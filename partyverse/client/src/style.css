@@ -1103,3 +1103,8 @@ input.field.code {
   letter-spacing: 0.2em;
   font-weight: 800;
 }
+
+/* Google-Speicherknopf (cloud/anmacha-cloud.js) im Minispiel ausblenden – er liegt sonst über dem Touch-Stick */
+body:has(.mg-on) > button[aria-label='Mit Google speichern'] {
+  display: none !important;
+}

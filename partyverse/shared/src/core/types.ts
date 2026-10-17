@@ -171,9 +171,18 @@ export type GameEvent =
   | { t: 'event'; player: string; id: EventId; arg?: string }
   | { t: 'fold'; phase: number; reason: 'round' | 'event' }
   | { t: 'altarMoved'; node: number }
+  /** Beginn der letzten drei Runden; player = Letzter, bekommt Aufholhilfe */
+  | { t: 'finalStretch'; player: string }
   | { t: 'minigameStart'; gameId: string; mode: MinigameMode; teams: string[][] }
   | { t: 'minigameResult'; player: string; score: number }
-  | { t: 'minigameDone'; ranking: string[]; rewards: Record<string, number>; winners: string[] }
+  | {
+      t: 'minigameDone';
+      ranking: string[];
+      rewards: Record<string, number>;
+      winners: string[];
+      /** Punkte aller Spieler, auch der Bots */
+      scores?: Record<string, number>;
+    }
   | { t: 'finale'; bonuses: FinaleBonus[]; ranking: string[] }
   | { t: 'turnEnd'; player: string };
 

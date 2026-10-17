@@ -1,4 +1,4 @@
-import { CHARACTER_IDS, type CharacterId } from '@shared/characters';
+import { CHARACTER_IDS, getCharacter, type CharacterId } from '@shared/characters';
 import type { Difficulty, GameConfig, PlayerSetup } from '@shared/core/types';
 import { MAX_PLAYERS, MIN_PLAYERS } from '@shared/core/types';
 import { getLayout } from '@shared/levels';
@@ -14,8 +14,6 @@ import { cleanName } from '@shared/net/protocol';
 import type { LobbyView } from './lobby';
 import type { Link } from './p2pLink';
 import { GuestSession, HostSession, P2P_TIMING } from './p2pSession';
-
-const BOT_NAMES = ['Funki', 'Glimmo', 'Zeitfuchs', 'Raumkater'];
 
 interface Seat {
   slot: P2PSlot;
@@ -207,12 +205,12 @@ export class P2PHostRoom {
   }
   addBot(difficulty: Difficulty): void {
     if (this.seats.length >= MAX_PLAYERS) return;
-    const n = this.seats.filter((s) => s.slot.kind === 'bot').length;
+    const character = this.freeCharacter();
     this.seats.push({
       slot: {
         id: 'p' + ++this.counter,
-        name: BOT_NAMES[n % BOT_NAMES.length] as string,
-        character: this.freeCharacter(),
+        name: this.freeName(getCharacter(character).name),
+        character,
         kind: 'bot',
         difficulty,
         ready: true,

@@ -669,3 +669,24 @@ describe('KI', () => {
     }
   });
 });
+
+describe('Endspurt und Minispiel-Punkte', () => {
+  it('kündigt ab 6 Runden die letzten drei Runden einmal an und gibt dem Letzten Aufholhilfe', () => {
+    const c = mk(3, 8, 77, ['human']);
+    const ev = autoPlay(c, 4);
+    const fs = ev.filter((e) => e.t === 'finalStretch') as Array<Extract<GameEvent, { t: 'finalStretch' }>>;
+    expect(fs.length).toBe(1);
+    const i = ev.indexOf(fs[0] as GameEvent);
+    expect(ev.slice(0, i).some((e) => e.t === 'round' && e.round === 6)).toBe(true);
+    expect(ev[i + 1]).toMatchObject({ t: 'coins', player: fs[0]!.player, delta: 10 });
+  });
+  it('kein Endspurt in kurzen Partien', () => {
+    const ev = autoPlay(mk(3, 5, 78, ['human']), 4);
+    expect(ev.some((e) => e.t === 'finalStretch')).toBe(false);
+  });
+  it('meldet am Ende eines Minispiels die Punkte aller Spieler, auch der Bots', () => {
+    const ev = autoPlay(mk(3, 1, 79, ['human']), 4);
+    const done = ev.find((e) => e.t === 'minigameDone') as Extract<GameEvent, { t: 'minigameDone' }>;
+    expect(Object.keys(done.scores ?? {}).sort()).toEqual(['p0', 'p1', 'p2']);
+  });
+});

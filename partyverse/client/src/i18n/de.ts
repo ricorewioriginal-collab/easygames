@@ -74,7 +74,10 @@ export const de: Record<string, string> = {
   'hud.fold': 'Faltung {phase}/{phases}',
   'hud.thinking': '{name} überlegt …',
   'hud.yourTurn': '{name}, du bist dran!',
-  'hud.chooseWay': 'Wähle deinen Weg (noch {n} Schritte)',
+  'hud.chooseWay': 'Wähle deinen Weg (noch {steps})',
+  'hud.altarIn': 'Altar {steps} entfernt',
+  'steps.one': '1 Schritt',
+  'steps.many': '{n} Schritte',
   'act.roll': '🎲 Würfeln',
   'ev.order': 'Reihenfolge: {names}',
   'ev.round': 'Runde {round}',
@@ -82,13 +85,16 @@ export const de: Record<string, string> = {
   'ev.item': '{name} setzt {item} ein',
   'ev.bonusPlus': 'Rückenwind: +{n}',
   'ev.bonusMinus': 'Gegenwind: −{n}',
-  'ev.steps': 'Noch {n} Schritte',
+  'ev.steps': 'Noch {steps}',
+  'ev.altarPoor': 'Altar! Ein Splitter kostet {cost} Glimmer',
   'ev.pass': 'Überholt {name}',
   'ev.shard': '{name} erringt einen Siegpunkt-Splitter!',
   'ev.swap': '{a} und {b} tauschen die Plätze!',
   'ev.steal': '{to} schnappt {from} {n} Glimmer weg!',
   'ev.fold': 'Die Welt faltet sich – neue Wege!',
   'ev.altar': 'Der Chrono-Altar zieht um!',
+  'ev.finalStretch':
+    'Endspurt! Die letzten 3 Runden: Felder zählen doppelt. {name} bekommt 10 Glimmer Aufholhilfe.',
   'ev.minigame': 'Minispiel!',
   'gate.title': 'Mautbrücke',
   'gate.text': 'Die Brücke kostet {toll} Glimmer – oder ein Schlüsselfragment.',
@@ -150,7 +156,7 @@ export const de: Record<string, string> = {
   'rules.goal':
     'Sammle Glimmer und kaufe am Chrono-Altar für {cost} Glimmer Siegpunkt-Splitter. Nach der letzten Runde gewinnt, wer die meisten Splitter hat.',
   'rules.turn':
-    'Du würfelst, ziehst über die Felder, wählst an Weggabelungen deinen Weg und erlebst, was das Zielfeld bietet. Nach jeder Runde wartet ein Minispiel.',
+    'Du würfelst, ziehst über die Felder, wählst an Weggabelungen deinen Weg und erlebst, was das Zielfeld bietet. Nach jeder Runde wartet ein Minispiel. Im Endspurt (letzte 3 Runden ab 6 Runden) zählen die Felder doppelt.',
   'rules.fold':
     '4D-Faltung: In manchen Brettern wechseln Wege von Runde zu Runde – nur gestrichelte Wege verschwinden und erscheinen wieder.',
   'finale.title': 'Siegerehrung',

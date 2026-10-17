@@ -26,11 +26,11 @@ npm run check        # Typen + Lint + alle Tests
 npm run build        # Client bauen nach partyverse/app (Basis-URL ./, überall lauffähig)
 ```
 
-| Befehl                            | Zweck                                                                                                   |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `npm test`                        | Vitest: Spielkern, 50 Layouts, 22 Minispiele, Netzwerk-Nachrichten, Audio, Speicher                     |
-| `npm run lint` / `npm run format` | ESLint / Prettier                                                                                       |
-| `npm run typecheck`               | `tsc` für das Spiel                                                                                     |
+| Befehl                            | Zweck                                                                               |
+| --------------------------------- | ----------------------------------------------------------------------------------- |
+| `npm test`                        | Vitest: Spielkern, 50 Layouts, 22 Minispiele, Netzwerk-Nachrichten, Audio, Speicher |
+| `npm run lint` / `npm run format` | ESLint / Prettier                                                                   |
+| `npm run typecheck`               | `tsc` für das Spiel                                                                 |
 
 Konfiguration (optional, siehe `.env.example`): `VITE_BASE` (Basis-URL beim Bauen).
 
@@ -53,6 +53,7 @@ Entwickler-Labore: `?lab=<minispiel-id>` (Minispiel einzeln, `&bot=0.8` lässt d
 3. Am **Chrono-Altar** kostet ein **Siegpunkt-Splitter** (◈) 20 Glimmer. Der Altar zieht manchmal um.
 4. **4D-Faltung:** Auf manchen Brettern erscheinen und verschwinden Wege je Runde (gestrichelte Wege) – plane voraus.
 5. Nach jeder Runde spielen alle ein **Minispiel**; die Besten bekommen Glimmer.
+   **Endspurt:** In Partien ab 6 Runden zählen in den letzten 3 Runden Glimmer- und Dornenfelder doppelt, und der Letzte bekommt 10 Glimmer Aufholhilfe.
 6. Nach der letzten Runde gibt es Bonus-Splitter (meiste Minispiel-Siege, meiste Glimmer, meiste Ereignisse). Wer die meisten Splitter hat, gewinnt (Gleichstand: Glimmer, Minispiel-Siege, Reihenfolge).
 
 Die vollständigen Regeln stehen im Spiel unter **Anleitung**.

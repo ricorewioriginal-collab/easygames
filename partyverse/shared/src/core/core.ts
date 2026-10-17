@@ -551,12 +551,12 @@ export class GameCore {
     this.emit({ t: 'land', player: id, node, kind: n.kind });
     switch (n.kind) {
       case 'glimmer':
-        this.addCoins(p, 3, 'Glimmer-Feld');
+        this.addCoins(p, this.finalStretch() ? 6 : 3, 'Glimmer-Feld');
         break;
       case 'thorn':
         if (p.mantle)
           this.emit({ t: 'blocked', player: id, reason: 'Der Phasenmantel schützt vor dem Dornenfeld.' });
-        else this.addCoins(p, -3, 'Dornenfeld');
+        else this.addCoins(p, this.finalStretch() ? -6 : -3, 'Dornenfeld');
         break;
       case 'item':
         this.giveItem(p, this.randomItem(), 'field');
@@ -737,6 +737,12 @@ export class GameCore {
     this.emit({ t: 'order', order: sorted, rolls });
   }
 
+  /** Die letzten drei Runden einer Partie ab 6 Runden */
+  finalStretch(): boolean {
+    const s = this.state;
+    return s.rounds >= 6 && s.round > s.rounds - 3;
+  }
+
   private startRound(first = false): void {
     const s = this.state;
     s.foldPhase = this.effectivePhase();
@@ -746,6 +752,14 @@ export class GameCore {
     s.rolled = false;
     this.emit({ t: 'round', round: s.round, foldPhase: s.foldPhase });
     if (!first && this.layout.foldPhases > 1) this.emit({ t: 'fold', phase: s.foldPhase, reason: 'round' });
+    if (this.finalStretch() && s.round === s.rounds - 2) {
+      // Endspurt: Felder zählen doppelt, der Letzte bekommt Aufholhilfe
+      const last = this.players
+        .slice()
+        .sort((a, b) => a.shards - b.shards || a.coins - b.coins)[0] as PlayerState;
+      this.emit({ t: 'finalStretch', player: last.id });
+      this.addCoins(last, 10, 'Aufholhilfe');
+    }
     this.emit({ t: 'turn', player: s.current });
   }
 
@@ -860,7 +874,9 @@ export class GameCore {
     }
     for (const id of ids) this.addCoins(this.player(id), rewards[id] as number, 'Minispiel');
     for (const id of winners) this.player(id).stats.minigameWins++;
-    this.emit({ t: 'minigameDone', ranking, rewards, winners });
+    const scores: Record<string, number> = {};
+    for (const id of ids) scores[id] = score(id);
+    this.emit({ t: 'minigameDone', ranking, rewards, winners, scores });
     s.minigame = null;
     this.endRound();
   }

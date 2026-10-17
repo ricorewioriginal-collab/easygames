@@ -1,7 +1,14 @@
 import * as THREE from 'three';
 import { getLayout } from '@shared/levels';
+import { distancesTo } from '@shared/core/ai';
 import { EVENTS, ITEMS } from '@shared/core/items';
-import type { GameEvent, GameState, ItemId, PlayerSetup } from '@shared/core/types';
+import {
+  ALTAR_COST,
+  type GameEvent,
+  type GameState,
+  type ItemId,
+  type PlayerSetup,
+} from '@shared/core/types';
 import type { WorldId } from '@shared/levels/types';
 import type { App } from '../app/app';
 import { recordGame } from '../app/achievements';
@@ -224,7 +231,13 @@ export class GameScreen {
         stage.hideDice();
         break;
       case 'step':
-        hud.setBanner(ev.remaining > 0 ? t('ev.steps', { n: ev.remaining }) : null);
+        hud.setBanner(ev.remaining > 0 ? t('ev.steps', { steps: steps(ev.remaining) }) : null);
+        if (
+          ev.to === this.state.altar &&
+          ev.remaining > 0 &&
+          (this.shown[ev.player]?.coins ?? 0) < ALTAR_COST
+        )
+          this.float(ev.player, t('ev.altarPoor', { cost: ALTAR_COST }), 'info');
         await stage.hop(ev.player, ev.to);
         sfx('step');
         break;
@@ -308,6 +321,11 @@ export class GameScreen {
         stage.viewOverview();
         await delay(1500);
         break;
+      case 'finalStretch':
+        hud.say(t('ev.finalStretch', { name: this.nameOf(ev.player) }), 3200);
+        sfx('fanfare');
+        await delay(2400);
+        break;
       case 'altarMoved':
         stage.setAltar(ev.node);
         stage.viewFocus(ev.node, 14);
@@ -327,6 +345,7 @@ export class GameScreen {
         this.scores[ev.player] = ev.score;
         break;
       case 'minigameDone':
+        Object.assign(this.scores, ev.scores);
         if (ev.winners.some((w) => this.session.localIds.includes(w))) this.minigameWins++;
         await this.showMinigameResults(ev.ranking, ev.rewards, ev.winners);
         app.audio.music(this.layout.world as WorldId);
@@ -338,6 +357,14 @@ export class GameScreen {
       case 'finale':
         break;
     }
+  }
+
+  /** Felder vom Knoten bis zum Altar in der aktuellen Faltung (wie die Bots rechnen) */
+  private altarSteps(from: number): number {
+    const s = this.state;
+    const n = this.layout.foldPhases;
+    const phase = n <= 1 ? 0 : (((s.round - 1 + s.foldShift) % n) + n) % n;
+    return distancesTo(this.layout, s.altar, phase)[from] ?? Infinity;
   }
 
   private refreshScoresFor(current: string): void {
@@ -488,7 +515,11 @@ export class GameScreen {
             title: ITEMS[i].description,
           }),
         );
-      hud.setBanner(t('hud.yourTurn', { name: this.nameOf(id) }));
+      const far = this.altarSteps(me.position);
+      hud.setBanner(
+        t('hud.yourTurn', { name: this.nameOf(id) }) +
+          (Number.isFinite(far) ? ' · ' + t('hud.altarIn', { steps: steps(far) }) : ''),
+      );
       hud.setActions(...items, roll);
       return;
     }
@@ -497,15 +528,21 @@ export class GameScreen {
     switch (pd.kind) {
       case 'branch': {
         stage.highlight(pd.options);
-        hud.setBanner(t('hud.chooseWay', { n: pd.remaining }));
+        hud.setBanner(t('hud.chooseWay', { steps: steps(pd.remaining) }));
+        // Zeigt pro Weg die Entfernung zum Altar, damit sich gleich aussehende Wege unterscheiden lassen
+        const far = pd.options.map((n) => this.altarSteps(n) + 1);
+        const best = Math.min(...far);
         hud.setActions(
-          ...pd.options.map((n) =>
-            btn(
-              `${KIND_ICON[this.layout.nodes[n]?.kind ?? 'glimmer'] ?? '•'} ${t('kind.' + (this.layout.nodes[n]?.kind ?? 'glimmer'))}`,
+          ...pd.options.map((n, i) => {
+            const kind = this.layout.nodes[n]?.kind ?? 'glimmer';
+            const d = far[i] as number;
+            return btn(
+              `${KIND_ICON[kind] ?? '•'} ${t('kind.' + kind)}` + (Number.isFinite(d) ? ` · ◈ ${d}` : ''),
               () => this.act(id, { type: 'chooseBranch', node: n }),
-              'good',
-            ),
-          ),
+              d === best && Number.isFinite(d) ? 'hot' : 'good',
+              { title: Number.isFinite(d) ? t('hud.altarIn', { steps: steps(d) }) : '' },
+            );
+          }),
         );
         break;
       }
@@ -919,3 +956,5 @@ export class GameScreen {
     void (null as PlayerSetup | null);
   }
 }
+
+const steps = (n: number): string => (n === 1 ? t('steps.one') : t('steps.many', { n }));

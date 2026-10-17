@@ -82,7 +82,7 @@ export class LobbyPanel {
         h(
           'div',
           { class: 'stepper' },
-          btn('−', () => api.config({ rounds: Math.max(3, v.rounds - 1) }), 'ghost', { 'aria-label': '−' }),
+          btn('−', () => api.config({ rounds: Math.max(5, v.rounds - 1) }), 'ghost', { 'aria-label': '−' }),
           h('b', null, String(v.rounds)),
           btn('+', () => api.config({ rounds: Math.min(30, v.rounds + 1) }), 'ghost', { 'aria-label': '+' }),
         ),

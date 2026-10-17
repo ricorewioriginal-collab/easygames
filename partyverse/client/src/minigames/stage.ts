@@ -82,15 +82,22 @@ export class MiniStage implements Screen {
     this.view.update(this.state, 0);
   }
 
+  private lastNow = 0;
+
   start(): void {
     this.running = true;
+    this.lastNow = 0;
   }
 
   update(dt: number): void {
+    // Echte Zeit nehmen: Der Renderer kappt dt bei 50 ms, sonst liefe das Spiel auf langsamen Geräten in Zeitlupe
+    const now = performance.now();
+    const real = this.lastNow ? Math.min(0.25, Math.max(dt, (now - this.lastNow) / 1000)) : dt;
+    this.lastNow = now;
     if (this.running && !this.finished) {
-      this.acc += dt;
+      this.acc += real;
       let guard = 0;
-      while (this.acc >= TICK_DT && !this.finished && guard++ < 10) {
+      while (this.acc >= TICK_DT && !this.finished && guard++ < 16) {
         this.acc -= TICK_DT;
         this.stepOnce();
       }
