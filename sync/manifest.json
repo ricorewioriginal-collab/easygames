@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "8cefd1f51b1b",
- "generated": "2026-10-17T13:17:53+02:00",
- "commit": "c5c63994c8e27c0c65a27e1f0168a77dce22c88f",
+ "version": "712cab9c64ea",
+ "generated": "2026-10-17T14:05:55+02:00",
+ "commit": "d13d1c378529b5a0478c1ce133ab2f72bd396949",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4773,8 +4773,8 @@
   },
   {
    "p": "games.js",
-   "s": 23866,
-   "h": "393b685a4aa9e3be64b6f8b96b839abf8d842f9137766f2f2c04df9e2d54e131"
+   "s": 23928,
+   "h": "9670e68a2ece880cb4df8907695f47c792a022b16d993089335eab14f923c639"
   },
   {
    "p": "gay-life/card.jpg",
@@ -4933,8 +4933,8 @@
   },
   {
    "p": "guides.js",
-   "s": 63801,
-   "h": "d62842f851bb4c8d9dfabd3ef9197d197af3ab854cbb716f187729b237c35d32"
+   "s": 64288,
+   "h": "17fe6b3462925166d7f3fe439a7acf6dc1cd2cf0545e75de116e39242ee09796"
   },
   {
    "p": "heute.html",
@@ -5902,19 +5902,19 @@
    "h": "a6f562fbc38022687e87b9cdcd3f7ac4f4390c7d0420728b1feb497dc46e6aec"
   },
   {
-   "p": "ricoville/assets/index-BLdHkGPY.js",
-   "s": 190584,
-   "h": "81fc82e574bea321fe2cc959262c925ba034abcebea9bf913ec5ba964f520ed2"
+   "p": "ricoville/assets/index-BUWwZhsM.css",
+   "s": 14430,
+   "h": "9e13508cc7c2ef2e6d1cf7f11b99db658e62b9f56b39b75744fa44866b12a53e"
   },
   {
-   "p": "ricoville/assets/index-D_MYwwq2.css",
-   "s": 13425,
-   "h": "7fb5ce57d84e7cee0696140da8052f26dea83d0bff2ca1b7b514acd83cc0f608"
+   "p": "ricoville/assets/index-CDRFEBml.js",
+   "s": 202247,
+   "h": "fdda32b6da4e76eca2323245cb425404db7c5538ec0aa69fe5f97c1d16a195fb"
   },
   {
-   "p": "ricoville/assets/three-DaP6-81L.js",
-   "s": 521014,
-   "h": "e303c4c452c142fee0e3b9dd156c5b64118699005820781e559fa50dd91315a6"
+   "p": "ricoville/assets/three-BxyXCb2a.js",
+   "s": 526533,
+   "h": "98167e7a2761cec77bcc28598bd90d7a79c7ba2fb83e671aef65dbe56a748415"
   },
   {
    "p": "ricoville/card.svg",
@@ -5949,7 +5949,7 @@
   {
    "p": "ricoville/index.html",
    "s": 1940,
-   "h": "fa1168321e3fd63b890fd8153c529d816689dde20f6562e0b2c6f8abcf39c867"
+   "h": "e777990eb04139477937f6580141f74bfc881e3aed7bcaaad1debdf04862739c"
   },
   {
    "p": "ricoville/manifest.webmanifest",
@@ -5959,7 +5959,7 @@
   {
    "p": "ricoville/sw.js",
    "s": 2296,
-   "h": "6a1eb89b45d06d87ca4bd966e069db7305b926dfbab9ae6bdc5587437bd669a1"
+   "h": "8bb29c5822261ba539955365aff30449834d587310bc54c29eec3c0a8bc73b88"
   },
   {
    "p": "riftzone/app/assets/index-41c2d7c84c.js",
@@ -6083,8 +6083,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 100917,
-   "h": "63c6c7f6d4c58363eff8076079d1c110f69dc3bcb716478f89722039c58bef3e"
+   "s": 101462,
+   "h": "89d85cbc4dcfcbfed6b163d004387ff75faba2949105fada97b4767f540e93ac"
   },
   {
    "p": "taschi/card.svg",
