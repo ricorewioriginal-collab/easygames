@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>Profil &amp; Freunde – easygames</title>
+<style>
+:root{--bg:#0b1020;--card:#151b33;--line:#ffffff24;--text:#f3f5ff;--mut:#a9b0cf;--acc:#d4fd78;--gold:#ffc53d;--bad:#f28b82;--good:#81c995}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 14px calc(24px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;gap:12px;margin:0 0 14px}
+header h1{font-size:22px;margin:0;flex:1}
+.back{color:var(--text);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:7px 13px;font-weight:600;font-size:13px}
+body.embed .back{display:none}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.card{margin:14px 0 0;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:14px}
+.card h2{font-size:16px;margin:0 0 6px}
+.card p,.hint{margin:6px 0;color:var(--mut);font-size:13px}
+.me{display:flex;gap:14px;align-items:center}
+.av{flex:none;width:72px;height:72px;border-radius:50%;background:#222a4d;display:grid;place-items:center;font-size:38px}
+.me b{display:block;font-size:20px}.me small{color:var(--mut)}
+.emojis{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.emojis button{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:#0f1530;font-size:22px;cursor:pointer}
+.emojis button[aria-pressed=true]{border-color:var(--acc);background:#d4fd7822}
+label{display:block;margin:12px 0 4px;font-weight:600;font-size:13px}
+input[type=text],select{width:100%;min-height:44px;border-radius:12px;border:1px solid var(--line);background:#0f1530;color:var(--text);font:16px system-ui;padding:0 12px}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+.btn{flex:1 1 150px;min-height:44px;border-radius:12px;border:1px solid var(--line);background:#222a4d;color:var(--text);font:600 14px system-ui;cursor:pointer;padding:0 14px;display:flex;align-items:center;justify-content:center;text-decoration:none}
+.btn.pri{background:var(--acc);color:#10140a;border-color:var(--acc)}
+.btn.bad{color:var(--bad)}.btn:disabled{opacity:.5}
+.btn.sm{flex:0 0 auto;min-height:36px;padding:0 10px;font-size:13px}
+ul.fl{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+ul.fl li{border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+ul.fl .h{display:flex;gap:10px;align-items:center}
+ul.fl .h .e{font-size:24px}ul.fl .h b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.on{color:var(--good);font-size:12px}.off{color:var(--mut);font-size:12px}
+.err{color:var(--bad);font-size:13px;min-height:18px;margin:6px 0 0}.ok{color:var(--good);font-weight:600}
+.badge{display:inline-block;background:var(--gold);color:#3a2a00;border-radius:99px;padding:1px 8px;font-size:12px;font-weight:700;margin-left:6px}
+#toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#222a4d;border:1px solid var(--line);border-radius:12px;padding:8px 14px;opacity:0;transition:opacity .3s;pointer-events:none;max-width:92vw}
+#toast.on{opacity:1}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>🙂 Profil &amp; Freunde</h1>
+    <a class="back" href="index.html">← Spiele</a>
+  </header>
+
+  <section class="card" id="gate">
+    <h2>Melde dich an</h2>
+    <p>Mit deinem easygames-Konto kannst du ein Profil veröffentlichen, Freunden folgen und sie zum Spielen einladen. Es erscheint nur dein Spitzname – keine Google-Daten.</p>
+    <div id="cloudMount"></div>
+  </section>
+
+  <div id="app" hidden>
+    <section class="card" id="other" hidden>
+      <h2>Profil</h2>
+      <div class="me"><div class="av" id="oAv">🙂</div><div style="min-width:0"><b id="oN"></b><small id="oS"></small></div></div>
+      <p id="oFav" class="hint"></p>
+      <div class="row"><button class="btn pri" id="oAdd" type="button">➕ Als Freund hinzufügen</button><button class="btn" id="oInv" type="button">📨 Zum Spielen einladen</button></div>
+      <p class="err" id="oErr" role="alert"></p>
+    </section>
+
+    <section class="card" id="mine">
+      <h2>Mein Profil</h2>
+      <div class="me"><div class="av" id="av">🙂</div><div style="min-width:0"><b id="nm">–</b><small id="sm"></small></div></div>
+      <label>Avatar</label><div class="emojis" id="emojis" role="group" aria-label="Avatar wählen"></div>
+      <label for="nick">Spitzname (2–20 Zeichen)</label><input type="text" id="nick" maxlength="20" autocomplete="off">
+      <label>Lieblingsspiele (bis zu 3)</label>
+      <div class="row"><select id="f1" aria-label="Lieblingsspiel 1"></select><select id="f2" aria-label="Lieblingsspiel 2"></select><select id="f3" aria-label="Lieblingsspiel 3"></select></div>
+      <div class="row"><button class="btn pri" id="pub" type="button">Profil veröffentlichen</button><button class="btn bad" id="unpub" type="button" hidden>Profil entfernen</button></div>
+      <p class="err" id="err" role="alert"></p>
+      <label for="link">Dein Profil-Link zum Teilen</label>
+      <div class="row"><input type="text" id="link" readonly style="flex:1"><button class="btn sm" id="copy" type="button">Kopieren</button></div>
+    </section>
+
+    <section class="card" id="inv">
+      <h2>Einladungen <span class="badge" id="invN" hidden></span></h2>
+      <ul class="fl" id="invList"></ul>
+    </section>
+
+    <section class="card">
+      <h2>Freunde</h2>
+      <p>Folge Freunden über ihren Profil-Link. Du siehst, wer gerade im Chat ist, und kannst sie zu einem Spiel einladen.</p>
+      <ul class="fl" id="friends"></ul>
+    </section>
+  </div>
+</main>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="cloud/anmacha-cloud.js" data-game="profil" data-prefix="anmacha-profil-ohne-spielstand" data-mount="#cloudMount" data-sync="off" data-board="off" data-hint="Mit Google anmelden." defer></script>
+<script src="cloud/anmacha-board.js" defer></script>
+<script src="cloud/anmacha-ach.js" defer></script>
+<script src="cloud/anmacha-gameach.js" defer></script>
+<script src="cloud/anmacha-chat.js" defer></script>
+<script src="cloud/anmacha-chatfilter.js" defer></script>
+<script src="cloud/anmacha-engage.js" defer></script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  var Cloud = window.AnMaChaCloud, B = window.AnMaChaBoard, A = window.AnMaChaAch, GA = window.AnMaChaGameAch, Chat = window.AnMaChaChat, F = window.AnMaChaChatFilter, E = window.AnMaChaEngage, $ = function (id) { return document.getElementById(id); };
+  var qs = new URLSearchParams(location.search); if (qs.get('embed') === '1') document.body.classList.add('embed');
+  if (!Cloud || !B || !A || !Chat || !F || !E) { $('gate').querySelector('p').textContent = 'Profile sind gerade nicht verfügbar.'; $('cloudMount').hidden = true; return; }
+  var FS = Cloud.FS.replace(/\/$/, ''), PUBLIC = 'https://ricorewioriginal-collab.github.io/easygames/', me = null, games = [], emoji = '🎮', mine = null, logging = false, toastT = 0, target = (qs.get('u') || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 128);
+  function mk(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function toast(t, bad) { var el = $('toast'); el.textContent = t; el.style.color = bad ? 'var(--bad)' : ''; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(function () { el.classList.remove('on'); }, 3000); }
+  function api(url, opt) { return Cloud.account().then(function (a) { if (!a) throw new Error('login'); me = a; opt = opt || {}; opt.headers = { 'Content-Type': 'application/json', Authorization: 'Bearer ' + a.token }; return fetch(url, opt); }); }
+  function post(url, body) { return api(url, { method: 'POST', body: JSON.stringify(body) }); }
+  function gtitle(id) { var t = ''; games.forEach(function (g) { if (g.cloud && g.cloud.game === id) t = (g.icon || '') + ' ' + String(g.title).split(' – ')[0]; }); return t || id; }
+  function err(e) { toast(e && e.message ? e.message : 'Fehler', true); }
+  function getProfile(uid) { return api(FS + '/profiles/' + uid).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { return j && j.fields ? E.simple(j.fields) : null; }); }
+
+  // ---- Mein Profil ----
+  function fillFavs() {
+    ['f1', 'f2', 'f3'].forEach(function (id, i) {
+      var s = $(id); s.textContent = ''; var o0 = mk('option', '', '– keins –'); o0.value = ''; s.appendChild(o0);
+      games.forEach(function (g) { if (!g.cloud || !g.cloud.game) return; var o = mk('option', '', gtitle(g.cloud.game)); o.value = g.cloud.game; s.appendChild(o); });
+      var f = ((mine && mine.g) || '').split(',')[i] || ''; s.value = f;
+    });
+  }
+  function drawMine() {
+    $('av').textContent = emoji; $('nm').textContent = (mine && mine.n) || $('nick').value || 'Noch kein Profil';
+    $('sm').textContent = mine ? (mine.r ? mine.r + ' · ' : '') + (mine.p || 0) + ' Punkte · ' + (mine.a || 0) + ' Erfolge' : 'Noch nicht veröffentlicht';
+    $('unpub').hidden = !mine; $('pub').textContent = mine ? 'Profil aktualisieren' : 'Profil veröffentlichen';
+    Array.prototype.forEach.call($('emojis').children, function (b) { b.setAttribute('aria-pressed', String(b.textContent === emoji)); });
+    $('link').value = me ? PUBLIC + 'profil.html?u=' + me.uid : '';
+  }
+  function publish() {
+    $('err').textContent = ''; var n = $('nick').value.replace(/[\u0000-\u001f<>&"']/g, '').replace(/\s+/g, ' ').trim(), c = F.check(n, 20);
+    if (n.length < 2 || n.length > 20) { $('err').textContent = 'Bitte 2 bis 20 Zeichen.'; return; }
+    if (!c.ok) { $('err').textContent = F.REASON[c.reason] || F.REASON.bad; return; }
+    var favs = ['f1', 'f2', 'f3'].map(function (id) { return $(id).value; }).filter(Boolean).filter(function (x, i, a) { return a.indexOf(x) === i; });
+    var own = {}; if (GA) { var c2 = GA.collect(); Object.keys(c2).forEach(function (g) { own[g] = { total: c2[g].total, done: c2[g].done, unlocked: c2[g].unlocked }; }); }
+    var res = A.run(games, B, { cloud: true, board: B.shared && B.shared(), own: own });
+    var p = { n: c.text, e: emoji, r: res.rank.name, p: res.rank.pts, a: res.done, g: favs.join(',') };
+    $('pub').disabled = true;
+    post(E.commitUrl(Cloud.FS), E.profileBody(Cloud.FS, me.uid, p)).then(function (r) { if (!r.ok) throw new Error(r.status === 403 ? 'Bitte kurz warten und noch einmal versuchen.' : 'Veröffentlichen gerade nicht möglich.'); mine = { n: p.n, e: p.e, r: p.r, p: p.p, a: p.a, g: p.g }; try { localStorage.setItem('anmacha-profile-emoji', emoji); } catch (e) {} drawMine(); toast('Profil veröffentlicht ✓'); }).catch(function (e) { $('err').textContent = e.message; }).then(function () { $('pub').disabled = false; });
+  }
+  function unpublish() { if (!window.confirm('Dein veröffentlichtes Profil entfernen?')) return; api(FS + '/profiles/' + me.uid, { method: 'DELETE' }).then(function (r) { if (!r.ok) throw new Error('Entfernen nicht möglich'); mine = null; drawMine(); toast('Profil entfernt.'); }).catch(err); }
+
+  // ---- Freunde ----
+  var onlineIds = {};
+  function loadOnline() { return post(E.rootQueryUrl(Cloud.FS), Chat.onlineQuery(Date.now() - 150000)).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) { onlineIds = {}; Chat.parseOnline(rows).forEach(function (o) { onlineIds[o.u] = 1; }); }).catch(function () {}); }
+  function inviteTo(uid, nameOfFriend, sel) {
+    var g = sel.value; if (!g) { toast('Bitte ein Spiel wählen.', true); return; }
+    post(E.commitUrl(Cloud.FS), E.inviteBody(Cloud.FS, me.uid, (mine && mine.n) || B.nick() || 'Spieler', uid, g)).then(function (r) {
+      if (r.ok) toast('📨 Einladung an ' + nameOfFriend + ' gesendet.'); else toast(r.status === 403 ? (nameOfFriend + ' hat noch kein veröffentlichtes Profil – oder du hast gerade erst eingeladen. Bitte kurz warten.') : 'Einladen gerade nicht möglich.', true);
+    }).catch(err);
+  }
+  function gameSelect() { var s = mk('select'); s.setAttribute('aria-label', 'Spiel wählen'); var o0 = mk('option', '', 'Spiel wählen …'); o0.value = ''; s.appendChild(o0); games.forEach(function (g) { if (g.cloud && g.cloud.game && (g.multiplayer || (g.modes && g.modes.online))) { var o = mk('option', '', gtitle(g.cloud.game)); o.value = g.cloud.game; s.appendChild(o); } }); return s; }
+  function loadFriends() {
+    var ul = $('friends'); ul.textContent = '';
+    Promise.all([post(E.friendsUrl(Cloud.FS, me.uid), E.friendsQuery()).then(function (r) { return r.ok ? r.json() : []; }), loadOnline()]).then(function (res) {
+      var list = E.parseDocs(res[0]); if (!list.length) { ul.appendChild(mk('li', '', 'Noch keine Freunde – öffne den Profil-Link eines Freundes und tippe auf „Als Freund hinzufügen“.')); return; }
+      list.forEach(function (x) {
+        var li = mk('li'), h = mk('div', 'h'), em = mk('span', 'e', '🙂'), nm = mk('b', '', x.f.n || 'Spieler'), st = mk('span', onlineIds[x.id] ? 'on' : 'off', onlineIds[x.id] ? '● im Chat' : '○'); h.append(em, nm, st); li.appendChild(h);
+        getProfile(x.id).then(function (p) { if (p) { em.textContent = p.e || '🙂'; nm.textContent = p.n || nm.textContent; var sub = mk('div', 'hint', (p.r ? p.r + ' · ' : '') + (p.p || 0) + ' Punkte' + (p.g ? ' · ' + p.g.split(',').map(gtitle).join(', ') : '')); li.insertBefore(sub, li.querySelector('.row')); } }).catch(function () {});
+        var row = mk('div', 'row'), sel = gameSelect(); sel.style.flex = '1'; row.appendChild(sel);
+        var inv = mk('button', 'btn sm', '📨 Einladen'); inv.type = 'button'; inv.onclick = function () { inviteTo(x.id, x.f.n || 'Freund', sel); }; row.appendChild(inv);
+        var rm = mk('button', 'btn sm bad', 'Entfernen'); rm.type = 'button'; rm.onclick = function () { api(FS + '/friends/' + me.uid + '/f/' + x.id, { method: 'DELETE' }).then(function () { li.remove(); }).catch(err); }; row.appendChild(rm);
+        li.appendChild(row); ul.appendChild(li);
+      });
+    }).catch(err);
+  }
+  function loadInvites() {
+    var ul = $('invList'); ul.textContent = '';
+    post(E.invitesUrl(Cloud.FS, me.uid), E.invitesQuery()).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
+      var list = E.parseDocs(rows); $('invN').hidden = !list.length; $('invN').textContent = String(list.length);
+      if (!list.length) { ul.appendChild(mk('li', '', 'Keine Einladungen.')); return; }
+      list.forEach(function (x) {
+        var g = null; games.forEach(function (y) { if (y.cloud && y.cloud.game === x.f.g) g = y; });
+        var li = mk('li'), h = mk('div', 'h'); h.appendChild(mk('span', 'e', '📨')); h.appendChild(mk('b', '', (B.cleanName(x.f.n) || 'Jemand') + ' lädt dich zu ' + gtitle(x.f.g) + ' ein')); li.appendChild(h);
+        var row = mk('div', 'row'); if (g) { var go = mk('a', 'btn sm pri', '▶ Spielen'); go.href = g.path || 'index.html'; row.appendChild(go); }
+        var del = mk('button', 'btn sm', 'Verwerfen'); del.type = 'button'; del.onclick = function () { api(FS + '/invites/' + me.uid + '/i/' + x.id, { method: 'DELETE' }).then(function () { li.remove(); var n = ul.querySelectorAll('li').length; $('invN').hidden = !n; $('invN').textContent = String(n); if (!n) ul.appendChild(mk('li', '', 'Keine Einladungen.')); }).catch(err); }; row.appendChild(del); li.appendChild(row); ul.appendChild(li);
+      });
+    }).catch(function () {});
+  }
+
+  // ---- Fremdes Profil (?u=…) ----
+  function showOther() {
+    if (!target || target === me.uid) return;
+    $('other').hidden = false;
+    getProfile(target).then(function (p) {
+      if (!p) { $('oN').textContent = 'Profil nicht gefunden'; $('oS').textContent = 'Dieser Spieler hat (noch) kein Profil veröffentlicht.'; $('oAdd').hidden = $('oInv').hidden = true; return; }
+      $('oAv').textContent = p.e || '🙂'; $('oN').textContent = p.n; $('oS').textContent = (p.r ? p.r + ' · ' : '') + (p.p || 0) + ' Punkte · ' + (p.a || 0) + ' Erfolge'; $('oFav').textContent = p.g ? 'Lieblingsspiele: ' + p.g.split(',').map(gtitle).join(', ') : '';
+      $('oAdd').onclick = function () { post(E.commitUrl(Cloud.FS), E.friendBody(Cloud.FS, me.uid, target, p.n)).then(function (r) { if (!r.ok) throw new Error('Hinzufügen nicht möglich'); toast('➕ ' + p.n + ' ist jetzt in deiner Freundesliste.'); loadFriends(); }).catch(function (e) { $('oErr').textContent = e.message; }); };
+      var sel = gameSelect(); $('oInv').onclick = function () { if (!sel.parentNode) { $('oInv').parentNode.parentNode.insertBefore(sel, $('oErr')); return; } inviteTo(target, p.n, sel); };
+    }).catch(function () { $('oN').textContent = 'Profil gerade nicht abrufbar'; });
+  }
+
+  function start() {
+    $('gate').hidden = true; $('app').hidden = false;
+    var saved = ''; try { saved = localStorage.getItem('anmacha-profile-emoji') || ''; } catch (e) {}
+    emoji = saved || emoji; $('nick').value = (B.nick && B.nick()) || '';
+    $('emojis').textContent = ''; E.EMOJIS.forEach(function (x) { var b = mk('button', '', x); b.type = 'button'; b.setAttribute('aria-label', 'Avatar ' + x); b.onclick = function () { emoji = x; drawMine(); }; $('emojis').appendChild(b); });
+    getProfile(me.uid).then(function (p) { mine = p; if (p) { emoji = p.e || emoji; $('nick').value = p.n; } fillFavs(); drawMine(); }).catch(function () { fillFavs(); drawMine(); });
+    drawMine(); loadFriends(); loadInvites(); showOther();
+  }
+  $('pub').addEventListener('click', publish); $('unpub').addEventListener('click', unpublish);
+  $('copy').addEventListener('click', function () { var v = $('link').value; try { navigator.clipboard.writeText(v).then(function () { toast('Link kopiert ✓'); }, function () { $('link').select(); }); } catch (e) { $('link').select(); } });
+  function login() { return Cloud.account().then(function (a) { if (!a) { $('gate').hidden = false; $('app').hidden = true; return; } me = a; start(); }).catch(function () {}); }
+  fetch('sync/catalog.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : { games: [] }; }).then(function (c) { games = c.games || []; }, function () {}).then(login);
+  setInterval(function () { var now = !!(Cloud.user && Cloud.user()); if (now && !me && !logging) { logging = true; login().then(function () { logging = false; }, function () { logging = false; }); } else if (!now && me) { me = null; $('app').hidden = true; $('gate').hidden = false; } }, 1000);
+});
+</script>
+</body>
+</html>

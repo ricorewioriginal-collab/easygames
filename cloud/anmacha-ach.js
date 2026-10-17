@@ -27,6 +27,7 @@
     { id: 'team', icon: '🤝', stat: 'multi', thr: [1, 3, 6], names: ['Mitspieler', 'Teamplayer', 'Partykönig'], desc: 'Spiele {n} Mehrspieler-Spiele.' },
     { id: 'ownach', icon: '🎯', stat: 'ownach', thr: [1, 10, 25, 50, 100], names: ['Erster Spiel-Erfolg', 'Erfolgsjäger', 'Trophäensammler', 'Medaillenregen', 'Hall of Fame'], desc: 'Schalte {n} Erfolge in den Spielen selbst frei (siehe unten).' },
     { id: 'allgame', icon: '💯', stat: 'allgame', thr: [1, 3, 5], names: ['Perfektionist', 'Komplettierer', 'Meister aller Klassen'], desc: 'Schalte in {n} Spielen alle Spiel-Erfolge frei.' },
+    { id: 'challenge', icon: '🎯', stat: 'challenge', thr: [1, 7, 30, 100], names: ['Tagesheld', 'Wochenheld', 'Monatsheld', 'Dauerbrenner'], desc: 'Trage dich an {n} Tagen bei der Tagesherausforderung ein (Seite „Heute“).' },
     { id: 'owl', icon: '🌙', stat: 'owl', thr: [1], names: ['Nachteule'], desc: 'Spiele zwischen Mitternacht und 5 Uhr.' },
     { id: 'early', icon: '🌅', stat: 'early', thr: [1], names: ['Frühaufsteher'], desc: 'Spiele zwischen 5 und 8 Uhr morgens.' },
     { id: 'weekend', icon: '🎉', stat: 'weekend', thr: [1], names: ['Wochenend-Held'], desc: 'Spiele am Samstag oder Sonntag.' },
@@ -43,7 +44,7 @@
     action: ['krawallvoegel', 'rico-flap', 'radio-maze', 'lumo', 'pufi-farbwind', 'radio-surfer', 'funkparcours', 'kart', 'turbokick', 'riftzone', 'flipper', 'snake', 'showdown'],
     denken: ['kraterkommando', 'funkblasen', 'radio-match', 'memory', 'wobbel', 'frequenzrad', 'tower-defense'],
     quiz: ['quiz', 'gesucht', 'hoererwahl', 'preisradar', 'machmichaus', 'zeitsprung-wissen', 'zeitsprung-movie', 'zeitsprung-radio', 'koffer-dealer'],
-    sim: ['ricoville', 'ricolife', 'mimori', 'markthalle', 'funkhaus', 'klotzfunk', 'bunte-insel'],
+    sim: ['ricoville', 'ricolife', 'ricorail', 'mimori', 'markthalle', 'funkhaus', 'klotzfunk', 'bunte-insel'],
     tisch: ['ricopoly', 'partyverse', 'spielesammlung', 'stapelrausch', 'gold-reels'],
     musik: ['beat-surfer', 'prismrush']
   };
@@ -92,11 +93,15 @@
   }
   function merge(a, b) {
     a = isObj(a) ? a : {}; b = isObj(b) ? b : {};
+    var hd = {}, hl = [];
+    [a.h, b.h].forEach(function (l) { (Array.isArray(l) ? l : []).forEach(function (d) { d = num(d); if (d > 19000101 && d < 99991231) hd[d] = 1; }); });
+    for (var hk in hd) hl.push(Number(hk));
+    hl.sort(function (x, y) { return x - y; });
     var days = {}, list = [];
     [a.d, b.d].forEach(function (l) { (Array.isArray(l) ? l : []).forEach(function (d) { d = num(d); if (d > 19000101 && d < 99991231) days[d] = 1; }); });
     for (var d in days) list.push(Number(d));
     list.sort(function (x, y) { return x - y; });
-    return { u: minMap(a.u, b.u), gu: minMap(a.gu, b.gu), g: minMap(a.g, b.g), d: list.slice(-400), f: minMap(a.f, b.f), m: Math.min(99, Math.max(num(a.m), num(b.m))), v: mergeV(a.v, b.v) };
+    return { u: minMap(a.u, b.u), gu: minMap(a.gu, b.gu), g: minMap(a.g, b.g), d: list.slice(-400), h: hl.slice(-400), f: minMap(a.f, b.f), m: Math.min(99, Math.max(num(a.m), num(b.m))), v: mergeV(a.v, b.v) };
   }
   function sameState(a, b) { return JSON.stringify(merge(a, {})) === JSON.stringify(merge(b, {})); }
 
@@ -116,7 +121,7 @@
     });
     s.stars = Math.floor(s.stars); s.wins = Math.floor(s.wins);
     s.genres = Object.keys(gen).length;
-    s.days = st.d.length; s.streak = streak(st.d);
+    s.days = st.d.length; s.streak = streak(st.d); s.challenge = st.h.length;
     s.age = st.d.length && input.today ? Math.max(0, dayIndex(input.today) - dayIndex(st.d[0])) : 0;
     s.marathon = st.m;
     s.pct = s.total ? Math.floor(100 * s.played / s.total) : 0;
@@ -219,6 +224,9 @@
       return B.putUserDoc('ach', m).catch(function () {});
     });
   }
+  // Tagesherausforderung: heutigen Tag als „eingetragen“ merken (lokal; der Abgleich mit dem Profil folgt über sync/pushGame)
+  function markChallenge(day) { var st = merge(loadState(), { h: [day] }); saveState(st); return st.h.length; }
+  api.markChallenge = markChallenge;
   api.loadState = loadState; api.collect = collect; api.run = run; api.sync = sync; api.pushGame = pushGame;
 
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

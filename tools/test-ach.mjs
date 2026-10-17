@@ -16,8 +16,9 @@ ok('Serien: Lücken, Jahres-/Monatswechsel, Doppelte');
 // Zusammenführen: früheste Zeit gewinnt, Tage vereinigt, Müll wird ignoriert
 const m = A.merge({ u: { 'explore:1': 500, 'daily:1': 9 }, g: { a: 5 }, d: [20260102, 20260101], f: { owl: 7 } }, { u: { 'explore:1': 300, 'x:1': 'kaputt' }, g: { b: 6 }, d: [20260103, 5, 'x'], f: {} });
 assert.deepEqual(m.u, { 'explore:1': 300, 'daily:1': 9 }); assert.deepEqual(m.g, { a: 5, b: 6 }); assert.deepEqual(m.d, [20260101, 20260102, 20260103]); assert.deepEqual(m.f, { owl: 7 });
-assert.deepEqual(A.merge(null, undefined), { u: {}, gu: {}, g: {}, d: [], f: {}, m: 0, v: {} });
+assert.deepEqual(A.merge(null, undefined), { u: {}, gu: {}, g: {}, d: [], h: [], f: {}, m: 0, v: {} });
 assert(A.sameState(m, A.merge(m, {})) && !A.sameState(m, {}));
+assert.deepEqual(A.merge({ h: [20260102, 5] }, { h: [20260101, 20260102] }).h, [20260101, 20260102], 'Tagesherausforderung: Tage vereinigt, ungültige fallen weg');
 const m2 = A.merge({ gu: { 'a:x': 50 }, m: 4, v: { a: { stars: 5, time: 90 } } }, { gu: { 'a:x': 20, 'a:y': 9 }, m: 7, v: { a: { stars: 3, time: 60 }, b: { wins: -2 } } });
 assert.deepEqual(m2.gu, { 'a:x': 20, 'a:y': 9 }); assert.equal(m2.m, 7); assert.deepEqual(m2.v, { a: { stars: 5, time: 60 } }, 'Zeiten: kleinster, sonst größter Wert; ungültige fallen weg');
 ok('Zusammenführen: früheste Zeit, Vereinigung, ungültige Werte, Spiel-Erfolge, Bestwerte');
@@ -54,7 +55,7 @@ ok('Bewertung: Stufen, Fortschritt, einmalige Freischaltung, Punkte/Rang');
 
 // Alles freigeschaltet: Rang Legende und Maximalpunkte stimmen mit den Definitionen überein
 const ids = [].concat(...Object.values(A.GENRES)), own = {}; ids.slice(0, 6).forEach(i => { own[i] = { total: 4, done: 4 }; }); own[ids[6]] = { total: 100, done: 100 };
-const allStats = { games: ids.map(i => g(i, { played: true, multi: true, vals: [{ id: 'stars', v: 10000 }, { id: 'wins', v: 300 }, { id: 'time', v: 5 }] })), own, today: 20270101, state: { d: Array.from({ length: 120 }, (_, i) => { const t = new Date(Date.UTC(2026, 0, 1 + i)); return t.getUTCFullYear() * 10000 + (t.getUTCMonth() + 1) * 100 + t.getUTCDate(); }), m: 12, f: { owl: 1, early: 1, weekend: 1, app: 1, tv: 1, pad: 1 } }, cloud: true, board: true };
+const allStats = { games: ids.map(i => g(i, { played: true, multi: true, vals: [{ id: 'stars', v: 10000 }, { id: 'wins', v: 300 }, { id: 'time', v: 5 }] })), own, today: 20270101, state: { d: Array.from({ length: 120 }, (_, i) => { const t = new Date(Date.UTC(2026, 0, 1 + i)); return t.getUTCFullYear() * 10000 + (t.getUTCMonth() + 1) * 100 + t.getUTCDate(); }), m: 12, h: Array.from({ length: 120 }, (_, i) => 20260101 + i), f: { owl: 1, early: 1, weekend: 1, app: 1, tv: 1, pad: 1 } }, cloud: true, board: true };
 const full = A.evaluate(allStats, 1);
 assert.equal(full.done, full.total, 'alle Stufen erreichbar (' + full.done + '/' + full.total + ')');
 const max = A.DEFS.reduce((t, d) => t + d.thr.reduce((x, _, i) => x + A.PTS[i], 0), 0);

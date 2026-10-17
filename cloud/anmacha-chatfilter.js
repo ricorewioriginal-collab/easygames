@@ -48,9 +48,16 @@
     });
     return { stems: stems, exact: exact, phrases: phrases, stemsS: stems.map(single), exactS: Object.keys(exact).map(single) };
   }
-  var L = prep(STEMS);
+  var L = prep(STEMS), OK = {};
+  // Vom Betreiber gepflegte Ergänzungen (Verwaltung → Wörter, Dokument config/words): bad = zusätzliche verbotene Wörter ("wort=" = nur ganzes Wort), ok = erlaubte Ausnahmen (ganze Wörter)
+  function setExtra(x) {
+    x = x && typeof x === 'object' ? x : {};
+    L = prep(STEMS.concat((Array.isArray(x.bad) ? x.bad : []).map(function (w) { return String(w).slice(0, 40); }).filter(function (w) { return w.replace(/=$/, '').trim().length >= 2; })));
+    OK = {}; (Array.isArray(x.ok) ? x.ok : []).forEach(function (w) { var n = norm(String(w).slice(0, 40)); if (n) OK[n] = 1; });
+  }
   function bad(n) {
     if (!n || n.length < 2) return false;
+    if (OK[n]) return false;
     if (L.exact[n]) return true;
     var s = single(n), i;
     if (L.exactS.indexOf(s) >= 0) return true;
@@ -113,7 +120,7 @@
     link: 'Links und Internetadressen sind im Chat nicht erlaubt.',
     contact: 'Aus Sicherheitsgründen keine Telefonnummern, E-Mail-Adressen oder Nutzernamen anderer Dienste teilen.'
   };
-  var api = { check: check, mask: mask, tidy: tidy, REASON: REASON };
+  var api = { check: check, mask: mask, tidy: tidy, setExtra: setExtra, REASON: REASON };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.AnMaChaChatFilter = api;
 })(typeof window !== 'undefined' ? window : this);

@@ -31,5 +31,14 @@ assert.equal(F.check('HALLO ZUSAMMEN WIE GEHT ES EUCH').text, 'Hallo zusammen wi
 assert.equal(F.check('jaaaaaaaaaa!!!!!!!').text, 'jaaa!!');
 ok('Bereinigung: leer, zu lang, Sonderzeichen, Großschreibung, Wiederholungen');
 
+// Betreiber-Ergänzungen: zusätzliche Wörter, Ausnahmen, ungültige Eingaben
+F.setExtra({ bad: ['blödmann', 'doof=', 'x', ''], ok: ['Klassenarbeit'] });
+assert.equal(F.check('du Blödmann').reason, 'bad'); assert.equal(F.check('B l ö d m a n n').reason, 'bad', 'Tricks gelten auch für eigene Wörter');
+assert.equal(F.check('du bist doof').reason, 'bad'); assert.equal(F.check('doofe Frage').ok, true, 'wort= trifft nur das ganze Wort');
+assert.equal(F.check('Klassenarbeit morgen').ok, true); assert.equal(F.mask('hallo Blödmann'), 'hallo ********');
+F.setExtra({ ok: ['arschloch'] }); assert.equal(F.check('du Arschloch').ok, true, 'Ausnahme hebt auch eingebaute Wörter auf'); assert.equal(F.check('du Hurensohn').reason, 'bad');
+F.setExtra(null); F.setExtra('kaputt'); assert.equal(F.check('du Arschloch').reason, 'bad', 'ohne Ergänzungen gilt wieder die eingebaute Liste'); assert.equal(F.check('du Blödmann').ok, true);
+ok('Betreiber-Ergänzungen: zusätzliche Wörter (auch mit Tricks), Ausnahmen, ungültige Eingaben');
+
 assert(Object.keys(F.REASON).every(k => F.REASON[k].length > 10));
 ok('Hinweise für alle Ablehnungsgründe vorhanden');

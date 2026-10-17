@@ -74,6 +74,7 @@ input[type=text]{flex:1;min-width:0;min-height:46px;border-radius:12px;border:1p
     <div id="on" aria-live="off"></div>
     <div id="list" role="log" aria-live="polite" aria-label="Nachrichten"></div>
     <p class="err" id="err" role="alert"></p>
+    <div class="row" id="seek" hidden style="display:flex;gap:8px"><select id="seekGame" aria-label="Spiel wählen" style="flex:1;min-width:0;min-height:44px;border-radius:12px;border:1px solid var(--line);background:#0f1530;color:var(--text);font:15px system-ui;padding:0 10px"></select><button class="btn" id="seekBtn" type="button">🎮 Mitspieler suchen</button></div>
     <form id="form" autocomplete="off"><input type="text" id="msg" maxlength="200" placeholder="Nachricht schreiben …" aria-label="Nachricht"><button class="btn pri" id="send" type="submit">Senden</button></form>
     <p class="hint">Bitte freundlich bleiben: Beleidigungen, Links und Kontaktdaten werden gefiltert. Mit ⚑ meldest du Nachrichten, mit 🚫 blendest du Spieler für dich aus. <span id="who"></span> <a href="#" id="chNick" style="color:var(--acc)">Namen ändern</a></p>
   </section>
@@ -93,6 +94,7 @@ window.addEventListener('DOMContentLoaded', function () {
   if (!Cloud || !F || !C) { $('gate').querySelector('p').textContent = 'Der Chat ist gerade nicht verfügbar.'; $('cloudMount').hidden = true; return; }
   var NICK = 'anmacha-chat-nick', BLOCK = 'anmacha-chat-block', MIN_GAP = 2600, POLL_FAST = 4000, POLL_SLOW = 12000, MAX_SHOWN = 150;
   var me = null, nick = '', room = 'lobby', games = [], admin = false, banned = false, seen = {}, last = '', timers = {}, lastSend = 0, lastText = '', lastTextAt = 0, calm = 0, gen = 0;
+  var SEEK = /^🎮 Sucht Mitspieler: (.{1,60})$/;   // Nachrichten im Raum „Mitspieler gesucht“ bekommen einen Knopf zum Spiel (nur Name des Spiels, keine Links)
   var blocked = {}; try { blocked = JSON.parse(localStorage.getItem(BLOCK) || '{}') || {}; } catch (e) {}
   function ls(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
   function toast(t) { var el = $('toast'); el.textContent = t; el.classList.add('on'); clearTimeout(timers.toast); timers.toast = setTimeout(function () { el.classList.remove('on'); }, 3500); }
@@ -112,7 +114,12 @@ window.addEventListener('DOMContentLoaded', function () {
 
   // ---- Raum wählen ----
   var wanted = (qs.get('room') || '').toLowerCase(); if (C.ROOM_RE.test(wanted)) room = wanted;
+  function drawSeek() {
+    var box = $('seek'); box.hidden = room !== 'mitspieler'; if (box.hidden) return; var sel = $('seekGame'); if (sel.options.length) return;
+    games.forEach(function (g) { if (g.cloud && g.cloud.game && (g.multiplayer || (g.modes && g.modes.online))) { var o = document.createElement('option'); o.value = String(g.title).split(' – ')[0]; o.textContent = (g.icon || '') + ' ' + o.value; sel.appendChild(o); } });
+  }
   function drawRooms() {
+    drawSeek();
     var list = C.ROOMS.slice(); if (!list.some(function (r) { return r[0] === room; })) list.push([room, C.roomTitle(room, games)]);
     $('rooms').innerHTML = ''; list.forEach(function (r) {
       var b = document.createElement('button'); b.type = 'button'; b.className = 'tab'; b.textContent = r[0] === room ? C.roomTitle(room, games) : r[1]; b.setAttribute('aria-pressed', String(r[0] === room));
@@ -137,6 +144,7 @@ window.addEventListener('DOMContentLoaded', function () {
     if (admin && m.u !== me.uid) { var bn = document.createElement('button'); bn.type = 'button'; bn.title = 'Spieler sperren'; bn.setAttribute('aria-label', 'Spieler sperren'); bn.textContent = '⛔'; bn.onclick = function () { ban(m); }; acts.appendChild(bn); }
     h.appendChild(acts); li.appendChild(h);
     var x = document.createElement('div'); x.className = 'x'; x.textContent = F.mask(m.x); li.appendChild(x);
+    var sk = SEEK.exec(m.x || ''); if (sk) { var gm = null; games.forEach(function (g) { if (g.cloud && g.cloud.game && String(g.title).split(' – ')[0] === sk[1]) gm = g; }); if (gm) { var op = document.createElement('a'); op.className = 'btn'; op.style.cssText = 'min-height:34px;margin-top:6px;display:inline-flex;align-items:center;padding:0 12px;text-decoration:none;font-size:13px'; op.textContent = '▶ ' + sk[1] + ' öffnen'; op.href = gm.path || 'index.html'; li.appendChild(op); } }
     li.dataset.u = m.u; if (blocked[m.u]) li.hidden = true;
     var box = $('list'), near = box.scrollHeight - box.scrollTop - box.clientHeight < 80 || mine;
     box.appendChild(li);
@@ -253,6 +261,10 @@ window.addEventListener('DOMContentLoaded', function () {
   });
   $('chNick').addEventListener('click', function (e) { e.preventDefault(); gen++; clearTimeout(timers.poll); $('chat').hidden = true; $('nickBox').hidden = false; $('nick').value = nick; $('nick').focus(); });
   $('msg').addEventListener('input', function () { $('err').textContent = ''; });
+  $('seekBtn').addEventListener('click', function () {
+    var t = $('seekGame').value; if (!t) return; $('seekBtn').disabled = true; $('err').textContent = '';
+    send('🎮 Sucht Mitspieler: ' + t).then(function () { calm = 0; poll(gen); }).catch(function (er) { $('err').textContent = er.message || 'Senden nicht möglich.'; }).then(function () { $('seekBtn').disabled = false; });
+  });
   $('form').addEventListener('submit', function (e) {
     e.preventDefault();
     var inp = $('msg'), text = inp.value; if (!text.trim()) return;
@@ -262,6 +274,16 @@ window.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('visibilitychange', function () { if (!document.hidden && me && nick && !$('chat').hidden) { calm = 0; poll(gen); online(); beat(); } });
   window.addEventListener('pagehide', leave);
 
+  // Vom Betreiber gepflegte Wörter (config/words, öffentlich lesbar; höchstens alle 10 Minuten)
+  (function words() {
+    var K = 'easygames-words', apply = function (o) { try { F.setExtra(o); } catch (e) {} }, c = null;
+    try { c = JSON.parse(localStorage.getItem(K) || 'null'); } catch (e) {}
+    if (c && c.o) apply(c.o); if (c && Date.now() - c.t < 600000) return;
+    fetch(Cloud.FS + 'config/words').then(function (r) { return r.ok ? r.json() : (r.status === 404 ? { fields: {} } : null); }).then(function (j) {
+      if (!j) return; var o = {}; try { o = JSON.parse((j.fields && j.fields.d && j.fields.d.stringValue) || '{}') || {}; } catch (e) {}
+      try { localStorage.setItem(K, JSON.stringify({ t: Date.now(), o: o })); } catch (e) {} apply(o);
+    }).catch(function () {});
+  })();
   fetch('sync/catalog.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : { games: [] }; }).then(function (c) { games = c.games || []; }, function () {}).then(login);
   // Anmeldung über das Cloud-Fenster (auch Kopplung in der App) erkennen
   var logging = false;

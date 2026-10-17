@@ -41,6 +41,8 @@
     background-attachment:fixed;min-height:100vh}
   button{font:inherit;color:inherit;cursor:pointer}
   .hidden{display:none!important}
+  .daybar{display:flex;gap:10px;align-items:center;margin:0 0 12px;padding:10px 14px;border:1px solid #ffc53d66;border-radius:14px;background:#ffc53d14;color:inherit;text-decoration:none;font-weight:600}
+  .daybar small{opacity:.8;font-weight:500}.daybar .go{margin-left:auto;white-space:nowrap}
   main{max-width:1040px;margin:0 auto;padding:calc(22px + env(safe-area-inset-top)) 18px 56px}
   header{margin-bottom:22px}
   h1{margin:0;font-size:clamp(34px,7vw,60px);font-weight:900;letter-spacing:-.01em;line-height:1.05;
@@ -249,14 +251,17 @@
       <nav class="links" aria-label="Verknüpfungen">
         <a class="pill" id="lRadio" href="https://www.ricorewi-radio.de" target="_blank" rel="noopener">📻 RicoReWi Radio</a>
         <a class="pill" id="lBoard" href="ranglisten.html">🏆 Ranglisten</a>
+        <a class="pill" id="lToday" href="heute.html">🎯 Heute</a>
         <a class="pill" id="lAch" href="erfolge.html">🏅 Erfolge</a>
         <a class="pill" id="lAcc" href="konto.html">👤 Konto</a>
+        <a class="pill" id="lProf" href="profil.html">🙂 Profil &amp; Freunde</a>
         <a class="pill" id="lChat" href="chat.html">💬 Chat</a>
         <a class="pill" id="lBug" href="bug.html">🐞 Fehler melden</a>
         <a class="pill" id="lGh" href="https://ricorewioriginal-collab.github.io/easygames/" target="_blank" rel="noopener">🌐 easygames im Web</a>
       </nav>
     </div>
     <div class="appbar hidden" id="appBar"></div>
+    <a class="daybar hidden" id="dayBar" href="heute.html"></a>
     <section class="hero hidden" id="hero" aria-label="Empfohlenes Spiel"></section>
     <div class="bar2">
       <label class="search"><input id="q" type="search" placeholder="Spiel suchen …" aria-label="Spiel suchen" autocomplete="off"></label>
@@ -751,8 +756,13 @@ fetch('sync/catalog.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : nu
     if (!cfg || typeof cfg !== 'object') return;
     const hide = Array.isArray(cfg.hide) ? cfg.hide : [], note = cfg.note && typeof cfg.note === 'object' ? cfg.note : {};
     OFF = {}; hide.forEach(id => { OFF[String(id)] = true; });
+    // Zeitplan (Verwaltung): sched[id] = { from, until } in ms – vor „from“ und nach „until“ nicht gelistet; 7 Tage nach „from“ trägt die Kachel „🆕 Neu“
+    const sched = cfg.sched && typeof cfg.sched === 'object' ? cfg.sched : {}, now = Date.now(), fresh = {};
+    Object.keys(sched).forEach(id => { const s = sched[id] || {}, a = Number(s.from) || 0, b = Number(s.until) || 0; if ((a && now < a) || (b && now > b)) OFF[id] = true; else if (a && now - a < 7 * 864e5) fresh[id] = true; });
     tiles.forEach(t => {
       const n = typeof note[t.dataset.id] === 'string' ? note[t.dataset.id].slice(0, 100) : '', old = t.querySelector('.maint'); if (old) old.remove();
+      const nw = t.querySelector('.fresh'); if (nw) nw.remove();
+      if (fresh[t.dataset.id]) { const bd = t.querySelector('.badges') || t.querySelector('.info') || t; const e = document.createElement('i'); e.className = 'fresh'; e.textContent = '🆕 Neu'; bd.appendChild(e); }
       if (n) { const bd = t.querySelector('.info') || t; const e = document.createElement('i'); e.className = 'maint'; e.textContent = '🔧 ' + n; e.style.cssText = 'display:block;margin-top:4px;font-style:normal;font-size:.78rem;color:#ffc53d'; bd.appendChild(e); }
     });
     if (heroGame) heroOn = !OFF[heroGame];   // Empfohlenes Spiel nicht zeigen, wenn es ausgeblendet ist
@@ -766,6 +776,26 @@ fetch('sync/catalog.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : nu
     let cfg = {}; try { cfg = JSON.parse((j.fields && j.fields.d && j.fields.d.stringValue) || '{}') || {}; } catch (e) {}
     try { localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), cfg })); } catch (e) {}
     apply(cfg);
+  }).catch(() => {});
+})();
+
+// ----- Tagesspiel und Serie (Hinweis): Spiel des Tages (für alle gleich), Serie, ob heute schon eingetragen; Benachrichtigung höchstens einmal am Tag und nur, wenn der Browser/die App sie schon erlaubt hat -----
+(function dayBar() {
+  if (embedMode) return;
+  const load = f => new Promise(res => { const s = document.createElement('script'); s.src = f; s.onload = s.onerror = res; document.head.appendChild(s); });
+  load('cloud/anmacha-board.js').then(() => load('cloud/anmacha-ach.js')).then(() => load('cloud/anmacha-engage.js')).then(() => fetch('sync/catalog.json')).then(r => r.ok ? r.json() : null).then(c => {
+    const B = window.AnMaChaBoard, A = window.AnMaChaAch, E = window.AnMaChaEngage; if (!c || !B || !A || !E) return;
+    const day = E.dayNum(), g = E.dailyPick((c.games || []).filter(x => x.cloud && x.cloud.game), day, x => !B.isOptOut(x.cloud.game) && !!B.REG[x.cloud.game] && B.REG[x.cloud.game].length > 0);
+    if (!g) return;
+    let seen = {}; try { seen = JSON.parse(localStorage.getItem('anmacha-seen') || '{}') || {}; } catch (e) {}
+    const st = A.loadState(), streak = A.streak((seen.d || []).concat(st.d || [])), done = (st.h || []).indexOf(day) >= 0, bar = $('dayBar');
+    bar.textContent = ''; const t = el('span', '', '🎯 Heute: ' + String(g.title).split(' – ')[0]), s = el('small', '', done ? '✓ eingetragen' : (streak ? '🔥 Serie ' + streak + (streak === 1 ? ' Tag' : ' Tage') : 'Mach mit!')), go = el('span', 'go', done ? 'Ansehen ›' : 'Mitmachen ›');
+    bar.append(t, s, go); bar.classList.remove('hidden');
+    try {
+      if (!done && streak >= 2 && typeof Notification !== 'undefined' && Notification.permission === 'granted' && localStorage.getItem('easygames-daynote') !== String(day)) {
+        localStorage.setItem('easygames-daynote', String(day)); new Notification('🎯 Dein Tagesspiel wartet', { body: String(g.title).split(' – ')[0] + ' – halte deine Serie von ' + streak + ' Tagen am Laufen!' });
+      }
+    } catch (e) {}
   }).catch(() => {});
 })();
 

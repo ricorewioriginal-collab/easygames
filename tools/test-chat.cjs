@@ -28,7 +28,7 @@ const server = http.createServer((req, res) => {
     await ctx.route(/identitytoolkit\.googleapis\.com/, r => json(r, { users: [{ displayName: 'Rico Test', email: 'rico@example.test', photoUrl: '' }] }));
     await ctx.route(/firestore\.googleapis\.com/, r => {
       const req = r.request(), u = req.url(), m = req.method(), body = req.postData() ? JSON.parse(req.postData()) : null;
-      if (/\/config\/games$/.test(u)) return json(r, {}, 404);   // Spieleliste (Hub) fragt öffentlich nach Betreiber-Einstellungen
+      if (/\/config\/(games|words)$/.test(u)) return json(r, {}, 404);   // Spieleliste (Hub) fragt öffentlich nach Betreiber-Einstellungen
       assert(/Bearer tok/.test(req.headers().authorization || '') || /\/saves\//.test(u), 'Anfragen mit Anmelde-Token: ' + u);
       if (/\/chat\/([a-z0-9-]+):runQuery$/.test(u)) {
         const room = /\/chat\/([a-z0-9-]+):runQuery$/.exec(u)[1], q = body.structuredQuery, after = q.where && q.where.fieldFilter.value.timestampValue;
@@ -105,6 +105,14 @@ const server = http.createServer((req, res) => {
     await page.click('#rooms .tab:nth-child(2)'); await page.waitForSelector('#list .sys');
     assert.match(await page.$eval('#list', e => e.textContent), /Erste!/);
     console.log('PASS Raumwechsel: eigener, zunächst leerer Raum');
+
+    // 6b) Mitspieler suchen: Raum „Mitspieler gesucht“ mit Spielauswahl, Nachricht mit Knopf zum Spiel
+    await page.click('#rooms .tab:nth-child(2)'); await page.waitForFunction(() => !document.getElementById('seek').hidden); assert((await page.$$eval('#seekGame option', o => o.length)) > 3, 'Mehrspieler-Spiele wählbar');
+    await page.waitForTimeout(2800); const pick = await page.$eval('#seekGame', s => s.options[0].value); await page.click('#seekBtn');
+    await page.waitForFunction(t => [...document.querySelectorAll('#list .m .x')].some(x => x.textContent === '🎮 Sucht Mitspieler: ' + t), pick);
+    await page.waitForSelector('#list .m.me a.btn'); assert.match(await page.$eval('#list .m.me a.btn', a => a.textContent), /öffnen/); assert.doesNotMatch(await page.$eval('#list .m.me .x', e => e.textContent), /http|\.de|\.com/);
+    console.log('PASS Mitspieler suchen: Spielauswahl, Nachricht ohne Link, Knopf „Spiel öffnen“');
+    await page.click('#rooms .tab:nth-child(1)');
 
     // 7) Betreiber sieht Löschen/Sperren
     db.admin = true; await page.goto(base + 'chat.html?room=lobby'); await page.waitForSelector('#list .m');
