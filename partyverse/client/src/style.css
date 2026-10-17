@@ -1108,3 +1108,35 @@ input.field.code {
 body:has(.mg-on) > button[aria-label='Mit Google speichern'] {
   display: none !important;
 }
+
+/* Live-Punktestand der Mitspieler im Minispiel */
+.mg-rivals {
+  position: absolute;
+  right: 10px;
+  top: calc(58px + var(--safe-t));
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+  font-size: 13px;
+}
+.mg-rivals div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 120px;
+  padding: 3px 9px;
+  border-radius: 10px;
+  background: rgba(11, 10, 31, 0.7);
+  border-left: 4px solid var(--c);
+}
+.mg-rivals div.me {
+  background: rgba(11, 10, 31, 0.9);
+  outline: 2px solid var(--c);
+}
+.mg-rivals span {
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

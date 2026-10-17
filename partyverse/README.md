@@ -48,11 +48,11 @@ Entwickler-Labore: `?lab=<minispiel-id>` (Minispiel einzeln, `&bot=0.8` lässt d
 
 ## Spielregeln (Kurzfassung)
 
-1. Jede Runde würfelt jeder Spieler in der Reihenfolge, zieht Feld für Feld und wählt an Weggabelungen seinen Weg.
+1. Jede Runde würfelt jeder Spieler in der Reihenfolge (der Würfel dreht sich, bis man „Stopp!“ tippt), zieht Feld für Feld und wählt an Weggabelungen seinen Weg.
 2. **Glimmer** (✦) sind die Währung. Felder geben oder nehmen Glimmer, bringen Gegenstände, Zufallsereignisse, Läden, Portale, Mautbrücken (3 Glimmer oder Schlüsselfragment) und Chaosfelder (Platztausch).
 3. Am **Chrono-Altar** kostet ein **Siegpunkt-Splitter** (◈) 20 Glimmer. Der Altar zieht manchmal um.
 4. **4D-Faltung:** Auf manchen Brettern erscheinen und verschwinden Wege je Runde (gestrichelte Wege) – plane voraus.
-5. Nach jeder Runde spielen alle ein **Minispiel**; die Besten bekommen Glimmer.
+5. Nach jeder Runde spielen alle ein **Minispiel**; die Besten bekommen Glimmer. Oben rechts läuft der Punktestand der Mitspieler live mit.
    **Endspurt:** In Partien ab 6 Runden zählen in den letzten 3 Runden Glimmer- und Dornenfelder doppelt, und der Letzte bekommt 10 Glimmer Aufholhilfe.
 6. Nach der letzten Runde gibt es Bonus-Splitter (meiste Minispiel-Siege, meiste Glimmer, meiste Ereignisse). Wer die meisten Splitter hat, gewinnt (Gleichstand: Glimmer, Minispiel-Siege, Reihenfolge).
 

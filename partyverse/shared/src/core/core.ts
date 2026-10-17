@@ -29,6 +29,8 @@ import {
 
 export const BOT_SKILL: Record<Difficulty, number> = { easy: 0.3, normal: 0.6, hard: 0.88 };
 const FFA_REWARDS: Record<number, number[]> = { 2: [8, 3], 3: [10, 5, 2], 4: [10, 6, 3, 1] };
+/** Preis für einen Splitter beim Ereignis Splitterräuber */
+const SHARD_THEFT_COST = 15;
 
 /** Fehler bei ungültiger Konfiguration (für Lobby/Server) */
 export function validateConfig(c: GameConfig, layout?: Layout): string | null {
@@ -630,6 +632,23 @@ export class GameCore {
       case 'schatz':
         this.giveItem(p, this.randomItem(), 'event');
         break;
+      case 'splitterraub': {
+        // Wie ein Sternenraub: Der Führende verliert einen Splitter, wenn man ihn bezahlen kann
+        const leader = others
+          .filter((o) => o.shards > 0)
+          .sort((a, b) => b.shards - a.shards || b.coins - a.coins)[0];
+        if (leader && p.coins >= SHARD_THEFT_COST) {
+          if (this.shielded(leader, 'Splitterraub')) break;
+          this.addCoins(p, -SHARD_THEFT_COST, 'Splitterräuber');
+          leader.shards--;
+          p.shards++;
+          this.emit({ t: 'shardStolen', from: leader.id, to: p.id, cost: SHARD_THEFT_COST });
+        } else {
+          const rich = others.slice().sort((a, b) => b.coins - a.coins)[0];
+          if (rich && !this.shielded(rich, 'Diebstahl')) this.steal(rich, p, 5, 'Splitterräuber');
+        }
+        break;
+      }
       case 'dieb': {
         const o = others.length ? this.rng.pick(others) : null;
         if (o) this.steal(p, o, 5, 'Taschendieb');
@@ -787,14 +806,11 @@ export class GameCore {
     ids.forEach((id, i) => {
       const p = this.player(id);
       if (p.kind === 'bot') {
-        const r = runBot(
-          game,
-          seed,
-          { playerIndex: i, players: ids.length },
-          BOT_SKILL[p.difficulty],
-          this.rng.int(2147483647),
-        );
-        run.results[id] = { score: r.score, source: 'bot' };
+        const skill = BOT_SKILL[p.difficulty];
+        const botSeed = this.rng.int(2147483647);
+        const r = runBot(game, seed, { playerIndex: i, players: ids.length }, skill, botSeed);
+        // Seed und Stärke mitgeben: Clients lassen den Bot damit live mitlaufen (gleiches Ergebnis)
+        run.results[id] = { score: r.score, source: 'bot', bot: { seed: botSeed, skill } };
       } else {
         run.results[id] = null;
         run.ready[id] = false;

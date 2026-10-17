@@ -1,5 +1,6 @@
 import type { GameState } from '@shared/core/types';
 import { getMiniGame } from '@shared/minigames/registry';
+import { BotRunner } from '@shared/minigames/simulate';
 import type { MiniGame } from '@shared/minigames/types';
 import type { App } from '../app/app';
 import type { Screen } from '../render/engine';
@@ -8,7 +9,7 @@ import { MiniStage } from '../minigames/stage';
 import type { GameSession } from '../net/session';
 import { t } from '../i18n';
 import { btn, clear, h } from '../ui/dom';
-import { PLAYER_SYMBOLS } from '../app/theme';
+import { PLAYER_SYMBOLS, playerColor } from '../app/theme';
 
 /**
  * Führt die Minispiele durch: Anleitung → (Gerät weitergeben) → Countdown → Spiel → Ergebnis abgeben.
@@ -164,7 +165,8 @@ export class MinigameFlow {
     this.stage = stage;
     this.hud = h('div', { class: 'mg-hud' }, h('span'), h('span'));
     const hint = h('div', { class: 'mg-hint' });
-    this.el.append(this.hud, hint);
+    const rivals = this.rivalBoard(g, s, who, stage);
+    this.el.append(this.hud, hint, rivals.el);
     this.app.engine.setScreen(stage);
     stage.onFinish = (r) => {
       cancelAnimationFrame(this.raf);
@@ -184,11 +186,65 @@ export class MinigameFlow {
       if (spans?.[0]) spans[0].textContent = hd.left;
       if (spans?.[1]) spans[1].textContent = hd.right;
       hint.textContent = hd.hint ?? '';
+      rivals.update();
       this.raf = requestAnimationFrame(tick);
     };
     tick();
     stage.start();
     stage.running = !this.paused;
+  }
+
+  /**
+   * Live-Punktestand aller Spieler im Minispiel. Bots laufen mit ihrem Seed Takt für Takt mit (gleiches Ergebnis wie
+   * im Spielkern), andere Menschen erscheinen, sobald ihr Ergebnis da ist.
+   */
+  private rivalBoard(
+    g: MiniGame,
+    s: GameState,
+    who: string,
+    stage: MiniStage,
+  ): { el: HTMLElement; update: () => void } {
+    const m = s.minigame;
+    const el = h('div', { class: 'mg-rivals' });
+    el.setAttribute('aria-hidden', 'true');
+    if (!m || s.order.length < 2) return { el, update: () => undefined };
+    const team = (id: string): string =>
+      m.mode === 'team' ? (m.teams[0]?.includes(id) ? ' A' : m.teams[1]?.includes(id) ? ' B' : '') : '';
+    const rows = s.order.map((id, i) => {
+      const res = m.results[id];
+      const ghost = res?.bot
+        ? new BotRunner(g, m.seed, { playerIndex: i, players: s.order.length }, res.bot.skill, res.bot.seed)
+        : null;
+      const val = h('b', null, '…');
+      const idx = this.colorIdx(id);
+      const row = h(
+        'div',
+        { class: id === who ? 'me' : '', style: `--c:${playerColor(idx)}` },
+        h('span', null, `${PLAYER_SYMBOLS[idx % 4] ?? ''} ${this.nameOf(id)}${team(id)}`),
+        val,
+      );
+      el.appendChild(row);
+      return { id, ghost, val, row, score: -1 };
+    });
+    const update = (): void => {
+      for (const r of rows) {
+        let sc: number | undefined;
+        if (r.id === who) sc = Math.max(0, g.score(stage.state) || 0);
+        else if (r.ghost) {
+          for (let n = 0; n < 12 && r.ghost.tick < stage.tick && !r.ghost.done; n++) r.ghost.step();
+          sc = r.ghost.score();
+        } else sc = this.session.state.minigame?.results[r.id]?.score;
+        if (sc === undefined) continue;
+        const v = Math.round(sc);
+        if (v === r.score) continue;
+        r.score = v;
+        r.val.textContent = String(v);
+      }
+      // nach Punkten sortieren (nur wenn sich die Reihenfolge ändert)
+      const sorted = rows.slice().sort((a, b) => b.score - a.score);
+      if (sorted.some((r, i) => el.children[i] !== r.row)) for (const r of sorted) el.appendChild(r.row);
+    };
+    return { el, update };
   }
 
   setPaused(p: boolean): void {

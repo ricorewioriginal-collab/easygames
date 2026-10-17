@@ -293,6 +293,22 @@ export class GameScreen {
         hud.say(t('ev.swap', { a: this.nameOf(ev.a), b: this.nameOf(ev.b) }));
         await stage.swap(ev.a, ev.b);
         break;
+      case 'shardStolen': {
+        const from = this.shown[ev.from];
+        const to = this.shown[ev.to];
+        if (from) from.shards = Math.max(0, from.shards - 1);
+        if (to) to.shards++;
+        this.refreshScores();
+        sfx('steal');
+        stage.react(ev.from, 'lose');
+        stage.react(ev.to, 'win');
+        stage.burstAt(ev.to, 0x35f0ff, 30);
+        this.float(ev.from, '−1 ◈', 'bad');
+        this.float(ev.to, '+1 ◈', 'good');
+        hud.say(t('ev.shardStolen', { to: this.nameOf(ev.to), from: this.nameOf(ev.from) }), 2800);
+        await delay(1600);
+        break;
+      }
       case 'steal':
         sfx('steal');
         this.float(ev.from, `−${ev.amount} ✦`, 'bad');
@@ -357,6 +373,30 @@ export class GameScreen {
       case 'finale':
         break;
     }
+  }
+
+  /**
+   * Würfelblock: Der Würfel dreht sich über der Figur, bis man „Stopp!“ tippt (oder nach 4 s).
+   * Nur Inszenierung – die Augenzahl würfelt weiterhin der Spielkern, damit online alles fair bleibt.
+   */
+  private diceBlock(id: string): void {
+    if (this.paused || this.pumping) return;
+    this.app.audio.sfx('whoosh');
+    this.stage.spinDice(id);
+    let done = false;
+    const stop = (): void => {
+      if (done || this.disposed) return;
+      clearTimeout(timer);
+      if (this.paused) {
+        timer = setTimeout(stop, 500); // im Pausemenü nicht von selbst würfeln
+        return;
+      }
+      done = true;
+      this.act(id, { type: 'roll' });
+    };
+    let timer = setTimeout(stop, 4000);
+    this.hud.setBanner(t('hud.stopDice'));
+    this.hud.setActions(btn(t('act.stop'), stop, 'hot roll'));
   }
 
   /** Felder vom Knoten bis zum Altar in der aktuellen Faltung (wie die Bots rechnen) */
@@ -507,7 +547,7 @@ export class GameScreen {
     const key = `${s.version}:${id}`;
     this.lastPromptKey = key;
     if (s.phase === 'turn' && !s.rolled) {
-      const roll = btn(t('act.roll'), () => this.act(id, { type: 'roll' }), 'hot roll');
+      const roll = btn(t('act.roll'), () => this.diceBlock(id), 'hot roll');
       const items = [...new Set(me.items)]
         .filter((i) => ITEMS[i].active)
         .map((i) =>
