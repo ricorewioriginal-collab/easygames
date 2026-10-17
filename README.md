@@ -97,6 +97,18 @@ und **⤴ Teilen**. Dort stehen für jedes Spiel der **direkte Link** und der **
   style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>
 ```
 
+- **Ranglisten und Erfolge einbetten** (eigene Seite oder App; Generator und alle Varianten in `einbinden.html`, Abschnitt 5b):
+
+```html
+<script src="https://ricorewioriginal-collab.github.io/easygames/easygames.js"></script>
+<button data-easygames="ranglisten" data-mode="overlay">🏆 Ranglisten</button>
+<button data-easygames="erfolge" data-mode="overlay">🏅 Erfolge</button>
+<!-- oder eingebettet: <div data-easygames="ranglisten" data-game="anmacha-snake"></div>  /  <div data-easygames="erfolge"></div> -->
+<!-- oder iframe: …/easygames/ranglisten.html?embed=1[&game=<id>]   …/easygames/erfolge.html?embed=1 -->
+```
+
+- Aus einem eingebetteten Spiel führt „← Alle Spiele“ automatisch zurück zur Seite des Gastgebers (schließt das Overlay, `easygames:close`).
+
 ## Android-App (offline, mit Sync über GitHub)
 
 Native Android-Hülle (Kotlin) um die Oberfläche, Quellen in `android/`. Alle Spiele und ihre Bibliotheken (three.js, PeerJS, QR-Code, Schrift) liegen auf dem Gerät; im WLAN lädt die App geänderte Dateien selbst von GitHub – ohne neues APK.
@@ -122,6 +134,8 @@ Optionen (`--only`, `--exclude`, `--tv`, `--window`, `--browser`, `--frontend`, 
 
 ## Neues Spiel hinzufügen
 
+
+**Spielkarte (`card.png`/`card.jpg`, quadratisch 512 px):** Ohne eigenes Titelbild zeigt die App-Kachel nur ein Emoji. `node tools/make-cards.cjs <spiel-id>` erzeugt eine einheitliche Karte (Farben aus `games.js`, Titel in `CARDS`, **gezeichnetes Emblem** in `tools/card-art.cjs` – keine Screenshots, kein Emoji) als `<spiel>/card.jpg` plus ein eigenständiges Logo `<spiel>/logo.svg`; die App-Symbole danach mit `python3 tools/make-pwa.py --icons <spiel>` erneuern; dann `img: '<spiel>/card.jpg'` in `games.js` setzen und `node tools/build-sync.js` ausführen.
 Alles Weitere (Kachel, Suche, Filter, Anleitung, Einbettung, Teilen, TV-Navigation) ergibt sich aus den Einträgen:
 
 1. Eigenes Verzeichnis anlegen (`mein-spiel/index.html`). Die Vorlage `tools/spiel-vorlage/index.html` zeigt, wie ein Spiel zwischen Handy, TV und Computer unterscheidet.

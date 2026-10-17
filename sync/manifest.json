@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f088032ce157",
- "generated": "2026-10-17T01:12:34+00:00",
- "commit": "267bd34c8958c9c05a28118afa25a7e9c0191f2b",
+ "version": "cc9dc60a4a90",
+ "generated": "2026-10-17T01:19:33+00:00",
+ "commit": "3c7affc7797b0ba4fe0767fadfbf3dc50bb5c39b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -392,6 +392,11 @@
    "h": "57bf8f9f062349ed05116bf375972004ac130d084e4fefd3fb4fc433304560fa"
   },
   {
+   "p": "anmacha-beat-surfer/card.jpg",
+   "s": 40453,
+   "h": "7ac721bfd4cc82b257c937a2eecddfe42afb1bb4f9c6e3558748ed812f02c0a3"
+  },
+  {
    "p": "anmacha-beat-surfer/index.html",
    "s": 63183,
    "h": "319789719ede9906a1555f328712225b1cc5ef19fcd817870a1a21af65106a92"
@@ -400,6 +405,11 @@
    "p": "anmacha-beat-surfer/logo.png",
    "s": 172254,
    "h": "2334bf70302e49f298ca3043a89fcc1b5312f4fd04c49267dc2201ea8b4dccf5"
+  },
+  {
+   "p": "anmacha-beat-surfer/logo.svg",
+   "s": 1580,
+   "h": "d3454679f34857624dd1d020dcb75726986015464bde7ab66197e707bc537669"
   },
   {
    "p": "anmacha-beat-surfer/logos/01.jpg",
@@ -477,6 +487,11 @@
    "h": "a66b2b70779f14ea9aea5147703cb2d4bf2921a8f109f874d3695b3362893f69"
   },
   {
+   "p": "anmacha-flipper/card.jpg",
+   "s": 39315,
+   "h": "1abf58609b95ccba5772dcda9c0e9e9e6cb274c737f90b90f52cdee133f33c80"
+  },
+  {
    "p": "anmacha-flipper/index.html",
    "s": 81331,
    "h": "366c0fe904c56c863e2fbd5fb5ebe1dddf6f19f4038750ac8b563924ca2001e6"
@@ -485,6 +500,11 @@
    "p": "anmacha-flipper/logo.png",
    "s": 546693,
    "h": "2b05e7fc0bf983803b9e08cf9204056ac9ca629d1fb8f9819901813cbb6228df"
+  },
+  {
+   "p": "anmacha-flipper/logo.svg",
+   "s": 1973,
+   "h": "dd1867a7187a772b0564bf6ba4782fd1b50de15fc897eb59f49338d5e5a8d6b1"
   },
   {
    "p": "anmacha-flipper/logos/01.jpg",
@@ -1417,9 +1437,19 @@
    "h": "19c96d5db110219244398e53e0d5607cf6f16302dadf2f7590e62a713912125f"
   },
   {
+   "p": "anmacha-klotzfunk/card.jpg",
+   "s": 35616,
+   "h": "73fbdaa5a1a311c4dda740287c7702b1ed8bebc9bc4a569699aa8586ef6ce6e9"
+  },
+  {
    "p": "anmacha-klotzfunk/index.html",
    "s": 22732,
    "h": "4cbf26c1e0a9b040be32ac0b269942f9d4cbbba2e5576126c106d614b357de85"
+  },
+  {
+   "p": "anmacha-klotzfunk/logo.svg",
+   "s": 2541,
+   "h": "07527fc433f19ce5394bc24d07458fd1a1a0db1c8dbad53b8b4313063e987525"
   },
   {
    "p": "anmacha-klotzfunk/logos/01.png",
@@ -1622,6 +1652,11 @@
    "h": "92a676d688d0a82a0712c9173290f85b4c60f6470c7ac3c9d202c2a96eeec445"
   },
   {
+   "p": "anmacha-markthalle/card.jpg",
+   "s": 39314,
+   "h": "92682d1bfaded699adc484d642998382654ae1c1dd8dc73508ffe5be1acbb3a9"
+  },
+  {
    "p": "anmacha-markthalle/data.js",
    "s": 24900,
    "h": "6a6fea9d3b8e7ac96e675d6d1aecdc81d2c9692866e3e715bc0b6d037807cbc9"
@@ -1635,6 +1670,11 @@
    "p": "anmacha-markthalle/index.html",
    "s": 33438,
    "h": "6e66332160c6c2d852cfca00f5af2fde085f491f767c53d1060d4a7f260daae6"
+  },
+  {
+   "p": "anmacha-markthalle/logo.svg",
+   "s": 1717,
+   "h": "38a6bc75d1c55aea6b484bd697745bd306eb2fec872a19da20c4c20dd3a0c226"
   },
   {
    "p": "anmacha-markthalle/manifest.webmanifest",
@@ -1662,6 +1702,11 @@
    "h": "9c61ffd9e34ca66bb46af9543727e5c703fc54dbb2909df1e54b2c9a0d6cdb91"
   },
   {
+   "p": "anmacha-memory/card.jpg",
+   "s": 38634,
+   "h": "f3c72ddf7b3a0695211cf3478b44c4a29a3cde2b0e94e1f98b9e14a0f725e818"
+  },
+  {
    "p": "anmacha-memory/index.html",
    "s": 34477,
    "h": "355b757f7786b09d3448827f6c34322c52555077a4299ce8285de29f452f80ac"
@@ -1670,6 +1715,11 @@
    "p": "anmacha-memory/logo.png",
    "s": 191036,
    "h": "d27a42129fb3fcd1d43123a963b9ce1ad7f34259223568f9163a89f60f21ee4c"
+  },
+  {
+   "p": "anmacha-memory/logo.svg",
+   "s": 1525,
+   "h": "d1f64017184c7c2a11e13bf81c12349ed259b120ff6b3411ce295fc6d8323282"
   },
   {
    "p": "anmacha-memory/logos/01.png",
@@ -1935,6 +1985,11 @@
    "p": "anmacha-quest-rpg/anleitung.html",
    "s": 14217,
    "h": "ba09efc290b2a3f49dff4940b132bc7c88319b6180de3e2be441feeb50dcf444"
+  },
+  {
+   "p": "anmacha-quest-rpg/card.jpg",
+   "s": 38271,
+   "h": "7e74019a0495d58c002e2c57c86646c6fd3ff4acee2ba3c2c82e813d7d2cee51"
   },
   {
    "p": "anmacha-quest-rpg/godot/assets/buildings/1Story_GableRoof_Mat.fbx",
@@ -3122,6 +3177,11 @@
    "h": "30cb03305840f2fa66db8eb71ec9f3403d9b552019467c1a3718f6cc17748373"
   },
   {
+   "p": "anmacha-quest-rpg/logo.svg",
+   "s": 2317,
+   "h": "21b9959a39c48f915e38042729f440243c439039a3d13a6dde3053fab03af5e9"
+  },
+  {
    "p": "anmacha-quest-rpg/manifest.webmanifest",
    "s": 781,
    "h": "3c4462259d3c2e5f925769d3e88fcfdfb44fcff1f8db61c9cfd0617a246705df"
@@ -3252,9 +3312,19 @@
    "h": "cabd93032cced69fd8f06a5163e8680b45b3d9d02b470db2ce7b54459db137d2"
   },
   {
+   "p": "anmacha-radio-match/card.jpg",
+   "s": 39837,
+   "h": "b4c04621e01cc34187002052a97cc99349d16e96c245a519225227dcfe520cb2"
+  },
+  {
    "p": "anmacha-radio-match/index.html",
    "s": 39384,
    "h": "7656defa073bf46c7b2366ac86811c064bb2c808e75f7b4b32dd2bc57f16f4bc"
+  },
+  {
+   "p": "anmacha-radio-match/logo.svg",
+   "s": 2313,
+   "h": "25b271a7940fd1b08695b166d943c18a3b3c68e579e544b3455107f45cc5057a"
   },
   {
    "p": "anmacha-radio-match/manifest.webmanifest",
@@ -3265,6 +3335,11 @@
    "p": "anmacha-radio-match/sw.js",
    "s": 2006,
    "h": "dca086b93da9c2ca9c4001b574d0832f3accbc728065e55ee593b2aef7ca4bf4"
+  },
+  {
+   "p": "anmacha-radio-surfer/card.jpg",
+   "s": 41565,
+   "h": "b09b8589c9d5bb1478bbd73cf64c7859255d425a689b8eb715f410d7fbb701cc"
   },
   {
    "p": "anmacha-radio-surfer/hindernisse/01.jpg",
@@ -3350,6 +3425,11 @@
    "p": "anmacha-radio-surfer/logo.png",
    "s": 442226,
    "h": "163872661f3b985fd8d19b0ccd987d2d00c2fabf3a6772a2e70e4993073e3233"
+  },
+  {
+   "p": "anmacha-radio-surfer/logo.svg",
+   "s": 1516,
+   "h": "e03c465d248f6cc3ddbcb7c2100fa3ac11084e521c6c674b7b9fd1fd86115487"
   },
   {
    "p": "anmacha-radio-surfer/manifest.webmanifest",
@@ -3472,6 +3552,11 @@
    "h": "5d54699fef7be0991eb0407ce64b1fc3ee54f492f91e53247e7464f0bad7d748"
   },
   {
+   "p": "anmacha-snake/card.jpg",
+   "s": 39421,
+   "h": "45350eb18465cd013948cb08b6258534b816cc4a22452bd707aeaf260038d5a4"
+  },
+  {
    "p": "anmacha-snake/index.html",
    "s": 46430,
    "h": "56e620eca59a130098de1a2f7d3d3241ea99c99c005f82d1b1988e1282033ee8"
@@ -3480,6 +3565,11 @@
    "p": "anmacha-snake/logo.png",
    "s": 199998,
    "h": "de52d4f6873ebc5462b85eb43c27d5f42f987c75fdd6281e820ab0cb601c60a3"
+  },
+  {
+   "p": "anmacha-snake/logo.svg",
+   "s": 1628,
+   "h": "4fcfdda61fee9fda362fb102360550c30f4956b92f50693b19d817eb794a1682"
   },
   {
    "p": "anmacha-snake/logos/01.png",
@@ -3557,9 +3647,19 @@
    "h": "5d5424f4814ce47d8a5d1067392ea392c5e7a0fb9951d5b5c6c832ea624da677"
   },
   {
+   "p": "anmacha-spielesammlung/card.jpg",
+   "s": 41282,
+   "h": "25cfcdf88a64f960d16ce9d370ebfb0399f96fcf27aef4db81d0ed1306bffeeb"
+  },
+  {
    "p": "anmacha-spielesammlung/index.html",
    "s": 100257,
    "h": "72fec69de20770f4fa9c1c3d7fd7968a06bc0ebb797be2626d5da3e344ee0858"
+  },
+  {
+   "p": "anmacha-spielesammlung/logo.svg",
+   "s": 1586,
+   "h": "6c8630849e82331ef879607d00275c27feacf2ccd1528ff9481b9cec6a3ed56c"
   },
   {
    "p": "anmacha-spielesammlung/manifest.webmanifest",
@@ -3572,9 +3672,19 @@
    "h": "cc3282742cc195b1608ea98bf2e26891fb12e39db0d9d840a75ea67c21619232"
   },
   {
+   "p": "anmacha-stapelrausch/card.jpg",
+   "s": 47116,
+   "h": "beb9a301b6eea5a675fe6e3b7927c659b3feae3c5ed66b73761547c0ed9c7b99"
+  },
+  {
    "p": "anmacha-stapelrausch/index.html",
    "s": 52102,
    "h": "01bf9e7242ed5661060a190fd398b1fa8921552be97461e2014900a759ec9d6c"
+  },
+  {
+   "p": "anmacha-stapelrausch/logo.svg",
+   "s": 2143,
+   "h": "19f1c50c3e62a47d219a5cb650f6ed8762a197abdabb33bab5485ede8ac5e1de"
   },
   {
    "p": "anmacha-stapelrausch/manifest.webmanifest",
@@ -3592,9 +3702,19 @@
    "h": "6ad02b2fcb9487f96b629ca1e37b1278608b3f505f021e542da2a6ce34bf828a"
   },
   {
+   "p": "anmacha-tower-defense/card.jpg",
+   "s": 42856,
+   "h": "da3f45456a247a0df9c1b5737a172407e8c746d648ae1be78c9d3503adcbe808"
+  },
+  {
    "p": "anmacha-tower-defense/index.html",
    "s": 17653,
    "h": "45c9a6222d6a144aa820bd16e5cff578c60f4af39a16c33033c6835f5b89b77a"
+  },
+  {
+   "p": "anmacha-tower-defense/logo.svg",
+   "s": 1841,
+   "h": "6f6b1f79c49ef1fce6e03e4351452f9c90135530f94bd3482749a5cc2bf7befd"
   },
   {
    "p": "anmacha-tower-defense/logos/01.png",
@@ -3687,6 +3807,11 @@
    "h": "b1f40c9ad29833aeef040230cdda2262998a43d3b17ad205ecf6695173abf64b"
   },
   {
+   "p": "anmacha-urwaldlager/card.jpg",
+   "s": 42405,
+   "h": "1f8b2d4aff3f9b045982ceea8ef33289340135aaa1f5477597cda39632bb618f"
+  },
+  {
    "p": "anmacha-urwaldlager/data.js",
    "s": 26112,
    "h": "513c5857fbe989df7d821806c8b4d3e1f7c91636a8edd4e35f2be8502219fc74"
@@ -3710,6 +3835,11 @@
    "p": "anmacha-urwaldlager/input.js",
    "s": 8507,
    "h": "d40d7f464ce4679ad162571e2671972bf879c9fa0768700bb0a41d1214f77294"
+  },
+  {
+   "p": "anmacha-urwaldlager/logo.svg",
+   "s": 1931,
+   "h": "fd38b0e17d2a96908b67a72f3cbf65f902647ae782b761e285adc562bc4d5031"
   },
   {
    "p": "anmacha-urwaldlager/main.js",
@@ -4683,13 +4813,13 @@
   },
   {
    "p": "easygames.js",
-   "s": 20908,
-   "h": "70e8f431a71bc2ce258e5d097c7a796be88bf5ecbc6d7b2b695d426c74db0459"
+   "s": 20948,
+   "h": "84fc5c04033a93c1c938c6efd25d0417f797634cf2a8c933b39fd2e660d0f9a4"
   },
   {
    "p": "einbinden.html",
-   "s": 59799,
-   "h": "256afc9cace107845310de309d2b4b8d64fbf876bef47b3933f611afedb29e80"
+   "s": 70732,
+   "h": "233e14007a3245f777712b196b7febffd26cf8ad284e6a99206ffe45be4879b1"
   },
   {
    "p": "erfolge.html",
@@ -4713,8 +4843,13 @@
   },
   {
    "p": "games.js",
-   "s": 22179,
-   "h": "91d9cf05343cea0db93cba2067de5e62c129f81ae166ba6c02c7cd74708bab15"
+   "s": 22673,
+   "h": "01c49c1b8f8db19f7359466d69af6fd6622afc16dd9e84525abb84318148967f"
+  },
+  {
+   "p": "gay-life/card.jpg",
+   "s": 37921,
+   "h": "82aaf32216582401bc6473d9f04c0f7ee86fd5528d21fb80940e142b758097da"
   },
   {
    "p": "gay-life/index.html",
@@ -4852,6 +4987,11 @@
    "h": "cd6c74bfbe676dd85eed43bc9740627bd6b8f49863e3b1cd33dee438fbeb98cc"
   },
   {
+   "p": "gay-life/logo.svg",
+   "s": 1616,
+   "h": "03cf2befc2f44e0fbc82e0e8da77fed2329081ff1219204f6d44a6bd935ff3d4"
+  },
+  {
    "p": "gay-life/manifest.webmanifest",
    "s": 746,
    "h": "85dda0095cadaf29527bab7bdaffa2fbf7404737a846e171443036717b266bb1"
@@ -4868,8 +5008,8 @@
   },
   {
    "p": "index.html",
-   "s": 57772,
-   "h": "230e76d4cec7e8ca4b0794b88e5726bdfb4fdf81b9cd443e038b24f75778e7af"
+   "s": 58413,
+   "h": "9385d132aac02138631c109080e8b1cf865a0407fc24cb0325e59a33b3292ff8"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -5392,9 +5532,9 @@
    "h": "f015814790f8544174045bacf1d8610dd86f06ee985178f13a9ecde6cc0d5064"
   },
   {
-   "p": "partyverse/card.png",
-   "s": 26999,
-   "h": "9f5ae647cd2c80f12a981cb7ccaa5fcf772bb07a313448bea579a717aade0e44"
+   "p": "partyverse/card.jpg",
+   "s": 42810,
+   "h": "271bb753fdc0bbd84a11aa1465e44b3052913d5dd41d0593472b54129baf391d"
   },
   {
    "p": "partyverse/client/index.html",
@@ -5420,6 +5560,11 @@
    "p": "partyverse/logo.png",
    "s": 130382,
    "h": "2212550abc6c7a1f9fae6bce96a1e746fdbf31c94a12d9799f4c9301a8d6c849"
+  },
+  {
+   "p": "partyverse/logo.svg",
+   "s": 2367,
+   "h": "963084200d95e9d5823119f84699b66dcc4f4d8c7bbf4537b4be8a8e46ec8ac1"
   },
   {
    "p": "partyverse/manifest.webmanifest",
@@ -5878,8 +6023,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 94142,
-   "h": "e7ddb43bcc2a10b21f43f3e3e042e827e4e8cbbaacbbb23522df97273bab7b36"
+   "s": 94484,
+   "h": "81eccf3a64ffbfb6d872afb424a6413386f2ea33e26c2fb835ac0f08a3c6b19b"
   },
   {
    "p": "taschi/card.svg",
