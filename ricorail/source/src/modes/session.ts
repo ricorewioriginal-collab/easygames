@@ -80,6 +80,12 @@ export class Session {
   /** bereits gezählte beladene Wagen (Be- und Entladen im Wechsel zählt nicht mehrfach) */
   private loadedV = new Set<object>();
   stopErrors: number[] = [];
+  /** Haltepunkte: jeder Halt des Spielers wird bewertet (Genauigkeit + Pünktlichkeit) */
+  stopPts = 0;
+  stopCount = 0;
+  praise: { t: number; text: string; pts: number; top: boolean } | null = null;
+  /** Türen öffnet/schließt das Spiel (einfache Bedienung) */
+  autoDoors = false;
   doorsMissed = 0;
   private t0: number;
   private faultsDone = new Set<number>();
@@ -250,6 +256,17 @@ export class Session {
   }
 
   // ------------------------------------------------------------ Spieleraktionen
+  private rateStop(err: number, delay: number, assisted: boolean, name: string) {
+    const [grade, base] = err <= 2 ? ['Perfekter Halt!', 100] : err <= 5 ? ['Sehr guter Halt', 75] : err <= 10 ? ['Guter Halt', 50] : err <= 25 ? ['Halt in Ordnung', 25] : ['Am Bahnsteig', 10];
+    const prec = assisted ? Math.round(base / 2) : base;
+    const punct = delay <= 60 ? 50 : delay <= 180 ? 20 : 0;
+    const pts = prec + punct;
+    this.stopPts += pts; this.stopCount++;
+    const text = `${assisted ? 'Haltassistent hat gebremst' : grade} · ${err.toFixed(1)} m${punct === 50 ? ' · pünktlich' : ''} · +${pts}`;
+    this.praise = { t: this.world.time, text, pts, top: !assisted && err <= 5 && punct === 50 };
+    this.say(`${name}: ${text} Punkte`, 'info');
+  }
+
   say(msg: string, sev: 'info' | 'warn' | 'error' = 'info') { this.messages.push({ t: this.world.time, msg, sev }); if (this.messages.length > 60) this.messages.shift(); }
 
   /** Ersatzsignal (Zs 1) beim Fahrdienstleiter anfordern */
@@ -451,12 +468,14 @@ export class Session {
       // Haltgenauigkeit
       const sp = w.stopPoint(t, { ...plan, stopIdx: plan.stopIdx - 1 });
       if (sp) this.stopErrors.push(Math.abs(sp.d));
+      if (sp && !t.ai && plan.arrived.length > 1) this.rateStop(Math.abs(sp.d), a.delay, (t.meta.assistStopT as number ?? 0) > 2, st?.name ?? '');
+      t.meta.assistStopT = 0;
       this.stopDoorOpened = false;
       if (st && t.hasDoors && plan.arrived.length > 1) {
         const out = Math.round(this.pax.onboard * (0.15 + Math.random() * 0.3));
         const inn = Math.min(t.seats * 1.6 - (this.pax.onboard - out), Math.round((st.pax ?? 200) / 60 * (2 + Math.random() * 6)));
         this.pax.onboard = Math.max(0, this.pax.onboard - out + inn); this.pax.total += inn; this.pax.revenue += inn * 4.5;
-        this.say(`${st.name}: ${out} Fahrgäste aus, ${Math.max(0, inn)} ein.${t.ai ? '' : ' Türen freigeben (T), nach dem Fahrgastwechsel schließen.'}`, 'info');
+        this.say(`${st.name}: ${out} Fahrgäste aus, ${Math.max(0, inn)} ein.${t.ai || this.autoDoors ? '' : ' Türen freigeben (T), nach dem Fahrgastwechsel schließen.'}`, 'info');
       }
       // Türstörung an diesem Halt
       (this.sc?.faults ?? []).forEach((f, i) => {
@@ -588,6 +607,7 @@ export class Session {
     if (w.score.trailed) add('Weiche aufgefahren', String(w.score.trailed), -200 * w.score.trailed);
     if (this.doorsMissed) add('Türen nicht geöffnet', String(this.doorsMissed), -50 * this.doorsMissed);
     if (this.pax.total) add('Fahrgäste befördert', String(this.pax.total), Math.min(150, Math.round(this.pax.total / 5)));
+    if (this.stopCount) add('Haltepunkte', `${this.stopPts} aus ${this.stopCount} Halten`, 0);
     if (t) add('Energie', `${t.energyKWh.toFixed(0)} kWh`, 0);
     score = Math.max(0, Math.round(score));
     const stars: Result['stars'] = !ok ? 0 : score >= 1100 ? 3 : score >= 850 ? 2 : 1;
