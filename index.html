@@ -42,6 +42,7 @@
   button{font:inherit;color:inherit;cursor:pointer}
   .hidden{display:none!important}
   .daybar{display:flex;gap:10px;align-items:center;margin:0 0 12px;padding:10px 14px;border:1px solid #ffc53d66;border-radius:14px;background:#ffc53d14;color:inherit;text-decoration:none;font-weight:600}
+  .promo{margin:0 0 12px;border:1px solid #8a5cff66;border-radius:14px;background:#8a5cff14}.promo summary{cursor:pointer;padding:10px 14px;font-weight:600}.promo video{display:block;width:min(100%,360px);max-height:70vh;margin:0 auto 14px;border-radius:12px;background:#000}
   .daybar small{opacity:.8;font-weight:500}.daybar .go{margin-left:auto;white-space:nowrap}
   main{max-width:1040px;margin:0 auto;padding:calc(22px + env(safe-area-inset-top)) 18px 56px}
   header{margin-bottom:22px}
@@ -262,6 +263,7 @@
     </div>
     <div class="appbar hidden" id="appBar"></div>
     <a class="daybar hidden" id="dayBar" href="heute.html"></a>
+    <details class="promo" id="promo"><summary>🎬 Video: Radio hören und nebenbei zocken</summary><video id="promoVid" controls playsinline preload="none" poster="https://ricorewioriginal-collab.github.io/easygames/promo/easygames-promo.jpg"></video></details>
     <section class="hero hidden" id="hero" aria-label="Empfohlenes Spiel"></section>
     <div class="bar2">
       <label class="search"><input id="q" type="search" placeholder="Spiel suchen …" aria-label="Spiel suchen" autocomplete="off"></label>
@@ -780,6 +782,7 @@ fetch('sync/catalog.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : nu
 })();
 
 // ----- Tagesspiel und Serie (Hinweis): Spiel des Tages (für alle gleich), Serie, ob heute schon eingetragen; Benachrichtigung höchstens einmal am Tag und nur, wenn der Browser/die App sie schon erlaubt hat -----
+document.getElementById('promo').addEventListener('toggle', function () { var v = document.getElementById('promoVid'); if (this.open) { if (!v.src) v.src = 'https://ricorewioriginal-collab.github.io/easygames/promo/easygames-promo.mp4'; } else v.pause(); });
 (function dayBar() {
   if (embedMode) return;
   const load = f => new Promise(res => { const s = document.createElement('script'); s.src = f; s.onload = s.onerror = res; document.head.appendChild(s); });
