@@ -2,6 +2,7 @@
 import { BUILDING, ROAD_COST } from '../catalogs/buildings';
 import { CROP, ITEM, MARKET, ORDER, RECIPE } from '../catalogs/items';
 import { ACHIEVEMENTS, QUEST, QUESTS, TASK_TEMPLATES } from '../catalogs/quests';
+import { seasonKey, seasonOf } from './season';
 import type { Building, BuildingDef, CityState, GameEvent, GoalSpec, Mode, QuestDef, Result, Rot, SocialState, TaskState } from './types';
 
 export const MAP = 48;
@@ -387,6 +388,7 @@ export class City {
     if (d.needsRoad && !this.hasRoadAccess({ x, y, rot, def: defId })) return fail('Braucht eine angrenzende Straße.');
     if (moving) return ok;
     if (d.level > this.s.level && !this.creative) return fail(`Ab Stadtlevel ${d.level}.`);
+    if (d.event && !this.creative && !this.s.unlocks?.includes(defId)) return fail('Belohnung aus einem Saison-Event – erst freischalten.');
     if (d.max && this.count(defId) >= d.max) return fail('Davon gibt es schon eines.');
     if (!this.creative && this.s.coins < d.cost) return fail(`Dir fehlen ${d.cost - this.s.coins} Münzen.`);
     if (d.pop && !this.creative && this.plannedPopulation() + d.pop > this.popCap())
@@ -554,6 +556,29 @@ export class City {
       default:
         return { kind: 'none' };
     }
+  }
+
+  /** Was „Alles einsammeln“ gerade abholen würde (Miete, Kasse, Ernte, fertige Waren und Lieferungen). */
+  collectable(): Building[] {
+    const kinds = new Set(['rent', 'cash', 'harvest', 'ready']);
+    return this.s.buildings.filter((b) => kinds.has(this.status(b).kind));
+  }
+  /**
+   * Sammelt alles Fertige auf einmal ein – gleiche Regeln wie einzelnes Antippen (Energie, Lagerplatz).
+   * Hört auf, sobald die Energie fehlt; volle Lager überspringen nur die betroffenen Ernten.
+   */
+  collectAll(): { n: number; msg?: string } {
+    let n = 0;
+    let msg: string | undefined;
+    for (const b of this.collectable()) {
+      const r = this.collect(b.uid);
+      if (r.ok) n++;
+      else {
+        msg = r.msg;
+        if (this.energyOn && this.s.energy <= 0) break;
+      }
+    }
+    return { n, msg };
   }
 
   /** Haupt-Antippen-Aktion: Miete, Kasse, Ernte, Abholen. */
@@ -787,6 +812,7 @@ export class City {
 
   // ------------------------------------------------------------ Quests, Aufgaben, Erfolge
   questVisible(q: QuestDef): boolean {
+    if (q.season && (this.creative || q.season !== seasonOf(new Date(this.now())))) return false;
     if (this.s.quests[q.id]?.claimed) return false;
     if ((q.level ?? 0) > this.s.level) return false;
     return (q.after ?? []).every((a) => this.s.quests[a]?.claimed);
@@ -813,9 +839,12 @@ export class City {
   /** Legt Fortschritt für neu sichtbare Quests an und markiert erfüllte. */
   refreshQuests(): void {
     if (this.creative) return;
+    // Saison-Events beginnen jedes Jahr neu: alter Fortschritt verfällt.
+    const sk = seasonKey(new Date(this.now()));
+    for (const q of QUESTS) if (q.season && this.s.quests[q.id] && this.s.quests[q.id]!.yr !== sk) delete this.s.quests[q.id];
     for (const q of QUESTS) {
       if (!this.questVisible(q)) continue;
-      const p = (this.s.quests[q.id] ??= { c: q.goals.map(() => 0) });
+      const p = (this.s.quests[q.id] ??= q.season ? { c: q.goals.map(() => 0), yr: sk } : { c: q.goals.map(() => 0) });
       if (!p.done && this.questDone(q)) {
         p.done = true;
         this.emit({ type: 'questDone', id: q.id });
@@ -854,6 +883,11 @@ export class City {
     if (q.reward.energy && this.energyOn) this.s.energy += q.reward.energy;
     this.earn(q.reward.coins ?? 0, q.reward.xp ?? 0);
     this.emit({ type: 'questClaimed', id });
+    const u = q.reward.unlock;
+    if (u && !(this.s.unlocks ??= []).includes(u)) {
+      this.s.unlocks.push(u);
+      this.emit({ type: 'unlocked', id: u });
+    }
     if (id === 'm08' && this.s.tutorial === 'on') this.s.tutorial = 'done';
     this.refreshQuests();
     return ok;

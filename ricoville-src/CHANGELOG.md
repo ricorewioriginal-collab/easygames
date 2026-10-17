@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0 – 2026-10-17
+
+- Saison-Events: Je Jahreszeit eine Kette aus drei Aufgaben (ab Level 3, nicht im Kreativmodus). Belohnung ist eine Event-Deko, die dauerhaft freigeschaltet bleibt: Maibaum (Frühling), Sommerkarussell (Sommer), Laternenbogen (Herbst), Eisbahn (Winter). Der Fortschritt beginnt mit jeder neuen Jahreszeit von vorn.
+- Knopf „🧺 Alles“ unten links sammelt alle fertigen Mieten, Ernten, Kassen und Lieferungen auf einmal ein (im Energie-Modus, bis die Energie leer ist).
+- Animationen: Windräder und Windmühle drehen sich, das Riesenrad läuft, Brunnen sprudeln, Karussell und Maibaum drehen sich, Fabriken rauchen während der Produktion (Rauch nicht auf Grafik „Niedrig“).
+
 ## 0.3.0 – 2026-10-17
 
 - Jahreszeiten nach Kalender: Frühling mit Blüten, Herbstlaub, Schnee im Winter (Boden, Umland, Wald). Nur Optik, ändert keine Regeln.

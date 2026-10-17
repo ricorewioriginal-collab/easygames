@@ -1,4 +1,4 @@
-# Funktionsstand (0.3.0)
+# Funktionsstand (0.4.0)
 
 ✅ fertig und getestet · 🟡 vorhanden, nur teilweise getestet · ⛔ noch nicht gebaut
 
@@ -14,12 +14,15 @@
 | Baustellen mit Material | ✅ | Unit |
 | Bahn, Schiff, Flugzeug (Aufträge + Animation) | 🟡 | Regeln Unit-getestet, Animation nur angesehen |
 | Gemeinschaftsgebäude (19), Zufriedenheit, Ausstrahlung | ✅ | Unit |
-| Deko (60) | ✅ | Katalog-Test |
+| Deko (64, davon 4 Event-Deko) | ✅ | Katalog-Test |
+| Saison-Events (je Jahreszeit 3 Aufgaben, Event-Deko als Belohnung) | ✅ | Unit (Ketten, Freischaltung, Jahreswechsel) |
+| „Alles einsammeln“ | ✅ | Unit; im Browser angesehen |
+| Animationen (Windräder, Mühle, Riesenrad, Brunnen, Karussell, Fabrikrauch) | 🟡 | nur angesehen (Chromium) |
 | Jahreszeiten, Wetter, Nachtlichter | 🟡 | Regeln Unit-getestet, Darstellung per E2E fehlerfrei durchgeschaltet und angesehen (Chromium) |
 | 3D-Vorschaubilder im Baumenü | ✅ | E2E: jedes Gebäude ergibt ein nicht leeres Bild |
 | Level, Freischaltungen, Energie | ✅ | Unit |
 | Gebiete erweitern | ✅ | Unit |
-| 84 Aufgaben, Tages-/Wochenziele, 18 Erfolge | 🟡 | Ablauf getestet, nicht jede Aufgabe einzeln durchgespielt |
+| 96 Aufgaben, Tages-/Wochenziele, 18 Erfolge | 🟡 | Ablauf getestet, nicht jede Aufgabe einzeln durchgespielt |
 | Modi Nostalgisch / Entspannt / Kreativ | ✅ | Unit + E2E |
 | Speichern lokal, Sicherung, Migration, zwei Tabs | ✅ | Unit + E2E (Neuladen) |
 | Google-Speicher (easygames-Cloud-Skript) | 🟡 | Einbindung getestet, echte Anmeldung nicht |
