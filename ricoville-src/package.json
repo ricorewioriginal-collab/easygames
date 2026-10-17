@@ -1,6 +1,6 @@
 {
   "name": "ricoville",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "RicoVille – Deine Stadt lebt! 3D-Städtebauspiel für Browser und Handy (TypeScript, Three.js).",
   "type": "module",

@@ -1,15 +1,8 @@
 // Jahreszeit und Wetter – nur Darstellung, beeinflusst keine Spielregeln und nichts im Spielstand.
 
-export type Season = 'spring' | 'summer' | 'autumn' | 'winter';
+import type { Season } from '../core/season';
+export { SEASON_LABEL, seasonOf, type Season } from '../core/season';
 export type Weather = 'clear' | 'rain' | 'snow';
-
-export const SEASON_LABEL: Record<Season, string> = { spring: '🌸 Frühling', summer: '☀️ Sommer', autumn: '🍂 Herbst', winter: '❄️ Winter' };
-
-/** Jahreszeit nach Kalendermonat (Nordhalbkugel, meteorologisch). */
-export function seasonOf(d: Date): Season {
-  const m = d.getMonth();
-  return m >= 2 && m <= 4 ? 'spring' : m >= 5 && m <= 7 ? 'summer' : m >= 8 && m <= 10 ? 'autumn' : 'winter';
-}
 
 /** Länge eines Wetterabschnitts. Alle Geräte sehen zur selben Zeit dasselbe Wetter. */
 export const WEATHER_SLOT = 6 * 60 * 1000;

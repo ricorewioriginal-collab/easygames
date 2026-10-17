@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "540a112c3ded",
- "generated": "2026-10-17T20:53:24+02:00",
- "commit": "b9f2b3fa2b30e19888376f2e2e08fb63648ef1cd",
+ "version": "9b611abd5326",
+ "generated": "2026-10-17T21:34:57+02:00",
+ "commit": "33fcffaf81854a5f1b26bbbdac21820c85783380",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5054,7 +5054,7 @@
   {
    "p": "games.js",
    "s": 24677,
-   "h": "4a4ca4868ae24c4a23b0e1640232d0bd11f47348bd900f185bb2504af45663e4"
+   "h": "396785d5247e6cc0f67cb76a47a14e43ecc7574b5d2eba68ef995de0fe9e7f1c"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6182,19 +6182,19 @@
    "h": "1ecf1aaee5af6ab748076a5b382c0a811b2594c4e3ab3e598a28a8d5bc5d3229"
   },
   {
-   "p": "ricoville/assets/index-BUWwZhsM.css",
-   "s": 14430,
-   "h": "9e13508cc7c2ef2e6d1cf7f11b99db658e62b9f56b39b75744fa44866b12a53e"
+   "p": "ricoville/assets/index-Ba31iYgM.js",
+   "s": 212100,
+   "h": "b293af607a01963f22fd79f9a442ff55b301e5dd01a61fcc42702b33851eb6f0"
   },
   {
-   "p": "ricoville/assets/index-CDRFEBml.js",
-   "s": 202247,
-   "h": "fdda32b6da4e76eca2323245cb425404db7c5538ec0aa69fe5f97c1d16a195fb"
+   "p": "ricoville/assets/index-DM7de2RE.css",
+   "s": 15059,
+   "h": "b2b553ebb4b92e02dfa95e84c6dae1b20246958bd9eb1f1615cdae13534e4669"
   },
   {
-   "p": "ricoville/assets/three-BxyXCb2a.js",
-   "s": 526533,
-   "h": "98167e7a2761cec77bcc28598bd90d7a79c7ba2fb83e671aef65dbe56a748415"
+   "p": "ricoville/assets/three-Cyi9Njma.js",
+   "s": 526541,
+   "h": "199e108e9ec9173fc9304fcc2735a001124ddcc33a03d1f4644b3761012161d2"
   },
   {
    "p": "ricoville/card.svg",
@@ -6229,7 +6229,7 @@
   {
    "p": "ricoville/index.html",
    "s": 1940,
-   "h": "e777990eb04139477937f6580141f74bfc881e3aed7bcaaad1debdf04862739c"
+   "h": "dabfa2025273f4dff8bf74feec605454e6f66fb1eb67ad1c9516c99eeab0020b"
   },
   {
    "p": "ricoville/manifest.webmanifest",
@@ -6239,7 +6239,7 @@
   {
    "p": "ricoville/sw.js",
    "s": 2296,
-   "h": "8bb29c5822261ba539955365aff30449834d587310bc54c29eec3c0a8bc73b88"
+   "h": "a6c48e784cd51799f82b6a928f4ced7c887211e164f8082919be2dce72fa3617"
   },
   {
    "p": "riftzone/app/assets/index-41c2d7c84c.js",
@@ -6364,7 +6364,7 @@
   {
    "p": "sync/catalog.json",
    "s": 104972,
-   "h": "f64ea2369140469626279774bc987aa240a9398e83390e0b87c66424dbdc50aa"
+   "h": "2468b755a6ff0a05a4e6b8af291f2ebf4ae52596fe077714e79b085865f75c3a"
   },
   {
    "p": "taschi/card.svg",

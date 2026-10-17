@@ -102,9 +102,27 @@ const SIDE: QuestDef[] = [
   { id: 's52', giver: 'lotte', title: 'Herbststimmung', level: 6, text: 'Dekoriere mit Kürbisstapel und Herbstahorn.', goals: [{ own: 'kuerbisse', n: 1 }, { own: 'ahorn', n: 2 }], reward: { coins: 350, xp: 35 } },
 ];
 
+// Saison-Events: drei Aufgaben je Jahreszeit, nur in dieser Jahreszeit sichtbar und jedes Jahr neu.
+// Die letzte schaltet eine Deko frei, die es nur als Event-Belohnung gibt.
+const EVENTS: QuestDef[] = [
+  { id: 'e_fr1', season: 'spring', level: 3, giver: 'lotte', title: '🌸 Frühlingsputz: Neues Grün', text: 'Der Winter ist vorbei! Säe zehnmal, damit die Felder wieder sprießen.', goals: [{ ev: 'plant', n: 10 }], reward: { coins: 250, xp: 30 } },
+  { id: 'e_fr2', season: 'spring', level: 3, after: ['e_fr1'], giver: 'lotte', title: '🌸 Frühlingsputz: Blütenpracht', text: 'Setze fünf Dekorationen und kassiere zehnmal Miete.', goals: [{ ev: 'buildCat', id: 'decoration', n: 5 }, { ev: 'collectRent', n: 10 }], reward: { coins: 350, xp: 40 } },
+  { id: 'e_fr3', season: 'spring', level: 3, after: ['e_fr2'], giver: 'frieda', title: '🌸 Frühlingsputz: Tanz in den Mai', text: 'Ernte 25 Feldfrüchte für das große Frühlingsfest. Als Dank gibt es einen Maibaum!', goals: [{ ev: 'harvest', n: 25 }], reward: { coins: 500, xp: 60, unlock: 'maibaum' } },
+  { id: 'e_so1', season: 'summer', level: 3, giver: 'emil', title: '☀️ Sommerfest: Eis und Limo', text: 'Bei der Hitze kaufen alle ein. Kassiere achtmal in deinen Geschäften.', goals: [{ ev: 'collectShop', n: 8 }], reward: { coins: 300, xp: 35 } },
+  { id: 'e_so2', season: 'summer', level: 3, after: ['e_so1'], giver: 'frieda', title: '☀️ Sommerfest: Volle Körbe', text: 'Ernte 30 Feldfrüchte für das Grillbuffet.', goals: [{ ev: 'harvest', n: 30 }], reward: { coins: 350, xp: 40 } },
+  { id: 'e_so3', season: 'summer', level: 3, after: ['e_so2'], giver: 'lotte', title: '☀️ Sommerfest: Alle sind da', text: 'Kassiere 20-mal Miete – die ganze Stadt feiert mit. Belohnung: ein Karussell!', goals: [{ ev: 'collectRent', n: 20 }], reward: { coins: 600, xp: 70, unlock: 'karussell' } },
+  { id: 'e_he1', season: 'autumn', level: 3, giver: 'frieda', title: '🍂 Herbstfest: Erntedank', text: 'Die Felder sind reif. Ernte 30 Feldfrüchte.', goals: [{ ev: 'harvest', n: 30 }], reward: { coins: 300, xp: 35 } },
+  { id: 'e_he2', season: 'autumn', level: 3, after: ['e_he1'], giver: 'lotte', title: '🍂 Herbstfest: Laternen basteln', text: 'Setze drei Dekorationen und kassiere zehnmal Miete.', goals: [{ ev: 'buildCat', id: 'decoration', n: 3 }, { ev: 'collectRent', n: 10 }], reward: { coins: 350, xp: 40 } },
+  { id: 'e_he3', season: 'autumn', level: 3, after: ['e_he2'], giver: 'emil', title: '🍂 Herbstfest: Großer Festmarkt', text: 'Beliefere fünf Geschäfte für den Festmarkt. Als Dank gibt es den Laternenbogen!', goals: [{ ev: 'supply', n: 5 }], reward: { coins: 600, xp: 70, unlock: 'laternenbogen' } },
+  { id: 'e_wi1', season: 'winter', level: 3, giver: 'emil', title: '❄️ Wintermarkt: Leckereien', text: 'Stelle zehn Waren für die Marktstände her.', goals: [{ ev: 'produce', n: 10 }], reward: { coins: 300, xp: 35 } },
+  { id: 'e_wi2', season: 'winter', level: 3, after: ['e_wi1'], giver: 'emil', title: '❄️ Wintermarkt: Buden öffnen', text: 'Beliefere vier Geschäfte.', goals: [{ ev: 'supply', n: 4 }], reward: { coins: 350, xp: 40 } },
+  { id: 'e_wi3', season: 'winter', level: 3, after: ['e_wi2'], giver: 'lotte', title: '❄️ Wintermarkt: Warme Stuben', text: 'Kassiere 15-mal Miete. Belohnung: eine Eisbahn für alle!', goals: [{ ev: 'collectRent', n: 15 }], reward: { coins: 600, xp: 70, unlock: 'eisbahn' } },
+];
+
 export const QUESTS: QuestDef[] = [
   ...MAIN.map((q, i) => ({ ...q, after: i ? [MAIN[i - 1]!.id] : undefined })),
   ...SIDE.map((q) => ({ ...q, after: q.after ?? ['m08'] })),
+  ...EVENTS,
 ];
 export const QUEST = new Map(QUESTS.map((q) => [q.id, q]));
 
