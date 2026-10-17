@@ -32,6 +32,9 @@
  * Erfolge (spielübergreifend, mit Google-Sicherung):
  *      <button data-easygames="erfolge" data-mode="overlay">🏅 Erfolge</button>   |   EasyGames.open('erfolge')   |   EasyGames.achievements('#ziel')
  *    Oder direkt per iframe: https://…/easygames/erfolge.html?embed=1
+ *  - Benutzerkonto (einmal mit Google anmelden, gilt in allen Spielen):
+ *      <div data-easygames="konto"></div>  |  <button data-easygames="konto" data-mode="overlay">👤 Konto</button>  |  EasyGames.open('konto')  |  EasyGames.account('#ziel')
+ *    Oder direkt per iframe: https://…/easygames/konto.html?embed=1
  *
  * Weitere Funktionen:
  *      EasyGames.ready(() => console.log(EasyGames.list()));   // alle Spiele (id, title, desc, url …)
@@ -129,17 +132,19 @@
   function boardUrl(o) { return base + 'ranglisten.html?embed=1' + (o && o.game ? '&game=' + encodeURIComponent(o.game) : ''); }
   // Erfolge-Seite (spielübergreifend)
   function achUrl() { return base + 'erfolge.html?embed=1'; }
+  // Benutzerkonto (Anmeldung für alle Spiele)
+  function accUrl() { return base + 'konto.html?embed=1'; }
   var current = null;
   EG.close = function () { if (current) current(false); };
   // EasyGames.open('zotik' | 'all', { close:false, fullscreen:false, title, onClose })
   EG.open = function (game, o) {
     o = o || {};
     EG.ready(function () {
-      var board = game === 'ranglisten', ach = game === 'erfolge', g = game && game !== 'all' && !board && !ach ? find(game) : null;
-      if (game && game !== 'all' && !board && !ach && !g) { console.error('EasyGames: unbekanntes Spiel "' + game + '"'); return; }
+      var board = game === 'ranglisten', ach = game === 'erfolge', acc = game === 'konto', g = game && game !== 'all' && !board && !ach && !acc ? find(game) : null;
+      if (game && game !== 'all' && !board && !ach && !acc && !g) { console.error('EasyGames: unbekanntes Spiel "' + game + '"'); return; }
       var reuse = !!current && !!(history.state && history.state.egOverlay), opener = current && current.opener || document.activeElement;   // Verlaufseintrag und Fokus-Ziel des alten Overlays weiterverwenden
       if (current) current(true);   // ersetzt ein offenes Overlay (ohne Verlaufsschritt zurück, sonst würde das neue sofort schließen)
-      var title = o.title || (g ? g.title : board ? 'easygames – Ranglisten' : ach ? 'easygames – Erfolge' : 'easygames – Spielebibliothek'), box = document.createElement('div'), f = fullFrame(g ? gameUrl(g) : board ? boardUrl(o) : ach ? achUrl() : libUrl(o), title);
+      var title = o.title || (g ? g.title : board ? 'easygames – Ranglisten' : ach ? 'easygames – Erfolge' : acc ? 'easygames – Konto' : 'easygames – Spielebibliothek'), box = document.createElement('div'), f = fullFrame(g ? gameUrl(g) : board ? boardUrl(o) : ach ? achUrl() : acc ? accUrl() : libUrl(o), title);
       box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', title);
       box.style.cssText = LAYER_CSS;
       box.appendChild(f);
@@ -272,13 +277,24 @@
     return t;
   };
 
+  // EasyGames.account(ziel, { mode: 'page'|'overlay', … }) – Benutzerkonto: einmal anmelden, in allen Spielen angemeldet
+  EG.account = function (target, o) {
+    o = o || {};
+    var t = el(target);
+    if (!t) { console.error('EasyGames: Ziel nicht gefunden:', target); return null; }
+    if (o.mode === 'overlay') { bindOpen(t, 'konto', o); return t; }
+    if (o.mode === 'page') { pageLayer(t, accUrl(), o.title || 'easygames – Konto'); return t; }
+    t.appendChild(frame(accUrl(), o.title || 'easygames – Konto', o));
+    return t;
+  };
+
   function scan() {
     var nodes = document.querySelectorAll('[data-easygames]');
     for (var i = 0; i < nodes.length; i++) {
       var n = nodes[i]; if (n.getAttribute('data-easygames-done')) continue;
       n.setAttribute('data-easygames-done', '1');
       var d = n.dataset, o = { width: d.width, maxWidth: d.maxWidth, ratio: d.ratio, height: d.height, radius: d.radius, title: d.title, fullscreen: d.fullscreen, tvLink: d.tvLink, mode: d.mode, close: d.close, layout: d.layout };
-      if (d.easygames === 'all') EG.library(n, o); else if (d.easygames === 'ranglisten') { o.game = d.game; EG.leaderboard(n, o); } else if (d.easygames === 'erfolge') EG.achievements(n, o); else { o.game = d.easygames; EG.embed(n, o); }
+      if (d.easygames === 'all') EG.library(n, o); else if (d.easygames === 'ranglisten') { o.game = d.game; EG.leaderboard(n, o); } else if (d.easygames === 'erfolge') EG.achievements(n, o); else if (d.easygames === 'konto') EG.account(n, o); else { o.game = d.easygames; EG.embed(n, o); }
     }
   }
   EG.scan = scan;

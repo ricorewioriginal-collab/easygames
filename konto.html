@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>Konto – easygames</title>
+<style>
+:root{--bg:#0b1020;--card:#151b33;--line:#ffffff24;--text:#f3f5ff;--mut:#a9b0cf;--acc:#d4fd78}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 14px calc(24px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;gap:12px;margin:0 0 14px}
+header h1{font-size:22px;margin:0;flex:1}
+.back{color:var(--text);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:7px 13px;font-weight:600;font-size:13px}
+body.embed .back{display:none}
+a:focus-visible,button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.card{margin:14px 0 0;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:14px}
+.card h2{font-size:16px;margin:0 0 6px}
+.card p{margin:6px 0;color:var(--mut);font-size:13px}
+.me{display:flex;gap:14px;align-items:center}
+.av{flex:none;width:64px;height:64px;border-radius:50%;background:#222a4d;display:grid;place-items:center;font-size:30px;overflow:hidden}
+.av img{width:100%;height:100%;display:block}
+.me b{display:block;font-size:19px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.me small{color:var(--mut);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ok{color:#81c995;font-weight:600}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}
+.links a{flex:1 1 150px;min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:12px;border:1px solid var(--line);background:#222a4d;color:var(--text);text-decoration:none;font-weight:600;font-size:14px;padding:0 12px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:10px 0 0}
+.stats div{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.stats b{display:block;font-size:20px}.stats span{color:var(--mut);font-size:12px}
+ul.sv{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+ul.sv li{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:14px}
+ul.sv li span:first-child{font-size:20px}
+ul.sv li b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+ul.sv li small{color:var(--mut);font-size:12px;flex:none}
+.hint{font-size:13px;color:var(--mut)}
+body.in #cloudMount{display:none}
+body:not(.in) #out{display:none}
+#out{margin:10px 0 0;min-height:44px;width:100%;border-radius:12px;border:1px solid var(--line);background:#222a4d;color:var(--text);font:600 14px system-ui;cursor:pointer}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>👤 Mein Konto</h1>
+    <a class="back" href="index.html">← Spiele</a>
+  </header>
+
+  <section class="card" id="acc" aria-live="polite">
+    <div class="me"><div class="av" id="av">👤</div><div style="min-width:0"><b id="nm">Nicht angemeldet</b><small id="em"></small></div></div>
+    <p id="msg">Melde dich einmal mit Google an – danach bist du in allen easygames-Spielen automatisch angemeldet und deine Spielstände, Erfolge und Ranglisten-Einträge folgen dir auf jedes Gerät.</p>
+    <div id="cloudMount"></div>
+    <p class="ok" id="okp" hidden>● Mit Google verbunden – in allen Spielen angemeldet.</p>
+    <button type="button" id="out">Abmelden</button>
+  </section>
+
+  <section class="card" id="sum" hidden>
+    <h2>Mein easygames</h2>
+    <div class="stats">
+      <div><b id="sRank">–</b><span>Rang</span></div>
+      <div><b id="sAch">–</b><span>Erfolge</span></div>
+      <div><b id="sSave">–</b><span>Spiele in der Cloud</span></div>
+    </div>
+    <p id="nick" class="hint"></p>
+    <div class="links">
+      <a href="erfolge.html" id="lAch">🏅 Erfolge</a>
+      <a href="ranglisten.html" id="lBoard">🏆 Ranglisten &amp; Spitzname</a>
+      <a href="index.html" id="lGames">🎮 Spiele</a>
+    </div>
+  </section>
+
+  <section class="card" id="sv" hidden>
+    <h2>Gesicherte Spielstände</h2>
+    <p>Diese Spiele sind mit deinem Konto gesichert. Beim Öffnen eines Spiels wird der neueste Stand automatisch geladen – ohne erneute Anmeldung.</p>
+    <ul class="sv" id="svList"></ul>
+  </section>
+
+  <section class="card">
+    <h2>So funktioniert das Konto</h2>
+    <p>Die Anmeldung gilt für alle Spiele auf diesem Gerät und in dieser App. In einem neuen Browser oder auf einem anderen Gerät meldest du dich hier einmal an, danach ist alles wieder da. Niemand sieht deine Google-Daten; öffentlich sind nur Spitzname und Bestwerte – und nur, wenn du das bei den Ranglisten freigibst.</p>
+  </section>
+</main>
+
+<script src="cloud/anmacha-cloud.js" data-game="konto" data-prefix="anmacha-konto-ohne-spielstand" data-mount="#cloudMount" data-sync="off" data-board="off" data-hint="Mit Google anmelden – einmal für alle Spiele." defer></script>
+<script src="cloud/anmacha-board.js" defer></script>
+<script src="cloud/anmacha-ach.js" defer></script>
+<script src="cloud/anmacha-gameach.js" defer></script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  var B = window.AnMaChaBoard, A = window.AnMaChaAch, GA = window.AnMaChaGameAch, Cloud = window.AnMaChaCloud, games = [], lastUid = null, seq = 0;
+  var $ = function (id) { return document.getElementById(id); };
+  if (new URLSearchParams(location.search).get('embed') === '1') {
+    document.body.classList.add('embed');
+    ['lAch', 'lBoard', 'lGames'].forEach(function (id) { var a = $(id), u = a.getAttribute('href'); a.setAttribute('href', u + (u.indexOf('?') < 0 ? '?embed=1' : '&embed=1')); });
+  }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function user() { return Cloud && Cloud.user ? Cloud.user() : null; }
+  function fmt(t) { try { return new Date(Number(t)).toLocaleDateString('de-DE'); } catch (e) { return ''; } }
+  if (!Cloud) { $('msg').textContent = 'Das Konto ist gerade nicht verfügbar.'; return; }
+
+  function key(u) { return u ? (u.uid || '') + '|' + (u.displayName || '') + '|' + (u.email || '') : ''; }   // Name/Uid kommen in der App erst nach dem Laden des Profils
+  function head(u) {
+    $('nm').textContent = u ? (u.displayName || 'Spieler') : 'Nicht angemeldet'; $('em').textContent = u ? u.email || '' : '';
+    var av = $('av'); av.textContent = '';
+    if (u && u.photoURL) { var im = document.createElement('img'); im.src = u.photoURL; im.alt = ''; im.referrerPolicy = 'no-referrer'; av.appendChild(im); } else av.textContent = u ? '🙂' : '👤';
+    $('msg').hidden = !!u; $('okp').hidden = !u; document.body.classList.toggle('in', !!u);
+  }
+  // Gesicherte Spielstände: Dokumente users/<uid>/saves (ohne Profil-Dokumente "__…" und ältere Sicherungen "…__alt")
+  function listSaves() {
+    return Cloud.account().then(function (a) {
+      if (!a) return [];
+      return fetch(Cloud.FS + 'users/' + a.uid + '/saves?pageSize=300&mask.fieldPaths=t', { headers: { Authorization: 'Bearer ' + a.token } }).then(function (r) { return r.ok ? r.json() : { documents: [] }; }).then(function (j) {
+        return (j.documents || []).map(function (d) { var id = d.name.split('/').pop(); return { id: id, t: d.fields && d.fields.t && Number(d.fields.t.integerValue) || 0 }; })
+          .filter(function (x) { return x.id.indexOf('__') !== 0 && !/__alt$/.test(x.id); });
+      });
+    });
+  }
+  function draw() {
+    var u = user(), uid = key(u), my = ++seq;
+    head(u); lastUid = uid;
+    $('sum').hidden = $('sv').hidden = !u;
+    if (!u) return;
+    var byId = {}; games.forEach(function (g) { if (g.cloud && g.cloud.game) byId[g.cloud.game] = g; });
+    if (B && A && GA && games.length) {
+      var own = {}, c = GA.collect(); Object.keys(c).forEach(function (g) { own[g] = { total: c[g].total, done: c[g].done, unlocked: c[g].unlocked }; });
+      try { var r = A.run(games, B, { cloud: true, board: B.shared && B.shared(), own: own }); $('sRank').textContent = r.rank.name; $('sAch').textContent = r.done + ' / ' + r.total; } catch (e) {}
+    }
+    $('nick').textContent = B && B.shared && B.shared() ? '🏆 Ranglisten: freigegeben als „' + (B.nick() || '') + '“.' : '🏆 Ranglisten: noch nicht freigegeben – dort wählst du deinen Spitznamen.';
+    listSaves().then(function (list) {
+      if (my !== seq) return;
+      list.sort(function (a, b) { return b.t - a.t; });
+      $('sSave').textContent = String(list.length);
+      $('svList').innerHTML = list.map(function (x) { var g = byId[x.id]; return '<li><span aria-hidden="true">' + esc(g ? g.icon : '🎮') + '</span><b>' + esc(g ? g.title.split(' – ')[0] : x.id) + '</b><small>' + (x.t ? fmt(x.t) : '') + '</small></li>'; }).join('') || '<li><b>Noch keine Spielstände gesichert – sie erscheinen, sobald du ein Spiel spielst.</b></li>';
+    }).catch(function () {});
+  }
+  $('out').addEventListener('click', function () { Cloud.signOut().then(function () { draw(); }); });
+  fetch('sync/catalog.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : { games: [] }; }).then(function (c) { games = c.games || []; }, function () {}).then(function () { return Cloud.account ? Cloud.account() : null; }).then(function () {
+    draw();
+    // Anmeldung/Abmeldung (auch Kopplung in der App) erkennen und neu zeichnen
+    setInterval(function () { var u = user(), id = key(u); if (id !== lastUid) { if (u && B && B.loadProfile) B.loadProfile(true).then(draw, draw); else draw(); } }, 700);
+    if (user() && B && B.loadProfile) B.loadProfile(true).then(draw, function () {});
+  });
+});
+</script>
+</body>
+</html>

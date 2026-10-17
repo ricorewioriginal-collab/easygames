@@ -275,7 +275,7 @@
 
     <h3>Code-Generator</h3>
     <div class="gen">
-      <label>Seite<select id="bPage"><option value="ranglisten">🏆 Ranglisten</option><option value="erfolge">🏅 Erfolge</option></select></label>
+      <label>Seite<select id="bPage"><option value="ranglisten">🏆 Ranglisten</option><option value="erfolge">🏅 Erfolge</option><option value="konto">👤 Konto (Login für alle Spiele)</option></select></label>
       <label id="bGameL">Spiel vorwählen (optional)<select id="bGame"><option value="">– keins (Auswahl durch den Spieler) –</option></select></label>
       <label>Darstellung<select id="bMode"><option value="">Eingebettet (Rahmen in der Seite)</option><option value="page">Vollbild: ganze Seite</option><option value="overlay">Vollbild: Klick öffnet Overlay</option></select></label>
     </div>
@@ -305,8 +305,9 @@ EasyGames.achievements('#ziel');</pre>
     <ul>
       <li><b>Keine eigene Firebase-Einrichtung nötig:</b> Die Seiten laufen im Rahmen von easygames (eigene Adresse, bereits freigegeben). Die Google-Anmeldung passiert dort im Rahmen; deine Seite muss keine Domain freischalten.</li>
       <li><b>Anpassungen:</b> <code>?embed=1</code> blendet den Knopf „← Spiele“ aus (macht <code>easygames.js</code> automatisch). Größe, Seitenverhältnis und Rahmen steuerst du wie bei Spielen (<code>data-ratio</code>, <code>data-max-width</code>, <code>data-mode</code>).</li>
+      <li><b>👤 Konto (einmal anmelden, überall angemeldet):</b> <code>konto.html</code> (Generator oben: „Konto“, <code>data-easygames="konto"</code>, <code>EasyGames.open('konto')</code>, <code>EasyGames.account('#ziel')</code>). Die Seite zeigt die Google-Anmeldung, Name, Rang, Erfolge und die gesicherten Spielstände. Alle Spiele unter derselben Adresse übernehmen die Anmeldung automatisch; im Cloud-Fenster jedes Spiels führt „👤 Konto“ dorthin. Auf einer <b>anderen Adresse</b> (eigene Seite, anderer Browser) gilt die Anmeldung nur dort – dort einmal anmelden (oder die Konto-Seite einbetten); Spielstände, Erfolge und Ranglisten-Profil kommen danach automatisch aus dem Google-Profil.</li>
       <li><b>Erfolge sind pro Gerät und Adresse:</b> Sie werden aus den Spielständen berechnet, die unter derselben Adresse gespeichert sind. Wer easygames im Browser (<code>github.io</code>) spielt, sieht sie dort; mit Google-Anmeldung folgen sie dem Spieler auf alle Geräte und Apps.</li>
-      <li><b>In Apps (Android/Windows):</b> Die Seiten sind Teil des Offline-Standes (<code>ranglisten.html</code>, <code>erfolge.html</code>, <code>cloud/anmacha-board.js</code>, <code>cloud/anmacha-ach.js</code>, <code>cloud/anmacha-gameach.js</code>, <code>sync/catalog.json</code>). Die Anmeldung geschieht über die Kopplung: ☁ in einem Spiel ▸ Link im Browser öffnen ▸ danach erscheint das Konto auch in Ranglisten und Erfolgen.</li>
+      <li><b>In Apps (Android/Windows):</b> Die Seiten sind Teil des Offline-Standes (<code>ranglisten.html</code>, <code>erfolge.html</code>, <code>konto.html</code>, <code>cloud/anmacha-board.js</code>, <code>cloud/anmacha-ach.js</code>, <code>cloud/anmacha-gameach.js</code>, <code>sync/catalog.json</code>). Die Anmeldung geschieht über die Kopplung: ☁ in einem Spiel ▸ Link im Browser öffnen ▸ danach erscheint das Konto auch in Ranglisten und Erfolgen.</li>
       <li><b>Eigene Seite mit eigenen Spielen:</b> Die Spielliste kommt aus <code>sync/catalog.json</code> (<code>node tools/build-sync.js</code>). Neue Spiele bekommen Ranglisten und Erfolge automatisch, sobald sie <code>cloud/anmacha-cloud.js</code> einbinden (<a href="#cloud">Cloud-Speicherstand</a>); besondere Wertungen trägst du in <code>cloud/anmacha-board.js</code> (<code>REG</code>) ein, ein leerer Eintrag schaltet die Rangliste eines Spiels ab.</li>
       <li><b>Grenzen:</b> Die Werte stammen vom Gerät des Spielers und sind nicht manipulationssicher (Spaß-Ranglisten). Die Erkennung der Bestwerte ist eine Heuristik über typische Feldnamen (<code>best</code>, <code>highscore</code>, <code>wins</code>, <code>stars</code> …).</li>
       <li><b>Einmalig in der Firebase-Konsole</b> (nur der Betreiber von easygames, nicht deine Seite): die Regeln aus <code>cloud/firestore.rules</code> veröffentlichen, sonst zeigen die Ranglisten „noch nicht freigeschaltet“. Die Erfolge brauchen keine neue Regel.</li>
@@ -701,8 +702,8 @@ function gen() {
   const genB = () => {
     const page = $('bPage').value, mode = $('bMode').value, id = page === 'ranglisten' ? $('bGame').value : '', allow = 'fullscreen; autoplay; gamepad; accelerometer; gyroscope';
     $('bGameL').style.display = page === 'ranglisten' ? '' : 'none';
-    const title = page === 'ranglisten' ? 'easygames – Ranglisten' : 'easygames – Erfolge', url = base + page + '.html?embed=1' + (id ? '&game=' + encodeURIComponent(id) : ''), direct = base + page + '.html' + (id ? '?game=' + encodeURIComponent(id) : '');
-    const gameAttr = id ? ` data-game="${id}"` : '', gameOpt = id ? `{ game: '${id}' }` : '{}', fn = page === 'ranglisten' ? 'leaderboard' : 'achievements', icon = page === 'ranglisten' ? '🏆 Ranglisten' : '🏅 Erfolge';
+    const title = page === 'ranglisten' ? 'easygames – Ranglisten' : page === 'konto' ? 'easygames – Konto' : 'easygames – Erfolge', url = base + page + '.html?embed=1' + (id ? '&game=' + encodeURIComponent(id) : ''), direct = base + page + '.html' + (id ? '?game=' + encodeURIComponent(id) : '');
+    const gameAttr = id ? ` data-game="${id}"` : '', gameOpt = id ? `{ game: '${id}' }` : '{}', fn = page === 'ranglisten' ? 'leaderboard' : page === 'konto' ? 'account' : 'achievements', icon = page === 'ranglisten' ? '🏆 Ranglisten' : page === 'konto' ? '👤 Konto' : '🏅 Erfolge';
     $('bLink').textContent = `<a href="${direct}">${icon}</a>`;
     if (mode === 'overlay') {
       $('bIframe').textContent = '(Für das Overlay den easygames.js-Code verwenden – Rahmen, Schließen-Knopf, Esc und Zurück-Taste regelt das Skript.)';

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "aebc91967cfe",
- "generated": "2026-10-17T04:37:09+02:00",
- "commit": "c1c72f8b7d4a324acc4e6160734f262c58ec01d1",
+ "version": "b17ec976bec9",
+ "generated": "2026-10-17T02:42:38+00:00",
+ "commit": "7a9b82a2f2a61f68beec5b69c13f85c4ec5ae33e",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4623,8 +4623,8 @@
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 31101,
-   "h": "c8efa0a58a75cac14e0c65ea8e4c437363e09c867b4b328b70cedce9400885ee"
+   "s": 31634,
+   "h": "ee1f9256516a1d282154d18d2887b4e1b1c5463dd79055e6ed213bc7cc658e60"
   },
   {
    "p": "cloud/anmacha-gameach.js",
@@ -4643,13 +4643,13 @@
   },
   {
    "p": "easygames.js",
-   "s": 20948,
-   "h": "84fc5c04033a93c1c938c6efd25d0417f797634cf2a8c933b39fd2e660d0f9a4"
+   "s": 22069,
+   "h": "b9a29606e449ea52cd33adc98dbca14c8a0222dd8e021bb9228e7f5dfaf483c7"
   },
   {
    "p": "einbinden.html",
-   "s": 70902,
-   "h": "1fe2c5346ee93fcfc04b644375527da9f21fa3565f23fd942d4dfd35aedee4e6"
+   "s": 71820,
+   "h": "4f16069e469a71b8a6574c2dab41e0b83c71eddc484d3b19361f7453e5daae1f"
   },
   {
    "p": "erfolge.html",
@@ -4903,8 +4903,8 @@
   },
   {
    "p": "index.html",
-   "s": 58413,
-   "h": "9385d132aac02138631c109080e8b1cf865a0407fc24cb0325e59a33b3292ff8"
+   "s": 58480,
+   "h": "3f274c2787761da96773ddc97776ec1ee583446f9698aea04b754a0f6bff1173"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -5008,8 +5008,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 31101,
-   "h": "c8efa0a58a75cac14e0c65ea8e4c437363e09c867b4b328b70cedce9400885ee"
+   "s": 31634,
+   "h": "ee1f9256516a1d282154d18d2887b4e1b1c5463dd79055e6ed213bc7cc658e60"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -5020,6 +5020,11 @@
    "p": "kiko-sterneninseln/vite.config.js",
    "s": 214,
    "h": "455543146b29d9a6f7943ac05350b9e95f9dfdf2f100babff20a2f6a4802f316"
+  },
+  {
+   "p": "konto.html",
+   "s": 9952,
+   "h": "dbeb8fc55365c9e54d8f916d5cfe9dcd4674deb65c49005e54384bec60f7448f"
   },
   {
    "p": "kraterkommando/card.svg",
@@ -5974,7 +5979,7 @@
   {
    "p": "sync/catalog.json",
    "s": 98297,
-   "h": "2e243c235cb98075e4ecd3a0f8df0d08607e22607cd9448bd5ec0c83e5184d79"
+   "h": "35b507e88bb33660ea3e34192f4c2d3c09d36ad665fe632e8770608aba1bfc37"
   },
   {
    "p": "taschi/card.svg",

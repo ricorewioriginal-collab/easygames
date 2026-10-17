@@ -93,6 +93,8 @@
   // (Link mit Kopplungscode auf ricorewi-radio.de), die App holt sich danach das Aktualisierungs-Token und nutzt es per REST. ----
   var APP = location.hostname === 'appassets.local' || location.hostname === 'appassets.androidplatform.net' || !!window.EasyGamesApp || /(RicoReWi|EasyGames)App\//.test(navigator.userAgent), RT = 'anmacha-cloud-rt', PAIR = null;
   var PORTAL = 'https://www.ricorewi-radio.de/';
+  // Zentrale Konto-Seite (einmal anmelden, gilt in allen Spielen) – Navigation auf demselben Gerät, daher lokal (funktioniert auch offline in der App)
+  var kontoUrl = game === 'konto' || !/\/cloud\/[^\/]*$/.test((s.src || '').split(/[?#]/)[0]) ? '' : (s.src || '').split(/[?#]/)[0].replace(/cloud\/[^\/]*$/, 'konto.html');
   var FS = 'https://firestore.googleapis.com/v1/projects/' + CONFIG.projectId + '/databases/(default)/documents/';
   function post(u, body, form) {
     return fetch(u, { method: 'POST', headers: { 'Content-Type': form ? 'application/x-www-form-urlencoded' : 'application/json' }, body: body }).then(function (r) {
@@ -411,6 +413,7 @@
       row('Jetzt in Google speichern', function () { first = false; sync(); }, G);
       row('Spielstand mit Google wiederherstellen', restore, G);
       row('Älteren Stand wiederherstellen', restoreOlder, G);
+      if (kontoUrl) row('👤 Konto & Übersicht', function () { location.href = kontoUrl; });
       row('Abmelden', signOut);
     } else if (PAIR) {
       var lk = PORTAL + '#koppeln=' + PAIR.id;
@@ -425,6 +428,7 @@
       panel.appendChild(el('div', 'margin:6px 0 0;opacity:.8', lastErr ? '⚠ ' + lastErr : (s.dataset.hint || 'Speichere deinen Fortschritt mit Google und spiele auf jedem Gerät weiter.')));
       row('Mit Google speichern', signIn, G);
       row('Spielstand mit Google wiederherstellen', signIn, G);
+      if (kontoUrl) row('👤 Konto – einmal für alle Spiele', function () { location.href = kontoUrl; });
     }
     if (btn) {
       btn.textContent = '';
