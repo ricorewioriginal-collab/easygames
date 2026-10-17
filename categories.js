@@ -19,7 +19,7 @@ window.EASYGAMES_CATS = {
     // Quiz
     'zeitsprung-wissen': 'quiz', 'zeitsprung-movie': 'quiz', 'zeitsprung-radio': 'quiz', 'anmacha-quiz': 'quiz', 'anmacha-koffer-dealer': 'quiz', 'anmacha-gesucht': 'quiz', 'anmacha-hoererwahl': 'quiz', 'anmacha-preisradar': 'quiz', 'MachMichAus': 'quiz',
     // Simulation
-    'ricolife': 'sim', 'ricorail': 'sim', 'ricoville': 'sim', 'mimori': 'sim', 'FunkhausReality': 'sim', 'anmacha-markthalle': 'sim', 'anmacha-klotzfunk': 'sim', 'bunte-insel': 'sim',
+    'ricolife': 'sim', 'ricorail': 'sim', 'ricoville': 'sim', 'mimori': 'sim', 'FunkhausReality': 'sim', 'anmacha-markthalle': 'sim', 'anmacha-klotzfunk': 'sim', 'anmacha-podcast-tycoon': 'sim', 'bunte-insel': 'sim',
     // Tisch
     'ricopoly': 'tisch', 'partyverse': 'tisch', 'anmacha-gold-reels': 'tisch', 'anmacha-spielesammlung': 'tisch', 'anmacha-stapelrausch': 'tisch',
     // Musik

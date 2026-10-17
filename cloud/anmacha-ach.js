@@ -44,7 +44,7 @@
     action: ['krawallvoegel', 'rico-flap', 'radio-maze', 'lumo', 'pufi-farbwind', 'radio-surfer', 'funkparcours', 'kart', 'turbokick', 'riftzone', 'flipper', 'snake', 'showdown'],
     denken: ['kraterkommando', 'funkblasen', 'radio-match', 'memory', 'wobbel', 'frequenzrad', 'tower-defense'],
     quiz: ['quiz', 'gesucht', 'hoererwahl', 'preisradar', 'machmichaus', 'zeitsprung-wissen', 'zeitsprung-movie', 'zeitsprung-radio', 'koffer-dealer'],
-    sim: ['ricoville', 'ricolife', 'ricorail', 'mimori', 'markthalle', 'funkhaus', 'klotzfunk', 'bunte-insel'],
+    sim: ['ricoville', 'ricolife', 'ricorail', 'mimori', 'markthalle', 'funkhaus', 'klotzfunk', 'bunte-insel', 'anmacha-podcast-tycoon'],
     tisch: ['ricopoly', 'partyverse', 'spielesammlung', 'stapelrausch', 'gold-reels'],
     musik: ['beat-surfer', 'prismrush']
   };
