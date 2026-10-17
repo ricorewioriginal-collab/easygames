@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3bc1fab42902",
- "generated": "2026-10-17T02:12:20+00:00",
- "commit": "71bab238888a4c8d086cb7235a768338dd04894d",
+ "version": "8372af946883",
+ "generated": "2026-10-17T04:21:41+02:00",
+ "commit": "f4e87ac50869160fd4f9944847a29b01a59d2f07",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4734,7 +4734,7 @@
   {
    "p": "games.js",
    "s": 23245,
-   "h": "f9d7dcc9aaf3e890ee1cd43148a92c237d3ec0581cae09db100e8d2a792c17f7"
+   "h": "f06172d7966673db9de4df5f9d928a6b5c558b5f89122accc6d4512806656f83"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5642,9 +5642,9 @@
    "h": "13ff08bb013337d1b3f62a730374c4e5817ba8ef9b1ac1fd88ef8619370de78a"
   },
   {
-   "p": "ricolife/assets/index-CPSrR1EJ.js",
-   "s": 718011,
-   "h": "5f47cd16694c51f21c6e13af149142e12a5ea0e8bfa6b9444fdaac8d5b5c8efc"
+   "p": "ricolife/assets/index-B4Xfwki-.js",
+   "s": 718329,
+   "h": "925d8c4827c116ba02e0bd9136e2cc0dad93a55fa672899ba15501d430792d2d"
   },
   {
    "p": "ricolife/assets/index-CSVHXUdX.css",
@@ -5689,7 +5689,7 @@
   {
    "p": "ricolife/index.html",
    "s": 1910,
-   "h": "353dc6b3798571abce66d4c270ba3ae408ef7e6882c5a66a0c0282a44ac85bed"
+   "h": "3e8ae5a4b7a84fe2ff5a9675fe9f716858ba71cdde02b1322832c70a852c8ba4"
   },
   {
    "p": "ricolife/manifest.webmanifest",
@@ -5969,7 +5969,7 @@
   {
    "p": "sync/catalog.json",
    "s": 98297,
-   "h": "d79336528cfe2fd71968adaa0aa6b51277549c1af4ddb8c153a3b2f4289f68d1"
+   "h": "bc21206d51175b319b2772a8c7014cbce0c241bcf4d8d9c8102abdf2d0739a41"
   },
   {
    "p": "taschi/card.svg",
