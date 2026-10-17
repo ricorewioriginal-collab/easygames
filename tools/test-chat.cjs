@@ -106,6 +106,14 @@ const server = http.createServer((req, res) => {
     assert.match(await page.$eval('#list', e => e.textContent), /Erste!/);
     console.log('PASS Raumwechsel: eigener, zunächst leerer Raum');
 
+    // 6b) Mitspieler suchen: Raum „Mitspieler gesucht“ mit Spielauswahl, Nachricht mit Knopf zum Spiel
+    await page.click('#rooms .tab:nth-child(2)'); await page.waitForFunction(() => !document.getElementById('seek').hidden); assert((await page.$$eval('#seekGame option', o => o.length)) > 3, 'Mehrspieler-Spiele wählbar');
+    await page.waitForTimeout(2800); const pick = await page.$eval('#seekGame', s => s.options[0].value); await page.click('#seekBtn');
+    await page.waitForFunction(t => [...document.querySelectorAll('#list .m .x')].some(x => x.textContent === '🎮 Sucht Mitspieler: ' + t), pick);
+    await page.waitForSelector('#list .m.me a.btn'); assert.match(await page.$eval('#list .m.me a.btn', a => a.textContent), /öffnen/); assert.doesNotMatch(await page.$eval('#list .m.me .x', e => e.textContent), /http|\.de|\.com/);
+    console.log('PASS Mitspieler suchen: Spielauswahl, Nachricht ohne Link, Knopf „Spiel öffnen“');
+    await page.click('#rooms .tab:nth-child(1)');
+
     // 7) Betreiber sieht Löschen/Sperren
     db.admin = true; await page.goto(base + 'chat.html?room=lobby'); await page.waitForSelector('#list .m');
     await page.waitForFunction(() => document.querySelector('#list .m[data-id=old1] button[title="Nachricht löschen"]'));

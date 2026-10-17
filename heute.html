@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>Heute – easygames</title>
+<style>
+:root{--bg:#0b1020;--card:#151b33;--line:#ffffff24;--text:#f3f5ff;--mut:#a9b0cf;--acc:#d4fd78;--gold:#ffc53d;--bad:#f28b82;--good:#81c995}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 14px calc(24px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;gap:12px;margin:0 0 14px}
+header h1{font-size:22px;margin:0;flex:1}
+.back{color:var(--text);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:7px 13px;font-weight:600;font-size:13px}
+body.embed .back{display:none}
+a:focus-visible,button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.card{margin:14px 0 0;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:14px}
+.card h2{font-size:16px;margin:0 0 6px}
+.card p{margin:6px 0;color:var(--mut);font-size:13px}
+.hero{display:flex;gap:14px;align-items:center;border-radius:16px;padding:16px;border:1px solid var(--line);background:linear-gradient(135deg,#1c2550,#151b33 60%)}
+.hero .ic{flex:none;width:72px;height:72px;border-radius:18px;display:grid;place-items:center;font-size:36px;background:#222a4d;overflow:hidden}
+.hero .ic img{width:100%;height:100%;object-fit:cover}
+.hero .tx{min-width:0}
+.hero b{display:block;font-size:20px}
+.hero small{color:var(--mut)}
+.kick{font-size:12px;color:var(--gold);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.btn{min-height:46px;width:100%;margin-top:10px;border-radius:12px;border:1px solid var(--line);background:#222a4d;color:var(--text);font:600 15px system-ui;cursor:pointer;padding:0 16px;display:flex;align-items:center;justify-content:center;text-decoration:none}
+.btn.pri{background:var(--acc);color:#10140a;border-color:var(--acc)}
+.btn:disabled{opacity:.5;cursor:default}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:12px}
+.stats div{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.stats b{display:block;font-size:22px}.stats span{color:var(--mut);font-size:12px}
+ol{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+ol li{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+ol li.me{border-color:var(--acc);background:#d4fd7812}
+ol li b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ol li .n{width:24px;color:var(--mut);text-align:right}
+.ok{color:var(--good);font-weight:600}.err{color:var(--bad);font-size:13px;min-height:18px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>🎯 Heute</h1>
+    <a class="back" href="index.html">← Spiele</a>
+  </header>
+
+  <section class="hero" id="hero" aria-live="polite"><div class="ic" id="ic">🎮</div><div class="tx"><div class="kick">Tagesherausforderung</div><b id="gt">Lade …</b><small id="gd"></small></div></section>
+  <a class="btn pri" id="play" href="index.html" hidden>▶ Jetzt spielen</a>
+
+  <div class="stats">
+    <div><b id="stStreak">–</b><span>🔥 Tage in Folge</span></div>
+    <div><b id="stHero">–</b><span>🎯 Tage eingetragen</span></div>
+    <div><b id="stBest">–</b><span>Dein Bestwert</span></div>
+  </div>
+
+  <section class="card">
+    <h2>Heute dabei</h2>
+    <p id="how">Spiele das Tagesspiel und trage deinen Bestwert für heute ein – jeder Tag zählt für den Erfolg „Tagesheld“ und hält deine Serie am Laufen.</p>
+    <div id="cloudMount"></div>
+    <button class="btn" id="enter" type="button" hidden>🎯 Für heute eintragen</button>
+    <p class="err" id="err" role="alert"></p>
+    <ol id="list"></ol>
+  </section>
+</main>
+
+<script src="cloud/anmacha-cloud.js" data-game="heute" data-prefix="anmacha-heute-ohne-spielstand" data-mount="#cloudMount" data-sync="off" data-board="off" data-hint="Mit Google anmelden, um dich einzutragen." defer></script>
+<script src="cloud/anmacha-board.js" defer></script>
+<script src="cloud/anmacha-ach.js" defer></script>
+<script src="cloud/anmacha-engage.js" defer></script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  var Cloud = window.AnMaChaCloud, B = window.AnMaChaBoard, A = window.AnMaChaAch, E = window.AnMaChaEngage, $ = function (id) { return document.getElementById(id); };
+  if (new URLSearchParams(location.search).get('embed') === '1') document.body.classList.add('embed');
+  if (!Cloud || !B || !A || !E) { $('gt').textContent = 'Die Tagesherausforderung ist gerade nicht verfügbar.'; return; }
+  var day = E.dayNum(), game = null, me = null, best = null, games = [], logging = false;
+  function esc(s) { return String(s == null ? '' : s); }
+  function mk(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function api(url, opt) {
+    return Cloud.account().then(function (a) { if (!a) throw new Error('login'); me = a; opt = opt || {}; opt.headers = { 'Content-Type': 'application/json', Authorization: 'Bearer ' + a.token }; return fetch(url, opt); });
+  }
+  function seen() { try { return JSON.parse(localStorage.getItem('anmacha-seen') || '{}') || {}; } catch (e) { return {}; } }
+  function playedToday() { var s = seen(); return !!(s.t && s.t.d === day && Array.isArray(s.t.g) && game && s.t.g.indexOf(game.cloud.game) >= 0); }
+  function myBest() {
+    if (!game) return null;
+    var pre = String(game.cloud.prefix || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean), pairs = pre.length ? B.localPairs(pre) : [], v = pairs.length ? B.values(game.cloud.game, pairs) : [];
+    var b0 = ((B.REG || {})[game.cloud.game] || [])[0]; v = v.filter(function (x) { return b0 && x.id === b0.id; });
+    return v.length ? v[0] : null;
+  }
+  function fmtVal(o) { try { var b = (B.REG[game.cloud.game] || [])[0] || {}; return B.fmt(b.fmt, o.v) + (b.unit && !b.fmt ? ' ' + b.unit : ''); } catch (e) { return String(o.v); } }
+
+  function drawStats() {
+    var st = A.loadState(), s = seen(), days = (s.d || []).concat(st.d || []);
+    $('stStreak').textContent = String(A.streak(days)); $('stHero').textContent = String((st.h || []).length);
+    best = myBest(); $('stBest').textContent = best ? fmtVal(best) : '–';
+    var done = (st.h || []).indexOf(day) >= 0;
+    $('enter').hidden = !me || done || !best; $('enter').textContent = done ? '✓ Heute eingetragen' : '🎯 Für heute eintragen';
+    $('how').textContent = done ? '✓ Heute eingetragen – komm morgen wieder für das nächste Tagesspiel!' : (playedToday() || best ? 'Du hast schon gespielt – trage deinen Bestwert für heute ein.' : 'Spiele das Tagesspiel und trage deinen Bestwert für heute ein – jeder Tag zählt für den Erfolg „Tagesheld“ und hält deine Serie am Laufen.');
+  }
+  function drawList() {
+    var ol = $('list'); ol.textContent = '';
+    if (!me) return;
+    api(E.dailyListUrl(Cloud.FS, day), { method: 'POST', body: JSON.stringify(E.dailyQuery(((B.REG[game.cloud.game] || [])[0] || {}).order)) }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
+      var list = E.parseDocs(rows); if (!list.length) { ol.appendChild(mk('li', '', 'Noch niemand eingetragen – sei der Erste!')); return; }
+      list.forEach(function (x, i) { var li = mk('li', x.id === me.uid ? 'me' : ''); li.appendChild(mk('span', 'n', String(i + 1))); li.appendChild(mk('b', '', B.cleanName ? (B.cleanName(x.f.n) || x.f.n) : x.f.n)); li.appendChild(mk('span', '', fmtVal({ v: x.f.s }))); ol.appendChild(li); });
+    }).catch(function () {});
+  }
+  $('enter').addEventListener('click', function () {
+    $('err').textContent = ''; if (!best || !me) return;
+    if (!B.shared()) { $('err').textContent = 'Zum Eintragen brauchst du einen Spitznamen: gib deine Bestwerte auf der Seite „Ranglisten“ frei.'; return; }
+    var nick = B.nick(); if (!nick) { $('err').textContent = 'Bitte zuerst einen Spitznamen auf der Seite „Ranglisten“ wählen.'; return; }
+    $('enter').disabled = true;
+    api(E.commitUrl(Cloud.FS), { method: 'POST', body: JSON.stringify(E.dailyBody(Cloud.FS, me.uid, day, nick, best.v, best.order || 'desc', game.cloud.game)) }).then(function (r) {
+      if (!r.ok) { if (r.status === 403 || r.status === 400) { A.markChallenge(day); throw new Error('Du stehst heute schon mit einem besseren oder gleichen Wert in der Liste.'); } throw new Error('Eintragen gerade nicht möglich.'); }
+      A.markChallenge(day); drawStats(); drawList();
+    }).catch(function (e) { $('err').textContent = e.message === 'login' ? 'Bitte neu anmelden.' : e.message; drawStats(); }).then(function () { $('enter').disabled = false; });
+  });
+  function show() {
+    var ok = function (g) { var id = g.cloud.game; return !B.isOptOut(id) && !!(B.REG || {})[id] && B.REG[id].length > 0; };   // nur Spiele mit fest definierter Hauptwertung (alle Spieler vergleichen dasselbe)
+    game = E.dailyPick(games, day, ok);
+    if (!game) { $('gt').textContent = 'Heute gibt es kein Tagesspiel.'; return; }
+    $('gt').textContent = String(game.title).split(' – ')[0]; $('gd').textContent = game.desc ? String(game.desc).slice(0, 110) + (String(game.desc).length > 110 ? ' …' : '') : '';
+    var ic = $('ic'); ic.textContent = ''; if (game.img) { var im = mk('img'); im.src = game.img; im.alt = ''; ic.appendChild(im); } else ic.textContent = game.icon || '🎮';
+    var p = $('play'); p.hidden = false; p.href = game.path || 'index.html';
+    drawStats(); drawList();
+  }
+  function login() { return Cloud.account().then(function (a) { me = a || null; $('cloudMount').hidden = !!a; show(); }).catch(function () { show(); }); }
+  fetch('sync/catalog.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : { games: [] }; }).then(function (c) { games = (c.games || []).filter(function (g) { return g.cloud && g.cloud.game; }); }, function () {}).then(login);
+  setInterval(function () { var now = !!(Cloud.user && Cloud.user()); if (now && !me && !logging) { logging = true; login().then(function () { logging = false; }, function () { logging = false; }); } else if (!now && me) { me = null; $('cloudMount').hidden = false; show(); } }, 1000);
+});
+</script>
+</body>
+</html>
