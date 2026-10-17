@@ -17,7 +17,7 @@ Der Installationshinweis erscheint nicht in iframes (Einbindung), nicht in den R
 import json, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-EIGENE = {'prismrush', 'wobbel', 'pufi-farbwind', 'ricoville'}          # haben ein eigenes Manifest + eigenen Service Worker
+EIGENE = {'prismrush', 'wobbel', 'pufi-farbwind', 'ricoville', 'ricorail'}          # haben ein eigenes Manifest + eigenen Service Worker
 CACHE_VERSION = {'bunte-insel': 8} # andere Spiele erhalten beim nächsten make-pwa-Lauf v2          # Versionssprung löscht veraltete Offline-Dateien dieses Spiels
 MARK = re.compile(r'\n?<!--pwa-->.*?<!--/pwa-->', re.S)
 
