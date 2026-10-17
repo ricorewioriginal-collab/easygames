@@ -5,19 +5,25 @@
 ## Hauptmenü
 | Eintrag | Inhalt |
 |---|---|
+| ▶ Jetzt fahren | startet sofort eine Fahrplanfahrt (Regionalexpress auf der ersten Strecke, leichte Schwierigkeit) |
 | Weiterfahren | startet die letzte Fahrt neu (ein Zwischenstand mitten in der Fahrt wird nicht gespeichert) |
-| Freies Fahren | Strecke, Garnitur, Start, optionales Ziel, Uhrzeit, Wetter, Jahreszeit, Verkehr, Schwierigkeit |
+| Fahren | Untermenü: Freies Fahren, Fahrplanfahrt, Güterverkehr & Rangieren |
 | Karriere | 7 Ränge, Erfahrungspunkte, 5 Prüfungsfahrten |
-| Fahrplanfahrt | eine Linie in einer Richtung zu einer Abfahrtszeit, mit Wertung |
-| Güterverkehr & Rangieren | Güter- und Rangierszenarien |
+| Aufgaben | alle 64 Szenarien in 6 Kategorien |
 | Stellwerk | Stellwerksszenarien und freies Stellwerk für jeden Bahnhof |
 | Bahngesellschaft | Fahrzeuge kaufen, Strecken erwerben, Linien betreiben, Tage simulieren |
-| Freie Eisenbahnwelt | zuschauen, Kameras, Zeitraffer, freie Kamera |
-| Strecken-Editor | eigene Strecken bauen, prüfen, speichern, exportieren, probefahren |
-| Alle Szenarien | 64 Szenarien in 6 Kategorien |
+| Zuschauen | freie Eisenbahnwelt: Kameras, Zeitraffer, freie Kamera |
+| Editor | eigene Strecken bauen, prüfen, speichern, exportieren, probefahren |
 | Online | **in Entwicklung**, nicht verfügbar |
 
+Unten: Einstellungen, Handbuch, Mitwirkende & Lizenzen, Zurück zu Easygames.
+
 ## Fahren
+**Einfache Bedienung (Standard, Einstellungen → Bedienung):** nur der Hebel. Nach oben (W) = fahren, nach unten (S) = bremsen.
+Richtungswender, Bremse lösen, Stromabnehmer/Hauptschalter/Motor, Türen am Bahnsteig sowie Wachsam/Sifa übernimmt das Spiel.
+Auf dem Handy bleiben nur Hebel, Horn und Schnellbremsung sichtbar; am Gleisende erscheint „Zug wenden“.
+
+**Realistische Bedienung:**
 1. Richtungswender vor (R), Bremse lösen (Q).
 2. Fahrhebel nach vorn (W) – auf dem Handy den Hebel am Rand nach oben ziehen.
 3. Bremsen: Hebel zurück (S, Kombihebel) oder Führerbremsventil (E). Schnellbremsung: Leertaste.

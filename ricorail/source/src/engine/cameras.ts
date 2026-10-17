@@ -28,7 +28,16 @@ export class CameraRig {
     if (mode === this.mode) return;
     if (mode === 'free') { this.freePos.copy(this.cam.position); const d = this.cam.getWorldDirection(_v); this.freeYaw = Math.atan2(-d.x, -d.z); this.freePitch = Math.asin(Math.max(-1, Math.min(1, d.y))); }
     this.mode = mode; this.yaw = 0; this.pitch = mode === 'chase' ? -0.25 : -0.05; this.side = null; this.hasSmooth = false;
-    this.cam.fov = mode === 'cab' || mode === 'passenger' ? 62 : 55; this.cam.updateProjectionMatrix();
+    this.baseFov = mode === 'cab' || mode === 'passenger' ? 62 : 55; this.applyFov();
+  }
+
+  /** Blickwinkel fürs Querformat; im Hochformat breiter, damit seitlich nicht zu viel abgeschnitten wird */
+  private baseFov = 62;
+  applyFov() {
+    const a = this.cam.aspect, ref = 1.2;
+    let fov = this.baseFov;
+    if (a < ref) { const t = Math.tan((fov * Math.PI) / 360) * ref / a; fov = Math.min(95, (Math.atan(t) * 360) / Math.PI); }
+    this.cam.fov = fov; this.cam.updateProjectionMatrix();
   }
 
   look(dx: number, dy: number) {
@@ -37,7 +46,7 @@ export class CameraRig {
     if (this.mode === 'cab' || this.mode === 'passenger') this.yaw = Math.max(-2.6, Math.min(2.6, this.yaw));
   }
   zoom(f: number) {
-    if (this.mode === 'cab' || this.mode === 'passenger') { this.cam.fov = Math.max(25, Math.min(80, this.cam.fov * f)); this.cam.updateProjectionMatrix(); }
+    if (this.mode === 'cab' || this.mode === 'passenger') { this.baseFov = Math.max(25, Math.min(80, this.baseFov * f)); this.applyFov(); }
     else this.dist = Math.max(12, Math.min(400, this.dist * f));
   }
   resetLook() { this.yaw = 0; this.pitch = this.mode === 'chase' ? -0.25 : -0.05; }

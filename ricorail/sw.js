@@ -1,8 +1,8 @@
 /* RicoRail Simulator 3D – Service Worker (erzeugt von source/scripts/build.mjs, nicht von Hand ändern).
    Nach dem ersten Laden offline spielbar. Seite: Netz zuerst, offline aus dem Cache. Bundle (Name mit Prüfsumme): Cache zuerst.
    Eine neue Fassung wartet, bis die Seite EG_SKIP_WAITING schickt (Knopf „Jetzt aktualisieren“). Nur eigene Dateien unter ricorail/. */
-const CACHE = 'eg-ricorail-cefc03a10d';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './favicon.svg', './icons/icon-192.png', './icons/icon-512.png', './assets/ricorail-cefc03a10d.js'];
+const CACHE = 'eg-ricorail-ea49a84d0c';
+const SHELL = ['./', './index.html', './manifest.webmanifest', './favicon.svg', './icons/icon-192.png', './icons/icon-512.png', './assets/ricorail-ea49a84d0c.js'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL))); });
 self.addEventListener('message', (e) => { if (e.data && e.data.type === 'EG_SKIP_WAITING') self.skipWaiting(); });
 self.addEventListener('activate', (e) => {

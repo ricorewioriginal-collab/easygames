@@ -6,7 +6,7 @@ import type { Settings } from '../save/store';
 import type { Action } from '../input/input';
 import { lookahead } from '../operations/lookahead';
 import { Map2D } from './map2d';
-import { h, btn, clear, hhmm } from './dom';
+import { h, btn, clear, hhmm, toast } from './dom';
 
 type Mode = 'drive' | 'box' | 'world';
 
@@ -28,6 +28,8 @@ export class Hud {
   private visible = true;
   private replayOn = false;
   private goalsOpen = true;
+  /** Einfache Bedienung: nur Hebel, Horn und Schnellbremsung */
+  private simple: boolean;
 
   constructor(root: HTMLElement, game: Game, s: Session, settings: Settings, mode: Mode) {
     this.g = game; this.s = s; this.set = settings; this.mode = mode;
@@ -35,6 +37,7 @@ export class Hud {
     const touch = matchMedia('(pointer: coarse)').matches;
     const minimal = settings.hud === 'minimal';
     const drive = mode === 'drive' && !!s.player;
+    const simple = this.simple = settings.controls === 'simple';
 
     const tl = h('div', { class: 'tl' });
     if (drive) {
@@ -45,8 +48,9 @@ export class Hud {
           P('nlim', h('div', { class: 'lim next', title: 'Nächste Geschwindigkeitsänderung' }, ''))),
         P('nlimd', h('div', { class: 'small muted' }, '')),
         h('div', { class: 'sig', style: 'margin-top:4px' }, P('lamp', h('span', { class: 'lamp' })), P('sigt', h('span', { class: 'small' }, ''))),
-        P('info', h('div', { class: 'small muted', style: 'margin-top:4px' }, '')),
+        P('info', h('div', { class: 'small muted inf', style: 'margin-top:4px' }, '')),
         P('ctl', h('div', { class: 'small', style: 'margin-top:2px' }, ''))));
+      if (simple) toast(touch ? 'Hebel nach oben = fahren, nach unten = bremsen. Türen und Technik macht das Spiel.' : 'W = fahren, S = bremsen. Türen und Technik macht das Spiel.', 'info', 6000);
     } else {
       tl.appendChild(h('div', { class: 'box' }, P('clock', h('div', { style: 'font-weight:700;font-size:1.3em' }, '')), P('info', h('div', { class: 'small muted' }, ''))));
     }
@@ -91,14 +95,16 @@ export class Hud {
         } else b.addEventListener('click', (e) => { e.stopPropagation(); this.act(a); });
         return b;
       };
-      const btns = h('div', { style: 'display:grid;grid-template-columns:repeat(2,54px);gap:6px' },
-        B('📯', 'horn', 'Signalhorn (H)', true), B('🛑', 'emergency', 'Schnellbremsung (Leertaste)'),
-        B('⚠', 'pzb', 'Wachsam / Sifa (V)'), B('🚪', 'doors', 'Türen freigeben (T)'),
-        B('⇅', 'reverser', 'Richtungswender vor (R)'), B('⇵', 'reverserBack', 'Richtungswender zurück (⇧R)'));
+      const btns = simple
+        ? h('div', { class: 'tbtns' }, B('📯', 'horn', 'Signalhorn (H)', true), B('🛑', 'emergency', 'Schnellbremsung (Leertaste)'))
+        : h('div', { class: 'tbtns' },
+          B('📯', 'horn', 'Signalhorn (H)', true), B('🛑', 'emergency', 'Schnellbremsung (Leertaste)'),
+          B('⚠', 'pzb', 'Wachsam / Sifa (V)'), B('🚪', 'doors', 'Türen freigeben (T)'),
+          B('⇅', 'reverser', 'Richtungswender vor (R)'), B('⇵', 'reverserBack', 'Richtungswender zurück (⇧R)'));
       if (!touch) btns.style.display = 'none';
       const side = h('div', { class: left ? 'bl' : 'br', style: 'display:flex;gap:8px;align-items:flex-end' + (left ? '' : ';flex-direction:row-reverse') }, lever, btns);
-      const other = h('div', { class: left ? 'br' : 'bl' }, P('ctlinfo', h('div', { class: 'box small ctlinfo', style: 'min-width:130px' }, '')));
-      kids.push(side, other);
+      kids.push(side);
+      if (!simple) kids.push(h('div', { class: left ? 'br' : 'bl' }, P('ctlinfo', h('div', { class: 'box small ctlinfo', style: 'min-width:130px' }, ''))));
     }
     this.ctxBtns = h('div', { class: 'bc' });
     kids.push(this.ctxBtns);
@@ -182,7 +188,9 @@ export class Hud {
     this.put('info', `${hhmm(w.time)} · ${grade > 0 ? '↗' : grade < 0 ? '↘' : '→'} ${Math.abs(grade)} ‰ · ${w.weather.kind === 'clear' ? 'trocken' : w.rail === 'dry' ? 'Regen' : 'Schiene nass/glatt'}`);
     const c = t.ctl;
     const rv = c.reverser === 1 ? 'V' : c.reverser === -1 ? 'R' : '0';
-    this.put('ctl', `Wender ${rv} · Fahren ${Math.round(c.throttle * 100)} % · Bremse ${Math.round(Math.max(c.brake, this.g.getBrake()) * 100)} %`);
+    const L = this.g.getLever();
+    if (this.simple) this.put('ctl', L > 0.02 ? `▲ Fahren ${Math.round(L * 100)} %` : L < -0.02 ? `▼ Bremsen ${Math.round(-L * 100)} %` : t.meta.assistBrake ? '▼ Bremsassistent' : Math.abs(t.v) < 0.1 ? '▲ Hebel hoch = losfahren' : '● Rollen');
+    else this.put('ctl', `Wender ${rv} · Fahren ${Math.round(c.throttle * 100)} % · Bremse ${Math.round(Math.max(c.brake, this.g.getBrake()) * 100)} %`);
     const air = `HLL ${t.brake.pipe.toFixed(1)} bar · Bz ${(t.brake.cyl * 3.8).toFixed(1)} bar`;
     const extra = t.traction === 'steam' ? `Kessel ${t.boiler.toFixed(1)} bar · Wasser ${Math.round(t.glass * 100)} % · Feuer ${Math.round(t.fire * 100)} %` : t.traction === 'electric' ? `Stromabn. ${c.panto ? 'oben' : 'unten'} · HS ${c.mainSwitch ? 'ein' : 'aus'}` : `Motor ${c.engine ? 'an' : 'aus'} · ${Math.round(t.engineRpm * 100)} %`;
     this.html('ctlinfo', air + extra + t.ai, () => [h('div', null, air), h('div', { class: 'muted' }, extra), t.ai ? h('div', null, '🤖 Automatik fährt') : '']);
@@ -215,8 +223,20 @@ export class Hud {
     const ctx: [string, Action][] = [];
     const still = Math.abs(t.v) < 0.1;
     if (sig && asp === 'stop' && sig.d < 250 && still && sig.ref && w.il.failedSignals.has(sig.ref)) ctx.push(['Ersatzsignal anfordern', 'zs1']);
+    const p = s.opts.player;
+    if (this.simple) {
+      // Nur was man wirklich braucht: Rangieraufgaben und Wenden am Gleisende
+      const shunt = p.kind === 'free' && !!(p.shunt || p.cut || p.dest?.industry || p.at.industry);
+      if (still && shunt) { ctx.push(['Kuppeln', 'couple']); if (t.consist.length > 1) ctx.push(['Entkuppeln', 'uncouple']); }
+      if (still && shunt && t.consist.some((v) => v.type.payload)) ctx.push(['Beladen', 'load'], ['Entladen', 'unload']);
+      const end = la.targets.find((x) => x.kind === 'buffer' || x.kind === 'end');
+      if (still && t.consist[t.consist.length - 1].type.cab && end && end.d < 150) ctx.push(['Zug wenden', 'cabChange']);
+      if (c.emergency && still) ctx.push(['Schnellbremsung lösen', 'emergency']);
+      this.ctxButtons(ctx);
+      return;
+    }
     if (still && t.hasDoors && (c.releaseL || c.releaseR)) ctx.push(['Türen schließen', 'doorsClose']);
-    if (still && s.opts.player.kind === 'free') { ctx.push(['Kuppeln', 'couple']); if (t.consist.length > 1) ctx.push(['Entkuppeln', 'uncouple']); }
+    if (still && p.kind === 'free') { ctx.push(['Kuppeln', 'couple']); if (t.consist.length > 1) ctx.push(['Entkuppeln', 'uncouple']); }
     if (still && t.consist.some((v) => v.type.payload)) ctx.push(['Beladen', 'load'], ['Entladen', 'unload']);
     if (still && t.consist[t.consist.length - 1].type.cab && t.consist.length > 0) ctx.push(['Führerstand wechseln', 'cabChange']);
     if (t.traction === 'electric' && !c.panto) ctx.push(['Stromabnehmer heben', 'panto']);

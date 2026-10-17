@@ -24,6 +24,8 @@ export interface Settings {
   lang: 'de' | 'en'; quality: 'low' | 'mid' | 'high' | 'auto'; fpsCap: 30 | 60 | 0;
   volume: { master: number; train: number; env: number; ui: number; voice: number };
   assist: 'easy' | 'standard' | 'expert'; units: 'kmh'; invertLook: boolean; touchLayout: 'left' | 'right'; hud: 'full' | 'minimal';
+  /** Einfach: ein Hebel, Richtung/Türen/Stromabnehmer automatisch. Realistisch: alle Bedienschritte selbst */
+  controls: 'simple' | 'real';
   announcements: boolean; subtitles: boolean; colorblind: boolean; reducedMotion: boolean; textScale: number;
 }
 export interface Profile {
@@ -44,7 +46,7 @@ type Slot = 0 | 1 | 2;
 export function defaultSettings(): Settings {
   return {
     lang: 'de', quality: 'auto', fpsCap: 60, volume: { master: 0.8, train: 1, env: 0.8, ui: 0.7, voice: 0.9 },
-    assist: 'standard', units: 'kmh', invertLook: false, touchLayout: 'right', hud: 'full',
+    assist: 'easy', units: 'kmh', invertLook: false, touchLayout: 'right', hud: 'full', controls: 'simple',
     announcements: true, subtitles: true, colorblind: false, reducedMotion: false, textScale: 1,
   };
 }
@@ -72,7 +74,7 @@ function cleanSettings(raw: unknown): Settings {
     fpsCap: pick(r.fpsCap, [30, 60, 0] as const, d.fpsCap),
     volume: { ...vol, master: num(vol.master, d.volume.master, 0, 1), train: num(vol.train, d.volume.train, 0, 1), env: num(vol.env, d.volume.env, 0, 1), ui: num(vol.ui, d.volume.ui, 0, 1), voice: num(vol.voice, d.volume.voice, 0, 1) },
     assist: pick(r.assist, ['easy', 'standard', 'expert'] as const, d.assist), units: 'kmh', invertLook: bool(r.invertLook, d.invertLook),
-    touchLayout: pick(r.touchLayout, ['left', 'right'] as const, d.touchLayout), hud: pick(r.hud, ['full', 'minimal'] as const, d.hud),
+    touchLayout: pick(r.touchLayout, ['left', 'right'] as const, d.touchLayout), hud: pick(r.hud, ['full', 'minimal'] as const, d.hud), controls: pick(r.controls, ['simple', 'real'] as const, d.controls),
     announcements: bool(r.announcements, d.announcements), subtitles: bool(r.subtitles, d.subtitles), colorblind: bool(r.colorblind, d.colorblind),
     reducedMotion: bool(r.reducedMotion, d.reducedMotion), textScale: num(r.textScale, d.textScale, 0.75, 2),
   } as Settings;

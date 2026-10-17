@@ -81,6 +81,17 @@ h3{font-size:calc(16px*var(--fs));margin:.6em 0 .3em;color:var(--acc)}
 .menu .btn{text-align:left;display:flex;gap:12px;align-items:center;font-size:1.05em}
 .menu .btn small{display:block;font-weight:400;color:var(--muted);font-size:.8em}
 .menu .btn.dis{opacity:.55}
+.hero{border-radius:18px;padding:16px 18px 10px;margin-bottom:14px;background:linear-gradient(90deg,rgba(10,20,36,.92) 0,rgba(10,20,36,.55) 60%,rgba(10,20,36,.35)),url(card.svg) center 25%/cover;border:1px solid var(--line)}
+.hero .logo{margin:0;font-size:calc(26px*var(--fs))}.hero .sub{margin:4px 0 2px;color:var(--txt);font-size:1.05em}.hero .small{margin:0}
+.menu2{display:grid;gap:12px;max-width:760px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.btn.tile{display:flex;gap:12px;align-items:center;text-align:left;padding:12px 14px;min-height:64px;border-radius:14px}
+.btn.tile b{display:block;font-size:1.05em}.btn.tile small{display:block;font-weight:400;color:var(--muted);font-size:.8em;line-height:1.25}
+.btn.tile.primary small{color:#3a2a00}
+.btn.tile .ti{font-size:1.6em;width:1.5em;text-align:center;flex:none}
+.btn.tile.big{min-height:76px}.btn.tile.big b{font-size:1.25em}
+.btn.tile.dis{opacity:.55}
+.foot{margin-top:4px}
 .tag{display:inline-block;font-size:.75em;padding:2px 8px;border-radius:99px;background:#24405f;color:var(--muted);margin-left:6px;font-weight:600}
 .tag.real{background:#3a2a10;color:#ffcf70}.tag.fant{background:#10333a;color:#7ff3e6}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
@@ -133,6 +144,7 @@ table.t td,table.t th{padding:5px 6px;border-bottom:1px solid #22395a;text-align
 .hud .br{position:absolute;right:max(8px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom))}
 .hud .bc{position:absolute;left:50%;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:92vw}
 .hud .btn{pointer-events:auto}
+.hud .tbtns{display:grid;grid-template-columns:repeat(2,54px);gap:6px}
 .tbtn{pointer-events:auto;width:54px;height:54px;border-radius:14px;border:1px solid rgba(120,160,210,.5);background:rgba(16,32,54,.82);color:#fff;font-size:1.25em;font-weight:700;display:inline-flex;align-items:center;justify-content:center;touch-action:none}
 .tbtn.on{background:var(--acc);color:#1a1300}
 .tbtn small{font-size:.5em}
@@ -150,7 +162,9 @@ table.t td,table.t th{padding:5px 6px;border-bottom:1px solid #22395a;text-align
 .box2d{position:fixed;inset:0;background:#08111d;touch-action:none}
 .box2d canvas{width:100%;height:100%;display:block}
 .small{font-size:.85em}
-@media (max-width:700px){.hud{font-size:.9em}.hud .speed{font-size:1.8em}.menu{max-width:none}.hud .ctlinfo{display:none}.hud .bc{left:max(8px,env(safe-area-inset-left));top:calc(max(8px,env(safe-area-inset-top)) + 150px);bottom:auto;transform:none;flex-direction:column;align-items:flex-start;max-width:46vw}.hud .tt{max-height:18vh}}
+@media (max-width:700px){.tiles{grid-template-columns:1fr 1fr}.btn.tile{flex-direction:column;align-items:flex-start;gap:4px;padding:10px}.btn.tile.big{flex-direction:row;align-items:center}.hud{font-size:.9em}.hud .speed{font-size:1.8em}.menu{max-width:none}.hud .ctlinfo{display:none}.hud .bc{left:max(8px,env(safe-area-inset-left));top:calc(max(8px,env(safe-area-inset-top)) + 150px);bottom:auto;transform:none;flex-direction:column;align-items:flex-start;max-width:46vw}.hud .tt{max-height:18vh}}
+/* Hochformat (Handy): kompakter, nichts über dem Führerstandspult stapeln */
+@media (orientation:portrait) and (max-width:700px){.toasts{top:24vh}.hero{background:linear-gradient(180deg,rgba(10,20,36,.6),rgba(10,20,36,.92)),url(card.svg) center 20%/cover}.hud .tl{max-width:56vw}.hud .tr{max-width:42vw}.hud .tr .tbtn{width:40px;height:40px;font-size:1em;border-radius:11px}.hud .inf{display:none}.hud .lim{width:38px;height:38px;border-width:4px}.hud .lim.next{width:30px;height:30px}.hud .tt{max-height:12vh}.hud .tbtns{grid-template-columns:48px}.hud .tbtns .tbtn{width:48px;height:48px}.lever{height:min(34vh,230px)}.hud .bc{top:auto;bottom:max(8px,env(safe-area-inset-bottom));left:max(8px,env(safe-area-inset-left));right:132px;max-width:none;flex-direction:row;flex-wrap:wrap;align-items:flex-end}.hud .bc .btn{padding:8px 10px;font-size:.9em}.hud .msgs{font-size:.8em}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 body.cb .lamp.go{background:#4aa3ff;box-shadow:0 0 10px #4aa3ff}
 `;
