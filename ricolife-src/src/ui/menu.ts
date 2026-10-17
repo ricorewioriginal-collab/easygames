@@ -109,7 +109,7 @@ export class MainMenu {
           free((slot) => this.api.newGame({ household: hs.id, slot }));
         }, 'small', { 'data-hh': hs.id })))),
         h('h3', null, '🧑‍🎨 Eigene Familie'),
-        h('p', { class: 'muted' }, 'Erstelle bis zu acht Figuren mit Aussehen, Merkmalen und Lebensziel und such dir ein Zuhause aus (20.000 RT Startkapital).'),
+        h('p', { class: 'muted' }, 'Erstelle bis zu acht Figuren mit Aussehen, Merkmalen und Lebensziel und such dir ein Zuhause aus – das Haus ist inklusive, dazu gibt es 20.000 RT Startkapital.'),
         btn('Familie erstellen', () => {
           m.close();
           free((slot) => this.api.openCas((custom) => this.chooseLot((lot) => this.api.newGame({ custom, lot, slot }))));

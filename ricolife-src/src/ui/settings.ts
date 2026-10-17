@@ -137,7 +137,7 @@ export function openHelp(): void {
         { id: 'ctrl', label: 'Steuerung', render: () => h('div', null,
           sec('Maus & Tastatur', 'Linksklick: auswählen/Aktion · Rechte Maustaste ziehen oder Q/E: drehen · Mittlere Maustaste oder WASD: verschieben · Mausrad: zoomen', 'Leertaste: Pause · 1/2/3: Tempo · Tab: nächste Figur · B/N/F: Kaufen/Bauen/Leben · R: Objekt drehen · Strg+Z / Strg+Y: Rückgängig/Wiederholen · Bild↑/↓: Stockwerk · V: Wände · Esc: Menü schließen'),
           sec('Touch', 'Tippen: auswählen · Ein Finger ziehen: verschieben · Zwei Finger: zoomen und drehen · Langes Tippen: Aktionsmenü'),
-          sec('Controller', 'Linker Stick: Kamera · Rechter Stick: drehen/zoomen · A: auswählen · B: zurück · X: Aktionsmenü · Y: Figur wechseln · LB/RB: Tempo · Start: Menü'),
+          sec('Controller', 'Linker Stick: Kamera · Rechter Stick: drehen/zoomen · A: Aktion in der Bildmitte · B: zurück · X: Handy · Y: eigene Aktionen · LB/RB: Figur wechseln · Steuerkreuz ←/→: Tempo, ↑/↓: Stockwerk · Back: Stadtkarte · Start: Menü'),
         ) },
         { id: 'build', label: 'Bauen & Kaufen', render: () => h('div', null,
           sec('Kaufmodus', 'Wähle ein Objekt im Katalog und tippe auf dein Grundstück. Grün = passt, Rot = geht nicht (Grund steht oben). Drehen mit R oder dem Drehknopf. Antippen eines vorhandenen Objekts: verschieben, drehen, verkaufen.'),

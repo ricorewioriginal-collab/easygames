@@ -119,11 +119,17 @@ export function throwParty(g: Game): string | true {
   const h = g.hh;
   const a = g.active;
   if (!h?.lot || !a) return 'Kein Zuhause';
-  if (!g.money(h.id, -80, 'Feier: Snacks und Deko', `party:${h.id}:${g.clock.day}`)) return 'Feier kostet 80 RT (eine pro Tag)';
+  const key = `party:${h.id}:${g.clock.day}`;
+  if (!g.money(h.id, -80, 'Feier: Snacks und Deko', key)) return 'Feier kostet 80 RT (eine pro Tag)';
   const guests = g.known(a).filter((x) => isTownie(g, x) && !x.away && x.age !== 'baby' && x.age !== 'toddler').sort((x, y) => (g.peekRel(a.id, y.id)?.f ?? 0) - (g.peekRel(a.id, x.id)?.f ?? 0));
   let n = 0;
   for (const s of guests) if (n < 6 && startVisit(g, s, h.lot, 180, false)) n++;
-  if (!n) return 'Niemand hat Zeit – erst ein paar Leute kennenlernen';
+  if (!n) {
+    // niemand kommt: Geld zurück, später am Tag erneut versuchbar
+    g.money(h.id, 80, 'Feier abgesagt: Erstattung');
+    h.booked = h.booked.filter((k) => k !== key);
+    return 'Niemand hat Zeit – erst ein paar Leute kennenlernen';
+  }
   g.flags.partyUntil = g.clock.min + 180;
   g.flags.partyLot = 1;
   for (const m of g.members()) g.addMood(m, 'partyfun', { hours: 3 });

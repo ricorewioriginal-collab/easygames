@@ -8,6 +8,8 @@ import { createGame } from '../src/sim/setup';
 import type { Sim } from '../src/sim/types';
 import { NEED_IDS } from '../src/data/types';
 import { sanitizeCard } from '../src/net/mp';
+import { throwParty } from '../src/sim/npcs';
+import { joinCareer } from '../src/sim/career';
 
 let base: Game;
 const fresh = (o: Parameters<typeof createGame>[0] = {}): Game => createGame({ household: 'hh-sonnberg', seed: 11, ...o });
@@ -206,5 +208,64 @@ describe('Mehrspieler-Steckbrief', () => {
     expect(c.traits).toEqual([]);
     expect(c.look.skin).toMatch(/^#/);
     expect(c.look.height).toBeLessThanOrEqual(40);
+  });
+});
+
+describe('Korrekturen aus der Code-Prüfung', () => {
+  it('fehlgeschlagene Buchung sperrt den Schlüssel nicht', () => {
+    const g = fresh();
+    const h = g.hh!;
+    const f0 = h.funds;
+    expect(g.money(h.id, -(f0 + 50), 'Zu teuer', 'bill:1')).toBe(false);
+    g.money(h.id, 100, 'Lohn');
+    expect(g.money(h.id, -(f0 + 50), 'Jetzt reicht es', 'bill:1')).toBe(true);
+    expect(g.money(h.id, -1, 'Doppelt', 'bill:1')).toBe(false);
+  });
+  it('Feier ohne Gäste kostet nichts und bleibt wiederholbar', () => {
+    const g = fresh();
+    for (const s of g.sims.values()) if (s.npc) s.away = { kind: 'work', until: g.clock.min + 9999, lot: 'x' };
+    const f0 = g.hh!.funds;
+    expect(throwParty(g)).not.toBe(true);
+    expect(g.hh!.funds).toBe(f0);
+    expect(g.hh!.booked.some((k) => k.startsWith('party:'))).toBe(false);
+  });
+  it('eigene Familie zieht ins gewählte Haus und behält das Startkapital', () => {
+    const g = createGame({ seed: 3, slot: 1, lot: 'sh-4', custom: { name: 'Test', members: [{ first: 'Alex', last: 'Test', pronoun: 'they', age: 'adult', traits: [], aspiration: 'friends', look: base.active!.look }] } });
+    expect(g.hh!.lot).toBe('sh-4');
+    expect(g.hh!.funds).toBe(20000);
+  });
+  it('Snack am eigenen Kühlschrank braucht Geld', () => {
+    const g = fresh();
+    g.settings.autonomy = 0;
+    const s = adult(g);
+    g.hh!.funds = 0;
+    s.needs.hunger = 30;
+    const fridge = g.objsWith(g.hh!.lot, 'fridge')[0]!;
+    g.queueAction(s, 'snack', { user: true, obj: fridge.id });
+    run(g, 30);
+    expect(s.needs.hunger).toBeLessThan(30);
+    expect(g.hh!.funds).toBe(0);
+  });
+  it('laufende Schicht übersteht Speichern und Laden', () => {
+    const g = fresh();
+    const s = adult(g);
+    if (!s.career) expect(joinCareer(g, s, 'gastro')).toBe(true);
+    s.career!.shift = g.clock.min;
+    s.away = { kind: 'work', until: g.clock.min + 240, lot: 'x' };
+    const g2 = deserialize(JSON.parse(JSON.stringify(serialize(g))));
+    const s2 = g2.sims.get(s.id)!;
+    expect(s2.career!.shift).toBe(s.career!.shift);
+    expect(s2.away?.kind).toBe('work');
+  });
+  it('Schule erst ab 7 Uhr', () => {
+    const g = fresh();
+    g.settings.autonomy = 0;
+    const kid = g.members().find((m) => m.age === 'child')!;
+    g.clock.min = Math.floor(g.clock.min / 1440) * 1440 + 3 * 60;
+    while (g.clock.weekday >= 5) g.clock.min += 1440;
+    g.queueAction(kid, 'goToSchool', { user: true });
+    run(g, 2);
+    expect(kid.queue.some((q) => q.def === 'goToSchool' && q.phase !== 'done')).toBe(false);
+    expect(kid.school?.attended).not.toBe(g.clock.day);
   });
 });

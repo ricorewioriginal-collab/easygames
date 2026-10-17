@@ -10,6 +10,9 @@ import { objFront } from './actions';
 import { nextActionUid, type Game } from './game';
 import type { Sim } from './types';
 
+/** wirksame Jahreszeit (feste Jahreszeit aus den Einstellungen hat Vorrang) */
+const seasonOf = (g: Game) => g.settings.fixedSeason || g.clock.season;
+
 const ADULTS: AgeStage[] = ['teen', 'youngadult', 'adult', 'senior'];
 const GROWN: AgeStage[] = ['youngadult', 'adult', 'senior'];
 const WALKERS: AgeStage[] = ['child', 'teen', 'youngadult', 'adult', 'senior'];
@@ -168,7 +171,7 @@ def({
   dur: 7, anim: 'eatStand', rate: { hunger: 3.6 },
   start: (c) => {
     const own = c.o && lotHh(c.g, c.o.lot)?.id === c.s.hh;
-    if (own && c.s.hh) c.g.money(c.s.hh, -3, 'Snack');
+    if (own && c.s.hh && !c.g.money(c.s.hh, -3, 'Snack')) return 'Kein Geld für einen Snack';
   },
   goal: 'eat',
 });
@@ -581,7 +584,7 @@ def({
 });
 def({
   id: 'swim', label: 'Schwimmen', icon: '🏊', on: 'obj', func: ['pool'], ages: WALKERS, slot: 'near', group: 'Fitness', outfit: 'swim',
-  adv: { fun: 45, hygiene: 10 }, advFn: (c) => (c.g.hasTrait(c.s, 'active') ? 15 : 0) + (c.g.clock.season === 'winter' ? -40 : 0),
+  adv: { fun: 45, hygiene: 10 }, advFn: (c) => (c.g.hasTrait(c.s, 'active') ? 15 : 0) + (seasonOf(c.g) === 'winter' ? -40 : 0),
   avail: (c) => (c.o && !mayUse(c.g, c.s, c.o) ? false : true),
   route: (c) => {
     const cells = c.g.world.cellsOf(c.o!);
@@ -704,7 +707,7 @@ def({
   adv: { fun: 14 }, advFn: (c) => (c.g.hasTrait(c.s, 'outdoorsy') ? 25 : 0) + (c.s.hobbies.includes('gardening') ? 20 : 0) + (c.o?.st?.crop && (c.o.st.water ?? 0) < 0.4 ? 20 : 0),
   avail: (c) => {
     if (c.o && !mayUse(c.g, c.s, c.o)) return false;
-    if (c.g.clock.season === 'winter' && !c.o?.st?.crop) return 'Im Winter wächst nichts';
+    if (seasonOf(c.g) === 'winter' && !c.o?.st?.crop) return 'Im Winter wächst nichts';
     if (c.o?.st?.crop && (c.o.st.growth ?? 0) >= 1) return 'Reif – jetzt ernten';
     if (c.o?.st?.crop && (c.o.st.water ?? 0) > 0.85) return 'Ist gut versorgt';
     return true;
@@ -715,7 +718,7 @@ def({
     o.st = o.st ?? {};
     if (!o.st.crop) {
       const lv = c.g.skillLv(c.s, 'gardening');
-      const opts = CROPS.filter((x) => x.lv <= lv && x.seasons.includes(c.g.clock.season));
+      const opts = CROPS.filter((x) => x.lv <= lv && x.seasons.includes(seasonOf(c.g)));
       const crop = (c.a.data?.crop && opts.find((x) => x.id === c.a.data!.crop)) || c.g.rng.pick(opts.length ? opts : CROPS);
       o.st.crop = crop.id;
       o.st.growth = 0;
@@ -853,7 +856,7 @@ def({
 });
 def({
   id: 'warmUp', label: 'Am Kamin aufwärmen', icon: '🔥', on: 'obj', func: ['fireplace'], ages: WALKERS, slot: 'near', group: 'Ruhen',
-  adv: { comfort: 30, fun: 8 }, advFn: (c) => (c.g.clock.season === 'winter' ? 25 : -10), avail: (c) => (c.o && !mayUse(c.g, c.s, c.o) ? false : true),
+  adv: { comfort: 30, fun: 8 }, advFn: (c) => (seasonOf(c.g) === 'winter' ? 25 : -10), avail: (c) => (c.o && !mayUse(c.g, c.s, c.o) ? false : true),
   dur: 30, anim: 'idle', rate: { comfort: 2, fun: 0.4 }, done: (c) => c.g.removeMood(c.s, 'cold'),
 });
 def({

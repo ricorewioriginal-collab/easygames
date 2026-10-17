@@ -2,7 +2,7 @@
 import type { AgeStage } from '../data/types';
 import { traitById } from '../data/traits';
 import { clamp } from '../core/util';
-import { def, type Ctx } from './interact';
+import { def, idef, type Ctx } from './interact';
 import { nextActionUid, type Game } from './game';
 import type { Rel, Sim } from './types';
 import type { AnimId } from './types';
@@ -229,7 +229,7 @@ for (const sd of SOCIALS) {
       const t = c.t!;
       if (t.away || t.trip) return `${t.first} ist nicht da`;
       const cur = t.queue[0];
-      if (cur && (cur.def === 'sleep' || cur.def.startsWith('work') || cur.def === 'toilet' || cur.def === 'shower')) return `${t.first} ist beschäftigt`;
+      if (cur && cur.phase !== 'done' && (idef(cur.def)?.busy || cur.def.startsWith('work'))) return `${t.first} ist beschäftigt`;
       if (t.rt.socialWith && t.rt.socialWith !== c.s.id) return `${t.first} unterhält sich gerade`;
       // Gegenüber reagiert (unterbricht autonome Handlungen)
       if (cur && !cur.user && cur.phase !== 'done' && !cur.def.startsWith('soc')) {

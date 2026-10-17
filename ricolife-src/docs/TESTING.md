@@ -19,7 +19,7 @@ node tools/offline-audit.js ricolife
 
 | Datei | Inhalt |
 |---|---|
-| `tests/sim.test.ts` | Spielstart, Kochen → Essen → Abwasch, Warteschlange, Reservierungen, Geld ohne Doppelbuchung, Rechnungen, Beziehungen, Spielstand hin und zurück, Ablehnung kaputter Dateien, Grundstücksabgleich (Mehrspieler), Geschichten, 3 Spieltage ohne Fehler, Bereinigung von Gast-Steckbriefen |
+| `tests/sim.test.ts` | Spielstart, Kochen → Essen → Abwasch, Warteschlange, Reservierungen, Geld ohne Doppelbuchung, Rechnungen, Beziehungen, Spielstand hin und zurück, Ablehnung kaputter Dateien, Grundstücksabgleich (Mehrspieler), Geschichten, 3 Spieltage ohne Fehler, Bereinigung von Gast-Steckbriefen, Korrekturen aus der Code-Prüfung (Buchungsschlüssel, Feier, Startzuhause, Snack, Schicht nach Laden, Schulzeit) |
 | `tests/build.test.ts` | Wände, Räume und Böden, Kaufen/Verkaufen, Fertighäuser, Rückgängig |
 | `tests/cas.test.ts` | Haushaltsprüfung, Zufallsfiguren |
 | `tests/templates.test.ts` | Bau-Vorlagen gültig und begehbar |
@@ -40,7 +40,7 @@ Bildschirmfotos landen in `test-results/shots/` (Hauptmenü, Editor, Stadt Tag/N
 | Prüfung | Ergebnis |
 |---|---|
 | `npm run typecheck` | ohne Fehler |
-| `npm test` | 6 Dateien, 77 Tests bestanden |
+| `npm test` | 6 Dateien, 83 Tests bestanden |
 | `npm run test:e2e` | 14 bestanden, 25 übersprungen, 0 fehlgeschlagen (Desktop A–E, G–M; Handy hoch/quer F) |
 | `node tools/check-games.js` | 50 Spiele, 0 Fehler (9 Warnungen betreffen andere Spiele) |
 | `node tools/build-sync.js` (`--check`, `--strict`) | aktuell, ohne Fehler |

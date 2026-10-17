@@ -230,12 +230,12 @@ export class Game {
   money(hhId: string | null, amount: number, label: string, key?: string): boolean {
     const h = hhId ? this.hhs.get(hhId) : undefined;
     if (!h) return false;
+    if (key && h.booked.includes(key)) return false;
+    if (amount < 0 && h.funds + amount < 0 && !this.settings.creative) return false;
     if (key) {
-      if (h.booked.includes(key)) return false;
       h.booked.push(key);
       if (h.booked.length > 200) h.booked.splice(0, h.booked.length - 200);
     }
-    if (amount < 0 && h.funds + amount < 0 && !this.settings.creative) return false;
     if (!(this.settings.creative && amount < 0 && label.startsWith('Bau'))) h.funds = Math.round(h.funds + amount);
     h.ledger.unshift({ id: key ?? uid('t'), m: Math.floor(this.clock.min), a: Math.round(amount), t: label });
     if (h.ledger.length > 60) h.ledger.length = 60;
