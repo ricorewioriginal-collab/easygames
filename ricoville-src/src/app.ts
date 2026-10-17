@@ -8,6 +8,7 @@ import { localKV, parse, SaveManager, saveKey, type Slot } from './core/save';
 import type { Building, BuildingDef, Category, CityState, GameEvent, Mode, QuestDef, Rot } from './core/types';
 import { Controls } from './input/controls';
 import { SEASON_LABEL, seasonOf } from './rendering/season';
+import type { Season } from './core/season';
 import { World, type Quality } from './rendering/world';
 import { bridge, NeighborApi, SocialError } from './social/api';
 import { helpable, msgName, toPublic, validMsg, visitState, type InboxMsg, type PublicCity } from './social/codec';
@@ -42,6 +43,7 @@ const CRESTS = ['🏰', '🦁', '🦅', '🌻', '⚓', '🍀', '⭐', '🐻', '�
 const CAT_ICON: Record<Category, string> = {
   residential: '🏠', business: '🏪', farm: '🌾', community: '🏛️', production: '🏭', storage: '📦', transport: '🚂', decoration: '🌳', special: '🗼',
 };
+const EVENT_NAME: Record<Season, string> = { spring: '🌸 Frühlingsputz', summer: '☀️ Sommerfest', autumn: '🍂 Herbstfest', winter: '❄️ Wintermarkt' };
 const BUILD_TABS: Category[] = ['residential', 'business', 'farm', 'production', 'community', 'storage', 'transport', 'special', 'decoration'];
 const BUBBLES = [
   'Was für ein schöner Tag in {c}!', 'Der neue Laden ist super!', 'Ich liebe unseren Park.', 'Hat jemand frische Brötchen?', 'Endlich ein Zuhause!',
@@ -353,7 +355,8 @@ export class App {
     this.els.placebar = h('div', { id: 'placebar', class: 'hidden' });
     this.els.questfab = h('div', { id: 'questfab' });
     this.els.toast = h('div', { id: 'toast', 'aria-live': 'polite' });
-    this.ui.append(hud, this.els.questfab, tools, bar, this.els.placebar, this.els.toast);
+    this.els.collect = h('button', { id: 'collectall', class: 'hidden', 'aria-label': 'Alles einsammeln', title: 'Alles Fertige auf einmal einsammeln', onclick: () => this.collectAll() });
+    this.ui.append(hud, this.els.questfab, this.els.collect, tools, bar, this.els.placebar, this.els.toast);
     this.setTool('normal');
   }
 
@@ -381,10 +384,15 @@ export class App {
     const qs = c.activeQuests();
     const fab = this.els.questfab!;
     fab.innerHTML = '';
-    for (const q of qs.slice(0, 4)) {
+    // Hauptgeschichte zuerst, dann das laufende Saison-Event, dann Nebenaufgaben
+    const rank = (q: QuestDef) => (q.id.startsWith('m') ? 0 : q.season ? 1 : 2);
+    for (const q of [...qs].sort((a, b) => rank(a) - rank(b)).slice(0, 4)) {
       const done = c.s.quests[q.id]?.done;
-      fab.append(h('button', { class: `qf ${done ? 'done' : ''}`, title: q.title, onclick: () => this.questDetail(q) }, NPCS[q.giver]?.face ?? '📜'));
+      fab.append(h('button', { class: `qf ${done ? 'done' : ''} ${q.season ? 'ev' : ''}`, title: q.title, onclick: () => this.questDetail(q) }, NPCS[q.giver]?.face ?? '📜'));
     }
+    const nReady = this.visit ? 0 : c.collectable().length;
+    this.els.collect!.classList.toggle('hidden', nReady === 0 || this.tool !== 'normal');
+    this.els.collect!.innerHTML = `<span class="e">🧺</span>Alles <b>${nReady}</b>`;
     const claimable = qs.filter((q) => c.s.quests[q.id]?.done).length + [...(s.daily?.tasks ?? []), ...(s.weekly?.tasks ?? [])].filter((t) => t.c >= t.n && !t.claimed).length;
     this.badge('quests', claimable);
     const ready = s.buildings.filter((b) => ['cash', 'supply'].includes(c.status(b).kind) && BUILDING.get(b.def)!.cat === 'business').length;
@@ -395,6 +403,25 @@ export class App {
       if (main?.hint && this.els[main.hint]) this.els[main.hint]!.classList.add('pulse');
     }
     this.panelRefresh?.();
+  }
+  /** Alles Fertige auf einmal einsammeln (gleiche Regeln wie einzelnes Antippen). */
+  private bulk = false;
+  private collectAll(): void {
+    if (!this.inGame || this.visit) return;
+    this.bulk = true;
+    let r: { n: number; msg?: string };
+    try {
+      r = this.city.collectAll();
+    } finally {
+      this.bulk = false;
+    }
+    if (r.n) {
+      this.audio.play('coin');
+      this.toast(`🧺 ${r.n}× eingesammelt${r.msg ? ` – ${r.msg}` : ''}`, 'good');
+    } else this.fail(r.msg ?? 'Gerade ist nichts fertig.');
+    this.world.sync();
+    this.hud();
+    this.scheduleSave();
   }
   private badge(id: string, n: number): void {
     const el = this.els[id];
@@ -413,11 +440,11 @@ export class App {
   // ================================================================ Ereignisse → Rückmeldung
   private onEvent(e: GameEvent): void {
     const sfx: Record<string, Sfx> = { harvested: 'harvest', planted: 'plant', supplied: 'deliver', delivery: 'deliver', road: 'road', placed: 'build', delivered: 'deliver', upgraded: 'build', expanded: 'level', started: 'click', orderStarted: 'deliver', bought: 'coin' };
-    if (sfx[e.type]) this.audio.play(sfx[e.type]!);
+    if (sfx[e.type] && !this.bulk) this.audio.play(sfx[e.type]!);
     switch (e.type) {
       case 'reward':
         if (e.coins || e.xp) {
-          this.audio.play('coin');
+          if (!this.bulk) this.audio.play('coin');
           this.floatAt(e.uid, `${e.coins ? `+${num(e.coins)} 💰 ` : ''}${e.xp ? `+${e.xp} ⭐` : ''}`);
         }
         break;
@@ -466,7 +493,16 @@ export class App {
         this.audio.play('deliver');
         this.floatAt(undefined, `+${e.n} ${ITEM.get(e.id ?? '')?.icon ?? '🎁'}`);
         break;
+      case 'unlocked': {
+        const d = BUILDING.get(e.id ?? '');
+        if (d) {
+          this.toast(`🎁 Neue Event-Deko freigeschaltet: ${d.name} (Bauen → Deko)`, 'good');
+          this.confetti(90);
+        }
+        break;
+      }
     }
+    if (this.bulk) return; // Sammelaktion aktualisiert einmal am Ende
     this.world.sync();
     this.hud();
     this.scheduleSave();
@@ -941,7 +977,8 @@ export class App {
       this.thumbObs?.disconnect();
       const list = BUILDINGS.filter((b) => b.cat === c && b.level < 99).sort((a, b) => a.level - b.level || a.cost - b.cost);
       for (const d of list) {
-        const locked = d.level > this.city.s.level && !this.city.creative;
+        const evLocked = !!d.event && !this.city.creative && !this.city.s.unlocks?.includes(d.id);
+        const locked = (d.level > this.city.s.level && !this.city.creative) || evLocked;
         const maxed = !!d.max && this.city.count(d.id) >= d.max;
         const meta: string[] = [`${d.w}×${d.h}`];
         if (d.pop) meta.push(`👥 ${d.pop}`, `💰 ${d.rent}/${fmtDur(this.city.dur(d.rentTime ?? 0) / 1000)}`);
@@ -954,10 +991,10 @@ export class App {
         if (d.buildTime) meta.push(`🔨 ${fmtDur(this.city.dur(d.buildTime) / 1000)}`);
         grid.append(h('button', {
           class: `card ${locked || maxed ? 'locked' : ''}`, 'data-def': d.id, title: d.desc,
-          onclick: () => (locked ? this.fail(`Ab Stadtlevel ${d.level}.`) : maxed ? this.fail('Davon gibt es schon eines.') : this.startPlacing(d.id)),
+          onclick: () => (evLocked ? this.fail(`Belohnung aus dem Event „${EVENT_NAME[d.event!]}“ – schließe dessen Aufgaben ab.`) : locked ? this.fail(`Ab Stadtlevel ${d.level}.`) : maxed ? this.fail('Davon gibt es schon eines.') : this.startPlacing(d.id)),
         },
           this.thumbPic(d), h('b', {}, d.name), h('div', { class: 'meta' }, meta.join(' · ')),
-          h('div', { class: 'price' }, locked ? `🔒 Level ${d.level}` : d.cost ? `${num(d.cost)} 💰` : 'kostenlos')));
+          h('div', { class: 'price' }, evLocked ? `🎁 ${EVENT_NAME[d.event!]}` : locked ? `🔒 Level ${d.level}` : d.cost ? `${num(d.cost)} 💰` : 'kostenlos')));
       }
     };
     draw(cat);
@@ -1301,7 +1338,8 @@ export class App {
   }
   private rewardText(q: QuestDef): string {
     const r = q.reward;
-    return [r.coins ? `${num(r.coins)} 💰` : '', r.xp ? `${r.xp} ⭐` : '', r.energy ? `${r.energy} ⚡` : ''].filter(Boolean).join(' · ');
+    const deco = r.unlock ? BUILDING.get(r.unlock) : undefined;
+    return [r.coins ? `${num(r.coins)} 💰` : '', r.xp ? `${r.xp} ⭐` : '', r.energy ? `${r.energy} ⚡` : '', deco ? `🎁 ${deco.name}` : ''].filter(Boolean).join(' · ');
   }
   private questDetail(q: QuestDef): void {
     const render = () => {

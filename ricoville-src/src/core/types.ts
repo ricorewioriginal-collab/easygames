@@ -11,6 +11,8 @@ export type Category =
   | 'decoration'
   | 'special';
 
+import type { Season } from './season';
+
 export type Rot = 0 | 1 | 2 | 3;
 export type Mode = 'nostalgic' | 'relaxed' | 'creative';
 export type Station = 'rail' | 'sea' | 'air';
@@ -70,6 +72,8 @@ export interface BuildingDef {
   nearWater?: boolean;
   /** Höchstzahl pro Stadt (z. B. Rathaus = 1). */
   max?: number;
+  /** Belohnungs-Deko eines Saison-Events: baubar erst nach dem Freischalten (CityState.unlocks). */
+  event?: Season;
 }
 
 export interface ItemDef {
@@ -130,7 +134,9 @@ export interface QuestDef {
   after?: string[];
   level?: number;
   goals: GoalSpec[];
-  reward: { coins?: number; xp?: number; energy?: number; items?: Record<string, number> };
+  reward: { coins?: number; xp?: number; energy?: number; items?: Record<string, number>; unlock?: string };
+  /** Saison-Event: nur in dieser Jahreszeit sichtbar, jedes Jahr neu spielbar. */
+  season?: Season;
   /** Tutorial-Hinweis: welcher Knopf hervorgehoben wird. */
   hint?: string;
 }
@@ -157,6 +163,8 @@ export interface QuestProgress {
   c: number[];
   done?: boolean;
   claimed?: boolean;
+  /** Saison-Events: Saison, zu der der Fortschritt gehört (seasonKey). */
+  yr?: number;
 }
 
 export interface TaskState {
@@ -194,6 +202,8 @@ export interface CityState {
   tutorial: 'on' | 'skipped' | 'done';
   /** Nachbarn: was heute (UTC-Tag JJJJMMTT) schon geholfen und verschenkt wurde. Nur lokal, schützt keine fremden Daten. */
   social?: SocialState;
+  /** Freigeschaltete Belohnungs-Deko aus Saison-Events (Gebäude-IDs). */
+  unlocks?: string[];
 }
 
 export interface SocialState {

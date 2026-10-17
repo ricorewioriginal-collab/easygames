@@ -1,3 +1,4 @@
+import type { Season } from '../core/season';
 import type { BuildingDef, Category, ModelSpec } from '../core/types';
 
 const MIN = 60;
@@ -259,6 +260,19 @@ const decoration = DECOS.map(([id, name, s, cost, level, appeal, model]) =>
     desc: `Attraktivität +${appeal} für Häuser und Geschäfte im Umkreis von ${s >= 2 ? 4 : 3} Feldern.`,
   }),
 );
+// Belohnungs-Deko der Saison-Events: erst nach dem Freischalten baubar, danach dauerhaft.
+const EVENT_DECOS: [string, string, number, number, number, ModelSpec, Season][] = [
+  ['maibaum', 'Maibaum', 1, 200, 9, { kind: 'maypole', color: '#ffffff' }, 'spring'],
+  ['karussell', 'Sommerkarussell', 2, 600, 16, { kind: 'carousel', color: '#ff6b9d', accent: '#ffd54f' }, 'summer'],
+  ['laternenbogen', 'Laternenbogen', 1, 250, 10, { kind: 'lanterns', color: '#5d4037' }, 'autumn'],
+  ['eisbahn', 'Eisbahn', 2, 600, 16, { kind: 'rink', color: '#d6eef8' }, 'winter'],
+];
+const eventDecoration = EVENT_DECOS.map(([id, name, s, cost, appeal, model, event]) =>
+  mk('decoration', false, {
+    id, name, w: s, h: s, cost, level: 1, appeal, radius: s >= 2 ? 4 : 3, buildTime: 0, xp: Math.max(1, Math.round(cost / 30)), model, event,
+    desc: `Event-Belohnung. Attraktivität +${appeal} im Umkreis von ${s >= 2 ? 4 : 3} Feldern.`,
+  }),
+);
 
 export const BUILDINGS: BuildingDef[] = [
   ...residential,
@@ -270,6 +284,7 @@ export const BUILDINGS: BuildingDef[] = [
   ...storage,
   ...transport,
   ...decoration,
+  ...eventDecoration,
 ];
 
 export const BUILDING = new Map(BUILDINGS.map((b) => [b.id, b]));
