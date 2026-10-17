@@ -57,6 +57,8 @@ export class Game {
   /** Reservierungen: "objId:slot" → Sim-ID */
   reserved = new Map<string, string>();
   role: Role = 'solo';
+  /** Kamerafokus (bestimmt, welche Stadtbewohner sichtbar simuliert werden) */
+  focus = { x: 80, z: 50 };
   /** Spielstand-Platz und Name */
   slot = 1;
   saveName = 'Neues Leben';
@@ -65,6 +67,10 @@ export class Game {
   systems: { name: string; tick?: (g: Game, dt: number) => void; hourly?: (g: Game) => void; daily?: (g: Game) => void; minute?: (g: Game) => void }[] = [];
   /** Ereignis zur Anzeige (UI holt es ab) */
   pendingEvent: { id: string; npc: string | null } | null = null;
+  /** Geschichte: anzuzeigender Dialog (Einleitung, Abschluss, Verzweigung) */
+  pendingStory: { kind: 'intro' | 'outro' | 'branch' | 'finale'; quest: string } | null = null;
+  /** Zähler für Ziele (Interaktionen, Käufe, Bauen …) */
+  stats: Record<string, number> = {};
   private lastHour = -1;
   private lastDay = -1;
   private minuteAcc = 0;
