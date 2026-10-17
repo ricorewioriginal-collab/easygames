@@ -6,6 +6,10 @@ const launchOptions = {
   ...(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {}),
 };
 
+// Hinter einem Firmen-/Sandbox-Proxy (HTTPS_PROXY) braucht Chromium ihn ausdrücklich, sonst erreicht der Mehrspieler-Test Firebase nicht.
+const px = process.env.HTTPS_PROXY ? new URL(process.env.HTTPS_PROXY) : null;
+const proxy = px ? { server: `${px.protocol}//${px.host}`, bypass: 'localhost,127.0.0.1', ...(px.username ? { username: decodeURIComponent(px.username), password: decodeURIComponent(px.password) } : {}) } : undefined;
+
 export default defineConfig({
   testDir: 'e2e',
   timeout: 90_000,
@@ -14,7 +18,7 @@ export default defineConfig({
   workers: 1,
   retries: process.env.CI ? 1 : 0,
   reporter: [['list']],
-  use: { baseURL: 'http://localhost:4174', trace: 'retain-on-failure', launchOptions },
+  use: { baseURL: 'http://localhost:4174', trace: 'retain-on-failure', launchOptions: { ...launchOptions, ...(proxy ? { proxy } : {}) } },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } } },
     { name: 'mobile-portrait', use: { ...devices['Pixel 7'] } },
