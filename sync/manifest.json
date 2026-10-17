@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "d06cf8eff719",
- "generated": "2026-10-17T02:08:48+00:00",
- "commit": "b64429eba876bb2f33b0d234d4b9f22622549447",
+ "version": "3bc1fab42902",
+ "generated": "2026-10-17T02:12:20+00:00",
+ "commit": "71bab238888a4c8d086cb7235a768338dd04894d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4733,8 +4733,8 @@
   },
   {
    "p": "games.js",
-   "s": 22661,
-   "h": "a10809520cfecc93b9ac0e9cf258bcb416026f804437d94130fa8720c5ff0ec4"
+   "s": 23245,
+   "h": "f9d7dcc9aaf3e890ee1cd43148a92c237d3ec0581cae09db100e8d2a792c17f7"
   },
   {
    "p": "gay-life/card.jpg",
@@ -4893,8 +4893,8 @@
   },
   {
    "p": "guides.js",
-   "s": 59504,
-   "h": "38e867a98903fe5fb39f9d26391fe6b3da52126be320bc294217fe1f278407f6"
+   "s": 62074,
+   "h": "c526baf03d9a4b1eb293183f7e29ed57ba4c3e10cf40016f153ddc1e286608a7"
   },
   {
    "p": "index.html",
@@ -5233,8 +5233,8 @@
   },
   {
    "p": "modes.js",
-   "s": 1838,
-   "h": "1a3f52e2791f4d7f8969d68760dca641c448b03828eb74d2ecf32757acd4e320"
+   "s": 1870,
+   "h": "6afee36526d783cdb429443fc888c00f8ffee4301a21664b706af6d559e3bbab"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -5642,6 +5642,66 @@
    "h": "13ff08bb013337d1b3f62a730374c4e5817ba8ef9b1ac1fd88ef8619370de78a"
   },
   {
+   "p": "ricolife/assets/index-CPSrR1EJ.js",
+   "s": 718011,
+   "h": "5f47cd16694c51f21c6e13af149142e12a5ea0e8bfa6b9444fdaac8d5b5c8efc"
+  },
+  {
+   "p": "ricolife/assets/index-CSVHXUdX.css",
+   "s": 26862,
+   "h": "baff95142b6fa157e66bee4651c7f4c41d89d0f06ab4350afa646ce12afecce0"
+  },
+  {
+   "p": "ricolife/assets/three-BTyb07Io.js",
+   "s": 497571,
+   "h": "0f0c1934af3dea900c839d07a1d3979bf145d853260db2563413946513802b8f"
+  },
+  {
+   "p": "ricolife/card.svg",
+   "s": 1723,
+   "h": "9ccb217cdeed3731713e3ae2b9406e1eef1df0dffc2e7abfdd744529c050c4d9"
+  },
+  {
+   "p": "ricolife/favicon.svg",
+   "s": 629,
+   "h": "21480b641b7d02ae25e4a377340613bcae7c613ca91f3fc8515c20f41c16c3df"
+  },
+  {
+   "p": "ricolife/icons/apple-touch-icon.png",
+   "s": 9480,
+   "h": "8adcc104ec18fc5892c28fbae131b6ab3b0ab04ff12df681652a45ae8ff85ccd"
+  },
+  {
+   "p": "ricolife/icons/icon-192.png",
+   "s": 13830,
+   "h": "9ff0e21100a896720e083466b27598bdc61f05902b4a9000dd09ac3e283de626"
+  },
+  {
+   "p": "ricolife/icons/icon-512.png",
+   "s": 80816,
+   "h": "98e7623475f0a54f8236078acf2b49cf16afa90f3e7ad3309e7ba517c5988ccd"
+  },
+  {
+   "p": "ricolife/icons/maskable-512.png",
+   "s": 64011,
+   "h": "3c62c9d82d31168d84e56855668519e16769fa3d6d1f028be8ee6e0aa4dde85a"
+  },
+  {
+   "p": "ricolife/index.html",
+   "s": 1910,
+   "h": "353dc6b3798571abce66d4c270ba3ae408ef7e6882c5a66a0c0282a44ac85bed"
+  },
+  {
+   "p": "ricolife/manifest.webmanifest",
+   "s": 810,
+   "h": "13852e6ad7e440349d0dfafa17fa3581ee0ae1f98950f97681bf98579646567f"
+  },
+  {
+   "p": "ricolife/sw.js",
+   "s": 2296,
+   "h": "f79be4144b7aa988fbe56722a440c14820816ff7e449cedd19cdaf231b824384"
+  },
+  {
    "p": "ricopoly/card.jpg",
    "s": 107716,
    "h": "bfd67047d33387c074dd4e476fc4c9b708da743ae26ac6382c83c8fb630a624c"
@@ -5908,8 +5968,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 94827,
-   "h": "d6139c0049f50ed4d01bedc500a283c1186441739b24a6130ea3edf2e3f43c3e"
+   "s": 98297,
+   "h": "d79336528cfe2fd71968adaa0aa6b51277549c1af4ddb8c153a3b2f4289f68d1"
   },
   {
    "p": "taschi/card.svg",

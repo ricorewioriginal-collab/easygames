@@ -18,6 +18,7 @@ window.EASYGAMES_MODES = {
   'ricopoly': { online: true, multi: true },
   'partyverse': { online: true, multi: true },
   'riftzone': { online: true },
+  'ricolife': { online: true },
   'anmacha-stapelrausch': { online: true, multi: true },
   'gay-life': { online: true },
   'bunte-insel': { online: true, pad: true, multi: true, tvParam: true },

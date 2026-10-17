@@ -6,6 +6,41 @@
  },
  "games": [
   {
+   "id": "ricolife",
+   "title": "RicoLife 3D – Dein Leben. Deine Regeln.",
+   "desc": "Eigenständige 3D-Lebenssimulation in einer lebendigen offenen Stadt: eigenen Haushalt erstellen, begehbare Häuser bauen und einrichten, Bedürfnisse und Emotionen erleben, Berufe ausüben, Freundschaften und Familien gründen, Lebensgeschichten entdecken. Frei spielbar, auch offline, mit optionalem Google-Spielstand. Für Handy, PC und Controller.",
+   "icon": "🏡",
+   "img": "ricolife/card.svg",
+   "bg": "linear-gradient(145deg,#123a50,#4b8d8e 54%,#e5b16b)",
+   "glow": "rgba(139,212,194,.45)",
+   "path": "ricolife/",
+   "modes": {
+    "online": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "RicoLife 3D ist eine Lebenssimulation in der Hafenstadt Lindenhafen. Du spielst eine der drei Familien (Familie Sonnberg, die Loft-WG Kaiweg oder Hedwig & Jonas) oder erstellst im Figureneditor deinen eigenen Haushalt mit bis zu acht Personen, Haustieren, Merkmalen, Lebenszielen und Aussehen. Deine Figuren haben sieben Bedürfnisse wie Hunger, Energie und Spaß und zeigen Gefühle; tippe Gegenstände, Personen oder den Boden an und wähle eine Handlung, oder lass sie selbst entscheiden. Bis zu acht Befehle stehen in der Warteschlange und lassen sich abbrechen. Kochen, essen, abwaschen, duschen, schlafen, Fähigkeiten üben, Freundschaften und Liebe pflegen, Kinder großziehen, eine Feier geben oder in der Stadt Freunde besuchen. Über das Handy bewirbst du dich auf neun Berufe; im Café, in der Praxis und beim Radio arbeitest du sichtbar vor Ort. Im Kauf- und Baumodus richtest du dein Haus ein, ziehst Wände, Räume, Türen, Fenster und Treppen auf bis zu zwei Etagen, mit Rückgängig und Wiederholen, oder stellst ein Fertighaus auf. Rechnungen kommen jeden Montag. Drei Geschichten mit je acht Aufgaben und viele Zufallsereignisse begleiten dich, Jahreszeiten und Wetter verändern die Stadt. Im Mehrspieler besuchen dich bis zu drei Freunde über einen Raumcode mit ihrer eigenen Figur. Gespeichert wird auf drei Plätzen im Browser, mit Export und Import, optional mit Google auf allen Geräten.",
+    "steuerung": [
+     "Smartphone und Tablet: Antippen öffnet das Aktionsmenü, ein Finger verschiebt die Kamera, zwei Finger drehen und zoomen. Die Knöpfe rechts öffnen Menü, Kauf- und Baumodus, Handy, Karte, Etage und Wandansicht.",
+     "PC: Klick wählt Aktionen, linke Maustaste ziehen verschiebt, rechte dreht, Mausrad zoomt. WASD/Pfeile bewegen, Q/E drehen, Leertaste pausiert, 1–3 Tempo, Tab nächste Figur, B Kaufen, N Bauen, P Handy, M Karte, R dreht Möbel, Strg+Z/Strg+Y rückgängig/wiederholen, Esc Menü. Tasten sind umbelegbar.",
+     "Controller: linker Stick Kamera, rechter Stick drehen/zoomen, A wählt in der Bildmitte, LB/RB wechseln die Figur, Steuerkreuz Tempo und Etage, Start Pausemenü, B zurück; in Menüs bewegt das Steuerkreuz den Fokus."
+    ],
+    "tipps": [
+     "Kochen lohnt sich: Nudeln reichen für vier Personen und machen satter als ein Snack.",
+     "Rechnungen pünktlich bezahlen, sonst wird nach drei Tagen der Strom abgestellt.",
+     "Gute Stimmung vor der Arbeit bringt mehr Leistung und schnellere Beförderungen.",
+     "Freundschaften verblassen, wenn man sich lange nicht sieht: ab und zu anrufen oder einladen."
+    ]
+   },
+   "size": 1417949,
+   "files": 12,
+   "offline": true,
+   "cloud": {
+    "game": "ricolife",
+    "prefix": "ricolife.save.,ricolife.profile"
+   }
+  },
+  {
    "id": "ricoville",
    "title": "RicoVille – Deine Stadt lebt!",
    "desc": "Gemütliches 3D-Städtebauspiel in Iso-Ansicht: Straßen ziehen, Häuser bauen, Einwohner anlocken, Felder bestellen, Waren herstellen, Läden beliefern und Miete kassieren. Fabriken, Bahnhof, Hafen und Flughafen, Rathaus-Ausbau, neue Gebiete, über 80 Aufgaben mit Stadtgeschichte, Tages- und Wochenziele. Modi Nostalgisch, Entspannt und Kreativ; Handy und PC, offline spielbar, optionaler Google-Spielstand.",
