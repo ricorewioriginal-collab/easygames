@@ -29,6 +29,7 @@ window.addEventListener('unhandledrejection', (e) => console.error(e.reason));
 async function boot(): Promise<void> {
   try {
     app = new App();
+    if (new URLSearchParams(location.search).has('e2e')) (window as unknown as { __rl: App }).__rl = app;
     await app.start(progress);
     progress(1, 'Fertig!');
     document.getElementById('boot')?.remove();

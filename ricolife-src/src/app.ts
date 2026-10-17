@@ -153,6 +153,27 @@ export class App implements AppApi {
     return m;
   }
 
+  // ---------- Testhilfen (nur mit ?e2e über window.__rl erreichbar) ----------
+  /** Bildschirmposition eines Weltpunkts */
+  screenOf(x: number, z: number, y = 0.5): { x: number; y: number } {
+    this.rig.update(1);
+    this.rig.cam.updateMatrixWorld();
+    const v = new THREE.Vector3(x, y + this.level * 3, z).project(this.rig.cam);
+    return { x: ((v.x + 1) / 2) * window.innerWidth, y: ((1 - v.y) / 2) * window.innerHeight };
+  }
+  /** Spielzeit vorspulen (Minuten) */
+  advance(minutes: number): void {
+    const g = this.game;
+    if (!g) return;
+    for (let t = 0; t < minutes; t += 1) g.step(1);
+  }
+  /** Kamera sofort auf einen Punkt setzen */
+  look(x: number, z: number, dist = 14): void {
+    this.rig.focus(x, z, true);
+    this.rig.dist = dist;
+    this.rig.update(1);
+  }
+
   /** schwerer Fehler nach dem Start: Spiel sichern und Hinweis zeigen */
   fatal(text: string): void {
     try {
