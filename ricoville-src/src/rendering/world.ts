@@ -6,7 +6,7 @@ import { CROP } from '../catalogs/items';
 import { City, footprint, isBeach, isWater, key, MAP, SECTOR, SECTORS } from '../core/city';
 import type { Building, BuildingDef, Rot } from '../core/types';
 import { position, spawn, step, type Walker } from '../world/traffic';
-import { buildingGeometry, carGeometry, cropGeometry, Parts, personGeometry, scaffoldGeometry } from './models';
+import { animSpec, buildingGeometry, carGeometry, cropGeometry, Parts, personGeometry, scaffoldGeometry, type AnimPart } from './models';
 import { daylight, weatherAt, type Season, type Weather } from './season';
 
 export type Quality = 'low' | 'medium' | 'high';
@@ -110,6 +110,20 @@ function glowTexture(): THREE.Texture {
   return new THREE.CanvasTexture(c);
 }
 
+/** Hängt die bewegten Teile eines Modells als Kinder an (gleiches Material wie das Gebäude). */
+function attachAnims(mesh: THREE.Mesh, def: BuildingDef, mat: THREE.Material): { m: THREE.Mesh; part: AnimPart }[] {
+  const spec = animSpec(def);
+  if (!spec) return [];
+  return spec.parts.map((part) => {
+    const m = new THREE.Mesh(part.geo, mat);
+    m.position.set(...part.at);
+    m.castShadow = mesh.castShadow;
+    m.userData.uid = mesh.userData.uid;
+    mesh.add(m);
+    return { m, part };
+  });
+}
+
 function rng(seed: number): () => number {
   let s = seed >>> 0;
   return () => {
@@ -124,6 +138,11 @@ function rng(seed: number): () => number {
 interface BMesh {
   mesh: THREE.Mesh;
   key: string;
+  /** Bewegte Teile (Rotor, Flügel, Wasserstrahl …) als Kinder des Gebäudes. */
+  anims?: { m: THREE.Mesh; part: AnimPart }[];
+  /** Schornsteine in Weltkoordinaten; Rauch nur, solange produziert wird. */
+  smoke?: THREE.Vector3[];
+  working?: boolean;
   icon?: THREE.Sprite;
   iconKind?: string;
   crop?: THREE.Mesh;
@@ -536,6 +555,14 @@ export class World {
         this.scene.add(mesh);
         const fresh = !bm;
         bm = { mesh, key: k };
+        if (b.state === 'done') {
+          bm.anims = attachAnims(mesh, def, this.mat);
+          const sm = animSpec(def)?.smoke;
+          if (sm?.length) {
+            mesh.updateMatrixWorld(true);
+            bm.smoke = sm.map(([x, y, z]) => mesh.localToWorld(new THREE.Vector3(x, y, z)));
+          }
+        }
         this.bmeshes.set(b.uid, bm);
         if (!fresh || b.state !== 'done') this.pop(mesh);
       }
@@ -555,6 +582,7 @@ export class World {
 
   private updateStatus(b: Building, bm: BMesh, def: BuildingDef): void {
     const st = this.statusFor ? { kind: this.statusFor(b) ?? 'none' } : this.city.status(b);
+    bm.working = st.kind === 'working';
     let kind: string | undefined = ICONS[st.kind] ? st.kind : undefined;
     if (kind === 'plant' && b.state !== 'done') kind = undefined;
     if (kind === 'harvest' && b.job) kind = b.job;
@@ -643,6 +671,7 @@ export class World {
     const { w, h } = footprint(def, rot);
     if (defId !== '__road') {
       this.ghost = new THREE.Mesh(buildingGeometry(def), this.ghostMat);
+      attachAnims(this.ghost, def, this.ghostMat);
       this.placeMesh(this.ghost, def, x, y, rot);
       this.ghost.position.y = 0.05;
       this.scene.add(this.ghost);
@@ -914,9 +943,51 @@ export class World {
         if (nt >= 1) delete bm.mesh.userData.popT;
         else bm.mesh.userData.popT = nt;
       }
+      if (bm.anims)
+        for (const { m, part } of bm.anims) {
+          if (part.pulse) m.scale.y = 0.7 + 0.3 * Math.sin(this.time * part.speed + bm.mesh.position.x);
+          else m.rotation[part.axis] += part.speed * dt;
+        }
+      if (bm.smoke && bm.working && this.quality !== 'low') {
+        bm.mesh.userData.smokeT = ((bm.mesh.userData.smokeT as number | undefined) ?? 0) - dt;
+        if ((bm.mesh.userData.smokeT as number) <= 0) {
+          bm.mesh.userData.smokeT = 0.7;
+          for (const p of bm.smoke) this.puff(p);
+        }
+      }
     }
+    this.updateSmoke(dt);
     this.updateWeather(dt);
     this.updateLight();
+  }
+
+  // ---------------------------------------------------------------- Rauch aus Fabrikschornsteinen
+  private smokeMat: THREE.SpriteMaterial | null = null;
+  private puffs: { s: THREE.Sprite; life: number }[] = [];
+  private puff(at: THREE.Vector3): void {
+    if (this.puffs.length >= 40) return;
+    this.smokeMat ??= new THREE.SpriteMaterial({ map: glowTexture(), color: '#d7dde2', transparent: true, depthWrite: false, opacity: 0.6 });
+    const s = new THREE.Sprite(this.smokeMat.clone());
+    s.position.copy(at);
+    s.scale.setScalar(0.25);
+    this.scene.add(s);
+    this.puffs.push({ s, life: 0 });
+  }
+  private updateSmoke(dt: number): void {
+    this.puffs = this.puffs.filter((p) => {
+      p.life += dt;
+      const k = p.life / 3;
+      if (k >= 1) {
+        this.scene.remove(p.s);
+        p.s.material.dispose();
+        return false;
+      }
+      p.s.position.y += dt * 0.45;
+      p.s.position.x += dt * 0.15;
+      p.s.scale.setScalar(0.25 + k * 0.6);
+      p.s.material.opacity = 0.55 * (1 - k);
+      return true;
+    });
   }
 
   /** Licht, Himmel und Nebel aus Tageszeit und Wetter. */
@@ -1040,12 +1111,11 @@ export class World {
       this.thumbRig = { scene, cam: new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 100), rt: new THREE.WebGLRenderTarget(S, S), buf: new Uint8Array(S * S * 4), big, out, lut };
     }
     const { scene, cam, rt, buf, big, out, lut } = this.thumbRig;
-    const geo = buildingGeometry(def);
-    if (!geo.boundingBox) geo.computeBoundingBox();
-    const bb = geo.boundingBox!;
-    const center = bb.getCenter(new THREE.Vector3());
-    const mesh = new THREE.Mesh(geo, this.mat);
+    const mesh = new THREE.Mesh(buildingGeometry(def), this.mat);
+    attachAnims(mesh, def, this.mat);
     scene.add(mesh);
+    const bb = new THREE.Box3().setFromObject(mesh);
+    const center = bb.getCenter(new THREE.Vector3());
     cam.position.copy(center).add(new THREE.Vector3(1, 1.27, 1).normalize().multiplyScalar(30));
     cam.lookAt(center);
     cam.updateMatrixWorld();

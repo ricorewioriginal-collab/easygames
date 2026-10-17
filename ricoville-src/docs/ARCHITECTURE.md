@@ -4,9 +4,10 @@
 src/
   core/types.ts      Datentypen (Kataloge, Spielstand, Ereignisse)
   core/city.ts       Alle Spielregeln (City-Klasse), reine Logik, Uhr injiziert
+  core/season.ts     Jahreszeit nach Kalender und Saison-Schlüssel (für Saison-Events)
   core/save.ts       Speichern: Prüfsumme, Sicherung, Versionen/Migration, Mehr-Tab-Schutz
   catalogs/*.ts      Inhalte: Gebäude, Pflanzen, Waren, Rezepte, Aufträge, Aufgaben, Figuren, Erfolge
-  rendering/models.ts  Prozedurale Modelle (Vertex-Farben, zu einer Geometrie verschmolzen, gecacht)
+  rendering/models.ts  Prozedurale Modelle (Vertex-Farben, zu einer Geometrie verschmolzen, gecacht); animSpec() liefert drehende Teile und Rauch-Punkte
   rendering/world.ts   Three.js-Szene: Kamera, Licht, Boden, Wasser, Wald, Verkehr, Transport, Tag/Nacht, Wetter, Vorschaubilder
   rendering/season.ts  Jahreszeit (Kalender), Wetter je 6-Minuten-Abschnitt, Tageslichtkurve – reine Funktionen, nur Optik
   world/traffic.ts     Autos und Fußgänger auf dem Straßengraphen

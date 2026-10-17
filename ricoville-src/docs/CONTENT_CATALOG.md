@@ -14,12 +14,12 @@ _Automatisch erzeugt aus `src/catalogs/` (`npm run docs:catalog`). Alle Namen un
 | Produktion | 12 |
 | Lager | 3 |
 | Transport | 3 |
-| Deko | 60 |
+| Deko | 64 |
 | Feldfrüchte | 14 |
 | Waren und Materialien | 37 |
 | Rezepte | 15 |
 | Lieferaufträge | 18 |
-| Aufgaben (Haupt + Neben) | 84 |
+| Aufgaben (Haupt + Neben) | 96 |
 | Aufgaben-Figuren | 6 |
 | Tages-/Wochenziel-Vorlagen | 11 |
 | Erfolge | 18 |
@@ -218,6 +218,10 @@ _Automatisch erzeugt aus `src/catalogs/` (`npm run docs:catalog`). Alle Namen un
 | E-Roller-Station | 1×1 | 7 | 130 | 0 s | Ausstrahlung 4 (Radius 3) |
 | Windrad | 1×1 | 10 | 450 | 0 s | Ausstrahlung 7 (Radius 3) |
 | Solarfeld | 2×2 | 12 | 700 | 0 s | Ausstrahlung 12 (Radius 4) |
+| Maibaum | 1×1 | 1 | 200 | 0 s | Ausstrahlung 9 (Radius 3) |
+| Sommerkarussell | 2×2 | 1 | 600 | 0 s | Ausstrahlung 16 (Radius 4) |
+| Laternenbogen | 1×1 | 1 | 250 | 0 s | Ausstrahlung 10 (Radius 3) |
+| Eisbahn | 2×2 | 1 | 600 | 0 s | Ausstrahlung 16 (Radius 4) |
 
 ## Feldfrüchte
 
@@ -359,3 +363,15 @@ _Automatisch erzeugt aus `src/catalogs/` (`npm run docs:catalog`). Alle Namen un
 | s50 | Feld an Feld | Frieda Feld | 12 |
 | s51 | Winterzauber | Kalle Klotz | 5 |
 | s52 | Herbststimmung | Lotte Lindner | 6 |
+| e_fr1 | 🌸 Frühlingsputz: Neues Grün | Lotte Lindner | 3 |
+| e_fr2 | 🌸 Frühlingsputz: Blütenpracht | Lotte Lindner | 3 |
+| e_fr3 | 🌸 Frühlingsputz: Tanz in den Mai | Frieda Feld | 3 |
+| e_so1 | ☀️ Sommerfest: Eis und Limo | Emil Eckstein | 3 |
+| e_so2 | ☀️ Sommerfest: Volle Körbe | Frieda Feld | 3 |
+| e_so3 | ☀️ Sommerfest: Alle sind da | Lotte Lindner | 3 |
+| e_he1 | 🍂 Herbstfest: Erntedank | Frieda Feld | 3 |
+| e_he2 | 🍂 Herbstfest: Laternen basteln | Lotte Lindner | 3 |
+| e_he3 | 🍂 Herbstfest: Großer Festmarkt | Emil Eckstein | 3 |
+| e_wi1 | ❄️ Wintermarkt: Leckereien | Emil Eckstein | 3 |
+| e_wi2 | ❄️ Wintermarkt: Buden öffnen | Emil Eckstein | 3 |
+| e_wi3 | ❄️ Wintermarkt: Warme Stuben | Lotte Lindner | 3 |

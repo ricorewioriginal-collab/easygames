@@ -1,7 +1,7 @@
 /* RicoVille Service Worker: offline spielbar nach dem ersten Laden.
    Navigation: Netzwerk zuerst (Updates kommen an), offline aus dem Cache. Gehashte Assets: Cache zuerst.
    Eine neue Fassung wartet, bis die Seite EG_SKIP_WAITING schickt (Knopf „Jetzt aktualisieren"). */
-const CACHE = 'eg-ricoville-v3';
+const CACHE = 'eg-ricoville-v4';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './favicon.svg', './icons/icon-192.png', './icons/icon-512.png'];
 
 // Die gehashten Bundles stehen in index.html; sie gleich mit ablegen, damit schon der erste Neustart offline klappt.

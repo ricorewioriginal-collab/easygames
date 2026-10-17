@@ -343,17 +343,12 @@ function lighthouse(p: Parts, m: ModelSpec, W: number, D: number): void {
   p.box(0.5, 0.3, 0.4, '#ffffff', W * 0.25, 0.04, D * 0.25);
 }
 
-function wheel(p: Parts, m: ModelSpec, W: number, D: number): void {
+function wheel(p: Parts, _m: ModelSpec, W: number, D: number): void {
   lot(p, W, D, '#cfc6b4');
   const r = W * 0.42;
   const cy = r + 0.3;
-  const ring = new THREE.TorusGeometry(r, 0.04, 6, 24);
-  p.add(ring, m.color ?? '#fff', 0, cy, 0);
-  for (let i = 0; i < 8; i++) {
-    const a = (i / 8) * Math.PI * 2;
-    p.add(new THREE.BoxGeometry(0.03, r * 2, 0.03), '#e0e0e0', 0, cy, 0, 0, 0, a);
-    p.box(0.2, 0.2, 0.2, ['#ff6b9d', '#4fc3f7', '#ffd54f', '#81c784'][i % 4]!, Math.cos(a) * r, cy + Math.sin(a) * r - 0.1, 0);
-  }
+  // Rad mit Gondeln dreht sich: siehe animSpec
+  p.add(new THREE.CylinderGeometry(0.07, 0.07, 0.4, 6), '#9e9e9e', 0, cy, 0.05, 0, Math.PI / 2);
   for (const s of [-1, 1]) p.add(new THREE.BoxGeometry(0.06, cy * 1.1, 0.06), '#bdbdbd', s * 0.3, cy / 2, 0.15, 0, 0, s * 0.3);
 }
 
@@ -380,6 +375,7 @@ function mill(p: Parts, m: ModelSpec, W: number, D: number): void {
   p.cone(0.48, 0.45, m.accent ?? '#8e5b3a', 0, 1.24, 0, 8);
   p.box(0.2, 0.3, 0.05, '#6d4c41', 0, 0.04, 0.48);
   p.box(0.6, 0.35, 0.4, '#d7ccc8', W * 0.28, 0.04, D * 0.25);
+  p.cyl(0.05, 0.05, 0.2, '#5d4037', 0, 1.05, 0.45, 6); // Achse, die Flügel drehen sich (animSpec)
 }
 
 function factory(p: Parts, m: ModelSpec, W: number, D: number): void {
@@ -509,8 +505,7 @@ function decoModel(p: Parts, m: ModelSpec, W: number, D: number): void {
       p.cyl(r - 0.06, r - 0.06, 0.02, '#4fc3f7', 0, 0.14, 0, 12);
       p.cyl(0.06, 0.08, 0.45, c, 0, 0.15, 0, 6);
       p.cyl(r * 0.4, r * 0.25, 0.06, c, 0, 0.55, 0, 10);
-      p.ball(0.08, '#b3e5fc', 0, 0.7, 0);
-      return;
+      return; // Wasserstrahl: siehe animSpec
     }
     case 'statue':
       p.box(0.4, 0.3, 0.4, '#bdbdbd', 0, 0, 0);
@@ -633,6 +628,37 @@ function decoModel(p: Parts, m: ModelSpec, W: number, D: number): void {
       p.box(0.5, 0.25, 0.4, '#f5f5f5', 0, 0, 0).box(0.55, 0.6, 0.1, c, 0, 0.1, -0.18);
       p.add(new THREE.CylinderGeometry(0.26, 0.26, 0.5, 8, 1, false, 0, Math.PI), c, 0, 0.7, -0.05, 0, 0, Math.PI / 2);
       return;
+    case 'maypole':
+      p.cyl(0.2, 0.24, 0.08, '#8d6e63', 0, 0, 0, 10);
+      p.cyl(0.035, 0.045, 1.9, c, 0, 0.08, 0, 8);
+      p.add(new THREE.TorusGeometry(0.16, 0.035, 5, 12), '#66bb6a', 0, 1.7, 0, 0, Math.PI / 2);
+      for (let i = 0; i < 6; i++) p.ball(0.05, ['#ff6b9d', '#ffd54f', '#4fc3f7'][i % 3]!, Math.cos(i) * 0.16, 1.72, Math.sin(i) * 0.16, 3);
+      p.cone(0.18, 0.4, '#2f6b3a', 0, 1.95, 0, 7);
+      return; // Bänderkranz dreht sich
+    case 'carousel':
+      p.cyl(W * 0.42, W * 0.44, 0.1, '#e0d6c4', 0, 0, 0, 16);
+      p.cyl(0.06, 0.06, 1.0, '#ffd54f', 0, 0.1, 0, 8);
+      return; // Dach und Pferde drehen sich
+    case 'lanterns':
+      for (const sx of [-1, 1]) p.cyl(0.035, 0.045, 1.1, c, sx * 0.4, 0, 0, 6);
+      p.add(new THREE.TorusGeometry(0.4, 0.03, 5, 14, Math.PI), c, 0, 1.1, 0);
+      p.glow = 1;
+      for (let i = 0; i < 5; i++) {
+        const a = (i / 4) * Math.PI;
+        p.ball(0.07, ['#ff8a3d', '#ffd54f', '#ff5252'][i % 3]!, Math.cos(a) * 0.4, 1.0 + Math.sin(a) * 0.4, 0, 3);
+      }
+      p.glow = 0;
+      return;
+    case 'rink':
+      p.box(W * 0.96, 0.05, D * 0.96, '#ffffff', 0, 0, 0).box(W * 0.86, 0.02, D * 0.86, c, 0, 0.05, 0);
+      for (const [x, z, col] of [[-0.3, 0.2, '#e53935'], [0.35, -0.25, '#1e88e5'], [0.1, 0.45, '#43a047']] as [number, number, string][]) {
+        p.box(0.1, 0.22, 0.08, col, x, 0.07, z).ball(0.06, '#f1c27d', x, 0.36, z, 3);
+      }
+      p.glow = 0.9;
+      for (const [x, z] of [[-W * 0.47, -D * 0.47], [W * 0.47, -D * 0.47], [-W * 0.47, D * 0.47], [W * 0.47, D * 0.47]] as [number, number][]) p.ball(0.06, '#fff59d', x, 0.75, z, 3);
+      p.glow = 0;
+      for (const [x, z] of [[-W * 0.47, -D * 0.47], [W * 0.47, -D * 0.47], [-W * 0.47, D * 0.47], [W * 0.47, D * 0.47]] as [number, number][]) p.cyl(0.02, 0.025, 0.7, '#37474f', x, 0.05, z, 5);
+      return;
     case 'charger':
       p.box(0.8, 0.04, 0.8, '#b0bec5', 0, 0, 0).box(0.7, 0.012, 0.3, '#43a047', 0, 0.04, 0.2);
       p.box(0.22, 0.62, 0.16, c, 0, 0.04, -0.22).box(0.24, 0.06, 0.18, '#263238', 0, 0.66, -0.22);
@@ -645,12 +671,7 @@ function decoModel(p: Parts, m: ModelSpec, W: number, D: number): void {
       p.cyl(0.18, 0.2, 0.08, '#b0bec5', 0, 0, 0, 10);
       p.cyl(0.035, 0.07, 2.2, c, 0, 0.08, 0, 8);
       p.box(0.12, 0.12, 0.28, c, 0, 2.25, 0);
-      p.ball(0.06, c, 0, 2.31, 0.16, 3);
-      for (let i = 0; i < 3; i++) {
-        const a = (i / 3) * Math.PI * 2;
-        p.add(new THREE.BoxGeometry(0.06, 0.75, 0.015), i ? c : '#ef5350', Math.sin(a) * 0.38, 2.31 + Math.cos(a) * 0.38, 0.19, 0, 0, -a);
-      }
-      return;
+      return; // Rotor dreht sich: siehe animSpec
     }
     case 'solar':
       p.box(W * 0.98, 0.03, D * 0.98, '#9e9e9e', 0, 0, 0);
@@ -685,6 +706,95 @@ const BIG: Record<string, (p: Parts, m: ModelSpec, W: number, D: number) => void
 };
 
 const geoCache = new Map<string, THREE.BufferGeometry>();
+
+/** Bewegtes Teilmodell: liegt um den Ursprung und wird am Drehpunkt um eine Achse gedreht (oder pulsiert). */
+export interface AnimPart {
+  geo: THREE.BufferGeometry;
+  at: [number, number, number];
+  axis: 'x' | 'y' | 'z';
+  speed: number;
+  pulse?: boolean;
+}
+export interface AnimSpec {
+  parts: AnimPart[];
+  /** Schornsteine (lokal), aus denen beim Arbeiten Rauch steigt. */
+  smoke: [number, number, number][];
+}
+const animCache = new Map<string, AnimSpec | null>();
+
+/** Animationen eines Gebäudes (gecacht). null = statisch. */
+export function animSpec(def: BuildingDef): AnimSpec | null {
+  if (animCache.has(def.id)) return animCache.get(def.id)!;
+  const m = def.model;
+  const W = def.w, D = def.h;
+  const parts: AnimPart[] = [];
+  const smoke: [number, number, number][] = [];
+  switch (m.kind) {
+    case 'windturbine': {
+      const p = new Parts().ball(0.06, m.color ?? '#fff', 0, 0, 0, 3);
+      for (let i = 0; i < 3; i++) {
+        const a = (i / 3) * Math.PI * 2;
+        p.add(new THREE.BoxGeometry(0.06, 0.75, 0.015), i ? (m.color ?? '#fff') : '#ef5350', Math.sin(a) * 0.38, Math.cos(a) * 0.38, 0.03, 0, 0, -a);
+      }
+      parts.push({ geo: p.build(), at: [0, 2.31, 0.16], axis: 'z', speed: 1.8 });
+      break;
+    }
+    case 'mill': {
+      const p = new Parts();
+      for (let i = 0; i < 4; i++) {
+        const a = (i / 4) * Math.PI * 2 + Math.PI / 4;
+        p.add(new THREE.BoxGeometry(0.05, 0.5, 0.02), '#6d4c41', Math.sin(a) * 0.28, Math.cos(a) * 0.28, 0, 0, 0, -a);
+        p.add(new THREE.BoxGeometry(0.16, 0.42, 0.015), '#f5f0e6', Math.sin(a) * 0.32 + Math.cos(a) * 0.07, Math.cos(a) * 0.32 - Math.sin(a) * 0.07, 0.015, 0, 0, -a);
+      }
+      parts.push({ geo: p.build(), at: [0, 1.05, 0.56], axis: 'z', speed: 0.9 });
+      break;
+    }
+    case 'wheel': {
+      const r = W * 0.42;
+      const p = new Parts().add(new THREE.TorusGeometry(r, 0.04, 6, 24), m.color ?? '#fff');
+      for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * Math.PI * 2;
+        p.add(new THREE.BoxGeometry(0.03, r * 2, 0.03), '#e0e0e0', 0, 0, 0, 0, 0, a);
+        p.box(0.2, 0.2, 0.2, ['#ff6b9d', '#4fc3f7', '#ffd54f', '#81c784'][i % 4]!, Math.cos(a) * r, Math.sin(a) * r - 0.1, 0);
+      }
+      parts.push({ geo: p.build(), at: [0, r + 0.3, 0], axis: 'z', speed: 0.25 });
+      break;
+    }
+    case 'fountain': {
+      const big = !!m.variant;
+      const p = new Parts().cone(0.09, 0.32, '#b3e5fc', 0, 0, 0, 7).ball(0.07, '#e1f5fe', 0, 0.3, 0, 3);
+      parts.push({ geo: p.build(), at: [0, 0.6, 0], axis: 'y', speed: big ? 5 : 6, pulse: true });
+      break;
+    }
+    case 'maypole': {
+      const p = new Parts();
+      for (let i = 0; i < 6; i++) {
+        const a = (i / 6) * Math.PI * 2;
+        p.add(new THREE.BoxGeometry(0.02, 1.0, 0.05), ['#ff6b9d', '#ffd54f', '#4fc3f7', '#81c784'][i % 4]!, Math.cos(a) * 0.3, -0.5, Math.sin(a) * 0.3, -a, 0, 0.3);
+      }
+      parts.push({ geo: p.build(), at: [0, 1.7, 0], axis: 'y', speed: 0.7 });
+      break;
+    }
+    case 'carousel': {
+      const r = W * 0.36;
+      const p = new Parts().cone(r + 0.12, 0.4, m.color ?? '#ff6b9d', 0, 0.9, 0, 12).cyl(r + 0.12, r + 0.12, 0.08, m.accent ?? '#ffd54f', 0, 0.82, 0, 12);
+      for (let i = 0; i < 6; i++) {
+        const a = (i / 6) * Math.PI * 2;
+        const x = Math.cos(a) * r, z = Math.sin(a) * r;
+        p.cyl(0.015, 0.015, 0.72, '#eeeeee', x, 0.1, z, 4);
+        p.box(0.22, 0.12, 0.08, ['#ffffff', '#8d6e63', '#ffd54f'][i % 3]!, x, 0.3 + (i % 2) * 0.08, z, -a + Math.PI / 2);
+      }
+      parts.push({ geo: p.build(), at: [0, 0.1, 0], axis: 'y', speed: 0.8 });
+      break;
+    }
+    case 'factory':
+      smoke.push([W * 0.3, 1.3, -D * 0.3]);
+      break;
+  }
+  const spec = parts.length || smoke.length ? { parts, smoke } : null;
+  animCache.set(def.id, spec);
+  return spec;
+}
 
 /** Geometrie für ein Gebäude in lokalen Koordinaten (Mitte der Grundfläche, Boden y=0, unrotiert). */
 export function buildingGeometry(def: BuildingDef): THREE.BufferGeometry {
