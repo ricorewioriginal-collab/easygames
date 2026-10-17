@@ -343,7 +343,7 @@
       nearCache = paused ? null : near;
       const box = document.getElementById('actBox');
       box.hidden = !nearCache; if (nearCache) { document.getElementById('actLabel').textContent = nearCache.label; document.getElementById('actBtn').textContent = /Touch|Mobi|Android|iPhone/.test(navigator.userAgent) ? '👆' : UI.keyName(UI.settings.keys.interact); }
-    } else if (st && G.mode === 'build') { G.world.update(0, { mx: 0, mz: 0 }); }
+    } else if (st && G.mode === 'build') { G.world.update(dt, { mx: 0, mz: 0 }); } // dt nötig, sonst folgt die Baukamera Wischen/Zoom nicht
     else G.world.update(dt, { mx: 0, mz: 0, idle: true });
     G.world.render();
     hudT += dt; if (hudT > 0.25 && st) { hudT = 0; hud(); drawMap(); }

@@ -81,7 +81,15 @@
       'Verspätungsmeldungen verschieben Abfahrt und Ankunft eines Zuges.',
       'Nur eine Verbindung erreicht den Termin. Falsche Wahl = Fehler, zu viele Fehler oder Zeit um = verloren.'
     ],
-    controls: { key: 'Pfeile wählen, Leertaste nimmt den Zug, unten „Losfahren“; Q löscht', touch: 'Zug antippen, dann „Losfahren“', pad: 'Steuerkreuz, A wählen, B löschen' },
+    goal: d => 'Finde in ' + CFG[d].rounds.length + ' Rätseln jeweils die einzige Zugverbindung, die pünktlich zum Interview kommt – in ' + CFG[d].time + ' s, höchstens ' + CFG[d].errs + ' Fehler.',
+    how: [
+      'Jede Spalte ist ein Reiseabschnitt (z. B. „1: A → B“). Tippe pro Spalte genau einen Zug an.',
+      'Der erste Zug muss nach „Jetzt“ abfahren. Beim Umsteigen brauchst du Zeit: Ankunft + Umstiegszeit (steht oben) ≤ nächste Abfahrt.',
+      'Gleiches Gleis (Gl.) = schneller Umstieg, anderes Gleis = länger. Verspätungen (📢 / rote Zahl) verschieben Ab- und Ankunft.',
+      'Letzte Ankunft spätestens zur Interview-Zeit. Dann „Losfahren ▶“ – falsche Verbindung = Fehler.'
+    ],
+    tip: { key: 'Pfeile + Leertaste: je Spalte einen Zug wählen, dann „Losfahren ▶“', touch: 'Tippe in jeder Spalte einen Zug an, dann „Losfahren ▶“', y: 300 },
+    controls: { key: 'Pfeile wählen, Leertaste nimmt den Zug, ganz unten „Losfahren“; Q löscht', touch: 'In jeder Spalte einen Zug antippen, dann „Losfahren ▶“', mouse: 'In jeder Spalte einen Zug anklicken, dann „Losfahren ▶“', pad: 'Steuerkreuz, A wählen, B löschen' },
     touch: ['left', 'right', 'up', 'down', 'a', 'b'],
     init(o) {
       const d = o.difficulty | 0, c = CFG[d];
@@ -119,7 +127,7 @@
     result(st) {
       const c = st.cfg;
       if (st.status === 'won') return { won: true, score: Math.round(PT.clamp(50 + 40 * (1 - st.t / c.time) + 10 * (1 - st.errs / (c.errs + 1)), 50, 100)), detail: 'Alle ' + st.pz.length + ' Reisen geplant – mit ' + st.errs + ' Fehlern.' };
-      return { won: false, score: Math.round(PT.clamp(40 * st.round / st.pz.length, 0, 49)), detail: (st.errs > c.errs ? 'Zu viele verpasste Anschlüsse' : 'Die Zeit am Fahrkartenschalter ist abgelaufen') + ' – ' + st.round + ' von ' + st.pz.length + ' Reisen geplant.' };
+      return { won: false, score: Math.round(PT.clamp(40 * st.round / st.pz.length, 0, 49)), detail: (st.errs > c.errs ? 'Zu viele falsche Verbindungen (' + st.errs + ', erlaubt ' + c.errs + ')' : 'Die Zeit am Fahrkartenschalter ist abgelaufen') + ' – ' + st.round + ' von ' + st.pz.length + ' Reisen geplant.' };
     },
     bot(st, goal) {
       const pz = st.pz[st.round], n = st.sel.length, cu = st.cur;
@@ -142,7 +150,7 @@
       g.fillStyle = '#fff'; g.font = '700 24px system-ui'; g.textAlign = 'left';
       g.fillText('🚆 Rätsel ' + Math.min(st.round + 1, st.pz.length) + ' / ' + st.pz.length, 20, 34);
       g.textAlign = 'center'; g.fillStyle = c.time - st.t < 10 ? '#ff4d6d' : '#ffb02e'; g.fillText('⏱ ' + Math.ceil(Math.max(0, c.time - st.t)) + ' s', 480, 34);
-      g.textAlign = 'right'; g.fillStyle = '#fff'; g.fillText('Fehler: ' + st.errs + ' / ' + c.errs, 940, 34);
+      g.textAlign = 'right'; g.fillStyle = '#fff'; g.fillText('Fehler: ' + st.errs + ' / ' + c.errs, 900, 34);
       g.font = '600 20px system-ui'; g.textAlign = 'left'; g.fillStyle = '#cfd6ff';
       g.fillText('Jetzt ' + PT.timeStr(pz.now) + ' in ' + pz.st[0] + ' · Ziel: Interview in ' + pz.st[n] + ' um ' + PT.timeStr(pz.dead), 20, 64);
       g.font = '18px system-ui'; g.fillStyle = '#6ef0ff';
@@ -172,6 +180,7 @@
       const m = st.msg, cut = m.length > 56 ? m.lastIndexOf(' ', 56) : m.length;
       if (m) { g.fillText(m.slice(0, cut), 20, 496); g.fillText(m.slice(cut + 1), 20, 520); }
       const full = st.sel.every(v => v >= 0);
+      if (!m) { g.fillStyle = '#cfd6ff'; g.fillText(full ? 'Alle Abschnitte gewählt → „Losfahren ▶“' : 'Gewählt: ' + st.sel.filter(v => v >= 0).length + ' von ' + n + ' Abschnitten – tippe je Spalte einen Zug', 20, 508); }
       g.fillStyle = full ? '#4be08a' : '#2a3050'; g.fillRect(640, 468, 300, 56);
       if (cu.row === 4) { g.strokeStyle = '#ffb02e'; g.lineWidth = 4; g.strokeRect(636, 464, 308, 64); }
       g.fillStyle = full ? '#10142a' : '#8890b8'; g.font = '700 24px system-ui'; g.textAlign = 'center'; g.fillText('Losfahren ▶', 790, 504);

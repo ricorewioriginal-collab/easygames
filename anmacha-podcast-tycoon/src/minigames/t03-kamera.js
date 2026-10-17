@@ -4,7 +4,8 @@
 (function (root) {
   'use strict';
   const PT = root.PT, MG = PT.MG;
-  const SL = ['☀️ Helligkeit', '🔍 Schärfe', '🌡️ Weißabgleich', '◐ Kontrast'];
+  const SL = ['☀️ Helligkeit', '🔍 Schärfe', '🌡️ Farbton', '◐ Kontrast'];
+  const LO_HI = [['dunkel', 'hell'], ['unscharf', 'scharf'], ['warm/orange', 'kalt/blau'], ['flau', 'kräftig']];
   const CFG = [ // hint 2 = Zielmarken, 1 = Richtungspfeile, 0 = nur Bildvergleich + Übereinstimmung
     { n: 3, rounds: 3, time: 60, tol: 8, err: 3, hint: 2 },
     { n: 3, rounds: 4, time: 70, tol: 6, err: 2, hint: 1 },
@@ -74,7 +75,15 @@
       'Falsch übernehmen ist ein Fehler. Alle Runden geschafft = gewonnen.',
       'Zeit abgelaufen oder zu viele Fehler = verloren.'
     ],
-    controls: { key: '↑/↓ Regler wählen, ←/→ einstellen, Leertaste: übernehmen', touch: 'Regler ziehen, „Übernehmen“ antippen', pad: 'Steuerkreuz, A übernehmen' },
+    goal: d => 'Stell ' + CFG[d].rounds + ' Szenen so ein, dass das Live-Bild (rechts) wie das Referenzbild (links) aussieht – in ' + CFG[d].time + ' s, höchstens ' + CFG[d].err + ' Fehlversuche.',
+    how: [
+      'Vergleiche die zwei Bilder: Links ist das Ziel, rechts deine Kamera.',
+      'Zieh die Regler unten nach links/rechts, bis beide Bilder gleich aussehen' + ' (Locker: grünes Feld = Zielwert, Standard: Pfeile zeigen die Richtung).',
+      'Stimmt alles? Drück ✅ Übernehmen. Danach kommt die nächste Szene.',
+      'Übernehmen, obwohl es noch nicht passt, ist ein Fehlversuch.'
+    ],
+    tip: { key: '↑/↓ Regler wählen, ←/→ verstellen – dann Leertaste = Übernehmen', touch: 'Zieh die Regler, bis rechts wie links aussieht – dann ✅ antippen', y: 200 },
+    controls: { key: '↑/↓ Regler wählen, ←/→ verstellen, Leertaste: übernehmen', touch: 'Regler-Knopf nach links/rechts ziehen, dann ✅ Übernehmen antippen', mouse: 'Regler anklicken und ziehen, dann ✅ Übernehmen klicken', pad: 'Steuerkreuz, A übernehmen' },
     touch: ['left', 'right', 'up', 'down', 'a'],
     multi: { local: true, max: 4, mode: 'turns' },
     init(o) {
@@ -114,7 +123,7 @@
     result(st) {
       const c = st.cfg, won = st.status === 'won', left = Math.max(0, c.time - st.t);
       const score = won ? PT.clamp(Math.round(55 + 45 * left / c.time - st.err * 5), 50, 100) : PT.clamp(Math.round(45 * st.round / c.rounds), 0, 49);
-      return { won, score, detail: won ? 'Alle ' + c.rounds + ' Szenen kalibriert, ' + st.err + ' Fehlversuche – gestochen scharf!' : st.round + ' von ' + c.rounds + ' Szenen kalibriert – das Bild bleibt verwaschen.' };
+      return { won, score, detail: won ? 'Alle ' + c.rounds + ' Szenen kalibriert, ' + st.err + ' Fehlversuche – gestochen scharf!' : (st.err > c.err ? 'Zu viele Fehlversuche (' + st.err + ', erlaubt ' + c.err + ') – ' : 'Zeit abgelaufen – ') + st.round + ' von ' + c.rounds + ' Szenen kalibriert.' };
     },
     bot(st, goal) {
       if (goal === 'lose') return [{ type: 'key', key: 'a', down: true }];
@@ -129,23 +138,28 @@
       g.fillStyle = '#10142a'; g.fillRect(0, 0, 960, 540);
       g.font = '600 22px system-ui'; g.textAlign = 'left'; g.fillStyle = '#ffb02e'; g.fillText('📷 Kamerakalibrierung', 24, 36);
       g.textAlign = 'right'; g.fillStyle = '#cfd6ff';
-      g.fillText('Szene ' + Math.min(st.round + 1, c.rounds) + ' / ' + c.rounds + '   Fehler ' + st.err + '/' + c.err + '   ⏱ ' + Math.max(0, c.time - st.t).toFixed(0) + ' s', 936, 36);
+      g.fillText('Szene ' + Math.min(st.round + 1, c.rounds) + ' / ' + c.rounds + '   Fehler ' + st.err + '/' + c.err + '   ⏱ ' + Math.max(0, c.time - st.t).toFixed(0) + ' s', 900, 36);
       picture(g, 40, 80, 420, 236, st.tg, c.n); picture(g, 500, 80, 420, 236, st.v, c.n);
       g.font = '600 18px system-ui'; g.textAlign = 'left'; g.fillStyle = '#ffffff';
-      g.fillText('Referenz', 50, 104); g.fillText('🔴 Live', 510, 104);
+      g.fillText('🎯 Ziel (Referenz)', 50, 104); g.fillText('🔴 Deine Kamera', 510, 104);
+      g.font = '800 28px system-ui'; g.textAlign = 'center'; g.fillText('=?', 480, 206); g.font = '600 18px system-ui';
       const m = match(st);
       g.textAlign = 'center'; g.fillStyle = st.msgT > 0 ? '#ffb02e' : m >= 90 ? '#4be08a' : '#8f98c8';
-      g.fillText(st.msgT > 0 ? st.msg : 'Übereinstimmung: ' + m + ' %', 480, 338);
+      const allOk = c.hint > 0 && fits(st);
+      if (allOk && st.msgT <= 0) g.fillStyle = '#4be08a';
+      g.fillText(st.msgT > 0 ? st.msg : allOk ? '✓ Alle Regler passen – jetzt ✅ Übernehmen!' : 'Übereinstimmung: ' + m + ' % · Regler ziehen, bis rechts = links', 480, 338);
       for (let i = 0; i < c.n; i++) {
         const y = rowY(i), dev = st.v[i] - st.tg[i];
         g.textAlign = 'left'; g.fillStyle = i === st.sel ? '#ffb02e' : '#cfd6ff'; g.font = '600 18px system-ui'; g.fillText(SL[i], 30, y + 6);
         g.fillStyle = '#1d2342'; g.fillRect(SX, y - 5, SW, 10);
+        g.font = '14px system-ui'; g.fillStyle = '#8f98c8'; g.textAlign = 'left'; g.fillText(LO_HI[i][0], SX, y + 21); g.textAlign = 'right'; g.fillText(LO_HI[i][1], SX + SW, y + 21); g.font = '600 18px system-ui';
         if (c.hint === 2) { g.fillStyle = 'rgba(75,224,138,.45)'; g.fillRect(SX + (st.tg[i] - c.tol) / 100 * SW, y - 12, 2 * c.tol / 100 * SW, 24); }
         g.fillStyle = i === st.sel ? '#ffb02e' : '#6ef0ff'; g.fillRect(SX + st.v[i] / 100 * SW - 9, y - 15, 18, 30);
         if (i === st.sel) { g.strokeStyle = '#ffb02e'; g.lineWidth = 2; g.strokeRect(SX - 12, y - 20, SW + 24, 40); }
         if (c.hint === 1) { g.textAlign = 'center'; g.fillStyle = Math.abs(dev) <= c.tol ? '#4be08a' : '#ff4d6d'; g.fillText(Math.abs(dev) <= c.tol ? '✓' : dev < 0 ? '→' : '←', SX - 22, y + 6); }
       }
-      g.fillStyle = '#2f9e64'; g.fillRect(BTN.x, BTN.y, BTN.w, BTN.h);
+      g.fillStyle = allOk ? '#3fc77e' : '#2f9e64'; g.fillRect(BTN.x, BTN.y, BTN.w, BTN.h);
+      g.strokeStyle = allOk ? '#ffffff' : 'rgba(255,255,255,.5)'; g.lineWidth = allOk ? 4 : 2; g.strokeRect(BTN.x, BTN.y, BTN.w, BTN.h);
       g.fillStyle = '#ffffff'; g.textAlign = 'center'; g.font = '600 18px system-ui';
       g.fillText('✅', BTN.x + 60, BTN.y + 62); g.fillText('Über-', BTN.x + 60, BTN.y + 92); g.fillText('nehmen', BTN.x + 60, BTN.y + 114);
     }

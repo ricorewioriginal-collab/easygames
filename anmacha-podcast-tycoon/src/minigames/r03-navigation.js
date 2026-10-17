@@ -55,7 +55,15 @@
       'Überschreitest du das Zeitbudget oder läuft die Planungszeit ab, ist der Termin geplatzt.',
       'Locker/Standard: Q nimmt die letzte Fahrt zurück. Profi: Achtung, Radiomeldungen!'
     ],
-    controls: { key: 'Pfeile wählen eine Straße (nochmal drücken = nächste), Leertaste fährt, Q zurück', touch: 'Nachbarort antippen = hinfahren', pad: 'Steuerkreuz wählen, A fahren, B zurück' },
+    goal: d => 'Fahr mit dem Bus ' + (CFG[d].wps.length > 2 ? 'alle ' + CFG[d].wps.length + ' Wegpunkte' : 'zu beiden Wegpunkten') + ' der Reihe nach ab (der 🎙️ Interviewort zuletzt), ohne das Reisezeit-Budget oben zu überziehen – Planungszeit ' + CFG[d].time + ' s.',
+    how: [
+      'Du bist der Bus 🚐. Die großen Kreise mit Nummer sind die Wegpunkte – der gelbe ist der nächste.',
+      'Tippe einen hellen Nachbarort (mit weißem Ring) an: Der Bus fährt die Straße dorthin.',
+      'Die Zahl auf jeder Straße = Minuten. Rot = Stau (teurer), 🚧 = gesperrt. Oben siehst du verbrauchte / erlaubte Minuten.',
+      'Such kurze Wege! ' + 'Verfahren? Locker/Standard: B oder Q nimmt die letzte Fahrt zurück.'
+    ],
+    tip: { key: 'Pfeile wählen eine Straße, Leertaste fährt – zum gelben Wegpunkt!', touch: 'Tippe einen Nachbarort mit weißem Ring an – ab zum gelben Wegpunkt!', y: 300 },
+    controls: { key: 'Pfeile wählen eine Straße (nochmal drücken = nächste), Leertaste fährt, Q zurück', touch: 'Nachbarort (weißer Ring) antippen = hinfahren, B = zurück', mouse: 'Nachbarort (weißer Ring) anklicken = hinfahren, Q = zurück', pad: 'Steuerkreuz wählen, A fahren, B zurück' },
     touch: ['left', 'right', 'up', 'down', 'a', 'b'],
     init(o) {
       const d = o.difficulty | 0, c = CFG[d];
@@ -107,7 +115,7 @@
     },
     result(st) {
       if (st.status === 'won') return { won: true, score: Math.round(PT.clamp(50 + 40 * (st.budget - st.used) / Math.max(1, st.budget - st.opt * 0.9) + 10 * (1 - st.t / st.cfg.time), 50, 100)), detail: 'Tour geschafft in ' + st.used + ' von ' + st.budget + ' Reiseminuten.' };
-      return { won: false, score: Math.round(PT.clamp(40 * st.gi / st.wps.length, 0, 49)), detail: (st.used > st.budget ? 'Zeitbudget überzogen (' + st.used + ' / ' + st.budget + ' Min)' : 'Planungszeit abgelaufen') + ' – ' + st.gi + ' von ' + st.wps.length + ' Wegpunkten erreicht.' };
+      return { won: false, score: Math.round(PT.clamp(40 * st.gi / st.wps.length, 0, 49)), detail: (st.used > st.budget ? 'Reisezeit überzogen: ' + st.used + ' Min gefahren, erlaubt ' + st.budget + ' Min' : 'Planungszeit abgelaufen') + ' – ' + st.gi + ' von ' + st.wps.length + ' Wegpunkten erreicht.' };
     },
     bot(st, goal) {
       let to;
@@ -142,6 +150,7 @@
         g.fillStyle = w >= 0 ? (w < st.gi ? '#4be08a' : w === st.gi ? '#ffb02e' : '#6ef0ff') : nb ? '#cfd6ff' : '#7a86b0';
         g.beginPath(); g.arc(p.x, p.y, w >= 0 ? 20 : nb ? 11 : 8, 0, 7); g.fill();
         if (w >= 0) { g.font = '22px system-ui'; g.fillText(WP[c.wps[w]].i, p.x, p.y + 8); g.fillStyle = '#fff'; g.font = '700 18px system-ui'; g.fillText(w < st.gi ? '✓' : (w + 1) + '', p.x + 22, p.y - 16); }
+        if (nb && st.status === 'playing') { g.strokeStyle = 'rgba(255,255,255,' + (0.45 + 0.35 * Math.sin(st.t * 5)) + ')'; g.lineWidth = 2; g.beginPath(); g.arc(p.x, p.y, w >= 0 ? 25 : 17, 0, 7); g.stroke(); }
         if (i === st.sel) { g.strokeStyle = '#ffb02e'; g.lineWidth = 4; g.beginPath(); g.arc(p.x, p.y, 26, 0, 7); g.stroke(); }
       });
       let vx = N[st.at].x, vy = N[st.at].y;
@@ -149,11 +158,11 @@
       g.font = '34px system-ui'; g.fillText('🚐', vx, vy - 14);
       g.textAlign = 'left'; g.font = '700 22px system-ui'; g.fillStyle = c.time - st.t < 10 ? '#ff4d6d' : '#fff';
       g.fillText('⏱ ' + Math.ceil(Math.max(0, c.time - st.t)) + ' s', 20, 34);
-      g.fillStyle = st.used > st.budget * 0.85 ? '#ff4d6d' : '#4be08a'; g.fillText('Reisezeit ' + st.used + ' / ' + st.budget + ' Min', 130, 34);
+      g.fillStyle = st.used > st.budget * 0.85 ? '#ff4d6d' : '#4be08a'; g.fillText('Reisezeit ' + st.used + ' von max. ' + st.budget + ' Min', 130, 34);
       g.fillStyle = '#fff'; g.textAlign = 'right';
-      const nx = st.wps[st.gi]; g.fillText(nx != null ? 'Nächstes Ziel: ' + WP[c.wps[st.gi]].i + ' ' + WP[c.wps[st.gi]].n : 'Angekommen!', 940, 34);
+      const nx = st.wps[st.gi]; g.fillText(nx != null ? 'Nächstes Ziel: ' + WP[c.wps[st.gi]].i + ' ' + WP[c.wps[st.gi]].n : 'Angekommen!', 900, 34);
       g.textAlign = 'left'; g.font = '18px system-ui'; g.fillStyle = st.radio ? '#ffc84a' : '#9aa3cf';
-      g.fillText(st.radio || 'Zahlen = Minuten · rot = Stau · 🚧 = gesperrt' + (c.undo ? ' · Q = zurück' : ''), 20, 70);
+      g.fillText(st.radio || 'Nachbarort mit Ring antippen = hinfahren · Zahl = Minuten · rot = Stau · 🚧 = gesperrt' + (c.undo ? ' · Q/B = zurück' : ''), 20, 70);
     }
   });
 })(typeof window !== 'undefined' ? window : globalThis);

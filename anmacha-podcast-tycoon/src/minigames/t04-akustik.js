@@ -19,7 +19,7 @@
     if (rec) { st.rays = []; st.whit = st.wall.map(() => 0); }
     for (let s = 0; s < st.srcs.length; s++) for (let d = 0; d < 4; d++) {
       let x = st.srcs[s] % w, y = Math.floor(st.srcs[s] / w), dx = DIRS[d][0], dy = DIRS[d][1], b = 0;
-      const line = rec ? [x, y] : null;
+      const line = rec ? [x, y] : null, h0 = hits;
       for (let n = 0; n < MAXSTEP && b <= MAXB; n++) {
         if (!isWall(st, x + dx, y + dy)) {
           x += dx; y += dy;
@@ -34,7 +34,7 @@
         b++;
         if (rec) line.push(x, y);
       }
-      if (rec) { if (line[line.length - 2] !== x || line[line.length - 1] !== y) line.push(x, y); st.rays.push({ s, pts: line }); }
+      if (rec) { if (line[line.length - 2] !== x || line[line.length - 1] !== y) line.push(x, y); st.rays.push({ s, pts: line, hit: hits > h0 }); }
     }
     return hits;
   }
@@ -97,7 +97,15 @@
       'Drück die Reflexionen auf den Grenzwert – mit wenigen Absorbern und Zügen.',
       'Züge aufgebraucht oder Zeit abgelaufen = verloren.'
     ],
-    controls: { key: 'Pfeile: Feld wählen, Leertaste: Absorber an/ab', touch: 'Wandfeld antippen', pad: 'Steuerkreuz, A Absorber an/ab' },
+    goal: d => 'Häng bis zu ' + CFG[d].k + ' Absorber 🟩 an die Wände, bis kaum noch Schall-Echo das Mikro 🎙️ trifft (Zielwert steht rechts) – höchstens ' + CFG[d].moves + ' Klicks, ' + CFG[d].time + ' s.',
+    how: [
+      'Der Lautsprecher 🔈 schickt Schall-Linien schräg los. An Wänden prallen sie ab.',
+      'Hell leuchtende Linien treffen nach dem Abprallen das Mikro 🎙️ – das ist Echo. Die Zahl rechts zählt diese Treffer.',
+      'Tippe eine Wand (Rand oder Säule) an, an der so eine Linie abprallt: Dort hängt dann ein Absorber 🟩 und schluckt sie.',
+      'Bring die Echo-Zahl auf den Zielwert. Nochmal tippen nimmt den Absorber wieder ab (kostet auch einen Klick).'
+    ],
+    tip: { key: 'Pfeile: Wandfeld wählen · Leertaste: Absorber an/ab', touch: 'Tippe rote Wandfelder an, an denen die hellen Linien abprallen', y: 470 },
+    controls: { key: 'Pfeile: Feld wählen (weißer Rahmen), Leertaste: Absorber anbringen/abnehmen', touch: 'Wandfeld (Rand oder Säule) antippen = Absorber an/ab', mouse: 'Wandfeld anklicken = Absorber an/ab', pad: 'Steuerkreuz, A Absorber an/ab' },
     touch: ['left', 'right', 'up', 'down', 'a'],
     multi: { local: true, max: 4, mode: 'turns' },
     init(o) {
@@ -131,7 +139,7 @@
     result(st) {
       const c = st.cfg, won = st.status === 'won', left = Math.max(0, c.time - st.t);
       const score = won ? PT.clamp(Math.round(50 + 25 * (c.moves - st.moves) / c.moves + 25 * left / c.time), 50, 100) : PT.clamp(Math.round(40 - 4 * (st.hits - st.limit)), 0, 49);
-      return { won, score, detail: won ? 'Nur noch ' + st.hits + ' Reflexionen am Mikro nach ' + st.moves + ' Zügen – trocken wie ein Keks.' : st.hits + ' Reflexionen am Mikro, erlaubt wären ' + st.limit + '.' };
+      return { won, score, detail: won ? 'Nur noch ' + st.hits + ' Reflexionen am Mikro nach ' + st.moves + ' Zügen – trocken wie ein Keks.' : (st.moves >= c.moves ? 'Keine Klicks mehr: ' : 'Zeit abgelaufen: ') + 'noch ' + st.hits + ' Echo-Treffer am Mikro – nötig waren höchstens ' + st.limit + '.' };
     },
     bot(st, goal) {
       const G = geo(st), w = st.cfg.w;
@@ -143,9 +151,9 @@
       const c = st.cfg, G = geo(st), cs = G.cs, w = c.w;
       g.fillStyle = '#10142a'; g.fillRect(0, 0, 960, 540);
       g.font = '600 22px system-ui'; g.textAlign = 'left'; g.fillStyle = '#ffb02e'; g.fillText('🔊 Akustikpuzzle', 24, 36);
-      g.textAlign = 'right'; g.fillStyle = '#cfd6ff'; g.fillText('⏱ ' + Math.max(0, c.time - st.t).toFixed(0) + ' s', 936, 36);
+      g.textAlign = 'right'; g.fillStyle = '#cfd6ff'; g.fillText('⏱ ' + Math.max(0, c.time - st.t).toFixed(0) + ' s', 900, 36);
       g.font = '18px system-ui'; g.textAlign = 'center'; g.fillStyle = st.msgT > 0 ? '#ffb02e' : '#8f98c8';
-      g.fillText(st.msgT > 0 ? st.msg : 'Rote Wände werden getroffen – dort wirken Absorber', 380, 78);
+      g.fillText(st.msgT > 0 ? st.msg : 'Helle Linien = Echo am Mikro · Wand antippen, wo sie abprallen', 380, 78);
       for (let i = 0; i < st.wall.length; i++) {
         const x = G.x0 + (i % w) * cs, y = G.y0 + Math.floor(i / w) * cs;
         if (st.abs[i]) g.fillStyle = '#2f9e64';
@@ -153,10 +161,11 @@
         else g.fillStyle = ((i % w + Math.floor(i / w)) & 1) ? '#151a36' : '#181e3e';
         g.fillRect(x + 1, y + 1, cs - 2, cs - 2);
         if (st.abs[i]) { g.fillStyle = '#4be08a'; for (let k = 1; k < 4; k++) g.fillRect(x + k * cs / 4 - 2, y + 6, 4, cs - 12); }
+        else if (st.whit[i] && canHold(st, i)) { g.fillStyle = 'rgba(255,255,255,.55)'; g.fillRect(x + cs / 2 - 1, y + cs * 0.3, 3, cs * 0.4); g.fillRect(x + cs * 0.3, y + cs / 2 - 1, cs * 0.4, 3); }
       }
       g.lineWidth = 3; g.lineJoin = 'round';
       for (const r of st.rays) {
-        g.strokeStyle = RAYCOL[r.s]; g.beginPath();
+        g.strokeStyle = r.hit ? RAYCOL[r.s] : 'rgba(143,152,200,.25)'; g.lineWidth = r.hit ? 4 : 2; g.beginPath();
         for (let k = 0; k < r.pts.length; k += 2) { const x = G.x0 + (r.pts[k] + 0.5) * cs, y = G.y0 + (r.pts[k + 1] + 0.5) * cs; k ? g.lineTo(x, y) : g.moveTo(x, y); }
         g.stroke();
       }
@@ -167,12 +176,12 @@
       g.strokeStyle = '#ffffff'; g.lineWidth = 3; g.strokeRect(G.x0 + (st.cur % w) * cs + 2, G.y0 + Math.floor(st.cur / w) * cs + 2, cs - 4, cs - 4);
       // Seitenleiste
       const placed = st.abs.reduce((n, v) => n + v, 0);
-      g.textAlign = 'left'; g.font = '600 20px system-ui'; g.fillStyle = '#cfd6ff'; g.fillText('Reflexionen', 760, 130);
-      g.font = '600 44px system-ui'; g.fillStyle = st.hits <= st.limit ? '#4be08a' : '#ff4d6d'; g.fillText(String(st.hits), 760, 182);
-      g.font = '18px system-ui'; g.fillStyle = '#cfd6ff'; g.fillText('Ziel: höchstens ' + st.limit, 760, 212);
+      g.textAlign = 'left'; g.font = '600 20px system-ui'; g.fillStyle = '#cfd6ff'; g.fillText('Echo am Mikro', 760, 130);
+      g.font = '600 44px system-ui'; g.fillStyle = st.hits <= st.limit ? '#4be08a' : '#ff4d6d'; g.fillText(st.hits + ' → ' + st.limit, 760, 182);
+      g.font = '18px system-ui'; g.fillStyle = '#cfd6ff'; g.fillText(st.limit ? 'Ziel: höchstens ' + st.limit : 'Ziel: auf 0 bringen', 760, 212);
       g.fillText('🟩 Absorber: ' + (c.k - placed) + ' frei', 760, 270);
       g.fillText('👣 Züge: ' + (c.moves - st.moves) + ' übrig', 760, 304);
-      g.fillStyle = '#8f98c8'; g.fillText('🔈 Quelle  🎙️ Mikro', 760, 360);
+      g.fillStyle = '#8f98c8'; g.fillText('🔈 Lautsprecher', 760, 360); g.fillText('🎙️ Mikro', 760, 386); g.fillText('＋ = Aufprall-Wand', 760, 412);
     }
   });
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -43,7 +43,16 @@
       'Über dem roten Strich übersteuert das Signal (Clip). Zu viele Clips = verloren.',
       'Gewonnen, wenn der Pegel lange genug im grünen Bereich war.'
     ],
-    controls: { key: '↑/↓ oder W/S: Fader', touch: 'Fader ziehen oder ▲/▼', pad: 'Stick/Steuerkreuz hoch/runter' },
+    goal: d => 'Halte die blaue Linie insgesamt ' + Math.round(CFG[d].need * CFG[d].time) + ' von ' + CFG[d].time + ' Sekunden im grünen Band – und höchstens ' + CFG[d].clips + '× über die rote Linie.',
+    how: [
+      'Die blaue Linie zeigt, wie laut die Stimme gerade ankommt. Sie schwankt von selbst.',
+      'Linie zu tief? Regler rechts hoch. Linie zu hoch? Regler runter.',
+      'Nie über die rote Linie – das übersteuert (zählt als Fehler).',
+      'Oben steht, was gleich kommt: „Lacher“ = laut → schon mal runter, „Flüstern“ = leise → hoch.'
+    ],
+    pic: '<svg viewBox="0 0 340 120"><rect x="0" y="0" width="340" height="120" rx="10" fill="#10142a"/><rect x="10" y="40" width="240" height="34" fill="rgba(75,224,138,.25)"/><text x="16" y="92" fill="#4be08a" font-size="13" font-weight="700">↑ grünes Band = gut</text><line x1="10" y1="16" x2="250" y2="16" stroke="#ff4d6d" stroke-width="2"/><text x="16" y="31" fill="#ff4d6d" font-size="12">zu laut</text><path d="M10 100 C50 90 80 50 120 58 S180 66 250 56" stroke="#6ef0ff" stroke-width="3" fill="none"/><rect x="292" y="10" width="8" height="100" fill="#2a3160"/><rect x="276" y="50" width="40" height="18" rx="3" fill="#ffb02e"/><text x="322" y="30" fill="#cfd6ff" font-size="16">▲</text><text x="322" y="104" fill="#cfd6ff" font-size="16">▼</text><text x="262" y="100" fill="#cfd6ff" font-size="11">Regler</text></svg>',
+    tip: { key: 'Halte die blaue Linie im grünen Band: ↑ = lauter, ↓ = leiser', touch: 'Halte die Linie im grünen Band: Regler rechts hoch/runter ziehen', y: 300 },
+    controls: { key: '↑ = lauter, ↓ = leiser (oder W/S)', touch: 'Regler rechts mit dem Finger hoch/runter ziehen oder ▲/▼ tippen', mouse: 'Regler rechts anklicken und hoch/runter ziehen', pad: 'Stick/Steuerkreuz hoch = lauter, runter = leiser' },
     touch: ['up', 'down'],
     multi: { local: true, max: 4, mode: 'turns' },
     init(o) {
@@ -77,7 +86,11 @@
     result(st) {
       const c = st.cfg, ratio = st.inZone / Math.max(1, Math.min(st.t, c.time));
       const score = Math.round(PT.clamp(ratio * 100 - st.clips * 4, 0, 100));
-      return { won: st.status === 'won', score: st.status === 'won' ? Math.max(score, 50) : Math.min(score, 49), detail: Math.round(ratio * 100) + ' % im grünen Bereich, ' + st.clips + ' Übersteuerungen' };
+      const pct = Math.round(ratio * 100), need = Math.round(c.need * 100);
+      const detail = st.clips > c.clips ? 'Zu oft übersteuert: ' + st.clips + '× über der roten Linie (erlaubt ' + c.clips + '×).'
+        : st.status === 'won' ? pct + ' % im grünen Bereich (nötig ' + need + ' %), ' + st.clips + '× übersteuert.'
+        : 'Nur ' + pct + ' % im grünen Bereich – nötig sind ' + need + ' %.';
+      return { won: st.status === 'won', score: st.status === 'won' ? Math.max(score, 50) : Math.min(score, 49), detail };
     },
     bot(st, goal) {
       if (goal === 'lose') return st.hold !== 1 ? [{ type: 'key', key: 'up', down: true }] : [];
@@ -90,8 +103,11 @@
       const W = 960, H = 540;
       g.fillStyle = '#10142a'; g.fillRect(0, 0, W, H);
       // Verlauf
-      g.fillStyle = 'rgba(80,230,140,.12)'; const y0 = 470 - HI * 380, y1 = 470 - LO * 380; g.fillRect(40, y0, 640, y1 - y0);
+      g.fillStyle = 'rgba(80,230,140,.2)'; const y0 = 470 - HI * 380, y1 = 470 - LO * 380; g.fillRect(40, y0, 640, y1 - y0);
+      g.strokeStyle = 'rgba(80,230,140,.7)'; g.lineWidth = 2; g.strokeRect(40, y0, 640, y1 - y0);
+      g.font = '700 18px system-ui'; g.textAlign = 'left'; g.fillStyle = '#4be08a'; g.fillText('GRÜNES BAND – hier halten', 50, y0 + 24);
       g.strokeStyle = '#ff4d6d'; g.lineWidth = 2; g.beginPath(); g.moveTo(40, 470 - CLIP * 380); g.lineTo(680, 470 - CLIP * 380); g.stroke();
+      g.fillStyle = '#ff4d6d'; g.fillText('zu laut (übersteuert)', 50, 470 - CLIP * 380 - 8);
       g.strokeStyle = '#6ef0ff'; g.lineWidth = 3; g.beginPath();
       st.hist.forEach((v, i) => { const x = 40 + i * (640 / 240), y = 470 - PT.clamp(v, 0, 1.15) * 380; i ? g.lineTo(x, y) : g.moveTo(x, y); });
       g.stroke();
@@ -104,11 +120,23 @@
       const fy = 90 + (2.6 - st.gain) / 2.3 * 380;
       g.fillStyle = '#ffb02e'; g.fillRect(760, fy - 16, 80, 32); g.fillStyle = '#10142a'; g.fillRect(764, fy - 2, 72, 4);
       g.fillStyle = '#cfd6ff'; g.font = '600 20px system-ui'; g.textAlign = 'center';
-      g.fillText('Fader', 800, 70); g.fillText('Pegel', 650, 70);
-      const nx = st.phrases.find(p => p.t0 > st.t);
-      g.textAlign = 'left'; g.fillText('Gerade: ' + (st.phrase || 'Rede') + (nx ? '   ·   gleich (' + Math.max(0, nx.t0 - st.t).toFixed(1) + ' s): ' + nx.label : ''), 40, 70);
-      g.fillText('Clips: ' + st.clips + ' / ' + st.cfg.clips, 40, 510);
-      g.textAlign = 'right'; g.fillText('Im Grünen: ' + Math.round(100 * st.inZone / Math.max(1, st.t)) + ' % (Ziel ' + Math.round(st.cfg.need * 100) + ' %)', 680, 510);
+      g.fillText('Regler', 800, 52); g.fillText('▲ lauter', 800, 80); g.fillText('▼ leiser', 800, 494); g.fillText('Pegel', 650, 80);
+      // Richtungshinweis am Regler, wenn die Linie das Band verlässt
+      if (st.t > 0.5 && (st.out < LO || st.out > HI)) {
+        const up = st.out < LO, pulse = 0.6 + 0.4 * Math.sin(st.t * 10);
+        g.globalAlpha = pulse; g.fillStyle = up ? '#ffc84a' : '#ff4d6d'; g.font = '800 22px system-ui';
+        g.fillText(up ? '▲ hoch!' : '▼ runter!', 800, up ? fy - 26 : fy + 42); g.globalAlpha = 1;
+      }
+      const c = st.cfg, nx = st.phrases.find(p => p.t0 > st.t), hint = l => l === 'Flüstern' ? ' (leise)' : l === 'Rede' ? '' : ' (laut!)';
+      g.font = '600 20px system-ui'; g.textAlign = 'left';
+      g.fillText('Jetzt: ' + (st.phrase || 'Rede') + hint(st.phrase || 'Rede') + (nx ? '   ·   in ' + Math.max(0, nx.t0 - st.t).toFixed(1) + ' s: ' + nx.label + hint(nx.label) : ''), 40, 34);
+      g.textAlign = 'right'; g.fillText('⏱ ' + Math.max(0, c.time - st.t).toFixed(0) + ' s', 900, 34);
+      // Fortschritt: Sekunden im Band gegen das Ziel
+      const need = c.need * c.time, pr = Math.min(1, st.inZone / need);
+      g.fillStyle = '#1d2342'; g.fillRect(40, 500, 440, 26); g.fillStyle = pr >= 1 ? '#4be08a' : '#2f9e64'; g.fillRect(40, 500, 440 * pr, 26);
+      g.fillStyle = '#ffffff'; g.font = '600 18px system-ui'; g.textAlign = 'center';
+      g.fillText('Im grünen Band: ' + st.inZone.toFixed(0) + ' von ' + need.toFixed(0) + ' s', 260, 519);
+      g.textAlign = 'right'; g.fillStyle = st.clips ? '#ff4d6d' : '#cfd6ff'; g.fillText('Übersteuert: ' + st.clips + ' von max. ' + c.clips, 680, 519);
     }
   });
 })(typeof window !== 'undefined' ? window : globalThis);

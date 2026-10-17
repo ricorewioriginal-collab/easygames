@@ -65,7 +65,15 @@
       'Falscher Inhalt, zu kleiner Karton oder fehlendes Füllmaterial beim Versenden = Fehler.',
       'Gewonnen, wenn alle Bestellungen vor Ablauf der Zeit verschickt sind. Zu viele Fehler = verloren.'
     ],
-    controls: { key: 'Pfeile + Leertaste, E/Q = letzten Artikel raus, 1–3 Karton, 4 versenden', touch: 'Artikel und Knöpfe antippen', pad: 'Steuerkreuz + A, B = raus' },
+    goal: d => 'Pack und verschick alle ' + CFG[d].n + ' Fan-Bestellungen richtig – in ' + CFG[d].time + ' s, höchstens ' + CFG[d].errs + ' Fehler.',
+    how: [
+      'Links steht die Bestellung. Tippe die bestellten Artikel im Regal (mittlere Reihe) an – jeder Tipp legt einen ins Paket.',
+      'Wähle unten einen Karton: S (Platz 4), M (7) oder L (10). Der Inhalt muss reinpassen.',
+      'Tipp: kleinster passender Karton! Leerer Platz verbraucht Füllmaterial – davon gibt es wenig.',
+      '„📦 Versenden“ schickt das Paket los. Falscher Inhalt, zu kleiner Karton oder kein Füllmaterial = Fehler.'
+    ],
+    tip: { key: 'Pfeile + Leertaste: Artikel ins Paket, dann Karton (1–3), dann 4 = versenden', touch: '1. Artikel antippen  2. Karton wählen  3. 📦 Versenden', y: 290 },
+    controls: { key: 'Pfeile + Leertaste, E/Q = letzten Artikel raus, 1–3 Karton, 4 versenden', touch: 'Artikel, Karton und „📦 Versenden“ antippen', mouse: 'Artikel, Karton und „📦 Versenden“ anklicken', pad: 'Steuerkreuz + A, B = raus' },
     touch: ['left', 'right', 'up', 'down', 'a', 'b'],
     init(o) {
       const c = CFG[o.difficulty | 0] || CFG[1];
@@ -115,7 +123,7 @@
       const won = st.status === 'won', c = st.cfg;
       const score = won ? 50 + Math.round(30 * (1 - st.errs / (c.errs + 1)) + 20 * Math.max(0, 1 - st.t / c.time)) : Math.round(45 * st.done / c.n);
       return { won, score: won ? PT.clamp(score, 50, 100) : PT.clamp(score, 0, 49),
-        detail: st.done + ' von ' + c.n + ' Paketen verschickt, ' + st.errs + ' Fehler' + (!won && st.t >= c.time ? ' – die Zeit war um' : '') };
+        detail: won ? 'Alle ' + c.n + ' Pakete verschickt, ' + st.errs + ' Fehler.' : 'Nur ' + st.done + ' von ' + c.n + ' Paketen verschickt' + (st.errs > c.errs ? ' – zu viele Fehler (' + st.errs + ', erlaubt ' + c.errs + ').' : ' – die Zeit war um.') };
     },
     bot(st, goal) {
       const tap = (r, i) => { const b = ROWS[r][i]; return [{ type: 'pointer', phase: 'down', x: b.x + 10, y: b.y + 10 }]; };
@@ -133,8 +141,8 @@
       const c = st.cfg, o = st.orders[Math.min(st.idx, st.orders.length - 1)];
       g.fillStyle = '#10142a'; g.fillRect(0, 0, 960, 540);
       g.font = '600 20px system-ui'; g.fillStyle = '#cfd6ff'; g.textAlign = 'left';
-      g.fillText('Paket ' + Math.min(st.idx + 1, c.n) + ' / ' + c.n + '   Fehler: ' + st.errs + ' / ' + c.errs + '   Füllmaterial: ' + st.filler, 20, 30);
-      g.textAlign = 'right'; g.fillText('Zeit: ' + Math.max(0, Math.ceil(c.time - st.t)) + ' s', 940, 30);
+      g.fillText('Paket ' + Math.min(st.idx + 1, c.n) + ' von ' + c.n + '   Fehler: ' + st.errs + ' von max. ' + c.errs + '   Füllmaterial: ' + st.filler, 20, 30);
+      g.textAlign = 'right'; g.fillText('Zeit: ' + Math.max(0, Math.ceil(c.time - st.t)) + ' s', 900, 30);
       g.fillStyle = '#1d2342'; g.fillRect(20, 42, 920, 10);
       g.fillStyle = '#ffb02e'; g.fillRect(20, 42, 920 * Math.max(0, 1 - st.t / c.time), 10);
       // Bestellzettel
@@ -183,6 +191,9 @@
       if (st.msg) {
         g.fillStyle = st.msg.good ? '#4be08a' : '#ff4d6d'; g.font = '800 21px system-ui'; g.textAlign = 'center';
         g.fillText(st.msg.text, 480, 525);
+      } else { // nächster Schritt
+        g.fillStyle = '#cfd6ff'; g.font = '600 19px system-ui'; g.textAlign = 'center';
+        g.fillText(!same(st.packed, o.items) ? 'Schritt 1: bestellte Artikel im Regal antippen' : st.box < 0 ? 'Schritt 2: passenden Karton wählen (S/M/L)' : 'Schritt 3: 📦 Versenden', 480, 525);
       }
     }
   });
