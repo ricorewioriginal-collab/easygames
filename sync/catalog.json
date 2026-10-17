@@ -107,6 +107,40 @@
    }
   },
   {
+   "id": "funkblasen",
+   "title": "Funkblasen – Bubble Shooter",
+   "desc": "Bubble-Shooter in 3D mit Funki, dem Funkgeist: 150 Level in 10 Welten, Ziele wie Abräumen, Kristalle retten und Punktejagd, Bandenschüsse mit Zielvorschau, Bomben-, Regenbogen-, Blitz-, Eis- und Kettenblasen, Steine und Schalter. Endlosmodus mit Rekord, Tagesaufgabe, Freies Spiel, 30 Erfolge und Designs für Kanone und Kugeln (nur Optik). Touch, Maus, Tastatur und Gamecontroller; Spielstand lokal und optional mit Google.",
+   "icon": "🫧",
+   "img": "funkblasen/card.svg",
+   "bg": "linear-gradient(145deg,#2a1670,#3b2aa6 55%,#16a6c9)",
+   "glow": "rgba(95,243,255,.5)",
+   "path": "funkblasen/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Funkblasen ist ein Bubble-Shooter in 3D. Unten steht die Funk-Kanone von Funki, dem kleinen Funkgeist mit Kopfhörern. Ziele und schieß Farbkugeln nach oben: Sobald mindestens drei gleiche Farben zusammenhängen, platzen sie. Alles, was danach nicht mehr mit der Decke verbunden ist, fällt herunter und bringt doppelte Punkte. An den Seitenwänden prallen Kugeln ab, die Zielvorschau zeigt den Weg genau. Jedes Level hat ein Ziel (alle Farbblasen abräumen, Kristalle retten oder Punkte sammeln) und eine begrenzte Zahl an Schüssen; übrige Schüsse bringen Bonuspunkte und bis zu drei Sterne. Erreichen die Kugeln die rote Linie, ist die Runde verloren. Spezialblasen: Bombe (sprengt die Umgebung), Regenbogen (passt sich der größten Gruppe an), Blitz (räumt eine Reihe), Eis (taut erst auf), Kettenblasen (platzen alle zusammen), Steine, Schalter, Farbwandler, Kristalle und Sterne. 150 Level in 10 Welten, dazu Endlosmodus, eine tägliche Aufgabe und Freies Spiel. Münzen kaufen nur Designs und den Regenbogen-Joker. Der Spielstand wird lokal gespeichert und optional mit Google synchronisiert.",
+    "steuerung": [
+     "Smartphone/Tablet: Finger aufs Spielfeld, ziehen zum Zielen, loslassen zum Schießen. Zum Abbrechen unter die Kanone ziehen. Die kleine Kugel links antippen = tauschen.",
+     "PC: Maus zielt, Klick schießt. Tastatur: ←/→ oder A/D zielen (Umschalt = fein), Leertaste/Enter schießen, T tauschen, J Joker, P/Esc Pause, M Ton, F Vollbild.",
+     "Controller: linker Stick oder Steuerkreuz zielen, Ⓐ schießen, Ⓧ tauschen, Ⓨ Joker, Start Pause. Menüs mit Steuerkreuz, Ⓐ und Ⓑ."
+    ],
+    "tipps": [
+     "Schieß unter große Trauben: Was herunterfällt, zählt doppelt.",
+     "Nutze die Wände – Bandentreffer bringen Extrapunkte.",
+     "Tausche die Kugel, wenn die nächste besser passt.",
+     "Kristalle, Bomben und Schalter lösen aus, wenn direkt daneben etwas platzt.",
+     "Spare Schüsse für den dritten Stern."
+    ]
+   },
+   "size": 219960,
+   "files": 13,
+   "offline": true,
+   "cloud": {
+    "game": "funkblasen",
+    "prefix": "easygames.funkblasen.v1"
+   }
+  },
+  {
    "id": "rico-flap",
    "title": "Rico Flap 3D",
    "desc": "Der Flatter-Klassiker in moderner 3D-Optik: Rico im RicoReWi-Hoodie flattert durch die Lücken der Funktürme. 10 Level in 5 Welten (Stadt, Wald, Wüste, Eis, Neon-Nacht), bewegliche Türme, Noten für bis zu drei Sterne und ein Endlos-Modus mit Rekord. Touch, Tastatur, Maus und Gamecontroller; lokaler Spielstand und optionaler Google-Speicher.",

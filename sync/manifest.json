@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "31f4048a7547",
- "generated": "2026-10-17T01:50:03+00:00",
- "commit": "b72d1a3dce1788df942ad97d950755732f5425d2",
+ "version": "d06cf8eff719",
+ "generated": "2026-10-17T02:08:48+00:00",
+ "commit": "b64429eba876bb2f33b0d234d4b9f22622549447",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4618,8 +4618,8 @@
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 28421,
-   "h": "f86a2af4385897ae6baaa01f10512bd017f9ef249a6d71346add1eb5972d7674"
+   "s": 28729,
+   "h": "3519a6d6418c5df3a9cf067826e73591e817d06813c5028cbbd96136c38e85ed"
   },
   {
    "p": "cloud/anmacha-cloud.js",
@@ -4657,6 +4657,71 @@
    "h": "d5ef61cb780ac29613e137e3f5e2103928d9b1b102772d90cfe3551b52e5c6da"
   },
   {
+   "p": "funkblasen/audio.js",
+   "s": 8498,
+   "h": "2e3593367aaaa3e782c9b32596831584e900891cb85e26e98f0802213b3ed7cd"
+  },
+  {
+   "p": "funkblasen/card.svg",
+   "s": 3396,
+   "h": "a7c8b57b06ef71117f8fc8d6c56960148787b08fea552133064adbc1b5c3204b"
+  },
+  {
+   "p": "funkblasen/engine.js",
+   "s": 24738,
+   "h": "63c9196768f9aa00d36c6c905a692c6bc70e82b5cd2b9edf1b6ccd6296d2bf74"
+  },
+  {
+   "p": "funkblasen/index.html",
+   "s": 14377,
+   "h": "843667de0961418e328dc3de93301ecf7ed2aeb60afa584bc3ce3e55a9823712"
+  },
+  {
+   "p": "funkblasen/input.js",
+   "s": 7262,
+   "h": "71424fa07b3e9cbd86fc715559b668a592fef18ffbc66ef83a6201f7816b4bb4"
+  },
+  {
+   "p": "funkblasen/levels.js",
+   "s": 29281,
+   "h": "4387ab89aaaec0105c90dd6fb1a072511979251ed3a76ab6e273188c46fe6e6c"
+  },
+  {
+   "p": "funkblasen/main.js",
+   "s": 26999,
+   "h": "1d7b2efbe8b627fa94efd28f1504a4a6ccace655a1e9a473085f8c99a080db37"
+  },
+  {
+   "p": "funkblasen/manifest.webmanifest",
+   "s": 773,
+   "h": "6d3bccdc995bb9c8327c3251c388f344ebe12a17c567cc6ac39fca685f28bd7e"
+  },
+  {
+   "p": "funkblasen/renderer.js",
+   "s": 40963,
+   "h": "d3a043b2f06ac40b0d82dbaf4c26da2178c49619d4672cc78f1a0f66db249d0d"
+  },
+  {
+   "p": "funkblasen/save.js",
+   "s": 14193,
+   "h": "a834ec9a197b8540b0ed76eb41d56cb77aa63dbb1586baa27321ce6b6bce162d"
+  },
+  {
+   "p": "funkblasen/style.css",
+   "s": 19200,
+   "h": "d29429487a573a06defea33d1db33a532168e551933a0505c66c0e56ff1617b9"
+  },
+  {
+   "p": "funkblasen/sw.js",
+   "s": 1999,
+   "h": "3f7879854f143d0eca42b5ecfa33ab13bf4831c1e1fbd95e5c123be154d1e9cf"
+  },
+  {
+   "p": "funkblasen/ui.js",
+   "s": 28281,
+   "h": "86f83add93f444ee1cf792ff679b9fd6b55538b3d8342a71cfa54f6947b94088"
+  },
+  {
    "p": "gamekit.js",
    "s": 5678,
    "h": "2408caf366c6c700ee4a1cc935a57e106e1a835ce4bc29826ecbe158261bc96f"
@@ -4668,8 +4733,8 @@
   },
   {
    "p": "games.js",
-   "s": 22011,
-   "h": "91b912f7a1edbab36ca2252c92667c5093d53d2d41ae0807d4ed657ca9daa74f"
+   "s": 22661,
+   "h": "a10809520cfecc93b9ac0e9cf258bcb416026f804437d94130fa8720c5ff0ec4"
   },
   {
    "p": "gay-life/card.jpg",
@@ -4828,8 +4893,8 @@
   },
   {
    "p": "guides.js",
-   "s": 57553,
-   "h": "b26e97b8794c6df2d4ae29376100aee23f9fddfd0159db28bd659578f6cb69ff"
+   "s": 59504,
+   "h": "38e867a98903fe5fb39f9d26391fe6b3da52126be320bc294217fe1f278407f6"
   },
   {
    "p": "index.html",
@@ -5843,8 +5908,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 91935,
-   "h": "d01993146e6a764a6fcb90458b8dc8c0b1c5e0fd609d10abba3bce93db2e91b1"
+   "s": 94827,
+   "h": "d6139c0049f50ed4d01bedc500a283c1186441739b24a6130ea3edf2e3f43c3e"
   },
   {
    "p": "taschi/card.svg",
