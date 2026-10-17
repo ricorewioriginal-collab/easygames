@@ -32,6 +32,7 @@ jobs:
       - run: node tools/test-board.mjs
       - run: node tools/test-ach.mjs
       - run: node tools/test-gameach.cjs
+      - run: node tools/test-chatfilter.mjs
       - run: node tools/build-sync.js --strict --stage android/app/src/main/assets/easygames
       - name: Install browser test runtime
         run: |
@@ -47,6 +48,7 @@ jobs:
         run: |
           NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-erfolge.cjs
           NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-konto.cjs
+          NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-chat.cjs
       - name: Verify back link from embedded games
         run: NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-embed-back.cjs
       - run: ./android/gradlew -p android :core:test :app:assembleDebug --console=plain
