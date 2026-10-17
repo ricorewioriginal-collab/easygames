@@ -71,13 +71,13 @@ const DIRS: [number, number, number][] = [
 ];
 
 /** Kann man von Zelle a direkt zur Nachbarzelle (dx,dz) gehen? (Wände, Ecken) */
-export function stepOk(w: World, l: number, x: number, z: number, dx: number, dz: number): boolean {
+export function stepOk(w: World, l: number, x: number, z: number, dx: number, dz: number, intoBlocked = false): boolean {
   const f = w.flags;
   const base = l * PLANE;
   const nx = x + dx,
     nz = z + dz;
   if (nx < 0 || nz < 0 || nx >= MAP_W || nz >= MAP_H) return false;
-  if (f[base + nz * MAP_W + nx]! & F_BLOCK) return false;
+  if (!intoBlocked && f[base + nz * MAP_W + nx]! & F_BLOCK) return false;
   const wallE = (cx: number, cz: number, n: boolean): boolean => (f[base + cz * MAP_W + cx]! & (n ? F_WALL_N : F_WALL_W)) !== 0;
   if (dz === 0) return !wallE(Math.max(x, nx), z, false);
   if (dx === 0) return !wallE(x, Math.max(z, nz), true);
@@ -150,8 +150,9 @@ export function findPath(w: World, sx: number, sz: number, sl: number, goals: { 
       x = rest - z * MAP_W;
     const g0 = gScore[cur]!;
     for (const [dx, dz, cost] of DIRS) {
-      if (!stepOk(w, l, x, z, dx, dz)) continue;
       const n = cur + dz * MAP_W + dx;
+      // Zielzellen dürfen von einem Objekt belegt sein (Platz in der Grundfläche: Dusche, Laufband, Angelsteg) – Wände gelten trotzdem
+      if (!stepOk(w, l, x, z, dx, dz) && !(goalSet.has(n) && w.occ.has(n) && stepOk(w, l, x, z, dx, dz, true))) continue;
       if (closed[n] === curStamp) continue;
       let c = cost;
       if (w.flags[n]! & F_PRIVATE) {

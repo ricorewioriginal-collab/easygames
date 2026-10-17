@@ -72,7 +72,8 @@ function slotTarget(g: Game, s: Sim, o: ObjInst, kinds: string[] | null): RouteT
           [cx + sx, cz + sz],
           [cx - sx, cz - sz],
         ];
-        const ok = opts.find(([x, y]) => g.world.cellWalkable(o.l, Math.floor(x!), Math.floor(y!)));
+        const acc = g.world.seatAccess(o);
+        const ok = opts.find(([x, y]) => g.world.cellWalkable(o.l, Math.floor(x!), Math.floor(y!))) ?? (acc ? [acc[0], acc[1]] : null);
         if (!ok) continue;
         gx = ok[0]!;
         gz = ok[1]!;
@@ -81,9 +82,11 @@ function slotTarget(g: Game, s: Sim, o: ObjInst, kinds: string[] | null): RouteT
         gx = w.x + (fx / len) * 0.9;
         gz = w.z + (fz / len) * 0.9;
         if (!g.world.cellWalkable(o.l, Math.floor(gx), Math.floor(gz))) {
-          gx = cx + fx;
-          gz = cz + fz;
-          if (!g.world.cellWalkable(o.l, Math.floor(gx), Math.floor(gz))) continue;
+          // Stuhl am Tisch: von der Seite oder von hinten heran
+          const acc = g.world.seatAccess(o);
+          if (!acc) continue;
+          gx = acc[0];
+          gz = acc[1];
         }
       }
     }

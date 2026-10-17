@@ -30,7 +30,10 @@ export function mayUse(g: Game, s: Sim, o: ObjInst): boolean {
   const lot = lotById(o.lot);
   if (!lot) return true;
   if (lot.kind !== 'home') {
-    if (lot.open && !isOpen(g, lot.open) && !(s.career && s.career.onSite)) return false;
+    const staff = !!(s.career && s.career.onSite);
+    if (lot.open && !isOpen(g, lot.open) && !staff) return false;
+    // Küchen in Lokalen gehören dem Personal (sonst gäbe es Gratis-Essen)
+    if (!staff && getDef(o.def).func?.includes('fridge')) return false;
     return true;
   }
   const h = lotHh(g, o.lot);
@@ -82,7 +85,7 @@ export function findSeat(g: Game, s: Sim, near: { x: number; z: number; l: numbe
         let ax = w.x + fx * 0.9,
           az = w.z + fz * 0.9;
         if (!g.world.cellWalkable(o.l, Math.floor(ax), Math.floor(az))) {
-          const f = objFront(g, o);
+          const f = g.world.seatAccess(o) ?? objFront(g, o);
           ax = f[0];
           az = f[1];
           if (!g.world.cellWalkable(o.l, Math.floor(ax), Math.floor(az))) continue;

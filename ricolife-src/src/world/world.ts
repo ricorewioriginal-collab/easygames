@@ -336,23 +336,50 @@ export class World {
     if (!s) return false;
     const def = getDef(o.def);
     const slot = def.slots![i]!;
-    if (slot.kind === 'sit' || slot.kind === 'sleep') {
-      // Sitz in der Grundfläche: Zugang über eine Nachbarzelle vor dem Objekt
-      const [fx, fz] = rotLocal(0, def.d / 2 + 0.5, o.r);
-      const [cx, cz] = this.centerOf(o);
-      const tx = Math.floor(cx + fx * (slot.kind === 'sleep' ? 0 : 1)),
-        tz = Math.floor(cz + fz * (slot.kind === 'sleep' ? 0 : 1));
-      if (slot.kind === 'sleep') return true;
-      return this.cellWalkable(o.l, tx, tz, o.id, extra);
-    }
+    if (slot.kind === 'sleep') return true;
+    // Sitz in der Grundfläche: Zugang über eine Nachbarzelle (vorn, sonst seitlich/hinten – z. B. Stuhl am Tisch)
+    if (slot.kind === 'sit') return this.seatAccess(o, extra) !== null;
     const cx = Math.floor(s.x),
       cz = Math.floor(s.z);
+    // Platz in der eigenen Grundfläche (Dusche, Laufband, Angelsteg, Tanzfläche): eine freie Nachbarzelle genügt
+    if (this.cellsOf(o).some(([x, z]) => x === cx && z === cz)) {
+      const own = new Set(this.cellsOf(o).map(([x, z]) => cellKey(o.l, x, z)));
+      return [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dz]) => {
+        const nx = cx + dx!,
+          nz = cz + dz!;
+        return !own.has(cellKey(o.l, nx, nz)) && this.cellWalkable(o.l, nx, nz, o.id, extra) && !this.wallBetween(o.l, cx, cz, nx, nz);
+      });
+    }
     if (!this.cellWalkable(o.l, cx, cz, o.id, extra)) return false;
     // keine Wand zwischen Platz und Objekt
     const [ocx, ocz] = this.centerOf(o);
     const ox = Math.floor(ocx + (s.x - ocx) * 0.4),
       oz = Math.floor(ocz + (s.z - ocz) * 0.4);
     return !this.wallBetween(o.l, cx, cz, ox, oz);
+  }
+
+  /** Zugangszelle (Zellmitte) eines Sitzobjekts: vor dem Objekt, sonst links/rechts, sonst dahinter; null = zugestellt.
+   *  Stühle schauen zum Tisch – ihre Vorderzelle ist dann belegt, Zugang erfolgt von der Seite oder von hinten. */
+  seatAccess(o: ObjInst, extra?: Set<number>): [number, number] | null {
+    const def = getDef(o.def);
+    const [cx, cz] = this.centerOf(o);
+    const hw = def.w / 2,
+      hd = def.d / 2;
+    for (const [lx, lz, ix, iz] of [
+      [0, hd + 0.5, 0, hd - 0.5],
+      [hw + 0.5, 0, hw - 0.5, 0],
+      [-hw - 0.5, 0, -hw + 0.5, 0],
+      [0, -hd - 0.5, 0, -hd + 0.5],
+    ] as const) {
+      const [dx, dz] = rotLocal(lx, lz, o.r);
+      const tx = Math.floor(cx + dx),
+        tz = Math.floor(cz + dz);
+      if (!this.cellWalkable(o.l, tx, tz, o.id, extra)) continue;
+      const [ex, ez] = rotLocal(ix, iz, o.r);
+      if (this.wallBetween(o.l, tx, tz, Math.floor(cx + ex), Math.floor(cz + ez))) continue;
+      return [tx + 0.5, tz + 0.5];
+    }
+    return null;
   }
 
   cellWalkable(l: number, x: number, z: number, ignoreObj?: string, extra?: Set<number>): boolean {
