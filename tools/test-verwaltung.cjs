@@ -85,7 +85,8 @@ const server = http.createServer((req, res) => {
     // 4b) Zeitplan: Sichtbar ab/bis je Spiel
     await page.click('#tabs [data-t=games]'); await page.waitForSelector('#gBody tr'); await page.fill('#gq', 'memory');
     const when = '2030-01-02T10:30'; await page.fill('#gBody tr input[type=datetime-local] >> nth=0', when); await page.dispatchEvent('#gBody tr input[type=datetime-local] >> nth=0', 'change');
-    await page.click('#gSave'); await page.waitForFunction(() => /Gespeichert/.test(document.getElementById('toast').textContent));
+    const nPatch = db.patched.length;   // der Hinweis „Gespeichert“ vom vorigen Speichern steht noch: auf das neue Schreiben warten
+    await page.click('#gSave'); for (let i = 0; i < 100 && db.patched.length === nPatch; i++) await page.waitForTimeout(50);
     const sch = db.patched.at(-1).sched['anmacha-memory']; assert.equal(new Date(sch.from).getFullYear(), 2030); assert(!sch.until);
     console.log('PASS Zeitplan: „Sichtbar ab“ wird gespeichert');
 
