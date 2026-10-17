@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>Chat – easygames</title>
+<style>
+:root{--bg:#0b1020;--card:#151b33;--line:#ffffff24;--text:#f3f5ff;--mut:#a9b0cf;--acc:#d4fd78}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:820px;height:100%;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px}
+header{display:flex;align-items:center;gap:12px}
+header h1{font-size:22px;margin:0;flex:1}
+.back{color:var(--text);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:7px 13px;font-weight:600;font-size:13px}
+body.embed .back{display:none}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.card{border:1px solid var(--line);border-radius:14px;background:var(--card);padding:14px}
+.card h2{font-size:16px;margin:0 0 6px}
+.card p{margin:6px 0;color:var(--mut);font-size:13px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px}
+.tab{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:99px;padding:8px 14px;font:600 13px system-ui;cursor:pointer;min-height:38px}
+.tab[aria-pressed=true]{background:var(--acc);color:#10140a;border-color:var(--acc)}
+#chat{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px}
+#on{font-size:12px;color:var(--mut);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#on b{color:#81c995}
+#on span.c{border:1px solid var(--line);border-radius:99px;padding:2px 9px;color:var(--text)}
+#list{flex:1;min-height:120px;overflow-y:auto;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:10px;display:flex;flex-direction:column;gap:6px;overscroll-behavior:contain}
+.m{max-width:88%;align-self:flex-start;background:#222a4d;border-radius:14px 14px 14px 4px;padding:7px 11px;word-wrap:break-word;overflow-wrap:anywhere}
+.m.me{align-self:flex-end;background:#2c3f1e;border-radius:14px 14px 4px 14px}
+.m .h{display:flex;gap:8px;align-items:baseline;font-size:12px;color:var(--mut)}
+.m .h b{color:var(--text);font-size:13px}
+.m .x{white-space:pre-wrap}
+.m .a{display:inline-flex;gap:2px;margin-left:auto}
+.m .a button{border:0;background:transparent;color:var(--mut);cursor:pointer;font-size:14px;padding:2px 5px;min-width:28px;min-height:28px;border-radius:8px}
+.m .a button:hover{background:#ffffff18}
+.sys{align-self:center;color:var(--mut);font-size:12px;text-align:center}
+form{display:flex;gap:8px}
+input[type=text]{flex:1;min-width:0;min-height:46px;border-radius:12px;border:1px solid var(--line);background:#0f1530;color:var(--text);font:16px system-ui;padding:0 12px}
+.btn{min-height:46px;border-radius:12px;border:1px solid var(--line);background:#222a4d;color:var(--text);font:600 14px system-ui;cursor:pointer;padding:0 16px}
+.btn.pri{background:var(--acc);color:#10140a;border-color:var(--acc)}
+.btn:disabled{opacity:.5;cursor:default}
+.hint{font-size:12px;color:var(--mut);margin:0 2px}
+.err{color:#f28b82;font-size:13px;margin:0 2px;min-height:18px}
+.ok{color:#81c995}
+.row{display:flex;gap:8px;margin:10px 0 0}
+#toast{position:fixed;left:50%;bottom:calc(80px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#222a4d;border:1px solid var(--line);border-radius:12px;padding:8px 14px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;max-width:92vw;text-align:center}
+#toast.on{opacity:1}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>💬 Chat</h1>
+    <a class="back" href="index.html">← Spiele</a>
+  </header>
+
+  <section class="card" id="gate">
+    <h2>Chatte mit anderen Spielern</h2>
+    <p>Der Chat ist für alle, die gerade bei easygames angemeldet sind. Melde dich einmal mit Google an – danach geht es sofort los. Deine Google-Daten sieht niemand, im Chat erscheint nur dein Spitzname.</p>
+    <div id="cloudMount"></div>
+  </section>
+
+  <section class="card" id="nickBox" hidden>
+    <h2>Wähle deinen Chat-Namen</h2>
+    <p>2 bis 20 Zeichen, so sehen dich die anderen. Bitte freundlich und ohne echten Namen.</p>
+    <form id="nickForm" autocomplete="off" novalidate><input type="text" id="nick" maxlength="20" minlength="2" placeholder="Spitzname" aria-label="Chat-Name"><button class="btn pri" type="submit">Los geht’s</button></form>
+    <p class="err" id="nickErr" role="alert"></p>
+  </section>
+
+  <section id="chat" hidden>
+    <div class="tabs" id="rooms" role="group" aria-label="Chat-Räume"></div>
+    <div id="on" aria-live="off"></div>
+    <div id="list" role="log" aria-live="polite" aria-label="Nachrichten"></div>
+    <p class="err" id="err" role="alert"></p>
+    <form id="form" autocomplete="off"><input type="text" id="msg" maxlength="200" placeholder="Nachricht schreiben …" aria-label="Nachricht"><button class="btn pri" id="send" type="submit">Senden</button></form>
+    <p class="hint">Bitte freundlich bleiben: Beleidigungen, Links und Kontaktdaten werden gefiltert. Mit ⚑ meldest du Nachrichten, mit 🚫 blendest du Spieler für dich aus. <span id="who"></span> <a href="#" id="chNick" style="color:var(--acc)">Namen ändern</a></p>
+  </section>
+</main>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="cloud/anmacha-cloud.js" data-game="chat" data-prefix="anmacha-chat-ohne-spielstand" data-mount="#cloudMount" data-sync="off" data-board="off" data-hint="Mit Google anmelden – einmal für alle Spiele und den Chat." defer></script>
+<script src="cloud/anmacha-board.js" defer></script>
+<script src="cloud/anmacha-chatfilter.js" defer></script>
+<script src="cloud/anmacha-chat.js" defer></script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  var Cloud = window.AnMaChaCloud, B = window.AnMaChaBoard, F = window.AnMaChaChatFilter, C = window.AnMaChaChat;
+  var $ = function (id) { return document.getElementById(id); }, qs = new URLSearchParams(location.search);
+  if (qs.get('embed') === '1') document.body.classList.add('embed');
+  if (!Cloud || !F || !C) { $('gate').querySelector('p').textContent = 'Der Chat ist gerade nicht verfügbar.'; $('cloudMount').hidden = true; return; }
+  var NICK = 'anmacha-chat-nick', BLOCK = 'anmacha-chat-block', MIN_GAP = 2600, POLL_FAST = 4000, POLL_SLOW = 12000, MAX_SHOWN = 150;
+  var me = null, nick = '', room = 'lobby', games = [], admin = false, banned = false, seen = {}, last = '', timers = {}, lastSend = 0, lastText = '', lastTextAt = 0, calm = 0, gen = 0;
+  var blocked = {}; try { blocked = JSON.parse(localStorage.getItem(BLOCK) || '{}') || {}; } catch (e) {}
+  function ls(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+  function toast(t) { var el = $('toast'); el.textContent = t; el.classList.add('on'); clearTimeout(timers.toast); timers.toast = setTimeout(function () { el.classList.remove('on'); }, 3500); }
+  function fmtTime(t) { try { return new Date(t).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } }
+  function user() { return Cloud.user ? Cloud.user() : null; }
+
+  // ---- Zugriff auf Firestore (REST mit frischem Token) ----
+  function api(url, opt) {
+    return Cloud.account().then(function (a) {
+      if (!a) throw new Error('login');
+      me = a;
+      opt = opt || {}; opt.headers = { 'Content-Type': 'application/json', Authorization: 'Bearer ' + a.token };
+      return fetch(url, opt);
+    });
+  }
+  function post(url, body) { return api(url, { method: 'POST', body: JSON.stringify(body) }); }
+
+  // ---- Raum wählen ----
+  var wanted = (qs.get('room') || '').toLowerCase(); if (C.ROOM_RE.test(wanted)) room = wanted;
+  function drawRooms() {
+    var list = C.ROOMS.slice(); if (!list.some(function (r) { return r[0] === room; })) list.push([room, C.roomTitle(room, games)]);
+    $('rooms').innerHTML = ''; list.forEach(function (r) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'tab'; b.textContent = r[0] === room ? C.roomTitle(room, games) : r[1]; b.setAttribute('aria-pressed', String(r[0] === room));
+      b.onclick = function () { if (r[0] !== room) { room = r[0]; drawRooms(); openRoom(); } }; $('rooms').appendChild(b);
+    });
+  }
+
+  // ---- Nachrichten ----
+  function add(m, mine) {
+    var li = document.createElement('div'); li.className = 'm' + (m.u === (me && me.uid) ? ' me' : ''); li.dataset.id = m.id;
+    var h = document.createElement('div'); h.className = 'h';
+    var n = document.createElement('b'); n.textContent = F.mask(m.n || '?'); h.appendChild(n);
+    var t = document.createElement('span'); t.textContent = fmtTime(m.t); h.appendChild(t);
+    var acts = document.createElement('span'); acts.className = 'a';
+    if (m.u !== (me && me.uid)) {
+      var rp = document.createElement('button'); rp.type = 'button'; rp.title = 'Nachricht melden'; rp.setAttribute('aria-label', 'Nachricht melden'); rp.textContent = '⚑'; rp.onclick = function () { report(m); acts.removeChild(rp); }; acts.appendChild(rp);
+      var bl = document.createElement('button'); bl.type = 'button'; bl.title = 'Spieler ausblenden'; bl.setAttribute('aria-label', 'Spieler ausblenden'); bl.textContent = '🚫'; bl.onclick = function () { blocked[m.u] = 1; try { localStorage.setItem(BLOCK, JSON.stringify(blocked)); } catch (e) {} hideUser(m.u); toast('Spieler ausgeblendet.'); }; acts.appendChild(bl);
+    }
+    if (admin || m.u === (me && me.uid)) {
+      var dl = document.createElement('button'); dl.type = 'button'; dl.title = 'Nachricht löschen'; dl.setAttribute('aria-label', 'Nachricht löschen'); dl.textContent = '🗑'; dl.onclick = function () { del(m, li); }; acts.appendChild(dl);
+    }
+    if (admin && m.u !== me.uid) { var bn = document.createElement('button'); bn.type = 'button'; bn.title = 'Spieler sperren'; bn.setAttribute('aria-label', 'Spieler sperren'); bn.textContent = '⛔'; bn.onclick = function () { ban(m); }; acts.appendChild(bn); }
+    h.appendChild(acts); li.appendChild(h);
+    var x = document.createElement('div'); x.className = 'x'; x.textContent = F.mask(m.x); li.appendChild(x);
+    li.dataset.u = m.u; if (blocked[m.u]) li.hidden = true;
+    var box = $('list'), near = box.scrollHeight - box.scrollTop - box.clientHeight < 80 || mine;
+    box.appendChild(li);
+    while (box.children.length > MAX_SHOWN) box.removeChild(box.firstChild);
+    if (near) box.scrollTop = box.scrollHeight;
+  }
+  function hideUser(u) { Array.prototype.forEach.call($('list').children, function (el) { if (el.dataset && el.dataset.u === u) el.hidden = true; }); }
+  function sys(t) { var d = document.createElement('div'); d.className = 'sys'; d.textContent = t; $('list').appendChild(d); }
+  function take(rows, mine) {
+    var n = 0;
+    C.parse(rows).forEach(function (m) {
+      if (seen[m.id]) return; seen[m.id] = 1; if (m.ts > last) last = m.ts; n++; add(m, mine && m.u === me.uid);
+    });
+    return n;
+  }
+  function poll(g) {
+    if (g !== gen) return;
+    clearTimeout(timers.poll);
+    if (document.hidden) return;   // im Hintergrund nichts abfragen (spart Kontingent)
+    post(C.roomQueryUrl(Cloud.FS, room), C.listQuery(last)).then(function (r) {
+      if (r.status === 403 || r.status === 401) throw new Error('Kein Zugriff auf den Chat (bitte neu anmelden).');
+      if (!r.ok) throw new Error('Chat gerade nicht erreichbar.');
+      return r.json();
+    }).then(function (rows) {
+      if (g !== gen) return;
+      $('err').textContent = '';
+      calm = take(rows) ? 0 : Math.min(calm + 1, 20);
+      timers.poll = setTimeout(function () { poll(g); }, calm > 6 ? POLL_SLOW : POLL_FAST);
+    }).catch(function (e) { if (g !== gen) return; $('err').textContent = e.message === 'login' ? 'Bitte neu anmelden.' : e.message; timers.poll = setTimeout(function () { poll(g); }, POLL_SLOW); });
+  }
+  function openRoom() {
+    gen++; var g = gen; seen = {}; last = ''; calm = 0; $('list').textContent = ''; $('err').textContent = '';
+    post(C.roomQueryUrl(Cloud.FS, room), C.listQuery('')).then(function (r) { if (!r.ok) throw new Error(r.status === 403 ? 'Kein Zugriff auf den Chat (bitte neu anmelden).' : 'Chat gerade nicht erreichbar.'); return r.json(); }).then(function (rows) {
+      if (g !== gen) return;
+      if (!take(rows)) sys('Noch nichts geschrieben – sei der Erste! 👋');
+      else sys('— neueste Nachrichten —');
+      $('list').scrollTop = $('list').scrollHeight;
+      poll(g);
+    }).catch(function (e) { if (g === gen) { $('err').textContent = e.message; timers.poll = setTimeout(function () { openRoom(); }, POLL_SLOW); } });
+  }
+
+  // ---- Senden, Melden, Löschen, Sperren ----
+  function send(text) {
+    var now = Date.now();
+    if (banned) return Promise.reject(new Error('Du wurdest vom Chat ausgeschlossen.'));
+    var c = F.check(text); if (!c.ok) return Promise.reject(new Error(F.REASON[c.reason] || F.REASON.bad));
+    if (now - lastSend < MIN_GAP) return Promise.reject(new Error('Langsam – bitte eine Sekunde warten.'));
+    if (c.text === lastText && now - lastTextAt < 30000) return Promise.reject(new Error('Diese Nachricht hast du gerade schon geschrieben.'));
+    lastSend = now; lastText = c.text; lastTextAt = now;
+    var s = C.sendBody(Cloud.FS, room, me.uid, nick, c.text);
+    return post(C.commitUrl(Cloud.FS), s.body).then(function (r) {
+      if (r.ok) return;
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (r.status === 403 || r.status === 400) return checkBan().then(function () { throw new Error(banned ? 'Du wurdest vom Chat ausgeschlossen.' : 'Senden nicht möglich – zu schnell oder keine Berechtigung. Bitte kurz warten.'); });
+        throw new Error('Senden gerade nicht möglich.');
+      });
+    });
+  }
+  function report(m) {
+    post(C.commitUrl(Cloud.FS), C.reportBody(Cloud.FS, room, m, me.uid)).then(function (r) { toast(r.ok ? '⚑ Danke, die Nachricht wurde gemeldet.' : 'Melden gerade nicht möglich.'); }).catch(function () { toast('Melden gerade nicht möglich.'); });
+  }
+  function del(m, li) {
+    api(Cloud.FS.replace(/\/$/, '') + '/chat/' + room + '/m/' + m.id, { method: 'DELETE' }).then(function (r) { if (r.ok) { if (li.parentNode) li.parentNode.removeChild(li); } else toast('Löschen nicht möglich.'); }).catch(function () {});
+  }
+  function ban(m) {
+    if (!window.confirm('„' + F.mask(m.n) + '“ vom Chat ausschließen?')) return;
+    post(C.commitUrl(Cloud.FS), C.banBody(Cloud.FS, m.u)).then(function (r) { toast(r.ok ? '⛔ Gesperrt.' : 'Sperren nicht möglich.'); });
+  }
+  function checkBan() {
+    return api(Cloud.FS.replace(/\/$/, '') + '/chat_ban/' + me.uid).then(function (r) { banned = r.ok; });
+  }
+
+  // ---- Online-Liste ----
+  function beat() {
+    if (document.hidden || !nick) return;
+    post(C.commitUrl(Cloud.FS), C.presenceBody(Cloud.FS, me.uid, nick)).catch(function () {});
+  }
+  function online() {
+    if (document.hidden) return;
+    post(C.rootQueryUrl(Cloud.FS), C.onlineQuery(Date.now() - 150000)).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
+      var list = C.parseOnline(rows), el = $('on'); el.textContent = '';
+      var b = document.createElement('b'); b.textContent = '● ' + list.length + ' im Chat'; el.appendChild(b);
+      list.slice(0, 12).forEach(function (o) { var s = document.createElement('span'); s.className = 'c'; s.textContent = F.mask(o.n); el.appendChild(s); });
+    }).catch(function () {});
+  }
+  function leave() { if (!me || !nick) return; try { fetch(Cloud.FS.replace(/\/$/, '') + '/chat_online/' + me.uid, { method: 'DELETE', keepalive: true, headers: { Authorization: 'Bearer ' + me.token } }); } catch (e) {} }
+
+  // ---- Start: Anmeldung → Name → Chat ----
+  function setNick(n) { nick = n; try { localStorage.setItem(NICK + ':' + me.uid, n); } catch (e) {} $('who').textContent = 'Du schreibst als „' + n + '“.'; }
+  function start() {
+    $('gate').hidden = true; $('nickBox').hidden = !!nick; $('chat').hidden = !nick;
+    if (!nick) { $('nick').value = (B && B.nick && B.nick()) || ''; $('nick').focus(); return; }
+    clearInterval(timers.beat); timers.beat = setInterval(function () { beat(); }, 60000);
+    clearInterval(timers.on); timers.on = setInterval(online, 30000);
+    // Betreiber und Sperre vor dem ersten Anzeigen klären (Löschen-/Sperren-Knöpfe hängen daran)
+    Promise.all([api(Cloud.FS.replace(/\/$/, '') + '/chat_admin/' + me.uid).then(function (r) { admin = r.ok; }), checkBan()]).catch(function () {}).then(function () { drawRooms(); openRoom(); beat(); online(); });
+  }
+  function login() {
+    return Cloud.account().then(function (a) {
+      if (!a) { $('gate').hidden = false; $('nickBox').hidden = $('chat').hidden = true; return; }
+      me = a; nick = ls(NICK + ':' + a.uid);
+      var p = nick || !B || !B.getUserDoc ? Promise.resolve(null) : B.getUserDoc('chat');
+      return p.then(function (d) { if (d && F.check(d.n || '').ok && (d.n || '').length >= 2) setNick(d.n); else if (nick) setNick(nick); start(); });
+    }).catch(function () {});
+  }
+  $('nickForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var n = $('nick').value.replace(/[\u0000-\u001f<>&"']/g, '').replace(/\s+/g, ' ').trim(), c = F.check(n, 20);
+    if (n.length < 2 || n.length > 20) { $('nickErr').textContent = 'Bitte 2 bis 20 Zeichen.'; return; }
+    if (!c.ok) { $('nickErr').textContent = F.REASON[c.reason] || F.REASON.bad; return; }
+    $('nickErr').textContent = ''; setNick(c.text);
+    if (B && B.putUserDoc) B.putUserDoc('chat', { n: c.text }).catch(function () {});
+    start();
+  });
+  $('chNick').addEventListener('click', function (e) { e.preventDefault(); gen++; clearTimeout(timers.poll); $('chat').hidden = true; $('nickBox').hidden = false; $('nick').value = nick; $('nick').focus(); });
+  $('msg').addEventListener('input', function () { $('err').textContent = ''; });
+  $('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var inp = $('msg'), text = inp.value; if (!text.trim()) return;
+    $('send').disabled = true; $('err').textContent = '';
+    send(text).then(function () { inp.value = ''; calm = 0; poll(gen); }).catch(function (er) { $('err').textContent = er.message || 'Senden nicht möglich.'; }).then(function () { $('send').disabled = false; inp.focus(); });
+  });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && me && nick && !$('chat').hidden) { calm = 0; poll(gen); online(); beat(); } });
+  window.addEventListener('pagehide', leave);
+
+  fetch('sync/catalog.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : { games: [] }; }).then(function (c) { games = c.games || []; }, function () {}).then(login);
+  // Anmeldung über das Cloud-Fenster (auch Kopplung in der App) erkennen
+  var logging = false;
+  timers.watch = setInterval(function () {
+    var now = !!user();
+    if (now && !me && !logging) { logging = true; login().then(function () { logging = false; }, function () { logging = false; }); }
+    else if (!now && me) { clearTimeout(timers.poll); clearInterval(timers.beat); clearInterval(timers.on); gen++; leave(); me = null; nick = ''; $('chat').hidden = $('nickBox').hidden = true; $('gate').hidden = false; }
+  }, 1000);
+});
+</script>
+</body>
+</html>

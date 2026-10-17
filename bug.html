@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>Fehler melden – easygames</title>
+<style>
+:root{--bg:#0b1020;--card:#151b33;--line:#ffffff24;--text:#f3f5ff;--mut:#a9b0cf;--acc:#d4fd78}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 14px calc(24px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;gap:12px;margin:0 0 14px}
+header h1{font-size:22px;margin:0;flex:1}
+.back{color:var(--text);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:7px 13px;font-weight:600;font-size:13px}
+body.embed .back{display:none}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.card{margin:14px 0 0;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:14px}
+.card h2{font-size:16px;margin:0 0 6px}
+.card p{margin:6px 0;color:var(--mut);font-size:13px}
+label{display:block;margin:12px 0 4px;font-weight:600;font-size:13px}
+select,textarea{width:100%;border-radius:12px;border:1px solid var(--line);background:#0f1530;color:var(--text);font:16px system-ui;padding:10px 12px}
+select{min-height:46px}
+textarea{min-height:130px;resize:vertical}
+.cnt{text-align:right;font-size:12px;color:var(--mut)}
+.btn{min-height:46px;width:100%;margin-top:12px;border-radius:12px;border:1px solid var(--line);background:#222a4d;color:var(--text);font:600 15px system-ui;cursor:pointer;padding:0 16px;display:flex;align-items:center;justify-content:center;text-decoration:none}
+.btn.pri{background:var(--acc);color:#10140a;border-color:var(--acc)}
+.btn:disabled{opacity:.5;cursor:default}
+.err{color:#f28b82;font-size:13px;min-height:18px;margin:8px 0 0}
+.ok{color:#81c995;font-weight:600}
+details{margin:10px 0 0;color:var(--mut);font-size:12px}
+details pre{white-space:pre-wrap;word-break:break-all;background:#0f1530;border-radius:10px;padding:8px;margin:6px 0 0}
+.it{border:1px solid var(--line);border-radius:12px;padding:10px;margin:8px 0 0;font-size:14px}
+.it .h{display:flex;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--mut);align-items:center}
+.it .h b{color:var(--text)}
+.it .x{white-space:pre-wrap;overflow-wrap:anywhere;margin:4px 0}
+.it button{margin-left:auto;border:1px solid var(--line);background:transparent;color:var(--text);border-radius:8px;min-height:30px;cursor:pointer}
+.tabs{display:flex;gap:8px;margin:8px 0}
+.tab{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:99px;padding:7px 13px;font:600 13px system-ui;cursor:pointer}
+.tab[aria-pressed=true]{background:var(--acc);color:#10140a;border-color:var(--acc)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>🐞 Fehler melden</h1>
+    <a class="back" href="index.html">← Spiele</a>
+  </header>
+
+  <section class="card" id="gate">
+    <h2>Melde dich kurz an</h2>
+    <p>Fehler können angemeldete Spieler melden – so bleiben Meldungen nachvollziehbar und es gibt keinen Spam. Die Anmeldung gilt für alle Spiele und den Chat; dein Name und deine E-Mail werden nicht mitgesendet.</p>
+    <div id="cloudMount"></div>
+  </section>
+
+  <section class="card" id="formBox" hidden>
+    <h2>Was ist passiert?</h2>
+    <form id="form" autocomplete="off" novalidate>
+      <label for="game">Spiel</label>
+      <select id="game"></select>
+      <label for="kind">Art des Fehlers</label>
+      <select id="kind"></select>
+      <label for="text">Beschreibung</label>
+      <textarea id="text" maxlength="1000" placeholder="Was hast du gemacht, was ist passiert und was hast du erwartet?"></textarea>
+      <div class="cnt"><span id="cnt">0</span> / 1000 (mindestens 10 Zeichen)</div>
+      <details><summary>Diese technischen Angaben werden mitgesendet</summary><pre id="info"></pre><p>Keine Spielstände, keine Konto-Daten. Du kannst das Häkchen entfernen.</p></details>
+      <label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="withInfo" checked> Technische Angaben mitsenden (hilft bei der Fehlersuche)</label>
+      <p class="err" id="err" role="alert"></p>
+      <button class="btn pri" id="send" type="submit">Meldung senden</button>
+    </form>
+  </section>
+
+  <section class="card" id="done" hidden>
+    <h2 class="ok">✓ Danke für deine Meldung!</h2>
+    <p>Sie ist angekommen und wird geprüft. Du kannst gern noch einen weiteren Fehler melden.</p>
+    <button class="btn" id="again" type="button">Weiteren Fehler melden</button>
+  </section>
+
+  <section class="card">
+    <h2>Lieber über GitHub?</h2>
+    <p>Mit einem GitHub-Konto geht das auch ohne easygames-Anmeldung. Das Formular oben wird dafür vorausgefüllt.</p>
+    <a class="btn" id="gh" href="https://github.com/ricorewioriginal-collab/easygames/issues/new" target="_blank" rel="noopener">Auf GitHub melden</a>
+  </section>
+
+  <section class="card" id="adm" hidden>
+    <h2>Betreiber: Meldungen</h2>
+    <div class="tabs" id="admTabs"><button class="tab" type="button" data-c="bugs" aria-pressed="true">🐞 Fehler</button><button class="tab" type="button" data-c="chat_reports" aria-pressed="false">💬 Chat-Meldungen</button></div>
+    <div id="admList"></div>
+  </section>
+</main>
+
+<script src="cloud/anmacha-cloud.js" data-game="bug" data-prefix="anmacha-bug-ohne-spielstand" data-mount="#cloudMount" data-sync="off" data-board="off" data-hint="Mit Google anmelden – einmal für alle Spiele." defer></script>
+<script src="cloud/anmacha-bug.js" defer></script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  var Cloud = window.AnMaChaCloud, Bug = window.AnMaChaBug, $ = function (id) { return document.getElementById(id); }, qs = new URLSearchParams(location.search);
+  if (qs.get('embed') === '1') document.body.classList.add('embed');
+  if (!Cloud || !Bug) { $('gate').querySelector('p').textContent = 'Das Melden ist gerade nicht verfügbar.'; $('cloudMount').hidden = true; return; }
+  var me = null, games = [], MIN_GAP = 30000, lastSend = 0, coll = 'bugs';
+  function api(url, opt) {
+    return Cloud.account().then(function (a) {
+      if (!a) throw new Error('login'); me = a;
+      opt = opt || {}; opt.headers = { 'Content-Type': 'application/json', Authorization: 'Bearer ' + a.token };
+      return fetch(url, opt);
+    });
+  }
+  function page() { var r = ''; try { r = document.referrer ? new URL(document.referrer).origin : ''; } catch (e) {} return r && r !== location.origin ? r : ''; }
+  function cur() {
+    var info = Bug.deviceInfo(window), o = {}; try { o = JSON.parse(info); } catch (e) {}
+    if (page()) o.embedder = page();
+    return { info: JSON.stringify(o), page: page() };
+  }
+  function fill() {
+    var g = $('game'), want = (qs.get('game') || '').replace(/[^\w-]/g, '');
+    g.innerHTML = '<option value="">Allgemein / easygames-Seite</option>' + games.filter(function (x) { return x.cloud && x.cloud.game; }).map(function (x) { return '<option value="' + x.cloud.game + '">' + (x.icon || '') + ' ' + String(x.title).split(' – ')[0].replace(/[<>&"]/g, '') + '</option>'; }).join('');
+    if (want) g.value = want; if (g.value !== want) g.value = '';
+    $('kind').innerHTML = Bug.KINDS.map(function (k) { return '<option value="' + k[0] + '">' + k[1] + '</option>'; }).join('');
+    $('info').textContent = cur().info;
+  }
+  function report() { return { game: $('game').value, kind: $('kind').value, text: $('text').value.trim(), info: $('withInfo').checked ? cur().info : '', page: $('withInfo').checked ? cur().page : '' }; }
+  function gh() { $('gh').href = Bug.githubUrl(Object.assign(report(), { text: report().text || 'Beschreibung des Fehlers' })); }
+  $('text').addEventListener('input', function () { $('cnt').textContent = String($('text').value.length); $('err').textContent = ''; gh(); });
+  ['game', 'kind', 'withInfo'].forEach(function (id) { $(id).addEventListener('change', gh); });
+  $('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var r = report(), now = Date.now();
+    if (r.text.length < 10) { $('err').textContent = 'Bitte beschreibe den Fehler mit mindestens 10 Zeichen.'; return; }
+    if (now - lastSend < MIN_GAP) { $('err').textContent = 'Bitte kurz warten, bevor du die nächste Meldung sendest.'; return; }
+    $('send').disabled = true; $('err').textContent = '';
+    api(Bug.commitUrl(Cloud.FS), { method: 'POST', body: JSON.stringify(Bug.sendBody(Cloud.FS, me.uid, r)) }).then(function (res) {
+      if (!res.ok) throw new Error(res.status === 403 || res.status === 400 ? 'Senden nicht möglich – zu viele Meldungen kurz hintereinander oder keine Berechtigung. Bitte später erneut versuchen.' : 'Senden gerade nicht möglich.');
+      lastSend = Date.now(); $('formBox').hidden = true; $('done').hidden = false; $('text').value = ''; $('cnt').textContent = '0';
+    }).catch(function (er) { $('err').textContent = er.message === 'login' ? 'Bitte neu anmelden.' : er.message; }).then(function () { $('send').disabled = false; });
+  });
+  $('again').addEventListener('click', function () { $('done').hidden = true; $('formBox').hidden = false; $('text').focus(); });
+
+  // ---- Betreiber: Meldungen lesen und erledigen (Dokument chat_admin/<uid>) ----
+  function admList() {
+    api(Bug.rootQueryUrl(Cloud.FS), { method: 'POST', body: JSON.stringify(Bug.listQuery(coll)) }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
+      var list = Bug.parse(rows), box = $('admList'); box.textContent = '';
+      if (!list.length) { box.textContent = 'Keine Meldungen. 🎉'; return; }
+      list.forEach(function (x) {
+        var d = document.createElement('div'); d.className = 'it';
+        var h = document.createElement('div'); h.className = 'h';
+        var b = document.createElement('b'); b.textContent = coll === 'bugs' ? (x.g || 'allgemein') + ' · ' + x.c : 'Raum ' + x.room; h.appendChild(b);
+        var t = document.createElement('span'); t.textContent = new Date(x.t).toLocaleString('de-DE'); h.appendChild(t);
+        var del = document.createElement('button'); del.type = 'button'; del.textContent = '✓ erledigt'; del.onclick = function () { api(Cloud.FS.replace(/\/$/, '') + '/' + coll + '/' + x.id, { method: 'DELETE' }).then(function (r) { if (r.ok) d.remove(); }); }; h.appendChild(del);
+        var tx = document.createElement('div'); tx.className = 'x'; tx.textContent = x.x; d.appendChild(h); d.appendChild(tx);
+        var more = x.i || x.p || (coll !== 'bugs' ? 'Autor: ' + x.u + ' · Nachricht: ' + x.m : '');
+        if (more) { var s = document.createElement('details'); var sm = document.createElement('summary'); sm.textContent = 'Details'; var pre = document.createElement('pre'); pre.textContent = (x.p ? 'Seite: ' + x.p + '\n' : '') + more; s.appendChild(sm); s.appendChild(pre); d.appendChild(s); }
+        box.appendChild(d);
+      });
+    }).catch(function () {});
+  }
+  $('admTabs').addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('.tab'); if (!b) return; coll = b.dataset.c; Array.prototype.forEach.call($('admTabs').children, function (x) { x.setAttribute('aria-pressed', String(x === b)); }); admList(); });
+  function login() {
+    return Cloud.account().then(function (a) {
+      $('gate').hidden = !!a; $('formBox').hidden = !a;
+      if (!a) { $('adm').hidden = true; return; }
+      me = a; fill(); gh();
+      api(Cloud.FS.replace(/\/$/, '') + '/chat_admin/' + a.uid).then(function (r) { if (r.ok) { $('adm').hidden = false; admList(); } }).catch(function () {});
+    }).catch(function () {});
+  }
+  fetch('sync/catalog.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : { games: [] }; }).then(function (c) { games = c.games || []; }, function () {}).then(function () { fill(); gh(); return login(); });
+  var logging = false;
+  setInterval(function () {
+    var now = !!(Cloud.user && Cloud.user());
+    if (now && !me && !logging) { logging = true; login().then(function () { logging = false; }, function () { logging = false; }); }
+    else if (!now && me) { me = null; $('formBox').hidden = $('done').hidden = $('adm').hidden = true; $('gate').hidden = false; }
+  }, 1000);
+});
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@
   "type": "module",
   "description": "Tests der Firestore-Regeln für die RicoVille-Nachbarn gegen den lokalen Emulator (kein Server, Spark-Tarif).",
   "scripts": {
-    "test": "firebase emulators:exec --only firestore --project demo-ricoville \"node --test rules.test.mjs boards.rules.test.mjs\""
+    "test": "firebase emulators:exec --only firestore --project demo-ricoville \"node --test rules.test.mjs boards.rules.test.mjs chat.rules.test.mjs bug.rules.test.mjs\""
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^4.0.1",

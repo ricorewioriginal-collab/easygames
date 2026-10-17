@@ -32,6 +32,15 @@
  * Erfolge (spielübergreifend, mit Google-Sicherung):
  *      <button data-easygames="erfolge" data-mode="overlay">🏅 Erfolge</button>   |   EasyGames.open('erfolge')   |   EasyGames.achievements('#ziel')
  *    Oder direkt per iframe: https://…/easygames/erfolge.html?embed=1
+ *  - Benutzerkonto (einmal mit Google anmelden, gilt in allen Spielen):
+ *      <div data-easygames="konto"></div>  |  <button data-easygames="konto" data-mode="overlay">👤 Konto</button>  |  EasyGames.open('konto')  |  EasyGames.account('#ziel')
+ *    Oder direkt per iframe: https://…/easygames/konto.html?embed=1
+ *  - Chat für angemeldete Spieler (gefiltert; data-room = Raum: lobby | mitspieler | tipps | g-<spiel-id>):
+ *      <div data-easygames="chat" data-room="lobby"></div>  |  <button data-easygames="chat" data-mode="overlay">💬 Chat</button>  |  EasyGames.open('chat', { room })  |  EasyGames.chat('#ziel', { room })
+ *    Oder direkt per iframe: https://…/easygames/chat.html?embed=1[&room=<raum>]
+ *  - Fehler melden (angemeldete Spieler; data-game = Spiel-ID vorwählen):
+ *      <button data-easygames="bug" data-mode="overlay" data-game="anmacha-snake">🐞 Fehler melden</button>  |  EasyGames.open('bug', { game })  |  EasyGames.bug('#ziel', { game })
+ *    Oder direkt per iframe: https://…/easygames/bug.html?embed=1[&game=<cloud-id>]
  *
  * Weitere Funktionen:
  *      EasyGames.ready(() => console.log(EasyGames.list()));   // alle Spiele (id, title, desc, url …)
@@ -129,17 +138,23 @@
   function boardUrl(o) { return base + 'ranglisten.html?embed=1' + (o && o.game ? '&game=' + encodeURIComponent(o.game) : ''); }
   // Erfolge-Seite (spielübergreifend)
   function achUrl() { return base + 'erfolge.html?embed=1'; }
+  // Benutzerkonto (Anmeldung für alle Spiele)
+  function accUrl() { return base + 'konto.html?embed=1'; }
+  // Chat (room: lobby | mitspieler | tipps | g-<spiel-id>)
+  // Fehler melden (game = Cloud-ID des Spiels, z. B. snake)
+  function bugUrl(o) { return base + 'bug.html?embed=1' + (o && o.game && /^[\w-]{1,40}$/.test(o.game) ? '&game=' + o.game : ''); }
+  function chatUrl(o) { return base + 'chat.html?embed=1' + (o && o.room && /^[a-z0-9-]{1,40}$/.test(o.room) ? '&room=' + o.room : ''); }
   var current = null;
   EG.close = function () { if (current) current(false); };
   // EasyGames.open('zotik' | 'all', { close:false, fullscreen:false, title, onClose })
   EG.open = function (game, o) {
     o = o || {};
     EG.ready(function () {
-      var board = game === 'ranglisten', ach = game === 'erfolge', g = game && game !== 'all' && !board && !ach ? find(game) : null;
-      if (game && game !== 'all' && !board && !ach && !g) { console.error('EasyGames: unbekanntes Spiel "' + game + '"'); return; }
+      var board = game === 'ranglisten', ach = game === 'erfolge', acc = game === 'konto', chat = game === 'chat', bug = game === 'bug', g = game && game !== 'all' && !board && !ach && !acc && !chat && !bug ? find(game) : null;
+      if (game && game !== 'all' && !board && !ach && !acc && !chat && !bug && !g) { console.error('EasyGames: unbekanntes Spiel "' + game + '"'); return; }
       var reuse = !!current && !!(history.state && history.state.egOverlay), opener = current && current.opener || document.activeElement;   // Verlaufseintrag und Fokus-Ziel des alten Overlays weiterverwenden
       if (current) current(true);   // ersetzt ein offenes Overlay (ohne Verlaufsschritt zurück, sonst würde das neue sofort schließen)
-      var title = o.title || (g ? g.title : board ? 'easygames – Ranglisten' : ach ? 'easygames – Erfolge' : 'easygames – Spielebibliothek'), box = document.createElement('div'), f = fullFrame(g ? gameUrl(g) : board ? boardUrl(o) : ach ? achUrl() : libUrl(o), title);
+      var title = o.title || (g ? g.title : board ? 'easygames – Ranglisten' : ach ? 'easygames – Erfolge' : acc ? 'easygames – Konto' : chat ? 'easygames – Chat' : bug ? 'easygames – Fehler melden' : 'easygames – Spielebibliothek'), box = document.createElement('div'), f = fullFrame(g ? gameUrl(g) : board ? boardUrl(o) : ach ? achUrl() : acc ? accUrl() : chat ? chatUrl(o) : bug ? bugUrl(o) : libUrl(o), title);
       box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', title);
       box.style.cssText = LAYER_CSS;
       box.appendChild(f);
@@ -272,13 +287,46 @@
     return t;
   };
 
+  // EasyGames.account(ziel, { mode: 'page'|'overlay', … }) – Benutzerkonto: einmal anmelden, in allen Spielen angemeldet
+  EG.account = function (target, o) {
+    o = o || {};
+    var t = el(target);
+    if (!t) { console.error('EasyGames: Ziel nicht gefunden:', target); return null; }
+    if (o.mode === 'overlay') { bindOpen(t, 'konto', o); return t; }
+    if (o.mode === 'page') { pageLayer(t, accUrl(), o.title || 'easygames – Konto'); return t; }
+    t.appendChild(frame(accUrl(), o.title || 'easygames – Konto', o));
+    return t;
+  };
+
+  // EasyGames.chat(ziel, { room, mode: 'page'|'overlay', … }) – Chat für angemeldete Spieler
+  EG.chat = function (target, o) {
+    o = o || {};
+    var t = el(target);
+    if (!t) { console.error('EasyGames: Ziel nicht gefunden:', target); return null; }
+    if (o.mode === 'overlay') { bindOpen(t, 'chat', o); return t; }
+    if (o.mode === 'page') { pageLayer(t, chatUrl(o), o.title || 'easygames – Chat'); return t; }
+    t.appendChild(frame(chatUrl(o), o.title || 'easygames – Chat', o));
+    return t;
+  };
+
+  // EasyGames.bug(ziel, { game, mode: 'page'|'overlay', … }) – Fehler melden (angemeldete Spieler)
+  EG.bug = function (target, o) {
+    o = o || {};
+    var t = el(target);
+    if (!t) { console.error('EasyGames: Ziel nicht gefunden:', target); return null; }
+    if (o.mode === 'overlay') { bindOpen(t, 'bug', o); return t; }
+    if (o.mode === 'page') { pageLayer(t, bugUrl(o), o.title || 'easygames – Fehler melden'); return t; }
+    t.appendChild(frame(bugUrl(o), o.title || 'easygames – Fehler melden', o));
+    return t;
+  };
+
   function scan() {
     var nodes = document.querySelectorAll('[data-easygames]');
     for (var i = 0; i < nodes.length; i++) {
       var n = nodes[i]; if (n.getAttribute('data-easygames-done')) continue;
       n.setAttribute('data-easygames-done', '1');
       var d = n.dataset, o = { width: d.width, maxWidth: d.maxWidth, ratio: d.ratio, height: d.height, radius: d.radius, title: d.title, fullscreen: d.fullscreen, tvLink: d.tvLink, mode: d.mode, close: d.close, layout: d.layout };
-      if (d.easygames === 'all') EG.library(n, o); else if (d.easygames === 'ranglisten') { o.game = d.game; EG.leaderboard(n, o); } else if (d.easygames === 'erfolge') EG.achievements(n, o); else { o.game = d.easygames; EG.embed(n, o); }
+      if (d.easygames === 'all') EG.library(n, o); else if (d.easygames === 'ranglisten') { o.game = d.game; EG.leaderboard(n, o); } else if (d.easygames === 'erfolge') EG.achievements(n, o); else if (d.easygames === 'konto') EG.account(n, o); else if (d.easygames === 'chat') { o.room = d.room; EG.chat(n, o); } else if (d.easygames === 'bug') { o.game = d.game; EG.bug(n, o); } else { o.game = d.easygames; EG.embed(n, o); }
     }
   }
   EG.scan = scan;

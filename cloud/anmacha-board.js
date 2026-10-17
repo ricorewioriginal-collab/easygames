@@ -439,10 +439,26 @@
     if (h >= 5 && h < 8 && !s.f.early) { s.f.early = now.getTime(); ch = true; }
     var wd = now.getDay();
     if ((wd === 0 || wd === 6) && !s.f.weekend) { s.f.weekend = now.getTime(); ch = true; }
+    // Verschiedene Spiele an einem Tag (Spielemarathon) und Gerätearten (App, Fernseher)
+    if (!s.t || s.t.d !== day || !Array.isArray(s.t.g)) { s.t = { d: day, g: [] }; ch = true; }
+    if (s.t.g.indexOf(gameId) < 0) { s.t.g.push(gameId); if (s.t.g.length > (Number(s.m) || 0)) s.m = s.t.g.length; ch = true; }
+    var ua = '', host = '';
+    try { ua = navigator.userAgent || ''; host = location.hostname || ''; } catch (e) {}
+    if (!s.f.app && (window.EasyGamesApp || /(RicoReWi|EasyGames)App\//.test(ua) || /^appassets\./.test(host))) { s.f.app = now.getTime(); ch = true; }
+    if (!s.f.tv && (/[?&](tv=1|device=tv)\b/.test(location.search) || /SmartTV|Smart-TV|Tizen|Web0S|WebOS|NetCast|HbbTV|Android TV|GoogleTV|AppleTV|BRAVIA|CrKey|VIDAA|Fire TV|AFTM|AFTB|AFTT|AFTN/i.test(ua))) { s.f.tv = now.getTime(); ch = true; }
     if (ch) put(KEY_SEEN, JSON.stringify(s));
   }
+  // Einzelne Flagge in den Spielspuren setzen (z. B. 'pad' beim Anschließen eines Controllers)
+  function flag(name) {
+    var s = null;
+    try { s = JSON.parse(get(KEY_SEEN) || 'null'); } catch (e) {}
+    if (!s || typeof s !== 'object') s = {};
+    s.f = s.f && typeof s.f === 'object' ? s.f : {};
+    if (s.f[name]) return;
+    s.f[name] = Date.now(); put(KEY_SEEN, JSON.stringify(s));
+  }
 
-  var API = { _t: T, values: values, getUserDoc: getUserDoc, putUserDoc: putUserDoc, touch: touch, detect: detect, readValue: readValue, REG: REG, SLOTS: SLOTS, boardsFor: boardsFor, isOptOut: isOptOut, isAuto: isAuto, query: query, probe: probe, loadProfile: loadProfile, saveProfile: saveProfile,
+  var API = { _t: T, flag: flag, values: values, getUserDoc: getUserDoc, putUserDoc: putUserDoc, touch: touch, detect: detect, readValue: readValue, REG: REG, SLOTS: SLOTS, boardsFor: boardsFor, isOptOut: isOptOut, isAuto: isAuto, query: query, probe: probe, loadProfile: loadProfile, saveProfile: saveProfile,
     shared: shared, nick: function () { return cleanName(get(KEY_NICK)); }, submitGame: submitGame, submitLocal: submitLocal, removeAll: removeAll, localPairs: localPairs,
     fmt: fmt, cleanName: cleanName, message: function () { return lastMsg; } };
   window.AnMaChaBoard = API;
@@ -452,6 +468,22 @@
   if (!game || !LS) return;
   if (game === 'erfolge' || game === 'ranglisten') return;   // Übersichtsseiten zählen nicht als Spielen (keine Spielspuren, nichts einreichen)
   touch(game);   // Erfolge: Spiel/Tag merken (auch bei Spielen ohne Rangliste)
+  try { window.addEventListener('gamepadconnected', function () { flag('pad'); }); } catch (e) {}
+  // Erfolge ins Profil (nur angemeldet): beste Werte und Spiel-Erfolge dieses Spiels, damit die Erfolge-Seite sie auch dann kennt, wenn sie unter anderer Adresse läuft (Apps)
+  var BASE = (document.currentScript && document.currentScript.src || '').replace(/[^/]*$/, '');
+  function need(file, name) {
+    if (window[name]) return Promise.resolve();
+    return new Promise(function (res, rej) { var sc = document.createElement('script'); sc.src = (BASE || '') + file; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); });
+  }
+  function pushAch() {
+    var u = Cloud && Cloud.user ? Cloud.user() : null;
+    if (!u || !BASE) return Promise.resolve();
+    return need('anmacha-ach.js', 'AnMaChaAch').then(function () { return need('anmacha-gameach.js', 'AnMaChaGameAch'); })
+      .then(function () { return window.AnMaChaAch.pushGame(game, API, window.AnMaChaGameAch); }).catch(function () {});
+  }
+  API.pushAch = pushAch;
+  setTimeout(pushAch, 9000);
+  setInterval(function () { if (!document.hidden) pushAch(); }, 330000);
   if (isOptOut(game)) return;
   function run() { touch(game); return loadProfile(false).then(function () { return submitGame(game, localPairs(null)); }); }
   API.submit = run;

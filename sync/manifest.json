@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "bb7a92ef9818",
- "generated": "2026-10-17T02:29:05+00:00",
- "commit": "a5f572d9dd47bd7031a86f3ce93514a88cded99e",
+ "version": "057046728b4b",
+ "generated": "2026-10-17T02:56:42+00:00",
+ "commit": "5b4f5cbd568f925659b3c58f8095a89cd61beb00",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3972,6 +3972,11 @@
    "h": "4c9536af9fe70cc484c808f1723a2513c0c281e5658a35c8846cbb275f2f22e8"
   },
   {
+   "p": "bug.html",
+   "s": 12525,
+   "h": "86dd64f1510a1acd7075b18230044ab12f7ba5c33975b3b86de6fce73f9b35b4"
+  },
+  {
    "p": "bunte-insel/card.png",
    "s": 116908,
    "h": "a8b67e74057b3fb5836c2697b8e3d935084b67aaabc904eb092437e64da57dd7"
@@ -4612,19 +4617,44 @@
    "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
   },
   {
+   "p": "chat.html",
+   "s": 19557,
+   "h": "f0eb7c687d48ee1f54383d3e12616e390dcb035fa83b0ba45560a4e7aa2467be"
+  },
+  {
    "p": "cloud/anmacha-ach.js",
-   "s": 10431,
-   "h": "1d25162f86e2c0cd686df8325fecf11d994ad45bed4a49ee86a8ef5cf85a62f7"
+   "s": 17261,
+   "h": "77dfd48074d509cffc1c056bcb570a2aaa3742fc75c2e0e2dc0520a6fc05e176"
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 28729,
-   "h": "3519a6d6418c5df3a9cf067826e73591e817d06813c5028cbbd96136c38e85ed"
+   "s": 31111,
+   "h": "3a8245ce3bf0103d224089751c4d51c8d2a64f8ca8c5f9d0441e2dfdec1c4535"
+  },
+  {
+   "p": "cloud/anmacha-bug.js",
+   "s": 4537,
+   "h": "c968770aff8e6d04e0a360647103860385a8eba97733aacec41f7673084299c6"
+  },
+  {
+   "p": "cloud/anmacha-chat.js",
+   "s": 5687,
+   "h": "bba5a3493d80c1d78f72e76e20b09b64ecd62e7334cf07231b7dbc4b42cb0456"
+  },
+  {
+   "p": "cloud/anmacha-chatfilter.js",
+   "s": 8239,
+   "h": "57feb9b934134927f4d3ef190551b6dd4a507117a415b806a673a7f2bbf35472"
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 31101,
-   "h": "c8efa0a58a75cac14e0c65ea8e4c437363e09c867b4b328b70cedce9400885ee"
+   "s": 31929,
+   "h": "830b585ac897a2c70e0dfcb0711aa563d5d87c3acd23fde040fbcedd9861484a"
+  },
+  {
+   "p": "cloud/anmacha-gameach.js",
+   "s": 45039,
+   "h": "7234166bdc18770379d64191f96314daaa0e4d3b89d09b5e62f316284e2b4f02"
   },
   {
    "p": "cloud/fire-peer.js",
@@ -4638,18 +4668,18 @@
   },
   {
    "p": "easygames.js",
-   "s": 20948,
-   "h": "84fc5c04033a93c1c938c6efd25d0417f797634cf2a8c933b39fd2e660d0f9a4"
+   "s": 24598,
+   "h": "79d8a5159ed0d9c8c35db218ae9504aae399a08873380c8d5e0d00e5eee84dd8"
   },
   {
    "p": "einbinden.html",
-   "s": 70732,
-   "h": "233e14007a3245f777712b196b7febffd26cf8ad284e6a99206ffe45be4879b1"
+   "s": 73386,
+   "h": "e2039697a81e23fc949a4155a4f8503ea1a5c510688e64c11ec5f72b13805196"
   },
   {
    "p": "erfolge.html",
-   "s": 11309,
-   "h": "6b4ede713beb373221edb85b24e19c0e49a799413fd2fe0c72c853f141ad2e37"
+   "s": 15599,
+   "h": "4ca06d3f153e7979d706ce07b4fb881afd9294b78aec5d60071bc4d99144b689"
   },
   {
    "p": "favicon.ico",
@@ -4898,8 +4928,8 @@
   },
   {
    "p": "index.html",
-   "s": 58413,
-   "h": "9385d132aac02138631c109080e8b1cf865a0407fc24cb0325e59a33b3292ff8"
+   "s": 58619,
+   "h": "dff7307456aab0b614ef17efbd522b43d6f42e783a324b203abfcfea5d6950ec"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -5003,8 +5033,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 31101,
-   "h": "c8efa0a58a75cac14e0c65ea8e4c437363e09c867b4b328b70cedce9400885ee"
+   "s": 31929,
+   "h": "830b585ac897a2c70e0dfcb0711aa563d5d87c3acd23fde040fbcedd9861484a"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -5015,6 +5045,11 @@
    "p": "kiko-sterneninseln/vite.config.js",
    "s": 214,
    "h": "455543146b29d9a6f7943ac05350b9e95f9dfdf2f100babff20a2f6a4802f316"
+  },
+  {
+   "p": "konto.html",
+   "s": 10078,
+   "h": "ea42ac8b2613417f57219da814124a9f18fce31434139f9db140c1aaa2bf7635"
   },
   {
    "p": "kraterkommando/card.svg",
@@ -5969,7 +6004,7 @@
   {
    "p": "sync/catalog.json",
    "s": 98297,
-   "h": "2e243c235cb98075e4ecd3a0f8df0d08607e22607cd9448bd5ec0c83e5184d79"
+   "h": "fff3e86fadafed4fdfe1a0bbadb029de3794b26a994c03453669698778fe98f0"
   },
   {
    "p": "taschi/card.svg",

@@ -53,7 +53,7 @@ function makeEnv(game, { user = null, store = {}, firestore = {}, prefix = '' } 
     AnMaChaCloud: { game, FS: 'https://fs/v1/projects/p/databases/(default)/documents/', signIn() {}, user: () => user, mine: k => !!prefix && k.startsWith(prefix) },
   };
   win.window = win;
-  const ctx = vm.createContext({ ...win, document: { body: { appendChild() { throw new Error('UI im Spiel'); } }, createElement() { throw new Error('UI im Spiel'); }, hidden: false, addEventListener() {} }, console, Date, JSON, Math, Number, String, Object, isFinite, Promise, Error, Array });
+  const ctx = vm.createContext({ ...win, location: { search: '', hostname: 'localhost' }, navigator: { userAgent: 'test' }, document: { body: { appendChild() { throw new Error('UI im Spiel'); } }, createElement() { throw new Error('UI im Spiel'); }, hidden: false, addEventListener() {} }, console, Date, JSON, Math, Number, String, Object, isFinite, Promise, Error, Array });
   ctx.window = ctx; ctx.fetch = fetchFake; ctx.localStorage = ls;
   vm.runInContext(src, ctx);
   return { ctx, store, firestore, calls, timers };
