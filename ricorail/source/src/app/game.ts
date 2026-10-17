@@ -67,6 +67,7 @@ export class Game {
   private cab: CabModel | null = null;
   private cabFor = '';
   private eye = new THREE.Vector3(5, 3, -0.6);
+  private eyeBase = new THREE.Vector3(5, 3, -0.6);
   private raf = 0;
   private last = 0;
   private paused = false;
@@ -203,9 +204,11 @@ export class Game {
         this.cab = buildCab(layout, this.qual.model);
         // Führerstand sitzt an der Vorderkante des Fahrzeugs (x = len/2); eye ist im Führerstandssystem
         const half = lead!.type.len / 2;
-        this.eye.copy(this.cab.eye).add(new THREE.Vector3(half, 0, 0));
+        this.eyeBase.copy(this.cab.eye).add(new THREE.Vector3(half, 0, 0));
       }
     }
+    // Hochformat: Blick etwas weiter vorn und höher, damit das Pult nicht die halbe Sicht verdeckt
+    if (this.cab) { this.eye.copy(this.eyeBase); if (innerHeight > innerWidth) { this.eye.x += 0.55; this.eye.y += 0.22; } }
     // Führerstand nicht an die (im Führerstand ausgeblendete) Fahrzeuggruppe hängen, sondern deren Matrix übernehmen
     if (this.cab && t && this.trains.leadGroup) {
       const cg = this.cab.group;
@@ -229,8 +232,8 @@ export class Game {
     if (this.input.axis.active && Math.abs(this.input.axis.lever) > 0.02) this.lever = this.input.axis.lever;
     // Schnappen auf 0 nahe Mitte
     if (!held.has('throttleUp') && !held.has('throttleDown') && Math.abs(this.lever) < 0.04) this.lever = 0;
-    if (this.ctx.settings.controls === 'simple') this.simpleAssist(t, dt);
-    const L = this.lever;
+    const hold = this.ctx.settings.controls === 'simple' ? this.simpleAssist(t, dt) : false;
+    const L = hold ? Math.min(0, this.lever) : this.lever;
     let thr = Math.max(0, L);
     if (t.traction === 'diesel' && t.consist[0].type.body !== 'dmu') thr = Math.round(thr * 8) / 8; // Fahrstufen
     c.throttle = thr;
@@ -254,8 +257,18 @@ export class Game {
   /** Einfache Bedienung: Richtung, Bremse lösen, Stromabnehmer/Motor und Türen übernimmt das Spiel */
   private stillT = 0;
   private doorStop = '';
-  private simpleAssist(t: Train, dt: number) {
+  private holdMsg = -1;
+  /** gibt true zurück, solange der Zug noch nicht abfahren darf (Halt bis zur Abfahrtszeit) */
+  private simpleAssist(t: Train, dt: number): boolean {
     const c = t.ctl, still = Math.abs(t.v) < 0.1;
+    const plan = this.s.world.plans.get(t.id);
+    const hold = still && plan?.state === 'dwell';
+    // nach einer Schnellbremsung im Stillstand automatisch lösen
+    if (still && c.emergency && this.stillT > 3) { c.emergency = false; toast('Schnellbremsung gelöst – weiterfahren'); }
+    if (hold && this.lever > 0.02 && this.holdMsg !== plan!.stopIdx) {
+      this.holdMsg = plan!.stopIdx;
+      toast(`Noch nicht abfahren – Abfahrt ${hhmm(plan!.dwellUntil)}. Der Zug fährt los, sobald es so weit ist.`, 'warn', 5000);
+    }
     this.manBrake = 0;
     if (t.traction === 'electric') { c.panto = true; c.mainSwitch = true; }
     if (t.traction === 'diesel') c.engine = true;
@@ -266,14 +279,15 @@ export class Game {
     if (this.lever > 0.02 && still && c.reverser === 0) c.reverser = 1;
     this.stillT = still ? this.stillT + dt : 0;
     const where = `${t.head.t}:${Math.round(t.head.s / 50)}`;
-    if (this.lever > 0.02) {
+    if (this.lever > 0.02 && !hold) {
       // Losfahren: Türen zu
       if (c.openL || c.openR || c.releaseL || c.releaseR) { c.openL = c.openR = c.releaseL = c.releaseR = false; this.ctx.audio.play('door_beep'); toast('Türen schließen – gleich geht es los'); }
     } else if (t.hasDoors && this.stillT > 1.2 && this.doorStop !== where) {
       const side = this.platformSide(t);
-      if (side) { this.doorStop = where; c.releaseL = c.openL = side === 'L'; c.releaseR = c.openR = side === 'R'; this.ctx.audio.play('door_open'); toast(`Türen ${side === 'L' ? 'links' : 'rechts'} offen – zum Weiterfahren Hebel nach oben`); }
+      if (side) { this.doorStop = where; c.releaseL = c.openL = side === 'L'; c.releaseR = c.openR = side === 'R'; this.ctx.audio.play('door_open'); toast(`Türen ${side === 'L' ? 'links' : 'rechts'} offen${plan?.state === 'dwell' ? ` – Abfahrt ${hhmm(plan.dwellUntil)}` : ' – zum Weiterfahren Hebel nach oben'}`); }
     }
     if (!still) this.doorStop = this.doorStop && this.stillT === 0 && Math.abs(t.v) > 3 ? '' : this.doorStop;
+    return hold;
   }
 
   setLever(v: number) { this.lever = Math.max(this.s.world.assist === 'expert' && this.ctx.settings.controls !== 'simple' ? 0 : -1, Math.min(1, v)); }
