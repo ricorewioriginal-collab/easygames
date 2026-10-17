@@ -403,7 +403,7 @@ if (isTv) document.documentElement.classList.add('tv');
 // ----- Kacheln -----
 GAMES.forEach((g, i) => {
   const c = document.createElement('div');
-  c.className = 'card'; c.dataset.i = i; c.dataset.s = (g.title + ' ' + g.desc).toLowerCase();
+  c.className = 'card'; c.dataset.i = i; c.dataset.id = g.id; c.dataset.s = (g.title + ' ' + g.desc).toLowerCase();
   const b = document.createElement('button');
   b.className = 'tile';
   b.innerHTML = `<div class="icon${g.img ? ' has-img' : ''}" style="background:${g.bg};--g:${g.glow}">${g.external ? '<div class="ext">extern</div>' : ''}${g.img ? `<img src="${g.img}" alt="" loading="lazy">` : `<span>${g.icon}</span>`}</div><div class="info"><b></b><span class="badges"></span><small></small><span class="play">Spielen ▶</span></div>`;
@@ -421,10 +421,10 @@ GAMES.forEach((g, i) => {
   $('grid').appendChild(c);
 });
 const tiles = [...$('grid').children];
-let modeF = '', heroOn = false, recentOn = false;
+let modeF = '', heroOn = false, recentOn = false, heroGame = '', OFF = {};   // OFF: vom Betreiber ausgeblendete Spiele { id: true } (Spiele-Verwaltung, config/games)
 function filt() {
   const q = $('q').value.trim().toLowerCase(); let n = 0;
-  tiles.forEach(t => { const m = (!q || t.dataset.s.includes(q)) && (!modeF || (' ' + t.dataset.m + ' ').includes(' ' + modeF + ' ')); t.hidden = !m; if (m) n++; });
+  tiles.forEach(t => { const m = !OFF[t.dataset.id] && (!q || t.dataset.s.includes(q)) && (!modeF || (' ' + t.dataset.m + ' ').includes(' ' + modeF + ' ')); t.hidden = !m; if (m) n++; });
   $('count').textContent = n + (n === 1 ? ' Spiel' : ' Spiele');
   $('empty').classList.toggle('hidden', n > 0);
   const filtering = !!(q || modeF);
@@ -733,7 +733,7 @@ function renderRecent() {
   b.appendChild(el('p', '', g.desc));
   const row = el('div', 'row'), play = el('button', 'primary', '▶ Spielen'), more = el('button', 'pill', '📖 Details & Handbuch');
   play.onclick = () => openGame(i); more.onclick = () => openDetail(i, 'info'); row.append(play, more); b.appendChild(row); h.appendChild(b);
-  h.classList.remove('hidden'); heroOn = true; filt();
+  h.classList.remove('hidden'); heroOn = !OFF[g.id]; heroGame = g.id; filt();
 })();
 renderRecent();
 
@@ -743,6 +743,31 @@ fetch('sync/catalog.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : nu
   (c.games || []).forEach(x => { CAT[x.id] = x; });
   if (c.links) { if (c.links.radio) $('lRadio').href = c.links.radio; if (c.links.githubPage) $('lGh').href = c.links.githubPage; }
 }).catch(() => {});
+
+// ----- Spiele-Verwaltung: Betreiber kann Spiele ausblenden und Wartungshinweise setzen (öffentliches Firestore-Dokument config/games; ohne Netz/Dokument bleibt alles wie gehabt) -----
+(function adminConfig() {
+  const KEY = 'easygames-config', FSURL = 'https://firestore.googleapis.com/v1/projects/ricorewi-games-save/databases/(default)/documents/config/games';
+  const apply = cfg => {
+    if (!cfg || typeof cfg !== 'object') return;
+    const hide = Array.isArray(cfg.hide) ? cfg.hide : [], note = cfg.note && typeof cfg.note === 'object' ? cfg.note : {};
+    OFF = {}; hide.forEach(id => { OFF[String(id)] = true; });
+    tiles.forEach(t => {
+      const n = typeof note[t.dataset.id] === 'string' ? note[t.dataset.id].slice(0, 100) : '', old = t.querySelector('.maint'); if (old) old.remove();
+      if (n) { const bd = t.querySelector('.info') || t; const e = document.createElement('i'); e.className = 'maint'; e.textContent = '🔧 ' + n; e.style.cssText = 'display:block;margin-top:4px;font-style:normal;font-size:.78rem;color:#ffc53d'; bd.appendChild(e); }
+    });
+    if (heroGame) heroOn = !OFF[heroGame];   // Empfohlenes Spiel nicht zeigen, wenn es ausgeblendet ist
+    filt();
+  };
+  let cached = null; try { cached = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+  if (cached && cached.cfg) apply(cached.cfg);
+  if (cached && Date.now() - cached.t < 600000) return;   // höchstens alle 10 Minuten nachfragen (spart Firestore-Abfragen)
+  fetch(FSURL).then(r => r.ok ? r.json() : (r.status === 404 ? { fields: {} } : null)).then(j => {
+    if (!j) return;
+    let cfg = {}; try { cfg = JSON.parse((j.fields && j.fields.d && j.fields.d.stringValue) || '{}') || {}; } catch (e) {}
+    try { localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), cfg })); } catch (e) {}
+    apply(cfg);
+  }).catch(() => {});
+})();
 
 // ----- Android-App: Status der Offline-Inhalte (Brücke EasyGamesApp, nur in der App vorhanden) -----
 (function appBar() {
