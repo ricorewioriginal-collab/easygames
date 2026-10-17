@@ -67,6 +67,7 @@ body:not(.in) #out{display:none}
       <a href="erfolge.html" id="lAch">🏅 Erfolge</a>
       <a href="ranglisten.html" id="lBoard">🏆 Ranglisten &amp; Spitzname</a>
       <a href="chat.html" id="lChat">💬 Chat</a>
+      <a href="bug.html" id="lBug">🐞 Fehler melden</a>
       <a href="index.html" id="lGames">🎮 Spiele</a>
     </div>
   </section>
@@ -94,7 +95,7 @@ window.addEventListener('DOMContentLoaded', function () {
   var $ = function (id) { return document.getElementById(id); };
   if (new URLSearchParams(location.search).get('embed') === '1') {
     document.body.classList.add('embed');
-    ['lAch', 'lBoard', 'lChat', 'lGames'].forEach(function (id) { var a = $(id), u = a.getAttribute('href'); a.setAttribute('href', u + (u.indexOf('?') < 0 ? '?embed=1' : '&embed=1')); });
+    ['lAch', 'lBoard', 'lChat', 'lBug', 'lGames'].forEach(function (id) { var a = $(id), u = a.getAttribute('href'); a.setAttribute('href', u + (u.indexOf('?') < 0 ? '?embed=1' : '&embed=1')); });
   }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function user() { return Cloud && Cloud.user ? Cloud.user() : null; }

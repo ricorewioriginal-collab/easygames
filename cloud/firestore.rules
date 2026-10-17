@@ -226,6 +226,30 @@ service cloud.firestore {
       allow update: if false;
     }
 
+    // ---------- Fehlermeldungen (bug.html) ----------
+    // bugs/<id>: u = eigene uid, g = Spiel, c = Art, x = Beschreibung (10–1000 Zeichen), i = technische Angaben (JSON, optional), p = Seite (optional), t = Serverzeit.
+    // Nur angemeldet und nicht gesperrt, höchstens eine Meldung alle 30 Sekunden (Pflicht-Schreibvorgang auf bug_last/<uid>). Lesen, Abhaken, Löschen: nur der Betreiber (chat_admin/<uid>).
+    match /bugs/{id} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['u', 'g', 'c', 'x', 'i', 'p', 't']) && request.resource.data.keys().hasAll(['u', 'g', 'c', 'x', 't'])
+        && request.resource.data.u == request.auth.uid
+        && request.resource.data.g is string && request.resource.data.g.size() <= 40
+        && request.resource.data.c in ['absturz', 'anzeige', 'steuerung', 'ton', 'online', 'speichern', 'sonstiges']
+        && request.resource.data.x is string && request.resource.data.x.size() >= 10 && request.resource.data.x.size() <= 1000
+        && (!('i' in request.resource.data) || (request.resource.data.i is string && request.resource.data.i.size() <= 600))
+        && (!('p' in request.resource.data) || (request.resource.data.p is string && request.resource.data.p.size() <= 200))
+        && request.resource.data.t == request.time
+        && !exists(/databases/$(database)/documents/chat_ban/$(request.auth.uid))
+        && getAfter(/databases/$(database)/documents/bug_last/$(request.auth.uid)).data.t == request.time;
+      allow read, update, delete: if chatAdmin();
+    }
+    match /bug_last/{uid} {
+      allow create: if isOwner(uid) && request.resource.data.keys().hasOnly(['t']) && request.resource.data.t == request.time;
+      allow update: if isOwner(uid) && request.resource.data.keys().hasOnly(['t']) && request.resource.data.t == request.time
+        && request.time > resource.data.t + duration.value(30, 's');
+      allow read, delete: if false;
+    }
+
     // ---------- Online-Kopplung aller Spiele (cloud/fire-peer.js) ----------
     // Firebase vermittelt nur den Verbindungsaufbau (WebRTC-Angebot/Antwort), gespielt wird direkt Gerät zu Gerät.
     // p2p/<Kennung> gehört dem Gastgeber (h = uid, t = Lebenszeichen alle 5 min); verwaist nach 15 min, dann darf ein anderer sie übernehmen.

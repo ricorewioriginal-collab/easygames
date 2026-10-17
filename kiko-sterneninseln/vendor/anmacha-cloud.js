@@ -94,7 +94,9 @@
   var APP = location.hostname === 'appassets.local' || location.hostname === 'appassets.androidplatform.net' || !!window.EasyGamesApp || /(RicoReWi|EasyGames)App\//.test(navigator.userAgent), RT = 'anmacha-cloud-rt', PAIR = null;
   var PORTAL = 'https://www.ricorewi-radio.de/';
   // Zentrale Konto-Seite (einmal anmelden, gilt in allen Spielen) – Navigation auf demselben Gerät, daher lokal (funktioniert auch offline in der App)
+  var bugUrl = '';
   var kontoUrl = game === 'konto' || !/\/cloud\/[^\/]*$/.test((s.src || '').split(/[?#]/)[0]) ? '' : (s.src || '').split(/[?#]/)[0].replace(/cloud\/[^\/]*$/, 'konto.html');
+  if (kontoUrl) bugUrl = kontoUrl.replace(/konto\.html$/, 'bug.html?game=' + encodeURIComponent(game));
   var FS = 'https://firestore.googleapis.com/v1/projects/' + CONFIG.projectId + '/databases/(default)/documents/';
   function post(u, body, form) {
     return fetch(u, { method: 'POST', headers: { 'Content-Type': form ? 'application/x-www-form-urlencoded' : 'application/json' }, body: body }).then(function (r) {
@@ -414,6 +416,7 @@
       row('Spielstand mit Google wiederherstellen', restore, G);
       row('Älteren Stand wiederherstellen', restoreOlder, G);
       if (kontoUrl) row('👤 Konto & Übersicht', function () { location.href = kontoUrl; });
+      if (bugUrl) row('🐞 Fehler melden', function () { location.href = bugUrl; });
       row('Abmelden', signOut);
     } else if (PAIR) {
       var lk = PORTAL + '#koppeln=' + PAIR.id;
@@ -429,6 +432,7 @@
       row('Mit Google speichern', signIn, G);
       row('Spielstand mit Google wiederherstellen', signIn, G);
       if (kontoUrl) row('👤 Konto – einmal für alle Spiele', function () { location.href = kontoUrl; });
+      if (bugUrl) row('🐞 Fehler melden', function () { location.href = bugUrl; });
     }
     if (btn) {
       btn.textContent = '';
