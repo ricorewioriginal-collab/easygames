@@ -8,6 +8,7 @@ const mime = { html: 'text/html', js: 'text/javascript', json: 'application/json
 const server = http.createServer((req, res) => {
   const u = decodeURIComponent(new URL(req.url, 'http://x').pathname);
   let f = path.join(root, u === '/' ? 'index.html' : u);
+  if (u !== '/' && u.endsWith('/')) f = path.join(f, 'index.html');   // Spielordner wie ricoville/ liefern ihre index.html
   if (!f.startsWith(root) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); return res.end(); }
   res.writeHead(200, { 'content-type': mime[f.split('.').pop()] || 'application/octet-stream' }); res.end(fs.readFileSync(f));
 });
@@ -55,7 +56,7 @@ const server = http.createServer((req, res) => {
     const g0 = cat[0];
     const play = await ctx.newPage();
     await play.goto(base + g0.path.replace(/^\.?\//, ''));
-    await play.waitForFunction(() => !!localStorage.getItem('anmacha-seen'), null, { timeout: 15000 });
+    await play.waitForFunction(() => { try { return Object.keys(JSON.parse(localStorage.getItem('anmacha-seen')).g).length > 0; } catch (e) { return false; } }, null, { timeout: 15000 });
     const seen = await play.evaluate(() => JSON.parse(localStorage.getItem('anmacha-seen')));
     assert(Object.keys(seen.g).length === 1 && seen.d.length === 1, 'Spiel und Tag gemerkt: ' + JSON.stringify(seen));
     console.log('PASS Spiel: schreibt Spielspur (Spiel, Tag) in anmacha-seen');

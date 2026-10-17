@@ -446,6 +446,7 @@
   // ---- Stille Laufzeit im Spiel: nur Einreichen, keine Oberfläche ----
   var game = Cloud && Cloud.game;
   if (!game || !LS) return;
+  if (game === 'erfolge' || game === 'ranglisten') return;   // Übersichtsseiten zählen nicht als Spielen (keine Spielspuren, nichts einreichen)
   touch(game);   // Erfolge: Spiel/Tag merken (auch bei Spielen ohne Rangliste)
   if (isOptOut(game)) return;
   function run() { touch(game); return loadProfile(false).then(function () { return submitGame(game, localPairs(null)); }); }
