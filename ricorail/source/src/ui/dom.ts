@@ -149,6 +149,15 @@ table.t td,table.t th{padding:5px 6px;border-bottom:1px solid #22395a;text-align
 .hud .bc{position:absolute;left:50%;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:92vw}
 .hud .btn{pointer-events:auto}
 .hud .tbtns{display:grid;grid-template-columns:repeat(2,54px);gap:6px}
+.hud .cond{display:flex;flex-direction:column;gap:6px;align-items:flex-end;max-width:min(380px,92vw)}
+.hud .cond.bl{align-items:flex-start}
+.hud .cbtns{display:grid;grid-template-columns:54px 54px auto;gap:6px;align-items:center}
+.hud .cbtns .btn{pointer-events:auto}
+.hud .cbtns .btn:disabled{opacity:.5}
+.ticket{background:linear-gradient(#fdfaf0,#efe6cf);color:#222;border-radius:10px;padding:10px 14px;border:2px dashed #b9a77a;max-width:340px}
+.ticket .thead{font-weight:800;color:#a8323e;margin-bottom:6px;letter-spacing:.04em}
+.ticket .trow{display:flex;justify-content:space-between;gap:14px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.08)}
+.ticket.none{text-align:center;color:#a8323e;font-weight:800}
 .tbtn{pointer-events:auto;width:54px;height:54px;border-radius:14px;border:1px solid rgba(120,160,210,.5);background:rgba(16,32,54,.82);color:#fff;font-size:1.25em;font-weight:700;display:inline-flex;align-items:center;justify-content:center;touch-action:none}
 .tbtn.on{background:var(--acc);color:#1a1300}
 .tbtn small{font-size:.5em}

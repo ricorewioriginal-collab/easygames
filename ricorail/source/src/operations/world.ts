@@ -819,7 +819,7 @@ export class World {
         if (!train.ai || e.sev === 'error') this.emit({ ...e, train: train.id });
       }
       this.progress(train);
-      if (train.ai && plan?.state === 'done' && !plan.svc?.keep && plan.svc && Math.abs(train.v) < 0.05 && this.time > plan.dwellUntil + 60) this.removeTrain(train.id);
+      if (train.ai && train.id !== this.player && plan?.state === 'done' && !plan.svc?.keep && plan.svc && Math.abs(train.v) < 0.05 && this.time > plan.dwellUntil + 60) this.removeTrain(train.id);
     }
     this.dirtyAI = false;
     this.refreshOccupancy();
