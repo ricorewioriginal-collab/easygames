@@ -28,6 +28,10 @@
     'krawallvoegel': [
       { id: 'main', title: 'Gesamtpunkte (alle Level)', key: 'easygames.krawallvoegel.v1', path: 'lv.*.1', agg: 'sum', order: 'desc', unit: 'Punkte' }
     ],
+    'funkblasen': [
+      { id: 'main', title: 'Gesamtpunkte (150 Level)', key: 'easygames.funkblasen.v1', path: 'best.*', agg: 'sum', order: 'desc', unit: 'Punkte' },
+      { id: 'endless', title: 'Endlos-Rekord', key: 'easygames.funkblasen.v1', path: 'endless.best', order: 'desc', unit: 'Punkte' }
+    ],
     'rico-flap': [
       { id: 'main', title: 'Endlos-Rekord', key: 'easygames.rico-flap.v1', path: 'endless', order: 'desc', unit: 'Punkte' }
     ],

@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/funkblasen-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Funkblasen"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#1a0f3a">
+<meta name="description" content="FUNKBLASEN – Das große Bubble-Shooter-Abenteuer: 150 Level in 10 Welten, Endlosmodus, Tagesaufgabe, Spezialblasen und Funki, der Funkgeist. Für Handy, Tablet, PC und Controller.">
+<link rel="icon" href="./card.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../vendor/fonts/fredoka.css">
+<link rel="stylesheet" href="./style.css?v=1">
+<title>FUNKBLASEN – Bubble Shooter · easygames</title>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="fkBody" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#bff7ff"/><stop offset="1" stop-color="#4fc9f0"/></radialGradient>
+    <symbol id="funki" viewBox="0 0 120 130">
+      <ellipse cx="60" cy="122" rx="30" ry="6" fill="rgba(0,0,0,.25)"/>
+      <path d="M60 12c26 0 42 20 42 46 0 22-8 34-18 44 4 6 10 10 10 10s-14 2-24-4c-4 1-7 1-10 1-26 0-42-20-42-51S34 12 60 12z" fill="url(#fkBody)"/>
+      <path d="M22 56c0-26 16-44 38-44s38 18 38 44" fill="none" stroke="#ff8a3d" stroke-width="7" stroke-linecap="round" class="fk-band"/>
+      <rect x="10" y="48" width="18" height="26" rx="8" fill="#ff8a3d" class="fk-cup"/><rect x="92" y="48" width="18" height="26" rx="8" fill="#ff8a3d" class="fk-cup"/>
+      <ellipse cx="47" cy="60" rx="6" ry="8" fill="#1b1530"/><ellipse cx="73" cy="60" rx="6" ry="8" fill="#1b1530"/>
+      <circle cx="49" cy="57" r="2" fill="#fff"/><circle cx="75" cy="57" r="2" fill="#fff"/>
+      <path d="M50 76q10 9 20 0" fill="none" stroke="#1b1530" stroke-width="4" stroke-linecap="round"/>
+      <ellipse cx="38" cy="72" rx="6" ry="3.5" fill="#ff9ec7" opacity=".7"/><ellipse cx="82" cy="72" rx="6" ry="3.5" fill="#ff9ec7" opacity=".7"/>
+      <path d="M60 12v-6" stroke="#ff8a3d" stroke-width="3"/><circle cx="60" cy="5" r="4" fill="#ff5a5a"/>
+    </symbol>
+  </defs>
+</svg>
+<div id="app">
+  <div id="stage"></div>
+
+  <!-- Laden -->
+  <section id="scrLoad" class="screen center" aria-live="polite">
+    <div class="load-box">
+      <h1 class="logo"><span>FUNK</span><span>BLASEN</span></h1>
+      <p class="sub">Das große Bubble-Shooter-Abenteuer</p>
+      <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="loadBar"><i></i></div>
+      <p id="loadText">Starte …</p>
+      <div id="loadError" class="error" hidden>
+        <p id="loadErrorText"></p>
+        <button class="btn primary" id="btnRetry" type="button">Erneut versuchen</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hauptmenü -->
+  <section id="scrMenu" class="screen" hidden>
+    <div class="menu-wrap">
+      <div class="menu-head">
+        <h1 class="logo big"><span>FUNK</span><span>BLASEN</span></h1>
+        <p class="sub">Das große Bubble-Shooter-Abenteuer</p>
+      </div>
+      <div class="funki-row">
+        <svg class="funki-svg" viewBox="0 0 120 130" aria-hidden="true"><use href="#funki"/></svg>
+        <p class="speech" id="menuSpeech">Hallo, ich bin Funki!</p>
+      </div>
+      <div class="menu-stats" id="menuStats"></div>
+      <nav class="menu-buttons" aria-label="Hauptmenü">
+        <button class="btn primary big" id="btnPlay" type="button">▶ Spielen</button>
+        <button class="btn" data-go="scrWorlds" type="button">🗺️ Welten</button>
+        <button class="btn" id="btnEndless" type="button">♾️ Endlos</button>
+        <button class="btn" id="btnDaily" type="button">📅 Tagesaufgabe</button>
+        <button class="btn" id="btnFree" type="button">🌤️ Freies Spiel</button>
+        <button class="btn" data-go="scrCollection" type="button">🎨 Sammlung</button>
+        <button class="btn" data-go="scrSettings" type="button">⚙️ Einstellungen</button>
+        <button class="btn" data-go="scrGuide" type="button">📖 Anleitung</button>
+        <button class="btn" data-go="scrCloud" type="button" id="btnCloud">☁️ Mit Google speichern</button>
+      </nav>
+      <div class="menu-foot">
+        <button class="btn small ghost" id="btnFull" type="button">⛶ Vollbild</button>
+        <button class="btn small ghost" id="btnHome" type="button" hidden>← Alle Spiele</button>
+        <span class="brand">by RicoReWi × AnMaCha</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Welten -->
+  <section id="scrWorlds" class="screen panel" hidden data-back="scrMenu">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück">←</button><h2>Welten</h2><span class="chips" id="worldsChips"></span></header>
+    <div class="scroll"><div class="world-list" id="worldList"></div></div>
+  </section>
+
+  <!-- Weltkarte -->
+  <section id="scrMap" class="screen panel" hidden data-back="scrWorlds">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück">←</button><h2 id="mapTitle">Welt</h2><span class="chips" id="mapChips"></span></header>
+    <div class="scroll"><div class="map" id="map"></div><p class="map-info" id="mapInfo"></p></div>
+  </section>
+
+  <!-- Tagesaufgabe -->
+  <section id="scrDaily" class="screen panel" hidden data-back="scrMenu">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück">←</button><h2>Tagesaufgabe</h2></header>
+    <div class="scroll"><div class="card" id="dailyBox"></div></div>
+  </section>
+
+  <!-- Endlos -->
+  <section id="scrEndless" class="screen panel" hidden data-back="scrMenu">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück">←</button><h2>Endlosmodus</h2></header>
+    <div class="scroll"><div class="card" id="endlessBox"></div></div>
+  </section>
+
+  <!-- Sammlung -->
+  <section id="scrCollection" class="screen panel" hidden data-back="scrMenu">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück">←</button><h2>Sammlung</h2><span class="chips" id="colChips"></span></header>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="designs" type="button">Designs</button>
+      <button class="tab" role="tab" data-tab="ach" type="button">Erfolge</button>
+      <button class="tab" role="tab" data-tab="stats" type="button">Statistik</button>
+    </div>
+    <div class="scroll"><div id="colBody"></div></div>
+  </section>
+
+  <!-- Einstellungen -->
+  <section id="scrSettings" class="screen panel" hidden data-back="scrMenu">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück">←</button><h2>Einstellungen</h2></header>
+    <div class="scroll"><div class="settings" id="settingsBody"></div></div>
+  </section>
+
+  <!-- Anleitung -->
+  <section id="scrGuide" class="screen panel" hidden data-back="scrMenu">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück">←</button><h2>Anleitung</h2></header>
+    <div class="scroll"><div class="guide" id="guideBody"></div></div>
+  </section>
+
+  <!-- Google-Speicher -->
+  <section id="scrCloud" class="screen panel" hidden data-back="scrMenu">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück">←</button><h2>Mit Google speichern</h2></header>
+    <div class="scroll"><div class="card">
+      <p>Dein Fortschritt (Level, Sterne, Rekorde, Münzen, Erfolge und Einstellungen) wird immer automatisch auf diesem Gerät gespeichert. Mit einer Google-Anmeldung kommt er zusätzlich in die Cloud und folgt dir auf Handy, Tablet und PC. Es gilt immer der zuletzt gespielte Stand.</p>
+      <div id="cloudMount"></div>
+      <p class="muted" id="cloudNote"></p>
+    </div></div>
+  </section>
+
+  <!-- Spiel-Anzeige -->
+  <div id="hud" hidden>
+    <div class="hud-top" id="hudTop">
+      <button class="hud-btn" id="btnPause" type="button" aria-label="Pause">⏸</button>
+      <div class="hud-title"><b id="hudLevel">1-1</b><small id="hudWorld"></small></div>
+      <div class="hud-goal" id="hudGoal" aria-live="polite"></div>
+      <div class="hud-score"><small>Punkte</small><b id="hudScore">0</b></div>
+      <button class="hud-btn" id="btnHudSettings" type="button" aria-label="Einstellungen">⚙</button>
+      <div class="hud-row2">
+        <span class="chip" id="hudShots" title="Verbleibende Schüsse"></span>
+        <span class="chip stars" id="hudStars" title="Sterne, die du gerade noch holst"></span>
+        <span class="chip" id="hudExtra" hidden></span>
+      </div>
+    </div>
+    <div class="hud-bottom" id="hudBottom">
+      <button class="hud-btn wide" id="btnJoker" type="button" aria-label="Regenbogen-Joker für 60 Münzen">🌈 <span>Joker</span> <small>60🪙</small></button>
+      <div class="hud-hint" id="hudHint"></div>
+      <button class="hud-btn wide" id="btnSwap" type="button" aria-label="Kugeln tauschen">⇄ <span>Tauschen</span></button>
+    </div>
+    <div class="combo" id="combo" aria-hidden="true"></div>
+    <div id="floaters" aria-hidden="true"></div>
+  </div>
+
+  <!-- Hinweis im ersten Level -->
+  <div id="coach" hidden><div class="coach-box"><svg class="funki-svg tiny" viewBox="0 0 120 130" aria-hidden="true"><use href="#funki"/></svg><p id="coachText"></p><button class="btn small" id="coachSkip" type="button">Überspringen</button></div></div>
+
+  <!-- Dialoge -->
+  <div id="modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-box">
+      <svg class="funki-svg modal-funki" viewBox="0 0 120 130" aria-hidden="true"><use href="#funki"/></svg>
+      <h2 id="modalTitle"></h2>
+      <div id="modalBody"></div>
+      <div class="modal-actions" id="modalActions"></div>
+    </div>
+  </div>
+  <div id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../gamekit.js"></script>
+<script src="./engine.js?v=1"></script>
+<script src="./levels.js?v=1"></script>
+<script src="./save.js?v=1"></script>
+<script src="./audio.js?v=1"></script>
+<script src="./renderer.js?v=1"></script>
+<script src="./input.js?v=1"></script>
+<script src="./ui.js?v=1"></script>
+<script src="./main.js?v=1"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="funkblasen" data-prefix="easygames.funkblasen.v1" data-mount="#cloudMount" data-hint="Mit Google anmelden und Level, Sterne, Münzen und Erfolge auf allen Geräten nutzen." defer></script>
+</body>
+</html>
