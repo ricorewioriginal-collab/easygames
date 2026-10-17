@@ -318,7 +318,7 @@ body[data-mode='build'] .chat, body[data-mode='buy'] .chat { display: none; }
 }
 @media (max-height: 560px) and (max-width: 720px) {
   .cas-view { height: 22vh; min-height: 120px; }
-  .cas-stagebtns { flex-direction: row; flex-wrap: wrap; width: 104px; }
-  .cas-stagebtns .btn { width: 48px; }
+  .cas-stagebtns { flex-direction: row; flex-wrap: wrap; align-content: flex-start; }
+  .cas-stagebtns .btn { min-height: 40px; }
 }
 /* ===================== Ende Figurenerstellung ===================== */

@@ -73,7 +73,10 @@ export class App implements AppApi {
       load: (slot, backup) => this.loadSlot(slot, backup),
       importFile: (text, slot) => this.importFile(text, slot),
       exportSlot: (slot) => this.exportSlot(slot),
-      openCas: (done, opts) => openCas(done, opts),
+      openCas: (done, opts) => {
+        this.menu.hide();
+        openCas(done, opts, () => this.menu.show());
+      },
       openSettings: () => this.openSettings(),
       openHelp: () => openHelp(),
       openMultiplayer: () => this.openMultiplayer(),
@@ -148,6 +151,17 @@ export class App implements AppApi {
     const m: Record<string, string> = {};
     for (const k of KEY_ACTIONS) m[keyFor(this.settings, k.id)] = k.id;
     return m;
+  }
+
+  /** schwerer Fehler nach dem Start: Spiel sichern und Hinweis zeigen */
+  fatal(text: string): void {
+    try {
+      if (this.game && !this.guest) saveToSlot(this.game);
+    } catch {
+      /* egal */
+    }
+    const d = h('div', { id: 'err' }, h('div', null, h('h2', null, 'RicoLife 3D hat ein Problem'), h('p', null, text), h('p', { class: 'muted' }, 'Dein letzter Stand wurde gespeichert.'), btn('Neu laden', () => location.reload(), 'primary')));
+    document.body.appendChild(d);
   }
 
   // ---------- Spielstart ----------
