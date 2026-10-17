@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "6e0b4bb5e500",
- "generated": "2026-10-17T01:35:00+00:00",
- "commit": "6dc11a79273b2ec3b4876de5dca05112cb64d678",
+ "version": "3bc1fab42902",
+ "generated": "2026-10-17T02:12:20+00:00",
+ "commit": "71bab238888a4c8d086cb7235a768338dd04894d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4612,189 +4612,14 @@
    "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
   },
   {
-   "p": "bunte-insel2/assets/app-DADXP5PT.js",
-   "s": 544827,
-   "h": "984e33cddb03fc9f8606fbe9bad9bf9008f5e048d8764eb576dff512b2c740d1"
-  },
-  {
-   "p": "bunte-insel2/assets/chunk-O2XFH626.js",
-   "s": 180,
-   "h": "d9cad469beb0997cded3780659461d023f24353d6a947fe77434f079536af5f9"
-  },
-  {
-   "p": "bunte-insel2/assets/main-2SVZ5P2M.css",
-   "s": 22108,
-   "h": "cf8d8601b653e7fcc11c67cbdee8bc6e110161fb07751bb20e6cba67c4307df8"
-  },
-  {
-   "p": "bunte-insel2/assets/main-JLRFA6JU.js",
-   "s": 397,
-   "h": "c5b8370963c7599c6f404853161b171f23c57b0124bb517d91e6fcde08ab0e99"
-  },
-  {
-   "p": "bunte-insel2/audio/bonk.mp3",
-   "s": 4125,
-   "h": "df75516285c32078d2f4ee2a3f2f9b3955d815fe0060e25cdaaf9d62781c957e"
-  },
-  {
-   "p": "bunte-insel2/audio/bump.mp3",
-   "s": 2829,
-   "h": "f6387ed280d4a5bd65a935bf901b55ea131e406318473ab87c91c047e6fb98f3"
-  },
-  {
-   "p": "bunte-insel2/audio/buy.mp3",
-   "s": 5277,
-   "h": "d80627936cf852364af1e0b6e1734591c46cd8b0d7a140bdb81a00cf8ad6caff"
-  },
-  {
-   "p": "bunte-insel2/audio/cat.mp3",
-   "s": 6861,
-   "h": "dcc2c89455aaaf312bd6e50cd7390806bbb888d6d2729809b45b32863ef68c84"
-  },
-  {
-   "p": "bunte-insel2/audio/chicken.mp3",
-   "s": 10893,
-   "h": "b4bbaa95bd08f3eb9b4a9f30f7d76372e8f16dae36092efb45b29dd54e4394c9"
-  },
-  {
-   "p": "bunte-insel2/audio/chop.mp3",
-   "s": 1965,
-   "h": "1c5d0096227491654efb8ae151eae5b8c71a3e5f7f8318ca834ca56001999f07"
-  },
-  {
-   "p": "bunte-insel2/audio/coins.mp3",
-   "s": 2253,
-   "h": "9cac9f1ad4b4be66fb96e955effdd9ff4d0a67a9d5232e5fe99e3abeb7cbc107"
-  },
-  {
-   "p": "bunte-insel2/audio/cow.mp3",
-   "s": 9453,
-   "h": "12022a2615d45b2badc034372291a2dbc683252cfe10bd5aa15171ce7087336e"
-  },
-  {
-   "p": "bunte-insel2/audio/dog.mp3",
-   "s": 7725,
-   "h": "a6e48ad48049e070df1f6384967331c2495d7df6e3968de385fc5f7b0b5db826"
-  },
-  {
-   "p": "bunte-insel2/audio/donkey.mp3",
-   "s": 10173,
-   "h": "572ae6da2052c1821ea0ec9fe4d796fc28f0e89ea42a84524bed95ab1ca08ddc"
-  },
-  {
-   "p": "bunte-insel2/audio/duck.mp3",
-   "s": 9021,
-   "h": "a04a426764b748f5079edaf5a6bc0a24d14d162123508469f31d93fa430e11b7"
-  },
-  {
-   "p": "bunte-insel2/audio/enter.mp3",
-   "s": 5277,
-   "h": "8186591f1fab555f5cd8dc857597f1d8ab2036cb212f230e499007c469cd2a6e"
-  },
-  {
-   "p": "bunte-insel2/audio/goat.mp3",
-   "s": 9597,
-   "h": "645ecbe8afd7a7135f390a9d6637632b4dc17112952f7f85f25ee5b81913f4cb"
-  },
-  {
-   "p": "bunte-insel2/audio/hit.mp3",
-   "s": 3117,
-   "h": "3377d85a2b13c115f7eb61774504455c20436bdb0bc0b65ed54ec81f61d52493"
-  },
-  {
-   "p": "bunte-insel2/audio/horse.mp3",
-   "s": 13773,
-   "h": "db75edb20672b617af47fd5b4a663e4453e6689897ae471f2d5e3e4ca43abb1e"
-  },
-  {
-   "p": "bunte-insel2/audio/kick.mp3",
-   "s": 4557,
-   "h": "f6f990d31156d316933f3ede75cdfe846510b603ef4ef2bbbff6beb46592cce4"
-  },
-  {
-   "p": "bunte-insel2/audio/leave.mp3",
-   "s": 4557,
-   "h": "892226922e191bac77cd2cc7c198edd15f8ad37267384d38b050af1b29a4b189"
-  },
-  {
-   "p": "bunte-insel2/audio/pig.mp3",
-   "s": 9191,
-   "h": "b3df5fc22cd206ca9eac842793ea0be82c62d2a2935b9878330e39d228507636"
-  },
-  {
-   "p": "bunte-insel2/audio/sheep.mp3",
-   "s": 9597,
-   "h": "ecb6eba17aa33b239a0cd6d5d2e3dbcd8aa8b76c0c9fd5402f0d688eb5054729"
-  },
-  {
-   "p": "bunte-insel2/audio/thwack.mp3",
-   "s": 2541,
-   "h": "18d476b81e7152ec5cf839e0d517d45b04dcdf7c50a04314975409c01a900d02"
-  },
-  {
-   "p": "bunte-insel2/card.png",
-   "s": 167690,
-   "h": "9d37666b14c1e1c99e57fcc6cd397e82ffc2789143cafe0912061950214f3830"
-  },
-  {
-   "p": "bunte-insel2/fonts/fredoka-latin-wght-normal.woff2",
-   "s": 29732,
-   "h": "99d6c78e043710d4f83ed90716779798b7b04eb690f73e0ad0e8f32d1f0e98c2"
-  },
-  {
-   "p": "bunte-insel2/icons/icon-192.png",
-   "s": 19845,
-   "h": "ce223f06a76ea42354da0f38dd04b38359ffc84cec47472e176d8da17bd235a9"
-  },
-  {
-   "p": "bunte-insel2/icons/icon-512.png",
-   "s": 57148,
-   "h": "b0906ad7317dafd48a842d631a2406b00bc720d8b4d7a83b4cedcb214b3ae81b"
-  },
-  {
-   "p": "bunte-insel2/icons/icon-maskable-512.png",
-   "s": 47603,
-   "h": "e81177486fb13496a8437e28460bc5d583b38da2cf4caa9ba803f922084f886e"
-  },
-  {
-   "p": "bunte-insel2/icons/icon.svg",
-   "s": 1400,
-   "h": "eaf9955f61f35bae4f67cc4656ab1d137656b28b06acc96a362e1ff2ac2e3845"
-  },
-  {
-   "p": "bunte-insel2/index.html",
-   "s": 5434,
-   "h": "04bf7c45bceb1129fd72c9e006daba17cd23567a8da263d5a9f367eaf0a5d16f"
-  },
-  {
-   "p": "bunte-insel2/manifest.webmanifest",
-   "s": 846,
-   "h": "a3b2121931e05b425622f67fb52bfc1e3798c3e6ff60ecf856be73a09d460b39"
-  },
-  {
-   "p": "bunte-insel2/sw.js",
-   "s": 1968,
-   "h": "adecb13e3c1ed46f7276fd3523d5dd71d56e197f2a7d9e95ce3766b4b107f06b"
-  },
-  {
-   "p": "bunte-insel2/vendor/three.min.js",
-   "s": 603445,
-   "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
-  },
-  {
-   "p": "bunte-insel2/version.json",
-   "s": 49,
-   "h": "cd9e1426ee54852ddbce25c1ba5dec843d84ef6cac4304084c4d3d7eaf4ef948"
-  },
-  {
    "p": "cloud/anmacha-ach.js",
    "s": 10431,
    "h": "1d25162f86e2c0cd686df8325fecf11d994ad45bed4a49ee86a8ef5cf85a62f7"
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 28298,
-   "h": "640a1fffddd3cb3fe8538d9e3f9ed19801e1508f3a97dc3459a84bc272f07411"
+   "s": 28729,
+   "h": "3519a6d6418c5df3a9cf067826e73591e817d06813c5028cbbd96136c38e85ed"
   },
   {
    "p": "cloud/anmacha-cloud.js",
@@ -4832,6 +4657,71 @@
    "h": "d5ef61cb780ac29613e137e3f5e2103928d9b1b102772d90cfe3551b52e5c6da"
   },
   {
+   "p": "funkblasen/audio.js",
+   "s": 8498,
+   "h": "2e3593367aaaa3e782c9b32596831584e900891cb85e26e98f0802213b3ed7cd"
+  },
+  {
+   "p": "funkblasen/card.svg",
+   "s": 3396,
+   "h": "a7c8b57b06ef71117f8fc8d6c56960148787b08fea552133064adbc1b5c3204b"
+  },
+  {
+   "p": "funkblasen/engine.js",
+   "s": 24738,
+   "h": "63c9196768f9aa00d36c6c905a692c6bc70e82b5cd2b9edf1b6ccd6296d2bf74"
+  },
+  {
+   "p": "funkblasen/index.html",
+   "s": 14377,
+   "h": "843667de0961418e328dc3de93301ecf7ed2aeb60afa584bc3ce3e55a9823712"
+  },
+  {
+   "p": "funkblasen/input.js",
+   "s": 7262,
+   "h": "71424fa07b3e9cbd86fc715559b668a592fef18ffbc66ef83a6201f7816b4bb4"
+  },
+  {
+   "p": "funkblasen/levels.js",
+   "s": 29281,
+   "h": "4387ab89aaaec0105c90dd6fb1a072511979251ed3a76ab6e273188c46fe6e6c"
+  },
+  {
+   "p": "funkblasen/main.js",
+   "s": 26999,
+   "h": "1d7b2efbe8b627fa94efd28f1504a4a6ccace655a1e9a473085f8c99a080db37"
+  },
+  {
+   "p": "funkblasen/manifest.webmanifest",
+   "s": 773,
+   "h": "6d3bccdc995bb9c8327c3251c388f344ebe12a17c567cc6ac39fca685f28bd7e"
+  },
+  {
+   "p": "funkblasen/renderer.js",
+   "s": 40963,
+   "h": "d3a043b2f06ac40b0d82dbaf4c26da2178c49619d4672cc78f1a0f66db249d0d"
+  },
+  {
+   "p": "funkblasen/save.js",
+   "s": 14193,
+   "h": "a834ec9a197b8540b0ed76eb41d56cb77aa63dbb1586baa27321ce6b6bce162d"
+  },
+  {
+   "p": "funkblasen/style.css",
+   "s": 19200,
+   "h": "d29429487a573a06defea33d1db33a532168e551933a0505c66c0e56ff1617b9"
+  },
+  {
+   "p": "funkblasen/sw.js",
+   "s": 1999,
+   "h": "3f7879854f143d0eca42b5ecfa33ab13bf4831c1e1fbd95e5c123be154d1e9cf"
+  },
+  {
+   "p": "funkblasen/ui.js",
+   "s": 28281,
+   "h": "86f83add93f444ee1cf792ff679b9fd6b55538b3d8342a71cfa54f6947b94088"
+  },
+  {
    "p": "gamekit.js",
    "s": 5678,
    "h": "2408caf366c6c700ee4a1cc935a57e106e1a835ce4bc29826ecbe158261bc96f"
@@ -4843,8 +4733,8 @@
   },
   {
    "p": "games.js",
-   "s": 23254,
-   "h": "688fa3f854fb99bb8cf3dffb163193701192e1f3f8505cb54a7a0a1827e340e5"
+   "s": 23245,
+   "h": "f9d7dcc9aaf3e890ee1cd43148a92c237d3ec0581cae09db100e8d2a792c17f7"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5003,8 +4893,8 @@
   },
   {
    "p": "guides.js",
-   "s": 61632,
-   "h": "ee46222cc3831084f8a396c1cf2915e425a4a244fa6a9d0e923fb114dd38ace2"
+   "s": 62074,
+   "h": "c526baf03d9a4b1eb293183f7e29ed57ba4c3e10cf40016f153ddc1e286608a7"
   },
   {
    "p": "index.html",
@@ -5352,14 +5242,9 @@
    "h": "f7664af7477abfe132ee3ec4d72823c1696ab876738e574a5887c4b350e9af3f"
   },
   {
-   "p": "partyverse/app/assets/_commonjsHelpers-BDb2sbTn.js",
-   "s": 3263,
-   "h": "ce8635068ea87691d918f6a59848c393dab38884192036f3321f357eebfe8ead"
-  },
-  {
-   "p": "partyverse/app/assets/achievements-By3vesb-.js",
+   "p": "partyverse/app/assets/achievements-B6xrGwXP.js",
    "s": 2054,
-   "h": "3f4a931df2226d60ebac9428b1c35eca62a9ef7b8bbd6df02b137a2969bb3068"
+   "h": "c8a6a993768e043934d255deb186f9c98e15fa826bbe69a7a1bf487bbdc3f2bc"
   },
   {
    "p": "partyverse/app/assets/achievements-C1x9Muqj.js",
@@ -5367,9 +5252,9 @@
    "h": "bc101688e837d32c0b3cdb0ee1fd8871b98b63ccddcdb529fa8a7f3fcbfb9502"
   },
   {
-   "p": "partyverse/app/assets/app-BFnLqtiZ.js",
-   "s": 39834,
-   "h": "5edd5e8636e8ababd03aac5d99f9ff58d1db338955bedd363f9f15605625cf93"
+   "p": "partyverse/app/assets/app-oWd5MO4K.js",
+   "s": 37812,
+   "h": "2070ffda46eea77e04f8172633696cb050f81ef77d7575fdbcabfb934c381fa2"
   },
   {
    "p": "partyverse/app/assets/characters-BMTEIcKf.js",
@@ -5392,9 +5277,9 @@
    "h": "77d4938900a25fd60eae2954ad68c8a7363ef3411a0f94071aa4951d75b3b01e"
   },
   {
-   "p": "partyverse/app/assets/common-B3WH-9si.js",
+   "p": "partyverse/app/assets/common-BfBbnEkL.js",
    "s": 492,
-   "h": "4cac34cc0cfdf5e14a3f27a6fd35c1e8daace0e8d0efea5a1fb49b89de730d77"
+   "h": "40af6a1e5bd6dcc9d27d049afc1ec6035dfa9964191623464d4137369776b43e"
   },
   {
    "p": "partyverse/app/assets/common-CBcA4fVF.js",
@@ -5402,24 +5287,19 @@
    "h": "2411ac48f621ce021ea99306c0e587af6ef8a4d5458bf6ea2d8a9f3a669390e4"
   },
   {
-   "p": "partyverse/app/assets/controls-DkWzps5q.js",
-   "s": 143333,
-   "h": "aa9a6eef1b9f8f12b253c7e9b71fe68676abcfef7cfdc52132a75763457f52c9"
+   "p": "partyverse/app/assets/controls-9KO2Juep.js",
+   "s": 143719,
+   "h": "cafbd3ba3f63aedd6d00c5cf0c2030aaa662a403214c15673ebbecb71a7bbb87"
   },
   {
-   "p": "partyverse/app/assets/core-CLvOepmn.js",
-   "s": 19489,
-   "h": "a9baada65c4cfb2031f17802f67ebfcc1e1877b67bf24e8e2a0bcae41f3fadf9"
-  },
-  {
-   "p": "partyverse/app/assets/cosmetics-kG9kFSbE.js",
+   "p": "partyverse/app/assets/cosmetics-BAsmLZmq.js",
    "s": 3766,
-   "h": "f123cffbfa9c6f2de3202c3673e58edef24a457a0db5f90eab5c808b7dce73c4"
+   "h": "2faa59736fc0b4edb1e5b5844f5b8ac53c0072755eec711a6bfb333ab352d6c7"
   },
   {
-   "p": "partyverse/app/assets/credits-CdQMCcje.js",
-   "s": 2092,
-   "h": "24c8edc008e26d369628cb4c5b770ab5dcc39afc5b8b41f57120fda4d70dde5d"
+   "p": "partyverse/app/assets/credits-BZEzNwHp.js",
+   "s": 1674,
+   "h": "dc5f8e97e8fb1f9b5d6486c2ce316c25562d4a76f4b7149384972f8a8ab9470f"
   },
   {
    "p": "partyverse/app/assets/engine-CdQh-NN8.js",
@@ -5427,14 +5307,9 @@
    "h": "aadf936f00639f1a3ece0d06a8e55ff708e8abb4c2ff031683a48fcf296721c9"
   },
   {
-   "p": "partyverse/app/assets/gameScreen-CRoymhnq.js",
-   "s": 38045,
-   "h": "f40ddfd490db4e3fb55e6741fb4fc54b7ede4c765f879d4dec6787943ba49b6c"
-  },
-  {
-   "p": "partyverse/app/assets/index-5AZZy0OW.js",
-   "s": 3447,
-   "h": "4db1c58df61fe4bb6387c93cfa67206f3812806457d5eba8d36278de88037eac"
+   "p": "partyverse/app/assets/gameScreen-CMAaE5xy.js",
+   "s": 40735,
+   "h": "b878d7e0a558fcc8833ddabfb5e07af06eb9802cb20f6c1833a48f9243dd5704"
   },
   {
    "p": "partyverse/app/assets/index-8ng3Vig7.js",
@@ -5442,14 +5317,19 @@
    "h": "f34602cdd04eaff9cecb2b5d3d31a854fe6932014f961421855a323066f3a08d"
   },
   {
+   "p": "partyverse/app/assets/index-B-WfM19p.css",
+   "s": 15518,
+   "h": "354d6ff1fe14514aa1340d2b25abb0814fb1d9020a24fc227b8a6c82dea70758"
+  },
+  {
+   "p": "partyverse/app/assets/index-B2FVuSyP.js",
+   "s": 3622,
+   "h": "edffa4dd4af07fca716d193dedd131cd1208336598311d432edde6a8edc09f44"
+  },
+  {
    "p": "partyverse/app/assets/index-BbHxmHED.js",
    "s": 68116,
    "h": "66aac3c251df0992cc7db566e7d2d00ea9b83d3788c7dcca45075db871877aa6"
-  },
-  {
-   "p": "partyverse/app/assets/index-D6ZGKbN_.css",
-   "s": 14934,
-   "h": "e0f889253186a4e763db421c881d632b4fc8ad85fc06ab310bf193d46fa73670"
   },
   {
    "p": "partyverse/app/assets/input-_e25xTZH.js",
@@ -5457,19 +5337,19 @@
    "h": "ea10d1213e0ff194b50b2011b2a104c3fb57ce2d2df9d9b11c8d7bc5920f2437"
   },
   {
-   "p": "partyverse/app/assets/items-BLLwVi0L.js",
-   "s": 3045,
-   "h": "3bbb97e580fd7ee260221a15c36ac6933bb6ac5bae51c4c0da6d22ecbd762186"
+   "p": "partyverse/app/assets/items-CDMi3g47.js",
+   "s": 3258,
+   "h": "dd9070cd0799a9c240664a9b0ce775626efcff27a9aed59562bd33f0a89f3288"
   },
   {
-   "p": "partyverse/app/assets/lab-BEqT79z3.js",
+   "p": "partyverse/app/assets/lab-C7VoYL44.js",
    "s": 1289,
-   "h": "91b64b89153d7e102eccc4e96cf86ce6f73b7cd028dabec60163f756a0780d30"
+   "h": "0b6b036a23f0be67714347c59a136db8e7becc0a08ae2ece42811009584af84d"
   },
   {
-   "p": "partyverse/app/assets/mainMenu-DRjiKwnO.js",
-   "s": 3400,
-   "h": "edd38cb3d21cc826059dd1b388cbabb7e3353b79258932c8647049a92379eec7"
+   "p": "partyverse/app/assets/mainMenu-C56vJvbf.js",
+   "s": 3290,
+   "h": "4052a20425e5265554d92cc4f89cc118ab1ff42999ec645e25d5a4512dfbc28f"
   },
   {
    "p": "partyverse/app/assets/materials-DT0vjpLi.js",
@@ -5477,29 +5357,24 @@
    "h": "2dcebeac762253abfbeb4e4fb7c292452737eb1477b6abe71c77ce7779f242fd"
   },
   {
-   "p": "partyverse/app/assets/online-DEiAJph1.js",
-   "s": 84966,
-   "h": "3e72ba756714c0db84f9791f2d045319aecbc72b3c446073d0ebbaff9cb8d8a3"
+   "p": "partyverse/app/assets/options-6PNj3DiX.js",
+   "s": 3732,
+   "h": "13dcf3375c7a417070e61a17e0605a129d2fb6e179e23c0e7a1da3330de88a3a"
   },
   {
-   "p": "partyverse/app/assets/options-D7VsUHz3.js",
-   "s": 4645,
-   "h": "0a8e66e5722f1acef65e47009996a388151aa9ba7d79028510f596999567eb86"
+   "p": "partyverse/app/assets/p2p-DlpQkBSZ.js",
+   "s": 44516,
+   "h": "54b9dc8a5aea18c89e61b6f13efc4e7156a3c03e480932bead4ff088bb9f57a1"
   },
   {
-   "p": "partyverse/app/assets/p2p-D1t9FwyA.js",
-   "s": 178544,
-   "h": "45c9244c68f70744e651cfd5c3e2d171cc3e21b28c1ce2e83c4ee9dd05bec798"
-  },
-  {
-   "p": "partyverse/app/assets/pickers-Dv_r3iB1.js",
+   "p": "partyverse/app/assets/pickers-9kq0WBCt.js",
    "s": 3088,
-   "h": "582b3fd40584a64f628bcaac16249b49b83fc3e9a6f4a789630e540884259b10"
+   "h": "b96f7df8d950eaebd051f76647403e16e2ca1042f78ec539841acd5a0bc9ab15"
   },
   {
-   "p": "partyverse/app/assets/protocol-CKv5g1dt.js",
-   "s": 1327,
-   "h": "e87370278786433714ccd931149d9a6d51f1a4ebc94bb25ff9847ecb9f9d4478"
+   "p": "partyverse/app/assets/protocol-D15s5kg9.js",
+   "s": 1232,
+   "h": "6a27edae15bb4898939d4d84817a1cff341d4486a43ebca47996b0bb0f83e159"
   },
   {
    "p": "partyverse/app/assets/registry-Z9T_d8Yy.js",
@@ -5512,19 +5387,19 @@
    "h": "c94f20b2ec5326364a26d2f9afb5d101125f6f4d6a2008300b73773fa65330fa"
   },
   {
-   "p": "partyverse/app/assets/rules-CXpgc4Q9.js",
+   "p": "partyverse/app/assets/rules-LK73Eh6t.js",
    "s": 7274,
-   "h": "60f5271c303c973f3bb570e72f3f42296b17f3475855f5172fa019d30a164306"
+   "h": "352590fff226128f03c658d331341696e86bf5a4c162703d32b959749e81ce53"
   },
   {
-   "p": "partyverse/app/assets/session-D9KGF3WT.js",
-   "s": 5432,
-   "h": "d8bc559b9431b12418686450b94828b12f68d550f001ffac607822ca21c50722"
+   "p": "partyverse/app/assets/session-Bo4y8Fn1.js",
+   "s": 25871,
+   "h": "753db582f4fdbc6c6c431931ec2e8b16dcbee8a1507bc4bda702542a5d1447ad"
   },
   {
-   "p": "partyverse/app/assets/setup-DrRUN3SM.js",
-   "s": 3601,
-   "h": "e13d3f7f63e219b66b5e071aec25cdf93d377dfc241291e9a4528a4631c4e221"
+   "p": "partyverse/app/assets/setup-Dbe9Hfak.js",
+   "s": 3544,
+   "h": "acc79041dce4b0cc0a2f91281e0f6e2320045fcfa349501878ffed3202efd951"
   },
   {
    "p": "partyverse/app/assets/types-CQvaslrR.js",
@@ -5543,8 +5418,8 @@
   },
   {
    "p": "partyverse/app/index.html",
-   "s": 808,
-   "h": "12104851142e53032234ae3794bf3c11bbe186c27306c58da443dc4618498abe"
+   "s": 804,
+   "h": "f015814790f8544174045bacf1d8610dd86f06ee985178f13a9ecde6cc0d5064"
   },
   {
    "p": "partyverse/card.jpg",
@@ -5558,8 +5433,8 @@
   },
   {
    "p": "partyverse/client/src/style.css",
-   "s": 19281,
-   "h": "36fa43ff93ff71b502ecfe603ba6c94e4e812334dca1976c7cbfce831dee38b5"
+   "s": 20203,
+   "h": "71d93ab644436f02b83991610c0a26f0b85d214d994eab80991fe2ca7a7595a9"
   },
   {
    "p": "partyverse/client/src/ui/screens/screens.css",
@@ -5585,11 +5460,6 @@
    "p": "partyverse/manifest.webmanifest",
    "s": 754,
    "h": "87972d5a6776b24a2641117345f13e81cb171fac14e231743e3d797773ef5deb"
-  },
-  {
-   "p": "partyverse/server/Dockerfile",
-   "s": 544,
-   "h": "1f50a65ba5096b129689b589aebc48a8244c98cc31cbe6c80133bab545041848"
   },
   {
    "p": "partyverse/sw.js",
@@ -6098,8 +5968,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 97802,
-   "h": "98a3b9a4284a1b074ac5a83b857f4bb7998f9bbdd19a969f8eefb4ee292b3b98"
+   "s": 98297,
+   "h": "d79336528cfe2fd71968adaa0aa6b51277549c1af4ddb8c153a3b2f4289f68d1"
   },
   {
    "p": "taschi/card.svg",

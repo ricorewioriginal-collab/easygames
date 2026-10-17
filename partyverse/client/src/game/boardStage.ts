@@ -98,6 +98,8 @@ export class BoardStage implements Screen {
   private tags = new Map<string, THREE.Sprite>();
   private die: THREE.Group;
   private dieMeshes: THREE.Mesh[] = [];
+  /** Würfelblock: Würfel dreht sich über dieser Figur, bis gestoppt wird */
+  private spinning: string | null = null;
   private raycaster = new THREE.Raycaster();
   // Kamera
   private camPos = V();
@@ -413,7 +415,17 @@ export class BoardStage implements Screen {
   }
 
   /** Würfel erscheint über der Figur, wirbelt und landet auf den gewürfelten Augen */
+  /** Würfelblock: Ein Würfel schwebt und dreht sich über der Figur, bis gewürfelt wird */
+  spinDice(id: string): void {
+    const rig = this.rigs.get(id);
+    if (!rig) return;
+    this.spinning = id;
+    this.die.visible = true;
+    this.dieMeshes.forEach((m, i) => (m.visible = i === 0));
+  }
+
   async rollDice(id: string, dice: number[]): Promise<void> {
+    this.spinning = null;
     const rig = this.rigs.get(id);
     if (!rig) return;
     rig.play('roll');
@@ -457,6 +469,7 @@ export class BoardStage implements Screen {
     await this.wait(0.45);
   }
   hideDice(): void {
+    this.spinning = null;
     this.die.visible = false;
   }
 
@@ -498,6 +511,12 @@ export class BoardStage implements Screen {
   // ------------------------------------------------------------------ Schleife
   update(dt: number): void {
     this.t += dt;
+    const spin = this.spinning ? this.rigs.get(this.spinning) : undefined;
+    const m0 = this.dieMeshes[0];
+    if (spin && m0) {
+      m0.position.copy(spin.root.position).add(new THREE.Vector3(0, 3.6 + Math.sin(this.t * 5) * 0.15, 0));
+      m0.rotation.set(this.t * 9, this.t * 11, this.t * 7);
+    }
     for (let i = this.tweens.length - 1; i >= 0; i--) {
       const tw = this.tweens[i] as Tween;
       tw.t += dt;

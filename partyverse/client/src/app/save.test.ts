@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SaveStore, defaultSave, normalizeServerUrl, sanitize, type StorageLike } from './save';
+import { SaveStore, defaultSave, sanitize, type StorageLike } from './save';
 
 const mem = (init: Record<string, string> = {}): StorageLike & { m: Map<string, string> } => {
   const m = new Map(Object.entries(init));
@@ -15,11 +15,10 @@ describe('Speicher', () => {
     expect(st.m.get('partyverse.save.backup')).toBe('{kaputt');
   });
   it('ungültige Werte werden bereinigt', () => {
-    const d = sanitize({ settings: { master: 7, music: 'laut', quality: 'ultra', serverUrl: 'http://x' }, profile: { name: '<b>Ab</b>' + 'x'.repeat(30), character: 'nix' }, stats: { games: -4, wins: NaN } });
+    const d = sanitize({ settings: { master: 7, music: 'laut', quality: 'ultra' }, profile: { name: '<b>Ab</b>' + 'x'.repeat(30), character: 'nix' }, stats: { games: -4, wins: NaN } });
     expect(d.settings.master).toBe(1);
     expect(d.settings.music).toBe(defaultSave().settings.music);
     expect(d.settings.quality).toBe('auto');
-    expect(d.settings.serverUrl).toBe('');
     expect(d.profile.name.length).toBeLessThanOrEqual(14);
     expect(d.profile.name).not.toMatch(/[<>]/);
     expect(d.profile.character).toBe('pip');
@@ -49,13 +48,5 @@ describe('Speicher', () => {
     expect(s.importJson('[]')).toBe(false);
     expect(s.importJson(JSON.stringify({ profile: { name: 'Neu' } }))).toBe(true);
     expect(s.data.profile.name).toBe('Neu');
-  });
-  it('Server-Adressen: nur ws/wss ohne Zugangsdaten', () => {
-    expect(normalizeServerUrl('')).toBe('');
-    expect(normalizeServerUrl('ws://localhost:2567')).toBe('ws://localhost:2567');
-    expect(normalizeServerUrl('wss://spiel.example.org/')).toBe('wss://spiel.example.org');
-    expect(normalizeServerUrl('http://x')).toBeNull();
-    expect(normalizeServerUrl('wss://u:p@x')).toBeNull();
-    expect(normalizeServerUrl('quatsch')).toBeNull();
   });
 });

@@ -142,6 +142,40 @@
    }
   },
   {
+   "id": "funkblasen",
+   "title": "Funkblasen – Bubble Shooter",
+   "desc": "Bubble-Shooter in 3D mit Funki, dem Funkgeist: 150 Level in 10 Welten, Ziele wie Abräumen, Kristalle retten und Punktejagd, Bandenschüsse mit Zielvorschau, Bomben-, Regenbogen-, Blitz-, Eis- und Kettenblasen, Steine und Schalter. Endlosmodus mit Rekord, Tagesaufgabe, Freies Spiel, 30 Erfolge und Designs für Kanone und Kugeln (nur Optik). Touch, Maus, Tastatur und Gamecontroller; Spielstand lokal und optional mit Google.",
+   "icon": "🫧",
+   "img": "funkblasen/card.svg",
+   "bg": "linear-gradient(145deg,#2a1670,#3b2aa6 55%,#16a6c9)",
+   "glow": "rgba(95,243,255,.5)",
+   "path": "funkblasen/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Funkblasen ist ein Bubble-Shooter in 3D. Unten steht die Funk-Kanone von Funki, dem kleinen Funkgeist mit Kopfhörern. Ziele und schieß Farbkugeln nach oben: Sobald mindestens drei gleiche Farben zusammenhängen, platzen sie. Alles, was danach nicht mehr mit der Decke verbunden ist, fällt herunter und bringt doppelte Punkte. An den Seitenwänden prallen Kugeln ab, die Zielvorschau zeigt den Weg genau. Jedes Level hat ein Ziel (alle Farbblasen abräumen, Kristalle retten oder Punkte sammeln) und eine begrenzte Zahl an Schüssen; übrige Schüsse bringen Bonuspunkte und bis zu drei Sterne. Erreichen die Kugeln die rote Linie, ist die Runde verloren. Spezialblasen: Bombe (sprengt die Umgebung), Regenbogen (passt sich der größten Gruppe an), Blitz (räumt eine Reihe), Eis (taut erst auf), Kettenblasen (platzen alle zusammen), Steine, Schalter, Farbwandler, Kristalle und Sterne. 150 Level in 10 Welten, dazu Endlosmodus, eine tägliche Aufgabe und Freies Spiel. Münzen kaufen nur Designs und den Regenbogen-Joker. Der Spielstand wird lokal gespeichert und optional mit Google synchronisiert.",
+    "steuerung": [
+     "Smartphone/Tablet: Finger aufs Spielfeld, ziehen zum Zielen, loslassen zum Schießen. Zum Abbrechen unter die Kanone ziehen. Die kleine Kugel links antippen = tauschen.",
+     "PC: Maus zielt, Klick schießt. Tastatur: ←/→ oder A/D zielen (Umschalt = fein), Leertaste/Enter schießen, T tauschen, J Joker, P/Esc Pause, M Ton, F Vollbild.",
+     "Controller: linker Stick oder Steuerkreuz zielen, Ⓐ schießen, Ⓧ tauschen, Ⓨ Joker, Start Pause. Menüs mit Steuerkreuz, Ⓐ und Ⓑ."
+    ],
+    "tipps": [
+     "Schieß unter große Trauben: Was herunterfällt, zählt doppelt.",
+     "Nutze die Wände – Bandentreffer bringen Extrapunkte.",
+     "Tausche die Kugel, wenn die nächste besser passt.",
+     "Kristalle, Bomben und Schalter lösen aus, wenn direkt daneben etwas platzt.",
+     "Spare Schüsse für den dritten Stern."
+    ]
+   },
+   "size": 219960,
+   "files": 13,
+   "offline": true,
+   "cloud": {
+    "game": "funkblasen",
+    "prefix": "easygames.funkblasen.v1"
+   }
+  },
+  {
    "id": "rico-flap",
    "title": "Rico Flap 3D",
    "desc": "Der Flatter-Klassiker in moderner 3D-Optik: Rico im RicoReWi-Hoodie flattert durch die Lücken der Funktürme. 10 Level in 5 Welten (Stadt, Wald, Wüste, Eis, Neon-Nacht), bewegliche Türme, Noten für bis zu drei Sterne und ein Endlos-Modus mit Rekord. Touch, Tastatur, Maus und Gamecontroller; lokaler Spielstand und optionaler Google-Speicher.",
@@ -1246,7 +1280,7 @@
   {
    "id": "partyverse",
    "title": "PARTYVERSE",
-   "desc": "3D-Brett-Partyspiel: 5 Welten, 50 Bretter, 22 Minispiele, 8 Figuren. Gegen Bots, lokal zu viert oder online (eigener Server nötig). Handy und PC.",
+   "desc": "3D-Brett-Partyspiel: 5 Welten, 50 Bretter, 22 Minispiele, 8 Figuren. Gegen Bots, lokal zu viert oder online mit Freunden per Raumcode. Handy und PC.",
    "icon": "🎲",
    "img": "partyverse/card.jpg",
    "bg": "linear-gradient(145deg,#2a1a8a,#ff3e9d 55%,#2de2e6)",
@@ -1262,15 +1296,16 @@
     "steuerung": [
      "PC: Würfeln per Knopf, Leertaste oder Enter; Weg per Knopf oder Feld anklicken; Kamera ziehen = drehen, Mausrad = Zoom; Esc oder Menü-Knopf für Pause.",
      "Touch: Knöpfe und Felder antippen; Wischen = Kamera drehen, Zwei-Finger = Zoom; Minispiele mit virtuellem Stick und Knöpfen A/B bzw. Antippen.",
-     "Minispiele am PC: je nach Spiel WASD/Pfeile, Leertaste oder Maus; die Anleitung erscheint vor jedem Minispiel."
+     "Minispiele am PC: je nach Spiel WASD/Pfeile, Leertaste oder Maus; die Anleitung erscheint vor jedem Minispiel.",
+     "Online: im Menü „🌐 Online mit Freunden“ einen Raum eröffnen und Code, Link oder QR-Code teilen; Freunde treten von jedem Gerät bei."
     ],
     "tipps": [
      "Bei Mautbrücken zahlst du 3 Glimmer oder ein Schlüsselfragment.",
      "Auf manchen Brettern erscheinen und verschwinden Wege je Runde (gestrichelt): vorausplanen."
     ]
    },
-   "size": 1576731,
-   "files": 50,
+   "size": 1356231,
+   "files": 46,
    "offline": true,
    "cloud": {
     "game": "partyverse",
@@ -1533,37 +1568,6 @@
    "cloud": {
     "game": "bunte-insel",
     "prefix": "bunteInsel.,bunteInsel_"
-   }
-  },
-  {
-   "id": "bunte-insel2",
-   "title": "Bunte Insel 2 – DEMO TEST",
-   "desc": "DEMO TEST – noch in Entwicklung, Fehler möglich. Die große Fortsetzung von Bunte Insel in 3D: alle 20 Welten als zusammenhängende Geschichte mit Wolke Flick, Story-Modus und freie Welt, eigene Figur im Editor, Fahrzeuge, Begleiter, Quests mit Hinweisen, Prisma-Insel mit Ki-Garten, Runen-Arena und Datenwesen, 20 Minispiele, Angeln, Karte und Schnellreise. Gekämpft wird nur im Verbotenen Wald. Für Handy, PC und Gamepad.",
-   "icon": "🌈",
-   "img": "bunte-insel2/card.png",
-   "bg": "linear-gradient(145deg,#58d9ff,#b48aff 50%,#ff79c9)",
-   "glow": "rgba(180,138,255,.55)",
-   "path": "bunte-insel2/",
-   "modes": {},
-   "multiplayer": false,
-   "guide": {
-    "anleitung": "DEMO TEST – das Spiel ist noch in Entwicklung, es kann Fehler geben. Fortsetzung von Bunte Insel: Du gestaltest deine Figur und erkundest eine große Inselwelt mit 20 Welten. Im Story-Modus hilfst du der einsamen Wolke Flick und öffnest Kapitel für Kapitel neue Welten, in der freien Welt ist alles sofort offen (beide haben getrennte Spielstände). Bewohner geben dir Aufgaben, das Tagebuch zeigt Ziele und bis zu drei Hinweise. Gespeichert wird lokal in drei Spielständen, ein Spielstand aus Bunte Insel 1 kann übernommen werden, ohne ihn zu verändern.",
-    "steuerung": [
-     "PC: W A S D oder Pfeile laufen/fahren, Maus ziehen = Kamera, Mausrad Abstand, Leertaste springen (zweimal = Doppelsprung, Fahrzeug: steigen), Umschalt rennen, E reden/einsteigen/aussteigen, F zweite Aktion, X sinken, H hupen, M Karte, Q Tagebuch, I oder Tab Rucksack, G Gesten, Y Hinweis, Esc oder P Pause. Nur im Verbotenen Wald: J Angriff, K Ausweichen, L Abwehr, U Lichtwelle, T Ziel erfassen. Tasten lassen sich in den Einstellungen ändern.",
-     "Touch: Joystick links laufen/lenken, rechts wischen = Kamera, Knöpfe rechts für Springen, Aktion und Rennen; im Wald erscheinen Kampfknöpfe.",
-     "Gamepad: Linker Stick laufen, rechter Stick Kamera, A Aktion, B springen, X Angriff, Y zweite Aktion, RT rennen, LT sinken, Steuerkreuz Karte/Rucksack/Gesten, Select Tagebuch, Start Pause."
-    ],
-    "tipps": [
-     "Die Weltensteine auf jeder Insel sind Schnellreise-Punkte: einmal berühren, danach über die Karte hinreisen.",
-     "Gekämpft wird nur im Verbotenen Wald – überall sonst wird geholfen, gerätselt und gespielt."
-    ]
-   },
-   "size": 1635454,
-   "files": 35,
-   "offline": true,
-   "cloud": {
-    "game": "bunte-insel2",
-    "prefix": "bunteInsel2."
    }
   }
  ]

@@ -36,7 +36,7 @@ const mime = p => ({ html:'text/html', js:'text/javascript', mjs:'text/javascrip
     const errors = []; page.on('pageerror',e=>errors.push(e.message));
     await page.goto(base + 'index.html');
     assert(await page.locator('.tile').count() > 20, 'Game catalog must render');
-    for (const id of process.argv.slice(2).length ? process.argv.slice(2) : ['anmacha-kart','partyverse','bunte-insel2','bunte-insel','anmacha-quest-rpg']) {
+    for (const id of process.argv.slice(2).length ? process.argv.slice(2) : ['anmacha-kart','partyverse','bunte-insel','anmacha-quest-rpg']) {
       const before = errors.length;
       await page.evaluate(id => openGame(GAMES.findIndex(g=>g.id===id)), id);
       await page.waitForTimeout(id === 'anmacha-quest-rpg' ? 12000 : 4000);

@@ -1,62 +1,113 @@
-import { decodeSignal, encodeSignal } from './signal';
-
-/** Öffentlicher STUN-Server, damit Verbindungen auch über verschiedene Netze (Handy-Daten ↔ WLAN) gelingen. Er sieht nur Verbindungsdaten, keine Spielinhalte. */
-export const STUN_SERVERS = ['stun:stun.l.google.com:19302', 'stun:stun.cloudflare.com:3478'];
+/**
+ * Online mit Freunden über Firebase (wie alle easygames-Spiele): ../../cloud/fire-peer.js stellt eine PeerJS-kompatible
+ * Klasse bereit. Firebase vermittelt nur den Verbindungsaufbau (Raumcode → Gastgeber), gespielt wird direkt Gerät zu Gerät
+ * per WebRTC (mit STUN/TURN). Fällt Firebase aus, nimmt fire-peer.js automatisch PeerJS.
+ * Der Gastgeber öffnet einen Raum mit 5-stelligem Code, Mitspieler treten per Code oder Einladungslink bei.
+ */
 
 export type LinkState = 'connecting' | 'open' | 'closed';
 
-/** Ein Datenkanal zu einem Mitspieler (JSON-Nachrichten) mit Verbindungsüberwachung */
-export class Link {
+/** Ein Datenkanal zu einem Mitspieler (JSON-Nachrichten) */
+export interface Link {
+  readonly state: LinkState;
+  onMessage(cb: (m: unknown) => void): void;
+  onClose(cb: () => void): void;
+  send(m: unknown): void;
+  close(): void;
+}
+
+interface PeerConn {
+  open: boolean;
+  on(ev: string, fn: (x?: unknown) => void): unknown;
+  send(d: unknown): void;
+  close(): void;
+}
+interface PeerLike {
+  on(ev: string, fn: (x?: unknown) => void): unknown;
+  connect(id: string, opt?: Record<string, unknown>): PeerConn;
+  destroy(): void;
+}
+type PeerCtor = (new (id?: string) => PeerLike) & { isFirePeer?: boolean };
+
+export const P2P_PREFIX = 'partyverse-';
+const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+export const normCode = (s: string): string =>
+  s
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
+    .slice(0, 5);
+export const isCode = (s: string): boolean => /^[A-HJ-NP-Z2-9]{5}$/.test(s);
+const newCode = (): string =>
+  Array.from({ length: 5 }, () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]).join('');
+const errType = (e: unknown): string => String((e as { type?: string } | undefined)?.type ?? '');
+
+export const p2pSupported = (): boolean => typeof RTCPeerConnection !== 'undefined';
+
+let libP: Promise<PeerCtor> | null = null;
+/** fire-peer.js erst laden, wenn jemand online spielt */
+export function loadPeer(): Promise<PeerCtor> {
+  const w = window as unknown as { Peer?: PeerCtor };
+  if (w.Peer?.isFirePeer) return Promise.resolve(w.Peer);
+  libP ??= new Promise<PeerCtor>((res, rej) => {
+    const s = document.createElement('script');
+    s.src = new URL('../../cloud/fire-peer.js', document.baseURI).href;
+    s.onload = () => (w.Peer ? res(w.Peer) : rej(new Error('lib')));
+    s.onerror = () => {
+      libP = null;
+      rej(new Error('lib'));
+    };
+    document.head.appendChild(s);
+  });
+  return libP.catch(() => {
+    throw new Error('Die Online-Verbindung konnte nicht geladen werden. Bist du mit dem Internet verbunden?');
+  });
+}
+
+const HOME = 'https://ricorewioriginal-collab.github.io/easygames/';
+/** Einladungslink – Mehrspieler-Regel (easygames CLAUDE.md): immer über die easygames-Homepage, nie die lokale App-Adresse */
+export function inviteLink(code: string): string {
+  const u = new URL('./', location.href).href + '?room=' + code;
+  const L = (window as unknown as { EasyGamesLink?: { share(u: string): string } }).EasyGamesLink;
+  if (L) return L.share(u);
+  return u.startsWith(HOME) ? u : u.replace(/^[a-z]+:\/\/[^?#]*?\/easygames\//i, HOME);
+}
+
+/** Datenkanal über eine PeerJS-/fire-peer-Verbindung */
+class PeerLink implements Link {
   state: LinkState = 'connecting';
   private msgCbs: Array<(m: unknown) => void> = [];
   private closeCbs: Array<() => void> = [];
 
   constructor(
-    private readonly pc: RTCPeerConnection,
-    private readonly dc: RTCDataChannel,
+    private readonly conn: PeerConn,
+    private readonly onEnd?: () => void,
   ) {
-    dc.onmessage = (e) => {
-      if (typeof e.data !== 'string' || e.data.length > 400_000) return;
-      let m: unknown;
-      try {
-        m = JSON.parse(e.data);
-      } catch {
-        return;
+    if (conn.open) this.state = 'open';
+    conn.on('open', () => {
+      if (this.state === 'connecting') this.state = 'open';
+    });
+    conn.on('data', (d) => {
+      let m: unknown = d;
+      if (typeof d === 'string') {
+        if (d.length > 400_000) return;
+        try {
+          m = JSON.parse(d);
+        } catch {
+          return;
+        }
       }
       for (const c of this.msgCbs) c(m);
-    };
-    dc.onclose = () => this.markClosed();
-    dc.onerror = () => this.markClosed();
-    pc.addEventListener('connectionstatechange', () => {
-      if (
-        pc.connectionState === 'failed' ||
-        pc.connectionState === 'closed' ||
-        pc.connectionState === 'disconnected'
-      )
-        this.disconnectedSoon();
     });
-    if (dc.readyState === 'open') this.state = 'open';
-  }
-
-  private timer: ReturnType<typeof setTimeout> | null = null;
-  /** „disconnected" kann sich von selbst erholen – erst nach einer Gnadenfrist als getrennt behandeln */
-  private disconnectedSoon(): void {
-    if (this.pc.connectionState === 'disconnected') {
-      if (this.timer) return;
-      this.timer = setTimeout(() => {
-        this.timer = null;
-        if (this.pc.connectionState !== 'connected') this.markClosed();
-      }, 6000);
-    } else this.markClosed();
+    conn.on('close', () => this.markClosed());
+    conn.on('error', () => this.markClosed());
   }
 
   private markClosed(): void {
     if (this.state === 'closed') return;
     this.state = 'closed';
-    if (this.timer) clearTimeout(this.timer);
     for (const c of this.closeCbs) c();
+    this.onEnd?.();
   }
-
   onMessage(cb: (m: unknown) => void): void {
     this.msgCbs.push(cb);
   }
@@ -64,17 +115,16 @@ export class Link {
     this.closeCbs.push(cb);
   }
   send(m: unknown): void {
-    if (this.state !== 'open' || this.dc.readyState !== 'open') return;
+    if (this.state !== 'open') return;
     try {
-      this.dc.send(JSON.stringify(m));
+      this.conn.send(m);
     } catch {
       /* Kanal gerade geschlossen */
     }
   }
   close(): void {
     try {
-      this.dc.close();
-      this.pc.close();
+      this.conn.close();
     } catch {
       /* ignorieren */
     }
@@ -82,139 +132,97 @@ export class Link {
   }
 }
 
-function newPc(useStun: boolean): RTCPeerConnection {
-  return new RTCPeerConnection({
-    iceServers: useStun ? [{ urls: STUN_SERVERS }] : [],
-    iceCandidatePoolSize: 0,
-  });
-}
-
-/** Wartet, bis alle Verbindungswege gesammelt sind (oder die Zeit abläuft) – es gibt kein „Nachreichen", der Code muss vollständig sein. */
-function iceComplete(pc: RTCPeerConnection, ms = 5000): Promise<void> {
-  return new Promise((resolve) => {
-    if (pc.iceGatheringState === 'complete') return resolve();
-    const done = (): void => {
-      clearTimeout(t);
-      pc.removeEventListener('icegatheringstatechange', on);
-      resolve();
-    };
-    const on = (): void => {
-      if (pc.iceGatheringState === 'complete') done();
-    };
-    const t = setTimeout(done, ms);
-    pc.addEventListener('icegatheringstatechange', on);
-  });
-}
-
-export const p2pSupported = (): boolean =>
-  typeof RTCPeerConnection !== 'undefined' && typeof CompressionStream !== 'undefined';
-
-export interface Invite {
-  /** Einladungs-Code (als Text und als QR-Code zeigen) */
+export interface HostNet {
+  /** 5-stelliger Raumcode */
   code: string;
-  /** Nimmt den Antwort-Code des Mitspielers entgegen und wartet, bis der Kanal offen ist */
-  accept(answerCode: string): Promise<Link>;
-  cancel(): void;
+  /** Neuer Mitspieler verbunden */
+  onLink(cb: (l: Link) => void): void;
+  /** Keine neuen Mitspieler mehr annehmen (Raumcode freigeben, Firebase nicht mehr abfragen); bestehende Verbindungen bleiben */
+  stopListening(): void;
+  close(): void;
 }
 
-/** Gastgeber: erzeugt einen Einladungs-Code für genau einen Mitspieler */
-export async function createInvite(useStun: boolean): Promise<Invite> {
-  const pc = newPc(useStun);
-  const dc = pc.createDataChannel('partyverse', { ordered: true });
-  await pc.setLocalDescription(await pc.createOffer());
-  await iceComplete(pc);
-  const desc = pc.localDescription;
-  if (!desc) throw new Error('Die Verbindung konnte nicht vorbereitet werden.');
-  const code = await encodeSignal({ kind: 'offer', sdp: desc.sdp });
-  return {
-    code,
-    async accept(answerCode: string): Promise<Link> {
-      const ans = await decodeSignal(answerCode, 'answer');
-      await pc.setRemoteDescription({ type: 'answer', sdp: ans.sdp });
-      await new Promise<void>((resolve, reject) => {
-        if (dc.readyState === 'open') return resolve();
-        const t = setTimeout(
-          () =>
-            reject(
-              new Error(
-                'Die Verbindung kam nicht zustande. Sind beide im selben WLAN oder ist ein Netz sehr streng? Versuche es erneut.',
-              ),
-            ),
-          25000,
-        );
-        dc.addEventListener('open', () => {
-          clearTimeout(t);
-          resolve();
-        });
-        pc.addEventListener('connectionstatechange', () => {
-          if (pc.connectionState === 'failed') {
-            clearTimeout(t);
-            reject(new Error('Die Verbindung ist fehlgeschlagen. Versuche es erneut.'));
-          }
-        });
+/** Gastgeber: belegt einen freien Raumcode und nimmt Verbindungen an */
+export async function openRoom(): Promise<HostNet> {
+  const Peer = await loadPeer();
+  const cbs: Array<(l: Link) => void> = [];
+  for (let tries = 0; tries < 5; tries++) {
+    const code = newCode();
+    const peer = new Peer(P2P_PREFIX + code);
+    const ok = await new Promise<boolean>((res, rej) => {
+      const t = setTimeout(
+        () => rej(new Error('Der Raum konnte nicht eröffnet werden (Zeit abgelaufen).')),
+        20000,
+      );
+      peer.on('open', () => {
+        clearTimeout(t);
+        res(true);
       });
-      return new Link(pc, dc);
-    },
-    cancel: () => {
-      try {
-        dc.close();
-        pc.close();
-      } catch {
-        /* ignorieren */
-      }
-    },
-  };
-}
-
-export interface Reply {
-  /** Antwort-Code (dem Gastgeber zeigen) */
-  code: string;
-  /** Wird erfüllt, sobald der Gastgeber die Antwort eingegeben hat und der Kanal offen ist */
-  opened: Promise<Link>;
-  cancel(): void;
-}
-
-/** Gast: nimmt den Einladungs-Code des Gastgebers und erzeugt den Antwort-Code */
-export async function answerInvite(offerCode: string, useStun: boolean): Promise<Reply> {
-  const offer = await decodeSignal(offerCode, 'offer');
-  const pc = newPc(useStun);
-  const opened = new Promise<Link>((resolve, reject) => {
-    const t = setTimeout(
-      () => reject(new Error('Die Verbindung kam nicht zustande (Zeit abgelaufen). Bitte erneut versuchen.')),
-      180000,
-    );
-    pc.ondatachannel = (e) => {
-      const dc = e.channel;
+      peer.on('error', (e) => {
+        clearTimeout(t);
+        if (errType(e) === 'unavailable-id') res(false);
+        else rej(new Error('Der Raum konnte nicht eröffnet werden. Bist du mit dem Internet verbunden?'));
+      });
+    }).catch((e: Error) => {
+      peer.destroy();
+      throw e;
+    });
+    if (!ok) {
+      peer.destroy();
+      continue;
+    }
+    peer.on('connection', (c) => {
+      const conn = c as PeerConn;
       const go = (): void => {
-        clearTimeout(t);
-        resolve(new Link(pc, dc));
+        const l = new PeerLink(conn);
+        for (const cb of cbs) cb(l);
       };
-      if (dc.readyState === 'open') go();
-      else dc.addEventListener('open', go);
+      if (conn.open) go();
+      else conn.on('open', go);
+    });
+    return {
+      code,
+      onLink: (cb) => void cbs.push(cb),
+      stopListening: () => (peer as PeerLike & { disconnect?: () => void }).disconnect?.(),
+      close: () => peer.destroy(),
     };
-    pc.addEventListener('connectionstatechange', () => {
-      if (pc.connectionState === 'failed') {
+  }
+  throw new Error('Kein freier Raumcode gefunden. Bitte erneut versuchen.');
+}
+
+/** Mitspieler: verbindet sich mit dem Raum des Gastgebers */
+export async function joinRoom(code: string): Promise<Link> {
+  const Peer = await loadPeer();
+  const peer = new Peer();
+  return new Promise<Link>((res, rej) => {
+    let done = false;
+    const fail = (msg: string): void => {
+      if (done) return;
+      done = true;
+      clearTimeout(t);
+      peer.destroy();
+      rej(new Error(msg));
+    };
+    const t = setTimeout(
+      () => fail('Der Raum antwortet nicht. Stimmt der Code und ist der Gastgeber noch im Raum?'),
+      25000,
+    );
+    peer.on('error', (e) =>
+      fail(
+        errType(e) === 'peer-unavailable'
+          ? 'Diesen Raum gibt es nicht (mehr). Prüfe den Code.'
+          : 'Keine Verbindung zum Raum. Bist du mit dem Internet verbunden?',
+      ),
+    );
+    peer.on('open', () => {
+      const conn = peer.connect(P2P_PREFIX + code, { reliable: true, serialization: 'json' });
+      conn.on('open', () => {
+        if (done) return;
+        done = true;
         clearTimeout(t);
-        reject(new Error('Die Verbindung ist fehlgeschlagen. Versuche es erneut.'));
-      }
+        res(new PeerLink(conn, () => peer.destroy()));
+      });
+      conn.on('error', () => fail('Die Verbindung zum Raum ist fehlgeschlagen. Bitte erneut versuchen.'));
     });
   });
-  opened.catch(() => undefined);
-  await pc.setRemoteDescription({ type: 'offer', sdp: offer.sdp });
-  await pc.setLocalDescription(await pc.createAnswer());
-  await iceComplete(pc);
-  const desc = pc.localDescription;
-  if (!desc) throw new Error('Die Antwort konnte nicht erstellt werden.');
-  const code = await encodeSignal({ kind: 'answer', sdp: desc.sdp });
-  return {
-    code,
-    opened,
-    cancel: () => {
-      try {
-        pc.close();
-      } catch {
-        /* ignorieren */
-      }
-    },
-  };
 }

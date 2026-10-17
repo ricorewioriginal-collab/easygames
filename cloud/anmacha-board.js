@@ -28,6 +28,10 @@
     'krawallvoegel': [
       { id: 'main', title: 'Gesamtpunkte (alle Level)', key: 'easygames.krawallvoegel.v1', path: 'lv.*.1', agg: 'sum', order: 'desc', unit: 'Punkte' }
     ],
+    'funkblasen': [
+      { id: 'main', title: 'Gesamtpunkte (150 Level)', key: 'easygames.funkblasen.v1', path: 'best.*', agg: 'sum', order: 'desc', unit: 'Punkte' },
+      { id: 'endless', title: 'Endlos-Rekord', key: 'easygames.funkblasen.v1', path: 'endless.best', order: 'desc', unit: 'Punkte' }
+    ],
     'rico-flap': [
       { id: 'main', title: 'Endlos-Rekord', key: 'easygames.rico-flap.v1', path: 'endless', order: 'desc', unit: 'Punkte' }
     ],
@@ -105,7 +109,6 @@
     ],
     // Leerer Eintrag = bewusst keine Rangliste (Sandbox/Story, deren „Sterne“ o. Ä. eine ausgebbare Währung sind)
     'bunte-insel': [],
-    'bunte-insel2': [],
     'klotzfunk': [],
     'showdown': [
       { id: 'main', title: 'Siege gegen den Bot', key: 'asdSave', path: 'stats.*.0', agg: 'sum', order: 'desc', unit: 'Siege' }
@@ -447,6 +450,7 @@
   // ---- Stille Laufzeit im Spiel: nur Einreichen, keine Oberfläche ----
   var game = Cloud && Cloud.game;
   if (!game || !LS) return;
+  if (game === 'erfolge' || game === 'ranglisten') return;   // Übersichtsseiten zählen nicht als Spielen (keine Spielspuren, nichts einreichen)
   touch(game);   // Erfolge: Spiel/Tag merken (auch bei Spielen ohne Rangliste)
   if (isOptOut(game)) return;
   function run() { touch(game); return loadProfile(false).then(function () { return submitGame(game, localPairs(null)); }); }

@@ -33,7 +33,7 @@ export interface GameSession {
 
 /** Wartezeit der Bots in ms – wirkt „nachdenklich", aber nie zu lang */
 export function botDelay(rng: Rng, phase: string): number {
-  return phase === 'decision' ? rng.range(900, 1700) : rng.range(700, 1500);
+  return phase === 'decision' ? rng.range(500, 1000) : rng.range(350, 800);
 }
 
 export class LocalSession implements GameSession {

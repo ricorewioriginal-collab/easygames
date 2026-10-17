@@ -21,10 +21,6 @@ export interface Settings {
   colorMode: ColorMode;
   cameraShake: boolean;
   touchControls: 'auto' | 'on' | 'off';
-  /** Eigener Spielserver (ws:// oder wss://), leer = Online-Modus aus */
-  serverUrl: string;
-  /** Öffentlichen STUN-Dienst für Verbindungen ohne Server nutzen (nötig, wenn Spieler in verschiedenen Netzen sind) */
-  useStun: boolean;
   language: string;
 }
 
@@ -59,16 +55,10 @@ export interface SaveData {
   seenTutorial: boolean;
 }
 
-/** Standard-Serveradresse aus der Build-Konfiguration (VITE_SERVER_URL), sonst leer = Online aus */
-function envServerUrl(): string {
-  const v = (import.meta as unknown as { env?: Record<string, string | undefined> }).env?.VITE_SERVER_URL;
-  return typeof v === 'string' ? (normalizeServerUrl(v) ?? '') : '';
-}
-
 export function defaultSave(): SaveData {
   return {
     version: SAVE_VERSION,
-    settings: { master: 0.8, music: 0.6, sfx: 0.9, muted: false, quality: 'auto', reducedMotion: false, highContrast: false, largeText: false, colorMode: 'standard', cameraShake: true, touchControls: 'auto', serverUrl: envServerUrl(), useStun: true, language: 'de' },
+    settings: { master: 0.8, music: 0.6, sfx: 0.9, muted: false, quality: 'auto', reducedMotion: false, highContrast: false, largeText: false, colorMode: 'standard', cameraShake: true, touchControls: 'auto', language: 'de' },
     profile: { name: 'Spieler', character: 'pip' },
     cosmetics: { hat: null, trail: null, dice: 'klassisch' },
     achievements: {},
@@ -101,8 +91,6 @@ export function sanitize(raw: unknown): SaveData {
     colorMode: oneOf(s.colorMode, ['standard', 'protanopia', 'deuteranopia', 'tritanopia'], 'standard'),
     cameraShake: bool(s.cameraShake, true),
     touchControls: oneOf(s.touchControls, ['auto', 'on', 'off'], 'auto'),
-    serverUrl: normalizeServerUrl(str(s.serverUrl, '', 200)) ?? '',
-    useStun: bool(s.useStun, true),
     language: str(s.language, 'de', 8),
   };
   const p = isObj(raw.profile) ? raw.profile : {};
@@ -128,19 +116,6 @@ export function sanitize(raw: unknown): SaveData {
     difficulty: oneOf(ls.difficulty, ['easy', 'normal', 'hard'], 'normal'),
   };
   return { version: SAVE_VERSION, settings, profile, cosmetics, achievements, stats, lastSetup, seenTutorial: bool(raw.seenTutorial, false) };
-}
-
-/** Akzeptiert nur ws:// oder wss://-Adressen (ohne Zugangsdaten); gibt die bereinigte Adresse oder null zurück. */
-export function normalizeServerUrl(v: string): string | null {
-  const s = v.trim();
-  if (!s) return '';
-  try {
-    const u = new URL(s);
-    if ((u.protocol !== 'ws:' && u.protocol !== 'wss:') || u.username || u.password) return null;
-    return u.toString().replace(/\/$/, '');
-  } catch {
-    return null;
-  }
 }
 
 type Listener = (d: SaveData) => void;

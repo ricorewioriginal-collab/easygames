@@ -1,7 +1,14 @@
 import * as THREE from 'three';
 import { getLayout } from '@shared/levels';
+import { distancesTo } from '@shared/core/ai';
 import { EVENTS, ITEMS } from '@shared/core/items';
-import type { GameEvent, GameState, ItemId, PlayerSetup } from '@shared/core/types';
+import {
+  ALTAR_COST,
+  type GameEvent,
+  type GameState,
+  type ItemId,
+  type PlayerSetup,
+} from '@shared/core/types';
 import type { WorldId } from '@shared/levels/types';
 import type { App } from '../app/app';
 import { recordGame } from '../app/achievements';
@@ -224,7 +231,13 @@ export class GameScreen {
         stage.hideDice();
         break;
       case 'step':
-        hud.setBanner(ev.remaining > 0 ? t('ev.steps', { n: ev.remaining }) : null);
+        hud.setBanner(ev.remaining > 0 ? t('ev.steps', { steps: steps(ev.remaining) }) : null);
+        if (
+          ev.to === this.state.altar &&
+          ev.remaining > 0 &&
+          (this.shown[ev.player]?.coins ?? 0) < ALTAR_COST
+        )
+          this.float(ev.player, t('ev.altarPoor', { cost: ALTAR_COST }), 'info');
         await stage.hop(ev.player, ev.to);
         sfx('step');
         break;
@@ -280,6 +293,22 @@ export class GameScreen {
         hud.say(t('ev.swap', { a: this.nameOf(ev.a), b: this.nameOf(ev.b) }));
         await stage.swap(ev.a, ev.b);
         break;
+      case 'shardStolen': {
+        const from = this.shown[ev.from];
+        const to = this.shown[ev.to];
+        if (from) from.shards = Math.max(0, from.shards - 1);
+        if (to) to.shards++;
+        this.refreshScores();
+        sfx('steal');
+        stage.react(ev.from, 'lose');
+        stage.react(ev.to, 'win');
+        stage.burstAt(ev.to, 0x35f0ff, 30);
+        this.float(ev.from, '−1 ◈', 'bad');
+        this.float(ev.to, '+1 ◈', 'good');
+        hud.say(t('ev.shardStolen', { to: this.nameOf(ev.to), from: this.nameOf(ev.from) }), 2800);
+        await delay(1600);
+        break;
+      }
       case 'steal':
         sfx('steal');
         this.float(ev.from, `−${ev.amount} ✦`, 'bad');
@@ -308,6 +337,11 @@ export class GameScreen {
         stage.viewOverview();
         await delay(1500);
         break;
+      case 'finalStretch':
+        hud.say(t('ev.finalStretch', { name: this.nameOf(ev.player) }), 3200);
+        sfx('fanfare');
+        await delay(2400);
+        break;
       case 'altarMoved':
         stage.setAltar(ev.node);
         stage.viewFocus(ev.node, 14);
@@ -327,6 +361,7 @@ export class GameScreen {
         this.scores[ev.player] = ev.score;
         break;
       case 'minigameDone':
+        Object.assign(this.scores, ev.scores);
         if (ev.winners.some((w) => this.session.localIds.includes(w))) this.minigameWins++;
         await this.showMinigameResults(ev.ranking, ev.rewards, ev.winners);
         app.audio.music(this.layout.world as WorldId);
@@ -338,6 +373,38 @@ export class GameScreen {
       case 'finale':
         break;
     }
+  }
+
+  /**
+   * Würfelblock: Der Würfel dreht sich über der Figur, bis man „Stopp!“ tippt (oder nach 4 s).
+   * Nur Inszenierung – die Augenzahl würfelt weiterhin der Spielkern, damit online alles fair bleibt.
+   */
+  private diceBlock(id: string): void {
+    if (this.paused || this.pumping) return;
+    this.app.audio.sfx('whoosh');
+    this.stage.spinDice(id);
+    let done = false;
+    const stop = (): void => {
+      if (done || this.disposed) return;
+      clearTimeout(timer);
+      if (this.paused) {
+        timer = setTimeout(stop, 500); // im Pausemenü nicht von selbst würfeln
+        return;
+      }
+      done = true;
+      this.act(id, { type: 'roll' });
+    };
+    let timer = setTimeout(stop, 4000);
+    this.hud.setBanner(t('hud.stopDice'));
+    this.hud.setActions(btn(t('act.stop'), stop, 'hot roll'));
+  }
+
+  /** Felder vom Knoten bis zum Altar in der aktuellen Faltung (wie die Bots rechnen) */
+  private altarSteps(from: number): number {
+    const s = this.state;
+    const n = this.layout.foldPhases;
+    const phase = n <= 1 ? 0 : (((s.round - 1 + s.foldShift) % n) + n) % n;
+    return distancesTo(this.layout, s.altar, phase)[from] ?? Infinity;
   }
 
   private refreshScoresFor(current: string): void {
@@ -480,7 +547,7 @@ export class GameScreen {
     const key = `${s.version}:${id}`;
     this.lastPromptKey = key;
     if (s.phase === 'turn' && !s.rolled) {
-      const roll = btn(t('act.roll'), () => this.act(id, { type: 'roll' }), 'hot roll');
+      const roll = btn(t('act.roll'), () => this.diceBlock(id), 'hot roll');
       const items = [...new Set(me.items)]
         .filter((i) => ITEMS[i].active)
         .map((i) =>
@@ -488,7 +555,11 @@ export class GameScreen {
             title: ITEMS[i].description,
           }),
         );
-      hud.setBanner(t('hud.yourTurn', { name: this.nameOf(id) }));
+      const far = this.altarSteps(me.position);
+      hud.setBanner(
+        t('hud.yourTurn', { name: this.nameOf(id) }) +
+          (Number.isFinite(far) ? ' · ' + t('hud.altarIn', { steps: steps(far) }) : ''),
+      );
       hud.setActions(...items, roll);
       return;
     }
@@ -497,15 +568,21 @@ export class GameScreen {
     switch (pd.kind) {
       case 'branch': {
         stage.highlight(pd.options);
-        hud.setBanner(t('hud.chooseWay', { n: pd.remaining }));
+        hud.setBanner(t('hud.chooseWay', { steps: steps(pd.remaining) }));
+        // Zeigt pro Weg die Entfernung zum Altar, damit sich gleich aussehende Wege unterscheiden lassen
+        const far = pd.options.map((n) => this.altarSteps(n) + 1);
+        const best = Math.min(...far);
         hud.setActions(
-          ...pd.options.map((n) =>
-            btn(
-              `${KIND_ICON[this.layout.nodes[n]?.kind ?? 'glimmer'] ?? '•'} ${t('kind.' + (this.layout.nodes[n]?.kind ?? 'glimmer'))}`,
+          ...pd.options.map((n, i) => {
+            const kind = this.layout.nodes[n]?.kind ?? 'glimmer';
+            const d = far[i] as number;
+            return btn(
+              `${KIND_ICON[kind] ?? '•'} ${t('kind.' + kind)}` + (Number.isFinite(d) ? ` · ◈ ${d}` : ''),
               () => this.act(id, { type: 'chooseBranch', node: n }),
-              'good',
-            ),
-          ),
+              d === best && Number.isFinite(d) ? 'hot' : 'good',
+              { title: Number.isFinite(d) ? t('hud.altarIn', { steps: steps(d) }) : '' },
+            );
+          }),
         );
         break;
       }
@@ -821,27 +898,11 @@ export class GameScreen {
       void this.app.toMenu();
       return;
     }
+    // Ohne Server gibt es kein Wiederverbinden: Hinweis zeigen, bis die Verbindung zurück ist oder endet
     if (!this.connEl) {
       this.connEl = h('div', { class: 'conn', role: 'alert' }, t('online.reconnecting'));
       this.el.appendChild(this.connEl);
     }
-    void this.tryReconnect(0);
-  }
-  private async tryReconnect(n: number): Promise<void> {
-    const net = this.app.online;
-    if (!net || this.disposed) return;
-    if (n >= 8) {
-      toast(t('online.closed'), 'error', 5000);
-      void this.app.toMenu();
-      return;
-    }
-    await delay(1500);
-    if (this.disposed) return;
-    if (await net.tryReconnect()) {
-      this.connEl?.remove();
-      this.connEl = null;
-      toast(t('online.reconnected'), 'good');
-    } else void this.tryReconnect(n + 1);
   }
 
   // ------------------------------------------------------------------ Finale
@@ -935,3 +996,5 @@ export class GameScreen {
     void (null as PlayerSetup | null);
   }
 }
+
+const steps = (n: number): string => (n === 1 ? t('steps.one') : t('steps.many', { n }));

@@ -5,14 +5,14 @@ Ein 3D-Browser-Partyspiel im Stil klassischer Brett-Party-Spiele – **vollstän
 - **5 Welten × 10 Bretter = 50 Layouts** (PRISMARA, NOVA NEXUS, WURZELWILD, PARADOX CITY, INFINITY CARNIVAL), alle aus Daten von einer gemeinsamen Brett-Engine geladen und beim Test auf Struktur und Erreichbarkeit geprüft
 - **22 Minispiele** mit gemeinsamem Rahmen (Anleitung, Countdown, Ergebnis, faire Belohnung)
 - **8 Figuren** mit Animationen und Kosmetik (Hüte, Spuren, Würfel-Skins)
-- **Modi:** gegen Bots (3 Stufen), lokal auf einem Gerät (Hot-Seat, 2–4 Spieler), **online ohne Server per QR-Code oder Text-Code** (WebRTC-Direktverbindung, läuft von GitHub Pages) und optional online über einen Colyseus-Spielserver (Raumcode, öffentliche Räume, Wiederverbindung)
+- **Modi:** gegen Bots (3 Stufen), lokal auf einem Gerät (Hot-Seat, 2–4 Spieler) und **🌐 online mit Freunden per Raumcode, Link oder QR-Code** (Vermittlung über Firebase wie bei allen easygames-Spielen, gespielt wird direkt Gerät zu Gerät)
 - Desktop (Maus/Tastatur) und Handy/Tablet (Touch, Hoch- und Querformat)
 - Deutsche Oberfläche (vorbereitet für weitere Sprachen), Barrierefreiheits-Optionen, adaptive Grafikqualität
 - Musik und Soundeffekte werden zur Laufzeit selbst erzeugt (Web Audio), Spielstand lokal im Browser
 
 ## Spielen
 
-Gebaut liegt das Spiel unter `partyverse/app/` (GitHub Pages: `…/easygames/partyverse/`). Lokale Partien und **Online mit Freunden per QR-Code/Text-Code** brauchen **keinen Server** – siehe [docs/p2p.md](docs/p2p.md). Nur der optionale Raumcode-Modus braucht einen eigenen Spielserver ([docs/server.md](docs/server.md)); GitHub Pages kann keinen Spielserver hosten.
+Gebaut liegt das Spiel unter `partyverse/app/` (GitHub Pages: `…/easygames/partyverse/`). Lokale Partien brauchen kein Netz, **Online mit Freunden** läuft über Firebase ohne eigenen Server – siehe [docs/p2p.md](docs/p2p.md).
 
 ## Entwicklung
 
@@ -22,19 +22,17 @@ Voraussetzung: Node.js ≥ 20.
 cd partyverse
 npm install
 npm run dev          # Client auf http://localhost:5173
-npm run server       # Spielserver auf Port 2567 (optional, nur für Online)
 npm run check        # Typen + Lint + alle Tests
 npm run build        # Client bauen nach partyverse/app (Basis-URL ./, überall lauffähig)
 ```
 
-| Befehl                            | Zweck                                                                                                   |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `npm test`                        | Vitest: Spielkern, 50 Layouts, 22 Minispiele, Netzwerk-Nachrichten, Server-Integration, Audio, Speicher |
-| `npm run lint` / `npm run format` | ESLint / Prettier                                                                                       |
-| `npm run typecheck`               | `tsc` für Client und Server                                                                             |
-| `npm run server:build`            | Server als einzelne Datei nach `server/dist/server.mjs`                                                 |
+| Befehl                            | Zweck                                                                               |
+| --------------------------------- | ----------------------------------------------------------------------------------- |
+| `npm test`                        | Vitest: Spielkern, 50 Layouts, 22 Minispiele, Netzwerk-Nachrichten, Audio, Speicher |
+| `npm run lint` / `npm run format` | ESLint / Prettier                                                                   |
+| `npm run typecheck`               | `tsc` für das Spiel                                                                 |
 
-Konfiguration (alles optional, siehe `.env.example`): `VITE_BASE` (Basis-URL beim Bauen), `VITE_SERVER_URL` (Standard-Serveradresse), `PORT`, `ALLOWED_ORIGINS` (Server).
+Konfiguration (optional, siehe `.env.example`): `VITE_BASE` (Basis-URL beim Bauen).
 
 Entwickler-Labore: `?lab=<minispiel-id>` (Minispiel einzeln, `&bot=0.8` lässt die KI spielen), `?charlab=1` (Figuren), `?worldlab=<layout-id>` (Brett und Welt). Hilfswerkzeuge in `tools/` (Bildschirmfotos per Playwright, Layout-Vorschau, Dokumentationsgeneratoren).
 
@@ -50,11 +48,12 @@ Entwickler-Labore: `?lab=<minispiel-id>` (Minispiel einzeln, `&bot=0.8` lässt d
 
 ## Spielregeln (Kurzfassung)
 
-1. Jede Runde würfelt jeder Spieler in der Reihenfolge, zieht Feld für Feld und wählt an Weggabelungen seinen Weg.
+1. Jede Runde würfelt jeder Spieler in der Reihenfolge (der Würfel dreht sich, bis man „Stopp!“ tippt), zieht Feld für Feld und wählt an Weggabelungen seinen Weg.
 2. **Glimmer** (✦) sind die Währung. Felder geben oder nehmen Glimmer, bringen Gegenstände, Zufallsereignisse, Läden, Portale, Mautbrücken (3 Glimmer oder Schlüsselfragment) und Chaosfelder (Platztausch).
 3. Am **Chrono-Altar** kostet ein **Siegpunkt-Splitter** (◈) 20 Glimmer. Der Altar zieht manchmal um.
 4. **4D-Faltung:** Auf manchen Brettern erscheinen und verschwinden Wege je Runde (gestrichelte Wege) – plane voraus.
-5. Nach jeder Runde spielen alle ein **Minispiel**; die Besten bekommen Glimmer.
+5. Nach jeder Runde spielen alle ein **Minispiel**; die Besten bekommen Glimmer. Oben rechts läuft der Punktestand der Mitspieler live mit.
+   **Endspurt:** In Partien ab 6 Runden zählen in den letzten 3 Runden Glimmer- und Dornenfelder doppelt, und der Letzte bekommt 10 Glimmer Aufholhilfe.
 6. Nach der letzten Runde gibt es Bonus-Splitter (meiste Minispiel-Siege, meiste Glimmer, meiste Ereignisse). Wer die meisten Splitter hat, gewinnt (Gleichstand: Glimmer, Minispiel-Siege, Reihenfolge).
 
 Die vollständigen Regeln stehen im Spiel unter **Anleitung**.
@@ -63,16 +62,15 @@ Die vollständigen Regeln stehen im Spiel unter **Anleitung**.
 
 ```
 partyverse/
-  shared/src/           # Reiner Code ohne DOM – läuft im Browser und im Server
-    core/               #   GameCore: Regeln als Zustandsautomat (server-autoritativ), KI (ai.ts), Gegenstände/Ereignisse
+  shared/src/           # Reiner Code ohne DOM
+    core/               #   GameCore: Regeln als Zustandsautomat (beim Gastgeber autoritativ), KI (ai.ts), Gegenstände/Ereignisse
     levels/             #   50 Layouts (Daten + 17 Baupläne), Graph-Funktionen, Validierung
     minigames/          #   Minispiel-Framework (deterministische 60-Hz-Simulation) + 22 Spiele
-    net/protocol.ts     #   Nachrichtenformate Client↔Server mit Prüfung
+    net/                #   Nachrichtenformate Gast↔Gastgeber mit Prüfung (p2p.ts, protocol.ts)
     characters.ts, rng.ts
-  server/src/           # Colyseus-Raum (PartyRoom), Lobby-Schema, Zeitgeber
   client/src/
     app/                #   App-Wurzel, Speicher (versioniert), Erfolge, Theme
-    net/                #   Session-Schnittstelle: LocalSession (Bots/Hot-Seat), HostSession/GuestSession (WebRTC, ohne Server), OnlineSession (Colyseus), Verbindungs-Codes (signal.ts)
+    net/                #   Session-Schnittstelle: LocalSession (Bots/Hot-Seat), HostSession/GuestSession (online), Raumcode-Verbindung über Firebase (p2pLink.ts)
     game/               #   Spielablauf: Brett-Bühne, Kamera, Würfel, HUD, Minispiel-Ablauf, Siegerehrung
     render/             #   Engine (adaptive Qualität), Materialien, Figuren, Welten + Brett-Darstellung
     minigames/          #   Minispiel-Bühne und 22 Ansichten (Three.js)
@@ -81,24 +79,23 @@ partyverse/
     i18n/               #   Wörterbuch (de)
 ```
 
-**Server-Autorität:** Der Spielkern (`GameCore`) ist eine reine Zustandsmaschine mit privatem Zufallsgenerator. Aktionen werden geprüft (Wer ist am Zug? Ist die Aktion erlaubt?), der Client zeigt nur den bestätigten Zustand plus Ereignisse zum Animieren. Lokal läuft derselbe Kern im Browser. **Minispiele** sind deterministisch: Clients senden ihr Eingabeprotokoll, der Server rechnet das Ergebnis nach und akzeptiert keine selbst gemeldeten Punkte. Bots nutzen dieselben Regeln und Informationen wie Menschen (keine versteckten Boni).
+**Gastgeber-Autorität:** Der Spielkern (`GameCore`) ist eine reine Zustandsmaschine mit privatem Zufallsgenerator. Aktionen werden geprüft (Wer ist am Zug? Ist die Aktion erlaubt?), der Client zeigt nur den bestätigten Zustand plus Ereignisse zum Animieren. Lokal läuft derselbe Kern im Browser. **Minispiele** sind deterministisch: Clients senden ihr Eingabeprotokoll, der Gastgeber rechnet das Ergebnis nach und akzeptiert keine selbst gemeldeten Punkte. Bots nutzen dieselben Regeln und Informationen wie Menschen (keine versteckten Boni).
 
 ## Übersichten
 
 - [Alle 50 Bretter](docs/levels.md)
 - [Alle 22 Minispiele](docs/minigames.md)
-- [Online ohne Server (QR/Code)](docs/p2p.md)
-- [Spielserver betreiben (optional)](docs/server.md)
+- [Online mit Freunden (Raumcode über Firebase)](docs/p2p.md)
 - [Mehrsprachigkeit](docs/i18n.md)
 - [Drittanbieter-Lizenzen](THIRD_PARTY.md)
 
 ## Veröffentlichen (GitHub Pages)
 
-`npm run build` schreibt das Spiel nach `partyverse/app/` mit relativer Basis-URL (`./`); die Datei `partyverse/index.html` leitet dorthin. Pages liefert nur diese statischen Dateien aus. Online mit Freunden (QR/Text-Code) funktioniert direkt von Pages. Nur für den Raumcode-Modus muss ein Spielserver separat laufen und per `wss://` erreichbar sein (Serveradresse in den Optionen oder beim Bauen als `VITE_SERVER_URL`). Es gibt keine Geheimnisse im Client.
+`npm run build` schreibt das Spiel nach `partyverse/app/` mit relativer Basis-URL (`./`); die Datei `partyverse/index.html` leitet dorthin. Pages liefert nur diese statischen Dateien aus; Online mit Freunden läuft darüber und über Firebase (`../cloud/fire-peer.js`). Es gibt keine Geheimnisse im Client.
 
 ## Bekannte Grenzen
 
 - Musik und Klänge wurden nur strukturell getestet (keine Hörprobe in der Entwicklungsumgebung); Pegel können Feinschliff brauchen.
 - Bildschirmfotos und Abläufe wurden mit Software-Rendering geprüft; die Leistung auf echten Geräten ist nicht gemessen. Die Grafikqualität senkt sich bei niedriger Bildrate selbst ab.
-- Online ohne Server wurde mit zwei Browser-Seiten bis zum Finale getestet (lokales Netz, ohne STUN); Tests mit zwei echten Geräten und über verschiedene Netze (STUN/NAT) fanden nicht statt. Strenge Netze können Direktverbindungen verhindern (kein TURN). Der Server-Modus ist über echte WebSocket-Verbindungen getestet, aber nicht zwischen echten Geräten.
+- Online mit Freunden wurde mit zwei Browser-Seiten über Firebase getestet (Raum eröffnen, per Link beitreten, Spielstart); Tests mit zwei echten Geräten über verschiedene Netze stehen aus.
 - Einige Texte (Optionen, Anleitung, Spieldaten) stehen direkt auf Deutsch im Code und sind noch nicht übersetzbar.

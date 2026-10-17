@@ -13,6 +13,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | Rico Flap 3D – Flatter-Klassiker in 3D: Rico im RicoReWi-Hoodie, 10 Level in 5 Welten, bewegliche Türme, Noten und Sterne, Endlos-Modus mit Rekord; Touch, Tastatur, Maus und Gamecontroller, Google-Spielstand (Three.js, Sounds im Browser erzeugt) | [`rico-flap/`](rico-flap/) |
 | KIKO – Das Geheimnis der Sterneninseln – acht 3D-Level in vier Welten, Kristalle, Rätsel, Endgegner, Touch und Gamepad, lokaler Spielstand | [`kiko-sterneninseln/`](kiko-sterneninseln/) |
 | Krawallvögel 3D – Schleuder-Physikspiel mit 150 Leveln in 10 Sender-Welten, 8 Vogelarten mit Fähigkeiten, 6 Schweinetypen, Glas/Holz/Stein/TNT, Endgegner König Grunz, Power-ups, goldene Sender-Kisten und Senderwand; Touch, Maus, Tastatur, Gamecontroller, Google-Spielstand, Offline-PWA (Three.js + planck.js, Sounds und Musik im Browser erzeugt; Tests: `node tools/test-krawallvoegel.cjs`) | [`krawallvoegel/`](krawallvoegel/) |
+| Funkblasen – Bubble Shooter: 3D-Kugeln auf festem Sechseckgitter, 150 Level in 10 Welten, Endlosmodus, Tagesaufgabe, Freies Spiel, Spezialblasen (Bombe, Regenbogen, Blitz, Eis, Kette, Stern), Kristalle, Steine, Schalter, 30 Erfolge, Designs nur zur Optik, Maskottchen Funki; Touch, Maus, Tastatur, Gamecontroller, Google-Spielstand, Offline-PWA (Three.js, Sounds und Musik im Browser erzeugt; Tests: `node --test funkblasen/tests/*.test.js`) | [`funkblasen/`](funkblasen/) |
 | AnMaCha Radio Maze 3D – Arcade-Labyrinth-Klassiker in 3D mit Original-Regeln, 60 Level, Senderlogos als Bonus, Google-Spielstand, Offline-PWA (Three.js) | [`radio-maze/`](radio-maze/) |
 | ZEITSPRUNG WISSEN – moderierte 3D-Wissensshow nach dem Zeitstrahl-Prinzip: 236 Ereignisse aus Geschichte, Politik, Erdkunde, Wissenschaft und Kultur (776 v. Chr. bis heute), 377 Wissensfragen, „Was war zuerst?“-Runden, 38 Bildrätsel, 16 historische Clips von Wikimedia Commons und 25 Songs zu Ereignissen über Deezer; A–D-Jahreswahl oder Zeitstrahl, TV-Handys per WR-Code/PIN, Google-Speicherung | [`zeitsprung-wissen/`](zeitsprung-wissen/) |
 | ZEITSPRUNG MOVIE – moderierte 3D-Filmshow mit 398 Fragen: 318 Quizfragen, 38 Filmmusik- und Serienintro-Hörfragen über Deezer/Spotify sowie 42 Bildrätsel; 12 eingebettete Trailer, A–D-Jahreswahl oder Zeitleiste, TV-Handys per WR-Code/PIN und Google-Speicherung | [`zeitsprung-movie/`](zeitsprung-movie/) |
@@ -41,7 +42,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | Mach mich aus! – Funk-Dating-Show mit 20 Pulten und Lampen (3D-Studio, Kandidat oder Pult, Quiz, Talent, Joker, bis zu 4 Menschen mit Handy-Pads) | [`MachMichAus/`](MachMichAus/) |
 | TURBOKICK – 3D-Auto-Fußball mit Nitro (Bots, Splitscreen, online per QR-Code/Text-Code ohne Server; TypeScript/Three.js, eigene Physik) | [`turbokick/`](turbokick/) |
 | RIFTZONE – 3D-Battle-Royale: Riftfähre, Gleiter, 14 Orte, 8 Waffen, Bauen oder ohne Bauen, Fahrzeuge, Sturm in 7 Phasen; Solo/Duo/Squad offline gegen bis zu 99 Bots oder online ohne Server (ein Gerät eröffnet einen Raum, Freunde treten per Code bei, Vermittlung über Firebase) bzw. mit eigenem Server (Gruppen, öffentliche und private Lobbys). TypeScript, Three.js, WebSocket/WebRTC; Quelltext und Server in [`riftzone/`](riftzone/), gebautes Spiel in `riftzone/app/` | [`riftzone/`](riftzone/) |
-| PARTYVERSE – 3D-Brett-Partyspiel mit 50 Brettern in 5 Welten, 22 Minispielen, 8 Figuren; gegen Bots, lokal oder online (Colyseus-Server, TypeScript/Three.js) | [`partyverse/`](partyverse/) |
+| PARTYVERSE – 3D-Brett-Partyspiel mit 50 Brettern in 5 Welten, 22 Minispielen, 8 Figuren; gegen Bots, lokal oder 🌐 online mit Freunden per Raumcode/Link/QR über Firebase (TypeScript/Three.js) | [`partyverse/`](partyverse/) |
 | AnMaCha Hörerwahl – das große Umfrage-Duell (reines HTML/CSS/JS, Sounds werden im Browser erzeugt, 120 Fragen) | [`anmacha-hoererwahl/`](anmacha-hoererwahl/) |
 | AnMaCha Showdown – Mikro-Duell mit 8 Mini-Spielen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-showdown/`](anmacha-showdown/) |
 | AnMaCha Spielesammlung 3D – Rausschmeißer (Laufspiel), Würfelfieber (5-Würfel-Spiel), Schach, Leiterspiel, Vier in einer Reihe, Dame, Mühle (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-spielesammlung/`](anmacha-spielesammlung/) |
@@ -64,7 +65,7 @@ Alle Spiele mit Handy-Kopplung oder Online-Modus (Code/QR) verbinden sich über 
 
 Alle Spiele lassen sich mit einem Gamecontroller (Xbox, PlayStation, 8BitDo …, per USB oder Bluetooth) spielen.
 
-- **Eigene Controller-Steuerung** haben KIKO, Rico Flap, Radio Maze, Kart Rush, Klotzfunk, Quest RPG, Bunte Insel 1 und 2, Pufi Farbwind, Riftzone, Taschi, Turbokick, Funkparcours und AnMaCha Casino.
+- **Eigene Controller-Steuerung** haben KIKO, Rico Flap, Radio Maze, Kart Rush, Klotzfunk, Quest RPG, Bunte Insel 1 und 2, Pufi Farbwind, Riftzone, Taschi, Turbokick, Funkparcours, Funkblasen und AnMaCha Casino.
 - **Alle anderen Spiele** binden `gamepad.js` aus dem Hauptordner ein (`<script src="../gamepad.js" data-pad="…" defer></script>`). Die Datei übersetzt den Controller in das, was das Spiel schon kann:
   - Steuerkreuz und linker Stick = Pfeiltasten, **A** = Enter, **B** = Esc, **X** = Leertaste, **Y** = E, **LB/RB** = Q/E, **Start** = P, **Select** = M – pro Spiel angepasst im Attribut `data-pad` (z. B. `a=Space/Enter` = Leertaste, und nur wenn das Spiel sie nicht nutzt, Enter; `ls=wasd`; `y=-` = nichts).
   - In Menüs, die nicht auf Pfeiltasten reagieren, springt das Steuerkreuz von Knopf zu Knopf (gelber Rahmen), **A** drückt ihn.
@@ -433,6 +434,16 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 - **Inhalte:** `content.js` (18 Kandidaten, 40 Pult-Besetzungen, 14 Quizfragen, Moderator- und Date-Texte) – prüfen mit `node MachMichAus/tests/check-content.js`.
 - **Technik:** `engine.js` (Regeln, rein, mit Startwert nachspielbar), `studio.js` (Three.js), `panel.js`/`games.js` (Eingaben und Talent-Spiel, gleich am Gastgeber und Handy), `avatars.js`, `pair.js`/`controller.js`, `audio.js`, `main.js`.
 - **Tests:** `node MachMichAus/tests/engine-tests.js` (Passgenauigkeit, Phasen, Joker, Blackout, 400 KI-Runden mit Balance), Browser-Tests `tests/e2e.mjs` (ganze Show) und `tests/e2e-pair.mjs` (2 Handys).
+
+## Funkblasen – Bubble Shooter
+
+Eigener Bubble-Shooter mit Maskottchen Funki (Ordner `funkblasen/`):
+
+- Regeln rein und deterministisch in `engine.js` (Sechseckgitter „odd-r“, 11/10 Kugeln je Reihe, Flugbahn in festen Zeitschritten – die Zielvorschau ist genau der echte Schuss). Three.js (`renderer.js`) zeichnet nur.
+- 150 Level in 10 Welten (`levels.js`, aus Startwerten erzeugt, einige von Hand gebaut), Ziele: alles abräumen, Kristalle retten, Punkte. Tagesaufgabe aus UTC-Datum + Version, Endlos mit nachrückenden Reihen.
+- Münzen gibt es nur für Verbesserungen; sie kaufen Designs (Optik) und den Regenbogen-Joker (einmal pro Level). Kein Echtgeld, keine Werbung.
+- Spielstand `easygames.funkblasen.v1` (geprüft, kaputte Stände werden gesichert), Google-Speicher über `cloud/anmacha-cloud.js`.
+- Tests: `node --test funkblasen/tests/*.test.js` (Regeln, Spezialblasen, Speicher, alle 150 Level und Tagesaufgaben werden von einem Test-Spieler mit der echten Engine gelöst). Browser-Test (Playwright): `node funkblasen/tests/smoke.js`.
 
 ## Krawallvögel 3D
 

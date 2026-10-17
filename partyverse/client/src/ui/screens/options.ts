@@ -1,6 +1,6 @@
 import { btn, h, select, slider, toast, toggle } from '../dom';
 import type { App, RouteParams, ScreenView } from '../../app/app';
-import { normalizeServerUrl, type ColorMode, type QualityChoice, type Settings } from '../../app/save';
+import { type ColorMode, type QualityChoice, type Settings } from '../../app/save';
 import { locales } from '../../i18n';
 import { header, section } from './common';
 
@@ -108,40 +108,6 @@ export function create(app: App, params?: RouteParams): ScreenView {
     ),
   );
 
-  // Online-Server
-  const urlInput = h('input', {
-    class: 'field',
-    type: 'text',
-    value: s.serverUrl,
-    placeholder: 'wss://dein-server.example',
-    'aria-label': 'Online-Server-Adresse',
-    maxlength: 200,
-  });
-  const urlMsg = h('div', { class: 'err', 'aria-live': 'polite' });
-  const saveUrl = (): void => {
-    const norm = normalizeServerUrl(urlInput.value);
-    urlMsg.className = 'err';
-    if (norm === null) {
-      urlMsg.textContent =
-        'Ungültige Adresse. Erlaubt sind nur ws:// oder wss:// ohne Benutzername und Passwort.';
-      return;
-    }
-    set('serverUrl', norm);
-    urlInput.value = norm;
-    urlMsg.className = 'ok';
-    urlMsg.textContent = norm ? 'Gespeichert.' : 'Online-Modus ist ausgeschaltet (keine Adresse).';
-  };
-  const serverSec = section(
-    'Online-Server',
-    h('div', { class: 'inline' }, urlInput, btn('Speichern', saveUrl, 'good')),
-    urlMsg,
-    h(
-      'p',
-      { class: 'hint' },
-      'GitHub Pages kann nur die Webseite ausliefern, aber keinen Spielserver betreiben. Für Online-Partien brauchst du einen eigenen PARTYVERSE-Server (z. B. auf deinem Rechner oder bei einem Hoster). Wie du ihn startest, steht in docs/server.md. Ohne Adresse bleibt der Online-Modus aus; lokale Partien funktionieren immer.',
-    ),
-  );
-
   const langs = locales();
   const langSec = section(
     'Sprache',
@@ -242,7 +208,6 @@ export function create(app: App, params?: RouteParams): ScreenView {
       gfxSec,
       a11ySec,
       touchSec,
-      serverSec,
       langSec,
       dataSec,
     ),
