@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "AnMaCha Radio-Match 3D",
-  "short_name": "Radio-Match 3D",
+  "name": "Royal Radio Match 3D",
+  "short_name": "Radio Match 3D",
   "lang": "de",
   "start_url": "./",
   "scope": "./",
@@ -10,8 +10,8 @@
     "fullscreen",
     "standalone"
   ],
-  "background_color": "#053438",
-  "theme_color": "#084c51",
+  "background_color": "#382d10",
+  "theme_color": "#514217",
   "categories": [
     "games"
   ],

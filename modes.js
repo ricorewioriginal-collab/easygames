@@ -28,6 +28,7 @@ window.EASYGAMES_MODES = {
   'zeitsprung-radio': { pad: true, online: true },
   'zotik': { online: true },
   'anmacha-spielesammlung': { multi: true },
+  'anmacha-radio-match': { multi: true },
   'anmacha-memory': { multi: true },
   'anmacha-showdown': { multi: true },
   'anmacha-gesucht': { multi: true }

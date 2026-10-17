@@ -46,14 +46,15 @@ window.EASYGAMES_GUIDES = {
   "tipps": []
  },
  "anmacha-radio-match": {
-  "anleitung": "Ein 3D-Match-3-Spiel mit 100 Leveln. Du tauschst zwei benachbarte Bauteile, drei gleiche in einer Reihe verschwinden. Jedes Level hat ein Ziel, etwa Punkte, bestimmte Bauteile sammeln, Rausch-Felder entstören, Power-ups erzeugen oder Kombo-Ketten schaffen, meist in begrenzten Zügen, manchmal in begrenzter Zeit. Geschaffte Level bringen Sterne und schalten das nächste Level frei.",
+  "anleitung": "Royal Radio Match 3D: ein 3D-Match-3 mit 200 Leveln in 10 Radio-Welten. Tausche zwei benachbarte Bauteile, drei gleiche in einer Reihe oder Spalte verschwinden. Jedes Level hat Ziele (Bauteile sammeln, Kisten, Moos, Eis oder Rauschen räumen, Pakete und Kassetten nach unten bringen, Punkte, Combos) in begrenzten Zügen. Vierer, L/T-Formen, Quadrate und Fünfer bauen Wellenrakete, Bassbombe, Funkdrohne und Frequenzkugel; zwei Spezialteile miteinander getauscht ergeben starke Kombos. Mit Sternen baust du das Funkhaus aus, Münzen gibt es nur fürs Spielen. Dazu Bonuslevel und ein Duell zu zweit oder gegen die KI.",
   "steuerung": [
-   "PC: Mit der Maus ein Bauteil anklicken und dann ein benachbartes anklicken, oder zum Nachbarn ziehen, um zu tauschen. Oben rechts: Hinweis (Glühbirne), Ton, Menü",
-   "Touch: Bauteil antippen und danach das Nachbarfeld antippen, oder in die gewünschte Richtung wischen. Knöpfe für Hinweis, Ton und Menü"
+   "PC: Bauteil anklicken und Nachbarn anklicken oder hinziehen. Tastatur: Pfeiltasten bewegen den Rahmen, Enter wählt und tauscht, Esc = Pause. Booster unten anklicken (Feld-Booster: Feld wählen, dann bestätigen)",
+   "Touch: Bauteil antippen und Nachbarfeld antippen oder in die Richtung wischen. Pause oben links, Booster unten; die Zurück-Taste öffnet die Pause"
   ],
   "tipps": [
-   "Vierer-Reihe: Wellen-Teil räumt Reihe oder Spalte; L/T-Form: Funkenbombe räumt 3x3; Fünfer: Frequenzkugel, mit einem Teil tauschen entfernt alle davon.",
-   "Der Hinweis-Knopf zeigt einen möglichen Zug."
+   "Spezialteile miteinander tauschen: Rakete + Bombe räumt drei Reihen und Spalten, Kugel + Kugel das ganze Brett.",
+   "Nach ein paar Sekunden ohne Zug hüpft ein möglicher Zug als Hinweis.",
+   "Alter Radio-Match-Fortschritt (Level 1–100) wird automatisch übernommen."
   ]
  },
  "anmacha-flipper": {

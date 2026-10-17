@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "44c291701588",
- "generated": "2026-10-17T19:57:02+00:00",
- "commit": "108ecdfdb74490582649ee67f2e05e61450c83c6",
+ "version": "e9c828c6bbe5",
+ "generated": "2026-10-17T21:31:30+00:00",
+ "commit": "0db831ead78029d8bb0db89bebe04450bfc26838",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3593,28 +3593,93 @@
   },
   {
    "p": "anmacha-radio-match/card.jpg",
-   "s": 39837,
-   "h": "b4c04621e01cc34187002052a97cc99349d16e96c245a519225227dcfe520cb2"
+   "s": 39356,
+   "h": "6e4e27d63504b62ca419dbff1f5d7aae5ec96d8227d087259fe98931fc5062c1"
+  },
+  {
+   "p": "anmacha-radio-match/data/levels.js",
+   "s": 135999,
+   "h": "b6a2a55098aaa6d5a999de5f4901b5f9887c47638f0a090c459dacfc181ec316"
   },
   {
    "p": "anmacha-radio-match/index.html",
-   "s": 39384,
-   "h": "7656defa073bf46c7b2366ac86811c064bb2c808e75f7b4b32dd2bc57f16f4bc"
+   "s": 5369,
+   "h": "1e2c014f50e3bbb6fa999ab320147a41daed346dd8296429d7220fd7ce26dc81"
   },
   {
    "p": "anmacha-radio-match/logo.svg",
-   "s": 2313,
-   "h": "25b271a7940fd1b08695b166d943c18a3b3c68e579e544b3455107f45cc5057a"
+   "s": 1442,
+   "h": "3bd99165bd89fb9151548f73de0ec5c1f5b15f98278e1569eacd22432c2ddf74"
   },
   {
    "p": "anmacha-radio-match/manifest.webmanifest",
-   "s": 797,
-   "h": "8088388456047624819032758462d7873b27f05e74b174c403ea41b6d2096246"
+   "s": 795,
+   "h": "8e275658142d2b2af358c1b463da660452736aa65f7d3d119cb17754f2044c09"
+  },
+  {
+   "p": "anmacha-radio-match/src/audio/audio.js",
+   "s": 5614,
+   "h": "b7c5d4026c159e2f5cd6f6f9426e92e6e5811a24252f2761b1232a0fb17d786c"
+  },
+  {
+   "p": "anmacha-radio-match/src/core/defs.js",
+   "s": 10839,
+   "h": "113f3862541d434808ebe280fe8d30237d6bb2a5ecbeda23c8e8fb9fb8c603ab"
+  },
+  {
+   "p": "anmacha-radio-match/src/core/engine.js",
+   "s": 44074,
+   "h": "773b78ff6f0549e3a5b1b7141fb1da4c375706971d98a25cd71453918dc9df3f"
+  },
+  {
+   "p": "anmacha-radio-match/src/core/rng.js",
+   "s": 960,
+   "h": "f98f5e5e469afed1040b1242a7f2940716a80bd1e41768b5b439d88540966927"
+  },
+  {
+   "p": "anmacha-radio-match/src/render/board.js",
+   "s": 32524,
+   "h": "38998ad381160b4a224ee33528a3292ccbec7f78db94b9ff6f5286cafc1ba5cd"
+  },
+  {
+   "p": "anmacha-radio-match/src/render/models.js",
+   "s": 20716,
+   "h": "a53f0fcbeab5ef30b60b5fdb6ba2bea8b0553783887b6bf031f645eef0207af3"
+  },
+  {
+   "p": "anmacha-radio-match/src/render/stage.js",
+   "s": 6435,
+   "h": "208515a22e0b9fd99f84f359c7ed8a8a2406d4d0fb3b8df98ce197bd410b5501"
+  },
+  {
+   "p": "anmacha-radio-match/src/render/tower.js",
+   "s": 8394,
+   "h": "f7e0c59e574139d35f7329edd2ecf52451fc26f5e376aae0525d97f09a25d568"
+  },
+  {
+   "p": "anmacha-radio-match/src/save/storage.js",
+   "s": 6099,
+   "h": "35f94fc83ecdf15b5c22984f4342e3efaae27ef610d8248c11563fa18a7e8a17"
+  },
+  {
+   "p": "anmacha-radio-match/src/ui/app.js",
+   "s": 53430,
+   "h": "d17299db007c39c0d1bd7ad84c56852f6ccffde8d2a55d3c39f81a44c2d407a0"
+  },
+  {
+   "p": "anmacha-radio-match/src/ui/texts.js",
+   "s": 7059,
+   "h": "a53ceee72e1cdd76e48b22b6dc13ed337fbb1f1ece4d5967c096c5eb2cedc4c0"
+  },
+  {
+   "p": "anmacha-radio-match/style.css",
+   "s": 20775,
+   "h": "af27e899c8169a705460f2c114e28441495a634c04327f86180ae4d662e49a26"
   },
   {
    "p": "anmacha-radio-match/sw.js",
-   "s": 2006,
-   "h": "dca086b93da9c2ca9c4001b574d0832f3accbc728065e55ee593b2aef7ca4bf4"
+   "s": 2008,
+   "h": "665fcc1d9f7c85790f3697f4ded511d3b9996e76cd3827c563a15532b8b1f276"
   },
   {
    "p": "anmacha-radio-surfer/card.jpg",
@@ -5053,8 +5118,8 @@
   },
   {
    "p": "games.js",
-   "s": 24677,
-   "h": "396785d5247e6cc0f67cb76a47a14e43ecc7574b5d2eba68ef995de0fe9e7f1c"
+   "s": 24715,
+   "h": "4b29408ec4bd3b639690bfc7303b5b5d6cabcf0d6b8d268da2b1120350967943"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5213,8 +5278,8 @@
   },
   {
    "p": "guides.js",
-   "s": 66730,
-   "h": "aa71a95eeb6c0a6a04d05921c3dc46c73340f398e162bf6362769175ff99f96e"
+   "s": 67087,
+   "h": "20bfbb31c9b8d6c57523ae71ae137ced87e6b4330492265654c15b2cab2af8f4"
   },
   {
    "p": "heute.html",
@@ -5563,8 +5628,8 @@
   },
   {
    "p": "modes.js",
-   "s": 1929,
-   "h": "729ad8cdbfd7d36b9092ac879a5108ac49c3fe6d34fa2fe15b54ba0bc580a3ec"
+   "s": 1971,
+   "h": "abfd8fbe1ea0c5d2a42d77ce3a1fe4199161c4dfac979a11d8aeebbeece09388"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -6363,8 +6428,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 104972,
-   "h": "f4e22fb046502b14b4cf7d94d4b2a70c634e42bea3433f5ad3d31d744efe3c61"
+   "s": 105413,
+   "h": "291dccbcf6340442702327c64a0c0eb9895b6f3f97900db626e490a06fc9cf0f"
   },
   {
    "p": "taschi/card.svg",
