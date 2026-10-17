@@ -221,7 +221,16 @@ export function deserialize(raw: SaveData): Game {
     g.hhs.set(h.id, { ...h, storage: h.storage ?? [], booked: h.booked ?? [], ledger: h.ledger ?? [], pets: h.pets ?? [] });
     if (h.lot) g.world.privateLots.add(h.lot);
   }
-  for (const s of d.sims) g.sims.set(s.id, { ...(s as Sim), queue: [], rt: newRuntime(), away: s.away && s.away.kind === 'travel' ? null : s.away });
+  for (const s of d.sims)
+    g.sims.set(s.id, {
+      ...(s as Sim),
+      queue: [],
+      rt: newRuntime(),
+      away: s.away && s.away.kind === 'travel' ? null : s.away,
+      // Wünsche: ältere Spielstände ohne Feld = keine Wünsche
+      wishes: Array.isArray(s.wishes) ? s.wishes.filter((w) => w && typeof w.k === 'string' && Number.isFinite(w.until)).slice(0, 3) : [],
+      wishPoints: Number.isFinite(s.wishPoints) ? s.wishPoints : 0,
+    });
   for (const p of d.pets) g.pets.set(p.id, { ...(p as Pet), act: { kind: 'idle', t: 1 }, rt: { anim: 'idle', animT: 0, path: null, pathI: 0, spawned: false, bubble: null } });
   for (const [k, r] of d.rels) g.rels.set(k, r);
   g.weather = d.weather ?? g.weather;
