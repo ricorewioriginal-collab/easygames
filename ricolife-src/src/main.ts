@@ -79,7 +79,7 @@ function registerSW(): void {
           app?.saveNow();
           w.postMessage({ type: 'EG_SKIP_WAITING' });
         };
-        d.append('✨ Ein Update ist bereit ', b);
+        d.append('✨ Neue Version verfügbar – ', b);
         document.body.append(d);
       };
       if (r.waiting && navigator.serviceWorker.controller) offer(r.waiting);

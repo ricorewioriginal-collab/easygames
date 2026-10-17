@@ -135,6 +135,14 @@ small, .muted { color: var(--muted); }
 .money { font-weight: 700; padding: 0 8px; font-variant-numeric: tabular-nums; }
 .spd .btn { min-width: 38px; min-height: 38px; padding: 0 6px; border-radius: 10px; }
 .portraits { display: flex; gap: 4px; flex-wrap: wrap; }
+/* schmale Handys (hochkant): Kopfzeile passt in die Breite, Hinweise verdecken die Porträts nicht */
+@media (max-width: 560px) {
+  .clock small { display: none; }
+  .clock, .money { padding: 0 4px; white-space: nowrap; }
+  .spd .btn { min-width: 32px; padding: 0 2px; }
+  .hud-top { gap: 4px; }
+  #toasts { left: calc(62px + var(--safe-l)); right: calc(8px + var(--safe-r)); width: auto; transform: none; }
+}
 .portrait { width: 46px; height: 46px; border-radius: 50%; border: 2px solid var(--line); background: var(--panel); display: grid; place-items: center; font-weight: 800; font-size: 17px; cursor: pointer; position: relative; box-shadow: var(--shadow); }
 .portrait.on { border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(229, 177, 107, 0.4); }
 .portrait .emo { position: absolute; right: -4px; bottom: -4px; font-size: 15px; }
@@ -324,7 +332,7 @@ body[data-mode='build'] .chat, body[data-mode='buy'] .chat { display: none; }
 /* ===================== Ende Figurenerstellung ===================== */
 
 /* ===================== Bau- und Kaufmodus (src/build) ===================== */
-.bm-panel { position: absolute; left: calc(6px + var(--safe-l)); right: calc(6px + var(--safe-r)); bottom: calc(6px + var(--safe-b)); z-index: 6; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 6px 8px 8px; display: flex; flex-direction: column; gap: 4px; max-height: 46vh; backdrop-filter: blur(8px); pointer-events: auto; }
+.bm-panel { position: absolute; left: calc(6px + var(--safe-l)); right: calc(6px + var(--safe-r)); bottom: calc(6px + var(--safe-b)); z-index: 6; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 6px 8px 8px; display: flex; flex-direction: column; gap: 4px; max-height: 38vh; backdrop-filter: blur(8px); pointer-events: auto; }
 .bm-head { display: flex; gap: 6px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
 .bm-tabs, .bm-acts { display: flex; gap: 4px; align-items: center; overflow-x: auto; scrollbar-width: none; touch-action: pan-x; max-width: 100%; }
 .bm-tabs::-webkit-scrollbar, .bm-row::-webkit-scrollbar, .bm-acts::-webkit-scrollbar { display: none; }

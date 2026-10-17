@@ -429,7 +429,12 @@ function route(g: Game, s: Sim, a: Action, d: IDef, c: Ctx, dt: number): void {
     // soziales Ziel bewegt sich: Weg nachführen
     if (c.t && a.waitT === undefined && s.rt.path && s.rt.pathI >= s.rt.path.length - 1) {
       const last = s.rt.path[s.rt.path.length - 1]!;
-      if (Math.hypot(c.t.x - last.x, c.t.z - last.z) > 2.5) a.phase = 'queued';
+      if (Math.hypot(c.t.x - last.x, c.t.z - last.z) > 2.5) {
+        // nicht endlos hinterherlaufen
+        a.rr = (a.rr ?? 0) + 1;
+        if (a.rr > 10) return fail(g, s, a, `${c.t.first} ist gerade zu beschäftigt`);
+        a.phase = 'queued';
+      }
     }
     return;
   }

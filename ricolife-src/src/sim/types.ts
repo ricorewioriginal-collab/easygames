@@ -61,6 +61,8 @@ export interface Action {
   data?: Record<string, string | number | boolean>;
   /** Ziel nicht erreichbar → Zähler gegen Endlosversuche */
   fails?: number;
+  /** Umleitungen, weil das soziale Ziel weitergegangen ist */
+  rr?: number;
   /** wartet auf Partner (soziale Interaktion) */
   waitT?: number;
   label?: string;
