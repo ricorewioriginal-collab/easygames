@@ -236,11 +236,7 @@ export function deserialize(raw: SaveData): Game {
   for (const s of g.sims.values()) {
     s.npc = !(s.hh && s.hh === g.activeHh);
     s.rt.spawned = !s.npc;
-    if (s.career) {
-      s.career.shift = null;
-      s.career.onSite = false;
-    }
-    if (s.away?.kind === 'work' && !s.npc) s.away = null;
+    // laufende Schichten bleiben erhalten; careerMinute beendet sie regulär (Lohn, Leistung)
     if (!Number.isFinite(s.x) || !Number.isFinite(s.z)) {
       s.x = 24;
       s.z = 48;

@@ -270,6 +270,7 @@ def({
     if (!c.s.school) return false;
     if (c.g.clock.weekday >= 5) return 'Wochenende';
     if (c.g.clock.hour >= SCHOOL_END) return 'Schule ist aus';
+    if (c.g.clock.hour < SCHOOL_START - 1) return `Schule beginnt um ${SCHOOL_START} Uhr – losgehen ab ${SCHOOL_START - 1} Uhr`;
     if (c.s.school.attended === c.g.clock.day) return 'Heute schon dort gewesen';
     return true;
   },

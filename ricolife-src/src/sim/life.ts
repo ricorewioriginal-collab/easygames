@@ -171,7 +171,8 @@ def({
   start: (c: Ctx) => {
     const t = c.t!;
     const lot = c.g.homeLotOf(c.s)!;
-    const bed = c.g.objsWith(lot, 'bedDouble')[0]!;
+    const bed = c.g.objsWith(lot, 'bedDouble').find((o) => mayUse(c.g, c.s, o) && !o.st?.broken);
+    if (!bed) return 'Kein Doppelbett';
     const [x, z] = c.g.world.centerOf(bed);
     c.s.x = x - 0.3;
     c.s.z = z;

@@ -254,11 +254,8 @@ export function createGame(o: NewGameOpts = {}): Game {
       }
     // zwei Erwachsene im eigenen Haushalt gelten als Paar, wenn sie es so wollen – hier: neutral (Freundschaft)
     for (const p of o.custom.pets ?? []) newPet(g, { name: p.name, kind: p.kind, fur: p.fur, hh: h.id });
-    const ok = moveHousehold(g, h.id, lot, !st);
-    if (ok !== true) {
-      // Notfall: leeres Grundstück ohne Kosten
-      moveHousehold(g, h.id, freeHomeLots(g)[0] ?? 'sh-6', false);
-    }
+    // Das Startzuhause ist inklusive (wie bei den Geschichten-Familien); das Startkapital bleibt frei verfügbar.
+    if (moveHousehold(g, h.id, lot, false) !== true) moveHousehold(g, h.id, freeHomeLots(g)[0] ?? 'sh-6', false);
     if (st) h.funds = st.startFunds;
     h.ledger = [];
     h.booked = [];

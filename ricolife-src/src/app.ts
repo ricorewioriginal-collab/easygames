@@ -805,7 +805,10 @@ export class App implements AppApi {
     const s = this.game?.settings ?? this.settings;
     openSettings(s, (ns, key) => {
       this.settings = ns;
-      if (this.game) this.game.settings = ns;
+      if (this.game) {
+        this.game.settings = ns;
+        this.game.clock.seasonDays = ns.seasonDays;
+      }
       // Darstellung/Steuerung bleibt geräteweit im Profil
       this.profile.settings = { ...this.profile.settings, [key]: ns[key] };
       saveProfile(this.profile);
