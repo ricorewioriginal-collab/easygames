@@ -41,6 +41,39 @@
    }
   },
   {
+   "id": "ricorail",
+   "title": "RicoRail Simulator 3D",
+   "desc": "Deine Eisenbahn. Deine Strecken. Deine Welt. Eisenbahnsimulator in 3D mit 4 nachgebildeten Strecken in Deutschland und 4 Fantasiewelten, 11 Führerständen, Fahrphysik, Signalen und vereinfachter PZB, Fahrplan, Güterverkehr und Rangieren, Stellwerk, 64 Szenarien mit Karriere und Prüfungen, Bahngesellschaft und Strecken-Editor. Wetter, Tag und Nacht, 7 Kameras; Touch, Tastatur und Gamepad, offline spielbar.",
+   "icon": "🚆",
+   "img": "ricorail/card.svg",
+   "bg": "linear-gradient(145deg,#0b1a33,#24456e 55%,#f2a900)",
+   "glow": "rgba(242,169,0,.5)",
+   "path": "ricorail/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "RicoRail Simulator 3D ist ein Eisenbahnsimulator. Du fährst Züge im Führerstand auf vier vereinfacht nachgebildeten Strecken (Hannover – Hamburg, Hannover – Bremen, Köln – Koblenz, München – Garmisch) und in vier Fantasiewelten. Beim freien Fahren wählst du Strecke, Zug, Uhrzeit und Wetter; bei der Fahrplanfahrt hältst du pünktlich an jedem Bahnsteig und gibst die Türen frei. Im Güterverkehr belädst, kuppelst und stellst du Wagen zu, im Stellwerk stellst du Fahrstraßen für alle Züge. Die Karriere führt mit Prüfungsfahrten durch sieben Ränge, in der Bahngesellschaft kaufst du Züge und betreibst Linien, und im Strecken-Editor baust du eigene Strecken und fährst sie gleich probe. Signale, PZB und Sifa sind vereinfachte Spielmodelle. Simulation, kein offizielles Produkt der Deutschen Bahn.",
+    "steuerung": [
+     "Smartphone und Tablet: Hebel am Bildschirmrand nach oben ziehen = fahren, nach unten = bremsen. Knöpfe für Horn, Schnellbremsung, Wachsam und Türen; mit einem Finger umsehen, mit zwei Fingern zoomen. Bedienelemente im Führerstand lassen sich antippen.",
+     "PC: W/S Fahrhebel, Q/E Bremse, R Richtungswender, Leertaste Schnellbremsung, T Türen, V Wachsam/Sifa, H Horn, C oder 1–7 Kamera, M Karte, Tab Zeitraffer, Esc Pause, F1 Hilfe.",
+     "Gamepad: rechter Trigger fahren, linker Trigger bremsen, A Türen, B Schnellbremsung, X Horn, Y Kamera."
+    ],
+    "tipps": [
+     "Erst Richtungswender auf vorwärts (R) und Bremse lösen (Q), dann Fahrhebel nach vorn.",
+     "Lange Güterzüge bremsen verzögert: im Gefälle früh bremsen.",
+     "Am Vorsignal die Wachsam-Taste drücken, sonst bremst die PZB den Zug.",
+     "Bei nasser oder glatter Schiene sanft anfahren und sanden (G)."
+    ]
+   },
+   "size": 1086735,
+   "files": 12,
+   "offline": true,
+   "cloud": {
+    "game": "ricorail",
+    "prefix": "ricorail."
+   }
+  },
+  {
    "id": "ricoville",
    "title": "RicoVille – Deine Stadt lebt!",
    "desc": "Gemütliches 3D-Städtebauspiel in Iso-Ansicht: Straßen ziehen, Häuser bauen, Einwohner anlocken, Felder bestellen, Waren herstellen, Läden beliefern und Miete kassieren. Fabriken, Bahnhof, Hafen und Flughafen, Rathaus-Ausbau, neue Gebiete, über 80 Aufgaben mit Stadtgeschichte, Tages- und Wochenziele. Modi Nostalgisch, Entspannt und Kreativ; Handy und PC, offline spielbar, optionaler Google-Spielstand.",

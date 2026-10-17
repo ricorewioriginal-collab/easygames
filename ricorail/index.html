@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#0d1726" />
+    <meta name="description" content="RicoRail Simulator 3D – Deine Eisenbahn. Deine Strecken. Deine Welt. Eisenbahnsimulator mit Führerständen, Fahrplan, Güterverkehr, Stellwerk, Karriere, Bahngesellschaft und Strecken-Editor." />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="RicoRail" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <title>RicoRail Simulator 3D</title>
+    <style>html,body{margin:0;height:100%;background:#0d1726;color:#eef3f9;font-family:system-ui,sans-serif;overflow:hidden}</style>
+    <script src="../cloud/anmacha-cloud.js" data-game="ricorail" data-prefix="ricorail." data-mount="#cloudMount" defer></script>
+    <script src="./assets/ricorail-ea49a84d0c.js" defer></script>
+  </head>
+  <body>
+    <canvas id="scene" aria-label="3D-Ansicht"></canvas>
+    <div id="ui" role="main"></div>
+    <div id="cloudMount" hidden></div>
+    <noscript>RicoRail Simulator 3D benötigt JavaScript.</noscript>
+    <script>(function(){var fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(navigator.userAgent)||location.hostname==='appassets.local'||location.hostname==='appassets.androidplatform.net'||(location.protocol!=='https:'&&location.hostname!=='localhost')||!('serviceWorker' in navigator))return;
+addEventListener('load',function(){var reload=false,shown=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){
+function offer(w){if(shown||!w)return;shown=true;var d=document.createElement('div'),b=document.createElement('button');d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:10px;align-items:center;padding:8px 10px 8px 14px;background:#102747;color:#fff;border:1px solid #fff5;border-radius:16px;font:600 14px system-ui,sans-serif';d.textContent='Ein Update ist bereit ';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:10px;padding:8px 10px;background:#f2a900;color:#1a1300;font:700 14px system-ui,sans-serif';b.onclick=function(){reload=true;b.disabled=true;w.postMessage({type:'EG_SKIP_WAITING'})};d.appendChild(b);document.body.appendChild(d)}
+if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting);r.addEventListener('updatefound',function(){var w=r.installing;if(w)w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});
+navigator.serviceWorker.addEventListener('controllerchange',function(){if(reload)location.reload()})}).catch(function(){})})})();</script>
+  </body>
+</html>

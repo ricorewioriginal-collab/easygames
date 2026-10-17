@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f8abfb343e8c",
- "generated": "2026-10-17T03:44:28+00:00",
- "commit": "b11036e02730ee69c6183d4ad9feb88ed01f4411",
+ "version": "a6c4d29d3ef3",
+ "generated": "2026-10-17T08:45:59+00:00",
+ "commit": "14fc0654532bbdfd2d84fd9784ba9da1c5435a1e",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4768,8 +4768,8 @@
   },
   {
    "p": "games.js",
-   "s": 23245,
-   "h": "f06172d7966673db9de4df5f9d928a6b5c558b5f89122accc6d4512806656f83"
+   "s": 23866,
+   "h": "b2aae124bc387ff795a20b85f10ec88243f1b14217ffd3820da8784eddf9ae41"
   },
   {
    "p": "gay-life/card.jpg",
@@ -4928,8 +4928,8 @@
   },
   {
    "p": "guides.js",
-   "s": 62074,
-   "h": "c526baf03d9a4b1eb293183f7e29ed57ba4c3e10cf40016f153ddc1e286608a7"
+   "s": 63801,
+   "h": "d62842f851bb4c8d9dfabd3ef9197d197af3ab854cbb716f187729b237c35d32"
   },
   {
    "p": "heute.html",
@@ -5837,6 +5837,66 @@
    "h": "b1a597ac448c28ef7efd2d49a802d593755bdf72d6babe32d25fe795cc920985"
   },
   {
+   "p": "ricorail/assets/ricorail-ea49a84d0c.js",
+   "s": 1033379,
+   "h": "ea49a84d0cd431e686fba59d518dbfc33a8399d33b3e8596f6ef4431661af48e"
+  },
+  {
+   "p": "ricorail/card.svg",
+   "s": 2430,
+   "h": "b1e69c7c1475396e60f194cae02e8c5e90317aa57a302e6e7950431a5bdab4e8"
+  },
+  {
+   "p": "ricorail/data/licences.json",
+   "s": 897,
+   "h": "4d4f9bebcbff1a7e70ed5a8161689e2e46911a2c1900b514f615447a8b08ac48"
+  },
+  {
+   "p": "ricorail/favicon.svg",
+   "s": 449,
+   "h": "dd87ec877b7c24927e87f9fdaab0208da668ad7097b46203628544feacdb7c13"
+  },
+  {
+   "p": "ricorail/icons/apple-touch-icon.png",
+   "s": 5612,
+   "h": "af67b37a9686f599f2a4af395496efac7a930b1b72ee777a80e0180aa7b39d62"
+  },
+  {
+   "p": "ricorail/icons/icon-192.png",
+   "s": 7787,
+   "h": "612c9f2bf6b394bfdadcea0875f9263a08f8015e9e127ed7c07dd0e8b9475e54"
+  },
+  {
+   "p": "ricorail/icons/icon-512.png",
+   "s": 19849,
+   "h": "0ddf2ee058a95a0a2f0eca5133c59db8087763de930115d696fac03ddfb59743"
+  },
+  {
+   "p": "ricorail/icons/maskable-512.png",
+   "s": 10410,
+   "h": "5967a78ca81b2a6cd00fd541c5de871ea1c6047886934654c137be9d8da42c1d"
+  },
+  {
+   "p": "ricorail/index.html",
+   "s": 3231,
+   "h": "c6545ab34bfaa66bb3130d4247337db63769096005d411737a79dd710cc6b721"
+  },
+  {
+   "p": "ricorail/manifest.webmanifest",
+   "s": 805,
+   "h": "fde706e81eb9c4a4f8b552226b6b41e9e6775bf62554601ee25c68953745f06a"
+  },
+  {
+   "p": "ricorail/sw.js",
+   "s": 1812,
+   "h": "86bc059f4d58e3191ca7ff1032cb5212ce8a5364a91132f816345689cece1bc4"
+  },
+  {
+   "p": "ricorail/version.json",
+   "s": 74,
+   "h": "a1e7c0eda8e3a552856c90656de98621c7f4628cb7252c6eec4566108b50c2f1"
+  },
+  {
    "p": "ricoville/assets/index-BLdHkGPY.js",
    "s": 190584,
    "h": "81fc82e574bea321fe2cc959262c925ba034abcebea9bf913ec5ba964f520ed2"
@@ -6018,8 +6078,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 98297,
-   "h": "fff3e86fadafed4fdfe1a0bbadb029de3794b26a994c03453669698778fe98f0"
+   "s": 100917,
+   "h": "7ed7e705e5907ea84e9e3f4367bbd57c02fd331ce3a4eeeed6a661c8552dc743"
   },
   {
    "p": "taschi/card.svg",

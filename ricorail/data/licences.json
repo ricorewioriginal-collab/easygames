@@ -1,0 +1,14 @@
+{
+  "game": "RicoRail Simulator 3D",
+  "notice": "Simulation, kein offizielles Produkt der Deutschen Bahn. Reale Strecken vereinfacht nachgebildet.",
+  "components": [
+    { "name": "three.js", "version": "0.180.0", "license": "MIT", "copyright": "2010-2025 three.js authors", "url": "https://github.com/mrdoob/three.js" }
+  ],
+  "assets": [
+    { "kind": "3D-Modelle, Führerstände, Landschaft", "source": "prozedural im eigenen Code erzeugt", "license": "eigen" },
+    { "kind": "Geräusche", "source": "WebAudio-Synthese zur Laufzeit", "license": "eigen" },
+    { "kind": "Ansagen", "source": "Sprachsynthese des Geräts (speechSynthesis)", "license": "Gerät" },
+    { "kind": "Icons, Kartenbild", "source": "eigene SVG/PNG", "license": "eigen" },
+    { "kind": "Reale Strecken", "source": "öffentlich bekannte Ortsnamen und ungefähre Lage; Rest frei gestaltet", "license": "eigen" }
+  ]
+}
