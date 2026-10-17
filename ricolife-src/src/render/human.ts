@@ -717,7 +717,7 @@ function idle(X: Rig, t: number): void {
 
 function walkCycle(X: Rig, t: number, run: boolean): void {
   const d = X.d;
-  const f = (run ? 1.35 : 0.9) * (d.kid ? 1.25 : 1) * (d.senior ? 0.9 : 1);
+  const f = (run ? 1.75 : 1.3) * (d.kid ? 1.25 : 1) * (d.senior ? 0.9 : 1);
   const ph = t * f * PI * 2;
   const sn = Math.sin(ph), cs = Math.cos(ph);
   const A = run ? 0.75 : 0.42, K = run ? 1.45 : 0.75;

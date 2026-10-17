@@ -2,7 +2,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { lotById, type LotDef } from '../src/data/lots';
 import { History } from '../src/build/history';
-import { execute, planDeleteWalls, planFloor, planMove, planOpening, planPaint, planPlace, planRoom, planSell, planTemplate, planWalls, lineEdges, RESALE, WALL_COST, type Ctx } from '../src/build/ops';
+import { execute, planDeleteWalls, planFloor, planMove, planOpening, planPaint, planPlace, planRoom, planSell, planTemplate, planTip, planWalls, lineEdges, RESALE, WALL_COST, type Ctx } from '../src/build/ops';
 import { createGame, moveHousehold } from '../src/sim/setup';
 import type { Game } from '../src/sim/game';
 import { lotData } from '../src/sim/save';
@@ -226,5 +226,19 @@ describe('Fertighäuser', () => {
     expect(r.cmd.redo()).toBe(true);
     expect(funds()).toBe(f0 - p.cost);
     r.cmd.undo();
+  });
+});
+
+describe('Zeiger-Etikett', () => {
+  it('zeigt Name, Maß und Preis bzw. den Grund', () => {
+    const edges = lineEdges(lot.x + 2, lot.z + 9, lot.x + 6, lot.z + 9);
+    const plan = planWalls(ctx(), 0, edges, 0);
+    expect(plan.ok).toBe(true);
+    expect(planTip(plan, plan.cost, 'Wand', '4 m')).toBe(`Wand · 4 m · ${(4 * WALL_COST[0]).toLocaleString('de-DE')} RT`);
+    expect(planTip(plan, 0)).toBe(plan.label);
+    expect(planTip({ ...plan, cost: -50 }, -50)).toBe(`${plan.label} · +50 RT`);
+    const out = planWalls(ctx(), 0, lineEdges(lot.x - 6, lot.z - 6, lot.x - 3, lot.z - 6), 0);
+    expect(out.ok).toBe(false);
+    expect(planTip(out, out.cost, 'Wand', '3 m')).toBe(`⛔ ${out.reason}`);
   });
 });

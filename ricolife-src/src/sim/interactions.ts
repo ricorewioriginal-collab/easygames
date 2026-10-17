@@ -292,6 +292,12 @@ def({
   dur: 2, anim: 'wash', rate: { hygiene: 4 },
 });
 def({
+  id: 'brushTeeth', label: 'Zähne putzen', icon: '🪥', on: 'obj', func: ['sink'], ages: WALKERS, slot: 'use', group: 'Bad',
+  adv: { hygiene: 14 }, advFn: (c) => (c.g.clock.hour >= 20 || c.g.clock.hour < 9 ? 10 : 0),
+  avail: (c) => (c.o && !mayUse(c.g, c.s, c.o) ? false : true),
+  dur: 3, anim: 'wash', rate: { hygiene: 5 },
+});
+def({
   id: 'shower', label: 'Duschen', icon: '🚿', on: 'obj', func: ['shower'], ages: WALKERS, slot: 'use', group: 'Bad', busy: true, outfit: 'swim',
   adv: { hygiene: 90 }, avail: (c) => (c.o && !mayUse(c.g, c.s, c.o) ? false : true),
   dur: 14, until: 'hygiene', anim: 'shower', rate: { hygiene: 8, comfort: 0.5, energy: 0.1 },
@@ -810,6 +816,24 @@ def({
   dur: 6, anim: 'clean', rate: { hygiene: -0.5 },
   done: (c) => {
     c.g.removeObject(c.o!.id);
+    if (c.g.hasTrait(c.s, 'neat')) c.g.addMood(c.s, 'proud', { hours: 2 });
+  },
+  goal: 'clean',
+});
+def({
+  id: 'takeOutTrash', label: 'Müll rausbringen', icon: '🗑️', on: 'obj', func: ['trash'], ages: ['child', ...ADULTS], slot: 'use', group: 'Haushalt',
+  adv: { fun: 2 }, advFn: (c) => (c.g.hasTrait(c.s, 'neat') ? 40 : c.g.hasTrait(c.s, 'messy') ? -15 : 12),
+  avail: (c) => {
+    if (!c.o || !mayUse(c.g, c.s, c.o)) return false;
+    for (const o of c.g.world.objs.values()) if (o.lot === c.o.lot && o.def === 'prop-trash') return true;
+    return 'Kein Müll herum';
+  },
+  dur: 8, anim: 'carry', rate: { hygiene: -0.3 },
+  done: (c) => {
+    const ids: string[] = [];
+    for (const o of c.g.world.objs.values()) if (o.lot === c.o!.lot && o.def === 'prop-trash') ids.push(o.id);
+    for (const id of ids) c.g.removeObject(id);
+    if (ids.length) c.g.notify(`${c.s.first} hat den Müll rausgebracht.`, '🗑️', c.s.id, 'good');
     if (c.g.hasTrait(c.s, 'neat')) c.g.addMood(c.s, 'proud', { hours: 2 });
   },
   goal: 'clean',

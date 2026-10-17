@@ -8,6 +8,7 @@ import { WEATHER_ICONS, WEATHER_NAMES } from '../sim/world-sys';
 import { careerDef, levelOf, shiftWindow, worksOn } from '../sim/career';
 import { questOf, goalProgress, storyById } from '../sim/stories';
 import type { Sim } from '../sim/types';
+import { dismissWish, wishAction, wishIcon, wishLabel } from '../sim/wishes';
 import type { AppApi } from './api';
 import { h, clear, bar, btn } from './dom';
 
@@ -122,7 +123,7 @@ export class Hud {
     }
     this.card.classList.remove('hidden');
     const q = s.queue;
-    const sig = `${s.id}|${s.emo}|${s.moods.map((m) => m.id).join(',')}|${q.map((a) => a.uid + a.phase).join(',')}|${this.min}|${s.away?.kind ?? ''}|${s.career?.onSite ? s.career.tasks : ''}`;
+    const sig = `${s.id}|${s.emo}|${s.moods.map((m) => m.id).join(',')}|${q.map((a) => a.uid + a.phase).join(',')}|${this.min}|${s.away?.kind ?? ''}|${s.career?.onSite ? s.career.tasks : ''}|${(s.wishes ?? []).map((w) => w.k + (w.t ?? '')).join(',')}|${s.wishPoints ?? 0}`;
     if (sig !== this.cardSig) {
       this.cardSig = sig;
       this.buildCard(s);
@@ -160,6 +161,7 @@ export class Hud {
       ml.appendChild(h('span', { class: `moodlet ${NEG.has(d.emo) ? 'neg' : ''}`, title: d.text }, d.text.split(/[.:–]/)[0]!.slice(0, 26)));
     }
     this.card.appendChild(ml);
+    if (g.isControllable(s) && !this.app.isGuest && s.age !== 'baby' && s.age !== 'toddler') this.card.appendChild(this.wishRow(s));
     if (s.career?.onSite) {
       const lv = levelOf(s);
       const goal = Math.max(3, Math.round((lv?.hours ?? 6) * 0.8));
@@ -190,6 +192,30 @@ export class Hud {
         s.career?.onSite ? btn('🏁 Feierabend', () => this.app.command(s.id, { kind: 'self' }, { def: 'leaveWork', label: '', icon: '', group: '', avail: true })) : null,
       ),
     );
+  }
+
+  /** Zeile „Wünsche“: bis zu 3 Chips (Klick = passende Handlung, ✕ = verwerfen) und Wunschpunkte */
+  private wishRow(s: Sim): HTMLElement {
+    const g = this.app.g;
+    const row = h('div', { class: 'wishes', 'aria-label': 'Wünsche' }, h('span', { class: 'wl' }, 'Wünsche'));
+    (s.wishes ?? []).forEach((w, i) => {
+      const label = wishLabel(g, w);
+      const chip = h('button', { class: 'wish', title: `${label} – antippen zum Erledigen`, 'aria-label': label }, h('span', null, wishIcon(w)), h('span', { class: 'wt' }, label));
+      chip.addEventListener('click', () => {
+        const act = wishAction(g, s, w);
+        if (act) this.app.command(s.id, act.tg, act.it);
+        else g.notify(`${s.first} wünscht sich: ${label}`, wishIcon(w), s.id);
+      });
+      const x = h('button', { class: 'wishx', title: 'Wunsch verwerfen', 'aria-label': `${label} verwerfen` }, '✕');
+      x.addEventListener('click', () => {
+        dismissWish(s, i);
+        this.cardSig = '';
+      });
+      row.appendChild(h('span', { class: 'wishchip' }, chip, x));
+    });
+    if (!s.wishes?.length) row.appendChild(h('small', { class: 'muted' }, 'gerade wunschlos'));
+    row.appendChild(h('span', { class: 'wishpts', title: 'Wunschpunkte' }, `✨ ${s.wishPoints ?? 0}`));
+    return row;
   }
 
   private updateQuest(): void {

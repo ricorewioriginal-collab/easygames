@@ -58,6 +58,7 @@ export const MOODLETS: MoodletDef[] = [
   { id: 'stargazing', emo: 'inspired', power: 2, hours: 4, text: 'Sternenhimmel' },
   { id: 'musicjoy', emo: 'playful', power: 2, hours: 3, text: 'Musik im Blut' },
   { id: 'tvfun', emo: 'playful', power: 1, hours: 2, text: 'Lustige Sendung' },
+  { id: 'wishgranted', emo: 'happy', power: 2, hours: 4, text: 'Wunsch erfüllt' },
   { id: 'gamewin', emo: 'playful', power: 2, hours: 3, text: 'Spiel gewonnen' },
   // Familie & Leben
   { id: 'newbaby', emo: 'happy', power: 5, hours: 72, text: 'Familienzuwachs' },

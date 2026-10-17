@@ -13,8 +13,9 @@ import { History } from './history';
 import type { BuildHost } from './host';
 import {
   cellFor, effCost, execute, lineEdges, money, nearestEdge, nearestWall, planDeleteWalls, planFloor, planMove, planOpening, planPaint, planPlace,
-  planRoom, planSell, planTemplate, planWalls, templateCost, wallFacing, type BuildCmd, type Ctx, type PEdge, type Plan,
+  planRoom, planSell, planTemplate, planTip, planWalls, templateCost, wallFacing, type BuildCmd, type Ctx, type PEdge, type Plan,
 } from './ops';
+import { cancelThumbs, disposeThumbs, requestThumb } from './thumbs';
 
 type Tool = 'wall' | 'fence' | 'half' | 'room' | 'floor' | 'paint' | 'door' | 'window' | 'stairs' | 'delete' | 'hand' | 'place' | 'sell' | 'pick';
 type View = 'build' | 'buy' | 'homes';
@@ -133,6 +134,15 @@ export class BuildMode {
   private undoBtn: HTMLButtonElement | null = null;
   private redoBtn: HTMLButtonElement | null = null;
   private lvlBtns: HTMLButtonElement[] = [];
+  // Zeiger-Etikett (Name · Maß · Preis bzw. Grund) direkt am Mauszeiger/Finger
+  private tipEl: HTMLElement | null = null;
+  private tipName = '';
+  private tipMeasure = '';
+  private overPanel = false;
+  private touch = false;
+  private readonly onPtrType = (e: PointerEvent): void => {
+    this.touch = e.pointerType === 'touch' || e.pointerType === 'pen';
+  };
 
   constructor(private host: BuildHost) {}
 
@@ -153,6 +163,7 @@ export class BuildMode {
       this.createPreview();
       this.host.grid(true);
       this.host.focusLot();
+      window.addEventListener('pointerdown', this.onPtrType, { capture: true, passive: true });
       if (!this.host.lot()) this.host.toast('Dein Haushalt hat kein Grundstück – hier kann nichts gebaut werden.', '🏚️', 'warn');
     }
     this.cancel();
@@ -168,8 +179,12 @@ export class BuildMode {
     this.setHighlight(null);
     this.host.grid(false);
     this.disposePreview();
+    disposeThumbs();
+    window.removeEventListener('pointerdown', this.onPtrType, { capture: true });
     this.panel?.remove();
-    this.panel = this.hintEl = this.fundsEl = this.bodyEl = this.undoBtn = this.redoBtn = null;
+    this.tipEl?.remove();
+    this.overPanel = false;
+    this.panel = this.hintEl = this.fundsEl = this.bodyEl = this.undoBtn = this.redoBtn = this.tipEl = null;
     this.lvlBtns = [];
     this.host.closed();
   }
@@ -301,7 +316,9 @@ export class BuildMode {
     if (!this._active) return;
     this.sx = x;
     this.sy = y;
+    this.overPanel = false;
     this.refresh(false);
+    this.updateTip();
   }
 
   /** Bodenpunkt holen und Plan neu berechnen, wenn sich etwas Relevantes geändert hat */
@@ -344,15 +361,24 @@ export class BuildMode {
     let hl: string | null = null;
     const t = this.tool;
     const wk = WALL_KIND[t];
+    this.tipName = '';
+    this.tipMeasure = '';
     if (wk !== undefined) {
-      if (this.drag) plan = planWalls(c, l, lineEdges(this.drag.ax, this.drag.az, this.drag.bx, this.drag.bz), wk);
-      else {
+      this.tipName = BUILD_TOOLS.find((b) => b[0] === t)?.[2] ?? '';
+      if (this.drag) {
+        const line = lineEdges(this.drag.ax, this.drag.az, this.drag.bx, this.drag.bz);
+        plan = planWalls(c, l, line, wk);
+        this.tipMeasure = `${line.length} m`;
+      } else {
         const e = nearestEdge(px, pz);
         plan = planWalls(c, l, [e], wk);
       }
     } else if (t === 'room' || t === 'floor') {
       const d = this.drag ?? { ax: Math.floor(px), az: Math.floor(pz), bx: Math.floor(px), bz: Math.floor(pz) };
       plan = t === 'room' ? planRoom(c, l, d.ax, d.az, d.bx, d.bz, Math.max(0, this.floorType), this.paint) : planFloor(c, l, d.ax, d.az, d.bx, d.bz, this.floorType);
+      if (t === 'floor') this.tipName = this.floorType < 0 ? 'Boden entfernen' : 'Boden';
+      const area = (Math.abs(d.bx - d.ax) + 1) * (Math.abs(d.bz - d.az) + 1);
+      if (this.drag) this.tipMeasure = `${area} m²`;
     } else if (t === 'paint') {
       if (this.drag) plan = planPaint(c, l, lineEdges(this.drag.ax, this.drag.az, this.drag.bx, this.drag.bz), this.drag.side, this.paint);
       else {
@@ -503,6 +529,7 @@ export class BuildMode {
     if (!this.drag) return;
     this.sx = x;
     this.sy = y;
+    this.updateTip();
     const gp = this.host.groundAt(x, y);
     if (!gp) return;
     const cellTool = this.tool === 'room' || this.tool === 'floor';
@@ -710,6 +737,7 @@ export class BuildMode {
   private render(): void {
     if (!this._active) return;
     if (!this.panel) this.buildPanel();
+    cancelThumbs();
     const body = clear(this.bodyEl!);
     for (const b of this.panel!.querySelectorAll<HTMLElement>('.bm-tab')) b.classList.toggle('on', b.dataset.v === this.view);
     if (this.view === 'build') this.renderBuild(body);
@@ -743,7 +771,16 @@ export class BuildMode {
     this.bodyEl = h('div', { class: 'bm-body' });
     this.panel = h(
       'div',
-      { class: 'bm-panel', role: 'region', 'aria-label': 'Bau- und Kaufmodus', onpointerdown: (e: Event) => e.stopPropagation() },
+      {
+        class: 'bm-panel',
+        role: 'region',
+        'aria-label': 'Bau- und Kaufmodus',
+        onpointerdown: (e: Event) => e.stopPropagation(),
+        onpointerenter: () => {
+          this.overPanel = true;
+          this.updateTip();
+        },
+      },
       h(
         'div',
         { class: 'bm-head' },
@@ -754,6 +791,8 @@ export class BuildMode {
       this.bodyEl,
     );
     this.host.uiRoot.appendChild(this.panel);
+    this.tipEl = h('div', { class: 'bm-tip', 'aria-hidden': 'true', hidden: true });
+    this.host.uiRoot.appendChild(this.tipEl);
   }
 
   private toolRow(tools: [Tool, string, string][]): HTMLElement {
@@ -786,18 +825,23 @@ export class BuildMode {
   }
   private itemCard(d: ReturnType<typeof buyable>[number]): HTMLElement {
     const price = effCost(this.host.g, d.price);
+    const sel = this.def === d.id;
+    // Emoji als Platzhalter, bis das 3D-Bild fertig ist (ausgewählte Karte zeigt die gewählten Farben)
+    const ico = h('span', { class: 'bm-ico big' }, CATEGORIES[d.cat].icon);
+    requestThumb(ico, d.id, sel ? this.ca : 0, sel ? this.cb : 0);
     return h(
       'button',
       {
-        class: `bm-item ${this.def === d.id ? 'on' : ''}`,
+        class: `bm-item ${sel ? 'on' : ''}`,
         type: 'button',
         title: d.desc,
+        'aria-pressed': sel ? 'true' : 'false',
         onclick: (e: Event) => {
           e.stopPropagation();
           this.selectDef(d.id, 0, 0);
         },
       },
-      h('span', { class: 'bm-ico big' }, CATEGORIES[d.cat].icon),
+      ico,
       h('span', { class: 'bm-name' }, d.name),
       h('span', { class: 'bm-price' }, price ? money(price) : 'gratis'),
     );
@@ -939,5 +983,46 @@ export class BuildMode {
     else text = HINTS[this.tool];
     if (el.textContent !== text) el.textContent = text;
     el.classList.toggle('bad', bad);
+    this.updateTip();
+  }
+
+  /** Etikett am Zeiger: Text aus dem aktuellen Plan, Position aus den letzten Zeigerkoordinaten */
+  private updateTip(): void {
+    const el = this.tipEl;
+    if (!el) return;
+    const p = this.plan;
+    let text = '';
+    let bad = false;
+    // Finger: nur beim Ziehen (sonst bliebe das Etikett nach dem Tippen stehen)
+    const show = !this.overPanel && this.sx >= 0 && this.view !== 'homes' && (!this.touch || !!this.drag) && !!this.host.lot();
+    if (show && p) {
+      text = planTip(p, effCost(this.host.g, p.cost), this.tipName, this.tipMeasure);
+      bad = !p.ok;
+    } else if (show && this.highlighted && !this.touch && (this.tool === 'hand' || this.tool === 'pick')) {
+      const o = this.host.g.world.objs.get(this.highlighted);
+      if (o) text = `${getDef(o.def).name} · ${this.tool === 'hand' ? '✋ aufnehmen' : '🎯 auswählen'}`;
+    }
+    if (!text) {
+      if (!el.hidden) el.hidden = true;
+      return;
+    }
+    if (el.textContent !== text) el.textContent = text;
+    el.classList.toggle('bad', bad);
+    el.hidden = false;
+    let x: number, y: number, ax: number, ay: number;
+    if (this.touch) {
+      // über dem Finger, mittig
+      x = this.sx;
+      y = this.sy - 48;
+      ax = -50;
+      ay = -100;
+    } else {
+      const flip = this.sx > window.innerWidth - 240;
+      x = this.sx + (flip ? -14 : 18);
+      y = this.sy + 20;
+      ax = flip ? -100 : 0;
+      ay = 0;
+    }
+    el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px) translate(${ax}%, ${ay}%)`;
   }
 }

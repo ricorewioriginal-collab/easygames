@@ -53,6 +53,16 @@ const fail = (reason: string, label = ''): Plan => ({ ok: false, reason, cost: 0
 const inLot = (lot: LotDef, x: number, z: number): boolean => x >= lot.x && z >= lot.z && x < lot.x + lot.w && z < lot.z + lot.d;
 export const money = (n: number): string => `${Math.round(n).toLocaleString('de-DE')} RT`;
 
+/** Text für das Zeiger-Etikett: „Wand · 4 m · 280 RT“ bzw. „⛔ Grund“. cost = tatsächliche Kosten (effCost) */
+export function planTip(plan: Plan, cost: number, name?: string, measure?: string): string {
+  if (!plan.ok) return `⛔ ${plan.reason ?? 'Nicht möglich'}`;
+  const parts = [name || plan.label];
+  if (measure) parts.push(measure);
+  if (cost > 0) parts.push(money(cost));
+  else if (cost < 0) parts.push(`+${money(-cost)}`);
+  return parts.join(' · ');
+}
+
 function base(ctx: Ctx): string | null {
   if (!ctx.hh || !ctx.g.hhs.has(ctx.hh)) return 'Kein aktiver Haushalt';
   if (!ctx.lot) return 'Dein Haushalt hat kein Grundstück';
