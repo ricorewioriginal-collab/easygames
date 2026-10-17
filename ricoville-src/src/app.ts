@@ -7,6 +7,7 @@ import { City, footprint, GIFT_AMOUNT, GIFT_ITEMS, maxEnergy, NEIGHBOR_HELPS, ne
 import { localKV, parse, SaveManager, saveKey, type Slot } from './core/save';
 import type { Building, BuildingDef, Category, CityState, GameEvent, Mode, QuestDef, Rot } from './core/types';
 import { Controls } from './input/controls';
+import { SEASON_LABEL, seasonOf } from './rendering/season';
 import { World, type Quality } from './rendering/world';
 import { bridge, NeighborApi, SocialError } from './social/api';
 import { helpable, msgName, toPublic, validMsg, visitState, type InboxMsg, type PublicCity } from './social/codec';
@@ -24,6 +25,7 @@ interface Settings {
   muted: boolean;
   quality: 'auto' | Quality;
   dayNight: boolean;
+  weather: boolean;
   bubbles: boolean;
   anim: boolean;
 }
@@ -77,7 +79,7 @@ export class App {
   private saves!: SaveManager;
   private slot: Slot = 'main';
   private offset = 0;
-  private settings: Settings = loadJSON<Settings>(SETTINGS_KEY, { music: 0.35, fx: 0.7, amb: 0.3, muted: false, quality: 'auto', dayNight: false, bubbles: true, anim: true });
+  private settings: Settings = loadJSON<Settings>(SETTINGS_KEY, { music: 0.35, fx: 0.7, amb: 0.3, muted: false, quality: 'auto', dayNight: true, weather: true, bubbles: true, anim: true });
   private profile: Profile = loadJSON<Profile>(PROFILE_KEY, { name: 'Bürgermeister:in', crest: '🏰' });
   private tool: Tool = 'normal';
   private placing: { def: string; x: number; y: number; rot: Rot; moveUid?: number; set: boolean } | null = null;
@@ -160,6 +162,9 @@ export class App {
       screen: (x: number, y: number) => this.world.project(x + 0.5, 0, y + 0.5),
       look: (x: number, y: number) => (this.world.target.set(x, 0, y), this.world.placeCamera()),
       save: () => this.saveNow(),
+      /** Nur für Tests: Größe jedes Vorschaubilds (leere Bilder sind sehr klein). */
+      thumbSizes: this.e2e ? () => BUILDINGS.map((d) => [d.id, this.world.thumbnail(d).length] as const) : undefined,
+      world: this.e2e ? this.world : undefined,
     };
     (window as unknown as { __rvApp: App }).__rvApp = this;
     progress(1, 'Fertig!');
@@ -181,6 +186,8 @@ export class App {
     this.audio.apply();
     this.world.setQuality(s.quality === 'auto' ? (matchMedia('(pointer:coarse)').matches ? 'medium' : 'high') : s.quality);
     this.world.dayNight = s.dayNight;
+    this.world.weatherOn = s.weather;
+    this.world.setSeason(s.weather ? seasonOf(new Date()) : 'summer');
     saveJSON(SETTINGS_KEY, s);
   }
   private measureFps(dt: number): void {
@@ -430,6 +437,7 @@ export class App {
       }
       case 'levelup':
         this.audio.play('level');
+        this.confetti();
         this.levelUp(e.n ?? 1, e.coins ?? 0);
         break;
       case 'questDone': {
@@ -445,7 +453,10 @@ export class App {
         break;
       case 'achievement': {
         const a = ACHIEVEMENTS.find((x) => x.id === e.id);
-        if (a) this.toast(`${a.icon} Erfolg: ${a.name}`, 'good');
+        if (a) {
+          this.toast(`${a.icon} Erfolg: ${a.name}`, 'good');
+          this.confetti(60);
+        }
         break;
       }
       case 'expanded':
@@ -927,6 +938,7 @@ export class App {
       tabs.innerHTML = '';
       for (const t of BUILD_TABS) tabs.append(h('button', { class: `tab ${t === c ? 'on' : ''}`, role: 'tab', onclick: () => draw(t) }, `${CAT_ICON[t]} ${CATEGORY_LABEL[t]}`));
       grid.innerHTML = '';
+      this.thumbObs?.disconnect();
       const list = BUILDINGS.filter((b) => b.cat === c && b.level < 99).sort((a, b) => a.level - b.level || a.cost - b.cost);
       for (const d of list) {
         const locked = d.level > this.city.s.level && !this.city.creative;
@@ -944,12 +956,102 @@ export class App {
           class: `card ${locked || maxed ? 'locked' : ''}`, 'data-def': d.id, title: d.desc,
           onclick: () => (locked ? this.fail(`Ab Stadtlevel ${d.level}.`) : maxed ? this.fail('Davon gibt es schon eines.') : this.startPlacing(d.id)),
         },
-          h('div', { class: 'pic' }, defIcon(d)), h('b', {}, d.name), h('div', { class: 'meta' }, meta.join(' · ')),
+          this.thumbPic(d), h('b', {}, d.name), h('div', { class: 'meta' }, meta.join(' · ')),
           h('div', { class: 'price' }, locked ? `🔒 Level ${d.level}` : d.cost ? `${num(d.cost)} 💰` : 'kostenlos')));
       }
     };
     draw(cat);
     this.openPanel('Bauen', grid, true, true, tabs);
+  }
+
+  // ---------------------------------------------------------------- Vorschaubilder im Baumenü
+  private thumbs = new Map<string, string>();
+  private thumbJobs: { id: string; el: HTMLElement }[] = [];
+  /** Bildfeld einer Baukarte: erst das Symbol, dann das gerenderte 3D-Modell (gecacht, verteilt auf mehrere Bilder). */
+  private thumbPic(d: BuildingDef): HTMLElement {
+    const pic = h('div', { class: 'pic' }, defIcon(d));
+    const url = this.thumbs.get(d.id);
+    if (url) pic.replaceChildren(h('img', { src: url, alt: '', draggable: 'false' }));
+    else if (url === undefined) {
+      pic.dataset.def = d.id;
+      // Nur sichtbare Karten rendern: spart Arbeit, wenn man nicht bis ganz unten scrollt.
+      if (typeof IntersectionObserver === 'undefined') this.queueThumb(d.id, pic);
+      else {
+        this.thumbObs ??= new IntersectionObserver((list) => {
+          for (const e of list)
+            if (e.isIntersecting) {
+              this.thumbObs!.unobserve(e.target);
+              this.queueThumb((e.target as HTMLElement).dataset.def!, e.target as HTMLElement);
+            }
+        });
+        this.thumbObs.observe(pic);
+      }
+    }
+    return pic;
+  }
+  private thumbObs: IntersectionObserver | null = null;
+  private queueThumb(id: string, el: HTMLElement): void {
+    this.thumbJobs.push({ id, el });
+    if (this.thumbJobs.length === 1) requestAnimationFrame(() => this.runThumbs());
+  }
+  private runThumbs(): void {
+    const t0 = performance.now();
+    while (this.thumbJobs.length && performance.now() - t0 < 12) {
+      const j = this.thumbJobs.shift()!;
+      if (!j.el.isConnected) continue;
+      let url = this.thumbs.get(j.id);
+      if (url === undefined) {
+        try {
+          url = this.world.thumbnail(BUILDING.get(j.id)!);
+        } catch {
+          url = ''; // Symbol bleibt stehen
+        }
+        this.thumbs.set(j.id, url);
+      }
+      if (url) j.el.replaceChildren(h('img', { src: url, alt: '', draggable: 'false' }));
+    }
+    if (this.thumbJobs.length) requestAnimationFrame(() => this.runThumbs());
+  }
+
+  // ---------------------------------------------------------------- Konfetti
+  private confetti(count = 140): void {
+    if (!this.settings.anim || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const c = h('canvas', { class: 'confetti', 'aria-hidden': 'true' }) as HTMLCanvasElement;
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    c.width = innerWidth * dpr;
+    c.height = innerHeight * dpr;
+    document.body.append(c);
+    const g = c.getContext('2d')!;
+    const cols = ['#ffd54f', '#ff8c2b', '#2f7fd1', '#2fa45a', '#ff6b9d', '#59b4ff', '#ffffff'];
+    const ps = Array.from({ length: count }, () => ({
+      x: innerWidth * (0.3 + Math.random() * 0.4), y: innerHeight * 0.35, vx: (Math.random() - 0.5) * 900, vy: -300 - Math.random() * 700,
+      r: Math.random() * 6, vr: (Math.random() - 0.5) * 12, w: 6 + Math.random() * 6, col: cols[Math.floor(Math.random() * cols.length)]!,
+    }));
+    let last = performance.now();
+    const end = last + 2600;
+    const step = (t: number) => {
+      const dt = Math.min(0.05, (t - last) / 1000);
+      last = t;
+      g.setTransform(dpr, 0, 0, dpr, 0, 0);
+      g.clearRect(0, 0, innerWidth, innerHeight);
+      g.globalAlpha = Math.max(0, Math.min(1, (end - t) / 600));
+      for (const p of ps) {
+        p.vy += 1100 * dt;
+        p.vx *= 1 - dt * 1.5;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.r += p.vr * dt;
+        g.save();
+        g.translate(p.x, p.y);
+        g.rotate(p.r);
+        g.fillStyle = p.col;
+        g.fillRect(-p.w / 2, -p.w / 4, p.w, p.w / 2);
+        g.restore();
+      }
+      if (t < end) requestAnimationFrame(step);
+      else c.remove();
+    };
+    requestAnimationFrame(step);
   }
 
   private statusText(b: Building): string {
@@ -1669,7 +1771,7 @@ export class App {
       r.addEventListener('input', () => ((s[key] = Number(r.value)), this.applySettings()));
       return h('label', { class: 'set' }, label, r);
     };
-    const check = (label: string, key: 'muted' | 'dayNight' | 'bubbles' | 'anim') => {
+    const check = (label: string, key: 'muted' | 'dayNight' | 'weather' | 'bubbles' | 'anim') => {
       const c = h('input', { type: 'checkbox', 'aria-label': label }) as HTMLInputElement;
       c.checked = s[key];
       c.addEventListener('change', () => ((s[key] = c.checked), this.applySettings()));
@@ -1686,7 +1788,7 @@ export class App {
     this.openPanel('⚙️ Einstellungen', h('div', {},
       this.inGame && !this.city.creative ? h('div', {}, h('p', {}, h('b', {}, 'Spielweise')), modeSeg, h('p', { class: 'meta' }, 'Nostalgisch: Energie für Aktionen, lädt alle 3 Min. Entspannt: keine Energie, halbe Wartezeiten.')) : null,
       range('🎵 Musik', 'music'), range('🔊 Effekte', 'fx'), range('🐦 Umgebung', 'amb'), check('🔇 Stumm', 'muted'),
-      h('label', { class: 'set' }, '🖥️ Grafik', q), check('🌗 Tag-/Nacht-Stimmung', 'dayNight'), check('💬 Sprechblasen der Bewohner', 'bubbles'), check('🎞️ Animationen', 'anim'),
+      h('label', { class: 'set' }, '🖥️ Grafik', q), check('🌗 Tag und Nacht (Fenster leuchten)', 'dayNight'), check(`🌦️ Wetter & Jahreszeiten (jetzt ${SEASON_LABEL[seasonOf(new Date())]})`, 'weather'), check('💬 Sprechblasen der Bewohner', 'bubbles'), check('🎞️ Animationen', 'anim'),
       h('div', { class: 'btns' },
         h('button', { class: 'btn alt', onclick: () => this.toggleFullscreen() }, '⛶ Vollbild'),
         h('button', { class: 'btn alt', onclick: () => this.helpPanel() }, '❓ Hilfe')),

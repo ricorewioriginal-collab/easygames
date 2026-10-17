@@ -1,4 +1,4 @@
-# Funktionsstand (0.1.0)
+# Funktionsstand (0.3.0)
 
 ✅ fertig und getestet · 🟡 vorhanden, nur teilweise getestet · ⛔ noch nicht gebaut
 
@@ -14,7 +14,9 @@
 | Baustellen mit Material | ✅ | Unit |
 | Bahn, Schiff, Flugzeug (Aufträge + Animation) | 🟡 | Regeln Unit-getestet, Animation nur angesehen |
 | Gemeinschaftsgebäude (19), Zufriedenheit, Ausstrahlung | ✅ | Unit |
-| Deko (56) | ✅ | Katalog-Test |
+| Deko (60) | ✅ | Katalog-Test |
+| Jahreszeiten, Wetter, Nachtlichter | 🟡 | Regeln Unit-getestet, Darstellung per E2E fehlerfrei durchgeschaltet und angesehen (Chromium) |
+| 3D-Vorschaubilder im Baumenü | ✅ | E2E: jedes Gebäude ergibt ein nicht leeres Bild |
 | Level, Freischaltungen, Energie | ✅ | Unit |
 | Gebiete erweitern | ✅ | Unit |
 | 84 Aufgaben, Tages-/Wochenziele, 18 Erfolge | 🟡 | Ablauf getestet, nicht jede Aufgabe einzeln durchgespielt |
@@ -30,5 +32,4 @@
 ## Bekannte Schwächen
 - Rückgängig einer Straße nimmt Aufgaben-Fortschritt („Straßen bauen") nicht zurück.
 - Autos springen an Kurven leicht zwischen den Fahrspuren.
-- Alle Wohnhäuser im Baumenü haben dasselbe Symbol; das 3D-Modell unterscheidet sich.
 - Getestet nur in Chromium. Safari/iOS und Firefox sind nicht geprüft.

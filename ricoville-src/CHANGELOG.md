@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0 – 2026-10-17
+
+- Jahreszeiten nach Kalender: Frühling mit Blüten, Herbstlaub, Schnee im Winter (Boden, Umland, Wald). Nur Optik, ändert keine Regeln.
+- Wetter: zeitweise Regen oder Schneefall, Himmel und Licht passen sich an. Auf Grafik „Niedrig“ ohne Teilchen. Schalter „Wetter & Jahreszeiten“ in den Einstellungen.
+- Tag und Nacht: längerer Tag mit Abendrot, dunklere Nacht; Fenster, Laternen, Festtagsbaum und Ladesäulen leuchten. Für neue Spieler standardmäßig an.
+- Baumenü zeigt für jedes Gebäude ein aus dem 3D-Modell gerendertes Vorschaubild (nur sichtbare Karten, zwischengespeichert).
+- Vier moderne Deko-Objekte: E-Ladesäule, E-Roller-Station, Windrad, Solarfeld.
+- Konfetti bei Levelaufstieg und Erfolgen (aus bei „Animationen“ aus oder reduzierter Bewegung). Leisten im Glas-Look, Karten mit sanfter Hover-Bewegung.
+
 ## 0.2.1 – 2026-10-16
 
 - Rangliste „Höchstes Level“ und „Meiste Einwohner“ (easygames-Ranglisten, nur mit Freigabe). Knopf 🏆 im Menü und im Profil öffnet die zentrale easygames-Ranglisten-Seite (`ranglisten.html`) eingebettet, mit RicoVille vorgewählt.
