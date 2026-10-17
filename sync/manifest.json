@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "4d2246f7ca3f",
- "generated": "2026-10-17T02:02:16+00:00",
- "commit": "876384c638067b7143be85c3145d391fddf81eda",
+ "version": "d06cf8eff719",
+ "generated": "2026-10-17T02:08:48+00:00",
+ "commit": "b64429eba876bb2f33b0d234d4b9f22622549447",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4688,8 +4688,8 @@
   },
   {
    "p": "funkblasen/main.js",
-   "s": 26249,
-   "h": "33536713973102992567f02edd656033266e36a9ca6672d88ca3add98c4e2dc0"
+   "s": 26999,
+   "h": "1d7b2efbe8b627fa94efd28f1504a4a6ccace655a1e9a473085f8c99a080db37"
   },
   {
    "p": "funkblasen/manifest.webmanifest",
@@ -4703,8 +4703,8 @@
   },
   {
    "p": "funkblasen/save.js",
-   "s": 13048,
-   "h": "4f0cfb565e601dd8590ab28292222e653c5088b165a45a160f585236f71a8e9b"
+   "s": 14193,
+   "h": "a834ec9a197b8540b0ed76eb41d56cb77aa63dbb1586baa27321ce6b6bce162d"
   },
   {
    "p": "funkblasen/style.css",
@@ -5909,7 +5909,7 @@
   {
    "p": "sync/catalog.json",
    "s": 94827,
-   "h": "b48f023c0278381db75114923fc674fe343ef28735e60da6756ebf2ea71f5f98"
+   "h": "d6139c0049f50ed4d01bedc500a283c1186441739b24a6130ea3edf2e3f43c3e"
   },
   {
    "p": "taschi/card.svg",

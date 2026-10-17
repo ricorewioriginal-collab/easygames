@@ -42,3 +42,14 @@ test('G3: Münzen nur für Optik, Kauf und Ausrüsten geprüft', () => {
   const d = a.recordDaily('2026-10-17', 1000, true), d2 = a.recordDaily('2026-10-17', 1200, true);
   assert.equal(d.coins, 40); assert.equal(d2.coins, 0); assert.equal(a.data.daily['2026-10-17'].best, 1200);
 });
+
+test('G4: gespeicherte Endlos-Runde wird vollständig geprüft', () => {
+  const E = require('../engine.js'), L = require('../levels.js');
+  const st = E.createState(L.endless(5));
+  assert.equal(S.validRun(JSON.parse(JSON.stringify(st))), true);
+  const bad = JSON.parse(JSON.stringify(st)); bad.grid = new Array(16).fill(0);
+  assert.equal(S.validRun(bad), false);
+  const noGoal = JSON.parse(JSON.stringify(st)); delete noGoal.goal; assert.equal(S.validRun(noGoal), false);
+  const v = S.validate({ endless: { best: 10, run: { st: bad, ts: 1 } } });
+  assert.equal(v.endless.run, null); assert.equal(v.endless.best, 10);
+});

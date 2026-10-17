@@ -70,7 +70,7 @@
     else app.ui.toast('Dafür reichen die Münzen noch nicht.');
   };
   function applyRewards() { for (let w = 1; w <= 10; w++) if (app.save.data.stars[w * 15]) app.save.grant('k' + w); }
-  app.resetAll = function () { app.save.reset(); applyOpts(); app.ui.toast('Spielstand gelöscht.'); app.ui.show('scrMenu'); };
+  app.resetAll = function () { if (app.session) { app.applied = true; endSession(); app.inGameSettings = false; root.FBAudio.music(null); } app.save.reset(); applyOpts(); app.ui.toast('Spielstand gelöscht.'); app.ui.show('scrMenu'); };
   function setBackdrop(w) { app.renderer.setWorld(w); }
   app.setBackdrop = setBackdrop;
   app.fullscreen = function () {
@@ -162,8 +162,8 @@
   app.startEndless = () => { app.save.data.endless.run = null; app.start(L.endless((Math.random() * 1e9) >>> 0)); };
   app.resumeEndless = () => {
     const run = app.save.data.endless.run;
-    try { const def = Object.assign(L.endless(1), { state: run.st }); app.start(def); }
-    catch (e) { app.save.data.endless.run = null; app.persist(); app.ui.toast('Die gespeicherte Runde ließ sich nicht laden – starte eine neue.'); app.ui.show('scrEndless'); }
+    try { if (!root.FBSave.validRun(run && run.st)) throw new Error('Runde ungültig'); const def = Object.assign(L.endless(1), { state: E.clone(run.st) }); app.start(def); }
+    catch (e) { if (app.session) { app.applied = true; endSession(); } app.save.data.endless.run = null; app.persist(); app.ui.toast('Die gespeicherte Runde ließ sich nicht laden – starte eine neue.'); app.ui.show('scrEndless'); }
   };
   app.showAllTips = function () {
     const tips = []; for (let n = 1; n <= 150; n++) { const d = L.level(n); if (d.tip) tips.push('<p><b>' + d.world + '-' + d.index + ':</b> ' + app.ui.esc(d.tip) + '</p>'); }
@@ -176,7 +176,7 @@
     app.def = def;
     const S = new E.Session(def, { resolveTime: reducedMotion() ? 0.2 : 0.38 });
     if (def.state) { S.st.jokerUsed = !!S.st.jokerUsed; }
-    app.session = S; app.applied = false; app.sinceSave = 0;
+    app.session = S; app.applied = false; app.sinceSave = 0; app.settled = def.mode === 'endless' ? E.clone(S.st) : null;
     app.renderer.session = S; app.renderer.mode = 'game'; app.renderer.clearFx();
     setBackdrop(def.world || 1);
     root.FBAudio.music(L.WORLDS[(def.world || 1) - 1].music);
@@ -187,9 +187,13 @@
     layout(); app.ui.hud(S, def);
     if (def.mode === 'level' && def.id <= 2 && !app.save.data.tut.coach) showCoach();
   };
+  // Endlos-Runde sichern: nur ruhende Zustände (nie eine Kugel mitten im Flug, die sonst beim Fortsetzen verschwände)
+  function settled(S) { const ph = S.phase === 'paused' ? S.prev : S.phase; return ph === 'ready' || ph === 'aiming'; }
+  function remember(S) { if (app.def && app.def.mode === 'endless' && settled(S)) app.settled = E.clone(S.st); }
+  function saveRun() { if (app.settled) app.save.data.endless.run = { st: E.clone(app.settled), ts: Date.now() }; }
   function endSession() {
     const S = app.session; if (!S) return;
-    if (app.def.mode === 'endless' && !app.applied && S.phase !== 'lose') { app.save.data.endless.run = { st: E.clone(S.st), ts: Date.now() }; }
+    if (app.def.mode === 'endless' && !app.applied && S.phase !== 'lose') saveRun();
     app.persist();
     S.listeners.length = 0; app.session = null; app.renderer.session = null; app.renderer.mode = 'menu'; app.renderer.clearFx();
     $('hud').hidden = true; hideCoach(false);
@@ -232,11 +236,12 @@
     if (document.hidden) { if (app.session && app.session.phase !== 'paused' && app.session.phase !== 'win' && app.session.phase !== 'lose') pauseGame(); if (app.input) app.input.cancel(); app.persist && app.save && app.persist(); root.FBAudio.suspend(); }
     else root.FBAudio.resume();
   });
-  root.addEventListener('pagehide', () => { if (app.save) { if (app.session && app.def.mode === 'endless' && app.session.phase !== 'lose') app.save.data.endless.run = { st: E.clone(app.session.st), ts: Date.now() }; app.persist(); } });
+  root.addEventListener('pagehide', () => { if (app.save) { if (app.session && app.def.mode === 'endless' && !app.applied && app.session.phase !== 'lose') saveRun(); app.persist(); } });
 
   // ---------- Ereignisse der Spielrunde ----------
   function onSession(type, data, S) {
     const st = S.st, sv = app.save;
+    if (type === 'ready' || type === 'swap' || type === 'joker') remember(S);
     if (type === 'fire') {
       app.sfx('shoot'); hideCoach(true); sv.addStat('shots', 1);
       if (data.bubble.s === 'rainbow') sv.addStat('rainbows', 1);

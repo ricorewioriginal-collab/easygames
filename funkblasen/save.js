@@ -23,6 +23,18 @@
   }
 
   // Prüft und repariert einen geladenen Stand (fremde/kaputte Felder werden verworfen, gültige bleiben erhalten)
+  // Gespeicherte Endlos-Runde nur annehmen, wenn der ganze Zustand die Form hat, die die Spielregeln erwarten
+  const KINDS = 'nilhwskxbq';
+  const ball = b => obj(b) && typeof b.c === 'number' && (b.s == null || typeof b.s === 'string');
+  function validRun(st) {
+    if (!obj(st) || st.mode !== 'endless' || !Array.isArray(st.grid) || st.grid.length !== 16) return false;
+    if (!Array.isArray(st.colors) || !st.colors.length || !st.colors.every(c => Number.isInteger(c) && c >= 0 && c < 6)) return false;
+    if (!obj(st.goal) || typeof st.goal.type !== 'string' || !Array.isArray(st.specials) || !ball(st.cur) || !ball(st.next)) return false;
+    for (const k of ['shift', 'ceil', 'score', 'combo', 'shotsLeft', 'shotsUsed', 'rng', 'rngRow', 'drawn', 'wave', 'pushEvery', 'pushCount', 'rowsPushed']) if (typeof st[k] !== 'number' || !isFinite(st[k])) return false;
+    if (st.shift !== 0 && st.shift !== 1) return false;
+    return st.grid.every((row, r) => Array.isArray(row) && row.length === (((r + st.shift) & 1) ? 10 : 11)
+      && row.every(c => c === null || (obj(c) && typeof c.k === 'string' && c.k.length === 1 && KINDS.indexOf(c.k) >= 0 && typeof c.c === 'number')));
+  }
   function validate(raw) {
     const d = defaults();
     if (!obj(raw)) return d;
@@ -44,7 +56,7 @@
     if (obj(raw.endless)) {
       d.endless.best = int(raw.endless.best, 0, 1e9, 0); d.endless.rows = int(raw.endless.rows, 0, 1e6, 0);
       const run = raw.endless.run;
-      d.endless.run = obj(run) && obj(run.st) && Array.isArray(run.st.grid) && run.st.grid.length === 16 ? run : null;
+      d.endless.run = obj(run) && validRun(run.st) ? run : null;
     }
     if (obj(raw.opts)) {
       const o = raw.opts;
@@ -171,5 +183,5 @@
     return api;
   }
 
-  return { KEY, SCHEMA, ACH, ACH_BY_ID, defaults, validate, create, memoryStorage };
+  return { KEY, SCHEMA, ACH, ACH_BY_ID, defaults, validate, validRun, create, memoryStorage };
 });
