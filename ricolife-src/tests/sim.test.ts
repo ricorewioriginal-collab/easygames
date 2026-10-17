@@ -10,6 +10,8 @@ import { NEED_IDS } from '../src/data/types';
 import { sanitizeCard } from '../src/net/mp';
 import { throwParty } from '../src/sim/npcs';
 import { joinCareer } from '../src/sim/career';
+import { offerWish, wishDef, wishAction, MAX_WISHES } from '../src/sim/wishes';
+import { idef } from '../src/sim/interact';
 
 let base: Game;
 const fresh = (o: Parameters<typeof createGame>[0] = {}): Game => createGame({ household: 'hh-sonnberg', seed: 11, ...o });
@@ -177,6 +179,112 @@ describe('Geschichten', () => {
       expect(g.story?.id).toBe(st.id);
       expect(g.story?.quest).toBeTruthy();
     }
+  });
+});
+
+describe('Wünsche', () => {
+  it('Haushaltsmitglieder bekommen nach ein paar Stunden Wünsche', () => {
+    const g = fresh();
+    g.settings.autonomy = 0;
+    run(g, 60 * 3, 1);
+    const s = adult(g);
+    expect(s.wishes?.length ?? 0).toBeGreaterThan(0);
+    expect(s.wishes!.length).toBeLessThanOrEqual(MAX_WISHES);
+    for (const m of g.members()) if (m.age === 'baby' || m.age === 'toddler') expect(m.wishes?.length ?? 0).toBe(0);
+  });
+  it('bietet nur erfüllbare Wünsche an', () => {
+    const g = fresh();
+    const s = adult(g);
+    const lot = g.hh!.lot!;
+    for (let i = 0; i < 40; i++) {
+      s.wishes = [];
+      const w = offerWish(g, s)!;
+      expect(w).toBeTruthy();
+      const d = wishDef(w.k)!;
+      if (w.k === 'pet') expect(g.hh!.pets.length).toBeGreaterThan(0);
+      if (w.k === 'work' || w.k === 'promote') expect(s.career).toBeTruthy();
+      const func = d.use ? idef(d.use)?.func : undefined;
+      if (func) expect(func.some((f) => g.objsWith(lot, f).length > 0)).toBe(true);
+      if (w.t && (w.k === 'chat' || w.k === 'hug' || w.k === 'kiss')) expect(g.sims.has(w.t)).toBe(true);
+    }
+  });
+  it('Erfüllen entfernt den Wunsch, gibt Punkte und Stimmung', () => {
+    const g = fresh();
+    g.settings.autonomy = 0;
+    const s = adult(g);
+    const other = [...g.sims.values()].find((o) => o.id !== s.id && o.age !== 'baby')!;
+    s.wishes = [
+      { k: 'cook', until: g.clock.min + 600 },
+      { k: 'chat', t: other.id, until: g.clock.min + 600 },
+    ];
+    s.wishPoints = 0;
+    g.bus.emit('interaction', { sim: s.id, id: 'cook' });
+    expect(s.wishes.map((w) => w.k)).toEqual(['chat']);
+    expect(s.wishPoints).toBe(wishDef('cook')!.pts);
+    expect(s.moods.some((m) => m.id === 'wishgranted')).toBe(true);
+    expect(s.rt.bubble?.icon).toBe('✨');
+    g.bus.emit('social', { sim: s.id, target: other.id, id: 'insult', ok: true });
+    expect(s.wishes.length).toBe(1);
+    g.bus.emit('social', { sim: s.id, target: other.id, id: 'chat', ok: true });
+    expect(s.wishes.length).toBe(0);
+    expect(s.wishPoints).toBe(wishDef('cook')!.pts + wishDef('chat')!.pts);
+  });
+  it('echtes Kochen erfüllt den Kochwunsch; Klick findet die Handlung', () => {
+    const g = fresh();
+    g.settings.autonomy = 0;
+    const s = adult(g);
+    for (const n of NEED_IDS) s.needs[n] = 90;
+    s.wishes = [{ k: 'cook', until: g.clock.min + 600 }];
+    const act = wishAction(g, s, s.wishes[0]!);
+    expect(act?.it.def).toBe('cook');
+    const fridge = g.objsWith(g.hh!.lot, 'fridge')[0]!;
+    g.queueAction(s, 'cook', { user: true, obj: fridge.id, data: { recipe: 'toast' } });
+    run(g, 90);
+    expect(s.wishes.some((w) => w.k === 'cook')).toBe(false);
+    expect(s.wishPoints).toBeGreaterThanOrEqual(wishDef('cook')!.pts);
+  });
+  it('abgelaufene Wünsche verschwinden', () => {
+    const g = fresh();
+    g.settings.autonomy = 0;
+    const s = adult(g);
+    s.wishes = [{ k: 'tv', until: g.clock.min + 10 }];
+    s.flags.wishAt = g.clock.min + 6000;
+    run(g, 70, 1);
+    expect(s.wishes.some((w) => w.k === 'tv')).toBe(false);
+  });
+  it('Gedankenblase zeigt das dringendste Bedürfnis', () => {
+    const g = fresh();
+    g.settings.autonomy = 0;
+    const s = adult(g);
+    for (const n of NEED_IDS) s.needs[n] = 90;
+    s.needs.hunger = 12;
+    const seen = new Set<string>();
+    for (let t = 0; t < 60; t++) {
+      g.step(1);
+      s.needs.hunger = 12;
+      if (s.rt.bubble) seen.add(s.rt.bubble.icon);
+    }
+    expect(seen.has('🍽️')).toBe(true);
+  });
+  it('Spielstand behält Wünsche; alte Stände ohne Wünsche laden', () => {
+    const g = fresh();
+    const s = adult(g);
+    s.wishes = [{ k: 'read', until: g.clock.min + 600 }];
+    s.wishPoints = 42;
+    const json = JSON.parse(JSON.stringify(serialize(g)));
+    const g2 = deserialize(json);
+    expect(g2.sim(s.id)!.wishes).toEqual(s.wishes);
+    expect(g2.sim(s.id)!.wishPoints).toBe(42);
+    for (const x of json.sims) {
+      delete x.wishes;
+      delete x.wishPoints;
+    }
+    expect(validate(json)).toBeNull();
+    const g3 = deserialize(json);
+    expect(g3.sim(s.id)!.wishes).toEqual([]);
+    expect(g3.sim(s.id)!.wishPoints).toBe(0);
+    run(g3, 60 * 3, 1);
+    expect(g3.sim(s.id)!.wishes!.length).toBeGreaterThan(0);
   });
 });
 

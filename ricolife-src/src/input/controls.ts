@@ -16,6 +16,8 @@ export interface ControlHandlers {
   edgeScroll(): boolean;
   deadzone(): number;
   uiBlocked(): boolean;
+  /** Bodenpunkt unter dem Mauszeiger (für Zoom zum Zeiger) */
+  groundAt?(x: number, y: number): { x: number; z: number } | null;
 }
 
 interface Ptr {
@@ -149,8 +151,11 @@ export class Controls {
 
   private wheel = (e: WheelEvent): void => {
     e.preventDefault();
-    if (e.ctrlKey) this.rig.zoom(1 + e.deltaY * 0.01);
-    else this.rig.zoom(e.deltaY > 0 ? 1.12 : 1 / 1.12);
+    const f = e.ctrlKey ? 1 + e.deltaY * 0.01 : e.deltaY > 0 ? 1.12 : 1 / 1.12;
+    // wie im Genre üblich: zum Mauszeiger hin zoomen
+    const gp = this.hd.groundAt?.(e.clientX, e.clientY) ?? null;
+    if (gp) this.rig.zoomAt(f, gp.x, gp.z);
+    else this.rig.zoom(f);
   };
 
   private keydown = (e: KeyboardEvent): void => {

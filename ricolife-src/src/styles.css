@@ -361,7 +361,12 @@ body[data-mode='build'] .chat, body[data-mode='buy'] .chat { display: none; }
 .bm-colors { display: flex; flex-direction: column; gap: 2px; }
 .bm-item { appearance: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: 104px; min-height: 92px; padding: 6px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel2); color: var(--text); font: inherit; cursor: pointer; text-align: center; touch-action: manipulation; }
 .bm-item:hover { background: rgba(255, 255, 255, 0.14); }
-.bm-item.on { border-color: var(--accent); background: rgba(139, 212, 194, 0.22); }
+.bm-item.on { border-color: var(--accent); background: rgba(139, 212, 194, 0.22); box-shadow: 0 0 0 2px var(--accent) inset; }
+.bm-item .bm-ico.big { height: 60px; display: flex; align-items: center; justify-content: center; }
+.bm-thumb { width: 60px; height: 60px; object-fit: contain; pointer-events: none; -webkit-user-drag: none; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.25)); }
+.bm-tip { position: fixed; left: 0; top: 0; z-index: 9; pointer-events: none !important; padding: 4px 9px; border-radius: 9px; background: rgba(20, 28, 26, 0.86); color: #7ff0a4; border: 1px solid rgba(127, 240, 164, 0.5); font-size: 0.85em; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35); will-change: transform; }
+.bm-tip.bad { color: #ff9a8a; border-color: rgba(255, 110, 90, 0.6); }
+.bm-tip[hidden] { display: none; }
 .bm-item:focus-visible { outline: 3px solid var(--accent2); outline-offset: 2px; }
 .bm-name { font-size: 0.8em; font-weight: 600; line-height: 1.15; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .bm-price { font-size: 0.8em; color: var(--accent2); font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -373,6 +378,21 @@ body[data-mode='build'] .chat, body[data-mode='buy'] .chat { display: none; }
   .bm-funds { display: none; }
   .bm-hint { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
   .bm-item { width: 92px; min-height: 84px; }
+  .bm-item .bm-ico.big, .bm-thumb { width: 52px; height: 52px; }
   .bm-tab span:last-child { font-size: 0.9em; }
 }
 /* ===================== Ende Bau- und Kaufmodus ===================== */
+
+/* ===== Wünsche ===== */
+.wishes { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 5px; font-size: 0.78em; }
+.wishes .wl { color: var(--muted); font-weight: 700; margin-right: 2px; }
+.wishchip { display: inline-flex; align-items: stretch; border-radius: 99px; background: rgba(229, 177, 107, 0.16); border: 1px solid rgba(229, 177, 107, 0.45); overflow: hidden; max-width: 100%; }
+.wishchip button { appearance: none; background: none; border: 0; color: var(--text); font: inherit; cursor: pointer; min-height: 30px; touch-action: manipulation; }
+.wishchip .wish { display: inline-flex; align-items: center; gap: 3px; padding: 2px 4px 2px 8px; min-width: 0; }
+.wishchip .wt { max-width: 104px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wishchip .wishx { padding: 0 8px 0 4px; color: var(--muted); }
+.wishchip .wishx:hover, .wishchip .wish:hover { color: var(--accent2); }
+.wishchip button:focus-visible { outline: 2px solid var(--accent2); outline-offset: -2px; }
+.wishpts { margin-left: auto; font-weight: 700; color: var(--accent2); white-space: nowrap; }
+.simcard.min .wishes { display: none; }
+/* ===== Ende Wünsche ===== */

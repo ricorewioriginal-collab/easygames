@@ -6,13 +6,14 @@ Stand: 17.10.2026 · Spielstand-Version 1 · Service-Worker-Cache `eg-ricolife-v
 
 - **Stadt Lindenhafen:** 3 Bezirke, 25 Grundstücke, Tag/Nacht, Jahreszeiten, Wetter, 47 Stadtbewohner mit Tagesablauf
 - **Figuren:** Haushalt-Editor mit 3D-Vorschau (Aussehen, Kleidung, Merkmale, Lebensziel), Altersstufen, Haustiere
-- **Leben:** 8 Bedürfnisse, Emotionen, Autonomie, Warteschlange mit Abbrechen, Reservierungen von Plätzen
+- **Leben:** 8 Bedürfnisse, Emotionen, Autonomie, Warteschlange mit Abbrechen, Reservierungen von Plätzen, Wünsche mit Wunschpunkten, Gedankenblasen, Rennen bei langen Wegen
 - **Soziales:** 44 Handlungen, Freundschaft/Romantik, Familie, Nachwuchs, Einziehen
 - **Beruf und Geld:** 9 Berufe (3 vor Ort spielbar), Schule, Lohn, wöchentliche Rechnungen, Haushaltsbuch
-- **Bau-/Kaufmodus:** Wände, Böden, Räume, Treppen, 159 kaufbare Objekte, Fertighäuser, Rückgängig/Wiederholen
+- **Bau-/Kaufmodus:** Wände, Böden, Räume, Treppen, 159 kaufbare Objekte, Fertighäuser, Rückgängig/Wiederholen, 3D-Vorschaubilder im Katalog, Hinweis am Zeiger mit Länge/Fläche und Kosten, Draufsicht beim Wechsel in den Baumodus
 - **Geschichten:** 3 Geschichten mit je 8 Aufgaben, 46 Zufallsereignisse
 - **Speichern:** 3 Plätze, Sicherungskopie, Export/Import, Autosave, Google-Spielstand über `anmacha-cloud`
 - **Mehrspieler:** Besuch über Code mit bis zu 3 Gästen über `cloud/fire-peer.js` (Firebase-Vermittlung, WebRTC); Gastgeber rechnet, Gäste steuern ihre eigene Figur und chatten
+- **Kamera:** nah und flach im Live-Modus, Mausrad zoomt zum Zeiger hin
 - **Steuerung:** Touch, Maus/Tastatur (umbelegbar), Controller
 - **PWA:** offline spielbar, installierbar, Update-Hinweis „Neue Version verfügbar – Jetzt aktualisieren“
 

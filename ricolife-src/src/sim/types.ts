@@ -68,6 +68,13 @@ export interface Action {
   label?: string;
 }
 
+/** kleiner Wunsch einer Figur (k = Art aus WISHES, t = Person/Fähigkeit/Variante, until = Ablauf in Spielminuten) */
+export interface Wish {
+  k: string;
+  t?: string;
+  until: number;
+}
+
 export interface SimRuntime {
   anim: AnimId;
   animT: number;
@@ -136,6 +143,10 @@ export interface Sim {
   visit?: { lot: string; until: number };
   /** Fahrt mit dem Auto (Polylinie, Fortschritt in Kacheln) */
   trip?: { pts: [number, number][]; t: number; len: number; to: string; tx: number; tz: number; then?: string };
+  /** aktive Wünsche (fehlt in älteren Spielständen = keine) */
+  wishes?: Wish[];
+  /** gesammelte Wunschpunkte */
+  wishPoints?: number;
   /** Gast eines Mehrspielers (wird nicht gespeichert) */
   guest?: string;
   queue: Action[];

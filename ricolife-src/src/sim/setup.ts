@@ -18,6 +18,7 @@ import { installPets } from './pets';
 import { installNpcs } from './npcs';
 import { installStories, startStory, storyById } from './stories';
 import { installWorldSys, rollWeather } from './world-sys';
+import { installWishes } from './wishes';
 import './interactions';
 import './socials';
 import type { Household, Sim } from './types';
@@ -32,6 +33,7 @@ export function installSystems(g: Game): void {
   installNpcs(g);
   installStories(g);
   installWorldSys(g);
+  installWishes(g);
 }
 
 export interface CustomMember {

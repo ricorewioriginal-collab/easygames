@@ -48,6 +48,8 @@ export class App implements AppApi {
   private sv: SimsView;
   private hud: Hud | null = null;
   private build: BuildMode | null = null;
+  /** Neigung der Kamera vor dem Bau-/Kaufmodus */
+  private livePitch: number | null = null;
   private menu: MainMenu;
   private host: MpHost | null = null;
   private guest: MpGuest | null = null;
@@ -123,6 +125,7 @@ export class App implements AppApi {
       edgeScroll: () => this.settings.edgeScroll,
       deadzone: () => this.settings.padDeadzone,
       uiBlocked: () => modalOpen() || !this.game || this.loading || !!document.getElementById('cas'),
+      groundAt: (x, y) => this.groundAt(x, y),
     });
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) this.autosave();
@@ -232,7 +235,7 @@ export class App implements AppApi {
       else if (lot) this.rig.focus(lot.x + lot.w / 2, lot.z + lot.d / 2, true);
       this.level = a?.l ?? 0;
       this.rig.setLevel(this.level);
-      this.rig.dist = 24;
+      this.rig.dist = 15;
       wv.setView(this.wallMode, this.level, { x: this.rig.tx, z: this.rig.tz }, this.rig.yaw);
       wv.setEnvironment(g.clock.minOfDay, season(g), g.weather.now, g.clock.dayOfSeason);
       wv.syncLots();
@@ -562,7 +565,22 @@ export class App implements AppApi {
     if (m === 'live') {
       if (prev !== 'live') this.build?.close();
       this.wv?.setGrid(false);
-    } else this.build?.open(m === 'buy' ? 'buy' : 'build');
+      // Blickwinkel aus dem Live-Modus zurück
+      if (prev !== 'live' && this.livePitch !== null) this.rig.pitch = this.livePitch;
+      this.livePitch = null;
+    } else {
+      // Bauen/Kaufen: steilerer Blick aufs ganze Grundstück
+      if (prev === 'live') {
+        this.livePitch = this.rig.pitch;
+        this.rig.pitch = Math.max(this.rig.pitch, 1.0);
+        const L = lotById(g.hh!.lot!);
+        if (L) {
+          this.rig.focus(L.x + L.w / 2, L.z + L.d / 2);
+          this.rig.dist = Math.max(14, Math.min(30, Math.max(L.w, L.d) * 1.15));
+        }
+      }
+      this.build?.open(m === 'buy' ? 'buy' : 'build');
+    }
     this.hud?.setCompact(m !== 'live');
     document.body.dataset.mode = m;
     this.wv?.highlightObject(null);

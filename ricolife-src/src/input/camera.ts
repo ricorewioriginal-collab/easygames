@@ -9,19 +9,19 @@ export class CameraRig {
   tz = 36;
   ty = 0;
   yaw = Math.PI * 0.25;
-  pitch = 0.95;
-  dist = 26;
+  pitch = 0.82;
+  dist = 15;
   // geglättete Werte
   private x = 30;
   private z = 36;
   private y = 0;
   private yw = Math.PI * 0.25;
-  private pt = 0.95;
-  private d = 26;
+  private pt = 0.82;
+  private d = 15;
   reduceMotion = false;
 
   constructor(aspect: number) {
-    this.cam = new THREE.PerspectiveCamera(42, aspect, 0.3, 400);
+    this.cam = new THREE.PerspectiveCamera(36, aspect, 0.3, 400);
   }
   setAspect(a: number): void {
     this.cam.aspect = a;
@@ -56,7 +56,16 @@ export class CameraRig {
     this.yaw += d;
   }
   zoom(f: number): void {
-    this.dist = Math.max(5, Math.min(110, this.dist * f));
+    this.dist = Math.max(4, Math.min(100, this.dist * f));
+  }
+  /** zoomen und dabei den Bodenpunkt (gx, gz) unter dem Zeiger festhalten */
+  zoomAt(f: number, gx: number, gz: number): void {
+    const before = this.dist;
+    this.zoom(f);
+    const k = 1 - this.dist / before;
+    this.tx += (gx - this.tx) * k;
+    this.tz += (gz - this.tz) * k;
+    this.clamp();
   }
   tilt(d: number): void {
     this.pitch = Math.max(0.45, Math.min(1.35, this.pitch + d));

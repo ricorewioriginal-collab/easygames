@@ -9,7 +9,14 @@ import type { Game } from './game';
 import { idef, type Ctx, type IDef, type QCtx, type RouteTarget } from './interact';
 import type { Action, Sim } from './types';
 
-export const WALK = 1.45; // Kacheln je Spielminute
+export const WALK = 2.4; // Kacheln je Spielminute (bei Normaltempo: je Sekunde)
+/** ab so vielen Wegpunkten Restweg wird gelaufen statt gegangen */
+const RUN_FROM = 14;
+/** läuft die Figur gerade (langer Weg)? */
+export function isRunning(s: Sim): boolean {
+  const p = s.rt.path;
+  return !!p && s.age !== 'toddler' && s.age !== 'baby' && p.length - s.rt.pathI > RUN_FROM;
+}
 const CAR = 9;
 
 export function ctxOf(g: Game, s: Sim, a: Action): Ctx {
@@ -165,9 +172,10 @@ export function setPath(s: Sim, path: PathPoint[] | null): void {
 
 export function speedOf(g: Game, s: Sim): number {
   let v = WALK;
-  if (s.age === 'toddler') v = 0.75;
-  else if (s.age === 'senior') v = 1.15;
-  else if (s.age === 'child') v = 1.3;
+  if (s.age === 'toddler') v = 1.2;
+  else if (s.age === 'senior') v = 1.9;
+  else if (s.age === 'child') v = 2.2;
+  if (isRunning(s)) v *= 1.5;
   if (s.needs.bladder < 15 || s.queue[0]?.data?.hurry) v *= 1.6;
   if (s.needs.energy < 10) v *= 0.8;
   if (g.settings.reduceMotion) v *= 1;
@@ -412,7 +420,7 @@ function begin(g: Game, s: Sim, a: Action, d: IDef, c: Ctx): void {
 
 function route(g: Game, s: Sim, a: Action, d: IDef, c: Ctx, dt: number): void {
   const arrived = moveAlong(g, s, dt);
-  s.rt.anim = 'walk';
+  s.rt.anim = isRunning(s) ? 'run' : 'walk';
   if (!arrived) {
     // Hängenbleiben erkennen
     const moved = Math.hypot(s.x - s.rt.lastX, s.z - s.rt.lastZ);
