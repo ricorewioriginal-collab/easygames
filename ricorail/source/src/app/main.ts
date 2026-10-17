@@ -573,6 +573,7 @@ async function run(cfg: RunCfg, stub?: RunStub) {
       openSettings: (onClose) => settingsScreen(() => { document.querySelectorAll('.screen.clear').forEach((e) => e.remove()); onClose(); }, true),
     }, { title: cfg.title, mode: cfg.mode, allowFreeCam: cfg.allowFreeCam });
     game = g;
+    if (location.search.includes('debug')) (window as unknown as { rrGame?: Game }).rrGame = g; // nur für Tests
     for (let i = 0; i < 60; i++) { const pr = g.warmup(3); prog(0.6 + 0.4 * pr); await frame(); if (pr >= 0.999) break; }
     load.remove();
     g.start();

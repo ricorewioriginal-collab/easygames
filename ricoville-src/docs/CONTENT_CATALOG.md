@@ -14,7 +14,7 @@ _Automatisch erzeugt aus `src/catalogs/` (`npm run docs:catalog`). Alle Namen un
 | Produktion | 12 |
 | Lager | 3 |
 | Transport | 3 |
-| Deko | 56 |
+| Deko | 60 |
 | Feldfrüchte | 14 |
 | Waren und Materialien | 37 |
 | Rezepte | 15 |
@@ -214,6 +214,10 @@ _Automatisch erzeugt aus `src/catalogs/` (`npm run docs:catalog`). Alle Namen un
 | Ostereier-Nest (Frühling) | 1×1 | 3 | 80 | 0 s | Ausstrahlung 3 (Radius 3) |
 | Blumenkarren (Frühling) | 1×1 | 6 | 130 | 0 s | Ausstrahlung 5 (Radius 3) |
 | Strandkorb (Sommer) | 1×1 | 9 | 140 | 0 s | Ausstrahlung 5 (Radius 3) |
+| E-Ladesäule | 1×1 | 6 | 150 | 0 s | Ausstrahlung 4 (Radius 3) |
+| E-Roller-Station | 1×1 | 7 | 130 | 0 s | Ausstrahlung 4 (Radius 3) |
+| Windrad | 1×1 | 10 | 450 | 0 s | Ausstrahlung 7 (Radius 3) |
+| Solarfeld | 2×2 | 12 | 700 | 0 s | Ausstrahlung 12 (Radius 4) |
 
 ## Feldfrüchte
 

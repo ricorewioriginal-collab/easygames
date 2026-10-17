@@ -17,8 +17,8 @@ export interface WorldEnv {
 }
 
 const LEVELS: Record<WorldQuality['level'], Omit<QP, 'level' | 'cell' | 'shadows' | 'maxTex'> & { precip: number }> = {
-  low: { n: 24, nFar: 24, lodDist: 0, trees: 14, houses: 3, people: 0.012, sleepers3d: false, wires: false, precip: 1200 },
-  mid: { n: 32, nFar: 16, lodDist: 1000, trees: 40, houses: 7, people: 0.035, sleepers3d: false, wires: true, precip: 2500 },
+  low: { n: 24, nFar: 24, lodDist: 0, trees: 14, houses: 6, people: 0.012, sleepers3d: false, wires: false, precip: 1200 },
+  mid: { n: 32, nFar: 16, lodDist: 1000, trees: 40, houses: 10, people: 0.035, sleepers3d: false, wires: true, precip: 2500 },
   high: { n: 48, nFar: 24, lodDist: 1500, trees: 80, houses: 12, people: 0.07, sleepers3d: true, wires: true, precip: 5000 },
 };
 /** Zeitbudget für Chunkaufbau je Frame (ms) */

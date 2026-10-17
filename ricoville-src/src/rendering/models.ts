@@ -8,10 +8,13 @@ const tmpColor = new THREE.Color();
 
 export class Parts {
   private list: THREE.BufferGeometry[] = [];
+  /** Leuchtkraft (0–1) für die nächsten Teile: Fenster und Lampen leuchten nachts (Attribut `glow`). */
+  glow = 0;
+  private seed = 0;
   add(geo: THREE.BufferGeometry, color: string, x = 0, y = 0, z = 0, ry = 0, rx = 0, rz = 0): this {
     const g = geo.index ? geo.toNonIndexed() : geo.clone();
     g.deleteAttribute('uv');
-    for (const name of Object.keys(g.attributes)) if (!['position', 'normal', 'color'].includes(name)) g.deleteAttribute(name);
+    for (const name of Object.keys(g.attributes)) if (!['position', 'normal', 'color', 'glow'].includes(name)) g.deleteAttribute(name);
     g.clearGroups();
     const m = new THREE.Matrix4().compose(
       new THREE.Vector3(x, y, z),
@@ -31,6 +34,7 @@ export class Parts {
       }
       g.setAttribute('color', new THREE.BufferAttribute(cols, 3));
     }
+    if (!g.getAttribute('glow')) g.setAttribute('glow', new THREE.BufferAttribute(new Float32Array(g.getAttribute('position').count).fill(this.glow), 1));
     this.list.push(g);
     geo.dispose();
     return this;
@@ -71,22 +75,35 @@ export class Parts {
   }
   /** Fensterreihen auf allen vier Seiten eines Quaders. */
   windows(w: number, d: number, y0: number, floors: number, fh: number, color = '#3a5674', frame?: string): this {
+    const before = this.glow;
+    // Nachts brennt nicht überall Licht: feste Pseudo-Zufallsfolge, damit jedes Modell gleich aussieht.
+    const lit = (): number => {
+      this.seed = (this.seed * 1103515245 + 12345) & 0x7fffffff;
+      const r = (this.seed >> 8) / 0x7fffff;
+      return r < 0.3 ? 0 : 0.55 + r * 0.45;
+    };
     for (let f = 0; f < floors; f++) {
       const y = y0 + f * fh + fh * 0.35;
       const nx = Math.max(1, Math.floor(w / 0.42));
       const nz = Math.max(1, Math.floor(d / 0.42));
       for (let i = 0; i < nx; i++) {
         const x = -w / 2 + (i + 0.5) * (w / nx);
+        this.glow = lit();
         this.box(0.2, fh * 0.42, 0.03, color, x, y, d / 2 + 0.005);
+        this.glow = lit();
         this.box(0.2, fh * 0.42, 0.03, color, x, y, -d / 2 - 0.005);
+        this.glow = before;
         if (frame) this.box(0.26, 0.03, 0.05, frame, x, y - 0.02, d / 2 + 0.01);
       }
       for (let i = 0; i < nz; i++) {
         const z = -d / 2 + (i + 0.5) * (d / nz);
+        this.glow = lit();
         this.box(0.03, fh * 0.42, 0.2, color, w / 2 + 0.005, y, z);
+        this.glow = lit();
         this.box(0.03, fh * 0.42, 0.2, color, -w / 2 - 0.005, y, z);
       }
     }
+    this.glow = before;
     return this;
   }
   build(): THREE.BufferGeometry {
@@ -478,7 +495,9 @@ function decoModel(p: Parts, m: ModelSpec, W: number, D: number): void {
     case 'lamp':
       p.cyl(0.025, 0.035, 0.9, c, 0, 0, 0, 6);
       p.box(m.variant ? 0.14 : 0.3, 0.06, 0.12, c, m.variant ? 0 : 0.1, 0.9, 0);
+      p.glow = 1;
       p.ball(0.06, '#fff59d', m.variant ? 0 : 0.18, 0.86, 0, 3);
+      p.glow = 0;
       return;
     case 'fence':
       for (let i = -2; i <= 2; i++) p.box(0.05, 0.3, 0.05, c, i * 0.2, 0, 0);
@@ -594,8 +613,10 @@ function decoModel(p: Parts, m: ModelSpec, W: number, D: number): void {
     case 'xmastree':
       p.cyl(0.05, 0.05, 0.15, '#6d4c41', 0, 0, 0, 5);
       for (let i = 0; i < 3; i++) p.cone(0.38 - i * 0.09, 0.4, c, 0, 0.12 + i * 0.25, 0, 8);
+      p.glow = 0.7;
       for (let i = 0; i < 7; i++) p.ball(0.04, ['#e53935', '#ffd54f', '#42a5f5'][i % 3]!, Math.cos(i * 2) * (0.28 - i * 0.03), 0.25 + i * 0.1, Math.sin(i * 2) * (0.28 - i * 0.03), 3);
       p.cone(0.06, 0.1, '#ffd54f', 0, 0.9, 0, 5);
+      p.glow = 0;
       return;
     case 'pumpkins':
       for (const [x, z, r] of [[-0.15, 0, 0.16], [0.15, 0.05, 0.14], [0, -0.15, 0.12], [0, 0.05, 0.11]]) p.ball(r!, c, x!, r! + (x === 0 && z === 0.05 ? 0.22 : 0), z!);
@@ -611,6 +632,48 @@ function decoModel(p: Parts, m: ModelSpec, W: number, D: number): void {
     case 'beachchair':
       p.box(0.5, 0.25, 0.4, '#f5f5f5', 0, 0, 0).box(0.55, 0.6, 0.1, c, 0, 0.1, -0.18);
       p.add(new THREE.CylinderGeometry(0.26, 0.26, 0.5, 8, 1, false, 0, Math.PI), c, 0, 0.7, -0.05, 0, 0, Math.PI / 2);
+      return;
+    case 'charger':
+      p.box(0.8, 0.04, 0.8, '#b0bec5', 0, 0, 0).box(0.7, 0.012, 0.3, '#43a047', 0, 0.04, 0.2);
+      p.box(0.22, 0.62, 0.16, c, 0, 0.04, -0.22).box(0.24, 0.06, 0.18, '#263238', 0, 0.66, -0.22);
+      p.glow = 0.8;
+      p.box(0.14, 0.14, 0.02, '#4fc3f7', 0, 0.42, -0.135);
+      p.glow = 0;
+      p.add(new THREE.TorusGeometry(0.1, 0.015, 4, 10, Math.PI), '#263238', 0.13, 0.3, -0.18, Math.PI / 2, 0, 0);
+      return;
+    case 'windturbine': {
+      p.cyl(0.18, 0.2, 0.08, '#b0bec5', 0, 0, 0, 10);
+      p.cyl(0.035, 0.07, 2.2, c, 0, 0.08, 0, 8);
+      p.box(0.12, 0.12, 0.28, c, 0, 2.25, 0);
+      p.ball(0.06, c, 0, 2.31, 0.16, 3);
+      for (let i = 0; i < 3; i++) {
+        const a = (i / 3) * Math.PI * 2;
+        p.add(new THREE.BoxGeometry(0.06, 0.75, 0.015), i ? c : '#ef5350', Math.sin(a) * 0.38, 2.31 + Math.cos(a) * 0.38, 0.19, 0, 0, -a);
+      }
+      return;
+    }
+    case 'solar':
+      p.box(W * 0.98, 0.03, D * 0.98, '#9e9e9e', 0, 0, 0);
+      for (let i = 0; i < 2; i++)
+        for (let j = 0; j < 2; j++) {
+          const x = (i - 0.5) * W * 0.48;
+          const z = (j - 0.5) * D * 0.48;
+          p.cyl(0.03, 0.03, 0.25, '#616161', x, 0, z + 0.15, 5);
+          p.add(new THREE.BoxGeometry(W * 0.42, 0.03, D * 0.36), c, x, 0.32, z, 0, -0.45);
+          for (let k = 0; k < 3; k++) p.add(new THREE.BoxGeometry(W * 0.42, 0.035, 0.012), '#cfd8dc', x, 0.32 + (k - 1) * 0.05, z + (k - 1) * D * 0.11, 0, -0.45);
+        }
+      return;
+    case 'scooter':
+      p.box(0.9, 0.03, 0.5, '#cfd8dc', 0, 0, 0).box(0.06, 0.55, 0.06, '#37474f', -0.4, 0.03, -0.18);
+      p.glow = 0.6;
+      p.box(0.04, 0.16, 0.24, c, -0.4, 0.45, -0.18);
+      p.glow = 0;
+      for (let i = 0; i < 3; i++) {
+        const x = -0.2 + i * 0.25;
+        p.box(0.07, 0.03, 0.36, c, x, 0.07, 0.02).cyl(0.012, 0.012, 0.42, '#37474f', x, 0.07, 0.18, 5);
+        p.box(0.2, 0.02, 0.02, '#37474f', x, 0.49, 0.18);
+        for (const z of [-0.14, 0.18]) p.add(new THREE.CylinderGeometry(0.045, 0.045, 0.03, 8), '#212121', x, 0.05, z, 0, 0, Math.PI / 2);
+      }
       return;
     default:
       p.box(0.5, 0.5, 0.5, c, 0, 0, 0);

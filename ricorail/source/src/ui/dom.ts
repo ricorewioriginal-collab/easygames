@@ -155,7 +155,8 @@ table.t td,table.t th{padding:5px 6px;border-bottom:1px solid #22395a;text-align
 .lever{pointer-events:auto;position:relative;width:64px;height:min(42vh,260px);border-radius:16px;background:rgba(16,32,54,.85);border:1px solid rgba(120,160,210,.5);touch-action:none}
 .lever .knob{position:absolute;left:6px;right:6px;height:40px;border-radius:12px;background:var(--acc);box-shadow:0 2px 8px #0008}
 .lever .mid{position:absolute;left:0;right:0;height:2px;background:#fff6}
-.lever .lbl{position:absolute;left:0;right:0;text-align:center;font-size:.7em;color:var(--muted)}
+.lever .lbl{position:absolute;left:0;right:0;text-align:center;font-size:.62em;line-height:1.1;color:var(--muted)}
+.lever .notch{position:absolute;left:0;right:0;height:0;border-top:1px solid #fff3;font-size:.6em;line-height:0;text-align:right;padding-right:3px;color:#fff8;pointer-events:none}.lever .notch.b{color:#ffb0a0aa}
 .minimap{width:min(40vw,260px);height:min(28vw,170px);border-radius:12px}
 .tt{font-size:.85em;max-height:30vh;overflow:auto}
 .tt .cur{color:var(--acc);font-weight:700}

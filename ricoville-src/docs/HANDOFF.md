@@ -22,6 +22,6 @@ Lies das zuerst, wenn du an RicoVille weiterarbeitest (Mensch oder neue Sitzung)
 
 ## Nächste sinnvolle Schritte
 1. Auf echten Geräten spielen (iPhone/Safari, Android), Balancing der ersten Stunde nachschärfen.
-2. Eigene Symbole je Gebäude im Baumenü (aus den 3D-Modellen gerendert).
-3. Nachbarn mit zwei echten Google-Konten ausprobieren (Regeln vorher in der Konsole veröffentlichen, siehe FIREBASE_SETUP.md).
-4. Mehr Abwechslung: Ereignisse (Feste, Jahreszeiten), weitere Aufgabenketten.
+2. Nachbarn mit zwei echten Google-Konten ausprobieren (Regeln vorher in der Konsole veröffentlichen, siehe FIREBASE_SETUP.md).
+3. Mehr Abwechslung: Saison-Ereignisse mit eigenen Aufgaben (Jahreszeiten und Wetter sind als Optik schon da, `rendering/season.ts`), weitere Aufgabenketten.
+4. Windrad-Rotor animieren (Rotor als eigenes Teilmodell).

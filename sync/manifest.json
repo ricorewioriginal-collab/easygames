@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "ffdce6eea707",
- "generated": "2026-10-17T13:02:27+02:00",
- "commit": "e65dff5524c14c8e96c7412aeb0f81381e8ef387",
+ "version": "8eb933199b14",
+ "generated": "2026-10-17T12:48:29+00:00",
+ "commit": "ab73b1943d433bc48d94d8854f7b65106b83caf6",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4897,6 +4897,11 @@
    "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
   },
   {
+   "p": "categories.js",
+   "s": 2292,
+   "h": "b51c9548e2de1ccdead2acbcf4ff9f4d96f0af153fe09f7d76ccd21f8ba87579"
+  },
+  {
    "p": "chat.html",
    "s": 22289,
    "h": "15ee7b7bcb781912bcdba9c67190c4e51d8d629795d6efd5f14136eaf713264d"
@@ -5048,8 +5053,8 @@
   },
   {
    "p": "games.js",
-   "s": 24615,
-   "h": "5efb4efe8c46eebd37e328d8577e31efd42671f2cda77d6044d87b42c76a16db"
+   "s": 24677,
+   "h": "4a4ca4868ae24c4a23b0e1640232d0bd11f47348bd900f185bb2504af45663e4"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5208,8 +5213,8 @@
   },
   {
    "p": "guides.js",
-   "s": 66243,
-   "h": "b2d246a4ccdf340192486e45519f27c29f190c815855f4258f7b4bb9efc91080"
+   "s": 66730,
+   "h": "aa71a95eeb6c0a6a04d05921c3dc46c73340f398e162bf6362769175ff99f96e"
   },
   {
    "p": "heute.html",
@@ -5218,8 +5223,8 @@
   },
   {
    "p": "index.html",
-   "s": 64790,
-   "h": "7fa12b05493d490818ebc6b5aac7690c57375302d59812f88457e9ed276fa27a"
+   "s": 74316,
+   "h": "85c046661df0853320da0d2379aacd7bfb06d3495881b5c7589c2f70af848f6b"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -6117,9 +6122,9 @@
    "h": "b1a597ac448c28ef7efd2d49a802d593755bdf72d6babe32d25fe795cc920985"
   },
   {
-   "p": "ricorail/assets/ricorail-a44e098de6.js",
-   "s": 1036030,
-   "h": "a44e098de6a95c6beaa808627c46f92ec929df35cf069bf3a2ca3fcdb691cffe"
+   "p": "ricorail/assets/ricorail-b8783d0f07.js",
+   "s": 1038431,
+   "h": "b8783d0f07490069ddf21f16a5d0edd5ad824279ce668500423bb5dc49f0401d"
   },
   {
    "p": "ricorail/card.svg",
@@ -6159,7 +6164,7 @@
   {
    "p": "ricorail/index.html",
    "s": 3231,
-   "h": "4524202a511c7c88e7f59706059f002cd3c248d6869d4ab3c9fa33428e91f2ec"
+   "h": "a50d6156f41aa68a542f9089b8526c1866d4fd05d9249bc9c1b06780d699852b"
   },
   {
    "p": "ricorail/manifest.webmanifest",
@@ -6169,27 +6174,27 @@
   {
    "p": "ricorail/sw.js",
    "s": 1812,
-   "h": "065c449c59bb15c631ffeb901e70547e6ca4ddcae811030d73fb644258c2a0f8"
+   "h": "7ec9d5e883d94218036c3ae99cbbab32d8f448979127d3a4f7383b8c05b0c57b"
   },
   {
    "p": "ricorail/version.json",
    "s": 74,
-   "h": "4f6e40462f22a951fce75d6eaeb8da8512da7bc45bdd9c2bc62af0e8b9b19fe8"
+   "h": "a6f562fbc38022687e87b9cdcd3f7ac4f4390c7d0420728b1feb497dc46e6aec"
   },
   {
-   "p": "ricoville/assets/index-BLdHkGPY.js",
-   "s": 190584,
-   "h": "81fc82e574bea321fe2cc959262c925ba034abcebea9bf913ec5ba964f520ed2"
+   "p": "ricoville/assets/index-BUWwZhsM.css",
+   "s": 14430,
+   "h": "9e13508cc7c2ef2e6d1cf7f11b99db658e62b9f56b39b75744fa44866b12a53e"
   },
   {
-   "p": "ricoville/assets/index-D_MYwwq2.css",
-   "s": 13425,
-   "h": "7fb5ce57d84e7cee0696140da8052f26dea83d0bff2ca1b7b514acd83cc0f608"
+   "p": "ricoville/assets/index-CDRFEBml.js",
+   "s": 202247,
+   "h": "fdda32b6da4e76eca2323245cb425404db7c5538ec0aa69fe5f97c1d16a195fb"
   },
   {
-   "p": "ricoville/assets/three-DaP6-81L.js",
-   "s": 521014,
-   "h": "e303c4c452c142fee0e3b9dd156c5b64118699005820781e559fa50dd91315a6"
+   "p": "ricoville/assets/three-BxyXCb2a.js",
+   "s": 526533,
+   "h": "98167e7a2761cec77bcc28598bd90d7a79c7ba2fb83e671aef65dbe56a748415"
   },
   {
    "p": "ricoville/card.svg",
@@ -6224,7 +6229,7 @@
   {
    "p": "ricoville/index.html",
    "s": 1940,
-   "h": "fa1168321e3fd63b890fd8153c529d816689dde20f6562e0b2c6f8abcf39c867"
+   "h": "e777990eb04139477937f6580141f74bfc881e3aed7bcaaad1debdf04862739c"
   },
   {
    "p": "ricoville/manifest.webmanifest",
@@ -6234,7 +6239,7 @@
   {
    "p": "ricoville/sw.js",
    "s": 2296,
-   "h": "6a1eb89b45d06d87ca4bd966e069db7305b926dfbab9ae6bdc5587437bd669a1"
+   "h": "8bb29c5822261ba539955365aff30449834d587310bc54c29eec3c0a8bc73b88"
   },
   {
    "p": "riftzone/app/assets/index-41c2d7c84c.js",
@@ -6358,8 +6363,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 104427,
-   "h": "48b7897bc02a504dfa41bb968d258b67105313d2a3953ff5455a90a95b185e35"
+   "s": 104972,
+   "h": "4312ee6ad3082c575c29efff0d80df3ba4334495e6f75b35fd496ced9f5b17ac"
   },
   {
    "p": "taschi/card.svg",

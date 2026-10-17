@@ -11,6 +11,7 @@ const err = m => errors.push(m), warn = m => warns.push(m);
 const g = load('games.js'), GAMES = g.__G || g.EASYGAMES_GAMES;
 if (!Array.isArray(GAMES)) { console.error('FEHLER: games.js definiert kein GAMES-Array'); process.exit(1); }
 const MODES = load('modes.js').EASYGAMES_MODES || {}, GUIDES = load('guides.js').EASYGAMES_GUIDES || {};
+const CATS = load('categories.js').EASYGAMES_CATS || { list: [], of: {} };
 const ids = new Set(), KEYS = ['pad', 'online', 'multi', 'tvParam'];
 const isUrl = p => /^[a-z]+:\/\//i.test(p);
 
@@ -27,6 +28,7 @@ GAMES.forEach((x, i) => {
   if (x.img && !isUrl(x.img) && !fs.existsSync(path.join(root, x.img))) err(`${n}: Bild ${x.img} nicht gefunden`);
   if (!x.img) warn(`${n}: kein Kartenbild (img) – es erscheint das Icon`);
   if (!isUrl(x.path) && !fs.existsSync(path.join(root, x.path, 'manifest.webmanifest'))) warn(`${n}: keine PWA-Dateien – python3 tools/make-pwa.py ausführen (macht das Spiel mobil installierbar, mit automatischem Update)`);
+  if (!CATS.list.some(c => c.id === CATS.of[x.id])) warn(`${n}: keine Kategorie in categories.js (erscheint nur unter "Alle")`);
   const gd = GUIDES[x.id];
   if (!gd) warn(`${n}: keine Anleitung in guides.js (es wird die Kurzbeschreibung gezeigt)`);
   else { if (!gd.anleitung) warn(`${n}: guides.js ohne "anleitung"`); if (!Array.isArray(gd.steuerung) || !gd.steuerung.length) warn(`${n}: guides.js ohne "steuerung"`); }
