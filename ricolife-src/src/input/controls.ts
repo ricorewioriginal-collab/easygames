@@ -163,6 +163,7 @@ export class Controls {
     if ((e.ctrlKey || e.metaKey) && k === 'z') return this.hd.key('undo', e);
     if ((e.ctrlKey || e.metaKey) && (k === 'y' || (e.shiftKey && k === 'z'))) return this.hd.key('redo', e);
     if (k === 'pagedown') return this.hd.key('levelDown', e);
+    if (k === 'delete' || k === 'backspace') return this.hd.key('delete', e);
     if (k === 'tab') {
       e.preventDefault();
       return this.hd.key('nextSim', e);
