@@ -265,6 +265,98 @@ service cloud.firestore {
       allow delete: if chatAdmin();
     }
 
+    // ---------- Nutzungsstatistik (nur angemeldete Spieler, nur Zähler) ----------
+    // stats/<spiel>_<JJJJMMTT>_<uid> {g, d, s, t, a, l}: je Spieler, Spiel und Tag Sitzungen s, Spielsekunden t, kurze Sitzungen a (unter 20 s = „Abbruch“) und Zeit der letzten Meldung l.
+    // Der Spieler liest und schreibt nur sein eigenes Zähler-Dokument (Kennung endet auf die eigene uid); eine Meldung erhöht s um höchstens 1 (neue Sitzung) und t um 5–3600, höchstens alle 20 Sekunden.
+    // Keine Namen, keine Spielstände. Die Auswertung (Summen je Spiel) liest nur der Betreiber.
+    function ownStat(id) { return signedIn() && id.matches('^[a-z0-9_-]{1,60}_[0-9]{8}_' + request.auth.uid + '$'); }
+    match /stats/{id} {
+      allow get: if ownStat(id) || chatAdmin();
+      allow list: if chatAdmin();
+      allow delete: if chatAdmin();
+      allow create: if ownStat(id)
+        && request.resource.data.keys().hasOnly(['g', 'd', 's', 't', 'a', 'l']) && request.resource.data.keys().hasAll(['g', 'd', 's', 't', 'a', 'l'])
+        && request.resource.data.g is string && request.resource.data.g.size() >= 1 && request.resource.data.g.size() <= 50
+        && request.resource.data.d is int && id == request.resource.data.g + '_' + string(request.resource.data.d) + '_' + request.auth.uid
+        && request.resource.data.s == 1 && request.resource.data.t is int && request.resource.data.t >= 5 && request.resource.data.t <= 3600
+        && request.resource.data.a in [0, 1] && request.resource.data.l == request.time;
+      allow update: if ownStat(id)
+        && request.resource.data.keys().hasOnly(['g', 'd', 's', 't', 'a', 'l'])
+        && request.resource.data.g == resource.data.g && request.resource.data.d == resource.data.d
+        && request.resource.data.s is int && request.resource.data.s >= resource.data.s && request.resource.data.s <= resource.data.s + 1
+        && request.resource.data.t is int && request.resource.data.t >= resource.data.t + 5 && request.resource.data.t <= resource.data.t + 3600
+        && request.resource.data.a is int && request.resource.data.a >= resource.data.a && request.resource.data.a <= resource.data.a + 1
+        && request.resource.data.l == request.time && request.time > resource.data.l + duration.value(20, 's');
+    }
+
+    // ---------- Tagesherausforderung (heute.html) ----------
+    // daily/<JJJJMMTT>/e/<uid> {n, s, o, g, t}: „heute dabei“ mit Bestwert im Tagesspiel (nur mit Freigabe/Spitzname). Ein Eintrag je Spieler und Tag, nur der Besitzer schreibt,
+    // ein bestehender Eintrag darf nur besser werden. Lesen nur angemeldet.
+    function dailyOk(d) {
+      return d.keys().hasOnly(['n', 's', 'o', 'g', 't']) && d.keys().hasAll(['n', 's', 'o', 'g', 't'])
+        && d.n is string && d.n.size() >= 2 && d.n.size() <= 20
+        && d.s is number && d.s >= 0 && d.s <= 1000000000000
+        && d.o in ['asc', 'desc'] && d.g is string && d.g.size() >= 1 && d.g.size() <= 40 && d.t == request.time;
+    }
+    match /daily/{day}/e/{uid} {
+      allow get: if signedIn();
+      allow list: if signedIn() && request.query.limit <= 50;
+      allow create: if isOwner(uid) && day.matches('^[0-9]{8}$') && dailyOk(request.resource.data);
+      allow update: if isOwner(uid) && dailyOk(request.resource.data)
+        && request.resource.data.g == resource.data.g && request.resource.data.o == resource.data.o
+        && ((request.resource.data.o == 'desc' && request.resource.data.s >= resource.data.s)
+          || (request.resource.data.o == 'asc' && request.resource.data.s <= resource.data.s));
+      allow delete: if isOwner(uid) || chatAdmin();
+    }
+
+    // ---------- Profil, Freunde, Einladungen (profil.html) ----------
+    // profiles/<uid> {n, e, r, p, a, g, t}: freiwillig veröffentlichtes Profil (Spitzname, Emoji, Rang, Punkte, Erfolge, Lieblingsspiele). Nur einzeln abrufbar (kein Auflisten), nur der Besitzer schreibt
+    // (höchstens alle 5 Sekunden), Betreiber darf entfernen.
+    match /profiles/{uid} {
+      allow get: if signedIn();
+      allow list: if false;
+      allow create: if isOwner(uid) && profileOk(request.resource.data);
+      allow update: if isOwner(uid) && profileOk(request.resource.data) && request.time > resource.data.t + duration.value(5, 's');
+      allow delete: if isOwner(uid) || chatAdmin();
+    }
+    function profileOk(d) {
+      return d.keys().hasOnly(['n', 'e', 'r', 'p', 'a', 'g', 't']) && d.keys().hasAll(['n', 'e', 't'])
+        && d.n is string && d.n.size() >= 2 && d.n.size() <= 20
+        && d.e is string && d.e.size() <= 8
+        && (!('r' in d) || (d.r is string && d.r.size() <= 24))
+        && (!('p' in d) || (d.p is int && d.p >= 0 && d.p <= 1000000000))
+        && (!('a' in d) || (d.a is int && d.a >= 0 && d.a <= 10000))
+        && (!('g' in d) || (d.g is string && d.g.size() <= 200))
+        && d.t == request.time;
+    }
+    // Eigene Freundesliste (nur der Besitzer sieht und ändert sie): fid = Konto-Kennung des Freundes
+    match /friends/{uid}/f/{fid} {
+      allow get, delete: if isOwner(uid);
+      allow list: if isOwner(uid) && request.query.limit <= 100;
+      allow create, update: if isOwner(uid) && fid != uid && fid.size() <= 128
+        && request.resource.data.keys().hasOnly(['n', 't']) && request.resource.data.n is string && request.resource.data.n.size() <= 20 && request.resource.data.t is int;
+    }
+    // Einladungen „Lass uns spielen“: in den Posteingang eines Spielers mit Profil, höchstens eine alle 10 Sekunden je Absender, nur Spielkennung und Name (kein Freitext)
+    match /invites/{uid}/i/{iid} {
+      allow get, delete: if isOwner(uid);
+      allow list: if isOwner(uid) && request.query.limit <= 20;
+      allow create: if signedIn() && request.auth.uid != uid
+        && exists(/databases/$(database)/documents/profiles/$(uid))
+        && request.resource.data.keys().hasOnly(['f', 'n', 'g', 't']) && request.resource.data.keys().hasAll(['f', 'n', 'g', 't'])
+        && request.resource.data.f == request.auth.uid
+        && request.resource.data.n is string && request.resource.data.n.size() >= 2 && request.resource.data.n.size() <= 20
+        && request.resource.data.g is string && request.resource.data.g.size() >= 1 && request.resource.data.g.size() <= 40
+        && request.resource.data.t == request.time
+        && !exists(/databases/$(database)/documents/chat_ban/$(request.auth.uid))
+        && getAfter(/databases/$(database)/documents/invite_last/$(request.auth.uid)).data.t == request.time;
+    }
+    match /invite_last/{uid} {
+      allow create: if isOwner(uid) && request.resource.data.keys().hasOnly(['t']) && request.resource.data.t == request.time;
+      allow update: if isOwner(uid) && request.resource.data.keys().hasOnly(['t']) && request.resource.data.t == request.time
+        && request.time > resource.data.t + duration.value(10, 's');
+      allow read, delete: if false;
+    }
+
     // ---------- Online-Kopplung aller Spiele (cloud/fire-peer.js) ----------
     // Firebase vermittelt nur den Verbindungsaufbau (WebRTC-Angebot/Antwort), gespielt wird direkt Gerät zu Gerät.
     // p2p/<Kennung> gehört dem Gastgeber (h = uid, t = Lebenszeichen alle 5 min); verwaist nach 15 min, dann darf ein anderer sie übernehmen.

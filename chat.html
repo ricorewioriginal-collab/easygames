@@ -262,6 +262,16 @@ window.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('visibilitychange', function () { if (!document.hidden && me && nick && !$('chat').hidden) { calm = 0; poll(gen); online(); beat(); } });
   window.addEventListener('pagehide', leave);
 
+  // Vom Betreiber gepflegte Wörter (config/words, öffentlich lesbar; höchstens alle 10 Minuten)
+  (function words() {
+    var K = 'easygames-words', apply = function (o) { try { F.setExtra(o); } catch (e) {} }, c = null;
+    try { c = JSON.parse(localStorage.getItem(K) || 'null'); } catch (e) {}
+    if (c && c.o) apply(c.o); if (c && Date.now() - c.t < 600000) return;
+    fetch(Cloud.FS + 'config/words').then(function (r) { return r.ok ? r.json() : (r.status === 404 ? { fields: {} } : null); }).then(function (j) {
+      if (!j) return; var o = {}; try { o = JSON.parse((j.fields && j.fields.d && j.fields.d.stringValue) || '{}') || {}; } catch (e) {}
+      try { localStorage.setItem(K, JSON.stringify({ t: Date.now(), o: o })); } catch (e) {} apply(o);
+    }).catch(function () {});
+  })();
   fetch('sync/catalog.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : { games: [] }; }).then(function (c) { games = c.games || []; }, function () {}).then(login);
   // Anmeldung über das Cloud-Fenster (auch Kopplung in der App) erkennen
   var logging = false;

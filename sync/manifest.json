@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "305c8706bc74",
- "generated": "2026-10-17T05:11:12+02:00",
- "commit": "4f0c8bbff55c57e08618ef3909358f54ce5fe513",
+ "version": "88230e5f4c4b",
+ "generated": "2026-10-17T05:24:22+02:00",
+ "commit": "695d55e359c2896d94fce39beda47d338700fa6a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4618,8 +4618,8 @@
   },
   {
    "p": "chat.html",
-   "s": 19599,
-   "h": "362d459134422610e87087e214d53b720597720c55c232929ce603b572dfb083"
+   "s": 20401,
+   "h": "1fc221c4f91546462b65c2c2086df07b27968048206c94634edfd00fe7490025"
   },
   {
    "p": "cloud/anmacha-ach.js",
@@ -4628,8 +4628,8 @@
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 31111,
-   "h": "3a8245ce3bf0103d224089751c4d51c8d2a64f8ca8c5f9d0441e2dfdec1c4535"
+   "s": 33861,
+   "h": "a004faadcd432ace65879727b4f2510cb49acc96e977bfaedb0dad041b5e42f7"
   },
   {
    "p": "cloud/anmacha-bug.js",
@@ -4643,8 +4643,8 @@
   },
   {
    "p": "cloud/anmacha-chatfilter.js",
-   "s": 8239,
-   "h": "57feb9b934134927f4d3ef190551b6dd4a507117a415b806a673a7f2bbf35472"
+   "s": 8888,
+   "h": "aeec6486e302f44cda2a940378b40c5f305295e7083181f2cec0ca042a098f36"
   },
   {
    "p": "cloud/anmacha-cloud.js",
@@ -4928,8 +4928,8 @@
   },
   {
    "p": "index.html",
-   "s": 60655,
-   "h": "aaa7770517d1cbf3319235b103222a1496614f048883665fc465aae5dde54cd5"
+   "s": 61449,
+   "h": "84101047069ff8c85cdb1c14c5af29dd22a78136994860dbcc01ffbf38604e6e"
   },
   {
    "p": "kiko-sterneninseln/card.svg",

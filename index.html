@@ -751,8 +751,13 @@ fetch('sync/catalog.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : nu
     if (!cfg || typeof cfg !== 'object') return;
     const hide = Array.isArray(cfg.hide) ? cfg.hide : [], note = cfg.note && typeof cfg.note === 'object' ? cfg.note : {};
     OFF = {}; hide.forEach(id => { OFF[String(id)] = true; });
+    // Zeitplan (Verwaltung): sched[id] = { from, until } in ms – vor „from“ und nach „until“ nicht gelistet; 7 Tage nach „from“ trägt die Kachel „🆕 Neu“
+    const sched = cfg.sched && typeof cfg.sched === 'object' ? cfg.sched : {}, now = Date.now(), fresh = {};
+    Object.keys(sched).forEach(id => { const s = sched[id] || {}, a = Number(s.from) || 0, b = Number(s.until) || 0; if ((a && now < a) || (b && now > b)) OFF[id] = true; else if (a && now - a < 7 * 864e5) fresh[id] = true; });
     tiles.forEach(t => {
       const n = typeof note[t.dataset.id] === 'string' ? note[t.dataset.id].slice(0, 100) : '', old = t.querySelector('.maint'); if (old) old.remove();
+      const nw = t.querySelector('.fresh'); if (nw) nw.remove();
+      if (fresh[t.dataset.id]) { const bd = t.querySelector('.badges') || t.querySelector('.info') || t; const e = document.createElement('i'); e.className = 'fresh'; e.textContent = '🆕 Neu'; bd.appendChild(e); }
       if (n) { const bd = t.querySelector('.info') || t; const e = document.createElement('i'); e.className = 'maint'; e.textContent = '🔧 ' + n; e.style.cssText = 'display:block;margin-top:4px;font-style:normal;font-size:.78rem;color:#ffc53d'; bd.appendChild(e); }
     });
     if (heroGame) heroOn = !OFF[heroGame];   // Empfohlenes Spiel nicht zeigen, wenn es ausgeblendet ist

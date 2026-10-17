@@ -466,7 +466,7 @@
   // ---- Stille Laufzeit im Spiel: nur Einreichen, keine Oberfläche ----
   var game = Cloud && Cloud.game;
   if (!game || !LS) return;
-  if (game === 'erfolge' || game === 'ranglisten') return;   // Übersichtsseiten zählen nicht als Spielen (keine Spielspuren, nichts einreichen)
+  if (/^(erfolge|ranglisten|konto|chat|bug|verwaltung|heute|profil)$/.test(game)) return;   // Übersichtsseiten zählen nicht als Spielen (keine Spielspuren, keine Statistik, nichts einreichen)
   touch(game);   // Erfolge: Spiel/Tag merken (auch bei Spielen ohne Rangliste)
   try { window.addEventListener('gamepadconnected', function () { flag('pad'); }); } catch (e) {}
   // Erfolge ins Profil (nur angemeldet): beste Werte und Spiel-Erfolge dieses Spiels, damit die Erfolge-Seite sie auch dann kennt, wenn sie unter anderer Adresse läuft (Apps)
@@ -484,6 +484,34 @@
   API.pushAch = pushAch;
   setTimeout(pushAch, 9000);
   setInterval(function () { if (!document.hidden) pushAch(); }, 330000);
+  // Nutzungsstatistik (nur angemeldet, nur Zähler, siehe cloud/anmacha-engage.js): erste Meldung nach 45 s Spielzeit (neue Sitzung), danach alle 5 Minuten die Spielzeit; Sitzungen, die vorher
+  // enden, melden beim Verlassen (Abbruch). Eigenes Zähler-Dokument je Spieler/Spiel/Tag; ohne Netz oder Anmeldung passiert nichts.
+  var ST = { t0: Date.now(), vis: 0, last: 0, sent: 0, started: false, cur: null, busy: false };
+  var ST_FIRST = Number(window.EASYGAMES_STATS_FIRST) || 45000, ST_EVERY = Number(window.EASYGAMES_STATS_EVERY) || 300000;
+  function stTick() { if (!document.hidden) { var n = Date.now(); ST.vis += Math.min(5000, n - (ST.last || n)); ST.last = n; } else ST.last = 0; }
+  function stFlush(force) {
+    var u = Cloud && Cloud.user ? Cloud.user() : null;
+    if (!u || ST.busy || !BASE || isOptOut(game)) return Promise.resolve();
+    var sec = Math.round(ST.vis / 1000), add = sec - ST.sent;
+    if (add < 5 || (!force && ST.started && Date.now() - ST.at < ST_EVERY)) return Promise.resolve();
+    ST.busy = true;
+    return need('anmacha-engage.js', 'AnMaChaEngage').then(function () { return Cloud.account(); }).then(function (a) {
+      if (!a) return;
+      var E = window.AnMaChaEngage, day = E.dayNum(), fs = Cloud.FS, hdr = { Authorization: 'Bearer ' + a.token, 'Content-Type': 'application/json' };
+      var load = ST.cur ? Promise.resolve(ST.cur) : fetch(E.statUrl(fs, game, day, a.uid), { headers: hdr }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { return j && j.fields ? E.simple(j.fields) : { s: 0, t: 0, a: 0 }; });
+      return load.then(function (cur) {
+        var body = E.statCommit(fs, a.uid, game, day, add, cur);
+        if (ST.started) { body.writes[0].update.fields.s = { integerValue: String(cur.s) }; body.writes[0].update.fields.a = { integerValue: String(cur.a) }; }   // laufende Sitzung: nur Spielzeit
+        return fetch(E.commitUrl(fs), { method: 'POST', headers: hdr, body: JSON.stringify(body), keepalive: true }).then(function (r) {
+          if (!r.ok) return;
+          var f = body.writes[0].update.fields; ST.cur = { s: Number(f.s.integerValue), t: Number(f.t.integerValue), a: Number(f.a.integerValue) }; ST.sent = sec; ST.started = true; ST.at = Date.now();
+        });
+      });
+    }).catch(function () {}).then(function () { ST.busy = false; });
+  }
+  setInterval(function () { stTick(); if (!document.hidden && ST.vis >= ST_FIRST && !ST.started) stFlush(false); else if (ST.started) stFlush(false); }, 5000);
+  document.addEventListener('visibilitychange', function () { stTick(); if (document.hidden) stFlush(true); });
+  window.addEventListener('pagehide', function () { stTick(); stFlush(true); });
   if (isOptOut(game)) return;
   function run() { touch(game); return loadProfile(false).then(function () { return submitGame(game, localPairs(null)); }); }
   API.submit = run;

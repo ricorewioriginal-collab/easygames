@@ -71,6 +71,8 @@ details{font-size:12px;color:var(--mut)}details pre{white-space:pre-wrap;word-br
       <button class="tab" data-t="bugs" type="button" aria-pressed="false">🐞 Fehler</button>
       <button class="tab" data-t="chat" type="button" aria-pressed="false">💬 Chat</button>
       <button class="tab" data-t="boards" type="button" aria-pressed="false">🏆 Ranglisten</button>
+      <button class="tab" data-t="stats" type="button" aria-pressed="false">📈 Statistik</button>
+      <button class="tab" data-t="words" type="button" aria-pressed="false">🛡️ Wörter</button>
     </div>
 
     <section class="card" id="p-ov"><h2>Übersicht</h2><div class="stats" id="stats"></div><p class="hint" id="ovHint"></p><div class="row"><button class="btn" id="ovReload" type="button">↻ Aktualisieren</button></div></section>
@@ -79,7 +81,7 @@ details{font-size:12px;color:var(--mut)}details pre{white-space:pre-wrap;word-br
       <h2>Spiele</h2>
       <p>Hier steuerst du die Spieleliste auf easygames: Spiele ausblenden (bleiben per Link erreichbar) und einen Wartungshinweis auf der Kachel anzeigen. Die Liste übernimmt Änderungen innerhalb von ca. 10 Minuten.</p>
       <div class="row"><input type="text" id="gq" placeholder="Spiel suchen …" aria-label="Spiel suchen" style="flex:1;min-width:160px"><button class="btn pri" id="gSave" type="button">Speichern</button></div>
-      <div style="overflow-x:auto"><table><thead><tr><th>Spiel</th><th class="h2">Arten</th><th>Fehler</th><th>Sichtbar</th><th>Wartungshinweis</th></tr></thead><tbody id="gBody"></tbody></table></div>
+      <div style="overflow-x:auto"><table><thead><tr><th>Spiel</th><th class="h2">Arten</th><th>Fehler</th><th>Sichtbar</th><th>Wartungshinweis</th><th class="h2">Sichtbar ab</th><th class="h2">Sichtbar bis</th></tr></thead><tbody id="gBody"></tbody></table></div>
       <p class="hint" id="gInfo"></p>
     </section>
 
@@ -101,6 +103,23 @@ details{font-size:12px;color:var(--mut)}details pre{white-space:pre-wrap;word-br
       <div class="row"><select id="rGame" aria-label="Spiel"></select><select id="rBoard" aria-label="Wertung"></select><button class="btn" id="rReload" type="button">↻</button></div>
       <div id="rList"></div>
     </section>
+
+    <section class="card" id="p-stats" hidden>
+      <h2>Nutzung der Spiele</h2>
+      <p>Aus den anonymen Zählern angemeldeter Spieler: Sitzungen, Spieler, durchschnittliche Dauer und Abbrüche (Sitzungen unter 20 Sekunden). Es sind nur angemeldete Spieler enthalten, die Zahlen sind also ein Mindestwert.</p>
+      <div class="row"><select id="sDays" aria-label="Zeitraum"><option value="7">Letzte 7 Tage</option><option value="30">Letzte 30 Tage</option><option value="1">Heute</option></select><button class="btn" id="sReload" type="button">↻ Aktualisieren</button></div>
+      <div style="overflow-x:auto"><table><thead><tr><th>Spiel</th><th>Sitzungen</th><th class="h2">Spieler</th><th>Ø Dauer</th><th class="h2">Abbruch</th><th class="h2">Spielzeit</th></tr></thead><tbody id="sBody"></tbody></table></div>
+      <p class="hint" id="sInfo"></p>
+    </section>
+
+    <section class="card" id="p-words" hidden>
+      <h2>Chat-Filter: Wörter</h2>
+      <p>Ergänzungen zum eingebauten Filter. Gilt im Chat und für Spitznamen (Updates innerhalb von ca. 10 Minuten). Ein Wort pro Zeile; Umgehungen mit Zahlen, Punkten und Leerzeichen erkennt der Filter selbst. <code>wort=</code> trifft nur das ganze Wort, sonst jeden Wortanfang.</p>
+      <label class="hint" for="wBad">Zusätzlich verboten</label><textarea id="wBad" rows="6" style="width:100%;border-radius:10px;border:1px solid var(--line);background:#0f1530;color:var(--text);padding:8px;font:14px system-ui" placeholder="z. B. blödmann&#10;doof="></textarea>
+      <label class="hint" for="wOk">Erlaubte Ausnahmen (ganze Wörter)</label><textarea id="wOk" rows="3" style="width:100%;border-radius:10px;border:1px solid var(--line);background:#0f1530;color:var(--text);padding:8px;font:14px system-ui" placeholder="z. B. Klassenarbeit"></textarea>
+      <div class="row"><input type="text" id="wTest" placeholder="Filter ausprobieren: Text eingeben …" aria-label="Filter testen" style="flex:1;min-width:200px"><span id="wRes" class="hint"></span></div>
+      <div class="row"><button class="btn pri" id="wSave" type="button">Speichern</button></div>
+    </section>
   </div>
 </main>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -109,13 +128,15 @@ details{font-size:12px;color:var(--mut)}details pre{white-space:pre-wrap;word-br
 <script src="cloud/anmacha-board.js" defer></script>
 <script src="cloud/anmacha-bug.js" defer></script>
 <script src="cloud/anmacha-chat.js" defer></script>
+<script src="cloud/anmacha-chatfilter.js" defer></script>
+<script src="cloud/anmacha-engage.js" defer></script>
 <script>
 window.addEventListener('DOMContentLoaded', function () {
   'use strict';
-  var Cloud = window.AnMaChaCloud, B = window.AnMaChaBoard, Bug = window.AnMaChaBug, Chat = window.AnMaChaChat, $ = function (id) { return document.getElementById(id); };
+  var Cloud = window.AnMaChaCloud, B = window.AnMaChaBoard, Bug = window.AnMaChaBug, Chat = window.AnMaChaChat, F = window.AnMaChaChatFilter, E = window.AnMaChaEngage, $ = function (id) { return document.getElementById(id); };
   if (new URLSearchParams(location.search).get('embed') === '1') document.body.classList.add('embed');
-  if (!Cloud || !Bug || !Chat || !B) { $('gate').querySelector('p').textContent = 'Die Verwaltung ist gerade nicht verfügbar.'; $('cloudMount').hidden = true; return; }
-  var FS = Cloud.FS.replace(/\/$/, ''), me = null, games = [], cfg = { hide: [], note: {} }, bugs = [], active = 'ov', logging = false, toastT = 0;
+  if (!Cloud || !Bug || !Chat || !B || !F || !E) { $('gate').querySelector('p').textContent = 'Die Verwaltung ist gerade nicht verfügbar.'; $('cloudMount').hidden = true; return; }
+  var FS = Cloud.FS.replace(/\/$/, ''), me = null, games = [], cfg = { hide: [], note: {}, sched: {} }, bugs = [], active = 'ov', logging = false, toastT = 0;
   function toast(t, bad) { var el = $('toast'); el.textContent = t; el.style.color = bad ? 'var(--bad)' : ''; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(function () { el.classList.remove('on'); }, 3000); }
   function api(url, opt) {
     return Cloud.account().then(function (a) {
@@ -155,7 +176,7 @@ window.addEventListener('DOMContentLoaded', function () {
   function loadCfg() {
     return api(FS + '/config/games').then(function (r) { return r.ok ? r.json() : { fields: {} }; }).then(function (j) {
       var o = {}; try { o = JSON.parse((j.fields && j.fields.d && j.fields.d.stringValue) || '{}') || {}; } catch (e) {}
-      cfg = { hide: Array.isArray(o.hide) ? o.hide.map(String) : [], note: o.note && typeof o.note === 'object' ? o.note : {} };
+      cfg = { hide: Array.isArray(o.hide) ? o.hide.map(String) : [], note: o.note && typeof o.note === 'object' ? o.note : {}, sched: o.sched && typeof o.sched === 'object' ? o.sched : {} };
     }).catch(function () {});
   }
   function drawGames() {
@@ -167,12 +188,18 @@ window.addEventListener('DOMContentLoaded', function () {
       tr.appendChild(mk('td', '', String(g.cloud ? counts[g.cloud.game] || 0 : 0)));
       var t3 = mk('td'), cb = mk('input', 'sw'); cb.type = 'checkbox'; cb.checked = cfg.hide.indexOf(g.id) < 0; cb.setAttribute('aria-label', 'Sichtbar: ' + g.title); cb.onchange = function () { var i = cfg.hide.indexOf(g.id); if (cb.checked && i >= 0) cfg.hide.splice(i, 1); if (!cb.checked && i < 0) cfg.hide.push(g.id); }; t3.appendChild(cb); tr.appendChild(t3);
       var t4 = mk('td'), inp = mk('input'); inp.type = 'text'; inp.maxLength = 100; inp.placeholder = 'z. B. Wartung bis morgen'; inp.value = cfg.note[g.id] || ''; inp.setAttribute('aria-label', 'Wartungshinweis: ' + g.title); inp.oninput = function () { var v = inp.value.trim(); if (v) cfg.note[g.id] = v; else delete cfg.note[g.id]; }; t4.appendChild(inp); tr.appendChild(t4);
+      [['from', 'ab'], ['until', 'bis']].forEach(function (k) {
+        var td5 = mk('td', 'h2'), dt = mk('input'); dt.type = 'datetime-local'; dt.setAttribute('aria-label', 'Sichtbar ' + k[1] + ': ' + g.title); var v = Number((cfg.sched[g.id] || {})[k[0]]) || 0;
+        if (v) { var d0 = new Date(v - new Date(v).getTimezoneOffset() * 60000); dt.value = d0.toISOString().slice(0, 16); }
+        dt.onchange = function () { var ms = dt.value ? new Date(dt.value).getTime() : 0, o = cfg.sched[g.id] || (cfg.sched[g.id] = {}); if (ms) o[k[0]] = ms; else delete o[k[0]]; if (!Object.keys(o).length) delete cfg.sched[g.id]; };
+        td5.appendChild(dt); tr.appendChild(td5);
+      });
       body.appendChild(tr);
     });
-    $('gInfo').textContent = games.length + ' Spiele · ' + cfg.hide.length + ' ausgeblendet · ' + Object.keys(cfg.note).length + ' Hinweise';
+    $('gInfo').textContent = games.length + ' Spiele · ' + cfg.hide.length + ' ausgeblendet · ' + Object.keys(cfg.note).length + ' Hinweise · ' + Object.keys(cfg.sched).length + ' mit Zeitplan';
   }
   function saveGames() {
-    var body = { fields: { d: { stringValue: JSON.stringify({ hide: cfg.hide, note: cfg.note }) }, t: { integerValue: String(Date.now()) } } };
+    var body = { fields: { d: { stringValue: JSON.stringify({ hide: cfg.hide, note: cfg.note, sched: cfg.sched }) }, t: { integerValue: String(Date.now()) } } };
     $('gSave').disabled = true;
     api(FS + '/config/games', { method: 'PATCH', body: JSON.stringify(body) }).then(function (r) { if (!r.ok) throw new Error('Speichern fehlgeschlagen (' + r.status + ')'); toast('Gespeichert ✓ – die Spieleliste übernimmt es innerhalb von ca. 10 Minuten.'); drawGames(); }).catch(err).then(function () { $('gSave').disabled = false; });
   }
@@ -245,15 +272,45 @@ window.addEventListener('DOMContentLoaded', function () {
     sel.onchange = fillBoards; $('rBoard').onchange = boardList; fillBoards();
   }
 
+  // ---- Statistik ----
+  function fmtDur(sec) { return sec >= 60 ? Math.floor(sec / 60) + ' min ' + (sec % 60) + ' s' : sec + ' s'; }
+  function fmtTime(sec) { return sec >= 3600 ? Math.round(sec / 360) / 10 + ' h' : Math.round(sec / 60) + ' min'; }
+  function loadStats() {
+    var body = $('sBody'); body.textContent = ''; var n = Number($('sDays').value) || 7, since = E.dayNum(new Date(Date.now() - (n - 1) * 864e5));
+    api(E.rootQueryUrl(Cloud.FS), { method: 'POST', body: JSON.stringify(E.statQuery(since)) }).then(function (r) { if (!r.ok) throw new Error('Laden fehlgeschlagen (' + r.status + ')'); return r.json(); }).then(function (rows) {
+      var docs = E.parseDocs(rows), agg = E.aggregate(docs), max = agg.length ? agg[0].s : 1, total = 0, sec = 0;
+      if (!agg.length) { var tr0 = mk('tr'), td0 = mk('td', '', 'Noch keine Daten in diesem Zeitraum.'); td0.colSpan = 6; tr0.appendChild(td0); body.appendChild(tr0); }
+      agg.forEach(function (a) {
+        total += a.s; sec += a.t; var tr = mk('tr'), td = mk('td', 'g'); td.appendChild(mk('div', '', gname(a.g)));
+        var bar = mk('div'); bar.style.cssText = 'height:4px;border-radius:99px;background:var(--acc);margin-top:4px;width:' + Math.max(3, Math.round(100 * a.s / max)) + '%'; td.appendChild(bar); tr.appendChild(td);
+        tr.appendChild(mk('td', '', String(a.s))); tr.appendChild(mk('td', 'h2', String(a.players))); tr.appendChild(mk('td', '', fmtDur(a.avg))); tr.appendChild(mk('td', 'h2', a.abort + ' %')); tr.appendChild(mk('td', 'h2', fmtTime(a.t))); body.appendChild(tr);
+      });
+      $('sInfo').textContent = total + ' Sitzungen · ' + fmtTime(sec) + ' Spielzeit · ' + agg.length + ' Spiele (nur angemeldete Spieler)' + (docs.length >= 1500 ? ' · Hinweis: Abfragegrenze erreicht, Summen unvollständig' : '');
+    }).catch(err);
+  }
+
+  // ---- Wörter (Chat-Filter) ----
+  var wordsLoaded = false;
+  function lines(el) { return el.value.split(/\n/).map(function (x) { return x.trim(); }).filter(Boolean).slice(0, 300); }
+  function wordsTest() { F.setExtra({ bad: lines($('wBad')), ok: lines($('wOk')) }); var t = $('wTest').value; if (!t.trim()) { $('wRes').textContent = ''; return; } var r = F.check(t); $('wRes').textContent = r.ok ? '✓ erlaubt' : '✗ ' + (F.REASON[r.reason] || r.reason); $('wRes').className = 'hint ' + (r.ok ? 'ok' : 'err'); }
+  function loadWords() {
+    if (wordsLoaded) return; wordsLoaded = true;
+    api(FS + '/config/words').then(function (r) { return r.ok ? r.json() : { fields: {} }; }).then(function (j) { var o = {}; try { o = JSON.parse((j.fields && j.fields.d && j.fields.d.stringValue) || '{}') || {}; } catch (e) {} $('wBad').value = (o.bad || []).join('\n'); $('wOk').value = (o.ok || []).join('\n'); wordsTest(); }).catch(err);
+  }
+  function saveWords() {
+    var body = { fields: { d: { stringValue: JSON.stringify({ bad: lines($('wBad')), ok: lines($('wOk')) }) }, t: { integerValue: String(Date.now()) } } }; $('wSave').disabled = true;
+    api(FS + '/config/words', { method: 'PATCH', body: JSON.stringify(body) }).then(function (r) { if (!r.ok) throw new Error('Speichern fehlgeschlagen (' + r.status + ')'); toast('Gespeichert ✓ – der Chat übernimmt es innerhalb von ca. 10 Minuten.'); }).catch(err).then(function () { $('wSave').disabled = false; });
+  }
+
   // ---- Tabs ----
   function open(t) {
     active = t; Array.prototype.forEach.call($('tabs').children, function (b) { b.setAttribute('aria-pressed', String(b.dataset.t === t)); });
-    ['ov', 'games', 'bugs', 'chat', 'boards'].forEach(function (k) { $('p-' + k).hidden = k !== t; });
-    if (t === 'ov') overview(); if (t === 'games') { Promise.all([loadCfg(), loadBugs()]).then(drawGames); } if (t === 'bugs') loadBugs(); if (t === 'chat') chatPanel(); if (t === 'boards') boardsInit();
+    ['ov', 'games', 'bugs', 'chat', 'boards', 'stats', 'words'].forEach(function (k) { $('p-' + k).hidden = k !== t; });
+    if (t === 'ov') overview(); if (t === 'games') { Promise.all([loadCfg(), loadBugs()]).then(drawGames); } if (t === 'bugs') loadBugs(); if (t === 'chat') chatPanel(); if (t === 'boards') boardsInit(); if (t === 'stats') loadStats(); if (t === 'words') loadWords();
   }
   $('tabs').addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('.tab'); if (b) open(b.dataset.t); });
   $('cTabs').addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('.tab'); if (!b) return; cTab = b.dataset.c; Array.prototype.forEach.call($('cTabs').children, function (x) { x.setAttribute('aria-pressed', String(x === b)); }); chatPanel(); });
-  $('gq').addEventListener('input', drawGames); $('gSave').addEventListener('click', saveGames); $('bFilter').addEventListener('change', drawBugs); $('bReload').addEventListener('click', loadBugs); $('rReload').addEventListener('click', boardList); $('ovReload').addEventListener('click', overview);
+  $('gq').addEventListener('input', drawGames); $('gSave').addEventListener('click', saveGames); $('bFilter').addEventListener('change', drawBugs); $('bReload').addEventListener('click', loadBugs); $('rReload').addEventListener('click', boardList); $('ovReload').addEventListener('click', overview); $('sReload').addEventListener('click', loadStats); $('sDays').addEventListener('change', loadStats); $('wSave').addEventListener('click', saveWords); ['wBad', 'wOk', 'wTest'].forEach(function (id) { $(id).addEventListener('input', wordsTest); });
   $('out').addEventListener('click', function (e) { e.preventDefault(); Cloud.signOut(); });
 
   var tries = 0;
