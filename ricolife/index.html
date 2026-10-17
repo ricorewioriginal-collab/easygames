@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#123a50" />
+    <meta name="description" content="RicoLife 3D – Dein Leben. Deine Regeln. 3D-Lebenssimulation: Figuren erstellen, Häuser bauen und einrichten, Freundschaften, Beruf, Familie und Geschichten in Lindenhafen." />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="RicoLife" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <title>RicoLife 3D – Dein Leben. Deine Regeln.</title>
+    <script src="../cloud/anmacha-cloud.js" data-game="ricolife" data-prefix="ricolife.save.,ricolife.profile" data-mount="#cloudMount" data-board="off" defer></script>
+    <script type="module" crossorigin src="./assets/index-CPSrR1EJ.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/three-BTyb07Io.js">
+    <link rel="stylesheet" crossorigin href="./assets/index-CSVHXUdX.css">
+  </head>
+  <body>
+    <div id="boot">
+      <div>
+        <div class="logo" aria-label="RicoLife 3D">Rico<em>Life</em> 3D</div>
+        <div class="bar"><i></i></div>
+        <small>RicoLife wird geladen …</small>
+      </div>
+    </div>
+    <div id="app">
+      <canvas id="scene" aria-label="Spielansicht" tabindex="0"></canvas>
+      <div id="ui" role="main"></div>
+      <div id="cloudMount" class="hidden"></div>
+      <noscript>RicoLife 3D benötigt JavaScript.</noscript>
+    </div>
+  </body>
+</html>
