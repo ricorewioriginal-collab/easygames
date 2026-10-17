@@ -48,6 +48,7 @@ export class Hud {
           P('nlim', h('div', { class: 'lim next', title: 'Nächste Geschwindigkeitsänderung' }, ''))),
         P('nlimd', h('div', { class: 'small muted' }, '')),
         h('div', { class: 'sig', style: 'margin-top:4px' }, P('lamp', h('span', { class: 'lamp' })), P('sigt', h('span', { class: 'small' }, ''))),
+        P('halt', h('div', { class: 'halt' }, '')),
         P('info', h('div', { class: 'small muted inf', style: 'margin-top:4px' }, '')),
         P('ctl', h('div', { class: 'small', style: 'margin-top:2px' }, ''))));
       if (simple) toast(touch ? 'Hebel nach oben = fahren, nach unten = bremsen. Türen und Technik macht das Spiel.' : 'W = fahren, S = bremsen. Türen und Technik macht das Spiel.', 'info', 6000);
@@ -76,7 +77,8 @@ export class Hud {
     const warn = P('warn', h('div', { class: 'warnbig', role: 'alert' }, ''));
     const repl = P('replay', h('div', { class: 'warnbig', style: 'background:rgba(30,90,160,.85);animation:none' }, '⏪ Wiederholung – F8 beendet'));
 
-    const kids: HTMLElement[] = [tl, tr, warn, repl];
+    const praise = P('praise', h('div', { class: 'praise', 'aria-live': 'polite' }, ''));
+    const kids: HTMLElement[] = [tl, tr, warn, repl, praise];
     if (drive) {
       // Fahr-/Bremshebel: oben = Fahren, Mitte = 0, unten = Bremsen
       const knob = h('div', { class: 'knob' });
@@ -201,18 +203,30 @@ export class Hud {
     this.parts.warn?.classList.toggle('on', !!warn && !this.replayOn);
     // Nächster Halt + Fahrplan
     const plan = w.plans.get(t.id);
+    // Haltepunkt: Entfernung und Balken auf den letzten 400 m
+    const sp = plan?.svc && plan.state === 'run' ? w.stopPoint(t, plan) : null;
+    const nst = sp && plan!.svc!.stops[plan!.stopIdx];
+    const hd = sp && nst && sp.d < 3000 ? Math.round(sp.d) : null;
+    this.html('halt', hd === null ? '' : `${nst!.st}|${hd < 400 ? hd : Math.round(hd / 50)}`, () => hd === null ? [] : [
+      h('div', { class: 'small' }, `🚉 ${w.stations.get(nst!.st)?.name ?? ''}: ${hd >= -2 ? `noch ${fmtDist(Math.max(0, hd))}` : `${-hd} m zu weit`}`),
+      hd < 400 ? h('div', { class: 'hbar' }, h('i', { style: `width:${Math.max(0, Math.min(100, 100 - hd / 4))}%;background:${Math.abs(hd) <= 5 ? 'var(--green)' : hd < 0 ? 'var(--red)' : 'var(--acc)'}` })) : '',
+    ]);
+    const pr = s.praise && w.time - s.praise.t < 5 * this.g.warpFactor ? s.praise : null;
+    this.put('praise', pr ? `${pr.top ? '⭐ ' : ''}${pr.text}` : '');
+    this.parts.praise?.classList.toggle('on', !!pr && !this.replayOn);
     if (plan?.svc) {
       const svc = plan.svc;
       const rows = svc.stops.map((st, i) => ({ i, name: w.stations.get(st.st)?.name ?? st.st, time: st.dep ?? st.arr, pass: !!st.pass }));
       const cur = plan.stopIdx;
       const delay = Math.round(plan.delay / 60);
-      const key = `${cur}|${delay}|${plan.state}`;
+      const key = `${cur}|${delay}|${plan.state}|${s.stopPts}`;
       this.html('stop', key, () => {
         const here = plan.state === 'dwell' && cur > 0 ? cur - 1 : cur;
         const nx = rows[here];
         const list = rows.filter((r) => !r.pass && r.i >= cur - 1).slice(0, 6);
         return [
           h('div', { style: 'font-weight:700' }, nx ? `${plan.state === 'dwell' ? 'Halt' : 'Nächster Halt'}: ${nx.name}` : 'Endstation erreicht'),
+          s.stopCount ? h('div', { style: 'color:var(--acc);font-weight:700' }, `⭐ ${s.stopPts} Punkte`) : '',
           h('div', { class: 'muted' }, delay > 0 ? `+${delay} min Verspätung` : delay < 0 ? `${-delay} min zu früh` : 'pünktlich'),
           h('div', { class: 'tt' }, ...list.map((r) => h('div', { class: r.i < here ? 'done' : r.i === here ? 'cur' : '' }, `${r.time !== undefined ? hhmm(r.time) : '--:--'}  ${r.name}`))),
         ];
