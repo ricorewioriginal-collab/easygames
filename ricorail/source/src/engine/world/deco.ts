@@ -263,7 +263,7 @@ function procedural(b: CB) {
     const n = Math.round(q.houses * Math.min(2.5, 0.6 + sp.pax / 800));
     const rr = rng(hash2(sp.x | 0, sp.z | 0, b.chunk.key & 0xffff) * 4294967296);
     for (let i = 0; i < n * 3; i++) {
-      const a = rr() * Math.PI * 2, rad = 50 + Math.pow(rr(), 0.7) * 420;
+      const a = rr() * Math.PI * 2, rad = 40 + Math.pow(rr(), 0.9) * 360; // dichter um den Bahnhof: Ortskern
       const x = sp.x + Math.cos(a) * rad, z = sp.z + Math.sin(a) * rad;
       if (!b.inside(x, z)) continue;
       if (ctx.idx.nearest(x, z, 24, null, NEAR)) continue;

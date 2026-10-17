@@ -71,7 +71,7 @@ await session('desktop', { viewport: { width: 1280, height: 800 } }, async (page
   await page.keyboard.press('KeyR');
   await page.keyboard.down('KeyQ'); await page.waitForTimeout(1500); await page.keyboard.up('KeyQ');
   await page.keyboard.down('KeyW');
-  for (let i = 0; i < 60 && !/Fahren ([5-9]\d|100) %/.test(await page.locator('.hud .tl').textContent()); i++) await page.waitForTimeout(500);
+  for (let i = 0; i < 60 && !/(Fahren |F\d · )([5-9]\d|100) %/.test(await page.locator('.hud .tl').textContent()); i++) await page.waitForTimeout(500);
   await page.keyboard.up('KeyW');
   let v = 0;
   for (let i = 0; i < 90 && v < 1; i++) { await page.waitForTimeout(1000); v = Number(await page.locator('.hud .speed').textContent()); }

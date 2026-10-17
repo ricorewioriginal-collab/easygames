@@ -83,7 +83,10 @@ export class Hud {
       // Fahr-/Bremshebel: oben = Fahren, Mitte = 0, unten = Bremsen
       const knob = h('div', { class: 'knob' });
       const lever = h('div', { class: 'lever', role: 'slider', 'aria-label': 'Fahr- und Bremshebel', 'aria-valuemin': '-100', 'aria-valuemax': '100', tabindex: '0' },
-        h('div', { class: 'lbl', style: 'top:4px' }, 'Fahren'), h('div', { class: 'mid', style: 'top:50%' }), h('div', { class: 'lbl', style: 'bottom:4px' }, 'Bremsen'), knob);
+        h('div', { class: 'lbl', style: 'top:1px' }, 'Fahren'), h('div', { class: 'mid', style: 'top:50%' }), h('div', { class: 'lbl', style: 'bottom:1px' }, 'Bremsen'),
+        // Raststufen wie am echten Fahr-/Bremshebel: F1–F4 oben, B1–B4 unten
+        ...[-4, -3, -2, -1, 1, 2, 3, 4].map((k) => h('div', { class: `notch ${k > 0 ? 'f' : 'b'}`, style: `top:calc(20px + (100% - 40px) * ${(1 - (k / 4 + 1) / 2).toFixed(3)})` }, k > 0 ? `F${k}` : `B${-k}`)),
+        knob);
       this.knob = knob; this.leverEl = lever;
       lever.addEventListener('pointerdown', this.lpd); lever.addEventListener('pointermove', this.lpm);
       lever.addEventListener('pointerup', this.lpu); lever.addEventListener('pointercancel', this.lpu);
@@ -121,9 +124,10 @@ export class Hud {
   private leverFromY(e: PointerEvent) {
     const r = this.leverEl!.getBoundingClientRect();
     const f = 1 - (e.clientY - r.top - 20) / Math.max(1, r.height - 40); // 0 unten .. 1 oben
-    let v = f * 2 - 1;
-    if (Math.abs(v) < 0.06) v = 0;
-    this.g.setLever(Math.max(-1, Math.min(1, v)));
+    // auf Raststufen einrasten (¼-Schritte), mit kurzem Rütteln auf dem Handy
+    const v = Math.round(Math.max(-1, Math.min(1, f * 2 - 1)) * 4) / 4;
+    if (v !== this.g.getLever()) { try { navigator.vibrate?.(12); } catch { /* egal */ } }
+    this.g.setLever(v);
   }
   private lpd = (e: PointerEvent) => { e.preventDefault(); e.stopPropagation(); this.dragging = true; this.leverEl!.setPointerCapture?.(e.pointerId); this.leverFromY(e); };
   private lpm = (e: PointerEvent) => { if (this.dragging) { e.stopPropagation(); this.leverFromY(e); } };
@@ -191,7 +195,8 @@ export class Hud {
     const c = t.ctl;
     const rv = c.reverser === 1 ? 'V' : c.reverser === -1 ? 'R' : '0';
     const L = this.g.getLever();
-    if (this.simple) this.put('ctl', L > 0.02 ? `▲ Fahren ${Math.round(L * 100)} %` : L < -0.02 ? `▼ Bremsen ${Math.round(-L * 100)} %` : t.meta.assistBrake ? '▼ Bremsassistent' : Math.abs(t.v) < 0.1 ? '▲ Hebel hoch = losfahren' : '● Rollen');
+    const stufe = (x: number) => Math.max(1, Math.round(Math.abs(x) * 4));
+    if (this.simple) this.put('ctl', L > 0.02 ? `▲ Fahrstufe F${stufe(L)} · ${Math.round(L * 100)} %` : L < -0.02 ? `▼ Bremsstufe B${stufe(L)} · ${Math.round(-L * 100)} %` : t.meta.assistBrake ? '▼ Bremsassistent' : Math.abs(t.v) < 0.1 ? '▲ Hebel hoch = losfahren' : '● Rollen');
     else this.put('ctl', `Wender ${rv} · Fahren ${Math.round(c.throttle * 100)} % · Bremse ${Math.round(Math.max(c.brake, this.g.getBrake()) * 100)} %`);
     const air = `HLL ${t.brake.pipe.toFixed(1)} bar · Bz ${(t.brake.cyl * 3.8).toFixed(1)} bar`;
     const extra = t.traction === 'steam' ? `Kessel ${t.boiler.toFixed(1)} bar · Wasser ${Math.round(t.glass * 100)} % · Feuer ${Math.round(t.fire * 100)} %` : t.traction === 'electric' ? `Stromabn. ${c.panto ? 'oben' : 'unten'} · HS ${c.mainSwitch ? 'ein' : 'aus'}` : `Motor ${c.engine ? 'an' : 'aus'} · ${Math.round(t.engineRpm * 100)} %`;

@@ -223,20 +223,26 @@ export class World {
   }
 
   /** Haltepunkt an einem Bahnsteig: Spitze vor dem Bahnsteigende */
-  stopPoint(train: Train, plan: Plan): { d: number } | null {
+  /** Haltepunkt der Zugspitze: Gleis, Position, Fahrtrichtung und (falls Bahnsteig) Bahnsteigseite */
+  stopTarget(train: Train, plan: Plan): { t: string; s: number; d: 1 | -1; side: 'L' | 'R' | null } | null {
     if (!plan.path.length) return null;
     const last = plan.path[plan.path.length - 1];
     const ends = this.platformsOn.get(last.t);
-    let target: number;
     const svc = plan.svc;
     const stop = svc && plan.stopIdx < svc.stops.length ? svc.stops[plan.stopIdx] : null;
     const pl = stop ? ends?.find((x) => x.st.id === stop.st) : null;
     const tr = this.net.track(last.t);
-    if (pl) {
-      const plen = pl.p.s1 - pl.p.s0;
-      const marg = Math.min(10, Math.max(3, (plen - train.length) / 2));
-      target = last.d > 0 ? pl.p.s1 - marg : pl.p.s0 + marg;
-    } else target = last.d > 0 ? tr.len - 15 : 15;
+    if (!pl) return { t: last.t, s: last.d > 0 ? tr.len - 15 : 15, d: last.d, side: null };
+    // Zugmitte etwa in Bahnsteigmitte (dort stehen Dach und Empfangsgebäude), Spitze nie über das Bahnsteigende hinaus
+    const { s0, s1 } = pl.p, L = train.length, mid = (s0 + s1) / 2;
+    const marg = Math.min(10, Math.max(3, (s1 - s0 - L) / 2));
+    const s = last.d > 0 ? Math.min(s1 - marg, Math.max(mid + L / 2, s0 + L + 2)) : Math.max(s0 + marg, Math.min(mid - L / 2, s1 - L - 2));
+    return { t: last.t, s, d: last.d, side: pl.p.side };
+  }
+
+  stopPoint(train: Train, plan: Plan): { d: number } | null {
+    const tg = this.stopTarget(train, plan); if (!tg) return null;
+    const target = tg.s;
     // Distanz entlang Pfad
     let d = 0;
     const hi = plan.path.findIndex((s) => s.t === train.head.t && s.d === train.head.d);
