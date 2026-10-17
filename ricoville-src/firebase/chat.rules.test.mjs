@@ -130,3 +130,21 @@ test('REST wie in chat.html: senden, Liste abfragen, Flutschutz, Online-Liste, M
   r = await rest('u2', FS + 'chat/lobby/m/' + msgs[0].id, null, 'DELETE'); assert.notEqual(r.status, 200, 'fremde Nachricht löschen geht nicht');
   r = await rest('u1', FS + 'chat/lobby/m/' + msgs[0].id, null, 'DELETE'); assert.equal(r.status, 200, 'eigene Nachricht löschen');
 });
+
+test('Betreiber per Google-Konto ricorewioriginal@gmail.com (bestätigte E-Mail): löschen, sperren, Meldungen und Fehler lesen; andere E-Mails nicht', async () => {
+  const as = (uid, claims) => env.authenticatedContext(uid, claims).firestore();
+  const boss = { email: 'ricorewioriginal@gmail.com', email_verified: true };
+  await env.withSecurityRulesDisabled(async (c) => {
+    const d = c.firestore();
+    await setDoc(doc(d, 'chat/lobby/m/a'), { u: 'u1', n: 'Rico', x: 'hi', t: new Date() });
+    await setDoc(doc(d, 'chat_reports/r1'), { room: 'lobby', m: 'a', u: 'u1', x: 'hi', r: 'u2', t: new Date() });
+    await setDoc(doc(d, 'bugs/b1'), { u: 'u2', g: 'snake', c: 'ton', x: 'Kein Ton im Menü', t: new Date() });
+  });
+  await assertFails(deleteDoc(doc(as('x1', { email: 'ricorewioriginal@gmail.com', email_verified: false }), 'chat/lobby/m/a')));
+  await assertFails(deleteDoc(doc(as('x2', { email: 'anderer@gmail.com', email_verified: true }), 'chat/lobby/m/a')));
+  await assertFails(getDoc(doc(as('x3', { email: 'ricorewioriginal@gmail.com.evil.de', email_verified: true }), 'bugs/b1')));
+  await assertSucceeds(getDoc(doc(as('adm', boss), 'bugs/b1')));
+  await assertSucceeds(getDoc(doc(as('adm', boss), 'chat_reports/r1')));
+  await assertSucceeds(setDoc(doc(as('adm', boss), 'chat_ban/u9'), { t: 1 }));
+  await assertSucceeds(deleteDoc(doc(as('adm', boss), 'chat/lobby/m/a')));
+});

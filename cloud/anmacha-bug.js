@@ -46,7 +46,9 @@
     var body = '**Art:** ' + r.kind + '\n**Spiel:** ' + (r.game || '-') + '\n\n' + cut(r.text, 1000) + (r.info ? '\n\n<details><summary>Technische Angaben</summary>\n\n```json\n' + cut(r.info, 600) + '\n```\n</details>' : '');
     return REPO + '?title=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(body) + '&labels=bug';
   }
-  var api = { KINDS: KINDS, sendBody: sendBody, commitUrl: commitUrl, rootQueryUrl: rootQueryUrl, listQuery: listQuery, parse: parse, deviceInfo: deviceInfo, githubUrl: githubUrl, docName: docName };
+  var ADMIN_EMAIL = 'ricorewioriginal@gmail.com';   // Betreiber-Konto (Regeln prüfen die bestätigte E-Mail serverseitig; hier nur zum Anzeigen)
+  function isAdminEmail(e) { return String(e || '').toLowerCase() === ADMIN_EMAIL; }
+  var api = { ADMIN_EMAIL: ADMIN_EMAIL, isAdminEmail: isAdminEmail, KINDS: KINDS, sendBody: sendBody, commitUrl: commitUrl, rootQueryUrl: rootQueryUrl, listQuery: listQuery, parse: parse, deviceInfo: deviceInfo, githubUrl: githubUrl, docName: docName };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.AnMaChaBug = api;
 })(typeof window !== 'undefined' ? window : this);
