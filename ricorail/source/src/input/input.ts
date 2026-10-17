@@ -3,7 +3,7 @@ export type Action =
   | 'throttleUp' | 'throttleDown' | 'brakeUp' | 'brakeDown' | 'emergency' | 'reverser' | 'reverserBack' | 'horn' | 'doors' | 'doorsClose'
   | 'panto' | 'mainSwitch' | 'lights' | 'sand' | 'pzb' | 'zs1' | 'isolate' | 'couple' | 'uncouple' | 'load' | 'unload' | 'cabChange'
   | 'camera' | 'cam1' | 'cam2' | 'cam3' | 'cam4' | 'cam5' | 'cam6' | 'cam7' | 'map' | 'pause' | 'help' | 'timewarp' | 'screenshot' | 'replay'
-  | 'cutoffUp' | 'cutoffDown' | 'injector' | 'firing' | 'wipers' | 'cabLight' | 'parking' | 'shunt' | 'hud';
+  | 'cutoffUp' | 'cutoffDown' | 'injector' | 'firing' | 'wipers' | 'cabLight' | 'parking' | 'shunt' | 'hud' | 'conductor' | 'ticket';
 
 export interface KeyDef { key: string; label: string; act: Action; shift?: boolean; hold?: boolean }
 
@@ -24,6 +24,7 @@ export const KEYS: KeyDef[] = [
   { key: 'Comma', label: ', / .', act: 'cutoffDown', hold: true }, { key: 'Period', label: '', act: 'cutoffUp', hold: true }, { key: 'KeyI', label: '⇧I', act: 'injector', shift: true },
   { key: 'KeyB', label: 'B', act: 'firing' }, { key: 'KeyO', label: 'O', act: 'wipers' }, { key: 'KeyL', label: '⇧L', act: 'cabLight', shift: true }, { key: 'KeyX', label: 'X', act: 'parking' },
   { key: 'KeyA', label: 'A', act: 'shunt' }, { key: 'F2', label: 'F2', act: 'hud' },
+  { key: 'F4', label: 'F4', act: 'conductor' }, { key: 'Enter', label: 'Enter', act: 'ticket' },
 ];
 
 export const ACTION_LABELS: Partial<Record<Action, string>> = {
@@ -33,6 +34,7 @@ export const ACTION_LABELS: Partial<Record<Action, string>> = {
   zs1: 'Ersatzsignal anfordern', isolate: 'Gestörte Tür absperren', couple: 'Kuppeln vorbereiten', uncouple: 'Entkuppeln', load: 'Beladen', unload: 'Entladen', cabChange: 'Führerstand wechseln',
   camera: 'Kamera wechseln', map: 'Gleisplan / Karte', pause: 'Pause', help: 'Hilfe', timewarp: 'Zeitraffer', screenshot: 'Bildschirmfoto', replay: 'Wiederholung',
   cutoffDown: 'Dampf: Steuerung', injector: 'Dampf: Injektor', firing: 'Dampf: Feuern', wipers: 'Scheibenwischer', cabLight: 'Führerstandslicht', parking: 'Feststellbremse', shunt: 'Rangierfahrt an/aus', hud: 'Anzeige ein/aus',
+  conductor: 'Schaffner-Modus an/aus (Zug fährt selbst, W/S = gehen)', ticket: 'Schaffner: Fahrkarte prüfen',
 };
 
 /** Tastatur- und Gamepad-Zustand */
@@ -60,6 +62,7 @@ export class Input {
     if (!this.enabled) return;
     const t = e.target as HTMLElement | null;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA')) return;
+    if (e.code === 'Enter' && (t?.tagName === 'BUTTON' || document.querySelector('.overlay.dlg'))) return; // Enter bleibt für Knöpfe/Dialoge
     const k = this.find(e); if (!k) return;
     e.preventDefault();
     if (e.repeat) return;

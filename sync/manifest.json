@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "540a112c3ded",
- "generated": "2026-10-17T20:53:24+02:00",
- "commit": "b9f2b3fa2b30e19888376f2e2e08fb63648ef1cd",
+ "version": "d7ce3893e072",
+ "generated": "2026-10-17T21:34:57+02:00",
+ "commit": "33fcffaf81854a5f1b26bbbdac21820c85783380",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6122,9 +6122,9 @@
    "h": "b1a597ac448c28ef7efd2d49a802d593755bdf72d6babe32d25fe795cc920985"
   },
   {
-   "p": "ricorail/assets/ricorail-b57a6e6ccf.js",
-   "s": 1039654,
-   "h": "b57a6e6ccf55fd4c33d31e08f851c50979f405fbc6224010e6ec0f3b719fee90"
+   "p": "ricorail/assets/ricorail-c8e7dadfbc.js",
+   "s": 1056573,
+   "h": "c8e7dadfbcdbadb1b4d6b430b7331fb8f609d3c15b9812021ae50cc565908f76"
   },
   {
    "p": "ricorail/card.svg",
@@ -6164,7 +6164,7 @@
   {
    "p": "ricorail/index.html",
    "s": 3231,
-   "h": "594b43aafc8ee5062d0de2d5c7b7ab9ae47668a0f0c7f996a654c49b7f500162"
+   "h": "fba7d4e8154ec4d5bede05f3dc898b82c5686ef907e4a11174dc7259e0f63eda"
   },
   {
    "p": "ricorail/manifest.webmanifest",
@@ -6174,12 +6174,12 @@
   {
    "p": "ricorail/sw.js",
    "s": 1812,
-   "h": "0ec113b18b80bafd8c450e11149d7027442df8064dffb937178a94fd472212e2"
+   "h": "aed926f0d62cdd9507050042d0658a8219c7d7dc0258dea368082e456f506617"
   },
   {
    "p": "ricorail/version.json",
    "s": 74,
-   "h": "1ecf1aaee5af6ab748076a5b382c0a811b2594c4e3ab3e598a28a8d5bc5d3229"
+   "h": "e28a134abc40c0fa11febbd31aa67e58e8e5062a5f4cb6461f75064ce4ba150a"
   },
   {
    "p": "ricoville/assets/index-BUWwZhsM.css",
@@ -6364,7 +6364,7 @@
   {
    "p": "sync/catalog.json",
    "s": 104972,
-   "h": "f64ea2369140469626279774bc987aa240a9398e83390e0b87c66424dbdc50aa"
+   "h": "5789aa633c48928f2ea6d9971252508cd0a9d86bcb8dc13459606753c7be5523"
   },
   {
    "p": "taschi/card.svg",
