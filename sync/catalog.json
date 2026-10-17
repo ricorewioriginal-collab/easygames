@@ -1500,37 +1500,6 @@
     "game": "bunte-insel",
     "prefix": "bunteInsel.,bunteInsel_"
    }
-  },
-  {
-   "id": "bunte-insel2",
-   "title": "Bunte Insel 2 – DEMO TEST",
-   "desc": "DEMO TEST – noch in Entwicklung, Fehler möglich. Die große Fortsetzung von Bunte Insel in 3D: alle 20 Welten als zusammenhängende Geschichte mit Wolke Flick, Story-Modus und freie Welt, eigene Figur im Editor, Fahrzeuge, Begleiter, Quests mit Hinweisen, Prisma-Insel mit Ki-Garten, Runen-Arena und Datenwesen, 20 Minispiele, Angeln, Karte und Schnellreise. Gekämpft wird nur im Verbotenen Wald. Für Handy, PC und Gamepad.",
-   "icon": "🌈",
-   "img": "bunte-insel2/card.png",
-   "bg": "linear-gradient(145deg,#58d9ff,#b48aff 50%,#ff79c9)",
-   "glow": "rgba(180,138,255,.55)",
-   "path": "bunte-insel2/",
-   "modes": {},
-   "multiplayer": false,
-   "guide": {
-    "anleitung": "DEMO TEST – das Spiel ist noch in Entwicklung, es kann Fehler geben. Fortsetzung von Bunte Insel: Du gestaltest deine Figur und erkundest eine große Inselwelt mit 20 Welten. Im Story-Modus hilfst du der einsamen Wolke Flick und öffnest Kapitel für Kapitel neue Welten, in der freien Welt ist alles sofort offen (beide haben getrennte Spielstände). Bewohner geben dir Aufgaben, das Tagebuch zeigt Ziele und bis zu drei Hinweise. Gespeichert wird lokal in drei Spielständen, ein Spielstand aus Bunte Insel 1 kann übernommen werden, ohne ihn zu verändern.",
-    "steuerung": [
-     "PC: W A S D oder Pfeile laufen/fahren, Maus ziehen = Kamera, Mausrad Abstand, Leertaste springen (zweimal = Doppelsprung, Fahrzeug: steigen), Umschalt rennen, E reden/einsteigen/aussteigen, F zweite Aktion, X sinken, H hupen, M Karte, Q Tagebuch, I oder Tab Rucksack, G Gesten, Y Hinweis, Esc oder P Pause. Nur im Verbotenen Wald: J Angriff, K Ausweichen, L Abwehr, U Lichtwelle, T Ziel erfassen. Tasten lassen sich in den Einstellungen ändern.",
-     "Touch: Joystick links laufen/lenken, rechts wischen = Kamera, Knöpfe rechts für Springen, Aktion und Rennen; im Wald erscheinen Kampfknöpfe.",
-     "Gamepad: Linker Stick laufen, rechter Stick Kamera, A Aktion, B springen, X Angriff, Y zweite Aktion, RT rennen, LT sinken, Steuerkreuz Karte/Rucksack/Gesten, Select Tagebuch, Start Pause."
-    ],
-    "tipps": [
-     "Die Weltensteine auf jeder Insel sind Schnellreise-Punkte: einmal berühren, danach über die Karte hinreisen.",
-     "Gekämpft wird nur im Verbotenen Wald – überall sonst wird geholfen, gerätselt und gespielt."
-    ]
-   },
-   "size": 1635454,
-   "files": 35,
-   "offline": true,
-   "cloud": {
-    "game": "bunte-insel2",
-    "prefix": "bunteInsel2."
-   }
   }
  ]
 }

@@ -105,7 +105,6 @@
     ],
     // Leerer Eintrag = bewusst keine Rangliste (Sandbox/Story, deren „Sterne“ o. Ä. eine ausgebbare Währung sind)
     'bunte-insel': [],
-    'bunte-insel2': [],
     'klotzfunk': [],
     'showdown': [
       { id: 'main', title: 'Siege gegen den Bot', key: 'asdSave', path: 'stats.*.0', agg: 'sum', order: 'desc', unit: 'Siege' }
