@@ -1538,6 +1538,42 @@
    }
   },
   {
+   "id": "anmacha-podcast-tycoon",
+   "title": "AnMaCha Podcast Tycoon 3D – Das totale Studio-Chaos!",
+   "desc": "Podcast-Wirtschaftssimulation in 3D mit Marco und Andrew: begehbare Stadt mit 8 Vierteln, Studio-Baumodus mit über 70 Objekten, Gäste, Personal und Sponsoren, Folgen von der Recherche bis zum Mehrspur-Schnitt produzieren, 60 Hauptmissionen in 6 Kapiteln, Nebenaufträge, 3 Enden und Endlosmodus. 24 Minispiele, Party für 1–4 an einem Gerät und 🌐 Online-Quizshow per Code, Link oder QR. Handy, PC und Controller, Speicherstand lokal und per Google.",
+   "icon": "🎙️",
+   "img": "anmacha-podcast-tycoon/card.svg",
+   "bg": "linear-gradient(145deg,#10142a,#232a52 55%,#ff8a1e)",
+   "glow": "rgba(255,138,30,.5)",
+   "path": "anmacha-podcast-tycoon/",
+   "modes": {
+    "online": true,
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "AnMaCha Podcast Tycoon 3D ist eine Wirtschaftssimulation mit Marco und Andrew. Du startest mit 6000 Euro und einer kleinen Garage in einer begehbaren 3D-Stadt mit acht Vierteln. Im Baumodus ziehst du Wände, legst Böden, setzt Türen und Fenster und stellst über 70 Objekte aus 12 Kategorien auf, etwa Mikrofone, Mischpulte, Akustikplatten und Sofas. Eine Folge entsteht in Schritten: Thema aus 60 Themen in 6 Rubriken wählen, recherchieren, Gast einladen, Technik prüfen, aufnehmen, im Mehrspur-Editor schneiden, Cover und Titel festlegen und veröffentlichen. Hörer, Fans, Ruf und Einnahmen hängen von der Qualität ab. Du stellst Personal ein, nimmst Sponsoren an, kaufst neue Grundstücke und reparierst Technik. Die Geschichte führt durch 60 Hauptmissionen in 6 Kapiteln mit drei Enden, dazu kommen 24 Nebenaufträge und danach ein Endlosmodus. Außerdem gibt es einen Kreativmodus ohne Geldgrenze und Herausforderungen. 24 Minispiele (Technik, Fahren, Fans, Quiz, Produktion und Party) lassen sich einzeln, als Party für 1–4 Spieler an einem Gerät oder in der 🌐 Online-Quizshow spielen, der Mitspieler von überall per Code, Link oder QR beitreten. Gespeichert wird in 3 Plätzen plus Autosave, optional mit Google auf allen Geräten. Fanprojekt, kein offizielles Produkt; den echten Podcast gibt es auf anmacha.de.",
+    "steuerung": [
+     "Smartphone und Tablet: Joystick links unten zum Laufen, Knopf zum Sprechen oder Benutzen, Knöpfe rechts unten für Bauen, Folge, Team, Geld, Journal, Karte und Menü. Im Baumodus mit einem Finger verschieben, mit zwei Fingern zoomen, antippen zum Platzieren.",
+     "PC: WASD oder Pfeiltasten laufen, Umschalt rennen, E oder Enter sprechen/benutzen, B Bauen, P Produktion, T Team, F Finanzen, J Journal, O Archiv, M Karte, Esc Pause. Im Baumodus Maus zum Platzieren, Mausrad zoomt, R dreht, Strg+Z/Y rückgängig. Tasten in den Optionen änderbar.",
+     "Controller: linker Stick laufen, A sprechen/benutzen, B zurück, Start Pause, rechter Stick als Mauszeiger für alle Knöpfe."
+    ],
+    "tipps": [
+     "Akustikplatten und gute Mikrofone heben die Aufnahmequalität am stärksten.",
+     "Technik nutzt sich mit jeder Folge ab: rechtzeitig im Finanzfenster reparieren.",
+     "Im Schnitteditor zuerst die Ähms schneiden und Pausen schließen, das bringt die meisten Punkte.",
+     "Wenig Geld? Kurze Folgen kosten nichts, Nebenaufträge in der Stadt bringen schnelles Geld."
+    ]
+   },
+   "size": 951641,
+   "files": 56,
+   "offline": true,
+   "cloud": {
+    "game": "anmacha-podcast-tycoon",
+    "prefix": "anmachaPodcastTycoon"
+   }
+  },
+  {
    "id": "anmacha-klotzfunk",
    "title": "KLOTZFUNK 3D",
    "desc": "Voxel-Sandbox in 3D: 15 Biome mit Höhlen, Erzen und Funkkristallen, Dörfer mit Bewohnern und Handel, verlassene Minen, Tiere, Weizenfelder, Rauschlinge, Höhlenwesen und Drohnen, Story „Das große Rauschen“ in 6 Kapiteln, Funknetz mit Sendern, Relais und Maschinen, Werkzeuge, Schwerter und Rüstung, Bauformen, Werkbank und Schmelzofen, Herzen und Hunger im Überlebensmodus, 16 Radio-Logo-Blöcke, Federn, Turbo, Aufwind, Radio-Beats, Seilhaken und Gleiten, Minikarte, Tag und Nacht. Maus und Tastatur oder Touch am Handy, Grafik passt sich dem Gerät an.",
