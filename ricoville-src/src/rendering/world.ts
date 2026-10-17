@@ -7,6 +7,7 @@ import { City, footprint, isBeach, isWater, key, MAP, SECTOR, SECTORS } from '..
 import type { Building, BuildingDef, Rot } from '../core/types';
 import { position, spawn, step, type Walker } from '../world/traffic';
 import { buildingGeometry, carGeometry, cropGeometry, Parts, personGeometry, scaffoldGeometry } from './models';
+import { daylight, weatherAt, type Season, type Weather } from './season';
 
 export type Quality = 'low' | 'medium' | 'high';
 
@@ -81,6 +82,34 @@ function roadTexture(mask: number): THREE.Texture {
   return t;
 }
 
+/** Bodenfarben je Jahreszeit: [freigeschaltet ×3, gesperrt ×3, Umland, Hügel ×2, Nadelbäume]. */
+const LAND: Record<Season, string[]> = {
+  spring: ['#8ccc62', '#86c65c', '#92d168', '#5f9a46', '#5a9442', '#64a04a', '#7cbc5c', '#6faa4f', '#86c062', '#2f6b3a'],
+  summer: ['#8ccc62', '#86c65c', '#92d168', '#5f9a46', '#5a9442', '#64a04a', '#79b85a', '#6faa4f', '#86c062', '#2f6b3a'],
+  autumn: ['#a5c45e', '#9dbd57', '#aecb66', '#7c8f45', '#768a40', '#82964a', '#93a84e', '#8fa24c', '#a3b25a', '#2f6b3a'],
+  winter: ['#e8eef3', '#e1e9ef', '#eef3f7', '#d5dee6', '#cfd9e2', '#dae3ea', '#dfe7ee', '#e3eaf0', '#d6e0e8', '#3f6e52'],
+};
+/** Baumkronen je Jahreszeit: Laubbäume und Nadelbäume (Farben werden je Baum gewählt). */
+const CROWNS: Record<Season, [string[], string[]]> = {
+  spring: [['#5aa83f', '#6bb84a', '#4f9a3a', '#f4b6cf'], ['#2f6b3a', '#34713f', '#2a6234']],
+  summer: [['#4f9a3a', '#57a340', '#468f34'], ['#2f6b3a', '#34713f', '#2a6234']],
+  autumn: [['#d9762b', '#e0b13a', '#b8432f', '#6f9a3a', '#e8892f'], ['#2f6b3a', '#34713f', '#2a6234']],
+  winter: [['#a1887f', '#b8aca0', '#e6edf2'], ['#4d7a62', '#dfe8ee', '#3f6e52']],
+};
+
+function glowTexture(): THREE.Texture {
+  const c = document.createElement('canvas');
+  c.width = c.height = 32;
+  const g = c.getContext('2d')!;
+  const gr = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+  gr.addColorStop(0, 'rgba(255,255,255,1)');
+  gr.addColorStop(0.5, 'rgba(255,255,255,.7)');
+  gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr;
+  g.fillRect(0, 0, 32, 32);
+  return new THREE.CanvasTexture(c);
+}
+
 function rng(seed: number): () => number {
   let s = seed >>> 0;
   return () => {
@@ -153,9 +182,30 @@ export class World {
   quality: Quality = 'medium';
   dayNight = false;
   paused = false;
+  /** Wetter und Jahreszeit anzeigen (nur Optik). */
+  weatherOn = true;
+  season: Season = 'summer';
+  /** Nachtstärke für leuchtende Fenster und Lampen (Shader-Uniform). */
+  private nightU = { value: 0 };
+  private hills: THREE.Mesh | null = null;
+  private outer!: THREE.Mesh;
+  private precip: THREE.LineSegments | THREE.Points | null = null;
+  private precipKind: Weather = 'clear';
+  private precipVel: Float32Array | null = null;
+  private wetK = 0;
+  private weatherCheck = 0;
+  private wantWeather: Weather = 'clear';
+  private tmpA = new THREE.Color();
+  private tmpB = new THREE.Color();
 
   constructor(canvas: HTMLCanvasElement, city: City) {
     this.city = city;
+    // Fenster und Lampen leuchten nachts: Attribut „glow“ der Modelle als Eigenleuchten.
+    this.mat.onBeforeCompile = (sh) => {
+      sh.uniforms.uNight = this.nightU;
+      sh.vertexShader = 'attribute float glow;\nvarying float vGlow;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n  vGlow = glow;');
+      sh.fragmentShader = 'uniform float uNight;\nvarying float vGlow;\n' + sh.fragmentShader.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n  totalEmissiveRadiance += vec3(1.0, 0.72, 0.32) * vGlow * uNight;');
+    };
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.shadowMap.enabled = true;
@@ -198,6 +248,7 @@ export class World {
 
   setQuality(q: Quality): void {
     this.quality = q;
+    if (this.precipKind !== 'clear') this.buildPrecip(this.precipKind);
     const dpr = Math.min(window.devicePixelRatio || 1, q === 'high' ? 2 : q === 'medium' ? 1.5 : 1);
     this.renderer.setPixelRatio(dpr);
     this.renderer.shadowMap.enabled = q !== 'low';
@@ -258,9 +309,24 @@ export class World {
     this.ground.receiveShadow = true;
     this.scene.add(this.ground);
     // Umland: weite Wiese und Hügel als Höhenstufen außerhalb der Baufläche
-    const outer = new THREE.Mesh(new THREE.PlaneGeometry(400, 400).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ color: '#79b85a' }));
-    outer.position.set(MAP / 2 + 150, -0.02, MAP / 2);
-    this.scene.add(outer);
+    this.outer = new THREE.Mesh(new THREE.PlaneGeometry(400, 400).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ color: LAND[this.season][6] }));
+    this.outer.position.set(MAP / 2 + 150, -0.02, MAP / 2);
+    this.scene.add(this.outer);
+    this.buildHills();
+    // Wasser
+    const wg = new THREE.PlaneGeometry(90, 200, 30, 60).rotateX(-Math.PI / 2);
+    this.water = new THREE.Mesh(wg, new THREE.MeshLambertMaterial({ color: '#3fa7d6', transparent: true, opacity: 0.88 }));
+    this.water.position.set(4.6 - 45, -0.06, MAP / 2);
+    this.scene.add(this.water);
+  }
+
+  /** Hügel und Wald im Umland (Farben je Jahreszeit). */
+  private buildHills(): void {
+    if (this.hills) {
+      this.scene.remove(this.hills);
+      this.hills.geometry.dispose();
+    }
+    const L = LAND[this.season];
     const hills = new Parts();
     const r = rng(3);
     for (let i = 0; i < 26; i++) {
@@ -269,20 +335,25 @@ export class World {
       const x = MAP / 2 + Math.sin(a) * d + 6;
       const z = MAP / 2 - Math.cos(a) * d;
       if (x < MAP + 3 && z > -3 && z < MAP + 3) continue;
-      hills.add(new THREE.SphereGeometry(6 + r() * 6, 9, 5, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.35 + r() * 0.3, 1), r() > 0.5 ? '#6faa4f' : '#86c062', x, -0.5, z);
+      hills.add(new THREE.SphereGeometry(6 + r() * 6, 9, 5, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.35 + r() * 0.3, 1), r() > 0.5 ? L[7]! : L[8]!, x, -0.5, z);
     }
     for (let i = 0; i < 60; i++) {
       const x = MAP + 2 + r() * 30;
       const z = -20 + r() * (MAP + 40);
-      hills.add(new THREE.ConeGeometry(0.8, 2.2, 6), '#2f6b3a', x, 1.1, z);
+      hills.add(new THREE.ConeGeometry(0.8, 2.2, 6), L[9]!, x, 1.1, z);
     }
-    const hm = new THREE.Mesh(hills.build(), this.mat);
-    this.scene.add(hm);
-    // Wasser
-    const wg = new THREE.PlaneGeometry(90, 200, 30, 60).rotateX(-Math.PI / 2);
-    this.water = new THREE.Mesh(wg, new THREE.MeshLambertMaterial({ color: '#3fa7d6', transparent: true, opacity: 0.88 }));
-    this.water.position.set(4.6 - 45, -0.06, MAP / 2);
-    this.scene.add(this.water);
+    this.hills = new THREE.Mesh(hills.build(), this.mat);
+    this.scene.add(this.hills);
+  }
+
+  /** Jahreszeit wechseln: Boden, Umland und Baumkronen werden neu eingefärbt. */
+  setSeason(s: Season): void {
+    if (s === this.season) return;
+    this.season = s;
+    (this.outer.material as THREE.MeshLambertMaterial).color.set(LAND[s][6]!);
+    this.buildHills();
+    this.sectorsKey = '';
+    this.sync();
   }
 
   private drawGround(): void {
@@ -297,7 +368,7 @@ export class World {
         else if (isBeach(x, y)) col = (x + y) % 2 ? '#f1dca4' : '#ecd497';
         else {
           const v = Math.floor(r() * 3);
-          col = unlocked ? ['#8ccc62', '#86c65c', '#92d168'][v]! : ['#5f9a46', '#5a9442', '#64a04a'][v]!;
+          col = LAND[this.season][unlocked ? v : 3 + v]!;
         }
         g.fillStyle = col;
         g.fillRect(x * 8, y * 8, 8, 8);
@@ -313,14 +384,18 @@ export class World {
   private buildForest(): void {
     for (const f of this.forest) {
       this.scene.remove(f);
+      f.geometry.dispose();
       f.dispose();
     }
     this.forest = [];
     const trunk = new Parts().cyl(0.05, 0.07, 0.3, '#6d4c41').build();
+    // Kronen weiß modelliert, Farbe je Baum über Instanzfarben (Jahreszeit).
     const crowns = [
-      new Parts().cone(0.34, 0.9, '#2f6b3a', 0, 0.2, 0, 7).build(),
-      new Parts().ball(0.34, '#4f9a3a', 0, 0.55, 0).build(),
+      new Parts().cone(0.34, 0.9, '#ffffff', 0, 0.2, 0, 7).build(),
+      new Parts().ball(0.34, '#ffffff', 0, 0.55, 0).build(),
     ];
+    const [leafy, conifer] = CROWNS[this.season];
+    const rc = rng(41);
     const spots: [number, number, number][] = [];
     const r = rng(23);
     for (let x = 0; x < MAP; x++)
@@ -330,11 +405,13 @@ export class World {
       }
     const m4 = new THREE.Matrix4();
     const q = new THREE.Quaternion();
-    const mk = (geo: THREE.BufferGeometry, list: [number, number, number][]) => {
+    const col = new THREE.Color();
+    const mk = (geo: THREE.BufferGeometry, list: [number, number, number][], colors?: string[]) => {
       const im = new THREE.InstancedMesh(geo, this.mat, Math.max(1, list.length));
       list.forEach(([x, z, s], i) => {
         const k = 0.8 + s * 0.6;
         im.setMatrixAt(i, m4.compose(new THREE.Vector3(x, 0, z), q, new THREE.Vector3(k, k, k)));
+        if (colors) im.setColorAt(i, col.set(colors[Math.floor(rc() * colors.length)]!));
       });
       im.count = list.length;
       im.castShadow = this.quality !== 'low';
@@ -342,8 +419,8 @@ export class World {
       this.forest.push(im);
     };
     mk(trunk, spots);
-    mk(crowns[0]!, spots.filter((s) => s[2] < 0.55));
-    mk(crowns[1]!, spots.filter((s) => s[2] >= 0.55));
+    mk(crowns[0]!, spots.filter((s) => s[2] < 0.55), conifer);
+    mk(crowns[1]!, spots.filter((s) => s[2] >= 0.55), leafy);
   }
 
   private setupEnvironment(): void {
@@ -838,17 +915,187 @@ export class World {
         else bm.mesh.userData.popT = nt;
       }
     }
-    if (this.dayNight) {
-      const k = (Math.sin(this.time * 0.05) + 1) / 2; // 0 Nacht … 1 Tag
-      this.sun.intensity = 0.5 + k * 1.5;
-      this.hemi.intensity = 0.6 + k * 0.6;
-      (this.scene.background as THREE.Color).setRGB(0.2 + k * 0.42, 0.25 + k * 0.6, 0.45 + k * 0.5);
-    } else {
-      this.sun.intensity = 2.0;
-      this.hemi.intensity = 1.2;
-      (this.scene.background as THREE.Color).set('#9fd7f2');
+    this.updateWeather(dt);
+    this.updateLight();
+  }
+
+  /** Licht, Himmel und Nebel aus Tageszeit und Wetter. */
+  private updateLight(): void {
+    const k = this.dayNight ? daylight(this.time) : 1; // 0 Nacht … 1 Tag
+    const wet = this.wetK;
+    // Abend- und Morgenrot um k ≈ 0,4
+    const dusk = this.dayNight ? Math.max(0, 1 - Math.abs(k - 0.4) / 0.25) : 0;
+    this.nightU.value = Math.max(0, Math.min(1, (0.6 - k) * 2.2));
+    this.sun.intensity = (0.25 + k * 1.75) * (1 - 0.45 * wet);
+    this.sun.color.set('#9fb4ff').lerp(this.tmpA.set('#fff4dc'), k).lerp(this.tmpB.set('#ffab66'), dusk * 0.6);
+    this.hemi.intensity = (0.4 + k * 0.8) * (1 - 0.2 * wet);
+    const bg = this.scene.background as THREE.Color;
+    bg.set('#16213e').lerp(this.tmpA.set(this.season === 'winter' ? '#b9d6ea' : '#9fd7f2'), k);
+    bg.lerp(this.tmpA.set('#f2a66b'), dusk * 0.45);
+    bg.lerp(this.tmpA.set(k > 0.3 ? '#8d9aa5' : '#1b2233'), wet * 0.6);
+    (this.scene.fog as THREE.Fog).color.copy(bg);
+    if (this.cloudMat) this.cloudMat.color.set('#ffffff').lerp(this.tmpA.set('#8e979f'), wet);
+  }
+
+  /** Regen oder Schnee je nach Jahreszeit; blendet weich ein und aus. Auf „Niedrig“ ohne Teilchen. */
+  private updateWeather(dt: number): void {
+    this.weatherCheck -= dt;
+    if (this.weatherCheck <= 0) {
+      this.weatherCheck = 2;
+      this.wantWeather = this.weatherOn ? weatherAt(Date.now(), this.season) : 'clear';
     }
-    (this.scene.fog as THREE.Fog).color.copy(this.scene.background as THREE.Color);
+    const want = this.wantWeather;
+    if (want !== 'clear' && want !== this.precipKind && this.wetK < 0.02) this.buildPrecip(want);
+    const target = want !== 'clear' && want === this.precipKind ? 1 : 0;
+    this.wetK += (target - this.wetK) * Math.min(1, dt * 0.5);
+    if (target === 0 && this.wetK < 0.01 && this.precipKind !== 'clear') this.buildPrecip('clear');
+    const pr = this.precip;
+    if (!pr) return;
+    (pr.material as THREE.Material).opacity = (this.precipKind === 'snow' ? 0.95 : 0.5) * this.wetK;
+    pr.position.set(this.target.x, 0, this.target.z);
+    pr.scale.set(1 / this.zoom, 1, 1 / this.zoom);
+    const pos = pr.geometry.getAttribute('position') as THREE.BufferAttribute;
+    const a = pos.array as Float32Array;
+    const vel = this.precipVel!;
+    const snow = this.precipKind === 'snow';
+    const stride = snow ? 1 : 2;
+    const n = pos.count / stride;
+    for (let i = 0; i < n; i++) {
+      const o = i * stride * 3;
+      let y = a[o + 1]! - vel[i]! * dt;
+      let x = a[o]!;
+      let z = a[o + 2]!;
+      if (snow) {
+        x += Math.sin(this.time * 1.3 + i) * dt * 0.35;
+      } else x += dt * 1.2;
+      if (y < 0) {
+        y += 16;
+        x = (this.rnd() - 0.5) * 44;
+        z = (this.rnd() - 0.5) * 44;
+      }
+      a[o] = x;
+      a[o + 1] = y;
+      a[o + 2] = z;
+      if (!snow) {
+        a[o + 3] = x - 0.06;
+        a[o + 4] = y + 0.55;
+        a[o + 5] = z;
+      }
+    }
+    pos.needsUpdate = true;
+  }
+
+  private buildPrecip(kind: Weather): void {
+    if (this.precip) {
+      this.scene.remove(this.precip);
+      this.precip.geometry.dispose();
+      const m = this.precip.material as THREE.PointsMaterial;
+      m.map?.dispose();
+      m.dispose();
+      this.precip = null;
+      this.precipVel = null;
+    }
+    this.precipKind = kind;
+    if (kind === 'clear' || this.quality === 'low') return;
+    const n = this.quality === 'high' ? 900 : 500;
+    const snow = kind === 'snow';
+    const pts = new Float32Array(n * (snow ? 3 : 6));
+    this.precipVel = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      const x = (this.rnd() - 0.5) * 44;
+      const y = this.rnd() * 16;
+      const z = (this.rnd() - 0.5) * 44;
+      this.precipVel[i] = snow ? 1 + this.rnd() * 0.8 : 13 + this.rnd() * 5;
+      pts.set(snow ? [x, y, z] : [x, y, z, x - 0.06, y + 0.55, z], i * (snow ? 3 : 6));
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pts, 3).setUsage(THREE.DynamicDrawUsage));
+    this.precip = snow
+      ? new THREE.Points(geo, new THREE.PointsMaterial({ color: '#ffffff', size: 6 * this.renderer.getPixelRatio(), map: glowTexture(), transparent: true, depthWrite: false, opacity: 0 }))
+      : new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color: '#d6e6f5', transparent: true, depthWrite: false, opacity: 0 }));
+    this.precip.frustumCulled = false;
+    this.precip.renderOrder = 5;
+    this.scene.add(this.precip);
+  }
+
+  /** Vorschaubild eines Gebäudes für das Baumenü (PNG-Daten-URL), mit dem Hauptrenderer in ein kleines Bild gerendert. */
+  private thumbRig: { scene: THREE.Scene; cam: THREE.OrthographicCamera; rt: THREE.WebGLRenderTarget; buf: Uint8Array; big: HTMLCanvasElement; out: HTMLCanvasElement; lut: Uint8Array } | null = null;
+  thumbnail(def: BuildingDef): string {
+    const S = 192;
+    if (!this.thumbRig) {
+      const scene = new THREE.Scene();
+      scene.add(new THREE.HemisphereLight('#fffaf0', '#7da35c', 1.3));
+      const sun = new THREE.DirectionalLight('#fff4dc', 2.1);
+      sun.position.set(-18, 40, 14);
+      scene.add(sun);
+      const lut = new Uint8Array(256);
+      for (let i = 0; i < 256; i++) {
+        const c = i / 255;
+        lut[i] = Math.round(255 * (c <= 0.0031308 ? c * 12.92 : 1.055 * Math.pow(c, 1 / 2.4) - 0.055));
+      }
+      const big = document.createElement('canvas');
+      big.width = big.height = S;
+      const out = document.createElement('canvas');
+      out.width = out.height = S / 2;
+      this.thumbRig = { scene, cam: new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 100), rt: new THREE.WebGLRenderTarget(S, S), buf: new Uint8Array(S * S * 4), big, out, lut };
+    }
+    const { scene, cam, rt, buf, big, out, lut } = this.thumbRig;
+    const geo = buildingGeometry(def);
+    if (!geo.boundingBox) geo.computeBoundingBox();
+    const bb = geo.boundingBox!;
+    const center = bb.getCenter(new THREE.Vector3());
+    const mesh = new THREE.Mesh(geo, this.mat);
+    scene.add(mesh);
+    cam.position.copy(center).add(new THREE.Vector3(1, 1.27, 1).normalize().multiplyScalar(30));
+    cam.lookAt(center);
+    cam.updateMatrixWorld();
+    // Eng um das Modell zuschneiden: Ecken der Box in Kamerakoordinaten
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    const v = new THREE.Vector3();
+    for (let i = 0; i < 8; i++) {
+      v.set(i & 1 ? bb.max.x : bb.min.x, i & 2 ? bb.max.y : bb.min.y, i & 4 ? bb.max.z : bb.min.z).applyMatrix4(cam.matrixWorldInverse);
+      x0 = Math.min(x0, v.x); x1 = Math.max(x1, v.x); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y);
+    }
+    const half = Math.max(x1 - x0, y1 - y0) * 0.54;
+    const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+    cam.left = cx - half; cam.right = cx + half; cam.top = cy + half; cam.bottom = cy - half;
+    cam.updateProjectionMatrix();
+    const night = this.nightU.value;
+    const prevRT = this.renderer.getRenderTarget();
+    const prevClear = this.renderer.getClearColor(new THREE.Color());
+    const prevAlpha = this.renderer.getClearAlpha();
+    this.nightU.value = 0;
+    try {
+      this.renderer.setRenderTarget(rt);
+      this.renderer.setClearColor(0x000000, 0);
+      this.renderer.clear();
+      this.renderer.render(scene, cam);
+      this.renderer.readRenderTargetPixels(rt, 0, 0, S, S, buf);
+    } finally {
+      this.renderer.setRenderTarget(prevRT);
+      this.renderer.setClearColor(prevClear, prevAlpha);
+      this.nightU.value = night;
+      scene.remove(mesh);
+    }
+    // Renderziel ist linear und steht auf dem Kopf: umrechnen nach sRGB und spiegeln.
+    const g = big.getContext('2d')!;
+    const img = g.createImageData(S, S);
+    const d = img.data;
+    for (let y = 0; y < S; y++)
+      for (let x = 0; x < S; x++) {
+        const i = ((S - 1 - y) * S + x) * 4;
+        const o = (y * S + x) * 4;
+        d[o] = lut[buf[i]!]!;
+        d[o + 1] = lut[buf[i + 1]!]!;
+        d[o + 2] = lut[buf[i + 2]!]!;
+        d[o + 3] = buf[i + 3]!;
+      }
+    g.putImageData(img, 0, 0);
+    const og = out.getContext('2d')!;
+    og.clearRect(0, 0, out.width, out.height);
+    og.imageSmoothingQuality = 'high';
+    og.drawImage(big, 0, 0, out.width, out.height);
+    return out.toDataURL('image/png');
   }
 
   frame(dt: number): void {

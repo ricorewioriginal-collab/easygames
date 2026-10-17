@@ -188,7 +188,7 @@ const transport: BuildingDef[] = [
   mk('transport', true, { id: 'flughafen', name: 'Flughafen Wolkenfeld', w: 6, h: 4, cost: 15000, level: 25, buildTime: 45 * MIN, xp: 500, station: 'air', max: 1, materials: { stahl: 14, glas: 10 }, desc: 'Luftfracht für Elektronik, Stahl und Spielzeug sowie lukrative Exporte.', model: { kind: 'airport', color: '#e4e8ec', accent: '#2e86de' } }),
 ];
 
-// ---------------------------------------------------------------- Dekoration (54)
+// ---------------------------------------------------------------- Dekoration (60)
 type DecoRow = [string, string, number, number, number, number, ModelSpec];
 // id, Name, Größe, Kosten, Level, Attraktivität, Modell
 const DECOS: DecoRow[] = [
@@ -248,6 +248,10 @@ const DECOS: DecoRow[] = [
   ['ostereier', 'Ostereier-Nest (Frühling)', 1, 80, 3, 3, { kind: 'eggs', color: '#a29bfe' }],
   ['blumenkarren', 'Blumenkarren (Frühling)', 1, 130, 6, 5, { kind: 'cart', color: '#55efc4', variant: 2 }],
   ['strandkorb', 'Strandkorb (Sommer)', 1, 140, 9, 5, { kind: 'beachchair', color: '#0abde3' }],
+  ['ladesaeule', 'E-Ladesäule', 1, 150, 6, 4, { kind: 'charger', color: '#eceff1' }],
+  ['rollerstation', 'E-Roller-Station', 1, 130, 7, 4, { kind: 'scooter', color: '#26a69a' }],
+  ['windrad', 'Windrad', 1, 450, 10, 7, { kind: 'windturbine', color: '#f5f5f5' }],
+  ['solarfeld', 'Solarfeld', 2, 700, 12, 12, { kind: 'solar', color: '#1e3a5f' }],
 ];
 const decoration = DECOS.map(([id, name, s, cost, level, appeal, model]) =>
   mk('decoration', false, {

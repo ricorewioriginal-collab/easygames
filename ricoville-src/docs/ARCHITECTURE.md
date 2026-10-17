@@ -7,7 +7,8 @@ src/
   core/save.ts       Speichern: Prüfsumme, Sicherung, Versionen/Migration, Mehr-Tab-Schutz
   catalogs/*.ts      Inhalte: Gebäude, Pflanzen, Waren, Rezepte, Aufträge, Aufgaben, Figuren, Erfolge
   rendering/models.ts  Prozedurale Modelle (Vertex-Farben, zu einer Geometrie verschmolzen, gecacht)
-  rendering/world.ts   Three.js-Szene: Kamera, Licht, Boden, Wasser, Wald, Verkehr, Transport, Tag/Nacht
+  rendering/world.ts   Three.js-Szene: Kamera, Licht, Boden, Wasser, Wald, Verkehr, Transport, Tag/Nacht, Wetter, Vorschaubilder
+  rendering/season.ts  Jahreszeit (Kalender), Wetter je 6-Minuten-Abschnitt, Tageslichtkurve – reine Funktionen, nur Optik
   world/traffic.ts     Autos und Fußgänger auf dem Straßengraphen
   input/controls.ts    Maus/Touch/Tastatur: Tippen, Ziehen, Malen, Pinch, Mausrad
   audio/audio.ts       Klänge und generative Musik per Web Audio
@@ -26,6 +27,9 @@ Die Regeln kennen weder DOM noch Three.js. Dadurch laufen die Unit-Tests in Node
 
 ## Rendering und Leistung
 - Ein Material für alle Gebäude (Vertex-Farben), Geometrien pro Gebäudetyp einmal gebaut und geteilt.
+- Nachtlichter ohne Lichtquellen: Modelle tragen ein Attribut `glow` (Fenster, Lampen), das Material addiert es nachts als Eigenleuchten (`onBeforeCompile`, eine Uniform).
+- Wald-Kronen sind weiß modelliert und werden je Baum über Instanzfarben eingefärbt (Jahreszeit ohne neue Geometrie).
+- Vorschaubilder im Baumenü: Hauptrenderer rendert das Modell in ein 192²-Renderziel, Umrechnung nach sRGB, verkleinert als PNG; nur sichtbare Karten, gecacht.
 - Straßen und Wald als `InstancedMesh` (wenige Draw Calls), Straßenmuster über 16 Masken-Texturen.
 - Orthografische Iso-Kamera mit 90°-Drehung, Zoom und weicher Zielfahrt.
 - Qualitätsstufen (Schatten, Pixelverhältnis, Verkehrsmenge); bei niedriger Bildrate wird automatisch heruntergeschaltet. Unsichtbarer Tab: Ton aus, Ticks pausiert.
