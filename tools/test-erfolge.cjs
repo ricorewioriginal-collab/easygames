@@ -20,6 +20,8 @@ const server = http.createServer((req, res) => {
   try {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 800 } });
     await ctx.route(/firestore\.googleapis\.com|gstatic\.com/, r => r.abort());
+    // Feste Uhrzeit (Mittwoch, 12 Uhr): sonst schalten Nachteule/Frühaufsteher/Wochenende je nach Testzeit schon beim leeren Start frei
+    await ctx.clock.setFixedTime(new Date(2026, 9, 14, 12, 0, 0));
     const page = await ctx.newPage();
     const errors = []; page.on('pageerror', e => errors.push(e.message));
 
