@@ -38,9 +38,10 @@ async function run(browser, vp, name) {
   await shot('1-title');
   await p.click('#tStart');
   await p.waitForSelector('#menu');
-  const st = await p.evaluate(() => JSON.parse(localStorage.getItem('royal-radio-match-v2')));
+  const st = await p.evaluate(() => RRMApp.state());
   ok(st && st.unlocked === 7 && st.stars[1] === 3 && st.from === 1, 'Migration: v1-Fortschritt (Level 7, Sterne) übernommen');
   ok(!!(await p.evaluate(() => localStorage.getItem('anmacha-radio-match-v1'))), 'Migration: alter Schlüssel bleibt als Sicherung');
+  ok(!(await p.evaluate(() => localStorage.getItem('royal-radio-match-v2'))), 'Start schreibt nichts, bevor sich etwas ändert (Cloud-Abgleich bleibt unberührt)');
   ok((await p.textContent('#menu .btn.big')).includes('Level 7'), 'Menü zeigt aktuelles Level');
   await shot('2-menu');
 

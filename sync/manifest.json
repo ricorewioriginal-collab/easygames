@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c04b2d352565",
- "generated": "2026-10-17T20:43:02+00:00",
- "commit": "a9a9aff277afd0aef4297f3d1a00269840b9529b",
+ "version": "e9c828c6bbe5",
+ "generated": "2026-10-17T21:31:30+00:00",
+ "commit": "0db831ead78029d8bb0db89bebe04450bfc26838",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3598,8 +3598,8 @@
   },
   {
    "p": "anmacha-radio-match/data/levels.js",
-   "s": 136113,
-   "h": "32617fbc9e2311f28ce3f112f90dfc80c89d3c920cb4fe4c56ba1db976404071"
+   "s": 135999,
+   "h": "b6a2a55098aaa6d5a999de5f4901b5f9887c47638f0a090c459dacfc181ec316"
   },
   {
    "p": "anmacha-radio-match/index.html",
@@ -3658,13 +3658,13 @@
   },
   {
    "p": "anmacha-radio-match/src/save/storage.js",
-   "s": 5961,
-   "h": "666ad97e5a077690a04fcf867a85d968671836bbe3682984de27ef4266e73602"
+   "s": 6099,
+   "h": "35f94fc83ecdf15b5c22984f4342e3efaae27ef610d8248c11563fa18a7e8a17"
   },
   {
    "p": "anmacha-radio-match/src/ui/app.js",
-   "s": 53121,
-   "h": "921302e2f48efc9edbbc6614941b99c6078551e8f12f053dec7fc43f59b505b6"
+   "s": 53430,
+   "h": "d17299db007c39c0d1bd7ad84c56852f6ccffde8d2a55d3c39f81a44c2d407a0"
   },
   {
    "p": "anmacha-radio-match/src/ui/texts.js",
@@ -6429,7 +6429,7 @@
   {
    "p": "sync/catalog.json",
    "s": 105413,
-   "h": "24624cd9645cd152c526a70e066b03a0edd3c746a9bd5fb3158d53fb13f6d393"
+   "h": "291dccbcf6340442702327c64a0c0eb9895b6f3f97900db626e490a06fc9cf0f"
   },
   {
    "p": "taschi/card.svg",

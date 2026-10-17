@@ -659,20 +659,18 @@
   {
    "id": 38,
    "mask": "midcol",
-   "moves": 20,
-   "cert": 8,
+   "moves": 45,
+   "cert": 17,
    "fair": [
-    11,
-    14,
-    14,
+    16,
     18,
-    35
+    44,
+    45,
+    68
    ],
    "rate": 0.8,
    "goals": [
-    "deliver:parcel",
-    "deliver:parcel",
-    "collect:"
+    "deliver:parcel"
    ]
   },
   {
@@ -3213,18 +3211,17 @@
   {
    "id": 180,
    "mask": "zigportal",
-   "moves": 18,
-   "cert": 6,
+   "moves": 45,
+   "cert": 16,
    "fair": [
-    4,
-    7,
-    16,
-    21,
-    25
+    46,
+    51,
+    57,
+    77,
+    102
    ],
-   "rate": 0.6,
+   "rate": 0,
    "goals": [
-    "deliver:parcel",
     "deliver:parcel",
     "collect:3"
    ]
@@ -3752,12 +3749,12 @@
   "rolling": 20
  },
  "goals": {
-  "collect": 100,
+  "collect": 99,
   "clear:crate": 23,
   "clear:noise": 52,
   "specials": 8,
   "clear:dusty": 15,
-  "deliver:parcel": 31,
+  "deliver:parcel": 29,
   "combo": 6,
   "clear:moss": 18,
   "score": 6,
@@ -3773,5 +3770,5 @@
   "clear:rolling": 11
  },
  "uniqueMasks": 127,
- "seconds": 141
+ "seconds": 143
 }

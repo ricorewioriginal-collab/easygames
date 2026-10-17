@@ -60,6 +60,9 @@ ok('mindestens 12 Missionsarten', () => {
   assert(t.size >= 12, [...t].join(','));
   console.log('     ' + t.size + ' Missionsarten');
 });
+ok('kein Level hat doppelte Liefer-Ziele (die Engine zählt Lieferungen gemeinsam)', () => {
+  [...L, ...B].forEach(l => { const k = l.goals.filter(g => g.type === 'deliver').map(g => g.what); assert.equal(new Set(k).size, k.length, 'L' + l.id); });
+});
 ok('jedes Level hat einen gespeicherten Siegpfad, der innerhalb der Züge gewinnt', () => {
   let tot = 0;
   [...L, ...B].forEach(l => {

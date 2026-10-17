@@ -24,6 +24,11 @@ ok('v1-Stand wird übernommen (Level, Sterne, Ton aus), ungültige Einträge ver
   assert.equal(s.unlocked, 37); assert.deepEqual(s.stars, { 1: 3, 2: 2, 36: 1 });
   assert.equal(s.from, 1); assert.equal(s.set.sfx, false); assert.equal(s.set.music, false); assert.equal(s.coins, 500);
 });
+ok('wer im alten Spiel Level 100 geschafft hat, startet bei Level 101', () => {
+  const s = Save.load(mem({ 'anmacha-radio-match-v1': JSON.stringify({ unlocked: 100, stars: { 99: 2, 100: 1 } }) }));
+  assert.equal(s.unlocked, 101);
+  assert.equal(Save.load(mem({ 'anmacha-radio-match-v1': JSON.stringify({ unlocked: 100, stars: { 99: 2 } }) })).unlocked, 100);
+});
 ok('Migration ist idempotent und lässt den alten Schlüssel unverändert', () => {
   const ls = mem({ 'anmacha-radio-match-v1': V1 });
   const a = Save.load(ls); Save.store(ls, a, 1000);

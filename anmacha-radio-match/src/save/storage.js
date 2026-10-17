@@ -59,6 +59,7 @@
       unlocked: int(old.unlocked, 1, 100, 1),
       stars: cleanMap(old.stars, 100, 3)
     };
+    if (s.unlocked === 100 && s.stars[100]) s.unlocked = 101;   // altes Spiel deckelte bei 100: wer Level 100 geschafft hat, darf weiter
     if (old.mute === true) s.set = { sfx: false, music: false };
     return s;
   }

@@ -511,7 +511,7 @@
     var last = performance.now();
     timer = setInterval(function () {
       var now = performance.now(), dt = (now - last) / 1000; last = now;
-      if (!G || !G.time) return stopTimer();
+      if (!G || !G.def.time) return stopTimer();
       if (topName() !== 'game' || G.eng.status !== 'play' || D.hidden) return;
       G.time = Math.max(0, G.time - dt);
       $('mv').textContent = Math.ceil(G.time); $('mv').classList.toggle('low', G.time <= 10);
@@ -666,10 +666,11 @@
     render();
   }
   function cutscene(lines, w, cb) {
-    var i = 0;
+    var i = 0, fired = false;
+    function go() { if (fired) return; fired = true; if (cb) setTimeout(cb, 0); }   // auch bei Zurück-Taste geht es weiter
     var m = modal('<div class="cut"><p class="wname">Welt ' + (w + 1) + ' · ' + RRM.WORLDS[w].name + '</p><div class="stagec"><div class="who" id="cw"></div><div class="bubble" id="cb"></div></div><div class="row"><button class="btn" data-a="skip">Überspringen</button><button class="btn gold" data-a="next" id="cn">Weiter</button></div></div>', {
-      name: 'cut', cls: 'cutscene', dismiss: false,
-      on: function (a) { if (a === 'skip' || i >= lines.length - 1) { closeTop(cb); return; } i++; render(); }
+      name: 'cut', cls: 'cutscene', dismiss: false, onClose: go,
+      on: function (a) { if (a === 'skip' || i >= lines.length - 1) { closeTop(); return; } i++; render(); }
     });
     function render() {
       var l = lines[i], mira = /^MIRA/.test(l);
@@ -880,8 +881,8 @@
   // ---------- Start ----------
   function boot() {
     ui = $('ui');
-    S = RRM.Save.load(LS);
-    save();   // Migration sofort festschreiben (idempotent)
+    S = RRM.Save.load(LS);   // Migration geschieht beim Laden (idempotent); gespeichert wird erst bei der ersten Änderung,
+                             // damit ein frischer Stand nicht mit neuem Zeitstempel einen Cloud-Stand überschreibt
     stage = new RRM.Stage($('gl'), {
       onLost: function () { var e = el('<div class="lost" id="lost">3D-Grafik wird neu gestartet …</div>'); ui.appendChild(e); },
       onRestored: function () { var e = $('lost'); if (e) e.remove(); if (G) board.sync(); }

@@ -129,7 +129,10 @@ class Builder {
     if (!pos.length) return;
     const [x, y] = pos[0]; this.used[key(x, y)] = 1; this.specials.push(k != null ? { x, y, s, k } : { x, y, s });
   }
-  goal(g) { this.goals.push(g); }
+  goal(g) {   // gleiche Liefer-Ziele zusammenfassen: die Engine zählt alle Pakete/Kassetten in einem Zähler
+    const same = g.type === 'deliver' && this.goals.find(x => x.type === 'deliver' && x.what === g.what);
+    if (same) same.n += g.n; else this.goals.push(g);
+  }
   count(t) { return this.blockers.filter(b => b.t === t).length; }
 }
 
