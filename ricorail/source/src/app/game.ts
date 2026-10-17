@@ -39,11 +39,12 @@ export function qualityOf(s: Settings): { world: WorldQuality; model: Quality; p
   if (q === 'auto') {
     const mobile = matchMedia('(pointer: coarse)').matches;
     const mem = (navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 4;
-    q = mobile ? (mem >= 6 ? 'mid' : 'low') : 'high';
+    // Automatisch lieber flüssig als detailreich: Handys niedrig, Rechner mittel
+    q = mobile ? (mem >= 8 ? 'mid' : 'low') : 'mid';
   }
   if (q === 'low') return { world: { level: 'low', viewDist: 1400, shadows: false }, model: 'low', pixel: 1 };
-  if (q === 'mid') return { world: { level: 'mid', viewDist: 2400, shadows: false }, model: 'medium', pixel: 1.5 };
-  return { world: { level: 'high', viewDist: 3800, shadows: true }, model: 'high', pixel: 2 };
+  if (q === 'mid') return { world: { level: 'mid', viewDist: 2400, shadows: false }, model: 'medium', pixel: 1.25 };
+  return { world: { level: 'high', viewDist: 3800, shadows: true }, model: 'high', pixel: 1.75 };
 }
 
 export class Game {
@@ -131,7 +132,7 @@ export class Game {
   private resize = () => {
     const w = innerWidth, hh = innerHeight;
     this.renderer.setSize(w, hh, false);
-    this.rig.cam.aspect = w / hh; this.rig.cam.updateProjectionMatrix();
+    this.rig.cam.aspect = w / hh; this.rig.applyFov();
   };
   private vis = () => { if (document.hidden && !this.paused) this.setPaused(true); };
 
@@ -216,12 +217,13 @@ export class Game {
     const expert = this.s.world.assist === 'expert';
     const rate = 0.6 * dt;
     if (held.has('throttleUp')) this.lever = Math.min(1, this.lever + rate);
-    if (held.has('throttleDown')) this.lever = Math.max(expert ? 0 : -1, this.lever - rate);
+    if (held.has('throttleDown')) this.lever = Math.max(expert && this.ctx.settings.controls !== 'simple' ? 0 : -1, this.lever - rate);
     if (held.has('brakeUp')) this.manBrake = Math.min(1, this.manBrake + rate);
     if (held.has('brakeDown')) this.manBrake = Math.max(0, this.manBrake - rate);
     if (this.input.axis.active && Math.abs(this.input.axis.lever) > 0.02) this.lever = this.input.axis.lever;
     // Schnappen auf 0 nahe Mitte
     if (!held.has('throttleUp') && !held.has('throttleDown') && Math.abs(this.lever) < 0.04) this.lever = 0;
+    if (this.ctx.settings.controls === 'simple') this.simpleAssist(t, dt);
     const L = this.lever;
     let thr = Math.max(0, L);
     if (t.traction === 'diesel' && t.consist[0].type.body !== 'dmu') thr = Math.round(thr * 8) / 8; // Fahrstufen
@@ -243,7 +245,32 @@ export class Game {
     }
   }
 
-  setLever(v: number) { this.lever = Math.max(this.s.world.assist === 'expert' ? 0 : -1, Math.min(1, v)); }
+  /** Einfache Bedienung: Richtung, Bremse lösen, Stromabnehmer/Motor und Türen übernimmt das Spiel */
+  private stillT = 0;
+  private doorStop = '';
+  private simpleAssist(t: Train, dt: number) {
+    const c = t.ctl, still = Math.abs(t.v) < 0.1;
+    this.manBrake = 0;
+    if (t.traction === 'electric') { c.panto = true; c.mainSwitch = true; }
+    if (t.traction === 'diesel') c.engine = true;
+    c.parking = false;
+    // Wachsam/Sifa quittiert das Spiel selbst
+    if (this.s.world.pzb.need > 0) this.s.world.pzbAck();
+    if (t.sifaWarn) t.sifaAck();
+    if (this.lever > 0.02 && still && c.reverser === 0) c.reverser = 1;
+    this.stillT = still ? this.stillT + dt : 0;
+    const where = `${t.head.t}:${Math.round(t.head.s / 50)}`;
+    if (this.lever > 0.02) {
+      // Losfahren: Türen zu
+      if (c.openL || c.openR || c.releaseL || c.releaseR) { c.openL = c.openR = c.releaseL = c.releaseR = false; this.ctx.audio.play('door_beep'); toast('Türen schließen – gleich geht es los'); }
+    } else if (t.hasDoors && this.stillT > 1.2 && this.doorStop !== where) {
+      const side = this.platformSide(t);
+      if (side) { this.doorStop = where; c.releaseL = c.openL = side === 'L'; c.releaseR = c.openR = side === 'R'; this.ctx.audio.play('door_open'); toast(`Türen ${side === 'L' ? 'links' : 'rechts'} offen – zum Weiterfahren Hebel nach oben`); }
+    }
+    if (!still) this.doorStop = this.doorStop && this.stillT === 0 && Math.abs(t.v) > 3 ? '' : this.doorStop;
+  }
+
+  setLever(v: number) { this.lever = Math.max(this.s.world.assist === 'expert' && this.ctx.settings.controls !== 'simple' ? 0 : -1, Math.min(1, v)); }
   getLever() { return this.lever; }
   setBrake(v: number) { this.manBrake = Math.max(0, Math.min(1, v)); }
   getBrake() { return this.manBrake; }

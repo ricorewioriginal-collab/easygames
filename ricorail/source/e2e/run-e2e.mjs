@@ -53,16 +53,16 @@ async function drive(page, label) {
 
 await session('desktop', { viewport: { width: 1280, height: 800 } }, async (page) => {
   await page.goto(BASE);
-  await page.waitForSelector('text=Freies Fahren', { timeout: 30000 });
+  await page.waitForSelector('text=Jetzt fahren', { timeout: 30000 });
   ok('Desktop: Hauptmenü', true);
-  const menu = await page.locator('.menu .btn').allTextContents();
+  const menu = await page.locator('.menu2 .btn').allTextContents();
   ok('Desktop: Online als „in Entwicklung“', menu.some((t) => /Online/.test(t) && /in Entwicklung/.test(t)));
   await shot(page, 'desktop-menu');
   // Software-Rendering im Test: niedrige Qualität
   await page.click('text=Einstellungen');
   await page.locator('label.f', { hasText: 'Qualität' }).locator('select').selectOption('low');
   await page.click('button[aria-label="Zurück"]');
-  await page.click('text=Freies Fahren');
+  await page.click('.tiles .btn >> nth=0'); await page.click('text=Freies Fahren');
   await page.click('text=Losfahren');
   await drive(page, 'Desktop');
   await page.waitForTimeout(1500);
@@ -90,11 +90,11 @@ await session('desktop', { viewport: { width: 1280, height: 800 } }, async (page
 
 await session('handy', { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 }, async (page) => {
   await page.goto(BASE);
-  await page.waitForSelector('text=Fahrplanfahrt', { timeout: 30000 });
+  await page.waitForSelector('text=Jetzt fahren', { timeout: 30000 });
   await shot(page, 'handy-menu');
   const sw = await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1);
   ok('Handy: kein waagerechtes Scrollen im Menü', sw);
-  await page.tap('text=Fahrplanfahrt');
+  await page.tap('.tiles .btn >> nth=0'); await page.tap('text=Fahrplanfahrt');
   await page.tap('text=Dienst antreten');
   await drive(page, 'Handy');
   await page.waitForTimeout(1500);
@@ -107,13 +107,13 @@ await session('handy', { viewport: { width: 390, height: 844 }, isMobile: true, 
 
 await session('offline', { viewport: { width: 1024, height: 700 } }, async (page, ctx) => {
   await page.goto(BASE);
-  await page.waitForSelector('text=Freies Fahren', { timeout: 30000 });
+  await page.waitForSelector('text=Jetzt fahren', { timeout: 30000 });
   const reg = await page.evaluate(async () => { const r = await navigator.serviceWorker.ready; return !!r.active; });
   ok('Offline: Service Worker aktiv', reg);
   await page.waitForTimeout(1500);
   await ctx.setOffline(true);
   await page.reload();
-  await page.waitForSelector('text=Freies Fahren', { timeout: 30000 });
+  await page.waitForSelector('text=Jetzt fahren', { timeout: 30000 });
   ok('Offline: Spiel startet ohne Netz', true);
 });
 

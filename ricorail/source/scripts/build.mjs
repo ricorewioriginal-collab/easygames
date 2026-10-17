@@ -12,7 +12,7 @@ const pkg = JSON.parse(readFileSync(join(SRC, 'package.json'), 'utf8'));
 
 const res = await build({
   entryPoints: [join(SRC, 'src/app/main.ts')],
-  bundle: true, minify: true, format: 'iife', target: ['es2020', 'chrome87', 'safari14', 'firefox90'],
+  bundle: true, minify: process.env.NOMIN ? false : true, format: 'iife', target: ['es2020', 'chrome87', 'safari14', 'firefox90'],
   write: false, legalComments: 'eof', sourcemap: false, logLevel: 'warning',
   define: { 'process.env.NODE_ENV': '"production"' },
 });

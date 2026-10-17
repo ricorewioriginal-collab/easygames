@@ -47,7 +47,7 @@ export class TrainsView {
       const hp = net.pos(t.head);
       const d = Math.hypot(hp.x - cam.x, hp.z - cam.z) - t.length;
       if (d > range && t.id !== playerId) { if (this.trains.has(t.id)) this.drop(t.id); continue; }
-      this.place(t.id, t, null, t.id === playerId, hideLeadBody && t.id === playerId);
+      this.place(t.id, t, null, t.id === playerId, hideLeadBody && t.id === playerId, t.v * world.pendingTime);
     }
     for (const id of [...this.trains.keys()]) if (this.trains.get(id)!.seen !== this.frame) this.drop(id);
   }
@@ -59,7 +59,7 @@ export class TrainsView {
     for (const id of [...this.trains.keys()]) if (this.trains.get(id)!.seen !== this.frame) this.drop(id);
   }
 
-  private place(id: string, t: Train | null, pose: TrainPose | null, isPlayer: boolean, hideLead: boolean) {
+  private place(id: string, t: Train | null, pose: TrainPose | null, isPlayer: boolean, hideLead: boolean, ext = 0) {
     const net = this.net;
     let tr = this.trains.get(id);
     const types = t ? t.consist.map((v) => v.type) : pose!.types.map((x) => ({ id: x }));
@@ -78,9 +78,17 @@ export class TrainsView {
     }
     tr.seen = this.frame;
     // Positionierung: entlang der Spur hinter der Spitze
-    const head = t ? t.head : pose!.head;
-    const trail = t ? t.trail : pose!.trail;
-    const behind = (x: number): TrackPos => posBehind(net, head, trail, x);
+    let head = t ? t.head : pose!.head;
+    let trail = t ? t.trail : pose!.trail;
+    // Zwischen zwei Simulationstakten weiterrechnen (sonst ruckelt die Fahrt sichtbar)
+    ext = Math.max(-2, Math.min(2, ext));
+    let back = 0;
+    if (ext > 0.001) {
+      const m = net.move(head, ext);
+      if (m.entered.length) trail = [...m.entered].reverse().concat(trail);
+      head = m.pos;
+    } else if (ext < -0.001) back = -ext;
+    const behind = (x: number): TrackPos => posBehind(net, head, trail, x + back);
     let off = 0;
     const n = tr.vehicles.length;
     const cons = t ? t.consist : null;
@@ -102,7 +110,7 @@ export class TrainsView {
       g.position.addVectors(_a, _b).multiplyScalar(0.5);
       g.visible = !(hideLead && i === 0);
       // Animation
-      const odo = t ? t.odo : pose!.odo;
+      const odo = t ? t.odo + Math.abs(ext) : pose!.odo;
       const lights = t ? t.ctl.lights : pose!.lights;
       const first = i === 0, last = i === n - 1;
       const dl = t ? t.doorL : pose!.doorL, dr = t ? t.doorR : pose!.doorR;

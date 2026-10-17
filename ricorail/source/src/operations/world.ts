@@ -762,6 +762,9 @@ export class World {
   }
 
   // ---------------------------------------------------------------- Takt
+  /** Noch nicht simulierte Zeit seit dem letzten Takt (s) – für flüssige Darstellung zwischen den Takten */
+  get pendingTime() { return this.acc; }
+
   /** Echtzeit-Fortschritt (dt in s Wanduhr) – führt feste Takte aus */
   update(dtReal: number) {
     this.acc += Math.min(dtReal, 0.25) * this.speedMul;

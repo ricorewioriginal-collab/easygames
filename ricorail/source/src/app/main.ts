@@ -98,31 +98,66 @@ function select<T extends string>(opts: [T, string][], val: T, on: (v: T) => voi
 const ROUTE_TAG = (id: string) => { const r = ROUTE.get(id)!; return h('span', { class: `tag ${r.world === 'real' ? 'real' : 'fant'}` }, r.world === 'real' ? 'nachgebildet' : 'Fantasie'); };
 
 // ------------------------------------------------------------------ Hauptmenü
+/** Große Kachel mit Symbol, Titel und Unterzeile */
+const tile = (icon: string, label: string, sub: string, on: () => void, cls = '') =>
+  btn([h('span', { class: 'ti' }, icon), h('span', null, h('b', null, label), h('small', null, sub))] as unknown as HTMLElement, on, `btn tile ${cls}`);
+/** Text ohne führendes Symbol („🚆 Freies Fahren“ → „Freies Fahren“) */
+const bare = (s: string) => s.replace(/^[^\p{L}]+/u, '');
+
 function menu() {
   const p = P();
   const rank = RANKS[p.career.rank]?.name ?? '';
   const last = p.resume as RunStub | null;
-  const M = (label: string, sub: string, on: () => void, extra: Record<string, unknown> = {}) => btn([label, h('small', null, sub)] as unknown as HTMLElement, on, 'btn', extra);
+  const quick = quickPick();
   screen(
-    h('div', { class: 'row' }, h('h1', { class: 'logo' }, 'RicoRail ', h('b', null, 'Simulator 3D')), h('span', { class: 'spacer' }),
-      btn(`👤 ${p.name}`, profiles, 'btn small', { title: t('profile') })),
-    h('p', { class: 'sub' }, 'Deine Eisenbahn. Deine Strecken. Deine Welt.', h('br'), h('span', { class: 'small' }, `${rank} · ${p.career.xp} Erfahrung`)),
-    h('div', { class: 'menu' },
-      last ? M(t('continue'), `${t('continueSub')}: ${last.title}`, () => resume(last), { class: 'btn primary' }) : null,
-      M(t('free'), t('freeSub'), freeDrive),
-      M(t('career'), t('careerSub'), career),
-      M(t('timetable'), t('timetableSub'), timetableRun),
-      M(t('freight'), t('freightSub'), () => scenarioList(['freight', 'shunt'], t('freight'))),
-      M(t('box'), t('boxSub'), boxMenu),
-      M(t('tycoon'), t('tycoonSub'), tycoon),
-      M(t('world'), t('worldSub'), worldMenu),
-      M(t('editor'), t('editorSub'), editor),
-      M(t('scenarios'), t('scenariosSub'), () => scenarioList(null, t('scenarios'))),
-      M(t('online'), t('onlineSub'), () => toast('Online-Modus ist in Entwicklung und noch nicht verfügbar.'), { class: 'btn dis', 'aria-disabled': 'true' }),
-      h('div', { class: 'row' }, btn(t('settings'), () => settingsScreen(menu)), btn(t('manual'), manual), btn(t('credits'), credits)),
-      btn(t('back'), backToEasygames, 'btn ghost')),
+    h('div', { class: 'hero' },
+      h('div', { class: 'row' }, h('h1', { class: 'logo' }, 'RicoRail ', h('b', null, 'Simulator 3D')), h('span', { class: 'spacer' }),
+        btn(`👤 ${p.name}`, profiles, 'btn small', { title: t('profile') })),
+      h('p', { class: 'sub' }, 'Deine Eisenbahn. Deine Strecken. Deine Welt.'),
+      h('p', { class: 'small muted' }, `${rank} · ${p.career.xp} Erfahrung`)),
+    h('div', { class: 'menu2' },
+      quick ? btn([h('span', { class: 'ti' }, '▶'), h('span', null, h('b', null, 'Jetzt fahren'), h('small', null, `Sofort los: ${quick.title}`))] as unknown as HTMLElement, () => quickStart(quick), 'btn tile primary big') : null,
+      last ? tile('⟲', bare(t('continue')), last.title, () => resume(last), 'big') : null,
+      h('div', { class: 'tiles' },
+        tile('🚆', 'Fahren', 'Frei, nach Fahrplan, Güter', driveMenu),
+        tile('🎓', bare(t('career')), t('careerSub'), career),
+        tile('📋', 'Aufgaben', t('scenariosSub'), () => scenarioList(null, t('scenarios'))),
+        tile('🚦', bare(t('box')), t('boxSub'), boxMenu),
+        tile('🏢', bare(t('tycoon')), t('tycoonSub'), tycoon),
+        tile('🌍', 'Zuschauen', 'Züge beobachten, Kameras, Zeitraffer', worldMenu),
+        tile('✏️', 'Editor', t('editorSub'), editor),
+        tile('🌐', 'Online', 'in Entwicklung', () => toast('Online-Modus ist in Entwicklung und noch nicht verfügbar.'), 'dis')),
+      h('div', { class: 'row foot' }, btn(t('settings'), () => settingsScreen(menu), 'btn small'), btn(t('manual'), manual, 'btn small'), btn(t('credits'), credits, 'btn small'), btn(t('back'), backToEasygames, 'btn small ghost'))),
     h('p', { class: 'notice' }, `Version ${VERSION} · Simulation, kein offizielles Produkt der Deutschen Bahn. Reale Strecken sind vereinfacht nachgebildet. Sicherungssysteme sind Spielmodelle, nicht zertifiziert und nicht sicherheitsrelevant. Kostenlos, keine In-App-Käufe.`),
   );
+}
+
+/** Untermenü „Fahren“ */
+function driveMenu() {
+  screen(header('Fahren'),
+    h('div', { class: 'tiles' },
+      tile('🚆', bare(t('free')), t('freeSub'), freeDrive),
+      tile('🕒', bare(t('timetable')), t('timetableSub'), timetableRun),
+      tile('📦', bare(t('freight')), t('freightSub'), () => scenarioList(['freight', 'shunt'], t('freight')))));
+}
+
+/** Schnellstart: erste Nahverkehrslinie der ersten Strecke, nächste Abfahrt ab 8 Uhr */
+function quickPick(): { route: string; line: string; dep: number; title: string } | null {
+  try {
+    const route = ROUTES[0].id;
+    const lines = (LINES[route] ?? []).filter((l) => l.kind !== 'GZ');
+    const L = lines.find((l) => ['RB', 'RE', 'S'].includes(l.kind)) ?? lines[0];
+    if (!L) return null;
+    const dep = nextDeparture(netOf(route), L, false, 8 * 3600).stops[0].dep ?? 8 * 3600;
+    return { route, line: L.id, dep, title: `${L.name} ab ${hhmm(dep)}` };
+  } catch { return null; }
+}
+function quickStart(q: { route: string; line: string; dep: number; title: string }) {
+  const player: PlayerSpec = { kind: 'service', line: q.line, back: false, dep: q.dep };
+  const weather: Weather = { kind: 'clear', season: 'summer', wind: 3 };
+  const start = Math.max(0, q.dep - 120);
+  void run({ title: q.title, routeId: q.route, time: start, weather, assist: 'easy', traffic: 1, player, mode: 'drive', allowFreeCam: false, back: menu, scenario: serviceScenario(q.route, q.title) },
+    { title: q.title, kind: 'service', routeId: q.route, time: start, weather, assist: 'easy', traffic: 1, player });
 }
 
 // „Weiterfahren“: gespeicherte Startdaten der letzten Fahrt
@@ -465,6 +500,7 @@ function settingsScreen(back: () => void, inGame = false) {
         h('p', { class: 'small muted' }, inGame ? 'Qualitätsänderungen gelten ab der nächsten Fahrt.' : '')),
       h('div', null, h('h3', null, 'Ton'), vol('master', 'Gesamt'), vol('train', 'Zug'), vol('env', 'Umgebung'), vol('ui', 'Bedienung'), vol('voice', 'Ansagen'), chk('announcements', 'Haltestellenansagen')),
       h('div', null, h('h3', null, 'Steuerung'),
+        field('Bedienung', select([['simple', 'Einfach (nur Hebel, Rest automatisch)'], ['real', 'Realistisch (Wender, Türen, PZB selbst)']], s.controls, (v) => set('controls', v))),
         field('Schwierigkeit (neue Fahrten)', select(Object.entries(ASSIST) as [Assist, string][], s.assist, (v) => set('assist', v))),
         field('Touch-Hebel', select([['right', 'Rechts'], ['left', 'Links']], s.touchLayout, (v) => set('touchLayout', v))),
         field('Anzeige', select([['full', 'Vollständig'], ['minimal', 'Reduziert']], s.hud, (v) => set('hud', v))),
