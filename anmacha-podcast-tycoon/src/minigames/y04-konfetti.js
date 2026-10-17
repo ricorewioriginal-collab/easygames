@@ -51,14 +51,22 @@
       'Standard: Podeste fahren hin und her. Profi: Wind verweht das Konfetti – vorhalten!',
       'Genug Treffer vor Ablauf der Zeit = gewonnen. Zu viele Pannen = verloren.'
     ],
-    controls: { key: '←/→ drehen, ↑/↓ Weite, 1–4 Farbe (Q wechselt), Leertaste feuern', touch: 'Farbe unten wählen, Boden antippen = zielen und feuern', pad: 'Steuerkreuz zielen, B Farbe, A feuern' },
+    goal: d => 'Triff ' + CFG[d].need + ' Podeste mit Konfetti in ihrer Farbe – in ' + CFG[d].time + ' s, höchstens ' + CFG[d].errs + ' Pannen.',
+    how: [
+      'Auf dem Boden tauchen farbige Podeste auf. Über jedem steht, welche Farbe es will, und ein Zeitbalken.',
+      'Wähle unten die passende Farbe (Rot, Gelb, Blau, Grün).',
+      'Dann tippe auf das Podest: Die Kanone zielt dorthin und schießt.',
+      'Falsche Farbe oder ein Podest, das leer ausgeht, ist eine Panne.' + ' Profi: Wind (oben rechts) verweht das Konfetti – etwas vorhalten.'
+    ],
+    tip: { key: '1–4 Farbe wählen, ←/→ ↑/↓ zielen, Leertaste feuern', touch: 'Erst unten die Farbe wählen, dann das Podest antippen', y: 300 },
+    controls: { key: '←/→ drehen, ↑/↓ Weite, 1–4 Farbe (Q wechselt), Leertaste feuern', touch: 'Farbe unten antippen, dann Podest antippen = zielen und feuern', mouse: 'Farbe unten anklicken, dann Podest anklicken = zielen und feuern', pad: 'Steuerkreuz zielen, B Farbe, A feuern' },
     touch: ['left', 'right', 'up', 'down', 'a', 'b'],
     multi: { local: true, max: 4, mode: 'turns' },
     render: '3d',
     init(o) {
       const d = o.difficulty | 0, c = CFG[d];
       return { status: 'playing', seed: (o.seed >>> 0) || 1, fx: [], diff: d, cfg: c, t: 0, hits: 0, errs: 0, col: 0, yaw: 0, dist: 10, cool: 0, wind: 0, windT: 0,
-        player: ((o.players || [])[o.turn | 0] || {}).name || '', hold: { left: 0, right: 0, up: 0, down: 0 }, tg: [], shots: [], bursts: [], nid: 0, bid: 0, next: 0.8, msg: '' };
+        player: (o.players || []).length > 1 ? ((o.players[o.turn | 0] || {}).name || '') : '', hold: { left: 0, right: 0, up: 0, down: 0 }, tg: [], shots: [], bursts: [], nid: 0, bid: 0, next: 0.8, msg: '' };
     },
     input(st, a) {
       if (st.status !== 'playing') return;
@@ -101,7 +109,7 @@
     result(st) {
       const c = st.cfg, who = st.player ? st.player + ': ' : '';
       if (st.status === 'won') return { won: true, score: Math.round(PT.clamp(50 + 35 * (1 - st.t / c.time) + 15 * (1 - st.errs / (c.errs + 1)), 50, 100)), detail: who + st.hits + ' Treffer in ' + st.t.toFixed(1) + ' s, ' + st.errs + ' Pannen.' };
-      return { won: false, score: Math.round(PT.clamp(45 * st.hits / c.need, 0, 49)), detail: who + st.hits + ' von ' + c.need + ' Treffern' + (st.errs > c.errs ? ' – zu viele Pannen.' : ' – Party vorbei.') };
+      return { won: false, score: Math.round(PT.clamp(45 * st.hits / c.need, 0, 49)), detail: who + 'nur ' + st.hits + ' von ' + c.need + ' Treffern' + (st.errs > c.errs ? ' – zu viele Pannen (' + st.errs + ', erlaubt ' + c.errs + ').' : ' – die Zeit war um.') };
     },
     bot(st, goal) {
       if (goal === 'lose') return [];
@@ -175,18 +183,19 @@
       g.fillStyle = 'rgba(16,20,42,.8)'; g.fillRect(0, 0, 960, 56);
       g.font = '700 22px system-ui'; g.textAlign = 'left'; g.fillStyle = c.time - st.t < 10 ? '#ff4d6d' : '#fff';
       g.fillText('⏱ ' + Math.ceil(Math.max(0, c.time - st.t)) + ' s', 18, 36);
-      g.fillStyle = '#4be08a'; g.fillText('Treffer: ' + st.hits + ' / ' + c.need, 130, 36);
-      g.fillStyle = st.errs >= c.errs ? '#ff4d6d' : '#ffc84a'; g.fillText('Pannen: ' + st.errs + ' / ' + c.errs, 340, 36);
+      g.fillStyle = '#4be08a'; g.fillText('Treffer: ' + st.hits + ' von ' + c.need, 130, 36);
+      g.fillStyle = st.errs >= c.errs ? '#ff4d6d' : '#ffc84a'; g.fillText('Pannen: ' + st.errs + ' von max. ' + c.errs, 340, 36);
       g.textAlign = 'right'; g.fillStyle = '#cfd6ff';
-      g.fillText(c.wind ? 'Wind ' + (st.wind < 0 ? '◀ ' : '▶ ') + Math.abs(st.wind).toFixed(1) : (st.player ? '🎊 ' + st.player : 'Farbe passend wählen!'), 942, 36);
+      g.fillText(c.wind ? 'Wind ' + (st.wind < 0 ? '◀ ' : '▶ ') + Math.abs(st.wind).toFixed(1) : (st.player ? '🎊 ' + st.player : 'Farbe wählen → Podest antippen'), 900, 36);
       g.textAlign = 'center'; g.font = '700 18px system-ui';
       st.tg.forEach(t => {
         const s = toScreen(t.x, 1.4, t.z), w = 70;
         g.fillStyle = '#10142acc'; g.fillRect(s.x - w / 2 - 4, s.y - 36, w + 8, 34);
-        g.fillStyle = COLS[t.col]; g.fillText(CNAME[t.col], s.x, s.y - 20);
+        g.fillStyle = COLS[t.col]; g.fillText(CNAME[t.col] + (t.col === st.col ? ' ✓' : ''), s.x, s.y - 20);
         g.fillStyle = '#2a3050'; g.fillRect(s.x - w / 2, s.y - 12, w, 6); g.fillStyle = t.left < 2 ? '#ff4d6d' : '#4be08a'; g.fillRect(s.x - w / 2, s.y - 12, w * PT.clamp(t.left / c.life, 0, 1), 6);
       });
       g.font = '600 18px system-ui'; g.fillStyle = '#fff'; g.fillText(st.msg, 480, 82);
+      g.fillStyle = '#ffffff'; g.textAlign = 'right'; g.fillText('Farbe:', 294, 518); g.textAlign = 'center';
       for (let i = 0; i < 4; i++) {
         const x = 300 + i * 90; g.fillStyle = COLS[i]; g.fillRect(x + 6, 492, 78, 40);
         g.fillStyle = '#10142a'; g.font = '700 18px system-ui'; g.fillText((i + 1) + ' ' + CNAME[i], x + 45, 518);

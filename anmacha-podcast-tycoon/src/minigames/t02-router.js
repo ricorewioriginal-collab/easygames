@@ -37,7 +37,15 @@
       'Die Farbe und Nummer des Pakets zeigen sein Zielsegment rechts.',
       'Genug Pakete richtig zugestellt = gewonnen. Zu viele Fehlzustellungen = verloren.'
     ],
-    controls: { key: 'Pfeile: Weiche wählen, Leertaste: umschalten', touch: 'Weiche antippen', pad: 'Steuerkreuz wählen, A umschalten' },
+    goal: d => 'Stelle ' + CFG[d].need + ' Pakete richtig zu – bei mehr als ' + CFG[d].err + ' verirrten Paketen ist das Spiel verloren.',
+    how: [
+      'Links kommen farbige Pakete mit einer Nummer. Die Nummer zeigt, wohin sie müssen (Liste rechts).',
+      'Die gelben Kreise sind Weichen: ▲ schickt nach oben, ▼ nach unten. Antippen schaltet um.',
+      'Rechts neben den Zielen siehst du, wo jedes Paket gerade landen würde: ✓ passt, ✗ falsch → Weiche umschalten!',
+      'Erst umschalten, wenn das Paket davor durch ist.'
+    ],
+    tip: { key: 'Pfeile wählen eine Weiche, Leertaste schaltet ▲/▼ um', touch: 'Tippe die gelben Weichen ▲/▼ an, damit die Pakete zur richtigen Nummer fahren', y: 470 },
+    controls: { key: 'Pfeile: Weiche wählen (weißer Ring), Leertaste: umschalten', touch: 'Gelbe Weiche antippen = umschalten', mouse: 'Gelbe Weiche anklicken = umschalten', pad: 'Steuerkreuz wählen, A umschalten' },
     touch: ['left', 'right', 'up', 'down', 'a'],
     multi: { local: true, max: 4, mode: 'turns' },
     init(o) {
@@ -85,7 +93,7 @@
     result(st) {
       const c = st.cfg, won = st.status === 'won';
       const score = won ? PT.clamp(100 - st.bad * 12, 50, 100) : PT.clamp(Math.round(45 * st.ok / c.need), 0, 49);
-      return { won, score, detail: won ? c.need + ' Pakete zugestellt, nur ' + st.bad + ' verirrt – das Netz schnurrt.' : st.bad + ' Pakete verirrt, nur ' + st.ok + ' von ' + c.need + ' angekommen.' };
+      return { won, score, detail: won ? c.need + ' Pakete zugestellt, nur ' + st.bad + ' verirrt – das Netz schnurrt.' : st.bad + ' Pakete verirrt (erlaubt ' + c.err + '), nur ' + st.ok + ' von ' + c.need + ' richtig angekommen.' };
     },
     bot(st, goal) {
       const d = st.cfg.d, acts = [];
@@ -104,9 +112,9 @@
       g.fillStyle = '#10142a'; g.fillRect(0, 0, 960, 540);
       g.font = '600 22px system-ui'; g.textAlign = 'left'; g.fillStyle = '#ffb02e'; g.fillText('📦 Routerpakete', 24, 36);
       g.textAlign = 'right'; g.fillStyle = '#cfd6ff';
-      g.fillText('Zugestellt ' + st.ok + ' / ' + c.need + '   Verirrt ' + st.bad + ' / ' + c.err, 936, 36);
+      g.fillText('Zugestellt ' + st.ok + ' / ' + c.need + '   Verirrt ' + st.bad + ' / ' + c.err, 900, 36);
       g.font = '18px system-ui'; g.textAlign = 'center'; g.fillStyle = st.msgT > 0 ? '#ff4d6d' : '#8f98c8';
-      g.fillText(st.msgT > 0 ? st.msg : 'Schalte die Weichen rechtzeitig um!', 470, 76);
+      g.fillText(st.msgT > 0 ? st.msg : 'Paket-Nummer = Ziel rechts · Weichen ▲▼ antippen zum Umschalten', 470, 76);
       // Leitungen
       g.lineWidth = 3;
       const s = pos(d, 0), r = pos(d, 1);
@@ -134,6 +142,16 @@
         if (k === st.cur) { g.strokeStyle = '#ffffff'; g.lineWidth = 3; g.beginPath(); g.arc(p[0], p[1], 27, 0, 6.283); g.stroke(); }
       }
       g.fillStyle = '#4be08a'; g.fillRect(s[0] - 22, s[1] - 22, 44, 44); g.fillStyle = '#10142a'; g.fillText('🌐', s[0], s[1] + 7);
+      // Vorschau: wo landet jedes Paket mit den aktuellen Weichen?
+      const hits = {};
+      for (const q of st.pk) {
+        let n = q.to; while (n < leaf0) n = 2 * n + st.set[n];
+        const seg = n - leaf0, p = pos(d, n), h = Math.min(60, 420 / leaf0 - 6), k = hits[seg] = (hits[seg] || 0) + 1;
+        const x = p[0] - 2 - 32 * k, ok = seg === q.dest;
+        g.fillStyle = COLS[q.dest]; g.fillRect(x, p[1] - h / 2 + 4, 28, h - 8);
+        g.fillStyle = '#10142a'; g.textAlign = 'center'; g.font = '600 16px system-ui'; g.fillText(String(q.dest + 1), x + 14, p[1] + 6);
+        g.fillStyle = ok ? '#4be08a' : '#ff4d6d'; g.font = '800 18px system-ui'; g.fillText(ok ? '✓' : '✗', x + 14, p[1] - h / 2 + 2);
+      }
       // Pakete
       for (const q of st.pk) {
         const a = pos(d, q.from), b = pos(d, q.to), x = a[0] + (b[0] - a[0]) * q.p, y = a[1] + (b[1] - a[1]) * q.p;

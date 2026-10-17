@@ -25,7 +25,7 @@
     [bar, drawer, cam, info].forEach(e => { UI.layer().appendChild(e); UI.bind(e, ACT); });
     BM._cam = cam;
     setTool('obj'); bindPointer(true); addEventListener('keydown', onKey); document.body.classList.add('pt-building');
-    UI.toast('Baumodus: ' + (lotId === 'studio' ? 'Euer Studio' : 'Campus') + '. Ziehen = Kamera schieben, Tippen = platzieren.', 'info', 4500);
+    UI.toast('Baumodus: ' + (lotId === 'studio' ? 'Euer Studio' : 'Campus') + '. Ziehen = Kamera schieben, zwei Finger oder Mausrad = zoomen, Tippen = platzieren. PC: Pfeiltasten/WASD schieben, Q/E drehen.', 'info', 6000);
     g.hud && g.hud();
   };
   BM.close = function () {
@@ -84,8 +84,14 @@
   function pMove(e) {
     const p = pointers[e.pointerId];
     if (p) { moved += Math.abs(e.clientX - p.x) + Math.abs(e.clientY - p.y); }
-    if (pinch && p) { p.x = e.clientX; p.y = e.clientY; const [a, b] = Object.keys(pointers).map(k => pointers[k]); const d = Math.hypot(a.x - b.x, a.y - b.y); G().world.buildZoom(Math.max(20, d) / Math.max(20, pinch)); pinch = d; return; }
-    if (panFrom && p && moved > 8) { const w = G().world, mpp = (w.buildDist ? w.buildDist() : 20) * 1.1 / Math.max(300, innerHeight); w.buildPan(-(e.clientX - p.x) * mpp, -(e.clientY - p.y) * mpp); }
+    if (pinch && p) {
+      // Zwei Finger: Abstand = Zoom, Mittelpunkt verschieben = Kamera schieben (geht auch mit Wand-/Bodenwerkzeug)
+      const [a0, b0] = Object.keys(pointers).map(k => pointers[k]), m0 = { x: (a0.x + b0.x) / 2, y: (a0.y + b0.y) / 2 };
+      p.x = e.clientX; p.y = e.clientY; const [a, b] = Object.keys(pointers).map(k => pointers[k]); const d = Math.hypot(a.x - b.x, a.y - b.y), m1 = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+      const w = G().world, g0 = w.groundAt(m0.x, m0.y), g1 = w.groundAt(m1.x, m1.y); if (g0 && g1) w.buildPanWorld(g0.x - g1.x, g0.z - g1.z);
+      w.buildZoom(Math.max(20, d) / Math.max(20, pinch)); pinch = d; return;
+    }
+    if (panFrom && p && moved > 8) { const w = G().world, a = w.groundAt(p.x, p.y), c = w.groundAt(e.clientX, e.clientY); if (a && c) w.buildPanWorld(a.x - c.x, a.z - c.z); }
     if (p) { p.x = e.clientX; p.y = e.clientY; }
     preview(e); if (drag) apply(e);
   }

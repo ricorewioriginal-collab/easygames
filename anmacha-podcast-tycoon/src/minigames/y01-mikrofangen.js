@@ -37,14 +37,22 @@
       'Bleibt ein Mikro zu lange liegen, geht es kaputt. Zu viele kaputte Mikros = verloren.',
       'Erreiche die Zielpunktzahl vor Ablauf der Zeit. Mehrere Spieler: reihum, die meisten Punkte gewinnen.'
     ],
-    controls: { key: 'Pfeile/WASD bewegen den Korb', touch: 'Finger halten: Korb läuft dorthin', pad: 'Stick/Steuerkreuz' },
+    goal: d => 'Sammle ' + CFG[d].need + ' Punkte in ' + CFG[d].time + ' s, indem du fallende Mikros mit dem Korb fängst – höchstens ' + CFG[d].miss + ' Mikros dürfen kaputtgehen.',
+    how: [
+      'Du steuerst den orangen Korb (Markierung „DU“). Von oben fallen Mikros – der dunkle Schatten zeigt, wo sie landen.',
+      'Fahr mit dem Korb unter die Mikros: weißes = 1 Punkt, goldenes = 3 Punkte.',
+      'Rote Mikros sind Feedback-Bomben: −2 Punkte und der Korb ist kurz gelähmt – ausweichen!',
+      'Bleibt ein Mikro zu lange liegen, geht es kaputt.'
+    ],
+    tip: { key: 'Pfeile/WASD bewegen den Korb – fang die weißen und goldenen Mikros!', touch: 'Finger halten = Korb läuft hin. Fang die Mikros, rote meiden!', y: 300 },
+    controls: { key: 'Pfeile/WASD bewegen den Korb', touch: 'Finger auf den Boden halten: Korb läuft dorthin', mouse: 'Maustaste gedrückt halten: Korb läuft zum Zeiger', pad: 'Stick/Steuerkreuz' },
     touch: ['left', 'right', 'up', 'down'],
     multi: { local: true, max: 4, mode: 'turns' },
     render: '3d',
     init(o) {
       const d = o.difficulty | 0, c = CFG[d];
       return { status: 'playing', seed: (o.seed >>> 0) || 1, fx: [], diff: d, cfg: c, t: 0, pts: 0, caught: 0, miss: 0, stun: 0, next: 0.6,
-        player: ((o.players || [])[o.turn | 0] || {}).name || '', p: { x: W / 2, z: D / 2 }, keys: { up: false, down: false, left: false, right: false }, ptr: null, objs: [], pops: [] };
+        player: (o.players || []).length > 1 ? ((o.players[o.turn | 0] || {}).name || '') : '', p: { x: W / 2, z: D / 2 }, keys: { up: false, down: false, left: false, right: false }, ptr: null, objs: [], pops: [] };
     },
     input(st, a) {
       if (a.type === 'key' && st.keys[a.key] !== undefined) st.keys[a.key] = !!a.down;
@@ -82,7 +90,7 @@
     result(st) {
       const c = st.cfg, who = st.player ? st.player + ': ' : '';
       if (st.status === 'won') return { won: true, score: Math.round(PT.clamp(50 + 35 * (1 - st.t / c.time) + 15 * (1 - st.miss / (c.miss + 1)), 50, 100)), detail: who + st.pts + ' Punkte nach ' + st.t.toFixed(1) + ' s, ' + st.miss + ' Mikros kaputt.' };
-      return { won: false, score: Math.round(PT.clamp(45 * st.pts / c.need, 0, 49)), detail: who + st.pts + ' von ' + c.need + ' Punkten' + (st.miss > c.miss ? ' – zu viele kaputte Mikros.' : ' – die Zeit war um.') };
+      return { won: false, score: Math.round(PT.clamp(45 * st.pts / c.need, 0, 49)), detail: who + 'nur ' + st.pts + ' von ' + c.need + ' nötigen Punkten' + (st.miss > c.miss ? ' – zu viele kaputte Mikros (' + st.miss + ', erlaubt ' + c.miss + ').' : ' – die Zeit war um.') };
     },
     bot(st, goal) {
       const p = st.p, c = st.cfg; let aim;
@@ -150,9 +158,10 @@
       g.fillStyle = 'rgba(16,20,42,.78)'; g.fillRect(0, 0, 960, 56);
       g.font = '700 22px system-ui'; g.textAlign = 'left'; g.fillStyle = c.time - st.t < 10 ? '#ff4d6d' : '#fff';
       g.fillText('⏱ ' + Math.ceil(Math.max(0, c.time - st.t)) + ' s', 18, 36);
-      g.fillStyle = '#4be08a'; g.fillText('Punkte: ' + st.pts + ' / ' + c.need, 130, 36);
-      g.fillStyle = st.miss >= c.miss ? '#ff4d6d' : '#ffc84a'; g.fillText('Kaputt: ' + st.miss + ' / ' + c.miss, 360, 36);
-      g.textAlign = 'right'; g.fillStyle = '#cfd6ff'; g.fillText(st.player ? '🎤 ' + st.player + ' ist dran' : 'Gold = 3 · Rot meiden!', 942, 36);
+      g.fillStyle = '#4be08a'; g.fillText('Punkte: ' + st.pts + ' von ' + c.need, 130, 36);
+      g.fillStyle = st.miss >= c.miss ? '#ff4d6d' : '#ffc84a'; g.fillText('Kaputt: ' + st.miss + ' von max. ' + c.miss, 360, 36);
+      g.textAlign = 'right'; g.fillStyle = '#cfd6ff'; g.fillText(st.player ? '🎤 ' + st.player + ' ist dran' : 'Gold +3 · Rot meiden!', 900, 36);
+      { const s = toScreen(st.p.x, CY + 0.8, st.p.z); g.textAlign = 'center'; g.fillStyle = '#ffffff'; g.font = '800 18px system-ui'; g.fillText('DU', s.x, s.y - 8); }
       g.textAlign = 'center';
       st.pops.forEach(q => { const age = st.t - q.t; if (age > 1) return; const s = toScreen(q.x, 2 + age * 2, q.z); g.globalAlpha = 1 - age; g.fillStyle = q.s[0] === '+' ? '#4be08a' : '#ff4d6d'; g.font = '700 26px system-ui'; g.fillText(q.s, s.x, s.y); });
       g.globalAlpha = 1;

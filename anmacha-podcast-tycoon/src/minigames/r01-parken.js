@@ -57,13 +57,21 @@
       'Profi: Die Lücke ist eng und der Camper muss rückwärts hinein (Pfeil beachten).',
       'Läuft die Zeit ab, bevor du stehst, ist die Parkplatzsuche gescheitert.'
     ],
-    controls: { key: '↑ Gas, ↓ Bremse/Rückwärts, ←/→ lenken', touch: 'Finger halten: Camper fährt dorthin (hinter dem Auto = rückwärts)', pad: 'Steuerkreuz: Gas/Bremse und Lenken' },
+    goal: d => 'Park den Camper im leuchtenden Feld oben' + (CFG[d].rev ? ' – rückwärts, Nase nach unten –' : '') + ' und bleib kurz stehen: in ' + CFG[d].time + ' s, höchstens ' + CFG[d].errs + ' Rempler.',
+    how: [
+      'Du bist der orange Camper unten links. Das leuchtende Rechteck oben ist dein Parkfeld.',
+      'Halte den Finger (oder die gedrückte Maus) dorthin, wo der Camper hinfahren soll – er lenkt von selbst. Hinter ihm = rückwärts.',
+      'Tastatur: ↑ Gas, ↓ Bremse/rückwärts, ←/→ lenken (lenkt nur, wenn er rollt).',
+      'Steht er im Feld (wird grün), loslassen und stillstehen, bis 100 % erreicht sind. Poller, Camper und Rand = Rempler.'
+    ],
+    tip: { key: '↑ Gas · ↓ rückwärts · ←/→ lenken – ab ins leuchtende Feld!', touch: 'Finger aufs Feld halten – der Camper fährt hin', y: 300 },
+    controls: { key: '↑ Gas, ↓ Bremse/Rückwärts, ←/→ lenken', touch: 'Finger halten: Camper fährt dorthin (hinter den Camper tippen = rückwärts)', mouse: 'Maustaste gedrückt halten: Camper fährt zum Zeiger', pad: 'Steuerkreuz: Gas/Bremse und Lenken' },
     touch: ['left', 'right', 'up', 'down'],
     multi: { local: true, max: 4, mode: 'turns' },
     init(o) {
       const d = o.difficulty | 0, c = CFG[d];
       const st = { status: 'playing', seed: (o.seed >>> 0) || 1, fx: [], diff: d, cfg: c, t: 0, errs: 0, cool: 0, park: 0,
-        player: ((o.players || [])[o.turn | 0] || {}).name || '', car: { x: 70, y: Y0, h: 0, v: 0, s: 0 },
+        player: (o.players || []).length > 1 ? ((o.players[o.turn | 0] || {}).name || '') : '', car: { x: 70, y: Y0, h: 0, v: 0, s: 0 },
         keys: { up: false, down: false, left: false, right: false }, ptr: null, poles: [], campers: [], bm: { seg: 0, idx: 0 } };
       const slots = []; for (let x = 60; x <= 900; x += c.pitch) slots.push(x);
       const ok = slots.map((x, i) => i).filter(i => slots[i] >= 230 && slots[i] <= 700);
@@ -120,7 +128,7 @@
     result(st) {
       const c = st.cfg, cc = center(st.car), dp = Math.hypot(cc.x - st.sx, cc.y - SY);
       if (st.status === 'won') return { won: true, score: Math.round(PT.clamp(50 + 35 * (1 - st.t / c.time) + 15 * (1 - st.errs / (c.errs + 1)), 50, 100)), detail: 'Eingeparkt in ' + st.t.toFixed(1) + ' s mit ' + st.errs + ' Remplern.' };
-      return { won: false, score: Math.round(PT.clamp(40 * (1 - dp / 500), 0, 49)), detail: st.errs > c.errs ? 'Zu viele Rempler – der Platzwart winkt ab.' : 'Zeit abgelaufen, der Camper steht noch nicht in der Lücke.' };
+      return { won: false, score: Math.round(PT.clamp(40 * (1 - dp / 500), 0, 49)), detail: st.errs > c.errs ? 'Zu viele Rempler (' + st.errs + ', erlaubt ' + c.errs + ') – der Platzwart winkt ab.' : 'Zeit abgelaufen – der Camper stand nicht still im leuchtenden Feld' + (c.rev ? ' (rückwärts, Nase nach unten)' : '') + '.' };
     },
     bot(st, goal) {
       const want = { up: false, down: false, left: false, right: false }, car = st.car;
@@ -169,10 +177,16 @@
       g.fillStyle = '#fff'; g.fillRect(-HL + 6, -5, 30, 10);
       g.restore();
       if (st.ptr) { g.strokeStyle = '#ffb02e'; g.lineWidth = 2; g.beginPath(); g.arc(st.ptr.x, st.ptr.y, 16, 0, 7); g.stroke(); }
+      else if (!st.inSpot && st.t < 8) { // Wegweiser zum Parkfeld in den ersten Sekunden
+        g.globalAlpha = 0.5 + 0.4 * Math.sin(st.t * 6); g.strokeStyle = '#6ef0ff'; g.lineWidth = 3; g.setLineDash([10, 10]);
+        g.beginPath(); g.moveTo(cc.x, cc.y); g.lineTo(st.sx, SY + 48); g.stroke(); g.setLineDash([]); g.globalAlpha = 1;
+      }
+      g.fillStyle = '#ffffff'; g.font = '600 18px system-ui'; g.textAlign = 'center'; g.fillText('DU', cc.x, cc.y - 26);
       g.fillStyle = '#fff'; g.font = '700 22px system-ui'; g.textAlign = 'left';
       g.fillText('⏱ ' + Math.max(0, c.time - st.t).toFixed(1) + ' s', 24, 44);
       g.fillText('Rempler: ' + st.errs + ' / ' + c.errs, 190, 44);
-      g.textAlign = 'right'; g.fillText(st.park > 0 ? 'Stehen bleiben … ' + Math.round(st.park / 0.8 * 100) + ' %' : (st.player ? st.player + ': ' : '') + 'Ziel: Lücke ' + (c.rev ? 'rückwärts' : '') + ' treffen', 936, 44);
+      g.textAlign = 'right'; g.fillStyle = st.park > 0 ? '#4be08a' : '#fff';
+      g.fillText(st.park > 0 ? '✓ Im Feld – stehen bleiben … ' + Math.round(st.park / 0.8 * 100) + ' %' : st.inSpot ? '✓ Im Feld – jetzt anhalten!' : (st.player ? st.player + ': ' : '') + 'Ziel: ins leuchtende Feld' + (c.rev ? ' (rückwärts)' : ''), 900, 44);
     }
   });
 })(typeof window !== 'undefined' ? window : globalThis);

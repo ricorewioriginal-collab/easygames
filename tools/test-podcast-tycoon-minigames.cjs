@@ -41,6 +41,10 @@ for (const d of MG.list()) {
   if (only.length && !only.includes(d.id)) continue;
   ok(Array.isArray(d.rules) && d.rules.length >= 2, d.id + ': Regeln fehlen');
   ok(d.controls && d.controls.key && d.controls.touch && d.controls.pad, d.id + ': Steuerung (key/touch/pad) unvollständig');
+  // Verständlichkeit: Ziel je Stufe, 2–4 Schritte, Einblendung beim Start
+  for (let diff = 0; diff < 3; diff++) { const gl = typeof d.goal === 'function' ? d.goal(diff) : d.goal; ok(typeof gl === 'string' && gl.length > 10 && /\d/.test(gl), d.id + ': Ziel (goal) für Stufe ' + diff + ' fehlt oder ohne Zahl'); }
+  ok(Array.isArray(d.how) && d.how.length >= 2 && d.how.length <= 4, d.id + ': „So geht’s“ (how) braucht 2–4 Schritte');
+  ok(d.tip && (typeof d.tip === 'string' || (d.tip.key && d.tip.touch)), d.id + ': Einblendung (tip) fehlt');
   ok(d.render === '2d' ? typeof d.draw2d === 'function' : typeof d.setup3d === 'function' && typeof d.draw3d === 'function', d.id + ': Darstellung fehlt');
   for (let diff = 0; diff < 3; diff++) {
     for (const seed of [7, 99991]) {

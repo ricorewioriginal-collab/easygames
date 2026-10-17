@@ -8,7 +8,7 @@
     { name: 'Frage', icon: '❔', col: '#6ef0ff', key: '2' },
     { name: 'Themenwunsch', icon: '💡', col: '#4be08a', key: '3' },
     { name: 'Kritik', icon: '🛠️', col: '#ff8a4d', key: '4' },
-    { name: 'Spam', icon: '🗑️', col: '#ff4d6d', key: 'B' }
+    { name: 'Spam', icon: '🗑️', col: '#ff4d6d', key: 'E' }
   ];
   const CFG = [
     { n: 14, every: 3.6, cap: 6, errs: 5, time: 75 },
@@ -94,7 +94,15 @@
       'Falsch sortiert = Fehler. Zu viele Fehler, ein überlaufendes Postfach oder Zeitablauf = verloren.',
       'Gewonnen, wenn alle Nachrichten einsortiert sind.'
     ],
-    controls: { key: '1–4 = Lob/Frage/Wunsch/Kritik, E/Q = Spam, oder ←/→ + Leertaste', touch: 'Fach antippen', pad: 'Steuerkreuz + A, B = Spam' },
+    goal: d => 'Sortiere alle ' + CFG[d].n + ' Hörer-Nachrichten ins richtige Fach – höchstens ' + CFG[d].errs + ' Fehler, das Postfach (max. ' + CFG[d].cap + ') darf nicht überlaufen, Zeit ' + CFG[d].time + ' s.',
+    how: [
+      'Lies die Nachricht auf dem großen Zettel.',
+      'Tippe unten auf das passende Fach: 💛 Lob, ❔ Frage, 💡 Themenwunsch, 🛠️ Kritik oder 🗑️ Spam (Werbung, Abzocke).',
+      'Dann kommt die nächste Nachricht. Links siehst du, wie voll das Postfach ist – nicht trödeln!',
+      'Falsches Fach = Fehler (das richtige Fach leuchtet kurz grün).'
+    ],
+    tip: { key: 'Taste 1–4 oder E (Spam): In welches Fach gehört die Nachricht?', touch: 'Tippe unten das passende Fach an', y: 395 },
+    controls: { key: '1–4 = Lob/Frage/Wunsch/Kritik, E oder Q = Spam, oder ←/→ + Leertaste', touch: 'Fach unten antippen', mouse: 'Fach unten anklicken', pad: 'Steuerkreuz + A, B = Spam' },
     touch: ['1', '2', '3', '4', 'b'],
     init(o) {
       const c = CFG[o.difficulty | 0] || CFG[1];
@@ -128,7 +136,8 @@
       const won = st.status === 'won', n = st.cfg.n, acc = st.right / n;
       const score = won ? 50 + Math.round(50 * (st.right / Math.max(1, st.sorted)) - st.errs * 4 + Math.max(0, (st.cfg.time - st.t) / 10)) : Math.round(45 * acc);
       const why = won ? '' : st.overflow ? ' – das Postfach ist übergelaufen' : st.errs > st.cfg.errs ? ' – zu viele Fehler' : ' – die Zeit war um';
-      return { won, score: won ? PT.clamp(score, 50, 100) : PT.clamp(score, 0, 49), detail: st.right + ' von ' + n + ' Nachrichten richtig sortiert, ' + st.errs + ' Fehler' + why };
+      const why2 = won ? '' : st.overflow ? ' – das Postfach ist übergelaufen (zu langsam)' : st.errs > st.cfg.errs ? ' – zu viele Fehler (erlaubt ' + st.cfg.errs + ')' : ' – die Zeit war um';
+      return { won, score: won ? PT.clamp(score, 50, 100) : PT.clamp(score, 0, 49), detail: st.right + ' von ' + n + ' Nachrichten richtig sortiert, ' + st.errs + ' Fehler' + (why2 || why) + '.' };
     },
     bot(st, goal) {
       if (!st.inbox.length || st.cardT < 0.4) return [];
@@ -139,8 +148,8 @@
       const c = st.cfg;
       g.fillStyle = '#10142a'; g.fillRect(0, 0, 960, 540);
       g.font = '600 20px system-ui'; g.fillStyle = '#cfd6ff'; g.textAlign = 'left';
-      g.fillText('Sortiert: ' + st.sorted + ' / ' + c.n + '   Fehler: ' + st.errs + ' / ' + c.errs, 20, 32);
-      g.textAlign = 'right'; g.fillText('Zeit: ' + Math.max(0, Math.ceil(c.time - st.t)) + ' s   Punkte: ' + st.points, 940, 32);
+      g.fillText('Sortiert: ' + st.sorted + ' von ' + c.n + '   Fehler: ' + st.errs + ' von max. ' + c.errs, 20, 32);
+      g.textAlign = 'right'; g.fillText('Zeit: ' + Math.max(0, Math.ceil(c.time - st.t)) + ' s   Punkte: ' + st.points, 900, 32);
       g.fillStyle = '#1d2342'; g.fillRect(20, 44, 920, 10);
       g.fillStyle = '#ffb02e'; g.fillRect(20, 44, 920 * Math.max(0, 1 - st.t / c.time), 10);
       // Postfach-Stapel links
@@ -161,7 +170,8 @@
         g.fillStyle = '#5a4a3a'; g.font = '600 20px system-ui'; g.textAlign = 'left';
         g.fillText('Von: ' + m.from, 225 + slide, 118);
         g.fillStyle = '#1b1b2a'; g.font = '600 28px system-ui';
-        wrap(g, m.text, 680).slice(0, 6).forEach((l, i) => g.fillText(l, 225 + slide, 175 + i * 38));
+        wrap(g, m.text, 680).slice(0, 5).forEach((l, i) => g.fillText(l, 225 + slide, 175 + i * 38));
+        g.fillStyle = '#7a6a55'; g.font = '600 18px system-ui'; g.fillText('↓ In welches Fach gehört diese Nachricht?', 225 + slide, 360);
       } else {
         g.fillStyle = '#5a4a3a'; g.font = '600 26px system-ui'; g.textAlign = 'center';
         g.fillText('Gerade keine Post – kurz durchatmen …', 567, 230);

@@ -95,7 +95,16 @@
       'Ein Kabel an den falschen Stecker kostet 2 Sekunden.',
       'Alle Paare verbunden = gewonnen. Zeit abgelaufen = verloren.'
     ],
-    controls: { key: 'Pfeile bewegen, Leertaste: Kabel aufnehmen/ablegen, E: Kabel löschen', touch: 'Vom Anschluss aus ziehen', pad: 'Steuerkreuz, A aufnehmen/ablegen, B löschen' },
+    goal: d => 'Verbinde alle ' + CFG[d].pairs + ' Farbpaare (je zwei gleiche Kreise) mit einem Kabel – ohne Kreuzung, innerhalb von ' + CFG[d].time + ' s.',
+    how: [
+      'Auf dem Boden liegen Anschlüsse als farbige Kreise – jede Farbe gibt es genau zweimal.',
+      'Drück auf einen Kreis und zieh mit dem Finger/der Maus Feld für Feld zum zweiten Kreis gleicher Farbe.',
+      'Kabel dürfen sich nicht kreuzen und nicht über Möbel 🪑. Das Kabel ist begrenzt (Anzeige rechts).',
+      'Verlegt? Einfach neu vom Kreis aus ziehen. Falscher Stecker kostet 2 s.'
+    ],
+    pic: '<svg viewBox="0 0 340 92"><rect width="340" height="92" rx="10" fill="#10142a"/><g fill="#171c3a"><rect x="20" y="10" width="300" height="62"/></g><path d="M50 26 H170 V56 H290" stroke="#ffb02e" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="26" r="12" fill="#ffb02e"/><circle cx="290" cy="56" r="12" fill="#ffb02e"/><text x="170" y="86" fill="#cfd6ff" font-size="12" text-anchor="middle">vom Kreis zum gleichfarbigen Kreis ziehen</text></svg>',
+    tip: { key: 'Leertaste auf einem Kreis, dann mit den Pfeilen zum gleichfarbigen Kreis', touch: 'Drück auf einen Kreis und zieh zum Kreis gleicher Farbe', y: 300 },
+    controls: { key: 'Pfeile bewegen den Rahmen, Leertaste auf einem Kreis = Kabel starten, dann Pfeile; E: Kabel löschen', touch: 'Auf einen Kreis drücken und zum gleichfarbigen Kreis ziehen', mouse: 'Auf einen Kreis klicken und mit gedrückter Taste zum gleichfarbigen Kreis ziehen', pad: 'Steuerkreuz, A Kabel starten/ablegen, B löschen' },
     touch: ['left', 'right', 'up', 'down', 'a', 'b'],
     multi: { local: true, max: 4, mode: 'turns' },
     init(o) {
@@ -138,7 +147,7 @@
     result(st) {
       const c = st.cfg, won = st.status === 'won', left = Math.max(0, c.time - st.t), n = st.done.filter(Boolean).length;
       const score = won ? PT.clamp(Math.round(55 + 45 * left / c.time - st.wrong * 3), 50, 100) : PT.clamp(Math.round(45 * n / st.pairs), 0, 49);
-      return { won, score, detail: won ? 'Alles verkabelt mit ' + Math.round(left) + ' s Rest und ' + (st.budget - usedLen(st)) + ' m Kabel übrig.' : n + ' von ' + st.pairs + ' Verbindungen stehen – das Studio bleibt stumm.' };
+      return { won, score, detail: won ? 'Alles verkabelt mit ' + Math.round(left) + ' s Rest und ' + (st.budget - usedLen(st)) + ' m Kabel übrig.' : 'Zeit abgelaufen: nur ' + n + ' von ' + st.pairs + ' Farbpaaren verbunden – das Studio bleibt stumm.' };
     },
     bot(st, goal) {
       if (goal === 'lose') return [];
@@ -151,9 +160,10 @@
       const c = st.cfg, G = geo(st), cs = G.cs, w = c.w;
       g.fillStyle = '#10142a'; g.fillRect(0, 0, 960, 540);
       g.font = '600 22px system-ui'; g.textAlign = 'left'; g.fillStyle = '#ffb02e'; g.fillText('🔌 Kabelnetz', 24, 36);
-      g.textAlign = 'right'; g.fillStyle = '#cfd6ff'; g.fillText('⏱ ' + Math.max(0, c.time - st.t).toFixed(0) + ' s', 936, 36);
+      g.textAlign = 'right'; g.fillStyle = '#cfd6ff'; g.fillText('⏱ ' + Math.max(0, c.time - st.t).toFixed(0) + ' s', 900, 36);
       g.font = '18px system-ui'; g.textAlign = 'center'; g.fillStyle = st.msgT > 0 ? '#ffb02e' : '#8f98c8';
-      g.fillText(st.msgT > 0 ? st.msg : 'Verbinde alle Paare ohne Kreuzung', 400, 78);
+      const nDone = st.done.filter(Boolean).length;
+      g.fillText(st.msgT > 0 ? st.msg : st.drawing >= 0 ? 'Weiter zum zweiten ' + TYPES[st.drawing].t + '-Kreis …' : 'Zieh vom Kreis zum Kreis gleicher Farbe · verbunden: ' + nDone + ' von ' + st.pairs, 400, 78);
       for (let i = 0; i < st.cell.length; i++) {
         const x = G.x0 + (i % w) * cs, y = G.y0 + Math.floor(i / w) * cs;
         g.fillStyle = st.cell[i] === -1 ? '#3a3f58' : '#171c3a'; g.fillRect(x + 1, y + 1, cs - 2, cs - 2);
@@ -171,16 +181,18 @@
         const x = G.x0 + (i % w + 0.5) * cs, y = G.y0 + (Math.floor(i / w) + 0.5) * cs;
         g.fillStyle = TYPES[p].col; g.beginPath(); g.arc(x, y, cs * 0.4, 0, 6.283); g.fill();
         if (st.done[p]) { g.strokeStyle = '#ffffff'; g.lineWidth = 3; g.stroke(); }
-        g.fillStyle = '#10142a'; g.font = '600 18px system-ui'; g.fillText(TYPES[p].t.slice(0, 3), x, y + 6);
+        else { g.strokeStyle = 'rgba(255,255,255,' + (0.35 + 0.3 * Math.sin(st.t * 5)) + ')'; g.lineWidth = 2; g.beginPath(); g.arc(x, y, cs * 0.46, 0, 6.283); g.stroke(); }
+        let fz = 18; g.font = '600 18px system-ui'; while (fz > 12 && g.measureText(TYPES[p].t).width > cs * 0.74) { fz--; g.font = '600 ' + fz + 'px system-ui'; }
+        g.fillStyle = '#10142a'; g.fillText(TYPES[p].t, x, y + fz / 3);
       }
       const cx = G.x0 + (st.cur % w) * cs, cy = G.y0 + Math.floor(st.cur / w) * cs;
       g.strokeStyle = st.drawing >= 0 ? TYPES[st.drawing].col : '#ffffff'; g.lineWidth = 3; g.strokeRect(cx + 3, cy + 3, cs - 6, cs - 6);
       // Seitenleiste
-      g.textAlign = 'left'; g.font = '600 20px system-ui'; g.fillStyle = '#cfd6ff'; g.fillText('Verbindungen', 770, 120);
+      g.textAlign = 'left'; g.font = '600 20px system-ui'; g.fillStyle = '#cfd6ff'; g.fillText('Verbunden ' + st.done.filter(Boolean).length + '/' + st.pairs, 770, 120);
       g.font = '18px system-ui';
       for (let p = 0; p < st.pairs; p++) { g.fillStyle = TYPES[p].col; g.fillText((st.done[p] ? '✓ ' : '○ ') + TYPES[p].t, 780, 154 + p * 30); }
       const left = st.budget - usedLen(st);
-      g.fillStyle = '#cfd6ff'; g.fillText('🧵 Kabelrolle:', 770, 330); g.fillStyle = left < 3 ? '#ff4d6d' : '#4be08a'; g.fillText(left + ' m übrig', 780, 358);
+      g.fillStyle = '#cfd6ff'; g.fillText('🧵 Kabel übrig:', 770, 330); g.fillStyle = left < 3 ? '#ff4d6d' : '#4be08a'; g.fillText(left + ' m übrig', 780, 358);
       g.fillStyle = '#cfd6ff'; g.fillText('Falsche Stecker: ' + st.wrong, 770, 400);
     }
   });
