@@ -374,10 +374,16 @@ function platform(b: CB, ti: number, inf: { p: { s0: number; s1: number; side: '
     b.glow.box(x - P.dz * sg * -0.2, y + 4.15, z + P.dx * sg * -0.2, -P.dz, P.dx, 0.6, 0.22, 0.12, C.lampGlow);
   }
   // Dach
-  if (mid >= a && mid < e) {
-    const Ls = Math.min(40, len * 0.35), [x, y, z] = at(mid, cl, ph), dx = P.dx, dz = P.dz;
-    for (const o of [-0.4, 0, 0.4]) b.st.box(x + dx * Ls * o, y, z + dz * Ls * o, dx, dz, 0.2, 0.2, 3.2, C.mast);
-    b.st.box(x, y + 3.2, z, dx, dz, Ls, Math.max(1.4, W * 0.85), 0.25, C.roof, b.winter ? C.snow : C.roof);
+  // Bahnsteigdach über der Bahnsteigmitte (dort hält die Zugspitze), in 8-m-Stücken, folgt Kurven
+  const Ls = Math.min(160, len * (inf.st.pax && inf.st.pax > 1500 ? 0.7 : 0.45)), r0 = Math.max(a, mid - Ls / 2), r1 = Math.min(e, mid + Ls / 2);
+  if (r1 - r0 > 1) {
+    const n = Math.max(1, Math.ceil((r1 - r0) / 8)), rw = Math.max(1.4, W * 0.85);
+    for (let k = 0; k < n; k++) {
+      const s0 = r0 + ((r1 - r0) * k) / n, s1 = r0 + ((r1 - r0) * (k + 1)) / n, sm = (s0 + s1) / 2;
+      const [x, y, z] = at(sm, cl, ph);
+      b.st.box(x, y + 3.4, z, P.dx, P.dz, s1 - s0 + 0.05, rw, 0.25, C.roof, b.winter ? C.snow : C.roof);
+      if (Math.floor(s0 / 16) !== Math.floor(s1 / 16) || k === 0) b.st.box(x, y, z, P.dx, P.dz, 0.22, 0.22, 3.4, C.mast);
+    }
   }
   // Stationsschilder
   for (const f of [0.18, 0.82]) {

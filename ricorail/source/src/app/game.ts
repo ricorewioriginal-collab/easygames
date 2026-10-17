@@ -15,6 +15,7 @@ import type { Train } from '../trains/train';
 import { buildCab, type CabModel, type CabState } from '../engine/models/cab';
 import type { Quality } from '../engine/models/vehicles';
 import { helpContent } from '../ui/help';
+import { StopSign } from '../engine/stopsign';
 
 export interface GameCtx {
   settings: Settings;
@@ -57,6 +58,7 @@ export class Game {
   private scene = new THREE.Scene();
   private view: WorldView;
   private trains: TrainsView;
+  private stopSign: StopSign;
   private rig: CameraRig;
   private input = new Input();
   private hud: Hud;
@@ -97,6 +99,7 @@ export class Game {
     this.rig = new CameraRig(innerWidth / innerHeight);
     this.view = new WorldView(this.renderer, this.scene, s.world.net, this.qual.world);
     this.trains = new TrainsView(this.scene, s.world.net, this.qual.model);
+    this.stopSign = new StopSign(this.scene);
     this.hud = new Hud(root, this, s, ctx.settings, o.mode);
     if (o.mode === 'box') { this.openMap(true); }
     if (o.mode === 'world' || !s.player) this.rig.set(s.player ? 'chase' : 'free');
@@ -125,7 +128,7 @@ export class Game {
     removeEventListener('resize', this.resize);
     document.removeEventListener('visibilitychange', this.vis);
     this.unbindPointer();
-    this.cab?.dispose(); this.trains.dispose(); this.view.dispose();
+    this.cab?.dispose(); this.stopSign.dispose(); this.trains.dispose(); this.view.dispose();
     this.renderer.dispose();
     this.ctx.audio.update(0.1, silentAudio());
   }
@@ -163,6 +166,8 @@ export class Game {
     if (this.replay) this.trains.syncPoses(this.replay.poses[this.replay.i] ?? [], t?.id ?? null);
     else this.trains.sync(w, this.rig.cam.position, this.qual.world.viewDist, t?.id ?? null, cabOn && !!t?.consist[0]?.type.cab);
     this.syncCab(cabOn, t, dt);
+    const plan = t ? w.plans.get(t.id) : undefined;
+    this.stopSign.update(w.net, t && plan?.svc && plan.state === 'run' ? w.stopTarget(t, plan) : null);
     this.view.update(this.rig.cam, this.env(), dt);
     this.renderer.render(this.scene, this.rig.cam);
     this.hud.update(dt);

@@ -23,7 +23,9 @@ Unten: Einstellungen, Handbuch, Mitwirkende & Lizenzen, Zurück zu Easygames.
 Richtungswender, Bremse lösen, Stromabnehmer/Hauptschalter/Motor, Türen am Bahnsteig sowie Wachsam/Sifa übernimmt das Spiel.
 Auf dem Handy bleiben nur Hebel, Horn und Schnellbremsung sichtbar; am Gleisende erscheint „Zug wenden“.
 
-**Halten und Haltepunkte:** Links oben steht, wie weit es noch bis zum Haltepunkt ist; auf den letzten 400 m füllt sich ein Balken (grün = genau richtig).
+**Hebel mit Raststufen:** wie am echten Fahr-/Bremshebel rastet der Touch-Hebel in Stufen ein: F1–F4 fahren, 0, B1–B4 bremsen.
+
+**Halten und Haltepunkte:** Der Haltepunkt liegt in der Bahnsteigmitte, eine Haltetafel „H“ am Bahnsteig zeigt ihn an. Links oben steht, wie weit es noch bis zum Haltepunkt ist; auf den letzten 400 m füllt sich ein Balken (grün = genau richtig).
 Jeder Halt wird bewertet: bis 2 m „Perfekter Halt“ (100), bis 5 m 75, bis 10 m 50, bis 25 m 25, sonst 10 Punkte; pünktlich +50, bis 3 min +20.
 In der leichten Schwierigkeit hält der Haltassistent den Zug notfalls selbst am Bahnsteig – dann gibt es nur die halben Genauigkeitspunkte.
 
