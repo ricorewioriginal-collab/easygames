@@ -134,9 +134,13 @@ async function run(browser, vp, name) {
   await p.click('.modal [data-a=ai1]'); await p.waitForTimeout(900);
   const m = await p.evaluate(() => { const g = RRMApp.game(), x = g.eng.bestMove(), b = RRMApp.board; return [b.screen(x[0], 0.35), b.screen(x[1], 0.35)]; });
   await p.mouse.move(m[0].x, m[0].y); await p.mouse.down(); await p.mouse.move(m[1].x, m[1].y, { steps: 4 }); await p.mouse.up();
-  await p.waitForTimeout(3500);
-  const d = await p.evaluate(() => { const g = RRMApp.game(); return { moves: g.eng.moves, turn: g.duel.turn, s: g.duel.score }; });
-  ok(d.moves === 18 && d.turn === 0 && d.s[0] > 0 && d.s[1] > 0, 'Duell: Spielerzug und KI-Zug gezählt');
+  let d;
+  for (let w = 0; w < 60; w++) {   // KI denkt nach und animiert – bis zu 12 s warten
+    await p.waitForTimeout(200);
+    d = await p.evaluate(() => { const g = RRMApp.game(); return { moves: g.eng.moves, turn: g.duel.turn, s: g.duel.score, busy: g.lock || RRMApp.board.busy() }; });
+    if (d.moves <= 18 && d.turn === 0 && !d.busy) break;
+  }
+  ok(d.moves === 18 && d.turn === 0 && d.s[0] > 0 && d.s[1] > 0, 'Duell: Spielerzug und KI-Zug gezählt ' + JSON.stringify(d));
   await shot('11-duel');
 
   ok(errs.length === 0, 'keine JavaScript-Fehler' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
