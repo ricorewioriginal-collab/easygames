@@ -604,13 +604,18 @@ export class World {
   // ---------------------------------------------------------------- Zugbeeinflussung (Spielmodell)
   private safety(train: Train, dt: number) {
     if (this.assist === 'easy') {
-      // Bremsassistent: hält vor Halt zeigenden Signalen, Prellböcken und Fahrzeugen automatisch an
-      const decel = this.planDecel(train) * 1.25;
+      // Zwangsbremsung (z. B. nach Signalüberfahrt) im Stillstand wieder lösen – sonst bliebe der Zug für immer stehen
+      if (train.forcedBrake && Math.abs(train.v) < 0.05 && train.forcedBrake !== '!Sifa') { train.forcedBrake = null; this.emit({ type: 'release', msg: 'Zwangsbremsung beendet – weiterfahren', sev: 'info', train: train.id }); }
+      // Bremsassistent: hält vor Halt zeigenden Signalen, Prellböcken und Fahrzeugen automatisch an.
+      // Vorsichtige Bremskurve (Luftbremse braucht Zeit), 20 m Sicherheitsabstand
+      const decel = this.planDecel(train) * 1.25, sDecel = this.planDecel(train) * 0.8;
       const la = lookahead(this.net, this.il, train.head, 2500, { occupiedBy: (t) => this.occupiedOn.get(t) ?? [], self: train.id, pass: train.meta.zs1 as string | undefined });
-      const lim0 = permitted(la.targets.filter((t) => t.v === 0), decel, 12, train.length, 999);
+      const lim0 = permitted(la.targets.filter((t) => t.v === 0), sDecel, 20, train.length, 999);
+      if (lim0 < 0.3) { train.ctl.throttle = 0; train.ctl.brake = Math.max(train.ctl.brake, 0.6); } // vor rotem Signal gar nicht erst anfahren
       // Haltassistent: hält auch am nächsten Bahnsteig (Haltepunkt etwa 2 m vor dem Ziel)
       const plan = this.plans.get(train.id);
-      const sp = plan?.state === 'run' ? this.stopPoint(train, plan) : null;
+      // nur wenn der geplante Weg wirklich am Bahnsteig endet – sonst würde der Assistent am Ende des bisher gestellten Weges anhalten
+      const sp = plan?.state === 'run' && this.stopTarget(train, plan)?.side ? this.stopPoint(train, plan) : null;
       const stopLim = sp && sp.d > -5 && plan!.svc ? permitted([{ d: sp.d + 4, v: 0, kind: 'stop' }], decel, 12, train.length, 999) : 999;
       const lim = Math.min(lim0, stopLim);
       train.meta.assistBrake = train.v > lim + 0.5;
@@ -814,7 +819,7 @@ export class World {
         if (!train.ai || e.sev === 'error') this.emit({ ...e, train: train.id });
       }
       this.progress(train);
-      if (train.ai && plan?.state === 'done' && !plan.svc?.keep && plan.svc && Math.abs(train.v) < 0.05 && this.time > plan.dwellUntil + 60) this.removeTrain(train.id);
+      if (train.ai && train.id !== this.player && plan?.state === 'done' && !plan.svc?.keep && plan.svc && Math.abs(train.v) < 0.05 && this.time > plan.dwellUntil + 60) this.removeTrain(train.id);
     }
     this.dirtyAI = false;
     this.refreshOccupancy();

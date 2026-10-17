@@ -30,6 +30,10 @@ export class Hud {
   private goalsOpen = true;
   /** Einfache Bedienung: nur Hebel, Horn und Schnellbremsung */
   private simple: boolean;
+  /** Fahr-Bedienelemente und Schaffner-Bedienelemente (umschaltbar) */
+  private driveEls: HTMLElement[] = [];
+  private condEl: HTMLElement | null = null;
+  private condOn = false;
 
   constructor(root: HTMLElement, game: Game, s: Session, settings: Settings, mode: Mode) {
     this.g = game; this.s = s; this.set = settings; this.mode = mode;
@@ -63,7 +67,8 @@ export class Hud {
         btn('❓', () => this.g.showHelp(), 'tbtn', { title: 'Hilfe (F1)', 'aria-label': 'Hilfe' }),
         btn('🗺', () => this.act('map'), 'tbtn', { title: 'Karte (M)', 'aria-label': 'Karte' }),
         btn('🎥', () => this.act('camera'), 'tbtn', { title: 'Kamera (C)', 'aria-label': 'Kamera wechseln' }),
-        P('warp', btn('×1', () => this.act('timewarp'), 'tbtn', { title: 'Zeitraffer (Tab)', 'aria-label': 'Zeitraffer' }))));
+        P('warp', btn('×1', () => this.act('timewarp'), 'tbtn', { title: 'Zeitraffer (Tab)', 'aria-label': 'Zeitraffer' })),
+        drive && game.canConduct() ? P('condBtn', btn('🎫', () => this.act('conductor'), 'tbtn', { title: 'Schaffner-Modus: Zug fährt selbst, du kontrollierst Fahrkarten (F4)', 'aria-label': 'Schaffner-Modus' })) : null));
     if (drive) tr.appendChild(P('stop', h('div', { class: 'box small' }, '')));
     const narrow = innerWidth < 700;
     this.goalsOpen = !narrow;
@@ -108,8 +113,25 @@ export class Hud {
           B('⇅', 'reverser', 'Richtungswender vor (R)'), B('⇵', 'reverserBack', 'Richtungswender zurück (⇧R)'));
       if (!touch) btns.style.display = 'none';
       const side = h('div', { class: left ? 'bl' : 'br', style: 'display:flex;gap:8px;align-items:flex-end' + (left ? '' : ';flex-direction:row-reverse') }, lever, btns);
-      kids.push(side);
-      if (!simple) kids.push(h('div', { class: left ? 'br' : 'bl' }, P('ctlinfo', h('div', { class: 'box small ctlinfo', style: 'min-width:130px' }, ''))));
+      kids.push(side); this.driveEls.push(side);
+      if (!simple) { const ci = h('div', { class: left ? 'br' : 'bl' }, P('ctlinfo', h('div', { class: 'box small ctlinfo', style: 'min-width:130px' }, ''))); kids.push(ci); this.driveEls.push(ci); }
+      // Schaffner: gehen, umdrehen, Fahrkarte prüfen, zurück an den Hebel
+      const W = (label: string, d: number, title: string) => {
+        const b = h('button', { class: 'tbtn', type: 'button', title, 'aria-label': title }, label);
+        b.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); this.g.setWalk(d); b.classList.add('on'); });
+        const up = () => { if (b.classList.contains('on')) { this.g.setWalk(0); b.classList.remove('on'); } };
+        b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up); b.addEventListener('pointerleave', up);
+        return b;
+      };
+      this.condEl = h('div', { class: `cond ${left ? 'bl' : 'br'}`, style: 'display:none' },
+        P('condt', h('div', { class: 'box small' }, '')),
+        h('div', { class: 'cbtns' },
+          W('▲', 1, 'Vorwärts gehen (W)'), btn('↻', () => this.g.turnAround(), 'tbtn', { title: 'Umdrehen', 'aria-label': 'Umdrehen' }),
+          (() => { const b = W('▼', -1, 'Zurück gehen (S)'); b.style.cssText = 'grid-row:2;grid-column:1'; return b; })(),
+          P('tick', btn('🎫 Fahrkarte prüfen', () => this.act('ticket'), 'btn primary', { title: 'Fahrkarte prüfen (Enter)' })),
+          btn('🚆 Selbst fahren', () => this.act('conductor'), 'btn small', { title: 'Zurück an den Fahrhebel (F4)', style: 'grid-row:2;grid-column:2/4' })));
+      kids.push(this.condEl);
+
     }
     this.ctxBtns = h('div', { class: 'bc' });
     kids.push(this.ctxBtns);
@@ -132,6 +154,15 @@ export class Hud {
   private lpd = (e: PointerEvent) => { e.preventDefault(); e.stopPropagation(); this.dragging = true; this.leverEl!.setPointerCapture?.(e.pointerId); this.leverFromY(e); };
   private lpm = (e: PointerEvent) => { if (this.dragging) { e.stopPropagation(); this.leverFromY(e); } };
   private lpu = () => { this.dragging = false; };
+
+  /** Schaffner-Modus: Hebel ausblenden, Geh- und Prüfknöpfe zeigen */
+  setConductor(on: boolean) {
+    this.condOn = on;
+    for (const e of this.driveEls) e.style.display = on ? 'none' : '';
+    if (this.condEl) this.condEl.style.display = on ? '' : 'none';
+    this.parts.condBtn?.classList.toggle('on', on);
+    this.cache.condt = ''; this.acc = 1;
+  }
 
   setVisible(v: boolean) { this.visible = v; this.el.style.display = v ? '' : 'none'; }
   setReplay(on: boolean) { this.replayOn = on; this.parts.replay?.classList.toggle('on', on); }
@@ -189,14 +220,16 @@ export class Hud {
     const lamp = this.parts.lamp;
     if (lamp) lamp.className = `lamp ${asp === 'stop' ? 'stop' : asp === 'go' ? 'go' : asp === 'none' ? '' : 'caution'}`;
     const aspTxt: Record<string, string> = { stop: 'Halt', go: 'Fahrt', caution: 'Halt erwarten', slow: 'Langsamfahrt', none: '' };
-    this.put('sigt', sig ? `${aspTxt[asp] ?? asp}${sig.sig?.speed ? ` ${sig.sig.speed} km/h` : ''} · ${fmtDist(sig.d)}` : 'kein Signal voraus');
+    this.put('sigt', sig ? `Signal in ${fmtDist(sig.d)}: ${aspTxt[asp] ?? asp}${sig.sig?.speed ? ` ${sig.sig.speed} km/h` : ''}` : 'kein Signal voraus');
     const grade = Math.round(w.net.gradeAt(t.head) * 1000);
     this.put('info', `${hhmm(w.time)} · ${grade > 0 ? '↗' : grade < 0 ? '↘' : '→'} ${Math.abs(grade)} ‰ · ${w.weather.kind === 'clear' ? 'trocken' : w.rail === 'dry' ? 'Regen' : 'Schiene nass/glatt'}`);
     const c = t.ctl;
     const rv = c.reverser === 1 ? 'V' : c.reverser === -1 ? 'R' : '0';
     const L = this.g.getLever();
     const stufe = (x: number) => Math.max(1, Math.round(Math.abs(x) * 4));
-    if (this.simple) this.put('ctl', L > 0.02 ? `▲ Fahrstufe F${stufe(L)} · ${Math.round(L * 100)} %` : L < -0.02 ? `▼ Bremsstufe B${stufe(L)} · ${Math.round(-L * 100)} %` : t.meta.assistBrake ? '▼ Bremsassistent' : Math.abs(t.v) < 0.1 ? '▲ Hebel hoch = losfahren' : '● Rollen');
+    const pl0 = w.plans.get(t.id);
+    if (this.simple && pl0?.state === 'dwell' && Math.abs(t.v) < 0.1) this.put('ctl', `⏱ Abfahrt ${hhmm(pl0.dwellUntil)} – bitte warten`);
+    else if (this.simple) this.put('ctl', L > 0.02 ? `▲ Fahrstufe F${stufe(L)} · ${Math.round(L * 100)} %` : L < -0.02 ? `▼ Bremsstufe B${stufe(L)} · ${Math.round(-L * 100)} %` : t.meta.assistBrake ? '▼ Bremsassistent' : Math.abs(t.v) < 0.1 ? '▲ Hebel hoch = losfahren' : '● Rollen');
     else this.put('ctl', `Wender ${rv} · Fahren ${Math.round(c.throttle * 100)} % · Bremse ${Math.round(Math.max(c.brake, this.g.getBrake()) * 100)} %`);
     const air = `HLL ${t.brake.pipe.toFixed(1)} bar · Bz ${(t.brake.cyl * 3.8).toFixed(1)} bar`;
     const extra = t.traction === 'steam' ? `Kessel ${t.boiler.toFixed(1)} bar · Wasser ${Math.round(t.glass * 100)} % · Feuer ${Math.round(t.fire * 100)} %` : t.traction === 'electric' ? `Stromabn. ${c.panto ? 'oben' : 'unten'} · HS ${c.mainSwitch ? 'ein' : 'aus'}` : `Motor ${c.engine ? 'an' : 'aus'} · ${Math.round(t.engineRpm * 100)} %`;
@@ -209,7 +242,7 @@ export class Hud {
     // Nächster Halt + Fahrplan
     const plan = w.plans.get(t.id);
     // Haltepunkt: Entfernung und Balken auf den letzten 400 m
-    const sp = plan?.svc && plan.state === 'run' ? w.stopPoint(t, plan) : null;
+    const sp = plan?.svc && plan.state === 'run' && w.stopTarget(t, plan)?.side ? w.stopPoint(t, plan) : null;
     const nst = sp && plan!.svc!.stops[plan!.stopIdx];
     const hd = sp && nst && sp.d < 3000 ? Math.round(sp.d) : null;
     this.html('halt', hd === null ? '' : `${nst!.st}|${hd < 400 ? hd : Math.round(hd / 50)}`, () => hd === null ? [] : [
@@ -238,6 +271,22 @@ export class Hud {
       });
     } else if (plan?.dest) this.put('stop', `Ziel: Gleis ${plan.dest}`);
     else this.put('stop', 'Freie Fahrt');
+    if (this.condOn) {
+      const ci = this.g.condInfo();
+      if (ci) {
+        const st = ci.stats;
+        this.put('ctl', '🤖 Der Zug fährt selbst – du bist Schaffner');
+        this.html('condt', `${ci.carNo}|${ci.cars}|${ci.left}|${st.checked}|${st.right}|${st.pts}`, () => [
+          h('div', { style: 'font-weight:700' }, `🎫 Schaffner · Wagen ${ci.carNo} von ${ci.cars}${ci.first ? ' · 1. Klasse' : ''}`),
+          h('div', null, `Geprüft ${st.checked} · richtig ${st.right} · ⭐ ${st.pts} Punkte`),
+          h('div', { class: 'muted' }, ci.left ? `${ci.left} Fahrgäste noch nicht kontrolliert · heute ${ci.today}` : 'Alle kontrolliert – neue Fahrgäste am nächsten Halt'),
+        ]);
+        const tk = this.parts.tick as HTMLButtonElement | undefined;
+        if (tk) { tk.disabled = !ci.near; tk.classList.toggle('primary', ci.near); }
+      }
+      this.ctxButtons([]);
+      return;
+    }
     // Kontextknöpfe
     const ctx: [string, Action][] = [];
     const still = Math.abs(t.v) < 0.1;

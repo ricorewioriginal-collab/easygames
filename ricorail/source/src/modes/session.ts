@@ -82,6 +82,8 @@ export class Session {
   stopErrors: number[] = [];
   /** Haltepunkte: jeder Halt des Spielers wird bewertet (Genauigkeit + Pünktlichkeit) */
   stopPts = 0;
+  /** Schaffner-Modus: Wertung der Fahrkartenkontrolle (null = nicht benutzt) */
+  conductor: { checked: number; right: number; caught: number; pts: number } | null = null;
   stopCount = 0;
   praise: { t: number; text: string; pts: number; top: boolean } | null = null;
   /** Türen öffnet/schließt das Spiel (einfache Bedienung) */
@@ -607,6 +609,8 @@ export class Session {
     if (w.score.trailed) add('Weiche aufgefahren', String(w.score.trailed), -200 * w.score.trailed);
     if (this.doorsMissed) add('Türen nicht geöffnet', String(this.doorsMissed), -50 * this.doorsMissed);
     if (this.pax.total) add('Fahrgäste befördert', String(this.pax.total), Math.min(150, Math.round(this.pax.total / 5)));
+    const cd = this.conductor;
+    if (cd?.checked) add('Fahrkartenkontrolle', `${cd.right} von ${cd.checked} richtig, ${cd.caught} ohne gültige Fahrkarte`, cd.pts);
     if (this.stopCount) add('Haltepunkte', `${this.stopPts} aus ${this.stopCount} Halten`, 0);
     if (t) add('Energie', `${t.energyKWh.toFixed(0)} kWh`, 0);
     score = Math.max(0, Math.round(score));

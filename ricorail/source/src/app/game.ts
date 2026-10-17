@@ -16,6 +16,8 @@ import { buildCab, type CabModel, type CabState } from '../engine/models/cab';
 import type { Quality } from '../engine/models/vehicles';
 import { helpContent } from '../ui/help';
 import { StopSign } from '../engine/stopsign';
+import { Interior } from '../engine/interior';
+import { Conductor, seatLayout, walkRange, type CarInfo, type Rider } from '../modes/conductor';
 
 export interface GameCtx {
   settings: Settings;
@@ -67,6 +69,7 @@ export class Game {
   private cab: CabModel | null = null;
   private cabFor = '';
   private eye = new THREE.Vector3(5, 3, -0.6);
+  private eyeBase = new THREE.Vector3(5, 3, -0.6);
   private raf = 0;
   private last = 0;
   private paused = false;
@@ -87,6 +90,12 @@ export class Game {
   private lastStopIdx = -1;
   private hudVisible = true;
   private frameMin = 0;
+  // Schaffner-Modus
+  private cond: Conductor | null = null;
+  private condOn = false;
+  private interior: Interior | null = null;
+  private walkTouch = 0;
+  private ticketOpen = false;
 
   constructor(canvas: HTMLCanvasElement, root: HTMLElement, s: Session, ctx: GameCtx, o: GameOpts) {
     this.canvas = canvas; this.root = root; this.s = s; this.ctx = ctx; this.o = o;
@@ -128,7 +137,7 @@ export class Game {
     removeEventListener('resize', this.resize);
     document.removeEventListener('visibilitychange', this.vis);
     this.unbindPointer();
-    this.cab?.dispose(); this.stopSign.dispose(); this.trains.dispose(); this.view.dispose();
+    this.cab?.dispose(); this.interior?.dispose(); this.stopSign.dispose(); this.trains.dispose(); this.view.dispose();
     this.renderer.dispose();
     this.ctx.audio.update(0.1, silentAudio());
   }
@@ -154,6 +163,7 @@ export class Game {
     const s = this.s, w = s.world;
     if (!this.paused && !this.replay) {
       this.drive(dt);
+      if (this.condOn) this.walkStep(dt);
       w.speedMul = this.warp;
       s.update(dt);
       this.record(dt);
@@ -166,6 +176,9 @@ export class Game {
     if (this.replay) this.trains.syncPoses(this.replay.poses[this.replay.i] ?? [], t?.id ?? null);
     else this.trains.sync(w, this.rig.cam.position, this.qual.world.viewDist, t?.id ?? null, cabOn && !!t?.consist[0]?.type.cab);
     this.syncCab(cabOn, t, dt);
+    this.syncInterior(t);
+    // Innenansichten nach dem Platzieren der Fahrzeuge setzen, sonst hinkt die Kamera einen Takt hinterher (Wackeln)
+    if (t && (this.rig.mode === 'cab' || this.rig.mode === 'passenger' || this.rig.mode === 'walk')) this.placeCam(0, t);
     const plan = t ? w.plans.get(t.id) : undefined;
     this.stopSign.update(w.net, t && plan?.svc && plan.state === 'run' ? w.stopTarget(t, plan) : null);
     this.view.update(this.rig.cam, this.env(), dt);
@@ -187,8 +200,11 @@ export class Game {
   }
 
   private updateCamera(dt: number, t: Train | null) {
-    const lead = t && this.trains.leadGroup ? this.trains.leadMatrix : null;
     if (this.input.axis.active && (this.input.axis.lookX || this.input.axis.lookY)) this.rig.look(this.input.axis.lookX * 12, this.input.axis.lookY * 9);
+    this.placeCam(dt, t);
+  }
+  private placeCam(dt: number, t: Train | null) {
+    const lead = t && this.trains.leadGroup ? this.trains.leadMatrix : null;
     this.rig.update(dt, this.s.world.net, t, lead, this.eye, (i) => (t ? this.trains.vehicleGroup(t.id, i) : null), (x, z) => this.view.heightAt(x, z));
   }
 
@@ -203,9 +219,11 @@ export class Game {
         this.cab = buildCab(layout, this.qual.model);
         // Führerstand sitzt an der Vorderkante des Fahrzeugs (x = len/2); eye ist im Führerstandssystem
         const half = lead!.type.len / 2;
-        this.eye.copy(this.cab.eye).add(new THREE.Vector3(half, 0, 0));
+        this.eyeBase.copy(this.cab.eye).add(new THREE.Vector3(half, 0, 0));
       }
     }
+    // Hochformat: Blick etwas weiter vorn und höher, damit das Pult nicht die halbe Sicht verdeckt
+    if (this.cab) { this.eye.copy(this.eyeBase); if (innerHeight > innerWidth) { this.eye.x += 0.55; this.eye.y += 0.22; } }
     // Führerstand nicht an die (im Führerstand ausgeblendete) Fahrzeuggruppe hängen, sondern deren Matrix übernehmen
     if (this.cab && t && this.trains.leadGroup) {
       const cg = this.cab.group;
@@ -229,8 +247,8 @@ export class Game {
     if (this.input.axis.active && Math.abs(this.input.axis.lever) > 0.02) this.lever = this.input.axis.lever;
     // Schnappen auf 0 nahe Mitte
     if (!held.has('throttleUp') && !held.has('throttleDown') && Math.abs(this.lever) < 0.04) this.lever = 0;
-    if (this.ctx.settings.controls === 'simple') this.simpleAssist(t, dt);
-    const L = this.lever;
+    const hold = this.ctx.settings.controls === 'simple' ? this.simpleAssist(t, dt) : false;
+    const L = hold ? Math.min(0, this.lever) : this.lever;
     let thr = Math.max(0, L);
     if (t.traction === 'diesel' && t.consist[0].type.body !== 'dmu') thr = Math.round(thr * 8) / 8; // Fahrstufen
     c.throttle = thr;
@@ -254,8 +272,18 @@ export class Game {
   /** Einfache Bedienung: Richtung, Bremse lösen, Stromabnehmer/Motor und Türen übernimmt das Spiel */
   private stillT = 0;
   private doorStop = '';
-  private simpleAssist(t: Train, dt: number) {
+  private holdMsg = -1;
+  /** gibt true zurück, solange der Zug noch nicht abfahren darf (Halt bis zur Abfahrtszeit) */
+  private simpleAssist(t: Train, dt: number): boolean {
     const c = t.ctl, still = Math.abs(t.v) < 0.1;
+    const plan = this.s.world.plans.get(t.id);
+    const hold = still && plan?.state === 'dwell';
+    // nach einer Schnellbremsung im Stillstand automatisch lösen
+    if (still && c.emergency && this.stillT > 3) { c.emergency = false; toast('Schnellbremsung gelöst – weiterfahren'); }
+    if (hold && this.lever > 0.02 && this.holdMsg !== plan!.stopIdx) {
+      this.holdMsg = plan!.stopIdx;
+      toast(`Noch nicht abfahren – Abfahrt ${hhmm(plan!.dwellUntil)}. Der Zug fährt los, sobald es so weit ist.`, 'warn', 5000);
+    }
     this.manBrake = 0;
     if (t.traction === 'electric') { c.panto = true; c.mainSwitch = true; }
     if (t.traction === 'diesel') c.engine = true;
@@ -266,14 +294,15 @@ export class Game {
     if (this.lever > 0.02 && still && c.reverser === 0) c.reverser = 1;
     this.stillT = still ? this.stillT + dt : 0;
     const where = `${t.head.t}:${Math.round(t.head.s / 50)}`;
-    if (this.lever > 0.02) {
+    if (this.lever > 0.02 && !hold) {
       // Losfahren: Türen zu
       if (c.openL || c.openR || c.releaseL || c.releaseR) { c.openL = c.openR = c.releaseL = c.releaseR = false; this.ctx.audio.play('door_beep'); toast('Türen schließen – gleich geht es los'); }
     } else if (t.hasDoors && this.stillT > 1.2 && this.doorStop !== where) {
       const side = this.platformSide(t);
-      if (side) { this.doorStop = where; c.releaseL = c.openL = side === 'L'; c.releaseR = c.openR = side === 'R'; this.ctx.audio.play('door_open'); toast(`Türen ${side === 'L' ? 'links' : 'rechts'} offen – zum Weiterfahren Hebel nach oben`); }
+      if (side) { this.doorStop = where; c.releaseL = c.openL = side === 'L'; c.releaseR = c.openR = side === 'R'; this.ctx.audio.play('door_open'); toast(`Türen ${side === 'L' ? 'links' : 'rechts'} offen${plan?.state === 'dwell' ? ` – Abfahrt ${hhmm(plan.dwellUntil)}` : ' – zum Weiterfahren Hebel nach oben'}`); }
     }
     if (!still) this.doorStop = this.doorStop && this.stillT === 0 && Math.abs(t.v) > 3 ? '' : this.doorStop;
+    return hold;
   }
 
   setLever(v: number) { this.lever = Math.max(this.s.world.assist === 'expert' && this.ctx.settings.controls !== 'simple' ? 0 : -1, Math.min(1, v)); }
@@ -297,7 +326,9 @@ export class Game {
       case 'screenshot': this.screenshot(); return;
       case 'replay': this.toggleReplay(); return;
       case 'timewarp': { const opts = this.o.mode === 'drive' ? [1, 2, 4] : [1, 2, 4, 8, 16]; this.warp = opts[(opts.indexOf(this.warp) + 1) % opts.length]; say(`Zeitraffer ×${this.warp}`); return; }
-      case 'camera': { const list = CAMS.filter((m) => m !== 'free' || this.o.allowFreeCam); this.setCam(list[(list.indexOf(this.rig.mode) + 1) % list.length]); return; }
+      case 'conductor': this.setConductor(!this.condOn); return;
+      case 'ticket': this.checkTicket(); return;
+      case 'camera': { const list = (this.condOn ? ['walk' as CamMode, ...CAMS] : CAMS).filter((m) => m !== 'free' || this.o.allowFreeCam); this.setCam(list[(list.indexOf(this.rig.mode) + 1) % list.length]); return; }
       case 'cam1': case 'cam2': case 'cam3': case 'cam4': case 'cam5': case 'cam6': case 'cam7': { const m = CAMS[Number(a.slice(3)) - 1]; if (m !== 'free' || this.o.allowFreeCam) this.setCam(m); else say('Freie Kamera nur im Fotomodus/Editor und in der freien Welt.', 'warn'); return; }
     }
     if (this.paused || !t || t.ai) return;
@@ -439,6 +470,121 @@ export class Game {
     if (a) { this.onAction(a, true); if (a === 'horn' || a === 'sand') setTimeout(() => this.onAction(a, false), 600); }
   }
 
+  // ------------------------------------------------------------ Schaffner-Modus
+  /** Personenzug nach Fahrplan mit Sitzwagen? */
+  canConduct(): boolean {
+    const t = this.s.player;
+    return this.o.mode === 'drive' && !!t && !!this.s.world.plans.get(t.id)?.svc && t.consist.some((v) => (v.type.seats ?? 0) > 0);
+  }
+  get conductorOn() { return this.condOn; }
+
+  setConductor(on: boolean) {
+    const t = this.s.player; if (!t || on === this.condOn) return;
+    if (on && !this.canConduct()) { toast('Schaffner-Modus gibt es nur in Personenzügen nach Fahrplan.', 'warn'); return; }
+    this.condOn = on; this.lever = 0; this.manBrake = 0; this.walkTouch = 0;
+    if (on) {
+      t.ai = true; t.ctl.emergency = false;
+      const cars = this.condCars(t);
+      if (!this.cond || this.cond.cars.map((c) => c.idx).join() !== cars.map((c) => c.idx).join()) {
+        const plan = this.s.world.plans.get(t.id)!;
+        const stops = plan.svc!.stops.map((x) => ({ name: this.s.world.stations.get(x.st)?.name ?? x.st, pass: !!x.pass }));
+        this.cond = new Conductor(cars, stops, new Date(), (t.id.length * 7919 + Math.floor(this.s.world.time)) | 0);
+        this.cond.fill(Math.max(0, plan.stopIdx - 1), this.occupancy(t));
+        this.s.conductor = this.cond.stats;
+      }
+      const c0 = this.cond.cars[0], [a, b] = walkRange(c0.len, c0.cab);
+      this.rig.set('walk'); this.rig.walk.car = c0.idx; this.rig.walk.x = (a + b) / 2;
+      this.rig.yaw = t.consist[c0.idx]?.flipped ? 0 : Math.PI; // Blick in den Zug hinein (zum Zugende)
+      toast('Schaffner-Modus: Der Zug fährt und hält von selbst. Geh mit ▲ ▼ (W/S) durch den Zug, zum Umsehen ziehen. Am Fahrgast „Fahrkarte prüfen“ (Enter).', 'info', 7000);
+    } else {
+      t.ai = false;
+      this.interior?.group.removeFromParent();
+      this.rig.set('cab');
+      toast('Du fährst wieder selbst: Hebel nach oben = fahren, nach unten = bremsen.', 'info', 5000);
+    }
+    this.hud.setConductor(on);
+  }
+
+  /** Gehen per Touch-Knopf: 1 vor, −1 zurück, 0 stehen */
+  setWalk(d: number) { this.walkTouch = d; }
+  turnAround() { this.rig.yaw += Math.PI; this.rig.pitch = -0.15; }
+
+  private occupancy(t: Train) { return t.seats ? this.s.pax.onboard / t.seats : 0.4; }
+
+  private condCars(t: Train): CarInfo[] {
+    const out: CarInfo[] = [];
+    t.consist.forEach((v, i) => { if ((v.type.seats ?? 0) > 0) out.push({ idx: i, len: v.type.len, cab: !!v.type.cab, first: v.type.id === 'coach1', seats: seatLayout(v.type.len, !!v.type.cab) }); });
+    return out;
+  }
+
+  /** Lage im Zug für die Anzeige */
+  condInfo() {
+    const c = this.cond; if (!c || !this.condOn) return null;
+    const w = this.rig.walk, k = c.cars.findIndex((x) => x.idx === w.car), car = c.cars[k];
+    return { carNo: k + 1, cars: c.cars.length, first: !!car?.first, near: this.rig.mode === 'walk' && !!c.near(w.car, w.x), left: c.left(), stats: c.stats, today: c.today };
+  }
+
+  private walkStep(dt: number) {
+    const t = this.s.player, c = this.cond; if (!t || !c) return;
+    const plan = this.s.world.plans.get(t.id);
+    // Halt erreicht: Fahrgäste steigen aus und ein
+    if (plan?.state === 'dwell') c.arrive(plan.stopIdx - 1, this.occupancy(t));
+    if (this.rig.mode !== 'walk' || this.ticketOpen) return;
+    const held = this.input.held;
+    const dir = (held.has('throttleUp') ? 1 : 0) - (held.has('throttleDown') ? 1 : 0) || this.walkTouch;
+    if (!dir) return;
+    const w = this.rig.walk;
+    const car = c.cars.find((x) => x.idx === w.car) ?? c.cars[0];
+    // in Blickrichtung gehen (vor/zurück entlang des Gangs)
+    w.x += dir * (Math.cos(this.rig.yaw) >= 0 ? 1 : -1) * 2.2 * dt;
+    const [a, b] = walkRange(car.len, car.cab);
+    if (w.x >= a && w.x <= b) return;
+    const out = w.x > b ? 1 : -1;
+    const fl = t.consist[car.idx]?.flipped ?? false;
+    const towardFront = out * (fl ? -1 : 1) > 0;
+    const nx = c.cars.find((x) => x.idx === car.idx + (towardFront ? -1 : 1));
+    if (!nx) { w.x = Math.max(a, Math.min(b, w.x)); return; }
+    const fj = t.consist[nx.idx]?.flipped ?? false, sF = fj ? -1 : 1;
+    const [na, nb] = walkRange(nx.len, nx.cab);
+    w.x = (towardFront ? -sF : sF) > 0 ? nb - 0.05 : na + 0.05;
+    if (fj !== fl) this.rig.yaw += Math.PI; // Wagen steht andersherum
+    w.car = nx.idx;
+    const k = c.cars.indexOf(nx) + 1;
+    toast(`Wagen ${k} von ${c.cars.length}${nx.first ? ' · 1. Klasse' : ''}`, 'info', 1800);
+  }
+
+  private syncInterior(t: Train | null) {
+    const c = this.cond;
+    if (!this.condOn || !c || !t) { if (this.interior?.group.parent) this.interior.group.removeFromParent(); return; }
+    const w = this.rig.walk, g = this.trains.vehicleGroup(t.id, w.car);
+    const car = c.cars.find((x) => x.idx === w.car);
+    if (!g || !car) return;
+    this.interior ??= new Interior();
+    const key = `${w.car}|${c.version}`;
+    if (this.interior.key !== key) { this.interior.build(car, c.riders); this.interior.key = key; }
+    if (this.interior.group.parent !== g) g.add(this.interior.group);
+    this.interior.marker(car, this.rig.mode === 'walk' ? c.near(w.car, w.x) : null, performance.now() / 1000);
+  }
+
+  private checkTicket() {
+    const c = this.cond;
+    if (!this.condOn || !c || this.ticketOpen || this.rig.mode !== 'walk') return;
+    const w = this.rig.walk, r = c.near(w.car, w.x);
+    if (!r) { toast(c.left() ? 'Kein Fahrgast ohne Kontrolle in der Nähe – geh näher heran (▲ ▼).' : 'Alle Fahrgäste sind kontrolliert. Am nächsten Halt steigen neue ein.'); return; }
+    const t = this.s.player!, plan = this.s.world.plans.get(t.id), car = c.cars.find((x) => x.idx === w.car)!;
+    const done = plan ? c.stops.slice(0, Math.max(0, plan.stopIdx)).filter((x) => !x.pass).map((x) => x.name) : [];
+    const next = plan ? c.stops.slice(plan.stopIdx).find((x) => !x.pass)?.name : '';
+    this.ticketOpen = true;
+    this.ctx.audio.play('ui_click');
+    void dialog('Fahrkartenkontrolle', ticketCard(r, c, car, done, next ?? ''), ['✓ Gültig', '✗ Nicht gültig']).then((i) => {
+      this.ticketOpen = false;
+      const v = c.judge(r, i === 0);
+      this.ctx.audio.play(v.correct ? 'ui_ok' : 'ui_err');
+      toast(v.msg, v.correct ? 'info' : 'warn', 5000);
+      this.s.praise = { t: this.s.world.time, text: `${v.correct ? '✔' : '✖'} ${v.pts > 0 ? '+' : ''}${v.pts} Punkte`, pts: v.pts, top: v.correct && !r.ok };
+    });
+  }
+
   // ------------------------------------------------------------ Karte / Stellwerk
   openMap(on: boolean) {
     if (!on) { this.map?.dispose(); this.mapHost?.remove(); this.map = null; this.mapHost = null; return; }
@@ -546,7 +692,7 @@ export class Game {
       });
       // entfernter Zug: leiser
       const hp = w.net.pos(near.head);
-      if (this.rig.mode !== 'cab' && this.rig.mode !== 'passenger') { const d = Math.hypot(hp.x - cam.x, hp.z - cam.z); const f = Math.max(0, 1 - d / 600); st.speed *= f > 0 ? 1 : 0; st.power *= f; st.throttle *= f; }
+      if (this.rig.mode !== 'cab' && this.rig.mode !== 'passenger' && this.rig.mode !== 'walk') { const d = Math.hypot(hp.x - cam.x, hp.z - cam.z); const f = Math.max(0, 1 - d / 600); st.speed *= f > 0 ? 1 : 0; st.power *= f; st.throttle *= f; }
     }
     st.rain = w.weather.kind === 'rain' ? 0.6 : w.weather.kind === 'storm' ? 1 : 0;
     st.wind = Math.min(1, w.weather.wind / 20 + (w.weather.kind === 'storm' ? 0.5 : 0));
@@ -589,4 +735,25 @@ function cabState(t: Train, s: Session): CabState {
     clock: hhmm(w.time), nextStop: stop ? w.stations.get(stop.st)?.name ?? '' : '', nextStopDist: null,
     gradient: w.net.gradeAt(t.head) * 1000, slip: t.slip, time: w.time, night: tod < 6.5 * 3600 || tod > 20 * 3600,
   };
+}
+
+const HELLO = ['Guten Tag, bitte schön.', 'Moment … hier, bitte.', 'Hallo! Einen Augenblick.', 'Bitte sehr.', 'Ach so, ja – hier.'];
+const NONE = ['Äh … ich habe leider keine Fahrkarte.', 'Der Automat war kaputt, ehrlich!', 'Ich wollte gerade eine kaufen …'];
+
+/** Fahrkarte und Hinweise für die Entscheidung */
+function ticketCard(r: Rider, c: Conductor, car: CarInfo, done: string[], next: string): HTMLElement {
+  const k = c.cars.indexOf(car) + 1, tk = r.ticket;
+  const row = (a: string, b: string) => h('div', { class: 'trow' }, h('span', null, a), h('b', null, b));
+  return h('div', null,
+    h('p', { class: 'muted' }, `„${tk ? HELLO[r.look % HELLO.length] : NONE[r.look % NONE.length]}“`),
+    tk ? h('div', { class: 'ticket' },
+      h('div', { class: 'thead' }, `FAHRKARTE · ${tk.cls}. Klasse`),
+      row('Art', tk.kind), row('Von', tk.from), row('Nach', tk.to), row('Gültig am', tk.date))
+      : h('div', { class: 'ticket none' }, 'keine Fahrkarte'),
+    h('div', { class: 'small', style: 'margin-top:10px;line-height:1.5' },
+      h('div', null, `📅 Heute: ${c.today}`),
+      h('div', null, `🚃 Wagen ${k}: ${car.first ? '1.' : '2.'} Klasse`),
+      h('div', null, `🚉 Schon gehalten: ${done.join(', ') || '–'}`),
+      next ? h('div', null, `➡ Nächster Halt: ${next}`) : null),
+    h('p', { class: 'small muted' }, 'Gültig ist eine Fahrkarte von heute, für eine Strecke, die noch vor uns liegt, und mindestens für die Klasse des Wagens.'));
 }

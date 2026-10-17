@@ -3,8 +3,8 @@ import * as THREE from 'three';
 import type { Network } from '../railway/network';
 import type { Train } from '../trains/train';
 
-export type CamMode = 'cab' | 'chase' | 'front' | 'rear' | 'passenger' | 'trackside' | 'free';
-export const CAM_NAMES: Record<CamMode, string> = { cab: 'Führerstand', chase: 'Verfolger', front: 'Front', rear: 'Heck', passenger: 'Fahrgast', trackside: 'Streckenrand', free: 'Freie Kamera' };
+export type CamMode = 'cab' | 'chase' | 'front' | 'rear' | 'passenger' | 'trackside' | 'free' | 'walk';
+export const CAM_NAMES: Record<CamMode, string> = { cab: 'Führerstand', chase: 'Verfolger', front: 'Front', rear: 'Heck', passenger: 'Fahrgast', trackside: 'Streckenrand', free: 'Freie Kamera', walk: 'Schaffner' };
 
 const _v = new THREE.Vector3(), _w = new THREE.Vector3(), _q = new THREE.Quaternion(), _e = new THREE.Euler(0, 0, 0, 'YXZ');
 
@@ -17,6 +17,8 @@ export class CameraRig {
   private freePos = new THREE.Vector3();
   private freeYaw = 0; private freePitch = -0.2;
   move = { f: 0, r: 0, u: 0 };
+  /** Schaffner: Wagen (Index im Zug) und Standort im Wagen (lokales x), Augenhöhe */
+  walk = { car: 0, x: 0, eye: 2.9 };
   /** Kamera ruckelfrei nachziehen */
   private smooth = new THREE.Vector3(); private hasSmooth = false;
 
@@ -27,8 +29,8 @@ export class CameraRig {
   set(mode: CamMode) {
     if (mode === this.mode) return;
     if (mode === 'free') { this.freePos.copy(this.cam.position); const d = this.cam.getWorldDirection(_v); this.freeYaw = Math.atan2(-d.x, -d.z); this.freePitch = Math.asin(Math.max(-1, Math.min(1, d.y))); }
-    this.mode = mode; this.yaw = 0; this.pitch = mode === 'chase' ? -0.25 : -0.05; this.side = null; this.hasSmooth = false;
-    this.baseFov = mode === 'cab' || mode === 'passenger' ? 62 : 55; this.applyFov();
+    this.mode = mode; this.yaw = 0; this.pitch = mode === 'chase' ? -0.25 : mode === 'walk' ? -0.15 : -0.05; this.side = null; this.hasSmooth = false;
+    this.baseFov = mode === 'walk' ? 70 : mode === 'cab' || mode === 'passenger' ? 62 : 55; this.applyFov();
   }
 
   /** Blickwinkel fürs Querformat; im Hochformat breiter, damit seitlich nicht zu viel abgeschnitten wird */
@@ -46,10 +48,10 @@ export class CameraRig {
     if (this.mode === 'cab' || this.mode === 'passenger') this.yaw = Math.max(-2.6, Math.min(2.6, this.yaw));
   }
   zoom(f: number) {
-    if (this.mode === 'cab' || this.mode === 'passenger') { this.baseFov = Math.max(25, Math.min(80, this.baseFov * f)); this.applyFov(); }
+    if (this.mode === 'cab' || this.mode === 'passenger' || this.mode === 'walk') { this.baseFov = Math.max(25, Math.min(80, this.baseFov * f)); this.applyFov(); }
     else this.dist = Math.max(12, Math.min(400, this.dist * f));
   }
-  resetLook() { this.yaw = 0; this.pitch = this.mode === 'chase' ? -0.25 : -0.05; }
+  resetLook() { this.yaw = 0; this.pitch = this.mode === 'chase' ? -0.25 : this.mode === 'walk' ? -0.15 : -0.05; }
 
   /**
    * lead: Weltmatrix des führenden Fahrzeugs; eye: Augpunkt im Fahrzeug (lokal); groundAt: Geländehöhe
@@ -88,6 +90,16 @@ export class CameraRig {
         c.position.set(0, 2.4, 0.9).applyMatrix4(g.matrixWorld);
         c.quaternion.setFromRotationMatrix(g.matrixWorld);
         c.rotateY(-Math.PI); // Blick zur rechten Fensterseite (+z)
+        c.rotateY(this.yaw); c.rotateX(this.pitch);
+        break;
+      }
+      case 'walk': {
+        const g = vehicles(this.walk.car);
+        if (!g) break;
+        g.updateMatrixWorld();
+        c.position.set(this.walk.x, this.walk.eye, 0).applyMatrix4(g.matrixWorld);
+        c.quaternion.setFromRotationMatrix(g.matrixWorld);
+        c.rotateY(-Math.PI / 2); // Blick entlang +x (Fahrzeugspitze)
         c.rotateY(this.yaw); c.rotateX(this.pitch);
         break;
       }

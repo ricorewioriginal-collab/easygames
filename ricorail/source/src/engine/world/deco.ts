@@ -20,16 +20,19 @@ const T = {
 };
 const pick = <X>(a: X[], r: () => number) => a[Math.floor(r() * a.length) % a.length];
 
-export function decorate(b: CB) {
+/** Ausschmückung in kleinen Schritten (yield = Rest im nächsten Bild), damit es auf Handys nicht ruckelt */
+export function* decorate(b: CB): Generator<void, void, void> {
   const ctx = b.ctx, key = b.chunk.key;
   for (const bl of ctx.blds.get(key) ?? []) stationBuilding(b, bl);
+  yield;
   for (const r of ctx.runs.get(key) ?? []) {
     const inds = ctx.inds.get(r.t); if (!inds) continue;
     const t = ctx.idx.tracks[r.t], sA = t.cs[r.i0], sB = t.cs[r.i1 + 1];
     for (const ind of inds) { const m = (ind.s0 + ind.s1) / 2; if (m >= sA && m < sB) industry(b, r.t, ind.s0, ind.s1, ind.cargo); }
   }
   for (const s of ctx.scen.get(key) ?? []) scenery(b, s);
-  procedural(b);
+  yield;
+  yield* procedural(b);
 }
 
 // ------------------------------------------------------------------ Gebäude
@@ -241,7 +244,7 @@ function tree(b: CB, x: number, z: number, r: () => number, conifer?: boolean) {
 }
 
 // ------------------------------------------------------------------ prozedural
-function procedural(b: CB) {
+function* procedural(b: CB): Generator<void, void, void> {
   const ctx = b.ctx, q = b.q, theme = ctx.net.def.theme, st = style(b), r = b.rnd;
   const ox = b.ox, oz = b.oz, cxm = ox + CH / 2, czm = oz + CH / 2;
   const city = theme.terrain === 'city';
@@ -257,6 +260,7 @@ function procedural(b: CB) {
       house(b, x, z, 1, 0, st === 'neon' ? 'neon' : 'city', rr, 24 + rr() * 16, 24 + rr() * 16, (14 + rr() * 50) * tall + 8);
     }
   }
+  if (city) yield;
   // Häuser um Bahnhöfe
   for (const sp of ctx.stPts) {
     const d = Math.hypot(sp.x - cxm, sp.z - czm); if (d > 800) continue;
@@ -272,6 +276,7 @@ function procedural(b: CB) {
       house(b, x, z, Math.cos(ang), Math.sin(ang), city ? (st === 'neon' ? 'neon' : 'city') : st === 'city' ? 'town' : st, rr);
     }
   }
+  yield;
   // Bauernhöfe
   if ((theme.terrain === 'plain' || theme.terrain === 'hills' || theme.terrain === 'river') && r() < (q.level === 'low' ? 0.12 : 0.28)) {
     farm(b, ox + 80 + r() * 340, oz + 80 + r() * 340, r() - 0.5, r() - 0.5, r);

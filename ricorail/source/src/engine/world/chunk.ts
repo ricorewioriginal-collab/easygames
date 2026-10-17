@@ -116,8 +116,8 @@ export function* chunkSteps(ctx: WorldCtx, q: QP, cx: number, cz: number, n: num
   buildSignals(b);
   buildCrossings(b);
   buildPortals(b); yield;
-  decorate(b); yield;
-  return finish(b);
+  yield* decorate(b); yield;
+  return yield* finish(b);
 }
 
 export function buildChunk(ctx: WorldCtx, q: QP, cx: number, cz: number, n: number): Chunk {
@@ -490,7 +490,7 @@ function buildPortals(b: CB) {
 }
 
 // ------------------------------------------------------------------ Abschluss: Meshes erzeugen
-function finish(b: CB): Chunk {
+function* finish(b: CB): Generator<void, Chunk, void> {
   const ch = b.chunk, M = b.ctx.mats, grp = ch.group, q = b.q;
   grp.position.set(b.ox, 0, b.oz);
   const add = (g: GeoBuf, mat: THREE.Material, name: string, shadow: boolean) => {
@@ -504,6 +504,7 @@ function finish(b: CB): Chunk {
   add(b.st, M.stat, 'static', true);
   add(b.bed, M.bed, 'bed', false);
   add(b.water, M.water, 'water', false);
+  if (b.signs.size) yield; // Schildtexturen (Canvas) im nächsten Bild
   for (const [, s] of b.signs) {
     const tex = hasDom() ? signTexture(s.name, q.maxTex) : null;
     const mat = tex ? new THREE.MeshBasicMaterial({ map: tex }) : M.signPlain;

@@ -19,6 +19,8 @@ type Mode = 'drive' | 'box' | 'world';
 interface RunCfg {
   title: string; routeId: string; def?: NetworkDef; time: number; weather: Weather; assist: Assist; traffic: number;
   player: PlayerSpec; scenario?: Scenario; mode: Mode; allowFreeCam: boolean; autoDispatch?: boolean;
+  /** gleich im Schaffner-Modus starten (Zug fährt selbst) */
+  conductor?: boolean;
   /** Rückkehr nach der Fahrt */
   back: () => void;
 }
@@ -120,6 +122,7 @@ function menu() {
       last ? tile('⟲', bare(t('continue')), last.title, () => resume(last), 'big') : null,
       h('div', { class: 'tiles' },
         tile('🚆', 'Fahren', 'Frei, nach Fahrplan, Güter', driveMenu),
+        quick ? tile('🎫', 'Schaffner', 'Zug fährt selbst – du kontrollierst Fahrkarten', () => quickStart(quick, true)) : null,
         tile('🎓', bare(t('career')), t('careerSub'), career),
         tile('📋', 'Aufgaben', t('scenariosSub'), () => scenarioList(null, t('scenarios'))),
         tile('🚦', bare(t('box')), t('boxSub'), boxMenu),
@@ -152,11 +155,11 @@ function quickPick(): { route: string; line: string; dep: number; title: string 
     return { route, line: L.id, dep, title: `${L.name} ab ${hhmm(dep)}` };
   } catch { return null; }
 }
-function quickStart(q: { route: string; line: string; dep: number; title: string }) {
+function quickStart(q: { route: string; line: string; dep: number; title: string }, conductor = false) {
   const player: PlayerSpec = { kind: 'service', line: q.line, back: false, dep: q.dep };
   const weather: Weather = { kind: 'clear', season: 'summer', wind: 3 };
-  const start = Math.max(0, q.dep - 120);
-  void run({ title: q.title, routeId: q.route, time: start, weather, assist: 'easy', traffic: 1, player, mode: 'drive', allowFreeCam: false, back: menu, scenario: serviceScenario(q.route, q.title) },
+  const start = Math.max(0, q.dep - 45); // kurz vor der Abfahrt: Fahrstraße wird gleich gestellt
+  void run({ title: q.title, routeId: q.route, time: start, weather, assist: 'easy', traffic: 1, player, mode: 'drive', allowFreeCam: false, back: menu, scenario: serviceScenario(q.route, q.title), conductor },
     { title: q.title, kind: 'service', routeId: q.route, time: start, weather, assist: 'easy', traffic: 1, player });
 }
 
@@ -577,6 +580,7 @@ async function run(cfg: RunCfg, stub?: RunStub) {
     for (let i = 0; i < 60; i++) { const pr = g.warmup(3); prog(0.6 + 0.4 * pr); await frame(); if (pr >= 0.999) break; }
     load.remove();
     g.start();
+    if (cfg.conductor) g.setConductor(true);
     if (cfg.mode === 'drive' && !matchMedia('(pointer: coarse)').matches) toast('F1 = Hilfe & Tasten · Esc = Pause', 'info', 5000);
   } catch (e) {
     console.error(e);
