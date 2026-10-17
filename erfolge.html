@@ -46,6 +46,24 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--acc);outline-offset
 .err{color:#f28b82}
 #toast{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top));transform:translate(-50%,-140%);transition:transform .4s;background:#222a4d;border:1px solid var(--gold);border-radius:14px;padding:10px 16px;font-weight:700;z-index:9;max-width:92vw;text-align:center}
 #toast.on{transform:translate(-50%,0)}
+h2.sec{font-size:17px;margin:26px 2px 4px}
+.sub{color:var(--mut);font-size:13px;margin:0 2px 10px}
+.og{border:1px solid var(--line);border-radius:14px;background:var(--card);margin:0 0 8px;overflow:hidden}
+.og[open]{border-color:#ffffff40}
+.og summary{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;list-style:none;min-height:48px}
+.og summary::-webkit-details-marker{display:none}
+.og summary b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.og .ogi{font-size:22px;line-height:1}
+.og .ogc{font-variant-numeric:tabular-nums;color:var(--mut);font-size:13px;flex:none}
+.og .ogb{display:block;width:56px;height:6px;border-radius:99px;background:#ffffff1f;overflow:hidden;flex:none}
+.og .ogb u{display:block;height:100%;background:linear-gradient(90deg,var(--acc),#7be6a0);text-decoration:none}
+.og.full .ogc{color:var(--gold)}
+.og ul{list-style:none;margin:0;padding:4px 10px 12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}
+.og li{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;line-height:1.3}
+.og li.done{border-color:#ffc53d88;background:#ffc53d12}
+.og li:not(.done){opacity:.6}.og li:not(.done) .ci{filter:grayscale(1)}
+.og li .ci{font-size:20px;line-height:1.1;flex:none}
+.og li small{display:block;color:var(--mut);font-size:12px;margin-top:2px}
 @media (prefers-reduced-motion:reduce){.bar>i,#toast{transition:none}}
 </style>
 </head>
@@ -68,6 +86,10 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--acc);outline-offset
   </div>
   <ul class="grid" id="grid"></ul>
 
+  <h2 class="sec" id="ogTitle" hidden>🎯 Erfolge in den Spielen</h2>
+  <p class="sub" id="ogSub" hidden></p>
+  <div id="og"></div>
+
   <section class="card" id="me" aria-labelledby="meTitle"></section>
 </main>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -76,10 +98,11 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--acc);outline-offset
 <script src="cloud/anmacha-cloud.js" data-game="erfolge" data-prefix="anmacha-erfolge-ohne-spielstand" data-ui="off" data-sync="off" data-board="off" defer></script>
 <script src="cloud/anmacha-board.js" defer></script>
 <script src="cloud/anmacha-ach.js" defer></script>
+<script src="cloud/anmacha-gameach.js" defer></script>
 <script>
 window.addEventListener('DOMContentLoaded', function () {
   'use strict';
-  var B = window.AnMaChaBoard, A = window.AnMaChaAch, Cloud = window.AnMaChaCloud;
+  var B = window.AnMaChaBoard, A = window.AnMaChaAch, GA = window.AnMaChaGameAch, Cloud = window.AnMaChaCloud, ownData = {};
   var qs = new URLSearchParams(location.search), $ = function (id) { return document.getElementById(id); };
   if (qs.get('embed') === '1') document.body.classList.add('embed');
   var APP = location.hostname === 'appassets.local' || location.hostname === 'appassets.androidplatform.net' || !!window.EasyGamesApp || /(RicoReWi|EasyGames)App\//.test(navigator.userAgent);
@@ -113,6 +136,31 @@ window.addEventListener('DOMContentLoaded', function () {
         (full ? '' : '<div class="bar"><i style="width:' + i.pct + '%"></i></div>') + '<div class="meta"><span>' + esc(meta) + '</span></div></li>';
     }).join('') : '<li class="ach lock"><p>Hier ist noch nichts – spiel einfach los! 🎮</p></li>';
   }
+  // Eigene Erfolge der Spiele: lokal gelesene (GA.collect) plus die im Profil gemerkten (state.gu, z. B. aus Apps oder von anderen Geräten)
+  function ownInput() {
+    var out = {}, loc = GA ? GA.collect() : {}, def = GA ? GA.definitions() : {};
+    ownData = {};
+    Object.keys(def).forEach(function (g) { var l = loc[g]; out[g] = { total: def[g].defs.length, done: l ? l.done : 0, unlocked: l ? l.unlocked : {} }; ownData[g] = { title: def[g].title, defs: def[g].defs, unlocked: l ? l.unlocked : {} }; });
+    Object.keys(loc).forEach(function (g) { if (!out[g]) { out[g] = { total: loc[g].total, done: loc[g].done, unlocked: loc[g].unlocked }; ownData[g] = { title: loc[g].title, defs: loc[g].defs, unlocked: loc[g].unlocked }; } });
+    return out;
+  }
+  function drawOwn() {
+    var gu = (res && res.state && res.state.gu) || {}, ids = Object.keys(ownData), total = 0, done = 0, icon = {};
+    games.forEach(function (g) { if (g.cloud && g.cloud.game) icon[g.cloud.game] = g.icon; });
+    var rows = ids.map(function (g) {
+      var o = ownData[g], got = {}, n = 0;
+      o.defs.forEach(function (d) { if (o.unlocked[d.id] || gu[g + ':' + d.id]) { got[d.id] = o.unlocked[d.id] > 1 ? o.unlocked[d.id] : gu[g + ':' + d.id] || 1; n++; } });
+      total += o.defs.length; done += n;
+      return { g: g, o: o, got: got, n: n };
+    }).sort(function (a, b) { return (b.n / b.o.defs.length) - (a.n / a.o.defs.length) || a.o.title.localeCompare(b.o.title, 'de'); });
+    $('ogTitle').hidden = $('ogSub').hidden = !rows.length;
+    $('ogSub').textContent = 'Manche Spiele haben ihre eigenen Erfolge – hier gesammelt: ' + done + ' von ' + total + ' freigeschaltet (zählt für „Spiel-Erfolge“ oben).';
+    $('og').innerHTML = rows.map(function (r) {
+      var pct = Math.round(100 * r.n / Math.max(1, r.o.defs.length));
+      return '<details class="og' + (r.n === r.o.defs.length ? ' full' : '') + '"><summary><span class="ogi" aria-hidden="true">' + esc(icon[r.g] || '🎮') + '</span><b>' + esc(r.o.title) + '</b><i class="ogb" aria-hidden="true"><u style="width:' + pct + '%"></u></i><span class="ogc">' + r.n + ' / ' + r.o.defs.length + '</span></summary><ul>' +
+        r.o.defs.map(function (d) { var on = !!r.got[d.id]; return '<li class="' + (on ? 'done' : '') + '"><span class="ci" aria-hidden="true">' + esc(on ? d.icon : '🔒') + '</span><span><b>' + esc(d.title) + '</b>' + (d.desc ? '<small>' + esc(d.desc) + '</small>' : '') + (on && r.got[d.id] > 1 ? '<small>seit ' + fmtDate(r.got[d.id]) + '</small>' : '') + '</span></li>'; }).join('') + '</ul></details>';
+    }).join('');
+  }
   function drawMe() {
     var u = user(), h = '<h2 id="meTitle">Geräteübergreifend sichern</h2>';
     if (!u) {
@@ -127,8 +175,8 @@ window.addEventListener('DOMContentLoaded', function () {
   function evaluate(syncFirst) {
     var u = user(), p = syncFirst && u && B.getUserDoc ? A.sync(B) : Promise.resolve();
     return p.catch(function () {}).then(function () {
-      res = A.run(games, B, { cloud: !!u, board: B.shared() });
-      toast(res.fresh); draw();
+      res = A.run(games, B, { cloud: !!u, board: B.shared(), own: ownInput() });
+      toast(res.fresh); draw(); drawOwn();
       // Neue Freischaltungen (z. B. Wolkenspieler) auch in die Cloud
       if (u && res.fresh.length && B.putUserDoc) return A.sync(B).catch(function () {});
     });
@@ -148,7 +196,7 @@ window.addEventListener('DOMContentLoaded', function () {
     filter = t.dataset.f; Array.prototype.forEach.call($('tabs').children, function (b) { b.setAttribute('aria-pressed', String(b === t)); }); draw();
   });
 
-  if (!B || !A || !Cloud) { $('rkName').textContent = 'Erfolge sind gerade nicht verfügbar.'; return; }
+  if (!B || !A || !GA || !Cloud) { $('rkName').textContent = 'Erfolge sind gerade nicht verfügbar.'; return; }
   drawMe();
   fetch('sync/catalog.json', { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (c) {
     games = c.games || [];

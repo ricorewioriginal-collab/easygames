@@ -31,6 +31,7 @@ jobs:
       - run: node --test tools/test-cloud-merge.mjs
       - run: node tools/test-board.mjs
       - run: node tools/test-ach.mjs
+      - run: node tools/test-gameach.cjs
       - run: node tools/build-sync.js --strict --stage android/app/src/main/assets/easygames
       - name: Install browser test runtime
         run: |

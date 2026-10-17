@@ -54,8 +54,23 @@ const server = http.createServer((req, res) => {
     assert(await page.$$eval('.ach h3', h => h.length) > 0, 'Filter „Offen“ zeigt Erfolge');
     console.log('PASS Seite mit Spielständen: Erfolge freigeschaltet und lokal gemerkt, Filter');
 
+    // 2b) eigene Erfolge der Spiele (Wobbel-Spielstand + Standard-Eintrag eines neuen Spiels) werden gelistet und zählen mit
+    await page.evaluate(() => {
+      localStorage.setItem('wobbelSave1', JSON.stringify({ ach: { first: 1700000000000, ten: 1700000001000 } }));
+      localStorage.setItem('anmacha-gameach.neutest', JSON.stringify({ t: 'Testspiel', d: [{ id: 'a', icon: '🎈', title: 'Ballon', desc: 'Platze einen.' }], u: { a: 1700000002000 } }));
+    });
+    await page.reload(); await page.waitForSelector('#og details');
+    const og = await page.$$eval('#og details', d => d.map(x => x.querySelector('summary').textContent));
+    assert(og.some(t => /Wobbel/.test(t)) && og.some(t => /Testspiel/.test(t)) && og.length >= 9, 'Spiele mit eigenen Erfolgen gelistet: ' + og.length);
+    assert.equal(await page.$$eval('#og details.full', d => d.length), 1, 'Testspiel komplett');
+    assert((await page.$$eval('#og li.done', l => l.length)) === 3, 'drei freigeschaltete Spiel-Erfolge');
+    assert(await page.$$eval('.ach.done h3', h => h.some(x => x.textContent === 'Erster Spiel-Erfolg')), 'Gesamt-Erfolg „Erster Spiel-Erfolg“');
+    const gu = await page.evaluate(() => JSON.parse(localStorage.getItem('anmacha-ach')).gu);
+    assert(gu['wobbel:first'] === 1700000000000 && gu['neutest:a'], 'Spiel-Erfolge im Zustand gemerkt (für den Profil-Abgleich)');
+    console.log('PASS Eigene Spiel-Erfolge: gelistet, gezählt, für den Profil-Abgleich gemerkt');
+
     // 3) Spielspuren: ein Spiel mit dem stillen Skript schreibt anmacha-seen
-    const g0 = cat[0];
+    const g0 = cat.find(g => { try { return !/data-board="off"/.test(fs.readFileSync(path.join(root, g.path.replace(/^\.?\//, ''), 'index.html'), 'utf8')); } catch (e) { return false; } });   // Spiele mit data-board="off" (RicoLife) schreiben bewusst keine Spur
     const play = await ctx.newPage();
     await play.goto(base + g0.path.replace(/^\.?\//, ''));
     await play.waitForFunction(() => { try { return Object.keys(JSON.parse(localStorage.getItem('anmacha-seen')).g).length > 0; } catch (e) { return false; } }, null, { timeout: 15000 });

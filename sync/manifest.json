@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "bb7a92ef9818",
- "generated": "2026-10-17T02:29:05+00:00",
- "commit": "a5f572d9dd47bd7031a86f3ce93514a88cded99e",
+ "version": "aebc91967cfe",
+ "generated": "2026-10-17T04:37:09+02:00",
+ "commit": "c1c72f8b7d4a324acc4e6160734f262c58ec01d1",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4613,18 +4613,23 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 10431,
-   "h": "1d25162f86e2c0cd686df8325fecf11d994ad45bed4a49ee86a8ef5cf85a62f7"
+   "s": 17261,
+   "h": "77dfd48074d509cffc1c056bcb570a2aaa3742fc75c2e0e2dc0520a6fc05e176"
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 28729,
-   "h": "3519a6d6418c5df3a9cf067826e73591e817d06813c5028cbbd96136c38e85ed"
+   "s": 31111,
+   "h": "3a8245ce3bf0103d224089751c4d51c8d2a64f8ca8c5f9d0441e2dfdec1c4535"
   },
   {
    "p": "cloud/anmacha-cloud.js",
    "s": 31101,
    "h": "c8efa0a58a75cac14e0c65ea8e4c437363e09c867b4b328b70cedce9400885ee"
+  },
+  {
+   "p": "cloud/anmacha-gameach.js",
+   "s": 45039,
+   "h": "7234166bdc18770379d64191f96314daaa0e4d3b89d09b5e62f316284e2b4f02"
   },
   {
    "p": "cloud/fire-peer.js",
@@ -4643,13 +4648,13 @@
   },
   {
    "p": "einbinden.html",
-   "s": 70732,
-   "h": "233e14007a3245f777712b196b7febffd26cf8ad284e6a99206ffe45be4879b1"
+   "s": 70902,
+   "h": "1fe2c5346ee93fcfc04b644375527da9f21fa3565f23fd942d4dfd35aedee4e6"
   },
   {
    "p": "erfolge.html",
-   "s": 11309,
-   "h": "6b4ede713beb373221edb85b24e19c0e49a799413fd2fe0c72c853f141ad2e37"
+   "s": 15599,
+   "h": "4ca06d3f153e7979d706ce07b4fb881afd9294b78aec5d60071bc4d99144b689"
   },
   {
    "p": "favicon.ico",
