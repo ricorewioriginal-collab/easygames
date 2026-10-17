@@ -561,7 +561,8 @@ export class World {
       if (stop) {
         const pl = this.platformsOn.get(train.head.t)?.find((x) => x.st.id === stop.st);
         const sp = this.stopPoint(train, plan);
-        if (pl && sp && Math.abs(sp.d) < 25 + (train.ai ? 0 : 15)) {
+        // Spieler: Halt zählt auch, wenn der Zug irgendwo vollständig am Bahnsteig steht
+        if (pl && sp && (Math.abs(sp.d) < 25 + (train.ai ? 0 : 15) || (!train.ai && this.trainOnPlatform(train, pl.p)))) {
           const ok = this.trainOnPlatform(train, pl.p);
           const delay = stop.arr !== undefined ? this.time - stop.arr : 0;
           plan.delay = Math.max(0, delay);
@@ -600,8 +601,14 @@ export class World {
       // Bremsassistent: hält vor Halt zeigenden Signalen, Prellböcken und Fahrzeugen automatisch an
       const decel = this.planDecel(train) * 1.25;
       const la = lookahead(this.net, this.il, train.head, 2500, { occupiedBy: (t) => this.occupiedOn.get(t) ?? [], self: train.id, pass: train.meta.zs1 as string | undefined });
-      const lim = permitted(la.targets.filter((t) => t.v === 0), decel, 12, train.length, 999);
+      const lim0 = permitted(la.targets.filter((t) => t.v === 0), decel, 12, train.length, 999);
+      // Haltassistent: hält auch am nächsten Bahnsteig (Haltepunkt etwa 2 m vor dem Ziel)
+      const plan = this.plans.get(train.id);
+      const sp = plan?.state === 'run' ? this.stopPoint(train, plan) : null;
+      const stopLim = sp && sp.d > -5 && plan!.svc ? permitted([{ d: sp.d + 4, v: 0, kind: 'stop' }], decel, 12, train.length, 999) : 999;
+      const lim = Math.min(lim0, stopLim);
       train.meta.assistBrake = train.v > lim + 0.5;
+      if (sp && train.v > Math.sqrt(2 * decel * Math.max(0, sp.d + 4)) + 1) train.meta.assistStopT = (train.meta.assistStopT as number ?? 0) + dt; // > 2 s = Assistent hat den Halt gebremst
       if (train.v > lim + 0.5) { train.ctl.throttle = 0; train.ctl.brake = Math.max(train.ctl.brake, Math.min(1, (train.v - lim) / 3 + 0.3)); }
       const vl = this.limitUnder(train);
       if (train.kmh > vl + 2) { train.ctl.throttle = 0; train.ctl.brake = Math.max(train.ctl.brake, 0.4); }

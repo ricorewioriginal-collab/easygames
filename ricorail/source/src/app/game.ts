@@ -89,6 +89,7 @@ export class Game {
   constructor(canvas: HTMLCanvasElement, root: HTMLElement, s: Session, ctx: GameCtx, o: GameOpts) {
     this.canvas = canvas; this.root = root; this.s = s; this.ctx = ctx; this.o = o;
     this.qual = qualityOf(ctx.settings);
+    this.s.autoDoors = ctx.settings.controls === 'simple';
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: this.qual.world.level !== 'low', powerPreference: 'high-performance' });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, this.qual.pixel));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;

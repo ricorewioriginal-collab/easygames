@@ -139,6 +139,10 @@ table.t td,table.t th{padding:5px 6px;border-bottom:1px solid #22395a;text-align
 .hud .goals .ok{color:var(--green)}.hud .goals .bad{color:var(--red)}
 .hud .warnbig{position:absolute;left:50%;top:22%;transform:translateX(-50%);font-weight:800;font-size:1.3em;padding:10px 18px;border-radius:12px;background:rgba(200,30,40,.85);display:none}
 .hud .warnbig.on{display:block;animation:blink 1s infinite}
+.hud .praise{position:absolute;left:50%;top:30%;transform:translateX(-50%);font-weight:800;font-size:1.25em;padding:10px 18px;border-radius:14px;background:rgba(20,110,60,.88);border:2px solid #7dffb0;display:none;text-align:center;max-width:90vw}
+.hud .praise.on{display:block;animation:pop .35s ease-out}
+@keyframes pop{0%{transform:translateX(-50%) scale(.7);opacity:0}100%{transform:translateX(-50%) scale(1);opacity:1}}
+.hud .hbar{height:8px;border-radius:6px;background:#0a1626;border:1px solid var(--line);overflow:hidden;margin-top:3px}.hud .hbar i{display:block;height:100%}
 @keyframes blink{50%{opacity:.4}}
 .hud .bl{position:absolute;left:max(8px,env(safe-area-inset-left));bottom:max(8px,env(safe-area-inset-bottom))}
 .hud .br{position:absolute;right:max(8px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom))}
