@@ -64,7 +64,7 @@
      "Ein fairer Tausch, der beiden eine Farbgruppe bringt, lohnt sich fast immer."
     ]
    },
-   "size": 582006,
+   "size": 581812,
    "files": 17,
    "offline": true,
    "cloud": {
@@ -219,8 +219,11 @@
    "bg": "linear-gradient(145deg,#0f2f55,#1f6f8b 55%,#ffd37c)",
    "glow": "rgba(124,240,216,.5)",
    "path": "zeitsprung-wissen/",
-   "modes": {},
-   "multiplayer": false,
+   "modes": {
+    "pad": true,
+    "online": true
+   },
+   "multiplayer": true,
    "guide": {
     "anleitung": "ZEITSPRUNG WISSEN funktioniert wie Hitster, nur mit Weltgeschehen statt Hits: Jeder Spieler startet mit einem Ereignis auf seinem Zeitstrahl. In Zeitstrahlrunden ordnest du ein neues Ereignis zeitlich ein – entweder per Jahreswahl aus A–D oder als Profi direkt in die passende Lücke deines Zeitstrahls. Zu vielen Ereignissen gibt es einen historischen Clip von Wikimedia Commons oder einen passenden Song über Deezer. Dazwischen kommen Wissensfragen zu Geschichte, Politik, Erdkunde, Wissenschaft und Allgemeinwissen, „Was war zuerst?“-Runden, Songrunden und Bildrätsel. Jede richtige Antwort bringt einen Punkt, wer zuerst 8 Punkte hat, gewinnt. Im TV-Modus verbinden sich bis zu vier Handys per WR-Code und PIN.",
     "steuerung": [
@@ -230,7 +233,7 @@
      "TV-Modus: Handys scannen den QR-Code und geben die PIN ein"
     ]
    },
-   "size": 242557,
+   "size": 242624,
    "files": 16,
    "offline": true,
    "cloud": {
@@ -247,10 +250,13 @@
    "bg": "linear-gradient(145deg,#241248,#74418e 55%,#ffd37c)",
    "glow": "rgba(255,211,124,.5)",
    "path": "zeitsprung-movie/",
-   "modes": {},
-   "multiplayer": false,
+   "modes": {
+    "pad": true,
+    "online": true
+   },
+   "multiplayer": true,
    "guide": null,
-   "size": 327154,
+   "size": 327221,
    "files": 17,
    "offline": true,
    "cloud": {
@@ -267,10 +273,13 @@
    "bg": "linear-gradient(145deg,#19142a,#ff4c93 55%,#ffcb61)",
    "glow": "rgba(255,76,147,.5)",
    "path": "zeitsprung-radio/",
-   "modes": {},
-   "multiplayer": false,
+   "modes": {
+    "pad": true,
+    "online": true
+   },
+   "multiplayer": true,
    "guide": null,
-   "size": 277862,
+   "size": 277929,
    "files": 14,
    "offline": true,
    "cloud": {
@@ -411,8 +420,10 @@
    "bg": "linear-gradient(145deg,#7a3cff,#19f0ff)",
    "glow": "rgba(25,240,255,.45)",
    "path": "zotik/",
-   "modes": {},
-   "multiplayer": false,
+   "modes": {
+    "online": true
+   },
+   "multiplayer": true,
    "guide": {
     "anleitung": "Zotik ist ein 3D-Action-Rollenspiel mit zehn Welten von Lunaris bis Elyndra und einem Endspiel im Weltenriss. Du erkundest die Welten, sprichst mit Figuren, erfüllst Quests (Hauptgeschichte und Nebenaufgaben), löst Rätsel, kämpfst mit deinen Gefährten gegen Gegner und Bosse und sammelst Rissplitter, Heiltränke und Erfahrung. Rote Kreise am Boden zeigen Angriffe an, denen du rechtzeitig ausweichen musst. Im Menü findest du Quests, Weltreise, Inventar, Fähigkeiten, Steuerung mit Optionen und Koop; das Spiel speichert automatisch, zusätzlich über das Menü.",
     "steuerung": [
@@ -428,7 +439,7 @@
      "Heiltränke gibt es im Laden gegen Rissplitter."
     ]
    },
-   "size": 508579,
+   "size": 508647,
    "files": 5,
    "offline": true,
    "cloud": {
@@ -461,7 +472,7 @@
      "Grafikqualität „Automatisch“ passt sich der Bildrate an; auf älteren Handys hilft eine niedrigere Auflösung und eine Bildratenbegrenzung."
     ]
    },
-   "size": 2324491,
+   "size": 2325773,
    "files": 23,
    "offline": true,
    "cloud": {
@@ -504,7 +515,7 @@
    "title": "AnMaCha Radio Surfer",
    "desc": "3D-Runner durchs Internet: springen, rutschen, ausweichen – 10 Level.",
    "icon": "📻",
-   "img": null,
+   "img": "anmacha-radio-surfer/card.jpg",
    "bg": "linear-gradient(145deg,#00ff66,#19f0ff)",
    "glow": "rgba(0,255,150,.5)",
    "path": "anmacha-radio-surfer/",
@@ -518,8 +529,8 @@
     ],
     "tipps": []
    },
-   "size": 3054678,
-   "files": 19,
+   "size": 3097759,
+   "files": 21,
    "offline": true,
    "cloud": {
     "game": "radio-surfer",
@@ -531,7 +542,7 @@
    "title": "AnMaCha Radio-Match 3D",
    "desc": "3D-Match-3 mit Radio-Bauteilen: 100 Level mit wachsendem Raster, Power-ups und 6 Herausforderungen.",
    "icon": "📡",
-   "img": null,
+   "img": "anmacha-radio-match/card.jpg",
    "bg": "linear-gradient(145deg,#19f0ff,#00ff66 55%,#ff2e88)",
    "glow": "rgba(25,240,255,.5)",
    "path": "anmacha-radio-match/",
@@ -548,8 +559,8 @@
      "Der Hinweis-Knopf zeigt einen möglichen Zug."
     ]
    },
-   "size": 42187,
-   "files": 3,
+   "size": 84337,
+   "files": 5,
    "offline": true,
    "cloud": {
     "game": "radio-match",
@@ -561,7 +572,7 @@
    "title": "AnMaCha Pinball",
    "desc": "3D-Pinball mit 13 Tischen: Kampagne mit steigender Schwierigkeit oder freies Spiel.",
    "icon": "🎱",
-   "img": null,
+   "img": "anmacha-flipper/card.jpg",
    "bg": "linear-gradient(145deg,#00E5FF,#8B5CF6 55%,#FF2D95)",
    "glow": "rgba(139,92,246,.55)",
    "path": "anmacha-flipper/",
@@ -577,8 +588,8 @@
      "Die Start-Taste halten und erst zum Abschuss loslassen."
     ]
    },
-   "size": 2943031,
-   "files": 17,
+   "size": 2984319,
+   "files": 19,
    "offline": true,
    "cloud": {
     "game": "flipper",
@@ -590,7 +601,7 @@
    "title": "AnMaCha Beat Surfer",
    "desc": "3D-Rhythmusspiel: Triff die Noten im Takt – 13 Songs, steigende Schwierigkeit.",
    "icon": "🎧",
-   "img": null,
+   "img": "anmacha-beat-surfer/card.jpg",
    "bg": "linear-gradient(145deg,#FF2D95,#8B5CF6 55%,#00E5FF)",
    "glow": "rgba(255,45,149,.5)",
    "path": "anmacha-beat-surfer/",
@@ -606,8 +617,8 @@
      "Treffer wirken zu früh oder zu spät (z. B. Bluetooth-Kopfhörer)? In der Pause lässt sich der Audio-Versatz anpassen."
     ]
    },
-   "size": 2550476,
-   "files": 17,
+   "size": 2592509,
+   "files": 19,
    "offline": true,
    "cloud": {
     "game": "beat-surfer",
@@ -648,7 +659,7 @@
    "title": "AnMaCha Memory",
    "desc": "Memory mit unseren Sender-Logos: 10 Level mit Mischer & Zeitlimit, freies Spiel und Duell.",
    "icon": "🃏",
-   "img": null,
+   "img": "anmacha-memory/card.jpg",
    "bg": "linear-gradient(145deg,#FF9A1F,#FF2D95 55%,#8B5CF6)",
    "glow": "rgba(255,45,149,.5)",
    "path": "anmacha-memory/",
@@ -666,8 +677,8 @@
      "Der Hinweis (Auge) zeigt kurz alle Karten, kostet aber 150 Punkte und ist begrenzt."
     ]
    },
-   "size": 1765447,
-   "files": 20,
+   "size": 1805606,
+   "files": 22,
    "offline": true,
    "cloud": {
     "game": "memory",
@@ -679,7 +690,7 @@
    "title": "AnMaCha Quest RPG",
    "desc": "3D-Rollenspiel (Godot): 5 Helden, animierte Monster, Oberwelt, Dungeons mit Schlüsseln, Bosse.",
    "icon": "⚔️",
-   "img": null,
+   "img": "anmacha-quest-rpg/card.jpg",
    "bg": "linear-gradient(145deg,#2a3cff,#8B5CF6 55%,#FF9A1F)",
    "glow": "rgba(80,100,255,.55)",
    "path": "anmacha-quest-rpg/",
@@ -697,8 +708,8 @@
      "Nutze Wache in der Runde, in der ein Boss seinen Spezialangriff ausführt."
     ]
    },
-   "size": 72042627,
-   "files": 241,
+   "size": 72083215,
+   "files": 243,
    "offline": true,
    "cloud": {
     "game": "quest-rpg",
@@ -710,7 +721,7 @@
    "title": "AnMaCha Snake 3D",
    "desc": "3D-Snake: friss Sender-Logos, 13 Welten, Power-ups, Portal-Modus, zwei Kameras.",
    "icon": "🐍",
-   "img": null,
+   "img": "anmacha-snake/card.jpg",
    "bg": "linear-gradient(145deg,#00e5ff,#2a6cff 55%,#FF2D95)",
    "glow": "rgba(0,229,255,.5)",
    "path": "anmacha-snake/",
@@ -727,8 +738,8 @@
      "In der Verfolger-Kamera lenkst du nur nach links oder rechts aus Sicht der Schlange."
     ]
    },
-   "size": 1440406,
-   "files": 17,
+   "size": 1481455,
+   "files": 19,
    "offline": true,
    "cloud": {
     "game": "snake",
@@ -740,7 +751,7 @@
    "title": "AnMaCha Tower Defense",
    "desc": "3D-Tower-Defense: 8 Sender-Logo-Türme, 25 Wellen Rauschen, 3 Karten, Ausbau & Boss-Wellen.",
    "icon": "🗼",
-   "img": null,
+   "img": "anmacha-tower-defense/card.jpg",
    "bg": "linear-gradient(145deg,#8B5CF6,#2a6cff 50%,#00FFC8)",
    "glow": "rgba(139,92,246,.55)",
    "path": "anmacha-tower-defense/",
@@ -757,8 +768,8 @@
      "Die Türme haben unterschiedliche Aufgaben, zum Beispiel Flächenschaden, Verlangsamen, Kettenblitz, große Reichweite, Geld pro Welle oder Verstärkung für Türme in der Nähe."
     ]
    },
-   "size": 1781353,
-   "files": 17,
+   "size": 1826050,
+   "files": 19,
    "offline": true,
    "cloud": {
     "game": "tower-defense",
@@ -776,6 +787,7 @@
    "path": "anmacha-quiz/",
    "modes": {
     "pad": true,
+    "online": true,
     "multi": true
    },
    "multiplayer": true,
@@ -784,13 +796,13 @@
     "steuerung": [
      "PC: Antwort mit Taste A, B, C oder D wählen, dann Enter, J oder Leertaste für Ja (endgültig), N für Nein; Joker mit Taste 1 bis 4; P oder Esc Pause, M Ton",
      "Touch/Maus: Antwort antippen oder anklicken, dann Ja, final! oder Nein bestätigen; Joker über die Knöpfe; Aussteigen über den Knopf Aussteigen",
-     "Handy-Kopplung: im Menü Handys koppeln wählen, QR-Code scannen oder Code eingeben, dann dient das Handy als Eingabegerät"
+     "Handy-Kopplung und online: im Menü „Online & Handys“ wählen, QR-Code scannen oder Code eingeben, dann dient das Handy als Eingabegerät"
     ],
     "tipps": [
      "Jeder Joker kann pro Spieler nur einmal eingesetzt werden."
     ]
    },
-   "size": 1529376,
+   "size": 1529617,
    "files": 23,
    "offline": true,
    "cloud": {
@@ -808,7 +820,8 @@
    "glow": "rgba(0,201,167,.5)",
    "path": "anmacha-koffer-dealer/",
    "modes": {
-    "pad": true
+    "pad": true,
+    "online": true
    },
    "multiplayer": true,
    "guide": {
@@ -816,11 +829,11 @@
     "steuerung": [
      "PC/Maus: Koffer in der 3D-Ansicht anklicken, um ihn zu wählen oder zu öffnen; beim Angebot Knöpfe benutzen oder Taste D bzw. Enter für Deal, W oder N für Weiter; bei der Tauschoption T zum Tauschen, B zum Behalten; P oder Esc Pause, M Ton",
      "Touch: Koffer antippen; Angebote über die Knöpfe unten beantworten",
-     "Handy-Kopplung: im Menü Handys koppeln, bis zu 4 Spieler"
+     "Handy-Kopplung und online: im Menü „Online & Handys“, bis zu 4 Spieler"
     ],
     "tipps": []
    },
-   "size": 1425667,
+   "size": 1425905,
    "files": 22,
    "offline": true,
    "cloud": {
@@ -915,7 +928,7 @@
      "Mit der Lenkhilfe (Aus, Leicht, Stark) wird das Fahren am Handy einfacher."
     ]
    },
-   "size": 1510192,
+   "size": 1510258,
    "files": 25,
    "offline": true,
    "cloud": {
@@ -963,7 +976,8 @@
    "glow": "rgba(139,92,246,.55)",
    "path": "anmacha-hoererwahl/",
    "modes": {
-    "pad": true
+    "pad": true,
+    "online": true
    },
    "multiplayer": true,
    "guide": {
@@ -978,7 +992,7 @@
      "Im Menü sind 2 Teams oder der Modus gegen das Funkhaus-Team, Rundenzahl, Gegner-Stufe und Antwortzeit einstellbar."
     ]
    },
-   "size": 1468919,
+   "size": 1469158,
    "files": 30,
    "offline": true,
    "cloud": {
@@ -997,6 +1011,7 @@
    "path": "anmacha-frequenzrad/",
    "modes": {
     "pad": true,
+    "online": true,
     "multi": true
    },
    "multiplayer": true,
@@ -1012,7 +1027,7 @@
      "Falsch gelöst bedeutet, der Zug ist weg."
     ]
    },
-   "size": 1386362,
+   "size": 1386601,
    "files": 30,
    "offline": true,
    "cloud": {
@@ -1031,6 +1046,7 @@
    "path": "anmacha-preisradar/",
    "modes": {
     "pad": true,
+    "online": true,
     "multi": true
    },
    "multiplayer": true,
@@ -1046,7 +1062,7 @@
      "Alle Preise sind Durchschnittswerte ohne Gewähr."
     ]
    },
-   "size": 1747935,
+   "size": 1748174,
    "files": 34,
    "offline": true,
    "cloud": {
@@ -1065,6 +1081,7 @@
    "path": "anmacha-funkparcours/",
    "modes": {
     "pad": true,
+    "online": true,
     "multi": true
    },
    "multiplayer": true,
@@ -1081,7 +1098,7 @@
      "An Hangelstangen greift der Läufer von selbst; mit Sprung kannst du früher abspringen."
     ]
    },
-   "size": 1841544,
+   "size": 1841819,
    "files": 33,
    "offline": true,
    "cloud": {
@@ -1099,7 +1116,8 @@
    "glow": "rgba(255,45,149,.55)",
    "path": "FunkhausReality/",
    "modes": {
-    "pad": true
+    "pad": true,
+    "online": true
    },
    "multiplayer": true,
    "guide": {
@@ -1113,7 +1131,7 @@
      "Wer beliebt ist, bleibt im Haus."
     ]
    },
-   "size": 1811903,
+   "size": 1812142,
    "files": 33,
    "offline": true,
    "cloud": {
@@ -1131,7 +1149,8 @@
    "glow": "rgba(0,184,217,.55)",
    "path": "MachMichAus/",
    "modes": {
-    "pad": true
+    "pad": true,
+    "online": true
    },
    "multiplayer": true,
    "guide": {
@@ -1146,7 +1165,7 @@
      "Flunkern im Quiz hilft kurz, schadet aber beim Date."
     ]
    },
-   "size": 1817750,
+   "size": 1817989,
    "files": 32,
    "offline": true,
    "cloud": {
@@ -1194,7 +1213,7 @@
    "title": "PARTYVERSE",
    "desc": "3D-Brett-Partyspiel: 5 Welten, 50 Bretter, 22 Minispiele, 8 Figuren. Gegen Bots, lokal zu viert oder online (eigener Server nötig). Handy und PC.",
    "icon": "🎲",
-   "img": "partyverse/card.png",
+   "img": "partyverse/card.jpg",
    "bg": "linear-gradient(145deg,#2a1a8a,#ff3e9d 55%,#2de2e6)",
    "glow": "rgba(255,62,157,.55)",
    "path": "partyverse/",
@@ -1215,8 +1234,8 @@
      "Auf manchen Brettern erscheinen und verschwinden Wege je Runde (gestrichelt): vorausplanen."
     ]
    },
-   "size": 1558553,
-   "files": 49,
+   "size": 1576731,
+   "files": 50,
    "offline": true,
    "cloud": {
     "game": "partyverse",
@@ -1262,7 +1281,7 @@
    "title": "AnMaCha Markthalle 24",
    "desc": "Supermarkt-Simulator in 3D für PC und Handy: Kartons einräumen, Preise machen, an der Kasse scannen, Rückgeld geben und Kartenbeträge tippen, Großhandel-Angebote, Vorbestellungen, Personal, Ausbau – mit eigenem Radiosender, Preis-Duell und Wetter.",
    "icon": "🛒",
-   "img": null,
+   "img": "anmacha-markthalle/card.jpg",
    "bg": "linear-gradient(145deg,#43e08a,#00e5ff 50%,#ff9a1f)",
    "glow": "rgba(67,224,138,.5)",
    "path": "anmacha-markthalle/",
@@ -1280,8 +1299,8 @@
      "Der Marktpreis plus 8 % gilt als fair; zu teure Preise vertreiben Kunden."
     ]
    },
-   "size": 288351,
-   "files": 8,
+   "size": 329382,
+   "files": 10,
    "offline": true,
    "cloud": {
     "game": "markthalle",
@@ -1293,7 +1312,7 @@
    "title": "Urwaldlager",
    "desc": "Die große Wildnis-Show in 3D: Lauf durchs Dschungelcamp, sammle Holz, hol Wasser, koch am Feuer, schließ Freundschaften und besteh zwölf echte Prüfungen – bis das simulierte Publikum den Champion kürt. Für PC und Handy.",
    "icon": "🌴",
-   "img": null,
+   "img": "anmacha-urwaldlager/card.jpg",
    "bg": "linear-gradient(145deg,#0f3a2a,#2ea84d 50%,#ffcf4a)",
    "glow": "rgba(120,255,100,.5)",
    "path": "anmacha-urwaldlager/",
@@ -1310,8 +1329,8 @@
      "Auf schwachen Handys in den Einstellungen Grafik: Niedrig wählen."
     ]
    },
-   "size": 1333455,
-   "files": 30,
+   "size": 1377791,
+   "files": 32,
    "offline": true,
    "cloud": {
     "game": "urwaldlager",
@@ -1323,7 +1342,7 @@
    "title": "AnMaCha Spielesammlung 3D",
    "desc": "7 Klassiker in 3D: Rausschmeißer, Würfelfieber, Schach, Leiterspiel, Vier in einer Reihe, Dame und Mühle – gegen den Computer oder zu mehreren.",
    "icon": "🎲",
-   "img": null,
+   "img": "anmacha-spielesammlung/card.jpg",
    "bg": "linear-gradient(145deg,#ff2d95,#8B5CF6 50%,#00c9a7)",
    "glow": "rgba(255,45,149,.5)",
    "path": "anmacha-spielesammlung/",
@@ -1342,8 +1361,8 @@
      "Dame: Bei Mehrfachsprüngen direkt das letzte Zielfeld antippen."
     ]
    },
-   "size": 103083,
-   "files": 3,
+   "size": 145951,
+   "files": 5,
    "offline": true,
    "cloud": {
     "game": "spielesammlung",
@@ -1355,7 +1374,7 @@
    "title": "AnMaCha Stapelrausch 3D",
    "desc": "3D-Kartenspiel: Zahlentürme von 1 bis 12 bauen und den Zielstapel zuerst leeren – gegen den Computer, an einem Gerät oder online per Code/QR.",
    "icon": "🃏",
-   "img": null,
+   "img": "anmacha-stapelrausch/card.jpg",
    "bg": "linear-gradient(145deg,#00E5FF,#8B5CF6 55%,#FF2D95)",
    "glow": "rgba(139,92,246,.55)",
    "path": "anmacha-stapelrausch/",
@@ -1375,8 +1394,8 @@
      "Sind alle Handkarten gespielt, ziehst du sofort 5 neue."
     ]
    },
-   "size": 54855,
-   "files": 3,
+   "size": 104172,
+   "files": 5,
    "offline": true,
    "cloud": {
     "game": "stapelrausch",
@@ -1388,7 +1407,7 @@
    "title": "Gay Life!",
    "desc": "Queere Lebenssimulation in 3D: eigene Wohnung, Alltag mit Uhrzeit und Bedürfnissen, Barkeeper-Job, Handy mit Karte, Kontakten, Nachrichten und Dating-App; Dating mit eigenen Figuren, Tagesabläufe. Aufträge, Sterne sammeln, Tag und Nacht, eigene Figur. Vierzehn Minispiele (Sauna, Dunkelkammer, Casting-Tag, Tanzbattle, Karaoke, Quiz, Rave und mehr), Nebenaufträge, Kleiderschrank zum Freischalten und Mehrspieler per Code/QR. Speicherstand lokal und per Google.",
    "icon": "🏳️‍🌈",
-   "img": null,
+   "img": "gay-life/card.jpg",
    "bg": "linear-gradient(145deg,#ff3b6b,#9b5cff 55%,#2ea8ff)",
    "glow": "rgba(255,59,107,.55)",
    "path": "gay-life/",
@@ -1407,8 +1426,8 @@
      "Ein Nein von Figuren wird im Spiel respektiert."
     ]
    },
-   "size": 463268,
-   "files": 29,
+   "size": 502877,
+   "files": 31,
    "offline": true,
    "cloud": {
     "game": "gay-life",
@@ -1420,7 +1439,7 @@
    "title": "KLOTZFUNK 3D",
    "desc": "Voxel-Sandbox in 3D: 15 Biome mit Höhlen, Erzen und Funkkristallen, Dörfer mit Bewohnern und Handel, verlassene Minen, Tiere, Weizenfelder, Rauschlinge, Höhlenwesen und Drohnen, Story „Das große Rauschen“ in 6 Kapiteln, Funknetz mit Sendern, Relais und Maschinen, Werkzeuge, Schwerter und Rüstung, Bauformen, Werkbank und Schmelzofen, Herzen und Hunger im Überlebensmodus, 16 Radio-Logo-Blöcke, Federn, Turbo, Aufwind, Radio-Beats, Seilhaken und Gleiten, Minikarte, Tag und Nacht. Maus und Tastatur oder Touch am Handy, Grafik passt sich dem Gerät an.",
    "icon": "🧱",
-   "img": null,
+   "img": "anmacha-klotzfunk/card.jpg",
    "bg": "linear-gradient(145deg,#4c9a3a,#865f43 55%,#4aa3ff)",
    "glow": "rgba(76,154,58,.55)",
    "path": "anmacha-klotzfunk/",
@@ -1438,8 +1457,8 @@
      "Die Tastenbelegung lässt sich in den Einstellungen ändern."
     ]
    },
-   "size": 1166729,
-   "files": 22,
+   "size": 1204886,
+   "files": 24,
    "offline": true,
    "cloud": {
     "game": "klotzfunk",
@@ -1473,7 +1492,7 @@
      "Gekämpft wird nur in der Kampfarena und im Verbotenen Wald."
     ]
    },
-   "size": 4292277,
+   "size": 4292426,
    "files": 128,
    "offline": true,
    "cloud": {

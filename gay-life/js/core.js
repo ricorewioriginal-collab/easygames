@@ -1540,7 +1540,7 @@ function mkNet(cb) {
   N.loadPeer = function () { return load('https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js', function () { return !!window.Peer; }); };
   N.loadQR = function () { return load('https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js', function () { return !!window.qrcode; }); };
   N.norm = function (s) { return Array.from(String(s || '').toUpperCase()).filter(function (ch) { return ALPHA.indexOf(ch) >= 0; }).join('').slice(0, PIN); };
-  N.link = function () { return location.href.split('#')[0] + '#join=' + N.code; };
+  N.link = function () { var u = location.href.split('#')[0] + '#join=' + N.code; return window.EasyGamesLink ? EasyGamesLink.share(u) : u; };
   function mkCode() { var c = ''; for (var i = 0; i < PIN; i++) c += ALPHA[(Math.random() * ALPHA.length) | 0]; return c; }
   function reg(conn, onOpen) {
     conn.on('open', function () {

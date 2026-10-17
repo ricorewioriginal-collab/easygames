@@ -29,7 +29,7 @@ export function initPair(h) {
     peer.on('error', e => { if (e.type === 'unavailable-id') { try { peer.destroy(); } catch (x) {} peer = null; create(); } else $('pairUrl').textContent = 'Verbindung zum Koppel-Server nicht möglich (' + e.type + ')'; });
     peer.on('connection', c => { c.on('data', m => onData(c, m)); c.on('close', () => gone(c)); c.on('error', () => gone(c)); });
   }
-  const url = () => location.href.split('#')[0].split('?')[0] + '?join=' + room + (PH ? '&ph=' + encodeURIComponent(PH) : '');
+  const url = () => (u => window.EasyGamesLink ? EasyGamesLink.share(u) : u)(location.href.split('#')[0].split('?')[0] + '?join=' + room + (PH ? '&ph=' + encodeURIComponent(PH) : ''));
   function show() { $('code').textContent = room; const u = url(); $('pairUrl').textContent = u; try { const q = qrcode(0, 'M'); q.addData(u); q.make(); $('qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch (e) { $('qr').innerHTML = ''; } renderList(); }
   function onData(c, m) {
     if (!m || typeof m !== 'object') return;

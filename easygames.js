@@ -29,6 +29,10 @@
  *      EasyGames.open('ranglisten', { game: 'anmacha-snake' });  EasyGames.leaderboard('#ziel', { game: '…' });
  *    Oder direkt per iframe: https://…/easygames/ranglisten.html?embed=1[&game=<spiel-id>]
  *
+ * Erfolge (spielübergreifend, mit Google-Sicherung):
+ *      <button data-easygames="erfolge" data-mode="overlay">🏅 Erfolge</button>   |   EasyGames.open('erfolge')   |   EasyGames.achievements('#ziel')
+ *    Oder direkt per iframe: https://…/easygames/erfolge.html?embed=1
+ *
  * Weitere Funktionen:
  *      EasyGames.ready(() => console.log(EasyGames.list()));   // alle Spiele (id, title, desc, url …)
  *      EasyGames.get('zotik'); EasyGames.url('zotik');
@@ -123,17 +127,19 @@
   function libUrl(o) { return base + 'index.html?embed=1' + (o && o.layout === 'apps' ? '&view=apps' : ''); }
   // Zentrale Ranglisten-Seite (alle Spiele); game = Spiel-ID aus games.js zum Vorwählen
   function boardUrl(o) { return base + 'ranglisten.html?embed=1' + (o && o.game ? '&game=' + encodeURIComponent(o.game) : ''); }
+  // Erfolge-Seite (spielübergreifend)
+  function achUrl() { return base + 'erfolge.html?embed=1'; }
   var current = null;
   EG.close = function () { if (current) current(false); };
   // EasyGames.open('zotik' | 'all', { close:false, fullscreen:false, title, onClose })
   EG.open = function (game, o) {
     o = o || {};
     EG.ready(function () {
-      var board = game === 'ranglisten', g = game && game !== 'all' && !board ? find(game) : null;
-      if (game && game !== 'all' && !board && !g) { console.error('EasyGames: unbekanntes Spiel "' + game + '"'); return; }
+      var board = game === 'ranglisten', ach = game === 'erfolge', g = game && game !== 'all' && !board && !ach ? find(game) : null;
+      if (game && game !== 'all' && !board && !ach && !g) { console.error('EasyGames: unbekanntes Spiel "' + game + '"'); return; }
       var reuse = !!current && !!(history.state && history.state.egOverlay), opener = current && current.opener || document.activeElement;   // Verlaufseintrag und Fokus-Ziel des alten Overlays weiterverwenden
       if (current) current(true);   // ersetzt ein offenes Overlay (ohne Verlaufsschritt zurück, sonst würde das neue sofort schließen)
-      var title = o.title || (g ? g.title : board ? 'easygames – Ranglisten' : 'easygames – Spielebibliothek'), box = document.createElement('div'), f = fullFrame(g ? gameUrl(g) : board ? boardUrl(o) : libUrl(o), title);
+      var title = o.title || (g ? g.title : board ? 'easygames – Ranglisten' : ach ? 'easygames – Erfolge' : 'easygames – Spielebibliothek'), box = document.createElement('div'), f = fullFrame(g ? gameUrl(g) : board ? boardUrl(o) : ach ? achUrl() : libUrl(o), title);
       box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', title);
       box.style.cssText = LAYER_CSS;
       box.appendChild(f);
@@ -186,8 +192,8 @@
   function modesOf(g) { var m = {}, a = (window.EASYGAMES_MODES || {})[g.id] || {}, b = g.modes || {}, k; for (k in a) m[k] = a[k]; for (k in b) m[k] = b[k]; return m; }
   function multi(g) { var m = modesOf(g); return !!(m.pad || m.online || m.multi); }
   // Der richtige Link für TV-Gaming: öffentliche Spielseite (+ ?tv, wo das Spiel es kennt) – auch wenn diese Seite in einer App oder auf localhost läuft
-  function tvUrl(g) { var D = window.EasyGamesDevice; return D ? D.tvUrl(g.path, modesOf(g).tvParam, base) : abs(g.path); }
-  function info(g) { return { id: g.id, title: g.title, desc: g.desc, icon: g.icon, url: gameUrl(g), card: g.img ? abs(g.img) : null, multiplayer: multi(g), modes: modesOf(g), tvUrl: multi(g) ? tvUrl(g) : null }; }
+  function tvUrl(g) { var D = window.EasyGamesDevice; return D ? D.tvUrl(g.path, modesOf(g).tvParam) : abs(g.path); }
+  function info(g) { return { id: g.id, title: g.title, desc: g.desc, icon: g.icon, url: gameUrl(g), card: g.img ? abs(g.img) : null, bg: g.bg || null, glow: g.glow || null, multiplayer: multi(g), modes: modesOf(g), tvUrl: multi(g) ? tvUrl(g) : null }; }
   EG.list = function () { return (games || []).map(info); };
   EG.get = function (id) { var g = games && find(id); return g ? info(g) : null; };
   EG.tvUrl = function (id) { var g = games && find(id); return g && multi(g) ? tvUrl(g) : null; };
@@ -255,13 +261,24 @@
     return t;
   };
 
+  // EasyGames.achievements(ziel, { mode: 'page'|'overlay', … }) – spielübergreifende Erfolge
+  EG.achievements = function (target, o) {
+    o = o || {};
+    var t = el(target);
+    if (!t) { console.error('EasyGames: Ziel nicht gefunden:', target); return null; }
+    if (o.mode === 'overlay') { bindOpen(t, 'erfolge', o); return t; }
+    if (o.mode === 'page') { pageLayer(t, achUrl(), o.title || 'easygames – Erfolge'); return t; }
+    t.appendChild(frame(achUrl(), o.title || 'easygames – Erfolge', o));
+    return t;
+  };
+
   function scan() {
     var nodes = document.querySelectorAll('[data-easygames]');
     for (var i = 0; i < nodes.length; i++) {
       var n = nodes[i]; if (n.getAttribute('data-easygames-done')) continue;
       n.setAttribute('data-easygames-done', '1');
       var d = n.dataset, o = { width: d.width, maxWidth: d.maxWidth, ratio: d.ratio, height: d.height, radius: d.radius, title: d.title, fullscreen: d.fullscreen, tvLink: d.tvLink, mode: d.mode, close: d.close, layout: d.layout };
-      if (d.easygames === 'all') EG.library(n, o); else if (d.easygames === 'ranglisten') { o.game = d.game; EG.leaderboard(n, o); } else { o.game = d.easygames; EG.embed(n, o); }
+      if (d.easygames === 'all') EG.library(n, o); else if (d.easygames === 'ranglisten') { o.game = d.game; EG.leaderboard(n, o); } else if (d.easygames === 'erfolge') EG.achievements(n, o); else { o.game = d.easygames; EG.embed(n, o); }
     }
   }
   EG.scan = scan;

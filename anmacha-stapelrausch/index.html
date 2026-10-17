@@ -590,7 +590,7 @@ function mkNet(cb) {
   N.loadPeer = () => load('https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js', () => !!window.Peer);
   N.loadQR = () => load('https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js', () => !!window.qrcode);
   N.norm = s => Array.from(String(s || '').toUpperCase()).filter(ch => ALPHA.includes(ch)).join('').slice(0, 4);
-  N.link = () => location.href.split('#')[0] + '#join=' + N.code;
+  N.link = () => (u => window.EasyGamesLink ? EasyGamesLink.share(u) : u)(location.href.split('#')[0] + '#join=' + N.code);
   const mkCode = () => { let c = ''; for (let i = 0; i < 4; i++) c += ALPHA[(Math.random() * ALPHA.length) | 0]; return c; };
   function reg(conn, onOpen) {
     conn.on('open', () => {

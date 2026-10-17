@@ -41,6 +41,15 @@ interface Friend {
   name: string;
 }
 
+/** Adresse für Einladungen – Mehrspieler-Regel (easygames CLAUDE.md): immer die easygames-Homepage, nie die eigene
+ *  Adresse (Android-App appassets…, lokal, Heimnetz, Spiegel), damit der Link auf jeder Plattform gleich funktioniert. */
+const PUBLIC_GAME = 'https://ricorewioriginal-collab.github.io/easygames/riftzone/app/';
+function inviteBase(): string {
+  const cfg = (window as unknown as { EASYGAMES_PUBLIC_BASE?: string }).EASYGAMES_PUBLIC_BASE;
+  if (cfg) return new URL('riftzone/app/', cfg.endsWith('/') ? cfg : cfg + '/').href;
+  return PUBLIC_GAME;
+}
+
 export class App {
   private readonly ui: HTMLElement;
   private readonly stage: LobbyStage;
@@ -390,7 +399,7 @@ export class App {
   private copyRoomInvite(): void {
     if (!this.p2p) return;
     const code = this.p2p.code;
-    const url = `${location.origin}${location.pathname}?room=${code}`;
+    const url = `${inviteBase()}?room=${code}`;
     navigator.clipboard?.writeText(url).then(
       () => toast('Einladungslink kopiert'),
       () => toast(`Raumcode: ${code}`),
@@ -418,7 +427,7 @@ export class App {
 
   private copyInvite(): void {
     if (!this.party) return;
-    const url = `${location.origin}${location.pathname}?server=${encodeURIComponent(settings.data.serverUrl)}&party=${this.party.code}`;
+    const url = `${inviteBase()}?server=${encodeURIComponent(settings.data.serverUrl)}&party=${this.party.code}`;
     navigator.clipboard?.writeText(url).then(
       () => toast('Einladungslink kopiert'),
       () => toast(`Code: ${this.party!.code}`),

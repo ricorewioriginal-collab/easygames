@@ -68,7 +68,7 @@
 
   <nav class="toc" aria-label="Inhalt">
     <a href="#wahl">Welche Variante?</a><a href="#gen">Code-Generator</a><a href="#link">Direktlink</a><a href="#iframe">iframe</a>
-    <a href="#js">JavaScript</a><a href="#lib">Bibliothek</a><a href="#vollbild">Vollbild</a><a href="#vollbild-einbinden">Vollbild einbinden</a><a href="#nav">Zurück &amp; TV</a>
+    <a href="#js">JavaScript</a><a href="#lib">Bibliothek</a><a href="#vollbild">Vollbild</a><a href="#vollbild-einbinden">Vollbild einbinden</a><a href="#boards">Ranglisten &amp; Erfolge</a><a href="#nav">Zurück &amp; TV</a>
     <a href="#geraet">Geräteerkennung</a><a href="#pwa">PWA</a><a href="#pad">Gamecontroller</a><a href="#cloud">Cloud-Speicher</a><a href="#android">Android-App</a><a href="#retro">EmulationStation</a><a href="#tvlink">TV-Link</a><a href="#neu">Neues Spiel</a><a href="#msg">postMessage</a><a href="#app">App &amp; Offline</a><a href="#host">Eigener Server</a><a href="#hilfe">Fehlerhilfe</a>
   </nav>
 
@@ -80,6 +80,7 @@
       <tr><td><a href="#iframe">iframe</a></td><td>Ein Spiel soll mitten in einer Seite laufen.</td><td>1 Zeile</td></tr>
       <tr><td><a href="#js">easygames.js</a></td><td>Spiele per Attribut oder JavaScript-Variable einbauen, mit Vollbild-Knopf. Die Spieleliste kommt automatisch mit.</td><td>2 Zeilen</td></tr>
       <tr><td><a href="#lib">Bibliothek</a></td><td>Die komplette Übersicht mit Suche, Anleitungen und Spielfenster in deine Seite einbetten.</td><td>1 Zeile</td></tr>
+      <tr><td><a href="#boards">Ranglisten &amp; Erfolge</a></td><td>Die öffentlichen Bestenlisten aller Spiele und die spielübergreifenden Erfolge (mit Google-Sicherung) auf deiner Seite oder in deiner App zeigen – ohne dass sie ein Spiel verdecken.</td><td>1 Zeile</td></tr>
       <tr><td><a href="#retro">EmulationStation</a></td><td>Spiele im Retro-Frontend (ES-DE, RetroPie, Batocera) auf Konsole, Handheld oder Wohnzimmer-PC.</td><td>2 Befehle</td></tr>
       <tr><td><a href="#pwa">PWA</a></td><td>Spiel direkt auf dem Handy als App installieren (Vollbild, offline, Updates automatisch) – über den Direktlink.</td><td>0 Zeilen</td></tr>
       <tr><td><a href="#app">App</a></td><td>Spiele in einer Android-, iOS- oder Hybrid-App, auch offline.</td><td>je nach App</td></tr>
@@ -175,7 +176,7 @@
       <tr><td><code>EasyGames.embed(ziel, optionen)</code></td><td>Setzt ein Spiel in das Ziel (Selektor oder Element).</td></tr>
       <tr><td><code>EasyGames.library(ziel, optionen)</code></td><td>Setzt die komplette Übersicht ein.</td></tr>
       <tr><td><code>EasyGames.ready(callback)</code></td><td>Ruft zurück, sobald die Spieleliste geladen ist.</td></tr>
-      <tr><td><code>EasyGames.list()</code></td><td>Alle Spiele: <code>id, title, desc, icon, url, card</code>. Praktisch für eigene Menüs.</td></tr>
+      <tr><td><code>EasyGames.list()</code></td><td>Alle Spiele: <code>id, title, desc, icon, url, card, bg, glow</code> (bg/glow = Spielfarben für eigene App-Kacheln). Praktisch für eigene Menüs.</td></tr>
       <tr><td><code>EasyGames.get(id)</code> / <code>url(id)</code></td><td>Ein Spiel bzw. nur seine URL.</td></tr>
       <tr><td><code>EasyGames.guide(id, cb)</code></td><td>Anleitung und Bedienung als Objekt <code>{anleitung, steuerung, tipps}</code>.</td></tr>
       <tr><td><code>EasyGames.open(id | 'all', optionen)</code></td><td>Öffnet ein Spiel oder den ganzen Katalog vollflächig als Overlay (<code>close</code>, <code>fullscreen</code>, <code>title</code>, <code>onClose</code>).</td></tr>
@@ -257,6 +258,58 @@
       <li><b>Barrierefreiheit:</b> Das Overlay ist ein <code>role="dialog"</code> mit <code>aria-modal</code>; die Seite dahinter wird für Screenreader und Tastatur gesperrt (<code>aria-hidden</code>/<code>inert</code>), der Fokus liegt im Spiel, der Tabulator bleibt im Overlay und beim Schließen kehrt der Fokus zum auslösenden Knopf zurück. Dazu schließen auch die Zurück-Tasten von TV und WebView.</li>
       <li>Nur ein Overlay gleichzeitig; ein neues ersetzt das offene. <code>EasyGames.open('zotik', { fullscreen:false, title:'…', onClose: fn })</code> bietet weitere Optionen.</li>
       <li><b>Controller und Sensoren:</b> Alle eingebetteten Fenster erlauben jetzt <code>gamepad</code>, <code>accelerometer</code> und <code>gyroscope</code>; ohne diese Freigabe funktionieren Gamepad und Neigungssteuerung in fremden Seiten nicht. Bei eigenem <code>iframe</code> bitte <code>allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope"</code> setzen.</li>
+    </ul>
+  </section>
+
+  <section id="boards">
+    <h2>5b. Ranglisten &amp; Erfolge einbinden <span class="tag">neu</span></h2>
+    <p>Zwei fertige Seiten von easygames lassen sich wie ein Spiel einbinden – per Direktlink, <code>iframe</code>, <code>easygames.js</code> (Attribut oder JavaScript) oder als Overlay. In den Spielen selbst gibt es dafür <b>keine Oberfläche</b>: nichts verdeckt Spielinhalt, die Spiele melden Bestwerte und Spielspuren nur still im Hintergrund.</p>
+    <div class="tw"><table>
+      <tr><th></th><th>🏆 Ranglisten</th><th>🏅 Erfolge</th></tr>
+      <tr><td><b>Seite</b></td><td><code>ranglisten.html</code></td><td><code>erfolge.html</code></td></tr>
+      <tr><td><b>Inhalt</b></td><td>Top&nbsp;25 je Spiel und Wertung (Highscore, Gesamtpunkte, Bestzeit, Siege, Sterne, XP), eigene Zeile hervorgehoben. Ansehen ohne Anmeldung.</td><td>14 spielübergreifende Erfolge mit 40 Stufen, Punkte und Rang (Neuling … Legende), Filter, Hinweis bei neuen Erfolgen.</td></tr>
+      <tr><td><b>Sichtbar für</b></td><td>alle – aber nur mit <b>Freigabe</b> des Spielers; öffentlich sind nur Spitzname, Bestwert und Zeitpunkt, keine Google-Daten. Freigabe jederzeit widerrufbar (löscht die Einträge).</td><td>nur den Spieler selbst (privat).</td></tr>
+      <tr><td><b>Sicherung</b></td><td>Cloud (Firestore), Freigabe und Spitzname liegen im eigenen Profil und gelten auf allen Geräten.</td><td>lokal und – mit Google-Anmeldung – im eigenen Profil; früheste Freischaltung je Stufe gewinnt.</td></tr>
+      <tr><td><b>Vorwahl</b></td><td><code>?game=&lt;spiel-id&gt;</code></td><td>–</td></tr>
+    </table></div>
+
+    <h3>Code-Generator</h3>
+    <div class="gen">
+      <label>Seite<select id="bPage"><option value="ranglisten">🏆 Ranglisten</option><option value="erfolge">🏅 Erfolge</option></select></label>
+      <label id="bGameL">Spiel vorwählen (optional)<select id="bGame"><option value="">– keins (Auswahl durch den Spieler) –</option></select></label>
+      <label>Darstellung<select id="bMode"><option value="">Eingebettet (Rahmen in der Seite)</option><option value="page">Vollbild: ganze Seite</option><option value="overlay">Vollbild: Klick öffnet Overlay</option></select></label>
+    </div>
+    <h3>Direktlink</h3><pre id="bLink"></pre>
+    <h3>iframe</h3><pre id="bIframe"></pre>
+    <h3>easygames.js (Attribute)</h3><pre id="bAttr"></pre>
+    <h3>easygames.js (JavaScript)</h3><pre id="bJs"></pre>
+    <div class="row"><button class="primary" data-c="bLink">Link kopieren</button><button class="primary" data-c="bIframe">iframe kopieren</button><button class="primary" data-c="bAttr">Attribute kopieren</button><button class="primary" data-c="bJs">JS kopieren</button></div>
+
+    <h3>Kurzform ohne Generator</h3>
+<pre>&lt;script src="<span class="u"></span>easygames.js"&gt;&lt;/script&gt;
+
+&lt;!-- Overlay per Knopf --&gt;
+&lt;button data-easygames="ranglisten" data-mode="overlay"&gt;🏆 Ranglisten&lt;/button&gt;
+&lt;button data-easygames="erfolge"    data-mode="overlay"&gt;🏅 Erfolge&lt;/button&gt;
+
+&lt;!-- eingebettet (Rangliste mit Spiel-Vorwahl) --&gt;
+&lt;div data-easygames="ranglisten" data-game="anmacha-snake"&gt;&lt;/div&gt;
+&lt;div data-easygames="erfolge"&gt;&lt;/div&gt;
+
+&lt;!-- JavaScript --&gt;
+EasyGames.open('ranglisten', { game: 'anmacha-snake' });   // Overlay
+EasyGames.open('erfolge');
+EasyGames.leaderboard('#ziel', { game: 'anmacha-snake' }); // eingebettet (mode: 'page' | 'overlay' möglich)
+EasyGames.achievements('#ziel');</pre>
+    <h3>So funktioniert es auf deiner Seite oder in deiner App</h3>
+    <ul>
+      <li><b>Keine eigene Firebase-Einrichtung nötig:</b> Die Seiten laufen im Rahmen von easygames (eigene Adresse, bereits freigegeben). Die Google-Anmeldung passiert dort im Rahmen; deine Seite muss keine Domain freischalten.</li>
+      <li><b>Anpassungen:</b> <code>?embed=1</code> blendet den Knopf „← Spiele“ aus (macht <code>easygames.js</code> automatisch). Größe, Seitenverhältnis und Rahmen steuerst du wie bei Spielen (<code>data-ratio</code>, <code>data-max-width</code>, <code>data-mode</code>).</li>
+      <li><b>Erfolge sind pro Gerät und Adresse:</b> Sie werden aus den Spielständen berechnet, die unter derselben Adresse gespeichert sind. Wer easygames im Browser (<code>github.io</code>) spielt, sieht sie dort; mit Google-Anmeldung folgen sie dem Spieler auf alle Geräte und Apps.</li>
+      <li><b>In Apps (Android/Windows):</b> Die Seiten sind Teil des Offline-Standes (<code>ranglisten.html</code>, <code>erfolge.html</code>, <code>cloud/anmacha-board.js</code>, <code>cloud/anmacha-ach.js</code>, <code>sync/catalog.json</code>). Die Anmeldung geschieht über die Kopplung: ☁ in einem Spiel ▸ Link im Browser öffnen ▸ danach erscheint das Konto auch in Ranglisten und Erfolgen.</li>
+      <li><b>Eigene Seite mit eigenen Spielen:</b> Die Spielliste kommt aus <code>sync/catalog.json</code> (<code>node tools/build-sync.js</code>). Neue Spiele bekommen Ranglisten und Erfolge automatisch, sobald sie <code>cloud/anmacha-cloud.js</code> einbinden (<a href="#cloud">Cloud-Speicherstand</a>); besondere Wertungen trägst du in <code>cloud/anmacha-board.js</code> (<code>REG</code>) ein, ein leerer Eintrag schaltet die Rangliste eines Spiels ab.</li>
+      <li><b>Grenzen:</b> Die Werte stammen vom Gerät des Spielers und sind nicht manipulationssicher (Spaß-Ranglisten). Die Erkennung der Bestwerte ist eine Heuristik über typische Feldnamen (<code>best</code>, <code>highscore</code>, <code>wins</code>, <code>stars</code> …).</li>
+      <li><b>Einmalig in der Firebase-Konsole</b> (nur der Betreiber von easygames, nicht deine Seite): die Regeln aus <code>cloud/firestore.rules</code> veröffentlichen, sonst zeigen die Ranglisten „noch nicht freigeschaltet“. Die Erfolge brauchen keine neue Regel.</li>
     </ul>
   </section>
 
@@ -364,6 +417,7 @@ python3 tools/make-pwa.py --check    # nur prüfen</pre>
       <li><code>data-prefix</code>: Anfänge der <code>localStorage</code>-Schlüssel, die mitgesichert werden (kommagetrennt). Am Spielcode ändert sich nichts.</li>
       <li>Pro Schlüssel gewinnt der neuere Zeitstempel. Geschrieben wird gebündelt (3 s nach einer Änderung und beim Verlassen), geladen beim Start.</li>
       <li><b>In den Apps</b> (Android/Windows) gilt eine Kopplung: Google sperrt die Anmeldung in App-Fenstern, deshalb zeigt die App einen Link, man meldet sich damit im Browser auf ricorewi-radio.de an, und die App übernimmt den Cloud-Speicher automatisch.</li>
+      <li><b>Ranglisten und Erfolge</b> kommen mit demselben Skript automatisch dazu (ohne Oberfläche im Spiel): Bestwerte werden – nur mit Freigabe des Spielers – still eingereicht, Spielspuren für die Erfolge lokal mitgeschrieben. Anzeigen und einbinden: <a href="#boards">5b</a>. <code>data-board="off"</code> schaltet das für ein Spiel ab.</li>
       <li>Die einmalige Einrichtung (Firebase-Projekt, Regeln, freigegebene Domains) steht in <a href="https://github.com/ricorewioriginal-collab/easygames/blob/main/cloud/README.md" target="_blank" rel="noopener"><code>cloud/README.md</code></a>.</li>
     </ul>
   </section>
@@ -382,6 +436,7 @@ python3 tools/make-pwa.py --check    # nur prüfen</pre>
     <h3>Offline</h3>
     <ul>
       <li>Das APK enthält einen Start-Stand aller Spiele, die App läuft also sofort ohne Internet.</li>
+      <li><b>Benachrichtigungen:</b> Die Android-WebView kennt die Browser-Funktion <code>Notification</code> nicht; die App stellt sie den Spielen bereit (<code>Notification.permission</code>, <code>requestPermission()</code>, <code>new Notification(titel, { body, tag })</code>). Ab Android 13 erscheint der System-Dialog „Benachrichtigungen erlauben“, Tippen auf die Meldung öffnet die App. Es sind lokale Meldungen des laufenden Spiels (kein Server-Push, keine Zustellung bei pausierter App).</li>
       <li>Bibliotheken, die Spiele von CDNs laden (three.js, PeerJS, QR-Code, Schrift Fredoka), liegen in <code>vendor/</code>. Die App fängt die Anfragen ab und liefert die lokale Datei – die Spiele selbst bleiben unverändert. Die Zuordnung steht in <code>vendor/map.json</code>.</li>
       <li><code>node tools/offline-audit.js</code> prüft, dass jedes Spiel nur mit dem Offline-Paket lädt. <code>node tools/build-sync.js --strict</code> meldet neue, noch nicht lokal vorhandene CDN-Bibliotheken.</li>
       <li><b>Braucht weiter Internet:</b> Online-Mehrspieler (PeerJS-Kopplung), Radio-Streams, Cloud-Speicherstand und Links wie das RicoReWi Radio.</li>
@@ -454,11 +509,10 @@ python3 easygames/tools/emulationstation.py install --mode offline</pre>
       <li><b>Im Spiel selbst:</b> <code>EasyGamesKit.tvUrl()</code> – zum Anzeigen oder als QR-Code für den TV.</li>
     </ul>
     <h3>Auch in Apps und auf anderen Seiten richtig</h3>
-    <p>Ein TV kann keine Adresse einer App, von <code>localhost</code> oder aus dem lokalen Netz öffnen. Deshalb nimmt easygames für TV-Links immer eine <b>öffentliche</b> Adresse:</p>
+    <p>Ein TV oder ein anderes Handy kann keine Adresse einer App, von <code>localhost</code> oder aus dem lokalen Netz öffnen. Deshalb gilt die feste <b>Mehrspieler-Regel</b>: TV-, Einladungs- und Spiellinks zeigen immer auf die easygames-Homepage, damit sie plattformübergreifend funktionieren:</p>
     <ol>
       <li>Ist <code>window.EASYGAMES_PUBLIC_BASE</code> gesetzt, gilt diese (z. B. deine eigene Domain).</li>
-      <li>Sonst die Adresse, unter der easygames gerade läuft, falls sie öffentlich ist (<code>https://…</code>).</li>
-      <li>Sonst (App, <code>file://</code>, <code>localhost</code>, lokale IPs) die Standardadresse <code>https://ricorewioriginal-collab.github.io/easygames/</code>.</li>
+      <li>Sonst immer die Homepage <code>https://ricorewioriginal-collab.github.io/easygames/</code> – auch in der App, unter <code>file://</code>, <code>localhost</code> oder im lokalen Netz.</li>
     </ol>
 <pre>&lt;script&gt;
   // vor easygames.js bzw. device.js setzen – nur nötig, wenn die Spiele auf einer eigenen Domain liegen
@@ -522,7 +576,9 @@ python3 easygames/tools/emulationstation.py install --mode offline</pre>
 parent.postMessage({ type: 'easygames:menu'  }, '*');   // Menüleiste zeigen
 parent.postMessage({ type: 'easygames:next'  }, '*');   // nächstes Spiel
 parent.postMessage({ type: 'easygames:prev'  }, '*');   // voriges Spiel</pre>
-    <p>Nur Nachrichten aus dem Spiel-Frame der Übersicht werden beachtet.</p>
+    <p>Nur Nachrichten aus dem Spiel-Frame der Übersicht werden beachtet. Mit <code>easygames.js</code> (Overlay) gilt <code>easygames:close</code> ebenfalls.</p>
+    <h3>Zurück zur Spieleansicht der Seite</h3>
+    <p>Ein Spiel in einem Overlay oder iframe kann mit „← Alle Spiele“ (<code>href="../"</code>) zurückgehen – das funktioniert ohne Zutun: Öffnet sich die easygames-Übersicht in einem Rahmen (ohne <code>?embed=1</code>), meldet sie <code>easygames:close</code> an deine Seite. Ein Overlay schließt dadurch, ein fest eingebetteter Rahmen zeigt stattdessen die eingebettete Spieleliste. Ein eigener Zurück-Knopf im Spiel kann direkt <code>EasyGamesKit.close()</code> (<code>gamekit.js</code>) bzw. <code>parent.postMessage({ type: 'easygames:close' }, '*')</code> senden.</p>
   </section>
 
   <section id="app">
@@ -531,6 +587,7 @@ parent.postMessage({ type: 'easygames:prev'  }, '*');   // voriges Spiel</pre>
     <ul>
       <li>Die <b>Spielordner</b> (je Spiel ein Ordner mit allen Dateien) – für Direktlinks reicht das.</li>
       <li>Für die Übersicht zusätzlich: <code>index.html</code>, <code>device.js</code>, <code>gamekit.js</code> (für neue Spiele), <code>games.js</code>, <code>modes.js</code>, <code>guides.js</code> und optional <code>easygames.js</code>. Fehlen <code>games.js</code> und <code>guides.js</code>, bleibt die Übersicht leer.</li>
+      <li>Für Ranglisten und Erfolge zusätzlich: <code>ranglisten.html</code>, <code>erfolge.html</code>, <code>cloud/anmacha-cloud.js</code>, <code>cloud/anmacha-board.js</code>, <code>cloud/anmacha-ach.js</code> und <code>sync/catalog.json</code> (siehe <a href="#boards">5b</a>).</li>
       <li>Alle Pfade sind relativ. Die Ordnerstruktur darf nicht verändert werden.</li>
       <li>Die Dateien laden nichts aus dem Internet. Einzelne Spiele können dennoch Online-Funktionen haben (z. B. Mehrspieler per Code/QR, Speicherstand per Google).</li>
     </ul>
@@ -638,6 +695,32 @@ function gen() {
   }
 }
 ['gGame', 'gMode', 'gRatio', 'gMax', 'gFs'].forEach(i => $(i).addEventListener('input', gen)); gen();
+// ---- Generator Ranglisten & Erfolge ----
+{
+  const sel = $('bGame'); GAMES.forEach(g => { const o = document.createElement('option'); o.value = g.id; o.textContent = g.title; sel.appendChild(o); });
+  const genB = () => {
+    const page = $('bPage').value, mode = $('bMode').value, id = page === 'ranglisten' ? $('bGame').value : '', allow = 'fullscreen; autoplay; gamepad; accelerometer; gyroscope';
+    $('bGameL').style.display = page === 'ranglisten' ? '' : 'none';
+    const title = page === 'ranglisten' ? 'easygames – Ranglisten' : 'easygames – Erfolge', url = base + page + '.html?embed=1' + (id ? '&game=' + encodeURIComponent(id) : ''), direct = base + page + '.html' + (id ? '?game=' + encodeURIComponent(id) : '');
+    const gameAttr = id ? ` data-game="${id}"` : '', gameOpt = id ? `{ game: '${id}' }` : '{}', fn = page === 'ranglisten' ? 'leaderboard' : 'achievements', icon = page === 'ranglisten' ? '🏆 Ranglisten' : '🏅 Erfolge';
+    $('bLink').textContent = `<a href="${direct}">${icon}</a>`;
+    if (mode === 'overlay') {
+      $('bIframe').textContent = '(Für das Overlay den easygames.js-Code verwenden – Rahmen, Schließen-Knopf, Esc und Zurück-Taste regelt das Skript.)';
+      $('bAttr').textContent = `<script src="${base}easygames.js"><\/script>\n<button data-easygames="${page}" data-mode="overlay"${gameAttr}>${icon}</button>`;
+      $('bJs').textContent = `<script src="${base}easygames.js"><\/script>\n<button id="los">${icon}</button>\n<script>\n  document.getElementById('los').onclick = () => EasyGames.open('${page}'${id ? `, ${gameOpt}` : ''});\n<\/script>`;
+    } else if (mode === 'page') {
+      $('bIframe').textContent = `<iframe src="${url}" title="${title}"\n  allow="${allow}" allowfullscreen\n  style="position:fixed;top:0;left:0;width:100%;height:100%;border:0;margin:0"></iframe>`;
+      $('bAttr').textContent = `<script src="${base}easygames.js"><\/script>\n<div data-easygames="${page}" data-mode="page"${gameAttr}></div>`;
+      $('bJs').textContent = `<script src="${base}easygames.js"><\/script>\n<div id="ziel"></div>\n<script>\n  EasyGames.${fn}('#ziel', { mode: 'page'${id ? `, game: '${id}'` : ''} });\n<\/script>`;
+    } else {
+      $('bIframe').textContent = `<iframe src="${url}" title="${title}"\n  allow="${allow}" loading="lazy"\n  style="width:100%;max-width:760px;height:720px;border:0;border-radius:12px"></iframe>`;
+      $('bAttr').textContent = `<script src="${base}easygames.js"><\/script>\n<div data-easygames="${page}"${gameAttr}></div>`;
+      $('bJs').textContent = `<script src="${base}easygames.js"><\/script>\n<div id="ziel"></div>\n<script>\n  EasyGames.${fn}('#ziel'${id ? `, ${gameOpt}` : ''});\n<\/script>`;
+    }
+  };
+  ['bPage', 'bGame', 'bMode'].forEach(i => $(i).addEventListener('input', genB)); genB();
+}
+
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-c]'); if (!b) return;
   const t = $(b.dataset.c).textContent, old = b.textContent;

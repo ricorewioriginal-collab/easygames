@@ -391,15 +391,65 @@
     });
   }
 
-  var API = { _t: T, REG: REG, SLOTS: SLOTS, boardsFor: boardsFor, isOptOut: isOptOut, isAuto: isAuto, query: query, probe: probe, loadProfile: loadProfile, saveProfile: saveProfile,
+  // ---- Werte eines Spiels (für Erfolge, cloud/anmacha-ach.js): [{id, order, v}] je erkannter Wertung ----
+  function values(game, pairs) {
+    var auto = isAuto(game), det = auto ? detect(pairs || []) : null, out = [];
+    boardsFor(game).forEach(function (b) {
+      var v = auto ? (det[b.id] != null ? det[b.id] : null) : readValue(pairsGet(pairs, b.key), b.path || '', b.agg);
+      if (v != null) out.push({ id: b.id, order: b.order, v: v });
+    });
+    return out;
+  }
+
+  // ---- Eigene Zusatzdokumente im Profil (users/<uid>/saves/__<name>, gleiche Regel wie der Spielstand): z. B. __ach ----
+  function userDocUrl(uid, name) { return FSb() + 'users/' + uid + '/saves/__' + name; }
+  function getUserDoc(name) {
+    var u = user();
+    if (!u || !FSb()) return Promise.resolve(null);
+    return uidOf(u).then(function (uid) { return authFetch(userDocUrl(uid, name)); }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      var v = d && d.fields && d.fields.d && d.fields.d.stringValue;
+      try { return v ? JSON.parse(v) : null; } catch (e) { return null; }
+    }).catch(function () { return null; });
+  }
+  function putUserDoc(name, obj) {
+    var u = user();
+    if (!u || !FSb()) return Promise.reject(new Error('login'));
+    return uidOf(u).then(function (uid) {
+      var body = { fields: { d: { stringValue: JSON.stringify(obj) }, t: { integerValue: String(Date.now()) } } };
+      return authFetch(userDocUrl(uid, name), { method: 'PATCH', body: JSON.stringify(body) });
+    }).then(function (r) { if (!r.ok) throw new Error('save'); });
+  }
+
+  // ---- Spielspuren für die Erfolge: wann welches Spiel zuerst/zuletzt gespielt wurde (klein, nur lokal; Schlüssel beginnt mit anmacha-, wird also nicht als Spielstand gesichert) ----
+  var KEY_SEEN = 'anmacha-seen';
+  function dayNum(d) { return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); }
+  function touch(gameId) {
+    if (!LS || !gameId) return;
+    var s = null, now = new Date(), day = dayNum(now), h = now.getHours();
+    try { s = JSON.parse(get(KEY_SEEN) || 'null'); } catch (e) {}
+    if (!s || typeof s !== 'object') s = {};
+    s.g = s.g && typeof s.g === 'object' ? s.g : {}; s.d = Array.isArray(s.d) ? s.d : []; s.f = s.f && typeof s.f === 'object' ? s.f : {};
+    var ch = false;
+    if (!s.g[gameId]) { s.g[gameId] = now.getTime(); ch = true; }
+    if (s.d.indexOf(day) < 0) { s.d.push(day); s.d.sort(function (a, b) { return a - b; }); if (s.d.length > 400) s.d = s.d.slice(-400); ch = true; }
+    if (h < 5 && !s.f.owl) { s.f.owl = now.getTime(); ch = true; }
+    if (h >= 5 && h < 8 && !s.f.early) { s.f.early = now.getTime(); ch = true; }
+    var wd = now.getDay();
+    if ((wd === 0 || wd === 6) && !s.f.weekend) { s.f.weekend = now.getTime(); ch = true; }
+    if (ch) put(KEY_SEEN, JSON.stringify(s));
+  }
+
+  var API = { _t: T, values: values, getUserDoc: getUserDoc, putUserDoc: putUserDoc, touch: touch, detect: detect, readValue: readValue, REG: REG, SLOTS: SLOTS, boardsFor: boardsFor, isOptOut: isOptOut, isAuto: isAuto, query: query, probe: probe, loadProfile: loadProfile, saveProfile: saveProfile,
     shared: shared, nick: function () { return cleanName(get(KEY_NICK)); }, submitGame: submitGame, submitLocal: submitLocal, removeAll: removeAll, localPairs: localPairs,
     fmt: fmt, cleanName: cleanName, message: function () { return lastMsg; } };
   window.AnMaChaBoard = API;
 
   // ---- Stille Laufzeit im Spiel: nur Einreichen, keine Oberfläche ----
   var game = Cloud && Cloud.game;
-  if (!game || !LS || isOptOut(game)) return;
-  function run() { return loadProfile(false).then(function () { return submitGame(game, localPairs(null)); }); }
+  if (!game || !LS) return;
+  touch(game);   // Erfolge: Spiel/Tag merken (auch bei Spielen ohne Rangliste)
+  if (isOptOut(game)) return;
+  function run() { touch(game); return loadProfile(false).then(function () { return submitGame(game, localPairs(null)); }); }
   API.submit = run;
   setTimeout(run, 4000);
   setInterval(function () { if (!document.hidden) run(); }, 20000);

@@ -10,7 +10,7 @@ Pro Spiel (Ordner = path aus games.js):
   - sw.js                  Service Worker: Netz zuerst (Updates kommen sofort an), bei Ausfall/Langsamkeit aus dem Cache
   - index.html             Block <!--pwa-->…<!--/pwa--> direkt nach <head>: Manifest-Link, Meta-Tags und ein kleiner Registrierungs-/
                            Installationshinweis (wird bei jedem Lauf ersetzt, ist also idempotent; nach einem Vite-Build erneut ausführen)
-  - ../pwa-icons/<id>-*.png  Symbole (aus card.png, sonst Farbverlauf mit Kürzel) – benötigt Pillow (pip install pillow)
+  - ../pwa-icons/<id>-*.png  Symbole (aus card.png/card.jpg, sonst Farbverlauf mit Kürzel) – benötigt Pillow (pip install pillow)
 Spiele mit eigener PWA (eigenes manifest.webmanifest vor dem ersten Lauf, z. B. prismrush, wobbel) bleiben unverändert (Liste EIGENE).
 Der Installationshinweis erscheint nicht in iframes (Einbindung), nicht in den RicoReWi-Apps/Windows-App und nicht im installierten Fenster.
 """
@@ -139,7 +139,7 @@ def icons(g):
     from PIL import Image, ImageDraw, ImageFont
     d = os.path.join(ROOT, g['dir'])
     c1, c2 = g['colors'][0], g['colors'][1] if len(g['colors']) > 1 else g['colors'][0]
-    card = next((os.path.join(d, n) for n in ('card.png',) if os.path.isfile(os.path.join(d, n))), None)
+    card = next((os.path.join(d, n) for n in ('card.png', 'card.jpg') if os.path.isfile(os.path.join(d, n))), None)
     if card:
         art = Image.open(card).convert('RGBA')
         w = min(art.size)

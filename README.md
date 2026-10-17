@@ -55,7 +55,9 @@ Jedes Spiel lässt sich zusätzlich zur Einbindung über seinen **Direktlink** a
 
 ## Online-Kopplung über Firebase
 
-Alle Spiele mit Handy-Kopplung oder Online-Modus (Code/QR) verbinden sich über Firebase wie RicoPoly: `cloud/fire-peer.js` ersetzt `window.Peer` durch eine PeerJS-kompatible Klasse, Firebase vermittelt nur den Verbindungsaufbau, gespielt wird direkt zwischen den Geräten. Fällt Firebase aus, läuft alles automatisch über PeerJS weiter. Neue Spiele mit PeerJS binden `<script src="../cloud/fire-peer.js"></script>` vor ihrem Spielcode ein. Details, Verbrauch und die einmalige Freischaltung in der Firebase-Konsole: [`cloud/README.md`](cloud/README.md#online-kopplung-aller-spiele-über-firebase-cloudfire-peerjs).
+Alle Spiele mit Handy-Kopplung oder Online-Modus (Code/QR) verbinden sich über Firebase wie RicoPoly: `cloud/fire-peer.js` ersetzt `window.Peer` durch eine PeerJS-kompatible Klasse, Firebase vermittelt nur den Verbindungsaufbau, gespielt wird direkt zwischen den Geräten. Fällt Firebase aus, läuft alles automatisch über PeerJS weiter. Neue Spiele mit PeerJS binden `<script src="../cloud/fire-peer.js"></script>` vor ihrem Spielcode ein.
+
+**Mehrspieler-Regel:** Einladungs-, Beitritts- und TV-Links zeigen immer auf die easygames-Homepage (`https://ricorewioriginal-collab.github.io/easygames/…`), nie auf die lokale App-Adresse – so funktionieren sie auf jeder Plattform. Umgesetzt in `cloud/fire-peer.js` (`EasyGamesLink.share()`), `device.js` und `gamekit.js`; alle Regeln stehen in [`CLAUDE.md`](CLAUDE.md#mehrspieler-regeln-fest-gelten-für-alle-spiele). Jedes Online-Spiel zeigt die Möglichkeit im Hauptmenü mit 🌐 „Online“. Details, Verbrauch und die einmalige Freischaltung in der Firebase-Konsole: [`cloud/README.md`](cloud/README.md#online-kopplung-aller-spiele-über-firebase-cloudfire-peerjs).
 
 ## Gamecontroller
 
@@ -95,6 +97,18 @@ und **⤴ Teilen**. Dort stehen für jedes Spiel der **direkte Link** und der **
   style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>
 ```
 
+- **Ranglisten und Erfolge einbetten** (eigene Seite oder App; Generator und alle Varianten in `einbinden.html`, Abschnitt 5b):
+
+```html
+<script src="https://ricorewioriginal-collab.github.io/easygames/easygames.js"></script>
+<button data-easygames="ranglisten" data-mode="overlay">🏆 Ranglisten</button>
+<button data-easygames="erfolge" data-mode="overlay">🏅 Erfolge</button>
+<!-- oder eingebettet: <div data-easygames="ranglisten" data-game="anmacha-snake"></div>  /  <div data-easygames="erfolge"></div> -->
+<!-- oder iframe: …/easygames/ranglisten.html?embed=1[&game=<id>]   …/easygames/erfolge.html?embed=1 -->
+```
+
+- Aus einem eingebetteten Spiel führt „← Alle Spiele“ automatisch zurück zur Seite des Gastgebers (schließt das Overlay, `easygames:close`).
+
 ## Android-App (offline, mit Sync über GitHub)
 
 Native Android-Hülle (Kotlin) um die Oberfläche, Quellen in `android/`. Alle Spiele und ihre Bibliotheken (three.js, PeerJS, QR-Code, Schrift) liegen auf dem Gerät; im WLAN lädt die App geänderte Dateien selbst von GitHub – ohne neues APK.
@@ -120,6 +134,8 @@ Optionen (`--only`, `--exclude`, `--tv`, `--window`, `--browser`, `--frontend`, 
 
 ## Neues Spiel hinzufügen
 
+
+**Spielkarte (`card.png`/`card.jpg`, quadratisch 512 px):** Ohne eigenes Titelbild zeigt die App-Kachel nur ein Emoji. `node tools/make-cards.cjs <spiel-id>` erzeugt eine einheitliche Karte (Farben aus `games.js`, Titel in `CARDS`, **gezeichnetes Emblem** in `tools/card-art.cjs` – keine Screenshots, kein Emoji) als `<spiel>/card.jpg` plus ein eigenständiges Logo `<spiel>/logo.svg`; die App-Symbole danach mit `python3 tools/make-pwa.py --icons <spiel>` erneuern; dann `img: '<spiel>/card.jpg'` in `games.js` setzen und `node tools/build-sync.js` ausführen.
 Alles Weitere (Kachel, Suche, Filter, Anleitung, Einbettung, Teilen, TV-Navigation) ergibt sich aus den Einträgen:
 
 1. Eigenes Verzeichnis anlegen (`mein-spiel/index.html`). Die Vorlage `tools/spiel-vorlage/index.html` zeigt, wie ein Spiel zwischen Handy, TV und Computer unterscheidet.
@@ -133,6 +149,7 @@ Alles Weitere (Kachel, Suche, Filter, Anleitung, Einbettung, Teilen, TV-Navigati
 5. `python3 tools/make-pwa.py` ausführen (Python 3 + Pillow): legt Manifest, Service Worker, Symbole (`pwa-icons/`) und den Installations-Block im `index.html` an – danach lässt sich das Spiel über den Direktlink mobil als App installieren (Vollbild, offline nach dem ersten Spielen, Updates kommen automatisch: Netz zuerst). Nach einem Vite-Build einmal erneut ausführen; `--check` prüft nur.
 6. Gamecontroller: Hat das Spiel keine eigene Controller-Steuerung, `<script src="../gamepad.js" defer></script>` einbinden (siehe Abschnitt „Gamecontroller“). Optional Cloud-Speicherstand: `<script src="../cloud/anmacha-cloud.js" data-game="…" data-prefix="…" defer></script>` (siehe `cloud/README.md`).
    **Ranglisten kommen automatisch** (Ansicht zentral auf `ranglisten.html` und einbettbar per `data-easygames="ranglisten"`, nicht im Spiel): Sobald das Spiel das Cloud-Skript einbindet, bekommt es öffentliche Ranglisten (nur mit Freigabe des Spielers), sofern der Spielstand typische Felder enthält: `best`/`highscore`/`record` (Highscore), Container `best`/`records`/`scores` (Gesamtpunkte), `…time`/`lap` unter `best` (Bestzeit), `wins`, `stars`, `xp`; auch Top-10-Listen (`rank`, `hof`, `top`) werden erkannt. Für besondere Wertungen (mehrere Modi, Strecken) einen Eintrag in `REG` in `cloud/anmacha-board.js` ergänzen, ein leerer Eintrag (`'spiel': []`) schaltet die Rangliste bewusst ab (Details `cloud/README.md`).
+   **Erfolge kommen automatisch** (Seite `erfolge.html`, einbettbar per `data-easygames="erfolge"`): spielübergreifend aus den Spielständen und den stillen Spielspuren, mit Google-Sicherung im eigenen Profil – nichts weiter zu tun (Details `cloud/README.md`).
 7. `node tools/check-games.js` ausführen: prüft IDs, Pfade, Bilder, Anleitungen und Modi (Fehler stoppen, Warnungen sind Hinweise).
 
 Bei Mehrspieler-Spielen (`pad`, `online` oder `multi`) zeigen Übersicht, Einbettung (`easygames.js`) und `EasyGamesKit.tvUrl()` automatisch den **Link für TV-Gaming**: immer die öffentliche Spielseite (bei Apps/`localhost` die Standardadresse oder `window.EASYGAMES_PUBLIC_BASE`), mit `tvParam`, falls vorhanden.

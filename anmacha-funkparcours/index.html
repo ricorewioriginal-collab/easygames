@@ -51,7 +51,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
       <nav class="cm-nav" id="cmNav">
         <button class="cm-it" id="bPlay" data-m="show"><span class="ic">🏆</span><span class="lb">Show starten<small>1–4 Läufer · 3 Parcours</small></span></button>
         <button class="cm-it" id="bTrain" data-m="train"><span class="ic">⏱</span><span class="lb">Training<small>Bestzeit jagen</small></span></button>
-        <button class="cm-it" id="bPairMenu" data-m="pair"><span class="ic">📱</span><span class="lb">Handys koppeln<small>Handys als Steuer-Pads</small></span></button>
+        <button class="cm-it" id="bPairMenu" data-m="pair"><span class="ic">🌐</span><span class="lb">Online & Handys<small>Handys als Steuer-Pads, auch online</small></span></button>
         <button class="cm-it" id="bRules" data-m="rules"><span class="ic">📖</span><span class="lb">So wird gespielt</span></button>
         <button class="cm-it" id="bSound" data-m="sound"><span class="ic">🔊</span><span class="lb">Ton: an</span></button>
         <button class="cm-it" id="bHome" data-m="home"><span class="ic">🏠</span><span class="lb">Alle Spiele</span></button>
@@ -97,7 +97,8 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <div id="card" class="dialog" hidden><div class="panel glass wide" id="cardBox"></div></div>
 
 <div id="pair" class="dialog" hidden><div class="panel glass">
-  <h2>📱 Handys koppeln</h2>
+  <h2>🌐 Online & Handys koppeln</h2>
+  <p class="info">🌐 Klappt auch online: Link oder Code an Mitspieler schicken – sie treten von überall bei, im Browser, in der App oder an einem anderen Gerät.</p>
   <p class="how2">QR-Code scannen oder die Seite öffnen und den Code eingeben. Jedes Handy wird das Steuer-Pad <b>eines Läufers</b> (bis zu 4): Stick zum Laufen, Knopf zum Springen.</p>
   <div id="qr"></div><div id="code">….</div><div class="info" id="pairUrl"></div><div class="info" id="pairList">Noch kein Handy verbunden.</div>
   <button class="btn green" id="bPairOk">Fertig</button>

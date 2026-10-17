@@ -94,26 +94,16 @@
 
   // Öffentliche Adresse für TV-Links: Ein TV (oder ein anderes Handy) kann keine Adressen einer App oder von localhost öffnen.
   var PUBLIC_DEFAULT = 'https://ricorewioriginal-collab.github.io/easygames/';
-  function isPublicBase(u) {
-    try {
-      var x = new URL(u), h = x.hostname;
-      if (!/^https?:$/.test(x.protocol)) return false;
-      if (h === 'localhost' || /\.local$/.test(h) || h.indexOf(':') >= 0 || h.indexOf('.') < 0) return false;
-      if (h === 'appassets.androidplatform.net') return false;   // interne Adresse der Android-App
-      return !/^(127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.)/.test(h);
-    } catch (e) { return false; }
-  }
-  // Basisadresse der Spiele für Links, die auf anderen Geräten geöffnet werden:
-  // 1) window.EASYGAMES_PUBLIC_BASE (oder EasyGamesConfig.publicBase), 2) die aktuelle Adresse, wenn öffentlich, 3) Standard
-  function publicBase(base) {
+  // Basisadresse der Spiele für Links, die auf anderen Geräten geöffnet werden (Mehrspieler-Regel, siehe CLAUDE.md):
+  // 1) window.EASYGAMES_PUBLIC_BASE (oder EasyGamesConfig.publicBase), 2) sonst immer die easygames-Homepage –
+  // nie die lokale App-Adresse oder ein Spiegel, damit Einladungen auf jeder Plattform gleich funktionieren.
+  function publicBase() {
     var cfg = root.EASYGAMES_PUBLIC_BASE || (root.EasyGamesConfig && root.EasyGamesConfig.publicBase);
-    if (cfg) return /\/$/.test(cfg) ? cfg : cfg + '/';
-    var b = base || (root.location ? new URL('.', root.location.href).href : '');
-    return isPublicBase(b) ? b : PUBLIC_DEFAULT;
+    return cfg ? (/\/$/.test(cfg) ? cfg : cfg + '/') : PUBLIC_DEFAULT;
   }
   // Der richtige Link für TV-Gaming: direkte Spielseite (+ Parameter wie ?tv, falls das Spiel einen kennt)
-  function tvUrl(path, tvParam, base) {
-    var u = new URL(path, publicBase(base)).href;
+  function tvUrl(path, tvParam) {
+    var u = new URL(path, publicBase()).href;
     return tvParam ? u + '?' + (typeof tvParam === 'string' ? tvParam.replace(/^\?/, '') : 'tv') : u;
   }
 
