@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "172123b73e2c",
- "generated": "2026-10-18T19:46:07+00:00",
- "commit": "a96f2b46bbca132b8a8055cd1393a2c913201f4d",
+ "version": "14b89814d3e2",
+ "generated": "2026-10-18T22:18:20+02:00",
+ "commit": "4f46d695e56a2a3691ebb278c237bb6f7539eb1e",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5253,13 +5253,13 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 21621,
-   "h": "19830faadb76487b0dff4d931bfea0b678441a847654178975f236b35233f29f"
+   "s": 21674,
+   "h": "27ecdae06e1736f83f52b443922a43ef13db14e86c3b2e7d89237a6c633e18a5"
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 34456,
-   "h": "0babb54d4a24b738170e72a8e194b02da9542b7fc6f0a5863a86dd5a27224de5"
+   "s": 34497,
+   "h": "614f4d78a3c00f4f78cfa46ac26e255986b336bef71c0145f8186a0358e9d737"
   },
   {
    "p": "cloud/anmacha-bug.js",
@@ -5278,8 +5278,8 @@
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 32724,
-   "h": "d02c0d8666c0f5253b5302d3663ff2f8588e1b5a01a2eaab50af2f8c6d17222a"
+   "s": 34844,
+   "h": "ca15102313fbb4f560e59d8df0e87fba92ab33998f66b3de23592c4e8cc563fb"
   },
   {
    "p": "cloud/anmacha-engage.js",
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "cloud/fire-peer.js",
-   "s": 27208,
-   "h": "660d59bd46ef1402b436526ae9942c3d2275370ab474467c4390fa47ae8f531e"
+   "s": 27323,
+   "h": "3363c68c8f3e6ed4ef7487ef347fcf5f171b564bda430db54e411529d17adcc5"
   },
   {
    "p": "device.js",
@@ -5673,8 +5673,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 32724,
-   "h": "d02c0d8666c0f5253b5302d3663ff2f8588e1b5a01a2eaab50af2f8c6d17222a"
+   "s": 34844,
+   "h": "ca15102313fbb4f560e59d8df0e87fba92ab33998f66b3de23592c4e8cc563fb"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -6959,7 +6959,7 @@
   {
    "p": "sync/catalog.json",
    "s": 116470,
-   "h": "c73b6b80064fc8f06692a4bc8267add44f31f9f46d1fa60f17c93679964c61c7"
+   "h": "d6be102d6322294fcba75bc99d99e2b605c7b614175a191a880dc71eed3c92a8"
   },
   {
    "p": "taschi/card.svg",

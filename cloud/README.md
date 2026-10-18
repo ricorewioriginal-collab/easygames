@@ -104,3 +104,9 @@ Die Datei stellt `window.Peer` mit derselben Schnittstelle wie PeerJS bereit, am
 ## Bewertungen (Sterne) – `anmacha-rating.js`
 Sterne für Spiele (und Sender, RicoReWi Radio, AnMaCha), **zentral** auf dem RicoReWi-Radio-Server gespeichert (`cms/api.php`, Aktionen `ratings_*`), Anmeldung nur zur Verifizierung per Google **ohne Firebase**. In der Spiel-Detailseite der Übersicht (`index.html`, `#dRating`) eingebunden; dadurch bewertet man dasselbe Spiel auf easygames, im Radio-Portal und auf der RicoReWi-Homepage (Rahmen) mit denselben Zahlen.
 `AnMaChaRating.mount(element, { subject: 'game:<ordner>', title })`, `AnMaChaRating.top({ kind: 'game', limit: 4 })`, Ereignis `amr-change`. Das Zugriffs-Token liegt je Webseite im localStorage (`anmacha-rating-token`). Einrichtung und Server: ricorewi-radio `cms/docs/BEWERTUNGEN.md`.
+
+## Firebase-Zugriffe sparen (Spark-Kontingent)
+Jeder Firestore-Zugriff zählt, auch ohne Treffer. Deshalb:
+- **Spielstand-Abgleich (`anmacha-cloud.js`):** Nach dem ersten Abholen merkt sich das Skript den Stand der Cloud samt Version und schreibt Änderungen gebündelt (frühestens alle 2 min, beim Verlassen des Tabs sofort) per Vorbedingung `currentDocument.updateTime` – ohne erneutes Lesen. Hat ein anderes Gerät geschrieben, lehnt Firestore ab und es folgt ein voller Abgleich. Rückkehr in den Tab liest erst nach 5 min neu. Gemessen (30 min Spielen, Speichern alle 20 s): vorher ≈ 45 Lesen + 45 Schreiben, jetzt 1 Lesen + 15 Schreiben. Wächter: `node tools/test-cloud-calls.cjs`.
+- **Mehrspieler-Kopplung (`fire-peer.js`):** Gastgeber fragt Beitritte in den ersten 2 min alle 2 s ab, dann alle 4 s (bis 10 min), danach alle 8 s, im Hintergrund alle 30 s.
+- **Erfolge ins Profil (`anmacha-ach.js`/`anmacha-board.js`):** höchstens alle 15 min.

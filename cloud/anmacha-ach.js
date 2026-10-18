@@ -244,7 +244,7 @@
   function pushGame(game, B, gameAch) {
     var K = 'anmacha-ach-pushed', last = 0;
     try { last = Number(LS.getItem(K)) || 0; } catch (e) {}
-    if (Date.now() - last < 300000) return Promise.resolve();
+    if (Date.now() - last < 900000) return Promise.resolve();   // höchstens alle 15 min (je ein Lesen/Schreiben)
     var now = Date.now(), pairs = B.localPairs(null), vals = B.values(game, pairs), own = gameAch ? gameAch.collectOne(game) : null;
     var ex = localExtras([{ id: game, vals: vals }], own ? (function (o) { o[game] = own; return o; })({}) : {}, now);
     var local = merge(loadState(), { v: ex.v, gu: ex.gu });
