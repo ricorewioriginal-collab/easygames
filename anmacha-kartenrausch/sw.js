@@ -1,12 +1,12 @@
-/* AnMaCha Stapelrausch 3D – Service Worker (erzeugt von tools/make-pwa.py, nicht von Hand ändern).
+/* AnMaCha Kartenrausch 3D – Service Worker (erzeugt von tools/make-pwa.py, nicht von Hand ändern).
    Netz zuerst: jeder Start holt den aktuellen Stand (der Browser prüft per ETag, große Dateien kommen bei „unverändert“ nicht neu).
    Fällt das Netz aus oder antwortet es länger als 4 s, kommt die zuletzt geladene Fassung aus dem Cache – so läuft das Spiel auch offline,
-   sobald es einmal gespielt wurde (auch Bibliotheken von CDNs). Neue Fassung = sofort aktiv (skipWaiting/claim), alte Zwischenspeicher werden gelöscht. */
-const CACHE = 'eg-anmacha-stapelrausch-v2';
+   sobald es einmal gespielt wurde (auch Bibliotheken von CDNs). Ein neues Spiel wird erst nach Klick aktiviert; alte Zwischenspeicher werden dann gelöscht. */
+const CACHE = 'eg-anmacha-kartenrausch-v2';
 self.addEventListener('install', () => {});
 self.addEventListener('message', e => { if (e.data && e.data.type === 'EG_SKIP_WAITING') self.skipWaiting(); });
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('eg-anmacha-stapelrausch-') && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('eg-anmacha-kartenrausch-') && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
 self.addEventListener('fetch', e => {
   const req = e.request, url = new URL(req.url);

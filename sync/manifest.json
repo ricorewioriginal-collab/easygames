@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "718a354218c4",
- "generated": "2026-10-18T19:35:23+02:00",
- "commit": "fd7dc64492b39a61a3a72c384780e243a2c72297",
+ "version": "1ad811de537b",
+ "generated": "2026-10-18T18:21:51+00:00",
+ "commit": "ff935b434a9299d5397223abd0c9d172d2ba82ba",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1420,6 +1420,46 @@
    "p": "anmacha-kart/view.js",
    "s": 82630,
    "h": "800e11cea9fa4100e3034f836a73390b04dca5c7cb384c84deda8e380599f548"
+  },
+  {
+   "p": "anmacha-kartenrausch/card.jpg",
+   "s": 48287,
+   "h": "641ca4ce9d46027a6d9b1d4dc85496411589f49f8878a4fbcdb593b4c348efa4"
+  },
+  {
+   "p": "anmacha-kartenrausch/index.html",
+   "s": 20454,
+   "h": "6bcabdf05a60466979e435d9076574a01afe0853cc0da88122f0daec75f5664d"
+  },
+  {
+   "p": "anmacha-kartenrausch/js/app.js",
+   "s": 85129,
+   "h": "e0b33c99cdf24e7425edf4b7d7c209cc01d358d7d87b999ac242be582fc87e66"
+  },
+  {
+   "p": "anmacha-kartenrausch/js/figures.js",
+   "s": 6348,
+   "h": "ef3905fb6a96042d1bab05b2c0ec259ab4a80e63ab0c90a9527eff5ce701da7f"
+  },
+  {
+   "p": "anmacha-kartenrausch/js/logic.js",
+   "s": 34361,
+   "h": "4f0fdf80e12279ca980fc7205b5c0faf96f9976e9a0899416c18655b0a8bd645"
+  },
+  {
+   "p": "anmacha-kartenrausch/logo.svg",
+   "s": 2143,
+   "h": "8b0395dbc19d14c419581983f855d85e3e0f50515e9ebdb110887b76fe33bcc8"
+  },
+  {
+   "p": "anmacha-kartenrausch/manifest.webmanifest",
+   "s": 802,
+   "h": "c2411516b877be3bf31792e37b5909b7baedc5c4b5e76bcf4eddfee5817e0a56"
+  },
+  {
+   "p": "anmacha-kartenrausch/sw.js",
+   "s": 2013,
+   "h": "438e0971b06a94827ca4650affff4e10a13a9eae258903a3271226724b204e4c"
   },
   {
    "p": "anmacha-klotzfunk/assets/index-BzgDj7WR.css",
@@ -4017,31 +4057,6 @@
    "h": "cc3282742cc195b1608ea98bf2e26891fb12e39db0d9d840a75ea67c21619232"
   },
   {
-   "p": "anmacha-stapelrausch/card.jpg",
-   "s": 47116,
-   "h": "beb9a301b6eea5a675fe6e3b7927c659b3feae3c5ed66b73761547c0ed9c7b99"
-  },
-  {
-   "p": "anmacha-stapelrausch/index.html",
-   "s": 52102,
-   "h": "01bf9e7242ed5661060a190fd398b1fa8921552be97461e2014900a759ec9d6c"
-  },
-  {
-   "p": "anmacha-stapelrausch/logo.svg",
-   "s": 2143,
-   "h": "19f1c50c3e62a47d219a5cb650f6ed8762a197abdabb33bab5485ede8ac5e1de"
-  },
-  {
-   "p": "anmacha-stapelrausch/manifest.webmanifest",
-   "s": 802,
-   "h": "fff56abd106a15ff28364129405002d13b6a9c3afc0b32eebfddea48665f87d8"
-  },
-  {
-   "p": "anmacha-stapelrausch/sw.js",
-   "s": 2009,
-   "h": "5e60df50f994fbd3fb517902c0d839dce03d2c0605e2ab419536603e9282c490"
-  },
-  {
    "p": "anmacha-tower-defense/assets/index-BG_UIOR7.js",
    "s": 569667,
    "h": "6ad02b2fcb9487f96b629ca1e37b1278608b3f505f021e542da2a6ce34bf828a"
@@ -5229,7 +5244,7 @@
   {
    "p": "categories.js",
    "s": 2380,
-   "h": "6f51884537946f4232b5cfd210a3dae17f849a399225750dfebaf4ef13c26603"
+   "h": "d6205daa79d7f1f9ca775c06d3f4fee5529a3e58f27fe2fe287829e05841e9e3"
   },
   {
    "p": "chat.html",
@@ -5383,8 +5398,8 @@
   },
   {
    "p": "games.js",
-   "s": 26584,
-   "h": "33c94c788c33dc61dc0358f015d22aaa9ee2ebfc15ed28a349e1be598b064f7a"
+   "s": 26715,
+   "h": "a410a4dac6d0ffc2f4075d5913b760fb60c6fe0bb4078eaffb06d54686ab561d"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5543,8 +5558,8 @@
   },
   {
    "p": "guides.js",
-   "s": 73533,
-   "h": "38ae29d86bab00e0e7a8a13238e1fcf4d4fea64c9aadd9bf936496c13d93c326"
+   "s": 74261,
+   "h": "f89fe1d00d7a4165d6e73fe202cca374d96efa0d174517df05155f291d114842"
   },
   {
    "p": "heute.html",
@@ -5893,8 +5908,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2104,
-   "h": "9e3306430d1df53a5bf8d112562a0f3534f2d615dd7c008ecb871487386235b8"
+   "s": 2115,
+   "h": "7b09995a535c93ddc617a083b336760765cf0b7bb75d2b179e60d9a25a071546"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -6943,8 +6958,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 114632,
-   "h": "485a890461525070c0d2a3d437cf7bc645b184c57ac116e037530e422f5f6423"
+   "s": 115522,
+   "h": "0cb9c865d0d44fa7def03931c41c0ac4ebc66bb939480f617c92bc0adb1e88e4"
   },
   {
    "p": "taschi/card.svg",

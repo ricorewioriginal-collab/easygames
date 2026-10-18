@@ -21,7 +21,7 @@ const CARDS = {
   'anmacha-markthalle': ['ANMACHA · 3D', ['MARKTHALLE', '24'], '🛒', ['🥫', '🍎']],
   'anmacha-urwaldlager': ['DIE WILDNIS-SHOW', ['URWALD-', 'LAGER'], '🌴', ['🔥', '🦜']],
   'anmacha-spielesammlung': ['ANMACHA · 3D', ['SPIELE-', 'SAMMLUNG'], '🎲', ['♟️', '🎯']],
-  'anmacha-stapelrausch': ['ANMACHA · 3D', ['STAPEL-', 'RAUSCH'], '🃏', ['🔢', '🏆']],
+  'anmacha-kartenrausch': ['ANMACHA · 3D', ['KARTEN-', 'RAUSCH'], '🃏', ['🌈', '🎯']],
   'gay-life': ['LEBENSSIMULATION', ['GAY', 'LIFE!'], '🏳️‍🌈', ['🏠', '🍸']],
   'anmacha-klotzfunk': ['VOXEL-SANDBOX · 3D', ['KLOTZ-', 'FUNK'], '🧱', ['⛏️', '💎']],
   'partyverse': ['3D-PARTYSPIEL', ['PARTY-', 'VERSE'], '🎲', ['🎉', '🎈']]
