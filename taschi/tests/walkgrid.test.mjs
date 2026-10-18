@@ -50,3 +50,16 @@ test('every interaction point is reachable on foot in all regions', () => {
     for (const [name, x, z] of targets(L)) assert.ok(reach(x, z, 4.5), 'region ' + r + ': ' + name + ' unreachable');
   }
 });
+
+test('people and items stand on free ground (no bench, wall, river or cliff)', () => {
+  for (let r = 0; r <= 16; r++) {
+    const L = buildLayout(r), g = buildWalkGrid(L);
+    for (const n of L.npcs) {
+      assert.equal(g.at(n.x, n.z), FREE, 'region ' + r + ': ' + n.name);
+      const night = n.schedule.find(s => s.from === 22 * 60).at;
+      assert.equal(g.at(night.x, night.z), FREE, 'region ' + r + ': night spot of ' + n.name);
+    }
+    for (const t of L.trainers) assert.equal(g.at(t.x, t.z), FREE, 'region ' + r + ': trainer ' + t.id);
+    for (const it of L.items) assert.equal(g.at(it.x, it.z), FREE, 'region ' + r + ': item ' + it.id);
+  }
+});

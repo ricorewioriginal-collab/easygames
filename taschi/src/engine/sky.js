@@ -5,6 +5,9 @@ import { globalUniforms } from './materials.js';
 import { setNightGlow } from './buildings.js';
 
 const NIGHT_TOP = new THREE.Color(0x0d1636), NIGHT_BOTTOM = new THREE.Color(0x2a3566), DUSK = new THREE.Color(0xf29a6a);
+// reused every frame instead of allocating new objects (less garbage collection)
+const C_TOP = new THREE.Color(), C_BOTTOM = new THREE.Color(), C_GREY_TOP = new THREE.Color(0x8a96a6), C_GREY_BOTTOM = new THREE.Color(0xb6bec8), C_HEMI_NIGHT = new THREE.Color(0x8090c8), C_CLOUD_NIGHT = new THREE.Color(0x4a5580);
+const SUN_DIR = new THREE.Vector3(), UP = new THREE.Vector3(0, 1, 0), AX = new THREE.Vector3(), AY = new THREE.Vector3(), SNAP = new THREE.Vector3();
 
 export class Sky {
   constructor(scene, quality) {
@@ -67,25 +70,34 @@ export class Sky {
     if (this.fixedNight) day = Math.min(day, 0.25);
     const night = 1 - day;
     const dusk = Math.max(0, 1 - Math.abs(hour - 19) / 1.4) + Math.max(0, 1 - Math.abs(hour - 6.5) / 1.2);
-    const top = new THREE.Color(pal.sky[0]).lerp(NIGHT_TOP, night * 0.92);
-    const bottom = new THREE.Color(pal.sky[1]).lerp(NIGHT_BOTTOM, night * 0.85).lerp(DUSK, Math.min(0.55, dusk * 0.5) * (1 - night * 0.5));
-    if (this.weather && ['rain', 'storm', 'fog', 'snow'].includes(this.weather.kind)) { top.lerp(new THREE.Color(0x8a96a6), 0.45); bottom.lerp(new THREE.Color(0xb6bec8), 0.45); }
+    const top = C_TOP.set(pal.sky[0]).lerp(NIGHT_TOP, night * 0.92);
+    const bottom = C_BOTTOM.set(pal.sky[1]).lerp(NIGHT_BOTTOM, night * 0.85).lerp(DUSK, Math.min(0.55, dusk * 0.5) * (1 - night * 0.5));
+    if (this.weather && ['rain', 'storm', 'fog', 'snow'].includes(this.weather.kind)) { top.lerp(C_GREY_TOP, 0.45); bottom.lerp(C_GREY_BOTTOM, 0.45); }
     this.uniforms.top.value.copy(top); this.uniforms.bottom.value.copy(bottom);
     this.uniforms.night.value = night;
     const ang = (hour - 6) / 12 * Math.PI;
-    const sunDir = new THREE.Vector3(Math.cos(ang) * 0.6, Math.max(0.12, Math.sin(ang)), 0.45).normalize();
+    const sunDir = SUN_DIR.set(Math.cos(ang) * 0.6, Math.max(0.12, Math.sin(ang)), 0.45).normalize();
     if (night > 0.7) sunDir.set(-0.4, 0.7, 0.3).normalize(); // moonlight
     this.uniforms.sunDir.value.copy(sunDir);
-    this.sun.position.copy(focus).addScaledVector(sunDir, 70);
-    this.sun.target.position.copy(focus);
+    // snap the shadow camera to whole shadow-map texels (in light space), so
+    // shadow edges do not crawl and flicker while the player walks
+    let f = focus;
+    if (this.sun.castShadow) {
+      const sc = this.sun.shadow.camera, texel = (sc.right - sc.left) / this.sun.shadow.mapSize.x;
+      AX.crossVectors(UP, sunDir).normalize(); AY.crossVectors(sunDir, AX);
+      const a = Math.round(focus.dot(AX) / texel) * texel, b = Math.round(focus.dot(AY) / texel) * texel, c = focus.dot(sunDir);
+      f = SNAP.copy(AX).multiplyScalar(a).addScaledVector(AY, b).addScaledVector(sunDir, c);
+    }
+    this.sun.position.copy(f).addScaledVector(sunDir, 70);
+    this.sun.target.position.copy(f);
     this.sun.color.set(night > 0.7 ? 0x9fb4ff : 0xfff0d0).lerp(DUSK, Math.min(0.6, dusk * 0.5));
     this.sun.intensity = (night > 0.7 ? 0.22 : 0.22 + day * 0.58) * (this.weather?.dim ?? 1);
     this.hemi.intensity = (0.3 + day * 0.42) * (this.weather?.dim ?? 1);
-    this.hemi.color.set(0xe9f6ff).lerp(new THREE.Color(0x8090c8), night * 0.7);
+    this.hemi.color.set(0xe9f6ff).lerp(C_HEMI_NIGHT, night * 0.7);
     this.hemi.groundColor.set(pal.grass).multiplyScalar(0.55 + day * 0.25);
     if (this.lightning > 0) { this.lightning -= dt; this.hemi.intensity += 1.5 * Math.max(0, this.lightning); }
     this.stars.material.opacity = Math.max(0, night - 0.35) * 1.2;
-    this.cloudMat.color.set(0xffffff).lerp(new THREE.Color(0x4a5580), night * 0.8);
+    this.cloudMat.color.set(0xffffff).lerp(C_CLOUD_NIGHT, night * 0.8);
     this.dome.position.copy(camera.position); this.stars.position.copy(camera.position);
     this.clouds.position.set(camera.position.x, 0, camera.position.z);
     this.clouds.rotation.y += dt * 0.004;
