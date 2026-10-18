@@ -162,7 +162,7 @@
     go.onclick = function () {
       go.disabled = true; msg.textContent = 'Einen Moment …';
       loadSdk().then(function (u) { return u ? { user: u } : fb.signInWithPopup(auth, new fb.GoogleAuthProvider()); }).then(function (r) {
-        user = r.user; rawSet.call(LS, ON_KEY, '1');
+        user = r.user; rawSet.call(LS, ON_KEY, '1'); keepRt(user); keepStorage();
         return user.getIdToken().then(function (tok) {
           return fetch(FS + 'pair/' + id + '?currentDocument.exists=false', {
             method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok },
@@ -177,6 +177,10 @@
     };
     b.appendChild(go); b.appendChild(x); o.appendChild(b); document.body.appendChild(o);
   }
+  // Browser: Aktualisierungs-Token zusätzlich merken. Ist der Firebase-Speicher des Browsers weg (Speicherbereinigung, Safari-Limit,
+  // Webseite wurde über eine andere Adresse geöffnet), meldet sich das Skript damit still wieder an – ohne erneutes Google-Fenster.
+  function keepRt(u) { try { if (u && u.refreshToken) rawSet.call(LS, RT, u.refreshToken); } catch (e) {} }
+  function keepStorage() { try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {}); } catch (e) {} }
   function loadSdk() {
     if (APP) {
       var r0 = ''; try { r0 = LS.getItem(RT) || ''; } catch (e) {}
@@ -187,19 +191,24 @@
       fb = m[1];
       auth = fb.getAuth(m[0].initializeApp({ apiKey: CONFIG.apiKey, authDomain: CONFIG.authDomain || CONFIG.projectId + '.firebaseapp.com', projectId: CONFIG.projectId }));
       return new Promise(function (res) {
-        var off = fb.onAuthStateChanged(auth, function (u) { user = u; off(); res(u); render(); });
+        var off = fb.onAuthStateChanged(auth, function (u) {
+          var r1 = ''; try { r1 = LS.getItem(RT) || ''; } catch (e) {}
+          if (u) keepRt(u);
+          else if (r1 && wanted()) { u = appUser(r1); u.load().then(render, render); }
+          user = u; off(); res(u); render();
+        });
       });
     }));
   }
   function signIn() {
     if (APP) return startPair();
     return loadSdk().then(function () { return fb.signInWithPopup(auth, new fb.GoogleAuthProvider()); }).then(function (r) {
-      user = r.user; rawSet.call(LS, ON_KEY, '1'); first = true; return sync();
+      user = r.user; rawSet.call(LS, ON_KEY, '1'); keepRt(user); keepStorage(); first = true; return sync();
     }).catch(function (e) { lastErr = e.code === 'auth/popup-closed-by-user' ? '' : (e.message || 'Anmeldung fehlgeschlagen'); render(); });
   }
   function signOut() {
-    rawRemove.call(LS, ON_KEY);
-    if (APP) { rawRemove.call(LS, RT); PAIR = null; user = null; render(); return Promise.resolve(); }
+    rawRemove.call(LS, ON_KEY); rawRemove.call(LS, RT);
+    if (APP) { PAIR = null; user = null; render(); return Promise.resolve(); }
     return (auth ? fb.signOut(auth) : Promise.resolve()).then(function () { user = null; render(); });
   }
 
