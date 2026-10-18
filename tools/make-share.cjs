@@ -26,8 +26,9 @@ function gameHtml(g) {
   return `<!doctype html><meta charset="utf-8"><style>
 *{box-sizing:border-box}body{margin:0;width:1200px;height:630px;overflow:hidden;font-family:${FONT};color:#fff;background:#0b1020;position:relative}
 .glow{position:absolute;inset:-120px;background:${g.bg || 'linear-gradient(145deg,#7a3cff,#19f0ff)'};filter:blur(120px) saturate(1.4);opacity:.55}
+.bgimg{position:absolute;inset:-80px;width:calc(100% + 160px);height:calc(100% + 160px);object-fit:cover;filter:blur(46px) saturate(1.5) brightness(.75);opacity:.7}
 .vig{position:absolute;inset:0;background:radial-gradient(900px 520px at 78% 55%,rgba(11,16,32,.55),rgba(11,16,32,.94) 70%),linear-gradient(0deg,#0b1020 0%,transparent 40%)}
-.card{position:absolute;left:84px;top:96px;width:438px;height:438px;border-radius:64px;overflow:hidden;background:${g.bg || '#222'};box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 90px ${g.glow || 'rgba(0,229,255,.45)'},0 0 0 3px rgba(255,255,255,.18)}
+.card{position:absolute;left:70px;top:84px;width:462px;height:462px;border-radius:64px;overflow:hidden;background:${g.bg || '#222'};box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 90px ${g.glow || 'rgba(0,229,255,.45)'},0 0 0 3px rgba(255,255,255,.18)}
 .card img{width:100%;height:100%;object-fit:cover;display:block}.card span{display:grid;place-items:center;height:100%;font-size:190px}
 .tx{position:absolute;left:590px;right:60px;top:70px}
 .tag{display:inline-block;padding:9px 20px;border-radius:999px;border:3px solid ${col};background:rgba(11,16,32,.7);font-weight:800;font-size:25px;letter-spacing:.06em;text-transform:uppercase}
@@ -37,7 +38,7 @@ p{margin:0;font-size:29px;line-height:1.38;color:#cfd8f4;display:-webkit-box;-we
 .play{position:absolute;left:590px;bottom:92px;padding:16px 34px;border-radius:20px;font-weight:900;font-size:32px;color:#06101a;background:linear-gradient(90deg,#00E5FF,#8B5CF6 60%,#FF2D95)}
 .ft{position:absolute;left:84px;right:70px;bottom:30px;display:flex;align-items:center;gap:14px;font-weight:800;font-size:25px;color:#9fb0d6}
 .ft img{height:40px;width:40px;border-radius:10px}.ft b{color:#fff}.ft em{font-style:normal;color:#ff7ac0}</style>
-<div class="glow"></div><div class="vig"></div>
+<div class="glow"></div>${card ? `<img class="bgimg" src="${card}">` : ''}<div class="vig"></div>
 <div class="card">${card ? `<img src="${card}">` : `<span>${esc(g.icon || '🎮')}</span>`}</div>
 <div class="tx"><span class="tag">${esc(cat ? cat.icon + ' ' + cat.short : 'Minispiel')}</span><h1>${esc(name)}</h1><p>${esc(short(g.desc, lines === 2 ? 110 : 150))}</p>${badges.length ? '<div class="b">' + badges.map(x => '<i>' + esc(x) + '</i>').join('') + '</div>' : ''}</div>
 <div class="play">▶ Jetzt spielen</div>
@@ -59,7 +60,7 @@ function pageHtml(g, img) {
 <meta http-equiv="refresh" content="0;url=../${esc(target)}">
 <script>location.replace('../${esc(target)}'+location.search+location.hash)</script>
 <style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#080B12;color:#fff;font:16px system-ui,sans-serif;text-align:center}a{color:#00E5FF}</style></head>
-<body><p>Weiter zu <a href="../${esc(target)}">${esc(name)}</a> …</p></body></html>
+<body><div><img src="${esc(g.id)}.jpg" alt="${esc(name)}" style="max-width:min(92vw,640px);border-radius:18px;box-shadow:0 12px 40px #0008"><p>Weiter zu <a href="../${esc(target)}">${esc(name)}</a> …</p></div></body></html>
 `;
 }
 
