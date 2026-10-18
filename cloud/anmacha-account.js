@@ -119,9 +119,21 @@
   function initial(u) { return u && u.name ? u.name.trim().charAt(0).toUpperCase() : '👤'; }
   function first(u) { return u.name.trim().split(/\s+/)[0]; }
   // Menü an den Knopf heften, aber höchstens bis zum unteren Bildschirmrand hoch: ist die Liste länger, lässt sie sich scrollen (Touch und Mausrad)
+  // Unterkante des freien Bereichs: fest am unteren Rand sitzende Leisten der Seite (Player, Navigation) verdecken sonst das Menü
+  function bottomLimit(menu) {
+    var vh = root.innerHeight || 600, vw = root.innerWidth || 360, lim = vh, ys = [6, 60, 110, 160, 210, 260], xs = [vw * 0.25, vw * 0.6, vw * 0.9];
+    try {
+      ys.forEach(function (dy) { xs.forEach(function (x) { doc.elementsFromPoint(x, vh - dy).forEach(function (e) {
+        if (menu.contains(e) || e.contains(menu) || e === doc.body || e === doc.documentElement) return;
+        var cs = root.getComputedStyle(e);
+        if (cs.position === 'fixed' || cs.position === 'sticky') { var rr = e.getBoundingClientRect(); if (rr.top > vh * 0.45 && rr.top < lim) lim = rr.top; }
+      }); }); });
+    } catch (e) { }
+    return lim;
+  }
   function place(btn, menu) {
     if (!menu || menu.hidden || !btn) return;
-    var r = btn.getBoundingClientRect(), vh = root.innerHeight || 600, vw = root.innerWidth || 360, below = vh - r.bottom - 16, above = r.top - 16;
+    var r = btn.getBoundingClientRect(), vh = root.innerHeight || 600, vw = root.innerWidth || 360, lim = bottomLimit(menu), below = lim - r.bottom - 16, above = r.top - 16;
     menu.style.position = 'fixed'; menu.style.left = 'auto'; menu.style.right = Math.max(8, vw - r.right) + 'px';
     if (below < 240 && above > below) {   // Knopf unten im Bild (z. B. Fußzeile): Menü nach oben öffnen
       menu.style.top = 'auto'; menu.style.bottom = Math.max(8, vh - r.top + 8) + 'px'; menu.style.maxHeight = Math.max(160, above) + 'px';
