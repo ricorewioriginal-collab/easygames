@@ -232,33 +232,44 @@
     return idbRead().then(function (x) { for (k in x) o[k] = x[k]; return o; });
   }
 
-  function url() {
-    return 'https://firestore.googleapis.com/v1/projects/' + CONFIG.projectId + '/databases/(default)/documents/users/' + user.uid + '/saves/' + game;
-  }
-  // Genau eine ältere Sicherung je Nutzer und Spiel: eigenes Dokument "<spiel>__alt" (gleiche Regeln wie der Spielstand)
-  function urlAlt() { return url() + '__alt'; }
+  // Spielstände liegen auf dem eigenen Server (ricorewi-radio.de, cms/api.php saves_*), nicht mehr in Firestore. Die Anmeldung bleibt das Firebase-Konto:
+  // dessen Token prüft der Server selbst. Firestore wird nur noch gelesen, wenn auf dem Server noch nichts liegt (Übernahme alter Stände).
+  var API = PORTAL + 'cms/api.php';
+  function url() { return game; }
+  // Genau eine ältere Sicherung je Nutzer und Spiel: eigener Eintrag "<spiel>__alt"
+  function urlAlt() { return game + '__alt'; }
+  function fsUrl(name) { return FS + 'users/' + user.uid + '/saves/' + name; }
   // Abgleich mit wenigen Zugriffen: Nach dem ersten Abholen merkt sich das Skript den Stand der Cloud (baseRemote) und dessen Version (baseVer).
   // Spätere Speicherungen schicken nur noch den neuen Stand und verlangen per Vorbedingung, dass die Cloud seitdem unverändert ist – ohne erneutes Lesen.
-  // Hat ein anderes Gerät inzwischen geschrieben, lehnt Firestore ab, und es folgt ein voller Abgleich (Lesen + Zusammenführen).
+  // Hat ein anderes Gerät inzwischen geschrieben, lehnt der Server ab (409), und es folgt ein voller Abgleich (Lesen + Zusammenführen).
   var baseRemote = null, baseVer = '', lastPull = 0, lastSyncAt = 0, FULL_EVERY = 300000, MIN_GAP = 120000;
-  function pull(tok, u, o) {
-    return fetch(u || url(), { headers: { Authorization: 'Bearer ' + tok } }).then(function (r) {
-      if (r.status === 404) { if (o) o.ver = ''; return {}; }
+  function pullLegacy(tok, name) {   // alter Stand aus Firestore (nur wenn der Server noch keinen hat)
+    return fetch(fsUrl(name), { headers: { Authorization: 'Bearer ' + tok } }).then(function (r) {
+      if (r.status === 404 || r.status === 403) return {};
       if (!r.ok) throw new Error('Laden ' + r.status);
-      return r.json().then(function (j) { if (o) o.ver = j.updateTime || ''; return ungz(j.fields.d.stringValue).then(JSON.parse).catch(function () { return {}; }); });
+      return r.json().then(function (j) { return ungz(j.fields.d.stringValue).then(JSON.parse).catch(function () { return {}; }); });
     });
   }
-  // pre: Version aus dem letzten Abholen/Speichern ('' = Dokument existierte nicht); undefined = ohne Vorbedingung. Antwort: neue Version.
-  function push(tok, state, keep, u, pre) {
+  function pull(tok, name, o) {
+    name = name || url();
+    return fetch(API + '?action=saves_get&game=' + encodeURIComponent(name), { headers: { Authorization: 'Bearer ' + tok } }).then(function (r) {
+      if (r.status === 404) { if (o) o.ver = ''; return pullLegacy(tok, name); }
+      if (!r.ok) throw new Error('Laden ' + r.status);
+      return r.json().then(function (j) { if (o) o.ver = j.ver || ''; return ungz(j.d).then(JSON.parse).catch(function () { return {}; }); });
+    });
+  }
+  // pre: Version aus dem letzten Abholen/Speichern ('' = Eintrag existierte nicht); undefined = ohne Vorbedingung. Antwort: neue Version.
+  function push(tok, state, keep, name, pre) {
     return gz(JSON.stringify(state)).then(function (d) {
       if (d.length > 900000) throw new Error('Spielstand zu groß für die Cloud');
-      var body = JSON.stringify({ fields: { d: { stringValue: d }, t: { integerValue: String(Date.now()) } } });
-      var cond = pre === undefined ? '' : pre ? '&currentDocument.updateTime=' + encodeURIComponent(pre) : '&currentDocument.exists=false';
-      return fetch((u || url()) + '?updateMask.fieldPaths=d&updateMask.fieldPaths=t' + cond, {
-        method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok }, body: body, keepalive: !!keep && body.length < 60000
+      var o = { game: name || url(), d: d, t: Date.now() };
+      if (pre !== undefined) o.pre = pre;
+      var body = JSON.stringify(o);
+      return fetch(API + '?action=saves_put', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok }, body: body, keepalive: !!keep && body.length < 60000
       }).then(function (r) {
-        if (!r.ok) { var e = new Error('Speichern ' + r.status); e.stale = pre !== undefined && (r.status === 400 || r.status === 404 || r.status === 409 || r.status === 412); throw e; }
-        return r.json().then(function (j) { return j.updateTime || ''; }, function () { return ''; });
+        if (!r.ok) { var e = new Error('Speichern ' + r.status); e.stale = pre !== undefined && r.status === 409; throw e; }
+        return r.json().then(function (j) { return j.ver || ''; }, function () { return ''; });
       });
     });
   }
@@ -497,7 +508,7 @@
       return u.getIdToken().then(function (t) { return { uid: u.uid, name: u.displayName || '', token: t, project: CONFIG.projectId }; });
     }).catch(function () { return null; });
   }
-  window.AnMaChaCloud = { sync: sync, restore: restore, restoreOlder: restoreOlder, account: account, game: game, FS: FS, mine: mine, signIn: signIn, signOut: signOut, user: function () { return wanted() && user ? user : null; } };
+  window.AnMaChaCloud = { sync: sync, restore: restore, restoreOlder: restoreOlder, account: account, game: game, FS: FS, API: API, mine: mine, signIn: signIn, signOut: signOut, user: function () { return wanted() && user ? user : null; } };
   // Ranglisten (nur für Spiele mit Eintrag in anmacha-board.js; data-board="off" schaltet ab, data-board-src = abweichender Pfad)
   if (s.dataset.board !== 'off') {
     var bsrc = s.dataset.boardSrc || (s.src || '').replace(/[^\/?#]*([?#].*)?$/, 'anmacha-board.js');

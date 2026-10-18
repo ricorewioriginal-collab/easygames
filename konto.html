@@ -109,12 +109,12 @@ window.addEventListener('DOMContentLoaded', function () {
     if (u && u.photoURL) { var im = document.createElement('img'); im.src = u.photoURL; im.alt = ''; im.referrerPolicy = 'no-referrer'; av.appendChild(im); } else av.textContent = u ? '🙂' : '👤';
     $('msg').hidden = !!u; $('okp').hidden = !u; document.body.classList.toggle('in', !!u);
   }
-  // Gesicherte Spielstände: Dokumente users/<uid>/saves (ohne Profil-Dokumente "__…" und ältere Sicherungen "…__alt")
+  // Gesicherte Spielstände: eigener Server (saves_list; ohne Profil-Dokumente "__…" und ältere Sicherungen "…__alt")
   function listSaves() {
     return Cloud.account().then(function (a) {
       if (!a) return [];
-      return fetch(Cloud.FS + 'users/' + a.uid + '/saves?pageSize=300&mask.fieldPaths=t', { headers: { Authorization: 'Bearer ' + a.token } }).then(function (r) { return r.ok ? r.json() : { documents: [] }; }).then(function (j) {
-        return (j.documents || []).map(function (d) { var id = d.name.split('/').pop(); return { id: id, t: d.fields && d.fields.t && Number(d.fields.t.integerValue) || 0 }; })
+      return fetch(Cloud.API + '?action=saves_list', { headers: { Authorization: 'Bearer ' + a.token } }).then(function (r) { return r.ok ? r.json() : { items: [] }; }).then(function (j) {
+        return (j.items || []).map(function (d) { return { id: d.game, t: Number(d.t) || 0 }; })
           .filter(function (x) { return x.id.indexOf('__') !== 0 && !/__alt$/.test(x.id); });
       });
     });

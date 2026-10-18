@@ -19,7 +19,8 @@ Ohne Eintrag in `CONFIG` tut das Skript nichts.
 ## Funktionsweise
 - Pro Schlüssel zählt der neuere Zeitstempel (gewinnt der zuletzt gespielte Stand).
 - Schreiben gebündelt (3 s nach Änderung, beim Verlassen), Laden beim Start. Wird beim Start etwas Neueres geladen, lädt die Seite einmal neu.
-- Daten liegen unter `users/<uid>/saves/<spiel>`; die Regeln erlauben nur dem eigenen Nutzer Lesen und Schreiben.
+- Spielstände liegen auf dem **eigenen Server** (`https://www.ricorewi-radio.de/cms/api.php?action=saves_get|saves_put|saves_list|saves_delete`, Ablage `cms/data/.saves/`), nicht mehr in Firestore. Die Anmeldung bleibt das Firebase-Konto: dessen Token prüft der Server selbst (Signatur, Projekt, Ablauf), der Speicherort richtet sich nach der Google-Kennung. Gibt es auf dem Server noch keinen Stand, wird der alte aus Firestore (`users/<uid>/saves/<spiel>`) einmalig übernommen. Rangliste (`__board`) und Erfolge (`__ach`) bleiben in Firestore.
+- Speichern mit Vorbedingung (`pre` = erwartete Version, 409 bei Konflikt), Grenzen je Person: 900 KB je Spielstand, 150 Spiele, 40 MB, 180 Schreibvorgänge/Stunde.
 - Das Firebase-SDK wird nur geladen, wenn sich ein Spieler angemeldet hat; sonst bleibt alles bei localStorage.
 
 ## Für Spiele mit eigenen Daten
@@ -32,7 +33,7 @@ Google sperrt die Anmeldung in App-Fenstern. Deshalb koppelt sich die App über 
 
 ## Ältere Sicherung (genau eine je Nutzer und Spiel)
 
-Ersetzt beim ersten Abgleich einer Sitzung (Start oder Anmeldung) der neuere Stand einen abweichenden älteren (egal ob lokal oder in der Cloud), wird der ersetzte Eintrag im Dokument `users/<uid>/saves/<spiel>__alt` aufgehoben und überschreibt dabei die vorherige Sicherung. Im Cloud-Fenster stellt „Älteren Stand wiederherstellen“ sie zurück und tauscht sie mit dem aktuellen Stand, es bleibt also immer genau eine ältere Sicherung. Die Firestore-Regeln decken das Dokument bereits ab (`{game}` ist ein Platzhalter), es ist nichts neu zu veröffentlichen. Apps mit eigenem Abgleich (Favoriten in Android/Windows, ZOTIK-Apps) haben das noch nicht.
+Ersetzt beim ersten Abgleich einer Sitzung (Start oder Anmeldung) der neuere Stand einen abweichenden älteren (egal ob lokal oder in der Cloud), wird der ersetzte Eintrag im Eintrag `<spiel>__alt` (Server) aufgehoben und überschreibt dabei die vorherige Sicherung. Im Cloud-Fenster stellt „Älteren Stand wiederherstellen“ sie zurück und tauscht sie mit dem aktuellen Stand, es bleibt also immer genau eine ältere Sicherung. Auf dem Server ist nichts einzurichten. Apps mit eigenem Abgleich (Favoriten in Android/Windows, ZOTIK-Apps) haben das noch nicht.
 
 ## Ranglisten (öffentliche Bestenlisten, nur mit Freigabe)
 **In den Spielen gibt es keine Oberfläche** (nichts verdeckt Spielinhalt): `cloud/anmacha-board.js` (wird von `anmacha-cloud.js` nachgeladen) reicht Bestwerte nur still im Hintergrund ein, sobald der Spieler sie freigegeben hat. Ansehen, Freigabe, Spitzname und Löschen liegen auf der **zentralen Seite `ranglisten.html`** (alle Spiele, Spiel-Auswahl, Ranglisten-Tabs, Top 25, eigene Zeile hervorgehoben; ohne Anmeldung lesbar):
