@@ -149,9 +149,26 @@
   }
   // Einheitliche Punkte (überall gleich): Konto, Profil, Erfolge, Ranglisten, Heute, Chat, Sichern, Fehler melden. base = Adresse von easygames (leer = diese Seite).
   var HOME = 'https://ricorewioriginal-collab.github.io/easygames/';
+  // Seiten von easygames im Vollbild-Fenster der eigenen Seite öffnen (kein Wechsel zu GitHub); das Konto wird an das Fenster weitergereicht (easygames.js / Portal-Relay)
+  var ov = null;
+  function openPage(url, title) {
+    if (!ov) {
+      ov = doc.createElement('div'); ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.hidden = true;
+      ov.style.cssText = 'position:fixed;inset:0;z-index:2147482600;background:#0b0e1a;display:flex;flex-direction:column';
+      var h = doc.createElement('div'); h.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 12px;background:#0b0e1a;color:#fff;font:600 15px system-ui';
+      var t = doc.createElement('span'); t.style.cssText = 'flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
+      var x = doc.createElement('button'); x.type = 'button'; x.textContent = '✕ Schließen'; x.style.cssText = 'border:0;border-radius:10px;padding:8px 14px;background:rgba(255,255,255,.14);color:#fff;font:600 14px system-ui;cursor:pointer';
+      var f = doc.createElement('iframe'); f.title = 'easygames'; f.allow = 'fullscreen; clipboard-write'; f.style.cssText = 'flex:1;border:0;width:100%;background:#080b12';
+      function close() { ov.hidden = true; f.setAttribute('src', 'about:blank'); doc.documentElement.style.overflow = ''; }
+      x.onclick = close; h.appendChild(t); h.appendChild(x); ov.appendChild(h); ov.appendChild(f); doc.body.appendChild(ov);
+      doc.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !ov.hidden) close(); });
+      root.addEventListener('message', function (e) { if (e.source === f.contentWindow && e.data && (e.data.type === 'easygames:close' || e.data === 'easygames:close')) close(); });
+    }
+    ov.firstChild.firstChild.textContent = title; ov.lastChild.setAttribute('src', url); ov.hidden = false; doc.documentElement.style.overflow = 'hidden';
+  }
   function standardItems(base) {
     var foreign = !!base && base.indexOf(root.location.origin + '/') !== 0, eg = function (p, icon, label) {
-      return { icon: icon, label: label, href: base + p + '.html', blank: foreign, fn: root.EasyGames && root.EasyGames.open && foreign ? function () { root.EasyGames.open(p); } : null };
+      return { icon: icon, label: label, href: base + p + '.html', blank: foreign, fn: foreign ? function () { openPage(base + p + '.html?embed=1', label); } : null };
     };
     return [eg('konto', '👤', 'Konto & Übersicht'), eg('profil', '🙂', 'Profil & Freunde'), eg('erfolge', '🏅', 'Meine Erfolge'), eg('ranglisten', '🏆', 'Ranglisten'), eg('heute', '🎯', 'Heute'), eg('chat', '💬', 'Chat'), '-',
       { icon: '☁', label: 'Spielstände jetzt sichern', fn: function () { var c = cloud(); if (c && c.sync) c.sync(false, true); } }, eg('bug', '🐞', 'Fehler melden')];
