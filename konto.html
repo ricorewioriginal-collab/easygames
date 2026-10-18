@@ -85,6 +85,7 @@ body:not(.in) #out{display:none}
 </main>
 
 <script src="cloud/anmacha-cloud.js" data-game="konto" data-prefix="anmacha-konto-ohne-spielstand" data-mount="#cloudMount" data-sync="off" data-board="off" data-hint="Mit Google anmelden – einmal für alle Spiele." defer></script>
+<script src="cloud/anmacha-account.js" defer></script>
 <script src="cloud/anmacha-board.js" defer></script>
 <script src="cloud/anmacha-ach.js" defer></script>
 <script src="cloud/anmacha-gameach.js" defer></script>
@@ -111,9 +112,9 @@ window.addEventListener('DOMContentLoaded', function () {
   }
   // Gesicherte Spielstände: eigener Server (saves_list; ohne Profil-Dokumente "__…" und ältere Sicherungen "…__alt")
   function listSaves() {
-    return Cloud.account().then(function (a) {
-      if (!a) return [];
-      return fetch(Cloud.API + '?action=saves_list', { headers: { Authorization: 'Bearer ' + a.token } }).then(function (r) { return r.ok ? r.json() : { items: [] }; }).then(function (j) {
+    return Cloud.serverToken().then(function (tok) {
+      if (!tok) return [];
+      return fetch(Cloud.API + '?action=saves_list', { headers: { Authorization: 'Bearer ' + tok } }).then(function (r) { return r.ok ? r.json() : { items: [] }; }).then(function (j) {
         return (j.items || []).map(function (d) { return { id: d.game, t: Number(d.t) || 0 }; })
           .filter(function (x) { return x.id.indexOf('__') !== 0 && !/__alt$/.test(x.id); });
       });

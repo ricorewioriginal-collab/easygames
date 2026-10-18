@@ -75,8 +75,9 @@ const server = http.createServer((req, res) => {
     assert.match(await host.$eval('[role=dialog] iframe', f => f.src), /konto\.html\?embed=1$/);
     console.log('PASS Einbettung: data-easygames="konto" (inline und Overlay) und EasyGames.open(\'konto\')');
     await page.goto(base + 'index.html');
-    assert.equal(await page.$eval('#lAcc', a => a.getAttribute('href')), 'konto.html');
-    console.log('PASS Hub: Link „👤 Konto“ vorhanden');
+    await page.waitForSelector('#acct .eg-acc-b');
+    await page.click('#acct .eg-acc-b'); await page.waitForSelector('#acct .eg-acc-m:not([hidden]) a[href="konto.html"]');
+    console.log('PASS Hub: angemeldet → Konto-Menü oben mit Link „👤 Konto & Übersicht“');
     assert.deepEqual(errors, [], 'Seitenfehler: ' + errors.join('; '));
   } finally { await browser.close(); server.close(); }
 })().catch(e => { console.error(e); process.exitCode = 1; });

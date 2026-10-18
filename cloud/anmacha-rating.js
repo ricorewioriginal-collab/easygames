@@ -171,5 +171,6 @@
     });
     return m;
   }
-  root.AnMaChaRating = { mount: mount, top: top, get: get, set: set, settings: settings, logout: logout, user: function () { return token() ? me() : null; }, api: API };
+  function refresh() { cfgP = null; cache = {}; mounts.slice().forEach(function (m) { mount(m.el, { subject: m.subject, title: m.title, compact: m.compact }); }); }   // nach Login/Logout durch anmacha-account.js
+  root.AnMaChaRating = { refresh: refresh, mount: mount, top: top, get: get, set: set, settings: settings, logout: logout, user: function () { return token() ? me() : null; }, api: API };
 })(typeof window !== 'undefined' ? window : this);
