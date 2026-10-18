@@ -79,7 +79,7 @@ BI.createCombat = function (G) {
 
   /* ---------- Spieler: Angriffe ---------- */
   const ATK = { punch: { dur: .3, at: .12, dmg: 12, range: 2.4, cd: .32, cost: 0 }, kick: { dur: .5, at: .22, dmg: 20, range: 2.7, cd: .6, cost: 0 }, special: { dur: .7, at: .28, dmg: 32, range: 4.6, cd: 1, cost: 25, ring: true } };
-  let atkCd = 0, freeze = 0, flick = false, combo = 0, lastPunch = -9;
+  let atkCd = 0, freeze = 0, flick = false, shown = false, potN = '', combo = 0, lastPunch = -9;
   K.attack = function (kind) {
     if (!K.active() || atk || atkCd > 0 || freeze > 0 || hp <= 0 || (G.gear && G.gear.open)) return; const a = ATK[kind]; if (!a) return;
     const cost = kind === 'special' ? a.cost * gv('spMul', 1) : a.cost; if (cost > ep) { say('⚡ Zu wenig Energie – kurz ausruhen!', 1400); return; }
@@ -295,13 +295,13 @@ BI.createCombat = function (G) {
     else if (block && act) { c.armL.rotation.set(-1.3, 0, .35); c.armR.rotation.set(-1.3, 0, -.35); }
     if (inv > 0 && act) { c.group.visible = Math.floor(t * 20) % 2 === 0; flick = true; } else if (flick) { c.group.visible = true; flick = false; }
     // Anzeige
-    const show = act && G.state() === 'play'; $('fightBars').hidden = !show; $('fightBtns').hidden = !show;
+    const show = act && G.state() === 'play'; $('fightBars').hidden = !show; $('fightBtns').hidden = !show; if (show !== shown) { shown = show; document.body.classList.toggle('fighting', show); }
     if (show) {
       $('fbHp').style.width = (hp / HPM * 100) + '%'; $('fbEp').style.width = (ep / EPM * 100) + '%';
       const tg = duel && !duel.over ? duel.f : (target && !target.dead && enemies.includes(target) ? target : null); $('fbEnemy').hidden = !tg;
       if (tg) { $('fbEName').textContent = (tg.T && tg.T.n) || ''; $('fbEHp').style.width = Math.max(0, tg.hp / tg.max * 100) + '%'; }
       $('fbInfo').textContent = duel && !duel.over ? 'Runde ' + duel.round + ' · Du ' + duel.rounds[0] + ' : ' + duel.rounds[1] + ' ' + duel.def.n : mode === 'wave' ? 'Welle ' + wave.n + '/5' : inBig() ? (() => { const Z = WA.zoneAt(P.x, P.z); return '💪 Stufe ' + K.level() + ' · ' + gv('weapon', { icon: '👊' }).icon + (safe() ? ' · 🏕️ sicher' : Z ? ' · ' + Z.icon + ' ' + ((G.wald && save.wald && save.wald.zb && save.wald.zb[Z.id]) ? '🏆' : Math.min(8, zkO()[Z.id] | 0) + '/8') : ''); })() : '🌲 Waldmonster besiegt: ' + K.kills + ' · 💪 ' + K.level();
-      $('fbExit').hidden = false; if ($('fbGear')) $('fbGear').hidden = !G.gear || !!duel; if (G.inv) { const iv = G.inv(), nh = (iv.potion_hp || 0) + (iv.krabbenburger || 0) + (iv.apple || 0), ne = (iv.potion_ep || 0) + (iv.quallenshake || 0) + (iv.juice || 0); $('fbPotHp').hidden = !nh; $('fbPotEp').hidden = !ne; $('fbPotHp').textContent = '❤️' + nh; $('fbPotEp').textContent = '⚡' + ne; }
+      $('fbExit').hidden = false; if ($('fbGear')) $('fbGear').hidden = !G.gear || !!duel; if (G.inv) { const iv = G.inv(), nh = (iv.potion_hp || 0) + (iv.krabbenburger || 0) + (iv.apple || 0), ne = (iv.potion_ep || 0) + (iv.quallenshake || 0) + (iv.juice || 0); $('fbPotHp').hidden = !nh; $('fbPotEp').hidden = !ne; if (potN !== nh + '/' + ne) { potN = nh + '/' + ne; $('fbPotHp').innerHTML = '❤️<b>' + nh + '</b>'; $('fbPotEp').innerHTML = '⚡<b>' + ne + '</b>'; } }
     }
     if (!act && enemies.length && !mode && !fz) { clearEnemies(); }
   };
