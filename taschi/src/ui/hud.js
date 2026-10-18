@@ -48,9 +48,14 @@ export class HUD {
   }
   show(v) { this.visible = v; this.el.classList.toggle('hidden', !v); this.updateTouchVisibility(); }
   updateTouchVisibility() {
-    const touchy = matchMedia('(pointer:coarse)').matches || this.game.input.lastDevice === 'touch';
-    this.touch.classList.toggle('hidden', !this.visible || !touchy || this.game.input.lastDevice === 'gamepad');
+    this.coarse ??= matchMedia('(pointer:coarse)');
+    const touchy = this.coarse.matches || this.game.input.lastDevice === 'touch';
+    const hide = !this.visible || !touchy || this.game.input.lastDevice === 'gamepad';
+    if (hide !== this.touchHidden) { this.touchHidden = hide; this.touch.classList.toggle('hidden', hide); }
   }
+  // DOM writes force the browser to restyle the page, which is costly on
+  // phones; only touch the HUD when a text actually changed.
+  setText(el, t) { if (el.textContent !== t) el.textContent = t; }
   banner(title, sub) {
     const b = h('div.region-banner', {}, h('div.s', {}, sub || ''), h('div.t', {}, title));
     this.el.append(b); setTimeout(() => b.remove(), 3500);
@@ -58,23 +63,26 @@ export class HUD {
   update(dt) {
     const g = this.game, w = g.world;
     this.updateTouchVisibility();
-    if (g.settings.get('showStats')) { const s = g.renderer.stats; this.stats.textContent = `fps ${s.fps}  ${s.ms}ms  scale ${s.scale}\ncalls ${s.calls}  tris ${(s.tris / 1000).toFixed(0)}k\ngeo ${s.geos}  tex ${s.tex}  ${g.renderer.profileName}`; }
+    if (g.settings.get('showStats')) { const s = g.renderer.stats; this.setText(this.stats, `fps ${s.fps}  ${s.ms}ms  scale ${s.scale}\ncalls ${s.calls}  tris ${(s.tris / 1000).toFixed(0)}k\ngeo ${s.geos}  tex ${s.tex}  ${g.renderer.profileName}`); }
     if (!this.visible || !w.current) return;
     const s = g.save;
     const c = w.current;
     const regName = c.region === 16 ? 'Sternengipfel' : REGIONS[c.region].name;
     const place = c.type === 'interior' ? ({ heal: 'Heilzentrum', shop: 'Laden', lab: 'Labor', house: 'Wohnhaus', arena: REGIONS[Math.min(15, c.region)].gym.theme, cave: c.interior.name, station: 'Forschungsstation', league: 'Halle der Sternenliga' }[c.kind]) : (c.region === 16 ? 'Gipfelplateau' : g.inTown() ? REGIONS[c.region].town : 'Route ' + regName);
-    this.loc.children[0].textContent = place + ' · ' + regName;
-    this.loc.children[1].textContent = '➜ ' + g.objective().text;
+    this.setText(this.loc.children[0], place + ' · ' + regName);
+    if (performance.now() > (this.objNext || 0)) { this.objNext = performance.now() + 500; this.setText(this.loc.children[1], '➜ ' + g.objective().text); }
     const mins = Math.floor(s.worldTime), hh = Math.floor(mins / 60), mm = mins % 60;
-    this.loc.children[2].textContent = (g.isNight() ? '🌙 ' : '☀ ') + String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0') + '  ·  ✦ ' + s.badges + '/16  ·  ★ ' + s.coins;
+    this.setText(this.loc.children[2], (g.isNight() ? '🌙 ' : '☀ ') + String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0') + '  ·  ✦ ' + s.badges + '/16  ·  ★ ' + s.coins);
     // prompt
     const near = g.busy || g.ui.blocking ? null : w.near;
-    if (near) {
-      this.prompt.classList.remove('hidden');
-      this.prompt.replaceChildren(h('span.key', {}, g.ui.hint('confirm')), (near.prompt || 'Interagieren') + ': ' + (near.label || ''));
-      this.aBtn.textContent = near.prompt || 'Aktion';
-    } else { this.prompt.classList.add('hidden'); this.aBtn.textContent = 'Aktion'; }
+    const hint = near ? g.ui.hint('confirm') : '', ptext = near ? (near.prompt || 'Interagieren') + ': ' + (near.label || '') : '';
+    const pkey = near ? hint + '|' + ptext : '';
+    if (pkey !== this.promptKey) {
+      this.promptKey = pkey;
+      this.prompt.classList.toggle('hidden', !near);
+      if (near) this.prompt.replaceChildren(h('span.key', {}, hint), ptext);
+      this.setText(this.aBtn, near?.prompt || 'Aktion');
+    }
     if (performance.now() > this.miniNext) { this.drawMinimap(); this.miniNext = performance.now() + 250; }
   }
   drawMinimap() {

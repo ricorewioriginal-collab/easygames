@@ -271,6 +271,7 @@ export class BattleScene {
     // intro camera: start close on the foe side
     const foeFirst = b.sides[1].active.map(i => b.sides[1].team[i]);
     if (opts.kind === 'wild') foeFirst.forEach((m, slot) => { const e = this.spawnModel(m, 1, slot, false); e.c.play('appear', 0.4); });
+    g.renderer.precompile(this.scene, this.camera); // no shader builds during the intro
     this.camera.position.set(6, 2.2, 1.5); this.lookCur.set(2.7, 1, -2.4); this.camera.lookAt(this.lookCur);
     this.camTarget = { pos: new THREE.Vector3(4.5, 2.4, 3.5), look: new THREE.Vector3(2.7, 1, -2.4), speed: 1.2 };
     this.hudEl.querySelectorAll('.bhud').forEach(e => e.style.visibility = 'hidden');

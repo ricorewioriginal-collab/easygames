@@ -35,7 +35,30 @@
     { id: 'tv', icon: '📺', stat: 'tv', thr: [1], names: ['Sofa-Held'], desc: 'Spiele auf dem Fernseher.' },
     { id: 'pad', icon: '🎮', stat: 'pad', thr: [1], names: ['Controller-Profi'], desc: 'Spiele mit einem Gamecontroller.' },
     { id: 'cloud', icon: '☁️', stat: 'cloud', thr: [1], names: ['Wolkenspieler'], desc: 'Melde dich mit Google an und sichere deine Spielstände.' },
-    { id: 'board', icon: '📣', stat: 'board', thr: [1], names: ['Ranglisten-Star'], desc: 'Gib deine Bestwerte für die Ranglisten frei.' }
+    { id: 'board', icon: '📣', stat: 'board', thr: [1], names: ['Ranglisten-Star'], desc: 'Gib deine Bestwerte für die Ranglisten frei.' },
+    { id: 'medals', icon: '🎖️', stat: 'medals', thr: [5, 25, 60, 120, 200], names: ['Medaillen-Sammler', 'Medaillen-Regen', 'Vitrinen-Füller', 'Trophäenwand', 'Ehrenhalle'], desc: 'Sammle {n} Spiel-Medaillen (in jedem Spiel möglich, siehe unten).' },
+    { id: 'regular', icon: '💛', stat: 'regular', thr: [1, 3, 5, 10], names: ['Lieblingsspiel', 'Stammspiele', 'Treue Seele', 'Spiele-Familie'], desc: 'Spiele {n} Spiele an mindestens 3 verschiedenen Tagen.' },
+    { id: 'devoted', icon: '🔁', stat: 'devoted', thr: [1, 3, 5], names: ['Dranbleiber', 'Dauerspieler', 'Spiele-Veteran'], desc: 'Spiele {n} Spiele an mindestens 10 verschiedenen Tagen.' },
+    { id: 'wingames', icon: '🏅', stat: 'wingames', thr: [1, 3, 6, 12], names: ['Siegerspiel', 'Sieger-Trio', 'Siegesserie', 'Allround-Sieger'], desc: 'Gewinne in {n} verschiedenen Spielen mindestens eine Partie.' },
+    { id: 'stargames', icon: '🌟', stat: 'stargames', thr: [1, 3, 6, 12], names: ['Sternenspiel', 'Sternen-Trio', 'Sternenregen', 'Sternenmeer'], desc: 'Sammle in {n} verschiedenen Spielen Sterne.' }
+  ];
+  // Eine Erfolgsreihe je Kategorie: spiele {n} verschiedene Spiele daraus (Schwellen passen zur Größe der Kategorie)
+  var GENRE_DEFS = [
+    ['abenteuer', '🗺️', [1, 3, 5], ['Abenteurer', 'Weltentdecker', 'Heldenreise'], 'Abenteuer'],
+    ['action', '💥', [1, 4, 8], ['Draufgänger', 'Actionheld', 'Adrenalin-Junkie'], 'Action'],
+    ['denken', '🧩', [1, 3, 5], ['Knobler', 'Denksportler', 'Meisterhirn'], 'Puzzle'],
+    ['quiz', '❓', [1, 4, 8], ['Rater', 'Quizprofi', 'Allwissend'], 'Quiz'],
+    ['sim', '🏙️', [1, 3, 6], ['Aufbauer', 'Stadtplaner', 'Simulations-Mogul'], 'Simulation'],
+    ['tisch', '🎲', [1, 3, 5], ['Brettspieler', 'Tischrunde', 'Spieleabend-König'], 'Tisch'],
+    ['musik', '🎵', [1, 2], ['Taktgefühl', 'Rhythmus-Profi'], 'Musik']
+  ];
+  GENRE_DEFS.forEach(function (g) { DEFS.push({ id: 'gn-' + g[0], icon: g[1], stat: 'gn-' + g[0], thr: g[2], names: g[3], desc: 'Spiele {n} verschiedene ' + g[4] + '-Spiele.' }); });
+  // Spiel-Medaillen: gelten für jedes Spiel – auch ohne eigene Erfolge (an verschiedenen Spieltagen je Spiel)
+  var MEDALS = [
+    { id: 'm-play', icon: '🥉', title: 'Gespielt', desc: 'Starte das Spiel.', days: 0 },
+    { id: 'm-3', icon: '🥈', title: 'Stammgast', desc: 'Spiele es an 3 verschiedenen Tagen.', days: 3 },
+    { id: 'm-10', icon: '🥇', title: 'Dauerspieler', desc: 'Spiele es an 10 verschiedenen Tagen.', days: 10 },
+    { id: 'm-30', icon: '🏆', title: 'Veteran', desc: 'Spiele es an 30 verschiedenen Tagen.', days: 30 }
   ];
 
   // Kategorien der Spiele (wie die 7 Gruppen im RicoReWi-Portal) je Cloud-ID; neue Spiele hier ergänzen (tools/test-ach.mjs prüft, dass alle Katalogspiele eingetragen sind)
@@ -45,7 +68,7 @@
     denken: ['kraterkommando', 'funkblasen', 'radio-match', 'memory', 'wobbel', 'frequenzrad', 'tower-defense'],
     quiz: ['quiz', 'gesucht', 'hoererwahl', 'preisradar', 'machmichaus', 'zeitsprung-wissen', 'zeitsprung-movie', 'zeitsprung-radio', 'zeitsprung-castingshow', 'koffer-dealer'],
     sim: ['ricoville', 'ricolife', 'ricorail', 'mimori', 'markthalle', 'funkhaus', 'klotzfunk', 'bunte-insel', 'anmacha-podcast-tycoon'],
-    tisch: ['ricopoly', 'partyverse', 'spielesammlung', 'stapelrausch', 'gold-reels'],
+    tisch: ['ricopoly', 'partyverse', 'spielesammlung', 'stapelrausch', 'gold-reels', 'anmacha-undercover'],
     musik: ['beat-surfer', 'prismrush']
   };
   var GENRE_OF = {};
@@ -75,6 +98,11 @@
     [a, b].forEach(function (m) { if (!isObj(m)) return; for (k in m) { var t = num(m[k]); if (t > 0 && (!out[k] || t < out[k])) out[k] = t; } });
     return out;
   }
+  function maxMap(a, b) {
+    var out = {};
+    [a, b].forEach(function (m) { if (!isObj(m)) return; for (var k in m) { var t = Math.min(999, Math.floor(num(m[k]))); if (t > 0 && t > (out[k] || 0)) out[k] = t; } });
+    return out;
+  }
   function mergeV(a, b) {
     var out = {};
     [a, b].forEach(function (m) {
@@ -101,26 +129,31 @@
     [a.d, b.d].forEach(function (l) { (Array.isArray(l) ? l : []).forEach(function (d) { d = num(d); if (d > 19000101 && d < 99991231) days[d] = 1; }); });
     for (var d in days) list.push(Number(d));
     list.sort(function (x, y) { return x - y; });
-    return { u: minMap(a.u, b.u), gu: minMap(a.gu, b.gu), g: minMap(a.g, b.g), d: list.slice(-400), h: hl.slice(-400), f: minMap(a.f, b.f), m: Math.min(99, Math.max(num(a.m), num(b.m))), v: mergeV(a.v, b.v) };
+    return { u: minMap(a.u, b.u), gu: minMap(a.gu, b.gu), g: minMap(a.g, b.g), d: list.slice(-400), h: hl.slice(-400), f: minMap(a.f, b.f), m: Math.min(99, Math.max(num(a.m), num(b.m))), v: mergeV(a.v, b.v), n: maxMap(a.n, b.n) };
   }
   function sameState(a, b) { return JSON.stringify(merge(a, {})) === JSON.stringify(merge(b, {})); }
 
   // Kennzahlen aus der Eingabe: games = [{ id, multi, played, vals: [{ id, v }] }], own = { spiel: { total, done } } (eigene Spiel-Erfolge), state, cloud / board, today (JJJJMMTT)
   function statsOf(input) {
-    var games = input.games || [], st = merge(input.state, {}), own = input.own || {}, s = { played: 0, bests: 0, stars: 0, wins: 0, times: 0, multi: 0, total: games.length }, gen = {};
+    var games = input.games || [], st = merge(input.state, {}), own = input.own || {}, s = { played: 0, bests: 0, stars: 0, wins: 0, times: 0, multi: 0, total: games.length, medals: 0, regular: 0, devoted: 0, wingames: 0, stargames: 0, perGame: {} }, gen = {}, gcount = {};
     games.forEach(function (g) {
       var vv = {}; (g.vals || []).forEach(function (x) { vv[x.id] = x.v; });
       var sv = st.v[g.id] || {}; Object.keys(sv).forEach(function (k) { if (vv[k] == null) vv[k] = sv[k]; });
       var keys = Object.keys(vv), played = !!g.played || !!st.g[g.id] || keys.length > 0;
       if (!played) return;
       s.played++; if (g.multi) s.multi++;
-      if (GENRE_OF[g.id]) gen[GENRE_OF[g.id]] = 1;
+      if (GENRE_OF[g.id]) { gen[GENRE_OF[g.id]] = 1; gcount[GENRE_OF[g.id]] = (gcount[GENRE_OF[g.id]] || 0) + 1; }
+      var nd = st.n[g.id] || 0, got = MEDALS.map(function (m) { return nd >= m.days; });
+      s.perGame[g.id] = { days: nd, got: got }; s.medals += got.filter(Boolean).length;
+      if (nd >= 3) s.regular++; if (nd >= 10) s.devoted++;
+      if (num(vv.wins) >= 1) s.wingames++; if (num(vv.stars) >= 1) s.stargames++;
       if (keys.length) s.bests++;
       if (vv.time != null) s.times++;
       s.stars += Math.max(0, num(vv.stars)); s.wins += Math.max(0, num(vv.wins));
     });
     s.stars = Math.floor(s.stars); s.wins = Math.floor(s.wins);
     s.genres = Object.keys(gen).length;
+    GENRE_DEFS.forEach(function (g) { s['gn-' + g[0]] = gcount[g[0]] || 0; });
     s.days = st.d.length; s.streak = streak(st.d); s.challenge = st.h.length;
     s.age = st.d.length && input.today ? Math.max(0, dayIndex(input.today) - dayIndex(st.d[0])) : 0;
     s.marathon = st.m;
@@ -163,7 +196,7 @@
     return { items: items, stats: s, fresh: fresh, state: st, rank: rank, done: done, total: all };
   }
 
-  var api = { DEFS: DEFS, RANKS: RANKS, PTS: PTS, GENRES: GENRES, GENRE_OF: GENRE_OF, streak: streak, merge: merge, sameState: sameState, statsOf: statsOf, evaluate: evaluate };
+  var api = { DEFS: DEFS, MEDALS: MEDALS, RANKS: RANKS, PTS: PTS, GENRES: GENRES, GENRE_OF: GENRE_OF, streak: streak, merge: merge, sameState: sameState, statsOf: statsOf, evaluate: evaluate };
 
   // ---- Browser: lokal lesen/schreiben, Spiele einsammeln, mit dem Profil abgleichen ----
   var LS = null;

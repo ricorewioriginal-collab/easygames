@@ -8,6 +8,15 @@ Stand: 16. Oktober 2026. Diese Datei ist der Übergabepunkt für die nächste Ar
 - Die bisherige Version bleibt unter `taschi/classic.html` spielbar (`game.js` unverändert).
 - Alte Spielstände (lokal und AnMaCha-Cloud, Präfix `easygames.taschi.eight-lights.v1`) werden beim Laden automatisch migriert. Version-1-Daten werden nie gelöscht.
 
+## Update 18. Oktober 2026 (flüssiger Lauf, Welt-Fehler)
+
+- Hänger beim Laufen: Shader wurden erst gebaut, wenn eine Pflanzengruppe oder ein Taschi zum ersten Mal ins Bild kam (bis 0,8 s Standbild). `Renderer.precompile()` baut sie jetzt beim Laden von Gebiet, Innenraum und Kampf vorab.
+- Gebäude verlassen lädt das Gebiet nicht mehr neu: Beim Betreten bleibt die Karte geparkt (`World.parked`) und wird beim Hinausgehen wiederverwendet; jeder andere Ortswechsel gibt sie frei.
+- Adaptive Auflösung ändert sich nur nach 2 s langsamer bzw. 5 s schneller Phase (jede Änderung kostet einen Ruckler).
+- HUD schreibt nur noch geänderte Texte ins DOM; Kamera gleitet sanft vor Häuser statt in Stufen zu springen; Schatten zittern beim Laufen nicht mehr (Texel-Raster); Pflanzen ohne eigenes Fernmodell werden nicht mehr doppelt angelegt.
+- Welt: Bewohner standen in Bänken und nachts in Hauswänden und liefen gegen Hindernisse; sie weichen jetzt aus und suchen freie Plätze. Gegenstände und Trainer stehen auf festem Boden (vorher z. B. ein Doppel-Trainer in Himmelskrone neben der Wolkeninsel). Gras und Blumen prüften Wasser mit einem veralteten Raster und wuchsen in Seen. Der Gildenballon kehrt nach dem Sieg nicht zurück.
+- Messung: `node tests/e2e/perf.mjs [frames]` (Handy-Ansicht, Zeit pro Bereich, Shader-Spitzen). Test `tests/walkgrid.test.mjs` prüft feste Standplätze.
+
 ## Update 16. Oktober 2026 (Trainer-Figur)
 
 - Charaktererstellung: Männlich, Weiblich oder Divers wählen, eigener Name, Trainer-Outfit (Trainerkappe, kurzärmelige Trainerjacke über Shirt, fingerlose Handschuhe, Ballgürtel, Rucksack). Vorlagen `PLAYER_PRESETS` (m/w/d) und Körperformen `teenM`/`teenF`/`teen` in `src/engine/characters.js`; Bildschirm `creatorScreen()` in `src/ui/screens.js` (Modi `new`, `upgrade`, `wardrobe`).

@@ -5,7 +5,7 @@ import { THREE } from '../engine/three.js';
 import { REGIONS } from '../data/regions.js';
 import { TYPES } from '../data/types.js';
 import { buildTerrain } from '../engine/terrain.js';
-import { heightAt, HALF, grassAt } from '../logic/layout.js';
+import { heightAt, HALF, CELL, CELLS, grassAt } from '../logic/layout.js';
 import { buildWalkGrid } from '../logic/walkgrid.js';
 import { InstanceField, vegetationGeometry, rockGeometry, tallGrassGeometry, tuftGeometry, flowerGeometry, MATERIALS } from '../engine/vegetation.js';
 import * as BLD from '../engine/buildings.js';
@@ -230,6 +230,8 @@ export async function buildRegionMap(L, { quality, onProgress = () => {}, save }
   if (L.guild) {
     const camp = new THREE.Group();
     const balloon = BLD.guildBalloon(); balloon.position.set(0, 0, -4); camp.add(balloon);
+    // the balloon flies off when the guild is driven out; keep it gone later
+    balloon.visible = save?.guild?.[region.guild] !== 'done';
     const tb = new Builder();
     const tg = BLD.tent(); tb.add(tg, null, matrix(-5, 0, 2)); tb.add(BLD.tent(0xf0974f), null, matrix(5, 0, 1, 0, 0.6, 0));
     const cages = [];
@@ -321,8 +323,9 @@ function insideBuilding(L, x, z) {
   if (L.dome && Math.hypot(x - L.dome.x, z - L.dome.z) < L.dome.r) return true;
   return false;
 }
+// looks up the water distance grid of computeHeights() (same size and origin)
 function waterNear(L, x, z) {
-  const n = 161, i = Math.round((x + 100) / 1.25), j = Math.round((z + 100) / 1.25);
+  const n = CELLS + 1, i = Math.round((x + HALF) / CELL), j = Math.round((z + HALF) / CELL);
   return (L.waterDist[j * n + i] ?? 10) < 1.2;
 }
 

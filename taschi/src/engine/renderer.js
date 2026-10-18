@@ -29,7 +29,7 @@ export class Renderer {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.setClearColor(0x87b8d8);
-    this.scale = 1; this.frameTimes = []; this.adaptT = 0; this.adaptive = true;
+    this.scale = 1; this.frameTimes = []; this.adaptT = 0; this.adaptive = true; this._bad = 0; this._good = 0;
     this.setProfile(profileName);
     this.stats = { fps: 0, ms: 0, calls: 0, tris: 0, geos: 0, tex: 0, scale: 1 };
     this._acc = 0; this._frames = 0;
@@ -60,11 +60,26 @@ export class Renderer {
       this._acc = 0; this._frames = 0;
       if (this.adaptive && !document.hidden) {
         const target = this.profile.targetFps;
-        if (this.stats.fps < target * 0.8 && this.scale > this.profile.minScale) { this.scale = Math.max(this.profile.minScale, this.scale - 0.1); this.resize(); }
-        else if (this.stats.fps > target * 1.15 && this.scale < 1) { this.scale = Math.min(1, this.scale + 0.05); this.resize(); }
+        // Every resize reallocates the frame buffers and costs a visible
+        // hitch, so only react to slow or fast phases that last a while
+        // (2 s down, 5 s up) instead of flipping the scale every second.
+        const slow = this.stats.fps < target * 0.8, fast = this.stats.fps > target * 1.15;
+        this._bad = slow ? this._bad + 1 : 0; this._good = fast ? this._good + 1 : 0;
+        if (this._bad >= 2 && this.scale > this.profile.minScale) { this.scale = Math.max(this.profile.minScale, this.scale - 0.1); this._bad = 0; this.resize(); }
+        else if (this._good >= 5 && this.scale < 1) { this.scale = Math.min(1, this.scale + 0.05); this._good = 0; this.resize(); }
       }
       this.stats.scale = +this.scale.toFixed(2);
     }
+  }
+  // Builds the shaders of everything in the scene up front (hidden objects
+  // included), so they are not compiled mid-game the first time a vegetation
+  // chunk or creature comes into view – that caused hitches of up to a
+  // second on phones while walking.
+  precompile(scene, camera) {
+    const hidden = [];
+    scene.traverse(o => { if (!o.visible) { hidden.push(o); o.visible = true; } });
+    try { this.renderer.compile(scene, camera); } catch (e) { console.warn('TASCHI: precompile', e); }
+    for (const o of hidden) o.visible = false;
   }
   render(scene, camera) {
     this.renderer.render(scene, camera);
