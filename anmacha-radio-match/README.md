@@ -7,7 +7,7 @@ Live: https://ricorewioriginal-collab.github.io/easygames/anmacha-radio-match/
 - **200 Kampagnenlevel** in 10 Radio-Welten (je 20 Level), jedes 10. ein Spezial-Level, jedes 20. ein Welt-Finale (Boss). **10 Bonuslevel** (teils mit Zeitlimit).
 - Jedes Level hat einen **gespeicherten Siegpfad** (`tests/solutions.json`), der in den Tests nachgespielt wird.
 - Spezialteile: Wellenrakete (4er), Bassbombe (L/T), Funkdrohne (2×2), Frequenzkugel (5er), Remix-Orb (6er / großes Kreuz) und alle Kombinationen.
-- 19 Hindernis-/Feldarten, 19 Missionsarten, 8 Booster im Level + 4 Start-Booster, Münzen nur durch Spielen, +5 Züge, Tagesbonus, kein Energiesystem.
+- 19 Hindernis-/Feldarten, 19 Missionsarten, 5 Booster im Level (Königshammer, Königspfeil, Kanone, Pauke, Narrenkappe) + 3 Start-Booster wie bei Royal Match, Münzen nur durch Spielen, +5 Züge, Tagesbonus, kein Energiesystem.
 - Funkhaus mit 10 ausbaubaren Etagen (sichtbare 3D-Requisiten), Figuren RAY und Mira Mix, überspringbare Zwischenszenen und Tutorials.
 - Duell auf einem Gerät (2 Spieler) oder gegen die KI. Kein Online-Modus.
 - Qualitätsstufen (Auto/Niedrig/Mittel/Hoch, Auto senkt bei Ruckeln), weniger Bewegung, Farbenblind-Modus, Tastatur und Controller, Zurück-Taste über die History.

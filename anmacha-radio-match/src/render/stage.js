@@ -103,17 +103,19 @@
   };
 
   // 3D-Modell als kleines Bild (HUD-Ziele, Booster-Vorschau). Wird gecacht.
-  Stage.prototype.icon = function (key, geoFn, matFn) {
+  // front: Ansicht von vorn wie auf dem Brett (Steine, Booster), sonst leicht von oben
+  Stage.prototype.icon = function (key, geoFn, matFn, front) {
     if (this.icons[key]) return this.icons[key];
     if (!this.renderer || this.lost) return '';
-    var S = 96, rt = new T.WebGLRenderTarget(S, S), sc = new T.Scene(), cam = new T.PerspectiveCamera(30, 1, 0.1, 20);
+    var S = 128, rt = new T.WebGLRenderTarget(S, S), sc = new T.Scene(), cam = new T.PerspectiveCamera(30, 1, 0.1, 20);
     sc.add(new T.HemisphereLight(0xffffff, 0x445566, 0.9));
     var dl = new T.DirectionalLight(0xffffff, 0.8); dl.position.set(1, 3, 2); sc.add(dl);
     var obj = geoFn();
     if (obj.isBufferGeometry) obj = new T.Mesh(obj, matFn ? matFn() : new T.MeshLambertMaterial({ vertexColors: true }));
     sc.add(obj);
     var box = new T.Box3().setFromObject(obj), c = box.getCenter(new T.Vector3()), sz = box.getSize(new T.Vector3()).length();
-    cam.position.set(c.x, c.y + sz * 0.9, c.z + sz * 1.7); cam.lookAt(c);
+    if (front) cam.position.set(c.x, c.y + sz * 0.25, c.z + sz * 1.55); else cam.position.set(c.x, c.y + sz * 0.9, c.z + sz * 1.7);
+    cam.lookAt(c);
     var r = this.renderer, old = r.getRenderTarget();
     r.setRenderTarget(rt); r.setClearColor(0x000000, 0); r.clear(); r.render(sc, cam);
     var px = new Uint8Array(S * S * 4); r.readRenderTargetPixels(rt, 0, 0, S, S, px);

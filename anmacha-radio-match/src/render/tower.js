@@ -53,7 +53,10 @@
     this.key = key;
     while (this.group.children.length) { var o = this.group.children.pop(); o.geometry && o.geometry.dispose(); }
     var parts = [], W = RRM.WORLDS, n = RRM.TOWER.length;
-    parts.push({ g: box(WIDTH + 1.4, 0.3, DEPTH + 1.4), c: 0x3b4252, m: M(0, -0.15, 0) });
+    // Sockel: Steinplatz auf einer Wiese (passt zur Landschaft im Menü)
+    var R = Math.max(WIDTH, DEPTH) * 0.95;
+    parts.push({ g: cyl(R + 0.9, R + 1.1, 0.3, 28), c: 0x3f8f22, c2: 0x5aae36, m: M(0, -0.25, 0) });
+    parts.push({ g: box(WIDTH + 1.4, 0.3, DEPTH + 1.4), c: 0xcdb48a, c2: 0xe8d7b0, m: M(0, -0.15, 0) });
     for (var f = 0; f < n; f++) {
       var y = f * FLOOR_H, has = owned.indexOf(f) >= 0, acc = W[f].accent, base = has ? acc : 0x6b7280;
       // Boden + Rückwand + Seitenwände

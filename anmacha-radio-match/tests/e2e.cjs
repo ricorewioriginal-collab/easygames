@@ -1,7 +1,7 @@
 /* Royal Radio Match 3D – Browser-Ende-zu-Ende-Test (Playwright, Chromium mit Software-WebGL).
  * Aufruf aus dem Repo-Stamm:  node anmacha-radio-match/tests/e2e.cjs [--shots <ordner>]
  * Prüft je Viewport (360×800, 412×915, Desktop 1366×768): Start ohne Fehler, Migration v1 -> v2, Menü, Karte, Vorschau,
- * Level spielen (Wischen) bis Sieg, Ergebnis + Freischaltung, Booster mit Bestätigung, Pause per Zurück-Taste,
+ * Level spielen (Wischen) bis Sieg, Ergebnis + Freischaltung, Booster wie bei Royal Match (wählen, Feld antippen), Pause per Zurück-Taste,
  * Funkhaus, Shop, Optionen, Hilfe, Duell gegen KI, Bonuslevel-Liste. */
 'use strict';
 const http = require('http'), fs = require('fs'), path = require('path');
@@ -87,16 +87,17 @@ async function run(browser, vp, name) {
   await p.waitForTimeout(600);
   ok(await p.evaluate(() => !RRMApp.game()), 'Level verlassen');
 
-  // Level 7 (Booster freigeschaltet): Hammer mit Bestätigung, Zurück-Taste = Pause
+  // Level 7 (Booster freigeschaltet): Hammer wählen, Feld antippen = sofort einsetzen, Zurück-Taste = Pause
   await p.evaluate(() => RRMApp.startLevel(7));
   for (let k = 0; k < 8; k++) { const top = await p.evaluate(() => { const l = RRMApp.layers(); return l[l.length - 1]; }); if (top === 'game') break; await p.click('.modal [data-a=skip]').catch(() => {}); await p.waitForTimeout(300); }
   const inv0 = await p.evaluate(() => RRMApp.state().inv.hammer);
   await p.click('.boost[data-id=hammer]');
-  ok(!!(await p.$('#banner')), 'Zell-Booster: Hinweis „Feld antippen“');
+  ok(!!(await p.$('#banner')) && !!(await p.$('.boost[data-id=hammer].on')), 'Zell-Booster: ausgewählt, Hinweis „Feld antippen“');
+  await p.click('.boost[data-id=hammer]');
+  ok(!(await p.$('#banner')), 'Zell-Booster: erneutes Antippen bricht ab');
+  await p.click('.boost[data-id=hammer]');
   const c = await p.evaluate(() => { const g = RRMApp.game(); for (let i = 0; i < g.eng.cells.length; i++) { const x = g.eng.cells[i]; if (x && x.p && !x.b && !x.c && !x.p.item) return RRMApp.board.screen(i, 0.35); } });
   await p.mouse.click(c.x, c.y);
-  ok(!!(await p.$('#banner [data-a=ok]')), 'Zell-Booster: Bestätigung nötig');
-  await p.click('#banner [data-a=ok]');
   await p.waitForTimeout(1200);
   ok((await p.evaluate(() => RRMApp.state().inv.hammer)) === inv0 - 1, 'Hammer eingesetzt und abgezogen');
   await p.goBack();

@@ -44,94 +44,90 @@
   var light = function (hex, f) { var c = new T.Color(hex); c.lerp(new T.Color(0xffffff), f); return c.getHex(); };
 
   // ---------- Steine (stehen auf y=0, Vorderseite +Z) ----------
+  // Kräftige, gut lesbare Formen wie Spielsymbole: das Brett dreht sie zur Kamera und bringt sie auf gleiche Größe.
   var PIECE_BUILD = [
     function mic() {
-      var G = 0xffc531, D = 0xb07a12;
-      var p = [
-        { g: cyl(0.08, 0.11, 0.42, 12), c: 0x2a2a33, c2: 0x4a4a55, m: M(0, 0.21, 0) },
-        { g: cyl(0.14, 0.12, 0.08, 14), c: D, m: M(0, 0.44, 0) },
-        { g: sph(0.25, 16, 12), c: G, c2: light(G, 0.35), m: M(0, 0.66, 0) },
-        { g: tor(0.25, 0.025, 6, 22), c: D, m: M(0, 0.66, 0, Math.PI / 2) },
-        { g: tor(0.21, 0.02, 6, 20), c: D, m: M(0, 0.78, 0, Math.PI / 2) },
-        { g: tor(0.21, 0.02, 6, 20), c: D, m: M(0, 0.54, 0, Math.PI / 2) },
-        { g: tor(0.25, 0.02, 6, 22), c: D, m: M(0, 0.66, 0, 0, 0, 0) },
-        { g: box(0.1, 0.05, 0.03), c: 0xff4a4a, m: M(0, 0.3, 0.1) }
-      ];
-      return merge(p);
+      var G = 0xffc531, D = 0xb77a0c;
+      return merge([
+        { g: cyl(0.1, 0.13, 0.36, 14), c: 0x2b2d3a, c2: 0x50536a, m: M(0, 0.18, 0) },
+        { g: cyl(0.17, 0.14, 0.1, 18), c: D, c2: G, m: M(0, 0.4, 0) },
+        { g: sph(0.32, 20, 14), c: shade(G, 0.85), c2: light(G, 0.45), m: M(0, 0.7, 0) },
+        { g: tor(0.32, 0.035, 8, 26), c: D, m: M(0, 0.7, 0, Math.PI / 2) },
+        { g: sph(0.07, 10, 8), c: 0xffffff, m: M(-0.12, 0.84, 0.24) }
+      ]);
     },
     function headphones() {
-      var C = 0x22d6c8, D = 0x0f7f78;
+      var C = 0x22d6c8, D = 0x0d8a82;
       return merge([
-        { g: tor(0.3, 0.055, 8, 20, Math.PI), c: C, c2: light(C, 0.3), m: M(0, 0.42, 0) },
-        { g: tor(0.3, 0.03, 6, 20, Math.PI), c: 0x1d2b33, m: M(0, 0.42, -0.02) },
-        { g: cyl(0.15, 0.15, 0.14, 16), c: C, m: M(-0.3, 0.34, 0, 0, 0, Math.PI / 2) },
-        { g: cyl(0.15, 0.15, 0.14, 16), c: C, m: M(0.3, 0.34, 0, 0, 0, Math.PI / 2) },
-        { g: cyl(0.12, 0.12, 0.06, 16), c: 0x1d2b33, m: M(-0.21, 0.34, 0, 0, 0, Math.PI / 2) },
-        { g: cyl(0.12, 0.12, 0.06, 16), c: 0x1d2b33, m: M(0.21, 0.34, 0, 0, 0, Math.PI / 2) },
-        { g: cyl(0.07, 0.07, 0.15, 12), c: D, m: M(-0.3, 0.34, 0, 0, 0, Math.PI / 2, 1, 1.01) },
-        { g: cyl(0.07, 0.07, 0.15, 12), c: D, m: M(0.3, 0.34, 0, 0, 0, Math.PI / 2, 1, 1.01) }
+        { g: tor(0.33, 0.085, 10, 24, Math.PI), c: C, c2: light(C, 0.35), m: M(0, 0.4, 0) },
+        { g: tor(0.33, 0.05, 8, 24, Math.PI), c: 0x16323a, m: M(0, 0.4, -0.05) },
+        { g: cyl(0.2, 0.2, 0.2, 20), c: shade(C, 0.9), c2: light(C, 0.3), m: M(-0.33, 0.3, 0, 0, 0, Math.PI / 2) },
+        { g: cyl(0.2, 0.2, 0.2, 20), c: shade(C, 0.9), c2: light(C, 0.3), m: M(0.33, 0.3, 0, 0, 0, Math.PI / 2) },
+        { g: cyl(0.15, 0.15, 0.06, 18), c: 0x16323a, m: M(-0.2, 0.3, 0, 0, 0, Math.PI / 2) },
+        { g: cyl(0.15, 0.15, 0.06, 18), c: 0x16323a, m: M(0.2, 0.3, 0, 0, 0, Math.PI / 2) },
+        { g: cyl(0.1, 0.1, 0.21, 14), c: D, m: M(-0.34, 0.3, 0, 0, 0, Math.PI / 2) },
+        { g: cyl(0.1, 0.1, 0.21, 14), c: D, m: M(0.34, 0.3, 0, 0, 0, Math.PI / 2) }
       ]);
     },
     function vinyl() {
-      var V = 0x7d3cf0;
+      var V = 0x8a46f5;
       return merge([
-        { g: cyl(0.38, 0.38, 0.07, 26), c: V, c2: light(V, 0.25), m: M(0, 0.42, 0, Math.PI / 2) },
-        { g: tor(0.3, 0.012, 4, 26), c: 0x3e1a8a, m: M(0, 0.42, 0.037) },
-        { g: tor(0.24, 0.012, 4, 26), c: 0x3e1a8a, m: M(0, 0.42, 0.037) },
-        { g: tor(0.33, 0.012, 4, 26), c: 0xc9a8ff, m: M(0, 0.42, 0.037) },
-        { g: cyl(0.14, 0.14, 0.08, 20), c: 0xf2e6ff, m: M(0, 0.42, 0, Math.PI / 2) },
-        { g: cyl(0.035, 0.035, 0.09, 8), c: 0x15101f, m: M(0, 0.42, 0, Math.PI / 2) },
-        { g: box(0.3, 0.05, 0.2), c: 0x3e1a8a, m: M(0, 0.03, 0) }
+        { g: cyl(0.42, 0.42, 0.12, 30), c: shade(V, 0.75), c2: light(V, 0.3), m: M(0, 0.42, 0, Math.PI / 2) },
+        { g: tor(0.34, 0.016, 4, 30), c: 0x3a1680, m: M(0, 0.42, 0.06) },
+        { g: tor(0.27, 0.016, 4, 30), c: 0x3a1680, m: M(0, 0.42, 0.06) },
+        { g: tor(0.39, 0.02, 4, 30), c: 0xd9bdff, m: M(0, 0.42, 0.06) },
+        { g: cyl(0.16, 0.16, 0.14, 22), c: 0xffd84a, c2: 0xfff2b0, m: M(0, 0.42, 0, Math.PI / 2) },
+        { g: cyl(0.04, 0.04, 0.15, 8), c: 0x15101f, m: M(0, 0.42, 0, Math.PI / 2) },
+        { g: sph(0.06, 8, 6), c: 0xffffff, m: M(-0.2, 0.62, 0.06, 0, 0, 0, 1, 1, 0.4) }
       ]);
     },
     function tower() {
-      var B = 0x3f86ff, L = 0xa8ccff, p = [], legs = 3, i;
-      for (i = 0; i < legs; i++) {
-        var a = i / legs * Math.PI * 2, x = Math.cos(a) * 0.2, z = Math.sin(a) * 0.2;
-        var tilt = Math.atan2(0.2, 0.74);
-        p.push({ g: cyl(0.025, 0.035, 0.78, 6), c: B, c2: L, m: M(x / 2, 0.38, z / 2, Math.sin(a) * -tilt, 0, Math.cos(a) * tilt) });
-      }
-      [0.18, 0.38, 0.56].forEach(function (y, j) { p.push({ g: tor(0.17 - j * 0.05, 0.02, 4, 12), c: L, m: M(0, y, 0, Math.PI / 2) }); });
-      p.push({ g: sph(0.09), c: 0xe6f3ff, m: M(0, 0.8, 0) });
-      p.push({ g: tor(0.18, 0.018, 4, 16, Math.PI), c: 0x7fb4ff, m: M(0, 0.8, 0) });
-      p.push({ g: tor(0.28, 0.016, 4, 16, Math.PI), c: 0x5d9cff, m: M(0, 0.8, 0) });
-      p.push({ g: cyl(0.26, 0.3, 0.06, 14), c: shade(B, 0.6), m: M(0, 0.03, 0) });
+      var B = 0x3f86ff, L = 0xbcd8ff, p = [
+        { g: cone(0.46, 0.8, 4), c: shade(B, 0.8), c2: light(B, 0.25), m: M(0, 0.44, 0, 0, Math.PI / 4) },
+        { g: box(0.66, 0.1, 0.4), c: shade(B, 0.6), m: M(0, 0.05, 0) },
+        { g: sph(0.12, 14, 10), c: 0xfff3a0, c2: 0xffffff, m: M(0, 0.82, 0) }
+      ];
+      [0.24, 0.42].forEach(function (y, j) { p.push({ g: box(0.5 - j * 0.18, 0.06, 0.36 - j * 0.12), c: 0xffffff, m: M(0, y, 0.04) }); });
+      [0.24].forEach(function (r) {
+        p.push({ g: tor(r, 0.05, 6, 14, Math.PI * 0.5), c: 0xffffff, c2: L, m: M(0, 0.82, 0.04, 0, 0, Math.PI / 4 * -1) });
+        p.push({ g: tor(r, 0.05, 6, 14, Math.PI * 0.5), c: 0xffffff, c2: L, m: M(0, 0.82, 0.04, 0, 0, Math.PI * 0.75) });
+      });
       return merge(p);
     },
     function equalizer() {
-      var G = 0x41d65a, p = [{ g: box(0.66, 0.08, 0.26), c: 0x1d5e2a, m: M(0, 0.04, 0) }];
-      [0.36, 0.62, 0.48, 0.74].forEach(function (h, i) {
-        var x = -0.24 + i * 0.16;
-        p.push({ g: box(0.12, h, 0.14), c: shade(G, 0.75), c2: light(G, 0.2), m: M(x, 0.08 + h / 2, 0) });
-        p.push({ g: box(0.13, 0.05, 0.15), c: 0xd7ffd0, m: M(x, 0.1 + h, 0) });
+      var G = 0x41d65a, p = [{ g: box(0.78, 0.12, 0.3), c: 0x1b5a28, c2: 0x2c7a3a, m: M(0, 0.06, 0) }];
+      [0.42, 0.7, 0.54, 0.82].forEach(function (h, i) {
+        var x = -0.27 + i * 0.18;
+        p.push({ g: box(0.15, h, 0.2), c: shade(G, 0.7), c2: light(G, 0.3), m: M(x, 0.12 + h / 2, 0) });
+        p.push({ g: box(0.16, 0.06, 0.21), c: 0xeaffdf, m: M(x, 0.14 + h, 0) });
       });
       return merge(p);
     },
     function radio() {
       var R = 0xff4a4a;
       return merge([
-        { g: box(0.66, 0.44, 0.24), c: shade(R, 0.8), c2: light(R, 0.15), m: M(0, 0.3, 0) },
-        { g: cyl(0.14, 0.14, 0.04, 18), c: 0x5a1414, m: M(-0.15, 0.3, 0.12, Math.PI / 2) },
-        { g: tor(0.14, 0.02, 6, 18), c: 0xffd9d0, m: M(-0.15, 0.3, 0.14) },
-        { g: box(0.2, 0.08, 0.03), c: 0xfff1c9, m: M(0.16, 0.38, 0.125) },
-        { g: cyl(0.05, 0.05, 0.05, 12), c: 0xffe0a0, m: M(0.12, 0.22, 0.13, Math.PI / 2) },
-        { g: cyl(0.05, 0.05, 0.05, 12), c: 0xffe0a0, m: M(0.22, 0.22, 0.13, Math.PI / 2) },
-        { g: cyl(0.012, 0.012, 0.42, 6), c: 0xdddddd, m: M(0.22, 0.68, -0.05, 0, 0, -0.45) },
-        { g: sph(0.03, 8, 6), c: 0xffffff, m: M(0.31, 0.87, -0.05) },
-        { g: tor(0.16, 0.025, 6, 14, Math.PI), c: shade(R, 0.55), m: M(-0.08, 0.52, 0) }
+        { g: box(0.78, 0.54, 0.3), c: shade(R, 0.75), c2: light(R, 0.2), m: M(0, 0.3, 0) },
+        { g: cyl(0.17, 0.17, 0.06, 22), c: 0x4a1010, m: M(-0.17, 0.28, 0.14, Math.PI / 2) },
+        { g: tor(0.17, 0.03, 6, 22), c: 0xffe0d6, m: M(-0.17, 0.28, 0.17) },
+        { g: box(0.24, 0.11, 0.04), c: 0xfff1c9, m: M(0.19, 0.38, 0.15) },
+        { g: cyl(0.055, 0.055, 0.06, 12), c: 0xffd36b, m: M(0.13, 0.19, 0.16, Math.PI / 2) },
+        { g: cyl(0.055, 0.055, 0.06, 12), c: 0xffd36b, m: M(0.26, 0.19, 0.16, Math.PI / 2) },
+        { g: tor(0.2, 0.04, 6, 16, Math.PI), c: shade(R, 0.5), m: M(0, 0.57, 0) },
+        { g: cyl(0.02, 0.02, 0.4, 6), c: 0xeeeeee, m: M(0.28, 0.75, -0.06, 0, 0, -0.5) },
+        { g: sph(0.05, 8, 6), c: 0xffffff, m: M(0.38, 0.93, -0.06) }
       ]);
     },
     function fader() {
       var O = 0xff9326;
       return merge([
-        { g: box(0.34, 0.7, 0.12), c: 0x3b2a1c, c2: 0x5a4330, m: M(0, 0.37, 0) },
-        { g: box(0.05, 0.56, 0.02), c: 0x0d0907, m: M(0, 0.37, 0.065) },
-        { g: box(0.3, 0.13, 0.12), c: O, c2: light(O, 0.35), m: M(0, 0.48, 0.09) },
-        { g: box(0.3, 0.02, 0.125), c: 0xffffff, m: M(0, 0.48, 0.095) },
-        { g: box(0.08, 0.02, 0.02), c: 0xffb35c, m: M(-0.12, 0.2, 0.065) },
-        { g: box(0.08, 0.02, 0.02), c: 0xffb35c, m: M(-0.12, 0.3, 0.065) },
-        { g: box(0.08, 0.02, 0.02), c: 0xffb35c, m: M(-0.12, 0.62, 0.065) },
-        { g: box(0.44, 0.06, 0.22), c: shade(O, 0.5), m: M(0, 0.03, 0) }
+        { g: box(0.5, 0.82, 0.16), c: 0x4a3322, c2: 0x6e5038, m: M(0, 0.41, 0) },
+        { g: box(0.07, 0.66, 0.03), c: 0x120c08, m: M(0, 0.41, 0.085) },
+        { g: box(0.44, 0.18, 0.18), c: shade(O, 0.85), c2: light(O, 0.4), m: M(0, 0.54, 0.1) },
+        { g: box(0.44, 0.03, 0.19), c: 0xffffff, m: M(0, 0.54, 0.105) },
+        { g: box(0.1, 0.03, 0.03), c: 0xffc27a, m: M(-0.17, 0.2, 0.085) },
+        { g: box(0.1, 0.03, 0.03), c: 0xffc27a, m: M(-0.17, 0.32, 0.085) },
+        { g: box(0.1, 0.03, 0.03), c: 0xffc27a, m: M(0.17, 0.2, 0.085) },
+        { g: box(0.1, 0.03, 0.03), c: 0xffc27a, m: M(0.17, 0.32, 0.085) }
       ]);
     }
   ];
@@ -352,6 +348,72 @@
     return GEO;
   }
 
+  // ---------- Booster-Symbole (nur als Bild in der Leiste) ----------
+  var BOOST_BUILD = {
+    hammer: function () {
+      return merge([
+        { g: cyl(0.06, 0.07, 0.8, 10), c: 0x8a4a1c, c2: 0xc77a3a, m: M(0.05, 0.4, 0, 0, 0, -0.5) },
+        { g: box(0.62, 0.3, 0.3), c: 0xe0a21a, c2: 0xffe27a, m: M(-0.12, 0.78, 0, 0, 0, -0.5) },
+        { g: box(0.08, 0.34, 0.34), c: 0xd8282e, m: M(-0.38, 0.92, 0, 0, 0, -0.5) },
+        { g: box(0.08, 0.34, 0.34), c: 0xd8282e, m: M(0.15, 0.64, 0, 0, 0, -0.5) },
+        { g: sph(0.08, 10, 8), c: 0xffd84a, m: M(0.26, 0.04, 0) }
+      ]);
+    },
+    laser: function () {
+      return merge([
+        { g: cyl(0.07, 0.07, 0.9, 10), c: 0x9a5a22, c2: 0xd28a44, m: M(0, 0.45, 0, 0, 0, Math.PI / 2) },
+        { g: cone(0.24, 0.4, 4), c: 0xffc531, c2: 0xfff1a0, m: M(0.6, 0.45, 0, 0, 0, -Math.PI / 2) },
+        { g: box(0.34, 0.28, 0.05), c: 0xd8282e, m: M(-0.36, 0.6, 0, 0, 0, 0.55) },
+        { g: box(0.34, 0.28, 0.05), c: 0xd8282e, m: M(-0.36, 0.3, 0, 0, 0, -0.55) },
+        { g: box(0.3, 0.06, 0.06), c: 0xffd84a, m: M(-0.36, 0.45, 0) }
+      ]);
+    },
+    blitz: function () {
+      return merge([
+        { g: cyl(0.17, 0.22, 0.78, 16), c: 0x2b2f3d, c2: 0x5a6078, m: M(0.04, 0.5, 0, 0, 0, 0.9) },
+        { g: tor(0.19, 0.04, 6, 16), c: 0xffc531, m: M(0.32, 0.7, 0, 0, Math.PI / 2, 0.9) },
+        { g: tor(0.22, 0.04, 6, 16), c: 0xffc531, m: M(-0.12, 0.38, 0, 0, Math.PI / 2, 0.9) },
+        { g: cyl(0.24, 0.24, 0.07, 16), c: 0x8a4a1c, c2: 0xc77a3a, m: M(-0.05, 0.24, 0.2, Math.PI / 2) },
+        { g: cyl(0.24, 0.24, 0.07, 16), c: 0x8a4a1c, c2: 0xc77a3a, m: M(-0.05, 0.24, -0.2, Math.PI / 2) },
+        { g: sph(0.07, 8, 6), c: 0xffd84a, m: M(-0.05, 0.24, 0.25) }
+      ]);
+    },
+    bass: function () {
+      return merge([
+        { g: cyl(0.38, 0.3, 0.42, 22), c: 0xb3141f, c2: 0xff4a4a, m: M(0, 0.32, 0) },
+        { g: cyl(0.4, 0.4, 0.05, 22), c: 0xfff6e0, m: M(0, 0.55, 0) },
+        { g: tor(0.4, 0.035, 6, 24), c: 0xffc531, m: M(0, 0.55, 0, Math.PI / 2) },
+        { g: tor(0.31, 0.03, 6, 24), c: 0xffc531, m: M(0, 0.12, 0, Math.PI / 2) },
+        { g: cyl(0.03, 0.03, 0.6, 8), c: 0xc77a3a, m: M(-0.18, 0.8, 0.05, 0, 0, 0.7) },
+        { g: sph(0.07, 10, 8), c: 0xfff6e0, m: M(-0.39, 1.03, 0.05) },
+        { g: cyl(0.03, 0.03, 0.6, 8), c: 0xc77a3a, m: M(0.18, 0.8, 0.05, 0, 0, -0.7) },
+        { g: sph(0.07, 10, 8), c: 0xfff6e0, m: M(0.39, 1.03, 0.05) }
+      ]);
+    },
+    shuffle: function () {
+      var p = [{ g: cyl(0.36, 0.4, 0.16, 20), c: 0xffc531, c2: 0xffe27a, m: M(0, 0.08, 0) }];
+      [[-0.32, 0x7b2fd6, 0.55], [0, 0xd8282e, 0], [0.32, 0x2a6be0, -0.55]].forEach(function (h) {
+        p.push({ g: cone(0.17, 0.66, 12), c: shade(h[1], 0.75), c2: light(h[1], 0.25), m: M(h[0] * 0.75, 0.46, 0, 0, 0, h[2]) });
+        p.push({ g: sph(0.08, 10, 8), c: 0xffd84a, m: M(h[0] * 0.75 - Math.sin(h[2]) * 0.34, 0.16 + Math.cos(h[2]) * 0.62, 0) });
+      });
+      return merge(p);
+    },
+    preRocket: function () {
+      return merge([
+        { g: cyl(0.16, 0.16, 0.6, 16), c: 0xd8282e, c2: 0xff6a5a, m: M(0, 0.5, 0, 0, 0, -0.7) },
+        { g: cone(0.16, 0.28, 16), c: 0xffffff, m: M(0.31, 0.77, 0, 0, 0, -0.7) },
+        { g: box(0.36, 0.14, 0.04), c: 0x2a6be0, m: M(-0.24, 0.3, 0, 0, 0, -0.7) },
+        { g: box(0.04, 0.14, 0.36), c: 0x2a6be0, m: M(-0.24, 0.3, 0, 0, 0, -0.7) },
+        { g: cone(0.12, 0.26, 10), c: 0xffc531, m: M(-0.36, 0.13, 0, 0, 0, Math.PI - 0.7) }
+      ]);
+    }
+  };
+  function boostIcon(id) {
+    if (id === 'preBomb') return bomb(-1);
+    if (id === 'preOrb') return orb();
+    return BOOST_BUILD[id] ? get('b' + id, BOOST_BUILD[id]) : null;
+  }
+
   // Sprite mit Text (Zahlen auf Schaltern, Störsender-HP)
   var spriteCache = {};
   function label(text, color) {
@@ -370,6 +432,6 @@
     M: M, merge: merge, PIECE_HEX: PIECE_HEX, shared: shared, label: label,
     piece: piece, bomb: bomb, drone: drone, orb: orb, remix: remix, cassette: cassette, parcel: parcel,
     crate: crate, moss: moss, barrier: barrier, dusty: dusty, amp: amp, antenna: antenna, jammer: jammer, generator: generator,
-    shield: shield, rolling: rolling, switchBox: switchBox, cable: cable
+    shield: shield, rolling: rolling, switchBox: switchBox, cable: cable, boostIcon: boostIcon
   };
 })(typeof window !== 'undefined' ? window : globalThis);
