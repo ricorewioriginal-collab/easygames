@@ -101,6 +101,18 @@ const host = mk((q, r) => { r.writeHead(200, { 'content-type': 'text/html' }); i
   assert.ok(a6 && a6.uid === 'fbuid-2' && a6.token === 'idtok2', 'Firebase-Anmeldung aus account_fbrt'); assert.strictEqual(rtCalls, 1);
   assert.strictEqual(await p6.evaluate(() => localStorage.getItem('anmacha-cloud-rt')), 'rt-frisch');
   console.log('PASS Ohne Dienstkonto-Schlüssel: Firebase-Anmeldung kommt vom Konto (account_fbrt), keine zweite Anmeldung');
+  // Langes Konto-Menü auf kleinem Bildschirm: lässt sich scrollen, der letzte Punkt (Abmelden) ist erreichbar und bleibt im Bild
+  const c8 = await b.newContext({ viewport: { width: 390, height: 420 }, hasTouch: true });
+  await c8.route(/^https?:\/\/(?!127)/, r => r.abort());
+  const p8 = await c8.newPage();
+  await p8.addInitScript(() => { localStorage.setItem('anmacha-rating-token', 'x.y'); localStorage.setItem('anmacha-rating-user', JSON.stringify({ name: 'Rico', picture: '' })); });
+  await p8.goto(gbase + 'index.html'); await p8.waitForSelector('#acct .eg-acc-b'); await p8.click('#acct .eg-acc-b');
+  const m8 = p8.locator('#acct .eg-acc-m:not([hidden])'); await m8.waitFor();
+  const dim = await m8.evaluate(e => ({ sh: e.scrollHeight, ch: e.clientHeight, bottom: e.getBoundingClientRect().bottom, ov: getComputedStyle(e).overflowY }));
+  assert.ok(dim.sh > dim.ch && dim.ov === 'auto' && dim.bottom <= 420, 'Menü scrollbar und im Bild: ' + JSON.stringify(dim));
+  await m8.evaluate(e => { e.scrollTop = e.scrollHeight; });
+  const last = m8.locator('.eg-acc-i').last(); assert.match(await last.textContent(), /Abmelden/); const lb = await last.evaluate(e => { const r = e.getBoundingClientRect(); return { top: r.top, bottom: r.bottom }; });
+  assert.ok(lb.top >= 0 && lb.bottom <= 420, 'Abmelden sichtbar: ' + JSON.stringify(lb)); console.log('PASS Konto-Menü: lang → scrollbar, letzter Punkt erreichbar, bleibt im Bild');
   // App (Android/Windows): Google sperrt die Anmeldung im App-Fenster → Kopplungs-Link im Konto-Menü
   const c3 = await b.newContext({ userAgent: 'Mozilla/5.0 EasyGamesApp/1.0', viewport: { width: 390, height: 800 } });
   await c3.route(/^https?:\/\/(?!127)/, r => r.request().url().includes('firestore.googleapis.com') ? r.fulfill({ status: 404, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '{}' }) : r.abort());

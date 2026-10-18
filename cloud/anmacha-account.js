@@ -101,7 +101,7 @@
     '.eg-acc-b.out{padding:4px 14px 4px 10px}.eg-acc-b .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
     '.eg-acc-av{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;background:linear-gradient(135deg,#b57cff,#22d3ee);color:#fff;font-weight:700;overflow:hidden}' +
     '.eg-acc-av img{width:100%;height:100%;object-fit:cover;display:block}' +
-    '.eg-acc-m{position:absolute;right:0;top:calc(100% + 8px);z-index:2147482000;width:min(300px,calc(100vw - 24px));padding:8px;border-radius:16px;background:#141a2b;color:#f4f6ff;border:1px solid rgba(255,255,255,.12);box-shadow:0 18px 50px rgba(0,0,0,.5)}' +
+    '.eg-acc-m{position:absolute;right:0;top:calc(100% + 8px);z-index:2147482000;width:min(300px,calc(100vw - 24px));max-height:calc(100vh - 90px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:8px;border-radius:16px;background:#141a2b;color:#f4f6ff;border:1px solid rgba(255,255,255,.12);box-shadow:0 18px 50px rgba(0,0,0,.5)}' +
     '.eg-acc-m[hidden]{display:none}.eg-acc-h{display:flex;align-items:center;gap:10px;padding:8px 8px 12px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:6px}' +
     '.eg-acc-h .av{width:42px;height:42px}.eg-acc-h b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.eg-acc-h small{color:#9aa5bd}' +
     '.eg-acc-i{display:flex;align-items:center;gap:10px;width:100%;padding:10px 10px;border:0;border-radius:10px;background:none;color:inherit;font:inherit;text-align:left;text-decoration:none;cursor:pointer}' +
@@ -117,6 +117,19 @@
   }
   function initial(u) { return u && u.name ? u.name.trim().charAt(0).toUpperCase() : '👤'; }
   function first(u) { return u.name.trim().split(/\s+/)[0]; }
+  // Menü an den Knopf heften, aber höchstens bis zum unteren Bildschirmrand hoch: ist die Liste länger, lässt sie sich scrollen (Touch und Mausrad)
+  function place(btn, menu) {
+    if (!menu || menu.hidden || !btn) return;
+    var r = btn.getBoundingClientRect(), vh = root.innerHeight || 600, vw = root.innerWidth || 360, below = vh - r.bottom - 16, above = r.top - 16;
+    menu.style.position = 'fixed'; menu.style.left = 'auto'; menu.style.right = Math.max(8, vw - r.right) + 'px';
+    if (below < 240 && above > below) {   // Knopf unten im Bild (z. B. Fußzeile): Menü nach oben öffnen
+      menu.style.top = 'auto'; menu.style.bottom = Math.max(8, vh - r.top + 8) + 'px'; menu.style.maxHeight = Math.max(160, above) + 'px';
+    } else {
+      menu.style.bottom = 'auto'; menu.style.top = Math.max(8, r.bottom + 8) + 'px'; menu.style.maxHeight = Math.max(160, below) + 'px';
+    }
+  }
+  function placeAll() { mounts.forEach(function (m) { if (m.open && m.menu) place(m.el.querySelector('.eg-acc-b'), m.menu); }); }
+  root.addEventListener('resize', placeAll); root.addEventListener('scroll', placeAll, { passive: true });
   function draw(m) {
     var u = user(), host = m.el, c = cloud(), pair = !u && APP && c && c.pairInfo ? c.pairInfo() : null, open = (m.open && !!u) || !!pair;
     host.textContent = '';
@@ -150,6 +163,7 @@
     }
     if (lastErr && !u) menu.appendChild(el('div', 'eg-acc-err', lastErr));
     host.appendChild(menu);
+    if (open) place(b, menu);
     if (lastErr && !u) { var er = el('div', 'eg-acc-err', lastErr); er.style.cssText = 'position:absolute;right:0;top:calc(100% + 6px);width:240px;background:#141a2b;border-radius:10px;z-index:2147482000'; host.appendChild(er); }
   }
   // Einheitliche Punkte (überall gleich): Konto, Profil, Erfolge, Ranglisten, Heute, Chat, Sichern, Fehler melden. base = Adresse von easygames (leer = diese Seite).
