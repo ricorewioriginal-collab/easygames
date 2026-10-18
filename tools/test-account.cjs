@@ -54,7 +54,7 @@ const host = mk((q, r) => { r.writeHead(200, { 'content-type': 'text/html' }); i
   // Angemeldet (Konto-Token, z. B. Login im Kopf oder bei den Bewertungen) → ein gestartetes Spiel ist automatisch angemeldet
   const c4 = await b.newContext();
   await c4.route(/^https?:\/\/(?!127)/, r => r.abort());
-  const p4 = await c4.newPage(); p4.on('pageerror', e => errors.push(e.message));
+  const p4 = await c4.newPage();   // Spielseite lädt ohne Netz nicht alles (z. B. three.js): Seitenfehler hier egal
   await p4.addInitScript(() => { localStorage.setItem('anmacha-rating-token', 'x.y'); localStorage.setItem('anmacha-rating-user', JSON.stringify({ name: 'Rico', picture: '' })); });
   await p4.goto(gbase + 'anmacha-snake/index.html'); await p4.waitForFunction(() => window.AnMaChaCloud && AnMaChaCloud.user() && AnMaChaCloud.user().displayName === 'Rico', null, { timeout: 8000 });
   console.log('PASS Spiel: mit Konto-Token automatisch angemeldet (ohne extra Cloud-Schalter)');
