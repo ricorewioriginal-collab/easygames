@@ -14,6 +14,7 @@
  *      const gameId = 'anmacha-snake';
  *      EasyGames.embed('#mein-container', { game: gameId, ratio: '16/10' });
  *      EasyGames.library('#alle-spiele');
+ *      EasyGames.portal('#spiele');           // komplettes Spieleportal (Karussell, Sammlungen, Reihen, Favoriten, Suche) – immer aktuell
  *      EasyGames.fullscreen(iframeElement);   // Vollbild (öffnet als Fallback einen neuen Tab, z. B. iPhone)
  *
  * 4) Vollbild – ganze Seite oder Overlay (Spiel oder ganzer Katalog):
@@ -258,6 +259,15 @@
     });
     return t;
   };
+  // EasyGames.portal(ziel, { height, maxWidth, … }) – das komplette Spieleportal von easygames (Karussell, Sammlungen, Reihen, Favoriten, Suche) als eingebettete Seite;
+  // gleiche Aufmachung wie auf easygames, immer auf dem neuesten Stand. Standard: volle Breite, 80 % der Fensterhöhe (mindestens 560 px).
+  EG.portal = function (target, o) {
+    o = o || {};
+    var p = {}, k; for (k in o) p[k] = o[k];
+    p.layout = 'portal'; p.maxWidth = p.maxWidth || 'none'; p.height = p.height || 'max(560px, 80vh)'; p.radius = p.radius || '16px';
+    return EG.library(target, p);
+  };
+
   // EasyGames.library(ziel, { … }) – komplette Spielübersicht
   EG.library = function (target, o) {
     o = o || {};
@@ -339,7 +349,7 @@
       var n = nodes[i]; if (n.getAttribute('data-easygames-done')) continue;
       n.setAttribute('data-easygames-done', '1');
       var d = n.dataset, o = { width: d.width, maxWidth: d.maxWidth, ratio: d.ratio, height: d.height, radius: d.radius, title: d.title, fullscreen: d.fullscreen, tvLink: d.tvLink, mode: d.mode, close: d.close, layout: d.layout };
-      if (d.easygames === 'all') EG.library(n, o); else if (d.easygames === 'ranglisten') { o.game = d.game; EG.leaderboard(n, o); } else if (d.easygames === 'erfolge') EG.achievements(n, o); else if (d.easygames === 'konto') EG.account(n, o); else if (d.easygames === 'chat') { o.room = d.room; EG.chat(n, o); } else if (d.easygames === 'bug') { o.game = d.game; EG.bug(n, o); } else if (EXTRA[d.easygames]) EG.page(d.easygames, n, o); else { o.game = d.easygames; EG.embed(n, o); }
+      if (d.easygames === 'all') EG.library(n, o); else if (d.easygames === 'portal') EG.portal(n, o); else if (d.easygames === 'ranglisten') { o.game = d.game; EG.leaderboard(n, o); } else if (d.easygames === 'erfolge') EG.achievements(n, o); else if (d.easygames === 'konto') EG.account(n, o); else if (d.easygames === 'chat') { o.room = d.room; EG.chat(n, o); } else if (d.easygames === 'bug') { o.game = d.game; EG.bug(n, o); } else if (EXTRA[d.easygames]) EG.page(d.easygames, n, o); else { o.game = d.easygames; EG.embed(n, o); }
     }
   }
   EG.scan = scan;
