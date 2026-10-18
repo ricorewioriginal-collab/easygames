@@ -143,7 +143,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <div class="scr on" id="sMain">
     <h1 class="brand">ANMACHA</h1>
     <h2>Kartenrausch 3D</h2>
-    <div class="sub">Drei Kartenspiele an einem Tisch. Wähle ein Spiel:</div>
+    <div class="sub">Sechs Kartenspiele an einem Tisch. Wähle ein Spiel:</div>
     <div class="games" id="gameList"></div>
     <button class="btn alt" id="goJoinScr">🌐 Online beitreten<small>Code oder QR vom Gastgeber</small></button>
     <div class="by">by <b>ricorewi</b></div>
@@ -152,7 +152,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <div class="scr" id="sSetup">
     <h2 id="suTitle"></h2>
     <div class="sub" id="suDesc"></div>
-    <div class="seg mode" data-opt="mode"><button data-v="solo">🤖<br>Computer</button><button data-v="local">👥<br>Ein Gerät</button><button data-v="online">🌐<br>Online</button></div>
+    <div class="seg mode" data-opt="mode"><button data-v="solo">🤖<br>Computer</button><button data-v="local">👥<br>Ein Gerät</button><button data-v="online">🌐<br>Online</button><button data-v="tv">📺<br>TV + Handys</button></div>
     <div class="box" id="suOpts"></div>
     <div class="box" id="suSolo">
       <div class="seg" data-opt="opp"><span>Gegner</span><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button></div>
@@ -167,6 +167,10 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
       <div class="who"><input id="name" maxlength="12" placeholder="Dein Name" autocomplete="off"><button class="figb" data-fig="me"></button></div>
       <div class="sub">Du erstellst einen Raum. Mitspieler treten per <b>Code, Link oder QR</b> von überall bei (bis 4 Spieler).</div>
       <button class="btn" id="goHost">🏠 Raum erstellen</button>
+    </div>
+    <div class="box" id="suTv">
+      <div class="sub">📺 Dieses Gerät (TV, PC oder Tablet) zeigt den <b>Tisch für alle</b>. 2 bis 4 Spieler spielen 🌐 Online mit dem eigenen <b>Handy</b> und sehen dort nur ihre Karten. Beitreten per Code, Link oder QR.</div>
+      <button class="btn" id="goTv">📺 TV-Tisch öffnen</button>
     </div>
     <div class="err" id="suErr"></div>
     <button class="btn" id="suGo">Los geht's</button>
@@ -211,7 +215,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   </div>
 
   <div class="scr" id="sColor">
-    <h2>Welche Farbe?</h2>
+    <h2 id="colTitle">Welche Farbe?</h2>
     <div class="cols" id="colBtns"></div>
     <button class="btn alt" id="colCancel">Abbrechen</button>
   </div>

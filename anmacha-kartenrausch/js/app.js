@@ -1,9 +1,12 @@
 'use strict';
-/* AnMaCha Kartenrausch 3D – Anzeige (Three.js), Bedienung, Menüs, Anleitung und Online-Modus (PeerJS, erst bei Bedarf geladen) für alle drei Spiele.
+/* AnMaCha Kartenrausch 3D – Anzeige (Three.js), Bedienung, Menüs, Anleitung und Online-Modus (PeerJS, erst bei Bedarf geladen) für alle Spiele.
    Gerendert wird nur, wenn sich etwas bewegt (kein Dauer-Loop), Texturen werden einmal erzeugt und wiederverwendet. */
 const $ = id => document.getElementById(id);
 const KRG = KR.games, FIGS = KR.FIGS, PHX = KRG.phase;
 const COLS = ['#ff3b6b', '#ffd426', '#2fe0a0', '#38bdf8'], COLD = ['#be123c', '#e08a00', '#059669', '#2563eb'], CNAME = ['Rot', 'Gelb', 'Grün', 'Blau'];
+const SUIT = ['♣', '♠', '♥', '♦'], SNAME = ['Kreuz', 'Pik', 'Herz', 'Karo'], SCOL = ['#1e293b', '#1e293b', '#e11d48', '#e11d48'];
+const RNK = r => r <= 10 ? String(r) : ['B', 'D', 'K', 'A'][r - 11];
+const fName = x => SUIT[x >> 4] + RNK(x & 15);
 const LS = 'kartenrausch-';
 const store = { get: k => { try { return localStorage.getItem(LS + k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(LS + k, v); } catch (e) { } } };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -42,6 +45,33 @@ const INFO = {
 <p><b>Rundenende:</b> Hat jemand keine Karte mehr, endet die Runde. Wer seine Phase ausgelegt hat, kommt zur nächsten Phase. Restkarten zählen als Minuspunkte: 1–9 = 5, 10–12 = 10, Aussetzen = 15, Joker = 25.</p>`
   }
 };
+Object.assign(INFO, {
+  mau: {
+    name: 'Mau-Mau', icon: '🂡', desc: 'Der Klassiker mit 32 Karten: Farbe oder Wert bedienen, die 7 lässt ziehen, der Bube wünscht.',
+    opts: [],
+    rules: `<p><b>Ziel:</b> Werde als Erste:r alle Karten los. Jede:r startet mit 5 Karten (32er-Blatt: 7 bis Ass).</p>
+<p><b>Dein Zug:</b> Lege eine Karte gleicher <b>Farbe</b> (♣ ♠ ♥ ♦) oder gleichen <b>Werts</b> auf die Ablage. Passende Karten leuchten. Kannst du nicht, ziehst du eine Karte – passt sie, darfst du sie gleich legen oder behalten.</p>
+<p><b>Sonderkarten:</b></p><ol><li><b>7</b> – die nächste Person zieht 2 Karten. Sie kann mit einer eigenen 7 kontern, dann zieht die übernächste 4 usw.</li><li><b>8</b> – die nächste Person setzt aus.</li><li><b>Bube</b> passt auf alles (außer auf einen Buben) – du wünschst dir eine Farbe.</li></ol>
+<p>Bei der letzten Karte ruft deine Figur <b>„Mau!“</b>, mit der letzten Karte <b>„Mau-Mau!“</b>.</p>`
+  },
+  swim: {
+    name: 'Schwimmen', icon: '🏊', desc: 'Sammle 31 Punkte in einer Farbe: tauschen mit der Mitte, schieben oder klopfen – wer am wenigsten hat, verliert ein Leben.',
+    opts: [],
+    rules: `<p><b>Ziel:</b> Bleib als Letzte:r im Spiel. Jede:r hat <b>3 Leben</b> ❤️ – ist das letzte weg, „schwimmt“ man noch eine Runde, dann ist man raus.</p>
+<p><b>Karten:</b> Du hast 3 Karten, in der Mitte liegen 3 offen. Gezählt wird nur <b>eine Farbe</b>: Ass = 11, Bube/Dame/König = 10, sonst der Wert. Drei gleiche Werte (z. B. drei Damen) = 30,5. Bestwert: <b>31</b>.</p>
+<p><b>Dein Zug</b> – eins davon:</p><ol><li><b>Tauschen:</b> eine eigene Karte antippen, dann eine Karte in der Mitte.</li><li><b>Alle tauschen:</b> deine 3 gegen die 3 der Mitte.</li><li><b>Schieben:</b> nichts tun. Schieben alle nacheinander, kommen 3 neue Karten in die Mitte.</li><li><b>Klopfen:</b> Du bist zufrieden – alle anderen haben noch genau einen Zug.</li></ol>
+<p><b>Rundenende:</b> Nach dem Klopfen wird gezählt. Der niedrigste Wert verliert ein Leben. Hat jemand sofort <b>31</b>, endet die Runde und alle anderen verlieren ein Leben.</p>`
+  },
+  domino: {
+    name: 'Kartendomino', icon: '🁫', desc: 'Lege von den Siebenen aus lückenlose Reihen in jeder Farbe – wer zuerst alle Karten los ist, gewinnt.',
+    opts: [],
+    rules: `<p><b>Ziel:</b> Werde als Erste:r alle Karten los. Alle 52 Karten werden verteilt.</p>
+<p><b>Start:</b> Wer die <b>♥ 7</b> hat, beginnt und legt sie.</p>
+<p><b>Dein Zug:</b> Lege eine Karte an: eine neue <b>7</b> eröffnet die Reihe ihrer Farbe. An jede Reihe passt nur die Karte direkt darunter (6, 5 … 2) oder direkt darüber (8, 9 … Ass) in derselben Farbe. Passende Karten leuchten – einfach antippen.</p>
+<p><b>Kannst du nicht</b>, tippe auf <b>Passen</b>. Wer kann, muss legen.</p>
+<p><b>Tipp:</b> Halte Karten zurück, die anderen weiterhelfen würden, und spiele zuerst dort, wo du selbst noch Karten nachlegen kannst.</p>`
+  }
+});
 const S = {
   game: 'stapel', mode: '', G: null, V: null, sel: null, multi: [], hide: false, pend: false, lastSeq: 0, lastTurn: -1, snd: true, timer: 0,
   pl: [], opt: { mode: 'solo', opp: 2, loc: 2, stock: 30, len: 10 }, myFig: 0, locFig: [0, 1, 2, 3], locName: ['', '', '', ''],
@@ -67,7 +97,7 @@ const sfx = {
 };
 
 /* ---------- Kartenbilder ---------- */
-let T, renderer, scene, camera, ray, running = false, lastT = 0, thumbs = [], layoutGame = '', SH = null;
+let T, renderer, scene, camera, ray, running = false, lastT = 0, thumbs = [], layoutGame = '', layoutTv = false, SH = null;
 let slots = {};
 const texCache = {};
 function cv2(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
@@ -110,6 +140,17 @@ function facePhase(card) {
   if (v === 6 || v === 9) { x.fillStyle = '#fff'; x.fillRect(98, 268, 60, 9); }
   return c;
 }
+function faceFrench(card) {
+  const c = cv2(256, 358), x = c.getContext('2d'), su = card >> 4, r = card & 15, col = SCOL[su];
+  const g = x.createLinearGradient(0, 0, 256, 358); g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#dfe6f5'); x.fillStyle = g; x.fillRect(0, 0, 256, 358);
+  x.strokeStyle = su >= 2 ? 'rgba(225,29,72,.55)' : 'rgba(30,41,59,.45)'; x.lineWidth = 6; x.strokeRect(10, 10, 236, 338);
+  x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = col;
+  const corner = (X, Y, rot) => { x.save(); x.translate(X, Y); if (rot) x.rotate(Math.PI); x.font = '900 46px system-ui,sans-serif'; x.fillText(RNK(r), 0, 0); x.font = '900 40px system-ui,sans-serif'; x.fillText(SUIT[su], 0, 44); x.restore(); };
+  corner(42, 44); corner(214, 314, true);
+  if (r >= 11) { x.fillStyle = su >= 2 ? 'rgba(225,29,72,.12)' : 'rgba(30,41,59,.1)'; x.beginPath(); x.ellipse(128, 182, 70, 96, 0, 0, 7); x.fill(); x.fillStyle = col; x.font = '900 150px "Trebuchet MS",system-ui,sans-serif'; x.fillText(RNK(r), 128, 176); x.font = '900 54px system-ui,sans-serif'; x.fillText(SUIT[su], 128, 262); }
+  else { x.font = '900 150px system-ui,sans-serif'; x.fillText(SUIT[su], 128, 184); x.font = '900 60px system-ui,sans-serif'; x.fillStyle = '#fff'; x.fillText(RNK(r), 128, 190); }
+  return c;
+}
 function drawBack() {
   const c = cv2(256, 358), x = c.getContext('2d');
   const g = x.createLinearGradient(0, 0, 256, 358); g.addColorStop(0, '#101a33'); g.addColorStop(1, '#2a1250'); x.fillStyle = g; x.fillRect(0, 0, 256, 358);
@@ -126,7 +167,7 @@ function drawBack() {
 function tex(k) {
   if (!texCache[k]) {
     const t = k[0], n = parseInt(k.slice(1), 10);
-    const t2 = new T.CanvasTexture(t === 'B' ? drawBack() : t === 'S' ? faceStapel(n, k.endsWith('w')) : t === 'F' ? faceFarb(n) : facePhase(n));
+    const t2 = new T.CanvasTexture(t === 'B' ? drawBack() : t === 'S' ? faceStapel(n, k.endsWith('w')) : t === 'F' ? faceFarb(n) : t === 'K' ? faceFrench(n) : facePhase(n));
     t2.anisotropy = 4; texCache[k] = t2;
   }
   return texCache[k];
@@ -135,6 +176,13 @@ function txtTex(s, w, h, col, size) {
   const k = 'T' + s + '|' + w + col + size; if (texCache[k]) return texCache[k];
   const c = cv2(w, h), x = c.getContext('2d'); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = col || '#fff'; x.font = '800 ' + (size || h * .6) + 'px system-ui,sans-serif';
   x.fillText(s, w / 2, h / 2 + 2); const t = new T.CanvasTexture(c); texCache[k] = t; return t;
+}
+function miniF(x, X, Y, w, h, card) {
+  x.fillStyle = '#f8fafc'; x.beginPath(); if (x.roundRect) x.roundRect(X, Y, w, h, 5); else x.rect(X, Y, w, h); x.fill();
+  x.strokeStyle = 'rgba(30,41,59,.5)'; x.lineWidth = 1.5; x.stroke();
+  x.fillStyle = SCOL[card >> 4]; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.font = '900 ' + (h * .36 | 0) + 'px system-ui,sans-serif'; x.fillText(RNK(card & 15), X + w / 2, Y + h * .32);
+  x.font = '900 ' + (h * .34 | 0) + 'px system-ui,sans-serif'; x.fillText(SUIT[card >> 4], X + w / 2, Y + h * .72);
 }
 // Kleine Karte für Auslagen und Vorschauen (2D)
 function mini(x, X, Y, w, h, card) {
@@ -202,9 +250,13 @@ function clearLayout() {
   }
   slots = {};
 }
-const HAND = { stapel: { one: 3.2, per: 5, sp: 1.4 }, farb: { one: 2.25, z: [1.35, 3.05], per: 7, sp: 1.2 }, phase: { one: 2.25, z: [1.4, 3.05], per: 6, sp: 1.2 } };
+const HAND = {
+  stapel: { one: 3.2, per: 5, sp: 1.4 }, farb: { one: 2.25, z: [1.35, 3.05], z3: [.95, 2.1, 3.25], per: 7, sp: 1.2 }, phase: { one: 2.25, z: [1.4, 3.05], per: 6, sp: 1.2 },
+  mau: { one: 2.25, z: [1.35, 3.05], z3: [.95, 2.1, 3.25], per: 7, sp: 1.2 }, swim: { one: 2.6, per: 3, sp: 1.5 }, domino: { one: 2.25, z: [1.35, 3.05], z3: [.9, 2.05, 3.2], per: 8, sp: 1.2 }
+};
+const FACE = { stapel: 'S', farb: 'F', phase: 'P', mau: 'K', swim: 'K', domino: 'K' };
 function buildLayout(game) {
-  if (!scene) return; clearLayout(); layoutGame = game; figKey = '';
+  if (!scene) return; clearLayout(); layoutGame = game; layoutTv = S.mode === 'tv'; figKey = '';
   let labels;
   if (game === 'stapel') {
     labels = [['TÜRME: JE VON 1 BIS 12 BAUEN', 0, -2.55, .26, 'rgba(0,229,255,.8)'], ['ZIEHSTAPEL', 1.6, -3.3], ['ZIELSTAPEL', -2.8, 1.95, .2, 'rgba(255,212,38,.9)'], ['DEINE ABLAGEN · BEENDEN DEN ZUG', .7, 1.95, .2, 'rgba(255,45,149,.85)']];
@@ -219,32 +271,46 @@ function buildLayout(game) {
     mkSlot('pile', 1.15, -1.45).g.add(ring); slots.pile.ring = ring;
     const dir = mkPlate('dir', 0, -1.45, .9, .9, 128); drawPlate(dir, 'd', (x, w, h) => { x.fillStyle = 'rgba(255,255,255,.75)'; x.font = '900 100px system-ui,sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('↻', w / 2, h / 2 + 6); });
     dir.hit.visible = false;
-  } else {
+  } else if (game === 'phase') {
     labels = [['ZIEHEN', -2.05, -3.3], ['ABLAGE', 2.05, -3.3]];
     mkSlot('deck', -.75, -3.3, { tint: 0xff2d95 });
     mkSlot('pile', .75, -3.3);
+  } else if (game === 'mau') {
+    labels = [['ZIEHEN', -1.15, -.35], ['ABLAGE', 1.15, -.35]];
+    mkSlot('deck', -1.15, -1.45, { tint: 0xff2d95 });
+    mkSlot('pile', 1.15, -1.45);
+    mkPlate('wish', 0, -1.45, .9, .9, 128).hit.visible = false;
+  } else if (game === 'swim') {
+    labels = [['MITTE · ZUM TAUSCHEN', 0, -.45, .24, 'rgba(0,229,255,.8)'], ['DEINE KARTEN', 0, 3.65, .2, 'rgba(255,212,38,.85)']];
+    [-1.4, 0, 1.4].forEach((x, j) => mkSlot('c' + j, x, -1.6, { tint: 0x00e5ff }));
+    mkPlate('knock', 0, -3.25, 4, .5, 512).hit.visible = false;
+  } else {
+    labels = [];
+    SUIT.forEach((_, su) => mkPlate('r' + su, 0, -3.25 + su * .78, 7.1, .66, 1024));
   }
-  if (!SH.tables[game]) SH.tables[game] = tableTex(labels);
-  SH.table.material.map = SH.tables[game]; SH.table.material.needsUpdate = true;
+  const tk = game + (S.mode === 'tv' ? '-tv' : ''); // TV-Tisch: Beschriftung für den Spieler am Zug statt „Deine …“
+  if (!SH.tables[tk]) SH.tables[tk] = tableTex(S.mode === 'tv' ? labels.map(l => [l[0].replace('DEINE KARTEN', 'KARTEN AM ZUG').replace('DEINE ABLAGEN', 'ABLAGEN AM ZUG')].concat(l.slice(1))) : labels);
+  SH.table.material.map = SH.tables[tk]; SH.table.material.needsUpdate = true;
   for (let i = 0; i < 30; i++) { const s = mkSlot('h' + i, 0, 3.2, { nobed: true }); s.yo = i * .004; }
   resize();
 }
 function layHand(n, cfg) {
-  const out = [], rows = n <= cfg.per || !cfg.z ? 1 : 2, per = Math.ceil(n / rows);
+  const out = [], rows = n <= cfg.per || !cfg.z ? 1 : n <= cfg.per * 2 || !cfg.z3 ? 2 : 3, per = Math.ceil(n / rows), sc = rows === 3 ? .82 : 1;
+  const zs = rows === 1 ? [cfg.one] : rows === 2 ? cfg.z : cfg.z3;
   for (let i = 0; i < n; i++) {
-    const r = rows === 1 || i < per ? 0 : 1, k = r ? i - per : i, cnt = rows === 1 ? n : r ? n - per : per;
-    const sp = Math.min(cfg.sp, cnt > 1 ? 6.4 / (cnt - 1) : cfg.sp);
-    out.push({ x: (k - (cnt - 1) / 2) * sp, z: rows === 1 ? cfg.one : cfg.z[r], sp, last: k === cnt - 1 });
+    const r = Math.floor(i / per), k = i - r * per, cnt = Math.min(per, n - r * per);
+    const sp = Math.min(cfg.sp * sc, cnt > 1 ? (7.4 - sc) / (cnt - 1) : cfg.sp);
+    out.push({ x: (k - (cnt - 1) / 2) * sp, z: zs[r], sp, sc, last: k === cnt - 1 });
   }
   return out;
 }
 function showHand(cards, hidden) {
-  const pos = layHand(cards.length, HAND[layoutGame]), pre = layoutGame === 'stapel' ? 'S' : layoutGame === 'farb' ? 'F' : 'P';
+  const pos = layHand(cards.length, HAND[layoutGame]), pre = FACE[layoutGame];
   for (let i = 0; i < 30; i++) {
     const s = slots['h' + i], p = pos[i];
     if (!p) { setSlot(s, null); continue; }
-    s.tx = p.x; s.g.position.z = p.z;
-    const ov = p.sp < 1.02 && !p.last; s.hit.scale.x = ov ? p.sp / 1.3 : 1; s.hit.position.x = ov ? -.5 + p.sp / 2 : 0;
+    s.tx = p.x; s.g.position.z = p.z; s.g.scale.setScalar(p.sc);
+    const ov = p.sp < p.sc * 1.02 && !p.last; s.hit.scale.x = ov ? p.sp / (1.3 * p.sc) : 1; s.hit.position.x = ov ? -.5 + p.sp / (2 * p.sc) : 0;
     setSlot(s, hidden ? 'B' : pre + cards[i], 1);
   }
 }
@@ -353,6 +419,7 @@ const figImg = f => thumbs[f] ? '<img alt="" src="' + thumbs[f] + '">' : '<i>' +
 function showScr(id) { S.scr = id; document.querySelectorAll('.scr').forEach(e => e.classList.toggle('on', e.id === id)); $('ov').classList.remove('hidden'); $('ov').scrollTop = 0; }
 function hideOv() { S.scr = null; $('ov').classList.add('hidden'); }
 function toast(t) { const e = $('toast'); e.textContent = t; e.classList.remove('go'); void e.offsetWidth; e.classList.add('go'); }
+const shared = () => S.mode === 'local' || S.mode === 'tv';
 const mineNow = v => v.turn === v.me && v.winner < 0 && !S.hide && !v.wait;
 function chip(p, i, v, inner) {
   return '<div class="chip' + (v.turn === i && v.winner < 0 && !v.wait ? ' turn' : '') + '"><div class="nm">' + figImg(p.fig) + esc(p.name) + '</div>' + inner + '</div>';
@@ -430,7 +497,7 @@ const RStapel = {
     if (fx.t === 'play') { fly(from, slotPos('b' + fx.p), 'S' + fx.c); if (fx.clr) { slots['b' + fx.p].flash = 1; toast('Turm fertig! 🎉'); sfx.clr(); } else sfx.play(); }
     else { fly(from, mine ? slotPos('d' + fx.d) : figPos(fx.pl), 'S' + fx.c); sfx.disc(); }
   },
-  end(v) { return v.winner === v.me && S.mode !== 'local' ? 'Zielstapel leer – stark gespielt.' : 'Zielstapel zuerst geleert.'; }
+  end(v) { return v.winner === v.me && !shared() ? 'Zielstapel leer – stark gespielt.' : 'Zielstapel zuerst geleert.'; }
 };
 
 /* ===== Farbflash ===== */
@@ -463,7 +530,7 @@ const RFarb = {
     if (key[0] !== 'h') return;
     const i = +key.slice(1), x = me.hand[i]; if (x === undefined) return;
     if (!RFarb.ok(v, i)) { sfx.bad(); shakeSlot(key); toast(v.drawn >= 0 ? 'Nur die gezogene Karte' : 'Passt nicht'); return; }
-    if (x >> 4 === 4) { S.colPick = i; showScr('sColor'); return; }
+    if (x >> 4 === 4) { pickColor('col', i); return; }
     act({ t: 'play', i });
   },
   fx(fx, v) {
@@ -574,9 +641,152 @@ const RPhase = {
     else if (fx.t === 'hit') { const k = Object.keys(S.plateG || {}).find(q => S.plateG[q] === fx.g); fly(mine ? slotPos('h' + fx.i) : figPos(fx.pl), k ? slotPos(k) : { x: 0, z: -1 }, 'P' + fx.c); sfx.play(); }
     else if (fx.t === 'disc') { fly(mine ? slotPos('h' + fx.i) : figPos(fx.pl), slotPos('pile'), 'P' + fx.c); sfx.disc(); if (fx.vic >= 0) toast(P[fx.vic].name + ' setzt aus'); }
   },
+  round(v) { return resTable(v, true); },
+  roundSub(v) { return (v.last ? v.players[v.last.out].name : '') + ' hat keine Karten mehr.'; },
   end(v) { return 'Alle ' + v.len + ' Phasen geschafft.'; }
 };
-const RG = { stapel: RStapel, farb: RFarb, phase: RPhase };
+/* ===== Mau-Mau ===== */
+const RMau = {
+  render(v) {
+    const me = v.players[v.me];
+    setSlot(slots.deck, v.deckN ? 'B' : null, Math.ceil(v.deckN / 3));
+    setSlot(slots.pile, 'K' + v.top, 6);
+    drawPlate(slots.wish, 'w' + v.wish + ':' + v.pen, (x, w, h) => {
+      x.textAlign = 'center'; x.textBaseline = 'middle';
+      if (v.pen) { x.fillStyle = '#ff2d95'; x.font = '900 60px system-ui,sans-serif'; x.fillText('+' + v.pen, w / 2, h / 2 + 4); }
+      else if (v.wish >= 0) { x.fillStyle = '#fff'; x.beginPath(); x.arc(w / 2, h / 2, 54, 0, 7); x.fill(); x.fillStyle = SCOL[v.wish]; x.font = '900 80px system-ui,sans-serif'; x.fillText(SUIT[v.wish], w / 2, h / 2 + 6); }
+    });
+    showHand(me.hand, S.hide);
+    $('opp').innerHTML = v.players.map((p, i) => i === v.me ? '' : chip(p, i, v, '<div class="r"><small>🃏 <b style="color:#fff;font-size:14px">' + p.handN + '</b> Karten</small>' + (p.handN === 1 ? '<span class="tag">Mau!</span>' : '') + '</div>')).join('');
+  },
+  ok(v, i) { const me = v.players[v.me]; return (v.drawn < 0 || v.drawn === i) && KRG.mau.fits(v, me.hand[i]); },
+  hint(v) {
+    const mine = mineNow(v), me = v.players[v.me];
+    let t = '', any = false;
+    if (mine) {
+      me.hand.forEach((x, i) => { if (RMau.ok(v, i)) { slots['h' + i].hl = 1; any = true; } });
+      if (v.drawn >= 0) { slots['h' + v.drawn].liftT = .45; t = 'Die gezogene Karte passt: <b>antippen</b> zum Legen oder <b>Behalten</b>.'; }
+      else if (v.pen) t = any ? 'Kontere mit einer <b>7</b> – oder ziehe <b>' + v.pen + ' Karten</b>.' : 'Du musst <b>' + v.pen + ' Karten</b> ziehen – tippe auf den Ziehstapel.';
+      else if (any) t = 'Leuchtende Karte antippen: gleiche <b>Farbe</b> oder gleicher <b>Wert</b>' + (v.wish >= 0 ? ' (Wunsch: <b>' + SNAME[v.wish] + '</b>)' : '') + '.';
+      else t = 'Keine Karte passt – tippe auf den <b>Ziehstapel</b>.';
+      if (!any || v.pen) slots.deck.hl = 1;
+      acts(v.drawn >= 0 ? [{ t: '✋ Behalten', fn: () => act({ t: 'pass' }) }] : [{ t: v.pen ? '🂠 ' + v.pen + ' Karten ziehen' : '🂠 Karte ziehen', go: !any, fn: () => act({ t: 'draw' }) }]);
+    } else acts([]);
+    return [t, (v.wish >= 0 ? 'Wunschfarbe: <b>' + SUIT[v.wish] + ' ' + SNAME[v.wish] + '</b> · ' : '') + 'Ziehstapel: <b>' + v.deckN + '</b>'];
+  },
+  tap(key, v) {
+    const me = v.players[v.me];
+    if (key === 'deck') { if (v.drawn < 0) act({ t: 'draw' }); return; }
+    if (key[0] !== 'h') return;
+    const i = +key.slice(1), x = me.hand[i]; if (x === undefined) return;
+    if (!RMau.ok(v, i)) { sfx.bad(); shakeSlot(key); toast(v.pen ? 'Nur eine 7 – oder ziehen' : v.drawn >= 0 ? 'Nur die gezogene Karte' : 'Passt nicht'); return; }
+    if ((x & 15) === 11) { pickColor('suit', i); return; }
+    act({ t: 'play', i });
+  },
+  fx(fx, v) {
+    const mine = fx.pl === v.me, P = v.players;
+    if (fx.t === 'play') {
+      fly(mine ? slotPos('h' + fx.i) : figPos(fx.pl), slotPos('pile'), 'K' + fx.c); sfx.play();
+      const r = fx.c & 15, nx = P[(fx.pl + 1) % v.n].name;
+      if (r === 11) toast('Wunsch: ' + SUIT[fx.col] + ' ' + SNAME[fx.col]);
+      else if (r === 7) toast(nx + ' muss ' + fx.pen + ' ziehen');
+      else if (r === 8) toast(P[fx.vic].name + ' setzt aus');
+      if (fx.one && P[fx.pl].handN === 1) { setTimeout(() => toast(P[fx.pl].name + ': Mau! 🃏'), 700); beep(990, .2, 'square', .05, .6); }
+    } else if (fx.t === 'draw') { for (let k = 0; k < Math.min(fx.n || 1, 3); k++) fly(slotPos('deck'), mine ? { x: 0, z: 2.6 } : figPos(fx.pl), 'B'); sfx.draw(); if (fx.n > 1) toast((mine ? 'Du ziehst ' : P[fx.pl].name + ' zieht ') + fx.n); }
+  },
+  end() { return 'Mau-Mau! Alle Karten los.'; }
+};
+
+/* ===== Schwimmen ===== */
+const hearts = p => p.out ? 'raus' : p.lives ? '❤️'.repeat(p.lives) : '🏊 schwimmt';
+const RSwim = {
+  render(v) {
+    const me = v.players[v.me];
+    v.mid.forEach((c, j) => setSlot(slots['c' + j], 'K' + c, 1));
+    drawPlate(slots.knock, 'k' + v.knock + v.round, (x, w, h) => { if (v.knock < 0) return; x.fillStyle = 'rgba(255,45,149,.9)'; const t = '✊ ' + (v.knock === v.me && !shared() ? 'Du hast' : v.players[v.knock].name + ' hat') + ' geklopft · letzte Runde'; let fs = h * .55 | 0; x.font = '800 ' + fs + 'px system-ui,sans-serif'; const m = x.measureText(t).width; if (m > w * .94) { fs = fs * w * .94 / m | 0; x.font = '800 ' + fs + 'px system-ui,sans-serif'; } x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(t, w / 2, h / 2 + 2); });
+    showHand(me.out ? [] : me.hand, S.hide);
+    $('opp').innerHTML = v.players.map((p, i) => i === v.me ? '' : chip(p, i, v, '<div class="r"><small>' + hearts(p) + '</small>' + (v.knock === i ? '<span class="tag">✊ klopft</span>' : '') + '</div>')).join('');
+  },
+  hint(v) {
+    const mine = mineNow(v), me = v.players[v.me];
+    let t = '';
+    if (mine) {
+      const sel = S.sel;
+      if (sel) slots[(sel.k === 'hand' ? 'h' : 'c') + sel.i].liftT = .45;
+      if (sel) for (let j = 0; j < 3; j++) slots[(sel.k === 'hand' ? 'c' : 'h') + j].hl = 1;
+      t = sel ? 'Jetzt die Karte ' + (sel.k === 'hand' ? 'in der <b>Mitte</b>' : 'auf deiner <b>Hand</b>') + ' antippen, die du tauschen willst.' : 'Eine Karte von dir und eine aus der <b>Mitte</b> antippen = tauschen. Oder unten wählen.';
+      acts([{ t: '🔄 Alle tauschen', fn: () => act({ t: 'all' }) }, { t: '⏭️ Schieben', fn: () => act({ t: 'pass' }) }, { t: '✊ Klopfen', go: me.score >= 25, off: v.knock >= 0, fn: () => act({ t: 'knock' }) }]);
+    } else acts([]);
+    return [t, me.out ? 'Du bist raus – schau zu.' : 'Dein Wert: <b>' + String(me.score).replace('.', ',') + '</b> · Leben: ' + hearts(me) + ' · Runde ' + v.round];
+  },
+  tap(key, v) {
+    const k = key[0] === 'h' ? 'hand' : key[0] === 'c' ? 'mid' : ''; if (!k) return;
+    const i = +key.slice(1); if (k === 'hand' && i > 2) return;
+    if (!S.sel || S.sel.k === k) { S.sel = S.sel && S.sel.i === i && S.sel.k === k ? null : { k, i }; refreshSel(); return; }
+    const a = k === 'hand' ? { t: 'swap', i, j: S.sel.i } : { t: 'swap', i: S.sel.i, j: i }; S.sel = null; act(a);
+  },
+  fx(fx, v) {
+    const mine = fx.pl === v.me, P = v.players, who = mine && !shared() ? 'Du' : P[fx.pl].name;
+    if (fx.t === 'swap') { fly(mine ? slotPos('h' + fx.i) : figPos(fx.pl), slotPos('c' + fx.j), 'K' + fx.c); fly(slotPos('c' + fx.j), mine ? slotPos('h' + fx.i) : figPos(fx.pl), 'B'); sfx.play(); }
+    else if (fx.t === 'all') { for (let j = 0; j < 3; j++) fly(slotPos('c' + j), mine ? slotPos('h' + j) : figPos(fx.pl), 'B'); sfx.clr(); toast(who + ': alle getauscht'); }
+    else if (fx.t === 'pass') { sfx.disc(); if (fx.fresh) toast('Alle haben geschoben – neue Mitte'); }
+    else if (fx.t === 'knock') { beep(200, .08, 'square', .1); beep(200, .08, 'square', .1, .15); toast(who + ' klopft! ✊'); }
+    if (fx.s31) { toast(who + ': 31! 🎉'); sfx.win(); }
+  },
+  round(v) {
+    const L = v.last; if (!L) return '';
+    return '<tr><th>Spieler</th><th>Karten</th><th>Wert</th><th>Leben</th></tr>' + v.players.map((p, i) => '<tr><td>' + figImg(p.fig) + esc(i === v.me && !shared() ? 'Du' : p.name) + '</td><td>' + (L.hands[i] || []).map(fName).join(' ') + '</td><td>' + (L.sc[i] < 0 ? '–' : String(L.sc[i]).replace('.', ',')) + (L.lose.includes(i) ? ' 💔' : '') + '</td><td>' + hearts(p) + '</td></tr>').join('');
+  },
+  roundSub(v) { const L = v.last; return L.why === '31' ? 'Jemand hat 31! Alle anderen verlieren ein Leben.' : 'Nach dem Klopfen verliert der niedrigste Wert ein Leben.'; },
+  end() { return 'Als Letzte:r über Wasser geblieben.'; }
+};
+
+/* ===== Kartendomino ===== */
+const RDomino = {
+  render(v) {
+    const me = v.players[v.me];
+    v.rows.forEach((r, su) => drawPlate(slots['r' + su], JSON.stringify(r), (x, w, h) => {
+      x.fillStyle = 'rgba(255,255,255,.05)'; x.strokeStyle = 'rgba(0,229,255,.35)'; x.lineWidth = 3; x.setLineDash(r ? [] : [12, 8]); x.beginPath(); if (x.roundRect) x.roundRect(3, 3, w - 6, h - 6, 14); else x.rect(3, 3, w - 6, h - 6); x.fill(); x.stroke(); x.setLineDash([]);
+      x.fillStyle = su >= 2 ? '#ff5577' : '#e6f1ff'; x.font = '900 ' + (h * .6 | 0) + 'px system-ui,sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(SUIT[su], 44, h / 2 + 3);
+      const cw = (w - 100) / 13;
+      for (let k = 2; k <= 14; k++) {
+        const X = 86 + (k - 2) * cw;
+        if (r && k >= r.lo && k <= r.hi) miniF(x, X, 8, cw - 4, h - 16, su * 16 + k);
+        else { x.fillStyle = 'rgba(159,180,200,.35)'; x.font = '700 ' + (h * .3 | 0) + 'px system-ui,sans-serif'; x.fillText(RNK(k), X + cw / 2, h / 2 + 2); }
+      }
+    }));
+    showHand(me.hand, S.hide);
+    $('opp').innerHTML = v.players.map((p, i) => i === v.me ? '' : chip(p, i, v, '<div class="r"><small>🃏 <b style="color:#fff;font-size:14px">' + p.handN + '</b> Karten</small></div>')).join('');
+  },
+  hint(v) {
+    const mine = mineNow(v), me = v.players[v.me];
+    let t = '', any = false;
+    if (mine) {
+      me.hand.forEach((x, i) => { if (KRG.domino.can(v, x)) { slots['h' + i].hl = 1; any = true; } });
+      t = !v.started ? 'Du hast die <b>♥ 7</b> – leg sie zum Start.' : any ? 'Leuchtende Karte antippen – sie wird an ihre Reihe gelegt.' : 'Keine Karte passt – tippe auf <b>Passen</b>.';
+      acts(any ? [] : [{ t: '✋ Passen', go: true, fn: () => act({ t: 'pass' }) }]);
+    } else acts([]);
+    return [t, 'Deine Karten: <b>' + me.hand.length + '</b>'];
+  },
+  tap(key, v) {
+    if (key[0] !== 'h') return; const i = +key.slice(1), x = v.players[v.me].hand[i]; if (x === undefined) return;
+    if (!KRG.domino.can(v, x)) { sfx.bad(); shakeSlot(key); toast(v.started ? 'Passt an keine Reihe' : 'Zuerst die ♥ 7'); return; }
+    act({ t: 'play', i });
+  },
+  fx(fx, v) {
+    const mine = fx.pl === v.me;
+    if (fx.t === 'play') { const su = fx.c >> 4, k = fx.c & 15; fly(mine ? slotPos('h' + fx.i) : figPos(fx.pl), { x: -3.55 + .38 + (86 + (k - 2) * 71.8) / 1024 * 7.1 - .2, z: -3.25 + su * .78 }, 'K' + fx.c); slots['r' + su].flash = .6; sfx.play(); }
+    else { toast(v.players[fx.pl].name + ' passt'); sfx.disc(); }
+  },
+  end() { return 'Alle Karten angelegt.'; }
+};
+const RG = { stapel: RStapel, farb: RFarb, phase: RPhase, mau: RMau, swim: RSwim, domino: RDomino };
+function pickColor(kind, i) {
+  S.colPick = i; $('colTitle').textContent = kind === 'suit' ? 'Welche Farbe wünschst du dir?' : 'Welche Farbe?';
+  $('colBtns').innerHTML = kind === 'suit' ? SUIT.map((c, k) => '<button data-col="' + k + '" style="background:#f8fafc;color:' + SCOL[k] + ';text-shadow:none;font-size:22px">' + c + ' ' + SNAME[k] + '</button>').join('')
+    : COLS.map((c, k) => '<button data-col="' + k + '" style="background:linear-gradient(' + c + ',' + COLD[k] + ')">' + CNAME[k] + '</button>').join('');
+  showScr('sColor');
+}
 function layNow() {
   const v = S.V, me = v.players[v.me], ph = Math.min(me.ph, 9);
   if (S.multi.length !== PHX.need(ph)) { toast('Wähle ' + PHX.need(ph) + ' Karten'); return; }
@@ -586,27 +796,28 @@ function layNow() {
 function resTable(v, round) {
   const rows = v.players.map((p, i) => {
     const r = round && v.last ? v.last.rows[i] : null;
-    return '<tr><td>' + figImg(p.fig) + esc(i === v.me && S.mode !== 'local' ? 'Du' : p.name) + '</td><td>' + (r ? (r.made ? '✔' : '✗') + ' → Phase ' + Math.min(r.ph + 1, v.len) : 'Phase ' + Math.min(p.ph, v.len)) + '</td>' + (r ? '<td>+' + r.pts + '</td>' : '') + '<td>' + p.pts + '</td></tr>';
+    return '<tr><td>' + figImg(p.fig) + esc(i === v.me && !shared() ? 'Du' : p.name) + '</td><td>' + (r ? (r.made ? '✔' : '✗') + ' → Phase ' + Math.min(r.ph + 1, v.len) : 'Phase ' + Math.min(p.ph, v.len)) + '</td>' + (r ? '<td>+' + r.pts + '</td>' : '') + '<td>' + p.pts + '</td></tr>';
   }).join('');
   return '<tr><th>Spieler</th><th>Phase</th>' + (round ? '<th>Runde</th>' : '') + '<th>Minus</th></tr>' + rows;
 }
 
 function refreshSel() {
-  const v = S.V; if (!v || !slots.deck) return;
+  const v = S.V; if (!v || !slots.h0) return;
   for (const k in slots) { const s = slots[k]; s.hl = 0; s.liftT = 0; }
   const [l1, l2] = RG[v.game].hint(v);
   const me = v.players[v.me];
   let h;
   if (v.winner >= 0 || v.wait) h = '';
+  else if (S.mode === 'tv') h = '📱 <b>' + esc(v.players[v.turn].name) + '</b> ist dran und spielt am Handy …';
   else if (S.hide) h = 'Gerät an <b>' + esc(me.name) + '</b> übergeben …';
   else if (!mineNow(v)) h = esc(v.players[v.turn].name) + ' ist dran …';
   else h = l1;
-  $('foot').innerHTML = h + '<span class="l2">' + l2 + '</span>';
+  $('foot').innerHTML = h + '<span class="l2">' + (S.mode === 'tv' ? '' : l2) + '</span>';
   need();
 }
 function render(v, animate) {
   if (!scene) return;
-  if (layoutGame !== v.game) { buildLayout(v.game); S.lastSeq = 0; RPhase.sig = ''; }
+  if (layoutGame !== v.game || layoutTv !== (S.mode === 'tv')) { buildLayout(v.game); S.lastSeq = 0; RPhase.sig = ''; }
   const prev = S.V; S.V = v;
   if (animate && v.fx && v.fx.seq !== S.lastSeq && prev) { S.lastSeq = v.fx.seq; RG[v.game].fx(v.fx, v); }
   else if (v.fx) S.lastSeq = v.fx.seq;
@@ -614,8 +825,8 @@ function render(v, animate) {
   RG[v.game].render(v);
   const st = $('status'), mine = mineNow(v);
   st.className = mine ? 'me' : '';
-  st.innerHTML = '<small>' + INFO[v.game].icon + ' ' + INFO[v.game].name + '</small><b>' + esc(v.winner >= 0 ? '🏆 ' + v.players[v.winner].name : v.wait ? 'Runde vorbei' : mine ? 'Du bist dran' : S.hide ? '' : v.players[v.turn].name + ' ist dran') + '</b>';
-  if (mine && S.lastTurn !== v.turn && S.mode !== 'local') sfx.my();
+  st.innerHTML = '<small>' + INFO[v.game].icon + ' ' + INFO[v.game].name + '</small><b>' + esc(v.winner >= 0 ? '🏆 ' + v.players[v.winner].name : v.wait ? 'Runde vorbei' : mine ? 'Du bist dran' : S.hide && S.mode !== 'tv' ? '' : v.players[v.turn].name + ' ist dran') + '</b>';
+  if (mine && S.lastTurn !== v.turn && !shared()) sfx.my();
   S.lastTurn = v.turn; S.pend = false; refreshSel();
   if (v.winner >= 0) endScreen(v);
   else if (v.wait) roundScreen(v);
@@ -623,16 +834,15 @@ function render(v, animate) {
 }
 function roundScreen(v) {
   if (S.roundSeen === v.round) return; S.roundSeen = v.round;
-  const out = v.last ? v.players[v.last.out].name : '';
   $('rdTitle').textContent = 'Runde ' + (v.round - 1) + ' vorbei';
-  $('rdSub').textContent = out + ' hat keine Karten mehr.';
-  $('rdTab').innerHTML = resTable(v, true);
-  const guest = S.mode === 'guest'; $('rdGo').style.display = guest ? 'none' : ''; if (guest) $('rdSub').textContent += ' Warte auf den Gastgeber …';
+  $('rdSub').textContent = RG[v.game].roundSub(v);
+  $('rdTab').innerHTML = RG[v.game].round(v);
+  const guest = S.mode === 'guest' && !S.tvGuest; $('rdGo').style.display = guest ? 'none' : ''; if (guest) $('rdSub').textContent += ' Warte auf den Gastgeber …';
   setTimeout(() => { if (S.V && S.V.wait && S.V.round === v.round) showScr('sRound'); }, 900);
 }
 function endScreen(v) {
-  const iw = v.winner === v.me && S.mode !== 'local'; sfx.win();
-  $('endTitle').textContent = S.mode === 'local' || v.winner !== v.me ? v.players[v.winner].name + ' gewinnt!' : 'Gewonnen! 🏆';
+  const iw = v.winner === v.me && !shared(); sfx.win();
+  $('endTitle').textContent = shared() || v.winner !== v.me ? v.players[v.winner].name + ' gewinnt!' : 'Gewonnen! 🏆';
   $('endSub').textContent = iw ? RG[v.game].end(v) : RG[v.game].end(v).replace(/ – stark gespielt\./, '');
   const tb = v.game === 'phase'; $('endTabBox').style.display = tb ? '' : 'none'; if (tb) $('endTab').innerHTML = resTable(v, false);
   const again = $('endAgain'); again.style.display = S.mode === 'guest' ? 'none' : ''; if (S.mode === 'guest') $('endSub').textContent += ' Warte auf einen neuen Start vom Gastgeber …';
@@ -659,13 +869,14 @@ function doApply(a) {
 /* ---------- Spielablauf ---------- */
 function publish() {
   const G = S.G, E = KRG[S.game]; clearTimeout(S.timer);
-  if (S.mode === 'host') for (const [id, idx] of S.peerIdx) S.net.sendTo(id, { t: 'view', v: E.mkView(G, idx) });
+  if (S.mode === 'host' || S.mode === 'tv') for (const [id, idx] of S.peerIdx) S.net.sendTo(id, { t: 'view', v: E.mkView(G, idx) });
   if (S.mode === 'local') {
     const turnChanged = S.lastTurn !== G.turn && G.winner < 0 && !G.wait;
     if (turnChanged) { S.hide = true; $('passName').textContent = G.players[G.turn].name + ' ist dran'; render(E.mkView(G, G.turn), true); if (!S.scr || S.scr === 'sRound') showScr('sPass'); else S.rulesBack = 'sPass'; return; }
     render(E.mkView(G, G.turn), true); return;
   }
-  render(E.mkView(G, 0), true);
+  if (S.mode === 'tv') { S.hide = true; render(E.mkView(G, G.turn), true); } // TV-Tisch: Blick vom Platz des aktiven Spielers, Karten verdeckt
+  else render(E.mkView(G, 0), true);
   if (G.winner < 0 && !G.wait && G.players[G.turn].bot) {
     const quick = S.game === 'phase' && G.step === 'draw';
     S.timer = setTimeout(() => { if (S.G !== G || G.winner >= 0 || G.wait) return; if (!E.apply(G, E.botAct(G))) E.apply(G, { t: 'draw', src: 'deck' }); publish(); }, (quick ? 450 : 650) + KR.RND() * 400);
@@ -701,10 +912,10 @@ function startLocal() {
 }
 function restart() {
   if (S.mode === 'solo' || S.mode === 'local') begin(S.mode, S.pl);
-  else if (S.mode === 'host') startHostGame();
+  else if (S.mode === 'host' || S.mode === 'tv') startHostGame();
 }
 function toMenu() {
-  clearTimeout(S.timer); if (S.net) { S.net.close(true); S.net = null; } S.mode = ''; S.G = null; S.V = null; S.sel = null; S.multi = []; S.hide = false; S.peerIdx.clear();
+  clearTimeout(S.timer); if (S.net) { S.net.close(true); S.net = null; } S.mode = ''; S.tvHost = false; S.tvGuest = false; S.G = null; S.V = null; S.sel = null; S.multi = []; S.hide = false; S.peerIdx.clear();
   $('opp').innerHTML = ''; $('status').textContent = ''; $('foot').textContent = ''; acts([]);
   for (const k in slots) { const s = slots[k]; if (s.card) setSlot(s, null); s.liftT = 0; s.hl = 0; }
   seats.forEach(s => scene.remove(s.g)); seats = []; figKey = '';
@@ -713,7 +924,7 @@ function toMenu() {
 
 /* ---------- Online (PeerJS, WebRTC direkt zwischen den Geräten; Vermittlung über cloud/fire-peer.js) ---------- */
 function mkNet(cb) {
-  const ALPHA = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789', PRE = 'kartenrausch-', MAX = 3;
+  const ALPHA = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789', PRE = 'kartenrausch-', MAX = cb.max || 3;
   const N = { role: '', code: '', peer: null, conns: new Map(), busy: false }; const libs = {};
   const load = (src, ok) => libs[src] || (libs[src] = new Promise((res, rej) => { if (ok()) return res(); const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => { delete libs[src]; rej(new Error('lib')); }; document.head.appendChild(s); }));
   N.loadPeer = () => load('https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js', () => !!window.Peer);
@@ -774,12 +985,12 @@ function mkNet(cb) {
 function saveName(n) { store.set('name', n); ['soloName', 'name', 'jName'].forEach(id => { if ($(id).value !== n) $(id).value = n; }); }
 const getName = id => { let n = $(id).value.trim().slice(0, 12); saveName(n); return n || 'Spieler'; };
 const errText = { code: 'Bitte den 4-stelligen Code eingeben.', nocode: 'Diesen Raum gibt es nicht (mehr).', timeout: 'Keine Verbindung – nochmal versuchen.', broker: 'Verbindungsdienst nicht erreichbar.', lib: 'Online-Bibliothek konnte nicht geladen werden (Internet?).' };
-function lobbyList(list, me) { $('lobList').innerHTML = list.map((x, i) => '<div>' + figImg(x.fig) + (i === 0 ? '👑 ' : '') + esc(x.name) + (i === me ? ' (du)' : '') + '</div>').join(''); }
+function lobbyList(list, me, tv) { $('lobList').innerHTML = list.map((x, i) => '<div>' + figImg(x.fig) + (i === 0 && !tv ? '👑 ' : '') + esc(x.name) + (i === me ? ' (du)' : '') + '</div>').join(''); }
 function hostLobbyUpdate() {
-  const list = [{ name: S.hostName, fig: S.myFig }].concat(S.lobby.map(x => ({ name: x.name, fig: x.fig })));
-  lobbyList(list, 0); $('lobStart').disabled = list.length < 2;
-  $('lobMsg').textContent = list.length < 2 ? 'Warte auf Mitspieler … (' + list.length + '/4)' : list.length + ' Spieler bereit.';
-  S.lobby.forEach((x, i) => S.net.sendTo(x.id, { t: 'lobby', list, you: i + 1, game: S.game }));
+  const tv = S.tvHost, list = (tv ? [] : [{ name: S.hostName, fig: S.myFig }]).concat(S.lobby.map(x => ({ name: x.name, fig: x.fig })));
+  lobbyList(list, tv ? -1 : 0, tv); $('lobStart').disabled = list.length < 2;
+  $('lobMsg').textContent = list.length < 2 ? 'Warte auf ' + (tv ? 'Handys' : 'Mitspieler') + ' … (' + list.length + '/4)' : list.length + ' Spieler bereit.';
+  S.lobby.forEach((x, i) => S.net.sendTo(x.id, { t: 'lobby', list, you: tv ? i : i + 1, game: S.game, tv }));
 }
 function cleanAct(a) {
   if (!a || typeof a !== 'object') return null;
@@ -792,6 +1003,8 @@ function netMsgHost(id, d) {
   if (d.t === 'hello') {
     let x = S.lobby.find(l => l.id === id);
     if (!x) { x = { id, name: '' }; S.lobby.push(x); } x.name = String(d.name || 'Gast').slice(0, 12); x.fig = Number.isInteger(d.fig) && FIGS[d.fig] ? d.fig : 0; hostLobbyUpdate();
+  } else if (d.t === 'next') {
+    if (S.mode === 'tv' && S.G && S.G.wait) { hideOv(); doApply({ t: 'next' }); }
   } else if (d.t === 'act') {
     const idx = S.peerIdx.get(id), G = S.G; if (!G || idx === undefined || G.turn !== idx || G.players[idx].bot) return;
     const a = cleanAct(d.a); if (!a || !KRG[S.game].apply(G, a)) { S.net.sendTo(id, { t: 'view', v: KRG[S.game].mkView(G, idx) }); return; }
@@ -799,29 +1012,30 @@ function netMsgHost(id, d) {
   }
 }
 function netLeaveHost(id) {
-  if (S.G && S.mode === 'host') {
+  if (S.G && (S.mode === 'host' || S.mode === 'tv')) {
     const idx = S.peerIdx.get(id); S.peerIdx.delete(id); if (idx === undefined) return;
     const P = S.G.players[idx]; P.bot = true; P.name += ' 🤖'; publish(); return;
   }
   S.lobby = S.lobby.filter(l => l.id !== id); hostLobbyUpdate();
 }
-async function goHost() {
-  audio(); $('suErr').textContent = ''; S.hostName = getName('name'); S.lobby = [];
-  S.net = mkNet({ onMsg: netMsgHost, onLeave: netLeaveHost, locked: () => !!S.G && S.mode === 'host' });
-  $('goHost').disabled = true;
+async function goHost(tv) {
+  audio(); $('suErr').textContent = ''; S.tvHost = !!tv; S.hostName = tv ? '' : getName('name'); S.lobby = [];
+  S.net = mkNet({ onMsg: netMsgHost, onLeave: netLeaveHost, locked: () => !!S.G && (S.mode === 'host' || S.mode === 'tv'), max: tv ? 4 : 3 });
+  $('goHost').disabled = $('goTv').disabled = true;
   try {
     const code = await S.net.host(); S.mode = 'host-lobby';
-    $('lobTitle').textContent = 'Dein Raum'; $('lobGame').innerHTML = 'Spiel: <b>' + INFO[S.game].icon + ' ' + INFO[S.game].name + '</b>';
+    $('lobTitle').textContent = tv ? '📺 TV-Tisch' : 'Dein Raum'; $('lobGame').innerHTML = 'Spiel: <b>' + INFO[S.game].icon + ' ' + INFO[S.game].name + '</b>';
     $('lobHost').style.display = ''; $('lobCode').textContent = code; $('lobQr').innerHTML = '';
     $('lobStart').style.display = ''; hostLobbyUpdate(); showScr('sLobby');
     S.net.loadQR().then(() => { const q = qrcode(0, 'M'); q.addData(S.net.link()); q.make(); $('lobQr').innerHTML = '<img alt="QR-Code" src="' + q.createDataURL(5, 0) + '">'; }).catch(() => { });
   } catch (e) { if (S.net) S.net.close(true); S.net = null; $('suErr').textContent = errText[e.message] || errText.broker; }
-  $('goHost').disabled = false;
+  $('goHost').disabled = $('goTv').disabled = false;
 }
 function startHostGame() {
   const lob = S.lobby.filter(l => S.net.conns.has(l.id)); if (!lob.length) return;
-  S.peerIdx = new Map(lob.map((l, i) => [l.id, i + 1]));
-  begin('host', [{ name: S.hostName, fig: S.myFig }].concat(lob.map(l => ({ name: l.name, fig: l.fig }))));
+  const tv = S.tvHost; if (tv && lob.length < 2) return;
+  S.peerIdx = new Map(lob.map((l, i) => [l.id, tv ? i : i + 1]));
+  begin(tv ? 'tv' : 'host', (tv ? [] : [{ name: S.hostName, fig: S.myFig }]).concat(lob.map(l => ({ name: l.name, fig: l.fig }))));
 }
 async function goJoin(codeIn) {
   audio(); const err = $('onErr'); err.textContent = ''; const name = getName('jName');
@@ -834,7 +1048,7 @@ async function goJoin(codeIn) {
   $('goJoin').disabled = false;
 }
 function netMsgGuest(id, d) {
-  if (d.t === 'lobby') { lobbyList(Array.isArray(d.list) ? d.list : [], d.you); if (INFO[d.game]) $('lobGame').innerHTML = 'Spiel: <b>' + INFO[d.game].icon + ' ' + INFO[d.game].name + '</b>'; }
+  if (d.t === 'lobby') { S.tvGuest = !!d.tv; lobbyList(Array.isArray(d.list) ? d.list : [], d.you, S.tvGuest); if (INFO[d.game]) $('lobGame').innerHTML = 'Spiel: <b>' + INFO[d.game].icon + ' ' + INFO[d.game].name + '</b>'; }
   else if (d.t === 'view' && d.v && INFO[d.v.game]) {
     if (S.mode !== 'guest') return;
     const fresh = !S.V || S.V.game !== d.v.game || (d.v.fx && S.V.fx && d.v.fx.seq < S.V.fx.seq);
@@ -871,8 +1085,8 @@ function openSetup(g) {
 }
 function syncSetup() {
   document.querySelectorAll('.seg[data-opt]').forEach(s => s.querySelectorAll('button').forEach(b => b.classList.toggle('on', String(S.opt[s.dataset.opt]) === b.dataset.v)));
-  const m = S.opt.mode; $('suSolo').classList.toggle('hid', m !== 'solo'); $('suLocal').classList.toggle('hid', m !== 'local'); $('suOnline').classList.toggle('hid', m !== 'online');
-  $('suGo').style.display = m === 'online' ? 'none' : '';
+  const m = S.opt.mode; $('suSolo').classList.toggle('hid', m !== 'solo'); $('suLocal').classList.toggle('hid', m !== 'local'); $('suOnline').classList.toggle('hid', m !== 'online'); $('suTv').classList.toggle('hid', m !== 'tv');
+  $('suGo').style.display = m === 'online' || m === 'tv' ? 'none' : '';
   refreshFigButtons();
 }
 function initUI() {
@@ -896,21 +1110,20 @@ function initUI() {
       store.set('opt', JSON.stringify(S.opt)); syncSetup();
     }
   });
-  $('colBtns').innerHTML = COLS.map((c, i) => '<button data-col="' + i + '" style="background:linear-gradient(' + c + ',' + COLD[i] + ')">' + CNAME[i] + '</button>').join('');
   $('colBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (!b || S.colPick < 0) return; const i = S.colPick; S.colPick = -1; hideOv(); act({ t: 'play', i, col: +b.dataset.col }); });
   $('colCancel').onclick = () => { S.colPick = -1; hideOv(); };
   $('suGo').onclick = () => { if (S.opt.mode === 'solo') startSolo(); else startLocal(); };
   $('suRules').onclick = () => showRules(S.game, false);
-  $('goHost').onclick = goHost; $('goJoin').onclick = () => goJoin(); $('goJoinScr').onclick = () => { $('onErr').textContent = ''; showScr('sJoin'); };
+  $('goHost').onclick = () => goHost(false); $('goTv').onclick = () => goHost(true); $('goJoin').onclick = () => goJoin(); $('goJoinScr').onclick = () => { $('onErr').textContent = ''; showScr('sJoin'); };
   $('joinCode').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase(); });
   $('figBack').onclick = () => showScr(S.figBack || 'sSetup');
-  $('rulesBack').onclick = () => { const b = S.rulesBack; S.rulesBack = null; if (b && b !== 'sRules') showScr(b); else if (S.hide) showScr('sPass'); else hideOv(); };
+  $('rulesBack').onclick = () => { const b = S.rulesBack; S.rulesBack = null; if (b && b !== 'sRules') showScr(b); else if (S.hide && S.mode === 'local') showScr('sPass'); else hideOv(); };
   $('bHelp').onclick = () => { if (S.scr === 'sRules') return; showRules(S.V ? S.V.game : S.game, false); };
   $('bMenu').onclick = () => { if (S.mode === 'host-lobby') return; showScr(S.V && S.V.winner < 0 ? 'sPause' : S.V ? 'sEnd' : 'sMain'); };
-  $('pResume').onclick = () => { if (S.hide) showScr('sPass'); else if (S.V && S.V.wait) { S.roundSeen = 0; roundScreen(S.V); hideOv(); } else hideOv(); };
+  $('pResume').onclick = () => { if (S.hide && S.mode === 'local') showScr('sPass'); else if (S.V && S.V.wait) { S.roundSeen = 0; roundScreen(S.V); hideOv(); } else hideOv(); };
   $('pRules').onclick = () => showRules(S.V ? S.V.game : S.game, false);
   $('pQuit').onclick = toMenu; $('endMenu').onclick = toMenu; $('endAgain').onclick = restart;
-  $('rdGo').onclick = () => { hideOv(); if (S.mode !== 'guest') { S.pend = false; doApply({ t: 'next' }); } };
+  $('rdGo').onclick = () => { hideOv(); if (S.mode === 'guest') { if (S.tvGuest) S.net.send({ t: 'next' }); } else { S.pend = false; doApply({ t: 'next' }); } };
   $('passGo').onclick = () => { S.hide = false; hideOv(); render(KRG[S.game].mkView(S.G, S.G.turn), false); sfx.my(); };
   $('bSnd').onclick = () => { S.snd = !S.snd; $('bSnd').textContent = S.snd ? '🔊' : '🔇'; audio(); };
   $('lobStart').onclick = () => { hideOv(); startHostGame(); };

@@ -22,7 +22,7 @@ window.EASYGAMES_MODES = {
   'partyverse': { online: true, multi: true },
   'riftzone': { online: true },
   'ricolife': { online: true },
-  'anmacha-kartenrausch': { online: true, multi: true },
+  'anmacha-kartenrausch': { pad: true, online: true, multi: true },
   'gay-life': { online: true },
   'bunte-insel': { online: true, pad: true, multi: true, tvParam: true },
   'zeitsprung-wissen': { pad: true, online: true },

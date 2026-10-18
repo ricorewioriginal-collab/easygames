@@ -1,5 +1,5 @@
 'use strict';
-/* AnMaCha Kartenrausch 3D – Spiellogik der drei Kartenspiele (ohne Anzeige, auch in Node testbar: tools/test-kartenrausch.cjs).
+/* AnMaCha Kartenrausch 3D – Spiellogik der Kartenspiele (ohne Anzeige, auch in Node testbar: tools/test-kartenrausch.cjs).
    Jedes Spiel: newGame(spieler, optionen) → G, apply(G, aktion) → true/false, botAct(G) → aktion, mkView(G, ich) → Ansicht.
    Karten sind ganze Zahlen, damit Ansichten klein bleiben und online ohne Umwandlung verschickt werden können. */
 (function (root) {
@@ -366,5 +366,217 @@
       };
     }
     KR.games.phase = { newGame, apply, botAct, mkView, PH, need, fitsGroup, partition, pen };
+  })();
+
+  /* ===================== Französisches Blatt (Mau-Mau, Schwimmen, Kartendomino) ===================== */
+  /* Karte = Farbe*16 + Rang. Farben 0–3 (♣ ♠ ♥ ♦), Ränge 2–10, 11 Bube, 12 Dame, 13 König, 14 Ass. */
+  const FS = x => x >> 4, FR = x => x & 15;
+  const fdeck = lo => { const d = []; for (let s = 0; s < 4; s++) for (let r = lo; r <= 14; r++) d.push(s * 16 + r); return d; };
+  const fsort = h => h.sort((a, b) => (FS(a) - FS(b)) || (FR(a) - FR(b)));
+
+  /* ===================== Mau-Mau: Farbe oder Wert bedienen; 7 = zwei ziehen, 8 = aussetzen, Bube = Wunschfarbe ===================== */
+  (function () {
+    const top = G => G.pile[G.pile.length - 1];
+    const eff = G => G.wish >= 0 ? G.wish : FS(top(G));
+    function fits(G, x) {
+      if (G.pen > 0) return FR(x) === 7;
+      if (FR(x) === 11) return FR(top(G)) !== 11;
+      return FS(x) === eff(G) || (G.wish < 0 && FR(x) === FR(top(G)));
+    }
+    function take(G, P, k) {
+      const got = [];
+      while (k-- > 0) {
+        if (!G.deck.length) { const t = G.pile.pop(); G.deck = shuffle(G.pile); G.pile = [t]; }
+        if (!G.deck.length) break;
+        const x = G.deck.pop(); P.hand.push(x); got.push(x);
+      }
+      fsort(P.hand); return got;
+    }
+    const step = (G, k) => { const n = G.players.length; G.turn = (G.turn + k) % n; G.turns++; };
+    function newGame(pl) {
+      const G = { game: 'mau', deck: shuffle(fdeck(7)), pile: [], wish: -1, pen: 0, turn: 0, winner: -1, turns: 0, seq: 0, fx: null, drawn: -1, players: [] };
+      pl.forEach(p => G.players.push(Object.assign(base(p), { hand: [] })));
+      G.players.forEach(P => take(G, P, 5));
+      let x = G.deck.pop(), g = 0;
+      while ([7, 8, 11].includes(FR(x)) && g++ < 100) { G.deck.unshift(x); x = G.deck.pop(); }
+      G.pile.push(x); return G;
+    }
+    function endByCount(G) { let b = 0; G.players.forEach((p, i) => { if (p.hand.length < G.players[b].hand.length) b = i; }); G.winner = b; }
+    function apply(G, a) {
+      if (G.winner >= 0 || !a) return false;
+      const P = G.players[G.turn];
+      if (a.t === 'play') {
+        const i = a.i; if (!int(i, 0, P.hand.length - 1) || (G.drawn >= 0 && i !== G.drawn)) return false;
+        const x = P.hand[i]; if (!fits(G, x)) return false;
+        P.hand.splice(i, 1); G.pile.push(x); G.drawn = -1; G.wish = -1;
+        const r = FR(x), fx = G.fx = { seq: ++G.seq, pl: G.turn, t: 'play', i, c: x, one: P.hand.length === 1 };
+        if (r === 11) G.wish = fx.col = int(a.col, 0, 3) ? a.col : FS(x);
+        if (!P.hand.length) { G.winner = G.turn; return true; }
+        if (r === 7) { G.pen += 2; fx.pen = G.pen; step(G, 1); }
+        else if (r === 8) { fx.vic = (G.turn + 1) % G.players.length; step(G, 2); }
+        else step(G, 1);
+        if (G.turns > 3000) endByCount(G);
+        return true;
+      }
+      if (a.t === 'draw') {
+        if (G.drawn >= 0) return false;
+        if (G.pen > 0) { const n = take(G, P, G.pen).length; G.pen = 0; G.fx = { seq: ++G.seq, pl: G.turn, t: 'draw', n }; step(G, 1); return true; }
+        const got = take(G, P, 1), x = got.length ? got[0] : -1;
+        G.fx = { seq: ++G.seq, pl: G.turn, t: 'draw', n: got.length };
+        if (got.length && fits(G, x)) { G.drawn = P.hand.lastIndexOf(x); return true; }
+        step(G, 1); if (G.turns > 3000) endByCount(G); return true;
+      }
+      if (a.t === 'pass') { if (G.drawn < 0) return false; G.drawn = -1; G.fx = { seq: ++G.seq, pl: G.turn, t: 'pass' }; step(G, 1); return true; }
+      return false;
+    }
+    function bestSuit(hand, skip) { const c = [0, 0, 0, 0]; hand.forEach((x, i) => { if (i !== skip && FR(x) !== 11) c[FS(x)]++; }); let b = 0; c.forEach((k, s) => { if (k > c[b]) b = s; }); return b; }
+    function botAct(G) {
+      const P = G.players[G.turn], nextN = G.players[(G.turn + 1) % G.players.length].hand.length;
+      if (G.drawn >= 0) return { t: 'play', i: G.drawn, col: bestSuit(P.hand, G.drawn) };
+      let best = -1, bs = -1e9;
+      P.hand.forEach((x, i) => {
+        if (!fits(G, x)) return; const r = FR(x);
+        const s = r === 11 ? (P.hand.length <= 2 ? 40 : -30) : r === 7 || r === 8 ? (nextN <= 2 ? 50 : 12) : 10 + r * .1 + (FS(x) === eff(G) ? 2 : 0);
+        if (s > bs) { bs = s; best = i; }
+      });
+      return best >= 0 ? { t: 'play', i: best, col: bestSuit(P.hand, best) } : { t: 'draw' };
+    }
+    function mkView(G, me) {
+      return {
+        game: 'mau', n: G.players.length, me, turn: G.turn, winner: G.winner, top: top(G), wish: G.wish, pen: G.pen, deckN: G.deck.length,
+        drawn: G.turn === me ? G.drawn : -1, fx: G.fx,
+        players: G.players.map((p, i) => Object.assign(pub(p), { handN: p.hand.length, hand: i === me ? p.hand.slice() : null }))
+      };
+    }
+    KR.games.mau = { newGame, apply, botAct, mkView, fits: (v, x) => fits({ pen: v.pen, wish: v.wish, pile: [v.top] }, x) };
+  })();
+
+  /* ===================== Schwimmen (31): drei Karten, höchste Summe einer Farbe; Leben verlieren ===================== */
+  (function () {
+    const val = x => FR(x) === 14 ? 11 : FR(x) >= 10 ? 10 : FR(x);
+    function score(h) {
+      if (h.length === 3 && FR(h[0]) === FR(h[1]) && FR(h[1]) === FR(h[2])) return 30.5;
+      const s = [0, 0, 0, 0]; h.forEach(x => { s[FS(x)] += val(x); }); return Math.max(...s);
+    }
+    const alive = P => !P.out;
+    function deal(G) {
+      G.deck = shuffle(fdeck(7)); G.players.forEach(P => { P.hand = P.out ? [] : fsort(G.deck.splice(0, 3)); });
+      G.mid = G.deck.splice(0, 3); G.knock = -1; G.passes = 0; G.wait = false;
+      let t = G.start; while (G.players[t].out) t = (t + 1) % G.players.length; G.turn = t;
+    }
+    function newGame(pl) {
+      const G = { game: 'swim', deck: [], mid: [], players: [], turn: 0, start: 0, knock: -1, passes: 0, round: 1, winner: -1, wait: false, last: null, seq: 0, fx: null, turns: 0 };
+      pl.forEach(p => G.players.push(Object.assign(base(p), { hand: [], lives: 3, out: false })));
+      deal(G); return G;
+    }
+    function endRound(G, why) {
+      const sc = G.players.map(P => alive(P) ? score(P.hand) : -1), act = G.players.map((P, i) => i).filter(i => alive(G.players[i]));
+      const has31 = act.filter(i => sc[i] === 31), low = Math.min(...act.map(i => sc[i]));
+      const lose = has31.length ? act.filter(i => sc[i] !== 31) : act.filter(i => sc[i] === low);
+      lose.forEach(i => { const P = G.players[i]; if (P.lives > 0) P.lives--; else P.out = true; });
+      G.last = { round: G.round, why, sc, lose, hands: G.players.map(P => P.hand.slice()) };
+      const left = G.players.map((P, i) => i).filter(i => alive(G.players[i]));
+      if (left.length <= 1) { G.winner = left.length ? left[0] : act.reduce((b, i) => sc[i] > sc[b] ? i : b, act[0]); }
+      else { G.wait = true; G.round++; G.start = (G.start + 1) % G.players.length; while (G.players[G.start].out) G.start = (G.start + 1) % G.players.length; }
+      G.fx = { seq: ++G.seq, pl: G.turn, t: 'round' };
+    }
+    function next(G) {
+      const n = G.players.length; let t = G.turn;
+      do t = (t + 1) % n; while (!alive(G.players[t]));
+      G.turn = t; G.turns++;
+      if (G.knock === t) { endRound(G, 'knock'); return; }
+      if (G.turns > 3000) endRound(G, 'knock');
+    }
+    function apply(G, a) {
+      if (G.winner >= 0 || !a) return false;
+      if (G.wait) { if (a.t !== 'next') return false; deal(G); G.fx = { seq: ++G.seq, pl: G.turn, t: 'deal' }; return true; }
+      const P = G.players[G.turn], nAct = G.players.filter(alive).length;
+      if (a.t === 'swap') {
+        if (!int(a.i, 0, 2) || !int(a.j, 0, 2)) return false;
+        const x = P.hand[a.i]; P.hand[a.i] = G.mid[a.j]; G.mid[a.j] = x; fsort(P.hand); G.passes = 0;
+        G.fx = { seq: ++G.seq, pl: G.turn, t: 'swap', i: a.i, j: a.j, c: x };
+      } else if (a.t === 'all') {
+        const h = P.hand; P.hand = fsort(G.mid); G.mid = h; G.passes = 0;
+        G.fx = { seq: ++G.seq, pl: G.turn, t: 'all' };
+      } else if (a.t === 'pass') {
+        G.passes++; G.fx = { seq: ++G.seq, pl: G.turn, t: 'pass' };
+        if (G.passes >= nAct) { G.deck.unshift(...G.mid); G.mid = G.deck.splice(G.deck.length - 3, 3); G.passes = 0; G.fx.fresh = true; }
+      } else if (a.t === 'knock') {
+        if (G.knock >= 0) return false;
+        G.knock = G.turn; G.fx = { seq: ++G.seq, pl: G.turn, t: 'knock' };
+      } else return false;
+      if (score(P.hand) === 31) { G.fx.s31 = true; endRound(G, '31'); return true; }
+      next(G); return true;
+    }
+    function botAct(G) {
+      if (G.wait) return { t: 'next' };
+      const P = G.players[G.turn], cur = score(P.hand);
+      let best = { t: 'all' }, bs = score(G.mid);
+      for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) { const h = P.hand.slice(); h[i] = G.mid[j]; const s = score(h); if (s > bs) { bs = s; best = { t: 'swap', i, j }; } }
+      if (G.knock < 0 && cur >= 27 && bs <= cur + 2) return { t: 'knock' };
+      if (bs > cur) return best;
+      if (G.knock < 0 && cur >= 24 + R() * 4) return { t: 'knock' };
+      return { t: 'pass' };
+    }
+    function mkView(G, me) {
+      return {
+        game: 'swim', n: G.players.length, me, turn: G.turn, winner: G.winner, wait: G.wait, last: G.last, round: G.round, mid: G.mid.slice(), knock: G.knock, fx: G.fx,
+        players: G.players.map((p, i) => Object.assign(pub(p), { handN: p.hand.length, hand: i === me ? p.hand.slice() : null, lives: p.lives, out: p.out, score: i === me ? score(p.hand) : -1 }))
+      };
+    }
+    KR.games.swim = { newGame, apply, botAct, mkView, score };
+  })();
+
+  /* ===================== Kartendomino: von den Siebenen aus Reihen je Farbe bilden ===================== */
+  (function () {
+    function canPlay(G, x) {
+      if (!G.started) return x === 2 * 16 + 7;   // ♥7 eröffnet
+      const r = G.rows[FS(x)], k = FR(x);
+      if (!r) return k === 7;
+      return k === r.lo - 1 || k === r.hi + 1;
+    }
+    function newGame(pl) {
+      const G = { game: 'domino', rows: [null, null, null, null], started: false, players: [], turn: 0, winner: -1, seq: 0, fx: null, turns: 0 };
+      pl.forEach(p => G.players.push(Object.assign(base(p), { hand: [] })));
+      const d = shuffle(fdeck(2)), n = G.players.length;
+      d.forEach((x, i) => G.players[i % n].hand.push(x));
+      G.players.forEach((P, i) => { fsort(P.hand); if (P.hand.includes(2 * 16 + 7)) G.turn = i; });
+      return G;
+    }
+    const playable = (G, P) => P.hand.some(x => canPlay(G, x));
+    function apply(G, a) {
+      if (G.winner >= 0 || !a) return false;
+      const P = G.players[G.turn], n = G.players.length;
+      if (a.t === 'play') {
+        if (!int(a.i, 0, P.hand.length - 1)) return false;
+        const x = P.hand[a.i]; if (!canPlay(G, x)) return false;
+        P.hand.splice(a.i, 1); G.started = true;
+        const s = FS(x), r = G.rows[s]; if (!r) G.rows[s] = { lo: 7, hi: 7 }; else if (FR(x) < r.lo) r.lo = FR(x); else r.hi = FR(x);
+        G.fx = { seq: ++G.seq, pl: G.turn, t: 'play', i: a.i, c: x };
+        if (!P.hand.length) { G.winner = G.turn; return true; }
+      } else if (a.t === 'pass') {
+        if (playable(G, P)) return false;
+        G.fx = { seq: ++G.seq, pl: G.turn, t: 'pass' };
+      } else return false;
+      G.turn = (G.turn + 1) % n; G.turns++;
+      return true;
+    }
+    function botAct(G) {
+      const P = G.players[G.turn]; let best = -1, bs = -1e9;
+      P.hand.forEach((x, i) => {
+        if (!canPlay(G, x)) return;
+        const s = FS(x), k = FR(x), mine = P.hand.filter(y => FS(y) === s && (k <= 7 ? FR(y) < k : FR(y) > k)).length;
+        const sc = mine * 3 - (k === 7 ? 2 : 0) + R();
+        if (sc > bs) { bs = sc; best = i; }
+      });
+      return best >= 0 ? { t: 'play', i: best } : { t: 'pass' };
+    }
+    function mkView(G, me) {
+      return {
+        game: 'domino', n: G.players.length, me, turn: G.turn, winner: G.winner, rows: G.rows, started: G.started, fx: G.fx,
+        players: G.players.map((p, i) => Object.assign(pub(p), { handN: p.hand.length, hand: i === me ? p.hand.slice() : null }))
+      };
+    }
+    KR.games.domino = { newGame, apply, botAct, mkView, can: (v, x) => canPlay(v, x) };
   })();
 })(typeof window !== 'undefined' ? window : globalThis);

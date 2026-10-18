@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "40029f02dedf",
- "generated": "2026-10-18T19:35:23+02:00",
- "commit": "fd7dc64492b39a61a3a72c384780e243a2c72297",
+ "version": "c9db338740ad",
+ "generated": "2026-10-18T17:54:09+00:00",
+ "commit": "2cda600646543b5f55cb4c2cfe101711e05d7245",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1428,13 +1428,13 @@
   },
   {
    "p": "anmacha-kartenrausch/index.html",
-   "s": 20047,
-   "h": "e335f878b1e302d6b350ee106f7f776f4e3ac99e080d5b2ef9c09ef268d3ad87"
+   "s": 20454,
+   "h": "6bcabdf05a60466979e435d9076574a01afe0853cc0da88122f0daec75f5664d"
   },
   {
    "p": "anmacha-kartenrausch/js/app.js",
-   "s": 66890,
-   "h": "9d9254b09c26b63fd810e6260ee1fa99861b694421fd26e1e5df81929871822f"
+   "s": 85129,
+   "h": "e0b33c99cdf24e7425edf4b7d7c209cc01d358d7d87b999ac242be582fc87e66"
   },
   {
    "p": "anmacha-kartenrausch/js/figures.js",
@@ -1443,8 +1443,8 @@
   },
   {
    "p": "anmacha-kartenrausch/js/logic.js",
-   "s": 22251,
-   "h": "e3f8c5bca829c835a146eff50268b6ed155872ab4fd04eb5a5d3fdcbcef79af6"
+   "s": 34361,
+   "h": "4f0fdf80e12279ca980fc7205b5c0faf96f9976e9a0899416c18655b0a8bd645"
   },
   {
    "p": "anmacha-kartenrausch/logo.svg",
@@ -5398,8 +5398,8 @@
   },
   {
    "p": "games.js",
-   "s": 26617,
-   "h": "9ab3c1bb109c4950c75262815c134aa96bf9c742c2af5a6187181ddc18b89d83"
+   "s": 26681,
+   "h": "b12465f9f9633b2b98126628dd7427dd6d52fc71ac04eedd2b2d9568342cfe42"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5558,8 +5558,8 @@
   },
   {
    "p": "guides.js",
-   "s": 73758,
-   "h": "c9de1e83301bb72f576d93bebb478e8470e0479fe1cb708116f6e6bc7e25a8f9"
+   "s": 74134,
+   "h": "55eb4e765fa5831d36933946088baa1c880aaf952bbda8aed890568c2ef4bec8"
   },
   {
    "p": "heute.html",
@@ -5908,8 +5908,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2104,
-   "h": "57ea8e4f678ea4d6d5dd7805a50e9d142729d5fdc5cdcd3e8aa9b13a5c3702ee"
+   "s": 2115,
+   "h": "7b09995a535c93ddc617a083b336760765cf0b7bb75d2b179e60d9a25a071546"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -6958,8 +6958,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 114904,
-   "h": "10dde900347298d97d71e215c12b2e73cc77887de6ae8753983fb0d24931c8f1"
+   "s": 115361,
+   "h": "320213ebc2b715b4d08ca87287c9a79f560fed3a7b9aa268a469b400e8685cab"
   },
   {
    "p": "taschi/card.svg",
