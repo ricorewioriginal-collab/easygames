@@ -63,10 +63,11 @@ const server = http.createServer((req, res) => {
     const og = await page.$$eval('#og details', d => d.map(x => x.querySelector('summary').textContent));
     assert(og.some(t => /Wobbel/.test(t)) && og.some(t => /Testspiel/.test(t)) && og.length >= 9, 'Spiele mit eigenen Erfolgen gelistet: ' + og.length);
     assert.equal(await page.$$eval('#og details.full', d => d.length), 1, 'Testspiel komplett');
-    assert((await page.$$eval('#og li.done', l => l.length)) === 3, 'drei freigeschaltete Spiel-Erfolge');
+    assert((await page.$$eval('#og li.done:not(.md)', l => l.length)) === 3, 'drei freigeschaltete Spiel-Erfolge');
     assert(await page.$$eval('.ach.done h3', h => h.some(x => x.textContent === 'Erster Spiel-Erfolg')), 'Gesamt-Erfolg „Erster Spiel-Erfolg“');
     const gu = await page.evaluate(() => JSON.parse(localStorage.getItem('anmacha-ach')).gu);
     assert(gu['wobbel:first'] === 1700000000000 && gu['neutest:a'], 'Spiel-Erfolge im Zustand gemerkt (für den Profil-Abgleich)');
+    assert((await page.$$eval('#og li.md', l => l.length)) >= 4 * 9 && (await page.$$eval('#og li.md.done', l => l.length)) >= 3, 'Medaillen je Spiel (auch ohne eigene Erfolge), gespielte Spiele haben „Gespielt“');
     console.log('PASS Eigene Spiel-Erfolge: gelistet, gezählt, für den Profil-Abgleich gemerkt');
 
     // 3) Spielspuren: ein Spiel mit dem stillen Skript schreibt anmacha-seen
