@@ -85,7 +85,7 @@ p{margin:0;font-size:34px;line-height:1.3;color:#cfd8f4;max-width:560px}
 .ft{position:absolute;left:84px;bottom:28px;display:flex;align-items:center;gap:14px;font-weight:800;font-size:24px;color:#9fb0d6}.ft img{height:38px;width:38px;border-radius:10px}.ft b{color:#fff}</style>
 <div class="bg"></div><div class="grid">${tiles}</div><div class="fade"></div>
 <div class="tx"><div class="ey">${esc(P.eyebrow)}</div><h1>${esc(P.title)}</h1><p>${esc(P.sub)}</p></div>
-<div class="cta">▶ ${GAMES.length} Spiele – jetzt spielen</div>
+<div class="cta">▶ Jetzt kostenlos spielen</div>
 <div class="ft">${logo ? `<img src="${logo}">` : ''}<span><b>easygames</b> · Spiele für Browser, Handy &amp; TV</span></div>`;
 }
 
