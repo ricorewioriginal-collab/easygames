@@ -215,7 +215,10 @@ export class InstanceField {
         cx /= arr.length; cz /= arr.length; cy /= arr.length;
         let radius = 0;
         for (const it of arr) radius = Math.max(radius, Math.hypot(it.x - cx, it.z - cz) + 6 * it.s + (def.extent || 0));
-        this.groups.push({ center: new THREE.Vector3(cx, cy + 3, cz), radius, high: mk(def.high), low: mk(def.low ?? def.high), lod: def.low !== undefined, far: def.far ?? 1 });
+        // without a separate low-detail model one mesh serves both distances
+        // (it used to be built twice: double instance buffers for nothing)
+        const high = mk(def.high), low = def.low ? mk(def.low) : high;
+        this.groups.push({ center: new THREE.Vector3(cx, cy + 3, cz), radius, high, low, lod: !!def.low && low !== high, far: def.far ?? 1 });
       }
     }
     return this.root;
