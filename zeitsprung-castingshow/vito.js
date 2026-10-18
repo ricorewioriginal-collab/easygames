@@ -4,7 +4,7 @@ const synth = typeof speechSynthesis !== 'undefined' ? speechSynthesis : null;
 // Bekannte männliche deutsche Systemstimmen (Windows/Edge, macOS/iOS, Chrome OS, Android-Varianten).
 const MALE = /\b(stefan|conrad|killian|florian|kasper|markus|yannick|viktor|martin|reed|grandpa|rocko|eddy|ralf|jonas|bernd|klaus|hans|male|männlich|mann)\b/i;
 const FEMALE = /female|weiblich|\bfrau\b|anna|petra|helena|hedda|katja|amala|seraphina|marlene|vicki|sandy|shelley|flo\b|grandma|louisa|elke|ingrid|gisela|tanja|ilse|katharina|maja|sabine|leni|hanna/i;
-let voice = null, male = false, ready = null;
+let voice = null, male = false, ready = null, chain = Promise.resolve();
 
 function pick() {
   if (!synth) return;
@@ -30,6 +30,16 @@ function whenReady() {
 }
 synth?.addEventListener?.('voiceschanged', pick);
 
+// Handys (iOS Safari, Chrome für Android) geben die Sprachausgabe erst frei, wenn sie einmal direkt in einem
+// Tipp gestartet wurde. Darum beim ersten Tipp eine stumme Ansage abspielen; danach darf Vito jederzeit sprechen.
+function unlock() {
+  ['pointerdown', 'touchend', 'click', 'keydown'].forEach(type => removeEventListener(type, unlock, true));
+  if (!synth) return;
+  pick();
+  try { const silent = new SpeechSynthesisUtterance(' '); silent.volume = 0; silent.lang = 'de-DE'; synth.speak(silent); } catch (_) {}
+}
+if (synth && typeof addEventListener === 'function') ['pointerdown', 'touchend', 'click', 'keydown'].forEach(type => addEventListener(type, unlock, { capture: true, passive: true }));
+
 const clean = text => String(text || '')
   .replace(/(\d+) v\. Chr\./g, '$1 vor Christus')
   .replace(/A[–-]D/g, 'A bis D')
@@ -42,14 +52,17 @@ export function stop() { try { synth?.cancel(); } catch (_) {} }
 export function speak(text, { queue = false } = {}) {
   const message = clean(text);
   if (!synth || !message) return;
+  // Chrome für Android verschluckt eine Ansage, die direkt nach dem Abbrechen startet: dann kurz warten.
+  const busy = !queue && (synth.speaking || synth.pending);
   if (!queue) stop();
-  whenReady().then(() => {
+  // Eine Kette hält die Reihenfolge: eine angehängte Frage startet nie vor der Begrüßung davor.
+  chain = chain.then(whenReady).then(() => new Promise(resolve => busy ? setTimeout(resolve, 120) : resolve())).then(() => {
     const line = new SpeechSynthesisUtterance(message);
     line.lang = 'de-DE'; line.rate = 1.02;
     // Ohne männliche Systemstimme klingt die Standardstimme mit tieferer Tonlage eher nach Vito.
     line.pitch = male ? .95 : .8;
     if (voice) line.voice = voice;
-    try { synth.speak(line); } catch (_) {}
+    try { if (synth.paused) synth.resume(); synth.speak(line); } catch (_) {}
   });
 }
 
