@@ -49,6 +49,13 @@ const host = mk((q, r) => { r.writeHead(200, { 'content-type': 'text/html' }); i
   const p2 = await c.newPage(); p2.on('pageerror', e => errors.push(e.message));
   await p2.goto(hurl + 'b'); await p2.frameLocator('#f').locator('#nm', { hasText: 'Host Person' }).waitFor({ timeout: 8000 });
   console.log('PASS Seite mit eigenem Login: das eingebettete Konto übernimmt den Login der Seite');
+  // Konto-Menü auf fremder Seite: Punkte öffnen im Fenster der Seite (kein Wechsel zu GitHub)
+  await p2.evaluate(() => AnMaChaAccount.mount('#hp', {})); let popups = 0; c.on('page', () => popups++);
+  await p2.click('#hp .eg-acc-b'); await p2.click('#hp .eg-acc-m a:has-text("Konto & Übersicht")');
+  await p2.waitForSelector('div[role=dialog] iframe[src*="konto.html?embed=1"]');
+  assert.strictEqual(p2.url().split('#')[0], hurl + 'b'); await new Promise(r => setTimeout(r, 300)); assert.strictEqual(popups, 0, 'kein neuer Tab');
+  console.log('PASS Konto-Menü: Seiten öffnen im Fenster der eigenen Seite (kein Wechsel zu GitHub, kein neuer Tab)');
+  await p2.click('div[role=dialog] button:has-text("Schließen")');
   await p2.evaluate(() => AnMaChaAccount.logout()); await p2.frameLocator('#f').locator('#nm', { hasText: 'Nicht angemeldet' }).waitFor({ timeout: 8000 });
   console.log('PASS Abmelden auf der Seite meldet auch das eingebettete Konto ab');
   // Angemeldet (Konto-Token, z. B. Login im Kopf oder bei den Bewertungen) → ein gestartetes Spiel ist automatisch angemeldet
@@ -58,6 +65,22 @@ const host = mk((q, r) => { r.writeHead(200, { 'content-type': 'text/html' }); i
   await p4.addInitScript(() => { localStorage.setItem('anmacha-rating-token', 'x.y'); localStorage.setItem('anmacha-rating-user', JSON.stringify({ name: 'Rico', picture: '' })); });
   await p4.goto(gbase + 'anmacha-snake/index.html'); await p4.waitForFunction(() => window.AnMaChaCloud && AnMaChaCloud.user() && AnMaChaCloud.user().displayName === 'Rico', null, { timeout: 8000 });
   console.log('PASS Spiel: mit Konto-Token automatisch angemeldet (ohne extra Cloud-Schalter)');
+  // Nur Konto-Token (z. B. Login im Portal): Ranglisten/Erfolge/Profil brauchen Firebase → still aus dem Konto-Token (account_fbtoken), ohne zweite Anmeldung
+  const c5 = await b.newContext(); let fbCalls = 0;
+  await c5.route(/^https?:\/\/(?!127)/, r => {
+    const u = new URL(r.request().url()), cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' };
+    if (/firebase-app\.js/.test(u.href)) return r.fulfill({ contentType: 'text/javascript', headers: cors, body: 'export const initializeApp=()=>({});' });
+    if (/firebase-auth\.js/.test(u.href)) return r.fulfill({ contentType: 'text/javascript', headers: cors, body: 'let cur=null;export const getAuth=()=>({});export const onAuthStateChanged=(a,cb)=>{setTimeout(()=>cb(cur),5);return()=>{}};export class GoogleAuthProvider{};export const signInWithCustomToken=async(a,t)=>{if(t!=="custom-jwt")throw Error("bad token");cur={uid:"fbuid-1",displayName:"Rico",refreshToken:"rt-neu",getIdToken:async()=>"idtok"};return {user:cur};};export const signOut=async()=>{};' });
+    if (u.host === 'www.ricorewi-radio.de' && u.searchParams.get('action') === 'account_fbtoken') { fbCalls++; return r.fulfill({ status: 200, contentType: 'application/json', headers: cors, body: '{"status":"ok","token":"custom-jwt","uid":"fbuid-1"}' }); }
+    return r.fulfill({ status: 404, contentType: 'application/json', headers: cors, body: '{}' });
+  });
+  const p5 = await c5.newPage();
+  await p5.addInitScript(() => { localStorage.setItem('anmacha-rating-token', 'x.y'); localStorage.setItem('anmacha-rating-user', JSON.stringify({ name: 'Rico', picture: '' })); });
+  await p5.goto(gbase + 'konto.html'); await p5.waitForFunction(() => window.AnMaChaCloud);
+  const ac = await p5.evaluate(() => AnMaChaCloud.account());
+  assert.ok(ac && ac.uid === 'fbuid-1' && ac.token === 'idtok', 'Firebase-Anmeldung aus dem Konto-Token'); assert.strictEqual(fbCalls, 1);
+  assert.strictEqual(await p5.evaluate(() => localStorage.getItem('anmacha-cloud-rt')), 'rt-neu');
+  console.log('PASS Nur Konto-Token: Firebase-Anmeldung (Ranglisten, Erfolge …) läuft still mit, ohne zweite Anmeldung');
   // App (Android/Windows): Google sperrt die Anmeldung im App-Fenster → Kopplungs-Link im Konto-Menü
   const c3 = await b.newContext({ userAgent: 'Mozilla/5.0 EasyGamesApp/1.0', viewport: { width: 390, height: 800 } });
   await c3.route(/^https?:\/\/(?!127)/, r => r.request().url().includes('firestore.googleapis.com') ? r.fulfill({ status: 404, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '{}' }) : r.abort());

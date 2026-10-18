@@ -213,6 +213,22 @@
       });
     }));
   }
+  // Konto-Token → Firebase-Anmeldung ohne Popup: Der Server (account_fbtoken) stellt aus dem Konto-Token ein Firebase-Anmelde-Token für dieselbe Person aus (Dienstkonto-Schlüssel nur auf dem Server).
+  // So sind Ranglisten, Erfolge, Profil und Chat auch dort angemeldet, wo man sich nur über das Portal/den Kopf angemeldet hat. Ohne Schlüssel auf dem Server bleibt alles wie bisher.
+  var upgP = null;
+  function upgrade() {
+    if (upgP) return upgP;
+    var t = ''; try { t = LS.getItem(OT) || ''; } catch (e) {}
+    if (!t || APP) return Promise.resolve(null);
+    upgP = fetch(API + '?action=account_fbtoken', { headers: { Authorization: 'Bearer ' + t } }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (!j || !j.token) return null;
+      return Promise.all([import(SDK + 'firebase-app.js'), import(SDK + 'firebase-auth.js')]).then(function (m) {
+        fb = m[1]; auth = fb.getAuth(m[0].initializeApp({ apiKey: CONFIG.apiKey, authDomain: CONFIG.authDomain || CONFIG.projectId + '.firebaseapp.com', projectId: CONFIG.projectId }));
+        return fb.signInWithCustomToken(auth, j.token);
+      }).then(function (r) { user = r.user; keepRt(user); render(); return user; });
+    }).catch(function () { upgP = null; return null; });
+    return upgP;
+  }
   // anmacha-account.js (ein Login für alles) bei Bedarf nachladen; liegt es nicht neben diesem Skript, bleibt die Firebase-Anmeldung dieses Skripts
   function withAccount(cb) {
     if (window.AnMaChaAccount) return cb(true);
@@ -555,7 +571,8 @@
     if (!wanted()) return Promise.resolve(null);
     return loadSdk().then(function (u) {
       u = u || user;
-      if (!u || u.own) return null;   // Firestore-Funktionen brauchen die Firebase-Anmeldung
+      if (u && u.own) return upgrade().then(function (fu) { return fu ? fu.getIdToken().then(function (t) { return { uid: fu.uid, name: fu.displayName || u.displayName || '', token: t, project: CONFIG.projectId }; }) : null; });   // Firestore-Funktionen brauchen die Firebase-Anmeldung
+      if (!u) return null;
       return u.getIdToken().then(function (t) { return { uid: u.uid, name: u.displayName || '', token: t, project: CONFIG.projectId }; });
     }).catch(function () { return null; });
   }
