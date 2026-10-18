@@ -35,7 +35,7 @@ Kinderspiel mit kleiner offener Insel-Welt (Three.js r128 per CDN, sonst keine B
 - **🛋️ Zimmer einrichten** (Spielkiste im Kinderzimmer): Tapete, Teppich, Bettwäsche, 4 Deko-Plätze, Wand-Deko.
 - **🚲 Fahrrad & 🛴 Tretroller** (leise, mit Klingel) und **⛺ Camp** mit Lagerfeuer: Geschichten zum Vorlesen, Marshmallows.
 - **Mehrspieler**: 🎂 **Geburtstagsparty** (Kuchen, Konfetti, gemeinsamer Tanz, Sterne für alle in der Nähe) und **🏠 Besuchen** (zur Wohnung eines Freundes).
-- **🥊 Kampfarena** (Nordosten, Kampfmeister Kai): **Duell wie bei Tekken** gegen Ninja Nele, Sumo Sam oder Roboter Rudi (Seitenkamera, 2 Gewinnrunden, Schlag 👊 / Tritt 🦵 / Spezial ✨ / Block 🛡️, Tasten J K L H) und **Monster-Wellen** (5 Wellen, Boss Riesen-Glibbi). **🌲 Verbotener Wald** (Norden): freier Kampf gegen kleine Monster (Glibbi, Stachli, Pilzling), Herzen ❤️ und Energie-Kristalle 💎 als Beute, alle 10 Monster erscheint der **Waldgeist**. Mit **HP und EP**, ohne Blut (besiegte Monster verpuffen in Sterne, wer müde wird, wacht am Eingang auf). **Nur in diesen beiden Bereichen wird gekämpft** – überall sonst gibt es keine Kampf-Knöpfe.
+- **🥊 Kampfarena** (Nordosten, Kampfmeister Kai): **Duell wie bei Tekken** gegen Ninja Nele, Sumo Sam oder Roboter Rudi (Seitenkamera, 2 Gewinnrunden, Schlag 👊 / Tritt 🦵 / Spezial ✨ / Block 🛡️, Tasten J K L H) und **Monster-Wellen** (5 Wellen, Boss Riesen-Glibbi). **🌲 Wald-Insel** (hinter der Rätsel-Insel; das 🌀 Waldtor im alten Verbotenen Wald im Norden führt hin): freier Kampf gegen kleine Monster (Glibbi, Stachli, Pilzling), Herzen ❤️ und Energie-Kristalle 💎 als Beute, alle 10 Monster erscheint der **Waldgeist**. Mit **HP und EP**, ohne Blut (besiegte Monster verpuffen in Sterne, wer müde wird, wacht am Eingang auf). **Nur in diesen beiden Bereichen wird gekämpft** – überall sonst gibt es keine Kampf-Knöpfe.
 - **🎈 Pappnase** lässt sich im Kleiderschrank oder im Schnellmenü an- und ablegen.
 - **🧑 Charakter-Editor** vor dem ersten Start (und im Menü „Mein Held“ / im Kleiderschrank): Name, Haut-/Augenfarbe, Mund, Sommersprossen, 11 Frisuren + Haarfarbe, Oberteil/Hose/Kleid/Latzhose, Streifen, Aufdruck, Schuhe, Mütze, Brille/Rucksack/Umhang/Flügel, Größe, Haustier – mit Live-Vorschau.
 - **🚂 Zug fahren**: am Bahnsteig den Knopf „Zug fahren“ drücken – der Zug fährt vor und man steigt als Lokführer ein. Autos stehen nie auf den Schienen (falsch abgestellte werden neben die Strecke gesetzt).
@@ -370,11 +370,11 @@ Jede Welt hat jetzt eigene Bewohner und Tiere passend zum Thema – gefüllt wir
 
 ### 🗝️ Schlüsselreich – die Lichtschlüssel-Insel (Westen)
 Eigene, frei erfundene Abenteuer-Insel (Welt "Herzlicht", eigene Musik): riesige Statue des **Lichtwanderers Lio** auf dem Glasmosaik-Platz, fünf Gebiete mit je einem **Schlüsselloch** (Strand der Freunde, Dämmerstadt mit Uhrturm/Eis/Sonnenhügel, Kristall-Burg mit Licht-Rätsel, Wald der Schatten, Schleier-Turm), ~30 Figuren (Meister Orrin, Rivo, Luma, Pico, Bruno, Wuscheln …).
-- **Keine Gegner mehr im Schlüsselreich**: Die Schattenwächter sind jetzt **steinerne Statuen** links und rechts vom Tor der Herzen (begrüßen = +1 ⭐). Ihre wilden Brüder leben im **Verbotenen Wald** (siehe unten).
+- **Keine Gegner mehr im Schlüsselreich**: Die Schattenwächter sind jetzt **steinerne Statuen** links und rechts vom Tor der Herzen (begrüßen = +1 ⭐). Ihre wilden Brüder leben auf der **Wald-Insel** (siehe unten).
 - **Mitmachen**: **Lichtzauber** (Aktionstaste / Spaß-Aktion) zündet die Laternen der Insel an (12 → +2 ⭐), **8 Glühpilze** im Wald der Schatten öffnen das Schlüsselloch Wald, **Sternfrüchte, Pilze, Laternen und Sterne** geben 💎 Herz-Kristalle für den **Wuschel-Laden** (5 Lichtschlüssel-Aussehen).
 - **Autos fahren hier**: Ringstraße um den Platz mit Zufahrten zu Strand, Dämmerstadt, Burg, Wuschel-Dorf, Wald und Hafen (Straßen = volle Fahrt). Ein Auto und ein Taxi stehen am Strand-Eingang; **12 Sterne auf der Ringstraße** einsammeln (zu Fuß oder mit dem Auto) = Runde geschafft.
 - Alle fünf Schlüssellöcher offen → **Tor der Herzen** → Feuerwerk, ⭐ und Sticker „Lichtwanderer“.
-- **Verbotener Wald**: Hier treffen sich jetzt die **Gegner aller Welten** – Glibbi, Stachli, Pilzling (Hauptinsel), **Dunkelwichtel** und **Dunkelriese** (Schlüsselreich), **Moosling, Dornenwolf, Frostgeist, Lavadrache** (Zotik – Lunaris) – plus Boss Waldgeist. Test: `tests/wald.mjs`.
+- **Wald-Insel** (früher Verbotener Wald): Hier treffen sich jetzt die **Gegner aller Welten** – Glibbi, Stachli, Pilzling (Hauptinsel), **Dunkelwichtel** und **Dunkelriese** (Schlüsselreich), **Moosling, Dornenwolf, Frostgeist, Lavadrache** (Zotik – Lunaris) – plus Boss Waldgeist. Test: `tests/wald.mjs`.
 - Highlight: **Schlüsselschwert-Mobil** (fliegendes Fahrzeug, am Sternen-Hafen oder per "Rufen"), 2 Spiele + 2 Automaten, Sticker, Aufgaben-Log, Wohin-Menü, Sammeln (Angeln am Rand).
 - Test: `node bunte-insel/tests/schluessel.mjs`
 
@@ -396,26 +396,26 @@ Sauberer Zugang: Holzsteg mit Torbogen und Tafel (🧭 „Badestrand & Wasserpar
 
 ### 🎠 Märchenland: Märchenpark-Gefühl & viel Mitmachen
 Neu in `js/maerchenplus.js`: **Märchen-Karussell** 🎠, **Schwanenboot** 🦢 durch die Perlenlagune, **Eisrutsche** 🛷 vom Frostgipfel-Gipfel, **Schloss-Show** 🎆 (Pult vor dem Schloss: Lichtstrahlen, Feuerwerk, Musik), **Märchen-Umzug** 🎭 (Wagen + tanzender Willi, alle ~3 Minuten oder am Pult; 8 Sekunden mitlaufen = ⭐), **Stempelheft** 🔖 (10 Orte besuchen), **Willi umarmen** 💛, **Popcorn-Wagen** 🍿, **Mausohren-Laden** 🐭 (Mausohren aufsetzen), Fähnchen-Girlanden an der Hauptstraße. 7 neue Sticker, 9 Aufgaben. Test: `tests/maerchenplus.mjs`.
-**Verbotener Wald** bekommt Trickfilm-Gegner (eigene Namen, inspiriert von Abenteuern in vergessenen Zeichentrick-Welten): **Tintenklecks**, **Käfer-Roboter**, **Verdünner-Geist**, **Skizzen-Wicht** und als dritter Boss **Der große Klecks** (neben Waldgeist und Dunkelriese); Tintenpfützen am Boden. Sticker „Klecks-Bezwinger“ und „Trickfilm-Held“.
+**Wald-Insel** (früher Verbotener Wald) bekommt Trickfilm-Gegner (eigene Namen, inspiriert von Abenteuern in vergessenen Zeichentrick-Welten): **Tintenklecks**, **Käfer-Roboter**, **Verdünner-Geist**, **Skizzen-Wicht** und als dritter Boss **Der große Klecks** (neben Waldgeist und Dunkelriese); Tintenpfützen am Boden. Sticker „Klecks-Bezwinger“ und „Trickfilm-Held“.
 
 
 ### 🧽🦀 Schwammi-Bucht – die Unterwasser-Stadt-Insel (hoher Norden)
 Eigene, frei erfundene Insel (nur INSPIRIERT von Trickfilm-Serien am Meeresgrund – eigene Namen und Formen): **Schwammi**, **Sternchen**, **Tadeus Tintenfuß**, **Sunny das Eichhörnchen**, **Käpt'n Zangenfuß**, **Winzling Plankto**, Meeresmann & Napfschnecken-Bub, Frau Kugelfisch, Hummer-Lenny u. a. (12 Figuren), Musik „Meeresgrund-Sommer“. Code: `js/schwamm.js`, Test: `tests/schwamm.mjs`.
-- **🦀 Die Knusper-Krabbe** (Schiffsrumpf-Restaurant, begehbar): an der **Theke Speisekarte** – Krabbenburger, Quallen-Shake, Algen-Pommes, Seetang-Salat, Muschel-Eis. **🍽️ Essen** = du setzt dich an einen Tisch und isst; **🎒 Mit** = ins Rucksack (Burger heilt +70 ❤️, Shake +40 ⚡ im Verbotenen Wald). Bezahlt wird mit ⭐, jede 5. Mahlzeit ist gratis (Treuekarte). Quallen-Gelee gegen ⭐ abgeben.
+- **🦀 Die Knusper-Krabbe** (Schiffsrumpf-Restaurant, begehbar): an der **Theke Speisekarte** – Krabbenburger, Quallen-Shake, Algen-Pommes, Seetang-Salat, Muschel-Eis. **🍽️ Essen** = du setzt dich an einen Tisch und isst; **🎒 Mit** = ins Rucksack (Burger heilt +70 ❤️, Shake +40 ⚡ auf der Wald-Insel). Bezahlt wird mit ⭐, jede 5. Mahlzeit ist gratis (Treuekarte). Quallen-Gelee gegen ⭐ abgeben.
 - **🍔 Burger selber braten**: am Grill hinter der Theke → Mini-Spiel (Fleisch im richtigen Moment wenden = grüner Ring, Zutaten in Bestell-Reihenfolge stapeln, Brötchen drauf).
 - **🪼 Quallenfischen** im Quallenfeld (Aktionstaste = Kescher), **Schwammis Fruchthaus** (klingeln, Schneckerich streicheln – „Miau“), **Sternchens Stein** (hochheben), **Tadeus' Steinkopf** (Klarinette hören), **Sunnys Luftkuppel** (Karate-Puppe, 10 Schläge = ⭐), **Eimerchen** von Plankto.
 - **🛁 Wannen-Mobil** (Meeresmann & Napfschnecken-Bub): fahrbare Badewanne am Heldenheim; nach dem Aussteigen fährt sie von allein zurück zum Standplatz.
-- **Verbotener Wald**: **Winzling Plankto** (schnell, klein) und sein **Riesen-Roboter** (4. Boss) greifen an; Sticker „Plankto-Bezwinger“. 5 neue Sticker, 8 Aufgaben.
+- **Wald-Insel** (früher Verbotener Wald): **Winzling Plankto** (schnell, klein) und sein **Riesen-Roboter** (4. Boss) greifen an; Sticker „Plankto-Bezwinger“. 5 neue Sticker, 8 Aufgaben.
 
 
 ### 🗿⚔️ Rätsel-Insel der Uralten – Rollenspiel-Abenteuer (Südwesten)
 Eigene Insel, INSPIRIERT von klassischen 16-Bit-Rollenspielen mit Rätsel-Verliesen und Kapselmonstern (Lufia 2: Werkzeug-Rätsel mit Bomben/Bogen/Enterhaken, Kapselmonster, Uralte Höhle, schwebende Titanen-Festung, Schmieden) – aber mit **eigenen Namen und Formen**: Held Milo, Sela, Gunnar, Alchemist Arto, Kapselmeisterin Pim, Schmied Brokk u. a. (12 Figuren), Musik „Heldenreise“. Code: `js/raetsel.js`, Test: `tests/raetsel.mjs`.
 - **🏯 Prüfungsturm** (3 Kammern, Tore): **Truhen** geben Werkzeuge → 💣 Bomben (Vorhalle), 🏹 Bogen (nach dem **Block-Rätsel**: Block 2 m weise auf die Bodenplatte schieben, Altar = zurücksetzen), 🔷 **Kristall** mit Pfeil treffen (Brücke über das Becken + Tor), rissige Wand **sprengen** → 🪝 Enterhaken, **über den Abgrund** zum Schatz. Aktionstaste wählt automatisch das passende Werkzeug. Zustand wird gespeichert.
-- **🥚 Kapselmonster** (Feuer/Wasser/Wind): Ei am Kapsel-Schrein wählen, mit Essen aus dem Rucksack **füttern → 5 Entwicklungsstufen**, folgt dir überall und **kämpft im Verbotenen Wald mit**.
-- **⚒️ Schmiede**: Schwert verbessern (Holz → Eisen → Silber → Runen → Titan, +18 % Schaden je Stufe im Verbotenen Wald), in der Hand sichtbar.
+- **🥚 Kapselmonster** (Feuer/Wasser/Wind): Ei am Kapsel-Schrein wählen, mit Essen aus dem Rucksack **füttern → 5 Entwicklungsstufen**, folgt dir überall und **kämpft auf der Wald-Insel mit**.
+- **⚒️ Schmiede**: Schwert verbessern (Holz → Eisen → Silber → Runen → Titan, +18 % Schaden je Stufe auf der Wald-Insel), in der Hand sichtbar.
 - **🕳️ Uralte Höhle**: Mini-Spiel im Nebel – Truhen 🎁 sammeln, Schleimis 👾 ausweichen, Treppe 🪜 finden, immer neue Stockwerke.
 - 6 rote/blaue **Schatztruhen** rund ums Dorf (eine hinter einem Fels, den man sprengen muss), schwebende Titanen-Festung am Himmel, 12 Aufgaben, 7 neue Sticker.
-- **Verbotener Wald**: 5. Boss **Titan Kron** (steinerner Riese).
+- **Wald-Insel** (früher Verbotener Wald): 5. Boss **Titan Kron** (steinerner Riese).
 - **Strand & Meer überall**: man kann jetzt von jedem Strand der Hauptinsel und aller Inseln ins Meer und rundherum **schwimmen** (keine unsichtbaren Mauern mehr, `tests/meer.mjs`). Märchenland: breite Basar-Gassen, **Märchen-Taxi** (Taxifahrer Theo) mit Straße.
 
 ### 🚪 Gebäude betreten – Open-World-Prinzip (`js/innen.js`)

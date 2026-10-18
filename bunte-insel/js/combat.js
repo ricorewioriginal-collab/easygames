@@ -281,7 +281,7 @@ BI.createCombat = function (G) {
     const act = K.active(); combatClock += dt; inv = Math.max(0, inv - dt); atkCd = Math.max(0, atkCd - dt); freeze = Math.max(0, freeze - dt); flashT = Math.max(0, flashT - dt);
     const fz = inSmall() ? 's' : inBig() ? 'b' : ''; if (fz !== wasZone) { wasZone = fz; if (fz) { resetStats(); K.kills = 0; K.nextBoss = 10; bossAlive = false; say(inBig() ? '🌲 Wald-Insel – hier wird gekämpft! Im 🏕️ Lager bist du sicher. (👊 ' + gv('weapon', { icon: '👊' }).icon + ', 🦵, ✨, 🛡️)' : '🌲 Verbotener Wald – hier wird gekämpft! (👊 Schlag, 🦵 Tritt, ✨ Spezial, 🛡️ Block)', 4800); } else if (!mode) { clearEnemies(); } }
     K.dim += ((fz ? (inBig() ? .35 : .7) : 0) - K.dim) * Math.min(1, dt * 1.5);
-    if (act && hp > 0) { ep = Math.min(EPM, ep + dt * (block ? 1 : 4)); if (!mode && Math.hypot(P.x - FO.x, P.z - FO.z) < FO.R && enemies.length === 0) hp = Math.min(HPM, hp + dt * 1.5); if (safe()) { hp = Math.min(HPM, hp + dt * 12); ep = Math.min(EPM, ep + dt * 10); } }
+    if (act && hp > 0) { ep = Math.min(EPM, ep + dt * (G.gear && G.gear.open ? 0 : block ? 1 : 4)); if (!mode && Math.hypot(P.x - FO.x, P.z - FO.z) < FO.R && enemies.length === 0) hp = Math.min(HPM, hp + dt * 1.5); if (safe()) { hp = Math.min(HPM, hp + dt * 12); ep = Math.min(EPM, ep + dt * 10); } }
     if (act && fz) forestSpawn(dt);
     if (mode === 'wave') { if (wave.n > 0 && enemies.every(e => e.dead)) { wave.gap += dt; if (wave.gap > 1.4) { wave.gap = 0; if (wave.n >= 5) { addStars(10); S().w++; persist(); say('🏆 Alle Wellen geschafft! +10 ⭐', 4200); A.fanfare(); G.earn('fight'); clearEnemies(); mode = null; resetStats(); P.x = AR.kai.x; P.z = AR.kai.z + 2.2; } else nextWave(); } } }
     if (duel && !duel.over) updateDuel(dt, t);

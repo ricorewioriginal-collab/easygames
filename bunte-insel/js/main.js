@@ -1576,7 +1576,7 @@
     { id: 'shop', icon: '🧸', name: 'Spielzeugladen', at: () => ({ x: SPOT.shop.x, z: SPOT.shop.z + 8 }) }, { id: 'range', icon: '🎯', name: 'Schießbude', at: () => ({ x: SPOT.range.x, z: SPOT.range.z }) },
     { id: 'hof', icon: '🥕', name: 'Hofladen', at: () => SPOT.farm.customer }, { id: 'fields', icon: '🌾', name: 'Felder & Maschinen', at: () => ({ x: -100, z: 56 }) },
     { id: 'city', icon: '🏙️', name: 'Stadt', at: () => ({ x: 0, z: -236 }) }, { id: 'shops', icon: '🛒', name: 'Einkaufsstraße', at: () => ({ x: 0, z: -265 }) },
-    { id: 'arena', icon: '🥊', name: 'Kampfarena', at: () => ({ x: SPOT.arena.kai.x, z: SPOT.arena.kai.z + 3 }) }, { id: 'forest', icon: '🌀', name: 'Alter Wald & Waldtor (zur Wald-Insel)', at: () => ({ x: SPOT.forest.gate.x, z: SPOT.forest.gate.z }) },
+    { id: 'arena', icon: '🥊', name: 'Kampfarena', at: () => ({ x: SPOT.arena.kai.x, z: SPOT.arena.kai.z + 3 }) }, { id: 'forest', icon: '🌀', name: 'Alter Wald & Waldtor (zur Wald-Insel)', at: () => ({ x: SPOT.forest.gx, z: SPOT.forest.gz }) },
     { id: 'obby', icon: '🏁', name: 'Himmels-Parcours', at: () => obby.pad },
     { id: 'park', icon: '🎡', name: 'Freizeitpark', at: () => ({ x: BI.PARK.bridge.x1 + 6, z: BI.PARK.z }) },
     { id: 'lighthouse', icon: '💡', name: 'Leuchtturm (Hauptinsel)', at: () => ({ x: SPOT.lighthouse.x, z: SPOT.lighthouse.z + 5 }) },
