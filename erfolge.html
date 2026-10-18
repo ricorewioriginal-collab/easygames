@@ -86,7 +86,7 @@ h2.sec{font-size:17px;margin:26px 2px 4px}
   </div>
   <ul class="grid" id="grid"></ul>
 
-  <h2 class="sec" id="ogTitle" hidden>🎯 Erfolge in den Spielen</h2>
+  <h2 class="sec" id="ogTitle" hidden>🎯 Erfolge und Medaillen je Spiel</h2>
   <p class="sub" id="ogSub" hidden></p>
   <div id="og"></div>
 
@@ -145,20 +145,24 @@ window.addEventListener('DOMContentLoaded', function () {
     return out;
   }
   function drawOwn() {
-    var gu = (res && res.state && res.state.gu) || {}, ids = Object.keys(ownData), total = 0, done = 0, icon = {};
-    games.forEach(function (g) { if (g.cloud && g.cloud.game) icon[g.cloud.game] = g.icon; });
-    var rows = ids.map(function (g) {
-      var o = ownData[g], got = {}, n = 0;
+    var gu = (res && res.state && res.state.gu) || {}, pg = (res && res.stats && res.stats.perGame) || {}, medals = A.MEDALS || [], total = 0, done = 0, icon = {}, title = {}, ids = {};
+    games.forEach(function (g) { if (g.cloud && g.cloud.game) { icon[g.cloud.game] = g.icon; title[g.cloud.game] = String(g.title || g.cloud.game).split(' – ')[0]; ids[g.cloud.game] = 1; } });
+    Object.keys(ownData).forEach(function (g) { ids[g] = 1; });
+    var rows = Object.keys(ids).map(function (g) {
+      var o = ownData[g] || { title: title[g] || g, defs: [], unlocked: {} }, got = {}, n = 0, m = pg[g] || { days: 0, got: [] }, mg = medals.map(function (d, i) { return !!m.got[i]; });
       o.defs.forEach(function (d) { if (o.unlocked[d.id] || gu[g + ':' + d.id]) { got[d.id] = o.unlocked[d.id] > 1 ? o.unlocked[d.id] : gu[g + ':' + d.id] || 1; n++; } });
       total += o.defs.length; done += n;
-      return { g: g, o: o, got: got, n: n };
-    }).sort(function (a, b) { return (b.n / b.o.defs.length) - (a.n / a.o.defs.length) || a.o.title.localeCompare(b.o.title, 'de'); });
+      var cnt = n + mg.filter(Boolean).length, all = o.defs.length + medals.length;
+      return { g: g, o: o, got: got, n: cnt, all: all, mg: mg, days: m.days };
+    }).sort(function (a, b) { return (b.n / b.all) - (a.n / a.all) || a.o.title.localeCompare(b.o.title, 'de'); });
     $('ogTitle').hidden = $('ogSub').hidden = !rows.length;
-    $('ogSub').textContent = 'Manche Spiele haben ihre eigenen Erfolge – hier gesammelt: ' + done + ' von ' + total + ' freigeschaltet (zählt für „Spiel-Erfolge“ oben).';
+    $('ogSub').textContent = 'Jedes Spiel hat Medaillen für treues Spielen (zählt für „Medaillen“ oben). Manche Spiele haben zusätzlich eigene Erfolge: ' + done + ' von ' + total + ' freigeschaltet (zählt für „Spiel-Erfolge“).';
     $('og').innerHTML = rows.map(function (r) {
-      var pct = Math.round(100 * r.n / Math.max(1, r.o.defs.length));
-      return '<details class="og' + (r.n === r.o.defs.length ? ' full' : '') + '"><summary><span class="ogi" aria-hidden="true">' + esc(icon[r.g] || '🎮') + '</span><b>' + esc(r.o.title) + '</b><i class="ogb" aria-hidden="true"><u style="width:' + pct + '%"></u></i><span class="ogc">' + r.n + ' / ' + r.o.defs.length + '</span></summary><ul>' +
-        r.o.defs.map(function (d) { var on = !!r.got[d.id]; return '<li class="' + (on ? 'done' : '') + '"><span class="ci" aria-hidden="true">' + esc(on ? d.icon : '🔒') + '</span><span><b>' + esc(d.title) + '</b>' + (d.desc ? '<small>' + esc(d.desc) + '</small>' : '') + (on && r.got[d.id] > 1 ? '<small>seit ' + fmtDate(r.got[d.id]) + '</small>' : '') + '</span></li>'; }).join('') + '</ul></details>';
+      var pct = Math.round(100 * r.n / Math.max(1, r.all));
+      function li(on, ic, t, d, since, md) { return '<li class="' + (on ? 'done' : '') + (md ? ' md' : '') + '"><span class="ci" aria-hidden="true">' + esc(on ? ic : '🔒') + '</span><span><b>' + esc(t) + '</b>' + (d ? '<small>' + esc(d) + '</small>' : '') + (on && since > 1 ? '<small>seit ' + fmtDate(since) + '</small>' : '') + '</span></li>'; }
+      return '<details class="og' + ((r.o.defs.length ? r.o.defs.length === r.n - r.mg.filter(Boolean).length : r.n === r.all) ? ' full' : '') + '"><summary><span class="ogi" aria-hidden="true">' + esc(icon[r.g] || '🎮') + '</span><b>' + esc(r.o.title) + '</b><i class="ogb" aria-hidden="true"><u style="width:' + pct + '%"></u></i><span class="ogc">' + r.n + ' / ' + r.all + '</span></summary><ul>' +
+        medals.map(function (d, i) { return li(r.mg[i], d.icon, d.title, d.desc + (!r.mg[i] && r.days ? ' (bisher ' + r.days + ')' : ''), 0, 1); }).join('') +
+        r.o.defs.map(function (d) { return li(!!r.got[d.id], d.icon, d.title, d.desc, r.got[d.id]); }).join('') + '</ul></details>';
     }).join('');
   }
   function drawMe() {
