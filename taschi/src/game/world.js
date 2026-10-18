@@ -18,6 +18,8 @@ import { createRng } from '../core/rng.js';
 import { makeMonster } from '../logic/monster.js';
 import { globalUniforms } from '../engine/materials.js';
 
+// NPC steering: straight ahead first, then gradually wider detours
+const STEER = [0, 0.7, -0.7, 1.4, -1.4];
 const RING = Array.from({ length: 8 }, (_, i) => [Math.sin(i * Math.PI / 4) * 0.32, Math.cos(i * Math.PI / 4) * 0.32]);
 const TMP = new THREE.Vector3();
 const angDiff = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
@@ -63,10 +65,15 @@ export class World {
 
   // ------------------------------------------------------------------ loading
   async loadRegion(r, spawnKey = 'start', onProgress = () => {}) {
+    // coming back out of a building: reuse the region that was parked on the
+    // way in instead of rebuilding terrain, plants and collision from scratch
+    const pk = this.parked;
+    const reuse = pk && pk.region === r && pk.quality === this.game.quality && pk.save === this.save ? pk.map : null;
+    if (reuse) this.parked = null;
     this.unload();
     const L = this.mapCache.get(r) || buildLayout(r);
     this.mapCache.set(r, L);
-    const map = await buildRegionMap(L, { quality: this.game.quality, onProgress, save: this.save });
+    const map = reuse || await buildRegionMap(L, { quality: this.game.quality, onProgress, save: this.save });
     this.scene.add(map.root);
     this.current = { type: 'region', region: r, map, layout: L, height: map.height };
     this.applyAtmosphere(paletteFor(r), r === 16 ? false : ['meadow-night', 'bay-night'].includes(L.biome));
@@ -81,11 +88,12 @@ export class World {
     this.save.location = { map: 'region:' + r, x: sp.x, z: sp.z, ry: sp.ry ?? 0 };
     this.save.visited[r] = true;
     this.updateGates();
+    this.game.renderer.precompile(this.scene, this.camera);
     onProgress(1, 'Bereit');
     return this.current;
   }
   async loadInterior(kind, region, opts = {}) {
-    this.unload();
+    this.unload(true);
     const I = buildInterior(kind, region, this.save);
     this.scene.add(I.group);
     this.current = { type: 'interior', kind, region, interior: I, height: () => 0, returnTo: opts.returnTo };
@@ -102,9 +110,13 @@ export class World {
     this.placePlayer(I.spawn.x, I.spawn.z, I.spawn.ry);
     this.cam.dist = kind === 'arena' || kind === 'league' || kind === 'cave' ? 9 : 7; this.cam.pitch = 0.7;
     this.snapCamera();
+    this.game.renderer.precompile(this.scene, this.camera);
     return this.current;
   }
-  unload() {
+  // park = true keeps a region's map (without NPCs and wild Taschis) for the
+  // way back out of a building; anything else frees it.
+  unload(park = false) {
+    if (this.parked && (!park || this.current?.type === 'region')) this.dropParked();
     for (const n of this.npcs) this.scene.remove(n.ch.root);
     for (const w of this.wild) { this.scene.remove(w.c.root); w.c.dispose(); }
     for (const p of this.puzzles) { this.scene.remove(p.group); disposeTree(p.group); }
@@ -112,12 +124,16 @@ export class World {
     if (this.current) {
       const root = this.current.type === 'region' ? this.current.map.root : this.current.interior.group;
       this.scene.remove(root);
-      disposeTree(root);
-      this.current.map?.field?.dispose();
+      if (park && this.current.type === 'region') this.parked = { region: this.current.region, map: this.current.map, quality: this.game.quality, save: this.save };
+      else { disposeTree(root); this.current.map?.field?.dispose(); }
     }
     this.current = null; this.near = null;
     this.game.sky.dome.visible = true; this.game.sky.stars.visible = true; this.game.sky.clouds.visible = true; this.game.sky.hemi.visible = true; this.game.sky.sun.visible = true;
     this.scene.background = null;
+  }
+  dropParked() {
+    const m = this.parked.map; this.parked = null;
+    disposeTree(m.root); m.field?.dispose();
   }
   applyAtmosphere(pal, fixedNight) {
     const q = this.game.quality;
@@ -275,7 +291,7 @@ export class World {
       const u = k / 12, x = t.x + (cx - t.x) * u, y = t.y + (cy - t.y) * u, z = t.z + (cz - t.z) * u;
       for (const b of L.buildings) {
         const rot = Math.abs(Math.sin(b.yaw)) > 0.5, hw = (rot ? b.d : b.w) / 2 + 0.6, hd = (rot ? b.w : b.d) / 2 + 0.6;
-        const top = this.current.height(b.x, b.z) + (b.kind === 'arena' ? 11 : b.kind === 'pavilion' ? 0 : 7);
+        const top = b.camTop ??= this.current.height(b.x, b.z) + (b.kind === 'arena' ? 11 : b.kind === 'pavilion' ? 0 : 7);
         if (Math.abs(x - b.x) < hw && Math.abs(z - b.z) < hd && y < top) return Math.max(0.15, u - 1 / 12);
       }
     }
@@ -302,8 +318,12 @@ export class World {
       cy = Math.min(cy + (Math.hypot(cx - px, cz - pz)) * 0.6, (I.h || 5) - 0.3);
     } else if (this.current?.type === 'region') {
       // pull the camera in front of buildings that would hide the player
-      const d = this.cameraObstruction(c.target, cx, cy, cz);
-      if (d < 1) { px = c.target.x + (cx - c.target.x) * d; pz = c.target.z + (cz - c.target.z) * d; cy = c.target.y + (cy - c.target.y) * d + (1 - d) * 1.5; }
+      // the raw value jumps in steps of 1/12, so ease it (fast in, slow out)
+      // to keep the camera from twitching while walking past houses
+      const raw = this.cameraObstruction(c.target, cx, cy, cz);
+      c.occ = snap || c.occ === undefined ? raw : c.occ + (raw - c.occ) * Math.min(1, dt * (raw < c.occ ? 14 : 3));
+      const d = c.occ;
+      if (d < 0.999) { px = c.target.x + (cx - c.target.x) * d; pz = c.target.z + (cz - c.target.z) * d; cy = c.target.y + (cy - c.target.y) * d + (1 - d) * 1.5; }
     }
     this.camera.position.set(px, cy, pz);
     if (c.shake > 0) { c.shake -= dt; this.camera.position.x += (Math.random() - 0.5) * c.shake; this.camera.position.y += (Math.random() - 0.5) * c.shake; }
@@ -392,7 +412,7 @@ export class World {
       // daily routine for residents
       if (n.schedule) {
         const slot = n.schedule.find(s => s.from < s.to ? minutes >= s.from && minutes < s.to : minutes >= s.from || minutes < s.to);
-        if (slot && (!n.target || n.target.slot !== slot)) n.target = { x: slot.at.x + (Math.random() - 0.5) * 2, z: slot.at.z + (Math.random() - 0.5) * 2, slot };
+        if (slot && (!n.target || n.target.slot !== slot)) n.target = { ...this.freeSpot(slot.at.x + (Math.random() - 0.5) * 2, slot.at.z + (Math.random() - 0.5) * 2, n), slot };
       } else if (!n.trainer && !n.interior && !n.target && (n.wait -= dt) < 0) {
         n.target = { x: n.home.x + (Math.random() - 0.5) * 4, z: n.home.z + (Math.random() - 0.5) * 4 };
       }
@@ -400,9 +420,21 @@ export class World {
       if (n.target) {
         const dx = n.target.x - r.position.x, dz = n.target.z - r.position.z, d = Math.hypot(dx, dz);
         if (d > 0.4) {
-          const nx = r.position.x + dx / d * 1.6 * dt, nz = r.position.z + dz / d * 1.6 * dt;
-          if (!this.blocked(nx, nz, n) && Math.hypot(nx - pp.x, nz - pp.z) > 1) { r.position.x = nx; r.position.z = nz; moving = 1.6; r.rotation.y += angDiff(Math.atan2(dx, dz), r.rotation.y) * Math.min(1, dt * 6); }
-          else n.target = n.schedule ? n.target : null, n.wait = 2;
+          // walk around benches, lamps and corners instead of pushing into
+          // them forever; give up (and stay put until the next slot) when
+          // there is no way through
+          const step = 1.6 * dt;
+          if (Math.hypot(r.position.x + dx / d * step - pp.x, r.position.z + dz / d * step - pp.z) <= 1) { /* let the player pass */ }
+          else {
+            let turn = null;
+            for (const a of STEER) {
+              const ca = Math.cos(a), sa = Math.sin(a), ux = (dx * ca + dz * sa) / d, uz = (dz * ca - dx * sa) / d;
+              if (!this.blocked(r.position.x + ux * step, r.position.z + uz * step, n)) { r.position.x += ux * step; r.position.z += uz * step; r.rotation.y += angDiff(Math.atan2(ux, uz), r.rotation.y) * Math.min(1, dt * 6); moving = 1.6; turn = a; break; }
+            }
+            n.stuck = turn === 0 ? 0 : (n.stuck || 0) + (turn === null ? dt : dt * 0.4);
+            if (!n.schedule && turn === null) { n.target = null; n.wait = 2; n.stuck = 0; }
+            else if (n.stuck > 3) { n.target = n.schedule ? { x: r.position.x, z: r.position.z, slot: n.target.slot } : null; n.wait = 2 + Math.random() * 3; n.stuck = 0; moving = 0; }
+          }
         } else if (!n.schedule) { n.target = null; n.wait = 2 + Math.random() * 5; }
         r.position.y = this.current.height(r.position.x, r.position.z);
       }
@@ -441,6 +473,15 @@ export class World {
       w.c.setMoving(sp); w.c.update(dt);
       r.visible = d < this.game.quality.drawDistance * 0.6;
     }
+  }
+  // nearest walkable point (schedule spots can fall on a flowerbed or a wall)
+  freeSpot(x, z, ignore) {
+    if (!this.blocked(x, z, ignore)) return { x, z };
+    for (let d = 0.5; d <= 6; d += 0.5) for (let k = 0; k < 12; k++) {
+      const a = k / 12 * Math.PI * 2, px = x + Math.cos(a) * d, pz = z + Math.sin(a) * d;
+      if (!this.blocked(px, pz, ignore)) return { x: px, z: pz };
+    }
+    return { x, z };
   }
   removeWild(w) { const i = this.wild.indexOf(w); if (i >= 0) { this.wild.splice(i, 1); this.scene.remove(w.c.root); w.c.dispose(); } }
   inGrass() {
