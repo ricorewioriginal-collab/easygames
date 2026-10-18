@@ -166,6 +166,21 @@ service cloud.firestore {
       allow delete: if request.auth != null && resource.data.h == request.auth.uid;
     }
 
+    // ---------- AnMaCha UNDERCOVER 3D: öffentliche Räume (anmacha-undercover/src/network/public-rooms.js) ----------
+    // undercover_pub/<CODE>: nur der Gastgeber des Raums (Besitzer von p2p/amu-<CODE>) schreibt Name, Modus und Belegung.
+    match /undercover_pub/{code} {
+      allow list: if request.auth != null && request.query.limit <= 20;
+      allow get: if request.auth != null;
+      allow create, update: if request.auth != null && code.matches('^[A-HJKMNP-Z2-9]{5}$')
+        && get(/databases/$(database)/documents/p2p/$('amu-' + code)).data.h == request.auth.uid
+        && request.resource.data.keys().hasOnly(['h', 'n', 'm', 'c', 'x', 't']) && request.resource.data.h == request.auth.uid
+        && request.resource.data.n is string && request.resource.data.n.size() <= 24
+        && request.resource.data.m in ['jagd', 'wort', 'detektiv', 'chaos', 'jagen', 'rollen']
+        && request.resource.data.c is int && request.resource.data.x is int && request.resource.data.c >= 0 && request.resource.data.x <= 12
+        && request.resource.data.t == request.time;
+      allow delete: if request.auth != null && resource.data.h == request.auth.uid;
+    }
+
     // ---------- easygames-Chat (chat.html, nur für angemeldete Spieler) ----------
     // Nachrichten chat/<raum>/m/<id>: u = eigene uid, n = Spitzname, x = Text (1–200 Zeichen), t = Serverzeit. Lesen nur angemeldet.
     // Flutschutz auf dem Server: Jede Nachricht muss im selben Schreibvorgang chat_last/<uid> auf die Serverzeit setzen, und das geht

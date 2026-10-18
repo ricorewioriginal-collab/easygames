@@ -45,7 +45,7 @@
     denken: ['kraterkommando', 'funkblasen', 'radio-match', 'memory', 'wobbel', 'frequenzrad', 'tower-defense'],
     quiz: ['quiz', 'gesucht', 'hoererwahl', 'preisradar', 'machmichaus', 'zeitsprung-wissen', 'zeitsprung-movie', 'zeitsprung-radio', 'zeitsprung-castingshow', 'koffer-dealer'],
     sim: ['ricoville', 'ricolife', 'ricorail', 'mimori', 'markthalle', 'funkhaus', 'klotzfunk', 'bunte-insel', 'anmacha-podcast-tycoon'],
-    tisch: ['ricopoly', 'partyverse', 'spielesammlung', 'stapelrausch', 'gold-reels'],
+    tisch: ['ricopoly', 'partyverse', 'spielesammlung', 'stapelrausch', 'gold-reels', 'anmacha-undercover'],
     musik: ['beat-surfer', 'prismrush']
   };
   var GENRE_OF = {};
