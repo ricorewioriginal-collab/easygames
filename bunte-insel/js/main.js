@@ -2452,9 +2452,10 @@
     };
     if (!P.veh && char.group.visible) add(P.x, P.z, 1.2, .8, P.h);
     if (pup.d.group.visible) add(pup.x, pup.z, .9, .65, pup.h);
-    for (const n of npcs) if (n.c.group.visible) add(n.x, n.z, n.kid ? .75 : 1.1, n.kid ? .55 : .7, n.h);
-    for (const n of town.folk) if (n.c.group.visible) add(n.x, n.z, n.kid ? .75 : 1.1, n.kid ? .55 : .7, n.h);
-    for (const n of life.talkers) if (n.c.group.visible) add(n.x, n.z, n.kid ? .75 : 1.1, n.kid ? .55 : .7, n.h);
+    const seen = g => g.visible && !g.userData.far; /* weit entfernte (ausgeblendete) Figuren ohne Schatten */
+    for (const n of npcs) if (seen(n.c.group)) add(n.x, n.z, n.kid ? .75 : 1.1, n.kid ? .55 : .7, n.h);
+    for (const n of town.folk) if (seen(n.c.group)) add(n.x, n.z, n.kid ? .75 : 1.1, n.kid ? .55 : .7, n.h);
+    for (const n of life.talkers) if (seen(n.c.group)) add(n.x, n.z, n.kid ? .75 : 1.1, n.kid ? .55 : .7, n.h);
     for (const a of animals) if (a.m.visible) add(a.x, a.z, a.k === 'cow' ? 1.8 : 1.1, a.k === 'cow' ? 2.2 : 1.3, a.h);
     for (const v of vehicles) if (v.root.visible && !v.spec.fly && !v.spec.boat && !v.shadow) {
       const cycle = v.spec.kind === 'cycle', large = ['bus', 'fire', 'ambulance', 'limo', 'combine'].includes(v.type);
@@ -2481,10 +2482,10 @@
      Nahe Figuren bleiben unverändert; geteilter TV-Bildschirm zeigt immer alle. Über die Ebenen-Maske, damit Spiel-Code, der visible setzt, unberührt bleibt. */
   const charList = []; let charScanT = 0, charCullT = 0;
   function cullChars(dt) {
-    if ((charScanT -= dt) <= 0) { charScanT = 3; for (let i = charList.length - 1; i >= 0; i--) if (!charList[i].g.parent) { charList[i].g.userData.cullReg = false; for (const m of charList[i].ms) m.layers.mask = 1; charList.splice(i, 1); } scene.traverse(g => { const u = g.userData; if (u && u.opts && !u.cullReg) { u.cullReg = true; const ms = []; g.traverse(m => { if (m.isMesh || m.isSprite) ms.push(m); }); /* Namensschilder mit ausblenden */ charList.push({ g, ms, far: false }); } }); }
+    if ((charScanT -= dt) <= 0) { charScanT = 3; for (let i = charList.length - 1; i >= 0; i--) if (!charList[i].g.parent) { charList[i].g.userData.cullReg = charList[i].g.userData.far = false; for (const m of charList[i].ms) m.layers.mask = 1; charList.splice(i, 1); } scene.traverse(g => { const u = g.userData; if (u && u.opts && !u.cullReg) { u.cullReg = true; const ms = []; g.traverse(m => { if (m.isMesh || m.isSprite) ms.push(m); }); /* Namensschilder mit ausblenden */ charList.push({ g, ms, far: false }); } }); }
     if ((charCullT -= dt) > 0) return; charCullT = .25;
     const all = tv.splitOn && tv.splitOn(), cx = camera.position.x, cz = camera.position.z;
-    for (const c of charList) { const e = c.g.matrixWorld.elements, dx = e[12] - cx, dz = e[14] - cz, far = !all && dx * dx + dz * dz > 8100; if (far !== c.far) { c.far = far; for (const m of c.ms) m.layers.mask = far ? 0 : 1; } }
+    for (const c of charList) { const e = c.g.matrixWorld.elements, dx = e[12] - cx, dz = e[14] - cz, far = !all && dx * dx + dz * dz > 8100; if (far !== c.far) { c.far = c.g.userData.far = far; for (const m of c.ms) m.layers.mask = far ? 0 : 1; } }
   }
   function frame(now) {
     requestAnimationFrame(frame);
