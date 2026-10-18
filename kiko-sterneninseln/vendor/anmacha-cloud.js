@@ -94,6 +94,9 @@
   // (Link mit Kopplungscode auf ricorewi-radio.de), die App holt sich danach das Aktualisierungs-Token und nutzt es per REST. ----
   var APP = location.hostname === 'appassets.local' || location.hostname === 'appassets.androidplatform.net' || !!window.EasyGamesApp || /(RicoReWi|EasyGames)App\//.test(navigator.userAgent), RT = 'anmacha-cloud-rt', PAIR = null;
   var PORTAL = 'https://www.ricorewi-radio.de/';
+  // Ist die App selbst angemeldet (natives Konto in Android/Windows), übernehmen die Spiele diese Anmeldung – kein zweites Koppeln in jedem Spiel.
+  // Android: RRWNative.cloudRt() (nur für die gebündelten Spiele), Windows: window.__rrwCloudRt (beim Laden der Seite eingesetzt).
+  if (APP) { try { var nrt = (window.RRWNative && window.RRWNative.cloudRt && window.RRWNative.cloudRt()) || window.__rrwCloudRt || ''; if (nrt && nrt !== LS.getItem(RT)) { rawSet.call(LS, RT, nrt); rawSet.call(LS, ON_KEY, '1'); } } catch (e) { } }
   // Zentrale Konto-Seite (einmal anmelden, gilt in allen Spielen) – Navigation auf demselben Gerät, daher lokal (funktioniert auch offline in der App)
   var bugUrl = '';
   var kontoUrl = game === 'konto' || !/\/cloud\/[^\/]*$/.test((s.src || '').split(/[?#]/)[0]) ? '' : (s.src || '').split(/[?#]/)[0].replace(/cloud\/[^\/]*$/, 'konto.html');
