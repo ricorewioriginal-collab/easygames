@@ -240,7 +240,9 @@
   #share label{font-size:13px;color:#9fb4c8}
   #share input{width:100%;font:13px ui-monospace,Menlo,Consolas,monospace;padding:10px;border-radius:10px;border:1px solid rgba(0,229,255,.3);background:#04070d;color:#9ff}
   .row{display:flex;gap:8px;flex-wrap:wrap}
-  body.embed-mode .hide-embed{display:none}
+  body.embed-mode:not(.portal-mode) .hide-embed{display:none}
+  body.portal-mode header.hide-embed,body.portal-mode #lib,body.portal-mode #libBtn,body.portal-mode #more,body.portal-mode footer.hide-embed,body.portal-mode .tvhint,body.portal-mode #menuBtn,body.portal-mode .topbar .brandrow{display:none!important}
+  body.portal-mode .stick{margin-top:calc(-12px - env(safe-area-inset-top))}
   body.embed-mode main{padding-top:12px}
 
   /* ===== Spieleportal-Design: Kopfleiste, Kategorien, Empfohlen + Beliebt, Kachelraster ===== */
@@ -357,16 +359,17 @@
   .vt{margin:2px 2px 4px;font-size:14px;font-weight:800;line-height:1.25;min-height:2.5em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .nb{position:absolute;z-index:2;background:#ff7a1a;color:#fff;font-size:11px;font-weight:900;letter-spacing:.04em;padding:3px 8px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
   .vc .nb{top:4px;right:4px}
-  .icon .nb,.icon .fav{position:absolute;transform:none}
+  .icon .nb{position:absolute;transform:none}
   .icon .nb{left:8px;bottom:8px}
   .colls{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:none}
   .colls::-webkit-scrollbar{display:none}
   .coll{flex:0 0 auto;width:84px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0;border:0;background:none;font-weight:700;font-size:12.5px;text-align:center}
   .coll .cc{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:32px;background:color-mix(in srgb,var(--cc,#00E5FF) 26%,#0c1220);border:2px solid color-mix(in srgb,var(--cc,#00E5FF) 60%,transparent);transition:transform .2s,background .2s}
   .coll:hover .cc{transform:scale(1.08);background:color-mix(in srgb,var(--cc,#00E5FF) 45%,#0c1220)}
-  .fav{position:absolute;right:8px;bottom:8px;z-index:3;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(8,11,18,.72);border:1.5px solid rgba(255,255,255,.3);font-size:17px;line-height:1;cursor:pointer;filter:none}
+  .fav{position:absolute;left:10px;top:10px;z-index:3;padding:0;color:#fff;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(8,11,18,.72);border:1.5px solid rgba(255,255,255,.3);font-size:17px;line-height:1;cursor:pointer;filter:none}
   .fav.on{color:#ff4d6d;border-color:#ff4d6d}
   body.view-apps .fav,body.view-apps .nb,body.view-apps .gl{display:none}
+  .fav:focus-visible{outline:3px solid var(--cy);outline-offset:2px}
   body:not(.view-apps) .icon .ctag{display:none}
   body:not(.view-apps) .gl{margin:0 0 -2px}
   html.tv .vc{flex-basis:240px}html.tv .coll{width:120px}html.tv .coll .cc{width:96px;height:96px;font-size:42px}html.tv .iconbtn{display:none}
@@ -522,7 +525,9 @@ const abs = p => new URL(p, base).href;
 const iframeCode = (url, title) =>
   `<iframe src="${url}" title="${title}" allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope" loading="lazy"\n  style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>`;
 const embedMode = new URLSearchParams(location.search).has('embed');
+const portalMode = embedMode && new URLSearchParams(location.search).get('portal') === '1';   // eingebettet mit dem vollen Portal-Look (Karussell, Sammlungen, Reihen); die Seite des Gastgebers bringt Kopf und Menü selbst mit
 if (embedMode) document.body.classList.add('embed-mode');
+if (portalMode) document.body.classList.add('portal-mode');
 const params = new URLSearchParams(location.search);
 // Ansicht: App-Kacheln (Symbolraster) oder Karten. ?view=apps|cards überschreibt, sonst die letzte Wahl (localStorage), sonst App-Kacheln; eingebettet (?embed=1) bleibt es bei Karten
 const VIEW_KEY = 'easygames.view';
@@ -565,27 +570,27 @@ GAMES.forEach((g, i) => {
   const ct = CATI[CATS.of[g.id]]; if (ct) { c.dataset.c = ct.id; const tg = document.createElement('span'); tg.className = 'ctag'; tg.textContent = ct.icon + ' ' + ct.short; b.querySelector('.icon').appendChild(tg); }
   if (ct) { const gl = document.createElement('span'); gl.className = 'gl'; gl.textContent = ct.short; b.querySelector('.info').prepend(gl); }
   if (i >= GAMES.length - NEWN) { const nt = document.createElement('span'); nt.className = 'nb'; nt.textContent = 'NEU'; b.querySelector('.icon').appendChild(nt); }
-  const fv = document.createElement('span'); fv.className = 'fav'; fv.setAttribute('role', 'button'); fv.tabIndex = isTv ? -1 : 0; fv.dataset.fav = g.id; b.querySelector('.icon').appendChild(fv);
-  const favTap = e => { e.stopPropagation(); e.preventDefault(); toggleFav(g.id); };
-  fv.addEventListener('click', favTap); fv.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') favTap(e); });
+  const fv = document.createElement('button'); fv.type = 'button'; fv.className = 'fav'; fv.tabIndex = isTv ? -1 : 0; fv.dataset.fav = g.id;
+  fv.addEventListener('click', () => toggleFav(g.id));
   b.addEventListener('click', () => openGame(i));
   const h = document.createElement('button');
   h.className = 'help'; h.textContent = '📖 Details'; h.setAttribute('aria-label', 'Handbuch und Details: ' + g.title);
   h.addEventListener('click', () => openDetail(i, 'info'));
   if (isTv) h.tabIndex = -1;
-  c.append(b, h);
+  c.append(b, h, fv);
   $('grid').appendChild(c);
 });
 const tiles = [...$('grid').children];
-let favF = false, catF = '', modeF = '', heroOn = false, recentOn = false, heroGame = '', OFF = {};   // OFF: vom Betreiber ausgeblendete Spiele { id: true } (Spiele-Verwaltung, config/games)
+let heroSync = () => {}, favF = false, catF = '', modeF = '', heroOn = false, recentOn = false, heroGame = '', OFF = {};   // OFF: vom Betreiber ausgeblendete Spiele { id: true } (Spiele-Verwaltung, config/games)
 function filt() {
   const q = $('q').value.trim().toLowerCase(); let n = 0;
   tiles.forEach(t => { const m = !OFF[t.dataset.id] && (!q || t.dataset.s.includes(q)) && (!modeF || (' ' + t.dataset.m + ' ').includes(' ' + modeF + ' ')) && (!catF || t.dataset.c === catF) && (!favF || favs().includes(t.dataset.id)); t.hidden = !m; if (m) n++; });
   document.querySelectorAll('[data-gid]').forEach(x => { x.hidden = !!OFF[x.dataset.gid]; });
+  heroSync();
   $('count').textContent = n + (n === 1 ? ' Spiel' : ' Spiele');
   $('empty').classList.toggle('hidden', n > 0);
   const filtering = !!(q || modeF || catF || favF);
-  $('feat').classList.toggle('hidden', filtering); $('rows').classList.toggle('hidden', filtering); $('hero').classList.toggle('hidden', !heroOn); $('recent').classList.toggle('hidden', filtering || !recentOn);
+  $('feat').classList.toggle('hidden', filtering); $('rows').classList.toggle('hidden', filtering); $('hero').classList.toggle('hidden', !heroOn || ![...$('hero').querySelectorAll('.hslide')].some(x => !x.hidden)); $('recent').classList.toggle('hidden', filtering || !recentOn);
   $('gridTitle').textContent = q ? 'Ergebnisse' : favF ? '♥ Meine Favoriten' : catF ? CATI[catF].icon + ' ' + CATI[catF].label : modeF ? 'Passende Spiele' : 'Alle Spiele';
   document.querySelectorAll('#cats .cat').forEach(x => x.setAttribute('aria-pressed', String((x.dataset.c || '') === catF)));
   const fb = $('favBtn'); if (fb) { fb.setAttribute('aria-pressed', String(favF)); syncFav(); }
@@ -891,7 +896,7 @@ function renderRecent() {
 // ----- Empfohlen: täglich wechselndes Spiel mit Bild -----
 (function hero() {
   const withImg = GAMES.map((g, i) => i).filter(i => GAMES[i].img);
-  if (!withImg.length || embedMode) return;
+  if (!withImg.length || (embedMode && !portalMode)) return;
   const day = Math.floor(Date.now() / 864e5), i = withImg[day % withImg.length], g = GAMES[i], h = $('hero');
   h.style.setProperty('--g', g.glow || 'rgba(0,229,255,.3)'); h.style.background = g.bg || '#222';
   // Karussell: das Tagesspiel zuerst, danach weitere Spiele mit Bild (wechseln täglich mit)
@@ -904,23 +909,25 @@ function renderRecent() {
     bd.appendChild(el('p', '', x.desc));
     const row = el('div', 'row'), play = el('button', 'primary', '▶ Spielen'), more = el('button', 'pill', '📖 Details & Handbuch');
     play.onclick = () => openGame(j); more.onclick = () => openDetail(j, 'info'); row.append(play, more); bd.appendChild(row); sl.appendChild(bd); track.appendChild(sl);
-    const d = el('i'); d.onclick = () => go(n); dots.appendChild(d);
   });
   h.appendChild(track);
   const slides = () => [...track.children].filter(x => !x.hidden);
   let cur = 0, timer = 0, stopped = false;
   const go = n => { const l = slides(); if (!l.length) return; cur = (n + l.length) % l.length; track.scrollTo({ left: l[cur].offsetLeft - track.offsetLeft, behavior: matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth' }); mark(); };
   const mark = () => [...dots.children].forEach((d, n) => d.classList.toggle('on', n === cur));
+  // Punkte folgen den sichtbaren Folien (vom Betreiber ausgeblendete Spiele fallen weg)
+  const dotsSync = () => { const n = slides().length; if (dots.children.length !== n) { dots.replaceChildren(...Array.from({ length: n }, (_, i) => { const d = el('i'); d.onclick = () => { stopped = true; go(i); }; return d; })); } if (cur >= n) cur = 0; mark(); };
+  heroSync = dotsSync;
   if (uniq.length > 1) {
     const mk = (c, t, d) => { const b = el('button', 'hnav ' + c, t); b.type = 'button'; b.setAttribute('aria-label', d); b.onclick = () => { stopped = true; go(cur + (c === 'l' ? -1 : 1)); }; return b; };
-    h.append(mk('l', '‹', 'Voriges Spiel'), mk('r', '›', 'Nächstes Spiel'), dots);
+    h.append(mk('l', '‹', 'Voriges Spiel'), mk('r', '›', 'Nächstes Spiel'), dots); dotsSync();
     track.addEventListener('scroll', () => { const w = track.clientWidth || 1, n = Math.round(track.scrollLeft / w); if (n !== cur) { cur = n; mark(); } }, { passive: true });
     ['pointerdown', 'touchstart', 'focusin', 'keydown'].forEach(ev => h.addEventListener(ev, () => { stopped = true; }, { passive: true }));
     h.addEventListener('mouseenter', () => { stopped = true; });
     if (!isTv && !matchMedia('(prefers-reduced-motion:reduce)').matches) timer = setInterval(() => { if (stopped || document.hidden) return; go(cur + 1); }, 6500);
     mark();
   }
-  h.classList.remove('hidden'); heroOn = !OFF[g.id]; heroGame = g.id; filt();
+  h.classList.remove('hidden'); heroOn = true; heroGame = g.id; filt();
   // daneben: beliebte Spiele (redaktionell, wie im RicoReWi-Portal) – Klick öffnet das Spiel
   const POP = ['anmacha-quiz', 'anmacha-kart', 'anmacha-radio-surfer', 'anmacha-klotzfunk', 'riftzone', 'anmacha-showdown', 'bunte-insel', 'anmacha-snake', 'kiko-sterneninseln', 'ricorail'];
   const side = $('featSide'); side.appendChild(el('h2', 'ftitle', '🔥 Beliebt bei uns'));
@@ -933,7 +940,7 @@ function renderRecent() {
 
 // ----- Plattform-Reihen: Sammlungen (Kategorien als Kreise) und waagerechte Reihen wie auf bekannten Spieleportalen -----
 (function rows() {
-  const host = $('rows'); if (embedMode || !host) return;
+  const host = $('rows'); if ((embedMode && !portalMode) || !host) return;
   const cardOf = j => {
     const x = GAMES[j], b = el('button', 'vc'), c = CATI[CATS.of[x.id]], vi = el('div', 'vi'); b.type = 'button'; b.dataset.gid = x.id; if (c) b.dataset.c = c.id;
     vi.style.background = x.bg || '#222'; if (x.img) { const im = el('img'); im.src = x.img; im.alt = ''; im.loading = 'lazy'; vi.appendChild(im); } else vi.appendChild(el('span', '', x.icon || '🎮'));
@@ -981,7 +988,6 @@ fetch('sync/catalog.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : nu
       if (fresh[t.dataset.id]) { const bd = t.querySelector('.badges') || t.querySelector('.info') || t; const e = document.createElement('i'); e.className = 'fresh'; e.textContent = '🆕 Neu'; bd.appendChild(e); }
       if (n) { const bd = t.querySelector('.info') || t; const e = document.createElement('i'); e.className = 'maint'; e.textContent = '🔧 ' + n; e.style.cssText = 'display:block;margin-top:4px;font-style:normal;font-size:.78rem;color:#ffc53d'; bd.appendChild(e); }
     });
-    if (heroGame) heroOn = !OFF[heroGame];   // Empfohlenes Spiel nicht zeigen, wenn es ausgeblendet ist
     filt();
   };
   let cached = null; try { cached = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
