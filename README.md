@@ -108,6 +108,8 @@ und **⤴ Teilen**. Dort stehen für jedes Spiel der **direkte Link** und der **
 <button data-easygames="ranglisten" data-mode="overlay">🏆 Ranglisten</button>
 <button data-easygames="erfolge" data-mode="overlay">🏅 Erfolge</button>
 <!-- oder eingebettet: <div data-easygames="ranglisten" data-game="anmacha-snake"></div>  /  <div data-easygames="erfolge"></div> -->
+<!-- das komplette Spieleportal (Karussell, Sammlungen, Reihen, Favoriten, Suche), immer aktuell: -->
+<div data-easygames="portal" data-height="90vh"></div>   <!-- oder EasyGames.portal('#spiele', { height: '90vh' }) -->
 <!-- oder iframe: …/easygames/ranglisten.html?embed=1[&game=<id>]   …/easygames/erfolge.html?embed=1 -->
 ```
 

@@ -83,6 +83,7 @@ let fails = 0; const t = (n, ok, extra) => { console.log((ok ? 'OK    ' : 'FEHLE
   t('Nach dem Schließen ist die Seite wieder frei', await p.evaluate(() => !document.querySelector('#t').hasAttribute('aria-hidden') && document.querySelector('#t').inert === false));
   // App-Kachel-Ansicht
   await p.goto(base + '/__apps.html'); await p.waitForFunction(() => document.querySelector('#lib iframe') && document.querySelector('#tl button'));
+  t('EasyGames.portal bettet das Portal ein (portal=1, volle Breite)', await p.evaluate(() => { const d = document.createElement('div'); document.body.appendChild(d); EasyGames.portal(d, { height: '500px' }); const f = d.querySelector('iframe'); return !!f && /embed=1&portal=1/.test(f.src) && f.style.maxWidth === 'none' && f.style.height === '500px'; }));
   t('Katalog layout=apps lädt view=apps', /embed=1&view=apps/.test(await p.getAttribute('#lib iframe', 'src')));
   t('Katalog-Overlay mit layout=apps', await p.evaluate(() => { EasyGames.open('all', { layout: 'apps', fullscreen: false }); return /view=apps/.test(document.querySelector('[role=dialog] iframe').src); }));
   await p.keyboard.press('Escape'); await p.evaluate(() => EasyGames.close());

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "064464f931a4",
- "generated": "2026-10-18T15:50:33+00:00",
- "commit": "5ce60df102f23601c681a0b454c8c5ddb12594e8",
+ "version": "975c80d74684",
+ "generated": "2026-10-18T18:06:39+02:00",
+ "commit": "d26745c55c31283e3359d72c536c56e091c35567",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5288,13 +5288,13 @@
   },
   {
    "p": "easygames.js",
-   "s": 25886,
-   "h": "398c8d2166f18717ae03ea2783beca5307d8e92eac6b6dd52cac9b4f19c39476"
+   "s": 26667,
+   "h": "05983e73f435ccfe520b5707bf50c6c5e9a0b63a54acd628289d9c1a372ddbd8"
   },
   {
    "p": "einbinden.html",
-   "s": 73386,
-   "h": "e2039697a81e23fc949a4155a4f8503ea1a5c510688e64c11ec5f72b13805196"
+   "s": 74502,
+   "h": "94eb4b171eba37e718395615b6a56e8516498974b36b6e22062749be331bd078"
   },
   {
    "p": "erfolge.html",
