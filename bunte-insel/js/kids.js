@@ -28,8 +28,8 @@ BI.createKids = function (G) {
   /* Tagesgeschenk mit Serie */
   K.daily = function () {
     const dk = d => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(), now = new Date(), key = dk(now), D = save.daily || { d: '', s: 0 }; if (D.d === key) return false;
-    D.s = D.d === dk(new Date(now - 864e5)) ? D.s + 1 : 1; D.d = key; save.daily = D; const r = 2 + Math.min(5, D.s - 1); addStars(r); persist(); A.fanfare(); fx.burst(P.x, 2.4, P.z, 24, [BI.C.gold, BI.C.pink, BI.C.white], 5, 1.2, 30, 6);
-    say('🎁 Tagesgeschenk! +' + r + ' ⭐' + (D.s > 1 ? ' · ' + D.s + ' Tage in Folge 🔥' : ''), 4600); if (D.s >= 3) K.earn('streak'); return true;
+    D.s = D.d === dk(new Date(now - 864e5)) ? D.s + 1 : 1; D.d = key; save.daily = D; const wk = D.s % 7 === 0, r = 2 + Math.min(5, D.s - 1) + (wk ? 10 : 0); addStars(r); persist(); A.fanfare(); fx.burst(P.x, 2.4, P.z, 24, [BI.C.gold, BI.C.pink, BI.C.white], 5, 1.2, 30, 6);
+    say('🎁 Tagesgeschenk! +' + r + ' ⭐' + (D.s > 1 ? ' · ' + D.s + ' Tage in Folge 🔥' : '') + (wk ? ' · Eine ganze Woche – Wochen-Bonus! 🏆' : ' · Komm morgen wieder, dann gibt es mehr!'), 4600); if (D.s >= 3) K.earn('streak'); return true;
   };
   /* Foto-Aufgaben */
   const PT = [['horse', '🐴', 'ein Pferd'], ['cow', '🐮', 'eine Kuh'], ['fountain', '⛲', 'den Brunnen'], ['sheep', '🐑', 'ein Schaf'], ['heli', '🚁', 'einen Hubschrauber'], ['pig', '🐷', 'ein Schwein'], ['train', '🚂', 'den Zug'], ['chicken', '🐔', 'ein Huhn'], ['police', '🚓', 'ein Polizeiauto'], ['donkey', '🫏', 'einen Esel']];

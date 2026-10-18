@@ -414,6 +414,8 @@ Eigene Insel, INSPIRIERT von klassischen 16-Bit-Rollenspielen mit Rätsel-Verlie
 - **Strand & Meer überall**: man kann jetzt von jedem Strand der Hauptinsel und aller Inseln ins Meer und rundherum **schwimmen** (keine unsichtbaren Mauern mehr, `tests/meer.mjs`). Märchenland: breite Basar-Gassen, **Märchen-Taxi** (Taxifahrer Theo) mit Straße.
 
 ### 🚪 Gebäude betreten – Open-World-Prinzip (`js/innen.js`)
+- **Passend zur Welt** (`THEME`/`FUN` in `js/innen.js`): Jedes Haus hat einen Bewohner aus seiner Welt (Wirtin Grete im Gasthaus, Schwammi im Ananas-Haus, Lyra im Mondhaus …), Bücher mit Tipps zur eigenen Insel und ein Mitmach-Ding (beim ersten Mal +1 ⭐, oft mit kleinem Geschenk): Saftfass, Klarinette, Glitzersporen, Glocke, Funkgerät, Wunderlampe, Koffer …
+- **Gut begehbar:** größere Räume, Puppenstuben-Blick von schräg oben (Kamera wird drinnen nicht an die Wand gezogen), goldene Türmatte; wer bis an die Tür läuft, geht hinaus.
 - Massive Gebäude aller Welten (Rätsel-Insel, Schlüsselreich, Märchenland, Schwammi-Bucht, Badestrand, Zotik, Bauland, Park, Dampfer) haben eine **goldene Türmatte** (`BI.registerDoors`, Tür wird automatisch an der Gebäudekante gefunden). Stadt, Fellretter-Bucht & Co. waren schon hohl/begehbar.
 - „Betreten“ → eigener kleiner **Innenraum** (Puppenstube, weit draußen bei x≥3000, erst beim ersten Betreten gebaut). Je nach Gebäude: Bett, Tisch (Snack ⭐), Bücherregal (Tipps), **Schatztruhe** (einmal pro Haus, ⭐ + Futter), Bewohner zum Reden, Laden (einkaufen), Schmiede (hämmern), Fernrohr, Kristallkugel, Kamin, Thron, Pokal …
 - Die **Uralte Höhle** der Rätsel-Insel ist ein Höhlenraum mit Abstieg ins Mini-Spiel. Das Block-Rätsel hat jetzt eine leuchtende Zielplatte mit Lichtstrahl und Schild.

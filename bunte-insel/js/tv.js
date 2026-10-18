@@ -256,6 +256,7 @@ BI.createTv = function (G) {
     views.forEach((v, k) => { const r = v.r, e = el('div', 'left:' + (r[0] + r[2] / 2) * 100 + '%;transform:translateX(-50%);top:calc(' + r[1] * 100 + '% + 10px);background:' + COL[v.s.i], v.s.name); e.className = 'tag'; splitEl.appendChild(e); });
     if (n === 3) { const e = el('div', 'left:50%;top:50%;width:50%;height:50%', '📱 Platz 4 frei<br>Code ' + T.code); e.className = 'emp'; splitEl.appendChild(e); }
   }
+  T.splitOn = () => views.length > 0;
   T.render = function () {
     if (!views.length) return false; const w = innerWidth, h = innerHeight, r = renderer;
     r.setScissorTest(true); const asp0 = camera.aspect;

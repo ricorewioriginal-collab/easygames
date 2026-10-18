@@ -753,6 +753,7 @@
     $('pause').hidden = true;
     $('hud').hidden = true;
     $('menu').hidden = false;
+    try { refreshPickers(); } catch (e) { }
     menuView('home');
     if (!isTouch()) $('bStart').focus({ preventScroll: true });
   });
@@ -1902,7 +1903,11 @@
   $('bRot').addEventListener('click', () => { if (!voxTab) { build.rotate(); A.pop(); } }); $('bPlace').addEventListener('click', () => buildPlace()); $('bDel').addEventListener('click', () => buildRemove()); $('bUndo').addEventListener('click', () => buildUndo());
   $('bUp').addEventListener('click', () => vox.shift(1)); $('bDn').addEventListener('click', () => vox.shift(-1));
   $('bClear').addEventListener('click', () => { if (performance.now() - clearT < 3000) { if (voxTab) vox.clearAll(); else build.clearAll(); clearT = 0; say('🧹 Alles weggeräumt', 1600); updateBuildCount(); } else { clearT = performance.now(); say(voxTab ? 'Nochmal drücken: ALLE Blöcke wegräumen?' : 'Nochmal drücken: ALLES wegräumen?', 2800); } });
-  const pickers = [], refreshPickers = () => { for (const f of pickers) f(); $('hello').textContent = 'Hallo ' + heroName() + '! ♥'; for (const i of document.querySelectorAll('.pn')) if (i !== document.activeElement) i.value = save.pname || ''; };
+  document.addEventListener('bunteinsel:languagechange', () => { try { refreshPickers(); } catch (e) { } });
+  const pickers = [], refreshPickers = () => { for (const f of pickers) f(); $('hello').textContent = 'Hallo ' + heroName() + '! ♥'; { /* Lust aufs Wiederkommen: Tagesgeschenk und Serie direkt im Menü zeigen */
+    const dk = d => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(), D = save.daily || {}, today = D.d === dk(new Date()), live = today || D.d === dk(new Date(Date.now() - 864e5)), n = live ? D.s | 0 : 0, sm = document.createElement('small');
+    sm.style.cssText = 'display:block;font-size:.78em;margin-top:2px'; const en = window.BunteInselI18n && BunteInselI18n.language === 'en'; sm.setAttribute('data-bi-i18n-skip', '');
+    sm.textContent = en ? (!today ? '🎁 Your daily gift is waiting' + (n ? ' · 🔥 ' + n + ' days in a row!' : '!') : '🔥 ' + n + (n === 1 ? ' day' : ' days') + ' in a row · another gift tomorrow!') : !today ? '🎁 Heute wartet dein Tagesgeschenk' + (n ? ' · 🔥 ' + n + ' Tage in Folge!' : '!') : '🔥 ' + n + (n === 1 ? ' Tag' : ' Tage') + ' in Folge · morgen wartet das nächste Geschenk!'; $('hello').appendChild(sm); } for (const i of document.querySelectorAll('.pn')) if (i !== document.activeElement) i.value = save.pname || ''; };
   function setPet(kind) {
     const def = BI.PETS.find(q => q.id === kind) || BI.PETS[0], g = pup.d.group, was = g.parent; freeObj(g); pup.d = BI.makePet(def.id); pup.name = def.name; pup.trick = null; if (was) scene.add(pup.d.group); pup.d.group.position.set(pup.x, 0, pup.z);
     save.pet = def.id; persist();
@@ -2408,7 +2413,7 @@
       tx = v.x; tz = v.z; ty = (v.y || 0) + (v.isTrain ? 3 : 1.3); dist = Math.max(v.type === 'heli' ? 20 : v.type === 'keymobil' ? 16 : v.type === 'drake' ? 17 : v.spec.remote ? 7 : v.isTrain ? 15 : v.r > 2 ? 13 : Math.max(7, v.r * 4), (v.spec.cam || 9) * cam.zoom); if (v.isTrain) pitch = Math.max(pitch, .4);
       if (drag.id == null) { cam.idle += dt; if (cam.idle > 3.2) { const want = v.h + Math.PI, speed = Math.abs(v.v) > .5 ? 1.25 : .72; cam.yaw += BI.angDiff(cam.yaw, want) * Math.min(1, dt * speed); } }
       pitch = BI.lerp(pitch, Math.abs(v.v) > 12 ? .3 : .42, .02);
-    } else { tx = P.x; ty = P.y + 1.3; tz = P.z; dist = 7.2 * cam.zoom; const sh = Math.max(build.shelter(P.x, P.z), W.shelter ? W.shelter(P.x, P.z) : 0); cam.sp = BI.damp(cam.sp || 0, sh === 2 ? 1.12 : sh === 1 ? .85 : 0, 3, dt); if (cam.sp > .04 && !build.active) pitch = Math.max(pitch, cam.sp); }
+    } else { tx = P.x; ty = P.y + 1.3; tz = P.z; dist = 7.2 * cam.zoom; const sh = Math.max(build.shelter(P.x, P.z), W.shelter ? W.shelter(P.x, P.z) : 0); cam.sp = BI.damp(cam.sp || 0, sh === 2 ? 1.12 : sh === 1 ? .85 : 0, 3, dt); if (cam.sp > .04 && !build.active) pitch = Math.max(pitch, cam.sp); if (innen && innen.inside) { const R = innen.inside; dist = Math.min(13, Math.max(7.5, Math.max(R.hw, R.hd) * 1.25 + 2.5)) * Math.max(.8, cam.zoom) * (innerHeight > innerWidth ? 1.25 : 1); pitch = Math.max(pitch, .78); } }
     { const L = !v && combat.lock(); if (L) { tx = L.x; tz = L.z; ty = 1.3; dist = 9; pitch = .3; cam.yaw += BI.angDiff(cam.yaw, L.yaw) * Math.min(1, dt * 3); } }
     cam.fwp = BI.damp(cam.fwp || 0, cam.fw > 0 ? 1 : 0, 2.5, dt); if (cam.fw > 0) cam.fw -= dt; if (cam.fwp > .01) pitch = BI.lerp(pitch, Math.min(pitch, .08), cam.fwp);
     if (keys.q) cam.yaw += dt * 1.6; if (keys.r) cam.yaw -= dt * 1.6;
@@ -2416,7 +2421,8 @@
     /* Nahebene: im Fahrzeug weiter weg für genaueren Tiefenpuffer, aber nie so weit, dass sie Fahrzeug oder Figur anschneidet (sonst wirkt die Figur nach dem Aussteigen „durchsichtig“) */
     { const nn = v ? Math.round(clamp(cam.dist * .18, .45, 1.4) * 10) / 10 : .45; if (camera.near !== nn) { camera.near = nn; camera.updateProjectionMatrix(); } }
     let d = dist; const cp = Math.cos(pitch), sx = Math.sin(cam.yaw) * cp, sz = Math.cos(cam.yaw) * cp;
-    for (let i = 1; i <= 12; i++) { const f = i / 12; if (blockedByBuilding(tx + sx * dist * f, tz + sz * dist * f, Math.sin(pitch) * dist * f + ty)) { d = Math.max(1.7, dist * (f - 1 / 12)); break; } }
+    /* Drinnen: Puppenstuben-Blick von schräg oben – die Wände sieht man von außen nicht, also Kamera nicht an die Wand heranziehen */
+    if (!(innen && innen.inside && !v)) for (let i = 1; i <= 12; i++) { const f = i / 12; if (blockedByBuilding(tx + sx * dist * f, tz + sz * dist * f, Math.sin(pitch) * dist * f + ty)) { d = Math.max(1.7, dist * (f - 1 / 12)); break; } }
     cam.dist = BI.damp(cam.dist, d, d < cam.dist ? 12 : 3, dt);
     const gx = tx + sx * cam.dist, gz = tz + sz * cam.dist, gy = ty + Math.sin(pitch) * cam.dist;
     cam.x = BI.damp(cam.x, gx, 14, dt); cam.y = BI.damp(cam.y, gy, 14, dt); cam.z = BI.damp(cam.z, gz, 14, dt);
@@ -2446,9 +2452,10 @@
     };
     if (!P.veh && char.group.visible) add(P.x, P.z, 1.2, .8, P.h);
     if (pup.d.group.visible) add(pup.x, pup.z, .9, .65, pup.h);
-    for (const n of npcs) if (n.c.group.visible) add(n.x, n.z, n.kid ? .75 : 1.1, n.kid ? .55 : .7, n.h);
-    for (const n of town.folk) if (n.c.group.visible) add(n.x, n.z, n.kid ? .75 : 1.1, n.kid ? .55 : .7, n.h);
-    for (const n of life.talkers) if (n.c.group.visible) add(n.x, n.z, n.kid ? .75 : 1.1, n.kid ? .55 : .7, n.h);
+    const seen = g => g.visible && !g.userData.far; /* weit entfernte (ausgeblendete) Figuren ohne Schatten */
+    for (const n of npcs) if (seen(n.c.group)) add(n.x, n.z, n.kid ? .75 : 1.1, n.kid ? .55 : .7, n.h);
+    for (const n of town.folk) if (seen(n.c.group)) add(n.x, n.z, n.kid ? .75 : 1.1, n.kid ? .55 : .7, n.h);
+    for (const n of life.talkers) if (seen(n.c.group)) add(n.x, n.z, n.kid ? .75 : 1.1, n.kid ? .55 : .7, n.h);
     for (const a of animals) if (a.m.visible) add(a.x, a.z, a.k === 'cow' ? 1.8 : 1.1, a.k === 'cow' ? 2.2 : 1.3, a.h);
     for (const v of vehicles) if (v.root.visible && !v.spec.fly && !v.spec.boat && !v.shadow) {
       const cycle = v.spec.kind === 'cycle', large = ['bus', 'fire', 'ambulance', 'limo', 'combine'].includes(v.type);
@@ -2470,6 +2477,15 @@
   function snapFigures() {
     scene.traverse(g => { const u = g.userData; if (!u || !u.opts || u.gSnap) return; u.gSnap = true; const pa = g.parent; if (!pa) return;
       g.getWorldPosition(_sp); if (Math.abs(_sp.y) > .002 || Math.abs(pa.matrixWorld.elements[5] - 1) > 1e-3) return; const gy = W.groundY(_sp.x, _sp.z); if (gy > .005 && gy < .25) g.position.y += gy; });
+  }
+  /* Figuren weit weg (über 90 m von der Kamera) werden nicht gezeichnet: jede Figur hat rund 5000 Dreiecke, und über 450 Figuren stehen auf den Inseln.
+     Nahe Figuren bleiben unverändert; geteilter TV-Bildschirm zeigt immer alle. Über die Ebenen-Maske, damit Spiel-Code, der visible setzt, unberührt bleibt. */
+  const charList = []; let charScanT = 0, charCullT = 0;
+  function cullChars(dt) {
+    if ((charScanT -= dt) <= 0) { charScanT = 3; for (let i = charList.length - 1; i >= 0; i--) if (!charList[i].g.parent) { charList[i].g.userData.cullReg = charList[i].g.userData.far = false; for (const m of charList[i].ms) m.layers.mask = 1; charList.splice(i, 1); } scene.traverse(g => { const u = g.userData; if (u && u.opts && !u.cullReg) { u.cullReg = true; const ms = []; g.traverse(m => { if (m.isMesh || m.isSprite) ms.push(m); }); /* Namensschilder mit ausblenden */ charList.push({ g, ms, far: false }); } }); }
+    if ((charCullT -= dt) > 0) return; charCullT = .25;
+    const all = tv.splitOn && tv.splitOn(), cx = camera.position.x, cz = camera.position.z;
+    for (const c of charList) { const e = c.g.matrixWorld.elements, dx = e[12] - cx, dz = e[14] - cz, far = !all && dx * dx + dz * dz > 8100; if (far !== c.far) { c.far = c.g.userData.far = far; for (const m of c.ms) m.layers.mask = far ? 0 : 1; } }
   }
   function frame(now) {
     requestAnimationFrame(frame);
@@ -2502,7 +2518,7 @@
     if (saveT > 0) { saveT -= dt; if (saveT <= 0) persist(); }
     if (state === 'play') { miniTick -= dt; if (miniTick <= 0) { miniTick = .08; drawMini(); } }
     if ((snapT -= dt) <= 0) { snapT = 2; snapFigures(); }
-    updateContactShadows(); if (!tv.render()) renderer.render(scene, camera);
+    cullChars(dt); updateContactShadows(); if (!tv.render()) renderer.render(scene, camera);
   }
   spawnRC(true); for (const tv of BI.TOYVEH) if (save.owned.includes(tv)) spawnRC(true, tv);
   $('loading').hidden = true; $('menu').hidden = false; if (!document.body.classList.contains('touch')) $('bStart').focus({ preventScroll: true });
