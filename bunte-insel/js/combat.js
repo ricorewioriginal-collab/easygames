@@ -86,7 +86,7 @@ BI.createCombat = function (G) {
     combo = kind === 'punch' && combatClock - lastPunch < .9 ? combo + 1 : 0; lastPunch = kind === 'punch' ? combatClock : -9;
     ep -= cost; atk = { kind, a, t: 0, hit: false, combo: combo % 3 === 2 }; atkCd = a.cd * gv('cdMul', 1); block = false;
     const shot = kind === 'punch' && gv('shot', 0); let best = null, bd = shot ? gv('shot', 0) : 5.5; for (const e of targets()) { const d = Math.hypot(e.x - P.x, e.z - P.z); if (d < bd) { bd = d; best = e; } }
-    if (best && kind !== 'special') { P.h = Math.atan2(best.x - P.x, best.z - P.z); const reach = (ATK[kind].range + gv('reach', 0)) * .7; if (!shot && !duel && bd > reach) { const st = Math.min(1.6, bd - reach), q = W.resolve(P.x + Math.sin(P.h) * st, P.z + Math.cos(P.h) * st, .4, {}); P.x = q.x; P.z = q.z; } } /* Ausfallschritt: kurz auf das Ziel zu, damit der Schlag trifft */
+    if (best && kind !== 'special') { P.h = Math.atan2(best.x - P.x, best.z - P.z); const reach = (ATK[kind].range + gv('reach', 0)) * .7; if (!shot && !duel && bd > reach) { const st = Math.min(1.6, bd - reach), sx = Math.sin(P.h), sz = Math.cos(P.h); for (let k = 0; k < 4; k++) { const tx = P.x + sx * st / 4, tz = P.z + sz * st / 4, q = W.resolve(tx, tz, .4, {}); P.x = q.x; P.z = q.z; if (Math.hypot(q.x - tx, q.z - tz) > .05) break; } /* in kleinen Schritten, damit man nicht durch Bäume/Zäune springt */ } } /* Ausfallschritt: kurz auf das Ziel zu, damit der Schlag trifft */
     A.whoosh && A.whoosh();
   };
   K.setBlock = on => { const next = !!on && K.active() && !atk; if (next && !block) blockSince = combatClock; block = next; };
