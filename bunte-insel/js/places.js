@@ -81,7 +81,7 @@ BI.addPlaces = function (W, st) {
     for (let k = 0; k < 6; k++) { const bx = ax - 7 + k * 2.8; st.box(bx, 1.5, az - H - 3.6, .5, .5, .5, [0xff5a8a, 0xffd23f, 0x4da3ff][k % 3]); }
     for (const sx of [-1, 1]) { st.box(ax + sx * (H + 3.2), 0, az - 2, .15, 4.2, .15, 0x6b4a2a); st.cone(ax + sx * (H + 3.2) + sx * .5, 3.9, az - 2, .55, .25, sx > 0 ? 0xff5a8a : 0x4da3ff, 3); }
     st.box(ax, 0, az + H + 3.4, 3.6, .9, .5, 0xc8803c); W.addBox(ax - 1.8, az + H + 3.1, ax + 1.8, az + H + 3.7, false, .9); }
-  /* ---------- Verbotener Wald (Nordwesten): dunkler Wald mit Zaun, hier – und nur hier – wird gekämpft ---------- */
+  /* ---------- Verbotener Wald (Nordwesten): dunkler Wald mit Zaun, heute friedlich, sein Waldtor führt zur Wald-Insel (dort wird gekämpft) ---------- */
   { const fx0 = 40, fz0 = -148, R = 16, rnd = BI.rng(77), gd = Math.atan2(-fx0, -fz0), gx = fx0 + Math.sin(gd) * R, gz = fz0 + Math.cos(gd) * R; W.pads.push([fx0 - R - 2, fz0 - R - 2, fx0 + R + 2, fz0 + R + 2]);
     W.spots.forest = { x: fx0, z: fz0, R, gate: { x: gx - Math.sin(gd) * 4, z: gz - Math.cos(gd) * 4 }, gx, gz, ang: gd };
     st.disc(fx0, fz0, R, .03, 0x4d6040, 40); st.disc(fx0, fz0, R * .72, .04, 0x526542, 36);

@@ -1,4 +1,4 @@
-/* Test: Gegner aller Welten im Verbotenen Wald (Dunkelwichtel, Dunkelriese, Zotik-Monster …). Aufruf: node bunte-insel/tests/wald.mjs */
+/* Test: Gegner aller Welten auf der Wald-Insel, Waldtor im alten Wald (Dunkelwichtel, Dunkelriese, Zotik-Monster …). Aufruf: node bunte-insel/tests/wald.mjs */
 import { chromium } from 'playwright';
 const BASE = process.env.BASE || 'http://localhost:8080';
 const browser = await chromium.launch({ args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
@@ -8,10 +8,10 @@ await p.route('**/fonts.googleapis.com/**', r => r.abort()); await p.route('**/c
 await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 60000 }); await p.click('#bStart'); await p.waitForTimeout(500);
 const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) fails++; };
 const r = await p.evaluate(async () => {
-  const b = __bi, c = b.combat, D = c.dbg, FO = b.W.spots.forest, sl = ms => new Promise(r => setTimeout(r, ms)), out = {};
+  const b = __bi, c = b.combat, D = c.dbg, FO = b.W.spots.wald_mond, sl = ms => new Promise(r => setTimeout(r, ms)), out = {};
   b.P.veh = null; b.P.x = FO.x; b.P.z = FO.z; b.P.y = 0; await sl(800);
   const kinds = ['blob', 'spike', 'mush', 'wichtel', 'moos', 'wolf', 'frost', 'lava', 'riese', 'boss', 'klecks', 'kaeferbot', 'verduenner', 'skizze', 'tintenriese', 'plankto', 'planktobot']; out.types = kinds.every(k => D.spawn && true);
-  const made = kinds.map(k => D.spawn(k, FO.x + 3, FO.z + 3, { home: true })); out.n = made.length; out.names = made.map(e => e.T.n).join(',');
+  const made = kinds.map(k => D.spawn(k, FO.x + 3, FO.z + 3, { isle: true })); out.n = made.length; out.names = made.map(e => e.T.n).join(',');
   await sl(600); out.alive = D.enemies.filter(e => !e.dead).length;
   const st = b.save.fight || {}; const e = made[3]; D.damage(e, 999, 1, 0); await sl(100); out.dw = (b.save.fight.dw | 0) >= 1 && (b.save.stk || []).includes('schatten');
   const rz = made[8]; const tb = made[14]; const pb = made[16]; D.damage(pb, 99999, 1, 0); await sl(100); out.plankton = (b.save.stk || []).includes('plankton'); D.damage(tb, 99999, 1, 0); await sl(100); out.tinte = (b.save.stk || []).includes('tintenboss'); D.damage(rz, 9999, 1, 0); await sl(100); out.riese = (b.save.stk || []).includes('schluesseltraeger');
@@ -34,5 +34,18 @@ const w = await p.evaluate(async () => {
 console.log(w);
 ok(w.isle && w.ground, 'Wald-Insel steht mit Boden und Brücke'); ok(w.shopNear && w.sword, 'Waldhändlerin: Schwert kaufen und anlegen'); ok(w.level, 'Kampfstufe steigt mit Erfahrung');
 ok(w.active && w.zone, 'Kampf auf der Wald-Insel, Wächter der Mondlichtung besiegt'); ok(w.campSafe, 'Monster bleiben aus dem Lager'); ok(w.log, 'Aufgaben-Liste der Wald-Insel');
+/* Alter Wald friedlich + Waldtor, Ausrüstung im Kampf anlegen, Waldgeist zwischen den Lichtungen */
+const t3 = await p.evaluate(async () => {
+  const b = __bi, c = b.combat, D = c.dbg, W = b.W, FO = W.spots.forest, sl = ms => new Promise(r => setTimeout(r, ms)), o = {};
+  b.P.veh = null; b.P.x = FO.x; b.P.z = FO.z; await sl(500); o.oldPeace = !c.active();
+  b.P.x = FO.gx; b.P.z = FO.gz; await sl(200); const n = b.wald.near(); o.tor = !!n && n.k === 'wtor'; b.wald.act(n); await sl(300);
+  o.beamed = W.isles.find(i => i.id === 'wald') && BI.WALD.onIsle(b.P.x, b.P.z, 2);
+  const z = W.spots.wald_mond; b.P.x = z.x; b.P.z = z.z; await sl(600); const gb = document.getElementById('fbGear'); o.gearBtn = !!gb && !gb.hidden;
+  gb && gb.click(); await sl(150); const btns = [...document.querySelectorAll('button')].map(x => x.textContent); o.gearOpen = b.gear.open && !btns.some(x => /\d+ ⭐$/.test(x.trim())); b.gear.close();
+  D.zk.frei = 10; const pt = BI.WALD.at(-64 + 30, 0); b.P.x = pt.x; b.P.z = pt.z; for (let i = 0; i < 40 && !D.enemies.some(e => e.kind === 'boss' && e.wz === 'frei'); i++) await sl(250);
+  const g = D.enemies.find(e => e.kind === 'boss' && e.wz === 'frei'); o.geist = !!g; if (g) { D.damage(g, 99999, 1, 0); await sl(150); } o.geistStk = (b.save.stk || []).includes('boss') && !((b.save.wald || {}).zb || {}).frei;
+  return o; });
+console.log(t3);
+ok(t3.oldPeace, 'Alter Wald der Hauptinsel ist friedlich'); ok(t3.tor && t3.beamed, 'Waldtor bringt zur Wald-Insel'); ok(t3.gearBtn && t3.gearOpen, 'Im Kampf: 🎒 Ausrüstung anlegen (ohne Kaufen)'); ok(t3.geist && t3.geistStk, 'Waldgeist erscheint zwischen den Lichtungen → Sticker Waldheld');
 ok(errs.length === 0, 'Keine Seitenfehler' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
 await browser.close(); console.log(fails ? fails + ' FEHLER' : 'ALLES OK'); process.exit(fails ? 1 : 0);

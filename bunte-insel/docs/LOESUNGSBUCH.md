@@ -8,7 +8,7 @@
 2. 🔓 Story: Welten freischalten
 3. 📜 Inselgeschichten
 4. 🗿 Rätsel-Insel der Uralten
-5. 🌲 Wald-Insel (großer Verbotener Wald)
+5. 🌲 Wald-Insel (hier wird gekämpft)
 6. 🗝️ Schlüsselreich
 7. 🧽 Schwammi-Bucht
 8. 🎠 Märchenland
@@ -173,7 +173,7 @@ Für jede Welt müssen 3 Sticker geschafft werden. Die Aufgaben stehen auch an d
 
 ### 🗿 Rätsel-Insel
 
-- 🌲 Waldläufer: Besiege 10 Waldmonster
+- 🥊 Kämpfer: Gewinne einen Kampf in der Arena
 - 📖 Buchleser: Öffne das Sammelbuch
 - 🧠 Schlaukopf: Spiel ein Lernspiel
 
@@ -199,7 +199,7 @@ Für jede Welt müssen 3 Sticker geschafft werden. Die Aufgaben stehen auch an d
 
 - 😋 Feinschmecker: Iss etwas aus dem Rucksack
 - 🐾 Haustierfreund: Füttere dein Haustier
-- 👑 Waldheld: Besiege den Waldgeist
+- 👑 Waldheld: Besiege den Waldgeist auf der Wald-Insel
 
 ### 🍄 Hüpfland
 
@@ -231,14 +231,14 @@ Betrittst du eine Welt, erzählt dir eine Figur dort ihre Geschichte in Akten. J
 - Akt 1: Schaffe alle Rätsel im Prüfungsturm (Block, Pfeil, Bombe, Enterhaken) → 🏆 Turm-Bezwinger
 - Akt 2: Wähle am Kapsel-Schrein ein Ei und schmiede ein Silberschwert → 🥚 Kapsel-Freund + ⚒️ Schwertschmied
 - Akt 3: Steige in die Uralte Höhle hinab → 🕳️ Höhlenforscher
-- Akt 4: Besiege Titan Kron im Verbotenen Wald → 🗿 Titanen-Bezwinger
+- Akt 4: Besiege Titan Kron auf der Wald-Insel → 🗿 Titanen-Bezwinger
 
 ### 🗝️ Das Licht der Schlüssel – erzählt von Lichtwanderer Lio
 
 - Akt 1: Zünde 12 Laternen mit dem Lichtschlüssel an → 🔦 Laternenanzünder
 - Akt 2: Sammle alle Sterne der Ringstraße und flieg mit dem Schlüsselschwert-Mobil → 🚗 Rundfahrer + 🛹 Schlüsselflieger
 - Akt 3: Öffne das Tor der Herzen im Schlüsselreich → 🌟 Lichtwanderer
-- Akt 4: Besiege den Dunkelriesen im Verbotenen Wald → 👑 Schlüsselträger
+- Akt 4: Besiege den Dunkelriesen auf der Wald-Insel → 👑 Schlüsselträger
 - Akt 5: Besuche die Wunsch-Insel, finde 3 Wunschfrüchte und das geheime Zeichen am Baum → Aufgabe der Welt
 - Akt 6: Öffne das Tor in der Schlucht, bau das Floß und mach die Probefahrt → Aufgabe der Welt
 - Akt 7: Besteige den Aussichtsturm und öffne 3 Truhen → Aufgabe der Welt
@@ -249,7 +249,7 @@ Betrittst du eine Welt, erzählt dir eine Figur dort ihre Geschichte in Akten. J
 
 - Akt 1: Iss drei verschiedene Gerichte in der Knusper-Krabbe → 🦀 Stammgast
 - Akt 2: Fang 15 Quallen und übe zehnmal Karate bei Sunny → 🪼 Quallenfischer + 🥋 Karate-Kind
-- Akt 3: Besiege Planktos Riesen-Roboter im Verbotenen Wald → 🧪 Plankto-Bezwinger
+- Akt 3: Besiege Planktos Riesen-Roboter auf der Wald-Insel → 🧪 Plankto-Bezwinger
 
 ### 🎠 Das verlorene Märchenbuch – erzählt von Fee Glimmer
 
@@ -355,11 +355,11 @@ Brücke im Süden. Zelda-/Lufia-Gefühl: Rätsel im Prüfungsturm, Dorf, Schmied
 - Schmiede: Schwert gegen ⭐ verbessern. Dorf: 6 Schatztruhen im Umland.
 - Uralte Höhle: Tür betreten, über die Stufen ins Mini-Spiel absteigen.
 
-> 💡 Der Titan Kron (Verbotener Wald) wird mit verbessertem Schwert und Kapselmonster viel leichter.
+> 💡 Der Titan Kron (Wald-Insel) wird mit verbessertem Schwert und Kapselmonster viel leichter.
 
 ---
 
-## 🌲 Wald-Insel (großer Verbotener Wald)
+## 🌲 Wald-Insel (hier wird gekämpft)
 
 Holzbrücke an der Nordküste der Rätsel-Insel. Hier wird wie in einem Rollenspiel gekämpft – mit Kampfstufe und gekaufter Ausrüstung.
 
@@ -753,7 +753,7 @@ So bekommst du jeden Sticker:
 | 💬 Plaudertasche | Sprich mit 5 Leuten auf der Insel |
 | 🥊 Kämpfer | Gewinne einen Kampf in der Arena |
 | 🌲 Waldläufer | Besiege 10 Waldmonster |
-| 👑 Waldheld | Besiege den Waldgeist |
+| 👑 Waldheld | Besiege den Waldgeist auf der Wald-Insel |
 | 📺 Fernsehgucker | Schau Fernsehen in einem Haus |
 | 📚 Leseratte | Lass dir 3 Märchen vorlesen |
 | 🛒 Einkäufer | Kaufe etwas in einem Laden |
@@ -762,9 +762,9 @@ So bekommst du jeden Sticker:
 | 📖 Tierforscher | Entdecke alle Tiere |
 | 🎣 Angler | Fang deinen ersten Fisch |
 | 🗝️ Schlüsselreisender | Besuche das Schlüsselreich |
-| 🌑 Schattenfreund | Begrüße den Schattenwächter oder besiege einen Dunkelwichtel im Verbotenen Wald |
-| ⚔️ Schattenbezwinger | Besiege 10 Dunkelwichtel im Verbotenen Wald |
-| 👑 Schlüsselträger | Besiege den Dunkelriesen im Verbotenen Wald |
+| 🌑 Schattenfreund | Begrüße den Schattenwächter oder besiege einen Dunkelwichtel auf der Wald-Insel |
+| ⚔️ Schattenbezwinger | Besiege 10 Dunkelwichtel auf der Wald-Insel |
+| 👑 Schlüsselträger | Besiege den Dunkelriesen auf der Wald-Insel |
 | 🎠 Karussell-Kind | Fahr mit dem Märchen-Karussell |
 | 🦢 Schwanenkapitän | Fahr mit dem Schwanenboot durch die Lagune |
 | 🛷 Eisrutscher | Rutsch vom Frostgipfel hinunter |
@@ -772,8 +772,8 @@ So bekommst du jeden Sticker:
 | 🎭 Umzugsläufer | Lauf beim Märchen-Umzug mit |
 | 🔖 Stempelsammler | Fülle das Stempelheft im Märchenland |
 | 🐭 Mausohren-Star | Setz die Mausohren auf |
-| 🖋️ Klecks-Bezwinger | Besiege den großen Klecks im Verbotenen Wald |
-| 🎞️ Trickfilm-Held | Besiege 10 Trickfilm-Monster (Tinte, Käfer-Roboter …) im Verbotenen Wald |
+| 🖋️ Klecks-Bezwinger | Besiege den großen Klecks auf der Wald-Insel |
+| 🎞️ Trickfilm-Held | Besiege 10 Trickfilm-Monster (Tinte, Käfer-Roboter …) auf der Wald-Insel |
 | 🗿 Rätsel-Reisender | Besuche die Rätsel-Insel der Uralten |
 | 🏆 Turm-Bezwinger | Schaffe alle Rätsel im Prüfungsturm |
 | 🥚 Kapsel-Freund | Wähle am Kapsel-Schrein ein Ei |
@@ -820,12 +820,12 @@ So bekommst du jeden Sticker:
 | 🏘️ Dorfentdecker | Betritt 20 Gebäude |
 | 🗺️ Weltenbummler | Betritt 40 Gebäude |
 | 🎁 Truhenfinder | Öffne 10 Schatztruhen in Gebäuden |
-| 🗿 Titanen-Bezwinger | Besiege Titan Kron im Verbotenen Wald |
+| 🗿 Titanen-Bezwinger | Besiege Titan Kron auf der Wald-Insel |
 | 🧽 Bucht-Besucher | Besuche die Schwammi-Bucht |
 | 🦀 Stammgast | Iss drei verschiedene Gerichte in der Knusper-Krabbe |
 | 🥋 Karate-Kind | Übe zehnmal Karate bei Sunny |
 | 🪼 Quallenfischer | Fang 15 Quallen im Quallenfeld |
-| 🧪 Plankto-Bezwinger | Besiege Planktos Riesen-Roboter im Verbotenen Wald |
+| 🧪 Plankto-Bezwinger | Besiege Planktos Riesen-Roboter auf der Wald-Insel |
 | 🌟 Lichtwanderer | Öffne das Tor der Herzen im Schlüsselreich |
 | 🔦 Laternenanzünder | Zünde 12 Laternen im Schlüsselreich an |
 | 🚗 Rundfahrer | Sammle alle Sterne auf der Ringstraße im Schlüsselreich |
@@ -853,7 +853,7 @@ So bekommst du jeden Sticker:
 | 🌀 Prisma-Chronik | Schließe die Geschichte des Prisma-Archipels ab |
 | 🎒 Gut gerüstet | Kauf dir Ausrüstung für den Wald |
 | 🌲 Waldläufer | Betritt die große Wald-Insel hinter der Rätsel-Insel |
-| 💪 Kampfstufe 5 | Erreiche Kampfstufe 5 im Verbotenen Wald |
+| 💪 Kampfstufe 5 | Erreiche Kampfstufe 5 auf der Wald-Insel |
 | 👑 Held des Waldes | Besiege alle fünf Wächter der Wald-Insel |
 
 ---

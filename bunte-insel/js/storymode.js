@@ -10,7 +10,7 @@ BI.STORY_ISLES = [
   { key: 'DRACHEN', icon: '🐉', name: 'Drachenhöhen', req: ['tree', 'obby', 'fight'] }, { key: 'PARK', icon: '🎡', name: 'Freizeitpark', req: ['cinema', 'swim', 'shoot'] },
   { key: 'FUSSBALL', icon: '⚽', name: 'Fußball-Insel', req: ['play', 'emote', 'mini'] }, { key: 'BAULAND', icon: '🧱', name: 'Bauland', req: ['build', 'paint', 'music'] },
   { key: 'MAERCHEN', icon: '🎠', name: 'Märchenland', req: ['story', 'reader', 'dance'] }, { key: 'SCHLUESSEL', icon: '🗝️', name: 'Schlüsselreich', req: ['angler', 'graeber', 'treasure'] },
-  { key: 'SCHWAMM', icon: '🧽', name: 'Schwammi-Bucht', req: ['seepferd', 'slide', 'kaefer'] }, { key: 'RAETSEL', icon: '🗿', name: 'Rätsel-Insel', req: ['forest', 'sammel', 'quiz'] },
+  { key: 'SCHWAMM', icon: '🧽', name: 'Schwammi-Bucht', req: ['seepferd', 'slide', 'kaefer'] }, { key: 'RAETSEL', icon: '🗿', name: 'Rätsel-Insel', req: ['fight', 'sammel', 'quiz'] } /* Kampf-Sticker aus der Arena: der Wald zum Kämpfen liegt jetzt hinter der Rätsel-Insel */,
   { key: 'ZOTIK', icon: '🦊', name: 'Zotik & Lunaris', req: ['karussell', 'schluesselreich', 'schwammi'] }, { key: 'RADIO', icon: '📻', name: 'Radio-Insel', req: ['raetsel', 'hoehle', 'kapsel'] },
   { key: 'ATLANTIS', icon: '🔱', name: 'Atlantis', req: ['turm_s', 'schmied', 'forscher20'] }, { key: 'TASCHI', icon: '🔴', name: 'Taschi-Land', req: ['eat', 'petfeed', 'boss'] },
   { key: 'HUEPF', icon: '🍄', name: 'Hüpfland', req: ['cupwin', 'park', 'gadget'] },

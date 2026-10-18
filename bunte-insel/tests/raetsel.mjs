@@ -42,10 +42,10 @@ const r = await p.evaluate(async () => {
     const iv = b.garden.inv(); iv.apple = 40; for (let i = 0; i < 30; i++) D.feed('apple'); out.stage5 = D.stageOf(S().cap.xp) === 5 && (b.save.stk || []).includes('kapsel5'); await sl(300); out.capVisible = D.capG.visible && D.capG.children.length === 1; }
   /* 7. Schmiede */
   { b.save.stars = 40; D.forge(1); D.forge(2); out.sword = S().sword === 2 && K.swordMul() > 1.3 && (b.save.stk || []).includes('schmied'); out.starsLeft = b.save.stars >= 40 - 9 && b.save.stars <= 40 - 9 + 3; }
-  /* 8. Kapselmonster hilft im Verbotenen Wald */
-  { const FO = SP.forest; P.veh = null; P.x = FO.x; P.z = FO.z; P.y = 0; await sl(900); const cb = b.combat; const e = cb.dbg.spawn('blob', FO.x + 2, FO.z + 2, { home: true }); await sl(300); e.cool = 99; const hp0 = e.hp; await sl(5200); out.helper = e.hp < hp0 || e.dead; cb.dbg.enemies.slice().forEach(q => { q.dead = true; }); }
+  /* 8. Kapselmonster hilft auf der Wald-Insel */
+  { const FO = SP.wald_mond; P.veh = null; P.x = FO.x; P.z = FO.z; P.y = 0; await sl(900); const cb = b.combat; const e = cb.dbg.spawn('blob', FO.x + 2, FO.z + 2, { isle: true }); await sl(300); e.cool = 99; const hp0 = e.hp; await sl(5200); out.helper = e.hp < hp0 || e.dead; cb.dbg.enemies.slice().forEach(q => { q.dead = true; }); }
   /* 9. Titan Kron */
-  { const cb = b.combat, FO = SP.forest, e = cb.dbg.spawn('titan', FO.x + 3, FO.z + 3, { home: true }); out.titanName = e.T.n; cb.dbg.damage(e, 99999, 1, 0); await sl(100); out.titan = (b.save.stk || []).includes('titan'); }
+  { const cb = b.combat, FO = SP.wald_mond, e = cb.dbg.spawn('titan', FO.x + 3, FO.z + 3, { isle: true }); out.titanName = e.T.n; cb.dbg.damage(e, 99999, 1, 0); await sl(100); out.titan = (b.save.stk || []).includes('titan'); }
   /* 10. Uralte Höhle */
   { go(-40, 47); await sl(200); const n = K.near(); out.hoehleNear = !!n && n.k === 'rzhoehle'; if (n) K.act(n); await sl(300); { const I = b.innen; if (I.inside) { const st = I.inside.items.find(i => i.type === 'stairs'); P.x = st.x; P.z = st.z; await sl(150); I.act(I.near()); } } await sl(800); out.hoehle = b.mini.active && b.mini.kind === 'hoehle_raetsel'; if (out.hoehle) { const g = b.mini.cur(), d = g.dbg(); let s0 = b.mini.score; for (let f = 0; f < 3; f++) { const t = g.dbg().tiles; let st = null; t.forEach((row, y) => row.forEach((k, x) => { if (k === 's') st = [x, y]; })); if (!st) break; let h = g.dbg().hero, guard = 0; while ((h[0] !== st[0] || h[1] !== st[1]) && guard++ < 20) { g.dbg().tapTile(st[0], st[1]); h = g.dbg().hero; if (g.dbg().hearts <= 0) break; } } out.cave = g.dbg().floor >= 2 && b.mini.score > s0; b.mini.stop && b.mini.stop(); } }
   out.log = K.log().rows.length === 12; return out; });
@@ -55,6 +55,6 @@ ok(r.c1 && r.gateAShut, 'Vorhalle: Truhe mit Bomben, Tor A zu'); ok(r.push && r.
 ok(r.poolShut && r.shoot && r.crystal, 'Kristall-Rätsel: Pool sperrt, Pfeil → Brücke + Tor B'); ok(r.wallShut && r.bombPlace && r.wallOpen && r.c3, 'Bomben-Rätsel: rissige Wand sprengen → Enterhaken-Truhe');
 ok(r.pitShut && r.hook && r.crossed && r.c4, 'Haken-Rätsel: über den Abgrund, Schatz + Sticker');
 ok(r.capNear && r.panel && r.egg && r.stage5 && r.capVisible, 'Kapselmonster: Ei wählen, füttern bis Stufe 5, folgt dir'); ok(r.sword && r.starsLeft, 'Schmiede: Schwert verbessern');
-ok(r.helper, 'Kapselmonster hilft im Verbotenen Wald'); ok(r.titan, 'Titan Kron (' + r.titanName + ') besiegt → Sticker'); ok(r.hoehleNear && r.hoehle && r.cave, 'Uralte Höhle: Mini-Spiel, Stockwerke wechseln'); ok(r.log, 'Aufgabenliste: 12 Zeilen');
+ok(r.helper, 'Kapselmonster hilft auf der Wald-Insel'); ok(r.titan, 'Titan Kron (' + r.titanName + ') besiegt → Sticker'); ok(r.hoehleNear && r.hoehle && r.cave, 'Uralte Höhle: Mini-Spiel, Stockwerke wechseln'); ok(r.log, 'Aufgabenliste: 12 Zeilen');
 ok(errs.length === 0, 'Keine Seitenfehler' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
 await browser.close(); console.log(fails ? fails + ' FEHLER' : 'ALLES OK'); process.exit(fails ? 1 : 0);

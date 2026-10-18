@@ -11,12 +11,12 @@ BI.createPack = function (G) {
   const usedIn = k => Object.keys(REC).filter(r => REC[r][k]).map(r => FOOD[r][0] + ' ' + FOOD[r][1]);
   function foodInfo(k) {
     const g = groupOf(k), u = usedIn(k); let what, use;
-    if (k === 'potion_hp') { what = 'Ein Heiltrank aus der Apotheke.'; use = 'Im Verbotenen Wald 🌲 im Kampf: Knopf ❤️ drücken = +50 Leben.'; }
-    else if (k === 'potion_ep') { what = 'Ein Energietrank aus der Apotheke.'; use = 'Im Verbotenen Wald 🌲 im Kampf: Knopf ⚡ drücken = +30 Energie.'; }
+    if (k === 'potion_hp') { what = 'Ein Heiltrank aus der Apotheke.'; use = 'Auf der Wald-Insel 🌲 im Kampf: Knopf ❤️ drücken = +50 Leben.'; }
+    else if (k === 'potion_ep') { what = 'Ein Energietrank aus der Apotheke.'; use = 'Auf der Wald-Insel 🌲 im Kampf: Knopf ⚡ drücken = +30 Energie.'; }
     else if (k === 'bouquet') { what = 'Ein schöner Blumenstrauß.'; use = 'Schenke ihn einem Dorfbewohner: Geh hin und drück 💬 – das gibt +3 ⭐. Oder verschenke ihn an Freunde 🎁.'; }
     else if (g === 4) { what = 'Eine Blume aus dem Garten oder Blumenladen.'; use = 'Tiere im Zoo mögen manche Blumen. Du kannst sie auch an Bauer Heinz 🧑‍🌾 verkaufen oder verschenken.'; }
     else if (g === 0) { what = (k === 'egg' || k === 'milk') ? 'Frisch vom Bauernhof.' : 'Frisch aus dem Garten oder Supermarkt.'; use = (u.length ? 'Zutat für: ' + u.join(', ') + ' (kochen in der Hofküche 🍳). ' : '') + 'Auch zum Füttern der Tiere 🐮 oder Verkaufen an Bauer Heinz.'; }
-    else { what = 'Etwas Leckeres.'; use = (u.length ? 'Zutat für: ' + u.join(', ') + '. ' : '') + 'Zum Essen 😋 (Knopf unten). ' + (k === 'apple' ? 'Im Kampf: +20 ❤️. ' : '') + (k === 'juice' ? 'Im Kampf: +20 ⚡. ' : '') + (k === 'krabbenburger' ? 'Aus der Knusper-Krabbe 🦀. Im Verbotenen Wald: Knopf ❤️ = +70 Leben. ' : '') + (k === 'quallenshake' ? 'Aus der Knusper-Krabbe 🦀. Im Verbotenen Wald: Knopf ⚡ = +40 Energie. ' : '') + (REC[k] ? '' : 'Du kannst es auch verschenken 🎁.'); }
+    else { what = 'Etwas Leckeres.'; use = (u.length ? 'Zutat für: ' + u.join(', ') + '. ' : '') + 'Zum Essen 😋 (Knopf unten). ' + (k === 'apple' ? 'Im Kampf: +20 ❤️. ' : '') + (k === 'juice' ? 'Im Kampf: +20 ⚡. ' : '') + (k === 'krabbenburger' ? 'Aus der Knusper-Krabbe 🦀. Auf der Wald-Insel: Knopf ❤️ = +70 Leben. ' : '') + (k === 'quallenshake' ? 'Aus der Knusper-Krabbe 🦀. Auf der Wald-Insel: Knopf ⚡ = +40 Energie. ' : '') + (REC[k] ? '' : 'Du kannst es auch verschenken 🎁.'); }
     return { what, use };
   }
   const SLOTINFO = {
@@ -79,7 +79,7 @@ BI.createPack = function (G) {
     ['🐮 Tiere füttern', 'Im Streichelzoo: Tiere streicheln 🤗, Kühe melken 🥛 und füttern (Möhren, Mais, Äpfel).'], ['🏗️ Bauen', 'Mit 🏗️ baust du Häuser, Möbel, Gärten und sogar einen eigenen Parcours (Reiter 🏁). Alles ist gratis und wird gespeichert.'],
     ['🏁 Parcours', 'Himmels-Parcours: 🧭 → Himmels-Parcours. Eigener Parcours: Start 🚩 bauen, Hindernisse, Ziel 🏁 – dann auf den Start laufen.'], ['🚀 Gadgets', 'Doppelsprung, Hoverboard und Jetpack kaufst du im Spaß-Menü. Im Rucksack kannst du sie anlegen.'],
     ['🥚 Haustiere', 'Eier kaufen, Tiere sammeln, eins mitnehmen = Bonus-Sterne. Alles im Menü „Aufgaben & Haustiere“.'], ['🍭 Bonbon-Fabrik', 'Maschinen kaufen, Bonbons entstehen beim Spielen, verkaufen = Sterne.'],
-    ['⚔️ Kämpfen', 'Nur im Verbotenen Wald 🌲 und in der Arena. Heil- und Energietränke aus der Apotheke helfen dir.'], ['👥 Freunde, 🎁 Geschenke & 🔄 Tausch', 'Mit dem 👥-Knopf verbindest du dich mit Freunden. Im Rucksack kannst du Gegenstände verschenken oder tauschen.'],
+    ['⚔️ Kämpfen', 'Nur auf der Wald-Insel 🌲 und in der Arena. Heil- und Energietränke aus der Apotheke helfen dir.'], ['👥 Freunde, 🎁 Geschenke & 🔄 Tausch', 'Mit dem 👥-Knopf verbindest du dich mit Freunden. Im Rucksack kannst du Gegenstände verschenken oder tauschen.'],
     ['🏠 Meine Wohnung', 'Mit 🧭 → „Meine Wohnung“ kommst du heim: Bett, Zimmer-Editor und deine Deko.'], ['🚂 Zug & Boot', 'Am Bahnhof „Zug fahren“, am Steg das Segelboot. Beides gibt Aufträge und Sterne.']
   ];
   const HINT = { hat: 'Kommt auf den Kopf', glasses: 'Für dein Gesicht', patch: 'Piraten-Look', pack: 'Hängt am Rücken', teddy: 'Kuschelt im Arm', cape: 'Weht hinter dir', wings: 'Auf dem Rücken', scarf: 'Um den Hals', bowtie: 'Am Kragen', medal: 'Auf der Brust', kite: 'Fliegt über dir', glassT: 'Für dein Gesicht', beard: 'Im Gesicht', scooter: 'Zum Fahren', bicycle: 'Zum Fahren', bumper: 'Zum Fahren', mower: 'Zum Fahren', bobby: 'Zum Fahren', bike: 'Zum Fahren', limo: 'Zum Fahren', ice: 'Zum Fahren', taxi: 'Zum Fahren', watch: 'Am Handgelenk', headband: 'Im Haar', earring: 'Am Ohr', necklace: 'Um den Hals', mask: 'Im Gesicht', rainbow: 'Bunt!', fox: 'Fuchs-Look', rcheli: 'Zum Fernsteuern', skate: 'Zum Fahren', rollator: 'Zum Unfug machen', deco: 'Für dein Zimmer' };

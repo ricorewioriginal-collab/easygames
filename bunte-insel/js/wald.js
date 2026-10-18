@@ -1,6 +1,6 @@
 'use strict';
-/* Bunte Insel – Wald-Insel 🌲 (großer Verbotener Wald): eigene große Insel hinter der Rätsel-Insel (Holzbrücke an der Nordküste).
-   Hier – wie im kleinen Verbotenen Wald der Hauptinsel – darf gekämpft werden, aber wie in einem Rollenspiel: Kampfstufe (Erfahrung), gekaufte Waffen,
+/* Bunte Insel – Wald-Insel 🌲 (hier wird gekämpft): eigene große Insel hinter der Rätsel-Insel (Holzbrücke an der Nordküste).
+   Hier – und nur hier (außer in der Arena) – darf gekämpft werden; der alte Verbotene Wald der Hauptinsel ist friedlich und hat ein Waldtor hierher, aber wie in einem Rollenspiel: Kampfstufe (Erfahrung), gekaufte Waffen,
    Schilde und Tränke (js/ausruestung.js). Fünf Lichtungen mit den Monstern aus den Welten (Rätsel-Insel, Schlüsselreich, Zotik, Trickfilm-Wüste, Schwammi-Bucht),
    je ein Wächter (Endgegner). In der Mitte das Waldlager: Waldhändlerin Fenja, Heilquelle, Lagerfeuer – dort greifen keine Monster an.
    Lokale Koordinaten (a, b): a = weg von der Rätsel-Insel (nach Norden), b = quer dazu. Teil-Insel der Rätsel-Insel (Story-Modus: gleiche Sperre). */
@@ -82,13 +82,22 @@ BI.createWald = function (G) {
   const shop = W.spots.waldShop, fenja = BI.makeChar({ shirt: 0x3fa84e, pants: 0x6b4a2a, hair: 0xc8642a, skin: 0xf3c9a0, style: 'braids', hat: 'none', name: 'Waldhändlerin Fenja', scale: 1 });
   fenja.group.position.set(shop.x, 0, shop.z + 1.2); fenja.group.rotation.y = Math.PI; scene.add(fenja.group); W.addCircle(shop.x, shop.z + 1.2, .5, false, 2);
   const near = (q, r) => q && Math.hypot(P.x - q.x, P.z - q.z) < r;
+  /* Waldtor: der alte Verbotene Wald der Hauptinsel führt jetzt hierher (dort wird nicht mehr gekämpft) */
+  const FO = W.spots.forest, back = L(-T.R + 8, 3);
+  if (FO) { const g = new THREE.Mesh(new THREE.TorusGeometry(1.5, .2, 8, 24), new THREE.MeshBasicMaterial({ color: 0x7affc8 })), g2 = g.clone(); g.position.set(FO.gx, 1.8, FO.gz); g.rotation.y = FO.ang || 0; g2.position.set(back.x, 1.8, back.z); scene.add(g, g2); }
+  function beam(x, z, msg) { fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.green || BI.C.blue, BI.C.gold], 4, 1, 28, 4); const q = W.resolve(x, z, .6, {}); P.x = q.x; P.z = q.z; P.y = 0; P.vy = 0; A.star && A.star(); say(msg, 3600); }
   K.near = function () {
-    if (P.veh || !T.onIsle(P.x, P.z, 4)) return null;
+    if (P.veh) return null;
+    if (FO && Math.hypot(P.x - FO.gx, P.z - FO.gz) < 2.5) return { k: 'wtor', label: ['🌀', 'Waldtor zur Wald-Insel'] };
+    if (Math.hypot(P.x - back.x, P.z - back.z) < 3) return { k: 'wback', label: ['🌀', 'Zurück zur Hauptinsel'] };
+    if (!T.onIsle(P.x, P.z, 4)) return null;
     if (near({ x: shop.x, z: shop.z - 1.4 }, 3)) return { k: 'wshop', label: ['🎒', 'Ausrüstung kaufen'] };
     if (near(W.spots.waldQuelle, 3.4)) return { k: 'wquelle', label: ['💧', 'Heilquelle'] };
     return null;
   };
   K.act = function (n) {
+    if (n.k === 'wtor') { const lk = G.locked && G.locked(T.entry.x, T.entry.z); if (lk) { say(G.reqText(lk), 6000); return; } const e = W.spots.waldinsel; return beam(e.x, e.z, '🌀 Das Waldtor bringt dich zur Wald-Insel – hier wird gekämpft!'); }
+    if (n.k === 'wback') return beam(FO.gx + Math.sin(FO.ang || 0) * 3, FO.gz + Math.cos(FO.ang || 0) * 3, '🌀 Zurück am alten Wald der Hauptinsel.');
     if (n.k === 'wshop') { say('🧝 Fenja: „Willkommen, Waldläufer! Mit guter Ausrüstung sind die Wächter viel leichter.“', 3200); G.gear.show('Waldhändlerin Fenja'); }
     else if (n.k === 'wquelle') { G.heal && G.heal(); A.star && A.star(); fx.burst(P.x, 1.4, P.z, 24, [BI.C.blue, BI.C.white, BI.C.pink], 4, 1, 26, 4); say('💧 Das Quellwasser kitzelt – Herzen und Energie sind wieder voll!', 2600); }
   };
