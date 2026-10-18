@@ -113,6 +113,18 @@ const host = mk((q, r) => { r.writeHead(200, { 'content-type': 'text/html' }); i
   await m8.evaluate(e => { e.scrollTop = e.scrollHeight; });
   const last = m8.locator('.eg-acc-i').last(); assert.match(await last.textContent(), /Abmelden/); const lb = await last.evaluate(e => { const r = e.getBoundingClientRect(); return { top: r.top, bottom: r.bottom }; });
   assert.ok(lb.top >= 0 && lb.bottom <= 420, 'Abmelden sichtbar: ' + JSON.stringify(lb)); console.log('PASS Konto-Menü: lang → scrollbar, letzter Punkt erreichbar, bleibt im Bild');
+  // Fortschrittsbalken im Menü-Kopf: Spiele-Erfolge (lokal) und – wenn die Seite ihn liefert – Radio
+  const c9 = await b.newContext({ viewport: { width: 900, height: 900 } });
+  await c9.route(/^https?:\/\/(?!127)/, r => r.abort());
+  const p9 = await c9.newPage();
+  await p9.addInitScript(() => { localStorage.setItem('anmacha-rating-token', 'x.y'); localStorage.setItem('anmacha-rating-user', JSON.stringify({ name: 'Rico', picture: '' })); localStorage.setItem('eg-ach', JSON.stringify({ d: 12, t: 48 })); });
+  await p9.goto(gbase + 'index.html'); await p9.waitForSelector('#acct .eg-acc-b'); await p9.click('#acct .eg-acc-b');
+  let bars = await p9.locator('#acct .eg-acc-m:not([hidden]) [role=progressbar]').evaluateAll(l => l.map(e => ({ l: e.getAttribute('aria-label'), v: e.getAttribute('aria-valuenow') })));
+  assert.deepStrictEqual(bars, [{ l: 'Spiele', v: '25' }]); assert.match(await p9.locator('#acct .eg-acc-m:not([hidden]) .eg-acc-bt').first().textContent(), /12 von 48 Erfolgen/);
+  await p9.evaluate(() => { document.body.insertAdjacentHTML('beforeend', '<div id="bx"></div>'); AnMaChaAccount.mount('#bx', { bars: () => [{ label: 'Radio', value: .4, text: 'Level 2 · Hörer' }] }); });
+  await p9.click('#bx .eg-acc-b');
+  bars = await p9.locator('#bx .eg-acc-m:not([hidden]) [role=progressbar]').evaluateAll(l => l.map(e => ({ l: e.getAttribute('aria-label'), v: e.getAttribute('aria-valuenow') })));
+  assert.deepStrictEqual(bars, [{ l: 'Radio', v: '40' }, { l: 'Spiele', v: '25' }]); console.log('PASS Konto-Menü: zwei Fortschrittsbalken (Radio und Spiele) unter „Mit Google angemeldet“');
   // App (Android/Windows): Google sperrt die Anmeldung im App-Fenster → Kopplungs-Link im Konto-Menü
   const c3 = await b.newContext({ userAgent: 'Mozilla/5.0 EasyGamesApp/1.0', viewport: { width: 390, height: 800 } });
   await c3.route(/^https?:\/\/(?!127)/, r => r.request().url().includes('firestore.googleapis.com') ? r.fulfill({ status: 404, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '{}' }) : r.abort());

@@ -228,6 +228,7 @@
     var st = merge(loadState(), { v: ex.v, gu: ex.gu });
     var r = evaluate({ games: list, state: st, own: own, cloud: !!opt.cloud, board: !!opt.board, today: todayNum() }, now);
     saveState(r.state);
+    try { var sum = JSON.stringify({ d: r.done, t: r.total }); LS.setItem('eg-ach', sum); if (root.AnMaChaAccount && root.AnMaChaAccount.pushSummary) root.AnMaChaAccount.pushSummary('eg-ach', sum); } catch (e) { }   // Fortschrittsbalken „Spiele“ im Konto-Menü (auch auf anderen Seiten/Geräten)
     return r;
   }
   // Mit dem Profil abgleichen (nur angemeldet): Cloud-Stand holen, vereinigen, zurückschreiben, wenn sich etwas geändert hat. Liefert den vereinigten Zustand.
