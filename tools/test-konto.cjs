@@ -22,9 +22,9 @@ const server = http.createServer((req, res) => {
     await ctx.route(/gstatic\.com/, r => r.abort());
     await ctx.route(/securetoken\.googleapis\.com/, r => json(r, { id_token: 'tok', user_id: 'u1', expires_in: '3600', refresh_token: 'rt1' }));
     await ctx.route(/identitytoolkit\.googleapis\.com/, r => json(r, { users: [{ displayName: 'Rico Test', email: 'rico@example.test', photoUrl: '' }] }));
+    await ctx.route(/ricorewi-radio\.de\/cms\/api\.php\?action=saves_list/, r => json(r, { status: 'ok', items: [{ game: 'snake', t: 1800000000000 }, { game: 'wobbel', t: 1700000000000 }] }));
     await ctx.route(/firestore\.googleapis\.com/, r => {
       const u = r.request().url();
-      if (/\/saves\?/.test(u)) return json(r, { documents: [{ name: 'x/users/u1/saves/wobbel', fields: { t: { integerValue: '1700000000000' } } }, { name: 'x/users/u1/saves/__ach', fields: {} }, { name: 'x/users/u1/saves/wobbel__alt', fields: {} }, { name: 'x/users/u1/saves/snake', fields: { t: { integerValue: '1800000000000' } } }] });
       return r.fulfill({ status: 404, contentType: 'application/json', body: '{}' });
     });
     const errors = [], page = await ctx.newPage(); page.on('pageerror', e => errors.push(e.message));
@@ -75,8 +75,9 @@ const server = http.createServer((req, res) => {
     assert.match(await host.$eval('[role=dialog] iframe', f => f.src), /konto\.html\?embed=1$/);
     console.log('PASS Einbettung: data-easygames="konto" (inline und Overlay) und EasyGames.open(\'konto\')');
     await page.goto(base + 'index.html');
-    assert.equal(await page.$eval('#lAcc', a => a.getAttribute('href')), 'konto.html');
-    console.log('PASS Hub: Link „👤 Konto“ vorhanden');
+    await page.waitForSelector('#acct .eg-acc-b');
+    await page.click('#acct .eg-acc-b'); await page.waitForSelector('#acct .eg-acc-m:not([hidden]) a[href="konto.html"]');
+    console.log('PASS Hub: angemeldet → Konto-Menü oben mit Link „👤 Konto & Übersicht“');
     assert.deepEqual(errors, [], 'Seitenfehler: ' + errors.join('; '));
   } finally { await browser.close(); server.close(); }
 })().catch(e => { console.error(e); process.exitCode = 1; });

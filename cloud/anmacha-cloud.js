@@ -125,6 +125,16 @@
     };
     return u;
   }
+  // Eigenes Konto-Token (anmacha-account.js: Login über die Anmelde-Seite von ricorewi-radio.de, z. B. in fremden Seiten mit eingebetteten Spielen): kein Firebase nötig,
+  // der Server nimmt das Token für die Spielstände an. Firestore-Funktionen (Ranglisten, Chat, Profil) brauchen weiterhin die Firebase-Anmeldung.
+  var OT = 'anmacha-rating-token', OU = 'anmacha-rating-user';
+  function ownUser() {
+    var t = '', p = {};
+    try { t = LS.getItem(OT) || ''; p = JSON.parse(LS.getItem(OU) || '{}') || {}; } catch (e) {}
+    if (!t) return null;
+    return { uid: 'own', own: true, displayName: p.name || '', email: '', photoURL: p.picture || '', getIdToken: function () { return Promise.resolve(t); } };
+  }
+  function hasRt() { try { return !!LS.getItem(RT); } catch (e) { return false; } }
   function startPair() {
     var a = new Uint8Array(16), id;
     crypto.getRandomValues(a);
@@ -182,6 +192,8 @@
   function keepRt(u) { try { if (u && u.refreshToken) rawSet.call(LS, RT, u.refreshToken); } catch (e) {} }
   function keepStorage() { try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {}); } catch (e) {} }
   function loadSdk() {
+    if (!APP && !user && !hasRt()) { var ou = ownUser(); if (ou) { user = ou; return Promise.resolve(ou); } }
+    if (user && user.own && !hasRt()) return Promise.resolve(user);
     if (APP) {
       var r0 = ''; try { r0 = LS.getItem(RT) || ''; } catch (e) {}
       if (!user && r0) { user = appUser(r0); user.load().then(render, render); }
@@ -200,14 +212,36 @@
       });
     }));
   }
-  function signIn() {
+  // anmacha-account.js (ein Login für alles) bei Bedarf nachladen; liegt es nicht neben diesem Skript, bleibt die Firebase-Anmeldung dieses Skripts
+  function withAccount(cb) {
+    if (window.AnMaChaAccount) return cb(true);
+    try {
+      var a = document.createElement('script');
+      a.src = s.dataset.accountSrc || (s.src || '').replace(/[^\/?#]*([?#].*)?$/, 'anmacha-account.js');
+      a.onload = function () { cb(!!window.AnMaChaAccount); }; a.onerror = function () { cb(false); };
+      (document.head || document.documentElement).appendChild(a);
+    } catch (e) { cb(false); }
+  }
+  function signIn() {   // Ein Login für alles: anmacha-account.js (falls vorhanden), sonst die Firebase-Anmeldung dieses Skripts
+    return new Promise(function (res) { withAccount(function (ok) { res(ok ? window.AnMaChaAccount.login() : firebaseSignIn()); }); });
+  }
+  function firebaseSignIn() {
     if (APP) return startPair();
     return loadSdk().then(function () { return fb.signInWithPopup(auth, new fb.GoogleAuthProvider()); }).then(function (r) {
       user = r.user; rawSet.call(LS, ON_KEY, '1'); keepRt(user); keepStorage(); first = true; return sync();
     }).catch(function (e) { lastErr = e.code === 'auth/popup-closed-by-user' ? '' : (e.message || 'Anmeldung fehlgeschlagen'); render(); });
   }
+  function refresh(switchAccount) {   // nach einem Login/Logout durch anmacha-account.js: Zustand neu einlesen und abgleichen; switchAccount: anderes Konto übernommen → Spielstände folgen dem neuen Token (Firebase-Nutzer wird verlassen)
+    first = true; baseRemote = null; lastErr = '';
+    if (switchAccount && !APP && hasRt()) { try { rawRemove.call(LS, RT); } catch (e) { } user = null; try { if (auth && fb) fb.signOut(auth); } catch (e) { } }
+    if (user && !user.own && hasRt()) { render(); return sync(); }   // Firebase-Anmeldung bleibt bestehen (z. B. nach dem Tausch gegen das Konto-Token)
+    user = null;
+    return loadSdk().then(function () { render(); return sync(); }).catch(function () { });
+  }
   function signOut() {
-    rawRemove.call(LS, ON_KEY); rawRemove.call(LS, RT);
+    rawRemove.call(LS, ON_KEY); rawRemove.call(LS, RT); try { rawRemove.call(LS, OT); rawRemove.call(LS, OU); } catch (e) {}
+    try { window.dispatchEvent(new Event('anmacha-account')); } catch (e) {}
+    if (user && user.own) { user = null; render(); return Promise.resolve(); }
     if (APP) { PAIR = null; user = null; render(); return Promise.resolve(); }
     return (auth ? fb.signOut(auth) : Promise.resolve()).then(function () { user = null; render(); });
   }
@@ -232,33 +266,45 @@
     return idbRead().then(function (x) { for (k in x) o[k] = x[k]; return o; });
   }
 
-  function url() {
-    return 'https://firestore.googleapis.com/v1/projects/' + CONFIG.projectId + '/databases/(default)/documents/users/' + user.uid + '/saves/' + game;
-  }
-  // Genau eine ältere Sicherung je Nutzer und Spiel: eigenes Dokument "<spiel>__alt" (gleiche Regeln wie der Spielstand)
-  function urlAlt() { return url() + '__alt'; }
+  // Spielstände liegen auf dem eigenen Server (ricorewi-radio.de, cms/api.php saves_*), nicht mehr in Firestore. Die Anmeldung bleibt das Firebase-Konto:
+  // dessen Token prüft der Server selbst. Firestore wird nur noch gelesen, wenn auf dem Server noch nichts liegt (Übernahme alter Stände).
+  var API = PORTAL + 'cms/api.php';
+  function url() { return game; }
+  // Genau eine ältere Sicherung je Nutzer und Spiel: eigener Eintrag "<spiel>__alt"
+  function urlAlt() { return game + '__alt'; }
+  function fsUrl(name) { return FS + 'users/' + user.uid + '/saves/' + name; }
   // Abgleich mit wenigen Zugriffen: Nach dem ersten Abholen merkt sich das Skript den Stand der Cloud (baseRemote) und dessen Version (baseVer).
   // Spätere Speicherungen schicken nur noch den neuen Stand und verlangen per Vorbedingung, dass die Cloud seitdem unverändert ist – ohne erneutes Lesen.
-  // Hat ein anderes Gerät inzwischen geschrieben, lehnt Firestore ab, und es folgt ein voller Abgleich (Lesen + Zusammenführen).
+  // Hat ein anderes Gerät inzwischen geschrieben, lehnt der Server ab (409), und es folgt ein voller Abgleich (Lesen + Zusammenführen).
   var baseRemote = null, baseVer = '', lastPull = 0, lastSyncAt = 0, FULL_EVERY = 300000, MIN_GAP = 120000;
-  function pull(tok, u, o) {
-    return fetch(u || url(), { headers: { Authorization: 'Bearer ' + tok } }).then(function (r) {
-      if (r.status === 404) { if (o) o.ver = ''; return {}; }
+  function pullLegacy(tok, name) {   // alter Stand aus Firestore (nur wenn der Server noch keinen hat)
+    if (user && user.own) return Promise.resolve({});
+    return fetch(fsUrl(name), { headers: { Authorization: 'Bearer ' + tok } }).then(function (r) {
+      if (r.status === 404) return {};   // nur 404 heißt „nichts vorhanden“; alles andere (auch 403) bricht ab und wird später wiederholt
       if (!r.ok) throw new Error('Laden ' + r.status);
-      return r.json().then(function (j) { if (o) o.ver = j.updateTime || ''; return ungz(j.fields.d.stringValue).then(JSON.parse).catch(function () { return {}; }); });
+      return r.json().then(function (j) { return ungz(j.fields.d.stringValue).then(JSON.parse).catch(function () { return {}; }); });
     });
   }
-  // pre: Version aus dem letzten Abholen/Speichern ('' = Dokument existierte nicht); undefined = ohne Vorbedingung. Antwort: neue Version.
-  function push(tok, state, keep, u, pre) {
+  function pull(tok, name, o) {
+    name = name || url();
+    return fetch(API + '?action=saves_get&game=' + encodeURIComponent(name), { headers: { Authorization: 'Bearer ' + tok } }).then(function (r) {
+      if (r.status === 404) { if (o) o.ver = ''; return pullLegacy(tok, name).then(function (x) { if (o && Object.keys(x).length) o.legacy = true; return x; }); }   // legacy: alter Stand muss auf den Server geschrieben werden
+      if (!r.ok) throw new Error('Laden ' + r.status);
+      return r.json().then(function (j) { if (o) o.ver = j.ver || ''; return ungz(j.d).then(JSON.parse).catch(function () { return {}; }); });
+    });
+  }
+  // pre: Version aus dem letzten Abholen/Speichern ('' = Eintrag existierte nicht); undefined = ohne Vorbedingung. Antwort: neue Version.
+  function push(tok, state, keep, name, pre) {
     return gz(JSON.stringify(state)).then(function (d) {
       if (d.length > 900000) throw new Error('Spielstand zu groß für die Cloud');
-      var body = JSON.stringify({ fields: { d: { stringValue: d }, t: { integerValue: String(Date.now()) } } });
-      var cond = pre === undefined ? '' : pre ? '&currentDocument.updateTime=' + encodeURIComponent(pre) : '&currentDocument.exists=false';
-      return fetch((u || url()) + '?updateMask.fieldPaths=d&updateMask.fieldPaths=t' + cond, {
-        method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok }, body: body, keepalive: !!keep && body.length < 60000
+      var o = { game: name || url(), d: d, t: Date.now() };
+      if (pre !== undefined) o.pre = pre;
+      var body = JSON.stringify(o);
+      return fetch(API + '?action=saves_put', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok }, body: body, keepalive: !!keep && body.length < 60000
       }).then(function (r) {
-        if (!r.ok) { var e = new Error('Speichern ' + r.status); e.stale = pre !== undefined && (r.status === 400 || r.status === 404 || r.status === 409 || r.status === 412); throw e; }
-        return r.json().then(function (j) { return j.updateTime || ''; }, function () { return ''; });
+        if (!r.ok) { var e = new Error('Speichern ' + r.status); e.stale = pre !== undefined && r.status === 409; throw e; }
+        return r.json().then(function (j) { return j.ver || ''; }, function () { return ''; });
       });
     });
   }
@@ -307,7 +353,7 @@
           saveMeta();
           lastErr = ''; lastOk = Date.now();
           return Promise.all(writes).then(function () {
-            if (!dirty) { baseRemote = merged; return null; }
+            if (!dirty && !vinfo.legacy) { baseRemote = merged; return null; }
             return push(tok, merged, keep, undefined, baseVer).then(function (ver) { baseRemote = merged; baseVer = ver; });
           });
         }).then(function () {
@@ -422,6 +468,7 @@
   }
   function render() {
     labels();
+    try { window.dispatchEvent(new Event('anmacha-cloud-state')); } catch (e) { }   // Kopf-Knopf (anmacha-account.js) neu zeichnen, z. B. beim Koppeln in der App
     if (!panel || s.dataset.ui === 'off') return;
     var on = wanted() && user, k;
     panel.textContent = '';
@@ -483,6 +530,7 @@
   }
   function boot() {
     ui(); enhance();
+    if (!APP && (window.parent !== window || wanted() || s.dataset.ui !== 'off')) withAccount(function () { });   // Login-Baustein vorab laden (Popup-Blocker: Klick → sofort Fenster); eingebettet übernimmt er das Konto der einbettenden Seite
     var pm = !APP && /[#&]koppeln=([0-9a-f]{32})\b/.exec(location.hash);
     if (pm) pairPage(pm[1]);
   }
@@ -493,11 +541,13 @@
     if (!wanted()) return Promise.resolve(null);
     return loadSdk().then(function (u) {
       u = u || user;
-      if (!u) return null;
+      if (!u || u.own) return null;   // Firestore-Funktionen brauchen die Firebase-Anmeldung
       return u.getIdToken().then(function (t) { return { uid: u.uid, name: u.displayName || '', token: t, project: CONFIG.projectId }; });
     }).catch(function () { return null; });
   }
-  window.AnMaChaCloud = { sync: sync, restore: restore, restoreOlder: restoreOlder, account: account, game: game, FS: FS, mine: mine, signIn: signIn, signOut: signOut, user: function () { return wanted() && user ? user : null; } };
+  // Token für den eigenen Server (Spielstände): Firebase-Token oder eigenes Konto-Token
+  function serverToken() { return wanted() ? loadSdk().then(function (u) { u = u || user; return u ? u.getIdToken() : null; }).catch(function () { return null; }) : Promise.resolve(null); }
+  window.AnMaChaCloud = { serverToken: serverToken, sync: sync, restore: restore, restoreOlder: restoreOlder, account: account, game: game, FS: FS, API: API, mine: mine, pairInfo: function () { return PAIR ? { link: PORTAL + '#koppeln=' + PAIR.id } : null; }, cancelPair: function () { PAIR = null; render(); }, signIn: signIn, firebaseSignIn: firebaseSignIn, refresh: refresh, signOut: signOut, user: function () { return wanted() && user ? user : null; } };
   // Ranglisten (nur für Spiele mit Eintrag in anmacha-board.js; data-board="off" schaltet ab, data-board-src = abweichender Pfad)
   if (s.dataset.board !== 'off') {
     var bsrc = s.dataset.boardSrc || (s.src || '').replace(/[^\/?#]*([?#].*)?$/, 'anmacha-board.js');

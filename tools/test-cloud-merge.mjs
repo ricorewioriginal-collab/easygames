@@ -26,10 +26,11 @@ function harness({ prefix, remote = {}, local = {}, alt = null, failAlt = 0 }) {
     let data = {};
     if (url.includes('securetoken.googleapis.com')) data = { id_token: 'test-only-id-token', expires_in: 3600, user_id: 'test-user' };
     else if (url.includes('accounts:lookup')) data = { users: [{ displayName: 'Test' }] };
-    else if (options.method === 'PATCH' && url.includes('__alt') && ++altPatches <= failAlt) return { ok: false, status: 500, json: async () => ({}) };
-    else if (!options.method) {
-      if (url.includes('__alt')) { if (!alt) return { ok: false, status: 404, json: async () => ({}) }; data = { fields: { d: { stringValue: JSON.stringify(alt) } } }; }
-      else data = { fields: { d: { stringValue: JSON.stringify(remote) } } };
+    else if (url.includes('action=saves_put') && url.includes('') && JSON.parse(options.body).game.endsWith('__alt') && ++altPatches <= failAlt) return { ok: false, status: 500, json: async () => ({}) };
+    else if (url.includes('action=saves_put')) data = { status: 'ok', ver: 'v' + requests.length };
+    else if (url.includes('action=saves_get')) {
+      if (url.includes('__alt')) { if (!alt) return { ok: false, status: 404, json: async () => ({}) }; data = { status: 'ok', d: JSON.stringify(alt), ver: 'va' }; }
+      else data = { status: 'ok', d: JSON.stringify(remote), ver: 'v0' };
     }
     return { ok: true, status: 200, json: async () => data };
   };
@@ -40,8 +41,8 @@ function harness({ prefix, remote = {}, local = {}, alt = null, failAlt = 0 }) {
   vm.runInNewContext(source, context);
   return { ls, requests, api: window.AnMaChaCloud, get reloads() { return reloads; }, async idle() { for (let i = 0; i < 20; i++) await new Promise(r => setImmediate(r)); } };
 }
-const uploads = (h, alt) => h.requests.filter(r => r.options.method === 'PATCH' && (alt ? r.url.includes('__alt') : !r.url.includes('__alt?') && !r.url.includes('__alt')))
-  .map(r => JSON.parse(JSON.parse(r.options.body).fields.d.stringValue));
+const uploads = (h, alt) => h.requests.filter(r => r.options.method === 'POST' && r.url.includes('action=saves_put')).map(r => JSON.parse(r.options.body)).filter(o => o.game.endsWith('__alt') === !!alt)
+  .map(o => JSON.parse(o.d));
 
 test('Gleichstand beim ersten Abgleich: Cloud-Kopie wird als ältere Sicherung aufgehoben, lokal bleibt unverändert', async () => {
   const h = harness({ prefix: 'mygame.', remote: { 'mygame.save': { v: 'CLOUD', t: 1 } }, local: { 'mygame.save': 'LOKAL' } });

@@ -22,7 +22,8 @@ function harness({signedIn=false,remote={},fail=false}={}){
   let data={};
   if(url.includes('securetoken.googleapis.com'))data={id_token:'test-only-id-token',expires_in:3600,user_id:'test-user'};
   else if(url.includes('accounts:lookup'))data={users:[{displayName:'Test Player'}]};
-  else if(!options.method)data={fields:{d:{stringValue:JSON.stringify(remote)}}};
+  else if(url.includes('action=saves_get'))data={status:'ok',d:JSON.stringify(remote),ver:'v1',t:1};
+  else if(url.includes('action=saves_put'))data={status:'ok',ver:'v2'};
   return {ok:true,status:200,json:async()=>data};
  };
  const document={currentScript:{dataset:{game:'kiko-sterneninseln',prefix:KEY,ui:'off'}},body:{},visibilityState:'visible',addEventListener(){},querySelectorAll:()=>[]};
@@ -39,8 +40,8 @@ test('existing cloud module restores and uploads a separate Kiko save for a sign
  const h=harness({signedIn:true,remote:{[KEY]:{v:JSON.stringify(restored),t:100}}});await h.idle();
  assert.equal(JSON.parse(h.local.getItem(KEY)).unlocked,5);assert.equal(h.reloads,1);
  const next=structuredClone(restored);next.unlocked=6;h.local.setItem(KEY,JSON.stringify(next));await h.api.sync();await h.idle();
- const save=h.requests.findLast(r=>r.options.method==='PATCH'&&r.url.includes('/users/test-user/saves/kiko-sterneninseln?'));
- assert.ok(save,'Kiko save was not uploaded');const payload=JSON.parse(JSON.parse(save.options.body).fields.d.stringValue);
+ const save=h.requests.findLast(r=>r.options.method==='POST'&&r.url.includes('action=saves_put')&&JSON.parse(r.options.body).game==='kiko-sterneninseln');
+ assert.ok(save,'Kiko save was not uploaded');assert.equal(JSON.parse(save.options.body).pre,'v1');assert.ok(!h.requests.some(r=>r.url.includes('firestore')),'no Firestore access');const payload=JSON.parse(JSON.parse(save.options.body).d);
  assert.deepEqual(Object.keys(payload),[KEY]);assert.equal(JSON.parse(payload[KEY].v).unlocked,6);
  assert.equal(h.local.getItem('easygames.lumo.v1'),'keep-other-game');
 });

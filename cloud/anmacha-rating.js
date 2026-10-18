@@ -75,6 +75,7 @@
     });
   }
   function logout() {
+    if (root.AnMaChaAccount && root.AnMaChaAccount.token() && !logout.busy) { logout.busy = true; try { return root.AnMaChaAccount.logout(); } finally { logout.busy = false; } }   // ein Konto: Spielstände, Kopf-Knopf und Bewertungen melden zusammen ab
     var t = token(); store(TOK, null); store(USR, null); if (cfg) cfg.user = null;
     try { root.google && root.google.accounts && root.google.accounts.id.disableAutoSelect(); } catch (e) { }
     if (t) call('ratings_logout').catch(function () { });
@@ -160,16 +161,18 @@
       else if (b.dataset.amr === 'out') logout();
       else if (b.dataset.amr === 'consent' && root.RRWConsent) root.RRWConsent.open();
     });
+    var tk0 = token();   // Antwort auf eine ältere Anfrage darf ein inzwischen neu ausgestelltes Konto nicht löschen
     settings().then(function (c) {
       if (!c.enabled) { el.hidden = true; return; }
       return get([o.subject]).then(function (j) {
         m.agg = (j.items || {})[o.subject] || { count: 0, avg: 0 }; m.mine = ((j.mine || {})[o.subject]) || 0;
         if (j.user) { cfg.user = j.user; store(USR, JSON.stringify(j.user)); }
-        else if (token()) { store(TOK, null); store(USR, null); cfg.user = null; m.mine = 0; }   // Token abgelaufen oder Konto gesperrt
+        else if (token() && token() === tk0) { store(TOK, null); store(USR, null); cfg.user = null; m.mine = 0; }   // Token abgelaufen oder Konto gesperrt
         cache[o.subject] = m.agg; draw(m);
       });
     });
     return m;
   }
-  root.AnMaChaRating = { mount: mount, top: top, get: get, set: set, settings: settings, logout: logout, user: function () { return token() ? me() : null; }, api: API };
+  function refresh() { cfgP = null; cache = {}; mounts.slice().forEach(function (m) { mount(m.el, { subject: m.subject, title: m.title, compact: m.compact }); }); }   // nach Login/Logout durch anmacha-account.js
+  root.AnMaChaRating = { refresh: refresh, mount: mount, top: top, get: get, set: set, settings: settings, logout: logout, user: function () { return token() ? me() : null; }, api: API };
 })(typeof window !== 'undefined' ? window : this);

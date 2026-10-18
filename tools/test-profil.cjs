@@ -79,7 +79,7 @@ const server = http.createServer((req, res) => {
     await page.goto(base + 'profil.html'); await page.waitForSelector('#unpub:not([hidden])'); await page.click('#unpub'); await page.waitForFunction(() => /entfernt/.test(document.getElementById('toast').textContent)); assert(!db.profiles.u1);
     console.log('PASS Profil entfernen');
     await page.goto(base + 'profil.html?embed=1'); assert.equal(await page.$eval('.back', a => getComputedStyle(a).display), 'none');
-    await page.goto(base + 'index.html'); assert.equal(await page.$eval('#lProf', a => a.getAttribute('href')), 'profil.html');
+    await page.goto(base + 'index.html'); await page.waitForSelector('#acct .eg-acc-b'); await page.click('#acct .eg-acc-b'); await page.waitForSelector('#acct .eg-acc-m:not([hidden]) a[href="profil.html"]');
     assert.deepEqual(errors, [], 'Seitenfehler: ' + errors.join('; '));
   } finally { await browser.close(); server.close(); }
 })().catch(e => { console.error(e); process.exitCode = 1; });

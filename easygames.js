@@ -354,6 +354,32 @@
   }
   EG.scan = scan;
 
+  // Ein Login für alle eingebetteten Spiele dieser Seite: Meldet sich ein Spiel/eine Seite an (Fenster von ricorewi-radio.de), merkt sich die einbettende Seite das Konto
+  // und gibt es an alle easygames-iframes weiter; neue iframes bekommen es beim Start. So genügt eine Anmeldung je Seite, auch wenn der Browser Speicher in iframes trennt.
+  (function () {
+    var K = 'anmacha-embed-account';
+    var HOME = new URL(base).origin;
+    // nur iframes von easygames selbst (nie fremde Werbe-/Video-iframes der Seite)
+    function frames() { return [].slice.call(document.querySelectorAll('iframe')).filter(function (f) { try { return new URL(f.src, location.href).origin === HOME; } catch (e) { return false; } }); }
+    function send(f, d) { try { f.contentWindow.postMessage(d, new URL(f.src, location.href).origin); } catch (e) { } }
+    function get() {   // Konto der einbettenden Seite: eigener Login-Knopf (anmacha-account.js im Kopf der Seite) hat Vorrang, sonst das gemerkte Konto
+      var A = window.AnMaChaAccount, t = A && A.token && A.token(), u = t && A.user && A.user();
+      if (t && u) return { token: t, user: { name: u.name, picture: u.picture || '' } };
+      try { var v = JSON.parse(localStorage.getItem(K) || 'null'); return v && v.token && v.user ? v : null; } catch (e) { return null; }
+    }
+    function all() { var v = get(); frames().forEach(function (f) { send(f, v ? { type: 'anmacha-account', token: v.token, user: v.user } : { type: 'anmacha-account', token: '', user: null }); }); }
+    window.addEventListener('anmacha-account-changed', all);   // Login/Logout im Kopf der einbettenden Seite → alle Spiele
+    window.addEventListener('message', function (e) {
+      var d = e.data; if (!d || typeof d !== 'object' || (d.type !== 'anmacha-account' && d.type !== 'anmacha-account-hello')) return;
+      var from = frames().filter(function (f) { return f.contentWindow === e.source; })[0]; if (!from) return;
+      if (d.type === 'anmacha-account-hello') { var v = get(); if (v) send(from, { type: 'anmacha-account', token: v.token, user: v.user }); return; }
+      var ok = typeof d.token === 'string' && d.token && d.token.length < 2000 && d.user && typeof d.user.name === 'string';
+      if (window.AnMaChaAccount && window.AnMaChaAccount.adopt) { if (ok) window.AnMaChaAccount.adopt(d.token, d.user); else if (window.AnMaChaAccount.token()) window.AnMaChaAccount.logout(); }
+      try { if (ok) localStorage.setItem(K, JSON.stringify({ token: d.token, user: { name: d.user.name.slice(0, 80), picture: String(d.user.picture || '').slice(0, 300) } })); else localStorage.removeItem(K); } catch (x) { }
+      frames().forEach(function (f) { if (f !== from) send(f, ok ? { type: 'anmacha-account', token: d.token, user: d.user } : { type: 'anmacha-account', token: '', user: null }); });
+    });
+  })();
+
   function start() {
     var q = waiting; waiting = [];
     q.forEach(function (cb) { cb(); });

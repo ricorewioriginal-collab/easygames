@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "14b89814d3e2",
- "generated": "2026-10-18T22:18:20+02:00",
- "commit": "4f46d695e56a2a3691ebb278c237bb6f7539eb1e",
+ "version": "223053ae7037",
+ "generated": "2026-10-18T21:11:54+00:00",
+ "commit": "abf5c52b0861209b26f00d2b042aa11b354a1265",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5252,6 +5252,11 @@
    "h": "15ee7b7bcb781912bcdba9c67190c4e51d8d629795d6efd5f14136eaf713264d"
   },
   {
+   "p": "cloud/anmacha-account.js",
+   "s": 16997,
+   "h": "05a0d58550ed2f490c7d3505860e5aa220b6303332fb05a9802dbc7a71c82574"
+  },
+  {
    "p": "cloud/anmacha-ach.js",
    "s": 21674,
    "h": "27ecdae06e1736f83f52b443922a43ef13db14e86c3b2e7d89237a6c633e18a5"
@@ -5278,8 +5283,8 @@
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 34844,
-   "h": "ca15102313fbb4f560e59d8df0e87fba92ab33998f66b3de23592c4e8cc563fb"
+   "s": 39475,
+   "h": "a5a4e7bbe440cdbd940f648aff745aa3ac0f2b5d452c7e7423d0329a84edebe1"
   },
   {
    "p": "cloud/anmacha-engage.js",
@@ -5303,13 +5308,13 @@
   },
   {
    "p": "easygames.js",
-   "s": 26667,
-   "h": "05983e73f435ccfe520b5707bf50c6c5e9a0b63a54acd628289d9c1a372ddbd8"
+   "s": 29512,
+   "h": "1c9c4f67def05cb76ada1880a045be32741d59711e01bbfcda42d822543bd569"
   },
   {
    "p": "einbinden.html",
-   "s": 74502,
-   "h": "94eb4b171eba37e718395615b6a56e8516498974b36b6e22062749be331bd078"
+   "s": 75228,
+   "h": "ba2684e5d3846abc781d6b6e895ea52c6d9f23fc3549a79e46e85ea6417be530"
   },
   {
    "p": "erfolge.html",
@@ -5568,8 +5573,8 @@
   },
   {
    "p": "index.html",
-   "s": 87722,
-   "h": "3f5e6a163b5000c0424cf6d5b44e699a16f84d70ca8808dbd946bc4e7f4e5e68"
+   "s": 88745,
+   "h": "af470dcf7a9bcf0df658e291c2ad1c3b92317fa782680d0c1d9aaae91aa0cbd9"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -5578,8 +5583,8 @@
   },
   {
    "p": "kiko-sterneninseln/index.html",
-   "s": 1940,
-   "h": "15223788e1f1419798bd0e1b0ffa4a14aa567a8f044e04b7c9ab13c77549e0fa"
+   "s": 1987,
+   "h": "782714802508f94f078d30adeca993c96e3ad54f98baa7d0020657ab4577cfe1"
   },
   {
    "p": "kiko-sterneninseln/src/audio.js",
@@ -5673,8 +5678,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 34844,
-   "h": "ca15102313fbb4f560e59d8df0e87fba92ab33998f66b3de23592c4e8cc563fb"
+   "s": 39475,
+   "h": "a5a4e7bbe440cdbd940f648aff745aa3ac0f2b5d452c7e7423d0329a84edebe1"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -5688,8 +5693,8 @@
   },
   {
    "p": "konto.html",
-   "s": 10078,
-   "h": "ea42ac8b2613417f57219da814124a9f18fce31434139f9db140c1aaa2bf7635"
+   "s": 10015,
+   "h": "9bfb1fe1c616f882449e950cb7d4fe67dbd8392e62918cb05192c8b368f4f9bc"
   },
   {
    "p": "kraterkommando/card.svg",
@@ -6959,7 +6964,7 @@
   {
    "p": "sync/catalog.json",
    "s": 116470,
-   "h": "d6be102d6322294fcba75bc99d99e2b605c7b614175a191a880dc71eed3c92a8"
+   "h": "bcadace85e5607a5fd72b64ceb7bd249be78a2f90900969754f2c409b777156c"
   },
   {
    "p": "taschi/card.svg",
