@@ -1,0 +1,20 @@
+# Lokal oder auf einem kleinen VPS:  docker compose up -d --build
+# Secrets NICHT hier eintragen, sondern in .env (siehe .env.example; .env ist in .gitignore).
+services:
+  spinwelten-backend:
+    build:
+      context: .
+      additional_contexts:
+        game: ../spinwelten
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      DATA_DIR: /data
+    ports:
+      - "127.0.0.1:8080:8080"   # nur lokal; HTTPS davor über Reverse-Proxy (Caddy/nginx)
+    volumes:
+      - spinwelten-data:/data
+    restart: unless-stopped
+    stop_grace_period: 10s
+volumes:
+  spinwelten-data:
