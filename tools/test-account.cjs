@@ -51,6 +51,13 @@ const host = mk((q, r) => { r.writeHead(200, { 'content-type': 'text/html' }); i
   console.log('PASS Seite mit eigenem Login: das eingebettete Konto übernimmt den Login der Seite');
   await p2.evaluate(() => AnMaChaAccount.logout()); await p2.frameLocator('#f').locator('#nm', { hasText: 'Nicht angemeldet' }).waitFor({ timeout: 8000 });
   console.log('PASS Abmelden auf der Seite meldet auch das eingebettete Konto ab');
+  // Angemeldet (Konto-Token, z. B. Login im Kopf oder bei den Bewertungen) → ein gestartetes Spiel ist automatisch angemeldet
+  const c4 = await b.newContext();
+  await c4.route(/^https?:\/\/(?!127)/, r => r.abort());
+  const p4 = await c4.newPage();   // Spielseite lädt ohne Netz nicht alles (z. B. three.js): Seitenfehler hier egal
+  await p4.addInitScript(() => { localStorage.setItem('anmacha-rating-token', 'x.y'); localStorage.setItem('anmacha-rating-user', JSON.stringify({ name: 'Rico', picture: '' })); });
+  await p4.goto(gbase + 'anmacha-snake/index.html'); await p4.waitForFunction(() => window.AnMaChaCloud && AnMaChaCloud.user() && AnMaChaCloud.user().displayName === 'Rico', null, { timeout: 8000 });
+  console.log('PASS Spiel: mit Konto-Token automatisch angemeldet (ohne extra Cloud-Schalter)');
   // App (Android/Windows): Google sperrt die Anmeldung im App-Fenster → Kopplungs-Link im Konto-Menü
   const c3 = await b.newContext({ userAgent: 'Mozilla/5.0 EasyGamesApp/1.0', viewport: { width: 390, height: 800 } });
   await c3.route(/^https?:\/\/(?!127)/, r => r.request().url().includes('firestore.googleapis.com') ? r.fulfill({ status: 404, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '{}' }) : r.abort());

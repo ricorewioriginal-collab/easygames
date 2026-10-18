@@ -88,7 +88,8 @@
   }
   function saveMeta() { try { rawSet.call(LS, META_KEY, JSON.stringify(meta)); } catch (e) {} }
   var auth = null, user = null, fb = null, sdkP = null;
-  function wanted() { try { return LS.getItem(ON_KEY) === '1'; } catch (e) { return false; } }
+  // „Mit Google verbunden“: Cloud-Schalter dieses Skripts ODER ein Konto-Token (Login im Kopf, bei den Bewertungen, im Portal) – dann ist man in jedem Spiel automatisch angemeldet
+  function wanted() { try { return LS.getItem(ON_KEY) === '1' || !!LS.getItem('anmacha-rating-token'); } catch (e) { return false; } }
   // ---- App-Modus (Android/Windows-App): Google sperrt die Anmeldung im App-Fenster. Die Anmeldung läuft deshalb im Browser
   // (Link mit Kopplungscode auf ricorewi-radio.de), die App holt sich danach das Aktualisierungs-Token und nutzt es per REST. ----
   var APP = location.hostname === 'appassets.local' || location.hostname === 'appassets.androidplatform.net' || !!window.EasyGamesApp || /(RicoReWi|EasyGames)App\//.test(navigator.userAgent), RT = 'anmacha-cloud-rt', PAIR = null;
@@ -370,6 +371,19 @@
         if (again) { again = false; queue(); }
       });
   }
+  // Echtzeit-Abgleich: Solange die Seite sichtbar ist, fragt das Skript alle 45 s nur die Version des Spielstands vom eigenen Server ab (winzige Antwort, kein Firebase).
+  // Hat ein anderes Gerät/ein anderer Tab inzwischen gespeichert, folgt sofort ein voller Abgleich – der neue Stand erscheint ohne Neuladen von Hand.
+  function poll() {
+    if (document.hidden || busy || !wanted() || !user || baseRemote === null || s.dataset.sync === 'off') return;
+    var bv = baseVer;   // Antwort auf eine Anfrage vor dem eigenen Speichern darf keinen Abgleich auslösen
+    user.getIdToken().then(function (tok) {
+      return fetch(API + '?action=saves_ver&game=' + encodeURIComponent(game), { headers: { Authorization: 'Bearer ' + tok } });
+    }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (j && j.ver && j.ver !== baseVer && j.ver !== bv && !busy) sync(false, true);
+    }).catch(function () { });
+  }
+  if (typeof setInterval === 'function') setInterval(poll, 45000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) poll(); });
   function queue() { clearTimeout(timer); timer = setTimeout(function () { sync(); }, Math.max(3000, lastSyncAt + MIN_GAP - Date.now())); }   // Änderungen bündeln: höchstens etwa alle 2 Minuten schreiben (beim Verlassen des Tabs sofort)
 
   document.addEventListener('visibilitychange', function () {

@@ -15,7 +15,7 @@ const srv = http.createServer((q, r) => {
   r.writeHead(200, { 'content-type': 'text/html' });
   r.end('<!doctype html><meta charset=utf-8><body><script src="/cloud.js" data-game="t" data-prefix="tkey" defer></script></body>');
 });
-async function session(conflict) {
+async function session(conflict, live) {
   const b = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {}), c = await b.newContext();
   const log = []; let doc = null, ver = 0;
   const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': '*' };
@@ -30,6 +30,7 @@ async function session(conflict) {
     if (u.host === 'www.ricorewi-radio.de' && u.pathname === '/cms/api.php') {   // simulierter eigener Server (saves_get / saves_put)
       const J = { ...cors, 'content-type': 'application/json' }, act = u.searchParams.get('action');
       if (req.method() === 'OPTIONS') return r.fulfill({ status: 204, headers: cors });
+      if (act === 'saves_ver') { log.push('VER'); return doc ? r.fulfill({ status: 200, headers: J, body: JSON.stringify({ status: 'ok', ver: 'v' + ver }) }) : r.fulfill({ status: 404, headers: J, body: '{}' }); }
       if (act === 'saves_get') { log.push('GET'); return doc ? r.fulfill({ status: 200, headers: J, body: JSON.stringify({ status: 'ok', d: doc.d, t: doc.t, ver: 'v' + ver }) }) : r.fulfill({ status: 404, headers: J, body: '{"status":"none"}' }); }
       if (act === 'saves_put') {
         const b = JSON.parse(req.postData()), pre = b.pre;
@@ -44,22 +45,30 @@ async function session(conflict) {
   await p.addInitScript(() => { localStorage.setItem('anmacha-cloud-on', '1'); });
   await p.goto(`http://127.0.0.1:${srv.address().port}/`); await p.clock.runFor(2000);
   for (let i = 0; i < 90; i++) { await p.evaluate(i => localStorage.setItem('tkey1', JSON.stringify({ score: i })), i); await p.clock.runFor(20000); }
+  if (live) {   // ein anderes Gerät speichert: der Stand erscheint ohne Neuladen nach höchstens ~45 s
+    doc = { d: JSON.stringify({ tkey1: { v: 'von anderem Geraet', t: Date.now() + 1e9 } }), t: 1 }; ver++;
+    await p.clock.runFor(50000);
+    let got = null; for (let i = 0; i < 12 && got !== 'von anderem Geraet'; i++) { await new Promise(r => setTimeout(r, 400)); await p.clock.runFor(1000); got = await p.evaluate(() => localStorage.getItem('tkey1')); } await b.close(); return { liveOk: got === 'von anderem Geraet' };
+  }
   if (conflict) { doc = Object.assign({}, doc); ver++; await p.evaluate(() => localStorage.setItem('tkey1', 'zweites Geraet')); await p.clock.runFor(90000); }
   await p.evaluate(() => { Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true }); document.dispatchEvent(new Event('visibilitychange')); });
   await p.clock.runFor(3000); await new Promise(r => setTimeout(r, 1500)); await p.clock.runFor(1000); await new Promise(r => setTimeout(r, 800));
   const local = await p.evaluate(() => localStorage.getItem('tkey1'));
   let cloud = null; try { const dv = doc.d; cloud = JSON.parse(dv.startsWith('z:') ? zlib.gunzipSync(Buffer.from(dv.slice(2), 'base64')).toString() : dv).tkey1.v; } catch (e) {}
   await b.close();
-  return { reads: log.filter(x => x === 'GET').length, writes: log.filter(x => x === 'PUT').length, firestore: log.filter(x => x === 'FIRESTORE').length, rejects: log.filter(x => x === 'REJECT').length, same: cloud === local };
+  return { reads: log.filter(x => x === 'GET').length, writes: log.filter(x => x === 'PUT').length, firestore: log.filter(x => x === 'FIRESTORE').length, vers: log.filter(x => x === 'VER').length, rejects: log.filter(x => x === 'REJECT').length, same: cloud === local };
 }
 (async () => {
   await new Promise(r => srv.listen(0, '127.0.0.1', r));
   const a = await session(false);
   ok(a.reads <= 2 && a.writes <= 20, `30 min Spielen: ${a.reads} Lesen, ${a.writes} Schreiben auf dem eigenen Server (Grenze 2 / 20)`);
+  ok(a.vers <= 45, `Echtzeit: ${a.vers} Versions-Abfragen in 30 min (je 45 s, winzig; Grenze 45)`);
   ok(a.firestore <= 1, `Firestore: ${a.firestore} Zugriff (nur die einmalige Übernahme alter Stände, Grenze 1)`);
   ok(a.same, 'Cloud enthält am Ende den letzten lokalen Stand');
   const b = await session(true);
   ok(b.rejects >= 1 && b.reads <= 3, `Konflikt (anderes Gerät schrieb): abgelehnt ${b.rejects}×, danach voller Abgleich (${b.reads} Lesen)`);
   ok(b.same, 'Nach dem Konflikt enthält die Cloud den letzten lokalen Stand');
+  const l = await session(false, true);
+  ok(l.liveOk, 'Echtzeit: Spielstand eines anderen Geräts erscheint ohne Neuladen');
   srv.close(); process.exit(fails ? 1 : 0);
 })();
