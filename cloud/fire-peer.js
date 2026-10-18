@@ -289,12 +289,12 @@
       r.on('close', function () { if (self.destroyed) return; self.destroyed = true; self.open = false; self.emit('close'); });
     }, function () { if (!self.destroyed) self.emit('error', err('network', 'Verbindung nicht möglich (PeerJS nicht ladbar)')); });
   };
-  // Gastgeber: Beitrittswünsche abholen. 10 min nach dem Öffnen und nach jedem Beitritt alle 2 s, sonst alle 4 s,
-  // im Hintergrund alle 15 s (spart Lesezugriffe im Spark-Tarif). Alle 5 min ein Lebenszeichen.
+  // Gastgeber: Beitrittswünsche abholen. In den ersten 2 min nach dem Öffnen und nach jedem Beitritt alle 2 s, danach bis 10 min alle 4 s,
+  // wer länger wartet alle 8 s, im Hintergrund alle 30 s (spart Lesezugriffe: jede Abfrage zählt, auch ohne Treffer). Alle 5 min ein Lebenszeichen.
   Peer.prototype._poll = function () {
     var self = this; clearTimeout(this._pt);
     if (this.destroyed || this.disconnected) return;
-    var hidden = W.document && W.document.hidden, ms = hidden ? 15000 : Date.now() - this._act < 600000 ? 2000 : 4000;
+    var hidden = W.document && W.document.hidden, idle = Date.now() - this._act, ms = hidden ? 30000 : idle < 120000 ? 2000 : idle < 600000 ? 4000 : 8000;
     this._pt = setTimeout(function () {
       if (self.destroyed || self.disconnected) return;
       if (Date.now() - self._beat > BEAT) { self._beat = Date.now(); claim(self.id, self._uid).catch(noop); }

@@ -237,33 +237,44 @@
   }
   // Genau eine ältere Sicherung je Nutzer und Spiel: eigenes Dokument "<spiel>__alt" (gleiche Regeln wie der Spielstand)
   function urlAlt() { return url() + '__alt'; }
-  function pull(tok, u) {
+  // Abgleich mit wenigen Zugriffen: Nach dem ersten Abholen merkt sich das Skript den Stand der Cloud (baseRemote) und dessen Version (baseVer).
+  // Spätere Speicherungen schicken nur noch den neuen Stand und verlangen per Vorbedingung, dass die Cloud seitdem unverändert ist – ohne erneutes Lesen.
+  // Hat ein anderes Gerät inzwischen geschrieben, lehnt Firestore ab, und es folgt ein voller Abgleich (Lesen + Zusammenführen).
+  var baseRemote = null, baseVer = '', lastPull = 0, lastSyncAt = 0, FULL_EVERY = 300000, MIN_GAP = 120000;
+  function pull(tok, u, o) {
     return fetch(u || url(), { headers: { Authorization: 'Bearer ' + tok } }).then(function (r) {
-      if (r.status === 404) return {};
+      if (r.status === 404) { if (o) o.ver = ''; return {}; }
       if (!r.ok) throw new Error('Laden ' + r.status);
-      return r.json().then(function (j) { return ungz(j.fields.d.stringValue).then(JSON.parse).catch(function () { return {}; }); });
+      return r.json().then(function (j) { if (o) o.ver = j.updateTime || ''; return ungz(j.fields.d.stringValue).then(JSON.parse).catch(function () { return {}; }); });
     });
   }
-  function push(tok, state, keep, u) {
+  // pre: Version aus dem letzten Abholen/Speichern ('' = Dokument existierte nicht); undefined = ohne Vorbedingung. Antwort: neue Version.
+  function push(tok, state, keep, u, pre) {
     return gz(JSON.stringify(state)).then(function (d) {
       if (d.length > 900000) throw new Error('Spielstand zu groß für die Cloud');
       var body = JSON.stringify({ fields: { d: { stringValue: d }, t: { integerValue: String(Date.now()) } } });
-      return fetch((u || url()) + '?updateMask.fieldPaths=d&updateMask.fieldPaths=t', {
+      var cond = pre === undefined ? '' : pre ? '&currentDocument.updateTime=' + encodeURIComponent(pre) : '&currentDocument.exists=false';
+      return fetch((u || url()) + '?updateMask.fieldPaths=d&updateMask.fieldPaths=t' + cond, {
         method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok }, body: body, keepalive: !!keep && body.length < 60000
-      }).then(function (r) { if (!r.ok) throw new Error('Speichern ' + r.status); });
+      }).then(function (r) {
+        if (!r.ok) { var e = new Error('Speichern ' + r.status); e.stale = pre !== undefined && (r.status === 400 || r.status === 404 || r.status === 409 || r.status === 412); throw e; }
+        return r.json().then(function (j) { return j.updateTime || ''; }, function () { return ''; });
+      });
     });
   }
 
-  function sync(keep) {
+  function sync(keep, full) {
     if (s.dataset.sync === 'off') return Promise.resolve();   // z. B. zentrale Ranglisten-Seite: nur Anmeldung, kein Spielstand
     if (!wanted()) return Promise.resolve();
     if (busy) { again = true; return Promise.resolve(); }
-    busy = true;
+    busy = true; lastSyncAt = Date.now();
+    var quick = !full && !first && baseRemote !== null && Date.now() - lastPull < FULL_EVERY * 12, vinfo = {}, retryNow = false;   // quick: kein Lesen, nur Schreiben mit Vorbedingung
     return loadSdk().then(function () {
       if (!user) throw new Error('Bitte neu anmelden');
       return user.getIdToken();
     }).then(function (tok) {
-      return Promise.all([pull(tok), localState()]).then(function (rl) {
+      return Promise.all([quick ? baseRemote : pull(tok, undefined, vinfo), localState()]).then(function (rl) {
+        if (!quick) { baseVer = vinfo.ver || ''; lastPull = Date.now(); }
         var remote = rl[0], local = rl[1], merged = {}, changed = false, dirty = false, k, writes = [];
         // Beim ersten Abgleich (Start/Anmeldung) ersetzt der neuere Stand den abweichenden älteren: den ersetzten Eintrag
         // als einzige ältere Sicherung aufheben (überschreibt die vorherige Sicherung).
@@ -295,21 +306,28 @@
           }
           saveMeta();
           lastErr = ''; lastOk = Date.now();
-          return Promise.all(writes).then(function () { return dirty ? push(tok, merged, keep) : null; });
+          return Promise.all(writes).then(function () {
+            if (!dirty) { baseRemote = merged; return null; }
+            return push(tok, merged, keep, undefined, baseVer).then(function (ver) { baseRemote = merged; baseVer = ver; });
+          });
         }).then(function () {
           if (changed && first && !sessionStorage.getItem(RL)) { sessionStorage.setItem(RL, '1'); location.reload(); }
         });
       });
-    }).catch(function (e) { lastErr = e.message || 'Fehler'; render(); })
+    }).catch(function (e) {
+      if (e && e.stale) { baseRemote = null; retryNow = true; return; }   // ein anderes Gerät hat geschrieben: gleich vollständig abgleichen
+      lastErr = e.message || 'Fehler'; render();
+    })
       .then(function () {
         busy = false; first = retryFirst; retryFirst = false; try { sessionStorage.removeItem(RL); } catch (e) {} render();
+        if (retryNow) { setTimeout(function () { sync(false, true); }, 0); return; }
         if (again) { again = false; queue(); }
       });
   }
-  function queue() { clearTimeout(timer); timer = setTimeout(sync, 3000); }
+  function queue() { clearTimeout(timer); timer = setTimeout(function () { sync(); }, Math.max(3000, lastSyncAt + MIN_GAP - Date.now())); }   // Änderungen bündeln: höchstens etwa alle 2 Minuten schreiben (beim Verlassen des Tabs sofort)
 
   document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'hidden') sync(true); else sync();
+    if (document.visibilityState === 'hidden') sync(true); else sync(false, Date.now() - lastPull > FULL_EVERY);   // Rückkehr in den Tab: nur nach 5 Minuten neu lesen
   });
   window.addEventListener('pagehide', function () { sync(true); });
   if (idbPath && idbFiles.length) { // Godot schreibt ohne localStorage: alle 20 s auf geänderte Dateien prüfen

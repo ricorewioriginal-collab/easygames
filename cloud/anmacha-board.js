@@ -490,7 +490,7 @@
   }
   API.pushAch = pushAch;
   setTimeout(pushAch, 9000);
-  setInterval(function () { if (!document.hidden) pushAch(); }, 330000);
+  setInterval(function () { if (!document.hidden) pushAch(); }, 930000);   // pushGame selbst begrenzt auf 15 min
   // Nutzungsstatistik (nur angemeldet, nur Zähler, siehe cloud/anmacha-engage.js): erste Meldung nach 45 s Spielzeit (neue Sitzung), danach alle 5 Minuten die Spielzeit; Sitzungen, die vorher
   // enden, melden beim Verlassen (Abbruch). Eigenes Zähler-Dokument je Spieler/Spiel/Tag; ohne Netz oder Anmeldung passiert nichts.
   var ST = { t0: Date.now(), vis: 0, last: 0, sent: 0, started: false, cur: null, busy: false };

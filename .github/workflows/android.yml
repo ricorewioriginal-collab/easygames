@@ -44,6 +44,8 @@ jobs:
         run: NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/android-runtime-audit.js
       - name: Verify Google save script in all cloud games
         run: NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-cloud-games.cjs
+      - name: Verify Firestore call budget of the Google save script
+        run: NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-cloud-calls.cjs
       - name: Verify central leaderboard page and embedding
         run: NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-ranglisten.cjs
       - name: Verify cross-game achievements page and embedding
