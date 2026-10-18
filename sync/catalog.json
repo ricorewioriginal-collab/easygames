@@ -1673,6 +1673,41 @@
     "game": "bunte-insel",
     "prefix": "bunteInsel.,bunteInsel_"
    }
+  },
+  {
+   "id": "anmacha-undercover",
+   "title": "AnMaCha UNDERCOVER 3D – Wem kannst du trauen?",
+   "desc": "Social-Deduction-Party im Funkhaus: 6 Modi – Verräter-Jagd, Imposter mit geheimem Wort, Detektiv & Alibi, Sabotage-Chaos, Verstecken & Jagen und Rollen-Chaos. 6 Karten in 3D, 24 Minispiele, über 500 Wörter, Bots für 3–12 Teilnehmer. Solo offline gegen den Computer oder online per Link, Code und QR – jeder mit eigenem Gerät und geheimer Rolle.",
+   "icon": "🕵️",
+   "img": "anmacha-undercover/card.svg",
+   "bg": "linear-gradient(145deg,#070d22,#1b2f63 55%,#ff9a2e)",
+   "glow": "rgba(41,211,255,.5)",
+   "path": "anmacha-undercover/",
+   "modes": {
+    "online": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "AnMaCha UNDERCOVER 3D ist eine Social-Deduction-Party im Funkhaus: Wem kannst du trauen? Es gibt sechs Modi. Verräter-Jagd: Die Crew erledigt Aufgaben als Minispiele, 1–3 Verräter knipsen heimlich aus, sabotieren und nutzen Geheimgänge; wer etwas findet, meldet, dann wird diskutiert und anonym abgestimmt. Die Crew gewinnt mit vollem Aufgabenbalken oder wenn alle Verräter rausgewählt sind. Imposter – Das geheime Wort: Alle sehen ein geheimes Wort, nur der Imposter kennt bloß die Kategorie (oder bekommt ein ähnliches Wort). Reihum gibt jeder einen Hinweis, dann wird diskutiert und abgestimmt; ein enttarnter Imposter darf das Wort noch raten. Detektiv & Alibi: Ermittler untersuchen Fußspuren, Türlogbücher, Kameras und Zeugenaussagen, Verräter manipulieren Spuren – legt die Spuren in der Besprechung vor. Sabotage-Chaos: Stromausfall, Funkstille und kaputte Sendetürme – repariert im Team, oft an zwei Orten gleichzeitig, bis zum Sendeschluss. Verstecken & Jagen: 1–2 Jäger gegen Flüchtende, die Funkbaken aktivieren, sich verstecken, Gefangene befreien und durch die Ausgänge entkommen. Rollen-Chaos: Verräter-Jagd mit Sonderrollen wie Ermittler, Techniker, Beschützer, Kurier, Trickser, Gestaltwandler, Spurenleser und Störsender. Solo spielst du offline gegen Bots (3–12 Teilnehmer, drei Schwierigkeiten). Online erstellst du einen Raum und lädst per Link, Code oder QR ein; jeder spielt auf seinem eigenen Gerät mit geheimer Rolle, leere Plätze füllen Bots.",
+    "steuerung": [
+     "Smartphone und Tablet: Daumen links auf den Bildschirm legen und ziehen zum Laufen. Rechts unten der große Benutzen-Knopf (Aufgabe, Reparatur, Aufzug), daneben Melden, Ausknipsen/Fangen/Verstecken, Fähigkeit, Geheimgang und Sabotage – nur was gerade passt, ist hell. Oben Aufgabenliste, Karte und Menü.",
+     "PC: WASD oder Pfeiltasten laufen, E benutzen, F melden, Leertaste Spezialaktion (Ausknipsen, Fangen, Verstecken), V Geheimgang, G Sabotage, T Fähigkeit, Umschalt Sprint, M Karte, Tab Aufgaben, Q Kamera, Enter Chat, C Schnellchat, Esc Pause. Alle Tasten lassen sich in den Einstellungen neu belegen.",
+     "Controller: linker Stick laufen, rechter Stick Kamera, A benutzen/bestätigen, B Spezialaktion/zurück, X melden, Y Karte, LB Kamera, RB Geheimgang, LT Sabotage, RT Sprint, Start Pause. In Menüs steuert der Stick den Fokus."
+    ],
+    "tipps": [
+     "Merke dir, wer wann in welchem Raum war – in der Besprechung zählen Alibis.",
+     "Im Wortspiel: Gib Hinweise, die Mitwissende verstehen, aber nicht so deutlich, dass der Imposter das Wort errät.",
+     "Als Verräter: Tu so, als würdest du Aufgaben erledigen, und sabotiere, um die Crew zu trennen.",
+     "Online einladen: Raum erstellen, Link kopieren oder QR-Code zeigen – Mitspieler treten von überall bei. Öffentliche Räume funktionieren erst, wenn sie freigeschaltet sind."
+    ]
+   },
+   "size": 833458,
+   "files": 49,
+   "offline": true,
+   "cloud": {
+    "game": "anmacha-undercover",
+    "prefix": "anmachaUndercover"
+   }
   }
  ]
 }

@@ -21,7 +21,7 @@ window.EASYGAMES_CATS = {
     // Simulation
     'ricolife': 'sim', 'ricorail': 'sim', 'ricoville': 'sim', 'mimori': 'sim', 'FunkhausReality': 'sim', 'anmacha-markthalle': 'sim', 'anmacha-klotzfunk': 'sim', 'anmacha-podcast-tycoon': 'sim', 'bunte-insel': 'sim',
     // Tisch
-    'ricopoly': 'tisch', 'partyverse': 'tisch', 'anmacha-gold-reels': 'tisch', 'anmacha-spielesammlung': 'tisch', 'anmacha-stapelrausch': 'tisch',
+    'ricopoly': 'tisch', 'partyverse': 'tisch', 'anmacha-gold-reels': 'tisch', 'anmacha-spielesammlung': 'tisch', 'anmacha-stapelrausch': 'tisch', 'anmacha-undercover': 'tisch',
     // Musik
     'anmacha-beat-surfer': 'musik', 'prismrush': 'musik'
   }

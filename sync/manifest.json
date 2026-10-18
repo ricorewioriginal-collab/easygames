@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "a408406e8dee",
- "generated": "2026-10-18T12:47:57+00:00",
- "commit": "1286c166219dc132c30ae8db5b1c2deb0b791805",
+ "version": "b6881b0d5802",
+ "generated": "2026-10-18T14:54:12+02:00",
+ "commit": "ccbc315b33e216170c13d18a60dea373d7eb98ac",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4137,6 +4137,251 @@
    "h": "5ea4686e04d27384afdcdb69538625405ef91c24e15e7e8d2482c2139afc81ad"
   },
   {
+   "p": "anmacha-undercover/card.svg",
+   "s": 5568,
+   "h": "2b8f6938caaf81ca9f9345a38c2468f59292c4cbfed3091a6a1cc47031c7fbfb"
+  },
+  {
+   "p": "anmacha-undercover/index.html",
+   "s": 5727,
+   "h": "005820c8609109b621f33d4c39fc56e925c20b36e3cd2f3eeac5cac1ff57dccd"
+  },
+  {
+   "p": "anmacha-undercover/manifest.webmanifest",
+   "s": 818,
+   "h": "dbc0d28be2ee1a5efb09881eff77cd94938589d14b21d5b3ea7aef7573acd3fc"
+  },
+  {
+   "p": "anmacha-undercover/src/ai/brain.js",
+   "s": 36902,
+   "h": "a273327c524b1cdd80b66485a0f5259bed1a3be4e4f7ca0b9bafe51e799c79a8"
+  },
+  {
+   "p": "anmacha-undercover/src/ai/discussion.js",
+   "s": 11880,
+   "h": "11fb4cb4824174f5d79b86256f4777798b2b0f54141427acf972cd04e40a49ac"
+  },
+  {
+   "p": "anmacha-undercover/src/ai/memories.js",
+   "s": 4783,
+   "h": "2f49d9a194fa0ccb0af96d0524e1d91b72df27a885224139b7236e96befdedbc"
+  },
+  {
+   "p": "anmacha-undercover/src/ai/nav.js",
+   "s": 3363,
+   "h": "44138124fe312a7bc89eafe887caa0f7f1c58a3ef43eca5f0bb7d74f7edbbab2"
+  },
+  {
+   "p": "anmacha-undercover/src/ai/word-ai.js",
+   "s": 15788,
+   "h": "447592b320f13939ff14216df069c3e628a9c47784ebd1e879fa740a23089bc7"
+  },
+  {
+   "p": "anmacha-undercover/src/app.js",
+   "s": 36870,
+   "h": "8c884d27714a1d7c0d29b98b138f9718e19b2cb50b0e60693550f54afc63f9d8"
+  },
+  {
+   "p": "anmacha-undercover/src/core/evidence.js",
+   "s": 12000,
+   "h": "a50b67ff35b885f932f739eb9816efdd31448584d9c95aa54ea2a50a2e2eb2d8"
+  },
+  {
+   "p": "anmacha-undercover/src/core/grid.js",
+   "s": 12509,
+   "h": "f53e34d8de6bc02496e3d10675c8d086cee1cb611a4bf7de8dead0eeb0af90c1"
+  },
+  {
+   "p": "anmacha-undercover/src/core/meeting.js",
+   "s": 8228,
+   "h": "3d6fc51a04c9b46a62a8003103c13e959c3cf9d0056b87970b84cefd60060ea0"
+  },
+  {
+   "p": "anmacha-undercover/src/core/modes.js",
+   "s": 22065,
+   "h": "6d9fb849ae1059c54247e8dcb3fb8eb7c444784d1c94cb719f77ce34108f1fb3"
+  },
+  {
+   "p": "anmacha-undercover/src/core/rng.js",
+   "s": 3003,
+   "h": "89a5fecf9254b24cf6afda20cc9d94f6358b3a817a3193c22f63f47a61b29a78"
+  },
+  {
+   "p": "anmacha-undercover/src/core/rules.js",
+   "s": 5461,
+   "h": "ca2df09daaf44b866cb064c0afe852d22bb62fa439a8040a9737bafce62bb711"
+  },
+  {
+   "p": "anmacha-undercover/src/core/sabotage.js",
+   "s": 8047,
+   "h": "14192a93656f67c68c678f829cb24146afc6b66b7d9d1419aeb8658bcfbaceb2"
+  },
+  {
+   "p": "anmacha-undercover/src/core/sim.js",
+   "s": 25443,
+   "h": "008d2b15a4e282fa1247945c96ea6c2d777874e945642d5241f88dc6eb7a4357"
+  },
+  {
+   "p": "anmacha-undercover/src/core/tasks.js",
+   "s": 42860,
+   "h": "720e19cf7bcade5f0a7d3235ae896bfcf0fd1f401820792aeba3dadb3646cffb"
+  },
+  {
+   "p": "anmacha-undercover/src/core/word-game.js",
+   "s": 21622,
+   "h": "63fe3219e159dd87371c05bdd4fd498285632dc797c32c4b6d1cd92a488e747e"
+  },
+  {
+   "p": "anmacha-undercover/src/data/cases.js",
+   "s": 4175,
+   "h": "6f8ff626740c1b12b446c4a0c9dbc9811613675b3dda2ae563edc373313030dc"
+  },
+  {
+   "p": "anmacha-undercover/src/data/cosmetics.js",
+   "s": 5158,
+   "h": "2ddc6a43786dd9e1f0797a55d1d2aad72ce47605607d04b759821ee4007c9221"
+  },
+  {
+   "p": "anmacha-undercover/src/data/maps.js",
+   "s": 18542,
+   "h": "526df0bfc2cf612fd138bd47ffb5e3d0243f1642e85620e430adabc02f576939"
+  },
+  {
+   "p": "anmacha-undercover/src/data/roles.js",
+   "s": 9611,
+   "h": "38bc58bf5ead29ed67d54c4a01a147312189b09f7fef5acc5bebe21c15ac7dde"
+  },
+  {
+   "p": "anmacha-undercover/src/data/words-de.js",
+   "s": 114542,
+   "h": "85302d4ceb16561d2c02ab791fdbf0c099af1cfbe7fe2c8697c710bb79361a2c"
+  },
+  {
+   "p": "anmacha-undercover/src/input/input.js",
+   "s": 20364,
+   "h": "28f1694f9622c4ae9495e581255243115ec647b39c8637f36c878c81cac32a41"
+  },
+  {
+   "p": "anmacha-undercover/src/input/touch.js",
+   "s": 11486,
+   "h": "22d73473f56525987b79a5b4820f9563bbd52b741c86c27acfef40ab86adc94e"
+  },
+  {
+   "p": "anmacha-undercover/src/main.js",
+   "s": 4032,
+   "h": "3c54c23aef5a22684e2a5c2d0ef7acf4bf9ce8efc8141b33398d58b93b954cfa"
+  },
+  {
+   "p": "anmacha-undercover/src/network/peer.js",
+   "s": 7100,
+   "h": "b83475152a812541c6afa1b3db623234284ba87d5b10fa05f3e3dba741f4e4c7"
+  },
+  {
+   "p": "anmacha-undercover/src/network/protocol.js",
+   "s": 18763,
+   "h": "7efa6537cb285929e984ee7e8cbd5c3c1d8553ebefd5105471f31403acc1fb47"
+  },
+  {
+   "p": "anmacha-undercover/src/network/public-rooms.js",
+   "s": 3610,
+   "h": "24846d1a118c8c497b47ab67eb7c103a29e21da6df006b4a8a13aa2eabbcd81d"
+  },
+  {
+   "p": "anmacha-undercover/src/ui/achievements.js",
+   "s": 15198,
+   "h": "df2f0d59f9ee13a79a96de56ae469ce4bfab0ec0106c2d9bc8447870efd0a6d1"
+  },
+  {
+   "p": "anmacha-undercover/src/ui/audio.js",
+   "s": 13248,
+   "h": "3862d000084f5c23a85c39f93d4229c66d33431b6bf7e439a480c281285d242e"
+  },
+  {
+   "p": "anmacha-undercover/src/ui/core.js",
+   "s": 5798,
+   "h": "de53e0739cc97f256e8558ce10f5948051f624afc23f5c07a21c0ead38c85918"
+  },
+  {
+   "p": "anmacha-undercover/src/ui/editor.js",
+   "s": 12473,
+   "h": "ba02934f2ff5bf215d9b8dd4ef470f790dc018a4d2c734ce6803545ec0b6b01d"
+  },
+  {
+   "p": "anmacha-undercover/src/ui/help.js",
+   "s": 20192,
+   "h": "0f276878cd84a31519bbd1d62a16e9297cc016f1be0484f0e521e6f0315c9878"
+  },
+  {
+   "p": "anmacha-undercover/src/ui/hud.js",
+   "s": 23403,
+   "h": "da709ff60a22da6cbbb5cf4fd2a33083b7837f3b6bf884d6441a59af39a42434"
+  },
+  {
+   "p": "anmacha-undercover/src/ui/meeting-ui.js",
+   "s": 9259,
+   "h": "6869b5d9b1f19e34c1af101c3088b5a2a87b6d33b7540f87bb266c9adf32d019"
+  },
+  {
+   "p": "anmacha-undercover/src/ui/menus.js",
+   "s": 23214,
+   "h": "456a563dc7aa04164ce484f0ebd5959fbcce0781446bb1c3c46b578f3d386c73"
+  },
+  {
+   "p": "anmacha-undercover/src/ui/save.js",
+   "s": 4121,
+   "h": "8e1847118f229d6e96db3029c50b7aea401bbe320839814912149d72c916c27c"
+  },
+  {
+   "p": "anmacha-undercover/src/ui/settings.js",
+   "s": 12298,
+   "h": "e4e8135eaeddcc16e869393ca2740193cb829e11623bff25bca7e55a7ebd660b"
+  },
+  {
+   "p": "anmacha-undercover/src/ui/tasks.js",
+   "s": 50119,
+   "h": "ab0910c03a820da8be72d658cc98dd85740c75584102ba20ff49df920ec84f4d"
+  },
+  {
+   "p": "anmacha-undercover/src/ui/word-ui.js",
+   "s": 11890,
+   "h": "0db42f7f2d6b7367b3f9d9a0424f4751692876d0b52891f753251f1924d518cc"
+  },
+  {
+   "p": "anmacha-undercover/src/world/actors.js",
+   "s": 34573,
+   "h": "b73056e37590f93bce27ad80e8f92209d91a06a64a809955cd19996900ae1e7b"
+  },
+  {
+   "p": "anmacha-undercover/src/world/kit.js",
+   "s": 12661,
+   "h": "c08ec464d46f5fcc04c9596186ea2876c30a91a50307a001954221fa830b7a14"
+  },
+  {
+   "p": "anmacha-undercover/src/world/renderer.js",
+   "s": 29039,
+   "h": "19f8e165b196a40d1f09530d1ccac92ea096939b7791e0fa374bdf3f5da1ee2e"
+  },
+  {
+   "p": "anmacha-undercover/src/world/scene-lounge.js",
+   "s": 7165,
+   "h": "28326e29f77e345bcab8261c2cb0568fd256375169542cea524ae21c4aef53e0"
+  },
+  {
+   "p": "anmacha-undercover/src/world/scene-map.js",
+   "s": 31793,
+   "h": "a375efbb2ba12128f790364bbd4ef10ba4ebc7766e4b509aaaabe5fc16eb07d8"
+  },
+  {
+   "p": "anmacha-undercover/style.css",
+   "s": 14661,
+   "h": "8aecdf8454195dbe1965dacfe5eb8795217d95cbf1a5de3d366bfab1346fa7ab"
+  },
+  {
+   "p": "anmacha-undercover/sw.js",
+   "s": 2033,
+   "h": "623602da0420541133607c08d24cd3baaaeb223e0c6d240cf24a54c13017ca02"
+  },
+  {
    "p": "anmacha-urwaldlager/audio.js",
    "s": 6324,
    "h": "7bc48157f77eb59ccf9310e92abeb9e2313eaf63822ed41393bf82be68b846e4"
@@ -4973,8 +5218,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2326,
-   "h": "1655bcef41ebb26b5894eb90982fe106a084b247299513eaaa5cf237d9bfb0e2"
+   "s": 2357,
+   "h": "adae2dce1a33fe6011d487d1c42978ab714e4635671def27f5af7ae611fe2f9f"
   },
   {
    "p": "chat.html",
@@ -4983,8 +5228,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 18157,
-   "h": "45290cc0b0ab10a5deff8354e7f2d9effd046a81b40fdef39b6b0ff5cc44a390"
+   "s": 18179,
+   "h": "d70e74884a12445230beb0f8018ffb841d365f8413a354eba45bb926208c5d44"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -5128,8 +5373,8 @@
   },
   {
    "p": "games.js",
-   "s": 25438,
-   "h": "59b2efadd06d1f9046ede9de40138f8ab0123d79dd30a15dd582d8ba99a21fd1"
+   "s": 26067,
+   "h": "90b9b14dda853663b5715d4cf4698a517ecdef5fb7f1279685ecf965f1ca7396"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5288,8 +5533,8 @@
   },
   {
    "p": "guides.js",
-   "s": 68330,
-   "h": "97a1686524d9ddf28edc0a27a180a175724c00fe843a0e8671d21dc4a5783fed"
+   "s": 71221,
+   "h": "68dbf5f19ba82f73df8ed6592bb369ac68ceedc0df6241eaac7ca2c871b52d2d"
   },
   {
    "p": "heute.html",
@@ -5638,8 +5883,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2028,
-   "h": "a9d167740660e7e11f5634bad3ce3abb9101f7400c5a4f43b76ed6ca8c00ba39"
+   "s": 2070,
+   "h": "1871979e9afee5266180cc287f113366754823a6edaca4c04d6ef5847621af32"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -6438,8 +6683,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 107671,
-   "h": "9502455102dd4c96418454b3a424006051fad4cbf44162b2ca2068038cb84568"
+   "s": 111488,
+   "h": "5c6a4546f3a758e13e5181832d06e8ef8112908d9ca828a4708a24ca9f8a0315"
   },
   {
    "p": "taschi/card.svg",
