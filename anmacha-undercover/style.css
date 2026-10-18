@@ -145,6 +145,28 @@ body.rm *{transition:none!important;animation:none!important}
 .wd-secret small{color:var(--mu)}
 .wd-order .ui-list li{flex-wrap:wrap}.wd-order li.wd-turn{outline:2px solid var(--or)}.wd-order li.dead{opacity:.55}
 .wd-myturn{display:flex;flex-direction:column;gap:6px;border-color:var(--or)}
-@media (max-width:720px){.mt-main,.wd-main{grid-template-columns:1fr;grid-template-rows:auto 1fr;overflow:auto}.mt-players,.wd-left{max-height:34vh}.mt-chatbox{min-height:46vh}.wd-act{order:-1}.wd-secret{padding:6px 12px}.wd-secret b{font-size:20px}.wd-secret:not(.big) small:last-child{display:none}}
+.wd-steps{display:flex;gap:4px;margin:0;padding:0;list-style:none;overflow-x:auto}
+.wd-steps li{flex:1 0 auto;display:flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;background:#0b1630cc;border:1px solid #29d3ff22;color:var(--mu);font-size:12px;white-space:nowrap}
+.wd-steps li b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#1b2f63;font-size:11px}
+.wd-steps li.on{color:var(--tx);border-color:var(--or);background:#2a1d08cc}.wd-steps li.on b{background:var(--or);color:#1a1000}.wd-steps li.done b{background:var(--ok,#3ad38a);color:#062012}
+.wd-now{background:#0b1630ee;border:1px solid var(--or);border-radius:12px;padding:7px 12px;font-size:14px;line-height:1.35}
+/* Handy (hoch und quer): eine scrollbare Seite statt kleiner Fenster; unten Platz für den Konto-Knopf */
+@media (max-width:720px),(max-height:520px){
+.mt-wrap,.wd-wrap{overflow-y:auto;padding-bottom:calc(58px + var(--sab));gap:6px}
+.mt-wrap>*,.wd-wrap>*{flex-shrink:0}
+.wd-order .ui-list li{display:grid;grid-template-columns:1fr auto;grid-template-areas:'n b' 'c c';align-items:center;row-gap:2px}
+.wd-order li>span{grid-area:n}.wd-order li>small{grid-area:c;text-align:left;color:var(--mu)}.wd-order li>.ui-btn{grid-area:b}
+.mt-main,.wd-main{flex:none;overflow:visible;grid-template-rows:auto}
+.mt-players,.wd-left{max-height:none;overflow:visible}
+.mt-chatbox{min-height:0}.mt-chat{flex:none;min-height:60px;max-height:38vh}
+.mt-quick{max-height:none}
+.mt-head{padding:6px 10px}.mt-head .ui-h2{font-size:17px;margin:0}.mt-timer{font-size:19px}
+.wd-act{order:-1}.wd-steps li{flex:1 1 0;justify-content:center;padding:3px 4px;font-size:11px}
+.wd-secret:not(.big){flex-direction:row;flex-wrap:wrap;justify-content:center;column-gap:10px;padding:5px 12px;border-radius:12px}
+.wd-secret:not(.big) b{font-size:20px}.wd-secret:not(.big) small:last-child{display:none}
+.wd-ch,.wd-clues{display:none}
+.mt-pick,.mt-result{position:fixed}}
+@media (max-width:720px){.mt-main,.wd-main{grid-template-columns:1fr}}
+@media (max-width:420px){.wd-steps li{font-size:0;gap:0}.wd-steps li b{font-size:11px}.wd-steps li.on{font-size:11px;gap:4px;flex:2 1 0}}
 #ui>.ui-screen.clear{pointer-events:none}
 .hud-busy[hidden],.hud-tasks[hidden],.hud-bar[hidden],.mt-pick[hidden],.mt-result[hidden]{display:none!important}

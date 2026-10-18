@@ -15,9 +15,10 @@
     const el = AMU.UI.screen(
       '<div class="wd-wrap">' +
       '<header class="mt-head"><div><h2 class="ui-h2">🤫 Das geheime Wort</h2><p class="wd-phase ui-small ui-muted"></p></div><div class="mt-timer wd-timer"></div><button class="ui-btn ui-sm" data-a="menu" aria-label="Menü">☰</button></header>' +
+      '<ol class="wd-steps" aria-label="Ablauf"></ol><div class="wd-now" aria-live="polite"></div>' +
       '<div class="wd-card" aria-live="polite"></div>' +
       '<div class="wd-main"><section class="wd-left"><div class="wd-order"></div><div class="wd-act"></div></section>' +
-      '<section class="mt-chatbox"><h3 class="ui-h2 wd-h">💡 Hinweise</h3><ul class="wd-clues"></ul><h3 class="ui-h2 wd-h">💬 Diskussion</h3><ul class="mt-chat wd-chat"></ul>' +
+      '<section class="mt-chatbox"><h3 class="ui-h2 wd-h wd-ch">💡 Alle Hinweise</h3><ul class="wd-clues"></ul><h3 class="ui-h2 wd-h">💬 Diskussion</h3><ul class="mt-chat wd-chat"></ul>' +
       '<div class="mt-quick">' + Object.keys(Q).map(k => '<button class="ui-btn ui-sm" data-a="q" data-v="' + k + '">' + esc(Q[k].de.replace('{p}', '…')) + '</button>').join('') + '</div>' +
       '<form class="mt-form wd-chatform"><input type="text" maxlength="140" placeholder="Nachricht …" aria-label="Nachricht" autocomplete="off"><button class="ui-btn ui-sm" type="submit">Senden</button></form></section></div>' +
       '<div class="mt-pick" hidden></div></div>',
@@ -58,18 +59,37 @@
       return '<div class="wd-secret' + (big ? ' big' : '') + '"><small>Dein geheimes Wort</small><b>' + esc(c.word) + '</b><span>Kategorie: ' + esc(c.cat) + '</span>' +
         (v.variant === 'alternativ' ? '<small>Achtung: Der Imposter hat ein ähnliches Wort und weiß es nicht!</small>' : '<small>Verrate das Wort nicht – aber zeig, dass du es kennst.</small>') + '</div>';
     }
+    function nowText(me, nm) {
+      const imp = me.card && me.card.impostor, who = id => '<b>' + esc(nm[id] || '?') + '</b>';
+      if (v.phase === 'guess' && v.guess && v.guess.id === me.id) return 'Du wurdest enttarnt! Rate das Wort. Liegst du richtig, gewinnst du trotzdem.';   // der Rater ist schon „raus“
+      if (me.out) return 'Du bist raus und schaust zu.';
+      switch (v.phase) {
+        case 'reveal': return imp ? 'Du bist der <b>Imposter</b> und kennst das Wort nicht. Gleich gibt jeder reihum einen Hinweis. Hör gut zu und tu so, als wüsstest du es.'
+          : 'Merk dir dein Wort. Gleich gibt jeder reihum einen Hinweis dazu, ohne es zu verraten. Einer kennt das Wort nicht: der <b>Imposter</b>. Findet ihn!';
+        case 'clue': if (v.turn === me.id) return imp ? 'Du bist dran! Gib einen Hinweis, der zu den anderen passt, damit niemand merkt, dass du das Wort nicht kennst.' : 'Du bist dran! Gib einen kurzen Hinweis zu deinem Wort, ohne es zu verraten.';
+          return (v.turn ? who(v.turn) + ' gibt gerade einen Hinweis. ' : '') + (imp ? 'Errate aus den Hinweisen, um welches Wort es geht.' : 'Achte darauf, wessen Hinweis nicht richtig passt.');
+        case 'discuss': return imp ? 'Lenk den Verdacht auf jemand anderen. Tippe auf „Bereit zur Abstimmung“, wenn du so weit bist.' : 'Besprecht, wessen Hinweis verdächtig ist. Tippe auf „Bereit zur Abstimmung“, wenn du so weit bist.';
+        case 'vote': return me.voted ? 'Deine Stimme zählt. Warte, bis alle abgestimmt haben.' : 'Tippe beim Spieler, den du für den Imposter hältst, auf „🎭 Verdächtigen“. Unsicher? Dann überspringe.';
+        case 'guess': return v.guess && v.guess.id === me.id ? 'Du wurdest enttarnt! Rate das Wort. Liegst du richtig, gewinnst du trotzdem.' : (v.guess ? who(v.guess.id) + ' war ein Imposter und rät jetzt das Wort. Stimmt es, gewinnt der Imposter doch noch.' : '');
+        default: return 'Die Runde ist vorbei.';
+      }
+    }
     function update(nv) {
       if (closed) return; v = nv; const me = v.me || {}, nm = {}; v.roster.forEach(r => { nm[r.id] = r.n; });
       const PH = { reveal: 'Merke dir deine Karte', clue: 'Runde ' + v.round + '/' + v.rounds + ': reihum ein Hinweis', discuss: 'Diskutiert: Wessen Hinweis passt nicht?', vote: 'Abstimmen – wer ist der Imposter?', guess: 'Der enttarnte Imposter darf raten', end: 'Ende' };
-      set('ph', $('.wd-phase'), esc(PH[v.phase] || '') + (me.out ? ' · Du bist raus und schaust zu.' : ''));
+      set('ph', $('.wd-phase'), esc(PH[v.phase] || '') + (me.out && !(v.guess && v.guess.id === me.id) ? ' · Du bist raus und schaust zu.' : ''));
       set('tm', $('.wd-timer'), v.phase === 'clue' ? '⏱ ' + AMU.U.fmtTime(v.turnLeft) : v.left ? '⏱ ' + AMU.U.fmtTime(v.left) : '');
+      // Schrittleiste und Anleitung „Was jetzt?“
+      const step = { reveal: 0, clue: 1, discuss: 2, vote: 3, guess: 3, end: 4 }[v.phase];
+      set('steps', $('.wd-steps'), ['Karte ansehen', 'Hinweise geben', 'Diskutieren', 'Abstimmen'].map((t, i) => '<li class="' + (i === step ? 'on' : i < step ? 'done' : '') + '"><b>' + (i < step ? '✓' : i + 1) + '</b> ' + t + '</li>').join(''));
+      set('now', $('.wd-now'), '<b>Jetzt:</b> ' + nowText(me, nm));
       set('card', $('.wd-card'), cardHtml(me.card, v.phase === 'reveal') + ((me.mates || []).length ? '<p class="ui-small">🎭 Weiterer Imposter: ' + me.mates.map(id => esc(nm[id])).join(', ') + '</p>' : ''));
       // Reihenfolge / Teilnehmer
       set('ord', $('.wd-order'), '<ul class="ui-list">' + v.order.map(id => {
         const r = v.roster.find(x => x.id === id) || { n: '?' }, my = v.clues.filter(c => c.id === id);
         return '<li class="' + (v.turn === id ? 'wd-turn' : '') + (r.out ? ' dead' : '') + '"><span>' + AMU.UI.badge(r, id === me.id ? ' <small>(du)</small>' : '') + (r.out ? ' <span class="ui-tag">raus</span>' : '') + (r.voted ? ' <span class="ui-tag ok">✔</span>' : '') + (r.conn ? '' : ' <span class="ui-tag bad">getrennt</span>') + '</span>' +
           '<small>' + my.map(c => c.none ? '—' : '„' + esc(c.text) + '“').join(' · ') + (v.turn === id ? ' ✍️' : '') + '</small>' +
-          (v.phase === 'vote' && !me.out && !me.voted && id !== me.id && !r.out ? '<button class="ui-btn ui-sm ui-pri" data-a="vote" data-v="' + esc(id) + '">Wählen</button>' : '') + '</li>';
+          (v.phase === 'vote' && !me.out && !me.voted && id !== me.id && !r.out ? '<button class="ui-btn ui-sm ui-pri" data-a="vote" data-v="' + esc(id) + '">🎭 Verdächtigen</button>' : '') + '</li>';
       }).join('') + '</ul>');
       // Aktionsbereich
       let act = '';

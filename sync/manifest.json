@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "963835e1bea0",
- "generated": "2026-10-18T15:22:30+00:00",
- "commit": "b6ac3b57447584c5ed238a6fc71d9f8b81e0289b",
+ "version": "ad2d98fc716f",
+ "generated": "2026-10-18T15:34:54+00:00",
+ "commit": "c240e15d33cbcece4b19534fad6b1bc83fc365fe",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4137,9 +4137,19 @@
    "h": "5ea4686e04d27384afdcdb69538625405ef91c24e15e7e8d2482c2139afc81ad"
   },
   {
+   "p": "anmacha-undercover/card.jpg",
+   "s": 80678,
+   "h": "12d211a15e98b98327a3668ac7c6305a05285433bda8c0a9a8c5f15283313126"
+  },
+  {
+   "p": "anmacha-undercover/card.png",
+   "s": 101522,
+   "h": "649210aa23a1ee918d3e836f49ca87ea4f496b2a83d996c51578bd0e040fa3e7"
+  },
+  {
    "p": "anmacha-undercover/card.svg",
-   "s": 5568,
-   "h": "2b8f6938caaf81ca9f9345a38c2468f59292c4cbfed3091a6a1cc47031c7fbfb"
+   "s": 132634,
+   "h": "055258944f51105ef155cde82276eb2077aec9045a3f9febb63e712b3027f276"
   },
   {
    "p": "anmacha-undercover/index.html",
@@ -4178,8 +4188,8 @@
   },
   {
    "p": "anmacha-undercover/src/app.js",
-   "s": 36870,
-   "h": "8c884d27714a1d7c0d29b98b138f9718e19b2cb50b0e60693550f54afc63f9d8"
+   "s": 36892,
+   "h": "41ea3982f66afcbf20b66f325ea195fa4060d9dead835193c3d1d23030cb617a"
   },
   {
    "p": "anmacha-undercover/src/core/evidence.js",
@@ -4343,8 +4353,8 @@
   },
   {
    "p": "anmacha-undercover/src/ui/word-ui.js",
-   "s": 11890,
-   "h": "0db42f7f2d6b7367b3f9d9a0424f4751692876d0b52891f753251f1924d518cc"
+   "s": 14489,
+   "h": "6972e2d5f79ab8bdc5bab7c66e8e94abcba971f7c225e17a8e15311031e6c85a"
   },
   {
    "p": "anmacha-undercover/src/world/actors.js",
@@ -4373,8 +4383,8 @@
   },
   {
    "p": "anmacha-undercover/style.css",
-   "s": 14661,
-   "h": "8aecdf8454195dbe1965dacfe5eb8795217d95cbf1a5de3d366bfab1346fa7ab"
+   "s": 16535,
+   "h": "3a2e20a582d3af381c614c6a07397715995fc49bff617128da40f2a548d6b190"
   },
   {
    "p": "anmacha-undercover/sw.js",
@@ -5374,7 +5384,7 @@
   {
    "p": "games.js",
    "s": 26067,
-   "h": "90b9b14dda853663b5715d4cf4698a517ecdef5fb7f1279685ecf965f1ca7396"
+   "h": "096d88dc144d523fd89d762a81d29b1dcca02ba0b171a6716e98aaf9c5b411ad"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6683,8 +6693,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 111488,
-   "h": "fd664440554440d4d8f7ae5b20648d528f2a406f047084615e89ea295c65662a"
+   "s": 111489,
+   "h": "5e08ecc166a1f1d4d6ab36d14046058d701b134b32d05281f4d3d037d76ade28"
   },
   {
    "p": "taschi/card.svg",
