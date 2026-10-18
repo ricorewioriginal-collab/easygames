@@ -79,6 +79,8 @@
       <tr><td><a href="#link">Direktlink</a></td><td>Ein Link oder Knopf öffnet das Spiel als ganze Seite (Vollbild). Einfachste und robusteste Lösung, auch für Homepage-Menüs.</td><td>1 Zeile</td></tr>
       <tr><td><a href="#iframe">iframe</a></td><td>Ein Spiel soll mitten in einer Seite laufen.</td><td>1 Zeile</td></tr>
       <tr><td><a href="#js">easygames.js</a></td><td>Spiele per Attribut oder JavaScript-Variable einbauen, mit Vollbild-Knopf. Die Spieleliste kommt automatisch mit.</td><td>2 Zeilen</td></tr>
+      <tr><td><a href="#hub">Spiele-Hub <span class="tag">neu</span></a></td><td>Eine <b>eigene Spieleseite</b> in deinem Design – ohne iframe: Suche, Kategorien, Favoriten, Weiterspielen, Spiel des Tages, Live-Aktualisierung. Farben und Schrift kommen von deiner Seite. Mit Google-Login und Echtzeit-Abgleich der Favoriten.</td><td>2 Zeilen</td></tr>
+      <tr><td><a href="#login">Login &amp; Konto <span class="tag">neu</span></a></td><td>Ein Google-Login für Spiele, Favoriten, Bewertungen und Kommentare – auch auf deiner eigenen Domain, ohne dass du bei Google etwas eintragen musst.</td><td>0–5 Zeilen</td></tr>
       <tr><td><a href="#lib">Bibliothek</a></td><td>Die komplette Übersicht mit Suche, Anleitungen und Spielfenster in deine Seite einbetten.</td><td>1 Zeile</td></tr>
       <tr><td><a href="#boards">Ranglisten &amp; Erfolge</a></td><td>Die öffentlichen Bestenlisten aller Spiele und die spielübergreifenden Erfolge (mit Google-Sicherung) auf deiner Seite oder in deiner App zeigen – ohne dass sie ein Spiel verdecken.</td><td>1 Zeile</td></tr>
       <tr><td><a href="#retro">EmulationStation</a></td><td>Spiele im Retro-Frontend (ES-DE, RetroPie, Batocera) auf Konsole, Handheld oder Wohnzimmer-PC.</td><td>2 Befehle</td></tr>
@@ -219,6 +221,54 @@
     </table></div>
   </section>
 
+  <section id="hub">
+    <h2>4a. Spiele-Hub – eigene Spieleseite in deinem Design <span class="tag">neu</span></h2>
+    <p>Der Hub ist die komplette Spieleübersicht als <b>native Seite</b> (kein iframe). Er füllt ein Element deiner Seite, übernimmt Schrift, Farben und Rundungen von dir und ist immer auf dem aktuellen Stand der Spieleliste.</p>
+<pre>&lt;div data-anmacha-hub&gt;&lt;/div&gt;
+&lt;script src="https://ricorewioriginal-collab.github.io/easygames/hub/anmacha-hub.js"&gt;&lt;/script&gt;
+
+&lt;!-- oder mit eigenen Farben --&gt;
+&lt;div id="spiele"&gt;&lt;/div&gt;
+&lt;script src="https://ricorewioriginal-collab.github.io/easygames/hub/anmacha-hub.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  AnMaChaHub.mount('#spiele', { theme: { accent: '#ff4b9b', accent2: '#7fe5df', card: '#141521', text: '#fffdf8', muted: '#b8b6c5', radius: '20px', line: 'rgba(255,255,255,.14)' } });
+&lt;/script&gt;</pre>
+    <div class="tw"><table>
+      <tr><th>Theme-Wert (oder CSS-Variable)</th><th>Wirkung</th></tr>
+      <tr><td><code>accent</code> / <code>--egh-accent</code></td><td>Hauptfarbe (Knöpfe, aktive Kategorie, Rahmen beim Überfahren)</td></tr>
+      <tr><td><code>accent2</code> / <code>--egh-accent2</code></td><td>Zweitfarbe (Verläufe, Hervorhebungen)</td></tr>
+      <tr><td><code>card</code> / <code>--egh-card</code></td><td>Hintergrund der Karten und Felder</td></tr>
+      <tr><td><code>text</code>, <code>muted</code> / <code>--egh-text</code>, <code>--egh-muted</code></td><td>Textfarbe und gedämpfte Textfarbe</td></tr>
+      <tr><td><code>radius</code>, <code>line</code>, <code>font</code></td><td>Rundung, Linienfarbe, Schrift (Standard: erbt von deiner Seite)</td></tr>
+    </table></div>
+    <ul>
+      <li><b>Spielen:</b> Ein Tipp auf eine Karte öffnet das Spiel im Vollbild-Fenster deiner Seite (easygames-iframe). Das Konto wird weitergereicht – wer angemeldet ist, ist im Spiel angemeldet.</li>
+      <li><b>Echtzeit:</b> Die Spieleliste prüft alle 60 Sekunden ihre Version – neue oder geänderte Spiele erscheinen ohne Neuladen. Favoriten und „Weiterspielen“ gleichen sich bei angemeldeten Spielern mit dem Konto ab (alle 45 Sekunden eine winzige Versions-Abfrage, nur bei sichtbarer Seite) und erscheinen sofort auf jedem Gerät.</li>
+      <li><b>Ohne Anmeldung</b> bleiben Favoriten lokal auf dem Gerät.</li>
+      <li><b>Ohne Build und ohne Einrichtung:</b> Die Datei kommt immer in der aktuellen Fassung von GitHub Pages. Ein eigener Server oder Firebase ist nicht nötig.</li>
+      <li>Die komplette easygames-Übersicht als iframe (Abschnitt 4) gibt es weiterhin – sie sieht aber immer wie easygames aus; der Hub passt sich deiner Seite an.</li>
+    </ul>
+  </section>
+
+  <section id="login">
+    <h2>4b. Login &amp; Konto auf deiner Seite <span class="tag">neu</span></h2>
+    <p>Spieler melden sich einmal mit Google an; danach sind Spielstände, Favoriten, Bewertungen und Kommentare gekoppelt und folgen ihnen auf jedes Gerät.</p>
+    <ul>
+      <li><b>Nichts einzurichten:</b> Bindest du <code>easygames.js</code> oder den Hub ein, läuft die Anmeldung über ein kleines Fenster von ricorewi-radio.de. Auf deiner Domain musst du bei Google nichts eintragen.</li>
+      <li><b>Eigener Anmelden-Knopf im Kopf deiner Seite</b> (Avatar mit Menü: Konto, Profil, Erfolge, Ranglisten, Heute, Chat, Sichern, Fehler melden, Abmelden):
+<pre>&lt;div id="konto"&gt;&lt;/div&gt;
+&lt;script src="https://ricorewioriginal-collab.github.io/easygames/cloud/anmacha-account.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  AnMaChaAccount.mount('#konto', { items: [ { icon: '📻', label: 'Mein Radio', href: '/radio' } ] });   // eigene Punkte stehen oben
+&lt;/script&gt;</pre>
+        Die Standard-Punkte kommen automatisch dazu und sind überall gleich. <code>AnMaChaAccount.user()</code>, <code>.login()</code>, <code>.logout()</code>, <code>.onChange(fn)</code> stehen für eigene Oberflächen bereit.</li>
+      <li><b>Ein Login für alles auf der Seite:</b> Meldet sich der Spieler im Kopf, in einem Spiel oder im Konto-Fenster an, merkt sich deine Seite das Konto (<code>easygames.js</code>) und gibt es an alle eingebetteten easygames-Spiele weiter – nur an iframes von easygames. Abmelden räumt überall auf.</li>
+      <li><b>Spielstände:</b> Die Spiele speichern auf dem Server von ricorewi-radio.de (nicht mehr in Firestore). Angemeldete Spieler können auf jedem Gerät weiterspielen, ohne dass du etwas tust.</li>
+      <li><b>Anpassen der Spieleseite von außen:</b> <code>index.html?embed=1&amp;portal=1&amp;flat=1&amp;bg=%23101522&amp;cy=%2322d3ee&amp;ma=%23ff4b9b&amp;pu=%23b57cff</code> (Farben, <code>flat=1</code> ohne Farbverläufe) oder live per <code>postMessage({ type: 'easygames:theme', bg, cy, ma, pu, flat })</code>.</li>
+      <li><b>Apps:</b> Google sperrt die Anmeldung in App-Fenstern; die App koppelt sich über einen Link im Browser (im Konto-Menü: „Link im Browser öffnen“).</li>
+    </ul>
+  </section>
+
   <section id="vollbild">
     <h2>5. Vollbild</h2>
     <ul>
@@ -307,7 +357,7 @@ EasyGames.leaderboard('#ziel', { game: 'anmacha-snake' }); // eingebettet (mode:
 EasyGames.achievements('#ziel');</pre>
     <h3>So funktioniert es auf deiner Seite oder in deiner App</h3>
     <ul>
-      <li><b>Keine eigene Firebase-Einrichtung nötig:</b> Die Seiten laufen im Rahmen von easygames (eigene Adresse, bereits freigegeben). Die Google-Anmeldung passiert dort im Rahmen; deine Seite muss keine Domain freischalten.</li>
+      <li><b>Keine eigene Firebase-Einrichtung nötig:</b> Die Seiten laufen im Rahmen von easygames (eigene Adresse, bereits freigegeben). Die Anmeldung läuft über ein Fenster von ricorewi-radio.de (siehe <a href="#login">4b</a>); deine Seite muss keine Domain bei Google oder Firebase freischalten.</li>
       <li><b>Anpassungen:</b> <code>?embed=1</code> blendet den Knopf „← Spiele“ aus (macht <code>easygames.js</code> automatisch). Größe, Seitenverhältnis und Rahmen steuerst du wie bei Spielen (<code>data-ratio</code>, <code>data-max-width</code>, <code>data-mode</code>).</li>
       <li><b>🐞 Fehler melden:</b> <code>bug.html</code> (Generator oben: „Fehler melden“, <code>data-easygames="bug"</code>, <code>EasyGames.open('bug', { game: 'snake' })</code>, <code>EasyGames.bug('#ziel')</code>). Angemeldete Spieler schicken Spiel, Art und Beschreibung (optional mit technischen Angaben) direkt an dich; ohne Anmeldung gibt es den Ausweg über GitHub. Auf deiner Seite genügt ein Knopf – das Spiel kann über <code>data-game</code> vorgewählt werden (hier die Cloud-ID, z.&nbsp;B. <code>snake</code>).</li>
       <li><b>💬 Chat:</b> <code>chat.html</code> (Generator oben: „Chat“, <code>data-easygames="chat" data-room="lobby"</code>, <code>EasyGames.open('chat', { room: 'tipps' })</code>, <code>EasyGames.chat('#ziel', { room })</code>). Räume: <code>lobby</code>, <code>mitspieler</code>, <code>tipps</code>, <code>g-&lt;spiel-id&gt;</code> (z.&nbsp;B. <code>g-snake</code> für einen Spiel-Chat). Nur für angemeldete Spieler, mit Wortfilter, Melden und Ausblenden; auf einer anderen Adresse meldet sich der Spieler im Chat einmal an.</li>
