@@ -585,8 +585,9 @@ BI.Fx = class Fx {
     this.geo = g;
     const m = new THREE.ShaderMaterial({
       transparent: true, depthWrite: false, uniforms: { uScale: { value: 400 } },
-      vertexShader: 'attribute vec4 aCol; attribute float aSize; uniform float uScale; varying vec4 vC; void main(){ vC=aCol; vec4 mv=modelViewMatrix*vec4(position,1.); gl_PointSize=aSize*uScale/max(-mv.z,.5); gl_Position=projectionMatrix*mv; }',
-      fragmentShader: 'varying vec4 vC; void main(){ float d=length(gl_PointCoord-.5); if(d>.5) discard; gl_FragColor=vec4(vC.rgb,vC.a*smoothstep(.5,.35,d)); }'
+      vertexShader: 'attribute vec4 aCol; attribute float aSize; uniform float uScale; varying vec4 vC; void main(){ vC=aCol; vec4 mv=modelViewMatrix*vec4(position,1.); vC.a*=smoothstep(.9,2.4,-mv.z); gl_PointSize=min(aSize*uScale/max(-mv.z,.5),uScale*9.); gl_Position=projectionMatrix*mv; }',
+      /* Teilchen direkt vor der Kamera blenden aus und werden nie riesig – sonst verdecken bunte Kreise die Sicht (v. a. hochkant am Handy) */
+      fragmentShader: 'varying vec4 vC; void main(){ float d=length(gl_PointCoord-.5); if(d>.5||vC.a<.01) discard; gl_FragColor=vec4(vC.rgb,vC.a*smoothstep(.5,.35,d)); }'
     });
     this.mat = m; this.pts = new THREE.Points(g, m); this.pts.frustumCulled = false; scene.add(this.pts);
     for (let k = 0; k < n; k++) this.pos[k * 3 + 1] = -999;

@@ -8,10 +8,13 @@
   BI.CharacterBatch = class extends BI.Batch {
     add(g, x, y, z, sx, sy, sz, color, rx = 0, ry = 0, rz = 0) {
       matrix.compose(pos.set(x, y, z), quat.setFromEuler(euler.set(rx, ry, rz, 'YXZ')), scale.set(sx, sy, sz)); normals.getNormalMatrix(matrix);
-      const c = new T.Color(color), p = g.attributes.position, n = g.attributes.normal;
-      for (let i = 0; i < p.count; i++) {
-        pos.fromBufferAttribute(p, i).applyMatrix4(matrix); normal.fromBufferAttribute(n, i).applyMatrix3(normals).normalize();
-        this.p.push(pos.x, pos.y, pos.z); this.n.push(normal.x, normal.y, normal.z); this.c.push(c.r, c.g, c.b);
+      /* Rechnung direkt auf den Zahlen statt über Vector3 – gleiche Werte, deutlich schnellerer Figurenbau beim Laden */
+      const c = new T.Color(color), pa = g.attributes.position.array, na = g.attributes.normal.array, e = matrix.elements, m = normals.elements, P = this.p, N = this.n, C = this.c, cr = c.r, cg = c.g, cb = c.b;
+      for (let i = 0; i < pa.length; i += 3) {
+        const x = pa[i], y = pa[i + 1], z = pa[i + 2], a = na[i], b = na[i + 1], d = na[i + 2];
+        P.push(e[0] * x + e[4] * y + e[8] * z + e[12], e[1] * x + e[5] * y + e[9] * z + e[13], e[2] * x + e[6] * y + e[10] * z + e[14]);
+        const nx = m[0] * a + m[3] * b + m[6] * d, ny = m[1] * a + m[4] * b + m[7] * d, nz = m[2] * a + m[5] * b + m[8] * d, l = Math.hypot(nx, ny, nz) || 1;
+        N.push(nx / l, ny / l, nz / l); C.push(cr, cg, cb);
       }
     }
     sph(x, y, z, r, c, detail = 1, sx = 1, sy = 1, sz = 1) {

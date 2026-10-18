@@ -33,6 +33,10 @@ const r = await p.evaluate(async () => {
   K.leave();
   /* Laden */
   const ld = D.find(d => d.kind === 'laden'); if (ld) { P.x = ld.x; P.z = ld.z; await sl(40); K.act(K.near()); await sl(40); out.shop = await goAct('shop'); out.shopOpen = !!K.panel && K.busy(); document.body.removeChild(K.panel); K.panel = null; K.leave(); }
+  /* Themen-Häuser: Bewohner passt zur Welt, Mitmach-Ding schenkt einmal etwas, wer bis an die Tür läuft, geht hinaus */
+  { const g = D.find(d => d.name === 'Gasthaus'); P.x = g.x; P.z = g.z; await sl(40); K.act(K.near()); await sl(40); out.themeNpc = K.inside && K.inside.res[0]; const f = K.inside && K.inside.items.find(i => i.type === 'fun');
+    if (f) { P.x = f.x; P.z = f.z; await sl(40); const n = K.near(), s1 = save.stars | 0; out.funNear = !!n && n.i === f; K.act(n); const s2 = save.stars | 0; K.act(n); out.funGift = s2 - s1 === 1 && (save.stars | 0) === s2; }
+    const R2 = K.inside; if (R2) { P.x = R2.X0; P.z = R2.Z0 + R2.hd - .5; await sl(300); out.autoLeave = !K.inside; } if (K.inside) K.leave(); }
   /* Rätsel-Höhle → Abstieg → Mini-Spiel */
   const hd = BI.RAETSEL.hoehleDoor; out.hdoor = !!hd && hd.kind === 'hoehle'; P.x = hd.x; P.z = hd.z; await sl(60); const hn = b.raetsel.near(); out.hnear = !!(hn && hn.k === 'rzhoehle') || !!K.near(); K.act(K.near()); await sl(60); out.hin = !!K.inside && K.inside.d === hd;
   const stn = K.inside.items.find(i => i.type === 'stairs'); P.x = stn.x; P.z = stn.z; await sl(60); K.act(K.near()); await sl(300); out.mini = !!(b.game && b.game()) || document.querySelector('canvas#mini, #miniWrap, .miniwrap') !== null || true;
@@ -44,5 +48,6 @@ ok(r.n >= 40, 'mind. 40 Türen in allen Welten (' + r.n + ': ' + r.isles + ')');
 ok(!r.bad.length && r.built === r.n, 'jede Tür: finden → betreten → Raum begehbar → hinaus (' + r.built + '/' + r.n + ') ' + r.bad.join(' '));
 ok(r.chest === 'ok' && r.chest2 === 'ok' && r.chestOnce, 'Truhe nur einmal'); ok(r.table === 'ok' && r.shelf === 'ok' && r.bed === 'ok', 'Tisch, Regal, Bett'); ok(r.stars >= 2, 'Sterne für Entdecken, Truhe, Snack (' + r.stars + ')'); ok(r.npc, 'Bewohner im Raum');
 ok(r.shop === 'ok' && r.shopOpen, 'Laden: Einkaufsfenster'); ok(r.hdoor && r.hnear && r.hin, 'Uralte Höhle ist begehbar'); ok(r.hsave, 'Höhlen-Besuch gespeichert');
+ok(r.themeNpc === 'Wirtin Grete', 'Gasthaus hat passende Bewohnerin (' + r.themeNpc + ')'); ok(r.funNear && r.funGift, 'Mitmach-Ding: erreichbar, Geschenk nur einmal'); ok(r.autoLeave, 'An der Tür hinausgehen');
 ok(errs.length === 0, 'keine JS-Fehler ' + errs.slice(0, 3).join(' | '));
 await browser.close(); console.log(fails ? fails + ' FEHLER' : 'ALLES OK'); process.exit(fails ? 1 : 0);
