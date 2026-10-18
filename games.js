@@ -1,4 +1,4 @@
-window.EASYGAMES_BUILD = '20261018.5'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
+window.EASYGAMES_BUILD = '20261018.6'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
 // Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
 const GAMES = [
   { id: 'ricolife', title: 'RicoLife 3D – Dein Leben. Deine Regeln.', icon: '🏡', img: 'ricolife/card.svg', bg: 'linear-gradient(145deg,#123a50,#4b8d8e 54%,#e5b16b)', glow: 'rgba(139,212,194,.45)', path: 'ricolife/', desc: 'Eigenständige 3D-Lebenssimulation in einer lebendigen offenen Stadt: eigenen Haushalt erstellen, begehbare Häuser bauen und einrichten, Bedürfnisse und Emotionen erleben, Berufe ausüben, Freundschaften und Familien gründen, Lebensgeschichten entdecken. Frei spielbar, auch offline, mit optionalem Google-Spielstand. Für Handy, PC und Controller.' },

@@ -251,6 +251,7 @@
     body.appendChild(setRow(L('Bewegung reduzieren', 'Reduce motion'), L('weniger Kamerafahrten und Effekte', 'fewer camera moves and effects'), chk(st.reducedMotion, v => a.setSetting('reducedMotion', v))));
     body.appendChild(setRow(L('Auto-Drehen: höchstens', 'Auto-spin: at most'), null, sel(st.autoSpinMax || 0, [[0, L('bis Energie leer', 'until energy runs out')], [10, '10'], [25, '25'], [50, '50'], [100, '100']], v => a.setSetting('autoSpinMax', +v))));
     body.appendChild(setRow(L('Vollbild', 'Fullscreen'), null, btn(L('Umschalten', 'Toggle'), () => a.fullscreen(), 'small')));
+    body.appendChild(setRow(L('Vollbild beim Start', 'Fullscreen on start'), L('Handy und Tablet', 'phones and tablets'), chk(st.autoFull !== false, v => a.setSetting('autoFull', v))));
     void ctx;
   }
   function setGraphics(body) {
@@ -322,7 +323,7 @@
   P.guide = () => UI().sheet(L('Anleitung', 'How to play'), [{ id: 'h', label: '', render: body => {
     const sec = (t, ps) => { body.appendChild(h('div', { cls: 'sec' }, t)); ps.forEach(p => body.appendChild(h('p', null, p))); };
     sec(L('Ziel', 'Goal'), [L('Baue die 30 Wunderinseln des Himmelsarchipels wieder auf. Jede Insel hat fünf Bauwerke mit fünf Stufen. Ist alles gebaut und nichts beschädigt, reist du zur nächsten Insel.', 'Rebuild the 30 wonder isles of the sky archipelago. Each island has five buildings with five stages. Once everything is built and nothing is damaged, you travel to the next island.')]);
-    sec(L('Runenmaschine', 'Rune Machine'), [L('Ein Spin kostet Energie (⚡) mal Multiplikator. Energie lädt sich mit der Zeit auf. Das Ergebnis steht fest, bevor die Walzen drehen.', 'A spin costs energy (⚡) times the multiplier. Energy recharges over time. The result is fixed before the reels turn.'),
+    sec(L('Runenmaschine', 'Rune Machine'), [L('Ein Spin kostet Energie (⚡) mal Einsatz (Multiplikator). Energie lädt sich mit der Zeit auf. „Drehen“ gedrückt halten startet das Auto-Drehen, erneutes Tippen stoppt es. Das Ergebnis steht fest, bevor die Walzen drehen.', 'A spin costs energy (⚡) times the bet (multiplier). Energy recharges over time. Hold “Spin” to start auto-spin, tap again to stop. The result is fixed before the reels turn.'),
       SW.REELS.SYMBOLS.map(s => s.glyph + ' ' + tx(s.name)).join(' · '),
       L('3× Sonne/Stern/Wunder = Münzen · 3× Sturm = Sturmangriff · 3× Kompass = Schatzexpedition · 3× Schutzorb = Schild · 3× Schleife = Spins · Relikt = Truhe · Portal = Eventpunkte und Minispiel-Tickets.', '3× sun/star/wonder = coins · 3× storm = storm attack · 3× compass = treasure expedition · 3× shield orb = shield · 3× loop = spins · relic = chest · portal = event points and minigame tickets.'),
       L('Es gibt keine Einsätze mit echtem Geld, nichts zum Auszahlen und keine Käufe. Alle Chancen stehen im Spiel (Truhen) und im README.', 'There are no real-money stakes, nothing to cash out and no purchases. All odds are shown in the game (chests) and in the README.')]);

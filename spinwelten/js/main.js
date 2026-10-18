@@ -131,11 +131,15 @@
     const coach = $('coach'); if (coach) coach.classList.toggle('hidden', v === 'menu' || v === 'atlas');
     const game = v === 'machine' || v === 'village';
     $('hud').classList.toggle('hidden', !(game || v === 'atlas' || v === 'target' || v === 'visit'));
-    $('hudSub').classList.toggle('hidden', !game);
+    $('ui').dataset.view = v;
+    $('hudSub').classList.toggle('hidden', v !== 'village');
     $('dock').classList.toggle('hidden', !(game || v === 'atlas' || v === 'visit'));
     $('spinRow').classList.toggle('hidden', v !== 'machine');
+    $('mbar').classList.toggle('hidden', v !== 'machine');
+    $('marq').classList.toggle('hidden', v !== 'machine');
     $('builds').classList.toggle('hidden', v !== 'village');
-    $('isleName').classList.toggle('hidden', !(game || v === 'visit'));
+    $('isleName').classList.toggle('hidden', !(v === 'village' || v === 'visit'));
+    if (v !== 'machine') winClear();
     document.querySelectorAll('.tabs .tab').forEach(t => t.classList.toggle('on', t.dataset.tab === v || (v === 'visit' && t.dataset.tab === 'atlas')));
     r.overlay = null;
     if (v === 'menu') { r.main = A.island; A.island.setMode('backdrop'); }
@@ -197,6 +201,7 @@
     const hudEl = h('div', { id: 'hud', cls: 'hidden' }, [
       h('button', { cls: 'hbtn', id: 'hMenu', 'aria-label': L('Menü', 'Menu'), type: 'button', onclick: () => pauseMenu() }, '☰'),
       h('div', { cls: 'pill', id: 'hudCoins', title: L('Münzen', 'Coins') }, [h('span', { cls: 'ic' }, '🪙'), h('b', { id: 'vCoins' }, '0')]),
+      h('div', { cls: 'pill', id: 'hudShield', title: L('Schutzorbs', 'Shield orbs') }, [h('span', { cls: 'ic' }, '🛡️'), h('b', { id: 'vShield2' }, '0')]),
       h('div', { cls: 'pill', id: 'hudEnergy', title: L('Energie', 'Energy') }, [h('span', { cls: 'ic' }, '⚡'), h('b', { id: 'vEnergy' }, '0'), h('small', { id: 'vTimer' }, '')]),
       h('button', { cls: 'hbtn', id: 'hQuest', 'aria-label': L('Aufgaben', 'Quests'), type: 'button', onclick: () => SW.Panels.quests() }, ['📜', h('span', { cls: 'dot hidden', id: 'dQuest' })])]);
     const sub = h('div', { id: 'hudSub', cls: 'hidden' }, [
@@ -207,18 +212,36 @@
     const name = h('div', { id: 'isleName', cls: 'hidden' });
     const tabs = h('div', { cls: 'tabs', role: 'tablist' }, [
       tab('machine', '🎰', L('Maschine', 'Machine')), tab('village', '🏘️', L('Dorf', 'Village')), tab('atlas', '🗺️', L('Atlas', 'Atlas')), tab('more', '✦', L('Mehr', 'More'))]);
+    // Laufschrift über der Maschine: Event-Fortschritt bis zur nächsten Belohnung und die reichste Insel
+    const marq = h('div', { id: 'marq', cls: 'hidden' }, [
+      h('button', { cls: 'mq', id: 'mqEv', type: 'button', 'aria-label': 'Event', onclick: () => SW.Panels.quests('e') }, [
+        h('span', { cls: 'mqic', id: 'mqIc' }, '🎪'),
+        h('span', { cls: 'mqbar' }, [h('i', { id: 'mqFill' }), h('b', { id: 'mqTx' }, '')]),
+        h('span', { cls: 'mqrw', id: 'mqRw' }, '🎁')]),
+      h('div', { cls: 'mqsub', id: 'mqSub' }, '')]);
+    // Leiste unter der Maschine: Einsatz und Energie
+    const mbar = h('div', { id: 'mbar', cls: 'hidden' }, [
+      btn([h('b', { id: 'mLab' }, '×1'), h('small', null, L('Einsatz', 'Bet'))], () => cycleMult(1), 'bet', { id: 'multBtn', 'aria-label': L('Multiplikator', 'Multiplier') }),
+      h('div', { cls: 'ebar', title: L('Energie', 'Energy') }, [h('i', { id: 'eFill' }), h('b', { id: 'eTx' }, ''), h('small', { id: 'eTm' }, '')])]);
     const spin = h('div', { cls: 'spinrow', id: 'spinRow' }, [
-      btn(h('span', { id: 'mLab' }, '×1'), () => cycleMult(1), 'round', { id: 'multBtn', 'aria-label': L('Multiplikator', 'Multiplier') }),
-      btn([h('span', null, L('DREHEN', 'SPIN')), h('small', { id: 'spinSub' }, '')], () => doSpin(), 'gold', { id: 'spinBtn' }),
-      btn([h('span', null, 'AUTO'), h('small', { id: 'autoLab' }, '')], () => toggleAuto(), 'round', { id: 'autoBtn' })]);
+      btn([h('span', { id: 'spinLab' }, L('DREHEN', 'SPIN')), h('small', { id: 'spinSub' }, '')], () => spinClick(), 'gold', { id: 'spinBtn' })]);
     const bl = h('div', { id: 'builds', cls: 'hidden' });
-    const dock = h('div', { id: 'dock', cls: 'hidden' }, [spin, bl, tabs]);
-    ui.appendChild(menu); ui.appendChild(hudEl); ui.appendChild(sub); ui.appendChild(name); ui.appendChild(dock);
+    const dock = h('div', { id: 'dock', cls: 'hidden' }, [mbar, spin, bl, tabs]);
+    ui.appendChild(menu); ui.appendChild(hudEl); ui.appendChild(sub); ui.appendChild(name); ui.appendChild(marq); ui.appendChild(dock);
+    holdToAuto($('spinBtn'));
     UI.baseLayer = () => (A.view === 'menu' ? $('menu') : $('ui'));
     setupPointer();
   }
   function tab(id, ic, label) { const b = h('button', { cls: 'tab', type: 'button', 'data-tab': id, role: 'tab' }, [h('b', null, ic), label, h('span', { cls: 'dot hidden', id: 'dt_' + id })]); b.addEventListener('click', () => { SW.Audio.sfx('click'); if (id === 'more') moreMenu(); else go(id); }); return b; }
+  // Handy/Tablet: beim Start echtes Vollbild (Browser erlauben das nur nach einem Tipp; die App ist schon randlos)
+  A.autoFull = function () {
+    if (A.set.autoFull === false || A._fsTried) return; A._fsTried = true;
+    const d = document, el = d.documentElement, r = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (!r || d.fullscreenElement || d.webkitFullscreenElement || /RicoReWiApp/.test(navigator.userAgent) || !matchMedia('(pointer: coarse)').matches) return;
+    try { const p = r.call(el, { navigationUI: 'hide' }); if (p && p.catch) p.catch(() => {}); } catch (e) { /* nicht möglich */ }
+  };
   function startGame() {
+    A.autoFull();
     go('machine');
     const t = A.g.s.tutorial;
     if (t && !t.done) SW.Tutorial.start(); else dailyPrompt();
@@ -238,26 +261,33 @@
   }
   function layout() {
     const m = A.machine; if (!m || !A.r) return;
-    const hh = A.r.h || innerHeight, top = $('hudSub') && !$('hudSub').classList.contains('hidden') ? $('hudSub').getBoundingClientRect().bottom + 30 : 70;
-    const dk = $('dock') && !$('dock').classList.contains('hidden') ? $('dock').getBoundingClientRect().top : hh;
-    const land = innerWidth > innerHeight && innerHeight < 500;
-    m.layout = { top: Math.min(0.4, top / hh), bottom: land ? 0.04 : Math.min(0.45, (hh - dk + 8) / hh) };
+    const hh = A.r.h || innerHeight, ww = A.r.w || innerWidth, mq = $('marq'), mb = $('mbar');
+    if (!mq || mq.classList.contains('hidden')) { m.layout = { top: 0.12, bottom: 0.25 }; m.resize(A.r.w, A.r.h); return; }
+    const land = innerWidth > innerHeight && innerHeight < 560;
+    const top = mq.getBoundingClientRect().bottom + 2, mr = mb.getBoundingClientRect();
+    if (land) {
+      const tabs = document.querySelector('.tabs').getBoundingClientRect();
+      m.layout = { top: Math.min(0.4, ($('hud').getBoundingClientRect().bottom + 4) / hh), bottom: 0.03, left: Math.min(0.3, (tabs.right + 4) / ww), right: Math.min(0.5, (ww - mr.left + 6) / ww) };
+    } else m.layout = { top: Math.min(0.4, top / hh), bottom: Math.min(0.5, (hh - mr.top + 4) / hh) };
     m.resize(A.r.w, A.r.h);
   }
   function hud() {
     if (!A.g || !$('vCoins')) return;
     const g = A.g, s = g.s;
-    $('vCoins').textContent = F(s.coins);
-    $('vEnergy').textContent = s.energy + '/' + g.energyMax();
-    const nx = g.nextSpinIn(); $('vTimer').textContent = nx > 0 ? SW.Clock.fmtDur(nx, SW.lang) : '';
-    $('vRelics').textContent = F(s.relics); $('vShields').textContent = s.shields + '/' + g.maxShields();
+    if (!A.cTween) $('vCoins').textContent = F(s.coins);
+    const emax = g.energyMax(), nx = g.nextSpinIn(), tm = nx > 0 ? SW.Clock.fmtDur(nx, SW.lang) : '';
+    $('vEnergy').textContent = s.energy + '/' + emax; $('vTimer').textContent = tm;
+    $('eTx').textContent = s.energy + '/' + emax; $('eTm').textContent = tm ? '+1 ' + L('in ', 'in ') + tm : '';
+    $('eFill').style.width = Math.min(100, s.energy / emax * 100) + '%';
+    $('vRelics').textContent = F(s.relics); $('vShields').textContent = s.shields + '/' + g.maxShields(); $('vShield2').textContent = s.shields + '/' + g.maxShields();
     $('vChests').textContent = Object.values(s.chests).reduce((a, b) => a + b, 0);
     const ev = SW.Clock.eventAt(g.now()); $('vEvIc').textContent = ev.def.icon; $('vEvent').textContent = F(s.ev.pts);
+    if (A.view === 'machine') marquee(ev);
     const ms = g.mults(); if (!ms.includes(A.mult)) A.mult = 1;
     $('mLab').textContent = '×' + A.mult;
-    $('spinSub').textContent = A.spinning ? '…' : (s.pending ? (s.pending.kind === 'attack' ? L('Sturm wartet', 'Storm waiting') : L('Expedition wartet', 'Expedition waiting')) : '−' + A.mult + ' ⚡');
-    $('autoLab').textContent = A.auto ? (A.set.autoSpinMax ? (A.set.autoSpinMax - A.autoN) + '' : '∞') : '';
-    $('autoBtn').classList.toggle('jade', A.auto); $('spinBtn').classList.toggle('auto', A.auto);
+    $('spinLab').textContent = A.auto ? L('STOPP', 'STOP') : L('DREHEN', 'SPIN');
+    $('spinSub').textContent = A.auto ? 'Auto ' + (A.set.autoSpinMax ? (A.set.autoSpinMax - A.autoN) : '∞') : (s.pending ? (s.pending.kind === 'attack' ? L('Sturm wartet', 'Storm waiting') : L('Expedition wartet', 'Expedition waiting')) : '−' + A.mult + ' ⚡ · ' + L('Halten = Auto', 'Hold = auto'));
+    $('spinBtn').classList.toggle('auto', A.auto);
     const n = $('isleName');
     if (A.view === 'machine' || A.view === 'village') { const w = g.world(); n.innerHTML = ''; n.appendChild(document.createTextNode(w.n + '. ' + tx(w.name))); n.appendChild(h('small', null, L('Kapitel ', 'Chapter ') + (g.chapter() + 1) + ' · ' + g.stepsDone() + '/25 ' + L('Ausbauten', 'upgrades') + (s.ngp ? ' · NG+' + s.ngp : ''))); }
     if (s.clockWarn) { s.clockWarn = false; UI.toast(L('Die Geräteuhr wurde zurückgestellt – Energie zählt ab jetzt neu.', 'The device clock went backwards – energy counts again from now.'), 4000); }
@@ -296,8 +326,60 @@
   }
 
   // ---------- Runenmaschine ----------
-  function cycleMult(d) { const ms = A.g.mults(); let i = ms.indexOf(A.mult) + d; if (i >= ms.length) i = 0; if (i < 0) i = ms.length - 1; A.mult = ms[i]; hud(); if (ms.length === 1) UI.toast(L('Höhere Multiplikatoren gibt es nach der ersten Insel.', 'Higher multipliers unlock after the first island.')); }
+  function cycleMult(d) { const ms = A.g.mults(); let i = ms.indexOf(A.mult) + d; if (i >= ms.length) i = 0; if (i < 0) i = ms.length - 1; A.mult = ms[i]; hud(); if (ms.length === 1) UI.toast(L('Höhere Einsätze gibt es nach der ersten Insel.', 'Higher bets unlock after the first island.')); }
   function toggleAuto() { A.auto = !A.auto; A.autoN = 0; hud(); if (A.auto && !A.spinning) doSpin(); }
+  // Tippen = ein Spin, gedrückt halten = Auto-Drehen, Tippen während Auto = Stopp
+  function spinClick() { if (A._held) { A._held = false; return; } if (A.auto) { A.auto = false; hud(); return; } doSpin(); }
+  function holdToAuto(el) {
+    const stop = () => clearTimeout(A._holdT);
+    el.addEventListener('pointerdown', () => { A._held = false; stop(); A._holdT = setTimeout(() => { if (A.view !== 'machine') return; A._held = true; haptic(25); if (!A.auto) toggleAuto(); }, 550); });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(n => el.addEventListener(n, stop));
+    el.addEventListener('contextmenu', e => e.preventDefault());
+  }
+  function haptic(ms) { if (A.set.haptics !== false && navigator.vibrate) try { navigator.vibrate(ms); } catch (e) { /* egal */ } }
+  const RW_IC = rw => rw.chest ? '🎁' : rw.spins ? '⚡' + rw.spins : rw.relics ? '🔷' : '🪙';
+  function marquee(ev) {
+    const g = A.g, s = g.s, tiers = SW.EVENT_TIERS || [], i = tiers.findIndex(t => s.ev.pts < t.at);
+    const prev = i > 0 ? tiers[i - 1].at : 0, nxt = i >= 0 ? tiers[i] : null;
+    $('mqIc').textContent = ev.def.icon;
+    $('mqFill').style.width = (nxt ? Math.max(0, (s.ev.pts - prev) / (nxt.at - prev)) * 100 : 100) + '%';
+    $('mqTx').textContent = nxt ? F(s.ev.pts) + ' / ' + F(nxt.at) : F(s.ev.pts) + ' ✓';
+    $('mqRw').textContent = nxt ? RW_IC(nxt.reward) : '✓';
+    let rich = null; for (const d of SW.BOTS) { const v = s.bots[d.id]; if (v && v.coins > 0 && (!rich || v.coins > rich.c)) rich = { n: d.name, c: v.coins }; }
+    const sub = $('mqSub'); sub.innerHTML = '';
+    sub.appendChild(h('span', null, tx(ev.def.name) + ' · ' + SW.Clock.fmtDur(ev.end - g.now(), SW.lang)));
+    if (rich) sub.appendChild(h('span', { cls: 'rich' }, '💰 ' + rich.n + ' 🤖 ' + F(rich.c)));
+  }
+  // Gewinnanzeige mitten auf den Walzen
+  function winClear() { clearTimeout(A._winT); const w = $('winfx'); if (w) w.remove(); }
+  function winShow(title, amount, cls, ms) {
+    winClear(); if (A.view !== 'machine') return;
+    const c = A.machine.screen(0, 0);
+    const el = h('div', { id: 'winfx', cls: cls || '', style: 'left:' + c.x + 'px;top:' + c.y + 'px', 'aria-live': 'polite' }, [h('div', { cls: 'rays' }), h('div', { cls: 'wt' }, title), amount ? h('div', { cls: 'wa' }, '+' + F(amount)) : null]);
+    $('ui').appendChild(el);
+    if (amount && !A.set.reducedMotion) countUp(el.querySelector('.wa'), 0, amount, cls === 'big' ? 1300 : 650, '+');
+    A._winT = setTimeout(winClear, ms || 1600);
+  }
+  function countUp(el, a, b, ms, pre, done) {
+    const t0 = performance.now();
+    const step = now => { const u = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - u, 3); el.textContent = (pre || '') + F(Math.round(a + (b - a) * e)); if (u < 1) requestAnimationFrame(step); else if (done) done(); };
+    requestAnimationFrame(step);
+  }
+  // Münzen fliegen von den Walzen zur Münzanzeige, die Anzeige zählt hoch
+  function coinFly(n, from, to) {
+    const pill = $('hudCoins'), ic = pill.querySelector('.ic').getBoundingClientRect(), tx0 = ic.left + ic.width / 2, ty0 = ic.top + ic.height / 2;
+    A.cTween = true; let last = 0;
+    countUp($('vCoins'), from, to, A.set.reducedMotion ? 10 : 1100, '', () => { A.cTween = false; hud(); });
+    if (A.set.reducedMotion) return;
+    const c0 = A.machine.screen(0, 0);
+    for (let i = 0; i < n; i++) {
+      const c = h('i', { cls: 'fcoin', style: 'left:' + c0.x + 'px;top:' + c0.y + 'px' }); $('ui').appendChild(c);
+      const a = Math.random() * Math.PI * 2, r = 40 + Math.random() * 100, mx = Math.cos(a) * r, my = Math.sin(a) * r * 0.7 - 30;
+      const an = c.animate([{ transform: 'translate(0,0) scale(.4)', opacity: 0 }, { transform: 'translate(' + mx + 'px,' + my + 'px) scale(1.15)', opacity: 1, offset: 0.35 }, { transform: 'translate(' + (tx0 - c0.x) + 'px,' + (ty0 - c0.y) + 'px) scale(.55)', opacity: 0.9 }],
+        { duration: 700 + Math.random() * 300, delay: i * 30, easing: 'cubic-bezier(.3,.6,.4,1)', fill: 'both' });
+      an.onfinish = () => { c.remove(); pill.classList.remove('bump'); void pill.offsetWidth; pill.classList.add('bump'); const now = performance.now(); if (now - last > 70) { last = now; SW.Audio.sfx('tick'); } };
+    }
+  }
   function doSpin() {
     if (A.view !== 'machine') { go('machine'); return; }
     if (A.spinning) { A.machine.finishNow(); return; }
@@ -305,38 +387,45 @@
     if (res.error) {
       A.auto = false; hud();
       if (res.error === 'pending') continuePending();
-      else if (res.error === 'energy') { SW.Audio.sfx('error'); UI.toast(L('Keine Energie. Nächster Spin in ', 'No energy. Next spin in ') + SW.Clock.fmtDur(g.nextSpinIn(), SW.lang) + (A.mult > 1 ? L(' – oder Multiplikator senken.', ' – or lower the multiplier.') : ''), 3200); if (!g.s.daily.bonus) dailyPrompt(); }
+      else if (res.error === 'energy') { SW.Audio.sfx('error'); UI.toast(L('Keine Energie. Nächster Spin in ', 'No energy. Next spin in ') + SW.Clock.fmtDur(g.nextSpinIn(), SW.lang) + (A.mult > 1 ? L(' – oder Einsatz senken.', ' – or lower the bet.') : ''), 3200); if (!g.s.daily.bonus) dailyPrompt(); }
       return;
     }
-    A.spinning = true; A.autoN++; hud(); A.saveSoon();
-    SW.Audio.sfx('spin');
-    const sp = (A.set.speed || 1) * (A.auto ? 1.4 : 1);
-    A.machine.spin(res.ids, { speed: sp, skip: !!A.set.skip, onStop: () => SW.Audio.sfx('stop'), onDone: () => afterSpin(res) });
+    A.spinning = true; A.autoN++; winClear(); hud(); A.saveSoon();
+    SW.Audio.sfx('spin'); haptic(12);
+    const sp = (A.set.speed || 1) * (A.auto ? 1.35 : 1);
+    A.machine.spin(res.ids, { speed: sp, skip: !!A.set.skip, onStop: () => { SW.Audio.sfx('stop'); haptic(8); }, onTease: () => SW.Audio.sfx('tease'), onDone: () => afterSpin(res) });
   }
   function afterSpin(res) {
     A.spinning = false;
-    const r = res.reward || {}, sym = SW.REELS.SYMBOLS.find(s => s.id === res.sym);
-    if (r.coins) { UI.reward('🪙 +' + F(r.coins), res.rule === 'three' ? tx(sym.name) + ' ×3' : ''); SW.Audio.sfx(res.big || res.jackpot ? 'big' : 'coin'); A.machine.win(sym ? sym.col : '#ffd98a', res.big || res.jackpot); }
-    else if (res.rule !== 'none') A.machine.win(sym ? sym.col : '#ffd98a', false);
-    if (r.spins) UI.toast('⚡ +' + r.spins);
-    if (res.extra.shieldAdded) { UI.toast('🛡️ ' + L('Schutzorb erhalten!', 'Shield orb gained!')); SW.Audio.sfx('shield'); }
+    const g = A.g, r = res.reward || {}, sym = SW.REELS.SYMBOLS.find(s => s.id === res.sym), col = sym ? sym.col : '#ffd98a';
+    const mask = res.rule === 'three' ? [true, true, true] : res.rule === 'two' ? res.ids.map(id => id === res.sym) : null;
+    const big = !!(res.big || res.jackpot), name = sym ? tx(sym.name) : '';
+    if (mask) A.machine.win(col, big, mask);
+    // eine große Meldung je Spin, nach Wichtigkeit
+    if (res.pending) { winShow(res.pending.kind === 'attack' ? '⚡ ' + L('STURM!', 'STORM!') : '🧭 ' + L('SCHATZSUCHE!', 'TREASURE HUNT!'), 0, 'act', 1300); A.machine.shake = 0.5; SW.Audio.sfx(res.pending.kind === 'attack' ? 'attack' : 'win'); haptic(40); }
+    else if (r.coins) { winShow(res.jackpot ? L('JACKPOT!', 'JACKPOT!') : big ? L('GROSSER GEWINN!', 'BIG WIN!') : (res.rule === 'three' ? '3× ' : '2× ') + name, r.coins, big ? 'big' : '', big ? 2600 : 1500); SW.Audio.sfx(big ? 'big' : 'win'); if (big) haptic([40, 40, 80]); }
+    else if (r.spins) { winShow('⚡ +' + r.spins + ' ' + L('Spins', 'spins'), 0, '', 1400); SW.Audio.sfx('win'); }
+    else if (res.extra.shieldAdded) { winShow('🛡️ ' + L('Schutzorb!', 'Shield orb!'), 0, '', 1400); SW.Audio.sfx('shield'); }
+    else if (res.extra.chest) { winShow('🎁 ' + L('Truhe!', 'Chest!'), 0, '', 1200); SW.Audio.sfx('chest'); }
+    if (r.coins) coinFly(big ? 28 : Math.min(18, 8 + res.m), g.s.coins - r.coins - (res.extra.shieldOverflow || 0), g.s.coins);
+    if (r.spins && (r.coins || res.pending)) UI.toast('⚡ +' + r.spins);
+    if (res.extra.shieldAdded && (r.coins || r.spins)) UI.toast('🛡️ ' + L('Schutzorb erhalten!', 'Shield orb gained!'));
     if (res.extra.shieldOverflow) UI.toast('🛡️ ' + L('Schilde voll – stattdessen 🪙 ', 'Shields full – instead 🪙 ') + F(res.extra.shieldOverflow));
     if (res.extra.relics) UI.toast('🔷 +' + res.extra.relics);
-    if (res.jackpot && A.set.haptics && navigator.vibrate) try { navigator.vibrate([40, 40, 80]); } catch (e) { /* */ }
     A.after();
     if (SW.Tutorial) SW.Tutorial.after('spinDone');
-    if (res.pending) { A.auto = false; hud(); UI.toast(res.pending.kind === 'attack' ? '⚡ ' + L('Sturmangriff!', 'Storm attack!') : '🧭 ' + L('Schatzexpedition!', 'Treasure expedition!')); setTimeout(() => continuePending(), A.set.skip ? 200 : 900); return; }
+    if (res.pending) { A.auto = false; hud(); setTimeout(() => continuePending(), A.set.skip ? 300 : 1300); return; }
     if (res.extra.chest) {
       A.auto = false; hud();
       const tut = SW.Tutorial.active() && SW.Tutorial.step() && SW.Tutorial.step().id === 'chest';
-      UI.dialog({ title: '🎁 ' + tx(SW.CHESTS[res.extra.chest].name), text: res.extra.found ? L('Plumi hat eine Truhe gefunden!', 'Plumi found a chest!') : L('Eine Truhe voller Sammelkarten!', 'A chest full of collectible cards!'), noClose: tut,
-        buttons: [{ label: L('Öffnen', 'Open'), cls: 'gold', fn: () => SW.Flows.chest(res.extra.chest) }].concat(tut ? [] : [{ label: L('Später', 'Later') }]) });
+      setTimeout(() => UI.dialog({ title: '🎁 ' + tx(SW.CHESTS[res.extra.chest].name), text: res.extra.found ? L('Plumi hat eine Truhe gefunden!', 'Plumi found a chest!') : L('Eine Truhe voller Sammelkarten!', 'A chest full of collectible cards!'), noClose: tut,
+        buttons: [{ label: L('Öffnen', 'Open'), cls: 'gold', fn: () => SW.Flows.chest(res.extra.chest) }].concat(tut ? [] : [{ label: L('Später', 'Later') }]) }), A.set.skip ? 100 : 700);
       return;
     }
     if (A.auto) {
       const max = A.set.autoSpinMax || 0;
       if ((max && A.autoN >= max) || A.g.canSpin(A.mult)) { A.auto = false; hud(); if (A.g.canSpin(A.mult) === 'energy') UI.toast(L('Auto-Drehen gestoppt: Energie leer.', 'Auto-spin stopped: out of energy.')); return; }
-      setTimeout(() => { if (A.auto && A.view === 'machine' && !UI.hasDialog() && !UI.sheetOpen()) doSpin(); else { A.auto = false; hud(); } }, A.set.skip ? 250 : 450);
+      setTimeout(() => { if (A.auto && A.view === 'machine' && !UI.hasDialog() && !UI.sheetOpen()) doSpin(); else { A.auto = false; hud(); } }, A.set.skip ? 250 : (big ? 1400 : r.coins ? 650 : 380));
     }
   }
 
@@ -461,6 +550,7 @@
   addEventListener('keydown', e => { if (A.view !== 'village' || UI.hasDialog() || UI.sheetOpen() || A.mgOn) return; const m = /^Digit([1-5])$/.exec(e.code); if (m) buildTap(+m[1] - 1); });
   function frame(dt) {
     const ax = SW.Input.poll(dt), I = SW.Input;
+    if (A.view === 'target') SW.Flows.place();
     if (A.mgOn || UI.hasDialog() || UI.sheetOpen()) return;
     let ox = 0, oy = 0;
     if (ax) { ox += ax.x * 9; oy += ax.y * 6; }
