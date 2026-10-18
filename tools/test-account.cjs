@@ -10,7 +10,7 @@ const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css
 const mk = fn => http.createServer((q, r) => fn(q, r));
 const games = mk((q, r) => { let f = path.join(root, decodeURIComponent(q.url.split('?')[0])); if (f.endsWith('/')) f += 'index.html'; fs.readFile(f, (e, b) => { if (e) { r.writeHead(404); return r.end(); } r.writeHead(200, { 'content-type': mime[path.extname(f)] || 'application/octet-stream' }); r.end(b); }); });
 let gbase = '';
-const host = mk((q, r) => { r.writeHead(200, { 'content-type': 'text/html' }); r.end(`<!doctype html><meta charset=utf-8><body><h1>Fremde Seite</h1><script src="${gbase}easygames.js"></script><iframe id="f" src="${gbase}konto.html?embed=1" style="width:420px;height:700px"></iframe></body>`); });
+const host = mk((q, r) => { r.writeHead(200, { 'content-type': 'text/html' }); if (q.url === '/b') return r.end(`<!doctype html><meta charset=utf-8><body><div id="hp"></div><script>localStorage.setItem('anmacha-rating-token','tt.zz');localStorage.setItem('anmacha-rating-user','{"name":"Host Person","picture":""}')</script><script src="${gbase}cloud/anmacha-account.js"></script><script src="${gbase}easygames.js"></script><iframe id="f" src="${gbase}konto.html?embed=1" style="width:420px;height:700px"></iframe></body>`); r.end(`<!doctype html><meta charset=utf-8><body><h1>Fremde Seite</h1><script src="${gbase}easygames.js"></script><iframe id="f" src="${gbase}konto.html?embed=1" style="width:420px;height:700px"></iframe></body>`); });
 (async () => {
   await new Promise(r => games.listen(0, '127.0.0.1', r)); gbase = `http://127.0.0.1:${games.address().port}/`;
   await new Promise(r => host.listen(0, '127.0.0.1', r)); const hurl = `http://127.0.0.1:${host.address().port}/`;
@@ -45,6 +45,12 @@ const host = mk((q, r) => { r.writeHead(200, { 'content-type': 'text/html' }); r
   await p.waitForTimeout(300);
   assert.strictEqual(await p.evaluate(() => localStorage.getItem('anmacha-embed-account')), null);
   console.log('PASS Abmelden räumt auch das Konto der einbettenden Seite ab');
+  // Seite mit eigenem Login-Knopf (z. B. ricorewi.de): Konto der Seite gilt automatisch im eingebetteten Spiel/Konto
+  const p2 = await c.newPage(); p2.on('pageerror', e => errors.push(e.message));
+  await p2.goto(hurl + 'b'); await p2.frameLocator('#f').locator('#nm', { hasText: 'Host Person' }).waitFor({ timeout: 8000 });
+  console.log('PASS Seite mit eigenem Login: das eingebettete Konto übernimmt den Login der Seite');
+  await p2.evaluate(() => AnMaChaAccount.logout()); await p2.frameLocator('#f').locator('#nm', { hasText: 'Nicht angemeldet' }).waitFor({ timeout: 8000 });
+  console.log('PASS Abmelden auf der Seite meldet auch das eingebettete Konto ab');
   assert.deepStrictEqual(errors, [], 'Seitenfehler: ' + errors.join('; '));
   await b.close(); games.close(); host.close();
 })().catch(e => { console.error(e); process.exit(1); });

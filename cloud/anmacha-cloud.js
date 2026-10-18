@@ -233,7 +233,7 @@
   }
   function refresh() {   // nach einem Login/Logout durch anmacha-account.js: Zustand neu einlesen und abgleichen
     user = null; first = true; baseRemote = null; lastErr = '';
-    return loadSdk().then(function () { render(); return sync(); });
+    return loadSdk().then(function () { render(); return sync(); }).catch(function () { });
   }
   function signOut() {
     rawRemove.call(LS, ON_KEY); rawRemove.call(LS, RT); try { rawRemove.call(LS, OT); rawRemove.call(LS, OU); } catch (e) {}

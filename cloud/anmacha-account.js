@@ -35,7 +35,7 @@
     return f ? { name: f.displayName || 'Spieler', picture: f.photoURL || '' } : null;
   }
   function fbHost() { return /(^|\.)github\.io$|(^|\.)ricorewi-radio\.de$/.test(HOST); }
-  function emit() { listeners.forEach(function (f) { try { f(user()); } catch (e) { } }); mounts.forEach(draw); }
+  function emit() { listeners.forEach(function (f) { try { f(user()); } catch (e) { } }); mounts.forEach(draw); try { root.dispatchEvent(new Event('anmacha-account-changed')); } catch (e) { } }
 
   function setSession(t, u, fromParent) {
     if (!fromParent) toParent(t, u);
@@ -168,5 +168,6 @@
     exchange().then(function () { emit(); });
   }, 1500);
 
-  root.AnMaChaAccount = { mount: mount, user: user, token: token, login: login, logout: logout, onChange: onChange, api: API };
+  function adopt(t, u) { if (t && t !== token()) setSession(t, u || {}, true); }   // Konto von außen übernehmen (einbettende Seite ↔ iframe)
+  root.AnMaChaAccount = { adopt: adopt, mount: mount, user: user, token: token, login: login, logout: logout, onChange: onChange, api: API };
 })(window);

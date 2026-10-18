@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "05d432a5688d",
- "generated": "2026-10-18T20:36:07+00:00",
- "commit": "0165898d2bb506b0ef8eb65c4581d5c525dbf0be",
+ "version": "c27e3a4d5197",
+ "generated": "2026-10-18T20:43:38+00:00",
+ "commit": "ef1b7a8d520740d2bebdc3776aa809344a44cec0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5278,8 +5278,8 @@
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 38452,
-   "h": "b27c10df930a49132e15dc553c2cfa0c1a5d903135a65be9917bc7416218a851"
+   "s": 38475,
+   "h": "3a5a9fa7eeb09557796dd5e1f4fdeb61d6eae5384e526424db36b6f160278382"
   },
   {
    "p": "cloud/anmacha-engage.js",
@@ -5303,13 +5303,13 @@
   },
   {
    "p": "easygames.js",
-   "s": 28429,
-   "h": "de2bdde1f98c1fb82a19034296f29669dd25300febbf5db95711de1929223476"
+   "s": 29276,
+   "h": "af0ae7444b6b907f2a4ead2985f96ef17de787b35d22ce96cc6bd7a5fd5484dc"
   },
   {
    "p": "einbinden.html",
-   "s": 74502,
-   "h": "94eb4b171eba37e718395615b6a56e8516498974b36b6e22062749be331bd078"
+   "s": 75228,
+   "h": "ba2684e5d3846abc781d6b6e895ea52c6d9f23fc3549a79e46e85ea6417be530"
   },
   {
    "p": "erfolge.html",
@@ -5673,8 +5673,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 38452,
-   "h": "b27c10df930a49132e15dc553c2cfa0c1a5d903135a65be9917bc7416218a851"
+   "s": 38475,
+   "h": "3a5a9fa7eeb09557796dd5e1f4fdeb61d6eae5384e526424db36b6f160278382"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -6959,7 +6959,7 @@
   {
    "p": "sync/catalog.json",
    "s": 116470,
-   "h": "717ac824936f7457a511090ccdc70e7b38088b4fd188bea1633f2a2450f6f78f"
+   "h": "7266393c5bd38ae3b6a8451b6e80b9d3b08857151fe635ffd407f1c3d3077119"
   },
   {
    "p": "taschi/card.svg",
