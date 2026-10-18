@@ -180,7 +180,8 @@
         { buttons: low ? [{ label: '💰 +' + fmt(wallet.START) + ' Spielgeld', value: 'refill' }, { label: 'Schließen', value: null, cls: ' ' }] : [{ label: 'OK', value: null }] });
       if (r === 'refill') { wallet.refill(); sound.play('coin'); }
     },
-    gamble: amount => G.CasinoOverlay.gamble(amount),
+    gamble: (amount, opt) => G.CasinoOverlay.gamble(amount, opt),
+    ladder: (amount, bet, theme) => G.CasinoOverlay.ladder(amount, bet, theme),
     pickBonus: (st, theme, opt) => G.CasinoOverlay.pickBonus(st, theme, opt),
     bonusWheel: (st, theme, opt) => G.CasinoOverlay.bonusWheel(st, theme, opt)
   };

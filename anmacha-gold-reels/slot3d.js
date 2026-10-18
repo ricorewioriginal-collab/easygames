@@ -254,23 +254,7 @@
       if (mjp) wallet.give(mjp, true);
       this.winSum = 0;
       try {
-        for (const st of round.steps) {
-          if (this.dead) return;
-          if (st.type === 'spin' || st.type === 'respin') {
-            if (st.mode === 'free') { this.setBanner(`FREISPIEL <b>${st.freeNo}</b> / ${st.freeNo + st.freeLeft}` + (st.mult > 1 ? ` · ×${st.mult}` : '') + (this.upLevel ? ' · ⬆ ' + this.upLabel : '')); this.drawMarquee(`FREISPIEL ${st.freeNo} / ${st.freeNo + st.freeLeft}`); }
-            if (st.type === 'respin') this.setBanner('RESPIN – Wild bleibt stehen');
-            if (st.lucky) { await this.animSpin(st, { keys: st.lucky.pre.map((col, r) => col.map((v, y) => this.key(v, st.vals && st.vals[r][y]))) }); await this.playLucky(st); }
-            else await this.animSpin(st);
-            await this.showWins(st);
-            if (st.lucky) this.endLucky(st);
-            if (st.type === 'respin') this.banner.hidden = true;
-            if (st.mode === 'free') await this.freeExtras(st);
-          }
-          else if (st.type === 'pick' || st.type === 'wheel') await this.playBonus(st);
-          else if (st.type === 'holdwin') await this.playHoldWin(st);
-          else if (st.type === 'freeStart') await this.freeStart(st);
-          else if (st.type === 'freeEnd') await this.freeEnd(st);
-        }
+        await this.runSteps(round.steps);
       } finally {
         if (!this.dead) {
           wallet.reveal(); this.busy = false; this.free = false; this.refreshHud();
@@ -290,6 +274,25 @@
       if (this.offer) { this.offer.grid = b0.grid; this.offer.bet = bet; this.showNudge(); }
       this.startWinCycle(round.steps.filter(s => s.type === 'spin' || s.type === 'respin').pop());
       if (this.auto) { setTimeout(() => { if (this.auto && !this.busy && !this.dead) this.spin(); }, C.data.turbo ? 250 : 650); }
+    }
+    async runSteps(steps) {
+      for (const st of steps) {
+        if (this.dead) return;
+        if (st.type === 'spin' || st.type === 'respin') {
+          if (st.mode === 'free') { this.setBanner(`${this.freeName} <b>${st.freeNo}</b> / ${st.freeNo + st.freeLeft}` + (st.mult > 1 ? ` · ×${st.mult}` : '') + (this.upLevel ? ' · ⬆ ' + this.upLabel : '')); this.drawMarquee(`${this.freeName} ${st.freeNo} / ${st.freeNo + st.freeLeft}`); }
+          if (st.type === 'respin') this.setBanner('RESPIN – Wild bleibt stehen');
+          if (st.lucky) { await this.animSpin(st, { keys: st.lucky.pre.map((col, r) => col.map((v, y) => this.key(v, st.vals && st.vals[r][y]))) }); await this.playLucky(st); }
+          else await this.animSpin(st);
+          await this.showWins(st);
+          if (st.lucky) this.endLucky(st);
+          if (st.type === 'respin') this.banner.hidden = true;
+          if (st.mode === 'free') await this.freeExtras(st);
+        }
+        else if (st.type === 'pick' || st.type === 'wheel') await this.playBonus(st);
+        else if (st.type === 'holdwin') await this.playHoldWin(st);
+        else if (st.type === 'freeStart') await this.freeStart(st);
+        else if (st.type === 'freeEnd') await this.freeEnd(st);
+      }
     }
     allReels() { return this.wins && this.wins.length ? this.reels.concat(...this.wins.map(w => w.reels)) : this.reels; }
     quick() { this.quickStop = true; this.reels && this.allReels().forEach(R => { if (R.anim) R.anim.scale = 3.5; }); }
@@ -428,14 +431,16 @@
 
     // ---------- Freispiele ----------
     async freeStart(st) {
-      this.free = true; this.refreshHud(); sound.play('feature'); this.upLevel = 0; this.upLabel = '';
+      this.free = true; this.refreshHud(); sound.play('feature'); this.upLevel = 0; this.upLabel = ''; this.freeName = st.title ? 'SONDERSPIEL' : 'FREISPIEL';
       const sp = st.special != null ? this.m.symbols[st.special] : null;
-      const FF = { upgrade: 'Jeder Freispiel mit Wild wertet die niedrigsten Symbole auf und bringt +1 Freispiel', sticky: 'Wilds bleiben bis zum Ende kleben', multUp: 'Der Multiplikator steigt nach jedem Gewinn – bis ×' + (this.m.ff && this.m.ff.max) };
-      this.drawMarquee('FREISPIELE');
+      const FF = { upgrade: 'Jeder Freispiel mit Wild wertet die niedrigsten Symbole auf und bringt +1 Freispiel', sticky: 'Wilds bleiben bis zum Ende kleben', multUp: 'Der Multiplikator steigt nach jedem Gewinn – bis ×' + (this.m.ff && this.m.ff.max),
+        walk: 'Walking Wilds: Jedes Wild bleibt stehen und wandert jeden Freispiel eine Walze nach links' };
+      const title = st.title || 'FREISPIELE', xm = Math.max(st.mult || 0, this.m.freeMult || 1);
+      this.drawMarquee(title);
       const cells = []; if (this.cur && this.cur.grid) this.cur.grid.forEach((col, r) => col.forEach((v, y) => { if (v === this.m.scat) cells.push([r, y]); }));
       cells.forEach(c => this.flash(c[0], c[1])); if (cells.length) await wait(900 * this.speed); this.clearFlash();
       this.tint(true);
-      await this.app.featureIntro('FREISPIELE', (this.m.freeMult > 1 ? `<p>Alle Gewinne ×${this.m.freeMult}</p>` : '') + (st.ff ? `<p>${FF[st.ff]}</p>` : '') +
+      await this.app.featureIntro(title, (xm > 1 ? `<p>Alle Gewinne ×${xm}</p>` : '') + (st.ff ? `<p>${FF[st.ff]}</p>` : '') +
         (sp ? `<p>Sondersymbol:</p><canvas class="splashsym" data-art="${sp.art || sp.id}"></canvas>` : ''), this.theme, { count: st.count, ms: sp ? 3800 : 3200 });
       this.freeTotal = st.count;
     }
@@ -446,6 +451,10 @@
       if (st.free) { sound.play('fanfare'); this.party = true; C.toast(`+${m.scatter.retrigger || st.free} Freispiele!`); await wait(900 * this.speed); this.party = false; }
       if (st.newSticky && st.newSticky.length) {
         for (const [r, y] of st.newSticky) { this.setLockKey(r, y, this.key(m.wild, null, true), true); sound.play('lock'); await wait(140 * this.speed); }
+      }
+      if (st.walkNext) {                                           // Walking Wilds: eine Walze nach links
+        (st.stuck || []).forEach(([r, y]) => { this.lock(r, y).visible = false; });
+        if (st.walkNext.length) { const k = this.key(m.wild, null, true); st.walkNext.forEach(([r, y]) => this.setLockKey(r, y, k, true)); sound.play('lock'); await wait(380 * this.speed); }
       }
       if (st.upgrade) {
         this.upLevel = st.upgrade.level; this.upLabel = this.symName(st.upgrade.to);
@@ -473,10 +482,10 @@
     }
     async freeEnd(st) {
       this.banner.hidden = true; this.drawMarquee(''); this.upLevel = 0;
-      if (this.m.ff && this.m.ff.type === 'sticky') this.locks.forEach(l => { l.visible = false; });
+      if (this.m.ff && (this.m.ff.type === 'sticky' || this.m.ff.type === 'walk')) this.locks.forEach(l => { l.visible = false; });
       this.tint(false);
-      if (st.win > 0 && st.win < this.bet * 15) { this.shower.start(Math.min(1, st.win / this.bet / 60 + 0.25), new THREE.Vector3(0, -this.winH / 2, 1)); await this.app.totalWin(`${st.played} FREISPIELE`, st.win, this.theme); this.shower.stop(); }
-      else await this.app.splash(`<h2>FREISPIELE BEENDET</h2><p>${st.played} Freispiele</p><p class="big">${fmt(st.win)}</p>`, this.theme, 2000 * this.speed);
+      if (st.win > 0 && st.win < this.bet * 15) { this.shower.start(Math.min(1, st.win / this.bet / 60 + 0.25), new THREE.Vector3(0, -this.winH / 2, 1)); await this.app.totalWin(`${st.played} ${this.freeName}E`, st.win, this.theme); this.shower.stop(); }
+      else await this.app.splash(`<h2>${this.freeName}E BEENDET</h2><p>${st.played} ${this.freeName === 'FREISPIEL' ? 'Freispiele' : 'Sonderspiele'}</p><p class="big">${fmt(st.win)}</p>`, this.theme, 2000 * this.speed);
     }
     setBanner(html) { this.banner.innerHTML = html; this.banner.hidden = false; }
 
@@ -642,8 +651,23 @@
     async gamble() {
       if (this.busy || !this.lastWin) return;
       this.q('[data-act=risk]').hidden = true; this.clearWinShow();
-      const res = await this.app.gamble(this.lastWin);
+      let res = await this.app.gamble(this.lastWin, { ladder: L.ladderStart(this.lastWin, this.bet) >= 0 });
+      if (res && res.ladder != null) res = await this.ladder(res.ladder);
+      if (this.dead) return;
       this.lastWin = 0; this.setWin(res);
+    }
+    // Sonderspiel-Leiter; oben angekommen startet eine eigene Runde Sonderspiele
+    async ladder(amount) {
+      const r = await this.app.ladder(amount, this.bet, this.theme);
+      if (!r.special || this.dead) return r.win;
+      const bet = this.bet, round = L.specialRound(this.m, bet);
+      wallet.give(round.total, true); this.winSum = 0; this.busy = true; this.refreshHud();
+      try { await this.runSteps(round.steps); }
+      finally { if (!this.dead) { wallet.reveal(); this.busy = false; this.free = false; this.refreshHud(); } }
+      if (this.dead) return 0;
+      const won = r.win + round.total; this.setWin(won);
+      if (round.total >= bet * 15) await this.celebrate(round.total, round.total / bet);
+      return won;
     }
 
     info() {
@@ -658,6 +682,7 @@
       const lines = m.lines ? `${m.nLines} Gewinnlinien, von links nach rechts` : '243 Gewinnwege, von links nach rechts' + ' (Beträge je Weg)';
       C.modal(`<h2>${this.cfg.title}</h2><p class="muted">${lines} · Einsatz ${fmt(bet)}</p><div class="paytable">${rows}</div><p>${this.cfg.info}</p>
         <p><b>Glücks-Features:</b> Bei jedem Dreh kann zufällig eines starten – jedes Mal ein anderes: ${L.luckyTypes(m).map(t => ({ wildReel: 'Wild-Walze', mystery: 'Mystery-Symbole', wildRain: 'Wild-Regen', mult: 'Multiplikator ×2 bis ×5', cash: 'Geldregen', hammer: 'Goldhammer' })[t]).join(', ')}.</p>
+        <p><b>Sonderspiel-Leiter:</b> Im RISIKO führt der Knopf LEITER zur Leiter (ab dem 1-fachen Einsatz). STOP lässt das Licht entscheiden: oben eine Sprosse höher, unten alles weg. Ganz oben gibt es ${L.SPECIAL.count} Sonderspiele mit ×${L.SPECIAL.mult}.</p>
         <p><b>Nachdreh:</b> Knapp daneben? Nach einem Dreh ohne Gewinn kannst du eine Walze gegen einen Aufpreis nochmal drehen (dabei landen keine Scatter oder Bonus-Symbole).</p>
         <p><b>Mystery-Jackpot:</b> Ein Teil jedes Einsatzes an allen Automaten fließt in einen gemeinsamen Jackpot (Anzeige oben im Automaten). Er fällt zufällig – spätestens bei ${fmt(this.app.MYSTERY_MAX || 0)}.</p>
         <p class="muted small">Nach einem Gewinn kannst du mit <b>RISIKO</b> auf Rot oder Schwarz setzen und den Gewinn verdoppeln. Theoretische Auszahlungsquote ca. 95 %. Nur Spielgeld.</p>`,
