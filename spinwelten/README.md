@@ -8,6 +8,8 @@ werden im Browser erzeugt. Kein Echtgeld, keine Käufe, keine Werbung.
 
 - Runenmaschine mit großen Walzen (3 Reihen sichtbar), Einsatz ×1 bis ×50 (Freischaltung über Inseln), Auto-Drehen per Gedrückthalten,
   Gewinnanzeige mit Münzregen. Sturm- und Expeditionsziele werden direkt auf der Insel angetippt. Auf Handys startet echtes Vollbild.
+- Animationen: Kivi sitzt auf der Maschine und reagiert auf jeden Spin; Sturm mit Gewitterwolke, Blitz, Trümmern und Rauch;
+  Mira hüpft zur Grabstelle, gräbt, der Fund steigt aus dem Boden; Truhenkarten drehen sich nacheinander auf (Tippen = sofort).
   Jedes Ergebnis steht vor der Animation fest (`crypto.getRandomValues`), Erwartungswerte in `js/core/economy.js`.
 - 30 schwebende Inseln in 6 Kapiteln, je 5 Bauwerke × 5 Stufen, Weltenatlas mit Luftschiff-Reise, Neues Spiel+.
 - Freundliche Stürme und Schatzexpeditionen gegen 16 Computer-Inseln (laufen in Echtzeit weiter, Rache, Schutzorbs).
