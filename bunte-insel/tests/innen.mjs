@@ -13,6 +13,7 @@ const r = await p.evaluate(async () => {
   out.badFree = D.filter(d => !W.free(d.x, d.z, .5)).map(d => d.name + '@' + Math.round(d.x) + ',' + Math.round(d.z));
   out.dupes = D.filter((d, i) => D.some((o, j) => j < i && Math.hypot(o.x - d.x, o.z - d.z) < 2)).length;
   /* an jeder Tür: near() liefert die Tür; Betreten → drinnen; Hinausgehen → wieder vor der Tür */
+  { const sv = __bi.save; (sv.wunsch = sv.wunsch || {}).cave = 1; } /* Lichtgrotte öffnet erst nach dem Schlucht-Rätsel */
   const bad = []; let built = 0;
   for (const d of D) {
     P.veh = null; P.x = d.x; P.z = d.z; P.y = 0; P.vy = 0; await sl(40); const n = K.near();
