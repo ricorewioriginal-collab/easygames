@@ -6,7 +6,8 @@ werden im Browser erzeugt. Kein Echtgeld, keine Käufe, keine Werbung.
 
 ## Inhalt
 
-- Runenmaschine mit 10 Symbolen, Multiplikator ×1 bis ×50 (Freischaltung über Inseln), Auto-Drehen mit Höchstzahl.
+- Runenmaschine mit großen Walzen (3 Reihen sichtbar), Einsatz ×1 bis ×50 (Freischaltung über Inseln), Auto-Drehen per Gedrückthalten,
+  Gewinnanzeige mit Münzregen. Sturm- und Expeditionsziele werden direkt auf der Insel angetippt. Auf Handys startet echtes Vollbild.
   Jedes Ergebnis steht vor der Animation fest (`crypto.getRandomValues`), Erwartungswerte in `js/core/economy.js`.
 - 30 schwebende Inseln in 6 Kapiteln, je 5 Bauwerke × 5 Stufen, Weltenatlas mit Luftschiff-Reise, Neues Spiel+.
 - Freundliche Stürme und Schatzexpeditionen gegen 16 Computer-Inseln (laufen in Echtzeit weiter, Rache, Schutzorbs).

@@ -122,7 +122,7 @@
   function wipe() { if (LS) { try { LS.removeItem(KEY); } catch (e) { /* */ } } }
   // Einstellungen
   const SKEY = 'spinweltenSettings';
-  const DEF_SET = { lang: '', quality: 'auto', speed: 1, skip: false, sfx: 0.8, music: 0.4, haptics: true, reducedMotion: false, keymap: null, padmap: null, apiBase: '', autoSpinMax: 0, deadzone: 0.25, invertY: false };
+  const DEF_SET = { lang: '', quality: 'auto', speed: 1, skip: false, sfx: 0.8, music: 0.4, haptics: true, reducedMotion: false, keymap: null, padmap: null, apiBase: '', autoSpinMax: 0, autoFull: true, deadzone: 0.25, invertY: false };
   function loadSettings() { const s = read(SKEY); return Object.assign({}, DEF_SET, s && !s.__corrupt ? s : {}); }
   function saveSettings(s) { return write(SKEY, s); }
   SW.Save = { VERSION, KEY, fresh, sanitize, migrate, load, save, slotInfo, saveSlot, loadSlot, exportJSON, importJSON, wipe, loadSettings, saveSettings, DEF_SET, available: !!LS };

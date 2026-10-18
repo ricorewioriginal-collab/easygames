@@ -7,12 +7,28 @@
   const h = (...a) => SW.UI.h(...a), btn = (...a) => SW.UI.btn(...a);
   const T = () => globalThis.THREE;
   const Fl = { busy: false };
-  function pickBar(info, opts) {
+  // Hinweis oben; die Ziele selbst sind Marker direkt auf der Insel (folgen der Kamera)
+  function pickBar(info, marks) {
     Fl.closePick();
-    const el = h('div', { id: 'pick' }, [h('div', { cls: 'info' }, info), h('div', { cls: 'opts' }, opts)]);
-    document.getElementById('ui').appendChild(el); Fl.pickEl = el; UI().refocus(); return el;
+    const el = h('div', { id: 'pick', cls: 'top' }, [h('div', { cls: 'info' }, info)]);
+    document.getElementById('ui').appendChild(el); Fl.pickEl = el;
+    const box = h('div', { id: 'tmarks' });
+    Fl.mk = marks.map(o => {
+      const b = h('button', { type: 'button', cls: 'tm ' + (o.cls || ''), 'aria-label': o.title, disabled: o.off || null }, [h('span', { cls: 'ch' }, o.icon || ''), o.label ? h('small', null, o.label) : null]);
+      b.addEventListener('click', e => { e.stopPropagation(); if (b.disabled) return; SW.Audio.sfx('click'); o.fn(); });
+      box.appendChild(b); return { el: b, p: o.p };
+    });
+    document.getElementById('ui').appendChild(box); Fl.mkBox = box; Fl.place(); UI().refocus(); return el;
   }
-  Fl.closePick = () => { if (Fl.pickEl) { Fl.pickEl.remove(); Fl.pickEl = null; } };
+  Fl.place = function () {
+    if (!Fl.mk) return; const a = A(), cam = a.island.camera, w = a.r.w, hh = a.r.h;
+    for (const m of Fl.mk) {
+      const v = m.p.clone().project(cam), vis = v.z < 1 && Math.abs(v.x) < 1.05 && Math.abs(v.y) < 1.05;
+      m.el.style.visibility = vis ? '' : 'hidden';
+      m.el.style.transform = 'translate(' + Math.round((v.x + 1) / 2 * w) + 'px,' + Math.round((1 - v.y) / 2 * hh) + 'px) translate(-50%,-50%)';
+    }
+  };
+  Fl.closePick = () => { if (Fl.pickEl) { Fl.pickEl.remove(); Fl.pickEl = null; } if (Fl.mkBox) { Fl.mkBox.remove(); Fl.mkBox = null; } Fl.mk = null; };
   function targetList(title, list, onPick, kind) {
     const g = G(), box = h('div', { cls: 'list', style: 'text-align:left' });
     list.forEach(v => {
@@ -34,11 +50,11 @@
   Fl.attackTarget = function (id) {
     const g = G(), a = A(), v = g.botView(id), st = g.s.bots[id];
     a.showTarget(v); Fl.target = id;
-    const w = SW.WORLDS[v.island - 1];
-    const opts = w.buildings.map((b, i) => btn(tx(b.name) + (v.stages[i] ? ' (' + v.stages[i] + ')' : ''), () => Fl.fire(i), v.stages[i] ? 'coral small' : 'small', { disabled: !v.stages[i] }));
-    const none = v.stages.every(x => !x);
-    if (none) opts.push(btn(L('Sturm loslassen', 'Release storm'), () => Fl.fire(0), 'coral small'));
-    pickBar(L(`Ziel: ${v.name} 🤖 – tippe auf ein Bauwerk`, `Target: ${v.name} 🤖 – tap a building`) + (st.shields > 0 ? L(' · Achtung: Schutzorb aktiv', ' · Careful: shield orb active') : ''), opts);
+    const w = SW.WORLDS[v.island - 1], isl = a.island, up = new (T().Vector3)(0, 2.4 * SW.Island.BS, 0);
+    const marks = [];
+    w.buildings.forEach((b, i) => { if (v.stages[i]) marks.push({ p: isl.slotPos(i).add(up), cls: 'aim', title: tx(b.name), label: tx(b.name) + ' ' + '★'.repeat(v.stages[i]), fn: () => Fl.fire(i) }); });
+    if (!marks.length) marks.push({ p: new (T().Vector3)(0, 2, 0), cls: 'aim', title: L('Sturm loslassen', 'Release storm'), label: L('Sturm loslassen', 'Release storm'), fn: () => Fl.fire(0) });
+    pickBar('⚡ ' + L('Tippe auf ein Ziel!', 'Tap a target!') + (st.shields > 0 ? L(' · 🛡️ Schutzorb aktiv', ' · 🛡️ Shield orb active') : ''), marks);
     Fl.mode = 'attack';
   };
   Fl.fire = function (b) {
@@ -89,13 +105,16 @@
       g0.userData.hit = hit; g0.userData.bob = true;
       isl.root.add(g0); Fl.marks.push(g0);
     }
+    Fl.hint = -1; Fl.found = {};
     r.picks.forEach(i => Fl.markDone(i, null));
     Fl.raidBar(r);
   };
   Fl.raidBar = function (r) {
     const g = G(), p = g.s.pending, picks = p ? p.picks : [];
-    const opts = [0, 1, 2, 3, 4, 5].map(i => btn(L('Stelle ', 'Spot ') + (i + 1) + (r && r.hint === i ? ' 🦊' : ''), () => Fl.dig(i), 'gold small', { disabled: picks.includes(i) }));
-    pickBar(L(`Grabe an 3 von 6 Stellen · noch ${3 - picks.length}`, `Dig at 3 of 6 spots · ${3 - picks.length} left`) + (r && r.hint >= 0 ? L(' · Mira wittert etwas bei 🦊', ' · Mira smells something at 🦊') : ''), opts);
+    if (r && r.hint >= 0) Fl.hint = r.hint;
+    const up = new (T().Vector3)(0, 0.4, 0);
+    const marks = (Fl.marks || []).map((m, i) => ({ p: m.position.clone().add(up), cls: 'dig' + (picks.includes(i) ? ' done' : '') + (Fl.hint === i ? ' hint' : ''), off: picks.includes(i), title: L('Stelle ', 'Spot ') + (i + 1), icon: picks.includes(i) ? (Fl.found && Fl.found[i]) || '·' : '✖', fn: () => Fl.dig(i) }));
+    pickBar('⛏️ ' + L(`Grabe! Noch ${3 - picks.length} von 3`, `Dig! ${3 - picks.length} of 3 left`) + (Fl.hint >= 0 ? L(' · Mira wittert etwas bei 🦊', ' · Mira smells something at 🦊') : ''), marks);
   };
   Fl.markDone = function (i, kind) {
     const m = Fl.marks && Fl.marks[i]; if (!m) return;
@@ -110,7 +129,7 @@
     const m = Fl.marks[i], p = m.position.clone();
     a.island.fx.burst(p.clone().add(new (T().Vector3)(0, 0.5, 0)), { n: 40, color: '#9a7a50', speed: 4, up: 5, life: 0.9, gravity: 9 });
     setTimeout(() => {
-      Fl.busy = false; Fl.markDone(i, r.kind);
+      Fl.busy = false; Fl.markDone(i, r.kind); Fl.found[i] = r.kind === 'empty' ? '·' : r.kind === 'relic' ? '🔷' : r.kind === 'big' ? '💰' : '🪙';
       if (r.coins || r.relics) { SW.Audio.sfx('coin'); a.island.fx.burst(p.clone().add(new (T().Vector3)(0, 1, 0)), { n: 60, color: '#ffd75e', color2: '#fff4c2', speed: 5, up: 6, life: 1.2 }); }
       UI().reward(r.kind === 'empty' ? L('Leer …', 'Empty …') : '🪙 +' + F(r.coins), r.relics ? '🔷 +' + r.relics : '');
       if (r.done) {

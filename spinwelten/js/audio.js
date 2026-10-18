@@ -33,6 +33,8 @@
     click: t => tone(880, t, 0.06, 'triangle', 0.15),
     spin: t => { tone(220, t, 0.25, 'sawtooth', 0.08, null, 2.5); noise(t, 0.3, 0.12, 1200); },
     stop: t => { tone(440, t, 0.08, 'square', 0.08); noise(t, 0.06, 0.15, 3000); },
+    tick: t => tone(1900 + Math.random() * 500, t, 0.05, 'square', 0.035),
+    tease: t => { tone(330, t, 1.0, 'sawtooth', 0.06, null, 2.2); tone(495, t + 0.05, 0.95, 'triangle', 0.08, null, 2.2); },
     coin: t => { tone(1320, t, 0.08, 'square', 0.07); tone(1760, t + 0.06, 0.12, 'square', 0.06); },
     win: t => [0, 4, 7, 12].forEach((n, i) => tone(523 * Math.pow(2, n / 12), t + i * 0.08, 0.25, 'triangle', 0.18)),
     big: t => [0, 4, 7, 12, 16, 19, 24].forEach((n, i) => tone(392 * Math.pow(2, n / 12), t + i * 0.07, 0.4, 'triangle', 0.2)),
