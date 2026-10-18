@@ -1,9 +1,9 @@
 # Cloud-Speicher für alle Spiele
 
-Kostenlos, ohne Server, ohne Build-Schritt. Spielstände liegen in Firebase Firestore (Spark-Tarif, 1 GB, 20k Schreibzugriffe/Tag gratis, wird nicht pausiert).
-Spieler melden sich mit einem Klick auf ☁ → „Mit Google anmelden“ an; ihr Fortschritt folgt ihnen auf jedes Gerät.
+Spielstände, Favoriten und das Konto liegen auf dem **eigenen Server** (ricorewi-radio.de, `cms/api.php`), die Spieler melden sich mit Google an; ihr Fortschritt folgt ihnen auf jedes Gerät.
+**Firebase** (Spark-Tarif) wird nur noch gebraucht für: die Google-Anmeldung der Spiele (Firebase Auth), Ranglisten (`__board`), Erfolge (`__ach`), Profil/Freunde, Chat, die Online-Vermittlung der Mehrspieler-Spiele (`fire-peer.js`) und die Kopplung der Apps (`pair/…`). Wie alles zusammenhängt: siehe README von ricorewi-radio, Abschnitt „Anmeldung, Google & Firebase“.
 
-## Einmalig einrichten (nur du kannst das)
+## Einmalig einrichten (nur du kannst das – nur nötig für die Firebase-Funktionen oben)
 1. https://console.firebase.google.com → Projekt anlegen (Analytics aus).
 2. Build → Authentication → Anmeldemethode → Google aktivieren. Unter Einstellungen → Autorisierte Domains `ricorewioriginal-collab.github.io` hinzufügen.
 3. Build → Firestore Database → erstellen (Produktionsmodus, Region eur3) → Reiter „Regeln“ → Inhalt von `cloud/firestore.rules` einfügen → Veröffentlichen.
