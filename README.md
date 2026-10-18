@@ -58,6 +58,28 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 
 Jedes Spiel lässt sich zusätzlich zur Einbindung über seinen **Direktlink** auf dem Handy als App installieren (Chrome/Android: Hinweis „📲 Als App installieren“ oder Menü ▸ „App installieren“; iPhone: Teilen ▸ „Zum Home-Bildschirm“). Die App startet im Vollbild, läuft nach dem ersten Spielen auch offline und **aktualisiert sich automatisch** (Service Worker: Netz zuerst, bei Ausfall der Cache). Erzeugt von `tools/make-pwa.py` (siehe „Neues Spiel hinzufügen“); PRISMRUSH und Wobbel bringen eine eigene PWA mit.
 
+## Einbinden – alle Optionen im Überblick
+
+Ausführlich mit Generator: [`einbinden.html`](https://ricorewioriginal-collab.github.io/easygames/einbinden.html).
+
+| Option | Wofür | Code |
+|---|---|---|
+| Direktlink | ein Spiel als ganze Seite (am robustesten) | `https://…/easygames/<spiel>/` |
+| iframe / `easygames.js` | ein Spiel auf deiner Seite, Vollbild-Knopf | `<div data-easygames="snake">` |
+| **Spiele-Hub** (neu) | eigene Spieleseite in deinem Design, ohne iframe, mit Echtzeit | `<div data-anmacha-hub>` + `hub/anmacha-hub.js` |
+| **Login & Konto** (neu) | Google-Login im Kopf deiner Seite, gekoppelt mit allen Spielen | `AnMaChaAccount.mount('#konto')` |
+| Ranglisten, Erfolge, Konto, Profil, Chat | easygames-Seiten einbetten | `data-easygames="ranglisten"` u. a. |
+| Bibliothek | die komplette easygames-Übersicht als iframe (sieht wie easygames aus) | `?embed=1` |
+
+**Spiele-Hub:** `AnMaChaHub.mount('#ziel', { theme: { accent, accent2, card, text, muted, radius, line } })` – Farben/Schrift kommen von deiner Seite (`--egh-*`), Suche, Kategorien, Favoriten, „Weiterspielen“, Spiel des Tages. Neue Spiele erscheinen ohne Neuladen (Versionsprüfung alle 60 s); Favoriten gleichen sich mit dem Konto ab.
+
+## Anmeldung & Konto (Kurzfassung)
+
+- **Ein Google-Login für alles:** `cloud/anmacha-account.js` (Knopf + Menü), Token im Browser (`anmacha-rating-token`), gültig für Spielstände, Favoriten, Bewertungen und Kommentare.
+- **Spielstände liegen auf dem eigenen Server** (`ricorewi-radio.de/cms/api.php`, `saves_*`), nicht mehr in Firestore. Fremde Seiten melden sich über das Fenster `ricorewi-radio.de/anmelden.html` an (nichts bei Google einzutragen), `easygames.js` reicht das Konto an alle eingebetteten Spiele weiter.
+- **Firebase** bleibt für Google-Auth der Spiele, Ranglisten, Erfolge, Profil/Freunde, Chat, Online-Mehrspieler und die App-Kopplung. Details: [`cloud/README.md`](cloud/README.md) und die README von ricorewi-radio.
+- Tests: `node tools/test-account.cjs`, `test-hub.cjs`, `test-cloud-calls.cjs`, `test-konto.cjs`.
+
 ## Online-Kopplung über Firebase
 
 Alle Spiele mit Handy-Kopplung oder Online-Modus (Code/QR) verbinden sich über Firebase wie RicoPoly: `cloud/fire-peer.js` ersetzt `window.Peer` durch eine PeerJS-kompatible Klasse, Firebase vermittelt nur den Verbindungsaufbau, gespielt wird direkt zwischen den Geräten. Fällt Firebase aus, läuft alles automatisch über PeerJS weiter. Neue Spiele mit PeerJS binden `<script src="../cloud/fire-peer.js"></script>` vor ihrem Spielcode ein.
