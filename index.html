@@ -240,7 +240,9 @@
   #share label{font-size:13px;color:#9fb4c8}
   #share input{width:100%;font:13px ui-monospace,Menlo,Consolas,monospace;padding:10px;border-radius:10px;border:1px solid rgba(0,229,255,.3);background:#04070d;color:#9ff}
   .row{display:flex;gap:8px;flex-wrap:wrap}
-  body.embed-mode .hide-embed{display:none}
+  body.embed-mode:not(.portal-mode) .hide-embed{display:none}
+  body.portal-mode header.hide-embed,body.portal-mode #lib,body.portal-mode #libBtn,body.portal-mode #more,body.portal-mode footer.hide-embed,body.portal-mode .tvhint,body.portal-mode #menuBtn,body.portal-mode .topbar .brandrow{display:none!important}
+  body.portal-mode .stick{margin-top:calc(-12px - env(safe-area-inset-top))}
   body.embed-mode main{padding-top:12px}
 
   /* ===== Spieleportal-Design: Kopfleiste, Kategorien, Empfohlen + Beliebt, Kachelraster ===== */
@@ -325,6 +327,55 @@
   html.tv .menubtn{display:none}html.tv .links{display:flex}
   html.tv .cat{height:56px;font-size:1rem}
   html.tv .feat{grid-template-columns:1fr}html.tv .featside{display:none}
+
+  /* ===== Plattform-Look: Karussell, Sammlungen, Reihen, Favoriten ===== */
+  .stick::before{content:'';position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--cy),var(--pu),var(--ma))}
+  .iconbtn{position:relative;flex:0 0 auto;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);font-size:19px;line-height:1;display:grid;place-items:center}
+  .iconbtn[aria-pressed=true]{border-color:#ff4d6d;color:#ff4d6d;background:rgba(255,77,109,.14)}
+  .iconbtn small{position:absolute;right:-4px;top:-4px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#ff4d6d;color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center}
+  .feat .hero{min-height:0;display:block}
+  .hero::after{display:none}
+  .hslides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .hslides::-webkit-scrollbar{display:none}
+  .hslide{flex:0 0 100%;scroll-snap-align:center;position:relative;display:flex;align-items:flex-end;min-height:clamp(250px,38vw,400px);overflow:hidden}
+  .hslide>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .hslide::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,11,18,.92) 0%,rgba(8,11,18,.55) 55%,rgba(8,11,18,.1) 100%),linear-gradient(0deg,rgba(8,11,18,.8),transparent 55%)}
+  .hslide .hbody{padding-bottom:clamp(40px,6vw,56px)}
+  .hdots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:3;display:flex;gap:6px;padding:6px 10px;border-radius:99px;background:rgba(8,11,18,.6)}
+  .hdots i{width:8px;height:8px;border-radius:50%;background:#ffffff66;transition:width .25s,background .25s;cursor:pointer}
+  .hdots i.on{width:22px;border-radius:5px;background:var(--cy)}
+  .hnav{position:absolute;top:50%;z-index:3;transform:translateY(-50%);width:40px;height:40px;border-radius:12px;border:0;background:rgba(8,11,18,.6);color:#fff;font-size:20px;line-height:1}
+  .hnav:hover{background:rgba(0,229,255,.4)}.hnav.l{left:10px}.hnav.r{right:10px}
+  @media (pointer:coarse){.hnav{display:none}}
+  .vrow{margin-top:22px}
+  .vrow>h2{margin:0 0 10px;font-size:clamp(19px,2.6vw,24px)}
+  .vscroll{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;padding:4px 2px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .vscroll::-webkit-scrollbar{display:none}
+  .vc{flex:0 0 156px;scroll-snap-align:start;position:relative;display:flex;flex-direction:column;padding:8px;text-align:left;border-radius:18px;background:#0e1424;border:2px solid rgba(255,255,255,.12);transition:transform .2s,border-color .2s}
+  .vc:hover{transform:translateY(-4px);border-color:var(--cc,#fff)}
+  .vi{position:relative;aspect-ratio:16/10;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:44px}
+  .vi img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .vg,.gl{margin:8px 2px 0;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--cc,#9fb4c8)}
+  .vt{margin:2px 2px 4px;font-size:14px;font-weight:800;line-height:1.25;min-height:2.5em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .nb{position:absolute;z-index:2;background:#ff7a1a;color:#fff;font-size:11px;font-weight:900;letter-spacing:.04em;padding:3px 8px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .vc .nb{top:4px;right:4px}
+  .icon .nb{position:absolute;transform:none}
+  .icon .nb{left:8px;bottom:8px}
+  .colls{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:none}
+  .colls::-webkit-scrollbar{display:none}
+  .coll{flex:0 0 auto;width:84px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0;border:0;background:none;font-weight:700;font-size:12.5px;text-align:center}
+  .coll .cc{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:32px;background:color-mix(in srgb,var(--cc,#00E5FF) 26%,#0c1220);border:2px solid color-mix(in srgb,var(--cc,#00E5FF) 60%,transparent);transition:transform .2s,background .2s}
+  .coll:hover .cc{transform:scale(1.08);background:color-mix(in srgb,var(--cc,#00E5FF) 45%,#0c1220)}
+  .fav{position:absolute;left:10px;top:10px;z-index:3;padding:0;color:#fff;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(8,11,18,.72);border:1.5px solid rgba(255,255,255,.3);font-size:17px;line-height:1;cursor:pointer;filter:none}
+  .fav.on{color:#ff4d6d;border-color:#ff4d6d}
+  body.view-apps .fav,body.view-apps .nb,body.view-apps .gl{display:none}
+  .fav:focus-visible{outline:3px solid var(--cy);outline-offset:2px}
+  body:not(.view-apps) .icon .ctag{display:none}
+  body:not(.view-apps) .gl{margin:0 0 -2px}
+  html.tv .vc{flex-basis:240px}html.tv .coll{width:120px}html.tv .coll .cc{width:96px;height:96px;font-size:42px}html.tv .iconbtn{display:none}
+  @media (min-width:900px){.vc{flex-basis:190px}}
+  @media (max-width:480px){.topbar{gap:8px}.topbar .brandrow h1{font-size:20px}.iconbtn,.menubtn{width:38px;height:38px;padding:0}.menubtn{border-radius:50%}}
+  @media (prefers-reduced-motion:reduce){.hslides{scroll-behavior:auto}}
 </style>
 </head>
 <body>
@@ -333,6 +384,7 @@
     <div class="topbar">
       <a class="brandrow" href="./" aria-label="easygames Startseite"><img id="brandImg" class="brand" alt="Logo" hidden><div><h1>easygames</h1><p class="sub">Minispiele für Browser, Handy &amp; TV</p></div></a>
       <label class="search"><input id="q" type="search" placeholder="Spiel suchen …" aria-label="Spiel suchen" autocomplete="off"></label>
+      <button class="iconbtn" id="favBtn" type="button" aria-pressed="false" aria-label="Favoriten" title="Meine Favoriten">♡</button>
       <button class="pill menubtn" id="menuBtn" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menü">☰<span class="ml"> Menü</span></button>
     </div>
     <nav class="cats" id="cats" aria-label="Kategorien"></nav>
@@ -355,6 +407,7 @@
   </header>
   <section class="feat hide-embed" id="feat"><div class="hero hidden" id="hero" aria-label="Empfohlenes Spiel"></div><div class="featside hidden" id="featSide" aria-label="Beliebte Spiele"></div></section>
 
+  <div id="rows" class="hide-embed"></div>
   <section class="rowsec hidden" id="recent"><h2>Weiterspielen</h2><div class="rowscroll" id="recentRow"></div></section>
   <div class="sectitle"><h2 id="gridTitle">Alle Spiele</h2><span class="count" id="count"></span><span class="grow"></span><button class="pill" id="viewBtn" type="button" aria-pressed="false"></button><button class="pill hide-embed" id="libBtn">&lt;/&gt; Einbetten</button></div>
   <div class="chips" id="chips" role="group" aria-label="Spielarten">
@@ -472,7 +525,9 @@ const abs = p => new URL(p, base).href;
 const iframeCode = (url, title) =>
   `<iframe src="${url}" title="${title}" allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope" loading="lazy"\n  style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>`;
 const embedMode = new URLSearchParams(location.search).has('embed');
+const portalMode = embedMode && new URLSearchParams(location.search).get('portal') === '1';   // eingebettet mit dem vollen Portal-Look (Karussell, Sammlungen, Reihen); die Seite des Gastgebers bringt Kopf und Menü selbst mit
 if (embedMode) document.body.classList.add('embed-mode');
+if (portalMode) document.body.classList.add('portal-mode');
 const params = new URLSearchParams(location.search);
 // Ansicht: App-Kacheln (Symbolraster) oder Karten. ?view=apps|cards überschreibt, sonst die letzte Wahl (localStorage), sonst App-Kacheln; eingebettet (?embed=1) bleibt es bei Karten
 const VIEW_KEY = 'easygames.view';
@@ -491,6 +546,15 @@ const isTv = DEV.type === 'tv';
 if (isTv) document.documentElement.classList.add('tv');
 
 // ----- Kacheln -----
+const NEWN = 6;   // die zuletzt ergänzten Spiele (Ende von games.js) tragen „NEU“
+const FAV_KEY = 'eg-fav';
+function favs() { try { const a = JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); return Array.isArray(a) ? a.filter(id => GAMES.some(g => g.id === id)) : []; } catch (e) { return []; } }
+function toggleFav(id) { const a = favs(), k = a.indexOf(id); if (k >= 0) a.splice(k, 1); else a.push(id); try { localStorage.setItem(FAV_KEY, JSON.stringify(a)); } catch (e) {} syncFav(); filt(); }
+function syncFav() {
+  const a = favs();
+  document.querySelectorAll('.fav[data-fav]').forEach(f => { const on = a.includes(f.dataset.fav); f.classList.toggle('on', on); f.textContent = on ? '♥' : '♡'; f.setAttribute('aria-pressed', String(on)); f.setAttribute('aria-label', (on ? 'Aus Favoriten entfernen: ' : 'Zu Favoriten: ') + (GAMES.find(g => g.id === f.dataset.fav) || {}).title); });
+  const b = $('favBtn'); if (b) { b.textContent = favF ? '♥' : '♡'; if (a.length) { const n = document.createElement('small'); n.textContent = a.length; b.appendChild(n); } }
+}
 const CATS = window.EASYGAMES_CATS || { list: [], of: {} }, CATI = {}; CATS.list.forEach(c => { CATI[c.id] = c; });
 GAMES.forEach((g, i) => {
   const c = document.createElement('div');
@@ -504,32 +568,40 @@ GAMES.forEach((g, i) => {
   if (!bd.children.length) bd.remove();
   c.dataset.m = Object.keys(m).filter(k => m[k]).join(' ');
   const ct = CATI[CATS.of[g.id]]; if (ct) { c.dataset.c = ct.id; const tg = document.createElement('span'); tg.className = 'ctag'; tg.textContent = ct.icon + ' ' + ct.short; b.querySelector('.icon').appendChild(tg); }
+  if (ct) { const gl = document.createElement('span'); gl.className = 'gl'; gl.textContent = ct.short; b.querySelector('.info').prepend(gl); }
+  if (i >= GAMES.length - NEWN) { const nt = document.createElement('span'); nt.className = 'nb'; nt.textContent = 'NEU'; b.querySelector('.icon').appendChild(nt); }
+  const fv = document.createElement('button'); fv.type = 'button'; fv.className = 'fav'; fv.tabIndex = isTv ? -1 : 0; fv.dataset.fav = g.id;
+  fv.addEventListener('click', () => toggleFav(g.id));
   b.addEventListener('click', () => openGame(i));
   const h = document.createElement('button');
   h.className = 'help'; h.textContent = '📖 Details'; h.setAttribute('aria-label', 'Handbuch und Details: ' + g.title);
   h.addEventListener('click', () => openDetail(i, 'info'));
   if (isTv) h.tabIndex = -1;
-  c.append(b, h);
+  c.append(b, h, fv);
   $('grid').appendChild(c);
 });
 const tiles = [...$('grid').children];
-let catF = '', modeF = '', heroOn = false, recentOn = false, heroGame = '', OFF = {};   // OFF: vom Betreiber ausgeblendete Spiele { id: true } (Spiele-Verwaltung, config/games)
+let heroSync = () => {}, favF = false, catF = '', modeF = '', heroOn = false, recentOn = false, heroGame = '', OFF = {};   // OFF: vom Betreiber ausgeblendete Spiele { id: true } (Spiele-Verwaltung, config/games)
 function filt() {
   const q = $('q').value.trim().toLowerCase(); let n = 0;
-  tiles.forEach(t => { const m = !OFF[t.dataset.id] && (!q || t.dataset.s.includes(q)) && (!modeF || (' ' + t.dataset.m + ' ').includes(' ' + modeF + ' ')) && (!catF || t.dataset.c === catF); t.hidden = !m; if (m) n++; });
+  tiles.forEach(t => { const m = !OFF[t.dataset.id] && (!q || t.dataset.s.includes(q)) && (!modeF || (' ' + t.dataset.m + ' ').includes(' ' + modeF + ' ')) && (!catF || t.dataset.c === catF) && (!favF || favs().includes(t.dataset.id)); t.hidden = !m; if (m) n++; });
+  document.querySelectorAll('[data-gid]').forEach(x => { x.hidden = !!OFF[x.dataset.gid]; });
+  heroSync();
   $('count').textContent = n + (n === 1 ? ' Spiel' : ' Spiele');
   $('empty').classList.toggle('hidden', n > 0);
-  const filtering = !!(q || modeF || catF);
-  $('feat').classList.toggle('hidden', filtering); $('hero').classList.toggle('hidden', !heroOn); $('recent').classList.toggle('hidden', filtering || !recentOn);
-  $('gridTitle').textContent = q ? 'Ergebnisse' : catF ? CATI[catF].icon + ' ' + CATI[catF].label : modeF ? 'Passende Spiele' : 'Alle Spiele';
+  const filtering = !!(q || modeF || catF || favF);
+  $('feat').classList.toggle('hidden', filtering); $('rows').classList.toggle('hidden', filtering); $('hero').classList.toggle('hidden', !heroOn || ![...$('hero').querySelectorAll('.hslide')].some(x => !x.hidden)); $('recent').classList.toggle('hidden', filtering || !recentOn);
+  $('gridTitle').textContent = q ? 'Ergebnisse' : favF ? '♥ Meine Favoriten' : catF ? CATI[catF].icon + ' ' + CATI[catF].label : modeF ? 'Passende Spiele' : 'Alle Spiele';
   document.querySelectorAll('#cats .cat').forEach(x => x.setAttribute('aria-pressed', String((x.dataset.c || '') === catF)));
+  const fb = $('favBtn'); if (fb) { fb.setAttribute('aria-pressed', String(favF)); syncFav(); }
 }
 $('q').addEventListener('input', filt);
+$('favBtn').addEventListener('click', () => { favF = !favF; if (favF) catF = ''; filt(); if (favF) $('gridTitle').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
 (function cats() {
   const nav = $('cats'), h = (t, cls, txt) => { const e = document.createElement(t); e.className = cls; e.textContent = txt; return e; }, mk = (c, label, n) => { const b = h('button', 'cat', ''); b.type = 'button'; b.dataset.c = c ? c.id : ''; b.append(h('span', 'ci', c ? c.icon : '🎮'), h('span', 'cl', label), h('small', '', String(n))); return b; };
   nav.appendChild(mk(null, 'Alle', GAMES.length));
   CATS.list.forEach(c => { const n = GAMES.filter(g => CATS.of[g.id] === c.id).length; if (n) nav.appendChild(mk(c, c.short, n)); });
-  nav.addEventListener('click', e => { const b = e.target.closest('.cat'); if (!b) return; catF = b.dataset.c; filt(); if (catF) $('gridTitle').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  nav.addEventListener('click', e => { const b = e.target.closest('.cat'); if (!b) return; catF = b.dataset.c; favF = false; filt(); if (catF) $('gridTitle').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
   $('menuBtn').addEventListener('click', () => { const o = $('menu').classList.toggle('open'); $('menuBtn').setAttribute('aria-expanded', String(o)); });
 })();
 $('chips').querySelectorAll('.chip2[data-f]').forEach(b => { if (b.dataset.f && !tiles.some(t => (' ' + t.dataset.m + ' ').includes(' ' + b.dataset.f + ' '))) b.hidden = true; });   // Arten ohne Spiel ausblenden
@@ -824,16 +896,38 @@ function renderRecent() {
 // ----- Empfohlen: täglich wechselndes Spiel mit Bild -----
 (function hero() {
   const withImg = GAMES.map((g, i) => i).filter(i => GAMES[i].img);
-  if (!withImg.length || embedMode) return;
+  if (!withImg.length || (embedMode && !portalMode)) return;
   const day = Math.floor(Date.now() / 864e5), i = withImg[day % withImg.length], g = GAMES[i], h = $('hero');
   h.style.setProperty('--g', g.glow || 'rgba(0,229,255,.3)'); h.style.background = g.bg || '#222';
-  const im = el('img'); im.src = g.img; im.alt = ''; h.appendChild(im);
-  const b = el('div', 'hbody'); b.appendChild(el('span', 'kicker', 'Empfohlen heute')); b.appendChild(el('h2', '', g.title));
-  const bd = el('div', 'badges'); modeBadges(g, bd); if (bd.children.length) b.appendChild(bd);
-  b.appendChild(el('p', '', g.desc));
-  const row = el('div', 'row'), play = el('button', 'primary', '▶ Spielen'), more = el('button', 'pill', '📖 Details & Handbuch');
-  play.onclick = () => openGame(i); more.onclick = () => openDetail(i, 'info'); row.append(play, more); b.appendChild(row); h.appendChild(b);
-  h.classList.remove('hidden'); heroOn = !OFF[g.id]; heroGame = g.id; filt();
+  // Karussell: das Tagesspiel zuerst, danach weitere Spiele mit Bild (wechseln täglich mit)
+  const picks = [i]; for (let k = 1; k < withImg.length && picks.length < 6; k++) picks.push(withImg[(day + k * 7) % withImg.length]);
+  const uniq = [...new Set(picks)], track = el('div', 'hslides'), dots = el('div', 'hdots');
+  uniq.forEach((j, n) => {
+    const x = GAMES[j], sl = el('div', 'hslide'), im = el('img'); sl.dataset.gid = x.id; sl.style.background = x.bg || '#222'; im.src = x.img; im.alt = ''; if (n) im.loading = 'lazy'; sl.appendChild(im);
+    const bd = el('div', 'hbody'); bd.appendChild(el('span', 'kicker', n === 0 ? 'Empfohlen heute' : 'Empfohlen')); bd.appendChild(el('h2', '', x.title));
+    const bg = el('div', 'badges'); modeBadges(x, bg); if (bg.children.length) bd.appendChild(bg);
+    bd.appendChild(el('p', '', x.desc));
+    const row = el('div', 'row'), play = el('button', 'primary', '▶ Spielen'), more = el('button', 'pill', '📖 Details & Handbuch');
+    play.onclick = () => openGame(j); more.onclick = () => openDetail(j, 'info'); row.append(play, more); bd.appendChild(row); sl.appendChild(bd); track.appendChild(sl);
+  });
+  h.appendChild(track);
+  const slides = () => [...track.children].filter(x => !x.hidden);
+  let cur = 0, timer = 0, stopped = false;
+  const go = n => { const l = slides(); if (!l.length) return; cur = (n + l.length) % l.length; track.scrollTo({ left: l[cur].offsetLeft - track.offsetLeft, behavior: matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth' }); mark(); };
+  const mark = () => [...dots.children].forEach((d, n) => d.classList.toggle('on', n === cur));
+  // Punkte folgen den sichtbaren Folien (vom Betreiber ausgeblendete Spiele fallen weg)
+  const dotsSync = () => { const n = slides().length; if (dots.children.length !== n) { dots.replaceChildren(...Array.from({ length: n }, (_, i) => { const d = el('i'); d.onclick = () => { stopped = true; go(i); }; return d; })); } if (cur >= n) cur = 0; mark(); };
+  heroSync = dotsSync;
+  if (uniq.length > 1) {
+    const mk = (c, t, d) => { const b = el('button', 'hnav ' + c, t); b.type = 'button'; b.setAttribute('aria-label', d); b.onclick = () => { stopped = true; go(cur + (c === 'l' ? -1 : 1)); }; return b; };
+    h.append(mk('l', '‹', 'Voriges Spiel'), mk('r', '›', 'Nächstes Spiel'), dots); dotsSync();
+    track.addEventListener('scroll', () => { const w = track.clientWidth || 1, n = Math.round(track.scrollLeft / w); if (n !== cur) { cur = n; mark(); } }, { passive: true });
+    ['pointerdown', 'touchstart', 'focusin', 'keydown'].forEach(ev => h.addEventListener(ev, () => { stopped = true; }, { passive: true }));
+    h.addEventListener('mouseenter', () => { stopped = true; });
+    if (!isTv && !matchMedia('(prefers-reduced-motion:reduce)').matches) timer = setInterval(() => { if (stopped || document.hidden) return; go(cur + 1); }, 6500);
+    mark();
+  }
+  h.classList.remove('hidden'); heroOn = true; heroGame = g.id; filt();
   // daneben: beliebte Spiele (redaktionell, wie im RicoReWi-Portal) – Klick öffnet das Spiel
   const POP = ['anmacha-quiz', 'anmacha-kart', 'anmacha-radio-surfer', 'anmacha-klotzfunk', 'riftzone', 'anmacha-showdown', 'bunte-insel', 'anmacha-snake', 'kiko-sterneninseln', 'ricorail'];
   const side = $('featSide'); side.appendChild(el('h2', 'ftitle', '🔥 Beliebt bei uns'));
@@ -843,7 +937,33 @@ function renderRecent() {
   });
   side.classList.toggle('hidden', side.children.length < 2);
 })();
+
+// ----- Plattform-Reihen: Sammlungen (Kategorien als Kreise) und waagerechte Reihen wie auf bekannten Spieleportalen -----
+(function rows() {
+  const host = $('rows'); if ((embedMode && !portalMode) || !host) return;
+  const cardOf = j => {
+    const x = GAMES[j], b = el('button', 'vc'), c = CATI[CATS.of[x.id]], vi = el('div', 'vi'); b.type = 'button'; b.dataset.gid = x.id; if (c) b.dataset.c = c.id;
+    vi.style.background = x.bg || '#222'; if (x.img) { const im = el('img'); im.src = x.img; im.alt = ''; im.loading = 'lazy'; vi.appendChild(im); } else vi.appendChild(el('span', '', x.icon || '🎮'));
+    if (j >= GAMES.length - NEWN) vi.appendChild(el('span', 'nb', 'NEU'));
+    b.append(vi, el('span', 'vg', c ? c.short : 'Spiel'), el('span', 'vt', String(x.title).split(' – ')[0])); b.onclick = () => openGame(j); return b;
+  };
+  const row = (title, idx) => { if (idx.length < 3) return; const s = el('section', 'vrow'), sc = el('div', 'vscroll'); s.appendChild(el('h2', '', title)); idx.forEach(j => sc.appendChild(cardOf(j))); s.appendChild(sc); host.appendChild(s); };
+  // Sammlungen
+  const cl = CATS.list.filter(c => GAMES.some(g => CATS.of[g.id] === c.id));
+  if (cl.length) {
+    const s = el('section', 'vrow'), sc = el('div', 'colls'); s.appendChild(el('h2', '', 'Sammlungen'));
+    cl.forEach(c => { const b = el('button', 'coll'); b.type = 'button'; b.dataset.c = c.id; b.append(el('span', 'cc', c.icon), el('span', '', c.short)); b.onclick = () => { const n = document.querySelector('#cats .cat[data-c="' + c.id + '"]'); if (n) n.click(); }; sc.appendChild(b); });
+    s.appendChild(sc); host.appendChild(s);
+  }
+  const all = GAMES.map((g, j) => j);
+  row('Neue Spiele', all.slice(-NEWN * 2).reverse());
+  const POPR = ['anmacha-quiz', 'anmacha-kart', 'anmacha-radio-surfer', 'anmacha-klotzfunk', 'riftzone', 'anmacha-showdown', 'bunte-insel', 'anmacha-snake', 'kiko-sterneninseln', 'ricorail', 'ricolife', 'ricopoly'];
+  row('Beliebte Spiele', POPR.map(id => GAMES.findIndex(x => x.id === id)).filter(j => j >= 0));
+  row('Mit Freunden spielen', all.filter(j => { const m = modesOf(GAMES[j]); return m.online || m.multi; }).slice(0, 14));
+  CATS.list.forEach(c => { const idx = all.filter(j => CATS.of[GAMES[j].id] === c.id); if (idx.length >= 5) row(c.icon + ' ' + c.label, idx.slice(0, 12)); });
+})();
 renderRecent();
+syncFav();
 
 // ----- Katalog (Größen, Offline-Info, Links) – optional; die Seite funktioniert auch ohne -----
 fetch('sync/catalog.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(c => {
@@ -868,7 +988,6 @@ fetch('sync/catalog.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : nu
       if (fresh[t.dataset.id]) { const bd = t.querySelector('.badges') || t.querySelector('.info') || t; const e = document.createElement('i'); e.className = 'fresh'; e.textContent = '🆕 Neu'; bd.appendChild(e); }
       if (n) { const bd = t.querySelector('.info') || t; const e = document.createElement('i'); e.className = 'maint'; e.textContent = '🔧 ' + n; e.style.cssText = 'display:block;margin-top:4px;font-style:normal;font-size:.78rem;color:#ffc53d'; bd.appendChild(e); }
     });
-    if (heroGame) heroOn = !OFF[heroGame];   // Empfohlenes Spiel nicht zeigen, wenn es ausgeblendet ist
     filt();
   };
   let cached = null; try { cached = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}

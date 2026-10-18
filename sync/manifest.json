@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "ad2d98fc716f",
- "generated": "2026-10-18T15:34:54+00:00",
- "commit": "c240e15d33cbcece4b19534fad6b1bc83fc365fe",
+ "version": "064464f931a4",
+ "generated": "2026-10-18T15:50:33+00:00",
+ "commit": "5ce60df102f23601c681a0b454c8c5ddb12594e8",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5288,8 +5288,8 @@
   },
   {
    "p": "easygames.js",
-   "s": 25836,
-   "h": "f14710358f9e337637447c25b99590cf79a072aea8abc69728dd49e0d015e95d"
+   "s": 25886,
+   "h": "398c8d2166f18717ae03ea2783beca5307d8e92eac6b6dd52cac9b4f19c39476"
   },
   {
    "p": "einbinden.html",
@@ -5553,8 +5553,8 @@
   },
   {
    "p": "index.html",
-   "s": 74316,
-   "h": "e90497cad8d0a68f04ae07d06c54d9581d16f8c18c0c0f9eff29f5668508094a"
+   "s": 87162,
+   "h": "5557e1cc9fd8f433a587600f7e71cf91b2eef87d043a34ffa098077b0182ce63"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
