@@ -60,6 +60,62 @@
       this.extra.push({ m, t: 0, d: 1.4, own: [m], up: (o, k) => { o.material.opacity = k < 0.6 ? 0.45 * Math.min(1, k * 5) : 0.45 * (1 - (k - 0.6) / 0.4); o.scale.setScalar(k < 0.6 ? 1 : 1 + (k - 0.6) * 0.8); },
         done: () => this.burst(p, { n: 50, color: color || '#7dffcf', speed: 6, up: 2, life: 0.9 }) });
     }
+    // Trümmer: kleine Klötzchen fliegen weg, prallen auf, verblassen
+    debris(p, color, n, ground) {
+      const THREE = T(), geo = this.chunk || (this.chunk = new THREE.BoxGeometry(0.28, 0.2, 0.24)), gy = ground !== undefined ? ground : p.y - 0.8;
+      for (let i = 0; i < (n || 14); i++) {
+        const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: new THREE.Color(i % 3 ? color : '#8a7a6a'), roughness: 0.8, transparent: true }));
+        m.position.copy(p); m.scale.setScalar(0.6 + Math.random() * 0.9); this.scene.add(m);
+        const a = Math.random() * 6.283, s = 2 + Math.random() * 4, v = new THREE.Vector3(Math.cos(a) * s, 3 + Math.random() * 5, Math.sin(a) * s), r = new THREE.Vector3(Math.random() * 9, Math.random() * 9, 0);
+        const dur = 1.6 + Math.random() * 0.6; let lk = 0;
+        this.extra.push({ m, t: 0, d: dur, own: [{ material: m.material }], up: (o, k) => {
+          const dt = Math.min(0.05, (k - lk) * dur); lk = k; v.y -= 14 * dt; o.position.addScaledVector(v, dt);
+          if (o.position.y < gy) { o.position.y = gy; v.y = Math.abs(v.y) * 0.35; v.x *= 0.6; v.z *= 0.6; r.multiplyScalar(0.6); }
+          o.rotation.x += r.x * dt; o.rotation.y += r.y * dt; o.material.opacity = k < 0.7 ? 1 : 1 - (k - 0.7) / 0.3;
+        } });
+      }
+    }
+    // Rauchwolken (normal gemischt, damit sie dunkel bleiben)
+    smoke(p, n, color, size) {
+      const THREE = T(), geo = this.puff || (this.puff = new THREE.IcosahedronGeometry(1, 1));
+      for (let i = 0; i < (n || 8); i++) {
+        const m = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: new THREE.Color(color || '#8a8f99'), transparent: true, opacity: 0.85, depthWrite: false }));
+        const off = new THREE.Vector3((Math.random() - 0.5) * 2.2, Math.random() * 0.8, (Math.random() - 0.5) * 2.2);
+        m.position.copy(p).add(off); this.scene.add(m);
+        const s0 = (size || 0.8) * (0.6 + Math.random() * 0.6), rise = 1.5 + Math.random() * 2, base = m.position.clone(), delay = Math.random() * 0.3;
+        this.extra.push({ m, t: -delay, d: 1.8 + Math.random() * 0.8, own: [{ material: m.material }], up: (o, k) => {
+          if (k < 0) { o.scale.setScalar(0.01); return; }
+          o.scale.setScalar(s0 * (0.4 + k * 1.6)); o.position.set(base.x + off.x * k * 0.6, base.y + rise * k, base.z + off.z * k * 0.6); o.material.opacity = 0.85 * (1 - k);
+        } });
+      }
+    }
+    // Gewitterwolke über einem Punkt (wächst, dreht, verschwindet nach d Sekunden)
+    cloud(p, d, color) {
+      const THREE = T(), g = new THREE.Group(), mat = new THREE.MeshLambertMaterial({ color: new THREE.Color(color || '#5a5f7a'), transparent: true, opacity: 0.95 });
+      const geo = this.puff || (this.puff = new THREE.IcosahedronGeometry(1, 1));
+      for (let i = 0; i < 9; i++) { const m = new THREE.Mesh(geo, mat); const a = i / 9 * 6.283; m.position.set(Math.cos(a) * 1.6, (i % 3) * 0.3, Math.sin(a) * 1.2); m.scale.setScalar(0.9 + (i % 4) * 0.25); g.add(m); }
+      const core = new THREE.Mesh(geo, mat); core.scale.set(1.8, 1.2, 1.6); core.position.y = 0.4; g.add(core);
+      g.position.copy(p); g.scale.setScalar(0.01); this.scene.add(g);
+      this.extra.push({ m: g, t: 0, d: d || 2.2, own: [{ material: mat }], up: (o, k) => {
+        const grow = Math.min(1, k * 5), fade = k > 0.85 ? (1 - k) / 0.15 : 1; o.scale.setScalar(Math.max(0.01, grow * (1 + Math.sin(k * 40) * 0.03)) * (0.6 + 0.4 * fade)); o.rotation.y += 0.02; mat.opacity = 0.95 * fade;
+      } });
+      return g;
+    }
+    // Blitz: gezackte Kette heller Stäbe von a nach b, flackert kurz
+    bolt(a, b, color) {
+      const THREE = T(), g = new THREE.Group(), mat = new THREE.MeshBasicMaterial({ color: new THREE.Color(color || '#fff6c8'), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false });
+      const geo = this.rod || (this.rod = new THREE.CylinderGeometry(0.09, 0.09, 1, 5, 1));
+      const n = 9; let prev = a.clone();
+      for (let i = 1; i <= n; i++) {
+        const q = a.clone().lerp(b, i / n); if (i < n) { q.x += (Math.random() - 0.5) * 1.4; q.z += (Math.random() - 0.5) * 1.4; }
+        const m = new THREE.Mesh(geo, mat), len = prev.distanceTo(q); m.scale.set(1 + (n - i) * 0.12, len, 1 + (n - i) * 0.12);
+        m.position.copy(prev).lerp(q, 0.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), q.clone().sub(prev).normalize()); g.add(m); prev = q;
+      }
+      this.scene.add(g);
+      this.extra.push({ m: g, t: 0, d: 0.45, own: [{ material: mat }], up: (o, k) => { mat.opacity = (Math.floor(k * 9) % 2 ? 0.35 : 1) * (1 - k * 0.6); } });
+    }
+    // freie Zeitanimation (nichts wird entfernt): up(k) mit k 0…1, danach done()
+    anim(d, up, done) { this.extra.push({ m: null, t: 0, d, own: [], up: (o, k) => up(k), done }); }
     update(dt) {
       for (let i = 0; i < this.max; i++) {
         if (this.age[i] >= this.life[i]) continue;
@@ -75,13 +131,13 @@
       for (let j = this.extra.length - 1; j >= 0; j--) {
         const e = this.extra[j]; e.t += dt; const k = Math.min(1, e.t / e.d); e.up(e.m, k);
         if (k >= 1) {
-          this.scene.remove(e.m);
+          if (e.m) this.scene.remove(e.m);
           (e.own || [e.m]).forEach(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
           this.extra.splice(j, 1); if (e.done) e.done();
         }
       }
     }
-    dispose() { this.scene.remove(this.pts); this.geo.dispose(); this.mat.dispose(); for (const e of this.extra) this.scene.remove(e.m); this.extra = []; }
+    dispose() { this.scene.remove(this.pts); this.geo.dispose(); this.mat.dispose(); for (const e of this.extra) if (e.m) this.scene.remove(e.m); this.extra = []; }
   }
   SW.VFX = VFX;
 })(globalThis.SW = globalThis.SW || {});

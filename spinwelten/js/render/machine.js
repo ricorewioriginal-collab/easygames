@@ -105,6 +105,27 @@
       this.t = 0; this.spinning = false; this.leverT = 1; this.glow = 0; this.flashCol = new THREE.Color('#ffc94a');
       this.shake = 0; this.bump = 0; this.tease = -1; this.hit = null; this.hitT = 0;
       this.layout = { top: 0.15, bottom: 0.2 };
+      this.mood = 'idle'; this.moodT = 0; this.mascot = null;
+    }
+    // Kivi sitzt oben links auf dem Rahmen und reagiert: spin, tease, win, big, none
+    react(kind) { this.mood = kind; this.moodT = 0; }
+    mascotUpdate(dt, t) {
+      if (!this.mascot) {
+        const def = SW.Characters && SW.COMPANIONS && SW.COMPANIONS.find(c => c.id === 'kivi'); if (!def) return;
+        const m = this.mascot = SW.Characters.model(def, 1); m.scale.setScalar(0.8); m.position.set(-WIN_W / 2 + 0.65, WIN_H / 2 + 0.7, 0.3); this.group.add(m);
+        this.mascotY = m.position.y;
+      }
+      const m = this.mascot, u = this.moodT += dt, md = this.mood;
+      let y = Math.sin(t * 2.2) * 0.05, ry = 0.55 + Math.sin(t * 0.7) * 0.25, rx = 0, rz = 0, s = 1;
+      if (md === 'spin') { rx = 0.3; ry = 0.75; y = Math.abs(Math.sin(t * 9)) * 0.06; }
+      else if (md === 'tease') { rx = 0.35; ry = 0.9; rz = Math.sin(t * 38) * 0.14; s = 1 + Math.sin(t * 20) * 0.03; }
+      else if (md === 'win' || md === 'big') {
+        const hops = md === 'big' ? 3 : 1, d = 0.55 * hops, k = Math.min(1, u / d);
+        y = Math.abs(Math.sin(k * Math.PI * hops)) * (md === 'big' ? 0.9 : 0.7); ry = 0.55 + k * Math.PI * 2 * hops; s = 1 + Math.sin(k * Math.PI * hops * 2) * 0.06;
+        if (k >= 1) this.mood = 'idle';
+      } else if (md === 'none') { const k = Math.min(1, u / 0.25); rx = 0.45 * k; y = -0.08 * k; ry = 0.3; if (u > 1.4) this.mood = 'idle'; }
+      m.position.y = this.mascotY + y; m.rotation.set(rx, ry, rz); m.scale.setScalar(0.8 * s);
+      SW.Characters.animateModel(m, t * (md === 'idle' || md === 'none' ? 1 : 2.2), dt);
     }
     resize(w, h) {
       // Maschine füllt den freien Bereich zwischen oberer Leiste und den Knöpfen unten
@@ -203,6 +224,7 @@
         if (this.glow > 0.1) b.material.emissive.copy(this.flashCol); else if (teasing) b.material.emissive.setHex(0xff7a6b); else b.material.emissive.setHex(0xffc94a);
       });
       this.line.material.opacity = Math.min(0.95, this.glow * 0.6);
+      this.mascotUpdate(dt, t);
       if (this.fx) this.fx.update(dt);
     }
     pickLever(ndc) {

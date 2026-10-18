@@ -256,3 +256,9 @@ input[type=checkbox] { width: 24px; height: 24px; accent-color: var(--jade); }
 
 @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01s !important; transition-duration: 0.01s !important; } }
 .reduced * { animation-duration: 0.01s !important; transition-duration: 0.01s !important; }
+/* Animationen: Blitz-Aufleuchten, Karten drehen sich auf */
+.flash { position: fixed; inset: 0; z-index: 13; background: #fff8d8; pointer-events: none; }
+.card.flip { animation: flipIn 0.55s cubic-bezier(.2, 1.4, .4, 1) both; }
+.card.rare { box-shadow: 0 0 14px 2px rgba(255, 215, 94, 0.55); }
+@keyframes flipIn { from { transform: perspective(500px) rotateY(100deg) scale(0.5); opacity: 0; } 60% { opacity: 1; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .card.flip { animation: none; } }

@@ -14,7 +14,7 @@
       const ring = M.mesh(M.tor(0.78, 0.07, 8, 32), M.mat(c2, { metal: 0.8, rough: 0.3 }), 0, 1.1, 0); ring.rotation.x = Math.PI / 2; g.add(ring);
       const needle = M.mesh(M.cone(0.12, 0.7, 4), M.mat('#ff6b6b'), 0, 1.95, 0); needle.userData.wiggle = 1; g.add(needle);
       for (const s of [-1, 1]) { const w = M.mesh(M.sph(0.4, 10, 6), M.mat('#7bd88f', { side: 1 }), s * 0.85, 1.2, 0); w.scale.set(1, 0.2, 0.6); w.userData.flap = s; g.add(w); }
-      eyes(g, 1.2, 0.6, 0.22, 0.13, M);
+      eyes(g, 1.22, 0.66, 0.24, 0.14, M);
     },
     crystal(g, c, c2, M) {
       const k = M.mesh(M.oct(0.8), M.mat(c, { em: c2, emi: 0.5, rough: 0.15, flat: true }), 0, 1.2, 0); k.scale.set(0.8, 1.3, 0.8); k.userData.spinY = 0.8; g.add(k);
