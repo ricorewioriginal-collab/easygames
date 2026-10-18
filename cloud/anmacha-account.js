@@ -53,8 +53,13 @@
     var c = cloud(); if (!c || !c.account) return Promise.resolve(false);
     return c.account().then(function (a) {
       if (!a || !a.token) return false;
-      return post('account_firebase', { idToken: a.token }).then(function (j) { if (j.status === 'ok' && j.token) { setSession(j.token, j.user || { name: a.name }, false, true); return true; } return false; });
+      return post('account_firebase', { idToken: a.token }).then(function (j) { if (j.status === 'ok' && j.token) { setSession(j.token, j.user || { name: a.name }, false, true); shareFb(j.token); return true; } return false; });
     }).catch(function () { return false; });
+  }
+  // Die Firebase-Anmeldung dieses Geräts beim Konto ablegen, damit andere Geräte/Seiten sie ohne zweite Anmeldung übernehmen (account_fbrt)
+  function shareFb(t) {
+    var rt = store('anmacha-cloud-rt'); if (!rt) return;
+    try { root.fetch(API + '?action=account_fbrt', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify({ rt: rt }) }).catch(function () { }); } catch (e) { }
   }
   // Fenster mit der Anmelde-Seite; Antwort nur von ricorewi-radio.de und nur im Fenster, das wir geöffnet haben
   function popup() {
@@ -159,12 +164,12 @@
       var t = doc.createElement('span'); t.style.cssText = 'flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
       var x = doc.createElement('button'); x.type = 'button'; x.textContent = '✕ Schließen'; x.style.cssText = 'border:0;border-radius:10px;padding:8px 14px;background:rgba(255,255,255,.14);color:#fff;font:600 14px system-ui;cursor:pointer';
       var f = doc.createElement('iframe'); f.title = 'easygames'; f.allow = 'fullscreen; clipboard-write'; f.style.cssText = 'flex:1;border:0;width:100%;background:#080b12';
-      function close() { ov.hidden = true; f.setAttribute('src', 'about:blank'); doc.documentElement.style.overflow = ''; }
+      function close() { ov.hidden = true; ov.style.display = 'none'; f.setAttribute('src', 'about:blank'); doc.documentElement.style.overflow = ''; }
       x.onclick = close; h.appendChild(t); h.appendChild(x); ov.appendChild(h); ov.appendChild(f); doc.body.appendChild(ov);
       doc.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !ov.hidden) close(); });
       root.addEventListener('message', function (e) { if (e.source === f.contentWindow && e.data && (e.data.type === 'easygames:close' || e.data === 'easygames:close')) close(); });
     }
-    ov.firstChild.firstChild.textContent = title; ov.lastChild.setAttribute('src', url); ov.hidden = false; doc.documentElement.style.overflow = 'hidden';
+    ov.firstChild.firstChild.textContent = title; ov.lastChild.setAttribute('src', url); ov.hidden = false; ov.style.display = 'flex'; doc.documentElement.style.overflow = 'hidden';
   }
   function standardItems(base) {
     var foreign = !!base && base.indexOf(root.location.origin + '/') !== 0, eg = function (p, icon, label) {

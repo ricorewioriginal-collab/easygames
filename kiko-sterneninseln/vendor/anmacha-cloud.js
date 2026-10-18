@@ -213,20 +213,36 @@
       });
     }));
   }
-  // Konto-Token → Firebase-Anmeldung ohne Popup: Der Server (account_fbtoken) stellt aus dem Konto-Token ein Firebase-Anmelde-Token für dieselbe Person aus (Dienstkonto-Schlüssel nur auf dem Server).
-  // So sind Ranglisten, Erfolge, Profil und Chat auch dort angemeldet, wo man sich nur über das Portal/den Kopf angemeldet hat. Ohne Schlüssel auf dem Server bleibt alles wie bisher.
+  // Konto-Token → Firebase-Anmeldung ohne Popup. Zwei Wege, beide ohne zweite Anmeldung:
+  // 1) account_fbrt: die beim Google-Login erzeugte Firebase-Anmeldung dieses Kontos (liegt beim Konto, kein Schlüssel nötig) – Firebase-Token läuft wie in der App über den Refresh-Token.
+  // 2) account_fbtoken: Firebase-Anmelde-Token, falls der Betreiber einen Dienstkonto-Schlüssel auf dem Server hinterlegt hat.
+  // So sind Ranglisten, Erfolge, Profil und Chat auch dort angemeldet, wo man sich nur über das Portal/den Kopf angemeldet hat. Klappt beides nicht, bleibt alles wie bisher.
   var upgP = null;
   function upgrade() {
     if (upgP) return upgP;
     var t = ''; try { t = LS.getItem(OT) || ''; } catch (e) {}
     if (!t || APP) return Promise.resolve(null);
-    upgP = fetch(API + '?action=account_fbtoken', { headers: { Authorization: 'Bearer ' + t } }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
-      if (!j || !j.token) return null;
-      return Promise.all([import(SDK + 'firebase-app.js'), import(SDK + 'firebase-auth.js')]).then(function (m) {
-        fb = m[1]; auth = fb.getAuth(m[0].initializeApp({ apiKey: CONFIG.apiKey, authDomain: CONFIG.authDomain || CONFIG.projectId + '.firebaseapp.com', projectId: CONFIG.projectId }));
-        return fb.signInWithCustomToken(auth, j.token);
-      }).then(function (r) { user = r.user; keepRt(user); render(); return user; });
-    }).catch(function () { upgP = null; return null; });
+    var H = { headers: { Authorization: 'Bearer ' + t } };
+    function viaRt() {
+      return fetch(API + '?action=account_fbrt', H).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+        if (!j || !j.rt) return null;
+        var u = appUser(j.rt);
+        return u.load().then(function () { rawSet.call(LS, RT, j.rt); return u; });
+      }).catch(function () { return null; });
+    }
+    function viaToken() {
+      return fetch(API + '?action=account_fbtoken', H).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+        if (!j || !j.token) return null;
+        return Promise.all([import(SDK + 'firebase-app.js'), import(SDK + 'firebase-auth.js')]).then(function (m) {
+          fb = m[1]; auth = fb.getAuth(m[0].initializeApp({ apiKey: CONFIG.apiKey, authDomain: CONFIG.authDomain || CONFIG.projectId + '.firebaseapp.com', projectId: CONFIG.projectId }));
+          return fb.signInWithCustomToken(auth, j.token);
+        }).then(function (r) { keepRt(r.user); return r.user; });
+      }).catch(function () { return null; });
+    }
+    upgP = viaRt().then(function (u) { return u || viaToken(); }).then(function (u) {
+      if (!u) { upgP = null; return null; }
+      user = u; render(); return u;
+    });
     return upgP;
   }
   // anmacha-account.js (ein Login für alles) bei Bedarf nachladen; liegt es nicht neben diesem Skript, bleibt die Firebase-Anmeldung dieses Skripts
