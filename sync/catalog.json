@@ -1673,6 +1673,42 @@
     "game": "bunte-insel",
     "prefix": "bunteInsel.,bunteInsel_"
    }
+  },
+  {
+   "id": "spinwelten",
+   "title": "Spinwelten 3D",
+   "desc": "Das Abenteuer der Wunderinseln: Dreh die Runenmaschine, bau 30 schwebende 3D-Inseln wieder auf, schick freundliche Stürme, geh auf Schatzexpeditionen, sammle 240 Karten und 12 Begleiter. 8 Minispiele, Story mit 60 Aufgaben, online mit Freunden per Code. Ohne Echtgeld.",
+   "icon": "🌀",
+   "img": "spinwelten/card.svg",
+   "bg": "linear-gradient(145deg,#0d1b3d,#2ec4a6 55%,#f2d08a)",
+   "glow": "rgba(46,196,166,.55)",
+   "path": "spinwelten/",
+   "modes": {
+    "online": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Spinwelten 3D ist ein Insel-Abenteuer mit der Runenmaschine. Jeder Spin kostet Energie und bringt Münzen, Relikte oder Aktionen: drei Sturmrunen schicken einen freundlichen Sturm auf eine Computer-Insel, drei Kompasse starten eine Schatzexpedition mit sechs Fundstellen, Schutzorbs wehren Stürme ab. Mit den Münzen baust du auf jeder der 30 schwebenden Inseln fünf Bauwerke in je fünf Stufen wieder auf; danach reist dein Luftschiff über den Weltenatlas zur nächsten Insel. Truhen enthalten 240 Sammelkarten in 30 Alben, 12 Begleiter wie Kivi bringen Boni und lassen sich trainieren. Dazu kommen 8 Minispiele, eine Story mit 60 Aufgaben, Tages- und Wochenziele, 12 wechselnde Events und Erfolge. Online spielst du mit 2 bis 8 Freunden in privaten Räumen per Code, Link oder QR-Code (Inselrennen, Schatzduell, Weltenhilfe), freie Plätze übernehmen Computer-Spieler. Es gibt kein Echtgeld und nichts zu kaufen. Gespeichert wird automatisch im Browser, mit 2 Speicherplätzen, Export und Import, optional mit Google auf allen Geräten.",
+    "steuerung": [
+     "Touch: DREHEN-Knopf tippen, Multiplikator links, AUTO rechts. Unten wechseln Maschine, Dorf, Atlas und Mehr. Insel mit einem Finger drehen, mit zwei Fingern zoomen, Bauwerke antippen.",
+     "PC: Leertaste oder Enter drehen, Pfeile oder WASD bewegen Kamera und Auswahl, Tab wechselt die Ansicht, Minus/Plus Multiplikator, X Auto-Spin, M Weltenatlas, I Sammlung, Q Aufgaben, F Vollbild, Esc zurück. Im Dorf bauen die Tasten 1 bis 5. Alle Tasten sind in den Einstellungen umbelegbar.",
+     "Controller: A drehen/bestätigen, B zurück, LB/RB Ansicht wechseln, LT/RT Multiplikator, Steuerkreuz und linker Stick bewegen den Fokus, rechter Stick dreht die Kamera, Back Weltenatlas, Start Pause. Auch umbelegbar."
+    ],
+    "tipps": [
+     "Spare Schutzorbs nicht auf: Jeder Orb wehrt genau einen Sturm ab.",
+     "Bauwerke, die ein Sturm beschädigt hat, erst reparieren, dann weiter ausbauen.",
+     "Höhere Multiplikatoren lohnen sich erst, wenn genug Energie da ist.",
+     "Im Modus Entspannt lädt die Energie schneller und alles ist günstiger.",
+     "Grafik ruckelt? In den Einstellungen die Grafikqualität auf Niedrig stellen."
+    ]
+   },
+   "size": 697262,
+   "files": 50,
+   "offline": true,
+   "cloud": {
+    "game": "spinwelten",
+    "prefix": "spinweltenSave,spinweltenSlot"
+   }
   }
  ]
 }
