@@ -41,7 +41,7 @@
     if (!fromParent && !silent) toParent(t, u);   // nur nach einer Anmeldung in diesem Fenster, nie beim stillen Tausch einer bestehenden Anmeldung
     store(TOK, t); store(USR, JSON.stringify({ name: u.name || 'Spieler', picture: u.picture || '' })); store(ON, '1');
     lastErr = ''; emit();
-    var c = cloud(); if (c && c.refresh) c.refresh();
+    var c = cloud(); if (c && c.refresh) c.refresh(!!fromParent);   // von der einbettenden Seite übernommen: Spielstände folgen diesem Konto
     if (root.AnMaChaRating && root.AnMaChaRating.refresh) try { root.AnMaChaRating.refresh(); } catch (e) { }
   }
   function post(action, body) {

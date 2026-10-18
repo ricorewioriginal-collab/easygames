@@ -75,6 +75,7 @@
     });
   }
   function logout() {
+    if (root.AnMaChaAccount && root.AnMaChaAccount.token() && !logout.busy) { logout.busy = true; try { return root.AnMaChaAccount.logout(); } finally { logout.busy = false; } }   // ein Konto: Spielstände, Kopf-Knopf und Bewertungen melden zusammen ab
     var t = token(); store(TOK, null); store(USR, null); if (cfg) cfg.user = null;
     try { root.google && root.google.accounts && root.google.accounts.id.disableAutoSelect(); } catch (e) { }
     if (t) call('ratings_logout').catch(function () { });

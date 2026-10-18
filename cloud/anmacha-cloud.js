@@ -231,8 +231,9 @@
       user = r.user; rawSet.call(LS, ON_KEY, '1'); keepRt(user); keepStorage(); first = true; return sync();
     }).catch(function (e) { lastErr = e.code === 'auth/popup-closed-by-user' ? '' : (e.message || 'Anmeldung fehlgeschlagen'); render(); });
   }
-  function refresh() {   // nach einem Login/Logout durch anmacha-account.js: Zustand neu einlesen und abgleichen
+  function refresh(switchAccount) {   // nach einem Login/Logout durch anmacha-account.js: Zustand neu einlesen und abgleichen; switchAccount: anderes Konto übernommen → Spielstände folgen dem neuen Token (Firebase-Nutzer wird verlassen)
     first = true; baseRemote = null; lastErr = '';
+    if (switchAccount && !APP && hasRt()) { try { rawRemove.call(LS, RT); } catch (e) { } user = null; try { if (auth && fb) fb.signOut(auth); } catch (e) { } }
     if (user && !user.own && hasRt()) { render(); return sync(); }   // Firebase-Anmeldung bleibt bestehen (z. B. nach dem Tausch gegen das Konto-Token)
     user = null;
     return loadSdk().then(function () { render(); return sync(); }).catch(function () { });
