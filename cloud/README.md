@@ -87,7 +87,7 @@ Freier Chat für alle **angemeldeten** Spieler: Hub „💬 Chat“, `https://�
 
 ## Online-Kopplung aller Spiele über Firebase (`cloud/fire-peer.js`)
 
-Alle Spiele mit Handy-Kopplung oder Online-Modus über PeerJS (Funkhaus Reality, Mach mich aus!, Frequenzrad, Funkparcours, Hörerwahl, Kart Rush, Koffer DEALER, Preisradar, Quiz, Stapelrausch, Bunte Insel, Gay Life, ZEITSPRUNG Movie/Radio/Wissen, ZOTIK) verbinden sich jetzt wie RicoPoly über Firebase. Eingebunden ist das mit einer Zeile vor dem Spielcode:
+Alle Spiele mit Handy-Kopplung oder Online-Modus über PeerJS (Funkhaus Reality, Mach mich aus!, Frequenzrad, Funkparcours, Hörerwahl, Kart Rush, Koffer DEALER, Preisradar, Quiz, Kartenrausch, Bunte Insel, Gay Life, ZEITSPRUNG Movie/Radio/Wissen, ZOTIK) verbinden sich jetzt wie RicoPoly über Firebase. Eingebunden ist das mit einer Zeile vor dem Spielcode:
 ```html
 <script src="../cloud/fire-peer.js"></script>
 ```

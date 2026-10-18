@@ -43,6 +43,6 @@ ok('Homepage-Adresse überall gleich');
 // Kein Einladungslink mehr direkt aus location.href/origin ohne die Regel
 const files = ['FunkhausReality/pair.js', 'MachMichAus/pair.js', 'anmacha-frequenzrad/pair.js', 'anmacha-funkparcours/pair.js', 'anmacha-hoererwahl/pair.js',
   'anmacha-preisradar/pair.js', 'zeitsprung-movie/pair.js', 'zeitsprung-radio/pair.js', 'zeitsprung-wissen/pair.js', 'zeitsprung-castingshow/pair.js', 'anmacha-quiz/game.js',
-  'anmacha-koffer-dealer/game.js', 'anmacha-kart/game.js', 'gay-life/js/core.js', 'zotik/index.html', 'anmacha-stapelrausch/index.html', 'bunte-insel/js/net.js', 'bunte-insel/js/tv.js'];
+  'anmacha-koffer-dealer/game.js', 'anmacha-kart/game.js', 'gay-life/js/core.js', 'zotik/index.html', 'anmacha-kartenrausch/js/app.js', 'bunte-insel/js/net.js', 'bunte-insel/js/tv.js'];
 for (const f of files) assert.ok(read(f).includes('EasyGamesLink'), f + ' nutzt EasyGamesLink nicht');
 ok(files.length + ' Spiele nutzen EasyGamesLink');

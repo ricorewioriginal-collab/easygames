@@ -1508,36 +1508,37 @@
    }
   },
   {
-   "id": "anmacha-stapelrausch",
-   "title": "AnMaCha Stapelrausch 3D",
-   "desc": "3D-Kartenspiel: Zahlentürme von 1 bis 12 bauen und den Zielstapel zuerst leeren – gegen den Computer, an einem Gerät oder online per Code/QR.",
+   "id": "anmacha-kartenrausch",
+   "title": "AnMaCha Kartenrausch 3D",
+   "desc": "6 Kartenspiele in 3D mit wählbaren Figuren: Stapelrausch (Zahlentürme 1–12), Farbflash (Farbe oder Zeichen bedienen), Phasenjagd (10 Phasen), Mau-Mau, Schwimmen (31) und Kartendomino – gegen den Computer, an einem Gerät, online per Code/QR oder mit TV-Tisch und Handys.",
    "icon": "🃏",
-   "img": "anmacha-stapelrausch/card.jpg",
+   "img": "anmacha-kartenrausch/card.jpg",
    "bg": "linear-gradient(145deg,#00E5FF,#8B5CF6 55%,#FF2D95)",
    "glow": "rgba(139,92,246,.55)",
-   "path": "anmacha-stapelrausch/",
+   "path": "anmacha-kartenrausch/",
    "modes": {
+    "pad": true,
     "online": true,
     "multi": true
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "Kartenspiel nach dem Prinzip Skip-Bo: Wer zuerst den eigenen Zielstapel (15 oder 30 Karten) leert, gewinnt. In der Mitte stehen 4 Türme, die der Reihe nach von 1 bis 12 gebaut werden; Sterne sind Joker. Du spielst gegen 1 bis 3 Computer-Gegner, zu 2 bis 4 an einem Gerät oder online mit Code oder QR (bis 4 Spieler).",
+    "anleitung": "Sammlung von sechs Kartenspielen in 3D. Vor dem Start wählst du das Spiel und deine 3D-Figur. Stapelrausch: Zahlentürme von 1 bis 12 bauen und als Erste:r den Zielstapel (15 oder 30 Karten) leeren; Sterne sind Joker. Farbflash: Karte gleicher Farbe oder gleichen Zeichens ablegen, Aktionskarten (Aussetzen, Richtungswechsel, +2, Farbwahl, +4) nutzen – wer zuerst keine Karte mehr hat, gewinnt. Phasenjagd: 10 Phasen aus gleichen Zahlen, Folgen und Farben nacheinander erfüllen (oder kurz 5). Mau-Mau: Farbe oder Wert bedienen; 7 = zwei ziehen, 8 = aussetzen, Bube = Wunschfarbe. Schwimmen: mit der Mitte tauschen und 31 Punkte in einer Farbe sammeln; wer am wenigsten hat, verliert ein Leben. Kartendomino: von den Siebenern aus Reihen je Farbe nach oben und unten anlegen. Du spielst gegen 1 bis 3 Computer-Gegner, zu 2 bis 4 an einem Gerät, 🌐 online mit Code, Link oder QR (bis 4 Spieler) oder mit 📺 TV + Handys: Fernseher oder PC zeigt den Tisch, jedes Handy nur die eigenen Karten. Jedes Spiel erklärt sich beim ersten Start; die Anleitung ist jederzeit unter ? zu finden.",
     "steuerung": [
-     "PC: Karte anklicken, dann das Ziel anklicken: einen Turm in der Mitte oder (bei einer Handkarte) einen eigenen Ablagestapel. Karten spielst du von der Hand, vom Zielstapel oder von den Ablagestapeln (jeweils oberste Karte).",
-     "Touch: Karte antippen, dann Ziel antippen. Beim Spielen an einem Gerät erscheint nach jedem Zug ein Übergabe-Bildschirm; die Karten bleiben bis zum Aufdecken verborgen. ? zeigt die Regeln, ☰ das Menü."
+     "PC: Karte anklicken, dann das Ziel anklicken (Turm, Ablage oder Auslage). Knöpfe unter dem Tisch zum Ziehen, Auslegen oder Behalten.",
+     "Touch: Karte antippen, dann Ziel antippen. Passende Karten leuchten. Beim Spielen an einem Gerät erscheint nach jedem Zug ein Übergabe-Bildschirm; ? zeigt die Anleitung, ☰ das Menü."
     ],
     "tipps": [
-     "Ein Zug endet, wenn du eine Handkarte auf einen deiner 4 Ablagestapel legst.",
-     "Sind alle Handkarten gespielt, ziehst du sofort 5 neue."
+     "Stapelrausch: Ein Zug endet, wenn du eine Handkarte auf eine deiner 4 Ablagen legst.",
+     "Phasenjagd: Nach dem Auslegen darfst du Karten an alle Auslagen anlegen – so wirst du deine Hand schneller los."
     ]
    },
-   "size": 104172,
-   "files": 5,
+   "size": 199537,
+   "files": 8,
    "offline": true,
    "cloud": {
     "game": "stapelrausch",
-    "prefix": "stapelrausch-name"
+    "prefix": "kartenrausch-,stapelrausch-name"
    }
   },
   {
