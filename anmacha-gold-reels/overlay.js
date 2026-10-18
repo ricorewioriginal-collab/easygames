@@ -66,18 +66,22 @@
   }
 
   // Risiko: Gewinn auf Rot oder Schwarz setzen, bis zu 5 Stufen. Liefert den behaltenen Betrag.
+  // Risiko: Farbe (Rot/Schwarz) = ×2, Symbol (♠♥♦♣) = ×4. Höchstens bis zum 64-fachen Startgewinn.
   function gamble(amount) {
     return new Promise(res => {
       const o = mk('gamble', { a: '#ffd24a', b: '#ff2d95' });
-      let cur = amount, step = 0, done = false, busy = false, pending = null; const MAX = 5;
-      o.innerHTML = `<div class="sbox glass"><h2>RISIKO</h2><p class="muted">Rot oder Schwarz? Richtig = doppelt, falsch = alles weg.</p>
+      let cur = amount, step = 0, done = false, busy = false, pending = null; const CAP = amount * 64;
+      const suitBtn = (i, cls) => `<button class="pill suit ${cls}" data-nav data-g="s${i}">${L.SUITS[i]}</button>`;
+      o.innerHTML = `<div class="sbox glass"><h2>RISIKO</h2><p class="muted">Farbe richtig = ×2, Symbol richtig = ×4, falsch = alles weg.</p>
         <div class="gcard3"><canvas width="256" height="256"></canvas></div>
         <div class="ladder"></div><div class="gmsg"></div>
-        <div class="mbtns"><button class="pill red" data-nav data-g="red">ROT</button><button class="pill black" data-nav data-g="black">SCHWARZ</button><button class="pill gold" data-nav data-default data-g="take">NEHMEN</button></div>
+        <div class="mbtns"><button class="pill red" data-nav data-g="red">ROT ×2</button><button class="pill black" data-nav data-g="black">SCHWARZ ×2</button></div>
+        <div class="mbtns suits">${suitBtn(1, 'r')}${suitBtn(2, 'r')}${suitBtn(0, 'b')}${suitBtn(3, 'b')}</div>
+        <div class="mbtns"><button class="pill gold" data-nav data-default data-g="take">NEHMEN</button></div>
         <div class="ghist"></div></div>`;
       const cv = o.querySelector('canvas'), g = cv.getContext('2d'), lad = o.querySelector('.ladder'), msg = o.querySelector('.gmsg'), hist = o.querySelector('.ghist');
       const draw = c => { g.clearRect(0, 0, 256, 256); g.drawImage(T.cardCanvas(c, { a: '#ffd24a', b: '#ff2d95', c: '#8b5cf6' }), 0, 0); };
-      const ladder = () => { lad.innerHTML = Array.from({ length: MAX + 1 }, (_, i) => `<span class="${i === step ? 'on' : ''}">${C.short(amount * Math.pow(2, i))}</span>`).reverse().join(''); };
+      const ladder = () => { lad.innerHTML = `<span class="on">${C.short(cur)}</span><span>×2: ${C.short(cur * 2)}</span><span>×4: ${C.short(cur * 4)}</span>`; };
       draw(-1); ladder(); msg.textContent = 'Einsatz: ' + fmt(cur);
       const unl = C.layer(o, () => { if (!busy) finish(); });
       const btns = o.querySelectorAll('[data-g]');
@@ -88,15 +92,18 @@
         unl(); o.classList.add('out'); setTimeout(() => o.remove(), 250); wallet.reveal(); res(cur); }
       o.addEventListener('click', async e => {
         const b = e.target.closest('[data-g]'); if (!b || busy || done) return;
-        if (b.dataset.g === 'take') { sound.play('coin'); return finish(); }
+        const pick = b.dataset.g;
+        if (pick === 'take') { sound.play('coin'); return finish(); }
         busy = true; btns.forEach(x => { x.disabled = true; });
         if (!wallet.take(cur)) { busy = false; return finish(); }
-        const c = L.gambleCard(), red = L.isRed(c), ok = (b.dataset.g === 'red') === red; pending = ok ? cur * 2 : 0;
+        const c = L.gambleCard(), red = L.isRed(c), su = pick[0] === 's';
+        const ok = su ? L.suit(c) === +pick.slice(1) : (pick === 'red') === red, f = su ? 4 : 2;
+        pending = ok ? cur * f : 0;
         for (let i = 0; i < 6; i++) { draw(Math.floor(Math.random() * 52)); sound.play('card'); await wait(70); if (done) return; }
         pending = null; draw(c); hist.insertAdjacentHTML('afterbegin', `<i class="${red ? 'r' : 'b'}">${L.SUITS[L.suit(c)]}</i>`);
-        if (ok) { wallet.give(cur * 2); cur *= 2; step++; sound.play('win'); msg.innerHTML = `Richtig! <b>${fmt(cur)}</b>`; ladder(); }
+        if (ok) { wallet.give(cur * f); cur *= f; step++; sound.play(su ? 'fanfare' : 'win'); msg.innerHTML = `${su ? 'Volltreffer ×4' : 'Richtig'}! <b>${fmt(cur)}</b>`; ladder(); }
         else { sound.play('lose'); msg.innerHTML = 'Leider falsch – Gewinn verloren.'; cur = 0; await wait(1300); return finish(); }
-        if (step >= MAX) { msg.innerHTML = `Höchststufe erreicht: <b>${fmt(cur)}</b>`; await wait(1200); return finish(); }
+        if (cur >= CAP) { msg.innerHTML = `Höchststufe erreicht: <b>${fmt(cur)}</b>`; await wait(1200); return finish(); }
         await wait(500); if (done) return; busy = false; btns.forEach(x => { x.disabled = false; }); draw(-1);
       });
       open.add(finish);

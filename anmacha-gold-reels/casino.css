@@ -75,6 +75,14 @@ button:active:not(:disabled){transform:translateY(1px) scale(.98)}
 .ib.sm{width:40px;height:40px;font-size:22px;font-weight:900;border-radius:50%}
 .winbox{text-align:center;min-width:0}
 .winbox b{display:block;color:var(--ok);text-shadow:0 0 14px rgba(52,211,153,.5)}
+.nudge{background:linear-gradient(180deg,#a78bfa,#6d28d9)!important;border-color:#ddd6fe!important;animation:pulse 1.2s ease-in-out infinite;white-space:nowrap}
+.hammer{position:fixed;z-index:30;font-size:clamp(44px,9vmin,80px);pointer-events:none;transform-origin:85% 85%;translate:-30% -75%;animation:hammer .3s cubic-bezier(.5,0,.9,.4) forwards;filter:drop-shadow(0 4px 6px #000)}
+@keyframes hammer{0%{rotate:-75deg;opacity:0}30%{opacity:1}100%{rotate:20deg}}
+#gl.shake{animation:shake .28s linear}
+@keyframes shake{0%,100%{translate:0 0}20%{translate:-6px 3px}40%{translate:5px -4px}60%{translate:-4px 2px}80%{translate:3px -1px}}
+.mjp{display:flex;flex-direction:column;align-items:center;gap:2px;margin:4px auto 10px;padding:8px 18px;border-radius:16px;width:max-content;max-width:calc(100% - 20px);border:1px solid rgba(196,181,253,.6);box-shadow:0 0 22px rgba(139,92,246,.45)}
+.mjp b{font:900 clamp(22px,5vw,32px)/1 var(--font);color:#e9d5ff;text-shadow:0 0 12px #a855f7;font-variant-numeric:tabular-nums}
+.mjp small{font-size:11px;letter-spacing:.08em;color:#c4b5fd}
 .risk{background:linear-gradient(180deg,#ff6b7a,#c8102e)!important;border-color:#ffc2c8!important;animation:pulse 1.2s ease-in-out infinite}
 @keyframes pulse{50%{box-shadow:0 0 0 6px rgba(255,59,92,.25)}}
 .spin{width:84px;height:84px;border-radius:50%;border:4px solid rgba(255,255,255,.85);cursor:pointer;margin:-22px 0 -6px;color:#2a1700;font:900 19px var(--font);letter-spacing:.05em;flex:none;
@@ -195,7 +203,7 @@ button:active:not(:disabled){transform:translateY(1px) scale(.98)}
 .bulbs::after{content:"";position:absolute;inset:-7px;border:7px dotted #fff;border-radius:28px;animation:bulbs .36s steps(1) infinite reverse}
 @keyframes bulbs{50%{opacity:.25}}
 .bigwin h1.lvl{animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
-@media (prefers-reduced-motion:reduce){.rays,.risk,.bulbs,.bulbs::after{animation:none}.splash h2,.bigwin h1,.intro h2 span,.icount.bump{animation:none}}
+@media (prefers-reduced-motion:reduce){#gl.shake,.nudge,.rays,.risk,.bulbs,.bulbs::after{animation:none}.splash h2,.bigwin h1,.intro h2 span,.icount.bump{animation:none}}
 .gamble{background:rgba(4,2,12,.8);cursor:default}
 .gamble .sbox{border-radius:24px;width:min(420px,calc(100% - 20px))}
 .gamble h2{margin:0;color:var(--gold);font:900 28px var(--font)}
@@ -204,6 +212,9 @@ button:active:not(:disabled){transform:translateY(1px) scale(.98)}
 .ladder span{border-radius:8px;padding:2px;background:rgba(255,255,255,.06);font-weight:800;font-size:13px}
 .ladder span.on{background:var(--gold);color:#2a1700}
 .gmsg{min-height:22px;font-weight:800}
+.gamble .mbtns{margin-top:6px}.gamble .mbtns.suits{gap:6px}
+.pill.suit{min-width:46px;padding:4px 10px;font-size:22px;line-height:1;background:linear-gradient(180deg,#fff,#d9d9e3);border-color:#fff}
+.pill.suit.r{color:#d61f2c}.pill.suit.b{color:#111}
 .ghist{display:flex;gap:4px;justify-content:center;margin-top:8px}
 .ghist i{font-style:normal;width:24px;height:24px;border-radius:6px;display:grid;place-items:center;background:#fff}
 .ghist i.r{color:#d61f2c} .ghist i.b{color:#111}
@@ -233,10 +244,11 @@ button:active:not(:disabled){transform:translateY(1px) scale(.98)}
   .gamble .sbox{display:grid;grid-template-columns:auto 1fr;column-gap:18px;align-items:center;width:min(640px,calc(100% - 20px))}
   .gamble h2{grid-column:1/-1;font-size:22px}
   .gamble .sbox>p.muted{grid-column:1/-1;margin:2px 0 6px;font-size:12px}
-  .gcard3{grid-column:1;grid-row:3/span 4}.gcard3 canvas{width:min(120px,30vh);height:min(120px,30vh)}
+  .gcard3{grid-column:1;grid-row:3/span 6}.gcard3 canvas{width:min(120px,30vh);height:min(120px,30vh)}
   .gamble .ladder,.gamble .gmsg,.gamble .mbtns,.gamble .ghist{grid-column:2}
-  .gamble .ladder{flex-direction:row-reverse;flex-wrap:wrap;width:auto;justify-content:center}
-  .gamble .ladder span{flex:1 1 0;min-width:52px;font-size:12px}
+  .gamble .mbtns{margin-top:4px}.gamble .pill{padding:6px 12px}.gamble .pill.suit{padding:3px 10px;font-size:19px}
+  .gamble .ladder{flex-direction:row;flex-wrap:wrap;width:auto;justify-content:center}
+  .gamble .ladder span{flex:1 1 0;min-width:74px;font-size:12px;white-space:nowrap}
   .pick .sbox{width:min(720px,calc(100% - 20px))}
   .pick h2,.bwheel h2{font-size:24px}
   .pick .sbox>p.muted{margin:2px 0;font-size:12px}

@@ -117,9 +117,27 @@ t('Glücks-Features wechseln und zahlen korrekt', () => {
       const ev = L.evaluate(m, b.grid, 100, k.type === 'mult' ? k.x : 1, null);
       assert.strictEqual(b.win, ev.win + (k.amt || 0), c.id + ' ' + k.type + ' Gewinn');
       if (k.type === 'wildReel') k.reels.forEach(r => assert(b.grid[r].every(v => v === m.wild)));
+      if (k.type === 'hammer') { assert(k.hits.length >= 2 && k.hits.length <= 3); k.hits.forEach(([r, y, v]) => { assert(v === m.wild || v === m.coin); assert.strictEqual(b.grid[r][y], v); }); }
       if (k.type === 'mystery') k.cells.filter(([r]) => !(b.expandReels || []).includes(r)).forEach(([r, y]) => { assert.strictEqual(b.grid[r][y], k.sym); assert.strictEqual(k.pre[r][y], -2); });
     }
     assert.strictEqual(seen.size, types.length, c.id + ': alle Feature-Arten kommen vor');
+  }
+  L.setRandom(L.seeded(20261016));
+});
+t('Nachdreh: Preis liegt über dem Erwartungswert, Walze ohne Sondersymbole', () => {
+  L.setRandom(L.seeded(77));
+  for (const c of MACHINES) {
+    const m = L.compile(c); m.luckyCfg.p = 0; let paid = 0, won = 0, n = 0;
+    for (let i = 0; i < 6000 && n < 25; i++) {
+      const r = L.playRound(m, 100); if (r.total || r.steps.length > 1) continue;
+      const o = L.nudgeOffer(m, 100, r.steps[0].grid); if (!o) continue; n++;
+      const st = L.nudge(m, 100, r.steps[0].grid, o.reel); paid += o.price;
+      assert(st.grid[o.reel].every(v => v !== m.scat && v !== m.bon && v !== m.coin));
+      st.grid.forEach((col, x) => { if (x !== o.reel) assert.deepStrictEqual(col, r.steps[0].grid[x]); });
+      assert.strictEqual(st.win, L.evaluate(m, st.grid, 100, 1).win);
+      for (let k = 0; k < 600; k++) won += L.nudge(m, 100, r.steps[0].grid, o.reel).win / 600;   // Erwartungswert schätzen
+    }
+    if (m.respin) assert.strictEqual(n, 0); else { assert(n > 0, c.id + ' ohne Nachdreh-Angebot'); assert(won / paid < 1.12, c.id + ' Nachdreh zu billig: ' + (won / paid).toFixed(2)); }
   }
   L.setRandom(L.seeded(20261016));
 });
@@ -188,7 +206,7 @@ function sim(c, n, scaleOverride) {
 }
 L.setRandom(L.seeded(20261016));
 if (CAL) {
-  const N = +(process.env.N || 3e6), TARGET = 0.955;
+  const N = +(process.env.N || 3e6), TARGET = 0.935;   // + ca. 3 % aus dem Mystery-Jackpot (app.js)
   const only = process.argv.slice(2).filter(a => !a.startsWith('--'));
   for (const c of MACHINES.filter(c => !only.length || only.includes(c.id))) {
     const s = sim(c, N, 1); const A = s.rtp - s.hw;

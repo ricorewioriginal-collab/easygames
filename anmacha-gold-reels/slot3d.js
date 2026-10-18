@@ -172,6 +172,7 @@
     lockTex(key) { let t = this.texCache.get(key); if (!t) { t = Gfx.canvasTex(this.tileFor(key)); this.texCache.set(key, t); } return t; }
 
     drawMarquee(sub) {
+      this.mqSub = sub; if (!sub && this.app.mystery) sub = 'MYSTERY JACKPOT ' + fmt(this.app.mystery());
       const c = this.marqueeCanvas, g = c.getContext('2d'), th = this.theme;
       g.fillStyle = S.lg(g, 0, 0, 0, 256, th.tile[0], '#05030b'); g.fillRect(0, 0, 1024, 256);
       g.globalAlpha = 0.35; g.fillStyle = S.rg(g, 512, 128, 20, 520, th.b, 'rgba(0,0,0,0)'); g.fillRect(0, 0, 1024, 256); g.globalAlpha = 1;
@@ -197,6 +198,7 @@
         <div class="winbox"><small>GEWINN</small><b class="win">0</b></div>
         <div class="r2"><button class="pill" data-nav data-act="max">MAX</button>
         <button class="pill risk" data-nav data-act="risk" hidden>RISIKO</button>
+        <button class="pill nudge" data-nav data-act="nudge" hidden>NACHDREH</button>
         <button class="pill" data-nav data-act="auto">AUTO</button>
         <button class="ib" data-nav data-act="turbo" aria-label="Turbo">⚡</button></div>
         <button class="spin" data-nav data-default data-act="spin" aria-label="Drehen"><span>SPIN</span></button>`;
@@ -205,7 +207,7 @@
       bar.addEventListener('click', e => {
         const b = e.target.closest('[data-act]'); if (!b || b.disabled) return; sound.play('click');
         ({ info: () => this.info(), down: () => this.changeBet(-1), up: () => this.changeBet(1), max: () => this.maxBet(), auto: () => this.toggleAuto(),
-          turbo: () => this.toggleTurbo(), spin: () => this.spin(), risk: () => this.gamble() })[b.dataset.act]();
+          turbo: () => this.toggleTurbo(), spin: () => this.spin(), risk: () => this.gamble(), nudge: () => this.nudge() })[b.dataset.act]();
       });
       // Spin gedrückt halten = Autoplay
       const sp = this.q('.spin'); let hold = 0;
@@ -242,12 +244,14 @@
     async spin() {
       if (this.dead || C.modalOpen) return;
       if (this.busy) { this.quick(); if (this.auto) { this.auto = false; this.refreshHud(); } return; }
-      this.q('[data-act=risk]').hidden = true; this.lastWin = 0;
+      this.q('[data-act=risk]').hidden = true; this.lastWin = 0; this.hideNudge();
       const bet = this.bet;
       if (!wallet.take(bet)) { this.auto = false; this.refreshHud(); this.app.noMoney(bet); return; }
       this.clearWinShow(); this.busy = true; this.quickStop = false; this.refreshHud(); this.setWin(0);
       const round = L.playRound(this.m, bet);
       wallet.give(round.total, true);
+      const mjp = this.app.mysteryFeed ? this.app.mysteryFeed(bet) : 0;      // Mystery-Jackpot: wächst mit jedem Einsatz, fällt zufällig
+      if (mjp) wallet.give(mjp, true);
       this.winSum = 0;
       try {
         for (const st of round.steps) {
@@ -276,8 +280,14 @@
       this.setWin(round.total);
       const x = round.total / bet;
       if (x >= 15) await this.celebrate(round.total, x);
+      if (mjp) await this.mysteryWin(mjp);
+      else if (!this.mqSub) this.drawMarquee('');
+      if (this.dead) return;
       this.lastWin = round.total;
       if (round.total > 0 && !this.auto && round.steps.length === 1 && round.total <= bet * 50) this.q('[data-act=risk]').hidden = false;
+      const b0 = round.steps[0];
+      this.offer = !round.total && !mjp && !this.auto && round.steps.length === 1 && !b0.lucky ? L.nudgeOffer(this.m, bet, b0.grid) : null;
+      if (this.offer) { this.offer.grid = b0.grid; this.offer.bet = bet; this.showNudge(); }
       this.startWinCycle(round.steps.filter(s => s.type === 'spin' || s.type === 'respin').pop());
       if (this.auto) { setTimeout(() => { if (this.auto && !this.busy && !this.dead) this.spin(); }, C.data.turbo ? 250 : 650); }
     }
@@ -385,7 +395,8 @@
     async playLucky(st) {
       const L0 = st.lucky, m = this.m, sp = this.speed, hot = s => this.key(s, null, true);
       const T = { wildReel: ['WILD-WALZE', 'Ganze Walzen werden zum Wild!'], mystery: ['MYSTERY', 'Alle ?-Felder zeigen dasselbe Symbol!'], wildRain: ['WILD-REGEN', 'Wilds regnen auf die Walzen!'],
-        mult: ['MULTIPLIKATOR ×' + L0.x, `Dieser Dreh zählt ×${L0.x}!`], cash: ['GELDREGEN', 'Goldmünzen regnen auf die Walzen!'] }[L0.type];
+        mult: ['MULTIPLIKATOR ×' + L0.x, `Dieser Dreh zählt ×${L0.x}!`], cash: ['GELDREGEN', 'Goldmünzen regnen auf die Walzen!'],
+        hammer: ['GOLDHAMMER', 'Der Hammer schlägt Wilds auf die Walzen!'] }[L0.type];
       const cell = (r, y, key) => { const k = new Array(m.rows).fill(null); k[y] = key; this.reels[r].setVisible(k); this.flash(r, y); };
       this.party = true; this.drawMarquee(T[0]);
       await this.app.featureIntro(T[0], `<p>${T[1]}</p>`, this.theme, { ms: 1800 });
@@ -397,8 +408,17 @@
         for (const [r, y] of L0.cells) { cell(r, y, hot(L0.sym)); sound.play('lock'); await wait(170 * sp); }
       }
       if (L0.type === 'cash') for (const [r, y, v] of L0.drops) { this.setLockKey(r, y, 'coin|' + C.short(v, true) + '|1', true); sound.play('coin'); await wait(260 * sp); }
+      if (L0.type === 'hammer') for (const [r, y, v] of L0.hits) { await this.hammerHit(r, y); cell(r, y, this.key(v, st.vals && st.vals[r][y], true)); await wait(220 * sp); }
       if (L0.type === 'mult') { sound.play('big'); this.setBanner(`MULTIPLIKATOR <b>×${L0.x}</b>`); }
       await wait(350 * sp); this.clearFlash(); this.party = false;
+    }
+    // Hammer schwingt über dem Feld, Schlag mit Bildschirmwackeln
+    async hammerHit(r, y) {
+      const p = this.cellPos(r, y), q = Gfx.project(this.camera, p.x, p.y, p.z + 0.1), h = el('div', 'hammer', '🔨');
+      h.style.left = q.x + 'px'; h.style.top = q.y + 'px'; document.body.appendChild(h);
+      await wait(260 * this.speed); sound.play('hammer'); this.flash(r, y);
+      const gl = document.getElementById('gl'); gl.classList.remove('shake'); void gl.offsetWidth; gl.classList.add('shake');
+      setTimeout(() => { h.remove(); gl.classList.remove('shake'); }, 300);
     }
     endLucky(st) {
       if (st.lucky.drops) st.lucky.drops.forEach(([r, y]) => { this.lock(r, y).visible = false; });
@@ -586,6 +606,38 @@
     // Freispiel-Stimmung: Hintergrund wird wärmer und heller
     tint(on) { if (this.bg && this.bg.plane) { this.bg.plane.material.color.set(on ? 0xffe3a8 : 0xffffff); this.bg.plane.material.color.multiplyScalar(on ? 1.6 : 1); Gfx.kick(); } }
 
+    // ---------- Mystery-Jackpot ----------
+    async mysteryWin(v) {
+      this.party = true; this.drawMarquee('MYSTERY JACKPOT!'); sound.play('fanfare');
+      await this.app.featureIntro('MYSTERY JACKPOT', '<p>Der Jackpot aller Automaten ist gefallen!</p>', this.theme, { ms: 2200 });
+      if (this.dead) return;
+      this.shower.start(1, new THREE.Vector3(0, -this.winH / 2, 1));
+      await this.app.bigWin('MYSTERY JACKPOT', v, this.theme);
+      this.shower.stop(); this.party = false; wallet.reveal(); this.drawMarquee('');
+    }
+
+    // ---------- Nachdreh: eine Walze gegen Aufpreis neu drehen ----------
+    showNudge() {
+      const o = this.offer, b = this.q('[data-act=nudge]'); if (!o || !b) return;
+      b.innerHTML = `↻ W${o.reel + 1} · ${C.short(o.price)}`; b.hidden = false; b.title = `Walze ${o.reel + 1} nochmal drehen für ${fmt(o.price)}`;
+      for (let y = 0; y < this.m.rows; y++) { const f = this.frame(o.reel, y); f.visible = true; f.userData.t = this.t; f.userData.until = this.t + 1.6; }
+      Gfx.kick();
+    }
+    hideNudge() { const b = this.q && this.q('[data-act=nudge]'); if (b) b.hidden = true; this.offer = null; }
+    async nudge() {
+      const o = this.offer; if (this.busy || !o || o.bet !== this.bet) return this.hideNudge();
+      if (!wallet.take(o.price)) { this.hideNudge(); return this.app.noMoney(o.price); }
+      this.hideNudge(); this.clearWinShow(); this.busy = true; this.refreshHud(); this.setWin(0);
+      const st = L.nudge(this.m, o.bet, o.grid, o.reel);
+      wallet.give(st.win, true); this.winSum = 0;
+      try { this.setBanner(`NACHDREH – Walze ${o.reel + 1}`); await this.animSpin(st, { noTease: true }); this.banner.hidden = true; if (!this.dead) await this.showWins(st); }
+      finally { if (!this.dead) { wallet.reveal(); this.busy = false; this.refreshHud(); } }
+      if (this.dead) return;
+      this.setWin(st.win); this.lastWin = st.win;
+      if (st.win >= o.bet * 15) await this.celebrate(st.win, st.win / o.bet);
+      this.startWinCycle(st);
+    }
+
     // ---------- Risiko (Rot/Schwarz) ----------
     async gamble() {
       if (this.busy || !this.lastWin) return;
@@ -605,7 +657,9 @@
       }).join('');
       const lines = m.lines ? `${m.nLines} Gewinnlinien, von links nach rechts` : '243 Gewinnwege, von links nach rechts' + ' (Beträge je Weg)';
       C.modal(`<h2>${this.cfg.title}</h2><p class="muted">${lines} · Einsatz ${fmt(bet)}</p><div class="paytable">${rows}</div><p>${this.cfg.info}</p>
-        <p><b>Glücks-Features:</b> Bei jedem Dreh kann zufällig eines starten – jedes Mal ein anderes: ${L.luckyTypes(m).map(t => ({ wildReel: 'Wild-Walze', mystery: 'Mystery-Symbole', wildRain: 'Wild-Regen', mult: 'Multiplikator ×2 bis ×5', cash: 'Geldregen' })[t]).join(', ')}.</p>
+        <p><b>Glücks-Features:</b> Bei jedem Dreh kann zufällig eines starten – jedes Mal ein anderes: ${L.luckyTypes(m).map(t => ({ wildReel: 'Wild-Walze', mystery: 'Mystery-Symbole', wildRain: 'Wild-Regen', mult: 'Multiplikator ×2 bis ×5', cash: 'Geldregen', hammer: 'Goldhammer' })[t]).join(', ')}.</p>
+        <p><b>Nachdreh:</b> Knapp daneben? Nach einem Dreh ohne Gewinn kannst du eine Walze gegen einen Aufpreis nochmal drehen (dabei landen keine Scatter oder Bonus-Symbole).</p>
+        <p><b>Mystery-Jackpot:</b> Ein Teil jedes Einsatzes an allen Automaten fließt in einen gemeinsamen Jackpot (Anzeige oben im Automaten). Er fällt zufällig – spätestens bei ${fmt(this.app.MYSTERY_MAX || 0)}.</p>
         <p class="muted small">Nach einem Gewinn kannst du mit <b>RISIKO</b> auf Rot oder Schwarz setzen und den Gewinn verdoppeln. Theoretische Auszahlungsquote ca. 95 %. Nur Spielgeld.</p>`,
       { cls: 'wide', onOpen: box => box.querySelectorAll('canvas[data-art]').forEach(c => { const g = c.getContext('2d'); g.scale(64 / 200, 64 / 200); S.drawArt(g, c.dataset.art); }) });
     }

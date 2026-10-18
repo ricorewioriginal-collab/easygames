@@ -138,10 +138,10 @@
 
   // Glücks-Features im Grundspiel (zufällig, jedes Mal ein anderes): Wild-Walze, Mystery-Symbole, Wild-Regen,
   // Multiplikator, Geldregen. Verändert g direkt; pre = Walzenbild vor dem Feature (-2 = Mystery-Feld).
-  L.LUCKY = ['wildReel', 'mystery', 'wildRain', 'mult', 'cash'];
+  L.LUCKY = ['wildReel', 'mystery', 'wildRain', 'mult', 'cash', 'hammer'];
   L.luckyTypes = m => {
     const wildOk = m.wild >= 0 && !m.book && !m.wildMultEach;
-    return (m.luckyCfg.types || L.LUCKY).filter(t => (t !== 'wildReel' && t !== 'wildRain') || wildOk).filter(t => t !== 'wildReel' || !m.respin).filter(t => t !== 'mystery' || m.paying.length);
+    return (m.luckyCfg.types || L.LUCKY).filter(t => (t !== 'wildReel' && t !== 'wildRain') || wildOk).filter(t => t !== 'wildReel' || !m.respin).filter(t => t !== 'mystery' || m.paying.length).filter(t => t !== 'hammer' || wildOk || m.coin >= 0);
   };
   function lucky(m, bet, g) {
     const types = L.luckyTypes(m); if (!types.length) return null;
@@ -160,6 +160,12 @@
     if (type === 'mystery') {
       const cells = cellsFrom(Math.min(m.reels * m.rows - 1, 3 + randInt(3))), sym = m.paying[randInt(m.paying.length)];
       cells.forEach(([r, y]) => { pre[r][y] = -2; g[r][y] = sym; }); return { type, pre, cells, sym };
+    }
+    // Hammer: schlägt auf 2–3 Felder; daraus wird ein Wild (bei Nugget-Automaten manchmal ein Nugget)
+    if (type === 'hammer') {
+      const wildOk = m.wild >= 0 && !m.book && !m.wildMultEach;
+      const hits = cellsFrom(2 + randInt(2), 1).map(([r, y]) => [r, y, m.coin >= 0 && (!wildOk || rand() < 0.35) ? m.coin : m.wild]);
+      hits.forEach(([r, y, v]) => { g[r][y] = v; }); return { type, pre, hits };
     }
     if (type === 'cash') {
       const V = [0.3, 0.5, 0.5, 1, 1, 2]; const drops = cellsFrom(3 + randInt(4)).map(([r, y]) => [r, y, Math.round(V[randInt(V.length)] * bet)]);
@@ -282,6 +288,26 @@
       steps.push({ type: 'freeEnd', played, win: fwin });
     }
     return { bet, steps, total };
+  };
+
+  // ---------- Nachdreh: eine Walze gegen Aufpreis neu drehen ----------
+  // Auf der Nachdreh-Walze landen keine Scatter, Bonus-Symbole oder Münzen. Angebot nur bei knappen Fehlschlägen (Erwartungswert ≥ 1,5 × Einsatz), Preis = geschätzter Erwartungswert × 1,04.
+  const plainCol = (m, r) => Array.from({ length: m.rows }, () => { let v; do { v = pickSym(m, r); } while (v === m.scat || v === m.bon || v === m.coin); return v; });
+  L.nudgeOffer = (m, bet, grid, n) => {
+    if (m.respin) return null; n = n || 120; let best = null;
+    for (let r = 0; r < m.reels; r++) {
+      const g = grid.slice(); let s = 0;
+      for (let i = 0; i < n; i++) { g[r] = plainCol(m, r); s += evaluate(m, g, bet, 1).win; }
+      if (!best || s / n > best.ev) best = { reel: r, ev: s / n };
+    }
+    if (best.ev < bet * 1.5) return null;
+    best.price = Math.max(1, Math.round(best.ev * 1.04)); return best;
+  };
+  L.nudge = (m, bet, grid, r) => {
+    const g = grid.map(c => c.slice()); g[r] = plainCol(m, r);
+    const held = []; for (let i = 0; i < m.reels; i++) if (i !== r) held.push(i);
+    const ev = evaluate(m, g, bet, 1);
+    return Object.assign({ type: 'respin', mode: 'base', grid: g, vals: null, expandReels: null, held, mult: 1, coins: 0, bonusN: 0, stuck: null }, ev, { free: 0 });
   };
 
   // ---------- Karten ----------

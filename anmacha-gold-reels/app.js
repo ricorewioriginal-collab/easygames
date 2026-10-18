@@ -64,6 +64,7 @@
       <div class="hero"><div class="logo"><span>AnMaCha</span><b>CASINO</b></div>
         <div class="heroBtns"><button class="pill gold" data-nav id="daily">🎁 Tagesbonus</button><button class="pill" data-nav id="refill" hidden>💰 Spielgeld nachfüllen</button>
           <button class="pill" data-nav id="cur" title="Währung der Anzeige (nur Spielgeld)"></button><button class="pill" data-nav id="autofs" title="Spiele automatisch im Vollbild öffnen"></button></div></div>
+      <div class="mjp glass"><small>💎 MYSTERY JACKPOT</small><b></b><small>für alle Automaten · fällt zufällig</small></div>
       <div class="tabs" role="tablist"><button class="tab" data-nav data-f="all">Alle</button><button class="tab" data-nav data-f="slot">🎰 Slots</button><button class="tab" data-nav data-f="table">🃏 Tischspiele</button></div>
       <div class="grid"></div>
       <div id="cloudMount" class="cloudbox"></div>
@@ -95,6 +96,7 @@
     $('#daily').classList.toggle('done', C.data.daily === today); $('#daily').textContent = C.data.daily === today ? '✓ Bonus abgeholt' : '🎁 Tagesbonus +' + fmt(2500);
     $('#refill').hidden = wallet.bal >= 1000;
     $('#cur').textContent = C.data.cur === 'USD' ? '💲 Dollar' : '💶 Euro';
+    lobbyEl.querySelector('.mjp b').textContent = fmt(App.mystery());
     $('#autofs').textContent = '⛶ Vollbild ' + (C.data.autoFs ? 'an' : 'aus'); $('#autofs').hidden = !document.fullscreenEnabled;
   }
   wallet.on(() => { if (!current) refreshLobby(); });
@@ -150,8 +152,21 @@
   addEventListener('hashchange', route);
   addEventListener('resize', () => { if (current && current.resize) current.resize(innerWidth, innerHeight); });
 
+  // ---------- Mystery-Jackpot: gemeinsamer Topf aller Automaten ----------
+  // 1,5 % jedes Slot-Einsatzes fließen hinein; er fällt, sobald er eine geheime Schwelle zwischen Start- und Höchstwert erreicht.
+  const MJ = { seed: 2500, max: 7500, rate: 0.015 };
+  const mjAt = () => MJ.seed + 1 + Math.floor(Math.random() * (MJ.max - MJ.seed));
+  const mjFix = () => { const d = C.data; if (!(d.mjp >= MJ.seed && d.mjp < MJ.max)) d.mjp = MJ.seed; if (!(d.mjpAt > d.mjp && d.mjpAt <= MJ.max)) d.mjpAt = mjAt(); };
+
   // ---------- gemeinsame Einblendungen ----------
   const App = {
+    MYSTERY_MAX: MJ.max,
+    mystery() { mjFix(); return Math.floor(C.data.mjp); },
+    mysteryFeed(bet) {
+      mjFix(); const d = C.data; d.mjp += bet * MJ.rate;
+      let win = 0; if (d.mjp >= d.mjpAt) { win = Math.floor(d.mjp); d.mjp = MJ.seed; d.mjpAt = mjAt(); }
+      C.save(); return win;
+    },
     home() { if (location.hash) location.hash = ''; else route(); },
     toggleSound() { sound.on = !sound.on; setSndIcon(); C.toast(sound.on ? '🔊 Ton an' : '🔇 Ton aus', 1000); },
     splash: (html, theme, ms) => G.CasinoOverlay.splash(html, theme, ms),
