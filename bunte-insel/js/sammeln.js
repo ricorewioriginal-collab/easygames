@@ -58,7 +58,7 @@ BI.createSammeln = function (G) {
   const weighted = (list, g) => { const w = q => RW[q[3]] * (g && evBoost(g) && q[3] >= 1 ? 3 : 1); let t = 0; for (const q of list) t += w(q); let r = Math.random() * t; for (const q of list) { r -= w(q); if (r <= 0) return q; } return list[0]; };
   const isle = () => {
     let best = null;
-    for (const q of W.isles || []) { if (!q || !Number.isFinite(q.R)) continue; const d = Math.hypot(P.x - q.x, P.z - q.z); if (d < q.R + 16 && (!best || d < best.d)) best = { cx: q.x, cz: q.z, R: q.R, d }; }
+    for (const q of (W.isles || []).concat((W.SEA_ISL || []).map(k => W[k]))) { if (!q || !Number.isFinite(q.R)) continue; const d = Math.hypot(P.x - q.x, P.z - q.z); if (d < q.R + 16 && (!best || d < best.d)) best = { cx: q.x, cz: q.z, R: q.R, d }; }
     const d = Math.hypot(P.x, P.z); if (d < 219 && (!best || d < best.d)) best = { cx: 0, cz: 0, R: 203, d };
     return best;
   };

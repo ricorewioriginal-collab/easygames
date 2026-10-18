@@ -61,7 +61,7 @@ BI.buildFussballGround = function (c) {
   { const px = Pt.x + 22, pz = Pt.z - HZ - 3.2; st.cyl(px, 0, pz, 1.5, 1.7, .5, 0xcfd6e2, 14); st.cyl(px, .5, pz, 1.1, 1.3, .5, 0xb7c0d0, 14); st.cyl(px, 1.0, pz, .12, .18, .9, GOLD0, 8); st.cyl(px, 1.9, pz, .55, .25, .8, GOLD0, 10); st.sph(px, 2.8, pz, .22, GOLD0, 1); for (const sd of [-1, 1]) st.cyl(px + sd * .55, 2.1, pz, .06, .06, .5, GOLD0, 5); W.addCircle(px, pz, 1.6, false, 3); W.spots.fcup = { x: px, z: pz }; }
   /* Bäume am Rand, Laternen am Eingang */
   for (let i = 0; i < 50; i++) { const a = rn() * TAU, d = F.R - 5 - rn() * 6, x = F.x + Math.sin(a) * d, z = F.z + Math.cos(a) * d; if (Math.hypot(x - E.x, z - E.z) < 12) continue; if (x > x0 - 2 && x < x1 + 2 && z > z0 - 2 && z < z1 + 9) continue;
-    const h = 2.2 + rn() * 1.2; st.cyl(x, 0, z, .22, .32, h, 0x6b4a2a, 6); st.sph(x, h + 1.1, z, 1.5 + rn() * .5, [0x4cb85a, 0x5ac966, 0x3fa84e][i % 3], 1, 1, .95, 1); W.addCircle(x, z, .5, false, 3); }
+    const h = 2.2 + rn() * 1.2; st.cyl(x, 0, z, .22, .32, h, 0x6b4a2a, 6); st.sph(x, h + 1.1, z, 1.5 + rn() * .5, [0x4cb85a, 0x5ac966, 0x3fa84e][i % 3], 1, 1, .95, 1); W.addCircle(x, z, .5, false, 3); BI.isleTree(x, z, h + 1.6); }
   for (let k = 0; k < 4; k++) { const a = k / 4 * TAU + .8, x = E.x + Math.sin(a) * 8.4, z = E.z + Math.cos(a) * 8.4; st.cyl(x, 0, z, .08, .1, 3.4, 0x444a5a, 6); lamp.sph(x, 3.6, z, .3, 0xfff3b0, 1); }
 };
 

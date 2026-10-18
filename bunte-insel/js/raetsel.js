@@ -42,7 +42,7 @@ BI.buildRaetselGround = function (c) {
   const wallC = (a0, b0, a1, b1) => { const n = Math.max(1, Math.round(Math.hypot(a1 - a0, b1 - b0) / 1.1)); for (let i = 0; i <= n; i++) solid(a0 + (a1 - a0) * i / n, b0 + (b1 - b0) * i / n, .8, 7); };
   const dynC = (a, b, r) => { const q = L(a, b), o = { x: q.x, z: q.z, r, on: true }; W.dyn.push(o); return o; };
   const dynChain = (a0, b0, a1, b1, r) => { const n = Math.max(1, Math.round(Math.hypot(a1 - a0, b1 - b0) / (r * 1.2))), o = []; for (let i = 0; i <= n; i++) o.push(dynC(a0 + (a1 - a0) * i / n, b0 + (b1 - b0) * i / n, r)); return o; };
-  const tree = (a, b, h, col) => { cyl(a, b, .25, .4, h, 0x7a4a2a, 0, 6); sph(a, b, h + 1.3, 2, col, .95); sph(a + .5, b - .3, h + 2.6, 1.3, col + 0x0a140a, .95); solid(a, b, .5, 3); M.shade.push([L(a, b), 2.2, h]); };
+  const tree = (a, b, h, col) => { cyl(a, b, .25, .4, h, 0x7a4a2a, 0, 6); sph(a, b, h + 1.3, 2, col, .95); sph(a + .5, b - .3, h + 2.6, 1.3, col + 0x0a140a, .95); solid(a, b, .5, 3); M.shade.push([L(a, b), 2.2, h]); { const q = L(a, b); BI.isleTree(q.x, q.z, h + 2); } };
   /* ---- Wege, Dorfplatz „Wiesenhain“ mit Helden-Statue, Häuser, Brunnen ---- */
   path(-72, 0, 4, 0, 6); path(-44, 0, -44, -24, 3.4); path(-44, 0, -44, 26, 3.4); path(-20, 0, -20, 28, 3.2); path(-20, 0, -20, -26, 3.2); path(-44, 32, -34, 44, 3);
   { zone(-44, 0, 12, 0xf0e4b8); const p = L(-44, 0); st.ring(p.x, p.z, 8.5, 9.4, ROADY + .02, 0x6a8ad8, 40); st.ring(p.x, p.z, 5, 5.6, ROADY + .02, 0xffd23f, 40);
@@ -274,7 +274,7 @@ BI.createRaetsel = function (G) {
   K.update = function (dt, t) {
     { const k = .5 + .5 * Math.sin((t || 0) * 3.2); plateRing.scale.setScalar(1 + k * .14); plateRing.material.opacity = .55 + k * .4; plateBeam.material.opacity = .14 + k * .12; }
     const raw = Math.min(dt, .25), s = S(), p = s.puz, d0 = Math.hypot(P.x - M.x, P.z - M.z), ins = d0 < M.R + 12, near = d0 < 280;
-    refreshCap(); { const forest = W.spots.forest && Math.hypot(P.x - W.spots.forest.x, P.z - W.spots.forest.z) < W.spots.forest.R; if (attachSword()) swG.visible = s.sword > 0 && (onIsle() || forest) && !P.veh; }
+    refreshCap(); { const forest = W.spots.forest && Math.hypot(P.x - W.spots.forest.x, P.z - W.spots.forest.z) < W.spots.forest.R; if (attachSword()) swG.visible = s.sword > 0 && (onIsle() || forest) && !P.veh && !(G.handBusy && G.handBusy()); }
     { const lp = M.loc(P.x, P.z), inside = !P.veh && P.y < 4 && lp.a > RI.a0 && lp.a < RI.a1 && lp.b > RI.b0 && lp.b < RI.b1; if (roof.visible === inside) roof.visible = !inside; }
     if (ins !== was) { was = ins; if (ins) { if (!s.once.visit) { s.once.visit = 1; persist(); stars(1); earn('raetsel'); say('🗿 Willkommen auf der Rätsel-Insel der Uralten! +1 ⭐', 4200); } else say('🗿 Rätsel-Insel', 2000); } }
     /* Kapselmonster folgt dir (auch im Fahrzeug) */

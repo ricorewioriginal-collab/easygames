@@ -252,7 +252,7 @@ BI.buildCity = function (c) {
   // Straßenlaternen, Bänke, Bäume
   for (let x = -46; x <= 46; x += 12) for (const z of [-258.6, -271.6, -289.6, -302.6]) { if (Math.abs(x) < 8) continue; st.cyl(x, 0, z, .08, .08, 3.4, 0x555a66, 6); lamp.sph(x, 3.5, z, .26, 0xffffff, 1); }
   for (const x of [-20, 20, -32, 32]) for (const z of [-258.8, -271.2]) { st.box(x, .4, z, 1.8, .1, .5, 0xc8803c); st.box(x, 0, z + (z > -265 ? .12 : -.12), 1.6, .4, .08, 0x555a66); }
-  const tree = (x, z, s) => { if (Math.hypot(x - C.x, z - C.z) > C.R - 3) return; st.cyl(x, 0, z, .22 * s, .32 * s, 2.2 * s, 0x8a5a33, 6); st.sph(x, 3.1 * s, z, 1.7 * s, pick([0x4cb85a, 0x5ac966, 0x3fa84e]), 1, 1, .9, 1); W.addCircle(x, z, .6, false, 3); };
+  const tree = (x, z, s) => { if (Math.hypot(x - C.x, z - C.z) > C.R - 3) return; st.cyl(x, 0, z, .22 * s, .32 * s, 2.2 * s, 0x8a5a33, 6); st.sph(x, 3.1 * s, z, 1.7 * s, pick([0x4cb85a, 0x5ac966, 0x3fa84e]), 1, 1, .9, 1); W.addCircle(x, z, .6, false, 3); BI.isleTree(x, z, 3.6 * s); };
   for (let x = -48; x <= 48; x += 8) { if (Math.abs(x) < 7) continue; tree(x, -286, 1); tree(x + 3, -234 - Math.abs(x) * .18, 1.1); } for (const [x, z] of [[-10, -240], [10, -240], [-10, -282], [10, -282], [-8, -312], [8, -312], [-54, -300], [54, -300], [-44, -330], [44, -330]]) tree(x, z, 1.1);
   // geparkte Autos an der Hauptstraße
   W.vehicleSpawns.push({ type: 'car', x: -30, z: -261.4, h: Math.PI / 2 }, { type: 'taxi', x: 22, z: -268.6, h: -Math.PI / 2 }, { type: 'bus', x: 40, z: -261.6, h: Math.PI / 2 }, { type: 'car', x: -44, z: -268.6, h: -Math.PI / 2 });

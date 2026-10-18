@@ -42,7 +42,7 @@ BI.buildSchluesselGround = function (c) {
   const solid = (a, b, r, h) => { const p = L(a, b); W.addCircle(p.x, p.z, r, false, h || 4); return p; };
   const path = (a0, b0, a1, b1, w, col) => { const p = L((a0 + a1) / 2, (b0 + b1) / 2), q0 = L(a0, b0), q1 = L(a1, b1); st.strip(p.x, p.z, w, Math.hypot(a1 - a0, b1 - b0), Math.atan2(q1.x - q0.x, q1.z - q0.z), ROADY, col || 0xf0e0b8); };
   const hill = (a, b, r0, tiers, step, dr, cA, cB) => { M.hills.push({ a, b, r0, tiers, step, dr }); for (let k = 1; k <= tiers; k++) { const r = r0 - dr * (k - 1); cyl(a, b, r, r, step, k % 2 ? cA : cB, (k - 1) * step, 40); } };
-  const tree = (a, b, h, col, r) => { if (M.roadD(L(a, b).x, L(a, b).z) < 4.5) return; cyl(a, b, .25, .38, h, 0x7a4a2a, 0, 6); sph(a, b, h + 1.2, r || 1.9, col, .95); sph(a + .5, b - .3, h + 2.5, (r || 1.9) * .62, col + 0x0a140a, .95); solid(a, b, .5, 3); M.shade.push([L(a, b), (r || 1.9) * 1.1, h]); };
+  const tree = (a, b, h, col, r) => { if (M.roadD(L(a, b).x, L(a, b).z) < 4.5) return; cyl(a, b, .25, .38, h, 0x7a4a2a, 0, 6); sph(a, b, h + 1.2, r || 1.9, col, .95); sph(a + .5, b - .3, h + 2.5, (r || 1.9) * .62, col + 0x0a140a, .95); solid(a, b, .5, 3); M.shade.push([L(a, b), (r || 1.9) * 1.1, h]); { const q = L(a, b); BI.isleTree(q.x, q.z, h + 2); } };
   const lantern = (a, b, h, col) => { cyl(a, b, .08, .1, h || 3.2, 0x44485a, 0, 6); glow(a, b, (h || 3.2) + .3, .28, col || 0xfff0b0); const q = L(a, b); M.lamps.push({ x: q.x, z: q.z, y: (h || 3.2) + .3 }); };
   const zone = (a, b, r, col, y) => { const p = L(a, b); st.disc(p.x, p.z, r, y || ROADY + .004, col, 40); };
 
@@ -54,7 +54,7 @@ BI.buildSchluesselGround = function (c) {
     for (const [a, b, col] of [[-54, -6, 0xff5a8a], [-53, -4.4, 0x35d6e0], [-52, -2.8, 0xffd23f]]) { const q = L(a, b); st.box(q.x, 0, q.z, .5, 2.4, .12, col, ry + .3, .2); }
     for (const [a, b] of [[-66, -22], [-48, 14], [-70, 14], [-47, -26]]) palmish(a, b);
     W.spots.sk_strand = L(-60, 0); W.spots.palme = L(-62, -10); }
-  function palmish(a, b) { if (M.roadD(L(a, b).x, L(a, b).z) < 4.5) return; const q = L(a, b), h = 5 + rn() * 2; st.cyl(q.x, 0, q.z, .2, .3, h, 0x9a6a3a, 6); for (let f = 0; f < 6; f++) { const g = f / 6 * TAU; st.box(q.x + Math.sin(g) * 1.3, h - .2, q.z + Math.cos(g) * 1.3, 2.8, .1, .8, 0x3fae4a, g); } solid(a, b, .45, 6); }
+  function palmish(a, b) { if (M.roadD(L(a, b).x, L(a, b).z) < 4.5) return; const q = L(a, b), h = 5 + rn() * 2; st.cyl(q.x, 0, q.z, .2, .3, h, 0x9a6a3a, 6); for (let f = 0; f < 6; f++) { const g = f / 6 * TAU; st.box(q.x + Math.sin(g) * 1.3, h - .2, q.z + Math.cos(g) * 1.3, 2.8, .1, .8, 0x3fae4a, g); } solid(a, b, .45, 6); BI.isleTree(q.x, q.z, h); }
   /* ---- Erwachens-Plattform: Glasmosaik-Kreis mit der großen Statue des Lichtwanderers Lio ---- */
   { const SA = -14, SB = 0, p = L(SA, SB), COL = [0x4da3ff, 0xffd23f, 0xff5a8a, 0x7a4ad8, 0x35d6e0, 0xffffff];
     st.disc(p.x, p.z, 17, ROADY + .002, 0x2a3a6a, 48); for (let i = 0; i < 24; i++) st.ring(p.x, p.z, 12, 16.4, ROADY + .006, COL[i % 6], 1, i / 24 * TAU, (i + 1) / 24 * TAU - .02);

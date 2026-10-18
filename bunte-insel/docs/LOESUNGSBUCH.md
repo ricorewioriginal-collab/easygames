@@ -8,17 +8,18 @@
 2. 🔓 Story: Welten freischalten
 3. 📜 Inselgeschichten
 4. 🗿 Rätsel-Insel der Uralten
-5. 🗝️ Schlüsselreich
-6. 🧽 Schwammi-Bucht
-7. 🎠 Märchenland
-8. 🌊 Weitere Welten
-9. 🔴 Taschi-Land: fangen, kämpfen, Orden
-10. 🌠 Wunsch-Insel (hinter dem Schlüsselreich)
-11. 🍄 Hüpfland (Insel im Westen)
-12. 📋 Alle Aufgaben der Welten
-13. 🏅 Alle Sticker
-14. 🔑 Geheimcodes
-15. 💡 Tipps und Tricks
+5. 🌲 Wald-Insel (großer Verbotener Wald)
+6. 🗝️ Schlüsselreich
+7. 🧽 Schwammi-Bucht
+8. 🎠 Märchenland
+9. 🌊 Weitere Welten
+10. 🔴 Taschi-Land: fangen, kämpfen, Orden
+11. 🌠 Wunsch-Insel (hinter dem Schlüsselreich)
+12. 🍄 Hüpfland (Insel im Westen)
+13. 📋 Alle Aufgaben der Welten
+14. 🏅 Alle Sticker
+15. 🔑 Geheimcodes
+16. 💡 Tipps und Tricks
 
 ---
 
@@ -358,6 +359,20 @@ Brücke im Süden. Zelda-/Lufia-Gefühl: Rätsel im Prüfungsturm, Dorf, Schmied
 
 ---
 
+## 🌲 Wald-Insel (großer Verbotener Wald)
+
+Holzbrücke an der Nordküste der Rätsel-Insel. Hier wird wie in einem Rollenspiel gekämpft – mit Kampfstufe und gekaufter Ausrüstung.
+
+- 🏕️ Waldlager: sicher, keine Monster. Herzen und Energie füllen sich schnell wieder auf. Heilquelle = sofort voll.
+- 🎒 Waldhändlerin Fenja: Waffen, Schilde, Amulett und Tränke kaufen und anlegen.
+- Fünf Lichtungen mit Monstern aus den Welten: 🗿 Titanenkreis, 🗝️ Schattenhain, 🌙 Mondlichtung, 🎬 Tintenschlucht, 🫧 Muschelstrand.
+- Auf einer Lichtung 8 Monster besiegen → der Wächter erscheint (Titan Kron, Dunkelriese, Mondwolf-König, Der große Klecks, Planktos Riesen-Roboter).
+- Alle fünf Wächter besiegt → Sticker „Held des Waldes“.
+
+> 💡 Sternenbogen: schießt aus der Ferne (👊). Donnerhammer: der Tritt 🦵 wird zur Schockwelle. Funkelstab: ✨ kostet weniger Energie und trifft weiter. Ein Schild nimmt Monstern viel Kraft.
+
+---
+
 ## 🗝️ Schlüsselreich
 
 Mit dem Lichtschlüssel öffnest du 5 Schlüssellöcher, danach das Tor der Herzen.
@@ -536,8 +551,8 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 - 🐟 Fische im Sammelbuch: 0 von 14 (am See & Strand angeln)
 - 🐞 Käfer im Sammelbuch: 0 von 14 (Kescher im Gras)
 - 🐚 Funde im Sammelbuch: 0 von 14 (glitzernde Stellen am Strand)
-- 🌈 Heute: Regenbogen-Tag – Heute zeigt sich immer wieder ein Regenbogen mit bunten Sternen!
-- 🌟 Tagesglück: heute 🐲 Drachen-Karpfen fangen (+2 ⭐)
+- 🦋 Heute: Käfertag – Heute wimmelt es von Käfern und Faltern – seltene sind häufiger, die ersten 5 Fänge geben extra ⭐!
+- 🌟 Tagesglück: heute 🦐 Garnelchen fangen (+2 ⭐)
 
 ### 🎬 Dampfer-Hafen
 
@@ -639,9 +654,20 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 - 🎵 Noten sammeln: 0 (alle 10 = 1 ⭐)
 - 🕹️ Frequenz-Dreher am Spielautomaten spielen
 
+### 🌲 Wald-Insel
+
+- 🌲 Wald-Insel besuchen (Holzbrücke an der Nordküste der Rätsel-Insel)
+- 🎒 Bei Waldhändlerin Fenja Ausrüstung kaufen (Waffe, Schild oder Amulett)
+- 💪 Kampfstufe 5 erreichen (jetzt: Stufe 1)
+- 🗿 Titanenkreis: den Wächter besiegen (Monster aus Rätsel-Insel)
+- 🗝️ Schattenhain: den Wächter besiegen (Monster aus Schlüsselreich)
+- 🌙 Mondlichtung: den Wächter besiegen (Monster aus Zotik)
+- 🎬 Tintenschlucht: den Wächter besiegen (Monster aus Trickfilm-Wüste)
+- 🫧 Muschelstrand: den Wächter besiegen (Monster aus Schwammi-Bucht)
+
 ### 🚪 Gebäude erkunden
 
-- 🚪 Gebäude betreten: 0 von 47 (5 für den Sticker)
+- 🚪 Gebäude betreten: 0 von 48 (5 für den Sticker)
 - 🏘️ 20 verschiedene Gebäude betreten
 - 🎁 Schatztruhen in Gebäuden öffnen: 0 von 10
 
@@ -825,6 +851,10 @@ So bekommst du jeden Sticker:
 | 🃏 Kartensammler | Sammle alle 12 Runenkarten am Kartenautomaten |
 | 💠 Digi-Partner | Lass dein Partner-Ei mit Datenwürfeln bis zur 3. Stufe wachsen |
 | 🌀 Prisma-Chronik | Schließe die Geschichte des Prisma-Archipels ab |
+| 🎒 Gut gerüstet | Kauf dir Ausrüstung für den Wald |
+| 🌲 Waldläufer | Betritt die große Wald-Insel hinter der Rätsel-Insel |
+| 💪 Kampfstufe 5 | Erreiche Kampfstufe 5 im Verbotenen Wald |
+| 👑 Held des Waldes | Besiege alle fünf Wächter der Wald-Insel |
 
 ---
 

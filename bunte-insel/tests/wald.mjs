@@ -19,5 +19,20 @@ const r = await p.evaluate(async () => {
   return out; });
 ok(r.n === 17 && /Winzling Plankto/.test(r.names) && /Riesen-Roboter/.test(r.names) && /Tintenklecks/.test(r.names) && /Käfer-Roboter/.test(r.names) && /Verdünner/.test(r.names) && /Skizzen/.test(r.names) && /große Klecks/.test(r.names) && /Dunkelwichtel/.test(r.names) && /Moosling/.test(r.names) && /Dornenwolf/.test(r.names) && /Frostgeist/.test(r.names) && /Lavadrache/.test(r.names) && /Dunkelriese/.test(r.names), 'Alle Welt-Gegner lassen sich im Wald erzeugen: ' + r.names);
 ok(r.alive >= 14, 'Gegner leben und bewegen sich (' + r.alive + ')'); ok(r.dw, 'Dunkelwichtel besiegt → Sticker'); ok(r.plankton, 'Planktos Riesen-Roboter besiegt → Sticker Plankto-Bezwinger'); ok(r.tinte, 'Der große Klecks besiegt → Sticker Klecks-Bezwinger'); ok(r.riese, 'Dunkelriese besiegt → Sticker Schlüsselträger');
+/* Wald-Insel (großer Verbotener Wald): Insel + Brücke, Ausrüstung kaufen/anlegen, Kampfstufe, Lager sicher, Lichtungs-Wächter */
+const w = await p.evaluate(async () => {
+  const b = __bi, c = b.combat, D = c.dbg, W = b.W, sl = ms => new Promise(r => setTimeout(r, ms)), o = {};
+  o.isle = W.isles.some(i => i.id === 'wald'); const e = W.spots.waldinsel; o.ground = W.groundY(e.x, e.z, 5) > -0.1;
+  b.P.veh = null; const sh = W.spots.waldShop; b.P.x = sh.x; b.P.z = sh.z - 1.4; await sl(300); const n = b.wald.near(); o.shopNear = !!n && n.k === 'wshop';
+  b.save.stars = 100; b.gear.show('Test'); await sl(100); const btn = [...document.querySelectorAll('button')].find(x => x.textContent.includes('15 ⭐')); btn && btn.click(); b.gear.close();
+  o.sword = b.gear.weapon().id === 'schwert' && b.save.stars < 100 && b.gear.dmgMul() > 1;
+  const lv0 = c.level(); b.save.fight.xp = 60; o.level = c.level() > lv0 && c.level() >= 5;
+  const z = W.spots.wald_mond; b.P.x = z.x; b.P.z = z.z; await sl(500); o.active = c.active();
+  D.zk.mond = 8; const boss = D.spawn('mondwolf', z.x + 4, z.z, { isle: true, wz: 'mond', zboss: true }); D.damage(boss, 99999, 1, 0); await sl(200); o.zone = !!(b.save.wald && b.save.wald.zb && b.save.wald.zb.mond);
+  const cp = W.spots.waldCamp; b.P.x = cp.x; b.P.z = cp.z; await sl(300); const m = D.spawn('blob', cp.x + 1, cp.z, { isle: true }); await sl(600); o.campSafe = !b.wald || (Math.hypot(m.x - cp.x, m.z - cp.z) > BI.WALD.camp.r);
+  o.log = b.wald.log().rows.length === 8; return o; });
+console.log(w);
+ok(w.isle && w.ground, 'Wald-Insel steht mit Boden und Brücke'); ok(w.shopNear && w.sword, 'Waldhändlerin: Schwert kaufen und anlegen'); ok(w.level, 'Kampfstufe steigt mit Erfahrung');
+ok(w.active && w.zone, 'Kampf auf der Wald-Insel, Wächter der Mondlichtung besiegt'); ok(w.campSafe, 'Monster bleiben aus dem Lager'); ok(w.log, 'Aufgaben-Liste der Wald-Insel');
 ok(errs.length === 0, 'Keine Seitenfehler' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
 await browser.close(); console.log(fails ? fails + ' FEHLER' : 'ALLES OK'); process.exit(fails ? 1 : 0);

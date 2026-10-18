@@ -135,7 +135,7 @@ BI.buildPrismaWorlds = function (c) {
     for (let i = 0; i < 7; i++) { const an = i / 7 * TAU; st.cyl(al.x + Math.sin(an) * 1.35, 1.38, al.z + Math.cos(an) * 1.35, .3, .22, .12, 0xffd55b, 8); }
     W.addCircle(al.x, al.z, 3.0, false, 1.4);
     /* Kirschbäume (rosa Kronen) */
-    for (const t of K.trees) { const q = at(t[0], t[1]); if (!W.free(q.x, q.z, 1.2)) continue; st.cyl(q.x, 0, q.z, .22, .32, 2.4, 0x6b4423, 7); st.sph(q.x, 3.2, q.z, 1.7, 0xffb7d5, 1, 1, .8, 1); st.sph(q.x + .8, 3.8, q.z - .3, 1.0, 0xffc9e0, 1); W.addCircle(q.x, q.z, .45, false, 3); }
+    for (const t of K.trees) { const q = at(t[0], t[1]); if (!W.free(q.x, q.z, 1.2)) continue; st.cyl(q.x, 0, q.z, .22, .32, 2.4, 0x6b4423, 7); st.sph(q.x, 3.2, q.z, 1.7, 0xffb7d5, 1, 1, .8, 1); st.sph(q.x + .8, 3.8, q.z - .3, 1.0, 0xffc9e0, 1); W.addCircle(q.x, q.z, .45, false, 3); BI.isleTree(q.x, q.z, 4); }
     const cl = at(K.cloud[0], K.cloud[1]); W.vehicleSpawns.push({ type: 'wolke', x: cl.x, z: cl.z, h: RY });
   }
   /* ---------- Runen-Arena: Duell-Stadion ---------- */
@@ -164,7 +164,7 @@ BI.buildPrismaWorlds = function (c) {
       st.box(q.x, 5.8, q.z, .9, .5, .9, 0x5a4a3a, yaw); for (const sd of [-1, 1]) { const l = loc(q, yaw, sd * .9, 0); st.box(l.x, 6.2, l.z, .1, 2.6, .1, 0xbfc4d4, yaw, 0, -sd * .55); }
       W.addCircle(q.x, q.z, 3.5, false, 6); W.spots.prismaTv = loc(q, yaw, 0, 3.4); }
     /* Würfelbäume */
-    D.trees.forEach((t, i) => { const q = at(t[0], t[1]); if (!W.free(q.x, q.z, 1.2)) return; st.box(q.x, 0, q.z, .5, 2.4, .5, 0x2a3f6a); st.box(q.x, 2.4, q.z, 2.4, 1.6, 2.4, NEON[i % 4], i * .4); st.box(q.x + .5, 4.0, q.z - .3, 1.5, 1.2, 1.5, NEON[(i + 1) % 4], i * .7); lamp.box(q.x - .4, 5.2, q.z + .2, .7, .7, .7, NEON[(i + 2) % 4], i); W.addCircle(q.x, q.z, .5, false, 5); });
+    D.trees.forEach((t, i) => { const q = at(t[0], t[1]); if (!W.free(q.x, q.z, 1.2)) return; st.box(q.x, 0, q.z, .5, 2.4, .5, 0x2a3f6a); st.box(q.x, 2.4, q.z, 2.4, 1.6, 2.4, NEON[i % 4], i * .4); st.box(q.x + .5, 4.0, q.z - .3, 1.5, 1.2, 1.5, NEON[(i + 1) % 4], i * .7); lamp.box(q.x - .4, 5.2, q.z + .2, .7, .7, .7, NEON[(i + 2) % 4], i); W.addCircle(q.x, q.z, .5, false, 5); BI.isleTree(q.x, q.z, 5); });
     /* Ei-Nest */
     { const q = at(D.nest[0], D.nest[1]); st.cyl(q.x, 0, q.z, 1.7, 2.0, .45, 0x6b4a2a, 14); for (let i = 0; i < 14; i++) { const an = i / 14 * TAU; st.box(q.x + Math.sin(an) * 1.75, .3, q.z + Math.cos(an) * 1.75, .9, .22, .18, i % 2 ? 0x8a6a3a : 0xa8824a, an + .6); } st.cyl(q.x, .45, q.z, 1.2, 1.2, .05, 0xd8c08a, 14); W.addCircle(q.x, q.z, 1.9, false, .8); }
   }

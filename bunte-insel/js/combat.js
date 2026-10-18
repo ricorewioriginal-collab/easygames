@@ -5,9 +5,15 @@
 BI.createCombat = function (G) {
   const { scene, camera, W, A, fx, P, save, persist, say, addStars } = G, $ = id => document.getElementById(id), K = { dim: 0, panelOpen: false }, TAU = BI.TAU, mat = BI.mat();
   const AR = W.spots.arena, FO = W.spots.forest, rnd = Math.random, clamp = BI.clamp;
-  const HPM = 100, EPM = 50;
+  let HPM = 100; const EPM = 50;
   let hp = HPM, ep = EPM, inv = 0, block = false, blockSince = -Infinity, combatClock = 0, atk = null, mode = null, wasZone = null, spawnT = 3, flashT = 0, target = null, lastZone = null;
   const enemies = [], loot = [], S = () => save.fight || (save.fight = { k: 0, d: 0, b: 0, w: 0 });
+  /* Rollenspiel: Ausrüstung (js/ausruestung.js) und Kampfstufe (Erfahrung aus besiegten Monstern, save.fight.xp) */
+  const gv = (k, d) => G.gear && G.gear[k] ? G.gear[k]() : d, LVXP = [0, 8, 20, 36, 56, 80, 110, 150, 200, 260];
+  K.level = () => { const x = S().xp | 0; let l = 0; while (l < LVXP.length && x >= LVXP[l]) l++; return l; };
+  const calcHpm = () => 100 + (K.level() - 1) * 8 + gv('hpBonus', 0), lvMul = () => 1 + (K.level() - 1) * .06;
+  function gainXp(n) { const st = S(), was = K.level(); st.xp = (st.xp | 0) + n; const lv = K.level(); if (lv > was) { HPM = calcHpm(); hp = Math.min(HPM, hp + 20); setTimeout(() => say('💪 Kampfstufe ' + lv + '! Du bist stärker und hast mehr Herzen.', 2600), 1200); A.fanfare && A.fanfare(); if (lv >= 5) G.earn('wald_stufe5'); } }
+  K.heal = () => { HPM = calcHpm(); hp = HPM; ep = EPM; };
 
   /* ---------- Monster-Modelle (eine Geometrie je Art) ---------- */
   const geos = {};
@@ -42,6 +48,7 @@ BI.createCombat = function (G) {
     klecks: { n: 'Tintenklecks', hp: 30, spd: 2.1, dmg: 7, reach: 1.5, base: 1.1 }, kaeferbot: { n: 'Käfer-Roboter', hp: 46, spd: 2.9, dmg: 9, reach: 1.6, base: 1.1 }, verduenner: { n: 'Verdünner-Geist', hp: 36, spd: 2.5, dmg: 8, reach: 1.6, base: 1.1 }, skizze: { n: 'Skizzen-Wicht', hp: 34, spd: 2.7, dmg: 8, reach: 1.5, base: 1.1 },
     tintenriese: { n: 'Der große Klecks', hp: 330, spd: 1.8, dmg: 20, reach: 3.4, base: 3.4, big: true, geo: 'klecks' },
     plankto: { n: 'Winzling Plankto', hp: 28, spd: 3.2, dmg: 7, reach: 1.4, base: .8 }, planktobot: { n: 'Planktos Riesen-Roboter', hp: 340, spd: 1.9, dmg: 20, reach: 3.4, base: 2.4, big: true },
+    mondwolf: { n: 'Mondwolf-König', hp: 320, spd: 2.2, dmg: 19, reach: 3.3, base: 2.4, big: true, geo: 'wolf' },
     titan: { n: 'Titan Kron', hp: 360, spd: 1.8, dmg: 21, reach: 3.5, base: 2.4, big: true },
     riese: { n: 'Dunkelriese', hp: 300, spd: 1.9, dmg: 19, reach: 3.4, base: 3.2, big: true, geo: 'wichtel' },
     gblob: { n: 'Riesen-Glibbi', hp: 150, spd: 1.8, dmg: 14, reach: 2.8, base: 2.4, big: true, geo: 'gblob' }, boss: { n: 'Waldgeist', hp: 230, spd: 2.0, dmg: 17, reach: 3.2, base: 2.2, big: true, geo: 'boss' }
@@ -55,28 +62,29 @@ BI.createCombat = function (G) {
     scene.add(g); const e = Object.assign({ kind, T, g, body, bar, fg, tele, x, z, vx: 0, vz: 0, hp: T.hp, max: T.hp, state: 'idle', wind: 0, cool: 1 + rnd(), stun: 0, dead: false, t: 0, ph: rnd() * 6, home: o && o.home }, o || {}); enemies.push(e); return e;
   }
   function removeEnemy(e) { scene.remove(e.g); if (e.tele) { scene.remove(e.tele); } const i = enemies.indexOf(e); if (i >= 0) enemies.splice(i, 1); }
-  function clearEnemies() { while (enemies.length) removeEnemy(enemies[0]); for (const l of loot) scene.remove(l.m); loot.length = 0; if (duel) { scene.remove(duel.f.group); duel = null; } }
+  function clearEnemies() { while (enemies.length) removeEnemy(enemies[0]); while (arrows.length) scene.remove(arrows.pop().m); for (const l of loot) scene.remove(l.m); loot.length = 0; if (duel) { scene.remove(duel.f.group); duel = null; } }
 
   /* ---------- Beute: Herz, Energie-Kristall ---------- */
   const lootGeo = { heart: new THREE.SphereGeometry(.28, 8, 6), gem: new THREE.OctahedronGeometry(.3) }, lootMat = { heart: new THREE.MeshBasicMaterial({ color: 0xff4f7a }), gem: new THREE.MeshBasicMaterial({ color: 0x4da3ff }) };
   function drop(x, z) { const r = rnd(); if (r > .55) return; const k = r < .28 ? 'heart' : 'gem', m = new THREE.Mesh(lootGeo[k], lootMat[k]); m.position.set(x, .6, z); scene.add(m); loot.push({ m, k, t: 20 }); }
 
   /* ---------- Zonen & Zustand ---------- */
-  const inForest = () => !P.veh && Math.hypot(P.x - FO.x, P.z - FO.z) < FO.R - .5;
+  const WA = BI.WALD, inSmall = () => !P.veh && Math.hypot(P.x - FO.x, P.z - FO.z) < FO.R - .5;
+  const inBig = () => !P.veh && !!WA && WA.onIsle(P.x, P.z, -1), inForest = () => inSmall() || inBig(), safe = () => inBig() && WA.inCamp(P.x, P.z);
   const inRing = () => !P.veh && Math.abs(P.x - AR.x) < AR.half + 1 && Math.abs(P.z - AR.z) < AR.half + 1;
   K.active = () => !P.veh && (inForest() || (!!mode && inRing()));
   K.nearKai = () => !P.veh && !mode && Math.hypot(P.x - AR.kai.x, P.z - AR.kai.z) < 3.2;
   K.lock = () => (duel && !duel.over) ? duel.cam : null;
-  function resetStats() { hp = HPM; ep = EPM; inv = 0; atk = null; block = false; }
+  function resetStats() { HPM = calcHpm(); hp = HPM; ep = EPM; inv = 0; atk = null; block = false; }
 
   /* ---------- Spieler: Angriffe ---------- */
   const ATK = { punch: { dur: .3, at: .12, dmg: 12, range: 2.4, cd: .32, cost: 0 }, kick: { dur: .5, at: .22, dmg: 20, range: 2.7, cd: .6, cost: 0 }, special: { dur: .7, at: .28, dmg: 32, range: 4.6, cd: 1, cost: 25, ring: true } };
   let atkCd = 0, freeze = 0, flick = false;
   K.attack = function (kind) {
     if (!K.active() || atk || atkCd > 0 || freeze > 0 || hp <= 0) return; const a = ATK[kind]; if (!a) return;
-    if (a.cost > ep) { say('⚡ Zu wenig Energie – kurz ausruhen!', 1400); return; }
-    ep -= a.cost; atk = { kind, a, t: 0, hit: false }; atkCd = a.cd; block = false;
-    let best = null, bd = 4; for (const e of targets()) { const d = Math.hypot(e.x - P.x, e.z - P.z); if (d < bd) { bd = d; best = e; } } if (best && kind !== 'special') P.h = Math.atan2(best.x - P.x, best.z - P.z);
+    const cost = kind === 'special' ? a.cost * gv('spMul', 1) : a.cost; if (cost > ep) { say('⚡ Zu wenig Energie – kurz ausruhen!', 1400); return; }
+    ep -= cost; atk = { kind, a, t: 0, hit: false }; atkCd = a.cd * gv('cdMul', 1); block = false;
+    let best = null, bd = kind === 'punch' && gv('shot', 0) ? gv('shot', 0) : 4; for (const e of targets()) { const d = Math.hypot(e.x - P.x, e.z - P.z); if (d < bd) { bd = d; best = e; } } if (best && kind !== 'special') P.h = Math.atan2(best.x - P.x, best.z - P.z);
     A.whoosh && A.whoosh();
   };
   K.setBlock = on => { const next = !!on && K.active() && !atk; if (next && !block) blockSince = combatClock; block = next; };
@@ -85,12 +93,22 @@ BI.createCombat = function (G) {
     if (map[code]) { if (down) K.attack(map[code]); return true; } if (code === 'KeyH') { K.setBlock(down); return true; } return false;
   };
   const targets = () => { const o = enemies.filter(e => !e.dead); if (duel && !duel.over && duel.f.hp > 0) o.push(duel.f); return o; };
-  function hitEnemies(a) {
+  /* Sternpfeile (Sternenbogen) */
+  const arrows = [], arrowGeo = new THREE.CylinderGeometry(.06, .06, 1, 5).rotateX(Math.PI / 2), arrowMat = new THREE.MeshBasicMaterial({ color: 0xffd23f });
+  function shoot(dmg) { const m = new THREE.Mesh(arrowGeo, arrowMat), vx = Math.sin(P.h), vz = Math.cos(P.h); m.position.set(P.x + vx * .8, 1.1, P.z + vz * .8); m.rotation.y = P.h; scene.add(m); arrows.push({ m, vx, vz, t: 0, dmg, max: gv('shot', 14) / 22 }); A.whoosh && A.whoosh(); }
+  function updateArrows(dt) {
+    for (let i = arrows.length - 1; i >= 0; i--) { const r = arrows[i], m = r.m; r.t += dt; m.position.x += r.vx * 22 * dt; m.position.z += r.vz * 22 * dt; let hit = null;
+      for (const e of targets()) if (Math.hypot(e.x - m.position.x, e.z - m.position.z) < (e.T && e.T.big ? 2 : 1)) { hit = e; break; }
+      if (hit) damage(hit, hit.blocking ? r.dmg * .2 : r.dmg, r.vx, r.vz); if (hit || r.t > r.max) { scene.remove(m); arrows.splice(i, 1); } }
+  }
+  function hitEnemies(a, kind) {
+    const mul = Math.max(G.sword ? G.sword() : 1, gv('dmgMul', 1)) * lvMul(); if (kind === 'punch' && gv('shot', 0)) { shoot(a.dmg * mul); return; }
+    const slam = kind === 'kick' && gv('slam', false), ring = a.ring || slam, range = a.range + gv('reach', 0) + (kind === 'special' && gv('spMul', 1) < 1 ? 2 : 0) + (slam ? 1.2 : 0);
     let any = false; for (const e of targets()) {
-      const dx = e.x - P.x, dz = e.z - P.z, d = Math.hypot(dx, dz); if (d > a.range + (e.T && e.T.big ? 1 : 0)) continue; if (!a.ring && Math.abs(BI.angDiff(P.h, Math.atan2(dx, dz))) > 1.15) continue;
-      let dmg = a.dmg * (G.sword ? G.sword() : 1); if (e.blocking) dmg *= .2; damage(e, dmg, dx / (d || 1), dz / (d || 1)); any = true;
+      const dx = e.x - P.x, dz = e.z - P.z, d = Math.hypot(dx, dz); if (d > range + (e.T && e.T.big ? 1 : 0)) continue; if (!ring && Math.abs(BI.angDiff(P.h, Math.atan2(dx, dz))) > 1.15) continue;
+      let dmg = a.dmg * mul; if (e.blocking) dmg *= .2; damage(e, dmg, dx / (d || 1), dz / (d || 1)); any = true;
     }
-    if (a.ring) { fx.burst(P.x, 1, P.z, 30, [BI.C.gold, BI.C.white, BI.C.blue], 6, 1, 28, 2); }
+    if (ring) { fx.burst(P.x, 1, P.z, 30, [BI.C.gold, BI.C.white, BI.C.blue], 6, 1, 28, 2); }
     if (!any && !a.ring) A.pop();
   }
   function damage(e, dmg, nx, nz) {
@@ -100,19 +118,21 @@ BI.createCombat = function (G) {
   }
   function defeatMonster(e) {
     e.dead = true; e.t = 0; if (e.tele) e.tele.visible = false; A.bigpop && A.bigpop(); fx.burst(e.x, 1.2, e.z, 26, [BI.C.gold, BI.C.white, BI.C.pink, BI.C.purple], 6, 1.4, 32, 6);
-    const st = S(); if (mode === 'wave') { addStars(e.T.big ? 5 : 1); } else { addStars(e.T.big ? 8 : 1); st.k++; K.kills++; if (G.note) G.note('kill'); if (e.kind === 'boss') { st.b++; bossAlive = false; say('👑 Waldgeist besiegt! Du bist ein Waldheld! +8 ⭐', 4200); A.fanfare(); G.earn('boss'); } else if (e.kind === 'titan') { st.b++; bossAlive = false; addStars(3); say('🗿 Titan Kron ist besiegt – die Uralten sind stolz! +11 ⭐', 4600); A.fanfare(); G.earn('titan'); } else if (e.kind === 'planktobot') { st.b++; bossAlive = false; addStars(3); say('🧪 Planktos Roboter ist kaputt! Plankto flüchtet. +11 ⭐', 4600); A.fanfare(); G.earn('plankton'); } else if (e.kind === 'tintenriese') { st.b++; bossAlive = false; addStars(3); say('🖋️ Der große Klecks ist besiegt! +11 ⭐', 4600); A.fanfare(); G.earn('tintenboss'); st.tf = (st.tf | 0) + 1; } else if (e.kind === 'riese') { st.b++; bossAlive = false; addStars(2); say('🌑 Dunkelriese besiegt! Du bist ein Schlüsselträger! +10 ⭐', 4600); A.fanfare(); G.earn('schluesseltraeger'); } else { drop(e.x, e.z); if (TRICK.has(e.kind)) { st.tf = (st.tf | 0) + 1; if (st.tf >= 10) G.earn('trickfilm'); } if (e.kind === 'wichtel') { st.dw = (st.dw | 0) + 1; G.earn('schatten'); if (st.dw >= 10) G.earn('schatten10'); } } if (st.k >= 10) G.earn('forest'); persist(); }
+    const st = S(); gainXp(e.T.big ? 6 : 1); if (mode === 'wave') { addStars(e.T.big ? 5 : 1); } else { addStars(e.T.big ? 8 : 1); st.k++; K.kills++; if (G.note) G.note('kill'); if (e.wz && !e.zboss) zk[e.wz] = (zk[e.wz] | 0) + 1;
+      if (e.zboss) { st.b++; bossAlive = false; const Z = WA.ZONES.find(q => q.id === e.wz), first = G.wald && G.wald.bossDown(e.wz); if (first) addStars(5); say('🏆 ' + e.T.n + ' ist besiegt – ' + (Z ? Z.icon + ' ' + Z.name : 'die Lichtung') + ' ist befreit! +' + (first ? 13 : 8) + ' ⭐', 4600); A.fanfare(); const stk = { boss: 'boss', titan: 'titan', planktobot: 'plankton', tintenriese: 'tintenboss', riese: 'schluesseltraeger' }[e.kind]; if (stk) G.earn(stk); }
+      else if (e.kind === 'boss') { st.b++; bossAlive = false; say('👑 Waldgeist besiegt! Du bist ein Waldheld! +8 ⭐', 4200); A.fanfare(); G.earn('boss'); } else if (e.kind === 'titan') { st.b++; bossAlive = false; addStars(3); say('🗿 Titan Kron ist besiegt – die Uralten sind stolz! +11 ⭐', 4600); A.fanfare(); G.earn('titan'); } else if (e.kind === 'planktobot') { st.b++; bossAlive = false; addStars(3); say('🧪 Planktos Roboter ist kaputt! Plankto flüchtet. +11 ⭐', 4600); A.fanfare(); G.earn('plankton'); } else if (e.kind === 'tintenriese') { st.b++; bossAlive = false; addStars(3); say('🖋️ Der große Klecks ist besiegt! +11 ⭐', 4600); A.fanfare(); G.earn('tintenboss'); st.tf = (st.tf | 0) + 1; } else if (e.kind === 'riese') { st.b++; bossAlive = false; addStars(2); say('🌑 Dunkelriese besiegt! Du bist ein Schlüsselträger! +10 ⭐', 4600); A.fanfare(); G.earn('schluesseltraeger'); } else { drop(e.x, e.z); if (TRICK.has(e.kind)) { st.tf = (st.tf | 0) + 1; if (st.tf >= 10) G.earn('trickfilm'); } if (e.kind === 'wichtel') { st.dw = (st.dw | 0) + 1; G.earn('schatten'); if (st.dw >= 10) G.earn('schatten10'); } } if (st.k >= 10) G.earn('forest'); persist(); }
   }
-  let bossAlive = false; K.kills = 0; K.bossN = 0;
+  let bossAlive = false; const zk = {}; K.kills = 0; K.bossN = 0; K.zk = zk;
 
   /* ---------- Gegner verletzt den Spieler ---------- */
   function hurt(d, source) {
-    if (G.god && G.god()) return; if (inv > 0 || hp <= 0) return; if (block && combatClock - blockSince <= .24) { if (source && !source.dead) { source.stun = Math.max(source.stun, 1.05); source.state = 'idle'; source.cool = .9; if (source.tele) source.tele.visible = false; } fx.burst(P.x, 1.1, P.z, 18, [BI.C.gold, BI.C.white, BI.C.blue], 4, 1.1, 28, 3); say('🛡️ Perfekt pariert!', 850); A.hit && A.hit(); return; } if (block) d *= .2; hp = Math.max(0, hp - d); inv = .7; A.hit && A.hit(); fx.burst(P.x, 1.4, P.z, 8, [BI.C.white, BI.C.blue], 3, 1, 24, 2); flashT = .25;
+    if (G.god && G.god()) return; if (inv > 0 || hp <= 0) return; if (block && combatClock - blockSince <= .24) { if (source && !source.dead) { source.stun = Math.max(source.stun, 1.05); source.state = 'idle'; source.cool = .9; if (source.tele) source.tele.visible = false; } fx.burst(P.x, 1.1, P.z, 18, [BI.C.gold, BI.C.white, BI.C.blue], 4, 1.1, 28, 3); say('🛡️ Perfekt pariert!', 850); A.hit && A.hit(); return; } d *= gv('defMul', 1); if (block) d *= .2; hp = Math.max(0, hp - d); inv = .7; A.hit && A.hit(); fx.burst(P.x, 1.4, P.z, 8, [BI.C.white, BI.C.blue], 3, 1, 24, 2); flashT = .25;
     if (hp <= 0) onPlayerDown();
   }
   function onPlayerDown() {
     if (duel) { duel.pLost(); return; }
     say(mode === 'wave' ? '😴 Du bist müde – die Welle ist vorbei!' : '😴 Du bist müde … Ruh dich am Eingang aus!', 3200); A.bigpop && A.bigpop(); const was = mode; clearEnemies(); mode = null; resetStats(); K.dim = 0;
-    if (was) { P.x = AR.kai.x; P.z = AR.kai.z + 2.5; } else { P.x = FO.gate.x; P.z = FO.gate.z; } P.y = 0; spawnT = 3;
+    if (was) { P.x = AR.kai.x; P.z = AR.kai.z + 2.5; } else if (inBig()) { const c = W.spots.waldCamp; P.x = c.x; P.z = c.z + 3; } else { P.x = FO.gate.x; P.z = FO.gate.z; } P.y = 0; spawnT = 3;
   }
 
   /* ---------- Duell (wie Tekken): 3 Kämpfer, 2 Gewinn-Runden ---------- */
@@ -169,8 +189,16 @@ BI.createCombat = function (G) {
 
   /* ---------- Verbotener Wald ---------- */
   const WORLD = ['wichtel', 'plankto', 'klecks', 'moos', 'kaeferbot', 'wolf', 'verduenner', 'frost', 'skizze', 'lava'], TRICK = new Set(['klecks', 'kaeferbot', 'verduenner', 'skizze', 'tintenriese']);
+  /* Wald-Insel: Monster nach Lichtung, nach 8 besiegten kommt der Wächter; im Lager keine Monster */
+  function bigSpawn(dt) {
+    if (safe()) return; spawnT -= dt; const Z = WA.zoneAt(P.x, P.z), cap = Z ? (save.eco ? 4 : 5) : 2, alive = enemies.filter(e => !e.dead).length;
+    if (spawnT > 0 || alive >= cap) return; spawnT = Z ? 2.5 + rnd() * 2.5 : 5 + rnd() * 4;
+    for (let k = 0; k < 14; k++) { const a = rnd() * TAU, d = 9 + rnd() * 9, x = P.x + Math.sin(a) * d, z = P.z + Math.cos(a) * d; if (!WA.onIsle(x, z, -4) || WA.inCamp(x, z) || !W.free(x, z, .8)) continue;
+      if (Z && !bossAlive && (zk[Z.id] | 0) >= 8) { zk[Z.id] = 0; bossAlive = true; say('⚠️ Der Wächter erscheint: ' + TYPES[Z.boss].n + '!', 3200); spawn(Z.boss, x, z, { isle: true, wz: Z.id, zboss: true }); return; }
+      spawn(Z ? Z.mobs[(rnd() * Z.mobs.length) | 0] : WORLD[(rnd() * WORLD.length) | 0], x, z, { isle: true, wz: Z ? Z.id : null }); return; }
+  }
   function forestSpawn(dt) {
-    if (!inForest()) return; spawnT -= dt; const cap = save.eco ? 4 : 6, alive = enemies.filter(e => !e.dead).length;
+    if (inBig()) return bigSpawn(dt); if (!inForest()) return; spawnT -= dt; const cap = save.eco ? 4 : 6, alive = enemies.filter(e => !e.dead).length;
     if (spawnT > 0 || alive >= cap) return; spawnT = 3 + rnd() * 3;
     for (let k = 0; k < 14; k++) { const a = rnd() * TAU, d = 9 + rnd() * 9, x = P.x + Math.sin(a) * d, z = P.z + Math.cos(a) * d; if (Math.hypot(x - FO.x, z - FO.z) > FO.R - 2.5 || !W.free(x, z, .8)) continue;
       let kind = rnd() < .34 ? 'blob' : rnd() < .5 ? 'spike' : 'mush'; if (K.kills >= 3 && rnd() < .55) kind = WORLD[(rnd() * Math.min(WORLD.length, 2 + (K.kills / 3 | 0))) | 0];
@@ -184,7 +212,8 @@ BI.createCombat = function (G) {
     for (let i = enemies.length - 1; i >= 0; i--) {
       const e = enemies[i], T = e.T;
       if (e.dead) { e.t += dt; e.g.rotation.y += dt * 12; e.g.scale.setScalar(Math.max(.01, 1 - e.t * 1.6) * T.base); e.g.position.y += dt * 2.2; if (e.t > .65) removeEnemy(e); continue; }
-      const dx = px - e.x, dz = pz - e.z, d = Math.hypot(dx, dz) || .01, canFight = K.active() && hp > 0;
+      const dx = px - e.x, dz = pz - e.z, d = Math.hypot(dx, dz) || .01, canFight = K.active() && hp > 0 && !safe();
+      if (e.isle && d > 45) { if (e.zboss) { bossAlive = false; zk[e.wz] = 8; } removeEnemy(e); continue; }
       e.cool -= dt; e.stun -= dt;
       if (e.stun <= 0 && canFight) {
         if (e.state === 'wind') { e.wind -= dt; const k = 1 - e.wind / e.windMax; e.g.scale.setScalar(T.base * (1 + k * .22)); body(e, 1 + k * .5);
@@ -194,6 +223,8 @@ BI.createCombat = function (G) {
       }
       e.x += e.vx * dt; e.z += e.vz * dt; const fr = Math.exp(-dt * 7); e.vx *= fr; e.vz *= fr;
       if (e.ring) { const L = AR.half - 1; e.x = clamp(e.x, AR.x - L, AR.x + L); e.z = clamp(e.z, AR.z - L, AR.z + L); }
+      else if (e.isle) { const fd = Math.hypot(e.x - WA.x, e.z - WA.z), L = WA.R - 3; if (fd > L) { e.x = WA.x + (e.x - WA.x) / fd * L; e.z = WA.z + (e.z - WA.z) / fd * L; }
+        if (WA.inCamp(e.x, e.z)) { const c = W.spots.waldCamp, cd = Math.hypot(e.x - c.x, e.z - c.z) || 1, r = WA.camp.r + 2.2; e.x = c.x + (e.x - c.x) / cd * r; e.z = c.z + (e.z - c.z) / cd * r; if (e.state === 'wind') { e.state = 'idle'; if (e.tele) e.tele.visible = false; } } }
       else if (e.home) { const fd = Math.hypot(e.x - FO.x, e.z - FO.z); if (fd > FO.R - 1.5) { e.x = FO.x + (e.x - FO.x) / fd * (FO.R - 1.5); e.z = FO.z + (e.z - FO.z) / fd * (FO.R - 1.5); } }
       e.g.position.x = e.x; e.g.position.z = e.z; e.g.position.y = Math.abs(Math.sin(t * 5 + e.ph)) * (e.state === 'wind' ? 0 : .12); if (e.state !== 'wind') { e.g.rotation.y = Math.atan2(dx, dz); body(e, 1 + Math.sin(t * 6 + e.ph) * .05); }
       if (e.tele && e.tele.visible) { e.tele.position.set(e.x, .08, e.z); }
@@ -219,7 +250,7 @@ BI.createCombat = function (G) {
   function openPanel() { if (K.panelOpen || mode) return; K.panelOpen = true; G.setStick(0, 0); const b = $('arenaBox'); b.innerHTML = '';
     const mk = (t, f) => { const x = document.createElement('button'); x.className = 'pill'; x.style.cssText = 'display:block;margin:6px auto;min-width:220px;font-size:17px'; x.textContent = t; x.onclick = () => { A.pop(); f(); }; b.appendChild(x); };
     $('arenaTxt').textContent = 'Kampfmeister Kai: „Willkommen in der Arena! Hier wird fair gekämpft – ohne Blut, mit Herz.“';
-    for (const d of FIGHTERS) mk(d.icon + ' Duell: ' + d.n + ' (+' + d.reward + ' ⭐)', () => startDuel(d)); mk('👾 Monster-Wellen (5 Wellen, +10 ⭐)', startWave);
+    for (const d of FIGHTERS) mk(d.icon + ' Duell: ' + d.n + ' (+' + d.reward + ' ⭐)', () => startDuel(d)); mk('👾 Monster-Wellen (5 Wellen, +10 ⭐)', startWave); if (G.gear) mk('🎒 Ausrüstung kaufen & anlegen', () => { closePanel(); G.gear.show('Kampfmeister Kai'); });
     $('arenaPanel').hidden = false; }
   function closePanel() { K.panelOpen = false; $('arenaPanel').hidden = true; G.updateButtons && G.updateButtons(true); }
   K.openPanel = openPanel; K.closePanel = closePanel; $('arenaClose').addEventListener('click', closePanel);
@@ -229,7 +260,7 @@ BI.createCombat = function (G) {
     for (const [id, v] of ids) if ((iv[id] || 0) > 0) { iv[id]--; if (kind === 'hp') hp = Math.min(HPM, hp + v); else ep = Math.min(EPM, ep + v); persist(); A.star && A.star(); fx.burst(P.x, 1.6, P.z, 10, [kind === 'hp' ? BI.C.pink : BI.C.blue, BI.C.white], 3, 1, 26, 2); say((kind === 'hp' ? '❤️ +' : '⚡ +') + v, 900); return; }
   };
   $('fbPotHp').addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); K.useItem('hp'); }); $('fbPotEp').addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); K.useItem('ep'); });
-  K.exit = function () { if (!mode && !inForest()) return; clearEnemies(); const was = mode; mode = null; resetStats(); K.dim = 0; if (was) { P.x = AR.kai.x; P.z = AR.kai.z + 2.5; } else { P.x = FO.gate.x; P.z = FO.gate.z; } };
+  K.exit = function () { if (!mode && !inForest()) return; clearEnemies(); const was = mode; mode = null; resetStats(); K.dim = 0; if (was) { P.x = AR.kai.x; P.z = AR.kai.z + 2.5; } else if (inBig()) { const M = BI.RAETSEL; P.x = WA.x; P.z = M.z + M.R - 6; } else { P.x = FO.gate.x; P.z = FO.gate.z; } };
   $('fbExit').addEventListener('click', K.exit);
   for (const [id, kind] of [['fbPunch', 'punch'], ['fbKick', 'kick'], ['fbSpecial', 'special']]) $(id).addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); K.attack(kind); });
   { const bb = $('fbBlock'); bb.addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); K.setBlock(true); }); for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) bb.addEventListener(ev, () => K.setBlock(false)); }
@@ -238,18 +269,18 @@ BI.createCombat = function (G) {
   /* ---------- Frame ---------- */
   K.update = function (dt, t) {
     const act = K.active(); combatClock += dt; inv = Math.max(0, inv - dt); atkCd = Math.max(0, atkCd - dt); freeze = Math.max(0, freeze - dt); flashT = Math.max(0, flashT - dt);
-    const fz = inForest(); if (fz !== wasZone) { wasZone = fz; if (fz) { resetStats(); K.kills = 0; K.nextBoss = 10; bossAlive = false; say('🌲 Verbotener Wald – hier wird gekämpft! (👊 Schlag, 🦵 Tritt, ✨ Spezial, 🛡️ Block)', 4800); } else if (!mode) { clearEnemies(); } }
-    K.dim += ((fz ? .7 : 0) - K.dim) * Math.min(1, dt * 1.5);
-    if (act && hp > 0) { ep = Math.min(EPM, ep + dt * (block ? 1 : 4)); if (!mode && Math.hypot(P.x - FO.x, P.z - FO.z) < FO.R && enemies.length === 0) hp = Math.min(HPM, hp + dt * 1.5); }
+    const fz = inForest(); if (fz !== wasZone) { wasZone = fz; if (fz) { resetStats(); K.kills = 0; K.nextBoss = 10; bossAlive = false; say(inBig() ? '🌲 Wald-Insel – hier wird gekämpft! Im 🏕️ Lager bist du sicher. (👊 ' + gv('weapon', { icon: '👊' }).icon + ', 🦵, ✨, 🛡️)' : '🌲 Verbotener Wald – hier wird gekämpft! (👊 Schlag, 🦵 Tritt, ✨ Spezial, 🛡️ Block)', 4800); } else if (!mode) { clearEnemies(); } }
+    K.dim += ((fz ? (inBig() ? .35 : .7) : 0) - K.dim) * Math.min(1, dt * 1.5);
+    if (act && hp > 0) { ep = Math.min(EPM, ep + dt * (block ? 1 : 4)); if (!mode && Math.hypot(P.x - FO.x, P.z - FO.z) < FO.R && enemies.length === 0) hp = Math.min(HPM, hp + dt * 1.5); if (safe()) { hp = Math.min(HPM, hp + dt * 12); ep = Math.min(EPM, ep + dt * 10); } }
     if (act && fz) forestSpawn(dt);
     if (mode === 'wave') { if (wave.n > 0 && enemies.every(e => e.dead)) { wave.gap += dt; if (wave.gap > 1.4) { wave.gap = 0; if (wave.n >= 5) { addStars(10); S().w++; persist(); say('🏆 Alle Wellen geschafft! +10 ⭐', 4200); A.fanfare(); G.earn('fight'); clearEnemies(); mode = null; resetStats(); P.x = AR.kai.x; P.z = AR.kai.z + 2.2; } else nextWave(); } } }
     if (duel && !duel.over) updateDuel(dt, t);
-    updateEnemies(dt, t); updateLoot(dt, t);
+    updateEnemies(dt, t); updateArrows(dt); updateLoot(dt, t);
     // Angriffsanimation
     const c = G.char();
     if (atk && act) { atk.t += dt; const u = atk.t / atk.a.dur, sw = Math.sin(Math.min(1, u) * Math.PI);
       if (atk.kind === 'punch') { c.armR.rotation.set(-1.7 * sw, 0, 0); c.armL.rotation.set(.4 * sw, 0, 0); } else if (atk.kind === 'kick') { c.legR.rotation.x = -1.5 * sw; c.armL.rotation.set(-.6 * sw, 0, .5); c.armR.rotation.set(-.6 * sw, 0, -.5); } else { c.armL.rotation.set(-2.8 * sw, 0, .5); c.armR.rotation.set(-2.8 * sw, 0, -.5); }
-      if (!atk.hit && atk.t >= atk.a.at) { atk.hit = true; hitEnemies(atk.a); } if (atk.t >= atk.a.dur) atk = null; }
+      if (!atk.hit && atk.t >= atk.a.at) { atk.hit = true; hitEnemies(atk.a, atk.kind); } if (atk.t >= atk.a.dur) atk = null; }
     else if (block && act) { c.armL.rotation.set(-1.3, 0, .35); c.armR.rotation.set(-1.3, 0, -.35); }
     if (inv > 0 && act) { c.group.visible = Math.floor(t * 20) % 2 === 0; flick = true; } else if (flick) { c.group.visible = true; flick = false; }
     // Anzeige
@@ -258,13 +289,13 @@ BI.createCombat = function (G) {
       $('fbHp').style.width = (hp / HPM * 100) + '%'; $('fbEp').style.width = (ep / EPM * 100) + '%';
       const tg = duel && !duel.over ? duel.f : (target && !target.dead && enemies.includes(target) ? target : null); $('fbEnemy').hidden = !tg;
       if (tg) { $('fbEName').textContent = (tg.T && tg.T.n) || ''; $('fbEHp').style.width = Math.max(0, tg.hp / tg.max * 100) + '%'; }
-      $('fbInfo').textContent = duel && !duel.over ? 'Runde ' + duel.round + ' · Du ' + duel.rounds[0] + ' : ' + duel.rounds[1] + ' ' + duel.def.n : mode === 'wave' ? 'Welle ' + wave.n + '/5' : '🌲 Waldmonster besiegt: ' + K.kills;
+      $('fbInfo').textContent = duel && !duel.over ? 'Runde ' + duel.round + ' · Du ' + duel.rounds[0] + ' : ' + duel.rounds[1] + ' ' + duel.def.n : mode === 'wave' ? 'Welle ' + wave.n + '/5' : inBig() ? (() => { const Z = WA.zoneAt(P.x, P.z); return '💪 Stufe ' + K.level() + ' · ' + gv('weapon', { icon: '👊' }).icon + (safe() ? ' · 🏕️ sicher' : Z ? ' · ' + Z.icon + ' ' + ((G.wald && save.wald && save.wald.zb && save.wald.zb[Z.id]) ? '🏆' : Math.min(8, zk[Z.id] | 0) + '/8') : ''); })() : '🌲 Waldmonster besiegt: ' + K.kills + ' · 💪 ' + K.level();
       $('fbExit').hidden = false; if (G.inv) { const iv = G.inv(), nh = (iv.potion_hp || 0) + (iv.krabbenburger || 0) + (iv.apple || 0), ne = (iv.potion_ep || 0) + (iv.quallenshake || 0) + (iv.juice || 0); $('fbPotHp').hidden = !nh; $('fbPotEp').hidden = !ne; $('fbPotHp').textContent = '❤️' + nh; $('fbPotEp').textContent = '⚡' + ne; }
     }
     if (!act && enemies.length && !mode && !fz) { clearEnemies(); }
   };
   /* Helfer (Kapselmonster der Rätsel-Insel): trifft den nächsten Gegner in der Nähe */
   K.helper = function (x, z, r, dmg) { let best = null, bd = r; for (const e of enemies) { if (e.dead) continue; const d = Math.hypot(e.x - x, e.z - z); if (d < bd) { bd = d; best = e; } } if (best) { const dx = best.x - x, dz = best.z - z, d = Math.hypot(dx, dz) || 1; damage(best, dmg, dx / d, dz / d); } return best; };
-  K.dbg = { enemies, spawn, damage, hurt, FIGHTERS, startDuel, startWave, get duel() { return duel; }, get mode() { return mode; }, get hp() { return hp; }, get atk() { return atk; } };
+  K.dbg = { enemies, arrows, zk, spawn, damage, hurt, FIGHTERS, startDuel, startWave, get duel() { return duel; }, get mode() { return mode; }, get hp() { return hp; }, get atk() { return atk; } };
   return K;
 };

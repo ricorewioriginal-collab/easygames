@@ -144,7 +144,7 @@ BI.buildWorld = function (scene) {
   W.flyLimit = () => { if (W._fl) return W._fl; let m = K.LIMIT; for (const k of ['zotik', 'city', 'park', 'rainbow', 'drachen', 'dampf', 'pups', 'bauland']) { const C = W[k]; if (C && C.R) m = Math.max(m, Math.hypot(C.x, C.z) + C.R); } for (const I of W.isles || []) m = Math.max(m, Math.hypot(I.x, I.z) + I.R); return W._fl = m + 30; };
   /* Boden unter dem Punkt? (Land, Brücke, Steg – kein Meer, kein Hindernis). Hubschrauber sinken über dem Wasser nicht tiefer als 8 m */
   /* Meer (zum Schwimmen): außerhalb des Strands der Hauptinsel, der Insel-Strände (R+10), der Brücken und des Stegs */
-  const SEA_ISL = ['zotik', 'city', 'park', 'rainbow', 'drachen', 'dampf', 'pups', 'bauland', 'radio'];
+  const SEA_ISL = ['zotik', 'city', 'park', 'rainbow', 'drachen', 'dampf', 'pups', 'bauland', 'radio']; W.SEA_ISL = SEA_ISL;
   W.seaAt = (x, z) => {
     if (x > 2800) return false;
     if (x * x + z * z < 203 * 203) return false; if (W.bade && W.bade.sea(x, z)) return true; if (Math.abs(x) < 3.2 && z > 150 && z < 212) return false;
@@ -511,6 +511,7 @@ BI.buildWorld = function (scene) {
   if (BI.buildHuepfGround) BI.buildHuepfGround({ W, st, lamp, ROADY }); /* Hüpfland (huepf.js) */
   BI.buildSchwammGround({ W, st, lamp, ROADY });
   BI.buildRaetselGround({ W, st, lamp, ROADY });
+  if (BI.buildWaldGround) BI.buildWaldGround({ W, st, lamp, ROADY });
   BI.buildBadeGround({ W, st, lamp, ROADY });
   BI.buildAtlantisGround({ W, st, lamp, ROADY, scene });
   BI.buildZotikGround({ W, st, lamp, scene });
@@ -823,6 +824,12 @@ BI.buildWorld = function (scene) {
     if (x * x + z * z > 203 * 203 && W.seaAt(x, z)) return -.05; /* Meer: man schwimmt knapp unter der Oberfläche */
     return W.deco ? W.deco.get(x, z) : 0; /* Gehweg/Platz/Straße: auf dem Belag stehen, nicht darin */
   };
+  /* Stufe zu hoch zum Hinaufgehen (Felsen-/Hügelstufen der Inseln): wie eine Wand behandeln, damit man nicht in die Stufe „einsinkt“; Decks hoch über dem Kopf zählen nicht */
+  const stepAt = (x, z, y) => { const hi = h => h > y + .7 && h < y + 1.7;
+    if (W.zotik && hi(W.zotik.floor(x, z))) return true; if (W.radio && hi(W.radio.floor(x, z))) return true;
+    if (W.isles) for (const I of W.isles) if (I.floor && Math.abs(x - I.x) < I.R + 12 && Math.abs(z - I.z) < I.R + 12 && hi(I.floor(x, z))) return true;
+    return false; };
+  W.stepWall = (x, z, y, r) => { if (x > 2800) return false; r = r == null ? .35 : r; return stepAt(x, z, y) || (r > 0 && (stepAt(x + r, z, y) || stepAt(x - r, z, y) || stepAt(x, z + r, y) || stepAt(x, z - r, y))); };
   W.onDeck = (x, z) => { const S = W.ship; return x > S.deck.x0 && x < S.deck.x1 && z > S.deck.z0 && z < S.deck.z1; };
   W.update = function (t, dt, night) {
     W.clouds.rotation.y += dt * .006; W.foam.scale.setScalar(1 + Math.sin(t * .8) * .012); W.foam.material.opacity = .35 + Math.sin(t * .8) * .1;

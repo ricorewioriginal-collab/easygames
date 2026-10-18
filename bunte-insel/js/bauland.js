@@ -45,7 +45,7 @@ BI.buildBaulandGround = function (c) {
   /* Bäume und Felsen am Rand (Mitte bleibt frei zum Bauen) */
   for (let i = 0; i < 90; i++) { const a = rn() * TAU, d = B.R - 12 - rn() * 22, x = B.x + Math.sin(a) * d, z = B.z + Math.cos(a) * d; if (Math.hypot(x - E.x, z - E.z) < 34) continue;
     if (i % 5 === 4) { st.sph(x, .5, z, 1.2 + rn() * .8, 0x9aa0a8, 1, 1, .7, 1, .15); W.addCircle(x, z, 1.4, false, 1.2); continue; }
-    const h = 2.2 + rn() * 1.4; st.cyl(x, 0, z, .24, .34, h, 0x6b4a2a, 6); st.sph(x, h + 1.1, z, 1.6 + rn() * .5, [0x4cb85a, 0x5ac966, 0x3fa84e, 0xe8b84a][i % 4], 1, 1, .95, 1); W.addCircle(x, z, .5, false, 3); }
+    const h = 2.2 + rn() * 1.4; st.cyl(x, 0, z, .24, .34, h, 0x6b4a2a, 6); st.sph(x, h + 1.1, z, 1.6 + rn() * .5, [0x4cb85a, 0x5ac966, 0x3fa84e, 0xe8b84a][i % 4], 1, 1, .95, 1); W.addCircle(x, z, .5, false, 3); BI.isleTree(x, z, h + 1.6); }
   /* Laternen um die Plaza */
   for (let k = 0; k < 8; k++) { const a = k / 8 * TAU, x = E.x + Math.sin(a) * 13, z = E.z + Math.cos(a) * 13; st.cyl(x, 0, z, .08, .1, 3.4, 0x444a5a, 6); lamp.sph(x, 3.6, z, .3, 0xfff3b0, 1); }
 };
