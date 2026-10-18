@@ -21,7 +21,7 @@
     this.hooks = hooks || {};
     this.scene = new T.Scene();
     this.camera = new T.PerspectiveCamera(36, 1, 0.5, 80);
-    this.pitch = 1.02;   // Blickwinkel von oben (rad)
+    this.pitch = 1.2;    // Blickwinkel von oben (rad)
     this.insets = { top: 120, bottom: 110, side: 8 };
     this.tw = [];          // laufende Tweens
     this.q = [];           // Ereignis-Schritte
@@ -36,8 +36,8 @@
     this.sel = -1; this.hintCells = null; this.target = -1;
     this.t = 0;
 
-    var hemi = new T.HemisphereLight(0xffffff, 0x334055, 0.82);
-    var dir = new T.DirectionalLight(0xffffff, 0.75); dir.position.set(-3, 9, 6);
+    var hemi = new T.HemisphereLight(0xffffff, 0x334055, 0.72);
+    var dir = new T.DirectionalLight(0xffffff, 0.62); dir.position.set(-3, 6, 9);
     var rim = new T.DirectionalLight(0x9fc7ff, 0.3); rim.position.set(4, 3, -6);
     this.scene.add(hemi, dir, rim);
     this.root = new T.Group(); this.scene.add(this.root);
@@ -134,14 +134,14 @@
 
   // Alle Felder als EINE Geometrie (ein Draw-Call): Schachbrett + Rahmen + Ausgänge/Portale
   B.buildTiles = function (wd) {
-    var e = this.e, parts = [], self = this, a = new T.Color(wd.board), b = new T.Color(wd.board).lerp(new T.Color(0xffffff), 0.1);
-    var fr = new T.Color(wd.accent).lerp(new T.Color(0x000000), 0.35).getHex();
+    var e = this.e, parts = [], self = this, a = new T.Color(0x7d88d6), b = new T.Color(0x949fe3);
+    var fr = 0xe0a52a;
     for (var y = 0; y < this.H; y++) for (var x = 0; x < this.W; x++) {
       var i = y * this.W + x;
       if (!e.cells[i]) continue;
       var p = this.pos(x, y);
-      parts.push({ g: new T.BoxGeometry(0.98, 0.16, 0.98), c: ((x + y) & 1 ? a : b).getHex(), m: MD.M(p.x, -0.08, p.z) });
-      parts.push({ g: new T.BoxGeometry(1.08, 0.2, 1.08), c: fr, m: MD.M(p.x, -0.13, p.z) });
+      parts.push({ g: new T.BoxGeometry(1, 0.16, 1), c: ((x + y) & 1 ? a : b).getHex(), m: MD.M(p.x, -0.08, p.z) });
+      parts.push({ g: new T.BoxGeometry(1.16, 0.2, 1.16), c: fr, m: MD.M(p.x, -0.13, p.z) });
     }
     // Ausgänge für Kassetten/Pakete (Kettenende) markieren, wenn das Level Gegenstände nutzt
     var usesItems = (e.def.items && e.def.items.length) || e.spawn || (e.def.blockers || []).some(function (o) { return o.t === 'glass'; });
@@ -162,6 +162,14 @@
 
   // ---------- Modelle ----------
   function pieceKey(p, cb) { return p.item ? 'i' + p.item : p.k + '|' + p.s + (cb ? 'c' : ''); }
+  // Geometrie mittig auf gleiche Bildgröße bringen (einmal je geteilter Geometrie)
+  function fitInfo(g, size) {
+    if (g.userData.fit) return g.userData.fit;
+    g.computeBoundingBox();
+    var bb = g.boundingBox, s = size / Math.max(bb.max.x - bb.min.x, bb.max.y - bb.min.y);
+    return (g.userData.fit = { s: s, x: -(bb.min.x + bb.max.x) / 2 * s, y: -(bb.min.y + bb.max.y) / 2 * s, z: -(bb.min.z + bb.max.z) / 2 * s });
+  }
+  // Steine stehen wie Spielsymbole zur Kamera gedreht über dem Feld (wie bei klassischen Match-3-Spielen)
   B.makeModel = function (h, p) {
     while (h.children.length) h.remove(h.children[0]);
     var m;
@@ -171,19 +179,22 @@
     else if (p.s === 'bomb') m = new T.Mesh(MD.bomb(p.k), this.mat.glow);
     else if (p.s === 'drone') m = new T.Mesh(MD.drone(p.k), this.mat.glow);
     else m = new T.Mesh(MD.piece(p.k), this.pmat);
-    m.scale.setScalar(1.12);
-    h.add(m);
+    var f = fitInfo(m.geometry, p.s ? 0.86 : 0.9), face = new T.Group();
+    m.scale.setScalar(f.s); m.position.set(f.x, f.y, f.z);
+    face.rotation.x = -this.pitch; face.position.y = 0.42;
+    face.add(m);
+    h.add(face);
     h.userData.spin = p.s === 'orb' || p.s === 'remix' || p.s === 'drone';
     h.userData.model = m;
     if (p.s === 'rh' || p.s === 'rv') {
+      // Doppelpfeil vor dem Stein zeigt die Richtung der Rakete
       var a = new T.Mesh(MD.shared().arrow, this.mat.arrow);
-      a.position.set(0, 0.98, 0.05); if (p.s === 'rv') a.rotation.y = Math.PI / 2;
-      a.scale.set(1.05, 1.6, 1.6);
-      var a2 = a.clone(); a2.position.y = 0.06; a2.scale.set(1.35, 1, 2.2);
-      h.add(a, a2);
+      a.rotation.order = 'ZYX'; a.rotation.set(Math.PI / 2, 0, p.s === 'rv' ? Math.PI / 2 : 0);
+      a.position.z = 0.32; a.scale.set(1.3, 2.2, 1.6);
+      face.add(a);
     }
     if (this.cb && !p.item && p.k >= 0 && RRM.PIECES[p.k]) {
-      var s = new T.Sprite(MD.label(RRM.PIECES[p.k].glyph, RRM.PIECES[p.k].hex)); s.position.set(0.3, 0.85, 0.3); s.scale.set(0.34, 0.34, 1); h.add(s);
+      var s = new T.Sprite(MD.label(RRM.PIECES[p.k].glyph, RRM.PIECES[p.k].hex)); s.position.set(0.3, 0.3, 0.4); s.scale.set(0.34, 0.34, 1); face.add(s);
     }
     h.userData.key = pieceKey(p, this.cb);
   };

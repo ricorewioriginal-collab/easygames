@@ -47,20 +47,20 @@
     parcel: { name: 'Plattenpaket', plural: 'Plattenpakete', layer: 'item', maxHp: 0, desc: 'Bring das Paket ganz nach unten zum Ausgang.' }
   };
 
-  // Booster (Inventar). pre = vor dem Level, cell = braucht Zielfeld
+  // Booster (Inventar). pre = vor dem Level, cell = braucht Zielfeld, hidden = nur noch intern (alte Spielstände), nicht im Menü
   var BOOSTERS = [
-    { id: 'preRocket', name: 'Start-Rakete', icon: '🚀', pre: true, unlock: 4, price: 300, desc: 'Eine Wellenrakete liegt zu Beginn auf dem Brett.' },
-    { id: 'preBomb', name: 'Start-Bassbombe', icon: '💣', pre: true, unlock: 8, price: 400, desc: 'Eine Bassbombe liegt zu Beginn auf dem Brett.' },
-    { id: 'preOrb', name: 'Start-Frequenzkugel', icon: '🔮', pre: true, unlock: 14, price: 600, desc: 'Eine Frequenzkugel liegt zu Beginn auf dem Brett.' },
-    { id: 'preSuper', name: 'Super-Start', icon: '🌟', pre: true, unlock: 24, price: 800, desc: 'Rakete und Bassbombe zusammen zu Beginn.' },
-    { id: 'hammer', name: 'Mikrofon-Hammer', icon: '🎤', cell: true, unlock: 3, price: 250, desc: 'Trifft ein Feld: entfernt einen Stein oder eine Hindernislage.' },
-    { id: 'laser', name: 'Signal-Laser', icon: '↔️', cell: true, unlock: 6, price: 350, desc: 'Trifft eine komplette Reihe.' },
-    { id: 'blitz', name: 'Tower-Blitz', icon: '↕️', cell: true, unlock: 10, price: 350, desc: 'Trifft eine komplette Spalte.' },
-    { id: 'shuffle', name: 'Remix-Shuffle', icon: '🔀', cell: false, unlock: 12, price: 200, desc: 'Mischt alle beweglichen normalen Steine neu.' },
-    { id: 'bass', name: 'Basswelle', icon: '🔊', cell: true, unlock: 16, price: 450, desc: 'Trifft eine 3×3-Fläche.' },
-    { id: 'scan', name: 'Sendersuchlauf', icon: '📡', cell: false, unlock: 20, price: 450, desc: 'Ein Scanner trifft drei wichtige Ziele.' },
-    { id: 'boost', name: 'Verstärker', icon: '⚡', cell: false, unlock: 28, price: 300, desc: 'Dein nächster Tausch löst zusätzlich eine Bassexplosion aus.' },
-    { id: 'rescue', name: 'Frequenz-Retter', icon: '🛟', cell: false, unlock: 34, price: 300, desc: 'Färbt bis zu 5 Steine in die Farbe deines Sammelziels (sonst: eine Rakete).' }
+    { id: 'preRocket', name: 'Rakete', icon: '🚀', pre: true, unlock: 4, price: 300, desc: 'Eine Wellenrakete liegt zu Beginn auf dem Brett.' },
+    { id: 'preBomb', name: 'Bombe', icon: '💣', pre: true, unlock: 8, price: 400, desc: 'Eine Bassbombe liegt zu Beginn auf dem Brett.' },
+    { id: 'preOrb', name: 'Frequenzkugel', icon: '🔮', pre: true, unlock: 14, price: 600, desc: 'Eine Frequenzkugel liegt zu Beginn auf dem Brett.' },
+    { id: 'preSuper', name: 'Super-Start', icon: '🌟', pre: true, hidden: true, unlock: 24, price: 800, desc: 'Rakete und Bassbombe zusammen zu Beginn.' },
+    { id: 'hammer', name: 'Königshammer', icon: '🔨', cell: true, unlock: 3, price: 250, desc: 'Zerschlägt einen Stein oder eine Hindernislage.' },
+    { id: 'laser', name: 'Königspfeil', icon: '🏹', cell: true, unlock: 6, price: 350, desc: 'Fliegt durch eine komplette Reihe.' },
+    { id: 'blitz', name: 'Kanone', icon: '💥', cell: true, unlock: 10, price: 350, desc: 'Schießt durch eine komplette Spalte.' },
+    { id: 'bass', name: 'Pauke', icon: '🥁', cell: true, unlock: 12, price: 450, desc: 'Ein Paukenschlag trifft eine 3×3-Fläche.' },
+    { id: 'shuffle', name: 'Narrenkappe', icon: '🃏', cell: false, unlock: 16, price: 200, desc: 'Mischt alle beweglichen Steine neu.' },
+    { id: 'scan', name: 'Sendersuchlauf', icon: '📡', cell: false, hidden: true, unlock: 20, price: 450, desc: 'Ein Scanner trifft drei wichtige Ziele.' },
+    { id: 'boost', name: 'Verstärker', icon: '⚡', cell: false, hidden: true, unlock: 28, price: 300, desc: 'Dein nächster Tausch löst zusätzlich eine Bassexplosion aus.' },
+    { id: 'rescue', name: 'Frequenz-Retter', icon: '🛟', cell: false, hidden: true, unlock: 34, price: 300, desc: 'Färbt bis zu 5 Steine in die Farbe deines Sammelziels (sonst: eine Rakete).' }
   ];
 
   // Zehn Radio-Welten à 20 Level. bg/floor/accent: Farben der 3D-Bühne

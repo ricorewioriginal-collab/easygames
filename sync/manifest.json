@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e9c828c6bbe5",
- "generated": "2026-10-17T21:31:30+00:00",
- "commit": "0db831ead78029d8bb0db89bebe04450bfc26838",
+ "version": "3843d7727f45",
+ "generated": "2026-10-17T23:50:45+02:00",
+ "commit": "3db7ff2fe92b8183c10176bf2d85b31e17a8e814",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3623,8 +3623,8 @@
   },
   {
    "p": "anmacha-radio-match/src/core/defs.js",
-   "s": 10839,
-   "h": "113f3862541d434808ebe280fe8d30237d6bb2a5ecbeda23c8e8fb9fb8c603ab"
+   "s": 10926,
+   "h": "8124f920c93873918b6d891e130aac06f81614d6ce16bbc2aaa0b2623836d77b"
   },
   {
    "p": "anmacha-radio-match/src/core/engine.js",
@@ -3638,23 +3638,23 @@
   },
   {
    "p": "anmacha-radio-match/src/render/board.js",
-   "s": 32524,
-   "h": "38998ad381160b4a224ee33528a3292ccbec7f78db94b9ff6f5286cafc1ba5cd"
+   "s": 33172,
+   "h": "3c24acc7eb06e8addc8dced793645435ef44e5dffe5b404d4e36544b79016fc2"
   },
   {
    "p": "anmacha-radio-match/src/render/models.js",
-   "s": 20716,
-   "h": "a53f0fcbeab5ef30b60b5fdb6ba2bea8b0553783887b6bf031f645eef0207af3"
+   "s": 24292,
+   "h": "08986391fac2ba6764bafc45f2930502d5f0e1b89ef82ef0287c6b07a798b5ff"
   },
   {
    "p": "anmacha-radio-match/src/render/stage.js",
-   "s": 6435,
-   "h": "208515a22e0b9fd99f84f359c7ed8a8a2406d4d0fb3b8df98ce197bd410b5501"
+   "s": 6608,
+   "h": "4b398e3566801734f1406c68000a7c4433798af63410eeb64235163c6238701c"
   },
   {
    "p": "anmacha-radio-match/src/render/tower.js",
-   "s": 8394,
-   "h": "f7e0c59e574139d35f7329edd2ecf52451fc26f5e376aae0525d97f09a25d568"
+   "s": 8626,
+   "h": "026315067cf49317c9d40ad20608f8f72be96c46ae193187968f95a5f2b1e4b2"
   },
   {
    "p": "anmacha-radio-match/src/save/storage.js",
@@ -3663,8 +3663,8 @@
   },
   {
    "p": "anmacha-radio-match/src/ui/app.js",
-   "s": 53430,
-   "h": "d17299db007c39c0d1bd7ad84c56852f6ccffde8d2a55d3c39f81a44c2d407a0"
+   "s": 54032,
+   "h": "4d113659c78f512ca98a98a384b6a29fbd80a6a788d990a3a2310cd7f038defb"
   },
   {
    "p": "anmacha-radio-match/src/ui/texts.js",
@@ -3673,8 +3673,8 @@
   },
   {
    "p": "anmacha-radio-match/style.css",
-   "s": 20775,
-   "h": "af27e899c8169a705460f2c114e28441495a634c04327f86180ae4d662e49a26"
+   "s": 30118,
+   "h": "f8eb858ba0e848ab0470203a2f58f1a4fdbb7b15fdb40983cde4b0a3ad7fa635"
   },
   {
    "p": "anmacha-radio-match/sw.js",
@@ -5278,8 +5278,8 @@
   },
   {
    "p": "guides.js",
-   "s": 67087,
-   "h": "20bfbb31c9b8d6c57523ae71ae137ced87e6b4330492265654c15b2cab2af8f4"
+   "s": 67105,
+   "h": "86ea959bcbf868866535d110c0c6b73032834180471b46cf5bc66606fa5a927d"
   },
   {
    "p": "heute.html",
@@ -6428,8 +6428,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 105413,
-   "h": "291dccbcf6340442702327c64a0c0eb9895b6f3f97900db626e490a06fc9cf0f"
+   "s": 105431,
+   "h": "d1e9dfdd63d76057ccdedcb0c9712ea6434e46093387317a78c92396665e7f01"
   },
   {
    "p": "taschi/card.svg",

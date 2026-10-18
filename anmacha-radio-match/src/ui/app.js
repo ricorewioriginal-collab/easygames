@@ -15,6 +15,7 @@
   function fmt(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
   function worldOf(n) { return Math.min(9, Math.floor((n - 1) / 20)); }
   function starsFree() { var spent = 0; S.tower.forEach(function (f) { spent += RRM.TOWER[f].cost; }); return RRM.Save.totalStars(S) - spent; }
+  function bIcon(b, cls) { var src = iconFor('boost', b.id); return src ? '<img class="' + (cls || 'bi') + '" alt="" src="' + src + '">' : '<span class="' + (cls || 'bi') + '">' + b.icon + '</span>'; }
   function boosterDef(id) { for (var i = 0; i < RRM.BOOSTERS.length; i++) if (RRM.BOOSTERS[i].id === id) return RRM.BOOSTERS[i]; return null; }
   function today() { var d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
   function toast(t) {
@@ -74,7 +75,7 @@
     var MD = RRM.Models, mat = function () { return board.pmat; };
     try {
       switch (type) {
-        case 'piece': return stage.icon('p' + a, function () { return MD.piece(a); }, mat);
+        case 'piece': return stage.icon('p' + a, function () { return MD.piece(a); }, mat, true);
         case 'crate': return stage.icon('crate', function () { return MD.crate(2); }, mat);
         case 'moss': return stage.icon('moss', function () { return MD.moss(); }, mat);
         case 'dusty': return stage.icon('dusty', function () { return MD.dusty(2); }, mat);
@@ -89,6 +90,7 @@
         case 'parcel': return stage.icon('parcel', function () { return MD.parcel(); }, mat);
         case 'cassette': return stage.icon('cassette', function () { return MD.cassette(); }, mat);
         case 'orb': return stage.icon('orb', function () { return MD.orb(); }, function () { return board.mat.glow; });
+        case 'boost': return stage.icon('b' + a, function () { return MD.boostIcon(a); }, function () { return a === 'preBomb' || a === 'preOrb' ? board.mat.glow : board.pmat; }, true);
         case 'ice': return stage.icon('ice', function () { var g = new THREE.Group(); g.add(new THREE.Mesh(MD.piece(1), board.pmat)); g.add(new THREE.Mesh(MD.shared().ice, board.mat.ice2)); return g; });
       }
     } catch (e) { /* Symbol ist nur Zierde */ }
@@ -144,15 +146,16 @@
     A.music(worldOf(Math.min(S.unlocked, 200)));
     var old = $('menu'); if (old) old.remove();
     var n = Math.min(S.unlocked, RRM.MAX_LEVEL), dailyReady = S.daily !== today();
-    var m = el('<div class="screen menu" id="menu">' + pills() +
+    // Aufbau wie bei Royal Match: Kopfband, Gebäude in der Mitte, Seitenknöpfe, großer Level-Knopf, Leiste unten
+    var m = el('<div class="screen menu" id="menu">' +
+      '<div class="topbar"><div class="face">' + TX.RAY + '</div>' + pills() + '<button class="rbtn" data-a="settings" aria-label="Optionen">⚙️</button></div>' +
       '<div class="logo sm"><span>ROYAL RADIO</span><b>MATCH 3D</b></div>' +
-      '<button class="btn gold big" data-a="play">▶ Level ' + n + '</button>' +
-      '<div class="grid">' +
-      '<button class="btn" data-a="map">🗺️ Karte</button><button class="btn" data-a="tower">🏰 Funkhaus</button>' +
-      '<button class="btn" data-a="bonus">🎧 Bonus-Studio</button><button class="btn" data-a="duel">⚔️ Duell</button>' +
-      '<button class="btn" data-a="shop">🛒 Shop</button><button class="btn' + (dailyReady ? ' glow' : '') + '" data-a="daily">🎁 Tagesbonus' + (dailyReady ? ' <i class="dot"></i>' : '') + '</button>' +
-      '<button class="btn" data-a="help">❓ Hilfe</button><button class="btn" data-a="settings">⚙️ Optionen</button>' +
-      '</div><p class="small">Fortschritt wird auf diesem Gerät gespeichert. Google-Sicherung unter ⚙️ Optionen.</p></div>');
+      '<div class="side l"><button class="sbtn' + (dailyReady ? ' glow' : '') + '" data-a="daily"><i>🎁</i><small>Tagesbonus</small>' + (dailyReady ? '<em class="dot"></em>' : '') + '</button></div>' +
+      '<div class="side r"><button class="sbtn" data-a="help"><i>❓</i><small>Hilfe</small></button></div>' +
+      '<button class="btn gold big play" data-a="play">Level ' + n + '</button>' +
+      '<nav class="nav"><button data-a="shop"><i>🛒</i><small>Shop</small></button><button data-a="duel"><i>⚔️</i><small>Duell</small></button>' +
+      '<button class="home" data-a="map"><i>🗺️</i><small>Karte</small></button><button data-a="tower"><i>🏰</i><small>Funkhaus</small></button>' +
+      '<button data-a="bonus"><i>🎧</i><small>Bonus</small></button></nav></div>');
     ui.appendChild(m);
     m.addEventListener('click', function (e) {
       var b = e.target.closest('[data-a]'); if (!b) return; click();
@@ -209,18 +212,18 @@
     var L = RRM.LEVELS[n - 1]; if (!L) return;
     var pre = {}, diff = L.diff === 'boss' ? '<span class="tag boss">👑 Welt-Finale</span>' : L.diff === 'hard' ? '<span class="tag hard">🔥 Schwer</span>' : L.tag === 'special' ? '<span class="tag special">🎙️ Spezial</span>' : '';
     function preHtml() {
-      return RRM.BOOSTERS.filter(function (b) { return b.pre; }).map(function (b) {
+      return RRM.BOOSTERS.filter(function (b) { return b.pre && !b.hidden; }).map(function (b) {
         var lock = S.unlocked < b.unlock && n < b.unlock, cnt = S.inv[b.id] || 0;
-        return '<button class="pre' + (pre[b.id] ? ' on' : '') + (lock ? ' lock' : '') + '" data-a="pre" data-id="' + b.id + '" aria-pressed="' + !!pre[b.id] + '" title="' + b.desc + '">' +
-          '<span class="ic">' + (lock ? '🔒' : b.icon) + '</span><small>' + b.name + '</small><b>' + (lock ? 'ab L' + b.unlock : cnt > 0 ? '×' + cnt : '🪙' + b.price) + '</b></button>';
+        return '<button class="pre' + (pre[b.id] ? ' on' : '') + (lock ? ' lock' : '') + '" data-a="pre" data-id="' + b.id + '" aria-pressed="' + !!pre[b.id] + '" aria-label="' + b.name + '" title="' + b.name + ': ' + b.desc + '">' +
+          bIcon(b) + (lock ? '<i class="lk">🔒</i><b class="lv">' + b.unlock + '</b>' : pre[b.id] ? '<b class="ok">✓</b>' : cnt > 0 ? '<b class="cnt">' + cnt + '</b>' : '<b class="price">🪙' + b.price + '</b>') + '</button>';
       }).join('');
     }
-    var m = modal('<h2>Level ' + n + '</h2>' + diff + '<p class="wname">' + RRM.WORLDS[worldOf(n)].name + '</p>' +
-      '<div class="goals big">' + L.goals.map(function (g) { return goalChip(g, null); }).join('') + '</div>' +
+    var m = modal('<button class="xbtn corner" data-a="close" aria-label="Zurück">✕</button><h2>Level ' + n + '</h2>' + diff + '<p class="wname">' + RRM.WORLDS[worldOf(n)].name + '</p>' +
+      '<div class="panel"><h3>Ziele</h3><div class="goals big">' + L.goals.map(function (g) { return goalChip(g, null); }).join('') + '</div>' +
       '<ul class="glist">' + L.goals.map(function (g) { return '<li>' + goalText(g) + '</li>'; }).join('') + '</ul>' +
-      '<p class="moves">🎵 ' + L.moves + ' Züge' + (S.stars[n] ? ' · Bestwert ' + '★★★'.slice(0, S.stars[n]) : '') + '</p>' +
-      '<h3>Start-Booster</h3><div class="pres" id="pres">' + preHtml() + '</div>' +
-      '<div class="row"><button class="btn" data-a="close">Zurück</button><button class="btn gold big" data-a="go">▶ Spielen</button></div>', {
+      '<p class="moves">' + L.moves + ' Züge' + (S.stars[n] ? ' · Bestwert ' + '★★★'.slice(0, S.stars[n]) : '') + '</p></div>' +
+      '<div class="panel"><h3>Booster wählen</h3><div class="pres" id="pres">' + preHtml() + '</div></div>' +
+      '<button class="btn gold big wide" data-a="go">Spielen</button>', {
       name: 'preview',
       on: function (a, b) {
         if (a === 'close') closeTop();
@@ -302,13 +305,16 @@
   function buildHud() {
     if (hudEl) { hudEl.remove(); barEl.remove(); }
     var duel = G.duel;
-    hudEl = el('<div id="hud"><button class="btn icon" id="bPause" aria-label="Pause">⏸</button>' +
+    hudEl = el('<div id="hud"><div class="hband"><div class="face">' + TX.RAY + '</div>' +
       (duel ? '<div class="duelbox"><div class="pl" id="p0"><small>' + duel.names[0] + '</small><b>0</b></div><div class="vs">VS</div><div class="pl" id="p1"><small>' + duel.names[1] + '</small><b>0</b></div></div>'
-        : '<div class="goalbox"><small id="lvl"></small><div class="goals" id="goals"></div></div>') +
-      '<div class="movebox"><small id="mvl">' + (G.time ? 'Zeit' : duel ? 'Züge' : 'Züge') + '</small><b id="mv"></b><small id="sc"></small></div></div>');
+        : '<div class="goalbox"><small class="tab" id="lvl"></small><div class="goals" id="goals"></div></div>') +
+      '<div class="movebox"><small class="tab" id="mvl">' + (G.time ? 'Zeit' : 'Züge') + '</small><b id="mv"></b><small id="sc"></small></div></div></div>');
     barEl = el('<div id="bar"></div>');
     ui.appendChild(hudEl); ui.appendChild(barEl);
-    $('bPause').onclick = function () { click(); if (topName() === 'game') openPause(); };
+    barEl.onclick = function (e) {
+      if (e.target.closest('#bPause')) { click(); if (topName() === 'game') openPause(); return; }
+      var b = e.target.closest('.boost'); if (b) { click(); boosterTap(b.getAttribute('data-id')); }
+    };
     renderBar();
     updateHud();
     requestAnimationFrame(measure);
@@ -322,13 +328,13 @@
 
   function renderBar() {
     if (!barEl) return;
-    if (G.duel) { barEl.innerHTML = '<div class="duelinfo" id="duelinfo"></div>'; return; }
-    barEl.innerHTML = RRM.BOOSTERS.filter(function (b) { return !b.pre; }).map(function (b) {
+    var pause = '<button class="rbtn" id="bPause" aria-label="Pause">❚❚</button>';
+    if (G.duel) { barEl.innerHTML = '<div class="duelinfo" id="duelinfo"></div>' + pause; return; }
+    barEl.innerHTML = '<div class="boosts">' + RRM.BOOSTERS.filter(function (b) { return !b.pre && !b.hidden; }).map(function (b) {
       var lock = S.unlocked < b.unlock, cnt = S.inv[b.id] || 0;
-      return '<button class="boost' + (lock ? ' lock' : '') + (G.pending === b.id ? ' on' : '') + (b.id === 'boost' && G.eng.amped ? ' on' : '') + '" data-id="' + b.id + '" aria-label="' + b.name + '" title="' + b.name + ': ' + b.desc + '">' +
-        '<span>' + (lock ? '🔒' : b.icon) + '</span><b>' + (lock ? 'L' + b.unlock : cnt > 0 ? cnt : '+') + '</b></button>';
-    }).join('');
-    barEl.onclick = function (e) { var b = e.target.closest('.boost'); if (b) { click(); boosterTap(b.getAttribute('data-id')); } };
+      return '<button class="boost' + (lock ? ' lock' : '') + (G.pending === b.id ? ' on' : '') + '" data-id="' + b.id + '" aria-label="' + b.name + (lock ? ' (ab Level ' + b.unlock + ')' : '') + '" title="' + b.name + ': ' + b.desc + '">' +
+        bIcon(b) + (lock ? '<i class="lk">🔒</i><b class="lv">' + b.unlock + '</b>' : cnt > 0 ? '<b class="cnt">' + cnt + '</b>' : '<b class="plus">+</b>') + '</button>';
+    }).join('') + '</div>' + pause;
   }
   function updateHud() {
     if (!G || !hudEl) return;
@@ -445,7 +451,7 @@
     if (S.unlocked < b.unlock) { toast(b.name + ' gibt es ab Level ' + b.unlock); return; }
     if (G.pending === id) { cancelPending(); return; }
     if (!(S.inv[id] > 0)) {
-      modal('<h2>' + b.icon + ' ' + b.name + '</h2><p>' + b.desc + '</p><p>Du hast keinen mehr. Für <b>🪙 ' + b.price + '</b> kaufen?</p><p class="small">Dein Guthaben: 🪙 ' + fmt(S.coins) + '</p>' +
+      modal('<h2>' + b.name + '</h2>' + bIcon(b, 'bimg') + '<p>' + b.desc + '</p><p>Du hast keinen mehr. Für <b>🪙 ' + b.price + '</b> kaufen?</p><p class="small">Dein Guthaben: 🪙 ' + fmt(S.coins) + '</p>' +
         '<div class="row"><button class="btn" data-a="no">Nein</button><button class="btn gold" data-a="buy"' + (S.coins < b.price ? ' disabled' : '') + '>Kaufen</button></div>', {
         on: function (a) {
           if (a === 'no') closeTop();
@@ -457,40 +463,37 @@
     if (id === 'boost' && G.eng.amped) { toast('Verstärker ist schon aktiv'); return; }
     if (b.cell) {
       G.pending = id; G.target = -1; G.sel = -1; board.select(-1); board.setTarget(-1);
-      renderBar(); banner(b.icon + ' ' + b.name + ': Feld antippen', true);
+      renderBar(); banner(b);
       return;
     }
-    modal('<h2>' + b.icon + ' ' + b.name + '</h2><p>' + b.desc + '</p><p class="small">Kostet keinen Zug. Du hast ' + S.inv[id] + '.</p><div class="row"><button class="btn" data-a="no">Abbrechen</button><button class="btn gold" data-a="yes">Einsetzen</button></div>', {
-      on: function (a) { if (a === 'no') closeTop(); else closeTop(function () { useBooster(id, null); }); }
-    });
+    if (board.busy()) return;
+    if (G.pending) cancelPending();
+    useBooster(id, null);
   }
   function targetTap(i) {
     if (G.lock || board.busy()) return;
-    var b = boosterDef(G.pending);
-    if (G.target === i) { var id = G.pending; cancelPending(); useBooster(id, i); return; }
-    G.target = i; board.setTarget(i);
-    banner(b.icon + ' ' + b.name + ': nochmal antippen oder', true, true);
+    var id = G.pending, b = boosterDef(id);
+    cancelPending();
+    if (!useBooster(id, i) && G && G.eng.status === 'play') { G.pending = id; renderBar(); banner(b); }   // falsches Feld: Booster bleibt gewählt
   }
   function cancelPending() { if (!G) return; G.pending = null; G.target = -1; board.setTarget(G.cur); var bn = $('banner'); if (bn) bn.remove(); renderBar(); }
-  function banner(text, cancel, confirm) {
+  // Hinweisband oben (wie bei Royal Match): Name, Wirkung, Abbrechen
+  function banner(b) {
     var bn = $('banner'); if (bn) bn.remove();
-    bn = el('<div id="banner"><span>' + text + '</span>' + (confirm ? '<button class="btn gold sm" data-a="ok">Einsetzen</button>' : '') + (cancel ? '<button class="btn sm" data-a="x">Abbrechen</button>' : '') + '</div>');
+    bn = el('<div id="banner" role="status">' + bIcon(b) + '<div><b>' + b.name + '</b><small>' + b.desc + ' Tippe auf ein Feld.</small></div><button class="xbtn" data-a="x" aria-label="Abbrechen">✕</button></div>');
     ui.appendChild(bn);
-    bn.onclick = function (e) {
-      var a = e.target.closest('[data-a]'); if (!a) return; click();
-      if (a.getAttribute('data-a') === 'x') cancelPending();
-      else if (G && G.pending && G.target >= 0) { var id = G.pending, t = G.target; cancelPending(); useBooster(id, t); }
-    };
+    bn.onclick = function (e) { if (e.target.closest('[data-a=x]')) { click(); cancelPending(); } };
   }
   function useBooster(id, target) {
     if (!G) return;
     var r = G.eng.useBooster(id, target);
-    if (!r.ok) { toast(r.reason === 'target' ? 'Dieses Feld geht nicht' : 'Gerade nicht möglich'); take(); return; }
+    if (!r.ok) { toast(r.reason === 'target' ? 'Dieses Feld geht nicht' : 'Gerade nicht möglich'); take(); return false; }
     S.inv[id]--; save();
     A.play('booster');
     board.stopHint(); G.idle = 0;
     renderBar();
     playEvents(function () { renderBar(); checkEnd(); });
+    return true;
   }
 
   // ---------- Hinweis ----------
@@ -789,9 +792,9 @@
   // ---------- Shop & Tagesbonus ----------
   function showShop() {
     function body() {
-      return '<h2>🛒 Shop</h2>' + pills() + '<p class="small">Münzen verdienst du nur im Spiel (und im Tagesbonus). Kein Echtgeld.</p><div class="shop">' + RRM.BOOSTERS.map(function (b) {
+      return '<h2>🛒 Shop</h2>' + pills() + '<p class="small">Münzen verdienst du nur im Spiel (und im Tagesbonus). Kein Echtgeld.</p><div class="shop">' + RRM.BOOSTERS.filter(function (b) { return !b.hidden; }).map(function (b) {
         var lock = S.unlocked < b.unlock;
-        return '<div class="item' + (lock ? ' lock' : '') + '"><span class="ic">' + b.icon + '</span><div><b>' + b.name + ' <small>×' + (S.inv[b.id] || 0) + '</small></b><small>' + b.desc + '</small></div>' +
+        return '<div class="item' + (lock ? ' lock' : '') + '">' + bIcon(b, 'ic') + '<div><b>' + b.name + ' <small>×' + (S.inv[b.id] || 0) + '</small></b><small>' + b.desc + '</small></div>' +
           (lock ? '<span class="lk">🔒 L' + b.unlock + '</span>' : '<button class="btn gold sm" data-a="buy" data-id="' + b.id + '"' + (S.coins < b.price ? ' disabled' : '') + '>🪙 ' + b.price + '</button>') + '</div>';
       }).join('') + '</div><button class="btn" data-a="close">Schließen</button>';
     }
@@ -867,7 +870,7 @@
       '<h3>Spezialteile</h3><ul>' + ['rh', 'bomb', 'drone', 'orb', 'remix'].map(function (k) { return '<li><b>' + sp[k].name + '</b> – ' + sp[k].desc + '</li>'; }).join('') + '</ul>' +
       '<h3>Kombos (zwei Spezialteile tauschen)</h3><ul>' + TX.COMBOS.map(function (c) { return '<li><b>' + c[0] + '</b>: ' + c[1] + '</li>'; }).join('') + '</ul>' +
       '<h3>Hindernisse</h3><ul>' + Object.keys(B).map(function (k) { return '<li><b>' + B[k].name + '</b> – ' + B[k].desc + '</li>'; }).join('') + '</ul>' +
-      '<h3>Booster</h3><ul>' + RRM.BOOSTERS.map(function (b) { return '<li>' + b.icon + ' <b>' + b.name + '</b> – ' + b.desc + (b.pre ? ' (vor dem Level)' : '') + '</li>'; }).join('') + '</ul>' +
+      '<h3>Booster</h3><ul>' + RRM.BOOSTERS.filter(function (b) { return !b.hidden; }).map(function (b) { return '<li>' + b.icon + ' <b>' + b.name + '</b> – ' + b.desc + (b.pre ? ' (vor dem Level)' : '') + '</li>'; }).join('') + '</ul>' +
       '<h3>Steuerung</h3><p>Maus/Touch: tippen oder wischen. Tastatur: Pfeiltasten bewegen den Rahmen, Enter wählt und tauscht, Esc pausiert. Controller werden unterstützt.</p>' +
       '<button class="btn" data-a="close">Schließen</button>', { name: 'help', cls: 'tall', on: function () { closeTop(); } });
   }
