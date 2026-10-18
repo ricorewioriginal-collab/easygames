@@ -72,7 +72,7 @@ BI.buildRainbowGround = function (c) {
     for (const sx of [-.8, .8]) { const [lx, lz] = loc(bx, bz, an, sx, 0); st.box(lx, 0, lz, .12, .4, .5, 0x555a66, an); } W.addCircle(bx, bz, 1, false, .8); }
   const crnd = BI.rng(1313), FOL = [0xff9ccf, 0xb8f0c8, 0xd2b8ff, 0xffe27a, 0x9ad4ff];
   for (let i = 0; i < 22; i++) { const an = crnd() * TAU, d = 40 + crnd() * 5, x = P.x + Math.sin(an) * d, z = P.z + Math.cos(an) * d; if ((x > P.x + 30 && Math.abs(z - P.z) < 9) || (x < P.x - 28 && Math.abs(z - P.z) < 15)) continue;
-    st.cyl(x, 0, z, .2, .3, 2, WD, 6); st.sph(x, 3.2, z, 1.6, FOL[i % 5], 1, 1, .95, 1); W.addCircle(x, z, .5, false, 3); }
+    st.cyl(x, 0, z, .2, .3, 2, WD, 6); st.sph(x, 3.2, z, 1.6, FOL[i % 5], 1, 1, .95, 1); W.addCircle(x, z, .5, false, 3); BI.isleTree(x, z, 4); }
 };
 
 /* ---------- Laufzeit: Schilder, Bewohner, Brunnen-Freude ---------- */

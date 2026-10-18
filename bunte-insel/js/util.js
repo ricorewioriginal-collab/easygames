@@ -17,6 +17,8 @@ if (THREE.Object3D && THREE.REVISION === '128' && !(typeof location !== 'undefin
     const ch = this.children; for (let i = 0, l = ch.length; i < l; i++) { const c = ch[i]; if (c.visible) c.updateMatrixWorld(force); else c.matrixWorldNeedsUpdate = true; }
   };
 })();
+/* Bäume der Nebeninseln (statisch gebaut): zum Schütteln/Hauen wie auf der Hauptinsel (fun.js nearTree) */
+BI.ISLE_TREES = []; BI.isleTree = (x, z, top) => { BI.ISLE_TREES.push({ x, z, top: top || 4, hp: 5, cd: 0, still: true }); };
 BI.rng = function (seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; };
 /* Schriftbilder brauchen auf WebGL 1 bei nicht-zweierpotenten Canvasgrößen lineare Filter ohne Mipmaps. */
 BI.labelTexture = function (canvas) {

@@ -159,6 +159,7 @@ BI.createFun = function (G) {
     const P = G.P; if (P.veh) return null; let best = null, bd = 2.9;
     for (const T of G.W.trees) { const d = Math.hypot(T.x - P.x, T.z - P.z); if (d < bd) { bd = d; best = T; } }
     for (const T of userTrees()) { const d = Math.hypot(T.x - P.x, T.z - P.z); if (d < bd) { bd = d; best = T; } }
+    if (!best) for (const T of BI.ISLE_TREES) { if (Math.abs(T.x - P.x) > 3 || Math.abs(T.z - P.z) > 3) continue; const d = Math.hypot(T.x - P.x, T.z - P.z); if (d < bd) { bd = d; best = T; } } /* Bäume der anderen Inseln */
     return best;
   };
   const WORDS = ['BONK!', 'PUFF!', 'AUA!', 'BUMM!', 'HUIII!', 'WUMMS!'];
@@ -168,7 +169,7 @@ BI.createFun = function (G) {
     fx.burst(T.x - T.wx * .5, 1.3, T.z - T.wz * .5, 6, [BI.C.dust, BI.C.white], 2.5, .5, 26, 6);
     for (let i = 0; i < 12; i++) fx.emit(T.x + (Math.random() - .5) * 2.2, (T.top || 3.6) + Math.random(), T.z + (Math.random() - .5) * 2.2, (Math.random() - .5) * 1.5, .5, (Math.random() - .5) * 1.5, 2.4, 24, .3 + Math.random() * .3, .75, .3, 1.5, .95);
     if (T.cd > 0) return; T.hp--; if (Math.random() < .35) apple(T);
-    if (T.hp <= 0) { T.cd = 25; T.hp = 5; for (let i = 0; i < 4; i++) apple(T); A.fanfare(); G.addStars(3); G.say('🏆 TIMBER! Der Baum fällt um! +3 ⭐', 2800); fx.burst(T.x, 3, T.z, 40, [BI.C.gold, BI.C.pink, BI.C.green, BI.C.white], 8, 1.6, 26, 9); }
+    if (T.hp <= 0) { T.cd = 25; T.hp = 5; for (let i = 0; i < 4; i++) apple(T); A.fanfare(); G.addStars(3); G.say(T.still ? '🏆 Geschafft! Der Baum schüttelt alle Äpfel ab! +3 ⭐' : '🏆 TIMBER! Der Baum fällt um! +3 ⭐', 2800); fx.burst(T.x, 3, T.z, 40, [BI.C.gold, BI.C.pink, BI.C.green, BI.C.white], 8, 1.6, 26, 9); }
   };
   function updateApples(dt) {
     const P = G.P, px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z;
@@ -179,6 +180,7 @@ BI.createFun = function (G) {
       if (Math.hypot(a.x - px, a.z - pz) < 1.5 && a.y < 1.6) { a.on = false; a.m.visible = false; A.star(); G.addStars(1); G.say('🍎 Apfel! +1 ⭐', 1200); fx.burst(a.x, .6, a.z, 8, [BI.C.red, BI.C.gold, BI.C.white], 4, .7, 24, 8); }
     }
     for (const T of userTrees()) if (T.cd > 0) T.cd -= dt;
+    for (const T of BI.ISLE_TREES) if (T.cd > 0) T.cd -= dt;
   }
 
   /* ---------- Seifenblasen: normale zum Plattmachen und XXL (Riesenblase trägt Jannis nach oben) ---------- */

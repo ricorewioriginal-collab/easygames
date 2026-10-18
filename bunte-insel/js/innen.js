@@ -37,7 +37,9 @@ BI.registerDoors = function (W) {
     lo(S, 34, -44, 0, 1, 'turm', 'Uhrturm', 'schluessel'); lo(S, -56, 18, 1, 0, 'huette', 'Strandhütte', 'schluessel'); lo(S, 58, 14, -1, 0, 'schloss', 'Kristall-Burg', 'schluessel');
     [[0, 0], [8, 3], [-7, 5], [3, -9], [-4, -8]].forEach(([da, db], i) => lo(S, -42 + da, -46 + db, 0, 1, 'pilz', 'Pilzhaus ' + (i + 1), 'schluessel'));
   }
-  if (BI.WUNSCH) { const Wn = BI.WUNSCH, h = Wn.P.hut; lo(Wn, h[0], h[1], -1, 0, 'huette', 'Strandhütte (Wunsch-Insel)', 'wunsch'); }
+  if (BI.WUNSCH) { const Wn = BI.WUNSCH, h = Wn.P.hut; lo(Wn, h[0], h[1], -1, 0, 'huette', 'Strandhütte (Wunsch-Insel)', 'wunsch');
+    /* Tor am Ende der geheimen Schlucht: erst nach dem Rätsel (save.wunsch.cave) begehbar – dahinter die Lichtgrotte */
+    const dr = Wn.P.door, q = Wn.at(dr[0] - 3.6, dr[1]), f = Wn.at(dr[0], dr[1]); Wn.lichtDoor = BI.addDoor({ x: q.x, z: q.z, h: Math.atan2(q.x - f.x, q.z - f.z), kind: 'grotte', name: 'Lichtgrotte', isle: 'wunsch', nomark: true, gate: sv => !!(sv.wunsch && sv.wunsch.cave) }); }
   if (BI.TASCHI) { const T = BI.TASCHI; lo(T, -38, 28, 0, -1, 'labor', 'Labor von Professor Ulme', 'taschi'); lo(T, -38, -28, 0, 1, 'heil', 'Taschi-Heilhaus', 'taschi'); { const fd = lo(T, -16, -30, 0, 1, 'laden', 'Taschi-Fangladen', 'taschi'); if (fd) fd.tshop = true; } }
   if (M) { lo(M, 66, -16, -1, 0, 'huette', 'Strandhütte', 'maerchen'); [[5, -33], [19, -33], [5, -41], [19, -41]].forEach(([a, b], i) => lo(M, a, b, 0, 1, 'zelt', ['Wahrsager-Zelt', 'Teppich-Zelt', 'Gewürz-Zelt', 'Lampen-Zelt'][i], 'maerchen')); }
   if (Q) { lo(Q, 14, -32, 0, 1, 'frucht', 'Ananas-Haus', 'schwamm'); lo(Q, 26, -32, 0, 1, 'stein', 'Stein-Haus', 'schwamm'); lo(Q, 38, -32, 0, 1, 'kopf', 'Steinkopf-Haus', 'schwamm'); lo(Q, -14, 34, 0, -1, 'eimer', 'Eimerchen', 'schwamm'); lo(Q, -44, 34, 0, -1, 'held', 'Heldenheim', 'schwamm'); lo(Q, -56, -20, 1, 0, 'huette', 'Strandhütte', 'schwamm'); }
@@ -52,6 +54,7 @@ BI.registerDoors = function (W) {
 BI.buildDoorMarks = function (c) {
   const { st, lamp, W } = c; W.doors = BI.DOORS;
   for (const d of BI.DOORS) {
+    if (d.nomark) continue; /* eigenes Tor in der Welt (z. B. Lichtgrotte) */
     st.disc(d.x, d.z, 1.1, .05, 0xffd23f, 16); st.disc(d.x, d.z, .75, .06, 0xfff0a0, 16);
     /* sichtbare Haustür an der Wand (Rahmen, Tür, Knauf, Fenster, Laterne, Stufe) – Wand liegt ca. .85 hinter dem Türplatz */
     const nx = Math.sin(d.h), nz = Math.cos(d.h), tx = nz, tz = -nx, wx = d.x - nx * .85, wz = d.z - nz * .85, col = [0x8a4a2a, 0x3a6ad8, 0xc23a3a, 0x2f9a5a][d.id % 4];
@@ -72,7 +75,7 @@ BI.createInnen = function (G) {
     haus: { w: 10, d: 9, wall: [0xf6e6c8, 0xe8d0b0, 0xd8e8d0, 0xf0d8e0], floor: [0xc89a5a, 0xb88a4a], title: '🏠' }, labor: { w: 11, d: 9, wall: [0xd8e8f0, 0xd8f0e0], floor: [0x9aa8b8], title: '🧪' }, kapitaen: { w: 10, d: 9, wall: [0xe8d8b8, 0xc8b090], floor: [0x8a5a3a], title: '⚓' }, werkstatt: { w: 10, d: 8, wall: [0xd0d8e0, 0xaeb8c4], floor: [0x888c94], title: '🛠️' }, huette: { w: 8.4, d: 7.4, wall: [0xc8a070, 0xb89060], floor: [0x9a6a3a], title: '🛖' },
     laden: { w: 11, d: 8, wall: [0xfff0c8, 0xd8f0e8], floor: [0xd0c8b0], title: '🛍️' }, schmiede: { w: 10, d: 8, wall: [0x9a9aa8, 0xb0a898], floor: [0x6a6a78], title: '⚒️' },
     turm: { w: 8.6, d: 8.2, wall: [0xc8c8d8, 0xd8c8c0], floor: [0xa8a8b8], title: '🗼' }, zelt: { w: 8.4, d: 7.4, wall: [0xff9ac0, 0xffb04a, 0x9a7af0], floor: [0xc84a6a], title: '⛺' },
-    schloss: { w: 48, d: 38, wall: [0xe8d8f0, 0xc8d0f0], floor: [0xd8c8e8], title: '🏰' }, hoehle: { w: 10, d: 9, wall: [0x4a4658, 0x3a3648], floor: [0x6a6070], title: '🕳️' },
+    schloss: { w: 48, d: 38, wall: [0xe8d8f0, 0xc8d0f0], floor: [0xd8c8e8], title: '🏰' }, hoehle: { w: 10, d: 9, wall: [0x4a4658, 0x3a3648], floor: [0x6a6070], title: '🕳️' }, grotte: { w: 9, d: 8, wall: [0x3a2e6a, 0x2e2858], floor: [0x4a3e78], title: '🌠' },
     pilz: { w: 8.4, d: 7.4, wall: [0xfff0d8, 0xffe0e8], floor: [0xf0c898], title: '🍄' }, frucht: { w: 10, d: 9, wall: [0xffe8a0, 0xffd080], floor: [0xd8a050], title: '🍍' },
     stein: { w: 8.4, d: 7.4, wall: [0xe8b0c0, 0xd89aaa], floor: [0xb88a7a], title: '🪨' }, kopf: { w: 9, d: 8, wall: [0x9ab8b0, 0x8aa8a0], floor: [0x6a8a80], title: '🗿' },
     heil: { w: 12, d: 9, wall: [0xffd6e0, 0xfff0f4], floor: [0xf6e8ec], title: '💖' },
@@ -119,6 +122,7 @@ BI.createInnen = function (G) {
     park: { npc: ['Parkchefin Paula', ['Willkommen im Park-Büro! Von hier aus laufen alle Karussells. 🎡', 'Mit Sternen kannst du hier Leckereien für den Park kaufen.']], shop: [['cookie', '🍪', 'Keks', 1], ['juice', '🧃', 'Saft', 1], ['icecream', '🍦', 'Eis', 2]] },
     teppich: { npc: ['Teppichhändler Aram', ['Meine Teppiche sind die weichsten im ganzen Märchenland! 🧞', 'Einer davon kann sogar fliegen … pssst!']], center: 'teppich' },
     gewuerz: { npc: ['Gewürzhändlerin Safi', ['Riech mal! Zimt, Kurkuma und Paprika. 🌶️', 'Ein bisschen Gewürz macht jede Suppe lecker.']], center: 'gewuerz' },
+    grotte: { npc: ['Lichtfee Luma', ['Psst … du hast das Tor geöffnet! Hier schläft das warme Licht der Wunsch-Insel. 🌠', 'Das Licht hat dir den Wunschschlüssel geschenkt. Berühr es ruhig – es kitzelt ein bisschen!']] },
     lampen: { npc: ['Lampenmeister Omar', ['So viele Lampen – und eine davon ist eine Wunderlampe! 🪔', 'Reib vorsichtig daran …']], center: 'lampe' }
   };
   const themeOf = d => { const n = d.name || '', i = d.isle, k = d.kind;
@@ -126,7 +130,7 @@ BI.createInnen = function (G) {
     if (k === 'frucht') return 'ananas'; if (k === 'stein') return 'stein'; if (k === 'kopf') return 'kopf'; if (k === 'eimer') return 'eimer'; if (k === 'held') return 'held';
     if (i === 'zotik') return 'mond'; if (i === 'bauland' && k !== 'werkstatt') return 'bau'; if (/Hafenhaus/.test(n)) return 'hafen'; if (/Ferienhaus/.test(n)) return 'ferien'; if (/Bauernhütte/.test(n)) return 'bauer';
     if (/Uhrturm/.test(n)) return 'uhr'; if (/Funkturm/.test(n)) return 'funk'; if (/Wasserturm/.test(n)) return 'wasser'; if (/Bademeister/.test(n)) return 'bademeister'; if (/Eis-Kiosk/.test(n)) return 'eis'; if (/Park-Büro/.test(n)) return 'park';
-    if (/Teppich/.test(n)) return 'teppich'; if (/Gewürz/.test(n)) return 'gewuerz'; if (/Lampen/.test(n)) return 'lampen'; return ''; };
+    if (/Teppich/.test(n)) return 'teppich'; if (/Gewürz/.test(n)) return 'gewuerz'; if (/Lampen/.test(n)) return 'lampen'; if (k === 'grotte') return 'grotte'; return ''; };
   /* Mitmach-Dinge: Text-Reihe, Effekt-Farben, Klang und einmal pro Haus ein kleines Geschenk */
   const FUN = {
     fass: { label: ['🍺', 'Apfelsaft zapfen'], txt: ['🧃 Gluck-gluck … frischer Apfelsaft aus dem Fass!'], gift: ['juice', '🧃 Saft'], col: [[1, .8, .3]], snd: 'pop' },
@@ -150,6 +154,7 @@ BI.createInnen = function (G) {
     ring: { label: ['🛟', 'Rettungsring ansehen'], txt: ['🛟 Der Rettungsring ist für Notfälle. Immer da schwimmen, wo jemand aufpasst!'], col: [[1, .4, .3], [1, 1, 1]] },
     teppich: { label: ['🧞', 'Auf den Teppich setzen'], txt: ['🧞 Der Teppich hebt kurz ab – huiii! – und landet wieder sanft.', '🧞 Aram lacht: „Für weite Flüge musst du noch üben!“'], col: [[1, .3, .4], [1, .85, .3]], snd: 'chime' },
     gewuerz: { label: ['🌶️', 'Gewürze schnuppern'], txt: ['🌶️ Hatschi! Der Pfeffer kitzelt in der Nase.', '🟡 Kurkuma duftet warm und färbt alles gelb.'], col: [[1, .5, .2], [1, .85, .2]], snd: 'pop' },
+    licht: { label: ['🌟', 'Warmes Licht berühren'], txt: ['🌟 Das Licht wird warm und hell – es summt ganz leise ein Wunschlied.', '✨ Kleine Lichtfunken tanzen um dich herum. Du fühlst dich mutig!'], gift: ['cookie', '⭐ Sternkeks'], col: [[1, .9, .5], [1, 1, 1]], snd: 'chime' },
     lampe: { label: ['🪔', 'Wunderlampe reiben'], txt: ['🪔 Puff! Ein kleiner Lampengeist erscheint: „Dein Wunsch: ein Stern!“', '🪔 Der Lampengeist zwinkert: „Ein Wunsch pro Tag reicht!“'], gift: ['cookie', '⭐ Glücks-Keks'], col: [[.6, .5, 1], [1, .85, .3]], snd: 'chime' }
   };
   const sprite = (txt, y, w, x, z) => { const cv = document.createElement('canvas'); cv.width = 512; cv.height = 96; const c = cv.getContext('2d'); let f = 50; c.font = 'bold ' + f + 'px Fredoka, system-ui, sans-serif'; const mw = c.measureText(txt).width; if (mw > 480) { f = Math.floor(f * 480 / mw); c.font = 'bold ' + f + 'px Fredoka, system-ui, sans-serif'; } c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 9; c.strokeStyle = '#3a2a1a'; c.strokeText(txt, 256, 50); c.fillStyle = '#fff3b0'; c.fillText(txt, 256, 50); const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false, depthTest: false })); sp.scale.set(w, w * 96 / 512, 1); sp.position.set(x, y, z); sp.renderOrder = 9; return sp; };
@@ -176,7 +181,9 @@ BI.createInnen = function (G) {
     const shelf = (x, z, wall) => { const w = wall === 'n' ? 2.6 : .7, dd = wall === 'n' ? .7 : 2.6; fur(x, z, w, dd, 2.3, 0x7a4a2a); for (let k = 0; k < 4; k++) for (let j = 0; j < 4; j++) box(x + (wall === 'n' ? (j - 1.5) * .55 : 0), z + (wall === 'n' ? 0 : (j - 1.5) * .55), wall === 'n' ? .4 : .5, wall === 'n' ? .5 : .4, .4, [0xe0382b, 0x2f8cff, 0xffd23f, 0x4cd07d, 0xb48aff][(k + j) % 5], .3 + k * .55); it('shelf', x + (wall === 'e' ? -1.4 : wall === 'w' ? 1.4 : 0), z + (wall === 'n' ? 1.4 : 0), 1.8, ['📚', 'Lesen']); };
     const plant = (x, z) => { fur(x, z, .7, .7, .4, 0xc8703a); box(x, z, .5, .5, 1.1, 0x3fae4a, .4); box(x, z, 1.0, 1.0, .5, 0x4cc65a, 1.1); };
     const lamp = (x, z) => { box(x, z, .2, .2, 1.7, 0x6a6a7a); box(x, z, .6, .6, .5, 0xfff0a0, 1.7); solid(x, z, .5, .5, 2.2); };
-    const chest = (x, z) => { fur(x, z, 1.4, .9, .8, 0x8a5a2a); box(x, z, 1.5, 1.0, .12, 0xc23a2a, .8); box(x, z + .46, .3, .12, .3, 0xffd23f, .35); const open = !!S().c[d.id]; it('chest', x, z + 1.3, 1.5, ['🎁', 'Truhe öffnen'], { open }); };
+    const chest = (x, z) => { /* an der Seitenwand: Schloss und Platz zum Öffnen zeigen zur Raummitte – so steht der Held neben der Truhe, nicht davor */
+      const side = Math.abs(x - X0) > hw - 2.2 ? Math.sign(X0 - x) : 0; fur(x, z, side ? .9 : 1.4, side ? 1.4 : .9, .8, 0x8a5a2a); box(x, z, side ? 1.0 : 1.5, side ? 1.5 : 1.0, .12, 0xc23a2a, .8);
+      if (side) box(x + side * .46, z, .12, .3, .3, 0xffd23f, .35); else box(x, z + .46, .3, .12, .3, 0xffd23f, .35); const open = !!S().c[d.id]; it('chest', side ? x + side * 1.3 : x, side ? z : z + 1.3, 1.5, ['🎁', 'Truhe öffnen'], { open }); };
     const kind = d.kind;
     /* Puppenstuben-Rand oben auf drei Wänden (vorne nicht, sonst läge er im Bild) und goldene Türmatte am Ausgang */
     for (const [x, z, w, dd] of [[X0, Z0 - hd, K0.w + .3, .3], [X0 - hw, Z0, .3, K0.d + .3], [X0 + hw, Z0, .3, K0.d + .3]]) box(x, z, w, dd, .22, 0xfff6e0, H - .02);
@@ -286,6 +293,11 @@ BI.createInnen = function (G) {
     } else if (kind === 'hoehle') {
       for (let k = 0; k < 9; k++) { const sx = (rng() - .5) * (K0.w - 2), sz = (rng() - .5) * (K0.d - 3) - 1; if (Math.hypot(sx, sz) < 2.4) continue; b.cone(X0 + sx, 0, Z0 + sz, .4 + rng() * .4, 1.2 + rng() * 1.8, 0x7a7488, 6); solid(X0 + sx, Z0 + sz, .8, .8, 2); } for (const [dx, dz, col] of [[-3.5, -2.5, 0x9ad8ff], [3.4, -3, 0xff9ad8], [-3, 2.5, 0x9affc8]]) { b.cone(X0 + dx, 0, Z0 + dz, .35, 1.4, col, 5); b.sph(X0 + dx, 1.5, Z0 + dz, .25, col, 1); solid(X0 + dx, Z0 + dz, .6, .6, 1.5); }
       box(X0, Z0 - 1.6, 3.2, 3.2, .05, 0x1a1a24, .02); box(X0, Z0 - 1.6, 2.4, 2.4, .06, 0x000000, .03); for (let k = 0; k < 4; k++) box(X0, Z0 - .4 - k * .55, 3.0 - k * .5, .5, .25, 0x8a8a98, 0); it('stairs', X0, Z0 + .6, 2.2, ['🕳️', 'Abstieg ins Mini-Spiel']); chest(X0 + hw - 1.3, Z0 + 2.4); R.npcAt = [X0 - 2.6, Z0 + 2.4, 1.2];
+    } else if (kind === 'grotte') {
+      /* Lichtgrotte hinter dem Tor der Wunsch-Insel: leuchtende Kristalle am Rand, das warme Licht in der Mitte */
+      for (const [dx, dz, col] of [[-3.3, -2.6, 0x9ad8ff], [3.2, -2.8, 0xff9ad8], [-3.4, 1.6, 0x9affc8], [3.4, 1.2, 0xffe08a], [-1.6, -3.2, 0xb89aff], [1.7, -3.3, 0x9ad8ff]]) { b.cone(X0 + dx, 0, Z0 + dz, .4, 1.6, col, 5); b.sph(X0 + dx, 1.7, Z0 + dz, .26, col, 1); solid(X0 + dx, Z0 + dz, .6, .6, 1.6); }
+      b.cyl(X0, 0, Z0 - 1.1, 1.1, 1.3, .35, 0x6a5aa8, 14); b.sph(X0, 1.5, Z0 - 1.1, .85, 0xfff0b0, 1); for (let k = 0; k < 7; k++) { const g = k / 7 * TAU; b.sph(X0 + Math.sin(g) * 1.25, 1.2 + (k % 3) * .35, Z0 - 1.1 + Math.cos(g) * 1.25, .12, 0xffd23f, 0); } solid(X0, Z0 - 1.1, 1.3, 1.3, 1.5);
+      funIt('licht', X0, Z0 + .4); chest(X0 + hw - 1.3, Z0 + 2.2); R.npcAt = [X0 - 2.6, Z0 + 1.4, 1.2];
     } else if (kind === 'heil') {
       /* Taschi-Heilhaus: Tresen mit Heil-Automat (Ballregal), Betten, Team-Tisch */
       fur(X0, Z0 - hd + 1.5, hw * 1.7, .9, 1.1, 0xffffff); box(X0, Z0 - hd + 1.5, hw * 1.75, 1.0, .12, 0xe8453c, 1.1); box(X0, Z0 - hd + 1.5, 1.2, .2, .14, 0xffffff, 1.2);
@@ -296,7 +308,7 @@ BI.createInnen = function (G) {
       R.npcAt = [X0, Z0 - hd + 2.6, 0];
     } else {
       /* Wohnhaus, Hütte, Pilz, Frucht, Stein, Kopf, Eimer, Heldenheim */
-      bed(X0 - hw + 1.4, Z0 - hd + 2); table(X0 + 1.2, Z0 - .6, true); shelf(X0 + hw - .7, Z0 - 1.6, 'e'); plant(X0 - hw + 1, Z0 + hd - 1.2); lamp(X0 + hw - 1, Z0 + hd - 1.2); chest(X0 + hw - 1.3, Z0 + 2.2);
+      bed(X0 - hw + 1.4, Z0 - hd + 2); table(X0 + 1.2, Z0 - .6, true); shelf(X0 + hw - .7, Z0 - 1.6, 'e'); plant(X0 - hw + 1, Z0 + hd - 1.2); lamp(X0 - hw + 2.1, Z0 + hd - 1.0); chest(X0 + hw - 1.3, Z0 + 2.2);
       if (kind === 'huette') { fur(X0, Z0 - hd + .9, 2.4, 1.2, 1.5, 0x6a5a4a); box(X0, Z0 - hd + 1.1, 1.6, .2, .9, 0xff7a2a, .3); it('fire', X0, Z0 - hd + 2.6, 1.8, ['🔥', 'Aufwärmen']); }
       else if (kind === 'frucht') { fur(X0 - 1.8, Z0 + 1.6, 1.6, .6, .7, 0x4a505c); box(X0 - 1.8, Z0 + 1.6, 1.4, .1, .9, 0x2a2a3a, .6); it('tv', X0 - 1.8, Z0 + 2.6, 1.8, ['📺', 'Fernsehen']); }
       else if (kind === 'held') { fur(X0 - 2.6, Z0 - hd + .9, 1.2, 1.2, 1.1, 0xc9d0e0); box(X0 - 2.6, Z0 - hd + .9, .5, .5, .5, 0xffd23f, 1.1); it('cup', X0 - 2.6, Z0 - hd + 2.4, 1.8, ['🏆', 'Heldenpokal ansehen']); }
@@ -332,7 +344,7 @@ BI.createInnen = function (G) {
     if (P.veh || P.y - (K.inside ? 0 : W.groundY(P.x, P.z)) > 2.5 || K.panel) return null;
     if (K.inside) { const R = K.inside; if (nr(R.exit, 1.9)) return { k: 'inout', label: ['🚪', 'Hinausgehen'] }; let best = null, bd = 1e9; for (const i of R.items) { const dd = Math.hypot(P.x - i.x, P.z - i.z); if (dd < i.r && dd < bd) { bd = dd; best = i; } } /* das nächste Ding gewinnt, nicht das zuerst gebaute */
       return best ? { k: 'initem', i: best, label: best.type === 'chest' && best.open ? ['🎁', 'Truhe (leer)'] : best.label } : null; }
-    if (P.x < 2500) for (const d of BI.DOORS) if (Math.abs(P.x - d.x) < 3 && Math.abs(P.z - d.z) < 3 && Math.hypot(P.x - d.x, P.z - d.z) < 2.3) return { k: 'door', d, label: ['🚪', d.name + ' betreten'] };
+    if (P.x < 2500) for (const d of BI.DOORS) if (Math.abs(P.x - d.x) < 3 && Math.abs(P.z - d.z) < 3 && Math.hypot(P.x - d.x, P.z - d.z) < 2.3 && (!d.gate || d.gate(save))) return { k: 'door', d, label: ['🚪', d.name + ' betreten'] };
     return null;
   };
   K.busy = () => !!K.panel;
