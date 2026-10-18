@@ -88,7 +88,8 @@
   }
   function saveMeta() { try { rawSet.call(LS, META_KEY, JSON.stringify(meta)); } catch (e) {} }
   var auth = null, user = null, fb = null, sdkP = null;
-  function wanted() { try { return LS.getItem(ON_KEY) === '1'; } catch (e) { return false; } }
+  // „Mit Google verbunden“: Cloud-Schalter dieses Skripts ODER ein Konto-Token (Login im Kopf, bei den Bewertungen, im Portal) – dann ist man in jedem Spiel automatisch angemeldet
+  function wanted() { try { return LS.getItem(ON_KEY) === '1' || !!LS.getItem('anmacha-rating-token'); } catch (e) { return false; } }
   // ---- App-Modus (Android/Windows-App): Google sperrt die Anmeldung im App-Fenster. Die Anmeldung läuft deshalb im Browser
   // (Link mit Kopplungscode auf ricorewi-radio.de), die App holt sich danach das Aktualisierungs-Token und nutzt es per REST. ----
   var APP = location.hostname === 'appassets.local' || location.hostname === 'appassets.androidplatform.net' || !!window.EasyGamesApp || /(RicoReWi|EasyGames)App\//.test(navigator.userAgent), RT = 'anmacha-cloud-rt', PAIR = null;
