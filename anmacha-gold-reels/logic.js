@@ -46,6 +46,7 @@
     const id = k => (k && k in m.idx ? m.idx[k] : -1);
     m.wild = id(cfg.wild); m.scat = cfg.scatter ? id(cfg.scatter.id) : -1; m.coin = cfg.holdwin ? id(cfg.holdwin.coin) : -1;
     m.bon = cfg.bonus ? id(cfg.bonus.id) : -1;
+    m.luckyCfg = Object.assign({ p: 1 / 55 }, cfg.lucky);
     m.ff = cfg.freeFeature || null;                            // Freispiel-Besonderheit: upgrade | sticky | multUp
     if (m.ff && m.ff.type === 'upgrade') m.upOrder = m.ff.order.map(id);
     m.book = !!cfg.book && m.wild >= 0 && m.wild === m.scat;
@@ -135,9 +136,46 @@
   }
   L.evaluate = evaluate;
 
+  // Glücks-Features im Grundspiel (zufällig, jedes Mal ein anderes): Wild-Walze, Mystery-Symbole, Wild-Regen,
+  // Multiplikator, Geldregen. Verändert g direkt; pre = Walzenbild vor dem Feature (-2 = Mystery-Feld).
+  L.LUCKY = ['wildReel', 'mystery', 'wildRain', 'mult', 'cash'];
+  L.luckyTypes = m => {
+    const wildOk = m.wild >= 0 && !m.book && !m.wildMultEach;
+    return (m.luckyCfg.types || L.LUCKY).filter(t => (t !== 'wildReel' && t !== 'wildRain') || wildOk).filter(t => t !== 'wildReel' || !m.respin).filter(t => t !== 'mystery' || m.paying.length);
+  };
+  function lucky(m, bet, g) {
+    const types = L.luckyTypes(m); if (!types.length) return null;
+    const type = types[randInt(types.length)], pre = g.map(c => c.slice());
+    const free = (r, y) => g[r][y] !== m.scat && g[r][y] !== m.bon && g[r][y] !== m.coin;
+    const cellsFrom = (n, r0) => { const all = []; for (let r = r0 || 0; r < m.reels; r++) for (let y = 0; y < m.rows; y++) if (free(r, y)) all.push([r, y]);
+      for (let i = all.length - 1; i > 0; i--) { const j = randInt(i + 1); [all[i], all[j]] = [all[j], all[i]]; } return all.slice(0, n); };
+    if (type === 'wildReel') {
+      const opts = []; for (let r = 1; r < m.reels - 1; r++) opts.push(r); if (!opts.length) opts.push(0);
+      const n = opts.length > 2 && rand() < 0.15 ? 2 : 1, reels = [];
+      while (reels.length < n) { const r = opts[randInt(opts.length)]; if (!reels.includes(r)) reels.push(r); }
+      reels.sort((a, b) => a - b).forEach(r => { g[r] = g[r].map(() => m.wild); });
+      return { type, pre, reels };
+    }
+    if (type === 'wildRain') { const cells = cellsFrom(2 + randInt(3), 1); cells.forEach(([r, y]) => { g[r][y] = m.wild; }); return { type, pre, cells }; }
+    if (type === 'mystery') {
+      const cells = cellsFrom(Math.min(m.reels * m.rows - 1, 3 + randInt(3))), sym = m.paying[randInt(m.paying.length)];
+      cells.forEach(([r, y]) => { pre[r][y] = -2; g[r][y] = sym; }); return { type, pre, cells, sym };
+    }
+    if (type === 'cash') {
+      const V = [0.3, 0.5, 0.5, 1, 1, 2]; const drops = cellsFrom(3 + randInt(4)).map(([r, y]) => [r, y, Math.round(V[randInt(V.length)] * bet)]);
+      return { type, pre, drops, amt: drops.reduce((a, d) => a + d[2], 0) };
+    }
+    // Multiplikator: das Walzenbild wird neu gezogen, bis es gewinnt (höchstens 8 Versuche)
+    const x = [2, 2, 2, 3, 3, 5][randInt(6)];
+    for (let i = 0; i < 8; i++) { const t = randomGrid(m); t.forEach((c, r) => { g[r] = c; }); if (evaluate(m, g, bet, x).win > 0) break; }
+    return { type: 'mult', pre: g.map(c => c.slice()), x };
+  }
+
   // fx (nur Freispiele): up = Upgrade-Stufe, sticky = Set klebender Wild-Felder 'r,y'
-  function spinStep(m, bet, mode, mult, special, held, fx) {
+  function spinStep(m, bet, mode, mult, special, held, fx, luck) {
     const g = randomGrid(m);
+    const lk = luck && rand() < m.luckyCfg.p ? lucky(m, bet, g) : null;
+    if (lk && lk.type === 'mult') mult = lk.x;
     if (held) held.forEach(r => { g[r] = held.grid[r].slice(); });
     let upMap = null, stuck = null;
     if (fx && fx.up > 0) {                                     // niedrige Symbole werden zur aktuellen Stufe aufgewertet
@@ -156,6 +194,7 @@
       if (g[wr].includes(m.wild)) { g[wr] = g[wr].map(() => m.wild); expandReels = [wr]; }
     }
     const ev = evaluate(m, g, bet, mult, special);
+    if (lk) { ev.lucky = lk; if (lk.amt) ev.win += lk.amt; }
     const coins = vals ? vals.reduce((a, c) => a + c.filter(Boolean).length, 0) : 0;
     let bonusN = 0; if (m.bon >= 0) g.forEach(col => col.forEach(v => { if (v === m.bon) bonusN++; }));
     return Object.assign({ type: held ? 'respin' : 'spin', mode, grid: g, vals, expandReels, held: held ? held.slice() : null, mult, coins, bonusN, stuck }, ev);
@@ -196,19 +235,20 @@
     const B = m.bonus, picks = Math.min(B.items || 12, B.picks[Math.min(n, Math.max(...Object.keys(B.picks).map(Number)))] || 3);
     const vals = []; for (let i = 0; i < picks; i++) vals.push(wpick(B.prizes)[1]);
     const rest = []; for (let i = picks; i < (B.items || 12); i++) rest.push(wpick(B.prizes)[1]);
-    const win = Math.round(vals.reduce((a, v) => a + v, 0) * bet * m.scale);
-    return { type: 'pick', items: B.items || 12, vals, rest, win, unit: bet * m.scale };
+    const unit = bet * m.scale, win = Math.round(vals.reduce((a, v) => a + v, 0) * unit);
+    return { type: 'pick', items: B.items || 12, vals, rest, win, unit };
   }
   // Bonusrad: ein Feld zeigt × Einsatz oder Freispiele
   function wheelBonus(m, bet) {
     const segs = m.bonus.segs, i = randInt(segs.length), s = segs[i];
-    return { type: 'wheel', segs, idx: i, free: s.free || 0, win: s.x ? Math.round(s.x * bet * m.scale) : 0, unit: bet * m.scale };
+    const unit = bet * m.scale;
+    return { type: 'wheel', segs, idx: i, free: s.free || 0, win: s.x ? Math.round(s.x * unit) : 0, unit };
   }
 
   // Eine komplette Runde (Grunddreh + Features). Die Grafik spielt die Schritte nacheinander ab.
   L.playRound = (m, bet) => {
     const steps = []; let total = 0;
-    const base = spinStep(m, bet, 'base', 1, null, null); steps.push(base); total += base.win;
+    const base = spinStep(m, bet, 'base', 1, null, null, null, true); steps.push(base); total += base.win;
     if (m.respin && base.expandReels) {
       const held = base.expandReels.slice(); held.grid = base.grid;
       const rs = spinStep(m, bet, 'base', 1, null, held); steps.push(rs); total += rs.win;

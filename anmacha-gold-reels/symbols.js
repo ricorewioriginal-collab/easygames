@@ -122,6 +122,8 @@
       if (val) { const jp = /[A-Z]/.test(val); rr(g, 6, 112, 188, 70, 26); g.fillStyle = jp ? 'rgba(122,10,58,.92)' : 'rgba(40,20,0,.82)'; g.fill(); g.lineWidth = 4; g.strokeStyle = '#ffe58a'; g.stroke();
         text(g, val, 100, 148, jp ? 46 : (val.length > 5 ? 42 : val.length > 4 ? 50 : 58), jp ? '#fff' : '#ffe27a', '#2a1000', 6); }
     },
+    mystery(g) { rr(g, 22, 22, 156, 156, 26); g.fillStyle = lg(g, 0, 22, 0, 178, '#c084fc', '#7c3aed', '#3b0a6e'); g.fill(); g.lineWidth = 8; g.strokeStyle = gold(g, 22, 178); g.stroke();
+      text(g, '?', 100, 108, 140, gold(g, 40, 170), '#2a0a4a', 10); shine(g, 62, 56, 16); },
     pyramid(g) { g.beginPath(); g.moveTo(100, 22); g.lineTo(186, 160); g.lineTo(14, 160); g.closePath(); g.fillStyle = lg(g, 14, 0, 186, 0, '#ffe7a0', '#e0a630', '#8a5a10'); g.fill(); g.lineWidth = 6; g.strokeStyle = '#5a3500'; g.stroke();
       g.beginPath(); g.moveTo(100, 22); g.lineTo(130, 160); g.closePath(); g.strokeStyle = 'rgba(90,53,0,.6)'; g.lineWidth = 4; g.stroke();
       g.strokeStyle = 'rgba(90,53,0,.35)'; g.lineWidth = 3; [70, 100, 130].forEach(y => { const w = (y - 22) / 138 * 86; g.beginPath(); g.moveTo(100 - w, y); g.lineTo(100 + w, y); g.stroke(); });
