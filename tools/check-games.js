@@ -27,6 +27,7 @@ GAMES.forEach((x, i) => {
   else if (!isUrl(x.path) && !fs.existsSync(path.join(root, x.path, 'index.html'))) err(`${n}: ${x.path}index.html nicht gefunden`);
   if (x.img && !isUrl(x.img) && !fs.existsSync(path.join(root, x.img))) err(`${n}: Bild ${x.img} nicht gefunden`);
   if (!x.img) warn(`${n}: kein Kartenbild (img) – es erscheint das Icon`);
+  if (!x.external && !isUrl(x.path) && !fs.existsSync(path.join(root, 'share', x.id + '.html'))) warn(`${n}: keine Teilen-Vorschau – node tools/make-share.cjs ${x.id}`);
   if (!isUrl(x.path) && !fs.existsSync(path.join(root, x.path, 'manifest.webmanifest'))) warn(`${n}: keine PWA-Dateien – python3 tools/make-pwa.py ausführen (macht das Spiel mobil installierbar, mit automatischem Update)`);
   if (!CATS.list.some(c => c.id === CATS.of[x.id])) warn(`${n}: keine Kategorie in categories.js (erscheint nur unter "Alle")`);
   const gd = GUIDES[x.id];

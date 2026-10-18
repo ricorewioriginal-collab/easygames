@@ -31,6 +31,7 @@ jobs:
       - run: node --test tools/test-cloud-merge.mjs
       - run: node tools/test-board.mjs
       - run: node tools/test-ach.mjs
+      - run: node tools/test-share-pages.js
       - run: node tools/test-gameach.cjs
       - run: node tools/test-chatfilter.mjs
       - run: node tools/test-engage.mjs
