@@ -81,7 +81,7 @@ BI.createCombat = function (G) {
   const ATK = { punch: { dur: .3, at: .12, dmg: 12, range: 2.4, cd: .32, cost: 0 }, kick: { dur: .5, at: .22, dmg: 20, range: 2.7, cd: .6, cost: 0 }, special: { dur: .7, at: .28, dmg: 32, range: 4.6, cd: 1, cost: 25, ring: true } };
   let atkCd = 0, freeze = 0, flick = false, combo = 0, lastPunch = -9;
   K.attack = function (kind) {
-    if (!K.active() || atk || atkCd > 0 || freeze > 0 || hp <= 0) return; const a = ATK[kind]; if (!a) return;
+    if (!K.active() || atk || atkCd > 0 || freeze > 0 || hp <= 0 || (G.gear && G.gear.open)) return; const a = ATK[kind]; if (!a) return;
     const cost = kind === 'special' ? a.cost * gv('spMul', 1) : a.cost; if (cost > ep) { say('⚡ Zu wenig Energie – kurz ausruhen!', 1400); return; }
     combo = kind === 'punch' && combatClock - lastPunch < .9 ? combo + 1 : 0; if (kind === 'punch') lastPunch = combatClock;
     ep -= cost; atk = { kind, a, t: 0, hit: false, combo: combo % 3 === 2 }; atkCd = a.cd * gv('cdMul', 1); block = false;
