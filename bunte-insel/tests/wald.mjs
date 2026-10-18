@@ -43,7 +43,7 @@ const t3 = await p.evaluate(async () => {
   const z = W.spots.wald_mond; b.P.x = z.x; b.P.z = z.z; await sl(600); const gb = document.getElementById('fbGear'); o.gearBtn = !!gb && !gb.hidden;
   gb && gb.click(); await sl(150); const btns = [...document.querySelectorAll('button')].map(x => x.textContent); o.gearOpen = b.gear.open && !btns.some(x => /\d+ ⭐$/.test(x.trim())); b.gear.close();
   D.zk.frei = 10; const pt = BI.WALD.at(-64 + 30, 0); b.P.x = pt.x; b.P.z = pt.z; for (let i = 0; i < 40 && !D.enemies.some(e => e.kind === 'boss' && e.wz === 'frei'); i++) await sl(250);
-  const g = D.enemies.find(e => e.kind === 'boss' && e.wz === 'frei'); o.geist = !!g; if (g) { D.damage(g, 99999, 1, 0); await sl(150); } o.geistStk = (b.save.stk || []).includes('boss');
+  const g = D.enemies.find(e => e.kind === 'boss' && e.wz === 'frei'); o.geist = !!g; if (g) { D.damage(g, 99999, 1, 0); await sl(150); } o.geistStk = (b.save.stk || []).includes('boss') && !((b.save.wald || {}).zb || {}).frei;
   return o; });
 console.log(t3);
 ok(t3.oldPeace, 'Alter Wald der Hauptinsel ist friedlich'); ok(t3.tor && t3.beamed, 'Waldtor bringt zur Wald-Insel'); ok(t3.gearBtn && t3.gearOpen, 'Im Kampf: 🎒 Ausrüstung anlegen (ohne Kaufen)'); ok(t3.geist && t3.geistStk, 'Waldgeist erscheint zwischen den Lichtungen → Sticker Waldheld');

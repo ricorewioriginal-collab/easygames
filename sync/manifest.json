@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "d37a5fabb9dd",
- "generated": "2026-10-18T10:43:32+00:00",
- "commit": "e7ced498c1d9b1b29b6261321cc081136d5837df",
+ "version": "fba38051f3ef",
+ "generated": "2026-10-18T10:52:11+00:00",
+ "commit": "9a967ebb867a327a753c8c3bae36746be117875f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4339,7 +4339,7 @@
   {
    "p": "bunte-insel/index.html",
    "s": 110353,
-   "h": "ad49c7627dd0a1fe30818f3996fba2ba3a464b603a81ec7f12e386c97dafb03c"
+   "h": "69d9aea50fcdd1e4f9c76b9890aebcc3c7b104f3a3e50b0eb6d9fa29b6d12902"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -4418,8 +4418,8 @@
   },
   {
    "p": "bunte-insel/js/combat.js",
-   "s": 45557,
-   "h": "a5ff86394366b2bf1311271f4b8a74749861b03391e424095bbedb0378cb7c1e"
+   "s": 45576,
+   "h": "6ea019462f5540c5ab72b5661b3bf2ae64a68f1369e313a01f9d437c75dfc3e6"
   },
   {
    "p": "bunte-insel/js/dampfer.js",
@@ -4754,7 +4754,7 @@
   {
    "p": "bunte-insel/js/wald.js",
    "s": 14661,
-   "h": "50c9a89e2a54e4fc693a30c74cdd10f03ffa2a31fab85ddb2c3e615a52b4c62a"
+   "h": "7fb43d7349f2be898026ac0d938faa6b4eab3971d4ca48cc0b41a9cc28fbb479"
   },
   {
    "p": "bunte-insel/js/weather.js",
@@ -6439,7 +6439,7 @@
   {
    "p": "sync/catalog.json",
    "s": 105486,
-   "h": "e734dc500a3b5c27b4eef01f785663c1a1a8e436e8abda92d0c8687c6b3409e5"
+   "h": "d5a62b1a8eb53e361ea1b1bcbc1e28175229d39c06922a330660a30381f22779"
   },
   {
    "p": "taschi/card.svg",

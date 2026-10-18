@@ -88,7 +88,7 @@ BI.createWald = function (G) {
   function beam(x, z, msg) { fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.green || BI.C.blue, BI.C.gold], 4, 1, 28, 4); const q = W.resolve(x, z, .6, {}); P.x = q.x; P.z = q.z; P.y = 0; P.vy = 0; A.star && A.star(); say(msg, 3600); }
   K.near = function () {
     if (P.veh) return null;
-    if (FO && Math.hypot(P.x - FO.gx, P.z - FO.gz) < 4.5) return { k: 'wtor', label: ['🌀', 'Waldtor zur Wald-Insel'] };
+    if (FO && Math.hypot(P.x - FO.gx, P.z - FO.gz) < 2.5) return { k: 'wtor', label: ['🌀', 'Waldtor zur Wald-Insel'] };
     if (Math.hypot(P.x - back.x, P.z - back.z) < 3) return { k: 'wback', label: ['🌀', 'Zurück zur Hauptinsel'] };
     if (!T.onIsle(P.x, P.z, 4)) return null;
     if (near({ x: shop.x, z: shop.z - 1.4 }, 3)) return { k: 'wshop', label: ['🎒', 'Ausrüstung kaufen'] };
