@@ -1,4 +1,4 @@
-window.EASYGAMES_BUILD = '20261018.3'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
+window.EASYGAMES_BUILD = '20261018.4'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
 // Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
 const GAMES = [
   { id: 'ricolife', title: 'RicoLife 3D – Dein Leben. Deine Regeln.', icon: '🏡', img: 'ricolife/card.svg', bg: 'linear-gradient(145deg,#123a50,#4b8d8e 54%,#e5b16b)', glow: 'rgba(139,212,194,.45)', path: 'ricolife/', desc: 'Eigenständige 3D-Lebenssimulation in einer lebendigen offenen Stadt: eigenen Haushalt erstellen, begehbare Häuser bauen und einrichten, Bedürfnisse und Emotionen erleben, Berufe ausüben, Freundschaften und Familien gründen, Lebensgeschichten entdecken. Frei spielbar, auch offline, mit optionalem Google-Spielstand. Für Handy, PC und Controller.' },
@@ -90,7 +90,7 @@ const GAMES = [
     path: 'anmacha-klotzfunk/', desc: 'Voxel-Sandbox in 3D: 15 Biome mit Höhlen, Erzen und Funkkristallen, Dörfer mit Bewohnern und Handel, verlassene Minen, Tiere, Weizenfelder, Rauschlinge, Höhlenwesen und Drohnen, Story „Das große Rauschen“ in 6 Kapiteln, Funknetz mit Sendern, Relais und Maschinen, Werkzeuge, Schwerter und Rüstung, Bauformen, Werkbank und Schmelzofen, Herzen und Hunger im Überlebensmodus, 16 Radio-Logo-Blöcke, Federn, Turbo, Aufwind, Radio-Beats, Seilhaken und Gleiten, Minikarte, Tag und Nacht. Maus und Tastatur oder Touch am Handy, Grafik passt sich dem Gerät an.' },
   { id: 'bunte-insel', title: 'Bunte Insel', icon: '🚓', img: 'bunte-insel/card.png', bg: 'linear-gradient(145deg,#4ab8ff,#4cd07d 55%,#ffd23f)', glow: 'rgba(76,208,125,.55)',
     path: 'bunte-insel/', desc: 'Kinderspiel mit offener Insel-Welt: laufen, 9 Fahrzeuge (auch Hubschrauber & Zug-Simulation), Spielzeugladen, Bauen wie bei den Sims, Tanzparty, Seifenblasen, Baum hauen, Polizeihund Blitz und Pappnase. Touch mit festem Joystick und Tastatur.' },
-  { id: 'anmacha-undercover', title: 'AnMaCha UNDERCOVER 3D – Wem kannst du trauen?', icon: '🕵️', img: 'anmacha-undercover/card.svg', bg: 'linear-gradient(145deg,#070d22,#1b2f63 55%,#ff9a2e)', glow: 'rgba(41,211,255,.5)',
+  { id: 'anmacha-undercover', title: 'AnMaCha UNDERCOVER 3D – Wem kannst du trauen?', icon: '🕵️', img: 'anmacha-undercover/card.png', bg: 'linear-gradient(145deg,#070d22,#1b2f63 55%,#ff9a2e)', glow: 'rgba(41,211,255,.5)',
     path: 'anmacha-undercover/', desc: 'Social-Deduction-Party im Funkhaus: 6 Modi – Verräter-Jagd, Imposter mit geheimem Wort, Detektiv & Alibi, Sabotage-Chaos, Verstecken & Jagen und Rollen-Chaos. 6 Karten in 3D, 24 Minispiele, über 500 Wörter, Bots für 3–12 Teilnehmer. Solo offline gegen den Computer oder online per Link, Code und QR – jeder mit eigenem Gerät und geheimer Rolle.' },
 ];
 window.EASYGAMES_GAMES = GAMES;

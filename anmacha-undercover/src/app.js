@@ -127,7 +127,7 @@
       g.hud = AMU.HUD.create(hudEl, { onAction: h => onHud(h), touch, device: () => input ? input.lastDevice() : 'keyboard' });
     } else if (w) w.loadLounge();
     setMenuMode(false);
-    if (AMU.Help && AMU.Help.tip) { const tip = AMU.Help.tip(mode.id); if (tip && !(AMU.Save.profile().tut || {})[mode.id]) { UI().toast(tip, 'info', 6000); const p = AMU.Save.profile(); p.tut[mode.id] = 1; AMU.Save.saveProfile(p); } }
+    if (AMU.Help && AMU.Help.tip && mode.id !== 'wort') { const tip = AMU.Help.tip(mode.id); if (tip && !(AMU.Save.profile().tut || {})[mode.id]) { UI().toast(tip, 'info', 6000); const p = AMU.Save.profile(); p.tut[mode.id] = 1; AMU.Save.saveProfile(p); } }
     lastT = performance.now();
     if (!raf) raf = requestAnimationFrame(loop);
   }
