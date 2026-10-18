@@ -182,11 +182,14 @@ export function buildLayout(r) {
   const homes = L.buildings.filter(b => b.kind === 'house' || b.kind === 'shop' || b.kind === 'lab');
   region.npcs.forEach((n, i) => {
     const a = (i / region.npcs.length) * Math.PI * 2 + 0.4;
-    const day = { x: plaza.x + Math.cos(a) * (plaza.r - 3.5), z: plaza.z + Math.sin(a) * (plaza.r - 3.5) };
-    const home = homes[i % homes.length].door;
+    // inside the ring of benches (plaza.r - 2.2), so nobody stands in a bench
+    const day = { x: plaza.x + Math.cos(a) * (plaza.r - 5.5), z: plaza.z + Math.sin(a) * (plaza.r - 5.5) };
+    // at night in front of the own door (a fixed offset used to end inside the wall)
+    const hb = homes[i % homes.length], hd = Math.hypot(hb.door.x - hb.x, hb.door.z - hb.z) || 1;
+    const home = { x: hb.door.x + (hb.door.x - hb.x) / hd * 1.6, z: hb.door.z + (hb.door.z - hb.z) / hd * 1.6 };
     const wander = { x: plaza.x + Math.cos(a + 0.6) * (plaza.r + 4), z: plaza.z + Math.sin(a + 0.6) * (plaza.r + 4) };
     L.npcs.push({ idx: i, role: n.role, name: n.name, x: day.x, z: day.z,
-      schedule: [{ from: 6 * 60, to: 12 * 60, at: day }, { from: 12 * 60, to: 18 * 60, at: wander }, { from: 18 * 60, to: 22 * 60, at: day }, { from: 22 * 60, to: 6 * 60, at: { x: home.x + 1.5, z: home.z + 1 } }] });
+      schedule: [{ from: 6 * 60, to: 12 * 60, at: day }, { from: 12 * 60, to: 18 * 60, at: wander }, { from: 18 * 60, to: 22 * 60, at: day }, { from: 22 * 60, to: 6 * 60, at: home }] });
   });
 
   // --- trainers -----------------------------------------------------------------
@@ -229,6 +232,9 @@ export function buildLayout(r) {
 
   // --- terrain heights -----------------------------------------------------------
   computeHeights(L, noise);
+  // items and route trainers need firm ground: not in a river, on a cliff or
+  // beyond the edge of the cloud island
+  for (const p of [...L.items, ...L.trainers]) settle(L, p);
 
   // --- vegetation and rocks (deterministic scatter) ----------------------------------
   scatter(L, rng, noise);
@@ -326,6 +332,15 @@ function landmarkCandidates(kind) {
     case 'moonarch': return [[54, 40], [44, 30]];
     case 'suntemple': return [[54, 16], [-54, 34]];
     default: return [[48, 18], [-50, 36], [52, 34]];
+  }
+}
+function settle(L, p) {
+  const flat = (x, z) => slopeAt(L, x, z) < 0.6;
+  const firm = (x, z) => Math.abs(x) < HALF - 8 && Math.abs(z) < HALF - 8 && waterDistance(L, x, z) > 2.5 && flat(x, z) && flat(x + 1, z) && flat(x - 1, z) && flat(x, z + 1) && flat(x, z - 1);
+  if (firm(p.x, p.z)) return;
+  for (let d = 1; d <= 14; d++) for (let k = 0; k < 12; k++) {
+    const a = k / 12 * Math.PI * 2, x = p.x + Math.cos(a) * d, z = p.z + Math.sin(a) * d;
+    if (firm(x, z)) { p.x = x; p.z = z; return; }
   }
 }
 function landmarkRadius(kind) { return { volcano: 18, bigtree: 9, windmills: 10, observatory: 8, suntemple: 9, crystalspires: 9, stormtowers: 9, mill: 7 }[kind] || 7; }
