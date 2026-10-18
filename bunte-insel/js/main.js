@@ -2535,7 +2535,7 @@
   const resume = takeRecentSession();
   if (resume) {
     if (resume.mode === 'story' || resume.mode === 'free') { smode.setMode(resume.mode, true); syncMode(); }
-    startPlay(); P.x = clamp(resume.x, -420, 420); P.z = clamp(resume.z, -420, 420); P.h = resume.h; P.y = 0; P.vy = 0; cam.yaw = P.h + Math.PI; updateHud(); say('🌈 Du bist wieder da!', 2200);
+    startPlay(); { const onI = Number.isFinite(resume.x) && Number.isFinite(resume.z) && (W.isles || []).some(I => Math.hypot(resume.x - I.x, resume.z - I.z) < I.R + 4); /* Inseln weit draußen (Wald-Insel, Wunsch-Insel …) behalten ihre Position */ P.x = onI ? resume.x : clamp(resume.x, -420, 420); P.z = onI ? resume.z : clamp(resume.z, -420, 420); } P.h = resume.h; P.y = 0; P.vy = 0; cam.yaw = P.h + Math.PI; updateHud(); say('🌈 Du bist wieder da!', 2200);
   }
   /* Konsolen-Steuerung im Startmenü: Pfeiltasten / Steuerkreuz wählen, Enter / A öffnet, Esc / B geht zurück */
   { const btns = () => [...$('menu').querySelectorAll('[data-v]:not([hidden]) button')].filter(b => !b.disabled && b.offsetParent), live = () => state === 'menu' && !$('menu').hidden && !mpOpen && !creating && !tv.open; /* Fernseher-Fenster offen: Pfeile gehören dem Fenster */

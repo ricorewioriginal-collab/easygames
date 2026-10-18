@@ -62,7 +62,7 @@ BI.createCombat = function (G) {
     scene.add(g); const e = Object.assign({ kind, T, g, body, bar, fg, tele, x, z, vx: 0, vz: 0, hp: T.hp, max: T.hp, state: 'idle', wind: 0, cool: 1 + rnd(), stun: 0, dead: false, t: 0, ph: rnd() * 6, home: o && o.home }, o || {}); enemies.push(e); return e;
   }
   function removeEnemy(e) { scene.remove(e.g); if (e.tele) { scene.remove(e.tele); } const i = enemies.indexOf(e); if (i >= 0) enemies.splice(i, 1); }
-  function clearEnemies() { while (enemies.length) removeEnemy(enemies[0]); while (arrows.length) scene.remove(arrows.pop().m); for (const l of loot) scene.remove(l.m); loot.length = 0; if (duel) { scene.remove(duel.f.group); duel = null; } }
+  function clearEnemies() { for (const e of enemies) if (e.zboss && !e.dead) { zkO()[e.wz] = 8; bossAlive = false; } while (enemies.length) removeEnemy(enemies[0]); while (arrows.length) scene.remove(arrows.pop().m); for (const l of loot) scene.remove(l.m); loot.length = 0; if (duel) { scene.remove(duel.f.group); duel = null; } }
 
   /* ---------- Beute: Herz, Energie-Kristall ---------- */
   const lootGeo = { heart: new THREE.SphereGeometry(.28, 8, 6), gem: new THREE.OctahedronGeometry(.3) }, lootMat = { heart: new THREE.MeshBasicMaterial({ color: 0xff4f7a }), gem: new THREE.MeshBasicMaterial({ color: 0x4da3ff }) };
@@ -97,8 +97,8 @@ BI.createCombat = function (G) {
   const arrows = [], arrowGeo = new THREE.CylinderGeometry(.06, .06, 1, 5).rotateX(Math.PI / 2), arrowMat = new THREE.MeshBasicMaterial({ color: 0xffd23f });
   function shoot(dmg) { const m = new THREE.Mesh(arrowGeo, arrowMat), vx = Math.sin(P.h), vz = Math.cos(P.h); m.position.set(P.x + vx * .8, 1.1, P.z + vz * .8); m.rotation.y = P.h; scene.add(m); arrows.push({ m, vx, vz, t: 0, dmg, max: gv('shot', 14) / 22 }); A.whoosh && A.whoosh(); }
   function updateArrows(dt) {
-    for (let i = arrows.length - 1; i >= 0; i--) { const r = arrows[i], m = r.m; r.t += dt; m.position.x += r.vx * 22 * dt; m.position.z += r.vz * 22 * dt; let hit = null;
-      for (const e of targets()) if (Math.hypot(e.x - m.position.x, e.z - m.position.z) < (e.T && e.T.big ? 2 : 1)) { hit = e; break; }
+    for (let i = arrows.length - 1; i >= 0; i--) { const r = arrows[i], m = r.m, x0 = m.position.x, z0 = m.position.z, L = 22 * dt; r.t += dt; m.position.x += r.vx * L; m.position.z += r.vz * L; let hit = null;
+      for (const e of targets()) { const u = Math.max(0, Math.min(L, (e.x - x0) * r.vx + (e.z - z0) * r.vz)); if (Math.hypot(e.x - x0 - r.vx * u, e.z - z0 - r.vz * u) < (e.T && e.T.big ? 2 : 1)) { hit = e; break; } } /* ganze Flugstrecke des Bilds prüfen */
       if (hit) damage(hit, hit.blocking ? r.dmg * .2 : r.dmg, r.vx, r.vz); if (hit || r.t > r.max) { scene.remove(m); arrows.splice(i, 1); } }
   }
   function hitEnemies(a, kind) {
@@ -118,11 +118,12 @@ BI.createCombat = function (G) {
   }
   function defeatMonster(e) {
     e.dead = true; e.t = 0; if (e.tele) e.tele.visible = false; A.bigpop && A.bigpop(); fx.burst(e.x, 1.2, e.z, 26, [BI.C.gold, BI.C.white, BI.C.pink, BI.C.purple], 6, 1.4, 32, 6);
-    const st = S(); gainXp(e.T.big ? 6 : 1); if (mode === 'wave') { addStars(e.T.big ? 5 : 1); } else { addStars(e.T.big ? 8 : 1); st.k++; K.kills++; if (G.note) G.note('kill'); if (e.wz && !e.zboss) zk[e.wz] = (zk[e.wz] | 0) + 1;
+    const st = S(); gainXp(e.T.big ? 6 : 1); if (mode === 'wave') { addStars(e.T.big ? 5 : 1); } else { addStars(e.T.big ? 8 : 1); st.k++; K.kills++; if (G.note) G.note('kill'); if (e.wz && !e.zboss) zkO()[e.wz] = (zkO()[e.wz] | 0) + 1;
       if (e.zboss) { st.b++; bossAlive = false; const Z = WA.ZONES.find(q => q.id === e.wz), first = G.wald && G.wald.bossDown(e.wz); if (first) addStars(5); say('🏆 ' + e.T.n + ' ist besiegt – ' + (Z ? Z.icon + ' ' + Z.name : 'die Lichtung') + ' ist befreit! +' + (first ? 13 : 8) + ' ⭐', 4600); A.fanfare(); const stk = { boss: 'boss', titan: 'titan', planktobot: 'plankton', tintenriese: 'tintenboss', riese: 'schluesseltraeger' }[e.kind]; if (stk) G.earn(stk); }
       else if (e.kind === 'boss') { st.b++; bossAlive = false; say('👑 Waldgeist besiegt! Du bist ein Waldheld! +8 ⭐', 4200); A.fanfare(); G.earn('boss'); } else if (e.kind === 'titan') { st.b++; bossAlive = false; addStars(3); say('🗿 Titan Kron ist besiegt – die Uralten sind stolz! +11 ⭐', 4600); A.fanfare(); G.earn('titan'); } else if (e.kind === 'planktobot') { st.b++; bossAlive = false; addStars(3); say('🧪 Planktos Roboter ist kaputt! Plankto flüchtet. +11 ⭐', 4600); A.fanfare(); G.earn('plankton'); } else if (e.kind === 'tintenriese') { st.b++; bossAlive = false; addStars(3); say('🖋️ Der große Klecks ist besiegt! +11 ⭐', 4600); A.fanfare(); G.earn('tintenboss'); st.tf = (st.tf | 0) + 1; } else if (e.kind === 'riese') { st.b++; bossAlive = false; addStars(2); say('🌑 Dunkelriese besiegt! Du bist ein Schlüsselträger! +10 ⭐', 4600); A.fanfare(); G.earn('schluesseltraeger'); } else { drop(e.x, e.z); if (TRICK.has(e.kind)) { st.tf = (st.tf | 0) + 1; if (st.tf >= 10) G.earn('trickfilm'); } if (e.kind === 'wichtel') { st.dw = (st.dw | 0) + 1; G.earn('schatten'); if (st.dw >= 10) G.earn('schatten10'); } } if (st.k >= 10) G.earn('forest'); persist(); }
   }
-  let bossAlive = false; const zk = {}; K.kills = 0; K.bossN = 0; K.zk = zk;
+  let bossAlive = false; K.kills = 0; K.bossN = 0;
+  const zkO = () => { const w = save.wald || (save.wald = {}); return w.zk || (w.zk = {}); }; /* Fortschritt je Lichtung bis zum Wächter (gespeichert) */
 
   /* ---------- Gegner verletzt den Spieler ---------- */
   function hurt(d, source) {
@@ -194,7 +195,7 @@ BI.createCombat = function (G) {
     if (safe()) return; spawnT -= dt; const Z = WA.zoneAt(P.x, P.z), cap = Z ? (save.eco ? 4 : 5) : 2, alive = enemies.filter(e => !e.dead).length;
     if (spawnT > 0 || alive >= cap) return; spawnT = Z ? 2.5 + rnd() * 2.5 : 5 + rnd() * 4;
     for (let k = 0; k < 14; k++) { const a = rnd() * TAU, d = 9 + rnd() * 9, x = P.x + Math.sin(a) * d, z = P.z + Math.cos(a) * d; if (!WA.onIsle(x, z, -4) || WA.inCamp(x, z) || !W.free(x, z, .8)) continue;
-      if (Z && !bossAlive && (zk[Z.id] | 0) >= 8) { zk[Z.id] = 0; bossAlive = true; say('⚠️ Der Wächter erscheint: ' + TYPES[Z.boss].n + '!', 3200); spawn(Z.boss, x, z, { isle: true, wz: Z.id, zboss: true }); return; }
+      if (Z && !bossAlive && (zkO()[Z.id] | 0) >= 8) { zkO()[Z.id] = 0; bossAlive = true; say('⚠️ Der Wächter erscheint: ' + TYPES[Z.boss].n + '!', 3200); spawn(Z.boss, x, z, { isle: true, wz: Z.id, zboss: true }); return; }
       spawn(Z ? Z.mobs[(rnd() * Z.mobs.length) | 0] : WORLD[(rnd() * WORLD.length) | 0], x, z, { isle: true, wz: Z ? Z.id : null }); return; }
   }
   function forestSpawn(dt) {
@@ -213,7 +214,7 @@ BI.createCombat = function (G) {
       const e = enemies[i], T = e.T;
       if (e.dead) { e.t += dt; e.g.rotation.y += dt * 12; e.g.scale.setScalar(Math.max(.01, 1 - e.t * 1.6) * T.base); e.g.position.y += dt * 2.2; if (e.t > .65) removeEnemy(e); continue; }
       const dx = px - e.x, dz = pz - e.z, d = Math.hypot(dx, dz) || .01, canFight = K.active() && hp > 0 && !safe();
-      if (e.isle && d > 45) { if (e.zboss) { bossAlive = false; zk[e.wz] = 8; } removeEnemy(e); continue; }
+      if (e.isle && d > 45) { if (e.zboss) { bossAlive = false; zkO()[e.wz] = 8; } removeEnemy(e); continue; }
       e.cool -= dt; e.stun -= dt;
       if (e.stun <= 0 && canFight) {
         if (e.state === 'wind') { e.wind -= dt; const k = 1 - e.wind / e.windMax; e.g.scale.setScalar(T.base * (1 + k * .22)); body(e, 1 + k * .5);
@@ -268,8 +269,9 @@ BI.createCombat = function (G) {
 
   /* ---------- Frame ---------- */
   K.update = function (dt, t) {
+    if (!duel) { const hm = calcHpm(); if (hm !== HPM) { hp = Math.max(1, Math.min(hm, hp + hm - HPM)); HPM = hm; } } /* Amulett/Stufe sofort wirksam */
     const act = K.active(); combatClock += dt; inv = Math.max(0, inv - dt); atkCd = Math.max(0, atkCd - dt); freeze = Math.max(0, freeze - dt); flashT = Math.max(0, flashT - dt);
-    const fz = inForest(); if (fz !== wasZone) { wasZone = fz; if (fz) { resetStats(); K.kills = 0; K.nextBoss = 10; bossAlive = false; say(inBig() ? '🌲 Wald-Insel – hier wird gekämpft! Im 🏕️ Lager bist du sicher. (👊 ' + gv('weapon', { icon: '👊' }).icon + ', 🦵, ✨, 🛡️)' : '🌲 Verbotener Wald – hier wird gekämpft! (👊 Schlag, 🦵 Tritt, ✨ Spezial, 🛡️ Block)', 4800); } else if (!mode) { clearEnemies(); } }
+    const fz = inSmall() ? 's' : inBig() ? 'b' : ''; if (fz !== wasZone) { wasZone = fz; if (fz) { resetStats(); K.kills = 0; K.nextBoss = 10; bossAlive = false; say(inBig() ? '🌲 Wald-Insel – hier wird gekämpft! Im 🏕️ Lager bist du sicher. (👊 ' + gv('weapon', { icon: '👊' }).icon + ', 🦵, ✨, 🛡️)' : '🌲 Verbotener Wald – hier wird gekämpft! (👊 Schlag, 🦵 Tritt, ✨ Spezial, 🛡️ Block)', 4800); } else if (!mode) { clearEnemies(); } }
     K.dim += ((fz ? (inBig() ? .35 : .7) : 0) - K.dim) * Math.min(1, dt * 1.5);
     if (act && hp > 0) { ep = Math.min(EPM, ep + dt * (block ? 1 : 4)); if (!mode && Math.hypot(P.x - FO.x, P.z - FO.z) < FO.R && enemies.length === 0) hp = Math.min(HPM, hp + dt * 1.5); if (safe()) { hp = Math.min(HPM, hp + dt * 12); ep = Math.min(EPM, ep + dt * 10); } }
     if (act && fz) forestSpawn(dt);
@@ -289,13 +291,13 @@ BI.createCombat = function (G) {
       $('fbHp').style.width = (hp / HPM * 100) + '%'; $('fbEp').style.width = (ep / EPM * 100) + '%';
       const tg = duel && !duel.over ? duel.f : (target && !target.dead && enemies.includes(target) ? target : null); $('fbEnemy').hidden = !tg;
       if (tg) { $('fbEName').textContent = (tg.T && tg.T.n) || ''; $('fbEHp').style.width = Math.max(0, tg.hp / tg.max * 100) + '%'; }
-      $('fbInfo').textContent = duel && !duel.over ? 'Runde ' + duel.round + ' · Du ' + duel.rounds[0] + ' : ' + duel.rounds[1] + ' ' + duel.def.n : mode === 'wave' ? 'Welle ' + wave.n + '/5' : inBig() ? (() => { const Z = WA.zoneAt(P.x, P.z); return '💪 Stufe ' + K.level() + ' · ' + gv('weapon', { icon: '👊' }).icon + (safe() ? ' · 🏕️ sicher' : Z ? ' · ' + Z.icon + ' ' + ((G.wald && save.wald && save.wald.zb && save.wald.zb[Z.id]) ? '🏆' : Math.min(8, zk[Z.id] | 0) + '/8') : ''); })() : '🌲 Waldmonster besiegt: ' + K.kills + ' · 💪 ' + K.level();
+      $('fbInfo').textContent = duel && !duel.over ? 'Runde ' + duel.round + ' · Du ' + duel.rounds[0] + ' : ' + duel.rounds[1] + ' ' + duel.def.n : mode === 'wave' ? 'Welle ' + wave.n + '/5' : inBig() ? (() => { const Z = WA.zoneAt(P.x, P.z); return '💪 Stufe ' + K.level() + ' · ' + gv('weapon', { icon: '👊' }).icon + (safe() ? ' · 🏕️ sicher' : Z ? ' · ' + Z.icon + ' ' + ((G.wald && save.wald && save.wald.zb && save.wald.zb[Z.id]) ? '🏆' : Math.min(8, zkO()[Z.id] | 0) + '/8') : ''); })() : '🌲 Waldmonster besiegt: ' + K.kills + ' · 💪 ' + K.level();
       $('fbExit').hidden = false; if (G.inv) { const iv = G.inv(), nh = (iv.potion_hp || 0) + (iv.krabbenburger || 0) + (iv.apple || 0), ne = (iv.potion_ep || 0) + (iv.quallenshake || 0) + (iv.juice || 0); $('fbPotHp').hidden = !nh; $('fbPotEp').hidden = !ne; $('fbPotHp').textContent = '❤️' + nh; $('fbPotEp').textContent = '⚡' + ne; }
     }
     if (!act && enemies.length && !mode && !fz) { clearEnemies(); }
   };
   /* Helfer (Kapselmonster der Rätsel-Insel): trifft den nächsten Gegner in der Nähe */
   K.helper = function (x, z, r, dmg) { let best = null, bd = r; for (const e of enemies) { if (e.dead) continue; const d = Math.hypot(e.x - x, e.z - z); if (d < bd) { bd = d; best = e; } } if (best) { const dx = best.x - x, dz = best.z - z, d = Math.hypot(dx, dz) || 1; damage(best, dmg, dx / d, dz / d); } return best; };
-  K.dbg = { enemies, arrows, zk, spawn, damage, hurt, FIGHTERS, startDuel, startWave, get duel() { return duel; }, get mode() { return mode; }, get hp() { return hp; }, get atk() { return atk; } };
+  K.dbg = { enemies, arrows, get zk() { return zkO(); }, spawn, damage, hurt, FIGHTERS, startDuel, startWave, get duel() { return duel; }, get mode() { return mode; }, get hp() { return hp; }, get atk() { return atk; } };
   return K;
 };

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "805652b2a889",
- "generated": "2026-10-18T05:50:15+02:00",
- "commit": "95b4832f3dd169e20d35a82f037ddefde59bd836",
+ "version": "5c88d9068edf",
+ "generated": "2026-10-18T05:50:52+00:00",
+ "commit": "d7d7329574e448dd508721a25e3a47278b736b59",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4418,8 +4418,8 @@
   },
   {
    "p": "bunte-insel/js/combat.js",
-   "s": 41854,
-   "h": "2dd3271c50bfc5eabac0161f0db4a8781a24d4f33033d7bb0b1dae15ad417199"
+   "s": 42455,
+   "h": "ffe72508ab2c8aed87cf49a548d964d5a7f014ebf7cf6dfaa6809d361778dd2f"
   },
   {
    "p": "bunte-insel/js/dampfer.js",
@@ -4548,8 +4548,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 318368,
-   "h": "6e99b6dda81c74ad6f25ba64a2f958e95cfbe0707ea5dc2095ea1aea7b779d76"
+   "s": 318638,
+   "h": "c9e80afbe1c9bb9c11b8f5013393ba761fc1fa728dcc703073f693eb35cea0f3"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -6439,7 +6439,7 @@
   {
    "p": "sync/catalog.json",
    "s": 105431,
-   "h": "b76c7f1817cf3fccd5b98f8d902e9b3219a853692d5823189081264677329708"
+   "h": "3ee5f11514f35f25cca10cc7148adca65b2e206de6702ec50cbed922b8783247"
   },
   {
    "p": "taschi/card.svg",
