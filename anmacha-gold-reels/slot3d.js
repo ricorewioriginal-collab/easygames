@@ -10,7 +10,7 @@
 
   // ---------- eine Walze ----------
   class Reel {
-    constructor(slot, r) {
+    constructor(slot, r, parent) {
       this.slot = slot; this.r = r; this.rows = slot.m.rows;
       this.cv = Gfx.canvas(CELL, CELL * K); this.g = this.cv.getContext('2d');
       this.tex = Gfx.canvasTex(this.cv);
@@ -24,7 +24,7 @@
       geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); geo.setIndex(idx);
       this.mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: this.tex }));
       this.mesh.position.set(slot.reelX(r), 0, -RAD); this.mesh.rotation.x = this.phi;
-      slot.group.add(this.mesh);
+      (parent || slot.group).add(this.mesh);
     }
     target(base) { return (base + (this.rows - 1) / 2 + 0.5) * DA; }
     cellOfRow(y, base) { return ((base == null ? this.base : base) + this.rows - 1 - y) % K; }
@@ -81,7 +81,7 @@
     key(sym, val, hot) {
       if (sym == null || sym < 0) return 'blank';
       const s = this.m.symbols[sym], art = s.art || s.id;
-      if (sym === this.m.coin) return 'coin|' + (val ? coinLabel(this.m, val, this.bet) : '') + (hot ? '|1' : '');
+      if (sym === this.m.coin) return (art === 'nugget' ? 'nugget|' : 'coin|') + (val ? coinLabel(this.m, val, this.bet) : '') + (hot ? '|1' : '');
       return art + (hot ? '||1' : '');
     }
     randKey() { const g = L.randomGrid(this.m); const s = g[0][0]; return this.key(s, s === this.m.coin ? this.randCoin() : null); }
@@ -117,6 +117,7 @@
       this.cab = { w: rw + 2 * fw + 0.5, h: wh + 2 * fw + mh + bh, cy: (mh - bh) / 2, fw, mh, bh };
       const metal = new THREE.MeshStandardMaterial({ color: new THREE.Color(th.a), metalness: 0.85, roughness: 0.28, emissive: new THREE.Color(th.a).multiplyScalar(0.12) });
       const dark = new THREE.MeshStandardMaterial({ color: 0x0a0814, metalness: 0.3, roughness: 0.6 });
+      this.mats = { metal, dark };
       const box = (w, h, d, x, y, z, mat) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); b.position.set(x, y, z); grp.add(b); return b; };
       // Rückwand hinter den Walzen
       const back = new THREE.Mesh(new THREE.PlaneGeometry(rw + 0.6, wh + 0.6), new THREE.MeshBasicMaterial({ color: new THREE.Color(th.tile[1]) })); back.position.z = -RAD * 1.6; grp.add(back);
@@ -221,7 +222,7 @@
       q('[data-act=auto]').classList.toggle('on', this.auto); q('[data-act=turbo]').classList.toggle('on', !!C.data.turbo);
       q('.spin').classList.toggle('busy', this.busy); q('.spin span').textContent = this.busy ? (this.auto ? 'STOP' : '■') : 'SPIN';
       if (this.jackbar) {
-        const J = this.m.holdwin.jackpots; this.jackbar.innerHTML = ['GRAND', 'MAJOR', 'MINOR', 'MINI'].map(k => `<div class="jp ${k.toLowerCase()}"><small>${k}</small><b>${C.short(J[k] * this.bet)}</b></div>`).join('');
+        const J = this.m.holdwin.jackpots; this.jackbar.innerHTML = Object.keys(J).sort((a, b) => J[b] - J[a]).map(k => `<div class="jp ${k.toLowerCase()}"><small>${k}</small><b>${C.short(J[k] * this.bet)}</b></div>`).join('');
       }
     }
     setWin(v) { if (this.q) this.q('.win').textContent = fmt(v); }
@@ -251,7 +252,7 @@
         for (const st of round.steps) {
           if (this.dead) return;
           if (st.type === 'spin' || st.type === 'respin') {
-            if (st.mode === 'free') this.setBanner(`FREISPIEL <b>${st.freeNo}</b> / ${st.freeNo + st.freeLeft}` + (st.mult > 1 ? ` · ×${st.mult}` : '') + (this.upLevel ? ' · ⬆ ' + this.upLabel : ''));
+            if (st.mode === 'free') { this.setBanner(`FREISPIEL <b>${st.freeNo}</b> / ${st.freeNo + st.freeLeft}` + (st.mult > 1 ? ` · ×${st.mult}` : '') + (this.upLevel ? ' · ⬆ ' + this.upLabel : '')); this.drawMarquee(`FREISPIEL ${st.freeNo} / ${st.freeNo + st.freeLeft}`); }
             if (st.type === 'respin') this.setBanner('RESPIN – Wild bleibt stehen');
             await this.animSpin(st); await this.showWins(st);
             if (st.type === 'respin') this.banner.hidden = true;
@@ -276,19 +277,25 @@
       this.startWinCycle(round.steps.filter(s => s.type === 'spin' || s.type === 'respin').pop());
       if (this.auto) { setTimeout(() => { if (this.auto && !this.busy && !this.dead) this.spin(); }, C.data.turbo ? 250 : 650); }
     }
-    quick() { this.quickStop = true; this.reels && this.reels.forEach(R => { if (R.anim) R.anim.scale = 3.5; }); }
+    allReels() { return this.wins && this.wins.length ? this.reels.concat(...this.wins.map(w => w.reels)) : this.reels; }
+    quick() { this.quickStop = true; this.reels && this.allReels().forEach(R => { if (R.anim) R.anim.scale = 3.5; }); }
     onStop(r) {
       sound.play('stop');
-      const st = this.cur; if (st && st.grid && (this.m.scat >= 0 || this.m.bon >= 0)) { const n = st.grid[r].filter(v => v === this.m.scat || v === this.m.bon).length; if (n) sound.play('coin'); }
-      if (this.reels.every(R => !R.anim)) { sound.whirr(false); const w = this.stopWaiters; this.stopWaiters = []; w.forEach(f => f()); }
+      if (this.teasing && this.teasing.delete(r)) for (let y = 0; y < this.m.rows; y++) this.frame(r, y).visible = false;
+      const st = this.cur, m = this.m;
+      if (st && st.grid && st.grid[r] && (m.scat >= 0 || m.bon >= 0 || m.coin >= 0)) {   // Scatter, Bonus und Nuggets leuchten beim Landen kurz auf
+        let n = 0; st.grid[r].forEach((v, y) => { if (v === m.scat || v === m.bon || v === m.coin) { n++; const f = this.frame(r, y); f.visible = true; f.userData.t = this.t; f.userData.until = this.t + 0.9; } });
+        if (n) sound.play('coin');
+      }
+      if (this.allReels().every(R => !R.anim)) { sound.whirr(false); const w = this.stopWaiters; this.stopWaiters = []; w.forEach(f => f()); }
     }
-    allStopped() { return new Promise(res => { if (this.reels.every(R => !R.anim)) res(); else this.stopWaiters.push(res); }); }
+    allStopped() { return new Promise(res => { if (this.allReels().every(R => !R.anim)) res(); else this.stopWaiters.push(res); }); }
 
     async animSpin(st, opt) {
       opt = opt || {}; this.cur = st;
       const m = this.m, held = st.held || [];
       const sp = this.speed, omega = 26;
-      let scatSeen = 0, extra = 0;
+      let scatSeen = 0, extra = 0; this.teasing = new Set();
       sound.play('spin'); sound.whirr(true);
       for (let r = 0; r < m.reels; r++) {
         if (held.includes(r)) continue;
@@ -300,7 +307,9 @@
         if (opt.keys) col = opt.keys[r];
         R.prepare(col, opt.filler || (() => this.randKey()));
         let T = (0.55 + r * 0.17) * sp + extra;
-        if (!opt.noTease && m.scat >= 0 && scatSeen >= 2 && r < m.reels) { extra += 0.7 * sp; T += 0.7 * sp; }
+        if (!opt.noTease && m.scat >= 0 && scatSeen >= 2 && r < m.reels) {     // Spannung: Walze dreht länger und leuchtet
+          extra += 0.7 * sp; T += 0.7 * sp; this.teasing.add(r); for (let y = 0; y < m.rows; y++) this.flash(r, y); sound.play('tease');
+        }
         scatSeen += st.grid[r].filter(v => v === m.scat).length;
         if (this.quickStop) T = 0.25 + r * 0.05;
         R.start(T, omega);
@@ -334,14 +343,15 @@
       this.clearFlash(); this.clearLines();
     }
     async countUp(a, b, ms) {
-      const t0 = performance.now(); let lastTick = 0;
+      const t0 = performance.now(); let lastTick = 0; this.party = true;
       while (true) {
         const k = Math.min(1, (performance.now() - t0) / ms); this.setWin(a + (b - a) * k);
         if (performance.now() - lastTick > 70) { sound.play('count'); lastTick = performance.now(); }
         if (k >= 1 || this.dead) break; await wait(30);
       }
+      this.party = false;
     }
-    flash(r, y) { const f = this.frame(r, y); f.visible = true; f.userData.t = this.t; Gfx.kick(); }
+    flash(r, y) { const f = this.frame(r, y); f.visible = true; f.userData.t = this.t; f.userData.until = 0; Gfx.kick(); }
     clearFlash() { this.frames.forEach(f => { f.visible = false; }); }
     drawLines(wins) {
       const c = this.fx, g = this.fxg, dpr = Math.min(2, devicePixelRatio || 1);
@@ -372,15 +382,18 @@
       const sp = st.special != null ? this.m.symbols[st.special] : null;
       const FF = { upgrade: 'Jeder Freispiel mit Wild wertet die niedrigsten Symbole auf und bringt +1 Freispiel', sticky: 'Wilds bleiben bis zum Ende kleben', multUp: 'Der Multiplikator steigt nach jedem Gewinn – bis ×' + (this.m.ff && this.m.ff.max) };
       this.drawMarquee('FREISPIELE');
-      await this.app.splash(`<h2>${st.count} FREISPIELE</h2>` + (this.m.freeMult > 1 ? `<p>Alle Gewinne ×${this.m.freeMult}</p>` : '') + (st.ff ? `<p>${FF[st.ff]}</p>` : '') +
-        (sp ? `<p>Sondersymbol:</p><canvas class="splashsym" data-art="${sp.art || sp.id}"></canvas>` : ''), this.theme, 2200 * this.speed);
+      const cells = []; if (this.cur && this.cur.grid) this.cur.grid.forEach((col, r) => col.forEach((v, y) => { if (v === this.m.scat) cells.push([r, y]); }));
+      cells.forEach(c => this.flash(c[0], c[1])); if (cells.length) await wait(900 * this.speed); this.clearFlash();
+      this.tint(true);
+      await this.app.featureIntro('FREISPIELE', (this.m.freeMult > 1 ? `<p>Alle Gewinne ×${this.m.freeMult}</p>` : '') + (st.ff ? `<p>${FF[st.ff]}</p>` : '') +
+        (sp ? `<p>Sondersymbol:</p><canvas class="splashsym" data-art="${sp.art || sp.id}"></canvas>` : ''), this.theme, { count: st.count, ms: sp ? 3800 : 3200 });
       this.freeTotal = st.count;
     }
     symName(i) { const s = this.m.symbols[i]; return ({ T: '10', J: 'B', Q: 'D' })[s.id] || (s.id.length < 3 ? s.id : (s.name || s.id)); }
     // nach jedem Freispiel: Retrigger, Upgrade, klebende Wilds, steigender Multiplikator
     async freeExtras(st) {
       const m = this.m;
-      if (st.free) { sound.play('feature'); C.toast(`+${m.scatter.retrigger || st.free} Freispiele!`); }
+      if (st.free) { sound.play('fanfare'); this.party = true; C.toast(`+${m.scatter.retrigger || st.free} Freispiele!`); await wait(900 * this.speed); this.party = false; }
       if (st.newSticky && st.newSticky.length) {
         for (const [r, y] of st.newSticky) { this.setLockKey(r, y, this.key(m.wild, null, true), true); sound.play('lock'); await wait(140 * this.speed); }
       }
@@ -399,7 +412,9 @@
       this.free = true; this.refreshHud(); sound.play('feature');
       this.drawMarquee(st.type === 'wheel' ? 'BONUSRAD' : 'BONUS');
       const cells = []; this.cur.grid.forEach((col, r) => col.forEach((v, y) => { if (v === this.m.bon) cells.push([r, y]); }));
-      cells.forEach(c => this.flash(c[0], c[1])); await wait(900 * this.speed); this.clearFlash();
+      cells.forEach(c => this.flash(c[0], c[1])); sound.play('tease'); await wait(900 * this.speed); this.clearFlash();
+      await this.app.featureIntro(st.type === 'wheel' ? 'BONUSRAD' : 'BONUSSPIEL', st.type === 'wheel' ? '<p>Das Rad entscheidet: Geld oder Freispiele!</p>' : `<p>Wähle ${st.vals.length} Felder – jedes zeigt einen Gewinn!</p>`, this.theme, { ms: 2400 });
+      if (this.dead) return;
       const opt = { auto: this.auto, faces: this.m.bonus.faces };
       if (st.type === 'wheel') await this.app.bonusWheel(st, this.theme, opt); else await this.app.pickBonus(st, this.theme, opt);
       if (this.dead) return;
@@ -409,49 +424,137 @@
     async freeEnd(st) {
       this.banner.hidden = true; this.drawMarquee(''); this.upLevel = 0;
       if (this.m.ff && this.m.ff.type === 'sticky') this.locks.forEach(l => { l.visible = false; });
-      await this.app.splash(`<h2>FREISPIELE BEENDET</h2><p>${st.played} Freispiele</p><p class="big">${fmt(st.win)}</p>`, this.theme, 2400 * this.speed);
+      this.tint(false);
+      if (st.win > 0 && st.win < this.bet * 15) { this.shower.start(Math.min(1, st.win / this.bet / 60 + 0.25), new THREE.Vector3(0, -this.winH / 2, 1)); await this.app.totalWin(`${st.played} FREISPIELE`, st.win, this.theme); this.shower.stop(); }
+      else await this.app.splash(`<h2>FREISPIELE BEENDET</h2><p>${st.played} Freispiele</p><p class="big">${fmt(st.win)}</p>`, this.theme, 2000 * this.speed);
     }
     setBanner(html) { this.banner.innerHTML = html; this.banner.hidden = false; }
 
-    // ---------- Hold & Win ----------
+    // ---------- Hold & Win / Nugget-Feature ----------
+    lockW(w, r, y) { return this.locks[(w * this.m.reels + r) * this.m.rows + y]; }
+    frameW(w, r, y) { return this.frames[(w * this.m.reels + r) * this.m.rows + y]; }
+    // Lage der Zusatzfelder: quer nebeneinander (links, rechts), hochkant über dem Kopfschild und unter dem Fuß
+    winOffset(w) {
+      const c = this.cab, half = this.winH / 2 + c.fw, gap = 0.62;
+      if (this.nugLay === 'h') return { x: (w === 1 ? -1 : 1) * (this.cab.w + 0.3), y: 0 };
+      return { x: 0, y: w === 1 ? half + c.mh + gap + half : -(half + c.bh + gap + half) };
+    }
+    featureBox(n) {
+      const c = this.cab, half = this.winH / 2 + c.fw, B = this.baseBox;
+      if (this.nugLay === 'h') { const W = this.cab.w + 0.3, lo = -W * (n > 1 ? 1 : 0) - B.w / 2, hi = (n > 2 ? W : 0) + B.w / 2; return { x: (lo + hi) / 2, y: B.y, w: hi - lo, h: B.h }; }
+      const top = n > 1 ? this.winOffset(1).y + half + 0.5 : half + c.mh, bot = n > 2 ? this.winOffset(2).y - half : -(half + c.bh);
+      return { x: 0, y: (top + bot) / 2, w: B.w + 0.1, h: top - bot };
+    }
+    addWindow(w, label) {
+      const m = this.m, th = this.theme, rw = this.reelsW, wh = this.winH, fw = this.cab.fw, o = this.winOffset(w);
+      const grp = new THREE.Group(); grp.position.set(o.x, o.y, 0); grp.scale.setScalar(0.01); this.group.add(grp);
+      const metal = this.mats.metal.clone(), dark = this.mats.dark.clone();
+      const box = (bw, bh, d, x, y, z, mat) => { const b = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, d), mat); b.position.set(x, y, z); grp.add(b); };
+      const back = new THREE.Mesh(new THREE.PlaneGeometry(rw + 0.6, wh + 0.6), new THREE.MeshBasicMaterial({ color: new THREE.Color(th.tile[1]) })); back.position.z = -RAD * 1.6; grp.add(back);
+      box(rw + 2 * fw, fw, 0.36, 0, wh / 2 + fw / 2, 0.08, metal); box(rw + 2 * fw, fw, 0.36, 0, -wh / 2 - fw / 2, 0.08, metal);
+      box(fw, wh + 2 * fw, 0.36, -rw / 2 - fw / 2, 0, 0.08, metal); box(fw, wh + 2 * fw, 0.36, rw / 2 + fw / 2, 0, 0.08, metal);
+      for (let r = 1; r < m.reels; r++) box(GAP * 0.7, wh, 0.12, this.reelX(r) - (REEL_W + GAP) / 2, 0, 0.02, dark);
+      [-1, 1].forEach(sg => box(rw + 2 * fw, 0.8, 0.1, 0, sg * (wh / 2 + fw + 0.4), 0.04, dark));   // verdeckt die Walzenrundung
+      // Schild DOPPEL / DREIFACH über dem Feld
+      const lc = Gfx.canvas(512, 96), lg = lc.getContext('2d'); lg.fillStyle = S.lg(lg, 0, 0, 0, 96, th.b, '#2a0a00'); S.rr(lg, 4, 4, 504, 88, 40); lg.fill();
+      lg.lineWidth = 6; lg.strokeStyle = S.gold(lg, 0, 96); lg.stroke(); S.text(lg, label, 256, 50, 56, S.gold(lg, 20, 80), '#1a0800', 7, true);
+      const plate = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 0.49), new THREE.MeshBasicMaterial({ map: Gfx.canvasTex(lc), transparent: true }));
+      plate.position.set(0, wh / 2 + fw + 0.28, 0.2); grp.add(plate);
+      const win = { grp, reels: [], pop: this.t };
+      for (let r = 0; r < m.reels; r++) {
+        const R = new Reel(this, r, grp); win.reels.push(R);
+        R.setVisible(new Array(m.rows).fill('blank'));
+        for (let y = 0; y < m.rows; y++) {
+          const f = new THREE.Mesh(new THREE.PlaneGeometry(REEL_W * 1.02, 1.02), new THREE.MeshBasicMaterial({ map: Gfx.frameTex(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+          const lk = new THREE.Mesh(new THREE.PlaneGeometry(REEL_W * 0.98, 0.98), new THREE.MeshBasicMaterial({ transparent: true }));
+          const p = this.cellPos(r, y); [f, lk].forEach((ob, i) => { ob.position.set(p.x, p.y, p.z + 0.02 + i * 0.005); ob.rotation.x = p.rx; ob.visible = false; grp.add(ob); });
+          this.frames.push(f); this.locks.push(lk);
+        }
+      }
+      this.wins.push(win); Gfx.kick();
+    }
+    removeWindows() {
+      const n = this.m.reels * this.m.rows;
+      this.locks.slice(n).forEach(l => { l.material.map = null; });          // Münzbilder liegen im gemeinsamen Cache
+      for (const w of this.wins || []) { this.group.remove(w.grp); Gfx.dispose(w.grp); }
+      this.wins = []; this.frames.length = n; this.locks.length = n;
+    }
     async playHoldWin(st) {
-      const m = this.m, hw = m.holdwin, bet = this.bet;
-      this.free = true; this.refreshHud(); sound.play('feature'); this.drawMarquee('HOLD & WIN');
-      await this.app.splash('<h2>HOLD &amp; WIN</h2><p>Münzen bleiben liegen – 3 Respins!</p>', this.theme, 1800 * this.speed);
-      const locked = st.start.map(c => c.slice());
-      const setLock = (r, y, v, fresh) => this.setLockKey(r, y, this.key(m.coin, v, true), fresh);
-      locked.forEach((col, r) => col.forEach((v, y) => { if (v) setLock(r, y, v); }));
-      const blank = 'blank', coinFill = () => (Math.random() < 0.18 ? this.key(m.coin, this.randCoin()) : blank);
-      let respins = hw.respins || 3;
-      this.setBanner(`HOLD &amp; WIN · Respins: <b>${respins}</b>`);
+      const m = this.m, hw = m.holdwin, bet = this.bet, W = st.windows || 1, nug = W > 1;
+      const name = nug ? 'NUGGET-FEATURE' : 'HOLD &amp; WIN';
+      this.free = true; this.refreshHud(); this.drawMarquee(nug ? 'NUGGET-FEATURE' : 'HOLD & WIN');
+      const cells = []; this.cur.grid.forEach((col, r) => col.forEach((v, y) => { if (v === m.coin) cells.push([r, y]); }));
+      cells.forEach(c => this.flash(c[0], c[1])); sound.play('tease'); await wait(800 * this.speed); this.clearFlash();
+      await this.app.featureIntro(nug ? 'NUGGET-FEATURE' : 'HOLD & WIN', nug ? 'Nuggets bleiben liegen · 3 Respins · volle Mitte öffnet ein neues Feld!' : 'Münzen bleiben liegen – 3 Respins!', this.theme, { coins: true });
+      if (this.dead) return;
+      this.wins = [];
+      if (nug) this.nugLay = this.rect && this.rect.w > this.rect.h ? 'h' : 'v';
+      const coinKey = (v, hot) => this.key(m.coin, v, hot);
+      const setLock = (w, r, y, v, fresh) => { const lk = this.lockW(w, r, y); lk.material.map = this.lockTex(coinKey(v, true)); lk.material.needsUpdate = true; lk.visible = true; if (fresh) { lk.scale.setScalar(1.35); lk.userData.pop = this.t; } Gfx.kick(); };
+      st.start.forEach((col, r) => col.forEach((v, y) => { if (v) setLock(0, r, y, v); }));
+      const labels = ['', 'DOPPEL', 'DREIFACH'];
+      const finals = st.finals || [st.final];
+      const lockState = finals.map(() => Array.from({ length: m.reels }, () => new Array(m.rows).fill(false)));
+      st.start.forEach((col, r) => col.forEach((v, y) => { if (v) lockState[0][r][y] = true; }));
+      let open = 1;
+      const banner = rs => this.setBanner(`${name} · Respins: <b>${rs}</b>` + (nug ? ` · Feld <b>${open}</b>/${W}` : ''));
+      const openWin = async w => {
+        open = w + 1; sound.play('big');
+        const mid = Math.floor(m.reels / 2); for (let y = 0; y < m.rows; y++) { const f = this.frameW(w - 1, mid, y); f.visible = true; f.userData.t = this.t; }
+        this.addWindow(w, labels[w] || ('FELD ' + (w + 1))); this.viewTo(this.featureBox(open));
+        C.toast(`${labels[w]}-FEATURE! Neues Feld offen`, 1600); banner(hw.respins || 3);
+        await wait(1100 * this.speed); this.clearFlash();
+      };
+      for (const w of st.startOpen || []) await openWin(w);
+      let respins = hw.respins || 3; banner(respins);
+      const blank = 'blank', coinFill = () => (Math.random() < 0.16 ? coinKey(this.randCoin()) : blank);
       for (const rd of st.rounds) {
         if (this.dead) return;
-        const keys = []; for (let r = 0; r < m.reels; r++) { const col = []; for (let y = 0; y < m.rows; y++) { const f = rd.fresh.find(x => x[0] === r && x[1] === y); col.push(f ? this.key(m.coin, f[2]) : blank); } keys.push(col); }
-        await this.animSpin({ grid: keys.map(c => c.map(() => -1)), held: [] }, { keys, filler: coinFill, noTease: true });
-        for (const f of rd.fresh) { setLock(f[0], f[1], f[2], true); sound.play('lock'); await wait(160 * this.speed); }
-        respins = rd.respins; this.setBanner(`HOLD &amp; WIN · Respins: <b>${respins}</b>`);
-        await wait(250 * this.speed);
+        const sp = this.speed; let T0 = 0;
+        sound.play('spin'); sound.whirr(true);
+        for (let w = 0; w < open; w++) {
+          const reels = w ? this.wins[w - 1].reels : this.reels;
+          for (let r = 0; r < m.reels; r++) {
+            if (lockState[w][r].every(Boolean)) continue;
+            const col = []; for (let y = 0; y < m.rows; y++) { const f = rd.fresh.find(x => x[0] === r && x[1] === y && (x[3] || 0) === w); col.push(f ? coinKey(f[2]) : blank); }
+            reels[r].prepare(col, coinFill);
+            reels[r].start(this.quickStop ? 0.25 + r * 0.05 : (0.5 + r * 0.12 + w * 0.18) * sp, 22); T0++;
+          }
+        }
+        this.cur = null;
+        if (T0) await this.allStopped(); else sound.whirr(false);
+        for (const f of rd.fresh) { const w = f[3] || 0; lockState[w][f[0]][f[1]] = true; setLock(w, f[0], f[1], f[2], true); sound.play('lock'); if (typeof f[2][1] === 'string') { sound.play('big'); C.toast(f[2][1] + '-JACKPOT!', 1400); } await wait(150 * sp); }
+        respins = rd.respins;
+        for (const w of rd.opened || []) await openWin(w);
+        banner(respins);
+        await wait(250 * sp);
       }
-      // zusammenzählen
+      // zusammenzählen: Feld für Feld, Nugget für Nugget
       let sum = 0; const start = this.winSum;
-      for (let r = 0; r < m.reels; r++) for (let y = 0; y < m.rows; y++) {
-        const v = st.final[r][y]; if (!v) continue;
-        sum += L.coinValue(hw, v) * bet; this.flash(r, y); sound.play('coin'); this.setWin(start + sum); await wait(120 * this.speed);
+      this.setBanner(nug ? 'NUGGETS WERDEN GEZÄHLT' : 'MÜNZEN WERDEN GEZÄHLT');
+      for (let w = 0; w < finals.length; w++) for (let r = 0; r < m.reels; r++) for (let y = 0; y < m.rows; y++) {
+        const v = finals[w][r][y]; if (!v) continue;
+        sum += L.coinValue(hw, v) * bet; const f = this.frameW(w, r, y); f.visible = true; f.userData.t = this.t;
+        const lk = this.lockW(w, r, y); lk.scale.setScalar(1.25); lk.userData.pop = this.t;
+        sound.play('coin'); this.setWin(start + sum); await wait(110 * this.speed);
       }
       if (st.full) { sound.play('big'); this.setBanner('GRAND JACKPOT!'); await this.app.splash(`<h2>GRAND JACKPOT</h2><p class="big">${fmt(hw.jackpots.GRAND * bet)}</p>`, this.theme, 2600); }
       this.winSum += st.win; this.setWin(this.winSum); wallet.reveal(st.win);
-      await wait(900 * this.speed);
+      if (st.win < this.bet * 15) await this.app.totalWin(nug ? 'NUGGET-GEWINN' : 'HOLD & WIN GEWINN', st.win, this.theme);   // große Summen feiert danach BIG/MEGA WIN
+      else await wait(700 * this.speed);
       this.locks.forEach(l => { l.visible = false; }); this.clearFlash(); this.banner.hidden = true; this.drawMarquee('');
+      if (this.wins.length) { this.removeWindows(); this.viewTo(null, true); }
       // Walzen wieder mit normalen Symbolen füllen
       this.reels.forEach(R => { const g = L.randomGrid(m); R.setVisible(g[0].map(s => this.key(s, s === m.coin ? this.randCoin() : null))); });
     }
 
     async celebrate(win, x) {
-      const t = x >= 100 ? 'EPIC WIN' : x >= 40 ? 'MEGA WIN' : 'BIG WIN';
-      sound.play('big'); this.shower.start(Math.min(1, x / 60), new THREE.Vector3(0, -this.winH / 2, 1));
-      await this.app.bigWin(t, win, this.theme);
-      this.shower.stop();
+      sound.play('big'); this.party = true; this.shower.start(Math.min(1, x / 60), new THREE.Vector3(0, -this.winH / 2, 1));
+      await this.app.bigWin('BIG WIN', win, this.theme, { tiers: [{ v: 40 * this.bet, t: 'MEGA WIN' }, { v: 100 * this.bet, t: 'EPIC WIN' }] });
+      this.shower.stop(); this.party = false;
     }
+    // Freispiel-Stimmung: Hintergrund wird wärmer und heller
+    tint(on) { if (this.bg && this.bg.plane) { this.bg.plane.material.color.set(on ? 0xffe3a8 : 0xffffff); this.bg.plane.material.color.multiplyScalar(on ? 1.6 : 1); Gfx.kick(); } }
 
     // ---------- Risiko (Rot/Schwarz) ----------
     async gamble() {
@@ -486,25 +589,36 @@
       const c = this.cab, wide = rect.w > rect.h * 1.2, low = wide && rect.h < 480, up = low ? 0.4 : wide ? 1 : 0.85, dn = low ? 0.15 : wide ? 1 : 0.5;
       const fh = this.winH + 2 * c.fw + up * c.mh + dn * c.bh, fcy = (up * c.mh - dn * c.bh) / 2;
       document.body.classList.toggle('slotwide', low);
-      const d = Gfx.fit(this.camera, this.reelsW + 2 * c.fw + 0.04, fh, rect, { pad: 1.01 });
-      c.cy = fcy; this.camDist = d; this.camera.position.set(0, fcy, d); this.camera.lookAt(0, fcy, 0);
+      this.rect = rect; this.baseBox = { x: 0, y: fcy, w: this.reelsW + 2 * c.fw + 0.04, h: fh };
+      this.applyView();
       if (this.fx) this.clearLines();
     }
+    // Kamera auf einen Ausschnitt richten; bei offenem Nugget-Feld mit weichem Übergang
+    applyView() {
+      let b = this.baseBox; const v = this.view;
+      if (v) { const k = Math.min(1, (this.t - v.t0) / v.dur), e = k * k * (3 - 2 * k), a = v.from; b = { x: a.x + (v.to.x - a.x) * e, y: a.y + (v.to.y - a.y) * e, w: a.w + (v.to.w - a.w) * e, h: a.h + (v.to.h - a.h) * e }; if (k >= 1 && v.end) this.view = null; }
+      const d = Gfx.fit(this.camera, b.w, b.h, this.rect, { pad: 1.01 });
+      this.camC = b; this.camDist = d; this.camera.position.set(b.x, b.y, d); this.camera.lookAt(b.x, b.y, 0);
+    }
+    viewTo(to, end) { const from = this.camC || this.baseBox; this.view = { from: Object.assign({}, from), to: to || this.baseBox, t0: this.t, dur: 0.9, end }; Gfx.kick(); }
     update(dt, t) {
       this.t = t;
       let busy = false;
-      if (this.reels) for (const R of this.reels) if (R.update(dt)) busy = true;
+      if (this.reels) for (const R of this.allReels()) if (R.update(dt)) busy = true;
       if (this.shower && this.shower.update(dt)) busy = true;
       if (this.bg) this.bg.update(t);
       // Lauflichter und Glühbirnen
-      if (this.leds) { const h = (t * 0.08) % 1; this.leds[0].material.color.setHSL(h, 0.9, 0.55); this.leds[1].material.color.setHSL((h + 0.5) % 1, 0.9, 0.55); }
+      const party = this.party || this.free;
+      if (this.leds) { const h = (t * (party ? 0.5 : 0.08)) % 1; this.leds[0].material.color.setHSL(h, 0.9, 0.55); this.leds[1].material.color.setHSL((h + 0.5) % 1, 0.9, 0.55); }
       if (this.bulbs) {
-        const step = Math.floor(t * (busy ? 14 : 5)); if (step !== this.bulbStep) { this.bulbStep = step; const a = new THREE.Color(this.theme.a), b = new THREE.Color('#ffffff'), o = new THREE.Color('#3a2a10');
+        const step = Math.floor(t * (party ? 16 : busy ? 14 : 5)); if (step !== this.bulbStep) { this.bulbStep = step; const a = new THREE.Color(this.theme.a), b = new THREE.Color('#ffffff'), o = new THREE.Color('#3a2a10');
           for (let i = 0; i < this.bulbN; i++) this.bulbs.setColorAt(i, (i + step) % 3 === 0 ? b : (i + step) % 3 === 1 ? a : o); this.bulbs.instanceColor.needsUpdate = true; }
       }
-      if (this.frames) for (const f of this.frames) if (f.visible) { const k = 0.5 + 0.5 * Math.sin((t - (f.userData.t || 0)) * 9); f.material.opacity = 0.55 + 0.45 * k; f.scale.setScalar(1 + 0.03 * k); }
+      if (this.frames) for (const f of this.frames) if (f.visible) { if (f.userData.until && t > f.userData.until) { f.visible = false; f.userData.until = 0; continue; } if (f.userData.until) busy = true; const k = 0.5 + 0.5 * Math.sin((t - (f.userData.t || 0)) * 9); f.material.opacity = 0.55 + 0.45 * k; f.scale.setScalar(1 + 0.03 * k); }
       if (this.locks) for (const l of this.locks) if (l.visible && l.userData.pop != null) { const k = Math.min(1, (t - l.userData.pop) * 4); l.scale.setScalar(1.3 - 0.3 * k); if (k >= 1) l.userData.pop = null; else busy = true; }
-      if (this.camera && this.camDist) { this.camera.position.x = Math.sin(t * 0.25) * 0.08; this.camera.lookAt(0, this.cab.cy, 0); }
+      if (this.view && this.rect) { const v = this.view; this.applyView(); if (t - v.t0 < v.dur) busy = true; }
+      if (this.wins) for (const w of this.wins) if (w.pop != null) { const k = Math.min(1, (t - w.pop) / 0.7); w.grp.scale.setScalar(Math.max(0.01, easeBack(k))); if (k >= 1) w.pop = null; else busy = true; }
+      if (this.camera && this.camDist) { const c = this.camC; this.camera.position.x = c.x + Math.sin(t * 0.25) * 0.08; this.camera.lookAt(c.x, c.y, 0); }
       return busy;
     }
     leave() {

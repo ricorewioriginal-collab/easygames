@@ -108,6 +108,20 @@
     coin(g, val) { ball(g, 100, 100, 88, '#fff6c8', '#ffcc22', '#8a4b00'); g.lineWidth = 6; g.strokeStyle = '#7a4500'; g.beginPath(); g.arc(100, 100, 74, 0, 7); g.stroke();
       if (val) { const jp = /[A-Z]/.test(val); text(g, val, 100, 104, jp ? (val.length > 5 ? 30 : 36) : (val.length > 3 ? 46 : 60), jp ? '#fff' : '#5a2a00', jp ? '#7a0a3a' : '#fff6c8', jp ? 7 : 5); }
       else text(g, '$', 100, 106, 96, gold(g, 40, 160), '#6a3a00', 8); shine(g, 70, 60, 20); },
+    // Goldnugget: unregelmäßiger Klumpen, mit Wert-Aufschrift im Feature
+    nugget(g, val) {
+      const P = [[38, 92], [52, 54], [86, 36], [122, 42], [154, 60], [170, 96], [160, 136], [128, 160], [86, 164], [50, 146], [32, 120]];
+      g.save(); g.shadowColor = 'rgba(0,0,0,.55)'; g.shadowBlur = 14; g.shadowOffsetY = 8;
+      g.beginPath(); P.forEach((p, i) => { const q = P[(i + 1) % P.length], mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2; if (!i) g.moveTo(mx, my); else g.quadraticCurveTo(p[0], p[1], mx, my); });
+      g.quadraticCurveTo(P[0][0], P[0][1], (P[0][0] + P[1][0]) / 2, (P[0][1] + P[1][1]) / 2); g.closePath();
+      g.fillStyle = rg(g, 84, 70, 6, 120, '#fffbe0', '#ffd84a', '#d18a00', '#6a3a00'); g.fill(); g.restore();
+      g.lineWidth = 5; g.strokeStyle = '#6a3a00'; g.stroke();
+      g.strokeStyle = 'rgba(106,58,0,.55)'; g.lineWidth = 4; g.lineCap = 'round';
+      [[[70, 70], [92, 86], [88, 110]], [[120, 64], [130, 92]], [[60, 128], [86, 132]], [[118, 120], [142, 112]]].forEach(l => { g.beginPath(); l.forEach((p, i) => (i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); g.stroke(); });
+      shine(g, 78, 62, 18); shine(g, 136, 84, 9); shine(g, 104, 134, 7);
+      if (val) { const jp = /[A-Z]/.test(val); rr(g, 6, 112, 188, 70, 26); g.fillStyle = jp ? 'rgba(122,10,58,.92)' : 'rgba(40,20,0,.82)'; g.fill(); g.lineWidth = 4; g.strokeStyle = '#ffe58a'; g.stroke();
+        text(g, val, 100, 148, jp ? 46 : (val.length > 5 ? 42 : val.length > 4 ? 50 : 58), jp ? '#fff' : '#ffe27a', '#2a1000', 6); }
+    },
     pyramid(g) { g.beginPath(); g.moveTo(100, 22); g.lineTo(186, 160); g.lineTo(14, 160); g.closePath(); g.fillStyle = lg(g, 14, 0, 186, 0, '#ffe7a0', '#e0a630', '#8a5a10'); g.fill(); g.lineWidth = 6; g.strokeStyle = '#5a3500'; g.stroke();
       g.beginPath(); g.moveTo(100, 22); g.lineTo(130, 160); g.closePath(); g.strokeStyle = 'rgba(90,53,0,.6)'; g.lineWidth = 4; g.stroke();
       g.strokeStyle = 'rgba(90,53,0,.35)'; g.lineWidth = 3; [70, 100, 130].forEach(y => { const w = (y - 22) / 138 * 86; g.beginPath(); g.moveTo(100 - w, y); g.lineTo(100 + w, y); g.stroke(); });
@@ -138,7 +152,7 @@
     if (art.startsWith('eb:')) { const [e, t] = art.slice(3).split('|'); return labelled(g, e, t || 'BONUS'); }
     if (art.startsWith('logo:')) return logo(g, art.slice(5));
     if (art.startsWith('gem:')) return ART.gem(g, art.slice(4));
-    if (art === 'coin') return ART.coin(g, extra);
+    if (art === 'coin' || art === 'nugget') return ART[art](g, extra);
     (ART[art] || ART.blank)(g, extra);
   }
   // Symbol-Kachel mit Hintergrund (für Walzen)

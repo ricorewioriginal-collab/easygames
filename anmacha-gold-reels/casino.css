@@ -92,7 +92,7 @@ button:active:not(:disabled){transform:translateY(1px) scale(.98)}
 .jp{flex:1;text-align:center;border-radius:12px;padding:3px 4px;border:1px solid rgba(255,255,255,.3);min-width:0}
 .jp small{display:block;font:900 10px var(--font)!important;letter-spacing:.14em;color:#fff!important}
 .jp b{display:block;font:900 clamp(13px,3vw,18px) var(--font);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.jp.grand{background:linear-gradient(180deg,#b91c1c,#5a0a0a)}.jp.major{background:linear-gradient(180deg,#7c3aed,#3b0a6e)}.jp.minor{background:linear-gradient(180deg,#0e7490,#062e3a)}.jp.mini{background:linear-gradient(180deg,#15803d,#063a1a)}
+.jp.grand{background:linear-gradient(180deg,#b91c1c,#5a0a0a)}.jp.major{background:linear-gradient(180deg,#7c3aed,#3b0a6e)}.jp.minor{background:linear-gradient(180deg,#0e7490,#062e3a)}.jp.mini{background:linear-gradient(180deg,#15803d,#063a1a)}.jp.super{background:linear-gradient(180deg,#ea580c,#5a1a02)}.jp.maxi{background:linear-gradient(180deg,#7c3aed,#3b0a6e)}
 .banner{position:fixed;top:calc(62px + var(--safeT));left:50%;transform:translateX(-50%);padding:8px 20px;border-radius:999px;font:900 clamp(13px,3.4vw,18px) var(--font);white-space:nowrap;
   background:linear-gradient(180deg,var(--gold),var(--gold2));color:#2a1700;box-shadow:0 0 26px rgba(255,190,40,.6);z-index:3}
 .jackbar~.banner{top:calc(104px + var(--safeT))}
@@ -179,7 +179,23 @@ button:active:not(:disabled){transform:translateY(1px) scale(.98)}
 .rays{position:absolute;left:50%;top:50%;width:200vmax;height:200vmax;margin:-100vmax 0 0 -100vmax;background:repeating-conic-gradient(rgba(255,210,74,.13) 0 6deg,transparent 6deg 18deg);animation:spinr 18s linear infinite;pointer-events:none}
 @keyframes spinr{to{transform:rotate(360deg)}}
 @keyframes pop{from{transform:scale(.3);opacity:0}}
-@media (prefers-reduced-motion:reduce){.rays,.risk{animation:none}.splash h2,.bigwin h1{animation:none}}
+/* Spielhallen-Ankündigung */
+.intro{background:radial-gradient(circle,rgba(40,14,70,.6),rgba(4,2,12,.9));overflow:hidden}
+.intro h2{margin:0;font:900 italic clamp(38px,11vw,96px)/1.05 var(--font);white-space:nowrap}
+.intro h2 span,.intro h2 i{display:inline-block;font-style:inherit}
+.intro h2 span{background:linear-gradient(180deg,#fff,var(--a,#ffd24a) 55%,var(--b,#ff2d95));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 16px rgba(255,160,0,.7));
+  animation:drop .55s cubic-bezier(.2,1.7,.4,1) both,glow 1.2s ease-in-out infinite alternate;animation-delay:calc(var(--i) * 55ms),calc(600ms + var(--i) * 55ms)}
+@keyframes drop{from{transform:translateY(-140%) scale(.3) rotate(-14deg);opacity:0}}
+@keyframes glow{to{filter:drop-shadow(0 0 22px var(--a,#ffd24a)) brightness(1.25)}}
+.icount{margin:6px 0 0;font:900 clamp(56px,16vw,130px)/1 var(--font);color:#fff;text-shadow:0 0 18px var(--a,#ffd24a),0 6px 0 var(--b,#ff2d95)}
+.icount.bump{animation:bump .18s ease-out}
+@keyframes bump{from{transform:scale(1.35)}}
+.isub{font:800 clamp(15px,3.8vw,20px) var(--font);margin:10px auto;max-width:560px}.isub p{margin:6px 0}
+.bulbs{position:absolute;inset:max(8px,var(--safeT)) max(8px,var(--safeR)) max(8px,var(--safeB)) max(8px,var(--safeL));border:7px dotted var(--a,#ffd24a);border-radius:28px;pointer-events:none;filter:drop-shadow(0 0 6px var(--a,#ffd24a));animation:bulbs .36s steps(1) infinite}
+.bulbs::after{content:"";position:absolute;inset:-7px;border:7px dotted #fff;border-radius:28px;animation:bulbs .36s steps(1) infinite reverse}
+@keyframes bulbs{50%{opacity:.25}}
+.bigwin h1.lvl{animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+@media (prefers-reduced-motion:reduce){.rays,.risk,.bulbs,.bulbs::after{animation:none}.splash h2,.bigwin h1,.intro h2 span,.icount.bump{animation:none}}
 .gamble{background:rgba(4,2,12,.8);cursor:default}
 .gamble .sbox{border-radius:24px;width:min(420px,calc(100% - 20px))}
 .gamble h2{margin:0;color:var(--gold);font:900 28px var(--font)}
@@ -229,6 +245,8 @@ button:active:not(:disabled){transform:translateY(1px) scale(.98)}
   .bwheel .sbox{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"w h" "w r" "w b";column-gap:18px;align-items:center;width:min(600px,calc(100% - 20px))}
   .bwheel h2{grid-area:h}.bwheel .wwrap{grid-area:w;width:min(300px,calc(100vh - 60px));margin:8px 0}.bwheel .wres{grid-area:r}.bwheel .sbox>button{grid-area:b;justify-self:center}
   .splash h2{font-size:clamp(28px,11vh,60px)}.splash p{margin:6px 0;font-size:15px}.splash .big,.amt{font-size:clamp(26px,12vh,52px)}
+  .jp{padding:1px 4px}.jp small{font-size:9px!important}.jp b{font-size:13px}
   .bigwin h1{font-size:clamp(36px,18vh,110px)}
+  .intro h2{font-size:clamp(30px,13vh,80px)}.icount{font-size:clamp(44px,20vh,110px)}.isub{margin:4px auto;font-size:14px}
   .wf{height:44px;font-size:17px}
 }

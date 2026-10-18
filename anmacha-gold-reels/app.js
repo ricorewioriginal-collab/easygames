@@ -155,7 +155,9 @@
     home() { if (location.hash) location.hash = ''; else route(); },
     toggleSound() { sound.on = !sound.on; setSndIcon(); C.toast(sound.on ? '🔊 Ton an' : '🔇 Ton aus', 1000); },
     splash: (html, theme, ms) => G.CasinoOverlay.splash(html, theme, ms),
-    bigWin: (title, amount, theme) => G.CasinoOverlay.bigWin(title, amount, theme),
+    bigWin: (title, amount, theme, opt) => G.CasinoOverlay.bigWin(title, amount, theme, opt),
+    totalWin: (title, amount, theme) => (amount > 0 ? G.CasinoOverlay.bigWin(title, amount, theme) : Promise.resolve()),
+    featureIntro: (title, sub, theme, opt) => G.CasinoOverlay.featureIntro(title, sub, theme, opt),
     async noMoney(need) {
       sound.play('lose');
       const low = wallet.bal < 1000;

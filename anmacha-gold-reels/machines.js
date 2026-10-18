@@ -33,6 +33,23 @@
         prizes: [[30, 2], [25, 3], [18, 5], [12, 8], [8, 10], [4, 15], [2, 25], [0.8, 50], [0.2, 100]] },
       info: 'Wild ersetzt alle Symbole außer Bonus und Mikrofon. 3 oder mehr Bonus-Symbole lösen 10 Freispiele mit doppeltem Gewinn aus (erneut auslösbar: +5). 3 Mikrofone auf Walze 1, 3 und 5 starten den Studio-Bonus: Wähle 3 von 12 Sender-Logos, jedes verbirgt einen Gewinn.' },
 
+    { id: 'nugget-rush', title: 'Nugget Rush', scale: 1.50443, tag: '20 Linien · Nugget-Feature · bis zu 3 Felder', reels: 5, rows: 3, lines: 'l20', cover: ['tnt', 'nugget', 'gem:#ffd24a'],
+      theme: { a: '#ffc53d', b: '#d9480f', c: '#f59e0b', bg: '#120b04', tile: ['#2b1d0e', '#110a03'] },
+      symbols: [
+        { id: 'gemGold', art: 'gem:#ffd24a', w: 3, pay: { 3: 50, 4: 200, 5: 1000 } },
+        { id: 'gemGreen', art: 'gem:#4ade80', w: 4, pay: { 3: 40, 4: 150, 5: 500 } },
+        { id: 'lamp', art: 'emoji:🏮', w: 5, pay: { 3: 30, 4: 100, 5: 300 } },
+        { id: 'pick', art: 'emoji:⛏️', w: 6, pay: { 3: 20, 4: 60, 5: 200 } },
+        ...LET([8, 8, 9, 9, 9]).slice(0, 4),
+        { id: 'wild', art: 'tnt', w: [0, 3, 3, 3, 0], name: 'Dynamit-Wild' },
+        { id: 'nugget', art: 'nugget', w: 5.5, name: 'Goldnugget' }
+      ],
+      wild: 'wild',
+      holdwin: { coin: 'nugget', trigger: 5, p: 0.07, respins: 3, windows: 3,
+        values: [[40, 0.5], [30, 1], [16, 2], [8, 3], [4, 5], [1.6, 10], [0.7, 'MINI'], [0.3, 'MINOR'], [0.1, 'MAXI'], [0.03, 'SUPER']],
+        jackpots: { MINI: 10, MINOR: 25, MAXI: 75, SUPER: 250, GRAND: 1000 } },
+      info: '5 oder mehr Goldnuggets starten das Nugget-Feature: Nuggets bleiben liegen, 3 Respins, jedes neue Nugget setzt sie auf 3 zurück. Ist die mittlere Walze voll, öffnet sich ein zweites Feld (DOPPEL), dort genauso ein drittes (DREIFACH). Am Ende zählen alle Nuggets; sind alle drei Felder voll, gibt es den GRAND.' },
+
     { id: 'fruit-blaze', title: 'Fruit Blaze', scale: 0.96925, tag: 'Klassik · 5 Linien · Früchte', reels: 5, rows: 3, lines: 'l5',
       theme: { a: '#ff5a1f', b: '#ffd23f', c: '#ff1f4b', bg: '#2a0606', tile: ['#3a0d0d', '#1a0404'] },
       symbols: [

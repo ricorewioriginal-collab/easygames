@@ -98,6 +98,9 @@
         case 'chip': T(2400, 0, 0.03, 'square', 0.05); N(0, 0.04, 6000, 3, 0.1); break;
         case 'ball': N(0, 0.05, 3500 + Math.random() * 1500, 6, 0.12); break;
         case 'tick': N(0, 0.025, 5000, 4, 0.15); break;
+        case 'fanfare': { const m = [[523, 0], [659, 0.12], [784, 0.24], [1047, 0.36], [784, 0.52], [1047, 0.64]];
+          m.forEach(([f, t]) => { T(f, t, 0.18, 'square', 0.06); T(f / 2, t, 0.2, 'triangle', 0.09); });
+          [523, 659, 784, 1047].forEach(f => T(f, 0.8, 0.9, 'sawtooth', 0.045)); N(0, 0.6, 1800, 0.7, 0.06); break; }
         case 'lock': T(988, 0, 0.1, 'triangle', 0.14); T(1319, 0.06, 0.16, 'triangle', 0.12); break;
       }
     }
