@@ -90,6 +90,23 @@ t('Klebende Wilds bleiben bis zum Ende', () => {
   }
   assert(ok > 0);
 });
+t('Nugget-Feature: volle Mittelwalze öffnet das nächste Feld, Gewinn = Summe aller Nuggets', () => {
+  const m = L.compile(MACHINES.find(c => c.id === 'nugget-rush')), hw = m.holdwin, mid = Math.floor(m.reels / 2);
+  L.setRandom(L.seeded(7)); let seen = [0, 0, 0, 0];
+  for (let i = 0; i < 200000 && !(seen[2] && seen[3]); i++) {
+    const r = L.playRound(m, 100), h = r.steps.find(s => s.type === 'holdwin'); if (!h) continue;
+    assert(h.finals.length >= 1 && h.finals.length <= hw.windows); seen[h.finals.length]++;
+    h.finals.slice(0, -1).forEach(f => assert(f[mid].every(Boolean), 'Feld geöffnet ohne volle Mitte'));
+    const last = h.finals[h.finals.length - 1]; if (h.finals.length < hw.windows) assert(!last[mid].every(Boolean), 'volle Mitte ohne neues Feld');
+    let sum = 0; h.finals.forEach(f => f.forEach(col => col.forEach(v => { if (v) sum += L.coinValue(hw, v) * 100; })));
+    if (h.full) sum += hw.jackpots.GRAND * 100;
+    assert.strictEqual(h.win, Math.round(sum));
+    const opened = (h.startOpen || []).length + h.rounds.reduce((a, rd) => a + (rd.opened ? rd.opened.length : 0), 0);
+    assert.strictEqual(opened, h.finals.length - 1);
+  }
+  assert(seen[2] && seen[3], 'Doppel und Dreifach kommen vor');
+  L.setRandom(L.seeded(20261016));
+});
 t('Bonusspiele: Wahl und Rad zahlen den angezeigten Betrag', () => {
   for (const id of ['pirate-pick', 'fortune-wheel', 'gold-reels']) {
     const m = L.compile(MACHINES.find(c => c.id === id)); let n = 0;
@@ -155,7 +172,7 @@ function sim(c, n, scaleOverride) {
 }
 L.setRandom(L.seeded(20261016));
 if (CAL) {
-  const N = 3e6, TARGET = 0.955;
+  const N = +(process.env.N || 3e6), TARGET = 0.955;
   const only = process.argv.slice(2).filter(a => !a.startsWith('--'));
   for (const c of MACHINES.filter(c => !only.length || only.includes(c.id))) {
     const s = sim(c, N, 1); const A = s.rtp - s.hw;

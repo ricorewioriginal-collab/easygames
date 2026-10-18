@@ -17,19 +17,48 @@
     });
   }
 
-  function bigWin(title, amount, theme) {
+  // Spielhallen-Ankündigung: Strahlen, Lauflicht-Rahmen, Buchstaben fallen ein, Freispiel-Zahl zählt hoch
+  function featureIntro(title, sub, theme, opt) {
+    opt = opt || {};
     return new Promise(res => {
-      const o = mk('bigwin', theme);
-      o.innerHTML = `<div class="rays"></div><div class="sbox"><h1>${title}</h1><p class="amt">0</p><button class="pill gold" data-nav data-default>EINSAMMELN</button></div>`;
-      const amt = o.querySelector('.amt'), dur = 2600 * (C.data.turbo ? 0.6 : 1), t0 = performance.now();
-      let done = false, raf = 0, last = 0, finished = false;
-      const tick = now => { const k = Math.min(1, (now - t0) / dur); amt.textContent = fmt(amount * (1 - Math.pow(1 - k, 2))); if (now - last > 80) { sound.play('count'); last = now; } if (k < 1) raf = requestAnimationFrame(tick); else { finished = true; setTimeout(close, 1400); } };
+      const o = mk('intro', theme), sp = C.data.turbo ? 0.6 : 1;
+      const letters = [...title].map((ch, i) => ch === ' ' ? '<i> </i>' : `<span style="--i:${i}">${C.esc(ch)}</span>`).join('');
+      o.innerHTML = `<div class="rays"></div><div class="bulbs"></div><div class="sbox"><h2>${letters}</h2>` +
+        (opt.count ? `<p class="icount">0</p>` : '') + (sub ? `<div class="isub">${sub}</div>` : '') + `<button class="pill gold" data-nav data-default>LOS GEHT'S</button></div>`;
+      o.querySelectorAll('canvas[data-art]').forEach(c => { c.width = c.height = 120; const g = c.getContext('2d'); g.scale(120 / 200, 120 / 200); S.drawArt(g, c.dataset.art); });
+      sound.play('fanfare');
+      let done = false, timer = 0; const cnt = o.querySelector('.icount');
+      if (cnt) {                                                    // Freispiele zählen hoch, Tick für Tick
+        let k = 0; const step = () => { if (done) return; k++; cnt.textContent = k; sound.play('tick'); cnt.classList.remove('bump'); void cnt.offsetWidth; cnt.classList.add('bump');
+          if (k < opt.count) timer = setTimeout(step, Math.max(40, 700 / opt.count) * sp); else sound.play('lock'); };
+        timer = setTimeout(step, 500 * sp);
+      }
+      const unl = C.layer(o, () => close());
+      const close = () => { if (done) return; done = true; clearTimeout(timer); unl(); open.delete(close); o.classList.add('out'); setTimeout(() => o.remove(), 250); res(); };
+      open.add(close); o.addEventListener('click', close); setTimeout(close, (opt.ms || 3000) * sp);
+    });
+  }
+
+  // Großer Gewinn: zählt hoch, steigt dabei über die Stufen (BIG → MEGA → EPIC)
+  function bigWin(title, amount, theme, opt) {
+    opt = opt || {};
+    return new Promise(res => {
+      const o = mk('bigwin', theme), tiers = (opt.tiers || []).filter(t => t.v <= amount);
+      o.innerHTML = `<div class="rays"></div><div class="bulbs"></div><div class="sbox"><h1>${title}</h1><p class="amt">0</p><button class="pill gold" data-nav data-default>EINSAMMELN</button></div>`;
+      const amt = o.querySelector('.amt'), h1 = o.querySelector('h1'), dur = (2600 + tiers.length * 1300) * (C.data.turbo ? 0.6 : 1), t0 = performance.now();
+      let done = false, raf = 0, last = 0, finished = false, tier = 0;
+      const tick = now => {
+        const k = Math.min(1, (now - t0) / dur), v = amount * (1 - Math.pow(1 - k, 2)); amt.textContent = fmt(v);
+        if (tier < tiers.length && v >= tiers[tier].v) { h1.textContent = tiers[tier].t; h1.classList.remove('lvl'); void h1.offsetWidth; h1.classList.add('lvl'); sound.play('big'); tier++; }
+        if (now - last > 80) { sound.play('count'); last = now; }
+        if (k < 1) raf = requestAnimationFrame(tick); else { finished = true; setTimeout(close, 1400); }
+      };
       const closer = () => close(true);
       raf = requestAnimationFrame(tick);
       const unl = C.layer(o, closer);
       function close(force) {
         if (done) return;
-        if (!finished && !force) { cancelAnimationFrame(raf); amt.textContent = fmt(amount); finished = true; setTimeout(close, 900); return; }
+        if (!finished && !force) { cancelAnimationFrame(raf); amt.textContent = fmt(amount); if (tiers.length) h1.textContent = tiers[tiers.length - 1].t; finished = true; setTimeout(close, 900); return; }
         done = true; cancelAnimationFrame(raf); unl(); open.delete(closer); o.classList.add('out'); setTimeout(() => o.remove(), 250); res();
       }
       open.add(closer); o.addEventListener('click', () => close());
@@ -138,5 +167,5 @@
     });
   }
 
-  G.CasinoOverlay = { splash, bigWin, gamble, pickBonus, bonusWheel, closeAll() { [...open].forEach(f => f()); open.clear(); } };
+  G.CasinoOverlay = { splash, featureIntro, bigWin, gamble, pickBonus, bonusWheel, closeAll() { [...open].forEach(f => f()); open.clear(); } };
 })(window);

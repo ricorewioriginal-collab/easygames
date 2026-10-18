@@ -161,21 +161,32 @@
     return Object.assign({ type: held ? 'respin' : 'spin', mode, grid: g, vals, expandReels, held: held ? held.slice() : null, mult, coins, bonusN, stuck }, ev);
   }
 
+  // Hold & Win. Mit windows > 1 (Nugget-Feature): ist die mittlere Walze eines Feldes voll, öffnet sich das nächste Feld
+  // (Doppel, Dreifach); neue Münzen oder ein neues Feld setzen die Respins zurück.
   function holdWin(m, bet, base) {
-    const hw = m.holdwin, cells = m.reels * m.rows;
-    const lock = base.vals.map(col => col.map(v => v));
-    let count = base.coins, respins = hw.respins || 3; const rounds = [];
-    while (respins > 0 && count < cells) {
+    const hw = m.holdwin, R = hw.respins || 3, W = hw.windows || 1, mid = Math.floor(m.reels / 2), cells = m.reels * m.rows;
+    const empty = () => Array.from({ length: m.reels }, () => new Array(m.rows).fill(null));
+    const locks = [base.vals.map(col => col.map(v => v))], counts = [base.coins];
+    const tryOpen = () => { const o = []; while (locks.length < W && locks[locks.length - 1][mid].every(Boolean)) { o.push(locks.length); locks.push(empty()); counts.push(0); } return o; };
+    const allFull = () => counts.every(c => c >= cells);
+    const startOpen = tryOpen();
+    let respins = R; const rounds = [];
+    while (respins > 0 && !allFull()) {
       const fresh = [];
-      for (let r = 0; r < m.reels; r++) for (let y = 0; y < m.rows; y++) {
-        if (!lock[r][y] && rand() < hw.p) { const v = pickCoin(hw); lock[r][y] = v; fresh.push([r, y, v]); count++; }
-      }
-      respins = fresh.length ? (hw.respins || 3) : respins - 1;
-      rounds.push({ fresh, respins });
+      locks.forEach((lock, w) => {
+        for (let r = 0; r < m.reels; r++) for (let y = 0; y < m.rows; y++) {
+          if (!lock[r][y] && rand() < hw.p) { const v = pickCoin(hw); lock[r][y] = v; counts[w]++; fresh.push(W > 1 ? [r, y, v, w] : [r, y, v]); }
+        }
+      });
+      const opened = tryOpen();
+      respins = fresh.length || opened.length ? R : respins - 1;
+      rounds.push(opened.length ? { fresh, respins, opened } : { fresh, respins });
     }
-    let win = 0; lock.forEach(col => col.forEach(v => { if (v) win += L.coinValue(hw, v) * bet; }));
-    const full = count >= cells; if (full) win += hw.jackpots.GRAND * bet;
-    return { type: 'holdwin', start: base.vals, final: lock, rounds, full, win: Math.round(win) };
+    let win = 0; locks.forEach(lock => lock.forEach(col => col.forEach(v => { if (v) win += L.coinValue(hw, v) * bet; })));
+    const full = locks.length === W && allFull(); if (full) win += hw.jackpots.GRAND * bet;
+    const st = { type: 'holdwin', start: base.vals, final: locks[0], rounds, full, win: Math.round(win) };
+    if (W > 1) { st.windows = W; st.finals = locks; st.startOpen = startOpen; }
+    return st;
   }
 
   const wpick = list => { let tot = 0; for (const v of list) tot += v[0]; let x = rand() * tot; for (const v of list) { if ((x -= v[0]) < 0) return v; } return list[list.length - 1]; };
