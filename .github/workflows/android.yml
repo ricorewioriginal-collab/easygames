@@ -53,6 +53,7 @@ jobs:
           NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-erfolge.cjs
           NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-konto.cjs
           NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-account.cjs
+          NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-hub.cjs
           NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-chat.cjs
           NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-bug.cjs
           NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-verwaltung.cjs
