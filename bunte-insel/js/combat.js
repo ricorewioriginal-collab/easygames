@@ -22,7 +22,7 @@ BI.createCombat = function (G) {
     blob: b => { b.sph(0, .55, 0, .6, 0x6bd66b, 1, 1, .85, 1); eyes(b, .72, .42, .22, .14); b.box(0, .5, .58, .3, .05, .04, 0x2b6b2b); b.sph(-.3, .06, .2, .14, 0x4fb84f, 0); b.sph(.3, .06, .2, .14, 0x4fb84f, 0); },
     spike: b => { b.sph(0, .5, 0, .5, 0xff9a3a, 1, 1, .9, 1.1); for (let i = 0; i < 9; i++) { const a = i * .7; b.cone(Math.sin(a) * .34, .78 + (i % 3) * .06, Math.cos(a) * .34 - .12, .1, .36, 0xc0541a, 5); } eyes(b, .62, .42, .2, .12); b.sph(0, .5, .56, .08, 0x5a2b1a, 0); },
     mush: b => { b.cyl(0, 0, 0, .3, .36, .55, 0xf4e6c8, 8); b.sph(0, .72, 0, .62, 0xe0382b, 1, 1, .62, 1); for (const [x, z] of [[-.3, .2], [.28, .3], [0, -.3], [.32, -.1]]) b.sph(x, .98 - Math.abs(x) * .3, z, .12, 0xffffff, 0); eyes(b, .35, .3, .13, .09); },
-    /* Gegner aus allen Welten, die sich im Verbotenen Wald treffen: Schlüsselreich (Dunkelwichtel, Dunkelriese), Zotik/Lunaris (Moosling, Dornenwolf, Frostgeist, Lavadrache) */
+    /* Gegner aus allen Welten, die sich auf der Wald-Insel treffen: Schlüsselreich (Dunkelwichtel, Dunkelriese), Zotik/Lunaris (Moosling, Dornenwolf, Frostgeist, Lavadrache) */
     wichtel: b => { b.sph(0, .55, 0, .5, 0x1a1228, 1, 1, .9, 1); b.cone(-.2, .95, 0, .12, .45, 0x1a1228, 4); b.cone(.2, .95, 0, .12, .45, 0x1a1228, 4); b.sph(-.18, .62, .4, .11, 0xffe14a, 0); b.sph(.18, .62, .4, .11, 0xffe14a, 0); b.box(0, .02, 0, .9, .1, .7, 0x2a1a3a); },
     moos: b => { b.sph(0, .5, 0, .55, 0x6aa84a, 1, 1, .8, 1); for (let i = 0; i < 5; i++) b.sph(Math.sin(i * 1.3) * .3, .85, Math.cos(i * 1.3) * .25, .2, 0x3f7a2e, 0); eyes(b, .6, .42, .2, .12); b.box(0, .42, .55, .26, .05, .04, 0x2b4b1b); },
     wolf: b => { b.sph(0, .5, -.1, .5, 0x8a7a6a, 1, .9, .8, 1.3); b.sph(0, .62, .62, .32, 0x8a7a6a, 1); b.cone(-.15, .92, .6, .1, .25, 0x5a4a3a, 4); b.cone(.15, .92, .6, .1, .25, 0x5a4a3a, 4); for (let i = 0; i < 6; i++) b.cone(0, .85, -.5 + i * .2, .07, .3, 0x4a3a2a, 4); eyes(b, .7, .86, .12, .08); b.box(0, .5, .92, .14, .1, .1, 0x2a2018); for (const [x, z] of [[-.25, .2], [.25, .2], [-.25, -.4], [.25, -.4]]) b.box(x, 0, z, .14, .3, .14, 0x6a5a4a); },
@@ -62,14 +62,14 @@ BI.createCombat = function (G) {
     scene.add(g); const e = Object.assign({ kind, T, g, body, bar, fg, tele, x, z, vx: 0, vz: 0, hp: T.hp, max: T.hp, state: 'idle', wind: 0, cool: 1 + rnd(), stun: 0, dead: false, t: 0, ph: rnd() * 6, home: o && o.home }, o || {}); enemies.push(e); return e;
   }
   function removeEnemy(e) { scene.remove(e.g); if (e.tele) { scene.remove(e.tele); } const i = enemies.indexOf(e); if (i >= 0) enemies.splice(i, 1); }
-  function clearEnemies() { for (const e of enemies) if (e.zboss && !e.dead) { zkO()[e.wz] = 8; bossAlive = false; } while (enemies.length) removeEnemy(enemies[0]); while (arrows.length) scene.remove(arrows.pop().m); for (const l of loot) scene.remove(l.m); loot.length = 0; if (duel) { scene.remove(duel.f.group); duel = null; } }
+  function clearEnemies() { for (const e of enemies) if (e.zboss && !e.dead) { zkO()[e.wz] = e.need || 8; bossAlive = false; } while (enemies.length) removeEnemy(enemies[0]); while (arrows.length) scene.remove(arrows.pop().m); for (const l of loot) scene.remove(l.m); loot.length = 0; if (duel) { scene.remove(duel.f.group); duel = null; } }
 
   /* ---------- Beute: Herz, Energie-Kristall ---------- */
   const lootGeo = { heart: new THREE.SphereGeometry(.28, 8, 6), gem: new THREE.OctahedronGeometry(.3) }, lootMat = { heart: new THREE.MeshBasicMaterial({ color: 0xff4f7a }), gem: new THREE.MeshBasicMaterial({ color: 0x4da3ff }) };
   function drop(x, z) { const r = rnd(); if (r > .55) return; const k = r < .28 ? 'heart' : 'gem', m = new THREE.Mesh(lootGeo[k], lootMat[k]); m.position.set(x, .6, z); scene.add(m); loot.push({ m, k, t: 20 }); }
 
   /* ---------- Zonen & Zustand ---------- */
-  const WA = BI.WALD, inSmall = () => !P.veh && Math.hypot(P.x - FO.x, P.z - FO.z) < FO.R - .5;
+  const WA = BI.WALD, inSmall = () => false; /* der alte Verbotene Wald der Hauptinsel ist jetzt friedlich: sein Waldtor führt zur Wald-Insel, dort wird gekämpft */
   const inBig = () => !P.veh && !!WA && WA.onIsle(P.x, P.z, -1), inForest = () => inSmall() || inBig(), safe = () => inBig() && WA.inCamp(P.x, P.z);
   const inRing = () => !P.veh && Math.abs(P.x - AR.x) < AR.half + 1 && Math.abs(P.z - AR.z) < AR.half + 1;
   K.active = () => !P.veh && (inForest() || (!!mode && inRing()));
@@ -79,12 +79,14 @@ BI.createCombat = function (G) {
 
   /* ---------- Spieler: Angriffe ---------- */
   const ATK = { punch: { dur: .3, at: .12, dmg: 12, range: 2.4, cd: .32, cost: 0 }, kick: { dur: .5, at: .22, dmg: 20, range: 2.7, cd: .6, cost: 0 }, special: { dur: .7, at: .28, dmg: 32, range: 4.6, cd: 1, cost: 25, ring: true } };
-  let atkCd = 0, freeze = 0, flick = false;
+  let atkCd = 0, freeze = 0, flick = false, combo = 0, lastPunch = -9;
   K.attack = function (kind) {
     if (!K.active() || atk || atkCd > 0 || freeze > 0 || hp <= 0) return; const a = ATK[kind]; if (!a) return;
     const cost = kind === 'special' ? a.cost * gv('spMul', 1) : a.cost; if (cost > ep) { say('⚡ Zu wenig Energie – kurz ausruhen!', 1400); return; }
-    ep -= cost; atk = { kind, a, t: 0, hit: false }; atkCd = a.cd * gv('cdMul', 1); block = false;
-    let best = null, bd = kind === 'punch' && gv('shot', 0) ? gv('shot', 0) : 4; for (const e of targets()) { const d = Math.hypot(e.x - P.x, e.z - P.z); if (d < bd) { bd = d; best = e; } } if (best && kind !== 'special') P.h = Math.atan2(best.x - P.x, best.z - P.z);
+    combo = kind === 'punch' && combatClock - lastPunch < .9 ? combo + 1 : 0; if (kind === 'punch') lastPunch = combatClock;
+    ep -= cost; atk = { kind, a, t: 0, hit: false, combo: combo % 3 === 2 }; atkCd = a.cd * gv('cdMul', 1); block = false;
+    const shot = kind === 'punch' && gv('shot', 0); let best = null, bd = shot ? gv('shot', 0) : 5.5; for (const e of targets()) { const d = Math.hypot(e.x - P.x, e.z - P.z); if (d < bd) { bd = d; best = e; } }
+    if (best && kind !== 'special') { P.h = Math.atan2(best.x - P.x, best.z - P.z); const reach = (ATK[kind].range + gv('reach', 0)) * .7; if (!shot && !duel && bd > reach) { const st = Math.min(1.6, bd - reach), q = W.resolve(P.x + Math.sin(P.h) * st, P.z + Math.cos(P.h) * st, .4, {}); P.x = q.x; P.z = q.z; } } /* Ausfallschritt: kurz auf das Ziel zu, damit der Schlag trifft */
     A.whoosh && A.whoosh();
   };
   K.setBlock = on => { const next = !!on && K.active() && !atk; if (next && !block) blockSince = combatClock; block = next; };
@@ -106,13 +108,18 @@ BI.createCombat = function (G) {
     const slam = kind === 'kick' && gv('slam', false), ring = a.ring || slam, range = a.range + gv('reach', 0) + (kind === 'special' && gv('spMul', 1) < 1 ? 2 : 0) + (slam ? 1.2 : 0);
     let any = false; for (const e of targets()) {
       const dx = e.x - P.x, dz = e.z - P.z, d = Math.hypot(dx, dz); if (d > range + (e.T && e.T.big ? 1 : 0)) continue; if (!ring && Math.abs(BI.angDiff(P.h, Math.atan2(dx, dz))) > 1.15) continue;
-      let dmg = a.dmg * mul; if (e.blocking) dmg *= .2; damage(e, dmg, dx / (d || 1), dz / (d || 1)); any = true;
+      let dmg = a.dmg * mul * (atk && atk.combo ? 1.6 : 1); if (e.blocking) dmg *= .2; damage(e, dmg, dx / (d || 1), dz / (d || 1)); any = true;
     }
     if (ring) { fx.burst(P.x, 1, P.z, 30, [BI.C.gold, BI.C.white, BI.C.blue], 6, 1, 28, 2); }
     if (!any && !a.ring) A.pop();
   }
+  /* Schadenszahlen über dem Gegner (kleiner Vorrat, wird wiederverwendet) */
+  const nums = []; for (let i = 0; i < 6; i++) { const cv = document.createElement('canvas'); cv.width = 128; cv.height = 64; const tx = new THREE.CanvasTexture(cv), sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tx, transparent: true, depthTest: false })); sp.renderOrder = 9; sp.scale.set(1.4, .7, 1); sp.visible = false; scene.add(sp); nums.push({ cv, tx, sp, t: 0 }); }
+  let numI = 0; function showNum(x, y, z, v, big) { const n = nums[numI++ % nums.length], c = n.cv.getContext('2d'); c.clearRect(0, 0, 128, 64); c.font = 'bold 44px Fredoka, system-ui, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 8; c.strokeStyle = '#3a1a1a'; const t = (big ? '💥' : '') + Math.max(1, Math.round(v)); c.strokeText(t, 64, 34); c.fillStyle = big ? '#ffd23f' : '#ffffff'; c.fillText(t, 64, 34); n.tx.needsUpdate = true; n.sp.position.set(x + (rnd() - .5) * .6, y, z); n.sp.visible = true; n.t = .8; }
+  function updateNums(dt) { for (const n of nums) if (n.t > 0) { n.t -= dt; n.sp.position.y += dt * 1.6; n.sp.material.opacity = Math.min(1, n.t * 2.5); if (n.t <= 0) n.sp.visible = false; } }
+  const tRing = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: .7, side: THREE.DoubleSide, depthWrite: false })); tRing.rotation.x = -Math.PI / 2; tRing.visible = false; scene.add(tRing);
   function damage(e, dmg, nx, nz) {
-    e.hp -= dmg; e.stun = e.T && e.T.big ? .12 : .35; e.vx = nx * (e.T && e.T.big ? 2 : 5); e.vz = nz * (e.T && e.T.big ? 2 : 5); target = e; A.hit && A.hit(); fx.burst(e.x, 1.1, e.z, 10, [BI.C.gold, BI.C.white, BI.C.pink], 4, 1, 26, 3);
+    showNum(e.x, (e.T && e.T.big ? 3.6 : 2) , e.z, dmg, atk && atk.combo); e.hp -= dmg; e.stun = e.T && e.T.big ? .12 : .35; e.vx = nx * (e.T && e.T.big ? 2 : 5); e.vz = nz * (e.T && e.T.big ? 2 : 5); target = e; A.hit && A.hit(); fx.burst(e.x, 1.1, e.z, 10, [BI.C.gold, BI.C.white, BI.C.pink], 4, 1, 26, 3);
     if (e.state === 'wind' && !(e.T && e.T.big)) { e.state = 'idle'; e.cool = .8; if (e.tele) e.tele.visible = false; }
     if (e.hp <= 0) { if (e.isFighter) koFighter(e); else defeatMonster(e); }
   }
@@ -196,7 +203,8 @@ BI.createCombat = function (G) {
     if (spawnT > 0 || alive >= cap) return; spawnT = Z ? 2.5 + rnd() * 2.5 : 5 + rnd() * 4;
     for (let k = 0; k < 14; k++) { const a = rnd() * TAU, d = 9 + rnd() * 9, x = P.x + Math.sin(a) * d, z = P.z + Math.cos(a) * d; if (!WA.onIsle(x, z, -4) || WA.inCamp(x, z) || !W.free(x, z, .8)) continue;
       if (Z && !bossAlive && (zkO()[Z.id] | 0) >= 8) { zkO()[Z.id] = 0; bossAlive = true; say('⚠️ Der Wächter erscheint: ' + TYPES[Z.boss].n + '!', 3200); spawn(Z.boss, x, z, { isle: true, wz: Z.id, zboss: true }); return; }
-      spawn(Z ? Z.mobs[(rnd() * Z.mobs.length) | 0] : WORLD[(rnd() * WORLD.length) | 0], x, z, { isle: true, wz: Z ? Z.id : null }); return; }
+      if (!Z && !bossAlive && (zkO().frei | 0) >= 10) { zkO().frei = 0; bossAlive = true; say('⚠️ Der Waldgeist erwacht zwischen den Bäumen!', 3200); spawn('boss', x, z, { isle: true, wz: 'frei', zboss: true, need: 10 }); return; }
+      spawn(Z ? Z.mobs[(rnd() * Z.mobs.length) | 0] : WORLD[(rnd() * WORLD.length) | 0], x, z, { isle: true, wz: Z ? Z.id : 'frei' }); return; }
   }
   function forestSpawn(dt) {
     if (inBig()) return bigSpawn(dt); if (!inForest()) return; spawnT -= dt; const cap = save.eco ? 4 : 6, alive = enemies.filter(e => !e.dead).length;
@@ -213,8 +221,8 @@ BI.createCombat = function (G) {
     for (let i = enemies.length - 1; i >= 0; i--) {
       const e = enemies[i], T = e.T;
       if (e.dead) { e.t += dt; e.g.rotation.y += dt * 12; e.g.scale.setScalar(Math.max(.01, 1 - e.t * 1.6) * T.base); e.g.position.y += dt * 2.2; if (e.t > .65) removeEnemy(e); continue; }
-      const dx = px - e.x, dz = pz - e.z, d = Math.hypot(dx, dz) || .01, canFight = K.active() && hp > 0 && !safe();
-      if (e.isle && d > 45) { if (e.zboss) { bossAlive = false; zkO()[e.wz] = 8; } removeEnemy(e); continue; }
+      const dx = px - e.x, dz = pz - e.z, d = Math.hypot(dx, dz) || .01, canFight = K.active() && hp > 0 && !safe() && !(G.gear && G.gear.open);
+      if (e.isle && d > 45) { if (e.zboss) { bossAlive = false; zkO()[e.wz] = e.need || 8; } removeEnemy(e); continue; }
       e.cool -= dt; e.stun -= dt;
       if (e.stun <= 0 && canFight) {
         if (e.state === 'wind') { e.wind -= dt; const k = 1 - e.wind / e.windMax; e.g.scale.setScalar(T.base * (1 + k * .22)); body(e, 1 + k * .5);
@@ -244,7 +252,7 @@ BI.createCombat = function (G) {
   /* ---------- Schild über dem Eingang ---------- */
   function sign(text, x, y, z, w) { const cv = document.createElement('canvas'); cv.width = 512; cv.height = 128; const c = cv.getContext('2d'); c.fillStyle = 'rgba(30,20,20,.85)'; c.fillRect(0, 0, 512, 128); c.strokeStyle = '#ffd23f'; c.lineWidth = 8; c.strokeRect(6, 6, 500, 116); c.fillStyle = '#fff'; c.font = 'bold 50px Fredoka, system-ui, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(text, 256, 66);
     const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })); s.scale.set(w, w / 4, 1); s.position.set(x, y, z); scene.add(s); return s; }
-  sign('⚠️ Verbotener Wald', FO.gx, 3.6, FO.gz, 5.6); sign('Hier darf gekämpft werden!', FO.gx, 2.9, FO.gz, 4.4); sign('🥊 Kampfarena', AR.x, 3.6, AR.z + AR.half + 3.4, 4.8);
+  sign('🌀 Waldtor', FO.gx, 3.6, FO.gz, 5.6); sign('⚔️ Gekämpft wird auf der Wald-Insel', FO.gx, 2.9, FO.gz, 4.4); sign('🥊 Kampfarena', AR.x, 3.6, AR.z + AR.half + 3.4, 4.8);
   const kai = BI.makeChar({ shirt: 0xe0382b, pants: 0x23262d, hair: 0x222222, skin: 0x8d5a3b, hat: 'cap', name: 'Kampfmeister Kai', scale: 1.05 }); kai.group.position.set(AR.kai.x, 0, AR.kai.z + 1); kai.group.rotation.y = Math.PI; scene.add(kai.group); W.addCircle(AR.kai.x, AR.kai.z + 1, .5, false, 1.8);
 
   /* ---------- Menü der Arena ---------- */
@@ -262,7 +270,7 @@ BI.createCombat = function (G) {
   };
   $('fbPotHp').addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); K.useItem('hp'); }); $('fbPotEp').addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); K.useItem('ep'); });
   K.exit = function () { if (!mode && !inForest()) return; clearEnemies(); const was = mode; mode = null; resetStats(); K.dim = 0; if (was) { P.x = AR.kai.x; P.z = AR.kai.z + 2.5; } else if (inBig()) { const M = BI.RAETSEL; P.x = WA.x; P.z = M.z + M.R - 6; } else { P.x = FO.gate.x; P.z = FO.gate.z; } };
-  $('fbExit').addEventListener('click', K.exit);
+  $('fbExit').addEventListener('click', K.exit); { const gb = $('fbGear'); if (gb) gb.addEventListener('click', e => { e.stopPropagation(); if (G.gear) G.gear.show(''); }); }
   for (const [id, kind] of [['fbPunch', 'punch'], ['fbKick', 'kick'], ['fbSpecial', 'special']]) $(id).addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); K.attack(kind); });
   { const bb = $('fbBlock'); bb.addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); K.setBlock(true); }); for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) bb.addEventListener(ev, () => K.setBlock(false)); }
   for (const id of ['fightBtns', 'fightBars']) $(id).addEventListener('pointerdown', e => e.stopPropagation());
@@ -277,7 +285,8 @@ BI.createCombat = function (G) {
     if (act && fz) forestSpawn(dt);
     if (mode === 'wave') { if (wave.n > 0 && enemies.every(e => e.dead)) { wave.gap += dt; if (wave.gap > 1.4) { wave.gap = 0; if (wave.n >= 5) { addStars(10); S().w++; persist(); say('🏆 Alle Wellen geschafft! +10 ⭐', 4200); A.fanfare(); G.earn('fight'); clearEnemies(); mode = null; resetStats(); P.x = AR.kai.x; P.z = AR.kai.z + 2.2; } else nextWave(); } } }
     if (duel && !duel.over) updateDuel(dt, t);
-    updateEnemies(dt, t); updateArrows(dt); updateLoot(dt, t);
+    updateEnemies(dt, t); updateArrows(dt); updateLoot(dt, t); updateNums(dt);
+    { const tg = target && !target.dead && enemies.includes(target) ? target : null; tRing.visible = !!tg && act; if (tg) { const r = (tg.T && tg.T.big ? 2.2 : 1.1); tRing.scale.setScalar(r); tRing.position.set(tg.x, .07, tg.z); } }
     // Angriffsanimation
     const c = G.char();
     if (atk && act) { atk.t += dt; const u = atk.t / atk.a.dur, sw = Math.sin(Math.min(1, u) * Math.PI);
@@ -292,7 +301,7 @@ BI.createCombat = function (G) {
       const tg = duel && !duel.over ? duel.f : (target && !target.dead && enemies.includes(target) ? target : null); $('fbEnemy').hidden = !tg;
       if (tg) { $('fbEName').textContent = (tg.T && tg.T.n) || ''; $('fbEHp').style.width = Math.max(0, tg.hp / tg.max * 100) + '%'; }
       $('fbInfo').textContent = duel && !duel.over ? 'Runde ' + duel.round + ' · Du ' + duel.rounds[0] + ' : ' + duel.rounds[1] + ' ' + duel.def.n : mode === 'wave' ? 'Welle ' + wave.n + '/5' : inBig() ? (() => { const Z = WA.zoneAt(P.x, P.z); return '💪 Stufe ' + K.level() + ' · ' + gv('weapon', { icon: '👊' }).icon + (safe() ? ' · 🏕️ sicher' : Z ? ' · ' + Z.icon + ' ' + ((G.wald && save.wald && save.wald.zb && save.wald.zb[Z.id]) ? '🏆' : Math.min(8, zkO()[Z.id] | 0) + '/8') : ''); })() : '🌲 Waldmonster besiegt: ' + K.kills + ' · 💪 ' + K.level();
-      $('fbExit').hidden = false; if (G.inv) { const iv = G.inv(), nh = (iv.potion_hp || 0) + (iv.krabbenburger || 0) + (iv.apple || 0), ne = (iv.potion_ep || 0) + (iv.quallenshake || 0) + (iv.juice || 0); $('fbPotHp').hidden = !nh; $('fbPotEp').hidden = !ne; $('fbPotHp').textContent = '❤️' + nh; $('fbPotEp').textContent = '⚡' + ne; }
+      $('fbExit').hidden = false; if ($('fbGear')) $('fbGear').hidden = !G.gear || !!duel; if (G.inv) { const iv = G.inv(), nh = (iv.potion_hp || 0) + (iv.krabbenburger || 0) + (iv.apple || 0), ne = (iv.potion_ep || 0) + (iv.quallenshake || 0) + (iv.juice || 0); $('fbPotHp').hidden = !nh; $('fbPotEp').hidden = !ne; $('fbPotHp').textContent = '❤️' + nh; $('fbPotEp').textContent = '⚡' + ne; }
     }
     if (!act && enemies.length && !mode && !fz) { clearEnemies(); }
   };

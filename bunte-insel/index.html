@@ -508,7 +508,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
     <button id="mMin" aria-label="Aufgaben-Kachel ein-/ausklappen">–</button>
   </div>
   <div id="fightBars" hidden><div class="fbr"><b>❤️</b><div class="fbar hp"><i id="fbHp"></i></div></div><div class="fbr"><b>⚡</b><div class="fbar ep"><i id="fbEp"></i></div></div><div id="fbEnemy" class="fbr" hidden><b id="fbEName"></b><div class="fbar hp"><i id="fbEHp"></i></div></div><div id="fbInfo"></div></div>
-  <div id="fightBtns" hidden><button id="fbPunch" aria-label="Schlag">👊</button><button id="fbKick" aria-label="Tritt">🦵</button><button id="fbSpecial" aria-label="Spezial">✨</button><button id="fbBlock" aria-label="Block">🛡️</button><button id="fbPotHp" aria-label="Heiltrank" hidden>❤️</button><button id="fbPotEp" aria-label="Energietrank" hidden>⚡</button><button id="fbExit" class="ex" aria-label="Kampf verlassen">✖</button></div>
+  <div id="fightBtns" hidden><button id="fbPunch" aria-label="Schlag">👊</button><button id="fbKick" aria-label="Tritt">🦵</button><button id="fbSpecial" aria-label="Spezial">✨</button><button id="fbBlock" aria-label="Block">🛡️</button><button id="fbPotHp" aria-label="Heiltrank" hidden>❤️</button><button id="fbPotEp" aria-label="Energietrank" hidden>⚡</button><button id="fbGear" class="ex" aria-label="Ausrüstung anlegen" hidden>🎒 Ausrüstung</button><button id="fbExit" class="ex" aria-label="Kampf verlassen">✖</button></div>
   <div id="topR">
     <div id="tools">
       <button class="tb" id="bLog" aria-label="Aufgaben und Hinweise">📋</button>
@@ -873,8 +873,8 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
   setInterval(function(){if(!finished&&visible()&&Date.now()-startAt>12000)report('Start-Watchdog');else if(!visible())finished=true;},4000);
 })();
 </script>
-<script src="js/i18n.js?v=wi1" onload="__ld()"></script>
-<script src="js/i18n-en.js?v=fp2" onload="__ld()"></script>
+<script src="js/i18n.js?v=wf1" onload="__ld()"></script>
+<script src="js/i18n-en.js?v=wf1" onload="__ld()"></script>
 <script src="vendor/three.min.js?v=r128" onload="__ld()"></script>
 <script src="js/util.js?v=wi1" onload="__ld()"></script>
 <script src="js/bugreport.js?v=1" onload="__ld()"></script>
@@ -882,7 +882,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script src="js/audio.js?v=i18n3" onload="__ld()"></script>
 <script src="js/town.js?v=wi1" onload="__ld()"></script>
 <script src="js/world.js?v=wi1" onload="__ld()"></script>
-<script src="js/places.js?v=md1" onload="__ld()"></script>
+<script src="js/places.js?v=wf1" onload="__ld()"></script>
 <script src="js/vehicles.js?v=fp2" onload="__ld()"></script>
 <script src="js/fun.js?v=wi1" onload="__ld()"></script>
 <script src="js/thumbs.js" onload="__ld()"></script>
@@ -893,7 +893,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script src="js/minis2.js" onload="__ld()"></script>
 <script src="js/minis3.js?v=rz1" onload="__ld()"></script>
 <script src="js/mini.js" onload="__ld()"></script>
-<script src="js/kids.js?v=wi1" onload="__ld()"></script>
+<script src="js/kids.js?v=wf1" onload="__ld()"></script>
 <script src="js/garden.js" onload="__ld()"></script>
 <script src="js/farm.js?v=nc1" onload="__ld()"></script>
 <script src="js/pool.js?v=bd1" onload="__ld()"></script>
@@ -903,7 +903,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script src="js/gadgets.js" onload="__ld()"></script>
 <script src="js/parcours.js" onload="__ld()"></script>
 <script src="js/meta.js?v=sk1" onload="__ld()"></script>
-<script src="js/pack.js?v=sw1" onload="__ld()"></script>
+<script src="js/pack.js?v=wf1" onload="__ld()"></script>
 <script src="js/themes.js?v=hpf1" onload="__ld()"></script>
 <script src="js/park.js?v=wi1" onload="__ld()"></script>
 <script src="js/tycoon.js?v=ifx1" onload="__ld()"></script>
@@ -919,24 +919,24 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script src="js/maerchen.js?v=wi1" onload="__ld()"></script>
 <script src="js/schatz.js?v=ins2" onload="__ld()"></script>
 <script src="js/sammeln.js?v=wi1" onload="__ld()"></script>
-<script src="js/schluessel.js?v=wi1" onload="__ld()"></script>
+<script src="js/schluessel.js?v=wf1" onload="__ld()"></script>
 <script src="js/badestrand.js?v=1" onload="__ld()"></script>
-<script src="js/schwamm.js?v=1" onload="__ld()"></script>
-<script src="js/raetsel.js?v=wi1" onload="__ld()"></script>
-<script src="js/wald.js?v=wi1" onload="__ld()"></script>
+<script src="js/schwamm.js?v=wf1" onload="__ld()"></script>
+<script src="js/raetsel.js?v=wf1" onload="__ld()"></script>
+<script src="js/wald.js?v=wf1" onload="__ld()"></script>
 <script src="js/tafeln.js?v=rz1" onload="__ld()"></script>
-<script src="js/innen.js?v=wi1" onload="__ld()"></script>
-<script src="js/storymode.js?v=fp1" onload="__ld()"></script>
+<script src="js/innen.js?v=wf1" onload="__ld()"></script>
+<script src="js/storymode.js?v=wf1" onload="__ld()"></script>
 <script src="js/tv.js?v=sm2" onload="__ld()"></script>
 <script src="js/gamepad.js?v=2" onload="__ld()"></script>
 <script src="js/keys.js?v=1" onload="__ld()"></script>
-<script src="js/inselstory.js?v=fp2" onload="__ld()"></script>
-<script src="js/buch-data.js?v=wi1" onload="__ld()"></script>
+<script src="js/inselstory.js?v=wf1" onload="__ld()"></script>
+<script src="js/buch-data.js?v=wf1" onload="__ld()"></script>
 <script src="js/buch.js?v=1" onload="__ld()"></script>
 <script src="js/cheats.js?v=hpf1" onload="__ld()"></script>
 <script src="js/voxel.js" onload="__ld()"></script>
 <script src="js/atlantis.js?v=nc1" onload="__ld()"></script>
-<script src="js/zotik.js?v=wi1" onload="__ld()"></script>
+<script src="js/zotik.js?v=wf1" onload="__ld()"></script>
 <script src="js/radio.js?v=nc1" onload="__ld()"></script>
 <script src="js/dialog.js?v=dl1" onload="__ld()"></script>
 <script src="js/wunsch.js?v=wi1" onload="__ld()"></script>
@@ -956,11 +956,11 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script src="js/room.js?v=ins13" onload="__ld()"></script>
 <script src="js/camp.js" onload="__ld()"></script>
 <script src="js/beauty.js?v=ifx1" onload="__ld()"></script>
-<script src="js/ausruestung.js?v=wi1" onload="__ld()"></script>
-<script src="js/combat.js?v=wi1" onload="__ld()"></script>
+<script src="js/ausruestung.js?v=wf1" onload="__ld()"></script>
+<script src="js/combat.js?v=wf1" onload="__ld()"></script>
 <script src="js/weather.js?v=ins10" onload="__ld()"></script>
-<script src="js/talk.js" onload="__ld()"></script>
-<script src="js/main.js?v=wi1" onload="__ld()"></script>
+<script src="js/talk.js?v=wf1" onload="__ld()"></script>
+<script src="js/main.js?v=wf1" onload="__ld()"></script>
 <script src="../cloud/anmacha-cloud.js" data-mount="#cloudLoginMount" data-game="bunte-insel" data-prefix="bunteInsel.,bunteInsel_" defer></script>
 </body>
 </html>

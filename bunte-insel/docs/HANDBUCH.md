@@ -193,7 +193,7 @@ Alle massiven Gebäude der Welten haben eine echte Haustür und eine goldene Tü
 
 ## ⚔️ Kämpfen und Monster
 
-- Arena: Kämpfe gegen Gegner (Sticker „Kämpfer“). Verbotener Wald: Waldmonster, Trickfilm-Monster und Riesen-Gegner.
+- Arena: Kämpfe gegen Gegner (Sticker „Kämpfer“). Wald-Insel: Waldmonster, Trickfilm-Monster und Riesen-Gegner.
 - Das Kapselmonster (Rätsel-Insel, Kapsel-Schrein) kämpft mit, wird gefüttert und entwickelt sich bis Stufe 5.
 - Schwert verbessern: Schmiede auf der Rätsel-Insel (kostet ⭐).
 - 🎒 Ausrüstung kaufen: Waldhändlerin Fenja (Wald-Insel), Rurik in Lunaris oder Kampfmeister Kai (Arena). Waffen (Stock, Schwert, Bogen, Hammer, Zauberstab), Schilde, Herz-Amulett und Tränke.
@@ -225,7 +225,7 @@ Brücken führen von der Hauptinsel zu den Welten. Im Story-Modus öffnen sie si
 - 🎠 Märchenland – Märchenland: Schloss, Karussell, Basar, Taxi, Umzug und viel Mitmachen. (Freischalten: Märchenonkel, Leseratte, Tänzer)
 - 🗝️ Schlüsselreich – Schlüsselreich: Lichtschlüssel, Schlüssellöcher, Tor der Herzen – und dahinter die Wunsch-Insel mit Schlucht, Floß, Dunkelheit und Schattenarena. (Freischalten: Angler, Schatzgräber, Schatzsucher)
 - 🧽 Schwammi-Bucht – Schwammi-Bucht: Unterwasser-Stadt mit Knusper-Krabbe und Fruchthaus. (Freischalten: Seepferdchen, Rutschmeister, Käferfreund)
-- 🗿 Rätsel-Insel – Rätsel-Insel der Uralten: Prüfungsturm, Kapselmonster, Schmiede, Uralte Höhle. (Freischalten: Waldläufer, Buchleser, Schlaukopf)
+- 🗿 Rätsel-Insel – Rätsel-Insel der Uralten: Prüfungsturm, Kapselmonster, Schmiede, Uralte Höhle. (Freischalten: Kämpfer, Buchleser, Schlaukopf)
 - 🦊 Zotik & Lunaris – Zotik & Lunaris: Mond-Welt mit Luftschiff, Quest und Elementar-Kampf. (Freischalten: Karussell-Kind, Schlüsselreisender, Bucht-Besucher)
 - 📻 Radio-Insel – Funkwelle: 13 Radiosender, Visual Radio, Noten sammeln. (Freischalten: Rätsel-Reisender, Höhlenforscher, Kapsel-Freund)
 - 🔱 Atlantis – Atlantis: versunkene Stadt mit Hologramm-Archiv, Harfe und Aqua-Gleitern. (Freischalten: Turm-Bezwinger, Schwertschmied, Dorfentdecker)
@@ -235,7 +235,7 @@ Brücken führen von der Hauptinsel zu den Welten. Im Story-Modus öffnen sie si
 
 **🏝️ Inseln:** 🏙️ Stadt · 🎡 Freizeitpark · 🎬 Dampfer-Hafen · 🐉 Drachenhöhen · 🌀 Prisma-Archipel · 🔱 Atlantis (Treppe an der Küste) · ⭐ Zotik – Lunaris (Insel im Süden) · 📻 Funkwelle – 13 Radiosender (Insel im Südosten) · 🏰 Märchenland (Insel im Nordwesten) · 🗿 Rätsel-Insel der Uralten (Insel im Süden) · 🌲 Wald-Insel (Kampf, hinter der Rätsel-Insel) · 🧽 Schwammi-Bucht (Insel im hohen Norden) · 🗝️ Schlüsselreich (Insel im Westen) · ⚽ Fußball-Arena (Insel im Südwesten) · 🍄 Hüpfland (Insel im Westen) · 🔴 Taschi-Land (Insel im Osten) · 🌠 Wunsch-Insel (hinter dem Schlüsselreich) · 🏗️ Bauland · 🐶 Fellretter-Bucht · 🌈 Regenbogenwelt
 
-**🏠 Hauptinsel:** 🏠 Meine Wohnung · 🌻 Mein Garten · 🧸 Spielzeugladen · 🎯 Schießbude · 🥕 Hofladen · 🌾 Felder & Maschinen · 🛒 Einkaufsstraße · 🥊 Kampfarena · 🌲 Verbotener Wald · 🏁 Himmels-Parcours · 💡 Leuchtturm (Hauptinsel) · 🏖️ Badestrand & Wasserpark · ⛺ Camp · 🐮 Streichelzoo · 🏊 Freibad · 🚂 Bahnhof · 🏥 Krankenhaus · 🛝 Spielplatz · 🎬 Kino & Autokino
+**🏠 Hauptinsel:** 🏠 Meine Wohnung · 🌻 Mein Garten · 🧸 Spielzeugladen · 🎯 Schießbude · 🥕 Hofladen · 🌾 Felder & Maschinen · 🛒 Einkaufsstraße · 🥊 Kampfarena · 🌀 Alter Wald & Waldtor (zur Wald-Insel) · 🏁 Himmels-Parcours · 💡 Leuchtturm (Hauptinsel) · 🏖️ Badestrand & Wasserpark · ⛺ Camp · 🐮 Streichelzoo · 🏊 Freibad · 🚂 Bahnhof · 🏥 Krankenhaus · 🛝 Spielplatz · 🎬 Kino & Autokino
 
 **🕹️ Spiele:** 🗺️ Schatzmeister Piet – Schatzsuche · 🏆 Fußball-Turnier (Pokal) · 🕹️ Greifer-Automat (Spielzeug-Land) · 💠 Tor zum Zotik-Spiel (Schwesterspiel) · 🚁 Heli-Rettung (Spielautomat) · 🚕 Taxi-Rush (Spielautomat) · 🥫 Dosen-Knall (Spielautomat) · 💃 Pride-Disco (Spielautomat) · 🏗️ Hafen-Kran (Spielautomat) · 🐶 Fellretter-Sprint (Spielautomat) · 🏗️ Pixel-Plan (Spielautomat) · 💧 Strömungs-Rätsel (Spielautomat) · ⚔️ Elementar-Kampf (Spielautomat) · 📻 Frequenz-Dreher (Spielautomat) · 🦋 Schmetterlinge fangen (Spielautomat) · 🚦 Ampel-Held (Spielautomat) · 🎠 Karussell-Ringe (Spielautomat) · 🌈 Farben-Suche (Spielautomat) · 🎣 Fische fangen (Spielautomat) · 🥚 Drachen-Eier (Spielautomat) · 🐶 Welpen-Suche (Spielautomat) · ⚽ Elfmeter (Spielautomat) · 🔷 Formen-Suche (Spielautomat) · 🎵 Noten-Fang (Spielautomat) · ⭐ Sternschnuppen (Spielautomat) · 🗝️ Schatten-Jagd (Spielautomat) · 🚀 Weltenreise (Spielautomat) · 🔥 Zauber-Suche (Spielautomat) · 🦖 Hüpf-Abenteuer (Spielautomat) · 🫧 Blasen-Pop (Spielautomat)
 

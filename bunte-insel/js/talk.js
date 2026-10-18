@@ -40,7 +40,7 @@ BI.TALK.tales = [
 BI.TALK.jokes = ['Was machen Fernseher im Winter? – Sie sehen sich ein Heizungsprogramm an! 😂', 'Der Wetterbericht sagt: Heute Sonne, morgen Eis – und übermorgen Eis mit Sonne! 🍦', 'Warum hat der Roboter keinen Hunger? – Er hat schon einen Byte gegessen! 🤖', 'Kasperle fragt das Krokodil: Hast du schon gegessen? – Ja, aber du siehst lecker aus! 🐊😄'];
 BI.TALK.shops = {
   supermarkt: ['Frau Kasse', 'Heute gibt es besonders frische Äpfel! 🍎'], baeckerei: ['Bäcker Benno', 'Frisch aus dem Ofen – Vorsicht, heiß! 🥐'], blumen: ['Floristin Flora', 'Schenk jemandem einen Blumenstrauß – das macht beide froh! 💐'],
-  apotheke: ['Apothekerin Anna', 'Meine Tränke helfen im Verbotenen Wald – aber bleib vorsichtig! ⚕️'], cafe: ['Kellner Karl', 'Eine heiße Schokolade gefällig? ☕'], buecherei: ['Bibliothekarin Berta', 'Psst! Such dir ein schönes Buch aus. 📚'],
+  apotheke: ['Apothekerin Anna', 'Meine Tränke helfen auf der Wald-Insel – aber bleib vorsichtig! ⚕️'], cafe: ['Kellner Karl', 'Eine heiße Schokolade gefällig? ☕'], buecherei: ['Bibliothekarin Berta', 'Psst! Such dir ein schönes Buch aus. 📚'],
   tiere: ['Tierpfleger Timo', 'Hast du Futter für die Tiere im Zoo? 🐾'], mode: ['Schneiderin Sina', 'Probier doch etwas Neues an! 👒']
 };
 
@@ -83,7 +83,7 @@ BI.TALK.kids.push(
   ['Hannes', ['Was ist grün und hüpft über die Wiese? Ein Gras-hüpfer! 🦗', 'Meine Katze heißt Wolke.', 'Ich kann pfeifen – hör mal!']],
   ['Ida', ['Heute bin ich Prinzessin. 👑', 'Meine Puppe hat ein Kleid aus Seide.', 'Ich tanze gern – tanz mit mir!']],
   ['Jakob', ['Ich baue ein Raumschiff aus Kartons. 🚀', 'Drei, zwei, eins – Start!', 'Weißt du, wie viele Monde der Mars hat? Zwei!']],
-  ['Klara', ['Im Wald gibt es Kämpfe – aber nur im Verbotenen Wald! ⚔️', 'Ich passe auf meinen kleinen Bruder auf.', 'Magst du Gummibärchen?']],
+  ['Klara', ['Im Wald gibt es Kämpfe – aber nur auf der Wald-Insel! ⚔️', 'Ich passe auf meinen kleinen Bruder auf.', 'Magst du Gummibärchen?']],
   ['Leo', ['Ich bin ein Löwe! Rooaar! 🦁', 'Mein Papa kocht die beste Nudelsuppe.', 'Ich zähle gern Sterne – schon 15 heute!']],
   ['Marie', ['Ich lerne Klavier – spiel doch mit mir! 🎹', 'Hast du das Lied „Alle meine Entchen“ geübt? C D E F G G.', 'Meine Lieblingstiere sind Hasen.']],
   ['Noah', ['Ich habe Hunger! Hast du einen Keks? 🍪', 'Das Taxi ist gelb – sieht man sofort!', 'Heute wird ein toller Tag!']],
@@ -93,7 +93,7 @@ BI.TALK.kids.push(
 /* Allgemeiner Plausch + Tipps fürs Spiel – wird gern zwischen die persönlichen Sätze gemischt */
 BI.TALK.chat = [
   'Schönes Wetter heute, oder? ☀️', 'Hast du schon das Feuerwerk ausprobiert? 🎆 Schau einfach in den Himmel!', 'Im Park gibt es eine Schaukel, eine Rutsche und ein Trampolin. 🛝',
-  'Hast du die Häuser schon besucht? Du kannst überall hineingehen! 🏠', 'In der Stadt gibt es acht verschiedene Läden. 🛒', 'Ich liebe diese Insel!', 'Kennst du schon den Verbotenen Wald? Nur dort darf man kämpfen. ⚔️',
+  'Hast du die Häuser schon besucht? Du kannst überall hineingehen! 🏠', 'In der Stadt gibt es acht verschiedene Läden. 🛒', 'Ich liebe diese Insel!', 'Kennst du schon die Wald-Insel? Nur dort darf man kämpfen. ⚔️',
   'Sammle die goldenen Sterne – sie liegen überall herum. ⭐', 'Wenn du in ein Auto steigst, fragt dich das Spiel, ob du einen Auftrag annehmen willst.', 'Das gelbe Auto mit dem Dachschild ist ein Taxi! 🚕',
   'Mit dem Zug kannst du einmal um die Insel fahren. 🚂', 'Im Camp erzählt man Geschichten am Lagerfeuer. 🔥', 'Kennst du schon den Streichelzoo? Da gibt es Kühe, Schafe und Ziegen!', 'Die Knöpfe A, B, X und Y sind auf dem Bildschirm wie bei einer Spielkonsole angeordnet. 🎮',
   'Hast du schon einen Baum gehauen? Wenn er umkippt, ruf laut TIMBER! 🌳', 'Ein Lächeln kostet nichts und macht andere froh. 😊', 'Hallo! Schön, dass du da bist!', 'Gleich gibt es Mittagessen, glaube ich.', 'Heute habe ich schon viel erlebt!',
