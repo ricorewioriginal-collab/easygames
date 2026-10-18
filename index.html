@@ -137,6 +137,7 @@
   .sectitle{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:26px 0 12px}
   .sectitle h2{margin:0;font-size:21px}
   /* Spiel-Details (Store-Seite) */
+  .drating{margin:6px 0 10px;color:#E8EAF2}
   #detail{position:fixed;inset:0;z-index:40;background:#080B12;overflow:auto;overscroll-behavior:contain}
   .dsheet{max-width:860px;margin:0 auto;padding-bottom:calc(40px + env(safe-area-inset-bottom))}
   .dhero{position:relative;width:100%;aspect-ratio:16/8;max-height:46vh;display:flex;align-items:center;justify-content:center;font-size:clamp(70px,16vw,130px);overflow:hidden}
@@ -495,6 +496,7 @@
     <div class="dhead">
       <h2 id="dTitle"></h2>
       <div class="badges" id="dBadges"></div>
+      <div id="dRating" class="drating"></div>
       <div class="row dactions"><button class="primary" id="dPlay">▶ Spielen</button><button class="pill" id="dShare">⤴ Teilen</button><button class="pill" id="dTv">📺 TV-Link</button></div>
     </div>
     <div class="tabs" role="tablist" aria-label="Spielinfos">
@@ -511,6 +513,7 @@
 <script src="games.js"></script>
 <script src="modes.js"></script>
 <script src="guides.js"></script>
+<script src="cloud/anmacha-rating.js" defer></script>
 <script src="categories.js"></script>
 <script>
 const $ = id => document.getElementById(id);
@@ -818,6 +821,7 @@ function openDetail(i, tab) {
   hero.style.background = g.bg || '#222';
   if (g.img) { const im = el('img'); im.src = g.img; im.alt = ''; hero.appendChild(im); } else hero.appendChild(el('span', '', g.icon || '🎮'));
   $('dTitle').textContent = g.title; $('dBadges').textContent = ''; modeBadges(g, $('dBadges'));
+  if (window.AnMaChaRating) window.AnMaChaRating.mount($('dRating'), { subject: 'game:' + g.id, title: g.title });   // Sterne (zentral, Google zur Verifizierung)
   $('dTv').classList.toggle('hidden', !isMulti(g));
   // ähnliche Spiele: gleiche Spielart
   const m = modesOf(g), rel = GAMES.map((x, j) => j).filter(j => j !== i && BADGES.some(([k]) => m[k] && modesOf(GAMES[j])[k])).slice(0, 8);
