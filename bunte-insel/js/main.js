@@ -2481,7 +2481,7 @@
      Nahe Figuren bleiben unverändert; geteilter TV-Bildschirm zeigt immer alle. Über die Ebenen-Maske, damit Spiel-Code, der visible setzt, unberührt bleibt. */
   const charList = []; let charScanT = 0, charCullT = 0;
   function cullChars(dt) {
-    if ((charScanT -= dt) <= 0) { charScanT = 3; for (let i = charList.length - 1; i >= 0; i--) if (!charList[i].g.parent) { charList[i].g.userData.cullReg = false; for (const m of charList[i].ms) m.layers.mask = 1; charList.splice(i, 1); } scene.traverse(g => { const u = g.userData; if (u && u.opts && !u.cullReg) { u.cullReg = true; const ms = []; g.traverse(m => { if (m.isMesh) ms.push(m); }); charList.push({ g, ms, far: false }); } }); }
+    if ((charScanT -= dt) <= 0) { charScanT = 3; for (let i = charList.length - 1; i >= 0; i--) if (!charList[i].g.parent) { charList[i].g.userData.cullReg = false; for (const m of charList[i].ms) m.layers.mask = 1; charList.splice(i, 1); } scene.traverse(g => { const u = g.userData; if (u && u.opts && !u.cullReg) { u.cullReg = true; const ms = []; g.traverse(m => { if (m.isMesh || m.isSprite) ms.push(m); }); /* Namensschilder mit ausblenden */ charList.push({ g, ms, far: false }); } }); }
     if ((charCullT -= dt) > 0) return; charCullT = .25;
     const all = tv.splitOn && tv.splitOn(), cx = camera.position.x, cz = camera.position.z;
     for (const c of charList) { const e = c.g.matrixWorld.elements, dx = e[12] - cx, dz = e[14] - cz, far = !all && dx * dx + dz * dz > 8100; if (far !== c.far) { c.far = far; for (const m of c.ms) m.layers.mask = far ? 0 : 1; } }

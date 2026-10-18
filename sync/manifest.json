@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "98ed113ae823",
- "generated": "2026-10-18T02:40:08+02:00",
- "commit": "7ada5693e76c1d4627c13fb2585897765fd6cd78",
+ "version": "369ac30da344",
+ "generated": "2026-10-18T03:25:47+00:00",
+ "commit": "c52ba2ea9e6d590904ca7fb985247c0057166987",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4339,7 +4339,7 @@
   {
    "p": "bunte-insel/index.html",
    "s": 109383,
-   "h": "b7108394a6ea57d0f9b090fe69073d9ece4cb71eaff513bab2da99e2a3706f7d"
+   "h": "6f316ac6dc70b8fd142bad7b0a9827984c981f21e10b8413f8f5917ef8bab4f2"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -4498,8 +4498,8 @@
   },
   {
    "p": "bunte-insel/js/innen.js",
-   "s": 61397,
-   "h": "5a063edd5141c95f4aa87c034b88c12271d81515405994d7fa849bd84fe166f1"
+   "s": 61418,
+   "h": "347240a7875663003ba92e0dc938d87f88582fa4bfe869c4483010358f0b49ca"
   },
   {
    "p": "bunte-insel/js/inselstory.js",
@@ -4543,8 +4543,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 316300,
-   "h": "c5320d76381009ed15839c62ece9aad12e627e8fc9b46b127c78efbf5e6be535"
+   "s": 316350,
+   "h": "d09f5d7de260fbf04f024b5867e68a2807c4bb92811b4518b6232b9940b41509"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -6429,7 +6429,7 @@
   {
    "p": "sync/catalog.json",
    "s": 105431,
-   "h": "130cdbbae7f047181fcb48ac100ad4a1304c5526239d4e56368ededd6ffaa1b4"
+   "h": "a4524da42dd3ba8ec20b3d9bfa381806c46c16aea247f401b7c42de2966d76b9"
   },
   {
    "p": "taschi/card.svg",
