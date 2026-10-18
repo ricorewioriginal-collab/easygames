@@ -352,9 +352,9 @@
   }
   // Gewinnanzeige mitten auf den Walzen
   function winClear() { clearTimeout(A._winT); const w = $('winfx'); if (w) w.remove(); }
-  function winShow(title, amount, cls, ms) {
-    winClear(); if (A.view !== 'machine') return;
-    const c = A.machine.screen(0, 0);
+  function winShow(title, amount, cls, ms, at) {
+    winClear(); if (!at && A.view !== 'machine') return;
+    const c = at || A.machine.screen(0, 0);
     const el = h('div', { id: 'winfx', cls: cls || '', style: 'left:' + c.x + 'px;top:' + c.y + 'px', 'aria-live': 'polite' }, [h('div', { cls: 'rays' }), h('div', { cls: 'wt' }, title), amount ? h('div', { cls: 'wa' }, '+' + F(amount)) : null]);
     $('ui').appendChild(el);
     if (amount && !A.set.reducedMotion) countUp(el.querySelector('.wa'), 0, amount, cls === 'big' ? 1300 : 650, '+');
@@ -366,12 +366,12 @@
     requestAnimationFrame(step);
   }
   // Münzen fliegen von den Walzen zur Münzanzeige, die Anzeige zählt hoch
-  function coinFly(n, from, to) {
+  function coinFly(n, from, to, at) {
     const pill = $('hudCoins'), ic = pill.querySelector('.ic').getBoundingClientRect(), tx0 = ic.left + ic.width / 2, ty0 = ic.top + ic.height / 2;
     A.cTween = true; let last = 0;
     countUp($('vCoins'), from, to, A.set.reducedMotion ? 10 : 1100, '', () => { A.cTween = false; hud(); });
     if (A.set.reducedMotion) return;
-    const c0 = A.machine.screen(0, 0);
+    const c0 = at || A.machine.screen(0, 0);
     for (let i = 0; i < n; i++) {
       const c = h('i', { cls: 'fcoin', style: 'left:' + c0.x + 'px;top:' + c0.y + 'px' }); $('ui').appendChild(c);
       const a = Math.random() * Math.PI * 2, r = 40 + Math.random() * 100, mx = Math.cos(a) * r, my = Math.sin(a) * r * 0.7 - 30;
@@ -380,6 +380,7 @@
       an.onfinish = () => { c.remove(); pill.classList.remove('bump'); void pill.offsetWidth; pill.classList.add('bump'); const now = performance.now(); if (now - last > 70) { last = now; SW.Audio.sfx('tick'); } };
     }
   }
+  A.winShow = winShow; A.winClear = winClear; A.coinFly = coinFly; A.countUp = countUp;
   function doSpin() {
     if (A.view !== 'machine') { go('machine'); return; }
     if (A.spinning) { A.machine.finishNow(); return; }
@@ -391,9 +392,9 @@
       return;
     }
     A.spinning = true; A.autoN++; winClear(); hud(); A.saveSoon();
-    SW.Audio.sfx('spin'); haptic(12);
+    SW.Audio.sfx('spin'); haptic(12); A.machine.react('spin');
     const sp = (A.set.speed || 1) * (A.auto ? 1.35 : 1);
-    A.machine.spin(res.ids, { speed: sp, skip: !!A.set.skip, onStop: () => { SW.Audio.sfx('stop'); haptic(8); }, onTease: () => SW.Audio.sfx('tease'), onDone: () => afterSpin(res) });
+    A.machine.spin(res.ids, { speed: sp, skip: !!A.set.skip, onStop: () => { SW.Audio.sfx('stop'); haptic(8); }, onTease: () => { SW.Audio.sfx('tease'); A.machine.react('tease'); }, onDone: () => afterSpin(res) });
   }
   function afterSpin(res) {
     A.spinning = false;
@@ -401,6 +402,7 @@
     const mask = res.rule === 'three' ? [true, true, true] : res.rule === 'two' ? res.ids.map(id => id === res.sym) : null;
     const big = !!(res.big || res.jackpot), name = sym ? tx(sym.name) : '';
     if (mask) A.machine.win(col, big, mask);
+    A.machine.react(big || res.pending ? 'big' : r.coins || r.spins || res.extra.chest || res.extra.shieldAdded ? 'win' : 'none');
     // eine große Meldung je Spin, nach Wichtigkeit
     if (res.pending) { winShow(res.pending.kind === 'attack' ? '⚡ ' + L('STURM!', 'STORM!') : '🧭 ' + L('SCHATZSUCHE!', 'TREASURE HUNT!'), 0, 'act', 1300); A.machine.shake = 0.5; SW.Audio.sfx(res.pending.kind === 'attack' ? 'attack' : 'win'); haptic(40); }
     else if (r.coins) { winShow(res.jackpot ? L('JACKPOT!', 'JACKPOT!') : big ? L('GROSSER GEWINN!', 'BIG WIN!') : (res.rule === 'three' ? '3× ' : '2× ') + name, r.coins, big ? 'big' : '', big ? 2600 : 1500); SW.Audio.sfx(big ? 'big' : 'win'); if (big) haptic([40, 40, 80]); }

@@ -318,6 +318,7 @@
         if (this.fx) { this.fx.burst(new THREE.Vector3(sl.x, sl.y + 1, sl.z), { n: 60, color: this.w.pal.glow, speed: 5, up: 4, life: 1.2 }); this.fx.ring(new THREE.Vector3(sl.x, sl.y + 0.15, sl.z), this.w.pal.accent2 || '#ffffff'); }
       }
     }
+    hitBuilding(b) { const g = this.bgroups[b]; if (g) g.userData.hitT = 0; }
     slotPos(b) { const s = this.slots[b]; return s ? new (T().Vector3)(s.x, s.y, s.z) : new (T().Vector3)(); }
     pick(ndc) {
       const THREE = T(), rc = new THREE.Raycaster(); rc.setFromCamera(ndc, this.camera);
@@ -345,9 +346,11 @@
       const d = c.dist * (this.portrait && this.mode !== 'backdrop' ? 1.25 : 1);
       this.camera.position.set(c.tx + Math.sin(c.yaw) * Math.cos(c.pitch) * d, c.ty + Math.sin(c.pitch) * d, c.tz + Math.cos(c.yaw) * Math.cos(c.pitch) * d);
       this.camera.lookAt(c.tx, c.ty, c.tz);
+      if (this.shake > 0) { this.shake = Math.max(0, this.shake - dt); const a = this.shake * 1.4; this.camera.position.x += (Math.random() - 0.5) * a; this.camera.position.y += (Math.random() - 0.5) * a; }
       if (this.sea) this.sea.material.uniforms.t.value = t;
       for (const g of this.bgroups) if (g) {
         if (g.userData.grow !== undefined) { const u = g.userData.grow = Math.min(1, g.userData.grow + dt * 1.6); const e = 1 + Math.sin(u * Math.PI) * 0.12; const B = Island.BS; g.scale.set(B * (0.6 + 0.4 * u * e), B * (0.2 + 0.8 * u * e), B * (0.6 + 0.4 * u * e)); if (u >= 1) { g.scale.setScalar(B); delete g.userData.grow; } }
+        if (g.userData.hitT !== undefined) { const u = g.userData.hitT += dt, k = Math.min(1, u / 0.7); g.rotation.z = Math.sin(u * 42) * 0.14 * (1 - k); g.rotation.x = Math.cos(u * 37) * 0.08 * (1 - k); if (k >= 1) { delete g.userData.hitT; g.rotation.z = g.rotation.x = 0; } }
         Mo().animate(g, t, dt);
       }
       for (const a of this.anims) if (a.userData.float) a.position.y = a.userData.float.base + Math.sin(t * 0.6 + a.userData.float.ph) * 0.4;

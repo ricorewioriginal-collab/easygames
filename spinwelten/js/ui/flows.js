@@ -6,7 +6,7 @@
   const UI = () => SW.UI, A = () => SW.App, G = () => SW.App.g;
   const h = (...a) => SW.UI.h(...a), btn = (...a) => SW.UI.btn(...a);
   const T = () => globalThis.THREE;
-  const Fl = { busy: false };
+  const Fl = { busy: false }, FOX = 1.3;
   // Hinweis oben; die Ziele selbst sind Marker direkt auf der Insel (folgen der Kamera)
   function pickBar(info, marks) {
     Fl.closePick();
@@ -21,6 +21,7 @@
     document.getElementById('ui').appendChild(box); Fl.mkBox = box; Fl.place(); UI().refocus(); return el;
   }
   Fl.place = function () {
+    if (Fl.foxM) SW.Characters.animateModel(Fl.foxM, performance.now() / 1000, 0.016);
     if (!Fl.mk) return; const a = A(), cam = a.island.camera, w = a.r.w, hh = a.r.h;
     for (const m of Fl.mk) {
       const v = m.p.clone().project(cam), vis = v.z < 1 && Math.abs(v.x) < 1.05 && Math.abs(v.y) < 1.05;
@@ -57,27 +58,57 @@
     pickBar('⚡ ' + L('Tippe auf ein Ziel!', 'Tap a target!') + (st.shields > 0 ? L(' · 🛡️ Schutzorb aktiv', ' · 🛡️ Shield orb active') : ''), marks);
     Fl.mode = 'attack';
   };
+  // Bildschirmpunkt (px) eines Inselpunkts
+  function scr(p) { const a = A(), v = p.clone().project(a.island.camera); return { x: (v.x + 1) / 2 * a.r.w, y: (1 - v.y) / 2 * a.r.h }; }
+  function flash(col) {
+    if (A().set.reducedMotion) return;
+    const f = h('div', { cls: 'flash', style: col ? 'background:' + col : '' }); document.getElementById('ui').appendChild(f);
+    f.animate([{ opacity: 0.7 }, { opacity: 0 }], { duration: 420, easing: 'ease-out' }).onfinish = () => f.remove();
+  }
+  // Ablauf: Wolke zieht auf → Blitz → Treffer (Wackeln, Trümmer, Rauch) oder Schutzkuppel → Beute fliegt zur Münzanzeige
   Fl.fire = function (b) {
-    if (Fl.busy) return; const g = G(), a = A(), id = Fl.target;
-    const res = g.attack(id, b); a.after();
-    if (res.error) { UI().toast(L('Geht nicht: ', 'Not possible: ') + res.error); return; }
+    if (Fl.busy) return; const g = G(), a = A(), id = Fl.target, c0 = g.s.coins;
+    const res = g.attack(id, b);
+    if (res.error) { a.after(); UI().toast(L('Geht nicht: ', 'Not possible: ') + res.error); return; }
+    a.cTween = true; a.after();
     Fl.busy = true; Fl.closePick();
-    const isl = a.island, p = res.b >= 0 ? isl.slotPos(res.b) : new (T().Vector3)(0, 0, 0), from = new (T().Vector3)(-40, 30, 30);
+    const THREE = T(), isl = a.island, fx = isl.fx, V = (x, y, z) => new THREE.Vector3(x, y, z);
+    const p = res.b >= 0 ? isl.slotPos(res.b) : V(0, 0, 0), blocked = res.res === 'blocked', hit = res.res === 'damaged' || res.res === 'downgraded';
+    const quick = a.set.reducedMotion || a.set.skip, sp = a.set.speed || 1, ms = x => quick ? 0 : x / sp;
+    const BS = SW.Island.BS, top = p.clone().add(V(0, 2.2 * BS, 0)), sky = p.clone().add(V(0, 7 + 2 * BS, 0));
     SW.Audio.sfx('attack'); if (a.set.haptics && navigator.vibrate) try { navigator.vibrate(30); } catch (e) { /* egal */ }
     if (res.b >= 0) isl.focus(res.b);
-    const finish = () => {
-      if (res.res === 'blocked') { SW.Audio.sfx('shield'); isl.fx.shield(p.clone().add(new (T().Vector3)(0, 1.5, 0)), 3.2, '#7dffcf'); }
-      else { SW.Audio.sfx('hit'); isl.fx.burst(p.clone().add(new (T().Vector3)(0, 1, 0)), { n: 90, color: '#c58bff', color2: '#ffe066', speed: 7, up: 5, life: 1.2 }); isl.fx.ring(p, '#c58bff', 4); const bv = g.botView(id); if (res.b >= 0) isl.setBuilding(res.b, bv.stages[res.b], bv.damaged[res.b], false); }
-      setTimeout(() => {
-        Fl.busy = false;
-        const t = res.res === 'blocked' ? L('Abgewehrt! Ein Schutzorb hat den Sturm aufgefangen.', 'Blocked! A shield orb caught the storm.') : res.res === 'miss' ? L('Der Sturm wirbelt über die leere Insel.', 'The storm swirls over the empty island.') : res.res === 'downgraded' ? L('Volltreffer – das Bauwerk verliert eine Stufe.', 'Direct hit – the building loses a stage.') : L('Treffer – das Bauwerk ist beschädigt.', 'Hit – the building is damaged.');
-        UI().dialog({ title: res.revenge ? L('Rache geglückt!', 'Revenge done!') : L('Sturmangriff', 'Storm attack'), text: t + '\n🪙 +' + F(res.coins), buttons: [{ label: L('Zurück zur Insel', 'Back to island'), cls: 'gold', fn: () => { a.go('machine'); if (a.tut) a.tut.after('attack'); } }], noClose: true });
-      }, a.set.reducedMotion ? 300 : 1300);
+    if (!quick && fx) fx.cloud(sky, 2.4 / sp, '#4a4f6e');
+    const impact = () => {
+      flash(blocked ? '#bfffe8' : '#fff8d8'); isl.shake = blocked ? 0.25 : 0.55;
+      if (a.set.haptics && navigator.vibrate) try { navigator.vibrate(blocked ? 30 : [50, 30, 80]); } catch (e) { /* egal */ }
+      if (blocked) {
+        SW.Audio.sfx('shield'); const dome = p.clone().add(V(0, 1.5, 0));
+        if (fx) { if (!quick) fx.bolt(sky, dome.clone().add(V(0, 3.2, 0))); fx.shield(dome, 3.2, '#7dffcf'); fx.burst(dome.clone().add(V(0, 3.2, 0)), { n: 40, color: '#ffffff', color2: '#7dffcf', speed: 6, up: 3, life: 0.7 }); }
+        return;
+      }
+      SW.Audio.sfx('hit');
+      if (fx) {
+        if (!quick) { fx.bolt(sky, top); setTimeout(() => fx.bolt(sky.clone().add(V(0.6, 0, -0.4)), top), 120); }
+        fx.burst(top, { n: 90, color: '#ffe066', color2: '#c58bff', speed: 7, up: 5, life: 1.1 }); fx.ring(p.clone().add(V(0, 0.15, 0)), '#c58bff', 4);
+        if (hit) { fx.debris(top, (a.island.w && a.island.w.pal && a.island.w.pal.accent) || '#c99a6a', quick ? 8 : 18, p.y + 0.1); fx.smoke(p.clone().add(V(0, 1, 0)), quick ? 4 : 9, '#6d6a72', 0.9 * BS); }
+      }
+      if (res.b >= 0) { isl.hitBuilding(res.b); const bv = g.botView(id); isl.setBuilding(res.b, bv.stages[res.b], bv.damaged[res.b], false); }
     };
-    if (a.set.reducedMotion || a.set.skip) { setTimeout(finish, 150); return; }
-    const to = p.clone().add(new (T().Vector3)(0, 1.2, 0));
-    if (res.res === 'blocked') to.y += 2.2;
-    isl.fx.projectile(from, to, '#c58bff', 1.3 / (a.set.speed || 1), finish);
+    const loot = () => {
+      const at = scr(top), c = { x: Math.max(90, Math.min(a.r.w - 90, at.x)), y: Math.max(140, Math.min(a.r.h * 0.6, at.y - 40)) };
+      const title = blocked ? '🛡️ ' + L('ABGEWEHRT!', 'BLOCKED!') : res.res === 'miss' ? '🌪️ ' + L('Daneben', 'Missed') : '⚡ ' + L('TREFFER!', 'HIT!');
+      a.winShow(title, res.coins, blocked ? '' : 'big', quick ? 900 : 1700 / sp, c);
+      if (res.coins) { SW.Audio.sfx('coin'); a.coinFly(blocked ? 8 : 18, c0, g.s.coins, c); } else { a.cTween = false; a.after(); }
+    };
+    const end = () => {
+      Fl.busy = false;
+      const t = blocked ? L('Ein Schutzorb hat den Sturm aufgefangen. Es gab trotzdem ein paar Münzen.', 'A shield orb caught the storm. You still got a few coins.') : res.res === 'miss' ? L('Der Sturm wirbelt über die leere Insel.', 'The storm swirls over the empty island.') : res.res === 'downgraded' ? L('Volltreffer – das Bauwerk verliert eine Stufe.', 'Direct hit – the building loses a stage.') : L('Treffer – das Bauwerk ist beschädigt.', 'Hit – the building is damaged.');
+      UI().dialog({ title: res.revenge ? L('Rache geglückt!', 'Revenge done!') : L('Sturmangriff', 'Storm attack'), text: t + '\n🪙 +' + F(res.coins), buttons: [{ label: L('Zurück zur Insel', 'Back to island'), cls: 'gold', fn: () => { a.go('machine'); if (a.tut) a.tut.after('attack'); } }], noClose: true });
+    };
+    setTimeout(impact, ms(800));
+    setTimeout(loot, ms(1500) + (quick ? 100 : 0));
+    setTimeout(end, ms(3000) + (quick ? 500 : 0));
   };
   // ---------- Schatzexpedition ----------
   Fl.raid = function () {
@@ -106,6 +137,10 @@
       isl.root.add(g0); Fl.marks.push(g0);
     }
     Fl.hint = -1; Fl.found = {};
+    // Mira, die Füchsin, gräbt für dich
+    const fd = SW.Characters && SW.COMPANIONS && (SW.COMPANIONS.find(c => c.shape === 'fox') || SW.COMPANIONS[0]);
+    if (fd) { const fr = M.grp(), fm = SW.Characters.model(fd, 1); fm.scale.setScalar(FOX); fr.add(fm); fr.position.set(0, 0, rad * 0.15); fr.rotation.y = 0.6; isl.root.add(fr); Fl.fox = fr; Fl.foxM = fm; }
+    Fl.loot = [];
     r.picks.forEach(i => Fl.markDone(i, null));
     Fl.raidBar(r);
   };
@@ -114,7 +149,7 @@
     if (r && r.hint >= 0) Fl.hint = r.hint;
     const up = new (T().Vector3)(0, 0.4, 0);
     const marks = (Fl.marks || []).map((m, i) => ({ p: m.position.clone().add(up), cls: 'dig' + (picks.includes(i) ? ' done' : '') + (Fl.hint === i ? ' hint' : ''), off: picks.includes(i), title: L('Stelle ', 'Spot ') + (i + 1), icon: picks.includes(i) ? (Fl.found && Fl.found[i]) || '·' : '✖', fn: () => Fl.dig(i) }));
-    pickBar('⛏️ ' + L(`Grabe! Noch ${3 - picks.length} von 3`, `Dig! ${3 - picks.length} of 3 left`) + (Fl.hint >= 0 ? L(' · Mira wittert etwas bei 🦊', ' · Mira smells something at 🦊') : ''), marks);
+    pickBar('⛏️ ' + L(`Grabe! Noch ${3 - picks.length} von 3`, `Dig! ${3 - picks.length} of 3 left`) + (p && p.got ? ' · 🪙 ' + F(p.got) : '') + (Fl.hint >= 0 ? L(' · Mira wittert etwas bei 🦊', ' · Mira smells something at 🦊') : ''), marks);
   };
   Fl.markDone = function (i, kind) {
     const m = Fl.marks && Fl.marks[i]; if (!m) return;
@@ -122,24 +157,74 @@
     m.children.forEach(o => { if (o.material && o.material.visible !== false) o.material = SW.Models.mat(c, { em: c, emi: kind && kind !== 'empty' ? 0.6 : 0 }); });
     m.userData.done = true;
   };
+  // Schatz, der aus dem Loch steigt
+  function treasure(kind) {
+    const M = SW.Models, g = M.grp(), gold = M.mat('#ffd75e', { metal: 0.85, rough: 0.25, em: '#c98a1a', emi: 0.25 });
+    if (kind === 'big') {
+      g.add(M.mesh(M.rbox(1.1, 0.6, 0.75, 0.08), M.mat('#8a5a35', { rough: 0.8 }), 0, 0, 0, false));
+      g.add(M.mesh(M.rbox(1.16, 0.28, 0.8, 0.1), M.mat('#a06a3c', { rough: 0.7 }), 0, 0.62, -0.05, false));
+      g.add(M.mesh(M.box(1.2, 0.1, 0.84), gold, 0, 0.42, 0, false)); g.add(M.mesh(M.box(0.18, 0.22, 0.06), gold, 0, 0.35, 0.4, false));
+      for (let k = 0; k < 5; k++) g.add(M.mesh(M.cyl(0.14, 0.14, 0.05, 12), gold, -0.3 + k * 0.15, 0.95 + (k % 2) * 0.06, 0.05, false));
+    } else if (kind === 'mid') {
+      for (let k = 0; k < 7; k++) { const c = M.mesh(M.cyl(0.24, 0.24, 0.07, 16), gold, (k % 3 - 1) * 0.22, Math.floor(k / 3) * 0.08 + 0.04, ((k * 7) % 3 - 1) * 0.12, false); c.rotation.x = (k % 2) * 0.3; g.add(c); }
+    } else if (kind === 'relic') {
+      const c = M.mesh(M.oct(0.45), M.mat('#7fe8ff', { em: '#3fd8e8', emi: 1.1, rough: 0.15, flat: true }), 0, 0.5, 0, false); c.scale.y = 1.5; g.add(c);
+    } else g.add(M.mesh(M.ico(0.38, 0), M.mat('#7a7f88', { rough: 0.95, flat: true }), 0, 0.3, 0, false));
+    return g;
+  }
+  // Mira hüpft zur Stelle, gräbt, der Fund steigt aus dem Boden, Münzen fliegen zur Anzeige
   Fl.dig = function (i) {
-    if (Fl.busy) return; const g = G(), a = A(), r = g.raidDig(i); a.after();
-    if (r.error) return;
-    Fl.busy = true; SW.Audio.sfx('dig');
-    const m = Fl.marks[i], p = m.position.clone();
-    a.island.fx.burst(p.clone().add(new (T().Vector3)(0, 0.5, 0)), { n: 40, color: '#9a7a50', speed: 4, up: 5, life: 0.9, gravity: 9 });
-    setTimeout(() => {
-      Fl.busy = false; Fl.markDone(i, r.kind); Fl.found[i] = r.kind === 'empty' ? '·' : r.kind === 'relic' ? '🔷' : r.kind === 'big' ? '💰' : '🪙';
-      if (r.coins || r.relics) { SW.Audio.sfx('coin'); a.island.fx.burst(p.clone().add(new (T().Vector3)(0, 1, 0)), { n: 60, color: '#ffd75e', color2: '#fff4c2', speed: 5, up: 6, life: 1.2 }); }
-      UI().reward(r.kind === 'empty' ? L('Leer …', 'Empty …') : '🪙 +' + F(r.coins), r.relics ? '🔷 +' + r.relics : '');
-      if (r.done) {
-        r.layout.forEach((k, j) => { if (!Fl.marks[j].userData.done) Fl.markDone(j, k === 'empty' ? 'empty' : 'mid'); });
-        Fl.closePick();
-        setTimeout(() => UI().dialog({ title: L('Expedition beendet', 'Expedition complete'), text: L('Beute: 🪙 ', 'Loot: 🪙 ') + F(r.total) + (r.chest ? L('\nBeide großen Schätze gefunden – eine Holztruhe dazu!', '\nFound both big treasures – plus a wooden chest!') : ''), noClose: true, buttons: [{ label: L('Zurück zur Insel', 'Back to island'), cls: 'gold', fn: () => { Fl.cleanRaid(); a.go('machine'); if (a.tut) a.tut.after('raid'); } }] }), 900);
-      } else Fl.raidBar(null);
-    }, a.set.reducedMotion ? 150 : 650);
+    if (Fl.busy) return; const g = G(), a = A(), c0 = g.s.coins, r = g.raidDig(i);
+    if (r.error) { a.after(); return; }
+    a.cTween = true; a.after();
+    Fl.busy = true; Fl.closePick();
+    const THREE = T(), isl = a.island, fx = isl.fx, m = Fl.marks[i], hole = m.position.clone(); hole.y = 0;
+    const quick = a.set.reducedMotion || a.set.skip, sp = a.set.speed || 1, du = x => quick ? 0.05 : x / sp;
+    const fox = Fl.fox, start = fox ? fox.position.clone() : hole.clone(), dir = start.clone().sub(hole); dir.y = 0;
+    if (dir.lengthSq() < 0.01) dir.set(0, 0, 1); dir.normalize();
+    const stand = hole.clone().addScaledVector(dir, 1.6), dist = start.distanceTo(stand), hops = Math.max(1, Math.min(4, Math.round(dist / 2.2)));
+    const sym = r.kind === 'empty' ? '·' : r.kind === 'relic' ? '🔷' : r.kind === 'big' ? '💰' : '🪙';
+    const reveal = () => {
+      Fl.markDone(i, r.kind); Fl.found[i] = sym;
+      const tr = treasure(r.kind); tr.scale.setScalar(1.5); tr.position.copy(hole).add(new THREE.Vector3(0, -0.6, 0)); isl.root.add(tr); Fl.loot.push(tr);
+      const good = r.kind !== 'empty';
+      fx.burst(hole.clone().add(new THREE.Vector3(0, 0.4, 0)), { n: 30, color: '#9a7a50', speed: 4, up: 5, life: 0.8, gravity: 9 });
+      fx.anim(du(0.7), k => { const c1 = 1.7, q = k - 1, e = 1 + (c1 + 1) * q * q * q + c1 * q * q; tr.position.y = hole.y - 0.6 + e * (good ? 1.9 : 1.0); tr.rotation.y = k * Math.PI * 2; }, () => {
+        const top = tr.position.clone().add(new THREE.Vector3(0, 0.9, 0)), v = top.clone().project(isl.camera), at = { x: Math.max(90, Math.min(a.r.w - 90, (v.x + 1) / 2 * a.r.w)), y: Math.max(150, (1 - v.y) / 2 * a.r.h - 30) };
+        if (good) { SW.Audio.sfx(r.kind === 'big' ? 'big' : 'coin'); fx.burst(top, { n: r.kind === 'big' ? 110 : 60, color: r.kind === 'relic' ? '#7fe8ff' : '#ffd75e', color2: '#fff4c2', speed: 6, up: 6, life: 1.2 }); fx.ring(hole.clone().add(new THREE.Vector3(0, 0.15, 0)), '#ffd75e', 3); }
+        else SW.Audio.sfx('error');
+        if (Fl.foxM) Fl.foxM.rotation.x = 0;
+        a.winShow(good ? (r.kind === 'big' ? L('GROSSER SCHATZ!', 'BIG TREASURE!') : r.kind === 'relic' ? '🔷 +' + (r.relics || 1) : '🪙 ' + L('Münzen!', 'Coins!')) : L('Leer …', 'Empty …'), r.coins, r.kind === 'big' ? 'big' : '', quick ? 900 : 1500 / sp, at);
+        if (r.coins) a.coinFly(r.kind === 'big' ? 22 : 12, c0, g.s.coins, at); else { a.cTween = false; a.after(); }
+        setTimeout(() => {
+          Fl.busy = false;
+          if (r.done) {
+            r.layout.forEach((k, j) => { if (!Fl.marks[j].userData.done) Fl.markDone(j, k === 'empty' ? 'empty' : 'mid'); });
+            UI().dialog({ title: L('Expedition beendet', 'Expedition complete'), text: L('Beute: 🪙 ', 'Loot: 🪙 ') + F(r.total) + (r.chest ? L('\nBeide großen Schätze gefunden – eine Holztruhe dazu!', '\nFound both big treasures – plus a wooden chest!') : ''), noClose: true, buttons: [{ label: L('Zurück zur Insel', 'Back to island'), cls: 'gold', fn: () => { Fl.cleanRaid(); a.go('machine'); if (a.tut) a.tut.after('raid'); } }] });
+          } else Fl.raidBar(null);
+        }, quick ? 400 : 1300 / sp);
+      });
+    };
+    const dig = () => {
+      SW.Audio.sfx('dig'); let n = 0;
+      fx.anim(du(0.8), k => {
+        if (Fl.foxM) Fl.foxM.rotation.x = 0.45 + Math.sin(k * 40) * 0.15;
+        if (k * 5 > n) { n++; fx.burst(hole.clone().add(new THREE.Vector3(0, 0.3, 0)), { n: 12, color: '#9a7a50', color2: '#6b5236', speed: 3, up: 5, life: 0.7, gravity: 12 }); if (n === 3) SW.Audio.sfx('dig'); }
+      }, reveal);
+    };
+    if (!fox) { dig(); return; }
+    fox.rotation.y = Math.atan2(stand.x - start.x, stand.z - start.z);
+    fx.anim(du(0.32 * hops), k => {
+      fox.position.lerpVectors(start, stand, k); fox.position.y = start.y + Math.abs(Math.sin(k * Math.PI * hops)) * 0.9;
+      const sq = Math.abs(Math.cos(k * Math.PI * hops)); Fl.foxM.scale.set(FOX * (1 + sq * 0.12), FOX * (1 - sq * 0.15), FOX * (1 + sq * 0.12));
+    }, () => { fox.position.copy(stand); Fl.foxM.scale.setScalar(FOX); fox.rotation.y = Math.atan2(hole.x - stand.x, hole.z - stand.z); dig(); });
   };
-  Fl.cleanRaid = function () { const a = A(); if (Fl.marks) Fl.marks.forEach(m => a.island.root.remove(m)); Fl.marks = null; };
+  Fl.cleanRaid = function () {
+    const a = A(), root = a.island.root;
+    if (Fl.marks) Fl.marks.forEach(m => root.remove(m)); Fl.marks = null;
+    if (Fl.fox) root.remove(Fl.fox); Fl.fox = Fl.foxM = null;
+    if (Fl.loot) Fl.loot.forEach(o => root.remove(o)); Fl.loot = null;
+  };
   Fl.pick = function (ndc) {
     const a = A(), isl = a.island;
     if (Fl.mode === 'raid' && Fl.marks) {
@@ -159,10 +244,14 @@
     SW.Audio.sfx('chest');
     const reveal = () => {
       const grid = h('div', { cls: 'grid', style: 'grid-template-columns:repeat(auto-fill,minmax(84px,1fr))' });
-      res.cards.forEach(x => {
-        const c = x.card, el = h('div', { cls: 'card', style: 'border-color:' + SW.RARITY[c.r].col }, [h('img', { src: SW.Symbols.cardUrl(c, 160), alt: '' }), x.isNew ? h('span', { cls: 'n', style: 'background:var(--jade)' }, L('NEU', 'NEW')) : null, h('span', { cls: 'cap' }, tx(c.name))]);
+      const anim = !a.set.reducedMotion, tm = [];
+      res.cards.forEach((x, i) => {
+        const c = x.card, el = h('div', { cls: 'card' + (anim ? ' flip' : '') + (c.r >= 2 ? ' rare' : ''), style: 'border-color:' + SW.RARITY[c.r].col + (anim ? ';animation-delay:' + (0.15 + i * 0.28) + 's' : '') }, [h('img', { src: SW.Symbols.cardUrl(c, 160), alt: '' }), x.isNew ? h('span', { cls: 'n', style: 'background:var(--jade)' }, L('NEU', 'NEW')) : null, h('span', { cls: 'cap' }, tx(c.name))]);
         grid.appendChild(el);
+        if (anim) tm.push(setTimeout(() => SW.Audio.sfx(c.r >= 2 ? 'win' : 'coin'), 300 + i * 280));
       });
+      // Tippen zeigt sofort alle Karten
+      if (anim) grid.addEventListener('click', () => { tm.forEach(clearTimeout); grid.querySelectorAll('.card.flip').forEach(e => { e.style.animationDelay = '0s'; }); });
       const albums = res.cards.filter(x => x.album).map(x => x.album);
       UI().dialog({ title: tx(SW.CHESTS[type].name), node: h('div', null, [grid, albums.length ? h('p', { cls: 'warn' }, L('Album komplett! ', 'Album complete! ') + UI().rwText(albums[0])) : null]), noClose: true,
         buttons: [{ label: L('Super!', 'Great!'), cls: 'gold', fn: () => { a.hideStage(); if (a.tut) a.tut.after('chest'); } }] });

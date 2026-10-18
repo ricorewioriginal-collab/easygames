@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "079bd7f763c6",
- "generated": "2026-10-18T18:54:36+02:00",
- "commit": "3ee1a556dc252802d097ac4c9f393eecc26488af",
+ "version": "6d07a864173e",
+ "generated": "2026-10-18T17:27:18+00:00",
+ "commit": "fd1cd10e41cf311151f21d8ffbfe4496609cd67d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5384,7 +5384,7 @@
   {
    "p": "games.js",
    "s": 26550,
-   "h": "619e0d1142e68a1cf0224c6f477ea9e3177c768c4eacc5d1a3a6ad3b89a05953"
+   "h": "749016a8d8806bebc3ab45385071fddc47956f0ca3e54e49cea5ed58f1ef9f1b"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6698,8 +6698,8 @@
   },
   {
    "p": "spinwelten/css/app.css",
-   "s": 29155,
-   "h": "ff8e9d2ae0360014b0568c184a31dc6827e11f478cf7e0227e96e3dd2a1c83c7"
+   "s": 29683,
+   "h": "d93c650318cdce4559a227ce5bef0d2ce0ab14c9442cd02583c70e123d92eb2f"
   },
   {
    "p": "spinwelten/css/minigames.css",
@@ -6848,8 +6848,8 @@
   },
   {
    "p": "spinwelten/js/main.js",
-   "s": 43995,
-   "h": "edcebdabc0c9964faf0152ce2ff08963822a4c13a6ffeb4886de80af1fb5c6a5"
+   "s": 44297,
+   "h": "50e542e386c3f611e5188b8c0c8d1efb1a13ff519ebaafdbd27ced3cc27d3f6f"
   },
   {
    "p": "spinwelten/js/net/lobby.js",
@@ -6873,8 +6873,8 @@
   },
   {
    "p": "spinwelten/js/render/characters.js",
-   "s": 11768,
-   "h": "cf77d63765ce54be88155c67ee84c248257b98820edc52f61ff5304b456edd96"
+   "s": 11770,
+   "h": "329ab4149fc4599d6f557e8cc0d45a6335b6ee6466780adb3d00ef64e8d347f9"
   },
   {
    "p": "spinwelten/js/render/details.js",
@@ -6883,8 +6883,8 @@
   },
   {
    "p": "spinwelten/js/render/machine.js",
-   "s": 15627,
-   "h": "933a27cda9b7d333e7c86cba623190ba333d6b14a89485059420ea21fc2e32c3"
+   "s": 17277,
+   "h": "d2b0b10d97f23ad781542fc5196971e442585e9f10151a95ddbacf7fee3804ff"
   },
   {
    "p": "spinwelten/js/render/models.js",
@@ -6903,18 +6903,18 @@
   },
   {
    "p": "spinwelten/js/render/vfx.js",
-   "s": 6319,
-   "h": "5a05ecad62e632753624425498be7d27d5caa66244ae73df25a9702a7b243217"
+   "s": 11126,
+   "h": "64e41677f8493961a0f51adcb8f8fd2a7152ce1efa122cba60a6620069b69681"
   },
   {
    "p": "spinwelten/js/render/world.js",
-   "s": 32190,
-   "h": "c2221df7712f0554a17261429adad4cfb2f0ba3203c3a3009b9dc197cce6adf1"
+   "s": 32754,
+   "h": "3a19322a10d57b2af60f1d2d2459f520235d9ee23f2c43767beda2ecd9f66e06"
   },
   {
    "p": "spinwelten/js/ui/flows.js",
-   "s": 16216,
-   "h": "a25830e122d9cb2afcb06c2ef8a1ee24df1a9466e9df61e5011807067c21d53f"
+   "s": 23577,
+   "h": "d9420bb6983b14b1feb8904c6bc3de6f46e2767d77da4c5e52fd40f6335dda63"
   },
   {
    "p": "spinwelten/js/ui/panels.js",
@@ -6944,7 +6944,7 @@
   {
    "p": "sync/catalog.json",
    "s": 114471,
-   "h": "a09b9e4b8b9dd945685636356df4c495065ac0d20e228a0a2e2c5fffbe713a6a"
+   "h": "a41be0c53e949985832a2ee2290458af1fff786853dcb50d1ef1acadfc29ddfd"
   },
   {
    "p": "taschi/card.svg",
