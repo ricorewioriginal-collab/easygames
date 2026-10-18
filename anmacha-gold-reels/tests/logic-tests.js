@@ -141,6 +141,31 @@ t('Nachdreh: Preis liegt über dem Erwartungswert, Walze ohne Sondersymbole', ()
   }
   L.setRandom(L.seeded(20261016));
 });
+t('Anubis: Wild dehnt sich aus, Star Fruits: Wilds laufen nach links', () => {
+  const an = L.compile(MACHINES.find(c => c.id === 'anubis')); an.luckyCfg.p = 0;
+  for (let i = 0; i < 3000; i++) { const b = L.playRound(an, 100).steps[0]; an.expandWild.forEach(r => { if (b.grid[r].includes(an.wild)) { assert(b.grid[r].every(v => v === an.wild)); } }); }
+  const sf = L.compile(MACHINES.find(c => c.id === 'star-fruits')); let n = 0;
+  for (let i = 0; i < 20000 && n < 20; i++) {
+    const r = L.playRound(sf, 100); if (!r.steps.some(s => s.type === 'freeStart')) continue; n++;
+    const fr = r.steps.filter(s => s.mode === 'free');
+    fr.forEach((s, k) => {
+      const wc = []; s.grid.forEach((col, x) => col.forEach((v, y) => { if (v === sf.wild) wc.push([x, y]); }));
+      assert.deepStrictEqual(s.walkNext, wc.filter(([x]) => x > 0).map(([x, y]) => [x - 1, y]));
+      if (k > 0) { const prev = fr[k - 1].walkNext.map(String).sort(); assert.deepStrictEqual((s.stuck || []).map(String).sort(), prev); prev.forEach(c => { const [x, y] = c.split(',').map(Number); assert.strictEqual(s.grid[x][y], sf.wild); }); }
+      assert.strictEqual(s.win, L.evaluate(sf, s.grid, 100, s.mult).win);
+    });
+  }
+  assert(n > 0, 'keine Freispiele bei Star Fruits');
+});
+t('Sonderspiel-Leiter und Sonderspiele', () => {
+  assert.strictEqual(L.ladderStart(99, 100), -1); assert.strictEqual(L.ladderStart(100, 100), 0); assert.strictEqual(L.ladderStart(799, 100), 2); assert.strictEqual(L.ladderStart(5000, 100), 3);
+  for (const c of MACHINES) {
+    const m = L.compile(c), r = L.specialRound(m, 100), fs = r.steps[0], fe = r.steps[r.steps.length - 1];
+    assert.strictEqual(fs.type, 'freeStart'); assert.strictEqual(fs.count, L.SPECIAL.count); assert.strictEqual(fs.ff, null); assert.strictEqual(fs.special, null);
+    assert.strictEqual(fe.type, 'freeEnd'); assert.strictEqual(r.total, fe.win);
+    r.steps.filter(s => s.mode === 'free').forEach(s => assert(s.mult >= L.SPECIAL.mult));
+  }
+});
 t('Bonusspiele: Wahl und Rad zahlen den angezeigten Betrag', () => {
   for (const id of ['pirate-pick', 'fortune-wheel', 'gold-reels']) {
     const m = L.compile(MACHINES.find(c => c.id === id)); let n = 0;

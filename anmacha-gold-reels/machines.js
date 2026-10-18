@@ -181,6 +181,21 @@
       freeFeature: { type: 'upgrade', order: ['T', 'J', 'Q', 'K'], extra: 1 },
       info: 'Das Auge ist Wild. 3 Pyramiden bringen 12 Freispiele. Jeder Freispiel mit Auge wertet das niedrigste Symbol auf (10 → B → D → K) und bringt einen Freispiel extra.' },
 
+    { id: 'anubis', title: 'Tempel des Anubis', scale: 0.52770, tag: '10 Linien · Expanding Wild · Upgrade-Freispiele', reels: 5, rows: 3, lines: 'l10',
+      cover: ['emoji:🐈‍⬛', 'pyramid', 'emoji:🐍'],
+      theme: { a: '#f5c542', b: '#14b8a6', c: '#b45309', bg: '#0c0a06', tile: ['#2a2010', '#0e0a04'] },
+      symbols: [
+        { id: 'cat', art: 'emoji:🐈‍⬛', w: 3, pay: { 2: 10, 3: 100, 4: 1000, 5: 5000 } },
+        { id: 'cobra', art: 'emoji:🐍', w: 4, pay: { 2: 5, 3: 40, 4: 400, 5: 2000 } },
+        { id: 'urn', art: 'emoji:⚱️', w: 5, pay: { 3: 30, 4: 100, 5: 750 } },
+        ...LET([7, 7, 8, 8, 8], true),
+        { id: 'wild', art: 'ew:🐺', w: [0, 1.2, 1.2, 1.2, 0], name: 'Anubis (Wild, dehnt sich aus)' },
+        { id: 'pyramid', w: 1.5, name: 'Pyramide (Scatter)' }
+      ],
+      wild: 'wild', expandWild: [1, 2, 3], scatter: { id: 'pyramid', pay: { 3: 2, 4: 20, 5: 200 }, free: { 3: 10, 4: 10, 5: 10 }, retrigger: 10 }, maxFree: 60,
+      freeFeature: { type: 'upgrade', order: ['T', 'J', 'Q', 'K'] },
+      info: 'Anubis ist Wild und dehnt sich auf den Walzen 2 bis 4 über die ganze Walze aus – im Grundspiel und in den Freispielen. 3 Pyramiden bringen 10 Freispiele. Jeder Freispiel mit Anubis wertet die niedrigsten Symbole auf (10 → B → D → K).' },
+
     { id: 'lady-luna', title: 'Lady Luna', scale: 0.44506, tag: '10 Linien · 15 Freispiele ×3', reels: 5, rows: 3, lines: 'l10',
       theme: { a: '#f0abfc', b: '#7c3aed', c: '#38bdf8', bg: '#120826', tile: ['#24104a', '#0e061e'] },
       symbols: [
@@ -264,7 +279,26 @@
         { id: 'star', w: 2, name: 'Stern (Scatter)' }
       ],
       wild: 'wild', scatter: { id: 'star', pay: { 3: 2, 4: 10, 5: 50 }, free: { 3: 10, 4: 10, 5: 10 }, retrigger: 5 }, freeMult: 2,
-      info: 'Der Joker ersetzt alle Früchte. 3 oder mehr Sterne lösen 10 Freispiele mit doppeltem Gewinn aus.' }
+      info: 'Der Joker ersetzt alle Früchte. 3 oder mehr Sterne lösen 10 Freispiele mit doppeltem Gewinn aus.' },
+
+    { id: 'star-fruits', title: 'Star Fruits', scale: 0.66194, tag: '20 Linien · Stern-Scatter · Walking Wilds', reels: 5, rows: 3, lines: 'l20',
+      cover: ['cherry', 'star', 'melon'],
+      theme: { a: '#facc15', b: '#22c55e', c: '#ef4444', bg: '#04140a', tile: ['#0d2a16', '#041008'] },
+      symbols: [
+        { id: 'seven', w: 3, pay: { 3: 100, 4: 500, 5: 2500 } },
+        { id: 'bell', w: 4, pay: { 3: 50, 4: 200, 5: 750 } },
+        { id: 'melon', w: 6, pay: { 3: 30, 4: 80, 5: 300 } },
+        { id: 'grapes', w: 6, pay: { 3: 30, 4: 80, 5: 300 } },
+        { id: 'plum', w: 8, pay: { 3: 15, 4: 40, 5: 150 } },
+        { id: 'orange', w: 8, pay: { 3: 15, 4: 40, 5: 150 } },
+        { id: 'lemon', w: 9, pay: { 3: 10, 4: 30, 5: 100 } },
+        { id: 'cherry', w: 9, pay: { 2: 5, 3: 10, 4: 30, 5: 100 } },
+        { id: 'wild', w: [0, 2, 2, 2, 2], name: 'Wild' },
+        { id: 'star', w: 2, name: 'Stern (Scatter)' }
+      ],
+      wild: 'wild', scatter: { id: 'star', pay: { 3: 2, 4: 10, 5: 50 }, free: { 3: 10, 4: 12, 5: 15 }, retrigger: 5 }, maxFree: 60,
+      freeFeature: { type: 'walk' },
+      info: 'Klassische Früchte mit Stern-Scatter: Sterne zahlen überall. 3 Sterne bringen 10 Freispiele (4: 12, 5: 15). In den Freispielen laufen Wilds: Jedes Wild bleibt stehen und wandert bei jedem Freispiel eine Walze nach links, bis es die Walzen verlässt.' }
   ];
 
   const api = { MACHINES };

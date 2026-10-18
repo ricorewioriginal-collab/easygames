@@ -195,6 +195,9 @@
     let vals = null;
     if (m.coin >= 0) { vals = g.map(col => col.map(v => (v === m.coin ? pickCoin(m.holdwin) : null))); }
     let expandReels = null;
+    if (m.expandWild) {                                       // Wild auf den Expand-Walzen füllt die ganze Walze
+      m.expandWild.forEach(r => { if (g[r].includes(m.wild) && !g[r].every(v => v === m.wild)) { g[r] = g[r].map(() => m.wild); (expandReels = expandReels || []).push(r); } });
+    }
     if (m.respin && !held) {                                  // Wild auf der Respin-Walze füllt die ganze Walze
       const wr = m.respin.reel;
       if (g[wr].includes(m.wild)) { g[wr] = g[wr].map(() => m.wild); expandReels = [wr]; }
@@ -265,28 +268,7 @@
       const b = m.bonus.type === 'wheel' ? wheelBonus(m, bet) : pickBonus(m, bet, base.bonusN);
       steps.push(b); total += b.win; if (b.free) fs += b.free;
     }
-    if (fs > 0) {
-      const special = m.book ? m.paying[randInt(m.paying.length)] : null, ff = m.ff;
-      steps.push({ type: 'freeStart', count: fs, special, ff: ff ? ff.type : null });
-      let played = 0, fwin = 0, mult = m.freeMult || 1; const max = m.maxFree || 100;
-      const fx = { up: 0, sticky: ff && ff.type === 'sticky' ? new Set() : null };
-      while (fs > 0 && played < max) {
-        fs--; played++;
-        const s = spinStep(m, bet, 'free', mult, special, null, fx);
-        if (s.free) fs = Math.min(fs + (m.scatter.retrigger || s.free), max - played);
-        if (ff) {
-          const wc = []; s.grid.forEach((col, r) => col.forEach((v, y) => { if (v === m.wild) wc.push([r, y]); }));
-          if (ff.type === 'upgrade' && wc.length && fx.up < m.upOrder.length - 1) {
-            fx.up++; s.upgrade = { level: fx.up, from: m.upOrder.slice(0, fx.up), to: m.upOrder[fx.up] };
-            if (ff.extra) { const add = Math.min(ff.extra, max - played - fs); fs += add; s.extra = add; }
-          }
-          if (ff.type === 'sticky') { const fresh = wc.filter(([r, y]) => !fx.sticky.has(r + ',' + y)); fresh.forEach(([r, y]) => fx.sticky.add(r + ',' + y)); s.newSticky = fresh; }
-          if (ff.type === 'multUp' && s.win > 0 && mult < ff.max) { mult = Math.min(ff.max, mult + (ff.step || 1)); s.nextMult = mult; }
-        }
-        s.freeLeft = fs; s.freeNo = played; steps.push(s); total += s.win; fwin += s.win;
-      }
-      steps.push({ type: 'freeEnd', played, win: fwin });
-    }
+    if (fs > 0) total += freeGames(m, bet, fs, steps);
     return { bet, steps, total };
   };
 
@@ -309,6 +291,40 @@
     const ev = evaluate(m, g, bet, 1);
     return Object.assign({ type: 'respin', mode: 'base', grid: g, vals: null, expandReels: null, held, mult: 1, coins: 0, bonusN: 0, stuck: null }, ev, { free: 0 });
   };
+
+  // Freispiele (auch für die Sonderspiele der Leiter: opt.mult, opt.plain = ohne Sondersymbol und Freispiel-Besonderheit)
+  function freeGames(m, bet, fs, steps, opt) {
+    opt = opt || {};
+    const special = m.book && !opt.plain ? m.paying[randInt(m.paying.length)] : null, ff = opt.plain ? null : m.ff;
+    steps.push({ type: 'freeStart', count: fs, special, ff: ff ? ff.type : null, mult: opt.mult || 0, title: opt.title || '' });
+    let played = 0, fwin = 0, mult = Math.max(opt.mult || 0, m.freeMult || 1); const max = m.maxFree || 100;
+    const fx = { up: 0, sticky: ff && (ff.type === 'sticky' || ff.type === 'walk') ? new Set() : null };
+    while (fs > 0 && played < max) {
+      fs--; played++;
+      const s = spinStep(m, bet, 'free', mult, special, null, fx);
+      if (s.free) fs = Math.min(fs + (m.scatter.retrigger || s.free), max - played);
+      if (ff) {
+        const wc = []; s.grid.forEach((col, r) => col.forEach((v, y) => { if (v === m.wild) wc.push([r, y]); }));
+        if (ff.type === 'upgrade' && wc.length && fx.up < m.upOrder.length - 1) {
+          fx.up++; s.upgrade = { level: fx.up, from: m.upOrder.slice(0, fx.up), to: m.upOrder[fx.up] };
+          if (ff.extra) { const add = Math.min(ff.extra, max - played - fs); fs += add; s.extra = add; }
+        }
+        if (ff.type === 'sticky') { const fresh = wc.filter(([r, y]) => !fx.sticky.has(r + ',' + y)); fresh.forEach(([r, y]) => fx.sticky.add(r + ',' + y)); s.newSticky = fresh; }
+        if (ff.type === 'walk') { s.walkNext = wc.filter(([r]) => r > 0).map(([r, y]) => [r - 1, y]); fx.sticky = new Set(s.walkNext.map(([r, y]) => r + ',' + y)); }
+        if (ff.type === 'multUp' && s.win > 0 && mult < ff.max) { mult = Math.min(ff.max, mult + (ff.step || 1)); s.nextMult = mult; }
+      }
+      s.freeLeft = fs; s.freeNo = played; steps.push(s); fwin += s.win;
+    }
+    steps.push({ type: 'freeEnd', played, win: fwin });
+    return fwin;
+  }
+  // Sonderspiele (oberste Sprosse der Leiter): eigene Runde aus Freispielen mit Multiplikator
+  L.SPECIAL = { count: 10, mult: 2 };
+  L.specialRound = (m, bet) => { const steps = []; const total = freeGames(m, bet, L.SPECIAL.count, steps, { mult: L.SPECIAL.mult, plain: true, title: 'SONDERSPIELE' }); return { bet, steps, total }; };
+  // Leiter: Sprossen in Vielfachen des Einsatzes; jede Stufe 50 % hoch, sonst alles weg. Ganz oben warten die Sonderspiele.
+  L.LADDER = [1, 2, 4, 8];
+  L.ladderStart = (win, bet) => { let i = -1; L.LADDER.forEach((x, k) => { if (win >= x * bet) i = k; }); return i; };
+  L.ladderStep = () => rand() < 0.5;
 
   // ---------- Karten ----------
   // Karte 0..51: Rang = c % 13 (0 = Ass … 12 = König), Farbe = c / 13 (0 ♠, 1 ♥, 2 ♦, 3 ♣)

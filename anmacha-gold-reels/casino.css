@@ -212,7 +212,15 @@ button:active:not(:disabled){transform:translateY(1px) scale(.98)}
 .ladder span{border-radius:8px;padding:2px;background:rgba(255,255,255,.06);font-weight:800;font-size:13px}
 .ladder span.on{background:var(--gold);color:#2a1700}
 .gmsg{min-height:22px;font-weight:800}
-.gamble .mbtns{margin-top:6px}.gamble .mbtns.suits{gap:6px}
+.gamble .mbtns{margin-top:6px}
+.pill.ladderbtn{background:linear-gradient(180deg,#34d399,#047857);border-color:#a7f3d0}
+.rungs{display:flex;flex-direction:column;gap:4px;width:min(260px,100%);margin:8px auto}
+.rung{border-radius:10px;padding:5px 8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);font:800 15px var(--font);transition:background .08s,transform .08s}
+.rung.sp{background:linear-gradient(90deg,rgba(250,204,21,.25),rgba(236,72,153,.25));color:#fde68a;font-size:13px}
+.rung.zero{color:#fca5a5}
+.rung.on{background:var(--gold);color:#2a1700;transform:scale(1.04)}
+.rung.hot{background:#fff;color:#111;box-shadow:0 0 18px #fff}
+.rung.sp.on{background:linear-gradient(90deg,#facc15,#ec4899);color:#fff}.gamble .mbtns.suits{gap:6px}
 .pill.suit{min-width:46px;padding:4px 10px;font-size:22px;line-height:1;background:linear-gradient(180deg,#fff,#d9d9e3);border-color:#fff}
 .pill.suit.r{color:#d61f2c}.pill.suit.b{color:#111}
 .ghist{display:flex;gap:4px;justify-content:center;margin-top:8px}
@@ -247,6 +255,7 @@ button:active:not(:disabled){transform:translateY(1px) scale(.98)}
   .gcard3{grid-column:1;grid-row:3/span 6}.gcard3 canvas{width:min(120px,30vh);height:min(120px,30vh)}
   .gamble .ladder,.gamble .gmsg,.gamble .mbtns,.gamble .ghist{grid-column:2}
   .gamble .mbtns{margin-top:4px}.gamble .pill{padding:6px 12px}.gamble .pill.suit{padding:3px 10px;font-size:19px}
+  .ladderg .rungs{grid-column:1;grid-row:3/span 3;width:200px;margin:0}.ladderg .rung{padding:2px 8px;font-size:13px}.ladderg .rung.sp{font-size:11px}
   .gamble .ladder{flex-direction:row;flex-wrap:wrap;width:auto;justify-content:center}
   .gamble .ladder span{flex:1 1 0;min-width:74px;font-size:12px;white-space:nowrap}
   .pick .sbox{width:min(720px,calc(100% - 20px))}
