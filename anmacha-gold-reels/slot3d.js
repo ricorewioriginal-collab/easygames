@@ -79,6 +79,7 @@
       this.tiles.set(key, c); return c;
     }
     key(sym, val, hot) {
+      if (sym === -2) return 'mystery';
       if (sym == null || sym < 0) return 'blank';
       const s = this.m.symbols[sym], art = s.art || s.id;
       if (sym === this.m.coin) return (art === 'nugget' ? 'nugget|' : 'coin|') + (val ? coinLabel(this.m, val, this.bet) : '') + (hot ? '|1' : '');
@@ -254,7 +255,10 @@
           if (st.type === 'spin' || st.type === 'respin') {
             if (st.mode === 'free') { this.setBanner(`FREISPIEL <b>${st.freeNo}</b> / ${st.freeNo + st.freeLeft}` + (st.mult > 1 ? ` · ×${st.mult}` : '') + (this.upLevel ? ' · ⬆ ' + this.upLabel : '')); this.drawMarquee(`FREISPIEL ${st.freeNo} / ${st.freeNo + st.freeLeft}`); }
             if (st.type === 'respin') this.setBanner('RESPIN – Wild bleibt stehen');
-            await this.animSpin(st); await this.showWins(st);
+            if (st.lucky) { await this.animSpin(st, { keys: st.lucky.pre.map((col, r) => col.map((v, y) => this.key(v, st.vals && st.vals[r][y]))) }); await this.playLucky(st); }
+            else await this.animSpin(st);
+            await this.showWins(st);
+            if (st.lucky) this.endLucky(st);
             if (st.type === 'respin') this.banner.hidden = true;
             if (st.mode === 'free') await this.freeExtras(st);
           }
@@ -332,6 +336,7 @@
       all.forEach(w => w.cells.forEach(c => cells.push(c)));
       if (st.scat && st.scat.amt) st.scat.cells.forEach(c => cells.push(c));
       if (st.expand) st.expand.reels.forEach(r => { for (let y = 0; y < m.rows; y++) cells.push([r, y]); });
+      if (st.lucky && st.lucky.drops) st.lucky.drops.forEach(d => cells.push([d[0], d[1]]));
       if (!st.win) { if (st.mode === 'free') await wait(250 * this.speed); return; }
       cells.forEach(c => this.flash(c[0], c[1]));
       this.drawLines(all);
@@ -374,6 +379,31 @@
       let i = 0; const list = st.wins;
       const show = () => { if (this.busy || this.dead) return this.clearWinShow(); this.clearFlash(); const w = list[i % list.length]; w.cells.forEach(c => this.flash(c[0], c[1])); this.drawLines([w]); i++; };
       if (list.length > 1) { show(); this.winCycle = setInterval(show, 1300); }
+    }
+
+    // ---------- Glücks-Features (zufällig im Grundspiel) ----------
+    async playLucky(st) {
+      const L0 = st.lucky, m = this.m, sp = this.speed, hot = s => this.key(s, null, true);
+      const T = { wildReel: ['WILD-WALZE', 'Ganze Walzen werden zum Wild!'], mystery: ['MYSTERY', 'Alle ?-Felder zeigen dasselbe Symbol!'], wildRain: ['WILD-REGEN', 'Wilds regnen auf die Walzen!'],
+        mult: ['MULTIPLIKATOR ×' + L0.x, `Dieser Dreh zählt ×${L0.x}!`], cash: ['GELDREGEN', 'Goldmünzen regnen auf die Walzen!'] }[L0.type];
+      const cell = (r, y, key) => { const k = new Array(m.rows).fill(null); k[y] = key; this.reels[r].setVisible(k); this.flash(r, y); };
+      this.party = true; this.drawMarquee(T[0]);
+      await this.app.featureIntro(T[0], `<p>${T[1]}</p>`, this.theme, { ms: 1800 });
+      if (this.dead) return;
+      if (L0.type === 'wildReel') for (const r of L0.reels) { for (let y = 0; y < m.rows; y++) cell(r, y, hot(m.wild)); sound.play('feature'); await wait(450 * sp); }
+      if (L0.type === 'wildRain') for (const [r, y] of L0.cells) { cell(r, y, hot(m.wild)); sound.play('lock'); await wait(300 * sp); }
+      if (L0.type === 'mystery') {
+        L0.cells.forEach(([r, y]) => this.flash(r, y)); sound.play('tease'); await wait(600 * sp);
+        for (const [r, y] of L0.cells) { cell(r, y, hot(L0.sym)); sound.play('lock'); await wait(170 * sp); }
+      }
+      if (L0.type === 'cash') for (const [r, y, v] of L0.drops) { this.setLockKey(r, y, 'coin|' + C.short(v, true) + '|1', true); sound.play('coin'); await wait(260 * sp); }
+      if (L0.type === 'mult') { sound.play('big'); this.setBanner(`MULTIPLIKATOR <b>×${L0.x}</b>`); }
+      await wait(350 * sp); this.clearFlash(); this.party = false;
+    }
+    endLucky(st) {
+      if (st.lucky.drops) st.lucky.drops.forEach(([r, y]) => { this.lock(r, y).visible = false; });
+      if (st.lucky.type === 'mult') this.banner.hidden = true;
+      this.drawMarquee('');
     }
 
     // ---------- Freispiele ----------
@@ -575,6 +605,7 @@
       }).join('');
       const lines = m.lines ? `${m.nLines} Gewinnlinien, von links nach rechts` : '243 Gewinnwege, von links nach rechts' + ' (Beträge je Weg)';
       C.modal(`<h2>${this.cfg.title}</h2><p class="muted">${lines} · Einsatz ${fmt(bet)}</p><div class="paytable">${rows}</div><p>${this.cfg.info}</p>
+        <p><b>Glücks-Features:</b> Bei jedem Dreh kann zufällig eines starten – jedes Mal ein anderes: ${L.luckyTypes(m).map(t => ({ wildReel: 'Wild-Walze', mystery: 'Mystery-Symbole', wildRain: 'Wild-Regen', mult: 'Multiplikator ×2 bis ×5', cash: 'Geldregen' })[t]).join(', ')}.</p>
         <p class="muted small">Nach einem Gewinn kannst du mit <b>RISIKO</b> auf Rot oder Schwarz setzen und den Gewinn verdoppeln. Theoretische Auszahlungsquote ca. 95 %. Nur Spielgeld.</p>`,
       { cls: 'wide', onOpen: box => box.querySelectorAll('canvas[data-art]').forEach(c => { const g = c.getContext('2d'); g.scale(64 / 200, 64 / 200); S.drawArt(g, c.dataset.art); }) });
     }

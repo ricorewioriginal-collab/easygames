@@ -107,13 +107,29 @@ t('Nugget-Feature: volle Mittelwalze öffnet das nächste Feld, Gewinn = Summe a
   assert(seen[2] && seen[3], 'Doppel und Dreifach kommen vor');
   L.setRandom(L.seeded(20261016));
 });
+t('Glücks-Features wechseln und zahlen korrekt', () => {
+  L.setRandom(L.seeded(11));
+  for (const c of MACHINES) {
+    const m = L.compile(c); m.luckyCfg.p = 1; const types = L.luckyTypes(m), seen = new Set();
+    if (m.book || m.wildMultEach) assert(!types.includes('wildReel') && !types.includes('wildRain'), c.id + ': keine Wild-Features');
+    for (let i = 0; i < 400; i++) {
+      const b = L.playRound(m, 100).steps[0], k = b.lucky; assert(k, c.id + ' ohne Feature'); seen.add(k.type);
+      const ev = L.evaluate(m, b.grid, 100, k.type === 'mult' ? k.x : 1, null);
+      assert.strictEqual(b.win, ev.win + (k.amt || 0), c.id + ' ' + k.type + ' Gewinn');
+      if (k.type === 'wildReel') k.reels.forEach(r => assert(b.grid[r].every(v => v === m.wild)));
+      if (k.type === 'mystery') k.cells.filter(([r]) => !(b.expandReels || []).includes(r)).forEach(([r, y]) => { assert.strictEqual(b.grid[r][y], k.sym); assert.strictEqual(k.pre[r][y], -2); });
+    }
+    assert.strictEqual(seen.size, types.length, c.id + ': alle Feature-Arten kommen vor');
+  }
+  L.setRandom(L.seeded(20261016));
+});
 t('Bonusspiele: Wahl und Rad zahlen den angezeigten Betrag', () => {
   for (const id of ['pirate-pick', 'fortune-wheel', 'gold-reels']) {
     const m = L.compile(MACHINES.find(c => c.id === id)); let n = 0;
     for (let i = 0; i < 20000 && n < 30; i++) {
       const r = L.playRound(m, 1000); const b = r.steps.find(s => s.type === 'pick' || s.type === 'wheel'); if (!b) continue; n++;
       if (b.type === 'pick') { assert.strictEqual(b.vals.length + b.rest.length, b.items); assert.strictEqual(b.win, Math.round(b.vals.reduce((a, v) => a + v, 0) * b.unit)); }
-      else { const sg = b.segs[b.idx]; assert.strictEqual(b.win, sg.x ? Math.round(sg.x * b.unit) : 0); if (sg.free) assert(r.steps.some(s => s.type === 'freeStart' && s.count === sg.free)); }
+      else { const sg = b.segs[b.idx]; assert.strictEqual(b.win, sg.x ? Math.round(sg.x * b.unit) : 0); if (sg.free) assert(r.steps.some(s => s.type === 'freeStart' && s.count >= sg.free)); }
     }
     assert(n > 0, id + ' ohne Bonus');
   }

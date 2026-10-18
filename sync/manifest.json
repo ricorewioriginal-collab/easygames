@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1ad811de537b",
- "generated": "2026-10-18T18:21:51+00:00",
- "commit": "ff935b434a9299d5397223abd0c9d172d2ba82ba",
+ "version": "7154724cbe35",
+ "generated": "2026-10-18T18:37:59+00:00",
+ "commit": "be9f8f233211cbf2ca6dcf9b7a6da7ccc76c598c",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1043,8 +1043,8 @@
   },
   {
    "p": "anmacha-gold-reels/logic.js",
-   "s": 20433,
-   "h": "2cbe35652e3c26602716fa3148bbf8256b20b2a2c2f2c0d993cfa24508cd88f9"
+   "s": 23290,
+   "h": "b78bd72c727468ec40ea7a986312b44af88d84a35fccf007780859754570508e"
   },
   {
    "p": "anmacha-gold-reels/logos/01.png",
@@ -1113,8 +1113,8 @@
   },
   {
    "p": "anmacha-gold-reels/machines.js",
-   "s": 19666,
-   "h": "fdbb8db4e410c60bc728f4d641e6dbf197d21a180c523103d81c5de25b7fe7d8"
+   "s": 19667,
+   "h": "1b2eda38755dd62120cb99417c9017f2e03e672234c77ce17237e8552ae6ec46"
   },
   {
    "p": "anmacha-gold-reels/manifest.webmanifest",
@@ -1128,8 +1128,8 @@
   },
   {
    "p": "anmacha-gold-reels/slot3d.js",
-   "s": 46891,
-   "h": "f0264a00a8151b0c32c095b0dbb70d4de35fa42e899083e4cd0da0d236daba0d"
+   "s": 49512,
+   "h": "c4fd75232333481ea5c36301231cf87a2ab69822fdaee4903a872b1942060e23"
   },
   {
    "p": "anmacha-gold-reels/sw.js",
@@ -1138,8 +1138,8 @@
   },
   {
    "p": "anmacha-gold-reels/symbols.js",
-   "s": 21206,
-   "h": "9fd8011bcd2dedf3a3ec3f5a89a49ae9d94905d2cee31ea98627691b0f0fec56"
+   "s": 21487,
+   "h": "6c1d7922e763a1fedefa0cab035daf8643a8e23d0390489a6376ada7f27feee3"
   },
   {
    "p": "anmacha-gold-reels/tables.js",
@@ -5398,8 +5398,8 @@
   },
   {
    "p": "games.js",
-   "s": 26715,
-   "h": "a410a4dac6d0ffc2f4075d5913b760fb60c6fe0bb4078eaffb06d54686ab561d"
+   "s": 26763,
+   "h": "e46fb96ea3cb686e60eef8cb02a847a819a4906f270080e9fbcdea9e3a97320c"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5558,8 +5558,8 @@
   },
   {
    "p": "guides.js",
-   "s": 74261,
-   "h": "f89fe1d00d7a4165d6e73fe202cca374d96efa0d174517df05155f291d114842"
+   "s": 74388,
+   "h": "195747b145fa9e35ec15324ffbdfa024b288bb97f6aeba9fb02c6227c170aea1"
   },
   {
    "p": "heute.html",
@@ -6958,8 +6958,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 115522,
-   "h": "0cb9c865d0d44fa7def03931c41c0ac4ebc66bb939480f617c92bc0adb1e88e4"
+   "s": 115697,
+   "h": "96ec7b31177b5860873a84602c5a77cdb1b4f477d0dd58459bcf744718b2eb25"
   },
   {
    "p": "taschi/card.svg",
