@@ -232,7 +232,9 @@
     }).catch(function (e) { lastErr = e.code === 'auth/popup-closed-by-user' ? '' : (e.message || 'Anmeldung fehlgeschlagen'); render(); });
   }
   function refresh() {   // nach einem Login/Logout durch anmacha-account.js: Zustand neu einlesen und abgleichen
-    user = null; first = true; baseRemote = null; lastErr = '';
+    first = true; baseRemote = null; lastErr = '';
+    if (user && !user.own && hasRt()) { render(); return sync(); }   // Firebase-Anmeldung bleibt bestehen (z. B. nach dem Tausch gegen das Konto-Token)
+    user = null;
     return loadSdk().then(function () { render(); return sync(); }).catch(function () { });
   }
   function signOut() {
@@ -277,7 +279,7 @@
   function pullLegacy(tok, name) {   // alter Stand aus Firestore (nur wenn der Server noch keinen hat)
     if (user && user.own) return Promise.resolve({});
     return fetch(fsUrl(name), { headers: { Authorization: 'Bearer ' + tok } }).then(function (r) {
-      if (r.status === 404 || r.status === 403) return {};
+      if (r.status === 404) return {};   // nur 404 heißt „nichts vorhanden“; alles andere (auch 403) bricht ab und wird später wiederholt
       if (!r.ok) throw new Error('Laden ' + r.status);
       return r.json().then(function (j) { return ungz(j.fields.d.stringValue).then(JSON.parse).catch(function () { return {}; }); });
     });
@@ -285,7 +287,7 @@
   function pull(tok, name, o) {
     name = name || url();
     return fetch(API + '?action=saves_get&game=' + encodeURIComponent(name), { headers: { Authorization: 'Bearer ' + tok } }).then(function (r) {
-      if (r.status === 404) { if (o) o.ver = ''; return pullLegacy(tok, name); }
+      if (r.status === 404) { if (o) o.ver = ''; return pullLegacy(tok, name).then(function (x) { if (o && Object.keys(x).length) o.legacy = true; return x; }); }   // legacy: alter Stand muss auf den Server geschrieben werden
       if (!r.ok) throw new Error('Laden ' + r.status);
       return r.json().then(function (j) { if (o) o.ver = j.ver || ''; return ungz(j.d).then(JSON.parse).catch(function () { return {}; }); });
     });
@@ -350,7 +352,7 @@
           saveMeta();
           lastErr = ''; lastOk = Date.now();
           return Promise.all(writes).then(function () {
-            if (!dirty) { baseRemote = merged; return null; }
+            if (!dirty && !vinfo.legacy) { baseRemote = merged; return null; }
             return push(tok, merged, keep, undefined, baseVer).then(function (ver) { baseRemote = merged; baseVer = ver; });
           });
         }).then(function () {

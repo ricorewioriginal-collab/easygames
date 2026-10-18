@@ -160,12 +160,13 @@
       else if (b.dataset.amr === 'out') logout();
       else if (b.dataset.amr === 'consent' && root.RRWConsent) root.RRWConsent.open();
     });
+    var tk0 = token();   // Antwort auf eine ältere Anfrage darf ein inzwischen neu ausgestelltes Konto nicht löschen
     settings().then(function (c) {
       if (!c.enabled) { el.hidden = true; return; }
       return get([o.subject]).then(function (j) {
         m.agg = (j.items || {})[o.subject] || { count: 0, avg: 0 }; m.mine = ((j.mine || {})[o.subject]) || 0;
         if (j.user) { cfg.user = j.user; store(USR, JSON.stringify(j.user)); }
-        else if (token()) { store(TOK, null); store(USR, null); cfg.user = null; m.mine = 0; }   // Token abgelaufen oder Konto gesperrt
+        else if (token() && token() === tk0) { store(TOK, null); store(USR, null); cfg.user = null; m.mine = 0; }   // Token abgelaufen oder Konto gesperrt
         cache[o.subject] = m.agg; draw(m);
       });
     });

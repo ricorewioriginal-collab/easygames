@@ -37,8 +37,8 @@
   function fbHost() { return /(^|\.)github\.io$|(^|\.)ricorewi-radio\.de$/.test(HOST); }
   function emit() { listeners.forEach(function (f) { try { f(user()); } catch (e) { } }); mounts.forEach(draw); try { root.dispatchEvent(new Event('anmacha-account-changed')); } catch (e) { } }
 
-  function setSession(t, u, fromParent) {
-    if (!fromParent) toParent(t, u);
+  function setSession(t, u, fromParent, silent) {
+    if (!fromParent && !silent) toParent(t, u);   // nur nach einer Anmeldung in diesem Fenster, nie beim stillen Tausch einer bestehenden Anmeldung
     store(TOK, t); store(USR, JSON.stringify({ name: u.name || 'Spieler', picture: u.picture || '' })); store(ON, '1');
     lastErr = ''; emit();
     var c = cloud(); if (c && c.refresh) c.refresh();
@@ -53,7 +53,7 @@
     var c = cloud(); if (!c || !c.account) return Promise.resolve(false);
     return c.account().then(function (a) {
       if (!a || !a.token) return false;
-      return post('account_firebase', { idToken: a.token }).then(function (j) { if (j.status === 'ok' && j.token) { setSession(j.token, j.user || { name: a.name }); return true; } return false; });
+      return post('account_firebase', { idToken: a.token }).then(function (j) { if (j.status === 'ok' && j.token) { setSession(j.token, j.user || { name: a.name }, false, true); return true; } return false; });
     }).catch(function () { return false; });
   }
   // Fenster mit der Anmelde-Seite; Antwort nur von ricorewi-radio.de und nur im Fenster, das wir geöffnet haben
