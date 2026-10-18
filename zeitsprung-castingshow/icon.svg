@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ZEITSPRUNG CASTINGSHOW">
+ <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#5a1a6e"/><stop offset=".55" stop-color="#2a0c42"/><stop offset="1" stop-color="#12051f"/></linearGradient><linearGradient id="gold" x2="1" y2="1"><stop stop-color="#fff3a0"/><stop offset=".5" stop-color="#ffc36b"/><stop offset="1" stop-color="#ff5fae"/></linearGradient><linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff6c8" stop-opacity=".55"/><stop offset="1" stop-color="#fff6c8" stop-opacity="0"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="13"/></filter></defs>
+ <rect x="8" y="8" width="496" height="496" rx="105" fill="url(#bg)" stroke="#ff5fae" stroke-width="10"/>
+ <path d="M200 30h112l90 360H110z" fill="url(#beam)"/>
+ <circle cx="256" cy="190" r="120" fill="#ff5fae" opacity=".3" filter="url(#glow)"/>
+ <rect x="196" y="78" width="120" height="200" rx="60" fill="#2a1240" stroke="url(#gold)" stroke-width="16"/>
+ <g stroke="#8fe7ff" stroke-width="7" opacity=".85"><path d="M212 130h88M206 170h100M206 210h100M212 250h88"/></g>
+ <path d="M166 226c0 60 40 100 90 100s90-40 90-100" fill="none" stroke="url(#gold)" stroke-width="14" stroke-linecap="round"/>
+ <path d="M256 326v52M206 384h100" stroke="url(#gold)" stroke-width="14" stroke-linecap="round"/>
+ <g fill="#ffd37c"><path d="M92 120l8 18 20 2-15 13 5 20-18-11-18 11 5-20-15-13 20-2z"/><path d="M420 96l6 14 15 1-11 10 4 15-14-8-14 8 4-15-11-10 15-1z"/></g>
+ <text x="256" y="470" text-anchor="middle" font-family="Impact,Arial Black,sans-serif" font-size="51" font-weight="900" letter-spacing="5" fill="url(#gold)">CASTING</text>
+</svg>

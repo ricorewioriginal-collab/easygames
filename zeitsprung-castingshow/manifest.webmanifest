@@ -1,0 +1,46 @@
+{
+  "id": "./",
+  "name": "ZEITSPRUNG CASTINGSHOW – Die große Castingshow-Quizshow",
+  "short_name": "ZEITSPRUNG CASTINGSHOW",
+  "description": "Moderierte 3D-Quizshow rund um Castingshows: DSDS, Das Supertalent, The Voice, Popstars und internationale Formate mit Siegersongs, Auftritten und TV-Multiplayer.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1a0a2a",
+  "theme_color": "#2a1240",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "../pwa-icons/zeitsprung-castingshow-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../pwa-icons/zeitsprung-castingshow-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../pwa-icons/zeitsprung-castingshow-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "./card.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "ZEITSPRUNG CASTINGSHOW Live-Castingshow"
+    }
+  ]
+}

@@ -391,6 +391,37 @@
    }
   },
   {
+   "id": "zeitsprung-castingshow",
+   "title": "ZEITSPRUNG CASTINGSHOW",
+   "desc": "Moderierte 3D-Castingshow-Quizshow mit Vito nach dem Zeitstrahl-Prinzip: 265 Show-Momente und 1247 Fragen zu DSDS (alle Sieger und Top 10), Das Supertalent, The Voice, Popstars, GNTM, Idol, X Factor und Got Talent – auch abgesetzte Shows. Dazu 31 YouTube-Videos (Castings, Auftritte, Siegersongs), 44 Siegersongs über Deezer und 31 Bildrätsel. A–D-Jahreswahl oder Zeitstrahl, TV-Modus und Handy-Controller per WR-Code/PIN, Google-Speicherung und App-Installation.",
+   "icon": "🎤",
+   "img": "zeitsprung-castingshow/card.png",
+   "bg": "linear-gradient(145deg,#2a0c42,#a0287a 55%,#ffd37c)",
+   "glow": "rgba(255,95,174,.5)",
+   "path": "zeitsprung-castingshow/",
+   "modes": {
+    "pad": true,
+    "online": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "ZEITSPRUNG CASTINGSHOW funktioniert wie Hitster, nur mit Castingshows: Jeder Spieler startet mit einem Show-Moment auf seinem Zeitstrahl. In Zeitstrahlrunden ordnest du einen neuen Moment ein – zum Beispiel einen Staffelsieg bei DSDS, Das Supertalent, The Voice oder American Idol –, entweder per Jahreswahl aus A–D oder als Profi direkt in die passende Lücke. Zu vielen Momenten gibt es ein YouTube-Video (Casting, Auftritt, Siegersong) oder den Siegersong über Deezer. Dazwischen kommen Quizfragen zu Gewinnern, Top-10-Kandidaten, Jury, Coaches und Moderatoren, „Was war zuerst?“-Runden, Songrunden („Aus welcher Show stammt dieser Siegersong?“) und Bildrätsel. Jede richtige Antwort bringt einen Punkt, wer zuerst 8 Punkte hat, gewinnt. Im TV-Modus verbinden sich bis zu vier Handys per WR-Code und PIN.",
+    "steuerung": [
+     "Maus/Touch: Antwort A–D oder Lücke im Zeitstrahl antippen",
+     "Tastatur: A–D bzw. 1–4 für Antworten, 1–9 für Lücken im Zeitstrahl",
+     "▶ Video / ♫ Song startet die Medien zum Moment, ↻ wählt einen anderen Moment",
+     "TV-Modus: Handys scannen den QR-Code und geben die PIN ein"
+    ]
+   },
+   "size": 284089,
+   "files": 17,
+   "offline": true,
+   "cloud": {
+    "game": "zeitsprung-castingshow",
+    "prefix": "zc-save-v1"
+   }
+  },
+  {
    "id": "mimori",
    "title": "Mimori – Dein 3D-Haustier",
    "desc": "Mimori: große interaktive 3D-Wohnwelt mit Raumwechsel ganz oben und fünf Live-Statuswerten, 20 stylbaren Accessoires und 24 ausbaubaren Möbeln. Vier Tierarten, individuelle Fellfarben und drei Varianten, Hochzeit mit bis zu drei Partnern samt sichtbaren 3D-Ehepartnern, zwölf 3D-Räume und 13 echte laut.fm-Streams im Wohnzimmer. Pflege, fünf Minigames, Google-Speicherung und Offline-PWA.",
