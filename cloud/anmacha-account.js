@@ -157,7 +157,7 @@
   doc.addEventListener('click', function (e) { mounts.forEach(function (m) { if (m.open && !m.el.contains(e.target)) { m.open = false; draw(m); } }); });
   doc.addEventListener('keydown', function (e) { if (e.key === 'Escape') mounts.forEach(function (m) { if (m.open) { m.open = false; draw(m); var b = m.el.querySelector('.eg-acc-b'); if (b) b.focus(); } }); });
   // Fenster in anderen Tabs: Konto-Wechsel übernehmen
-  root.addEventListener('storage', function (e) { if (e.key === TOK || e.key === USR) emit(); });
+  root.addEventListener('storage', function (e) { if (e.key === TOK || e.key === USR) { emit(); var c = cloud(); if (c && c.refresh && e.key === TOK) c.refresh(); } });   // anderer Tab: Konto gewechselt → Cloud-Zugang neu aufbauen
   root.addEventListener('anmacha-account', function () { if (!token()) toParent(''); emit(); });
   root.addEventListener('anmacha-cloud-state', function () { mounts.forEach(draw); });
   if (framed) {   // Konto der einbettenden Seite übernehmen (easygames.js merkt es sich dort und gibt es an alle eingebetteten Spiele weiter)

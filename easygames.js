@@ -358,7 +358,9 @@
   // und gibt es an alle easygames-iframes weiter; neue iframes bekommen es beim Start. So genügt eine Anmeldung je Seite, auch wenn der Browser Speicher in iframes trennt.
   (function () {
     var K = 'anmacha-embed-account';
-    function frames() { return [].slice.call(document.querySelectorAll('iframe')); }
+    var HOME = new URL(base).origin;
+    // nur iframes von easygames selbst (nie fremde Werbe-/Video-iframes der Seite)
+    function frames() { return [].slice.call(document.querySelectorAll('iframe')).filter(function (f) { try { return new URL(f.src, location.href).origin === HOME; } catch (e) { return false; } }); }
     function send(f, d) { try { f.contentWindow.postMessage(d, new URL(f.src, location.href).origin); } catch (e) { } }
     function get() {   // Konto der einbettenden Seite: eigener Login-Knopf (anmacha-account.js im Kopf der Seite) hat Vorrang, sonst das gemerkte Konto
       var A = window.AnMaChaAccount, t = A && A.token && A.token(), u = t && A.user && A.user();
