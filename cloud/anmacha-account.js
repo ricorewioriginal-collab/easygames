@@ -147,11 +147,22 @@
     host.appendChild(menu);
     if (lastErr && !u) { var er = el('div', 'eg-acc-err', lastErr); er.style.cssText = 'position:absolute;right:0;top:calc(100% + 6px);width:240px;background:#141a2b;border-radius:10px;z-index:2147482000'; host.appendChild(er); }
   }
+  // Einheitliche Punkte (überall gleich): Konto, Profil, Erfolge, Ranglisten, Heute, Chat, Sichern, Fehler melden. base = Adresse von easygames (leer = diese Seite).
+  var HOME = 'https://ricorewioriginal-collab.github.io/easygames/';
+  function standardItems(base) {
+    var foreign = !!base && base.indexOf(root.location.origin + '/') !== 0, eg = function (p, icon, label) {
+      return { icon: icon, label: label, href: base + p + '.html', blank: foreign, fn: root.EasyGames && root.EasyGames.open && foreign ? function () { root.EasyGames.open(p); } : null };
+    };
+    return [eg('konto', '👤', 'Konto & Übersicht'), eg('profil', '🙂', 'Profil & Freunde'), eg('erfolge', '🏅', 'Meine Erfolge'), eg('ranglisten', '🏆', 'Ranglisten'), eg('heute', '🎯', 'Heute'), eg('chat', '💬', 'Chat'), '-',
+      { icon: '☁', label: 'Spielstände jetzt sichern', fn: function () { var c = cloud(); if (c && c.sync) c.sync(false, true); } }, eg('bug', '🐞', 'Fehler melden')];
+  }
+  // mount(ziel, { base: easygames-Adresse, items: eigene Punkte (stehen oben, z. B. „Mein Radio“) })
   function mount(target, o) {
     css(); o = o || {};
     var host = typeof target === 'string' ? doc.querySelector(target) : target;
     if (!host) return null;
-    var m = { el: host, items: o.items || [], open: false };
+    var own = o.items || [], std = standardItems(o.base == null ? HOME : o.base);
+    var m = { el: host, items: own.length ? own.concat(['-'], std) : std, open: false };
     host.classList.add('eg-acc'); mounts.push(m); draw(m); return m;
   }
   doc.addEventListener('click', function (e) { mounts.forEach(function (m) { if (m.open && !m.el.contains(e.target)) { m.open = false; draw(m); } }); });
@@ -176,5 +187,5 @@
   }, 1500);
 
   function adopt(t, u) { if (t && t !== token()) setSession(t, u || {}, true); }   // Konto von außen übernehmen (einbettende Seite ↔ iframe)
-  root.AnMaChaAccount = { adopt: adopt, mount: mount, user: user, token: token, login: login, logout: logout, onChange: onChange, api: API };
+  root.AnMaChaAccount = { standardItems: standardItems, adopt: adopt, mount: mount, user: user, token: token, login: login, logout: logout, onChange: onChange, api: API };
 })(window);

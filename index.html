@@ -31,13 +31,13 @@
 <meta name="twitter:image" content="https://ricorewioriginal-collab.github.io/easygames/share/portal.jpg">
 <style>
   *{box-sizing:border-box}
-  :root{--cy:#00E5FF;--ma:#FF2D95;--pu:#8B5CF6}
-  html,body{margin:0;min-height:100%;background:#080B12;color:#fff;
+  :root{--cy:#00E5FF;--ma:#FF2D95;--pu:#8B5CF6;--bg:#080B12}
+  html,body{margin:0;min-height:100%;background:var(--bg);color:#fff;
     font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.45}
   body{background:
     radial-gradient(900px 500px at 10% -10%,rgba(0,229,255,.18),transparent 60%),
     radial-gradient(800px 500px at 100% 0%,rgba(255,45,149,.16),transparent 60%),
-    radial-gradient(800px 600px at 50% 110%,rgba(139,92,246,.18),transparent 60%),#080B12;
+    radial-gradient(800px 600px at 50% 110%,rgba(139,92,246,.18),transparent 60%),var(--bg);
     background-attachment:fixed;min-height:100vh}
   button{font:inherit;color:inherit;cursor:pointer}
   .hidden{display:none!important}
@@ -243,6 +243,7 @@
   .row{display:flex;gap:8px;flex-wrap:wrap}
   body.embed-mode:not(.portal-mode) .hide-embed{display:none}
   body.portal-mode header.hide-embed,body.portal-mode #lib,body.portal-mode #libBtn,body.portal-mode #more,body.portal-mode footer.hide-embed,body.portal-mode .tvhint,body.portal-mode #menuBtn,body.portal-mode .topbar .brandrow{display:none!important}
+  body.portal-mode .acct{display:none}   /* eingebettet als Spieleseite: Login steckt im Kopf der einbettenden Seite */
   body.portal-mode .stick{margin-top:calc(-12px - env(safe-area-inset-top))}
   body.embed-mode main{padding-top:12px}
 
@@ -509,6 +510,21 @@
   </div>
 </div>
 
+<script>
+// Anpassung an die einbettende Seite: ?bg=%23101522&cy=…&ma=…&pu=… (Hex) und ?flat=1 (ohne Farbverläufe im Hintergrund); auch live per postMessage {type:'easygames:theme', bg, cy, ma, pu, flat}
+(function () {
+  var HEX = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i;
+  function apply(o) {
+    var r = document.documentElement.style;
+    ['bg', 'cy', 'ma', 'pu'].forEach(function (k) { var v = o && o[k]; if (typeof v === 'string' && HEX.test(v.trim())) r.setProperty('--' + k, '#' + v.trim().replace('#', '')); });
+    if (o && o.flat != null) document.body.style.backgroundImage = o.flat && o.flat !== '0' && o.flat !== false ? 'none' : '';
+  }
+  var q = new URLSearchParams(location.search), o = {}; ['bg', 'cy', 'ma', 'pu', 'flat'].forEach(function (k) { if (q.has(k)) o[k] = q.get(k); });
+  function init() { apply(o); }
+  if (document.body) init(); else document.addEventListener('DOMContentLoaded', init);
+  window.addEventListener('message', function (e) { var d = e.data; if (e.source === window.parent && d && d.type === 'easygames:theme') apply(d); });
+})();
+</script>
 <script src="device.js"></script>
 <script src="games.js"></script>
 <script src="modes.js"></script>
@@ -1070,18 +1086,27 @@ if (start >= 0) openGame(start, true);
 </script>
 <script>
 // Ein Login für alles (Google): Anmelden-Knopf oben, danach Menü mit allen persönlichen Funktionen
+// Spieleliste live: neue/geänderte Spiele (neue Version der Spieleliste auf dem Server) erscheinen ohne Zutun – die Seite lädt sich neu, sobald kein Spiel läuft
+(function () {
+  let base = null, t = 0;
+  async function ver() { try { const r = await fetch('sync/manifest.json?_=' + Date.now(), { cache: 'no-store' }); return r.ok ? ((await r.json()).version || '') : ''; } catch (e) { return ''; } }
+  async function check() {
+    if (document.hidden) return;
+    const v = await ver(); if (!v) return;
+    if (base === null) { base = v; return; }
+    if (v === base) return;
+    if (typeof cur !== 'undefined' && cur >= 0) { t = setTimeout(check, 30000); return; }   // läuft ein Spiel: später erneut
+    try { sessionStorage.setItem('eg-live-reload', '1'); } catch (e) {}
+    location.reload();
+  }
+  check(); setInterval(check, 90000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
+})();
 window.addEventListener('DOMContentLoaded', () => {
   if (!window.AnMaChaAccount) return;
   const C = () => window.AnMaChaCloud;
-  AnMaChaAccount.mount('#acct', { items: [
-    { icon: '👤', label: 'Konto & Übersicht', href: 'konto.html' },
-    { icon: '🙂', label: 'Profil & Freunde', href: 'profil.html' },
-    { icon: '🏅', label: 'Meine Erfolge', href: 'erfolge.html' },
-    { icon: '🏆', label: 'Ranglisten', href: 'ranglisten.html' },
-    { icon: '♥', label: 'Favoriten (Spiele)', fn: () => { const b = $('favBtn'); if (b && b.getAttribute('aria-pressed') !== 'true') b.click(); } },
-    '-',
-    { icon: '☁', label: 'Spielstände jetzt sichern', fn: () => { if (C() && C().sync) C().sync(false, true); } },
-    { icon: '🐞', label: 'Fehler melden', href: 'bug.html' }
+  AnMaChaAccount.mount('#acct', { base: '', items: [
+    { icon: '♥', label: 'Favoriten (Spiele)', fn: () => { const b = $('favBtn'); if (b && b.getAttribute('aria-pressed') !== 'true') b.click(); } }
   ] });
 });
 </script>
