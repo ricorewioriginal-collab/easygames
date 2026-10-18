@@ -12,7 +12,7 @@
   ];
 
   const MACHINES = [
-    { id: 'gold-reels', title: 'AnMaCha Gold Reels', scale: 0.91346, tag: 'Sender-Logos · 20 Linien · Freispiele', reels: 5, rows: 3, lines: 'l20', cover: ['logo:04', 'seven', 'logo:09'],
+    { id: 'gold-reels', title: 'AnMaCha Gold Reels', scale: 0.89815, tag: 'Sender-Logos · 20 Linien · Freispiele', reels: 5, rows: 3, lines: 'l20', cover: ['logo:04', 'seven', 'logo:09'],
       theme: { a: '#ffb11f', b: '#ff2d95', c: '#8b5cf6', bg: '#170a2e', tile: ['#241a46', '#120c26'] },
       symbols: [
         { id: 'seven', w: 3, pay: { 3: 137, 4: 685, 5: 3425 } },
@@ -33,7 +33,7 @@
         prizes: [[30, 2], [25, 3], [18, 5], [12, 8], [8, 10], [4, 15], [2, 25], [0.8, 50], [0.2, 100]] },
       info: 'Wild ersetzt alle Symbole außer Bonus und Mikrofon. 3 oder mehr Bonus-Symbole lösen 10 Freispiele mit doppeltem Gewinn aus (erneut auslösbar: +5). 3 Mikrofone auf Walze 1, 3 und 5 starten den Studio-Bonus: Wähle 3 von 12 Sender-Logos, jedes verbirgt einen Gewinn.' },
 
-    { id: 'nugget-rush', title: 'Nugget Rush', scale: 1.34503, tag: '20 Linien · Nugget-Feature · bis zu 3 Felder', reels: 5, rows: 3, lines: 'l20', cover: ['tnt', 'nugget', 'gem:#ffd24a'],
+    { id: 'nugget-rush', title: 'Nugget Rush', scale: 1.31948, tag: '20 Linien · Nugget-Feature · bis zu 3 Felder', reels: 5, rows: 3, lines: 'l20', cover: ['tnt', 'nugget', 'gem:#ffd24a'],
       theme: { a: '#ffc53d', b: '#d9480f', c: '#f59e0b', bg: '#120b04', tile: ['#2b1d0e', '#110a03'] },
       symbols: [
         { id: 'gemGold', art: 'gem:#ffd24a', w: 3, pay: { 3: 50, 4: 200, 5: 1000 } },
@@ -50,7 +50,7 @@
         jackpots: { MINI: 10, MINOR: 25, MAXI: 75, SUPER: 250, GRAND: 1000 } },
       info: '5 oder mehr Goldnuggets starten das Nugget-Feature: Nuggets bleiben liegen, 3 Respins, jedes neue Nugget setzt sie auf 3 zurück. Ist die mittlere Walze voll, öffnet sich ein zweites Feld (DOPPEL), dort genauso ein drittes (DREIFACH). Am Ende zählen alle Nuggets; sind alle drei Felder voll, gibt es den GRAND.' },
 
-    { id: 'fruit-blaze', title: 'Fruit Blaze', scale: 0.87917, tag: 'Klassik · 5 Linien · Früchte', reels: 5, rows: 3, lines: 'l5',
+    { id: 'fruit-blaze', title: 'Fruit Blaze', scale: 0.86088, tag: 'Klassik · 5 Linien · Früchte', reels: 5, rows: 3, lines: 'l5',
       theme: { a: '#ff5a1f', b: '#ffd23f', c: '#ff1f4b', bg: '#2a0606', tile: ['#3a0d0d', '#1a0404'] },
       symbols: [
         { id: 'seven', w: 3, pay: { 3: 100, 4: 1000, 5: 5000 } },
@@ -65,7 +65,7 @@
       scatter: { id: 'star', pay: { 3: 2, 4: 10, 5: 50 } },
       info: 'Klassischer Früchte-Slot ohne Wild: Kirschen zahlen schon ab 2. Sterne zahlen überall auf den Walzen.' },
 
-    { id: 'diamond-7', title: 'Triple Diamond 7', scale: 0.38000, tag: '3 Walzen · Diamant-Multiplikator', reels: 3, rows: 3, lines: 'l5x3',
+    { id: 'diamond-7', title: 'Triple Diamond 7', scale: 0.37208, tag: '3 Walzen · Diamant-Multiplikator', reels: 3, rows: 3, lines: 'l5x3',
       theme: { a: '#3be0ff', b: '#a855f7', c: '#ff2d55', bg: '#08122e', tile: ['#14214a', '#0a1028'] },
       symbols: [
         { id: 'seven', w: 3, pay: { 3: 100 } },
@@ -79,7 +79,7 @@
       wild: 'wild', wildMult: 2, wildMultEach: true,
       info: 'Der Diamant ist Wild und verdoppelt jeden Liniengewinn, an dem er beteiligt ist (zwei Diamanten = ×4). 3 Diamanten zahlen den Höchstgewinn.' },
 
-    { id: 'book-of-funk', title: 'Book of Funk', scale: 0.81752, tag: '10 Linien · Buch-Freispiele', reels: 5, rows: 3, lines: 'l10',
+    { id: 'book-of-funk', title: 'Book of Funk', scale: 0.80045, tag: '10 Linien · Buch-Freispiele', reels: 5, rows: 3, lines: 'l10',
       theme: { a: '#ffcc33', b: '#c2410c', c: '#7c3aed', bg: '#1c1006', tile: ['#2e1d0c', '#140a03'] },
       symbols: [
         { id: 'mic', w: 2, pay: { 2: 10, 3: 100, 4: 1000, 5: 5000 } },
@@ -92,7 +92,7 @@
       wild: 'book', book: true, scatter: { id: 'book', pay: { 3: 2, 4: 20, 5: 200 }, free: { 3: 10, 4: 10, 5: 10 }, retrigger: 10 },
       info: 'Das Buch ist Wild und Scatter zugleich. 3 Bücher lösen 10 Freispiele aus: Ein zufälliges Sondersymbol dehnt sich dann über ganze Walzen aus und zahlt auf allen Linien.' },
 
-    { id: 'golden-dragon', title: 'Golden Dragon', scale: 1.78738, tag: '243 Wege · Freispiele ×3', reels: 5, rows: 3, lines: 'ways', unit: 50,
+    { id: 'golden-dragon', title: 'Golden Dragon', scale: 1.74409, tag: '243 Wege · Freispiele ×3', reels: 5, rows: 3, lines: 'ways', unit: 50,
       theme: { a: '#ffd24a', b: '#e11d48', c: '#16a34a', bg: '#2a0508', tile: ['#3d0b10', '#1c0306'] },
       symbols: [
         { id: 'dragon', art: 'emoji:🐉', w: 3, pay: { 3: 50, 4: 150, 5: 500 } },
@@ -107,7 +107,7 @@
       wild: 'wild', scatter: { id: 'gong', pay: { 3: 2, 4: 10, 5: 50 }, free: { 3: 8, 4: 12, 5: 20 }, retrigger: 8 }, freeMult: 3,
       info: '243 Gewinnwege: gleiche Symbole auf benachbarten Walzen ab links zahlen, egal in welcher Reihe. 3 oder mehr Gongs bringen 8 bis 20 Freispiele mit dreifachem Gewinn.' },
 
-    { id: 'gold-mine', title: 'Gold Mine Hold & Win', scale: 1.62926, tag: '25 Linien · Hold & Win · Jackpots', reels: 5, rows: 3, lines: 'l25',
+    { id: 'gold-mine', title: 'Gold Mine Hold & Win', scale: 1.59376, tag: '25 Linien · Hold & Win · Jackpots', reels: 5, rows: 3, lines: 'l25',
       theme: { a: '#fbbf24', b: '#b45309', c: '#38bdf8', bg: '#140d05', tile: ['#2a1c0c', '#120a03'] },
       symbols: [
         { id: 'gemBlue', art: 'gem:#3be0ff', w: 3, pay: { 3: 50, 4: 200, 5: 1000 } },
@@ -124,7 +124,7 @@
         jackpots: { MINI: 20, MINOR: 50, MAJOR: 200, GRAND: 1000 } },
       info: '6 oder mehr Goldmünzen starten Hold & Win: Die Münzen bleiben liegen, du hast 3 Respins, jede neue Münze setzt sie auf 3 zurück. Am Ende zählen alle Münzwerte; ein volles Feld bringt den GRAND-Jackpot.' },
 
-    { id: 'neon-40', title: 'Neon 40 Hot', scale: 1.37140, tag: '4 Reihen · 40 Linien · Klassik', reels: 5, rows: 4, lines: 'l40', minBet: 40,
+    { id: 'neon-40', title: 'Neon 40 Hot', scale: 1.34246, tag: '4 Reihen · 40 Linien · Klassik', reels: 5, rows: 4, lines: 'l40', minBet: 40,
       theme: { a: '#ff2bd6', b: '#22d3ee', c: '#a3e635', bg: '#0b0420', tile: ['#1b0d3a', '#0a041a'] },
       symbols: [
         { id: 'seven', w: 3, pay: { 3: 100, 4: 400, 5: 2000 } },
@@ -140,7 +140,7 @@
       scatter: { id: 'star', pay: { 3: 2, 4: 10, 5: 50 } },
       info: '4 Reihen und 40 feste Linien im Neon-Look. Sterne zahlen überall auf den Walzen.' },
 
-    { id: 'lucky-clover', title: 'Lucky Clover', scale: 1.12714, tag: '25 Linien · Wild ×2 · Freispiele', reels: 5, rows: 3, lines: 'l25',
+    { id: 'lucky-clover', title: 'Lucky Clover', scale: 1.10638, tag: '25 Linien · Wild ×2 · Freispiele', reels: 5, rows: 3, lines: 'l25',
       theme: { a: '#4ade80', b: '#facc15', c: '#16a34a', bg: '#04180c', tile: ['#0c2e18', '#041409'] },
       symbols: [
         { id: 'clover', w: 3, pay: { 3: 50, 4: 200, 5: 1000 } },
@@ -154,7 +154,7 @@
       wild: 'wild', wildMult: 2, scatter: { id: 'pot', pay: { 3: 2, 4: 10, 5: 50 }, free: { 3: 10, 4: 15, 5: 20 }, retrigger: 10 },
       info: 'Gewinne mit Regenbogen-Wild zählen doppelt. 3 oder mehr Goldtöpfe bringen 10 bis 20 Freispiele.' },
 
-    { id: 'red-hot-7', title: 'Red Hot Respin', scale: 0.43630, tag: '3 Walzen · Wild-Respin', reels: 3, rows: 3, lines: 'l5x3',
+    { id: 'red-hot-7', title: 'Red Hot Respin', scale: 0.42084, tag: '3 Walzen · Wild-Respin', reels: 3, rows: 3, lines: 'l5x3',
       theme: { a: '#ff3b30', b: '#ff9f0a', c: '#c2410c', bg: '#1f0303', tile: ['#360808', '#180202'] },
       symbols: [
         { id: 'seven', w: 3, pay: { 3: 150 } },
@@ -167,7 +167,7 @@
       wild: 'wild', respin: { reel: 1 },
       info: 'Landet das Feuer-Wild auf der mittleren Walze, füllt es die ganze Walze und du bekommst einen Gratis-Respin, bei dem sie stehen bleibt.' },
 
-    { id: 'eye-of-ra', title: 'Eye of Ra', scale: 0.73707, tag: '10 Linien · Freispiele mit Symbol-Upgrade', reels: 5, rows: 3, lines: 'l10',
+    { id: 'eye-of-ra', title: 'Eye of Ra', scale: 0.72367, tag: '10 Linien · Freispiele mit Symbol-Upgrade', reels: 5, rows: 3, lines: 'l10',
       theme: { a: '#ffd24a', b: '#1e9bff', c: '#e0a630', bg: '#06142a', tile: ['#0e2346', '#050d1e'] },
       symbols: [
         { id: 'falcon', art: 'emoji:🦅', w: 3, pay: { 2: 10, 3: 100, 4: 1000, 5: 5000 } },
@@ -181,7 +181,7 @@
       freeFeature: { type: 'upgrade', order: ['T', 'J', 'Q', 'K'], extra: 1 },
       info: 'Das Auge ist Wild. 3 Pyramiden bringen 12 Freispiele. Jeder Freispiel mit Auge wertet das niedrigste Symbol auf (10 → B → D → K) und bringt einen Freispiel extra.' },
 
-    { id: 'lady-luna', title: 'Lady Luna', scale: 0.45481, tag: '10 Linien · 15 Freispiele ×3', reels: 5, rows: 3, lines: 'l10',
+    { id: 'lady-luna', title: 'Lady Luna', scale: 0.44506, tag: '10 Linien · 15 Freispiele ×3', reels: 5, rows: 3, lines: 'l10',
       theme: { a: '#f0abfc', b: '#7c3aed', c: '#38bdf8', bg: '#120826', tile: ['#24104a', '#0e061e'] },
       symbols: [
         { id: 'ring', art: 'emoji:💍', w: 3, pay: { 2: 10, 3: 100, 4: 1000, 5: 5000 } },
@@ -195,7 +195,7 @@
       wild: 'wild', wildMult: 2, scatter: { id: 'crystal', pay: { 3: 2, 4: 10, 5: 50 }, free: { 3: 15, 4: 15, 5: 15 }, retrigger: 15 }, freeMult: 3, maxFree: 180,
       info: 'Der Mond ist Wild und verdoppelt jeden Gewinn, an dem er beteiligt ist. 3 oder mehr Kristallkugeln bringen 15 Freispiele, in denen alle Gewinne dreifach zählen – erneut auslösbar.' },
 
-    { id: 'pirate-pick', title: 'Pirate Treasure', scale: 1.32648, tag: '20 Linien · Schatzkisten-Bonus', reels: 5, rows: 3, lines: 'l20',
+    { id: 'pirate-pick', title: 'Pirate Treasure', scale: 1.30437, tag: '20 Linien · Schatzkisten-Bonus', reels: 5, rows: 3, lines: 'l20',
       theme: { a: '#fbbf24', b: '#0ea5e9', c: '#dc2626', bg: '#04121c', tile: ['#0b2536', '#030c14'] },
       symbols: [
         { id: 'parrot', art: 'emoji:🦜', w: 3, pay: { 3: 50, 4: 250, 5: 1000 } },
@@ -211,7 +211,7 @@
         prizes: [[30, 3], [25, 5], [18, 8], [12, 12], [8, 15], [4, 25], [2, 40], [0.8, 75], [0.2, 200]] },
       info: '3 Schatzkisten auf Walze 1, 3 und 5 starten den Bonus: Wähle 4 von 12 Kisten, jede birgt einen Gewinn von bis zu 200 × Einsatz. Der Totenkopf ersetzt alle Symbole außer der Schatzkiste.' },
 
-    { id: 'fortune-wheel', title: 'Fortune Wheel 7', scale: 0.63581, tag: '20 Linien · Bonusrad · Multiplikator-Freispiele', reels: 5, rows: 3, lines: 'l20',
+    { id: 'fortune-wheel', title: 'Fortune Wheel 7', scale: 0.62513, tag: '20 Linien · Bonusrad · Multiplikator-Freispiele', reels: 5, rows: 3, lines: 'l20',
       theme: { a: '#ffd24a', b: '#ef4444', c: '#22c55e', bg: '#1c0610', tile: ['#38101f', '#16040b'] },
       symbols: [
         { id: 'seven', w: 3, pay: { 3: 100, 4: 500, 5: 2500 } },
@@ -231,7 +231,7 @@
       freeFeature: { type: 'multUp', step: 1, max: 10 },
       info: '3 Bonusräder auf Walze 1, 3 und 5 drehen das Glücksrad: bis zu 100 × Einsatz oder 8 bis 15 Freispiele. In den Freispielen steigt der Multiplikator nach jedem Gewinn um 1, bis ×10.' },
 
-    { id: 'sticky-fire', title: 'Sticky Fire Fruits', scale: 0.73476, tag: '20 Linien · Freispiele mit klebenden Wilds', reels: 5, rows: 3, lines: 'l20',
+    { id: 'sticky-fire', title: 'Sticky Fire Fruits', scale: 0.71394, tag: '20 Linien · Freispiele mit klebenden Wilds', reels: 5, rows: 3, lines: 'l20',
       theme: { a: '#ff7a1a', b: '#ffd23f', c: '#e11d48', bg: '#220703', tile: ['#3a1006', '#170402'] },
       symbols: [
         { id: 'seven', w: 3, pay: { 3: 100, 4: 400, 5: 2000 } },
@@ -249,7 +249,7 @@
       freeFeature: { type: 'sticky' },
       info: '3 oder mehr Bonus-Symbole bringen 10 bis 15 Freispiele. Jedes Feuer-Wild, das in den Freispielen landet, bleibt bis zum Ende kleben.' },
 
-    { id: 'joker-star', title: 'Joker Star', scale: 0.74360, tag: '10 Linien · Joker · Freispiele ×2', reels: 5, rows: 3, lines: 'l10',
+    { id: 'joker-star', title: 'Joker Star', scale: 0.73222, tag: '10 Linien · Joker · Freispiele ×2', reels: 5, rows: 3, lines: 'l10',
       theme: { a: '#c084fc', b: '#f43f5e', c: '#fde047', bg: '#14061f', tile: ['#26103a', '#10051a'] },
       symbols: [
         { id: 'seven', w: 3, pay: { 3: 100, 4: 500, 5: 2500 } },
