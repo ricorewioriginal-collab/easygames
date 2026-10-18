@@ -1679,7 +1679,7 @@
    "title": "AnMaCha UNDERCOVER 3D – Wem kannst du trauen?",
    "desc": "Social-Deduction-Party im Funkhaus: 6 Modi – Verräter-Jagd, Imposter mit geheimem Wort, Detektiv & Alibi, Sabotage-Chaos, Verstecken & Jagen und Rollen-Chaos. 6 Karten in 3D, 24 Minispiele, über 500 Wörter, Bots für 3–12 Teilnehmer. Solo offline gegen den Computer oder online per Link, Code und QR – jeder mit eigenem Gerät und geheimer Rolle.",
    "icon": "🕵️",
-   "img": "anmacha-undercover/card.svg",
+   "img": "anmacha-undercover/card.png",
    "bg": "linear-gradient(145deg,#070d22,#1b2f63 55%,#ff9a2e)",
    "glow": "rgba(41,211,255,.5)",
    "path": "anmacha-undercover/",
@@ -1701,8 +1701,8 @@
      "Online einladen: Raum erstellen, Link kopieren oder QR-Code zeigen – Mitspieler treten von überall bei. Öffentliche Räume funktionieren erst, wenn sie freigeschaltet sind."
     ]
    },
-   "size": 833458,
-   "files": 49,
+   "size": 1168582,
+   "files": 51,
    "offline": true,
    "cloud": {
     "game": "anmacha-undercover",
