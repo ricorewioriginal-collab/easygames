@@ -134,7 +134,7 @@
     if (document.body) document.body.style.overflow = 'hidden';
   }
   // Bibliothek-Adresse; layout "apps" = App-Kachel-Ansicht (nur Symbole mit Namen)
-  function libUrl(o) { return base + 'index.html?embed=1' + (o && o.layout === 'apps' ? '&view=apps' : ''); }
+  function libUrl(o) { return base + 'index.html?embed=1' + (o && o.layout === 'apps' ? '&view=apps' : '') + (o && o.layout === 'portal' ? '&portal=1' : ''); }
   // Zentrale Ranglisten-Seite (alle Spiele); game = Spiel-ID aus games.js zum Vorwählen
   function boardUrl(o) { return base + 'ranglisten.html?embed=1' + (o && o.game ? '&game=' + encodeURIComponent(o.game) : ''); }
   // Erfolge-Seite (spielübergreifend)

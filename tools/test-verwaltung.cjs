@@ -83,10 +83,11 @@ const server = http.createServer((req, res) => {
     console.log('PASS Spiele: Sichtbarkeit und Wartungshinweis speichern');
 
     // 4b) Zeitplan: Sichtbar ab/bis je Spiel
-    await page.click('#tabs [data-t=games]'); await page.waitForSelector('#gBody tr'); await page.fill('#gq', 'memory');
+    await page.click('#tabs [data-t=games]'); await page.waitForSelector('#gBody tr'); await page.waitForTimeout(800);   // der Tabwechsel lädt die Konfiguration neu: erst danach eintragen, sonst überschreibt die späte Antwort den Eintrag (nur in der langsamen CI)
+    await page.fill('#gq', 'memory');
     const when = '2030-01-02T10:30'; await page.fill('#gBody tr input[type=datetime-local] >> nth=0', when); await page.dispatchEvent('#gBody tr input[type=datetime-local] >> nth=0', 'change');
     const nPatch = db.patched.length;   // der Hinweis „Gespeichert“ vom vorigen Speichern steht noch: auf das neue Schreiben warten
-    await page.click('#gSave'); for (let i = 0; i < 100 && db.patched.length === nPatch; i++) await page.waitForTimeout(50);
+    await page.click('#gSave'); for (let i = 0; i < 200 && !(db.patched.length > nPatch && db.patched.at(-1).sched && db.patched.at(-1).sched['anmacha-memory']); i++) await page.waitForTimeout(50);
     const sch = db.patched.at(-1).sched['anmacha-memory']; assert.equal(new Date(sch.from).getFullYear(), 2030); assert(!sch.until);
     console.log('PASS Zeitplan: „Sichtbar ab“ wird gespeichert');
 
