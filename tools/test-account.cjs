@@ -51,6 +51,15 @@ const host = mk((q, r) => { r.writeHead(200, { 'content-type': 'text/html' }); i
   console.log('PASS Seite mit eigenem Login: das eingebettete Konto übernimmt den Login der Seite');
   await p2.evaluate(() => AnMaChaAccount.logout()); await p2.frameLocator('#f').locator('#nm', { hasText: 'Nicht angemeldet' }).waitFor({ timeout: 8000 });
   console.log('PASS Abmelden auf der Seite meldet auch das eingebettete Konto ab');
+  // App (Android/Windows): Google sperrt die Anmeldung im App-Fenster → Kopplungs-Link im Konto-Menü
+  const c3 = await b.newContext({ userAgent: 'Mozilla/5.0 EasyGamesApp/1.0', viewport: { width: 390, height: 800 } });
+  await c3.route(/^https?:\/\/(?!127)/, r => r.request().url().includes('firestore.googleapis.com') ? r.fulfill({ status: 404, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '{}' }) : r.abort());
+  const p3 = await c3.newPage(); p3.on('pageerror', e => errors.push(e.message));
+  await p3.goto(gbase + 'index.html'); await p3.locator('#acct .eg-acc-b.out').click();
+  const lk = p3.locator('#acct .eg-acc-m:not([hidden]) a[href*="#koppeln="]'); await lk.waitFor();
+  assert.match(await lk.getAttribute('href'), /^https:\/\/www\.ricorewi-radio\.de\/#koppeln=[0-9a-f]{32}$/);
+  console.log('PASS App: „Anmelden“ zeigt den Kopplungs-Link (Browser öffnen/kopieren/abbrechen)');
+  await p3.locator('#acct .eg-acc-m:not([hidden]) button', { hasText: 'Abbrechen' }).click(); await p3.locator('#acct .eg-acc-m[hidden]').waitFor({ state: 'attached' });
   assert.deepStrictEqual(errors, [], 'Seitenfehler: ' + errors.join('; '));
   await b.close(); games.close(); host.close();
 })().catch(e => { console.error(e); process.exit(1); });

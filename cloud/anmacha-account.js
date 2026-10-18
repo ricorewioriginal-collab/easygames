@@ -113,7 +113,7 @@
   function initial(u) { return u && u.name ? u.name.trim().charAt(0).toUpperCase() : '👤'; }
   function first(u) { return u.name.trim().split(/\s+/)[0]; }
   function draw(m) {
-    var u = user(), host = m.el, open = m.open && !!u;
+    var u = user(), host = m.el, c = cloud(), pair = !u && APP && c && c.pairInfo ? c.pairInfo() : null, open = (m.open && !!u) || !!pair;
     host.textContent = '';
     var b = el('button', 'eg-acc-b' + (u ? '' : ' out'));
     b.type = 'button'; b.setAttribute('aria-haspopup', 'menu'); b.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -137,6 +137,12 @@
       var lo = el('button', 'eg-acc-i'); lo.type = 'button'; lo.setAttribute('role', 'menuitem'); lo.appendChild(el('span', 'ic', '⎋')); lo.appendChild(el('span', '', 'Abmelden'));
       lo.onclick = function () { m.open = false; logout(); }; menu.appendChild(lo);
     }
+    if (pair) {   // App: Google sperrt die Anmeldung im App-Fenster → Kopplung über den Browser
+      menu.appendChild(el('div', 'eg-acc-note', 'Öffne diesen Link im Browser (auch auf einem anderen Gerät), melde dich mit Google an und komm hierher zurück. Die App erkennt es automatisch.'));
+      var go = el('a', 'eg-acc-i'); go.href = pair.link; go.target = '_blank'; go.rel = 'noopener'; go.appendChild(el('span', 'ic', '🌐')); go.appendChild(el('span', '', 'Link im Browser öffnen')); menu.appendChild(go);
+      var cp = el('button', 'eg-acc-i'); cp.type = 'button'; cp.appendChild(el('span', 'ic', '⧉')); cp.appendChild(el('span', '', 'Link kopieren')); cp.onclick = function () { try { root.navigator.clipboard.writeText(pair.link); } catch (e) { } }; menu.appendChild(cp);
+      var cn = el('button', 'eg-acc-i'); cn.type = 'button'; cn.appendChild(el('span', 'ic', '✕')); cn.appendChild(el('span', '', 'Abbrechen')); cn.onclick = function () { if (c.cancelPair) c.cancelPair(); }; menu.appendChild(cn);
+    }
     if (lastErr && !u) menu.appendChild(el('div', 'eg-acc-err', lastErr));
     host.appendChild(menu);
     if (lastErr && !u) { var er = el('div', 'eg-acc-err', lastErr); er.style.cssText = 'position:absolute;right:0;top:calc(100% + 6px);width:240px;background:#141a2b;border-radius:10px;z-index:2147482000'; host.appendChild(er); }
@@ -153,6 +159,7 @@
   // Fenster in anderen Tabs: Konto-Wechsel übernehmen
   root.addEventListener('storage', function (e) { if (e.key === TOK || e.key === USR) emit(); });
   root.addEventListener('anmacha-account', function () { if (!token()) toParent(''); emit(); });
+  root.addEventListener('anmacha-cloud-state', function () { mounts.forEach(draw); });
   if (framed) {   // Konto der einbettenden Seite übernehmen (easygames.js merkt es sich dort und gibt es an alle eingebetteten Spiele weiter)
     root.addEventListener('message', function (e) {
       var d = e.data; if (e.source !== root.parent || !d || d.type !== 'anmacha-account') return;

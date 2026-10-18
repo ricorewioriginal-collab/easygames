@@ -465,6 +465,7 @@
   }
   function render() {
     labels();
+    try { window.dispatchEvent(new Event('anmacha-cloud-state')); } catch (e) { }   // Kopf-Knopf (anmacha-account.js) neu zeichnen, z. B. beim Koppeln in der App
     if (!panel || s.dataset.ui === 'off') return;
     var on = wanted() && user, k;
     panel.textContent = '';
@@ -543,7 +544,7 @@
   }
   // Token für den eigenen Server (Spielstände): Firebase-Token oder eigenes Konto-Token
   function serverToken() { return wanted() ? loadSdk().then(function (u) { u = u || user; return u ? u.getIdToken() : null; }).catch(function () { return null; }) : Promise.resolve(null); }
-  window.AnMaChaCloud = { serverToken: serverToken, sync: sync, restore: restore, restoreOlder: restoreOlder, account: account, game: game, FS: FS, API: API, mine: mine, signIn: signIn, firebaseSignIn: firebaseSignIn, refresh: refresh, signOut: signOut, user: function () { return wanted() && user ? user : null; } };
+  window.AnMaChaCloud = { serverToken: serverToken, sync: sync, restore: restore, restoreOlder: restoreOlder, account: account, game: game, FS: FS, API: API, mine: mine, pairInfo: function () { return PAIR ? { link: PORTAL + '#koppeln=' + PAIR.id } : null; }, cancelPair: function () { PAIR = null; render(); }, signIn: signIn, firebaseSignIn: firebaseSignIn, refresh: refresh, signOut: signOut, user: function () { return wanted() && user ? user : null; } };
   // Ranglisten (nur für Spiele mit Eintrag in anmacha-board.js; data-board="off" schaltet ab, data-board-src = abweichender Pfad)
   if (s.dataset.board !== 'off') {
     var bsrc = s.dataset.boardSrc || (s.src || '').replace(/[^\/?#]*([?#].*)?$/, 'anmacha-board.js');
