@@ -434,6 +434,9 @@
     s.g = s.g && typeof s.g === 'object' ? s.g : {}; s.d = Array.isArray(s.d) ? s.d : []; s.f = s.f && typeof s.f === 'object' ? s.f : {};
     var ch = false;
     if (!s.g[gameId]) { s.g[gameId] = now.getTime(); ch = true; }
+    // Verschiedene Spieltage je Spiel (für die Spiel-Medaillen, cloud/anmacha-ach.js)
+    s.n = s.n && typeof s.n === 'object' ? s.n : {}; s.l = s.l && typeof s.l === 'object' ? s.l : {};
+    if (s.l[gameId] !== day) { s.l[gameId] = day; s.n[gameId] = Math.min(999, (Number(s.n[gameId]) || 0) + 1); ch = true; }
     if (s.d.indexOf(day) < 0) { s.d.push(day); s.d.sort(function (a, b) { return a - b; }); if (s.d.length > 400) s.d = s.d.slice(-400); ch = true; }
     if (h < 5 && !s.f.owl) { s.f.owl = now.getTime(); ch = true; }
     if (h >= 5 && h < 8 && !s.f.early) { s.f.early = now.getTime(); ch = true; }

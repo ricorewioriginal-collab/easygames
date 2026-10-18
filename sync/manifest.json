@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "a408406e8dee",
- "generated": "2026-10-18T12:47:57+00:00",
- "commit": "1286c166219dc132c30ae8db5b1c2deb0b791805",
+ "version": "3ce0bf7cbe2b",
+ "generated": "2026-10-18T14:54:12+02:00",
+ "commit": "ccbc315b33e216170c13d18a60dea373d7eb98ac",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4983,13 +4983,13 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 18157,
-   "h": "45290cc0b0ab10a5deff8354e7f2d9effd046a81b40fdef39b6b0ff5cc44a390"
+   "s": 21585,
+   "h": "8d301aea2b5a77a7e8629dca3116a407a7af92cbf267ea3b863d5825d229d3ee"
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 33861,
-   "h": "a004faadcd432ace65879727b4f2510cb49acc96e977bfaedb0dad041b5e42f7"
+   "s": 34175,
+   "h": "c663b2ea8284cb82e03e2492722143b191b9431fce3c599c085bb0cba02e9a42"
   },
   {
    "p": "cloud/anmacha-bug.js",
@@ -5043,8 +5043,8 @@
   },
   {
    "p": "erfolge.html",
-   "s": 15599,
-   "h": "4ca06d3f153e7979d706ce07b4fb881afd9294b78aec5d60071bc4d99144b689"
+   "s": 16441,
+   "h": "cfbf7ee10b79e265e3df026b5ca9bb267c5e90258c1e8d2b528732171b3090b5"
   },
   {
    "p": "favicon.ico",
