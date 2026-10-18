@@ -83,7 +83,7 @@ BI.createCombat = function (G) {
   K.attack = function (kind) {
     if (!K.active() || atk || atkCd > 0 || freeze > 0 || hp <= 0 || (G.gear && G.gear.open)) return; const a = ATK[kind]; if (!a) return;
     const cost = kind === 'special' ? a.cost * gv('spMul', 1) : a.cost; if (cost > ep) { say('⚡ Zu wenig Energie – kurz ausruhen!', 1400); return; }
-    combo = kind === 'punch' && combatClock - lastPunch < .9 ? combo + 1 : 0; if (kind === 'punch') lastPunch = combatClock;
+    combo = kind === 'punch' && combatClock - lastPunch < .9 ? combo + 1 : 0; lastPunch = kind === 'punch' ? combatClock : -9;
     ep -= cost; atk = { kind, a, t: 0, hit: false, combo: combo % 3 === 2 }; atkCd = a.cd * gv('cdMul', 1); block = false;
     const shot = kind === 'punch' && gv('shot', 0); let best = null, bd = shot ? gv('shot', 0) : 5.5; for (const e of targets()) { const d = Math.hypot(e.x - P.x, e.z - P.z); if (d < bd) { bd = d; best = e; } }
     if (best && kind !== 'special') { P.h = Math.atan2(best.x - P.x, best.z - P.z); const reach = (ATK[kind].range + gv('reach', 0)) * .7; if (!shot && !duel && bd > reach) { const st = Math.min(1.6, bd - reach), q = W.resolve(P.x + Math.sin(P.h) * st, P.z + Math.cos(P.h) * st, .4, {}); P.x = q.x; P.z = q.z; } } /* Ausfallschritt: kurz auf das Ziel zu, damit der Schlag trifft */
@@ -104,7 +104,7 @@ BI.createCombat = function (G) {
       if (hit) damage(hit, hit.blocking ? r.dmg * .2 : r.dmg, r.vx, r.vz); if (hit || r.t > r.max) { scene.remove(m); arrows.splice(i, 1); } }
   }
   function hitEnemies(a, kind) {
-    const mul = Math.max(G.sword ? G.sword() : 1, gv('dmgMul', 1)) * lvMul(); if (kind === 'punch' && gv('shot', 0)) { shoot(a.dmg * mul); return; }
+    const mul = Math.max(G.sword ? G.sword() : 1, gv('dmgMul', 1)) * lvMul(); if (kind === 'punch' && gv('shot', 0)) { shoot(a.dmg * mul * (atk && atk.combo ? 1.6 : 1)); return; }
     const slam = kind === 'kick' && gv('slam', false), ring = a.ring || slam, range = a.range + gv('reach', 0) + (kind === 'special' && gv('spMul', 1) < 1 ? 2 : 0) + (slam ? 1.2 : 0);
     let any = false; for (const e of targets()) {
       const dx = e.x - P.x, dz = e.z - P.z, d = Math.hypot(dx, dz); if (d > range + (e.T && e.T.big ? 1 : 0)) continue; if (!ring && Math.abs(BI.angDiff(P.h, Math.atan2(dx, dz))) > 1.15) continue;

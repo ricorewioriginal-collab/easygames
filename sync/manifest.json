@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "d30a5ee55eed",
- "generated": "2026-10-18T10:26:01+00:00",
- "commit": "e08409eced7b5d5e2835313dd2ba471a4002f5ea",
+ "version": "f29417d20101",
+ "generated": "2026-10-18T10:36:14+00:00",
+ "commit": "db0693dd0e397d67496b5a439d4652a2c9faebc3",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4339,7 +4339,7 @@
   {
    "p": "bunte-insel/index.html",
    "s": 110353,
-   "h": "2fb2480f80142da6c12c7f348d9348686c46a7d6fd8c759df0342b3c6e01b46b"
+   "h": "1bd535007096a71b774546f26c72812984ed8c34b629a678e08a52d1a8446ee7"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -4418,8 +4418,8 @@
   },
   {
    "p": "bunte-insel/js/combat.js",
-   "s": 45321,
-   "h": "b635bbeb3a7faca7b59a82ba324e429a566d9b5320ee9a2bf3e398cb9cd13337"
+   "s": 45354,
+   "h": "e4bce2f3845f459754c4e732ff1f0e245e6106e16864c42e089afa26e842f7ce"
   },
   {
    "p": "bunte-insel/js/dampfer.js",
@@ -5018,8 +5018,8 @@
   },
   {
    "p": "cloud/anmacha-gameach.js",
-   "s": 45039,
-   "h": "7234166bdc18770379d64191f96314daaa0e4d3b89d09b5e62f316284e2b4f02"
+   "s": 45058,
+   "h": "d4bea6814e2ef069c74f19324a2c56d2a78b721e1ea3a9306b1eb1e077ac75e2"
   },
   {
    "p": "cloud/fire-peer.js",
@@ -5288,8 +5288,8 @@
   },
   {
    "p": "guides.js",
-   "s": 67105,
-   "h": "86ea959bcbf868866535d110c0c6b73032834180471b46cf5bc66606fa5a927d"
+   "s": 67160,
+   "h": "986bffbcd8e342aca55edcf98df152b3e9cb182b55ae1a2b64c534036ec3d473"
   },
   {
    "p": "heute.html",
@@ -6438,8 +6438,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 105431,
-   "h": "3511e6d9ad898c8e4240fa1824c15d25ba13907226a8d7d4e9abab258b37b6d3"
+   "s": 105486,
+   "h": "9d846c5caa4f0e64b158022f0dce145161f3b6f049a7f8479c6b88a4ead484e3"
   },
   {
    "p": "taschi/card.svg",

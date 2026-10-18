@@ -393,7 +393,7 @@ window.EASYGAMES_GUIDES = {
   ],
   "tipps": [
    "Der Knopf 🧭 Wohin? zeigt mit Pfeil und Leuchtsäule den Weg zu einem Ziel.",
-   "Gekämpft wird nur in der Kampfarena und im Verbotenen Wald."
+   "Gekämpft wird nur in der Kampfarena und auf der Wald-Insel (das Waldtor im alten Verbotenen Wald bringt dich hin)."
   ]
  }
 };
