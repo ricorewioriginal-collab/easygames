@@ -56,6 +56,7 @@ const host = mk((q, r) => { r.writeHead(200, { 'content-type': 'text/html' }); i
   assert.strictEqual(p2.url().split('#')[0], hurl + 'b'); await new Promise(r => setTimeout(r, 300)); assert.strictEqual(popups, 0, 'kein neuer Tab');
   console.log('PASS Konto-Menü: Seiten öffnen im Fenster der eigenen Seite (kein Wechsel zu GitHub, kein neuer Tab)');
   await p2.click('div[role=dialog] button:has-text("Schließen")');
+  await p2.locator('div[role=dialog]').waitFor({ state: 'hidden', timeout: 3000 });   // Fenster wirklich weg (nicht nur hidden-Attribut)
   await p2.evaluate(() => AnMaChaAccount.logout()); await p2.frameLocator('#f').locator('#nm', { hasText: 'Nicht angemeldet' }).waitFor({ timeout: 8000 });
   console.log('PASS Abmelden auf der Seite meldet auch das eingebettete Konto ab');
   // Angemeldet (Konto-Token, z. B. Login im Kopf oder bei den Bewertungen) → ein gestartetes Spiel ist automatisch angemeldet
@@ -81,6 +82,25 @@ const host = mk((q, r) => { r.writeHead(200, { 'content-type': 'text/html' }); i
   assert.ok(ac && ac.uid === 'fbuid-1' && ac.token === 'idtok', 'Firebase-Anmeldung aus dem Konto-Token'); assert.strictEqual(fbCalls, 1);
   assert.strictEqual(await p5.evaluate(() => localStorage.getItem('anmacha-cloud-rt')), 'rt-neu');
   console.log('PASS Nur Konto-Token: Firebase-Anmeldung (Ranglisten, Erfolge …) läuft still mit, ohne zweite Anmeldung');
+  // Ohne Dienstkonto-Schlüssel: die beim Google-Login erzeugte Firebase-Anmeldung liegt beim Konto (account_fbrt) → jede Seite übernimmt sie still
+  const c6 = await b.newContext(); let rtCalls = 0;
+  await c6.route(/^https?:\/\/(?!127)/, r => {
+    const u = new URL(r.request().url()), cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' }, js = (o, st) => r.fulfill({ status: st || 200, contentType: 'application/json', headers: cors, body: JSON.stringify(o) });
+    if (/firebase-app\.js/.test(u.href)) return r.fulfill({ contentType: 'text/javascript', headers: cors, body: 'export const initializeApp=()=>({});' });
+    if (/firebase-auth\.js/.test(u.href)) return r.fulfill({ contentType: 'text/javascript', headers: cors, body: 'export const getAuth=()=>({});export const onAuthStateChanged=(a,cb)=>{setTimeout(()=>cb(null),5);return()=>{}};export class GoogleAuthProvider{};export const signInWithCustomToken=async()=>{throw new Error("nein")};export const signOut=async()=>{};' });
+    if (u.host === 'www.ricorewi-radio.de' && u.searchParams.get('action') === 'account_fbrt') { rtCalls++; return js({ status: 'ok', rt: 'rt-konto' }); }
+    if (u.host === 'www.ricorewi-radio.de' && u.searchParams.get('action') === 'account_fbtoken') return js({ status: 'unavailable' }, 503);
+    if (u.host === 'securetoken.googleapis.com') return js({ id_token: 'idtok2', expires_in: '3600', user_id: 'fbuid-2', refresh_token: 'rt-frisch' });
+    if (u.host === 'identitytoolkit.googleapis.com') return js({ users: [{ displayName: 'Rico', email: 'r@x.de', photoUrl: '' }] });
+    return js({}, 404);
+  });
+  const p6 = await c6.newPage();
+  await p6.addInitScript(() => { localStorage.setItem('anmacha-rating-token', 'x.y'); localStorage.setItem('anmacha-rating-user', JSON.stringify({ name: 'Rico', picture: '' })); });
+  await p6.goto(gbase + 'konto.html'); await p6.waitForFunction(() => window.AnMaChaCloud);
+  const a6 = await p6.evaluate(() => AnMaChaCloud.account());
+  assert.ok(a6 && a6.uid === 'fbuid-2' && a6.token === 'idtok2', 'Firebase-Anmeldung aus account_fbrt'); assert.strictEqual(rtCalls, 1);
+  assert.strictEqual(await p6.evaluate(() => localStorage.getItem('anmacha-cloud-rt')), 'rt-frisch');
+  console.log('PASS Ohne Dienstkonto-Schlüssel: Firebase-Anmeldung kommt vom Konto (account_fbrt), keine zweite Anmeldung');
   // App (Android/Windows): Google sperrt die Anmeldung im App-Fenster → Kopplungs-Link im Konto-Menü
   const c3 = await b.newContext({ userAgent: 'Mozilla/5.0 EasyGamesApp/1.0', viewport: { width: 390, height: 800 } });
   await c3.route(/^https?:\/\/(?!127)/, r => r.request().url().includes('firestore.googleapis.com') ? r.fulfill({ status: 404, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '{}' }) : r.abort());
