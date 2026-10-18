@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "7c4d81b1b62a",
- "generated": "2026-10-18T17:03:30+02:00",
- "commit": "860b3f697e0e2575b5196caf512b1f3f1f404ff8",
+ "version": "84953901de5b",
+ "generated": "2026-10-18T15:27:09+00:00",
+ "commit": "531ebbb6e8a64134b028e3e8aef02f291ea98699",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4138,18 +4138,18 @@
   },
   {
    "p": "anmacha-undercover/card.jpg",
-   "s": 92894,
-   "h": "620b39e53c43a026da808ccf8c79bd98ce914784538326ffe4dfcbce2cd5e6d3"
+   "s": 80678,
+   "h": "12d211a15e98b98327a3668ac7c6305a05285433bda8c0a9a8c5f15283313126"
   },
   {
    "p": "anmacha-undercover/card.png",
-   "s": 115538,
-   "h": "ab3cca2414e81ac8b39785848a61d8331daab0735ead56365ac9969633b7d678"
+   "s": 101522,
+   "h": "649210aa23a1ee918d3e836f49ca87ea4f496b2a83d996c51578bd0e040fa3e7"
   },
   {
    "p": "anmacha-undercover/card.svg",
-   "s": 127992,
-   "h": "d43dee8f757cc71a22275df2dc899e5fd2444033ff051896b2b289a5f10b8809"
+   "s": 132634,
+   "h": "055258944f51105ef155cde82276eb2077aec9045a3f9febb63e712b3027f276"
   },
   {
    "p": "anmacha-undercover/index.html",
@@ -4353,8 +4353,8 @@
   },
   {
    "p": "anmacha-undercover/src/ui/word-ui.js",
-   "s": 14262,
-   "h": "5b69abf0fac1f8068427791b0d75effe766c92100b4c90a95abd536f474d6c15"
+   "s": 14489,
+   "h": "6972e2d5f79ab8bdc5bab7c66e8e94abcba971f7c225e17a8e15311031e6c85a"
   },
   {
    "p": "anmacha-undercover/src/world/actors.js",
@@ -6694,7 +6694,7 @@
   {
    "p": "sync/catalog.json",
    "s": 111489,
-   "h": "55e8426e0a539df14cbbcdc806617e5c8cb023af987b5331357e129afcd3bc8d"
+   "h": "5e08ecc166a1f1d4d6ab36d14046058d701b134b32d05281f4d3d037d76ade28"
   },
   {
    "p": "taschi/card.svg",

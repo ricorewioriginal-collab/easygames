@@ -61,6 +61,7 @@
     }
     function nowText(me, nm) {
       const imp = me.card && me.card.impostor, who = id => '<b>' + esc(nm[id] || '?') + '</b>';
+      if (v.phase === 'guess' && v.guess && v.guess.id === me.id) return 'Du wurdest enttarnt! Rate das Wort. Liegst du richtig, gewinnst du trotzdem.';   // der Rater ist schon „raus“
       if (me.out) return 'Du bist raus und schaust zu.';
       switch (v.phase) {
         case 'reveal': return imp ? 'Du bist der <b>Imposter</b> und kennst das Wort nicht. Gleich gibt jeder reihum einen Hinweis. Hör gut zu und tu so, als wüsstest du es.'
@@ -76,7 +77,7 @@
     function update(nv) {
       if (closed) return; v = nv; const me = v.me || {}, nm = {}; v.roster.forEach(r => { nm[r.id] = r.n; });
       const PH = { reveal: 'Merke dir deine Karte', clue: 'Runde ' + v.round + '/' + v.rounds + ': reihum ein Hinweis', discuss: 'Diskutiert: Wessen Hinweis passt nicht?', vote: 'Abstimmen – wer ist der Imposter?', guess: 'Der enttarnte Imposter darf raten', end: 'Ende' };
-      set('ph', $('.wd-phase'), esc(PH[v.phase] || '') + (me.out ? ' · Du bist raus und schaust zu.' : ''));
+      set('ph', $('.wd-phase'), esc(PH[v.phase] || '') + (me.out && !(v.guess && v.guess.id === me.id) ? ' · Du bist raus und schaust zu.' : ''));
       set('tm', $('.wd-timer'), v.phase === 'clue' ? '⏱ ' + AMU.U.fmtTime(v.turnLeft) : v.left ? '⏱ ' + AMU.U.fmtTime(v.left) : '');
       // Schrittleiste und Anleitung „Was jetzt?“
       const step = { reveal: 0, clue: 1, discuss: 2, vote: 3, guess: 3, end: 4 }[v.phase];
