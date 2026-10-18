@@ -130,7 +130,7 @@
         var a = it.href ? el('a', 'eg-acc-i') : el('button', 'eg-acc-i'); a.setAttribute('role', 'menuitem');
         if (it.href) { a.href = it.href; if (it.blank) { a.target = '_blank'; a.rel = 'noopener'; } } else a.type = 'button';
         a.appendChild(el('span', 'ic', it.icon || '')); a.appendChild(el('span', '', it.label));
-        a.onclick = function () { m.open = false; draw(m); if (it.fn) it.fn(); };
+        a.onclick = function (e) { m.open = false; draw(m); if (it.fn) { if (it.href && e) e.preventDefault(); it.fn(); } };   // href = Ausweg ohne Skript, fn = Komfort (z. B. Overlay)
         menu.appendChild(a);
       });
       menu.appendChild(el('div', 'eg-acc-sep'));
