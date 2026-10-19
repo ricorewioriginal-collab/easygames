@@ -18,7 +18,7 @@ const home = { 'eg-fav': { v: JSON.stringify([catalog[1].id, 'gibt-es-nicht', ca
 (async () => {
   await new Promise(r => srv.listen(0, '127.0.0.1', r)); const base = `http://127.0.0.1:${srv.address().port}/`;
   const b = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {}), c = await b.newContext();
-  let saved = null, del = null; const queries = [];
+  let saved = null, del = null, rep = null; const queries = [];
   await c.route(/^https?:\/\/(?!127)/, r => {
     const u = new URL(r.request().url()), a = u.searchParams.get('action'), h = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' }, j = o => r.fulfill({ contentType: 'application/json', headers: h, body: JSON.stringify(o) });
     if (r.request().method() === 'OPTIONS') return r.fulfill({ status: 204, headers: h });
@@ -29,6 +29,7 @@ const home = { 'eg-fav': { v: JSON.stringify([catalog[1].id, 'gibt-es-nicht', ca
     if (a === 'pubprofile_get') return j(saved ? { status: 'ok', profile: Object.assign({ slug: 'rico' }, saved) } : { status: 'none', profile: null });
     if (a === 'pubprofile_save') { saved = JSON.parse(r.request().postData()); return j({ status: 'ok', profile: Object.assign({ slug: 'rico' }, saved) }); }
     if (a === 'pubprofile_delete') { del = JSON.parse(r.request().postData()); saved = null; return j({ status: 'ok', profile: true, saves: 4 }); }
+    if (a === 'pubprofile_report') { rep = JSON.parse(r.request().postData()); return j({ status: 'ok', message: 'Danke, wir schauen uns das an.' }); }
     if (a === 'pubprofiles_list') { queries.push(u.searchParams.get('q')); return j({ status: 'ok', total: 1, page: 1, pages: 1, items: [{ nick: 'Rico', slug: 'rico', avatar: '🦊', bio: 'Hi', sec: 7200, top: { id: 'ricorewi', n: 'RicoReWi' }, rach: { rank: 'Jungfuchs' } }] }); }
     if (a === 'pubprofile_view') return u.searchParams.get('n') === 'rico' ? j({ status: 'ok', profile: { nick: 'Rico', slug: 'rico', avatar: '🦊', bio: 'Hi', social: { instagram: 'https://www.instagram.com/rico', tiktok: 'javascript:alert(1)' }, games: [{ id: catalog[0].id, t: 'Spiel A' }], gach: { d: 7, t: 50 }, stations: [{ id: 'ricorewi', n: 'RicoReWi' }], songs: [{ a: 'Band', t: 'Lied' }], top: { id: 'ricorewi', n: 'RicoReWi' }, sec: 7200, rach: { rank: 'Jungfuchs', points: 90, done: 5, total: 40, level: 2 } } }) : j({ status: 'none', message: 'Dieses Profil gibt es nicht.' });
     return r.fulfill({ status: 404, headers: h, body: '{}' });
@@ -43,6 +44,8 @@ const home = { 'eg-fav': { v: JSON.stringify([catalog[1].id, 'gibt-es-nicht', ca
   assert.strictEqual(await p.locator('.rrp-soc a').count(), 1, 'nur der gültige Link ist klickbar');
   assert.strictEqual(await p.getAttribute('.rrp-soc a', 'href'), 'https://www.instagram.com/rico');
   console.log('PASS Ohne Anmeldung: Liste, Suche, Profil mit klickbarem Social-Link (unsichere Links fehlen)');
+  await p.click('#rrp-rep'); await p.fill('#rrp-reason', 'Spam-Link'); await p.click('#rrp-repgo'); await p.waitForFunction(() => /Danke/.test(document.getElementById('rrp-repmsg').textContent));
+  assert.ok(rep && rep.n === 'rico' && rep.reason === 'Spam-Link'); console.log('PASS Profil melden: Grund geht an den Server, Dank wird angezeigt');
   // angemeldet: eigenes Profil
   await p.evaluate(() => { localStorage.setItem('anmacha-rating-token', 'abc.def'); localStorage.setItem('anmacha-rating-user', JSON.stringify({ name: 'Test Person' })); });
   await p.goto(base + 'radio-profil.html?embed=1'); await p.waitForSelector('#rrp-f');
