@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "2b0c6559aaad",
- "generated": "2026-10-19T00:07:35+00:00",
- "commit": "e3eec93069a615e880d14b3c658ec4be34726e41",
+ "version": "1324b4aa8572",
+ "generated": "2026-10-19T02:25:01+02:00",
+ "commit": "e2496f73792fa9fd3ffa008815e5a4a7443bd0b3",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5303,8 +5303,13 @@
   },
   {
    "p": "cloud/radio-erfolge.js",
-   "s": 14005,
-   "h": "ce8d8767fca2f1c1cf4141ff18f63c28d46061bf1e460f65811c21d97a98e6ab"
+   "s": 14078,
+   "h": "1366118adf0c0545af4986e627738e92b266de2172d8a89d15514dda712eaa2c"
+  },
+  {
+   "p": "cloud/radio-profil.js",
+   "s": 21923,
+   "h": "3e529098187c750ea33043ab273fcc5525f352957a806a3db74157ff73ae6cbe"
   },
   {
    "p": "datenschutz.html",
@@ -6300,6 +6305,11 @@
    "p": "radio-maze/sw.js",
    "s": 1841,
    "h": "92baeff1fd79f8a6297751782bc96b16f139325be16202dc317a5c9053527890"
+  },
+  {
+   "p": "radio-profil.html",
+   "s": 2596,
+   "h": "922f75db73a02b6c6536966b0b395f136de6c7462a7d3b605bec34ec52a4e8ca"
   },
   {
    "p": "ranglisten.html",

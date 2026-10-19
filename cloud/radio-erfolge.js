@@ -97,7 +97,7 @@
     if (fs && typeof fs === 'object') for (k in fs) if (Array.isArray(fs[k])) shows += fs[k].length;
     var lvl = 1; for (i = 0; i < LEVELS.length; i++) if (s >= LEVELS[i]) lvl = i + 1;
     var out = { sec: s, stations: Object.keys(st).length, days: Object.keys(days).length, streak: streak(Object.keys(days)), night: n, early: e,
-      favs: Array.isArray(fav) ? fav.length : 0, shows: shows, songs: Array.isArray(sg) ? Math.min(100, sg.length) : 0, card: m.rrw_mein_radio_sendercard_v1 && m.rrw_mein_radio_sendercard_v1.v ? 1 : 0, level: lvl };
+      stMap: st, favs: Array.isArray(fav) ? fav.length : 0, shows: shows, songs: Array.isArray(sg) ? Math.min(100, sg.length) : 0, card: m.rrw_mein_radio_sendercard_v1 && m.rrw_mein_radio_sendercard_v1.v ? 1 : 0, level: lvl };
     for (k in extra || {}) out[k] = extra[k];
     return out;
   }
@@ -112,5 +112,5 @@
   }
   /** Holt Konto-Dokument + Beiträge und liefert evaluate()-Ergebnis */
   function load(token) { return Promise.all([fetchDoc(token), fetchArticles(token)]).then(function (a) { return evaluate(statsFromDoc(a[0], a[1])); }); }
-  root.RRWErfolge = { evaluate: evaluate, DEFS: DEFS, RANKS: RANKS, statsFromDoc: statsFromDoc, load: load, html: html, css: css };
+  root.RRWErfolge = { evaluate: evaluate, DEFS: DEFS, RANKS: RANKS, statsFromDoc: statsFromDoc, load: load, html: html, css: css, fetchDoc: fetchDoc, fetchArticles: fetchArticles, ungz: ungz };
 })(window);
