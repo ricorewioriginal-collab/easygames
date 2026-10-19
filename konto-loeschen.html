@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>Konto löschen – easygames</title>
+<style>
+:root{--bg:#0b1020;--card:#151b33;--line:#ffffff24;--text:#f3f5ff;--mut:#a9b0cf;--acc:#d4fd78;--bad:#f28b82;--good:#81c995}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 16px calc(32px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;gap:12px;margin:0 0 12px}
+header h1{font-size:22px;margin:0;flex:1}
+.back{color:var(--text);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:7px 13px;font-weight:600;font-size:13px}
+body.embed .back{display:none}
+.card{margin:14px 0 0;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:14px}
+.card.warn{border-color:var(--bad)}
+h2{font-size:16px;margin:0 0 6px}
+p,li{color:var(--mut);font-size:14px} li{margin:3px 0} strong,b{color:var(--text)}
+ul{margin:6px 0;padding-left:22px}
+label{display:block;margin:12px 0 4px;font-size:13px}
+input[type=text]{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:#0b1020;color:var(--text);font:inherit}
+.chk{display:flex;gap:10px;align-items:flex-start;margin:12px 0}.chk input{width:20px;height:20px;margin-top:2px;accent-color:var(--bad)}.chk span{color:var(--mut);font-size:14px}
+.btn{min-height:46px;width:100%;margin-top:12px;border-radius:12px;border:1px solid var(--line);background:#222a4d;color:var(--text);font:600 15px system-ui;cursor:pointer;padding:0 16px}
+.btn.bad{background:var(--bad);color:#2a0a08;border-color:var(--bad)}
+.btn:disabled{opacity:.45;cursor:default}
+ol.steps{list-style:none;padding:0;margin:10px 0 0}ol.steps li{display:flex;gap:8px}ol.steps .ok{color:var(--good)}ol.steps .no{color:var(--mut)}
+.err{color:var(--bad);font-size:13px;min-height:18px;margin-top:8px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <header><h1>🗑 Konto löschen</h1><a class="back" href="index.html">← Spiele</a></header>
+  <div id="cloudMount"></div>
+  <div id="out" hidden class="card"><h2>Dein Konto ist gelöscht.</h2><ol class="steps" id="steps"></ol><p id="after"></p></div>
+  <div id="form" hidden>
+    <div class="card warn">
+      <h2>⚠ Das kann nicht rückgängig gemacht werden</h2>
+      <p>Wir löschen <b>alles, was zu deinem Konto gespeichert ist</b>:</p>
+      <ul>
+        <li>dein Konto bei uns (Name, E-Mail-Adresse, Profilbild) und die Anmeldung</li>
+        <li>dein öffentliches Profil und deinen Eintrag in der Nutzerliste</li>
+        <li>alle Spielstände und Cloud-Daten: Spielfortschritt, Erfolge, Favoriten, gemerkte Songs, Mein-Radio-Daten</li>
+        <li>deine Ranglisten-Einträge, Freundeslisten und Online-Angaben in den Spielen</li>
+        <li>deine Bewertungen</li>
+      </ul>
+      <p>Anonymisiert (ohne Namen und ohne Bezug zu dir) bleiben deine <b>Kommentare</b> und bereits <b>veröffentlichte Magazin-Beiträge</b>; nicht veröffentlichte Beitragsentwürfe werden gelöscht.</p>
+      <p>Andere Geräte: Daten, die noch auf deinen Geräten liegen, bleiben dort und werden nicht mehr abgeglichen. Reste in der Firebase-Anmeldung von Google löschen wir auf Anfrage per E-Mail.</p>
+      <div class="chk"><input type="checkbox" id="loc" checked><span>Auch die Spielstände auf <b>diesem Gerät</b> löschen (empfohlen, sonst könnten sie bei einer neuen Anmeldung wieder ins Konto geladen werden).</span></div>
+      <label for="word">Zum Bestätigen tippe <b>LÖSCHEN</b></label>
+      <input type="text" id="word" autocomplete="off" placeholder="LÖSCHEN">
+      <button class="btn bad" id="go" type="button" disabled>Konto endgültig löschen</button>
+      <div class="err" id="err" role="alert"></div>
+    </div>
+  </div>
+</main>
+<script src="cloud/anmacha-cloud.js" data-game="konto-loeschen" data-prefix="anmacha-konto-loeschen-ohne-spielstand" data-mount="#cloudMount" data-sync="off" data-board="off" data-hint="Melde dich an, um dein Konto zu löschen." defer></script>
+<script src="cloud/anmacha-board.js" defer></script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  var Cloud = window.AnMaChaCloud, B = window.AnMaChaBoard, $ = function (id) { return document.getElementById(id); }, was = null, running = false;
+  var API_KEY = 'AIzaSyB-4IuC85PsOrvsY0GkBGsCIXdW_i1SrnM';
+  if (new URLSearchParams(location.search).get('embed') === '1') document.body.classList.add('embed');
+  if (!Cloud) { $('mount') ; $('cloudMount').textContent = 'Nicht verfügbar.'; return; }
+  function step(text, ok) { var li = document.createElement('li'); li.innerHTML = '<span class="' + (ok ? 'ok' : 'no') + '">' + (ok ? '✓' : '–') + '</span><span></span>'; li.lastChild.textContent = text; $('steps').appendChild(li); }
+  function show() {
+    if (running) return;
+    Cloud.serverToken().then(function (t) { $('cloudMount').hidden = !!t; $('form').hidden = !t; });
+  }
+  $('word').addEventListener('input', function () { $('go').disabled = $('word').value.trim().toUpperCase() !== 'LÖSCHEN'; });
+
+  // Reste in Firestore (Ranglisten, Freunde, alte Sicherungen, Online-Angaben): mit dem Firebase-Token des Kontos, soweit die Regeln es erlauben (best effort)
+  function cleanFirestore(acc) {
+    var FS = Cloud.FS, uid = acc.uid, tok = acc.token, H = { Authorization: 'Bearer ' + tok }, done = 0;
+    function del(name) { return fetch('https://firestore.googleapis.com/v1/' + name.replace(/^\//, ''), { method: 'DELETE', headers: H }).then(function (r) { if (r.ok) done++; }).catch(function () { }); }
+    function delPath(p) { return del('projects/' + acc.project + '/databases/(default)/documents/' + p); }
+    var jobs = [];
+    jobs.push(fetch('sync/catalog.json').then(function (r) { return r.ok ? r.json() : { games: [] }; }).catch(function () { return { games: [] }; }).then(function (c) { return B && B.removeAll ? B.removeAll(c.games || []) : null; }).catch(function () { }));
+    jobs.push(fetch(FS + '/friends/' + uid + ':runQuery', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, H), body: JSON.stringify({ structuredQuery: { from: [{ collectionId: 'f' }], limit: 100 } }) }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) { return Promise.all((rows || []).filter(function (x) { return x.document; }).map(function (x) { return del(x.document.name); })); }).catch(function () { }));
+    jobs.push(fetch(FS + '/users/' + uid + '/saves?pageSize=100', { headers: H }).then(function (r) { return r.ok ? r.json() : {}; }).then(function (j) { return Promise.all((j.documents || []).map(function (d) { return del(d.name); })); }).catch(function () { }));
+    ['ricoville_cities/' + uid, 'ricopoly_board/' + uid, 'chat_online/' + uid].forEach(function (p) { jobs.push(delPath(p)); });
+    return Promise.all(jobs).then(function () { return done; });
+  }
+
+  $('go').addEventListener('click', function () {
+    if (running || $('word').value.trim().toUpperCase() !== 'LÖSCHEN') return;
+    running = true; $('go').disabled = true; $('err').textContent = 'Lösche …';
+    var wipeLocal = $('loc').checked, fbTok = '';
+    Cloud.account().then(function (acc) {
+      fbTok = acc ? acc.token : '';
+      return acc ? cleanFirestore(acc).catch(function () { return 0; }) : 0;
+    }).then(function (nFs) {
+      return Cloud.serverToken().then(function (t) {
+        if (!t) throw new Error('Bitte melde dich neu an.');
+        return fetch(Cloud.API + '?action=account_delete', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify({ confirm: $('word').value }) });
+      }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok || j.status !== 'ok') throw new Error(j.message || 'Das Löschen hat nicht geklappt.'); return { d: j.deleted || {}, nFs: nFs }; }); });
+    }).then(function (res) {
+      var d = res.d;
+      step('Konto und Anmeldung bei uns gelöscht', !!d.account);
+      step('Öffentliches Profil gelöscht', !!d.profile);
+      step(d.saves + ' Spielstände und Cloud-Daten gelöscht', d.saves > 0);
+      step('Bewertungen gelöscht (' + (d.ratings || 0) + ')', true);
+      step('Kommentare anonymisiert (' + (d.comments || 0) + '), Beitragsentwürfe gelöscht (' + (d.drafts || 0) + ')', true);
+      step('Reste in den Spielen (Ranglisten, Freunde, Online-Angaben): ' + res.nFs + ' Einträge gelöscht', res.nFs > 0);
+      var fb = fbTok ? fetch('https://identitytoolkit.googleapis.com/v1/accounts:delete?key=' + API_KEY, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idToken: fbTok }) }).then(function (r) { return r.ok; }).catch(function () { return false; }) : Promise.resolve(false);
+      return fb.then(function (ok) { step(ok ? 'Firebase-Anmeldung gelöscht' : 'Firebase-Anmeldung: Löschung auf Anfrage per E-Mail (ricorewioriginal@gmail.com)', ok); });
+    }).then(function () {
+      try { Cloud.signOut(); } catch (e) { }
+      if (wipeLocal) { try { localStorage.clear(); } catch (e) { } }
+      try { window.parent.postMessage({ type: 'easygames:account-deleted' }, '*'); } catch (e) { }
+      try { if (window.RRWNative && window.RRWNative.accountDeleted) window.RRWNative.accountDeleted(); } catch (e) { }
+      try { if (window.chrome && window.chrome.webview) window.chrome.webview.postMessage('account-deleted'); } catch (e) { }
+      $('form').hidden = true; $('out').hidden = false;
+      $('after').textContent = wipeLocal ? 'Die Spielstände auf diesem Gerät wurden ebenfalls gelöscht. Auf anderen Geräten kannst du sie in den Einstellungen löschen.' : 'Spielstände auf diesem Gerät bleiben bestehen.';
+    }).catch(function (e) { $('err').textContent = (e && e.message) || 'Das Löschen hat nicht geklappt.'; $('go').disabled = false; running = false; });
+  });
+  setInterval(function () { var u = !!(Cloud.user && Cloud.user()); if (u !== was) { was = u; show(); } }, 800);
+});
+</script>
+</body>
+</html>

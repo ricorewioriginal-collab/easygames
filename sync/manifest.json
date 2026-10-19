@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c8e08441ba6d",
- "generated": "2026-10-19T02:47:30+02:00",
- "commit": "949f0502b91a808021eecf01d21af423081c7627",
+ "version": "d218bae72aa0",
+ "generated": "2026-10-19T00:58:54+00:00",
+ "commit": "aa150b207024872b6b5b7ba24cbc2e205e1cb963",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5253,8 +5253,8 @@
   },
   {
    "p": "cloud/anmacha-account.js",
-   "s": 26586,
-   "h": "09f4367eebce0cbc69a3d3081a5e1720325c3a53ccfcbad767a9e2decbd31329"
+   "s": 27114,
+   "h": "77c40defe4531e0c0de099947ed21dc07756cbb058d8b7f1c80354a3244a783d"
   },
   {
    "p": "cloud/anmacha-ach.js",
@@ -5308,8 +5308,8 @@
   },
   {
    "p": "cloud/radio-profil.js",
-   "s": 23588,
-   "h": "cd01c730ae6e65e627a4e3414810fcf6dafee820bb2ea2a7282cfedc682db5b0"
+   "s": 24888,
+   "h": "85d6098c6f47bbfcfbf7658592ab13f52df1f7983fd62feb7baa658f8475cd3b"
   },
   {
    "p": "colorpop-universe/card.png",
@@ -5438,8 +5438,8 @@
   },
   {
    "p": "datenschutz.html",
-   "s": 13604,
-   "h": "ee4ea09ddad3b37a191e419a1a7651b060f709fc7ba1b3db708f006e1a409204"
+   "s": 14098,
+   "h": "703bd63fc54e4a871f68666d79f580249498de3d5a649264ea51254cb18b1146"
   },
   {
    "p": "device.js",
@@ -5835,6 +5835,11 @@
    "p": "kiko-sterneninseln/vite.config.js",
    "s": 214,
    "h": "455543146b29d9a6f7943ac05350b9e95f9dfdf2f100babff20a2f6a4802f316"
+  },
+  {
+   "p": "konto-loeschen.html",
+   "s": 10303,
+   "h": "6abd805c249160c1c1b6dbe28ed8f59edb7b9ffaa83a06e39f7a7e6a1c700e5e"
   },
   {
    "p": "konto.html",
