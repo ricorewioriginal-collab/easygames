@@ -97,7 +97,15 @@
     Promise.all([call('pubprofile_view', { qs: 'n=' + encodeURIComponent(o.slug || '') }), catalog(o.catalogUrl)]).then(function (a) {
       var r = a[0];
       if (r.status !== 'ok') { frame(host, '<div class="rrp-card">' + esc(r.message || 'Dieses Profil gibt es nicht.') + '</div><button type="button" class="rrp-btn" data-rrp-go="list">← Nutzerliste</button>', { title: 'Profil', html: '' }); return; }
-      frame(host, viewHtml(r.profile, a[1]) + '<p><button type="button" class="rrp-btn" data-rrp-go="list">← Nutzerliste</button> ' + (tok ? '<button type="button" class="rrp-btn" data-rrp-go="me">Mein Profil</button>' : '') + '</p>', { title: 'Profil', html: '' });
+      frame(host, viewHtml(r.profile, a[1]) + '<p><button type="button" class="rrp-btn" data-rrp-go="list">← Nutzerliste</button> ' + (tok ? '<button type="button" class="rrp-btn" data-rrp-go="me">Mein Profil</button> ' : '') + '<button type="button" class="rrp-btn" id="rrp-rep">🚩 Profil melden</button></p><div class="rrp-card" id="rrp-repbox" hidden><label for="rrp-reason">Was ist nicht in Ordnung?</label><textarea id="rrp-reason" rows="2" maxlength="200" placeholder="z. B. Beleidigung, Spam, unpassender Link"></textarea><p><button type="button" class="rrp-btn pri" id="rrp-repgo">Meldung senden</button></p><div class="rrp-msg" id="rrp-repmsg" role="status"></div></div>', { title: 'Profil', html: '' });
+      var rb = host.querySelector('#rrp-rep'), bx = host.querySelector('#rrp-repbox'), go = host.querySelector('#rrp-repgo'), mg = host.querySelector('#rrp-repmsg');
+      rb.onclick = function () { bx.hidden = !bx.hidden; };
+      go.onclick = function () {
+        go.disabled = true; mg.className = 'rrp-msg'; mg.textContent = 'Sende …';
+        call('pubprofile_report', { body: { n: o.slug, reason: host.querySelector('#rrp-reason').value } }).then(function (x) {
+          if (x.status === 'ok') { mg.className = 'rrp-msg ok'; mg.textContent = x.message || 'Danke, wir schauen uns das an.'; } else { mg.className = 'rrp-msg err'; mg.textContent = x.message || 'Das hat nicht geklappt.'; go.disabled = false; }
+        }).catch(function () { mg.className = 'rrp-msg err'; mg.textContent = 'Keine Verbindung.'; go.disabled = false; });
+      };
     }).catch(function () { frame(host, '<div class="rrp-card">Das Profil konnte gerade nicht geladen werden.</div>', { title: 'Profil', html: '' }); });
   }
 
