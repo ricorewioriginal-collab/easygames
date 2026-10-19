@@ -233,7 +233,7 @@
       function close() { ov.hidden = true; ov.style.display = 'none'; f.setAttribute('src', 'about:blank'); doc.documentElement.style.overflow = ''; }
       x.onclick = close; h.appendChild(t); h.appendChild(x); ov.appendChild(h); ov.appendChild(f); doc.body.appendChild(ov);
       doc.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !ov.hidden) close(); });
-      root.addEventListener('message', function (e) { if (e.source === f.contentWindow && e.data && (e.data.type === 'easygames:close' || e.data === 'easygames:close')) close(); });
+      root.addEventListener('message', function (e) { if (e.source === f.contentWindow && e.data && (e.data.type === 'easygames:close' || e.data === 'easygames:close')) close(); if (e.source === f.contentWindow && e.data && e.data.type === 'easygames:account-deleted') { try { store(TOK, null); store(USR, null); store(ON, null); var cc = cloud(); if (cc && cc.signOut) cc.signOut(); } catch (x) { } emit(); } });   // Konto gelöscht (konto-loeschen.html): hier abmelden
     }
     ov.firstChild.firstChild.textContent = title; ov.lastChild.setAttribute('src', url); ov.hidden = false; ov.style.display = 'flex'; doc.documentElement.style.overflow = 'hidden';
   }
@@ -242,7 +242,7 @@
       return { icon: icon, label: label, href: base + p + '.html', blank: foreign, fn: foreign ? function () { openPage(base + p + '.html?embed=1', label); } : null };
     };
     return [eg('konto', '👤', 'Konto & Übersicht'), eg('profil', '🙂', 'Profil & Freunde'), eg('erfolge', '🏅', 'Meine Erfolge'), eg('ranglisten', '🏆', 'Ranglisten'), eg('heute', '🎯', 'Heute'), eg('chat', '💬', 'Chat'), '-',
-      { icon: '☁', label: 'Spielstände jetzt sichern', fn: function () { var c = cloud(); if (c && c.sync) c.sync(false, true); } }, eg('bug', '🐞', 'Fehler melden')];
+      { icon: '☁', label: 'Spielstände jetzt sichern', fn: function () { var c = cloud(); if (c && c.sync) c.sync(false, true); } }, eg('bug', '🐞', 'Fehler melden'), eg('konto-loeschen', '🗑', 'Konto löschen')];
   }
   // mount(ziel, { base: easygames-Adresse, items: eigene Punkte (stehen oben, z. B. „Mein Radio“) })
   function mount(target, o) {

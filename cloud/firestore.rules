@@ -8,7 +8,7 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['d', 't'])
         && request.resource.data.d is string
         && request.resource.data.d.size() < 950000;
-      allow delete: if false;
+      allow delete: if request.auth != null && request.auth.uid == uid;   // nur für die Konto-Löschung (konto-loeschen.html): eigene alte Sicherungen entfernen
     }
     // Ranglisten (nur mit Freigabe des Spielers, siehe cloud/anmacha-board.js): öffentlich lesbar; jeder darf nur seinen EIGENEN Eintrag
     // schreiben (Dokument-ID = eigene uid), nur mit Spitzname + Wert, ein bestehender Eintrag darf nur besser werden und jederzeit gelöscht werden.
