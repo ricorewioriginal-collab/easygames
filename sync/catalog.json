@@ -210,6 +210,41 @@
    }
   },
   {
+   "id": "colorpop-universe",
+   "title": "ColorPop Universe – Die bunte Welt der knallenden Steine",
+   "desc": "Antippen. Abräumen. Universen entdecken. Knobelspiel nach dem SameGame-Prinzip: Gruppen aus mindestens 2 gleichen Steinen antippen, alles darüber fällt, leere Spalten rücken nach links, große Gruppen bringen (n−2)²×10 Punkte, ein leeres Brett +1000. 300 geprüfte Level in 12 Welten, Spezialsteine und Hindernisse, 14 Modi (Klassiker, Zen, Sprint 60, Zeitattacke, Zuglimit, Puzzle-Labor, Farbchaos, Gravitation+, Daily Pop, Wochenliga, Endlos-Turm, KI-Duell, Lokal zu zweit), 53 Erfolge, 38 Designs. Touch, Maus, Tastatur und Controller, offline spielbar, ohne Echtgeld und Werbung.",
+   "icon": "🟣",
+   "img": "colorpop-universe/card.svg",
+   "bg": "linear-gradient(145deg,#3a1460,#7b2ff7 55%,#ff6fb5)",
+   "glow": "rgba(255,111,181,.5)",
+   "path": "colorpop-universe/",
+   "modes": {
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "ColorPop Universe ist ein Knobelspiel nach dem SameGame-Prinzip. Tippe auf eine Gruppe aus mindestens 2 gleichfarbigen Steinen, die sich waagerecht oder senkrecht berühren: Die Gruppe knallt weg, alles darüber fällt nach unten und leere Spalten rücken nach links. Punkte: (Steine − 2)² × 10, ein komplett leeres Brett bringt +1000. Die Runde endet, wenn das Brett leer ist oder keine Gruppe mehr übrig ist. Im Abenteuer warten 300 Level in 12 Welten mit Zielen (Punkte, Brett leeren, Farben sammeln, Eis brechen, Sammelobjekte nach unten bringen …), Sternen und neuen Steinen wie Bombe, Rakete, Prisma, Regenbogen, Kettenblitz, Anker, Neonstein und Windpfeil sowie Hindernissen wie Eis, Holz, Fels, Inseln und Portalen. Dazu 13 weitere Modi: Klassiker, Zen, Sprint 60, Zeitattacke, Zuglimit, Puzzle-Labor, Farbchaos, Gravitation+, Daily Pop, Wochenliga, Endlos-Turm, KI-Duell gegen einen Bot und Lokal zu zweit. Funken gibt es nur fürs Spielen; sie kaufen Booster. Kein Echtgeld, keine Werbung. Der Spielstand wird lokal gespeichert und optional mit Google synchronisiert.",
+    "steuerung": [
+     "Smartphone/Tablet: Gruppe antippen. Gedrückt halten zeigt Gruppe und Punkte, ohne zu ziehen. Zwei Finger = Zoom. Optional Bestätigungs-Tipp in den Einstellungen.",
+     "PC: Mausklick wählt, Darüberfahren zeigt die Gruppe, Mausrad zoomt. Tastatur: Pfeile oder W A S D bewegen den Cursor, Enter/Leertaste wählt, H Hinweis, U Rückgängig, R Neustart, P/Esc Pause, M Ton, F Vollbild, 1–4 Booster (Tasten frei belegbar).",
+     "Controller: Steuerkreuz bewegt den Cursor, A wählt, B zurück, X Hinweis, Y Rückgängig, LB/RB Booster, Start Pause, Select Ton."
+    ],
+    "tipps": [
+     "Große Gruppen lohnen sich enorm: 10 Steine bringen 640 Punkte, 2 Steine 0.",
+     "Räume zuerst kleine Farben weg, die große Gruppen einer anderen Farbe trennen.",
+     "Achte auf einzelne Steine – übrig gebliebene Einzelsteine verhindern das leere Brett.",
+     "Im Abenteuer kannst du nach erreichtem Ziel weiterspielen und mit „Abschließen“ beenden, wann du willst."
+    ]
+   },
+   "size": 369390,
+   "files": 24,
+   "offline": true,
+   "cloud": {
+    "game": "colorpop-universe",
+    "prefix": "colorpop-universe-v1"
+   }
+  },
+  {
    "id": "rico-flap",
    "title": "Rico Flap 3D",
    "desc": "Der Flatter-Klassiker in moderner 3D-Optik: Rico im RicoReWi-Hoodie flattert durch die Lücken der Funktürme. 10 Level in 5 Welten (Stadt, Wald, Wüste, Eis, Neon-Nacht), bewegliche Türme, Noten für bis zu drei Sterne und ein Endlos-Modus mit Rekord. Touch, Tastatur, Maus und Gamecontroller; lokaler Spielstand und optionaler Google-Speicher.",

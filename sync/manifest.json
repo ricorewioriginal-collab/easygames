@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "ee10c7aca7ac",
- "generated": "2026-10-19T00:40:32+00:00",
- "commit": "04e7d4d63d44a122ea428a1df7021647fa0b096d",
+ "version": "f1c33abeb5b9",
+ "generated": "2026-10-19T00:46:54+00:00",
+ "commit": "8725d0888b1488a7e81888448d8c0cfc225a405f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5243,8 +5243,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2380,
-   "h": "d6205daa79d7f1f9ca775c06d3f4fee5529a3e58f27fe2fe287829e05841e9e3"
+   "s": 2411,
+   "h": "c935c3e2c08cf2a52eb186197952d1b6f300f55c27e058491178f0ff97f86e4c"
   },
   {
    "p": "chat.html",
@@ -5258,8 +5258,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 21975,
-   "h": "ffd0afad05d9f1944e276976b6b60d9f06f4031a11180bec7e5cce8d2b866fc8"
+   "s": 21996,
+   "h": "bec90603929ebb4971399373b77a58decdad8fca745b2fd2a35b40e4044edf6e"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -5312,9 +5312,129 @@
    "h": "cd01c730ae6e65e627a4e3414810fcf6dafee820bb2ea2a7282cfedc682db5b0"
   },
   {
+   "p": "colorpop-universe/card.svg",
+   "s": 2717,
+   "h": "4777c1fe4f6c5546ec08b9df0f152785f31e02953fac9eac178294d2784e6030"
+  },
+  {
+   "p": "colorpop-universe/index.html",
+   "s": 19252,
+   "h": "94a845f5f469d001db60d170d64ed9877ec66e25a0ce9bed39683556d05d6a87"
+  },
+  {
+   "p": "colorpop-universe/manifest.webmanifest",
+   "s": 829,
+   "h": "ccd80bf22dae24005b094b5f13e32641c579b668714db8f5b8926d0c692f4db6"
+  },
+  {
+   "p": "colorpop-universe/src/audio/audio.js",
+   "s": 9871,
+   "h": "ac999e58e0b0dfe184c73ec6563761713bff3ff3806f0d72262f7be3be110ec3"
+  },
+  {
+   "p": "colorpop-universe/src/core/board.js",
+   "s": 17864,
+   "h": "6f307d2cd48daa4a88c3b718bbccc3b39ed8bf0ed7ba0b371ff1aa691964ea8b"
+  },
+  {
+   "p": "colorpop-universe/src/core/bots.js",
+   "s": 5814,
+   "h": "3e2bf25ccaf585736e46f7aa721749bff7fef2337aec90006b98a5c406902b8e"
+  },
+  {
+   "p": "colorpop-universe/src/core/levelgen.js",
+   "s": 6377,
+   "h": "7aa2406c9cbd1ef258321eee021bee630c76ac34967f3e3f739542806aac839f"
+  },
+  {
+   "p": "colorpop-universe/src/core/levels.js",
+   "s": 3516,
+   "h": "8251b9abfeac5baa41ce3bf93e435016ede9f2c445e15d7bc274599471baa229"
+  },
+  {
+   "p": "colorpop-universe/src/core/rng.js",
+   "s": 1677,
+   "h": "690cdfdd709270b8b70cac90538d92c195e0dc55f950a49c36ab0c64ccd191df"
+  },
+  {
+   "p": "colorpop-universe/src/core/rules.js",
+   "s": 14147,
+   "h": "f538fedb3b7150fe0510303bfe81ab62286b7350fca7526dc72da29eb8aca7dc"
+  },
+  {
+   "p": "colorpop-universe/src/data/achievements.js",
+   "s": 6736,
+   "h": "3ae1337732e91c9c73e45a71f84a4d1b78f4e961b558aa5839de112fb344018f"
+  },
+  {
+   "p": "colorpop-universe/src/data/levels.js",
+   "s": 70766,
+   "h": "6232e0961fc0ffa9a2844735e094a4c43eaa796ffe030113dcb90b2965f8aa8b"
+  },
+  {
+   "p": "colorpop-universe/src/data/puzzles.js",
+   "s": 3329,
+   "h": "252d23ce4db38cc0178b7c326c3aa59f119716e5829a2a6afbc8cff9716dbd8b"
+  },
+  {
+   "p": "colorpop-universe/src/data/skins.js",
+   "s": 5161,
+   "h": "615959cb388a48f1234bc390343adeab029bed16e3a96fe1cde22f22e92d980b"
+  },
+  {
+   "p": "colorpop-universe/src/data/worlds.js",
+   "s": 11036,
+   "h": "ecf992aae29e1ee554ffcb69ddc7fe25e6ae5e69375cdb9f3d1e24ffabf79e86"
+  },
+  {
+   "p": "colorpop-universe/src/input/input.js",
+   "s": 5413,
+   "h": "57d3294564e42d21ccf08f03fbca873ce728c585a91f8d5a2f3168028d6881db"
+  },
+  {
+   "p": "colorpop-universe/src/main.js",
+   "s": 47471,
+   "h": "40041ca5d72accf11c1f713ba5790895d6cab1711b8a972011e6b6c6204bbd04"
+  },
+  {
+   "p": "colorpop-universe/src/modes/modes.js",
+   "s": 16111,
+   "h": "6bbe7e81da828063fa2e141e7080489f2efb27b2640730c9eb4be95b32c88d07"
+  },
+  {
+   "p": "colorpop-universe/src/render/renderer.js",
+   "s": 22044,
+   "h": "a7c1cf77e321e769a7272172fbc70087cc3697b0b11ce0ae0a2a198508454a00"
+  },
+  {
+   "p": "colorpop-universe/src/render/sprites.js",
+   "s": 20975,
+   "h": "9746305b85f3606376140d29b0abf647578984bec5317e3f4c910b71bdc65d98"
+  },
+  {
+   "p": "colorpop-universe/src/storage/save.js",
+   "s": 15877,
+   "h": "7ddbd0d2dd2df927f3eb02bb30226df6795a61c258c4556aba42718fae13e490"
+  },
+  {
+   "p": "colorpop-universe/src/ui/ui.js",
+   "s": 35592,
+   "h": "c767dbb7d62ed799ed21228a4ed29ebecf6502223f002e2f9facd8936633652b"
+  },
+  {
+   "p": "colorpop-universe/styles/main.css",
+   "s": 24773,
+   "h": "8c4a3ba0a35b9228c9a0d41d8b4c55b236957e78725c13bd3b34d60653f1dad9"
+  },
+  {
+   "p": "colorpop-universe/sw.js",
+   "s": 2042,
+   "h": "afd53a8670a60956a19dffc8926b0302154fbd6b0a0114a80d50b1ddf74e9b71"
+  },
+  {
    "p": "datenschutz.html",
-   "s": 13443,
-   "h": "142aef54305e316bfd0bde0119cbb06da988767947b975c0e885c72d56d3c71f"
+   "s": 13604,
+   "h": "ee4ea09ddad3b37a191e419a1a7651b060f709fc7ba1b3db708f006e1a409204"
   },
   {
    "p": "device.js",
@@ -5418,8 +5538,8 @@
   },
   {
    "p": "games.js",
-   "s": 26950,
-   "h": "84b83cc4125932233728d7784dfefe69b0ce5ef13cf92ec2dfe29cf5817ac1ca"
+   "s": 27817,
+   "h": "0fcf2da8bb4e3974500f03d867604c028534e8d078ccac017eb0abd5a3e5013a"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5578,8 +5698,8 @@
   },
   {
    "p": "guides.js",
-   "s": 74974,
-   "h": "943a418220f0b61e3c6c6ef8d3d8174560419e18b0feb790f016702104aa465e"
+   "s": 77050,
+   "h": "588db5da0c54f4b1738a5bed569bef5aecc79a22ae41aff765bf75c47a30320f"
   },
   {
    "p": "heute.html",
@@ -5933,8 +6053,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2115,
-   "h": "7b09995a535c93ddc617a083b336760765cf0b7bb75d2b179e60d9a25a071546"
+   "s": 2155,
+   "h": "547201d2a41d3b7755902dbdbe641d9e31b6bef77dfd7e2a817af1e320225a9d"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -6993,8 +7113,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 116470,
-   "h": "1c250c81e12a21c33ef9707507777f70e2be2d5972eee185ec53d2e58a6905a7"
+   "s": 119716,
+   "h": "7e8b676fbef4334fc1ee10184793dba8b176bec1fa5925e73e76ccb02fedae00"
   },
   {
    "p": "taschi/card.svg",
