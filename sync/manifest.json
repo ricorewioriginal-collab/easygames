@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "bdde19547b19",
- "generated": "2026-10-19T02:12:43+02:00",
- "commit": "4e911559aebac00eb8ab6b64a89befdd3b13f4f0",
+ "version": "2b0c6559aaad",
+ "generated": "2026-10-19T00:07:35+00:00",
+ "commit": "e3eec93069a615e880d14b3c658ec4be34726e41",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5307,6 +5307,11 @@
    "h": "ce8d8767fca2f1c1cf4141ff18f63c28d46061bf1e460f65811c21d97a98e6ab"
   },
   {
+   "p": "datenschutz.html",
+   "s": 12645,
+   "h": "d8e66a0799009957b724fad89473cb507e72364c655dcf208880ef4eb27df31e"
+  },
+  {
    "p": "device.js",
    "s": 7239,
    "h": "f93fa48549082998a014156f40b3962bd9a3803caa3a660870a6c4f93957cfc5"
@@ -5577,9 +5582,14 @@
    "h": "b69f43a57c3441bd3133dca3f563f304b3a2b28346b6afcdccf6fd5ed256dd3d"
   },
   {
+   "p": "impressum.html",
+   "s": 4376,
+   "h": "c6c6268efc28fa1de0177b15097c8151f1d05efc7711b288a1afbad5ce19558d"
+  },
+  {
    "p": "index.html",
-   "s": 90452,
-   "h": "960f524a8a23a03da75cd2f9d9fc5dc134159c50c2cdc43577daba686715473f"
+   "s": 90584,
+   "h": "ae1b2669aab17e8aec906d6af4dedcd4af789bc5f6734935c37cd9c05211cc1f"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
