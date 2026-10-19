@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "40c7dc0ede51",
- "generated": "2026-10-19T03:05:31+02:00",
- "commit": "73f16894f8e8478aefe51be2fe812add8b401d5a",
+ "version": "d218bae72aa0",
+ "generated": "2026-10-19T00:58:54+00:00",
+ "commit": "aa150b207024872b6b5b7ba24cbc2e205e1cb963",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5312,6 +5312,11 @@
    "h": "85d6098c6f47bbfcfbf7658592ab13f52df1f7983fd62feb7baa658f8475cd3b"
   },
   {
+   "p": "colorpop-universe/card.png",
+   "s": 154091,
+   "h": "bf57a30a63edfa590c43061e54e543e8cd31995a4b0702abd10a24b0808203ba"
+  },
+  {
    "p": "colorpop-universe/card.svg",
    "s": 2717,
    "h": "4777c1fe4f6c5546ec08b9df0f152785f31e02953fac9eac178294d2784e6030"
@@ -7119,7 +7124,7 @@
   {
    "p": "sync/catalog.json",
    "s": 119716,
-   "h": "7e8b676fbef4334fc1ee10184793dba8b176bec1fa5925e73e76ccb02fedae00"
+   "h": "bfa2b7ce4ac1d6a0d40e71a4fc74b33b9e52f6d050a15f9a7b0da89d76b4dbd6"
   },
   {
    "p": "taschi/card.svg",
