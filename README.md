@@ -15,6 +15,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | KIKO – Das Geheimnis der Sterneninseln – acht 3D-Level in vier Welten, Kristalle, Rätsel, Endgegner, Touch und Gamepad, lokaler Spielstand | [`kiko-sterneninseln/`](kiko-sterneninseln/) |
 | Krawallvögel 3D – Schleuder-Physikspiel mit 150 Leveln in 10 Sender-Welten, 8 Vogelarten mit Fähigkeiten, 6 Schweinetypen, Glas/Holz/Stein/TNT, Endgegner König Grunz, Power-ups, goldene Sender-Kisten und Senderwand; Touch, Maus, Tastatur, Gamecontroller, Google-Spielstand, Offline-PWA (Three.js + planck.js, Sounds und Musik im Browser erzeugt; Tests: `node tools/test-krawallvoegel.cjs`) | [`krawallvoegel/`](krawallvoegel/) |
 | Funkblasen – Bubble Shooter: 3D-Kugeln auf festem Sechseckgitter, 150 Level in 10 Welten, Endlosmodus, Tagesaufgabe, Freies Spiel, Spezialblasen (Bombe, Regenbogen, Blitz, Eis, Kette, Stern), Kristalle, Steine, Schalter, 30 Erfolge, Designs nur zur Optik, Maskottchen Funki; Touch, Maus, Tastatur, Gamecontroller, Google-Spielstand, Offline-PWA (Three.js, Sounds und Musik im Browser erzeugt; Tests: `node --test funkblasen/tests/*.test.js`) | [`funkblasen/`](funkblasen/) |
+| ColorPop Universe – Die bunte Welt der knallenden Steine: SameGame-Knobelspiel mit 300 geprüften Leveln in 12 Welten, Spezialsteinen und Hindernissen, 14 Modi (Klassiker, Zen, Sprint, Zeitattacke, Zuglimit, Puzzle-Labor, Farbchaos, Gravitation+, Daily Pop, Wochenliga, Endlos-Turm, KI-Duell, Lokal zu zweit), 53 Erfolge, 38 Designs, prozeduraler Musik, Touch/Maus/Tastatur/Controller, Offline-PWA, Google-Spielstand | [`colorpop-universe/`](colorpop-universe/) |
 | AnMaCha Radio Maze 3D – Arcade-Labyrinth-Klassiker in 3D mit Original-Regeln, 60 Level, Senderlogos als Bonus, Google-Spielstand, Offline-PWA (Three.js) | [`radio-maze/`](radio-maze/) |
 | ZEITSPRUNG WISSEN – moderierte 3D-Wissensshow nach dem Zeitstrahl-Prinzip: 236 Ereignisse aus Geschichte, Politik, Erdkunde, Wissenschaft und Kultur (776 v. Chr. bis heute), 377 Wissensfragen, „Was war zuerst?“-Runden, 38 Bildrätsel, 16 historische Clips von Wikimedia Commons und 25 Songs zu Ereignissen über Deezer; A–D-Jahreswahl oder Zeitstrahl, TV-Handys per WR-Code/PIN, Google-Speicherung | [`zeitsprung-wissen/`](zeitsprung-wissen/) |
 | ZEITSPRUNG CASTINGSHOW – moderierte 3D-Castingshow-Quizshow nach dem Zeitstrahl-Prinzip: 265 Show-Momente, 1247 Fragen zu DSDS (alle Sieger und Top 10), Das Supertalent, The Voice, Popstars, GNTM, Idol, X Factor und Got Talent, 31 YouTube-Videos, 44 Siegersongs über Deezer und 31 Bildrätsel; A–D-Jahreswahl oder Zeitstrahl, TV-Handys per WR-Code/PIN, Google-Speicherung | [`zeitsprung-castingshow/`](zeitsprung-castingshow/) |
@@ -466,6 +467,16 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 - **Inhalte:** `content.js` (18 Kandidaten, 40 Pult-Besetzungen, 14 Quizfragen, Moderator- und Date-Texte) – prüfen mit `node MachMichAus/tests/check-content.js`.
 - **Technik:** `engine.js` (Regeln, rein, mit Startwert nachspielbar), `studio.js` (Three.js), `panel.js`/`games.js` (Eingaben und Talent-Spiel, gleich am Gastgeber und Handy), `avatars.js`, `pair.js`/`controller.js`, `audio.js`, `main.js`.
 - **Tests:** `node MachMichAus/tests/engine-tests.js` (Passgenauigkeit, Phasen, Joker, Blackout, 400 KI-Runden mit Balance), Browser-Tests `tests/e2e.mjs` (ganze Show) und `tests/e2e-pair.mjs` (2 Handys).
+
+## ColorPop Universe – Die bunte Welt der knallenden Steine
+
+Eigenes Knobelspiel nach dem SameGame-Prinzip (Ordner `colorpop-universe/`, ohne Bibliotheken, Canvas 2D):
+
+- Regeln rein und deterministisch in `src/core` (Brett, Gruppen, Schwerkraft, Spalten, Spezialsteine, Punkte (n−2)²×10, +1000 für leeres Brett), Modi in `src/modes/modes.js`. Der Renderer zeichnet nur.
+- 300 Level in 12 Welten, erzeugt von `tools/gen-levels.js` mit festem Startwert. Jedes Level hat ein Lösungszertifikat (`tools/level-certs.json`), das `tools/validate-levels.js` mit der echten Engine nachspielt (3 Sterne ohne Booster). 30 Rätsel mit per Breitensuche bewiesener kleinster Zugzahl.
+- 14 Modi, KI-Duell mit echtem Bot in drei Stärken, Lokal zu zweit (Zugwechsel oder nacheinander). Kein Online-Duell.
+- Spielstand `colorpop-universe-v1.*` (bis zu 3 Profile, Export/Import, Sicherung kaputter Stände), Google-Speicher über `cloud/anmacha-cloud.js`. Funken gibt es nur durchs Spielen; kein Echtgeld, keine Werbung.
+- Tests: `node --test colorpop-universe/tests/*.test.js`, `node colorpop-universe/tools/validate-levels.js`, Browser-Test (Playwright): `node colorpop-universe/tests/smoke.js`.
 
 ## Funkblasen – Bubble Shooter
 

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" width="640" height="400">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a1460"/><stop offset=".55" stop-color="#7b2ff7"/><stop offset="1" stop-color="#ff6fb5"/></linearGradient>
+    <radialGradient id="glow" cx=".5" cy=".45" r=".6"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <linearGradient id="gl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".75"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <g id="s"><rect x="-26" y="-26" width="52" height="52" rx="14"/><rect x="-21" y="-22" width="42" height="22" rx="10" fill="url(#gl)"/></g>
+  </defs>
+  <rect width="640" height="400" fill="url(#bg)"/>
+  <rect width="640" height="400" fill="url(#glow)"/>
+  <g opacity=".22" fill="#fff"><circle cx="70" cy="60" r="4"/><circle cx="590" cy="80" r="3"/><circle cx="540" cy="330" r="5"/><circle cx="110" cy="340" r="3"/><circle cx="320" cy="30" r="2.5"/></g>
+  <g transform="translate(198 84) scale(.84)">
+    <use href="#s" x="0" y="0" fill="#ff4f6d"/><use href="#s" x="58" y="0" fill="#ff4f6d"/><use href="#s" x="116" y="0" fill="#ffc93c"/><use href="#s" x="174" y="0" fill="#2f8cff"/><use href="#s" x="232" y="0" fill="#2f8cff"/><use href="#s" x="290" y="0" fill="#2ed38a"/>
+    <use href="#s" x="0" y="58" fill="#2ed38a"/><use href="#s" x="58" y="58" fill="#ff4f6d"/><use href="#s" x="116" y="58" fill="#ffc93c"/><use href="#s" x="174" y="58" fill="#ffc93c"/><use href="#s" x="232" y="58" fill="#2f8cff"/><use href="#s" x="290" y="58" fill="#a46bff"/>
+    <use href="#s" x="0" y="116" fill="#a46bff"/><use href="#s" x="58" y="116" fill="#a46bff"/><use href="#s" x="116" y="116" fill="#2ed38a"/><use href="#s" x="174" y="116" fill="#ffc93c"/><use href="#s" x="232" y="116" fill="#ff4f6d"/><use href="#s" x="290" y="116" fill="#a46bff"/>
+  </g>
+  <g fill="#fff" opacity=".9"><path d="M262 64l6 14 14 6-14 6-6 14-6-14-14-6 14-6z"/><path d="M420 40l4 9 9 4-9 4-4 9-4-9-9-4 9-4z"/><path d="M480 250l5 11 11 5-11 5-5 11-5-11-11-5 11-5z"/></g>
+  <g font-family="Fredoka, Nunito, Arial Rounded MT Bold, Arial, sans-serif" font-weight="700" text-anchor="middle">
+    <text x="320" y="292" font-size="58" fill="#2a0d45" opacity=".35" dy="4">ColorPop</text>
+    <text x="320" y="292" font-size="58" fill="#fff">Color<tspan fill="#ffe066">Pop</tspan></text>
+    <text x="320" y="326" font-size="24" fill="#fff" letter-spacing="6">UNIVERSE</text>
+    <text x="320" y="364" font-size="16" fill="#fff" opacity=".9">Antippen. Abräumen. Universen entdecken.</text>
+  </g>
+</svg>

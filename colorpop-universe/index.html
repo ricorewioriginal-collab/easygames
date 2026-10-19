@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/colorpop-universe-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="ColorPop Univ…"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#160a2e">
+<meta name="description" content="ColorPop Universe – Die bunte Welt der knallenden Steine. Antippen. Abräumen. Universen entdecken. 300 Level in 12 Welten, Klassiker, Zen, Sprint, Daily Pop, KI-Duell und mehr. Für Handy, Tablet, PC und Controller, auch offline.">
+<link rel="icon" href="./card.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../vendor/fonts/fredoka.css">
+<link rel="stylesheet" href="./styles/main.css?v=1">
+<title>ColorPop Universe – Die bunte Welt der knallenden Steine · easygames</title>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="gLogo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd1f0"/><stop offset=".5" stop-color="#ff7ac8"/><stop offset="1" stop-color="#7b5cff"/></linearGradient>
+    <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zm0 2.2 6 2v11.6l-6-2V6.2z" fill="currentColor"/></symbol>
+    <symbol id="i-gem" viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9l4-6zm1.2 2L5 8.5h4.6L11 5H7.2zm9.6 0H13l1.4 3.5H19L16.8 5zM5.6 10.5 11 17v-6.5H5.6zm7.4 0V17l5.4-6.5H13z" fill="currentColor"/></symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M20 3C9 3 4 9 4 15c0 2 .6 3.6 1.4 4.8L3 22l1.4 1.4 2.5-2.5C8.2 21.6 9.8 22 11 22c7 0 10-7 9-19zM11 20c-.8 0-1.8-.2-2.6-.6C11 15 14 12 17 10c-3.6 1-7 4-9.9 8.1A6 6 0 0 1 6 15c0-4.6 3.6-9.6 12-9.9.4 8-2.2 14.9-7 14.9z" fill="currentColor"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z" fill="currentColor"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm-1 3v6l5 3 1-1.7-4-2.4V7h-2z" fill="currentColor"/></symbol>
+    <symbol id="i-steps" viewBox="0 0 24 24"><path d="M3 20h4v-4h4v-4h4V8h4V4h2v6h-4v4h-4v4H9v4H3v-2z" fill="currentColor"/></symbol>
+    <symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M10 3a2 2 0 0 1 4 0v1h5v5h-1a2 2 0 0 0 0 4h1v6h-6v-1a2 2 0 0 0-4 0v1H4v-6h1a2 2 0 0 0 0-4H4V4h6V3z" fill="currentColor"/></symbol>
+    <symbol id="i-swirl" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 1 10 10h-2a8 8 0 1 0-8 8 6 6 0 1 1 0-12 4 4 0 1 1 0 8v-2a2 2 0 1 0 0-4 4 4 0 1 0 0 8 8 8 0 0 0 0-16V2z" fill="currentColor"/></symbol>
+    <symbol id="i-arrows" viewBox="0 0 24 24"><path d="M12 2 8 6h3v5H6V8l-4 4 4 4v-3h5v5H8l4 4 4-4h-3v-5h5v3l4-4-4-4v3h-5V6h3l-4-4z" fill="currentColor"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M4.2 19.8 7 17M17 7l2.8-2.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M7 2h2v2h6V2h2v2h3v17H4V4h3V2zm-1 8v9h12v-9H6zm2 2h3v3H8v-3z" fill="currentColor"/></symbol>
+    <symbol id="i-tower" viewBox="0 0 24 24"><path d="M6 2h3v2h2V2h2v2h2V2h3v6l-2 2v11H8V10L6 8V2zm5 12v5h2v-5h-2z" fill="currentColor"/></symbol>
+    <symbol id="i-robot" viewBox="0 0 24 24"><path d="M11 2h2v3h5a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2v3H8v-3H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5V2zM8.5 9a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm7 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9 14v2h6v-2H9z" fill="currentColor"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="8" cy="8" r="3.5" fill="currentColor"/><circle cx="16.5" cy="9" r="3" fill="currentColor"/><path d="M1.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6h-13zm14 0c0-1.9-.6-3.5-1.7-4.6.8-.3 1.7-.4 2.7-.4 3.3 0 6 2 6 5h-7z" fill="currentColor"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2 3 6.6 7.2.8-5.4 4.9 1.5 7.1L12 17.8l-6.3 3.6 1.5-7.1L1.8 9.4 9 8.6 12 2z" fill="currentColor"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 1l2.2 7.8L22 11l-7.8 2.2L12 21l-2.2-7.8L2 11l7.8-2.2L12 1z" fill="currentColor"/></symbol>
+    <symbol id="i-cube" viewBox="0 0 24 24"><path d="m12 2 9 5v10l-9 5-9-5V7l9-5zm0 2.3L5.6 7.8 12 11.3l6.4-3.5L12 4.3zM5 9.5v6.3l6 3.3v-6.3L5 9.5zm14 0-6 3.3v6.3l6-3.3V9.5z" fill="currentColor"/></symbol>
+    <symbol id="i-burst" viewBox="0 0 24 24"><path d="m12 1 2 6 5-4-1 6 6 1-5 3 4 5-6-1-1 6-4-5-4 5-1-6-6 1 4-5-5-3 6-1-1-6 5 4 2-6z" fill="currentColor"/></symbol>
+    <symbol id="i-broom" viewBox="0 0 24 24"><path d="M20.5 2.1 22 3.5l-7 7 1.4 1.4-1.4 1.4c1 3-1 6.7-4 8.7l-9-9c2-3 5.7-5 8.7-4l1.4-1.4L13.5 9l7-6.9z" fill="currentColor"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 2h2v1h12l-3 5 3 5H7v9H5V2z" fill="currentColor"/></symbol>
+    <symbol id="i-planet" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="currentColor"/><ellipse cx="12" cy="12" rx="11" ry="4" fill="none" stroke="currentColor" stroke-width="1.8" transform="rotate(-20 12 12)"/></symbol>
+    <symbol id="i-crown" viewBox="0 0 24 24"><path d="m2 7 5 4 5-7 5 7 5-4-2 12H4L2 7zm2 14h16v2H4v-2z" fill="currentColor"/></symbol>
+    <symbol id="i-hammer" viewBox="0 0 24 24"><path d="M6 3h8l3 3-3 3-1.5-1.5L5 15 2.5 12.5 10 5 8.5 3.5 6 3zm6.2 9.3 2.1-2.1 7.4 7.4a1.5 1.5 0 0 1-2.1 2.1l-7.4-7.4z" fill="currentColor"/></symbol>
+    <symbol id="i-shell" viewBox="0 0 24 24"><path d="M12 3c5.5 0 10 4 10 9 0 3-1.5 5-3 6l-1 3H6l-1-3c-1.5-1-3-3-3-6 0-5 4.5-9 10-9zm0 2-1 13h2L12 5zm-4 1.5L6 17h2l1.5-10.6L8 6.5zm8 0-1.5-.1L16 17h2L16 6.5z" fill="currentColor"/></symbol>
+    <symbol id="i-snow" viewBox="0 0 24 24"><path d="M11 1h2v4l2-2 1.4 1.4-3.4 3.4v2.5l2.2-1.3 1.3-4.6 1.9.5-.7 2.8 3.5-2 1 1.7-3.5 2 2.8.8-.5 1.9-4.6-1.3-2.2 1.3 2.2 1.3 4.6-1.3.5 1.9-2.8.8 3.5 2-1 1.7-3.5-2 .7 2.8-1.9.5-1.3-4.6-2.2-1.3v2.5l3.4 3.4L15 21l-2-2v4h-2v-4l-2 2-1.4-1.4 3.4-3.4v-2.5l-2.2 1.3-1.3 4.6-1.9-.5.7-2.8-3.5 2-1-1.7 3.5-2-2.8-.8.5-1.9 4.6 1.3 2.2-1.3-2.2-1.3-4.6 1.3-.5-1.9 2.8-.8-3.5-2 1-1.7 3.5 2-.7-2.8 1.9-.5 1.3 4.6 2.2 1.3V8.8L7.6 5.4 9 4l2 2V1z" fill="currentColor"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><path d="M10 1h4l.6 3 2.2 1.2 2.8-1.3 2.8 2.8-1.3 2.8L22.4 12l-1.2 2.2 1.3 2.8-2.8 2.8-2.8-1.3-2.2 1.2-.7 3.3h-4l-.6-3-2.2-1.2-2.8 1.3L1.6 17l1.3-2.8L1.7 12 1.6 10 2.9 7.2 1.6 4.4 4.4 1.6l2.8 1.3L9.4 1.7 10 1zm2 7a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" fill="currentColor"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" fill="currentColor"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15.5 3 17 4.5 9.5 12l7.5 7.5-1.5 1.5-9-9 9-9z" fill="currentColor"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm-.1 13.5a1.4 1.4 0 1 0 0 2.8 1.4 1.4 0 0 0 0-2.8zM12 5.5c-2.3 0-4 1.4-4.2 3.6h2.3c.1-.9.8-1.5 1.8-1.5s1.7.6 1.7 1.5c0 .8-.4 1.2-1.4 1.8-1.2.7-1.7 1.5-1.6 2.8v.5h2.2v-.4c0-.8.3-1.2 1.4-1.8 1.1-.7 1.9-1.6 1.9-3 0-2.1-1.7-3.5-4.1-3.5z" fill="currentColor"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M6 2h12v2h4v3a5 5 0 0 1-5 5h-.3A6 6 0 0 1 13 15.9V19h4v3H7v-3h4v-3.1A6 6 0 0 1 7.3 12H7a5 5 0 0 1-5-5V4h4V2zm0 4H4v1a3 3 0 0 0 2 2.8V6zm12 0v3.8A3 3 0 0 0 20 7V6h-2z" fill="currentColor"/></symbol>
+    <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6 2 11c0 4.5 3.6 8 8 8h1.2c1 0 1.6 1 1.2 1.8-.5 1.1.3 2.2 1.6 2.2C19 23 22 17.5 22 12 22 6.5 17.5 2 12 2zM6.5 12a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3 4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" fill="currentColor"/></symbol>
+    <symbol id="i-full" viewBox="0 0 24 24"><path d="M3 3h7v2H5v5H3V3zm11 0h7v7h-2V5h-5V3zM3 14h2v5h5v2H3v-7zm16 0h2v7h-7v-2h5v-5z" fill="currentColor"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M8 4 2 9.5 8 15v-4h6a4 4 0 0 1 0 8h-3v2h3a6 6 0 0 0 0-12H8V4z" fill="currentColor"/></symbol>
+    <symbol id="i-hint" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 4 12.7V17H8v-2.3A7 7 0 0 1 12 2zM9 19h6v1.5A1.5 1.5 0 0 1 13.5 22h-3A1.5 1.5 0 0 1 9 20.5V19z" fill="currentColor"/></symbol>
+    <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M17 3l4 4-4 4V8h-2.5l-7 9H3v-2h3.5l7-9H17V3zm0 10 4 4-4 4v-3h-3.5l-2-2.6 1.3-1.6 1.7 2.2H17v-3zM3 6h4.5l2 2.6-1.3 1.6L6.5 8H3V6z" fill="currentColor"/></symbol>
+    <symbol id="i-bomb" viewBox="0 0 24 24"><circle cx="10" cy="14" r="7" fill="currentColor"/><path d="m14 7 3-3m-1 0h3v3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></symbol>
+    <symbol id="i-paint" viewBox="0 0 24 24"><path d="M18 2a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-5v3h1v9h-4v-9h1V8h7V4H6v1H4V4a2 2 0 0 1 2-2h12z" fill="currentColor"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5v3h2v12H5V10h2V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v3h6V7a3 3 0 0 0-3-3z" fill="currentColor"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 3.5v17l14-8.5L7 3.5z" fill="currentColor"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m9 16.2-4.2-4.2L3.4 13.4 9 19 21 7l-1.4-1.4L9 16.2z" fill="currentColor"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="M3 9h4l5-4v14l-5-4H3V9zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z" fill="currentColor"/></symbol>
+    <symbol id="i-mute" viewBox="0 0 24 24"><path d="M3 9h4l5-4v14l-5-4H3V9zm13.6 3 2.7-2.7 1.4 1.4-2.7 2.7 2.7 2.7-1.4 1.4-2.7-2.7-2.7 2.7-1.4-1.4 2.7-2.7-2.7-2.7 1.4-1.4 2.7 2.7z" fill="currentColor"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M6.5 20A5.5 5.5 0 0 1 6 9a7 7 0 0 1 13.4 2A4.5 4.5 0 0 1 18.5 20h-12z" fill="currentColor"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m12 3 10 9h-3v9h-5v-6h-4v6H5v-9H2l10-9z" fill="currentColor"/></symbol>
+    <symbol id="i-funke" viewBox="0 0 24 24"><path d="M12 1c1 4 4 5 4 9a4 4 0 0 1-1 2.6c1-.4 2.2-1.6 2.4-3.4C19 11 20 13 20 15a8 8 0 0 1-16 0c0-4 3-6 4-9 .6 1.6 1.2 2.6 2.4 3.4C10 6 11 3.5 12 1z" fill="currentColor"/></symbol>
+  </defs>
+</svg>
+
+<div id="bg" aria-hidden="true"><div class="bg-grad"></div><div class="bg-deco" id="bgDeco"></div><div class="bg-vignette"></div></div>
+
+<main id="app">
+  <!-- Laden -->
+  <section id="scrLoad" class="screen center" aria-live="polite">
+    <div class="load-box">
+      <div class="logo-stones" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <h1 class="logo"><span>Color</span><span>Pop</span><small>Universe</small></h1>
+      <p class="sub">Die bunte Welt der knallenden Steine</p>
+      <div class="bar" role="progressbar" aria-label="Ladefortschritt" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="loadBar"><i></i></div>
+      <p id="loadText">Starte …</p>
+      <div id="loadError" class="error-box" hidden>
+        <p id="loadErrorText"></p>
+        <div class="row center">
+          <button class="btn primary" id="btnRetry" type="button">Erneut versuchen</button>
+          <button class="btn" id="btnSafe" type="button">Offline starten</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Alle weiteren Bildschirme werden von src/ui/ui.js aus dem Spielzustand gebaut -->
+  <section id="scrMenu" class="screen" hidden aria-label="Hauptmenü"></section>
+  <section id="scrWorlds" class="screen panel" hidden aria-label="Weltkarte"></section>
+  <section id="scrWorld" class="screen panel" hidden aria-label="Level einer Welt"></section>
+  <section id="scrSetup" class="screen panel" hidden aria-label="Modus einrichten"></section>
+  <section id="scrCollection" class="screen panel" hidden aria-label="Sammlung"></section>
+  <section id="scrSettings" class="screen panel" hidden aria-label="Einstellungen"></section>
+  <section id="scrHelp" class="screen panel" hidden aria-label="Hilfe"></section>
+  <section id="scrCloud" class="screen panel" hidden aria-label="Mit Google speichern">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück"><svg><use href="#i-back"/></svg></button><h2>Mit Google speichern</h2></header>
+    <div class="scroll"><div class="card">
+      <p>Dein Fortschritt (Level, Sterne, Rekorde, Erfolge, Designs und Profile) wird immer automatisch auf diesem Gerät gespeichert. Mit einer Google-Anmeldung kommt er zusätzlich in die Cloud und folgt dir auf Handy, Tablet und PC. Es gilt der zuletzt gespielte Stand; ein älterer Stand bleibt als Sicherung erhalten.</p>
+      <div id="cloudMount"></div>
+      <p class="muted" id="cloudNote">Ohne Anmeldung spielst und speicherst du ganz normal auf diesem Gerät.</p>
+    </div></div>
+  </section>
+
+  <!-- Spiel -->
+  <section id="scrGame" class="screen game" hidden aria-label="Spielfeld">
+    <header class="hud" id="hud">
+      <button class="hud-btn" id="btnPause" type="button" aria-label="Pause (Esc)"><svg><use href="#i-pause"/></svg></button>
+      <div class="hud-title"><b id="hudTitle">Level 1</b><small id="hudSub"></small></div>
+      <div class="hud-score" aria-live="off"><small>Punkte</small><b id="hudScore">0</b></div>
+      <div class="hud-chips">
+        <span class="chip" id="hudInfo" hidden></span>
+        <span class="chip stars" id="hudStars" hidden aria-label="Sterne"></span>
+      </div>
+      <div class="hud-goals" id="hudGoals" aria-live="polite"></div>
+    </header>
+    <div class="board-wrap" id="boardWrap">
+      <canvas id="board" aria-label="Spielbrett" role="img"></canvas>
+      <div class="board-msg" id="boardMsg" hidden></div>
+      <div class="sr-only" id="boardSr" aria-live="polite"></div>
+    </div>
+    <footer class="dock" id="dock"></footer>
+  </section>
+
+  <div id="modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-box" id="modalBox">
+      <h2 id="modalTitle"></h2>
+      <div id="modalBody"></div>
+      <div class="modal-actions" id="modalActions"></div>
+    </div>
+  </div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <div id="debug" hidden></div>
+</main>
+
+<script src="../gamekit.js"></script>
+<script src="./src/core/rng.js?v=1"></script>
+<script src="./src/core/board.js?v=1"></script>
+<script src="./src/core/rules.js?v=1"></script>
+<script src="./src/core/levelgen.js?v=1"></script>
+<script src="./src/core/bots.js?v=1"></script>
+<script src="./src/core/levels.js?v=1"></script>
+<script src="./src/data/worlds.js?v=1"></script>
+<script src="./src/data/levels.js?v=1"></script>
+<script src="./src/data/puzzles.js?v=1"></script>
+<script src="./src/data/achievements.js?v=1"></script>
+<script src="./src/data/skins.js?v=1"></script>
+<script src="./src/modes/modes.js?v=1"></script>
+<script src="./src/storage/save.js?v=1"></script>
+<script src="./src/audio/audio.js?v=1"></script>
+<script src="./src/render/sprites.js?v=1"></script>
+<script src="./src/render/renderer.js?v=1"></script>
+<script src="./src/input/input.js?v=1"></script>
+<script src="./src/ui/ui.js?v=1"></script>
+<script src="./src/main.js?v=1"></script>
+<script src="../gamepad.js" data-pad="a=Enter b=Escape x=F13 y=F14 lb=F15 rb=F16 start=F17 select=F18 rs=none" defer></script>
+<script src="../cloud/anmacha-cloud.js" data-game="colorpop-universe" data-prefix="colorpop-universe-v1" data-mount="#cloudMount" data-hint="Mit Google anmelden und Level, Sterne, Rekorde und Erfolge auf allen Geräten nutzen." defer></script>
+</body>
+</html>
