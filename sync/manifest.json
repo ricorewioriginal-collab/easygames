@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "a42cdf6dba9d",
- "generated": "2026-10-19T02:03:43+02:00",
- "commit": "685c345c39cfa32a61e304ec5baad46bec0b3f20",
+ "version": "bdde19547b19",
+ "generated": "2026-10-19T02:12:43+02:00",
+ "commit": "4e911559aebac00eb8ab6b64a89befdd3b13f4f0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6248,8 +6248,8 @@
   },
   {
    "p": "radio-erfolge.html",
-   "s": 2899,
-   "h": "f60bfb9d8df21734719d322c549891040a5327c28097c31f237b0b45ee4588ca"
+   "s": 2954,
+   "h": "c2bde6e48a5b629555057c4234b5b8f116ffdf17312c3dff5a6056c24a275971"
   },
   {
    "p": "radio-maze/card.svg",
