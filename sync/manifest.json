@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "8013342819a0",
- "generated": "2026-10-19T01:00:44+00:00",
- "commit": "4055837bf80d3e7e5a82f06e8b105455764f78c5",
+ "version": "40c7dc0ede51",
+ "generated": "2026-10-19T03:05:31+02:00",
+ "commit": "73f16894f8e8478aefe51be2fe812add8b401d5a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5433,8 +5433,8 @@
   },
   {
    "p": "datenschutz.html",
-   "s": 13604,
-   "h": "ee4ea09ddad3b37a191e419a1a7651b060f709fc7ba1b3db708f006e1a409204"
+   "s": 14098,
+   "h": "703bd63fc54e4a871f68666d79f580249498de3d5a649264ea51254cb18b1146"
   },
   {
    "p": "device.js",
