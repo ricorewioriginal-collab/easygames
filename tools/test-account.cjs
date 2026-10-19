@@ -125,6 +125,19 @@ const host = mk((q, r) => { r.writeHead(200, { 'content-type': 'text/html' }); i
   await p9.click('#bx .eg-acc-b');
   bars = await p9.locator('#bx .eg-acc-m:not([hidden]) [role=progressbar]').evaluateAll(l => l.map(e => ({ l: e.getAttribute('aria-label'), v: e.getAttribute('aria-valuenow') })));
   assert.deepStrictEqual(bars, [{ l: 'Radio', v: '40' }, { l: 'Spiele', v: '25' }]); console.log('PASS Konto-Menü: zwei Fortschrittsbalken (Radio und Spiele) unter „Mit Google angemeldet“');
+  // App mit eigenem Konto (natives Login): das Spiel übernimmt die Anmeldung ohne erneutes Koppeln
+  const c7 = await b.newContext({ userAgent: 'Mozilla/5.0 EasyGamesApp/1.0' });
+  await c7.route(/^https?:\/\/(?!127)/, r => {
+    const u = new URL(r.request().url()), cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' }, js = o => r.fulfill({ contentType: 'application/json', headers: cors, body: JSON.stringify(o) });
+    if (u.host === 'securetoken.googleapis.com') return js({ id_token: 'idtok7', expires_in: '3600', user_id: 'fbuid-7', refresh_token: 'rt-native' });
+    if (u.host === 'identitytoolkit.googleapis.com') return js({ users: [{ displayName: 'Rico', email: 'r@x.de', photoUrl: '' }] });
+    return r.abort();
+  });
+  const p7 = await c7.newPage();
+  await p7.addInitScript(() => { window.RRWNative = { cloudRt: () => 'rt-native' }; });
+  await p7.goto(gbase + 'anmacha-snake/index.html'); await p7.waitForFunction(() => window.AnMaChaCloud && AnMaChaCloud.user() && AnMaChaCloud.user().displayName === 'Rico', null, { timeout: 8000 });
+  assert.strictEqual(await p7.evaluate(() => localStorage.getItem('anmacha-cloud-rt')), 'rt-native');
+  console.log('PASS App: Spiel übernimmt die Anmeldung der App (kein zweites Koppeln)');
   // App (Android/Windows): Google sperrt die Anmeldung im App-Fenster → Kopplungs-Link im Konto-Menü
   const c3 = await b.newContext({ userAgent: 'Mozilla/5.0 EasyGamesApp/1.0', viewport: { width: 390, height: 800 } });
   await c3.route(/^https?:\/\/(?!127)/, r => r.request().url().includes('firestore.googleapis.com') ? r.fulfill({ status: 404, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '{}' }) : r.abort());
