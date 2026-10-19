@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "696a931dc173",
- "generated": "2026-10-19T02:25:01+02:00",
- "commit": "e2496f73792fa9fd3ffa008815e5a4a7443bd0b3",
+ "version": "f1c33abeb5b9",
+ "generated": "2026-10-19T00:46:54+00:00",
+ "commit": "8725d0888b1488a7e81888448d8c0cfc225a405f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5303,8 +5303,13 @@
   },
   {
    "p": "cloud/radio-erfolge.js",
-   "s": 14005,
-   "h": "ce8d8767fca2f1c1cf4141ff18f63c28d46061bf1e460f65811c21d97a98e6ab"
+   "s": 14078,
+   "h": "1366118adf0c0545af4986e627738e92b266de2172d8a89d15514dda712eaa2c"
+  },
+  {
+   "p": "cloud/radio-profil.js",
+   "s": 23588,
+   "h": "cd01c730ae6e65e627a4e3414810fcf6dafee820bb2ea2a7282cfedc682db5b0"
   },
   {
    "p": "colorpop-universe/card.svg",
@@ -5428,8 +5433,8 @@
   },
   {
    "p": "datenschutz.html",
-   "s": 12645,
-   "h": "d8e66a0799009957b724fad89473cb507e72364c655dcf208880ef4eb27df31e"
+   "s": 13604,
+   "h": "ee4ea09ddad3b37a191e419a1a7651b060f709fc7ba1b3db708f006e1a409204"
   },
   {
    "p": "device.js",
@@ -6420,6 +6425,11 @@
    "p": "radio-maze/sw.js",
    "s": 1841,
    "h": "92baeff1fd79f8a6297751782bc96b16f139325be16202dc317a5c9053527890"
+  },
+  {
+   "p": "radio-profil.html",
+   "s": 2596,
+   "h": "922f75db73a02b6c6536966b0b395f136de6c7462a7d3b605bec34ec52a4e8ca"
   },
   {
    "p": "ranglisten.html",
