@@ -101,11 +101,12 @@
     '.eg-acc-b.out{padding:4px 14px 4px 10px}.eg-acc-b .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
     '.eg-acc-av{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;background:linear-gradient(135deg,#b57cff,#22d3ee);color:#fff;font-weight:700;overflow:hidden}' +
     '.eg-acc-av img{width:100%;height:100%;object-fit:cover;display:block}' +
-    '.eg-acc-m{position:absolute;right:0;top:calc(100% + 8px);z-index:2147482000;width:min(300px,calc(100vw - 24px));padding:8px;border-radius:16px;background:#141a2b;color:#f4f6ff;border:1px solid rgba(255,255,255,.12);box-shadow:0 18px 50px rgba(0,0,0,.5)}' +
+    '.eg-acc-m{position:absolute;right:0;top:calc(100% + 8px);z-index:2147482000;width:min(300px,calc(100vw - 24px));max-height:calc(100vh - 90px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:8px;border-radius:16px;background:#141a2b;color:#f4f6ff;border:1px solid rgba(255,255,255,.12);box-shadow:0 18px 50px rgba(0,0,0,.5)}' +
     '.eg-acc-m[hidden]{display:none}.eg-acc-h{display:flex;align-items:center;gap:10px;padding:8px 8px 12px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:6px}' +
     '.eg-acc-h .av{width:42px;height:42px}.eg-acc-h b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.eg-acc-h small{color:#9aa5bd}' +
     '.eg-acc-i{display:flex;align-items:center;gap:10px;width:100%;padding:10px 10px;border:0;border-radius:10px;background:none;color:inherit;font:inherit;text-align:left;text-decoration:none;cursor:pointer}' +
     '.eg-acc-i:hover,.eg-acc-i:focus-visible{background:rgba(255,255,255,.1);outline:none}.eg-acc-i .ic{width:22px;text-align:center;flex:none}' +
+    '.eg-acc-h{flex-wrap:wrap}.eg-acc-bars{flex:0 0 100%;display:grid;gap:8px;margin-top:6px}.eg-acc-bar{font-size:12px;color:#9aa5bd}.eg-acc-bar>div:first-child{display:flex;justify-content:space-between;gap:8px;margin-bottom:3px}.eg-acc-bt{color:#f4f6ff;font-weight:600}.eg-acc-track{height:6px;border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden}.eg-acc-fill{height:100%;min-width:2px;border-radius:6px;background:linear-gradient(90deg,#b57cff,#22d3ee)}' +
     '.eg-acc-sep{height:1px;margin:6px 4px;background:rgba(255,255,255,.1)}.eg-acc-note{padding:6px 10px;color:#9aa5bd;font-size:13px}.eg-acc-err{padding:6px 10px;color:#f28b82;font-size:13px}' +
     '@media(max-width:520px){.eg-acc-b .n{display:none}.eg-acc-b{padding:4px}.eg-acc-b.out{width:42px;height:42px;padding:0;justify-content:center}}';
   function css() { if (doc.getElementById('eg-acc-css')) return; var s = doc.createElement('style'); s.id = 'eg-acc-css'; s.textContent = CSS; (doc.head || doc.documentElement).appendChild(s); }
@@ -117,6 +118,70 @@
   }
   function initial(u) { return u && u.name ? u.name.trim().charAt(0).toUpperCase() : '👤'; }
   function first(u) { return u.name.trim().split(/\s+/)[0]; }
+  // Menü an den Knopf heften, aber höchstens bis zum unteren Bildschirmrand hoch: ist die Liste länger, lässt sie sich scrollen (Touch und Mausrad)
+  // Unterkante des freien Bereichs: fest am unteren Rand sitzende Leisten der Seite (Player, Navigation) verdecken sonst das Menü
+  function bottomLimit(menu) {
+    var vh = root.innerHeight || 600, vw = root.innerWidth || 360, lim = vh, ys = [6, 60, 110, 160, 210, 260], xs = [vw * 0.25, vw * 0.6, vw * 0.9];
+    try {
+      ys.forEach(function (dy) { xs.forEach(function (x) { doc.elementsFromPoint(x, vh - dy).forEach(function (e) {
+        if (menu.contains(e) || e.contains(menu) || e === doc.body || e === doc.documentElement) return;
+        var cs = root.getComputedStyle(e);
+        if (cs.position === 'fixed' || cs.position === 'sticky') { var rr = e.getBoundingClientRect(); if (rr.top > vh * 0.45 && rr.top < lim) lim = rr.top; }
+      }); }); });
+    } catch (e) { }
+    return lim;
+  }
+  function place(btn, menu) {
+    if (!menu || menu.hidden || !btn) return;
+    var r = btn.getBoundingClientRect(), vh = root.innerHeight || 600, vw = root.innerWidth || 360, lim = bottomLimit(menu), below = lim - r.bottom - 16, above = r.top - 16;
+    menu.style.position = 'fixed'; menu.style.left = 'auto'; menu.style.right = Math.max(8, vw - r.right) + 'px';
+    if (below < 240 && above > below) {   // Knopf unten im Bild (z. B. Fußzeile): Menü nach oben öffnen
+      menu.style.top = 'auto'; menu.style.bottom = Math.max(8, vh - r.top + 8) + 'px'; menu.style.maxHeight = Math.max(160, above) + 'px';
+    } else {
+      menu.style.bottom = 'auto'; menu.style.top = Math.max(8, r.bottom + 8) + 'px'; menu.style.maxHeight = Math.max(160, below) + 'px';
+    }
+  }
+  function placeAll() { mounts.forEach(function (m) { if (m.open && m.menu) place(m.el.querySelector('.eg-acc-b'), m.menu); }); }
+  root.addEventListener('resize', placeAll); root.addEventListener('scroll', placeAll, { passive: true });
+  /* ───────── Fortschrittsbalken im Menü-Kopf: Radio (nur wo die Seite ihn liefert, mount-Option bars) und Spiele-Erfolge ───────── */
+  var ACH = 'eg-ach', achSrv = null, achAt = 0;
+  function gamesBar() {
+    var o = null; try { o = JSON.parse(store(ACH) || 'null'); } catch (e) { }
+    if (!o || !(o.t > 0)) o = achSrv;
+    var d = o && o.d > 0 ? o.d : 0, t = o && o.t > 0 ? o.t : 0;
+    return { label: 'Spiele', value: t ? d / t : 0, text: t ? d + ' von ' + t + ' Erfolgen' : 'Erfolge ansehen' };
+  }
+  function barsFor(m) { var out = []; try { if (m.bars) out = (m.bars() || []).slice(); } catch (e) { } out.push(gamesBar()); return out; }
+  // Erfolgs-Stand vom Konto holen, wenn dieser Ursprung ihn nicht selbst hat (z. B. Portal; die Spiele laufen auf einem anderen Ursprung)
+  function loadSummary() {
+    var t = token(); if (!t || Date.now() - achAt < 60000) return; achAt = Date.now();
+    root.fetch(API + '?action=saves_get&game=home', { headers: { Authorization: 'Bearer ' + t } }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { if (!j || typeof j.d !== 'string' || j.d.slice(0, 2) === 'z:') return null; var o = (JSON.parse(j.d) || {})[ACH]; return o && o.v ? JSON.parse(o.v) : null; })
+      .then(function (o) { if (o && o.t > 0 && (!achSrv || achSrv.d !== o.d || achSrv.t !== o.t)) { achSrv = o; mounts.forEach(function (m) { if (m.open) draw(m); }); } }).catch(function () { });
+  }
+  // Kleinen Wert ins Konto-Dokument „home“ schreiben (wie die Games-Seite; neuerer Zeitstempel gewinnt, andere Schlüssel bleiben)
+  function pushSummary(key, val) {
+    var t = token(); if (!t) return Promise.resolve();
+    return root.fetch(API + '?action=saves_get&game=home', { headers: { Authorization: 'Bearer ' + t } }).then(function (r) {
+      if (r.status === 404) return { obj: {}, ver: '' };
+      if (!r.ok) throw new Error('get');
+      return r.json().then(function (j) { if (typeof j.d !== 'string' || j.d.slice(0, 2) === 'z:') throw new Error('gz'); return { obj: JSON.parse(j.d) || {}, ver: j.ver || '' }; });
+    }).then(function (c) {
+      if (c.obj[key] && c.obj[key].v === val) return;
+      c.obj[key] = { v: val, t: Date.now() };
+      return root.fetch(API + '?action=saves_put', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify({ game: 'home', d: JSON.stringify(c.obj), t: Date.now(), pre: c.ver }) });
+    }).catch(function () { });
+  }
+  function drawBars(m) {
+    var box = el('div', 'eg-acc-bars');
+    barsFor(m).forEach(function (b) {
+      var v = Math.round(Math.max(0, Math.min(1, b.value || 0)) * 100), row = el('div', 'eg-acc-bar'), top = el('div'), tr = el('div', 'eg-acc-track'), f = el('div', 'eg-acc-fill');
+      top.appendChild(el('span', '', b.label)); top.appendChild(el('span', 'eg-acc-bt', b.text || ''));
+      tr.setAttribute('role', 'progressbar'); tr.setAttribute('aria-label', b.label); tr.setAttribute('aria-valuemin', '0'); tr.setAttribute('aria-valuemax', '100'); tr.setAttribute('aria-valuenow', String(v));
+      f.style.width = v + '%'; tr.appendChild(f); row.appendChild(top); row.appendChild(tr); box.appendChild(row);
+    });
+    return box;
+  }
   function draw(m) {
     var u = user(), host = m.el, c = cloud(), pair = !u && APP && c && c.pairInfo ? c.pairInfo() : null, open = (m.open && !!u) || !!pair;
     host.textContent = '';
@@ -128,7 +193,7 @@
     host.appendChild(b);
     var menu = el('div', 'eg-acc-m'); menu.hidden = !open; menu.setAttribute('role', 'menu'); m.menu = menu;
     if (u) {
-      var h = el('div', 'eg-acc-h'); h.appendChild(avatar(u, 'av')); var w = el('div'); w.appendChild(el('b', '', u.name)); w.appendChild(el('small', '', 'Mit Google angemeldet')); h.appendChild(w); menu.appendChild(h);
+      var h = el('div', 'eg-acc-h'); h.appendChild(avatar(u, 'av')); var w = el('div'); w.appendChild(el('b', '', u.name)); w.appendChild(el('small', '', 'Mit Google angemeldet')); h.appendChild(w); h.appendChild(drawBars(m)); menu.appendChild(h); loadSummary();
       (m.items || []).forEach(function (it) {
         if (it === '-' || it.sep) { menu.appendChild(el('div', 'eg-acc-sep')); return; }
         if (it.note) { menu.appendChild(el('div', 'eg-acc-note', it.note)); return; }
@@ -150,6 +215,7 @@
     }
     if (lastErr && !u) menu.appendChild(el('div', 'eg-acc-err', lastErr));
     host.appendChild(menu);
+    if (open) place(b, menu);
     if (lastErr && !u) { var er = el('div', 'eg-acc-err', lastErr); er.style.cssText = 'position:absolute;right:0;top:calc(100% + 6px);width:240px;background:#141a2b;border-radius:10px;z-index:2147482000'; host.appendChild(er); }
   }
   // Einheitliche Punkte (überall gleich): Konto, Profil, Erfolge, Ranglisten, Heute, Chat, Sichern, Fehler melden. base = Adresse von easygames (leer = diese Seite).
@@ -184,7 +250,7 @@
     var host = typeof target === 'string' ? doc.querySelector(target) : target;
     if (!host) return null;
     var own = o.items || [], std = standardItems(o.base == null ? HOME : o.base);
-    var m = { el: host, items: own.length ? own.concat(['-'], std) : std, open: false };
+    var m = { el: host, items: own.length ? own.concat(['-'], std) : std, open: false, bars: o.bars };
     host.classList.add('eg-acc'); mounts.push(m); draw(m); return m;
   }
   doc.addEventListener('click', function (e) { mounts.forEach(function (m) { if (m.open && !m.el.contains(e.target)) { m.open = false; draw(m); } }); });
@@ -209,5 +275,5 @@
   }, 1500);
 
   function adopt(t, u) { if (t && t !== token()) setSession(t, u || {}, true); }   // Konto von außen übernehmen (einbettende Seite ↔ iframe)
-  root.AnMaChaAccount = { standardItems: standardItems, adopt: adopt, mount: mount, user: user, token: token, login: login, logout: logout, onChange: onChange, api: API };
+  root.AnMaChaAccount = { pushSummary: pushSummary, standardItems: standardItems, adopt: adopt, mount: mount, user: user, token: token, login: login, logout: logout, onChange: onChange, api: API };
 })(window);
