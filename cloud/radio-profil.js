@@ -132,7 +132,8 @@
         '<p class="mut" style="font-size:.8rem">Top-3-Spiele: deine ersten 3 Favoriten ♥ in der Spieleliste · Top-3-Sender: deine ersten 3 Favoriten im Radio · Zahlen werden beim Speichern aus deinem Konto übernommen.</p>' +
         (snap ? '<p class="mut" style="font-size:.8rem">Aktuell: ' + snap.games.length + ' Spiele, ' + snap.stations.length + ' Sender, ' + snap.songs.length + ' Songs, ' + esc(dur(snap.sec)) + ' Hörzeit, Rang ' + esc(snap.rach.rank) + '.</p>' : '<p class="mut" style="font-size:.8rem">Deine Zahlen konnten gerade nicht geladen werden – gespeichert werden dann nur die Angaben unten.</p>') + '</div>' +
         '<div class="rrp-card"><h2>Social Media (optional, anklickbar)</h2><div class="rrp-two">' + SOCIAL.map(function (s) { return '<div><label for="rrp-so-' + s[0] + '">' + s[1] + '</label><input type="text" id="rrp-so-' + s[0] + '" maxlength="200" placeholder="' + s[2] + '" value="' + esc(soc[s[0]] || '') + '"></div>'; }).join('') + '</div></div>' +
-        '<div class="rrp-msg" id="rrp-msg" role="status"></div><p><button type="submit" class="rrp-btn pri">Speichern</button> ' + (cur.slug ? '<button type="button" class="rrp-btn" data-rrp-open="' + esc(cur.slug) + '">Profil ansehen</button> <button type="button" class="rrp-btn danger" id="rrp-del">Profil löschen</button>' : '') + '</p></form>';
+        '<div class="rrp-msg" id="rrp-msg" role="status"></div><p><button type="submit" class="rrp-btn pri">Speichern</button> ' + (cur.slug ? '<button type="button" class="rrp-btn" data-rrp-open="' + esc(cur.slug) + '">Profil ansehen</button> ' : '') + '<button type="button" class="rrp-btn danger" id="rrp-del">Profil löschen …</button></p>' +
+        '<div class="rrp-card" id="rrp-delbox" hidden style="border-color:#f28b82"><h2>⚠ Profil und Spielstände löschen?</h2><p>Das löscht <b>dauerhaft</b>: dein öffentliches Profil <b>und alle deine Spielstände und Cloud-Daten</b> (Spielfortschritt, Erfolge, Favoriten, gemerkte Songs, Mein-Radio-Daten im Konto). Das kann nicht rückgängig gemacht werden. Daten, die noch auf deinen Geräten liegen, bleiben dort; sie werden beim nächsten Abgleich wieder ins Konto geladen, wenn du dich anmeldest.</p><label for="rrp-delword">Zum Bestätigen tippe <b>LÖSCHEN</b></label><input type="text" id="rrp-delword" autocomplete="off" placeholder="LÖSCHEN"><p><button type="button" class="rrp-btn danger" id="rrp-delgo" disabled>Endgültig löschen</button> <button type="button" class="rrp-btn" id="rrp-delno">Abbrechen</button></p></div></form>';
       frame(host, f, { title: 'Mein Profil 🙂', html: tabsHtml('me', true) });
       var $ = function (id) { return host.querySelector('#' + id); }, msg = function (t, ok) { var m = $('rrp-msg'); m.textContent = t; m.className = 'rrp-msg ' + (ok ? 'ok' : 'err'); };
       $('rrp-f').onsubmit = function (e) {
@@ -145,7 +146,17 @@
         }).then(function (r) { if (r.status === 'ok') { msg(body.public ? 'Gespeichert – dein Profil ist öffentlich.' : 'Gespeichert (noch nicht öffentlich).', true); cur.slug = r.profile.slug; renderMe(host, o, tok); } else msg(r.message || 'Das hat nicht geklappt.', false); })
           .catch(function () { msg('Keine Verbindung – bitte später erneut versuchen.', false); });
       };
-      var del = $('rrp-del'); if (del) del.onclick = function () { if (!root.confirm('Dein öffentliches Profil wirklich löschen?')) return; call('pubprofile_delete', { token: tok, body: {} }).then(function () { renderMe(host, o, tok); }); };
+      var box = $('rrp-delbox'), word = $('rrp-delword'), go = $('rrp-delgo');
+      $('rrp-del').onclick = function () { box.hidden = false; word.value = ''; go.disabled = true; word.focus(); };
+      $('rrp-delno').onclick = function () { box.hidden = true; };
+      word.oninput = function () { go.disabled = word.value.trim().toUpperCase() !== 'LÖSCHEN'; };
+      go.onclick = function () {
+        go.disabled = true; msg('Lösche …', true);
+        call('pubprofile_delete', { token: tok, body: { confirm: word.value } }).then(function (r) {
+          if (r.status === 'ok') { frame(host, '<div class="rrp-card">Dein Profil und deine Spielstände im Konto wurden gelöscht.</div>', { title: 'Mein Profil 🙂', html: tabsHtml('me', true) }); try { root.dispatchEvent(new root.Event('rrw-profile-deleted')); } catch (x) { } }
+          else { msg(r.message || 'Das hat nicht geklappt.', false); go.disabled = false; }
+        }).catch(function () { msg('Keine Verbindung – bitte später erneut versuchen.', false); go.disabled = false; });
+      };
     }).catch(function () { frame(host, '<div class="rrp-card">Das Profil konnte gerade nicht geladen werden.</div>', { title: 'Mein Profil 🙂', html: tabsHtml('me', true) }); });
   }
 

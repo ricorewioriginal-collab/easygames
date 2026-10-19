@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1324b4aa8572",
- "generated": "2026-10-19T02:25:01+02:00",
- "commit": "e2496f73792fa9fd3ffa008815e5a4a7443bd0b3",
+ "version": "ee10c7aca7ac",
+ "generated": "2026-10-19T00:40:32+00:00",
+ "commit": "04e7d4d63d44a122ea428a1df7021647fa0b096d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5308,13 +5308,13 @@
   },
   {
    "p": "cloud/radio-profil.js",
-   "s": 21923,
-   "h": "3e529098187c750ea33043ab273fcc5525f352957a806a3db74157ff73ae6cbe"
+   "s": 23588,
+   "h": "cd01c730ae6e65e627a4e3414810fcf6dafee820bb2ea2a7282cfedc682db5b0"
   },
   {
    "p": "datenschutz.html",
-   "s": 12645,
-   "h": "d8e66a0799009957b724fad89473cb507e72364c655dcf208880ef4eb27df31e"
+   "s": 13443,
+   "h": "142aef54305e316bfd0bde0119cbb06da988767947b975c0e885c72d56d3c71f"
   },
   {
    "p": "device.js",

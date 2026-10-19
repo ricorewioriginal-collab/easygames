@@ -18,7 +18,7 @@ const home = { 'eg-fav': { v: JSON.stringify([catalog[1].id, 'gibt-es-nicht', ca
 (async () => {
   await new Promise(r => srv.listen(0, '127.0.0.1', r)); const base = `http://127.0.0.1:${srv.address().port}/`;
   const b = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {}), c = await b.newContext();
-  let saved = null; const queries = [];
+  let saved = null, del = null; const queries = [];
   await c.route(/^https?:\/\/(?!127)/, r => {
     const u = new URL(r.request().url()), a = u.searchParams.get('action'), h = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' }, j = o => r.fulfill({ contentType: 'application/json', headers: h, body: JSON.stringify(o) });
     if (r.request().method() === 'OPTIONS') return r.fulfill({ status: 204, headers: h });
@@ -28,6 +28,7 @@ const home = { 'eg-fav': { v: JSON.stringify([catalog[1].id, 'gibt-es-nicht', ca
     if (a === 'account_articles') return j({ articles: [] });
     if (a === 'pubprofile_get') return j(saved ? { status: 'ok', profile: Object.assign({ slug: 'rico' }, saved) } : { status: 'none', profile: null });
     if (a === 'pubprofile_save') { saved = JSON.parse(r.request().postData()); return j({ status: 'ok', profile: Object.assign({ slug: 'rico' }, saved) }); }
+    if (a === 'pubprofile_delete') { del = JSON.parse(r.request().postData()); saved = null; return j({ status: 'ok', profile: true, saves: 4 }); }
     if (a === 'pubprofiles_list') { queries.push(u.searchParams.get('q')); return j({ status: 'ok', total: 1, page: 1, pages: 1, items: [{ nick: 'Rico', slug: 'rico', avatar: '🦊', bio: 'Hi', sec: 7200, top: { id: 'ricorewi', n: 'RicoReWi' }, rach: { rank: 'Jungfuchs' } }] }); }
     if (a === 'pubprofile_view') return u.searchParams.get('n') === 'rico' ? j({ status: 'ok', profile: { nick: 'Rico', slug: 'rico', avatar: '🦊', bio: 'Hi', social: { instagram: 'https://www.instagram.com/rico', tiktok: 'javascript:alert(1)' }, games: [{ id: catalog[0].id, t: 'Spiel A' }], gach: { d: 7, t: 50 }, stations: [{ id: 'ricorewi', n: 'RicoReWi' }], songs: [{ a: 'Band', t: 'Lied' }], top: { id: 'ricorewi', n: 'RicoReWi' }, sec: 7200, rach: { rank: 'Jungfuchs', points: 90, done: 5, total: 40, level: 2 } } }) : j({ status: 'none', message: 'Dieses Profil gibt es nicht.' });
     return r.fulfill({ status: 404, headers: h, body: '{}' });
@@ -47,12 +48,21 @@ const home = { 'eg-fav': { v: JSON.stringify([catalog[1].id, 'gibt-es-nicht', ca
   await p.goto(base + 'radio-profil.html?embed=1'); await p.waitForSelector('#rrp-f');
   assert.ok(/3 Spiele|2 Spiele/.test(await p.textContent('#app')) && /Hörzeit/.test(await p.textContent('#app')));
   await p.fill('#rrp-nick', 'Rico'); await p.check('#rrp-pub'); await p.uncheck('#rrp-s-songs'); await p.fill('#rrp-so-instagram', '@rico'); await p.fill('#rrp-bio', 'Hi');
-  await p.click('#rrp-f button[type=submit]'); await p.waitForSelector('#rrp-del', { timeout: 8000 });
+  await p.click('#rrp-f button[type=submit]'); for (let i = 0; i < 80 && !saved; i++) await p.waitForTimeout(100); await p.waitForTimeout(300);
   assert.ok(saved && saved.nick === 'Rico' && saved.public === true && saved.sections.songs === false && saved.sections.games === true && saved.social.instagram === '@rico', 'Formular geht an den Server');
   assert.strictEqual(saved.games.length, 2, 'Top-Spiele aus den Favoriten (unbekannte fehlen)'); assert.strictEqual(saved.games[0].id, catalog[1].id);
   assert.deepStrictEqual(saved.stations.map(s => s.id), ['rockradio24', 'ricorewi', 'kultradio24']); assert.strictEqual(saved.stations[0].n, 'Name rockradio24');
   assert.strictEqual(saved.top.id, 'ricorewi'); assert.strictEqual(saved.sec, 40000); assert.deepStrictEqual(saved.gach, { d: 7, t: 50 }); assert.strictEqual(saved.songs[0].t, 'Lied'); assert.ok(saved.rach.rank);
   console.log('PASS Angemeldet: Zahlen aus dem Konto (Spiele, Sender, Songs, Meistgehört, Hörzeit, Erfolge) und Formular werden gespeichert');
+  // Löschen: erst Bestätigung mit dem Wort, dann erst geht es an den Server
+  await p.click('#rrp-del'); assert.ok(await p.isVisible('#rrp-delbox'), 'Bestätigung erscheint'); assert.match(await p.textContent('#rrp-delbox'), /Spielstände/);
+  assert.strictEqual(await p.isDisabled('#rrp-delgo'), true, 'Knopf gesperrt, bis das Wort getippt ist');
+  await p.fill('#rrp-delword', 'nein'); assert.strictEqual(await p.isDisabled('#rrp-delgo'), true);
+  await p.click('#rrp-delno'); assert.strictEqual(del, null, 'Abbrechen löscht nichts');
+  await p.click('#rrp-del'); await p.fill('#rrp-delword', 'löschen'); assert.strictEqual(await p.isDisabled('#rrp-delgo'), false);
+  await p.click('#rrp-delgo'); await p.waitForFunction(() => /wurden gelöscht/.test(document.body.textContent), null, { timeout: 8000 });
+  assert.ok(del && /^löschen$/i.test(del.confirm), 'Bestätigung geht mit');
+  console.log('PASS Profil löschen: Bestätigung mit Wort nötig (Abbrechen löscht nichts), danach Profil und Spielstände gelöscht');
   assert.deepStrictEqual(errors, []);
   await b.close(); srv.close();
 })().catch(e => { console.error('FAIL', e.message); process.exit(1); });
