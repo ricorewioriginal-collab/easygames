@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>Radio-Erfolge – easygames</title>
+<style>
+:root{--bg:#0b1020;--text:#f3f5ff;--line:#ffffff24;--primary:#a58cff}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{display:flex;align-items:center;gap:12px;max-width:1100px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px 0}
+header span{flex:1}
+.back{color:var(--text);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:7px 13px;font-weight:600;font-size:13px}
+body.embed header{display:none}
+#cloudMount{max-width:1100px;margin:0 auto;padding:0 16px}
+#cloudMount[hidden]{display:none}
+#app{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+</style>
+</head>
+<body>
+<header><span></span><a class="back" href="index.html">← Spiele</a></header>
+<div id="cloudMount"></div>
+<div id="app" aria-live="polite"></div>
+
+<script src="cloud/anmacha-cloud.js" data-game="radio-erfolge" data-prefix="anmacha-radio-erfolge-ohne-spielstand" data-mount="#cloudMount" data-sync="off" data-board="off" data-hint="Mit Google anmelden, um deine Radio-Erfolge zu sehen." defer></script>
+<script src="cloud/radio-erfolge.js" defer></script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  var Cloud = window.AnMaChaCloud, R = window.RRWErfolge, app = document.getElementById('app'), mount = document.getElementById('cloudMount'), busy = false, was = null;
+  if (new URLSearchParams(location.search).get('embed') === '1') document.body.classList.add('embed');
+  if (!Cloud || !R) { app.textContent = 'Die Radio-Erfolge sind gerade nicht verfügbar.'; return; }
+  R.css();
+  function head(t) { var d = document.createElement('div'); d.className = 'rre'; d.innerHTML = '<div class="rre-k">RICOREWI RADIO</div><h1>Radio-Erfolge 🦊</h1><p class="rre-note"></p>'; d.lastChild.textContent = t; return d; }
+  function show() {
+    if (busy) return; busy = true;
+    Cloud.serverToken().then(function (token) {
+      var a = token ? { token: token } : null;
+      mount.hidden = !!a;
+      if (!a) { app.textContent = ''; app.appendChild(head('Melde dich mit Google an, um Hörzeit, Serien, Favoriten und mehr als Stufen und Punkte zu sammeln – auf allen deinen Geräten.')); return; }
+      return R.load(a.token).then(function (r) { app.innerHTML = R.html(r); }, function () { app.textContent = ''; app.appendChild(head('Die Erfolge konnten gerade nicht geladen werden – bitte später erneut öffnen.')); });
+    }).catch(function () { }).then(function () { busy = false; });
+  }
+  setInterval(function () { var u = !!(Cloud.user && Cloud.user()); if (u !== was && !busy) { was = u; show(); } }, 800);
+});
+</script>
+</body>
+</html>

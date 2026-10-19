@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "221109960912",
- "generated": "2026-10-18T23:56:03+00:00",
- "commit": "1ac9b525b54aba5949759cb5cf7f029492f4bf3d",
+ "version": "a42cdf6dba9d",
+ "generated": "2026-10-19T02:03:43+02:00",
+ "commit": "685c345c39cfa32a61e304ec5baad46bec0b3f20",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5302,6 +5302,11 @@
    "h": "3363c68c8f3e6ed4ef7487ef347fcf5f171b564bda430db54e411529d17adcc5"
   },
   {
+   "p": "cloud/radio-erfolge.js",
+   "s": 14005,
+   "h": "ce8d8767fca2f1c1cf4141ff18f63c28d46061bf1e460f65811c21d97a98e6ab"
+  },
+  {
    "p": "device.js",
    "s": 7239,
    "h": "f93fa48549082998a014156f40b3962bd9a3803caa3a660870a6c4f93957cfc5"
@@ -6240,6 +6245,11 @@
    "p": "pufi-farbwind/sw.js",
    "s": 766,
    "h": "c66824c4c2a4715f2283b20ba6a1deae2161bb6bfc697b9e3cc90b181f3a3163"
+  },
+  {
+   "p": "radio-erfolge.html",
+   "s": 2899,
+   "h": "f60bfb9d8df21734719d322c549891040a5327c28097c31f237b0b45ee4588ca"
   },
   {
    "p": "radio-maze/card.svg",
