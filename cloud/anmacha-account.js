@@ -134,7 +134,8 @@
   function place(btn, menu) {
     if (!menu || menu.hidden || !btn) return;
     var r = btn.getBoundingClientRect(), vh = root.innerHeight || 600, vw = root.innerWidth || 360, lim = bottomLimit(menu), below = lim - r.bottom - 16, above = r.top - 16;
-    menu.style.position = 'fixed'; menu.style.left = 'auto'; menu.style.right = Math.max(8, vw - r.right) + 'px';
+    var mw = menu.offsetWidth || 300, rt = Math.min(Math.max(8, vw - r.right), Math.max(8, vw - mw - 8));   // am Knopf ausrichten, aber nie links aus dem Bild ragen (Knopf mitten im Kopf, z. B. SenderWelt mobil)
+    menu.style.position = 'fixed'; menu.style.left = 'auto'; menu.style.right = rt + 'px';
     if (below < 240 && above > below) {   // Knopf unten im Bild (z. B. Fußzeile): Menü nach oben öffnen
       menu.style.top = 'auto'; menu.style.bottom = Math.max(8, vh - r.top + 8) + 'px'; menu.style.maxHeight = Math.max(160, above) + 'px';
     } else {
