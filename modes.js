@@ -29,6 +29,7 @@ window.EASYGAMES_MODES = {
   'zeitsprung-wissen': { pad: true, online: true },
   'zeitsprung-castingshow': { pad: true, online: true },
   'zeitsprung-kinderserien': { pad: true, online: true },
+  'zeitsprung-eurovision': { pad: true, online: true },
   'zeitsprung-movie': { pad: true, online: true },
   'zeitsprung-radio': { pad: true, online: true },
   'zotik': { online: true },

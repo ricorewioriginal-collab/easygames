@@ -1815,6 +1815,41 @@
     "game": "zeitsprung-kinderserien",
     "prefix": "zk-save-v1"
    }
+  },
+  {
+   "id": "zeitsprung-eurovision",
+   "title": "ZEITSPRUNG EUROVISION",
+   "desc": "ESC-Zeitstrahlspiel und Fanarchiv von 1956 bis 2026: alle 70 ausgetragenen Wettbewerbe, 2020 als ausgefallenes Jahr, vier Sieger 1969, über 300 Quizfragen, 73 Siegersongs als Hörfragen und 26 Symbolrätsel. Mit Vito, Solo, TV-Modus und bis zu vier Handy-Controllern.",
+   "icon": "🎤",
+   "img": "zeitsprung-eurovision/card.png",
+   "bg": "linear-gradient(145deg,#43146d,#2d1859 55%,#ff91bf)",
+   "glow": "rgba(255,145,191,.55)",
+   "path": "zeitsprung-eurovision/",
+   "modes": {
+    "pad": true,
+    "online": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "ZEITSPRUNG EUROVISION führt durch alle ESC-Jahre von 1956 bis 2026. Ordne Austragungen auf dem Zeitstrahl ein oder wähle das richtige Jahr aus A–D. Dazu kommen Fragen zu Gastgebern, Ländern, Künstlern und Siegersongs, Hörfragen und Symbolrätsel. Im durchsuchbaren Fanarchiv stehen alle 70 Wettbewerbe, der vierfache Sieg 1969 und die ausgefallene Ausgabe 2020. Jede richtige Antwort bringt einen Punkt; acht Punkte gewinnen. Solo oder mit bis zu vier Spielern am TV und Handy-Controllern.",
+    "steuerung": [
+     "Maus/Touch: A–D-Antwort oder Lücke im Zeitstrahl antippen",
+     "Tastatur: A–D oder 1–4 für Antworten, 1–9 für Zeitstrahl-Lücken",
+     "♫ Song anhören startet die Hörfrage; ↻ wählt eine andere Ausgabe",
+     "TV-Modus: Handys scannen den QR-Code und geben WR-Code und PIN ein"
+    ],
+    "tipps": [
+     "Das Jahr der Austragung wird erst nach der Antwort aufgelöst. 2020 wurde der ESC abgesagt.",
+     "Die Siegersongs werden über Deezer gesucht; ihre Verfügbarkeit kann je nach Region variieren."
+    ]
+   },
+   "size": 164400,
+   "files": 19,
+   "offline": true,
+   "cloud": {
+    "game": "zeitsprung-eurovision",
+    "prefix": "ze-save-v1"
+   }
   }
  ]
 }

@@ -1,4 +1,4 @@
-window.EASYGAMES_BUILD = '20261022.1'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
+window.EASYGAMES_BUILD = '20261022.2'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
 // Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
 const GAMES = [
   { id: 'ricolife', title: 'RicoLife 3D – Dein Leben. Deine Regeln.', icon: '🏡', img: 'ricolife/card.svg', bg: 'linear-gradient(145deg,#123a50,#4b8d8e 54%,#e5b16b)', glow: 'rgba(139,212,194,.45)', path: 'ricolife/', desc: 'Eigenständige 3D-Lebenssimulation in einer lebendigen offenen Stadt: eigenen Haushalt erstellen, begehbare Häuser bauen und einrichten, Bedürfnisse und Emotionen erleben, Berufe ausüben, Freundschaften und Familien gründen, Lebensgeschichten entdecken. Frei spielbar, auch offline, mit optionalem Google-Spielstand. Für Handy, PC und Controller.' },
@@ -96,6 +96,7 @@ const GAMES = [
   { id: 'spinwelten', title: 'Spinwelten 3D', icon: '🌀', img: 'spinwelten/card.svg', bg: 'linear-gradient(145deg,#0d1b3d,#2ec4a6 55%,#f2d08a)', glow: 'rgba(46,196,166,.55)',
     path: 'spinwelten/', desc: 'Das Abenteuer der Wunderinseln: Dreh die Runenmaschine, bau 30 schwebende 3D-Inseln wieder auf, schick freundliche Stürme, geh auf Schatzexpeditionen, sammle 240 Karten und 12 Begleiter. 8 Minispiele, Story mit 60 Aufgaben, online mit Freunden per Code. Ohne Echtgeld.' },
   { id: 'zeitsprung-kinderserien', title: 'ZEITSPRUNG KINDERSERIEN', icon: '📺', img: 'zeitsprung-kinderserien/card.png', bg: 'linear-gradient(145deg,#28105a,#784ab1 55%,#ffd678)', glow: 'rgba(104,232,255,.5)', path: 'zeitsprung-kinderserien/', desc: 'Moderierte Zeitstrahl-Quizshow mit Vito zu Kinderserien von 1990 bis 2026: 66 Serienmomente, 97 Fragen, 33 Intro-Hörfragen und 30 Symbolrätsel. Von Disneys Große Pause über SpongeBob und Kim Possible bis Bluey. A–D-Jahreswahl oder Zeitstrahl, Solo, TV-Modus und bis zu vier Handy-Controller per WR-Code/PIN.' },
+  { id: 'zeitsprung-eurovision', title: 'ZEITSPRUNG EUROVISION', icon: '🎤', img: 'zeitsprung-eurovision/card.png', bg: 'linear-gradient(145deg,#43146d,#2d1859 55%,#ff91bf)', glow: 'rgba(255,145,191,.55)', path: 'zeitsprung-eurovision/', desc: 'ESC-Zeitstrahlspiel und Fanarchiv von 1956 bis 2026: alle 70 ausgetragenen Wettbewerbe, 2020 als ausgefallenes Jahr, vier Sieger 1969, über 300 Quizfragen, 73 Siegersongs als Hörfragen und 26 Symbolrätsel. Mit Vito, Solo, TV-Modus und bis zu vier Handy-Controllern.' },
 ];
 window.EASYGAMES_GAMES = GAMES;
 

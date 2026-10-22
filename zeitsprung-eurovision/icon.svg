@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ZEITSPRUNG EUROVISION">
+<defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="#4b1975"/><stop offset=".55" stop-color="#241350"/><stop offset="1" stop-color="#110b2d"/></linearGradient><linearGradient id="h" x2="1" y2="1"><stop stop-color="#ff75b6"/><stop offset="1" stop-color="#ffc980"/></linearGradient></defs>
+<rect x="7" y="7" width="498" height="498" rx="108" fill="url(#g)" stroke="#ffc27e" stroke-width="9"/>
+<circle cx="256" cy="244" r="152" fill="#ffffff" opacity=".05" stroke="#ffffff" stroke-opacity=".21" stroke-width="5"/>
+<path d="M256 170c-38-57-123-28-123 42 0 75 123 151 123 151s123-76 123-151c0-70-85-99-123-42z" fill="url(#h)"/>
+<path d="M255 161v148m-55-93h111" stroke="#22123c" stroke-width="19" stroke-linecap="round"/>
+<circle cx="256" cy="193" r="23" fill="#22123c"/>
+<path d="M99 393h314" stroke="#ffc27e" stroke-width="9" stroke-linecap="round"/><circle cx="130" cy="393" r="15" fill="#ff75b6"/><circle cx="257" cy="393" r="15" fill="#ff75b6"/><circle cx="382" cy="393" r="15" fill="#ff75b6"/>
+<text x="256" y="455" text-anchor="middle" font-family="Arial,sans-serif" font-size="44" font-weight="900" letter-spacing="3" fill="#fff4dc">ESC</text>
+</svg>

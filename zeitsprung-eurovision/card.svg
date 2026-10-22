@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="ZEITSPRUNG EUROVISION – ESC 1956 bis 2026">
+<defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="#471370"/><stop offset=".56" stop-color="#1b103d"/><stop offset="1" stop-color="#101b42"/></linearGradient><linearGradient id="h" x2="1" y2="1"><stop stop-color="#ff72b5"/><stop offset="1" stop-color="#ffcc82"/></linearGradient></defs>
+<rect width="1200" height="630" fill="url(#g)"/><circle cx="1040" cy="115" r="255" fill="#ec4e97" opacity=".14"/><circle cx="120" cy="560" r="280" fill="#7958db" opacity=".12"/>
+<text x="70" y="124" fill="#ffadd3" font-family="Arial,sans-serif" font-weight="900" letter-spacing="6" font-size="29">DIE GROSSE ESC-ZEITREISE</text>
+<text x="65" y="261" fill="#fff2c4" font-family="Impact,Arial Black,Arial,sans-serif" font-weight="900" font-size="104">ZEITSPRUNG</text>
+<text x="67" y="373" fill="#fff8e7" font-family="Impact,Arial Black,Arial,sans-serif" font-weight="900" font-size="93">EUROVISION</text>
+<text x="70" y="432" fill="#ffd5e7" font-family="Arial,sans-serif" font-size="28" font-weight="700">1956–2026 · 70 AUSGABEN · SIEGERSONGS · ARCHIV</text>
+<circle cx="963" cy="274" r="155" fill="#ffffff" opacity=".07" stroke="#ffffff" stroke-opacity=".27" stroke-width="6"/><path d="M963 204c-36-52-112-26-112 37 0 70 112 138 112 138s112-68 112-138c0-63-76-89-112-37z" fill="url(#h)"/><path d="M963 199v128m-53-79h106" stroke="#251340" stroke-width="17" stroke-linecap="round"/><circle cx="963" cy="224" r="18" fill="#251340"/>
+<path d="M68 535h1065" stroke="#ffcc82" stroke-width="8" stroke-linecap="round"/><g fill="#ff9ecc"><circle cx="92" cy="535" r="13"/><circle cx="409" cy="535" r="13"/><circle cx="730" cy="535" r="13"/><circle cx="1110" cy="535" r="13"/></g><g fill="#fff0d8" font-family="Arial,sans-serif" font-size="22" font-weight="800"><text x="67" y="590">1956</text><text x="385" y="590">1974</text><text x="705" y="590">2000</text><text x="1080" y="590">2026</text></g>
+</svg>
