@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "839ab2a1ddc0",
- "generated": "2026-10-22T22:13:11.645619+00:00",
- "commit": "74fab081ab88b268cbcb41d9d0deabcec007ef4f",
+ "version": "47855fc3a35d",
+ "generated": "2026-10-23T00:13:35+02:00",
+ "commit": "4b18384144aa088c9bc2a0228e723f1f18abc9c6",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
