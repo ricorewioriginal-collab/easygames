@@ -1,0 +1,47 @@
+{
+  "id": "./",
+  "name": "ZEITSPRUNG KINDERSERIEN – Die große Serien-Zeitreise",
+  "short_name": "ZEITSPRUNG KINDERSERIEN",
+  "description": "Moderierte Zeitstrahl-Quizshow zu Kinderserien und Intros von 1990 bis 2026. Solo oder mit TV und Handys.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1a0a2a",
+  "theme_color": "#2a1240",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "../pwa-icons/zeitsprung-kinderserien-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../pwa-icons/zeitsprung-kinderserien-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../pwa-icons/zeitsprung-kinderserien-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "./card.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "ZEITSPRUNG KINDERSERIEN Serien-Zeitreise"
+    }
+  ]
+}
+

@@ -1780,6 +1780,41 @@
     "game": "spinwelten",
     "prefix": "spinweltenSave,spinweltenSlot"
    }
+  },
+  {
+   "id": "zeitsprung-kinderserien",
+   "title": "ZEITSPRUNG KINDERSERIEN",
+   "desc": "Moderierte Zeitstrahl-Quizshow mit Vito zu Kinderserien von 1990 bis 2026: 66 Serienmomente, 97 Fragen, 33 Intro-Hörfragen und 30 Symbolrätsel. Von Disneys Große Pause über SpongeBob und Kim Possible bis Bluey. A–D-Jahreswahl oder Zeitstrahl, Solo, TV-Modus und bis zu vier Handy-Controller per WR-Code/PIN.",
+   "icon": "📺",
+   "img": "zeitsprung-kinderserien/card.png",
+   "bg": "linear-gradient(145deg,#28105a,#784ab1 55%,#ffd678)",
+   "glow": "rgba(104,232,255,.5)",
+   "path": "zeitsprung-kinderserien/",
+   "modes": {
+    "pad": true,
+    "online": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "ZEITSPRUNG KINDERSERIEN ist ein moderiertes Zeitstrahlspiel mit bekannten Serien von 1990 bis 2026. Jeder startet mit einem Serienmoment. Ordne weitere Serienstarts und besondere Momente zeitlich ein: wähle einfach ein Jahr aus A–D oder setze als Profi die Karte direkt in deinen Zeitstrahl. Dazwischen folgen Fragen zu Figuren und Serienwelten, Intro-Hörfragen, Symbolrätsel und ‚Was war zuerst?‘-Runden. Bekannte Intros von Disneys Große Pause, SpongeBob, Kim Possible und vielen weiteren Serien starten im eingebetteten YouTube- oder Deezer-Player. Jede richtige Antwort gibt einen Punkt; mit acht Punkten gewinnst du. Solo oder mit bis zu vier Spielern am TV und Handy-Controllern.",
+    "steuerung": [
+     "Maus/Touch: A–D-Antwort oder Lücke im Zeitstrahl antippen",
+     "Tastatur: A–D oder 1–4 für Antworten, 1–9 für Zeitstrahl-Lücken",
+     "▶ Intro abspielen startet die Hörfrage; ↻ wählt ein anderes Intro oder einen anderen Moment",
+     "TV-Modus: Handys scannen den QR-Code und geben WR-Code und PIN ein"
+    ],
+    "tipps": [
+     "Das Jahr meint den Originalstart der Serie; bei Rückkehrern und neuen Intros das Jahr des genannten Ereignisses.",
+     "Wenn ein externer Player in deinem Land nicht startet, wähle direkt ein anderes Intro."
+    ]
+   },
+   "size": 163809,
+   "files": 16,
+   "offline": true,
+   "cloud": {
+    "game": "zeitsprung-kinderserien",
+    "prefix": "zk-save-v1"
+   }
   }
  ]
 }

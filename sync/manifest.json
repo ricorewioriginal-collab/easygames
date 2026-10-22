@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "d218bae72aa0",
- "generated": "2026-10-19T00:58:54+00:00",
- "commit": "aa150b207024872b6b5b7ba24cbc2e205e1cb963",
+ "version": "fdd04aa92b11",
+ "generated": "2026-10-22T21:44:51.202769Z",
+ "commit": "f8210348b19f6c1367ddbddd3cb76d227baa4649",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5543,8 +5543,8 @@
   },
   {
    "p": "games.js",
-   "s": 27817,
-   "h": "0fcf2da8bb4e3974500f03d867604c028534e8d078ccac017eb0abd5a3e5013a"
+   "s": 28390,
+   "h": "761535ab2b1004564f090426f990d5fbfce913c77aecfdf6662b581968df08c9"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5703,8 +5703,8 @@
   },
   {
    "p": "guides.js",
-   "s": 77050,
-   "h": "588db5da0c54f4b1738a5bed569bef5aecc79a22ae41aff765bf75c47a30320f"
+   "s": 78330,
+   "h": "5193a17b579af6400cdd029124c95b4dfbb94756bf5e86ddbc3e4d61c8421fce"
   },
   {
    "p": "heute.html",
@@ -6063,8 +6063,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2155,
-   "h": "547201d2a41d3b7755902dbdbe641d9e31b6bef77dfd7e2a817af1e320225a9d"
+   "s": 2214,
+   "h": "2f5afbb614f0e6a1471d0c758a5b08d47a3b8a11d89aacaa86ead1a51a3f2506"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -7123,8 +7123,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 119716,
-   "h": "bfa2b7ce4ac1d6a0d40e71a4fc74b33b9e52f6d050a15f9a7b0da89d76b4dbd6"
+   "s": 121881,
+   "h": "69ef68cdb9a3cc9e05b4784f7f250a92f98f7ffeb9c49d9213f7b858fc19d53a"
   },
   {
    "p": "taschi/card.svg",
@@ -7885,6 +7885,86 @@
    "p": "zeitsprung-castingshow/year.js",
    "s": 1141,
    "h": "a3e78593d06f9f68a58fafb75867a87e3f7c44c5388d068f60068cf8041b6167"
+  },
+  {
+   "p": "zeitsprung-kinderserien/card.png",
+   "s": 44657,
+   "h": "70198289de2a88f63b6e5c092b1cb6d075aff4a587c18d2cd3d03084816f2b70"
+  },
+  {
+   "p": "zeitsprung-kinderserien/card.svg",
+   "s": 2235,
+   "h": "51d82bf80dc32537199c34b492818f0cff825fcca4a8c4aff561a0a2056e7712"
+  },
+  {
+   "p": "zeitsprung-kinderserien/events.js",
+   "s": 7509,
+   "h": "28abd02af74b1c178eb47767bd8c37f7d94f922237ce559da8e314c24a949a5a"
+  },
+  {
+   "p": "zeitsprung-kinderserien/game.js",
+   "s": 35507,
+   "h": "b8a5c9e32f7a88d4e0ed1f956a8716948b33cd4689699134c64b20dd0bc807ad"
+  },
+  {
+   "p": "zeitsprung-kinderserien/icon.svg",
+   "s": 1348,
+   "h": "a634cdf261915e057bfa824d4edbfc85205594ef64592ae267ab2a9b23b3d358"
+  },
+  {
+   "p": "zeitsprung-kinderserien/index.html",
+   "s": 8786,
+   "h": "ef8498f4f2834532e9ed735bca6d22ad182f1d4db2c08aa0c3ba1cdb47fcd30d"
+  },
+  {
+   "p": "zeitsprung-kinderserien/knowledge.js",
+   "s": 10566,
+   "h": "9199874d28ff3eeadc33ea917e2e10de9f221949d518b9d0dba30b5501a2e1d3"
+  },
+  {
+   "p": "zeitsprung-kinderserien/manifest.webmanifest",
+   "s": 1163,
+   "h": "aca31d236b8a9a5292bc73e346ffe69cf77ecea4231d3af2d4ef6dceedf2f5f5"
+  },
+  {
+   "p": "zeitsprung-kinderserien/media.js",
+   "s": 5068,
+   "h": "9402857bd1242a09b31e8d4861a00ddfb9ce6976b797e2cb6901fe5c6d2cdf56"
+  },
+  {
+   "p": "zeitsprung-kinderserien/music.js",
+   "s": 2048,
+   "h": "209180cc68f4627d1a5dfb393034db34edbd3358fb3d75a02da10ec9614baec5"
+  },
+  {
+   "p": "zeitsprung-kinderserien/pair.js",
+   "s": 11889,
+   "h": "fdb91c220156b1db8bb4f8f82a44916eca7f37e2ea1ea639ed8fe9ad06724e54"
+  },
+  {
+   "p": "zeitsprung-kinderserien/style.css",
+   "s": 23512,
+   "h": "4a6015a44ed9d99addbb7d3375a94f012b65637aa4ae4a3b1acf1d76c492f51e"
+  },
+  {
+   "p": "zeitsprung-kinderserien/sw.js",
+   "s": 1561,
+   "h": "c7fd09f9192586ded774e17bc45c42888c6622813750cc99e73ea6a993ca8999"
+  },
+  {
+   "p": "zeitsprung-kinderserien/visual.js",
+   "s": 2642,
+   "h": "e2a93c2ea2ca8694f30de6744857f4d23b56001bf180a38bd934fe445baa48c5"
+  },
+  {
+   "p": "zeitsprung-kinderserien/vito.js",
+   "s": 4175,
+   "h": "3cb2bff4848bc5e04a956364d7607ac033b46a682eb811457001191d428c6e44"
+  },
+  {
+   "p": "zeitsprung-kinderserien/year.js",
+   "s": 1143,
+   "h": "02a6b67e06485598d2c47ff8963da4ca5e0d2fba29b72f6d375480435f8a8d3e"
   },
   {
    "p": "zeitsprung-movie/card.png",

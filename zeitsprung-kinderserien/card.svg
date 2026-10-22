@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="ZEITSPRUNG KINDERSERIEN – die Serien-Zeitreise">
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#351160"/><stop offset=".55" stop-color="#171239"/><stop offset="1" stop-color="#0d2b52"/></linearGradient><linearGradient id="tv" x2="1" y2="1"><stop stop-color="#68e8ff"/><stop offset="1" stop-color="#ec80cd"/></linearGradient><linearGradient id="title" x2="1" y2="1"><stop stop-color="#fff2bd"/><stop offset="1" stop-color="#ffc16e"/></linearGradient></defs>
+<rect width="1200" height="630" fill="url(#bg)"/>
+<circle cx="1080" cy="120" r="230" fill="#704799" opacity=".22"/><circle cx="130" cy="430" r="280" fill="#e361ab" opacity=".13"/>
+<path d="M60 551h1080" stroke="#f8c779" stroke-width="7" stroke-linecap="round"/>
+<g fill="#ffe8b6" font-family="Arial,sans-serif" font-weight="800" font-size="22"><text x="70" y="600">1990</text><text x="510" y="600">2000</text><text x="800" y="600">2010</text><text x="1080" y="600">2026</text></g>
+<g fill="#ffd376"><circle cx="95" cy="551" r="14"/><circle cx="520" cy="551" r="14"/><circle cx="810" cy="551" r="14"/><circle cx="1094" cy="551" r="14"/></g>
+<rect x="832" y="126" width="274" height="330" rx="35" fill="#102347" stroke="#ffd376" stroke-width="18"/><rect x="855" y="149" width="228" height="246" rx="17" fill="url(#tv)"/>
+<circle cx="969" cy="269" r="75" fill="#251449" stroke="#fff2ca" stroke-width="10"/><path d="M969 217v54l37 24" fill="none" stroke="#fff2ca" stroke-width="14" stroke-linecap="round"/>
+<path d="M917 466h106" stroke="#ffd376" stroke-width="16" stroke-linecap="round"/>
+<text x="70" y="132" fill="#7debff" font-family="Arial,sans-serif" font-weight="900" letter-spacing="6" font-size="28">DIE SERIEN-ZEITREISE</text>
+<text x="65" y="262" fill="url(#title)" font-family="Impact,Arial Black,Arial,sans-serif" font-weight="900" font-size="105">ZEITSPRUNG</text>
+<text x="68" y="380" fill="#fff8da" font-family="Impact,Arial Black,Arial,sans-serif" font-weight="900" font-size="94">KINDERSERIEN</text>
+<text x="71" y="445" fill="#ffd7e8" font-family="Arial,sans-serif" font-weight="700" font-size="29">1990–2026 · ZEITSTRAHL · INTRO-HÖRFRAGEN</text>
+</svg>

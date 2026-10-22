@@ -1,4 +1,4 @@
-window.EASYGAMES_BUILD = '20261019.1'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
+window.EASYGAMES_BUILD = '20261022.1'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
 // Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
 const GAMES = [
   { id: 'ricolife', title: 'RicoLife 3D – Dein Leben. Deine Regeln.', icon: '🏡', img: 'ricolife/card.svg', bg: 'linear-gradient(145deg,#123a50,#4b8d8e 54%,#e5b16b)', glow: 'rgba(139,212,194,.45)', path: 'ricolife/', desc: 'Eigenständige 3D-Lebenssimulation in einer lebendigen offenen Stadt: eigenen Haushalt erstellen, begehbare Häuser bauen und einrichten, Bedürfnisse und Emotionen erleben, Berufe ausüben, Freundschaften und Familien gründen, Lebensgeschichten entdecken. Frei spielbar, auch offline, mit optionalem Google-Spielstand. Für Handy, PC und Controller.' },
@@ -95,5 +95,7 @@ const GAMES = [
     path: 'anmacha-undercover/', desc: 'Social-Deduction-Party im Funkhaus: 6 Modi – Verräter-Jagd, Imposter mit geheimem Wort, Detektiv & Alibi, Sabotage-Chaos, Verstecken & Jagen und Rollen-Chaos. 6 Karten in 3D, 24 Minispiele, über 500 Wörter, Bots für 3–12 Teilnehmer. Solo offline gegen den Computer oder online per Link, Code und QR – jeder mit eigenem Gerät und geheimer Rolle.' },
   { id: 'spinwelten', title: 'Spinwelten 3D', icon: '🌀', img: 'spinwelten/card.svg', bg: 'linear-gradient(145deg,#0d1b3d,#2ec4a6 55%,#f2d08a)', glow: 'rgba(46,196,166,.55)',
     path: 'spinwelten/', desc: 'Das Abenteuer der Wunderinseln: Dreh die Runenmaschine, bau 30 schwebende 3D-Inseln wieder auf, schick freundliche Stürme, geh auf Schatzexpeditionen, sammle 240 Karten und 12 Begleiter. 8 Minispiele, Story mit 60 Aufgaben, online mit Freunden per Code. Ohne Echtgeld.' },
+  { id: 'zeitsprung-kinderserien', title: 'ZEITSPRUNG KINDERSERIEN', icon: '📺', img: 'zeitsprung-kinderserien/card.png', bg: 'linear-gradient(145deg,#28105a,#784ab1 55%,#ffd678)', glow: 'rgba(104,232,255,.5)', path: 'zeitsprung-kinderserien/', desc: 'Moderierte Zeitstrahl-Quizshow mit Vito zu Kinderserien von 1990 bis 2026: 66 Serienmomente, 97 Fragen, 33 Intro-Hörfragen und 30 Symbolrätsel. Von Disneys Große Pause über SpongeBob und Kim Possible bis Bluey. A–D-Jahreswahl oder Zeitstrahl, Solo, TV-Modus und bis zu vier Handy-Controller per WR-Code/PIN.' },
 ];
 window.EASYGAMES_GAMES = GAMES;
+

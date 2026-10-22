@@ -28,6 +28,7 @@ window.EASYGAMES_MODES = {
   'bunte-insel': { online: true, pad: true, multi: true, tvParam: true },
   'zeitsprung-wissen': { pad: true, online: true },
   'zeitsprung-castingshow': { pad: true, online: true },
+  'zeitsprung-kinderserien': { pad: true, online: true },
   'zeitsprung-movie': { pad: true, online: true },
   'zeitsprung-radio': { pad: true, online: true },
   'zotik': { online: true },
@@ -37,3 +38,4 @@ window.EASYGAMES_MODES = {
   'anmacha-showdown': { multi: true },
   'anmacha-gesucht': { multi: true }
 };
+

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ZEITSPRUNG KINDERSERIEN">
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#28105a"/><stop offset="1" stop-color="#101638"/></linearGradient><linearGradient id="screen" x2="1" y2="1"><stop stop-color="#6ce7fb"/><stop offset="1" stop-color="#f18bdc"/></linearGradient></defs>
+<rect x="8" y="8" width="496" height="496" rx="110" fill="url(#bg)" stroke="#f8b651" stroke-width="10"/>
+<path d="M116 119h280a25 25 0 0 1 25 25v213a25 25 0 0 1-25 25H116a25 25 0 0 1-25-25V144a25 25 0 0 1 25-25z" fill="#12234b" stroke="#ffd678" stroke-width="15"/>
+<rect x="112" y="140" width="288" height="218" rx="18" fill="url(#screen)"/>
+<circle cx="255" cy="247" r="80" fill="#271854" opacity=".9" stroke="#fff0bd" stroke-width="10"/>
+<path d="M255 192v56l44 27" fill="none" stroke="#fff0bd" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M143 408h226" stroke="#ffd678" stroke-width="16" stroke-linecap="round"/>
+<path d="M194 380v29m124-29v29" stroke="#ffd678" stroke-width="13"/>
+<circle cx="145" cy="77" r="12" fill="#6ce7fb"/><circle cx="365" cy="77" r="10" fill="#f18bdc"/>
+<text x="256" y="465" text-anchor="middle" font-family="Arial,sans-serif" font-size="37" font-weight="900" letter-spacing="2" fill="#fff2c7">SERIEN</text>
+</svg>
