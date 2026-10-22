@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "b25be971d922",
- "generated": "2026-10-23T00:04:18+02:00",
- "commit": "6775b764d85c04057f44ef9e88909b447742f160",
+ "version": "839ab2a1ddc0",
+ "generated": "2026-10-22T22:13:11.645619+00:00",
+ "commit": "74fab081ab88b268cbcb41d9d0deabcec007ef4f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5544,7 +5544,7 @@
   {
    "p": "games.js",
    "s": 28910,
-   "h": "0b95ae517d23eac34d587f88e010e5bd8ac2d0646ecc48264146e0a9543620f3"
+   "h": "29aaf955ee4d0f92f5e47e95ca0d6b3928ec1f060748e226622cad3d905cb018"
   },
   {
    "p": "gay-life/card.jpg",
@@ -7124,7 +7124,7 @@
   {
    "p": "sync/catalog.json",
    "s": 123753,
-   "h": "4a8f3fc05f4b4254e58277997146b621bab55bb6e4c41506b4e6c56a2027ab22"
+   "h": "09e79e160fab86ae97188887949c4a7e0538e7fb67b3c4affa12c5e81739f09a"
   },
   {
    "p": "taschi/card.svg",
@@ -7918,8 +7918,8 @@
   },
   {
    "p": "zeitsprung-eurovision/game.js",
-   "s": 35510,
-   "h": "ad0657f79352a8513854179d3f88aa747b4196ebd63f564d3f70c3670207681f"
+   "s": 36645,
+   "h": "aab52bf7fa8dd252ed62a832a5fc1953aa15b7745560c83e9d8437038ad82408"
   },
   {
    "p": "zeitsprung-eurovision/icon.svg",
@@ -7943,13 +7943,13 @@
   },
   {
    "p": "zeitsprung-eurovision/media.js",
-   "s": 1560,
-   "h": "00c8bf97208de8a4416811febd716242ec2fab4f30a682f0b118bb8e0bdb8967"
+   "s": 2631,
+   "h": "d7113e18a5fd898a72da658d2fc7b70e203cacdbfff5f49e60dfa6f8bf203c60"
   },
   {
    "p": "zeitsprung-eurovision/music.js",
-   "s": 2048,
-   "h": "2867027ecddf628042388b7af8474ad0b9678283c038a9ea331d15fbff45fb57"
+   "s": 2098,
+   "h": "39018574a675b9bbb8db8529456736cb974c3b783a5b7ef303e4347f7d8f13ff"
   },
   {
    "p": "zeitsprung-eurovision/pair.js",
@@ -7958,13 +7958,13 @@
   },
   {
    "p": "zeitsprung-eurovision/style.css",
-   "s": 23889,
-   "h": "4e71bc31c01b37f6532bb88dee98ad9799e48af6e4ca965ad9e333fec07c5c65"
+   "s": 23809,
+   "h": "4037a7ae341bc90b71b15d9fcfc97d44d558939959bf4eb633aeae47756fb371"
   },
   {
    "p": "zeitsprung-eurovision/sw.js",
    "s": 1659,
-   "h": "a795758c5510c6282fbef149f1c6d91ee16166a5ccf2b4b37cd76e65cd990934"
+   "h": "a855d3bb410f50995f29ef72c3f94d754b31f95d3483e314b16c25b04550468b"
   },
   {
    "p": "zeitsprung-eurovision/visual.js",
@@ -7998,8 +7998,8 @@
   },
   {
    "p": "zeitsprung-kinderserien/game.js",
-   "s": 35507,
-   "h": "b8a5c9e32f7a88d4e0ed1f956a8716948b33cd4689699134c64b20dd0bc807ad"
+   "s": 36574,
+   "h": "a2f0bd290713bf4f452324348f0283e5a02b02d4e8eacb59fa741b8fb8c62117"
   },
   {
    "p": "zeitsprung-kinderserien/icon.svg",
@@ -8028,8 +8028,8 @@
   },
   {
    "p": "zeitsprung-kinderserien/music.js",
-   "s": 2048,
-   "h": "209180cc68f4627d1a5dfb393034db34edbd3358fb3d75a02da10ec9614baec5"
+   "s": 2098,
+   "h": "ead63756f6f02cfe4603b78523138c8550c3abecd353cf3f8f6ccab0bd2a4a07"
   },
   {
    "p": "zeitsprung-kinderserien/pair.js",
@@ -8038,13 +8038,13 @@
   },
   {
    "p": "zeitsprung-kinderserien/style.css",
-   "s": 23512,
-   "h": "4a6015a44ed9d99addbb7d3375a94f012b65637aa4ae4a3b1acf1d76c492f51e"
+   "s": 23432,
+   "h": "55ffd0d6b0a6c37a950b1d9bbdbced5a5e164a20498b9242c8c44bd0eea4b8f5"
   },
   {
    "p": "zeitsprung-kinderserien/sw.js",
    "s": 1561,
-   "h": "c7fd09f9192586ded774e17bc45c42888c6622813750cc99e73ea6a993ca8999"
+   "h": "a1987a227b647ff745ebb993ef053903d72b73b480c21b25a9e15eba782a9a77"
   },
   {
    "p": "zeitsprung-kinderserien/visual.js",

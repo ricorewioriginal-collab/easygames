@@ -1,4 +1,4 @@
-const CACHE = 'zeitsprung-eurovision-v2';
+const CACHE = 'zeitsprung-eurovision-v3';
 const APP = ['./', './index.html', './archiv.html', './archiv.css', './archiv.js', './style.css', './game.js', './vito.js', './year.js', './events.js', './knowledge.js', './media.js', './visual.js', './music.js', './pair.js', './icon.svg', './card.svg', './card.png', './manifest.webmanifest', '../vendor/three-r128.min.js', '../cloud/fire-peer.js', '../vendor/peerjs-1.5.4.min.js', '../vendor/qrcode-generator-1.4.4.js', '../pwa-icons/zeitsprung-eurovision-192.png', '../pwa-icons/zeitsprung-eurovision-512.png'];
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(APP)).then(() => self.skipWaiting())));
 self.addEventListener('activate', event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('zeitsprung-eurovision-') && key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())));

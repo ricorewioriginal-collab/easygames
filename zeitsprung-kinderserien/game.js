@@ -204,7 +204,7 @@ async function playMedia(index=0) {
   if(state.current!==current||state.solved)return;
   ui.playMusic.disabled=false;
   const [source]=musicSources(id);
-  if(!source){if(song.youtubeId){renderSource({...introSource(song),song});return;}playerPlaceholder('!','Intro gerade nicht verfügbar. Wähle ein anderes.');ui.mediaState.textContent='KEIN AUDIO';return;}
+  if(!source){if(song.youtubeId){renderSource({...introSource(song),song});return;}playerPlaceholder('!','Intro gerade nicht verfügbar. Wähle ein anderes.');ui.mediaState.textContent='KEIN AUDIO';ui.musicInfo.textContent='Der eingebettete Player ist nicht verfügbar. Öffne den Song direkt:';showMediaLinks(song);return;}
   renderSource({...source,song});
 }
 function renderSource(source) {
@@ -215,7 +215,20 @@ function renderSource(source) {
   const kinds=mediaKinds();ui.switchSource.classList.toggle('hidden',kinds.length<2);if(kinds.length>1)ui.switchSource.textContent=kinds[(state.sourceIndex+1)%kinds.length]==='clip'?'↔ Video zeigen':'↔ Intro anhören';
   ui.musicInfo.textContent=clip?'Das Intro läuft über YouTube. Falls es gesperrt ist, wähle ein anderes.':'Das Intro läuft über Deezer. Tippe im Player auf Play.';
   ui.hostText.textContent=clip?'Das Intro ist bereit. Tippe im Player auf Play.':'Das Intro ist bereit. Tippe im Player auf Play.';
+  showMediaLinks(source.song || (state.current?.event ? songFor(state.current.event) : state.current?.item), source);
   state.pair?.broadcast();
+}
+function showMediaLinks(song, source = null) {
+  const links = [];
+  if (source?.page) links.push([source.page, source.kind === 'song' ? '▶ Auf Deezer abspielen ↗' : '▶ Auf YouTube abspielen ↗']);
+  if (song) {
+    const query = encodeURIComponent(`${song.artist} ${song.title}`);
+    links.push([`https://www.youtube.com/results?search_query=${query}`, '▶ Auf YouTube suchen ↗']);
+    if (source?.kind !== 'song') links.push([`https://www.deezer.com/search/${query}`, '♫ Auf Deezer suchen ↗']);
+  }
+  for (const [href, label] of links) {
+    const a = document.createElement('a'); a.className = 'media-open'; a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = label; ui.musicInfo.append(a);
+  }
 }
 function switchSource() {
   const kinds=mediaKinds();if(state.solved||!kinds.length)return;
@@ -245,6 +258,7 @@ function renderRound() {
   ui.swapTrailer.classList.toggle('hidden',!(event||type==='audio'));ui.swapTrailer.textContent=type==='audio'?'↻ Anderes Intro':'↻ Anderer Moment';
   ui.musicInfo.classList.toggle('hidden',!kinds.length);
   ui.musicInfo.textContent=type==='audio'?'Starte das Intro im Player und wähle die passende Serie.':kinds.length===2?'Zu diesem Moment gibt es ein Video und ein Intro.':kinds[0]==='clip'?'Zu diesem Moment gibt es ein Video auf YouTube.':'Zu diesem Moment gibt es ein Intro.';
+  if(kinds.length)showMediaLinks(type==='audio'?c.item:event?songFor(c.event):null);
   ui.questionTitle.textContent=type==='year'?'In welchem Jahr war das?':type==='timeline'?'Wohin gehört dieser Moment auf deinem Zeitstrahl?':promptText(c);
   ui.questionHint.textContent=type==='quiz'?'Wähle eine der vier Antworten. Vito löst danach auf.':type==='order'?'Tippe auf den Moment, der als erstes war.':type==='audio'?'Starte das Intro und tippe auf A, B, C oder D.':type==='visual'?'Sieh dir die Symbole an und wähle A, B, C oder D.':type==='year'?`${c.event.title}. Wähle das Jahr mit A, B, C oder D.`:'Tippe auf die passende Lücke deines Zeitstrahls.';
   ui.result.className='result hidden';ui.result.replaceChildren();ui.next.classList.add('hidden');

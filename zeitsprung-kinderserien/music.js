@@ -30,6 +30,6 @@ export function resolveDeezer(item) {
 }
 
 export function musicSources(deezerId) {
-  return deezerId ? [{ name: 'Deezer', kind: 'song', src: `https://widget.deezer.com/widget/dark/track/${deezerId}` }] : [];
+  return deezerId ? [{ name: 'Deezer', kind: 'song', src: `https://widget.deezer.com/widget/dark/track/${deezerId}`, page: `https://www.deezer.com/track/${deezerId}` }] : [];
 }
 

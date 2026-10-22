@@ -47,5 +47,7 @@ body{background:radial-gradient(circle at 50% -20%,#41687f,transparent 43%),line
 .player-box[data-provider="commons"] iframe{background:#000}
 .menu-hero h1 em,.boot h1 em{letter-spacing:.02em}@media(max-width:650px){.menu-hero h1,.boot h1{font-size:clamp(30px,10.5vw,84px)}}
 .player-box.is-audio { position: relative; }
-.player-box.is-audio iframe { filter: blur(28px) brightness(.48); }
-.player-box.is-audio::after { content: '♫  INTRO HÖREN'; position: absolute; inset: 0; display: grid; place-items: center; font: 900 clamp(1.1rem, 3vw, 1.8rem) system-ui, sans-serif; letter-spacing: .16em; color: #fff4d7; text-shadow: 0 3px 18px #170e31; pointer-events: none; }
+.player-box.is-audio iframe { filter: none; }
+
+
+.media-open{display:inline-block;margin:8px 9px 2px 0;padding:8px 11px;border:1px solid #ffcc82;border-radius:9px;background:#211735;color:#ffe4aa;font-weight:850;text-decoration:none}.media-open:hover{background:#392553}
