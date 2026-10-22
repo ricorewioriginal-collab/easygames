@@ -66,7 +66,7 @@
     abenteuer: ['kiko-sterneninseln', 'taschi', 'quest-rpg', 'aeru', 'urwaldlager', 'gay-life', 'zotik2'],
     action: ['krawallvoegel', 'rico-flap', 'radio-maze', 'lumo', 'pufi-farbwind', 'radio-surfer', 'funkparcours', 'kart', 'turbokick', 'riftzone', 'flipper', 'snake', 'showdown'],
     denken: ['kraterkommando', 'funkblasen', 'colorpop-universe', 'radio-match', 'memory', 'wobbel', 'frequenzrad', 'tower-defense'],
-    quiz: ['quiz', 'gesucht', 'hoererwahl', 'preisradar', 'machmichaus', 'zeitsprung-wissen', 'zeitsprung-movie', 'zeitsprung-radio', 'zeitsprung-castingshow', 'koffer-dealer'],
+    quiz: ['quiz', 'gesucht', 'hoererwahl', 'preisradar', 'machmichaus', 'zeitsprung-wissen', 'zeitsprung-movie', 'zeitsprung-radio', 'zeitsprung-castingshow', 'zeitsprung-kinderserien', 'koffer-dealer'],
     sim: ['ricoville', 'ricolife', 'ricorail', 'mimori', 'markthalle', 'funkhaus', 'klotzfunk', 'bunte-insel', 'anmacha-podcast-tycoon'],
     tisch: ['ricopoly', 'partyverse', 'spielesammlung', 'stapelrausch', 'gold-reels', 'anmacha-undercover', 'spinwelten'],
     musik: ['beat-surfer', 'prismrush']
@@ -266,3 +266,4 @@
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.AnMaChaAch = api;
 })(typeof window !== 'undefined' ? window : this);
+
