@@ -50,6 +50,7 @@ body{background:radial-gradient(circle at 50% -20%,#41687f,transparent 43%),line
 .player-box.is-audio iframe { filter: none; }
 
 
-.archive-cta{display:flex;align-items:center;justify-content:center;text-align:center;text-decoration:none}.archive-head{padding:8px 11px;border:1px solid #ffffff55;border-radius:9px;color:#ffd1e6;font-size:12px;font-weight:900;letter-spacing:.08em;text-decoration:none}.archive-head:hover{background:#ffffff22}@media(max-width:600px){.archive-head{font-size:10px;padding:7px}}
+.archive-cta{display:flex;align-items:center;justify-content:center;text-align:center;text-decoration:none}.archive-head{padding:8px 11px;border:1px solid #ffffff55;border-radius:9px;color:#ffd1e6;font-size:12px;font-weight:900;letter-spacing:.08em;text-decoration:none}.archive-head:hover{background:#ffffff22}@media(max-width:600px){.archive-head{display:none}}
 
 .media-open{display:inline-block;margin:8px 9px 2px 0;padding:8px 11px;border:1px solid #ffcc82;border-radius:9px;background:#211735;color:#ffe4aa;font-weight:850;text-decoration:none}.media-open:hover{background:#392553}
+.boot img{display:block;margin:0 auto 12px}

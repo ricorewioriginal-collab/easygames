@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "47855fc3a35d",
- "generated": "2026-10-23T00:13:35+02:00",
- "commit": "4b18384144aa088c9bc2a0228e723f1f18abc9c6",
+ "version": "52b130cad6dc",
+ "generated": "2026-10-23T05:12:09+02:00",
+ "commit": "8f39186fbdad5454f6b26f866bdfa79ed24e5c46",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5243,8 +5243,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2411,
-   "h": "c935c3e2c08cf2a52eb186197952d1b6f300f55c27e058491178f0ff97f86e4c"
+   "s": 2479,
+   "h": "1e282143ab613f29efcd95a77efad2498e863d3935c08f812e968ff628afeb5c"
   },
   {
    "p": "chat.html",
@@ -7124,7 +7124,7 @@
   {
    "p": "sync/catalog.json",
    "s": 123753,
-   "h": "09e79e160fab86ae97188887949c4a7e0538e7fb67b3c4affa12c5e81739f09a"
+   "h": "2374b80b769bb52e63c5647dd76a4664fae5a713516fb538e66cba418efe8391"
   },
   {
    "p": "taschi/card.svg",
@@ -7958,8 +7958,8 @@
   },
   {
    "p": "zeitsprung-eurovision/style.css",
-   "s": 23809,
-   "h": "4037a7ae341bc90b71b15d9fcfc97d44d558939959bf4eb633aeae47756fb371"
+   "s": 23839,
+   "h": "9e0cda19171a2308d663cd9f8f1970735083fa8ee30a705b59e88caffd87aa49"
   },
   {
    "p": "zeitsprung-eurovision/sw.js",
@@ -8038,8 +8038,8 @@
   },
   {
    "p": "zeitsprung-kinderserien/style.css",
-   "s": 23432,
-   "h": "55ffd0d6b0a6c37a950b1d9bbdbced5a5e164a20498b9242c8c44bd0eea4b8f5"
+   "s": 23476,
+   "h": "1d9c2a47ee8af942bf63c22d1c32af3e11aea28f88f5d4a3043732854984e42d"
   },
   {
    "p": "zeitsprung-kinderserien/sw.js",
