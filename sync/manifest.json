@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "00208af1d9e0",
- "generated": "2026-10-23T10:52:02+02:00",
- "commit": "bd62fc6f5d99e90deae463feca109d327a156d2b",
+ "version": "23709bcb52a4",
+ "generated": "2026-10-24T00:32:58+02:00",
+ "commit": "3b098e99c976e9df77f8a7a7b2d9637927935426",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5728,8 +5728,8 @@
   },
   {
    "p": "games.js",
-   "s": 34112,
-   "h": "7af8ad4d6c2560a101ff51f349c3d165002008697aaf512499467dc61511b829"
+   "s": 34196,
+   "h": "e333bbe458bf40a06d0018515d37e4a7fd90039f98cfe2096e9e63ab7b2c0b78"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5888,8 +5888,8 @@
   },
   {
    "p": "guides.js",
-   "s": 97471,
-   "h": "5f80b909e1c692b4dba04cf52143e2900f3b376980c0c0ef8ded0f4109e762ae"
+   "s": 97783,
+   "h": "56f62380476aaf1671ba9115f7fea9f48764fd7e4768f7e9952699b13f6277e3"
   },
   {
    "p": "heute.html",
@@ -7343,8 +7343,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 149522,
-   "h": "67e0ae9c5ae270592590b2302d0bb5ee6f91d27c4e7e99fe571580fdf0514b43"
+   "s": 149918,
+   "h": "89ccab400932b1133e0ff815d0dd1e41e3f567057f7e2af933f35405d2e09a2a"
   },
   {
    "p": "taschi/card.svg",
@@ -7608,23 +7608,23 @@
   },
   {
    "p": "tortenschlacht/card.jpg",
-   "s": 39321,
-   "h": "c8a35c1826b6e1255143a70ce114ee0d2f600c1a26665c83db3e5e6aab598b9f"
+   "s": 41176,
+   "h": "3bec6833244c6aa2e6a55218669dccc2c6ef8975d7d69f5bb5fb2412b89ee0c7"
   },
   {
    "p": "tortenschlacht/index.html",
-   "s": 11138,
-   "h": "a4ee1de0d9c70a984c4416aac53bd2c50b523bc745338fb536d66dfee00cab3f"
+   "s": 11404,
+   "h": "1e087bb29a71b2207181d48b1035360c3c5b31b93b391c7e6d742fd5ff78ff08"
   },
   {
    "p": "tortenschlacht/js/core.js",
-   "s": 13853,
-   "h": "bdb0926d1cfa13e44952719ef21dd6cbc0fe20264412e950e7b8db49f7be0763"
+   "s": 18835,
+   "h": "234b946e254fd01e76e575f8a3f7ecbab1801562e409e1ae6f8203d476fbbcbe"
   },
   {
    "p": "tortenschlacht/js/game.js",
-   "s": 59566,
-   "h": "112bab48a3b0db5d2e4ef775649ce3d81313041e98c2fefadb7fc982457ac17b"
+   "s": 74248,
+   "h": "beda27bbb67a5a6fbb9cba92d3344f04dfafb902862b595fc30485d9ecd58d7b"
   },
   {
    "p": "tortenschlacht/manifest.webmanifest",

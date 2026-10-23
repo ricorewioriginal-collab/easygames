@@ -10,7 +10,7 @@ await ctx.addInitScript(() => { window.__pad = { b: [], ax: [0, 0] }; navigator.
 const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
 const st = () => pg.evaluate(() => TORTEN.state());
 // stehende Figur mitten ins Bild stellen, Bildschirmkoordinaten von Kopf/Bauch zurück
-const target = (type, layer) => pg.evaluate(([type, layer]) => { const g = TORTEN.game(); g.spawnT = 99; g.people.length = 0; const p = TS.spawn(g, type, g.camX + g.A / 2); p.layer = layer; p.g = TS.LAYERS[layer].g; p.x = g.camX + g.A / 2; p.v = 0; p.state = 'stand'; p.target = null; p.life = 99; const b = TS.body(p); return { body: TORTEN.toScreen(p.x, (b.by0 + b.by1) / 2), head: TORTEN.toScreen(p.x, b.hy), id: p.id }; }, [type, layer]);
+const target = (type, layer) => pg.evaluate(([type, layer]) => { const g = TORTEN.game(); g.spawnT = 99; g.people.length = 0; const p = TS.spawn(g, type, g.camX + g.A / 2); p.layer = layer; p.z = layer; p.gy = TS.LAYERS[layer].g; p.sc = TS.LAYERS[layer].s * TS.HMAN; p.x = g.camX + g.A / 2; p.v = 0; p.state = 'stand'; p.target = null; p.life = 99; const b = TS.body(p); return { body: TORTEN.toScreen(p.x, (b.by0 + b.by1) / 2), head: TORTEN.toScreen(p.x, b.hy), id: p.id }; }, [type, layer]);
 await pg.goto(URL); await pg.waitForTimeout(800);
 ok(await pg.isVisible('#sMenu'), 'Menü');
 await pg.click('#bSolo'); await pg.waitForTimeout(500);
@@ -29,11 +29,11 @@ ok((await st()).players[0].x > x0 + .05, 'Stick bewegt das Fadenkreuz');
 const am = (await st()).players[0].ammo.torte; await pg.evaluate(() => { __pad.b[0] = true; }); await pg.waitForTimeout(80); await pg.evaluate(() => { __pad.b[0] = false; }); await pg.waitForTimeout(100);
 ok((await st()).players[0].ammo.torte === am - 1, 'A wirft');
 await pg.evaluate(() => { __pad.b[2] = true; }); await pg.waitForTimeout(80); await pg.evaluate(() => { __pad.b[2] = false; }); await pg.waitForTimeout(1100);
-ok((await st()).players[0].ammo.torte === 5, 'X lädt nach');
+ok((await st()).players[0].ammo.torte === 8, 'X lädt nach');
 // Scrollen am Rand
 await pg.mouse.move(995, 300); await pg.waitForTimeout(900); ok((await st()).camX > .2, 'Landschaft scrollt am Rand');
 // Konditor wirft zurück
-await pg.evaluate(() => { const g = TORTEN.game(); g.people.length = 0; const k = TS.spawn(g, 'kond', g.camX + .5); k.t = 1.3; });
+await pg.evaluate(() => { const g = TORTEN.game(); g.people.length = 0; const k = TS.spawn(g, 'kond', g.camX + .5); k.t = 1.2; g.spawnT = 99; });
 await pg.waitForTimeout(3300); ok((await st()).players[0].stun > 0, 'Konditor-Torte: Sahne im Gesicht');
 await pg.screenshot({ path: process.env.SHOT || '/tmp/ts-blind.jpg', type: 'jpeg', quality: 60 });
 // Pause
@@ -77,7 +77,7 @@ await ph.goto(URL + '?join=' + code); await ph.fill('#jName', 'Mia'); await ph.c
 ok(true, 'Handy beigetreten'); await tv.waitForTimeout(200);
 ok((await tv.evaluate(() => TORTEN.state())).slots === 1 && /Mia/.test(await tv.textContent('#lobSlots')), 'Mia steht in der Lobby');
 await tv.click('#lobStart'); await tv.waitForTimeout(400);
-const tt = await tv.evaluate(() => { const g = TORTEN.game(); g.spawnT = 99; g.people.length = 0; const p = TS.spawn(g, 'mod', g.WW / 2); p.layer = 2; p.g = TS.LAYERS[2].g; p.x = g.WW / 2; p.v = 0; p.state = 'stand'; p.target = null; p.life = 99; const bb = TS.body(p); return { x: p.x / g.WW, y: (bb.by0 + bb.by1) / 2 }; });
+const tt = await tv.evaluate(() => { const g = TORTEN.game(); g.spawnT = 99; g.people.length = 0; const p = TS.spawn(g, 'mod', g.WW / 2); p.layer = 2; p.z = 2; p.gy = TS.LAYERS[2].g; p.sc = TS.LAYERS[2].s * TS.HMAN; p.x = g.WW / 2; p.v = 0; p.state = 'stand'; p.target = null; p.life = 99; const bb = TS.body(p); return { x: p.x / g.WW, y: (bb.by0 + bb.by1) / 2 }; });
 const pr = await ph.locator('#pad').boundingBox();
 await ph.touchscreen.tap(pr.x + pr.width * tt.x, pr.y + pr.height * tt.y); await ph.waitForTimeout(200);
 const fb = await ph.locator('#cFire').boundingBox(); await ph.touchscreen.tap(fb.x + fb.width / 2, fb.y + fb.height / 2); await tv.waitForTimeout(700);
