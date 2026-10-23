@@ -15,7 +15,7 @@ window.EASYGAMES_CATS = {
     // Action
     'krawallvoegel': 'action', 'rico-flap': 'action', 'radio-maze': 'action', 'pufi-farbwind': 'action', 'lumo': 'action', 'riftzone': 'action', 'anmacha-radio-surfer': 'action', 'anmacha-flipper': 'action', 'anmacha-snake': 'action', 'anmacha-showdown': 'action', 'anmacha-kart': 'action', 'anmacha-funkparcours': 'action', 'turbokick': 'action',
     // Puzzle
-    'funkblasen': 'denken', 'colorpop-universe': 'denken', 'kraterkommando': 'denken', 'anmacha-radio-match': 'denken', 'anmacha-memory': 'denken', 'anmacha-tower-defense': 'denken', 'wobbel': 'denken', 'anmacha-frequenzrad': 'denken', 'wortfunk': 'denken',
+    'funkblasen': 'denken', 'colorpop-universe': 'denken', 'kraterkommando': 'denken', 'anmacha-radio-match': 'denken', 'anmacha-memory': 'denken', 'anmacha-tower-defense': 'denken', 'wobbel': 'denken', 'anmacha-frequenzrad': 'denken', 'wortfunk': 'denken', 'wortgitter': 'denken',
     // Quiz
     'zeitsprung-wissen': 'quiz', 'zeitsprung-movie': 'quiz', 'zeitsprung-radio': 'quiz', 'zeitsprung-castingshow': 'quiz', 'zeitsprung-kinderserien': 'quiz', 'zeitsprung-eurovision': 'quiz', 'anmacha-quiz': 'quiz', 'anmacha-koffer-dealer': 'quiz', 'anmacha-gesucht': 'quiz', 'anmacha-hoererwahl': 'quiz', 'anmacha-preisradar': 'quiz', 'MachMichAus': 'quiz',
     // Simulation

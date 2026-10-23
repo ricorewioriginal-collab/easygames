@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/wortgitter-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Wortgitter"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0B0F1E">
+<title>Wortgitter – Wörter wischen</title>
+<meta name="description" content="Wortgitter: Wische Wörter durch ein Buchstabengitter – 4×4, 5×5 oder 6×6, Tagesgitter und online mit Handys.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <section class="scr on" id="sMenu">
+    <div class="menuBox">
+      <div class="logo" aria-label="Wortgitter">
+        <span>W</span><span>O</span><span>R</span><span>T</span><span class="fx">G</span><span class="fx">I</span><span class="fx">T</span><span class="fx">T</span><span class="fx">E</span><span class="fx">R</span>
+      </div>
+      <p class="sub">Wische Wörter durchs Buchstabengitter</p>
+      <div class="lvls" id="lvls">
+        <button class="lvl" data-lv="leicht"><b>4×4</b><span>Leicht</span><small>ab 3 Buchstaben</small></button>
+        <button class="lvl" data-lv="mittel"><b>5×5</b><span>Mittel</span><small>ab 4 Buchstaben</small></button>
+        <button class="lvl" data-lv="schwer"><b>6×6</b><span>Schwer</span><small>ab 4 Buchstaben</small></button>
+      </div>
+      <div class="menuBtns">
+        <button class="btn big pri" id="bDay">📅 Tagesgitter</button>
+        <button class="btn big" id="bOnline">🌐 Online &amp; Handys</button>
+        <div class="row2">
+          <button class="btn" id="bHelp">📖 Anleitung</button>
+          <button class="btn" id="bSet">⚙️ Einstellungen</button>
+        </div>
+      </div>
+      <p class="stat" id="menuStat"></p>
+      <p class="foot"><a href="../" id="backLink">← Alle Spiele</a></p>
+    </div>
+    <p class="loadInfo" id="loadInfo">Wörterbuch wird geladen …</p>
+  </section>
+
+  <section class="scr" id="sOnline">
+    <div class="panel">
+      <h2>🌐 Online &amp; Handys</h2>
+      <p class="hint">Ein Gerät eröffnet den Raum – gern der Fernseher. Mitspieler treten per Link, QR-Code oder Code von überall bei. Alle wischen gleichzeitig im selben Gitter.</p>
+      <div id="onChoose">
+        <label class="field">Dein Name <input id="onName" maxlength="14" autocomplete="nickname"></label>
+        <button class="btn big pri" id="bHost">📺 Raum eröffnen</button>
+        <div class="joinRow">
+          <input id="joinCode" maxlength="4" placeholder="CODE" autocapitalize="characters" autocomplete="off" spellcheck="false">
+          <button class="btn pri" id="bJoin">Beitreten</button>
+        </div>
+      </div>
+      <div id="onLobby" hidden>
+        <div class="lobbyTop">
+          <div class="qr" id="lobQr"></div>
+          <div><div class="codeBig" id="lobCode">····</div><button class="btn small" id="bCopy">🔗 Link kopieren</button><p class="hint" id="lobLink"></p></div>
+        </div>
+        <label class="field">Gitter
+          <select id="lobLevel"><option value="leicht">4×4 · Leicht</option><option value="mittel">5×5 · Mittel</option><option value="schwer">6×6 · Schwer</option></select>
+        </label>
+        <label class="check"><input type="checkbox" id="lobUnique" checked> Wörter, die mehrere finden, zählen nicht</label>
+        <label class="check"><input type="checkbox" id="hostPlays" checked> Dieses Gerät spielt mit</label>
+        <div id="lobSeats"></div>
+        <div class="rowBtns"><button class="btn small" id="bAddBot">＋ Computer</button></div>
+        <p class="hint" id="lobInfo"></p>
+        <div class="rowBtns"><button class="btn" id="bLobBack">← Verlassen</button><button class="btn pri" id="bLobStart">Runde starten ▶</button></div>
+      </div>
+      <div id="onGuest" hidden>
+        <p class="codeBig" id="guestCode"></p>
+        <p class="hint">Verbunden – warte auf den Start …</p>
+        <div id="guestSeats"></div>
+        <div class="rowBtns"><button class="btn" id="bGuestBack">← Verlassen</button></div>
+      </div>
+      <div class="rowBtns" id="onBack"><button class="btn" id="bOnBack">← Zurück</button></div>
+    </div>
+  </section>
+
+  <section class="scr" id="sGame">
+    <header class="top">
+      <button class="icon" id="bMenu" aria-label="Menü">☰</button>
+      <div class="timer"><div class="bar" id="tBar"></div><span id="tTxt">3:00</span></div>
+      <div class="pts"><b id="score">0</b><small id="count">0 Wörter</small></div>
+    </header>
+    <div class="players" id="players" hidden></div>
+    <div class="word" id="word"><span id="wordTxt">&nbsp;</span></div>
+    <div class="gridWrap" id="gridWrap">
+      <div class="grid" id="grid"></div>
+      <svg class="trail" id="trail"><polyline id="trailLine" points=""/></svg>
+    </div>
+    <div class="bottom">
+      <div class="controls" id="controls">
+        <button class="btn act" id="aClear" title="Weg löschen">✕</button>
+        <button class="btn act pri" id="aOk">✓ Wort</button>
+        <button class="btn act" id="aDone">Fertig</button>
+      </div>
+      <div class="found" id="found"></div>
+    </div>
+  </section>
+
+  <div class="ov" id="ovMenu" hidden><div class="card">
+    <h2>Pause</h2>
+    <div class="menuBtns">
+      <button class="btn big pri" id="mGo">▶ Weiter</button>
+      <button class="btn" id="mHelp">📖 Anleitung</button>
+      <button class="btn" id="mSound">🔊 Ton an</button>
+      <button class="btn" id="mQuit">⏹ Runde beenden</button>
+    </div>
+  </div></div>
+
+  <div class="ov" id="ovEnd" hidden><div class="card scroll">
+    <h2 id="endTitle"></h2>
+    <p class="big" id="endScore"></p>
+    <ol class="rank" id="endRank"></ol>
+    <h3 id="endFoundH">Deine Wörter</h3>
+    <div class="wlist" id="endFound"></div>
+    <h3 id="endMissH">Nicht gefunden</h3>
+    <div class="wlist miss" id="endMiss"></div>
+    <div class="rowBtns"><button class="btn" id="bEndMenu">Menü</button><button class="btn pri" id="bEndAgain">Nochmal ▶</button></div>
+  </div></div>
+
+  <div class="ov" id="ovSet" hidden><div class="card">
+    <h2>Einstellungen</h2>
+    <label class="check"><input type="checkbox" id="setSound"> Ton</label>
+    <label class="check"><input type="checkbox" id="setZen"> Ohne Zeitlimit (Zen) – nicht beim Tagesgitter</label>
+    <button class="btn pri" id="bSetX">Fertig</button>
+  </div></div>
+
+  <div class="ov" id="ovHelp" hidden><div class="card scroll">
+    <h2>So spielst du Wortgitter</h2>
+    <p>Verbinde benachbarte Buchstaben – waagerecht, senkrecht oder schräg – zu Wörtern. Jedes Feld darf pro Wort nur einmal vorkommen. Wie viele Wörter findest du, bevor die Zeit abläuft?</p>
+    <ul>
+      <li><b>4×4 Leicht</b>: Wörter ab 3 Buchstaben, 3 Minuten. <b>5×5 Mittel</b> und <b>6×6 Schwer</b>: ab 4 Buchstaben, 3½ bzw. 4 Minuten.</li>
+      <li>Punkte nach Länge: 3 Buchstaben 1 · 4 → 2 · 5 → 3 · 6 → 5 · 7 → 8 · 8 → 12, jeder weitere +4.</li>
+      <li>Erlaubt sind alle Formen deutscher Wörter (Mehrzahl, Fälle, gebeugte Verben), keine Namen oder Abkürzungen. ß gibt es als SS.</li>
+      <li><b>Tagesgitter</b>: Jeden Tag ein neues 5×5-Gitter, für alle gleich.</li>
+      <li><b>Online</b>: Alle spielen dasselbe Gitter. Wörter, die mehrere gefunden haben, zählen (wenn eingestellt) für niemanden.</li>
+    </ul>
+    <h3>Steuerung</h3>
+    <ul>
+      <li><b>Wischen</b> (Finger oder Maus): über die Buchstaben ziehen, loslassen prüft das Wort. Zurückwischen nimmt den letzten Buchstaben weg.</li>
+      <li><b>Tippen</b>: Buchstaben nacheinander antippen, den letzten nochmal antippen oder ✓ prüft.</li>
+      <li><b>Tastatur</b>: Wort einfach tippen (der Weg wird gesucht), Enter prüft, Rücktaste löscht einen Buchstaben, Esc Menü. Oder Pfeile + Leertaste.</li>
+      <li><b>Gamecontroller</b>: Steuerkreuz bewegt den Rahmen, A nimmt den Buchstaben dazu (auf dem letzten nochmal: prüfen), X prüft, B löscht einen Buchstaben, Start Menü.</li>
+    </ul>
+    <p class="hint">Wörterbuch wie in Wortfunk (LanguageTool, CC BY-SA 4.0), siehe <a href="../wortfunk/data/LIZENZ.txt" target="_blank" rel="noopener">Lizenz</a>.</p>
+    <button class="btn pri" id="bHelpX">Verstanden</button>
+  </div></div>
+
+  <div class="toast" id="toast" hidden></div>
+</div>
+
+<script src="../cloud/fire-peer.js"></script>
+<script src="../wortfunk/js/logic.js"></script>
+<script src="js/grid.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="wortgitter" data-prefix="wortgitter-" defer></script>
+<script src="../gamepad.js" data-pad="a=Space/Enter x=Enter b=Backspace start=Escape" defer></script>
+</body>
+</html>

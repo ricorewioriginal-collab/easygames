@@ -415,4 +415,17 @@ window.EASYGAMES_GUIDES = {
    "Behalte den Joker für einen 7-Steine-Zug – das sind 50 Extrapunkte."
   ]
  },
+ "wortgitter": {
+  "anleitung": "Wortgitter ist ein Wischspiel: Verbinde benachbarte Buchstaben (waagerecht, senkrecht oder schräg) zu Wörtern, jedes Feld darf pro Wort nur einmal vorkommen. Drei Stufen: 4×4 Leicht (ab 3 Buchstaben, 3 Minuten), 5×5 Mittel (ab 4 Buchstaben, 3½ Minuten) und 6×6 Schwer (ab 4 Buchstaben, 4 Minuten); in den Einstellungen geht es auch ohne Zeitlimit (Zen). Längere Wörter bringen mehr Punkte (3 Buchstaben 1, 4 → 2, 5 → 3, 6 → 5, 7 → 8, 8 → 12, jeder weitere +4). Erlaubt sind alle deutschen Wortformen aus dem Wortfunk-Wörterbuch, keine Namen oder Abkürzungen. Nach der Runde siehst du, welche Wörter du verpasst hast. Das Tagesgitter (5×5) ist jeden Tag neu und für alle gleich. Bei 🌐 Online & Handys spielen alle gleichzeitig im selben Gitter, der Fernseher zeigt Gitter, Zeit und wie viele Wörter jeder hat; Wörter, die mehrere gefunden haben, zählen (wenn eingestellt) für niemanden. Computer-Mitspieler sind möglich.",
+  "steuerung": [
+   "Touch & Maus: über die Buchstaben wischen, loslassen prüft das Wort, zurückwischen nimmt den letzten Buchstaben weg. Oder Buchstaben nacheinander antippen und den letzten nochmal antippen bzw. ✓ Wort.",
+   "Tastatur: Wort einfach tippen (der Weg wird automatisch gesucht), Enter prüft, Rücktaste löscht einen Buchstaben, Esc Menü. Alternativ Pfeile + Leertaste.",
+   "Gamecontroller: Steuerkreuz bewegt den Rahmen, A nimmt den Buchstaben dazu (auf dem letzten nochmal: prüfen), X prüft, B löscht einen Buchstaben, Start Menü."
+  ],
+  "tipps": [
+   "Achte auf Endungen wie -EN, -ER, -ES und -TE: Aus einem gefundenen Wort werden oft mehrere.",
+   "Lange Wörter lohnen sich: ein Wort mit 8 Buchstaben bringt so viel wie zwölf Wörter mit 3.",
+   "Online mit „doppelt zählt nicht“: Suche lieber die ungewöhnlichen Wörter, die die anderen übersehen."
+  ]
+ },
 };

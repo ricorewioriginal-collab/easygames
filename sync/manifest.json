@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c0748d7dd3fb",
- "generated": "2026-10-23T06:03:23+02:00",
- "commit": "ad0f7341da0305006be5daa210c97e4f2c0c45b0",
+ "version": "6e27f3a99e4d",
+ "generated": "2026-10-23T06:19:16+02:00",
+ "commit": "b9a1e6e80fa61520c89554a3199dffa6c13e01ee",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5243,8 +5243,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2501,
-   "h": "865f22a509a1f73204a8209b57d952e2073caf1446f5ebf65249d9bf28478586"
+   "s": 2525,
+   "h": "812715d7199852803479c557a51e8f592262304dcc87b4e10ce3097de22ce374"
   },
   {
    "p": "chat.html",
@@ -5543,8 +5543,8 @@
   },
   {
    "p": "games.js",
-   "s": 29410,
-   "h": "cc15398f835ef8092cfbc40ca98103f5baf8d96c78f52a36b3c354d1ff563b4d"
+   "s": 29911,
+   "h": "3a5797f5eee5434de2af178c8c5889ddb87a8600ae6f5711fa6679dc1934a40a"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5703,8 +5703,8 @@
   },
   {
    "p": "guides.js",
-   "s": 81395,
-   "h": "ec3eb3dfb19865bdad678ce07015aa171e622e9152220fb703586659fbe3a098"
+   "s": 83280,
+   "h": "0dcecfa444a90a47e7264468d8001974d534ce2928d3739a9ee0b54bee8b9baa"
   },
   {
    "p": "heute.html",
@@ -6063,8 +6063,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2341,
-   "h": "c86f3fe5eed3274d4bb51e1961d9f31892c84780bf804efc28dd2e4f5a72681c"
+   "s": 2401,
+   "h": "c396702db473271200a62d1a5c6f1e584fdb783b112d05b5c7ea9d8c5a2ab383"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -7123,8 +7123,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 126588,
-   "h": "67d3d394b3e3c103c84816b391de37b8d2720dc89648d40ac160735c38fa4b59"
+   "s": 129262,
+   "h": "a603e164307a73590161b09c34336961aa70ddcc36f50eaa80aa074d274fcb39"
   },
   {
    "p": "taschi/card.svg",
@@ -7855,6 +7855,41 @@
    "p": "wortfunk/worker.js",
    "s": 482,
    "h": "bb23e6703346623691e60cf8dfbc7ba3ec7bf2592719d4b785f6511315be7048"
+  },
+  {
+   "p": "wortgitter/card.jpg",
+   "s": 34144,
+   "h": "22493f93c75b444e74200096552246456947befd32e954c0b5bc28a5e56f461f"
+  },
+  {
+   "p": "wortgitter/index.html",
+   "s": 12394,
+   "h": "6ba2956c6c31bc321203dec95745f4559b119f9716c8fb8a2cc6300c78e3fc28"
+  },
+  {
+   "p": "wortgitter/js/app.js",
+   "s": 38394,
+   "h": "e380f20b33c3e7aaaf74d0bec5cb696262860c9cb21022be783a5dbe4d0b8770"
+  },
+  {
+   "p": "wortgitter/js/grid.js",
+   "s": 6492,
+   "h": "47b81d2254747b2817a6cba578c20a63cd0a2dd25e8e2c436cc434d3c97d0b37"
+  },
+  {
+   "p": "wortgitter/manifest.webmanifest",
+   "s": 774,
+   "h": "d591c51f1c371ea5b1bd9b8f333de32a7782d63ed88e9f85905f36f47a8c9e4a"
+  },
+  {
+   "p": "wortgitter/style.css",
+   "s": 15609,
+   "h": "91b7aa669884896f95c3d0817fa832df53b348cf8a5182d1eadaa1763be58914"
+  },
+  {
+   "p": "wortgitter/sw.js",
+   "s": 2000,
+   "h": "920810948ad9169606d0ede35ff11af463a5a85c0e68bca6aed0e555f6a38260"
   },
   {
    "p": "zeitsprung-castingshow/card.png",
