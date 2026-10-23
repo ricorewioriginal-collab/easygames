@@ -441,4 +441,17 @@ window.EASYGAMES_GUIDES = {
    "FreeCell: Halte freie Zellen und leere Spalten frei; jede verdoppelt, wie viele Karten du auf einmal bewegen kannst."
   ]
  },
+ "saftblitz": {
+  "anleitung": "Saftblitz ist ein Frucht-Schneidespiel: Wische durch die Früchte, die von unten ins Bild fliegen, bevor sie wieder herunterfallen – Bomben nicht berühren! Mehrere Früchte in einem Zug ergeben eine Combo (3 Früchte = +3 extra). Modi: Klassik (3 Leben, jede fallen gelassene Frucht kostet eins, eine Bombe beendet die Runde, Herzfrüchte geben Leben zurück), Arcade (60 Sekunden, Bomben −10, Power-Früchte ❄ Frost verlangsamt die Zeit, » Rausch schießt Früchte von den Seiten, ×2 Doppelt verdoppelt die Punkte, kritische Treffer +10 und am Ende die Gold-Kokosnuss mit AnMaCha-Logo zum Mehrfachtreffen), Zen (90 Sekunden ohne Bomben), Radio-Rhythmus (ein Beat läuft, Früchte kommen im Takt, Schnitte genau auf den Schlag geben „Perfekt!“-Punkte und eine Serie) und 2 Spieler (geteilter Bildschirm, jeder schneidet seine Hälfte). Gesammelte Punkte schalten 6 Klingen und 4 Schauplätze frei; 18 Erfolge warten.",
+  "steuerung": [
+   "Touch: wischen (mehrere Finger gehen, im 2-Spieler-Modus je Hälfte). Maus: mit gedrückter Taste ziehen – oder in den Einstellungen „ohne Klicken“.",
+   "Gamecontroller: linker oder rechter Stick bzw. Steuerkreuz führt die Klinge, RT/A/RB beschleunigt; schnelle Bewegungen schneiden. Start = Pause. In Menüs Steuerkreuz + A.",
+   "Tastatur: Pfeile oder WASD führen die Klinge, Shift beschleunigt, Esc oder P = Pause."
+  ],
+  "tipps": [
+   "Warte, bis mehrere Früchte oben sind, und erwische sie in einem Zug – Combos bringen viel mehr Punkte.",
+   "Frost zuerst schneiden: In der langsamen Zeit gelingen Combos fast von selbst.",
+   "Im Radio-Rhythmus ist der höchste Punkt einer Frucht genau auf dem Schlag – dort schneiden!"
+  ]
+ },
 };

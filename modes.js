@@ -26,6 +26,7 @@ window.EASYGAMES_MODES = {
   'anmacha-kartenrausch': { pad: true, online: true, multi: true },
   'wortfunk': { pad: true, online: true, multi: true, tvParam: true },
   'wortgitter': { pad: true, online: true, tvParam: true },
+  'saftblitz': { multi: true },
   'gay-life': { online: true },
   'bunte-insel': { online: true, pad: true, multi: true, tvParam: true },
   'zeitsprung-wissen': { pad: true, online: true },

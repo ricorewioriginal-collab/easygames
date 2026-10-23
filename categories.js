@@ -13,7 +13,7 @@ window.EASYGAMES_CATS = {
     // Abenteuer
     'kiko-sterneninseln': 'abenteuer', 'taschi': 'abenteuer', 'zotik': 'abenteuer', 'aeru': 'abenteuer', 'anmacha-quest-rpg': 'abenteuer', 'anmacha-urwaldlager': 'abenteuer', 'gay-life': 'abenteuer',
     // Action
-    'krawallvoegel': 'action', 'rico-flap': 'action', 'radio-maze': 'action', 'pufi-farbwind': 'action', 'lumo': 'action', 'riftzone': 'action', 'anmacha-radio-surfer': 'action', 'anmacha-flipper': 'action', 'anmacha-snake': 'action', 'anmacha-showdown': 'action', 'anmacha-kart': 'action', 'anmacha-funkparcours': 'action', 'turbokick': 'action',
+    'saftblitz': 'action', 'krawallvoegel': 'action', 'rico-flap': 'action', 'radio-maze': 'action', 'pufi-farbwind': 'action', 'lumo': 'action', 'riftzone': 'action', 'anmacha-radio-surfer': 'action', 'anmacha-flipper': 'action', 'anmacha-snake': 'action', 'anmacha-showdown': 'action', 'anmacha-kart': 'action', 'anmacha-funkparcours': 'action', 'turbokick': 'action',
     // Puzzle
     'funkblasen': 'denken', 'colorpop-universe': 'denken', 'kraterkommando': 'denken', 'anmacha-radio-match': 'denken', 'anmacha-memory': 'denken', 'anmacha-tower-defense': 'denken', 'wobbel': 'denken', 'anmacha-frequenzrad': 'denken', 'wortfunk': 'denken', 'wortgitter': 'denken',
     // Quiz

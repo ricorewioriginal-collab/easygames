@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/saftblitz-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Saftblitz"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#120A24">
+<title>Saftblitz – Schneide, was fliegt!</title>
+<meta name="description" content="Saftblitz: Früchte zerschneiden mit Combos, Power-Früchten, Radio-Rhythmus und 2-Spieler-Duell – mit Touch, Maus, Tastatur oder Gamecontroller.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="bg"></canvas>
+<canvas id="c"></canvas>
+
+<div id="hud" hidden>
+  <div class="hl"><div class="score" id="hScore">0</div><div class="best" id="hBest"></div></div>
+  <div class="hc" id="hCenter"></div>
+  <div class="hr"><div class="lives" id="hLives"></div><div class="time" id="hTime"></div><button class="pause" id="bPause" aria-label="Pause">❚❚</button></div>
+  <div class="powers" id="hPow"></div>
+  <div class="duo" id="hDuo" hidden><div class="p1"><b id="d1">0</b><span>Spieler 1</span></div><div class="p2"><b id="d2">0</b><span>Spieler 2</span></div></div>
+</div>
+
+<section class="scr on" id="sMenu">
+  <div class="menuBox">
+    <h1 class="logo"><span>SAFT</span><span>BLITZ</span></h1>
+    <p class="sub">Schneide, was fliegt!</p>
+    <div class="modes" id="modes">
+      <button class="mode" data-m="klassik"><i>🍉</i><b>Klassik</b><small>3 Leben · Bomben</small></button>
+      <button class="mode" data-m="arcade"><i>⚡</i><b>Arcade</b><small>60 s · Power-Früchte</small></button>
+      <button class="mode" data-m="zen"><i>🌿</i><b>Zen</b><small>90 s · keine Bomben</small></button>
+      <button class="mode" data-m="rhythmus"><i>📻</i><b>Radio-Rhythmus</b><small>im Takt schneiden</small></button>
+      <button class="mode" data-m="duo"><i>⚔️</i><b>2 Spieler</b><small>geteilter Bildschirm</small></button>
+    </div>
+    <div class="row3">
+      <button class="btn" id="bColl">🗡️ Sammlung</button>
+      <button class="btn" id="bAch">🏅 Erfolge</button>
+      <button class="btn" id="bSet">⚙️</button>
+    </div>
+    <p class="stat" id="menuStat"></p>
+    <p class="foot"><a href="../" id="backLink">← Alle Spiele</a> · <button class="link" id="bHelp">So geht's</button></p>
+  </div>
+</section>
+
+<div class="ov" id="ovPause" hidden><div class="card">
+  <h2>Pause</h2>
+  <div class="menuBtns">
+    <button class="btn big pri" id="pGo">▶ Weiter</button>
+    <button class="btn" id="pRe">↺ Neu starten</button>
+    <button class="btn" id="pSound">🔊 Ton an</button>
+    <button class="btn" id="pQuit">⏹ Zum Menü</button>
+  </div>
+</div></div>
+
+<div class="ov" id="ovEnd" hidden><div class="card">
+  <h2 id="eTitle">Runde vorbei</h2>
+  <div class="big" id="eScore">0</div>
+  <p class="rec" id="eRec"></p>
+  <ul class="facts" id="eFacts"></ul>
+  <div class="newach" id="eAch"></div>
+  <div class="rowBtns"><button class="btn" id="eMenu">Menü</button><button class="btn pri" id="eAgain">Nochmal ▶</button></div>
+</div></div>
+
+<div class="ov" id="ovColl" hidden><div class="card wide">
+  <h2>Sammlung</h2>
+  <p class="hint" id="collInfo"></p>
+  <h3>Klingen</h3><div class="grid" id="collBlades"></div>
+  <h3>Schauplätze</h3><div class="grid" id="collScenes"></div>
+  <button class="btn pri" id="collX">Fertig</button>
+</div></div>
+
+<div class="ov" id="ovAch" hidden><div class="card wide">
+  <h2>Erfolge</h2>
+  <ul class="achs" id="achList"></ul>
+  <button class="btn pri" id="achX">Fertig</button>
+</div></div>
+
+<div class="ov" id="ovSet" hidden><div class="card">
+  <h2>Einstellungen</h2>
+  <label class="check"><input type="checkbox" id="sSound"> Ton</label>
+  <label class="check"><input type="checkbox" id="sMusic"> Musik im Radio-Rhythmus</label>
+  <label class="check"><input type="checkbox" id="sHover"> Maus schneidet ohne Klicken</label>
+  <label class="check"><input type="checkbox" id="sVib"> Vibration bei Bomben (Handy)</label>
+  <label class="check"><input type="checkbox" id="sLow"> Sparmodus (weniger Effekte)</label>
+  <button class="btn pri" id="setX">Fertig</button>
+</div></div>
+
+<div class="ov" id="ovHelp" hidden><div class="card wide scroll">
+  <h2>So geht's</h2>
+  <p>Wische durch die Früchte, bevor sie wieder herunterfallen. Mehrere Früchte in einem Zug geben eine <b>Combo</b> (3 Früchte = +3 Punkte extra). <b>Bomben</b> nicht berühren!</p>
+  <ul>
+    <li><b>Klassik</b>: 3 Leben – jede heruntergefallene Frucht kostet eins, eine Bombe beendet die Runde. Herzfrüchte geben ein Leben zurück.</li>
+    <li><b>Arcade</b>: 60 Sekunden, Bomben kosten 10 Punkte. Power-Früchte: ❄ <b>Frost</b> verlangsamt die Zeit, » <b>Rausch</b> schießt Früchte von den Seiten, ×2 <b>Doppelt</b> verdoppelt die Punkte. Manchmal kommen kritische Treffer (+10) und am Ende die Gold-Kokosnuss mit AnMaCha-Logo – so oft wie möglich treffen!</li>
+    <li><b>Zen</b>: 90 Sekunden ganz entspannt, keine Bomben.</li>
+    <li><b>Radio-Rhythmus</b>: Ein Beat läuft, die Früchte kommen im Takt. Schneidest du genau auf den Schlag, gibt es „Perfekt!“-Punkte und eine Serie.</li>
+    <li><b>2 Spieler</b>: Der Bildschirm wird geteilt, jeder schneidet seine Hälfte – mit zwei Fingern, Maus und Controller oder zwei Controllern.</li>
+  </ul>
+  <h3>Steuerung</h3>
+  <ul>
+    <li><b>Touch</b>: wischen. <b>Maus</b>: mit gedrückter Taste ziehen (oder in den Einstellungen „ohne Klicken“).</li>
+    <li><b>Gamecontroller</b>: linker oder rechter Stick führt die Klinge, RT/A beschleunigt; schnelle Bewegungen schneiden. Start = Pause. In Menüs Steuerkreuz + A.</li>
+    <li><b>Tastatur</b>: Pfeile oder WASD führen die Klinge, Shift beschleunigt, Esc = Pause.</li>
+  </ul>
+  <p class="hint">Punkte schalten neue Klingen und Schauplätze frei. Mit Google angemeldet werden Fortschritt und Bestwerte auf allen Geräten gespeichert.</p>
+  <button class="btn pri" id="helpX">Los geht's</button>
+</div></div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="js/core.js"></script>
+<script src="js/game.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="saftblitz" data-prefix="saftblitz-" defer></script>
+<script src="../gamepad.js" data-pad="rs=none start=-" defer></script>
+</body>
+</html>
