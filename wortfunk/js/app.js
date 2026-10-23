@@ -20,20 +20,23 @@
   const wq = new Map();
   function ai(d) {
     d.seed = (Math.random() * 4294967296) >>> 0;
-    if (worker && wReady) return new Promise(res => { const id = ++wid; d.id = id; wq.set(id, res); worker.postMessage(d); });
-    return new Promise(res => setTimeout(() => res(WF.pick(d, dict)), 30));
+    if (worker && wReady) return new Promise(res => { const id = ++wid; d.id = id; wq.set(id, { res, d }); worker.postMessage(d); });
+    return new Promise(res => setTimeout(() => res(WF.pick(d, dict, common)), 30));
   }
-  function startWorker(buf) {
+  function startWorker(buf, cbuf) {
     try {
       worker = new Worker('worker.js');
-      worker.onmessage = e => { const d = e.data; if (d.ready) { wReady = true; return; } const r = wq.get(d.id); if (r) { wq.delete(d.id); r(d.move); } };
-      worker.onerror = () => { wReady = false; worker = null; for (const [, r] of wq) r(null); wq.clear(); };
-      worker.postMessage({ init: buf }, [buf]);
+      worker.onmessage = e => { const d = e.data; if (d.ready) { wReady = true; return; } const r = wq.get(d.id); if (r) { wq.delete(d.id); r.res(d.move); } };
+      worker.onerror = () => { wReady = false; worker = null; for (const [, r] of wq) r.res(WF.pick(r.d, dict, common)); wq.clear(); };
+      worker.postMessage({ init: buf, common: cbuf }, cbuf ? [buf, cbuf] : [buf]);
     } catch (e) { worker = null; }
   }
-  fetch('data/woerter.dawg').then(r => { if (!r.ok) throw new Error('http'); return r.arrayBuffer(); }).then(buf => {
+  let common = null;
+  const get = u => fetch(u).then(r => { if (!r.ok) throw new Error('http'); return r.arrayBuffer(); });
+  Promise.all([get('data/woerter.dawg'), get('data/bekannt.dawg').catch(() => null)]).then(([buf, cbuf]) => {
     dict = WF.Dict(new Uint32Array(buf.slice(0)));
-    startWorker(buf);
+    if (cbuf) common = WF.Dict(new Uint32Array(cbuf.slice(0)));
+    startWorker(buf, cbuf);
     $('loadInfo').hidden = true;
     onReady();
   }).catch(() => { $('loadInfo').textContent = 'Das Wörterbuch konnte nicht geladen werden. Bitte prüfe die Verbindung und lade die Seite neu.'; });
@@ -96,6 +99,7 @@
     document.documentElement.style.setProperty('--cell', c + 'px');
     w.classList.toggle('zoom', A.zoom);
     $('aZoom').hidden = !small && !A.zoom;
+    $('actions').classList.toggle('nozoom', $('aZoom').hidden || innerWidth > innerHeight * 1.2);
     if (A.zoom) scrollToCell(A.pend.length ? A.pend[A.pend.length - 1].i : A.cur);
   }
   addEventListener('resize', () => { if (curScr() === 'sGame') fit(); });
@@ -189,6 +193,7 @@
     $('aPlay').disabled = !act || !A.pend.length;
     $('aRecall').disabled = !A.pend.length;
     $('aHint').hidden = !SET.hints;
+    $('actions').classList.toggle('nohint', !SET.hints);
     $('aHint').disabled = !act || (A.hints[A.me] || 0) >= 3;
     $('aHint').title = 'Tipp (' + (3 - (A.hints[A.me] || 0)) + ' übrig)';
     $('aSwap').disabled = !act || !A.V.canSwap;

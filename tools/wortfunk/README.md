@@ -15,8 +15,14 @@ java -cp "$CP:." Dump gpd/src/main/resources/org/languagetool/resource/de/german
 python3 tools/wortfunk/mkwords.py forms.tsv gpd/src/main/resources/org/languagetool/resource/de/sonstige.txt words.txt
 python3 tools/wortfunk/mkdawg.py words.txt wortfunk/data/woerter.dawg
 
-# 3. prüfen
+# 3. bekannte Wörter (Computer leicht/mittel, Tipps) aus FrequencyWords (CC BY-SA 4.0)
+#    https://github.com/hermitdave/FrequencyWords → content/2018/de/de_50k.txt
+python3 tools/wortfunk/mkcommon.py de_50k.txt words.txt common.txt 40000
+python3 tools/wortfunk/mkdawg.py common.txt wortfunk/data/bekannt.dawg
+
+# 4. prüfen
 node --test wortfunk/tests/*.test.js
+python3 -m http.server 8765 & BASE=http://localhost:8765/wortfunk/ node wortfunk/tests/e2e.mjs
 ```
 
 Format einer Kante: Bits 0–4 Buchstabe (1–29 = A–Z, Ä, Ö, Ü), Bit 5 Wortende, Bit 6 letzte Kante des Knotens,

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "52b130cad6dc",
- "generated": "2026-10-23T05:12:09+02:00",
- "commit": "8f39186fbdad5454f6b26f866bdfa79ed24e5c46",
+ "version": "c0748d7dd3fb",
+ "generated": "2026-10-23T06:03:23+02:00",
+ "commit": "ad0f7341da0305006be5daa210c97e4f2c0c45b0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5243,8 +5243,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2479,
-   "h": "1e282143ab613f29efcd95a77efad2498e863d3935c08f812e968ff628afeb5c"
+   "s": 2501,
+   "h": "865f22a509a1f73204a8209b57d952e2073caf1446f5ebf65249d9bf28478586"
   },
   {
    "p": "chat.html",
@@ -5543,8 +5543,8 @@
   },
   {
    "p": "games.js",
-   "s": 28910,
-   "h": "29aaf955ee4d0f92f5e47e95ca0d6b3928ec1f060748e226622cad3d905cb018"
+   "s": 29410,
+   "h": "cc15398f835ef8092cfbc40ca98103f5baf8d96c78f52a36b3c354d1ff563b4d"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5703,8 +5703,8 @@
   },
   {
    "p": "guides.js",
-   "s": 79367,
-   "h": "96d717583dec2735c1adaf4a68806457233702ca35aa43f40caec5698b55d72c"
+   "s": 81395,
+   "h": "ec3eb3dfb19865bdad678ce07015aa171e622e9152220fb703586659fbe3a098"
   },
   {
    "p": "heute.html",
@@ -6063,8 +6063,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2270,
-   "h": "20881424bf7f645282edc804872bfeffb607935b99bb3722bd91fd9485df8917"
+   "s": 2341,
+   "h": "c86f3fe5eed3274d4bb51e1961d9f31892c84780bf804efc28dd2e4f5a72681c"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -7123,8 +7123,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 123753,
-   "h": "2374b80b769bb52e63c5647dd76a4664fae5a713516fb538e66cba418efe8391"
+   "s": 126588,
+   "h": "67d3d394b3e3c103c84816b391de37b8d2720dc89648d40ac160735c38fa4b59"
   },
   {
    "p": "taschi/card.svg",
@@ -7800,6 +7800,61 @@
    "p": "wobbel/vendor/three.min.js",
    "s": 603445,
    "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
+  },
+  {
+   "p": "wortfunk/card.jpg",
+   "s": 35670,
+   "h": "f91e89e3044d41c9dfce4985a86ffdda87ae0b63cd37570e942d7ebe575f4918"
+  },
+  {
+   "p": "wortfunk/data/LIZENZ.txt",
+   "s": 1194,
+   "h": "c06bf85ed8e45b28e13c181160e1e53840a49a8dba3769c7fc96fc00b83cb39c"
+  },
+  {
+   "p": "wortfunk/data/bekannt.dawg",
+   "s": 123804,
+   "h": "3e5e58a43a40e7f9155b0fddd6b6a0316b0a3c8ccd50525d85adf2df0501ecc5"
+  },
+  {
+   "p": "wortfunk/data/woerter.dawg",
+   "s": 474064,
+   "h": "67141363ee427a01985fb2e65fd062da0dcd297de894993ca0b26f82fbad97cd"
+  },
+  {
+   "p": "wortfunk/index.html",
+   "s": 13877,
+   "h": "b034d4ef8af05ee17310f7cae72b88749752e4fe4b36d54a9c738ebe16b5094c"
+  },
+  {
+   "p": "wortfunk/js/app.js",
+   "s": 50599,
+   "h": "4a5873b06be354b8681d09bf56aad7378d97cceb26f2ff0e1147c1f96ac8677a"
+  },
+  {
+   "p": "wortfunk/js/logic.js",
+   "s": 20477,
+   "h": "7678e54707cd339aa46ced5cb657e3ead14fe3aa9cee720e626744c3fc1a041c"
+  },
+  {
+   "p": "wortfunk/manifest.webmanifest",
+   "s": 766,
+   "h": "bf5ea55083735ba1df6eee3fcdd438d747bc7a344e70c0397e73c106b06a7e11"
+  },
+  {
+   "p": "wortfunk/style.css",
+   "s": 16377,
+   "h": "5f71aeffca53ba75d8776b0afb914930e17941f12dfb65f1aafe275e2e01ab2c"
+  },
+  {
+   "p": "wortfunk/sw.js",
+   "s": 1996,
+   "h": "bdcf970c73f8441650ea6600d064874a3b8baf8e6ba00ef76a7c5eabb316ce66"
+  },
+  {
+   "p": "wortfunk/worker.js",
+   "s": 482,
+   "h": "bb23e6703346623691e60cf8dfbc7ba3ec7bf2592719d4b785f6511315be7048"
   },
   {
    "p": "zeitsprung-castingshow/card.png",

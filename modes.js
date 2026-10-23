@@ -24,6 +24,7 @@ window.EASYGAMES_MODES = {
   'riftzone': { online: true },
   'ricolife': { online: true },
   'anmacha-kartenrausch': { pad: true, online: true, multi: true },
+  'wortfunk': { pad: true, online: true, multi: true, tvParam: true },
   'gay-life': { online: true },
   'bunte-insel': { online: true, pad: true, multi: true, tvParam: true },
   'zeitsprung-wissen': { pad: true, online: true },

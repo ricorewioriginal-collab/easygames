@@ -84,3 +84,18 @@ test('Tauschen und Passen beenden irgendwann die Partie', () => {
   let k = 0; while (!st.over && k++ < 10) WF.pass(st, st.turn);
   assert.ok(st.over);
 });
+
+test('Leicht, Mittel und Tipps nehmen nur bekannte Wörter', () => {
+  const common = WF.Dict(new Uint32Array(fs.readFileSync(path.join(__dirname, '../data/bekannt.dawg')).buffer.slice(0)));
+  assert.ok(common.hasWord('HAUS') && !common.hasWord('WÖBE'));
+  const st = WF.newGame(['A', 'B'], 42);
+  for (let k = 0; k < 10 && !st.over; k++) {
+    const p = st.turn, lvl = ['leicht', 'mittel'][k % 2];
+    const m = WF.pick({ board: st.board, rack: st.racks[p], level: lvl, seed: k + 1 }, dict, common);
+    if (!m) { WF.pass(st, p); continue; }
+    const ev = WF.evaluate(st.board, m.tiles, common);
+    const known = WF.generate(st.board, st.racks[p], dict).some(x => WF.evaluate(st.board, x.tiles, common).ok);
+    if (known) assert.ok(ev.ok, 'bekannt: ' + ev.err);
+    assert.ok(WF.play(st, p, m.tiles, dict).ok);
+  }
+});

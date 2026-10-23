@@ -1577,6 +1577,43 @@
    }
   },
   {
+   "id": "wortfunk",
+   "title": "Wortfunk – Das Wortlegespiel",
+   "desc": "Wörter legen und punkten wie im Kreuzworträtsel: 15×15-Brett mit Bonusfeldern, fast 400.000 deutsche Wörter, Joker, Tauschen und 50 Extrapunkte für alle 7 Steine – für 2 bis 4 Spieler gegen den Computer (3 Stufen), an einem Gerät oder online mit TV-Tisch und Handys.",
+   "icon": "🔤",
+   "img": "wortfunk/card.jpg",
+   "bg": "linear-gradient(145deg,#FFD27A,#8B5CF6 55%,#00E5FF)",
+   "glow": "rgba(255,210,122,.5)",
+   "path": "wortfunk/",
+   "modes": {
+    "pad": true,
+    "online": true,
+    "multi": true,
+    "tvParam": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Wortfunk ist ein Wortlegespiel für 2 bis 4 Spieler. Jeder hat 7 Buchstabensteine und legt daraus Wörter waagerecht oder senkrecht aufs 15×15-Brett, wie im Kreuzworträtsel. Das erste Wort geht über den Stern in der Mitte, jedes weitere schließt an liegende Steine an. Alle neu entstandenen Wörter müssen im Wörterbuch stehen (fast 400.000 deutsche Wortformen, keine Namen oder Abkürzungen, ß wird als SS gelegt). 2×B/3×B verdoppeln bzw. verdreifachen einen Buchstaben, 2×W/3×W das ganze Wort; alle 7 Steine auf einmal bringen 50 Extrapunkte. Der Joker steht für jeden Buchstaben und zählt 0 Punkte. Statt zu legen darfst du tauschen (solange 7 Steine im Beutel sind) oder passen. Wer zuletzt alle Steine los ist, bekommt die Restpunkte der anderen. Spielbar gegen den Computer in drei Stufen, mit mehreren Menschen an einem Gerät oder über 🌐 Online & Handys: Der Fernseher oder PC zeigt das Brett, jedes Handy nur die eigenen Steine.",
+    "steuerung": [
+     "Touch & Maus: Stein antippen, dann Feld antippen – oder ziehen. Gelegten Stein antippen nimmt ihn zurück, Steine in der Bank lassen sich per Ziehen ordnen. ✓ Legen schließt den Zug ab, die Vorschau zeigt vorher Wörter und Punkte.",
+     "Tastatur: Pfeile bewegen den Rahmen, Buchstaben tippen legt sie (Tab wechselt → / ↓), Enter legt den Zug, Rücktaste nimmt den letzten Stein zurück, Entf alle, 1–7 bzw. − / + wählt einen Stein, Leertaste legt ihn, 8 Tauschen, 9 Mischen, 0 Tipp, Esc Menü.",
+     "Gamecontroller: Steuerkreuz bewegt den Rahmen, LB/RB wählt den Stein, A legt bzw. nimmt zurück, X legt den Zug, B nimmt den letzten Stein zurück, LT alle zurück, Y mischt, RT tauscht, Select Tipp, Start Menü."
+    ],
+    "tipps": [
+     "Kurze Wörter auf 3×B- und 2×W-Feldern bringen oft mehr als lange Wörter ohne Bonus.",
+     "Lege parallel zu einem liegenden Wort – dann zählen auch die kurzen Querwörter mit.",
+     "Behalte den Joker für einen 7-Steine-Zug – das sind 50 Extrapunkte."
+    ]
+   },
+   "size": 739306,
+   "files": 11,
+   "offline": true,
+   "cloud": {
+    "game": "wortfunk",
+    "prefix": "wortfunk-"
+   }
+  },
+  {
    "id": "gay-life",
    "title": "Gay Life!",
    "desc": "Queere Lebenssimulation in 3D: eigene Wohnung, Alltag mit Uhrzeit und Bedürfnissen, Barkeeper-Job, Handy mit Karte, Kontakten, Nachrichten und Dating-App; Dating mit eigenen Figuren, Tagesabläufe. Aufträge, Sterne sammeln, Tag und Nacht, eigene Figur. Vierzehn Minispiele (Sauna, Dunkelkammer, Casting-Tag, Tanzbattle, Karaoke, Quiz, Rave und mehr), Nebenaufträge, Kleiderschrank zum Freischalten und Mehrspieler per Code/QR. Speicherstand lokal und per Google.",

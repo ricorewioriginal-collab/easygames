@@ -363,9 +363,15 @@
   }
 
   // Zug für Computer oder Tipp: d = { board, rack, level, seed, hint }
-  function pick(d, dict) {
-    const moves = generate(d.board, d.rack, dict), rnd = rng(d.seed || 1);
+  // common: Wörterbuch bekannter Wörter – Leicht, Mittel und Tipps nehmen nur Züge, deren Wörter alle bekannt sind
+  function pick(d, dict, common) {
+    let moves = generate(d.board, d.rack, dict);
+    const rnd = rng(d.seed || 1);
     if (!moves.length) return null;
+    if (common && (d.hint || d.level !== 'schwer')) {
+      const known = moves.filter(m => evaluate(d.board, m.tiles, common).ok);
+      if (known.length) moves = known;
+    }
     if (d.hint) { // ein guter, aber nicht unbedingt der beste Zug
       const s = moves.sort((a, b) => b.score - a.score);
       return s[Math.min(s.length - 1, 1 + ((rnd() * 4) | 0))];

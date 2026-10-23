@@ -11,3 +11,7 @@ https://creativecommons.org/licenses/by-sa/4.0/deed.de
 mit 2 bis 15 Buchstaben, ß als SS geschrieben, in Großbuchstaben umgewandelt und als Wortgraph (DAWG) gepackt.
 Erzeugt mit tools/wortfunk/ (siehe README dort). Diese Datei steht ebenfalls unter CC BY-SA 4.0.
 Der übrige Code von Wortfunk steht unter der Lizenz des Repos (Public Domain / Unlicense).
+
+bekannt.dawg (bekannte Wörter für die Computerstufen Leicht/Mittel und die Tipps):
+Schnittmenge aus woerter.dawg und den 40.000 häufigsten Wörtern der Liste FrequencyWords (OpenSubtitles 2018)
+von Hermit Dave, https://github.com/hermitdave/FrequencyWords – Inhalt unter CC BY-SA 4.0. Diese Datei steht ebenfalls unter CC BY-SA 4.0.
