@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c6796e5267e6",
- "generated": "2026-10-23T07:04:15+00:00",
- "commit": "9f15a2abd655352a2efb04790be5d50f2f8aed0b",
+ "version": "51edf40c8e0c",
+ "generated": "2026-10-23T07:52:19+00:00",
+ "commit": "6ebf64afefbb69d0af16475c88392863871ad892",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2644,
-   "h": "3d11bc223e97a372e3e6ce3dc4255666457dc73a6d1810f610e53d80240ab43e"
+   "s": 2669,
+   "h": "a5937d6b30f18d06dd36e6850a4ed8030d47d71018f7b6a30531e339715f12a0"
   },
   {
    "p": "chat.html",
@@ -5308,8 +5308,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22147,
-   "h": "8b8083036520914d468a08e62c98e86cf82d014ca48cc673d1f39486c7de9cbf"
+   "s": 22162,
+   "h": "d47e8ab9166acfea8c0f903da41bb7bfff0927fe8aba4fd3fe22c2b321705b23"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -5728,8 +5728,8 @@
   },
   {
    "p": "games.js",
-   "s": 32788,
-   "h": "8714c5f3cd4a0d829e67dae6da326b969156e215b03c3949fa832a152902870a"
+   "s": 33545,
+   "h": "f1a60f40a5c0c1e5a2219f31968894e8b7027dbec0267e2abd56205763ccfb89"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5888,8 +5888,8 @@
   },
   {
    "p": "guides.js",
-   "s": 93169,
-   "h": "ef6da398f479bf2b4964e4fbdd1c0898656f330eb3ec8c71c3071e67112c67d8"
+   "s": 95498,
+   "h": "2579859039daa7deedd8e7a29bd155304c0994a775468413b506e0e5f1dea7fb"
   },
   {
    "p": "heute.html",
@@ -6248,8 +6248,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2568,
-   "h": "c4a49e5ecf889d3a533126a287f143da716e9b2c4d6e1250b897ede410bc1a20"
+   "s": 2602,
+   "h": "831545d640e61e8957a45304e3aec7bb9813d544cf5c6530c246e2fd82b67535"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -7343,8 +7343,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 143330,
-   "h": "e02919a969e60e4f177493f59f943cbdc6241538f22c6a4e28d2e99818f4208c"
+   "s": 146667,
+   "h": "0cee1ca30bb99fbb42696f1d165e96ea82023cd1d782e2606078e15752659d87"
   },
   {
    "p": "taschi/card.svg",
@@ -7820,6 +7820,81 @@
    "p": "vendor/three-r128.min.js",
    "s": 603445,
    "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
+  },
+  {
+   "p": "winzflitzer/card.jpg",
+   "s": 48755,
+   "h": "b5b74a23f83c0535a3c6c099f2e656dbbe3d582de2507b40b307165178576ff9"
+  },
+  {
+   "p": "winzflitzer/index.html",
+   "s": 11598,
+   "h": "d6aa94bd1f3d694fc5ea5ab74493d1ec75e5c37f8d4fe694a2f9e528322bd7ac"
+  },
+  {
+   "p": "winzflitzer/js/audio.js",
+   "s": 7886,
+   "h": "e91feeac8037c557d9ff170ab91d6a5cfc565eb868e05bf518f4f7ce24e931f5"
+  },
+  {
+   "p": "winzflitzer/js/data.js",
+   "s": 20319,
+   "h": "bd663d75b0a823a52e58c4354d9cb912e5b977958a8e3029f4e4b5991417ff1f"
+  },
+  {
+   "p": "winzflitzer/js/game.js",
+   "s": 54702,
+   "h": "efcde34ae75aeaf98d6ce6b13a0f6d771ed8cb46a4d20abdbf3e517a5a996bbf"
+  },
+  {
+   "p": "winzflitzer/js/input.js",
+   "s": 7746,
+   "h": "dada8c51a68f94b87ce3235aba7da3e462e3690083a1f20c4de5147b5446fdcc"
+  },
+  {
+   "p": "winzflitzer/js/models.js",
+   "s": 9112,
+   "h": "f2b83c313f0c3b5efa114aa1bc71aa4b032d0f1b6219523aa0970224ba04c84c"
+  },
+  {
+   "p": "winzflitzer/js/physics.js",
+   "s": 15855,
+   "h": "b407c1dd5df38fff97af528787c930e4f2ff642403c38940b45653aa2490d9b7"
+  },
+  {
+   "p": "winzflitzer/js/scenery.js",
+   "s": 37836,
+   "h": "d8bd5133c8c34b99042f710f8bdc3703dee704c63ad2001bf82d579be1e49361"
+  },
+  {
+   "p": "winzflitzer/js/track.js",
+   "s": 12044,
+   "h": "de3ad587390b8d63b974716e68f15266ab31319ba51a2720b3a8904c377e737d"
+  },
+  {
+   "p": "winzflitzer/js/util.js",
+   "s": 5828,
+   "h": "bb73c5849b4f503978f1447f197ebcf1ed92eb843554f317591d8e5206304b83"
+  },
+  {
+   "p": "winzflitzer/logo.svg",
+   "s": 3411,
+   "h": "9f3d0fcf0b895bf669b69d86025e742657c9b450799fc33e69e9d0a77043cdc5"
+  },
+  {
+   "p": "winzflitzer/manifest.webmanifest",
+   "s": 797,
+   "h": "f205847411ab36d6f48e0f4130d55bf62acfb8ed7834721e5bfaf5ecdebc9361"
+  },
+  {
+   "p": "winzflitzer/style.css",
+   "s": 12641,
+   "h": "29adf8d6bdfb95e0239fdbed490e714a5c75d319a7c816ff04faa6d1e2908d42"
+  },
+  {
+   "p": "winzflitzer/sw.js",
+   "s": 2018,
+   "h": "31e1b20d246dd85ff0547c2601a279c28038236e4806fe3c0219fc488710db2b"
   },
   {
    "p": "wobbel/card.png",

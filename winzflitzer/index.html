@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/winzflitzer-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Winzflitzer 3D"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#14123a">
+<title>Winzflitzer 3D – Rennen auf dem Küchentisch</title>
+<meta name="description" content="Winzflitzer 3D: Winzige Flitzer rasen über Frühstückstisch, Schreibtisch, Badewanne, Garten, Sandkasten, Billardtisch, Werkbank und Kinderzimmer. 24 Strecken, 8 Fahrzeugarten, Meisterschaft, Kopf-an-Kopf-Duelle, Mehrspieler bis 4 an einem Gerät, Zeitfahren. Touch, Tastatur und Gamecontroller.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="view"></div>
+
+<div id="hud" hidden>
+  <div class="hl">
+    <div class="pos" id="hPos"></div>
+    <div class="lap" id="hLap"></div>
+  </div>
+  <div class="hc">
+    <div class="time" id="hTime"></div>
+    <div class="lights" id="hLights"></div>
+  </div>
+  <div class="hr">
+    <button class="icon" id="bPause" aria-label="Pause">⏸</button>
+  </div>
+  <canvas id="mini" width="180" height="120" aria-hidden="true"></canvas>
+  <div class="msg" id="hMsg"></div>
+  <div class="sub" id="hSub"></div>
+</div>
+
+<!-- Titel -->
+<section class="scr on" id="sTitle">
+  <div class="box title">
+    <h1 class="logo"><span>Winz</span><span>flitzer</span><small>3D</small></h1>
+    <p class="tag">Winzige Flitzer. Riesige Tische. Ein Ziel.</p>
+    <div class="menu">
+      <button class="btn big pri" data-go="champ">🏆 Meisterschaft</button>
+      <button class="btn" data-go="h2h">⚔️ Kopf-an-Kopf</button>
+      <button class="btn" data-go="multi">👥 Mehrspieler (1 Gerät)</button>
+      <button class="btn" data-go="single">🏁 Einzelrennen</button>
+      <button class="btn" data-go="time">⏱️ Zeitfahren</button>
+      <div class="row2"><button class="btn" data-go="settings">⚙️ Einstellungen</button><button class="btn" data-go="help">📖 So geht's</button></div>
+      <p class="stat" id="titleStat"></p>
+      <a class="back" href="../" id="backLink">← Alle Spiele</a>
+    </div>
+  </div>
+</section>
+
+<!-- Fahrer wählen -->
+<section class="scr" id="sDriver">
+  <div class="box wide">
+    <h2 id="drvTitle">Wähle deinen Fahrer</h2>
+    <div class="grid drivers" id="drvGrid"></div>
+    <div class="opts" id="drvOpts"></div>
+    <div class="row2"><button class="btn" data-back>← Zurück</button><button class="btn pri" id="drvOk">Weiter →</button></div>
+  </div>
+</section>
+
+<!-- Strecke wählen -->
+<section class="scr" id="sTrack">
+  <div class="box wide">
+    <h2 id="trkTitle">Strecke wählen</h2>
+    <div class="tracks" id="trkGrid"></div>
+    <div class="row2"><button class="btn" data-back>← Zurück</button></div>
+  </div>
+</section>
+
+<!-- Meisterschaft / Kopf-an-Kopf: Übersicht -->
+<section class="scr" id="sLadder">
+  <div class="box wide">
+    <h2 id="ladTitle">Meisterschaft</h2>
+    <div class="lives" id="ladLives"></div>
+    <div class="next" id="ladNext"></div>
+    <div class="roster" id="ladRoster"></div>
+    <div class="row2"><button class="btn" id="ladQuit">🏠 Menü</button><button class="btn big pri" id="ladGo">Los geht's! 🏁</button></div>
+  </div>
+</section>
+
+<!-- Mehrspieler-Lobby -->
+<section class="scr" id="sLobby">
+  <div class="box wide">
+    <h2>👥 Mehrspieler an einem Gerät</h2>
+    <p class="hint">Zum Mitmachen <b>Gas geben</b>: Pfeiltaste ↑ (Spieler mit Pfeilen), <b>W</b> (Spieler mit WASD), <b>A</b> am Controller oder hier tippen. Bis zu 4 Spieler. Im Duell gewinnt, wer die anderen aus dem Bild fährt.</p>
+    <div class="slots" id="lobSlots"></div>
+    <div class="opts">
+      <div class="opt"><span>Ziel</span><div class="chips" id="lobGoal"></div></div>
+      <div class="opt"><span>Computer auffüllen</span><div class="chips" id="lobCpu"></div></div>
+    </div>
+    <div class="row2"><button class="btn" data-back>← Zurück</button><button class="btn pri" id="lobGo">Strecke wählen →</button></div>
+  </div>
+</section>
+
+<!-- Ergebnis -->
+<section class="scr" id="sResult">
+  <div class="box wide">
+    <h2 id="resTitle">Ergebnis</h2>
+    <p class="sub2" id="resSub"></p>
+    <table class="res" id="resTable"></table>
+    <div class="row2" id="resBtns"></div>
+  </div>
+</section>
+
+<!-- Einstellungen -->
+<section class="scr" id="sSettings">
+  <div class="box">
+    <h2>⚙️ Einstellungen</h2>
+    <div class="opts col" id="setList"></div>
+    <button class="btn pri" data-back>Fertig</button>
+  </div>
+</section>
+
+<!-- Anleitung -->
+<section class="scr" id="sHelp">
+  <div class="box wide help">
+    <h2>📖 So geht's</h2>
+    <p>Winzige Flitzer, riesige Welten: Ihr rast über den Frühstückstisch, den Schreibtisch, durch die Badewanne, über den Garten, den Sandkasten, den Billardtisch, die Werkbank und das Kinderzimmer. Wer von der Tischkante fällt, verliert Zeit!</p>
+    <ul>
+      <li><b>🏆 Meisterschaft:</b> 24 Rennen gegen je 3 Gegner. Platz 1 oder 2 bringt dich weiter, sonst kostet es ein Leben und du fährst das Rennen noch einmal. Wer als letzter Computer-Fahrer ankommt, scheidet aus. Nach jedem dritten Rennen gibt es eine Bonusrunde um ein Extraleben.</li>
+      <li><b>⚔️ Kopf-an-Kopf:</b> Du gegen einen Gegner, ein Bildschirm. Wer den anderen aus dem Bild fährt, holt sich ein Licht. Alle 8 Lichter gewinnen das Duell. Schlag alle 11 Gegner der Reihe nach!</li>
+      <li><b>👥 Mehrspieler:</b> 2–4 Spieler an einem Gerät (Tastatur zu zweit, Controller, Touch). Wer vorne bleibt und die anderen aus dem Bild drängt, punktet.</li>
+      <li><b>🏁 Einzelrennen</b> und <b>⏱️ Zeitfahren</b> (mit Geist deiner besten Runde) auf allen 24 Strecken.</li>
+      <li><b>Fahrzeuge:</b> Sportflitzer, Formel-Winzlinge, Speedboote, Hubschrauber, Geländewagen, Kugelflitzer, Panzer (schießen!) und Monstertrucks – jedes fährt sich anders.</li>
+      <li><b>Strecke:</b> Pinke Pfeil-Streifen geben Turbo. Milch, Öl und Seife sind rutschig, Honig und Sägespäne bremsen, der Abfluss-Strudel zieht dich mit. Rampen lassen dich springen – über Lücken nur mit Schwung!</li>
+    </ul>
+    <h3>Steuerung</h3>
+    <ul>
+      <li><b>Tastatur:</b> ↑ Gas, ↓ Bremse/Rückwärts, ← → lenken (aus Sicht des Fahrers), Leertaste/Enter schießen (Panzer), Esc Pause. Zweiter Spieler: W A S D, Shift links oder Q schießt.</li>
+      <li><b>Gamecontroller:</b> Linker Stick oder Steuerkreuz lenkt, A oder RT Gas, B oder LT Bremse, X/RB schießen, Start Pause. In den Einstellungen: „Stick-Richtung“ – der Flitzer fährt dorthin, wohin du den Stick drückst.</li>
+      <li><b>Touch:</b> Links den Stick in die gewünschte Richtung ziehen – der Flitzer fährt los und lenkt selbst; rechts Bremse und 💥. Oder in den Einstellungen klassische Tasten (◀ ▶ Gas Bremse) wählen.</li>
+    </ul>
+    <button class="btn pri" data-back>Los geht's</button>
+  </div>
+</section>
+
+<!-- Pause -->
+<div class="ov" id="ovPause" hidden><div class="card">
+  <h2>⏸ Pause</h2>
+  <button class="btn pri" id="pCont">▶ Weiter</button>
+  <button class="btn" id="pRestart">↻ Neu starten</button>
+  <button class="btn" id="pSound">🔊 Ton: an</button>
+  <button class="btn" id="pMusic">🎵 Musik: an</button>
+  <button class="btn" id="pQuit">🏠 Aufgeben</button>
+</div></div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="js/util.js"></script>
+<script src="js/data.js"></script>
+<script src="js/track.js"></script>
+<script src="js/scenery.js"></script>
+<script src="js/models.js"></script>
+<script src="js/physics.js"></script>
+<script src="js/input.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/game.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="winzflitzer" data-prefix="winzflitzer-" defer></script>
+</body>
+</html>

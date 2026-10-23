@@ -482,6 +482,19 @@ window.EASYGAMES_GUIDES = {
    "Zu schnell springt der Ball über das Loch – kurz vor dem Loch sanft einlochen."
   ]
  },
+ "winzflitzer": {
+  "anleitung": "Winzflitzer 3D ist ein Micro-Rennspiel: Winzige Fahrzeuge rasen über riesige Alltagswelten – Frühstückstisch, Schreibtisch, Badewanne, Garten, Sandkasten, Billardtisch, Werkbank und Kinderzimmer, je 3 Strecken. Jede Welt hat ihr Fahrzeug: Sportflitzer, Formel-Winzlinge, Speedboote, Hubschrauber, Geländewagen, Kugelflitzer, Panzer (können schießen) und Monstertrucks. Wer von der Tischkante fällt oder die Strecke verlässt, wird zurückgesetzt und verliert Zeit. Pinke Pfeil-Streifen geben Turbo, Milch, Öl und Seife sind rutschig, Honig und Sägespäne bremsen, der Abfluss-Strudel zieht dich mit; über Lücken kommst du nur mit Schwung. Meisterschaft: 24 Rennen gegen je 3 Gegner, Platz 1 oder 2 bringt dich weiter, sonst kostet es ein Leben; der letzte Computer-Fahrer scheidet aus, nach jedem dritten Rennen gibt es eine Bonusrunde um ein Extraleben. Kopf-an-Kopf: Du gegen einen Gegner auf einem Bildschirm – wer zurückfällt und aus dem Bild gerät, verliert ein Licht; mit allen 8 Lichtern gewinnst du das Duell, 11 Gegner warten der Reihe nach. Mehrspieler: 2–4 Spieler an einem Gerät (Tastatur zu zweit, Controller, Touch), optional mit Computer-Fahrern, Ziel 3, 5 oder 8 Punkte. Dazu Einzelrennen und Zeitfahren mit dem Geist deiner besten Runde.",
+  "steuerung": [
+   "Tastatur: ↑ Gas, ↓ Bremse/Rückwärts, ← → lenken (aus Sicht des Fahrers), Leertaste oder Enter schießen (Panzer), Esc Pause. Zweiter Spieler: W A S D, Shift links oder Q schießt.",
+   "Gamecontroller: linker Stick oder Steuerkreuz lenkt, A oder RT Gas, B oder LT Bremse, X oder RB schießen, Start Pause. In den Einstellungen „Stick-Richtung“: der Flitzer fährt dorthin, wohin der Stick zeigt.",
+   "Touch: links den Stick in die gewünschte Fahrtrichtung ziehen – der Flitzer gibt selbst Gas und lenkt; rechts Bremse und 💥 (Panzer). In den Einstellungen gibt es auch klassische Tasten (◀ ▶, Gas, Bremse)."
+  ],
+  "tipps": [
+   "Vor engen Kurven kurz vom Gas – wer zu schnell ist, rutscht über die Tischkante.",
+   "Turbo-Streifen vor Rampen nutzen: Über die Lücken auf dem Schreibtisch und im Kinderzimmer kommst du nur mit vollem Tempo.",
+   "Im Duell vorne bleiben: Die Kamera folgt dem Führenden – wer hinten aus dem Bild fällt, verliert das Licht."
+  ]
+ },
  "funkmaler": {
   "anleitung": "Funkmaler ist ein Mal- und Ratespiel für 2 bis 8 Spieler. Ein großer Bildschirm (Fernseher, PC oder Tablet) öffnet „🌐 Online & Handys“ und zeigt einen QR-Code mit Raum-Code; alle anderen scannen ihn mit dem Handy (oder öffnen den Link), geben ihren Namen ein und sind drin – auch von unterwegs. Reihum ist jemand Maler: Sein Handy zeigt 3 Wörter, eins wird gewählt und gemalt (Buchstaben und Zahlen sind tabu). Die Zeichnung erscheint live auf dem Fernseher und den Handys. Alle anderen tippen ihre Vermutung ins Handy; „knapp daneben“ sieht nur, wer geraten hat. Je schneller richtig, desto mehr Punkte (bis 120), der Maler bekommt für jeden, der es errät, 15 Punkte. Im Lauf der Zeit werden Buchstaben aufgedeckt. Nach allen Runden gibt es Podest und Galerie aller Bilder. Fällt ein Handy kurz aus, verbindet es sich von selbst wieder und behält seine Punkte. Ohne Handys: „Ein Gerät“ – einer malt, alle raten laut, der Maler tippt an, wer es zuerst hatte.",
   "steuerung": [
