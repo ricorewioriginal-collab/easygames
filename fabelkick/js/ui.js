@@ -456,7 +456,7 @@
     const kbH = m.humans.find(h => h.dev === 'kb');
     if (kbH && IN.lastType === 'touch') {
       const p = kbH.player, def = p && m.ball.owner && m.ball.owner.ti !== p.ti;
-      const lab = def ? ['GRÄTSCHE', 'TACKLING', '—', '—'] : ['SCHUSS', 'PASS', 'STEIL', 'FLANKE'];
+      const lab = def ? ['GRÄTSCHE', 'TACKLING', 'WECHSEL', 'DRUCK'] : ['SCHUSS', 'PASS', 'STEIL', 'FLANKE'];
       setT('tbB', lab[0]); setT('tbA', lab[1]); setT('tbY', lab[2]); setT('tbX', lab[3]);
       const ready = m.teams[kbH.team].power >= 100;
       if (hudCache.star !== ready) { hudCache.star = ready; $('#tbRB').classList.toggle('ready', ready); }

@@ -129,9 +129,10 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
       <p><b>E</b> Fabel-Kraft · <b>Esc/P</b> Pause</p></div>
     <div class="ctrl"><h3>📱 Touch</h3>
       <p><b>Linke Hälfte</b>: Daumen-Stick erscheint, wo du tippst</p>
-      <p>Rechts: <b>Schuss</b>, <b>Pass</b>, <b>Steil</b>, <b>Flanke</b>, <b>Sprint</b></p>
-      <p>Abwehr: Tasten werden zu <b>Grätsche</b>, <b>Tackling</b>, <b>Wechsel</b></p>
-      <p><b>★</b> Fabel-Kraft, sobald der Balken voll ist</p>
+      <p><b>Stick ganz an den Rand</b> = Sprint</p>
+      <p>Rechts 4 Tasten: <b>A</b> Pass · <b>B</b> Schuss · <b>X</b> Flanke · <b>Y</b> Steil</p>
+      <p>Abwehr: <b>A</b> Tackling · <b>B</b> Grätsche · <b>X</b> Druck · <b>Y</b> Wechsel</p>
+      <p><b>★</b> erscheint, sobald die Fabel-Kraft voll ist</p>
       <p>Handy quer halten für die beste Sicht</p></div>
     <div class="ctrl"><h3>✨ Fabel-Kräfte</h3>
       <p>Jedes Team hat eine eigene Spezialkraft. Der Balken füllt sich mit der Zeit, mit Pässen, Zweikämpfen und Schüssen.</p>
@@ -163,14 +164,12 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <div id="stickZone"></div>
     <div id="stickBase"><i id="stickKnob"></i></div>
     <div class="tbtns">
-      <button data-btn="b" class="tb big" id="tbB">SCHUSS</button>
-      <button data-btn="a" class="tb" id="tbA">PASS</button>
-      <button data-btn="y" class="tb s" id="tbY">STEIL</button>
-      <button data-btn="x" class="tb s" id="tbX">FLANKE</button>
-      <button data-btn="rt" class="tb s sprint">SPRINT</button>
-      <button data-btn="lb" class="tb s" id="tbLB">WECHSEL</button>
-      <button data-btn="rb" class="tb star" id="tbRB">★</button>
+      <button data-btn="y" class="tb ty"><b>Y</b><span id="tbY">STEIL</span></button>
+      <button data-btn="x" class="tb tx"><b>X</b><span id="tbX">FLANKE</span></button>
+      <button data-btn="b" class="tb tbb"><b>B</b><span id="tbB">SCHUSS</span></button>
+      <button data-btn="a" class="tb ta"><b>A</b><span id="tbA">PASS</span></button>
     </div>
+    <button data-btn="rb" class="tb star" id="tbRB">★</button>
   </div>
   <div id="rotate" class="rotate">📱↻ Handy quer halten für mehr Überblick</div>
 </section>

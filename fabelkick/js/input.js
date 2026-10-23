@@ -36,7 +36,7 @@
   // ---------- Touch ----------
   I.bindTouch = (root) => {
     const zone = root.querySelector('#stickZone'), base = root.querySelector('#stickBase'), knob = root.querySelector('#stickKnob');
-    const R = 52;
+    const R = 52; stick.base = base;
     const showStick = (x, y) => { base.style.transform = `translate(${x - 60}px,${y - 60}px)`; base.classList.add('on'); };
     zone.addEventListener('touchstart', e => {
       e.preventDefault(); setType('touch');
@@ -53,7 +53,7 @@
       }
     };
     const end = e => {
-      for (const t of e.changedTouches) if (t.identifier === stick.id) { stick.id = null; stick.x = stick.y = 0; base.classList.remove('on'); }
+      for (const t of e.changedTouches) if (t.identifier === stick.id) { stick.id = null; stick.x = stick.y = 0; stick.run = false; base.classList.remove('on', 'sprint'); }
     };
     zone.addEventListener('touchmove', e => { e.preventDefault(); move(e); }, { passive: false });
     zone.addEventListener('touchend', end); zone.addEventListener('touchcancel', end);
@@ -93,7 +93,12 @@
     if (keys.has('KeyD') || keys.has('ArrowRight')) mx += 1;
     if (keys.has('KeyW') || keys.has('ArrowUp')) my -= 1;
     if (keys.has('KeyS') || keys.has('ArrowDown')) my += 1;
-    if (stick.id !== null) { mx = stick.x; my = stick.y; }
+    if (stick.id !== null) {
+      mx = stick.x; my = stick.y;
+      // Touch: Stick ganz an den Rand = Sprint
+      const run = Math.hypot(mx, my) > 0.92; if (run) kb.down.rt = true;
+      if (stick.base && run !== stick.run) { stick.run = run; stick.base.classList.toggle('sprint', run); }
+    }
     const l = Math.hypot(mx, my); if (l > 1) { mx /= l; my /= l; }
     kb.mx = mx; kb.my = my;
 

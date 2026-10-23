@@ -200,10 +200,10 @@
           p.hasTarget = false; p.vel.set(0, 0, 0); p.wantX = p.wantZ = 0;
           if (moving) p.face = Math.atan2(mx, mz);
         } else if (p.state === 'run') {
-          if (defending && I.down(h.dev, 'a') && !moving) { // Pressing: zum Gegner laufen
+          if (defending && (I.down(h.dev, 'x') || (I.down(h.dev, 'a') && !moving))) { // Pressing: zum Gegner laufen
             const o = b.owner, gx = this.ownGoalX(p.team);
             this.tmp.set(o.pos.x + (gx - o.pos.x) * 0.04, 0, o.pos.z - o.pos.z * 0.04);
-            p.target.copy(this.tmp); p.hasTarget = true; p.sprint = I.down(h.dev, 'rt');
+            p.target.copy(this.tmp); p.hasTarget = true; p.sprint = I.down(h.dev, 'rt') || I.down(h.dev, 'x');
           } else if (!b.owner && I.down(h.dev, 'a') && !moving && this.phase === 'play') {
             p.target.set(b.pos.x + b.vel.x * 0.25, 0, b.pos.z + b.vel.z * 0.25); p.hasTarget = true;
           } else if (!moving && p.expect && !b.owner) {
@@ -213,7 +213,7 @@
           }
         }
         // Wechseln
-        if (I.pressed(h.dev, 'lb') && !own) this.switchPlayer(h);
+        if ((I.pressed(h.dev, 'lb') && !own) || (defending && I.pressed(h.dev, 'y'))) this.switchPlayer(h);
         else if (defending && h.idle > 1.2 && this.dist(p.pos, b.pos) > 22) { this.switchPlayer(h); }
         // Aktionen
         const dirx = moving ? mx : Math.sin(p.face), dirz = moving ? mz : Math.cos(p.face);
