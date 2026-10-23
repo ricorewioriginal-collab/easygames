@@ -5,7 +5,7 @@
   const $ = id => document.getElementById(id);
   const P = 'funkgolf-';
   const LS = { get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } } };
-  const SET = Object.assign({ sound: true, help: true, low: false }, LS.get(P + 'settings', {}));
+  const SET = Object.assign({ sound: true, help: true, low: false, radio: false }, LS.get(P + 'settings', {}));
   const saveSet = () => LS.set(P + 'settings', SET);
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   let toastT = 0; function toast(m) { const t = $('toast'); t.textContent = m; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2400); }
@@ -68,7 +68,7 @@
   };
 
   /* ---------- Bahn bauen ---------- */
-  let H = null, movers = [], extras = [], cupFlag = null;
+  let H = null, movers = [], extras = [], cupFlag = null, occ = [];
   function bbox(h) { const p = h.bounds.flat(); const xs = p.map(q => q[0]), zs = p.map(q => q[1]); return { x0: Math.min(...xs), x1: Math.max(...xs), z0: Math.min(...zs), z1: Math.max(...zs) }; }
   function build(h, num) {
     scene.remove(course); course.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material && o.material.dispose && !o.material.keep) o.material.dispose(); });
@@ -124,7 +124,8 @@
     const ring = new T3.Mesh(new T3.RingGeometry(FG.CUP, FG.CUP + .03, 28), new T3.MeshBasicMaterial({ color: 0xffffff })); ring.rotation.x = -Math.PI / 2; ring.position.set(h.cup[0], .011, h.cup[1]); course.add(ring);
     cupFlag = new T3.Group(); cupFlag.add(cyl(.015, .015, 1.1, MS(0xffffff), 0, .55, 0)); const fl = plane(.42, .28, new T3.MeshBasicMaterial({ map: textTex(String(num), { w: 128, h: 96, bg: '#FF4FAE', border: null, font: 'bold 64px system-ui' }), side: T3.DoubleSide }), .21, .95, 0); cupFlag.add(fl); cupFlag.position.set(h.cup[0], 0, h.cup[1]); course.add(cupFlag);
     // Kulisse
-    decorate(h, th, B, cx, cz);
+    const n0 = course.children.length; decorate(h, th, B, cx, cz);
+    occ = course.children.slice(n0).map(o => { const mats = []; o.traverse(m => { if (m.material && !mats.includes(m.material)) mats.push(m.material); }); return { box: new T3.Box3().setFromObject(o), mats, faded: false }; });
     return B;
   }
   function decorate(h, th, B, cx, cz) {
@@ -192,6 +193,8 @@
   aimG.add(shaft, head); scene.add(aimG);
   const dots = []; for (let i = 0; i < 14; i++) { const d = new T3.Mesh(new T3.CircleGeometry(.025, 8), new T3.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .55 })); d.rotation.x = -Math.PI / 2; scene.add(d); dots.push(d); }
 
+  const grab = new T3.Mesh(new T3.RingGeometry(.2, .25, 32), new T3.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .6, depthWrite: false })); grab.rotation.x = -Math.PI / 2; scene.add(grab);
+
   /* ---------- Ton ---------- */
   let AC = null;
   function sfx(k, v) {
@@ -210,8 +213,25 @@
     } catch (e) { }
   }
 
+  /* ---------- Radio: Live-Stream des Senders der Bahn (laut.fm, wie Bunte Insel/Mimori) ---------- */
+  const STATIONS = [null, ['RicoReWi Radio', 'ricorewi'], ['YourTime-FM', 'yourtime-fm'], ['Rapradio 24', 'rapradio24'], ['Schlagerpop 24', 'schlagerpop24'], ['Chartradio 24', 'chartradio24'], ['Clubradio 24', 'clubradio24'], ['AnMaCha 24', 'anmacha24'],
+    ['RadioFloh!', 'radiofloh'], ['Rockradio 24', 'rockradio24'], ['Christmasradio 24', 'christmasradio24'], ['Kultradio 24', 'kultradio24'], ['Zocker-FM', 'zockerfm'], ['Special-Radio', 'special-radio']];
+  const RAD = { el: null, slug: '', song: '' };
+  const stationOf = h => (h && STATIONS[h.logo]) || null;
+  function radioSync(announce) {
+    const st = G.state === 'menu' ? null : stationOf(curHole()), btn = $('bRadio');
+    btn.hidden = !st; const on = !!(st && SET.radio); btn.classList.toggle('on', on);
+    btn.title = st ? (on ? st[0] + ' ausschalten' : st[0] + ' live hören') : '';
+    if (!on) { if (RAD.el && !RAD.el.paused) RAD.el.pause(); return; }
+    if (!RAD.el) { RAD.el = new Audio(); RAD.el.preload = 'none'; RAD.el.volume = .55; RAD.el.addEventListener('error', () => { if (SET.radio && RAD.slug) toast('📻 ' + RAD.name + ' ist gerade nicht erreichbar'); }); }
+    if (RAD.slug !== st[1]) { RAD.slug = st[1]; RAD.name = st[0]; RAD.el.src = 'https://stream.laut.fm/' + st[1]; RAD.song = ''; }
+    const pr = RAD.el.play(); if (pr && pr.catch) pr.catch(() => { });
+    if (announce) { toast('📻 ' + st[0] + ' live'); nowPlaying(st); }
+  }
+  function nowPlaying(st) { try { fetch('https://api.laut.fm/station/' + encodeURIComponent(st[1]) + '/current_song').then(r => r.ok ? r.json() : null).then(j => { if (j && j.title && SET.radio && RAD.slug === st[1]) toast('📻 ' + st[0] + ': ' + (j.artist && j.artist.name ? j.artist.name + ' – ' : '') + j.title); }).catch(() => { }); } catch (e) { } }
+
   /* ---------- Spielzustand ---------- */
-  const G = { state: 'menu', players: [], holes: [], hi: 0, pi: 0, scores: [], ball: null, t: 0, aim: 0, power: 0, drag: null, charge: 0, chargeDir: 1, cam: 'follow', yaw: 0, camYaw: 0, done: [], banner: 0 };
+  const G = { state: 'menu', players: [], holes: [], hi: 0, pi: 0, scores: [], ball: null, t: 0, aim: 0, power: 0, drag: null, charge: 0, chargeDir: 1, cam: 'follow', yaw: 0, view: 0, follow: true, pitch: .5, zoom: 1, done: [], banner: 0 };
   const curHole = () => FG.HOLES[G.holes[G.hi]];
   function startGame() {
     G.players = setupPlayers.map((n, i) => ({ name: (n || '').trim().slice(0, 14) || 'Spieler ' + (i + 1), col: PCOL[i] }));
@@ -223,10 +243,10 @@
     startHole();
   }
   let bounds = null;
-  function startHole() { const h = curHole(); bounds = build(h, G.holes[G.hi] + 1); G.t = 0; G.pi = 0; G.done = G.players.map(() => false); startPlayer(true); }
+  function startHole() { const h = curHole(); bounds = build(h, G.holes[G.hi] + 1); G.t = 0; G.pi = 0; G.done = G.players.map(() => false); startPlayer(true); setTimeout(() => radioSync(true), 1900); }
   function startPlayer(first) {
     const h = curHole(); G.ball = FG.newBall(h); G.strokes = 0; G.state = 'aim'; G.power = 0; G.drag = null; G.charge = 0;
-    G.aim = Math.atan2(h.cup[1] - h.tee[1], h.cup[0] - h.tee[0]); G.yaw = G.aim; G.camYaw = 0;
+    G.aim = Math.atan2(h.cup[1] - h.tee[1], h.cup[0] - h.tee[0]); G.view = G.yaw = G.aim; G.follow = true;
     ballMesh.material.color.set(G.players[G.pi].col);
     hud(); showBanner(first ? 'Bahn ' + (G.holes[G.hi] + 1) + '<small>' + esc(h.n) + ' · Par ' + h.par + '</small>' : esc(G.players[G.pi].name) + ' ist dran<small>Bahn ' + (G.holes[G.hi] + 1) + ' · Par ' + h.par + '</small>', 1800);
     if (first && G.players.length > 1) setTimeout(() => { if (G.state === 'aim' && G.strokes === 0) showBanner(esc(G.players[G.pi].name) + ' beginnt', 1100); }, 1900);
@@ -236,12 +256,12 @@
     const h = curHole(), p = G.players[G.pi], tot = G.scores[G.pi].reduce((s, v) => s + (v || 0), 0), parSoFar = G.holes.slice(0, G.hi).reduce((s, i) => s + FG.HOLES[i].par, 0), diff = tot - parSoFar;
     $('hNum').textContent = G.holes[G.hi] + 1; $('hName').textContent = h.n; $('hSub').textContent = h.sub + ' · Par ' + h.par;
     $('hWho').innerHTML = '<i style="background:' + p.col + '"></i>' + esc(p.name) + ' · Schlag ' + (G.strokes + (G.state === 'aim' ? 1 : 0)) + '<small>Gesamt ' + tot + (G.hi ? ' (' + (diff > 0 ? '+' : '') + diff + ')' : '') + '</small>';
-    $('tip').textContent = G.state === 'aim' ? (lastInput === 'pad' ? 'Stick zielen · A halten und loslassen' : lastInput === 'key' ? '← → zielen · Leertaste halten und loslassen' : 'Ziehen wie eine Steinschleuder · Loslassen schlägt') : '';
+    $('tip').textContent = G.state === 'aim' ? (lastInput === 'pad' ? 'Stick zielen · A halten und loslassen' : lastInput === 'key' ? '← → zielen · Leertaste halten und loslassen' : (innerWidth < 560 ? 'Vom Ball wegziehen = Schlag · sonst wischen = Kamera' : 'Vom Ball wegziehen = Schlag · daneben wischen = Kamera drehen · Mausrad/2 Finger = Zoom')) : '';
   }
   function showBanner(html, ms) { const b = $('banner'); b.innerHTML = html; b.hidden = false; b.style.animation = 'none'; void b.offsetWidth; b.style.animation = ''; clearTimeout(G.bannerT); G.bannerT = setTimeout(() => { b.hidden = true; }, ms || 1600); }
   function shoot(power) {
     if (G.state !== 'aim' || power < .05) return;
-    FG.shoot(G.ball, G.aim, power); G.strokes++; G.state = 'roll'; G.power = 0; sfx('putt', power); hud();
+    FG.shoot(G.ball, G.aim, power); G.strokes++; G.state = 'roll'; G.follow = true; G.power = 0; sfx('putt', power); hud();
   }
   function finishPlayer(inCup) {
     const h = curHole(), s = inCup ? G.strokes : FG.MAXSTROKES; G.scores[G.pi][G.hi] = s; G.done[G.pi] = true;
@@ -296,13 +316,14 @@
       const hh = Math.max(((B.z1 - B.z0) / 2 + .6) / tf, ((B.x1 - B.x0) / 2 + .6) / (tf * camera.aspect)) * 1.04;
       out.set(cx, hh, cz - hh * .12); look.set(cx, 0, cz + .25); return;
     }
-    let yaw = G.state === 'roll' && Math.hypot(b.vx, b.vz) > .3 ? Math.atan2(b.vz, b.vx) : G.aim;
-    G.yaw += angDiff(G.yaw, yaw) * .08; yaw = G.yaw + G.camYaw;
-    const d = innerWidth > innerHeight ? 3.6 : 4.2, hgt = innerWidth > innerHeight ? 2.2 : 2.8;
-    out.set(b.x - Math.cos(yaw) * d, hgt, b.z - Math.sin(yaw) * d); look.set(b.x + Math.cos(yaw) * 1.4, 0, b.z + Math.sin(yaw) * 1.4);
+    if (G.follow && !G.drag) { const auto = G.state === 'roll' ? (Math.hypot(b.vx, b.vz) > .3 ? Math.atan2(b.vz, b.vx) : G.view) : G.aim; G.view += angDiff(G.view, auto) * (G.state === 'roll' ? .06 : .12); }
+    G.yaw += angDiff(G.yaw, G.view) * .2; const yaw = G.yaw;
+    const d = (innerWidth > innerHeight ? 3.6 : 4.3) * G.zoom, hgt = d * (.22 + G.pitch * 1.05), ahead = 1.2 * Math.min(1.3, G.zoom);
+    out.set(b.x - Math.cos(yaw) * d, hgt, b.z - Math.sin(yaw) * d); look.set(b.x + Math.cos(yaw) * ahead, 0, b.z + Math.sin(yaw) * ahead);
   }
   const angDiff = (a, b) => { let d = b - a; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2; return d; };
-  function snapCam() { G.yaw = G.aim; camTarget(camPos, camLook); camera.position.copy(camPos); camera.lookAt(camLook); }
+  function snapCam() { G.view = G.yaw = G.aim; camTarget(camPos, camLook); camera.position.copy(camPos); camera.lookAt(camLook); }
+  $('bRadio').onclick = e => { SET.radio = !SET.radio; saveSet(); radioSync(true); if (!SET.radio) toast('📻 Radio aus'); if (e.detail) e.currentTarget.blur(); };
   $('bCam').onclick = e => { G.cam = G.cam === 'top' ? 'follow' : 'top'; if (e.detail) e.currentTarget.blur(); };
 
   /* ---------- Hauptschleife ---------- */
@@ -319,7 +340,7 @@
     pollPad(dt); keyAim(dt);
     if (G.state === 'roll') {
       const n = Math.ceil(dt * 240); for (let i = 0; i < n && b.moving; i++) FG.step(h, b, G.t - dt + i / 240, 1 / 240);
-      for (const e of b.events.splice(0)) { if (e === 'wall') sfx('wall'); if (e === 'bump') sfx('bump'); if (e === 'portal') { sfx('portal'); G.yaw = Math.atan2(b.vz, b.vx); } if (e === 'water') { sfx('water'); G.strokes++; toast('Platsch! 💦 +1 Strafschlag – zurück an den Ausgangspunkt'); } }
+      for (const e of b.events.splice(0)) { if (e === 'wall') sfx('wall'); if (e === 'bump') sfx('bump'); if (e === 'portal') { sfx('portal'); G.view = G.yaw = Math.atan2(b.vz, b.vx); } if (e === 'water') { sfx('water'); G.strokes++; toast('Platsch! 💦 +1 Strafschlag – zurück an den Ausgangspunkt'); } }
       if (b.inCup) finishPlayer(true);
       else if (!b.moving) { if (G.strokes >= FG.MAXSTROKES) finishPlayer(false); else { G.state = 'aim'; G.aim = Math.atan2(h.cup[1] - b.z, h.cup[0] - b.x); hud(); } }
     }
@@ -343,34 +364,64 @@
     cupFlag.position.y = Math.hypot(b.x - h.cup[0], b.z - h.cup[1]) < 1.2 && G.state === 'roll' ? .6 : 0;
     // Zielhilfe
     const aiming = G.state === 'aim';
+    grab.visible = aiming && !G.drag && G.power === 0; grab.position.set(b.x, .015, b.z); grab.scale.setScalar(1 + .15 * Math.sin(G.t * 4));
     aimG.visible = aiming; const pw = aiming ? Math.max(G.power, .08) : 0;
     aimG.position.set(b.x, 0, b.z); aimG.rotation.y = -G.aim; aimG.scale.set(.4 + pw * 1.6, 1, 1);
     aimMat.color.setHSL((1 - G.power) * .33, 1, .55);
     dots.forEach((d, i) => { const k = (i + 1) * .25; d.visible = aiming && SET.help; d.position.set(b.x + Math.cos(G.aim) * k, .02, b.z + Math.sin(G.aim) * k); });
     $('power').classList.toggle('on', aiming && G.power > 0); $('powerFill').style.width = Math.round(G.power * 100) + '%';
     // Kamera
-    camTarget(camPos, camLook); camera.position.lerp(camPos, Math.min(1, dt * 4)); const cl = new T3.Vector3(); camera.getWorldDirection(cl);
+    camTarget(camPos, camLook); camera.position.lerp(camPos, Math.min(1, dt * 4)); unblock(); const cl = new T3.Vector3(); camera.getWorldDirection(cl);
     const want = camLook.clone().sub(camera.position).normalize(); cl.lerp(want, Math.min(1, dt * 5)); camera.lookAt(camera.position.clone().add(cl));
+  }
+
+  // Kulisse zwischen Kamera und Ball (oder direkt an der Kamera) wird durchsichtig
+  const ray = new T3.Ray(), hit = new T3.Vector3();
+  function unblock() {
+    const c = camera.position, bp = ballMesh.position, dist = c.distanceTo(bp); ray.origin.copy(c); ray.direction.copy(bp).sub(c).normalize();
+    for (const o of occ) {
+      const f = o.box.distanceToPoint(c) < .9 || (ray.intersectBox(o.box, hit) && c.distanceTo(hit) < dist);
+      if (f === o.faded) continue; o.faded = f;
+      for (const m of o.mats) { if (m.userData.op == null) m.userData.op = m.opacity, m.userData.tr = m.transparent; m.transparent = f || m.userData.tr; m.opacity = f ? .1 : m.userData.op; m.depthWrite = !f; m.needsUpdate = true; }
+    }
   }
 
   /* ---------- Eingabe: Ziehen (Touch/Maus) ---------- */
   let lastInput = 'ptr';
   const cvs = renderer.domElement;
   function groundBasis() { const m = camera.matrixWorld.elements; let rx = m[0], rz = m[2], fx = -m[8], fz = -m[10]; const rl = Math.hypot(rx, rz) || 1, fl = Math.hypot(fx, fz) || 1; return { rx: rx / rl, rz: rz / rl, fx: fx / fl, fz: fz / fl }; }
+  const ptrs = new Map(); let pinch = null;
+  function ballScreen() { const v = ballMesh.position.clone().project(camera); return { x: (v.x + 1) / 2 * innerWidth, y: (1 - v.y) / 2 * innerHeight }; }
+  const turnView = (dx, dy) => { G.view -= dx; G.pitch = Math.max(0, Math.min(1, G.pitch + dy)); G.follow = false; };
   cvs.addEventListener('pointerdown', e => {
-    if (G.state !== 'aim' || anyOv()) return; lastInput = 'ptr'; hud();
-    G.drag = { x: e.clientX, y: e.clientY, aim0: G.aim }; try { cvs.setPointerCapture(e.pointerId); } catch (x) { }
+    if (anyOv() || !G.ball || G.state === 'menu') return; lastInput = 'ptr';
+    try { cvs.setPointerCapture(e.pointerId); } catch (x) { }
+    ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (ptrs.size === 2) { G.drag = null; G.power = 0; const [p, q] = [...ptrs.values()]; pinch = { d: Math.hypot(p.x - q.x, p.y - q.y) || 1, z: G.zoom }; return; }
+    const bs = ballScreen(), r = Math.max(58, Math.min(innerWidth, innerHeight) * .11);
+    if (G.state === 'aim' && Math.hypot(e.clientX - bs.x, e.clientY - bs.y) < r) G.drag = { x: e.clientX, y: e.clientY, id: e.pointerId };
+    hud();
   });
   cvs.addEventListener('pointermove', e => {
-    if (!G.drag || G.state !== 'aim') return;
-    const vx = e.clientX - G.drag.x, vy = e.clientY - G.drag.y, len = Math.hypot(vx, vy), ref = Math.min(innerWidth, innerHeight) * .34;
-    if (len < 14) { G.power = 0; return; }
-    const B = groundBasis(), dx = B.rx * -vx + B.fx * vy, dz = B.rz * -vx + B.fz * vy;
-    G.aim = Math.atan2(dz, dx); G.power = Math.min(1, len / ref);
+    const p = ptrs.get(e.pointerId); if (!p) return;
+    const mx = e.clientX - p.x, my = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+    if (pinch && ptrs.size >= 2) { const [a, c] = [...ptrs.values()]; G.zoom = Math.max(.55, Math.min(2.2, pinch.z * pinch.d / (Math.hypot(a.x - c.x, a.y - c.y) || 1))); return; }
+    if (G.drag && G.drag.id === e.pointerId) {
+      if (G.state !== 'aim') { G.drag = null; return; }
+      const vx = e.clientX - G.drag.x, vy = e.clientY - G.drag.y, len = Math.hypot(vx, vy), ref = Math.min(innerWidth, innerHeight) * .34;
+      if (len < 16) { G.power = 0; return; }
+      const B = groundBasis(), dx = B.rx * -vx + B.fx * vy, dz = B.rz * -vx + B.fz * vy;
+      G.aim = Math.atan2(dz, dx); G.power = Math.min(1, len / ref); return;
+    }
+    if (G.cam !== 'top') turnView(mx * .007, my * .004);
   });
-  const ptrUp = () => { if (!G.drag) return; G.drag = null; if (G.power >= .05) shoot(G.power); else G.power = 0; };
-  cvs.addEventListener('pointerup', ptrUp); cvs.addEventListener('pointercancel', () => { G.drag = null; G.power = 0; });
-  cvs.addEventListener('wheel', e => { G.camYaw += e.deltaY * .002; }, { passive: true });
+  const ptrUp = e => {
+    ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = null;
+    if (!G.drag || G.drag.id !== e.pointerId) return; G.drag = null;
+    if (e.type === 'pointerup' && G.power >= .05) shoot(G.power); else G.power = 0;
+  };
+  cvs.addEventListener('pointerup', ptrUp); cvs.addEventListener('pointercancel', ptrUp);
+  cvs.addEventListener('wheel', e => { G.zoom = Math.max(.55, Math.min(2.2, G.zoom * Math.exp(e.deltaY * .001))); }, { passive: true });
 
   /* ---------- Tastatur ---------- */
   const keys = new Set();
@@ -381,15 +432,17 @@
     const k = e.key.toLowerCase();
     if (k === 'escape') { e.preventDefault(); openMenu(); return; }
     if (k === 'c') { G.cam = G.cam === 'top' ? 'follow' : 'top'; return; }
-    if (['arrowleft', 'arrowright', 'arrowup', 'arrowdown', 'a', 'd', ' ', 'q', 'e'].includes(k)) { e.preventDefault(); if (!keys.has(k)) keys.add(k); lastInput = 'key'; hud(); }
+    if (k === '+' || k === '-') { G.zoom = Math.max(.55, Math.min(2.2, G.zoom * (k === '+' ? .85 : 1.18))); return; }
+    if (['arrowleft', 'arrowright', 'arrowup', 'arrowdown', 'a', 'd', ' ', 'q', 'e', 'w', 's'].includes(k)) { e.preventDefault(); if (!keys.has(k)) keys.add(k); lastInput = 'key'; hud(); }
   });
   addEventListener('keyup', e => { const k = e.key.toLowerCase(); if (k === ' ' && keys.has(' ') && G.state === 'aim') shoot(G.power); keys.delete(k); });
   addEventListener('blur', () => keys.clear());
   function keyAim(dt) {
+    if (keys.has('q')) turnView(dt * 1.6, 0); if (keys.has('e')) turnView(-dt * 1.6, 0);
+    if (keys.has('w')) turnView(0, dt * .8); if (keys.has('s')) turnView(0, -dt * .8);
     if (G.state !== 'aim') return;
-    if (keys.has('arrowleft') || keys.has('a')) G.aim -= dt * 1.3 * (keys.has('arrowdown') ? .3 : 1);
-    if (keys.has('arrowright') || keys.has('d')) G.aim += dt * 1.3 * (keys.has('arrowdown') ? .3 : 1);
-    if (keys.has('q')) G.camYaw -= dt * 1.5; if (keys.has('e')) G.camYaw += dt * 1.5;
+    if (keys.has('arrowleft') || keys.has('a')) { G.aim -= dt * 1.3 * (keys.has('arrowdown') ? .3 : 1); G.follow = true; }
+    if (keys.has('arrowright') || keys.has('d')) { G.aim += dt * 1.3 * (keys.has('arrowdown') ? .3 : 1); G.follow = true; }
     if (keys.has(' ')) charge(dt);
   }
   function charge(dt) { G.charge += dt * G.chargeDir / 1.3; if (G.charge >= 1) { G.charge = 1; G.chargeDir = -1; } if (G.charge <= 0) { G.charge = 0; G.chargeDir = 1; } G.power = G.charge; }
@@ -405,11 +458,13 @@
       if (st.start && !pv.start) { if (anyOv()) $('mGo').click(); else openMenu(); }
       if (anyOv()) continue;
       if (st.y && !pv.y) G.cam = G.cam === 'top' ? 'follow' : 'top';
-      if (st.lb) G.camYaw -= dt * 1.6; if (st.rb) G.camYaw += dt * 1.6;
+      if (st.lb) turnView(dt * 1.6, 0); if (st.rb) turnView(-dt * 1.6, 0);
+      const rx = Math.abs(pad.axes[2] || 0) > .2 ? pad.axes[2] : 0, ry = Math.abs(pad.axes[3] || 0) > .2 ? pad.axes[3] : 0;
+      if (rx || ry) turnView(-rx * dt * 2, ry * dt * 1.2);
       if (G.state !== 'aim') continue;
       const x = Math.abs(pad.axes[0] || 0) > .2 ? pad.axes[0] : 0, y = Math.abs(pad.axes[1] || 0) > .2 ? pad.axes[1] : 0;
-      if (x || y) { lastInput = 'pad'; const B = groundBasis(); if (Math.hypot(x, y) > .6) { const tgt = Math.atan2(B.rz * x + B.fz * -y, B.rx * x + B.fx * -y); G.aim += angDiff(G.aim, tgt) * Math.min(1, dt * 6); } else G.aim += x * dt * .8; }
-      if (bt(14)) G.aim -= dt * .6; if (bt(15)) G.aim += dt * .6;
+      if (x) { lastInput = 'pad'; G.follow = true; G.aim += x * Math.abs(x) * dt * 1.6; }
+      if (bt(14)) { G.aim -= dt * .6; G.follow = true; } if (bt(15)) { G.aim += dt * .6; G.follow = true; }
       if (st.a) { lastInput = 'pad'; charge(dt); } else if (pv.a && G.power > .05) shoot(G.power);
     }
   }
@@ -440,7 +495,7 @@
   $('mQuit').onclick = () => { $('ovMenu').hidden = true; toMenu(); };
   $('endMenu').onclick = () => { $('ovEnd').hidden = true; toMenu(); };
   $('endAgain').onclick = () => { $('ovEnd').hidden = true; startGame(); };
-  function toMenu() { G.state = 'menu'; $('hud').hidden = true; $('sMenu').classList.add('on'); padNav(true); renderSetup(); menuStat(); demoHole(); focusEl($('bPlay')); }
+  function toMenu() { G.state = 'menu'; radioSync(); $('hud').hidden = true; $('sMenu').classList.add('on'); padNav(true); renderSetup(); menuStat(); demoHole(); focusEl($('bPlay')); }
   function menuStat() { const st = LS.get(P + 'stats', {}), hs = LS.get(P + 'highscore', 0); $('menuStat').textContent = st.runden ? st.runden + ' Runden gespielt' + (st.bester ? ' · beste 18er-Runde ' + st.bester + ' Schläge (Par ' + FG.totalPar() + ')' : '') + (st.asse ? ' · ' + st.asse + '× Hole-in-One' : '') + (hs ? ' · Rekord ' + hs + ' Punkte' : '') : 'Par ' + FG.totalPar() + ' auf 18 Bahnen'; }
   let demoT = 0;
   function demoHole() { const i = (Math.random() * 18) | 0, h = FG.HOLES[i]; bounds = build(h, i + 1); G.ball = FG.newBall(h); G.cam = 'top'; ballMesh.position.set(h.tee[0], FG.BALL, h.tee[1]); aimG.visible = false; dots.forEach(d => { d.visible = false; }); camTarget(camPos, camLook); camera.position.copy(camPos); camera.lookAt(camLook); }
@@ -450,6 +505,6 @@
   if (window.self !== window.top) $('backLink').hidden = true;
   renderSetup(); menuStat(); demoHole(); requestAnimationFrame(frame);
   setTimeout(() => padNav(true), 400); focusEl($('bPlay'));
-  addEventListener('visibilitychange', () => { if (document.hidden && (G.state === 'aim' || G.state === 'roll')) openMenu(); });
-  window.FUNKGOLF = { state: () => ({ state: G.state, hole: G.holes[G.hi], hi: G.hi, pi: G.pi, strokes: G.strokes, ball: G.ball && { x: G.ball.x, z: G.ball.z, inCup: G.ball.inCup, moving: G.ball.moving }, aim: G.aim, scores: G.scores, t: G.t }), shootAt: (ang, p) => { G.aim = ang; shoot(p); }, goto: i => { G.hi = i; startHole(); }, cam: c => { G.cam = c; } }; // für Tests
+  addEventListener('visibilitychange', () => { if (document.hidden && (G.state === 'aim' || G.state === 'roll')) openMenu(); if (document.hidden) { if (RAD.el) RAD.el.pause(); } else radioSync(); });
+  window.FUNKGOLF = { state: () => ({ state: G.state, hole: G.holes[G.hi], hi: G.hi, pi: G.pi, strokes: G.strokes, ball: G.ball && { x: G.ball.x, z: G.ball.z, inCup: G.ball.inCup, moving: G.ball.moving }, aim: G.aim, scores: G.scores, t: G.t }), shootAt: (ang, p) => { G.aim = ang; shoot(p); }, goto: i => { G.hi = i; startHole(); }, ballScreen: () => ballScreen(), cam: c => { G.cam = c; } }; // für Tests
 })();

@@ -455,11 +455,11 @@ window.EASYGAMES_GUIDES = {
   ]
  },
  "funkgolf": {
-  "anleitung": "Funk-Minigolf 3D führt über 18 Bahnen quer durch das RicoReWi × AnMaCha Radioportal: Begrüßung „Schön, dass du da bist!“, die Senderstudios (YourTime-FM Strandbar, Rapradio 24, Schlagerpop 24, Chartradio 24, Clubradio 24, AnMaCha 24, RadioFloh!, Rockradio 24, Christmasradio 24, Kultradio 24, Zocker-FM, Special-Radio, AnMaChaCast), Sendeplan, Voting, Sleep-Timer und das Funkturm-Finale. Bring den Ball mit möglichst wenigen Schlägen ins Loch. Sand bremst, Eis ist glatt, Wasser kostet einen Strafschlag (Ball zurück), Hänge lenken ab, Plattenteller, Mischpult-Regler, Kassettenspulen und der Mond bewegen sich, Portale beamen den Ball weiter. Höchstens 8 Schläge pro Bahn. Bis zu 4 Spieler spielen abwechselnd an einem Gerät; nach jeder Bahn kommt die Scorekarte. Ganze Runden (18 Bahnen) allein zählen für die Rangliste.",
+  "anleitung": "Funk-Minigolf 3D führt über 18 Bahnen quer durch das RicoReWi × AnMaCha Radioportal: Begrüßung „Schön, dass du da bist!“, die Senderstudios (YourTime-FM Strandbar, Rapradio 24, Schlagerpop 24, Chartradio 24, Clubradio 24, AnMaCha 24, RadioFloh!, Rockradio 24, Christmasradio 24, Kultradio 24, Zocker-FM, Special-Radio, AnMaChaCast), Sendeplan, Voting, Sleep-Timer und das Funkturm-Finale. Bring den Ball mit möglichst wenigen Schlägen ins Loch. Sand bremst, Eis ist glatt, Wasser kostet einen Strafschlag (Ball zurück), Hänge lenken ab, Plattenteller, Mischpult-Regler, Kassettenspulen und der Mond bewegen sich, Portale beamen den Ball weiter. Höchstens 8 Schläge pro Bahn. Bis zu 4 Spieler spielen abwechselnd an einem Gerät; nach jeder Bahn kommt die Scorekarte. Ganze Runden (18 Bahnen) allein zählen für die Rangliste. Auf jeder Sender-Bahn schaltet 📻 den echten Live-Stream des Senders ein; auf der nächsten Sender-Bahn wechselt er automatisch.",
   "steuerung": [
-   "Touch/Maus: irgendwo auf den Bildschirm drücken und wie eine Steinschleuder nach hinten ziehen – je weiter, desto fester; loslassen schlägt. Zurück zum Startpunkt ziehen bricht ab. Mausrad dreht die Kamera.",
-   "Tastatur: ← → zielen (mit ↓ fein), Leertaste halten (Stärke pendelt) und loslassen, Q/E Kamera drehen, C Draufsicht, Esc Pause.",
-   "Gamecontroller: linker Stick zielt, A halten und loslassen schlägt, LB/RB Kamera drehen, Y Draufsicht, Start Pause. In Menüs Steuerkreuz + A."
+   "Touch/Maus: den Ball antippen und wie eine Steinschleuder nach hinten wegziehen – je weiter, desto fester; loslassen schlägt, zurück zum Ball ziehen bricht ab. Daneben wischen dreht und neigt die Kamera, Mausrad oder zwei Finger zoomen.",
+   "Tastatur: ← → zielen (mit ↓ fein), Leertaste halten (Stärke pendelt) und loslassen, Q/E Kamera drehen, W/S neigen, +/− Zoom, C Draufsicht, Esc Pause.",
+   "Gamecontroller: linker Stick zielt, A halten und loslassen schlägt, rechter Stick oder LB/RB Kamera drehen, Y Draufsicht, Start Pause. In Menüs Steuerkreuz + A."
   ],
   "tipps": [
    "Mit 🎥 bzw. C/Y siehst du die ganze Bahn von oben – ideal, um Bandenschläge zu planen.",

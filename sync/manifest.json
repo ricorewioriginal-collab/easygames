@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "ee07f0bd5ab0",
- "generated": "2026-10-23T08:01:00+02:00",
- "commit": "797baaa9d580d2c460349e6e824bb76a448aa47e",
+ "version": "d3227d4bcb0b",
+ "generated": "2026-10-23T08:20:23+02:00",
+ "commit": "ba54bc302a05c6a68dca1e023a4be79d53656c9d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5588,8 +5588,8 @@
   },
   {
    "p": "funkgolf/index.html",
-   "s": 9165,
-   "h": "fb70ce408a7925fd7502b8d1d7e02d1f7bc8bf0cae8d6cd5b2ea987a0ee13dbe"
+   "s": 9653,
+   "h": "35d21ac1265fe1df6a3dcced3241a3db4e1ed68fb586e7fbd2a93879511672f0"
   },
   {
    "p": "funkgolf/js/core.js",
@@ -5598,8 +5598,8 @@
   },
   {
    "p": "funkgolf/js/game.js",
-   "s": 44729,
-   "h": "95893bc98bf264efdb868ae54dd3c4adf0648b8d27509b831378fc721bcbf80b"
+   "s": 50319,
+   "h": "668f9a25944a48feb679d03b1e92c78910c8ded5e9a4151884874600e3035125"
   },
   {
    "p": "funkgolf/manifest.webmanifest",
@@ -5608,8 +5608,8 @@
   },
   {
    "p": "funkgolf/style.css",
-   "s": 9123,
-   "h": "a1158404d0c15e213da16741ab6eed54fe8282cdb764825e93fb37c4a6b47c7c"
+   "s": 9304,
+   "h": "39bc1b04160aa7f0140ed9e3fb23b5770a744e5bb3bc6a206d370880bbe7a72f"
   },
   {
    "p": "funkgolf/sw.js",
@@ -5828,8 +5828,8 @@
   },
   {
    "p": "guides.js",
-   "s": 90452,
-   "h": "0cd49b5a74f96f0da236e809fb5b528db41323eb81378794f566bd538093cecf"
+   "s": 90655,
+   "h": "25cd0a13eeda7d259689cd9a6085a24f23417e16d1b6bfd4aec548abd0c3b8ae"
   },
   {
    "p": "heute.html",
@@ -7283,8 +7283,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 139603,
-   "h": "36c1fabbe0a7b581187390310f9c0f906e3c77d271cd2a737b7f056ca26c2f9b"
+   "s": 139806,
+   "h": "4c9b28360bbbcf0ed8a9f9f9fda1b2a408a4e8f053dd7d266de018bac3afa3f6"
   },
   {
    "p": "taschi/card.svg",

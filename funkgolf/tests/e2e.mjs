@@ -19,7 +19,12 @@ await pg.click('#pList .rm >> nth=1'); ok(await pg.locator('#pList .pRow').count
 await pg.click('#course .chip[data-c="front"]'); await pg.click('#bPlay'); await pg.waitForTimeout(600);
 let s = await st(); ok(s.state === 'aim' && s.hole === 0, 'Bahn 1 startet');
 // Ziehen: nach unten ziehen = Schlag nach vorn (Richtung Loch)
-await pg.mouse.move(450, 300); await pg.mouse.down(); await pg.mouse.move(450, 360, { steps: 5 }); await pg.mouse.move(450, 400, { steps: 5 }); await pg.mouse.up();
+// Wischen neben dem Ball dreht nur die Kamera
+await pg.mouse.move(120, 200); await pg.mouse.down(); await pg.mouse.move(320, 220, { steps: 8 }); await pg.mouse.up(); await pg.waitForTimeout(300);
+s = await st(); ok(s.strokes === 0 && s.state === 'aim', 'Wischen neben dem Ball schlägt nicht');
+await pg.keyboard.press('ArrowLeft'); await pg.waitForTimeout(900); // Kamera wieder hinter den Ball
+let bs = await pg.evaluate(() => FUNKGOLF.ballScreen());
+await pg.mouse.move(bs.x, bs.y); await pg.mouse.down(); await pg.mouse.move(bs.x, bs.y + 80, { steps: 5 }); await pg.mouse.move(bs.x, bs.y + 150, { steps: 5 }); await pg.mouse.up();
 s = await st(); ok(s.strokes === 1, 'Schlag per Ziehen');
 s = await waitRest(); ok(s.ball.inCup || s.ball.z > 2, 'Ball rollt Richtung Loch (z=' + s.ball.z.toFixed(2) + ')');
 // Tastatur
@@ -41,6 +46,10 @@ await pg.waitForSelector('#ovCard:not([hidden])', { timeout: 6000 });
 ok(/Nach Bahn 1/.test(await pg.textContent('#cardTitle')), 'Scorekarte nach Bahn 1');
 ok((await st()).scores[0][0] > 0, 'Ergebnis eingetragen');
 await pg.click('#cardGo'); await pg.waitForTimeout(400); ok((await st()).hole === 1, 'Bahn 2');
+// Radio-Knopf auf Sender-Bahn (Bahn 2: YourTime-FM)
+await pg.waitForTimeout(1700); ok(await pg.isVisible('#bRadio'), 'Radio-Knopf auf Sender-Bahn');
+await pg.click('#bRadio'); ok((await pg.evaluate(() => document.querySelector('#bRadio').classList.contains('on'))) && /YourTime-FM/.test(await pg.textContent('#toast')), 'Sender eingeschaltet');
+await pg.click('#bRadio'); ok(!(await pg.evaluate(() => document.querySelector('#bRadio').classList.contains('on'))), 'Sender ausgeschaltet');
 // Kamera
 await pg.keyboard.press('c'); await pg.waitForTimeout(200); await pg.click('#bCam');
 // restliche Bahnen aufgeben
