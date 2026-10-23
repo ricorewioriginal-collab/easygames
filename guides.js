@@ -428,4 +428,17 @@ window.EASYGAMES_GUIDES = {
    "Online mit „doppelt zählt nicht“: Suche lieber die ungewöhnlichen Wörter, die die anderen übersehen."
   ]
  },
+ "anmacha-solitaire": {
+  "anleitung": "AnMaCha Solitaire vereint drei Kartenspiele für eine Person mit AnMaCha-Karten. Patience: In 7 Spalten absteigend in wechselnden Farben bauen (rot auf schwarz), leere Spalten nehmen nur Könige; Ziel sind die 4 Ablagen von Ass bis König. Vom Stapel deckst du 1 oder 3 Karten auf; mit „nur lösbare“ ist jede Partie garantiert lösbar. Spider: Zwei Kartenspiele in 10 Spalten, Karten auf eine um eins höhere legen, verschieben lassen sich aber nur Reihen derselben Farbe; komplette Reihen König bis Ass werden abgelegt; mit 1, 2 oder 4 Farben. FreeCell: alle Karten offen, 4 freie Zellen, absteigend in wechselnden Farben. Unbegrenzt rückgängig, Tipps, sichere Karten werden automatisch abgelegt und am Ende legt ⚡ alles von selbst ab. Täglich gibt es ein Tagesspiel (lösbare Patience). Siege, Bestzeiten und der Spielstand werden gespeichert, mit Google-Konto auf allen Geräten.",
+  "steuerung": [
+   "Touch & Maus: Karten ziehen oder einfach antippen – sie springen an die beste Stelle. Stapel antippen zieht neue Karten. ↶ rückgängig, 💡 Tipp, ⚡ automatisch fertig.",
+   "Tastatur: Pfeile bewegen den Rahmen, Leertaste/Enter nimmt Karten auf und legt sie ab, F legt automatisch, D zieht vom Stapel, Z rückgängig, H Tipp, A automatisch fertig, Rücktaste abbrechen, Esc Menü.",
+   "Gamecontroller: Steuerkreuz bewegt den Rahmen, A aufnehmen/ablegen, X automatisch legen, Y Stapel ziehen, B abbrechen, LB rückgängig, RB Tipp, Select automatisch fertig, Start Menü."
+  ],
+  "tipps": [
+   "Patience: Decke zuerst verdeckte Karten in den langen Spalten auf und leere Spalten nur, wenn du einen König dafür hast.",
+   "Spider: Baue möglichst Reihen derselben Farbe – nur die lassen sich später gemeinsam verschieben.",
+   "FreeCell: Halte freie Zellen und leere Spalten frei; jede verdoppelt, wie viele Karten du auf einmal bewegen kannst."
+  ]
+ },
 };

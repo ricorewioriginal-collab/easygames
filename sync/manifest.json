@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "6e27f3a99e4d",
- "generated": "2026-10-23T06:19:16+02:00",
- "commit": "b9a1e6e80fa61520c89554a3199dffa6c13e01ee",
+ "version": "dfc3dec2dca3",
+ "generated": "2026-10-23T06:43:32+02:00",
+ "commit": "c5e716ba14ef64413f429bcb9962bc1d8f4dcbd7",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4032,6 +4032,56 @@
    "h": "5d5424f4814ce47d8a5d1067392ea392c5e7a0fb9951d5b5c6c832ea624da677"
   },
   {
+   "p": "anmacha-solitaire/card.jpg",
+   "s": 32723,
+   "h": "6318c801bff73408b2c196a2f3a5af9d9030f0b587c7d47799bcd31f7a2e6699"
+  },
+  {
+   "p": "anmacha-solitaire/data/loesbar.json",
+   "s": 3591,
+   "h": "2a9c8ad234902a70f460c5024da18fe9f9ec916813c1ffed1baf76c59c30020f"
+  },
+  {
+   "p": "anmacha-solitaire/img/anmacha-logo.png",
+   "s": 28394,
+   "h": "466a7c3ba4b450d56054e6442c84ae428911174d276a05e53b1f3ae2583217b3"
+  },
+  {
+   "p": "anmacha-solitaire/img/radioportal-icon.png",
+   "s": 20776,
+   "h": "06358bdf93261f3ffb84505a41512bfd7e0cd4b5773611d46bf38d9c2a66b43a"
+  },
+  {
+   "p": "anmacha-solitaire/index.html",
+   "s": 11007,
+   "h": "6b62420f7ea18af42245d5126668ba50db77247edf3221ba6d7ae4b8aa56aa50"
+  },
+  {
+   "p": "anmacha-solitaire/js/app.js",
+   "s": 34965,
+   "h": "b94302ca1aee64dd8d1157c79d38059d1fba5471cc6df3bafd3cf371fa4c8bf6"
+  },
+  {
+   "p": "anmacha-solitaire/js/rules.js",
+   "s": 13021,
+   "h": "287457557522274faf28b96c9304d26a6e4e1ab1d2b93e10e4fac5cd7290edf4"
+  },
+  {
+   "p": "anmacha-solitaire/manifest.webmanifest",
+   "s": 781,
+   "h": "50853fbb50078e4b559fc803653b5cc24f47cae33ef92f3dd9f0c5b1fd448b5a"
+  },
+  {
+   "p": "anmacha-solitaire/style.css",
+   "s": 11250,
+   "h": "3a1ae2be3e2d3f61536544520ae5577b6429b39d745daf4318cfeb4397ebbb4c"
+  },
+  {
+   "p": "anmacha-solitaire/sw.js",
+   "s": 2001,
+   "h": "411b7db8def836d2829d8203900f40320e24102ef7aa8ad766193e27850fc970"
+  },
+  {
    "p": "anmacha-spielesammlung/card.jpg",
    "s": 41282,
    "h": "25cfcdf88a64f960d16ce9d370ebfb0399f96fcf27aef4db81d0ed1306bffeeb"
@@ -5243,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2525,
-   "h": "812715d7199852803479c557a51e8f592262304dcc87b4e10ce3097de22ce374"
+   "s": 2555,
+   "h": "5e65f03be416c7b5be34f989f3eac547097efd4f209d338081ce6fd3286ccf8e"
   },
   {
    "p": "chat.html",
@@ -5543,8 +5593,8 @@
   },
   {
    "p": "games.js",
-   "s": 29911,
-   "h": "3a5797f5eee5434de2af178c8c5889ddb87a8600ae6f5711fa6679dc1934a40a"
+   "s": 30398,
+   "h": "fa6f2c2bede8b4eb4fb36e5928a3b32c59426b66224c009776a1266bdd0e350c"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5703,8 +5753,8 @@
   },
   {
    "p": "guides.js",
-   "s": 83280,
-   "h": "0dcecfa444a90a47e7264468d8001974d534ce2928d3739a9ee0b54bee8b9baa"
+   "s": 85202,
+   "h": "2f39990083a0dc95c1c6d7d5787913ea4125fc2d901b4a1672c08a482d2af885"
   },
   {
    "p": "heute.html",
@@ -7123,8 +7173,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 129262,
-   "h": "a603e164307a73590161b09c34336961aa70ddcc36f50eaa80aa074d274fcb39"
+   "s": 131907,
+   "h": "8f28a70d8e57f8d9f04d14c614cf7d001f70aab2f3fd83aa13cf2a432be74e71"
   },
   {
    "p": "taschi/card.svg",

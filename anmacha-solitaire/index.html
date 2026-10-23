@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/anmacha-solitaire-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Solitaire"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0E1530">
+<title>AnMaCha Solitaire – Patience, Spider, FreeCell</title>
+<meta name="description" content="AnMaCha Solitaire: Patience, Spider und FreeCell mit AnMaCha-Karten – nur lösbare Partien, Rückgängig, Tipps, Tagesspiel und Cloud-Spielstand.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <section class="scr on" id="sMenu">
+    <div class="menuBox">
+      <div class="brand"><img src="img/anmacha-logo.png" alt="AnMaCha" width="340" height="129"><span>SOLITAIRE</span></div>
+      <div class="games" id="games">
+        <button class="gm" data-g="klondike"><span class="gi">♠♥</span><b>Patience</b><small>Klassiker</small></button>
+        <button class="gm" data-g="spider"><span class="gi">🕷</span><b>Spider</b><small>2 Kartenspiele</small></button>
+        <button class="gm" data-g="freecell"><span class="gi">♦♣</span><b>FreeCell</b><small>alles offen</small></button>
+      </div>
+      <div class="opts" id="optKlondike">
+        <span>Ziehen</span><button class="chip" data-draw="1">1 Karte</button><button class="chip" data-draw="3">3 Karten</button>
+        <label class="check small"><input type="checkbox" id="optSolv"> nur lösbare</label>
+      </div>
+      <div class="opts" id="optSpider" hidden>
+        <span>Farben</span><button class="chip" data-suits="1">1</button><button class="chip" data-suits="2">2</button><button class="chip" data-suits="4">4</button>
+      </div>
+      <div class="opts" id="optFree" hidden><span>4 freie Zellen · fast jede Partie lösbar</span></div>
+      <div class="menuBtns">
+        <button class="btn big pri" id="bResume" hidden>▶ Weiterspielen</button>
+        <button class="btn big pri" id="bNew">Neues Spiel</button>
+        <button class="btn big" id="bDay">📅 Tagesspiel</button>
+        <div class="row2"><button class="btn" id="bHelp">📖 Anleitung</button><button class="btn" id="bSet">⚙️ Einstellungen</button></div>
+      </div>
+      <p class="stat" id="menuStat"></p>
+      <p class="foot"><a href="../" id="backLink">← Alle Spiele</a></p>
+    </div>
+  </section>
+
+  <section class="scr" id="sGame">
+    <header class="top">
+      <button class="icon" id="bMenu" aria-label="Menü">☰</button>
+      <div class="info"><b id="gTitle">Patience</b><span id="gInfo">0:00 · 0 Züge</span></div>
+      <div class="tools">
+        <button class="icon" id="aUndo" title="Rückgängig (Z)" aria-label="Rückgängig">↶</button>
+        <button class="icon" id="aHint" title="Tipp (H)" aria-label="Tipp">💡</button>
+        <button class="icon pri" id="aFinish" title="Automatisch fertig (A)" hidden>⚡</button>
+      </div>
+    </header>
+    <div class="table" id="table"><div class="slots" id="slots"></div><div class="cards" id="cards"></div></div>
+  </section>
+
+  <div class="ov" id="ovMenu" hidden><div class="card">
+    <h2>Pause</h2>
+    <div class="menuBtns">
+      <button class="btn big pri" id="mGo">▶ Weiter</button>
+      <button class="btn" id="mNew">🔀 Neue Partie</button>
+      <button class="btn" id="mRestart">↺ Diese Partie neu starten</button>
+      <button class="btn" id="mHelp">📖 Anleitung</button>
+      <button class="btn" id="mSound">🔊 Ton an</button>
+      <button class="btn" id="mQuit">⏹ Zum Menü</button>
+    </div>
+  </div></div>
+
+  <div class="ov" id="ovWin" hidden><div class="card">
+    <img class="winLogo" src="img/anmacha-logo.png" alt="AnMaCha">
+    <h2 id="winTitle">Gewonnen!</h2>
+    <ol class="rank" id="winRank"></ol>
+    <div class="rowBtns"><button class="btn" id="bWinMenu">Menü</button><button class="btn pri" id="bWinNew">Neue Partie ▶</button></div>
+  </div></div>
+
+  <div class="ov" id="ovStuck" hidden><div class="card">
+    <h2>Keine Züge mehr</h2>
+    <p class="hint">Hier geht nichts mehr weiter. Du kannst Züge zurücknehmen oder neu beginnen.</p>
+    <div class="rowBtns"><button class="btn" id="bStuckUndo">↶ Rückgängig</button><button class="btn" id="bStuckRe">↺ Neu starten</button><button class="btn pri" id="bStuckNew">Neue Partie</button></div>
+  </div></div>
+
+  <div class="ov" id="ovSet" hidden><div class="card">
+    <h2>Einstellungen</h2>
+    <label class="check"><input type="checkbox" id="setSound"> Ton</label>
+    <label class="check"><input type="checkbox" id="setAuto"> Sichere Karten automatisch ablegen</label>
+    <label class="check"><input type="checkbox" id="setTap"> Antippen legt Karten automatisch ab</label>
+    <label class="check"><input type="checkbox" id="setLeft"> Linkshänder (Stapel rechts)</label>
+    <button class="btn pri" id="bSetX">Fertig</button>
+  </div></div>
+
+  <div class="ov" id="ovHelp" hidden><div class="card scroll">
+    <h2>So spielst du</h2>
+    <h3>Patience</h3>
+    <p>Baue in den 7 Spalten absteigende Reihen in wechselnden Farben (rot auf schwarz). Leere Spalten nehmen nur einen König. Ziel: alle Karten nach Farben von Ass bis König auf die 4 Ablagen oben rechts. Tippe auf den Stapel oben links, um 1 bzw. 3 Karten aufzudecken. Mit „nur lösbare“ ist jede Partie garantiert lösbar.</p>
+    <h3>Spider</h3>
+    <p>Zwei Kartenspiele, 10 Spalten. Lege Karten auf eine um eins höhere Karte, egal welche Farbe – verschieben lassen sich aber nur Reihen derselben Farbe. Eine komplette Reihe König bis Ass in einer Farbe wird abgelegt. Der Stapel teilt 10 neue Karten aus (dafür darf keine Spalte leer sein). Mit 1 Farbe ist es am leichtesten, mit 4 am schwersten.</p>
+    <h3>FreeCell</h3>
+    <p>Alle Karten liegen offen. Baue absteigend in wechselnden Farben; die 4 freien Zellen oben links nehmen je eine Karte auf. Wie viele Karten du auf einmal verschieben kannst, hängt von freien Zellen und leeren Spalten ab.</p>
+    <h3>Steuerung</h3>
+    <ul>
+      <li><b>Touch &amp; Maus:</b> Karten ziehen oder einfach antippen – die Karte springt an die beste Stelle. ↶ nimmt Züge zurück, 💡 zeigt einen Tipp, ⚡ legt am Ende alles automatisch ab.</li>
+      <li><b>Tastatur:</b> Pfeile bewegen den Rahmen, Leertaste/Enter nimmt Karten auf und legt sie ab, F legt die markierte Karte automatisch, D zieht vom Stapel, Z rückgängig, H Tipp, A automatisch fertig, Rücktaste abbrechen, Esc Menü.</li>
+      <li><b>Gamecontroller:</b> Steuerkreuz bewegt den Rahmen, A aufnehmen/ablegen, X automatisch legen, Y Stapel ziehen, B abbrechen, LB rückgängig, RB Tipp, Select automatisch fertig, Start Menü.</li>
+    </ul>
+    <p class="hint">Mit Google angemeldet werden Spielstand und Statistik auf allen Geräten gespeichert; Siege zählen für die Ranglisten.</p>
+    <button class="btn pri" id="bHelpX">Verstanden</button>
+  </div></div>
+
+  <div class="toast" id="toast" hidden></div>
+</div>
+
+<script src="js/rules.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="anmacha-solitaire" data-prefix="anmacha-solitaire-" defer></script>
+<script src="../gamepad.js" data-pad="a=Space/Enter x=KeyF y=KeyD b=Backspace lb=KeyZ rb=KeyH select=KeyA start=Escape" defer></script>
+</body>
+</html>
