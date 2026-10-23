@@ -133,7 +133,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 /* HUD */
 #hud{pointer-events:none}
-#hud .touch,#hud .pause-btn{pointer-events:auto}
+#hud .pause-btn,#stickZone,.tb{pointer-events:auto}
+#hud .pause-btn{z-index:5}
 .score{position:absolute;left:calc(14px + var(--sal));top:calc(12px + var(--sat));display:flex;align-items:stretch;border-radius:12px;overflow:hidden;background:var(--glass2);border:1px solid var(--line);box-shadow:0 6px 20px rgba(0,0,0,.35);font-weight:900;font-style:italic}
 .sb-team{display:flex;align-items:center;gap:6px;padding:0 10px;font-size:15px}
 .mini-crest{width:16px;height:16px;border-radius:50%;border:2px solid #fff;display:block}

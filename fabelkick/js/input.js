@@ -31,7 +31,12 @@
     if (FK.onAnyInput) FK.onAnyInput();
   });
   addEventListener('keyup', e => keys.delete(e.code));
-  addEventListener('blur', () => { keys.clear(); for (const k in touchBtn) touchBtn[k] = false; stick.x = stick.y = 0; });
+  addEventListener('blur', () => {
+    keys.clear(); for (const k in touchBtn) touchBtn[k] = false;
+    stick.id = null; stick.x = stick.y = 0; stick.run = false;
+    if (stick.base) stick.base.classList.remove('on', 'sprint');
+    document.querySelectorAll('.tb.down').forEach(b => b.classList.remove('down'));
+  });
 
   // ---------- Touch ----------
   I.bindTouch = (root) => {

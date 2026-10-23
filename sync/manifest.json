@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "76379f4bd960",
- "generated": "2026-10-23T06:55:31+00:00",
- "commit": "cc209c10125c24c16eed1ef9c77f829396406362",
+ "version": "c6796e5267e6",
+ "generated": "2026-10-23T07:04:15+00:00",
+ "commit": "9f15a2abd655352a2efb04790be5d50f2f8aed0b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5533,13 +5533,13 @@
   },
   {
    "p": "fabelkick/js/input.js",
-   "s": 8033,
-   "h": "12594ebd492683ec6001314989e5dcbb6c49771e9c90c7fb2ad6699c77cda256"
+   "s": 8492,
+   "h": "29b8a5270d83e9a68734ffc1a9daa3c3f919fbf32e27d105592bac9ddd54f857"
   },
   {
    "p": "fabelkick/js/match.js",
-   "s": 68624,
-   "h": "676474502eb76ded0082f48097688bb64c1ef6217dbdffa8409680cdef63c797"
+   "s": 70626,
+   "h": "21151442647f351d5e0fb57ee34f52218582668b3e022d359bcc6c52d2ea7e5c"
   },
   {
    "p": "fabelkick/js/ui.js",
@@ -5563,8 +5563,8 @@
   },
   {
    "p": "fabelkick/style.css",
-   "s": 22133,
-   "h": "f79a4a4e05ca86b59715fa02867d5310dca8f04523bb3e1d025fc1eb39df7315"
+   "s": 22163,
+   "h": "a2ffeb4d4e076d092d94ef92f118bcb68478415782ca0b07a0e5bae6cbdb07d0"
   },
   {
    "p": "fabelkick/sw.js",
@@ -7344,7 +7344,7 @@
   {
    "p": "sync/catalog.json",
    "s": 143330,
-   "h": "fef05eef7e8e6b6c6018ce4681a31c4a005d4682114b8a0961ac23eddc3544b8"
+   "h": "e02919a969e60e4f177493f59f943cbdc6241538f22c6a4e28d2e99818f4208c"
   },
   {
    "p": "taschi/card.svg",

@@ -173,9 +173,11 @@
       this.time += dt;
       const ph = this.phase;
       if (ph === 'shootout') { this.stepShootout(dt); return; }
+      // Elfmeter in der Schlussminute: der Schuss darf noch ankommen
+      if (ph === 'setpiece' && this.setPiece && this.setPiece.type === 'penalty') this.penGrace = 2.5; else if (this.penGrace > 0) this.penGrace -= dt;
       if (ph === 'play' || ph === 'setpiece' || ph === 'dead') {
         if (this.halfLen !== Infinity) this.clock += dt;
-        if (this.clock >= this.halfLen && (ph === 'play' || ph === 'setpiece') && !(this.setPiece && this.setPiece.type === 'penalty')) { this.endHalf(); return; }
+        if (this.clock >= this.halfLen && (ph === 'play' || ph === 'setpiece') && !(this.penGrace > 0)) { this.endHalf(); return; }
       }
       this.teams.forEach(t => {
         ['boostT', 'slowT', 'freezeT', 'stoneT', 'wallT', 'nextShotT'].forEach(k => { if (t[k] > 0) t[k] = Math.max(0, t[k] - dt); });
@@ -688,6 +690,8 @@
       if (!best.gk && sp > 24 && Math.random() < 0.5) { // zu hart: prallt ab
         b.vel.multiplyScalar(-0.25); b.vel.y = Math.abs(b.vel.y) + 2; best.kickCd = 0.25; b.lastTouch = best.ti; b.lastPlayer = best; return;
       }
+      // Schuss, über den die Parade schon entschieden hat: nicht nachträglich fangen
+      if (best.gk && b.lastTouch !== best.ti && best.saveCheck === b.shotId && sp > 10) return;
       if (best.gk && b.special === 'fire' && b.lastTouch !== best.ti && sp > 12) { // Feuerball lässt sich nicht fangen: nur abwehren
         b.special = null; b.vel.set(best.team.dir * rnd(4, 9), rnd(2, 5), (Math.sign(b.pos.z - best.pos.z) || 1) * rnd(3, 8)); b.curve = 0;
         b.lastTouch = best.ti; b.lastPlayer = best; best.kickCd = 0.5; A().save(); return;
