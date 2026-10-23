@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/fabelkick-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="FABELKICK 3D"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>FABELKICK 3D – Fantasy-Fußball</title>
+<meta name="description" content="FABELKICK 3D – Fantasy-Fußball in 3D: Affen, Gorillas, Orks, Elfen, Zwerge, Trolle, Drachenbrut und Yetis spielen 11 gegen 11. Pokal, Elfmeterschießen, Training, Spezialkräfte. Touch, Tastatur und Gamecontroller, auch zu zweit.">
+<meta name="theme-color" content="#070b18">
+<link rel="stylesheet" href="./style.css?v=1">
+</head>
+<body data-screen="boot">
+<canvas id="gl" aria-hidden="true"></canvas>
+<div id="fade"></div>
+
+<!-- Ladescreen -->
+<section id="boot" class="screen on">
+  <div class="boot-bg"></div>
+  <div class="boot-center">
+    <div class="logo"><span class="logo-a">FABEL</span><span class="logo-b">KICK</span><em>3D</em></div>
+    <div class="logo-sub">Fantasy-Fußball</div>
+    <div class="load"><i id="loadBar"></i></div>
+    <div id="loadText" class="load-text">Stadion wird aufgebaut …</div>
+  </div>
+  <div class="boot-tip"><b>TIPP</b><span id="bootTip"></span></div>
+</section>
+
+<!-- Startbildschirm -->
+<section id="press" class="screen">
+  <div class="press-center">
+    <div class="logo big"><span class="logo-a">FABEL</span><span class="logo-b">KICK</span><em>3D</em></div>
+    <div class="logo-sub">Affen · Orks · Elfen · Zwerge · Trolle · Drachen · Yetis</div>
+    <button class="press-btn nav" data-act="start"><span class="pulse">Taste drücken oder tippen</span></button>
+  </div>
+  <div class="legal">Eigenständiges Fantasy-Fußballspiel · easygames</div>
+</section>
+
+<!-- Hauptmenü -->
+<section id="menu" class="screen">
+  <header class="topbar">
+    <div class="logo small"><span class="logo-a">FABEL</span><span class="logo-b">KICK</span><em>3D</em></div>
+    <div class="chips" id="profileChips"></div>
+    <button class="icon" id="fsBtn" aria-label="Vollbild">⛶</button>
+  </header>
+  <div class="tiles">
+    <button class="tile hero nav" data-act="quick" style="--c1:#7c3aed;--c2:#f59e0b">
+      <span class="t-kick">SCHNELLES SPIEL</span><b>ANSTOSS</b><small>11 gegen 11 – wähle dein Fabel-Team, eine Arena und los geht's. Allein, zu zweit oder gegeneinander.</small><span class="t-art">⚽</span>
+    </button>
+    <button class="tile nav" data-act="cup" style="--c1:#b45309;--c2:#fde047"><span class="t-kick">TURNIER</span><b>FABEL-POKAL</b><small id="cupInfo">8 Teams, K.-o.-Runden</small><span class="t-art">🏆</span></button>
+    <button class="tile nav" data-act="pens" style="--c1:#be123c;--c2:#fb7185"><span class="t-kick">NERVENSACHE</span><b>ELFMETER</b><small>Schießen und halten</small><span class="t-art">🥅</span></button>
+    <button class="tile nav" data-act="training" style="--c1:#047857;--c2:#6ee7b7"><span class="t-kick">ÜBEN</span><b>TRAINING</b><small>Gegen den Torwart</small><span class="t-art">🎯</span></button>
+    <button class="tile nav" data-act="teams" style="--c1:#1d4ed8;--c2:#67e8f9"><span class="t-kick">KADER</span><b>TEAMS</b><small>Alle 8 Fabel-Teams</small><span class="t-art">🐒</span></button>
+    <button class="tile nav" data-act="settings" style="--c1:#334155;--c2:#94a3b8"><span class="t-kick">OPTIONEN</span><b>EINSTELLUNGEN</b><small>Spielzeit, Grafik, Ton</small><span class="t-art">⚙️</span></button>
+    <button class="tile nav" data-act="controls" style="--c1:#4c1d95;--c2:#c4b5fd"><span class="t-kick">HILFE</span><b>STEUERUNG</b><small>Touch, PC, Controller</small><span class="t-art">🎮</span></button>
+  </div>
+  <footer class="hints" data-hints></footer>
+</section>
+
+<!-- Team-Auswahl -->
+<section id="select" class="screen">
+  <header class="screen-head"><button class="back nav" data-act="back" aria-label="Zurück">‹</button><h2 id="selTitle">ANSTOSS</h2></header>
+  <div class="sel-wrap">
+    <div class="sel-teams">
+      <div class="team-card nav lr" data-lr="home" id="cardHome"></div>
+      <div class="vs">VS</div>
+      <div class="team-card nav lr" data-lr="away" id="cardAway"></div>
+    </div>
+    <div class="sel-opts" id="selOpts"></div>
+    <button class="go nav" data-act="go" id="goBtn">ANPFIFF</button>
+  </div>
+  <footer class="hints" data-hints></footer>
+</section>
+
+<!-- Pokal -->
+<section id="cup" class="screen">
+  <header class="screen-head"><button class="back nav" data-act="back" aria-label="Zurück">‹</button><h2>FABEL-POKAL</h2></header>
+  <div class="bracket" id="bracket"></div>
+  <div class="cup-actions">
+    <button class="go nav" data-act="cupPlay" id="cupPlay">SPIELEN</button>
+    <button class="ghost nav" data-act="cupQuit" id="cupQuit">Pokal beenden</button>
+  </div>
+  <footer class="hints" data-hints></footer>
+</section>
+
+<!-- Teams -->
+<section id="teams" class="screen">
+  <header class="screen-head"><button class="back nav" data-act="back" aria-label="Zurück">‹</button><h2>DIE FABEL-TEAMS</h2></header>
+  <div class="team-grid" id="teamGrid"></div>
+  <footer class="hints" data-hints></footer>
+</section>
+
+<!-- Einstellungen -->
+<section id="settings" class="screen">
+  <header class="screen-head"><button class="back nav" data-act="back" aria-label="Zurück">‹</button><h2>EINSTELLUNGEN</h2></header>
+  <div class="panel-list" id="setList"></div>
+  <div id="cloudMount" class="cloud"></div>
+  <footer class="hints" data-hints></footer>
+</section>
+
+<!-- Steuerung -->
+<section id="controls" class="screen">
+  <header class="screen-head"><button class="back nav" data-act="back" aria-label="Zurück">‹</button><h2>STEUERUNG</h2></header>
+  <div class="ctrl-grid">
+    <div class="ctrl"><h3>🎮 Controller</h3>
+      <p><b>Linker Stick</b> laufen · <b>RT</b> sprinten</p>
+      <p><b>A</b> Pass · <b>Y</b> Steilpass · <b>X</b> Flanke/Lupfer</p>
+      <p><b>B</b> Schuss (halten = mehr Kraft)</p>
+      <p>Abwehr: <b>A</b> Tackling (halten = Pressing) · <b>B</b> Grätsche · <b>LB</b> Spieler wechseln</p>
+      <p><b>RB</b> Fabel-Kraft · <b>Start</b> Pause</p></div>
+    <div class="ctrl"><h3>⌨️ Tastatur</h3>
+      <p><b>WASD</b> oder <b>Pfeile</b> laufen · <b>Shift</b> sprinten</p>
+      <p><b>Leertaste/K</b> Pass · <b>L</b> Steilpass · <b>I</b> Flanke</p>
+      <p><b>J</b> Schuss (halten = mehr Kraft)</p>
+      <p>Abwehr: <b>K</b> Tackling · <b>J</b> Grätsche · <b>Q</b> wechseln</p>
+      <p><b>E</b> Fabel-Kraft · <b>Esc/P</b> Pause</p></div>
+    <div class="ctrl"><h3>📱 Touch</h3>
+      <p><b>Linke Hälfte</b>: Daumen-Stick erscheint, wo du tippst</p>
+      <p>Rechts: <b>Schuss</b>, <b>Pass</b>, <b>Steil</b>, <b>Flanke</b>, <b>Sprint</b></p>
+      <p>Abwehr: Tasten werden zu <b>Grätsche</b>, <b>Tackling</b>, <b>Wechsel</b></p>
+      <p><b>★</b> Fabel-Kraft, sobald der Balken voll ist</p>
+      <p>Handy quer halten für die beste Sicht</p></div>
+    <div class="ctrl"><h3>✨ Fabel-Kräfte</h3>
+      <p>Jedes Team hat eine eigene Spezialkraft. Der Balken füllt sich mit der Zeit, mit Pässen, Zweikämpfen und Schüssen.</p>
+      <p>Elfmeter: Stick zielt, Schuss halten bestimmt die Kraft. Als Torwart: Stick in die Ecke, in die du springen willst.</p></div>
+  </div>
+  <footer class="hints" data-hints></footer>
+</section>
+
+<!-- Spiel-HUD -->
+<section id="hud" class="screen">
+  <div class="score">
+    <div class="sb-team"><i id="crest0" class="mini-crest"></i><span id="sbName0">AFF</span></div>
+    <div class="sb-score"><span id="sbS0">0</span><span class="sep">:</span><span id="sbS1">0</span></div>
+    <div class="sb-team r"><span id="sbName1">ORK</span><i id="crest1" class="mini-crest"></i></div>
+    <div class="sb-clock"><span id="sbClock">00:00</span><span id="sbHalf">1. HZ</span></div>
+  </div>
+  <div class="power">
+    <div class="pw" id="pw0"><i></i><span></span></div>
+    <div class="pw r" id="pw1"><i></i><span></span></div>
+  </div>
+  <div id="pensRow" class="pens-row"></div>
+  <button id="pauseBtn" class="icon pause-btn" aria-label="Pause">❚❚</button>
+  <div id="playerCards" class="player-cards"></div>
+  <div id="shotBar" class="shot-bar"><i></i></div>
+  <canvas id="radar" width="200" height="128"></canvas>
+  <div id="hint" class="hint"></div>
+  <div id="banner" class="banner"><b></b><span></span></div>
+  <div id="touch" class="touch">
+    <div id="stickZone"></div>
+    <div id="stickBase"><i id="stickKnob"></i></div>
+    <div class="tbtns">
+      <button data-btn="b" class="tb big" id="tbB">SCHUSS</button>
+      <button data-btn="a" class="tb" id="tbA">PASS</button>
+      <button data-btn="y" class="tb s" id="tbY">STEIL</button>
+      <button data-btn="x" class="tb s" id="tbX">FLANKE</button>
+      <button data-btn="rt" class="tb s sprint">SPRINT</button>
+      <button data-btn="lb" class="tb s" id="tbLB">WECHSEL</button>
+      <button data-btn="rb" class="tb star" id="tbRB">★</button>
+    </div>
+  </div>
+  <div id="rotate" class="rotate">📱↻ Handy quer halten für mehr Überblick</div>
+</section>
+
+<!-- Pause -->
+<section id="pause" class="screen overlay">
+  <div class="modal">
+    <h2>PAUSE</h2>
+    <div id="pauseScore" class="pause-score"></div>
+    <button class="mbtn nav" data-act="resume">Weiterspielen</button>
+    <button class="mbtn nav lr" data-lr="cam" id="camBtn">Kamera: TV</button>
+    <button class="mbtn nav" data-act="pauseControls">Steuerung</button>
+    <button class="mbtn nav" data-act="restart">Neu starten</button>
+    <button class="mbtn nav danger" data-act="quit">Zum Hauptmenü</button>
+  </div>
+</section>
+
+<!-- Ergebnis -->
+<section id="result" class="screen overlay">
+  <div class="modal wide">
+    <div id="resHead" class="res-head"></div>
+    <div id="resScore" class="res-score"></div>
+    <div id="resScorers" class="res-scorers"></div>
+    <div id="resStats" class="res-stats"></div>
+    <div class="res-actions" id="resActions"></div>
+  </div>
+</section>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="js/data.js?v=1"></script>
+<script src="js/audio.js?v=1"></script>
+<script src="js/input.js?v=1"></script>
+<script src="js/world.js?v=1"></script>
+<script src="js/match.js?v=1"></script>
+<script src="js/ui.js?v=1"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="fabelkick" data-prefix="easygames.fabelkick.v1" data-mount="#cloudMount" data-hint="Mit Google anmelden und Siege, Tore und Pokale auf allen Geräten speichern." defer></script>
+</body>
+</html>
