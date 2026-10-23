@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "8ac13a7ac3a9",
- "generated": "2026-10-23T06:51:16+00:00",
- "commit": "a16669ed6342eb739e4a9eeec60907d7428e101f",
+ "version": "76379f4bd960",
+ "generated": "2026-10-23T06:55:31+00:00",
+ "commit": "cc209c10125c24c16eed1ef9c77f829396406362",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5648,18 +5648,18 @@
   },
   {
    "p": "funkgolf/index.html",
-   "s": 9653,
-   "h": "35d21ac1265fe1df6a3dcced3241a3db4e1ed68fb586e7fbd2a93879511672f0"
+   "s": 10228,
+   "h": "b50c0874747a7df58d689639e81e39f3ca66cbc885819f231a96fe74454bc894"
   },
   {
    "p": "funkgolf/js/core.js",
-   "s": 12205,
-   "h": "5d2189996f6f0f5c379f4e22f9dd4be177709ae4427629eecd79f332c311a147"
+   "s": 17261,
+   "h": "02143f59e289fae710d658677d1cfa8b6c96eb8002b1440a3f06f102c67f8f5f"
   },
   {
    "p": "funkgolf/js/game.js",
-   "s": 50319,
-   "h": "668f9a25944a48feb679d03b1e92c78910c8ded5e9a4151884874600e3035125"
+   "s": 56393,
+   "h": "bf5f13c35a8b8ab9347b6a805f75c6aa9a97c5e72a95be3c826a2efe22e79f42"
   },
   {
    "p": "funkgolf/manifest.webmanifest",
@@ -5668,8 +5668,8 @@
   },
   {
    "p": "funkgolf/style.css",
-   "s": 9304,
-   "h": "39bc1b04160aa7f0140ed9e3fb23b5770a744e5bb3bc6a206d370880bbe7a72f"
+   "s": 10348,
+   "h": "62ed1c50b6ebaed496a0c7dbe0bf7e54cf92dc08650d88f6ef4ba6f3e9c5ae55"
   },
   {
    "p": "funkgolf/sw.js",
@@ -5728,8 +5728,8 @@
   },
   {
    "p": "games.js",
-   "s": 32669,
-   "h": "d72d436a98bab1d66cf93526c20a9b9418d7daf53028dd175b37269165ca2326"
+   "s": 32788,
+   "h": "8714c5f3cd4a0d829e67dae6da326b969156e215b03c3949fa832a152902870a"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5888,8 +5888,8 @@
   },
   {
    "p": "guides.js",
-   "s": 92831,
-   "h": "27eeeae9c98002fc5c1ec04788bf211602004b178a0483f478187d1589543300"
+   "s": 93169,
+   "h": "ef6da398f479bf2b4964e4fbdd1c0898656f330eb3ec8c71c3071e67112c67d8"
   },
   {
    "p": "heute.html",
@@ -7343,8 +7343,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 142873,
-   "h": "77e5a82cf4cbfcdff4277dc14f69b31c508a2946c64bc4b4676e1670fb22520a"
+   "s": 143330,
+   "h": "fef05eef7e8e6b6c6018ce4681a31c4a005d4682114b8a0961ac23eddc3544b8"
   },
   {
    "p": "taschi/card.svg",

@@ -46,10 +46,13 @@ await pg.waitForSelector('#ovCard:not([hidden])', { timeout: 6000 });
 ok(/Nach Bahn 1/.test(await pg.textContent('#cardTitle')), 'Scorekarte nach Bahn 1');
 ok((await st()).scores[0][0] > 0, 'Ergebnis eingetragen');
 await pg.click('#cardGo'); await pg.waitForTimeout(400); ok((await st()).hole === 1, 'Bahn 2');
-// Radio-Knopf auf Sender-Bahn (Bahn 2: YourTime-FM)
-await pg.waitForTimeout(1700); ok(await pg.isVisible('#bRadio'), 'Radio-Knopf auf Sender-Bahn');
-await pg.click('#bRadio'); ok((await pg.evaluate(() => document.querySelector('#bRadio').classList.contains('on'))) && /YourTime-FM/.test(await pg.textContent('#toast')), 'Sender eingeschaltet');
-await pg.click('#bRadio'); ok(!(await pg.evaluate(() => document.querySelector('#bRadio').classList.contains('on'))), 'Sender ausgeschaltet');
+// Radio: Sender wählen, läuft weiter, wechseln, aus
+await pg.waitForTimeout(1700); await pg.click('#bRadio'); await pg.waitForSelector('#ovRadio:not([hidden])');
+ok(await pg.locator('#radioList .rItem').count() === 15, 'Senderliste (13 Sender + Aus + Passend)');
+await pg.click('#radioList .rItem[data-v="rockradio24"]'); ok(/Rockradio 24/.test(await pg.textContent('#toast')), 'Sender gewählt');
+await pg.click('#radioX'); ok(await pg.evaluate(() => document.querySelector('#bRadio').classList.contains('on')), 'Radio an');
+await pg.click('#bRadio'); await pg.click('#radioList .rItem[data-v="auto"]'); ok(/YourTime-FM/.test(await pg.textContent('#toast')), 'Passend zur Bahn');
+await pg.click('#radioList .rItem[data-v=""]'); await pg.click('#radioX'); ok(!(await pg.evaluate(() => document.querySelector('#bRadio').classList.contains('on'))), 'Radio aus');
 // Kamera
 await pg.keyboard.press('c'); await pg.waitForTimeout(200); await pg.click('#bCam');
 // restliche Bahnen aufgeben

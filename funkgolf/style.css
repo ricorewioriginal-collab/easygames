@@ -68,3 +68,11 @@ a { color: var(--c); }
 .check { display: flex; gap: 10px; align-items: center; margin: 10px 0; text-align: left; cursor: pointer; } .check input { width: 20px; height: 20px; accent-color: var(--pink); }
 .toast { position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 20; background: rgba(12, 14, 40, .95); border: 1px solid var(--line); padding: 10px 18px; border-radius: 999px; font-weight: 700; text-align: center; max-width: 92vw; }
 @media (max-width: 560px) { .who { font-size: 13px; } .hole b { width: 34px; height: 34px; font-size: 17px; } .hTop { flex-wrap: wrap; } .btns { order: -1; margin-left: auto; } }
+.btn.wide { width: 100%; margin-top: 10px; }
+.btn.on { border-color: var(--pink); box-shadow: 0 0 14px rgba(255, 79, 174, .45); }
+.radioGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin: 12px 0; max-height: 52vh; overflow-y: auto; padding: 2px; }
+.rItem { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 6px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255, 255, 255, .06); cursor: pointer; font-weight: 700; font-size: 13px; color: var(--text); }
+.rItem img, .rItem i { width: 52px; height: 52px; border-radius: 12px; font-style: normal; font-size: 30px; display: grid; place-items: center; background: rgba(0, 0, 0, .3); }
+.rItem.on { background: linear-gradient(135deg, rgba(255, 79, 174, .35), rgba(255, 138, 31, .35)); border-color: var(--pink); }
+.rItem:focus-visible, .rItem.pad-focus { outline: none; box-shadow: 0 0 0 3px var(--c); }
+.ov:not([hidden]) ~ .toast { bottom: auto; top: calc(14px + env(safe-area-inset-top)); }
