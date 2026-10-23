@@ -30,6 +30,7 @@ window.EASYGAMES_MODES = {
   'saftblitz': { multi: true },
   'funkmaler': { pad: true, online: true, multi: true, tvParam: true },
   'funkgolf': { multi: true },
+  'tortenschlacht': { pad: true, online: true, multi: true, tvParam: true },
   'winzflitzer': { multi: true },
   'gay-life': { online: true },
   'bunte-insel': { online: true, pad: true, multi: true, tvParam: true },

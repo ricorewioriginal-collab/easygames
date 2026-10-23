@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/tortenschlacht-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Tortenschlacht"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#1b1250">
+<title>Tortenschlacht – Sahne für alle!</title>
+<meta name="description" content="Tortenschlacht: Moorhuhn-artiges Wurfspiel im Radioportal – Torten, Sahnespritze und Kirschbombe auf Moderatoren, Praktikanten, DJs und den Chef. Solo, bis zu 4 an einem Bildschirm oder online mit dem Handy als Zielgerät.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="hud" hidden>
+  <div class="hBtns"><button class="icon" id="bRadio" title="Radio" aria-label="Radio">📻</button><button class="icon" id="bPause" aria-label="Pause">☰</button></div>
+  <div class="tBtns" id="tBtns" hidden><button class="tb" id="tWeapon" aria-label="Waffe wechseln">🎂</button><button class="tb" id="tReload" aria-label="Nachladen">🔄</button></div>
+</div>
+
+<!-- Menü -->
+<section class="scr on" id="sMenu">
+  <div class="box">
+    <div class="brand"><img src="../anmacha-memory/logos/01.png" alt="RicoReWi" width="80" height="80"><img src="../anmacha-memory/logos/07.png" alt="AnMaCha 24" width="80" height="80"></div>
+    <h1 class="logo">Torten<span>schlacht</span></h1>
+    <p class="sub">Sahne für alle! Wirf Torten auf Moderatoren, Praktikanten, DJs und den Chef – aber pass auf den Konditor auf …</p>
+    <button class="btn big pri" id="bSolo">🎂 Solo – 90 Sekunden</button>
+    <div class="row2"><button class="btn" id="bLocal">👥 Mehrspieler</button><button class="btn" id="bOnline">🌐 Online &amp; Handys</button></div>
+    <div class="row2"><button class="btn" id="bHelp">📖 So geht's</button><button class="btn" id="bSet">⚙️ Einstellungen</button></div>
+    <button class="btn wide" id="bRadioM">📻 Radio: aus</button>
+    <p class="stat" id="menuStat"></p>
+    <p class="foot"><a href="../" id="backLink">← Alle Spiele</a></p>
+  </div>
+</section>
+
+<!-- Mehrspieler-Lobby (ein Bildschirm, auf Wunsch mit Handys) -->
+<section class="scr" id="sLobby">
+  <div class="box wideBox">
+    <h2 id="lobTitle">👥 Mehrspieler</h2>
+    <div class="lobGrid">
+      <div>
+        <div id="lobSlots" class="slots"></div>
+        <p class="hint" id="lobHow"></p>
+        <button class="btn" id="lobMouse">🖱️ Mit Maus/Touch mitspielen</button>
+      </div>
+      <div class="qrBox" id="qrBox" hidden>
+        <div class="qr" id="qr">…</div>
+        <div class="code" id="code">····</div>
+        <p class="hint">Mitspieler scannen den QR-Code oder öffnen den Link – von überall, das Handy wird zum Zielgerät.</p>
+        <p class="url" id="url"></p>
+      </div>
+    </div>
+    <div class="rowBtns"><button class="btn" id="lobBack">← Zurück</button><button class="btn pri" id="lobStart" disabled>▶ Los geht's!</button></div>
+  </div>
+</section>
+
+<!-- Handy als Zielgerät -->
+<section class="scr" id="sPhone">
+  <div class="box" id="joinBox">
+    <h1 class="logo small">Torten<span>schlacht</span></h1>
+    <p class="sub">Dein Handy wird zum Zielgerät – geworfen wird auf dem Fernseher.</p>
+    <input id="jName" maxlength="14" placeholder="Dein Name" autocomplete="nickname">
+    <input id="jCode" maxlength="4" placeholder="Code" autocapitalize="characters">
+    <button class="btn big pri" id="bJoin">🎂 Mitmachen</button>
+    <p class="hint" id="jMsg"></p>
+  </div>
+  <div class="ctrl" id="ctrl" hidden>
+    <div class="cTop"><span id="cName"></span><b id="cScore">0</b><span id="cInfo"></span></div>
+    <div class="pad" id="pad"><i id="padDot"></i><span>Hier zielen – Finger bewegen</span></div>
+    <div class="cBtns"><button class="cb" id="cWeapon">🎂 Torte</button><button class="cb fire" id="cFire">WERFEN</button><button class="cb" id="cReload">🔄</button></div>
+  </div>
+</section>
+
+<div class="ov" id="ovPause" hidden><div class="card">
+  <h2>Pause</h2>
+  <div class="menuBtns">
+    <button class="btn big pri" id="pGo">▶ Weiter</button>
+    <button class="btn" id="pRadio">📻 Radio</button>
+    <button class="btn" id="pSound">🔊 Ton an</button>
+    <button class="btn" id="pQuit">⏹ Zum Menü</button>
+  </div>
+</div></div>
+
+<div class="ov" id="ovEnd" hidden><div class="card">
+  <h2 id="endTitle"></h2>
+  <ol class="rank" id="endRank"></ol>
+  <p class="hint" id="endInfo"></p>
+  <div class="rowBtns"><button class="btn" id="endMenu">Menü</button><button class="btn pri" id="endAgain">Nochmal ▶</button></div>
+</div></div>
+
+<div class="ov" id="ovSet" hidden><div class="card">
+  <h2>Einstellungen</h2>
+  <label class="check"><input type="checkbox" id="sSound"> Ton</label>
+  <label class="check"><input type="checkbox" id="sVib"> Vibration</label>
+  <label class="check"><input type="checkbox" id="sLow"> Sparmodus (weniger Details)</label>
+  <button class="btn pri" id="setX">Fertig</button>
+</div></div>
+
+<div class="ov" id="ovRadio" hidden><div class="card">
+  <h2>📻 Radio</h2>
+  <p class="hint">Der Sender läuft live während des ganzen Spiels – hier jederzeit wechseln.</p>
+  <div class="radioGrid" id="radioList"></div>
+  <button class="btn pri" id="radioX">Fertig</button>
+</div></div>
+
+<div class="ov" id="ovHelp" hidden><div class="card scroll">
+  <h2>So geht's</h2>
+  <p>Im Radioportal ist Tortenschlacht! Triff in 90 Sekunden so viele Leute wie möglich mit Sahne. Alle Figuren sind frei erfunden – und keiner ist böse, nur eingesaut.</p>
+  <ul>
+    <li><b>🎂 Torte:</b> 5 pro Ladung, fliegt kurz – bei Läufern etwas vorhalten. Ein Treffer reicht.</li>
+    <li><b>💦 Sahnespritze:</b> gedrückt halten, 30 Spritzer pro Ladung, 3 Spritzer pro Person.</li>
+    <li><b>🍒 Kirschbombe:</b> vom goldenen Fan – trifft alle in der Nähe.</li>
+    <li><b>Punkte:</b> Praktikantin 15, Moderator 10, DJ 20, Techniker am Funkturm 30, Konditor 25, Chef 50, goldener Fan 40, Sender-Aufsteller 15. Kopftreffer zählen doppelt, Treffer in Folge erhöhen den Multiplikator bis ×5. Ein Fehlwurf setzt ihn zurück.</li>
+    <li><b>Konditor:</b> Er holt aus und wirft zurück! Triff ihn vorher oder schieß seine Torte im Flug ab – sonst klebt dir Sahne im Gesicht.</li>
+    <li><b>Geheimtipp:</b> Das Schild „Schön, dass du da bist!“ gibt einmal +10 Sekunden.</li>
+    <li><b>Steuerung:</b> Maus zielen und klicken (rechte Taste lädt nach, Mausrad wechselt die Waffe). Touch: antippen wirft. Tastatur: Pfeile zielen, Leertaste wirft, R lädt nach, Q wechselt. Gamecontroller: Stick zielt, A/RT wirft, X lädt nach, Y wechselt, Start Pause. Solo scrollt die Landschaft, wenn du an den Rand zielst.</li>
+    <li><b>Mehrspieler:</b> Bis zu 4 an einem Bildschirm (Maus, Tastatur, Controller) – oder <b>🌐 Online &amp; Handys</b>: Mitspieler scannen den QR-Code, das Handy wird zum Zielgerät.</li>
+  </ul>
+  <button class="btn pri" id="helpX">Los geht's</button>
+</div></div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../device.js"></script>
+<script src="../gamekit.js"></script>
+<script src="../cloud/fire-peer.js"></script>
+<script src="js/core.js"></script>
+<script src="js/game.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="tortenschlacht" data-prefix="tortenschlacht-" defer></script>
+<script src="../gamepad.js" data-pad="rs=none start=-" defer></script>
+</body>
+</html>

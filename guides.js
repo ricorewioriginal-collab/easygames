@@ -469,6 +469,21 @@ window.EASYGAMES_GUIDES = {
    "Im Radio-Rhythmus ist der höchste Punkt einer Frucht genau auf dem Schlag – dort schneiden!"
   ]
  },
+ "tortenschlacht": {
+  "anleitung": "Tortenschlacht ist ein Wurfspiel im Stil der Moorhuhn-Jagd – nur mit Sahne: Im Radioportal laufen Moderatoren, Praktikantinnen, DJs, Techniker am Funkturm, der Chef und ein goldener Fan herum (alle frei erfunden). Triff in 90 Sekunden so viele wie möglich. 🎂 Torte (5 pro Ladung, kurze Flugzeit, ein Treffer reicht), 💦 Sahnespritze (gedrückt halten, 3 Spritzer pro Person) und 🍒 Kirschbombe vom goldenen Fan (trifft alle in der Nähe). Kopftreffer zählen doppelt, Treffer in Folge steigern den Multiplikator bis ×5, ein Fehlwurf setzt ihn zurück. Der Konditor holt aus und wirft zurück – triff ihn vorher oder schieß seine Torte im Flug ab, sonst klebt dir Sahne im Gesicht. Das Schild „Schön, dass du da bist!“ gibt einmal +10 Sekunden. Solo scrollt eine breite Landschaft; im Mehrspieler spielen bis zu 4 an einem Bildschirm, bei „🌐 Online & Handys“ wird jedes Handy per QR-Code zum Zielgerät – auch von unterwegs. 📻 spielt einen Sender live das ganze Spiel über.",
+  "steuerung": [
+   "Maus: zielen und klicken (gedrückt halten mit der Spritze), rechte Taste lädt nach, Mausrad wechselt die Waffe. Touch: antippen wirft, 🎂 wechselt, 🔄 lädt nach.",
+   "Tastatur: Pfeile/WASD zielen (Shift schneller), Leertaste wirft, R lädt nach, Q wechselt die Waffe, Esc Pause.",
+   "Gamecontroller: linker Stick oder Steuerkreuz zielt, A/RT wirft, X lädt nach, Y/RB wechselt, Start Pause. In der Lobby tritt jeder Controller mit A bei.",
+   "Handy als Zielgerät: Finger auf dem Zielfeld bewegen, WERFEN tippen (halten mit der Spritze), 🔄 lädt nach."
+  ],
+  "tipps": [
+   "Bei Läufern etwas vorhalten – die Torte fliegt einen kurzen Moment.",
+   "Stehende Moderatoren und DJs auf den Kopf treffen: doppelte Punkte und die Serie bleibt.",
+   "Den Techniker am Funkturm nicht vergessen – klein, aber 30 Punkte.",
+   "Wenn der Konditor ein rotes „!“ hat: sofort auf ihn werfen!"
+  ]
+ },
  "funkgolf": {
   "anleitung": "Funk-Minigolf 3D führt über 18 Bahnen quer durch das RicoReWi × AnMaCha Radioportal: Begrüßung „Schön, dass du da bist!“, die Senderstudios (YourTime-FM Strandbar, Rapradio 24, Schlagerpop 24, Chartradio 24, Clubradio 24, AnMaCha 24, RadioFloh!, Rockradio 24, Christmasradio 24, Kultradio 24, Zocker-FM, Special-Radio, AnMaChaCast), Sendeplan, Voting, Sleep-Timer und das Funkturm-Finale. Bring den Ball mit möglichst wenigen Schlägen ins Loch. Jede Bahn hat ein echtes Minigolf-Hindernis: Tor, Düne, Blitz-Zickzack, Vulkan (Loch auf dem Hügel), Looping (nur mit genug Schwung), Plattenteller und Kassettenspulen, die den Ball mitdrehen, Mischpult-Regler, Netz mit versetzten Lücken, Windmühle (warten, bis die Tür frei ist), Doppelwelle, Inselhügel und Schranke. Dazu bremst Sand, Eis ist glatt, Wasser kostet einen Strafschlag (Ball zurück), Hänge lenken ab und Portale beamen den Ball weiter. Höchstens 8 Schläge pro Bahn. Bis zu 4 Spieler spielen abwechselnd an einem Gerät; nach jeder Bahn kommt die Scorekarte. Ganze Runden (18 Bahnen) allein zählen für die Rangliste. Mit 📻 (im Menü oder im Spiel) wählst du einen der 13 Sender live – er läuft während des ganzen Spiels weiter und lässt sich jederzeit wechseln; „Passend zur Bahn“ schaltet auf jeder Sender-Bahn um.",
   "steuerung": [

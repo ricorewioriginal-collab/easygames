@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "51edf40c8e0c",
- "generated": "2026-10-23T07:52:19+00:00",
- "commit": "6ebf64afefbb69d0af16475c88392863871ad892",
+ "version": "00208af1d9e0",
+ "generated": "2026-10-23T10:52:02+02:00",
+ "commit": "bd62fc6f5d99e90deae463feca109d327a156d2b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2669,
-   "h": "a5937d6b30f18d06dd36e6850a4ed8030d47d71018f7b6a30531e339715f12a0"
+   "s": 2697,
+   "h": "3aa08a263896ca9a3046581dd9cbfc54a29dbe19f7623836fe886512af2fc434"
   },
   {
    "p": "chat.html",
@@ -5728,8 +5728,8 @@
   },
   {
    "p": "games.js",
-   "s": 33545,
-   "h": "f1a60f40a5c0c1e5a2219f31968894e8b7027dbec0267e2abd56205763ccfb89"
+   "s": 34112,
+   "h": "7af8ad4d6c2560a101ff51f349c3d165002008697aaf512499467dc61511b829"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5888,8 +5888,8 @@
   },
   {
    "p": "guides.js",
-   "s": 95498,
-   "h": "2579859039daa7deedd8e7a29bd155304c0994a775468413b506e0e5f1dea7fb"
+   "s": 97471,
+   "h": "5f80b909e1c692b4dba04cf52143e2900f3b376980c0c0ef8ded0f4109e762ae"
   },
   {
    "p": "heute.html",
@@ -6248,8 +6248,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2602,
-   "h": "831545d640e61e8957a45304e3aec7bb9813d544cf5c6530c246e2fd82b67535"
+   "s": 2679,
+   "h": "88ec6bcce9209dcf73a7cabcf60af924ff003025f7b8439e4eb76b5dcecfc8a5"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -7343,8 +7343,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 146667,
-   "h": "0cee1ca30bb99fbb42696f1d165e96ea82023cd1d782e2606078e15752659d87"
+   "s": 149522,
+   "h": "67e0ae9c5ae270592590b2302d0bb5ee6f91d27c4e7e99fe571580fdf0514b43"
   },
   {
    "p": "taschi/card.svg",
@@ -7605,6 +7605,41 @@
    "p": "taschi/vite.config.mjs",
    "s": 929,
    "h": "722bcf0e7eabd6475f355575a277281e7e06f4b502f56bec7941107073f113e2"
+  },
+  {
+   "p": "tortenschlacht/card.jpg",
+   "s": 39321,
+   "h": "c8a35c1826b6e1255143a70ce114ee0d2f600c1a26665c83db3e5e6aab598b9f"
+  },
+  {
+   "p": "tortenschlacht/index.html",
+   "s": 11138,
+   "h": "a4ee1de0d9c70a984c4416aac53bd2c50b523bc745338fb536d66dfee00cab3f"
+  },
+  {
+   "p": "tortenschlacht/js/core.js",
+   "s": 13853,
+   "h": "bdb0926d1cfa13e44952719ef21dd6cbc0fe20264412e950e7b8db49f7be0763"
+  },
+  {
+   "p": "tortenschlacht/js/game.js",
+   "s": 59566,
+   "h": "112bab48a3b0db5d2e4ef775649ce3d81313041e98c2fefadb7fc982457ac17b"
+  },
+  {
+   "p": "tortenschlacht/manifest.webmanifest",
+   "s": 795,
+   "h": "a0060396f12882364770ef82cc0aedc1329f26bc2e5ab6f10196db08014f31a2"
+  },
+  {
+   "p": "tortenschlacht/style.css",
+   "s": 9038,
+   "h": "b2deb348561129b94b0c5684e6f90aa079024a2f94d79eb2a929865c817082b5"
+  },
+  {
+   "p": "tortenschlacht/sw.js",
+   "s": 2013,
+   "h": "60954a6f54ae18ab7ee795db0f0a99e3bcc2b036fc7d41f5afc56894e7f3d0a3"
   },
   {
    "p": "turbokick/app/assets/actorslab-LE03rGj_.js",
