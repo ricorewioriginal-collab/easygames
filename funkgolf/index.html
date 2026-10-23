@@ -31,7 +31,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <div class="hTop">
     <div class="hole"><b id="hNum">1</b><div><span id="hName"></span><small id="hSub"></small></div></div>
     <div class="who" id="hWho"></div>
-    <div class="btns"><button class="icon" id="bRadio" title="Sender dieser Bahn live hören" aria-label="Radio an/aus" hidden>📻</button><button class="icon" id="bCam" title="Kamera (C)" aria-label="Kamera">🎥</button><button class="icon" id="bCard" title="Scorekarte" aria-label="Scorekarte">📋</button><button class="icon" id="bMenu" aria-label="Menü">☰</button></div>
+    <div class="btns"><button class="icon" id="bRadio" title="Radio" aria-label="Radio-Sender wählen">📻</button><button class="icon" id="bCam" title="Kamera (C)" aria-label="Kamera">🎥</button><button class="icon" id="bCard" title="Scorekarte" aria-label="Scorekarte">📋</button><button class="icon" id="bMenu" aria-label="Menü">☰</button></div>
   </div>
   <div class="power" id="power"><i id="powerFill"></i></div>
   <div class="tip" id="tip"></div>
@@ -52,6 +52,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     </div>
     <button class="btn big pri" id="bPlay">⛳ Abschlag!</button>
     <div class="row2"><button class="btn" id="bHelp">📖 So geht's</button><button class="btn" id="bSet">⚙️ Einstellungen</button></div>
+    <button class="btn wide" id="bRadioM">📻 Radio: aus</button>
     <p class="stat" id="menuStat"></p>
     <p class="foot"><a href="../" id="backLink">← Alle Spiele</a></p>
   </div>
@@ -96,12 +97,19 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <li><b>Zielen &amp; Schlagen (Touch/Maus):</b> den Ball antippen und wie eine Steinschleuder nach hinten wegziehen; je weiter, desto fester. Loslassen schlägt, zurück zum Ball ziehen bricht ab.</li>
     <li><b>Tastatur:</b> ← → zielen, Leertaste gedrückt halten (Stärke pendelt) und loslassen. C Kamera, Esc Pause.</li>
     <li><b>Gamecontroller:</b> linker Stick zielt, A gedrückt halten und loslassen schlägt, LB/RB oder rechter Stick dreht die Kamera, Y Draufsicht, Start Pause.</li>
-    <li><b>Hindernisse:</b> Sand bremst, Eis ist glatt, Wasser kostet einen Schlag (Ball zurück), Hänge lenken ab, Plattenteller, Spulen, Regler und der Mond bewegen sich, Portale beamen dich weiter.</li>
+    <li><b>Hindernisse:</b> echte Minigolf-Klassiker: Looping (nur mit genug Schwung), Windmühle (warten, bis die Tür frei ist), Vulkan und Hügel, Doppelwelle, Tor, Netz und Blitz-Zickzack; dazu Plattenteller und Kassettenspulen, die den Ball mitdrehen, Mischpult-Regler, Sand, Eis, Wasser (ein Strafschlag) und Portale.</li>
     <li><b>Kamera:</b> neben dem Ball wischen dreht die Kamera (hoch/runter neigt sie), Mausrad oder zwei Finger zoomen; Q/E bzw. rechter Stick drehen, 🎥 zeigt die ganze Bahn von oben.</li>
-    <li><b>📻 Radio:</b> Auf jeder Sender-Bahn schaltet 📻 den echten Live-Stream des Senders ein – auf der nächsten Sender-Bahn wechselt er automatisch.</li>
+    <li><b>📻 Radio:</b> Im Menü oder mit 📻 im Spiel einen Sender wählen – er läuft live während des ganzen Spiels und lässt sich jederzeit wechseln. „Passend zur Bahn“ schaltet auf jeder Sender-Bahn um.</li>
     <li>Höchstens 8 Schläge pro Bahn. Bis zu 4 Spieler wechseln sich ab; nach jeder Bahn gibt es die Scorekarte.</li>
   </ul>
   <button class="btn pri" id="helpX">Los geht's</button>
+</div></div>
+
+<div class="ov" id="ovRadio" hidden><div class="card">
+  <h2>📻 Radio</h2>
+  <p class="hint">Der Sender läuft live während des ganzen Spiels – hier jederzeit wechseln. „Passend zur Bahn“ schaltet auf jeder Sender-Bahn um.</p>
+  <div class="radioGrid" id="radioList"></div>
+  <button class="btn pri" id="radioX">Fertig</button>
 </div></div>
 
 <div class="toast" id="toast" hidden></div>

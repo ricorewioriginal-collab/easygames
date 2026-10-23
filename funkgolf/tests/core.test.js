@@ -56,7 +56,19 @@ test('Wasser setzt zurück, Teleporter versetzt, Punkte für die Rangliste', () 
   const rock = FG.HOLES[10], b = FG.newBall(rock); b.x = .6; b.z = 3.5; b.rest = [.6, 3.5];
   const r = FG.simulate(rock, b, Math.PI / 2, .35, 0, 10);
   assert.ok(r.b.events.includes('water') && r.b.x === .6, 'zurück an die Stelle vor dem Schlag');
-  const arc = FG.HOLES[13], r2 = FG.simulate(arc, FG.newBall(arc), Math.PI / 2, .8, 0, 10);
-  assert.ok(r2.b.events.includes('portal') && r2.b.z > 8, 'Teleporter');
+  const arc = FG.HOLES[13], pa = arc.portals[0].a, ang = Math.atan2(pa[1] - arc.tee[1], pa[0] - arc.tee[0]);
+  assert.ok([.4, .5, .6, .7, .8].some(p => { const r2 = FG.simulate(arc, FG.newBall(arc), ang, p, 0, 10); return r2.b.events.includes('portal') && r2.b.z > 8; }), 'Teleporter');
   assert.strictEqual(FG.points(FG.totalPar()), 100); assert.strictEqual(FG.points(FG.totalPar() - 3), 130);
+});
+
+test('Looping nur mit genug Schwung, Windmühle schließt und öffnet, Vulkan wirft zu langsame Bälle ab', () => {
+  const ch = FG.HOLES[4], strong = FG.simulate(ch, FG.newBall(ch), Math.PI / 2, 1, 0, 10).b, weak = FG.simulate(ch, FG.newBall(ch), Math.PI / 2, .75, 0, 10).b;
+  assert.ok(strong.events.includes('loop') && strong.z > 6, 'Looping geschafft');
+  assert.ok(weak.events.includes('loopfail') && weak.z < 5, 'Looping zu schwach → zurück');
+  const m = FG.HOLES[9].movers[0]; let open = 0, closed = 0;
+  for (let t = 0; t < 6; t += .05) FG.moverSegs(m, t).segs.length ? closed++ : open++;
+  assert.ok(open > 10 && closed > 10, 'Mühle offen/zu ' + open + '/' + closed);
+  const v = FG.HOLES[3]; assert.ok(FG.heightAt(v, ...v.cup) > .15 && FG.heightAt(v, 2, 3) === 0, 'Vulkan-Höhe');
+  const b = FG.newBall(v); b.x = 2; b.z = 9.95; b.vx = 0; b.vz = .05; b.moving = true; for (let i = 0; i < 2400 && b.moving && !b.inCup; i++) FG.step(v, b, 0, 1 / 240);
+  assert.ok(b.inCup || Math.hypot(b.x - 2, b.z - 10.4) > .3, 'Ball bleibt nicht am Hang liegen');
 });
