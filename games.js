@@ -61,6 +61,8 @@ const GAMES = [
     path: 'anmacha-hoererwahl/', desc: 'Das große Umfrage-Duell: Was haben 100 Hörer geantwortet? Zwei Teams oder gegen das Funkhaus-Team – mit Strikes, Klauen und Hörer-Finale. 120 Fragen.' },
   { id: 'anmacha-frequenzrad', title: 'AnMaCha Frequenzrad', icon: '🎡', img: 'anmacha-frequenzrad/card.png', bg: 'linear-gradient(145deg,#1a1a6a,#ff2d95 55%,#ffd24a)', glow: 'rgba(255,45,149,.55)',
     path: 'anmacha-frequenzrad/', desc: 'Das Buchstaben-Rätsel: Rad drehen, Konsonanten raten, Vokale kaufen, Rätsel lösen – bis zu 4 Spieler, Computer-Gegner und Handys als Pads. 150 Rätsel.' },
+  { id: 'funkmaler', title: 'Funkmaler – Malen & Raten', icon: '🎨', img: 'funkmaler/card.jpg', bg: 'linear-gradient(145deg,#FF8A1F,#FF2D95 55%,#8B5CF6)', glow: 'rgba(255,45,149,.5)',
+    path: 'funkmaler/', desc: 'Partyspiel für 2–8: Einer malt auf dem Handy, alle anderen raten auf ihrem Handy – der Fernseher zeigt die Zeichnung live, Buchstaben-Hinweise und Punkte. Beitreten per QR-Code oder Link, rund 480 Begriffe in 3 Stufen, Galerie am Ende; auch an einem Gerät spielbar.' },
   { id: 'anmacha-preisradar', title: 'AnMaCha Preisradar', icon: '💶', img: 'anmacha-preisradar/card.png', bg: 'linear-gradient(145deg,#1a1a6a,#8b5cf6 50%,#ff9a1f)', glow: 'rgba(255,154,31,.55)',
     path: 'anmacha-preisradar/', desc: 'Das Preis-Schätzspiel: Gebotsduell, Frequenz-Skala, Teurer oder billiger, Einkaufswagen und Preisfinale – bis zu 4 Spieler, Computer-Gegner, geheime Tipps per Handy. 200+ Produkte, präsentiert vom RicoReWi Radioportal.' },
   { id: 'anmacha-funkparcours', title: 'AnMaCha Funkparcours', icon: '🏃', img: 'anmacha-funkparcours/card.png', bg: 'linear-gradient(145deg,#1a1a6a,#00b8d9 55%,#ff2d95)', glow: 'rgba(0,184,217,.55)',

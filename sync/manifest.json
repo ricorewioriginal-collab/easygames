@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "78b4e84d36ea",
- "generated": "2026-10-23T07:23:36+02:00",
- "commit": "244ff4d1a0cb5b9b2c533db7bcc3aa0bb0259119",
+ "version": "06517a2bc679",
+ "generated": "2026-10-23T07:40:43+02:00",
+ "commit": "c4281de438547f002432b12a5b685f60d8614a66",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2578,
-   "h": "a81cbd109c9d25f55d070da2d8222d3575591b79e99f8668d5ab4842e966d297"
+   "s": 2599,
+   "h": "9029251d17f5952c5160f774da6d5357c06d3c947e12414cf35da1e6ad1948f5"
   },
   {
    "p": "chat.html",
@@ -5582,6 +5582,46 @@
    "h": "86f83add93f444ee1cf792ff679b9fd6b55538b3d8342a71cfa54f6947b94088"
   },
   {
+   "p": "funkmaler/card.jpg",
+   "s": 31664,
+   "h": "f443522d4288edf36670a404021b9e3b0d33e25da7442e8a7e7fd81f32511d55"
+  },
+  {
+   "p": "funkmaler/index.html",
+   "s": 13466,
+   "h": "d1d0336667d3a371bdb607474a9b917859d24c4ae142fa9ee4b58337a6f748ca"
+  },
+  {
+   "p": "funkmaler/js/app.js",
+   "s": 44817,
+   "h": "8944a0dc2fd2c014e0a3d31fe1fec2d5947845f8204d148ee830ee73461330b3"
+  },
+  {
+   "p": "funkmaler/js/core.js",
+   "s": 3978,
+   "h": "cc8cc923b6d70b7d80b4beffbbd36bd8af7ea9bd3e6fff709503431c80f07aa0"
+  },
+  {
+   "p": "funkmaler/js/words.js",
+   "s": 5015,
+   "h": "ae4cab9be1c128e3a022738b0ba3ffe6a7f32f1418e4c878466c380bdaecfc6a"
+  },
+  {
+   "p": "funkmaler/manifest.webmanifest",
+   "s": 767,
+   "h": "94456a73070bba975c2d1c8d9956a6877144de73bf552f9beba0ad745ebe6705"
+  },
+  {
+   "p": "funkmaler/style.css",
+   "s": 15573,
+   "h": "080502c637fcbeba637d3d93405ef54940941581c1304eb6f3664f86a59008f4"
+  },
+  {
+   "p": "funkmaler/sw.js",
+   "s": 1995,
+   "h": "5ebc033bb9b02167d6cbdb58c54be5859a1c01a906c900efef40a77e0b145d0b"
+  },
+  {
    "p": "gamekit.js",
    "s": 5678,
    "h": "2408caf366c6c700ee4a1cc935a57e106e1a835ce4bc29826ecbe158261bc96f"
@@ -5593,8 +5633,8 @@
   },
   {
    "p": "games.js",
-   "s": 30970,
-   "h": "b2260abc9e1fba2412f2b4b120aad6c7373d414836280bd0b220434a9be70be3"
+   "s": 31465,
+   "h": "0236a0ae7ec9bf00b7b35cd0685c582080b30ee348d092de00f98a9f88025644"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5753,8 +5793,8 @@
   },
   {
    "p": "guides.js",
-   "s": 86938,
-   "h": "598c5c8bdc29a356cbc823df462451fc43390639fef1d8f7a6d6b1aa5c20198a"
+   "s": 88724,
+   "h": "f188ff1ee240ef9952ce10c783f18bfba90ce66515e0b9b46e0a147df31b99d9"
   },
   {
    "p": "heute.html",
@@ -6113,8 +6153,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2433,
-   "h": "9f21b1eabfd21d35403165f3fc1d691522974e7b2f4da1c5e31c7fab72bbaff3"
+   "s": 2505,
+   "h": "69a680dc8ff328e1d6adde2007a1c6f77b13f3327c38488e81362ef4328e624a"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -7208,8 +7248,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 134463,
-   "h": "1fd364858459d67ef034908d92d786e97c90ee9c7e9d91f458c89791bdbdf193"
+   "s": 137050,
+   "h": "1a2de8966cc9993574e40a11d252ee9e4ec7b95c08abfdf475086c976cfa9a0a"
   },
   {
    "p": "taschi/card.svg",

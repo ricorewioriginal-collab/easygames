@@ -454,4 +454,17 @@ window.EASYGAMES_GUIDES = {
    "Im Radio-Rhythmus ist der höchste Punkt einer Frucht genau auf dem Schlag – dort schneiden!"
   ]
  },
+ "funkmaler": {
+  "anleitung": "Funkmaler ist ein Mal- und Ratespiel für 2 bis 8 Spieler. Ein großer Bildschirm (Fernseher, PC oder Tablet) öffnet „🌐 Online & Handys“ und zeigt einen QR-Code mit Raum-Code; alle anderen scannen ihn mit dem Handy (oder öffnen den Link), geben ihren Namen ein und sind drin – auch von unterwegs. Reihum ist jemand Maler: Sein Handy zeigt 3 Wörter, eins wird gewählt und gemalt (Buchstaben und Zahlen sind tabu). Die Zeichnung erscheint live auf dem Fernseher und den Handys. Alle anderen tippen ihre Vermutung ins Handy; „knapp daneben“ sieht nur, wer geraten hat. Je schneller richtig, desto mehr Punkte (bis 120), der Maler bekommt für jeden, der es errät, 15 Punkte. Im Lauf der Zeit werden Buchstaben aufgedeckt. Nach allen Runden gibt es Podest und Galerie aller Bilder. Fällt ein Handy kurz aus, verbindet es sich von selbst wieder und behält seine Punkte. Ohne Handys: „Ein Gerät“ – einer malt, alle raten laut, der Maler tippt an, wer es zuerst hatte.",
+  "steuerung": [
+   "Fernseher/PC: Lobby mit QR-Code, Einstellungen (Runden, Zeit, Wörter) und Start – mit Maus, Tastatur, Fernbedienung oder Gamecontroller (Steuerkreuz + A). ⏭ überspringt, ☰ Spielleitung.",
+   "Handy Maler: Wort antippen, mit dem Finger malen; Farben, 3 Stiftgrößen, Radierer, ↶ zurück, 🗑 alles löschen (zweimal tippen).",
+   "Handy Rater: Vermutung eintippen und „Raten“ – so oft du willst."
+  ],
+  "tipps": [
+   "Erst die Umrisse groß malen, dann Details – so raten die anderen schneller und du bekommst mehr Punkte.",
+   "Achte auf die Buchstaben-Hinweise und die Länge in Klammern auf dem Fernseher.",
+   "Kein Fernseher da? Ein Laptop oder Tablet als Bildschirm reicht – oder spielt „Ein Gerät“."
+  ]
+ },
 };

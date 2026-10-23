@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/funkmaler-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Funkmaler"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#14102E">
+<title>Funkmaler – Malen und Raten mit Handys</title>
+<meta name="description" content="Funkmaler: Einer malt auf dem Handy, alle anderen raten – der Fernseher zeigt die Zeichnung live. Für 2 bis 8 Spieler, online per Link oder QR-Code.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+<!-- ===== Start ===== -->
+<section class="scr on" id="sStart">
+  <div class="box">
+    <h1 class="logo">Funk<span>maler</span> <i>🎨</i></h1>
+    <p class="sub">Einer malt, alle raten – der Fernseher zeigt die Zeichnung live.</p>
+    <div class="big3">
+      <button class="choice pri" id="bHost"><i>📺</i><b>🌐 Online &amp; Handys</b><small>Dieses Gerät wird der Bildschirm (TV, PC, Tablet). Alle spielen mit ihrem Handy.</small></button>
+      <button class="choice" id="bJoinScr"><i>📱</i><b>Mitspielen</b><small>Du hast einen Code oder QR-Code? Hier mit dem Handy beitreten.</small></button>
+      <button class="choice" id="bLocal"><i>🖐</i><b>Ein Gerät</b><small>Ohne Handys: Einer malt auf diesem Gerät, die anderen raten laut.</small></button>
+    </div>
+    <p class="foot"><button class="link" id="bHow">So geht's</button> · <a href="../" id="backLink">← Alle Spiele</a></p>
+  </div>
+</section>
+
+<!-- ===== TV / Gastgeber: Lobby ===== -->
+<section class="scr" id="hLobby">
+  <div class="lobby">
+    <div class="lobLeft">
+      <h2>🌐 Online &amp; Handys – so kommt ihr rein</h2>
+      <ol class="steps">
+        <li><b>Handy-Kamera</b> auf den QR-Code halten (oder Link öffnen)</li>
+        <li><b>Namen</b> eingeben und „Beitreten“ tippen</li>
+        <li>Alle drin? Hier auf <b>Spiel starten</b></li>
+      </ol>
+      <div class="joinBox">
+        <div class="qr" id="qr"></div>
+        <div class="codeCol">
+          <span class="lbl">Raum-Code</span>
+          <div class="code" id="code">····</div>
+          <span class="lbl">oder öffnen</span>
+          <div class="url" id="url"></div>
+          <button class="btn small" id="bCopy">🔗 Link kopieren</button>
+        </div>
+      </div>
+      <p class="hint">Mitspieler können per Link oder Code von überall beitreten – auch von unterwegs.</p>
+    </div>
+    <div class="lobRight">
+      <h3>Spieler <span id="pCount">0/8</span></h3>
+      <div class="players" id="lobPlayers"><p class="hint">Noch niemand da – scannt den QR-Code!</p></div>
+      <h3>Einstellungen</h3>
+      <div class="sets">
+        <label>Runden <select id="setRounds"><option>1</option><option selected>2</option><option>3</option></select></label>
+        <label>Zeit zum Malen <select id="setTime"><option value="60">60 s</option><option value="80" selected>80 s</option><option value="100">100 s</option></select></label>
+        <label>Wörter <select id="setLevel"><option value="leicht">Leicht</option><option value="mittel" selected>Mittel</option><option value="schwer">Schwer</option><option value="gemischt">Gemischt</option></select></label>
+      </div>
+      <button class="btn big pri" id="bStart" disabled>Spiel starten ▶</button>
+      <p class="hint" id="lobInfo">Mindestens 2 Handys nötig.</p>
+      <button class="btn small" id="bLobBack">← Zurück</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TV / Gastgeber: Spiel ===== -->
+<section class="scr" id="hGame">
+  <header class="hTop">
+    <div class="hRound" id="hRound"></div>
+    <div class="hHint" id="hHint"></div>
+    <div class="hTimer" id="hTimer"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17"/><circle id="hRing" cx="20" cy="20" r="17"/></svg><b id="hTime">0</b></div>
+  </header>
+  <div class="hMain">
+    <div class="boardWrap"><canvas id="hBoard" width="800" height="600"></canvas><div class="banner" id="hBanner" hidden></div></div>
+    <aside class="hSide">
+      <div class="players small" id="hPlayers"></div>
+      <ul class="feed" id="hFeed"></ul>
+      <div class="lateJoin" id="lateJoin"></div>
+      <div class="hBtns"><button class="btn small" id="bSkip">⏭ Weiter</button><button class="btn small" id="bHostMenu">☰</button></div>
+    </aside>
+  </div>
+</section>
+
+<!-- ===== Handy: Mitspieler ===== -->
+<section class="scr" id="gJoin">
+  <div class="box">
+    <h1 class="logo sm">Funk<span>maler</span></h1>
+    <h2>Mitspielen</h2>
+    <label class="field">Dein Name <input id="gName" maxlength="14" autocomplete="nickname" placeholder="z. B. Mia"></label>
+    <label class="field">Raum-Code (steht auf dem Fernseher) <input id="gCode" maxlength="4" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="ABCD"></label>
+    <button class="btn big pri" id="bJoin">Beitreten ▶</button>
+    <p class="hint" id="gJoinInfo"></p>
+    <button class="btn small" id="bJoinBack">← Zurück</button>
+  </div>
+</section>
+<section class="scr" id="gPlay">
+  <div class="gTop"><span class="me" id="gMe"></span><span class="gStat" id="gStat"></span><b class="gTime" id="gTime"></b></div>
+  <div class="gBody" id="gBody">
+    <div class="gMsg" id="gMsg"></div>
+    <div class="gOpts" id="gOpts"></div>
+    <div class="gWord" id="gWord"></div>
+    <div class="gHint" id="gHint"></div>
+    <div class="gBoard" id="gBoardWrap"><canvas id="gBoard" width="800" height="600"></canvas></div>
+    <div class="tools" id="gTools"></div>
+    <form class="guess" id="gGuess" autocomplete="off"><input id="gGuessIn" maxlength="40" placeholder="Was wird gemalt?" enterkeyhint="send"><button class="btn pri" type="submit">Raten</button></form>
+    <ul class="myGuesses" id="gMine"></ul>
+  </div>
+  <div class="conn" id="gConn" hidden>Verbindung weg – verbinde neu …</div>
+</section>
+
+<!-- ===== Ein Gerät ===== -->
+<section class="scr" id="lSetup">
+  <div class="box">
+    <h2>🖐 Ein Gerät – reihum malen</h2>
+    <p class="hint">Wer malt, schaut allein aufs Gerät und malt das Wort. Alle anderen raten laut. Wer es zuerst sagt, wird angetippt – beide bekommen Punkte.</p>
+    <div id="lNames"></div>
+    <button class="btn small" id="bLAdd">＋ Spieler</button>
+    <div class="sets">
+      <label>Runden <select id="lRounds"><option>1</option><option selected>2</option><option>3</option></select></label>
+      <label>Zeit <select id="lTime"><option value="60">60 s</option><option value="80" selected>80 s</option><option value="100">100 s</option></select></label>
+      <label>Wörter <select id="lLevel"><option value="leicht">Leicht</option><option value="mittel" selected>Mittel</option><option value="schwer">Schwer</option><option value="gemischt">Gemischt</option></select></label>
+    </div>
+    <div class="rowBtns"><button class="btn" id="bLBack">← Zurück</button><button class="btn pri" id="bLStart">Los geht's ▶</button></div>
+  </div>
+</section>
+<section class="scr" id="lPlay">
+  <div class="gTop"><span class="me" id="lWho"></span><span class="gStat" id="lStat"></span><b class="gTime" id="lTimeT"></b></div>
+  <div class="gBody">
+    <div class="gMsg" id="lMsg"></div>
+    <div class="gOpts" id="lOpts"></div>
+    <div class="gWord" id="lWord"></div>
+    <div class="gBoard"><canvas id="lBoard" width="800" height="600"></canvas></div>
+    <div class="tools" id="lTools"></div>
+    <div class="lGot" id="lGot"></div>
+  </div>
+</section>
+
+<!-- ===== Overlays ===== -->
+<div class="ov" id="ovHow" hidden><div class="card scroll">
+  <h2>So geht's</h2>
+  <ol>
+    <li><b>Ein Bildschirm</b> (Fernseher, PC oder Tablet) öffnet „🌐 Online &amp; Handys“ und zeigt einen QR-Code.</li>
+    <li><b>Alle anderen</b> scannen ihn mit dem Handy, geben ihren Namen ein – fertig. 2 bis 8 Spieler.</li>
+    <li>Reihum ist jemand <b>Maler</b>: Das Handy zeigt 3 Wörter, eins wird gewählt und gemalt. Buchstaben und Zahlen malen ist nicht erlaubt!</li>
+    <li>Alle anderen sehen die Zeichnung auf dem Fernseher (und auf dem Handy) und <b>tippen ihre Vermutung</b> ins Handy. „Knapp daneben!“ sieht nur, wer geraten hat.</li>
+    <li>Je schneller richtig, desto mehr <b>Punkte</b> (bis 120). Der Maler bekommt für jeden, der es errät, 15 Punkte. Im Lauf der Zeit erscheinen Buchstaben als Hinweis.</li>
+    <li>Nach allen Runden gewinnt, wer die meisten Punkte hat – mit Galerie aller Bilder.</li>
+  </ol>
+  <p class="hint">Fällt ein Handy kurz aus (Bildschirm aus, Funkloch), verbindet es sich von selbst wieder und behält seine Punkte. Ohne Handys geht's mit „Ein Gerät“.</p>
+  <button class="btn pri" id="howX">Alles klar</button>
+</div></div>
+
+<div class="ov" id="ovHostMenu" hidden><div class="card">
+  <h2>Spielleitung</h2>
+  <div class="menuBtns">
+    <button class="btn pri" id="hmGo">▶ Weiter spielen</button>
+    <button class="btn" id="hmLobby">↩ Zurück zur Lobby (Punkte zurücksetzen)</button>
+    <button class="btn" id="hmSound">🔊 Ton an</button>
+    <button class="btn" id="hmQuit">⏹ Raum schließen</button>
+  </div>
+</div></div>
+
+<div class="ov" id="ovPick" hidden><div class="card">
+  <h2>Wer hat es erraten?</h2>
+  <div class="menuBtns" id="pickList"></div>
+  <button class="btn" id="pickX">Zurück zum Malen</button>
+</div></div>
+
+<div class="toast" id="toast" hidden></div>
+</div>
+
+<script src="../device.js"></script>
+<script src="../gamekit.js"></script>
+<script src="../cloud/fire-peer.js"></script>
+<script src="js/words.js"></script>
+<script src="js/core.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="funkmaler" data-prefix="funkmaler-" defer></script>
+<script src="../gamepad.js" data-pad="rs=none" defer></script>
+</body>
+</html>

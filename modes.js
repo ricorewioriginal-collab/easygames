@@ -27,6 +27,7 @@ window.EASYGAMES_MODES = {
   'wortfunk': { pad: true, online: true, multi: true, tvParam: true },
   'wortgitter': { pad: true, online: true, tvParam: true },
   'saftblitz': { multi: true },
+  'funkmaler': { pad: true, online: true, multi: true, tvParam: true },
   'gay-life': { online: true },
   'bunte-insel': { online: true, pad: true, multi: true, tvParam: true },
   'zeitsprung-wissen': { pad: true, online: true },
