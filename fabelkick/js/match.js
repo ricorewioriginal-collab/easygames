@@ -145,14 +145,20 @@
         this.give(h, own[0]);
       });
       if (this.setPiece && this.setPiece.taker && this.setPiece.taker.team.human && !this.setPiece.taker.gk) {
-        const h = this.humans.find(x => x.team === this.setPiece.taker.ti); if (h) this.give(h, this.setPiece.taker);
+        const tk = this.setPiece.taker, h = this.humans.find(x => x.team === tk.ti); if (h && !tk.human) this.give(h, tk);
       }
     }
     give(h, p) {
       if (!p || p.gk || p.human === h) return;
-      if (p.human) { const o = p.human; o.player = null; p.human = null; }
-      if (h.player) h.player.human = null;
+      const o = p.human, prev = h.player;
+      if (o) { o.player = null; p.human = null; }
+      if (prev) prev.human = null;
       h.player = p; p.human = h; h.charge = -1; h.idle = 0;
+      // Koop: wer seine Figur abgibt, bekommt die alte Figur des anderen (oder die nächste freie)
+      if (o) {
+        const q = prev && prev.ti === o.team && !prev.gk ? prev : this.teams[o.team].players.filter(x => !x.gk && !x.human).sort((a, c) => this.dist(a.pos, p.pos) - this.dist(c.pos, p.pos))[0];
+        if (q) { o.player = q; q.human = o; o.charge = -1; o.idle = 0; }
+      }
     }
 
     // ---------- Hauptschritt ----------
