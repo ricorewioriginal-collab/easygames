@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0B0F1E">
+<title>Wortfunk – Das Wortlegespiel</title>
+<meta name="description" content="Wortfunk: das Wortlegespiel mit fast 400.000 deutschen Wörtern – gegen den Computer, zu zweit bis zu viert an einem Gerät oder online mit Handys.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- Start -->
+  <section class="scr on" id="sMenu">
+    <div class="menuBox">
+      <div class="logo" aria-label="Wortfunk"><span>W</span><span>O</span><span>R</span><span>T</span><span class="fx">F</span><span class="fx">U</span><span class="fx">N</span><span class="fx">K</span></div>
+      <p class="sub">Das Wortlegespiel · fast 400.000 deutsche Wörter</p>
+      <div class="menuBtns">
+        <button class="btn big pri" id="bResume" hidden>▶ Weiterspielen</button>
+        <button class="btn big pri" id="bNew">🎮 Neues Spiel</button>
+        <button class="btn big" id="bOnline">🌐 Online &amp; Handys</button>
+        <div class="row2">
+          <button class="btn" id="bHelp">📖 Anleitung</button>
+          <button class="btn" id="bSet">⚙️ Einstellungen</button>
+        </div>
+      </div>
+      <p class="stat" id="menuStat"></p>
+      <p class="foot"><a href="../" id="backLink">← Alle Spiele</a></p>
+    </div>
+    <p class="loadInfo" id="loadInfo">Wörterbuch wird geladen …</p>
+  </section>
+
+  <!-- Spieler wählen -->
+  <section class="scr" id="sSetup">
+    <div class="panel wide">
+      <h2>Neues Spiel</h2>
+      <p class="hint">2 bis 4 Spieler, Menschen und Computer frei gemischt. Mehrere Menschen spielen abwechselnd an diesem Gerät.</p>
+      <div id="seatList"></div>
+      <div class="rowBtns">
+        <button class="btn" id="bAddSeat">＋ Spieler</button>
+      </div>
+      <div class="rowBtns">
+        <button class="btn" id="bSetupBack">← Zurück</button>
+        <button class="btn pri" id="bStart">Los geht's ▶</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Online -->
+  <section class="scr" id="sOnline">
+    <div class="panel wide">
+      <h2>🌐 Online &amp; Handys</h2>
+      <p class="hint">Ein Gerät eröffnet den Raum – zum Beispiel der Fernseher oder PC. Mitspieler treten per Link, QR-Code oder Code von überall bei; auf jedem Handy siehst du nur deine eigenen Steine.</p>
+      <div id="onChoose">
+        <label class="field">Dein Name <input id="onName" maxlength="14" autocomplete="nickname"></label>
+        <button class="btn big pri" id="bHost">📺 Raum eröffnen</button>
+        <div class="joinRow">
+          <input id="joinCode" maxlength="4" placeholder="CODE" autocapitalize="characters" autocomplete="off" spellcheck="false">
+          <button class="btn pri" id="bJoin">Beitreten</button>
+        </div>
+      </div>
+      <div id="onLobby" hidden>
+        <div class="lobbyTop">
+          <div class="qr" id="lobQr"></div>
+          <div>
+            <div class="codeBig" id="lobCode">····</div>
+            <button class="btn small" id="bCopy">🔗 Link kopieren</button>
+            <p class="hint" id="lobLink"></p>
+          </div>
+        </div>
+        <label class="check"><input type="checkbox" id="hostPlays" checked> Dieses Gerät spielt mit</label>
+        <div id="lobSeats"></div>
+        <div class="rowBtns" id="lobBots">
+          <button class="btn small" id="bAddBot">＋ Computer</button>
+        </div>
+        <p class="hint" id="lobInfo"></p>
+        <div class="rowBtns">
+          <button class="btn" id="bLobBack">← Verlassen</button>
+          <button class="btn pri" id="bLobStart">Spiel starten ▶</button>
+        </div>
+      </div>
+      <div id="onGuest" hidden>
+        <p class="codeBig" id="guestCode"></p>
+        <p class="hint" id="guestInfo">Verbunden – warte auf den Start …</p>
+        <div id="guestSeats"></div>
+        <div class="rowBtns"><button class="btn" id="bGuestBack">← Verlassen</button></div>
+      </div>
+      <div class="rowBtns" id="onBack"><button class="btn" id="bOnBack">← Zurück</button></div>
+    </div>
+  </section>
+
+  <!-- Spiel -->
+  <section class="scr" id="sGame">
+    <header class="top">
+      <button class="icon" id="bMenu" aria-label="Menü">☰</button>
+      <div class="scores" id="scores"></div>
+      <div class="bag" id="bag" title="Steine im Beutel">👜 <b id="bagN">0</b></div>
+    </header>
+    <div class="boardWrap" id="boardWrap">
+      <div class="board" id="board"></div>
+      <div class="preview" id="preview" hidden></div>
+    </div>
+    <aside class="side">
+      <div class="turnInfo" id="turnInfo"></div>
+      <div class="rack" id="rack"></div>
+      <div class="actions" id="actions">
+        <button class="btn act pri" id="aPlay">✓ Legen</button>
+        <button class="btn act" id="aRecall" title="Steine zurück">↺</button>
+        <button class="btn act" id="aShuffle" title="Mischen">⇄</button>
+        <button class="btn act" id="aHint" title="Tipp">💡</button>
+        <button class="btn act" id="aSwap">Tauschen</button>
+        <button class="btn act" id="aPass">Passen</button>
+        <button class="btn act" id="aZoom" title="Brett vergrößern">🔍</button>
+      </div>
+      <ol class="log" id="log"></ol>
+    </aside>
+  </section>
+
+  <!-- Overlays -->
+  <div class="ov" id="ovHand" hidden><div class="card">
+    <h2 id="handTitle"></h2><p id="handLast" class="hint"></p>
+    <button class="btn big pri" id="bHandGo">Meine Steine zeigen</button>
+  </div></div>
+
+  <div class="ov" id="ovJoker" hidden><div class="card">
+    <h2>Joker – welcher Buchstabe?</h2>
+    <div class="jokerGrid" id="jokerGrid"></div>
+    <button class="btn" id="bJokerX">Abbrechen</button>
+  </div></div>
+
+  <div class="ov" id="ovSwap" hidden><div class="card">
+    <h2>Steine tauschen</h2>
+    <p class="hint">Wähle die Steine, die zurück in den Beutel sollen. Dafür bekommst du keine Punkte, und du setzt diese Runde aus.</p>
+    <div class="swapRack" id="swapRack"></div>
+    <div class="rowBtns"><button class="btn" id="bSwapX">Abbrechen</button><button class="btn pri" id="bSwapGo">Tauschen</button></div>
+  </div></div>
+
+  <div class="ov" id="ovMenu" hidden><div class="card">
+    <h2>Pause</h2>
+    <div class="menuBtns">
+      <button class="btn big pri" id="mGo">▶ Weiter</button>
+      <button class="btn" id="mHelp">📖 Anleitung</button>
+      <button class="btn" id="mSound">🔊 Ton an</button>
+      <button class="btn" id="mQuit">⏹ Partie beenden</button>
+    </div>
+  </div></div>
+
+  <div class="ov" id="ovEnd" hidden><div class="card">
+    <h2 id="endTitle"></h2>
+    <ol class="rank" id="endRank"></ol>
+    <p class="hint" id="endInfo"></p>
+    <div class="rowBtns"><button class="btn" id="bEndMenu">Menü</button><button class="btn pri" id="bEndAgain">Nochmal ▶</button></div>
+  </div></div>
+
+  <div class="ov" id="ovSet" hidden><div class="card">
+    <h2>Einstellungen</h2>
+    <label class="check"><input type="checkbox" id="setSound"> Ton</label>
+    <label class="check"><input type="checkbox" id="setPreview"> Punkte schon beim Legen anzeigen</label>
+    <label class="check"><input type="checkbox" id="setHints"> 💡 Tipps erlauben (3 pro Partie)</label>
+    <button class="btn pri" id="bSetX">Fertig</button>
+  </div></div>
+
+  <div class="ov" id="ovHelp" hidden><div class="card scroll">
+    <h2>So spielst du Wortfunk</h2>
+    <p>Lege aus deinen 7 Steinen Wörter auf das Brett – waagerecht oder senkrecht, wie im Kreuzworträtsel. Das erste Wort geht über den <b>★</b> in der Mitte, jedes weitere schließt an liegende Steine an. Alle neu entstandenen Wörter müssen im Wörterbuch stehen und zählen Punkte.</p>
+    <ul>
+      <li><b class="tagB2">2×B</b> / <b class="tagB3">3×B</b> verdoppeln bzw. verdreifachen den Buchstaben, <b class="tagW2">2×W</b> / <b class="tagW3">3×W</b> das ganze Wort – nur in dem Zug, in dem du das Feld belegst.</li>
+      <li>Alle 7 Steine auf einmal: <b>+50 Punkte</b>.</li>
+      <li>Der leere <b>Joker</b> steht für jeden Buchstaben, zählt aber 0 Punkte.</li>
+      <li>Statt zu legen darfst du <b>tauschen</b> (solange 7 Steine im Beutel sind) oder <b>passen</b>.</li>
+      <li>Ende: Wer zuletzt alle Steine los ist, bekommt die Restpunkte der anderen; die anderen verlieren ihre Restpunkte. Passen alle zweimal hintereinander, endet die Partie auch.</li>
+      <li>Erlaubt sind alle Formen deutscher Wörter (Mehrzahl, Fälle, gebeugte Verben). Namen und Abkürzungen nicht. ß wird als SS gelegt.</li>
+    </ul>
+    <h3>Steuerung</h3>
+    <ul>
+      <li><b>Touch &amp; Maus:</b> Stein antippen, dann Feld antippen – oder ziehen. Gelegten Stein antippen nimmt ihn zurück. ✓ legt den Zug.</li>
+      <li><b>Tastatur:</b> Pfeile bewegen den Rahmen, Buchstaben tippen legt sie (Tab wechselt → / ↓), Enter legt den Zug, Rücktaste nimmt den letzten Stein zurück, Entf alle, 1–7 bzw. − / + wählt einen Stein, Leertaste legt ihn, 8 Tauschen, 9 Mischen, 0 Tipp, Esc Menü.</li>
+      <li><b>Gamecontroller:</b> Steuerkreuz bewegt den Rahmen, LB/RB wählt den Stein, A legt bzw. nimmt zurück, X legt den Zug, B nimmt den letzten Stein zurück, LT alle zurück, Y mischt, RT tauscht, Select Tipp, Start Menü.</li>
+    </ul>
+    <p class="hint">Wörterbuch: german-pos-dict von LanguageTool (CC BY-SA 4.0), Details in <a href="data/LIZENZ.txt" target="_blank" rel="noopener">data/LIZENZ.txt</a>.</p>
+    <button class="btn pri" id="bHelpX">Verstanden</button>
+  </div></div>
+
+  <div class="toast" id="toast" hidden></div>
+  <div class="ghost" id="ghost" hidden></div>
+</div>
+
+<script src="../cloud/fire-peer.js"></script>
+<script src="js/logic.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="wortfunk" data-prefix="wortfunk-" defer></script>
+<script src="../gamepad.js" data-pad="a=Space/Enter x=Enter b=Backspace y=Digit9 lb=Minus rb=Equal lt=Delete rt=Digit8 select=Digit0 start=Escape" defer></script>
+</body>
+</html>

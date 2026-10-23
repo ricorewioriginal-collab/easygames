@@ -1,0 +1,13 @@
+Wortfunk – Wörterbuch (woerter.dawg)
+
+Die Wortliste ist abgeleitet aus german-pos-dict von LanguageTool
+https://github.com/languagetool-org/german-pos-dict
+Ursprung: Export aus Morphy (http://morphy.wolfganglezius.de/), erweitert durch http://korrekturen.de/flexion
+
+Lizenz: Creative Commons Namensnennung – Weitergabe unter gleichen Bedingungen 4.0 International (CC BY-SA 4.0)
+https://creativecommons.org/licenses/by-sa/4.0/deed.de
+
+Änderungen: alle Wortformen ausgelesen, Eigennamen und Abkürzungen entfernt, nur Wörter aus A–Z, Ä, Ö, Ü
+mit 2 bis 15 Buchstaben, ß als SS geschrieben, in Großbuchstaben umgewandelt und als Wortgraph (DAWG) gepackt.
+Erzeugt mit tools/wortfunk/ (siehe README dort). Diese Datei steht ebenfalls unter CC BY-SA 4.0.
+Der übrige Code von Wortfunk steht unter der Lizenz des Repos (Public Domain / Unlicense).
