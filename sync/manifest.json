@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "2ffea58a190b",
- "generated": "2026-10-23T23:57:19+00:00",
- "commit": "fde2492bc57d54de05437e6c65982fba0bb3f1e2",
+ "version": "266fde520834",
+ "generated": "2026-10-23T23:57:20+00:00",
+ "commit": "852fb4217011dd1bee14d95fc91084cbd2f23330",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6233,8 +6233,8 @@
   },
   {
    "p": "mahjong/js/main.js",
-   "s": 34466,
-   "h": "e4fe35efee594238ef4e25e4ace2d2bb7bfc39237a2f9fd8976d2b17159cc53e"
+   "s": 35162,
+   "h": "37a10fef24370528683f3a78ec96517d1bdfec3b5107ad3e99557c9bd012d86d"
   },
   {
    "p": "mahjong/js/render.js",
@@ -7469,7 +7469,7 @@
   {
    "p": "sync/catalog.json",
    "s": 155562,
-   "h": "602748247321e6e8339e11edb3ea7c2fee03cc4ec1b2530d1bfce1fe13b723c4"
+   "h": "2b6482d799ede576d9159685377ae17e88d942d22c3548e0ea215af0f7e52c53"
   },
   {
    "p": "taschi/card.svg",
