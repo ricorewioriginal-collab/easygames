@@ -15,7 +15,7 @@
  *     (für Spiele, die man fast nur per Klick spielt), rs=qe: rechter Stick = Q/E statt Zeiger, rs=none: aus.
  * Ohne angeschlossenen Controller läuft nichts mit (keine Schleife, kein Overlay).
  * Spiele mit eigener Controller-Steuerung binden die Datei nicht ein, damit nichts doppelt reagiert.
- * API: EasyGamesPad.enabled(false) hält alles an, EasyGamesPad.map zeigt die Belegung.
+ * API: EasyGamesPad.enabled(false) hält alles an, EasyGamesPad.focus(el) setzt den Leuchtrahmen, EasyGamesPad.map zeigt die Belegung.
  */
 (function (root) {
   'use strict';
@@ -253,6 +253,8 @@
 
   root.EasyGamesPad = {
     version: 1, map: MAP, options: opt,
-    enabled: function (on) { if (on === undefined) return enabled; enabled = !!on; if (!enabled) { releaseAll(); clearRing(); show(cursor, false); } return enabled; }
+    enabled: function (on) { if (on === undefined) return enabled; enabled = !!on; if (!enabled) { releaseAll(); clearRing(); show(cursor, false); } return enabled; },
+    // Leuchtrahmen auf einen bestimmten Knopf setzen (z. B. die erste Taste einer Bildschirmtastatur)
+    focus: function (el) { if (!el) return; focusEl = el; if (running) drawRing(); }
   };
 })(window);

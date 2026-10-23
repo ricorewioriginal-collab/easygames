@@ -1,0 +1,51 @@
+/* Funkgalgen – Wortlisten nach Kategorien (familienfreundlich). Jedes Wort steht auch im Wortfunk-Wörterbuch (../wortfunk/data/woerter.dawg);
+ * das prüft tests/core.test.js. Der Modus „Wörterbuch“ zieht zusätzlich Wörter aus ../wortfunk/data/bekannt.dawg. ß ist als SS geschrieben. */
+(function (root) {
+  'use strict';
+  const W = {
+    tiere: ['HUND', 'KATZE', 'PFERD', 'ELEFANT', 'GIRAFFE', 'KROKODIL', 'PINGUIN', 'DELFIN', 'SCHMETTERLING', 'EICHHÖRNCHEN', 'IGEL', 'FUCHS', 'WOLF', 'HASE', 'KANINCHEN',
+      'SCHILDKRÖTE', 'PAPAGEI', 'EULE', 'ADLER', 'STORCH', 'FLAMINGO', 'KAMEL', 'ZEBRA', 'NASHORN', 'NILPFERD', 'KÄNGURU', 'PANDA', 'TIGER', 'LÖWE',
+      'LEOPARD', 'GORILLA', 'AFFE', 'MAULWURF', 'BIBER', 'OTTER', 'WALROSS', 'QUALLE', 'HUMMER', 'KRABBE', 
+      'BIENE', 'AMEISE', 'SCHNECKE', 'REGENWURM', 'FROSCH', 'EIDECHSE', 'SCHLANGE', 'HAMSTER', 'GOLDFISCH', 'PFAU', 'SCHWAN', 'ENTE', 'HUHN'],
+    essen: ['APFEL', 'BANANE', 'ERDBEERE', 'KIRSCHE', 'ANANAS', 'ZITRONE', 'ORANGE', 'BIRNE', 'PFIRSICH', 'HIMBEERE', 'TRAUBE', 'KAROTTE', 'TOMATE',
+      'GURKE', 'KARTOFFEL', 'ZWIEBEL', 'PAPRIKA', 'BROKKOLI', 'SPINAT', 'KÜRBIS', 'PIZZA', 'NUDELN', 'SPAGHETTI', 'LASAGNE', 'PFANNKUCHEN', 'WAFFEL', 'BREZEL',
+      'BRÖTCHEN', 'KÄSE', 'BUTTER', 'JOGHURT', 'MÜSLI', 'HONIG', 'MARMELADE', 'SCHOKOLADE', 'GUMMIBÄRCHEN', 'KEKS', 'KUCHEN', 'TORTE', 'SAHNE', 'EIS', 
+      'BURGER', 'BRATWURST', 'SUPPE', 'SALAT', 'REIS', 'PUDDING', 'LIMONADE', 'KAKAO', 'KAFFEE', 'APFELSAFT', 'MILCHSHAKE', 'CROISSANT', 'DÖNER'],
+    musik: ['RADIO', 'SENDER', 'MIKROFON', 'LAUTSPRECHER', 'MODERATOR', 'MODERATORIN', 'STUDIO', 'SENDUNG', 'PLAYLIST', 'HITPARADE', 'CHARTS', 'JINGLE',
+      'PODCAST', 'GITARRE', 'SCHLAGZEUG', 'KLAVIER', 'GEIGE', 'TROMPETE', 'SAXOPHON', 'FLÖTE', 'BASS', 'SCHLAGER', 'ROCK', 'TECHNO',
+      'HIPHOP', 'KONZERT', 'FESTIVAL', 'BÜHNE', 'BAND', 'SÄNGER', 'SÄNGERIN', 'REFRAIN', 'STROPHE', 'MELODIE', 'RHYTHMUS', 'LAUTSTÄRKE', 'FREQUENZ', 'ANTENNE',
+      'FUNKTURM', 'EMPFANG', 'WERBUNG', 'NACHRICHTEN', 'WETTERBERICHT', 'HÖRER', 'SCHALLPLATTE', 'KASSETTE', 'DIRIGENT', 'ORCHESTER'],
+    berufe: ['ÄRZTIN', 'ARZT', 'LEHRER', 'LEHRERIN', 'POLIZIST', 'FEUERWEHRMANN', 'BÄCKER', 'KONDITOR', 'KOCH', 'FRISEUR', 'GÄRTNER', 'BAUER', 'TIERARZT', 'PILOT',
+      'ASTRONAUT', 'ARCHITEKT', 'INGENIEUR', 'ELEKTRIKER', 'KLEMPNER', 'SCHREINER', 'MALER', 'FOTOGRAF', 'JOURNALIST', 'REPORTER', 'SCHAUSPIELER', 'ZAUBERER',
+      'BUSFAHRER', 'KELLNER', 'VERKÄUFER', 'MECHANIKER', 'PROGRAMMIERER', 'RICHTER', 'ANWALT', 'APOTHEKER', 'ZAHNARZT', 'PFLEGER', 'HEBAMME',
+      'METZGER', 'FISCHER', 'FÖRSTER', 'TÄNZERIN', 'MUSIKER', 'SCHNEIDER', 'BIBLIOTHEKAR', 'KAPITÄN', 'TRAINER', 'SCHIEDSRICHTER', 'DETEKTIV', 'ERFINDER'],
+    sport: ['FUSSBALL', 'HANDBALL', 'BASKETBALL', 'VOLLEYBALL', 'TENNIS', 'TISCHTENNIS', 'BADMINTON', 'GOLF', 'MINIGOLF', 'SCHWIMMEN', 'TAUCHEN', 'SEGELN',
+      'RUDERN', 'RADFAHREN', 'JOGGEN', 'MARATHON', 'TURNEN', 'BOXEN', 'KARATE', 'JUDO', 'RINGEN', 'FECHTEN', 'REITEN', 'KLETTERN', 'SNOWBOARD',
+      'SCHLITTSCHUH', 'BOWLING', 'DARTS', 'SKATEBOARD', 'TRAMPOLIN', 'YOGA', 'TORWART', 'ELFMETER', 'POKAL', 'MEDAILLE', 'STADION', 'TRIKOT',
+      'TURNSCHUH', 'STOPPUHR', 'WELTMEISTER', 'OLYMPIA', 'MANNSCHAFT', 'HALBZEIT', 'ABSEITS'],
+    zuhause: ['KÜHLSCHRANK', 'WASCHMASCHINE', 'SPÜLMASCHINE', 'BACKOFEN', 'TOASTER', 'MIKROWELLE', 'WASSERKOCHER', 'BÜGELEISEN',
+      'SOFA', 'SESSEL', 'TISCH', 'STUHL', 'BETT', 'KLEIDERSCHRANK', 'REGAL', 'LAMPE', 'TEPPICH', 'VORHANG', 'FENSTER', 'TÜR', 'TREPPE',
+      'BADEWANNE', 'DUSCHE', 'HANDTUCH', 'SPIEGEL', 'FERNSEHER', 'FERNBEDIENUNG', 'COMPUTER', 'LAPTOP', 'HANDY', 'WECKER', 'UHR', 'KERZE',
+      'GIESSKANNE', 'SCHLÜSSEL', 'SCHERE', 'KLEBEBAND', 'BATTERIE', 'GLÜHBIRNE', 'STECKDOSE', 'TASSE', 'TELLER'],
+    natur: ['SONNE', 'MOND', 'STERN', 'REGENBOGEN', 'GEWITTER', 'BLITZ', 'DONNER', 'SCHNEE', 'HAGEL', 'NEBEL', 'WOLKE', 'WIND', 'STURM', 'TORNADO', 'VULKAN',
+      'GEBIRGE', 'WÜSTE', 'DSCHUNGEL', 'WALD', 'WIESE', 'STRAND', 'INSEL', 'OZEAN', 'GLETSCHER', 'HÖHLE', 'FLUSS', 'BACH', 'MEER', 'WELLE',
+      'ROSE', 'TULPE', 'GÄNSEBLÜMCHEN', 'LÖWENZAHN', 'KAKTUS', 'PALME', 'EICHE', 'TANNE', 'KASTANIE', 'PILZ', 'MOOS', 'FRÜHLING', 'SOMMER',
+      'HERBST', 'WINTER', 'SONNENUNTERGANG', 'POLARLICHT', 'KOMET', 'PLANET', 'GALAXIE', 'ERDBEBEN'],
+    unterwegs: ['AUTO', 'FAHRRAD', 'MOTORRAD', 'ROLLER', 'BUS', 'STRASSENBAHN', 'ZUG', 'FLUGZEUG', 'HUBSCHRAUBER', 'RAKETE', 'SCHIFF', 
+      'TRAKTOR', 'BAGGER', 'POLIZEIAUTO', 'TAXI', 'WOHNMOBIL', 'SEILBAHN', 
+      'BAHNHOF', 'FLUGHAFEN', 'HAFEN', 'AUTOBAHN', 'TANKSTELLE', 'AMPEL', 'KREUZUNG', 'BRÜCKE', 'TUNNEL', 'KOFFER', 'RUCKSACK', 'REISEPASS', 
+      'KOMPASS', 'URLAUB', 'HOTEL', 'ZELT', 'CAMPINGPLATZ', 'FREIZEITPARK', 'ACHTERBAHN', 'KARUSSELL', 'ZOO', 'MUSEUM', 'BIBLIOTHEK', 'SCHWIMMBAD'],
+    spiele: ['PUZZLE', 'SCHACH', 'DAME', 'MÜHLE', 'WÜRFEL', 'DOMINO', 'MURMEL', 'KREISEL', 'DRACHEN', 
+      'VERSTECKEN', 'FANGEN', 'SCHAUKEL', 'RUTSCHE', 'WIPPE', 'LUFTBALLON', 'GEBURTSTAG', 'GESCHENK', 'ÜBERRASCHUNG',
+      'PARTY', 'KOSTÜM', 'FASCHING', 'PIRAT', 'RITTER', 'PRINZESSIN', 'ROBOTER', 'DINOSAURIER', 'TEDDYBÄR',
+      'PUPPE', 'BAUKLOTZ', 'KNETE', 'BUNTSTIFT', 'HIGHSCORE', 'JOYSTICK', 'LEVEL', 'RÄTSEL', 'QUIZ']
+  };
+  const CATS = [
+    { id: 'tiere', n: 'Tiere', icon: '🐾' }, { id: 'essen', n: 'Essen & Trinken', icon: '🍕' }, { id: 'musik', n: 'Musik & Radio', icon: '📻' },
+    { id: 'berufe', n: 'Berufe', icon: '🧑‍🍳' }, { id: 'sport', n: 'Sport', icon: '⚽' }, { id: 'zuhause', n: 'Zuhause', icon: '🏠' },
+    { id: 'natur', n: 'Natur & Wetter', icon: '🌦️' }, { id: 'unterwegs', n: 'Unterwegs', icon: '🚂' }, { id: 'spiele', n: 'Spiel & Spaß', icon: '🎲' }
+  ];
+  const FGW = { W, CATS };
+  if (typeof module !== 'undefined' && module.exports) module.exports = FGW;
+  root.FGW = FGW;
+})(typeof self !== 'undefined' ? self : this);

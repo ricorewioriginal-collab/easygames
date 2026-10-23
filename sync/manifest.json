@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "23709bcb52a4",
- "generated": "2026-10-24T00:32:58+02:00",
- "commit": "3b098e99c976e9df77f8a7a7b2d9637927935426",
+ "version": "fd1a1acbe314",
+ "generated": "2026-10-24T00:47:04+02:00",
+ "commit": "cbf30965f55efaa1aaf6509939c29abc2450e785",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2697,
-   "h": "3aa08a263896ca9a3046581dd9cbfc54a29dbe19f7623836fe886512af2fc434"
+   "s": 2719,
+   "h": "c2e154888f8454d8350060c4cae21fd609d498821be1b9fff39f6d3d8f6a69a0"
   },
   {
    "p": "chat.html",
@@ -5642,6 +5642,51 @@
    "h": "86f83add93f444ee1cf792ff679b9fd6b55538b3d8342a71cfa54f6947b94088"
   },
   {
+   "p": "funkgalgen/card.jpg",
+   "s": 37175,
+   "h": "84f80ba2a348e3ad62adc7930bee42f28ca43a680143921a61c93f3f8551445c"
+  },
+  {
+   "p": "funkgalgen/index.html",
+   "s": 14083,
+   "h": "a8ec74c833183b5ef14f358dbd2cf6b2f0cc180efc47e5f202cfe659ebdfea78"
+  },
+  {
+   "p": "funkgalgen/js/app.js",
+   "s": 42142,
+   "h": "435f0e563f407d5c1e41e08eef09ee56da3a8773288e701a6033f5aef6eda2d4"
+  },
+  {
+   "p": "funkgalgen/js/core.js",
+   "s": 6752,
+   "h": "9be03ed81f9aca8bd4af869baf0ed01e84d6dd71c861a6c3ddf5f8b92ce9711f"
+  },
+  {
+   "p": "funkgalgen/js/scene.js",
+   "s": 14458,
+   "h": "2096a6dd75bb0f2b65d6032cba168a716915140ac5ede67c44ba01840cb10e6f"
+  },
+  {
+   "p": "funkgalgen/js/words.js",
+   "s": 5953,
+   "h": "e429f8463a246c125aba0aa4f5a4a6ed1bd13c2291a2338a779e122a1b40e530"
+  },
+  {
+   "p": "funkgalgen/manifest.webmanifest",
+   "s": 779,
+   "h": "cf9d7ee330f72f8c74238af03d72473ad5c618d815e8159136333e5805a35b24"
+  },
+  {
+   "p": "funkgalgen/style.css",
+   "s": 12138,
+   "h": "573302966572470c81c27d61dd1efddbc54276d04820ba5ff3b4f9c34d8c6f95"
+  },
+  {
+   "p": "funkgalgen/sw.js",
+   "s": 2005,
+   "h": "6a151e1c8a9c12b0f33fe04866d0cc36f32edbdd09536c51bcafe793d88f5d92"
+  },
+  {
    "p": "funkgolf/card.jpg",
    "s": 40797,
    "h": "d33391abccdc5ba277d03093bb241168c310101d67a6d24b59491afedd59f252"
@@ -5723,13 +5768,13 @@
   },
   {
    "p": "gamepad.js",
-   "s": 16750,
-   "h": "b16b1730389ed1c01709246cf077d4229497ec4ad91bcf30346cba03e124ae0c"
+   "s": 16986,
+   "h": "9331d8d7da54124a1976b864027c79b279d42963e108ca4d15ecbbbb925daa2a"
   },
   {
    "p": "games.js",
-   "s": 34196,
-   "h": "e333bbe458bf40a06d0018515d37e4a7fd90039f98cfe2096e9e63ab7b2c0b78"
+   "s": 34785,
+   "h": "474256ef3df96c8bc65f36a429b27e14b9edba013d2da10c1aeaa24fd136c12c"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5888,8 +5933,8 @@
   },
   {
    "p": "guides.js",
-   "s": 97783,
-   "h": "56f62380476aaf1671ba9115f7fea9f48764fd7e4768f7e9952699b13f6277e3"
+   "s": 99523,
+   "h": "7da3b94d7dc893506606e0dddf111cb5ac91e1aa9bad603f6f04b144cba8566b"
   },
   {
    "p": "heute.html",
@@ -6248,8 +6293,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2679,
-   "h": "88ec6bcce9209dcf73a7cabcf60af924ff003025f7b8439e4eb76b5dcecfc8a5"
+   "s": 2752,
+   "h": "94984da7d92b82915cf800c542242a3e486ec8c60419f63165a1139fb92e8fe4"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -7343,8 +7388,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 149918,
-   "h": "89ccab400932b1133e0ff815d0dd1e41e3f567057f7e2af933f35405d2e09a2a"
+   "s": 152556,
+   "h": "27f0390d210a56ac63ec9c2089238df44c0cf3980dca0119b17509ecab69357b"
   },
   {
    "p": "taschi/card.svg",

@@ -1352,6 +1352,44 @@
    }
   },
   {
+   "id": "funkgalgen",
+   "title": "Funkgalgen – Rette den Moderator!",
+   "desc": "Modernes Galgenmännchen in 3D: Der Moderator steht auf einem Turm aus Lautsprecher-Kisten über einer Riesen-Torte – jeder falsche Buchstabe schießt eine Kiste heraus. Solo-Serie mit 9 Kategorien oder dem Wortfunk-Wörterbuch, Tageswort zum Teilen, Duell zu zweit und online: reihum denkt sich ein Handy das Wort aus, alle anderen raten um die Wette.",
+   "icon": "🔤",
+   "img": "funkgalgen/card.jpg",
+   "bg": "linear-gradient(145deg,#8B5CF6,#FF4FAE 55%,#FF8A1F)",
+   "glow": "rgba(255,79,174,.5)",
+   "path": "funkgalgen/",
+   "modes": {
+    "pad": true,
+    "online": true,
+    "multi": true,
+    "tvParam": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Funkgalgen ist Galgenmännchen in modern und freundlich: Der Moderator steht auf einem Turm aus 8 Lautsprecher-Kisten über einer Riesen-Torte. Rate das Wort Buchstabe für Buchstabe – richtige Buchstaben erscheinen an allen Stellen, jeder falsche schießt eine Kiste aus dem Turm. Ist die letzte Kiste weg, landet der Moderator in der Torte. 💡 Joker deckt einen Buchstaben auf (kostet Punkte), ✍️ Lösen nimmt das ganze Wort (falsch kostet 2 Kisten). Modi: 🎯 Solo-Serie (9 Kategorien oder 📖 Wörterbuch mit bekannten Wörtern aus dem Wortfunk-Wörterbuch, drei Schwierigkeiten; die Serie läuft, bis es einmal schiefgeht), 📅 Tageswort (für alle gleich, Ergebnis teilen), 👥 Duell (zu zweit an einem Gerät, Wörter werden im Wörterbuch geprüft) und 🌐 Online & Handys: Der Fernseher zeigt Turm und Wort, reihum denkt sich ein Handy das Wort aus, die anderen raten um die Wette (richtiger Buchstabe +5 je Stelle, falscher −2, Wort lösen +20; landet der Moderator in der Torte, punktet der Wortgeber).",
+    "steuerung": [
+     "Tastatur: Buchstaben einfach tippen (auch Ä, Ö, Ü), Enter = Wort lösen, Esc = Pause.",
+     "Touch/Maus: Bildschirmtastatur antippen; 💡 Joker und ✍️ Lösen unten rechts.",
+     "Gamecontroller: Steuerkreuz wählt die Taste, A drückt sie, B zurück, Start = Pause.",
+     "Online: Jedes Handy hat seine eigene Tastatur; der Fernseher zeigt Wort, Turm, Punkte und wer gerade was geraten hat."
+    ],
+    "tipps": [
+     "Mit häufigen Buchstaben anfangen: E, N, R, I, S, T, A.",
+     "Erst Vokale klären, dann die Mitlaute – so zeigt sich das Wort schnell.",
+     "Den Joker lieber früh in langen Wörtern einsetzen, nicht beim letzten Buchstaben."
+    ]
+   },
+   "size": 135485,
+   "files": 9,
+   "offline": true,
+   "cloud": {
+    "game": "funkgalgen",
+    "prefix": "funkgalgen-"
+   }
+  },
+  {
    "id": "anmacha-preisradar",
    "title": "AnMaCha Preisradar",
    "desc": "Das Preis-Schätzspiel: Gebotsduell, Frequenz-Skala, Teurer oder billiger, Einkaufswagen und Preisfinale – bis zu 4 Spieler, Computer-Gegner, geheime Tipps per Handy. 200+ Produkte, präsentiert vom RicoReWi Radioportal.",

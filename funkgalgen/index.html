@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/funkgalgen-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Funkgalgen"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b0f2a">
+<title>Funkgalgen – Rette den Moderator!</title>
+<meta name="description" content="Funkgalgen: modernes Galgenmännchen in 3D – rate das Wort, bevor der Moderator vom Lautsprecher-Turm in die Sahnetorte fällt. Solo-Serie, Tageswort, Duell und online mit Handys.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg"></div>
+
+<!-- Menü -->
+<section class="scr on" id="sMenu">
+  <div class="box">
+    <div class="brand"><img src="../anmacha-memory/logos/01.png" alt="RicoReWi" width="76" height="76"><img src="../anmacha-memory/logos/07.png" alt="AnMaCha 24" width="76" height="76"></div>
+    <h1 class="logo">Funk<span>galgen</span></h1>
+    <p class="sub">Rate das Wort, bevor der Moderator vom Lautsprecher-Turm in die Sahnetorte plumpst!</p>
+    <button class="btn big pri" id="bSolo">🎯 Solo-Serie</button>
+    <div class="row2"><button class="btn" id="bDaily">📅 Tageswort</button><button class="btn" id="bDuel">👥 Duell</button></div>
+    <button class="btn wide" id="bOnline">🌐 Online &amp; Handys</button>
+    <div class="row2"><button class="btn" id="bHelp">📖 So geht's</button><button class="btn" id="bSet">⚙️ Einstellungen</button></div>
+    <button class="btn wide" id="bRadioM">📻 Radio: aus</button>
+    <p class="stat" id="menuStat"></p>
+    <p class="foot"><a href="../" id="backLink">← Alle Spiele</a></p>
+  </div>
+</section>
+
+<!-- Solo: Kategorie und Schwierigkeit -->
+<section class="scr" id="sSetup">
+  <div class="box">
+    <h2>🎯 Solo-Serie</h2>
+    <p class="hint">Löse Wort für Wort – die Serie endet, wenn der Moderator in der Torte landet.</p>
+    <h3>Kategorie</h3>
+    <div class="chips" id="cats"></div>
+    <h3>Schwierigkeit</h3>
+    <div class="chips" id="diffs"><button class="chip" data-d="leicht">Leicht</button><button class="chip on" data-d="mittel">Mittel</button><button class="chip" data-d="schwer">Schwer</button></div>
+    <div class="rowBtns"><button class="btn" id="setupBack">← Zurück</button><button class="btn pri" id="setupGo">▶ Los geht's</button></div>
+  </div>
+</section>
+
+<!-- Duell: Namen -->
+<section class="scr" id="sDuel">
+  <div class="box">
+    <h2>👥 Duell</h2>
+    <p class="hint">Abwechselnd denkt sich einer ein Wort aus, der andere rät. Wer weniger Kisten verliert, gewinnt die Runde.</p>
+    <input class="field" id="dA" maxlength="14" placeholder="Name Spieler 1">
+    <input class="field" id="dB" maxlength="14" placeholder="Name Spieler 2">
+    <h3>Runden pro Spieler</h3>
+    <div class="chips" id="dRounds"><button class="chip" data-r="2">2</button><button class="chip on" data-r="3">3</button><button class="chip" data-r="5">5</button></div>
+    <div class="rowBtns"><button class="btn" id="duelBack">← Zurück</button><button class="btn pri" id="duelGo">▶ Starten</button></div>
+  </div>
+</section>
+
+<!-- Wort eingeben (Duell) -->
+<section class="scr" id="sWord">
+  <div class="box">
+    <h2 id="wTitle"></h2>
+    <p class="hint" id="wHint"></p>
+    <div class="pw"><input class="field" id="wIn" type="password" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Geheimes Wort"><button class="icon" id="wEye" aria-label="Wort zeigen">👁</button></div>
+    <p class="err" id="wErr"></p>
+    <div class="rowBtns"><button class="btn" id="wRand">🎲 Zufallswort</button><button class="btn pri" id="wOk">✔ Fertig</button></div>
+  </div>
+</section>
+
+<!-- Spiel -->
+<section class="scr game" id="sGame">
+  <div class="hud">
+    <div class="hl"><b id="hMode"></b><small id="hInfo"></small></div>
+    <div class="hr"><span class="score" id="hScore"></span><button class="icon" id="bRadio" aria-label="Radio">📻</button><button class="icon" id="bPause" aria-label="Pause">☰</button></div>
+  </div>
+  <div class="stage" id="stage"><div class="lives" id="lives"></div><div class="feed" id="feed"></div><div class="side" id="side" hidden></div></div>
+  <div class="cat" id="cat"></div>
+  <div class="tiles" id="tiles"></div>
+  <div class="wrongs" id="wrongs"></div>
+  <div class="kbd" id="kbd"></div>
+  <div class="tvHint" id="tvHint" hidden></div>
+</section>
+
+<!-- Online-Lobby (Fernseher/PC) -->
+<section class="scr" id="sLobby">
+  <div class="box wideBox">
+    <h2>🌐 Online &amp; Handys</h2>
+    <div class="lobGrid">
+      <div><div id="lobPlayers" class="slots"></div><p class="hint" id="lobInfo">Mitspieler scannen den QR-Code oder öffnen den Link – von überall. Reihum denkt sich jeder ein Wort aus, die anderen raten um die Wette.</p></div>
+      <div class="qrBox"><div class="qr" id="qr">…</div><div class="code" id="code">····</div><p class="url" id="url"></p></div>
+    </div>
+    <div class="rowBtns"><button class="btn" id="lobBack">← Zurück</button><button class="btn pri" id="lobStart" disabled>Mindestens 2 Handys …</button></div>
+  </div>
+</section>
+
+<!-- Handy -->
+<section class="scr" id="sPhone">
+  <div class="box" id="pJoin">
+    <h1 class="logo small">Funk<span>galgen</span></h1>
+    <p class="sub">Dein Handy ist deine Tastatur – das Wort steht auf dem Fernseher.</p>
+    <input class="field" id="jName" maxlength="14" placeholder="Dein Name" autocomplete="nickname">
+    <input class="field" id="jCode" maxlength="4" placeholder="Code" autocapitalize="characters">
+    <button class="btn big pri" id="bJoin">Mitmachen</button>
+    <p class="err" id="jMsg"></p>
+  </div>
+  <div class="phone" id="pPlay" hidden>
+    <div class="pTop"><span id="pName"></span><b id="pScore">0</b></div>
+    <p class="pMsg" id="pMsg">Warte auf den Start …</p>
+    <div class="pSet" id="pSet" hidden>
+      <div class="pw"><input class="field" id="pWord" type="password" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Dein geheimes Wort"><button class="icon" id="pEye">👁</button></div>
+      <p class="err" id="pErr"></p>
+      <div class="rowBtns"><button class="btn" id="pRand">🎲 Zufall</button><button class="btn pri" id="pSend">✔ Los</button></div>
+    </div>
+    <div class="tiles small" id="pTiles"></div>
+    <div class="kbd" id="pKbd" hidden></div>
+  </div>
+</section>
+
+<div class="ov" id="ovRound" hidden><div class="card">
+  <h2 id="rTitle"></h2>
+  <div class="reveal" id="rWord"></div>
+  <p class="hint" id="rInfo"></p>
+  <div class="rowBtns" id="rBtns"><button class="btn" id="rShare" hidden>📤 Teilen</button><button class="btn pri" id="rNext">Weiter ▶</button></div>
+</div></div>
+
+<div class="ov" id="ovSolve" hidden><div class="card">
+  <h2>✍️ Wort lösen</h2>
+  <p class="hint">Richtig: sofort geschafft. Falsch: kostet 2 Kisten.</p>
+  <input class="field" id="sIn" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Das ganze Wort">
+  <div class="rowBtns"><button class="btn" id="sCancel">Abbrechen</button><button class="btn pri" id="sOk">Lösen</button></div>
+</div></div>
+
+<div class="ov" id="ovPause" hidden><div class="card">
+  <h2>Pause</h2>
+  <div class="menuBtns"><button class="btn big pri" id="pGo">▶ Weiter</button><button class="btn" id="pRadio">📻 Radio</button><button class="btn" id="pSound">🔊 Ton an</button><button class="btn" id="pQuit">⏹ Zum Menü</button></div>
+</div></div>
+
+<div class="ov" id="ovSet" hidden><div class="card">
+  <h2>Einstellungen</h2>
+  <label class="check"><input type="checkbox" id="sSound"> Ton</label>
+  <label class="check"><input type="checkbox" id="sVib"> Vibration</label>
+  <label class="check"><input type="checkbox" id="sLow"> Sparmodus (weniger 3D-Details)</label>
+  <button class="btn pri" id="setX">Fertig</button>
+</div></div>
+
+<div class="ov" id="ovRadio" hidden><div class="card">
+  <h2>📻 Radio</h2>
+  <p class="hint">Der Sender läuft live während des ganzen Spiels – hier jederzeit wechseln.</p>
+  <div class="radioGrid" id="radioList"></div>
+  <button class="btn pri" id="radioX">Fertig</button>
+</div></div>
+
+<div class="ov" id="ovHelp" hidden><div class="card scroll">
+  <h2>So geht's</h2>
+  <p>Der Moderator steht auf einem Turm aus 8 Lautsprecher-Kisten über einer Riesen-Torte. Errate das Wort Buchstabe für Buchstabe: Jeder richtige Buchstabe erscheint an allen Stellen, jeder falsche schießt eine Kiste aus dem Turm. Ist die letzte Kiste weg, landet der Moderator in der Torte.</p>
+  <ul>
+    <li><b>🎯 Solo-Serie:</b> Wort für Wort weiter, bis es einmal schiefgeht. Punkte für jedes Wort: je mehr Kisten übrig, desto mehr; Serien-Bonus bis ×2. Kategorien oder <b>📖 Wörterbuch</b> (bekannte Wörter aus dem Wortfunk-Wörterbuch, auch gebeugte Formen).</li>
+    <li><b>📅 Tageswort:</b> ein Wort pro Tag, für alle gleich – Ergebnis teilen!</li>
+    <li><b>👥 Duell:</b> zu zweit an einem Gerät. Einer gibt verdeckt ein Wort ein (es muss im Wörterbuch stehen), der andere rät.</li>
+    <li><b>🌐 Online &amp; Handys:</b> Der Fernseher zeigt Turm und Wort. Reihum denkt sich ein Handy das Wort aus, alle anderen raten um die Wette: richtiger Buchstabe +5 je Stelle, falscher −2, ganzes Wort lösen +20. Fällt der Moderator in die Torte, punktet der Wortgeber.</li>
+    <li><b>💡 Joker:</b> deckt einen Buchstaben auf (kostet Punkte). <b>✍️ Lösen:</b> das ganze Wort tippen – falsch kostet 2 Kisten.</li>
+    <li><b>Steuerung:</b> Tastatur einfach tippen (Enter = lösen, Esc = Pause), Bildschirmtastatur antippen oder mit dem Gamecontroller: Steuerkreuz wählt die Taste, A drückt sie.</li>
+  </ul>
+  <button class="btn pri" id="helpX">Los geht's</button>
+</div></div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../device.js"></script>
+<script src="../gamekit.js"></script>
+<script src="../cloud/fire-peer.js"></script>
+<script src="js/words.js"></script>
+<script src="js/core.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="funkgalgen" data-prefix="funkgalgen-" defer></script>
+<script src="../gamepad.js" data-pad="rs=none x=- y=- lb=- rb=- select=- start=Escape" defer></script>
+</body>
+</html>

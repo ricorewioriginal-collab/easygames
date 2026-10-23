@@ -469,6 +469,20 @@ window.EASYGAMES_GUIDES = {
    "Im Radio-Rhythmus ist der höchste Punkt einer Frucht genau auf dem Schlag – dort schneiden!"
   ]
  },
+ "funkgalgen": {
+  "anleitung": "Funkgalgen ist Galgenmännchen in modern und freundlich: Der Moderator steht auf einem Turm aus 8 Lautsprecher-Kisten über einer Riesen-Torte. Rate das Wort Buchstabe für Buchstabe – richtige Buchstaben erscheinen an allen Stellen, jeder falsche schießt eine Kiste aus dem Turm. Ist die letzte Kiste weg, landet der Moderator in der Torte. 💡 Joker deckt einen Buchstaben auf (kostet Punkte), ✍️ Lösen nimmt das ganze Wort (falsch kostet 2 Kisten). Modi: 🎯 Solo-Serie (9 Kategorien oder 📖 Wörterbuch mit bekannten Wörtern aus dem Wortfunk-Wörterbuch, drei Schwierigkeiten; die Serie läuft, bis es einmal schiefgeht), 📅 Tageswort (für alle gleich, Ergebnis teilen), 👥 Duell (zu zweit an einem Gerät, Wörter werden im Wörterbuch geprüft) und 🌐 Online & Handys: Der Fernseher zeigt Turm und Wort, reihum denkt sich ein Handy das Wort aus, die anderen raten um die Wette (richtiger Buchstabe +5 je Stelle, falscher −2, Wort lösen +20; landet der Moderator in der Torte, punktet der Wortgeber).",
+  "steuerung": [
+   "Tastatur: Buchstaben einfach tippen (auch Ä, Ö, Ü), Enter = Wort lösen, Esc = Pause.",
+   "Touch/Maus: Bildschirmtastatur antippen; 💡 Joker und ✍️ Lösen unten rechts.",
+   "Gamecontroller: Steuerkreuz wählt die Taste, A drückt sie, B zurück, Start = Pause.",
+   "Online: Jedes Handy hat seine eigene Tastatur; der Fernseher zeigt Wort, Turm, Punkte und wer gerade was geraten hat."
+  ],
+  "tipps": [
+   "Mit häufigen Buchstaben anfangen: E, N, R, I, S, T, A.",
+   "Erst Vokale klären, dann die Mitlaute – so zeigt sich das Wort schnell.",
+   "Den Joker lieber früh in langen Wörtern einsetzen, nicht beim letzten Buchstaben."
+  ]
+ },
  "tortenschlacht": {
   "anleitung": "Tortenschlacht ist ein Wurfspiel im Stil der Moorhuhn-Jagd – nur mit Sahne: Im Radioportal ist viel los (alle Figuren frei erfunden): Moderatoren, Praktikantinnen, Radfahrer, DJs, Leute in den Studiofenstern, Techniker am Funkturm, Fallschirmspringer, Ballonfahrer, Jetpack-Flieger, menschliche Kanonenkugeln, ein Werbeflieger mit Banner, der Chef und ein goldener Fan – manchmal taucht auch jemand ganz nah vorn auf. Triff in 90 Sekunden so viele wie möglich. 🎂 Torte (8 pro Ladung, trifft sofort, ein Treffer reicht), 💦 Sahnespritze (gedrückt halten, 3 Spritzer pro Person) und 🍒 Kirschbombe vom goldenen Fan (trifft alle in der Nähe). Kopftreffer zählen doppelt, Treffer in Folge steigern den Multiplikator bis ×5, ein Fehlwurf setzt ihn zurück. Der Konditor holt aus und wirft zurück – triff ihn vorher oder schieß seine Torte im Flug ab, sonst klebt dir Sahne im Gesicht. Geheimnisse: Das Schild „Schön, dass du da bist!“ gibt +10 Sekunden, ON-AIR-Schilder und Turmlampen je +25, und wer ans Fenster wirft, holt jemanden heraus. Solo scrollt eine breite Landschaft; im Mehrspieler spielen bis zu 4 an einem Bildschirm, bei „🌐 Online & Handys“ wird jedes Handy per QR-Code zum Zielgerät – auch von unterwegs. 📻 spielt einen Sender live das ganze Spiel über.",
   "steuerung": [
