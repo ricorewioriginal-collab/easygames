@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "cc15593cb0a6",
- "generated": "2026-10-23T08:30:41+02:00",
- "commit": "14334b395a919c6a7a7744087d0ce2db0aafdaf7",
+ "version": "a3606c260db6",
+ "generated": "2026-10-23T08:55:11+02:00",
+ "commit": "bcd02e0ad4ea513c654eb290fdc582ba1dd6a0af",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2621,
-   "h": "b410f7b4286500868b9f419184d452e77c92b08ac308f52581ab0ccf7587f330"
+   "s": 2646,
+   "h": "78c3b143c8a18af46016716cecdfc848561ce0e817de70c577565177359b312d"
   },
   {
    "p": "chat.html",
@@ -5668,8 +5668,8 @@
   },
   {
    "p": "games.js",
-   "s": 32162,
-   "h": "57c02f826cc04081f6d54d126c4a9b849ac38fffd4cb8ed9938adf3c12de2b79"
+   "s": 32919,
+   "h": "bc4d9729dfa21563c6902815d964150d74be0286401cd21169cbf6c5b5d015c6"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5828,8 +5828,8 @@
   },
   {
    "p": "guides.js",
-   "s": 90993,
-   "h": "e6771802154a48e1bd708e031d614166d896f8872d1424ee030b057a7fdabf36"
+   "s": 93322,
+   "h": "a65879e0da18c07a1aa9b1d8e248d7d8d7d589d1cb3b033c0e298b0725a31f21"
   },
   {
    "p": "heute.html",
@@ -6188,8 +6188,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2536,
-   "h": "68bd5b17242c72442e8e8474506bfb585417a56a9723887364be9ae5b80d80fd"
+   "s": 2570,
+   "h": "f5eeb090166b4b6ece1b12c0b654ec6ec7eec4dcb4534e3258fc8dadc1c79437"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -7283,8 +7283,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 140263,
-   "h": "e44645484cca92b97a7bd96216d3c15e09125296c483b2bd1be611fc1582802d"
+   "s": 143600,
+   "h": "d65e27563531f821dd6d2c206266e8b88ea737257175a800b33ceb7bd33fffac"
   },
   {
    "p": "taschi/card.svg",
@@ -7760,6 +7760,81 @@
    "p": "vendor/three-r128.min.js",
    "s": 603445,
    "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
+  },
+  {
+   "p": "winzflitzer/card.jpg",
+   "s": 48755,
+   "h": "b5b74a23f83c0535a3c6c099f2e656dbbe3d582de2507b40b307165178576ff9"
+  },
+  {
+   "p": "winzflitzer/index.html",
+   "s": 11598,
+   "h": "d6aa94bd1f3d694fc5ea5ab74493d1ec75e5c37f8d4fe694a2f9e528322bd7ac"
+  },
+  {
+   "p": "winzflitzer/js/audio.js",
+   "s": 7886,
+   "h": "e91feeac8037c557d9ff170ab91d6a5cfc565eb868e05bf518f4f7ce24e931f5"
+  },
+  {
+   "p": "winzflitzer/js/data.js",
+   "s": 20319,
+   "h": "bd663d75b0a823a52e58c4354d9cb912e5b977958a8e3029f4e4b5991417ff1f"
+  },
+  {
+   "p": "winzflitzer/js/game.js",
+   "s": 54702,
+   "h": "efcde34ae75aeaf98d6ce6b13a0f6d771ed8cb46a4d20abdbf3e517a5a996bbf"
+  },
+  {
+   "p": "winzflitzer/js/input.js",
+   "s": 7746,
+   "h": "dada8c51a68f94b87ce3235aba7da3e462e3690083a1f20c4de5147b5446fdcc"
+  },
+  {
+   "p": "winzflitzer/js/models.js",
+   "s": 9112,
+   "h": "f2b83c313f0c3b5efa114aa1bc71aa4b032d0f1b6219523aa0970224ba04c84c"
+  },
+  {
+   "p": "winzflitzer/js/physics.js",
+   "s": 15855,
+   "h": "b407c1dd5df38fff97af528787c930e4f2ff642403c38940b45653aa2490d9b7"
+  },
+  {
+   "p": "winzflitzer/js/scenery.js",
+   "s": 37836,
+   "h": "d8bd5133c8c34b99042f710f8bdc3703dee704c63ad2001bf82d579be1e49361"
+  },
+  {
+   "p": "winzflitzer/js/track.js",
+   "s": 12044,
+   "h": "de3ad587390b8d63b974716e68f15266ab31319ba51a2720b3a8904c377e737d"
+  },
+  {
+   "p": "winzflitzer/js/util.js",
+   "s": 5828,
+   "h": "bb73c5849b4f503978f1447f197ebcf1ed92eb843554f317591d8e5206304b83"
+  },
+  {
+   "p": "winzflitzer/logo.svg",
+   "s": 3411,
+   "h": "9f3d0fcf0b895bf669b69d86025e742657c9b450799fc33e69e9d0a77043cdc5"
+  },
+  {
+   "p": "winzflitzer/manifest.webmanifest",
+   "s": 797,
+   "h": "f205847411ab36d6f48e0f4130d55bf62acfb8ed7834721e5bfaf5ecdebc9361"
+  },
+  {
+   "p": "winzflitzer/style.css",
+   "s": 12641,
+   "h": "29adf8d6bdfb95e0239fdbed490e714a5c75d319a7c816ff04faa6d1e2908d42"
+  },
+  {
+   "p": "winzflitzer/sw.js",
+   "s": 2018,
+   "h": "31e1b20d246dd85ff0547c2601a279c28038236e4806fe3c0219fc488710db2b"
   },
   {
    "p": "wobbel/card.png",

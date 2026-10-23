@@ -56,6 +56,14 @@ const E = {
 <path d="M68 22a46 46 0 0 1 64 0M82 8a24 24 0 0 1 36 0" stroke="#fff" stroke-width="6" stroke-linecap="round" fill="none"/></g>`,
   'partyverse': () => `<path d="M26 164C26 120 80 150 100 118S150 100 174 60" stroke="#ffffff88" stroke-width="12" stroke-linecap="round" stroke-dasharray="1 20" fill="none"/>${[[34, 160, '#19f0ff'], [64, 146, '#ffc53d'], [94, 124, '#8cf04a'], [126, 106, '#ff3d8b']].map(([x, y, c]) => `<circle cx="${x}" cy="${y}" r="15" fill="${c}" stroke="#fff" stroke-width="5"/>`).join('')}
 ${iso(100, 44, 52, '#ffffff', '#ffd6ea', '#ff9ad0')}${dicePips(100, 44, 52, [[.3, .3], [.7, .7]], [[.25, .25], [.5, .5], [.75, .75]])}
-${star(166, 52, 22, 10, '#ffc53d', 'stroke="#fff" stroke-width="4"')}<path d="M24 56l8-10 8 10zM170 130l8 4-6 8zM36 100a5 5 0 1 0 .1 0" fill="#fff" opacity=".9"/><circle cx="14" cy="30" r="5" fill="#19f0ff"/><circle cx="188" cy="104" r="5" fill="#ff3d8b"/>`
+${star(166, 52, 22, 10, '#ffc53d', 'stroke="#fff" stroke-width="4"')}<path d="M24 56l8-10 8 10zM170 130l8 4-6 8zM36 100a5 5 0 1 0 .1 0" fill="#fff" opacity=".9"/><circle cx="14" cy="30" r="5" fill="#19f0ff"/><circle cx="188" cy="104" r="5" fill="#ff3d8b"/>`,
+  'winzflitzer': () => `<rect x="-10" y="150" width="220" height="60" fill="#fff"/>${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(k => `<rect x="${k * 22 - 10}" y="150" width="11" height="60" fill="#ff5d7a" opacity=".55"/>`).join('')}<rect x="-10" y="150" width="220" height="11" fill="#ff5d7a" opacity=".45"/><rect x="-10" y="172" width="220" height="11" fill="#ff5d7a" opacity=".45"/>
+<circle cx="104" cy="36" r="20" fill="none" stroke="#f5b041" stroke-width="10"/><circle cx="30" cy="40" r="13" fill="none" stroke="#e8a33c" stroke-width="7"/><circle cx="58" cy="18" r="8" fill="none" stroke="#f5c66e" stroke-width="5"/>
+<path d="M10 104H52M4 122H44M16 86H50" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".85"/>
+<path d="M50 132C50 112 62 104 80 102L104 80C112 72 122 70 134 70H150C162 70 168 78 172 88L180 104C190 106 196 114 196 124V132Z" fill="#ff2d95" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+<path d="M108 84C114 78 120 76 128 76H146C152 76 156 80 158 86L162 98H100Z" fill="#1b2a3a" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
+<path d="M60 116H190" stroke="#ffd23f" stroke-width="7"/><rect x="40" y="94" width="18" height="8" rx="3" fill="#222"/><rect x="46" y="100" width="6" height="12" fill="#222"/>
+<circle cx="82" cy="136" r="19" fill="#1d1d1f" stroke="#fff" stroke-width="4"/><circle cx="82" cy="136" r="8" fill="#c8ccd2"/><circle cx="166" cy="136" r="19" fill="#1d1d1f" stroke="#fff" stroke-width="4"/><circle cx="166" cy="136" r="8" fill="#c8ccd2"/>
+<rect x="150" y="6" width="5" height="34" fill="#fff"/>${[0, 1, 2, 3].map(r => [0, 1, 2].map(c => `<rect x="${155 + c * 9}" y="${6 + r * 6}" width="9" height="6" fill="${(r + c) % 2 ? '#111' : '#fff'}"/>`).join('')).join('')}`
 };
 module.exports = E;
