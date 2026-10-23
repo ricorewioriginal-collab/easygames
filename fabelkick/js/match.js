@@ -24,7 +24,7 @@
       this.diff = FK.DIFFS[o.diff != null ? o.diff : 1];
       this.halfLen = this.mode === 'training' ? Infinity : (o.half || 3) * 60;
       this.clock = 0; this.half = 1; this.time = 0; this.phase = 'init'; this.paused = false;
-      this.scorers = []; this.events = [];
+      this.scorers = []; this.events = []; this.timers = new Set(); this.disposed = false;
       this.teams = [this.makeTeam(o.home, 0, 1), this.makeTeam(o.away, 1, -1)];
       this.players = this.teams[0].players.concat(this.teams[1].players);
       const b = world.makeBall();
@@ -59,11 +59,17 @@
       return t;
     }
 
+    // Zeitgeber, die nach dem Beenden des Spiels nicht mehr feuern
+    later(fn, ms) { const id = setTimeout(() => { this.timers.delete(id); if (!this.disposed) fn(); }, ms); this.timers.add(id); }
     dispose() {
+      this.disposed = true; this.timers.forEach(clearTimeout); this.timers.clear();
       this.players.forEach(p => p.char.dispose());
-      this.w.scene.remove(this.ball.mesh); this.w.scene.remove(this.ball.blob);
-      this.humans.forEach(h => this.w.scene.remove(h.marker));
-      if (this.aimMark) this.w.scene.remove(this.aimMark);
+      const bm = this.ball.mesh, sc = this.w.scene;
+      sc.remove(bm); sc.remove(this.ball.blob);
+      bm.geometry.dispose(); if (bm.material.map) bm.material.map.dispose(); bm.material.dispose();
+      // Marker: Geometrien sind geteilt, nur die eigenen Materialien freigeben
+      this.humans.forEach(h => { sc.remove(h.marker); h.marker.children.forEach(c => c.material.dispose()); });
+      if (this.aimMark) { sc.remove(this.aimMark); this.aimMark.geometry.dispose(); this.aimMark.material.dispose(); }
     }
 
     // ---------- Hilfen ----------
@@ -579,6 +585,8 @@
           b.vel.set(o.vel.x, 0, o.vel.z);
         }
         this.roll(dt, Math.hypot(o.vel.x, o.vel.z));
+        // Auch beim Dribbeln: Aus, Ecke, Abstoß oder Tor prüfen
+        if (o.state !== 'hold' && this.phase === 'play') { this.rules(b); if (this.phase !== 'play') { b.owner = null; b.vel.set(0, 0, 0); } }
         return;
       }
       b.vel.y -= GRAV * dt;
@@ -673,6 +681,10 @@
       if (!best.gk && b.pos.y > 1.3 && Math.hypot(this.oppGoalX(best.team) - best.pos.x, best.pos.z) < 17 && (best.human ? (best.human.queue && best.human.queue.k === 'shot') || IN().down(best.human.dev, 'b') : Math.random() < 0.7)) { this.header(best); return; }
       if (!best.gk && sp > 24 && Math.random() < 0.5) { // zu hart: prallt ab
         b.vel.multiplyScalar(-0.25); b.vel.y = Math.abs(b.vel.y) + 2; best.kickCd = 0.25; b.lastTouch = best.ti; b.lastPlayer = best; return;
+      }
+      if (best.gk && b.special === 'fire' && b.lastTouch !== best.ti && sp > 12) { // Feuerball lässt sich nicht fangen: nur abwehren
+        b.special = null; b.vel.set(best.team.dir * rnd(4, 9), rnd(2, 5), (Math.sign(b.pos.z - best.pos.z) || 1) * rnd(3, 8)); b.curve = 0;
+        b.lastTouch = best.ti; b.lastPlayer = best; best.kickCd = 0.5; A().save(); return;
       }
       if (best.gk && b.pos.y > 1.2 && b.lastTouch !== best.ti) A().save();
       this.take(best);
@@ -1014,7 +1026,7 @@
         stats: this.teams.map((t, i) => ({ poss: Math.round(this.poss[i] / tot * 100), shots: t.st.shots, onT: t.st.onT, passes: t.st.passes, passOk: t.st.passOk, tackles: t.st.tackles, fouls: t.st.fouls })) };
       this.players.forEach(p => { if (!p.gk) { p.state = winner === -1 ? 'run' : (p.ti === winner ? 'celebrate' : 'sad'); p.hasTarget = false; p.vel.set(0, 0, 0); } });
       this.w.cheer = 1;
-      if (this.on.end) setTimeout(() => this.on.end(res), 1800);
+      if (this.on.end) this.later(() => this.on.end(res), 1800);
     }
 
     // ---------- Elfmeterschießen ----------
@@ -1137,7 +1149,7 @@
         if (sa + ra < sb || sb + rb < sa) done = true;
         if (so.n === 10 && sa !== sb) done = true;
       } else if (so.n % 2 === 0 && sa !== sb) done = true;
-      if (done) { this.aimMark.visible = false; this.phase = 'shootend'; this.banner(this.teams[sa > sb ? 0 : 1].def.name.toUpperCase(), 'gewinnt das Elfmeterschießen ' + sa + ':' + sb, 'goal'); setTimeout(() => this.finish(), 1200); return; }
+      if (done) { this.aimMark.visible = false; this.phase = 'shootend'; this.banner(this.teams[sa > sb ? 0 : 1].def.name.toUpperCase(), 'gewinnt das Elfmeterschießen ' + sa + ':' + sb, 'goal'); this.later(() => this.finish(), 1200); return; }
       so.turn = 1 - so.turn; this.soSetup();
     }
 

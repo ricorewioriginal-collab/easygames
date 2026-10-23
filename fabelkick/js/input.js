@@ -102,7 +102,10 @@
     const l = Math.hypot(mx, my); if (l > 1) { mx /= l; my /= l; }
     kb.mx = mx; kb.my = my;
 
-    pads().forEach(p => {
+    const list = pads(), live = {};
+    list.forEach(p => { if (p && p.connected) live['pad' + p.index] = true; });
+    for (const id in dev) if (id !== 'kb' && !live[id]) { delete dev[id]; delete padPrevMenu[id]; } // getrennter Controller: nichts bleibt gedrückt
+    list.forEach(p => {
       if (!p || !p.connected) return;
       const id = 'pad' + p.index, d = dev[id] || (dev[id] = { down: {}, prev: {}, mx: 0, my: 0 });
       d.prev = d.down; d.down = {};
