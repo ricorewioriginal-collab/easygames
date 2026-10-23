@@ -24,7 +24,8 @@ const CARDS = {
   'anmacha-kartenrausch': ['ANMACHA · 3D', ['KARTEN-', 'RAUSCH'], '🃏', ['🌈', '🎯']],
   'gay-life': ['LEBENSSIMULATION', ['GAY', 'LIFE!'], '🏳️‍🌈', ['🏠', '🍸']],
   'anmacha-klotzfunk': ['VOXEL-SANDBOX · 3D', ['KLOTZ-', 'FUNK'], '🧱', ['⛏️', '💎']],
-  'partyverse': ['3D-PARTYSPIEL', ['PARTY-', 'VERSE'], '🎲', ['🎉', '🎈']]
+  'partyverse': ['3D-PARTYSPIEL', ['PARTY-', 'VERSE'], '🎲', ['🎉', '🎈']],
+  'fabelkick': ['FANTASY-FUSSBALL · 3D', ['FABEL', 'KICK'], '⚽', ['🐒', '🐉']]
 };
 function colors(id) {
   const src = fs.readFileSync(path.join(root, 'games.js'), 'utf8'), i = src.indexOf("id: '" + id + "'");
