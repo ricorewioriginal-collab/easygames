@@ -23,6 +23,10 @@
     return '' + d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
   };
   app.today = () => app.dayKey(0);
+  app.prevKey = function (key) {
+    const d = new Date(+key.slice(0, 4), +key.slice(4, 6) - 1, +key.slice(6, 8), 12); d.setDate(d.getDate() - 1);
+    return '' + d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
+  };
 
   // ---------- Freischaltung ----------
   app.worldOpen = function (w) {
@@ -146,7 +150,7 @@
     catch (e) { if (cfg.state) { app.save.d.cur = null; app.save.write(); app.ui.toast('Gespeicherte Partie war beschädigt – neue Partie.'); return startGame(mode, Object.assign({}, cfg, { state: null })); } throw e; }
     endTimer();
     app.mode = mode; app.ref = cfg.ref || null; app.def = cfg.def || null; app.layout = layout; app.game = game;
-    app.playing = true; app.paused = false; app.cursor = -1; app.hover = -1; app.hint = null; app.lastAction = performance.now();
+    app.playing = true; app.paused = false; app.spinTok = null; app.cursor = -1; app.hover = -1; app.hint = null; app.lastAction = performance.now();
     app.ui.closeModal(); app.ui.hideScreens();
     $('hud').hidden = false;
     $('hudTitle').textContent = cfg.title || layout.name;
@@ -162,6 +166,7 @@
     refreshTints(); updateHud();
     if (!cfg.state) { app.save.d.stats.games++; }
     saveCur();
+    if (cfg.state && game.won()) { app.playing = false; setTimeout(() => { if (app.game === game) onWin(); }, 300); return true; }
     startTimer();
     if (!cfg.quiet && game.stuck()) setTimeout(onStuck, 600);
     return true;
@@ -239,7 +244,7 @@
 
   // ---------- Züge ----------
   function onTile(i) {
-    const g = app.game; if (!g || !app.playing || app.paused) return;
+    const g = app.game; if (!g || !app.playing || app.paused || app.spinTok) return;
     app.lastAction = performance.now();
     const res = g.tap(i, g.time);
     if (res.type === 'blocked') { app.R.shake(i); A.play('blocked'); hintBlocked(i); }
@@ -285,15 +290,16 @@
   }
   app.hintAction = () => { if (app.playing && !app.paused) { app.lastAction = performance.now(); showHint(false); } };
   app.undoAction = function () {
-    const g = app.game; if (!g || !app.playing || app.paused) return;
+    const g = app.game; if (!g || !app.playing || app.paused || app.spinTok) return;
     const p = g.undo();
     if (!p) { app.ui.toast('Nichts zum Zurücknehmen'); return; }
     app.save.d.stats.undos++;
+    if (app.mode === 'blitz') app.blitz.left = Math.max(1, app.blitz.left - 3);   // Zeitbonus des Paars zurücknehmen
     app.hint = null; app.R.restorePair(p[0], p[1]); A.play('undo');
     refreshTints(); updateHud(); saveCur();
   };
   app.shuffleAction = function (free) {
-    const g = app.game; if (!g || !app.playing || app.paused || g.remaining() === 0) return;
+    const g = app.game; if (!g || !app.playing || app.paused || app.spinTok || g.remaining() === 0) return;
     const ok = g.reshuffle(!!free);
     if (!ok) {
       app.ui.modal('Mischen hilft hier nicht', '<p>Die restlichen Steine liegen so übereinander, dass keine Verteilung lösbar ist. Nimm ein paar Züge zurück oder starte neu.</p>',
@@ -303,7 +309,8 @@
     if (!free) app.save.d.stats.shuffles++;
     app.hint = null; g.selected = -1;
     A.play('shuffle');
-    app.R.spinAll(() => { app.R.setFaces(g.faces); refreshTints(); });
+    const tok = app.spinTok = {};
+    app.R.spinAll(() => { if (app.spinTok !== tok) return; app.spinTok = null; if (app.game === g) { app.R.setFaces(g.faces); refreshTints(); } });
     refreshTints(); updateHud(); saveCur();
     if (g.stuck()) setTimeout(onStuck, 900);
   };
@@ -365,7 +372,7 @@
       const d = app.save.d.daily, key = app.ref;
       if (!d.done[key]) {
         d.done[key] = r.score; st.daily++;
-        const yesterday = app.dayKey(-1);
+        const yesterday = app.prevKey(key);
         d.streak = d.last === yesterday ? d.streak + 1 : (d.last === key ? d.streak : 1);
         d.last = key; d.bestStreak = Math.max(d.bestStreak, d.streak);
         extra = '<p class="newbest">Serie: ' + d.streak + ' Tag' + (d.streak === 1 ? '' : 'e') + ' 🔥</p>';
@@ -493,6 +500,7 @@
   function webglOk() { try { const c = document.createElement('canvas'); return !!(root.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl'))); } catch (e) { return false; } }
 
   function boot() {
+    $('btnRetry').onclick = () => location.reload();
     progress(10, 'Spielstand wird geladen …');
     if (!root.THREE) { fail('Die 3D-Bibliothek konnte nicht geladen werden. Bitte Internetverbindung prüfen.'); return; }
     if (!webglOk()) { fail('Dein Browser oder Gerät unterstützt kein WebGL (3D-Grafik). Bitte einen aktuellen Browser verwenden oder die Hardwarebeschleunigung einschalten.'); return; }
@@ -592,7 +600,6 @@
     $('btnZen').onclick = () => { A.play('click'); app.startZen(); };
     $('btnFull').onclick = fullscreen;
     $('btnHome').onclick = () => { if (root.EasyGamesKit) root.EasyGamesKit.close(); };
-    $('btnRetry').onclick = () => location.reload();
     $('btnPause').onclick = () => { A.play('click'); pause(); };
     $('btnHint').onclick = () => app.hintAction();
     $('btnUndo').onclick = () => app.undoAction();
