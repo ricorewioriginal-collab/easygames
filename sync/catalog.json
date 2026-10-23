@@ -1245,6 +1245,40 @@
    }
   },
   {
+   "id": "funkgolf",
+   "title": "Funk-Minigolf 3D – Die Radioportal-Tour",
+   "desc": "18 Minigolf-Bahnen in 3D quer durch das RicoReWi × AnMaCha Radioportal: Senderstudios von YourTime-FM bis AnMaChaCast, Sendeplan, Voting, Sleep-Timer und Funkturm-Finale – mit Plattentellern, Mischpult-Reglern, Eis, Sand, Wasser und Portalen. 1–4 Spieler an einem Gerät, Scorekarte und Rangliste; Touch, Maus, Tastatur und Gamecontroller.",
+   "icon": "⛳",
+   "img": "funkgolf/card.jpg",
+   "bg": "linear-gradient(145deg,#2EE6A0,#FF4FAE 55%,#070a1c)",
+   "glow": "rgba(46,230,160,.5)",
+   "path": "funkgolf/",
+   "modes": {
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Funk-Minigolf 3D führt über 18 Bahnen quer durch das RicoReWi × AnMaCha Radioportal: Begrüßung „Schön, dass du da bist!“, die Senderstudios (YourTime-FM Strandbar, Rapradio 24, Schlagerpop 24, Chartradio 24, Clubradio 24, AnMaCha 24, RadioFloh!, Rockradio 24, Christmasradio 24, Kultradio 24, Zocker-FM, Special-Radio, AnMaChaCast), Sendeplan, Voting, Sleep-Timer und das Funkturm-Finale. Bring den Ball mit möglichst wenigen Schlägen ins Loch. Sand bremst, Eis ist glatt, Wasser kostet einen Strafschlag (Ball zurück), Hänge lenken ab, Plattenteller, Mischpult-Regler, Kassettenspulen und der Mond bewegen sich, Portale beamen den Ball weiter. Höchstens 8 Schläge pro Bahn. Bis zu 4 Spieler spielen abwechselnd an einem Gerät; nach jeder Bahn kommt die Scorekarte. Ganze Runden (18 Bahnen) allein zählen für die Rangliste.",
+    "steuerung": [
+     "Touch/Maus: irgendwo auf den Bildschirm drücken und wie eine Steinschleuder nach hinten ziehen – je weiter, desto fester; loslassen schlägt. Zurück zum Startpunkt ziehen bricht ab. Mausrad dreht die Kamera.",
+     "Tastatur: ← → zielen (mit ↓ fein), Leertaste halten (Stärke pendelt) und loslassen, Q/E Kamera drehen, C Draufsicht, Esc Pause.",
+     "Gamecontroller: linker Stick zielt, A halten und loslassen schlägt, LB/RB Kamera drehen, Y Draufsicht, Start Pause. In Menüs Steuerkreuz + A."
+    ],
+    "tipps": [
+     "Mit 🎥 bzw. C/Y siehst du die ganze Bahn von oben – ideal, um Bandenschläge zu planen.",
+     "Bei beweglichen Hindernissen den richtigen Moment abwarten: lieber einmal mehr hinsehen als im Wasser landen.",
+     "Zu schnell springt der Ball über das Loch – kurz vor dem Loch sanft einlochen."
+    ]
+   },
+   "size": 118811,
+   "files": 7,
+   "offline": true,
+   "cloud": {
+    "game": "funkgolf",
+    "prefix": "funkgolf-"
+   }
+  },
+  {
    "id": "anmacha-preisradar",
    "title": "AnMaCha Preisradar",
    "desc": "Das Preis-Schätzspiel: Gebotsduell, Frequenz-Skala, Teurer oder billiger, Einkaufswagen und Preisfinale – bis zu 4 Spieler, Computer-Gegner, geheime Tipps per Handy. 200+ Produkte, präsentiert vom RicoReWi Radioportal.",

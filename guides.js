@@ -454,6 +454,19 @@ window.EASYGAMES_GUIDES = {
    "Im Radio-Rhythmus ist der höchste Punkt einer Frucht genau auf dem Schlag – dort schneiden!"
   ]
  },
+ "funkgolf": {
+  "anleitung": "Funk-Minigolf 3D führt über 18 Bahnen quer durch das RicoReWi × AnMaCha Radioportal: Begrüßung „Schön, dass du da bist!“, die Senderstudios (YourTime-FM Strandbar, Rapradio 24, Schlagerpop 24, Chartradio 24, Clubradio 24, AnMaCha 24, RadioFloh!, Rockradio 24, Christmasradio 24, Kultradio 24, Zocker-FM, Special-Radio, AnMaChaCast), Sendeplan, Voting, Sleep-Timer und das Funkturm-Finale. Bring den Ball mit möglichst wenigen Schlägen ins Loch. Sand bremst, Eis ist glatt, Wasser kostet einen Strafschlag (Ball zurück), Hänge lenken ab, Plattenteller, Mischpult-Regler, Kassettenspulen und der Mond bewegen sich, Portale beamen den Ball weiter. Höchstens 8 Schläge pro Bahn. Bis zu 4 Spieler spielen abwechselnd an einem Gerät; nach jeder Bahn kommt die Scorekarte. Ganze Runden (18 Bahnen) allein zählen für die Rangliste.",
+  "steuerung": [
+   "Touch/Maus: irgendwo auf den Bildschirm drücken und wie eine Steinschleuder nach hinten ziehen – je weiter, desto fester; loslassen schlägt. Zurück zum Startpunkt ziehen bricht ab. Mausrad dreht die Kamera.",
+   "Tastatur: ← → zielen (mit ↓ fein), Leertaste halten (Stärke pendelt) und loslassen, Q/E Kamera drehen, C Draufsicht, Esc Pause.",
+   "Gamecontroller: linker Stick zielt, A halten und loslassen schlägt, LB/RB Kamera drehen, Y Draufsicht, Start Pause. In Menüs Steuerkreuz + A."
+  ],
+  "tipps": [
+   "Mit 🎥 bzw. C/Y siehst du die ganze Bahn von oben – ideal, um Bandenschläge zu planen.",
+   "Bei beweglichen Hindernissen den richtigen Moment abwarten: lieber einmal mehr hinsehen als im Wasser landen.",
+   "Zu schnell springt der Ball über das Loch – kurz vor dem Loch sanft einlochen."
+  ]
+ },
  "funkmaler": {
   "anleitung": "Funkmaler ist ein Mal- und Ratespiel für 2 bis 8 Spieler. Ein großer Bildschirm (Fernseher, PC oder Tablet) öffnet „🌐 Online & Handys“ und zeigt einen QR-Code mit Raum-Code; alle anderen scannen ihn mit dem Handy (oder öffnen den Link), geben ihren Namen ein und sind drin – auch von unterwegs. Reihum ist jemand Maler: Sein Handy zeigt 3 Wörter, eins wird gewählt und gemalt (Buchstaben und Zahlen sind tabu). Die Zeichnung erscheint live auf dem Fernseher und den Handys. Alle anderen tippen ihre Vermutung ins Handy; „knapp daneben“ sieht nur, wer geraten hat. Je schneller richtig, desto mehr Punkte (bis 120), der Maler bekommt für jeden, der es errät, 15 Punkte. Im Lauf der Zeit werden Buchstaben aufgedeckt. Nach allen Runden gibt es Podest und Galerie aller Bilder. Fällt ein Handy kurz aus, verbindet es sich von selbst wieder und behält seine Punkte. Ohne Handys: „Ein Gerät“ – einer malt, alle raten laut, der Maler tippt an, wer es zuerst hatte.",
   "steuerung": [

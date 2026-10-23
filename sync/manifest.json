@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "06517a2bc679",
- "generated": "2026-10-23T07:40:43+02:00",
- "commit": "c4281de438547f002432b12a5b685f60d8614a66",
+ "version": "ee07f0bd5ab0",
+ "generated": "2026-10-23T08:01:00+02:00",
+ "commit": "797baaa9d580d2c460349e6e824bb76a448aa47e",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2599,
-   "h": "9029251d17f5952c5160f774da6d5357c06d3c947e12414cf35da1e6ad1948f5"
+   "s": 2621,
+   "h": "b410f7b4286500868b9f419184d452e77c92b08ac308f52581ab0ccf7587f330"
   },
   {
    "p": "chat.html",
@@ -5582,6 +5582,41 @@
    "h": "86f83add93f444ee1cf792ff679b9fd6b55538b3d8342a71cfa54f6947b94088"
   },
   {
+   "p": "funkgolf/card.jpg",
+   "s": 40797,
+   "h": "d33391abccdc5ba277d03093bb241168c310101d67a6d24b59491afedd59f252"
+  },
+  {
+   "p": "funkgolf/index.html",
+   "s": 9165,
+   "h": "fb70ce408a7925fd7502b8d1d7e02d1f7bc8bf0cae8d6cd5b2ea987a0ee13dbe"
+  },
+  {
+   "p": "funkgolf/js/core.js",
+   "s": 12205,
+   "h": "5d2189996f6f0f5c379f4e22f9dd4be177709ae4427629eecd79f332c311a147"
+  },
+  {
+   "p": "funkgolf/js/game.js",
+   "s": 44729,
+   "h": "95893bc98bf264efdb868ae54dd3c4adf0648b8d27509b831378fc721bcbf80b"
+  },
+  {
+   "p": "funkgolf/manifest.webmanifest",
+   "s": 785,
+   "h": "2538b146125e4bbd445102c2bb87beb4f15e0c19170996ef0ada001e0964ed28"
+  },
+  {
+   "p": "funkgolf/style.css",
+   "s": 9123,
+   "h": "a1158404d0c15e213da16741ab6eed54fe8282cdb764825e93fb37c4a6b47c7c"
+  },
+  {
+   "p": "funkgolf/sw.js",
+   "s": 2007,
+   "h": "7c8a98ebecfefe3b5ddf5438f24bb2ddd2cdc653b8d0db5bea310352569c385d"
+  },
+  {
    "p": "funkmaler/card.jpg",
    "s": 31664,
    "h": "f443522d4288edf36670a404021b9e3b0d33e25da7442e8a7e7fd81f32511d55"
@@ -5633,8 +5668,8 @@
   },
   {
    "p": "games.js",
-   "s": 31465,
-   "h": "0236a0ae7ec9bf00b7b35cd0685c582080b30ee348d092de00f98a9f88025644"
+   "s": 32043,
+   "h": "3eeb878a2395f54ddac79fa6473e5f31570653887d6100ed069f681fd27d8ae4"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5793,8 +5828,8 @@
   },
   {
    "p": "guides.js",
-   "s": 88724,
-   "h": "f188ff1ee240ef9952ce10c783f18bfba90ce66515e0b9b46e0a147df31b99d9"
+   "s": 90452,
+   "h": "0cd49b5a74f96f0da236e809fb5b528db41323eb81378794f566bd538093cecf"
   },
   {
    "p": "heute.html",
@@ -6153,8 +6188,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2505,
-   "h": "69a680dc8ff328e1d6adde2007a1c6f77b13f3327c38488e81362ef4328e624a"
+   "s": 2536,
+   "h": "68bd5b17242c72442e8e8474506bfb585417a56a9723887364be9ae5b80d80fd"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -7248,8 +7283,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 137050,
-   "h": "1a2de8966cc9993574e40a11d252ee9e4ec7b95c08abfdf475086c976cfa9a0a"
+   "s": 139603,
+   "h": "36c1fabbe0a7b581187390310f9c0f906e3c77d271cd2a737b7f056ca26c2f9b"
   },
   {
    "p": "taschi/card.svg",
