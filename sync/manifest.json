@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "a3606c260db6",
- "generated": "2026-10-23T08:55:11+02:00",
- "commit": "bcd02e0ad4ea513c654eb290fdc582ba1dd6a0af",
+ "version": "35561d1f8df7",
+ "generated": "2026-10-23T07:51:53+00:00",
+ "commit": "03a8c080d5720a73dcb845d53f660c7aaedbf319",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2646,
-   "h": "78c3b143c8a18af46016716cecdfc848561ce0e817de70c577565177359b312d"
+   "s": 2669,
+   "h": "a5937d6b30f18d06dd36e6850a4ed8030d47d71018f7b6a30531e339715f12a0"
   },
   {
    "p": "chat.html",
@@ -5308,8 +5308,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22049,
-   "h": "1e6e85cf7c20d09071a9e2ba25abb21d390cae528e12e3ec72a6c12c82b0d1cd"
+   "s": 22147,
+   "h": "8b8083036520914d468a08e62c98e86cf82d014ca48cc673d1f39486c7de9cbf"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -5512,6 +5512,66 @@
    "h": "cfbf7ee10b79e265e3df026b5ca9bb267c5e90258c1e8d2b528732171b3090b5"
   },
   {
+   "p": "fabelkick/card.jpg",
+   "s": 42235,
+   "h": "0fe3d9476b065c622ac1c8af1a084c5501eb2b01ceadc82615b27e9e43227f6b"
+  },
+  {
+   "p": "fabelkick/index.html",
+   "s": 14181,
+   "h": "1a3593f13546398eeb33531b26f9e03f78a4adc4d8f47c8e894e838706502c57"
+  },
+  {
+   "p": "fabelkick/js/audio.js",
+   "s": 6837,
+   "h": "47f3924393270ccc08727d4b0ff562b1fa3ded0f7ee7bd22d986ea062b7bcec8"
+  },
+  {
+   "p": "fabelkick/js/data.js",
+   "s": 8630,
+   "h": "cb35fc9595da9ca7d5b794934e4ef92dab283a20492eda0ffec5536ed037a565"
+  },
+  {
+   "p": "fabelkick/js/input.js",
+   "s": 8492,
+   "h": "29b8a5270d83e9a68734ffc1a9daa3c3f919fbf32e27d105592bac9ddd54f857"
+  },
+  {
+   "p": "fabelkick/js/match.js",
+   "s": 70626,
+   "h": "21151442647f351d5e0fb57ee34f52218582668b3e022d359bcc6c52d2ea7e5c"
+  },
+  {
+   "p": "fabelkick/js/ui.js",
+   "s": 32068,
+   "h": "5f1c8fd9ae155df2ce6ee9dcab4b53b6dc1b9b537e662d245ceb1d764aededa7"
+  },
+  {
+   "p": "fabelkick/js/world.js",
+   "s": 37482,
+   "h": "62c9da63287129412442e11e1258899b856233cf0f73f344fbfc1d24c3c490f8"
+  },
+  {
+   "p": "fabelkick/logo.svg",
+   "s": 1709,
+   "h": "567bd13954d555df034b3a627baaf98473440bf652b600df93fff560d6b29fef"
+  },
+  {
+   "p": "fabelkick/manifest.webmanifest",
+   "s": 776,
+   "h": "8793b84e6abd08955481f8b7301d0af38d2322db2fd53a74b27485dff300bc9b"
+  },
+  {
+   "p": "fabelkick/style.css",
+   "s": 22163,
+   "h": "a2ffeb4d4e076d092d94ef92f118bcb68478415782ca0b07a0e5bae6cbdb07d0"
+  },
+  {
+   "p": "fabelkick/sw.js",
+   "s": 2001,
+   "h": "49454e3965a67ab1a8aa4e0503b3071b557068ccef705151a7860b8c32a5b4b1"
+  },
+  {
    "p": "favicon.ico",
    "s": 12090,
    "h": "d5ef61cb780ac29613e137e3f5e2103928d9b1b102772d90cfe3551b52e5c6da"
@@ -5668,8 +5728,8 @@
   },
   {
    "p": "games.js",
-   "s": 32919,
-   "h": "bc4d9729dfa21563c6902815d964150d74be0286401cd21169cbf6c5b5d015c6"
+   "s": 33545,
+   "h": "f1a60f40a5c0c1e5a2219f31968894e8b7027dbec0267e2abd56205763ccfb89"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5828,8 +5888,8 @@
   },
   {
    "p": "guides.js",
-   "s": 93322,
-   "h": "a65879e0da18c07a1aa9b1d8e248d7d8d7d589d1cb3b033c0e298b0725a31f21"
+   "s": 95498,
+   "h": "2579859039daa7deedd8e7a29bd155304c0994a775468413b506e0e5f1dea7fb"
   },
   {
    "p": "heute.html",
@@ -6188,8 +6248,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2570,
-   "h": "f5eeb090166b4b6ece1b12c0b654ec6ec7eec4dcb4534e3258fc8dadc1c79437"
+   "s": 2602,
+   "h": "831545d640e61e8957a45304e3aec7bb9813d544cf5c6530c246e2fd82b67535"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -7283,8 +7343,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 143600,
-   "h": "d65e27563531f821dd6d2c206266e8b88ea737257175a800b33ceb7bd33fffac"
+   "s": 146667,
+   "h": "0cee1ca30bb99fbb42696f1d165e96ea82023cd1d782e2606078e15752659d87"
   },
   {
    "p": "taschi/card.svg",

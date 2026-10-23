@@ -18,6 +18,7 @@ window.EASYGAMES_MODES = {
   'FunkhausReality': { pad: true, online: true },
   'MachMichAus': { pad: true, online: true },
   'turbokick': { online: true, multi: true },
+  'fabelkick': { multi: true },
   'colorpop-universe': { multi: true },
   'ricopoly': { online: true, multi: true },
   'partyverse': { online: true, multi: true },

@@ -266,6 +266,21 @@ window.EASYGAMES_GUIDES = {
    "Flunkern im Quiz hilft kurz, schadet aber beim Date."
   ]
  },
+ "fabelkick": {
+  "anleitung": "FABELKICK 3D ist Fußball wie bei den großen Konsolenspielen, nur mit Fabelwesen. Acht Teams treten 11 gegen 11 an: Urwald-Affen, Silberrücken, Ork-Brecher, Elfenhain, Zwergenhammer, Trollbrücke, Drachenbrut und Frostpranken. Jedes Team hat eigene Werte für Tempo, Schuss, Pass, Abwehr und Torwart und eine Spezialkraft (z. B. Lianen-Sprint, Donnerschuss, Zauberschuss, Steinwall, Eiszeit). Der Kraftbalken füllt sich mit der Zeit, mit Pässen, Zweikämpfen und Schüssen; ist er voll, löst du die Kraft aus. Es gibt Einwürfe, Ecken, Abstöße, Freistöße mit Mauer, Fouls und Elfmeter, Kopfbälle und Paraden. Modi: Anstoß (schnelles Spiel, auch zu zweit gegeneinander oder zusammen), Fabel-Pokal mit Viertelfinale, Halbfinale und Finale, Elfmeterschießen und Training gegen den Torwart. Drei Arenen, vier Schwierigkeitsstufen, Halbzeitlänge 2 bis 6 Minuten. Siege, Tore und Pokale werden lokal gespeichert, optional mit Google auf allen Geräten.",
+  "steuerung": [
+   "Controller: linker Stick laufen, RT sprinten, A Pass, Y Steilpass, X Flanke, B Schuss (halten = mehr Kraft). Abwehr: A Tackling (halten = Pressing), B Grätsche, LB Spieler wechseln. RB Fabel-Kraft, Start Pause.",
+   "PC: WASD oder Pfeile laufen, Shift sprinten, Leertaste oder K Pass, L Steilpass, I Flanke, J Schuss. Abwehr: K Tackling, J Grätsche, Q wechseln. E Fabel-Kraft, Esc oder P Pause.",
+   "Smartphone und Tablet: Daumen-Stick auf der linken Hälfte, rechts Tasten für Schuss, Pass, Steil, Flanke, Sprint, Wechsel und ★ für die Fabel-Kraft. Am besten quer halten.",
+   "Zu zweit: In der Teamauswahl jedes Gerät (Tastatur/Touch, Controller 1, 2 …) auf HEIM oder GAST stellen. Beide auf einer Seite = zusammen gegen den Computer."
+  ],
+  "tipps": [
+   "Kurz drücken für flache Schüsse, länger halten für mehr Wucht. Zu lange gehalten fliegt der Ball über die Latte.",
+   "Steilpässe in den Lauf sind gegen langsame Teams wie Zwerge und Trolle besonders stark.",
+   "Grätsche nie von hinten: Das gibt Freistoß und im Strafraum Elfmeter.",
+   "Beim Elfmeter als Torwart den Stick erst kurz vor dem Schuss in eine Ecke drücken."
+  ]
+ },
  "turbokick": {
   "anleitung": "3D-Auto-Fußball: Fahre mit deinem Boliden, nutze Nitro und Sprünge und schieße die große Plasmakugel ins gegnerische Tor. Modi: schnelles Spiel gegen Bots (1v1, 2v2, 3v3, 4 Stufen), Splitscreen zu zweit, Training und Online mit Freunden per QR-Code oder Text-Code. Bei Gleichstand gibt es eine Verlängerung (Golden Goal).",
   "steuerung": [

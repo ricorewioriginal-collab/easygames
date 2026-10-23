@@ -25,7 +25,8 @@ const CARDS = {
   'gay-life': ['LEBENSSIMULATION', ['GAY', 'LIFE!'], '🏳️‍🌈', ['🏠', '🍸']],
   'anmacha-klotzfunk': ['VOXEL-SANDBOX · 3D', ['KLOTZ-', 'FUNK'], '🧱', ['⛏️', '💎']],
   'partyverse': ['3D-PARTYSPIEL', ['PARTY-', 'VERSE'], '🎲', ['🎉', '🎈']],
-  'winzflitzer': ['MICRO-RENNEN · 3D', ['WINZ-', 'FLITZER'], '🏎️', ['🥣', '🏁']]
+  'winzflitzer': ['MICRO-RENNEN · 3D', ['WINZ-', 'FLITZER'], '🏎️', ['🥣', '🏁']],
+  'fabelkick': ['FANTASY-FUSSBALL · 3D', ['FABEL', 'KICK'], '⚽', ['🐒', '🐉']]
 };
 function colors(id) {
   const src = fs.readFileSync(path.join(root, 'games.js'), 'utf8'), i = src.indexOf("id: '" + id + "'");
