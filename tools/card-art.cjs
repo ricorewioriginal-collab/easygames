@@ -18,6 +18,13 @@ const dicePips = (x, y, s, L, R) => { const w = s * .866, h = s * .5; return L.m
 const sword = rot => `<g transform="rotate(${rot} 100 100)"><polygon points="100,6 108,22 108,118 92,118 92,22" fill="#e9eef7" stroke="#8b97ad" stroke-width="3" stroke-linejoin="round"/><path d="M100 14V112" stroke="#b7c2d6" stroke-width="3"/><rect x="72" y="116" width="56" height="11" rx="5" fill="#ffc53d" stroke="#8a5a00" stroke-width="3"/><rect x="95" y="126" width="10" height="30" rx="4" fill="#8a4b1c"/><circle cx="100" cy="160" r="8" fill="#ffc53d" stroke="#8a5a00" stroke-width="3"/></g>`;
 
 const E = {
+  'mahjong': () => {
+    const tile = (x, y, rot, face) => `<g transform="rotate(${rot} ${x + 30} ${y + 40})"><rect x="${x + 6}" y="${y + 8}" width="60" height="80" rx="10" fill="#1f8a64"/><rect x="${x}" y="${y}" width="60" height="80" rx="10" fill="#fbf5e6" stroke="#d8c9a4" stroke-width="2.5"/>${face(x, y)}</g>`;
+    const chung = (x, y) => `<path d="M${x + 14} ${y + 30}h32v20h-32zM${x + 30} ${y + 14}v52" fill="none" stroke="#cc2a2a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`;
+    const dots = (x, y) => [[18, 22, '#1f4fa8'], [42, 22, '#1d8a4a'], [30, 40, '#cc2a2a'], [18, 58, '#1d8a4a'], [42, 58, '#1f4fa8']].map(([dx, dy, c]) => `<circle cx="${x + dx}" cy="${y + dy}" r="8" fill="${c}"/><circle cx="${x + dx}" cy="${y + dy}" r="4" fill="#fbf5e6"/>`).join('');
+    const bam = (x, y) => [[18, '#1d8a4a'], [30, '#cc2a2a'], [42, '#1f4fa8']].map(([dx, c]) => `<rect x="${x + dx - 4}" y="${y + 14}" width="8" height="52" rx="4" fill="${c}"/><rect x="${x + dx - 5}" y="${y + 38}" width="10" height="3" fill="#0006"/>`).join('');
+    return tile(18, 70, -14, dots) + tile(122, 70, 14, bam) + tile(70, 44, 0, chung) + star(100, 26, 13, 6, '#ffd36b', 'stroke="#fff" stroke-width="3"');
+  },
   'anmacha-radio-surfer': () => `<path d="M60 52L122 12" stroke="#eef1f8" stroke-width="7" stroke-linecap="round"/><circle cx="122" cy="12" r="7" fill="#ff2e88"/>
 <rect x="30" y="50" width="140" height="94" rx="20" fill="#ffb02e" stroke="#7a3d00" stroke-width="7"/><rect x="44" y="64" width="68" height="66" rx="10" fill="#2b1a05"/>
 <path d="M54 76H102M54 90H102M54 104H102M54 118H102" stroke="#ffb02e" stroke-width="6" stroke-linecap="round"/>

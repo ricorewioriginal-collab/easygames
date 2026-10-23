@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/mahjong-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mahjong 3D"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b2f25">
+<meta name="description" content="Mahjong 3D – Jadepalast: Mahjong Solitaire in echtem 3D. Reise mit 48 Leveln in 8 Welten, 29 Layouts, Tagesrätsel, Zeitjagd und Zen-Modus, immer lösbar gemischt. Für Handy, Tablet, PC und Gamecontroller.">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../vendor/fonts/fredoka.css">
+<link rel="stylesheet" href="./style.css?v=1">
+<title>Mahjong 3D – Jadepalast · easygames</title>
+</head>
+<body>
+<div id="app" data-theme="jade">
+  <div id="stage" aria-hidden="true"></div>
+
+  <!-- Laden -->
+  <section id="scrLoad" class="screen center" aria-live="polite">
+    <div class="load-box">
+      <div class="logo"><img class="logo-tile" src="icon.svg" alt="" aria-hidden="true"><div><b>MAHJONG 3D</b><small>Jadepalast</small></div></div>
+      <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="loadBar"><i></i></div>
+      <p id="loadText">Steine werden poliert …</p>
+      <div id="loadError" class="error" hidden>
+        <p id="loadErrorText"></p>
+        <button class="btn primary" id="btnRetry" type="button">Erneut versuchen</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hauptmenü -->
+  <section id="scrMenu" class="screen" hidden>
+    <div class="menu-wrap">
+      <div class="logo big"><img class="logo-tile" src="icon.svg" alt="" aria-hidden="true"><div><b>MAHJONG 3D</b><small>Jadepalast</small></div></div>
+      <div class="menu-stats" id="menuStats"></div>
+      <nav class="menu-buttons" aria-label="Hauptmenü">
+        <button class="btn primary big" id="btnContinue" type="button" hidden>▶ Weiterspielen</button>
+        <button class="btn primary big" id="btnJourney" type="button">🗺️ Reise</button>
+        <button class="btn" data-go="scrFree" type="button">🀄 Freies Spiel</button>
+        <button class="btn" data-go="scrDaily" type="button">📅 Tagesrätsel</button>
+        <button class="btn" data-go="scrBlitz" type="button">⏱️ Zeitjagd</button>
+        <button class="btn" id="btnZen" type="button">🍵 Zen</button>
+        <button class="btn" data-go="scrStats" type="button">🏆 Erfolge</button>
+        <button class="btn" data-go="scrSettings" type="button">⚙️ Einstellungen</button>
+        <button class="btn" data-go="scrGuide" type="button">📖 Anleitung</button>
+        <button class="btn" data-go="scrCloud" type="button">☁️ Mit Google speichern</button>
+      </nav>
+      <div class="menu-foot">
+        <button class="btn small ghost" id="btnFull" type="button">⛶ Vollbild</button>
+        <button class="btn small ghost" id="btnHome" type="button" hidden>← Alle Spiele</button>
+        <span class="brand">by RicoReWi × AnMaCha</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reise: Welten -->
+  <section id="scrWorlds" class="screen panel" hidden data-back="scrMenu">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück">←</button><h2>Reise</h2><span class="chip" id="worldsStars"></span></header>
+    <div class="scroll"><div class="world-list" id="worldList"></div></div>
+  </section>
+
+  <!-- Reise: Level einer Welt -->
+  <section id="scrLevels" class="screen panel" hidden data-back="scrWorlds">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück">←</button><h2 id="levelsTitle">Welt</h2><span class="chip" id="levelsStars"></span></header>
+    <div class="scroll"><div class="level-grid" id="levelGrid"></div></div>
+  </section>
+
+  <!-- Freies Spiel -->
+  <section id="scrFree" class="screen panel" hidden data-back="scrMenu">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück">←</button><h2>Freies Spiel</h2></header>
+    <div class="scroll">
+      <div class="seg" role="group" aria-label="Sortierung">
+        <button class="btn small" data-sort="size" type="button" aria-pressed="true">Nach Größe</button>
+        <button class="btn small" data-sort="name" type="button" aria-pressed="false">A–Z</button>
+        <button class="btn small" id="btnRandomLayout" type="button">🎲 Zufall</button>
+      </div>
+      <div class="layout-grid" id="layoutGrid"></div>
+    </div>
+  </section>
+
+  <!-- Tagesrätsel -->
+  <section id="scrDaily" class="screen panel" hidden data-back="scrMenu">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück">←</button><h2>Tagesrätsel</h2></header>
+    <div class="scroll"><div class="card" id="dailyBox"></div></div>
+  </section>
+
+  <!-- Zeitjagd -->
+  <section id="scrBlitz" class="screen panel" hidden data-back="scrMenu">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück">←</button><h2>Zeitjagd</h2></header>
+    <div class="scroll"><div class="card" id="blitzBox"></div></div>
+  </section>
+
+  <!-- Erfolge & Statistik -->
+  <section id="scrStats" class="screen panel" hidden data-back="scrMenu">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück">←</button><h2>Erfolge &amp; Statistik</h2><span class="chip" id="achCount"></span></header>
+    <div class="scroll"><div class="stat-grid" id="statGrid"></div><div class="ach-list" id="achList"></div></div>
+  </section>
+
+  <!-- Einstellungen -->
+  <section id="scrSettings" class="screen panel" hidden data-back="scrMenu">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück">←</button><h2>Einstellungen</h2></header>
+    <div class="scroll"><div class="settings" id="settingsBox"></div></div>
+  </section>
+
+  <!-- Anleitung -->
+  <section id="scrGuide" class="screen panel" hidden data-back="scrMenu">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück">←</button><h2>Anleitung</h2></header>
+    <div class="scroll"><div class="guide" id="guideBody"></div></div>
+  </section>
+
+  <!-- Google-Speicher -->
+  <section id="scrCloud" class="screen panel" hidden data-back="scrMenu">
+    <header class="head"><button class="btn round" data-back type="button" aria-label="Zurück">←</button><h2>Mit Google speichern</h2></header>
+    <div class="scroll"><div class="card">
+      <p>Dein Fortschritt (Sterne, Bestwerte, Erfolge, Einstellungen und die laufende Partie) wird immer automatisch auf diesem Gerät gespeichert. Mit einer Google-Anmeldung kommt er zusätzlich in die Cloud und folgt dir auf Handy, Tablet und PC. Es gilt immer der zuletzt gespielte Stand.</p>
+      <div id="cloudMount"></div>
+      <p class="muted" id="cloudNote"></p>
+    </div></div>
+  </section>
+
+  <!-- Spiel-Anzeige -->
+  <div id="hud" hidden>
+    <div class="hud-top">
+      <button class="hud-btn" id="btnPause" type="button" aria-label="Pause">⏸</button>
+      <div class="hud-title"><b id="hudTitle">Level</b><small id="hudSub"></small></div>
+      <div class="hud-vals">
+        <span class="val" id="hudTimeBox"><small id="hudTimeLabel">Zeit</small><b id="hudTime">0:00</b></span>
+        <span class="val" id="hudScoreBox"><small>Punkte</small><b id="hudScore">0</b></span>
+        <span class="val"><small>Steine</small><b id="hudLeft">0</b></span>
+        <span class="val" id="hudMovesBox"><small>Paare frei</small><b id="hudMoves">0</b></span>
+      </div>
+    </div>
+    <div class="combo" id="combo" aria-hidden="true"></div>
+    <div class="hud-bottom" id="hudBottom">
+      <button class="hud-btn wide" id="btnUndo" type="button" aria-label="Rückgängig (U)">↶<span>Zurück</span></button>
+      <button class="hud-btn wide" id="btnHint" type="button" aria-label="Tipp (H)">💡<span>Tipp</span></button>
+      <button class="hud-btn wide" id="btnShuffle" type="button" aria-label="Mischen (R)">🔀<span>Mischen</span></button>
+      <span class="hud-gap"></span>
+      <button class="hud-btn" id="btnZoomOut" type="button" aria-label="Verkleinern (−)">−</button>
+      <button class="hud-btn" id="btnZoomIn" type="button" aria-label="Vergrößern (+)">+</button>
+      <button class="hud-btn" id="btnView" type="button" aria-label="Ansicht zurücksetzen (V)">⟲</button>
+    </div>
+    <div id="floaters" aria-hidden="true"></div>
+  </div>
+
+  <!-- Dialog -->
+  <div id="modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-box">
+      <h2 id="modalTitle"></h2>
+      <div id="modalBody"></div>
+      <div class="modal-actions" id="modalActions"></div>
+    </div>
+  </div>
+  <div id="toast" role="status" aria-live="polite"></div>
+</div>
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../gamekit.js"></script>
+<script src="./js/engine.js?v=1"></script>
+<script src="./js/layouts.js?v=1"></script>
+<script src="./js/faces.js?v=1"></script>
+<script src="./js/save.js?v=1"></script>
+<script src="./js/audio.js?v=1"></script>
+<script src="./js/render.js?v=1"></script>
+<script src="./js/input.js?v=1"></script>
+<script src="./js/ui.js?v=1"></script>
+<script src="./js/main.js?v=1"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="mahjong" data-prefix="easygames.mahjong.v1" data-mount="#cloudMount" data-hint="Mit Google anmelden und Sterne, Bestwerte und Erfolge auf allen Geräten nutzen." defer></script>
+</body>
+</html>
