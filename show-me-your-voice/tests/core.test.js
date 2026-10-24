@@ -284,3 +284,15 @@ test('Live-Wertung: saubere gehaltene Töne geben Perfekt und Combo, schiefe Tö
   assert.ok(bad.evs.filter(t => t === 'perfekt').length < clean.evs.filter(t => t === 'perfekt').length);
   assert.strictEqual(S.singTitle(95), '🌟 Superstar'); assert.strictEqual(S.singTitle(10), '🚿 Duschsänger');
 });
+
+test('Song des Tages, Belohnungen und Speicherstand', () => {
+  assert.match(S.dailyDay(new Date('2026-10-24T23:30:00Z')), /^20261025$/);   // deutsche Zeit
+  const a = S.dailySong('20261024'), b = S.dailySong('20261024');
+  assert.deepStrictEqual(a, b); assert.ok(a.vid && a.title);
+  const sv = S.repair({ v: 1, singCh: { pop: { best: 90, stars: 3 }, rock: { best: 80, stars: 2 } }, daily: { d20261023: 5, d20261024: 700.4 }, rew: { mic: 'feuer', stage: 'x' }, singBest: 5e6 });
+  assert.deepStrictEqual(sv.daily, { d20261024: 700 }); assert.strictEqual(sv.singBest, 10000);
+  assert.deepStrictEqual(sv.rew, { mic: 'feuer', stage: 'chairs' });
+  assert.strictEqual(S.starSum(sv), 5);
+  const r = id => S.D.REWARDS.find(x => x.id === id);
+  assert.ok(S.unlocked(sv, r('feuer')) && !S.unlocked(sv, r('diamant')) && S.unlocked(sv, r('gold')));
+});

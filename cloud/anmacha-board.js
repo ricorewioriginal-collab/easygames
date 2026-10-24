@@ -18,6 +18,15 @@
   // ---- Registry: je Spiel die Ranglisten. key = localStorage-Schlüssel, path = Pfad im JSON-Wert ('' = Zahl direkt),
   // order 'desc' = höher ist besser, 'asc' = niedriger ist besser (Zeiten), fmt: 'int' | 'sec' (Sekunden) | 'ms' (Millisekunden)
   var REG = {
+    // Song des Tages: eine Rangliste pro Tag (deutsche Zeit); der Spielstand hält nur den heutigen Wert (daily.dJJJJMMTT)
+    'show-me-your-voice': (function () {
+      var d = new Date(), day;
+      try { day = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Berlin' }).format(d).replace(/-/g, ''); } catch (e) { day = d.toISOString().slice(0, 10).replace(/-/g, ''); }
+      return [
+        { id: 'tag' + day, title: 'Song des Tages', key: 'smyv-save', path: 'daily.d' + day, order: 'desc', unit: 'Punkte' },
+        { id: 'main', title: 'Bester Auftritt (Vorsingen)', key: 'smyv-save', path: 'singBest', order: 'desc', unit: 'Punkte' }
+      ];
+    })(),
     'spinwelten': [
       { id: 'main', title: 'Wiederhergestellte Inseln', key: 'spinweltenSave', path: 'islandsDone', order: 'desc', unit: 'Inseln' },
       { id: 'mg', title: 'Minispiel-Siege', key: 'spinweltenSave', path: 'stats.mg_wins', order: 'desc', unit: 'Siege' }
