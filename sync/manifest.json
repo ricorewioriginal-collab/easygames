@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5b894b47e2d0",
- "generated": "2026-10-24T07:46:35+00:00",
- "commit": "5ece714a81a37486f3501a70b479d4a4755700c7",
+ "version": "8255419234f5",
+ "generated": "2026-10-24T08:04:04+00:00",
+ "commit": "bf213a2c9648d4a105fea3cb4b0f6295250a5e98",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5353,8 +5353,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22351,
-   "h": "2c621e040969f59c7f91f373afbe040a30fdc31160e3a2edc34d74e401ec6bcb"
+   "s": 22367,
+   "h": "cc21a3875a413eb1cdc8eaa30b67be96147f8b32e997a45a12459d3579c9f27c"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -7743,8 +7743,8 @@
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 116671,
-   "h": "b142cbfdd7665c366d1f27182ce82eec0708ca537cc2edabb09e5b7fba8917d2"
+   "s": 117231,
+   "h": "99258d271016efcd9f7fd66ff9bc272e755225788688ccf5939e1fb99bf4428d"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
@@ -8044,7 +8044,7 @@
   {
    "p": "sync/catalog.json",
    "s": 183898,
-   "h": "46109b489c52aa3ce04fdfda4dc89ad316202f9bc3398a11f53afd8370d8ef58"
+   "h": "4a3f287d2c81622305c7075212cd52e703173b62ac000242c3c7a888648a03f3"
   },
   {
    "p": "taschi/card.svg",

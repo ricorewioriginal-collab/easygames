@@ -1093,9 +1093,14 @@
       catch (e) {
         save.settings.mic = false; persist(); closeOv();
         let framed = false; try { framed = window.top !== window.self; } catch (x) { framed = true; }
-        if (framed) {   // eingebettet: die Seite drumherum kann das Mikrofon sperren
+        if (e && e.name === 'NotFoundError') { toast('Kein Mikrofon gefunden – du spielst mit Tasten/Touch.', 4500); return; }
+        if (framed) {   // eingebettet: die Seite drumherum kann das Mikrofon sperren – oder der Browser für diese Seite
           (after || RENDER.sSettings)();
-          overlay(`<h3>🎙️ Mikrofon gesperrt</h3><p>Hier ist das Spiel in eine andere Seite eingebettet, die das Mikrofon nicht freigibt. Öffne das Spiel direkt, dann fragt dein Browser nach dem Mikrofon.</p>
+          const fp = document.featurePolicy || document.permissionsPolicy;
+          const pageBlocks = !(fp && fp.allowsFeature) || !fp.allowsFeature('microphone');
+          overlay(`<h3>🎙️ Mikrofon gesperrt</h3>${pageBlocks
+            ? '<p>Hier ist das Spiel in eine andere Seite eingebettet, die das Mikrofon nicht freigibt. Öffne das Spiel direkt, dann fragt dein Browser nach dem Mikrofon.</p>'
+            : '<p>Dein Browser hat das Mikrofon für diese Seite gesperrt. Tippe oben in der Adresszeile auf das Schloss/Einstellungen-Symbol, erlaube das Mikrofon und versuch es noch einmal.</p>'}
             <p class="muted">Ist es dort auch gesperrt: In den Website-Einstellungen des Browsers das Mikrofon erlauben.</p>
             <button class="btn gold" type="button" data-act="open">↗ Spiel direkt öffnen</button><button class="btn" type="button" data-act="no">Mit Tasten/Touch weiter</button>`,
           { open: () => { closeOv(); window.open(location.href.split('#')[0], '_blank', 'noopener'); }, no: closeOv });
