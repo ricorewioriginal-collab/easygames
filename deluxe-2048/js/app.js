@@ -69,7 +69,7 @@
   function back() {
     const ov = overlays().pop();
     if (ov) { S.sfx('back'); if (ov.id === 'ovPause') return resume(); const x = ov.querySelector('[data-close]'); if (x) return x.click(); if (ov.id === 'ovWin') return $('wGo').click(); if (ov.id === 'ovEnd') return $('eMenu').click(); return closeOv(ov.id); }
-    if (cur === 'sGame') { if (G.armed) return disarm(); return pause(); }
+    if (cur === 'sGame') { if (G.armed) return disarm(); if (G.sel >= 0) return deselect(); return pause(); }
     if (BACK[cur]) { S.sfx('back'); BACK[cur](); }
   }
   // Freie Fläche für Brett und Rico je nach Bildschirm
@@ -88,7 +88,7 @@
   function flat() {
     if (!G.g) return; if (!FL) { FL = document.createElement('div'); FL.className = 'flat'; $('stage').appendChild(FL); }
     const n = G.g.n; FL.style.setProperty('--n', n);
-    FL.innerHTML = G.g.cells.map((c, i) => '<i class="' + (c ? 'v' + Math.min(4096, c.v) : '') + (G.armed && i === G.cur ? ' cur' : '') + '">' + (c ? c.v : '') + '</i>').join('');
+    FL.innerHTML = G.g.cells.map((c, i) => '<i class="' + (c ? 'v' + Math.min(4096, c.v) : '') + ((G.armed || M().tap) && i === G.cur ? ' cur' : '') + (i === G.sel ? ' sel' : '') + '">' + (c ? c.v : '') + '</i>').join('');
   }
   function pickFlat(x, y) { if (!FL) return -1; const r = FL.getBoundingClientRect(), n = G.g.n, cx = Math.floor((x - r.left) / r.width * n), cy = Math.floor((y - r.top) / r.height * n); return cx >= 0 && cy >= 0 && cx < n && cy < n ? cy * n + cx : -1; }
 
@@ -97,9 +97,10 @@
     classic: { n: 'Klassisch', undo: 2, hammer: 1, rank: true, save: true },
     blitz: { n: 'Blitz', undo: 1, hammer: 0, rank: true, time: 180 },
     daily: { n: 'Tages-2048', undo: 2, hammer: 1, rank: true },
-    zen: { n: 'Zen', inf: true, save: true }
+    zen: { n: 'Zen', inf: true, save: true },
+    tap: { n: 'Antippen', undo: 2, hammer: 1, save: true, tap: true }
   };
-  const G = { mode: 'attract', g: null, undo: 0, hammer: 0, armed: false, cur: -1, time: 0, ended: false, counted: false, seen: {}, idle: 0, demoT: 0, size: 4, daily: null, danger: 0 };
+  const G = { mode: 'attract', g: null, undo: 0, hammer: 0, armed: false, cur: -1, sel: -1, time: 0, ended: false, counted: false, seen: {}, idle: 0, demoT: 0, size: 4, daily: null, danger: 0 };
   const M = () => MODES[G.mode] || {};
   const playing = () => cur === 'sGame' && !overlays().length && G.g && !G.ended;
   function demo() { G.mode = 'attract'; G.g = D2048.newGame(4); for (let k = 0; k < 40; k++) D2048.move(G.g, pickOne(['down', 'left', 'down', 'right'])); G.g.over = false; G.g.hist = []; if (has3d) SC.setGame(G.g); }
@@ -110,16 +111,18 @@
     else {
       G.size = mode === 'blitz' || mode === 'daily' ? 4 : size || SET.size;
       if (mode === 'daily') { G.daily = D2048.daily(); G.g = D2048.newGame(4, G.daily.seed); } else G.g = D2048.newGame(G.size);
+      if (m.tap) { G.g.tap = true; D2048.refill(G.g); }
       G.undo = m.undo || 0; G.hammer = m.hammer || 0;
     }
     G.time = (MODES[mode].time || 0); D2048.maxTile(G.g) >= 2048 && (G.g.keep = true);
     for (const c of G.g.cells) if (c) G.seen[c.v] = 1;
+    G.sel = -1; G.cur = Math.max(0, G.g.cells.findIndex(Boolean)); if (has3d) { SC.select(-1); SC.cursor(-1); }
     if (has3d) SC.setGame(G.g);
     scr('sGame'); hud(); S.music('game'); S.sfx('ok');
-    $('hMode').textContent = MODES[mode].n + (mode === 'classic' || mode === 'zen' ? ' · ' + G.size + '×' + G.size : '');
+    $('hMode').textContent = MODES[mode].n + (mode === 'classic' || mode === 'zen' || mode === 'tap' ? ' · ' + G.size + '×' + G.size : '');
     $('hTimeBox').hidden = !MODES[mode].time;
-    $('hBestL').textContent = mode === 'zen' ? 'Größte' : 'Rekord';
-    rico('thumbs', 1.4); setTimeout(() => say(resume ? 'Weiter geht’s – ich hab alles aufgehoben 💜' : 'hello', 2), 350);
+    $('hBestL').textContent = mode === 'zen' ? 'Größte' : mode === 'tap' ? 'Bestwert' : 'Rekord';
+    rico('thumbs', 1.4); setTimeout(() => say(resume ? 'Weiter geht’s – ich hab alles aufgehoben 💜' : mode === 'tap' ? 'Tipp zwei gleiche Zahlen an – mit freier Sicht in Reihe oder Spalte! 💜' : 'hello', 2, mode === 'tap' ? 4.5 : 0), 350);
     persist();
   }
   function persist() {
@@ -131,7 +134,7 @@
   function hud() {
     const g = G.g, m = M(); if (!g) return;
     $('hScore').textContent = fmt(g.score);
-    $('hBest').textContent = G.mode === 'zen' ? fmt(D2048.maxTile(g)) : fmt(Math.max(hs(), m.rank ? g.score : 0));
+    $('hBest').textContent = G.mode === 'zen' ? fmt(D2048.maxTile(g)) : G.mode === 'tap' ? fmt(Math.max(stats().tap, g.score)) : fmt(Math.max(hs(), m.rank ? g.score : 0));
     $('nUndo').textContent = m.inf ? '∞' : G.undo; $('nHammer').textContent = m.inf ? '∞' : G.hammer;
     $('bUndo').disabled = !(m.inf || G.undo > 0) || !g.hist.length; $('bHammer').disabled = !(m.inf || G.hammer > 0);
     $('bHammer').classList.toggle('armed', G.armed);
@@ -142,10 +145,26 @@
 
   function doMove(dir) {
     if (!playing()) return;
-    if (G.armed) { moveCursor(dir); return; }
+    if (G.armed || M().tap) { moveCursor(dir); return; }
     const r = D2048.move(G.g, dir); G.idle = 0;
     if (!r) { if (has3d) SC.bump(); S.sfx('bump'); vib(8); return; }
     if (has3d) { SC.apply(r); SC.tilt(dir); }
+    afterMove(r);
+  }
+  /* Antippen-Modus: erste Zahl wählen (schwebt, Partner wippen), zweite gleiche Zahl mit freier Sicht antippen */
+  function deselect() { G.sel = -1; if (has3d) SC.select(-1); else flat(); }
+  function tapCell(i) {
+    if (!playing() || i < 0) return; const g = G.g, c = g.cells[i]; G.idle = 0;
+    if (G.sel >= 0 && G.sel !== i && D2048.linked(g, G.sel, i)) {
+      const r = D2048.tapMerge(g, G.sel, i); deselect(); if (!r) return;
+      if (has3d) SC.apply(r); afterMove(r); return;
+    }
+    if (!c || G.sel === i) { if (G.sel >= 0) { deselect(); S.sfx('back'); } return; }
+    const ps = D2048.partners(g, i);
+    if (!ps.length) { deselect(); toast('Keine gleiche Zahl mit freier Sicht'); S.sfx('bump'); if (has3d) SC.bump(); vib(8); return; }
+    G.sel = i; G.cur = i; if (has3d) SC.select(c.id, ps.map(j => g.cells[j].id)); else flat(); S.sfx('move'); vib(6);
+  }
+  function afterMove(r) {
     S.sfx('slide'); if (r.spawn) setTimeout(() => S.sfx('spawn'), 130);
     let top = 0; for (const mg of r.merges) top = Math.max(top, mg.v);
     if (top) { S.sfx('merge', top); if (top >= 128) setTimeout(() => S.sfx('big'), 60); vib(top >= 256 ? 25 : 10); gainFx(r.gain); }
@@ -174,12 +193,13 @@
     if (!G.g || G.ended) return; const m = M();
     if (!(m.inf || G.undo > 0)) { toast('Kein Rückgängig mehr – neue gibt’s für jede 256'); return; }
     if (!D2048.undo(G.g)) return; if (!m.inf) G.undo--;
-    disarm(); if (has3d) SC.setGame(G.g); S.sfx('undo'); rico('point', .8); say('undo', 1); hud(); persist();
+    disarm(); deselect(); if (has3d) SC.setGame(G.g); S.sfx('undo'); rico('point', .8); say('undo', 1); hud(); persist();
   }
   /* Hammer: Kachel wählen (Tippen oder Steuerkreuz + A/Enter) */
   function arm() {
     if (!playing()) return; const m = M();
     if (G.armed) return disarm();
+    deselect();
     if (!(m.inf || G.hammer > 0)) { toast(MODES[G.mode].hammer === 0 ? 'Im Blitz gibt’s keinen Hammer' : 'Kein Hammer mehr – einen gibt’s für jede 1024'); return; }
     G.armed = true; let i = 0, mv = 1e9; G.g.cells.forEach((c, k) => { if (c && c.v < mv) { mv = c.v; i = k; } }); G.cur = i;
     if (has3d) SC.cursor(coarse() ? -1 : i); $('hammerHint').hidden = false; $('hammerHint').firstChild.textContent = coarse() ? '🔨 Tippe die Kachel an, die weg soll · ' : '🔨 Kachel wählen, dann Enter/A · ';
@@ -190,8 +210,9 @@
   function smashAt(i) {
     if (!G.armed || i < 0) return; const r = D2048.smash(G.g, i);
     if (!r) { toast(G.g.cells[i] ? 'Die letzte Kachel bleibt!' : 'Da liegt keine Kachel'); return; }
-    if (!M().inf) G.hammer--; if (has3d) SC.smash(r); S.sfx('smash'); vib(40); rico('cheer', 1); say('hammer', 1);
-    disarm(); persist();
+    const extra = G.g.tap ? D2048.refill(G.g) : [];
+    if (!M().inf) G.hammer--; if (has3d) SC.smash(r, extra); S.sfx('smash'); vib(40); rico('cheer', 1); say('hammer', 1);
+    disarm(); persist(); if (G.g.over) setTimeout(() => endGame('over'), 650);
   }
   $('bUndo').onclick = () => undo(); $('bHammer').onclick = () => arm(); $('bHammerX').onclick = e => { e.stopPropagation(); disarm(); };
 
@@ -205,7 +226,7 @@
   $('wNew').onclick = () => { closeOv('ovWin'); start(G.mode, G.size); };
   $('wMenu').onclick = () => { closeOv('ovWin'); toMenu(); };
 
-  function stats() { return Object.assign({ games: 0, wins: 0, maxTile: 0, merges: 0, blitz: 0, bySize: {}, moves: 0 }, LS.get(P + 'stats', {})); }
+  function stats() { return Object.assign({ games: 0, wins: 0, maxTile: 0, merges: 0, blitz: 0, tap: 0, bySize: {}, moves: 0 }, LS.get(P + 'stats', {})); }
   function endGame(reason) {
     if (G.ended) return; G.ended = true; disarm();
     const g = G.g, m = M(), st = stats(), top = D2048.maxTile(g); let rec = false;
@@ -214,13 +235,14 @@
     if (m.rank && g.score > hs()) { LS.set(P + 'highscore', g.score); rec = g.score > 0; }
     if (G.mode === 'classic') st.bySize[g.n] = Math.max(st.bySize[g.n] || 0, g.score);
     if (G.mode === 'blitz') st.blitz = Math.max(st.blitz, g.score);
+    if (G.mode === 'tap') st.tap = Math.max(st.tap, g.score);
     if (G.mode === 'daily') { const d = LS.get(P + 'daily', {}); if (d.key !== G.daily.key) { d.key = G.daily.key; d.best = 0; d.plays = 0; } d.plays++; d.best = Math.max(d.best, g.score); d.top = Math.max(d.top || 0, top); LS.set(P + 'daily', d); }
     LS.set(P + 'stats', st); if (m.save) LS.del(P + 'save');
     $('eKick').textContent = MODES[G.mode].n + (G.mode === 'daily' ? ' · ' + G.daily.key.split('-').reverse().join('.') : '');
     $('eTitle').textContent = reason === 'time' ? '⏱ Zeit um!' : top >= 2048 ? 'Was für eine Show! 💜' : 'Keine Züge mehr';
     $('eScore').textContent = fmt(g.score); $('eRec').hidden = !rec;
     const c = (k, v) => '<div><small>' + k + '</small><b>' + v + '</b></div>';
-    $('eStats').innerHTML = c('Größte Kachel', fmt(top)) + c('Züge', fmt(g.moves)) + c(G.mode === 'zen' ? 'Brett' : 'Rekord', G.mode === 'zen' ? g.n + '×' + g.n : fmt(hs())) + c('Brett', g.n + '×' + g.n);
+    $('eStats').innerHTML = c('Größte Kachel', fmt(top)) + c('Züge', fmt(g.moves)) + c(G.mode === 'zen' ? 'Brett' : G.mode === 'tap' ? 'Bestwert' : 'Rekord', G.mode === 'zen' ? g.n + '×' + g.n : G.mode === 'tap' ? fmt(st.tap) : fmt(hs())) + c('Brett', g.n + '×' + g.n);
     $('eUndo').hidden = !(reason === 'over' && (m.inf || G.undo > 0) && g.hist.length);
     $('eShare').hidden = G.mode !== 'daily' && G.mode !== 'blitz';
     S.sfx(rec ? 'win' : 'lose'); S.music('menu');
@@ -257,7 +279,7 @@
   }
   let sizePick = SET.size, sizeMode = 'classic';
   function openSize(mode) {
-    sizeMode = mode; $('szTitle').textContent = (mode === 'zen' ? '🧘 Zen' : '🎯 Klassisch') + ' – Brettgröße';
+    sizeMode = mode; $('szTitle').textContent = (mode === 'zen' ? '🧘 Zen' : mode === 'tap' ? '👆 Antippen' : '🎯 Klassisch') + ' – Brettgröße';
     const info = { 3: 'Knifflig: wenig Platz, jeder Zug zählt.', 4: 'Das Original.', 5: 'Mehr Luft – große Zahlen möglich.', 6: 'Riesig: für lange Sessions.' }, st = stats();
     $('szChips').innerHTML = [3, 4, 5, 6].map(n => '<button class="chip' + (n === sizePick ? ' on' : '') + '" data-n="' + n + '">' + n + '×' + n + '<small>' + (mode === 'classic' && st.bySize[n] ? '🏆 ' + fmt(st.bySize[n]) : n === 4 ? 'Original' : '&nbsp;') + '</small></button>').join('');
     const upd = () => { $('szInfo').textContent = info[sizePick]; $('szChips').querySelectorAll('.chip').forEach(c => c.classList.toggle('on', +c.dataset.n === sizePick)); };
@@ -269,7 +291,7 @@
   document.querySelectorAll('#tiles .tile').forEach(t => t.onclick = () => {
     S.unlock(); S.sfx('ok'); const k = t.dataset.go;
     if (k === 'cont') start(null, 0, true);
-    else if (k === 'classic' || k === 'zen') openSize(k);
+    else if (k === 'classic' || k === 'zen' || k === 'tap') openSize(k);
     else if (k === 'blitz' || k === 'daily') start(k);
     else if (k === 'rec') { showRec(); openOv('ovRec'); }
     else if (k === 'opts') openOv('ovOpts');
@@ -277,7 +299,7 @@
   });
   function showRec() {
     const st = stats(), d = LS.get(P + 'daily', {}), today = D2048.daily().key, c = (k, v) => '<div><small>' + k + '</small><b>' + v + '</b></div>';
-    $('recList').innerHTML = c('🏆 Rekord', fmt(hs())) + c('Größte Kachel', st.maxTile ? fmt(st.maxTile) : '–') + c('⚡ Blitz', st.blitz ? fmt(st.blitz) : '–') + c('📅 Heute', d.key === today && d.plays ? fmt(d.best) : '–') +
+    $('recList').innerHTML = c('🏆 Rekord', fmt(hs())) + c('Größte Kachel', st.maxTile ? fmt(st.maxTile) : '–') + c('⚡ Blitz', st.blitz ? fmt(st.blitz) : '–') + c('👆 Antippen', st.tap ? fmt(st.tap) : '–') + c('📅 Heute', d.key === today && d.plays ? fmt(d.best) : '–') +
       [3, 4, 5, 6].map(n => c('🎯 ' + n + '×' + n, st.bySize[n] ? fmt(st.bySize[n]) : '–')).join('') + c('2048 geschafft', st.wins + '×') + c('Spiele', fmt(st.games));
   }
   $('recX').onclick = () => closeOv('ovRec'); $('helpX').onclick = () => closeOv('ovHelp');
@@ -295,11 +317,11 @@
     document.body.classList.add('kbd'); const c = e.code;
     if (c === 'Escape' || (c === 'KeyP' && cur === 'sGame' && !overlays().length)) { e.preventDefault(); back(); return; }
     if (cur === 'sGame' && !overlays().length) {
-      if (KDIR[c]) { e.preventDefault(); if (!e.repeat || G.armed) doMove(KDIR[c]); return; }
+      if (KDIR[c]) { e.preventDefault(); if (!e.repeat || G.armed || M().tap) doMove(KDIR[c]); return; }
       if (e.repeat) return;
       if (c === 'KeyU' || c === 'KeyZ' || c === 'Backspace') { e.preventDefault(); undo(); return; }
       if (c === 'KeyH') { arm(); return; }
-      if (G.armed && (c === 'Enter' || c === 'Space' || c === 'NumpadEnter')) { e.preventDefault(); smashAt(G.cur); return; }
+      if (c === 'Enter' || c === 'Space' || c === 'NumpadEnter') { e.preventDefault(); if (G.armed) smashAt(G.cur); else if (M().tap) tapCell(G.cur); return; }
       return;
     }
     if (cur === 'sTitle' && !overlays().length && !e.repeat) { e.preventDefault(); pressStart(); return; }
@@ -307,18 +329,28 @@
     if (dir) { e.preventDefault(); moveFocus(dir[0], dir[1]); }
   });
   addEventListener('pointerdown', () => document.body.classList.remove('kbd'), true);
-  // Wischen (Touch und Maus) – Zug sofort, sobald die Schwelle erreicht ist
+  // Wischen (Touch und Maus): Zug, sobald eine Richtung klar überwiegt; kurze Wischer zählen beim Loslassen.
+  // Im Antippen-Modus und beim Hammer zählt ein Tippen (ohne Wischen) als Auswahl.
   const SW = { id: null, x: 0, y: 0, done: false };
-  const sw = $('swipe');
-  sw.addEventListener('pointerdown', e => { SW.id = e.pointerId; SW.x = e.clientX; SW.y = e.clientY; SW.done = false; try { sw.setPointerCapture(e.pointerId); } catch (x) { } e.preventDefault(); });
+  const sw = $('swipe'), pickAt = e => has3d ? SC.pick(e.clientX, e.clientY) : pickFlat(e.clientX, e.clientY);
+  const swDir = (dx, dy) => Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+  sw.addEventListener('pointerdown', e => { if (SW.id !== null && SW.id !== e.pointerId) return; SW.id = e.pointerId; SW.x = e.clientX; SW.y = e.clientY; SW.done = false; try { sw.setPointerCapture(e.pointerId); } catch (x) { } e.preventDefault(); });
   sw.addEventListener('pointermove', e => {
-    if (e.pointerId !== SW.id || SW.done || G.armed) return; const dx = e.clientX - SW.x, dy = e.clientY - SW.y, th = Math.max(22, Math.min(innerWidth, innerHeight) * .045);
-    if (Math.hypot(dx, dy) < th) return; SW.done = true; doMove(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+    if (e.pointerId !== SW.id || SW.done || G.armed || M().tap) return;
+    const dx = e.clientX - SW.x, dy = e.clientY - SW.y, ax = Math.abs(dx), ay = Math.abs(dy), th = Math.max(26, Math.min(innerWidth, innerHeight) * .055);
+    if (Math.max(ax, ay) < th || Math.max(ax, ay) < Math.min(ax, ay) * 1.35) return;
+    SW.done = true; doMove(swDir(dx, dy));
   });
-  const swEnd = e => { if (e.pointerId !== SW.id) return; if (!SW.done && G.armed && e.type === 'pointerup') smashAt(has3d ? SC.pick(e.clientX, e.clientY) : pickFlat(e.clientX, e.clientY)); SW.id = null; };
-  sw.addEventListener('pointerup', swEnd); sw.addEventListener('pointercancel', swEnd);
+  const swEnd = e => {
+    if (e.pointerId !== SW.id) return; SW.id = null; if (e.type !== 'pointerup' || SW.done) return;
+    const dx = e.clientX - SW.x, dy = e.clientY - SW.y, dist = Math.hypot(dx, dy);
+    if (G.armed) { if (dist < 24) smashAt(pickAt(e)); return; }
+    if (M().tap) { if (dist < 28) tapCell(pickAt(e)); return; }
+    if (dist >= 14) doMove(swDir(dx, dy));
+  };
+  sw.addEventListener('pointerup', swEnd); sw.addEventListener('pointercancel', swEnd); sw.addEventListener('lostpointercapture', e => { if (e.pointerId === SW.id) SW.id = null; });
   // Gamecontroller
-  const PAD = { b: [], dir: null }; let padNavT = 0;
+  const PAD = { b: [], dir: null, lock: false }; let padNavT = 0;
   function pollPads(dt) {
     let list = []; try { list = navigator.getGamepads ? Array.from(navigator.getGamepads()) : []; } catch (e) { }
     const g = list.find(p => p && p.connected); if (!g) return;
@@ -328,8 +360,11 @@
     const now = []; for (let k = 0; k < 17; k++) now[k] = pr(k); const down = k => now[k] && !PAD.b[k];
     const dir = Math.abs(x) >= Math.abs(z) ? (x ? (x > 0 ? 'right' : 'left') : null) : (z > 0 ? 'down' : 'up');
     if (cur === 'sGame' && !overlays().length) {
-      if (dir && dir !== PAD.dir) doMove(dir);
-      if (down(0) && G.armed) smashAt(G.cur);
+      const dp = [12, 13, 14, 15].find(k => down(k)), mag = Math.max(Math.abs(ax[0] || 0), Math.abs(ax[1] || 0)), sx = ax[0] || 0, sy = ax[1] || 0;
+      if (mag < .3) PAD.lock = false;
+      if (dp !== undefined) doMove({ 12: 'up', 13: 'down', 14: 'left', 15: 'right' }[dp]);
+      else if (mag > .6 && !PAD.lock) { PAD.lock = true; doMove(Math.abs(sx) > Math.abs(sy) ? (sx > 0 ? 'right' : 'left') : (sy > 0 ? 'down' : 'up')); }
+      if (down(0)) { if (G.armed) smashAt(G.cur); else if (M().tap) tapCell(G.cur); }
       if (down(2)) undo(); if (down(3) || down(5)) arm(); if (down(4)) undo();
       if (down(1)) back(); if (down(9)) pause();
     } else {

@@ -92,12 +92,13 @@
     G.cells.forEach((c, i) => { if (c) makeTile(c, i); });
   }
   function finish() { for (const a of B.anim) { a.t = 1e9; stepAnim(a); } B.anim.length = 0; }
-  const SL = .11;
+  const SL = .1;
   function apply(res) {
     finish();
     for (const mv of res.moves) { const g = B.tiles.get(mv.id); if (!g) continue; const a = cellPos(mv.from), b = cellPos(mv.to); B.anim.push({ k: 'slide', g, a, b, t: 0, d: SL }); }
     for (const mg of res.merges) B.anim.push({ k: 'merge', mg, t: -SL, d: .2 });
     if (res.spawn) B.anim.push({ k: 'spawn', s: res.spawn, t: -SL - .03, d: .16 });
+    (res.extra || []).forEach((sp, k) => B.anim.push({ k: 'spawn', s: sp, t: -SL - .12 - k * .08, d: .16 }));
   }
   function stepAnim(a) {
     const x = a.t / a.d;
@@ -121,8 +122,9 @@
     }
     return true;
   }
-  function smash(info) { finish(); const g = B.tiles.get(info.id); if (!g) return; B.tiles.delete(info.id); B.anim.push({ k: 'smash', g, t: 0, d: .22 }); burst(info.i, info.v, 22); }
-  function tilt(dir) { const d = { up: [-1, 0], down: [1, 0], left: [0, 1], right: [0, -1] }[dir]; if (!d) return; B.tilt.vx += d[0] * .9; B.tilt.vz += d[1] * .9; }
+  function smash(info, extra) { finish(); const g = B.tiles.get(info.id); if (!g) return; B.tiles.delete(info.id); B.anim.push({ k: 'smash', g, t: 0, d: .22 }); burst(info.i, info.v, 22); (extra || []).forEach((sp, k) => B.anim.push({ k: 'spawn', s: sp, t: -.25 - k * .08, d: .16 })); }
+  function select(id, ids) { if (id == null || id < 0) { B.sel = null; for (const g of B.tiles.values()) g.position.y = 0; } else B.sel = { id, p: new Set(ids || []) }; }
+  function tilt(dir) { const d = { up: [-1, 0], down: [1, 0], left: [0, 1], right: [0, -1] }[dir]; if (!d) return; B.tilt.vx += d[0] * .45; B.tilt.vz += d[1] * .45; }
   const bump = () => { B.tilt.vx += (Math.random() - .5) * .8; B.tilt.vz += (Math.random() - .5) * .8; };
 
   // Funken: aus Brett-Koordinaten in Weltkoordinaten
@@ -301,8 +303,10 @@
     if (dt > 0) { perf.a += (dt - perf.a) * .05; perf.n++; if (perf.n > 90 && perf.a > 1 / 38 && R.getPixelRatio() > .75) { R.setPixelRatio(Math.max(.75, R.getPixelRatio() - .25)); resize(); perf.n = 0; } }
     for (let i = B.anim.length - 1; i >= 0; i--) { const a = B.anim[i]; a.t += dt; if (stepAnim(a)) B.anim.splice(i, 1); }
     // Brett kippt federnd
-    const tl = B.tilt; tl.vx += (-tl.x * 90 - tl.vx * 11) * dt; tl.vz += (-tl.z * 90 - tl.vz * 11) * dt; tl.x += tl.vx * dt; tl.z += tl.vz * dt;
-    B.g.rotation.x = tl.x * .09; B.g.rotation.z = tl.z * .09; B.g.position.y = Math.sin(t * 1.2) * .04;
+    const tl = B.tilt; tl.vx += (-tl.x * 120 - tl.vx * 22) * dt; tl.vz += (-tl.z * 120 - tl.vz * 22) * dt; tl.x += tl.vx * dt; tl.z += tl.vz * dt;
+    B.g.rotation.x = tl.x * .07; B.g.rotation.z = tl.z * .07; B.g.position.y = Math.sin(t * 1.2) * .04;
+    // Antippen: gewählte Kachel schwebt, passende Partner wippen
+    if (B.sel) for (const [id, g] of B.tiles) { const on = id === B.sel.id, pt = B.sel.p.has(id), ty = on ? .32 : pt ? .05 + Math.abs(Math.sin(t * 6)) * .1 : 0; if (on || pt || g.position.y) g.position.y += (ty - g.position.y) * Math.min(1, dt * 14); }
     if (B.cursor && B.cursor.visible) { B.cursor.rotation.z = t * 2; const s = 1 + Math.sin(t * 8) * .06; B.cursor.scale.set(s, s, s); }
     // Funken
     let any = false;
@@ -317,5 +321,5 @@
     R.render(SC, CAM);
   }
 
-  window.D2048Scene = { init, setGame, apply, smash, tilt, bump, burst, confetti, pick, cursor, bubblePos, update, resize, setMargins, finish, rico: Rico, get busy() { return B.anim.length > 0; } };
+  window.D2048Scene = { init, setGame, apply, select, smash, tilt, bump, burst, confetti, pick, cursor, bubblePos, update, resize, setMargins, finish, rico: Rico, get busy() { return B.anim.length > 0; } };
 })();

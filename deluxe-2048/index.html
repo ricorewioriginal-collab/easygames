@@ -54,6 +54,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <div class="tiles" id="tiles">
       <button class="tile nav hero" data-go="cont" id="tCont" hidden><i>▶</i><b>Weiterspielen</b><small id="contInfo"></small></button>
       <button class="tile nav" data-go="classic" id="tClassic"><i>🎯</i><b>Klassisch</b><small>Bis 2048 – und weiter</small></button>
+      <button class="tile nav" data-go="tap"><i>👆</i><b>Antippen</b><small>Zwei gleiche Zahlen antippen</small></button>
       <button class="tile nav" data-go="blitz"><i>⚡</i><b>Blitz</b><small>3 Minuten, so viel wie geht</small></button>
       <button class="tile nav" data-go="daily"><i>📅</i><b>Tages-2048</b><small id="dailyInfo">Gleiches Spiel für alle</small></button>
       <button class="tile nav" data-go="zen"><i>🧘</i><b>Zen</b><small>Ohne Druck, alles rückgängig</small></button>
@@ -133,6 +134,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <p>Schiebe <b>alle Kacheln</b> gleichzeitig in eine Richtung. Treffen zwei <b>gleiche Zahlen</b> aufeinander, verschmelzen sie zur doppelten Zahl – und es gibt so viele Punkte, wie die neue Kachel zeigt. Nach jedem Zug kommt eine neue 2 oder 4 dazu. Ziel: die <b>2048</b>! Danach darfst du weiterspielen. Geht kein Zug mehr, ist die Show vorbei.</p>
   <ul>
     <li><b>🎯 Klassisch:</b> Bretter von 3×3 (knifflig) bis 6×6 (lang). Das Spiel wird automatisch gespeichert.</li>
+    <li><b>👆 Antippen:</b> statt zu schieben tippst du zwei gleiche Zahlen nacheinander an. Sie brauchen <b>freie Sicht</b> in derselben Reihe oder Spalte (nur leere Felder dazwischen) und verschmelzen auf dem zweiten Feld. Die gewählte Kachel schwebt, passende Partner wippen. Nach jedem Treffer kommt eine neue Kachel.</li>
     <li><b>⚡ Blitz:</b> 3 Minuten auf 4×4 – so viele Punkte wie möglich.</li>
     <li><b>📅 Tages-2048:</b> Jeden Tag die gleichen neuen Kacheln für alle – vergleich dich mit Freunden.</li>
     <li><b>🧘 Zen:</b> beliebig oft rückgängig und hämmern, ohne Rangliste.</li>
@@ -142,6 +144,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <h3>Steuerung</h3>
   <ul>
     <li><b>Touch / Maus:</b> wischen (oder mit gedrückter Maus ziehen).</li>
+    <li><b>Antippen-Modus:</b> Kachel antippen/anklicken – oder mit Pfeilen bzw. Steuerkreuz wählen und Enter/A drücken.</li>
     <li><b>Tastatur:</b> Pfeiltasten oder WASD schieben, U/Z/Rücktaste rückgängig, H Hammer, Esc/P Pause.</li>
     <li><b>Controller:</b> Steuerkreuz oder Stick schieben, X rückgängig, Y Hammer (dann Steuerkreuz + A), Start Pause.</li>
   </ul>
