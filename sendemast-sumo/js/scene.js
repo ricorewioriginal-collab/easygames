@@ -157,12 +157,15 @@
     return g;
   }
   // Runde einrichten
-  function setup(W, names) {
+  function setup(W, names, humans) {
     W0 = W; for (const f of fighters) world.remove(f); fighters = [];
     for (const [, m] of pus) world.remove(m); pus.clear(); for (const w of warn) world.remove(w.m); warn = [];
     rings.forEach(r => { r.visible = true; r.position.set(0, 0, 0); r.rotation.set(0, 0, 0); r.userData.fall = -1; r.userData.stripe.material.color.set(W.A.acc); });
     core.scale.set(1, 1, 1);
-    W.f.forEach((f, i) => { const g = mkFighter(SM.fighter(f.fid), names && names[i]); world.add(g); fighters.push(g); });
+    W.f.forEach((f, i) => { const fd = SM.fighter(f.fid), g = mkFighter(fd, names && names[i]); world.add(g); fighters.push(g);
+      // Eigene Figur(en): leuchtender Ring am Boden und Pfeil über dem Kopf
+      if (humans && humans[i]) { const m = new T3.Mesh(new T3.RingGeometry(.78, 1.0, 40), new T3.MeshBasicMaterial({ color: fd.col, transparent: true, opacity: .9, side: T3.DoubleSide, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.y = .03; g.add(m);
+        const ar = new T3.Mesh(new T3.ConeGeometry(.22, .4, 4), new T3.MeshBasicMaterial({ color: fd.col })); ar.rotation.x = Math.PI; ar.position.y = 2.75; g.add(ar); g.userData.me = { m, ar }; } });
     camT = { x: 0, z: 0, d: 18 }; if (windLines) windLines.visible = false;
   }
   function burst(x, y, z, n, cols, sp, up, grav) {
@@ -220,6 +223,7 @@
         u.ring.material.opacity = f.pu.schild > 0 ? .55 + Math.sin(t * 12) * .25 : 0; u.ring.rotation.z += dt * 3;
         u.ring.material.color.set(f.pu.turbo > 0 && f.pu.schild <= 0 ? '#ffe066' : '#9ef0ff'); if (f.pu.turbo > 0 && f.pu.schild <= 0) u.ring.material.opacity = .4 + Math.sin(t * 20) * .2;
         if (u.tag) u.tag.visible = tags && !f.falling;
+        if (u.me) { u.me.m.visible = u.me.ar.visible = !f.falling; const k = 1 + Math.sin(t * 6) * .08; u.me.m.scale.set(k, k, k); u.me.ar.position.y = 2.75 + Math.sin(t * 5) * .12; }
         if (f.pu.turbo > 0 && Math.random() < .3 && !f.falling) burst(f.x, .2, f.z, 1, ['#ffe066'], .5, 1);
       });
       // Power-ups
@@ -244,7 +248,7 @@
       const asp = Math.max(.6, Math.min(1.8, cam.aspect)), want = Math.max(8, (Math.max(sp + 2, W.R * .62 + 1.2)) * 2.3 / Math.sqrt(asp) + 2);
       camT.x += (cx - camT.x) * Math.min(1, dt * 2.2); camT.z += (cz - camT.z) * Math.min(1, dt * 2.2); camT.d += (want - camT.d) * Math.min(1, dt * 1.6);
     }
-    if (opts.orbit) orbit += dt * .12; else orbit += (0 - orbit) * Math.min(1, dt * 2);
+    if (opts.orbit) orbit = (orbit + dt * .12) % (Math.PI * 2); else { if (orbit > Math.PI) orbit -= Math.PI * 2; orbit += (0 - orbit) * Math.min(1, dt * 3); }
     const el = opts.orbit ? .5 : .74, d = camT.d * (opts.orbit ? 1.2 : 1);
     cam.position.set(camT.x + Math.sin(orbit) * Math.cos(el) * d, Math.sin(el) * d + 1, camT.z + Math.cos(orbit) * Math.cos(el) * d);
     if (shake > 0) { shake = Math.max(0, shake - dt * 1.6); cam.position.x += (Math.random() - .5) * shake; cam.position.y += (Math.random() - .5) * shake; }

@@ -130,7 +130,7 @@
   }
   function newRound(quiet) {
     G.W = SM.newRound(G.M); G.endShown = false; G.paused = false; G.running = true;
-    SMScene.setArena(G.W.A); SMScene.setup(G.W, quiet ? null : G.M.players.map(p => p.name)); SMScene.tags = SET.tags;
+    SMScene.setArena(G.W.A); SMScene.setup(G.W, quiet ? null : G.M.players.map(p => p.name), quiet ? null : G.M.players.map(p => p.kind === 'human')); SMScene.tags = SET.tags;
     if (!quiet) { hudInit(); $('hRound').textContent = 'Runde ' + G.M.round; $('hInfo').textContent = G.W.A.n; banner(G.W.A.n, G.W.A.d, 2600); clearEdges(); }
   }
   function startMatch(cfg) {
