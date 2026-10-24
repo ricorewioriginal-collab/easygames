@@ -116,6 +116,7 @@ ok(/Quelle: .*laut\.fm/.test(await p.textContent('#resBox')), 'Quelle steht auch
 await p.click('#bNext'); await p.waitForTimeout(4800); await shot(p, '10-jury');
 await p.click('#bNext'); await p.waitForTimeout(300); await shot(p, '11-entscheidung');
 await p.click('#bNext'); await p.waitForSelector('#sBack.on');
+ok(!(await p.evaluate(() => window.SMYVAudio.micActive())), 'Mikrofon nach dem Auftritt aus');
 await p.waitForTimeout(800); ok(await p.isVisible('#ovBox [data-act="c0"]'), 'Backstage-Ereignis erscheint im Recall'); await shot(p, '11b-ereignis');
 let s = await st(p); ok(s.round === 1 && s.status === 'backstage', 'Casting bestanden → Recall freigeschaltet');
 // Neuladen: Stand bleibt
@@ -154,6 +155,9 @@ ok(!/fortsetzen/.test(await p.textContent('#menuList')), 'Nach dem Ausscheiden k
 // ---------- Freies Casting, Bonus, Archiv, Einstellungen ----------
 await bot(p, 0.95, 7);
 await p.click('[data-m="free"]'); await p.waitForSelector('#sPrep.on'); await p.click('#bGo'); await talkThrough(p);
+await p.waitForSelector('#sStage.on'); await p.waitForTimeout(2500);
+const lost = await p.evaluate(() => { const s = window.SMYVApp.stageObj(); const n0 = s.notes.length; s.radioLost(); return { live: s.part.live, sg: !!s.sg, more: s.notes.length > n0 }; });
+ok(!lost.live && lost.sg, 'Radio bricht ab → eigene Beats und Noten übernehmen');
 await waitResult(p);
 for (let k = 0; k < 8 && !(await p.isVisible('#sPrep.on')); k++) { await p.click('#bNext'); await p.waitForTimeout(150); }
 await p.waitForSelector('#sPrep.on'); ok(true, 'Freies Casting durchgespielt');

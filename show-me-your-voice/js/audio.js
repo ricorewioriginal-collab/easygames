@@ -118,17 +118,19 @@
   }
 
   // ---------- Mikrofon (optional) ----------
+  let micWant = false;
   async function micStart() {
     if (!init() || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('nosupport');
-    if (mic) return true;
+    micWant = true; if (mic) return true;
     const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+    if (!micWant || mic) { if (!mic || mic.stream !== stream) stream.getTracks().forEach(t => t.stop()); return !!mic; }   // inzwischen wieder gestoppt
     const src = ctx.createMediaStreamSource(stream), an = ctx.createAnalyser();
     an.fftSize = 2048; src.connect(an);           // nicht mit den Lautsprechern verbunden: kein Echo, keine Aufnahme
     mic = { stream, src, an, buf: new Float32Array(1024) };
     return true;
   }
   function micStop() {
-    if (!mic) return;
+    micWant = false; if (!mic) return;
     try { mic.stream.getTracks().forEach(t => t.stop()); mic.src.disconnect(); } catch (e) {}
     mic = null;
   }
@@ -172,11 +174,14 @@
         radio = { el, src, an, dl, g, spec: new Uint8Array(an.frequencyBinCount), prev: [0, 0, 0, 0], avg: [0.02, 0.02, 0.02, 0.02], last: [0, 0, 0, 0], alt: [0, 0, 0, 0] };
       } catch (e) { fail('graph'); return; }
       el.addEventListener('error', () => fail('error'), { once: true });
+      el.addEventListener('error', () => { if (done && radio && radio.el === el) { radioStop(); if (onLost) onLost(); } });
+      el.addEventListener('ended', () => { if (done && radio && radio.el === el) { radioStop(); if (onLost) onLost(); } });
       el.addEventListener('playing', () => { if (done) return; done = true; clearTimeout(to); g.gain.setTargetAtTime(1, ctx.currentTime, 0.05); resolve(true); }, { once: true });
       el.src = url || 'https://stream.laut.fm/' + encodeURIComponent(slug);
       const pr = el.play(); if (pr && pr.catch) pr.catch(() => fail('play'));
     });
   }
+  let onLost = null;   // Rückruf, wenn der Stream nach dem Start abbricht
   function radioStop() {
     if (!radio) return; const r = radio; radio = null;
     try { r.el.pause(); r.el.removeAttribute('src'); r.el.load(); r.src.disconnect(); r.g.disconnect(); } catch (e) { /* schon weg */ }
@@ -190,6 +195,7 @@
     for (let b = 0; b < 4; b++) {
       let e = 0; const [lo, hi] = BANDS[b]; for (let i = lo; i < hi; i++) e += sp[i]; e /= (hi - lo) * 255;
       const flux = Math.max(0, e - r.prev[b]); r.prev[b] = e;
+      if (t < r.last[b]) r.last[b] = -9;   // neuer Teil: Uhr beginnt wieder bei 0
       if (flux > r.avg[b] * 2.4 + 0.025 && t - r.last[b] > 0.13) { r.last[b] = t; out.push({ band: b, s: flux, lane: (b + (r.alt[b]++ % 2)) % 4 }); }
       r.avg[b] = r.avg[b] * 0.92 + flux * 0.08;
     }
@@ -200,6 +206,6 @@
       .then(j => (j && j.title ? { title: String(j.title), artist: j.artist && j.artist.name ? String(j.artist.name) : '' } : null)).catch(() => null);
   }
 
-  root.SMYVAudio = { radioStart, radioStop, radioMute, radioOnsets, radioSong, radioActive: () => !!radio, init, setVolume, ok, song, tick, chordTones, sfx, guide, voiceOn, voiceSet, voiceOff,
+  root.SMYVAudio = { radioOnLost: cb => { onLost = cb; }, radioStart, radioStop, radioMute, radioOnsets, radioSong, radioActive: () => !!radio, init, setVolume, ok, song, tick, chordTones, sfx, guide, voiceOn, voiceSet, voiceOff,
     micStart, micStop, micPitch, micActive: () => !!mic, mtof, ctxTime: () => (ctx ? ctx.currentTime : 0) };
 })(window);

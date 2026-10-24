@@ -410,7 +410,9 @@
       closeOv();
       cfg.parts.forEach(p => { if (p.type === 'rhythm') p.live = radio; });
     }
-    if (cfg.mic && save.settings.mic) { try { await A.micStart(); mic = true; } catch (e) { toast('🎙️ Mikrofon nicht verfügbar – du singst mit Tasten/Touch.'); } }
+    if (cfg.mic && save.settings.mic) { try { await A.micStart(); mic = true; A.micStop(); } catch (e) { toast('🎙️ Mikrofon nicht verfügbar – du singst mit Tasten/Touch.'); } }
+    cfg.micOn = mic;   // Mikrofon nur in Gesangsteilen öffnen
+    A.radioOnLost(() => { if (stage && flow === cfg) { stage.radioLost(); cfg.credit = ''; $('#stTitle').textContent = cfg.title; toast('📻 Radio-Verbindung verloren – weiter mit eigenen Beats.', 3500); } });
     flow = cfg; go('sStage'); setBg(cfg.bg || 'stage', true);
     $('#stTitle').textContent = cfg.title;
     cfg.credit = '';
@@ -424,6 +426,7 @@
     const pads = $('#pads'); pads.className = 'pads' + (('ontouchstart' in window || navigator.maxTouchPoints > 0) ? '' : ' auto');
     stage = new ST.Stage({ canvas: $('#cv'), pads, parts: cfg.parts, settings: save.settings, mic, bonus: !!cfg.bonus, hints: cfg.hints, captions: caption, juryStop: !!cfg.juryStop,
       onPart: (i, p) => {
+        if (mic && p.type === 'pitch') A.micStart().catch(() => {}); else A.micStop();
         pads.classList.toggle('pitch', p.type === 'pitch'); pads.classList.toggle('hide', p.type === 'rival');
         pads.querySelectorAll('.pad i').forEach((x, k) => { x.textContent = p.type === 'cues' ? ST.CUES[k][0] : ''; });
         const rb = $('#rivalBox'), who = p.group ? (cfg.group || []) : cfg.rival ? [cfg.rival] : [];
@@ -447,6 +450,7 @@
   }
   $('#bPause').onclick = () => { if (stage) stage.pause(false); };
   function showPause(auto) {
+    A.micStop();   // in der Pause hört niemand zu
     const career = flow && (flow.mode === 'career' || flow.mode === 'encore');
     overlay(`<h3>⏸ Pause</h3>${auto ? '<p class="muted">Automatisch angehalten.</p>' : ''}${flow && flow.credit ? `<p class="hint">${esc(flow.credit)}</p>` : ''}
       <button class="btn gold" type="button" data-act="go">▶ Weiter</button>
@@ -457,10 +461,10 @@
       end: () => { closeOv(); if (stage) stage.abort(); },
       re: () => { closeOv(); stopAll(); runStage(flow); },
       quit: () => { closeOv(); stopAll(); go(flow.ret || 'sMenu'); } });
-    function resume() { closeOv(); if (stage) stage.resume(); }
+    function resume() { closeOv(); if (stage) { if (flow && flow.micOn && stage.part && stage.part.type === 'pitch') A.micStart().catch(() => {}); stage.resume(); } }
   }
   // Während der Pause: P/Start setzt ebenfalls fort
-  addEventListener('keydown', e => { if (cur === 'sStage' && stage && stage.paused && e.code === 'KeyP' && !$('#ov').hidden) { e.preventDefault(); closeOv(); stage.resume(); } });
+  addEventListener('keydown', e => { if (cur === 'sStage' && stage && stage.paused && e.code === 'KeyP' && !$('#ov').hidden) { e.preventDefault(); const r = $('#ovBox [data-act="go"]'); if (r) r.click(); } });
 
   // Zugabe a cappella: bei genau einem Ja im Casting
   function askEncore(f, out, oc) {

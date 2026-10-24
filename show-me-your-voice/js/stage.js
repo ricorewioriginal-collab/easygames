@@ -17,7 +17,7 @@
 
   // ---------- Inhalte erzeugen ----------
   function genRhythm(p) {
-    const R = S.rng(p.seed), beat = 60 / p.bpm, notes = [], lead = 2.0, end = p.len - 0.8;
+    const R = S.rng(p.seed), beat = 60 / p.bpm, notes = [], lead = Math.ceil(2.0 / beat - 1e-9) * beat, end = p.len - 0.8;   // Einsatz auf dem Beat der Begleitmusik
     const shows = [];
     for (let k = 0; k < (p.shows || 0); k++) shows.push({ t: lead + (end - lead) * (k + 1) / ((p.shows || 0) + 1), lane: Math.floor(R() * 4), win: p.fastShows ? 0.95 : 1.35, st: 0 });
     const minGap = Math.max(0.2, beat / 2 * 0.95);
@@ -65,7 +65,7 @@
     this.energy = 0.5; this.stars = 0; this.sg = null;
     this.colors = o.settings.cb ? COL_CB : COL; this.travel = TRAVEL[o.settings.speed] || 1.5;
     this.offset = (+o.settings.offset || 0) / 1000; this.reduced = !!o.settings.reduced;
-    this.mic = !!o.mic && A.micActive(); this.base = BASE[o.settings.range] || 55;
+    this.mic = !!o.mic;   // Mikrofon läuft nur in Gesangsteilen (App startet/stoppt es) this.base = BASE[o.settings.range] || 55;
     this._key = this.key.bind(this); this._keyup = this.keyup.bind(this); this._frame = this.frame.bind(this);
     this._vis = () => { if (document.hidden) this.pause(true); };
     this._resize = () => this.resize();
@@ -102,7 +102,7 @@
   P.summary = function () {
     const p = this.part, base = { type: p.type, len: p.len, stars: this.partStars || 0 };
     this.partStars = 0;
-    if (p.type === 'rhythm') return Object.assign(base, this.cnt, { n: this.notes.length, maxCombo: this.maxCombo, showHit: this.showHit, showTotal: this.shows.length });
+    if (p.type === 'rhythm') return Object.assign(base, this.cnt, { n: this.notes.length + (this.extraN || 0), maxCombo: this.maxCombo, showHit: this.showHit, showTotal: this.shows.length });
     if (p.type === 'pitch') return Object.assign(base, { q: this.pitchT > 0 ? this.pitchGot / this.pitchT : 0, t: this.pitchT });
     if (p.type === 'cues') return Object.assign(base, { q: this.cues.length ? this.cueSum / this.cues.length : 0, points: this.cuePts, n: this.cues.length });
     return base;
@@ -128,11 +128,14 @@
   };
   P.abort = function () { // Auftritt beenden: Rest zählt als verpasst
     if (this.done) return;
-    if (this.part && this.part.type === 'rhythm') this.notes.forEach(n => { if (!n.st) { n.st = 4; this.cnt.m++; } });
+    if (this.part && this.part.type === 'rhythm') {
+      this.notes.forEach(n => { if (!n.st) { n.st = 4; this.cnt.m++; } });
+      if (this.part.live) { const rest = genRhythm(this.part).notes.filter(n => n.t > this.now + this.travel).length; this.cnt.m += rest; this.extraN = rest; }   // noch nicht erzeugte Live-Noten
+    }
     if (this.part && this.part.type === 'pitch') this.segs.forEach(s => { if (s.t + s.d > this.now) this.pitchT += Math.min(s.d, s.t + s.d - Math.max(this.now, s.t)); });
     if (this.part && this.part.type === 'cues') this.cues.forEach(c => { if (!c.st) c.st = 2; });
     this.res.push(this.summary()); this.part = null;
-    for (let i = this.pi + 1; i < this.parts.length; i++) { const p = this.parts[i]; this.res.push(p.type === 'rhythm' ? { type: 'rhythm', len: p.len, n: 0, p: 0, g: 0, o: 0, m: 0, maxCombo: 0, showHit: 0, showTotal: 0 } : { type: p.type, len: p.len, q: 0, t: p.type === 'pitch' ? p.len : 0, n: 0, points: 0 }); }
+    for (let i = this.pi + 1; i < this.parts.length; i++) { const p = this.parts[i], g = p.type === 'rhythm' ? genRhythm(p) : null; this.res.push(g ? { type: 'rhythm', len: p.len, n: g.notes.length, p: 0, g: 0, o: 0, m: g.notes.length, maxCombo: 0, showHit: 0, showTotal: g.shows.length } : { type: p.type, len: p.len, q: 0, t: p.type === 'pitch' ? p.len : 0, n: 0, points: 0 }); }
     this.pi = this.parts.length; this.finish();
   };
   P.pause = function (auto) {
@@ -260,6 +263,17 @@
     if (t - this.lastSpawn < this.minGap || this.shows.some(s => t > s.t - 0.6 && t < s.t + s.win + 0.4)) return;
     this.notes.push({ t, lane: o.lane, st: 0 }); this.lastSpawn = t;
   };
+  // Radio bricht mitten im Auftritt ab: ab jetzt eigene Beats und vorbereitete Noten
+  P.radioLost = function () {
+    this.parts.forEach(q => { q.live = false; });
+    const p = this.part; if (!p || this.done) return;
+    p.live = false;
+    if (p.type === 'rhythm') {
+      const from = Math.max(this.now + this.travel, this.notes.length ? this.notes[this.notes.length - 1].t + this.minGap : 0);
+      genRhythm(p).notes.forEach(n => { if (n.t >= from) this.notes.push(n); });
+      this.sg = A.song(p.style || 'pop', p.bpm || 100); this.sg.step = Math.ceil(this.now / this.sg.spb);
+    }
+  };
   P.updRhythm = function (now) {
     const t = now - this.offset;
     for (const n of this.notes) {
@@ -283,7 +297,7 @@
     else { this.lv += (this.up - this.dn) * dt * 6.5; this.voiced = true; }
     this.lv = Math.max(0, Math.min(7, this.lv));
     const seg = this.segs.find(s => now >= s.t && now < s.t + s.d) || null;
-    if (seg && seg !== this.curSeg) { A.guide(60 + levelToSemi(seg.lv) - 12, Math.min(seg.d, 0.6)); }
+    if (seg && seg !== this.curSeg) { A.guide((this.mic ? this.base : 48) + levelToSemi(seg.lv), Math.min(seg.d, 0.6)); }
     if (this.curSeg && seg !== this.curSeg) {
       const s = this.curSeg, q = s.got / s.d;
       if (q >= 0.85) { this.pop('PERFECT!', '#ffd23f', 1.5); if (++this.streak % 3 === 0) this.addStar(); } else if (q >= 0.55) { this.pop('GUT', '#7cf29a', 1.5); this.streak = 0; } else { this.pop('Daneben', '#ff5470', 1.5); this.streak = 0; }
