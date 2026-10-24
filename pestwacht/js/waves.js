@@ -270,8 +270,8 @@
 
   WV.tick = function (S, dt) {
     const w = S.waves;
+    if (w.active) { let t = dt; while (t > 1e-6 && S.waves.active) { const s = Math.min(STEP, t); WV.step(S, s); t -= s; } return; }   // auch Überfälle bei abgeschalteten Wellen laufen zu Ende
     if (S.cfg.waves === false) return;
-    if (w.active) { let t = dt; while (t > 1e-6 && S.waves.active) { const s = Math.min(STEP, t); WV.step(S, s); t -= s; } return; }
     if (S.campaign && S.campaign.noWaves) { w.next = Math.max(w.next, S.time + 60); return; }
     if (!w.warned && S.time >= w.next - WV.warnTime(S)) { w.warned = true; const nn = w.n + 1; PW.log(S, '🔔 Kundschafter melden: Welle ' + nn + ' in ' + PW.fmtTime(w.next - S.time) + (nn % PW.WAVES.bossEvery === 0 ? ' – ein Boss ist dabei!' : ''), 'warn', { wave: 1 }); }
     if (S.time >= w.next) WV.start(S);

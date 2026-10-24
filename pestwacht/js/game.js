@@ -192,6 +192,7 @@
     PW.Econ.produce(S, dt);
     regions(S, dt);
     PW.Econ.population(S, dt);
+    if (PW.Ward) PW.Ward.tick(S, dt);
     C().progress(S, dt);
     PW.Econ.researchTick(S, dt);
     PW.Econ.recruitTick(S, dt);

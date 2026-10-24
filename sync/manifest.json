@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "08b603a71a46",
- "generated": "2026-10-24T04:54:22+02:00",
- "commit": "18c2b995445af8f4122efff3664de9be3e74ffe6",
+ "version": "8eb5bae8239f",
+ "generated": "2026-10-24T03:07:44+00:00",
+ "commit": "1da240c101516b89b8bff4d14ed4db127b41a4d8",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5308,8 +5308,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22269,
-   "h": "27f41c16d00452aeef8b7b3c91168f33d7be917f4f9d222b8d4836d1df8300cd"
+   "s": 22284,
+   "h": "1de74b0e6dcea2d14cdd91d7ab9df11c8297d0766378b61f2fe12c4e010406c6"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -6018,8 +6018,8 @@
   },
   {
    "p": "guides.js",
-   "s": 110873,
-   "h": "089051137e8dc5558517bb2eb0e1b4bd8c2119fd471506069e0bf683391d13ee"
+   "s": 111161,
+   "h": "e35bf588b7cd175ead45933907e630255d70d15532b397dbea440592fc353889"
   },
   {
    "p": "heute.html",
@@ -6703,8 +6703,8 @@
   },
   {
    "p": "pestwacht/index.html",
-   "s": 7419,
-   "h": "03bc17b0e750a969bb696629617b36370a179ad35a1542dd48c85c3ae9a6c5b8"
+   "s": 7458,
+   "h": "2829dd7149e1cb5bb50f26a5ce1f5aba79df4dd0cb837fea12a4fd603184c173"
   },
   {
    "p": "pestwacht/js/ai.js",
@@ -6718,13 +6718,13 @@
   },
   {
    "p": "pestwacht/js/battle.js",
-   "s": 16686,
-   "h": "40a687a1979327db3a761b9e4274f17d7927fa74c164a4fad33d376e11faf606"
+   "s": 17057,
+   "h": "5198f80014689055981db1d182fd1f84ee67e3ad45bb58fcd3f2b026ef211fd0"
   },
   {
    "p": "pestwacht/js/campaign.js",
-   "s": 17123,
-   "h": "e4918d15583a8fc86c5cf293bee342e53316b253ae13f9875d375c8c8efc9193"
+   "s": 17136,
+   "h": "03e4b6f433ff1387fb9468690a9c357b0511ec709b14faaa5455c4d325d4797b"
   },
   {
    "p": "pestwacht/js/city.js",
@@ -6738,13 +6738,13 @@
   },
   {
    "p": "pestwacht/js/data.js",
-   "s": 42434,
-   "h": "84fb59cc0ec5877c93bd430e52dce578d0fd994105b05da6c41851961240156d"
+   "s": 43255,
+   "h": "d65f42e9c5025c2ad769271c8130d4a579b14e0417c00109d4cdd2990fe423dc"
   },
   {
    "p": "pestwacht/js/diplo.js",
-   "s": 24701,
-   "h": "28c8eea0da5a95f0d22c49f4b74695f319fa46e82ec7a96139d8610148b63e81"
+   "s": 24798,
+   "h": "5e5700ca136230b044b507a14fa391dfc2ab57bb67fd07eba2fafaf30d84861b"
   },
   {
    "p": "pestwacht/js/econ.js",
@@ -6753,8 +6753,8 @@
   },
   {
    "p": "pestwacht/js/game.js",
-   "s": 16138,
-   "h": "bd62867442fc43b869e8d2981730951a923989d55ccb4407073e59e05a1e8553"
+   "s": 16176,
+   "h": "e6965409ae305931b0263633cf1ecf86234534cf323f15595d12774f4fe077d4"
   },
   {
    "p": "pestwacht/js/heroes.js",
@@ -6778,13 +6778,13 @@
   },
   {
    "p": "pestwacht/js/panels.js",
-   "s": 62987,
-   "h": "0497669c0fe1f13be6d0831b6a08e7fc52719e4a9880c138c7bae20909471b07"
+   "s": 68169,
+   "h": "9dbcf829023994643b4866d4b941698089e83466b6644491d251b6cad2faad90"
   },
   {
    "p": "pestwacht/js/render.js",
-   "s": 83514,
-   "h": "270e7a40d07ec766f602da237f928739f28d72fb1b120446d34dbf0c8ce287b6"
+   "s": 92646,
+   "h": "b5d6c0e5c3c08ad6e5ad1b9e204bcd06da6bbe115d2b76d8858e49d7ea9e4d18"
   },
   {
    "p": "pestwacht/js/save.js",
@@ -6793,13 +6793,18 @@
   },
   {
    "p": "pestwacht/js/ui.js",
-   "s": 46410,
-   "h": "5dc14f6f086211a9242dd175ff1328e341a1b2548238d44c5836d73a7aacced2"
+   "s": 47300,
+   "h": "7b045236a89e09039a33b60eca34b347d7e2f4ff988cc5e1b52313ffa4dcf739"
+  },
+  {
+   "p": "pestwacht/js/ward.js",
+   "s": 10528,
+   "h": "711827ac5782ee045fca3f044470ae6a5838a825761d5ace956167e40056c5b8"
   },
   {
    "p": "pestwacht/js/waves.js",
-   "s": 18511,
-   "h": "2b12b89515534ffb970eeb498ad1a169bb54c701be7cee988022a52ab602f552"
+   "s": 18574,
+   "h": "659d5c1fd70e136549472745f69b1418db265543e73ad3cf9e590c9ba4b3fb35"
   },
   {
    "p": "pestwacht/js/world.js",
@@ -7733,8 +7738,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 169728,
-   "h": "fc60c555ca4089bc3d52cdd60a39c24b9b17ee80d92a231121b2af5db768190d"
+   "s": 170021,
+   "h": "13733ef9a245112085acdda897bac2c2872e10da21027f83c6efca25a609dfa0"
   },
   {
    "p": "taschi/card.svg",

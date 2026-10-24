@@ -129,8 +129,12 @@
     const before = e.n;
     e.hp = Math.max(0, e.hp - dmg);
     e.n = e.kind === 'hero' ? (e.hp > 0 ? 1 : 0) : Math.ceil(e.hp / e.hpE - 1e-6);
-    if (a != null) { b.sq[a].dealt += dmg; b.sq[a].kills += before - e.n; }
+    if (a != null) { b.sq[a].dealt += dmg; b.sq[a].kills += before - e.n; energy(b.sq[a], 0.5); }
+    energy(e, 0.25);
   }
+  // Heldenenergie: lädt langsam von selbst und schneller durch Treffer, die der Held austeilt oder einsteckt
+  function energy(q, n) { if (q && q.skill && q.skill.t > 0) q.skill.t = Math.max(0, q.skill.t - n); }
+  BT.energy = q => (q && q.skill ? PW.clamp(1 - q.skill.t / q.skill.cd, 0, 1) : 0);
   function heal(b, j, amt) { const e = b.sq[j]; if (e.n <= 0) return; e.hp = Math.min(e.hpE * e.n0, e.hp + amt); e.n = e.kind === 'hero' ? 1 : Math.ceil(e.hp / e.hpE - 1e-6); }
 
   // ---------- Heldenfähigkeiten ----------
@@ -182,7 +186,7 @@
       for (const k in q.buf) if (q.buf[k] > 0 && k !== 'burnDps') q.buf[k] -= dt;
       if (q.buf.regen > 0) heal(b, i, q.hpE * q.n0 * 0.03 * dt);
       if (q.buf.burn > 0) apply(b, i, (q.buf.burnDps || 0) * dt);
-      if (q.skill) { q.skill.t -= dt; if (b.auto[q.s] && q.skill.t <= 0) autoSkill(b, i); }
+      if (q.skill) { q.skill.t = Math.max(0, q.skill.t - dt * 0.6); if (b.auto[q.s] && q.skill.t <= 0) autoSkill(b, i); }
       if (q.buf.stun > 0) continue;
       q.cd -= dt;
       if (q.tgt === -1 || (q.tgt >= 0 && b.sq[q.tgt].n <= 0) || (q.tgt === -2 && b.wall <= 0) || ((b.t * 5 | 0) % 5 === i % 5)) q.tgt = pickTarget(b, i);

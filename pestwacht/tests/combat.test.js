@@ -116,3 +116,27 @@ test('Eroberung: neuer Sitz zählt als Hauptstadt, Kampagnen-Ort gibt sein Flag 
   PW.Conquest.capture(S, { owner: 'P', units: { spear: 50 }, heroes: [], mission: 'occupy' }, s.tile, {});
   assert.equal(S.storyFlags.test_flag, 1);
 });
+
+test('Überfall läuft auch bei abgeschalteten Wellen zu Ende', () => {
+  const S = G.newGame({ mode: 'free', seed: 'ueberfall', bots: 2 }); S.cfg.waves = false;
+  WV.start(S, { raid: true });
+  assert.ok(S.waves.active, 'Überfall gestartet');
+  for (let i = 0; i < 4000 && S.waves.active; i++) G.tick(S, 0.5);
+  assert.equal(S.waves.active, null);
+});
+
+test('Verschollener Held in einer Ruine kommt auch nach Bot-Räumung zum Spieler', () => {
+  const S = G.newGame({ mode: 'free', seed: 'ruinheld', bots: 3 });
+  const s = S.world.sites.find(x => x.type === 'ruin' && x.tile != null);
+  const h = Object.keys(PW.HERO).find(k => !S.heroes[k]);
+  s.hero = h; s.cleared = true; s.gar = null; S.world.tiles[s.tile].own = S.factions[0].id;
+  PW.Conquest.capture(S, { owner: 'P', units: { spear: 30 }, heroes: [], mission: 'occupy' }, s.tile, {});
+  assert.ok(S.heroes[h], 'Held freigeschaltet');
+});
+
+test('Kampagne 5c: früher ausgeräucherte Nester zählen', () => {
+  const S = G.newGame({ mode: 'campaign' });
+  const m = PW.Campaign.all().find(x => x.id === '5c');
+  S.stats.lairs = 3;
+  assert.deepEqual(m.goals[0].g(S, { lairs: 3 }), [3, 3], 'Stand beim Missionsstart zählt mit');
+});

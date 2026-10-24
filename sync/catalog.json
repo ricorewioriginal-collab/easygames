@@ -255,9 +255,9 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Pestwacht – Die letzte Zuflucht ist ein Überlebens-, Aufbau- und Strategiespiel in 3D. Im Jahr der Graupest führst du die letzte ummauerte Zuflucht: Baue Häuser, Brunnen, Felder, Werkstätten, Heilstuben und Türme (34 Gebäudearten, jede mit Stufen), halte 10 Rohstoffe im Gleichgewicht und sorge dafür, dass Kranke gesund werden, bevor sich die Seuche ausbreitet. Drei Wissensbäume (Heilkunst, Wirtschaft, Krieg) schalten Verbesserungen frei. In regelmäßigen Abständen greifen Seuchenwellen mit Ratten, Wanderern, Plünderern, Bestien und Krähen an, später auch drei Bosse – Mauer, Tor, Türme, Truppen und Heldenfähigkeiten halten sie auf. 12 Helden steigen auf, lernen Talente und tragen Ausrüstung. Auf der Weltkarte mit Kriegsnebel schickst du Expeditionen zum Erkunden, Sammeln, Kranke retten, Heilen, Handeln und Erobern; Kämpfe kannst du live verfolgen und lenken. 8 Computer-Fraktionen bauen nach denselben Regeln wie du, verhandeln, schließen Bündnisse und führen Kriege untereinander. Die Kampagne erzählt 5 Kapitel, im Freien Spiel stellst du Karte, Fraktionen und Schwierigkeit selbst ein. Dazu kommen Ereignisse, Tages- und Wochenaufgaben und Erfolge. Gespeichert wird automatisch (dazu 3 eigene Plätze, Export und Import als Datei); beim Zurückkehren wird die Zeit dazwischen als Produktion verrechnet, ohne Angriffe.",
+    "anleitung": "Pestwacht – Die letzte Zuflucht ist ein Überlebens-, Aufbau- und Strategiespiel in 3D. Im Jahr der Graupest führst du die letzte ummauerte Zuflucht: Baue Häuser, Brunnen, Felder, Werkstätten, Heilstuben und Türme (34 Gebäudearten, jede mit Stufen), halte 10 Rohstoffe im Gleichgewicht und sorge dafür, dass Kranke gesund werden, bevor sich die Seuche ausbreitet. Im Lazarett untersuchst und behandelst du einzelne Patienten mit dem passenden Mittel, stellst Personal ein und erntest eigene Kräuterbeete. Drei Wissensbäume (Heilkunst, Wirtschaft, Krieg) schalten Verbesserungen frei. In regelmäßigen Abständen greifen Seuchenwellen mit Ratten, Wanderern, Plünderern, Bestien und Krähen an, später auch drei Bosse – Mauer, Tor, Türme, Truppen und Heldenfähigkeiten halten sie auf. 12 Helden steigen auf, lernen Talente und tragen Ausrüstung. Auf der Weltkarte mit Kriegsnebel schickst du Expeditionen zum Erkunden, Sammeln, Kranke retten, Heilen, Handeln und Erobern; Kämpfe kannst du live verfolgen und lenken. 8 Computer-Fraktionen bauen nach denselben Regeln wie du, verhandeln, schließen Bündnisse und führen Kriege untereinander. Die Kampagne erzählt 5 Kapitel, im Freien Spiel stellst du Karte, Fraktionen und Schwierigkeit selbst ein. Dazu kommen Ereignisse, Tages- und Wochenaufgaben und Erfolge. Gespeichert wird automatisch (dazu 3 eigene Plätze, Export und Import als Datei); beim Zurückkehren wird die Zeit dazwischen als Produktion verrechnet, ohne Angriffe.",
     "steuerung": [
-     "Touch: mit einem Finger die Ansicht verschieben, mit zwei Fingern zoomen und drehen, Gebäude oder Felder antippen. Unten: Bauen, Karte, Zuflucht, Militär, Helden, Forschung, Diplomatie, Aufgaben und Menü.",
+     "Touch: mit einem Finger die Ansicht verschieben, mit zwei Fingern zoomen und drehen, Gebäude oder Felder antippen. Unten: Bauen, Karte, Zuflucht, Lazarett, Militär, Helden, Forschung, Diplomatie, Aufgaben und Menü.",
      "Maus: Linksklick wählt, Ziehen verschiebt, rechte Maustaste gedrückt halten dreht, Mausrad zoomt.",
      "Tastatur (frei belegbar): W A S D oder Pfeile bewegen die Kamera, Q/E drehen, + und − zoomen, Leertaste oder P Pause, 1–3 Tempo, B Bauen, M Weltkarte, R dreht beim Platzieren, Enter bestätigt, U verbessert, Entf reißt ab, F Heldenfähigkeit in der Welle, H Hilfe, Esc zurück oder Menü.",
      "Gamecontroller: linker Stick bewegt die Kamera, LB/RB drehen, LT/RT zoomen, A bestätigt, B zurück, Y Bauen, Select Weltkarte, Start Pause; das Steuerkreuz springt zwischen den Knöpfen, der rechte Stick ist ein Zeiger."
@@ -265,12 +265,13 @@
     "tipps": [
      "Am Anfang zuerst Wasser, Nahrung und Unterkünfte sichern – erst dann ausbauen.",
      "Kranke in Heilstuben pflegen und Hygiene hochhalten, sonst steckt die Seuche weitere Bewohner an.",
+     "Schau oft ins Lazarett (🩺): Schwere Fälle (🔥🔥🔥) zuerst untersuchen und behandeln, Gäste mit 🎩 zahlen besonders gut.",
      "Vor jeder Welle die Mauer und das Tor reparieren und Türme an die Laufwege stellen.",
      "Gefährliche Fraktionen lassen sich mit Geschenken, Handels- und Nichtangriffsverträgen beruhigen."
     ]
    },
-   "size": 514184,
-   "files": 27,
+   "size": 541358,
+   "files": 28,
    "offline": true,
    "cloud": {
     "game": "pestwacht",

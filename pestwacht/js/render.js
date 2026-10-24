@@ -7,7 +7,7 @@
   const R = PW.R = { ok: false, mode: 'city' };
   let T, renderer, scene, cam, hemi, sun, groups = {}, W = 1, H = 1, pr = 1, quality = 'auto', fpsAcc = 0, fpsN = 0, slowFor = 0, fastFor = 0;
   const rigs = {
-    city: { tx: 15, tz: 18, dist: 36, yaw: 0, pitch: 0.92, min: 12, max: 70 },
+    city: { tx: 15, tz: 17, dist: 27, yaw: 0, pitch: 0.86, min: 9, max: 70 },
     world: { tx: 0, tz: 0, dist: 26, yaw: 0, pitch: 1.05, min: 8, max: 60 },
     battle: { tx: 4, tz: 0, dist: 26, yaw: 0, pitch: 0.7, min: 6, max: 80 }
   };
@@ -70,6 +70,9 @@
     MAT.inst = new T.MeshLambertMaterial({ vertexColors: true });
     MAT.white = new T.MeshLambertMaterial({ color: 0xffffff });
     MAT.lane = new T.MeshBasicMaterial({ color: 0xc0503a, transparent: true, opacity: 0.35, depthWrite: false });
+    const cv = document.createElement('canvas'); cv.width = cv.height = 64; const cx = cv.getContext('2d'), gr = cx.createRadialGradient(32, 32, 2, 32, 32, 32);
+    gr.addColorStop(0, 'rgba(255,214,140,0.9)'); gr.addColorStop(0.35, 'rgba(255,170,80,0.35)'); gr.addColorStop(1, 'rgba(255,150,60,0)'); cx.fillStyle = gr; cx.fillRect(0, 0, 64, 64);
+    MAT.halo = new T.SpriteMaterial({ map: new T.CanvasTexture(cv), transparent: true, depthWrite: false, blending: T.AdditiveBlending, opacity: 0.4 });
   }
   R.merge = merge;
 
@@ -163,7 +166,7 @@
     renderer.domElement.setAttribute('tabindex', '0');
     scene = new T.Scene(); scene.background = new T.Color('#1a1712'); scene.fog = new T.Fog('#1a1712', 60, 140);
     cam = new T.PerspectiveCamera(45, 1, 0.5, 400);
-    hemi = new T.HemisphereLight(0xcfd8e8, 0x3a2e20, 0.75); scene.add(hemi);
+    hemi = new T.HemisphereLight(0xc4ccd0, 0x342c20, 0.75); scene.add(hemi);
     sun = new T.DirectionalLight(0xfff0d0, 0.9); sun.position.set(20, 40, 10); scene.add(sun); scene.add(sun.target);
     if (renderer.shadowMap.enabled) { sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); const sc = sun.shadow.camera; sc.left = -30; sc.right = 30; sc.top = 30; sc.bottom = -30; sc.far = 120; }
     basicGeos(); mats();
@@ -525,12 +528,70 @@
   }
   const TEAM = ['#3f73c8', '#b8392e'], CIVC = ['#8a6a44', '#6a7a4a', '#9a8a6a', '#7a4a3a', '#5a6a8a', '#a08a50'];
   const LANE_N = 4;
+  // Wertrauschen für Bodenfarben (deterministisch, ohne Bibliothek)
+  function hash2(x, y) { const h = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return h - Math.floor(h); }
+  function vnoise(x, y) {
+    const ix = Math.floor(x), iy = Math.floor(y), fx = x - ix, fy = y - iy, sx = fx * fx * (3 - 2 * fx), sy = fy * fy * (3 - 2 * fy);
+    const a = hash2(ix, iy), b = hash2(ix + 1, iy), c = hash2(ix, iy + 1), d = hash2(ix + 1, iy + 1);
+    return a + (b - a) * sx + (c - a) * sy + (a - b - c + d) * sx * sy;
+  }
+  function noisePlane(w, d, sw, sd, colorAt) {
+    const g = new T.PlaneGeometry(w, d, sw, sd); g.rotateX(-Math.PI / 2);
+    const pos = g.attributes.position, arr = new Float32Array(pos.count * 3), c = new T.Color();
+    for (let i = 0; i < pos.count; i++) { colorAt(pos.getX(i), pos.getZ(i), c); arr[i * 3] = c.r; arr[i * 3 + 1] = c.g; arr[i * 3 + 2] = c.b; }
+    g.setAttribute('color', new T.BufferAttribute(arr, 3));
+    const m = new T.Mesh(g, MAT.v); m.receiveShadow = true; return m;
+  }
+  // Kleinkram auf freien Feldern (Fässer, Kisten, Heu, Säcke, Gras, Pfützen) – neu, wenn sich die Bebauung ändert
+  function rebuildClutter(S) {
+    const occ = new Set();
+    S.city.b.forEach(b => { for (let x = b.x; x < b.x + (b.w || 1); x++) for (let y = b.y; y < b.y + (b.h || 1); y++) occ.add(x + ',' + y); });
+    const P = [], add = (s, x, y, z, sx, sy, sz, c, rx, ry, rz) => P.push({ s, x, y, z, sx, sy, sz, c, rx: rx || 0, ry: ry || 0, rz: rz || 0 });
+    for (let x = PW.City.MIN; x <= PW.City.MAX; x++) for (let y = PW.City.MIN; y <= PW.City.MAX; y++) {
+      if (occ.has(x + ',' + y) || (x >= 13 && x <= 16 && y >= 15)) continue;
+      const h = hash2(x * 3.1, y * 1.7); if (h > 0.12) continue;
+      const k = hash2(x + 0.5, y + 9.5), cx = x + 0.3 + hash2(x, y + 3) * 0.4, cz = y + 0.3 + hash2(x + 7, y) * 0.4, ry = k * 6;
+      if (k < 0.18) { add('cyl', cx, 0, cz, 0.3, 0.42, 0.3, '#6a4a2c'); add('cyl', cx, 0.1, cz, 0.31, 0.03, 0.31, '#2e2a26'); add('cyl', cx, 0.32, cz, 0.31, 0.03, 0.31, '#2e2a26'); if (k < 0.08) add('cyl', cx + 0.33, 0, cz + 0.1, 0.28, 0.4, 0.28, '#5e4228'); }
+      else if (k < 0.34) { add('box', cx, 0, cz, 0.4, 0.34, 0.4, '#7a5e3c', 0, ry); if (k < 0.26) add('box', cx + 0.05, 0.34, cz, 0.3, 0.26, 0.3, '#8a6a44', 0, ry + 0.4); }
+      else if (k < 0.46) add('cyl', cx, 0.2, cz, 0.42, 0.5, 0.42, '#a8904c', 0, ry, Math.PI / 2);
+      else if (k < 0.58) { add('sph', cx, 0, cz, 0.3, 0.34, 0.26, '#9a8c70', 0, ry); add('sph', cx + 0.22, 0, cz + 0.1, 0.26, 0.3, 0.24, '#8a7c62', 0, ry); }
+      else if (k < 0.74) for (let j = 0; j < 4; j++) add('cone', cx + (hash2(x, j) - 0.5) * 0.5, 0, cz + (hash2(j, y) - 0.5) * 0.5, 0.1, 0.26 + 0.12 * hash2(j, x), 0.1, j % 2 ? '#4a5a2a' : '#5a6230');
+      else if (k < 0.86) add('cyl', cx, 0.006, cz, 0.7, 0.01, 0.5, '#2a3034', 0, ry);
+      else { for (let j = 0; j < 3; j++) add('cyl', cx, 0.08 + j * 0.13, cz, 0.12, 0.6, 0.12, '#6a4e32', 0, ry, Math.PI / 2); add('box', cx, 0, cz, 0.5, 0.04, 0.2, '#3a2e22', 0, ry); }
+    }
+    if (city.clutter) { groups.city.remove(city.clutter); city.clutter.geometry.dispose(); }
+    city.clutter = P.length ? new T.Mesh(merge(P), MAT.v) : null; if (city.clutter) groups.city.add(city.clutter);
+  }
   function buildCity() {
     const g = groups.city;
     // Boden: Umland, Innenhof, Torstraße
-    const outer = new T.Mesh(new T.PlaneGeometry(130, 130), new T.MeshLambertMaterial({ color: '#3d3a26' })); outer.rotation.x = -Math.PI / 2; outer.position.set(15, -0.02, 15); outer.receiveShadow = true; g.add(outer);
-    const inner = new T.Mesh(new T.PlaneGeometry(25.6, 25.6), new T.MeshLambertMaterial({ color: '#5a5236' })); inner.rotation.x = -Math.PI / 2; inner.position.set(15, 0, 15); inner.receiveShadow = true; g.add(inner);
-    const street = new T.Mesh(new T.PlaneGeometry(2, 12.4), new T.MeshLambertMaterial({ color: '#7a7268' })); street.rotation.x = -Math.PI / 2; street.position.set(15, 0.01, 21.2); g.add(street);
+    const base = new T.Color(), mud = new T.Color('#2e2a1e');
+    const outer = noisePlane(130, 130, R.low ? 40 : 80, R.low ? 40 : 80, (x, z, c) => {
+      const n = vnoise(x * 0.18, z * 0.18), m = vnoise(x * 0.05 + 7, z * 0.05 + 3);
+      c.set(m > 0.62 ? '#3a3a28' : '#363824').offsetHSL(0.02 * (n - 0.5), 0, (n - 0.5) * 0.08);
+      if (m < 0.25) c.lerp(mud, 0.45);
+    });
+    outer.position.set(15, -0.02, 15); g.add(outer);
+    const inner = noisePlane(25.6, 25.6, 64, 64, (x, z, c) => {
+      const n = vnoise(x * 0.9 + 40, z * 0.9 + 40), p = vnoise(x * 0.25 + 9, z * 0.25 + 1), edge = Math.max(Math.abs(x), Math.abs(z)) / 12.8;
+      c.set('#5a4e34').offsetHSL(0, -0.04 * n, (n - 0.5) * 0.1 - 0.08 * edge * edge);
+      if (p < 0.18) c.lerp(mud, 0.55);                     // Schlammpfützen
+    });
+    inner.position.set(15, 0, 15); g.add(inner);
+    const street = noisePlane(2.2, 12.6, 9, 50, (x, z, c) => {
+      const row = Math.floor(z * 2.6), cx = Math.floor(x * 2.6 + (row % 2) * 0.5), h = hash2(cx, row);
+      c.set('#6a655c').offsetHSL(0, 0, (h - 0.5) * 0.12 - ((x * 2.6 + (row % 2) * 0.5) % 1 < 0.12 || (z * 2.6) % 1 < 0.12 ? 0.08 : 0));
+    });
+    street.position.set(15, 0.012, 21.2); g.add(street);
+    // Laternen entlang der Torstraße und am Ratshaus (leuchten nachts)
+    city.lamps = [];
+    const lp0 = [], lg0 = [];
+    [[13.7, 18], [16.3, 21], [13.7, 24], [16.3, 26.6], [12.6, 15.6], [17.4, 15.6], [5, 5], [25, 5], [5, 25], [25, 25]].forEach(([x, z]) => {
+      lp0.push({ s: 'cyl', x, y: 0, z, sx: 0.08, sy: 1.6, sz: 0.08, c: '#2a2620' }, { s: 'box', x, y: 1.55, z: z + 0.12, sx: 0.06, sy: 0.06, sz: 0.3, c: '#2a2620' }, { s: 'pyr', x, y: 1.72, z: z + 0.26, sx: 0.24, sy: 0.12, sz: 0.24, c: '#1e1c18' });
+      lg0.push({ s: 'box', x, y: 1.5, z: z + 0.26, sx: 0.16, sy: 0.22, sz: 0.16, c: '#ffc860' });
+      const h = new T.Sprite(MAT.halo); h.position.set(x, 1.6, z + 0.26); h.scale.set(2.4, 2.4, 1); g.add(h); city.lamps.push(h);
+    });
+    g.add(new T.Mesh(merge(lp0), MAT.v)); g.add(new T.Mesh(merge(lg0), MAT.glow));
     // Laufwege der Wellen als Trampelpfade, Bäume und Felsen im Umland
     const lp = [];
     PW.Waves.LANES.forEach(l => { for (let k = 0; k < l.pts.length - 1; k++) { const a = l.pts[k], b = l.pts[k + 1], dx = b[0] - a[0], dz = b[1] - a[1], len = Math.hypot(dx, dz); lp.push({ s: 'box', x: (a[0] + b[0]) / 2, y: -0.01, z: (a[1] + b[1]) / 2, sx: 1.6, sy: 0.02, sz: len + 1.2, c: '#5a4a32', ry: Math.atan2(dx, dz) }); } });
@@ -556,6 +617,12 @@
     city.walkG = pair('civ', 48, g);
     city.solG = pair('spear', 40, g);
     city.heroG = pair('hero', 12, g);
+    city.patG = pair('civ', 8, g);
+    city.docG = pair('medic', 2, g);
+    city.rat = inst(merge([{ s: 'sph', x: 0, y: 0.06, z: 0, sx: 0.16, sy: 0.12, sz: 0.3, c: '#3a3430' }, { s: 'sph', x: 0, y: 0.08, z: 0.15, sx: 0.1, sy: 0.09, sz: 0.13, c: '#433b36' },
+      { s: 'sph', x: 0.04, y: 0.13, z: 0.15, sx: 0.04, sy: 0.05, sz: 0.02, c: '#8a6a66' }, { s: 'sph', x: -0.04, y: 0.13, z: 0.15, sx: 0.04, sy: 0.05, sz: 0.02, c: '#8a6a66' },
+      { s: 'box', x: 0, y: 0.04, z: -0.27, sx: 0.025, sy: 0.02, sz: 0.28, c: '#6a5856' }]), 48); g.add(city.rat);
+    city.rats = []; city.clutterKey = ''; city.clutter = null;
     city.en = {}; Object.keys(PW.ENEMIES).forEach(k => { city.en[k] = inst(enemyGeo(k), 260); g.add(city.en[k]); });
     city.boss = {}; Object.keys(PW.BOSSES).forEach(k => { const m = new T.Mesh(enemyGeo(k), MAT.v); m.visible = false; city.boss[k] = m; g.add(m); });
     const pg = new T.BoxGeometry(0.12, 0.12, 0.7); city.proj = inst(pg, 300, new T.MeshBasicMaterial({ color: 0xffffff })); g.add(city.proj);
@@ -568,7 +635,7 @@
     city.ghostBox = new T.Mesh(G.box, MAT.ok); city.ghostBox.visible = false; g.add(city.ghostBox);
     city.ghost = new T.Mesh(G.box, MAT.ghost); city.ghost.visible = false; g.add(city.ghost);
     // Straßen als Instanzen
-    city.roads = inst(merge([{ s: 'box', x: 0, y: 0, z: 0, sx: 1, sy: 0.05, sz: 1, c: '#7a7268' }]), 300); g.add(city.roads);
+    city.roads = inst(merge([{ s: 'box', x: 0, y: 0, z: 0, sx: 1, sy: 0.04, sz: 1, c: '#625d55' }, { s: 'box', x: -0.25, y: 0.04, z: -0.2, sx: 0.4, sy: 0.012, sz: 0.36, c: '#6e6960' }, { s: 'box', x: 0.22, y: 0.04, z: 0.24, sx: 0.42, sy: 0.012, sz: 0.34, c: '#57534c' }]), 300); g.add(city.roads);
     city.built = true;
     city.walkers = [];
   }
@@ -631,7 +698,11 @@
     // Seuche: grüner Dunst über der Stadt
     const tot = PW.Econ.popTotal(S.pop), sick = tot ? (S.pop.i + S.pop.t) / tot : 0;
     if (sick > 0.08 && Math.random() < dt * sick * 12) emit(5 + Math.random() * 20, 0.4, 5 + Math.random() * 20, C.sick, 1, 2, 0.4, 3);
+    city._ck = (city._ck || 0) - dt;
+    if (city._ck <= 0) { city._ck = 0.5; const key = S.city.b.map(b => b.x + ',' + b.y + ',' + b.w + ',' + b.h).join('|'); if (key !== city.clutterKey) { city.clutterKey = key; rebuildClutter(S); } }
     syncWalkers(S, dt, sick);
+    syncPatients(S);
+    syncRats(S, dt, sick);
     syncWave(S, dt);
     syncCityUi(S, ui);
   }
@@ -656,6 +727,40 @@
     const hs = PW.Heroes.list(S).filter(h => PW.Heroes.available(S, h)).slice(0, 12);
     sc.set(0.95, 0.95, 0.95); hs.forEach((h, i) => { pv.set(13 + i * 0.8, 0, a ? 26.4 : 16.4); q.setFromAxisAngle(up, 0); m4.compose(pv, q, sc); pairSet(city.heroG, m4, color(PW.HERO[h].col)); });
     pairEnd(city.heroG);
+  }
+  // Wartende Patienten vor der Heilstube, dazu ein Pestarzt, der zwischen ihnen umhergeht
+  function syncPatients(S) {
+    const m4 = _m(), q = _q(), sc = new T.Vector3(0.72, 0.72, 0.72), pv = new T.Vector3(), up = new T.Vector3(0, 1, 0);
+    const hs = S.city.b.find(b => b.t === 'heilstube' && b.lv > 0 && b.w), W = S.ward;
+    if (hs && W && W.list.length && !S.waves.active) {
+      const list = W.list.filter(c => c.st !== 'behandlung').slice(0, 8), z0 = hs.y + hs.h + 0.45;
+      list.forEach((c, i) => {
+        pv.set(hs.x + 0.35 + (i % 4) * 0.45, Math.abs(Math.sin(performance.now() / 700 + i)) * 0.015, z0 + Math.floor(i / 4) * 0.5); q.setFromAxisAngle(up, Math.PI);
+        m4.compose(pv, q, sc); pairSet(city.patG, m4, color(c.st === 'gesund' ? '#7ac06a' : c.vip != null ? '#c8a040' : c.hp < 35 ? '#a8a070' : '#8a9a6a'));
+      });
+      const t = performance.now() / 4000, px = hs.x + 0.4 + (Math.sin(t) * 0.5 + 0.5) * Math.max(0.5, Math.min(4, list.length) * 0.45 - 0.3);
+      pv.set(px, 0, z0 + 0.75); q.setFromAxisAngle(up, Math.cos(t) > 0 ? Math.PI / 2 : -Math.PI / 2); sc.set(0.8, 0.8, 0.8); m4.compose(pv, q, sc); pairSet(city.docG, m4, color('#3a3a40'));
+    }
+    pairEnd(city.patG); pairEnd(city.docG);
+  }
+  // Ratten huschen umher – mehr bei viel Seuche und nachts
+  function syncRats(S, dt, sick) {
+    const plague = PW.clamp(sick * 2.5 + (S._regionPlague || 0) * 0.6, 0, 1), want = S.waves.active ? 0 : Math.round((R.low ? 0.5 : 1) * (3 + 32 * plague) * (R.night ? 1.4 : 1));
+    const rs = city.rats, m4 = _m(), q = _q(), sc = new T.Vector3(1, 1, 1), pv = new T.Vector3(), up = new T.Vector3(0, 1, 0);
+    const spot = () => Math.random() < 0.5 ? [2.6 + Math.random() * 24.8, Math.random() < 0.5 ? 2.6 : 27.3] : [Math.random() < 0.5 ? 2.6 : 27.4, 2.6 + Math.random() * 24.8];
+    const inside = () => [3 + Math.random() * 24, 3 + Math.random() * 24];
+    while (rs.length < Math.min(48, want)) { const [x, z] = spot(); rs.push({ x, z, tx: x, tz: z, wait: Math.random() * 2, a: 0 }); }
+    rs.length = Math.min(rs.length, want);
+    rs.forEach((r, i) => {
+      if (r.wait > 0) { r.wait -= dt; }
+      else {
+        const dx = r.tx - r.x, dz = r.tz - r.z, d = Math.hypot(dx, dz);
+        if (d < 0.15) { r.wait = 0.3 + Math.random() * 2.5; [r.tx, r.tz] = Math.random() < 0.6 ? spot() : inside(); }
+        else { const s = Math.min(d, 2.6 * dt); r.x += dx / d * s; r.z += dz / d * s; r.a = Math.atan2(dx, dz); }
+      }
+      pv.set(r.x, 0, r.z); q.setFromAxisAngle(up, r.a); m4.compose(pv, q, sc); city.rat.setMatrixAt(i, m4);
+    });
+    city.rat.count = rs.length; city.rat.instanceMatrix.needsUpdate = true;
   }
   const lastPos = new Map(); let fxSeen = 0;
   function syncWave(S, dt) {
@@ -1008,8 +1113,12 @@
       const lm = R.mode === 'city' ? 1 : 0.72;
       hemi.intensity = (0.35 + 0.5 * dayF) * lm; sun.intensity = (0.15 + 0.85 * dayF) * lm;
       sun.color.setRGB(1, 0.85 + 0.12 * dayF, 0.7 + 0.25 * dayF);
-      const bg = scene.background; bg.setRGB(0.05 + 0.08 * dayF, 0.05 + 0.08 * dayF, 0.06 + 0.07 * dayF); scene.fog.color.copy(bg);
+      const bg = scene.background;
+      if (R.mode === 'city') { bg.setRGB(0.05 + 0.2 * dayF, 0.06 + 0.22 * dayF, 0.07 + 0.2 * dayF); scene.fog.near = 26; scene.fog.far = 82; }
+      else { bg.setRGB(0.05 + 0.08 * dayF, 0.05 + 0.08 * dayF, 0.06 + 0.07 * dayF); scene.fog.near = 60; scene.fog.far = 140; }
+      scene.fog.color.copy(bg);
       MAT.glow.color.setScalar(0.55 + 0.6 * (1 - dayF));
+      MAT.halo.opacity = 0.12 + 0.75 * (1 - dayF);
       R.night = dayF < 0.45;
     }
     stepParticles(dt);
