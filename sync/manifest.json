@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "388325e3c12f",
- "generated": "2026-10-24T15:30:25+02:00",
- "commit": "c909f0099116e72f5a107e12e83d497400c9cdf4",
+ "version": "21c609534064",
+ "generated": "2026-10-24T15:58:09+02:00",
+ "commit": "fd4855fefeffc7a93df585aab9c2e3525cb9e530",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6868,8 +6868,8 @@
   },
   {
    "p": "oma-rennen/js/app.js",
-   "s": 56163,
-   "h": "e63368332153f04ca47a35974aa57ccca0c7aef2ffd6f2c8976c6b2fbc569be6"
+   "s": 56177,
+   "h": "5fb1b1f1ea1b53b0d5367b0e21ebdb10874e4b6f2148ed382a0ac4792a3677ac"
   },
   {
    "p": "oma-rennen/js/data.js",
@@ -8299,7 +8299,7 @@
   {
    "p": "sync/catalog.json",
    "s": 202798,
-   "h": "33373ffcf6610397171fea673d16f897066abdd90c8822e9b535ef9aabcb1573"
+   "h": "f24125ad719c906d4d9288649e5acbf72bd45fcba8e105875b89be3a47e3fa8d"
   },
   {
    "p": "taschi/card.svg",
@@ -8848,8 +8848,8 @@
   },
   {
    "p": "werwolf-nacht/js/voice.js",
-   "s": 3729,
-   "h": "98e7b72da54c63e660a29eab8547ffa89dbff7750d4cd1a5f7af3695fbe9214f"
+   "s": 3743,
+   "h": "3138790c8f99ac10ec9cc2e19e3ff199280a0e6f6f2d90981fa6314f02ad7ef4"
   },
   {
    "p": "werwolf-nacht/manifest.webmanifest",
@@ -9353,8 +9353,8 @@
   },
   {
    "p": "zeitsprung-castingshow/vito.js",
-   "s": 4174,
-   "h": "4462667cd61426f392ddd1e75a509c876b80afa6d34828ee3afe3bff17a356eb"
+   "s": 4188,
+   "h": "851467403ebcb119cabf4bd9b667ebc373320ecf1eee3d77987dec4f5ab394f0"
   },
   {
    "p": "zeitsprung-castingshow/year.js",
@@ -9448,8 +9448,8 @@
   },
   {
    "p": "zeitsprung-eurovision/vito.js",
-   "s": 4175,
-   "h": "3cb2bff4848bc5e04a956364d7607ac033b46a682eb811457001191d428c6e44"
+   "s": 4189,
+   "h": "7c916f95711e32f206f13ef756ee9e4ab063a7dcbaed81074a38ebe0fe264ed0"
   },
   {
    "p": "zeitsprung-eurovision/year.js",
@@ -9528,8 +9528,8 @@
   },
   {
    "p": "zeitsprung-kinderserien/vito.js",
-   "s": 4175,
-   "h": "3cb2bff4848bc5e04a956364d7607ac033b46a682eb811457001191d428c6e44"
+   "s": 4189,
+   "h": "7c916f95711e32f206f13ef756ee9e4ab063a7dcbaed81074a38ebe0fe264ed0"
   },
   {
    "p": "zeitsprung-kinderserien/year.js",
@@ -9613,8 +9613,8 @@
   },
   {
    "p": "zeitsprung-movie/vito.js",
-   "s": 4174,
-   "h": "4462667cd61426f392ddd1e75a509c876b80afa6d34828ee3afe3bff17a356eb"
+   "s": 4188,
+   "h": "851467403ebcb119cabf4bd9b667ebc373320ecf1eee3d77987dec4f5ab394f0"
   },
   {
    "p": "zeitsprung-movie/year.js",
@@ -9683,8 +9683,8 @@
   },
   {
    "p": "zeitsprung-radio/vito.js",
-   "s": 4174,
-   "h": "4462667cd61426f392ddd1e75a509c876b80afa6d34828ee3afe3bff17a356eb"
+   "s": 4188,
+   "h": "851467403ebcb119cabf4bd9b667ebc373320ecf1eee3d77987dec4f5ab394f0"
   },
   {
    "p": "zeitsprung-radio/year.js",
@@ -9763,8 +9763,8 @@
   },
   {
    "p": "zeitsprung-wissen/vito.js",
-   "s": 4174,
-   "h": "4462667cd61426f392ddd1e75a509c876b80afa6d34828ee3afe3bff17a356eb"
+   "s": 4188,
+   "h": "851467403ebcb119cabf4bd9b667ebc373320ecf1eee3d77987dec4f5ab394f0"
   },
   {
    "p": "zeitsprung-wissen/year.js",

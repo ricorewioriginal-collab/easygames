@@ -58,16 +58,29 @@ class AppTts(context: Context, private val emit: (id: String, kind: String) -> U
         }
     }
 
-    /** Installierte Stimmen als JSON: n = Name, l = Sprache, d = Standardstimme, o = braucht Internet. */
+    /** Männliche deutsche Stimme (Google „x-deg“, Samsung „SMTm…“), installiert, ohne Internetpflicht bevorzugt; sonst null. */
+    private fun maleGerman(t: TextToSpeech): Voice? = try {
+        val male = Regex("x-deg|smtm\\d|\\bmale\\b", RegexOption.IGNORE_CASE)
+        (t.voices ?: emptySet<Voice>())
+            .filter { it.locale?.language == "de" && male.containsMatchIn(it.name) && it.features?.contains(TextToSpeech.Engine.KEY_FEATURE_NOT_INSTALLED) != true }
+            .minByOrNull { if (it.isNetworkConnectionRequired) 1 else 0 }
+    } catch (e: Exception) {
+        null
+    }
+
+    /** Installierte Stimmen als JSON (männliche deutsche Stimme zuerst): n = Name, l = Sprache, d = bevorzugte Stimme, o = braucht Internet. */
     fun voicesJson(): String {
         main.post { init() }
         val out = JSONArray()
         val t = tts ?: return out.toString()
         if (!ready) return out.toString()
         try {
-            val def = try { t.defaultVoice?.name } catch (e: Exception) { null }
-            val list = t.voices ?: emptySet<Voice>()
-            for (v in list.sortedBy { if (it.name == def) 0 else 1 }) {
+            // Männliche deutsche Stimme zuerst (Moderation/Caller), sonst Reihenfolge der Engine
+            val pref = maleGerman(t)
+            val list = (t.voices ?: emptySet<Voice>()).toMutableList()
+            if (pref != null) { list.remove(pref); list.add(0, pref) }
+            val def = list.firstOrNull()?.name
+            for (v in list) {
                 if (v.features?.contains(TextToSpeech.Engine.KEY_FEATURE_NOT_INSTALLED) == true) continue
                 out.put(JSONObject().put("n", v.name).put("l", v.locale.toLanguageTag()).put("d", v.name == def).put("o", v.isNetworkConnectionRequired))
             }
@@ -89,7 +102,9 @@ class AppTts(context: Context, private val emit: (id: String, kind: String) -> U
                     return@Runnable
                 }
                 try {
-                    val chosen = if (voice.isEmpty()) null else t.voices?.firstOrNull { it.name == voice }
+                    // Ohne gewählte Stimme spricht die Moderation (normale/tiefe Tonlage) mit der Männerstimme; Figurenstimmen (hohe Tonlage, z. B. Oma) behalten die Standardstimme
+                    val de = if (lang.isEmpty()) Locale.getDefault().language == "de" else lang.lowercase(Locale.ROOT).startsWith("de")
+                    val chosen = if (voice.isEmpty()) (if (pitch <= 1.05f && de) maleGerman(t) else null) else t.voices?.firstOrNull { it.name == voice }
                     if (chosen == null || t.setVoice(chosen) != TextToSpeech.SUCCESS) {
                         val loc = if (lang.isEmpty()) Locale.getDefault() else Locale.forLanguageTag(lang.replace('_', '-'))
                         val r = t.setLanguage(loc)
