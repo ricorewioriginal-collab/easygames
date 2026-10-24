@@ -200,6 +200,7 @@
       return lerpP(base, P0, Math.min(1, (F.t - m.st - m.act - 4) / Math.max(4, m.rec * .7)));
     }
     if (s === 'walk' || s === 'walkb') { const ph = tt * (s === 'walk' ? 9 : -8); return pose({ lHipX: -.35 + Math.sin(ph) * .45, rHipX: .25 - Math.sin(ph) * .45, lKnX: .45 + Math.max(0, Math.cos(ph)) * .6, rKnX: .5 + Math.max(0, -Math.cos(ph)) * .6, hipY: Math.abs(Math.sin(ph)) * .03 }); }
+    if (s === 'sidewalk') { const ph = tt * 8; return pose({ lHipX: -.35 + Math.sin(ph) * .3, rHipX: .25 - Math.sin(ph) * .3, lHipZ: .1 + Math.max(0, Math.sin(ph)) * .35, rHipZ: -.12 - Math.max(0, -Math.sin(ph)) * .35, lKnX: .5 + Math.abs(Math.cos(ph)) * .4, rKnX: .5 + Math.abs(Math.sin(ph)) * .4, lean: (F.sideDir || 0) * -.12, hipY: Math.abs(Math.sin(ph)) * .03 }); }
     if (s === 'dash') return pose({ spX: .45, lHipX: -1, lKnX: .9, rHipX: .5 });
     if (s === 'bdash') return pose({ spX: -.25, lHipX: .3, rHipX: -.6, rKnX: .8 });
     if (s === 'crouch') return F.block ? LIB.cblock : LIB.crouch;

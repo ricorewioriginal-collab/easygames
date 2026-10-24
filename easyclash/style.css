@@ -108,8 +108,8 @@ body.kbd .tile:focus i, .tile:hover i { transform: scale(1.2) rotate(-8deg); }
 @keyframes ann { 0% { opacity: 0; transform: scale(2.4); } 15% { opacity: 1; transform: scale(1); } 75% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0; transform: scale(1.1); } }
 .trainInfo { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); background: var(--pan); padding: 8px 16px; font-size: 13px; text-align: center; clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); }
 /* Touch */
-.touch { position: absolute; left: 0; right: 0; bottom: 0; height: 46%; }
-.tZone { position: absolute; left: 0; bottom: 0; width: 48%; height: 100%; touch-action: none; }
+.touch { position: absolute; left: 0; right: 0; bottom: 0; height: 58%; }
+.tZone { position: absolute; left: 0; bottom: 0; width: 52%; height: 100%; touch-action: none; }
 .stick { position: absolute; left: 22%; bottom: 26%; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; background: rgba(255, 255, 255, .08); border: 2px solid rgba(255, 255, 255, .25); opacity: .6; }
 .stick.on { opacity: 1; } .stick i { position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; margin: -27px; border-radius: 50%; background: rgba(255, 255, 255, .5); }
 .tBtns { position: absolute; right: max(10px, env(safe-area-inset-right)); bottom: max(14px, env(safe-area-inset-bottom)); display: grid; grid-template-columns: repeat(3, 66px); gap: 8px; touch-action: none; }

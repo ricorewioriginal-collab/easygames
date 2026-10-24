@@ -49,7 +49,7 @@
   };
   // Richtung + Knopf → Angriff
   const CMD = { '1': 'jab', '2': 'straight', '3': 'kick', '4': 'highkick', f1: 'elbow', f2: 'power', f3: 'knee', f4: 'roundhouse', df1: 'check', df2: 'uppercut', df3: 'midkick', df4: 'launcher', d1: 'low', d2: 'lowpunch', d3: 'lowkick', d4: 'sweep', db1: 'low', db2: 'lowpunch', db3: 'lowkick', db4: 'sweep', b1: 'backfist', b2: 'body', b3: 'kick', b4: 'spinkick' };
-  const W0 = { walk: 2.4, back: 2.0, side: 2.2, power: 1, reach: 1, speed: 1, weight: 1 };
+  const W0 = { walk: 2.8, back: 2.4, side: 2.6, power: 1, reach: 1, speed: 1, weight: 1 };
 
   function stats(ch) { return Object.assign({}, W0, ch && ch.stats || {}); }
   function fighter(ch, i) {
@@ -67,7 +67,7 @@
   const len = (x, z) => Math.hypot(x, z);
   const other = (W, F) => W.f[1 - F.i];
   function faceTo(F, O) { const dx = O.x - F.x, dz = O.z - F.z, l = len(dx, dz) || 1; F.fx = dx / l; F.fz = dz / l; }
-  const busy = F => ['attack', 'hit', 'block', 'down', 'getup', 'air', 'thrown', 'grab', 'ko', 'win', 'side', 'dash', 'bdash'].includes(F.state);
+  const busy = F => F.state !== 'sidewalk' && ['attack', 'hit', 'block', 'down', 'getup', 'air', 'thrown', 'grab', 'ko', 'win', 'side', 'dash', 'bdash'].includes(F.state);
   function setState(F, s) { F.state = s; F.t = 0; }
 
   function startMove(W, F, id) {
@@ -98,8 +98,13 @@
     F.block = (bw || !!inp.block) && !anyBtn;
     // Ducken / Springen / Seitschritt (antippen = Seitschritt, halten = ducken bzw. springen; mit Knopf kein Seitschritt)
     if (anyBtn && (dn || up)) F.usedDir = true;
-    if (dn) F.crouch++; else { if (F.crouch > 0 && F.crouch < 8 && !F.usedDir && !busy(F)) sidestep(W, F, 1); F.crouch = 0; if (!up) F.usedDir = false; }
-    if (up) { F.upHeld++; if (F.upHeld === 9 && !busy(F) && F.y === 0) { setState(F, 'jump'); F.vy = 7.2; F.vx = fw ? F.fx * 2.5 : bw ? -F.fx * 2 : 0; F.vz = fw ? F.fz * 2.5 : bw ? -F.fz * 2 : 0; } } else { if (F.upHeld > 0 && F.upHeld < 8 && !F.usedDir && !busy(F)) sidestep(W, F, -1); F.upHeld = 0; if (!dn) F.usedDir = false; }
+    // Unten schräg (unten-zurück / unten-vor) oder unten + Block = ducken; nur unten/oben = seitwärts laufen (frei im Kreis um den Gegner);
+    // kurz antippen = schneller Seitschritt; oben schräg halten = Sprung
+    const duck = dn && (fw || bw || !!inp.block);
+    if (duck) F.crouch++; else F.crouch = 0;
+    if (dn && !duck) F.dnHeld = (F.dnHeld || 0) + 1; else { if (F.dnHeld > 0 && F.dnHeld < 8 && !F.usedDir && !busy(F)) sidestep(W, F, 1); F.dnHeld = 0; }
+    if (up) { F.upHeld++; if (F.upHeld === 9 && (fw || bw) && !busy(F) && F.y === 0) { setState(F, 'jump'); F.vy = 7.2; F.vx = fw ? F.fx * 2.5 : -F.fx * 2; F.vz = fw ? F.fz * 2.5 : -F.fz * 2; } } else { if (F.upHeld > 0 && F.upHeld < 8 && !F.usedDir && !busy(F)) sidestep(W, F, -1); F.upHeld = 0; }
+    if (!dn && !up) F.usedDir = false;
     // Knöpfe sammeln (2 Takte für gleichzeitige Paare wie 1+3), dann Befehl auflösen
     if (anyBtn) { const P = F.pend || (F.pend = { b: {}, t: 2, dir: '' }); for (const k of ['b1', 'b2', 'b3', 'b4', 's', 'g', 'f']) if (inp[k]) P.b[k] = true; P.dir = dn ? (fw ? 'df' : bw ? 'db' : 'd') : fw ? 'f' : bw ? 'b' : up ? 'u' : ''; }
     if (F.pend && --F.pend.t <= 0) {
@@ -119,14 +124,17 @@
       } else if (!busy(F) && F.state !== 'jump') startMove(W, F, F.buf.id);
       if (F.buf && F.buf.t <= 0) F.buf = null;
     }
-    // Gehen (unten-zurück = geduckt blocken)
+    // Gehen in alle Richtungen (Stick stufenlos): vor/zurück zum Gegner, hoch/runter seitwärts um ihn herum; unten schräg = geduckt (blocken)
     if (!busy(F) && F.state !== 'jump') {
-      let mv = 0;
-      const crouch = F.crouch >= 4 || (dn && F.usedDir);
+      const crouch = F.crouch >= 3 || (dn && F.usedDir && duck);
+      const ax = Math.abs(inp.fx || 0) > .2 ? inp.fx : 0, ay = Math.abs(inp.sy || 0) > .2 ? inp.sy : 0;
       if (crouch) F.state = 'crouch';
-      else if (fw) { mv = F.st.walk; F.state = 'walk'; } else if (bw) { mv = -F.st.back; F.state = 'walkb'; }
-      else F.state = 'idle';
-      F.x += F.fx * mv * DT; F.z += F.fz * mv * DT;
+      else if (ax || ay) {
+        const fwd = ax > 0 ? ax * F.st.walk : ax * F.st.back, o = F.i ? -1 : 1, ox = -F.fz * o, oz = F.fx * o, sd = ay * F.st.side;
+        let vx = F.fx * fwd + ox * sd, vz = F.fz * fwd + oz * sd; const l = Math.hypot(vx, vz), mx = Math.max(F.st.walk, F.st.side);
+        if (l > mx) { vx *= mx / l; vz *= mx / l; }
+        F.x += vx * DT; F.z += vz * DT; F.state = Math.abs(ax) >= Math.abs(ay) ? (ax > 0 ? 'walk' : 'walkb') : 'sidewalk'; F.sideDir = ay * o;
+      } else F.state = 'idle';
     }
   }
   function sidestep(W, F, dir) { setState(F, 'side'); F.side = dir * (F.i ? -1 : 1); /* +1 = zur Kamera hin (aus der Bildtiefe heraus) */ W.ev.push({ k: 'side', i: F.i }); }
