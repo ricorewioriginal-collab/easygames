@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/easyclash-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="EASYCLASH"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#120818">
+<title>EASYCLASH – Das Turnier aller Helden</title>
+<meta name="description" content="EASYCLASH: 3D-Prügelspiel mit den Figuren aus allen easygames – Schlag- und Tritt-Ketten, Seitschritt, Würfe, Luft-Kombos, Spezialangriffe und Finale. Arcade, Versus zu zweit, Training; Touch, Tastatur und Controller.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage"></div>
+<div class="flash" id="flash"></div>
+
+<!-- Ladebildschirm -->
+<section class="scr on" id="sLoad">
+  <div class="load">
+    <h1 class="title">EASY<span>CLASH</span></h1>
+    <div class="bar"><i id="loadBar"></i></div>
+    <p class="tip" id="loadTip">Kämpfer wärmen sich auf …</p>
+  </div>
+</section>
+
+<!-- Titel -->
+<section class="scr" id="sTitle">
+  <div class="titleBox">
+    <p class="kicker">Das Turnier aller Helden</p>
+    <h1 class="title big">EASY<span>CLASH</span></h1>
+    <button class="press nav" id="bPress"><span id="pressTxt">Drücke Start</span></button>
+  </div>
+  <p class="corner"><a href="../" id="backLink">← Alle Spiele</a></p>
+</section>
+
+<!-- Hauptmenü -->
+<section class="scr" id="sMenu">
+  <div class="menuWrap">
+    <header class="mHead"><h1 class="title small">EASY<span>CLASH</span></h1><div class="mStat" id="menuStat"></div></header>
+    <div class="tiles" id="tiles">
+      <button class="tile nav hero" data-go="arcade"><i>🏆</i><b>Arcade</b><small>8 Gegner bis zum Titel</small></button>
+      <button class="tile nav" data-go="versus"><i>⚔️</i><b>Versus</b><small>Zu zweit an einem Gerät</small></button>
+      <button class="tile nav" data-go="cpu"><i>🤖</i><b>Gegen CPU</b><small>Freier Kampf</small></button>
+      <button class="tile nav online" data-go="online"><i>🌐</i><b>Online &amp; Handys</b><small>Handys als Controller</small></button>
+      <button class="tile nav" data-go="training"><i>🥊</i><b>Training</b><small>Kombos üben</small></button>
+      <button class="tile nav" data-go="roster"><i>🧑‍🤝‍🧑</i><b>Kämpfer</b><small id="rosterInfo">Alle Helden</small></button>
+      <button class="tile nav" data-go="rec"><i>🏅</i><b>Rekorde</b><small>Siege &amp; Titel</small></button>
+      <button class="tile nav" data-go="opts"><i>⚙️</i><b>Optionen</b><small>Ton, Stärke, Grafik</small></button>
+      <button class="tile nav" data-go="help"><i>📖</i><b>Anleitung</b><small>Steuerung &amp; Kombos</small></button>
+    </div>
+    <footer class="mFoot"><span class="hintKeys" id="menuKeys"></span><a href="../" class="nav" id="backLink2">← Alle Spiele</a></footer>
+  </div>
+</section>
+
+<!-- Kämpferwahl -->
+<section class="scr" id="sSelect">
+  <div class="selWrap">
+    <div class="selHead"><button class="btn nav" id="selBack">←</button><h2 id="selTitle">Wähle deinen Kämpfer</h2><span class="selTag" id="selTag">Spieler 1</span></div>
+    <div class="selNames"><div class="selName p1"><b id="selN1">–</b><small id="selG1"></small></div><div class="selName p2"><b id="selN2">–</b><small id="selG2"></small></div></div>
+    <div class="selGrid" id="selGrid"></div>
+    <div class="selFoot"><span class="selSp" id="selSp"></span><button class="btn nav" id="selRand">🎲 Zufall</button><button class="btn pri nav" id="selGo" disabled>Weiter ▶</button></div>
+  </div>
+</section>
+
+<!-- Arena-Wahl -->
+<section class="scr" id="sStage">
+  <div class="pickWrap">
+    <h2 class="sTitle">Arena wählen</h2>
+    <div class="stageGrid" id="stageGrid"></div>
+    <div class="optRow" id="diffRow"><span>Stärke</span><div class="chips" id="diffChips"></div></div>
+    <div class="optRow"><span>Runden</span><div class="chips" id="roundChips"></div></div>
+    <div class="rowBtns"><button class="btn nav" id="stBack">← Zurück</button><button class="btn pri big nav" id="stGo">⚔ Kampf!</button></div>
+  </div>
+</section>
+
+<!-- Online-Lobby am Fernseher/PC -->
+<section class="scr" id="sLobby">
+  <div class="pickWrap lob">
+    <h2 class="sTitle">🌐 Online &amp; Handys</h2>
+    <div class="lobGrid">
+      <div>
+        <p class="hint">Zwei Mitspieler scannen den QR-Code oder öffnen den Link – <b>von überall</b>. Jedes Handy wird zum Controller, gekämpft wird hier auf dem großen Bildschirm. Ein Platz kann auch hier mit Tastatur/Controller gespielt werden.</p>
+        <div class="slots" id="lobSlots"></div>
+        <div class="rowBtns wrap"><button class="btn nav" id="lobMe">🎮 Hier spielen: aus</button></div>
+      </div>
+      <div class="qrBox"><div class="qr" id="qr">…</div><div class="code" id="code">····</div><p class="url" id="url"></p></div>
+    </div>
+    <div class="rowBtns"><button class="btn nav" id="lobBack">← Zurück</button><button class="btn pri nav" id="lobGo" disabled>Warte auf 2 Spieler …</button></div>
+  </div>
+</section>
+
+<!-- Handy als Controller -->
+<section class="scr" id="sPhone">
+  <div class="phoneJoin" id="pJoin">
+    <h1 class="title small">EASY<span>CLASH</span></h1>
+    <p class="hint">Dein Handy wird zum Controller – gekämpft wird auf dem großen Bildschirm.</p>
+    <input class="field" id="jName" maxlength="12" placeholder="Dein Name" autocomplete="nickname">
+    <input class="field" id="jCode" maxlength="4" placeholder="Code" autocapitalize="characters">
+    <button class="btn pri big" id="bJoin">Mitmachen</button>
+    <p class="err" id="jMsg"></p>
+  </div>
+  <div class="pad" id="pPad" hidden>
+    <div class="padTop"><b id="pName"></b><span class="pSlot" id="pSlot"></span></div>
+    <div class="padPick" id="pPick"><button class="btn" id="pPrev">◀</button><div><b id="pFighter">–</b><small id="pGame"></small></div><button class="btn" id="pNext">▶</button></div>
+    <p class="padMsg" id="pMsg">Warte auf den Start …</p>
+    <div class="padCtl"><div class="pZone" id="pZone"><div class="stick" id="pStick"><i></i></div></div>
+      <div class="tBtns pBtns"><button class="tb tp" data-b="p">👊<small>Schlag</small></button><button class="tb tk" data-b="k">🦵<small>Tritt</small></button><button class="tb ts" data-b="s">✨<small>Spezial</small></button><button class="tb tg" data-b="g">🤝<small>Wurf</small></button><button class="tb tbl" data-b="block">🛡<small>Block</small></button><button class="tb tf" data-b="f">🔥<small>Finale</small></button></div></div>
+  </div>
+</section>
+
+<!-- Kampf -->
+<section class="scr game" id="sGame">
+  <div class="hud">
+    <div class="side p1"><img class="por" id="hP1" alt=""><div class="info"><div class="hpBar"><i class="lag" id="hL1"></i><i class="hp" id="hH1"></i></div><div class="nameRow"><b id="hN1"></b><span class="wins" id="hW1"></span><span class="rage" id="hR1">🔥 WUT</span></div></div></div>
+    <div class="timer" id="hTime">60</div>
+    <div class="side p2"><img class="por" id="hP2" alt=""><div class="info"><div class="hpBar"><i class="lag" id="hL2"></i><i class="hp" id="hH2"></i></div><div class="nameRow"><b id="hN2"></b><span class="wins" id="hW2"></span><span class="rage" id="hR2">🔥 WUT</span></div></div></div>
+  </div>
+  <button class="icon nav" id="bPause" aria-label="Pause"><i class="pz"></i></button>
+  <div class="combo p1" id="hC1"></div><div class="combo p2" id="hC2"></div>
+  <div class="announce" id="announce"></div>
+  <div class="trainInfo" id="trainInfo" hidden></div>
+  <div class="touch" id="touch" hidden>
+    <div class="tZone" id="tZone"><div class="stick" id="tStick"><i></i></div></div>
+    <div class="tBtns">
+      <button class="tb tp" data-b="p">👊<small>Schlag</small></button><button class="tb tk" data-b="k">🦵<small>Tritt</small></button>
+      <button class="tb ts" data-b="s">✨<small>Spezial</small></button><button class="tb tg" data-b="g">🤝<small>Wurf</small></button>
+      <button class="tb tbl" data-b="block">🛡<small>Block</small></button><button class="tb tf" data-b="f" id="tFin" hidden>🔥<small>Finale</small></button>
+    </div>
+  </div>
+</section>
+
+<!-- Overlays -->
+<div class="ov" id="ovPause" hidden><div class="card">
+  <h2>Pause</h2>
+  <div class="menuBtns"><button class="btn big pri nav" id="pGo">▶ Weiter</button><button class="btn nav" id="pRestart">↻ Neu starten</button><button class="btn nav" id="pSel">🧑‍🤝‍🧑 Kämpferwahl</button><button class="btn nav" id="pHelp">📖 Steuerung</button><button class="btn nav" id="pOpts">⚙️ Optionen</button><button class="btn nav" id="pQuit">⏹ Zum Menü</button></div>
+</div></div>
+
+<div class="ov end" id="ovEnd" hidden><div class="card big">
+  <p class="kicker" id="eKick"></p>
+  <img class="endPor" id="ePor" alt="">
+  <h2 class="endTitle" id="eTitle"></h2>
+  <p class="hint" id="eSub"></p>
+  <div class="stats" id="eStats"></div>
+  <div class="rowBtns wrap"><button class="btn pri big nav" id="eNext">▶ Weiter</button><button class="btn nav" id="eAgain">↻ Revanche</button><button class="btn nav" id="eSel">🧑‍🤝‍🧑 Kämpferwahl</button><button class="btn nav" id="eMenu">☰ Menü</button></div>
+</div></div>
+
+<div class="ov" id="ovVs" hidden><div class="vs"><div class="vsSide l"><img id="vsP1" alt=""><b id="vsN1"></b><small id="vsG1"></small></div><div class="vsMid"><span>VS</span><small id="vsInfo"></small></div><div class="vsSide r"><img id="vsP2" alt=""><b id="vsN2"></b><small id="vsG2"></small></div></div></div>
+
+<div class="ov" id="ovOpts" hidden><div class="card">
+  <h2>⚙️ Optionen</h2>
+  <label class="check"><input type="checkbox" id="sSound"> Soundeffekte</label>
+  <label class="check"><input type="checkbox" id="sMusic"> Musik</label>
+  <label class="check"><input type="checkbox" id="sVib"> Vibration</label>
+  <label class="check"><input type="checkbox" id="sTouch"> Touch-Knöpfe immer zeigen</label>
+  <label class="check"><input type="checkbox" id="sLow"> Sparmodus (weniger Details, nach Neustart)</label>
+  <button class="btn pri nav" id="optX" data-close>Fertig</button>
+</div></div>
+
+<div class="ov" id="ovRec" hidden><div class="card">
+  <h2>🏅 Rekorde</h2>
+  <div class="stats" id="recList"></div>
+  <p class="hint">Der Arcade-Highscore landet in der Rangliste und wird mit deinem Konto gespeichert.</p>
+  <button class="btn pri nav" id="recX" data-close>Fertig</button>
+</div></div>
+
+<div class="ov" id="ovRoster" hidden><div class="card wide">
+  <h2>🧑‍🤝‍🧑 Die Kämpfer</h2>
+  <div class="roster" id="roster"></div>
+  <button class="btn pri nav" id="rosX" data-close>Fertig</button>
+</div></div>
+
+<div class="ov" id="ovHelp" hidden><div class="card scroll">
+  <h2>📖 So geht's</h2>
+  <p>Zwei Kämpfer, eine runde Arena mit Wand. Wer zuerst die Lebensleiste des anderen leert, gewinnt die Runde – wer zuerst <b>2 Runden</b> holt (einstellbar), gewinnt den Kampf. Läuft die Zeit ab, gewinnt, wer mehr Leben hat.</p>
+  <ul>
+    <li><b>👊 Schlag ×3</b> und <b>🦵 Tritt ×2</b> sind Ketten. Vor + Schlag = harter Schlag (an der Wand bleibt der Gegner kleben), Vor + Tritt = <b>Aushebler</b> → danach in der Luft weiter treffen (Luft-Kombo).</li>
+    <li><b>Ducken</b> (runter halten): hohe Angriffe gehen drüber. Unten + Schlag = schneller Tief-Stoß, unten + Tritt = Feger (wirft um).</li>
+    <li><b>🛡 Blocken:</b> zurück halten oder Block-Knopf. Stehend blockst du hoch und mittel, geduckt tief – mittlere Angriffe treffen Duckende.</li>
+    <li><b>Seitschritt:</b> hoch/runter kurz antippen – gerade Angriffe gehen daneben. Hoch halten = Sprung. Doppelt vor = Sprint, doppelt zurück = Rückzug.</li>
+    <li><b>🤝 Wurf</b> geht durch jeden Block. Befreien: direkt nach dem Greifen selbst Wurf drücken.</li>
+    <li><b>✨ Spezial:</b> jede Figur hat ihren eigenen – Energiestoß, Sturmangriff, Wirbel, Sturzflug, Himmelsfaust oder Bodenbeben.</li>
+    <li><b>🔥 Wut:</b> unter 25 % Leben glühst du – dann einmal pro Runde das <b>Finale</b>: riesiger Schaden.</li>
+    <li><b>Konter:</b> Wer in einen startenden Angriff hineintrifft, macht mehr Schaden.</li>
+  </ul>
+  <h3>Steuerung</h3>
+  <ul>
+    <li><b>Tastatur (Spieler 1):</b> WASD bzw. Pfeile bewegen, J Schlag, K Tritt, L Spezial, I Wurf, U Block, O Finale. Esc/P Pause.</li>
+    <li><b>Tastatur (Spieler 2 im Versus):</b> Pfeile bewegen, Ziffernblock 4 Schlag, 5 Tritt, 6 Spezial, 8 Wurf, 0 Block, 9 Finale (oder , . - und #).</li>
+    <li><b>Controller:</b> Stick/Steuerkreuz bewegen, X Schlag, A Tritt, Y Spezial, B Wurf, LB/RB Block, RT Finale, Start Pause. Zwei Controller = zwei Spieler.</li>
+    <li><b>Touch:</b> linker Daumen = Stick, rechts die Knöpfe.</li>
+    <li><b>🌐 Online &amp; Handys:</b> Der große Bildschirm zeigt den Kampf, zwei Handys sind die Controller – per QR-Code oder Link von überall.</li>
+  </ul>
+  <button class="btn pri nav" id="helpX" data-close>Los geht's</button>
+</div></div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../device.js"></script>
+<script src="../gamekit.js"></script>
+<script src="../cloud/fire-peer.js"></script>
+<script src="js/core.js"></script>
+<script src="js/roster.js"></script>
+<script src="js/model.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="easyclash" data-prefix="easyclash-" defer></script>
+</body>
+</html>

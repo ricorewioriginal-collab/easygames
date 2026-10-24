@@ -1,0 +1,38 @@
+{
+  "id": "./",
+  "name": "Hüpfstraße – Hüpf so weit du kannst!",
+  "short_name": "Hüpfstraße",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#1b2d38",
+  "theme_color": "#284251",
+  "categories": [
+    "games"
+  ],
+  "icons": [
+    {
+      "src": "../pwa-icons/huepfstrasse-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../pwa-icons/huepfstrasse-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../pwa-icons/huepfstrasse-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "519638ca77a7",
- "generated": "2026-10-24T05:57:33+00:00",
- "commit": "e0bc345965c0210a292b1e15504798216fc5dcb6",
+ "version": "2993656d5c74",
+ "generated": "2026-10-24T06:03:52+00:00",
+ "commit": "30f52b3e2c67c5f30ce1245ced64ec6a02d70a05",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2897,
-   "h": "6360a4f858f3eede5885b8b4edc2b577560b3b36d6e2e8a5ffcd1ba0d42962f7"
+   "s": 2946,
+   "h": "0ef5bd0fa4472865b785c965ab0a728713d25347f3fd8f08c0f0422b90bf4146"
   },
   {
    "p": "chat.html",
@@ -5540,6 +5540,61 @@
    "p": "device.js",
    "s": 9119,
    "h": "f325bd0da82c43ce6f8c1414b46fffcd1f4be650c6850d2f63726100e0b2fbec"
+  },
+  {
+   "p": "easyclash/card.jpg",
+   "s": 30835,
+   "h": "c80f7c247429c903ea145a749af0ab1795498cbd6666def47c5f4e1b43c42e12"
+  },
+  {
+   "p": "easyclash/index.html",
+   "s": 17198,
+   "h": "13e8156799aefee53771f217676dcaca971f0e55c029dfabac35d328cf0d7593"
+  },
+  {
+   "p": "easyclash/js/app.js",
+   "s": 44968,
+   "h": "4e2999cab879f1e937686efe3ea4717b76398378865c5b9f05ee4dc72e7f479e"
+  },
+  {
+   "p": "easyclash/js/core.js",
+   "s": 21946,
+   "h": "3acf61f5c4bc914584961b938deb9451ee3ad4f6a3067655c5ee137ee34e6fc5"
+  },
+  {
+   "p": "easyclash/js/model.js",
+   "s": 23121,
+   "h": "17ec3ab2547a52947bb527c025d68a551694125b29d1c8262cf72ac2c2ba2d47"
+  },
+  {
+   "p": "easyclash/js/roster.js",
+   "s": 7456,
+   "h": "943e9b4bcb4353e77dce982649b4b757029529ea28c79e7b8a7487728ea05ddf"
+  },
+  {
+   "p": "easyclash/js/scene.js",
+   "s": 15612,
+   "h": "5141624ed7c5b91584cb02555aabca01e6fa5f83a6136db642f2cdd3af1f58d5"
+  },
+  {
+   "p": "easyclash/js/sound.js",
+   "s": 5687,
+   "h": "45aba5b71a293a4cba03f40ed72d9411ff0f9f6416ebd945c18d95f5ced425e4"
+  },
+  {
+   "p": "easyclash/manifest.webmanifest",
+   "s": 778,
+   "h": "e4d1060a9c5859d78b5b619a43201860c76eb25e239912bc3ed749e2c61f5efe"
+  },
+  {
+   "p": "easyclash/style.css",
+   "s": 20288,
+   "h": "3b8660cbdae7f61af9f4484c66691feb0edb298bb03b465e76e87894775030b6"
+  },
+  {
+   "p": "easyclash/sw.js",
+   "s": 2006,
+   "h": "802ca72b731c733e5f057e82c5a12201f0dd7f364dbbf14543c4988ebbc5d310"
   },
   {
    "p": "easygames.js",
@@ -5858,8 +5913,8 @@
   },
   {
    "p": "games.js",
-   "s": 39478,
-   "h": "7b52dfa26fc26bb7a5ea0374a9d64ed3eb89e23d7e85451236357b62810765a0"
+   "s": 40739,
+   "h": "ae14fa769512e2658b7e74392e9559bb292f99e7bcb8bf144a4debb9eb5974c8"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6018,13 +6073,58 @@
   },
   {
    "p": "guides.js",
-   "s": 112992,
-   "h": "6110f6b7b482e3ae405c55694d40d16fb15aa0ac67cd1574c409b361b8b16ed9"
+   "s": 116389,
+   "h": "f16f47e752fe65a73acb43506bf5569b27bc8f403dacba26f9a550ac7993e06c"
   },
   {
    "p": "heute.html",
    "s": 10577,
    "h": "b69f43a57c3441bd3133dca3f563f304b3a2b28346b6afcdccf6fd5ed256dd3d"
+  },
+  {
+   "p": "huepfstrasse/card.jpg",
+   "s": 50089,
+   "h": "62146374d4695fa7ae87f4c7784ec1f04975824ecbd4ccc124d2ef90ff8bc892"
+  },
+  {
+   "p": "huepfstrasse/index.html",
+   "s": 11395,
+   "h": "a4d47a8367fcc227866e330b608d09368b02accd8cd8bb5e960a1dbd475534e4"
+  },
+  {
+   "p": "huepfstrasse/js/app.js",
+   "s": 21096,
+   "h": "a5bc469f927d698399c4ec3f68034cb0a3fd7299283777593602a120bf763c6b"
+  },
+  {
+   "p": "huepfstrasse/js/core.js",
+   "s": 12725,
+   "h": "ef611532ac4e26d96fef9ae1331b10becf5805e6daf674d81e4d4391e47ce89b"
+  },
+  {
+   "p": "huepfstrasse/js/scene.js",
+   "s": 27108,
+   "h": "18809d34339daa8817085f62b05aa40b41085e062a63b1e55330d0c224730049"
+  },
+  {
+   "p": "huepfstrasse/js/sound.js",
+   "s": 5461,
+   "h": "74bd0b7546ed72a3587c1a3008d7b1bfa11ed378bf9713f9e206241946416f30"
+  },
+  {
+   "p": "huepfstrasse/manifest.webmanifest",
+   "s": 793,
+   "h": "5e26e2906591db17781fed577f042ef21acc340fe710cd5eab3071f475b60de0"
+  },
+  {
+   "p": "huepfstrasse/style.css",
+   "s": 12535,
+   "h": "edb4800d5d1731a209dd13b2fa676fc61ef761c854762b0f5c117770d9eb791e"
+  },
+  {
+   "p": "huepfstrasse/sw.js",
+   "s": 2015,
+   "h": "95db3d0a9895b13baaeb5fd390c8e29f8451cb7b16be206295aefe9959865115"
   },
   {
    "p": "impressum.html",
@@ -6458,8 +6558,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2907,
-   "h": "1d3639d466c9d050394fc65a01f0127cce397103ec747731b50655f45b83e94a"
+   "s": 2979,
+   "h": "c637150e75847a8c5b7f8a91bd6790b2e9c233793db1b3b5a1313aea3b93eb13"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -7853,8 +7953,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 172574,
-   "h": "150d0add8ff5c564fb3ec25314cca67a0d4ab8f8cb2fd48e0523c48de15cdf4e"
+   "s": 177771,
+   "h": "16713f999800b3e93123c805348d279dd18fc44fabf9acde540b3cacfe3342e3"
   },
   {
    "p": "taschi/card.svg",

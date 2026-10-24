@@ -527,6 +527,33 @@ window.EASYGAMES_GUIDES = {
    "Hebe den Hammer für eine einzelne Kachel auf, die deine Reihe blockiert."
   ]
  },
+ "huepfstrasse": {
+  "anleitung": "Hüpfstraße ist ein Endlos-Hüpfspiel im Klötzchen-Look: Deine Figur hüpft Feld für Feld nach vorn, jede neue Reihe ist ein Punkt. Auf Straßen fahren Autos und Laster – Lücke abwarten! In Flüssen nur auf Baumstämmen oder Seerosen landen; Stämme tragen dich mit, am Rand ist Schluss. Blinkt am Gleis das rote Licht, kommt gleich ein Zug. Bäume und Steine versperren den Weg. Wer zu lange trödelt oder zu weit zurückhüpft, wird von der Funk-Drohne geschnappt. Mit gesammelten Münzen schaltest du im Figuren-Laden neue Figuren frei: Rico, Glamour-Star, Kleiner Flitzer, Waldläuferin (mit Hund), Hallen-Fan, Pingu, Fuchs, Robo, Panda, Astronautin, Mietze, Dino und Einhorn. Alle 60 Reihen beginnt ein neues Gebiet (Frühlingswiese, Sommerfeld, Herbstwald, Winterland, Neonnacht). 📅 Tagesstrecke: jeden Tag dieselbe Strecke für alle.",
+  "steuerung": [
+   "Touch: tippen = vorwärts, wischen = in die Richtung (auch zurück).",
+   "Tastatur: Pfeiltasten oder WASD, Leertaste = vorwärts, Esc/P Pause.",
+   "Gamecontroller: Steuerkreuz oder Stick hüpfen, A = vorwärts, Start Pause; im Menü Steuerkreuz und A."
+  ],
+  "tipps": [
+   "Auf Straßen lieber kurz warten als blind losspringen – Laster sind länger, als sie aussehen.",
+   "Auf Baumstämmen nicht zu lange stehen bleiben, sonst treibst du über den Rand.",
+   "Hörst du das Bimmeln am Gleis, bleib davor stehen, bis der Zug durch ist."
+  ]
+ },
+ "easyclash": {
+  "anleitung": "EASYCLASH ist ein 3D-Prügelspiel mit den Helden aus den easygames. Zwei Kämpfer stehen in einer runden Arena mit Wand; wer zuerst die Lebensleiste des anderen leert, gewinnt die Runde, wer zuerst 2 Runden holt, den Kampf. Schlag ×3 und Tritt ×2 sind Ketten, vor + Schlag ist ein harter Schlag (an der Wand bleibt der Gegner kleben), vor + Tritt ist ein Aushebler für Luft-Kombos. Ducken lässt hohe Angriffe drübergehen, unten + Tritt ist ein Feger. Blocken mit zurück oder dem Block-Knopf: stehend hoch und mittel, geduckt tief. Hoch/runter kurz antippen ist ein Seitschritt, gegen den gerade Angriffe danebengehen. Würfe gehen durch jeden Block und lassen sich mit Wurf befreien. Jede Figur hat einen eigenen Spezialangriff (Energiestoß, Sturmangriff, Wirbel, Sturzflug, Himmelsfaust oder Bodenbeben). Unter 25 % Leben glühst du vor Wut und hast einmal pro Runde das Finale. Modi: 🏆 Arcade (8 Gegner, Punkte für die Rangliste), ⚔️ Versus zu zweit, 🤖 Gegen CPU (3 Stärken), 🥊 Training und 🌐 Online & Handys (der große Bildschirm zeigt den Kampf, zwei Handys sind die Controller).",
+  "steuerung": [
+   "Tastatur Spieler 1: WASD oder Pfeile bewegen, J Schlag, K Tritt, L Spezial, I Wurf, U Block, O Finale, Esc/P Pause.",
+   "Tastatur Spieler 2 (Versus): Pfeile bewegen, Ziffernblock 4 Schlag, 5 Tritt, 6 Spezial, 8 Wurf, 0 Block, 9 Finale.",
+   "Gamecontroller: Stick/Steuerkreuz bewegen, X Schlag, A Tritt, Y Spezial, B Wurf, LB/RB Block, RT Finale, Start Pause – zwei Controller für zwei Spieler.",
+   "Touch: linker Daumen auf den Stick, rechts die Knöpfe; online ist das Handy der Controller."
+  ],
+  "tipps": [
+   "Gegen Kombos: zurück halten blockt – aber gegen Feger musst du ducken.",
+   "Nach einem geblockten Aushebler ist der Gegner offen: sofort zurückschlagen!",
+   "Spar dir das Finale für den Moment auf, in dem der Gegner einen Fehler macht."
+  ]
+ },
  "frequenzminen": {
   "anleitung": "Frequenz-Minen 3D ist Minesweeper in modern: Das Spielfeld liegt auf einer Radarscheibe, unter einigen Funkplatten stecken Störsender. Decke alle anderen Platten auf – jede offene Platte zeigt, wie viele Störsender auf den 8 Nachbarfeldern rauschen, leere Platten decken ihre Nachbarn automatisch auf. Der erste Klick ist immer sicher. 🚩 Peiler markieren vermutete Störsender, eine Zahl antippen deckt die übrigen Nachbarn auf, wenn genug Peiler stehen. 💡 Peilung zeigt dreimal pro Runde eine sichere Platte (+20 Sekunden). Modi: Leicht (9×9, 10 Störsender), Mittel (12×12, 24), Schwer (12×18, 44) und 📅 Tagesrätsel – für alle gleich, Ergebnis teilen. Punkte: jede freie Platte zählt, beim Sieg Tempo-Bonus (Leicht ×1, Mittel ×2, Schwer ×4). 📻 spielt einen Sender live das ganze Spiel über.",
   "steuerung": [

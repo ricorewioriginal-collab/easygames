@@ -1633,6 +1633,76 @@
    }
   },
   {
+   "id": "huepfstrasse",
+   "title": "Hüpfstraße – Hüpf so weit du kannst!",
+   "desc": "Endlos-Hüpfspiel im Klötzchen-Look: Hüpf über Straßen voller Autos und Laster, über Flüsse auf Baumstämmen und Seerosen und über Gleise, bevor der Zug kommt. Wer trödelt, den schnappt die Funk-Drohne. Münzen sammeln und 13 Figuren freischalten – mit Rico, Glamour-Star, Kleinem Flitzer, Waldläuferin mit Hund, Hallen-Fan, Pingu, Einhorn und mehr. Fünf Gebiete und eine Tagesstrecke für alle.",
+   "icon": "🐾",
+   "img": "huepfstrasse/card.jpg",
+   "bg": "linear-gradient(145deg,#7fd0ff,#6cc644 55%,#ffd23f)",
+   "glow": "rgba(108,198,68,.5)",
+   "path": "huepfstrasse/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Hüpfstraße ist ein Endlos-Hüpfspiel im Klötzchen-Look: Deine Figur hüpft Feld für Feld nach vorn, jede neue Reihe ist ein Punkt. Auf Straßen fahren Autos und Laster – Lücke abwarten! In Flüssen nur auf Baumstämmen oder Seerosen landen; Stämme tragen dich mit, am Rand ist Schluss. Blinkt am Gleis das rote Licht, kommt gleich ein Zug. Bäume und Steine versperren den Weg. Wer zu lange trödelt oder zu weit zurückhüpft, wird von der Funk-Drohne geschnappt. Mit gesammelten Münzen schaltest du im Figuren-Laden neue Figuren frei: Rico, Glamour-Star, Kleiner Flitzer, Waldläuferin (mit Hund), Hallen-Fan, Pingu, Fuchs, Robo, Panda, Astronautin, Mietze, Dino und Einhorn. Alle 60 Reihen beginnt ein neues Gebiet (Frühlingswiese, Sommerfeld, Herbstwald, Winterland, Neonnacht). 📅 Tagesstrecke: jeden Tag dieselbe Strecke für alle.",
+    "steuerung": [
+     "Touch: tippen = vorwärts, wischen = in die Richtung (auch zurück).",
+     "Tastatur: Pfeiltasten oder WASD, Leertaste = vorwärts, Esc/P Pause.",
+     "Gamecontroller: Steuerkreuz oder Stick hüpfen, A = vorwärts, Start Pause; im Menü Steuerkreuz und A."
+    ],
+    "tipps": [
+     "Auf Straßen lieber kurz warten als blind losspringen – Laster sind länger, als sie aussehen.",
+     "Auf Baumstämmen nicht zu lange stehen bleiben, sonst treibst du über den Rand.",
+     "Hörst du das Bimmeln am Gleis, bleib davor stehen, bis der Zug durch ist."
+    ]
+   },
+   "size": 143217,
+   "files": 9,
+   "offline": true,
+   "cloud": {
+    "game": "huepfstrasse",
+    "prefix": "huepfstrasse-"
+   }
+  },
+  {
+   "id": "easyclash",
+   "title": "EASYCLASH – Das Turnier aller Helden",
+   "desc": "Modernes 3D-Prügelspiel mit den Helden aus den easygames: Rico, die Sumo-Stars, Hopsis, die Hüpfstraße-Figuren und Ulk-Kämpfer wie Kampf-Würstchen und Klopapier-Ninja. Schlag- und Tritt-Ketten, Seitschritt, Würfe, Aushebler mit Luft-Kombos, Spezialangriff je Figur und das Finale. Arcade, Versus zu zweit, Gegen CPU, Training und 🌐 Online & Handys als Controller.",
+   "icon": "🥊",
+   "img": "easyclash/card.jpg",
+   "bg": "linear-gradient(145deg,#ff3d6e,#3a0f2a 55%,#ffc83d)",
+   "glow": "rgba(255,61,110,.5)",
+   "path": "easyclash/",
+   "modes": {
+    "pad": true,
+    "online": true,
+    "multi": true,
+    "tvParam": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "EASYCLASH ist ein 3D-Prügelspiel mit den Helden aus den easygames. Zwei Kämpfer stehen in einer runden Arena mit Wand; wer zuerst die Lebensleiste des anderen leert, gewinnt die Runde, wer zuerst 2 Runden holt, den Kampf. Schlag ×3 und Tritt ×2 sind Ketten, vor + Schlag ist ein harter Schlag (an der Wand bleibt der Gegner kleben), vor + Tritt ist ein Aushebler für Luft-Kombos. Ducken lässt hohe Angriffe drübergehen, unten + Tritt ist ein Feger. Blocken mit zurück oder dem Block-Knopf: stehend hoch und mittel, geduckt tief. Hoch/runter kurz antippen ist ein Seitschritt, gegen den gerade Angriffe danebengehen. Würfe gehen durch jeden Block und lassen sich mit Wurf befreien. Jede Figur hat einen eigenen Spezialangriff (Energiestoß, Sturmangriff, Wirbel, Sturzflug, Himmelsfaust oder Bodenbeben). Unter 25 % Leben glühst du vor Wut und hast einmal pro Runde das Finale. Modi: 🏆 Arcade (8 Gegner, Punkte für die Rangliste), ⚔️ Versus zu zweit, 🤖 Gegen CPU (3 Stärken), 🥊 Training und 🌐 Online & Handys (der große Bildschirm zeigt den Kampf, zwei Handys sind die Controller).",
+    "steuerung": [
+     "Tastatur Spieler 1: WASD oder Pfeile bewegen, J Schlag, K Tritt, L Spezial, I Wurf, U Block, O Finale, Esc/P Pause.",
+     "Tastatur Spieler 2 (Versus): Pfeile bewegen, Ziffernblock 4 Schlag, 5 Tritt, 6 Spezial, 8 Wurf, 0 Block, 9 Finale.",
+     "Gamecontroller: Stick/Steuerkreuz bewegen, X Schlag, A Tritt, Y Spezial, B Wurf, LB/RB Block, RT Finale, Start Pause – zwei Controller für zwei Spieler.",
+     "Touch: linker Daumen auf den Stick, rechts die Knöpfe; online ist das Handy der Controller."
+    ],
+    "tipps": [
+     "Gegen Kombos: zurück halten blockt – aber gegen Feger musst du ducken.",
+     "Nach einem geblockten Aushebler ist der Gegner offen: sofort zurückschlagen!",
+     "Spar dir das Finale für den Moment auf, in dem der Gegner einen Fehler macht."
+    ]
+   },
+   "size": 189895,
+   "files": 11,
+   "offline": true,
+   "cloud": {
+    "game": "easyclash",
+    "prefix": "easyclash-"
+   }
+  },
+  {
    "id": "anmacha-preisradar",
    "title": "AnMaCha Preisradar",
    "desc": "Das Preis-Schätzspiel: Gebotsduell, Frequenz-Skala, Teurer oder billiger, Einkaufswagen und Preisfinale – bis zu 4 Spieler, Computer-Gegner, geheime Tipps per Handy. 200+ Produkte, präsentiert vom RicoReWi Radioportal.",
