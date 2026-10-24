@@ -1774,6 +1774,42 @@
    }
   },
   {
+   "id": "brainrot-parkour",
+   "title": "Brainrot Parkour – Obby Assurdo",
+   "desc": "Verrückter 3D-Obby mit 13 eigenen Brainrot-Figuren – von Pinguino Spaghettino über Llama Jetpacko und Hippo Ballerina bis Scheletro Cowboy – samt italienischer Brainrot-Sprachausgabe und Untertiteln. Drei Welten (Cucina Cosmica, Spiaggia Assurda, Galassia Gelato) mit Lücken, Soße, Drehbalken, Schiebe-Plattformen, Sprungpolstern, Eis und Förderbändern, Checkpoints, Münzen und Bestzeiten. Minigames: Brainrot-Rennen gegen Computer-Figuren, Pavimento Lava, Torre Infinita und das Ratespiel „Chi lo dice?“ – dazu 🌐 Online-Rennen mit Freunden. Drei Stufen von Bambini (Doppelsprung, für Kinder) bis Esperto.",
+   "icon": "🍝",
+   "img": "brainrot-parkour/card.jpg",
+   "bg": "linear-gradient(145deg,#6a2aff,#ff3a9a 55%,#ffd23a)",
+   "glow": "rgba(255,58,154,.5)",
+   "path": "brainrot-parkour/",
+   "modes": {
+    "pad": true,
+    "online": true,
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Brainrot Parkour ist ein verrückter 3D-Obby. Wähle eine von 13 eigenen Brainrot-Figuren – zum Beispiel Pinguino Spaghettino, Toastini Volantini, Llama Jetpacko, Hippo Ballerina, Polpo Cappuccino oder Scheletro Cowboy. Jede ruft ihre italienischen Quatsch-Sprüche (Sprachausgabe und Untertitel, beides abschaltbar). Im Obby läufst und springst du über Plattformen bis ins Ziel: Rote Soße und Abgründe schicken dich zum letzten 🚩 Checkpoint zurück, rot-weiße Drehbalken musst du überspringen, gelbe Polster schleudern dich hoch, braune Platten fallen kurz nach dem Betreten, Eis rutscht, Förderbänder schieben zurück und blaue Plattformen fahren hin und her. Sammle 🪙 Münzen, schaffe Bestzeiten und bis zu 3 Sterne – jede geschaffte Welt schaltet die nächste frei (Cucina Cosmica, Spiaggia Assurda, Galassia Gelato). Schwierigkeit: 🧸 Bambini (Doppelsprung, kürzere Lücken, Drehbalken schubsen nur – ideal für Kinder), 🙂 Normale und 🔥 Esperto. Minigames: 🏁 Brainrot-Rennen gegen drei Computer-Figuren, 🔥 Pavimento Lava (drei Fliesen-Etagen bröckeln weg – wer bleibt am längsten?), 🗼 Torre Infinita (immer höher, die Soße steigt), 🎤 Chi lo dice? (Spruch hören, Figur erraten) und 🌐 Online-Rennen: Alle laufen dieselbe Strecke auf ihrem eigenen Gerät und sehen sich gegenseitig – Beitritt per Code, Link oder QR-Code von überall.",
+    "steuerung": [
+     "Tastatur & Maus: WASD/Pfeile laufen, Leertaste springen, Maus ziehen oder Q/E dreht die Kamera, Mausrad zoomt, Esc Pause.",
+     "Touch: links der Joystick zum Laufen, rechts SPRUNG, KAMERA dreht hinter die Figur, rechts wischen dreht die Kamera.",
+     "Gamecontroller: linker Stick laufen, A springen, rechter Stick oder LB/RB Kamera, Start Pause."
+    ],
+    "tipps": [
+     "Kurz tippen = kleiner Sprung, länger halten = großer Sprung.",
+     "Über Drehbalken springst du am besten, kurz bevor der Balken bei dir ist.",
+     "Bei Pavimento Lava immer in Bewegung bleiben – stehen bleiben lässt die Fliese bröckeln."
+    ]
+   },
+   "size": 244960,
+   "files": 13,
+   "offline": true,
+   "cloud": {
+    "game": "brainrot-parkour",
+    "prefix": "brainrot-parkour-"
+   }
+  },
+  {
    "id": "stadt-land-plus",
    "title": "Stadt Land Plus – Stadt, Land und dein Thema",
    "desc": "Das moderne Stadt-Land-Fluss in 3D: Die Buchstaben-Trommel lost aus, dann schreibt ihr zu Stadt, Land und einem frei wählbaren dritten Thema – Fluss, Tier, Beruf, Vorname, Essen, Sportart, Automarke und viele mehr oder eine ganz eigene Kategorie, dazu bis zu drei Extra-Spalten. Eine große Wissensdatenbank mit allen Ländern, über 33.000 Städten (jede deutsche Gemeinde, Weltstädte auch mit deutschem Namen) und Flüssen prüft schlau mit Tippfehler-Erkennung; zu jeder Antwort gibt es Infos mit 3D-Globus. Prüfung automatisch, per Abstimmung oder mit Moderator. Solo gegen Computer-Mitspieler, zum Nachschlagen und 🌐 Online & Handys: alle schreiben auf dem eigenen Handy, der Fernseher zeigt Buchstabe, Uhr und Auswertung.",

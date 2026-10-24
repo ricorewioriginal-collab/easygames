@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/brainrot-parkour-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Brainrot Park…"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#3a1a8a">
+<title>Brainrot Parkour – Obby Assurdo</title>
+<meta name="description" content="Brainrot Parkour: 3D-Obby mit eigenen Brainrot-Figuren wie Pinguino Spaghettino, Llama Jetpacko, Hippo Ballerina oder Scheletro Cowboy – mit italienischer Brainrot-Sprachausgabe. Drei verrückte Welten, Rennen gegen Computer-Figuren, Pavimento Lava, Torre Infinita, das Ratespiel „Chi lo dice?“ und Online-Rennen mit Freunden. Für alle Altersklassen: Bambini, Normale, Esperto. PC, Handy, Fernseher und Gamepad.">
+<link rel="stylesheet" href="../vendor/fonts/fredoka.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<section class="scr on" id="sLoad"><div class="load"><div class="lSpin">🍝</div><h1 class="logo">BRAINROT<span>PARKOUR</span></h1><div class="bar"><i id="loadBar"></i></div><p class="tip" id="loadTip">Spaghetti werden gekocht …</p></div></section>
+
+<section class="scr" id="sTitle">
+  <div class="titleBox"><h1 class="logo big">BRAINROT<span>PARKOUR</span></h1><p class="claim">Obby assurdo · salta, corri, ridi!</p><button class="press nav" id="bPress">▶ <span id="pressTxt">Tippe zum Start</span></button></div>
+  <p class="corner"><a href="../">← Alle Spiele</a></p>
+</section>
+
+<section class="scr" id="sMenu">
+  <div class="menuWrap">
+    <header class="mHead"><h1 class="logo small">BRAINROT<span>PARKOUR</span></h1><div class="mStat" id="menuStat"></div></header>
+    <div class="mBody">
+      <div class="mList" id="mList">
+        <button class="mi nav hero" data-go="obby" data-i="Das Hauptspiel: drei verrückte Welten mit je 10 Abschnitten – Lücken, Soße, Drehbalken, Schiebe-Plattformen, Sprungpolster. Checkpoints retten dich!"><i>🏃</i><b>Obby</b></button>
+        <button class="mi nav" data-go="race" data-i="Wettrennen gegen drei Computer-Figuren über eine kurze Obby-Strecke. Wer ist zuerst im Ziel?"><i>🏁</i><b>Brainrot-Rennen</b></button>
+        <button class="mi nav" data-go="lava" data-i="Pavimento Lava: Die Fliesen bröckeln weg, sobald jemand draufsteht. Wer bleibt am längsten stehen?"><i>🔥</i><b>Pavimento Lava</b></button>
+        <button class="mi nav" data-go="tower" data-i="Torre Infinita: Spring immer höher – unten steigt die Tomatensoße! Wie hoch schaffst du es?"><i>🗼</i><b>Torre Infinita</b></button>
+        <button class="mi nav" data-go="quiz" data-i="Chi lo dice? Hör den Brainrot-Spruch und tippe die richtige Figur. Super für Kinder!"><i>🎤</i><b>Chi lo dice?</b></button>
+        <button class="mi nav online" data-go="online" data-i="Online-Rennen mit Freunden: Alle laufen dieselbe Strecke auf ihrem eigenen Gerät – von überall per Code, Link oder QR-Code."><i>🌐</i><b>Online-Rennen</b></button>
+        <button class="mi nav" data-go="chars" data-i="Wähle deine Brainrot-Figur – jede hat ihre eigenen Sprüche."><i>🧑‍🎤</i><b>Figuren</b></button>
+        <button class="mi nav" data-go="opts" data-i="Ton, Musik, Sprachausgabe, Untertitel, Kamera und dein Name."><i>⚙️</i><b>Einstellungen</b></button>
+        <button class="mi nav" data-go="help" data-i="Steuerung und Spielregeln."><i>❓</i><b>Anleitung</b></button>
+      </div>
+      <div class="mInfo"><p id="mInfo"></p><div class="mChar" id="mChar"></div></div>
+    </div>
+    <footer class="mFoot"><span class="hintKeys">Pfeile + Enter: wählen · Esc: zurück</span><a href="../" class="nav">← Alle Spiele</a></footer>
+  </div>
+</section>
+
+<section class="scr" id="sChars">
+  <div class="panel wide charPanel">
+    <h2>🧑‍🎤 Wähle deine Figur</h2>
+    <div class="charGrid" id="charGrid"></div>
+    <div class="row"><button class="btn nav" id="chBack">← Zurück</button><button class="btn nav" id="chSay">🔊 Spruch</button><button class="btn pri big nav" id="chOk">✔ Auswählen</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sWorld">
+  <div class="panel wide">
+    <h2 id="wdT">🏃 Obby</h2>
+    <div class="worlds" id="worlds"></div>
+    <p class="lbl">Schwierigkeit</p><div class="seg" id="diffSeg"></div>
+    <p class="hint" id="diffHint"></p>
+    <div class="row"><button class="btn nav" id="wdBack">← Zurück</button><button class="btn pri big nav" id="wdGo">▶ Los!</button></div>
+  </div>
+</section>
+
+<section class="scr game" id="sGame">
+  <div class="hud">
+    <div class="hTop"><span class="chip" id="hStage"></span><span class="chip" id="hTime">0:00</span><span class="chip" id="hCoins">🪙 0</span><span class="chip" id="hDeaths">💀 0</span></div>
+    <div class="hProg"><i id="hProgBar"></i></div>
+    <div class="hRank" id="hRank"></div>
+    <button class="pbtn nav" id="bPause" aria-label="Pause">⏸</button>
+  </div>
+  <div class="hSub" id="hSub" hidden></div>
+  <div id="big" hidden></div>
+  <div class="tc" id="tpad" hidden></div>
+</section>
+
+<section class="scr" id="sResult">
+  <div class="panel">
+    <h2 id="rsT">🏆</h2>
+    <div class="rsBody" id="rsBody"></div>
+    <div class="row" id="rsBtns"></div>
+  </div>
+</section>
+
+<section class="scr" id="sQuiz">
+  <div class="panel wide quizPanel">
+    <div class="qTop"><b id="qNum">Frage 1/10</b><span id="qScore">⭐ 0</span></div>
+    <h2>🎤 Chi lo dice?</h2>
+    <p class="qText" id="qText">…</p>
+    <div class="qOpts" id="qOpts"></div>
+    <div class="row"><button class="btn nav" id="qBack">← Menü</button><button class="btn nav" id="qReplay">🔊 Nochmal hören</button><button class="btn nav" id="qShow">📝 Text zeigen</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sHelp">
+  <div class="panel wide">
+    <h2>❓ So wird gespielt</h2>
+    <div class="help">
+      <p><b>Obby:</b> Lauf und spring von Plattform zu Plattform bis ins Ziel. Fällst du in die Soße oder in die Tiefe, geht es am letzten 🚩 Checkpoint weiter. Sammle 🪙 Brainrot-Münzen und schlag deine Bestzeit. <b>Bambini</b>: Doppelsprung, mehr Checkpoints, Drehbalken schubsen nur. <b>Normale</b> und <b>Esperto</b>: echte Obby-Herausforderung.</p>
+      <p><b>Hindernisse:</b> rote Soße = zurück zum Checkpoint · rot-weiße Drehbalken: drüberspringen · gelbe Polster schleudern dich hoch · braune Platten fallen kurz nach dem Betreten · Eis rutscht · Förderbänder schieben zurück · blaue Plattformen fahren hin und her.</p>
+      <p><b>Minigames:</b> 🏁 Rennen gegen Computer-Figuren · 🔥 Pavimento Lava – die Fliesen bröckeln, bleib am längsten stehen · 🗼 Torre Infinita – immer höher, die Soße steigt · 🎤 Chi lo dice? – welche Figur sagt das? · 🌐 Online-Rennen mit Freunden.</p>
+      <p><b>Steuerung:</b> <kbd>WASD</kbd>/Pfeile laufen, <kbd>Leertaste</kbd> springen, Maus ziehen oder <kbd>Q</kbd>/<kbd>E</kbd> drehen die Kamera, <kbd>Esc</kbd> Pause. <b>Handy:</b> links Joystick, rechts SPRUNG, rechts wischen dreht die Kamera. <b>Gamepad:</b> linker Stick laufen, <kbd>A</kbd> springen, rechter Stick Kamera, <kbd>Start</kbd> Pause.</p>
+      <p><b>Brainrot-Sprache:</b> Die Figuren rufen ihre italienischen Quatsch-Sprüche – mit Sprachausgabe und Untertiteln (beides abschaltbar).</p>
+    </div>
+    <div class="row"><button class="btn pri nav" id="helpBack">← Zurück</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sLobby">
+  <div class="panel wide">
+    <h2>🌐 Online-Rennen</h2>
+    <p class="hint">Alle laufen dieselbe Strecke auf ihrem eigenen Gerät – Freunde können <b>von überall</b> per Code, Link oder QR-Code beitreten.</p>
+    <div id="lbHost">
+      <div class="hostBox"><div class="qr" id="qr">…</div><div class="hostTxt"><div class="code" id="code">····</div><p class="url" id="url"></p><div class="row tight"><button class="btn small nav" id="lbCopy">🔗 Link kopieren</button></div><p class="hint" id="lobbyMsg">Die Runde wird vorbereitet …</p></div></div>
+      <div class="lobbyList" id="lobbyList"></div>
+      <p class="lbl">Welt &amp; Schwierigkeit</p><div class="seg" id="lbWorld"></div> <div class="seg" id="lbDiff"></div>
+      <div class="row"><button class="btn nav" id="lbBack">← Zurück</button><button class="btn pri big nav" id="lbGo" disabled>▶ Rennen starten</button></div>
+    </div>
+    <div id="lbJoin" hidden>
+      <input class="field nav" id="jName" maxlength="14" placeholder="Dein Name" autocomplete="nickname">
+      <input class="field nav code" id="jCode" maxlength="4" placeholder="CODE" autocapitalize="characters">
+      <p class="hint" id="jMsg">Gib den Code deines Freundes ein.</p>
+      <div class="lobbyList" id="joinList"></div>
+      <div class="row"><button class="btn nav" id="jBack">← Zurück</button><button class="btn pri nav" id="jGo">Beitreten</button></div>
+    </div>
+  </div>
+</section>
+
+<div class="ov" id="ovOnline" hidden><div class="panel"><h2>🌐 Online-Rennen</h2><div class="col"><button class="btn pri nav" id="onHost">🏠 Rennen erstellen</button><button class="btn nav" id="onJoin">🔑 Mit Code beitreten</button><button class="btn nav" id="onX">← Zurück</button></div></div></div>
+<div class="ov" id="ovPause" hidden><div class="panel"><h2>⏸ Pause</h2><div class="col"><button class="btn pri nav" id="paGo">▶ Weiter</button><button class="btn nav" id="paCp">🚩 Zum Checkpoint</button><button class="btn nav" id="paOpt">⚙️ Einstellungen</button><button class="btn nav" id="paQuit">✕ Beenden</button></div></div></div>
+<div class="ov" id="ovOpts" hidden>
+  <div class="panel">
+    <h2>⚙️ Einstellungen</h2>
+    <div class="opts">
+      <label class="chk"><input type="checkbox" id="oSound"> Geräusche</label>
+      <label class="chk"><input type="checkbox" id="oMusic"> Musik</label>
+      <label class="chk"><input type="checkbox" id="oVoice"> Brainrot-Sprachausgabe</label>
+      <label class="chk"><input type="checkbox" id="oSubs"> Untertitel</label>
+      <label class="chk"><input type="checkbox" id="oAuto"> Kamera dreht sich automatisch mit</label>
+      <label class="chk"><input type="checkbox" id="oVib"> Vibration</label>
+      <input class="field nav" id="oName" maxlength="14" placeholder="Dein Name" autocomplete="nickname">
+    </div>
+    <div class="row"><button class="btn pri nav" id="optX">Fertig</button></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../device.js"></script>
+<script src="../gamekit.js"></script>
+<script src="../cloud/fire-peer.js"></script>
+<script src="js/env.js"></script>
+<script src="js/chars.js"></script>
+<script src="js/core.js"></script>
+<script src="js/view.js"></script>
+<script src="js/voice.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/touch.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="brainrot-parkour" data-prefix="brainrot-parkour-" defer></script>
+</body>
+</html>
