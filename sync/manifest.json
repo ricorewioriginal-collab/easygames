@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "8eb5bae8239f",
- "generated": "2026-10-24T03:07:44+00:00",
- "commit": "1da240c101516b89b8bff4d14ed4db127b41a4d8",
+ "version": "666a88a9a75b",
+ "generated": "2026-10-24T04:19:45+00:00",
+ "commit": "9a2fc901ef2083cb5a85296cdff739a98d47119b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2866,
-   "h": "e3209a0ccba30a232faded58f5f8972f1061f9f2008d2bec2538074407f2fd7e"
+   "s": 2897,
+   "h": "6360a4f858f3eede5885b8b4edc2b577560b3b36d6e2e8a5ffcd1ba0d42962f7"
   },
   {
    "p": "chat.html",
@@ -5308,8 +5308,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22284,
-   "h": "1de74b0e6dcea2d14cdd91d7ab9df11c8297d0766378b61f2fe12c4e010406c6"
+   "s": 22306,
+   "h": "c17561531978f34fb0ec31d23bc148ce1823d7aa363c90050dfb5836f254c341"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -5858,8 +5858,8 @@
   },
   {
    "p": "games.js",
-   "s": 39007,
-   "h": "bd66bb94a64b9aa59db345b55d51179b350554bf24dbb707fc14be9f8a5deccc"
+   "s": 39478,
+   "h": "7b52dfa26fc26bb7a5ea0374a9d64ed3eb89e23d7e85451236357b62810765a0"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6018,8 +6018,8 @@
   },
   {
    "p": "guides.js",
-   "s": 111161,
-   "h": "e35bf588b7cd175ead45933907e630255d70d15532b397dbea440592fc353889"
+   "s": 112992,
+   "h": "6110f6b7b482e3ae405c55694d40d16fb15aa0ac67cd1574c409b361b8b16ed9"
   },
   {
    "p": "heute.html",
@@ -7482,6 +7482,121 @@
    "h": "4a300da54fab86834b92b1e5630f47cdd16e129b00896834531edf69f57d193a"
   },
   {
+   "p": "show-me-your-voice/card.jpg",
+   "s": 57766,
+   "h": "1f186bf8c7aa8e4f704ff906ffba21a62c9c96c08f41a9d0df267ac9af30a06d"
+  },
+  {
+   "p": "show-me-your-voice/img/bg-arena.jpg",
+   "s": 33774,
+   "h": "2676febbbddbf93ad0baa72fc5960c2d2aae1d1db7168e54f436662e7d49a972"
+  },
+  {
+   "p": "show-me-your-voice/img/bg-backstage.jpg",
+   "s": 28025,
+   "h": "46cdf9e33332a3e18c23e072585b735bb6aeada3ebfd21ea3f12b1f167fdcd78"
+  },
+  {
+   "p": "show-me-your-voice/img/bg-chairs.jpg",
+   "s": 30558,
+   "h": "cd1a0ea378ea1de52c909885b26df5ac2d2454d18010c66bb583b027acac10ae"
+  },
+  {
+   "p": "show-me-your-voice/img/bg-out.jpg",
+   "s": 18007,
+   "h": "a8b77aa57b7727ff0f232ceafdbc9f9ae140d85d115cf92c6dd929143818defb"
+  },
+  {
+   "p": "show-me-your-voice/img/bg-stage.jpg",
+   "s": 74988,
+   "h": "6e1f7168ef33d9ed10c3d5e6d71643718a5daec3305f280975567bc1fafdc851"
+  },
+  {
+   "p": "show-me-your-voice/img/bg-win.jpg",
+   "s": 20768,
+   "h": "0a16042d482d348b9403f6b67bdb014b7b22d89c26a2d7241dcca8b280251781"
+  },
+  {
+   "p": "show-me-your-voice/img/icons.jpg",
+   "s": 33402,
+   "h": "08c07a50b48e4938c117405735aa6bd47bff85d674d52b8eda65158ecbc65e1f"
+  },
+  {
+   "p": "show-me-your-voice/img/jury-david.jpg",
+   "s": 13507,
+   "h": "e846deb0c339048de70ca7138571bc8dfd7caf556ce5ed6995fde456cea462ef"
+  },
+  {
+   "p": "show-me-your-voice/img/jury-lena.jpg",
+   "s": 16949,
+   "h": "3be5a2b8ac4f22f01d2fca2df5030d49af72ca120cee3ce42ed032a1dd36970e"
+  },
+  {
+   "p": "show-me-your-voice/img/jury-marc.jpg",
+   "s": 15042,
+   "h": "0d423b3288a79d8cc9ff6da6c34f5a75d43aba744c360e335dbca5d8810149f1"
+  },
+  {
+   "p": "show-me-your-voice/img/jury-sophie.jpg",
+   "s": 16673,
+   "h": "25d13245d0643f340f7b2223de6f10c1fb434d9e52966478a4729ae8bc5a272a"
+  },
+  {
+   "p": "show-me-your-voice/img/logo.jpg",
+   "s": 61184,
+   "h": "ad20ff7016c3a18a928c538a3640b27a5c7dd2e2bfca222fc0a01bcd372e0297"
+  },
+  {
+   "p": "show-me-your-voice/index.html",
+   "s": 13573,
+   "h": "86bbd6281f635d9811dd736849644b446b59bb9b1313b1c8e8e1607d1503c2f5"
+  },
+  {
+   "p": "show-me-your-voice/js/app.js",
+   "s": 72466,
+   "h": "c24c9202a138776174dfd8f6ea3ecec0489c3a5b13bff8b705a12da2ba97b39d"
+  },
+  {
+   "p": "show-me-your-voice/js/audio.js",
+   "s": 13719,
+   "h": "4320bdfd44fd199de93718cc48e00808a8051649f9f0d57cebeca42f0f0d853b"
+  },
+  {
+   "p": "show-me-your-voice/js/avatar.js",
+   "s": 9259,
+   "h": "1ce3e1e90b73407188ad56598aa954c06776acfec180e303445a47f576e28a5c"
+  },
+  {
+   "p": "show-me-your-voice/js/core.js",
+   "s": 19350,
+   "h": "270c7a96255937e0b2a7837a30b3b201bf9f3edb58f2a81ba3c198da641cf824"
+  },
+  {
+   "p": "show-me-your-voice/js/data.js",
+   "s": 25227,
+   "h": "366e508c6185665f7eccf4972b96528c1e61d2f653f77ada94e09c1133ea9763"
+  },
+  {
+   "p": "show-me-your-voice/js/stage.js",
+   "s": 30160,
+   "h": "04a28e12f4ff01c2bd984e5c79a2216f3e3a74009c3b790180884743c0a3729e"
+  },
+  {
+   "p": "show-me-your-voice/manifest.webmanifest",
+   "s": 791,
+   "h": "d59f2d2602501371077cb19c4aa7bb4f29b69ac2874beecd30fbec0410dc35ba"
+  },
+  {
+   "p": "show-me-your-voice/style.css",
+   "s": 18839,
+   "h": "36c84c7a785ae35ae433392c6db98f6ac7ea0ddc27a559977f0511e06ee97537"
+  },
+  {
+   "p": "show-me-your-voice/sw.js",
+   "s": 2004,
+   "h": "33aa0f8334cf0092973dceabfe23bc4c26268441c046822bc345ee66f2480949"
+  },
+  {
    "p": "show-voice.js",
    "s": 3181,
    "h": "2affd4b5a1fbdad10a44fc25f668003ecc73add98d08e27aeab6674412b29ead"
@@ -7738,8 +7853,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 170021,
-   "h": "13733ef9a245112085acdda897bac2c2872e10da21027f83c6efca25a609dfa0"
+   "s": 172552,
+   "h": "f9b06ba7f2f4606004a17df3db9a195bb5ce76a815ba02da9a94d73fedb9635b"
   },
   {
    "p": "taschi/card.svg",

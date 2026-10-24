@@ -37,6 +37,8 @@ const GAMES = [
     path: 'anmacha-flipper/', desc: '3D-Pinball mit 13 Tischen: Kampagne mit steigender Schwierigkeit oder freies Spiel.' },
   { id: 'anmacha-beat-surfer', title: 'AnMaCha Beat Surfer', icon: '🎧', img: 'anmacha-beat-surfer/card.jpg', bg: 'linear-gradient(145deg,#FF2D95,#8B5CF6 55%,#00E5FF)', glow: 'rgba(255,45,149,.5)',
     path: 'anmacha-beat-surfer/', desc: '3D-Rhythmusspiel: Triff die Noten im Takt – 13 Songs, steigende Schwierigkeit.' },
+  { id: 'show-me-your-voice', title: 'SHOW ME YOUR VOICE', icon: '🎤', img: 'show-me-your-voice/card.jpg', bg: 'linear-gradient(145deg,#140a3a,#7a2bd6 55%,#ffc93c)', glow: 'rgba(255,201,60,.5)',
+    path: 'show-me-your-voice/', desc: 'Das Castingshow-Spiel von RicoReWi: Avatar bauen, vor der Jury singen, Votes sammeln und eine ganze Staffel vom Casting bis zum Finale spielen. Noten live aus den RicoReWi-Radiosendern, Training, Winterglanz-Gala und Show-Archiv.' },
   { id: 'prismrush', title: 'PRISMRUSH', icon: '🔺', img: 'prismrush/card.png', bg: 'linear-gradient(145deg,#ff3df2,#8a3dff 55%,#3df2ff)', glow: 'rgba(255,61,242,.55)',
     path: 'prismrush/', desc: 'Hypnotisches 3D-Rhythmusspiel aus Licht und synthetischem Klang: 32 Level in 4 Welten, 12 Spielmodi von Endlos über Turbo bis Blindflug, Combos, Overdrive und 19 freischaltbare Effekte. Tastatur, Maus oder Touch.' },
   { id: 'anmacha-memory', title: 'AnMaCha Memory', icon: '🃏', img: 'anmacha-memory/card.jpg', bg: 'linear-gradient(145deg,#FF9A1F,#FF2D95 55%,#8B5CF6)', glow: 'rgba(255,45,149,.5)',

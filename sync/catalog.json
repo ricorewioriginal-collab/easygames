@@ -867,6 +867,41 @@
    }
   },
   {
+   "id": "show-me-your-voice",
+   "title": "SHOW ME YOUR VOICE",
+   "desc": "Das Castingshow-Spiel von RicoReWi: Avatar bauen, vor der Jury singen, Votes sammeln und eine ganze Staffel vom Casting bis zum Finale spielen. Noten live aus den RicoReWi-Radiosendern, Training, Winterglanz-Gala und Show-Archiv.",
+   "icon": "🎤",
+   "img": "show-me-your-voice/card.jpg",
+   "bg": "linear-gradient(145deg,#140a3a,#7a2bd6 55%,#ffc93c)",
+   "glow": "rgba(255,201,60,.5)",
+   "path": "show-me-your-voice/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Du bist Kandidatin oder Kandidat bei SHOW ME YOUR VOICE. Erstelle deinen Avatar, wähle Musik, Ansatz und Bühnen-Aktion und sprich vor dem Auftritt mit der Jury oder mit Showmaster Rico. Auf der Bühne triffst du Noten im Takt, hältst beim Gesang den Punkt auf der Melodielinie und reagierst auf Show-Momente. Marc, Lena und David bewerten mit eigenen, offen sichtbaren Kriterien; ab dem Recall zählen auch die Votes des Publikums. Die Staffel: Casting (2 von 3 Ja), Gruppen-Recall (Top 8), Mottoshow (Top 6), Battle, Halbfinale (Top 3) und Finale. Wer rausfliegt, startet eine neue Staffel. Mit dem Radio als Musikquelle entstehen die Noten live aus dem Programm der RicoReWi-Sender auf laut.fm; Sender und Titel werden angezeigt.",
+    "steuerung": [
+     "PC: Pfeiltasten oder D, F, J, K = die vier Spuren; beim Gesang Pfeil hoch/runter (oder W/S) halten; Esc oder P = Pause; Menüs mit Pfeiltasten und Enter",
+     "Touch: die vier großen Tasten unten antippen, beim Gesang auf dem Bildschirm nach oben/unten ziehen",
+     "Controller: Steuerkreuz oder X, A, Y, B; Start = Pause, B = zurück",
+     "Mikrofon (freiwillig): In den Einstellungen einschalten – das Spiel erkennt nur die Tonhöhe, nichts wird aufgenommen"
+    ],
+    "tipps": [
+     "Beim Casting gibt es bei genau einem Ja eine Zugabe a cappella – ab 70 % auf der Linie kippt eine Nein-Stimme.",
+     "Ehrliche Antworten im Jury-Gespräch bringen Sympathiepunkte, die bei der Bewertung zählen.",
+     "Training und Community-Aktionen zwischen den Runden: Fans bringen Votes, Training verbessert deine Werte ein wenig.",
+     "Der Musikstil zählt: Lena mag Balladen, Marc Soul, David Rock.",
+     "Ohne Internet oder bei Senderproblemen spielt das Spiel eigene Beats; in den Einstellungen lässt sich die Musikquelle festlegen."
+    ]
+   },
+   "size": 626031,
+   "files": 23,
+   "offline": true,
+   "cloud": {
+    "game": "show-me-your-voice",
+    "prefix": "smyv-"
+   }
+  },
+  {
    "id": "prismrush",
    "title": "PRISMRUSH",
    "desc": "Hypnotisches 3D-Rhythmusspiel aus Licht und synthetischem Klang: 32 Level in 4 Welten, 12 Spielmodi von Endlos über Turbo bis Blindflug, Combos, Overdrive und 19 freischaltbare Effekte. Tastatur, Maus oder Touch.",
