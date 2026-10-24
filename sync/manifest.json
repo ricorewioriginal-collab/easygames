@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "266fde520834",
- "generated": "2026-10-23T23:57:20+00:00",
- "commit": "852fb4217011dd1bee14d95fc91084cbd2f23330",
+ "version": "ffcf87c3b766",
+ "generated": "2026-10-24T02:11:00+02:00",
+ "commit": "90cca22f0749b6036f10d5b38d6759f93f050145",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2740,
-   "h": "3c91e299cade33452fb24688befbce449ac8bcb6be31382d00565c12bc4bdfb8"
+   "s": 2767,
+   "h": "1a2550d554b8240ec4583f2c983e654c43483e86b797d4f491edc8f2a707cf45"
   },
   {
    "p": "chat.html",
@@ -5577,6 +5577,46 @@
    "h": "d5ef61cb780ac29613e137e3f5e2103928d9b1b102772d90cfe3551b52e5c6da"
   },
   {
+   "p": "frequenzminen/card.jpg",
+   "s": 53334,
+   "h": "9e79560717e9db7e287dcad11db15ed9213b91424bdcecee5fa649a52081073f"
+  },
+  {
+   "p": "frequenzminen/index.html",
+   "s": 11238,
+   "h": "5bc55489a62c5ea837854c0034fd9030190943d6386b0ab3daad89f9e90a6292"
+  },
+  {
+   "p": "frequenzminen/js/app.js",
+   "s": 26021,
+   "h": "e620b57abf030437446cfcb98007aeaf7faa2ced338ea69237789a8c78a1bb7b"
+  },
+  {
+   "p": "frequenzminen/js/core.js",
+   "s": 5635,
+   "h": "bf2e7bb2ca12bfc1f4a4ef52c242e34944cae64748d244268c5366d5942dc779"
+  },
+  {
+   "p": "frequenzminen/js/scene.js",
+   "s": 19254,
+   "h": "c14845396e9e71016bb463c53ccc5df30f04350d4b0f6640f45189ab586835cb"
+  },
+  {
+   "p": "frequenzminen/manifest.webmanifest",
+   "s": 803,
+   "h": "1f8e76718293f29649e1012235d4fdbdf42f8c6a276bd9c464702f1da4a1366b"
+  },
+  {
+   "p": "frequenzminen/style.css",
+   "s": 12324,
+   "h": "742235f8becf20f4b5d3d14be2ca99bf2d04c5710db9fe3bbb9b83c48f136a53"
+  },
+  {
+   "p": "frequenzminen/sw.js",
+   "s": 2020,
+   "h": "a4a81882ed9cf23d5eab07ddedee8c3591a995ba5f09a3f25537906895158014"
+  },
+  {
    "p": "funkblasen/audio.js",
    "s": 8498,
    "h": "2e3593367aaaa3e782c9b32596831584e900891cb85e26e98f0802213b3ed7cd"
@@ -5773,8 +5813,8 @@
   },
   {
    "p": "games.js",
-   "s": 35544,
-   "h": "f8ab752503ad1ab44eb45d75ca686b7a3be8663289757beb1c280da7ad223c1f"
+   "s": 36133,
+   "h": "d6e8792ff7ee7956b30321c1a017174b0f4de1e6101b9085a51001967da8a9a8"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5933,8 +5973,8 @@
   },
   {
    "p": "guides.js",
-   "s": 101483,
-   "h": "7e434b8a84c7529fbd6fe6832fd660e2765585b601ef73d0f7eebca4964e6af8"
+   "s": 103092,
+   "h": "5f0e98348245318da88de0f591fab0097ebbb13584081462030b9f5fb795be23"
   },
   {
    "p": "heute.html",
@@ -6213,8 +6253,8 @@
   },
   {
    "p": "mahjong/js/engine.js",
-   "s": 14024,
-   "h": "f20851057ee636d607485fb08202b373b72c9e96bb6ba8e5533961d088d0207d"
+   "s": 14239,
+   "h": "a2533487e69907272abbcf26597f89b1484ed474ccb60671191e02ee9376b2d9"
   },
   {
    "p": "mahjong/js/faces.js",
@@ -6233,8 +6273,8 @@
   },
   {
    "p": "mahjong/js/main.js",
-   "s": 35162,
-   "h": "37a10fef24370528683f3a78ec96517d1bdfec3b5107ad3e99557c9bd012d86d"
+   "s": 35347,
+   "h": "e7f0f62d8575cb9f3ba1d389d02310fa2c9cb0deacca316cdc89a4fec05fe33e"
   },
   {
    "p": "mahjong/js/render.js",
@@ -7468,8 +7508,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 155562,
-   "h": "2b6482d799ede576d9159685377ae17e88d942d22c3548e0ea215af0f7e52c53"
+   "s": 157993,
+   "h": "f70ab04281f83b11d27b35909a59cee081e9e1b118887b2b0838ef597c0815b3"
   },
   {
    "p": "taschi/card.svg",

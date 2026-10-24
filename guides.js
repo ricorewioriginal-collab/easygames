@@ -470,6 +470,20 @@ window.EASYGAMES_GUIDES = {
    "Im Radio-Rhythmus ist der höchste Punkt einer Frucht genau auf dem Schlag – dort schneiden!"
   ]
  },
+ "frequenzminen": {
+  "anleitung": "Frequenz-Minen 3D ist Minesweeper in modern: Das Spielfeld liegt auf einer Radarscheibe, unter einigen Funkplatten stecken Störsender. Decke alle anderen Platten auf – jede offene Platte zeigt, wie viele Störsender auf den 8 Nachbarfeldern rauschen, leere Platten decken ihre Nachbarn automatisch auf. Der erste Klick ist immer sicher. 🚩 Peiler markieren vermutete Störsender, eine Zahl antippen deckt die übrigen Nachbarn auf, wenn genug Peiler stehen. 💡 Peilung zeigt dreimal pro Runde eine sichere Platte (+20 Sekunden). Modi: Leicht (9×9, 10 Störsender), Mittel (12×12, 24), Schwer (12×18, 44) und 📅 Tagesrätsel – für alle gleich, Ergebnis teilen. Punkte: jede freie Platte zählt, beim Sieg Tempo-Bonus (Leicht ×1, Mittel ×2, Schwer ×4). 📻 spielt einen Sender live das ganze Spiel über.",
+  "steuerung": [
+   "Maus: Links aufdecken, Rechts Peiler setzen, Mausrad zoomt.",
+   "Touch: Tippen deckt auf, lange drücken setzt einen Peiler (oder 🚩 umschalten); zwei Finger zoomen, ein Finger verschiebt.",
+   "Tastatur: Pfeile/WASD bewegen den Rahmen, Leertaste/Enter aufdecken, F Peiler, H Peilung, +/− Zoom, Esc Pause.",
+   "Gamecontroller: Steuerkreuz/Stick bewegen, A aufdecken, X Peiler, Y Peilung, LB/RB Zoom, Start Pause."
+  ],
+  "tipps": [
+   "Eine 1 neben genau einer verdeckten Platte: Dort steckt der Störsender – Peiler drauf.",
+   "Muster 1-2-1 am Rand: Die Störsender liegen unter den beiden äußeren Platten.",
+   "Lieber erst mit Peilern sichern und dann die Zahl antippen – das spart Zeit und Fehlklicks."
+  ]
+ },
  "funkgalgen": {
   "anleitung": "Funkgalgen ist Galgenmännchen in modern und freundlich: Der Moderator steht auf einem Turm aus 8 Lautsprecher-Kisten über einer Riesen-Torte. Rate das Wort Buchstabe für Buchstabe – richtige Buchstaben erscheinen an allen Stellen, jeder falsche schießt eine Kiste aus dem Turm. Ist die letzte Kiste weg, landet der Moderator in der Torte. 💡 Joker deckt einen Buchstaben auf (kostet Punkte), ✍️ Lösen nimmt das ganze Wort (falsch kostet 2 Kisten). Modi: 🎯 Solo-Serie (9 Kategorien oder 📖 Wörterbuch mit bekannten Wörtern aus dem Wortfunk-Wörterbuch, drei Schwierigkeiten; die Serie läuft, bis es einmal schiefgeht), 📅 Tageswort (für alle gleich, Ergebnis teilen), 👥 Duell (zu zweit an einem Gerät, Wörter werden im Wörterbuch geprüft) und 🌐 Online & Handys: Der Fernseher zeigt Turm und Wort, reihum denkt sich ein Handy das Wort aus, die anderen raten um die Wette (richtiger Buchstabe +5 je Stelle, falscher −2, Wort lösen +20; landet der Moderator in der Torte, punktet der Wortgeber).",
   "steuerung": [
