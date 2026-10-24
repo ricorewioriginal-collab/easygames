@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "d33098d775a0",
- "generated": "2026-10-24T22:56:10+00:00",
- "commit": "ab897b14d2adcad7771a44249dc1fb20c2b7c66f",
+ "version": "49c86831a99b",
+ "generated": "2026-10-24T22:57:56+00:00",
+ "commit": "2f621a45de6e0e74134e62141dbdf22ba6b19e89",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8243,8 +8243,8 @@
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 153045,
-   "h": "cb47a97f28721a5167721bef5e32e53f6f27f748126d94f5fc1654ad15d9f5b7"
+   "s": 153394,
+   "h": "1234f55f151d3dd977003ce1d795ca6ae9c0d04190ece3e703c53d4fc83bf808"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
@@ -8258,8 +8258,8 @@
   },
   {
    "p": "show-me-your-voice/js/core.js",
-   "s": 31853,
-   "h": "12a90acb8ded49baed4fec291a4197a537dd8cd7d3534d3b8d2ce30d18758900"
+   "s": 31985,
+   "h": "b36938a3927919c90a59c1c448396745b71cbad1fed221622874b0e6deb9d9a1"
   },
   {
    "p": "show-me-your-voice/js/data.js",
@@ -8644,7 +8644,7 @@
   {
    "p": "sync/catalog.json",
    "s": 217138,
-   "h": "eaa16c7ad818c665036f207d265eaddb4ccdbfc0e13753ab4fff508aaf478411"
+   "h": "e61d4f5f4864898dbc6f4320f6044849872bd9d21a3b127856307b71038a3d0a"
   },
   {
    "p": "taschi/card.svg",

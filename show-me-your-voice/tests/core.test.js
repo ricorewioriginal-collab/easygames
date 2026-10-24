@@ -319,3 +319,10 @@ test('Karaoke-Songs: je Genre mindestens 40, gültige und eindeutige Video-IDs',
     }
   }
 });
+
+test('Live-Wertung: setLen verteilt die Punkte auf eine neue Länge', () => {
+  const a = S.liveScorer(180, 0.05), b = S.liveScorer(180, 0.05);
+  b.setLen(30);
+  for (let i = 0; i < 100; i++) { a.push(60); b.push(60); }
+  assert.ok(b.end().total > a.end().total * 5);
+});

@@ -1126,12 +1126,18 @@
       if (!vid || e.source !== vid.contentWindow) return;
       let d = null; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; }
       if (d && d.event === 'onError') { const er = $('#singErr'); if (er) er.hidden = false; }
-      const inf = d && d.event === 'infoDelivery' && d.info;   // Länge und Position des Videos für „Ganzer Song“
-      if (!inf || !run.full || run.ended) return;
+      if (!d || !run.full || run.ended) return;
+      if (d.event === 'onStateChange' && d.info === 0) { if (run.started) singFinish(); return; }   // Video zu Ende
+      const inf = d.event === 'infoDelivery' && d.info;   // Länge und Position des Videos für „Ganzer Song“
+      if (!inf) return;
       if (inf.duration > 0) run.dur = inf.duration;
       if (typeof inf.currentTime === 'number') run.vt = inf.currentTime;
-      if (run.started && run.dur && run.vt != null) run.len = Math.min(FULL_MAX, run.frames.length * 0.05 + Math.max(0, run.dur - run.vt) + 1.5);
-      if (inf.playerState === 0 && run.started) singFinish();   // Video zu Ende
+      if (run.started && run.dur && run.vt != null) {
+        const el = run.frames.length * 0.05;
+        run.len = Math.min(FULL_MAX, el + Math.max(0, run.dur - run.vt) + 1.5);
+        if (!run.scaled) { run.scaled = true; run.live.setLen(run.len); }   // Länge kam erst nach dem ersten Ton: Punkte doch auf den ganzen Song verteilen
+      }
+      if (inf.playerState === 0 && run.started) singFinish();
     };
     if (vid) { addEventListener('message', run.onMsg); vid.addEventListener('load', () => { try { const w = vid.contentWindow; w.postMessage(JSON.stringify({ event: 'listening', id: 'smyv', channel: 'widget' }), '*');
       w.postMessage(JSON.stringify({ event: 'command', func: 'addEventListener', args: ['onError'], id: 'smyv', channel: 'widget' }), '*');
@@ -1212,7 +1218,7 @@
           run.started = true; if (run.rec) try { run.rec.start(1000); } catch (e) { run.rec = null; }
           if (run.full) {   // Punkte auf die echte Restlänge des Songs verteilen
             const rest = run.dur && run.vt != null ? run.dur - run.vt : 0;
-            run.live = S.liveScorer(rest > 20 ? Math.min(FULL_MAX, rest) : 180, 0.05);
+            run.live = S.liveScorer(rest > 20 ? Math.min(FULL_MAX, rest) : 180, 0.05); run.scaled = rest > 20 || !pk.vid;
             if (rest > 20) run.len = Math.min(FULL_MAX, rest + 1.5); else if (!pk.vid) run.len = FULL_ACAP;
           }
         }
