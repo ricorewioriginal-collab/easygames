@@ -1,0 +1,175 @@
+// SHOW ME YOUR VOICE – Logik-Tests.  node --test show-me-your-voice/tests/core.test.js
+'use strict';
+const test = require('node:test'), assert = require('node:assert');
+const S = require('../js/core.js'), D = S.D;
+
+function raw(acc, extra) {
+  const n = 60, p = Math.round(n * acc * 0.7), g = Math.round(n * acc * 0.25), o = Math.round(n * acc * 0.05);
+  return Object.assign({ rhythm: { n, p, g, o, m: n - p - g - o, maxCombo: Math.round(n * acc * acc * 0.8) }, pitch: { q: acc * 0.95 },
+    show: { hit: Math.round(2 * acc), total: 2 }, rhythmShare: 0.6, approach: 'gefuehl', action: 'publikum' }, extra || {});
+}
+function playRound(se, prof, acc) {
+  const id = S.startRound(se);
+  const oc = S.analyze(raw(acc), prof.attrs, se.lastPerf); oc.style = 'pop'; oc.approach = 'gefuehl'; oc.action = 'publikum';
+  return S.resolveRound(se, prof, oc, id);
+}
+function season(acc, seed) {
+  const prof = S.newProfile('Test'), se = S.newSeason(seed, 'normal'), log = [];
+  while (se.status === 'backstage') log.push(playRound(se, prof, acc));
+  return { prof, se, log };
+}
+
+test('Daten: 12 Kandidaten inkl. Spieler, 3 Juroren mit Gewichten = 1, mindestens 10 Sprüche je Juror', () => {
+  assert.strictEqual(D.CANDIDATES.length + 1, 12);
+  D.JURY.forEach(j => {
+    assert.ok(Math.abs(Object.values(j.w).reduce((a, b) => a + b, 0) - 1) < 1e-9, j.id);
+    const n = ['top', 'yes', 'close', 'no'].reduce((a, k) => a + j.lines[k].length, 0);
+    assert.ok(n >= 10, j.id + ' hat nur ' + n + ' Sprüche');
+  });
+  assert.ok(D.ROUNDS.length >= 4 && D.ROUNDS[D.ROUNDS.length - 1].final);
+  D.CANDIDATES.forEach(c => { assert.ok(D.CANDIDATES.some(x => x.id === c.rival)); assert.ok(D.CANDIDATES.some(x => x.id === c.friend)); });
+});
+
+test('Bewertung: bessere Leistung ergibt mehr Punkte, Risiko lohnt sich nur bei guter Trefferquote', () => {
+  const a = S.analyze(raw(0.5), null, null), b = S.analyze(raw(0.9), null, null);
+  assert.ok(b.perf > a.perf + 20);
+  const goodRisk = S.analyze(raw(0.9, { approach: 'risiko' }), null, null), goodNorm = S.analyze(raw(0.9), null, null);
+  const badRisk = S.analyze(raw(0.5, { approach: 'risiko' }), null, null), badNorm = S.analyze(raw(0.5), null, null);
+  assert.ok(goodRisk.perf > goodNorm.perf); assert.ok(badRisk.perf < badNorm.perf);
+  S.CK.forEach(k => { assert.ok(b.crit[k] >= 0 && b.crit[k] <= 100, k); });
+});
+
+test('Training hilft, entscheidet aber nicht: Fähigkeiten zählen höchstens 15 %', () => {
+  const lo = S.analyze(raw(0.6), { timing: 0, stimme: 0, ausdruck: 0, praesenz: 0 }, null);
+  const hi = S.analyze(raw(0.6), { timing: 100, stimme: 100, ausdruck: 100, praesenz: 100 }, null);
+  assert.ok(hi.crit.timing > lo.crit.timing);
+  assert.ok(hi.crit.timing - lo.crit.timing <= 15.01);
+  const p = S.newProfile('x'); let total = 0;
+  for (let i = 0; i < 40; i++) total += S.applyTraining(p, 'timing', 1);
+  assert.ok(p.attrs.timing <= 100 && p.attrs.timing >= 90, 'Timing ' + p.attrs.timing);
+  assert.strictEqual(S.applyTraining(p, 'timing', 0), 0);
+});
+
+test('Jury entscheidet nachvollziehbar: gleiche Eingaben, gleiches Urteil; Tagesform höchstens ±3', () => {
+  const oc = S.analyze(raw(0.8), null, null);
+  const j1 = S.judge(oc.crit, 'pop', 42, 0, 'p'), j2 = S.judge(oc.crit, 'pop', 42, 0, 'p');
+  assert.deepStrictEqual(j1, j2);
+  j1.forEach(v => { assert.ok(Math.abs(v.mood) <= 3); assert.strictEqual(v.yes, v.score >= D.JURY.find(j => j.id === v.id).need); });
+  const txt = S.comment('marc', j1[0], oc.crit, 'Kim', 1);
+  assert.ok(txt.length > 10 && !/\{/.test(txt));
+});
+
+test('Ergebnis wird nur einmal verarbeitet', () => {
+  const prof = S.newProfile('A'), se = S.newSeason(7, 'normal');
+  const id = S.startRound(se), oc = S.analyze(raw(0.9), prof.attrs, null); oc.style = 'pop';
+  assert.strictEqual(S.resolveRound(se, prof, oc, id + 1), null, 'falsche Kennung');
+  assert.ok(S.resolveRound(se, prof, oc, id));
+  assert.strictEqual(S.resolveRound(se, prof, oc, id), null, 'zweites Mal');
+  assert.strictEqual(se.results.length, 1);
+});
+
+test('Gute Leistung gewinnt die Staffel, schwache scheidet im Casting aus', () => {
+  for (let s = 1; s <= 25; s++) {
+    const good = season(0.97, s * 101);
+    assert.strictEqual(good.se.status, 'done'); assert.strictEqual(good.se.place, 1);
+    assert.ok(good.prof.ach.includes('sieger') && good.prof.ach.includes('talent'));
+    const bad = season(0.35, s * 101);
+    assert.strictEqual(bad.se.status, 'out'); assert.strictEqual(bad.se.round, 0);
+  }
+});
+
+test('Staffelablauf: Top-X-Größen, Battle mit Community-Rettung, Finale mit 3 Plätzen', () => {
+  const { se, log } = season(0.97, 99);
+  const by = id => log.find(r => r.id === id);
+  assert.ok(by('recall').advanced.length <= 8);
+  assert.strictEqual(by('motto').advanced.length, 6);
+  const b = by('battle');
+  assert.strictEqual(b.battle.pairs.length, 3); assert.strictEqual(b.advanced.length, 4);
+  assert.ok(b.battle.pairs.every(pr => pr.votes.length === 3));
+  const losers = b.battle.pairs.map(pr => (pr.winner === pr.a ? pr.b : pr.a));
+  assert.ok(losers.includes(b.battle.saved));
+  const lv = b.entries.filter(e => losers.includes(e.id)).sort((x, y) => y.votes - x.votes || y.perf - x.perf)[0];
+  assert.strictEqual(lv.id, b.battle.saved, 'gerettet wird, wer die meisten Votes hat');
+  assert.strictEqual(by('halbfinale').advanced.length, 3);
+  assert.strictEqual(by('finale').entries.length, 3);
+  assert.strictEqual(se.status, 'done');
+});
+
+test('Rangfolge: Gesamt, dann Performance, dann Jury, dann Startnummer', () => {
+  const r = S.rank([{ id: 'a', total: 70, perf: 60, juryAvg: 50, startNo: 3 }, { id: 'b', total: 70, perf: 65, juryAvg: 40, startNo: 4 },
+    { id: 'c', total: 70, perf: 65, juryAvg: 40, startNo: 1 }, { id: 'd', total: 71, perf: 10, juryAvg: 10, startNo: 9 }]);
+  assert.deepStrictEqual(r.map(x => x.id), ['d', 'c', 'b', 'a']);
+});
+
+test('Votes: Fans bringen mehr Stimmen; Gesamtformel stimmt', () => {
+  const se = S.newSeason(5, 'normal'); se.round = 1; se.field = se.order.slice(0, 10); if (!se.field.includes('p')) se.field[0] = 'p';
+  const p1 = S.newProfile('A'), p2 = S.newProfile('B'); p2.fans = 95;
+  const r1 = (pr) => { const s = JSON.parse(JSON.stringify(se)); const id = S.startRound(s); const oc = S.analyze(raw(0.8), pr.attrs, null); oc.style = 'pop'; return S.resolveRound(s, pr, oc, id); };
+  const a = r1(p1).entries.find(e => e.id === 'p'), b = r1(p2).entries.find(e => e.id === 'p');
+  assert.ok(b.votes > a.votes);
+  const w = D.ROUNDS[1].w;
+  assert.ok(Math.abs(a.total - (w.perf * a.perf + w.jury * a.juryAvg + w.votes * a.votes)) < 0.11);
+});
+
+test('Goldenes Ticket: genau 1 Ja und mindestens 55 Punkte, einmal pro Staffel', () => {
+  let found = 0;
+  for (let s = 1; s < 400 && !found; s++) {
+    for (const acc of [0.62, 0.66, 0.7]) {
+      const prof = S.newProfile('G'), se = S.newSeason(s, 'normal'), r = playRound(se, prof, acc);
+      const me = r.entries.find(e => e.id === 'p');
+      if (r.golden) { found++; assert.strictEqual(me.yes, 1); assert.ok(me.perf >= 55); assert.ok(r.advanced.includes('p')); assert.ok(se.golden); break; }
+      if (me.yes === 1 && me.perf >= 55) assert.fail('Ticket hätte vergeben werden müssen');
+    }
+  }
+  assert.ok(found, 'kein Goldenes Ticket gefunden');
+});
+
+test('Community-Aktion: einmal pro Runde, Livestream kostet ein Training', () => {
+  const se = S.newSeason(3, 'normal'), p = S.newProfile('C');
+  assert.ok(S.applyCommunity(se, p, 'live')); assert.strictEqual(p.fans, 33); assert.strictEqual(se.trainLeft, 1);
+  assert.ok(!S.applyCommunity(se, p, 'video'));
+});
+
+test('Speicherstand: kaputte Daten werden repariert, laufender Auftritt wird zurückgesetzt', () => {
+  assert.strictEqual(S.repair(null).profile, null);
+  assert.strictEqual(S.repair({ v: 99 }).profile, null);
+  const p = S.newProfile('<b>X</b>'); assert.ok(!/[<>]/.test(p.name));
+  const se = S.newSeason(1, 'normal'); S.startRound(se);
+  const fixed = S.repair(JSON.parse(JSON.stringify({ v: 1, profile: Object.assign(p, { attrs: { timing: 'x', stimme: 500 } }), season: se, settings: { music: 0.3 } })));
+  assert.strictEqual(fixed.season.status, 'backstage'); assert.strictEqual(fixed.profile.attrs.timing, 40); assert.strictEqual(fixed.profile.attrs.stimme, 100);
+  assert.strictEqual(fixed.settings.music, 0.3); assert.strictEqual(fixed.settings.sfx, S.DEF_SETTINGS.sfx);
+  assert.strictEqual(S.repair({ v: 1, profile: p, season: { field: 'kaputt' } }).season, null);
+});
+
+test('Bonus-Punkte: Sterne erhöhen den Multiplikator, höchstens +100 %', () => {
+  const base = [{ type: 'rhythm', p: 10, g: 0, o: 0, maxCombo: 10 }, { type: 'pitch', q: 0.5 }, { type: 'cues', points: 500 }];
+  const s0 = S.bonusScore(base), s5 = S.bonusScore(base.map((x, i) => Object.assign({}, x, { stars: i === 0 ? 5 : 0 })));
+  const s50 = S.bonusScore(base.map(x => Object.assign({}, x, { stars: 50 })));
+  assert.strictEqual(s0, 1000 + 150 + 2000 + 500); assert.strictEqual(s5, Math.round(s0 * 1.5)); assert.strictEqual(s50, s0 * 2);
+});
+
+test('Zugabe: ab 70 % wechselt genau eine Nein-Stimme (die knappste) zu Ja', () => {
+  const mk = () => [{ id: 'marc', score: 50, yes: false, tier: 'no' }, { id: 'lena', score: 58, yes: true, tier: 'yes' }, { id: 'david', score: 54, yes: false, tier: 'no' }];
+  const a = mk(); assert.ok(!S.encoreFlip(a, 0.5)); assert.strictEqual(a.filter(j => j.yes).length, 1);
+  const b = mk(); assert.ok(S.encoreFlip(b, 0.8)); assert.strictEqual(b.filter(j => j.yes).length, 2);
+});
+
+test('Sympathie verschiebt Jury-Punkte, höchstens ±4', () => {
+  const oc = S.analyze(raw(0.7), null, null);
+  const base = S.judge(oc.crit, 'pop', 9, 0, 'p'), up = S.judge(oc.crit, 'pop', 9, 0, 'p', { lena: 9 });
+  const l0 = base.find(v => v.id === 'lena'), l1 = up.find(v => v.id === 'lena');
+  assert.strictEqual(l1.sy, 4); assert.ok(Math.abs(l1.score - l0.score - 4) < 0.11);
+  assert.deepStrictEqual(S.mergeSymp({ lena: 1 }, null, { lena: 2, marc: -1 }), { lena: 3, marc: -1 });
+});
+
+test('Backstage-Ereignis: nicht im Casting, einmal pro Runde, Effekt gilt nur für den nächsten Auftritt', () => {
+  const se = S.newSeason(11, 'normal'), p = S.newProfile('E');
+  assert.strictEqual(S.rollEvent(se), null, 'im Casting kein Ereignis');
+  se.round = 1;
+  const ev = S.rollEvent(se); assert.ok(ev);
+  const k = ev.a.findIndex(a => a.symp || a.crit); const r = S.applyEvent(se, p, k < 0 ? 0 : k);
+  assert.ok(r); assert.strictEqual(S.rollEvent(se), null, 'nur einmal pro Runde');
+  assert.strictEqual(S.applyEvent(se, p, 0), null);
+  const id = S.startRound(se); const oc = S.analyze(raw(0.8), p.attrs, null, se.mods); oc.style = 'pop';
+  S.resolveRound(se, p, oc, id); assert.strictEqual(se.mods, null, 'Effekt verbraucht');
+});
