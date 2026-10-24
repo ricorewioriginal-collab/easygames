@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "211c15533a9c",
- "generated": "2026-10-24T14:29:37+02:00",
- "commit": "0ec4acac6c8c7cd19aa0913abcf534f4cb48dc25",
+ "version": "481288a1cab1",
+ "generated": "2026-10-24T14:35:27+02:00",
+ "commit": "12109d2c89ac5acecc29d73e42cf1450d351d831",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5338,8 +5338,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3095,
-   "h": "a7add10d6ff52dec52e8a12d3cff3e35ff418ae587cc2a736c4575753f880e7f"
+   "s": 3122,
+   "h": "b75c2364b9900565a512adc3eed3438bd02eb4f39a874101991ffdc869b3d823"
   },
   {
    "p": "chat.html",
@@ -6098,8 +6098,8 @@
   },
   {
    "p": "games.js",
-   "s": 44895,
-   "h": "12a81b6646149268d1e999e49689701ce7a33a2b92a305c09bc71a79443b4c30"
+   "s": 45646,
+   "h": "f71db66d1886f974072b2e4618e5e8dcf1f8ead0d9038ce1de21eb9d45330d18"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6258,8 +6258,8 @@
   },
   {
    "p": "guides.js",
-   "s": 129139,
-   "h": "c48c6572ff80a6ea726589d191ca9d35b5fba7e6e691b5f402281a75bd149583"
+   "s": 131321,
+   "h": "3d86a5dea26561e304eb6094948919ad5684810b506fe89349f00d193dce3902"
   },
   {
    "p": "heute.html",
@@ -6537,6 +6537,61 @@
    "h": "f6a1587182700b23eb92b10e8c854db10141b88f3855ce088c3af610918de738"
   },
   {
+   "p": "kuechen-chaos/card.jpg",
+   "s": 33564,
+   "h": "06ec3d103952ed02fd2e51b9f502d7aa4b99f4d529c847df35811a861f274b26"
+  },
+  {
+   "p": "kuechen-chaos/index.html",
+   "s": 13129,
+   "h": "778aa882d818a2791dc01e3863b07af2c55643079e6b6c107cf953ba25594892"
+  },
+  {
+   "p": "kuechen-chaos/js/app.js",
+   "s": 39076,
+   "h": "32aec69aada956be15d4de8419065050fdfc3dd659911f37800e5818ec2f2db8"
+  },
+  {
+   "p": "kuechen-chaos/js/core.js",
+   "s": 27660,
+   "h": "b7425543da63dd64f665ab304d3bce0ffed74e32270d84e0e8fcee05ab9c82af"
+  },
+  {
+   "p": "kuechen-chaos/js/data.js",
+   "s": 4904,
+   "h": "12f9f97174106f24db552646fe28489647ae776e137ff256eec293e530658b27"
+  },
+  {
+   "p": "kuechen-chaos/js/sound.js",
+   "s": 4797,
+   "h": "88335392d8f7e8ece3a4346908236d7d06919a3b29a0199c91ee9363e59f4cbf"
+  },
+  {
+   "p": "kuechen-chaos/js/touch.js",
+   "s": 4505,
+   "h": "5cbc6f2da34cd5d4aabed2358ee81ad7c5b6b76395c43ddcb43dfba283058289"
+  },
+  {
+   "p": "kuechen-chaos/js/view.js",
+   "s": 17860,
+   "h": "a22f52ba98dab0d05311a5bd984c639ac8f760cf0cadca1f0441a7e57eb44720"
+  },
+  {
+   "p": "kuechen-chaos/manifest.webmanifest",
+   "s": 788,
+   "h": "e4017707885397c9f1d01fb64222f375c017ca29d9b3e5374fa928941c14e763"
+  },
+  {
+   "p": "kuechen-chaos/style.css",
+   "s": 20013,
+   "h": "f237be8edb8eb96e2a85d789ecc100f46d92aea1012350fc2ffc7cb6e4d61bb3"
+  },
+  {
+   "p": "kuechen-chaos/sw.js",
+   "s": 2008,
+   "h": "f990397d517c26753bb47d474ccb57e4dd160e342d5e516013b32f4b0c6b3390"
+  },
+  {
    "p": "logo.png",
    "s": 34732,
    "h": "14c626be404d5188444f9137fa57bef6a22e7938eb3ab4fde71e8af00f2ef162"
@@ -6743,8 +6798,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3309,
-   "h": "da7f8de88fcc8916e83a0e8810e8435e046bb6b0ef1d6c4a0a0c770fe2c4b695"
+   "s": 3385,
+   "h": "a19348970b53572dc08acc0521ee55025bd59493ccfa5e1350804d47c3cbdfa4"
   },
   {
    "p": "oma-rennen/card.jpg",
@@ -8188,8 +8243,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 196366,
-   "h": "381a3a95b3441ad49299b5a2a675fab1793b628a04c092267fbb4fc8c510105d"
+   "s": 199610,
+   "h": "cf92dd5956e9f3d89f2afab9cd51b09f7c85cbaee0dc0c1dad09d88813c4af91"
   },
   {
    "p": "taschi/card.svg",

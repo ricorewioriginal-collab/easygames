@@ -567,6 +567,19 @@ window.EASYGAMES_GUIDES = {
    "Als Werwolf: Verdächtige ruhig mal einen Dorfbewohner, aber stimme nicht immer gegen dieselben."
   ]
  },
+ "kuechen-chaos": {
+  "anleitung": "Küchen-Chaos ist ein hektisches Koch-Teamspiel. Oben stehen die Bestellzettel mit Zeitbalken. Hol die Zutaten aus den Kisten, leg sie aufs Schneidebrett und halte BENUTZEN, bis sie geschnitten sind. Fleisch und Fisch kommen in die Pfanne, drei gleiche Tomaten oder Zwiebeln in den Topf für eine Suppe. Ist es fertig, nimm einen Teller, richte am Herd an, gib Brötchen, Käse oder Salat dazu und bring den Teller zur gelben Ausgabe. Schnelle Lieferung gibt Trinkgeld, wer die vorderste Bestellung zuerst liefert, bekommt einen Serien-Bonus; abgelaufene Bestellungen kosten 10 Münzen. Bleibt etwas zu lange auf dem Herd, brennt es an und fängt Feuer – das breitet sich aus, bis jemand mit dem Feuerlöscher löscht. In manchen Küchen kommen die Teller dreckig zurück und müssen in der Spüle gewaschen werden; außerdem gibt es ein Förderband, spiegelglatten Eis-Boden und eine geteilte Küche, in der ihr euch alles über die Theke reicht. Sechs Küchen mit je drei Sternen, ein Stern schaltet die nächste frei. Modi: 🍳 Solo – du und ein Computer-Koch, oder (Einstellungen) du steuerst beide Köche und wechselst; 🌐 Online & Handys – der Fernseher zeigt die Küche, bis zu 4 Köche kochen mit Handys (per Code, Link oder QR-Code von überall), Controllern oder der Tastatur, freie Plätze übernehmen Computer-Köche.",
+  "steuerung": [
+   "Touch (wie bei AnMaCha Kart Rush): links der Joystick zum Laufen, rechts die Tasten-Raute – unten NEHMEN, links BENUTZEN (halten), rechts SPRINT, oben WECHSELN (am Handy als Controller: RUFEN).",
+   "Tastatur: WASD/Pfeile laufen, Leertaste/E Nehmen/Ablegen, F/Strg Benutzen (schneiden, spülen, löschen), Shift Sprint, Tab/Q Koch wechseln, Esc Pause.",
+   "Gamecontroller: Stick/Steuerkreuz laufen, A Nehmen/Ablegen, X/RT Benutzen, B Sprint, Y Koch wechseln, Start Pause. In der Lobby meldet A einen Controller an."
+  ],
+  "tipps": [
+   "Teilt euch auf: einer schneidet, einer kocht und serviert.",
+   "Leg schon einen Teller bereit, bevor die Pfanne fertig ist – der Balken wird rot, kurz bevor es brennt.",
+   "Den Feuerlöscher nach dem Löschen nah am Herd ablegen."
+  ]
+ },
  "oma-rennen": {
   "anleitung": "Oma-Rennen ist ein 3D-Funracer: Sieben Omas und Opa Kalle rasen auf Raketen-Rollatoren durch die Stadt. Wer nach allen Runden zuerst über die Ziellinie fährt, gewinnt. Aus den bunten Geschenkboxen gibt es Oma-Gegenstände: 🚀 Rheuma-Rakete (Schub), 🦷 Gebiss (hinter dir fallen lassen – wer drüberfährt, schleudert), 👜 Handtasche (nach vorne schleudern, prallt von Wänden ab), 🧶 Wollknäuel (verheddert Verfolger), 🍫 Pralinen-Lenkrakete (sucht die Oma vor dir), ☂️ Regenschirm (wehrt einen Treffer ab), 📢 Hörgeräte-Pfiff (alle vor dir drehen sich) und 💨 Puderwolke (nimmt allen vor dir die Sicht). In Kurven driften lädt einen Turbo, im Windschatten gibt es Extra-Schub, gelbe Pfeile am Boden beschleunigen. Jede Strecke hat ihre Tücken: Tauben im Kurpark, Rolltreppen-Abkürzungen im Einkaufszentrum, Möwen an der Promenade, Brücken auf dem Weihnachtsmarkt und Gespenster im Altenheim. Modi: 🏆 Grand Prix (3 Cups mit Punkten und Siegerehrung – Cups schalten neue Omas frei), 🏁 Einzelrennen, ⏱️ Zeitfahren (ohne Gegenstände, Bestzeiten), 👵👵 Zu zweit am geteilten Bildschirm und 🌐 Online & Handys – der Fernseher zeigt das Rennen, bis zu 4 Mitspielerinnen lenken per Handy (Beitritt per Code, Link oder QR-Code von überall), freie Plätze fahren Computer-Omas. Die Omas rufen Sprüche – im Browser mit einer Frauenstimme, in der RicoReWi-App mit der Android-Stimme.",
   "steuerung": [

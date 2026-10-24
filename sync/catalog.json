@@ -1774,6 +1774,43 @@
    }
   },
   {
+   "id": "kuechen-chaos",
+   "title": "Küchen-Chaos – Kochen im Team",
+   "desc": "Hektisches Koch-Teamspiel in 3D: Zutaten aus den Kisten holen, schnippeln, Burger braten, Suppe kochen, anrichten und servieren, bevor der Bestellzettel abläuft – und wenn die Pfanne brennt, schnell zum Feuerlöscher. Sechs verrückte Küchen von der Imbiss-Ecke über Fließband-Kantine und Eis-Bistro bis zur geteilten Küche, Sterne und Rekorde. Solo mit schlauem Computer-Koch (oder beide Köche selbst steuern) und 🌐 Online & Handys: bis zu 4 Köche mit Handys, Controllern und Tastatur am Fernseher.",
+   "icon": "🍳",
+   "img": "kuechen-chaos/card.jpg",
+   "bg": "linear-gradient(145deg,#ff5a2a,#2a1a10 55%,#ffc83a)",
+   "glow": "rgba(255,90,42,.5)",
+   "path": "kuechen-chaos/",
+   "modes": {
+    "pad": true,
+    "online": true,
+    "multi": true,
+    "tvParam": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Küchen-Chaos ist ein hektisches Koch-Teamspiel. Oben stehen die Bestellzettel mit Zeitbalken. Hol die Zutaten aus den Kisten, leg sie aufs Schneidebrett und halte BENUTZEN, bis sie geschnitten sind. Fleisch und Fisch kommen in die Pfanne, drei gleiche Tomaten oder Zwiebeln in den Topf für eine Suppe. Ist es fertig, nimm einen Teller, richte am Herd an, gib Brötchen, Käse oder Salat dazu und bring den Teller zur gelben Ausgabe. Schnelle Lieferung gibt Trinkgeld, wer die vorderste Bestellung zuerst liefert, bekommt einen Serien-Bonus; abgelaufene Bestellungen kosten 10 Münzen. Bleibt etwas zu lange auf dem Herd, brennt es an und fängt Feuer – das breitet sich aus, bis jemand mit dem Feuerlöscher löscht. In manchen Küchen kommen die Teller dreckig zurück und müssen in der Spüle gewaschen werden; außerdem gibt es ein Förderband, spiegelglatten Eis-Boden und eine geteilte Küche, in der ihr euch alles über die Theke reicht. Sechs Küchen mit je drei Sternen, ein Stern schaltet die nächste frei. Modi: 🍳 Solo – du und ein Computer-Koch, oder (Einstellungen) du steuerst beide Köche und wechselst; 🌐 Online & Handys – der Fernseher zeigt die Küche, bis zu 4 Köche kochen mit Handys (per Code, Link oder QR-Code von überall), Controllern oder der Tastatur, freie Plätze übernehmen Computer-Köche.",
+    "steuerung": [
+     "Touch (wie bei AnMaCha Kart Rush): links der Joystick zum Laufen, rechts die Tasten-Raute – unten NEHMEN, links BENUTZEN (halten), rechts SPRINT, oben WECHSELN (am Handy als Controller: RUFEN).",
+     "Tastatur: WASD/Pfeile laufen, Leertaste/E Nehmen/Ablegen, F/Strg Benutzen (schneiden, spülen, löschen), Shift Sprint, Tab/Q Koch wechseln, Esc Pause.",
+     "Gamecontroller: Stick/Steuerkreuz laufen, A Nehmen/Ablegen, X/RT Benutzen, B Sprint, Y Koch wechseln, Start Pause. In der Lobby meldet A einen Controller an."
+    ],
+    "tipps": [
+     "Teilt euch auf: einer schneidet, einer kocht und serviert.",
+     "Leg schon einen Teller bereit, bevor die Pfanne fertig ist – der Balken wird rot, kurz bevor es brennt.",
+     "Den Feuerlöscher nach dem Löschen nah am Herd ablegen."
+    ]
+   },
+   "size": 168304,
+   "files": 11,
+   "offline": true,
+   "cloud": {
+    "game": "kuechen-chaos",
+    "prefix": "kuechen-chaos-"
+   }
+  },
+  {
    "id": "oma-rennen",
    "title": "Oma-Rennen – Raketen-Rollatoren",
    "desc": "3D-Funracer mit Omas auf Raketen-Rollatoren: Vom Marktplatz über Kurpark, Einkaufszentrum und Strandpromenade bis zum Weihnachtsmarkt und Geister-Altenheim. Gebiss fallen lassen, Handtasche schleudern, Pralinen-Lenkrakete, Regenschirm, Hörgeräte-Pfiff und Puderwolke; Drift-Turbo, Windschatten, Tauben, Möwen und Gespenster. Grand Prix mit 3 Cups und freischaltbaren Omas, Einzelrennen und Zeitfahren solo gegen 7 Computer-Omas, Zu zweit am geteilten Bildschirm oder 🌐 Online & Handys: der Fernseher zeigt das Rennen, bis zu 4 Handys lenken.",

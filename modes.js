@@ -40,6 +40,7 @@ window.EASYGAMES_MODES = {
   'fall-akte': { pad: true },
   'werwolf-nacht': { pad: true, online: true, multi: true, tvParam: true },
   'oma-rennen': { pad: true, online: true, multi: true, tvParam: true },
+  'kuechen-chaos': { pad: true, online: true, multi: true, tvParam: true },
   'darts-arena': { pad: true, multi: true },
   'winzflitzer': { multi: true },
   'gay-life': { online: true },

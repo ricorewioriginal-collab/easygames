@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/kuechen-chaos-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Küchen-Chaos"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#ff6a2a">
+<title>Küchen-Chaos – Kochen im Team</title>
+<meta name="description" content="Küchen-Chaos: hektisches Koch-Teamspiel in 3D. Schnippeln, braten, Suppe kochen, Teller spülen, Feuer löschen und servieren, bevor die Bestellung abläuft. Sechs verrückte Küchen von der Imbiss-Ecke bis zur geteilten Küche. Solo mit Computer-Koch oder mit Freunden: Controller, Tastatur und bis zu 4 Handys am Fernseher – online per Code, Link oder QR.">
+<link rel="stylesheet" href="../vendor/fonts/fredoka.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="ovl"></div>
+
+<section class="scr on" id="sLoad"><div class="load"><div class="lPan">🍳</div><h1 class="logo">KÜCHEN<span>CHAOS</span></h1><div class="bar"><i id="loadBar"></i></div><p class="tip" id="loadTip">Herd wird angeheizt …</p></div></section>
+
+<section class="scr" id="sTitle">
+  <div class="titleBox"><h1 class="logo big">KÜCHEN<span>CHAOS</span></h1><p class="claim">Schnippeln · Braten · Servieren · Löschen!</p><button class="press nav" id="bPress">▶ <span id="pressTxt">Tippe zum Start</span></button></div>
+  <p class="corner"><a href="../">← Alle Spiele</a></p>
+</section>
+
+<section class="scr" id="sMenu">
+  <div class="menuWrap">
+    <header class="mHead"><h1 class="logo small">KÜCHEN<span>CHAOS</span></h1><div class="mStat" id="menuStat"></div></header>
+    <div class="mBody">
+      <div class="mList" id="mList">
+        <button class="mi nav hero" data-go="solo" data-i="Du und ein Computer-Koch gegen den Ansturm. Sammle Sterne und schalte neue Küchen frei."><i>🍳</i><b>Solo kochen</b></button>
+        <button class="mi nav online" data-go="host" data-i="Zusammen kochen am Fernseher: bis zu 4 Köche mit Handys (online per Code, Link oder QR-Code von überall), Controllern oder Tastatur – freie Plätze übernehmen Computer-Köche."><i>🌐</i><b>Online &amp; Handys</b></button>
+        <button class="mi nav" data-go="join" data-i="Mit dem Handy in einer Küche mitkochen (Code vom Fernseher)."><i>📱</i><b>Mitkochen</b></button>
+        <button class="mi nav" data-go="opts" data-i="Ton, Musik, Computer-Koch, Vibration."><i>⚙️</i><b>Einstellungen</b></button>
+        <button class="mi nav" data-go="help" data-i="So läuft die Küche: alle Gerichte, Stationen und die Steuerung."><i>❓</i><b>Anleitung</b></button>
+      </div>
+      <div class="mInfo"><p id="mInfo"></p></div>
+    </div>
+    <footer class="mFoot"><span class="hintKeys">Pfeile + Enter: wählen · Esc: zurück</span><a href="../" class="nav">← Alle Spiele</a></footer>
+  </div>
+</section>
+
+<section class="scr" id="sLevels">
+  <div class="panel wide">
+    <h2 id="lvT">🍳 Küche wählen</h2>
+    <div class="lvGrid" id="lvGrid"></div>
+    <p class="hint" id="lvInfo"></p>
+    <div class="row"><button class="btn nav" id="lvBack">← Zurück</button></div>
+  </div>
+</section>
+
+<section class="scr game" id="sGame">
+  <div class="orders" id="orders"></div>
+  <div class="hudL"><div class="coin">🪙 <b id="score">0</b></div><div class="combo" id="combo"></div></div>
+  <div class="hudR"><div class="clock" id="clock">0:00</div><div class="lvName" id="lvName"></div></div>
+  <button class="pbtn" id="bPause" aria-label="Pause">⏸</button>
+  <div class="tc" id="tpad" hidden></div>
+  <div class="big" id="big" hidden></div>
+  <div class="toastG" id="toastG"></div>
+</section>
+
+<section class="scr" id="sResult">
+  <div class="panel">
+    <h2 id="reT">Feierabend!</h2>
+    <div class="stars" id="reStars"><i>★</i><i>★</i><i>★</i></div>
+    <div class="reScore"><b id="reScore">0</b><small id="reBest"></small></div>
+    <div class="reTab" id="reTab"></div>
+    <div class="row" id="reBtns"></div>
+  </div>
+</section>
+
+<section class="scr" id="sHelp">
+  <div class="panel wide">
+    <h2>❓ So läuft die Küche</h2>
+    <div class="help">
+      <p><b>Ziel:</b> Oben stehen die Bestellungen. Koche das Gericht, lege es auf einen Teller und bring den Teller zur <b>Ausgabe</b> (gelbe Theke), bevor der Zettel abläuft. Schnelle Lieferung = Trinkgeld, die vorderste Bestellung zuerst = Serien-Bonus.</p>
+      <p><b>Ablauf:</b> Zutat aus der Kiste nehmen → aufs Schneidebrett legen → <b>Benutzen</b> gedrückt halten zum Schneiden → in Topf (3 gleiche für eine Suppe) oder Pfanne (Fleisch, Fisch) → wenn fertig, Teller nehmen und am Herd anrichten → servieren. Zu lange auf dem Herd? Es brennt an und fängt <b>Feuer</b> – mit dem Feuerlöscher (rote Flasche) löschen. Benutzte Teller kommen dreckig zurück: in der Spüle mit <b>Benutzen</b> abwaschen. Falsches im Topf oder auf dem Teller? Ab in den Mülleimer.</p>
+      <p><b>Tastatur:</b> WASD/Pfeile laufen, <kbd>Leertaste</kbd>/<kbd>E</kbd> Nehmen/Ablegen, <kbd>F</kbd>/<kbd>Strg</kbd> Benutzen (schneiden, spülen, löschen), <kbd>Shift</kbd> Sprint, <kbd>Tab</kbd>/<kbd>Q</kbd> Koch wechseln, <kbd>Esc</kbd> Pause.</p>
+      <p><b>Controller:</b> Stick laufen, <kbd>A</kbd> Nehmen/Ablegen, <kbd>X</kbd>/<kbd>RT</kbd> Benutzen, <kbd>B</kbd> Sprint, <kbd>Y</kbd> Koch wechseln, <kbd>Start</kbd> Pause.</p>
+      <p><b>Touch</b> (wie bei AnMaCha Kart Rush): links der Joystick zum Laufen, rechts die Tasten-Raute – unten <b>NEHMEN</b>, links <b>BENUTZEN</b>, rechts <b>SPRINT</b>, oben <b>WECHSELN</b>.</p>
+      <div class="recipes" id="recipeList"></div>
+    </div>
+    <div class="row"><button class="btn pri nav" id="helpBack">← Zurück</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sLobby">
+  <div class="panel wide">
+    <h2>🌐 Online &amp; Handys</h2>
+    <p class="hint">Der Fernseher zeigt die Küche. Bis zu 4 Köche kochen mit: <b>Handys von überall</b> per Code, Link oder QR-Code, Controller mit der <kbd>A</kbd>-Taste, die Tastatur per Haken. Freie Plätze übernehmen Computer-Köche.</p>
+    <div class="hostBox"><div class="qr" id="qr">…</div><div class="hostTxt"><div class="code" id="code">····</div><p class="url" id="url"></p><div class="row tight"><button class="btn small nav" id="lbCopy">🔗 Link kopieren</button></div><p class="hint" id="lobbyMsg">Küche wird aufgeschlossen …</p></div></div>
+    <div class="lobbyList" id="lobbyList"></div>
+    <div class="row left"><label class="chk"><input type="checkbox" id="lbKb"> Tastatur kocht mit</label><span class="lbl inl">Computer-Köche</span><span class="seg small" id="lbBots"></span></div>
+    <div class="lvGrid small" id="lbLevels"></div>
+    <div class="row"><button class="btn nav" id="lbBack">← Zurück</button><button class="btn pri big nav" id="lbGo" disabled>🍳 Schicht starten</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sPhone">
+  <div class="phone" id="pJoin">
+    <h2>📱 Mitkochen</h2>
+    <input class="field nav" id="jName" maxlength="14" placeholder="Dein Name" autocomplete="nickname">
+    <input class="field nav code" id="jCode" maxlength="4" placeholder="CODE" autocapitalize="characters">
+    <p class="hint" id="jMsg">Den Code zeigt der Fernseher bei „🌐 Online &amp; Handys“.</p>
+    <div class="row"><button class="btn nav" id="jBack">← Zurück</button><button class="btn pri big nav" id="jGo">Beitreten</button></div>
+  </div>
+  <div class="ctl" id="pCtl" hidden>
+    <div class="cTop"><span id="cName"></span><span id="cStat">Warte auf den Start …</span></div>
+    <div class="cMid"><div class="cHeld" id="cHeld">✋</div><button class="btn pri" id="cGo" hidden>▶ Los</button></div>
+    <div class="tc" id="cz"></div>
+  </div>
+</section>
+
+<div class="ov" id="ovPause" hidden><div class="panel"><h2>⏸ Pause</h2><div class="col"><button class="btn pri nav" id="paGo">▶ Weiterkochen</button><button class="btn nav" id="paRe">↻ Neustart</button><button class="btn nav" id="paOpt">⚙️ Einstellungen</button><button class="btn nav" id="paQuit">✕ Feierabend</button></div></div></div>
+<div class="ov" id="ovOpts" hidden>
+  <div class="panel">
+    <h2>⚙️ Einstellungen</h2>
+    <div class="opts">
+      <label class="chk"><input type="checkbox" id="oSound"> Geräusche</label>
+      <label class="chk"><input type="checkbox" id="oMusic"> Musik</label>
+      <label class="chk"><input type="checkbox" id="oHelper"> Solo: Computer-Koch hilft mit (aus = du steuerst beide Köche und wechselst)</label>
+      <label class="chk"><input type="checkbox" id="oVib"> Vibration</label>
+      <input class="field nav" id="oName" maxlength="14" placeholder="Dein Name (optional)" autocomplete="nickname">
+    </div>
+    <div class="row"><button class="btn pri nav" id="optX">Fertig</button></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../device.js"></script>
+<script src="../gamekit.js"></script>
+<script src="../cloud/fire-peer.js"></script>
+<script src="js/data.js"></script>
+<script src="js/core.js"></script>
+<script src="js/touch.js"></script>
+<script src="js/view.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="kuechen-chaos" data-prefix="kuechen-chaos-" defer></script>
+</body>
+</html>
