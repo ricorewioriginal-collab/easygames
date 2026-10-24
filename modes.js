@@ -34,6 +34,7 @@ window.EASYGAMES_MODES = {
   'funkgalgen': { pad: true, online: true, multi: true, tvParam: true },
   'sendemast-sumo': { pad: true, online: true, multi: true, tvParam: true },
   'wolkenhopser': { online: true },
+  'easyclash': { pad: true, online: true, multi: true, tvParam: true },
   'winzflitzer': { multi: true },
   'gay-life': { online: true },
   'bunte-insel': { online: true, pad: true, multi: true, tvParam: true },

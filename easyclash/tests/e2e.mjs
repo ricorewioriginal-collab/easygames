@@ -41,7 +41,7 @@ const t1 = await p.evaluate(() => ECApp.G.W.time); await wait(p, 800); ok(await 
 // Runde per K.O. beenden, dann Match
 for (let r = 0; r < 4; r++) {
   const s2 = await st(p); if (s2.ov.includes('ovEnd')) break;
-  await fightReady(p); await p.evaluate(() => { const W = ECApp.G.W; W.f[1].hp = 3; W.f[0].x = -.55; W.f[1].x = .55; W.f[0].z = W.f[1].z = 0; });
+  await fightReady(p); await p.evaluate(() => { const W = ECApp.G.W; W.ai_off = true; W.f[1].hp = 3; W.f[0].x = -.55; W.f[1].x = .55; W.f[0].z = W.f[1].z = 0; });
   for (let k = 0; k < 6; k++) { await p.keyboard.press('KeyJ'); await wait(p, 180); }
   await p.waitForFunction(() => !document.getElementById('ovEnd').hidden || (ECApp.G.W && ECApp.G.W.phase === 'intro'), null, { timeout: 15000 }).catch(() => {});
   await wait(p, 600);
@@ -51,8 +51,8 @@ s = await st(p); ok(s.wins[0] >= 2, 'Match gewonnen (' + s.wins.join(':') + ')')
 await p.click('#eMenu'); await wait(p, 400);
 // Arcade
 await p.click('[data-go="arcade"]'); await wait(p, 400); await p.click('#selGo'); await wait(p, 600); ok(await p.isVisible('#ovVs'), 'Arcade startet'); await fightReady(p);
-await p.evaluate(() => { const W = ECApp.G.W; W.f[1].hp = 3; W.f[0].x = -.55; W.f[1].x = .55; });
-for (let r = 0; r < 3; r++) { await fightReady(p).catch(() => {}); await p.evaluate(() => { const W = ECApp.G.W; if (W && W.phase === 'fight') { W.f[1].hp = 3; W.f[0].x = -.55; W.f[1].x = .55; W.f[0].z = W.f[1].z = 0; } }); for (let k = 0; k < 6; k++) { await p.keyboard.press('KeyJ'); await wait(p, 180); } await p.waitForFunction(() => !document.getElementById('ovEnd').hidden || ECApp.G.W.phase === 'intro', null, { timeout: 15000 }).catch(() => {}); await wait(p, 500); if (await p.isVisible('#ovEnd')) break; }
+await p.evaluate(() => { const W = ECApp.G.W; W.ai_off = true; W.f[1].hp = 3; W.f[0].x = -.55; W.f[1].x = .55; });
+for (let r = 0; r < 3; r++) { await fightReady(p).catch(() => {}); await p.evaluate(() => { const W = ECApp.G.W; if (W && W.phase === 'fight') { W.ai_off = true; W.f[1].hp = 3; W.f[0].x = -.55; W.f[1].x = .55; W.f[0].z = W.f[1].z = 0; } }); for (let k = 0; k < 6; k++) { await p.keyboard.press('KeyJ'); await wait(p, 180); } await p.waitForFunction(() => !document.getElementById('ovEnd').hidden || ECApp.G.W.phase === 'intro', null, { timeout: 15000 }).catch(() => {}); await wait(p, 500); if (await p.isVisible('#ovEnd')) break; }
 await p.waitForFunction(() => !document.getElementById('ovEnd').hidden, null, { timeout: 15000 });
 ok(await p.isVisible('#eNext') && (await p.textContent('#eStats')).includes('1 / 8'), 'Arcade: 1. Gegner besiegt, weiter zum nächsten'); await shot(p, '10-arcade');
 await p.click('#eMenu'); await wait(p, 300);

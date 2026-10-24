@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "dee66462a1cb",
- "generated": "2026-10-24T07:08:22+02:00",
- "commit": "f0768ad2390a123b75d990ba31def9dc1d218ca1",
+ "version": "8e711f0a2cc0",
+ "generated": "2026-10-24T07:43:59+02:00",
+ "commit": "4d72649cb1654193634778cd7dd87b84a370d0db",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2923,
-   "h": "f5ae5bdd2f96bf675d2b91630461f31ebe22ccb3e81232f2a25efd1ba1f32f48"
+   "s": 2946,
+   "h": "0ef5bd0fa4472865b785c965ab0a728713d25347f3fd8f08c0f0422b90bf4146"
   },
   {
    "p": "chat.html",
@@ -5540,6 +5540,61 @@
    "p": "device.js",
    "s": 9119,
    "h": "f325bd0da82c43ce6f8c1414b46fffcd1f4be650c6850d2f63726100e0b2fbec"
+  },
+  {
+   "p": "easyclash/card.jpg",
+   "s": 30835,
+   "h": "c80f7c247429c903ea145a749af0ab1795498cbd6666def47c5f4e1b43c42e12"
+  },
+  {
+   "p": "easyclash/index.html",
+   "s": 17198,
+   "h": "13e8156799aefee53771f217676dcaca971f0e55c029dfabac35d328cf0d7593"
+  },
+  {
+   "p": "easyclash/js/app.js",
+   "s": 44968,
+   "h": "4e2999cab879f1e937686efe3ea4717b76398378865c5b9f05ee4dc72e7f479e"
+  },
+  {
+   "p": "easyclash/js/core.js",
+   "s": 21946,
+   "h": "3acf61f5c4bc914584961b938deb9451ee3ad4f6a3067655c5ee137ee34e6fc5"
+  },
+  {
+   "p": "easyclash/js/model.js",
+   "s": 23121,
+   "h": "17ec3ab2547a52947bb527c025d68a551694125b29d1c8262cf72ac2c2ba2d47"
+  },
+  {
+   "p": "easyclash/js/roster.js",
+   "s": 7456,
+   "h": "943e9b4bcb4353e77dce982649b4b757029529ea28c79e7b8a7487728ea05ddf"
+  },
+  {
+   "p": "easyclash/js/scene.js",
+   "s": 15612,
+   "h": "5141624ed7c5b91584cb02555aabca01e6fa5f83a6136db642f2cdd3af1f58d5"
+  },
+  {
+   "p": "easyclash/js/sound.js",
+   "s": 5687,
+   "h": "45aba5b71a293a4cba03f40ed72d9411ff0f9f6416ebd945c18d95f5ced425e4"
+  },
+  {
+   "p": "easyclash/manifest.webmanifest",
+   "s": 778,
+   "h": "e4d1060a9c5859d78b5b619a43201860c76eb25e239912bc3ed749e2c61f5efe"
+  },
+  {
+   "p": "easyclash/style.css",
+   "s": 20288,
+   "h": "3b8660cbdae7f61af9f4484c66691feb0edb298bb03b465e76e87894775030b6"
+  },
+  {
+   "p": "easyclash/sw.js",
+   "s": 2006,
+   "h": "802ca72b731c733e5f057e82c5a12201f0dd7f364dbbf14543c4988ebbc5d310"
   },
   {
    "p": "easygames.js",
@@ -5858,8 +5913,8 @@
   },
   {
    "p": "games.js",
-   "s": 40132,
-   "h": "e86576ae2a709194d50262e2d4165168a7eb6c75c36a63bf41469abbe9ad042b"
+   "s": 40739,
+   "h": "ae14fa769512e2658b7e74392e9559bb292f99e7bcb8bf144a4debb9eb5974c8"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6018,8 +6073,8 @@
   },
   {
    "p": "guides.js",
-   "s": 114451,
-   "h": "1714068577472ecd179130cb10c070dc9ed969f042d19ccb7c9ebae53cac07d3"
+   "s": 116389,
+   "h": "f16f47e752fe65a73acb43506bf5569b27bc8f403dacba26f9a550ac7993e06c"
   },
   {
    "p": "heute.html",
@@ -6503,8 +6558,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2865,
-   "h": "2cdba20bd121b04fdf78a7267488a4ed3ddac8ec4a3b193040fde05518559e2f"
+   "s": 2937,
+   "h": "187014bc2156589fa8ef0a1dd9eea741e78b2109e4d1f3c756b74fc8ee947998"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -7898,8 +7953,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 174895,
-   "h": "06cd8c26632608266896264d28297061f879626c7d40dbe020ef72288fcb051d"
+   "s": 177749,
+   "h": "fedfc59eaa3112333a8b8a01aa94fd3a93a523dceeedd27912d0a9963313518e"
   },
   {
    "p": "taschi/card.svg",
