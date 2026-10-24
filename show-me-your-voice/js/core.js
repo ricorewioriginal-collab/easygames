@@ -37,14 +37,14 @@
   }
 
   // ---------- Staffel ----------
-  function newSeason(seed, difficulty) {
+  function newSeason(seed, difficulty, jury) {
     seed = (seed >>> 0) || 1;
     const R = rng(seed ^ 0x5bd1e995);
     const order = ['p'].concat(D.CANDIDATES.map(c => c.id));
     for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); const t = order[i]; order[i] = order[j]; order[j] = t; }
     return { v: 1, seed, diff: DIFF[difficulty] != null ? difficulty : 'normal', round: 0, order, field: order.slice(),
       status: 'backstage', results: [], golden: false, trainLeft: 2, commLeft: 1, lastPerf: null, aiLast: {},
-      lastRank: null, outAt: {}, motto: Math.floor(R() * D.MOTTOS.length), playing: null, place: 0 };
+      lastRank: null, outAt: {}, motto: Math.floor(R() * D.MOTTOS.length), playing: null, place: 0, jury: jury === 'fest' ? 'fest' : 'wechsel' };
   }
   // Auftritt beginnen: einmalige Kennung, damit ein Ergebnis nur einmal verarbeitet wird.
   function startRound(season) {
@@ -91,12 +91,22 @@
 
   // ---------- Jury ----------
   // symp: Sympathie aus Jury-Gespräch/Ereignissen je Juror (höchstens ±4, wird angezeigt)
-  function judge(crit, style, seed, round, who, symp) {
-    return D.JURY.map(j => {
+  // Jury einer Runde: Casting immer Stammjury (Marc, Lena, David). Danach bei „Wechselnder Jury“ drei aus dem Pool,
+  // mindestens eine Person der Stammjury; fest pro Staffel und Runde (Seed), also für alle Kandidaten gleich.
+  function panelOf(season, round) {
+    if (!season || season.jury !== 'wechsel' || !round) return D.MAIN_JURY.slice();
+    const R = rng(hash(season.seed + ':panel:' + round));
+    const main = D.MAIN_JURY[Math.floor(R() * D.MAIN_JURY.length)];
+    const rest = D.JURY.map(j => j.id).filter(id => id !== main);
+    for (let i = rest.length - 1; i > 0; i--) { const k = Math.floor(R() * (i + 1)); const t = rest[i]; rest[i] = rest[k]; rest[k] = t; }
+    return [main].concat(rest.slice(0, 2));
+  }
+  function judge(crit, style, seed, round, who, symp, panel) {
+    return (panel || D.MAIN_JURY).map(id => D.JURY.find(j => j.id === id)).filter(Boolean).map(j => {
       let s = 0; for (const k in j.w) s += j.w[k] * (crit[k] || 0);
       const R = rng(hash(seed + ':' + round + ':' + j.id + ':' + who));
       const mood = r1(R() * 6 - 3);                         // Tagesform: höchstens ±3 Punkte, wird angezeigt
-      const fav = D.STYLES[style] && D.STYLES[style].fav === j.id ? 3 : 0;
+      const fav = (D.STYLES[style] && D.STYLES[style].fav === j.id) || (j.favs || []).includes(style) ? 3 : 0;
       const sy = clamp(+(symp && symp[j.id]) || 0, -4, 4);
       const score = r1(clamp(s + mood + fav + sy));
       const yes = score >= j.need;
@@ -142,7 +152,7 @@
   function resolveRound(season, profile, outcome, playId) {
     if (!season || season.status !== 'playing' || !season.playing || season.playing.round !== season.round) return null;
     if (playId != null && season.playing.id !== playId) return null;
-    const idx = season.round, def = D.ROUNDS[idx], w = def.w || { perf: 0.5, jury: 0.3, votes: 0.2 };
+    const idx = season.round, def = D.ROUNDS[idx], w = def.w || { perf: 0.5, jury: 0.3, votes: 0.2 }, panel = panelOf(season, idx);
     const newAch = [];
     const entries = season.field.map(id => {
       let perf, crit, votesRaw, style, name;
@@ -154,7 +164,7 @@
         const c = cand(id), a = aiPerf(season, c, idx);
         perf = a.perf; crit = a.crit; votesRaw = a.votesRaw; style = c.style; name = c.name;
       }
-      const jury = judge(crit, style, season.seed, idx, id, id === 'p' ? outcome.symp : null);
+      const jury = judge(crit, style, season.seed, idx, id, id === 'p' ? outcome.symp : null, panel);
       if (id === 'p' && def.id === 'casting' && outcome.encore != null) { jury.encoreTried = true; jury.encoreOk = encoreFlip(jury, outcome.encore); }
       const juryAvg = r1(jury.reduce((s, j) => s + j.score, 0) / jury.length);
       return { id, name, perf, crit, jury, juryAvg, yes: jury.filter(j => j.yes).length, votesRaw, startNo: season.order.indexOf(id) + 1 };
@@ -167,7 +177,7 @@
     });
     const ranked = rank(entries); ranked.forEach((e, i) => { e.rank = i + 1; });
     const me = entries.find(e => e.id === 'p');
-    const res = { round: idx, id: def.id, name: def.name, entries: ranked, advanced: [], out: [], golden: false, battle: null, place: 0, ach: newAch,
+    const res = { round: idx, id: def.id, name: def.name, panel, entries: ranked, advanced: [], out: [], golden: false, battle: null, place: 0, ach: newAch,
       encore: me && me.jury.encoreTried ? !!me.jury.encoreOk : null };
 
     if (def.id === 'casting') {
@@ -180,7 +190,7 @@
       const pairs = [], losers = [];
       for (let i = 0; i < Math.floor(prev.length / 2); i++) {
         const A = entries.find(e => e.id === prev[i]), B = entries.find(e => e.id === prev[prev.length - 1 - i]);
-        const votes = D.JURY.map((j, k) => {
+        const votes = panel.map((j, k) => {
           const sa = A.jury[k].score, sb = B.jury[k].score;
           return sa > sb || (sa === sb && A.perf >= B.perf) ? A.id : B.id;
         });
@@ -231,6 +241,42 @@
       else if (!inNext) profile.stats.seasons++;
     }
     return res;
+  }
+
+  // ---------- Online-Show (mehrere Geräte): Runden und Wertung, gerechnet vom Gastgeber ----------
+  // Casting (2 von 3 Ja, mindestens zwei kommen weiter), Live-Shows (die besten 60 %), Finale ab höchstens drei.
+  const ONLINE = {
+    casting: { id: 'casting', name: 'Casting', icon: '🎤', parts: ['rhythm'], len: 30, w: { perf: 0.5, jury: 0.5, votes: 0 } },
+    recall: { id: 'recall', name: 'Recall', icon: '🔁', parts: ['rhythm', 'pitch'], len: 22, w: { perf: 0.5, jury: 0.4, votes: 0.1 } },
+    live: { id: 'live', name: 'Live-Show', icon: '🎭', parts: ['rhythm', 'pitch'], len: 22, w: { perf: 0.5, jury: 0.3, votes: 0.2 } },
+    finale: { id: 'finale', name: 'Finale', icon: '👑', parts: ['rhythm', 'pitch', 'rhythm'], len: 20, final: true, w: { perf: 0.4, jury: 0.3, votes: 0.3 } }
+  };
+  function onlineDef(round, fieldSize) {
+    if (!round) return ONLINE.casting;
+    if (round === 1) return ONLINE.recall;   // nach dem Casting immer erst der Recall
+    return fieldSize <= 3 ? ONLINE.finale : Object.assign({}, ONLINE.live, { name: 'Live-Show ' + (round - 1) });
+  }
+  // entries: [{ id, name, perf, crit, style, votesN }] in Startreihenfolge. Fehlende Auftritte zählen 0.
+  function onlineResolve(o) {
+    const def = o.def, w = def.w, panel = o.panel || D.MAIN_JURY;
+    const maxV = Math.max(0, ...o.entries.map(e => e.votesN || 0));
+    const list = o.entries.map((e, i) => {
+      const crit = {}; CK.forEach(k => { crit[k] = clamp(+(e.crit && e.crit[k]) || 0); });
+      const perf = r1(clamp(+e.perf || 0));
+      const jury = judge(crit, e.style || 'pop', o.seed, o.round, e.id, null, panel);
+      const juryAvg = r1(jury.reduce((s, j) => s + j.score, 0) / jury.length);
+      const votes = maxV ? r1(100 * (e.votesN || 0) / maxV) : 0;
+      return { id: e.id, name: e.name, perf, jury, juryAvg, yes: jury.filter(j => j.yes).length, votesN: e.votesN || 0, votes,
+        total: r1(w.perf * perf + w.jury * juryAvg + w.votes * votes), startNo: i + 1, missing: !!e.missing };
+    });
+    const ranked = rank(list); ranked.forEach((e, i) => { e.rank = i + 1; });
+    let advanced = [], rescued = [];
+    if (def.final) advanced = ranked.map(e => e.id);
+    else if (def.id === 'casting') {
+      advanced = ranked.filter(e => e.yes >= 2 && !e.missing).map(e => e.id);
+      for (const e of ranked) { if (advanced.length >= Math.min(2, ranked.length)) break; if (!advanced.includes(e.id)) { advanced.push(e.id); rescued.push(e.id); } }
+    } else advanced = ranked.slice(0, Math.max(2, Math.ceil(ranked.length * 0.6))).map(e => e.id);
+    return { round: o.round, def, panel, entries: ranked, advanced, rescued, out: ranked.filter(e => !advanced.includes(e.id)).map(e => e.id), final: !!def.final };
   }
 
   // Freies Casting: nur Jury, keine Staffel.
@@ -299,7 +345,7 @@
   }
 
   // ---------- Speicherstand ----------
-  const DEF_SETTINGS = { source: 'radio', music: 0.7, sfx: 0.8, mute: false, mic: false, range: 'mittel', speed: 'normal', offset: 0,
+  const DEF_SETTINGS = { source: 'radio', jury: 'wechsel', music: 0.7, sfx: 0.8, mute: false, mic: false, range: 'mittel', speed: 'normal', offset: 0,
     difficulty: 'normal', reduced: false, big: false, cb: false, captions: true };
   function freshSave() { return { v: 1, profile: null, season: null, settings: Object.assign({}, DEF_SETTINGS), best: 0, wins: 0, tutorial: false }; }
   function repair(s) {
@@ -326,7 +372,7 @@
   }
 
   const API = { D, CK, TRAINABLE, DIFF, rng, hash, clamp, cleanName, newProfile, level, newSeason, startRound, cancelRound,
-    analyze, judge, encoreFlip, comment, rollEvent, applyEvent, mergeSymp, aiPerf, rank, resolveRound, freeCasting, trainGain, applyTraining, applyCommunity, bonusScore,
+    analyze, panelOf, judge, ONLINE, onlineDef, onlineResolve, encoreFlip, comment, rollEvent, applyEvent, mergeSymp, aiPerf, rank, resolveRound, freeCasting, trainGain, applyTraining, applyCommunity, bonusScore,
     DEF_SETTINGS, freshSave, repair };
   if (typeof module !== 'undefined' && module.exports) module.exports = API; else root.SMYV = API;
 })(typeof window !== 'undefined' ? window : globalThis);

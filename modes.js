@@ -36,6 +36,7 @@ window.EASYGAMES_MODES = {
   'wolkenhopser': { online: true },
   'winzflitzer': { multi: true },
   'gay-life': { online: true },
+  'show-me-your-voice': { online: true },
   'bunte-insel': { online: true, pad: true, multi: true, tvParam: true },
   'zeitsprung-wissen': { pad: true, online: true },
   'zeitsprung-castingshow': { pad: true, online: true },

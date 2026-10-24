@@ -173,3 +173,42 @@ test('Backstage-Ereignis: nicht im Casting, einmal pro Runde, Effekt gilt nur f�
   const id = S.startRound(se); const oc = S.analyze(raw(0.8), p.attrs, null, se.mods); oc.style = 'pop';
   S.resolveRound(se, p, oc, id); assert.strictEqual(se.mods, null, 'Effekt verbraucht');
 });
+
+test('Wechselnde Jury: Casting mit Stammjury, danach 3 verschiedene mit mindestens einer Stammperson; feste Jury bleibt', () => {
+  const pool = D.JURY.map(j => j.id), seen = new Set();
+  assert.ok(pool.length >= 8);
+  for (let seed = 1; seed < 60; seed++) {
+    const se = S.newSeason(seed, 'normal', 'wechsel');
+    assert.deepStrictEqual(S.panelOf(se, 0), D.MAIN_JURY);
+    for (let r = 1; r < D.ROUNDS.length; r++) {
+      const p = S.panelOf(se, r);
+      assert.strictEqual(new Set(p).size, 3); assert.ok(p.some(id => D.MAIN_JURY.includes(id)));
+      assert.ok(p.every(id => pool.includes(id))); assert.deepStrictEqual(p, S.panelOf(se, r));
+      p.forEach(id => seen.add(id));
+    }
+    assert.deepStrictEqual(S.panelOf(S.newSeason(seed, 'normal', 'fest'), 3), D.MAIN_JURY);
+  }
+  assert.strictEqual(seen.size, pool.length, 'alle Juroren kommen vor');
+  const { log } = season(0.97, 7);
+  log.forEach(r => r.entries.forEach(e => assert.deepStrictEqual(e.jury.map(v => v.id), r.panel)));
+});
+
+test('Online-Show: Casting lässt mindestens zwei weiter, dann Recall, Live-Show 60 %, Finale verteilt Plätze; Votes zählen', () => {
+  const mk = (n, f) => Array.from({ length: n }, (_, i) => { const oc = S.analyze(raw(f(i)), null, null); return { id: 'g' + i, name: 'G' + i, perf: oc.perf, crit: oc.crit, style: 'pop', votesN: 0 }; });
+  const weak = S.onlineResolve({ def: S.onlineDef(0, 5), round: 0, seed: 3, entries: mk(5, () => 0.2) });
+  assert.strictEqual(weak.advanced.length, 2); assert.strictEqual(weak.rescued.length, 2);
+  const strong = S.onlineResolve({ def: S.onlineDef(0, 5), round: 0, seed: 3, entries: mk(5, () => 0.95) });
+  assert.strictEqual(strong.advanced.length, 5);
+  assert.strictEqual(S.onlineDef(1, 6).id, 'recall'); assert.strictEqual(S.onlineDef(1, 2).id, 'recall');
+  assert.strictEqual(S.onlineDef(2, 6).id, 'live'); assert.strictEqual(S.onlineDef(2, 3).id, 'finale');
+  const live = S.onlineResolve({ def: S.onlineDef(2, 6), round: 2, seed: 3, panel: S.panelOf(S.newSeason(3), 1), entries: mk(6, i => 0.5 + i * 0.08) });
+  assert.strictEqual(live.advanced.length, 4); assert.strictEqual(live.entries[0].id, 'g5');
+  // Gleiche Leistung: die Person mit Publikumsstimmen liegt vorn
+  const same = mk(3, () => 0.7).map(e => Object.assign(e, { perf: 70 })); same[2].votesN = 4; same[0].votesN = 1;
+  const fin = S.onlineResolve({ def: S.onlineDef(2, 3), round: 2, seed: 9, entries: same });
+  assert.ok(fin.final); assert.strictEqual(fin.advanced.length, 3);
+  const g2 = fin.entries.find(e => e.id === 'g2'), g1 = fin.entries.find(e => e.id === 'g1');
+  assert.strictEqual(g2.votes, 100); assert.strictEqual(g1.votes, 0); assert.ok(g2.total > g1.total);
+  const miss = S.onlineResolve({ def: S.onlineDef(0, 3), round: 0, seed: 1, entries: mk(3, () => 0.95).map((e, i) => (i === 0 ? { id: e.id, name: e.name, missing: true } : e)) });
+  assert.ok(!miss.advanced.includes('g0'));
+});

@@ -91,7 +91,7 @@ async function playRound(p) {
 const p = await page({ width: 1280, height: 800 });
 await shot(p, '01-titel');
 await p.keyboard.press('Enter'); await p.waitForSelector('#sMenu.on'); await shot(p, '02-menue');
-await p.keyboard.press('ArrowDown'); ok(await p.evaluate(() => document.activeElement && document.activeElement.dataset.m === 'free'), 'Pfeiltasten bewegen den Fokus im Menü');
+await p.keyboard.press('ArrowDown'); ok(await p.evaluate(() => document.activeElement && document.activeElement.dataset.m === 'online'), 'Pfeiltasten bewegen den Fokus im Menü');
 await p.click('[data-m="new"]'); await p.waitForSelector('#sAvatar.on');
 await p.fill('#avaName', 'Testy <Star>'); await p.click('[data-k="hair"][data-d="1"]'); await p.click('[data-k="skin"][data-v="3"]'); await shot(p, '03-avatar');
 await p.click('#avaOk'); await p.waitForSelector('#sBack.on');

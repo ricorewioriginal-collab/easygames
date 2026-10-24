@@ -875,8 +875,10 @@
    "bg": "linear-gradient(145deg,#140a3a,#7a2bd6 55%,#ffc93c)",
    "glow": "rgba(255,201,60,.5)",
    "path": "show-me-your-voice/",
-   "modes": {},
-   "multiplayer": false,
+   "modes": {
+    "online": true
+   },
+   "multiplayer": true,
    "guide": {
     "anleitung": "Du bist Kandidatin oder Kandidat bei SHOW ME YOUR VOICE. Erstelle deinen Avatar, wähle Musik, Ansatz und Bühnen-Aktion und sprich vor dem Auftritt mit der Jury oder mit Showmaster Rico. Auf der Bühne triffst du Noten im Takt, hältst beim Gesang den Punkt auf der Melodielinie und reagierst auf Show-Momente. Marc, Lena und David bewerten mit eigenen, offen sichtbaren Kriterien; ab dem Recall zählen auch die Votes des Publikums. Die Staffel: Casting (2 von 3 Ja), Gruppen-Recall (Top 8), Mottoshow (Top 6), Battle, Halbfinale (Top 3) und Finale. Wer rausfliegt, startet eine neue Staffel. Mit dem Radio als Musikquelle entstehen die Noten live aus dem Programm der RicoReWi-Sender auf laut.fm; Sender und Titel werden angezeigt.",
     "steuerung": [
@@ -893,7 +895,7 @@
      "Ohne Internet oder bei Senderproblemen spielt das Spiel eigene Beats; in den Einstellungen lässt sich die Musikquelle festlegen."
     ]
    },
-   "size": 630921,
+   "size": 667391,
    "files": 23,
    "offline": true,
    "cloud": {
