@@ -1114,6 +1114,10 @@
   // --- Anzeige ---
   RENDER.sOnline = () => onRender();
   function onRender() {
+    // Runde ist weitergezogen (z. B. Pause bis nach der Frist): alten Auftritt beenden, zurück zur Show
+    if (stage && flow && flow.mode === 'online' && ON.st && (ON.st.phase !== 'perform' || ON.st.seed !== ON.played)) {
+      stopAll(); flow = null; closeOv(); toast('⏱️ Die Zeit für den Auftritt ist um – weiter geht\'s in der Show.', 3500); go('sOnline'); return;
+    }
     if (cur !== 'sOnline') {
       // Auftritt automatisch starten, sobald die Runde beginnt (auch aus einer anderen Ansicht der Show heraus)
       return;
