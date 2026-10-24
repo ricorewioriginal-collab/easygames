@@ -56,14 +56,14 @@
     b.onclick = () => { sfx('ok'); const g = b.dataset.go; if (g === 'solo') levelsScreen(); else if (g === 'host') openLobby(); else if (g === 'join') phoneScreen(''); else if (g === 'opts') openOv('ovOpts'); else if (g === 'help') { helpScreen(); scr('sHelp'); } };
   });
   $('mInfo').textContent = $('mList').firstElementChild.dataset.i;
-  $('helpBack').onclick = () => toMenu(); $('lvBack').onclick = () => toMenu();
+  $('helpBack').onclick = () => toMenu(); $('lvBack').onclick = () => toMenu(); $('lvTut').onclick = () => { sfx('ok'); startTutorial(); };
   function helpScreen() { $('recipeList').innerHTML = Object.keys(RECIPES).map(k => { const r = RECIPES[k]; return `<div class="rc"><i>${r.icon}</i><b>${esc(r.n)}</b><small>${r.parts.map(p => partIcon(p) + (p.endsWith(':c') ? ' geschnitten' : p.endsWith(':k') ? ' gebraten' : p.startsWith('soup:') ? ' 3× ' + ING[p.slice(5)].icon + ' im Topf' : '')).join(' + ')}</small></div>`; }).join(''); }
   const menuIcons = L => L.menu.map(r => RECIPES[r].icon).join('');
   function levelCards(el, small, onPick) {
     el.innerHTML = LEVELS.map((L, i) => { const u = small || unlocked(i), st = ST.stars[L.id] || 0, th = D.THEMES[L.theme]; return `<button class="lv nav${SET.lv === i && small ? ' on' : ''}" data-i="${i}" ${u ? '' : 'disabled'} style="--a:${th.counter};--b:${th.sky}"><span class="no">${i + 1}</span><b>${u ? esc(L.n) : '🔒 ' + esc(L.n)}</b><small>${esc(L.d)}</small><span class="mn">${menuIcons(L)}</span><span class="st">${'★'.repeat(st)}<em>${'★'.repeat(3 - st)}</em></span>${ST.best[L.id] ? `<span class="bs">🪙 ${ST.best[L.id]}</span>` : ''}</button>`; }).join('');
     el.querySelectorAll('.lv').forEach(b => { b.onfocus = () => { if (!small) $('lvInfo').textContent = LEVELS[+b.dataset.i].d; }; b.onclick = () => { sfx('ok'); onPick(+b.dataset.i, b); }; });
   }
-  function levelsScreen() { levelCards($('lvGrid'), false, li => startSolo(li)); $('lvInfo').textContent = unlocked(1) ? 'Wähle eine Küche.' : 'Hol in einer Küche mindestens einen Stern, um die nächste freizuschalten.'; scr('sLevels'); }
+  function levelsScreen() { levelCards($('lvGrid'), false, li => li === 0 && !ST.tut ? startTutorial() : startSolo(li)); $('lvInfo').textContent = unlocked(1) ? 'Wähle eine Küche.' : 'Hol in einer Küche mindestens einen Stern, um die nächste freizuschalten.'; scr('sLevels'); }
 
   /* ---------- Einstellungen ---------- */
   const OPT = { oSound: 'sound', oMusic: 'music', oHelper: 'helper', oVib: 'vib' };
@@ -80,6 +80,7 @@
     let list = []; try { list = navigator.getGamepads ? Array.from(navigator.getGamepads()) : []; } catch (e) { }
     PADS = []; list.forEach(gp => { if (!gp || !gp.connected) return; const ax = gp.axes || [], bt = gp.buttons || [], v = k => bt[k] ? (bt[k].value || (bt[k].pressed ? 1 : 0)) : 0;
       let x = Math.abs(ax[0] || 0) > .2 ? ax[0] : 0, z = Math.abs(ax[1] || 0) > .2 ? ax[1] : 0; if (v(14) > .5) x = -1; if (v(15) > .5) x = 1; if (v(12) > .5) z = -1; if (v(13) > .5) z = 1;
+      if (x || z || v(0) > .5 || v(2) > .5) A.dev = 'pad';
       PADS[gp.index] = { mx: x, mz: z, pick: v(0) > .5, use: v(2) > .5 || v(7) > .5, dash: v(1) > .5 || v(6) > .5, sw: v(3) > .5, start: v(9) > .5, back: v(8) > .5 }; });
   }
   const TOUCH = { x: 0, y: 0, a: 0, u: 0, d: 0, w: 0 };
@@ -88,26 +89,28 @@
   const touchIn = () => ({ mx: TOUCH.x, mz: TOUCH.y, pick: !!TOUCH.a, use: !!TOUCH.u, dash: !!TOUCH.d, sw: !!TOUCH.w });
 
   /* ---------- Schicht ---------- */
-  const A = { G: null, seats: [], solo: false, ctrl: 0, swPrev: false, acc: 0, paused: false, count: 0, endT: 0, speed: 1, li: 0, oids: '', bubbles: [] };
+  const A = { dev: coarse() ? 'touch' : 'kb', G: null, seats: [], solo: false, ctrl: 0, swPrev: false, acc: 0, paused: false, count: 0, endT: 0, speed: 1, li: 0, oids: '', bubbles: [] };
   function startSolo(li) {
     SET.lv = li; saveSet();
     startGame({ li, solo: true, chefs: [{ name: SET.name || 'Du', look: 0 }, { name: SET.helper ? 'Kochomat' : 'Koch 2', look: 1, bot: SET.helper }], seats: [{ kind: 'solo' }] });
   }
+  function startTutorial() { startGame({ li: 0, solo: true, tutorial: true, chefs: [{ name: SET.name || 'Du', look: 0 }], seats: [{ kind: 'solo' }] }); }
   function soloHelper() { const G = A.G; G.chefs.forEach((c, i) => { const want = i !== A.ctrl && SET.helper; if (c.bot !== want) { c.bot = want; c.B = null; for (const k in G.claims) if (G.claims[k] === i) delete G.claims[k]; } }); }
   function startGame(cfg) {
     endGameView(); closeAllOv();
     A.cfg = cfg; A.li = cfg.li; A.solo = !!cfg.solo; A.seats = cfg.seats; A.ctrl = 0; A.acc = 0; A.paused = false; A.endT = 0; A.oids = ''; A.bubbles = [];
-    A.G = KC.newGame(cfg.li, cfg.chefs, { seed: (Math.random() * 1e9) | 0 });
+    A.G = KC.newGame(cfg.li, cfg.chefs, { seed: (Math.random() * 1e9) | 0, tutorial: cfg.tutorial }); A.tutDone = 0; V.setHint(-1);
     V.setLevel(A.G, $('ovl')); V.resize(innerWidth, innerHeight);
     scr('sGame'); document.body.classList.add('playing');
     $('tpad').hidden = !(coarse() && (A.solo || A.seats.some(s => s.kind === 'kb')));
     document.body.classList.toggle('touchp', !$('tpad').hidden);
     $('tpad').querySelector('.tb-w').style.visibility = A.solo ? '' : 'hidden';
-    $('lvName').textContent = LEVELS[cfg.li].n; A.count = 4.2; bigTxt('Heute auf der Karte:\n' + LEVELS[cfg.li].menu.map(r => RECIPES[r].icon + ' ' + RECIPES[r].n).join(' · '), 'menu');
+    $('lvName').textContent = cfg.tutorial ? '🎓 Übungsküche' : LEVELS[cfg.li].n; $('tut').hidden = !cfg.tutorial; document.body.classList.toggle('tutor', !!cfg.tutorial); $('hintL').hidden = !A.solo || !!cfg.tutorial;
+    if (cfg.tutorial) { A.count = 0; $('big').hidden = true; } else { A.count = 4.2; bigTxt('Heute auf der Karte:\n' + LEVELS[cfg.li].menu.map(r => RECIPES[r].icon + ' ' + RECIPES[r].n).join(' · '), 'menu'); }
     music(true); netAll({ t: 'st', ph: 'game', score: 0, time: A.G.t, lv: LEVELS[cfg.li].n });
     hud(0);
   }
-  function endGameView() { if (!A.G) return; A.G = null; document.body.classList.remove('playing', 'touchp'); $('ovl').innerHTML = ''; $('tpad').hidden = true; KCTouch.reset(); S.sizzleOn(0); music(false); }
+  function endGameView() { if (!A.G) return; A.G = null; V.setHint(-1); $('tut').hidden = true; $('hintL').hidden = true; document.body.classList.remove('playing', 'touchp'); $('ovl').innerHTML = ''; $('tpad').hidden = true; KCTouch.reset(); S.sizzleOn(0); music(false); }
   let bigT = 0; function bigTxt(t, cls, ms) { const e = $('big'); e.textContent = t; e.className = 'big ' + (cls || ''); e.hidden = false; void e.offsetWidth; e.classList.add('pop'); clearTimeout(bigT); if (ms) bigT = setTimeout(() => { e.hidden = true; }, ms); }
   function inputsFor(G) {
     readPads(); const inp = [];
@@ -144,7 +147,7 @@
         if (A.acc > .1) A.acc = 0;
         let cooking = 0; for (const ti of G.idx.stove || []) { const c = G.tiles[ti].it; if (c && !c.burnt && c.parts.length && (c.t === 'pan' || c.parts.length === 3)) cooking++; } S.sizzleOn(SET.sound ? cooking : 0);
       } else { A.endT += dt; if (A.endT > 1.6) return finish(); }
-      hud(dt); netPush(dt);
+      hud(dt); netPush(dt); if (A.cfg.tutorial) tutFrame(dt); else if (A.solo) hintLine();
     }
     V.render(dt, { names: !A.solo || G.chefs.length > 1, noMark: false });
     bubbles(dt);
@@ -157,6 +160,43 @@
     const tks = $('orders').children; G.orders.forEach((o, k) => { const e = tks[k]; if (!e) return; const p = o.t / o.max, b = e.lastChild.firstChild; b.style.width = Math.round(p * 100) + '%'; b.style.background = p > .5 ? '#3ad06a' : p > .25 ? '#ffb020' : '#ff3a3a'; e.classList.toggle('late', p < .25); });
     if (!$('tpad').hidden && A.solo) { const ch = G.chefs[A.ctrl]; const ic = heldIcon(ch.held); if (A.tIc !== ic) { A.tIc = ic; $('tpad').querySelector('.tb-a i').textContent = ch.held ? '⬇' : '✋'; } }
   }
+  /* ---------- Übungsküche & Tipps ---------- */
+  const LBL = () => A.dev === 'pad' ? { N: 'A', U: 'X' } : A.dev === 'kb' ? { N: 'Leertaste', U: 'F' } : { N: 'NEHMEN', U: 'BENUTZEN' };
+  const tileOf = (G, f) => { let best = -1, bd = 1e9; const me = G.chefs[A.ctrl]; G.tiles.forEach((t, i) => { if (!f(t)) return; const d = Math.hypot(t.c + .5 - me.x, t.r + .5 - me.z); if (d < bd) { bd = d; best = i; } }); return best; };
+  const isLet = (it, st) => it && it.t === 'ing' && it.ing === 'lettuce' && (!st || it.st === st);
+  function tutFrame(dt) {
+    const G = A.G, me = G.chefs[A.ctrl], h = me.held, { N, U } = LBL(), k = s => '<kbd>' + s + '</kbd>';
+    let tgt = -1, txt = '', sub = '';
+    if (G.served) { A.tutDone += dt; txt = '🎉 Geschafft – das war schon die ganze Kunst!'; sub = 'Gleich geht die echte Schicht los. Dein Kollege, der Computer-Koch, hilft dir dabei.'; if (A.tutDone > 3.2) { ST.tut = true; saveSt(); startSolo(0); return; } }
+    else if (h && h.t === 'plate' && h.parts.includes('lettuce:c')) { tgt = tileOf(G, t => t.kind === 'serve'); txt = '6️⃣ Bring den Teller zur gelben Ausgabe und drück ' + k(N); sub = 'Dort holen die Gäste ihr Essen ab.'; }
+    else if (isLet(h, 'c')) { tgt = tileOf(G, t => t.kind === 'plates'); txt = '5️⃣ Geh zum 🍽️ Tellerstapel und drück ' + k(N); sub = 'Der Salat landet dabei auf einem Teller.'; }
+    else if (isLet(h, 'raw')) { tgt = tileOf(G, t => t.kind === 'board' && !t.it); txt = '2️⃣ Leg den Salat aufs Schneidebrett: hinlaufen und ' + k(N); sub = 'Die Bretter sind die hellen Holzflächen.'; }
+    else if (h && h.t !== 'ing') { tgt = tileOf(G, t => t.kind === 'counter' && !t.it); txt = 'Stell das erst ab: an eine freie Theke laufen und ' + k(N); }
+    else if (h) { tgt = tileOf(G, t => t.kind === 'trash'); txt = 'Das brauchen wir nicht – ab in den Mülleimer mit ' + k(N); }
+    else { const bc = tileOf(G, t => t.kind === 'board' && isLet(t.it, 'c')), br = tileOf(G, t => t.kind === 'board' && isLet(t.it, 'raw')), lying = tileOf(G, t => t.kind !== 'board' && isLet(t.it));
+      if (bc >= 0) { tgt = bc; txt = '4️⃣ Fertig geschnitten! Nimm den Salat mit ' + k(N); }
+      else if (br >= 0) { tgt = br; txt = '3️⃣ Halte ' + k(U) + ' gedrückt, bis der Salat geschnitten ist'; sub = 'Der grüne Balken zeigt, wie weit du bist.'; }
+      else if (lying >= 0) { tgt = lying; txt = 'Nimm den Salat wieder auf: hinlaufen und ' + k(N); }
+      else { tgt = tileOf(G, t => t.kind === 'crate' && t.ing === 'lettuce'); txt = '1️⃣ Lauf zur 🥬 Salat-Kiste (gelber Pfeil) und drück ' + k(N); sub = A.dev === 'touch' ? 'Laufen: links den Joystick ziehen.' : A.dev === 'pad' ? 'Laufen: linker Stick.' : 'Laufen: WASD oder Pfeiltasten.'; } }
+    V.setHint(tgt); const html = txt + '|' + sub; if (A.tutHtml !== html) { A.tutHtml = html; $('tutT').innerHTML = txt; $('tutS').textContent = sub; }
+  }
+  const NAME = it => !it ? '' : it.t === 'ing' ? ING[it.ing].icon + ' ' + ING[it.ing].n + (it.st === 'c' ? ' (geschnitten)' : it.st === 'x' ? ' (verbrannt)' : '') : it.t === 'plate' ? '🍽️ Teller' : it.t === 'pot' ? '🍲 Topf' : it.t === 'pan' ? '🍳 Pfanne' : it.t === 'ext' ? '🧯 Feuerlöscher' : it.t === 'dirty' ? 'dreckige Teller' : '';
+  function hintLine() {
+    const G = A.G, me = G.chefs[A.ctrl], h = me.held, t = me.tgt >= 0 ? G.tiles[me.tgt] : null, { N, U } = LBL(), k = s => '<kbd>' + s + '</kbd>'; let x;
+    if (h && h.t === 'ext') x = G.tiles.some(q => q.fire > 0) ? k(U) + ' halten: Feuer löschen' : k(N) + ' an einer Theke: Feuerlöscher abstellen';
+    else if (!t) x = h ? 'Du trägst ' + NAME(h) + (h.t === 'ing' && h.st === 'raw' && ING[h.ing].chop ? ' – ab aufs Schneidebrett!' : ' – lauf zu einer Station') : 'Lauf zu einer Kiste und nimm eine Zutat';
+    else if (t.fire > 0) x = '🔥 Es brennt! Hol den 🧯 Feuerlöscher';
+    else if (t.kind === 'crate') x = h ? 'Hände voll – erst ablegen' : k(N) + ': ' + ING[t.ing].icon + ' ' + ING[t.ing].n + ' nehmen';
+    else if (t.kind === 'board' && !h && t.it && t.it.t === 'ing' && t.it.st === 'raw' && ING[t.it.ing].chop) x = k(U) + ' halten: schneiden';
+    else if (t.kind === 'sink') x = h && h.t === 'dirty' ? k(N) + ': Teller in die Spüle' : t.n ? k(U) + ' halten: Teller spülen' : 'Spüle – hier werden dreckige Teller gewaschen';
+    else if (t.kind === 'ret') x = t.n ? k(N) + ': dreckige Teller nehmen (ab in die Spüle)' : 'Hier kommen benutzte Teller zurück';
+    else if (t.kind === 'serve') x = h && h.t === 'plate' && h.parts.length ? k(N) + ': servieren' : 'Ausgabe – fertige Teller hierher';
+    else if (t.kind === 'plates') x = !h ? (t.n ? k(N) + ': Teller nehmen' : 'Keine Teller mehr – spülen!') : h.t === 'ing' ? k(N) + ': auf einen Teller legen' : k(N) + ': Teller zurücklegen';
+    else if (t.kind === 'trash') x = h ? k(N) + ': wegwerfen' : 'Mülleimer';
+    else if (t.kind === 'stove') { const c = t.it; x = !c ? (h && (h.t === 'pot' || h.t === 'pan') ? k(N) + ': auf den Herd stellen' : 'Leerer Herd') : h && h.t === 'ing' ? k(N) + ': hinein in ' + NAME(c) : h && h.t === 'plate' ? k(N) + ': anrichten' : c.burnt ? k(N) + ': nehmen und in den Müll' : KC.contentKey(c) ? 'Fertig! Teller holen und hier anrichten' : c.parts.length ? (c.t === 'pot' && c.parts.length < 3 ? 'Topf: noch ' + (3 - c.parts.length) + ' geschnittene Zutat(en) rein' : 'Kocht …') : c.t === 'pot' ? 'Topf: 3 gleiche geschnittene Zutaten für Suppe' : 'Pfanne: geschnittenes Fleisch oder Fisch'; }
+    else x = !h ? (t.it ? k(N) + ': ' + NAME(t.it) + ' nehmen' : 'Freie Theke') : !t.it ? k(N) + ': abstellen' : k(N) + ': zusammenlegen';
+    if (A.hintX !== x) { A.hintX = x; $('hintL').innerHTML = x; }
+  }
   function bubbles(dt) {
     A.bubbles = A.bubbles.filter(b => { b.t -= dt; if (b.t <= 0) { b.el.remove(); return false; } const ch = A.G && A.G.chefs[b.i]; if (ch) { const [x, y] = V.screenOf(ch.x, 1.9, ch.z); b.el.style.transform = `translate(${x}px,${y}px) translate(-50%,-100%)`; } return true; });
   }
@@ -167,10 +207,11 @@
   $('paRe').onclick = () => { closeAllOv(); restart(); };
   $('paOpt').onclick = () => openOv('ovOpts');
   $('paQuit').onclick = () => { closeAllOv(); if (A.G) { A.G.t = 0.01; A.paused = false; } };
-  function restart() { const c = A.cfg; if (A.solo) startSolo(c.li); else startGame(Object.assign({}, c, { chefs: c.chefs.map(x => Object.assign({}, x)) })); }
+  function restart() { const c = A.cfg; if (c.tutorial) return startTutorial(); if (A.solo) startSolo(c.li); else startGame(Object.assign({}, c, { chefs: c.chefs.map(x => Object.assign({}, x)) })); }
 
   /* ---------- Feierabend (Game Over) ---------- */
   function finish() {
+    if (A.cfg.tutorial) { endGameView(); return levelsScreen(); }
     const G = A.G, L = LEVELS[A.li], stars = KC.stars(G), old = ST.best[L.id] || 0, rec = G.score > old;
     ST.games++; ST.served += G.served; if (rec) ST.best[L.id] = G.score; if (stars > (ST.stars[L.id] || 0)) ST.stars[L.id] = stars; saveSt();
     const solo = A.solo; endGameView(); A.last = { li: A.li, solo };
@@ -213,7 +254,7 @@
     menuPad.a = q.pick; menuPad.b = q.dash; menuPad.st = q.start;
   }
   addEventListener('keydown', e => {
-    keys.add(e.code); document.body.classList.add('kbd');
+    keys.add(e.code); document.body.classList.add('kbd'); A.dev = 'kb';
     if (A.G && cur === 'sGame' && !overlays().length && /^(Arrow|Space|Tab)/.test(e.code)) e.preventDefault();
     if (e.code === 'Escape' || (e.code === 'KeyP' && A.G)) { e.preventDefault(); back(); return; }
     if (A.G && cur === 'sGame' && !overlays().length) return;
@@ -224,7 +265,7 @@
   });
   addEventListener('keyup', e => keys.delete(e.code));
   addEventListener('blur', () => keys.clear());
-  addEventListener('pointerdown', () => document.body.classList.remove('kbd'), true);
+  addEventListener('pointerdown', e => { document.body.classList.remove('kbd'); if (e.pointerType === 'touch' || e.pointerType === 'pen') A.dev = 'touch'; }, true);
   addEventListener('resize', () => V.resize(innerWidth, innerHeight));
   addEventListener('gamepadconnected', () => { toast('🎮 Controller verbunden'); $('pressTxt').textContent = 'Drücke A'; });
   document.addEventListener('visibilitychange', () => { if (document.hidden && A.G && A.solo) pause(); });

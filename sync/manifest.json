@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "481288a1cab1",
- "generated": "2026-10-24T14:35:27+02:00",
- "commit": "12109d2c89ac5acecc29d73e42cf1450d351d831",
+ "version": "072aff6ca47d",
+ "generated": "2026-10-24T15:14:40+02:00",
+ "commit": "d20f6f85454d201f601d3d358f36421a5dbc5a4a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6258,8 +6258,8 @@
   },
   {
    "p": "guides.js",
-   "s": 131321,
-   "h": "3d86a5dea26561e304eb6094948919ad5684810b506fe89349f00d193dce3902"
+   "s": 131519,
+   "h": "4464cdc026cfc4c7046dc4d5353d22e55f62da9752532cd91265d274200d8c77"
   },
   {
    "p": "heute.html",
@@ -6543,23 +6543,23 @@
   },
   {
    "p": "kuechen-chaos/index.html",
-   "s": 13129,
-   "h": "778aa882d818a2791dc01e3863b07af2c55643079e6b6c107cf953ba25594892"
+   "s": 13319,
+   "h": "a3bdf07ad34d024ea90faeb7a468ef801a6873138eb6b09bc17bd734dcd5e10e"
   },
   {
    "p": "kuechen-chaos/js/app.js",
-   "s": 39076,
-   "h": "32aec69aada956be15d4de8419065050fdfc3dd659911f37800e5818ec2f2db8"
+   "s": 45761,
+   "h": "0bd3f214c73dce2880d6a7296e28692a2bd9068d9ad2f8cffbcb7962ecbe1c85"
   },
   {
    "p": "kuechen-chaos/js/core.js",
-   "s": 27660,
-   "h": "b7425543da63dd64f665ab304d3bce0ffed74e32270d84e0e8fcee05ab9c82af"
+   "s": 28339,
+   "h": "70cc7fc788c99bf033083c2f75111cfda03baae76659d73410fad4a0c87ebaed"
   },
   {
    "p": "kuechen-chaos/js/data.js",
    "s": 4904,
-   "h": "12f9f97174106f24db552646fe28489647ae776e137ff256eec293e530658b27"
+   "h": "27e9e7c2fd4a7a55dbfc4f621c97443c03f869b2d5ef7785f4fbd23581744f2e"
   },
   {
    "p": "kuechen-chaos/js/sound.js",
@@ -6573,8 +6573,8 @@
   },
   {
    "p": "kuechen-chaos/js/view.js",
-   "s": 17860,
-   "h": "a22f52ba98dab0d05311a5bd984c639ac8f760cf0cadca1f0441a7e57eb44720"
+   "s": 18500,
+   "h": "adfc2a512180c1ea63b4cde605d01486af08281578e6296a8a440162fa705c04"
   },
   {
    "p": "kuechen-chaos/manifest.webmanifest",
@@ -6583,8 +6583,8 @@
   },
   {
    "p": "kuechen-chaos/style.css",
-   "s": 20013,
-   "h": "f237be8edb8eb96e2a85d789ecc100f46d92aea1012350fc2ffc7cb6e4d61bb3"
+   "s": 21763,
+   "h": "8e30b0e00e4cb2d38a17657ce4c0f8228ce4223eb1bdf2eb9851b7962fb2fc04"
   },
   {
    "p": "kuechen-chaos/sw.js",
@@ -8243,8 +8243,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 199610,
-   "h": "cf92dd5956e9f3d89f2afab9cd51b09f7c85cbaee0dc0c1dad09d88813c4af91"
+   "s": 199808,
+   "h": "a02b93e2ce9ddd311ace24ce619177e88c8c838a35ed2865e6ec1998edb9645e"
   },
   {
    "p": "taschi/card.svg",
