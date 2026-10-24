@@ -56,6 +56,32 @@
  */
 (function () {
   'use strict';
+  // Sprachausgabe für eingebettete Spiele: Chrome spricht in fremden iframes oft nicht – das Spiel (cloud/anmacha-cloud.js)
+  // schickt seine Ansagen per 'eg-tts' hierher, diese Seite spricht sie. Nur für easygames-Spiele (GitHub Pages oder eigene Adresse).
+  (function egTtsHost() {
+    var s = window.speechSynthesis;
+    if (!s || window.__egTtsHost || !window.SpeechSynthesisUtterance) return;
+    window.__egTtsHost = 1;
+    var live = {}, lastCancel = 0, wait = [], timer = 0;
+    window.addEventListener('message', function (e) {
+      var d = e.data;
+      if (!d || d.type !== 'eg-tts' || !e.source || (e.origin !== 'https://ricorewioriginal-collab.github.io' && e.origin !== location.origin)) return;
+      var src = e.source, origin = e.origin, reply = function (m) { m.type = 'eg-tts'; try { src.postMessage(m, origin); } catch (x) { } };
+      if (d.op === 'hello') return reply({ op: 'host' });
+      if (d.op === 'cancel') { live = {}; wait = []; clearTimeout(timer); timer = 0; lastCancel = Date.now(); try { s.cancel(); } catch (x) { } return; }
+      if (d.op !== 'speak' || !d.id) return;
+      var u = new SpeechSynthesisUtterance(String(d.text || '').slice(0, 1500)), id = String(d.id).slice(0, 20);
+      u.lang = String(d.lang || '').slice(0, 20); u.rate = +d.rate || 1; u.pitch = +d.pitch || 1; u.volume = d.volume == null ? 1 : +d.volume;
+      try { var v = d.voice && s.getVoices().filter(function (x) { return x.name === d.voice; })[0]; if (v) { u.voice = v; u.lang = v.lang; } } catch (x) { }
+      live[id] = u;
+      u.onstart = function () { reply({ op: 'ev', id: id, kind: 'start' }); };
+      u.onend = function () { delete live[id]; reply({ op: 'ev', id: id, kind: 'end' }); };
+      u.onerror = function (ev) { delete live[id]; reply({ op: 'ev', id: id, kind: 'error', error: ev && ev.error || '' }); };
+      // Chrome für Android verschluckt eine Ansage direkt nach cancel(): kurz warten, Reihenfolge bleibt
+      var go = function () { try { if (s.paused) s.resume(); s.speak(u); } catch (x) { } }, ms = 260 - (Date.now() - lastCancel);
+      if (ms > 0 || wait.length) { wait.push(go); if (!timer) timer = setTimeout(function () { timer = 0; var l = wait; wait = []; l.forEach(function (f) { f(); }); }, Math.max(0, ms)); } else go();
+    });
+  })();
   var cs = document.currentScript;
   var base = new URL('.', (cs && cs.src) || location.href).href;
   var games = window.EASYGAMES_GAMES || null, guides = window.EASYGAMES_GUIDES || null;

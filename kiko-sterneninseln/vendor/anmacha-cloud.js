@@ -7,6 +7,64 @@
  * data-mount  = CSS-Selektor: Anmelde-Bereich dort einbetten statt schwebendem Knopf; data-hint = Einleitungstext dazu
  * data-ui="off" blendet den Cloud-Knopf aus. data-board="off" schaltet die Ranglisten (anmacha-board.js) ab. data-sync="off" = nur Anmeldung, kein Spielstand-Abgleich.
  * Anmeldung per Google (Firebase Auth), Spielstand pro Nutzer (gzip ab 20 KB). Ohne Eintragungen in CONFIG tut das Skript nichts (Spiele laufen weiter nur mit localStorage). */
+/* Sprachausgabe robuster machen (gilt für alle Spiele mit Moderation/Caller, die dieses Skript laden):
+ * – Chrome (v. a. Android) verschluckt eine Ansage, die direkt nach cancel() startet: kurz warten.
+ * – Chrome räumt laufende Ansagen weg, wenn niemand sie mehr festhält: bis zum Ende merken.
+ * – Ein hängengebliebenes „paused“ blockiert alles: vor dem Sprechen fortsetzen.
+ * – Online-Stimmen (z. B. „Google Deutsch“) brechen nach ~15 s ab: dabei regelmäßig kurz anstoßen.
+ * – Chrome für Android braucht zur gewählten Stimme die passende Sprache. */
+(function () {
+  'use strict';
+  var s = window.speechSynthesis;
+  if (!s || s.__egFix || typeof s.speak !== 'function') return;
+  var speak = s.speak.bind(s), cancel = s.cancel.bind(s), live = [], pend = [], lastCancel = 0, timer = 0, keep = 0;
+  try { s.__egFix = 1; } catch (e) { }
+  var drop = function (u) { var i = live.indexOf(u); if (i >= 0) live.splice(i, 1); if (!live.length && keep) { clearInterval(keep); keep = 0; } };
+  s.cancel = function () { lastCancel = Date.now(); clearTimeout(timer); timer = 0; pend = []; live = []; if (keep) { clearInterval(keep); keep = 0; } return cancel(); };
+  s.speak = function (u) {
+    if (!u) return speak(u);
+    try { if (u.voice && u.voice.lang && (!u.lang || u.lang.slice(0, 2).toLowerCase() === u.voice.lang.slice(0, 2).toLowerCase())) u.lang = u.voice.lang; } catch (e) { }
+    if (live.indexOf(u) < 0) { live.push(u); try { u.addEventListener('end', function () { drop(u); }); u.addEventListener('error', function () { drop(u); }); } catch (e) { } }
+    var go = function () {
+      try { if (s.paused) s.resume(); } catch (e) { }
+      speak(u);
+      // Nur für Online-Stimmen am Desktop: pause/resume hält sie am Leben (auf Android würde pause die Ansage beenden)
+      if (!keep && u.voice && u.voice.localService === false && !/Android/i.test(navigator.userAgent)) keep = setInterval(function () { if (s.speaking && !s.paused) { try { s.pause(); s.resume(); } catch (e) { } } }, 9000);
+    };
+    var wait = 260 - (Date.now() - lastCancel);
+    if (wait > 0 || pend.length) { pend.push(go); if (!timer) timer = setTimeout(function () { timer = 0; var l = pend; pend = []; l.forEach(function (f) { f(); }); }, Math.max(0, wait)); } else go();
+  };
+  /* Eingebettet auf einer fremden Seite (z. B. ricorewi-radio.de): Chrome spricht dort oft nicht. Bietet die Seite an,
+   * für das Spiel zu sprechen (Spiele-Hub, easygames.js, RicoReWi-Portal: Nachricht 'eg-tts'), geht die Ansage an sie. */
+  var cross = false;
+  try { cross = window.top !== window && !window.top.location.href; } catch (e) { cross = window.top !== window; }
+  if (!cross || !window.postMessage) return;
+  var remote = null, ids = {}, nid = 0;
+  var post = function (m) { m.type = 'eg-tts'; try { window.parent.postMessage(m, '*'); } catch (e) { } };
+  var fire = function (u, k, err) {
+    try { var Ev = window.SpeechSynthesisEvent; u.dispatchEvent(Ev ? new Ev(k, { utterance: u, error: err }) : new Event(k)); return; } catch (e) { }
+    try { if (typeof u['on' + k] === 'function') u['on' + k]({ type: k, utterance: u, error: err || '' }); } catch (e) { }
+  };
+  window.addEventListener('message', function (e) {
+    var d = e.data; if (!d || d.type !== 'eg-tts' || e.source !== window.parent) return;
+    if (d.op === 'host' && !remote) {
+      remote = e.origin;
+      s.speak = function (u) {
+        if (!u) return; var id = 'u' + (++nid); ids[id] = u;
+        post({ op: 'speak', id: id, text: String(u.text || '').slice(0, 1500), lang: u.lang || '', voice: u.voice ? u.voice.name : '', rate: +u.rate || 1, pitch: +u.pitch || 1, volume: u.volume == null ? 1 : +u.volume });
+      };
+      s.cancel = function () { var l = Object.keys(ids).map(function (k) { return ids[k]; }); ids = {}; post({ op: 'cancel' }); l.forEach(function (u) { fire(u, 'error', 'canceled'); }); };
+      s.pause = function () { }; s.resume = function () { };
+      try { Object.defineProperty(s, 'speaking', { configurable: true, get: function () { return Object.keys(ids).length > 0; } }); Object.defineProperty(s, 'pending', { configurable: true, get: function () { return Object.keys(ids).length > 1; } }); Object.defineProperty(s, 'paused', { configurable: true, get: function () { return false; } }); } catch (e) { }
+    } else if (d.op === 'ev' && ids[d.id]) {
+      var u = ids[d.id]; if (d.kind !== 'start') delete ids[d.id];
+      fire(u, d.kind === 'start' ? 'start' : d.kind === 'end' ? 'end' : 'error', d.error || '');
+    }
+  });
+  // Spiel wird geschlossen: Ansagen auf der Seite beenden, sonst spricht sie weiter
+  window.addEventListener('pagehide', function () { if (remote && Object.keys(ids).length) { ids = {}; post({ op: 'cancel' }); } });
+  post({ op: 'hello' });
+})();
 (function () {
   'use strict';
   // <- aus der Firebase-Konsole eintragen (siehe cloud/README.md); authDomain leer = <projectId>.firebaseapp.com

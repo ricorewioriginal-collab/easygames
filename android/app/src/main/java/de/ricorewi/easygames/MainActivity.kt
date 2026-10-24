@@ -50,6 +50,14 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
     private lateinit var root: FrameLayout
     private var webView: WebView? = null
 
+    /** Android-Sprachausgabe für die Spiele (die WebView hat keine); Ereignisse gehen an `__egTts` der Seite. */
+    private val tts by lazy {
+        AppTts(this) { id, kind ->
+            val sid = id.filter { it.isLetterOrDigit() || it == '_' }
+            runOnUiThread { webView?.evaluateJavascript("window.__egTts&&window.__egTts('$sid','$kind')", null) }
+        }
+    }
+
     // Erststart-Overlay
     private lateinit var overlay: LinearLayout
     private lateinit var statusView: TextView
@@ -181,6 +189,7 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
     }
 
     override fun onDestroy() {
+        tts.shutdown()
         coordinator.removeListener(stateListener)
         pendingPermission?.deny()
         pendingPermission = null
@@ -256,7 +265,7 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
             override fun shouldInterceptRequest(request: WebResourceRequest): WebResourceResponse? = client.intercept(request)
         })
         wv.webChromeClient = GameChromeClient()
-        wv.addJavascriptInterface(WebBridge(this, coordinator), "EasyGamesApp")
+        wv.addJavascriptInterface(WebBridge(this, coordinator, tts), "EasyGamesApp")
 
         root.addView(wv, 0, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         webView = wv
