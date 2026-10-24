@@ -71,7 +71,7 @@ await p.evaluate(() => { navigator.getGamepads = () => []; });
 const h = await page({ width: 390, height: 844 }, true, '?fight=ulk-gurke,hs-pingu&mode=cpu&stage=2');
 await h.waitForFunction(() => window.ECApp && ECApp.cur === 'sGame', null, { timeout: 60000 }); await fightReady(h);
 ok(await h.isVisible('#touch'), 'Touch-Knöpfe sichtbar');
-await h.evaluate(() => { const W = ECApp.G.W; W.f[0].x = -.55; W.f[1].x = .55; W.f[0].z = W.f[1].z = 0; ECApp.G.mode = 'versus'; ECApp.G.human = [true, true]; });
+await h.evaluate(() => { const W = ECApp.G.W; W.ai_off = true; W.f.forEach(F => { F.state = 'idle'; F.mv = null; F.y = 0; F.vy = 0; F.hp = EC.HP; }); W.f[0].x = -.55; W.f[1].x = .55; W.f[0].z = W.f[1].z = 0; ECApp.G.mode = 'versus'; ECApp.G.human = [true, true]; });
 const hpT = await h.evaluate(() => ECApp.G.W.f[1].hp);
 const tap = sel => h.evaluate(sel => { const el = document.querySelector(sel), r = el.getBoundingClientRect(), o = { bubbles: true, pointerId: 3, pointerType: 'touch', clientX: r.left + 10, clientY: r.top + 10 }; el.dispatchEvent(new PointerEvent('pointerdown', o)); setTimeout(() => el.dispatchEvent(new PointerEvent('pointerup', o)), 60); }, sel);
 await tap('.tb.t1'); await wait(h, 400); await tap('.tb.t3'); await wait(h, 600);
