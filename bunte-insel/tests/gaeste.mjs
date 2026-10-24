@@ -17,10 +17,15 @@ const r = await p.evaluate(async () => {
   const k = BI.makeChar(G.find(g => g.id === 'g_kiko').o); k.pose(1, .8, true); k.dance(1, 1); k.sit(); k.punch(.5); out.rig = !!(k.legL && k.legR && k.armL && k.armR && k.group); k.dispose();
   out.hero = G.every(g => BI.HEROES.some(h => h.id === g.id)) && BI.HEROES[BI.HEROES.length - 1].id === 'custom';
   /* Gespräche: erster Satz nennt das Spiel, +1 Stern, nach 8 Gästen der Sticker */
-  const s0 = b.save.stars; out.first = '';
-  for (const n of list.slice(0, 8)) { P.x = n.x + 1; P.z = n.z; await sl(60); b.talkNpc(n); if (!out.first) out.first = b.dlg().cur ? b.dlg().cur.lines[0] : (document.querySelector('#rpgDlg .ln') || {}).textContent || ''; await sl(30); }
+  b.save.talked = (b.save.talked || []).concat('Kiko'); /* schon mit Kiko aus dem Schlüsselreich gesprochen: Gast Kiko zählt trotzdem */
+  const s0 = b.save.stars; out.first = ''; const L = list.slice().sort((a, c) => (c.guest === 'g_kiko') - (a.guest === 'g_kiko'));
+  for (const n of L.slice(0, 8)) { P.x = n.x + 1; P.z = n.z; await sl(60); b.talkNpc(n); if (!out.first) out.first = b.dlg().cur ? b.dlg().cur.lines[0] : (document.querySelector('#rpgDlg .ln') || {}).textContent || ''; await sl(30); }
   out.stars = b.save.stars - s0; out.sticker = (b.save.stk || []).includes('gaeste');
-  out.dest = !!b.DEST.find(d => d.id === 'gaeste');
+  out.dest = !!b.DEST.find(d => d.id === 'gaeste'); out.kiko = (b.save.guests || []).includes('g_kiko') && /aus dem Spiel/.test(out.first);
+  /* Tier-Gast als Spielfigur: Hut lässt sich nicht kaufen/anziehen (kein Menschenkopf), Sterne bleiben */
+  const hat = b.SHOP.find(q => q.slot === 'hat'), h0 = b.save.hero, st = b.save.stars; b.save.hero = 'g_kiko'; b.save.stars = 999; const ow = b.save.owned.slice(), eq = b.save.equip.hat;
+  b.buyItem(hat); b.setEq(hat, true); out.noWear = b.save.stars === 999 && !b.save.owned.includes(hat.id) && b.save.equip.hat === eq;
+  b.save.hero = h0; b.save.stars = st; b.save.owned = ow;
   return out;
 });
 console.log(JSON.stringify(r));
@@ -32,5 +37,7 @@ ok(/aus dem Spiel „/.test(r.first), 'erster Satz nennt das Herkunftsspiel: ' +
 ok(r.stars >= 8, '+1 ⭐ pro neuem Gast (' + r.stars + ')');
 ok(r.sticker, 'Sticker „Gästefreund“ nach 8 Gesprächen');
 ok(r.dest, 'easygames-Treff steht im Wohin-Menü');
+ok(r.kiko, 'Gast Kiko zählt, auch wenn Kiko aus dem Schlüsselreich schon bekannt ist');
+ok(r.noWear, 'Tier-Gast als Spielfigur: kein Zubehör kaufen/anziehen, keine Sterne weg');
 ok(errs.length === 0, 'keine JS-Fehler ' + errs.slice(0, 3).join(' | '));
 await browser.close(); console.log(fails ? fails + ' FEHLER' : 'Alles gut ✅'); process.exit(fails ? 1 : 0);
