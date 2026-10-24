@@ -96,7 +96,7 @@
   const TS = { x: 0, z: 0, id: null, ox: 0, oy: 0 };
   function stick(zone, knob, st, onMove) {
     const R = 52;
-    zone.addEventListener('pointerdown', e => { if (e.target.closest && e.target.closest('button')) return; st.id = e.pointerId;   // neuer Finger übernimmt immer (kein Hängenbleiben) try { zone.setPointerCapture(e.pointerId); } catch (x) { } const r = zone.getBoundingClientRect(); st.ox = e.clientX; st.oy = e.clientY; knob.style.left = (e.clientX - r.left) + 'px'; knob.style.top = (e.clientY - r.top) + 'px'; knob.classList.add('on'); e.preventDefault(); });
+    zone.addEventListener('pointerdown', e => { if (e.target.closest && e.target.closest('button')) return; st.id = e.pointerId; /* neuer Finger übernimmt immer (kein Hängenbleiben) */ try { zone.setPointerCapture(e.pointerId); } catch (x) { } const r = zone.getBoundingClientRect(); st.ox = e.clientX; st.oy = e.clientY; knob.style.left = (e.clientX - r.left) + 'px'; knob.style.top = (e.clientY - r.top) + 'px'; knob.classList.add('on'); e.preventDefault(); });
     zone.addEventListener('pointermove', e => { if (e.pointerId !== st.id) return; let dx = e.clientX - st.ox, dy = e.clientY - st.oy; const l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } st.x = dx / R; st.z = dy / R; knob.firstElementChild.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; if (onMove) onMove(); });
     const end = e => { if (e.pointerId !== st.id) return; st.id = null; st.x = st.z = 0; knob.firstElementChild.style.transform = ''; knob.classList.remove('on'); if (onMove) onMove(); };
     zone.addEventListener('pointerup', end); zone.addEventListener('pointercancel', end); zone.addEventListener('lostpointercapture', end);

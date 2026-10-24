@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "6517726ea0bf",
- "generated": "2026-10-24T04:15:56+02:00",
- "commit": "2e76dab2c8686ab2c81c78a0604be94b171a5d8f",
+ "version": "f2a867227666",
+ "generated": "2026-10-24T04:21:17+02:00",
+ "commit": "17fb44e8876c19b963e937680176d5d109365d61",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7263,8 +7263,8 @@
   },
   {
    "p": "sendemast-sumo/js/app.js",
-   "s": 48709,
-   "h": "d09a6661d5e4d2cf1184c44949006923ec42c1b17aa0a00ebf915fae8f199eb4"
+   "s": 48710,
+   "h": "acdbe3b114328fcc29907418d2e3fbb50b03e3851a2e554b0361f4cde28bff5e"
   },
   {
    "p": "sendemast-sumo/js/core.js",
@@ -7554,7 +7554,7 @@
   {
    "p": "sync/catalog.json",
    "s": 163292,
-   "h": "16892c57125655213da18638d0b65a799c579a5187c4663735b2bae432b8c5a1"
+   "h": "9b865c53731dcacf4a8d6bd88551f2b1c7d2709e2d9e3042298bc400e863a3a3"
   },
   {
    "p": "taschi/card.svg",
