@@ -253,8 +253,10 @@
     for (let i = 0; i < 2; i++) {
       const g = list[i], st = PADS[i]; st.on = !!g; if (!g) continue;
       const ax = g.axes || [], bt = g.buttons || [], pr = k => !!(bt[k] && (bt[k].pressed || bt[k].value > .5));
-      let x = Math.abs(ax[0]) > .4 ? Math.sign(ax[0]) : 0, y = Math.abs(ax[1]) > .5 ? Math.sign(ax[1]) : 0;
+      const dz = v => Math.abs(v) > .22 ? Math.max(-1, Math.min(1, (v - Math.sign(v) * .22) / .7)) : 0;
+      let x = dz(ax[0] || 0), y = dz(ax[1] || 0);
       if (pr(14)) x = -1; if (pr(15)) x = 1; if (pr(12)) y = -1; if (pr(13)) y = 1; st.x = x; st.y = y; st.block = pr(6);
+      x = Math.abs(x) > .5 ? Math.sign(x) : 0; y = Math.abs(y) > .5 ? Math.sign(y) : 0;
       const now = []; for (let k = 0; k < 17; k++) now[k] = pr(k); const down = k => now[k] && !st.b[k], E = EDGE['pad' + i];
       if (down(2)) E.b1 = true; if (down(3)) E.b2 = true; if (down(0)) E.b3 = true; if (down(1)) E.b4 = true; if (down(4)) E.g = true; if (down(5)) E.s = true; if (down(7)) E.f = true;
       const inGame = cur === 'sGame' && !overlays().length;
@@ -274,9 +276,9 @@
   // Touch
   const TS = { x: 0, y: 0, id: null, ox: 0, oy: 0, block: false };
   (function () {
-    const zone = $('tZone'), knob = $('tStick'), R = 50;
+    const zone = $('tZone'), knob = $('tStick'), R = 46;
     zone.addEventListener('pointerdown', e => { TS.id = e.pointerId; try { zone.setPointerCapture(e.pointerId); } catch (x) { } const r = zone.getBoundingClientRect(); TS.ox = e.clientX; TS.oy = e.clientY; knob.style.left = (e.clientX - r.left) + 'px'; knob.style.top = (e.clientY - r.top) + 'px'; knob.style.bottom = 'auto'; knob.style.margin = '-60px 0 0 -60px'; knob.classList.add('on'); e.preventDefault(); });
-    zone.addEventListener('pointermove', e => { if (e.pointerId !== TS.id) return; let dx = e.clientX - TS.ox, dy = e.clientY - TS.oy; const l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } TS.x = Math.abs(dx) > R * .4 ? Math.sign(dx) : 0; TS.y = Math.abs(dy) > R * .5 ? Math.sign(dy) : 0; knob.firstElementChild.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; });
+    zone.addEventListener('pointermove', e => { if (e.pointerId !== TS.id) return; let dx = e.clientX - TS.ox, dy = e.clientY - TS.oy; const l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } TS.x = Math.abs(dx) > R * .15 ? dx / R : 0; TS.y = Math.abs(dy) > R * .15 ? dy / R : 0; knob.firstElementChild.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; });
     const end = e => { if (e.pointerId !== TS.id) return; TS.id = null; TS.x = TS.y = 0; knob.firstElementChild.style.transform = ''; knob.classList.remove('on'); };
     zone.addEventListener('pointerup', end); zone.addEventListener('pointercancel', end); zone.addEventListener('lostpointercapture', end);
     document.querySelectorAll('.tb').forEach(b => { const k = b.dataset.b;
@@ -292,7 +294,7 @@
     for (const d of devs) {
       let v = null;
       if (d === 'kb1' || d === 'kb2') v = readKb(d); else if (d === 'touch') v = TS; else { const p = PADS[+d.slice(3)]; if (p && p.on) v = p; }
-      if (v) { if (v.x) x = v.x; if (v.y) y = v.y; if (v.block) block = true; }
+      if (v) { if (Math.abs(v.x || 0) > Math.abs(x)) x = v.x; if (Math.abs(v.y || 0) > Math.abs(y)) y = v.y; if (v.block) block = true; }
       const E = EDGE[d]; for (const k of BTN) if (E[k]) { b[k] = true; E[k] = false; }
     }
     return { fx: i === 0 ? x : -x, sy: y, block, b1: b.b1, b2: b.b2, b3: b.b3, b4: b.b4, s: b.s, g: b.g, f: b.f };
@@ -411,7 +413,7 @@
   (function () {
     const zone = $('pZone'), knob = $('pStick'), R = 50;
     zone.addEventListener('pointerdown', e => { PS.id = e.pointerId; try { zone.setPointerCapture(e.pointerId); } catch (x) { } PS.ox = e.clientX; PS.oy = e.clientY; knob.classList.add('on'); e.preventDefault(); });
-    zone.addEventListener('pointermove', e => { if (e.pointerId !== PS.id) return; let dx = e.clientX - PS.ox, dy = e.clientY - PS.oy; const l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } PS.x = Math.abs(dx) > R * .4 ? Math.sign(dx) : 0; PS.y = Math.abs(dy) > R * .5 ? Math.sign(dy) : 0; knob.firstElementChild.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; phoneSend(); });
+    zone.addEventListener('pointermove', e => { if (e.pointerId !== PS.id) return; let dx = e.clientX - PS.ox, dy = e.clientY - PS.oy; const l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } PS.x = Math.abs(dx) > R * .15 ? Math.round(dx / R * 10) / 10 : 0; PS.y = Math.abs(dy) > R * .15 ? Math.round(dy / R * 10) / 10 : 0; knob.firstElementChild.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; phoneSend(); });
     const end = e => { if (e.pointerId !== PS.id) return; PS.id = null; PS.x = PS.y = 0; knob.firstElementChild.style.transform = ''; knob.classList.remove('on'); phoneSend(true); };
     zone.addEventListener('pointerup', end); zone.addEventListener('pointercancel', end); zone.addEventListener('lostpointercapture', end);
     document.querySelectorAll('.pBtns .tb').forEach(b => { const k = b.dataset.b;

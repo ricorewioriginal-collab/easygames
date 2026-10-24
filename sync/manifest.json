@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9865eb0f8d73",
- "generated": "2026-10-24T06:19:16+00:00",
- "commit": "2cc49fa04118c5ffb325344be0cb18fa78c4a17a",
+ "version": "87b3fd19f863",
+ "generated": "2026-10-24T06:28:58+00:00",
+ "commit": "576ce5e75ade57ecd2ae879c76681971b1c2aa07",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5548,23 +5548,23 @@
   },
   {
    "p": "easyclash/index.html",
-   "s": 18241,
-   "h": "302cb2a0d6bb95cf283d7b07fb329821128be53af9eabccb57ad9598d6d73d1a"
+   "s": 18471,
+   "h": "0686ecf76bad653199d7e495e921c6e70b06acea545561f4699f75ad65541c40"
   },
   {
    "p": "easyclash/js/app.js",
-   "s": 46011,
-   "h": "27a1262b9fa43e5ac79f9c0819546aa4d7c2d458a1b9130a8f60d4efcc0ef604"
+   "s": 46223,
+   "h": "e53db07a7edac68ac88cd7e54984df888bef662a5fd223937c09b4aba4fe2c81"
   },
   {
    "p": "easyclash/js/core.js",
-   "s": 27334,
-   "h": "28bc5e1cc47e52dbeaa48112a1a2b2690659987809996bfe0ace5f763effe44e"
+   "s": 28202,
+   "h": "5896a731e0fa94a8e7a2a3af310430b2d7df5ec16f33603e8fe4a560589ec9ca"
   },
   {
    "p": "easyclash/js/model.js",
-   "s": 23446,
-   "h": "5797cf27a4d5e0efe0742140934fd1dee85f085d380f94a2c6aeec1b46ba3d84"
+   "s": 23817,
+   "h": "b070678d42b63a34903b7826fa42826397120584098ced4882a32316c14b03bb"
   },
   {
    "p": "easyclash/js/roster.js",
@@ -5589,7 +5589,7 @@
   {
    "p": "easyclash/style.css",
    "s": 20838,
-   "h": "1fbdace23bd059c3ba899c4f42a3d2df64a1dd8397654f49241c74e8bbe42aa3"
+   "h": "312050338520a96f5f0ef324b3daa8be2e566652dda2c882f12ebce69a03080d"
   },
   {
    "p": "easyclash/sw.js",
@@ -6073,8 +6073,8 @@
   },
   {
    "p": "guides.js",
-   "s": 116589,
-   "h": "5da54c0e08c2e02f5e1aa648fb3b755e64480d9bb903654fb988487ff01a5306"
+   "s": 116748,
+   "h": "b074a81641432bfedba55165679cb1c1b909bb6eff5cf589a18891a78861c3fb"
   },
   {
    "p": "heute.html",
@@ -7953,8 +7953,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 178083,
-   "h": "807e1506cd6cb35f8a47b8677809c9e2dc809dbf568cfdcb77f5e0ae2f0f8618"
+   "s": 178242,
+   "h": "5cc3d840e0c6727ca50c4403178ff06d55d2a8f18e34a010552bf76236e710f4"
   },
   {
    "p": "taschi/card.svg",

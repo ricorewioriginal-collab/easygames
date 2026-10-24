@@ -23,7 +23,7 @@ test('Schlag trifft, Kette P,P,P macht mehr Schaden; Block hält Mitte/Hoch, nic
 });
 
 test('Ducken lässt hohe Schläge durch, Seitschritt weicht geraden Angriffen aus', () => {
-  let W = fight(); near(W, 1.1); let ev = run(W, 40, k => [{ p: k === 12 }, { sy: 1 }]);
+  let W = fight(); near(W, 1.1); let ev = run(W, 40, k => [{ p: k === 12 }, { sy: 1, fx: -1 }]);
   assert.ok(ev.some(e => e.k === 'duck')); assert.strictEqual(W.f[1].hp, EC.HP);
   W = fight(); near(W, 1.3);
   ev = run(W, 50, k => [{ k: k === 0, fx: 0 }, { sy: k < 3 ? -1 : 0 }]);
@@ -83,4 +83,14 @@ test('Befehlsliste: Richtung + Knopf ergibt den richtigen Angriff, 1,2,4 ist ein
   const W = fight(); near(W, 1.1); const ids = [];
   for (let k = 0; k < 90; k++) { EC.step(W, [{ b1: k === 0, b2: k === 14, b4: k === 28 }, {}]); if (W.f[0].state === 'attack' && ids[ids.length - 1] !== W.f[0].mvId) ids.push(W.f[0].mvId); }
   assert.deepStrictEqual(ids, ['jab', 'cross', 'onetwofour']);
+});
+
+test('Freies Laufen: hoch/runter halten läuft seitlich im Kreis um den Gegner, vor/zurück zum Gegner hin', () => {
+  const W = fight(); near(W, 3); const a0 = Math.atan2(W.f[0].z - W.f[1].z, W.f[0].x - W.f[1].x);
+  run(W, 120, () => [{ sy: -1 }, {}]); const F = W.f[0];
+  const a1 = Math.atan2(F.z - W.f[1].z, F.x - W.f[1].x), d = EC.len(F.x - W.f[1].x, F.z - W.f[1].z);
+  assert.ok(Math.abs(a1 - a0) > .8, 'um den Gegner herumgelaufen (Winkel ' + (a1 - a0).toFixed(2) + ')'); assert.ok(d > 2 && d < 4.5, 'Abstand bleibt ähnlich (' + d.toFixed(2) + ')');
+  assert.notStrictEqual(F.state, 'crouch');
+  const d0 = d; run(W, 30, () => [{ fx: .6 }, {}]); assert.ok(EC.len(F.x - W.f[1].x, F.z - W.f[1].z) < d0 - .5, 'stufenlos vorwärts');
+  run(W, 20, () => [{ sy: 1, fx: -1 }, {}]); assert.strictEqual(F.state, 'crouch', 'unten-zurück = ducken');
 });
