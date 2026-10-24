@@ -567,6 +567,19 @@ window.EASYGAMES_GUIDES = {
    "Als Werwolf: Verdächtige ruhig mal einen Dorfbewohner, aber stimme nicht immer gegen dieselben."
   ]
  },
+ "oma-rennen": {
+  "anleitung": "Oma-Rennen ist ein 3D-Funracer: Sieben Omas und Opa Kalle rasen auf Raketen-Rollatoren durch die Stadt. Wer nach allen Runden zuerst über die Ziellinie fährt, gewinnt. Aus den bunten Geschenkboxen gibt es Oma-Gegenstände: 🚀 Rheuma-Rakete (Schub), 🦷 Gebiss (hinter dir fallen lassen – wer drüberfährt, schleudert), 👜 Handtasche (nach vorne schleudern, prallt von Wänden ab), 🧶 Wollknäuel (verheddert Verfolger), 🍫 Pralinen-Lenkrakete (sucht die Oma vor dir), ☂️ Regenschirm (wehrt einen Treffer ab), 📢 Hörgeräte-Pfiff (alle vor dir drehen sich) und 💨 Puderwolke (nimmt allen vor dir die Sicht). In Kurven driften lädt einen Turbo, im Windschatten gibt es Extra-Schub, gelbe Pfeile am Boden beschleunigen. Jede Strecke hat ihre Tücken: Tauben im Kurpark, Rolltreppen-Abkürzungen im Einkaufszentrum, Möwen an der Promenade, Brücken auf dem Weihnachtsmarkt und Gespenster im Altenheim. Modi: 🏆 Grand Prix (3 Cups mit Punkten und Siegerehrung – Cups schalten neue Omas frei), 🏁 Einzelrennen, ⏱️ Zeitfahren (ohne Gegenstände, Bestzeiten), 👵👵 Zu zweit am geteilten Bildschirm und 🌐 Online & Handys – der Fernseher zeigt das Rennen, bis zu 4 Mitspielerinnen lenken per Handy (Beitritt per Code, Link oder QR-Code von überall), freie Plätze fahren Computer-Omas. Die Omas rufen Sprüche – im Browser mit einer Frauenstimme, in der RicoReWi-App mit der Android-Stimme.",
+  "steuerung": [
+   "Touch: Gas gibt Oma von selbst. Links ◀ ▶ lenken, rechts Bremse, DRIFT (halten) und 🎁 Gegenstand. Am Handy als Lenkrad zusätzlich „📱 Kippen“ zum Lenken.",
+   "Tastatur: Pfeile oder WASD fahren, Leertaste/E Gegenstand, Shift/Q halten = Driften, Esc Pause. Zu zweit: Spielerin 1 WASD + Q + E, Spielerin 2 Pfeile + Shift rechts/M + Enter.",
+   "Gamecontroller: Stick lenkt, A/RT Gas, B/LT Bremse, RB/LB Drift, X/Y Gegenstand, Start Pause."
+  ],
+  "tipps": [
+   "Drift so lange halten, bis die Funken pink werden – dann gibt es den längsten Raketenschub.",
+   "Hebe dir den Regenschirm auf, wenn du vorne fährst: Pralinen-Raketen suchen sich die Erste.",
+   "Oma Hilde ist schwer – im Gedränge schiebt sie die anderen einfach zur Seite."
+  ]
+ },
  "fall-akte": {
   "anleitung": "FALL·AKTE ist ein Krimi-Rätsel im Noir-Comic-Stil. In jedem Fall gibt es einen Täter unter den Verdächtigen. Durchsuche die drei Schauplätze einer Welt mit der Lupe: Manche Gegenstände verbergen Spuren wie ein Haar, einen Zigarettenstummel oder einen Brillensplitter. Andere Spuren müssen ins Labor – Fußspur vermessen, Fingerabdruck-Muster vergleichen, Geheimcode mit dem Code-Rad knacken oder einen zerrissenen Brief zusammensetzen. Jede Spur verrät ein Merkmal des Täters. Haarfarbe und Brille siehst du auf den Fotos, Schuhgröße, Händigkeit, Rauchen und Fingerabdruck erfährst du nur im Verhör – die Fragen sind begrenzt. Das Notizbuch streicht automatisch alle, die nicht zu den Spuren passen. Bleibt nur eine Person übrig, klag sie an; jede falsche Anklage kostet Punkte, nach drei Fehlern ist der Fall verloren. Modi: 🗂️ Fälle lösen (6 Welten mit je 3 Fällen, 3 bis 5 Verdächtige; 2 gelöste Fälle öffnen die nächste Welt), 📅 Tagesfall (für alle gleich) und 🎲 Zufallsfall. Punkte und Sterne gibt es für wenige Fragen, wenige Tipps und keine Fehlanklage; mit den Punkten steigst du im Rang bis zum Meisterdetektiv.",
   "steuerung": [

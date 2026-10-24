@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "14a86d775273",
- "generated": "2026-10-24T11:16:15+02:00",
- "commit": "a6027b155dcf5fdd7fb4561bced5ae454aa2a010",
+ "version": "5f4951756966",
+ "generated": "2026-10-24T12:50:09+02:00",
+ "commit": "66a95c5012d2a24ec34e82f6faa8f827ba42a8ed",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5338,8 +5338,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3071,
-   "h": "5d8e08edd972ccb59dad3801baa10c084fbad7a8b3fa42333374c61e7f5ef093"
+   "s": 3095,
+   "h": "a7add10d6ff52dec52e8a12d3cff3e35ff418ae587cc2a736c4575753f880e7f"
   },
   {
    "p": "chat.html",
@@ -6098,8 +6098,8 @@
   },
   {
    "p": "games.js",
-   "s": 44114,
-   "h": "0dededfbf181a93240d172f78fc9e5716e3fbade78503eb9fae4379f6a650518"
+   "s": 44895,
+   "h": "12a81b6646149268d1e999e49689701ce7a33a2b92a305c09bc71a79443b4c30"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6258,8 +6258,8 @@
   },
   {
    "p": "guides.js",
-   "s": 126722,
-   "h": "c24e92a9d0ee67dc5c7880caab926063dcfeb623c15e0dd7b0d0a04d572985d6"
+   "s": 128970,
+   "h": "91b6b819a0419cc9a4c86ff6d5b0c8588ae526f0df2ad36eff7eb8522ff11829"
   },
   {
    "p": "heute.html",
@@ -6743,8 +6743,53 @@
   },
   {
    "p": "modes.js",
-   "s": 3236,
-   "h": "4ecb9ca6e4a597b53c4d6bcb53af3d01dc89d5fdf8e7986f85f63ace3020ff57"
+   "s": 3309,
+   "h": "da7f8de88fcc8916e83a0e8810e8435e046bb6b0ef1d6c4a0a0c770fe2c4b695"
+  },
+  {
+   "p": "oma-rennen/card.jpg",
+   "s": 36271,
+   "h": "0c2ddcb5d2a218d8c325afe54426d0c3477aa2df1b4839bb248324bf0e08da9e"
+  },
+  {
+   "p": "oma-rennen/index.html",
+   "s": 15851,
+   "h": "165828bf1ebce66dd1ada6a20e99a56caa929811a1124317cf255c5ae5b0ecbf"
+  },
+  {
+   "p": "oma-rennen/js/app.js",
+   "s": 56040,
+   "h": "1d3f37ef5b8e46fc236c8598e334cfa76c1b398b81b938795f8a09b0b87a9dbe"
+  },
+  {
+   "p": "oma-rennen/js/data.js",
+   "s": 7605,
+   "h": "f144e76e34d4ccba6ae453ed33d87151feac31c530909a50c617f52bdbef9689"
+  },
+  {
+   "p": "oma-rennen/js/sound.js",
+   "s": 6302,
+   "h": "e86e0644d42b1b2fd41dd3126b9955f4c27b7fbd54065dc794639114376862e8"
+  },
+  {
+   "p": "oma-rennen/js/view.js",
+   "s": 32411,
+   "h": "aaba706ba2e92bf63f8e8cc87dfcab7cbb9a830307b9cfc24aba361e7a6a462e"
+  },
+  {
+   "p": "oma-rennen/manifest.webmanifest",
+   "s": 777,
+   "h": "4287f0c7ea02285c4f3af7eb7b8d9c7f4ea195085ab1f639cecb3c473f4c02c4"
+  },
+  {
+   "p": "oma-rennen/style.css",
+   "s": 20561,
+   "h": "b55a492bb3db265b3f8a720eeeb93e63c22ec079230bf545996e000702376465"
+  },
+  {
+   "p": "oma-rennen/sw.js",
+   "s": 2003,
+   "h": "e55361625f5e2fadb4c24cdc2d86d465904e627a27e71bc63b8d913eadb79efa"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -8138,8 +8183,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 192860,
-   "h": "8f89302efabe06a0293d1da62d2aefc4389b97840706419c3486d4845257e9d1"
+   "s": 196196,
+   "h": "5f4be077df2477983d9f07c6c3d1306891cc44897f961ff3cac3531f9c0ad6cc"
   },
   {
    "p": "taschi/card.svg",

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/oma-rennen-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Oma-Rennen"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#ff4a8a">
+<title>Oma-Rennen – Raketen-Rollatoren durch die Fußgängerzone</title>
+<meta name="description" content="Oma-Rennen: 3D-Funracer mit Omas auf Raketen-Rollatoren. Grand Prix, Einzelrennen und Zeitfahren solo gegen 7 Computer-Omas, zu zweit am geteilten Bildschirm oder online mit bis zu 4 Handys am Fernseher. Gebiss werfen, Handtasche schleudern, Regenschirm aufspannen – 6 Strecken vom Marktplatz bis zum Geister-Altenheim.">
+<link rel="stylesheet" href="../vendor/fonts/fredoka.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud" hidden></div>
+<canvas id="mini" hidden></canvas>
+<div id="cnt" hidden></div>
+<div id="intro" hidden></div>
+<button class="pbtn" id="bPause" hidden aria-label="Pause">⏸</button>
+<div id="tpad" hidden>
+  <div class="tl"><button data-k="l" aria-label="Links">◀</button><button data-k="r" aria-label="Rechts">▶</button></div>
+  <div class="tr"><button data-k="b" class="sm" aria-label="Bremse">⏬</button><button data-k="d" class="md" aria-label="Driften">DRIFT</button><button data-k="i" class="bg" id="tItem" aria-label="Gegenstand">🎁</button></div>
+</div>
+
+<section class="scr on" id="sLoad">
+  <div class="load"><div class="lOma">👵</div><h1 class="logo">OMA<span>RENNEN</span></h1><div class="bar"><i id="loadBar"></i></div><p class="tip" id="loadTip">Rollatoren werden aufgepumpt …</p></div>
+</section>
+
+<section class="scr" id="sTitle">
+  <div class="titleBox"><h1 class="logo big">OMA<span>RENNEN</span></h1><p class="claim">Raketen-Rollatoren · Gebiss-Attacken · Kaffee und Kuchen</p><button class="press nav" id="bPress">▶ <span id="pressTxt">Tippe zum Start</span></button></div>
+  <p class="corner"><a href="../">← Alle Spiele</a></p>
+</section>
+
+<section class="scr" id="sMenu">
+  <div class="menuWrap">
+    <header class="mHead"><h1 class="logo small">OMA<span>RENNEN</span></h1><div class="mStat" id="menuStat"></div></header>
+    <div class="mBody">
+      <div class="mList" id="mList">
+        <button class="mi nav hero" data-go="gp" data-i="Drei Cups, je 3–4 Rennen. Punkte sammeln, aufs Podest fahren und neue Omas freischalten."><i>🏆</i><b>Grand Prix</b></button>
+        <button class="mi nav" data-go="single" data-i="Ein Rennen auf einer Strecke deiner Wahl gegen 7 Computer-Omas."><i>🏁</i><b>Einzelrennen</b></button>
+        <button class="mi nav" data-go="time" data-i="Allein auf der Strecke ohne Gegenstände – jag deine Bestzeit!"><i>⏱️</i><b>Zeitfahren</b></button>
+        <button class="mi nav" data-go="duo" data-i="Zu zweit an einem Bildschirm: Tastatur (WASD + Pfeile) oder zwei Controller."><i>👵👵</i><b>Zu zweit</b></button>
+        <button class="mi nav online" data-go="host" data-i="Der Fernseher zeigt das Rennen, bis zu 4 Handys sind die Lenkräder – Mitspieler treten per Code, Link oder QR-Code von überall bei."><i>🌐</i><b>Online &amp; Handys</b></button>
+        <button class="mi nav" data-go="join" data-i="Mit dem Handy einem Rennen beitreten (Code vom Fernseher)."><i>📱</i><b>Mitfahren</b></button>
+        <button class="mi nav" data-go="omas" data-i="Alle Omas, ihre Stärken und wie du sie freischaltest. Dazu deine Rekorde."><i>👵</i><b>Omas &amp; Rekorde</b></button>
+        <button class="mi nav" data-go="opts" data-i="Ton, Musik, Oma-Stimme, Lenkhilfe, Runden und Kamera."><i>⚙️</i><b>Einstellungen</b></button>
+        <button class="mi nav" data-go="help" data-i="Steuerung und alle Gegenstände."><i>❓</i><b>Anleitung</b></button>
+      </div>
+      <div class="mInfo"><p id="mInfo"></p></div>
+    </div>
+    <footer class="mFoot"><span class="hintKeys">Pfeile + Enter: wählen · Esc: zurück</span><a href="../" class="nav">← Alle Spiele</a></footer>
+  </div>
+</section>
+
+<!-- Oma-Auswahl -->
+<section class="scr" id="sSelect">
+  <div class="panel wide sel">
+    <h2 id="selT">Wähle deine Oma</h2>
+    <div class="selBody">
+      <div class="pvBox"><canvas id="pv"></canvas><div class="pvName" id="pvName"></div><div class="pvTag" id="pvTag"></div><div class="stats" id="pvStats"></div></div>
+      <div class="omaGrid" id="omaGrid"></div>
+    </div>
+    <div class="row"><button class="btn nav" id="selBack">← Zurück</button><button class="btn pri big nav" id="selGo">Weiter ▶</button></div>
+  </div>
+</section>
+
+<!-- Rennen einstellen -->
+<section class="scr" id="sSetup">
+  <div class="panel wide">
+    <h2 id="suT">Rennen</h2>
+    <p class="lbl" id="suWhatL">Strecke</p><div class="cards" id="suWhat"></div>
+    <div id="suLvlBox"><p class="lbl">Schwierigkeit</p><div class="seg" id="suLvl"></div></div>
+    <div id="suLapBox"><p class="lbl">Runden</p><div class="seg" id="suLaps"></div></div>
+    <p class="hint" id="suInfo"></p>
+    <div class="row"><button class="btn nav" id="suBack">← Zurück</button><button class="btn pri big nav" id="suGo">🏁 Los geht's</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sRace"></section>
+
+<!-- Ergebnis / Game Over -->
+<section class="scr" id="sResult">
+  <div class="panel wide">
+    <h2 id="reT">Zieleinlauf</h2>
+    <p class="reSub" id="reSub"></p>
+    <div class="table" id="reTab"></div>
+    <div class="row" id="reBtns"></div>
+  </div>
+</section>
+
+<!-- Siegerpodest -->
+<section class="scr" id="sPodium">
+  <div class="panel wide">
+    <h2 id="poT">🏆 Siegerehrung</h2>
+    <div class="podium" id="poBox"></div>
+    <p class="reSub" id="poSub"></p>
+    <div class="row"><button class="btn nav" id="poAgain">↻ Nochmal</button><button class="btn pri big nav" id="poMenu">Zum Menü</button></div>
+  </div>
+</section>
+
+<!-- Omas & Rekorde -->
+<section class="scr" id="sOmas">
+  <div class="panel wide">
+    <h2>👵 Omas &amp; Rekorde</h2>
+    <div class="omaList" id="omaList"></div>
+    <div class="recs" id="recs"></div>
+    <div class="row"><button class="btn pri nav" id="omasBack">← Zurück</button></div>
+  </div>
+</section>
+
+<!-- Anleitung -->
+<section class="scr" id="sHelp">
+  <div class="panel wide">
+    <h2>❓ So fährt Oma</h2>
+    <div class="help">
+      <p><b>Ziel:</b> Als erste Oma nach allen Runden über die Ziellinie – ganz egal, wer im Weg steht.</p>
+      <p><b>Tastatur:</b> Pfeile oder WASD lenken und geben Gas, <kbd>Leertaste</kbd>/<kbd>E</kbd> Gegenstand, <kbd>Shift</kbd>/<kbd>Q</kbd> gedrückt halten = Driften, <kbd>Esc</kbd> Pause.<br>Zu zweit: Spielerin 1 WASD + <kbd>Q</kbd> Drift + <kbd>E</kbd> Gegenstand · Spielerin 2 Pfeile + <kbd>Shift rechts</kbd>/<kbd>M</kbd> Drift + <kbd>Enter</kbd> Gegenstand.</p>
+      <p><b>Controller:</b> Stick lenkt, <kbd>A</kbd>/<kbd>RT</kbd> Gas, <kbd>B</kbd>/<kbd>LT</kbd> Bremse, <kbd>RB</kbd>/<kbd>LB</kbd> Drift, <kbd>X</kbd>/<kbd>Y</kbd> Gegenstand, <kbd>Start</kbd> Pause.</p>
+      <p><b>Touch:</b> Gas gibt Oma von selbst. Links lenken, rechts Bremse, Drift und Gegenstand.</p>
+      <p><b>Drift-Turbo:</b> In der Kurve Drift halten – die Funken werden blau, orange, pink. Loslassen = Raketenschub! Dicht hinter einer anderen Oma lädt der Windschatten einen Extra-Schub.</p>
+      <p><b>Strecken-Tücken:</b> Tauben im Kurpark, Rolltreppen-Abkürzungen im Einkaufszentrum, Möwen an der Promenade, Brücken auf dem Weihnachtsmarkt und Gespenster im Altenheim. Gelbe Pfeile am Boden geben Schub.</p>
+      <div class="items" id="itemList"></div>
+    </div>
+    <div class="row"><button class="btn pri nav" id="helpBack">← Zurück</button></div>
+  </div>
+</section>
+
+<!-- Online: Fernseher / Gastgeber -->
+<section class="scr" id="sLobby">
+  <div class="panel wide">
+    <h2>🌐 Online &amp; Handys</h2>
+    <p class="hint">Dieser Bildschirm zeigt das Rennen. Bis zu 4 Mitspielerinnen treten <b>von überall</b> mit dem Handy bei – per Code, Link oder QR-Code – und lenken ihre Oma damit. Freie Plätze fahren Computer-Omas.</p>
+    <div class="hostBox"><div class="qr" id="qr">…</div><div class="hostTxt"><div class="code" id="code">····</div><p class="url" id="url"></p><div class="row tight"><button class="btn small nav" id="lbCopy">🔗 Link kopieren</button></div><p class="hint" id="lobbyMsg">Raum wird eröffnet …</p></div></div>
+    <div class="lobbyList" id="lobbyList"></div>
+    <div class="row"><span class="seg small" id="lbMode"></span><span class="seg small" id="lbLvl"></span></div>
+    <div class="cards small" id="lbWhat"></div>
+    <div class="row"><label class="chk"><input type="checkbox" id="lbMe"> Ich fahre hier am Bildschirm mit (Tastatur/Controller)</label></div>
+    <div class="row"><button class="btn nav" id="lbBack">← Zurück</button><button class="btn pri big nav" id="lbGo" disabled>🏁 Rennen starten</button></div>
+  </div>
+</section>
+
+<!-- Handy als Lenkrad -->
+<section class="scr" id="sPhone">
+  <div class="phone" id="pJoin">
+    <h2>📱 Mitfahren</h2>
+    <input class="field nav" id="jName" maxlength="14" placeholder="Dein Name" autocomplete="nickname">
+    <input class="field nav code" id="jCode" maxlength="4" placeholder="CODE" autocapitalize="characters">
+    <p class="lbl">Deine Oma</p>
+    <div class="omaGrid small" id="jOmas"></div>
+    <p class="hint" id="jMsg">Den Code zeigt der Fernseher bei „🌐 Online &amp; Handys“.</p>
+    <div class="row"><button class="btn nav" id="jBack">← Zurück</button><button class="btn pri big nav" id="jGo">Beitreten</button></div>
+  </div>
+  <div class="ctl" id="pCtl" hidden>
+    <div class="cTop"><span id="cName"></span><span id="cStat">Warte auf den Start …</span><button class="btn small" id="cTilt">📱 Kippen</button></div>
+    <div class="cPad">
+      <div class="cl"><button data-k="l">◀</button><button data-k="r">▶</button></div>
+      <div class="cm"><div class="cItem" id="cItem">–</div><button class="btn pri" id="cGo" hidden>▶ Weiter</button></div>
+      <div class="cr"><button data-k="b" class="sm">⏬</button><button data-k="d" class="md">DRIFT</button><button data-k="i" class="bg">🎁</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- Pause -->
+<div class="ov" id="ovPause" hidden>
+  <div class="panel"><h2>⏸ Pause</h2><div class="col"><button class="btn pri nav" id="paGo">▶ Weiterfahren</button><button class="btn nav" id="paRe">↻ Neustart</button><button class="btn nav" id="paOpt">⚙️ Einstellungen</button><button class="btn nav" id="paQuit">✕ Aufgeben</button></div></div>
+</div>
+
+<!-- Einstellungen -->
+<div class="ov" id="ovOpts" hidden>
+  <div class="panel">
+    <h2>⚙️ Einstellungen</h2>
+    <div class="opts">
+      <label class="chk"><input type="checkbox" id="oSound"> Geräusche</label>
+      <label class="chk"><input type="checkbox" id="oMusic"> Musik (Schlager-Orgel)</label>
+      <label class="chk"><input type="checkbox" id="oVoice"> Oma-Stimme (Sprüche vorlesen)</label>
+      <label class="chk"><input type="checkbox" id="oAssist"> Lenkhilfe</label>
+      <label class="chk"><input type="checkbox" id="oVib"> Vibration</label>
+      <label class="chk"><input type="checkbox" id="oFar"> Kamera weiter weg</label>
+      <p class="lbl">Runden im Einzelrennen</p><div class="seg" id="oLaps"></div>
+      <input class="field nav" id="oName" maxlength="14" placeholder="Dein Name (optional)" autocomplete="nickname">
+    </div>
+    <div class="row"><button class="btn pri nav" id="optX" data-close>Fertig</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../device.js"></script>
+<script src="../gamekit.js"></script>
+<script src="../cloud/fire-peer.js"></script>
+<script src="js/data.js"></script>
+<script src="../anmacha-kart/track.js"></script>
+<script src="../anmacha-kart/sim.js"></script>
+<script src="js/view.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="oma-rennen" data-prefix="oma-rennen-" defer></script>
+</body>
+</html>
