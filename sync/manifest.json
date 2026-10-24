@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "13e73d5eee73",
- "generated": "2026-10-24T23:53:06+02:00",
- "commit": "30f25ccdad8df2fdc63a42446f40299747e45773",
+ "version": "b757fa88ff0e",
+ "generated": "2026-10-25T00:02:02+02:00",
+ "commit": "803d36d0303c4ab4b3fda0cfef44037e9611b6e7",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5483,8 +5483,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22500,
-   "h": "1bec4fa5001265fe78c8c3704c6c6d4520d05a52c8427e0727fde251dfe2e392"
+   "s": 22518,
+   "h": "a55c35e6a0f0913b19ec84b4b7097bd1a32104263c78a8bfaf2a7ba1a89008e0"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -8143,13 +8143,13 @@
   },
   {
    "p": "show-me-your-voice/index.html",
-   "s": 16828,
-   "h": "085ca7850ab2bd3ee98987ac5ea8229b2550a9a41d91cf5c62f1171e9d44b830"
+   "s": 17439,
+   "h": "39105ff026a5986512c651728d54207dd29105f2baf0b9c262f4c2de2418a485"
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 141541,
-   "h": "02c381b35b7db9766c9c28574d81ab7eaf6a57d1e3a6b8507b6b02d81de4dada"
+   "s": 150925,
+   "h": "1fa315b6361ee3f4dfb6657b1d7916270241a8e18439b766120fef4d87b7ba13"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
@@ -8168,8 +8168,8 @@
   },
   {
    "p": "show-me-your-voice/js/data.js",
-   "s": 41519,
-   "h": "eeb59a9e3d37d613d4785ec5bc42f0e9512fcd3b49ff0bc15315c72db8ac4d9f"
+   "s": 52490,
+   "h": "19a4821d1adf828fe3215e18e7a332db59722c3ec3ab2ea18f4054d79407a499"
   },
   {
    "p": "show-me-your-voice/js/stage.js",
@@ -8183,8 +8183,8 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 24669,
-   "h": "9b927027ca57e599e00a45ac1cf421aa032867273a933fbaef7a071d577b0482"
+   "s": 28024,
+   "h": "306b3929b49dce3d38138fa024c5aec71aa1da4292c09106da1f4b2a822c2ba8"
   },
   {
    "p": "show-me-your-voice/sw.js",
@@ -8549,7 +8549,7 @@
   {
    "p": "sync/catalog.json",
    "s": 213761,
-   "h": "446105233b1a30065501504d3794d9516e48831c621a6ac74f71fba5a105effa"
+   "h": "8d1bbc30e9abbc8076f8e5ae9647e9e1a95e13380656ba10ced00728aaab62d9"
   },
   {
    "p": "taschi/card.svg",

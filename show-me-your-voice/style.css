@@ -273,3 +273,39 @@ body.reduced .scr.on, body.reduced .logo.big, body.reduced .banner.gold, body.re
 .opt.lock, .sw button.lock { opacity: .45; filter: grayscale(.6); cursor: not-allowed; }
 .panel.daily { border: 2px solid var(--gold); }
 details.rew summary { cursor: pointer; padding: 4px 0; }
+
+/* Songliste mit Album-Cover und Suche */
+.songFind { display: flex; gap: 8px; margin: 6px 0 8px; }
+.songFind input { flex: 1; min-width: 0; min-height: 44px; border-radius: 12px; border: 2px solid var(--line); background: var(--panel2); color: inherit; padding: 8px 12px; font: inherit; }
+.opts.songs[hidden] { display: none; }
+.opt.song { display: flex; gap: 10px; align-items: center; }
+.opt.song > span { min-width: 0; }
+.cov { width: 52px; height: 52px; flex: none; border-radius: 8px; object-fit: cover; background: rgba(0, 0, 0, .35); box-shadow: 0 2px 8px rgba(0, 0, 0, .35); }
+.cov.sm { width: 40px; height: 40px; }
+.cov.x { visibility: hidden; }
+.ssCredit { display: flex; gap: 10px; align-items: center; text-align: left; }
+
+/* Live-Singen im SingStar-Stil: Notenbahn über dem Video, Punkte, Rang und Phrasen-Urteil auf dem Bildschirm */
+.ssScreen { position: relative; border-radius: 12px; overflow: hidden; background: radial-gradient(ellipse at 50% 120%, #4c1d95, #0b0420 70%); }
+.ssScreen .video { border-radius: 0; }
+.ssLane { position: absolute; left: 0; right: 0; top: 0; height: 45%; pointer-events: none; background: linear-gradient(180deg, rgba(8, 3, 28, .82), rgba(8, 3, 28, .5)); }
+.ssScreen[data-lane="bottom"] .ssLane { top: auto; bottom: 0; background: linear-gradient(0deg, rgba(8, 3, 28, .82), rgba(8, 3, 28, .5)); }
+.ssScreen[data-lane="below"] .ssLane, .ssScreen.novid .ssLane { position: relative; height: 210px; background: rgba(0, 0, 0, .25); }
+.ssLane canvas { display: block; width: 100%; height: 100%; }
+.ssLane .singPop { left: 41%; top: 50%; font-size: 1.25em; }
+.ssScore { position: absolute; right: 8px; top: 6px; text-align: right; pointer-events: none; text-shadow: 0 2px 6px #000; line-height: 1.1; }
+.ssScreen[data-lane="bottom"] .ssScore { top: auto; bottom: 6px; }
+.ssScore b { display: block; font-size: 1.6em; color: var(--gold); font-variant-numeric: tabular-nums; }
+.ssScore small { font-weight: 700; font-size: .8em; }
+.ssBtns { position: absolute; left: 6px; bottom: 6px; display: flex; gap: 6px; }
+.ssScreen[data-lane="bottom"] .ssBtns { bottom: auto; top: 6px; }
+.ssBtns button { width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(0, 0, 0, .55); color: #fff; font-size: 1.1em; cursor: pointer; }
+.ssPhrase { position: absolute; left: 50%; top: 55%; transform: translate(-50%, -50%); opacity: 0; pointer-events: none; font-weight: 900; font-size: 1.9em; text-shadow: 0 3px 12px #000; white-space: nowrap; }
+.ssPhrase.show { animation: ssPhrase 1.6s ease-out forwards; }
+.ssPhrase.perfekt { color: #ffc93c; } .ssPhrase.super { color: #4ade80; } .ssPhrase.gut { color: #93c5fd; } .ssPhrase.daneben { color: #fca5a5; }
+@keyframes ssPhrase { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.5); } 15% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); } 30% { transform: translate(-50%, -50%) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; } }
+.ssScreen:fullscreen { display: flex; flex-direction: column; justify-content: center; border-radius: 0; }
+.ssScreen:fullscreen .video { flex: 1; aspect-ratio: auto; }
+.ssScreen:fullscreen[data-lane="below"] .ssLane, .ssScreen.novid:fullscreen .ssLane { height: 28vh; }
+.ssScreen.novid:fullscreen .ssLane { height: 60vh; }
+@media (prefers-reduced-motion: reduce) { .ssPhrase.show { animation: none; opacity: 1; } }
