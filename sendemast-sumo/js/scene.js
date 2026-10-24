@@ -5,7 +5,7 @@
   const T3 = window.THREE, SM = window.SM;
   let R, scene, cam, host, low = false, ok = false, grad, W0 = null;
   let world, plat, rings = [], core = null, mast, clouds = null, fighters = [], pus = new Map(), warn = [], fx = [], parts, pv = [], pN = 0, windLines = null;
-  let camT = { x: 0, z: 0, d: 18 }, shake = 0, t = 0, orbit = 0, attract = false, tags = true;
+  const perf = { a: 1 / 60, n: 0 }; let camT = { x: 0, z: 0, d: 18 }, shake = 0, t = 0, orbit = 0, attract = false, tags = true;
   const v3 = new T3.Vector3();
 
   function toonGrad() { const d = new Uint8Array([85, 155, 225]); const tx = new T3.DataTexture(d, 3, 1, T3.LuminanceFormat); tx.minFilter = tx.magFilter = T3.NearestFilter; tx.needsUpdate = true; return tx; }
@@ -43,7 +43,7 @@
     host = el; if (ok) { el.appendChild(R.domElement); resize(); return; }
     low = !!(opt && opt.low);
     R = new T3.WebGLRenderer({ antialias: !low, alpha: true, powerPreference: 'high-performance' });
-    R.setPixelRatio(Math.min(devicePixelRatio || 1, low ? 1 : 1.75)); el.appendChild(R.domElement);
+    R.setPixelRatio(Math.min(devicePixelRatio || 1, low ? 1 : 1.5)); el.appendChild(R.domElement);
     scene = new T3.Scene(); cam = new T3.PerspectiveCamera(40, 1, .1, 400); grad = toonGrad();
     scene.add(new T3.HemisphereLight(0xffffff, 0x8a7fb0, .5));
     const sun = new T3.DirectionalLight(0xffffff, .7); sun.position.set(-8, 20, 10); scene.add(sun);
@@ -197,6 +197,8 @@
   // Einzelbild: Kämpfer, Plattform, Effekte, Kamera
   function frame(W, dt, opts) {
     if (!ok) return; t += dt; opts = opts || {};
+    // Automatisch sparsamer, wenn das Gerät zu langsam ist (flüssige Steuerung geht vor Schärfe)
+    if (dt > 0) { perf.a += (dt - perf.a) * .05; perf.n++; if (perf.n > 90 && perf.a > 1 / 38 && R.getPixelRatio() > .75) { R.setPixelRatio(Math.max(.75, R.getPixelRatio() - .25)); resize(); perf.n = 0; } }
     if (W) {
       const A = W.A, tiltK = .1;
       world.rotation.set(A.haz === 'tilt' ? W.tilt.z * tiltK : 0, 0, A.haz === 'tilt' ? -W.tilt.x * tiltK : 0);

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3ad7e48f6eb9",
- "generated": "2026-10-24T04:08:40+02:00",
- "commit": "4ecf25941e4e117fe74c5985b36f2e92e7824232",
+ "version": "6517726ea0bf",
+ "generated": "2026-10-24T04:15:56+02:00",
+ "commit": "2e76dab2c8686ab2c81c78a0604be94b171a5d8f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7263,18 +7263,18 @@
   },
   {
    "p": "sendemast-sumo/js/app.js",
-   "s": 48622,
-   "h": "335ea8243cf4fdb86d2a91c2fbbf0f2540791b91e6b210164b6c136269732f83"
+   "s": 48709,
+   "h": "d09a6661d5e4d2cf1184c44949006923ec42c1b17aa0a00ebf915fae8f199eb4"
   },
   {
    "p": "sendemast-sumo/js/core.js",
-   "s": 18996,
-   "h": "56fa8cc5bfeeec9253b9f60f2d62f23f28e2337fb838a974155e3c3a8a4fe6f9"
+   "s": 18995,
+   "h": "c6e9c7e0369926d34d4dd520ff48aa094623570534d38a2dec39e530070fe531"
   },
   {
    "p": "sendemast-sumo/js/scene.js",
-   "s": 31647,
-   "h": "3113bd6939e983b6853b873a65770ac169a4d82a9d6edafda663ef589ed3315d"
+   "s": 31988,
+   "h": "515fa40b8fb0aee136b458eebac216f3b34e77dd415b398875766a1a7529b715"
   },
   {
    "p": "sendemast-sumo/js/sound.js",
@@ -7288,8 +7288,8 @@
   },
   {
    "p": "sendemast-sumo/style.css",
-   "s": 22203,
-   "h": "12056cb974154be378ec25d58dc7335fa9f08f96d3014060553d62cea44bdfa0"
+   "s": 22220,
+   "h": "be6ef62ffb50c8359ec68c6cfcde005033c5c0d417bedf947e27ea50cf858264"
   },
   {
    "p": "sendemast-sumo/sw.js",
@@ -7554,7 +7554,7 @@
   {
    "p": "sync/catalog.json",
    "s": 163292,
-   "h": "457b0b8ad8386918956b7a4a4d96103b102878bf71a5a76cf4672f3affa69ed9"
+   "h": "16892c57125655213da18638d0b65a799c579a5187c4663735b2bae432b8c5a1"
   },
   {
    "p": "taschi/card.svg",

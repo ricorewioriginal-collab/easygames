@@ -53,7 +53,7 @@
     if (b.slamT > 0) return;          // in der Luft: unantastbar
     const k = b.pu.schild > 0 ? .25 : 1;
     b.vx += j.x * k / b.m; b.vz += j.z * k / b.m;
-    if (Math.hypot(j.x, j.z) * k / b.m > 3) b.hitT = .38;   // kurz nach einem Treffer weniger Kontrolle – so wirkt der Stoß
+    if (Math.hypot(j.x, j.z) * k / b.m > 6) b.hitT = .25;   // kurz nach einem Treffer weniger Kontrolle – so wirkt der Stoß
     if (a) { b.last = { by: a.i, t: W.t }; }
     W.ev.push({ k: kind || 'hit', i: a ? a.i : -1, j: b.i, p: Math.hypot(j.x, j.z) * k, x: b.x, z: b.z });
   }
@@ -122,7 +122,7 @@
         const vm = VMAX * sp; let tx = ix * vm, tz = iz * vm;
         if (W.wind.t > 0) { tx += W.wind.x * 2.6 / f.m; tz += W.wind.z * 2.6 / f.m; }
         if (A.haz === 'tilt') { tx += W.tilt.x * 2.2; tz += W.tilt.z * 2.2; }
-        const ice = fric < 1.5, ctrl = (f.hitT > 0 || f.stun > 0 ? .25 : 1) * (ice ? .45 : 1), dx = tx - f.vx, dz = tz - f.vz, dl = Math.hypot(dx, dz), mx = 36 * ctrl * dt;
+        const ice = fric < 1.5, ctrl = (f.hitT > 0 || f.stun > 0 ? .4 : 1) * (ice ? .45 : 1), dx = tx - f.vx, dz = tz - f.vz, dl = Math.hypot(dx, dz), mx = 50 * ctrl * dt;
         if (dl > mx) { f.vx += dx / dl * mx; f.vz += dz / dl * mx; } else { f.vx = tx; f.vz = tz; }
         if (f.hitT > 0) { const d = Math.exp(-Math.max(1.2, fric) * dt); f.vx *= d; f.vz *= d; }
       }
