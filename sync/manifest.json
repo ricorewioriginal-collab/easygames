@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e299c5177588",
- "generated": "2026-10-24T15:50:36+00:00",
- "commit": "93b4d4e155e25f9e7a5c37688f443f721c5dddab",
+ "version": "0d46d8e8dd4a",
+ "generated": "2026-10-24T16:12:46+00:00",
+ "commit": "d1deeefac0371f062b81de0fcf4d84572f6309ab",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4662,6 +4662,71 @@
    "h": "4511fe35ab5c051eacccbfcf10b40b642768f449a32c59c70d3f9b2881231ed5"
   },
   {
+   "p": "brainrot-parkour/card.jpg",
+   "s": 35759,
+   "h": "f81de67d9e2edd9ffe7257d182fe58edb488bbceaefdc6ec151643acd8a5e0e4"
+  },
+  {
+   "p": "brainrot-parkour/index.html",
+   "s": 14771,
+   "h": "a91d1b554f730bead4b0f1eefcc78e2c7fd5bafeed5368fd6a3e214ef9f0377d"
+  },
+  {
+   "p": "brainrot-parkour/js/app.js",
+   "s": 45159,
+   "h": "891597d5680444ee97d20639326d16816a68af2ef6294ebb72604cb14cc610b6"
+  },
+  {
+   "p": "brainrot-parkour/js/chars.js",
+   "s": 56557,
+   "h": "926883259a3830f867fa2c399ececdb4280339df69907803631251d4108a5cd9"
+  },
+  {
+   "p": "brainrot-parkour/js/core.js",
+   "s": 25104,
+   "h": "3c178853673e428f9d445977d7feaf1b3f401f46b32badb7569385c766dad61a"
+  },
+  {
+   "p": "brainrot-parkour/js/env.js",
+   "s": 2064,
+   "h": "dd163c7645b8a7dd13f32f269f0fe389d3a081463e0e4c77fd8354ab1e3c9f0d"
+  },
+  {
+   "p": "brainrot-parkour/js/sound.js",
+   "s": 3980,
+   "h": "f21a3efc6b4d9aeeaf42c55a54ec5e1893af39833b10ca453d353a28e1abe825"
+  },
+  {
+   "p": "brainrot-parkour/js/touch.js",
+   "s": 4905,
+   "h": "3d88f6463c22339263dfde8d781193373b3e4ca3f12d4337eac437e2c90d0780"
+  },
+  {
+   "p": "brainrot-parkour/js/view.js",
+   "s": 33336,
+   "h": "cd4f0a38caf0e0a9b3b1d8804b6d136e8fd3cdec9fbba54d6207cff3776e4bcf"
+  },
+  {
+   "p": "brainrot-parkour/js/voice.js",
+   "s": 2761,
+   "h": "2b21f100f1ea45fc935dc15f0d9e3f3538ca1637d117c5552962c27f71c8e1ad"
+  },
+  {
+   "p": "brainrot-parkour/manifest.webmanifest",
+   "s": 801,
+   "h": "4eb47bc9efe7469d00828e2fafa52ab43198239669d90eb4769f44863ef2bd41"
+  },
+  {
+   "p": "brainrot-parkour/style.css",
+   "s": 17748,
+   "h": "d0e84895709aa1020c8820f469e3579df61278e1b467e37d91cdc10960a4479c"
+  },
+  {
+   "p": "brainrot-parkour/sw.js",
+   "s": 2015,
+   "h": "cc62ffa7d10b9cc788aacf5c860171579d8fe32a3ee8019c1a39cbb657a2ac6a"
+  },
+  {
    "p": "branding/easygames-apple-touch-icon.png",
    "s": 17166,
    "h": "8b3edcc8f3ddf30a39eeb5eb3370805c675a1bed2a7d7c5d9c8d2610e5697aa0"
@@ -5343,8 +5408,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3177,
-   "h": "300b260cb01913a1354308a21ac417aed7b0267dd906949a80a5d84e7695adcb"
+   "s": 3207,
+   "h": "f35ed6a7c62f3381756eae7a38fecaee91b9d3e2d1bcfb25ecf9d19790653f75"
   },
   {
    "p": "chat.html",
@@ -5358,8 +5423,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22480,
-   "h": "15318f42106a850fc42ccbd0e41fa845c6d97494de53a6fd20e29751b541bd30"
+   "s": 22500,
+   "h": "58730d72d89d39d89d61b5dd25cbba2c81c0eb6b72496a93d45d9a0a42e396af"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -6103,8 +6168,8 @@
   },
   {
    "p": "games.js",
-   "s": 47414,
-   "h": "6de27eb3f02b71382282edc655a5c574bf47c2cfb8da7f3e69c94d61ca2454cf"
+   "s": 48291,
+   "h": "62f3c36fc4fa6f0f64b8f50914c4fad22631e77008361c1662ab4657cb3e6ac6"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6263,8 +6328,8 @@
   },
   {
    "p": "guides.js",
-   "s": 136066,
-   "h": "d7c2bb347d0b6e86c6401d9472a5e9b79dc6907b92f1dc04a5c3df0f6eb67f59"
+   "s": 138139,
+   "h": "3ecb8ed4708647bfad9b7c131ba19b17f9f05d9dbea80e1a5be4b1385c459183"
   },
   {
    "p": "heute.html",
@@ -6858,8 +6923,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3540,
-   "h": "1c880047bc77798a184e351bf318081f370475c3f87e786a7fdc1e2f490af346"
+   "s": 3604,
+   "h": "7b99408170ee1cf8c122305486be0f84d391eede560a80628c656c5bf835bab7"
   },
   {
    "p": "oma-rennen/card.jpg",
@@ -8398,8 +8463,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 206749,
-   "h": "0f3871bf722ccbb0c8640fa346db97d061f45d373befa9bf6e31ddf67b0ff243"
+   "s": 209992,
+   "h": "1e0fa1c7635779b0d03dc477158a94bea3654d8538310f684f41617507babd57"
   },
   {
    "p": "taschi/card.svg",
