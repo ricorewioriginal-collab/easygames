@@ -20,7 +20,7 @@ await p.waitForSelector('#loadBar'); await wait(p, 250); await shot(p, '01-laden
 await p.waitForSelector('#sTitle.on', { timeout: 20000 }); await wait(p, 900); await shot(p, '02-titel');
 await p.keyboard.press('Enter'); await wait(p, 600); ok((await st(p)).cur === 'sMenu', 'Titel → Hauptmenü'); await wait(p, 900); await shot(p, '03-menue');
 ok(await p.evaluate(() => document.activeElement.dataset.go) === 'classic', 'Klassisch hat den Fokus');
-await p.keyboard.press('ArrowRight'); ok(await p.evaluate(() => document.activeElement.dataset.go) === 'blitz', 'Pfeiltasten bewegen den Fokus');
+await p.keyboard.press('ArrowRight'); ok(await p.evaluate(() => document.activeElement.dataset.go) === 'tap', 'Pfeiltasten bewegen den Fokus');
 await p.keyboard.press('ArrowLeft'); await p.keyboard.press('Enter'); await wait(p, 300);
 ok((await st(p)).ov.includes('ovSize'), 'Brettgröße wählen'); await shot(p, '04-groesse');
 await p.keyboard.press('ArrowRight'); await p.keyboard.press('Enter'); await wait(p, 200); // 5×5 gewählt (Fokus bleibt), dann Los
@@ -69,6 +69,22 @@ for (const k of ['ArrowLeft', 'ArrowDown', 'ArrowRight', 'ArrowDown', 'ArrowLeft
 for (let i = 0; i < 4; i++) { await p.keyboard.press('KeyU'); await wait(p, 80); }
 ok(await p.textContent('#nUndo') === '∞' && (await st(p)).moves <= 1, 'Zen: beliebig oft rückgängig');
 
+// Antippen-Modus mit Tastatur: Kachel wählen, Partner wählen
+await p.keyboard.press('Escape'); await p.click('#pQuit'); await wait(p, 300); await p.click('[data-go="tap"]'); await wait(p, 200); await p.click('#szGo'); await wait(p, 400);
+ok((await st(p)).mode === 'tap', 'Antippen-Modus startet');
+await p.evaluate(() => { const g = D2048App.G.g; let id = 7000; g.cells = [[8, 0, 0, 8], [2, 4, 0, 0], [0, 0, 0, 0], [2, 0, 16, 0]].flat().map(v => v ? { id: id++, v } : null); g.over = false; D2048Scene.setGame(g); D2048App.G.cur = 0; });
+const sc0 = (await st(p)).score;
+await p.keyboard.press('Enter'); await wait(p, 150); ok(await p.evaluate(() => D2048App.G.sel) === 0, 'Antippen: erste Zahl gewählt (Enter)');
+await shot(p, '10b-antippen');
+for (let i = 0; i < 3; i++) { await p.keyboard.press('ArrowRight'); await wait(p, 60); }
+await p.keyboard.press('Enter'); await wait(p, 500); s = await st(p);
+ok(s.score === sc0 + 16 && await p.evaluate(() => D2048App.G.g.cells[3].v) === 16, 'Antippen: zwei 8er mit freier Sicht verschmelzen');
+await p.evaluate(() => { D2048App.G.cur = 4; }); await p.keyboard.press('Enter'); await p.keyboard.press('ArrowRight'); await p.keyboard.press('Enter'); await wait(p, 200);
+ok((await st(p)).score === sc0 + 16, 'Antippen: ungleiche Zahlen verschmelzen nicht');
+await p.evaluate(() => { const g = D2048App.G.g; let id = 7100; g.cells = [[2, 0, 0, 2], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 4]].flat().map(v => v ? { id: id++, v } : null); D2048Scene.setGame(g); D2048App.G.cur = 0; }); await p.keyboard.press('Enter'); ok(await p.evaluate(() => D2048App.G.sel) === 0, 'Antippen: 2 gewählt');
+await p.keyboard.press('Escape'); ok(await p.evaluate(() => D2048App.G.sel) === -1 && !(await st(p)).ov.length, 'Esc löst die Auswahl (ohne Pause)');
+await p.keyboard.press('Escape'); await p.click('#pQuit'); await wait(p, 300); await p.click('[data-go="zen"]'); await wait(p, 200); await p.click('#szGo'); await wait(p, 300);
+
 // Controller (simuliert)
 await p.evaluate(() => {
   const btn = () => Array.from({ length: 17 }, () => ({ pressed: false, value: 0 }));
@@ -88,6 +104,13 @@ const swipe = async (dx, dy) => { await h.evaluate(([dx, dy]) => { const el = do
   el.dispatchEvent(new PointerEvent('pointermove', Object.assign({ clientX: x + dx, clientY: y + dy }, o))); el.dispatchEvent(new PointerEvent('pointerup', Object.assign({ clientX: x + dx, clientY: y + dy }, o))); }, [dx, dy]); await wait(h, 160); };
 for (const [dx, dy] of [[-120, 0], [0, 120], [120, 0], [0, 120], [-120, 0], [0, 120], [120, 0], [0, -120]]) await swipe(dx, dy);
 s = await h.evaluate(() => ({ moves: D2048App.G.g.moves })); ok(s.moves >= 4, 'Wischen schiebt (' + s.moves + ' Züge)');
+const dirOf = async (dx, dy) => { const before = await h.evaluate(() => { const g = D2048App.G.g; return { m: g.moves, c: JSON.stringify(g.cells) }; });
+  await h.evaluate(() => { const g = D2048App.G.g; let id = 8000; g.cells = [[0, 0, 0, 0], [0, 2, 0, 0], [0, 0, 4, 0], [0, 0, 0, 0]].flat().map(v => v ? { id: id++, v } : null); g.over = false; D2048Scene.setGame(g); window.__last = null; const o = D2048App.doMove; });
+  await swipe(dx, dy); return h.evaluate(() => { const c = D2048App.G.g.cells; return c[4] && c[4].v === 2 ? 'left' : c[7] && c[7].v === 2 ? 'right' : c[1] && c[1].v === 2 ? 'up' : c[13] && c[13].v === 2 ? 'down' : '?'; }); };
+ok(await dirOf(110, 55) === 'right', 'Schräg-Wischer: überwiegende Richtung zählt (rechts)');
+ok(await dirOf(-30, -110) === 'up', 'Schräg-Wischer nach oben');
+const flick = async (dx, dy) => { await h.evaluate(([dx, dy]) => { const el = document.getElementById('swipe'), o = { pointerId: 11, bubbles: true, pointerType: 'touch' }; el.dispatchEvent(new PointerEvent('pointerdown', Object.assign({ clientX: 195, clientY: 500 }, o))); el.dispatchEvent(new PointerEvent('pointerup', Object.assign({ clientX: 195 + dx, clientY: 500 + dy }, o))); }, [dx, dy]); await wait(h, 150); };
+const mf = await h.evaluate(() => D2048App.G.g.moves); await flick(-18, 2); ok(await h.evaluate(() => D2048App.G.g.moves) === mf + 1, 'Kurzer Wischer zählt beim Loslassen');
 await wait(h, 800); await shot(h, '11-handy-spiel');
 // Hammer per Antippen: Tippen auf eine Kachel
 await h.evaluate(() => { D2048App.G.hammer = 1; D2048App.arm(); }); const before = await h.evaluate(() => D2048App.G.g.cells.filter(Boolean).length);
@@ -96,7 +119,14 @@ const ti = await h.evaluate(() => D2048App.G.g.cells.findIndex(Boolean));
 const pos = await h.evaluate(i => { const sc = D2048Scene; let best = null; for (let y = 200; y < 780; y += 6) for (let x = 10; x < 380; x += 6) { if (sc.pick(x, y) === i) { best = { x, y }; break; } } return best; }, ti);
 await h.evaluate(p => { const el = document.getElementById('swipe'), o = { pointerId: 9, bubbles: true, pointerType: 'touch', clientX: p.x, clientY: p.y }; el.dispatchEvent(new PointerEvent('pointerdown', o)); el.dispatchEvent(new PointerEvent('pointerup', o)); }, pos);
 await wait(h, 400); ok(await h.evaluate(() => D2048App.G.g.cells.filter(Boolean).length) === before - 1, 'Hammer per Antippen');
-await h.evaluate(() => D2048App.toMenu()); await wait(h, 900); await shot(h, '12-handy-menue');
+// Antippen per Touch
+await h.evaluate(() => { D2048App.start('tap', 4); const g = D2048App.G.g; let id = 9500; g.cells = [[4, 0, 0, 4], [0, 0, 0, 0], [0, 2, 0, 0], [0, 0, 0, 0]].flat().map(v => v ? { id: id++, v } : null); g.over = false; D2048Scene.setGame(g); });
+await wait(h, 500);
+const posOf = i => h.evaluate(i => { for (let y = 150; y < 780; y += 5) for (let x = 5; x < 385; x += 5) if (D2048Scene.pick(x, y) === i) return { x: x + 8, y: y + 8 }; return null; }, i);
+const tap = async q => { await h.evaluate(q => { const el = document.getElementById('swipe'), o = { pointerId: 13, bubbles: true, pointerType: 'touch', clientX: q.x, clientY: q.y }; el.dispatchEvent(new PointerEvent('pointerdown', o)); el.dispatchEvent(new PointerEvent('pointerup', o)); }, q); await wait(h, 250); };
+await tap(await posOf(0)); ok(await h.evaluate(() => D2048App.G.sel) === 0, 'Antippen am Handy: Kachel gewählt'); await wait(h, 400); await shot(h, '12-handy-antippen');
+await tap(await posOf(3)); await wait(h, 400); ok(await h.evaluate(() => D2048App.G.g.cells[3] && D2048App.G.g.cells[3].v === 8), 'Antippen am Handy: verschmolzen');
+await h.evaluate(() => D2048App.toMenu()); await wait(h, 900); await shot(h, '13-handy-menue');
 
 console.log(errs.length ? 'Fehler im Browser:\n' + errs.join('\n') : 'keine Browser-Fehler'); if (errs.length) process.exitCode = 1;
 await b.close();

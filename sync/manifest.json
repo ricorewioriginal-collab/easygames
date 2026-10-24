@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c2606cd526c0",
- "generated": "2026-10-24T04:33:37+02:00",
- "commit": "b58882d21218d53910b552cc880287197c20fef4",
+ "version": "08b603a71a46",
+ "generated": "2026-10-24T04:54:22+02:00",
+ "commit": "18c2b995445af8f4122efff3664de9be3e74ffe6",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5498,23 +5498,23 @@
   },
   {
    "p": "deluxe-2048/index.html",
-   "s": 12386,
-   "h": "d34db4a00421bb622c6a30d5fcf512be719f0493a776f6c53e35ffc6ce5246b5"
+   "s": 12970,
+   "h": "421c635af0412579027d4ca71167796f6247d057dda91d1e10ba0bfa5b76b555"
   },
   {
    "p": "deluxe-2048/js/app.js",
-   "s": 30402,
-   "h": "0788ae9beeacdc81af60c053a32e9c77c4cd6d820424ad1ce486aa5c21778f6c"
+   "s": 33417,
+   "h": "29944bdd4f7add825a72fbce2c94f3c8b41867a5d1fe51f15a1f68077ebf4412"
   },
   {
    "p": "deluxe-2048/js/core.js",
-   "s": 5353,
-   "h": "290419b60860511b7c990effa412d6b99146d7688722f955d45b180891c678ba"
+   "s": 7180,
+   "h": "0fd52de5b4fb56c5c3739b735b7f6934b64809eb961bca06173d3264fc0c4f84"
   },
   {
    "p": "deluxe-2048/js/scene.js",
-   "s": 29633,
-   "h": "bfe5c5fca6f677ea8eebf15f1b5bacdbcc79ac717e7c1314e5589930bfe10c8c"
+   "s": 30349,
+   "h": "1f1a2dc7f5efe74cb0f2453f252d6a47aa645d0bc2b61ea248c81efd4e82e91d"
   },
   {
    "p": "deluxe-2048/js/sound.js",
@@ -5528,8 +5528,8 @@
   },
   {
    "p": "deluxe-2048/style.css",
-   "s": 15964,
-   "h": "e6d4c5e219ba9735c060a27fd4bafd7eaee57261c34bba7d4f6baa50bc6cef75"
+   "s": 16159,
+   "h": "cb1b6d6d26fac2f10d2b085bc37b6a034667ef8672e32c6b6952c934a939b141"
   },
   {
    "p": "deluxe-2048/sw.js",
@@ -5858,8 +5858,8 @@
   },
   {
    "p": "games.js",
-   "s": 38951,
-   "h": "be538e7420dc6c8e944f9af6aefc62e335085d1c2852cd3b592b8d4210d02c12"
+   "s": 39007,
+   "h": "bd66bb94a64b9aa59db345b55d51179b350554bf24dbb707fc14be9f8a5deccc"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6018,8 +6018,8 @@
   },
   {
    "p": "guides.js",
-   "s": 110659,
-   "h": "94b13ad8f9174f12dcab87274e618b2b7a96a94055dc60bbca02d49f88103cfb"
+   "s": 110873,
+   "h": "089051137e8dc5558517bb2eb0e1b4bd8c2119fd471506069e0bf683391d13ee"
   },
   {
    "p": "heute.html",
@@ -7733,8 +7733,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 169458,
-   "h": "b2f90afd6272d9c6221e3f8fba201fd57d6208e6edead8df4017a9fee2076727"
+   "s": 169728,
+   "h": "fc60c555ca4089bc3d52cdd60a39c24b9b17ee80d92a231121b2af5db768190d"
   },
   {
    "p": "taschi/card.svg",

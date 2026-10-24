@@ -70,3 +70,29 @@ test('Zufallsspieler: Spiel endet irgendwann, Punkte steigen, Zustand bleibt gü
   assert.ok(G.over); assert.ok(G.score > 100); assert.ok(G.cells.every(c => c && c.v >= 2));
   const ids = G.cells.map(c => c.id); assert.strictEqual(new Set(ids).size, ids.length);
 });
+
+test('Antippen: nur gleiche Zahlen mit freier Sicht in Reihe/Spalte verschmelzen; Nachschub bis wieder ein Paar da ist', () => {
+  const G = board(D.newGame(4, 3), [[2, 0, 0, 2], [4, 8, 0, 0], [0, 0, 0, 0], [4, 0, 0, 16]]); G.tap = true;
+  assert.strictEqual(D.linked(G, 4, 12), true);                  // Spalte, frei
+  assert.strictEqual(D.linked(G, 0, 5), false);                  // diagonal
+  const H = board(D.newGame(4, 3), [[2, 4, 2, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]);
+  assert.strictEqual(D.linked(H, 0, 2), false);                  // 4 dazwischen
+  assert.deepStrictEqual(D.partners(G, 0), [3]);
+  const r = D.tapMerge(G, 0, 3); assert.ok(r);
+  assert.strictEqual(G.cells[0] === null || G.cells[0].v <= 4, true); assert.strictEqual(G.cells[3].v, 4); assert.strictEqual(G.score, 4);
+  assert.strictEqual(r.merges[0].to, 3); assert.ok(r.spawn);
+  assert.ok(D.hasPair(G) || G.over);
+  assert.strictEqual(D.tapMerge(G, 1, 2), null);                // ungültig
+  assert.ok(D.undo(G)); assert.strictEqual(G.cells[0].v, 2);
+  // Spiel ohne Paare auf vollem Brett ist vorbei
+  const F = board(D.newGame(2, 1), [[2, 4], [8, 16]]); F.n = 2; F.cells = [{ id: 1, v: 2 }, { id: 2, v: 4 }, { id: 3, v: 8 }, { id: 4, v: 16 }];
+  D.refill(F); assert.strictEqual(F.over, true);
+});
+
+test('Antippen: Zufallsspieler kommt durch, Zustand bleibt gültig', () => {
+  const G = D.newGame(4, 11); G.tap = true; D.refill(G); let k = 0;
+  while (!G.over && k < 3000) { let done = false; for (let a = 0; a < 16 && !done; a++) { const p = G.cells[a] && D.partners(G, a); if (p && p.length) { assert.ok(D.tapMerge(G, a, p[0])); done = true; } } assert.ok(done || G.over); k++; }
+  assert.ok(G.over); assert.ok(G.score > 50);
+  const ids = G.cells.filter(Boolean).map(c => c.id); assert.strictEqual(new Set(ids).size, ids.length);
+  const L = D.load(D.save(G)); assert.strictEqual(L.tap, true);
+});
