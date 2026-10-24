@@ -256,6 +256,7 @@
   .topbar .brand{max-height:42px;max-width:56px}
   .topbar .sub{display:none;margin:0;font-size:12.5px}
   .topbar .search{flex:1;min-width:0;max-width:560px;margin:0 auto}
+  @media (max-width:480px){.topbar .search input::placeholder{color:transparent}.topbar .search input{padding:0 10px 0 38px}.topbar .search::before{left:13px}}
   .topbar .search input{height:42px}
   .menubtn{height:42px;padding:0 14px}
   .acct{flex:0 0 auto}
@@ -385,7 +386,7 @@
 <main>
   <div class="stick hide-embed">
     <div class="topbar">
-      <a class="brandrow" href="./" aria-label="easygames Startseite"><img id="brandImg" class="brand" alt="Logo" hidden><div><h1>easygames</h1><p class="sub">Minispiele für Browser, Handy &amp; TV</p></div></a>
+      <a class="brandrow" href="./" aria-label="easygames Startseite"><img id="brandImg" class="brand" alt="Logo" src="logo.png" onerror="this.hidden=true"><div><h1>easygames</h1><p class="sub">Minispiele für Browser, Handy &amp; TV</p></div></a>
       <label class="search"><input id="q" type="search" placeholder="Spiel suchen …" aria-label="Spiel suchen" autocomplete="off"></label>
       <button class="iconbtn" id="favBtn" type="button" aria-pressed="false" aria-label="Favoriten" title="Meine Favoriten">♡</button>
       <div class="acct" id="acct"></div>
@@ -536,6 +537,7 @@
 </script>
 <script src="device.js"></script>
 <script src="games.js"></script>
+<script src="thumbs/thumbs.js"></script>
 <script src="modes.js"></script>
 <script src="guides.js"></script>
 <script src="cloud/anmacha-rating.js" defer></script>
@@ -544,12 +546,9 @@
 <script src="categories.js"></script>
 <script>
 const $ = id => document.getElementById(id);
-// Haupt-Logo (optional): logo.png / .jpg / .jpeg / .svg / .webp im Hauptordner
-(function () {
-  const exts = ['png', 'jpg', 'jpeg', 'svg', 'webp'];
-  Promise.all(exts.map(e => new Promise(res => { const im = new Image(); im.onload = () => res(im.src); im.onerror = () => res(null); im.src = 'logo.' + e; })))
-    .then(l => { const src = l.find(Boolean); if (src) { $('brandImg').src = src; $('brandImg').hidden = false; } });
-})();
+// Kartenbild: kleines WebP-Vorschaubild (tools/make-thumbs.py), sonst das Original
+const THUMBS = window.EASYGAMES_THUMBS || {};
+const pic = g => THUMBS[g.id] ? 'thumbs/' + g.id + '.webp?v=' + THUMBS[g.id] : g.img;
 const base = new URL('.', location.href).href;
 const abs = p => new URL(p, base).href;
 const iframeCode = (url, title) =>
@@ -591,7 +590,7 @@ GAMES.forEach((g, i) => {
   c.className = 'card'; c.dataset.i = i; c.dataset.id = g.id; c.dataset.s = (g.title + ' ' + g.desc).toLowerCase();
   const b = document.createElement('button');
   b.className = 'tile';
-  b.innerHTML = `<div class="icon${g.img ? ' has-img' : ''}" style="background:${g.bg};--g:${g.glow}">${g.external ? '<div class="ext">extern</div>' : ''}${g.img ? `<img src="${g.img}" alt="" loading="lazy">` : `<span>${g.icon}</span>`}</div><div class="info"><b></b><span class="badges"></span><small></small><span class="play">Spielen ▶</span></div>`;
+  b.innerHTML = `<div class="icon${g.img ? ' has-img' : ''}" style="background:${g.bg};--g:${g.glow}">${g.external ? '<div class="ext">extern</div>' : ''}${g.img ? `<img src="${pic(g)}" alt="" loading="lazy">` : `<span>${g.icon}</span>`}</div><div class="info"><b></b><span class="badges"></span><small></small><span class="play">Spielen ▶</span></div>`;
   b.querySelector('b').textContent = g.title; b.querySelector('small').textContent = g.desc;
   const m = modesOf(g), bd = b.querySelector('.badges');
   [['pad', '📱 Handy-Controller'], ['online', '🌐 Online'], ['multi', '👥 Mehrspieler']].forEach(([k, t]) => { if (m[k]) { const e = document.createElement('i'); e.textContent = t; bd.appendChild(e); } });
@@ -843,7 +842,7 @@ function setTab(tab) {
 }
 function miniCard(j, onOpen) {
   const g = GAMES[j], b = el('button', 'mini'), ic = el('div', 'micon'); ic.style.background = g.bg || '#222';
-  if (g.img) { const im = el('img'); im.src = g.img; im.alt = ''; im.loading = 'lazy'; ic.appendChild(im); } else ic.appendChild(el('span', '', g.icon || '🎮'));
+  if (g.img) { const im = el('img'); im.src = pic(g); im.alt = ''; im.loading = 'lazy'; ic.appendChild(im); } else ic.appendChild(el('span', '', g.icon || '🎮'));
   b.append(ic, el('span', 'mt', g.title)); b.addEventListener('click', () => onOpen(j)); return b;
 }
 function openDetail(i, tab) {
@@ -851,7 +850,7 @@ function openDetail(i, tab) {
   di = i; const g = GAMES[i];
   const hero = $('dHero'); [...hero.querySelectorAll('img,span')].forEach(n => n.remove());
   hero.style.background = g.bg || '#222';
-  if (g.img) { const im = el('img'); im.src = g.img; im.alt = ''; hero.appendChild(im); } else hero.appendChild(el('span', '', g.icon || '🎮'));
+  if (g.img) { const im = el('img'); im.src = pic(g); im.alt = ''; hero.appendChild(im); } else hero.appendChild(el('span', '', g.icon || '🎮'));
   $('dTitle').textContent = g.title; $('dBadges').textContent = ''; modeBadges(g, $('dBadges'));
   if (window.AnMaChaRating) window.AnMaChaRating.mount($('dRating'), { subject: 'game:' + g.id, title: g.title });   // Sterne (zentral, Google zur Verifizierung)
   $('dTv').classList.toggle('hidden', !isMulti(g));
@@ -941,7 +940,7 @@ function renderRecent() {
   const picks = [i]; for (let k = 1; k < withImg.length && picks.length < 6; k++) picks.push(withImg[(day + k * 7) % withImg.length]);
   const uniq = [...new Set(picks)], track = el('div', 'hslides'), dots = el('div', 'hdots');
   uniq.forEach((j, n) => {
-    const x = GAMES[j], sl = el('div', 'hslide'), im = el('img'); sl.dataset.gid = x.id; sl.style.background = x.bg || '#222'; im.src = x.img; im.alt = ''; if (n) im.loading = 'lazy'; sl.appendChild(im);
+    const x = GAMES[j], sl = el('div', 'hslide'), im = el('img'); sl.dataset.gid = x.id; sl.style.background = x.bg || '#222'; im.src = pic(x); im.alt = ''; if (n) im.loading = 'lazy'; sl.appendChild(im);
     const bd = el('div', 'hbody'); bd.appendChild(el('span', 'kicker', n === 0 ? 'Empfohlen heute' : 'Empfohlen')); bd.appendChild(el('h2', '', x.title));
     const bg = el('div', 'badges'); modeBadges(x, bg); if (bg.children.length) bd.appendChild(bg);
     bd.appendChild(el('p', '', x.desc));
@@ -970,7 +969,7 @@ function renderRecent() {
   const POP = ['anmacha-quiz', 'anmacha-kart', 'anmacha-radio-surfer', 'anmacha-klotzfunk', 'riftzone', 'anmacha-showdown', 'bunte-insel', 'anmacha-snake', 'kiko-sterneninseln', 'ricorail'];
   const side = $('featSide'); side.appendChild(el('h2', 'ftitle', '🔥 Beliebt bei uns'));
   POP.map(id => GAMES.findIndex(x => x.id === id)).filter(j => j >= 0 && j !== i && GAMES[j].img).slice(0, 4).forEach(j => {
-    const x = GAMES[j], bt = el('button', 'pop'), im = el('img'); im.src = x.img; im.alt = ''; im.loading = 'lazy'; bt.style.background = x.bg || '#222';
+    const x = GAMES[j], bt = el('button', 'pop'), im = el('img'); im.src = pic(x); im.alt = ''; im.loading = 'lazy'; bt.style.background = x.bg || '#222';
     const t = el('span', 'pt'); t.append(el('b', '', String(x.title).split(' – ')[0]), el('small', '', (CATI[CATS.of[x.id]] || {}).short || '')); bt.append(im, t); bt.onclick = () => openGame(j); side.appendChild(bt);
   });
   side.classList.toggle('hidden', side.children.length < 2);
@@ -981,7 +980,7 @@ function renderRecent() {
   const host = $('rows'); if ((embedMode && !portalMode) || !host) return;
   const cardOf = j => {
     const x = GAMES[j], b = el('button', 'vc'), c = CATI[CATS.of[x.id]], vi = el('div', 'vi'); b.type = 'button'; b.dataset.gid = x.id; if (c) b.dataset.c = c.id;
-    vi.style.background = x.bg || '#222'; if (x.img) { const im = el('img'); im.src = x.img; im.alt = ''; im.loading = 'lazy'; vi.appendChild(im); } else vi.appendChild(el('span', '', x.icon || '🎮'));
+    vi.style.background = x.bg || '#222'; if (x.img) { const im = el('img'); im.src = pic(x); im.alt = ''; im.loading = 'lazy'; vi.appendChild(im); } else vi.appendChild(el('span', '', x.icon || '🎮'));
     if (j >= GAMES.length - NEWN) vi.appendChild(el('span', 'nb', 'NEU'));
     b.append(vi, el('span', 'vg', c ? c.short : 'Spiel'), el('span', 'vt', String(x.title).split(' – ')[0])); b.onclick = () => openGame(j); return b;
   };
@@ -1004,7 +1003,8 @@ renderRecent();
 syncFav();
 
 // ----- Katalog (Größen, Offline-Info, Links) – optional; die Seite funktioniert auch ohne -----
-fetch('sync/catalog.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(c => {
+const catalog = fetch('sync/catalog.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).catch(() => null);   // einmal laden, mehrfach nutzen
+catalog.then(c => {
   if (!c) return;
   (c.games || []).forEach(x => { CAT[x.id] = x; });
   if (c.links) { if (c.links.radio) $('lRadio').href = c.links.radio; if (c.links.githubPage) $('lGh').href = c.links.githubPage; }
@@ -1044,7 +1044,7 @@ document.getElementById('promo').addEventListener('toggle', function () { var v 
 (function dayBar() {
   if (embedMode) return;
   const load = f => new Promise(res => { const s = document.createElement('script'); s.src = f; s.onload = s.onerror = res; document.head.appendChild(s); });
-  load('cloud/anmacha-board.js').then(() => load('cloud/anmacha-ach.js')).then(() => load('cloud/anmacha-engage.js')).then(() => fetch('sync/catalog.json')).then(r => r.ok ? r.json() : null).then(c => {
+  load('cloud/anmacha-board.js').then(() => load('cloud/anmacha-ach.js')).then(() => load('cloud/anmacha-engage.js')).then(() => catalog).then(c => {
     const B = window.AnMaChaBoard, A = window.AnMaChaAch, E = window.AnMaChaEngage; if (!c || !B || !A || !E) return;
     const day = E.dayNum(), g = E.dailyPick((c.games || []).filter(x => x.cloud && x.cloud.game), day, x => !B.isOptOut(x.cloud.game) && !!B.REG[x.cloud.game] && B.REG[x.cloud.game].length > 0);
     if (!g) return;
@@ -1103,7 +1103,7 @@ if (start >= 0) openGame(start, true);
 // Spieleliste live: neue/geänderte Spiele (neue Version der Spieleliste auf dem Server) erscheinen ohne Zutun – die Seite lädt sich neu, sobald kein Spiel läuft
 (function () {
   let base = null, t = 0;
-  async function ver() { try { const r = await fetch('sync/manifest.json?_=' + Date.now(), { cache: 'no-store' }); return r.ok ? ((await r.json()).version || '') : ''; } catch (e) { return ''; } }
+  async function ver() { try { const r = await fetch('sync/version.json?_=' + Date.now(), { cache: 'no-store' }); return r.ok ? ((await r.json()).version || '') : ''; } catch (e) { return ''; } }
   async function check() {
     if (document.hidden) return;
     const v = await ver(); if (!v) return;

@@ -50,6 +50,8 @@ const add = (p, who) => {
 };
 SHELL.forEach(f => { if (!fs.existsSync(path.join(root, f))) errors.push('Pflichtdatei fehlt: ' + f); else add(f, '_shell'); });
 SHELL_OPTIONAL.forEach(f => { if (fs.existsSync(path.join(root, f))) add(f, '_shell'); });
+// Vorschaubilder der Spieleliste (tools/make-thumbs.py)
+if (fs.existsSync(path.join(root, 'thumbs'))) fs.readdirSync(path.join(root, 'thumbs')).sort().forEach(f => { if (/\.(webp|js)$/.test(f)) add('thumbs/' + f, '_shell'); });
 
 // Spiele
 const sizes = {}, counts = {};
@@ -137,6 +139,8 @@ try { commit = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding:
 const manifest = { schema: 1, version, generated: generated || new Date().toISOString(), commit, entry: 'index.html', catalog: catalogPath, files: list, vendor: sortedVendor };
 
 const manPath = path.join(root, 'sync', 'manifest.json');
+// Kleine Versionsdatei: die Startseite prüft damit regelmäßig auf neue Spiele, ohne das ganze Manifest zu laden
+const verPath = path.join(root, 'sync', 'version.json'), verText = JSON.stringify({ version }) + '\n';
 let oldVersion = null; try { oldVersion = JSON.parse(fs.readFileSync(manPath, 'utf8')).version; } catch (e) {}
 const total = list.reduce((a, f) => a + f.s, 0);
 
@@ -151,12 +155,14 @@ if (has('--check')) {
   if (!fs.existsSync(path.join(root, catalogPath)) || fs.readFileSync(path.join(root, catalogPath), 'utf8') !== catalogText) {
     console.error('sync/catalog.json ist veraltet. Bitte "node tools/build-sync.js" ausführen.'); process.exit(1);
   }
+  if (!fs.existsSync(verPath) || fs.readFileSync(verPath, 'utf8') !== verText) { console.error('sync/version.json ist veraltet. Bitte "node tools/build-sync.js" ausführen.'); process.exit(1); }
   if (oldVersion !== version) { console.error(`sync/manifest.json ist veraltet (${oldVersion} ≠ ${version}). Bitte "node tools/build-sync.js" ausführen.`); process.exit(1); }
   console.log('sync/manifest.json ist aktuell (' + version + ')'); process.exit(0);
 }
 if (errors.length) process.exit(1);
 fs.writeFileSync(path.join(root, catalogPath), catalogText);
-if (oldVersion !== version) fs.writeFileSync(manPath, JSON.stringify(manifest, null, 1) + '\n');   // sonst unverändert lassen (kein Commit-Rauschen)
+if (oldVersion !== version) fs.writeFileSync(manPath, JSON.stringify(manifest, null, 1) + '\n');
+if (!fs.existsSync(verPath) || fs.readFileSync(verPath, 'utf8') !== verText) fs.writeFileSync(verPath, verText);   // sonst unverändert lassen (kein Commit-Rauschen)
 console.log(`${list.length} Dateien, ${(total / 1048576).toFixed(1)} MB, Version ${version}${oldVersion === version ? ' (unverändert)' : ' (neu)'}`);
 
 const stage = val('--stage');

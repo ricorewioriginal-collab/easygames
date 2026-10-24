@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3523106bba60",
- "generated": "2026-10-24T14:30:06+00:00",
- "commit": "d3588be44d107e70e5a30f15dcead963d694e08a",
+ "version": "1050252feb71",
+ "generated": "2026-10-24T16:31:55+02:00",
+ "commit": "9d8bbbc13801bb76b580773708514eba970c5a68",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5693,8 +5693,8 @@
   },
   {
    "p": "einbinden.html",
-   "s": 84799,
-   "h": "c716851b9bf62a2bbbcc1630f30ad5a7bd0d8fa46a8900aa90bfd828cbf9fcdb"
+   "s": 84872,
+   "h": "0c0765b722695c0989b03362b8621984607cda10ea421ac06750eff5a829f83f"
   },
   {
    "p": "erfolge.html",
@@ -6318,8 +6318,8 @@
   },
   {
    "p": "index.html",
-   "s": 93034,
-   "h": "b39a1488371c67e5cbcb3cb2f126c62ff447b8b5ee9baa5750c768f0d953b7b1"
+   "s": 93082,
+   "h": "ac991f4ec9ee94cbaba74a8cb048ea4d0629b11bccb4accafad1d43c606b4106"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -8560,6 +8560,336 @@
    "p": "taschi/vite.config.mjs",
    "s": 929,
    "h": "722bcf0e7eabd6475f355575a277281e7e06f4b502f56bec7941107073f113e2"
+  },
+  {
+   "p": "thumbs/FunkhausReality.webp",
+   "s": 12930,
+   "h": "904530237902611cd18fa2c2e5df874b1003ff9c4b421756415209ea5e9e8a54"
+  },
+  {
+   "p": "thumbs/MachMichAus.webp",
+   "s": 13102,
+   "h": "ffe444d39d3e53045b54144e682a8f80bf805ec92a53ccf88e14d0039782a841"
+  },
+  {
+   "p": "thumbs/aeru.webp",
+   "s": 10512,
+   "h": "63f78661ae16d3bd02515c6f1cf894f48e5a32437068ce200764d3531367b665"
+  },
+  {
+   "p": "thumbs/anmacha-beat-surfer.webp",
+   "s": 13484,
+   "h": "eaab6d66020b07cb1ec96db87f347db8b775f06cda16551a48c3008e936da1d3"
+  },
+  {
+   "p": "thumbs/anmacha-flipper.webp",
+   "s": 13448,
+   "h": "bb474d785d648c12f41d667e5b32ba6cffbe7ffe7958238946d96b0f9b2c0f99"
+  },
+  {
+   "p": "thumbs/anmacha-funkparcours.webp",
+   "s": 16462,
+   "h": "64f84f876f100b5d9b91c03dec6cd7103a9b1051a8d34c24d98b2f12902fbc08"
+  },
+  {
+   "p": "thumbs/anmacha-gesucht.webp",
+   "s": 6042,
+   "h": "c73a061207e9f5205ec389eddf48d22f4014e3caca11052ae071f4ec55a9d614"
+  },
+  {
+   "p": "thumbs/anmacha-gold-reels.webp",
+   "s": 12228,
+   "h": "761dd76889613419d7f81c5d885f69fe9d15e264e7e537475381bf1ddc19a005"
+  },
+  {
+   "p": "thumbs/anmacha-kartenrausch.webp",
+   "s": 16864,
+   "h": "8f0883a4a7e6fec0e71c336f5f511b85d74b6cf3c17b4db19b53583eac392774"
+  },
+  {
+   "p": "thumbs/anmacha-klotzfunk.webp",
+   "s": 11270,
+   "h": "fc8f8b8156f999b1314ad9c6ac83ebf45f3bf6063e34ba7ea2a8a2cd6e24b5ab"
+  },
+  {
+   "p": "thumbs/anmacha-koffer-dealer.webp",
+   "s": 7542,
+   "h": "c1cbc58664e8aa7853cb6d8d711c8d651c174bc2b74137e713b90d38ac95ed98"
+  },
+  {
+   "p": "thumbs/anmacha-markthalle.webp",
+   "s": 12998,
+   "h": "cbe67385197787a71d343e7508b2a777e464dba8305883e2be28451c2862c810"
+  },
+  {
+   "p": "thumbs/anmacha-memory.webp",
+   "s": 13516,
+   "h": "3bfbe50898159b0848dbc051908707dc8f1bc79f2c2d81e696cce10ff333b5b6"
+  },
+  {
+   "p": "thumbs/anmacha-quest-rpg.webp",
+   "s": 12960,
+   "h": "d71eea42526f18d6ca3850f1032ee9414f9d3d1e6d31377ee02e6a5199c28983"
+  },
+  {
+   "p": "thumbs/anmacha-quiz.webp",
+   "s": 7944,
+   "h": "96cdd0d5560943bd110f1e2ad3721245df4a3a1161e7b408bb59bda4d74c221f"
+  },
+  {
+   "p": "thumbs/anmacha-radio-match.webp",
+   "s": 12514,
+   "h": "ee1e5f09f81963e69cf60c3a246124fa1aff77c90d899314af72387dd16c018f"
+  },
+  {
+   "p": "thumbs/anmacha-radio-surfer.webp",
+   "s": 13058,
+   "h": "ed4c9b900d97a007dbc317be8a68d7d966ea1090253e03e05058446aee71e3ba"
+  },
+  {
+   "p": "thumbs/anmacha-showdown.webp",
+   "s": 8658,
+   "h": "58beecf994656819d200fca4521d649741dfb59b0f3e7c34257e86fb854b6516"
+  },
+  {
+   "p": "thumbs/anmacha-snake.webp",
+   "s": 13836,
+   "h": "e4abd8b24015cd07057654ad8991d8422acdc9f347d03698b39e2b9fa30a741f"
+  },
+  {
+   "p": "thumbs/anmacha-solitaire.webp",
+   "s": 15442,
+   "h": "b62c7b7d631154ec56102a042364cd85a6f4b809be236da180fa434203428165"
+  },
+  {
+   "p": "thumbs/anmacha-spielesammlung.webp",
+   "s": 13884,
+   "h": "bf7e7470e992f579e9f8b0c6b135755fd4a64bf79fcfdfc8b3f2ed8d7f8a9926"
+  },
+  {
+   "p": "thumbs/anmacha-tower-defense.webp",
+   "s": 14886,
+   "h": "cfa77ea10e9b87d3647ce032f0a71fc8e575026a8dbda106833ef9bcead8aaec"
+  },
+  {
+   "p": "thumbs/anmacha-undercover.webp",
+   "s": 23936,
+   "h": "3bbd726856f5cc6c59feb82ea4eb9f18aad657b0461ce227f110ea2717e7e9c3"
+  },
+  {
+   "p": "thumbs/anmacha-urwaldlager.webp",
+   "s": 14884,
+   "h": "7ac6b18805592af736dc6dda855cc461acf52caecbca5ee3c29ed5cf7b832b38"
+  },
+  {
+   "p": "thumbs/bowling-bahn.webp",
+   "s": 21336,
+   "h": "5422276aa6cdaa5247592f97e9303bd14dee4ee04b031722d3d2da330ff24613"
+  },
+  {
+   "p": "thumbs/bunte-insel.webp",
+   "s": 29406,
+   "h": "bdd9862e0e5e065f3074793b69770f3e3ae62e5b7ed419345e3f4c388ddb40ed"
+  },
+  {
+   "p": "thumbs/darts-arena.webp",
+   "s": 34090,
+   "h": "828f00e61b8874b3d94c89a66d085ce0ea615437dbf86ac80fe1987c004743a2"
+  },
+  {
+   "p": "thumbs/deluxe-2048.webp",
+   "s": 22644,
+   "h": "e9a644aecfabf355c37fce62bab7f7d8edb289d353bbc4a2c3731bd2ab787ccb"
+  },
+  {
+   "p": "thumbs/easyclash.webp",
+   "s": 13862,
+   "h": "ad23e384dc504fa42ec71bcfaf4e7aeeb1c47a65f75eea32640b8acc336d5848"
+  },
+  {
+   "p": "thumbs/fabelkick.webp",
+   "s": 14812,
+   "h": "c79fa70a2467b5c658bbbe1fdcd1951dbaa4bbbfa8044c44b0d450b7a430e31e"
+  },
+  {
+   "p": "thumbs/fall-akte.webp",
+   "s": 27428,
+   "h": "4c093a33d632203abae22c6586949baa590a9b8af0bb591ac10d712eb43ff986"
+  },
+  {
+   "p": "thumbs/frequenzminen.webp",
+   "s": 26904,
+   "h": "664cd0af7909389c1bd6d6a31dc1a7280c06e423c5dd49eb7948b9bdc62ee1c1"
+  },
+  {
+   "p": "thumbs/funk-billard.webp",
+   "s": 10994,
+   "h": "cc3dfc4ea7b1a8bf4d868084410499d26a1cc4b6aceef4046cdc35ada05e5c47"
+  },
+  {
+   "p": "thumbs/funkgalgen.webp",
+   "s": 17280,
+   "h": "0e366cb5530837fe05a2b4b656d2e162c05737cdaa42c9f03bae33c05c4d7c59"
+  },
+  {
+   "p": "thumbs/funkgolf.webp",
+   "s": 18870,
+   "h": "627e027e794988b7dbdab36f011b100953c45b1c71d92da0130ab587b5018846"
+  },
+  {
+   "p": "thumbs/funkmaler.webp",
+   "s": 13530,
+   "h": "7987ff498c75efdc83417754570eaed11db2d0aec490fac8d4b405b2f59bc80b"
+  },
+  {
+   "p": "thumbs/gay-life.webp",
+   "s": 12650,
+   "h": "cdc9c2c73b4b4d8f4f43ebed66870e4eff37166ae187ff64d2c6c32495b9355c"
+  },
+  {
+   "p": "thumbs/huepfstrasse.webp",
+   "s": 25524,
+   "h": "72c4990a6e09e1051d54c05aa1d1b08f346bfafc432941b6427537d3599ef391"
+  },
+  {
+   "p": "thumbs/konfetti-party.webp",
+   "s": 29880,
+   "h": "d20408309d598d1e76ef1929f0647e518eb580562353e4c2cd6089d393b94fde"
+  },
+  {
+   "p": "thumbs/kuechen-chaos.webp",
+   "s": 14096,
+   "h": "751b2431fef9333a5220c9420f8be8e1a5d932d827e35353d900864d2a4f6974"
+  },
+  {
+   "p": "thumbs/mahjong.webp",
+   "s": 15732,
+   "h": "f6b8f76dbc8b02c81b64cdc55a88edd9b8a989e6885fe024541a3940a62e8b47"
+  },
+  {
+   "p": "thumbs/mimori.webp",
+   "s": 24408,
+   "h": "07e1526e45a86c49b5d7f5ae70ea1a5dcb57b8dfbf4c1c3f282895170891cae9"
+  },
+  {
+   "p": "thumbs/oma-rennen.webp",
+   "s": 18326,
+   "h": "0ead94e464bc6553f2b3a27b52ac4e2af8c486298a1f1989e5bad0a30c3acad0"
+  },
+  {
+   "p": "thumbs/partyverse.webp",
+   "s": 14740,
+   "h": "4731f6903a27ec543670c8bc74fe93afc3aea15c2ff7bce30f12bb365f416249"
+  },
+  {
+   "p": "thumbs/pestwacht.webp",
+   "s": 13624,
+   "h": "8c1344207f74b0e966e13e8d8382d67cd00944637b08417a2a4df8e0c378d533"
+  },
+  {
+   "p": "thumbs/prismrush.webp",
+   "s": 31738,
+   "h": "97e92c480bb6c6ec59806af033b01e42473b8fccb734256110beb0940bd6026a"
+  },
+  {
+   "p": "thumbs/ricopoly.webp",
+   "s": 60732,
+   "h": "4e86b86e9a756bd391e9c7cbf8f556741bb1901f920025bc5b2a9235e4e4e4be"
+  },
+  {
+   "p": "thumbs/riftzone.webp",
+   "s": 12196,
+   "h": "e48fd0a77b7091d54a3a55f56d7b298ae77946a2d3fb714fb2473284dace9697"
+  },
+  {
+   "p": "thumbs/saftblitz.webp",
+   "s": 16568,
+   "h": "6d34fea3182644bd23549827883fa9b4ae820b96c8dab3e1939c9d88c2c79b1a"
+  },
+  {
+   "p": "thumbs/sendemast-sumo.webp",
+   "s": 24788,
+   "h": "297f93ad9b6399f6caa1d1fe9c50772aabef39476c67061faa0ec93302064160"
+  },
+  {
+   "p": "thumbs/show-me-your-voice.webp",
+   "s": 38844,
+   "h": "bc8ec4e305601876bd2e7204b6b71792be8f35d938db189ee54c0daac6852480"
+  },
+  {
+   "p": "thumbs/thumbs.js",
+   "s": 2054,
+   "h": "adcf4fd5c23cc48b8439867ac8ddbd53bd2439a8fdee97bc6d69a486f1587820"
+  },
+  {
+   "p": "thumbs/tortenschlacht.webp",
+   "s": 19110,
+   "h": "28c23d3cad65214265f78be9469d73ed6ac493c0cc0ddef900e04958c0df08f2"
+  },
+  {
+   "p": "thumbs/turbokick.webp",
+   "s": 13234,
+   "h": "17a2d8a442ce068f505d6272d440b64e3b1a3888697381ffc2f02559506d6713"
+  },
+  {
+   "p": "thumbs/werwolf-nacht.webp",
+   "s": 14858,
+   "h": "c073e553fed107fc697a6b14f7440dc3af435344e0993c358924247e8f890b76"
+  },
+  {
+   "p": "thumbs/winzflitzer.webp",
+   "s": 16944,
+   "h": "72ea1311e3f0c07c5e04169f3d814296eee0d9aaa90d4fd0f4751b710408fa61"
+  },
+  {
+   "p": "thumbs/wolkenhopser.webp",
+   "s": 13582,
+   "h": "00c2b85641e6347f22a6386c8c1a5b64150d4635f5fb29ae86845cef99b15a5f"
+  },
+  {
+   "p": "thumbs/wortfunk.webp",
+   "s": 16736,
+   "h": "01929bc46ab63b499dc80b3a6343caa46d9a042a83ffecf40e69275a157b991d"
+  },
+  {
+   "p": "thumbs/wortgitter.webp",
+   "s": 14336,
+   "h": "a025fe08a58390c34795dbc0f2312d7857641620650d78fdd5fc9b9e65070fec"
+  },
+  {
+   "p": "thumbs/zeitsprung-castingshow.webp",
+   "s": 26380,
+   "h": "29704bdd04add8eae82de1cd9b3e79f3b0995028a7f7f59c45a347813733d35b"
+  },
+  {
+   "p": "thumbs/zeitsprung-eurovision.webp",
+   "s": 22438,
+   "h": "cd3298f6d0aab8850b758aa545b48091d2dbaa62fb685adfb08d01b243f531cb"
+  },
+  {
+   "p": "thumbs/zeitsprung-kinderserien.webp",
+   "s": 22720,
+   "h": "ea76927b34729875fdcdebce0ba712cb3cd0d737fa70f6a3a043780091ce24d2"
+  },
+  {
+   "p": "thumbs/zeitsprung-movie.webp",
+   "s": 26368,
+   "h": "c08449e11894cb7c3b39175ed8709f64bc4e6c6671d5f4dd13ce92eb2eb07829"
+  },
+  {
+   "p": "thumbs/zeitsprung-radio.webp",
+   "s": 23730,
+   "h": "ebb9a4702a0df3b711f7e4ffba2910735f3fb2bb9e54aa803c7c05032f367516"
+  },
+  {
+   "p": "thumbs/zeitsprung-wissen.webp",
+   "s": 28032,
+   "h": "fedad3998630d3471cecf0c9287cd34aa20df95d9db789962e6744456c523df7"
+  },
+  {
+   "p": "thumbs/zotik.webp",
+   "s": 7820,
+   "h": "83239e79bcab0389359b018937b7ab50a2a5f5e699c4a6b0c49c3842fbb86545"
   },
   {
    "p": "tortenschlacht/card.jpg",

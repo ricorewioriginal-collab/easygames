@@ -48,8 +48,8 @@
   .warn{border-left-color:var(--ma);background:rgba(255,45,149,.08)}
   .tag{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12px;font-weight:800;background:rgba(139,92,246,.3);margin-left:6px;vertical-align:middle}
   .gen{display:grid;gap:10px;margin:10px 0}
-  .gen label{font-size:13px;color:var(--mut);display:flex;flex-direction:column;gap:4px}
-  .gen select,.gen input{height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:#04070d;color:#fff;font:inherit}
+  .gen label{font-size:13px;color:var(--mut);display:flex;flex-direction:column;gap:4px;min-width:0}
+  .gen select,.gen input{height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:#04070d;color:#fff;font:inherit;width:100%;max-width:100%;min-width:0;text-overflow:ellipsis}
   .row{display:flex;gap:10px;flex-wrap:wrap}
   .row>label{flex:1;min-width:150px}
   button{font:inherit;cursor:pointer}

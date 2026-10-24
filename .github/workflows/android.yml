@@ -84,12 +84,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Refresh list thumbnails (new or changed card images)
+        run: pip install -q pillow && python3 tools/make-thumbs.py
       - run: node tools/build-sync.js --strict
       - name: Publish updated game catalog and checksums
         run: |
-          if git diff --quiet -- sync/manifest.json sync/catalog.json; then exit 0; fi
+          git add -A thumbs
+          if git diff --quiet HEAD -- sync/manifest.json sync/catalog.json sync/version.json thumbs; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add sync/manifest.json sync/catalog.json
+          git add sync/manifest.json sync/catalog.json sync/version.json thumbs
           git commit -m 'chore: refresh Android offline game catalog'
           git push origin HEAD:main
