@@ -22,6 +22,9 @@ Ressourcensparend und fehlerfrei bauen: kleine, gezielte Änderungen, bestehende
 3. **Sichtbar im Menü.** Jedes Spiel mit Online-Möglichkeit zeigt sie im Hauptmenü (oder in den Einstellungen) mit 🌐 und dem Wort
    „Online“, z. B. „🌐 Online & Handys“. Im Online-Fenster steht kurz, dass Mitspieler per Link/Code von überall beitreten können.
 4. **In der Spieleliste eintragen.** `modes.js`: `online: true` für jedes Spiel, das über mehrere Geräte per Code/QR/Link spielbar ist.
+5. **Einbindung muss alles können.** Spiele mit Sprachausgabe laden `cloud/anmacha-cloud.js` (spricht eingebettet über die einbindende
+   Seite, auch verschachtelt). iframes für Spiele nutzen die Freigaben aus `easygames.js` (`FRAME_ALLOW`, öffentlich `EasyGames.allow`);
+   dieselbe Liste steht in `index.html`, `hub/anmacha-hub.js`, `einbinden.html`, `cloud/anmacha-account.js` – `tools/check-games.js` prüft beides.
 
 ## Nach Änderungen
 

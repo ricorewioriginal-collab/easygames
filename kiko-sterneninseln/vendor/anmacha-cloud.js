@@ -19,10 +19,28 @@
   if (!s || s.__egFix || typeof s.speak !== 'function') return;
   var speak = s.speak.bind(s), cancel = s.cancel.bind(s), live = [], pend = [], lastCancel = 0, timer = 0, keep = 0;
   try { s.__egFix = 1; } catch (e) { }
+  /* Männerstimme bevorzugt (Moderation, Caller): männliche deutsche Stimmen stehen in getVoices() vorn – Windows/Edge (Conrad,
+   * Killian, Stefan), Apple (Markus, Yannick, Viktor), Android (Google „x-deg“, Samsung „SMTm…“). Spiele, die die erste deutsche
+   * Stimme nehmen, bekommen so die Männerstimme; wer gezielt eine Frauenstimme sucht (Oma), findet sie weiter. Ansagen ohne Stimme
+   * in normaler/tiefer Tonlage sprechen mit ihr. Hat das Gerät keine männliche deutsche Stimme, bleibt alles wie bisher. */
+  var MALE = /\b(x-deg|smtm\d*|stefan|conrad|killian|florian|kasper|markus|yannick|viktor|martin|reed|grandpa|rocko|eddy|ralf|jonas|bernd|klaus|hans|male|männlich|mann)\b/i;
+  var FEM = /female|weiblich|\bfrau\b|anna|petra|helena|hedda|katja|amala|seraphina|marlene|vicki|sandy|shelley|grandma|louisa|elke|ingrid|gisela|tanja|ilse|katharina|maja|sabine|leni|hanna/i;
+  var rank = function (v) {
+    if (!v || !/^de([-_]|$)/i.test(v.lang || '') || !MALE.test(v.name || '') || FEM.test(v.name || '')) return 3;
+    return /grandpa|rocko|eddy|reed/i.test(v.name) ? 2 : /natural|neural|online|premium|enhanced/i.test(v.name) ? 0 : 1;
+  };
+  if (typeof s.getVoices === 'function') {
+    var voices = s.getVoices.bind(s);
+    s.getVoices = function () {
+      var a = voices() || [];
+      try { return a.map(function (v, i) { return [rank(v), i, v]; }).sort(function (x, y) { return x[0] - y[0] || x[1] - y[1]; }).map(function (x) { return x[2]; }); } catch (e) { return a; }
+    };
+  }
   var drop = function (u) { var i = live.indexOf(u); if (i >= 0) live.splice(i, 1); if (!live.length && keep) { clearInterval(keep); keep = 0; } };
   s.cancel = function () { lastCancel = Date.now(); clearTimeout(timer); timer = 0; pend = []; live = []; if (keep) { clearInterval(keep); keep = 0; } return cancel(); };
   s.speak = function (u) {
     if (!u) return speak(u);
+    try { if (!u.voice && !(u.pitch > 1.05) && /^de([-_]|$)/i.test(u.lang || document.documentElement.lang || 'de')) { var m = s.getVoices()[0]; if (rank(m) < 3) u.voice = m; } } catch (e) { }
     try { if (u.voice && u.voice.lang && (!u.lang || u.lang.slice(0, 2).toLowerCase() === u.voice.lang.slice(0, 2).toLowerCase())) u.lang = u.voice.lang; } catch (e) { }
     if (live.indexOf(u) < 0) { live.push(u); try { u.addEventListener('end', function () { drop(u); }); u.addEventListener('error', function () { drop(u); }); } catch (e) { } }
     var go = function () {
@@ -34,6 +52,28 @@
     var wait = 260 - (Date.now() - lastCancel);
     if (wait > 0 || pend.length) { pend.push(go); if (!timer) timer = setTimeout(function () { timer = 0; var l = pend; pend = []; l.forEach(function (f) { f(); }); }, Math.max(0, wait)); } else go();
   };
+  /* Spricht für eingebettete easygames-Seiten darunter (z. B. Spiel in der Bibliothek): Ansagen gehen über diese Seite
+   * und von hier – falls sie selbst eingebettet ist – weiter an die einbettende Seite. So klappt es auch verschachtelt. */
+  if (!window.__egTtsHost && window.SpeechSynthesisUtterance) {
+    try { window.__egTtsHost = 1; } catch (e) { }
+    var hostLive = {};
+    window.addEventListener('message', function (e) {
+      var d = e.data;
+      if (!d || d.type !== 'eg-tts' || !e.source || e.source === window.parent || (e.origin !== 'https://ricorewioriginal-collab.github.io' && e.origin !== location.origin)) return;
+      var src = e.source, origin = e.origin, reply = function (m) { m.type = 'eg-tts'; try { src.postMessage(m, origin); } catch (x) { } };
+      if (d.op === 'hello') return reply({ op: 'host' });
+      if (d.op === 'cancel') { hostLive = {}; try { s.cancel(); } catch (x) { } return; }
+      if (d.op !== 'speak' || !d.id) return;
+      var u = new SpeechSynthesisUtterance(String(d.text || '').slice(0, 1500)), id = String(d.id).slice(0, 20);
+      u.lang = String(d.lang || '').slice(0, 20); u.rate = +d.rate || 1; u.pitch = +d.pitch || 1; u.volume = d.volume == null ? 1 : +d.volume;
+      try { var v = d.voice && s.getVoices().filter(function (x) { return x.name === d.voice; })[0]; if (v) { u.voice = v; u.lang = v.lang; } } catch (x) { }
+      hostLive[id] = u;
+      u.onstart = function () { reply({ op: 'ev', id: id, kind: 'start' }); };
+      u.onend = function () { delete hostLive[id]; reply({ op: 'ev', id: id, kind: 'end' }); };
+      u.onerror = function (ev) { delete hostLive[id]; reply({ op: 'ev', id: id, kind: 'error', error: ev && ev.error || '' }); };
+      try { s.speak(u); } catch (x) { }   // s.speak: mit Wartezeit nach cancel (oben) bzw. weitergeleitet (unten)
+    });
+  }
   /* Eingebettet auf einer fremden Seite (z. B. ricorewi-radio.de): Chrome spricht dort oft nicht. Bietet die Seite an,
    * für das Spiel zu sprechen (Spiele-Hub, easygames.js, RicoReWi-Portal: Nachricht 'eg-tts'), geht die Ansage an sie. */
   var cross = false;

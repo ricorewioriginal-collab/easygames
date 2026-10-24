@@ -56,7 +56,7 @@
   }
   // Caller: deutsche Sprachausgabe, wenn das Gerät eine Stimme hat
   let voice = null;
-  function pickVoice() { try { const v = speechSynthesis.getVoices(); voice = v.find(x => /^de/i.test(x.lang) && /male|mann|google/i.test(x.name)) || v.find(x => /^de/i.test(x.lang)) || null; } catch (e) { voice = null; } }
+  function pickVoice() { try { const v = speechSynthesis.getVoices(); voice = v.find(x => /^de/i.test(x.lang) && /\b(x-deg|smtm\d*|stefan|conrad|killian|florian|markus|yannick|viktor|male|männlich)\b/i.test(x.name) && !/female/i.test(x.name)) || v.find(x => /^de/i.test(x.lang) && /google/i.test(x.name)) || v.find(x => /^de/i.test(x.lang)) || null; } catch (e) { voice = null; } }
   if (window.speechSynthesis) { pickVoice(); try { speechSynthesis.addEventListener('voiceschanged', pickVoice); } catch (e) { } }
   function call(txt) {
     if (!callerOn || !window.speechSynthesis || !txt) return;

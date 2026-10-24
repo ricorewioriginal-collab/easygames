@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "2dc7c4f231e0",
- "generated": "2026-10-24T14:16:26+00:00",
- "commit": "4514cb8bf9521c44cb862d030cbda8e12490495c",
+ "version": "3523106bba60",
+ "generated": "2026-10-24T14:30:06+00:00",
+ "commit": "d3588be44d107e70e5a30f15dcead963d694e08a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5348,8 +5348,8 @@
   },
   {
    "p": "cloud/anmacha-account.js",
-   "s": 27114,
-   "h": "77c40defe4531e0c0de099947ed21dc07756cbb058d8b7f1c80354a3244a783d"
+   "s": 27208,
+   "h": "a573e6ec77649c22a96d471d599a6f9c80c3ac02b5ff7dcee85d7c11c2b81840"
   },
   {
    "p": "cloud/anmacha-ach.js",
@@ -5378,8 +5378,8 @@
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 48413,
-   "h": "373a5c6b74425e195c490b1970ed03d108763251ce7305255fb9c04be3177bd6"
+   "s": 51970,
+   "h": "64752e6f8aca7aad739d779709ce4cca3e42e4f13c354b9b2225b7f08227d9ce"
   },
   {
    "p": "cloud/anmacha-engage.js",
@@ -5558,8 +5558,8 @@
   },
   {
    "p": "darts-arena/js/sound.js",
-   "s": 6670,
-   "h": "6406ceecf691f52ca9abe654461b2e5378946f187d0dcf64defd4dfa139c2136"
+   "s": 6829,
+   "h": "e463ebef24425e237eabd2ff1b322263886dfd9303afb2aebd8c8a751df30da9"
   },
   {
    "p": "darts-arena/manifest.webmanifest",
@@ -5688,13 +5688,13 @@
   },
   {
    "p": "easygames.js",
-   "s": 33732,
-   "h": "ce59358e6cc2c6adf06f1559b91a20f208de0b083da932ce072cade6fb5bc652"
+   "s": 34150,
+   "h": "640a75ae0983c5352d2a2c52abcc014a23c8037de2c19bf36cefed7ab203cdc5"
   },
   {
    "p": "einbinden.html",
-   "s": 84127,
-   "h": "8c6f68af06610019512f3ad94e2634af1dc996798499ccb7c1c237130e92e0b6"
+   "s": 84799,
+   "h": "c716851b9bf62a2bbbcc1630f30ad5a7bd0d8fa46a8900aa90bfd828cbf9fcdb"
   },
   {
    "p": "erfolge.html",
@@ -6318,8 +6318,8 @@
   },
   {
    "p": "index.html",
-   "s": 92891,
-   "h": "0de9b3f01d479c2d7117fdb2c8d8a3557e9353d388a24a21c1933bfd4eccb751"
+   "s": 93034,
+   "h": "b39a1488371c67e5cbcb3cb2f126c62ff447b8b5ee9baa5750c768f0d953b7b1"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -6423,8 +6423,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 48413,
-   "h": "373a5c6b74425e195c490b1970ed03d108763251ce7305255fb9c04be3177bd6"
+   "s": 51970,
+   "h": "64752e6f8aca7aad739d779709ce4cca3e42e4f13c354b9b2225b7f08227d9ce"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -8299,7 +8299,7 @@
   {
    "p": "sync/catalog.json",
    "s": 202798,
-   "h": "29ca5ee05d6472329339d4f8e205ff5ccb563f06137d9e19d63b73953f17ef7e"
+   "h": "88592e034f0e01319dd9a42f046971b5908c165627587fd1928bb29c1314aaae"
   },
   {
    "p": "taschi/card.svg",

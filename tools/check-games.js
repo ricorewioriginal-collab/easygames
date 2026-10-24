@@ -39,6 +39,22 @@ GAMES.forEach((x, i) => {
 Object.keys(MODES).forEach(k => { if (!ids.has(k)) warn(`modes.js: "${k}" ist kein Spiel in games.js`); });
 Object.keys(GUIDES).forEach(k => { if (!ids.has(k)) warn(`guides.js: "${k}" ist kein Spiel in games.js`); });
 
+// Einbindung: überall dieselben iframe-Freigaben, damit eingebettete Spiele (auch neue) alles dürfen
+const ALLOW = (fs.readFileSync(path.join(root, 'easygames.js'), 'utf8').match(/var FRAME_ALLOW = '([^']+)'/) || [])[1];
+if (!ALLOW) err('easygames.js: FRAME_ALLOW nicht gefunden');
+else ['index.html', 'hub/anmacha-hub.js', 'einbinden.html', 'cloud/anmacha-account.js'].forEach(f => {
+  const src = fs.readFileSync(path.join(root, f), 'utf8');
+  (src.match(/allow\s*=\s*["'`](fullscreen;[^"'`]*)["'`]/g) || []).forEach(a => { if (!a.includes(ALLOW)) err(`${f}: iframe-Freigabe weicht von FRAME_ALLOW (easygames.js) ab: ${a}`); });
+});
+// Sprachausgabe: Spiele, die sprechen, laden cloud/anmacha-cloud.js (Korrekturen + Sprechen über die einbindende Seite)
+const speaks = dir => { const st = [dir]; while (st.length) { const d = st.pop(); for (const f of fs.readdirSync(d, { withFileTypes: true })) { const q = path.join(d, f.name);
+  if (f.isDirectory()) { if (!/^(node_modules|vendor|tests?|src)$/.test(f.name)) st.push(q); } else if (/\.(js|html)$/.test(f.name) && fs.statSync(q).size < 4e6 && fs.readFileSync(q, 'utf8').includes('speechSynthesis')) return true; } } return false; };
+GAMES.forEach(x => {
+  if (!x.path || isUrl(x.path)) return;
+  const ix = path.join(root, x.path, 'index.html'), dir = path.join(root, x.path);
+  if (fs.existsSync(ix) && speaks(dir) && !/anmacha-cloud\.js/.test(fs.readFileSync(ix, 'utf8'))) err(`${x.id}: spricht (speechSynthesis), lädt aber cloud/anmacha-cloud.js nicht – eingebettet bliebe es stumm`);
+});
+
 warns.forEach(w => console.log('Warnung: ' + w));
 errors.forEach(e => console.error('FEHLER:  ' + e));
 console.log(`${GAMES.length} Spiele geprüft: ${errors.length} Fehler, ${warns.length} Warnungen`);

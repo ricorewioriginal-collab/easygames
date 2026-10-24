@@ -128,7 +128,7 @@
   <section id="iframe">
     <h2>2. Ein Spiel als iframe</h2>
 <pre>&lt;iframe src="<span class="u"></span>zotik/" title="ZOTIK"
-  allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone" allowfullscreen loading="lazy"
+  allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock" allowfullscreen loading="lazy"
   style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"&gt;&lt;/iframe&gt;</pre>
     <div class="note warn"><b>Wichtig:</b> Ohne <code>allow="fullscreen"</code> kann im iframe kein Vollbild gestartet werden. Ohne <code>autoplay</code> bleibt Ton oft stumm, bis jemand tippt.</div>
     <ul>
@@ -207,7 +207,7 @@
   <section id="lib">
     <h2>4. Ganze Bibliothek einbetten</h2>
 <pre>&lt;iframe src="<span class="u"></span>?embed=1" title="easygames"
-  allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone" allowfullscreen
+  allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock" allowfullscreen
   style="width:100%;height:90vh;border:0"&gt;&lt;/iframe&gt;</pre>
     <ul>
       <li>Die Übersicht mit Suche und Anleitungen erscheint, ohne Kopfzeile (<code>?embed=1</code>).</li>
@@ -318,7 +318,7 @@
       <li>Die Seite dahinter scrollt nicht. Das Browser-Vollbild wird beim Klick angefordert; wo es der Browser nicht erlaubt (z. B. iPhone), bleibt das Overlay trotzdem vollflächig.</li>
       <li><b>Barrierefreiheit:</b> Das Overlay ist ein <code>role="dialog"</code> mit <code>aria-modal</code>; die Seite dahinter wird für Screenreader und Tastatur gesperrt (<code>aria-hidden</code>/<code>inert</code>), der Fokus liegt im Spiel, der Tabulator bleibt im Overlay und beim Schließen kehrt der Fokus zum auslösenden Knopf zurück. Dazu schließen auch die Zurück-Tasten von TV und WebView.</li>
       <li>Nur ein Overlay gleichzeitig; ein neues ersetzt das offene. <code>EasyGames.open('zotik', { fullscreen:false, title:'…', onClose: fn })</code> bietet weitere Optionen.</li>
-      <li><b>Controller und Sensoren:</b> Alle eingebetteten Fenster erlauben jetzt <code>gamepad</code>, <code>accelerometer</code> und <code>gyroscope</code>; ohne diese Freigabe funktionieren Gamepad und Neigungssteuerung in fremden Seiten nicht. Bei eigenem <code>iframe</code> bitte <code>allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone"</code> setzen.</li>
+      <li><b>Freigaben (Controller, Sensoren, Mikrofon, Kamera, Kopieren, Teilen):</b> Alle eingebetteten Fenster erlauben <code>gamepad</code>, <code>accelerometer</code>/<code>gyroscope</code> (Neigungssteuerung), <code>microphone</code> (Sing- und Sprachspiele), <code>camera</code> (QR-Code scannen), <code>clipboard-write</code> (Einladungslink kopieren), <code>web-share</code> (Teilen-Menü) und <code>screen-wake-lock</code> (Bildschirm bleibt beim TV-Spiel an); ohne Freigabe fehlt die Funktion in fremden Seiten. Die Sprachausgabe der Spiele läuft über die einbindende Seite (mit <code>easygames.js</code> automatisch), auch verschachtelt. Bei eigenem <code>iframe</code> bitte <code>allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock"</code> setzen.</li>
     </ul>
   </section>
 
@@ -731,7 +731,7 @@ GAMES.forEach(g => { const o = document.createElement('option'); o.value = g.id;
 function gen() {
   const all = $('gGame').value === 'all', g = all ? { id: 'all', title: 'easygames – alle Spiele', path: 'index.html?embed=1' } : GAMES.find(x => x.id === $('gGame').value), url = new URL(g.path, base).href;
   const mode = $('gMode').value, ratio = $('gRatio').value, max = $('gMax').value || '960px', fs = $('gFs').value;
-  const fsAttr = fs ? ' data-fullscreen="false"' : '', fsOpt = fs ? ', fullscreen: false' : '', allow = 'fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone';
+  const fsAttr = fs ? ' data-fullscreen="false"' : '', fsOpt = fs ? ', fullscreen: false' : '', allow = 'fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock';
   const lib = all ? 'index.html?embed=1' : '';
   $('oLink').textContent = all ? `<a href="${base}">Alle Spiele</a>` : `<a href="${url}">${g.title} spielen</a>`;
   if (mode === 'page') {
@@ -779,7 +779,7 @@ const genAll = () => { gen(); shareCodes(); };
 {
   const sel = $('bGame'); GAMES.forEach(g => { const o = document.createElement('option'); o.value = g.id; o.textContent = g.title; sel.appendChild(o); });
   const genB = () => {
-    const page = $('bPage').value, mode = $('bMode').value, id = page === 'ranglisten' ? $('bGame').value : '', allow = 'fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone';
+    const page = $('bPage').value, mode = $('bMode').value, id = page === 'ranglisten' ? $('bGame').value : '', allow = 'fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock';
     $('bGameL').style.display = page === 'ranglisten' ? '' : 'none';
     const title = page === 'ranglisten' ? 'easygames – Ranglisten' : page === 'konto' ? 'easygames – Konto' : page === 'chat' ? 'easygames – Chat' : page === 'bug' ? 'easygames – Fehler melden' : 'easygames – Erfolge', url = base + page + '.html?embed=1' + (id ? '&game=' + encodeURIComponent(id) : ''), direct = base + page + '.html' + (id ? '?game=' + encodeURIComponent(id) : '');
     const gameAttr = id ? ` data-game="${id}"` : '', gameOpt = id ? `{ game: '${id}' }` : '{}', fn = page === 'ranglisten' ? 'leaderboard' : page === 'konto' ? 'account' : page === 'chat' ? 'chat' : page === 'bug' ? 'bug' : 'achievements', icon = page === 'ranglisten' ? '🏆 Ranglisten' : page === 'konto' ? '👤 Konto' : page === 'chat' ? '💬 Chat' : page === 'bug' ? '🐞 Fehler melden' : '🏅 Erfolge';
