@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "8e711f0a2cc0",
- "generated": "2026-10-24T07:43:59+02:00",
- "commit": "4d72649cb1654193634778cd7dd87b84a370d0db",
+ "version": "1d255b6871db",
+ "generated": "2026-10-24T07:50:30+02:00",
+ "commit": "529a7d82502b4934c07482e12067905ec788715a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5548,33 +5548,33 @@
   },
   {
    "p": "easyclash/index.html",
-   "s": 17198,
-   "h": "13e8156799aefee53771f217676dcaca971f0e55c029dfabac35d328cf0d7593"
+   "s": 18241,
+   "h": "302cb2a0d6bb95cf283d7b07fb329821128be53af9eabccb57ad9598d6d73d1a"
   },
   {
    "p": "easyclash/js/app.js",
-   "s": 44968,
-   "h": "4e2999cab879f1e937686efe3ea4717b76398378865c5b9f05ee4dc72e7f479e"
+   "s": 46011,
+   "h": "27a1262b9fa43e5ac79f9c0819546aa4d7c2d458a1b9130a8f60d4efcc0ef604"
   },
   {
    "p": "easyclash/js/core.js",
-   "s": 21946,
-   "h": "3acf61f5c4bc914584961b938deb9451ee3ad4f6a3067655c5ee137ee34e6fc5"
+   "s": 27334,
+   "h": "28bc5e1cc47e52dbeaa48112a1a2b2690659987809996bfe0ace5f763effe44e"
   },
   {
    "p": "easyclash/js/model.js",
-   "s": 23121,
-   "h": "17ec3ab2547a52947bb527c025d68a551694125b29d1c8262cf72ac2c2ba2d47"
+   "s": 23446,
+   "h": "5797cf27a4d5e0efe0742140934fd1dee85f085d380f94a2c6aeec1b46ba3d84"
   },
   {
    "p": "easyclash/js/roster.js",
-   "s": 7456,
-   "h": "943e9b4bcb4353e77dce982649b4b757029529ea28c79e7b8a7487728ea05ddf"
+   "s": 18064,
+   "h": "314fa7d805246d0cb8b19c9b79e5e1fa49fbc43cb679d3b730ba38f76b7c3c78"
   },
   {
    "p": "easyclash/js/scene.js",
-   "s": 15612,
-   "h": "5141624ed7c5b91584cb02555aabca01e6fa5f83a6136db642f2cdd3af1f58d5"
+   "s": 16112,
+   "h": "216970fde25fb047b945b0bd254c6c23b549d2c610af75ac6bc5b6deb64ca299"
   },
   {
    "p": "easyclash/js/sound.js",
@@ -5588,8 +5588,8 @@
   },
   {
    "p": "easyclash/style.css",
-   "s": 20288,
-   "h": "3b8660cbdae7f61af9f4484c66691feb0edb298bb03b465e76e87894775030b6"
+   "s": 20838,
+   "h": "1fbdace23bd059c3ba899c4f42a3d2df64a1dd8397654f49241c74e8bbe42aa3"
   },
   {
    "p": "easyclash/sw.js",
@@ -5913,8 +5913,8 @@
   },
   {
    "p": "games.js",
-   "s": 40739,
-   "h": "ae14fa769512e2658b7e74392e9559bb292f99e7bcb8bf144a4debb9eb5974c8"
+   "s": 40818,
+   "h": "6954d230a378cff19a88ee3acf8739337186cb6d5182c38c5004648f46e7f10e"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6073,8 +6073,8 @@
   },
   {
    "p": "guides.js",
-   "s": 116389,
-   "h": "f16f47e752fe65a73acb43506bf5569b27bc8f403dacba26f9a550ac7993e06c"
+   "s": 116589,
+   "h": "5da54c0e08c2e02f5e1aa648fb3b755e64480d9bb903654fb988487ff01a5306"
   },
   {
    "p": "heute.html",
@@ -7953,8 +7953,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 177749,
-   "h": "fedfc59eaa3112333a8b8a01aa94fd3a93a523dceeedd27912d0a9963313518e"
+   "s": 178028,
+   "h": "5c282b22d0352bde018f1de9438597309f3c30f89e11fb13d246bb9cbc274ac7"
   },
   {
    "p": "taschi/card.svg",

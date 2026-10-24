@@ -117,7 +117,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <div class="padPick" id="pPick"><button class="btn" id="pPrev">◀</button><div><b id="pFighter">–</b><small id="pGame"></small></div><button class="btn" id="pNext">▶</button></div>
     <p class="padMsg" id="pMsg">Warte auf den Start …</p>
     <div class="padCtl"><div class="pZone" id="pZone"><div class="stick" id="pStick"><i></i></div></div>
-      <div class="tBtns pBtns"><button class="tb tp" data-b="p">👊<small>Schlag</small></button><button class="tb tk" data-b="k">🦵<small>Tritt</small></button><button class="tb ts" data-b="s">✨<small>Spezial</small></button><button class="tb tg" data-b="g">🤝<small>Wurf</small></button><button class="tb tbl" data-b="block">🛡<small>Block</small></button><button class="tb tf" data-b="f">🔥<small>Finale</small></button></div></div>
+      <div class="tBtns pBtns"><button class="tb ts" data-b="s">✨<small>Spezial</small></button><button class="tb t1" data-b="b1">1<small>Faust L</small></button><button class="tb t2" data-b="b2">2<small>Faust R</small></button><button class="tb tg" data-b="g">🤝<small>Wurf</small></button><button class="tb t3" data-b="b3">3<small>Fuß L</small></button><button class="tb t4" data-b="b4">4<small>Fuß R</small></button><button class="tb tbl" data-b="block">🛡<small>Block</small></button><button class="tb tf" data-b="f">🔥<small>Finale</small></button></div></div>
   </div>
 </section>
 
@@ -135,8 +135,8 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <div class="touch" id="touch" hidden>
     <div class="tZone" id="tZone"><div class="stick" id="tStick"><i></i></div></div>
     <div class="tBtns">
-      <button class="tb tp" data-b="p">👊<small>Schlag</small></button><button class="tb tk" data-b="k">🦵<small>Tritt</small></button>
-      <button class="tb ts" data-b="s">✨<small>Spezial</small></button><button class="tb tg" data-b="g">🤝<small>Wurf</small></button>
+      <button class="tb ts" data-b="s">✨<small>Spezial</small></button><button class="tb t1" data-b="b1">1<small>Faust L</small></button><button class="tb t2" data-b="b2">2<small>Faust R</small></button>
+      <button class="tb tg" data-b="g">🤝<small>Wurf</small></button><button class="tb t3" data-b="b3">3<small>Fuß L</small></button><button class="tb t4" data-b="b4">4<small>Fuß R</small></button>
       <button class="tb tbl" data-b="block">🛡<small>Block</small></button><button class="tb tf" data-b="f" id="tFin" hidden>🔥<small>Finale</small></button>
     </div>
   </div>
@@ -145,7 +145,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <!-- Overlays -->
 <div class="ov" id="ovPause" hidden><div class="card">
   <h2>Pause</h2>
-  <div class="menuBtns"><button class="btn big pri nav" id="pGo">▶ Weiter</button><button class="btn nav" id="pRestart">↻ Neu starten</button><button class="btn nav" id="pSel">🧑‍🤝‍🧑 Kämpferwahl</button><button class="btn nav" id="pHelp">📖 Steuerung</button><button class="btn nav" id="pOpts">⚙️ Optionen</button><button class="btn nav" id="pQuit">⏹ Zum Menü</button></div>
+  <div class="menuBtns"><button class="btn big pri nav" id="pGo">▶ Weiter</button><button class="btn nav" id="pRestart">↻ Neu starten</button><button class="btn nav" id="pSel">🧑‍🤝‍🧑 Kämpferwahl</button><button class="btn nav" id="pMoves">📜 Befehlsliste</button><button class="btn nav" id="pHelp">📖 Steuerung</button><button class="btn nav" id="pOpts">⚙️ Optionen</button><button class="btn nav" id="pQuit">⏹ Zum Menü</button></div>
 </div></div>
 
 <div class="ov end" id="ovEnd" hidden><div class="card big">
@@ -158,6 +158,13 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 </div></div>
 
 <div class="ov" id="ovVs" hidden><div class="vs"><div class="vsSide l"><img id="vsP1" alt=""><b id="vsN1"></b><small id="vsG1"></small></div><div class="vsMid"><span>VS</span><small id="vsInfo"></small></div><div class="vsSide r"><img id="vsP2" alt=""><b id="vsN2"></b><small id="vsG2"></small></div></div></div>
+
+<div class="ov" id="ovMoves" hidden><div class="card scroll">
+  <h2>📜 Befehlsliste</h2>
+  <p class="hint">1 = linke Faust · 2 = rechte Faust · 3 = linkes Bein · 4 = rechtes Bein · f = vor · b = zurück · d = unten · df = unten-vor. Zurück halten = blocken.</p>
+  <div class="moves" id="moveList"></div>
+  <button class="btn pri nav" id="movX" data-close>Fertig</button>
+</div></div>
 
 <div class="ov" id="ovOpts" hidden><div class="card">
   <h2>⚙️ Optionen</h2>
@@ -186,20 +193,22 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <h2>📖 So geht's</h2>
   <p>Zwei Kämpfer, eine runde Arena mit Wand. Wer zuerst die Lebensleiste des anderen leert, gewinnt die Runde – wer zuerst <b>2 Runden</b> holt (einstellbar), gewinnt den Kampf. Läuft die Zeit ab, gewinnt, wer mehr Leben hat.</p>
   <ul>
-    <li><b>👊 Schlag ×3</b> und <b>🦵 Tritt ×2</b> sind Ketten. Vor + Schlag = harter Schlag (an der Wand bleibt der Gegner kleben), Vor + Tritt = <b>Aushebler</b> → danach in der Luft weiter treffen (Luft-Kombo).</li>
-    <li><b>Ducken</b> (runter halten): hohe Angriffe gehen drüber. Unten + Schlag = schneller Tief-Stoß, unten + Tritt = Feger (wirft um).</li>
-    <li><b>🛡 Blocken:</b> zurück halten oder Block-Knopf. Stehend blockst du hoch und mittel, geduckt tief – mittlere Angriffe treffen Duckende.</li>
+    <li><b>Vier Knöpfe</b> wie bei den großen 3D-Prüglern: <b>1</b> linke Faust, <b>2</b> rechte Faust, <b>3</b> linkes Bein, <b>4</b> rechtes Bein. Zusammen mit einer Richtung wird daraus ein anderer Angriff – alle stehen in der <b>📜 Befehlsliste</b> (Pause).</li>
+    <li><b>Ketten:</b> 1,2 · 1,2,4 · 1,2,1 · 2,2 · 3,4 – schnell hintereinander drücken.</li>
+    <li><b>df+2</b> (unten-vor + rechte Faust) = Aufwärtshaken: hebt den Gegner aus – danach in der Luft weiter treffen (<b>Luft-Kombo</b>). f+2 an der Wand lässt ihn kleben.</li>
+    <li><b>Tief:</b> d+1, d+3 und d+4 (Feger). Hohe Angriffe gehen über Duckende drüber.</li>
+    <li><b>Blocken:</b> zurück halten (stehend hoch/mittel, unten-zurück tief) oder Block-Knopf. Mittlere Angriffe treffen Duckende.</li>
     <li><b>Seitschritt:</b> hoch/runter kurz antippen – gerade Angriffe gehen daneben. Hoch halten = Sprung. Doppelt vor = Sprint, doppelt zurück = Rückzug.</li>
-    <li><b>🤝 Wurf</b> geht durch jeden Block. Befreien: direkt nach dem Greifen selbst Wurf drücken.</li>
-    <li><b>✨ Spezial:</b> jede Figur hat ihren eigenen – Energiestoß, Sturmangriff, Wirbel, Sturzflug, Himmelsfaust oder Bodenbeben.</li>
-    <li><b>🔥 Wut:</b> unter 25 % Leben glühst du – dann einmal pro Runde das <b>Finale</b>: riesiger Schaden.</li>
+    <li><b>Wurf</b> (1+3 oder Wurf-Knopf) geht durch jeden Block. Befreien: direkt nach dem Greifen 1+3 oder Wurf.</li>
+    <li><b>✨ Spezial</b> (1+2): jede Figur hat ihren eigenen – Energiestoß, Sturmangriff, Wirbel, Sturzflug, Himmelsfaust oder Bodenbeben.</li>
+    <li><b>🔥 Wut:</b> unter 25 % Leben – dann einmal pro Runde das <b>Finale</b> (Finale-Knopf oder df+1+2).</li>
     <li><b>Konter:</b> Wer in einen startenden Angriff hineintrifft, macht mehr Schaden.</li>
   </ul>
   <h3>Steuerung</h3>
   <ul>
-    <li><b>Tastatur (Spieler 1):</b> WASD bzw. Pfeile bewegen, J Schlag, K Tritt, L Spezial, I Wurf, U Block, O Finale. Esc/P Pause.</li>
-    <li><b>Tastatur (Spieler 2 im Versus):</b> Pfeile bewegen, Ziffernblock 4 Schlag, 5 Tritt, 6 Spezial, 8 Wurf, 0 Block, 9 Finale (oder , . - und #).</li>
-    <li><b>Controller:</b> Stick/Steuerkreuz bewegen, X Schlag, A Tritt, Y Spezial, B Wurf, LB/RB Block, RT Finale, Start Pause. Zwei Controller = zwei Spieler.</li>
+    <li><b>Tastatur (Spieler 1):</b> WASD bzw. Pfeile bewegen, U = 1, I = 2, J = 3, K = 4, O Wurf, L Spezial, Leertaste Finale, H Block. Esc/P Pause.</li>
+    <li><b>Tastatur (Spieler 2 im Versus):</b> Pfeile bewegen, Ziffernblock 7 = 1, 8 = 2, 4 = 3, 5 = 4, 9 Wurf, 6 Spezial, 0 Finale, Komma Block (ohne Ziffernblock: , . M N).</li>
+    <li><b>Controller:</b> Stick/Steuerkreuz bewegen, X = 1, Y = 2, A = 3, B = 4, LB Wurf, RB Spezial, RT Finale, LT Block, Start Pause. Zwei Controller = zwei Spieler.</li>
     <li><b>Touch:</b> linker Daumen = Stick, rechts die Knöpfe.</li>
     <li><b>🌐 Online &amp; Handys:</b> Der große Bildschirm zeigt den Kampf, zwei Handys sind die Controller – per QR-Code oder Link von überall.</li>
   </ul>

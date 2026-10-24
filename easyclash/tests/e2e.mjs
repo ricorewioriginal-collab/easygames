@@ -31,9 +31,9 @@ await wait(p, 600); ok(await p.isVisible('#ovVs'), 'VS-Bildschirm'); await shot(
 await fightReady(p); ok(true, 'Runde 1 → Kampf!'); await wait(p, 200);
 // Tastatur: ran und Schlag-Kette
 await p.keyboard.down('KeyD'); await wait(p, 900); await p.keyboard.up('KeyD');
-await p.evaluate(() => { const W = ECApp.G.W; W.f[0].x = -.55; W.f[0].z = 0; W.f[1].x = .55; W.f[1].z = 0; W.f[1].state = 'idle'; ECApp.G.W.ai_off = true; });
+await p.evaluate(() => { const W = ECApp.G.W; W.f[0].x = -.55; W.f[0].z = 0; W.f[1].x = .55; W.f[1].z = 0; W.f[1].state = 'idle'; W.f[0].state = 'idle'; W.f[0].y = W.f[1].y = 0; W.f[0].mv = W.f[1].mv = null; ECApp.G.W.ai_off = true; });
 const hp0 = (await st(p)).hp[1];
-for (const k of ['KeyJ', 'KeyJ', 'KeyJ']) { await p.keyboard.press(k); await wait(p, 160); }
+for (const k of ['KeyU', 'KeyU', 'KeyU']) { await p.keyboard.press(k); await wait(p, 160); }
 await wait(p, 300); s = await st(p); ok(s.hp[1] < hp0, 'Schlag-Kette trifft (' + hp0 + ' → ' + s.hp[1] + ')'); await shot(p, '07-kampf');
 // Pause
 await p.keyboard.press('Escape'); await wait(p, 200); ok((await st(p)).ov.includes('ovPause'), 'Esc = Pause'); await shot(p, '08-pause');
@@ -42,7 +42,7 @@ const t1 = await p.evaluate(() => ECApp.G.W.time); await wait(p, 800); ok(await 
 for (let r = 0; r < 4; r++) {
   const s2 = await st(p); if (s2.ov.includes('ovEnd')) break;
   await fightReady(p); await p.evaluate(() => { const W = ECApp.G.W; W.ai_off = true; W.f[1].hp = 3; W.f[0].x = -.55; W.f[1].x = .55; W.f[0].z = W.f[1].z = 0; });
-  for (let k = 0; k < 6; k++) { await p.keyboard.press('KeyJ'); await wait(p, 180); }
+  for (let k = 0; k < 6; k++) { await p.keyboard.press('KeyU'); await wait(p, 180); }
   await p.waitForFunction(() => !document.getElementById('ovEnd').hidden || (ECApp.G.W && ECApp.G.W.phase === 'intro'), null, { timeout: 15000 }).catch(() => {});
   await wait(p, 600);
 }
@@ -52,7 +52,7 @@ await p.click('#eMenu'); await wait(p, 400);
 // Arcade
 await p.click('[data-go="arcade"]'); await wait(p, 400); await p.click('#selGo'); await wait(p, 600); ok(await p.isVisible('#ovVs'), 'Arcade startet'); await fightReady(p);
 await p.evaluate(() => { const W = ECApp.G.W; W.ai_off = true; W.f[1].hp = 3; W.f[0].x = -.55; W.f[1].x = .55; });
-for (let r = 0; r < 3; r++) { await fightReady(p).catch(() => {}); await p.evaluate(() => { const W = ECApp.G.W; if (W && W.phase === 'fight') { W.ai_off = true; W.f[1].hp = 3; W.f[0].x = -.55; W.f[1].x = .55; W.f[0].z = W.f[1].z = 0; } }); for (let k = 0; k < 6; k++) { await p.keyboard.press('KeyJ'); await wait(p, 180); } await p.waitForFunction(() => !document.getElementById('ovEnd').hidden || ECApp.G.W.phase === 'intro', null, { timeout: 15000 }).catch(() => {}); await wait(p, 500); if (await p.isVisible('#ovEnd')) break; }
+for (let r = 0; r < 3; r++) { await fightReady(p).catch(() => {}); await p.evaluate(() => { const W = ECApp.G.W; if (W && W.phase === 'fight') { W.ai_off = true; W.f[1].hp = 3; W.f[0].x = -.55; W.f[1].x = .55; W.f[0].z = W.f[1].z = 0; } }); for (let k = 0; k < 6; k++) { await p.keyboard.press('KeyU'); await wait(p, 180); } await p.waitForFunction(() => !document.getElementById('ovEnd').hidden || ECApp.G.W.phase === 'intro', null, { timeout: 15000 }).catch(() => {}); await wait(p, 500); if (await p.isVisible('#ovEnd')) break; }
 await p.waitForFunction(() => !document.getElementById('ovEnd').hidden, null, { timeout: 15000 });
 ok(await p.isVisible('#eNext') && (await p.textContent('#eStats')).includes('1 / 8'), 'Arcade: 1. Gegner besiegt, weiter zum nächsten'); await shot(p, '10-arcade');
 await p.click('#eMenu'); await wait(p, 300);
@@ -74,7 +74,7 @@ ok(await h.isVisible('#touch'), 'Touch-Knöpfe sichtbar');
 await h.evaluate(() => { const W = ECApp.G.W; W.f[0].x = -.55; W.f[1].x = .55; W.f[0].z = W.f[1].z = 0; ECApp.G.mode = 'versus'; ECApp.G.human = [true, true]; });
 const hpT = await h.evaluate(() => ECApp.G.W.f[1].hp);
 const tap = sel => h.evaluate(sel => { const el = document.querySelector(sel), r = el.getBoundingClientRect(), o = { bubbles: true, pointerId: 3, pointerType: 'touch', clientX: r.left + 10, clientY: r.top + 10 }; el.dispatchEvent(new PointerEvent('pointerdown', o)); setTimeout(() => el.dispatchEvent(new PointerEvent('pointerup', o)), 60); }, sel);
-await tap('.tb.tp'); await wait(h, 400); await tap('.tb.tk'); await wait(h, 600);
+await tap('.tb.t1'); await wait(h, 400); await tap('.tb.t3'); await wait(h, 600);
 ok(await h.evaluate(() => ECApp.G.W.f[1].hp) < hpT, 'Touch: Schlag/Tritt treffen');
 await wait(h, 300); await shot(h, '11-handy-kampf');
 await h.evaluate(() => ECApp.openSelect('cpu')); await wait(h, 600); await shot(h, '12-handy-auswahl');

@@ -1665,7 +1665,7 @@
   {
    "id": "easyclash",
    "title": "EASYCLASH – Das Turnier aller Helden",
-   "desc": "Modernes 3D-Prügelspiel mit den Helden aus den easygames: Rico, die Sumo-Stars, Hopsis, die Hüpfstraße-Figuren und Ulk-Kämpfer wie Kampf-Würstchen und Klopapier-Ninja. Schlag- und Tritt-Ketten, Seitschritt, Würfe, Aushebler mit Luft-Kombos, Spezialangriff je Figur und das Finale. Arcade, Versus zu zweit, Gegen CPU, Training und 🌐 Online & Handys als Controller.",
+   "desc": "Modernes 3D-Prügelspiel mit 64 Helden aus 15 easygames – von Rico, den Sumo-Stars und Hopsis über KIKO, Krawallvögel, Kart- und Urwaldlager-Stars bis zu Ulk-Kämpfern wie Kampf-Würstchen und Klopapier-Ninja. Vier Knöpfe für Fäuste und Füße, Richtung + Knopf, Ketten, Seitschritt, Würfe, Aushebler mit Luft-Kombos, Spezialangriff je Figur und das Finale. Arcade, Versus zu zweit, Gegen CPU, Training und 🌐 Online & Handys als Controller.",
    "icon": "🥊",
    "img": "easyclash/card.jpg",
    "bg": "linear-gradient(145deg,#ff3d6e,#3a0f2a 55%,#ffc83d)",
@@ -1679,11 +1679,11 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "EASYCLASH ist ein 3D-Prügelspiel mit den Helden aus den easygames. Zwei Kämpfer stehen in einer runden Arena mit Wand; wer zuerst die Lebensleiste des anderen leert, gewinnt die Runde, wer zuerst 2 Runden holt, den Kampf. Schlag ×3 und Tritt ×2 sind Ketten, vor + Schlag ist ein harter Schlag (an der Wand bleibt der Gegner kleben), vor + Tritt ist ein Aushebler für Luft-Kombos. Ducken lässt hohe Angriffe drübergehen, unten + Tritt ist ein Feger. Blocken mit zurück oder dem Block-Knopf: stehend hoch und mittel, geduckt tief. Hoch/runter kurz antippen ist ein Seitschritt, gegen den gerade Angriffe danebengehen. Würfe gehen durch jeden Block und lassen sich mit Wurf befreien. Jede Figur hat einen eigenen Spezialangriff (Energiestoß, Sturmangriff, Wirbel, Sturzflug, Himmelsfaust oder Bodenbeben). Unter 25 % Leben glühst du vor Wut und hast einmal pro Runde das Finale. Modi: 🏆 Arcade (8 Gegner, Punkte für die Rangliste), ⚔️ Versus zu zweit, 🤖 Gegen CPU (3 Stärken), 🥊 Training und 🌐 Online & Handys (der große Bildschirm zeigt den Kampf, zwei Handys sind die Controller).",
+    "anleitung": "EASYCLASH ist ein 3D-Prügelspiel mit den Helden aus den easygames. Zwei Kämpfer stehen in einer runden Arena mit Wand; wer zuerst die Lebensleiste des anderen leert, gewinnt die Runde, wer zuerst 2 Runden holt, den Kampf. Vier Knöpfe wie bei den großen 3D-Prüglern: 1 linke Faust, 2 rechte Faust, 3 linkes Bein, 4 rechtes Bein – mit einer Richtung wird daraus ein anderer Angriff (alle in der Befehlsliste im Pausenmenü). Ketten: 1,2 · 1,2,4 · 1,2,1 · 2,2 · 3,4. Unten-vor + 2 ist der Aufwärtshaken für Luft-Kombos, vor + 2 an der Wand lässt den Gegner kleben, unten + 4 ist ein Feger. Ducken lässt hohe Angriffe drübergehen. Blocken mit zurück oder dem Block-Knopf: stehend hoch und mittel, geduckt tief. Hoch/runter kurz antippen ist ein Seitschritt, gegen den gerade Angriffe danebengehen. Würfe gehen durch jeden Block und lassen sich mit Wurf befreien. Jede Figur hat einen eigenen Spezialangriff (Energiestoß, Sturmangriff, Wirbel, Sturzflug, Himmelsfaust oder Bodenbeben). Unter 25 % Leben glühst du vor Wut und hast einmal pro Runde das Finale. Modi: 🏆 Arcade (8 Gegner, Punkte für die Rangliste), ⚔️ Versus zu zweit, 🤖 Gegen CPU (3 Stärken), 🥊 Training und 🌐 Online & Handys (der große Bildschirm zeigt den Kampf, zwei Handys sind die Controller).",
     "steuerung": [
-     "Tastatur Spieler 1: WASD oder Pfeile bewegen, J Schlag, K Tritt, L Spezial, I Wurf, U Block, O Finale, Esc/P Pause.",
-     "Tastatur Spieler 2 (Versus): Pfeile bewegen, Ziffernblock 4 Schlag, 5 Tritt, 6 Spezial, 8 Wurf, 0 Block, 9 Finale.",
-     "Gamecontroller: Stick/Steuerkreuz bewegen, X Schlag, A Tritt, Y Spezial, B Wurf, LB/RB Block, RT Finale, Start Pause – zwei Controller für zwei Spieler.",
+     "Tastatur Spieler 1: WASD bewegen, U = 1, I = 2, J = 3, K = 4, O Wurf, L Spezial, Leertaste Finale, H Block, Esc/P Pause.",
+     "Tastatur Spieler 2 (Versus): Pfeile bewegen, Ziffernblock 7 = 1, 8 = 2, 4 = 3, 5 = 4, 9 Wurf, 6 Spezial, 0 Finale.",
+     "Gamecontroller: Stick/Steuerkreuz bewegen, X = 1, Y = 2, A = 3, B = 4, LB Wurf, RB Spezial, RT Finale, LT Block, Start Pause – zwei Controller für zwei Spieler.",
      "Touch: linker Daumen auf den Stick, rechts die Knöpfe; online ist das Handy der Controller."
     ],
     "tipps": [
@@ -1692,7 +1692,7 @@
      "Spar dir das Finale für den Moment auf, in dem der Gegner einen Fehler macht."
     ]
    },
-   "size": 189895,
+   "size": 209352,
    "files": 11,
    "offline": true,
    "cloud": {
