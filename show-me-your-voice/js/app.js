@@ -436,7 +436,7 @@
     persist();
     runStage({ mode: 'career', playId, panel: S.panelOf(s, s.round), sel: Object.assign({}, prep, { style: mu.style }), radio: mu.radio, talk: { symp: talk.symp, votes: talk.votes },
       parts: buildParts(def, S.hash(s.seed + ':perf:' + s.round), song, s.round, mu), juryStop: def.id === 'casting',
-      title: def.icon + ' ' + def.name + (mu.radio ? '' : ' · „' + song + '“'), bg: def.bg, rival, group, mic: def.parts.includes('pitch'), ret: 'sBack' });
+      title: def.icon + ' ' + def.name + (mu.radio ? '' : ' · „' + song + '“'), bg: def.bg, rival, group, ret: 'sBack' });
   }
   function startFree() {
     const def = D.ROUNDS[0], mu = musicOf(prep);
@@ -797,7 +797,7 @@
       : t.id === 'cues' ? { type: 'cues', len: 22, bpm: 100, style: 'soul', seed, win: 1.15, title: t.icon + ' ' + t.name, sub: 'Drück die Taste zum Publikums-Signal' }
         : { type: 'pitch', len: 20, bpm: 96, style: 'ballade', seed, title: t.icon + ' ' + t.name, sub: 'Bleib auf der Linie' };
     const career = trainMode === 'career' && save.season && save.season.status === 'backstage' && save.season.trainLeft > 0;
-    runStage({ mode: 'train', train: t, career, parts: [part], title: t.icon + ' ' + t.name, bg: 'backstage', mic: t.id === 'pitch', noJury: true, ret: 'sTrain' });
+    runStage({ mode: 'train', train: t, career, parts: [part], title: t.icon + ' ' + t.name, bg: 'backstage', noJury: true, ret: 'sTrain' });
   });
   function finishTraining(f, out) {
     const r = out.parts[0];
@@ -1036,7 +1036,7 @@
     if (d.t === 'perf' && h.phase === 'perform' && d.r === h.round && h.field.includes(from) && !h.perf[from]) {
       const crit = {}; S.CK.forEach(k => { crit[k] = S.clamp(+(d.crit && d.crit[k]) || 0); });
       h.perf[from] = { perf: S.clamp(+d.perf || 0), crit }; hostSync(); hostCheck();
-    } else if (d.t === 'vote' && h.phase === 'vote' && d.r === h.round && !h.votes[from] && h.field.includes(d.for) && d.for !== from) {
+    } else if (d.t === 'vote' && h.phase === 'vote' && d.r === h.round && !h.votes[from] && h.field.includes(d.for) && d.for !== from && h.players.some(p => p.id === from && p.on)) {   // nur zugelassene Personen
       h.votes[from] = d.for; hostSync(); hostCheck();
     }
   }
