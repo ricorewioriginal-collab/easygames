@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/deluxe-2048-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="2048 Deluxe"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#2a0f52">
+<title>2048 Deluxe – Die Zahlen-Show mit Rico</title>
+<meta name="description" content="2048 Deluxe: das Zahlen-Schiebespiel in 3D mit Moderator Rico. Gleiche Kacheln zusammenschieben bis 2048 und weiter – Klassisch, Blitz, Tages-2048 und Zen, Bretter von 3×3 bis 6×6, Rückgängig und Hammer.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage"></div>
+<div class="bubble" id="bubble" hidden></div>
+
+<!-- Ladebildschirm -->
+<section class="scr on" id="sLoad">
+  <div class="load">
+    <div class="logo"><i>20</i><i>48</i></div>
+    <h1 class="title">2048<span>DELUXE</span></h1>
+    <div class="bar"><i id="loadBar"></i></div>
+    <p class="tip" id="loadTip">Rico stimmt das Mikro ein …</p>
+  </div>
+</section>
+
+<!-- Titel -->
+<section class="scr" id="sTitle">
+  <div class="titleBox">
+    <h1 class="title big">2048<span>DELUXE</span></h1>
+    <p class="claim">Die Zahlen-Show mit Rico 💜</p>
+    <button class="press nav" id="bPress">▶ <span id="pressTxt">Drücke Start</span></button>
+  </div>
+  <p class="corner"><a href="../" id="backLink">← Alle Spiele</a></p>
+</section>
+
+<!-- Hauptmenü im Konsolen-Stil -->
+<section class="scr" id="sMenu">
+  <div class="menuWrap">
+    <header class="mHead"><h1 class="title small">2048<span>DELUXE</span></h1><div class="mStat" id="menuStat"></div></header>
+    <div class="tiles" id="tiles">
+      <button class="tile nav hero" data-go="cont" id="tCont" hidden><i>▶</i><b>Weiterspielen</b><small id="contInfo"></small></button>
+      <button class="tile nav" data-go="classic" id="tClassic"><i>🎯</i><b>Klassisch</b><small>Bis 2048 – und weiter</small></button>
+      <button class="tile nav" data-go="blitz"><i>⚡</i><b>Blitz</b><small>3 Minuten, so viel wie geht</small></button>
+      <button class="tile nav" data-go="daily"><i>📅</i><b>Tages-2048</b><small id="dailyInfo">Gleiches Spiel für alle</small></button>
+      <button class="tile nav" data-go="zen"><i>🧘</i><b>Zen</b><small>Ohne Druck, alles rückgängig</small></button>
+      <button class="tile nav" data-go="rec"><i>🏅</i><b>Rekorde</b><small>Bestwerte &amp; Kacheln</small></button>
+      <button class="tile nav" data-go="opts"><i>⚙️</i><b>Optionen</b><small>Ton, Musik, Grafik</small></button>
+      <button class="tile nav" data-go="help"><i>📖</i><b>Anleitung</b><small>Steuerung &amp; Tipps</small></button>
+    </div>
+    <footer class="mFoot"><span class="hintKeys" id="menuKeys"></span><a href="../" class="nav" id="backLink2">← Alle Spiele</a></footer>
+  </div>
+</section>
+
+<!-- Spiel -->
+<section class="scr game" id="sGame">
+  <div class="hud" id="hud">
+    <div class="hBox"><small id="hScoreL">Punkte</small><b id="hScore">0</b><em class="gain" id="hGain"></em></div>
+    <div class="hBox"><small id="hBestL">Rekord</small><b id="hBest">0</b></div>
+    <div class="hBox" id="hTimeBox" hidden><small>Zeit</small><b id="hTime">3:00</b></div>
+    <button class="icon nav" id="bPause" aria-label="Pause"><i class="pz"></i></button>
+  </div>
+  <div class="tools" id="tools">
+    <button class="tool nav" id="bUndo" aria-label="Rückgängig">↶<span id="nUndo">0</span></button>
+    <div class="mode" id="hMode"></div>
+    <button class="tool nav" id="bHammer" aria-label="Hammer">🔨<span id="nHammer">0</span></button>
+  </div>
+  <div class="hammerHint" id="hammerHint" hidden>🔨 Tippe die Kachel an, die weg soll · <button class="btn small" id="bHammerX">Abbrechen</button></div>
+  <div class="swipe" id="swipe"></div>
+</section>
+
+<!-- Overlays -->
+<div class="ov" id="ovSize" hidden><div class="card">
+  <h2 id="szTitle">Brettgröße</h2>
+  <div class="chips sizes" id="szChips"></div>
+  <p class="hint" id="szInfo"></p>
+  <div class="rowBtns"><button class="btn nav" id="szBack" data-close>← Zurück</button><button class="btn pri nav" id="szGo">▶ Los geht's</button></div>
+</div></div>
+
+<div class="ov" id="ovWin" hidden><div class="card big win">
+  <div class="winTile">2048</div>
+  <h2>Du hast es geschafft! 💜</h2>
+  <p class="hint" id="wInfo"></p>
+  <div class="rowBtns wrap"><button class="btn pri nav" id="wGo">▶ Weiterspielen</button><button class="btn nav" id="wNew">↻ Neues Spiel</button><button class="btn nav" id="wMenu">☰ Menü</button></div>
+</div></div>
+
+<div class="ov end" id="ovEnd" hidden><div class="card big">
+  <p class="kicker" id="eKick">Spiel vorbei</p>
+  <h2 class="endTitle" id="eTitle">Keine Züge mehr</h2>
+  <div class="newRec" id="eRec" hidden>⭐ Neuer Rekord!</div>
+  <div class="bigScore" id="eScore">0</div>
+  <div class="stats" id="eStats"></div>
+  <div class="rowBtns wrap"><button class="btn pri nav" id="eAgain">↻ Nochmal</button><button class="btn nav" id="eUndo">↶ Letzten Zug zurück</button><button class="btn nav" id="eShare">📤 Teilen</button><button class="btn nav" id="eMenu">☰ Menü</button></div>
+</div></div>
+
+<div class="ov" id="ovPause" hidden><div class="card">
+  <h2>Pause</h2>
+  <div class="menuBtns"><button class="btn big pri nav" id="pGo">▶ Weiter</button><button class="btn nav" id="pRestart">↻ Neues Spiel</button><button class="btn nav" id="pOpts">⚙️ Optionen</button><button class="btn nav" id="pHelp">📖 Steuerung</button><button class="btn nav" id="pQuit">⏹ Zum Menü</button></div>
+</div></div>
+
+<div class="ov" id="ovOpts" hidden><div class="card">
+  <h2>⚙️ Optionen</h2>
+  <label class="check"><input type="checkbox" id="sSound"> Soundeffekte</label>
+  <label class="check"><input type="checkbox" id="sMusic"> Musik</label>
+  <label class="check"><input type="checkbox" id="sVib"> Vibration</label>
+  <label class="check"><input type="checkbox" id="sRico"> Rico kommentiert (Sprechblasen)</label>
+  <label class="check"><input type="checkbox" id="sLow"> Sparmodus (weniger 3D-Details, nach Neustart)</label>
+  <button class="btn pri nav" id="optX" data-close>Fertig</button>
+</div></div>
+
+<div class="ov" id="ovRec" hidden><div class="card">
+  <h2>🏅 Rekorde</h2>
+  <div class="stats" id="recList"></div>
+  <p class="hint">Der Rekord (Klassisch, Blitz, Tages-2048) landet in der Rangliste und wird mit deinem Konto gespeichert.</p>
+  <button class="btn pri nav" id="recX" data-close>Fertig</button>
+</div></div>
+
+<div class="ov" id="ovHelp" hidden><div class="card scroll">
+  <h2>📖 So geht's</h2>
+  <p>Schiebe <b>alle Kacheln</b> gleichzeitig in eine Richtung. Treffen zwei <b>gleiche Zahlen</b> aufeinander, verschmelzen sie zur doppelten Zahl – und es gibt so viele Punkte, wie die neue Kachel zeigt. Nach jedem Zug kommt eine neue 2 oder 4 dazu. Ziel: die <b>2048</b>! Danach darfst du weiterspielen. Geht kein Zug mehr, ist die Show vorbei.</p>
+  <ul>
+    <li><b>🎯 Klassisch:</b> Bretter von 3×3 (knifflig) bis 6×6 (lang). Das Spiel wird automatisch gespeichert.</li>
+    <li><b>⚡ Blitz:</b> 3 Minuten auf 4×4 – so viele Punkte wie möglich.</li>
+    <li><b>📅 Tages-2048:</b> Jeden Tag die gleichen neuen Kacheln für alle – vergleich dich mit Freunden.</li>
+    <li><b>🧘 Zen:</b> beliebig oft rückgängig und hämmern, ohne Rangliste.</li>
+    <li><b>↶ Rückgängig</b> nimmt den letzten Zug zurück, <b>🔨 Hammer</b> zerschlägt eine Kachel. Neue gibt's für jede 256 (↶) und jede 1024 (🔨).</li>
+    <li><b>Rico</b> moderiert deine Show – er feiert große Kacheln und warnt, wenn's eng wird.</li>
+  </ul>
+  <h3>Steuerung</h3>
+  <ul>
+    <li><b>Touch / Maus:</b> wischen (oder mit gedrückter Maus ziehen).</li>
+    <li><b>Tastatur:</b> Pfeiltasten oder WASD schieben, U/Z/Rücktaste rückgängig, H Hammer, Esc/P Pause.</li>
+    <li><b>Controller:</b> Steuerkreuz oder Stick schieben, X rückgängig, Y Hammer (dann Steuerkreuz + A), Start Pause.</li>
+  </ul>
+  <h3>Tipps</h3>
+  <ul><li>Leg die größte Zahl in eine Ecke und lass sie dort.</li><li>Schiebe möglichst nur in zwei, drei Richtungen.</li><li>Halte eine Reihe voll, damit die Ecke nicht wegrutscht.</li></ul>
+  <button class="btn pri nav" id="helpX" data-close>Los geht's</button>
+</div></div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../device.js"></script>
+<script src="js/core.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="deluxe-2048" data-prefix="deluxe-2048-" defer></script>
+</body>
+</html>

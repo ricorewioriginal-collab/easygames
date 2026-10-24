@@ -386,7 +386,7 @@
   U.A.msave = () => { U.save(); };
   U.A.log = () => U.P.log();
   U.A.reports = () => U.P.reports();
-  U.A.totitle = () => { U.save(true); if (U.battle) U.P.endBattle && U.P.endBattle(true); U.title(); };
+  U.A.totitle = () => { if (U.battle && U.P.endBattle) U.P.endBattle(true); U.save(true); U.title(); };
 
   // ---------- Speichern / Laden ----------
   U.save = function (silent, slot) {

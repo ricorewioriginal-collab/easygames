@@ -111,7 +111,7 @@
         reward: { coin: 200 } },
       { id: '5c', name: 'Nester ausräuchern', type: 'Seuchennester zerstören',
         intro: [['jorin', 'Drei Nester speisen den Schwarm. Räuchert sie aus – die Region wird es euch danken.']],
-        goals: [{ t: 'Zerstöre 3 Seuchennester', g: (S, b) => [Math.min(3, since(S, b, 'lairs')), 3], hint: 'tab:welt' }],
+        goals: [{ t: 'Zerstöre 3 Seuchennester (auch frühere zählen)', g: S => [Math.min(3, st(S, 'lairs')), 3], hint: 'tab:welt' }],
         reward: { med: 80, coin: 300 } },
       { id: '5d', name: 'Die Seuchenquelle', type: 'Finale',
         intro: [['fuerst', 'Ihr kleinen Feuer in der Nacht … Ich bin der Schwarm. Ich bin jedes Fieber.'], ['hildrun', 'Dann löschen wir dich aus. Für Aschental. Für alle, die wir nicht retten konnten.']],

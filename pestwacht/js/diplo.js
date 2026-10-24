@@ -307,6 +307,9 @@
     const t = S.world.tiles[tile], s = Wd().siteAt(S, tile), prev = t.own;
     let txt = '';
     if (a.owner === 'P' && s && s.story) S.storyFlags[s.story] = 1;
+    // verschollener Held in einer Ruine: auch, wenn ein Bot sie vorher geräumt hat
+    const heroHere = a.owner === 'P' && s && s.type === 'ruin' && s.hero && !S.heroes[s.hero] ? s.hero : null;
+    if (heroHere) { PW.Heroes.unlock(S, heroHere, 'in einer Ruine gefunden'); s.hero = null; }
     // neutrale Orte säubern
     if (s && s.gar && !s.cleared && !prev) {
       s.cleared = true;
@@ -320,7 +323,6 @@
       } else { rew.coin = 30 * s.lvl; txt = 'Plünderer vertrieben'; }
       if (a.owner === 'P') {
         a.gain = Object.assign(a.gain || {}, rew);
-        if (s.type === 'ruin' && s.hero && !S.heroes[s.hero]) { PW.Heroes.unlock(S, s.hero, 'in einer Ruine gefunden'); s.hero = null; txt += ' – ein verschollener Held schließt sich an!'; }
       } else { const f = A().get(S, a.owner); if (f) for (const k in rew) { f.res[k] = (f.res[k] || 0) + rew[k]; f.ledger.made[k] = (f.ledger.made[k] || 0) + rew[k]; } }
       s.gar = null;
       if (a.mission !== 'occupy' || s.type === 'boss') return txt;

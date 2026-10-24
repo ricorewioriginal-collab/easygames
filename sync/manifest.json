@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c54bdfa7a93a",
- "generated": "2026-10-24T04:33:37+02:00",
- "commit": "b58882d21218d53910b552cc880287197c20fef4",
+ "version": "6b498576e6ef",
+ "generated": "2026-10-24T02:54:00+00:00",
+ "commit": "ec186d859758fb9067c14b30f7413c5e88e1f89b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2841,
-   "h": "e7df94feb883935c1ecd6ba750be7bcc40676a0d8fbf389cd8423610005d41ba"
+   "s": 2866,
+   "h": "e3209a0ccba30a232faded58f5f8972f1061f9f2008d2bec2538074407f2fd7e"
   },
   {
    "p": "chat.html",
@@ -5308,8 +5308,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22269,
-   "h": "27f41c16d00452aeef8b7b3c91168f33d7be917f4f9d222b8d4836d1df8300cd"
+   "s": 22284,
+   "h": "1de74b0e6dcea2d14cdd91d7ab9df11c8297d0766378b61f2fe12c4e010406c6"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -5490,6 +5490,51 @@
    "p": "datenschutz.html",
    "s": 16145,
    "h": "048d59f2d324cad96974ae9665909e5be50e78afa51e56d659bcbe2803e3d582"
+  },
+  {
+   "p": "deluxe-2048/card.jpg",
+   "s": 46716,
+   "h": "7c6141208273c4e358ab7dc19286ec76bf327fd539ff80e75f606b9ec465cb5d"
+  },
+  {
+   "p": "deluxe-2048/index.html",
+   "s": 12386,
+   "h": "d34db4a00421bb622c6a30d5fcf512be719f0493a776f6c53e35ffc6ce5246b5"
+  },
+  {
+   "p": "deluxe-2048/js/app.js",
+   "s": 30402,
+   "h": "0788ae9beeacdc81af60c053a32e9c77c4cd6d820424ad1ce486aa5c21778f6c"
+  },
+  {
+   "p": "deluxe-2048/js/core.js",
+   "s": 5353,
+   "h": "290419b60860511b7c990effa412d6b99146d7688722f955d45b180891c678ba"
+  },
+  {
+   "p": "deluxe-2048/js/scene.js",
+   "s": 29633,
+   "h": "bfe5c5fca6f677ea8eebf15f1b5bacdbcc79ac717e7c1314e5589930bfe10c8c"
+  },
+  {
+   "p": "deluxe-2048/js/sound.js",
+   "s": 5521,
+   "h": "eb192ed3b12d44823e18ebcb7afe592137cc5840adb321fa24d1fd422bb77b77"
+  },
+  {
+   "p": "deluxe-2048/manifest.webmanifest",
+   "s": 788,
+   "h": "11f3849d0eb263b89b2d8d9de4f87331824d4c35b1463037572bead0e852867e"
+  },
+  {
+   "p": "deluxe-2048/style.css",
+   "s": 15964,
+   "h": "e6d4c5e219ba9735c060a27fd4bafd7eaee57261c34bba7d4f6baa50bc6cef75"
+  },
+  {
+   "p": "deluxe-2048/sw.js",
+   "s": 2012,
+   "h": "431ba962d4e5130f456f4ca296c57a7501c27c51f85ee503bb7ba461b5b7bf59"
   },
   {
    "p": "device.js",
@@ -5813,8 +5858,8 @@
   },
   {
    "p": "games.js",
-   "s": 38369,
-   "h": "9ae7ebfbbce924ee3fc8377063096cb0a4174594d5065861b5a89322273bd7da"
+   "s": 38951,
+   "h": "be538e7420dc6c8e944f9af6aefc62e335085d1c2852cd3b592b8d4210d02c12"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5973,8 +6018,8 @@
   },
   {
    "p": "guides.js",
-   "s": 109444,
-   "h": "74591b1c35c9f797dde17565df698f48eded320f6ec9ab81bcfa7fd346abb7ea"
+   "s": 110947,
+   "h": "570fc99d2fa8333022421bcfc584a39eee2131c3b3ba2814d44aeb837f50bd7f"
   },
   {
    "p": "heute.html",
@@ -6678,8 +6723,8 @@
   },
   {
    "p": "pestwacht/js/campaign.js",
-   "s": 17123,
-   "h": "e4918d15583a8fc86c5cf293bee342e53316b253ae13f9875d375c8c8efc9193"
+   "s": 17136,
+   "h": "03e4b6f433ff1387fb9468690a9c357b0511ec709b14faaa5455c4d325d4797b"
   },
   {
    "p": "pestwacht/js/city.js",
@@ -6698,8 +6743,8 @@
   },
   {
    "p": "pestwacht/js/diplo.js",
-   "s": 24701,
-   "h": "28c8eea0da5a95f0d22c49f4b74695f319fa46e82ec7a96139d8610148b63e81"
+   "s": 24798,
+   "h": "5e5700ca136230b044b507a14fa391dfc2ab57bb67fd07eba2fafaf30d84861b"
   },
   {
    "p": "pestwacht/js/econ.js",
@@ -6749,7 +6794,7 @@
   {
    "p": "pestwacht/js/ui.js",
    "s": 47300,
-   "h": "bdddbaa3cf1c044d70bb1f34d160ac750bdbdc4b7981f5d7f5dc94576b11384a"
+   "h": "7b045236a89e09039a33b60eca34b347d7e2f4ff988cc5e1b52313ffa4dcf739"
   },
   {
    "p": "pestwacht/js/ward.js",
@@ -6758,8 +6803,8 @@
   },
   {
    "p": "pestwacht/js/waves.js",
-   "s": 18511,
-   "h": "2b12b89515534ffb970eeb498ad1a169bb54c701be7cee988022a52ab602f552"
+   "s": 18574,
+   "h": "659d5c1fd70e136549472745f69b1418db265543e73ad3cf9e590c9ba4b3fb35"
   },
   {
    "p": "pestwacht/js/world.js",
@@ -7693,8 +7738,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 167437,
-   "h": "5b0a38b9887cae08772377a8272be1ed64a656cb6f6e48053fc929deabeb4fa8"
+   "s": 169751,
+   "h": "4d72efd3c534068d9e867635c1a6685708c878cb10636578f73398c6eb40e734"
   },
   {
    "p": "taschi/card.svg",

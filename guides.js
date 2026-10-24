@@ -498,6 +498,19 @@ window.EASYGAMES_GUIDES = {
    "Auf Eis nie mit Vollgas zum Rand – du rutschst weiter, als du denkst."
   ]
  },
+ "deluxe-2048": {
+  "anleitung": "2048 Deluxe ist das Zahlen-Schiebespiel in 3D: Alle Kacheln rutschen gleichzeitig in die Richtung, in die du schiebst. Treffen zwei gleiche Zahlen aufeinander, verschmelzen sie zur doppelten Zahl, und du bekommst so viele Punkte, wie die neue Kachel zeigt. Nach jedem Zug kommt eine 2 oder 4 dazu. Ziel ist die 2048 – danach darfst du weiterspielen. Geht kein Zug mehr, ist die Show vorbei. Moderator Rico steht mit seinem Mikro neben dem Brett, feiert große Kacheln und warnt, wenn es eng wird. Modi: 🎯 Klassisch (Bretter von 3×3 bis 6×6, wird automatisch gespeichert), ⚡ Blitz (3 Minuten auf 4×4), 📅 Tages-2048 (gleiche Kacheln für alle, Ergebnis teilen) und 🧘 Zen (beliebig oft rückgängig, ohne Rangliste). Joker: ↶ Rückgängig (neu für jede 256) und 🔨 Hammer, der eine Kachel zerschlägt (neu für jede 1024).",
+  "steuerung": [
+   "Touch / Maus: in die gewünschte Richtung wischen; beim Hammer die Kachel antippen.",
+   "Tastatur: Pfeiltasten oder WASD schieben, U/Z/Rücktaste rückgängig, H Hammer (Pfeile + Enter), Esc/P Pause.",
+   "Gamecontroller: Steuerkreuz oder Stick schieben, X rückgängig, Y Hammer (Steuerkreuz + A), B abbrechen, Start Pause; im Menü Steuerkreuz und A."
+  ],
+  "tipps": [
+   "Leg die größte Zahl in eine Ecke und lass sie dort.",
+   "Schiebe möglichst nur in zwei, drei Richtungen – die vierte nur im Notfall.",
+   "Hebe den Hammer für eine einzelne Kachel auf, die deine Reihe blockiert."
+  ]
+ },
  "frequenzminen": {
   "anleitung": "Frequenz-Minen 3D ist Minesweeper in modern: Das Spielfeld liegt auf einer Radarscheibe, unter einigen Funkplatten stecken Störsender. Decke alle anderen Platten auf – jede offene Platte zeigt, wie viele Störsender auf den 8 Nachbarfeldern rauschen, leere Platten decken ihre Nachbarn automatisch auf. Der erste Klick ist immer sicher. 🚩 Peiler markieren vermutete Störsender, eine Zahl antippen deckt die übrigen Nachbarn auf, wenn genug Peiler stehen. 💡 Peilung zeigt dreimal pro Runde eine sichere Platte (+20 Sekunden). Modi: Leicht (9×9, 10 Störsender), Mittel (12×12, 24), Schwer (12×18, 44) und 📅 Tagesrätsel – für alle gleich, Ergebnis teilen. Punkte: jede freie Platte zählt, beim Sieg Tempo-Bonus (Leicht ×1, Mittel ×2, Schwer ×4). 📻 spielt einen Sender live das ganze Spiel über.",
   "steuerung": [
