@@ -43,7 +43,7 @@ export function createUI({ SFX, Audio_, touch, onMenu, panel }) {
   // ------------------------------------------------------------ Navigation in Dialogen und Bildschirmen
   // Ebene von oben nach unten: Dialoge, Karte, Einrichtung, Menü. Liefert [Container, Zurück-Knopf].
   function layer() {
-    for (const [id, back] of [['err', null], ['rules', 'rulesOk'], ['pair', 'bPairOk'], ['card', null], ['setup', 'bSetBack']]) { const el = $(id); if (el && !el.hidden) return [el, back]; }
+    for (const [id, back] of [['err', null], ['rules', 'rulesOk'], ['pair', 'bPairOk'], ['pick', 'bPickOk'], ['card', null], ['setup', 'bSetBack']]) { const el = $(id); if (el && !el.hidden) return [el, back]; }
     return null;
   }
   function nav(k) {
