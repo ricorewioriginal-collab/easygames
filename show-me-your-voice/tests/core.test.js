@@ -287,3 +287,24 @@ test('Live-Wertung: saubere gehaltene Töne geben Perfekt und Combo, schiefe Tö
   assert.ok(pf > 20 && edge.end().best > 10, 'Ton genau zwischen zwei Halbtönen bleibt ein gehaltener Ton: ' + pf);
   assert.strictEqual(S.singTitle(95), '🌟 Superstar'); assert.strictEqual(S.singTitle(10), '🚿 Duschsänger');
 });
+
+test('Song des Tages, Belohnungen und Speicherstand', () => {
+  assert.match(S.dailyDay(new Date('2026-10-24T23:30:00Z')), /^20261025$/);   // deutsche Zeit
+  const a = S.dailySong('20261024'), b = S.dailySong('20261024');
+  assert.deepStrictEqual(a, b); assert.ok(a.vid && a.title);
+  const sv = S.repair({ v: 1, singCh: { pop: { best: 90, stars: 3 }, rock: { best: 80, stars: 2 } }, daily: { d20261023: 5, d20261024: 700.4 }, rew: { mic: 'feuer', stage: 'x' }, singBest: 5e6 });
+  assert.deepStrictEqual(sv.daily, { d20261024: 700 }); assert.strictEqual(sv.singBest, 10000);
+  assert.deepStrictEqual(sv.rew, { mic: 'feuer', stage: 'chairs' });
+  assert.strictEqual(S.starSum(sv), 5);
+  const r = id => S.D.REWARDS.find(x => x.id === id);
+  assert.ok(S.unlocked(sv, r('feuer')) && !S.unlocked(sv, r('diamant')) && S.unlocked(sv, r('gold')));
+});
+
+test('Tagesrangliste: Wert steigt mit jedem Tag, Punkte bleiben ablesbar', () => {
+  const a = S.dailyCode('20261024', 744), b = S.dailyCode('20261025', 10), c = S.dailyCode('20261024', 9999);
+  assert.ok(b > c && c > a);
+  assert.strictEqual(a % 1e5, 744);
+  assert.ok(S.dailyCode('20991231', 10000) <= 1e12);   // Grenze der Firestore-Regel
+  assert.strictEqual(S.repair({ v: 1, dailyBoard: a }).dailyBoard, a);
+  assert.strictEqual(S.repair({ v: 1, dailyBoard: 'x' }).dailyBoard, 0);
+});

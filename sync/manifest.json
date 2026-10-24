@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "613bb35a22a2",
- "generated": "2026-10-24T14:26:19+00:00",
- "commit": "2cfc4cb4e92692ac71d3b5a19208e9e53a6fcafb",
+ "version": "3523106bba60",
+ "generated": "2026-10-24T14:30:06+00:00",
+ "commit": "d3588be44d107e70e5a30f15dcead963d694e08a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5358,8 +5358,8 @@
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 35357,
-   "h": "6faa7046e47538804aa903d714cfcef6349100f0350928ee4ebe2377645c2433"
+   "s": 36397,
+   "h": "93cdce0dbd6ee344721c5ed64d8a9986ee09cf30ed71c57cac70a31d05c3da0e"
   },
   {
    "p": "cloud/anmacha-bug.js",
@@ -7993,13 +7993,13 @@
   },
   {
    "p": "show-me-your-voice/index.html",
-   "s": 16068,
-   "h": "1bc2cd5ae874165cbc982bc71aa6ae3eb6037aff7afc8fa506ec45b4da4f4c00"
+   "s": 16828,
+   "h": "085ca7850ab2bd3ee98987ac5ea8229b2550a9a41d91cf5c62f1171e9d44b830"
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 127162,
-   "h": "c724850d73c4bb17900b7c105d2e0d02a630c60066063c363991e8c0f2c677b1"
+   "s": 141541,
+   "h": "02c381b35b7db9766c9c28574d81ab7eaf6a57d1e3a6b8507b6b02d81de4dada"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
@@ -8008,18 +8008,18 @@
   },
   {
    "p": "show-me-your-voice/js/avatar.js",
-   "s": 9332,
-   "h": "014f88e9a269d749e9b3cdeaf804c46cf92f2d156aadf84f6c9eb9c1d82684cc"
+   "s": 9388,
+   "h": "33a31fa9bb3ea9aff31b24539b6a489aec309f41e1eb26a3c77570680f1bcc19"
   },
   {
    "p": "show-me-your-voice/js/core.js",
-   "s": 29907,
-   "h": "c6ffddeb1f350d292d91678758a41b275df828094b3eaca274e070c0c2991f48"
+   "s": 31853,
+   "h": "12a90acb8ded49baed4fec291a4197a537dd8cd7d3534d3b8d2ce30d18758900"
   },
   {
    "p": "show-me-your-voice/js/data.js",
-   "s": 40201,
-   "h": "7515017cc741f73a9dc7df894bf753d4e831913b9f875624b503c92cfaa1651b"
+   "s": 41519,
+   "h": "eeb59a9e3d37d613d4785ec5bc42f0e9512fcd3b49ff0bc15315c72db8ac4d9f"
   },
   {
    "p": "show-me-your-voice/js/stage.js",
@@ -8033,8 +8033,8 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 23648,
-   "h": "8bca7e44f8dc8d2257250c9cf0dc453d28226e2c9fa62329ff1a4e22ca304dea"
+   "s": 24669,
+   "h": "9b927027ca57e599e00a45ac1cf421aa032867273a933fbaef7a071d577b0482"
   },
   {
    "p": "show-me-your-voice/sw.js",
@@ -8299,7 +8299,7 @@
   {
    "p": "sync/catalog.json",
    "s": 202798,
-   "h": "01a92ac674af179ac0916372c410287544936b180b4e4bd7ad0cb1c2c1515ac8"
+   "h": "88592e034f0e01319dd9a42f046971b5908c165627587fd1928bb29c1314aaae"
   },
   {
    "p": "taschi/card.svg",

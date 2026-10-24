@@ -262,3 +262,14 @@ body.reduced .scr.on, body.reduced .logo.big, body.reduced .banner.gold, body.re
 .chair.on .back { opacity: 0; } .chair.on small { opacity: 1; color: #fca5a5; font-weight: 800; }
 .singRate { text-align: center; }
 @media (prefers-reduced-motion: reduce) { .singPop.show { animation: none; opacity: 1; transform: translate(-50%, -50%); } .chair .js { transition: none; } }
+/* Karaoke-Abend, Song des Tages, Belohnungen */
+.partyNames { display: grid; gap: 8px; margin-bottom: 8px; }
+.partyNames input { flex: 1; min-width: 0; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,.25); background: rgba(0,0,0,.35); color: #fff; font: inherit; }
+.podium { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 14px 0; }
+.pod { flex: 1; max-width: 200px; text-align: center; padding: 12px 8px; border-radius: 14px 14px 6px 6px; background: rgba(255,255,255,.08); display: flex; flex-direction: column; gap: 4px; }
+.pod.p1 { order: 2; min-height: 200px; background: linear-gradient(180deg, rgba(255,201,60,.35), rgba(255,201,60,.08)); }
+.pod.p2 { order: 1; min-height: 160px; } .pod.p3 { order: 3; min-height: 130px; }
+.pod .medal { font-size: 2.6em; }
+.opt.lock, .sw button.lock { opacity: .45; filter: grayscale(.6); cursor: not-allowed; }
+.panel.daily { border: 2px solid var(--gold); }
+details.rew summary { cursor: pointer; padding: 4px 0; }
