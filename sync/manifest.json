@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "915df008ccb8",
- "generated": "2026-10-24T23:19:52+02:00",
- "commit": "ca4110dd2362b29ebe3cd6ec8614f47f6c81e179",
+ "version": "97687aad4f10",
+ "generated": "2026-10-24T22:25:03+00:00",
+ "commit": "4eeba9826317245b18dcf65c9d53a805631734d8",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5443,8 +5443,68 @@
   },
   {
    "p": "categories.js",
-   "s": 3207,
-   "h": "f35ed6a7c62f3381756eae7a38fecaee91b9d3e2d1bcfb25ecf9d19790653f75"
+   "s": 3235,
+   "h": "fd1ac8cb5757d96b8a698a6bea0e97994d09a3654ccc6622288f12f71713a8a3"
+  },
+  {
+   "p": "challenge-show/card.jpg",
+   "s": 60894,
+   "h": "58ce8e6319aaaa200b0213325b4b25fcac0e170332f430fdfda62b232ff89968"
+  },
+  {
+   "p": "challenge-show/index.html",
+   "s": 15562,
+   "h": "1a9e16b4f9158eb1f44f74194205808b355964b1599ac80edc5195bafabb2b3f"
+  },
+  {
+   "p": "challenge-show/js/app.js",
+   "s": 50897,
+   "h": "4a33db320e2b33a95cdebc1f3de9ff58c71a3a59b6a7ddb0b0ce0df6f9895d5e"
+  },
+  {
+   "p": "challenge-show/js/core.js",
+   "s": 22420,
+   "h": "44adf957e31b903c0d96802e1eb932a36b2a9e8e079bfb02efd02bc26fda3393"
+  },
+  {
+   "p": "challenge-show/js/env.js",
+   "s": 2085,
+   "h": "ba811869c78ef08a3eb16270c94a599260efaa1505c961d8102e9878c60c47ab"
+  },
+  {
+   "p": "challenge-show/js/sound.js",
+   "s": 5285,
+   "h": "f655f1fc3a83df95b9922302de41999f2ca33e7e9e8b46c39ad38f065dbbbe20"
+  },
+  {
+   "p": "challenge-show/js/touch.js",
+   "s": 4926,
+   "h": "6b7e70c0914c91c778b67dcc45110e7a08f86e61b4ec324e5035c870c1a77275"
+  },
+  {
+   "p": "challenge-show/js/view.js",
+   "s": 37959,
+   "h": "0ae3a88f5c4655d1902368d5b4739356b9d194f8030307ab8bf2d7a7e836f4da"
+  },
+  {
+   "p": "challenge-show/js/voice.js",
+   "s": 4711,
+   "h": "5c210ef4f3031e303bcca2c5073a5775f9ca33cf87c48aa66d5bc58f090193a8"
+  },
+  {
+   "p": "challenge-show/manifest.webmanifest",
+   "s": 788,
+   "h": "a8f81bcc2c6708334bc253b42184d22d581e22116a8daf5db163d798c7a2d199"
+  },
+  {
+   "p": "challenge-show/style.css",
+   "s": 22158,
+   "h": "300a9b6f357394d3c32dd9ad3f18eab79f3743bcf1caa1b8fe64e8580d9762b6"
+  },
+  {
+   "p": "challenge-show/sw.js",
+   "s": 2003,
+   "h": "2102e24825b3ba8bf03c3141e72d8aafcb40eb3fb7f4df35e3462206f6f4a1a7"
   },
   {
    "p": "chat.html",
@@ -6223,8 +6283,8 @@
   },
   {
    "p": "games.js",
-   "s": 48356,
-   "h": "72be5a0f153d54ab5cf776b7694823720e1c9f40532be9d44b83ffb37b2cc7c4"
+   "s": 49135,
+   "h": "17bcf4b9e01c12d434789de337badd53318f07af1f82098504bb96c2d07d9038"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6383,8 +6443,8 @@
   },
   {
    "p": "guides.js",
-   "s": 138324,
-   "h": "4b40e8f9f2b7faaa3b8925aea6157252b910ef9cb0dbda9bb2f8ee5d4ab85bcb"
+   "s": 140744,
+   "h": "9367c4b95e26d8422dbca16bbb0ee0de46e5c880d476cb73ee95c8b4f9d468c6"
   },
   {
    "p": "heute.html",
@@ -6978,8 +7038,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3604,
-   "h": "7b99408170ee1cf8c122305486be0f84d391eede560a80628c656c5bf835bab7"
+   "s": 3681,
+   "h": "3034b0fd0054daf30de5c1f88eb4f3c58207575365b1d41dde324a4d4f0a6cea"
   },
   {
    "p": "oma-rennen/card.jpg",
@@ -8523,8 +8583,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 210251,
-   "h": "e0a9703ad1faba8be7246441905c8cdfa0928cfa5865d709cf50f86096bf1eab"
+   "s": 213762,
+   "h": "3411d2a481e30f99ff32b949d6316c2489cb5e8712da4ab1d8c497312e8580c4"
   },
   {
    "p": "taschi/card.svg",
@@ -8922,6 +8982,11 @@
    "h": "bdd9862e0e5e065f3074793b69770f3e3ae62e5b7ed419345e3f4c388ddb40ed"
   },
   {
+   "p": "thumbs/challenge-show.webp",
+   "s": 32590,
+   "h": "a6a431d2c2895d333da052fa466a78cdeef1e126765343e9e8957d2ebcc4fa11"
+  },
+  {
    "p": "thumbs/darts-arena.webp",
    "s": 34090,
    "h": "828f00e61b8874b3d94c89a66d085ce0ea615437dbf86ac80fe1987c004743a2"
@@ -9053,8 +9118,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2117,
-   "h": "8b9c20abfb7726df397b3ef2f953565eb7ac88aa0517bdc71082c356343d44f3"
+   "s": 2147,
+   "h": "823b87c67b538877ac48776ee1da071395b15b1958a878f4fd7bc11dfbe8eb2c"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
