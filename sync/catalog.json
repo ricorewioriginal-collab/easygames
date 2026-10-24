@@ -1790,7 +1790,7 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "Küchen-Chaos ist ein hektisches Koch-Teamspiel. Oben stehen die Bestellzettel mit Zeitbalken. Hol die Zutaten aus den Kisten, leg sie aufs Schneidebrett und halte BENUTZEN, bis sie geschnitten sind. Fleisch und Fisch kommen in die Pfanne, drei gleiche Tomaten oder Zwiebeln in den Topf für eine Suppe. Ist es fertig, nimm einen Teller, richte am Herd an, gib Brötchen, Käse oder Salat dazu und bring den Teller zur gelben Ausgabe. Schnelle Lieferung gibt Trinkgeld, wer die vorderste Bestellung zuerst liefert, bekommt einen Serien-Bonus; abgelaufene Bestellungen kosten 10 Münzen. Bleibt etwas zu lange auf dem Herd, brennt es an und fängt Feuer – das breitet sich aus, bis jemand mit dem Feuerlöscher löscht. In manchen Küchen kommen die Teller dreckig zurück und müssen in der Spüle gewaschen werden; außerdem gibt es ein Förderband, spiegelglatten Eis-Boden und eine geteilte Küche, in der ihr euch alles über die Theke reicht. Sechs Küchen mit je drei Sternen, ein Stern schaltet die nächste frei. Modi: 🍳 Solo – du und ein Computer-Koch, oder (Einstellungen) du steuerst beide Köche und wechselst; 🌐 Online & Handys – der Fernseher zeigt die Küche, bis zu 4 Köche kochen mit Handys (per Code, Link oder QR-Code von überall), Controllern oder der Tastatur, freie Plätze übernehmen Computer-Köche.",
+    "anleitung": "Küchen-Chaos ist ein hektisches Koch-Teamspiel. Oben stehen die Bestellzettel mit Zeitbalken. Hol die Zutaten aus den Kisten, leg sie aufs Schneidebrett und halte BENUTZEN, bis sie geschnitten sind. Fleisch und Fisch kommen in die Pfanne, drei gleiche Tomaten oder Zwiebeln in den Topf für eine Suppe. Ist es fertig, nimm einen Teller, richte am Herd an, gib Brötchen, Käse oder Salat dazu und bring den Teller zur gelben Ausgabe. Schnelle Lieferung gibt Trinkgeld, wer die vorderste Bestellung zuerst liefert, bekommt einen Serien-Bonus; abgelaufene Bestellungen kosten 10 Münzen. Bleibt etwas zu lange auf dem Herd, brennt es an und fängt Feuer – das breitet sich aus, bis jemand mit dem Feuerlöscher löscht. In manchen Küchen kommen die Teller dreckig zurück und müssen in der Spüle gewaschen werden; außerdem gibt es ein Förderband, spiegelglatten Eis-Boden und eine geteilte Küche, in der ihr euch alles über die Theke reicht. Sechs Küchen mit je drei Sternen, ein Stern schaltet die nächste frei. Beim ersten Mal führt die 🎓 Übungsküche Schritt für Schritt durch einen Salat (gelber Pfeil zeigt, wohin), danach zeigt unten eine Tipp-Zeile immer, was du an der Station vor dir tun kannst. Modi: 🍳 Solo – du und ein Computer-Koch, oder (Einstellungen) du steuerst beide Köche und wechselst; 🌐 Online & Handys – der Fernseher zeigt die Küche, bis zu 4 Köche kochen mit Handys (per Code, Link oder QR-Code von überall), Controllern oder der Tastatur, freie Plätze übernehmen Computer-Köche.",
     "steuerung": [
      "Touch (wie bei AnMaCha Kart Rush): links der Joystick zum Laufen, rechts die Tasten-Raute – unten NEHMEN, links BENUTZEN (halten), rechts SPRINT, oben WECHSELN (am Handy als Controller: RUFEN).",
      "Tastatur: WASD/Pfeile laufen, Leertaste/E Nehmen/Ablegen, F/Strg Benutzen (schneiden, spülen, löschen), Shift Sprint, Tab/Q Koch wechseln, Esc Pause.",
@@ -1802,7 +1802,7 @@
      "Den Feuerlöscher nach dem Löschen nah am Herd ablegen."
     ]
    },
-   "size": 168304,
+   "size": 178248,
    "files": 11,
    "offline": true,
    "cloud": {

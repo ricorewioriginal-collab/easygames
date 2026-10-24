@@ -52,7 +52,7 @@ const KC = (() => {
       used.add(p + '');
       G.chefs.push({ i, name: cd.name, look: cd.look == null ? i : cd.look, bot: !!cd.bot, x: p[0] + .5, z: p[1] + .5, vx: 0, vz: 0, fx: 0, fz: 1, held: null, dashT: 0, dashCd: 0, pickPrev: false, dashPrev: false, act: '', actT: 0, tgt: -1 });
     });
-    addOrder(G); addOrder(G);
+    if (opt.tutorial) { G.tut = true; G.orders.push({ id: ++G.oid, r: 'salat', t: 99, max: 99 }); } else { addOrder(G); addOrder(G); }
     return G;
   }
   const T = (G, c, r) => c < 0 || r < 0 || c >= G.W || r >= G.H ? null : G.tiles[r * G.W + c];
@@ -151,14 +151,18 @@ const KC = (() => {
   }
   function targetTile(G, ch) {
     for (const k of [.75, .55]) { const c = Math.floor(ch.x + ch.fx * k), r = Math.floor(ch.z + ch.fz * k), t = T(G, c, r); if (t && t.kind !== 'floor') return r * G.W + c; }
-    return -1;
+    if (ch.bot) return -1;
+    // Hilfe für Menschen: steht man schräg, zählt die Station, die am ehesten in Blickrichtung liegt
+    const c0 = Math.floor(ch.x), r0 = Math.floor(ch.z); let best = -1, bs = .35;
+    for (const [dx, dz] of DIRS) { const t = T(G, c0 + dx, r0 + dz); if (!t || t.kind === 'floor') continue; const tx = c0 + dx + .5 - ch.x, tz = r0 + dz + .5 - ch.z, l = Math.hypot(tx, tz), sc = (tx * ch.fx + tz * ch.fz) / l - l * .25; if (l < 1.05 && sc > bs) { bs = sc; best = (r0 + dz) * G.W + c0 + dx; } }
+    return best;
   }
   /* ---------- Schritt ---------- */
   function step(G, dt, inputs) {
     G.events.length = 0; if (G.over) return;
-    G.t -= dt;
-    for (let i = G.orders.length - 1; i >= 0; i--) { const o = G.orders[i]; o.t -= dt; if (o.t <= 0) { G.orders.splice(i, 1); G.score = Math.max(0, G.score - 10); G.failed++; G.combo = 0; G.events.push({ e: 'expire', r: o.r }); } }
-    G.nextOrder -= dt; if (G.nextOrder <= 0 || !G.orders.length) { addOrder(G); G.nextOrder = G.L.every * [1.2, 1, .85, .72][Math.min(3, nChefs(G) - 1)]; }
+    if (!G.tut) G.t -= dt;
+    for (let i = G.orders.length - 1; i >= 0; i--) { const o = G.orders[i]; if (!G.tut) o.t -= dt; if (o.t <= 0) { G.orders.splice(i, 1); G.score = Math.max(0, G.score - 10); G.failed++; G.combo = 0; G.events.push({ e: 'expire', r: o.r }); } }
+    if (!G.tut) G.nextOrder -= dt; if (G.nextOrder <= 0 || (!G.orders.length && !G.tut)) { addOrder(G); G.nextOrder = G.L.every * [1.2, 1, .85, .72][Math.min(3, nChefs(G) - 1)]; }
     G.chefs.forEach((ch, i) => {
       const inp = ch.bot ? botInput(G, ch, dt) : (inputs && inputs[i]) || {};
       move(G, ch, inp, dt); ch.tgt = targetTile(G, ch);

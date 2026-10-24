@@ -3,7 +3,7 @@
 (function () {
   'use strict';
   const T = THREE, D = KC_DATA, { ING, THEMES, CHEFS } = D;
-  let R = null, scene, cam, W = 1, H = 1, G = null, th = null, root = null, ovl = null, time = 0;
+  let hint = null, hintTi = -1, R = null, scene, cam, W = 1, H = 1, G = null, th = null, root = null, ovl = null, time = 0;
   const mats = {}, lam = (c, o) => { const k = c + (o ? JSON.stringify(o) : ''); return mats[k] || (mats[k] = new T.MeshLambertMaterial(Object.assign({ color: c }, o || {}))); };
   const bas = (c, o) => { const k = 'b' + c + (o ? JSON.stringify(o) : ''); return mats[k] || (mats[k] = new T.MeshBasicMaterial(Object.assign({ color: c }, o || {}))); };
   const GE = {}, geo = (k, f) => GE[k] || (GE[k] = f());
@@ -34,6 +34,7 @@
     G.chefs.forEach(ch => { ch.view = chefMesh(CHEFS[ch.look % CHEFS.length]); root.add(ch.view); });
     // Markierungen der Zielfelder
     G.mark = G.chefs.map(ch => { const m = part(root, box(), new T.MeshBasicMaterial({ color: CHEFS[ch.look % CHEFS.length].col, transparent: true, opacity: .35, depthWrite: false }), 0, TILE_H + .02, 0, 1.02, .04, 1.02); m.visible = false; return m; });
+    hint = new T.Group(); hint.visible = false; root.add(hint); part(hint, cone(), bas('#ffd02a'), 0, 0, 0, .28, .45, .28, Math.PI); part(hint, tor(), bas('#ffd02a', { transparent: true, opacity: .8 }), 0, -.55, 0, .55, .55, .55, Math.PI / 2);
     fitCam();
     if (ovl) ovl.innerHTML = '';
   }
@@ -151,10 +152,11 @@
       if (opt.names) { let e = bars['n' + i]; if (!e) { e = bars['n' + i] = document.createElement('div'); e.className = 'cname'; e.style.setProperty('--c', CHEFS[ch.look % CHEFS.length].col); ovl.appendChild(e); } e.textContent = ch.name + (ch.bot ? ' 🤖' : ''); const [sx, sy] = proj(ch.x, 1.45, ch.z); e.style.transform = `translate(${sx}px,${sy}px) translate(-50%,-100%)`; e.hidden = false; e.dataset.seen = 1; }
     });
     for (let k = fi; k < fires.length; k++) fires[k].visible = false;
+    if (hint) { hint.visible = hintTi >= 0 && !!G.tiles[hintTi]; if (hint.visible) { const t = G.tiles[hintTi]; hint.position.set(t.c + .5, TILE_H + .62, t.r + .5); hint.children[0].position.y = Math.abs(Math.sin(time * 5)) * .25; hint.children[1].position.y = -.58; hint.children[1].scale.setScalar(.45 + .08 * Math.sin(time * 8)); } }
     R.render(scene, cam);
   }
   function resize(w, h) { W = w; H = h; if (R) R.setSize(w, h, false); fitCam(); }
   function clearOverlay() { bars = {}; fires.forEach(f => root && root.remove(f)); fires = []; if (ovl) ovl.innerHTML = ''; }
   function screenOf(x, y, z) { return proj(x, y, z); }
-  window.KCView = { setZoom: (f, dz) => { zoom.f = f; zoom.dz = dz || 0; fitCam(); }, init, setLevel: (g, o) => { clearOverlay(); setLevel(g, o); }, render, resize, screenOf, TILE_H };
+  window.KCView = { setHint: ti => { hintTi = ti; }, setZoom: (f, dz) => { zoom.f = f; zoom.dz = dz || 0; fitCam(); }, init, setLevel: (g, o) => { clearOverlay(); setLevel(g, o); }, render, resize, screenOf, TILE_H };
 })();
