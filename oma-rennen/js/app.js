@@ -153,26 +153,21 @@
   const keys = new Set();
   const KB = [{ l: ['KeyA'], r: ['KeyD'], g: ['KeyW'], b: ['KeyS'], d: ['ShiftLeft', 'KeyQ'], i: ['KeyE', 'Space'] },
     { l: ['ArrowLeft'], r: ['ArrowRight'], g: ['ArrowUp'], b: ['ArrowDown'], d: ['ShiftRight', 'KeyM', 'Slash'], i: ['Enter', 'NumpadEnter', 'Period', 'Numpad0'] }];
+  const KB_SOLO = { l: [], r: [], g: [], b: [], d: ['KeyZ'], i: ['KeyX'] };
   const kbRead = sets => { const has = k => sets.some(s => s[k].some(c => keys.has(c))); return { s: (has('r') ? 1 : 0) - (has('l') ? 1 : 0), g: has('g') ? 1 : 0, b: has('b') ? 1 : 0, d: has('d'), i: has('i') }; };
   let PADS = [];
   function readPads() {
     let list = []; try { list = navigator.getGamepads ? Array.from(navigator.getGamepads()).filter(p => p && p.connected) : []; } catch (e) { }
-    PADS = list.map(gp => { const ax = gp.axes || [], bt = gp.buttons || [], v = k => bt[k] ? (bt[k].value || (bt[k].pressed ? 1 : 0)) : 0; let s = Math.abs(ax[0] || 0) > .15 ? ax[0] : 0; if (v(14) > .5) s = -1; if (v(15) > .5) s = 1; return { s, g: (v(0) > .5 || v(7) > .3 || v(12) > .5) ? 1 : 0, b: (v(1) > .5 || v(6) > .3 || v(13) > .5) ? 1 : 0, d: v(5) > .5 || v(4) > .5, i: v(2) > .5 || v(3) > .5, start: v(9) > .5 }; });
+    PADS = list.map(gp => { const ax = gp.axes || [], bt = gp.buttons || [], v = k => bt[k] ? (bt[k].value || (bt[k].pressed ? 1 : 0)) : 0; let s = ax[0] || 0; s = Math.abs(s) < .14 ? 0 : Math.sign(s) * (Math.abs(s) - .14) / .86; if (v(14) > .5) s = -1; else if (v(15) > .5) s = 1; return { s, g: (v(0) > .5 || v(7) > .5 || v(12) > .5) ? 1 : 0, b: (v(6) > .5 || v(1) > .5 || v(13) > .5) ? 1 : 0, d: v(5) > .5 || v(2) > .5, i: v(4) > .5 || v(3) > .5, start: v(9) > .5 }; });
   }
-  const TOUCH = { l: 0, r: 0, b: 0, d: 0, i: 0, used: false };
-  function bindPad(rootEl, st, onItem) {
-    rootEl.querySelectorAll('[data-k]').forEach(b => {
-      const k = b.dataset.k, on = e => { e.preventDefault(); st[k] = 1; st.used = true; b.classList.add('dn'); if (k === 'i' && onItem) onItem(); vib(8); }, off = e => { e.preventDefault(); st[k] = 0; b.classList.remove('dn'); };
-      b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off); b.addEventListener('pointercancel', off); b.addEventListener('pointerleave', off); b.addEventListener('contextmenu', e => e.preventDefault());
-    });
-  }
-  bindPad($('tpad'), TOUCH);
+  const TOUCH = { s: 0, g: 0, b: 0, d: 0, i: 0, used: false };
+  OmaTouch.build($('tpad'), TOUCH);
   function inputFor(p) {
     if (p.src === 'net') { const n = p.net; if (!n) return { s: 0, g: 1, b: 0, d: false, i: false }; const use = n.itemQ > 0; if (use) n.itemQ--; return { s: n.in.s || 0, g: n.in.g ? 1 : 0, b: n.in.b ? 1 : 0, d: !!n.in.d, i: use, itemPress: use }; }
-    const sets = p.src === 'kb0' ? [KB[0]] : p.src === 'kb1' ? [KB[1]] : KB, k = kbRead(sets), out = { s: k.s, g: k.g, b: k.b, d: k.d, i: k.i };
+    const sets = p.src === 'kb0' ? [KB[0]] : p.src === 'kb1' ? [KB[1]] : KB.concat(KB_SOLO), k = kbRead(sets), out = { s: k.s, g: k.g, b: k.b, d: k.d, i: k.i };
     const pads = p.src === 'solo' ? PADS : PADS[p.pad] ? [PADS[p.pad]] : [];
     for (const q of pads) { out.s += q.s; out.g = out.g || q.g; out.b = out.b || q.b; out.d = out.d || q.d; out.i = out.i || q.i; }
-    if (p.src === 'solo' && TOUCH.used) { out.s += TOUCH.r - TOUCH.l; out.b = out.b || TOUCH.b; out.d = out.d || !!TOUCH.d; out.i = out.i || !!TOUCH.i; if (!out.b) out.g = 1; }
+    if (p.src === 'solo' && TOUCH.used) { out.s += TOUCH.s; out.g = out.g || TOUCH.g; out.b = out.b || TOUCH.b; out.d = out.d || !!TOUCH.d; out.i = out.i || !!TOUCH.i; }
     out.s = clamp(out.s, -1, 1); return out;
   }
 
@@ -206,12 +201,12 @@
     buildHud(); scr('sRace'); document.body.classList.add('racing');
     $('hud').hidden = false; $('mini').hidden = false; $('bPause').hidden = false;
     $('tpad').hidden = !(humans.length === 1 && humans[0].src === 'solo' && coarse());
-    if (!$('tpad').hidden) TOUCH.used = true;
+    if (!$('tpad').hidden) TOUCH.used = true; document.body.classList.toggle('tpad', !$('tpad').hidden);
     musicOn('race'); if (SET.sound) SND.engine(true);
     intro((cfg.gpName ? cfg.gpName + ' · ' : '') + def.name, def.desc);
     netRaceStart();
   }
-  function endRaceView() { if (!R) return; R = null; SND.engine(false); $('hud').hidden = true; $('mini').hidden = true; $('cnt').hidden = true; $('intro').hidden = true; $('bPause').hidden = true; $('tpad').hidden = true; document.body.classList.remove('racing'); closeAllOv(); }
+  function endRaceView() { if (!R) return; R = null; SND.engine(false); $('hud').hidden = true; $('mini').hidden = true; $('cnt').hidden = true; $('intro').hidden = true; $('bPause').hidden = true; $('tpad').hidden = true; OmaTouch.reset(); document.body.classList.remove('racing', 'tpad'); closeAllOv(); }
   // HUD je Bildschirmteil
   function buildHud() {
     const n = R.views.length;
@@ -276,7 +271,7 @@
       const m = R.msgs[j]; if (m.t > 0) { m.t -= dt; if (m.t <= 0) $('hm' + v).textContent = ''; } if (m.b > 0) { m.b -= dt; if (m.b <= 0) $('hb' + v).hidden = true; }
       if (S.state === 'race' && !k.finished) { if (k.rank === 1 && R.lastRank[j] > 1 && S.t > 6) oSay(j, 'lead', .6); R.lastRank[j] = k.rank; }
     });
-    if (R.views.length === 1 && $('tItem')) { const k = S.karts[R.views[0]]; $('tItem').textContent = itemIcon(k.item) || '🎁'; }
+    if (!$('tpad').hidden) { const k = S.karts[R.views[0]], t = itemIcon(k.item) || '★'; if (R.tIt !== t) { R.tIt = t; $('tpad').querySelector('.tb-i i').textContent = t; } }
     const k0 = S.karts[R.views[0]]; $('hTime').textContent = S.state === 'grid' ? '' : fmt(R.cfg.mode === 'time' ? S.t : S.t);
     if (S.state === 'grid') { const c = Math.ceil(S.count); if (c !== R.lastC && c <= 3 && c >= 1) { R.lastC = c; banner(String(c), 800); sfx('count'); } }
     if (SET.sound) SND.engineSet(Math.max(0, k0.vf), k0.boostT > 0);
@@ -397,7 +392,7 @@
     if (d) { e.preventDefault(); moveFocus(d[0], d[1]); }
   });
   addEventListener('keyup', e => keys.delete(e.code));
-  addEventListener('blur', () => { keys.clear(); for (const k in TOUCH) if (k !== 'used') TOUCH[k] = 0; });
+  addEventListener('blur', () => keys.clear());
   addEventListener('pointerdown', () => document.body.classList.remove('kbd'), true);
   addEventListener('resize', () => { V.resize(innerWidth, innerHeight); layoutHud(); if (R) miniPrep(); });
   addEventListener('gamepadconnected', () => { toast('🎮 Controller verbunden'); $('pressTxt').textContent = 'Drücke A'; });
@@ -511,7 +506,7 @@
   function netResults(res) { if (!NETH.on) return; NETH.seats.forEach(s => { const r = res.find(x => x.k.kart === s.oma && R === null); NET.sendTo(s.peer, { t: 'st', ph: 'res', pos: r ? r.pos : 0, msg: r ? 'Platz ' + r.pos : 'Ziel' }); }); }
 
   /* ---------- Handy als Lenkrad ---------- */
-  const PH = { on: false, oma: 0, ph: '', st: { l: 0, r: 0, b: 0, d: 0, i: 0 }, sendT: 0, last: '', tilt: false, tv: 0, cid: '' };
+  const PH = { on: false, oma: 0, ph: '', st: { s: 0, g: 0, b: 0, d: 0, i: 0 }, sendT: 0, last: '', tilt: false, inv: false, tv: 0, cid: '', itemPrev: 0 };
   try { PH.cid = localStorage.getItem(P + 'cid') || ''; } catch (e) { } if (!/^[a-z0-9]{8,16}$/.test(PH.cid)) { PH.cid = Math.random().toString(36).slice(2, 12).padEnd(8, '0'); try { localStorage.setItem(P + 'cid', PH.cid); } catch (e) { } }
   function phoneScreen(code) {
     netClose(); stopDemo(); PH.oma = SET.oma[0] || 0; $('pJoin').hidden = false; $('pCtl').hidden = true; $('jName').value = SET.name || ''; $('jCode').value = code || ''; $('jMsg').textContent = 'Den Code zeigt der Fernseher bei „🌐 Online & Handys“.';
@@ -544,19 +539,22 @@
     else if (m.ph === 'res') $('cStat').textContent = (m.msg || 'Ziel') + ' – nochmal? Tippe „Weiter“.';
     else if (m.ph === 'lobby') $('cStat').textContent = '✅ Dabei! Warte auf den Start …';
   }
-  bindPad($('pCtl'), PH.st, () => { if (NET) NET.send({ t: 'it' }); });
+  OmaTouch.build($('cz'), PH.st);
   $('cGo').onclick = () => { if (NET) NET.send({ t: 'go' }); sfx('ok'); };
   // Kippen zum Lenken (Handy quer oder hochkant)
-  function onTilt(e) { const ang = (screen.orientation && screen.orientation.angle) || window.orientation || 0, v = Math.abs(ang) === 90 ? (ang === 90 ? e.beta : -e.beta) : e.gamma; PH.tv = clamp((v || 0) / 28, -1, 1); }
+  function onTilt(e) { const ang = (screen.orientation && screen.orientation.angle) || window.orientation || 0, v = Math.abs(ang) === 90 ? (ang === 90 ? e.beta : -e.beta) : e.gamma; PH.tv = clamp((v || 0) / 25 * (PH.inv ? -1 : 1), -1, 1); if (Math.abs(PH.tv) < .06) PH.tv = 0; }
+  $('cInv').onclick = () => { PH.inv = !PH.inv; $('cInv').classList.toggle('on', PH.inv); };
   $('cTilt').onclick = async () => {
     if (PH.tilt) { PH.tilt = false; removeEventListener('deviceorientation', onTilt); $('cTilt').classList.remove('on'); return; }
     try { if (window.DeviceOrientationEvent && DeviceOrientationEvent.requestPermission) { const r = await DeviceOrientationEvent.requestPermission(); if (r !== 'granted') return toast('Kippen nicht erlaubt'); } } catch (e) { }
     PH.tilt = true; addEventListener('deviceorientation', onTilt); $('cTilt').classList.add('on'); toast('📱 Kippen lenkt – Knöpfe gehen weiter');
   };
   function phoneTick(dt) {
-    if (!PH.on || !NET) return; PH.sendT -= dt; const st = PH.st; let s = st.r - st.l; if (PH.tilt && !s) s = Math.abs(PH.tv) < .08 ? 0 : PH.tv;
-    const m = { t: 'in', s: Math.round(s * 20) / 20, g: st.b ? 0 : 1, b: st.b ? 1 : 0, d: st.d ? 1 : 0 }, key = m.s + ',' + m.b + ',' + m.d;
+    if (!PH.on || !NET) return; PH.sendT -= dt; readPads(); const st = PH.st, pa = PADS[0] || { s: 0 }; let s = clamp(st.s + pa.s, -1, 1); if (PH.tilt && !s) s = PH.tv;
+    const it = st.i || pa.i ? 1 : 0; if (it && !PH.itemPrev) NET.send({ t: 'it' }); PH.itemPrev = it;
+    const m = { t: 'in', s: Math.round(s * 50) / 50, g: st.g || pa.g ? 1 : 0, b: st.b || pa.b ? 1 : 0, d: st.d || pa.d ? 1 : 0 }, key = m.s + ',' + m.g + m.b + m.d;
     if (key !== PH.last || PH.sendT <= 0) { PH.last = key; PH.sendT = .25; NET.send(m); }
+    const ci = $('cItem').textContent; if (PH.ci !== ci) { PH.ci = ci; const e = $('cz').querySelector('.tb-i i'); if (e) e.textContent = ci && ci !== '–' && ci !== '🎰' ? ci : '★'; }
   }
 
   /* ---------- Laden ---------- */

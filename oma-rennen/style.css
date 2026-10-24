@@ -108,12 +108,6 @@ body:not(.kbd) .nav:focus { outline: none; }
 .ctl { position: fixed; inset: 0; display: flex; flex-direction: column; padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); gap: 8px; }
 .ctl.hit { animation: shake .35s; } @keyframes shake { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
 .cTop { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; font-weight: 600; } #cStat { flex: 1; text-align: center; background: var(--pan); border-radius: 99px; padding: 6px 12px; } #cTilt.on { background: var(--tq); color: #fff; }
-.cPad { flex: 1; display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; min-height: 0; }
-.cl, .cr { display: flex; gap: 10px; align-items: stretch; } .cr { flex-wrap: wrap; align-content: stretch; }
-.cl button, .cr button, #tpad button { border: 4px solid #fff; border-radius: 26px; background: rgba(255, 74, 138, .88); color: #fff; font-size: 40px; font-weight: 700; flex: 1; box-shadow: 0 6px 0 #b0205a; touch-action: none; }
-.cr button.sm { background: #7a6a80; font-size: 28px; flex-basis: 30%; } .cr button.md { background: var(--tq); font-size: 20px; flex-basis: 30%; } .cr button.bg { background: var(--yl); color: var(--ink); flex-basis: 100%; font-size: 46px; }
-.cl button.dn, .cr button.dn, #tpad button.dn { transform: translateY(4px); box-shadow: 0 2px 0 #b0205a; filter: brightness(1.15); }
-.cm { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; } .cItem { font-size: 52px; background: var(--pan); border-radius: 22px; min-width: 90px; text-align: center; padding: 6px; }
 /* Rennen: HUD */
 #hud { position: fixed; inset: 0; pointer-events: none; z-index: 5; }
 .vp { position: absolute; overflow: hidden; } #hud.n2 .vp, #hud.n3 .vp, #hud.n4 .vp { outline: 2px solid rgba(255, 255, 255, .7); }
@@ -132,14 +126,10 @@ body:not(.kbd) .nav:focus { outline: none; }
 #hud.n2 ~ #mini, #hud.n3 ~ #mini, #hud.n4 ~ #mini { right: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); }
 #cnt { position: fixed; left: 0; right: 0; top: 34%; text-align: center; z-index: 8; pointer-events: none; font-size: clamp(60px, 16vmin, 150px); font-weight: 700; color: var(--yl); -webkit-text-stroke: 3px var(--ink); text-shadow: 0 6px 0 var(--ink); } #cnt.pop { animation: pop .4s; }
 #intro { position: fixed; left: 50%; top: 14%; transform: translateX(-50%); z-index: 8; pointer-events: none; background: var(--pan); border-radius: 18px; padding: 10px 20px; text-align: center; box-shadow: var(--sh); display: flex; flex-direction: column; } #intro b { font-size: 22px; color: var(--pk); } #intro small { font-size: 14px; }
-#intro[hidden], #cnt[hidden], #hud[hidden], #mini[hidden], #tpad[hidden], .pbtn[hidden] { display: none; }
+#intro[hidden], #cnt[hidden], #hud[hidden], #mini[hidden], .pbtn[hidden] { display: none; }
 @keyframes pop { from { transform: scale(1.6); opacity: 0; } }
 .pbtn { position: fixed; z-index: 9; left: 50%; bottom: max(10px, env(safe-area-inset-bottom)); transform: translateX(-50%); border: 3px solid #fff; background: rgba(58, 22, 48, .6); color: #fff; border-radius: 99px; width: 46px; height: 46px; font-size: 18px; }
 body.racing .pbtn { bottom: auto; top: max(10px, env(safe-area-inset-top)); left: auto; right: 170px; transform: none; }
-#tpad { position: fixed; inset: auto 0 0 0; height: 44vh; z-index: 7; display: flex; justify-content: space-between; padding: 0 max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); pointer-events: none; }
-#tpad .tl, #tpad .tr { display: flex; gap: 10px; align-items: flex-end; pointer-events: auto; } #tpad .tr { flex-wrap: wrap; justify-content: flex-end; width: min(46vw, 300px); align-content: flex-end; }
-#tpad button { flex: none; width: min(22vw, 110px); height: min(22vw, 110px); background: rgba(255, 74, 138, .55); font-size: 34px; }
-#tpad .sm { width: min(15vw, 74px); height: min(15vw, 74px); font-size: 22px; background: rgba(122, 106, 128, .65); } #tpad .md { width: min(18vw, 90px); height: min(15vw, 74px); font-size: 16px; background: rgba(0, 196, 216, .65); } #tpad .bg { background: rgba(255, 210, 74, .8); color: var(--ink); }
 /* Overlays & Toast */
 .ov { position: fixed; inset: 0; z-index: 30; display: flex; align-items: center; justify-content: center; background: rgba(58, 22, 48, .55); padding: 14px; } .ov[hidden] { display: none; }
 .opts { display: flex; flex-direction: column; }
@@ -152,4 +142,30 @@ body.racing .pbtn { bottom: auto; top: max(10px, env(safe-area-inset-top)); left
   .pos { font-size: 46px; } .slot { width: 56px; height: 56px; font-size: 28px; top: 48px; } .lap { font-size: 15px; } .spd { display: none; }
   body.racing .pbtn { right: 130px; }
 }
-@media (max-height: 520px) { .cItem { font-size: 38px; } .cl button, .cr button { font-size: 30px; } .panel { padding: 12px 16px; } .podium { min-height: 170px; } .pd.p1 .blk { height: 90px; } .pd.p2 .blk { height: 60px; } .pd.p3 .blk { height: 40px; } }
+@media (max-height: 520px) { .cItem { font-size: 34px; } .panel { padding: 12px 16px; } .podium { min-height: 170px; } .pd.p1 .blk { height: 90px; } .pd.p2 .blk { height: 60px; } .pd.p3 .blk { height: 40px; } }
+
+/* Touch-Steuerung wie AnMaCha Kart Rush: Joystick links, Tasten-Raute rechts (unten GAS, links BREMSE, rechts DRIFT, oben ITEM) */
+.tc{position:fixed;inset:0;z-index:4;display:none;touch-action:none;-webkit-touch-callout:none;--s:clamp(54px,15.5vmin,92px);--j:clamp(104px,28vmin,156px);--e:calc(16px + env(safe-area-inset-bottom))}
+.tc .joy{position:absolute;left:0;top:0;bottom:0;width:50%}
+.tc .jb{position:absolute;left:calc(22px + env(safe-area-inset-left));bottom:calc(var(--e) + 6px);width:var(--j);height:var(--j);border-radius:50%;border:2px solid rgba(255,255,255,.16);background:radial-gradient(circle,rgba(255,255,255,.02) 45%,rgba(255,255,255,.07));box-shadow:0 10px 30px rgba(0,0,0,.35);pointer-events:none;opacity:.75;transition:opacity .15s,transform .18s ease-out;will-change:transform}
+.tc .jb::before,.tc .jb::after{content:'';position:absolute;top:50%;left:9%;width:calc(var(--j) * .07);height:calc(var(--j) * .07);border-left:3px solid rgba(255,255,255,.4);border-bottom:3px solid rgba(255,255,255,.4);transform:translateY(-50%) rotate(45deg)}
+.tc .jb::after{left:auto;right:9%;transform:translateY(-50%) rotate(-135deg)}
+.tc .jb.act{opacity:1;transition:opacity .15s}
+.tc .jk{position:absolute;left:29%;top:29%;width:42%;height:42%;border-radius:50%;background:radial-gradient(circle at 38% 32%,#fff,#d4d9e4 70%,#aab2c2);box-shadow:0 0 0 4px var(--acc,#ff2d95),0 8px 18px rgba(0,0,0,.5);will-change:transform}
+.tc .jb:not(.act) .jk{transition:transform .12s ease-out}
+.tc .pad{position:absolute;right:calc(14px + env(safe-area-inset-right));bottom:var(--e);width:calc(var(--s) * 2.55);height:calc(var(--s) * 2.55);pointer-events:none}
+.tc .tbtn{position:absolute;left:50%;top:50%;width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-align:center;font:700 clamp(11px,calc(var(--s) * .16),19px) Fredoka,system-ui,sans-serif;letter-spacing:.04em;color:var(--bc);background:rgba(58,22,48,.72);border:3px solid var(--bc);box-shadow:0 8px 20px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08);transition:background .06s,color .06s,scale .06s;user-select:none}
+.tc .tbtn i{font-style:normal;font-size:1.5em;line-height:1}
+.tc .tbtn.on{background:var(--bc);color:#0c0e13;scale:.93;box-shadow:0 0 22px var(--bc)}
+.tc .tb-g{--bc:#2ee58a;transform:translateY(calc(var(--s) * .775))}
+.tc .tb-b{--bc:#ff5468;transform:translateX(calc(var(--s) * -.775))}
+.tc .tb-d{--bc:#ffb020;transform:translateX(calc(var(--s) * .775))}
+.tc .tb-i{--bc:#ff4fd8;transform:translateY(calc(var(--s) * -.775))}
+#tpad:not([hidden]) { display: block; z-index: 7; }
+#cz { display: block; position: absolute; inset: 0; z-index: 1; --acc: var(--pk); }
+.ctl .cTop, .ctl .cMid { position: relative; z-index: 2; }
+.cMid { position: absolute !important; left: 50%; top: 56px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+#cInv.on { background: var(--tq); color: #fff; }
+body.tpad .pos { top: 52px; bottom: auto; left: 100px; right: auto; font-size: 46px; } body.tpad .spd { display: none; } body.tpad .bub { bottom: auto; top: 34%; }
+.tc .jb { background: radial-gradient(circle, rgba(58,22,48,.12) 45%, rgba(58,22,48,.32)); border-color: rgba(255,255,255,.55); }
+#tpad .jb, #cz .jb { left: calc(62px + env(safe-area-inset-left)); }

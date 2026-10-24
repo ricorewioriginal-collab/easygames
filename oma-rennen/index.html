@@ -31,9 +31,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <div id="cnt" hidden></div>
 <div id="intro" hidden></div>
 <button class="pbtn" id="bPause" hidden aria-label="Pause">⏸</button>
-<div id="tpad" hidden>
-  <div class="tl"><button data-k="l" aria-label="Links">◀</button><button data-k="r" aria-label="Rechts">▶</button></div>
-  <div class="tr"><button data-k="b" class="sm" aria-label="Bremse">⏬</button><button data-k="d" class="md" aria-label="Driften">DRIFT</button><button data-k="i" class="bg" id="tItem" aria-label="Gegenstand">🎁</button></div>
+<div class="tc" id="tpad" hidden></div>
 </div>
 
 <section class="scr on" id="sLoad">
@@ -128,9 +126,9 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <h2>❓ So fährt Oma</h2>
     <div class="help">
       <p><b>Ziel:</b> Als erste Oma nach allen Runden über die Ziellinie – ganz egal, wer im Weg steht.</p>
-      <p><b>Tastatur:</b> Pfeile oder WASD lenken und geben Gas, <kbd>Leertaste</kbd>/<kbd>E</kbd> Gegenstand, <kbd>Shift</kbd>/<kbd>Q</kbd> gedrückt halten = Driften, <kbd>Esc</kbd> Pause.<br>Zu zweit: Spielerin 1 WASD + <kbd>Q</kbd> Drift + <kbd>E</kbd> Gegenstand · Spielerin 2 Pfeile + <kbd>Shift rechts</kbd>/<kbd>M</kbd> Drift + <kbd>Enter</kbd> Gegenstand.</p>
-      <p><b>Controller:</b> Stick lenkt, <kbd>A</kbd>/<kbd>RT</kbd> Gas, <kbd>B</kbd>/<kbd>LT</kbd> Bremse, <kbd>RB</kbd>/<kbd>LB</kbd> Drift, <kbd>X</kbd>/<kbd>Y</kbd> Gegenstand, <kbd>Start</kbd> Pause.</p>
-      <p><b>Touch:</b> Gas gibt Oma von selbst. Links lenken, rechts Bremse, Drift und Gegenstand.</p>
+      <p><b>Tastatur:</b> Pfeile oder WASD lenken und geben Gas, <kbd>Leertaste</kbd>/<kbd>Enter</kbd>/<kbd>X</kbd> Gegenstand, <kbd>Shift</kbd>/<kbd>Z</kbd> gedrückt halten = Driften, <kbd>Esc</kbd> Pause.<br>Zu zweit: Spielerin 1 WASD + <kbd>Q</kbd> Drift + <kbd>E</kbd> Gegenstand · Spielerin 2 Pfeile + <kbd>Shift rechts</kbd>/<kbd>M</kbd> Drift + <kbd>Enter</kbd> Gegenstand.</p>
+      <p><b>Controller:</b> Stick lenkt, <kbd>A</kbd>/<kbd>RT</kbd> Gas, <kbd>B</kbd>/<kbd>LT</kbd> Bremse, <kbd>RB</kbd>/<kbd>X</kbd> Drift, <kbd>LB</kbd>/<kbd>Y</kbd> Gegenstand, <kbd>Start</kbd> Pause.</p>
+      <p><b>Touch</b> (wie bei AnMaCha Kart Rush): links der Joystick lenkt, rechts die Tasten-Raute – unten <b>GAS</b>, links <b>BREMSE</b>, rechts <b>DRIFT</b>, oben <b>ITEM</b>. Mit dem Daumen zwischen Gas und Drift drückst du beides.</p>
       <p><b>Drift-Turbo:</b> In der Kurve Drift halten – die Funken werden blau, orange, pink. Loslassen = Raketenschub! Dicht hinter einer anderen Oma lädt der Windschatten einen Extra-Schub.</p>
       <p><b>Strecken-Tücken:</b> Tauben im Kurpark, Rolltreppen-Abkürzungen im Einkaufszentrum, Möwen an der Promenade, Brücken auf dem Weihnachtsmarkt und Gespenster im Altenheim. Gelbe Pfeile am Boden geben Schub.</p>
       <div class="items" id="itemList"></div>
@@ -165,12 +163,9 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <div class="row"><button class="btn nav" id="jBack">← Zurück</button><button class="btn pri big nav" id="jGo">Beitreten</button></div>
   </div>
   <div class="ctl" id="pCtl" hidden>
-    <div class="cTop"><span id="cName"></span><span id="cStat">Warte auf den Start …</span><button class="btn small" id="cTilt">📱 Kippen</button></div>
-    <div class="cPad">
-      <div class="cl"><button data-k="l">◀</button><button data-k="r">▶</button></div>
-      <div class="cm"><div class="cItem" id="cItem">–</div><button class="btn pri" id="cGo" hidden>▶ Weiter</button></div>
-      <div class="cr"><button data-k="b" class="sm">⏬</button><button data-k="d" class="md">DRIFT</button><button data-k="i" class="bg">🎁</button></div>
-    </div>
+    <div class="cTop"><span id="cName"></span><span id="cStat">Warte auf den Start …</span><button class="btn small" id="cTilt">📱 Kippen</button><button class="btn small" id="cInv">⇄</button></div>
+    <div class="cMid"><div class="cItem" id="cItem">–</div><button class="btn pri" id="cGo" hidden>▶ Weiter</button></div>
+    <div class="tc" id="cz"></div>
   </div>
 </section>
 
@@ -206,6 +201,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="js/data.js"></script>
 <script src="../anmacha-kart/track.js"></script>
 <script src="../anmacha-kart/sim.js"></script>
+<script src="js/touch.js"></script>
 <script src="js/view.js"></script>
 <script src="js/sound.js"></script>
 <script src="js/app.js"></script>

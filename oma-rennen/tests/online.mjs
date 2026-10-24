@@ -32,11 +32,18 @@ if (out) await tv.screenshot({ path: out + '/or-30-lobby.jpg', type: 'jpeg', qua
 await tv.evaluate(() => { OmaApp.A.speed = 4; OmaApp.SET.laps = 2; });
 await phones[0].click('#cGo'); await tv.waitForFunction(() => !!OmaApp.R, null, { timeout: 5000 }); ok(true, 'Handy startet das Rennen');
 const R0 = await tv.evaluate(() => ({ n: OmaApp.R.S.karts.length, views: OmaApp.R.views.length })); ok(R0.n === 8 && R0.views === 2, '8 Omas, geteilter Bildschirm für 2 Handys');
-// Handy 1 lenkt nach rechts und gibt Gas, Handy 2 bleibt stehen (Gas kommt automatisch)
-await phones[0].dispatchEvent('#pCtl [data-k="r"]', 'pointerdown'); await tv.waitForTimeout(1500); await phones[0].dispatchEvent('#pCtl [data-k="r"]', 'pointerup');
-const inp = await tv.evaluate(() => OmaApp.NETH.seats[0].in); ok(inp && inp.g === 1, 'Eingaben kommen am Fernseher an ' + JSON.stringify(inp));
+// Handy 1: Steuerung wie AnMaCha Kart Rush – Joystick links nach rechts ziehen, GAS-Taste der Raute halten
+const gb = await phones[0].locator('#cz .tb-g').boundingBox(), jb = await phones[0].locator('#cz .jb').boundingBox();
+const gx = gb.x + gb.width / 2, gy = gb.y + gb.height / 2, jx = jb.x + jb.width / 2, jy = jb.y + jb.height / 2;
+await phones[0].dispatchEvent('#cz', 'pointerdown', { pointerId: 7, clientX: gx, clientY: gy, bubbles: true });
+await phones[0].dispatchEvent('#cz', 'pointerdown', { pointerId: 8, clientX: jx, clientY: jy, bubbles: true });
+await phones[0].dispatchEvent('#cz', 'pointermove', { pointerId: 8, clientX: jx + 60, clientY: jy, bubbles: true });
+await tv.waitForTimeout(1500);
+const inp = await tv.evaluate(() => OmaApp.NETH.seats[0].in); ok(inp && inp.g === 1 && inp.s > .5, 'Joystick + GAS kommen am Fernseher an ' + JSON.stringify(inp));
+if (out) await phones[0].screenshot({ path: out + '/or-32-handy.jpg', type: 'jpeg', quality: 80 });
+await phones[0].dispatchEvent('#cz', 'pointerup', { pointerId: 8, clientX: jx + 60, clientY: jy, bubbles: true });
 await phones[0].waitForFunction(() => /Platz \d/.test(document.getElementById('cStat').textContent), null, { timeout: 15000 }).then(() => ok(true, 'Handy zeigt Platz und Runde'), () => ok(false, 'Handy zeigt Platz und Runde'));
-if (out) { await tv.waitForTimeout(3000); await tv.screenshot({ path: out + '/or-31-tv-rennen.jpg', type: 'jpeg', quality: 80 }); await phones[0].screenshot({ path: out + '/or-32-handy.jpg', type: 'jpeg', quality: 80 }); }
+if (out) { await tv.waitForTimeout(3000); await tv.screenshot({ path: out + '/or-31-tv-rennen.jpg', type: 'jpeg', quality: 80 }); }
 await tv.evaluate(() => { const R = OmaApp.R; R.hk.forEach(k => { R.S.karts[k].assist = 1; }); R.speed = 14; });
 await tv.waitForSelector('#sResult.on', { timeout: 150000 }).then(() => ok(true, 'Ergebnis am Fernseher'), () => ok(false, 'Ergebnis am Fernseher'));
 await phones[1].waitForFunction(() => !document.getElementById('cGo').hidden, null, { timeout: 5000 }).then(() => ok(true, 'Handy zeigt „Weiter“ nach dem Rennen'), () => ok(false, 'Handy zeigt „Weiter“'));

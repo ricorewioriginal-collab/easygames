@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "ddbeaa3ad14a",
- "generated": "2026-10-24T14:26:40+02:00",
- "commit": "ce4eb872bfa81e348089b06ba5ea12ef9dbaea79",
+ "version": "211c15533a9c",
+ "generated": "2026-10-24T14:29:37+02:00",
+ "commit": "0ec4acac6c8c7cd19aa0913abcf534f4cb48dc25",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6258,8 +6258,8 @@
   },
   {
    "p": "guides.js",
-   "s": 128970,
-   "h": "91b6b819a0419cc9a4c86ff6d5b0c8588ae526f0df2ad36eff7eb8522ff11829"
+   "s": 129139,
+   "h": "c48c6572ff80a6ea726589d191ca9d35b5fba7e6e691b5f402281a75bd149583"
   },
   {
    "p": "heute.html",
@@ -6753,13 +6753,13 @@
   },
   {
    "p": "oma-rennen/index.html",
-   "s": 15851,
-   "h": "165828bf1ebce66dd1ada6a20e99a56caa929811a1124317cf255c5ae5b0ecbf"
+   "s": 15507,
+   "h": "0a5a10a81268284b4a2edfda883d94a9609b56a33fef75340d81a7d1c7b5cd0c"
   },
   {
    "p": "oma-rennen/js/app.js",
-   "s": 56040,
-   "h": "1d3f37ef5b8e46fc236c8598e334cfa76c1b398b81b938795f8a09b0b87a9dbe"
+   "s": 56163,
+   "h": "e63368332153f04ca47a35974aa57ccca0c7aef2ffd6f2c8976c6b2fbc569be6"
   },
   {
    "p": "oma-rennen/js/data.js",
@@ -6770,6 +6770,11 @@
    "p": "oma-rennen/js/sound.js",
    "s": 6302,
    "h": "e86e0644d42b1b2fd41dd3126b9955f4c27b7fbd54065dc794639114376862e8"
+  },
+  {
+   "p": "oma-rennen/js/touch.js",
+   "s": 4662,
+   "h": "eefab568c43e6f949d435ce92c456d3b3951b4b4f13f1672fa0bfe1086f93fcc"
   },
   {
    "p": "oma-rennen/js/view.js",
@@ -6783,8 +6788,8 @@
   },
   {
    "p": "oma-rennen/style.css",
-   "s": 20561,
-   "h": "b55a492bb3db265b3f8a720eeeb93e63c22ec079230bf545996e000702376465"
+   "s": 21965,
+   "h": "085766219591c303282e19a3a45192ebd5fe6b1c5f00fde24d300a0b39b0b159"
   },
   {
    "p": "oma-rennen/sw.js",
@@ -8183,8 +8188,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 196196,
-   "h": "3ddab5b69fe88090d2802104ca2062fd0cc8b0776c122d2b7dd720420c34ee7f"
+   "s": 196366,
+   "h": "381a3a95b3441ad49299b5a2a675fab1793b628a04c092267fbb4fc8c510105d"
   },
   {
    "p": "taschi/card.svg",
