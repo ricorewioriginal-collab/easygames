@@ -1023,10 +1023,10 @@
       persist();
     }
     // Blind Audition: dieselbe Jury, die am Ende entscheidet, dreht sich live um, sobald sie Ja sagen würde
-    const online = !!(cx && cx.mode === 'online');
-    run.panel = career ? S.panelOf(s, s.round) : online ? (cx.panel || D.MAIN_JURY).slice() : D.MAIN_JURY.slice();
-    run.jseed = career ? s.seed : online ? cx.seed : run.seed; run.jround = career ? s.round : online ? cx.r : 0; run.jwho = online ? ON.me : 'p';
-    if (online) run.len = ONLINE_SING;
+    const isOnline = !!(cx && cx.mode === 'online');
+    run.panel = career ? S.panelOf(s, s.round) : isOnline ? (cx.panel || D.MAIN_JURY).slice() : D.MAIN_JURY.slice();
+    run.jseed = career ? s.seed : isOnline ? cx.seed : run.seed; run.jround = career ? s.round : isOnline ? cx.r : 0; run.jwho = isOnline ? ON.me : 'p';
+    if (isOnline) run.len = ONLINE_SING;
     $('#singBox').innerHTML = `<header class="bar"><span></span><h2>${run.party ? '🎉 ' + esc(party.players[run.party.i]) + ': ' : run.daily ? '📅 ' : '🎙️ '}${esc(pk.title)}</h2><span></span></header>
       ${pk.vid ? `<div class="video"><iframe id="singVid" src="https://www.youtube-nocookie.com/embed/${pk.vid}?autoplay=1&rel=0&playsinline=1&enablejsapi=1${save.settings.mute ? '&mute=1' : ''}" title="Karaoke-Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
         <p class="hint">${esc(pk.credit)} · <a href="https://www.youtube.com/watch?v=${pk.vid}" target="_blank" rel="noopener">YouTube ↗</a></p><p class="banner lose" id="singErr" hidden>Dieses Video darf hier nicht abgespielt werden. Brich ab und wähle einen anderen Song – oder sing einfach a cappella weiter.</p>` : `<p class="hint">${esc(pk.credit)}</p>`}
@@ -1080,15 +1080,18 @@
       pop.textContent = GRADE[ev.t] + (ev.combo >= 2 && ev.t !== 'daneben' ? ' · Combo ×' + ev.combo : '');
       pop.className = 'singPop ' + ev.t; void pop.offsetWidth; pop.classList.add('show');
     }
-    function chairs() {   // jede Sekunde: Würde jemand aus der Jury jetzt Ja sagen? Dann dreht er/sie sich um.
+    // gleiche Jury-Rechnung wie die Endwertung (crit nach singCareer), damit Stühle und Urteil zusammenpassen
+    const online = !!(cx && cx.mode === 'online'), jmods = career && s ? s.mods : null, jsymp = cx && cx.talk ? S.mergeSymp(cx.talk.symp, jmods && jmods.symp) : null;
+    run.jury = crit => S.judge(crit, online ? cx.style : pk.style, run.jseed, run.jround, run.jwho, online ? null : jsymp, run.panel);
+    function chairs() {   // jede Sekunde: Würde jemand aus der Jury jetzt Ja sagen? Dann dreht er/sie sich um – und bei Nein wieder weg.
       const part = S.singScore(run.frames, run.party || !save.profile ? null : save.profile.attrs, 0.05);
       if (part.sing.voiced < 8) return;
-      const mods = career && s ? s.mods : null;
-      if (cx && cx.sel) S.singCareer(part, career && s ? s.lastPerf : null, mods, cx.sel.action);   // wie die Wertung am Ende
-      const symp = cx && cx.talk ? S.mergeSymp(cx.talk.symp, mods && mods.symp) : null;
-      S.judge(part.crit, cx && cx.mode === 'online' ? cx.style : pk.style, run.jseed, run.jround, run.jwho, cx && cx.mode === 'online' ? null : symp, run.panel).forEach(v => {
+      if (cx && cx.sel) S.singCareer(part, career && s ? s.lastPerf : null, jmods, cx.sel.action);   // wie die Wertung am Ende
+      run.jury(part.crit).forEach(v => {
+        const el = $(`#singBox .chair[data-c="${v.id}"]`);
+        if (run.turned[v.id] && !v.yes) { delete run.turned[v.id]; if (el) el.classList.remove('on'); toast('↩️ ' + jur(v.id).name + ' dreht sich wieder weg …', 2000); return; }
         if (run.turned[v.id] || !v.yes || v.score < jur(v.id).need + 1) return;
-        run.turned[v.id] = true; const el = $(`#singBox .chair[data-c="${v.id}"]`); if (el) el.classList.add('on');
+        run.turned[v.id] = true; if (el) el.classList.add('on');
         A.sfx('yes'); toast('🔴 ' + jur(v.id).name + ' hat sich umgedreht!', 2000);
       });
     }
@@ -1123,6 +1126,8 @@
     }
     run.raf = requestAnimationFrame(frame);
   }
+  // Am Ende zählen nur Stühle, deren Jury-Mitglied auch im Endurteil Ja sagt
+  function finalTurned(run, crit) { return run.jury(crit).filter(v => v.yes && run.turned[v.id]).map(v => v.id); }
   function singFinish() {
     const run = sing.run; if (!run || run.ended) return;
     if (run.frames.filter(f => f.m != null).length < 40) { RENDER.sSing(); toast('🎙️ Ich habe kaum Gesang gehört. Sing etwas länger oder näher am Mikrofon.', 3500); return; }
@@ -1139,6 +1144,7 @@
       const out = { sing: res.sing, rec: url, pts: fin.total, combo: fin.best, title: S.singTitle(res.perf), turned: Object.keys(run.turned), song: run.pk.title };
       if (run.party) {   // Karaoke-Abend: Punkte notieren, Jury-Urteil zeigen, dann zurück zur Rangliste
         const oc = Object.assign(res, { style: run.pk.style, symp: null }), fc = S.freeCasting(null, oc, run.seed), nm = party.players[run.party.i];
+        out.turned = finalTurned(run, oc.crit);
         party.scores[run.party.i].push({ pts: fin.total, perf: res.perf, title: out.title, song: run.pk.title, yes: fc.yes }); party.turn++; sing.party = null;
         showResult({ fc, oc, out, free: true, ret: 'sParty', credit: run.pk.credit, name: nm }); return;
       }
@@ -1156,10 +1162,12 @@
         const f = { mode: cx.mode, playId: run.playId, seed: run.seed, sel: Object.assign({}, cx.sel, { style: run.pk.style }), talk: cx.talk, credit: run.pk.credit, bg: cx.bg, ret: career ? 'sBack' : 'sPrep' };
         const oc = Object.assign(S.singCareer(res, career && s ? s.lastPerf : null, mods, cx.sel.action), { style: run.pk.style, approach: cx.sel.approach, action: cx.sel.action,
           symp: S.mergeSymp(cx.talk.symp, mods && mods.symp), votesBonus: cx.talk.votes });
+        out.turned = finalTurned(run, oc.crit);
         sing.ctx = null; flow = f; decide(f, out, oc); return;
       }
       const oc = Object.assign(res, { style: run.pk.style, symp: null });
       const fc = S.freeCasting(p, oc, run.seed);
+      out.turned = finalTurned(run, oc.crit);
       let chal = null;
       if (g) {
         const stn = S.singStars(g.id, res, fc), old = save.singCh[g.id] || { best: 0, stars: 0 };
