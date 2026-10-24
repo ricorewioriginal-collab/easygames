@@ -25,7 +25,7 @@
     const c = [n >> 16, (n >> 8) & 255, n & 255].map(v => Math.max(0, Math.min(255, Math.round(v * f))));
     return '#' + c.map(v => v.toString(16).padStart(2, '0')).join('');
   }
-  const pickC = (list, v, d) => typeof v === 'number' ? list[((v % list.length) + list.length) % list.length] : (typeof v === 'string' && v[0] === '#' ? v : list[d]);
+  const pickC = (list, v, d) => Number.isFinite(v) ? list[((Math.floor(v) % list.length) + list.length) % list.length] : (typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v) ? v : list[d]);   // nur echte Farben (auch fremde Avatare online)
   const one = (list, v) => list.includes(v) ? v : list[0];
 
   // expr: neutral | happy | shock | sad

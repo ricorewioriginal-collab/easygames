@@ -136,6 +136,13 @@
     try { mic.stream.getTracks().forEach(t => t.stop()); mic.src.disconnect(); } catch (e) {}
     mic = null;
   }
+  // Lautstärke (RMS) fürs Treffen der Noten mit der Stimme; null ohne Mikrofon
+  function micLevel() {
+    if (!mic) return null;
+    const b = mic.buf; mic.an.getFloatTimeDomainData(b);
+    let rms = 0; for (let i = 0; i < b.length; i++) rms += b[i] * b[i];
+    return Math.sqrt(rms / b.length);
+  }
   // Grundton per Autokorrelation (70–1000 Hz). Liefert MIDI-Ton (Kommazahl) oder null bei Stille.
   function micPitch() {
     if (!mic) return null;
@@ -166,7 +173,7 @@
       if (!init()) { reject(new Error('noaudio')); return; }
       radioStop();
       let done = false, el, g;
-      const fail = why => { if (done) return; done = true; clearTimeout(to); radioStop(); reject(new Error(why)); };
+      const fail = why => { if (done) return; done = true; clearTimeout(to); if (radio && radio.el === el) radioStop(); else if (el) { try { el.pause(); el.removeAttribute('src'); } catch (e) {} } reject(new Error(why)); };   // nur den eigenen Stream stoppen
       const to = setTimeout(() => fail('timeout'), plain ? 12000 : 6000);
       try {
         el = new Audio(); el.preload = 'auto';
@@ -215,5 +222,5 @@
   }
 
   root.SMYVAudio = { radioOnLost: cb => { onLost = cb; }, radioStart, radioStop, radioMute, radioOnsets, radioSong, radioActive: () => !!radio, radioPlain: () => !!(radio && radio.plain), init, setVolume, ok, song, tick, chordTones, sfx, guide, voiceOn, voiceSet, voiceOff,
-    micStart, micStop, micPitch, micActive: () => !!mic, mtof, ctxTime: () => (ctx ? ctx.currentTime : 0) };
+    micStart, micStop, micPitch, micLevel, micActive: () => !!mic, mtof, ctxTime: () => (ctx ? ctx.currentTime : 0) };
 })(window);

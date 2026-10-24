@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "463f2a8f947b",
- "generated": "2026-10-24T08:14:03+02:00",
- "commit": "b8d08f8d6298b843da32f62d7ce760bedfc4eea2",
+ "version": "9865eb0f8d73",
+ "generated": "2026-10-24T06:19:16+00:00",
+ "commit": "2cc49fa04118c5ffb325344be0cb18fa78c4a17a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5308,8 +5308,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22306,
-   "h": "c17561531978f34fb0ec31d23bc148ce1823d7aa363c90050dfb5836f254c341"
+   "s": 22335,
+   "h": "83da8d5a7ee22ad29173bba8194d24f1ab6b0b7df8c84ecb8954fa8d9a179b89"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -6558,8 +6558,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2937,
-   "h": "187014bc2156589fa8ef0a1dd9eea741e78b2109e4d1f3c756b74fc8ee947998"
+   "s": 2979,
+   "h": "c637150e75847a8c5b7f8a91bd6790b2e9c233793db1b3b5a1313aea3b93eb13"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -7648,38 +7648,38 @@
   },
   {
    "p": "show-me-your-voice/index.html",
-   "s": 13656,
-   "h": "3c7c6cdb067870e8ac39d22565efa3426adb8cd43ff76c0d10fb1072bcdd3565"
+   "s": 14445,
+   "h": "325247d8e43b28c6c6c1313000247e6a5b071c6aa804b0c588b5816a3e50353f"
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 76536,
-   "h": "dff08b0bbf2aa125fe53096c063a8199bb1c82bc6e9c982bf4aa091267885f6b"
+   "s": 100409,
+   "h": "2d47742e1ede4efc26e9d20e3dc7640c4c538b7fce83226b65b5fcee1f3904bc"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
-   "s": 14398,
-   "h": "9bd95b7c5d729a636d808e5f521262d831571e8eebc1638465648b2e82f9c4e0"
+   "s": 14855,
+   "h": "ee0e5e73d7b49bf204d75f360086808f42ef0dfb3b83c436a132e430c836f8ff"
   },
   {
    "p": "show-me-your-voice/js/avatar.js",
-   "s": 9259,
-   "h": "1ce3e1e90b73407188ad56598aa954c06776acfec180e303445a47f576e28a5c"
+   "s": 9332,
+   "h": "014f88e9a269d749e9b3cdeaf804c46cf92f2d156aadf84f6c9eb9c1d82684cc"
   },
   {
    "p": "show-me-your-voice/js/core.js",
-   "s": 19350,
-   "h": "270c7a96255937e0b2a7837a30b3b201bf9f3edb58f2a81ba3c198da641cf824"
+   "s": 23085,
+   "h": "a90470e3baf76d54eae723edbaf706414a8c7c9ca337846dc23ad8df01c53583"
   },
   {
    "p": "show-me-your-voice/js/data.js",
-   "s": 25227,
-   "h": "366e508c6185665f7eccf4972b96528c1e61d2f653f77ada94e09c1133ea9763"
+   "s": 30668,
+   "h": "7e178ddb0d9eb8df8440d14cf63b48a6df706ec10bced0d0a5c6ea051d61689d"
   },
   {
    "p": "show-me-your-voice/js/stage.js",
-   "s": 30218,
-   "h": "404858c4bd9a55352214afbf00f77abf14fa4bc7b80dff32e463fe7f82df08a3"
+   "s": 31638,
+   "h": "a662bbb3a79c39c277dc77a9285d2eddb2a365f1b18ae061058afd5bf6607ef8"
   },
   {
    "p": "show-me-your-voice/manifest.webmanifest",
@@ -7688,8 +7688,8 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 18839,
-   "h": "36c84c7a785ae35ae433392c6db98f6ac7ea0ddc27a559977f0511e06ee97537"
+   "s": 21181,
+   "h": "ff7c9c082f2b08eabc6f05c57e02b8273467c5b1a1c661c759e7dd37b35afaea"
   },
   {
    "p": "show-me-your-voice/sw.js",
@@ -7953,8 +7953,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 178061,
-   "h": "debae6566d96d44953689b1a567949df5eddb8cfa23b064482254079f9ad547b"
+   "s": 178083,
+   "h": "807e1506cd6cb35f8a47b8677809c9e2dc809dbf568cfdcb77f5e0ae2f0f8618"
   },
   {
    "p": "taschi/card.svg",

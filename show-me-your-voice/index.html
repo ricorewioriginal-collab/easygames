@@ -98,6 +98,10 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <div class="wrap center" id="winBox"></div>
 </section>
 
+<section class="scr" id="sOnline" aria-label="Online-Show">
+  <div class="wrap" id="onBox"></div>
+</section>
+
 <section class="scr" id="sCands" aria-label="Kandidaten">
   <div class="wrap">
     <header class="bar"><button class="btn sm" data-back type="button">← Zurück</button><h2>Kandidaten</h2><span></span></header>
@@ -149,6 +153,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
         <li><b>Tastatur:</b> ← ↓ ↑ → oder D F J K</li>
         <li><b>Touch:</b> die vier großen Tasten unten oder direkt in die Spur tippen</li>
         <li><b>Controller:</b> Steuerkreuz oder X · A · Y · B</li>
+        <li><b>Stimme:</b> Mit Mikrofon (Einstellungen oder Auftritts-Vorbereitung) singst du jede Note an, wenn sie den Kreis erreicht. Kopfhörer helfen, damit die Musik nicht mitzählt.</li>
       </ul>
       <h3>Show-Momente</h3>
       <p>Mitten im Song erscheint ein Publikums-Signal (👏 🙌 💃 🎤) mit einer Spur. Drücke diese Spur rechtzeitig – das bringt Bühnenpräsenz, Applaus und Votes.</p>
@@ -156,6 +161,8 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
       <p>Halte den Mikro-Punkt auf der blauen Melodielinie: <b>↑/↓</b> (oder W/S, J/F) halten, auf dem Bildschirm ziehen oder Steuerkreuz. Optional mit Mikrofon (Einstellungen) – das Spiel erkennt nur deine Tonhöhe, nichts wird aufgenommen.</p>
       <h3>Castingshow-Ablauf</h3>
       <p>Vor jedem Auftritt: Wartebereich mit Startnummer und Gespräch mit der Jury (Casting) oder Interview mit Rico. Gute Antworten bringen Sympathie oder Votes. Im Casting kann die Jury bei schwacher Leistung abbrechen; bei genau einem Ja gibt es eine Zugabe a cappella. Ab dem Recall entscheidet die Gesamtwertung aus Performance, Jury und Community-Voting, und im Backstage passieren Ereignisse, auf die du reagieren musst.</p>
+      <h3>🌐 Online & Handys</h3>
+      <p>Eine Person eröffnet die Show und bekommt einen 4-stelligen Code, Link und QR-Code. Bis zu 8 Personen treten bei – von überall, auch übers Internet. Alle singen gleichzeitig auf dem eigenen Gerät zur gleichen Musik, die Jury bewertet, danach stimmt ihr gegenseitig ab. Casting → Recall → Live-Shows → Finale. Wer ausscheidet, bleibt als Publikum dabei und stimmt weiter mit ab.</p>
       <h3>Allgemein</h3>
       <ul>
         <li><b>Pause:</b> Esc, P, ⏸ oder Start am Controller</li>
@@ -187,6 +194,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <canvas id="confetti" aria-hidden="true"></canvas>
 
 <script src="../gamepad.js" data-pad="x=KeyD a=KeyF/Enter y=KeyJ b=KeyK/Escape start=KeyP select=- lb=- rb=-" defer></script>
+<script src="../cloud/fire-peer.js"></script>
 <script src="js/data.js"></script>
 <script src="js/core.js"></script>
 <script src="js/avatar.js"></script>

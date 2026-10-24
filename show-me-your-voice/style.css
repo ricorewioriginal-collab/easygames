@@ -208,3 +208,30 @@ body.reduced .scr.on, body.reduced .logo.big, body.reduced .banner.gold, body.re
 .zit .avs { display: flex; justify-content: center; gap: 18px; }
 .zit .avs > div { width: 96px; } .zit svg { width: 96px; height: 96px; }
 .reduced .vbar i { transition: none; }
+/* Wechselnde Jury: gezeichnete Gastjuroren */
+.jav { display: inline-block; overflow: hidden; background: linear-gradient(180deg, #3a1f7a, #1b0f45); }
+.jav svg { width: 100%; height: 100%; display: block; }
+.juryStrip .js { width: 34px; height: 44px; object-fit: cover; object-position: 50% 20%; border-radius: 8px; border: 2px solid var(--line); transition: transform .2s, border-color .2s; }
+.juryStrip .js.nod { transform: translateY(-4px) rotate(-4deg); border-color: var(--ok); }
+.juryStrip .js.frown { transform: translateY(2px); border-color: var(--bad); filter: grayscale(.5); }
+.juryStrip .js.wow { transform: scale(1.15); border-color: var(--pink); }
+.jcard .jimg.jav { width: 76px; height: 120px; }
+.panelRow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 4px 0 8px; }
+.pj { display: inline-flex; align-items: center; gap: 6px; }
+.pj .js { width: 30px; height: 40px; object-fit: cover; object-position: 50% 20%; border-radius: 8px; border: 2px solid var(--line); }
+.pj i { color: var(--gold); font-style: normal; font-size: .8em; }
+@media (max-width: 560px) { .jcard .jimg.jav { width: 64px; height: 96px; grid-row: span 3; } }
+/* Online-Show */
+.onPlayers { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.onP { width: 96px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: 0; color: inherit; font: inherit; }
+.onP svg { width: 76px; height: 76px; }
+.onP b { font-size: .85em; } .onP small { color: var(--muted); font-size: .72em; }
+.onP.off { opacity: .4; } .onP.wait svg { opacity: .7; }
+.btnP { cursor: pointer; padding: 8px 4px; border: 2px solid var(--line); border-radius: 14px; background: var(--panel); }
+.btnP:hover, .btnP:focus-visible { border-color: var(--gold); }
+.bigCode { font-size: 2em; letter-spacing: .2em; color: var(--gold); }
+.qr { width: 160px; height: 160px; margin: 8px auto; background: #fff; padding: 8px; border-radius: 12px; }
+.qr:empty { display: none; }
+.qr svg { width: 100%; height: 100%; }
+.codeIn { flex: 1; min-width: 0; font-size: 1.3em; text-transform: uppercase; letter-spacing: .2em; text-align: center; padding: 10px; border-radius: 12px; border: 2px solid var(--line); background: rgba(0, 0, 0, .3); color: var(--text); }
+.podium .onP svg { width: 96px; height: 96px; }

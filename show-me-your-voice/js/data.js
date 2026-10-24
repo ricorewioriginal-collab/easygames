@@ -84,8 +84,60 @@
           'Mutig wäre gewesen, es durchzuziehen. Heute leider Nein.',
           'Ich glaube an Comebacks. Komm wieder, wenn es brennt.'],
         battle: ['{x}! Mehr Mut, mehr Groove.', 'Ich nehme {x} mit ins Studio.', 'Mein Punkt: {x}. Da war Risiko – und es hat sich gelohnt.']
+      } },
+    // Gastjuroren (frei erfunden, gezeichnet): wechseln ab dem Recall in die Jury, wenn „Wechselnde Jury“ an ist.
+    { id: 'nina', name: 'Nina Sturm', role: 'Die Rockröhre', guest: true, need: 58, favs: ['rock'],
+      look: { skin: 0, hair: 'lang', hairColor: 4, outfit: 'lederjacke', outfitColor: 5, acc: 'ohrring', piercing: 'nase' },
+      w: { stimme: 0.35, mut: 0.35, praesenz: 0.3 },
+      lines: {
+        top: ['Das war laut, ehrlich und dreckig schön, {n}. Genau so!', 'Ich habe gerade meine Stimmbänder beneidet. Wahnsinn.', 'Du hast die Bühne nicht betreten, du hast sie erobert.'],
+        yes: ['Dein {s} hat Kraft. Ja!', 'Da war Feuer drin. An {w} arbeiten wir.', 'Rau, aber echt. Ich bin dabei.'],
+        close: ['Fast! Lass beim nächsten Mal alles raus.', 'Dein {w} hat mich noch nicht gepackt. Knapp nein.', 'Zu brav, {n}. Ich will dich schreien hören.'],
+        no: ['Das war mir zu leise im Herzen. Nein.', 'Da fehlte die Wut im Bauch. Heute nicht.', 'Ich habe gewartet, dass es knallt – es kam nicht.'],
+        battle: ['{x}! Mehr Druck, mehr Rock.', 'Ich nehme {x}. Da hat es gebrannt.', 'Für mich ganz klar {x}.']
+      } },
+    { id: 'kofi', name: 'Kofi Mensah', role: 'Der Gesangslehrer', guest: true, need: 60, favs: ['soul', 'ballade'],
+      look: { skin: 5, hair: 'buzz', hairColor: 0, outfit: 'sakko', outfitColor: 0, acc: 'brille', beard: 'stoppeln' },
+      w: { stimme: 0.5, timing: 0.3, ausdruck: 0.2 },
+      lines: {
+        top: ['Technisch sauber und trotzdem frei. Das ist die Königsklasse, {n}.', 'Diese Stütze, diese Linie – ich würde dich sofort unterrichten wollen. Oder von dir lernen.', 'Jeder Ton saß. Ich habe nichts zu korrigieren.'],
+        yes: ['Gute Technik, besonders im {s}. Ja.', 'Die Stimme trägt. Am {w} feilen wir noch.', 'Saubere Arbeit. Du hast geübt, das hört man.'],
+        close: ['Die Stimme ist da, aber der {w} wackelt noch.', 'Knapp. Atme tiefer, dann wird es stabil.', 'Ich höre Talent, aber noch zu wenig Kontrolle.'],
+        no: ['Da hat die Technik heute nicht mitgespielt. Nein.', 'Zu viele Töne daneben, {n}. Üben, dann wieder kommen.', 'Ich sage Nein – aber mit einem Übungsplan.'],
+        battle: ['{x} – die saubere Technik entscheidet.', 'Mein Punkt geht an {x}. Mehr Kontrolle.', '{x}. Die Stimme saß einfach besser.']
+      } },
+    { id: 'jule', name: 'Jule Winter', role: 'Die Social-Media-Queen', guest: true, need: 54, favs: ['pop'],
+      look: { skin: 1, hair: 'dutt', hairColor: 3, outfit: 'glitzer', outfitColor: 4, acc: 'sonnenbrille' },
+      w: { praesenz: 0.45, ausdruck: 0.3, entwicklung: 0.25 },
+      lines: {
+        top: ['Das geht viral, {n}! Ich habe schon drei Clips im Kopf.', 'Du bist ein Star für die Handykamera und für die Bühne.', 'Kommentarspalte: nur Herzen. Und meins ist dabei.'],
+        yes: ['Du hast Ausstrahlung. Ja!', 'Dein {s} macht dich besonders. Zeig mehr davon.', 'Das Publikum mag dich – ich auch.'],
+        close: ['Hübsch, aber noch nicht teilbar. Knapp.', 'Mir fehlte der Moment fürs Video, {n}.', 'Dein {w} war mir noch zu blass.'],
+        no: ['Ich hätte weitergescrollt. Sorry, nein.', 'Da war keine Story drin.', 'Heute leider kein Like von mir.'],
+        battle: ['{x}! Mehr Wow-Momente.', 'Ich nehme {x} – die Fans auch.', '{x}. Das war der Auftritt fürs Highlight-Video.']
+      } },
+    { id: 'tarik', name: 'Tarik Aydın', role: 'Der Beat-Bauer', guest: true, need: 58, favs: ['pop', 'rock'],
+      look: { skin: 2, hair: 'undercut', hairColor: 0, outfit: 'hoodie', outfitColor: 2, acc: 'kopfhoerer', beard: 'vollbart' },
+      w: { timing: 0.5, mut: 0.3, praesenz: 0.2 },
+      lines: {
+        top: ['Auf den Punkt, Bro! Jeder Einsatz im Raster, {n}.', 'Das war tighter als mein Metronom.', 'Ich will sofort einen Track mit dir bauen.'],
+        yes: ['Gutes Timing, guter Vibe. Ja!', 'Dein {s} sitzt. {w} geht noch tighter.', 'Ich habe mitgenickt. Das heißt was.'],
+        close: ['Ein paar Einsätze waren off. Knapp, {n}.', 'Der Groove war da, aber nicht durchgehend.', 'Dein {w} hat den Beat verloren.'],
+        no: ['Das lief neben dem Beat. Nein.', 'Zu viele verpasste Einsätze, sorry.', 'Ich habe den Takt gesucht – du leider auch.'],
+        battle: ['{x}, ganz klar. Tighter im Beat.', 'Mein Punkt: {x}. Bessere Einsätze.', '{x} hatte den Groove.']
+      } },
+    { id: 'greta', name: 'Greta Lind', role: 'Die Musical-Diva', guest: true, need: 60, favs: ['ballade'],
+      look: { skin: 0, hair: 'locken', hairColor: 4, outfit: 'glitzer', outfitColor: 1, acc: 'ohrring' },
+      w: { ausdruck: 0.4, stimme: 0.4, praesenz: 0.2 },
+      lines: {
+        top: ['Bravo, {n}! Das war großes Theater mit echter Stimme.', 'Ich habe Standing Ovations im Kopf gehört.', 'So singt man eine Geschichte. Wunderbar.'],
+        yes: ['Ausdrucksstark und klar. Ja.', 'Dein {s} hat mich überzeugt, den {w} polieren wir.', 'Da war eine Figur, ein Gefühl, ein Bogen. Ja!'],
+        close: ['Schön, aber noch nicht groß genug.', 'Mir fehlte der letzte Bogen, {n}.', 'Dein {w} hat die Geschichte gebremst.'],
+        no: ['Da kam keine Geschichte bei mir an. Nein.', 'Zu flach, zu vorsichtig. Leider nein.', 'Der Vorhang fällt heute zu früh.'],
+        battle: ['{x}. Das war die größere Geschichte.', 'Mein Applaus gilt {x}.', 'Ich wähle {x} – mehr Bühne, mehr Gefühl.']
       } }
   ];
+  const MAIN_JURY = ['marc', 'lena', 'david'];
 
   const COACH = { id: 'sophie', name: 'Sophie', role: 'Vocal-Coach', img: 'img/jury-sophie.jpg',
     tips: ['Atme vor dem Einsatz, nicht mittendrin – dann sitzt der erste Ton.',
@@ -287,6 +339,6 @@
       a: [{ t: 'Emotional erzählen', d: 'Lena +2 Sympathie, +2 Fans', symp: { lena: 2 }, fans: 2 }, { t: 'Selbstbewusst auftreten', d: 'David +2 Sympathie', symp: { david: 2 } }] }
   ];
 
-  const DATA = { STATIONS, INTERVIEW, HOST_Q, EVENTS, CRIT, JURY, COACH, HOST, CANDIDATES, STYLES, SONGS, MOTTOS, APPROACH, ACTION, ROUNDS, COMMUNITY, TRAINING, ACHIEVEMENTS, ARCHIVE };
+  const DATA = { MAIN_JURY, STATIONS, INTERVIEW, HOST_Q, EVENTS, CRIT, JURY, COACH, HOST, CANDIDATES, STYLES, SONGS, MOTTOS, APPROACH, ACTION, ROUNDS, COMMUNITY, TRAINING, ACHIEVEMENTS, ARCHIVE };
   if (typeof module !== 'undefined' && module.exports) module.exports = DATA; else root.SMYV_DATA = DATA;
 })(typeof window !== 'undefined' ? window : globalThis);

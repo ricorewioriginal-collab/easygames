@@ -11,6 +11,8 @@
   const nf = v => String(v).replace('.', ',');
   const cand = id => D.CANDIDATES.find(c => c.id === id);
   const jur = id => D.JURY.find(j => j.id === id);
+  // Bild eines Jurors: Foto (Stammjury) oder gezeichneter Avatar (Gastjuroren)
+  const jimg = (j, cls) => j.img ? `<img class="${cls || 'jimg'}" src="${j.img}" alt="${esc(j.name)}">` : `<span class="${cls || 'jimg'} jav" role="img" aria-label="${esc(j.name)}">${AV.svg(j.look, 'neutral')}</span>`;
   const ico = (i, cls) => `<span class="ico ${cls || ''}" style="background-position:${(i / 9 * 100).toFixed(3)}% 0" aria-hidden="true"></span>`;
   const meter = (v, max) => `<div class="meter"><i style="width:${Math.max(0, Math.min(100, v / (max || 100) * 100))}%"></i></div>`;
 
@@ -47,7 +49,7 @@
   function sfx(n, a, cap) { A.sfx(n, a); if (cap) caption(cap); }
 
   const BG = { sTitle: 'stage', sMenu: 'stage', sAvatar: 'backstage', sBack: 'backstage', sPrep: 'backstage', sResult: 'chairs', sOut: 'out', sWin: 'win',
-    sCands: 'backstage', sProfile: 'backstage', sTrain: 'backstage', sBonus: 'arena', sArchive: 'arena', sSettings: 'stage', sHelp: 'stage', sCredits: 'stage' };
+    sCands: 'backstage', sProfile: 'backstage', sTrain: 'backstage', sBonus: 'arena', sArchive: 'arena', sSettings: 'stage', sHelp: 'stage', sCredits: 'stage', sOnline: 'arena' };
   function setBg(name, dim) { const el = $('#bg'); el.style.backgroundImage = 'url(img/bg-' + name + '.jpg)'; el.classList.toggle('dim', !!dim); }
   const RENDER = {};
   function go(id, arg) {
@@ -123,6 +125,7 @@
     const it = [];
     if (running) it.push(['cont', 'gold wide', '▶ Karriere fortsetzen', esc(p.name) + ' · ' + D.ROUNDS[s.round].name]);
     it.push(['new', running ? 'violet' : 'gold wide', '🌟 Neue Karriere', 'Avatar, Casting, ganze Staffel']);
+    it.push(['online', 'pink', '🌐 Online & Handys', 'Live-Show mit Freunden – jede Person auf dem eigenen Gerät']);
     it.push(['free', 'pink', '🎤 Freies Casting', 'Ein Auftritt vor der Jury']);
     it.push(['train', 'violet', '🏋️ Training', 'Drei Minispiele mit Sophie']);
     it.push(['bonus', 'blue', '❄️ Winterglanz-Gala', 'Bonus-Challenge · Rekord ' + (save.best || 0)]);
@@ -145,7 +148,8 @@
         <button class="btn" data-act="ava" type="button">Neuen Avatar erstellen</button>
         <button class="btn sm" data-act="x" type="button">Abbrechen</button>`,
       { season: () => { closeOv(); startSeason(); }, ava: () => { closeOv(); openAvatar('fresh'); }, x: closeOv });
-    } else if (m === 'free') { if (!p) openAvatar('free'); else sub('sPrep', 'free'); }
+    } else if (m === 'online') openOnline();
+    else if (m === 'free') { if (!p) openAvatar('free'); else sub('sPrep', 'free'); }
     else if (m === 'train') sub('sTrain', 'practice');
     else if (m === 'bonus') sub('sBonus');
     else if (m === 'arch') sub('sArchive');
@@ -197,12 +201,13 @@
     persist();
     if (edit.mode === 'free') { backTo.sPrep = 'sMenu'; go('sPrep', 'free'); }
     else if (edit.mode === 'prof') { backTo.sProfile = 'sMenu'; go('sProfile'); }
+    else if (edit.mode === 'online') { backTo.sOnline = 'sMenu'; go('sOnline'); if (ON.pend && !ON.st) onJoin(ON.pend); }
     else startSeason();
   };
 
   // ---------- Staffel ----------
   function startSeason() {
-    save.season = S.newSeason((Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0, save.settings.difficulty);
+    save.season = S.newSeason((Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0, save.settings.difficulty, save.settings.jury);
     persist(); go('sBack', { welcome: true });
   }
   function hostLine(s, def, welcome) {
@@ -225,6 +230,7 @@
       <div class="panel host">${AV.svg(D.HOST.look, 'happy')}<div class="speech"><b>Rico:</b> ${esc(hostLine(s, def, arg && arg.welcome))}</div></div>
       <div class="panel">
         <p><b>${def.icon} Nächste Runde: ${def.name}</b> – ${esc(def.rule)}</p>
+        <div class="panelRow"><span class="muted">⚖️ Jury:</span>${S.panelOf(s, s.round).map(jur).map(j => `<span class="pj">${jimg(j, 'js')}<small>${esc(j.name)}${j.guest ? ' <i>Gast</i>' : ''}</small></span>`).join('')}</div>
         <p class="muted">Noch im Rennen: ${s.field.length} Kandidaten${last ? ` · Letzte Runde: Platz ${last.rank} von ${last.of}, Performance ${nf(last.perf)}` : ''}${s.golden ? ' · Goldenes Ticket bereits vergeben' : ''}</p>
         <button class="btn gold xl" type="button" data-b="stage" data-focus style="width:100%">🎤 Auf die Bühne: ${def.name}</button>
       </div>
@@ -300,7 +306,7 @@
       <p class="hint" style="text-align:left">${radioOn ? '📻 <b>Quelle:</b> Live-Programm des gewählten RicoReWi-Senders über laut.fm. Der Sender läuft live, die Noten entstehen aus den Beats des laufenden Songs (lässt der Stream keine Analyse zu, folgen sie dem Takt des Musikstils). Interpret und Titel stehen im Auftritt oben. Alle Rechte an der Musik liegen bei den jeweiligen Urhebern. Ohne Verbindung spielt das Spiel eigene Beats.' : '🎹 Eigene Songs: Musik wird live im Browser erzeugt. Radio-Sender kannst du in den Einstellungen einschalten.'} Der Stil bestimmt, welche Jurorin oder welcher Juror einen Bonus gibt.</p>
       <h3>2 · Dein Ansatz</h3><div class="opts">${Object.keys(D.APPROACH).map(k => opt('approach', k, D.APPROACH[k].name, D.APPROACH[k].desc)).join('')}</div>
       <h3>3 · Bühnen-Aktion</h3><div class="opts">${Object.keys(D.ACTION).map(k => opt('action', k, D.ACTION[k].name, D.ACTION[k].desc)).join('')}</div>
-      <p class="muted">${def.parts.includes('pitch') ? (save.settings.mic ? '🎙️ Mikrofon ist an: In Gesangsteilen hört das Spiel deine Tonhöhe (nur lokal).' : '🎤 Gesang mit Tasten/Touch. Mikrofon kannst du in den Einstellungen einschalten.') : ''}</p>
+      <div class="panel">${save.settings.mic ? '<p>🎙️ <b>Mikrofon ist an:</b> Sing die Noten an, wenn sie den Ring erreichen, und triff in Gesangsteilen die Tonhöhe. Ausgewertet wird nur auf deinem Gerät.</p>' : '<p>🎙️ <b>Mit deiner Stimme spielen?</b> Mit Mikrofon triffst du die Noten, indem du sie ansingst, und im Gesangsteil zählt deine echte Tonhöhe.</p><button class="btn" type="button" id="bMic">🎙️ Mikrofon einschalten</button>'}</div>
       <button class="btn gold xl" type="button" id="bGo" data-focus style="width:100%">${career && def.id !== 'casting' ? '🎙️ Zum Interview mit Rico' : '🚪 Zum Wartebereich'}</button>`;
   };
   $('#prepBox').addEventListener('click', e => {
@@ -310,6 +316,7 @@
       if (o.dataset.g === 'music') prep.style = musicOf(prep).style;
       return;
     }
+    if (e.target.closest('#bMic')) { micConsent(() => RENDER.sPrep(prepMode)); return; }
     if (e.target.closest('#bGo')) { backTo.sTalk = 'sPrep'; go('sTalk', prepMode); }
   });
   function opponent(s) {
@@ -347,16 +354,18 @@
   };
   // ---------- Radio im Wartebereich: Sender läuft schon, der Auftritt beginnt mit dem nächsten Song ----------
   const onAir = { slug: null, mode: null, poll: 0, song: null };
-  function airStop() { clearInterval(onAir.poll); onAir.poll = 0; onAir.slug = null; onAir.mode = null; onAir.song = null; A.radioStop(); }
+  let airTok = 0;   // jeder Verbindungsversuch bekommt eine Nummer; veraltete Versuche brechen ab
+  function airStop() { airTok++; clearInterval(onAir.poll); onAir.poll = 0; onAir.slug = null; onAir.mode = null; onAir.song = null; A.radioStop(); }
   function airShow(txt) { const el = $('#airBox'); if (el) el.textContent = txt; }
   function songTxt(sg) { return sg ? (sg.artist ? sg.artist + ' – ' : '') + sg.title : ''; }
   async function airStart(slug) {
     if (onAir.slug === slug && A.radioActive()) return onAir.mode;
     airStop(); onAir.slug = slug;
+    const tok = ++airTok, stale = () => tok !== airTok || onAir.slug !== slug;
     let mode = null;
     try { await A.radioStart(slug, ST.TRAVEL[save.settings.speed] || 1.5); mode = 'live'; }
-    catch (e) { try { await A.radioStart(slug, 0, null, true); mode = 'plain'; } catch (e2) { mode = null; } }
-    if (onAir.slug !== slug) { if (mode && !stage) A.radioStop(); return null; }   // inzwischen verlassen
+    catch (e) { if (stale()) return null; try { await A.radioStart(slug, 0, null, true); mode = 'plain'; } catch (e2) { mode = null; } }
+    if (stale()) { if (mode && !onAir.slug && !stage) A.radioStop(); return null; }   // inzwischen verlassen oder anderer Sender
     if (!mode) { onAir.slug = null; return null; }
     onAir.mode = mode; A.radioMute(false);
     const st = station(slug), upd = () => A.radioSong(slug).then(sg => { if (onAir.slug !== slug) return; if (sg) onAir.song = sg; airShow('📻 Läuft gerade auf ' + st.name + ': ' + (songTxt(onAir.song) || '…')); });
@@ -377,7 +386,7 @@
       const left = s0 && s0.end ? Math.round((s0.end - Date.now()) / 1000) : null, el = $('#airWait');
       if (el) el.textContent = (s0 ? 'Läuft noch: ' + songTxt(s0) : 'Warte auf den Songwechsel') + (left != null && left > 0 ? ' · ca. ' + left + ' s' : '');
       if (n > 240) { end(true); return; }   // Notbremse nach 4 Minuten
-      if (n % 3 === 0 || (left != null && left <= 0)) A.radioSong(onAir.slug).then(sg => { if (!done && sg && (!s0 || sg.title !== s0.title || sg.artist !== s0.artist)) { onAir.song = sg; sfx('cue', 0, '📻 Neuer Song'); end(true); } });
+      if (n % 3 === 0 || (left != null && left <= 0)) A.radioSong(onAir.slug).then(sg => { if (!done && sg && sg.type === 'song' && (!s0 || sg.title !== s0.title || sg.artist !== s0.artist)) { onAir.song = sg; sfx('cue', 0, '📻 Neuer Song'); end(true); } });
     }, 1000);
   }
   function talkStep() {
@@ -425,15 +434,15 @@
     if (def.parts.includes('group')) group = groupOf(s).map(c => ({ c, perf: S.aiPerf(s, c, s.round).perf }));
     const playId = S.startRound(s); if (playId == null) return;
     persist();
-    runStage({ mode: 'career', playId, sel: Object.assign({}, prep, { style: mu.style }), radio: mu.radio, talk: { symp: talk.symp, votes: talk.votes },
+    runStage({ mode: 'career', playId, panel: S.panelOf(s, s.round), sel: Object.assign({}, prep, { style: mu.style }), radio: mu.radio, talk: { symp: talk.symp, votes: talk.votes },
       parts: buildParts(def, S.hash(s.seed + ':perf:' + s.round), song, s.round, mu), juryStop: def.id === 'casting',
-      title: def.icon + ' ' + def.name + (mu.radio ? '' : ' · „' + song + '“'), bg: def.bg, rival, group, mic: def.parts.includes('pitch'), ret: 'sBack' });
+      title: def.icon + ' ' + def.name + (mu.radio ? '' : ' · „' + song + '“'), bg: def.bg, rival, group, ret: 'sBack' });
   }
   function startFree() {
     const def = D.ROUNDS[0], mu = musicOf(prep);
     runStage({ mode: 'free', sel: Object.assign({}, prep, { style: mu.style }), radio: mu.radio, talk: { symp: talk.symp, votes: 0 }, juryStop: true,
       parts: buildParts(def, (Date.now() & 0xffffff) >>> 0, mu.radio ? mu.name : D.SONGS[mu.style], 0, mu),
-      title: '🎤 Freies Casting' + (mu.radio ? '' : ' · „' + D.SONGS[mu.style] + '“'), bg: 'stage', mic: false, ret: 'sPrep' });
+      title: '🎤 Freies Casting' + (mu.radio ? '' : ' · „' + D.SONGS[mu.style] + '“'), bg: 'stage', ret: 'sPrep' });
   }
 
   // ---------- Bühne ----------
@@ -457,8 +466,8 @@
       }
       cfg.parts.forEach(p => { if (radio === 'live' && p.type === 'rhythm') p.live = true; if (radio === 'plain') p.plain = true; });
     }
-    if (cfg.mic && save.settings.mic) { try { await A.micStart(); mic = true; A.micStop(); } catch (e) { toast('🎙️ Mikrofon nicht verfügbar – du singst mit Tasten/Touch.'); } }
-    cfg.micOn = mic;   // Mikrofon nur in Gesangsteilen öffnen
+    if (cfg.mic !== false && save.settings.mic && cfg.parts.some(p => p.type === 'pitch' || p.type === 'rhythm')) { try { await A.micStart(); mic = true; A.micStop(); } catch (e) { toast('🎙️ Mikrofon nicht verfügbar – du singst mit Tasten/Touch.'); } }
+    cfg.micOn = mic;   // Mikrofon nur in Noten- und Gesangsteilen öffnen
     A.radioOnLost(() => { if (stage && flow === cfg) { stage.radioLost(); cfg.credit = ''; $('#stTitle').textContent = cfg.title; toast('📻 Radio-Verbindung verloren – weiter mit eigenen Beats.', 3500); } });
     flow = cfg; go('sStage'); setBg(cfg.bg || 'stage', true);
     $('#stTitle').textContent = cfg.title;
@@ -467,13 +476,13 @@
       const st = station(cfg.radio); cfg.credit = '📻 ' + st.name + ' (laut.fm)'; $('#stTitle').textContent = cfg.title + ' · ' + cfg.credit;
       A.radioSong(cfg.radio).then(sg => { if (sg && flow === cfg) { cfg.credit = '📻 Quelle: ' + st.name + ' auf laut.fm – ' + (sg.artist ? sg.artist + ' – ' : '') + sg.title; $('#stTitle').textContent = cfg.title + ' · ' + cfg.credit.replace('📻 Quelle: ', '📻 '); } });
     }
-    $('#juryStrip').innerHTML = cfg.noJury ? '' : D.JURY.map(j => `<img src="${j.img}" alt="${j.name}" data-j="${j.id}">`).join('');
+    $('#juryStrip').innerHTML = cfg.noJury ? '' : (cfg.panel || D.MAIN_JURY).map(jur).map(j => jimg(j, 'js').replace(/^<(img|span) /, '<$1 data-j="' + j.id + '" ')).join('');
     $('#snow').hidden = !cfg.bonus || reduced();
     $('#rivalBox').hidden = true;
     const pads = $('#pads'); pads.className = 'pads' + (('ontouchstart' in window || navigator.maxTouchPoints > 0) ? '' : ' auto');
     stage = new ST.Stage({ canvas: $('#cv'), pads, parts: cfg.parts, settings: save.settings, mic, bonus: !!cfg.bonus, hints: cfg.hints, captions: caption, juryStop: !!cfg.juryStop,
       onPart: (i, p) => {
-        if (mic && p.type === 'pitch') A.micStart().catch(() => {}); else A.micStop();
+        if (mic && (p.type === 'pitch' || p.type === 'rhythm')) A.micStart().catch(() => {}); else A.micStop();
         pads.classList.toggle('pitch', p.type === 'pitch'); pads.classList.toggle('hide', p.type === 'rival');
         pads.querySelectorAll('.pad i').forEach((x, k) => { x.textContent = p.type === 'cues' ? ST.CUES[k][0] : ''; });
         const rb = $('#rivalBox'), who = p.group ? (cfg.group || []) : cfg.rival ? [cfg.rival] : [];
@@ -490,7 +499,7 @@
       onPause: auto => showPause(auto),
       onEvent: k => {
         if (k === 'stop') { toast('✋ David: „Stopp! Danke, das reicht uns.“', 3000); caption('✋ Die Jury bricht ab'); A.sfx('buzzer'); return; }
-        const imgs = $('#juryStrip').querySelectorAll('img'); const cls = k === 'combo' ? 'nod' : k === 'show' ? 'wow' : 'frown';
+        const imgs = $('#juryStrip').querySelectorAll('[data-j]'); const cls = k === 'combo' ? 'nod' : k === 'show' ? 'wow' : 'frown';
         imgs.forEach((im, i) => { if (k !== 'miss' || i === 0) { im.classList.add(cls); setTimeout(() => im.classList.remove(cls), 700); } });
       },
       onDone: out => { stage = null; A.micStop(); airStop(); finishStage(out); } });
@@ -498,7 +507,7 @@
   $('#bPause').onclick = () => { if (stage) stage.pause(false); };
   function showPause(auto) {
     A.micStop();   // in der Pause hört niemand zu
-    const career = flow && (flow.mode === 'career' || flow.mode === 'encore');
+    const career = flow && (flow.mode === 'career' || flow.mode === 'encore' || flow.mode === 'online');
     overlay(`<h3>⏸ Pause</h3>${auto ? '<p class="muted">Automatisch angehalten.</p>' : ''}${flow && flow.credit ? `<p class="hint">${esc(flow.credit)}</p>` : ''}
       <button class="btn gold" type="button" data-act="go">▶ Weiter</button>
       ${career ? '<button class="btn red" type="button" data-act="end">Auftritt beenden (Rest zählt als verpasst)</button>'
@@ -508,7 +517,7 @@
       end: () => { closeOv(); if (stage) stage.abort(); },
       re: () => { closeOv(); stopAll(); runStage(flow); },
       quit: () => { closeOv(); stopAll(); go(flow.ret || 'sMenu'); } });
-    function resume() { closeOv(); if (stage) { if (flow && flow.micOn && stage.part && stage.part.type === 'pitch') A.micStart().catch(() => {}); stage.resume(); } }
+    function resume() { closeOv(); if (stage) { if (flow && flow.micOn && stage.part && (stage.part.type === 'pitch' || stage.part.type === 'rhythm')) A.micStart().catch(() => {}); stage.resume(); } }
   }
   // Während der Pause: P/Start setzt ebenfalls fort
   addEventListener('keydown', e => { if (cur === 'sStage' && stage && stage.paused && e.code === 'KeyP' && !$('#ov').hidden) { e.preventDefault(); const r = $('#ovBox [data-act="go"]'); if (r) r.click(); } });
@@ -558,7 +567,8 @@
     } else if (f.mode === 'encore') {
       const par = f.parent; par.oc.encore = out.pitch ? out.pitch.q : 0; flow = par.f;
       resolveAndShow(par.f, par.out, par.oc);
-    } else if (f.mode === 'train') finishTraining(f, out);
+    } else if (f.mode === 'online') onFinish(f, out);
+    else if (f.mode === 'train') finishTraining(f, out);
     else if (f.mode === 'bonus') finishBonus(out);
     else if (f.mode === 'tutorial') {
       save.tutorial = true; persist(); flow = null;
@@ -584,7 +594,7 @@
       const j = jur(v.id), ws = Object.keys(j.w).map(k => D.CRIT[k] + ' ' + Math.round(j.w[k] * 100) + ' %').join(' · ');
       const why = [`Tagesform ${v.mood >= 0 ? '+' : ''}${String(v.mood).replace('.', ',')}`]; if (v.fav) why.push('Lieblingsstil +3');
       if (v.sy) why.push(`Sympathie ${v.sy > 0 ? '+' : ''}${v.sy}`); if (v.encore) why.push('🎤 Zugabe hat überzeugt');
-      return `<div class="jcard ${v.yes ? 'yes' : 'no'}" id="jc${i}"><img class="jimg" src="${j.img}" alt="${j.name}">
+      return `<div class="jcard ${v.yes ? 'yes' : 'no'}" id="jc${i}">${jimg(j)}
         <div><b>${j.name}</b> <span class="muted">${j.role}</span></div>
         <div>${ico(v.tier === 'top' ? (v.id === 'lena' ? 3 : 2) : v.yes ? 0 : 1)} <span class="sc">${String(v.score).replace('.', ',')}</span> <span class="muted">/ ${j.need}</span></div>
         <p class="q">„${esc(S.comment(v.id, v, crit, name, seed))}“</p><div class="why">${ws}<br>${why.join(' · ')}</div></div>`;
@@ -685,7 +695,7 @@
       const pairs = b.pairs.map(pr => `<div class="pair"><div class="${pr.winner === pr.a ? 'w' : ''}">${esc(nm(pr.a))}</div><div class="vs">${pr.votes.map(v => v === pr.a ? '◀' : '▶').join(' ')}</div><div class="${pr.winner === pr.b ? 'w' : ''}">${esc(nm(pr.b))}</div></div>`).join('');
       const mine = b.pairs.find(pr => pr.a === 'p' || pr.b === 'p');
       const opp = mine ? (mine.a === 'p' ? mine.b : mine.a) : null;
-      const quotes = mine ? D.JURY.map((j, k) => `<p>„${esc(fill(j.lines.battle[k % 3], { x: nm(mine.votes[k]).replace(' (du)', '') }))}“ – <b>${j.name}</b></p>`).join('') : '';
+      const quotes = mine ? (res.panel || D.MAIN_JURY).map(jur).map((j, k) => `<p>„${esc(fill(j.lines.battle[k % 3], { x: nm(mine.votes[k]).replace(' (du)', '') }))}“ – <b>${j.name}</b></p>`).join('') : '';
       const saved = b.saved === 'p';
       const head = !inNext ? `<div class="banner lose">❌ Battle verloren – und zu wenige Votes.</div>${rico(fill(rnd(D.HOST.out), { n: name }))}`
         : saved ? `<div class="banner gold">💖 Von der Community gerettet!</div>${rico(fill(D.HOST.saved, { n: name }))}`
@@ -787,7 +797,7 @@
       : t.id === 'cues' ? { type: 'cues', len: 22, bpm: 100, style: 'soul', seed, win: 1.15, title: t.icon + ' ' + t.name, sub: 'Drück die Taste zum Publikums-Signal' }
         : { type: 'pitch', len: 20, bpm: 96, style: 'ballade', seed, title: t.icon + ' ' + t.name, sub: 'Bleib auf der Linie' };
     const career = trainMode === 'career' && save.season && save.season.status === 'backstage' && save.season.trainLeft > 0;
-    runStage({ mode: 'train', train: t, career, parts: [part], title: t.icon + ' ' + t.name, bg: 'backstage', mic: t.id === 'pitch', noJury: true, ret: 'sTrain' });
+    runStage({ mode: 'train', train: t, career, parts: [part], title: t.icon + ' ' + t.name, bg: 'backstage', noJury: true, ret: 'sTrain' });
   });
   function finishTraining(f, out) {
     const r = out.parts[0];
@@ -872,9 +882,10 @@
       row('🎵 Musik', 'Lautstärke der Beats', `<input type="range" min="0" max="1" step="0.05" value="${s.music}" data-r="music" aria-label="Musik">`) +
       row('🔊 Effekte', 'Jury, Applaus, Treffer', `<input type="range" min="0" max="1" step="0.05" value="${s.sfx}" data-r="sfx" aria-label="Effekte">`) +
       row('📻 Musikquelle', 'Radio: Noten entstehen live aus der Musik der RicoReWi-Sender auf laut.fm (Sender und Titel werden angezeigt). Eigene Beats: im Spiel erzeugt, ohne Internet.', seg('source', [['radio', '📻 Radio'], ['beats', '🥁 Eigene Beats']])) +
+      row('⚖️ Jury', 'Wechselnd: Ab dem Recall sitzen Gastjuroren mit eigenem Geschmack in der Jury. Gilt ab der nächsten Staffel.', seg('jury', [['wechsel', 'Wechselnd'], ['fest', 'Stammjury']])) +
       row('🔇 Stumm', 'Alles aus – das Spiel läuft trotzdem', tog('mute')) +
       row('💬 Untertitel', 'Wichtige Töne als Text einblenden', tog('captions')) +
-      row('🎙️ Mikrofon-Modus', 'Optional für Gesangsteile. Nur Tonhöhe, nur auf deinem Gerät, keine Aufnahme.', tog('mic')) +
+      row('🎙️ Mikrofon-Modus', 'Mit der Stimme spielen: Noten ansingen und Tonhöhe treffen. Nur auf deinem Gerät, keine Aufnahme.', tog('mic')) +
       row('🎚️ Stimmlage', 'Für den Mikrofon-Modus', seg('range', [['tief', 'Tief'], ['mittel', 'Mittel'], ['hoch', 'Hoch']])) +
       row('⏩ Notentempo', 'Wie schnell die Noten fallen', seg('speed', [['langsam', 'Langsam'], ['normal', 'Normal'], ['schnell', 'Schnell']])) +
       row('⏱️ Audio-Versatz', `Gleicht Verzögerung von Bluetooth-Kopfhörern aus: <b id="offV">${s.offset} ms</b>`, `<input type="range" min="-150" max="250" step="10" value="${s.offset}" data-r="offset" aria-label="Audio-Versatz">`) +
@@ -905,15 +916,15 @@
     applySettings(); persist(); RENDER.sSettings();
     const nb = $(`#setBox [data-s="${k}"][data-v="${raw}"]`); if (nb) nb.focus();
   });
-  function micConsent() {
-    overlay(`<h3>🎙️ Mikrofon-Modus</h3><p>In Gesangsteilen erkennt das Spiel die <b>Tonhöhe</b> deiner Stimme und bewegt damit den Mikro-Punkt.</p>
-      <p class="muted">Ausgewertet wird nur Tonhöhe und Lautstärke, direkt auf deinem Gerät. Nichts wird aufgenommen, gespeichert oder gesendet. Das Mikrofon ist nur während der Gesangsteile an.</p>
+  function micConsent(after) {
+    overlay(`<h3>🎙️ Mikrofon-Modus</h3><p>Das Spiel hört deine Stimme: In Notenteilen trifft jeder angesungene Ton die Note am Ring, in Gesangsteilen bewegt deine <b>Tonhöhe</b> den Mikro-Punkt.</p>
+      <p class="muted">Ausgewertet wird nur Tonhöhe und Lautstärke, direkt auf deinem Gerät. Nichts wird aufgenommen, gespeichert oder gesendet. Das Mikrofon ist nur während des Auftritts an. Kopfhörer helfen, damit die Musik nicht mitzählt.</p>
       <button class="btn gold" type="button" data-act="ok">Mikrofon erlauben</button><button class="btn" type="button" data-act="no">Ohne Mikrofon spielen</button>`,
     { ok: async () => {
       A.init();
-      try { await A.micStart(); A.micStop(); save.settings.mic = true; persist(); closeOv(); toast('🎙️ Mikrofon bereit – sing im Gesangsteil einfach mit!'); }
+      try { await A.micStart(); A.micStop(); save.settings.mic = true; persist(); closeOv(); toast('🎙️ Mikrofon bereit – sing die Noten einfach an!'); }
       catch (e) { save.settings.mic = false; persist(); closeOv(); toast('Mikrofon nicht erlaubt oder nicht vorhanden – du spielst mit Tasten/Touch.', 3500); }
-      RENDER.sSettings();
+      (after || RENDER.sSettings)();
     }, no: closeOv });
   }
 
@@ -939,6 +950,247 @@
       if (t - t0 < 3200) requestAnimationFrame(f); else c.clearRect(0, 0, w, h);
     })(t0);
   }
+
+  // ---------- 🌐 Online-Show: jede Person singt auf dem eigenen Gerät, der Gastgeber rechnet ----------
+  // Verbindung über ../cloud/fire-peer.js (PeerJS-kompatibel, Firebase vermittelt nur). Einladungslinks über EasyGamesLink.share.
+  function mkNet(cb) {
+    const ALPHA = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789', PRE = 'smyv-';
+    const N = { role: '', code: '', peer: null, conns: new Map() }, libs = {};
+    const load = (src, ok) => libs[src] || (libs[src] = new Promise((res, rej) => { if (ok()) return res(); const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => { delete libs[src]; rej(new Error('lib')); }; document.head.appendChild(s); }));
+    N.loadPeer = () => load('../vendor/peerjs-1.5.4.min.js', () => !!window.Peer);
+    N.loadQR = () => load('../vendor/qrcode-generator-1.4.4.js', () => !!window.qrcode);
+    N.norm = s => Array.from(String(s || '').toUpperCase()).filter(c => ALPHA.includes(c)).join('').slice(0, 4);
+    N.link = () => { const u = location.href.split('#')[0].split('?')[0] + '?join=' + N.code; return window.EasyGamesLink ? EasyGamesLink.share(u) : u; };
+    const mkCode = () => { let c = ''; for (let i = 0; i < 4; i++) c += ALPHA[(Math.random() * ALPHA.length) | 0]; return c; };
+    function reg(conn, onOpen) {
+      conn.on('open', () => { N.conns.set(conn.peer, conn); if (onOpen) onOpen(); });
+      conn.on('data', d => { if (d && typeof d === 'object') cb.onMsg(conn.peer, d); });
+      const gone = () => { if (N.conns.get(conn.peer) !== conn) return; N.conns.delete(conn.peer); cb.onLeave(conn.peer); };
+      conn.on('close', gone); conn.on('error', gone);
+    }
+    N.host = async function () {
+      N.close(); await N.loadPeer();
+      for (let k = 0; k < 6 && !N.peer; k++) {
+        const code = mkCode();
+        const ok = await new Promise(res => { const p = new Peer(PRE + code); let done = false;
+          p.on('open', () => { done = true; N.peer = p; N.code = code; N.role = 'host'; res(true); });
+          p.on('error', e => { if (!done) { done = true; try { p.destroy(); } catch (x) { /* weg */ } res(e && e.type === 'unavailable-id' ? false : 'err'); } }); });
+        if (ok === 'err') throw new Error('broker');
+      }
+      if (!N.peer) throw new Error('code');
+      N.peer.on('connection', c => reg(c)); N.peer.on('disconnected', () => { try { N.peer.reconnect(); } catch (e) { /* egal */ } });
+      return N.code;
+    };
+    N.join = async function (code) {
+      code = N.norm(code); if (code.length !== 4) throw new Error('code'); N.close(); await N.loadPeer();
+      await new Promise((res, rej) => { const p = new Peer(); let done = false; const fail = m => { if (done) return; done = true; try { p.destroy(); } catch (x) { /* weg */ } rej(new Error(m)); }; setTimeout(() => fail('timeout'), 14000);
+        p.on('error', e => { if (!done) fail(e && e.type === 'peer-unavailable' ? 'nocode' : 'broker'); });
+        p.on('open', () => { N.peer = p; N.role = 'guest'; N.code = code; reg(p.connect(PRE + code, { reliable: true }), () => { if (done) return; done = true; res(); }); }); });
+    };
+    N.sendTo = (id, d) => { const c = N.conns.get(id); if (c && c.open) { try { c.send(d); } catch (e) { /* weg */ } } };
+    N.send = d => { for (const [, c] of N.conns) if (c.open) { try { c.send(d); } catch (e) { /* weg */ } } };
+    N.close = () => { for (const [, c] of N.conns) { try { c.close(); } catch (e) { /* weg */ } } N.conns.clear(); if (N.peer) { try { N.peer.destroy(); } catch (e) { /* weg */ } } N.peer = null; N.role = ''; N.code = ''; };
+    return N;
+  }
+  const netErr = e => ({ nocode: 'Diese Show gibt es nicht (mehr). Stimmt der Code?', timeout: 'Keine Verbindung – bitte nochmal versuchen.', code: 'Bitte den 4-stelligen Code eingeben.' }[e && e.message] || 'Online ist gerade nicht erreichbar. Prüfe das Internet und versuche es nochmal.');
+  const cleanLook = l => { const o = {}; if (l && typeof l === 'object') for (const k of ['skin', 'hair', 'hairColor', 'outfit', 'outfitColor', 'acc', 'beard', 'piercing']) { const v = l[k]; if (typeof v === 'number' || (typeof v === 'string' && v.length < 24)) o[k] = v; } return o; };
+  const STYLE_ROT = ['pop', 'soul', 'rock', 'ballade'];
+  // st = gemeinsamer Stand (vom Gastgeber verteilt), H = nur beim Gastgeber
+  const ON = { net: null, me: '', st: null, played: -1, voted: -1, pend: '', H: null };
+  function onReset() { if (ON.net) ON.net.close(); if (ON.H && ON.H.tick) clearInterval(ON.H.tick); ON.net = null; ON.me = ''; ON.st = null; ON.played = -1; ON.voted = -1; ON.H = null; }
+  const amHost = () => !!ON.H;
+  const onPlayer = id => (ON.st && ON.st.players.find(p => p.id === id)) || null;
+
+  // --- Gastgeber ---
+  function hostState() {
+    const h = ON.H;
+    return { code: ON.net ? ON.net.code : '', phase: h.phase, round: h.round, players: h.players, field: h.field, def: h.def, seed: h.seed, style: h.style, panel: h.panel,
+      done: Object.keys(h.perf), voted: Object.keys(h.votes), res: h.res, deadline: h.deadline };
+  }
+  function hostSync() { const s = hostState(); ON.st = s; ON.net.send({ t: 'state', s }); onRender(); }
+  async function onHost() {
+    onReset(); const p = save.profile;
+    ON.H = { phase: 'lobby', round: 0, players: [{ id: 'host', name: p.name, look: cleanLook(p.look), on: true }], field: [], def: null, seed: 0, style: 'pop', panel: null, perf: {}, votes: {}, res: null, deadline: 0 };
+    ON.me = 'host';
+    ON.net = mkNet({ onMsg: hostMsg, onLeave: id => { const pl = id !== 'host' && ON.H && ON.H.players.find(x => x.id === id); if (pl) { pl.on = false; hostSync(); hostCheck(); } } });
+    ON.st = { phase: 'connecting', players: [] }; onRender();
+    const net = ON.net;   // wer zwischendurch „Verlassen“ drückt, beendet diesen Versuch
+    try { await net.host(); } catch (e) { if (ON.net === net) { onReset(); toast(netErr(e), 4000); onRender(); } return; }
+    if (ON.net !== net) { net.close(); return; }
+    ON.H.tick = setInterval(hostCheck, 1000);
+    hostSync();
+  }
+  function hostMsg(from, d) {
+    const h = ON.H; if (!h || from === 'host') return;   // „host“ ist der Gastgeber selbst, nie eine fremde Verbindung
+    if (d.t === 'hi') {
+      let pl = h.players.find(x => x.id === from);
+      if (!pl && h.phase === 'lobby') h.players = h.players.filter(x => x.on);   // Plätze von Gegangenen in der Lobby frei machen
+      if (!pl) { if (h.players.filter(x => x.on).length >= 8) { ON.net.sendTo(from, { t: 'full' }); return; } pl = { id: from }; h.players.push(pl); }
+      pl.name = S.cleanName(d.name) || 'Gast'; pl.look = cleanLook(d.look); pl.on = true;
+      ON.net.sendTo(from, { t: 'you', id: from }); hostSync();
+      if (h.phase === 'lobby') sfx('cue', 0, '🙋 ' + pl.name + ' ist dabei');
+    } else hostInput(from, d);
+  }
+  function hostInput(from, d) {
+    const h = ON.H; if (!h) return;
+    if (d.t === 'perf' && h.phase === 'perform' && d.r === h.round && h.field.includes(from) && !h.perf[from]) {
+      const crit = {}; S.CK.forEach(k => { crit[k] = S.clamp(+(d.crit && d.crit[k]) || 0); });
+      h.perf[from] = { perf: S.clamp(+d.perf || 0), crit }; hostSync(); hostCheck();
+    } else if (d.t === 'vote' && h.phase === 'vote' && d.r === h.round && !h.votes[from] && h.field.includes(d.for) && d.for !== from && h.players.some(p => p.id === from && p.on)) {   // nur zugelassene Personen
+      h.votes[from] = d.for; hostSync(); hostCheck();
+    }
+  }
+  function hostStart(round) {
+    const h = ON.H, on = h.players.filter(p => p.on);
+    if (!round) h.field = on.map(p => p.id);
+    if (h.field.length < 2) { toast('Mindestens zwei Personen müssen dabei sein.'); return; }
+    h.round = round; h.def = S.onlineDef(round, h.field.length); h.seed = (Math.random() * 1e9) >>> 0;
+    h.style = STYLE_ROT[(h.seed + round) % STYLE_ROT.length];
+    h.panel = S.panelOf({ seed: h.seed, jury: save.settings.jury }, round);
+    h.perf = {}; h.votes = {}; h.res = null; h.phase = 'perform';
+    h.deadline = Date.now() + (h.def.parts.length * h.def.len + 45) * 1000;
+    hostSync();
+  }
+  function hostCheck() {
+    const h = ON.H; if (!h) return;
+    const onIds = h.players.filter(p => p.on).map(p => p.id);
+    if (h.phase === 'perform') {
+      const open = h.field.filter(id => !h.perf[id] && onIds.includes(id));
+      if (!open.length || Date.now() > h.deadline) { h.phase = 'vote'; h.deadline = Date.now() + 30000; hostSync(); }
+    } else if (h.phase === 'vote') {
+      const open = onIds.filter(id => !h.votes[id] && h.field.some(f => f !== id));
+      if (!open.length || Date.now() > h.deadline) hostResolve();
+    }
+  }
+  function hostResolve() {
+    const h = ON.H, count = {};
+    Object.values(h.votes).forEach(id => { count[id] = (count[id] || 0) + 1; });
+    const entries = h.field.map(id => { const pl = h.players.find(p => p.id === id), r = h.perf[id];
+      return r ? { id, name: pl.name, perf: r.perf, crit: r.crit, style: h.style, votesN: count[id] || 0 } : { id, name: pl.name, missing: true, votesN: count[id] || 0 }; });
+    const r = S.onlineResolve({ def: h.def, round: h.round, seed: h.seed, panel: h.panel, entries });
+    h.res = { round: r.round, final: r.final, advanced: r.advanced, rescued: r.rescued, out: r.out,
+      entries: r.entries.map(e => ({ id: e.id, name: e.name, perf: e.perf, juryAvg: e.juryAvg, yes: e.yes, votesN: e.votesN, votes: e.votes, total: e.total, rank: e.rank, missing: e.missing,
+        jury: e.jury.map(v => ({ id: v.id, score: v.score, yes: v.yes, tier: v.tier, mood: v.mood, fav: v.fav })) })) };
+    h.field = h.field.filter(id => r.advanced.includes(id));
+    h.phase = r.final ? 'final' : 'result'; hostSync();
+  }
+
+  // --- Gast ---
+  async function onJoin(code) {
+    onReset(); ON.net = mkNet({
+      onMsg: (from, d) => {
+        if (d.t === 'you') ON.me = d.id;
+        else if (d.t === 'full') { toast('Die Show ist voll (höchstens 8).', 4000); onReset(); onRender(); }
+        else if (d.t === 'state' && d.s) { ON.st = d.s; onRender(); }
+      },
+      onLeave: () => { const was = ON.st; onReset(); if (was) { if (stage && flow && flow.mode === 'online') { stopAll(); flow = null; } toast('📡 Die Verbindung zum Gastgeber ist weg – die Show ist beendet.', 4500); go('sOnline'); } } });
+    ON.st = { phase: 'connecting', players: [] }; onRender();
+    const net = ON.net;
+    try { await net.join(code); } catch (e) { if (ON.net === net) { onReset(); toast(netErr(e), 4500); onRender(); } return; }
+    if (ON.net !== net) { net.close(); return; }
+    net.send({ t: 'hi', name: save.profile.name, look: cleanLook(save.profile.look) });
+  }
+  function onSend(d) { if (amHost()) hostInput('host', d); else if (ON.net) ON.net.send(d); }
+
+  // --- Auftritt ---
+  function onPerform(st) {
+    const sty = D.STYLES[st.style] || D.STYLES.pop, ap = D.APPROACH.gefuehl, ac = D.ACTION.publikum;
+    const parts = st.def.parts.map((t, i) => t === 'rhythm'
+      ? { type: 'rhythm', len: st.def.len, bpm: sty.bpm, style: st.style, density: ap.density + st.round * 0.04, seed: st.seed + i * 101, shows: i === 0 ? ac.shows : 1, title: '„' + D.SONGS[st.style] + '“', sub: st.def.name }
+      : { type: 'pitch', len: st.def.len, bpm: sty.bpm, style: st.style, seed: st.seed + i * 101, title: '🎤 Gesangsteil', sub: st.def.name });
+    ON.played = st.seed;   // jede Runde hat einen neuen Seed, auch nach „Neue Show“
+    runStage({ mode: 'online', r: st.round, style: st.style, panel: st.panel, parts, bg: st.def.final ? 'arena' : 'stage', ret: 'sOnline',
+      title: '🌐 ' + st.def.icon + ' ' + st.def.name + ' · „' + D.SONGS[st.style] + '“' });
+  }
+  function onFinish(f, out) {
+    flow = null;
+    const oc = S.analyze({ rhythm: out.rhythm, pitch: out.pitch, show: out.show, rhythmShare: out.rhythmShare, approach: 'gefuehl', action: 'publikum' }, save.profile.attrs, null);
+    ON.mine = { r: f.r, crit: oc.crit, perf: oc.perf };
+    save.profile.xp += Math.round(oc.perf / 4); persist();
+    onSend({ t: 'perf', r: f.r, perf: oc.perf, crit: oc.crit });
+    go('sOnline');
+  }
+
+  // --- Anzeige ---
+  RENDER.sOnline = () => onRender();
+  function onRender() {
+    // Runde ist weitergezogen (z. B. Pause bis nach der Frist): alten Auftritt beenden, zurück zur Show
+    if (stage && flow && flow.mode === 'online' && ON.st && (ON.st.phase !== 'perform' || ON.st.seed !== ON.played)) {
+      stopAll(); flow = null; closeOv(); toast('⏱️ Die Zeit für den Auftritt ist um – weiter geht\'s in der Show.', 3500); go('sOnline'); return;
+    }
+    if (cur !== 'sOnline') {
+      // Auftritt automatisch starten, sobald die Runde beginnt (auch aus einer anderen Ansicht der Show heraus)
+      return;
+    }
+    const st = ON.st, box = $('#onBox'), me = ON.me, p = save.profile;
+    const head = `<header class="bar"><button class="btn sm" type="button" data-o="leave">← ${st ? 'Verlassen' : 'Zurück'}</button><h2>🌐 Online-Show</h2><span class="tag">${st && st.code ? 'Code ' + esc(st.code) : ''}</span></header>`;
+    const ava = (pl, ex) => `<div class="onP ${pl.on === false ? 'off' : ''}">${AV.svg(pl.look || {}, ex || 'happy')}<b>${esc(pl.name)}${pl.id === me ? ' (du)' : ''}</b></div>`;
+    if (!st) {
+      box.innerHTML = head + `<div class="panel"><p><b>Live-Show mit Freunden:</b> Jede Person singt auf dem eigenen Handy, Tablet oder PC. Die Jury bewertet alle, ihr stimmt gegenseitig ab, wer weiterkommt. 2 bis 8 Personen.</p>
+        <p class="muted">Mitspieler treten per Link, QR-Code oder 4-stelligem Code bei – von überall, auch übers Internet.</p>
+        <button class="btn gold xl" type="button" data-o="host" style="width:100%">🎬 Show eröffnen</button>
+        <div class="row2" style="margin-top:12px"><input id="onCode" class="codeIn" maxlength="4" autocomplete="off" placeholder="CODE" aria-label="Code der Show" value="${esc(ON.pend)}"><button class="btn violet" type="button" data-o="join">🙋 Beitreten</button></div></div>`;
+      focusFirst(box); return;
+    }
+    if (st.phase === 'connecting') { box.innerHTML = head + '<div class="panel center"><p>📡 Verbinde …</p></div>'; return; }
+    const pls = st.players || [], inField = (st.field || []).includes(me), def = st.def;
+    let body = '';
+    if (st.phase === 'lobby') {
+      body = `<div class="panel center"><p>Code: <b class="bigCode">${esc(st.code)}</b></p><div id="onQR" class="qr"></div>
+        <p class="hint">Mitspieler öffnen den Link oder scannen den QR-Code – von überall, auch übers Internet.</p>
+        ${amHost() ? '<button class="btn sm" type="button" data-o="copy">🔗 Einladungslink kopieren</button>' : ''}</div>
+        <div class="panel"><p><b>Dabei (${pls.filter(x => x.on).length}/8):</b></p><div class="onPlayers">${pls.map(x => ava(x)).join('')}</div></div>` +
+        (amHost() ? `<button class="btn gold xl" type="button" data-o="start" style="width:100%" ${pls.filter(x => x.on).length < 2 ? 'disabled' : ''}>🎤 Show starten</button><p class="hint">Ablauf: Casting → Recall → Live-Shows → Finale. Musik: eigene Beats, für alle gleich.</p>`
+          : '<p class="center muted">Warte, bis der Gastgeber die Show startet …</p>');
+    } else if (st.phase === 'perform') {
+      const jury = (st.panel || D.MAIN_JURY).map(jur).map(j => `<span class="pj">${jimg(j, 'js')}<small>${esc(j.name)}</small></span>`).join('');
+      body = `<div class="panel"><p><b>${def.icon} ${esc(def.name)}</b> · Musik: „${esc(D.SONGS[st.style])}“ (${esc(D.STYLES[st.style].name)}, eigene Beats)</p><div class="panelRow"><span class="muted">⚖️ Jury:</span>${jury}</div></div>
+        <div class="panel"><div class="onPlayers">${st.field.map(id => { const x = onPlayer(id) || { name: '?', look: {} }; const ok = st.done.includes(id); return `<div class="onP ${ok ? '' : 'wait'}">${AV.svg(x.look, ok ? 'happy' : 'neutral')}<b>${esc(x.name)}</b><small>${ok ? '✅ fertig' : '🎤 singt …'}</small></div>`; }).join('')}</div></div>
+        <p class="center muted">${inField ? (ON.played === st.seed ? 'Super! Warte auf die anderen …' : '') : 'Du bist diesmal Publikum – gleich darfst du abstimmen.'}</p>`;
+    } else if (st.phase === 'vote') {
+      const can = st.field.filter(id => id !== me), done = ON.voted === st.seed || st.voted.includes(me);
+      body = `<div class="panel"><h3 style="margin-top:0">📱 Publikums-Voting</h3><p>Wer hat dich am meisten überzeugt? ${def.w.votes ? 'Die Stimmen zählen ' + Math.round(def.w.votes * 100) + ' % der Wertung.' : 'Im Casting zählt nur die Jury – eure Stimmen gibt es trotzdem als Applaus.'}</p>
+        ${done ? '<p class="center"><b>Danke für deine Stimme!</b> Warte auf die anderen …</p>' : `<div class="onPlayers">${can.map(id => { const x = onPlayer(id) || { name: '?', look: {} }; return `<button type="button" class="onP btnP" data-vote="${esc(id)}">${AV.svg(x.look, 'happy')}<b>${esc(x.name)}</b><small>Stimme geben</small></button>`; }).join('')}</div>`}</div>
+        <p class="center muted">Abgestimmt: ${st.voted.length} von ${pls.filter(x => x.on).length}</p>`;
+    } else if (st.phase === 'result' || st.phase === 'final') {
+      const r = st.res, mine = r.entries.find(e => e.id === me), wts = def.w;
+      const rows = r.entries.map(e => `<tr class="${e.id === me ? 'me' : ''} ${r.advanced.includes(e.id) && !r.final ? '' : r.final ? '' : 'out'}"><td>${e.rank}</td><td>${esc(e.name)}${r.rescued.includes(e.id) ? ' ✨' : ''}</td><td>${e.missing ? '–' : nf(e.perf)}</td><td>${nf(e.juryAvg)} <small class="muted">(${e.yes}/3)</small></td><td>${e.votesN}</td><td><b>${nf(e.total)}</b></td></tr>`).join('');
+      let banner = '';
+      if (r.final) { const w = r.entries[0]; banner = `<div class="banner gold">👑 ${esc(w.name)} gewinnt die Online-Show!</div>`; }
+      else if (mine) banner = r.advanced.includes(me) ? `<div class="banner win">✅ Du bist weiter${r.rescued.includes(me) ? ' – mit Ricos Ticket ✨' : ''}!</div>` : '<div class="banner lose">❌ Für dich ist hier Schluss – ab jetzt bist du Publikum und stimmst mit ab.</div>';
+      const myJury = mine && !mine.missing && ON.mine && ON.mine.r === r.round ? juryHtml(mine.jury, ON.mine.crit, p.name, st.seed).replace(/class="jcard /g, 'class="jcard show ') : '';
+      body = banner + (r.final ? `<div class="onPlayers podium">${r.entries.slice(0, 3).map((e, i) => `<div class="onP">${AV.svg((onPlayer(e.id) || {}).look || {}, 'happy')}<b>${['🥇', '🥈', '🥉'][i]} ${esc(e.name)}</b></div>`).join('')}</div>` : '') + myJury +
+        `<div class="tableWrap"><table class="rank"><thead><tr><th>#</th><th>Name</th><th>Perf.</th><th>Jury</th><th>Stimmen</th><th>Gesamt</th></tr></thead><tbody>${rows}</tbody></table></div>
+        <p class="hint">Gesamt = Performance × ${wts.perf} + Jury × ${wts.jury} + Publikum × ${wts.votes} (meiste Stimmen = 100). ${def.id === 'casting' ? 'Casting: weiter mit 2 von 3 Ja, mindestens zwei kommen weiter (✨ Ricos Ticket).' : r.final ? '' : 'Die besten 60 % kommen weiter.'}</p>` +
+        (amHost() ? (r.final ? '<button class="btn gold xl" type="button" data-o="again" style="width:100%">↻ Neue Show mit allen</button>' : '<button class="btn gold xl" type="button" data-o="next" style="width:100%">▶ Nächste Runde</button>') : '<p class="center muted">Der Gastgeber startet die nächste Runde …</p>');
+    }
+    box.innerHTML = head + body;
+    if (st.phase === 'lobby' && st.code && ON.net) ON.net.loadQR().then(() => { const el = $('#onQR'); if (!el) return; const q = qrcode(0, 'M'); q.addData(ON.net.link()); q.make(); el.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); }).catch(() => { /* Code reicht */ });
+    if ((st.phase === 'result' || st.phase === 'final') && st.res && ON.shown !== st.res.round + ':' + st.phase) {
+      ON.shown = st.res.round + ':' + st.phase; const r = st.res;
+      if (r.final) { confetti(); sfx('fanfare', 0, '🎺 Siegerehrung'); } else sfx(r.advanced.includes(me) ? 'yes' : 'applause', 1.5, r.advanced.includes(me) ? '✅ Weiter' : '👏 Applaus');
+    }
+  }
+  // Runde beginnt → eigenen Auftritt starten (einmal pro Runde)
+  const onTick = () => { const st = ON.st; if (st && st.phase === 'perform' && st.field.includes(ON.me) && ON.played !== st.seed && !stage && cur === 'sOnline') onPerform(st); };
+  setInterval(onTick, 400);
+  $('#onBox').addEventListener('click', e => {
+    const v = e.target.closest('[data-vote]');
+    if (v && ON.st && ON.st.phase === 'vote') { ON.voted = ON.st.seed; onSend({ t: 'vote', r: ON.st.round, for: v.dataset.vote }); sfx('click'); onRender(); return; }
+    const b = e.target.closest('[data-o]'); if (!b || b.disabled) return;
+    const k = b.dataset.o;
+    if (k === 'leave') { if (ON.st) confirmBox('Show verlassen?', amHost() ? 'Die Show endet dann für alle.' : 'Du verlässt die Show.', 'Verlassen', () => { onReset(); go('sMenu'); }); else go('sMenu'); }
+    else if (k === 'host') onHost();
+    else if (k === 'join') { const c = $('#onCode').value; ON.pend = c; onJoin(c); }
+    else if (k === 'copy') { const u = ON.net && ON.net.link(); if (u && navigator.clipboard) navigator.clipboard.writeText(u).then(() => toast('🔗 Link kopiert')).catch(() => toast(u, 5000)); else toast(u || '', 5000); }
+    else if (k === 'start') hostStart(0);
+    else if (k === 'next') hostStart(ON.H.round + 1);
+    else if (k === 'again') { const h = ON.H; h.phase = 'lobby'; h.res = null; h.field = []; h.round = 0; hostSync(); }
+  });
+  $('#onBox').addEventListener('keydown', e => { if (e.target.id === 'onCode' && e.key === 'Enter') { e.preventDefault(); $('[data-o="join"]').click(); } });
+  function openOnline() { if (!save.profile) { openAvatar('online'); return; } sub('sOnline'); if (ON.pend && !ON.st && ON.pend.length === 4) onJoin(ON.pend); }
+  // Einladungslink ?join=CODE
+  (function () { const m = /[?&]join=([A-Za-z0-9]{4})/.exec(location.search); if (m) ON.pend = m[1].toUpperCase(); })();
 
   // ---------- Start ----------
   applySettings();

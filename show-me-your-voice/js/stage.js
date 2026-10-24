@@ -65,7 +65,8 @@
     this.energy = 0.5; this.stars = 0; this.sg = null;
     this.colors = o.settings.cb ? COL_CB : COL; this.travel = TRAVEL[o.settings.speed] || 1.5;
     this.offset = (+o.settings.offset || 0) / 1000; this.reduced = !!o.settings.reduced;
-    this.mic = !!o.mic;   // Mikrofon läuft nur in Gesangsteilen (App startet/stoppt es) this.base = BASE[o.settings.range] || 55;
+    this.mic = !!o.mic;   // Mikrofon läuft nur in Noten- und Gesangsteilen (App startet/stoppt es)
+    this.base = BASE[o.settings.range] || 55; this.vFloor = 0.01; this.vArm = true; this.vLast = -9;
     this._key = this.key.bind(this); this._keyup = this.keyup.bind(this); this._frame = this.frame.bind(this);
     this._vis = () => { if (document.hidden) this.pause(true); };
     this._resize = () => this.resize();
@@ -90,7 +91,7 @@
     const p = this.part = Object.assign({}, this.parts[this.pi]);
     this.t0 = performance.now(); this.pauseAt = 0; this.combo = 0; this.maxCombo = 0; this.streak = 0;
     this.cnt = { n: 0, p: 0, g: 0, o: 0, m: 0 }; this.pitchT = 0; this.pitchGot = 0; this.trail = []; this.lv = 3.5;
-    this.showHit = 0; this.cueSum = 0; this.cuePts = 0; this.missRow = 0; this.partStars = 0; this.curSeg = null; this.voiced = false; this.now = 0;
+    this.showHit = 0; this.cueSum = 0; this.cuePts = 0; this.missRow = 0; this.partStars = 0; this.curSeg = null; this.voiced = false; this.now = 0; this.vArm = true; this.vLast = -9;
     if (p.type === 'rhythm') { const g = genRhythm(p); this.notes = p.live ? [] : g.notes; this.shows = g.shows; this.lastSpawn = -9; this.minGap = Math.max(0.2, 0.62 - 0.4 * (p.density || 0.75)); }
     if (p.type === 'pitch') this.segs = genPitch(p);
     if (p.type === 'cues') this.cues = genCues(p);
@@ -272,10 +273,13 @@
       const from = Math.max(this.now + this.travel, this.notes.length ? this.notes[this.notes.length - 1].t + this.minGap : 0);
       genRhythm(p).notes.forEach(n => { if (n.t >= from) this.notes.push(n); });
       this.sg = A.song(p.style || 'pop', p.bpm || 100); this.sg.step = Math.ceil(this.now / this.sg.spb);
+    } else if (p.type === 'pitch' && !p.acappella && !this.sg) {   // Gesangsteil bekommt wieder Begleitung
+      this.sg = A.song(p.style || 'pop', p.bpm || 100); this.sg.step = Math.ceil(this.now / this.sg.spb);
     }
   };
   P.updRhythm = function (now) {
     const t = now - this.offset;
+    if (this.mic) this.voiceHit(t);
     for (const n of this.notes) {
       if (n.t > t) break;
       if (!n.st && t - n.t > W_OK) { n.st = 4; this.cnt.m++; this.combo = 0; this.streak = 0; this.energy = Math.max(0, this.energy - 0.05); this.missRow++; this.pop('VERPASST', '#ff5470', n.lane); if (this.missRow === 4 && this.o.onEvent) this.o.onEvent('miss', 4); }
@@ -284,6 +288,17 @@
       if (s.st === 0 && t >= s.t && !s.cued) { s.cued = true; A.sfx('cue'); if (this.o.captions) this.o.captions('🔔 Show-Moment: ' + CUES[s.lane][1]); }
       if (s.st === 0 && t > s.t + s.win) this.showResult(s, false);
     }
+  };
+  // Mikrofon in Notenteilen: Jeder neu angesungene Ton trifft die nächste Note (Spur egal). Grundrauschen wird mitgelernt.
+  P.voiceHit = function (t) {
+    const lv = A.micLevel(); if (lv == null) return;
+    this.vFloor += (lv - this.vFloor) * (lv < this.vFloor ? 0.1 : 0.01);   // passt sich leiser Musik im Raum an
+    if (lv < this.vFloor * 1.4 + 0.008) { this.vArm = true; return; }
+    if (!this.vArm || lv < this.vFloor * 2.2 + 0.03 || t - this.vLast < 0.12) return;
+    this.vArm = false; this.vLast = t;
+    let best = null, bd = 9;
+    for (const n of this.notes) { if (n.st) continue; const d = Math.abs(n.t - t); if (d < bd) { bd = d; best = n; } if (n.t > t + W_OK) break; }
+    if (best && bd <= W_OK) { this.held[best.lane] = true; setTimeout(() => { this.held[best.lane] = false; }, 110); this.judge(best, bd); }
   };
   P.updPitch = function (now, dt) {
     if (this.mic) {
@@ -398,7 +413,7 @@
       c.fillStyle = '#fff'; c.font = '900 26px system-ui,sans-serif'; c.fillText(SYM[s.lane], cx + 50, cy + 7);
       c.font = '600 14px system-ui,sans-serif'; c.fillText(CUES[s.lane][1], cx, cy + 52);
       if (t >= s.t) { c.strokeStyle = '#ffd23f'; c.lineWidth = 5; c.beginPath(); c.arc(cx + 50, cy + 6, 36, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - k)); c.stroke(); }
-    }
+    }    if (this.mic) { c.fillStyle = 'rgba(255,255,255,.75)'; c.font = '600 13px system-ui,sans-serif'; c.fillText('🎙️ Sing jede Note an, wenn sie den Ring erreicht – Tasten gehen auch', this.w / 2, top - 14, this.w - 20); }
   };
   P.drawPitch = function (now) {
     const c = this.cx, w = this.w, h = this.h, px = w * 0.25, pps = Math.max(110, w * 0.2), y0 = h * 0.82, yr = h * 0.64;
