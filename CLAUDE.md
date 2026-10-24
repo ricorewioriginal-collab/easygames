@@ -28,6 +28,7 @@ Ressourcensparend und fehlerfrei bauen: kleine, gezielte Änderungen, bestehende
 
 ## Nach Änderungen
 
-- `node tools/build-sync.js` (Dateiliste der App aktualisieren), bei neuen Spielen auch `python3 tools/make-pwa.py <ordner>`.
+- `node tools/build-sync.js` (Dateiliste der App aktualisieren), bei neuen Spielen auch `python3 tools/make-pwa.py <ordner>` und
+  `python3 tools/make-thumbs.py` (kleine WebP-Vorschaubilder für die Spieleliste; macht sonst auch der Sync-Workflow auf `main`).
 - Neue Spiele: `node tools/make-share.cjs <spiel-id>` erzeugt die Teilen-Vorschau (`share/<id>.jpg` und `share/<id>.html`, Bild und Beschreibung für Chats/soziale Netze) – mit einchecken; die Teilen-Dialoge verweisen darauf.
 - `node tools/check-games.js` prüft alle Spiele; RIFTZONE nach Quelländerung neu bauen: `cd riftzone && node scripts/build.mjs`.

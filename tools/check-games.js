@@ -2,7 +2,7 @@
 // Prüft games.js, modes.js und guides.js auf Fehler, damit neue Spiele in der Übersicht sinnvoll funktionieren.
 //   node tools/check-games.js        (Exit-Code 1 bei Fehlern, Warnungen brechen nicht ab)
 'use strict';
-const fs = require('fs'), path = require('path'), vm = require('vm');
+const fs = require('fs'), path = require('path'), vm = require('vm'), crypto = require('crypto');
 const root = path.resolve(__dirname, '..');
 const load = f => { const w = {}; vm.runInNewContext(fs.readFileSync(path.join(root, f), 'utf8') + '\n;this.__G = typeof GAMES !== "undefined" ? GAMES : undefined;', Object.assign(w, { window: w })); return w; };
 const errors = [], warns = [];
@@ -53,6 +53,16 @@ GAMES.forEach(x => {
   if (!x.path || isUrl(x.path)) return;
   const ix = path.join(root, x.path, 'index.html'), dir = path.join(root, x.path);
   if (fs.existsSync(ix) && speaks(dir) && !/anmacha-cloud\.js/.test(fs.readFileSync(ix, 'utf8'))) err(`${x.id}: spricht (speechSynthesis), lädt aber cloud/anmacha-cloud.js nicht – eingebettet bliebe es stumm`);
+});
+
+// Vorschaubilder der Spieleliste (tools/make-thumbs.py): fehlt oder veraltet → Warnung (die Seite zeigt dann das große Original)
+const thumbsJs = path.join(root, 'thumbs', 'thumbs.js');
+const TH = fs.existsSync(thumbsJs) ? (() => { const w = {}; vm.runInNewContext(fs.readFileSync(thumbsJs, 'utf8'), { window: w }); return w.EASYGAMES_THUMBS || {}; })() : {};
+GAMES.forEach(x => {
+  if (!x.img || isUrl(x.img) || !/\.(png|jpe?g)$/i.test(x.img) || !fs.existsSync(path.join(root, x.img))) return;
+  const h = crypto.createHash('md5').update(fs.readFileSync(path.join(root, x.img))).digest('hex').slice(0, 10);
+  if (TH[x.id] && TH[x.id] !== h) warn(`${x.id}: Vorschaubild veraltet – python3 tools/make-thumbs.py`);
+  else if (!TH[x.id] && fs.statSync(path.join(root, x.img)).size > 40000) warn(`${x.id}: kein Vorschaubild (Kartenbild ${Math.round(fs.statSync(path.join(root, x.img)).size / 1024)} KB) – python3 tools/make-thumbs.py`);
 });
 
 warns.forEach(w => console.log('Warnung: ' + w));
