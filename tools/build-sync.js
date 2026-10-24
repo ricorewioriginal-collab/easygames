@@ -49,6 +49,8 @@ const add = (p, who) => {
   files.set(p, { p, s: b.length, h: sha256(b) }); owner.set(p, who);
 };
 SHELL.forEach(f => { if (!fs.existsSync(path.join(root, f))) errors.push('Pflichtdatei fehlt: ' + f); else add(f, '_shell'); });
+// Gemeinsame easygames-Figuren (figuren/figuren.js + Modelle), von mehreren Spielen genutzt
+if (fs.existsSync(path.join(root, 'figuren'))) fs.readdirSync(path.join(root, 'figuren')).sort().forEach(f => { if (/\.(js|glb)$/.test(f)) add('figuren/' + f, '_shell'); });
 SHELL_OPTIONAL.forEach(f => { if (fs.existsSync(path.join(root, f))) add(f, '_shell'); });
 // Vorschaubilder der Spieleliste (tools/make-thumbs.py)
 if (fs.existsSync(path.join(root, 'thumbs'))) fs.readdirSync(path.join(root, 'thumbs')).sort().forEach(f => { if (/\.(webp|js)$/.test(f)) add('thumbs/' + f, '_shell'); });

@@ -129,6 +129,12 @@ Alle Spiele lassen sich mit einem Gamecontroller (Xbox, PlayStation, 8BitDo …,
 
 Für EmulationStation siehe [unten](#emulationstation-es-de-retropie-batocera): das Startskript öffnet den Browser so, dass auch der Ton ohne Klick startet (Browser zählen Controller-Tasten nicht als „Nutzer-Klick“).
 
+## Gemeinsame Figuren (figuren/)
+
+Realistische, animierte 3D-Menschen für alle Spiele: zwei CC0-Grundkörper mit 22 Bewegungen, Kleidung, Hautton, Frisuren und Hüte entstehen zur Laufzeit.
+Einbinden: `../vendor/three-r128-gltfloader.js` und `../figuren/figuren.js` laden, dann `EasyFiguren.create({ THREE, base: '../figuren/' }).make(look)`.
+`fromRoster()` macht die Figuren aus `easyclash/js/roster.js` (69 Figuren aus 18 Spielen) überall spielbar. Details: [figuren/README.md](figuren/README.md). Genutzt von: Funkparcours.
+
 ## Spieleliste, Vollbild und Teilen
 
 Die Seite zeigt alle Spiele als App-Kacheln. Ein Klick öffnet das Spiel in einem App-Fenster, oben gibt es
@@ -465,7 +471,7 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 
 - **Prinzip:** Hindernis-Show im Look einer großen TV-Studio-Show (eigener Name, eigene Hindernisse, eigenes Design, kein Klon): Wasserbecken mit Unterwasserlicht, Stahl-Traversen mit LED-Schild über jedem Hindernis, Moving-Heads, steile Tribüne, LED-Bande, Startturm und Buzzer-Turm mit Flammen und Zeit-Anzeige. Jeder Läufer geht **allein** auf den Parcours, es zählt die Zeit; wer ins Wasser fällt, ist raus (gewertet wird dann die Strecke). Die Zeiten werden verglichen. **Präsentiert vom RicoReWi Radioportal**, die Sender-Logos hängen als Banner über der Tribüne und auf den Trikots.
 - **Hindernisse:** Stufensprung, Schiebebrücke, Fahrstuhl, Bruchplatten, Abrissbirnen, Hangelstangen und die Steilwand (mit Tempo anlaufen, oben Buzzer). **3 Parcours:** Vorrunde, Halbfinale, Finale.
-- **Figuren:** 8 erfundene Läufer (Frisur, Hautton, Statur, Shirt) mit Gelenken an Knie und Ellbogen; pro Läufer im Einrichtungs-Bildschirm wählbar (🧍-Knopf), wird im Browser gemerkt.
+- **Figuren:** realistische, animierte Menschen aus den gemeinsamen [easygames-Figuren](figuren/README.md) (Laufen, Sprinten, Springen, Hangeln, Klettern, Jubeln, Schwimmen nach dem Sturz). 8 eigene Läufer plus alle 69 Figuren aus anderen easygames (Rico, Sumo-Stars, Hopsis, …): Menschen als realistische Figur, Tiere und Wesen im Look ihres Spiels. Auswahl pro Läufer über den 🧍-Knopf (nach Spiel sortiert, Vorschau im Studio), wird im Browser gemerkt.
 - **Show:** 1–4 Läufer nacheinander („Bereit?" → 3-2-1-LOS), nach jedem Parcours Wertung (Platz 1 bekommt die meisten Punkte), am Ende Gesamtsieger (Punkte, bei Gleichstand die Gesamtzeit). Ein **Geist** zeigt den bisher Schnellsten.
 - **Training:** ein Parcours, Bestzeit und Geist werden im Browser gespeichert.
 - **Start im Konsolen-Stil:** Ladebildschirm mit echtem Fortschritt (3D-Grafik, Studio, Senderlogos), wechselnden Tipps und „Drücke eine beliebige Taste“; danach ein Hauptmenü mit Fokus-Liste und Info-Feld je Eintrag (Bestzeiten, Steuerung, Ton). Bedienbar mit Pfeiltasten/Enter/Esc, Gamepad (Steuerkreuz/Stick, A = OK, B = Zurück; im Lauf Steuerkreuz laufen, A springen), Maus und Touch. Im Hintergrund fährt die Kamera langsam über den Parcours.

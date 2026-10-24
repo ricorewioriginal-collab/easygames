@@ -3,6 +3,7 @@
   "https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js": "vendor/peerjs-1.5.4.min.js",
   "https://cdn.jsdelivr.net/npm/planck@1.4.2/dist/planck.min.js": "vendor/planck-1.4.2.min.js",
   "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js": "vendor/qrcode-generator-1.4.4.js",
+  "https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js": "vendor/three-r128-gltfloader.js",
   "https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js": "vendor/peerjs-1.5.4.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js": "vendor/qrcode-generator-1.4.4.js",
   "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js": "vendor/three-r128.min.js",

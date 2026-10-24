@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5476924631b4",
- "generated": "2026-10-24T14:41:17+00:00",
- "commit": "80c9a2f77c6973a8734bb1bd125a1aebe8d78c7a",
+ "version": "2585505b90be",
+ "generated": "2026-10-24T16:43:34+02:00",
+ "commit": "5ba389ae9cc4d7dffb2f7611334849c34ad04038",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -748,8 +748,8 @@
   },
   {
    "p": "anmacha-funkparcours/chars.js",
-   "s": 980,
-   "h": "46af2f127d19c1de504a1b8e5d3f459cd3099913e9dd9e2d51ea81a0c96cabf7"
+   "s": 3318,
+   "h": "5711a38822580e4f7f114b56a3c4eb747e0689e02a75c5274118097e219b4530"
   },
   {
    "p": "anmacha-funkparcours/commentary.js",
@@ -768,8 +768,8 @@
   },
   {
    "p": "anmacha-funkparcours/index.html",
-   "s": 11121,
-   "h": "e8be5b34b7da98f5b3f1146e63bfb0546b1c565c3787feb34f6c23ca969d63da"
+   "s": 11367,
+   "h": "64d966626a344e0a2581751f2ad6a169dbd8f24ef4578f05151afe03660f34b0"
   },
   {
    "p": "anmacha-funkparcours/logo.png",
@@ -858,8 +858,8 @@
   },
   {
    "p": "anmacha-funkparcours/main.js",
-   "s": 24518,
-   "h": "bc754fbaa7682f60d708a243aee5f97b4b59fb038df48a3ac2a10497af8efa6a"
+   "s": 26048,
+   "h": "4ff393111cd9bc4d3e9d531e20747e0280ca52cf55d69c52ea4efbba59789f24"
   },
   {
    "p": "anmacha-funkparcours/manifest.webmanifest",
@@ -868,8 +868,8 @@
   },
   {
    "p": "anmacha-funkparcours/menu.js",
-   "s": 7486,
-   "h": "635309de37bfb4a30370b880ab24a063b6fa451e98342e0aba83c3ded4c51fc7"
+   "s": 7507,
+   "h": "5831f2d31b01d0cb76979e1fee6b543846dbb469c085aab594488dc8e91ca8c4"
   },
   {
    "p": "anmacha-funkparcours/pair.js",
@@ -878,8 +878,8 @@
   },
   {
    "p": "anmacha-funkparcours/scene.js",
-   "s": 44159,
-   "h": "51b9d5a9859bcd81509a66313312fa1fb1f1365b141bac2048855d0977803e4a"
+   "s": 40100,
+   "h": "23564107e4aa5f48cb6d12289536ab83d4971572df8719c08161faa82dfb4863"
   },
   {
    "p": "anmacha-funkparcours/stick.js",
@@ -888,8 +888,8 @@
   },
   {
    "p": "anmacha-funkparcours/style.css",
-   "s": 18869,
-   "h": "d52d4be01e1283035b540b63f7cfc449ce3bfe3bc4903a588c10fd380034d478"
+   "s": 20096,
+   "h": "34c7f402443d9cdc2bb68f5d3fd8fb569b879ba011b7ba10d95f16cba78e5088"
   },
   {
    "p": "anmacha-funkparcours/sw.js",
@@ -5817,6 +5817,26 @@
    "h": "d5ef61cb780ac29613e137e3f5e2103928d9b1b102772d90cfe3551b52e5c6da"
   },
   {
+   "p": "figuren/anim.glb",
+   "s": 482332,
+   "h": "7e173a8fd4b601d3f1d2a902371df462274b22642ef12dea37006b79527511e3"
+  },
+  {
+   "p": "figuren/figuren.js",
+   "s": 22740,
+   "h": "aa31a265b7258f1c579b44bc933f9ab0164d6b290e3c5dc6bfd7697cc3b37f7a"
+  },
+  {
+   "p": "figuren/frau.glb",
+   "s": 446756,
+   "h": "e49c676c8a287f1667e75f08dcf6d238eb4a61f7393de5edd72e9fe41878ba83"
+  },
+  {
+   "p": "figuren/mann.glb",
+   "s": 441968,
+   "h": "9dfc5ef3411422c48339b5def22673a3411e0f3a808741c53e0eaaa4ed4a71cf"
+  },
+  {
    "p": "frequenzminen/card.jpg",
    "s": 53334,
    "h": "9e79560717e9db7e287dcad11db15ed9213b91424bdcecee5fa649a52081073f"
@@ -8394,7 +8414,7 @@
   {
    "p": "sync/catalog.json",
    "s": 206749,
-   "h": "a6df2b148a52349e89d22ff3b4b39e951e5773dcab3a0c7a1f8443fccf2ad44d"
+   "h": "68073176a191ea3605058000952beb8b65987fc54626daecd6bbc8b79967873f"
   },
   {
    "p": "taschi/card.svg",
@@ -9235,6 +9255,11 @@
    "p": "vendor/qrcode-generator-1.4.4.js",
    "s": 56694,
    "h": "18ae399f81182bc9de916e9c77b195df20cc58d6f2d55a62b085a299f1bf1780"
+  },
+  {
+   "p": "vendor/three-r128-gltfloader.js",
+   "s": 96550,
+   "h": "5c15967ba830918a9caea6338712c994c354bccd4edc4569bde411c3ec06a3e6"
   },
   {
    "p": "vendor/three-r128.min.js",
@@ -10232,6 +10257,7 @@
   "https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js": "vendor/peerjs-1.5.4.min.js",
   "https://cdn.jsdelivr.net/npm/planck@1.4.2/dist/planck.min.js": "vendor/planck-1.4.2.min.js",
   "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js": "vendor/qrcode-generator-1.4.4.js",
+  "https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js": "vendor/three-r128-gltfloader.js",
   "https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js": "vendor/peerjs-1.5.4.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js": "vendor/qrcode-generator-1.4.4.js",
   "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js": "vendor/three-r128.min.js",

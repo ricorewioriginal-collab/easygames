@@ -44,6 +44,21 @@ const phase = (p, ph, ms = 60000) => p.waitForFunction(x => window.__fp.G && win
   await p.click('#bToMenu'); await p.waitForSelector('#menu:not([hidden])'); log(true, 'Zurück im Menü');
   await p.close();
 }
+{ // ---- Figuren: realistische Läufer, Auswahl mit Figuren aus anderen easygames
+  const p = await mk({ viewport: { width: 1280, height: 720 } });
+  await p.waitForFunction(() => window.__fp.arena.runner.fig, null, { timeout: 30000 }).catch(() => {}); log(await p.evaluate(() => !!(window.__fp.arena.runner.fig && window.__fp.arena.runner.fig.mixer)), 'Läufer ist eine animierte easygames-Figur');
+  await p.click('#bTrain'); await p.click('.chb'); await p.waitForSelector('#pick:not([hidden]) .pk');
+  const g = await p.evaluate(() => ({ n: document.querySelectorAll('#pick .pk').length, h: [...document.querySelectorAll('#pickList h3')].map(h => h.textContent) }));
+  log(g.n >= 60 && g.h.includes('Funkparcours') && g.h.includes('Sendemast-Sumo'), 'Figurenwahl zeigt eigene Läufer und Figuren anderer Spiele (' + g.n + ')');
+  await p.click('.pk[data-k="rico"]'); await p.waitForFunction(() => { const r = window.__fp.arena.runner; return r.ci === 'rico' && r.fig; }, null, { timeout: 20000 }).catch(() => {});
+  log(await p.evaluate(() => window.__fp.arena.runner.ci === 'rico' && !!window.__fp.arena.runner.fig) && /2048 Deluxe/.test(await p.textContent('#pickWho')), 'Mensch aus anderem Spiel (Rico) wird als realistische Figur gezeigt');
+  await p.click('.pk[data-k="hopsi-hopsi"]'); await p.waitForFunction(() => { const r = window.__fp.arena.runner; return r.ci === 'hopsi-hopsi' && r.toon; }, null, { timeout: 20000 }).catch(() => {});
+  log(await p.evaluate(() => !!window.__fp.arena.runner.toon), 'Wesen aus anderem Spiel (Hopsi) erscheint im Look seines Spiels'); await p.screenshot({ path: `${SHOT}/fp-figurwahl.png` });
+  await p.keyboard.press('Escape'); await p.waitForTimeout(200); log(await p.isHidden('#pick') && /Hopsi/.test(await p.textContent('.chb')), 'Fertig/Esc schließt die Auswahl, Knopf zeigt die Figur');
+  await p.click('#bStart'); await p.waitForSelector('#bReady'); await p.click('#bReady'); await phase(p, 'run'); await p.keyboard.down('ArrowRight'); await p.waitForTimeout(600); await p.keyboard.up('ArrowRight');
+  log(await p.evaluate(() => window.__fp.arena.runner.st === 'run' || window.__fp.arena.runner.st === 'air' || window.__fp.arena.runner.st === 'idle'), 'Lauf mit Toon-Figur ohne Fehler');
+  await p.evaluate(() => { localStorage.removeItem('fpChars'); }); await p.close();
+}
 { // ---- Training mit Geist, Handy-Format + Touch-Pad
   const p = await mk({ viewport: { width: 420, height: 820 }, hasTouch: true, isMobile: true }); await p.evaluate(() => { window.__fpFast = 3; });
   { await p.waitForTimeout(400); await p.screenshot({ path: `${SHOT}/fp-menu-mobile.png` }); const m = await p.evaluate(() => { const r = document.getElementById('bHome').getBoundingClientRect(); return { sw: document.documentElement.scrollWidth, iw: innerWidth, vis: r.bottom > 0 && r.right <= innerWidth + 1 }; }); log(m.sw <= m.iw && m.vis, 'Handy-Menü: alle Einträge erreichbar, kein horizontales Scrollen'); }
