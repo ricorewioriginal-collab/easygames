@@ -42,7 +42,7 @@
     M.players.forEach((p, i) => {
       const a = Math.PI / 2 + i / n * Math.PI * 2, d = n > 4 ? 4.4 : 4, fd = fighter(p.fid);
       F.push({ i, fid: p.fid, x: Math.cos(a) * d, z: Math.sin(a) * d, vx: 0, vz: 0, y: 0, vy: 0, face: a + Math.PI, r: R0, m: fd.mass, alive: true, falling: false,
-        dashT: 0, dashCd: 1.6, slamT: 0, slamCd: 3, stun: 0, pu: { mega: 0, turbo: 0, schild: 0 }, last: { by: -1, t: -9 }, out: -1, place: 0, ai: { t: .8 + i * .15, tx: 0, tz: 0, want: null } });
+        dashT: 0, dashCd: .9, slamT: 0, slamCd: 2, stun: 0, pu: { mega: 0, turbo: 0, schild: 0 }, last: { by: -1, t: -9 }, out: -1, place: 0, ai: { t: .8 + i * .15, tx: 0, tz: 0, want: null } });
     });
     return { M, A, ai: M.arena, t: 0, fightT: 0, ring: 0, R: RINGS[0], f: F, pus: [], strikes: [], wind: { x: 0, z: 0, t: 0, warn: 0 }, tilt: { x: 0, z: 0, a: 0 },
       phase: 'count', count: 3, nextPU: 6 + M.rng() * 3, nextHaz: 7, ev: [], winner: -1, order: [], suddenDeath: false };
@@ -103,13 +103,15 @@
       if (il > .15) f.face = Math.atan2(iz, ix);
       const sp = fd.spd * (turbo ? 1.3 : 1);
       // Schubser
-      if (u.dash && f.dashCd <= 0 && f.slamT <= 0 && f.stun <= 0) {
+      // Tastendruck kurz merken, falls der Schubs noch lädt (fühlt sich sonst „verschluckt“ an)
+      f.dashBuf = u.dash ? .3 : Math.max(0, (f.dashBuf || 0) - dt); f.slamBuf = u.slam ? .25 : Math.max(0, (f.slamBuf || 0) - dt);
+      if (f.dashBuf > 0 && f.dashCd <= 0 && f.slamT <= 0 && f.stun <= 0) { f.dashBuf = 0;
         const a = il > .15 ? Math.atan2(iz, ix) : f.face, v = DASH_V * fd.dash * (turbo ? 1.15 : 1);
         f.vx = Math.cos(a) * v; f.vz = Math.sin(a) * v; f.face = a; f.dashT = DASH_T; f.dashCd = turbo ? .4 : DASH_CD; M.players[f.i].pushes++;
         W.ev.push({ k: 'dash', i: f.i, x: f.x, z: f.z });
       }
       // Stampfer: kurzer Sprung, bei der Landung Druckwelle
-      if (u.slam && f.slamCd <= 0 && f.slamT <= 0) { f.slamT = SLAM_AIR; f.vy = 9; f.slamCd = SLAM_CD; W.ev.push({ k: 'jump', i: f.i }); }
+      if (f.slamBuf > 0 && f.slamCd <= 0 && f.slamT <= 0) { f.slamBuf = 0; f.slamT = SLAM_AIR; f.vy = 9; f.slamCd = SLAM_CD; W.ev.push({ k: 'jump', i: f.i }); }
       if (f.slamT > 0) {
         f.slamT -= dt; f.y = Math.max(0, f.y + f.vy * dt); f.vy -= 9 / (SLAM_AIR / 2) * dt;
         if (f.slamT <= 0) { f.y = 0; f.vy = 0; slam(W, f, SLAM_R * (mega ? 1.25 : 1), 7); M.players[f.i].slams++; }
