@@ -268,3 +268,19 @@ test('Echt vorsingen in der Karriere: Entwicklung, Backstage-Ereignis und Runden
   const out = S.resolveRound(s, p, Object.assign(res, { style: 'pop', action: 'publikum', symp: null, votesBonus: 0 }), id);
   assert.ok(out && out.entries.find(e => e.id === 'p').perf === res.perf);
 });
+
+test('Live-Wertung: saubere gehaltene Töne geben Perfekt und Combo, schiefe Töne nicht', () => {
+  const run = (wob) => {
+    const L = S.liveScorer(30, 0.05), evs = [];
+    for (let i = 0; i < 600; i++) {
+      const k = Math.floor(i / 20), m = i % 20 > 16 ? null : [57, 60, 62, 64][k % 4] + 0.15 + (wob ? (k % 2 ? 0.45 : -0.1) + 0.3 * Math.sin(i) : 0);
+      const r = L.push(m); if (r.ev) evs.push(r.ev.t);
+    }
+    return Object.assign(L.end(), { evs });
+  };
+  const clean = run(false), bad = run(true);
+  assert.ok(clean.evs.filter(t => t === 'perfekt').length > 20, clean.evs.join());
+  assert.ok(clean.best >= 10 && clean.total > bad.total && clean.total <= 10000, clean.total + ' / ' + bad.total);
+  assert.ok(bad.evs.filter(t => t === 'perfekt').length < clean.evs.filter(t => t === 'perfekt').length);
+  assert.strictEqual(S.singTitle(95), '🌟 Superstar'); assert.strictEqual(S.singTitle(10), '🚿 Duschsänger');
+});

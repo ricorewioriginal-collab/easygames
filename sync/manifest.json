@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "481288a1cab1",
- "generated": "2026-10-24T14:35:27+02:00",
- "commit": "12109d2c89ac5acecc29d73e42cf1450d351d831",
+ "version": "2008c5c61b30",
+ "generated": "2026-10-24T15:14:40+02:00",
+ "commit": "d20f6f85454d201f601d3d358f36421a5dbc5a4a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7938,18 +7938,18 @@
   },
   {
    "p": "show-me-your-voice/index.html",
-   "s": 15586,
-   "h": "54f8c003247d9670a5d11721d5d1d9aa17dd4eedd651d86eed1b5a1a16534f1e"
+   "s": 16068,
+   "h": "1bc2cd5ae874165cbc982bc71aa6ae3eb6037aff7afc8fa506ec45b4da4f4c00"
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 120542,
-   "h": "cbf1e6fcdc78359b1ab58363b68f21e9b71f08e2d87cd48e86ed1efdac03f789"
+   "s": 126464,
+   "h": "f6b866dcfc293f98468664d1c1b3b31818f410d49d9fc5265a6b5b7182702c1b"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
-   "s": 14899,
-   "h": "2af4813a5a7a36618237ec95a237e45523dde71660fdb0465fdff4bc4ae961e2"
+   "s": 16444,
+   "h": "ed274ad0aeb1bc42bc761bfe93144ca1ff525a635e37de8f9b449d3caf0dfeae"
   },
   {
    "p": "show-me-your-voice/js/avatar.js",
@@ -7958,8 +7958,8 @@
   },
   {
    "p": "show-me-your-voice/js/core.js",
-   "s": 27628,
-   "h": "aa6534d935c88c1e1e5488064d5b31fe07e851d5e59859f0f3e9e3dd1d778291"
+   "s": 29763,
+   "h": "61d7e217cbde7ef9fc260b27ab4a31d9dcfe0e5436649c69f7ea8e625879c284"
   },
   {
    "p": "show-me-your-voice/js/data.js",
@@ -7978,8 +7978,8 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 21859,
-   "h": "52e936cf6d6d75795e1ecba6f76c7de792d4d6db33acb92a01ad930feb442cab"
+   "s": 23648,
+   "h": "8bca7e44f8dc8d2257250c9cf0dc453d28226e2c9fa62329ff1a4e22ca304dea"
   },
   {
    "p": "show-me-your-voice/sw.js",
@@ -8244,7 +8244,7 @@
   {
    "p": "sync/catalog.json",
    "s": 199610,
-   "h": "cf92dd5956e9f3d89f2afab9cd51b09f7c85cbaee0dc0c1dad09d88813c4af91"
+   "h": "e15e16c826e64373887c90fd4a98045c3b871f6f2f7585583a3ed8c53bdeaf10"
   },
   {
    "p": "taschi/card.svg",

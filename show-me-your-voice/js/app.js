@@ -598,10 +598,15 @@
     const sg = out.sing;
     if (sg) st.push(`🎯 Intonation ${Math.round(sg.inton)}`, `〰️ Stabilität ${Math.round(sg.stab)}`, `↕️ Umfang ${nf(sg.semis)} Halbtöne${sg.semis ? ` (${noteName(sg.low)}–${noteName(sg.high)})` : ''}`,
       `🎚️ Dynamik ${Math.round(sg.dyn)}`, `⏱️ ${nf(sg.voiced)} s gesungen`);
-    const rec = out.rec ? `<div class="panel"><p><b>🎧 Deine Aufnahme</b> <small class="muted">nur auf diesem Gerät, wird nicht gespeichert</small></p><audio controls preload="auto" src="${esc(out.rec)}" style="width:100%"></audio></div>` : '';
+    const ext = sing.recBlob && /mp4/.test(sing.recBlob.type) ? 'm4a' : sing.recBlob && /ogg/.test(sing.recBlob.type) ? 'ogg' : 'webm';
+    const canShare = !!(sing.recBlob && navigator.canShare && navigator.share);
+    const rec = out.rec ? `<div class="panel"><p><b>🎧 Deine Aufnahme</b> <small class="muted">mit Studio-Hall · bleibt auf diesem Gerät, bis du sie speicherst oder teilst</small></p><audio controls preload="auto" src="${esc(out.rec)}" style="width:100%"></audio>
+      <div class="row2"><a class="btn sm" href="${esc(out.rec)}" download="SHOW-ME-YOUR-VOICE-Auftritt.${ext}">⬇️ Speichern</a>${canShare ? '<button class="btn sm violet" type="button" id="recShare">📤 Teilen</button>' : ''}</div></div>` : '';
+    if (out.rec) sing.shareTxt = `🎤 Mein Auftritt bei SHOW ME YOUR VOICE${out.song ? ' mit „' + out.song + '“' : ''}: ${out.title ? out.title + ', ' : ''}${nf(oc.perf)} von 100 Punkten. Trau dich auch!`;
+    const live = sg && out.pts != null ? `<div class="banner gold singRate">${esc(out.title || '')} · 🎯 ${out.pts.toLocaleString('de-DE')} Punkte${out.combo ? ' · beste Combo ×' + out.combo : ''}${out.turned && out.turned.length ? '<br><small>🔴 Umgedreht: ' + out.turned.map(id => esc(jur(id).name)).join(', ') + '</small>' : ''}</div>` : '';
     const sgHint = sg ? '<p class="hint">Intonation zählt relativ zu deiner eigenen Tonart: Wie genau triffst du Halbtöne und hältst sie? Umfang = tiefe bis hohe Töne, Dynamik = laut und leise.</p>' : '';
     const mult = oc.mult !== 1 ? `<p class="muted center">Ansatz-Faktor ×${String(oc.mult).replace('.', ',')}</p>` : '';
-    return `<h2 class="center">Deine Performance</h2><div class="center"><div class="big">${nf(oc.perf)}</div><p class="muted">von 100 Punkten</p>${credit ? `<p class="hint">${esc(credit)}</p>` : ''}</div>
+    return `<h2 class="center">Deine Performance</h2><div class="center"><div class="big">${nf(oc.perf)}</div><p class="muted">von 100 Punkten</p>${credit ? `<p class="hint">${esc(credit)}</p>` : ''}</div>${live}
       <div class="stats">${st.map(x => `<span>${x}</span>`).join('')}</div>${mult}${sgHint}${rec}
       <div class="panel">${rows}<p class="hint">Kriterien: 85 % dein Auftritt, 15 % deine Trainingswerte. Daraus bewertet jede Jurorin und jeder Juror mit eigener Gewichtung.</p></div>`;
   }
@@ -621,6 +626,16 @@
     jury.forEach((v, i) => later(() => { const c = $('#jc' + i); if (c) c.classList.add('show'); A.sfx(v.yes ? 'yes' : 'no'); caption(jur(v.id).name + ': ' + (v.yes ? 'JA' : 'NEIN')); }, 1300 + i * 1100));
     later(done, 1300 + jury.length * 1100);
   }
+  // Aufnahme teilen (Datei + Link zur easygames-Homepage)
+  $('#resBox').addEventListener('click', async e => {
+    if (!e.target.closest('#recShare') || !sing.recBlob) return;
+    const b = sing.recBlob, ext = /mp4/.test(b.type) ? 'm4a' : /ogg/.test(b.type) ? 'ogg' : 'webm';
+    const base = location.href.split('#')[0].split('?')[0], url = window.EasyGamesLink ? EasyGamesLink.share(base) : base;
+    const file = new File([b], 'SHOW-ME-YOUR-VOICE-Auftritt.' + ext, { type: b.type || 'audio/webm' });
+    const data = { title: 'SHOW ME YOUR VOICE', text: sing.shareTxt || '🎤 SHOW ME YOUR VOICE', url };
+    try { if (navigator.canShare({ files: [file] })) data.files = [file]; await navigator.share(data); }
+    catch (x) { if (x && x.name !== 'AbortError') toast('Teilen klappt hier nicht – speichere die Aufnahme und teile sie selbst.', 3500); }
+  });
   function showResult(ctx) {
     go('sResult');
     const box = $('#resBox'), p = save.profile, name = p.name;
@@ -896,7 +911,7 @@
   const stars = n => '★'.repeat(n) + '☆'.repeat(3 - n);
   const genre = id => D.KARAOKE.find(g => g.id === id);
   const ytId = s => { s = String(s || '').trim(); const m = s.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([\w-]{11})/) || s.match(/^([\w-]{11})$/); return m ? m[1] : null; };
-  const sing = { g: 'pop', song: 0, own: '', title: '', len: 60, run: null, recUrl: null, ctx: null };   // ctx: echtes Vorsingen in Karriere/Freiem Casting
+  const sing = { g: 'pop', song: 0, own: '', title: '', len: 60, run: null, recUrl: null, recBlob: null, ctx: null };   // ctx: echtes Vorsingen in Karriere/Freiem Casting
   function openSingRound(mode) {
     const s = save.season, career = mode === 'career';
     if (career && (!s || s.status !== 'backstage')) { go('sBack'); return; }
@@ -965,26 +980,34 @@
     if (run.playId != null && !run.done && save.season && save.season.status === 'playing') { S.cancelRound(save.season); persist(); }   // abgebrochen: Runde nicht verbraucht
     const f = $('#singVid'); if (f) f.src = 'about:blank';
   }
+  const REC_TYPES = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/ogg;codecs=opus', 'audio/webm'];
+  const GRADE = { perfekt: '✨ Perfekt!', super: '🔥 Super!', gut: '👍 Gut', daneben: '😬 Daneben' };
   async function singStart() {
     if (!save.profile) { openAvatar('sing'); return; }
     if (!save.settings.mic) { micConsent(() => { if (save.settings.mic) singStart(); else RENDER.sSing(); }); return; }
     const pk = singPick();
     if (sing.song === 'own' && sing.own.trim() && !pk.vid) { toast('Das ist kein YouTube-Link. Kopiere die Adresse des Videos (youtube.com/watch?v=… oder youtu.be/…).', 4000); return; }
-    airStop(); A.init();
-    try { await A.micStart(); } catch (e) { save.settings.mic = false; persist(); micConsent(() => RENDER.sSing()); return; }
+    airStop(); A.init(); A.micStop();
+    try { await A.micStart(true); } catch (e) { save.settings.mic = false; persist(); micConsent(() => RENDER.sSing()); return; }
     if (cur !== 'sSing' || sing.run) { if (!sing.run) A.micStop(); return; }
-    if (sing.recUrl) { URL.revokeObjectURL(sing.recUrl); sing.recUrl = null; }
-    const run = sing.run = { pk, frames: [], started: false, acc: 0, last: performance.now(), raf: 0, chunks: [], rec: null, len: sing.len, ended: false, view: [], playId: null, done: false };
-    if (sing.ctx && sing.ctx.mode === 'career') {
-      const s = save.season; run.playId = s && s.status === 'backstage' ? S.startRound(s) : null;
+    if (sing.recUrl) { URL.revokeObjectURL(sing.recUrl); sing.recUrl = null; sing.recBlob = null; }
+    const cx = sing.ctx, career = !!(cx && cx.mode === 'career'), s = save.season;
+    const run = sing.run = { pk, frames: [], started: false, acc: 0, last: performance.now(), raf: 0, chunks: [], rec: null, len: sing.len, ended: false, view: [], playId: null, done: false,
+      seed: (Date.now() >>> 0) || 1, live: S.liveScorer(sing.len, 0.05), turned: {}, pts: 0 };
+    if (career) {
+      run.playId = s && s.status === 'backstage' ? S.startRound(s) : null;
       if (run.playId == null) { sing.run = null; A.micStop(); go('sBack'); return; }
       persist();
     }
+    // Blind Audition: dieselbe Jury, die am Ende entscheidet, dreht sich live um, sobald sie Ja sagen würde
+    run.panel = career ? S.panelOf(s, s.round) : D.MAIN_JURY.slice();
+    run.jseed = career ? s.seed : run.seed; run.jround = career ? s.round : 0;
     $('#singBox').innerHTML = `<header class="bar"><span></span><h2>🎙️ ${esc(pk.title)}</h2><span></span></header>
       ${pk.vid ? `<div class="video"><iframe id="singVid" src="https://www.youtube-nocookie.com/embed/${pk.vid}?autoplay=1&rel=0&playsinline=1&enablejsapi=1${save.settings.mute ? '&mute=1' : ''}" title="Karaoke-Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
         <p class="hint">${esc(pk.credit)} · <a href="https://www.youtube.com/watch?v=${pk.vid}" target="_blank" rel="noopener">YouTube ↗</a></p><p class="banner lose" id="singErr" hidden>Dieses Video darf hier nicht abgespielt werden. Brich ab und wähle einen anderen Song – oder sing einfach a cappella weiter.</p>` : `<p class="hint">${esc(pk.credit)}</p>`}
-      <div class="panel singLive"><div class="singTop"><b id="singNote">–</b><span id="singCents"></span><span id="singTime">Sing los – die Zeit startet mit deinem ersten Ton</span></div>
-        <canvas id="singCv" height="170" aria-label="Deine Tonhöhe"></canvas><div class="meter"><i id="singLv"></i></div></div>
+      <div class="chairs" aria-label="Blind Audition: Die Jury dreht sich um, wenn du überzeugst">${run.panel.map(jur).map(j => `<div class="chair" data-c="${j.id}"><span class="back">🪑</span>${jimg(j, 'js')}<small>${esc(j.name)}</small></div>`).join('')}</div>
+      <div class="panel singLive"><div class="singTop"><b id="singNote">–</b><span id="singCents"></span><span class="singPts">🎯 <b id="singPts">0</b></span><span id="singTime">Sing los – die Zeit startet mit deinem ersten Ton</span></div>
+        <div class="singStage"><canvas id="singCv" height="190" aria-label="Deine Töne als Notenbalken"></canvas><div class="singPop" id="singPop" aria-live="polite"></div></div><div class="meter"><i id="singLv"></i></div></div>
       <div class="row2"><button class="btn gold" id="singStop" type="button" data-focus>⏹ Fertig – zur Jury</button>${run.playId != null ? '' : '<button class="btn" id="singX" type="button">✖ Abbrechen</button>'}</div>`;
     focusFirst($('#singBox'));
     const vid = $('#singVid');
@@ -995,20 +1018,53 @@
     };
     if (vid) { addEventListener('message', run.onMsg); vid.addEventListener('load', () => { try { const w = vid.contentWindow; w.postMessage(JSON.stringify({ event: 'listening', id: 'smyv', channel: 'widget' }), '*');
       w.postMessage(JSON.stringify({ event: 'command', func: 'addEventListener', args: ['onError'], id: 'smyv', channel: 'widget' }), '*'); } catch (x) { /* egal */ } }); }
-    try { const ms = A.micStream(); if (ms && window.MediaRecorder) { run.rec = new MediaRecorder(ms); run.rec.ondataavailable = e => { if (e.data && e.data.size) run.chunks.push(e.data); }; } } catch (e) { run.rec = null; }
-    const cv = $('#singCv'), c2 = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1);
-    cv.width = Math.max(300, cv.clientWidth * dpr); cv.height = 170 * dpr;
-    const tm = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
-    function draw() {
-      const w = cv.width, h = cv.height, vw = run.view, vm = vw.filter(m => m != null).slice(-60).sort((a, b) => a - b);
-      const mid = vm.length ? vm[vm.length >> 1] : 62, lo = mid - 12, y = m => h - (m - lo) / 24 * h;
-      c2.clearRect(0, 0, w, h); c2.font = (11 * dpr) + 'px sans-serif';
-      for (let n = Math.ceil(lo); n <= lo + 24; n++) {
-        const c = ((n % 12) + 12) % 12 === 0; c2.fillStyle = c ? 'rgba(255,255,255,.28)' : 'rgba(255,255,255,.07)'; c2.fillRect(0, y(n), w, c ? 1.5 : 1);
-        if (c) { c2.fillStyle = 'rgba(255,255,255,.6)'; c2.fillText(noteName(n), 4, y(n) - 3); }
+    try {
+      const ms = A.micRecStream() || A.micStream();
+      if (ms && window.MediaRecorder) {
+        const mt = REC_TYPES.find(t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t));
+        run.rec = new MediaRecorder(ms, Object.assign({ audioBitsPerSecond: 128000 }, mt ? { mimeType: mt } : {}));
+        run.rec.ondataavailable = e => { if (e.data && e.data.size) run.chunks.push(e.data); };
       }
-      c2.fillStyle = '#ffc93c'; const step = w / 160;
-      vw.forEach((m, i) => { if (m != null) c2.fillRect(w - (vw.length - i) * step, y(m) - 2 * dpr, step + 0.5, 4 * dpr); });
+    } catch (e) { run.rec = null; }
+    const cv = $('#singCv'), c2 = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1), pop = $('#singPop');
+    cv.width = Math.max(300, cv.clientWidth * dpr); cv.height = 190 * dpr;
+    const tm = x => Math.floor(x / 60) + ':' + String(Math.floor(x % 60)).padStart(2, '0');
+    function draw() {   // Notenbahn wie bei SingStar: gehaltene Töne als Balken (gold = sauber), dünne Linie = deine echte Tonhöhe
+      const w = cv.width, h = cv.height, vw = run.view, rs = vw.filter(v => v.r != null).slice(-60).map(v => v.r).sort((a, b) => a - b);
+      const mid = rs.length ? rs[rs.length >> 1] : 62, lo = Math.round(mid) - 9, rows = 18, rh = h / rows, y = m => h - (m - lo + 0.5) * rh;
+      c2.clearRect(0, 0, w, h); c2.font = (11 * dpr) + 'px sans-serif';
+      for (let n = lo; n < lo + rows; n++) {
+        c2.fillStyle = n % 2 ? 'rgba(255,255,255,.035)' : 'rgba(255,255,255,0)'; c2.fillRect(0, y(n) - rh / 2, w, rh);
+        if (((n % 12) + 12) % 12 === 0) { c2.fillStyle = 'rgba(255,255,255,.55)'; c2.fillText(noteName(n), 4, y(n) + 4 * dpr); }
+      }
+      const step = w / 160, x0 = i => w - (vw.length - i) * step;
+      for (let i = 0; i < vw.length;) {   // Balken: gleiche Halbton-Stufe am Stück
+        const r = vw[i].r; if (r == null) { i++; continue; }
+        let j = i, ok = 0; while (j < vw.length && vw[j].r != null && Math.round(vw[j].r * 2) === Math.round(r * 2)) { if (vw[j].ok) ok++; j++; }
+        const good = ok / (j - i) >= 0.6, bx = x0(i), bw = Math.max(step, (j - i) * step - 2), by = y(r) - rh * 0.38, bh = rh * 0.76;
+        c2.fillStyle = good ? '#ffc93c' : '#60a5fa'; c2.shadowColor = good ? '#ffc93c' : 'transparent'; c2.shadowBlur = good ? 10 * dpr : 0;
+        c2.beginPath(); if (c2.roundRect) c2.roundRect(bx, by, bw, bh, bh / 2); else c2.rect(bx, by, bw, bh); c2.fill(); c2.shadowBlur = 0;
+        i = j;
+      }
+      c2.strokeStyle = 'rgba(255,255,255,.85)'; c2.lineWidth = 2 * dpr; c2.beginPath(); let pen = false;
+      vw.forEach((v, i) => { if (v.m == null) { pen = false; return; } const px = x0(i) + step / 2, py = y(v.m); if (pen) c2.lineTo(px, py); else c2.moveTo(px, py); pen = true; });
+      c2.stroke();
+    }
+    function showPop(ev) {
+      pop.textContent = GRADE[ev.t] + (ev.combo >= 2 && ev.t !== 'daneben' ? ' · Combo ×' + ev.combo : '');
+      pop.className = 'singPop ' + ev.t; void pop.offsetWidth; pop.classList.add('show');
+    }
+    function chairs() {   // jede Sekunde: Würde jemand aus der Jury jetzt Ja sagen? Dann dreht er/sie sich um.
+      const p = save.profile, part = S.singScore(run.frames, p.attrs, 0.05);
+      if (part.sing.voiced < 8) return;
+      const mods = career && s ? s.mods : null;
+      if (career) S.singCareer(part, s.lastPerf, mods, cx.sel.action);
+      const symp = cx ? S.mergeSymp(cx.talk.symp, mods && mods.symp) : null;
+      S.judge(part.crit, pk.style, run.jseed, run.jround, 'p', symp, run.panel).forEach(v => {
+        if (run.turned[v.id] || !v.yes || v.score < jur(v.id).need + 1) return;
+        run.turned[v.id] = true; const el = $(`#singBox .chair[data-c="${v.id}"]`); if (el) el.classList.add('on');
+        A.sfx('yes'); toast('🔴 ' + jur(v.id).name + ' hat sich umgedreht!', 2000);
+      });
     }
     function frame(now) {
       if (run.ended) return;
@@ -1018,14 +1074,20 @@
         const m = A.micPitch(), l = A.micLevel() || 0;
         if (!run.started && m != null) { run.started = true; if (run.rec) try { run.rec.start(1000); } catch (e) { run.rec = null; } }
         for (; run.acc >= 0.05; run.acc -= 0.05) {
-          if (run.started) run.frames.push({ m: m == null ? null : Math.round(m * 100) / 100, l: Math.round(l * 1e4) / 1e4 });
-          run.view.push(m); if (run.view.length > 160) run.view.shift();
+          let lv = { r: null, ok: false };
+          if (run.started) {
+            run.frames.push({ m: m == null ? null : Math.round(m * 100) / 100, l: Math.round(l * 1e4) / 1e4 });
+            lv = run.live.push(m); run.pts = lv.total; if (lv.ev) showPop(lv.ev);
+            if (run.frames.length % 20 === 0) chairs();
+          }
+          run.view.push({ m, r: lv.r, ok: lv.ok }); if (run.view.length > 160) run.view.shift();
         }
         $('#singLv').style.width = Math.min(100, l / 0.15 * 100) + '%';
-        const ct = m == null ? null : Math.round((m - Math.round(m)) * 100);
+        const off = run.live.state.off, ct = m == null ? null : Math.round((m - off - Math.round(m - off)) * 100);
         $('#singNote').textContent = m == null ? '–' : noteName(m);
         $('#singCents').textContent = ct == null ? '' : (ct > 0 ? '+' : '') + ct + ' ct';
-        $('#singCents').className = ct == null ? '' : Math.abs(ct) <= 15 ? 'ok' : 'off';
+        $('#singCents').className = ct == null ? '' : Math.abs(ct) <= 20 ? 'ok' : 'off';
+        $('#singPts').textContent = run.pts.toLocaleString('de-DE');
         const el = run.frames.length * 0.05;
         if (run.started) $('#singTime').textContent = tm(el) + ' / ' + tm(run.len);
         draw();
@@ -1039,22 +1101,25 @@
     const run = sing.run; if (!run || run.ended) return;
     if (run.frames.filter(f => f.m != null).length < 40) { RENDER.sSing(); toast('🎙️ Ich habe kaum Gesang gehört. Sing etwas länger oder näher am Mikrofon.', 3500); return; }
     const rec = run.rec, chunks = run.chunks, cx = sing.ctx; run.rec = null; run.done = true;   // singEnd soll Aufnahme und Runde nicht verwerfen
+    const fin = run.live.end();
     singEnd();
     let doneOnce = false;
     const done = () => {
       if (doneOnce) return; doneOnce = true;
-      let url = null; try { if (chunks.length) url = URL.createObjectURL(new Blob(chunks, { type: chunks[0].type || 'audio/webm' })); } catch (e) { url = null; }
-      sing.recUrl = url;
+      let url = null, blob = null;
+      try { if (chunks.length) { blob = new Blob(chunks, { type: chunks[0].type || 'audio/webm' }); url = URL.createObjectURL(blob); } } catch (e) { url = null; blob = null; }
+      sing.recUrl = url; sing.recBlob = blob;
       const p = save.profile, g = genre(sing.g), res = S.singScore(run.frames, p.attrs, 0.05);
+      const out = { sing: res.sing, rec: url, pts: fin.total, combo: fin.best, title: S.singTitle(res.perf), turned: Object.keys(run.turned), song: run.pk.title };
       if (cx) {   // echtes Vorsingen in Karriere oder Freiem Casting: weiter wie nach einem Bühnenauftritt
         const career = cx.mode === 'career', s = save.season, mods = career && s ? s.mods : null;
-        const f = { mode: cx.mode, playId: run.playId, sel: Object.assign({}, cx.sel, { style: run.pk.style }), talk: cx.talk, credit: run.pk.credit, bg: cx.bg, ret: career ? 'sBack' : 'sPrep' };
+        const f = { mode: cx.mode, playId: run.playId, seed: run.seed, sel: Object.assign({}, cx.sel, { style: run.pk.style }), talk: cx.talk, credit: run.pk.credit, bg: cx.bg, ret: career ? 'sBack' : 'sPrep' };
         const oc = Object.assign(S.singCareer(res, career && s ? s.lastPerf : null, mods, cx.sel.action), { style: run.pk.style, approach: cx.sel.approach, action: cx.sel.action,
           symp: S.mergeSymp(cx.talk.symp, mods && mods.symp), votesBonus: cx.talk.votes });
-        sing.ctx = null; flow = f; decide(f, { sing: res.sing, rec: url }, oc); return;
+        sing.ctx = null; flow = f; decide(f, out, oc); return;
       }
       const oc = Object.assign(res, { style: run.pk.style, symp: null });
-      const fc = S.freeCasting(p, oc, (Date.now() >>> 0) || 1);
+      const fc = S.freeCasting(p, oc, run.seed);
       let chal = null;
       if (g) {
         const stn = S.singStars(g.id, res, fc), old = save.singCh[g.id] || { best: 0, stars: 0 };
@@ -1062,7 +1127,7 @@
         save.singCh[g.id] = { best: Math.max(old.best, res.perf), stars: Math.max(old.stars, stn) };
       }
       p.xp += Math.round(res.perf / 4); persist();
-      showResult({ fc, oc, out: { sing: res.sing, rec: url }, free: true, ret: 'sSing', chal, credit: run.pk.credit });
+      showResult({ fc, oc, out, free: true, ret: 'sSing', chal, credit: run.pk.credit });
     };
     if (rec && rec.state !== 'inactive') { rec.onstop = done; try { rec.stop(); } catch (e) { done(); } setTimeout(done, 1500); }
     else done();
