@@ -1774,6 +1774,43 @@
    }
   },
   {
+   "id": "stadt-land-plus",
+   "title": "Stadt Land Plus – Stadt, Land und dein Thema",
+   "desc": "Das moderne Stadt-Land-Fluss in 3D: Die Buchstaben-Trommel lost aus, dann schreibt ihr zu Stadt, Land und einem frei wählbaren dritten Thema – Fluss, Tier, Beruf, Vorname, Essen, Sportart, Automarke und viele mehr oder eine ganz eigene Kategorie, dazu bis zu drei Extra-Spalten. Eine große Wissensdatenbank mit allen Ländern, über 33.000 Städten (jede deutsche Gemeinde, Weltstädte auch mit deutschem Namen) und Flüssen prüft schlau mit Tippfehler-Erkennung; zu jeder Antwort gibt es Infos mit 3D-Globus. Prüfung automatisch, per Abstimmung oder mit Moderator. Solo gegen Computer-Mitspieler, zum Nachschlagen und 🌐 Online & Handys: alle schreiben auf dem eigenen Handy, der Fernseher zeigt Buchstabe, Uhr und Auswertung.",
+   "icon": "🔤",
+   "img": "stadt-land-plus/card.jpg",
+   "bg": "linear-gradient(145deg,#7a6aff,#160c3a 55%,#ffc23a)",
+   "glow": "rgba(255,194,58,.5)",
+   "path": "stadt-land-plus/",
+   "modes": {
+    "pad": true,
+    "online": true,
+    "multi": true,
+    "tvParam": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Stadt Land Plus ist das moderne Stadt-Land-Fluss. Die 3D-Buchstaben-Trommel lost einen Buchstaben aus, dann schreibt jeder zu jeder Spalte ein Wort mit diesem Anfangsbuchstaben: Stadt und Land sind immer dabei, das dritte Thema wählst du frei – Fluss, Tier, Beruf, Vorname, Pflanze, Essen & Trinken, Sportart, Musikinstrument, Gegenstand, Farbe, Marke, Automarke, Berg & Gebirge, Körperteil oder eine ganz eigene Kategorie (z. B. Promi oder Film). Bis zu drei weitere Spalten sind möglich. Ist die Zeit um oder hat jemand STOPP gerufen (dann bleiben noch 10 Sekunden), wird ausgewertet: 20 Punkte, wenn nur du in einer Spalte etwas Gültiges hast, 10 für eine Antwort, die sonst niemand hat, 5, wenn jemand dasselbe geschrieben hat. Die Wissensdatenbank kennt alle Länder, über 33.000 Städte (jede deutsche Gemeinde und die Städte der Welt, auch mit deutschem Namen wie Mailand), viele Flüsse und große Wortlisten; Groß-/Kleinschreibung, Umlaute (ue = ü), Artikel, weibliche Formen und Mehrzahl sind egal, kleine Tippfehler werden erkannt, zusammengesetzte Wörter (Zwergmaus) gelten als wahrscheinlich richtig. Prüfung: 🤖 automatisch, 👍 Abstimmung (bei unsicheren Wörtern stimmen die anderen ab) oder 🧑‍⚖️ Moderator (eine Person gibt jede Antwort frei oder streicht sie, auf Wunsch ohne selbst mitzuspielen). Tippe in der Auswertung auf eine Antwort für Infos mit 3D-Globus – Einwohner, Hauptstadt, Sprachen, Währung, Nachbarländer, Flusslänge. Unter 📚 Nachschlagen geht das auch außerhalb des Spiels. Modi: 🧠 Solo gegen bis zu 5 Computer-Mitspieler in 3 Stärken; 🌐 Online & Handys – der Fernseher zeigt Buchstabe, Uhr und Auswertung, alle schreiben auf dem eigenen Handy (Beitritt per Code, Link oder QR-Code von überall), der Moderator kann der Fernseher oder ein Handy sein.",
+    "steuerung": [
+     "Touch/Handy: in die Felder tippen, „Weiter“ auf der Tastatur springt zur nächsten Spalte, STOPP-Knopf unten. In der Auswertung Antworten antippen für Infos, 👍/👎 zum Abstimmen.",
+     "Tastatur: einfach tippen, Enter/Tab nächste Spalte, Pfeile und Enter in den Menüs, Esc Pause.",
+     "Gamecontroller: Bildschirmtastatur mit Steuerkreuz/Stick, A tippt, B löscht, X Leerzeichen, Y/RB nächste Spalte, Start STOPP (in der Auswertung: weiter)."
+    ],
+    "tipps": [
+     "Seltene Antworten bringen mehr: Eine Stadt, die sonst keiner hat, gibt 10 statt 5 Punkte.",
+     "Ist eine Spalte für alle schwer, lohnt sich jedes Wort – allein gewusst sind es 20 Punkte.",
+     "Im Nachschlagen kannst du vorher üben: Welche Städte mit Q gibt es?"
+    ]
+   },
+   "size": 1265193,
+   "files": 19,
+   "offline": true,
+   "cloud": {
+    "game": "stadt-land-plus",
+    "prefix": "stadt-land-plus-"
+   }
+  },
+  {
    "id": "konfetti-party",
    "title": "Konfetti-Party – Knallbonbons in der Arena",
    "desc": "Buntes Arena-Partyspiel in 3D: Knallbonbons legen, Geschenkkartons platzen lassen, Extras wie Rollschuhe, Kick-Schuh, Luftballon-Schild und Fernzünder sammeln und die anderen Partygäste mit Konfetti aus der Runde schießen – mit Kettenreaktionen und einer Arena, die sich am Ende schließt. Fünf Arenen von der Geburtstagsparty bis zum Weltraum-Rave, Turnier mit Pokalen und Schnelle Party solo gegen Computer-Gäste, dazu 🌐 Online & Handys: bis zu 4 Gäste mit Handys, Controllern und Tastatur am Fernseher.",

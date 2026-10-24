@@ -567,6 +567,19 @@ window.EASYGAMES_GUIDES = {
    "Als Werwolf: Verdächtige ruhig mal einen Dorfbewohner, aber stimme nicht immer gegen dieselben."
   ]
  },
+ "stadt-land-plus": {
+  "anleitung": "Stadt Land Plus ist das moderne Stadt-Land-Fluss. Die 3D-Buchstaben-Trommel lost einen Buchstaben aus, dann schreibt jeder zu jeder Spalte ein Wort mit diesem Anfangsbuchstaben: Stadt und Land sind immer dabei, das dritte Thema wählst du frei – Fluss, Tier, Beruf, Vorname, Pflanze, Essen & Trinken, Sportart, Musikinstrument, Gegenstand, Farbe, Marke, Automarke, Berg & Gebirge, Körperteil oder eine ganz eigene Kategorie (z. B. Promi oder Film). Bis zu drei weitere Spalten sind möglich. Ist die Zeit um oder hat jemand STOPP gerufen (dann bleiben noch 10 Sekunden), wird ausgewertet: 20 Punkte, wenn nur du in einer Spalte etwas Gültiges hast, 10 für eine Antwort, die sonst niemand hat, 5, wenn jemand dasselbe geschrieben hat. Die Wissensdatenbank kennt alle Länder, über 33.000 Städte (jede deutsche Gemeinde und die Städte der Welt, auch mit deutschem Namen wie Mailand), viele Flüsse und große Wortlisten; Groß-/Kleinschreibung, Umlaute (ue = ü), Artikel, weibliche Formen und Mehrzahl sind egal, kleine Tippfehler werden erkannt, zusammengesetzte Wörter (Zwergmaus) gelten als wahrscheinlich richtig. Prüfung: 🤖 automatisch, 👍 Abstimmung (bei unsicheren Wörtern stimmen die anderen ab) oder 🧑‍⚖️ Moderator (eine Person gibt jede Antwort frei oder streicht sie, auf Wunsch ohne selbst mitzuspielen). Tippe in der Auswertung auf eine Antwort für Infos mit 3D-Globus – Einwohner, Hauptstadt, Sprachen, Währung, Nachbarländer, Flusslänge. Unter 📚 Nachschlagen geht das auch außerhalb des Spiels. Modi: 🧠 Solo gegen bis zu 5 Computer-Mitspieler in 3 Stärken; 🌐 Online & Handys – der Fernseher zeigt Buchstabe, Uhr und Auswertung, alle schreiben auf dem eigenen Handy (Beitritt per Code, Link oder QR-Code von überall), der Moderator kann der Fernseher oder ein Handy sein.",
+  "steuerung": [
+   "Touch/Handy: in die Felder tippen, „Weiter“ auf der Tastatur springt zur nächsten Spalte, STOPP-Knopf unten. In der Auswertung Antworten antippen für Infos, 👍/👎 zum Abstimmen.",
+   "Tastatur: einfach tippen, Enter/Tab nächste Spalte, Pfeile und Enter in den Menüs, Esc Pause.",
+   "Gamecontroller: Bildschirmtastatur mit Steuerkreuz/Stick, A tippt, B löscht, X Leerzeichen, Y/RB nächste Spalte, Start STOPP (in der Auswertung: weiter)."
+  ],
+  "tipps": [
+   "Seltene Antworten bringen mehr: Eine Stadt, die sonst keiner hat, gibt 10 statt 5 Punkte.",
+   "Ist eine Spalte für alle schwer, lohnt sich jedes Wort – allein gewusst sind es 20 Punkte.",
+   "Im Nachschlagen kannst du vorher üben: Welche Städte mit Q gibt es?"
+  ]
+ },
  "konfetti-party": {
   "anleitung": "Konfetti-Party ist ein buntes Arena-Partyspiel. Jeder Gast kann Knallbonbons legen. Nach gut zwei Sekunden schießt ein Bonbon einen Konfetti-Strahl in alle vier Richtungen: Geschenkkartons platzen (manchmal steckt ein Extra drin), Bonbons im Strahl knallen gleich mit, und wer im Strahl steht, ist für die Runde raus – auch du selbst, also nach dem Legen schnell um die Ecke laufen! Säulen halten den Strahl auf. Wer als Letzter übrig ist, gewinnt die Runde; wer zuerst die eingestellten Runden-Siege hat, gewinnt die Party. Ist die Zeit um, schließt sich die Arena von außen. Extras: 🍬 Extra-Bonbon, 🎉 mehr Konfetti (Reichweite), 🛼 Rollschuhe, 🦶 Kick-Schuh (Bonbons wegkicken), 🎈 Luftballon-Schild (fängt einen Treffer ab), 📡 Fernzünder (Bonbons knallen erst auf Knopfdruck) und 🌀 Wirrwarr (Richtungen kurz vertauscht). Modi: 🏆 Turnier – fünf Partys in fünf Arenen mit immer stärkeren Computer-Gästen, für jeden Sieg ein Pokal; 🎉 Schnelle Party – Arena, Gegner, Stärke und Siege frei wählen; 🌐 Online & Handys – der Fernseher zeigt die Arena, bis zu 4 Gäste spielen mit Handys (per Code, Link oder QR-Code von überall), Controllern oder Tastatur, freie Plätze übernehmen Computer-Gäste.",
   "steuerung": [
