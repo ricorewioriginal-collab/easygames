@@ -65,7 +65,7 @@
   }
   function fxText(fx) {
     if (!fx) return '';
-    const N = { money: v => (v > 0 ? '+' : '') + PT.money(v), fans: v => (v > 0 ? '+' : '') + v + ' Fans', rep: v => 'Ruf ' + (v > 0 ? '+' : '') + v, quality: v => 'Qualität ' + (v > 0 ? '+' : '') + v, reach: v => 'Reichweite ' + (v > 0 ? '+' : '') + Math.round(v * 100) + ' %', reliab: v => 'Zuverlässigkeit ' + (v > 0 ? '+' : '') + v, energy: v => 'Energie ' + (v > 0 ? '+' : '') + v, mood: v => 'Team-Stimmung ' + (v > 0 ? '+' : '') + v, condition: v => 'Gebäude ' + (v > 0 ? '+' : '') + v };
+    const N = { money: v => (v > 0 ? '+' : '') + PT.money(v), fans: v => (v > 0 ? '+' : '') + v + ' Fans', rep: v => 'Ruf ' + (v > 0 ? '+' : '') + v, quality: v => 'Qualität ' + (v > 0 ? '+' : '') + v, reach: v => 'Reichweite ' + (v > 0 ? '+' : '') + Math.round(v * 100) + ' %', reliab: v => 'Zuverlässigkeit ' + (v > 0 ? '+' : '') + v, energy: v => 'Energie ' + (v > 0 ? '+' : '') + v, mood: v => 'Team-Stimmung ' + (v > 0 ? '+' : '') + v, condition: v => 'Gebäude ' + (v > 0 ? '+' : '') + v, hmood: v => 'Laune Marco & Andrew ' + (v > 0 ? '+' : '') + v, creat: v => 'Kreativität ' + (v > 0 ? '+' : '') + v };
     return Object.keys(fx).filter(k => N[k] && fx[k]).map(k => N[k](fx[k])).join(', ') || 'Keine Auswirkung';
   }
   P.fxText = fxText;
@@ -89,12 +89,12 @@
         '<h3>Rubriken-Blöcke <small>(' + f.segments[0] + '–' + f.segments[1] + ', Reihenfolge = Ablauf)</small></h3><div class="pt-chips">' + D.rubrics.map(r => { const i = d.segments.indexOf(r.id); return '<button data-act="seg" data-id="' + r.id + '" class="' + (i >= 0 ? 'sel' : '') + '">' + (i >= 0 ? (i + 1) + '. ' : '') + r.icon + ' ' + esc(r.short) + '</button>'; }).join('') + '</div>' +
         '<h3>Gast</h3><select data-ch="guest"><option value="">Ohne Gast</option>' + D.guests.map(g => { const a = S.guestAvailable(st, g); return '<option value="' + g.id + '"' + (a.ok ? '' : ' disabled') + (d.guest === g.id ? ' selected' : '') + '>' + esc(g.name) + ' (' + D.guestArchetypes[g.arche] + ', ' + (a.ok ? PT.money(S.guestFee(st, g)) : a.why) + ')' + '</option>'; }).join('') + '</select>' +
         (d.guest ? (() => { const g = D.guests.find(x => x.id === d.guest), t = D.topics.find(x => x.id === d.topic); return '<p class="pt-hint">' + (g.fit.includes(t.rubric) ? '✓ passt gut zum Thema' : '• passt eher zu ' + g.fit.map(x => D.rubrics.find(r => r.id === x).short).join(', ')) + ' · Bekanntheit ' + g.fame + '/8</p>'; })() : '') +
-        '<h3>Moderation</h3><div class="pt-seg">' + [['marco', 'Marco'], ['andrew', 'Andrew'], ['both', 'Beide']].map(([id, n]) => { const t = D.topics.find(x => x.id === d.topic); const sk = id === 'both' ? (st.hostSkill.marco[t.rubric] + st.hostSkill.andrew[t.rubric]) / 2 : st.hostSkill[id][t.rubric]; return '<button data-act="lead" data-id="' + id + '" class="' + (d.lead === id ? 'sel' : '') + '">' + n + '<small>Können ' + PT.round(sk, 1) + '</small></button>'; }).join('') + '</div>' +
+        '<h3>Moderation</h3><div class="pt-seg">' + [['marco', 'Marco'], ['andrew', 'Andrew'], ['both', 'Beide']].map(([id, n]) => { const t = D.topics.find(x => x.id === d.topic); const sk = id === 'both' ? (st.hostSkill.marco[t.rubric] + st.hostSkill.andrew[t.rubric]) / 2 : st.hostSkill[id][t.rubric]; return '<button data-act="lead" data-id="' + id + '" class="' + (d.lead === id ? 'sel' : '') + '">' + n + '<small>Können ' + PT.round(sk, 1) + '</small></button>'; }).join('') + '</div>' + (D.funLeads && D.funLeads[d.lead] ? '<p class="pt-hint">' + D.funLeads[d.lead].icon + ' ' + esc(D.funLeads[d.lead].short) + '</p>' : '') +
         '<h3>Veröffentlichung</h3><div class="pt-seg">' + D.slots.map(x => '<button data-act="slot" data-id="' + x.id + '" class="' + (d.slot === x.id ? 'sel' : '') + '">' + esc(x.name) + '</button>').join('') + '</div>' +
         '<label class="pt-check' + (tvOk ? '' : ' off') + '"><input type="checkbox" data-ch="video"' + (d.video && tvOk ? ' checked' : '') + (tvOk ? '' : ' disabled') + '> 🎥 Videofolge' + (tvOk ? ' (mehr Reichweite)' : ' (braucht eine TV-Bühne)') + '</label>' +
         '<p class="pt-hint">Kontostand ' + UI.money(st.money) + ' · Energie Marco ' + Math.round(st.hosts.marco.energy) + ' / Andrew ' + Math.round(st.hosts.andrew.energy) + '</p></div></div>';
     },
-    foot: () => '<button data-act="cancel">Abbrechen</button><button data-act="plan" data-primary class="pri">Weiter: Recherche ▶</button>',
+    foot: () => '<button data-act="cancel">Abbrechen</button><button data-act="express" title="Alle weiteren Schritte automatisch: schnell, aber etwas schwächer">⚡ Express</button><button data-act="plan" data-primary class="pri">Weiter: Recherche ▶</button>',
     after() {
       const s = pnl.root.querySelector('[data-ch="guest"]'); if (s) s.onchange = () => { draft.guest = s.value || null; render(); };
       const v = pnl.root.querySelector('[data-ch="video"]'); if (v) v.onchange = () => { draft.video = v.checked; };
@@ -143,7 +143,7 @@
       return '<div class="pt-onair">🔴 ON AIR</div><p>Die Gesprächsmomente stehen. Jetzt den Pegel sauber halten!</p><div class="pt-list"><button class="pt-opt" data-act="record" data-how="mg" data-primary><b>🎚️ Selbst pegeln</b><small>Minispiel Mikrofon-Pegel – bestimmt die Aufnahmequalität</small></button><button class="pt-opt" data-act="record" data-how="auto"><b>🤖 Automatisch</b><small>' + (auto ? 'Tontechnik übernimmt (solide)' : 'Ohne Tontechnik nur mittelmäßig') + '</small></button></div>';
     },
     foot: () => '<button data-act="cancel">Abbrechen</button>',
-    after(st) { if (st.prod.event && !draft.evShown) { draft.evShown = true; eventCard(st, render); } }
+    after(st) { if (st.prod.event && !draft.evShown) { draft.evShown = true; eventCard(st, draft.express ? express : render); } }
   };
   // ── Schritt 6: Schnitt ───────────────────────────────────
   VIEWS.edit = {
@@ -180,7 +180,7 @@
       return '<p>Fertig zum Senden: <b>' + esc(st.prod.pack.title) + '</b></p><p>Voraussichtliche Qualität: <b>' + q.total + ' %</b> ' + UI.bar(q.total) + '</p><p class="pt-hint">Termin: ' + esc(slot.name) + ' · Kosten bisher ' + PT.money(st.prod.costs) + '</p>';
     },
     foot: () => '<button data-act="cancel">Abbrechen</button><button data-act="publish" data-primary class="pri">📡 Jetzt veröffentlichen</button>',
-    after(st) { if (st.prod.event && !draft.evPub) { draft.evPub = true; eventCard(st, render); } }
+    after(st) { if (st.prod.event && !draft.evPub) { draft.evPub = true; eventCard(st, draft.express ? express : render); } }
   };
   // ── Schritt 9: Bericht ───────────────────────────────────
   const PART_NAMES = { plan: ['Planung', 15], research: ['Recherche', 15], tech: ['Technik', 20], record: ['Aufnahme', 20], edit: ['Schnitt', 20], hosts: ['Form der Hosts', 10] };
@@ -188,8 +188,8 @@
     html(st) {
       const R = st.prod.report, e = R.ep;
       return '<div class="pt-report"><div class="pt-rep-head"><canvas width="160" height="160" data-cov="rep"></canvas><div><h3>' + esc(e.title) + '</h3><p class="pt-stars">' + UI.stars(e.stars) + '</p><p>Qualität <b>' + e.q + ' %</b></p><p>🎧 <b>' + PT.fmt(R.listeners) + '</b> Hörer am ersten Tag (Nachhören folgt)</p></div></div>' +
-        '<h3>So kam die Qualität zustande</h3><ul class="pt-parts">' + Object.keys(PART_NAMES).map(k => '<li><span>' + PART_NAMES[k][0] + '</span>' + UI.bar(R.q[k], PART_NAMES[k][1]) + '<b>' + R.q[k] + '/' + PART_NAMES[k][1] + '</b></li>').join('') + (R.q.events ? '<li><span>Ereignisse</span><b>' + (R.q.events > 0 ? '+' : '') + R.q.events + '</b></li>' : '') + '</ul>' +
-        '<ul class="pt-mini"><li>💶 Einnahmen: <b>' + PT.money(R.revenue) + '</b>' + (R.merch ? ' + Merch ' + PT.money(R.merch) : '') + '</li><li>💛 Fans: <b>' + (R.fansGain >= 0 ? '+' : '') + R.fansGain + '</b> (jetzt ' + PT.fmt(st.fans) + ')</li><li>⭐ Ruf: <b>' + (R.repDelta >= 0 ? '+' : '') + R.repDelta + '</b></li><li>📈 Trend ' + Math.round(R.trend.value * 100) + ' % · Reichweite +' + Math.round(R.reach * 100) + ' %' + (R.weekend ? ' · Wochenende' : '') + '</li>' + (R.sponsorNote ? '<li>🤝 ' + esc(R.sponsorNote) + '</li>' : '') + '</ul>' +
+        '<h3>So kam die Qualität zustande</h3><ul class="pt-parts">' + Object.keys(PART_NAMES).map(k => '<li><span>' + PART_NAMES[k][0] + '</span>' + UI.bar(R.q[k], PART_NAMES[k][1]) + '<b>' + R.q[k] + '/' + PART_NAMES[k][1] + '</b></li>').join('') + (R.q.events ? '<li><span>' + (st.prod.funLead && st.prod.funLead.q ? 'Moderation & Ereignisse' : 'Ereignisse') + '</span><b>' + (R.q.events > 0 ? '+' : '') + R.q.events + '</b></li>' : '') + '</ul>' +
+        '<ul class="pt-mini"><li>💶 Einnahmen: <b>' + PT.money(R.revenue) + '</b>' + (R.merch ? ' + Merch ' + PT.money(R.merch) : '') + '</li><li>💛 Fans: <b>' + (R.fansGain >= 0 ? '+' : '') + R.fansGain + '</b> (jetzt ' + PT.fmt(st.fans) + ')</li><li>⭐ Ruf: <b>' + (R.repDelta >= 0 ? '+' : '') + R.repDelta + '</b></li><li>📈 Trend ' + Math.round(R.trend.value * 100) + ' % · Reichweite +' + Math.round(R.reach * 100) + ' %' + (R.weekend ? ' · Wochenende' : '') + '</li>' + (R.sponsorNote ? '<li>🤝 ' + esc(R.sponsorNote) + '</li>' : '') + (R.radio ? '<li>📻 Radio-Promo (' + R.radio.icon + ' ' + esc(R.radio.name) + '): Reichweite <b>+' + Math.round(R.radio.pct * 100) + ' %</b> · <b>+' + PT.fmt(R.radio.fans) + '</b> Fans aus Radiohörern</li>' : '') + (R.fun || []).map(t => '<li>' + esc(t) + '</li>').join('') + '</ul>' +
         '<h3>Hörerstimmen</h3><ul class="pt-comments">' + e.comments.map(c => '<li>💬 ' + esc(c) + '</li>').join('') + '</ul>' + tips(st, R) + '</div>';
     },
     foot: () => '<button data-act="finish" data-primary class="pri">Fertig</button>',
@@ -203,6 +203,24 @@
     if (q.hosts < 7) t.push('Marco und Andrew sind müde – eine Kaffeeküche und eine Nacht Schlaf helfen.');
     if (q.plan < 9) t.push('Planung: Hauptthema als Block einplanen, Blöcke nicht doppeln, Gast passend zum Thema wählen.');
     return t.length ? '<h3>Tipps</h3><ul class="pt-tips">' + t.map(x => '<li>💡 ' + esc(x) + '</li>').join('') + '</ul>' : '';
+  }
+
+  // ── Express: restliche Schritte automatisch (Ereignisse fragt das Spiel trotzdem ab) ──
+  function express() {
+    const st = G().st; if (!st.prod || !draft) return;
+    for (let guard = 0; guard < 10 && st.prod && !st.prod.event; guard++) {
+      const s = st.prod.stage; let r = { ok: true };
+      if (s === 'research') r = S.prodResearch(st, 1, 0);
+      else if (s === 'team') { r = S.prodTeam(st, 0); if (!r.ok) { S.prodDropGuest(st); r = S.prodTeam(st, 0); } }
+      else if (s === 'tech') { const T = S.prodTech(st).tech; r = S.prodTechResolve(st, T.fault ? (S.canAfford(st, 600) ? 'pay' : 'ignore') : null); }
+      else if (s === 'record') { const beats = S.recordBeats(st); r = S.prodRecord(st, { auto: true, choices: beats.map(b => b.o.reduce((bi, o, i) => o.fx > b.o[bi].fx ? i : bi, 0)) }); }
+      else if (s === 'edit') r = S.prodEdit(st, { auto: true });
+      else if (s === 'package') { r = S.prodPackage(st, { title: draft.title || '', cover: draft.cover || 'klassik', teaser: 'none' }); if (!r.ok) r = S.prodPackage(st, { cover: 'klassik', teaser: 'none' }); }
+      else if (s === 'publish') { G().afterAction(); ACT.publish(); return; }
+      else break;
+      if (fail(r)) break;
+    }
+    G().afterAction(); render();
   }
 
   // ── Aktionen ─────────────────────────────────────────────
@@ -253,7 +271,8 @@
     cover: b => { draft.cover = b.dataset.id; render(); },
     teaser: b => { draft.teaser = b.dataset.id; render(); },
     package: () => { const st = G().st; if (fail(S.prodPackage(st, { title: draft.title, cover: draft.cover, teaser: draft.teaser }))) return; render(); },
-    publish: () => { const st = G().st; const r = S.prodPublish(st); if (fail(r)) return; G().afterAction(); render(); },
+    publish: () => { const st = G().st; const r = S.prodPublish(st); if (fail(r)) return; if (UI.Fun) UI.Fun.release(r.report); G().afterAction(); render(); },
+    express: () => { const st = G().st; if (st.prod.stage === 'plan' && fail(S.prodPlan(st, draft))) return; draft.express = true; express(); },
     finish: () => { const st = G().st; S.prodFinish(st); draft = null; pnl.close(); G().afterAction(true); }
   };
 })(typeof window !== 'undefined' ? window : globalThis);

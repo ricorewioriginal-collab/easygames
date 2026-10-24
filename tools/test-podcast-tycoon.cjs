@@ -12,8 +12,8 @@ load('core/util.js');
 fs.readdirSync(path.join(dir, 'data')).filter(f => f.endsWith('.js')).sort().forEach(f => load('data/' + f));
 load('minigames/registry.js');
 fs.readdirSync(path.join(dir, 'minigames')).filter(f => /^[a-z]\d\d-.*\.js$/.test(f)).sort().forEach(f => load('minigames/' + f));
-load('sim/build.js'); load('sim/sim.js');
-const optional = ['storage/save.js'];
+load('sim/build.js'); load('sim/sim.js'); load('sim/fun.js');
+const optional = ['storage/save.js', 'sim/radio.js'];
 optional.forEach(f => { if (fs.existsSync(path.join(dir, f))) load(f); });
 const P = global.PT, D = P.DATA, S = P.Sim, B = P.Build, MG = P.MG;
 const VERBOSE = process.argv.includes('--verbose');
@@ -58,7 +58,7 @@ D.events.forEach(e => e.choices.forEach(c => ok(!c.mg || MG.get(c.mg), 'Ereignis
 ok(D.quiz.mc.length + D.quiz.tf.length + D.quiz.est.length >= 120, '≥ 120 Quizfragen');
 ok(D.sounds.length >= 20, '≥ 20 Geräusche');
 ok(D.districts.length === 8, '8 Bezirke');
-Object.keys(D.roomFns).forEach(k => Object.keys(D.roomFns[k].req).forEach(r => ok(D.objectCats[r] || D.objectById[r] || ['seats', 'energy', 'music', 'storage', 'shop', 'surfaceWork'].includes(r), 'Raum ' + k + ' Anforderung ' + r)));
+Object.keys(D.roomFns).forEach(k => Object.keys(D.roomFns[k].req).forEach(r => ok(D.objectCats[r] || D.objectById[r] || ['seats', 'energy', 'music', 'storage', 'shop', 'surfaceWork', 'onair'].includes(r), 'Raum ' + k + ' Anforderung ' + r)));
 ok(MG.list().length === 24, '24 Minispiele geladen (' + MG.list().length + ')');
 
 // ── 2. Bauen ────────────────────────────────────────────────

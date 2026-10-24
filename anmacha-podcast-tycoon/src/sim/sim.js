@@ -503,7 +503,7 @@
     // Zeitpunkt: auf den gewählten Slot vorspulen (nächster Termin)
     const target = slot.hour * 60; if (st.time.min < target) S.advance(st, target - st.time.min); else S.advance(st, 1440 - st.time.min + target);
     const wk = S.weekday(st), weekend = wk === 'Sa' || wk === 'So';
-    const reach = cover.reach + teaser.reach + S.roomValue(st, 'social') * 0.004 + S.staffEff(st, 'social') * 0.012 + (P.reachDelta || 0) + (teaser.id === 'video' ? S.staffEff(st, 'kamera') * 0.005 : 0);
+    const reach = cover.reach + teaser.reach + S.roomValue(st, 'social') * 0.004 + S.staffEff(st, 'social') * 0.012 + (P.reachDelta || 0) + (teaser.id === 'video' ? S.staffEff(st, 'kamera') * 0.005 : 0) + (PT.Radio ? PT.Radio.promoReach(st) : 0); // Radio-Werbung (src/sim/radio.js)
     const base = 40 + 3 * Math.pow(st.fans, 0.8) + (g ? g.fame * 25 : 0);
     const qf = 0.25 + Math.pow(Q / 100, 1.3) * 1.5;
     const listeners = Math.max(5, Math.round(base * qf * tr.value * rub.pop * D.audiences[topic.aud].mult * slot.mult * (weekend ? 1.08 : 1) * f.reach * dr.listeners * (1 + Math.max(-0.3, reach)) * (0.8 + st.rep / 250) * (p.video ? 1.2 : 1)));
@@ -541,7 +541,8 @@
     // Hosts lernen in der Rubrik dazu
     ['marco', 'andrew'].forEach(h => { st.hostSkill[h][topic.rubric] = Math.min(10, PT.round(st.hostSkill[h][topic.rubric] + 0.2, 2)); st.hosts[h].xp += 15; });
     if (Q >= 80) st.story.legende += 0.3; if (fansGain > 50) st.story.publikum += 0.2;
-    P.report = { ep, q, listeners, revenue, merch, fansGain, repDelta, sponsorNote, reach: PT.round(reach, 2), trend: tr, base: Math.round(base), qf: PT.round(qf, 2), weekend };
+    const radio = PT.Radio ? PT.Radio.consumePromo(st) : null; if (radio) ep.radio = radio.pct; // Radiohörer werden Podcast-Fans
+    P.report = { ep, q, listeners, revenue, merch, fansGain, repDelta, sponsorNote, reach: PT.round(reach, 2), trend: tr, base: Math.round(base), qf: PT.round(qf, 2), weekend, radio };
     P.stage = 'report';
     S.missionEvent(st, { type: 'publish', ep, topic, guest: g }); if (teaser.id !== 'none') S.missionEvent(st, { type: 'teaser' });
     S.checkAch(st);

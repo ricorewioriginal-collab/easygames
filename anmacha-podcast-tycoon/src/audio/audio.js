@@ -5,7 +5,7 @@
   const PT = root.PT = root.PT || {};
   let ctx = null, master = null, busMusic = null, busFx = null, busVoice = null, noiseBuf = null;
   const vol = { master: 0.8, music: 0.45, fx: 0.8, voice: 0.6 };
-  let muted = false, musicName = null, musicTimer = null, musicStep = 0, nextNoteAt = 0, active = 0;
+  let muted = false, ducked = false, musicName = null, musicTimer = null, musicStep = 0, nextNoteAt = 0, active = 0;
   const NAMED = {
     good: [{ wave: 'triangle', f: 660, t: 0, d: 0.09, v: 0.35 }, { wave: 'triangle', f: 990, t: 0.08, d: 0.14, v: 0.35 }],
     bad: [{ wave: 'sawtooth', f: 220, f2: 140, t: 0, d: 0.25, v: 0.25, filter: { type: 'lowpass', f: 1200 } }],
@@ -45,7 +45,7 @@
     const d = noiseBuf.getChannelData(0); let s = 12345; for (let i = 0; i < d.length; i++) { s = (s * 1103515245 + 12345) & 0x7fffffff; d[i] = s / 0x3fffffff - 1; }
     apply(); return ctx;
   }
-  function apply() { if (!ctx) return; master.gain.value = muted ? 0 : vol.master; busMusic.gain.value = vol.music; busFx.gain.value = vol.fx; busVoice.gain.value = vol.voice; }
+  function apply() { if (!ctx) return; master.gain.value = muted ? 0 : vol.master; busMusic.gain.value = ducked ? 0 : vol.music; busFx.gain.value = vol.fx; busVoice.gain.value = vol.voice; }
   function part(p, t0, bus) {
     if (active > 48) return; // Schutz vor zu vielen gleichzeitigen Stimmen
     const t = t0 + (p.t || 0), d = Math.max(0.01, p.d || 0.2), v = Math.min(0.6, p.v == null ? 0.3 : p.v);
@@ -97,6 +97,8 @@
     setVolume(k, v) { if (k in vol) { vol[k] = Math.max(0, Math.min(1, +v || 0)); apply(); } },
     volume: k => vol[k],
     mute(m) { muted = !!m; apply(); },
+    /** Spielmusik stumm, solange ein echter Radio-Stream läuft (src/radio/player.js). */
+    duck(on) { ducked = !!on; apply(); },
     get muted() { return muted; },
     names: Object.keys(NAMED), songs: Object.keys(SONGS)
   };

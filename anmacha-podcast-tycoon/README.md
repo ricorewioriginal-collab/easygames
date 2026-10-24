@@ -9,6 +9,8 @@ Podcast-Wirtschaftssimulation in 3D mit Marco und Andrew. Fanprojekt, kein offiz
 - **Stadt:** 8 Viertel mit begehbaren Innenräumen, 12+ Figuren, 10 Gast-Typen.
 - **Baumodus:** Wände, Böden, Türen, Fenster, über 70 Objekte in 12 Kategorien, Rückgängig/Wiederholen, Wegprüfung.
 - **Folge produzieren:** Thema (60 Themen, 6 Rubriken) → Recherche → Gast → Technik → Aufnahme → Mehrspur-Schnitt → Verpackung → Veröffentlichen → Bericht.
+- **📻 Radio:** AnMaCha24 und die anderen 11 Sender von [meinradio.com](https://www.meinradio.com) live hören (laut.fm, nur nach Klick, Spielmusik wird solange leise). Eigenes **Radiostudio** (Sendepult, Mikrofon, ON-AIR-Licht; im Startstudio schon dabei) mit Sendungen wie Morningshow oder „AnMaCha & Friends Podcastnacht“: wenig Geld, aber Werbung für die nächste Folge (bis +25 % Reichweite, Radiohörer werden beim Veröffentlichen Fans). Logik in `src/sim/radio.js`, Player `src/radio/player.js`, Fenster `src/ui/ui-radio.js`.
+- **Marco & Andrew im Mittelpunkt:** Die beiden laufen durchs Studio, kommentieren Bauen, Folgen und Pannen in Sprechblasen, geben per Tipp auf ihr Bild Tipps; Energie und Laune stehen im HUD. Wer moderiert, bringt eigene Boni. **Studio-Stufe** mit XP, 3 **Tagesziele** täglich, **Sende-Serie**, 16 **Studio-Momente** mit Entscheidungen (Fan an der Tür, Shitstorm, viraler Clip …), **⚡ Express-Folge** und eine kurze **Veröffentlichungs-Show** (Countdown, Hörerzähler, Kommentare, Sterne). Logik `src/sim/fun.js`, Daten `src/data/studio-fun.js`, Oberfläche `src/ui/ui-fun.js`.
 - **24 Minispiele**, Party für 1–4 an einem Gerät, 🌐 **Online-Quizshow** über `../cloud/fire-peer.js` (Beitritt per Code, Link oder QR; Links über `EasyGamesLink.share`).
 - **Speichern:** 3 Plätze + Autosave, Schlüssel `anmachaPodcastTycoon.<platz>.v1` (saveSchema 1) mit `.lastGood`-Sicherung, Google-Sync über `../cloud/anmacha-cloud.js`.
 
@@ -36,6 +38,8 @@ node tools/test-podcast-tycoon-minigames.cjs  # alle 24 Minispiele: Gewinn- und 
 node tools/test-podcast-tycoon-editor.cjs     # Schnitteditor
 node tools/test-podcast-tycoon-online.cjs     # Online-Quizshow mit Netz-Attrappe
 node tools/test-podcast-tycoon-world.cjs      # 3D-Welt (ohne Grafikkarte)
+node tools/test-podcast-tycoon-fun.cjs        # Spaß-Schicht: Tagesziele, Stufen, Serie, Studio-Momente, Sprüche
+node tools/test-podcast-tycoon-radio.cjs      # Radiostudio, Sendungen, Radio-Werbung, Player (Attrappe)
 ```
 
 Nach Änderungen: `node tools/build-sync.js`, `node tools/check-games.js`.

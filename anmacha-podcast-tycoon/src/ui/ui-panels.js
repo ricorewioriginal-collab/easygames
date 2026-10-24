@@ -32,7 +32,7 @@
   UI.finance = function () {
     const st = G().st;
     const pnl = UI.panel('Finanzen & Sponsoren', '', { wide: true, icon: '💶' });
-    const IN = { listen: 'Hörer-Erlöse', tail: 'Nachhören', sponsor: 'Sponsoren', merch: 'Merch', events: 'Events & Verkäufe', jobs: 'Nebenjobs', missions: 'Missionen' };
+    const IN = { listen: 'Hörer-Erlöse', tail: 'Nachhören', sponsor: 'Sponsoren', merch: 'Merch', events: 'Events & Verkäufe', jobs: 'Nebenjobs', missions: 'Missionen', radio: 'Radio' };
     const OUT = { rent: 'Miete', salary: 'Gehälter', upkeep: 'Unterhalt', repair: 'Reparaturen', build: 'Bauen', staff: 'Personal', production: 'Produktion', travel: 'Reisen' };
     function render() {
       const b = S.balanceToday(st), L = st.today, q = S.repairQuote(st), studio = S.studio(st);

@@ -97,13 +97,15 @@
   D.plaza = { id: 'plaza', name: 'Funkplatz', spots: { brunnen: [0, 7], bank: [-8, 8], turm: [10, -10] },
     props: [['fountain', 0, 0], ['radiotower', 10, -10], ['bench', -8, 8, 0], ['bench', 8, 8, 0], ['tree', -14, -14], ['tree', 14, 14], ['tree', -14, 14], ['lamp', -6, -6], ['lamp', 6, 6]] };
 
-  // Startaufbau des eigenen Studios (Raster des Grundstücks 20×14): ein Aufnahmeraum + Flur mit Kaffeeecke
+  // Startaufbau des eigenen Studios (Raster des Grundstücks 20×14): ein Aufnahmeraum, ein kleines Radiostudio (AnMaCha24) + Flur mit Kaffeeecke
   D.startLayout = {
     floors: [{ x0: 2, z0: 2, x1: 14, z1: 12, type: 'holz' }],
     rect: { x0: 2, z0: 2, x1: 14, z1: 12 }, doors: [['s', 9]], windows: [['s', 2], ['n', 9]], // Türen/Fenster relativ zur Rechteck-Ecke
-    inner: [[8, 2, 8, 6, 'wall'], [8, 6, 8, 7, 'door'], [8, 7, 8, 12, 'wall']],
-    objs: [['mo_tisch', 4, 6, 0], ['mo_stuhl', 4, 5, 2], ['mo_stuhl', 5, 7, 0], ['mic_alt', 4, 6, 0], ['mic_alt', 5, 6, 0], ['mo_kaffee', 13, 2, 0], ['mo_stuhl', 11, 4, 0], ['pf_kaktus', 2, 11, 0]],
-    rooms: [{ x: 3, z: 3, fn: 'aufnahme' }]
+    inner: [[8, 2, 8, 6, 'wall'], [8, 6, 8, 7, 'door'], [8, 7, 8, 12, 'wall'],
+      [12, 6, 14, 6, 'wall'], [12, 10, 14, 10, 'wall'], [12, 6, 12, 8, 'wall'], [12, 8, 12, 9, 'door'], [12, 9, 12, 10, 'wall']],
+    objs: [['mo_tisch', 4, 6, 0], ['mo_stuhl', 4, 5, 2], ['mo_stuhl', 5, 7, 0], ['mic_alt', 4, 6, 0], ['mic_alt', 5, 6, 0], ['mo_kaffee', 13, 2, 0], ['mo_stuhl', 11, 4, 0], ['pf_kaktus', 2, 11, 0],
+      ['rd_pult', 12, 6, 0], ['mic_alt', 12, 6, 0], ['rq_onair', 13, 6, 0], ['mo_stuhl', 12, 7, 0]],
+    rooms: [{ x: 3, z: 3, fn: 'aufnahme' }, { x: 13, z: 8, fn: 'radio' }]
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = D;
 })(typeof window !== 'undefined' ? window : globalThis);

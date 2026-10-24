@@ -12,8 +12,8 @@ global.PT = {};
 const load = f => { require(path.join(dir, f)); };
 load('core/util.js');
 fs.readdirSync(path.join(dir, 'data')).filter(f => f.endsWith('.js')).sort().forEach(f => load('data/' + f));
-load('sim/build.js'); load('sim/sim.js');
-load('world/nav.js'); load('world/models.js'); load('world/world.js');
+load('sim/build.js'); load('sim/sim.js'); load('sim/fun.js');
+load('world/nav.js'); load('world/textures.js'); load('world/models.js'); load('world/world.js');
 const P = global.PT, D = P.DATA, B = P.Build, S = P.Sim, T = global.THREE;
 const VERBOSE = process.argv.includes('--verbose');
 let fails = 0, passes = 0;
@@ -39,6 +39,7 @@ ok(dbg.inter.filter(i => i.kind === 'travel').length === 8, 'Bushaltestelle in j
 ok(dbg.inter.filter(i => i.kind === 'job').length === D.jobs.length, 'Pult für jeden Nebenjob');
 D.jobs.forEach(j => ok(dbg.inter.some(i => i.kind === 'job' && i.id === j.id), 'Job-Pult ' + j.id));
 ok(dbg.inter.some(i => i.kind === 'studio' && i.id === 'studio'), 'Produktionspult im Studio');
+ok(dbg.inter.some(i => i.kind === 'radio' && i.id === 'studio'), 'Radio-Sendepult im Radiostudio');
 ok(dbg.inter.some(i => i.kind === 'build' && i.id === 'studio'), 'Bau-Terminal am Studio');
 ok(dbg.inter.some(i => i.kind === 'lot' && i.id === 'campus'), 'Pachtschild am Campus');
 ok(!dbg.inter.some(i => i.kind === 'build' && i.id === 'campus'), 'kein Bau-Terminal am ungepachteten Campus');
