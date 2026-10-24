@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "2585505b90be",
- "generated": "2026-10-24T16:43:34+02:00",
- "commit": "5ba389ae9cc4d7dffb2f7611334849c34ad04038",
+ "version": "d69875a781d1",
+ "generated": "2026-10-24T16:17:20+00:00",
+ "commit": "8bb977fd93f441d8aa3f467f801623f963965b49",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -878,8 +878,8 @@
   },
   {
    "p": "anmacha-funkparcours/scene.js",
-   "s": 40100,
-   "h": "23564107e4aa5f48cb6d12289536ab83d4971572df8719c08161faa82dfb4863"
+   "s": 40124,
+   "h": "9449cafb9401bc1c8096a2f4ec4df984af17cd83190cf5deeb6286508a291bb5"
   },
   {
    "p": "anmacha-funkparcours/stick.js",
@@ -5823,8 +5823,8 @@
   },
   {
    "p": "figuren/figuren.js",
-   "s": 22740,
-   "h": "aa31a265b7258f1c579b44bc933f9ab0164d6b290e3c5dc6bfd7697cc3b37f7a"
+   "s": 22974,
+   "h": "a435189a45e3bf0eebae4a554d2293f0253eda8539cc3374b5eab9384dc08f96"
   },
   {
    "p": "figuren/frau.glb",
@@ -8414,7 +8414,7 @@
   {
    "p": "sync/catalog.json",
    "s": 206749,
-   "h": "68073176a191ea3605058000952beb8b65987fc54626daecd6bbc8b79967873f"
+   "h": "81d39bd06991ea9ee996739b7378b8642be4f30dc6d10daf45843179b45d3dbe"
   },
   {
    "p": "taschi/card.svg",
