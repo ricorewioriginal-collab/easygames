@@ -106,7 +106,7 @@
       F.x += F.fx * mv * DT; F.z += F.fz * mv * DT;
     }
   }
-  function sidestep(W, F, dir) { setState(F, 'side'); F.side = dir; W.ev.push({ k: 'side', i: F.i }); }
+  function sidestep(W, F, dir) { setState(F, 'side'); F.side = dir * (F.i ? -1 : 1); /* +1 = zur Kamera hin (aus der Bildtiefe heraus) */ W.ev.push({ k: 'side', i: F.i }); }
 
   function step(W, inputs) {
     W.frame++; W.ev.length = 0;

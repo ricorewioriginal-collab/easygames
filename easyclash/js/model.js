@@ -46,15 +46,18 @@
     // Rumpf
     const sp = J.spine = new T3.Group(); hip.add(sp);
     let torso;
-    if (blob || bird) { torso = mesh(sph(.42 * w, 18), top, sp, 1.04); torso.scale.set(1, 1.05, .95); torso.position.y = .32; }
+    if (L.shape === 'tall') { torso = mesh(cyl(.3 * w, .3 * w, .85, 16), top, sp, 1.04); torso.position.y = .4; const b2 = mesh(sph(.3 * w, 14), top, sp, false); b2.position.y = -.02; const b3 = mesh(sph(.3 * w, 14), top, sp, 1.04); b3.position.y = .82; }
+    else if (L.shape === 'roll') { torso = mesh(cyl(.38 * w, .38 * w, .8, 20), top, sp, 1.04); torso.position.y = .42; const hole = mesh(cyl(.13, .13, .02, 12), toon('#c8b89a'), sp, false); hole.position.y = .83; for (let k = 0; k < 3; k++) { const l = mesh(cyl(.385 * w, .385 * w, .01, 20), toon('#e0e0e0'), sp, false); l.position.y = .15 + k * .25; } }
+    else if (blob || bird) { torso = mesh(sph(.42 * w, 18), top, sp, 1.04); torso.scale.set(1, 1.05, .95); torso.position.y = .32; }
     else if (robot) { torso = mesh(bx(.56 * w, .62, .36), top, sp, 1.04); torso.position.y = .34; }
     else { torso = mesh(cyl(.25 * w, .21 * w, .62, 14), top, sp, 1.04); torso.position.y = .32; const pel = mesh(cyl(.22 * w, .23 * w, .2, 12), bot, sp, 1.05); pel.position.y = .02; const ch2 = mesh(sph(.25 * w, 14), top, sp, false); ch2.scale.set(1.04, .5, .82); ch2.position.y = .62; }
     if (L.belly) { const b = mesh(sph(.2 * w, 12), toon(L.belly), sp, false); b.scale.set(1, 1.2, .5); b.position.set(0, .3, .2 * w + (blob || bird ? .14 : 0)); }
+    if (L.bumps) for (let k = 0; k < 10; k++) { const b = mesh(sph(.04, 6), toon(L.bumps), sp, false); const a = k * 2.4; b.position.set(Math.cos(a) * .3 * w, .1 + (k % 5) * .17, Math.sin(a) * .3 * w); }
     if (L.print) { const p = mesh(bx(.2, .1, .02), toon(L.print), sp, false); p.position.set(0, .44, (robot ? .19 : .24) * w); }
     if (L.jacket) { for (const sx of [-1, 1]) { const j = mesh(bx(.13 * w, .6, .44 * w), toon(L.jacket), sp, 1.04); j.position.set(sx * .17 * w, .34, 0); } }
     if (L.cape) { const c = mesh(bx(.5 * w, .9, .04), toon(L.cape), sp, false); c.position.set(0, .2, -.24 * w); c.rotation.x = .12; J.cape = c; }
     // Arme (bei Vögeln Flügel)
-    const shY = blob || bird ? .42 : .6;
+    const shY = L.shape ? .55 : blob || bird ? .42 : .6;
     for (const side of [-1, 1]) {
       const sh2 = J[side < 0 ? 'lSh' : 'rSh'] = new T3.Group(); sh2.position.set(side * (.33 * w + (blob || bird ? .1 : 0)), shY, 0); sp.add(sh2);
       if (bird) { const wing = mesh(bx(.08, .5, .32), toon(L.wing || L.top), sh2, 1.08); wing.position.y = -.22; J[side < 0 ? 'lEl' : 'rEl'] = new T3.Group(); sh2.add(J[side < 0 ? 'lEl' : 'rEl']); continue; }
@@ -64,12 +67,13 @@
       if (side > 0 && L.mic) { const mic = mesh(cyl(.035, .03, .18, 8), toon('#26232b'), el, 1.1); mic.position.set(0, -armLen - .08, .07); const gr = mesh(sph(.045, 8), toon('#77757f'), mic, false); gr.position.y = .1; }
     }
     // Kopf
-    const hd = J.head = new T3.Group(); hd.position.y = blob || bird ? .78 : .92; sp.add(hd);
-    const hr = (L.head || 1) * (blob || bird ? .3 : .25);
+    const hd = J.head = new T3.Group(); hd.position.y = L.shape === 'roll' ? .3 : L.shape ? .62 : blob || bird ? .78 : .92; sp.add(hd);
+    const hr = (L.head || 1) * (L.shape === 'roll' ? .36 : L.shape ? .3 : blob || bird ? .3 : .25);
     let skull;
     if (robot) { skull = mesh(bx(hr * 1.8, hr * 1.6, hr * 1.6), toon(L.skin), hd, 1.05); skull.position.y = hr * .8; }
+    else if (L.shape) { skull = new T3.Group(); hd.add(skull); }
     else { skull = mesh(sph(hr, 18), sk, hd, 1.05); skull.position.y = hr * .9; skull.scale.set(1, 1.05, .98); }
-    const fz = hr * .92, fy = hr * .95;
+    const fz = L.shape === 'roll' ? .4 * w : L.shape ? .31 * w : hr * .92, fy = hr * .95;
     // Augen
     const eyeC = toon(L.eyes || '#2a1a10'), white = toon('#ffffff');
     for (const sx of [-1, 1]) {
@@ -100,7 +104,7 @@
         else if (L.ears === 'bunny') { e = mesh(cyl(hr * .12, hr * .16, hr * 1.4, 8), ec, hd, 1.08); e.position.set(sx * hr * .35, fy + hr * 1.5, 0); e.rotation.z = sx * -.15; }
         else { e = mesh(sph(hr * .28, 10), ec, hd, 1.08); e.position.set(sx * hr * .7, fy + hr * .75, 0); e.scale.z = .5; }
       }
-    } else if (!robot && !bird && !blob) for (const sx of [-1, 1]) { const e = mesh(sph(hr * .2, 8), sk, hd, false); e.scale.set(.5, 1, .8); e.position.set(sx * hr * .98, fy, 0); }
+    } else if (!robot && !bird && !blob && !L.shape) for (const sx of [-1, 1]) { const e = mesh(sph(hr * .2, 8), sk, hd, false); e.scale.set(.5, 1, .8); e.position.set(sx * hr * .98, fy, 0); }
     // Haare
     if (L.hair && !robot) hair(hd, L.hair.style, hairM, hr, fy, fz);
     // Hüte und Kopfschmuck
