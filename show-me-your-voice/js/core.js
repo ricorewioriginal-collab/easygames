@@ -287,6 +287,56 @@
     return { jury, yes, pass: yes >= 2, encore: enc, juryAvg: r1(jury.reduce((s, j) => s + j.score, 0) / 3) };
   }
 
+  // ---------- Freies Vorsingen ----------
+  // frames: [{ m: MIDI-Tonhöhe | null, l: Pegel (RMS) }] im Abstand dt Sekunden. Kein Song als Vorgabe:
+  // Intonation zählt relativ zur eigenen Tonart (gemeinsame Verschiebung wird herausgerechnet).
+  function singScore(frames, attrs, dt) {
+    dt = dt > 0 ? dt : 0.05;
+    const fr = Array.isArray(frames) ? frames.filter(f => f && typeof f === 'object') : [];
+    const okM = m => Number.isFinite(m) && m > 24 && m < 108;
+    const v = fr.filter(f => okM(f.m)), voiced = v.length * dt, total = fr.length * dt;
+    // gehaltene Töne: Weicht die Tonhöhe mehr als 0,6 Halbtöne vom Anfang des Tons ab, beginnt ein neuer Ton.
+    // So zählt Rutschen durch viele Töne nicht als ein sauber gehaltener Ton.
+    const segs = []; let cur = null, anchor = 0;
+    fr.forEach(f => {
+      if (!okM(f.m)) { cur = null; return; }
+      if (!cur || Math.abs(f.m - anchor) > 0.6) { cur = []; segs.push(cur); anchor = f.m; }
+      cur.push(f.m);
+    });
+    const notes = segs.filter(s => s.length >= 3);
+    const sorted = a => a.slice().sort((x, y) => x - y), q = (a, p) => a[Math.min(a.length - 1, Math.floor(p * a.length))];
+    const centers = notes.map(s => q(sorted(s), 0.5));
+    let sx = 0, sy = 0; centers.forEach(c => { sx += Math.cos(2 * Math.PI * c); sy += Math.sin(2 * Math.PI * c); });
+    const off = Math.atan2(sy, sx) / (2 * Math.PI);
+    const dev = centers.length ? centers.reduce((s, c) => { const x = c - off; return s + Math.abs(x - Math.round(x)); }, 0) / centers.length * 100 : 50;
+    let ds = 0, dd = 0, dn = 0;   // Wackeln von Bild zu Bild und Abweichung von der Mitte des Tons
+    notes.forEach((s, k) => { for (let i = 1; i < s.length; i++) { ds += Math.abs(s[i] - s[i - 1]); dd += Math.abs(s[i] - centers[k]); dn++; } });
+    const ms = sorted(v.map(f => f.m)), low = ms.length ? q(ms, 0.1) : 0, high = ms.length ? q(ms, 0.9) : 0;
+    const db = v.map(f => 20 * Math.log10(Math.max(1e-4, +f.l || 0)));
+    const dbAvg = db.length ? db.reduce((a, b) => a + b, 0) / db.length : 0;
+    const dbSd = db.length ? Math.sqrt(db.reduce((a, b) => a + (b - dbAvg) * (b - dbAvg), 0) / db.length) : 0;
+    const st = {
+      inton: r1(clamp(110 - dev * 3)), stab: dn ? r1(clamp(100 * (1 - ds / dn / 0.8 - dd / dn / 0.5))) : 0,
+      range: r1(clamp((high - low) / 14 * 100)), dyn: r1(clamp(dbSd / 6 * 100)), presence: total ? r1(clamp(voiced / total * 130)) : 0,
+      cents: Math.round(dev), semis: r1(high - low), low: Math.round(low), high: Math.round(high), voiced: r1(voiced), total: r1(total), notes: notes.length };
+    const c = {
+      stimme: 0.6 * st.inton + 0.4 * st.stab, ausdruck: 0.6 * st.dyn + 0.4 * st.range, praesenz: st.presence,
+      timing: 0.5 * st.stab + 0.5 * st.presence, mut: 0.4 * st.range + 0.3 * st.dyn + 30 * Math.min(1, voiced / 20), entwicklung: 60 };
+    TRAINABLE.forEach(k => { c[k] = 0.85 * c[k] + 0.15 * (attrs && attrs[k] != null ? attrs[k] : 40); });
+    CK.forEach(k => { c[k] = r1(clamp(c[k])); });
+    let perf = 0.35 * st.inton + 0.2 * st.stab + 0.15 * st.range + 0.15 * st.dyn + 0.15 * st.presence;
+    if (voiced < 5) perf *= voiced / 5;      // kaum gesungen: kaum Punkte
+    return { perf: r1(clamp(perf)), crit: c, mult: 1, sing: st };
+  }
+
+  // Genre-Challenge: ★ = Jury sagt Ja (2 von 3), ★★ = dazu das Genre-Ziel, ★★★ = dazu mindestens 80 Punkte.
+  function singStars(genreId, res, fc) {
+    const g = D.KARAOKE.find(x => x.id === genreId);
+    if (!fc || !fc.pass) return 0;
+    if (!g || !res || !res.sing || !(res.sing[g.goal.k] >= g.goal.min)) return 1;
+    return res.perf >= 80 ? 3 : 2;
+  }
+
   // ---------- Training ----------
   function trainGain(cur, quality) { return Math.max(0, Math.round(7 * clamp(quality, 0, 1) * (1 - cur / 110))); }
   function applyTraining(profile, attr, quality) {
@@ -347,11 +397,13 @@
   // ---------- Speicherstand ----------
   const DEF_SETTINGS = { source: 'radio', jury: 'wechsel', music: 0.7, sfx: 0.8, mute: false, mic: false, range: 'mittel', speed: 'normal', offset: 0,
     difficulty: 'normal', reduced: false, big: false, cb: false, captions: true };
-  function freshSave() { return { v: 1, profile: null, season: null, settings: Object.assign({}, DEF_SETTINGS), best: 0, wins: 0, tutorial: false }; }
+  function freshSave() { return { v: 1, profile: null, season: null, settings: Object.assign({}, DEF_SETTINGS), best: 0, wins: 0, tutorial: false, singCh: {} }; }
   function repair(s) {
     const f = freshSave();
     if (!s || typeof s !== 'object' || s.v !== 1) return f;
     const out = Object.assign(f, { best: +s.best || 0, wins: +s.wins || 0, tutorial: !!s.tutorial });
+    if (s.singCh && typeof s.singCh === 'object') D.KARAOKE.forEach(g => { const c = s.singCh[g.id];
+      if (c && typeof c === 'object') out.singCh[g.id] = { best: clamp(+c.best || 0), stars: Math.max(0, Math.min(3, Math.round(+c.stars) || 0)) }; });
     out.settings = Object.assign({}, DEF_SETTINGS, s.settings && typeof s.settings === 'object' ? s.settings : {});
     const p = s.profile;
     if (p && typeof p === 'object' && typeof p.name === 'string' && p.attrs && typeof p.attrs === 'object') {
@@ -372,7 +424,7 @@
   }
 
   const API = { D, CK, TRAINABLE, DIFF, rng, hash, clamp, cleanName, newProfile, level, newSeason, startRound, cancelRound,
-    analyze, panelOf, judge, ONLINE, onlineDef, onlineResolve, encoreFlip, comment, rollEvent, applyEvent, mergeSymp, aiPerf, rank, resolveRound, freeCasting, trainGain, applyTraining, applyCommunity, bonusScore,
+    analyze, panelOf, judge, ONLINE, onlineDef, onlineResolve, encoreFlip, comment, rollEvent, applyEvent, mergeSymp, aiPerf, rank, resolveRound, freeCasting, singScore, singStars, trainGain, applyTraining, applyCommunity, bonusScore,
     DEF_SETTINGS, freshSave, repair };
   if (typeof module !== 'undefined' && module.exports) module.exports = API; else root.SMYV = API;
 })(typeof window !== 'undefined' ? window : globalThis);

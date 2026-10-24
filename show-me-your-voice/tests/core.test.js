@@ -212,3 +212,44 @@ test('Online-Show: Casting lässt mindestens zwei weiter, dann Recall, Live-Show
   const miss = S.onlineResolve({ def: S.onlineDef(0, 3), round: 0, seed: 1, entries: mk(3, () => 0.95).map((e, i) => (i === 0 ? { id: e.id, name: e.name, missing: true } : e)) });
   assert.ok(!miss.advanced.includes('g0'));
 });
+
+test('Freies Vorsingen: saubere Töne schlagen schiefes Rutschen, Stille bringt nichts', () => {
+  const R = S.rng(5), melody = [60, 62, 64, 65, 67, 69, 67, 64, 62, 72, 71, 67];
+  const clean = [], wobbly = [], silent = [];
+  for (let i = 0; i < 600; i++) {      // 30 s bei 20 Bildern pro Sekunde
+    const n = Math.floor(i / 20), gap = i % 20 >= 17;
+    const l = 0.03 + 0.05 * Math.abs(Math.sin(i / 60));
+    clean.push(gap ? { m: null, l: 0.002 } : { m: melody[n % melody.length] + 0.33 + 0.08 * Math.sin(i), l });
+    wobbly.push(gap ? { m: null, l: 0.002 } : { m: melody[n % melody.length] + (R() - 0.5) * 1.2 + (n % 2 ? 0.45 : 0), l: 0.04 });
+    silent.push({ m: null, l: 0.001 });
+  }
+  const a = S.singScore(clean, null, 0.05), b = S.singScore(wobbly, null, 0.05), c = S.singScore(silent, null, 0.05);
+  assert.ok(a.sing.inton >= 85, 'Tonart verschoben, aber sauber: ' + a.sing.inton);
+  assert.ok(a.sing.stab > b.sing.stab && a.sing.inton > b.sing.inton);
+  assert.ok(a.perf > b.perf + 10, a.perf + ' vs ' + b.perf);
+  assert.strictEqual(a.sing.semis >= 7, true); assert.ok(a.sing.notes >= 20);
+  assert.strictEqual(c.perf, 0); assert.strictEqual(c.sing.voiced, 0);
+  S.CK.forEach(k => assert.ok(a.crit[k] >= 0 && a.crit[k] <= 100));
+  assert.strictEqual(S.singScore(null).perf, 0);
+  const fc = S.freeCasting(null, Object.assign({}, a, { style: 'pop' }), 1);
+  assert.strictEqual(fc.jury.length, 3);
+});
+
+test('Genre-Challenges: Sterne nach Jury, Genre-Ziel und Punkten; Speicherstand wird bereinigt', () => {
+  const res = { perf: 82, sing: { inton: 80, stab: 60, range: 40, dyn: 20, presence: 90 } };
+  assert.strictEqual(S.singStars('ballade', res, { pass: true }), 3);
+  assert.strictEqual(S.singStars('soul', res, { pass: true }), 1);
+  assert.strictEqual(S.singStars('ballade', Object.assign({}, res, { perf: 70 }), { pass: true }), 2);
+  assert.strictEqual(S.singStars('ballade', res, { pass: false }), 0);
+  const r = S.repair({ v: 1, singCh: { pop: { best: 140, stars: 9 }, rock: 'x', evil: { best: 50, stars: 2 } } });
+  assert.deepStrictEqual(r.singCh, { pop: { best: 100, stars: 3 } });
+  assert.deepStrictEqual(S.freshSave().singCh, {});
+});
+
+test('Freies Vorsingen: Rutschen durch eine Oktave zählt nicht als saubere Intonation', () => {
+  const slide = S.singScore(Array.from({ length: 600 }, (_, i) => ({ m: 60 + i * 0.02, l: 0.05 })), null, 0.05);
+  assert.ok(slide.sing.inton < 60, 'Intonation ' + slide.sing.inton);
+  assert.ok(slide.sing.stab < 75, 'Stabilität ' + slide.sing.stab);
+  const fc = S.freeCasting(null, Object.assign({}, slide, { style: 'ballade' }), 1);
+  assert.ok(S.singStars('ballade', slide, fc) < 2);
+});

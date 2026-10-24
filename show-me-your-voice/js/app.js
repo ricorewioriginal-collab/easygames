@@ -49,7 +49,7 @@
   function sfx(n, a, cap) { A.sfx(n, a); if (cap) caption(cap); }
 
   const BG = { sTitle: 'stage', sMenu: 'stage', sAvatar: 'backstage', sBack: 'backstage', sPrep: 'backstage', sResult: 'chairs', sOut: 'out', sWin: 'win',
-    sCands: 'backstage', sProfile: 'backstage', sTrain: 'backstage', sBonus: 'arena', sArchive: 'arena', sSettings: 'stage', sHelp: 'stage', sCredits: 'stage', sOnline: 'arena' };
+    sCands: 'backstage', sProfile: 'backstage', sTrain: 'backstage', sBonus: 'arena', sArchive: 'arena', sSettings: 'stage', sHelp: 'stage', sCredits: 'stage', sOnline: 'arena', sSing: 'chairs' };
   function setBg(name, dim) { const el = $('#bg'); el.style.backgroundImage = 'url(img/bg-' + name + '.jpg)'; el.classList.toggle('dim', !!dim); }
   const RENDER = {};
   function go(id, arg) {
@@ -126,6 +126,7 @@
     if (running) it.push(['cont', 'gold wide', '▶ Karriere fortsetzen', esc(p.name) + ' · ' + D.ROUNDS[s.round].name]);
     it.push(['new', running ? 'violet' : 'gold wide', '🌟 Neue Karriere', 'Avatar, Casting, ganze Staffel']);
     it.push(['online', 'pink', '🌐 Online & Handys', 'Live-Show mit Freunden – jede Person auf dem eigenen Gerät']);
+    it.push(['sing', 'pink', '🎙️ Freies Vorsingen', 'Dein Song, Karaoke & Challenges']);
     it.push(['free', 'pink', '🎤 Freies Casting', 'Ein Auftritt vor der Jury']);
     it.push(['train', 'violet', '🏋️ Training', 'Drei Minispiele mit Sophie']);
     it.push(['bonus', 'blue', '❄️ Winterglanz-Gala', 'Bonus-Challenge · Rekord ' + (save.best || 0)]);
@@ -150,6 +151,7 @@
       { season: () => { closeOv(); startSeason(); }, ava: () => { closeOv(); openAvatar('fresh'); }, x: closeOv });
     } else if (m === 'online') openOnline();
     else if (m === 'free') { if (!p) openAvatar('free'); else sub('sPrep', 'free'); }
+    else if (m === 'sing') { if (!p) openAvatar('sing'); else sub('sSing'); }
     else if (m === 'train') sub('sTrain', 'practice');
     else if (m === 'bonus') sub('sBonus');
     else if (m === 'arch') sub('sArchive');
@@ -167,7 +169,7 @@
     edit.mode = mode; edit.look = Object.assign({}, AV.DEF, mode === 'edit' && save.profile ? save.profile.look : {});
     backTo.sAvatar = mode === 'edit' ? 'sProfile' : 'sMenu';
     go('sAvatar');
-    $('#avaName').value = mode === 'edit' || mode === 'free' || mode === 'prof' ? (save.profile ? save.profile.name : '') : '';
+    $('#avaName').value = mode === 'edit' || mode === 'free' || mode === 'prof' || mode === 'sing' ? (save.profile ? save.profile.name : '') : '';
   }
   function drawAva() { $('#avaPrev').innerHTML = AV.svg(edit.look, edit.expr); }
   RENDER.sAvatar = () => {
@@ -201,6 +203,7 @@
     persist();
     if (edit.mode === 'free') { backTo.sPrep = 'sMenu'; go('sPrep', 'free'); }
     else if (edit.mode === 'prof') { backTo.sProfile = 'sMenu'; go('sProfile'); }
+    else if (edit.mode === 'sing') { backTo.sSing = 'sMenu'; go('sSing'); }
     else if (edit.mode === 'online') { backTo.sOnline = 'sMenu'; go('sOnline'); if (ON.pend && !ON.st) onJoin(ON.pend); }
     else startSeason();
   };
@@ -584,9 +587,14 @@
     if (r) st.push(`✨ Perfect ${r.p}`, `👍 Gut ${r.g}`, `👌 OK ${r.o}`, `❌ Verpasst ${r.m}`, `🔥 Max-Combo ${r.maxCombo}`);
     if (out.pitch) st.push(`🎤 Gesang ${pct(out.pitch.q)}`);
     if (out.show) st.push(`👏 Show-Momente ${out.show.hit}/${out.show.total}`);
+    const sg = out.sing;
+    if (sg) st.push(`🎯 Intonation ${Math.round(sg.inton)}`, `〰️ Stabilität ${Math.round(sg.stab)}`, `↕️ Umfang ${nf(sg.semis)} Halbtöne${sg.semis ? ` (${noteName(sg.low)}–${noteName(sg.high)})` : ''}`,
+      `🎚️ Dynamik ${Math.round(sg.dyn)}`, `⏱️ ${nf(sg.voiced)} s gesungen`);
+    const rec = out.rec ? `<div class="panel"><p><b>🎧 Deine Aufnahme</b> <small class="muted">nur auf diesem Gerät, wird nicht gespeichert</small></p><audio controls preload="auto" src="${esc(out.rec)}" style="width:100%"></audio></div>` : '';
+    const sgHint = sg ? '<p class="hint">Intonation zählt relativ zu deiner eigenen Tonart: Wie genau triffst du Halbtöne und hältst sie? Umfang = tiefe bis hohe Töne, Dynamik = laut und leise.</p>' : '';
     const mult = oc.mult !== 1 ? `<p class="muted center">Ansatz-Faktor ×${String(oc.mult).replace('.', ',')}</p>` : '';
     return `<h2 class="center">Deine Performance</h2><div class="center"><div class="big">${nf(oc.perf)}</div><p class="muted">von 100 Punkten</p>${credit ? `<p class="hint">${esc(credit)}</p>` : ''}</div>
-      <div class="stats">${st.map(x => `<span>${x}</span>`).join('')}</div>${mult}
+      <div class="stats">${st.map(x => `<span>${x}</span>`).join('')}</div>${mult}${sgHint}${rec}
       <div class="panel">${rows}<p class="hint">Kriterien: 85 % dein Auftritt, 15 % deine Trainingswerte. Daraus bewertet jede Jurorin und jeder Juror mit eigener Gewichtung.</p></div>`;
   }
   function juryHtml(jury, crit, name, seed) {
@@ -613,7 +621,9 @@
     if (ctx.free) {
       steps.push(() => juryHtml(ctx.fc.jury, ctx.oc.crit, name, 1));
       steps.push(() => `<div class="banner ${ctx.fc.pass ? 'win' : 'lose'}">${ctx.fc.pass ? '✅ ' + ctx.fc.yes + ' von 3 Ja – du wärst weiter!' : '❌ Nur ' + ctx.fc.yes + ' von 3 Ja – diesmal nicht.'}</div>
-        <div class="panel host">${AV.svg(D.HOST.look, ctx.fc.pass ? 'happy' : 'neutral')}<div class="speech"><b>Rico:</b> ${ctx.fc.pass ? 'Stark! Bereit für die echte Staffel?' : 'Kopf hoch – üben, trainieren, nochmal!'}</div></div>`);
+        <div class="panel host">${AV.svg(D.HOST.look, ctx.fc.pass ? 'happy' : 'neutral')}<div class="speech"><b>Rico:</b> ${ctx.fc.pass ? 'Stark! Bereit für die echte Staffel?' : 'Kopf hoch – üben, trainieren, nochmal!'}</div></div>`
+        + (ctx.chal ? `<div class="panel"><p><b>${ctx.chal.g.icon} ${ctx.chal.g.name}-Challenge:</b> <span class="stars">${stars(ctx.chal.stars)}</span>${ctx.chal.up ? ' · neue Sterne!' : ''}${ctx.chal.rec ? ' · 🏆 neuer Rekord' : ''}</p>
+          <p class="muted">Genre-Ziel „${ctx.chal.g.goal.t}“: ${Math.round(ctx.chal.val)} von ${ctx.chal.g.goal.min} ${ctx.chal.met ? '✅' : '❌'}</p><p class="hint">★ 2 von 3 Jury-Ja · ★★ dazu das Genre-Ziel · ★★★ dazu mindestens 80 Punkte</p></div>` : ''));
     } else {
       const res = ctx.res, me = res.entries.find(e => e.id === 'p'), def = D.ROUNDS[res.round];
       steps.push(() => juryHtml(me.jury, ctx.oc.crit, name, save.season.seed + res.round));
@@ -642,7 +652,7 @@
       if (busy && box.querySelector('.vbar')) { clearTimers(); box.querySelectorAll('.vbar i').forEach(b => { b.style.width = b.dataset.w + '%'; }); const z = $('#zit'); if (z) z.hidden = false; busy = false; return; }
       if (busy) { clearTimers(); box.querySelectorAll('.jcard').forEach(c => c.classList.add('show')); busy = false; const jury = ctx.free ? ctx.fc.jury : ctx.res.entries.find(e => e.id === 'p').jury; $('#jsum').innerHTML = `<b>${jury.filter(v => v.yes).length} von 3 Ja</b>`; return; }
       if (i < steps.length - 1) { i++; show(); return; }
-      if (ctx.free) { go('sPrep', 'free'); return; }
+      if (ctx.free) { if (ctx.ret) go(ctx.ret); else go('sPrep', 'free'); return; }
       (ctx.res.ach || []).forEach((id, k) => setTimeout(() => toast('🏅 Erfolg freigeschaltet: ' + D.ACHIEVEMENTS.find(a => a.id === id).name, 2600), k * 2700));
       const st = save.season.status; go(st === 'out' ? 'sOut' : st === 'done' ? 'sWin' : 'sBack');
     }
@@ -872,6 +882,163 @@
       <p class="hint">Lädt nicht? <a href="https://www.youtube.com/watch?v=${v}" target="_blank" rel="noopener">Direkt auf YouTube öffnen</a></p><button class="btn" type="button" data-act="x">Schließen</button>`, { x: closeOv });
   });
 
+  // ---------- Freies Vorsingen: eigener Song oder Karaoke-Video, Auswertung der Stimme, Genre-Challenges ----------
+  const NOTE = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'H'];
+  const noteName = m => { const r = Math.round(m); return NOTE[((r % 12) + 12) % 12] + (Math.floor(r / 12) - 1); };
+  const stars = n => '★'.repeat(n) + '☆'.repeat(3 - n);
+  const genre = id => D.KARAOKE.find(g => g.id === id);
+  const ytId = s => { s = String(s || '').trim(); const m = s.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([\w-]{11})/) || s.match(/^([\w-]{11})$/); return m ? m[1] : null; };
+  const sing = { g: 'pop', song: 0, own: '', title: '', len: 60, run: null, recUrl: null };
+  function singPick() {
+    const g = genre(sing.g), style = g ? g.style : 'pop';
+    if (g && Number.isInteger(sing.song) && g.songs[sing.song]) { const [t, v, ch] = g.songs[sing.song]; return { vid: v, title: t, credit: `🎤 ${t} · Karaoke-Video: ${ch} (YouTube) · Rechte bei den Urhebern`, style }; }
+    const t = sing.title.trim().slice(0, 80) || (sing.song === 'own' ? 'Eigener Song' : 'A cappella');
+    if (sing.song === 'own') { const v = ytId(sing.own); return { vid: v, title: t, credit: `🎤 ${t}${v ? ' · Video: YouTube · Rechte bei den Urhebern' : ''}`, style }; }
+    return { vid: null, title: t, credit: `🎤 ${t} · a cappella`, style };
+  }
+  RENDER.sSing = () => {
+    singEnd();
+    const g = genre(sing.g), ch = save.singCh || {};
+    if (!g && Number.isInteger(sing.song)) sing.song = 'acap';
+    if (g && Number.isInteger(sing.song) && !g.songs[sing.song]) sing.song = 0;
+    const opt = (k, v, on, t, d) => `<button type="button" class="opt" data-${k}="${v}" aria-pressed="${on}"><b>${t}</b><small>${d}</small></button>`;
+    const gs = D.KARAOKE.map(x => { const c = ch[x.id]; return opt('sg', x.id, sing.g === x.id, `${x.icon} ${x.name} <span class="stars">${stars(c ? c.stars : 0)}</span>`, `Ziel: ${x.goal.t}${c ? ' · Rekord ' + nf(c.best) : ''}`); })
+      .concat(opt('sg', 'frei', !g, '🎤 Ohne Challenge', 'Freie Songwahl, nur die Jury zählt'));
+    const ss = (g ? g.songs.map((x, i) => opt('ss', i, sing.song === i, '▶ ' + esc(x[0]), 'Karaoke mit Lyrics · ' + esc(x[2]))) : [])
+      .concat(opt('ss', 'acap', sing.song === 'acap', '🎙️ A cappella', 'Ohne Musik, nur deine Stimme'), opt('ss', 'own', sing.song === 'own', '🔗 Eigener Song', 'YouTube-Link einfügen oder einfach ohne Video'));
+    const own = sing.song === 'own' || sing.song === 'acap';
+    $('#singBox').innerHTML = `
+      <header class="bar"><button class="btn sm" data-back type="button">← Zurück</button><h2>🎙️ Freies Vorsingen</h2><span></span></header>
+      <div class="panel"><p>Wie im echten Casting: Du singst einen Song deiner Wahl ins Mikrofon. Das Spiel hört auf <b>Intonation, Stabilität, Stimmumfang und Ausdruck</b>, danach entscheidet die Jury.</p>
+        <p class="muted">Ausgewertet wird nur auf deinem Gerät. Deine Aufnahme kannst du danach anhören; sie wird nicht gespeichert oder gesendet.</p></div>
+      <h3>1 · Genre-Challenge</h3><div class="opts">${gs.join('')}</div>
+      <p class="hint" style="text-align:left">★ 2 von 3 Jury-Ja · ★★ dazu das Genre-Ziel · ★★★ dazu mindestens 80 Punkte. Der Stil bringt bei der passenden Jurorin oder dem passenden Juror einen Bonus.</p>
+      <h3>2 · Dein Song</h3><div class="opts">${ss.join('')}</div>
+      ${own ? `<div class="panel"><label class="field">Songtitel (optional)<input id="singTitle" type="text" maxlength="80" value="${esc(sing.title)}" placeholder="z. B. Adele – Hello"></label>
+        ${sing.song === 'own' ? `<label class="field">YouTube-Link (optional)<input id="singLink" type="url" inputmode="url" value="${esc(sing.own)}" placeholder="https://youtu.be/…"></label>
+        <button class="btn sm violet" type="button" id="singFind">🔍 Karaoke-Version auf YouTube suchen</button><p class="hint" style="text-align:left">Video suchen, Link kopieren und oben einfügen. Nicht jedes Video darf eingebettet werden – dann sagt dir das Spiel Bescheid.</p>` : ''}</div>` : ''}
+      <h3>3 · Länge</h3><div class="seg">${[30, 60, 90].map(n => `<button class="btn" type="button" data-sl="${n}" aria-pressed="${sing.len === n}">${n} s</button>`).join('')}</div>
+      <p class="hint" style="text-align:left">🎧 Am besten mit Kopfhörern singen, sonst hört das Mikrofon die Musik mit. Die Zeit läuft ab deinem ersten Ton.${g ? ' Karaoke-Videos kommen von YouTube; alle Rechte an der Musik liegen bei den Urhebern.' : ''}</p>
+      <button class="btn gold xl" type="button" id="singGo" data-focus style="width:100%;margin-top:10px">🎤 Vorsingen starten</button>`;
+  };
+  $('#singBox').addEventListener('input', e => {
+    if (e.target.id === 'singTitle') sing.title = e.target.value;
+    else if (e.target.id === 'singLink') sing.own = e.target.value;
+  });
+  $('#singBox').addEventListener('click', e => {
+    const b = e.target.closest('[data-sg],[data-ss],[data-sl]');
+    if (b) {
+      const k = b.dataset.sg != null ? 'sg' : b.dataset.ss != null ? 'ss' : 'sl', v = b.dataset[k];
+      if (k === 'sg') { sing.g = v; if (v !== 'frei' && !Number.isInteger(sing.song)) sing.song = 0; }
+      else if (k === 'ss') sing.song = v === 'acap' || v === 'own' ? v : +v;
+      else sing.len = +v;
+      RENDER.sSing(); const nb = $(`#singBox [data-${k}="${v}"]`); if (nb) nb.focus();
+      return;
+    }
+    if (e.target.closest('#singFind')) { window.open('https://www.youtube.com/results?search_query=' + encodeURIComponent((sing.title.trim() || 'Song') + ' karaoke lyrics'), '_blank', 'noopener'); return; }
+    if (e.target.closest('#singGo')) singStart();
+    else if (e.target.closest('#singStop')) singFinish();
+    else if (e.target.closest('#singX')) RENDER.sSing();
+  });
+  function singEnd() {
+    const run = sing.run; if (!run) return;
+    sing.run = null; run.ended = true; cancelAnimationFrame(run.raf);
+    removeEventListener('message', run.onMsg);
+    if (run.rec && run.rec.state !== 'inactive') try { run.rec.stop(); } catch (e) { /* egal */ }
+    A.micStop();
+    const f = $('#singVid'); if (f) f.src = 'about:blank';
+  }
+  async function singStart() {
+    if (!save.profile) { openAvatar('sing'); return; }
+    if (!save.settings.mic) { micConsent(() => { if (save.settings.mic) singStart(); else RENDER.sSing(); }); return; }
+    const pk = singPick();
+    if (sing.song === 'own' && sing.own.trim() && !pk.vid) { toast('Das ist kein YouTube-Link. Kopiere die Adresse des Videos (youtube.com/watch?v=… oder youtu.be/…).', 4000); return; }
+    airStop(); A.init();
+    try { await A.micStart(); } catch (e) { save.settings.mic = false; persist(); micConsent(() => RENDER.sSing()); return; }
+    if (cur !== 'sSing' || sing.run) { if (!sing.run) A.micStop(); return; }
+    if (sing.recUrl) { URL.revokeObjectURL(sing.recUrl); sing.recUrl = null; }
+    const run = sing.run = { pk, frames: [], started: false, acc: 0, last: performance.now(), raf: 0, chunks: [], rec: null, len: sing.len, ended: false, view: [] };
+    $('#singBox').innerHTML = `<header class="bar"><span></span><h2>🎙️ ${esc(pk.title)}</h2><span></span></header>
+      ${pk.vid ? `<div class="video"><iframe id="singVid" src="https://www.youtube-nocookie.com/embed/${pk.vid}?autoplay=1&rel=0&playsinline=1&enablejsapi=1${save.settings.mute ? '&mute=1' : ''}" title="Karaoke-Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
+        <p class="hint">${esc(pk.credit)} · <a href="https://www.youtube.com/watch?v=${pk.vid}" target="_blank" rel="noopener">YouTube ↗</a></p><p class="banner lose" id="singErr" hidden>Dieses Video darf hier nicht abgespielt werden. Brich ab und wähle einen anderen Song – oder sing einfach a cappella weiter.</p>` : `<p class="hint">${esc(pk.credit)}</p>`}
+      <div class="panel singLive"><div class="singTop"><b id="singNote">–</b><span id="singCents"></span><span id="singTime">Sing los – die Zeit startet mit deinem ersten Ton</span></div>
+        <canvas id="singCv" height="170" aria-label="Deine Tonhöhe"></canvas><div class="meter"><i id="singLv"></i></div></div>
+      <div class="row2"><button class="btn gold" id="singStop" type="button" data-focus>⏹ Fertig – zur Jury</button><button class="btn" id="singX" type="button">✖ Abbrechen</button></div>`;
+    focusFirst($('#singBox'));
+    const vid = $('#singVid');
+    run.onMsg = e => {   // YouTube meldet Fehler 101/150, wenn der Kanal das Einbetten verbietet
+      if (!vid || e.source !== vid.contentWindow) return;
+      let d = null; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; }
+      if (d && d.event === 'onError') { const er = $('#singErr'); if (er) er.hidden = false; }
+    };
+    if (vid) { addEventListener('message', run.onMsg); vid.addEventListener('load', () => { try { const w = vid.contentWindow; w.postMessage(JSON.stringify({ event: 'listening', id: 'smyv', channel: 'widget' }), '*');
+      w.postMessage(JSON.stringify({ event: 'command', func: 'addEventListener', args: ['onError'], id: 'smyv', channel: 'widget' }), '*'); } catch (x) { /* egal */ } }); }
+    try { const ms = A.micStream(); if (ms && window.MediaRecorder) { run.rec = new MediaRecorder(ms); run.rec.ondataavailable = e => { if (e.data && e.data.size) run.chunks.push(e.data); }; } } catch (e) { run.rec = null; }
+    const cv = $('#singCv'), c2 = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = Math.max(300, cv.clientWidth * dpr); cv.height = 170 * dpr;
+    const tm = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+    function draw() {
+      const w = cv.width, h = cv.height, vw = run.view, vm = vw.filter(m => m != null).slice(-60).sort((a, b) => a - b);
+      const mid = vm.length ? vm[vm.length >> 1] : 62, lo = mid - 12, y = m => h - (m - lo) / 24 * h;
+      c2.clearRect(0, 0, w, h); c2.font = (11 * dpr) + 'px sans-serif';
+      for (let n = Math.ceil(lo); n <= lo + 24; n++) {
+        const c = ((n % 12) + 12) % 12 === 0; c2.fillStyle = c ? 'rgba(255,255,255,.28)' : 'rgba(255,255,255,.07)'; c2.fillRect(0, y(n), w, c ? 1.5 : 1);
+        if (c) { c2.fillStyle = 'rgba(255,255,255,.6)'; c2.fillText(noteName(n), 4, y(n) - 3); }
+      }
+      c2.fillStyle = '#ffc93c'; const step = w / 160;
+      vw.forEach((m, i) => { if (m != null) c2.fillRect(w - (vw.length - i) * step, y(m) - 2 * dpr, step + 0.5, 4 * dpr); });
+    }
+    function frame(now) {
+      if (run.ended) return;
+      if (cur !== 'sSing' || sing.run !== run) { singEnd(); return; }
+      run.acc += Math.min(0.25, (now - run.last) / 1000); run.last = now;
+      if (run.acc >= 0.05) {
+        const m = A.micPitch(), l = A.micLevel() || 0;
+        if (!run.started && m != null) { run.started = true; if (run.rec) try { run.rec.start(1000); } catch (e) { run.rec = null; } }
+        for (; run.acc >= 0.05; run.acc -= 0.05) {
+          if (run.started) run.frames.push({ m: m == null ? null : Math.round(m * 100) / 100, l: Math.round(l * 1e4) / 1e4 });
+          run.view.push(m); if (run.view.length > 160) run.view.shift();
+        }
+        $('#singLv').style.width = Math.min(100, l / 0.15 * 100) + '%';
+        const ct = m == null ? null : Math.round((m - Math.round(m)) * 100);
+        $('#singNote').textContent = m == null ? '–' : noteName(m);
+        $('#singCents').textContent = ct == null ? '' : (ct > 0 ? '+' : '') + ct + ' ct';
+        $('#singCents').className = ct == null ? '' : Math.abs(ct) <= 15 ? 'ok' : 'off';
+        const el = run.frames.length * 0.05;
+        if (run.started) $('#singTime').textContent = tm(el) + ' / ' + tm(run.len);
+        draw();
+        if (el >= run.len) { singFinish(); return; }
+      }
+      run.raf = requestAnimationFrame(frame);
+    }
+    run.raf = requestAnimationFrame(frame);
+  }
+  function singFinish() {
+    const run = sing.run; if (!run || run.ended) return;
+    if (run.frames.filter(f => f.m != null).length < 40) { RENDER.sSing(); toast('🎙️ Ich habe kaum Gesang gehört. Sing etwas länger oder näher am Mikrofon.', 3500); return; }
+    const rec = run.rec, chunks = run.chunks; run.rec = null;   // singEnd soll die Aufnahme nicht verwerfen
+    singEnd();
+    let doneOnce = false;
+    const done = () => {
+      if (doneOnce) return; doneOnce = true;
+      let url = null; try { if (chunks.length) url = URL.createObjectURL(new Blob(chunks, { type: chunks[0].type || 'audio/webm' })); } catch (e) { url = null; }
+      sing.recUrl = url;
+      const p = save.profile, g = genre(sing.g), res = S.singScore(run.frames, p.attrs, 0.05);
+      const oc = Object.assign(res, { style: run.pk.style, symp: null });
+      const fc = S.freeCasting(p, oc, (Date.now() >>> 0) || 1);
+      let chal = null;
+      if (g) {
+        const stn = S.singStars(g.id, res, fc), old = save.singCh[g.id] || { best: 0, stars: 0 };
+        chal = { g, stars: stn, val: res.sing[g.goal.k], met: res.sing[g.goal.k] >= g.goal.min, rec: res.perf > old.best, up: stn > old.stars };
+        save.singCh[g.id] = { best: Math.max(old.best, res.perf), stars: Math.max(old.stars, stn) };
+      }
+      p.xp += Math.round(res.perf / 4); persist();
+      showResult({ fc, oc, out: { sing: res.sing, rec: url }, free: true, ret: 'sSing', chal, credit: run.pk.credit });
+    };
+    if (rec && rec.state !== 'inactive') { rec.onstop = done; try { rec.stop(); } catch (e) { done(); } setTimeout(done, 1500); }
+    else done();
+  }
+
   // ---------- Einstellungen ----------
   RENDER.sSettings = () => {
     const s = save.settings;
@@ -918,7 +1085,7 @@
   });
   function micConsent(after) {
     overlay(`<h3>🎙️ Mikrofon-Modus</h3><p>Das Spiel hört deine Stimme: In Notenteilen trifft jeder angesungene Ton die Note am Ring, in Gesangsteilen bewegt deine <b>Tonhöhe</b> den Mikro-Punkt.</p>
-      <p class="muted">Ausgewertet wird nur Tonhöhe und Lautstärke, direkt auf deinem Gerät. Nichts wird aufgenommen, gespeichert oder gesendet. Das Mikrofon ist nur während des Auftritts an. Kopfhörer helfen, damit die Musik nicht mitzählt.</p>
+      <p class="muted">Ausgewertet wird nur Tonhöhe und Lautstärke, direkt auf deinem Gerät. Nichts wird gespeichert oder gesendet; beim Freien Vorsingen kannst du deine Aufnahme direkt anhören, danach ist sie weg. Das Mikrofon ist nur während des Auftritts an. Kopfhörer helfen, damit die Musik nicht mitzählt.</p>
       <button class="btn gold" type="button" data-act="ok">Mikrofon erlauben</button><button class="btn" type="button" data-act="no">Ohne Mikrofon spielen</button>`,
     { ok: async () => {
       A.init();

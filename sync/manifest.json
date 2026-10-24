@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "b6f2ab04971b",
- "generated": "2026-10-24T07:22:39+00:00",
- "commit": "e2a9e78d9647e2fe758e8ddaf7075f27c5d0f4e4",
+ "version": "c69bbb2f2a36",
+ "generated": "2026-10-24T07:38:43+00:00",
+ "commit": "06de2f2e9e91dd8d9d96892ac1fcb79e6560a2c9",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5308,8 +5308,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22335,
-   "h": "83da8d5a7ee22ad29173bba8194d24f1ab6b0b7df8c84ecb8954fa8d9a179b89"
+   "s": 22351,
+   "h": "2c621e040969f59c7f91f373afbe040a30fdc31160e3a2edc34d74e401ec6bcb"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -7693,18 +7693,18 @@
   },
   {
    "p": "show-me-your-voice/index.html",
-   "s": 14445,
-   "h": "325247d8e43b28c6c6c1313000247e6a5b071c6aa804b0c588b5816a3e50353f"
+   "s": 15304,
+   "h": "d8c45c413675e5f7cca56976a11041ffcf4783a971345e2ac22fc4e243f5a3d2"
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 101401,
-   "h": "68bbd29d2306e776bf09250ca7945cbe32a655a0454f0a83aa7a3c0cf477c601"
+   "s": 116671,
+   "h": "b142cbfdd7665c366d1f27182ce82eec0708ca537cc2edabb09e5b7fba8917d2"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
-   "s": 14855,
-   "h": "ee0e5e73d7b49bf204d75f360086808f42ef0dfb3b83c436a132e430c836f8ff"
+   "s": 14899,
+   "h": "2af4813a5a7a36618237ec95a237e45523dde71660fdb0465fdff4bc4ae961e2"
   },
   {
    "p": "show-me-your-voice/js/avatar.js",
@@ -7713,13 +7713,13 @@
   },
   {
    "p": "show-me-your-voice/js/core.js",
-   "s": 23085,
-   "h": "a90470e3baf76d54eae723edbaf706414a8c7c9ca337846dc23ad8df01c53583"
+   "s": 26993,
+   "h": "41769a778fc75f8b5295e30fea209a836ce14f66bae28365ba92a16b4920bc67"
   },
   {
    "p": "show-me-your-voice/js/data.js",
-   "s": 30724,
-   "h": "6c9fb5badb1d9436d1f8496929c58cf6875fa8b859cc71ae44eef256b9d66051"
+   "s": 32915,
+   "h": "eb996f92cf9bf0cc47e56b6b928cba0f7b684bb03f514a2cbebffe18177572c6"
   },
   {
    "p": "show-me-your-voice/js/stage.js",
@@ -7733,8 +7733,8 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 21181,
-   "h": "ff7c9c082f2b08eabc6f05c57e02b8273467c5b1a1c661c759e7dd37b35afaea"
+   "s": 21793,
+   "h": "7179a1b87b625b1f90b977965bb8d136ab39d82bcbfce1f8aec4eda0e18a07e4"
   },
   {
    "p": "show-me-your-voice/sw.js",
@@ -7999,7 +7999,7 @@
   {
    "p": "sync/catalog.json",
    "s": 181183,
-   "h": "c5a23f8f889899eb310ccca0c2622b2412560f0436276471bdcd2aad69cd3edc"
+   "h": "18d13eb5362b53b511861414beafc0bf465e0883929df7c7470b075e89bd31c4"
   },
   {
    "p": "taschi/card.svg",

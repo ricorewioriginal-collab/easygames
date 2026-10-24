@@ -68,7 +68,7 @@
     denken: ['kraterkommando', 'funkblasen', 'mahjong', 'colorpop-universe', 'radio-match', 'memory', 'wobbel', 'frequenzrad', 'tower-defense', 'wortfunk', 'wortgitter', 'frequenzminen', 'deluxe-2048'],
     quiz: ['quiz', 'gesucht', 'hoererwahl', 'preisradar', 'machmichaus', 'zeitsprung-wissen', 'zeitsprung-movie', 'zeitsprung-radio', 'zeitsprung-castingshow', 'zeitsprung-kinderserien', 'zeitsprung-eurovision', 'koffer-dealer', 'funkmaler', 'funkgalgen'],
     sim: ['ricoville', 'ricolife', 'ricorail', 'mimori', 'markthalle', 'funkhaus', 'klotzfunk', 'bunte-insel', 'anmacha-podcast-tycoon', 'pestwacht'],
-    tisch: ['ricopoly', 'partyverse', 'spielesammlung', 'stapelrausch', 'gold-reels', 'anmacha-undercover', 'spinwelten', 'anmacha-solitaire'],
+    tisch: ['funk-billard', 'ricopoly', 'partyverse', 'spielesammlung', 'stapelrausch', 'gold-reels', 'anmacha-undercover', 'spinwelten', 'anmacha-solitaire'],
     musik: ['beat-surfer', 'prismrush', 'show-me-your-voice']
   };
   var GENRE_OF = {};
