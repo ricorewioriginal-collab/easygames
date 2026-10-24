@@ -25,7 +25,7 @@
     { id: 'nova', n: 'Nova Neon', st: 'Kosmo 3000', col: '#c77dff', col2: '#f72585', ic: 'moon', skin: '#a86b4c', hair: '#f72585', hs: 'pony', band: true, spd: 1.1, mass: 0.92, dash: 1.12 }
   ];
   const PU = { mega: { n: 'Mega', dur: 7, ic: '🍔' }, turbo: { n: 'Turbo', dur: 6, ic: '⚡' }, schild: { n: 'Schild', dur: 5, ic: '🛡️' }, welle: { n: 'Druckwelle', dur: 0, ic: '💥' } };
-  const DIFF = [{ n: 'Locker', react: .55, aim: .5, agg: .45, edge: 2.2 }, { n: 'Normal', react: .3, aim: .25, agg: .7, edge: 1.7 }, { n: 'Profi', react: .14, aim: .1, agg: .95, edge: 1.35 }];
+  const DIFF = [{ n: 'Locker', react: .6, aim: .5, agg: .4, edge: 2.2, spd: .7 }, { n: 'Normal', react: .32, aim: .25, agg: .65, edge: 1.7, spd: .85 }, { n: 'Profi', react: .16, aim: .1, agg: .9, edge: 1.35, spd: 1 }];
   const R0 = .62, ACC = 24, VMAX = 6.4, DASH_V = 13.5, DASH_CD = 1.15, DASH_T = .2, SLAM_CD = 4, SLAM_AIR = .42, SLAM_R = 2.7, KO_WINDOW = 3;
 
   function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
@@ -40,9 +40,9 @@
     if (M.randomArena && M.round > 1) M.arena = Math.floor(M.rng() * ARENAS.length);
     const A = ARENAS[M.arena], n = M.players.length, F = [];
     M.players.forEach((p, i) => {
-      const a = -Math.PI / 2 + i / n * Math.PI * 2, d = n > 4 ? 4.2 : 3.4, fd = fighter(p.fid);
+      const a = Math.PI / 2 + i / n * Math.PI * 2, d = n > 4 ? 4.4 : 4, fd = fighter(p.fid);
       F.push({ i, fid: p.fid, x: Math.cos(a) * d, z: Math.sin(a) * d, vx: 0, vz: 0, y: 0, vy: 0, face: a + Math.PI, r: R0, m: fd.mass, alive: true, falling: false,
-        dashT: 0, dashCd: .6, slamT: 0, slamCd: 2, stun: 0, pu: { mega: 0, turbo: 0, schild: 0 }, last: { by: -1, t: -9 }, out: -1, place: 0, ai: { t: .8 + i * .15, tx: 0, tz: 0, want: null } });
+        dashT: 0, dashCd: .9, slamT: 0, slamCd: 2, stun: 0, pu: { mega: 0, turbo: 0, schild: 0 }, last: { by: -1, t: -9 }, out: -1, place: 0, ai: { t: .8 + i * .15, tx: 0, tz: 0, want: null } });
     });
     return { M, A, ai: M.arena, t: 0, fightT: 0, ring: 0, R: RINGS[0], f: F, pus: [], strikes: [], wind: { x: 0, z: 0, t: 0, warn: 0 }, tilt: { x: 0, z: 0, a: 0 },
       phase: 'count', count: 3, nextPU: 6 + M.rng() * 3, nextHaz: 7, ev: [], winner: -1, order: [], suddenDeath: false };
@@ -53,6 +53,7 @@
     if (b.slamT > 0) return;          // in der Luft: unantastbar
     const k = b.pu.schild > 0 ? .25 : 1;
     b.vx += j.x * k / b.m; b.vz += j.z * k / b.m;
+    if (Math.hypot(j.x, j.z) * k / b.m > 6) b.hitT = .25;   // kurz nach einem Treffer weniger Kontrolle – so wirkt der Stoß
     if (a) { b.last = { by: a.i, t: W.t }; }
     W.ev.push({ k: kind || 'hit', i: a ? a.i : -1, j: b.i, p: Math.hypot(j.x, j.z) * k, x: b.x, z: b.z });
   }
@@ -102,26 +103,31 @@
       if (il > .15) f.face = Math.atan2(iz, ix);
       const sp = fd.spd * (turbo ? 1.3 : 1);
       // Schubser
-      if (u.dash && f.dashCd <= 0 && f.slamT <= 0 && f.stun <= 0) {
+      // Tastendruck kurz merken, falls der Schubs noch lädt (fühlt sich sonst „verschluckt“ an)
+      f.dashBuf = u.dash ? .3 : Math.max(0, (f.dashBuf || 0) - dt); f.slamBuf = u.slam ? .25 : Math.max(0, (f.slamBuf || 0) - dt);
+      if (f.dashBuf > 0 && f.dashCd <= 0 && f.slamT <= 0 && f.stun <= 0) { f.dashBuf = 0;
         const a = il > .15 ? Math.atan2(iz, ix) : f.face, v = DASH_V * fd.dash * (turbo ? 1.15 : 1);
         f.vx = Math.cos(a) * v; f.vz = Math.sin(a) * v; f.face = a; f.dashT = DASH_T; f.dashCd = turbo ? .4 : DASH_CD; M.players[f.i].pushes++;
         W.ev.push({ k: 'dash', i: f.i, x: f.x, z: f.z });
       }
       // Stampfer: kurzer Sprung, bei der Landung Druckwelle
-      if (u.slam && f.slamCd <= 0 && f.slamT <= 0) { f.slamT = SLAM_AIR; f.vy = 9; f.slamCd = SLAM_CD; W.ev.push({ k: 'jump', i: f.i }); }
+      if (f.slamBuf > 0 && f.slamCd <= 0 && f.slamT <= 0) { f.slamBuf = 0; f.slamT = SLAM_AIR; f.vy = 9; f.slamCd = SLAM_CD; W.ev.push({ k: 'jump', i: f.i }); }
       if (f.slamT > 0) {
         f.slamT -= dt; f.y = Math.max(0, f.y + f.vy * dt); f.vy -= 9 / (SLAM_AIR / 2) * dt;
         if (f.slamT <= 0) { f.y = 0; f.vy = 0; slam(W, f, SLAM_R * (mega ? 1.25 : 1), 7); M.players[f.i].slams++; }
       }
-      if (f.dashT > 0) f.dashT -= dt;
-      else { f.vx += ix * ACC * sp * dt; f.vz += iz * ACC * sp * dt; }
-      // Wind, Neigung
-      if (W.wind.t > 0) { f.vx += W.wind.x * 9 * dt / f.m; f.vz += W.wind.z * 9 * dt / f.m; }
-      if (A.haz === 'tilt') { f.vx += W.tilt.x * 7.5 * dt; f.vz += W.tilt.z * 7.5 * dt; }
-      // Reibung und Höchsttempo (außer beim Schubser)
-      const damp = Math.exp(-fric * dt); f.vx *= damp; f.vz *= damp;
-      const v = Math.hypot(f.vx, f.vz), vm = VMAX * sp * (f.dashT > 0 ? 3 : 1);
-      if (v > vm && f.dashT <= 0) { const k = Math.max(vm / v, Math.exp(-6 * dt)); f.vx *= k; f.vz *= k; }
+      // Steuerung: direkt auf die Wunschgeschwindigkeit zulenken (straff, bremst beim Loslassen). Wind und Neigung verschieben
+      // das Ziel, kurz nach einem Treffer und auf Eis greift die Steuerung schwächer – so bleiben Stöße wirksam.
+      f.hitT = Math.max(0, (f.hitT || 0) - dt);
+      if (f.dashT > 0) { f.dashT -= dt; f.vx *= Math.exp(-1.5 * dt); f.vz *= Math.exp(-1.5 * dt); }
+      else {
+        const vm = VMAX * sp; let tx = ix * vm, tz = iz * vm;
+        if (W.wind.t > 0) { tx += W.wind.x * 2.6 / f.m; tz += W.wind.z * 2.6 / f.m; }
+        if (A.haz === 'tilt') { tx += W.tilt.x * 2.2; tz += W.tilt.z * 2.2; }
+        const ice = fric < 1.5, ctrl = (f.hitT > 0 || f.stun > 0 ? .4 : 1) * (ice ? .45 : 1), dx = tx - f.vx, dz = tz - f.vz, dl = Math.hypot(dx, dz), mx = 50 * ctrl * dt;
+        if (dl > mx) { f.vx += dx / dl * mx; f.vz += dz / dl * mx; } else { f.vx = tx; f.vz = tz; }
+        if (f.hitT > 0) { const d = Math.exp(-Math.max(1.2, fric) * dt); f.vx *= d; f.vz *= d; }
+      }
       f.x += f.vx * dt; f.z += f.vz * dt;
     }
     // Stöße zwischen Kämpfern
@@ -133,7 +139,7 @@
       const nx = dx / d, nz = dz / d, ov = rr - d, im = 1 / p.m + 1 / q.m;
       p.x -= nx * ov * (1 / p.m) / im; p.z -= nz * ov * (1 / p.m) / im; q.x += nx * ov * (1 / q.m) / im; q.z += nz * ov * (1 / q.m) / im;
       const vr = (q.vx - p.vx) * nx + (q.vz - p.vz) * nz; if (vr > 0) continue;
-      const j = -1.2 * vr / im;
+      const j = -1.0 * vr / im;
       // Wer schubst, gibt mehr ab und steht stabiler
       const pa = p.dashT > 0 ? 1 : 0, qa = q.dashT > 0 ? 1 : 0, bonusQ = pa ? 2 : 0, bonusP = qa ? 2 : 0;
       const jq = j + bonusQ, jp = j * (pa && !qa ? .35 : 1) + bonusP;   // wer schubst, bekommt weniger Rückstoß
@@ -197,14 +203,14 @@
       // Position hinter dem Gegner (von der Mitte aus gesehen)
       tx = o.x - ox * 1.6; tz = o.z - oz * 1.6;
       const d = Math.hypot(o.x - f.x, o.z - f.z), ax = (o.x - f.x) / d, az = (o.z - f.z) / d, along = ax * ox + az * oz;
-      if (d < 3.2 && along > .45 - D.agg * .25 && or > W.R * .35 && f.dashCd <= 0 && rng() < D.agg * .35) { const a = Math.atan2(az, ax) + m.err; out.x = Math.cos(a); out.z = Math.sin(a); out.dash = true; return out; }
+      if (d < 3.2 && along > .45 - D.agg * .25 && or > W.R * .5 && f.dashCd <= 0 && rng() < D.agg * .25) { const a = Math.atan2(az, ax) + m.err; out.x = Math.cos(a); out.z = Math.sin(a); out.dash = true; return out; }
       if (d < 1.9) { tx = o.x; tz = o.z; }
     }
     if (f.slamCd <= 0 && others.filter(q => Math.hypot(q.x - f.x, q.z - f.z) < SLAM_R).length >= (lvl >= 2 ? 1 : 2) && rng() < .01 + D.agg * .025) out.slam = true;
     let dx = tx - f.x, dz = tz - f.z;
     if (dang) { dx = -f.x * 1.5 + sx * 2; dz = -f.z * 1.5 + sz * 2; }
     else { dx += sx; dz += sz; }
-    const l = Math.hypot(dx, dz); if (l > .05) { out.x = dx / l; out.z = dz / l; }
+    const l = Math.hypot(dx, dz); if (l > .05) { const sp = dang ? 1 : D.spd * Math.min(1, l / 1.2); out.x = dx / l * sp; out.z = dz / l * sp; }
     // Auf Eis vorsichtiger
     if (W.A.fric < 1.5 && r > W.R - 2.6) { out.x = out.x * .5 - f.x / (r || 1) * .6; out.z = out.z * .5 - f.z / (r || 1) * .6; }
     return out;
