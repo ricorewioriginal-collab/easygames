@@ -480,7 +480,7 @@
       <button class="ib" id="vHelp" aria-label="Handbuch und Details">📖<span class="l">&nbsp;Handbuch</span></button>
       <button class="ib" id="vShare" aria-label="Teilen">⤴<span class="l">&nbsp;Teilen</span></button>
     </div>
-    <iframe id="frame" allow="fullscreen; autoplay; microphone" title="Spiel"></iframe>
+    <iframe id="frame" allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock" title="Spiel"></iframe>
   </div>
 </div>
 
@@ -553,7 +553,7 @@ const $ = id => document.getElementById(id);
 const base = new URL('.', location.href).href;
 const abs = p => new URL(p, base).href;
 const iframeCode = (url, title) =>
-  `<iframe src="${url}" title="${title}" allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone" loading="lazy"\n  style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>`;
+  `<iframe src="${url}" title="${title}" allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock" loading="lazy"\n  style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>`;
 const embedMode = new URLSearchParams(location.search).has('embed');
 const portalMode = embedMode && new URLSearchParams(location.search).get('portal') === '1';   // eingebettet mit dem vollen Portal-Look (Karussell, Sammlungen, Reihen); die Seite des Gastgebers bringt Kopf und Menü selbst mit
 if (embedMode) document.body.classList.add('embed-mode');

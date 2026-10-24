@@ -52,6 +52,7 @@
  *      EasyGames.get('zotik'); EasyGames.url('zotik');
  *      EasyGames.tvUrl('anmacha-kart');                       // Link für den TV (nur Mehrspieler-Spiele, sonst null)
  *      EasyGames.device();                                    // Geräteerkennung (siehe device.js): { type, role, os, input, … }
+ *      EasyGames.allow;                                       // Freigaben für eigene iframes: f.allow = EasyGames.allow
  *      EasyGames.guide('zotik', cb);                          // Anleitung + Steuerung (lädt guides.js bei Bedarf)
  */
 (function () {
@@ -119,8 +120,9 @@
     return u.href;
   }
 
-  // gamepad: Controller funktionieren in fremden Seiten nur, wenn der iframe es erlaubt (Permissions Policy)
-  var FRAME_ALLOW = 'fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone';
+  // Freigaben für eingebettete Spiele (Permissions Policy): ohne sie fehlen in fremden Seiten Controller, Neigung, Mikrofon,
+  // Kamera (QR), Kopieren, Teilen und Wach-Halten. Gleiche Liste in index.html, hub/anmacha-hub.js, einbinden.html (tools/check-games.js prüft das).
+  var FRAME_ALLOW = 'fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock';
   function frame(src, title, o) {
     var f = document.createElement('iframe');
     f.src = src; f.title = title; f.loading = 'lazy';
@@ -269,6 +271,7 @@
   EG.tvUrl = function (id) { var g = games && find(id); return g && multi(g) ? tvUrl(g) : null; };
   EG.url = function (id) { var g = games && find(id); return g ? gameUrl(g) : null; };
   EG.baseUrl = base;
+  EG.allow = FRAME_ALLOW;   // für eigene iframes: <iframe allow="…">
   EG.device = function () { return window.EasyGamesDevice ? window.EasyGamesDevice.get() : null; };
   if (!window.EasyGamesDevice) load('device.js', function () {});
   EG.guide = function (id, cb) {

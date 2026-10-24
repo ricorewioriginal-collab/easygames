@@ -230,7 +230,7 @@
       var h = doc.createElement('div'); h.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 12px;background:#0b0e1a;color:#fff;font:600 15px system-ui';
       var t = doc.createElement('span'); t.style.cssText = 'flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
       var x = doc.createElement('button'); x.type = 'button'; x.textContent = '✕ Schließen'; x.style.cssText = 'border:0;border-radius:10px;padding:8px 14px;background:rgba(255,255,255,.14);color:#fff;font:600 14px system-ui;cursor:pointer';
-      var f = doc.createElement('iframe'); f.title = 'easygames'; f.allow = 'fullscreen; clipboard-write'; f.style.cssText = 'flex:1;border:0;width:100%;background:#080b12';
+      var f = doc.createElement('iframe'); f.title = 'easygames'; f.allow = 'fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock'; f.style.cssText = 'flex:1;border:0;width:100%;background:#080b12';
       function close() { ov.hidden = true; ov.style.display = 'none'; f.setAttribute('src', 'about:blank'); doc.documentElement.style.overflow = ''; }
       x.onclick = close; h.appendChild(t); h.appendChild(x); ov.appendChild(h); ov.appendChild(f); doc.body.appendChild(ov);
       doc.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !ov.hidden) close(); });
