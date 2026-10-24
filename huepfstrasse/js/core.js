@@ -15,6 +15,10 @@
   const biomeOf = z => BIOMES[Math.floor(Math.max(0, z) / 60) % BIOMES.length];
   const FIGURES = [
     { id: 'rico', n: 'Rico', price: 0, d: 'Der Moderator persönlich – mit Bart, Nasenring und Mikro 💜' },
+    { id: 'star', n: 'Glamour-Star', price: 150, d: 'Blonde Mähne, oranger Mantel, Karohose – hüpft wie über den roten Teppich.' },
+    { id: 'flitzer', n: 'Kleiner Flitzer', price: 100, d: 'Blonder Wuschelkopf mit Fernsteuerung – lenkt am liebsten die Autos selbst.' },
+    { id: 'wanderin', n: 'Waldläuferin', price: 150, d: 'Brille, rotbraune Haare und ihr weißer Hund immer mit dabei.' },
+    { id: 'fan', n: 'Hallen-Fan', price: 150, d: 'Rote Kapuze, Jeansjacke, Sonnenbrille im Haar – feuert jeden Hüpfer an.' },
     { id: 'pingu', n: 'Pingu', price: 100, d: 'Watschelt cool über jede Straße.' },
     { id: 'fuchs', n: 'Flinker Fuchs', price: 100, d: 'Schlau, schnell, orange.' },
     { id: 'robo', n: 'Robo', price: 150, d: 'Piept bei jedem Hüpfer.' },

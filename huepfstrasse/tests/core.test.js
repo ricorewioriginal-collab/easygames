@@ -6,12 +6,12 @@ const run = (W, sec) => { for (let k = 0; k < sec * 60; k++) H.step(W, 1 / 60); 
 const land = W => { for (let k = 0; k < 30 && W.P.hop; k++) H.step(W, 1 / 60); };
 function setRow(W, z, o) { const R = H.row(W, z); Object.assign(R, { trees: new Set(), coins: new Set(), items: [], pads: null, train: null, speed: 0, dir: 1 }, o); return R; }
 
-test('Welt ist pro Seed gleich (Tagesstrecke), Start ist sicher, 9 Figuren mit Rico gratis', () => {
+test('Welt ist pro Seed gleich (Tagesstrecke), Start ist sicher, 13 Figuren mit Rico gratis', () => {
   const a = H.newWorld(42), b = H.newWorld(42), c = H.newWorld(43);
   const sig = W => { const r = []; for (let z = 0; z < 25; z++) { const R = H.row(W, z); r.push(R.type + [...R.trees].join(',') + (R.pads ? [...R.pads].join(',') : '')); } return r.join('|'); };
   assert.strictEqual(sig(a), sig(b)); assert.notStrictEqual(sig(a), sig(c));
   for (let z = 0; z <= 3; z++) { const R = H.row(a, z); assert.strictEqual(R.type, 'grass'); assert.ok(!R.trees.has(0)); }
-  assert.strictEqual(H.FIGURES.length, 9); assert.strictEqual(H.FIGURES[0].id, 'rico'); assert.strictEqual(H.FIGURES[0].price, 0);
+  assert.strictEqual(H.FIGURES.length, 13); assert.strictEqual(new Set(H.FIGURES.map(f => f.id)).size, 13); assert.strictEqual(H.FIGURES[0].id, 'rico'); assert.strictEqual(H.FIGURES[0].price, 0);
   assert.strictEqual(H.daily(new Date(2026, 9, 24)).seed, H.daily(new Date(2026, 9, 24)).seed);
 });
 

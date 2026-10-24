@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "dbe1e03cefde",
- "generated": "2026-10-24T05:05:15+00:00",
- "commit": "85bba40e3abbbb3c67bdd9e7474d289e46be17f2",
+ "version": "dee66462a1cb",
+ "generated": "2026-10-24T07:08:22+02:00",
+ "commit": "f0768ad2390a123b75d990ba31def9dc1d218ca1",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5858,8 +5858,8 @@
   },
   {
    "p": "games.js",
-   "s": 40070,
-   "h": "301452c667e51b1ee93d35938e59c2f07483a72663163a6c34e1feb2be2d51b3"
+   "s": 40132,
+   "h": "e86576ae2a709194d50262e2d4165168a7eb6c75c36a63bf41469abbe9ad042b"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6018,8 +6018,8 @@
   },
   {
    "p": "guides.js",
-   "s": 114382,
-   "h": "01333781381f391ae3e7d91594a6483dba6f6ec8fc606e0ad63e1d289f22a430"
+   "s": 114451,
+   "h": "1714068577472ecd179130cb10c070dc9ed969f042d19ccb7c9ebae53cac07d3"
   },
   {
    "p": "heute.html",
@@ -6033,8 +6033,8 @@
   },
   {
    "p": "huepfstrasse/index.html",
-   "s": 11263,
-   "h": "79a3821bb2c409f844c7d22bdb4c31b8a23327667e45bfe0dd5bbe5970a03f49"
+   "s": 11395,
+   "h": "a4d47a8367fcc227866e330b608d09368b02accd8cd8bb5e960a1dbd475534e4"
   },
   {
    "p": "huepfstrasse/js/app.js",
@@ -6043,13 +6043,13 @@
   },
   {
    "p": "huepfstrasse/js/core.js",
-   "s": 12194,
-   "h": "725699d3e1f267bd98ab8737c314ed58608d74a91f64831c57d07a1515ab1bf5"
+   "s": 12725,
+   "h": "ef611532ac4e26d96fef9ae1331b10becf5805e6daf674d81e4d4391e47ce89b"
   },
   {
    "p": "huepfstrasse/js/scene.js",
-   "s": 19996,
-   "h": "ca40d28a17f64ffa437e5850e2a8e6a436b59d0aa1df1c67fcdefc64f1b01b4a"
+   "s": 27108,
+   "h": "18809d34339daa8817085f62b05aa40b41085e062a63b1e55330d0c224730049"
   },
   {
    "p": "huepfstrasse/js/sound.js",
@@ -7898,8 +7898,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 174764,
-   "h": "87d04c6661559ff82f97a75eaaa534943226bfaf2bfd38623381fbbcff8d7749"
+   "s": 174895,
+   "h": "06cd8c26632608266896264d28297061f879626c7d40dbe020ef72288fcb051d"
   },
   {
    "p": "taschi/card.svg",

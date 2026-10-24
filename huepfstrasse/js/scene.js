@@ -61,6 +61,55 @@
       eyes(.83, .175, '#3a2210'); box(b, .1, .025, .02, '#4b2e1a', -.08, .9, .175, false); box(b, .1, .025, .02, '#4b2e1a', .08, .9, .175, false);
       box(b, .04, .06, .06, '#17141c', .2, .7, 0, false); box(b, .015, .06, .015, '#17141c', .21, .63, 0, false); box(b, .04, .015, .015, '#17141c', .21, .645, 0, false); // Ohr-Plug + Kreuz
       box(b, .07, .16, .07, '#26232b', -.27, .2, .07); box(b, .09, .07, .09, '#6d6a78', -.27, .3, .07); // Mikro in der Hand
+    } else if (id === 'star') {
+      // weite Karohose, langer oranger Mantel offen über weißem Hemd, blonde Fransen-Mähne, Septum-Ring
+      box(b, .16, .2, .17, '#8d9096', -.1, .1, 0); box(b, .16, .2, .17, '#8d9096', .1, .1, 0); for (const x of [-.1, .1]) for (const y of [.05, .14]) box(b, .17, .012, .18, '#5f6268', x, y, 0, false);
+      box(b, .14, .05, .2, '#1b1b1b', -.1, .025, .02); box(b, .14, .05, .2, '#1b1b1b', .1, .025, .02);
+      box(b, .5, .44, .32, '#ff7a2e', 0, .38, 0); box(b, .5, .1, .3, '#ff7a2e', 0, .18, -.01); box(b, .16, .36, .02, '#f7f2e6', 0, .42, .165, false);
+      box(b, .03, .14, .01, '#d4a73a', 0, .52, .178, false); box(b, .12, .1, .01, '#5a5f6e', .02, .5, .176, false);
+      box(b, .13, .3, .15, '#ff7a2e', -.3, .38, 0); box(b, .13, .3, .15, '#ff7a2e', .3, .38, 0); box(b, .08, .07, .1, '#f0c8a8', -.3, .21, 0); box(b, .08, .07, .1, '#f0c8a8', .3, .21, 0);
+      box(b, .36, .34, .32, '#f0c8a8', 0, .78, 0); box(b, .38, .1, .36, '#f6e7a6', 0, .97, -.01);
+      box(b, .38, .06, .04, '#f6e7a6', 0, .92, .165, false); for (const x of [-.13, .02, .14]) box(b, .07, .05, .04, '#f6e7a6', x, .885, .17, false);
+      box(b, .06, .26, .3, '#f6e7a6', -.19, .8, -.02); box(b, .06, .26, .3, '#f6e7a6', .19, .8, -.02); box(b, .36, .26, .06, '#f6e7a6', 0, .78, -.17);
+      box(b, .3, .07, .02, '#a07a55', 0, .66, .165, false); box(b, .12, .03, .02, '#a07a55', 0, .71, .165, false);
+      eyes(.79, .165, '#4a3423', .05); box(b, .1, .03, .02, '#5a4a3a', -.08, .85, .166, false); box(b, .1, .03, .02, '#5a4a3a', .08, .85, .166, false);
+      const sr = new T3.Mesh(new T3.TorusGeometry(.025, .007, 5, 12), mat('#e2b84a', { emissive: '#6a4a10' })); sr.position.set(0, .725, .19); b.add(sr);
+    } else if (id === 'flitzer') {
+      // Kind: großer Kopf, blonder Topfschnitt, dunkles Shirt mit buntem Aufdruck, braune Hose, Fernsteuerung mit Antenne
+      g.userData.scale = .82;
+      box(b, .14, .2, .16, '#7a5230', -.09, .1, 0); box(b, .14, .2, .16, '#7a5230', .09, .1, 0); box(b, .15, .06, .2, '#1f2a44', -.09, .03, .02); box(b, .15, .06, .2, '#1f2a44', .09, .03, .02);
+      box(b, .4, .32, .26, '#1f2a44', 0, .36, 0); for (const [y, c] of [[.46, '#9be37a'], [.41, '#4fc3f7'], [.36, '#b388ff'], [.31, '#ff6ec7']]) box(b, .22, .04, .01, c, 0, y, .135, false);
+      box(b, .1, .22, .12, '#1f2a44', -.25, .38, 0); box(b, .1, .1, .12, '#f5d0b5', .25, .3, 0); box(b, .1, .12, .12, '#1f2a44', .25, .42, 0); box(b, .09, .08, .1, '#f5d0b5', -.25, .24, .03);
+      box(b, .16, .14, .06, '#1b1b1b', -.27, .27, .1); box(b, .02, .34, .02, '#ffffff', -.3, .5, .1, false); box(b, .04, .05, .04, '#ff3d00', -.3, .68, .1, false);
+      box(b, .42, .4, .38, '#f5d0b5', 0, .76, 0); box(b, .46, .14, .42, '#f6dc8a', 0, .98, -.01); box(b, .46, .12, .06, '#f6dc8a', 0, .9, .19, false);
+      box(b, .06, .26, .38, '#f6dc8a', -.22, .86, -.02); box(b, .06, .26, .38, '#f6dc8a', .22, .86, -.02); box(b, .44, .26, .06, '#f6dc8a', 0, .86, -.2);
+      eyes(.78, .19, '#5d6d7e', .06); box(b, .14, .03, .02, '#c47a6a', 0, .67, .19, false);
+    } else if (id === 'wanderin') {
+      // rotbraune Kurzhaarfrisur, randlose Brille, weißes Shirt mit V-Ausschnitt, Taschenriemen – und der weiße Hund
+      box(b, .13, .2, .15, '#9aa0a8', -.1, .1, 0); box(b, .13, .2, .15, '#9aa0a8', .1, .1, 0); box(b, .15, .06, .2, '#f4f4f8', -.1, .03, .02); box(b, .15, .06, .2, '#f4f4f8', .1, .03, .02);
+      box(b, .42, .36, .28, '#fafafa', 0, .37, 0); box(b, .1, .08, .01, '#f0c8a8', 0, .5, .145, false); const st = box(b, .05, .5, .02, '#9e9e9e', 0, .38, .15, false); st.rotation.z = .65;
+      arms('#fafafa', '#f0c8a8');
+      box(b, .36, .34, .32, '#f0c8a8', 0, .76, 0); for (let i = 0; i < 6; i++) box(b, .02, .02, .01, '#c98b6a', -.1 + (i % 3) * .1, .72 - (i > 2 ? .04 : 0), .162, false);
+      box(b, .4, .12, .36, '#7b3b22', 0, .96, -.01); box(b, .38, .08, .04, '#7b3b22', .02, .9, .165, false); box(b, .07, .24, .32, '#7b3b22', -.2, .82, -.02); box(b, .07, .24, .32, '#7b3b22', .2, .82, -.02); box(b, .38, .26, .06, '#7b3b22', 0, .8, -.17);
+      eyes(.8, .165, '#4a2a14', .05); box(b, .13, .08, .01, '#d8dde6', -.08, .8, .175, false).material = mat('#cfe3f5', { transparent: true, opacity: .55 }); box(b, .13, .08, .01, '#d8dde6', .08, .8, .176, false).material = mat('#cfe3f5', { transparent: true, opacity: .55 });
+      box(b, .06, .015, .01, '#b0b4bc', 0, .82, .177, false); box(b, .02, .015, .2, '#b0b4bc', -.18, .82, .08, false); box(b, .02, .015, .2, '#b0b4bc', .18, .82, .08, false);
+      box(b, .14, .025, .02, '#c27a6a', 0, .68, .162, false);
+      // Hund
+      const d = new T3.Group(); d.position.set(.42, 0, .1); b.add(d);
+      box(d, .2, .16, .34, '#fbfbf8', 0, .2, 0); for (const [x, z] of [[-.07, .11], [.07, .11], [-.07, -.11], [.07, -.11]]) box(d, .06, .12, .06, '#fbfbf8', x, .06, z);
+      box(d, .18, .16, .16, '#fbfbf8', 0, .32, .2); box(d, .1, .08, .08, '#f3ead8', 0, .28, .3); box(d, .04, .04, .03, '#2b2b2b', 0, .3, .35, false);
+      box(d, .05, .08, .05, '#e8d6b0', -.07, .41, .18); box(d, .05, .08, .05, '#e8d6b0', .07, .41, .18); box(d, .03, .03, .02, '#2b2b2b', -.04, .35, .285, false); box(d, .03, .03, .02, '#2b2b2b', .04, .35, .285, false);
+      box(d, .22, .04, .05, '#6d4c41', 0, .26, .08, false); const tl = box(d, .08, .16, .08, '#fbfbf8', 0, .32, -.18); tl.rotation.x = -.5; g.userData.tail = tl;
+    } else if (id === 'fan') {
+      // blonde schulterlange Haare, Sonnenbrille im Haar, rote Kapuze, offene Jeansjacke, Taschenband, rote Schuhe
+      box(b, .13, .2, .15, '#8fb3d9', -.1, .1, 0); box(b, .13, .2, .15, '#8fb3d9', .1, .1, 0); box(b, .15, .06, .2, '#e53935', -.1, .03, .02); box(b, .15, .06, .2, '#e53935', .1, .03, .02);
+      box(b, .44, .38, .3, '#5b7fb0', 0, .38, 0); box(b, .2, .36, .02, '#e53935', 0, .39, .155, false); box(b, .02, .36, .01, '#cfd8e3', -.1, .39, .158, false); box(b, .02, .36, .01, '#cfd8e3', .1, .39, .158, false);
+      const lb = box(b, .035, .46, .015, '#1b1b1b', .04, .38, .162, false); lb.rotation.z = -.5; box(b, .12, .1, .05, '#78808c', .17, .24, .14);
+      arms('#5b7fb0', '#f0c8a8'); box(b, .3, .12, .1, '#e53935', 0, .6, -.15);
+      box(b, .36, .34, .32, '#f0c8a8', 0, .78, 0); box(b, .4, .1, .36, '#d9b36a', 0, .97, -.01); box(b, .38, .06, .04, '#d9b36a', .03, .92, .165, false);
+      box(b, .07, .36, .3, '#d9b36a', -.2, .76, -.02); box(b, .07, .36, .3, '#d9b36a', .2, .76, -.02); box(b, .4, .38, .07, '#d9b36a', 0, .74, -.17);
+      box(b, .32, .025, .03, '#2b2b2b', 0, 1.0, .19, false); box(b, .12, .07, .03, '#23232c', -.08, .995, .2, false); box(b, .12, .07, .03, '#23232c', .08, .995, .2, false);
+      eyes(.8, .165, '#4a5a6a', .05); box(b, .14, .025, .02, '#c26a62', 0, .69, .162, false); box(b, .03, .03, .02, '#e8c35a', .19, .74, .03, false);
     } else if (id === 'pingu') {
       box(b, .1, .06, .18, '#ff9800', -.1, .03, .04); box(b, .1, .06, .18, '#ff9800', .1, .03, .04);
       box(b, .46, .6, .38, '#222831', 0, .36, 0); box(b, .32, .44, .04, '#ffffff', 0, .33, .19, false);
@@ -98,6 +147,7 @@
       for (const [y, c] of [[.9, '#ff80ab'], [.76, '#b388ff'], [.62, '#80d8ff']]) box(b, .1, .16, .18, c, 0, y, -.08);
       const tl = box(b, .1, .3, .1, '#ff80ab', 0, .4, -.3); tl.rotation.x = .5;
     }
+    if (g.userData.scale) b.scale.setScalar(g.userData.scale);
     g.traverse(o => { if (o.isMesh && !low) o.castShadow = true; });
     return g;
   }
@@ -167,7 +217,7 @@
   function update(dt) {
     if (!R) return; t += dt;
     if (dt > 0) { perf.a += (dt - perf.a) * .05; perf.n++; if (perf.n > 90 && perf.a > 1 / 38 && R.getPixelRatio() > .75) { R.setPixelRatio(Math.max(.75, R.getPixelRatio() - .25)); resize(); perf.n = 0; } }
-    if (view === 'show') { if (SHOW.userData.fig) SHOW.userData.fig.rotation.y = Math.sin(t * .8) * .7 + .3; R.render(SHOW, SCAM); return; }
+    if (view === 'show') { if (SHOW.userData.fig) SHOW.userData.fig.rotation.y = Math.sin(t * .8) * .7 + .3; if (SHOW.userData.tail) SHOW.userData.tail.rotation.z = Math.sin(t * 14) * .5; R.render(SHOW, SCAM); return; }
     if (!W) return;
     // Reihen auf- und abbauen
     for (const [z, g] of built) if (!W.rows.has(z)) { SC.remove(g); built.delete(z); }
@@ -184,9 +234,10 @@
     let x = P.x, y = 0, z = P.z, sq = 1;
     if (P.hop) { const h = P.hop, k = Math.min(1, h.t); x = h.fx + (h.tx - h.fx) * k; z = h.fz + (h.tz - h.fz) * k; y = Math.sin(k * Math.PI) * .45; sq = 1 + Math.sin(k * Math.PI) * .12; }
     const rw = HS.row(W, Math.round(z)); if (!P.hop && rw.type === 'river' && rw.pads) y = -.22; else if (!P.hop && rw.type === 'river') y = -.05;
-    player.position.set(x, y, -z); b.scale.set(1 / Math.sqrt(sq), sq, 1 / Math.sqrt(sq));
+    const fs = player.userData.scale || 1; player.position.set(x, y, -z); b.scale.set(fs / Math.sqrt(sq), fs * sq, fs / Math.sqrt(sq));
     if (!P.hop && !P.dead) { const br = 1 + Math.sin(t * 5) * .02; b.scale.y *= br; }
     const fr = FACE[P.face] != null ? FACE[P.face] : Math.PI; let dr = fr - player.rotation.y; dr = Math.atan2(Math.sin(dr), Math.cos(dr)); player.rotation.y += dr * Math.min(1, dt * 18);
+    if (player.userData.tail) player.userData.tail.rotation.z = Math.sin(t * 14) * .5;
     if (P.dead) deadAnim(P, b);
     else if (drone) drone.visible = false;
     // Spritzer
@@ -210,7 +261,7 @@
       if (k > .5) { player.position.set(d.x, dy - .9, -P.z); }
     }
   }
-  function showcase(fid) { if (SHOW.userData.fig) SHOW.remove(SHOW.userData.fig); const f = figure(fid); f.scale.setScalar(1.55); SHOW.add(f); SHOW.userData.fig = f; }
+  function showcase(fid) { if (SHOW.userData.fig) SHOW.remove(SHOW.userData.fig); const f = figure(fid); f.scale.setScalar(1.55); if (f.userData.tail) SHOW.userData.tail = f.userData.tail; else SHOW.userData.tail = null; SHOW.add(f); SHOW.userData.fig = f; }
   function setView(v) { view = v; }
 
   function rebuild(z) { const g = built.get(z); if (g) { SC.remove(g); built.delete(z); } }

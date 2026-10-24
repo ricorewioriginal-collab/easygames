@@ -47,10 +47,11 @@ await p.waitForFunction(() => !document.getElementById('ovEnd').hidden, null, { 
 // Figuren-Laden: kaufen mit genug Münzen
 await p.evaluate(() => localStorage.setItem('huepfstrasse-coins', '150')); await p.click('[data-go="chars"]'); await wait(p, 500);
 ok((await st(p)).cur === 'sChars', 'Figuren-Laden'); await shot(p, '07-figur-rico');
-await p.click('#cNext'); await wait(p, 300); ok((await p.textContent('#cName')) === 'Pingu', 'Nächste Figur'); await p.click('#cAct'); await wait(p, 300);
-ok(await p.evaluate(() => JSON.parse(localStorage.getItem('huepfstrasse-owned')).includes('pingu') && +localStorage.getItem('huepfstrasse-coins') === 50), 'Pingu für 100 Münzen gekauft');
-await p.click('#cNext'); await p.click('#cAct'); await wait(p, 200); ok(await p.evaluate(() => !JSON.parse(localStorage.getItem('huepfstrasse-owned')).includes('fuchs')), 'Zu teuer: nicht gekauft');
-for (let i = 0; i < 7; i++) { await p.click('#cNext'); await wait(p, 120); } await wait(p, 300); await shot(p, '08-figur-einhorn');
+await p.click('#cNext'); await wait(p, 300); ok((await p.textContent('#cName')) === 'Glamour-Star', 'Nächste Figur'); await shot(p, '08a-star'); await p.click('#cAct'); await wait(p, 300);
+ok(await p.evaluate(() => JSON.parse(localStorage.getItem('huepfstrasse-owned')).includes('star') && +localStorage.getItem('huepfstrasse-coins') === 0), 'Glamour-Star für 150 Münzen gekauft');
+await p.click('#cNext'); await p.click('#cAct'); await wait(p, 300); ok(await p.evaluate(() => !JSON.parse(localStorage.getItem('huepfstrasse-owned')).includes('flitzer')), 'Zu teuer: nicht gekauft'); await shot(p, '08b-flitzer');
+await p.click('#cNext'); await wait(p, 400); await shot(p, '08c-wanderin'); await p.click('#cNext'); await wait(p, 400); await shot(p, '08d-fan');
+
 await p.keyboard.press('Escape'); await wait(p, 300); ok((await st(p)).cur === 'sMenu', 'Zurück zum Menü');
 // Tagesstrecke: gleiche Strecke
 await p.click('[data-go="daily"]'); await wait(p, 300); const d1 = await p.evaluate(() => { const W = HSApp.G.W; const r = []; for (let z = 0; z < 30; z++) r.push(HS.row(W, z).type); return r.join(); });
