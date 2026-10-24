@@ -36,6 +36,7 @@ window.EASYGAMES_MODES = {
   'wolkenhopser': { online: true },
   'easyclash': { pad: true, online: true, multi: true, tvParam: true },
   'funk-billard': { pad: true, online: true, multi: true },
+  'bowling-bahn': { pad: true, multi: true },
   'winzflitzer': { multi: true },
   'gay-life': { online: true },
   'show-me-your-voice': { online: true },

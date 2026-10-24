@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c69bbb2f2a36",
- "generated": "2026-10-24T07:38:43+00:00",
- "commit": "06de2f2e9e91dd8d9d96892ac1fcb79e6560a2c9",
+ "version": "5b894b47e2d0",
+ "generated": "2026-10-24T07:46:35+00:00",
+ "commit": "5ece714a81a37486f3501a70b479d4a4755700c7",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4617,6 +4617,51 @@
    "h": "7263f09ae3d0d49870b730b0aaf77f27d347f481544a68d870c038ec44630bfb"
   },
   {
+   "p": "bowling-bahn/card.jpg",
+   "s": 45397,
+   "h": "c5b581f65b2b83e20e92785896d2ef7cbea0182859dea5e444d0343a47757343"
+  },
+  {
+   "p": "bowling-bahn/index.html",
+   "s": 12275,
+   "h": "875a1a6cc106560b994617e3f1eee85bf60dfef65d262d8b9ebee99d40049d34"
+  },
+  {
+   "p": "bowling-bahn/js/app.js",
+   "s": 30155,
+   "h": "09ba3401652820df9ce11f114d58213f8151cfe481596749a62163404d883ee6"
+  },
+  {
+   "p": "bowling-bahn/js/core.js",
+   "s": 10450,
+   "h": "45a53ff82cdcb4d68f2a8ab098818d2760942f3ac1f919517a167131306f1850"
+  },
+  {
+   "p": "bowling-bahn/js/scene.js",
+   "s": 15540,
+   "h": "63257c52a9fcebf106e8257f6c5f5df339acebf7156c49bb05ffa739ac04dc11"
+  },
+  {
+   "p": "bowling-bahn/js/sound.js",
+   "s": 5754,
+   "h": "f0b59b764a2331e4172cdbd546581ebb5242ea28d628170555cf224d06df521e"
+  },
+  {
+   "p": "bowling-bahn/manifest.webmanifest",
+   "s": 799,
+   "h": "127680c94750d360752220d31b80e70b88ef9778f061faf230c30f77c57d348d"
+  },
+  {
+   "p": "bowling-bahn/style.css",
+   "s": 14100,
+   "h": "60b902342f49e5ba178710618235844c0ba448c6aac9db9891aa3fd0bc91eefa"
+  },
+  {
+   "p": "bowling-bahn/sw.js",
+   "s": 2018,
+   "h": "4511fe35ab5c051eacccbfcf10b40b642768f449a32c59c70d3f9b2881231ed5"
+  },
+  {
    "p": "branding/easygames-apple-touch-icon.png",
    "s": 17166,
    "h": "8b3edcc8f3ddf30a39eeb5eb3370805c675a1bed2a7d7c5d9c8d2610e5697aa0"
@@ -5293,8 +5338,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2971,
-   "h": "803fb79108e85fda60caafaf03e63519b03ace29d175db655f8597aa24300be4"
+   "s": 2997,
+   "h": "bce255fbca68d890606839adac421ffe2780d95dc16ba53a80d06d1a0915aff5"
   },
   {
    "p": "chat.html",
@@ -5958,8 +6003,8 @@
   },
   {
    "p": "games.js",
-   "s": 41485,
-   "h": "a719de3a7afbd57b6ad2ce944eae46cb53935355526173a7367371b953c66e64"
+   "s": 42123,
+   "h": "ca0b37aa199b52aa88a356c49d4fd607f8011d3186e824ac543a97e6ed48fc73"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6118,8 +6163,8 @@
   },
   {
    "p": "guides.js",
-   "s": 118767,
-   "h": "e304ddabbac37b4191f8d0c39cdfc526694c992576ff75f7d205beec9688ac52"
+   "s": 120576,
+   "h": "56ea706c03cdb60bf59158158b1752ca4ec767999a8bb2029cb7efef92d613cf"
   },
   {
    "p": "heute.html",
@@ -6603,8 +6648,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3039,
-   "h": "12873f40b5d3ef745902aa1e26641f53675e76aa83ee09281b379487ebcf6e2f"
+   "s": 3085,
+   "h": "9992c4b665652ab1d2414611583c16bc3cf850d870923845424b306078f372d9"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -7998,8 +8043,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 181183,
-   "h": "18d13eb5362b53b511861414beafc0bf465e0883929df7c7470b075e89bd31c4"
+   "s": 183898,
+   "h": "46109b489c52aa3ce04fdfda4dc89ad316202f9bc3398a11f53afd8370d8ef58"
   },
   {
    "p": "taschi/card.svg",

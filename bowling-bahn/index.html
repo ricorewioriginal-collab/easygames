@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/bowling-bahn-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Bowling-Bahn…"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0c0716">
+<title>Bowling-Bahn 3D – Strike in der Neon-Halle</title>
+<meta name="description" content="Bowling-Bahn 3D: Bowling mit echter Kugel- und Kegelphysik in einer Neon-Halle. Wischen zum Werfen, Effet für den Hook, Strikes und Spares, 10 Frames mit echter Zählweise. Allein, gegen den Computer oder mit bis zu vier Spielern an einem Gerät – mit den EASYCLASH-Helden als Bowler.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage"></div>
+
+<section class="scr on" id="sLoad">
+  <div class="load">
+    <div class="pinsLogo"><i></i><i></i><i></i><b></b></div>
+    <h1 class="title">BOWLING<span>BAHN</span></h1>
+    <div class="bar"><i id="loadBar"></i></div>
+    <p class="tip" id="loadTip">Bahn wird geölt …</p>
+  </div>
+</section>
+
+<section class="scr" id="sTitle">
+  <div class="titleBox">
+    <h1 class="title big">BOWLING<span>BAHN</span></h1>
+    <p class="claim">Strike in der Neon-Halle</p>
+    <button class="press nav" id="bPress">▶ <span id="pressTxt">Drücke Start</span></button>
+  </div>
+  <p class="corner"><a href="../" id="backLink">← Alle Spiele</a></p>
+</section>
+
+<section class="scr" id="sMenu">
+  <div class="menuWrap">
+    <header class="mHead"><h1 class="title small">BOWLING<span>BAHN</span></h1><div class="mStat" id="menuStat"></div></header>
+    <div class="tiles" id="tiles">
+      <button class="tile nav hero" data-go="solo"><i>🎳</i><b>Einzelspiel</b><small id="soloInfo">10 Frames – knack deinen Rekord</small></button>
+      <button class="tile nav" data-go="cpu"><i>🤖</i><b>Gegen CPU</b><small>Duell gegen den Computer</small></button>
+      <button class="tile nav" data-go="party"><i>👥</i><b>Party</b><small>2–4 Spieler an einem Gerät</small></button>
+      <button class="tile nav" data-go="fig"><i>🦸</i><b>Bowler</b><small id="figInfo">Wähle deinen Helden</small></button>
+      <button class="tile nav" data-go="rec"><i>🏅</i><b>Rekorde</b><small>Bestwerte &amp; Strikes</small></button>
+      <button class="tile nav" data-go="opts"><i>⚙️</i><b>Optionen</b><small>Ton, Ziellinie, Grafik</small></button>
+      <button class="tile nav" data-go="help"><i>📖</i><b>Anleitung</b><small>Zählweise &amp; Steuerung</small></button>
+    </div>
+    <footer class="mFoot"><span class="hintKeys">Pfeile + Enter: wählen · Esc: zurück</span><a href="../" class="nav">← Alle Spiele</a></footer>
+  </div>
+</section>
+
+<!-- Bowler wählen: Vorschau in 3D -->
+<section class="scr" id="sFig">
+  <div class="figBar">
+    <p class="kicker" id="figGame"></p>
+    <h2 id="figName"></h2>
+    <p class="hint" id="figDesc"></p>
+    <div class="rowBtns"><button class="btn nav" id="figPrev" aria-label="Vorheriger">◀</button><button class="btn nav" id="figRnd">🎲</button><button class="btn pri nav" id="figOk">✔ Nehmen</button><button class="btn nav" id="figNext" aria-label="Nächster">▶</button></div>
+    <p class="hint small" id="figCount"></p>
+  </div>
+</section>
+
+<!-- Party einrichten -->
+<section class="scr" id="sSetup">
+  <div class="panel">
+    <h2>👥 Party</h2>
+    <p class="hint">Bis zu vier Spieler werfen abwechselnd an diesem Gerät. Jeder Platz kann auch der Computer sein.</p>
+    <div id="slots"></div>
+    <div class="rowBtns wrap"><button class="btn nav" id="slAdd">＋ Spieler</button><button class="btn nav" id="slDel">－ Spieler</button></div>
+    <div class="rowBtns"><button class="btn nav" id="setBack">← Zurück</button><button class="btn pri big nav" id="setGo">🎳 Los geht's</button></div>
+  </div>
+</section>
+
+<section class="scr game" id="sGame">
+  <div class="board" id="board"></div>
+  <div class="msg" id="msg"></div>
+  <div class="side">
+    <button class="icon nav" id="bPause" aria-label="Pause"><i class="pz"></i></button>
+    <button class="icon nav" id="bSpinL" aria-label="Effet nach links">↶</button>
+    <button class="icon nav" id="bSpinR" aria-label="Effet nach rechts">↷</button>
+  </div>
+  <div class="spinShow" id="spinShow"></div>
+  <div class="power" id="power"><div class="powFill" id="powFill"></div><span>Halten<br>&amp; loslassen</span></div>
+  <div class="swipeHint" id="swipeHint">👆 Kugel zur Seite ziehen · nach oben wischen = werfen</div>
+  <div class="aimZone" id="aimZone"></div>
+  <div id="bigTxt" hidden></div>
+</section>
+
+<div class="ov end" id="ovEnd" hidden><div class="card big">
+  <p class="kicker" id="eKick"></p>
+  <h2 class="endTitle" id="eTitle"></h2>
+  <p class="hint" id="eSub"></p>
+  <div class="rank" id="eRank"></div>
+  <div class="rowBtns wrap"><button class="btn pri big nav" id="eAgain">↻ Nochmal</button><button class="btn nav" id="eMenu">☰ Menü</button></div>
+</div></div>
+
+<div class="ov" id="ovDiff" hidden><div class="card">
+  <h2>🤖 Gegen CPU</h2>
+  <div class="menuBtns" id="diffBtns"></div>
+  <button class="btn nav wide" data-close id="diffX">← Zurück</button>
+</div></div>
+
+<div class="ov" id="ovPause" hidden><div class="card">
+  <h2>Pause</h2>
+  <div class="menuBtns"><button class="btn big pri nav" id="pGo">▶ Weiter</button><button class="btn nav" id="pRestart">↻ Neu starten</button><button class="btn nav" id="pOpts">⚙️ Optionen</button><button class="btn nav" id="pHelp">📖 Anleitung</button><button class="btn nav" id="pQuit">⏹ Zum Menü</button></div>
+</div></div>
+
+<div class="ov" id="ovOpts" hidden><div class="card">
+  <h2>⚙️ Optionen</h2>
+  <label class="check"><input type="checkbox" id="sSound"> Soundeffekte</label>
+  <label class="check"><input type="checkbox" id="sMusic"> Musik</label>
+  <label class="check"><input type="checkbox" id="sGuide"> Ziellinie zeigen</label>
+  <label class="check"><input type="checkbox" id="sLong"> Ziellinie bis zu den Kegeln (mit Hook)</label>
+  <label class="check"><input type="checkbox" id="sVib"> Vibration</label>
+  <label class="check"><input type="checkbox" id="sLow"> Sparmodus (ohne Schatten, nach Neustart)</label>
+  <button class="btn pri nav wide" id="optX" data-close>Fertig</button>
+</div></div>
+
+<div class="ov" id="ovRec" hidden><div class="card">
+  <h2>🏅 Rekorde</h2>
+  <div class="stats" id="recList"></div>
+  <p class="hint">Für die Rangliste zählt dein bestes Spiel (Einzelspiel oder gegen den Computer) – höchstens 300 Punkte.</p>
+  <button class="btn pri nav wide" id="recX" data-close>Fertig</button>
+</div></div>
+
+<div class="ov" id="ovHelp" hidden><div class="card scroll">
+  <h2>📖 So geht's</h2>
+  <p>Ein Spiel hat <b>10 Frames</b>. In jedem Frame hast du zwei Würfe, um alle 10 Kegel umzuwerfen.</p>
+  <ul>
+    <li><b>Strike (X):</b> alle 10 mit dem ersten Wurf – zählt 10 plus die nächsten <b>zwei</b> Würfe.</li>
+    <li><b>Spare (/):</b> alle 10 mit zwei Würfen – zählt 10 plus den nächsten <b>einen</b> Wurf.</li>
+    <li>Sonst zählt jeder umgeworfene Kegel einen Punkt. Im 10. Frame gibt es nach Strike oder Spare Bonuswürfe. Perfekt sind 300 Punkte.</li>
+    <li><b>Effet (Hook):</b> Vorne ist die Bahn geölt, hinten trocken – dort biegt die Kugel mit Effet ab. Am meisten fallen, wenn sie schräg in die „Tasche“ zwischen Kegel 1 und 3 (oder 1 und 2) rollt.</li>
+  </ul>
+  <h3>Steuerung</h3>
+  <ul>
+    <li><b>Touch / Maus:</b> Kugel seitlich ziehen = Startpunkt. Nach oben wischen = Wurf: die Richtung zielt, das Tempo gibt Kraft, ein Bogen am Ende gibt Effet. ↶ ↷ stellen Effet auch per Knopf ein; alternativ den Kraftbalken halten und loslassen.</li>
+    <li><b>Tastatur:</b> ← → Startpunkt, A/D Richtung, ↑ ↓ Effet, Leertaste halten = Kraft, loslassen = Wurf, Esc/P Pause.</li>
+    <li><b>Controller:</b> linker Stick Startpunkt, rechter Stick oder LB/RB Richtung, X/Y Effet, A halten = Kraft, loslassen = Wurf, Start Pause.</li>
+  </ul>
+  <button class="btn pri nav wide" id="helpX" data-close>Los geht's</button>
+</div></div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../device.js"></script>
+<script src="js/core.js"></script>
+<script src="../easyclash/js/roster.js"></script>
+<script src="../easyclash/js/model.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="bowling-bahn" data-prefix="bowling-bahn-" defer></script>
+</body>
+</html>

@@ -554,6 +554,19 @@ window.EASYGAMES_GUIDES = {
    "Spar dir das Finale für den Moment auf, in dem der Gegner einen Fehler macht."
   ]
  },
+ "bowling-bahn": {
+  "anleitung": "Bowling-Bahn 3D ist Bowling in einer Neon-Halle mit echter Kugel- und Kegelphysik. Ein Spiel hat 10 Frames mit je zwei Würfen. Strike (X): alle 10 Kegel mit dem ersten Wurf – zählt 10 plus die nächsten zwei Würfe. Spare (/): alle 10 mit zwei Würfen – zählt 10 plus den nächsten Wurf. Sonst zählt jeder Kegel einen Punkt; im 10. Frame gibt es nach Strike oder Spare Bonuswürfe, perfekt sind 300 Punkte. Vorne ist die Bahn geölt, hinten trocken: Dort biegt die Kugel mit Effet ab (Hook). Am meisten fallen, wenn sie schräg in die Tasche zwischen Kegel 1 und 3 (oder 1 und 2) rollt. Modi: 🎳 Einzelspiel (dein bestes Spiel zählt für die Rangliste), 🤖 Gegen CPU (Leicht, Mittel, Profi) und 👥 Party mit 2–4 Spielern an einem Gerät, jeder Platz auch als Computer. Unter 🦸 Bowler wählst du deinen Helden aus allen 69 EASYCLASH-Figuren.",
+  "steuerung": [
+   "Touch/Maus: Kugel seitlich ziehen = Startpunkt. Nach oben wischen = Wurf – die Richtung zielt, schnell wischen = mehr Tempo, ein Bogen am Ende gibt Effet. ↶ ↷ stellen das Effet auch per Knopf ein; alternativ den Kraftbalken halten und loslassen.",
+   "Tastatur: ← → Startpunkt, A/D Richtung, ↑ ↓ Effet, Leertaste halten = Kraft, loslassen = Wurf, Esc/P Pause.",
+   "Gamecontroller: linker Stick Startpunkt, rechter Stick oder LB/RB Richtung, X/Y Effet, A halten = Kraft, loslassen = Wurf, Start Pause."
+  ],
+  "tipps": [
+   "Für Strikes: leicht rechts starten und mit Effet nach links in die Tasche zwischen 1 und 3 hooken.",
+   "Beim zweiten Wurf lieber gerade und ohne Effet auf die stehenden Kegel zielen.",
+   "Die Ziellinie zeigt nur den geölten Teil – wo der Hook greift, musst du selbst einschätzen (oder in den Optionen die lange Ziellinie einschalten)."
+  ]
+ },
  "funk-billard": {
   "anleitung": "Funk-Billard 3D ist 8-Ball-Pool in einer Neon-Lounge. Beim Anstoß liegen 15 Kugeln im Dreieck. Wer nach dem Anstoß zuerst eine Kugel versenkt, bekommt diese Gruppe: die Vollen (1–7) oder die Halben (9–15). Versenkst du eine eigene Kugel, bleibst du dran, sonst ist der andere am Zug. Wer seine Gruppe abgeräumt hat und dann die schwarze 8 versenkt, gewinnt – versenkst du die 8 zu früh oder mit einem Foul, hast du verloren. Fouls: Weiße versenkt, keine Kugel getroffen, fremde Kugel zuerst getroffen oder nach dem Kontakt weder Bande noch versenkt. Nach einem Foul hat der Gegner Ball in der Hand und legt die Weiße frei hin. Die Ziellinie zeigt die Geisterkugel und wohin beide Kugeln laufen. Effet: oben getroffen läuft die Weiße nach, unten getroffen zieht sie zurück. Modi: 🎱 Gegen CPU (Leicht, Mittel, Profi – Siege bringen 1, 2 oder 3 Punkte für die Rangliste), 👥 Zu zweit an einem Gerät, 🌐 Online gegen Freunde per Code, Link oder QR-Code (jeder auf seinem Gerät) und 🎯 Training ohne Regeln.",
   "steuerung": [

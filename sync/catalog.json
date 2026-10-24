@@ -1703,6 +1703,41 @@
    }
   },
   {
+   "id": "bowling-bahn",
+   "title": "Bowling-Bahn 3D – Strike in der Neon-Halle",
+   "desc": "Bowling mit echter Kugel- und Kegelphysik in einer Neon-Halle: Kugel seitlich ziehen, nach oben wischen – Richtung, Tempo und ein Bogen am Ende für den Hook. Strikes, Spares und Rinnen, 10 Frames mit echter Zählweise und Anzeigetafel. Einzelspiel mit Rangliste, gegen den Computer in 3 Stärken oder Party mit bis zu 4 Spielern an einem Gerät – als Bowler alle 69 EASYCLASH-Helden.",
+   "icon": "🎳",
+   "img": "bowling-bahn/card.jpg",
+   "bg": "linear-gradient(145deg,#ff3d9a,#1a0f3a 55%,#3dd6ff)",
+   "glow": "rgba(255,61,154,.5)",
+   "path": "bowling-bahn/",
+   "modes": {
+    "pad": true,
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Bowling-Bahn 3D ist Bowling in einer Neon-Halle mit echter Kugel- und Kegelphysik. Ein Spiel hat 10 Frames mit je zwei Würfen. Strike (X): alle 10 Kegel mit dem ersten Wurf – zählt 10 plus die nächsten zwei Würfe. Spare (/): alle 10 mit zwei Würfen – zählt 10 plus den nächsten Wurf. Sonst zählt jeder Kegel einen Punkt; im 10. Frame gibt es nach Strike oder Spare Bonuswürfe, perfekt sind 300 Punkte. Vorne ist die Bahn geölt, hinten trocken: Dort biegt die Kugel mit Effet ab (Hook). Am meisten fallen, wenn sie schräg in die Tasche zwischen Kegel 1 und 3 (oder 1 und 2) rollt. Modi: 🎳 Einzelspiel (dein bestes Spiel zählt für die Rangliste), 🤖 Gegen CPU (Leicht, Mittel, Profi) und 👥 Party mit 2–4 Spielern an einem Gerät, jeder Platz auch als Computer. Unter 🦸 Bowler wählst du deinen Helden aus allen 69 EASYCLASH-Figuren.",
+    "steuerung": [
+     "Touch/Maus: Kugel seitlich ziehen = Startpunkt. Nach oben wischen = Wurf – die Richtung zielt, schnell wischen = mehr Tempo, ein Bogen am Ende gibt Effet. ↶ ↷ stellen das Effet auch per Knopf ein; alternativ den Kraftbalken halten und loslassen.",
+     "Tastatur: ← → Startpunkt, A/D Richtung, ↑ ↓ Effet, Leertaste halten = Kraft, loslassen = Wurf, Esc/P Pause.",
+     "Gamecontroller: linker Stick Startpunkt, rechter Stick oder LB/RB Richtung, X/Y Effet, A halten = Kraft, loslassen = Wurf, Start Pause."
+    ],
+    "tipps": [
+     "Für Strikes: leicht rechts starten und mit Effet nach links in die Tasche zwischen 1 und 3 hooken.",
+     "Beim zweiten Wurf lieber gerade und ohne Effet auf die stehenden Kegel zielen.",
+     "Die Ziellinie zeigt nur den geölten Teil – wo der Hook greift, musst du selbst einschätzen (oder in den Optionen die lange Ziellinie einschalten)."
+    ]
+   },
+   "size": 136488,
+   "files": 9,
+   "offline": true,
+   "cloud": {
+    "game": "bowling-bahn",
+    "prefix": "bowling-bahn-"
+   }
+  },
+  {
    "id": "funk-billard",
    "title": "Funk-Billard 3D – 8-Ball in der Radio-Lounge",
    "desc": "8-Ball-Pool mit echter Kugelphysik in einer Neon-Funk-Lounge: Volle gegen Halbe, die 8 zum Schluss. Zielen mit Wischen oder von oben, Kraftbalken ziehen und loslassen, Effet für Nachläufer und Rückzieher, Ziellinie mit Laufrichtungen, Fouls und Ball in der Hand. Gegen den Computer in 3 Stärken, zu zweit an einem Gerät, 🌐 Online gegen Freunde per Code oder freies Training.",
