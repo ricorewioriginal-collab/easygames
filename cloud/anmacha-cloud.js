@@ -61,6 +61,8 @@
       fire(u, d.kind === 'start' ? 'start' : d.kind === 'end' ? 'end' : 'error', d.error || '');
     }
   });
+  // Spiel wird geschlossen: Ansagen auf der Seite beenden, sonst spricht sie weiter
+  window.addEventListener('pagehide', function () { if (remote && Object.keys(ids).length) { ids = {}; post({ op: 'cancel' }); } });
   post({ op: 'hello' });
 })();
 (function () {

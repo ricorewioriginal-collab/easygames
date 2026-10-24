@@ -22,7 +22,8 @@ class AppTts(context: Context, private val emit: (id: String, kind: String) -> U
     private val main = Handler(Looper.getMainLooper())
     private var tts: TextToSpeech? = null
     @Volatile private var ready = false
-    private val queue = ArrayList<Runnable>()
+    /** Wartende Ansagen bis die Engine bereit ist: (id, Aktion). */
+    private val queue = ArrayList<Pair<String, Runnable>>()
 
     private fun init() {
         if (tts != null) return
@@ -30,8 +31,13 @@ class AppTts(context: Context, private val emit: (id: String, kind: String) -> U
             main.post {
                 val t = tts
                 if (status != TextToSpeech.SUCCESS || t == null) {
+                    // Engine fehlt/defekt: wartende Ansagen als Fehler melden; beim nächsten Wunsch neuer Versuch
                     ready = false
+                    val ids = queue.map { it.first }
                     queue.clear()
+                    try { t?.shutdown() } catch (e: Exception) { }
+                    tts = null
+                    for (id in ids) emit(id, "error")
                     return@post
                 }
                 ready = true
@@ -45,7 +51,7 @@ class AppTts(context: Context, private val emit: (id: String, kind: String) -> U
                     override fun onError(id: String?) { emit(id ?: "", "error") }
                     override fun onError(id: String?, code: Int) { emit(id ?: "", "error") }
                 })
-                for (r in queue) r.run()
+                for (r in queue) r.second.run()
                 queue.clear()
                 emit("", "voices")
             }
@@ -98,13 +104,15 @@ class AppTts(context: Context, private val emit: (id: String, kind: String) -> U
                     emit(id, "error")
                 }
             }
-            if (ready) go.run() else if (tts != null) queue.add(go) else emit(id, "error")
+            if (ready) go.run() else if (tts != null) queue.add(id to go) else emit(id, "error")
         }
     }
 
     fun stop() {
         main.post {
+            val ids = queue.map { it.first }
             queue.clear()
+            for (id in ids) emit(id, "error")
             if (ready) try { tts?.stop() } catch (e: Exception) { }
         }
     }

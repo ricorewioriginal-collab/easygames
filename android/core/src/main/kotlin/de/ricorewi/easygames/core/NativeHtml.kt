@@ -81,6 +81,8 @@ object NativeHtml {
             }
             for (var i = 0; i < window.frames.length; i++) { try { if (window.frames[i].__egTts) window.frames[i].__egTts(id, k); } catch (x) {} }
           };
+          // Spiel wird geschlossen oder gewechselt: eigene Ansagen beenden, sonst spricht die App weiter
+          window.addEventListener('pagehide', function () { if (Object.keys(q).length) synth.cancel(); });
           try {
             Object.defineProperty(window, 'speechSynthesis', { value: synth, configurable: true, writable: true });
             Object.defineProperty(window, 'SpeechSynthesisUtterance', { value: Utt, configurable: true, writable: true });
