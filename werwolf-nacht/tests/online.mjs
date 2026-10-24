@@ -36,6 +36,9 @@ ok(roles.every(r => r.length > 3), 'Jedes Handy bekommt eine geheime Rolle: ' + 
 await phones[0].dispatchEvent('#pCard', 'pointerdown'); ok(await phones[0].evaluate(() => document.getElementById('pCard').classList.contains('show')), 'Karte gedrückt halten zeigt die Rolle');
 if (out) await phones[0].screenshot({ path: out + '/ww-31-handy-rolle.jpg', type: 'jpeg', quality: 80 });
 await phones[0].dispatchEvent('#pCard', 'pointerup');
+// Geheimes Ergebnis (z. B. der Seherin) bleibt auf der Karte, auch wenn sofort die nächste Ansage kommt
+await phones[0].evaluate(() => { const c = Object.values(window.__conns)[0]; c.emit('data', { t: 'secret', text: 'Tom ist ein Werwolf.' }); c.emit('data', { t: 'info', text: 'Die Seherin schläft wieder ein.' }); });
+ok(await phones[0].evaluate(() => document.getElementById('pRole').textContent.includes('Tom ist ein Werwolf') && document.getElementById('pInfo').textContent.includes('schläft')), 'Geheimnis bleibt auf der Rollenkarte nach der nächsten Ansage');
 // Spiel laufen lassen: Handys tippen immer die erste Möglichkeit, der Fernseher startet die Abstimmung
 let asked = 0, shotDone = false;
 for (let i = 0; i < 900; i++) {

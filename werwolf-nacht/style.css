@@ -105,6 +105,7 @@ body.kbd .nav:focus { outline: none; filter: drop-shadow(0 0 0 var(--amber)) dro
 .pName { font-size: 22px; font-weight: 900; margin: 0 0 8px; text-shadow: 0 2px 6px #000; }
 .roleCard { width: 100%; min-height: 180px; border: 0; border-radius: 18px; background: var(--ink); color: var(--moon); box-shadow: 0 0 0 3px var(--moon) inset, 0 10px 30px rgba(0, 0, 0, .5); cursor: pointer; padding: 14px; touch-action: none; }
 .roleCard .cardFront { display: none; } .roleCard.show .cardBack { display: none; } .roleCard.show .cardFront { display: block; }
+.cardFront small.sec { color: var(--amber); font-weight: 700; }
 .cardFront b { display: block; font-size: 34px; color: var(--amber); } .cardFront i { font-style: normal; font-size: 56px; display: block; } .cardFront small { display: block; color: var(--mut); margin-top: 6px; }
 .pInfo { font-size: 18px; text-shadow: 0 2px 6px #000; min-height: 2.6em; }
 #pAsk .btn { width: 100%; }

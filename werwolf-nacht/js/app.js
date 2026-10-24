@@ -401,8 +401,8 @@
       H.asks.set(id, q); netTo(pid, { t: 'ask', id, q: spec.q, opts });
     });
   }
-  function sendRole(pid) { const g = A.G, p = g.p[pid], mates = p.role === 'wolf' ? g.p.filter(x => x.role === 'wolf' && x.id !== pid).map(x => x.name) : []; netTo(pid, { t: 'role', role: p.role, name: p.name, mates, alive: p.alive }); }
-  function roleCards() { A.G.p.forEach(p => { if (!p.bot) sendRole(p.id); }); }
+  function sendRole(pid, fresh) { const g = A.G, p = g.p[pid], mates = p.role === 'wolf' ? g.p.filter(x => x.role === 'wolf' && x.id !== pid).map(x => x.name) : []; netTo(pid, { t: 'role', role: p.role, name: p.name, mates, alive: p.alive, fresh: !!fresh }); }
+  function roleCards() { A.G.p.forEach(p => { if (!p.bot) sendRole(p.id, true); }); }
   function hostStart() {
     stopGame(); A.mode = 'host'; A.me = -1; A.seenMe = {}; A.bubbles = {}; H.asks.clear();
     A.G = WW.newGame(H.seats.map(s => ({ name: s.name, bot: s.bot, look: s.look })), { seed: (Math.random() * 2 ** 31) >>> 0 });
@@ -422,12 +422,17 @@
   }
   $('jGo').onclick = () => { S.unlock(); phoneJoin(); };
   $('jBack').onclick = () => { netClose(); toMenu(); };
+  function roleCard() {
+    const d = C.role; if (!d) return; const r = R[d.role], sec = (C.secrets || []).slice(-6);
+    $('pRole').innerHTML = `<i>${r.icon}</i><b>${r.n}</b><small>${esc(r.desc)}</small>${d.mates.length ? '<small>🐺 Rudel: ' + esc(d.mates.join(', ')) + '</small>' : ''}` + sec.map(t => '<small class="sec">🤫 ' + esc(t) + '</small>').join('');
+  }
   function phoneMsg(d) {
     if (d.t === 'welcome') $('pName').textContent = d.name;
-    else if (d.t === 'role') { C.role = d; const r = R[d.role]; $('pRole').innerHTML = `<i>${r.icon}</i><b>${r.n}</b><small>${esc(r.desc)}</small>${d.mates.length ? '<small>🐺 Rudel: ' + esc(d.mates.join(', ')) + '</small>' : ''}`; vib([60, 60, 60]); $('pInfo').textContent = d.alive ? 'Halte die Karte gedrückt, um deine Rolle heimlich zu sehen.' : '💀 Du bist ausgeschieden.'; }
+    else if (d.t === 'role') { if (d.fresh) C.secrets = []; /* neues Spiel: alte Geheimnisse weg */ C.role = d; roleCard(); vib([60, 60, 60]); $('pInfo').textContent = d.alive ? 'Halte die Karte gedrückt, um deine Rolle heimlich zu sehen.' : '💀 Du bist ausgeschieden.'; }
     else if (d.t === 'info' || d.t === 'talk') { $('pInfo').textContent = d.text; }
     else if (d.t === 'phase') { sky(d.ph); }
-    else if (d.t === 'secret') { $('pInfo').textContent = '🤫 ' + d.text; vib(80); S.sfx('magic'); }
+    // Geheime Ergebnisse (z. B. der Seherin) bleiben auf der Rollenkarte – die nächste Ansage überschreibt sie nicht
+    else if (d.t === 'secret') { (C.secrets = C.secrets || []).push(d.text); roleCard(); $('pInfo').textContent = '🤫 Neues Geheimnis – halte deine Karte gedrückt: ' + d.text; vib(80); S.sfx('magic'); }
     else if (d.t === 'ask') { const a = $('pAsk'); a.innerHTML = `<p class="q">${esc(d.q)}</p>` + d.opts.map(o => `<button class="btn nav${o.v === 1 && /Bereit|retten/.test(o.label) ? ' pri' : ''}" data-v="${o.v}">${esc(o.label)}</button>`).join(''); vib(40); S.sfx('ok');
       a.querySelectorAll('[data-v]').forEach(b => { b.onclick = () => { NET.send({ t: 'ans', id: d.id, v: +b.dataset.v }); a.innerHTML = '<p class="hint">✔ ' + esc(b.textContent) + '</p>'; S.sfx('ok'); }; }); setTimeout(focusFirst, 0); }
     else if (d.t === 'clear') $('pAsk').innerHTML = '';
