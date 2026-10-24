@@ -261,6 +261,8 @@ test('Echt vorsingen in der Karriere: Entwicklung, Backstage-Ereignis und Runden
   assert.ok(res.crit.entwicklung > 60, 'Entwicklung ' + res.crit.entwicklung);
   const base = S.singScore(fr, null, 0.05);
   assert.ok(Math.abs(res.crit.praesenz - Math.max(0, base.crit.praesenz - 5)) < 0.11);
+  const big = S.singCareer(S.singScore(fr, null, 0.05), null, null, 'gross'), calm = S.singCareer(S.singScore(fr, null, 0.05), null, null, 'fokus');
+  assert.ok(big.crit.praesenz > calm.crit.praesenz && big.crit.mut > calm.crit.mut && calm.crit.timing > big.crit.timing, 'Bühnen-Aktion wirkt');
   const p = S.newProfile('Testi', {}), s = S.newSeason(12345, 'normal', 'fest');
   const id = S.startRound(s);
   const out = S.resolveRound(s, p, Object.assign(res, { style: 'pop', action: 'publikum', symp: null, votesBonus: 0 }), id);

@@ -329,10 +329,11 @@
     return { perf: r1(clamp(perf)), crit: c, mult: 1, sing: st };
   }
 
-  // Echtes Vorsingen in der Karriere: Entwicklung zur letzten Runde und Backstage-Ereignisse wie im Spiel-Modus.
-  function singCareer(res, lastPerf, mods) {
-    const c = res.crit;
+  // Echtes Vorsingen in der Karriere: Entwicklung zur letzten Runde, Bühnen-Aktion und Backstage-Ereignisse wie im Spiel-Modus.
+  function singCareer(res, lastPerf, mods, action) {
+    const c = res.crit, act = D.ACTION[action] || {};
     c.entwicklung = r1(clamp(lastPerf == null ? 60 : 60 + (res.perf - lastPerf) * 1.5));
+    c.timing = r1(clamp(c.timing + (act.timing || 0))); c.praesenz = r1(clamp(c.praesenz + (act.praesenz || 0))); c.mut = r1(clamp(c.mut + 0.8 * (act.mut || 0)));
     if (mods && mods.crit) for (const k in mods.crit) if (k in c) c[k] = r1(clamp(c[k] + (+mods.crit[k] || 0)));
     return res;
   }

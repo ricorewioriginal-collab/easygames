@@ -1049,7 +1049,7 @@
       if (cx) {   // echtes Vorsingen in Karriere oder Freiem Casting: weiter wie nach einem Bühnenauftritt
         const career = cx.mode === 'career', s = save.season, mods = career && s ? s.mods : null;
         const f = { mode: cx.mode, playId: run.playId, sel: Object.assign({}, cx.sel, { style: run.pk.style }), talk: cx.talk, credit: run.pk.credit, bg: cx.bg, ret: career ? 'sBack' : 'sPrep' };
-        const oc = Object.assign(S.singCareer(res, career && s ? s.lastPerf : null, mods), { style: run.pk.style, approach: cx.sel.approach, action: cx.sel.action,
+        const oc = Object.assign(S.singCareer(res, career && s ? s.lastPerf : null, mods, cx.sel.action), { style: run.pk.style, approach: cx.sel.approach, action: cx.sel.action,
           symp: S.mergeSymp(cx.talk.symp, mods && mods.symp), votesBonus: cx.talk.votes });
         sing.ctx = null; flow = f; decide(f, { sing: res.sing, rec: url }, oc); return;
       }
