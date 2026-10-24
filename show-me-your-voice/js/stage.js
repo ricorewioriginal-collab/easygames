@@ -91,7 +91,7 @@
     const p = this.part = Object.assign({}, this.parts[this.pi]);
     this.t0 = performance.now(); this.pauseAt = 0; this.combo = 0; this.maxCombo = 0; this.streak = 0;
     this.cnt = { n: 0, p: 0, g: 0, o: 0, m: 0 }; this.pitchT = 0; this.pitchGot = 0; this.trail = []; this.lv = 3.5;
-    this.showHit = 0; this.cueSum = 0; this.cuePts = 0; this.missRow = 0; this.partStars = 0; this.curSeg = null; this.voiced = false; this.now = 0;
+    this.showHit = 0; this.cueSum = 0; this.cuePts = 0; this.missRow = 0; this.partStars = 0; this.curSeg = null; this.voiced = false; this.now = 0; this.vArm = true; this.vLast = -9;
     if (p.type === 'rhythm') { const g = genRhythm(p); this.notes = p.live ? [] : g.notes; this.shows = g.shows; this.lastSpawn = -9; this.minGap = Math.max(0.2, 0.62 - 0.4 * (p.density || 0.75)); }
     if (p.type === 'pitch') this.segs = genPitch(p);
     if (p.type === 'cues') this.cues = genCues(p);

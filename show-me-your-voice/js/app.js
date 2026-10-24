@@ -1093,8 +1093,8 @@
     const parts = st.def.parts.map((t, i) => t === 'rhythm'
       ? { type: 'rhythm', len: st.def.len, bpm: sty.bpm, style: st.style, density: ap.density + st.round * 0.04, seed: st.seed + i * 101, shows: i === 0 ? ac.shows : 1, title: '„' + D.SONGS[st.style] + '“', sub: st.def.name }
       : { type: 'pitch', len: st.def.len, bpm: sty.bpm, style: st.style, seed: st.seed + i * 101, title: '🎤 Gesangsteil', sub: st.def.name });
-    ON.played = st.round;
-    runStage({ mode: 'online', r: st.round, style: st.style, panel: st.panel, parts, bg: st.def.final ? 'arena' : 'stage', mic: st.def.parts.includes('pitch'), ret: 'sOnline',
+    ON.played = st.seed;   // jede Runde hat einen neuen Seed, auch nach „Neue Show“
+    runStage({ mode: 'online', r: st.round, style: st.style, panel: st.panel, parts, bg: st.def.final ? 'arena' : 'stage', ret: 'sOnline',
       title: '🌐 ' + st.def.icon + ' ' + st.def.name + ' · „' + D.SONGS[st.style] + '“' });
   }
   function onFinish(f, out) {
@@ -1137,9 +1137,9 @@
       const jury = (st.panel || D.MAIN_JURY).map(jur).map(j => `<span class="pj">${jimg(j, 'js')}<small>${esc(j.name)}</small></span>`).join('');
       body = `<div class="panel"><p><b>${def.icon} ${esc(def.name)}</b> · Musik: „${esc(D.SONGS[st.style])}“ (${esc(D.STYLES[st.style].name)}, eigene Beats)</p><div class="panelRow"><span class="muted">⚖️ Jury:</span>${jury}</div></div>
         <div class="panel"><div class="onPlayers">${st.field.map(id => { const x = onPlayer(id) || { name: '?', look: {} }; const ok = st.done.includes(id); return `<div class="onP ${ok ? '' : 'wait'}">${AV.svg(x.look, ok ? 'happy' : 'neutral')}<b>${esc(x.name)}</b><small>${ok ? '✅ fertig' : '🎤 singt …'}</small></div>`; }).join('')}</div></div>
-        <p class="center muted">${inField ? (ON.played === st.round ? 'Super! Warte auf die anderen …' : '') : 'Du bist diesmal Publikum – gleich darfst du abstimmen.'}</p>`;
+        <p class="center muted">${inField ? (ON.played === st.seed ? 'Super! Warte auf die anderen …' : '') : 'Du bist diesmal Publikum – gleich darfst du abstimmen.'}</p>`;
     } else if (st.phase === 'vote') {
-      const can = st.field.filter(id => id !== me), done = ON.voted === st.round || st.voted.includes(me);
+      const can = st.field.filter(id => id !== me), done = ON.voted === st.seed || st.voted.includes(me);
       body = `<div class="panel"><h3 style="margin-top:0">📱 Publikums-Voting</h3><p>Wer hat dich am meisten überzeugt? ${def.w.votes ? 'Die Stimmen zählen ' + Math.round(def.w.votes * 100) + ' % der Wertung.' : 'Im Casting zählt nur die Jury – eure Stimmen gibt es trotzdem als Applaus.'}</p>
         ${done ? '<p class="center"><b>Danke für deine Stimme!</b> Warte auf die anderen …</p>' : `<div class="onPlayers">${can.map(id => { const x = onPlayer(id) || { name: '?', look: {} }; return `<button type="button" class="onP btnP" data-vote="${esc(id)}">${AV.svg(x.look, 'happy')}<b>${esc(x.name)}</b><small>Stimme geben</small></button>`; }).join('')}</div>`}</div>
         <p class="center muted">Abgestimmt: ${st.voted.length} von ${pls.filter(x => x.on).length}</p>`;
@@ -1163,11 +1163,11 @@
     }
   }
   // Runde beginnt → eigenen Auftritt starten (einmal pro Runde)
-  const onTick = () => { const st = ON.st; if (st && st.phase === 'perform' && st.field.includes(ON.me) && ON.played !== st.round && !stage && cur === 'sOnline') onPerform(st); };
+  const onTick = () => { const st = ON.st; if (st && st.phase === 'perform' && st.field.includes(ON.me) && ON.played !== st.seed && !stage && cur === 'sOnline') onPerform(st); };
   setInterval(onTick, 400);
   $('#onBox').addEventListener('click', e => {
     const v = e.target.closest('[data-vote]');
-    if (v && ON.st && ON.st.phase === 'vote') { ON.voted = ON.st.round; onSend({ t: 'vote', r: ON.st.round, for: v.dataset.vote }); sfx('click'); onRender(); return; }
+    if (v && ON.st && ON.st.phase === 'vote') { ON.voted = ON.st.seed; onSend({ t: 'vote', r: ON.st.round, for: v.dataset.vote }); sfx('click'); onRender(); return; }
     const b = e.target.closest('[data-o]'); if (!b || b.disabled) return;
     const k = b.dataset.o;
     if (k === 'leave') { if (ON.st) confirmBox('Show verlassen?', amHost() ? 'Die Show endet dann für alle.' : 'Du verlässt die Show.', 'Verlassen', () => { onReset(); go('sMenu'); }); else go('sMenu'); }

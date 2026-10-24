@@ -86,6 +86,12 @@ await A.click('[data-vote]'); await B.click('[data-vote]');
 await Promise.all([A.waitForSelector('.banner.gold', { timeout: 15000 }), B.waitForSelector('.banner.gold', { timeout: 15000 })]);
 await A.waitForTimeout(400); await shot(A, '5-finale');
 const win = await B.textContent('.banner.gold'); ok(/Hosti gewinnt/.test(win), 'Bessere Leistung gewinnt: ' + win.trim());
+// Neue Show mit allen: beide singen wieder (auch wer vorher schon gespielt hat)
+await A.click('[data-o="again"]'); await A.waitForSelector('[data-o="start"]', { timeout: 8000 }); await A.click('[data-o="start"]');
+await Promise.all([A.waitForSelector('#sStage.on', { timeout: 10000 }), B.waitForSelector('#sStage.on', { timeout: 10000 })]); ok(true, 'Neue Show: alle singen wieder');
+await Promise.all([A.waitForSelector('[data-vote]', { timeout: 90000 }), B.waitForSelector('[data-vote]', { timeout: 90000 })]); ok(true, 'Neue Show: beide können wieder abstimmen');
+// Fremde Avatar-Farben werden nicht als Code eingebaut
+ok(await B.evaluate(() => !/onclick/.test(window.SMYVAvatar.svg({ skin: '#" onclick="alert(1)', hairColor: NaN }, 'happy'))), 'Fremde Avatar-Daten sind entschärft');
 // Gastgeber geht → Gast bekommt Hinweis
 await A.click('[data-o="leave"]'); await A.click('#ovBox [data-act="y"]');
 await B.waitForFunction(() => !document.querySelector('.bigCode') && /Show eröffnen/.test(document.getElementById('onBox').textContent), null, { timeout: 8000 });
