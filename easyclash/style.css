@@ -138,3 +138,23 @@ body.kbd .tile:focus i, .tile:hover i { transform: scale(1.2) rotate(-8deg); }
 .vsSide b { font-size: clamp(20px, 4vw, 40px); font-style: italic; text-transform: uppercase; } .vsSide small { color: var(--mut); }
 .vsMid span { font-size: clamp(50px, 10vw, 110px); font-weight: 1000; font-style: italic; color: var(--g); text-shadow: 5px 5px 0 #b3261e; } .vsMid { display: flex; flex-direction: column; align-items: center; } .vsMid small { color: var(--mut); text-align: center; }
 @keyframes inL { from { transform: translateX(-60vw); } } @keyframes inR { from { transform: translateX(60vw); } }
+
+/* Online-Lobby und Handy-Controller */
+.tile.online { background: linear-gradient(120deg, #0d5a4a, #19a37f); }
+.pickWrap.lob { width: min(880px, 100%); }
+.lobGrid { display: grid; grid-template-columns: 1fr 260px; gap: 18px; align-items: start; }
+@media (max-width: 700px) { .lobGrid { grid-template-columns: 1fr; } }
+.slots { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.slot { background: rgba(255, 255, 255, .06); padding: 10px; display: flex; gap: 10px; align-items: center; border-left: 5px solid var(--p1); min-height: 76px; } .slot.s2 { border-color: var(--p2); }
+.slot img { width: 56px; height: 56px; background: #22122c; } .slot b { display: block; } .slot small { color: var(--mut); font-size: 12px; } .slot.off { opacity: .45; }
+.qrBox { background: #fff; color: #111; padding: 12px; text-align: center; } .qr svg { width: 100%; height: auto; display: block; } .code { font-size: 38px; font-weight: 1000; letter-spacing: .3em; margin-top: 6px; } .url { font-size: 11px; word-break: break-all; margin: 4px 0 0; color: #444; }
+#sPhone { flex-direction: column; }
+.phoneJoin { margin: auto; width: min(420px, 100%); display: flex; flex-direction: column; gap: 12px; text-align: center; }
+.field { padding: 14px; font-size: 20px; background: #22122c; border: 2px solid var(--line); color: var(--txt); text-align: center; border-radius: 6px; } .err { color: #ff8a8a; min-height: 20px; }
+.pad { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.padTop { display: flex; justify-content: space-between; align-items: center; font-style: italic; text-transform: uppercase; } .pSlot { padding: 4px 12px; background: var(--p1); font-weight: 1000; } .pSlot.p2 { background: var(--p2); }
+.padPick { display: flex; gap: 8px; align-items: stretch; } .padPick > div { flex: 1; text-align: center; background: rgba(255, 255, 255, .06); padding: 8px; } .padPick b { display: block; font-size: 20px; font-style: italic; text-transform: uppercase; } .padPick small { color: var(--mut); }
+.padMsg { text-align: center; color: var(--g); margin: 0; min-height: 22px; }
+.padCtl { flex: 1; position: relative; min-height: 260px; }
+.pZone { position: absolute; left: 0; top: 0; bottom: 0; width: 45%; touch-action: none; } .pZone .stick { left: 50%; top: 50%; bottom: auto; }
+.pBtns { position: absolute; right: 0; bottom: 10px; }

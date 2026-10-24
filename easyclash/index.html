@@ -39,6 +39,7 @@
       <button class="tile nav hero" data-go="arcade"><i>🏆</i><b>Arcade</b><small>8 Gegner bis zum Titel</small></button>
       <button class="tile nav" data-go="versus"><i>⚔️</i><b>Versus</b><small>Zu zweit an einem Gerät</small></button>
       <button class="tile nav" data-go="cpu"><i>🤖</i><b>Gegen CPU</b><small>Freier Kampf</small></button>
+      <button class="tile nav online" data-go="online"><i>🌐</i><b>Online &amp; Handys</b><small>Handys als Controller</small></button>
       <button class="tile nav" data-go="training"><i>🥊</i><b>Training</b><small>Kombos üben</small></button>
       <button class="tile nav" data-go="roster"><i>🧑‍🤝‍🧑</i><b>Kämpfer</b><small id="rosterInfo">Alle Helden</small></button>
       <button class="tile nav" data-go="rec"><i>🏅</i><b>Rekorde</b><small>Siege &amp; Titel</small></button>
@@ -67,6 +68,41 @@
     <div class="optRow" id="diffRow"><span>Stärke</span><div class="chips" id="diffChips"></div></div>
     <div class="optRow"><span>Runden</span><div class="chips" id="roundChips"></div></div>
     <div class="rowBtns"><button class="btn nav" id="stBack">← Zurück</button><button class="btn pri big nav" id="stGo">⚔ Kampf!</button></div>
+  </div>
+</section>
+
+<!-- Online-Lobby am Fernseher/PC -->
+<section class="scr" id="sLobby">
+  <div class="pickWrap lob">
+    <h2 class="sTitle">🌐 Online &amp; Handys</h2>
+    <div class="lobGrid">
+      <div>
+        <p class="hint">Zwei Mitspieler scannen den QR-Code oder öffnen den Link – <b>von überall</b>. Jedes Handy wird zum Controller, gekämpft wird hier auf dem großen Bildschirm. Ein Platz kann auch hier mit Tastatur/Controller gespielt werden.</p>
+        <div class="slots" id="lobSlots"></div>
+        <div class="rowBtns wrap"><button class="btn nav" id="lobMe">🎮 Hier spielen: aus</button></div>
+      </div>
+      <div class="qrBox"><div class="qr" id="qr">…</div><div class="code" id="code">····</div><p class="url" id="url"></p></div>
+    </div>
+    <div class="rowBtns"><button class="btn nav" id="lobBack">← Zurück</button><button class="btn pri nav" id="lobGo" disabled>Warte auf 2 Spieler …</button></div>
+  </div>
+</section>
+
+<!-- Handy als Controller -->
+<section class="scr" id="sPhone">
+  <div class="phoneJoin" id="pJoin">
+    <h1 class="title small">EASY<span>CLASH</span></h1>
+    <p class="hint">Dein Handy wird zum Controller – gekämpft wird auf dem großen Bildschirm.</p>
+    <input class="field" id="jName" maxlength="12" placeholder="Dein Name" autocomplete="nickname">
+    <input class="field" id="jCode" maxlength="4" placeholder="Code" autocapitalize="characters">
+    <button class="btn pri big" id="bJoin">Mitmachen</button>
+    <p class="err" id="jMsg"></p>
+  </div>
+  <div class="pad" id="pPad" hidden>
+    <div class="padTop"><b id="pName"></b><span class="pSlot" id="pSlot"></span></div>
+    <div class="padPick" id="pPick"><button class="btn" id="pPrev">◀</button><div><b id="pFighter">–</b><small id="pGame"></small></div><button class="btn" id="pNext">▶</button></div>
+    <p class="padMsg" id="pMsg">Warte auf den Start …</p>
+    <div class="padCtl"><div class="pZone" id="pZone"><div class="stick" id="pStick"><i></i></div></div>
+      <div class="tBtns pBtns"><button class="tb tp" data-b="p">👊<small>Schlag</small></button><button class="tb tk" data-b="k">🦵<small>Tritt</small></button><button class="tb ts" data-b="s">✨<small>Spezial</small></button><button class="tb tg" data-b="g">🤝<small>Wurf</small></button><button class="tb tbl" data-b="block">🛡<small>Block</small></button><button class="tb tf" data-b="f">🔥<small>Finale</small></button></div></div>
   </div>
 </section>
 
@@ -150,6 +186,7 @@
     <li><b>Tastatur (Spieler 2 im Versus):</b> Pfeile bewegen, Ziffernblock 4 Schlag, 5 Tritt, 6 Spezial, 8 Wurf, 0 Block, 9 Finale (oder , . - und #).</li>
     <li><b>Controller:</b> Stick/Steuerkreuz bewegen, X Schlag, A Tritt, Y Spezial, B Wurf, LB/RB Block, RT Finale, Start Pause. Zwei Controller = zwei Spieler.</li>
     <li><b>Touch:</b> linker Daumen = Stick, rechts die Knöpfe.</li>
+    <li><b>🌐 Online &amp; Handys:</b> Der große Bildschirm zeigt den Kampf, zwei Handys sind die Controller – per QR-Code oder Link von überall.</li>
   </ul>
   <button class="btn pri nav" id="helpX" data-close>Los geht's</button>
 </div></div>
@@ -158,6 +195,8 @@
 
 <script src="../vendor/three-r128.min.js"></script>
 <script src="../device.js"></script>
+<script src="../gamekit.js"></script>
+<script src="../cloud/fire-peer.js"></script>
 <script src="js/core.js"></script>
 <script src="js/roster.js"></script>
 <script src="js/model.js"></script>
