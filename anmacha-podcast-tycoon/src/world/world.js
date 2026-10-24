@@ -11,9 +11,9 @@
   const smooth = (a, b, v) => { const t = clamp((v - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
   const angDiff = (a, b) => { let d = (b - a) % TAU; if (d > Math.PI) d -= TAU; if (d < -Math.PI) d += TAU; return d; };
   const QUAL = {
-    low: { pr: 1, far: 140, fog: [42, 135], shadows: false, aa: false },
-    mid: { pr: 1.5, far: 190, fog: [70, 185], shadows: false, aa: true },
-    high: { pr: 2, far: 260, fog: [100, 250], shadows: true, aa: true }
+    low: { pr: 1, far: 140, fog: [42, 135], shadows: false, aa: false, lv: 0, tex: 256, map: 0, sh: 0 },
+    mid: { pr: 1.5, far: 190, fog: [70, 185], shadows: true, aa: true, lv: 1, tex: 512, map: 1024, sh: 30 },
+    high: { pr: 2, far: 260, fog: [100, 250], shadows: true, aa: true, lv: 2, tex: 512, map: 2048, sh: 42 }
   };
   const WALL_H = 3.2, LOT_H = 2.8, SPLIT_Y = 1.0, WT = 0.16;
   const PLAYER_R = 0.3, WALK = 4.3, RUN = 7.2, NPC_SPEED = 1.6;
@@ -27,6 +27,8 @@
     const AVES = (D.world && D.world.avenues) || [-40, 40];
     const headless = !!opts.headless || !canvas;
     let quality = QUAL[opts.quality] ? opts.quality : 'mid';
+    M.setDetail(QUAL[quality].lv);
+    const TX = PT.Tex || null;
     const size = { w: (canvas && canvas.clientWidth) || 1280, h: (canvas && canvas.clientHeight) || 720 };
     let renderer = null, lost = false;
     const cbLost = [], cbRest = [];
@@ -36,36 +38,61 @@
       renderer = new T.WebGLRenderer({ canvas, antialias: QUAL[quality].aa, powerPreference: 'high-performance', alpha: false });
       renderer.setPixelRatio(Math.min(root.devicePixelRatio || 1, QUAL[quality].pr));
       renderer.setSize(size.w, size.h);
-      renderer.shadowMap.type = T.PCFShadowMap;
+      renderer.shadowMap.type = T.PCFSoftShadowMap;
+      // Farbraum: lineare Beleuchtung, Ausgabe in sRGB mit filmischem Tonemapping (Eckfarben werden im Shader linearisiert)
+      renderer.outputEncoding = T.sRGBEncoding; renderer.toneMapping = T.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
       canvas.addEventListener('webglcontextlost', onLost, false);
       canvas.addEventListener('webglcontextrestored', onRest, false);
     }
     const scene = new T.Scene();
-    const camera = new T.PerspectiveCamera(55, size.w / size.h, 0.3, QUAL[quality].far);
+    const camera = new T.PerspectiveCamera(55, size.w / size.h, 0.3, QUAL[quality].far + 60); // +60: Kulisse hinter dem Nebel nicht abschneiden
     scene.background = new T.Color('#8fd3ff');
     scene.fog = new T.Fog(0x8fd3ff, QUAL[quality].fog[0], QUAL[quality].fog[1]);
-    const hemi = new T.HemisphereLight(0xffffff, 0xa89a80, 0.8); scene.add(hemi);
-    const sun = new T.DirectionalLight(0xffffff, 0.75); sun.position.set(30, 60, 20); scene.add(sun); scene.add(sun.target);
+    const lin = c => new T.Color(c).convertSRGBToLinear();
+    const hemi = new T.HemisphereLight(lin('#dcecff'), lin('#8a7a62'), 0.9); scene.add(hemi);
+    const sun = new T.DirectionalLight(lin('#fff3e0'), 1.6); sun.position.set(30, 60, 20); scene.add(sun); scene.add(sun.target);
     sun.shadow.mapSize.set(1024, 1024);
-    Object.assign(sun.shadow.camera, { left: -45, right: 45, top: 45, bottom: -45, near: 1, far: 160 });
-    sun.shadow.bias = -0.0008;
+    Object.assign(sun.shadow.camera, { left: -30, right: 30, top: 30, bottom: -30, near: 1, far: 160 });
+    sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.02; sun.shadow.radius = 3;
+    // Warmes Studiolicht (nur mid/high, steht über dem eigenen Studio)
+    const studioLight = new T.PointLight(lin('#ffc98a'), 0, 13, 2); studioLight.name = 'studioLight'; scene.add(studioLight);
+    // Himmel: Verlauf von Horizont (= Nebelfarbe) zum Zenit, folgt der Kamera (Farben in sRGB wie der Nebel)
+    const sky = (() => {
+      const g = new T.SphereGeometry(1, 24, 12);
+      const m = new T.ShaderMaterial({
+        uniforms: { top: { value: new T.Color('#3f8fe0') }, hor: { value: new T.Color('#8fd3ff') }, bot: { value: new T.Color('#8fd3ff') } },
+        vertexShader: 'varying vec3 vP; void main(){ vP = position; vec4 p = modelViewMatrix * vec4(position, 1.0); gl_Position = projectionMatrix * p; }',
+        fragmentShader: 'uniform vec3 top; uniform vec3 hor; uniform vec3 bot; varying vec3 vP; void main(){ float h = normalize(vP).y; vec3 c = h > 0.0 ? mix(hor, top, smoothstep(0.06, 0.65, h)) : bot; gl_FragColor = vec4(c, 1.0); }',
+        side: T.BackSide, depthWrite: false, depthTest: false, fog: false, toneMapped: false
+      });
+      const me = new T.Mesh(g, m); me.name = 'sky'; me.renderOrder = -10; me.frustumCulled = false; scene.add(me);
+      return me;
+    })();
 
     // ── Materialien (wenige, geteilt) ──
+    // Stadt-Material mit Oberflächenmustern (Holz, Fliesen, Ziegel, Asphalt, Gras …), auf low als Lambert
+    const detailTex = !headless && TX ? TX.detail(T, QUAL[quality].tex) : null;
+    if (detailTex && renderer) { const an = Math.min(quality === 'low' ? 2 : 8, renderer.capabilities.getMaxAnisotropy()); detailTex.a.anisotropy = detailTex.b.anisotropy = an; }
+    const LC = m => (TX ? TX.linearColors(m) : m);
+    const flatUI = m => { m.toneMapped = false; return m; };
     const mats = {
-      v: new T.MeshLambertMaterial({ vertexColors: true }),
-      glow: new T.MeshBasicMaterial({ vertexColors: true }),
-      glass: new T.MeshBasicMaterial({ vertexColors: true, color: '#a8d8f0' }),
-      lamp: new T.MeshBasicMaterial({ vertexColors: true, color: '#fff1b0' }),
-      sign: new T.MeshBasicMaterial({ color: 0xffffff }),
-      shadow: new T.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28, depthWrite: false }),
-      ghost: new T.MeshLambertMaterial({ vertexColors: true, transparent: true, opacity: 0.6, depthWrite: false }),
-      ghostFoot: new T.MeshBasicMaterial({ color: '#4be08a', transparent: true, opacity: 0.35, depthWrite: false }),
-      edge: new T.MeshBasicMaterial({ color: '#4be08a', transparent: true, opacity: 0.55, depthWrite: false }),
-      hl: new T.MeshBasicMaterial({ color: '#ffb02e', transparent: true, opacity: 0.35, depthWrite: false }),
-      grid: new T.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 }),
-      marker: new T.MeshBasicMaterial({ vertexColors: true }),
-      pool: new T.MeshBasicMaterial({ color: '#ffc04a', transparent: true, opacity: 0, depthWrite: false, blending: T.AdditiveBlending })
+      v: TX ? TX.surfMaterial(T, { standard: quality !== 'low', textures: detailTex }) : new T.MeshLambertMaterial({ vertexColors: true }),
+      glow: flatUI(LC(new T.MeshBasicMaterial({ vertexColors: true }))),
+      glass: LC(new T.MeshBasicMaterial({ vertexColors: true, color: lin('#a8d8f0') })),
+      lamp: flatUI(LC(new T.MeshBasicMaterial({ vertexColors: true, color: lin('#fff1b0') }))),
+      sign: flatUI(new T.MeshBasicMaterial({ color: 0xffffff })),
+      shadow: new T.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.34, depthWrite: false }),
+      ghost: LC(new T.MeshLambertMaterial({ vertexColors: true, transparent: true, opacity: 0.6, depthWrite: false })),
+      ghostFoot: flatUI(new T.MeshBasicMaterial({ color: lin('#4be08a'), transparent: true, opacity: 0.35, depthWrite: false })),
+      edge: flatUI(new T.MeshBasicMaterial({ color: lin('#4be08a'), transparent: true, opacity: 0.55, depthWrite: false })),
+      hl: flatUI(new T.MeshBasicMaterial({ color: lin('#ffb02e'), transparent: true, opacity: 0.35, depthWrite: false })),
+      grid: flatUI(new T.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 })),
+      marker: flatUI(LC(new T.MeshBasicMaterial({ vertexColors: true }))),
+      pool: flatUI(new T.MeshBasicMaterial({ color: lin('#ffc04a'), transparent: true, opacity: 0, depthWrite: false, blending: T.AdditiveBlending }))
     };
+    const blobTex = !headless && TX ? TX.blob(T) : null;
+    if (blobTex) { mats.shadow.map = blobTex; mats.shadow.opacity = 0.5; }
+    const setLin = (m, c) => { m.color.set(c).convertSRGBToLinear(); };
     const nav = NAV.create(HALF);
     const distMap = new Uint8Array(nav.size).fill(255);
     const world = new T.Group(); world.name = 'world'; scene.add(world);
@@ -90,7 +117,9 @@
     // ── Hilfen ──
     const cellOf = v => Math.floor(v + HALF);
     const blockRange = c => c < -20 ? [-HALF, -45] : c > 20 ? [45, HALF] : [-35, 35];
-    const floorCols = (D.buildParts && D.buildParts.floors || []).map(f => [M.col(T, f.color), M.shade(T, f.color, 0.93)]);
+    const floorCols = (D.buildParts && D.buildParts.floors || []).map(f => [M.col(T, f.color), M.shade(T, f.color, 0.97)]);
+    const FLOOR_SURF = { holz: 'wood', teppich: 'carpet', fliesen: 'tiles', beton: 'concrete', parkett: 'parquet' };
+    const floorSurf = (D.buildParts && D.buildParts.floors || []).map(f => FLOOR_SURF[f.id] || 'fine');
     const isLockedIdx = i => i < 8 && dists[i] && st && st.unlocks && st.unlocks.districts && st.unlocks.districts[dists[i].d.id] === false;
     const lockedCell = (gx, gz) => nav.inb(gx, gz) && isLockedIdx(distMap[gz * nav.S + gx]);
     const playerExtra = (nx, nz, fx, fz) => lockedCell(nx, nz) && !lockedCell(fx, fz);
@@ -119,7 +148,7 @@
         const c = (typeof document !== 'undefined' && document.createElement) ? document.createElement('canvas') : (typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(1024, 1024) : null);
         if (!c) return;
         c.width = c.height = atlas.S; atlas.canvas = c; atlas.g = c.getContext('2d');
-        atlas.tex = new T.CanvasTexture(c); atlas.tex.anisotropy = 2;
+        atlas.tex = new T.CanvasTexture(c); atlas.tex.anisotropy = 2; atlas.tex.encoding = T.sRGBEncoding;
         mats.sign.map = atlas.tex; mats.sign.needsUpdate = true;
       } catch (e) { atlas.g = null; }
     })();
@@ -229,11 +258,13 @@
     function emitLot(lot, ox, oz, o) {
       const H = o.wallH, F = floorCols, b = o.b, up = o.up || o.b;
       const wallCol = M.col(T, o.wallCol || '#f3e6d0'), capCol = M.mix(T, o.wallCol || '#f3e6d0', '#ffffff', 0.35), frameCol = M.shade(T, o.wallCol || '#f3e6d0', 0.72);
-      // Böden (nur Oberseite, leicht kariert für gute Lesbarkeit)
+      // Böden (nur Oberseite) mit Muster je Bodenart: Dielen, Teppich, Fliesen, Beton, Parkett
       for (let z = 0; z < lot.d; z++) for (let x = 0; x < lot.w; x++) {
         const fi = lot.floor[z * lot.w + x]; if (!fi || !F[fi - 1]) continue;
-        b.flat(ox + x + 0.5, 0.045, oz + z + 0.5, 1, 1, F[fi - 1][(x + z) & 1]);
+        b.surf(floorSurf[fi - 1]).flat(ox + x + 0.5, 0.045, oz + z + 0.5, 1, 1, F[fi - 1][(x + z) & 1]);
       }
+      const WS = o.wallSurf || 'plaster';
+      b.surf(WS); up.surf(WS);
       const part = (cx, cz, sx, sz, y0, y1, col) => {
         if (y1 <= y0) return;
         if (o.split && y0 < SPLIT_Y && y1 > SPLIT_Y) { b.box(cx, (y0 + SPLIT_Y) / 2, cz, sx, SPLIT_Y - y0, sz, col); up.box(cx, (SPLIT_Y + y1) / 2, cz, sx, y1 - SPLIT_Y, sz, col); }
@@ -247,21 +278,22 @@
         if (kind === 'wall') part(cx, cz, sx, sz, 0, H, wallCol);
         else if (kind === 'window') {
           part(cx, cz, sx, sz, 0, 0.9, wallCol); part(cx, cz, sx, sz, 2.1, H, wallCol);
-          b.box(cx, 0.93, cz, hor ? 1.0 : WT + 0.1, 0.06, hor ? WT + 0.1 : 1.0, '#ffffff');
+          b.surf('glossy').box(cx, 0.93, cz, hor ? 1.0 : WT + 0.1, 0.06, hor ? WT + 0.1 : 1.0, '#ffffff').surf(WS);
           o.gs.box(cx, 1.5, cz, hor ? 0.96 : 0.05, 1.18, hor ? 0.05 : 0.96, '#ffffff');
           (o.split ? up : b).box(cx, 1.5, cz, hor ? 0.06 : WT * 0.7, 1.2, hor ? WT * 0.7 : 0.06, '#ffffff');
         } else if (kind === 'door') {
           part(cx, cz, sx, sz, 2.25, H, wallCol);
           const ax = hor ? 0.46 : 0, az = hor ? 0 : 0.46;
-          (o.split ? up : b).box(cx - ax, 1.125, cz - az, hor ? 0.08 : WT + 0.04, 2.25, hor ? WT + 0.04 : 0.08, frameCol);
-          (o.split ? up : b).box(cx + ax, 1.125, cz + az, hor ? 0.08 : WT + 0.04, 2.25, hor ? WT + 0.04 : 0.08, frameCol);
-          b.box(cx, 0.05, cz, hor ? 0.9 : WT + 0.1, 0.03, hor ? WT + 0.1 : 0.9, frameCol);
+          (o.split ? up : b).surf('woodfine').box(cx - ax, 1.125, cz - az, hor ? 0.08 : WT + 0.04, 2.25, hor ? WT + 0.04 : 0.08, frameCol);
+          (o.split ? up : b).box(cx + ax, 1.125, cz + az, hor ? 0.08 : WT + 0.04, 2.25, hor ? WT + 0.04 : 0.08, frameCol).surf(WS);
+          b.surf('woodfine').box(cx, 0.05, cz, hor ? 0.9 : WT + 0.1, 0.03, hor ? WT + 0.1 : 0.9, frameCol).surf(WS);
         }
-        if (kind === 'wall' || kind === 'window') up.box(cx, H + 0.02, cz, sx + 0.02, 0.04, sz + 0.02, capCol);
+        if (kind === 'wall' || kind === 'window') up.surf('fine').box(cx, H + 0.02, cz, sx + 0.02, 0.04, sz + 0.02, capCol).surf(WS);
         if (o.stamp && (kind === 'wall' || kind === 'window')) {
           if (hor) nav.wallH(ox + x, ox + x + 1, oz + z); else nav.wallV(ox + x, oz + z, oz + z + 1);
         }
       });
+      b.surf(0); up.surf(0);
       // Objekte
       const tops = surfTops(lot), stack = {};
       (lot.objs || []).forEach(ob => { const d = D.objectById && D.objectById[ob.id]; if (d && d.layer === 'top') { const k = '#' + ob.x + ',' + ob.z; stack[k] = (stack[k] || 0) + 1; } });
@@ -287,19 +319,22 @@
     function buildGround(trees, lamps) {
       const b = M.builder(T), gs = M.builder(T), g = M.builder(T), out = { solids: [], fences: [], signs: [], heights: [] };
       const E = HALF + 48;
-      b.flat(0, 0, 0, E * 2, E * 2, '#6cb35c');
+      b.surf('grass').flat(0, 0, 0, E * 2, E * 2, '#6cb35c');
       // Blöcke der Bezirke (leicht in Bezirksfarbe getönt) und Funkplatz
       D.districts.forEach(d => { const xr = blockRange(d.cx), zr = blockRange(d.cz); b.flat((xr[0] + xr[1]) / 2, 0.012, (zr[0] + zr[1]) / 2, xr[1] - xr[0], zr[1] - zr[0], M.mix(T, '#74bb62', d.color, 0.1)); });
-      b.flat(0, 0.012, 0, 70, 70, '#eadfc4');
-      for (let r = 7; r < 34; r += 6) b.ring(0, 0.016, 0, r, r + 0.6, '#d9caa6', 48);
-      [[0, 1], [1, 0]].forEach(([ax, az]) => b.box(0, 0.017, 0, ax ? 70 : 3, 0.004, az ? 70 : 3, '#d9caa6'));
+      b.surf('plaza').flat(0, 0.012, 0, 70, 70, '#e6dcc4');
+      for (let r = 7; r < 34; r += 6) b.ring(0, 0.016, 0, r, r + 0.6, '#cdbd98', 64);
+      [[0, 1], [1, 0]].forEach(([ax, az]) => b.box(0, 0.017, 0, ax ? 70 : 3, 0.004, az ? 70 : 3, '#d4c49f'));
       // Alleen mit Gehwegen, Mittelstreifen und Zebrastreifen
       const segs = [[-HALF, AVES[0] - 5], [AVES[0] + 5, AVES[1] - 5], [AVES[1] + 5, HALF]];
       AVES.forEach(a => {
-        b.box(a, 0.02, 0, 6, 0.04, HALF * 2, '#4a4f5d'); b.box(0, 0.02, a, HALF * 2, 0.04, 6, '#4a4f5d');
+        b.surf('asphalt').box(a, 0.02, 0, 6, 0.04, HALF * 2, '#53575f'); b.box(0, 0.02, a, HALF * 2, 0.04, 6, '#53575f');
         segs.forEach(s => {
           const c = (s[0] + s[1]) / 2, L = s[1] - s[0];
-          [-4, 4].forEach(o => { b.box(a + o, 0.035, c, 2, 0.07, L, '#bab3a6'); b.box(c, 0.035, a + o, L, 0.07, 2, '#bab3a6'); });
+          b.surf('paving'); [-4, 4].forEach(o => { b.box(a + o, 0.035, c, 2, 0.07, L, '#c4beb2'); b.box(c, 0.035, a + o, L, 0.07, 2, '#c4beb2'); });
+          // Bordsteinkanten zur Straße
+          b.surf('concrete'); [-3.05, 3.05].forEach(o => { b.box(a + o, 0.05, c, 0.14, 0.1, L, '#d8d4cc'); b.box(c, 0.05, a + o, L, 0.1, 0.14, '#d8d4cc'); });
+          b.surf(0);
           for (let t = s[0] + 2; t < s[1] - 1; t += 4) { b.box(a, 0.043, t + 1, 0.16, 0.01, 2, '#f2efe6'); b.box(t + 1, 0.043, a, 2, 0.01, 0.16, '#f2efe6'); }
           // Straßenbäume und Laternen am Gehweg
           for (let t = s[0] + 6; t < s[1] - 4; t += 13) { trees.push([a + 4.2, t, 1]); trees.push([t + 6, a - 4.2, 1]); lamps.push([a - 4.2, t + 6, Math.PI]); lamps.push([t, a + 4.2, -HP]); }
@@ -310,7 +345,7 @@
       }));
       // Weltgrenze: Hecke rundum, dahinter bunte Häuser als Kulisse
       const hb = HALF + 0.6;
-      [[0, -hb, HALF * 2 + 2, 1.2], [0, hb, HALF * 2 + 2, 1.2], [-hb, 0, 1.2, HALF * 2 + 2], [hb, 0, 1.2, HALF * 2 + 2]].forEach(h => { b.box(h[0], 0.7, h[1], h[2], 1.4, h[3], '#3e8a49'); b.box(h[0], 1.45, h[1], h[2] * 0.98 + 0.01, 0.12, h[3] * 0.98 + 0.01, '#4f9e57'); });
+      b.surf('leaves'); [[0, -hb, HALF * 2 + 2, 1.2], [0, hb, HALF * 2 + 2, 1.2], [-hb, 0, 1.2, HALF * 2 + 2], [hb, 0, 1.2, HALF * 2 + 2]].forEach(h => { b.box(h[0], 0.7, h[1], h[2], 1.4, h[3], '#3e8a49'); b.box(h[0], 1.45, h[1], h[2] * 0.98 + 0.01, 0.12, h[3] * 0.98 + 0.01, '#4f9e57'); }); b.surf(0);
       const HC = ['#ffd8a8', '#ffb3c6', '#bde0fe', '#caffbf', '#fdffb6', '#e0c3fc', '#ffc6a5', '#f2efe6'], RC = ['#c0392b', '#2a6a8a', '#7a3a2a', '#3e6b3a', '#4a4f5d'];
       const rnd = PT.rng ? PT.rng(4242) : Math.random;
       const ctx = propCtx(b, g, gs, '#ff8a1e', out, [], '');
@@ -337,15 +372,15 @@
       (d.buildings || []).forEach(bp => {
         let lot; try { lot = B.fromBlueprint(bp); } catch (e) { return; }
         const ox = d.cx + bp.x, oz = d.cz + bp.z;
-        emitLot(lot, ox, oz, { b, gl: g, gs, wallH: WALL_H, wallCol: bp.wall, stamp: true });
+        emitLot(lot, ox, oz, { b, gl: g, gs, wallH: WALL_H, wallCol: bp.wall, stamp: true, wallSurf: bp.facade || ((PT.hash ? PT.hash(d.id + bp.id) : 0) % 3 === 0 ? 'brick' : 'plaster') });
         // Sockel außen (leicht dunkler) für klare Kontur
-        b.box(ox + bp.w / 2, 0.025, oz + bp.d / 2, bp.w + 0.5, 0.05, bp.d + 0.5, M.shade(T, bp.wall || '#ddd', 0.6));
+        b.surf('concrete').box(ox + bp.w / 2, 0.025, oz + bp.d / 2, bp.w + 0.5, 0.05, bp.d + 0.5, M.shade(T, bp.wall || '#ddd', 0.6)).surf(0);
         const rb = M.builder(T), rc = bp.roof || '#7a3a2a';
-        rb.box(ox + bp.w / 2, WALL_H + 0.14, oz + bp.d / 2, bp.w + 0.5, 0.28, bp.d + 0.5, rc);
+        rb.surf('gravel').box(ox + bp.w / 2, WALL_H + 0.14, oz + bp.d / 2, bp.w + 0.5, 0.28, bp.d + 0.5, rc);
         const rim = M.mix(T, rc, '#ffffff', 0.25);
-        rb.box(ox + bp.w / 2, WALL_H + 0.42, oz - 0.15, bp.w + 0.5, 0.3, 0.2, rim); rb.box(ox + bp.w / 2, WALL_H + 0.42, oz + bp.d + 0.15, bp.w + 0.5, 0.3, 0.2, rim);
+        rb.surf('concrete').box(ox + bp.w / 2, WALL_H + 0.42, oz - 0.15, bp.w + 0.5, 0.3, 0.2, rim); rb.box(ox + bp.w / 2, WALL_H + 0.42, oz + bp.d + 0.15, bp.w + 0.5, 0.3, 0.2, rim);
         rb.box(ox - 0.15, WALL_H + 0.42, oz + bp.d / 2, 0.2, 0.3, bp.d + 0.5, rim); rb.box(ox + bp.w + 0.15, WALL_H + 0.42, oz + bp.d / 2, 0.2, 0.3, bp.d + 0.5, rim);
-        rb.box(ox + bp.w * 0.3, WALL_H + 0.65, oz + bp.d * 0.35, 1.4, 0.8, 1.0, '#b8bcc6');
+        rb.surf('metal').box(ox + bp.w * 0.3, WALL_H + 0.65, oz + bp.d * 0.35, 1.4, 0.8, 1.0, '#b8bcc6');
         const rm = mesh(rb.build(), mats.v, rec.group, 'roof_' + bp.id); applyShadowFlags(rm, true, false);
         roofs.push({ mesh: rm, rect: [ox, oz, ox + bp.w, oz + bp.d], h: WALL_H });
         buildingRects.push({ rect: [ox, oz, ox + bp.w, oz + bp.d], col: rc, dist: d.id });
@@ -397,8 +432,8 @@
         if (d.lot && x > d.cx + d.lot.x - 3 && x < d.cx + d.lot.x + d.lot.w + 3 && z > d.cz + d.lot.z - 3 && z < d.cz + d.lot.z + d.lot.d + 4) continue;
         let free = true; for (let dz = -2; dz <= 2 && free; dz++) for (let dx = -2; dx <= 2; dx++) if (nav.solid(cellOf(x) + dx, cellOf(z) + dz)) { free = false; break; }
         if (!free || (d.props || []).some(p => (p[0] === 'road' || p[0] === 'platform' || p[0] === 'tracks' || p[0] === 'track' || p[0] === 'fence') && Math.abs(d.cz + (+p[2] || 0) - z) < ((p[0] === 'road' || p[0] === 'platform') ? (+p[4] || 6) / 2 + 2 : p[0] === 'track' ? 12 : 3) && Math.abs(d.cx + (+p[1] || 0) - x) < ((p[0] === 'road' || p[0] === 'platform') ? (+p[3] || 6) / 2 + 2 : p[0] === 'track' ? 12 : (+p[3] || 40) / 2 + 2))) continue;
-        if (rnd() < 0.55) { const r = 0.55 + rnd() * 0.35; b.sphere(x, r * 0.75, z, r, M.mix(T, '#3e8a49', '#5cc45f', rnd()), null, 7, 0.85); b.sphere(x + r * 0.6, r * 0.55, z + 0.2, r * 0.7, '#4f9e57', null, 6, 0.85); nav.solidCircle(x, z, 0.5); }
-        else { b.cyl(x, 0.12, z, 0.9, 0.24, 0.95, '#8a6a4a', null, 10); b.cyl(x, 0.25, z, 0.82, 0.04, 0.82, '#5a3e2a', null, 10); for (let i = 0; i < 6; i++) { const a = i / 6 * TAU + rnd(); b.sphere(x + Math.cos(a) * 0.45, 0.38, z + Math.sin(a) * 0.45, 0.17, FL[Math.floor(rnd() * FL.length)], null, 6); } nav.solidCircle(x, z, 0.6); }
+        if (rnd() < 0.55) { const r = 0.55 + rnd() * 0.35, lump = M.lumpGeo(T); b.surf('leaves'); b.add(lump, b._local(x, r * 0.75, z, r, r * 0.85, r, { ry: rnd() * TAU }), M.mix(T, '#3e8a49', '#5cc45f', rnd())); b.add(lump, b._local(x + r * 0.6, r * 0.55, z + 0.2, r * 0.7, r * 0.6, r * 0.7, { ry: rnd() * TAU }), M.col(T, '#4f9e57')); b.surf(0); nav.solidCircle(x, z, 0.5); }
+        else { b.surf('woodfine').cyl(x, 0.12, z, 0.9, 0.24, 0.95, '#8a6a4a', null, M.seg(10)); b.surf('gravel').cyl(x, 0.25, z, 0.82, 0.04, 0.82, '#5a3e2a', null, M.seg(10)); b.surf(0); for (let i = 0; i < 6; i++) { const a = i / 6 * TAU + rnd(); b.sphere(x + Math.cos(a) * 0.45, 0.38, z + Math.sin(a) * 0.45, 0.17, FL[Math.floor(rnd() * FL.length)], null, M.seg(6)); } nav.solidCircle(x, z, 0.6); }
         placed++;
       }
     }
@@ -409,7 +444,7 @@
       const ctx = propCtx(b, g, gs, '#ff8a1e', out, [], 'FUNKPLATZ');
       (P.props || []).forEach(p => { const t = p[0]; if (t === 'tree') trees.push([p[1], p[2], 0]); else if (t === 'lamp') lamps.push([p[1], p[2], 0]); else M.prop(ctx, t, p[1], p[2], p[3], p[4], p[5]); });
       // Blumenbeete an den Ecken
-      [[-24, -24], [24, -24], [-24, 24], [24, 24]].forEach(([x, z]) => { b.cyl(x, 0.25, z, 2.6, 0.5, 2.7, '#c9c4b8', null, 16); b.cyl(x, 0.52, z, 2.4, 0.06, 2.4, '#6b4f3a', null, 16); for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; b.sphere(x + Math.cos(a) * 1.4, 0.75, z + Math.sin(a) * 1.4, 0.32, ['#ff7ad9', '#ffd36b', '#ff4d6d', '#c58bff'][i % 4], null, 6); } nav.solidCircle(x, z, 2.6); });
+      [[-24, -24], [24, -24], [-24, 24], [24, 24]].forEach(([x, z]) => { b.surf('concrete').cyl(x, 0.25, z, 2.6, 0.5, 2.7, '#c9c4b8', null, M.seg(16)); b.surf('gravel').cyl(x, 0.52, z, 2.4, 0.06, 2.4, '#6b4f3a', null, M.seg(16)); b.surf('leaves'); for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; b.sphere(x + Math.cos(a) * 1.4, 0.75, z + Math.sin(a) * 1.4, 0.32, ['#ff7ad9', '#ffd36b', '#ff4d6d', '#c58bff'][i % 4], null, M.seg(6)); } b.surf(0); nav.solidCircle(x, z, 2.6); });
       M.prop(ctx, 'sign', 0, 12.5, 'FUNKPLATZ');
       const grp = new T.Group(); grp.name = 'plaza'; world.add(grp);
       const sm = mesh(b.build(), mats.v, grp, 'plaza'); if (sm) applyShadowFlags(sm, true, true);
@@ -480,14 +515,14 @@
       R.group.name = 'lot_' + lotId; world.add(R.group);
       const b = M.builder(T), up = M.builder(T), g = M.builder(T), gs = M.builder(T), rf = M.builder(T), out = { solids: [], fences: [], signs: [], heights: [] };
       // Grundstücksfläche und Rand
-      b.flat(ox + lot.w / 2, 0.02, oz + lot.d / 2, lot.w, lot.d, lot.owned ? '#8fd16f' : '#b9c98a');
+      b.surf('grass').flat(ox + lot.w / 2, 0.02, oz + lot.d / 2, lot.w, lot.d, lot.owned ? '#7cc160' : '#b9c98a').surf(0);
       [[ox + lot.w / 2, oz, lot.w + 0.2, 0.14], [ox + lot.w / 2, oz + lot.d, lot.w + 0.2, 0.14], [ox, oz + lot.d / 2, 0.14, lot.d], [ox + lot.w, oz + lot.d / 2, 0.14, lot.d]].forEach(s => b.box(s[0], 0.04, s[1], s[2], 0.08, s[3], lot.owned ? '#f2efe6' : '#ffd36b'));
       if (!lot.owned) [[ox, oz], [ox + lot.w, oz], [ox, oz + lot.d], [ox + lot.w, oz + lot.d]].forEach(p => b.box(p[0], 0.5, p[1], 0.18, 1.0, 0.18, '#ff4d6d'));
       emitLot(lot, ox, oz, { b, up, gl: g, gs, wallH: LOT_H, wallCol: lotId === 'studio' ? '#f6e7cf' : '#e3eef8', split: true, stamp: true });
       // Dach über allen umschlossenen Räumen
       let hasRoof = false;
       try {
-        const reg = B.regions(lot), rc = lotId === 'studio' ? '#d0563b' : '#2a6a8a';
+        const reg = B.regions(lot), rc = lotId === 'studio' ? '#d0563b' : '#2a6a8a'; rf.surf('gravel');
         reg.list.filter(r => r.enclosed).forEach(r => {
           const rows = {}; r.cells.forEach(c => { (rows[c[1]] = rows[c[1]] || []).push(c[0]); });
           Object.keys(rows).forEach(z => { const xs = rows[z].sort((a, e) => a - e); let s = xs[0], p = xs[0]; for (let i = 1; i <= xs.length; i++) { if (i < xs.length && xs[i] === p + 1) { p = xs[i]; continue; } rf.box(ox + (s + p + 1) / 2, LOT_H + 0.12, oz + (+z) + 0.5, p - s + 1 + 0.2, 0.24, 1.02, rc); hasRoof = true; if (i < xs.length) { s = p = xs[i]; } } });
@@ -511,6 +546,9 @@
         R.pult = [p.cx, p.cz];
         inter.push({ kind: 'studio', id: lotId, label: 'Produktionspult', x: p.cx, z: p.cz, r: 2.0, lot: lotId, color: '#ff8a1e' });
       } else R.pult = null;
+      // Radio-Sendepult (Radiostudio, src/ui/ui-radio.js)
+      const ro = lot.owned && (lot.objs || []).find(o => o.id === 'rd_pult');
+      if (ro) { const p = objPlacement(lot, ro, ox, oz, null, null); inter.push({ kind: 'radio', id: lotId, label: 'Radio-Sendepult – AnMaCha24', x: p.cx, z: p.cz, r: 2.0, lot: lotId, color: '#ff3b5c' }); }
       // Meshes
       R.static = mesh(b.build(), mats.v, R.group, 'lotStatic'); if (R.static) applyShadowFlags(R.static, true, true);
       R.upper = mesh(up.build(), mats.v, R.group, 'lotUpper'); if (R.upper) applyShadowFlags(R.upper, true, true);
@@ -526,7 +564,7 @@
       R.signs = out.signs; out.signs = [];
       stampOut(out);
       lotsR[lotId] = R; lotVer[lotId] = lot.ver + (lot.owned ? 'o' : '');
-      if (lotId === 'studio') placeHosts();
+      if (lotId === 'studio') { placeHosts(); studioLight.position.set(R.pult ? R.pult[0] : ox + lot.w / 2, LOT_H - 0.35, R.pult ? R.pult[1] : oz + lot.d / 2); }
       // Figuren, die jetzt in einem belegten Feld stehen, herausschieben
       if (player) unstick(player);
       npcs.forEach(n => { n.path = null; n.needPath = true; if (n.host) return; unstick(n); });
@@ -574,7 +612,7 @@
       });
     }
     function addNpc(def, host) {
-      const fi = figSys.add(def.look || {});
+      const fi = figSys.add(host ? Object.assign({}, def.look || {}, { hero: def.id }) : (def.look || {}));
       const n = { id: def.id, def, host: !!host, fig: fi, x: 0, z: 0, ry: 0, phase: 0, amt: 0, path: null, pi: 0, goal: null, goalKey: '', needPath: false, off: [0, 0], name: def.name || def.id };
       const h = PT.hash ? PT.hash(def.id) : 1, a = (h % 628) / 100; n.off = [Math.cos(a) * 0.9, Math.sin(a) * 0.9];
       npcs.push(n); return n;
@@ -679,9 +717,18 @@
         }
         r.mesh.visible = !hide;
       });
-      Object.keys(lotsR).forEach(k => { const R = lotsR[k]; const bm = mode === 'build' && bstate.lot === k; if (R.upper) R.upper.visible = !bm; if (R.glass) R.glass.visible = !bm; if (R.grid) R.grid.visible = bm; });
+      Object.keys(lotsR).forEach(k => {
+        const R = lotsR[k], bm = mode === 'build' && bstate.lot === k;
+        // Laufmodus im eigenen Gebäude: verdeckt eine Wand zwischen Figur und Kamera die Sicht, obere Wandhälften ausblenden (wie im Bau-Modus)
+        let cut = false;
+        if (!bm && mode === 'follow' && player && inRect(px, pz, [R.ox, R.oz, R.ox + R.w, R.oz + R.d], 0)) {
+          const dx = cx - px, dz = cz - pz, dl = Math.hypot(dx, dz) || 1, L = Math.min(dl, 5);
+          cut = !nav.los(px, pz, px + dx / dl * L, pz + dz / dl * L);
+        }
+        if (R.upper) R.upper.visible = !bm && !cut; if (R.glass) R.glass.visible = !bm && !cut; if (R.grid) R.grid.visible = bm;
+      });
       // Bezirke außerhalb der Sichtweite ganz ausblenden (spart Frustum-Tests und Draw-Calls)
-      const far = camera.far + 40;
+      const far = QUAL[quality].far + 40;
       dists.forEach(rec => { const mx = (rec.rect[0] + rec.rect[2]) / 2, mz = (rec.rect[1] + rec.rect[3]) / 2; rec.group.visible = Math.hypot(mx - cx, mz - cz) < far + 40; });
     }
 
@@ -739,7 +786,8 @@
       });
       const jm = mesh(jb.build(), mats.v, world, 'jobs'); if (jm) jm.frustumCulled = false;
       // Figuren
-      figSys = M.figureSystem(T, 48, { body: new T.MeshLambertMaterial({ vertexColors: true }), shadow: mats.shadow });
+      const figMat = quality === 'low' ? new T.MeshLambertMaterial({ vertexColors: true }) : new T.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0 });
+      figSys = M.figureSystem(T, 48, { body: LC(figMat), shadow: mats.shadow });
       mats.figure = figSys.meshes.torso.material; dyn.add(figSys.group); applyShadowFlags(figSys.group, true, false);
       figSys.meshes.shadow.castShadow = false;
       initNpcs();
@@ -828,7 +876,8 @@
 
     // ── Zeit, Tag/Nacht ──
     const sunDir = new T.Vector3(0.4, 0.8, 0.3);
-    const C = { daySky: new T.Color('#8fd3ff'), nightSky: new T.Color('#1b2347'), dusk: new T.Color('#ffa86b'), tmp: new T.Color(), glassDay: new T.Color('#a8d8f0'), glassNight: new T.Color('#ffcf6b'), lampOff: new T.Color('#9a9580'), lampOn: new T.Color('#fff1b0'), sunDay: new T.Color('#fff6e8'), sunDusk: new T.Color('#ffb070'), moon: new T.Color('#8fa8ff') };
+    const C = { daySky: new T.Color('#8fd3ff'), nightSky: new T.Color('#1b2347'), dusk: new T.Color('#ffa86b'), tmp: new T.Color(), glassDay: lin('#b4dcf0'), glassNight: lin('#ffcf6b'), lampOff: lin('#9a9580'), lampOn: lin('#fff1b0'), sunDay: lin('#fff1dc'), sunDusk: lin('#ffb070'), moon: lin('#8fa8ff'),
+      zenDay: new T.Color('#3c8ae0'), zenNight: new T.Color('#0b1030'), hemiDay: lin('#dcecff'), hemiNight: lin('#5a6aa8'), gDay: lin('#8a7a62'), gNight: lin('#2a2a3a') };
     let nightF = 0;
     function setTime(min) {
       min = ((+min || 0) % 1440 + 1440) % 1440; curMin = min;
@@ -836,24 +885,30 @@
       const day = smooth(-0.12, 0.3, e), dusk = clamp(1 - Math.abs(e - 0.05) / 0.25, 0, 1);
       nightF = 1 - day;
       C.tmp.copy(C.nightSky).lerp(C.daySky, day).lerp(C.dusk, dusk * 0.45);
-      scene.background.copy(C.tmp); scene.fog.color.copy(C.tmp);
+      scene.background.copy(C.tmp); scene.fog.color.copy(C.tmp); // Nebel wird in three r128 nach Tonemapping/sRGB gemischt → sRGB-Wert
+      sky.material.uniforms.hor.value.copy(scene.fog.color); sky.material.uniforms.bot.value.copy(scene.fog.color);
+      sky.material.uniforms.top.value.copy(C.zenNight).lerp(C.zenDay, day).lerp(C.dusk, dusk * 0.2);
       const az = (h - 6) / 14 * Math.PI;
       sunDir.set(Math.cos(az) * 0.7, Math.max(0.3, e), 0.6).normalize();
       sun.position.set((player ? player.x : 0) + sunDir.x * 60, sunDir.y * 60, (player ? player.z : 0) + sunDir.z * 60);
-      sun.intensity = 0.16 + 0.56 * day; sun.color.copy(day > 0.05 ? C.sunDay : C.moon).lerp(C.sunDusk, dusk * 0.6);
-      hemi.intensity = 0.5 + 0.2 * day; hemi.color.setRGB(lerp(0.62, 1, day), lerp(0.68, 1, day), lerp(0.95, 1, day));
+      sun.intensity = 0.2 + 0.9 * day; sun.color.copy(day > 0.05 ? C.sunDay : C.moon).lerp(C.sunDusk, dusk * 0.6);
+      hemi.intensity = 0.38 + 0.27 * day; hemi.color.copy(C.hemiNight).lerp(C.hemiDay, day); hemi.groundColor.copy(C.gNight).lerp(C.gDay, day);
+      studioLight.intensity = QUAL[quality].lv ? 0.5 + 0.8 * nightF : 0;
       mats.glass.color.copy(C.glassDay).lerp(C.glassNight, smooth(0.35, 0.8, nightF));
       mats.lamp.color.copy(C.lampOff).lerp(C.lampOn, smooth(0.3, 0.7, nightF));
       mats.pool.opacity = 0.42 * smooth(0.35, 0.8, nightF); if (poolMesh) poolMesh.visible = mats.pool.opacity > 0.02;
     }
     function setQuality(q) {
       if (QUAL[q]) quality = q; const Q = QUAL[quality];
-      camera.far = Q.far; camera.updateProjectionMatrix(); scene.fog.near = Q.fog[0]; scene.fog.far = Q.fog[1];
+      camera.far = Q.far + 60; camera.updateProjectionMatrix(); scene.fog.near = Q.fog[0]; scene.fog.far = Q.fog[1];
       if (renderer) {
         renderer.setPixelRatio(Math.min(root.devicePixelRatio || 1, Q.pr)); renderer.setSize(size.w, size.h);
         if (renderer.shadowMap.enabled !== Q.shadows) { renderer.shadowMap.enabled = Q.shadows; scene.traverse(o => { if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => { m.needsUpdate = true; }); }); }
       }
       sun.castShadow = Q.shadows;
+      if (Q.shadows && sun.shadow.mapSize.x !== Q.map) { sun.shadow.mapSize.set(Q.map, Q.map); if (sun.shadow.map) { sun.shadow.map.dispose(); sun.shadow.map = null; } }
+      if (Q.shadows) { Object.assign(sun.shadow.camera, { left: -Q.sh, right: Q.sh, top: Q.sh, bottom: -Q.sh }); sun.shadow.camera.updateProjectionMatrix(); }
+      studioLight.visible = Q.lv > 0;
       world.traverse(o => { if (o.isMesh) { const cast = !/^(ground|groundGlass|glass_|glow_|plazaGlow|lotGlass|lotGlow|signs)/.test(o.name); o.castShadow = Q.shadows && cast && o.name !== 'bulbs'; o.receiveShadow = Q.shadows && /^(ground|static_|plaza$|lotStatic|lotUpper)/.test(o.name); } });
       if (figSys) { figSys.group.traverse(o => { if (o.isMesh) o.castShadow = Q.shadows && o.name !== 'fig_shadow'; }); figSys.meshes.shadow.visible = !Q.shadows; }
     }
@@ -962,7 +1017,7 @@
       const p = objPlacement(lot || { objs: [] }, ob, R.ox, R.oz, lot ? surfTops(lot) : null, null), sz = B.size(ob);
       ghostMesh.position.set(p.cx, p.y + 0.01, p.cz); ghostMesh.rotation.set(0, p.ry, 0); ghostMesh.visible = true;
       ghostFoot.position.set(p.cx, 0.08, p.cz); ghostFoot.scale.set(sz[0] - 0.06, 1, sz[1] - 0.06); ghostFoot.visible = true;
-      const ok = o.ok !== false; mats.ghost.color.set(ok ? '#9dffb0' : '#ff7a7a'); mats.ghostFoot.color.set(ok ? '#4be08a' : '#ff4d6d');
+      const ok = o.ok !== false; setLin(mats.ghost, ok ? '#9dffb0' : '#ff7a7a'); setLin(mats.ghostFoot, ok ? '#4be08a' : '#ff4d6d');
     }
     function ghostEdge(key, kind, ok) {
       if (!key) { if (edgeMesh) edgeMesh.visible = false; return; }
@@ -973,7 +1028,7 @@
       const h = kind === 'door' ? 0.14 : kind === 'none' || kind === 'erase' ? 0.3 : SPLIT_Y + 0.05, th = kind === 'door' ? 0.5 : 0.24;
       edgeMesh.position.set(hor ? R.ox + x + 0.5 : R.ox + x, h / 2, hor ? R.oz + z : R.oz + z + 0.5);
       edgeMesh.scale.set(hor ? 1.1 : th, h, hor ? th : 1.1); edgeMesh.visible = true;
-      mats.edge.color.set(ok === false ? '#ff4d6d' : kind === 'window' ? '#6ef0ff' : kind === 'door' ? '#ffd36b' : kind === 'none' || kind === 'erase' ? '#ff9a3c' : '#4be08a');
+      setLin(mats.edge, ok === false ? '#ff4d6d' : kind === 'window' ? '#6ef0ff' : kind === 'door' ? '#ffd36b' : kind === 'none' || kind === 'erase' ? '#ff9a3c' : '#4be08a');
     }
     function highlightCells(cells, color) {
       if (hlMesh) { dyn.remove(hlMesh); hlMesh.geometry.dispose(); hlMesh = null; }
@@ -981,7 +1036,7 @@
       const b = M.builder(T);
       cells.forEach(c => { if (c && c.length >= 2) b.flat(R.ox + c[0] + 0.5, 0.075, R.oz + c[1] + 0.5, 0.96, 0.96, '#ffffff'); });
       const g = b.build(); if (!g) return;
-      mats.hl.color.set(color || '#ffb02e'); hlMesh = new T.Mesh(g, mats.hl); hlMesh.renderOrder = 3; dyn.add(hlMesh);
+      setLin(mats.hl, color || '#ffb02e'); hlMesh = new T.Mesh(g, mats.hl); hlMesh.renderOrder = 3; dyn.add(hlMesh);
     }
 
     // ── Minispiel-Szene ──
@@ -1000,7 +1055,10 @@
       renderer.setScissorTest(false); renderer.setViewport(0, 0, w, h); renderer.setClearColor(0x000000, 1); renderer.clear();
       renderer.setScissorTest(true); renderer.setScissor(vx, vy, vw, vh); renderer.setViewport(vx, vy, vw, vh);
       mg.camera.aspect = 16 / 9; mg.camera.updateProjectionMatrix();
+      // Minispiel-Szenen nutzen eigene, unveränderte Farben (ohne Farbraum-Umrechnung)
+      renderer.outputEncoding = T.LinearEncoding; renderer.toneMapping = T.NoToneMapping;
       renderer.render(mg.scene, mg.camera);
+      renderer.outputEncoding = T.sRGBEncoding; renderer.toneMapping = T.ACESFilmicToneMapping;
       renderer.setScissorTest(false); renderer.setViewport(0, 0, w, h);
       lastInfo = { calls: renderer.info.render.calls, tris: renderer.info.render.triangles };
     }
@@ -1009,6 +1067,7 @@
       if (mode === 'mg') return renderMg();
       if (!renderer || lost) return;
       renderer.setScissorTest(false); renderer.setViewport(0, 0, size.w, size.h);
+      sky.position.copy(camera.position); sky.scale.setScalar(camera.far * 0.95); sky.updateMatrixWorld();
       renderer.render(scene, camera);
       lastInfo = { calls: renderer.info.render.calls, tris: renderer.info.render.triangles };
     }
@@ -1094,6 +1153,7 @@
       [ghostMesh, ghostFoot, edgeMesh, hlMesh].forEach(m => { if (m) { dyn.remove(m); if (m.geometry && !(m.geometry.userData && m.geometry.userData.shared)) m.geometry.dispose(); } });
       ghostMesh = ghostFoot = edgeMesh = hlMesh = null;
       Object.keys(mats).forEach(k => { if (mats[k] && mats[k].dispose) mats[k].dispose(); });
+      scene.remove(sky); sky.material.dispose(); scene.remove(studioLight);
       if (atlas.tex) atlas.tex.dispose();
       if (mg) { mg.scene.traverse(o => { if (o.geometry) o.geometry.dispose(); }); mg = null; }
       M.clearCache();
