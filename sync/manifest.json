@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "168ca21cc11f",
- "generated": "2026-10-24T13:50:22+00:00",
- "commit": "e6d63e10d01e1a7189bed520bbca8d3172671fc1",
+ "version": "a37c1fae41a3",
+ "generated": "2026-10-24T13:55:30+00:00",
+ "commit": "07ec9bc0025ea01ab86537aad73a66eb3525169e",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5338,8 +5338,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3122,
-   "h": "b75c2364b9900565a512adc3eed3438bd02eb4f39a874101991ffdc869b3d823"
+   "s": 3150,
+   "h": "e41452702400957d52380a82eaebe1565bce4de591f9303cb8682aca74a1d48d"
   },
   {
    "p": "chat.html",
@@ -6098,8 +6098,8 @@
   },
   {
    "p": "games.js",
-   "s": 45646,
-   "h": "f71db66d1886f974072b2e4618e5e8dcf1f8ead0d9038ce1de21eb9d45330d18"
+   "s": 46418,
+   "h": "322b83bb2a1cf2920293bc8233ea3ae201a3f3cf006183221e157f4bb175e617"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6258,8 +6258,8 @@
   },
   {
    "p": "guides.js",
-   "s": 131519,
-   "h": "4464cdc026cfc4c7046dc4d5353d22e55f62da9752532cd91265d274200d8c77"
+   "s": 133425,
+   "h": "94e7c9966622fd32a4b120ea38ad51b4a4f1fa89676c02a838782d5395c4834d"
   },
   {
    "p": "heute.html",
@@ -6435,6 +6435,61 @@
    "p": "kiko-sterneninseln/vite.config.js",
    "s": 214,
    "h": "455543146b29d9a6f7943ac05350b9e95f9dfdf2f100babff20a2f6a4802f316"
+  },
+  {
+   "p": "konfetti-party/card.jpg",
+   "s": 60122,
+   "h": "569245b02cdd57113f9e0bb6a505ea6abbc4073e7604b7b606ce03bfacf1728a"
+  },
+  {
+   "p": "konfetti-party/index.html",
+   "s": 13037,
+   "h": "1dcaa41347d53bbcc8cc507099ded13e8afdf8b878a758691f34ba9d156d5c49"
+  },
+  {
+   "p": "konfetti-party/js/app.js",
+   "s": 38093,
+   "h": "802481a442f54e1e3cfc4d08a0c85ec87b32e69513a00ca9d37b7008ffedea74"
+  },
+  {
+   "p": "konfetti-party/js/core.js",
+   "s": 16079,
+   "h": "54e3c624b6b45575fb9891bc8f6cdf99faf641dc348f049861209699b62ac472"
+  },
+  {
+   "p": "konfetti-party/js/data.js",
+   "s": 4360,
+   "h": "5f702220a90e7f4e2879b259bf1cf1bc391d01f1df7afbb6f0e7513df7ec5e12"
+  },
+  {
+   "p": "konfetti-party/js/sound.js",
+   "s": 4194,
+   "h": "0a00c59e47a32be77609f39ad95022c7f196cc5198b2b5fd143d84a76bfc73a8"
+  },
+  {
+   "p": "konfetti-party/js/touch.js",
+   "s": 4506,
+   "h": "27f72a8297e5741226e461f343a34cf4cc1ae56c780c676ce2ac62cd09dbc05b"
+  },
+  {
+   "p": "konfetti-party/js/view.js",
+   "s": 13566,
+   "h": "d98be93bf8e3f8da225bb78af0ea1662eddd6adc0d39b07e07488944d4a7b136"
+  },
+  {
+   "p": "konfetti-party/manifest.webmanifest",
+   "s": 804,
+   "h": "e1a8c079bd8dcac8a47654a41dad0c5cbe6a39a4456881251f73496c58d39d5b"
+  },
+  {
+   "p": "konfetti-party/style.css",
+   "s": 17985,
+   "h": "01b8789d903e166dc8b4cc1760e0ce7138f4ecbfa60f7b50b1ace5eda07ad38c"
+  },
+  {
+   "p": "konfetti-party/sw.js",
+   "s": 2022,
+   "h": "0391dac8e5d307bf59cd1bc2fee9126680931cd1f5d087f2e6d829b3dcd46bf4"
   },
   {
    "p": "konto-loeschen.html",
@@ -6798,8 +6853,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3385,
-   "h": "a19348970b53572dc08acc0521ee55025bd59493ccfa5e1350804d47c3cbdfa4"
+   "s": 3462,
+   "h": "bb2fb5dbf858679f6dbdba47e1b4db7cb22723443e729a0961d1766905df0b92"
   },
   {
    "p": "oma-rennen/card.jpg",
@@ -8243,8 +8298,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 199808,
-   "h": "5ce9672f119ed7c3fe6cda33eb8129e62e45fc802fb9212bdd36beed95032a3d"
+   "s": 202798,
+   "h": "2cd2983c5ee821a2cada579ec5a854977725b5267e01f02f19ab1a35f52eb563"
   },
   {
    "p": "taschi/card.svg",
