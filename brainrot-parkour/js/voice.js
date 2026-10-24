@@ -25,7 +25,7 @@
   function load() { try { voices = speechSynthesis.getVoices() || []; } catch (e) { voices = []; } }
   if (TTS) { load(); try { speechSynthesis.onvoiceschanged = load; } catch (e) { } }
   const IT = v => /^it(-|_|$)/i.test(v.lang);
-  const MALE = /luca|diego|cosimo|giorgio|paolo|roberto|marco|andrea|riccardo|benigno|male|uomo|maschi|it-it-[a-z]*-?(c|d)\b|neural.*(diego|benigno|giuseppe)|giuseppe/i, FEM = /alice|federica|elsa|isabella|paola|carla|chiara|female|donna|google italiano/i;
+  const MALE = /luca|diego|cosimo|giorgio|paolo|roberto|marco|andrea|riccardo|benigno|giuseppe|\bmale\b|uomo|maschi|x-it[cd]\b|smtm\d/i  // Android: Google „x-itc/x-itd“, Samsung „SMTm…“ = Männerstimmen, FEM = /alice|federica|elsa|isabella|paola|carla|chiara|female|donna|google italiano/i;
   function voice() {
     const it = voices.filter(IT); if (!it.length) return null;
     if (mode === 'w') return it.find(v => FEM.test(v.name)) || it[0];
