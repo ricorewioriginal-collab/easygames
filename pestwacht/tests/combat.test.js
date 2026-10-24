@@ -70,3 +70,49 @@ test('Weltkarte: alle Hauptstädte sind erreichbar, Nebel lichtet sich nur beim 
   run(S, 1200);
   assert.ok(S.fog.split('').filter(x => x === '1').length > seen0, 'Erkundung deckt Felder auf');
 });
+
+test('Belagerung: Ziel-Fokus hält Nahkampf und Rammen nicht von der Mauer ab', () => {
+  const b = BT.make({ seed: 4, att: { units: { spear: 100, ram: 20 } }, def: { units: { bow: 1 } }, siege: { wall: 600, towers: 0 } });
+  b.focus[0] = b.sq.findIndex(q => q.s === 1 && q.n > 0);
+  for (let i = 0; i < 300 && !b.done; i++) BT.step(b, 0.2);
+  assert.ok(b.wall < 600, 'Mauer nimmt trotz Fokus Schaden');
+});
+
+test('Rückruf einer Karawane bringt die unverkaufte Ware heim', () => {
+  const S = G.newGame({ mode: 'free', seed: 'karawane', bots: 3 });
+  const cap = S.world.caps[0], far = W.within(S.world, cap, 4).find(t => t !== cap && W.dist(S.world, cap, t) >= 3 && W.path(S.world, cap, t));
+  S.res.wood = 50;
+  const a = M.create(S, { owner: 'P', units: {}, target: far, mission: 'trade', cargo: { wood: 100 } });
+  assert.ok(a && a.cargo);
+  run(S, 5); M.recall(S, a.id);
+  for (let i = 0; i < 4000 && S.marches.indexOf(a) >= 0; i++) G.tick(S, 0.5);
+  assert.equal(S.marches.indexOf(a), -1, 'Karawane ist zurück');
+  assert.ok(S.res.wood >= 140, 'Holz zurück: ' + S.res.wood);
+});
+
+test('Aufgeriebene Expedition: Verwundete kommen trotzdem ins Lazarett', () => {
+  const S = G.newGame({ mode: 'free', seed: 'verwundet', bots: 3 });
+  const cap = S.world.caps[0], s = S.world.sites.find(x => x.gar && !x.cleared && x.tile != null && W.path(S.world, cap, x.tile));
+  s.gar = { mon: { gaenger: 80, bestie: 4 } };
+  S.troops.spear = 20; S.cfg.watchBattles = false;
+  const w0 = S.wounded.spear || 0;
+  const r = M.send(S, { target: s.tile, mission: 'occupy', units: { spear: 20 }, heroes: [], formation: 'ausgewogen' });
+  assert.equal(r.ok, true, r.why);
+  for (let i = 0; i < 6000 && S.marches.indexOf(r.a) >= 0; i++) G.tick(S, 0.5);
+  assert.equal(S.marches.indexOf(r.a), -1);
+  assert.ok((S.wounded.spear || 0) > w0, 'Verwundete im Lazarett: ' + S.wounded.spear);
+});
+
+test('Eroberung: neuer Sitz zählt als Hauptstadt, Kampagnen-Ort gibt sein Flag auch nach Bot-Besetzung', () => {
+  const S = G.newGame({ mode: 'free', seed: 'sitz', bots: 3 });
+  const f = S.factions[0], other = W.tilesOf(S, f.id).find(t => t !== f.cap);
+  assert.ok(other != null);
+  f.cap = other;                                   // Hauptstadt wurde schon einmal verlegt
+  W.tilesOf(S, f.id).forEach(t => { if (t !== other) S.world.tiles[t].own = null; });
+  PW.Conquest.capture(S, { owner: 'P', units: { spear: 50 }, heroes: [], mission: 'occupy' }, other, {});
+  assert.equal(f.alive, false, 'letzter Sitz gefallen: Fraktion zerfällt');
+  const s = S.world.sites.find(x => x.tile != null && x.type !== 'capital');
+  s.story = 'test_flag'; s.cleared = true; s.gar = null; S.world.tiles[s.tile].own = S.factions[1].id;
+  PW.Conquest.capture(S, { owner: 'P', units: { spear: 50 }, heroes: [], mission: 'occupy' }, s.tile, {});
+  assert.equal(S.storyFlags.test_flag, 1);
+});

@@ -63,6 +63,16 @@ const SKIP = new Set(['exit', 'totitle', 'simport', 'sexport', 'sdel', 'keyreset
   await p.mouse.move(640, 400); await p.mouse.wheel(0, -300); await p.mouse.click(640, 420); await p.mouse.click(700, 380);
   await p.evaluate(() => { const S = PW.UI.S; S.speed = 3; for (let i = 0; i < 2400; i++) PW.Game.tick(S, 0.5); });
   await p.waitForTimeout(1500);
+  // Expeditionsfenster für jede Auftragsart öffnen (mit Truppen, damit die Zielprüfung läuft)
+  const expRes = await p.evaluate(() => {
+    const S = PW.UI.S, out = []; S.troops.spear = (S.troops.spear || 0) + 5; S.troops.rider = (S.troops.rider || 0) + 2;
+    const tile = PW.World.within(S.world, S.world.caps[0], 2).find(i => i !== S.world.caps[0]);
+    Object.keys(PW.March.MISSIONS).forEach(m => { try { PW.UI.P.expedition(tile, m); PW.UI.exp.units = { spear: 2 }; PW.UI.redraw && PW.UI.redraw(); out.push(m); } catch (e) { out.push(m + ': ' + e.message); } });
+    PW.UI.closeAll ? PW.UI.closeAll() : null; return out;
+  });
+  console.log('Expeditionsfenster:', expRes.join(', '));
+  if (expRes.some(x => x.indexOf(':') >= 0)) errs.push('Expeditionsfenster: ' + expRes.join(', '));
+  await closeAll();
   // Beobachtete Schlacht: Expedition gegen den nächsten Ort mit Besatzung schicken
   const sent = await p.evaluate(() => {
     const S = PW.UI.S, W = PW.World; S.troops.spear = (S.troops.spear || 0) + 60; S.troops.bow = (S.troops.bow || 0) + 40; S.cfg.watchBattles = true;

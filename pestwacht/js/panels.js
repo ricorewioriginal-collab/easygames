@@ -334,7 +334,7 @@
     const path = Wd().path(S.world, S.world.caps[0], tile); U.plan = path;
     U.modal('exp', M.MISSIONS[mission].icon + ' ' + M.MISSIONS[mission].name + ' → ' + esc(Wd().regionName(S, tile)), () => {
       const x = U.exp, mine = PW.Battle.power(x.units, null, x.heroes.map(h => H.stats(S, h)), S._mods), d = M.defenders(S, tile), theirs = (mission === 'attack' || mission === 'occupy') ? estPower(S, d) : 0;
-      const why = M.playerWhy(S, x), spd = M.speedOf(S, 'P', x.units, x.heroes, mission), eta = path ? Wd().pathCost(S.world, path) * PW.BAL.marchCost / spd : 0;
+      const why = M.playerWhy(S, Object.assign({ target: tile }, x)), spd = M.speedOf(S, 'P', x.units, x.heroes, mission), eta = path ? Wd().pathCost(S.world, path) * PW.BAL.marchCost / spd : 0;
       let b = '';
       if (mission !== 'trade') {
         b += '<h3>Truppen</h3><div class="col">' + PW.UNIT_IDS.filter(k => S.troops[k] > 0).map(k => '<label class="f">' + PW.UNITS[k].icon + ' ' + PW.UNITS[k].name + ': <b>' + (x.units[k] || 0) + '</b> / ' + S.troops[k] + '<input type="range" min="0" max="' + S.troops[k] + '" value="' + (x.units[k] || 0) + '" data-ch="expu" data-k="' + k + '" data-key="u' + k + '"></label>').join('') + (PW.UNIT_IDS.some(k => S.troops[k] > 0) ? '' : '<p class="muted small">Keine Truppen in der Zuflucht.</p>') + '</div>' +

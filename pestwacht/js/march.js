@@ -108,6 +108,7 @@
       PW.UNIT_IDS.forEach(k => { S.troops[k] = (S.troops[k] || 0) + (a.units[k] || 0); });
       a.heroes.forEach(h => { if (S.heroes[h]) S.heroes[h].where = 'stadt'; });
       const parts = [];
+      if (a.cargo) { PW.addRes(S.res, a.cargo, S._caps); parts.push('Waren zurück: ' + PW.costText(a.cargo)); }
       if (a.gain) { PW.addRes(S.res, a.gain, S._caps); parts.push(PW.costText(a.gain)); }
       if (a.patients) {
         S.pop.i += a.patients.sick; S.pop.h += a.patients.well; PW.stat(S, 'rescued', a.patients.sick + a.patients.well);
@@ -121,6 +122,7 @@
       if (f && f.alive) {
         PW.UNIT_IDS.forEach(k => { f.troops[k] = (f.troops[k] || 0) + (a.units[k] || 0); f.wounded[k] = (f.wounded[k] || 0) + ((a.wounded || {})[k] || 0); });
         if (a.gain) for (const k in a.gain) { f.res[k] = (f.res[k] || 0) + a.gain[k]; f.ledger.made[k] = (f.ledger.made[k] || 0) + a.gain[k]; }
+        if (a.cargo) for (const k in a.cargo) { f.res[k] = (f.res[k] || 0) + a.cargo[k]; f.ledger.made[k] = (f.ledger.made[k] || 0) + a.cargo[k]; }
         if (a.bhero) f.hero.away = false;
       }
     }
@@ -196,6 +198,8 @@
     if (M.unitsN(a.units) === 0 && !heroAlive) {
       if (a.owner === 'P') a.heroes.forEach(h => { if (S.heroes[h]) S.heroes[h].inj = 180; });   // Helden schleppen sich verwundet heim
       if (a.bhero) { const f = S.factions.find(x => x.id === a.owner); if (f) { f.hero.away = false; f.hero.inj = 180; } }
+      const pool = a.owner === 'P' ? S.wounded : (S.factions.find(x => x.id === a.owner) || {}).wounded;
+      if (pool) PW.UNIT_IDS.forEach(k => { pool[k] = (pool[k] || 0) + (a.wounded[k] || 0); });
       disband(S, a);
     } else if (!won) goHome(S, a);
   }

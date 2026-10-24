@@ -90,9 +90,9 @@
     if (!foes.length) return -1;
     // Spott (Letztes Bollwerk)
     const taunt = foes.find(j => b.sq[j].buf.taunt > 0); if (taunt != null) return taunt;
-    const f = b.focus[q.s]; if (f >= 0 && b.sq[f] && b.sq[f].n > 0) return f;
     // Angreifer vor stehender Mauer: Nahkampf, Belagerung und Monster schlagen auf das Tor
     if (q.s === 0 && b.wall > 0 && q.cls !== 'ranged' && q.cls !== 'support' && !(q.cls === 'hero' && q.range > 3)) return -2;
+    const f = b.focus[q.s]; if (f >= 0 && b.sq[f] && b.sq[f].n > 0) return f;
     let best = -1, bs = -Infinity;
     for (const j of foes) {
       const e = b.sq[j], d = Math.hypot(e.x - q.x, e.y - q.y);

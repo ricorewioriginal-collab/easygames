@@ -299,13 +299,14 @@
   const C2 = PW.Conquest = {};
   C2.transfer = function (S, tile, to, why) {
     const t = S.world.tiles[tile], from = t.own; t.own = to;
-    const s = Wd().siteAt(S, tile); if (s && s.type !== 'capital') s.owner = to;
+    const s = Wd().siteAt(S, tile); if (s) s.owner = to;
     if (to === 'P') { S.stats.maxTiles = Math.max(S.stats.maxTiles || 0, Wd().tilesOf(S, 'P').length); Wd().reveal(S, tile, 1); }
     return from;
   };
   C2.capture = function (S, a, tile, d) {
     const t = S.world.tiles[tile], s = Wd().siteAt(S, tile), prev = t.own;
     let txt = '';
+    if (a.owner === 'P' && s && s.story) S.storyFlags[s.story] = 1;
     // neutrale Orte säubern
     if (s && s.gar && !s.cleared && !prev) {
       s.cleared = true;
@@ -320,12 +321,11 @@
       if (a.owner === 'P') {
         a.gain = Object.assign(a.gain || {}, rew);
         if (s.type === 'ruin' && s.hero && !S.heroes[s.hero]) { PW.Heroes.unlock(S, s.hero, 'in einer Ruine gefunden'); s.hero = null; txt += ' – ein verschollener Held schließt sich an!'; }
-        if (s.story) S.storyFlags[s.story] = 1;
       } else { const f = A().get(S, a.owner); if (f) for (const k in rew) { f.res[k] = (f.res[k] || 0) + rew[k]; f.ledger.made[k] = (f.ledger.made[k] || 0) + rew[k]; } }
       s.gar = null;
       if (a.mission !== 'occupy' || s.type === 'boss') return txt;
     }
-    if (s && s.type === 'capital' && prev && prev !== a.owner) return C2.takeCapital(S, a, tile, prev);
+    if (prev && prev !== a.owner && M().capOf(S, prev) === tile) return C2.takeCapital(S, a, tile, prev);
     if (prev === a.owner) return txt;
     C2.transfer(S, tile, a.owner);
     // Besatzung bleibt zurück
@@ -343,7 +343,7 @@
     const f = A().get(S, prev); if (!f) return '';
     const s = Wd().siteAt(S, tile);
     C2.transfer(S, tile, a.owner);
-    s.owner = a.owner; s.fallen = f.id;
+    if (s) { s.owner = a.owner; s.fallen = f.id; }
     const gar = {}; PW.UNIT_IDS.forEach(k => { const g = Math.floor((a.units[k] || 0) * 0.4); if (g) { gar[k] = g; a.units[k] -= g; } });
     S.world.tiles[tile].gar = { units: gar };
     if (a.owner === 'P') PW.stat(S, 'capitals');

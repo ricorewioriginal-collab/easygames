@@ -95,7 +95,7 @@ Die Simulationsdateien laufen ohne DOM. Die Tests laden sie direkt in Node (`tes
 ## Tests
 
 ```bash
-node --test pestwacht/tests/*.test.js      # 34 Prüfungen der Simulation (Stadt, Seuche, Forschung, Bots, Diplomatie, Kampf, Wellen, Karte, Speichern)
+node --test pestwacht/tests/*.test.js      # 38 Prüfungen der Simulation (Stadt, Seuche, Forschung, Bots, Diplomatie, Kampf, Wellen, Karte, Speichern)
 python3 -m http.server 8765 &              # im Repo-Hauptordner
 node pestwacht/tests/smoke.cjs             # Browser-Klicktest mit Playwright: alle Fenster, Bauen, Schlacht, Welle, Speichern/Laden, freies Spiel
 ```
