@@ -1,5 +1,5 @@
 /* Bowling-Bahn 3D – Halle mit Neon, glänzende Holzbahn mit Pfeilen, Rinnen, Nachbarbahnen, Kegel (gedrechselt), Kugel mit Fingerlöchern,
- * Bowler aus EASYCLASH (../easyclash/js/model.js) mit Anlauf und Abwurf, Kamera hinter dem Bowler, folgt der Kugel und zeigt die Kegel.
+ * Bowler: Menschen als realistische easygames-Figur (../figuren), Tiere und Wesen im EASYCLASH-Look (../easyclash/js/model.js), mit Anlauf und Abwurf, Kamera hinter dem Bowler, folgt der Kugel und zeigt die Kegel.
  * Welt: x_welt = −x (Kern-x zeigt aus Sicht des Bowlers nach rechts), z die Bahn hinunter. */
 (function () {
   'use strict';
@@ -9,6 +9,9 @@
   let ball, ballMat, pins = [], aimLine, aimArrow, bowler = null, bowlerId = '', handOff = 0, ballQ = new T3.Quaternion();
   const BALLCOL = ['#ff3d9a', '#3dd6ff', '#ffd23f', '#7cff6b', '#a259ff', '#ff8a3d'];
   const wx = x => -x;
+  // Realistische Figuren (lädt nach; bis dahin und ohne Netz steht die EASYCLASH-Figur da)
+  const KIT = window.EasyFiguren && T3.GLTFLoader ? window.EasyFiguren.create({ THREE: T3, base: '../figuren/' }) : null;
+  let figReq = 0;
 
   function laneTex() {
     const c = document.createElement('canvas'); c.width = 128; c.height = 2048; const x = c.getContext('2d');
@@ -89,12 +92,28 @@
   function resize() { if (!R) return; const w = el.clientWidth || innerWidth, h = el.clientHeight || innerHeight; R.setSize(w, h, false); CAM.aspect = w / h; CAM.fov = CAM.aspect < 1 ? 64 : 52; CAM.updateProjectionMatrix(); }
   function setLane(l) { L = l; ballQ.identity(); pins.forEach(p => { p.fall = 0; }); }
   function setBallColor(i) { ballMat.map = ballTex(BALLCOL[i % BALLCOL.length]); ballMat.needsUpdate = true; }
+  function dropBowler() { if (!bowler) return; SC.remove(bowler); if (bowler.userData.fig) bowler.userData.fig.dispose(); bowler = null; }
   function setBowler(ch) {
-    if (bowler && bowlerId === (ch && ch.id)) return; if (bowler) { SC.remove(bowler); bowler = null; }
+    if (bowler && bowlerId === (ch && ch.id)) return; dropBowler(); const req = ++figReq;
     bowlerId = ch ? ch.id : ''; if (!ch) return;
     bowler = M.build(ch); SC.add(bowler); bowler.userData.F = { state: 'idle', t: 0 };
     bowler.position.set(0, 0, 0); bowler.rotation.y = 0; bowler.updateMatrixWorld(true);
     const v = new T3.Vector3(0, -.42, 0); bowler.userData.J.rEl.localToWorld(v); handOff = v.x;
+    const look = KIT && KIT.fromRoster(ch.look);
+    if (look) KIT.make(look).then(f => {
+      if (req !== figReq) { f.dispose(); return; }
+      const g = new T3.Group(), p = bowler ? bowler.position.clone() : new T3.Vector3(); dropBowler(); g.add(f.root); g.userData = { fig: f, F: { state: 'idle', t: 0 } };
+      f.root.traverse(o => { if (o.isMesh) o.castShadow = !low; }); SC.add(g); bowler = g; f.update(0); g.updateMatrixWorld(true);
+      const h = new T3.Vector3(); f.bones.hand_r.getWorldPosition(h); handOff = h.x; g.position.copy(p);
+    }).catch(e => console.warn('Figur', e));
+  }
+  // Realistische Figur: Bewegung je Phase, Wurfarm schwingt von hinten oben nach vorn unten
+  const DIR = new T3.Vector3(), LEFT = new T3.Vector3(.8, -.35, .25).normalize();
+  function figPose(f, bw, mood, dt) {
+    const k = bw.t, swing = bw.phase === 'swing' || bw.phase === 'release' || (bw.phase === 'after' && bw.t < .6), w = bw.phase === 'after' ? Math.max(0, 1 - bw.t / .6) : 1;
+    f.play(bw.phase === 'walk' ? 'walk' : swing ? 'crouch' : mood === 'win' ? 'dance' : mood === 'sad' ? 'arms' : 'idle', { fade: .2 });
+    if (bw.phase === 'walk') f.speed(1.3); f.update(dt);
+    if (swing) { const kk = bw.phase === 'swing' ? k : 1, sw = kk < .5 ? kk / .5 : 1, fw = kk < .5 ? 0 : (kk - .5) / .5, a = -1.35 * sw + 2.25 * fw; DIR.set(0, -Math.cos(a), Math.sin(a)); f.aimArm('r', DIR, w); f.aimArm('l', LEFT, .8 * w); }
   }
 
   /* ---------- Bild ---------- */
@@ -125,17 +144,18 @@
     ball.quaternion.copy(ballQ);
     // Bowler
     if (bowler) {
-      const F = bowler.userData.F, bw = ui.bowl || { phase: 'idle', t: 0 }, ballX = bw.x != null ? bw.x : aim ? aim.x : b ? b.x : 0;
+      const F = bowler.userData.F, bw = ui.bowl || { phase: 'idle', t: 0 }, ballX = bw.x != null ? bw.x : aim ? aim.x : b ? b.x : 0, fig = bowler.userData.fig;
       F.state = bw.phase === 'walk' ? 'walk' : ui.mood === 'win' ? 'win' : ui.mood === 'sad' ? 'hit' : 'idle'; F.t = 0;
-      M.apply(bowler, F, dt, t);
+      if (!fig) M.apply(bowler, F, dt, t);
       let z = -2.3; const k = bw.t;
       if (bw.phase === 'walk') z = -2.3 + k * 1.75; else if (bw.phase === 'swing' || bw.phase === 'release') z = -.55; else if (bw.phase === 'after') z = -.55;
       bowler.position.set(mode === 'select' ? 0 : wx(ballX) - handOff, 0, z); bowler.rotation.y = mode === 'select' ? Math.sin(t * .6) * .5 : 0;
-      if (bw.phase === 'swing' || bw.phase === 'release' || (bw.phase === 'after' && bw.t < .6)) bowlPose(bowler.userData.J, bw.phase === 'swing' ? k : 1, bw.phase === 'after' ? Math.max(0, 1 - bw.t / .6) : 1);
+      if (fig) { bowler.updateMatrixWorld(true); figPose(fig, bw, ui.mood, dt); }
+      else if (bw.phase === 'swing' || bw.phase === 'release' || (bw.phase === 'after' && bw.t < .6)) bowlPose(bowler.userData.J, bw.phase === 'swing' ? k : 1, bw.phase === 'after' ? Math.max(0, 1 - bw.t / .6) : 1);
       else if (bw.phase === 'walk') { const J = bowler.userData.J; J.rSh.rotation.x = -.2 + Math.sin(k * Math.PI) * .9; J.rEl.rotation.x = 0; J.lSh.rotation.set(-.3, 0, .3); J.lEl.rotation.x = -.4; }
       else if (!ui.mood) { const J = bowler.userData.J; J.rSh.rotation.set(-.12, 0, -.08); J.rEl.rotation.x = -.35; J.lSh.rotation.set(-.15, 0, .18); J.lEl.rotation.x = -.5; }
       // Kugel in der Hand
-      if (!b && ui.holding) { bowler.updateMatrixWorld(true); v3.set(0, -.48, 0); bowler.userData.J.rEl.localToWorld(v3); ball.position.copy(v3); ball.position.y = Math.max(BW.BALL_R, v3.y); ball.visible = true; }
+      if (!b && ui.holding) { bowler.updateMatrixWorld(true); if (fig) { fig.bones.hand_r.getWorldPosition(v3); v3.y -= .09; } else { v3.set(0, -.48, 0); bowler.userData.J.rEl.localToWorld(v3); } ball.position.copy(v3); ball.position.y = Math.max(BW.BALL_R, v3.y); ball.visible = true; }
     } else if (!b && aim) { ball.position.set(wx(aim.x), BW.BALL_R, -.3); ball.visible = true; }
     // Zielhilfe: Bahn der Kugel auf dem Öl (ohne Kegel)
     const show = !!(aim && ui.guide && !b);

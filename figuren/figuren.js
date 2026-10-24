@@ -6,7 +6,8 @@
      const kit = EasyFiguren.create({ THREE, GLTFLoader, base: '../figuren/' });   // GLTFLoader optional (sonst THREE.GLTFLoader)
      const fig = await kit.make({ body: 'm', skin: '#e8b88a', hair: { style: 'short', color: '#3a2a1a' }, top: '#ff2d95', topStyle: 'tank',
                                   bottom: '#161d3a', bottomStyle: 'shorts', shoes: '#f5f5ff', beard: '#3a2a1a', hat: { type: 'cap', color: '#ffd24a' } });
-     scene.add(fig.root); fig.play('jog'); … pro Bild: fig.update(dt);   fig.reach(1) = Arme nach oben (z. B. Hangeln); fig.dispose();
+     scene.add(fig.root); fig.play('jog'); … pro Bild: fig.update(dt);   fig.reach(1) = Arme nach oben (z. B. Hangeln);
+     fig.aimArm('r', richtung, w) = einen Arm gezielt ausrichten (z. B. Wurf); fig.dispose();
    Bewegungen: idle walk jog sprint jumpStart jump land ninjaStart ninja ninjaLand climb swim knock dance yes arms crouch roll slide push punch down
    Blickrichtung der Figur: +Z, Füße bei y = 0, Größe ca. 1,8 m. kit.fromRoster(look) übersetzt Steckbriefe aus easyclash/js/roster.js. */
 (function (root) {
@@ -234,6 +235,8 @@
         if (fig.reachW > 0.01) { rig.scene.updateMatrixWorld(true); for (const [u, l, h] of arms) { aim(u, l, UP, fig.reachW); aim(l, h, UP, fig.reachW); } }
         if (fig.tail) fig.tail.rotation.x = 0.35 + Math.sin(mixer.time * 9) * 0.08;
       };
+      // Arm (Ober- und Unterarm) in Weltrichtung dir zeigen lassen, nach fig.update aufrufen; side 'l' oder 'r', w = Anteil 0…1
+      fig.aimArm = (side, dir, w = 1) => { rig.scene.updateMatrixWorld(true); const [u, l, h] = arms[side === 'l' ? 0 : 1]; aim(u, l, dir, w); aim(l, h, dir, w); };
       fig.ghost = (opacity, color) => { for (const m of fig.mats.concat(fig.extra.map(e => e.material))) { m.transparent = true; m.opacity = opacity; m.depthWrite = false; if (color != null && m.emissive) m.emissive = hex(color); m.needsUpdate = true; } rig.scene.traverse(o => { o.castShadow = false; }); fig.extra.forEach(e => { e.castShadow = false; }); };
       fig.recolor = L2 => { Object.assign(L, L2); fig.mats.forEach(m => { if (m.userData.u) setBody(m, I, L); }); };
       fig.dispose = () => { mixer.stopAllAction(); mixer.uncacheRoot(rig.scene); if (wrap.parent) wrap.parent.remove(wrap); fig.mats.forEach(m => m.dispose()); fig.extra.forEach(e => { if (!e.userData.shared) e.geometry.dispose(); e.material.dispose(); }); };
