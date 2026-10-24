@@ -94,8 +94,8 @@
     if (p.type === 'rhythm') { const g = genRhythm(p); this.notes = p.live ? [] : g.notes; this.shows = g.shows; this.lastSpawn = -9; this.minGap = Math.max(0.2, 0.62 - 0.4 * (p.density || 0.75)); }
     if (p.type === 'pitch') this.segs = genPitch(p);
     if (p.type === 'cues') this.cues = genCues(p);
-    this.sg = p.type === 'rival' || p.live || p.acappella ? null : A.song(p.style || 'pop', p.bpm || 100);
-    A.radioMute(!p.live); this.lowT = 0;
+    this.sg = p.type === 'rival' || p.live || p.plain || p.acappella ? null : A.song(p.style || 'pop', p.bpm || 100);
+    A.radioMute(!(p.live || p.plain)); this.lowT = 0;
     if (p.type === 'pitch' && !this.mic) A.voiceOn();
     if (this.o.onPart) this.o.onPart(this.pi, p);
   };
@@ -265,9 +265,9 @@
   };
   // Radio bricht mitten im Auftritt ab: ab jetzt eigene Beats und vorbereitete Noten
   P.radioLost = function () {
-    this.parts.forEach(q => { q.live = false; });
+    this.parts.forEach(q => { q.live = false; q.plain = false; });
     const p = this.part; if (!p || this.done) return;
-    p.live = false;
+    p.live = false; p.plain = false;
     if (p.type === 'rhythm') {
       const from = Math.max(this.now + this.travel, this.notes.length ? this.notes[this.notes.length - 1].t + this.minGap : 0);
       genRhythm(p).notes.forEach(n => { if (n.t >= from) this.notes.push(n); });
