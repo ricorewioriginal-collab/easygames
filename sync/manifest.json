@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9865eb0f8d73",
- "generated": "2026-10-24T06:19:16+00:00",
- "commit": "2cc49fa04118c5ffb325344be0cb18fa78c4a17a",
+ "version": "fc178f5f5557",
+ "generated": "2026-10-24T06:28:58+00:00",
+ "commit": "576ce5e75ade57ecd2ae879c76681971b1c2aa07",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5598,13 +5598,13 @@
   },
   {
    "p": "easygames.js",
-   "s": 31422,
-   "h": "2eb7bbdb62c2132f58fd8c095504c9f5b6e661d7e465e28555af55e6e12eea18"
+   "s": 31434,
+   "h": "a0e633cd9b5df5920a2578f6c09aaccd7392f5f937cbe338047c25110bd7f764"
   },
   {
    "p": "einbinden.html",
-   "s": 84067,
-   "h": "d95a4674c74215204958040d810a71cfea819a5dd27cd69d38d3a39c9bb7dca0"
+   "s": 84127,
+   "h": "8c6f68af06610019512f3ad94e2634af1dc996798499ccb7c1c237130e92e0b6"
   },
   {
    "p": "erfolge.html",
@@ -6133,8 +6133,8 @@
   },
   {
    "p": "index.html",
-   "s": 92867,
-   "h": "ca978ef9f417e6dfaffba8fda90fab3d04f499ce4b018a00210be31de165774f"
+   "s": 92891,
+   "h": "0de9b3f01d479c2d7117fdb2c8d8a3557e9353d388a24a21c1933bfd4eccb751"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -7653,8 +7653,8 @@
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 100409,
-   "h": "2d47742e1ede4efc26e9d20e3dc7640c4c538b7fce83226b65b5fcee1f3904bc"
+   "s": 101401,
+   "h": "68bbd29d2306e776bf09250ca7945cbe32a655a0454f0a83aa7a3c0cf477c601"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
@@ -7673,8 +7673,8 @@
   },
   {
    "p": "show-me-your-voice/js/data.js",
-   "s": 30668,
-   "h": "7e178ddb0d9eb8df8440d14cf63b48a6df706ec10bced0d0a5c6ea051d61689d"
+   "s": 30724,
+   "h": "6c9fb5badb1d9436d1f8496929c58cf6875fa8b859cc71ae44eef256b9d66051"
   },
   {
    "p": "show-me-your-voice/js/stage.js",
@@ -7954,7 +7954,7 @@
   {
    "p": "sync/catalog.json",
    "s": 178083,
-   "h": "807e1506cd6cb35f8a47b8677809c9e2dc809dbf568cfdcb77f5e0ae2f0f8618"
+   "h": "71f52bedd5fb6cd637c005aba926b1807c3d04cd7865f7ee1ee2723a2e6edc70"
   },
   {
    "p": "taschi/card.svg",
