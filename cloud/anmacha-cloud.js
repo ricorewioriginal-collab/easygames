@@ -34,6 +34,34 @@
     var wait = 260 - (Date.now() - lastCancel);
     if (wait > 0 || pend.length) { pend.push(go); if (!timer) timer = setTimeout(function () { timer = 0; var l = pend; pend = []; l.forEach(function (f) { f(); }); }, Math.max(0, wait)); } else go();
   };
+  /* Eingebettet auf einer fremden Seite (z. B. ricorewi-radio.de): Chrome spricht dort oft nicht. Bietet die Seite an,
+   * für das Spiel zu sprechen (Spiele-Hub, easygames.js, RicoReWi-Portal: Nachricht 'eg-tts'), geht die Ansage an sie. */
+  var cross = false;
+  try { cross = window.top !== window && !window.top.location.href; } catch (e) { cross = window.top !== window; }
+  if (!cross || !window.postMessage) return;
+  var remote = null, ids = {}, nid = 0;
+  var post = function (m) { m.type = 'eg-tts'; try { window.parent.postMessage(m, '*'); } catch (e) { } };
+  var fire = function (u, k, err) {
+    try { var Ev = window.SpeechSynthesisEvent; u.dispatchEvent(Ev ? new Ev(k, { utterance: u, error: err }) : new Event(k)); return; } catch (e) { }
+    try { if (typeof u['on' + k] === 'function') u['on' + k]({ type: k, utterance: u, error: err || '' }); } catch (e) { }
+  };
+  window.addEventListener('message', function (e) {
+    var d = e.data; if (!d || d.type !== 'eg-tts' || e.source !== window.parent) return;
+    if (d.op === 'host' && !remote) {
+      remote = e.origin;
+      s.speak = function (u) {
+        if (!u) return; var id = 'u' + (++nid); ids[id] = u;
+        post({ op: 'speak', id: id, text: String(u.text || '').slice(0, 1500), lang: u.lang || '', voice: u.voice ? u.voice.name : '', rate: +u.rate || 1, pitch: +u.pitch || 1, volume: u.volume == null ? 1 : +u.volume });
+      };
+      s.cancel = function () { var l = Object.keys(ids).map(function (k) { return ids[k]; }); ids = {}; post({ op: 'cancel' }); l.forEach(function (u) { fire(u, 'error', 'canceled'); }); };
+      s.pause = function () { }; s.resume = function () { };
+      try { Object.defineProperty(s, 'speaking', { configurable: true, get: function () { return Object.keys(ids).length > 0; } }); Object.defineProperty(s, 'pending', { configurable: true, get: function () { return Object.keys(ids).length > 1; } }); Object.defineProperty(s, 'paused', { configurable: true, get: function () { return false; } }); } catch (e) { }
+    } else if (d.op === 'ev' && ids[d.id]) {
+      var u = ids[d.id]; if (d.kind !== 'start') delete ids[d.id];
+      fire(u, d.kind === 'start' ? 'start' : d.kind === 'end' ? 'end' : 'error', d.error || '');
+    }
+  });
+  post({ op: 'hello' });
 })();
 (function () {
   'use strict';
