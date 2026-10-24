@@ -39,6 +39,7 @@ window.EASYGAMES_MODES = {
   'bowling-bahn': { pad: true, multi: true },
   'fall-akte': { pad: true },
   'werwolf-nacht': { pad: true, online: true, multi: true, tvParam: true },
+  'oma-rennen': { pad: true, online: true, multi: true, tvParam: true },
   'darts-arena': { pad: true, multi: true },
   'winzflitzer': { multi: true },
   'gay-life': { online: true },
