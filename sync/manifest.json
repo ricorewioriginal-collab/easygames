@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "297d58bf76ab",
- "generated": "2026-10-24T17:06:16+00:00",
- "commit": "2a22d8efb56a9f939c2769dd658daa5cbe226302",
+ "version": "53faf58c1e80",
+ "generated": "2026-10-24T20:11:27Z",
+ "commit": "552a3ef2463bd56cd14031fda55a5774b3d84945",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8867,6 +8867,11 @@
    "h": "5422276aa6cdaa5247592f97e9303bd14dee4ee04b031722d3d2da330ff24613"
   },
   {
+   "p": "thumbs/brainrot-parkour.webp",
+   "s": 14710,
+   "h": "9a7b1c83b90f966373eff690f5b14e3b286a5bb274a9344872f043818a2a3676"
+  },
+  {
    "p": "thumbs/bunte-insel.webp",
    "s": 29406,
    "h": "bdd9862e0e5e065f3074793b69770f3e3ae62e5b7ed419345e3f4c388ddb40ed"
@@ -9003,8 +9008,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2085,
-   "h": "b2ccd35efc6a45bd4de027f41cb863b7789b9ee24a3076c0669d7c77da1877e9"
+   "s": 2117,
+   "h": "8b9c20abfb7726df397b3ef2f953565eb7ac88aa0517bdc71082c356343d44f3"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
