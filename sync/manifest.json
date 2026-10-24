@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "ffcf87c3b766",
- "generated": "2026-10-24T02:11:00+02:00",
- "commit": "90cca22f0749b6036f10d5b38d6759f93f050145",
+ "version": "59a9c4baa42a",
+ "generated": "2026-10-24T02:15:53+02:00",
+ "commit": "f83b249ca71c717c19927926b63e6c541d7b2f72",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5348,8 +5348,8 @@
   },
   {
    "p": "cloud/fire-peer.js",
-   "s": 27323,
-   "h": "3363c68c8f3e6ed4ef7487ef347fcf5f171b564bda430db54e411529d17adcc5"
+   "s": 28884,
+   "h": "e03ee93da583dc716bb572fe5ed6dce88ea446daf56915081d1dbe8eff80be66"
   },
   {
    "p": "cloud/radio-erfolge.js",
@@ -5493,18 +5493,18 @@
   },
   {
    "p": "device.js",
-   "s": 7239,
-   "h": "f93fa48549082998a014156f40b3962bd9a3803caa3a660870a6c4f93957cfc5"
+   "s": 9038,
+   "h": "e483099fe08bdfed5447b8181331061f0b3a68de03450466878688f0bc5bb4aa"
   },
   {
    "p": "easygames.js",
-   "s": 29512,
-   "h": "1c9c4f67def05cb76ada1880a045be32741d59711e01bbfcda42d822543bd569"
+   "s": 31071,
+   "h": "281bb2df1919b94fd8aa0592a9408822d29896c7dcaf8687db42b238b7dafb7c"
   },
   {
    "p": "einbinden.html",
-   "s": 80962,
-   "h": "d980a98f7674c7dd43d779d3517051408031786c331cebe8897d6235667c33ec"
+   "s": 82054,
+   "h": "18be2c2609bef7868a395beb94b9a952dbcde0fe0ccbf83e6d6c708c3fd7f40a"
   },
   {
    "p": "erfolge.html",
@@ -5588,8 +5588,8 @@
   },
   {
    "p": "frequenzminen/js/app.js",
-   "s": 26021,
-   "h": "e620b57abf030437446cfcb98007aeaf7faa2ced338ea69237789a8c78a1bb7b"
+   "s": 26028,
+   "h": "eb3d4ebd191212ad5b5f0ea86d1b3f8d320700a66b73f22576a9196297e4da36"
   },
   {
    "p": "frequenzminen/js/core.js",
@@ -5988,8 +5988,8 @@
   },
   {
    "p": "index.html",
-   "s": 91911,
-   "h": "017a984491ccf424672d0efa3c3bc34e133a5b4c2ed64202397fd8e0def2fcd8"
+   "s": 92678,
+   "h": "e097953218cac78234eae6eac51b3133ec5ccb21a2f8c72b410f37bbfddf3397"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -7509,7 +7509,7 @@
   {
    "p": "sync/catalog.json",
    "s": 157993,
-   "h": "f70ab04281f83b11d27b35909a59cee081e9e1b118887b2b0838ef597c0815b3"
+   "h": "69183b6c899302937f0031467e7e8e233d564eca0041a026de2ff9cc0c057210"
   },
   {
    "p": "taschi/card.svg",

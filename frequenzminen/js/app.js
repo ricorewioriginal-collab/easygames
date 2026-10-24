@@ -144,7 +144,7 @@
     }, won ? 1500 : 1900);
   }
   function shareText() {
-    const b = G.b, link = (window.EasyGamesDevice ? EasyGamesDevice.publicBase() : 'https://ricorewioriginal-collab.github.io/easygames/') + 'frequenzminen/';
+    const b = G.b, link = window.EasyGamesDevice ? EasyGamesDevice.gameLink('frequenzminen/') : 'https://ricorewioriginal-collab.github.io/easygames/frequenzminen/';
     if (G.mode === 'daily') { const r = LS.get(P + 'daily', {})[G.daily.key] || { won: b.won, sec: Math.round(secs()), hints: b.hintsUsed }; return '📡 Frequenz-Minen 3D · Tagesrätsel ' + G.daily.key.split('-').reverse().join('.') + '\n' + (r.won ? '✅ gelöst in ' + FM.fmt(r.sec) + (r.hints ? ' (💡' + r.hints + ')' : ' ohne Peilung') : '💥 Störsender erwischt') + '\nSchaffst du es schneller? ' + link; }
     return '📡 Frequenz-Minen 3D – finde die Störsender! ' + (b.won ? 'Ich hab ' + FM.DIFF[G.diff].n + ' in ' + FM.fmt(secs()) + ' geschafft. ' : '') + link;
   }

@@ -107,6 +107,31 @@
     return tvParam ? u + '?' + (typeof tvParam === 'string' ? tvParam.replace(/^\?/, '') : 'tv') : u;
   }
 
+  var W = root;
+  // Eingebettet mit ?eg_share=<Adresse> (z. B. https://www.ricorewi-radio.de/#games/<id>): Teilen-Links für DIESES Spiel zeigen auf die
+  // einbindende Seite. Gilt nur im iframe und nur, wenn die Adresse zur einbindenden Seite passt; Einladungs- und TV-Links (mit ?… oder #…)
+  // bleiben auf der easygames-Homepage. Gleicher Baustein in device.js und cloud/fire-peer.js.
+  if (!W.EasyGamesEmbedShare) W.EasyGamesEmbedShare = (function () {
+    var dir = function (p) { var m = /\/([^\/]+)\/(?:index\.html)?$/.exec(p || ''); return m ? m[1] : ''; };
+    var own = dir(W.location && W.location.pathname), K = 'eg-embed-share:' + own, v = null, m = null;
+    try {
+      m = /[?&]eg_share=([^&#]*)/.exec(W.location.search);
+      v = m ? decodeURIComponent(m[1]) : W.sessionStorage.getItem(K);
+      if (v) {
+        var u = new URL(v), ref = W.document.referrer ? new URL(W.document.referrer).origin : '';
+        v = W.parent !== W && /^https?:$/.test(u.protocol) && (!ref || ref === u.origin || ref === W.location.origin) ? u.href : null;
+      }
+    } catch (e) { v = null; }
+    if (v && m) try { W.sessionStorage.setItem(K, v); } catch (e) { }
+    function link(u) {
+      if (!v || !own) return u;
+      try { var x = new URL(u, W.location.href), q = new URLSearchParams(x.search); q.delete('eg_build'); q.delete('eg_share'); return dir(x.pathname) === own && !q.toString() && !x.hash ? v : u; } catch (e) { return u; }
+    }
+    return { url: function () { return v; }, link: link };
+  })();
+  // Teilen-Link für ein Spiel: öffentliche Adresse, eingebettet die Adresse der einbindenden Seite (siehe oben)
+  function gameLink(path) { var u = new URL(path, publicBase()).href; return W.EasyGamesEmbedShare ? W.EasyGamesEmbedShare.link(u) : u; }
+
   var API = root.EasyGamesDevice = {
     version: 1,
     get: function () { if (!cur) refresh(); return cur; },
@@ -115,7 +140,8 @@
     set: function (t) { forced = TYPES.indexOf(t) >= 0 ? t : null; last = ''; refresh(); },
     joinCode: function () { return API.get().join; },
     publicBase: publicBase,
-    tvUrl: tvUrl
+    tvUrl: tvUrl,
+    gameLink: gameLink
   };
   refresh();
   if (root.addEventListener) {

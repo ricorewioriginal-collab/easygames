@@ -22,6 +22,9 @@
  *      <div data-easygames="all"   data-mode="page"></div>        // ganzer Katalog vollflächig
  *      <button data-easygames="zotik" data-mode="overlay">Spielen</button>   // Klick öffnet das Spiel vollflächig (Overlay)
  *      EasyGames.open('zotik');  EasyGames.open('all', { close: false });   // per JavaScript; EasyGames.close() schließt
+ *    Eigener Teilen-Link je Spiel: data-share="auto" (bzw. { share: 'auto' }) = diese Seite + #games/<id>, oder eine Vorlage wie
+ *    data-share="https://meine-seite.de/spiele/{id}". „Spiel teilen“ im Spiel und in der Bibliothek nutzt dann diese Adresse;
+ *    #games/<id> beim Aufruf der Seite öffnet das Spiel direkt. Einladungs- und TV-Links bleiben auf der easygames-Homepage.
  *    Overlay: ✕-Knopf, Zurück-Taste, Esc (wenn der Fokus nicht im Spiel liegt) und das Schließen aus dem Spiel (easygames:close) beenden es; Browser-Vollbild wird angefordert.
  *
  * Ranglisten (alle Spiele, Freigabe/Spitzname inklusive; Spiel optional vorwählen):
@@ -67,7 +70,24 @@
   function el(t) { return typeof t === 'string' ? document.querySelector(t) : t; }
   function find(id) { for (var i = 0; i < games.length; i++) if (games[i].id === id) return games[i]; return null; }
   function abs(p) { return new URL(p, base).href; }
-  function gameUrl(g) { var u = new URL(g.path, base); u.searchParams.set('eg_build', window.EASYGAMES_BUILD || 'current'); return u.href; }
+  // Eigener Teilen-Link je Spiel (share-Option bzw. data-share): Vorlage mit {id}, true/"auto" = diese Seite + #games/<id>.
+  // Das Spiel bekommt die Adresse als ?eg_share und nutzt sie für „Spiel teilen“; #games/<id> beim Aufruf dieser Seite öffnet das Spiel.
+  function shareTpl(o) {
+    var t = o && o.share; if (t == null || t === false || t === 'false' || t === '') return null;
+    if (t === true || t === 'true' || t === 'auto') t = location.href.split('#')[0] + '#games/{id}';
+    if (typeof t !== 'string') return null; watchDeep(t); return t;
+  }
+  var deepOn = false;
+  function watchDeep(t) {
+    if (deepOn || t.indexOf(location.href.split('#')[0] + '#games/{id}') !== 0) return; deepOn = true;
+    function go() { var m = /^#games\/([\w-]+)/.exec(location.hash); if (m) EG.ready(function () { if (find(m[1])) EG.open(m[1], { share: t }); }); }
+    window.addEventListener('hashchange', go); go();
+  }
+  function gameUrl(g, o) {
+    var u = new URL(g.path, base), t = shareTpl(o); u.searchParams.set('eg_build', window.EASYGAMES_BUILD || 'current');
+    if (t && !/^https?:/.test(g.path)) u.searchParams.set('eg_share', t.replace(/\{id\}/g, encodeURIComponent(g.id)));
+    return u.href;
+  }
 
   // gamepad: Controller funktionieren in fremden Seiten nur, wenn der iframe es erlaubt (Permissions Policy)
   var FRAME_ALLOW = 'fullscreen; autoplay; gamepad; accelerometer; gyroscope';
@@ -135,7 +155,7 @@
     if (document.body) document.body.style.overflow = 'hidden';
   }
   // Bibliothek-Adresse; layout "apps" = App-Kachel-Ansicht (nur Symbole mit Namen)
-  function libUrl(o) { return base + 'index.html?embed=1' + (o && o.layout === 'apps' ? '&view=apps' : '') + (o && o.layout === 'portal' ? '&portal=1' : ''); }
+  function libUrl(o) { var t = shareTpl(o); return base + 'index.html?embed=1' + (o && o.layout === 'apps' ? '&view=apps' : '') + (o && o.layout === 'portal' ? '&portal=1' : '') + (t ? '&eg_share=' + encodeURIComponent(t) : ''); }
   // Zentrale Ranglisten-Seite (alle Spiele); game = Spiel-ID aus games.js zum Vorwählen
   function boardUrl(o) { return base + 'ranglisten.html?embed=1' + (o && o.game ? '&game=' + encodeURIComponent(o.game) : ''); }
   // Erfolge-Seite (spielübergreifend)
@@ -159,7 +179,7 @@
       if (game && game !== 'all' && !board && !ach && !acc && !chat && !bug && !ex && !g) { console.error('EasyGames: unbekanntes Spiel "' + game + '"'); return; }
       var reuse = !!current && !!(history.state && history.state.egOverlay), opener = current && current.opener || document.activeElement;   // Verlaufseintrag und Fokus-Ziel des alten Overlays weiterverwenden
       if (current) current(true);   // ersetzt ein offenes Overlay (ohne Verlaufsschritt zurück, sonst würde das neue sofort schließen)
-      var title = o.title || (g ? g.title : board ? 'easygames – Ranglisten' : ach ? 'easygames – Erfolge' : acc ? 'easygames – Konto' : chat ? 'easygames – Chat' : bug ? 'easygames – Fehler melden' : ex ? EXTRA[game][1] : 'easygames – Spielebibliothek'), box = document.createElement('div'), f = fullFrame(g ? gameUrl(g) : board ? boardUrl(o) : ach ? achUrl() : acc ? accUrl() : chat ? chatUrl(o) : bug ? bugUrl(o) : ex ? extraUrl(game) : libUrl(o), title);
+      var title = o.title || (g ? g.title : board ? 'easygames – Ranglisten' : ach ? 'easygames – Erfolge' : acc ? 'easygames – Konto' : chat ? 'easygames – Chat' : bug ? 'easygames – Fehler melden' : ex ? EXTRA[game][1] : 'easygames – Spielebibliothek'), box = document.createElement('div'), f = fullFrame(g ? gameUrl(g, o) : board ? boardUrl(o) : ach ? achUrl() : acc ? accUrl() : chat ? chatUrl(o) : bug ? bugUrl(o) : ex ? extraUrl(game) : libUrl(o), title);
       box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', title);
       box.style.cssText = LAYER_CSS;
       box.appendChild(f);
@@ -237,7 +257,7 @@
     if (g.img) { var im = document.createElement('img'); im.src = abs(g.img); im.alt = ''; im.loading = 'lazy'; im.style.cssText = 'width:100%;height:100%;object-fit:cover'; ic.appendChild(im); } else ic.textContent = g.icon || '\uD83C\uDFAE';
     nm.textContent = o.title || g.title;
     b.appendChild(ic); b.appendChild(nm);
-    b.addEventListener('click', function () { if (o.mode === 'page') { t.removeChild(b); pageLayer(t, gameUrl(g), g.title); } else EG.open(o.game, o); });
+    b.addEventListener('click', function () { if (o.mode === 'page') { t.removeChild(b); pageLayer(t, gameUrl(g, o), g.title); } else EG.open(o.game, o); });
     t.appendChild(b);
   }
   // EasyGames.embed(ziel, { game, width, maxWidth, ratio, height, radius, title, className })
@@ -251,8 +271,8 @@
     EG.ready(function () {
       var g = find(o.game);
       if (!g) { console.error('EasyGames: unbekanntes Spiel "' + o.game + '"'); return; }
-      if (o.mode === 'page') { pageLayer(t, gameUrl(g), o.title || g.title); return; }
-      f = frame(gameUrl(g), o.title || g.title, o);
+      if (o.mode === 'page') { pageLayer(t, gameUrl(g, o), o.title || g.title); return; }
+      f = frame(gameUrl(g, o), o.title || g.title, o);
       var node = wrap(f, o), row = tvRow(g, o);
       if (row) { var box = document.createElement('div'); box.style.cssText = 'width:' + (o.width || '100%') + ';max-width:' + (o.maxWidth || '960px'); node.style.width = '100%'; node.style.maxWidth = 'none'; box.appendChild(node); box.appendChild(row); node = box; }
       t.appendChild(node);
@@ -348,7 +368,7 @@
     for (var i = 0; i < nodes.length; i++) {
       var n = nodes[i]; if (n.getAttribute('data-easygames-done')) continue;
       n.setAttribute('data-easygames-done', '1');
-      var d = n.dataset, o = { width: d.width, maxWidth: d.maxWidth, ratio: d.ratio, height: d.height, radius: d.radius, title: d.title, fullscreen: d.fullscreen, tvLink: d.tvLink, mode: d.mode, close: d.close, layout: d.layout };
+      var d = n.dataset, o = { width: d.width, maxWidth: d.maxWidth, ratio: d.ratio, height: d.height, radius: d.radius, title: d.title, fullscreen: d.fullscreen, tvLink: d.tvLink, mode: d.mode, close: d.close, layout: d.layout, share: d.share };
       if (d.easygames === 'all') EG.library(n, o); else if (d.easygames === 'portal') EG.portal(n, o); else if (d.easygames === 'ranglisten') { o.game = d.game; EG.leaderboard(n, o); } else if (d.easygames === 'erfolge') EG.achievements(n, o); else if (d.easygames === 'konto') EG.account(n, o); else if (d.easygames === 'chat') { o.room = d.room; EG.chat(n, o); } else if (d.easygames === 'bug') { o.game = d.game; EG.bug(n, o); } else if (EXTRA[d.easygames]) EG.page(d.easygames, n, o); else { o.game = d.easygames; EG.embed(n, o); }
     }
   }

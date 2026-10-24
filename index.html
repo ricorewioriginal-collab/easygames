@@ -696,6 +696,9 @@ const tvQuery = g => { const p = modesOf(g).tvParam; return isTv && p ? '?' + (t
 const isMulti = g => { const m = modesOf(g); return !!(m.pad || m.online || m.multi); };
 // Der richtige Link für TV-Gaming: öffentliche Spielseite (auch wenn die Übersicht in einer App/auf localhost läuft), mit ?tv wo das Spiel es kennt
 const tvLink = g => EasyGamesDevice.tvUrl(g.path, modesOf(g).tvParam);
+// Eingebettet (?embed=1&eg_share=<Vorlage mit {id}>, z. B. https://www.ricorewi-radio.de/#games/{id}): Teilen-Links zeigen auf die einbindende Seite
+const EMBED_SHARE = (() => { try { const t = new URLSearchParams(location.search).get('eg_share'); if (!t || window.parent === window) return ''; const u = new URL(t.replace(/\{id\}/g, 'x')), r = document.referrer ? new URL(document.referrer).origin : ''; return /^https?:$/.test(u.protocol) && (!r || r === u.origin) ? t : ''; } catch (e) { return ''; } })();
+const embedLink = g => EMBED_SHARE.replace(/\{id\}/g, encodeURIComponent(g.id));
 const gameUrl = g => abs(g.path) + tvQuery(g);   // am TV öffnen Spiele wie Kart Rush direkt die Lobby mit QR-Code
 function sendDevice() { try { $('frame').contentWindow.postMessage({ type: 'easygames:device', device: EasyGamesDevice.get() }, '*'); } catch (e) {} }
 EasyGamesDevice.on(() => { if (cur >= 0) sendDevice(); });
@@ -707,7 +710,7 @@ function openGame(i, fromHash) {
   const g = GAMES[cur], url = gameUrl(g);
   $('vTitle').textContent = g.title;
   $('frame').title = g.title;
-  $('frame').src = url;
+  $('frame').src = EMBED_SHARE && !g.external && !/^https?:/.test(g.path) ? url + (url.includes('?') ? '&' : '?') + 'eg_share=' + encodeURIComponent(embedLink(g)) : url;
   $('viewer').classList.remove('hidden');
   document.body.style.overflow = 'hidden';
   // Zurück-Taste (Handy/TV) schließt das Spiel: pro Öffnen ein Verlaufseintrag
@@ -765,7 +768,7 @@ $('vFs').addEventListener('click', () => {
 // ----- Teilen -----
 let shareI = -1;
 // Teilen-Adresse: die Vorschauseite share/<id>.html (Bild und Beschreibung für Chats und soziale Netze, leitet sofort zum Spiel weiter)
-const shareLink = g => g.external || /^https?:/.test(g.path) ? abs(g.path) : abs('share/' + g.id + '.html');
+const shareLink = g => g.external || /^https?:/.test(g.path) ? abs(g.path) : EMBED_SHARE ? embedLink(g) : abs('share/' + g.id + '.html');
 function openShare(i) {
   shareI = i === undefined ? cur : i;
   const g = GAMES[shareI], url = abs(g.path), shareUrl = shareLink(g);

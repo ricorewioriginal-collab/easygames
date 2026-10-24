@@ -54,7 +54,33 @@
   function css() { if (doc.getElementById('egh-css')) return; var s = doc.createElement('style'); s.id = 'egh-css'; s.textContent = CSS; doc.head.appendChild(s); }
 
   /* ───────── Daten (Spieleliste live) ───────── */
-  var S = { games: [], ver: '', q: '', cat: '', cats: null, mounts: [], pl: null };
+  var S = { games: [], ver: '', q: '', cat: '', cats: null, mounts: [], pl: null, share: undefined, cur: null, prev: null };
+  /* Teilen-Link je Spiel: eingebundene Seiten teilen ihre eigene Adresse (Standard: diese Seite + #games/<id>, z. B. https://www.ricorewi-radio.de/#games/zotik).
+   * mount(…, { share: 'https://meine-seite.de/spiele/{id}' }) eigene Vorlage, share: false = easygames-Vorschauseite. Die Adresse geht als ?eg_share an das Spiel
+   * (dessen eigene Teilen-Knöpfe nutzen sie dann auch); #games/<id> beim Aufruf öffnet das Spiel direkt. */
+  function pageBase() { return root.location.href.split('#')[0]; }
+  function shareUrl(g) {
+    var t = S.share;
+    if (g.external || /^https?:/.test(g.path)) return g.path;
+    if (typeof t === 'function') { try { var r = t(g); if (r) return String(r); } catch (e) { } }
+    if (t === false || t === 'false' || (t == null && pageBase().indexOf(EG) === 0)) return new URL('share/' + g.id + '.html', EG).href;
+    if (typeof t === 'string' && t && t !== 'auto') return t.replace(/\{id\}/g, encodeURIComponent(g.id));
+    return pageBase() + '#games/' + encodeURIComponent(g.id);
+  }
+  function ownHash(u) { var b = pageBase(); return u.indexOf(b + '#') === 0 ? u.slice(b.length) : null; }
+  function setHash(h) { try { root.history.replaceState(root.history.state, '', root.location.pathname + root.location.search + h); } catch (e) { } }
+  function shareCur(btn) {
+    var g = S.cur; if (!g) return; var url = shareUrl(g), title = short(g.title), nav = root.navigator;
+    if (nav.share && /Android|iPhone|iPad|Mobile/i.test(nav.userAgent || '')) { nav.share({ title: title, text: title + ' – jetzt kostenlos spielen', url: url }).catch(function () { }); return; }
+    function ok() { var t = btn.textContent; btn.textContent = '✓ Link kopiert'; setTimeout(function () { btn.textContent = t; }, 1600); }
+    function ask() { root.prompt('Link zum Teilen:', url); }
+    if (nav.clipboard && nav.clipboard.writeText) nav.clipboard.writeText(url).then(ok, ask); else ask();
+  }
+  function deep() {
+    var m = /^#games\/([\w-]+)/.exec(root.location.hash); if (!m || !S.games.length) return;
+    if (S.pl && !S.pl.hidden && S.cur && S.cur.id === m[1]) return;
+    if (S.games.some(function (x) { return x.id === m[1]; })) open(m[1]);
+  }
   function fetchJSON(u) { return root.fetch(u, { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }); }
   function loadCatalog() {
     return Promise.all([fetchJSON(EG + 'sync/catalog.json?_=' + Date.now()), fetchJSON(EG + 'sync/manifest.json?_=' + Date.now()).catch(function () { return {}; })]).then(function (r) {
@@ -162,9 +188,10 @@
   function player() {
     if (S.pl) return S.pl;
     var d = doc.createElement('div'); d.className = 'egh-pl'; d.hidden = true; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true');
-    d.innerHTML = '<div class="egh-pl-h"><span></span><button type="button" data-fs>⛶ Vollbild</button><button type="button" data-x>✕ Schließen</button></div><iframe allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; clipboard-write" allowfullscreen title="Spiel"></iframe>';
+    d.innerHTML = '<div class="egh-pl-h"><span></span><button type="button" data-sh>📤 Teilen</button><button type="button" data-fs>⛶ Vollbild</button><button type="button" data-x>✕ Schließen</button></div><iframe allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; clipboard-write" allowfullscreen title="Spiel"></iframe>';
     doc.body.appendChild(d);
     d.querySelector('[data-x]').onclick = close;
+    d.querySelector('[data-sh]').onclick = function () { shareCur(this); };
     d.querySelector('[data-fs]').onclick = function () { try { (d.requestFullscreen || d.webkitRequestFullscreen).call(d); } catch (e) { } };
     doc.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !d.hidden && !doc.fullscreenElement) close(); });
     root.addEventListener('message', function (e) { if (e.source === d.querySelector('iframe').contentWindow && e.data && (e.data.type === 'easygames:close' || e.data === 'easygames:close')) close(); });
@@ -172,32 +199,37 @@
   }
   function open(id) {
     var g = S.games.filter(function (x) { return x.id === id; })[0]; if (!g) return;
-    var d = player(), u = new URL(g.path, EG); if (root.EASYGAMES_BUILD) u.searchParams.set('eg_build', root.EASYGAMES_BUILD);
+    var d = player(), u = new URL(g.path, EG), link = shareUrl(g), h = ownHash(link); if (root.EASYGAMES_BUILD) u.searchParams.set('eg_build', root.EASYGAMES_BUILD);
+    if (link.indexOf(EG) !== 0) u.searchParams.set('eg_share', link);
+    S.cur = g;
+    if (h && root.location.hash !== h) { if (S.prev == null) S.prev = root.location.hash; setHash(h); } else if (h && S.prev == null) S.prev = h.replace(/\/[^\/]*$/, '');
     d.querySelector('span').textContent = short(g.title);
     d.querySelector('iframe').setAttribute('src', u.href);   // easygames-iframe: die Seite reicht das Konto weiter (angemeldet im Spiel)
     d.hidden = false; doc.documentElement.style.overflow = 'hidden'; remember(id); renderAll();
   }
-  function close() { if (!S.pl) return; S.pl.hidden = true; S.pl.querySelector('iframe').setAttribute('src', 'about:blank'); doc.documentElement.style.overflow = ''; if (doc.fullscreenElement) try { doc.exitFullscreen(); } catch (e) { } }
+  function close() { if (!S.pl) return; S.pl.hidden = true; S.cur = null; if (S.prev != null) { setHash(S.prev); S.prev = null; } S.pl.querySelector('iframe').setAttribute('src', 'about:blank'); doc.documentElement.style.overflow = ''; if (doc.fullscreenElement) try { doc.exitFullscreen(); } catch (e) { } }
 
   function mount(target, o) {
     css(); o = o || {};
     var el = typeof target === 'string' ? doc.querySelector(target) : target;
     if (!el || el.__egh) return null;
     var m = el.__egh = { el: el, theme: o.theme || {} }; S.mounts.push(m);
+    if ('share' in o) S.share = o.share; else if (el.getAttribute && el.getAttribute('data-share') != null) S.share = el.getAttribute('data-share');
     el.addEventListener('click', function (e) {
       var h = e.target.closest('[data-fav]'), p = e.target.closest('[data-play]'), c = e.target.closest('[data-cat]');
       if (h) { e.stopPropagation(); toggleFav(h.dataset.fav); } else if (p) open(p.dataset.play); else if (c) { S.cat = c.dataset.cat; renderAll(); }
     });
     el.innerHTML = '<div class="egh"><div class="egh-empty">Spiele werden geladen …</div></div>';
-    (S.games.length ? Promise.resolve() : Promise.all([loadCatalog(), loadCats()])).then(function () { render(m); sync.seen = (LS.getItem(FAV) || '') + '|' + (LS.getItem(REC) || ''); syncNow(); })
+    (S.games.length ? Promise.resolve() : Promise.all([loadCatalog(), loadCats()])).then(function () { render(m); deep(); sync.seen = (LS.getItem(FAV) || '') + '|' + (LS.getItem(REC) || ''); syncNow(); })
       .catch(function () { el.innerHTML = '<div class="egh"><div class="egh-empty">Die Spieleliste ist gerade nicht erreichbar. <a href="' + esc(EG) + '" target="_blank" rel="noopener" style="color:inherit">Zu easygames</a></div></div>'; });
     return m;
   }
   setInterval(checkLive, 60000); setInterval(pollRemote, 45000); setInterval(watchLocal, 2000);
   doc.addEventListener('visibilitychange', function () { if (!doc.hidden) { checkLive(); pollRemote(); } });
   root.addEventListener('storage', function (e) { if (e.key === FAV || e.key === REC) renderAll(); });
+  root.addEventListener('hashchange', deep);
   root.addEventListener('anmacha-account-changed', function () { sync.ver = ''; syncNow(); });
   function auto() { [].forEach.call(doc.querySelectorAll('[data-anmacha-hub]'), function (el) { mount(el); }); }
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', auto); else auto();
-  root.AnMaChaHub = { mount: mount, open: open, base: EG };
+  root.AnMaChaHub = { mount: mount, open: open, base: EG, shareUrl: function (id) { var g = S.games.filter(function (x) { return x.id === id; })[0]; return g ? shareUrl(g) : null; } };
 })(window);

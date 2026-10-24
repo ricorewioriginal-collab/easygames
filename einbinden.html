@@ -211,6 +211,7 @@
       <li>Gib dem iframe genug Höhe (z. B. <code>90vh</code>), sonst wird der Viewer klein.</li>
       <li>Ein bestimmtes Spiel gleich öffnen: <code>?embed=1#zotik</code>.</li>
     </ul>
+    <p><b>Eigener Teilen-Link je Spiel:</b> <code>data-share="auto"</code> (bzw. <code>{ share: 'auto' }</code>) – „Spiel teilen“ zeigt dann auf deine Seite mit <code>#games/&lt;spiel-id&gt;</code>, und dieser Link öffnet das Spiel direkt. Oder eine eigene Vorlage: <code>data-share="https://meine-seite.de/spiele/{id}"</code>. Gilt auch für einzelne Spiele (<code>data-easygames="zotik" data-share="auto"</code>).</p>
     <h3>URL-Parameter der Übersicht</h3>
     <div class="tw"><table>
       <tr><th>Parameter</th><th>Wirkung</th></tr>
@@ -245,6 +246,7 @@
       <li><b>Spielen:</b> Ein Tipp auf eine Karte öffnet das Spiel im Vollbild-Fenster deiner Seite (easygames-iframe). Das Konto wird weitergereicht – wer angemeldet ist, ist im Spiel angemeldet.</li>
       <li><b>Echtzeit:</b> Die Spieleliste prüft alle 60 Sekunden ihre Version – neue oder geänderte Spiele erscheinen ohne Neuladen. Favoriten und „Weiterspielen“ gleichen sich bei angemeldeten Spielern mit dem Konto ab (alle 45 Sekunden eine winzige Versions-Abfrage, nur bei sichtbarer Seite) und erscheinen sofort auf jedem Gerät.</li>
       <li><b>Ohne Anmeldung</b> bleiben Favoriten lokal auf dem Gerät.</li>
+      <li><b>Eigener Teilen-Link je Spiel:</b> „📤 Teilen“ im Spielfenster teilt die Adresse <em>deiner</em> Seite, z. B. <code>https://www.ricorewi-radio.de/#games/frequenzminen</code>. Wer den Link öffnet, landet auf deiner Seite und das Spiel startet sofort. Die Spiele selbst nutzen die Adresse für ihre „Teilen“-Knöpfe ebenfalls. Eigene Form: <code>AnMaChaHub.mount('#spiele', { share: 'https://meine-seite.de/spiele/{id}' })</code> (bzw. <code>data-share="…"</code>), <code>share: false</code> teilt die easygames-Vorschauseite. Einladungs- und TV-Links für Mehrspieler bleiben auf der easygames-Homepage, damit jedes Gerät sie öffnet.</li>
       <li><b>Ohne Build und ohne Einrichtung:</b> Die Datei kommt immer in der aktuellen Fassung von GitHub Pages. Ein eigener Server oder Firebase ist nicht nötig.</li>
       <li>Die komplette easygames-Übersicht als iframe (Abschnitt 4) gibt es weiterhin – sie sieht aber immer wie easygames aus; der Hub passt sich deiner Seite an.</li>
     </ul>
