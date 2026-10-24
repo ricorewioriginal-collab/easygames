@@ -75,6 +75,9 @@ test('Rückgängig, Kombo, Punkte, Tipp-Abzug', () => {
   g.match(c, d, 2000); assert.strictEqual(g.combo, 2); assert.strictEqual(g.score, 30);
   assert.deepStrictEqual(g.undo(), [c, d]); assert.strictEqual(g.score, 10); assert.ok(g.alive[c] && g.alive[d]);
   const h = g.hint(); assert.ok(h && E.matches(g.faces[h[0]], g.faces[h[1]])); assert.strictEqual(g.score, 0);
+  // Abzug nach einem Paar bleibt beim Rückgängig erhalten
+  g.match(a, b, 50000); g.match(c, d, 52000); const s0 = g.score; g.hint(); g.undo();
+  assert.strictEqual(g.score, Math.max(0, s0 - 20 - 20));
 });
 
 test('Spielstand: Partie speichern und fortsetzen', () => {

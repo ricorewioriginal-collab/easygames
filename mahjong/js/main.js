@@ -150,7 +150,7 @@
     catch (e) { if (cfg.state) { app.save.d.cur = null; app.save.write(); app.ui.toast('Gespeicherte Partie war beschädigt – neue Partie.'); return startGame(mode, Object.assign({}, cfg, { state: null })); } throw e; }
     endTimer();
     app.mode = mode; app.ref = cfg.ref || null; app.def = cfg.def || null; app.layout = layout; app.game = game;
-    app.playing = true; app.paused = false; app.spinTok = null; app.cursor = -1; app.hover = -1; app.hint = null; app.lastAction = performance.now();
+    app.playing = true; app.paused = false; app.spinTok = null; app.stuckLater = false; app.cursor = -1; app.hover = -1; app.hint = null; app.lastAction = performance.now();
     app.ui.closeModal(); app.ui.hideScreens();
     $('hud').hidden = false;
     $('hudTitle').textContent = cfg.title || layout.name;
@@ -316,6 +316,7 @@
   };
   function onStuck() {
     const g = app.game; if (!g || !app.playing || !g.stuck()) return;
+    if (app.paused) { app.stuckLater = true; return; }   // nach dem Fortsetzen zeigen
     if (app.mode === 'zen') { app.ui.toast('Keine Paare mehr – ich mische neu 🍵'); app.shuffleAction(true); return; }
     if (app.mode === 'blitz') { app.blitz.left = Math.max(1, app.blitz.left - 10); app.ui.toast('Neu gemischt (−10 s)'); app.shuffleAction(true); return; }
     if (!app.save.opt.autoHint) { updateHud(); return; }
@@ -420,7 +421,7 @@
       { label: '🔁 Neu starten', fn: restart },
       { label: '🏠 Hauptmenü', fn: () => toMenu() }], { cancel: resume });
   }
-  function resume() { app.paused = false; app.lastAction = performance.now(); }
+  function resume() { app.paused = false; app.lastAction = performance.now(); if (app.stuckLater) { app.stuckLater = false; setTimeout(onStuck, 300); } }
   function restart() {
     const m = app.mode;
     if (m === 'level') app.startLevel(app.def);

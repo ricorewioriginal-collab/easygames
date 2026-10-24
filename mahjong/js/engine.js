@@ -166,7 +166,7 @@
     this.rand = rng(this.seed ^ 0xA5A5A5);
     const n = this.g.n;
     this.alive = new Uint8Array(n).fill(1);
-    this.history = [];     // [a, b, scoreVorher, comboVorher, letzteZeitVorher]
+    this.history = [];     // [a, b, scoreVorher, comboVorher, letzteZeitVorher, Punkte des Paars]
     this.selected = -1;
     this.score = 0; this.combo = 0; this.bestCombo = 0; this.lastMatch = -1e9;
     this.hints = 0; this.shuffles = 0; this.undos = 0; this.time = 0; this.matchesMade = 0;
@@ -209,12 +209,15 @@
       this.lastMatch = now;
       const pts = SCORE.base + SCORE.comboStep * Math.min(this.combo - 1, SCORE.comboMax - 1);
       this.score += pts;
+      this.history[this.history.length - 1].push(pts);
       return pts;
     },
     canUndo() { return this.history.length > 0; },
     undo() {
       const h = this.history.pop(); if (!h) return null;
-      this.alive[h[0]] = 1; this.alive[h[1]] = 1; this.score = h[2]; this.combo = h[3]; this.lastMatch = h[4];
+      this.alive[h[0]] = 1; this.alive[h[1]] = 1;
+      // nur die Punkte des Paars abziehen – spätere Abzüge (Tipp, Mischen) bleiben
+      this.score = h.length > 5 ? Math.max(0, this.score - h[5]) : h[2]; this.combo = h[3]; this.lastMatch = h[4];
       this.selected = -1; this.undos++;
       return [h[0], h[1]];
     },
