@@ -1563,6 +1563,38 @@
    }
   },
   {
+   "id": "deluxe-2048",
+   "title": "2048 Deluxe – Die Zahlen-Show mit Rico",
+   "desc": "Das Zahlen-Schiebespiel in 3D: Gleiche Kacheln zusammenschieben bis zur 2048 – und weiter. Moderator Rico steht mit Mikro neben dem Brett, feiert große Kacheln und warnt, wenn es eng wird. Klassisch von 3×3 bis 6×6, Blitz (3 Minuten), Tages-2048 für alle und Zen; Rückgängig und Hammer als Joker. Wischen, Tastatur oder Controller.",
+   "icon": "🟪",
+   "img": "deluxe-2048/card.jpg",
+   "bg": "linear-gradient(145deg,#a259ff,#ff5fa2 55%,#ffd23f)",
+   "glow": "rgba(162,89,255,.5)",
+   "path": "deluxe-2048/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "2048 Deluxe ist das Zahlen-Schiebespiel in 3D: Alle Kacheln rutschen gleichzeitig in die Richtung, in die du schiebst. Treffen zwei gleiche Zahlen aufeinander, verschmelzen sie zur doppelten Zahl, und du bekommst so viele Punkte, wie die neue Kachel zeigt. Nach jedem Zug kommt eine 2 oder 4 dazu. Ziel ist die 2048 – danach darfst du weiterspielen. Geht kein Zug mehr, ist die Show vorbei. Moderator Rico steht mit seinem Mikro neben dem Brett, feiert große Kacheln und warnt, wenn es eng wird. Modi: 🎯 Klassisch (Bretter von 3×3 bis 6×6, wird automatisch gespeichert), ⚡ Blitz (3 Minuten auf 4×4), 📅 Tages-2048 (gleiche Kacheln für alle, Ergebnis teilen) und 🧘 Zen (beliebig oft rückgängig, ohne Rangliste). Joker: ↶ Rückgängig (neu für jede 256) und 🔨 Hammer, der eine Kachel zerschlägt (neu für jede 1024).",
+    "steuerung": [
+     "Touch / Maus: in die gewünschte Richtung wischen; beim Hammer die Kachel antippen.",
+     "Tastatur: Pfeiltasten oder WASD schieben, U/Z/Rücktaste rückgängig, H Hammer (Pfeile + Enter), Esc/P Pause.",
+     "Gamecontroller: Steuerkreuz oder Stick schieben, X rückgängig, Y Hammer (Steuerkreuz + A), B abbrechen, Start Pause; im Menü Steuerkreuz und A."
+    ],
+    "tipps": [
+     "Leg die größte Zahl in eine Ecke und lass sie dort.",
+     "Schiebe möglichst nur in zwei, drei Richtungen – die vierte nur im Notfall.",
+     "Hebe den Hammer für eine einzelne Kachel auf, die deine Reihe blockiert."
+    ]
+   },
+   "size": 148775,
+   "files": 9,
+   "offline": true,
+   "cloud": {
+    "game": "deluxe-2048",
+    "prefix": "deluxe-2048-"
+   }
+  },
+  {
    "id": "anmacha-preisradar",
    "title": "AnMaCha Preisradar",
    "desc": "Das Preis-Schätzspiel: Gebotsduell, Frequenz-Skala, Teurer oder billiger, Einkaufswagen und Preisfinale – bis zu 4 Spieler, Computer-Gegner, geheime Tipps per Handy. 200+ Produkte, präsentiert vom RicoReWi Radioportal.",

@@ -1,0 +1,38 @@
+{
+  "id": "./",
+  "name": "2048 Deluxe – Die Zahlen-Show mit Rico",
+  "short_name": "2048 Deluxe",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#231338",
+  "theme_color": "#331c51",
+  "categories": [
+    "games"
+  ],
+  "icons": [
+    {
+      "src": "../pwa-icons/deluxe-2048-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../pwa-icons/deluxe-2048-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../pwa-icons/deluxe-2048-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
