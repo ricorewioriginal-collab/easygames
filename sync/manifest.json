@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "7d2274f5e58c",
- "generated": "2026-10-24T01:37:01+02:00",
- "commit": "6f55b53930d5c9820a9ee55667f4f002cf36f5a7",
+ "version": "266fde520834",
+ "generated": "2026-10-23T23:57:20+00:00",
+ "commit": "852fb4217011dd1bee14d95fc91084cbd2f23330",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2719,
-   "h": "c2e154888f8454d8350060c4cae21fd609d498821be1b9fff39f6d3d8f6a69a0"
+   "s": 2740,
+   "h": "3c91e299cade33452fb24688befbce449ac8bcb6be31382d00565c12bc4bdfb8"
   },
   {
    "p": "chat.html",
@@ -5308,13 +5308,13 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22162,
-   "h": "d47e8ab9166acfea8c0f903da41bb7bfff0927fe8aba4fd3fe22c2b321705b23"
+   "s": 22205,
+   "h": "bf8a8642c790cd2c39905514dd9ebbdafd155acb40179ec55ccb1a79e56124b8"
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 34497,
-   "h": "614f4d78a3c00f4f78cfa46ac26e255986b336bef71c0145f8186a0358e9d737"
+   "s": 34938,
+   "h": "cc1b4426432126d3d0d9dee6a58459f9cdf1d4049f5aa8a41370ea42c63b0683"
   },
   {
    "p": "cloud/anmacha-bug.js",
@@ -5773,8 +5773,8 @@
   },
   {
    "p": "games.js",
-   "s": 34785,
-   "h": "474256ef3df96c8bc65f36a429b27e14b9edba013d2da10c1aeaa24fd136c12c"
+   "s": 35544,
+   "h": "f8ab752503ad1ab44eb45d75ca686b7a3be8663289757beb1c280da7ad223c1f"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5933,8 +5933,8 @@
   },
   {
    "p": "guides.js",
-   "s": 99523,
-   "h": "7da3b94d7dc893506606e0dddf111cb5ac91e1aa9bad603f6f04b144cba8566b"
+   "s": 101483,
+   "h": "7e434b8a84c7529fbd6fe6832fd660e2765585b601ef73d0f7eebca4964e6af8"
   },
   {
    "p": "heute.html",
@@ -6190,6 +6190,86 @@
    "p": "lumo/index.html",
    "s": 3910,
    "h": "814e4ffc32ac5b9a5eb730cd084df82fb3e74e2a9fea94aae09a97952b78c3fb"
+  },
+  {
+   "p": "mahjong/card.jpg",
+   "s": 44232,
+   "h": "1bd91240d094c090d96a6ff281019757761488e673aca708b9280e4cf72dd90a"
+  },
+  {
+   "p": "mahjong/icon.svg",
+   "s": 671,
+   "h": "515bdcf8bbe8707b476ec239806c97c6e4a2d7f00b50727007e946cbb2f9ecbf"
+  },
+  {
+   "p": "mahjong/index.html",
+   "s": 13259,
+   "h": "a89e23258a147f13f882539375dc6b57e94bb0873bb28b2131d747b73647b6ad"
+  },
+  {
+   "p": "mahjong/js/audio.js",
+   "s": 7310,
+   "h": "72b8042faf8bf62eb3f880367ec612ccc8dbf276b6a84eff99c88ce3d697f1ca"
+  },
+  {
+   "p": "mahjong/js/engine.js",
+   "s": 14024,
+   "h": "f20851057ee636d607485fb08202b373b72c9e96bb6ba8e5533961d088d0207d"
+  },
+  {
+   "p": "mahjong/js/faces.js",
+   "s": 19057,
+   "h": "9ddd4b617a7b8c17e15739dd97ba20d62220df6028e0e30e9437485036835630"
+  },
+  {
+   "p": "mahjong/js/input.js",
+   "s": 8744,
+   "h": "c219873e9297912daa514ca6ec08d478c03a7b8c89a4c92eea4bfb4c4435b357"
+  },
+  {
+   "p": "mahjong/js/layouts.js",
+   "s": 9886,
+   "h": "b91207b0ff2ae27a6bfa6baa824e50031b170a8052df4be80683b20968d1275e"
+  },
+  {
+   "p": "mahjong/js/main.js",
+   "s": 35162,
+   "h": "37a10fef24370528683f3a78ec96517d1bdfec3b5107ad3e99557c9bd012d86d"
+  },
+  {
+   "p": "mahjong/js/render.js",
+   "s": 27443,
+   "h": "e1b4127a0e0a22399d9b5286fed7296d3dd7c80fd924fc74c97cdc789b6126c9"
+  },
+  {
+   "p": "mahjong/js/save.js",
+   "s": 8347,
+   "h": "eb3de5be7f04eef1056f4e1184f3ea8c65671ca6d36aae7bbe744ec516bee439"
+  },
+  {
+   "p": "mahjong/js/ui.js",
+   "s": 22879,
+   "h": "e9752cee387a8e17c8c4776585fc384f17342e234f5fd043d3e4615c70713e98"
+  },
+  {
+   "p": "mahjong/logo.svg",
+   "s": 2607,
+   "h": "e95621cb7fb080c5530700e6b26fe82566f4fed47b328dc29ba8dfe57176edf7"
+  },
+  {
+   "p": "mahjong/manifest.webmanifest",
+   "s": 760,
+   "h": "ccc9a7c4bc8c0decb6be6465f594e7a0576614310b795c81b78fa079c4770940"
+  },
+  {
+   "p": "mahjong/style.css",
+   "s": 17200,
+   "h": "d8f76cc09f4660bd08789f0cc16364f0e1aa14f11eacd6bebabb004b48d84891"
+  },
+  {
+   "p": "mahjong/sw.js",
+   "s": 1989,
+   "h": "26169f69def36c14f74757457db98a26f152ca327577ee14d232c5391541c98e"
   },
   {
    "p": "manifest.webmanifest",
@@ -7388,8 +7468,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 152556,
-   "h": "27f0390d210a56ac63ec9c2089238df44c0cf3980dca0119b17509ecab69357b"
+   "s": 155562,
+   "h": "2b6482d799ede576d9159685377ae17e88d942d22c3548e0ea215af0f7e52c53"
   },
   {
    "p": "taschi/card.svg",

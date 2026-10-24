@@ -210,6 +210,40 @@
    }
   },
   {
+   "id": "mahjong",
+   "title": "Mahjong 3D – Jadepalast",
+   "desc": "Mahjong Solitaire in echtem 3D: Paare gleicher, freier Steine abräumen, bis das Brett leer ist. Reise mit 48 Leveln in 8 Welten (Teegarten bis Kaiserstadt) mit Sternen und Zielzeiten, 29 Layouts von der Teeschale bis zur klassischen Schildkröte, Tagesrätsel mit Serie, Zeitjagd und entspannter Zen-Modus. Immer lösbar gemischt, Tipp, unbegrenztes Rückgängig, Mischen, Kombos, 26 Erfolge, zwei Steinbild-Stile (klassisch oder mit großen Zahlen), 8 Tische. Touch mit Zoom, Maus, Tastatur und Gamecontroller; Offline-PWA und Google-Spielstand.",
+   "icon": "🀄",
+   "img": "mahjong/card.jpg",
+   "bg": "linear-gradient(145deg,#0e3b2e,#1f8a64 55%,#e0b24a)",
+   "glow": "rgba(63,209,154,.5)",
+   "path": "mahjong/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Mahjong 3D – Jadepalast ist Mahjong Solitaire in echtem 3D. Auf dem Tisch liegen bis zu 144 Steine in Schichten. Tippe zwei gleiche Steine an, die frei sind – dann verschwinden sie. Frei ist ein Stein, wenn nichts auf ihm liegt und links oder rechts kein Nachbar ist. Alle vier Blumen passen untereinander, ebenso alle vier Jahreszeiten. Ist das Brett leer, hast du gewonnen. Jedes Brett wird immer lösbar gemischt. Auf der Reise spielst du 48 Level in 8 Welten mit eigenen Tischen und holst bis zu drei Sterne (geschafft, unter der Zielzeit, unter der Zielzeit ohne Tipp und Mischen). Dazu kommen das freie Spiel mit 29 Layouts, das Tagesrätsel mit Serie, die Zeitjagd gegen die Uhr und der entspannte Zen-Modus ohne Uhr und Punkte. Gespeichert wird automatisch, eine laufende Partie lässt sich fortsetzen, optional mit Google auf allen Geräten.",
+    "steuerung": [
+     "Touch: Stein antippen. Mit zwei Fingern zoomen und die Ansicht drehen, gezoomt mit einem Finger verschieben, Doppeltippen auf den Tisch zoomt. Unten: Zurück, Tipp, Mischen, Zoom und Ansicht zurücksetzen.",
+     "Maus: Klick wählt einen Stein, Mausrad zoomt, rechte Maustaste gedrückt halten dreht die Ansicht.",
+     "Tastatur: Pfeiltasten springen zwischen freien Steinen, Enter oder Leertaste wählt, H Tipp, U Zurück, R Mischen, + und − Zoom, Q/E drehen, V Ansicht, M Ton, F Vollbild, P oder Esc Pause.",
+     "Gamecontroller: Steuerkreuz oder linker Stick springen, A wählt, B abwählen/Pause, X Tipp, Y Zurück, Select Mischen, LB/RB drehen, LT/RT Zoom, rechter Stick verschieben, Start Pause."
+    ],
+    "tipps": [
+     "Räume zuerst Steine ab, die andere blockieren: hohe Stapel und die langen Reihen von außen.",
+     "Liegen drei gleiche Steine frei, überlege, welcher den meisten Platz schafft.",
+     "Paare kurz hintereinander bringen eine Kombo mit bis zu 50 Punkten pro Paar.",
+     "Auf kleinen Bildschirmen hilft der Steinstil „Klar“ mit großen Zahlen (Einstellungen)."
+    ]
+   },
+   "size": 233570,
+   "files": 16,
+   "offline": true,
+   "cloud": {
+    "game": "mahjong",
+    "prefix": "easygames.mahjong.v1"
+   }
+  },
+  {
    "id": "colorpop-universe",
    "title": "ColorPop Universe – Die bunte Welt der knallenden Steine",
    "desc": "Antippen. Abräumen. Universen entdecken. Knobelspiel nach dem SameGame-Prinzip: Gruppen aus mindestens 2 gleichen Steinen antippen, alles darüber fällt, leere Spalten rücken nach links, große Gruppen bringen (n−2)²×10 Punkte, ein leeres Brett +1000. 300 geprüfte Level in 12 Welten, Spezialsteine und Hindernisse, 14 Modi (Klassiker, Zen, Sprint 60, Zeitattacke, Zuglimit, Puzzle-Labor, Farbchaos, Gravitation+, Daily Pop, Wochenliga, Endlos-Turm, KI-Duell, Lokal zu zweit), 53 Erfolge, 38 Designs. Touch, Maus, Tastatur und Controller, offline spielbar, ohne Echtgeld und Werbung.",
