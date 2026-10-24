@@ -18,13 +18,17 @@ Den Spielnamen ändert man an einer Stelle: `PW.TITLE` / `PW.SUBTITLE` in `js/da
 - **Bewohner:**
   - Stufen der Seuche: gesund, gefährdet, krank, isoliert, in Behandlung, genesen und immun.
   - Hygiene, Quarantäne, Betten, Arznei, Zufriedenheit, Flucht und Zuwanderung.
+- **Lazarett:**
+  - Einzelne Kranke mit Namen: untersuchen, mit dem passenden Mittel behandeln, geheilt entlassen. Wartende verlieren Lebenskraft.
+  - Besondere Gäste mit hoher Belohnung, Personal (Empfang, Pflegerin, Träger), das Schritte selbst übernimmt.
+  - Kräuterbeete zum Säen und Ernten.
 - **Wirtschaft:**
   - 10 Rohstoffe mit Lagergrenzen.
   - Markt mit Kursen.
   - 3 Forschungsbäume (Heilkunst, Wirtschaft, Krieg) mit je 8 Stufen.
 - **Militär:**
   - 6 Truppenarten mit Stärken und Schwächen.
-  - 12 Helden mit Stufen, Talenten, Ausrüstung, Schmiede und Beförderung.
+  - 12 Helden mit Stufen, Talenten, Ausrüstung, Schmiede und Beförderung. In Schlachten lädt ihre Energie durch Treffer.
   - Formationen.
   - Beobachtbare Schlachten: Tempo 1/2/4, Ziel wählen, Heldenfähigkeiten, Rückzug, Sofort-Auswertung.
 - **Wellen:**
@@ -43,7 +47,7 @@ Den Spielnamen ändert man an einer Stelle: `PW.TITLE` / `PW.SUBTITLE` in `js/da
   - Freies Spiel mit einstellbarer Karte, Fraktionszahl, Schwierigkeit, Startbedingungen und Siegbedingung.
 - **Ereignisse und Aufgaben:**
   - Ereignisse mit Entscheidungen.
-  - Tages- und Wochenaufgaben, 22 Erfolge (auch für die easygames-Erfolgsseite).
+  - Tages- und Wochenaufgaben, 26 Erfolge (auch für die easygames-Erfolgsseite).
   - Ranglisten: abgewehrte Wellen, Bewohner und Geheilte.
 - **Speichern:**
   - Autosave alle 60 s sowie beim Verlassen und Ausblenden.
@@ -55,7 +59,7 @@ Den Spielnamen ändert man an einer Stelle: `PW.TITLE` / `PW.SUBTITLE` in `js/da
   - Touch, Maus und Tastatur (frei belegbar).
   - Gamecontroller über `gamepad.js`.
   - Einstellungen: Lautstärke, UI-Größe, Grafikqualität, Kontrast, weniger Effekte, Kamera, Zoom-Richtung.
-  - Hilfe mit 11 Kapiteln und Mitwirkende.
+  - Hilfe mit 12 Kapiteln und Mitwirkende.
 
 ## Wie die Bots arbeiten (Utility-KI)
 
@@ -83,7 +87,7 @@ Diplomatie (`js/diplo.js`):
 | `js/data.js` | alle Spieldaten: Gebäude, Rohstoffe, Truppen, Helden, Feinde, Bosse, Forschung, Fraktionen, Ereignisse, Erfolge, Balance |
 | `js/core.js` | Zufall mit Startwert, Bezahlen und Hinzufügen von Rohstoffen, Zeitformate, Chronik |
 | `js/world.js`, `js/march.js` | Weltkarte, Wegfindung, Nebel, Fundorte, Expeditionen, Eroberung |
-| `js/city.js`, `js/econ.js` | Stadt, Bauaufträge, Produktion, Bevölkerung und Seuche, Forschung, Rekrutierung, Markt |
+| `js/city.js`, `js/econ.js`, `js/ward.js` | Stadt, Bauaufträge, Produktion, Bevölkerung und Seuche, Forschung, Rekrutierung, Markt, Lazarett und Kräuterbeete |
 | `js/heroes.js`, `js/battle.js`, `js/waves.js` | Helden, Schlachtsimulation, Wellenverteidigung |
 | `js/ai.js`, `js/diplo.js` | Computer-Fraktionen und Diplomatie |
 | `js/campaign.js`, `js/game.js`, `js/save.js` | Kampagne, Spielablauf (fester 0,5-s-Takt), Ereignisse, Aufgaben, Speichern |
@@ -95,7 +99,7 @@ Die Simulationsdateien laufen ohne DOM. Die Tests laden sie direkt in Node (`tes
 ## Tests
 
 ```bash
-node --test pestwacht/tests/*.test.js      # 38 Prüfungen der Simulation (Stadt, Seuche, Forschung, Bots, Diplomatie, Kampf, Wellen, Karte, Speichern)
+node --test pestwacht/tests/*.test.js      # 44 Prüfungen der Simulation (Stadt, Seuche, Lazarett, Forschung, Bots, Diplomatie, Kampf, Wellen, Karte, Speichern)
 python3 -m http.server 8765 &              # im Repo-Hauptordner
 node pestwacht/tests/smoke.cjs             # Browser-Klicktest mit Playwright: alle Fenster, Bauen, Schlacht, Welle, Speichern/Laden, freies Spiel
 ```

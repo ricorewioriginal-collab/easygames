@@ -234,7 +234,7 @@
         const h = S.heroes[cur], st = h ? H.stats(S, cur) : null, R = PW.RARITY[d.rar];
         b += '<div class="card"><div class="fac"><div class="portrait" style="background:' + d.col + '">' + esc(d.name.charAt(0)) + '</div><div class="grow"><h3>' + esc(d.name) + '</h3><div class="small"><span style="color:' + R.col + '">' + R.name + '</span> · ' + PW.CLASSES[d.cls] + (h ? ' · Stufe ' + h.lv + '/' + H.cap(h) + ' ' + '★'.repeat(h.star) : '') + '</div></div></div>' +
           '<div class="small muted">' + esc(d.story) + '</div><div class="small">👍 ' + esc(d.pro) + ' · 👎 ' + esc(d.con) + '</div>' +
-          '<div class="small"><b>Passiv – ' + esc(d.passive.name) + ':</b> ' + esc(d.passive.desc) + '</div><div class="small"><b>Fähigkeit – ' + esc(d.skill.name) + ':</b> ' + esc(d.skill.desc) + ' (Abklingzeit ' + d.skill.cd + ' s)</div>';
+          '<div class="small"><b>Passiv – ' + esc(d.passive.name) + ':</b> ' + esc(d.passive.desc) + '</div><div class="small"><b>Fähigkeit – ' + esc(d.skill.name) + ':</b> ' + esc(d.skill.desc) + ' (Schlacht: lädt mit der Zeit und schneller durch Treffer, voll nach höchstens ' + Math.ceil(d.skill.cd / 0.6) + ' s)</div>';
         if (!h) {
           const why = H.recruitWhy(S, cur);
           b += '<hr class="sep">' + (d.unlock === 'gilde' ? '<div class="small">Anwerben in der Heldengilde (Stufe ' + d.guild + '): ' + cost(d.price) + '</div>' + U.why(why) + btn('hrec', 'Anwerben', { cls: 'small primary', dis: why, d: { id: cur } }) : '<div class="small muted">🔒 ' + (S.mode === 'campaign' ? 'Schließt sich dir im Lauf der Kampagne an.' : 'Verschollen – vielleicht in einer Ruine auf der Weltkarte zu finden.') + '</div>');
@@ -477,7 +477,7 @@
       '<div class="small">Kräfteverhältnis</div><div class="bar good"><i style="width:' + Math.round(p0 / Math.max(1, p0 + p1) * 100) + '%"></i></div>' +
       '<div class="squads"><div><div class="small good">' + esc(b.names[0]) + '</div>' + b.sq.map((q, i) => q.s === 0 ? row(q, i) : '').join('') + '</div><div><div class="small bad">' + esc(b.names[1]) + '</div>' + b.sq.map((q, i) => q.s === 1 ? row(q, i) : '').join('') + '</div></div>' +
       '<div class="small muted">Tippe einen feindlichen Trupp an, um alle Angriffe auf ihn zu richten.</div>' +
-      '<div class="row">' + b.sq.map((q, i) => q.s === 0 && q.kind === 'hero' && q.skill ? btn('bskill', '✨ ' + esc(PW.HERO[q.heroId] ? PW.HERO[q.heroId].skill.name : 'Fähigkeit') + (q.skill.t > 0 ? ' (' + Math.ceil(q.skill.t) + ')' : ''), { cls: 'small', dis: PW.Battle.canSkill(b, i) ? null : 'Noch nicht bereit', d: { i } }) : '').join('') + '</div>' +
+      '<div class="row">' + b.sq.map((q, i) => q.s === 0 && q.kind === 'hero' && q.skill ? btn('bskill', (q.skill.t > 0 ? '⚡' + Math.round(PW.Battle.energy(q) * 100) + '% ' : '✨ ') + esc(PW.HERO[q.heroId] ? PW.HERO[q.heroId].skill.name : 'Fähigkeit'), { cls: 'small', dis: PW.Battle.canSkill(b, i) ? null : 'Noch nicht bereit', d: { i } }) : '').join('') + '</div>' +
       '<div class="row"><label class="check small"><input type="checkbox" data-ch="bauto" ' + (b.auto[0] ? 'checked' : '') + '> Automatisch kämpfen</label></div>' +
       '<div class="row">' + btn('bretreat', '🏳️ Rückzug', { cls: 'small danger' }) + btn('bskip', '⏭ Sofort auswerten', { cls: 'small' }) + '</div>';
     el.hidden = false; el.querySelector('h3').innerHTML = '⚔️ ' + esc(B.d.capital ? 'Belagerung' : 'Gefecht') + ' · ' + esc(Wd().regionName(S_(), B.a.target)); const body = el.querySelector('.body'); if (body._h !== h && !U.pressed) { body.innerHTML = h; body._h = h; }
@@ -505,6 +505,57 @@
   // Seitenfenster im Schlachtmodus
   const side0 = U.side;
   U.side = function () { if (U.mode === 'battle') { U.side._t = performance.now(); P.battleSide(); return; } side0(); };
+
+  // ================= Lazarett =================
+  P.ward = function () {
+    U.modal('ward', '🩺 Lazarett', ent => {
+      const S = S_(), WD = PW.Ward, W = WD.state(S), t = ent.tab || 'patienten', cap = WD.cap(S);
+      let b = tabs([['patienten', 'Patienten (' + W.list.length + '/' + cap + ')'], ['garten', 'Kräuterbeete'], ['personal', 'Personal']], t, 'wtab');
+      if (!cap) return { body: b + '<p class="muted" style="margin-top:8px">Baue eine <b>Heilstube</b>, um Kranke einzeln zu pflegen. Je höher Heilstube und Lazarett, desto mehr Patienten passen hinein.</p>' + btn('nav', '🔨 Bauen', { d: { id: 'bauen' } }) };
+      if (t === 'patienten') {
+        if (!W.list.length) b += '<p class="muted" style="margin-top:8px">Gerade wartet niemand. Neue Kranke kommen, solange in der Zuflucht jemand krank ist (' + WD.sickN(S) + ').</p>';
+        b += '<div class="grid" style="margin-top:8px">' + W.list.map(c => {
+          const sy = WD.SYM[c.sym], cu = WD.cureOf(c), known = c.st !== 'wartet';
+          let act = '';
+          if (c.st === 'wartet') act = btn('wexam', '🔍 Untersuchen', { cls: 'primary', d: { id: c.id } });
+          else if (c.st === 'untersucht') { const why = WD.why(S, c, 'treat'); act = '<div class="small">' + cu.icon + ' ' + esc(cu.name) + ': ' + cost(cu.cost) + '</div>' + btn('wtreat', 'Behandeln', { cls: 'primary', dis: why, d: { id: c.id } }); }
+          else if (c.st === 'behandlung') act = '<div class="small">' + cu.icon + ' ' + esc(cu.name) + ' wirkt … ' + Math.ceil(c.t) + ' s</div>' + bar(1 - c.t / (c.tot || 1), 'good');
+          else act = btn('wout', '💚 Entlassen · ' + PW.costText(WD.reward(S, c)), { cls: 'primary', d: { id: c.id } });
+          return '<div class="card' + (c.vip != null ? ' sel' : '') + '"><h3><span class="ico">' + (c.vip != null ? '🎩' : known ? sy.icon : '❓') + '</span>' + esc(c.name) + '</h3>' +
+            '<div class="small muted">' + esc(c.job) + ' · ' + '🔥'.repeat(c.sev) + (known ? ' · ' + esc(sy.name) : ' · ' + esc(sy.hint)) + '</div>' +
+            '<div class="small">Lebenskraft</div>' + bar(c.hp / 100, c.hp < 35 ? 'hp' : 'good') + act + '</div>';
+        }).join('') + '</div><p class="small muted" style="margin-top:8px">Untersuchen zeigt die Krankheit und das passende Mittel. Wartende verlieren Lebenskraft – schwere Fälle (🔥🔥🔥) schneller. Gäste mit 🎩 zahlen besonders gut.</p>';
+      } else if (t === 'garten') {
+        const n = WD.bedCount(S);
+        if (!n) b += '<p class="muted" style="margin-top:8px">Baue einen <b>Kräutergarten</b>. Jede Stufe gibt ein weiteres Beet (höchstens 6).</p>';
+        else {
+          b += '<div class="grid" style="margin-top:8px">';
+          for (let i = 0; i < n; i++) {
+            const bd = W.beds[i] || { st: 'leer' };
+            if (bd.st === 'leer') b += '<div class="card"><h3><span class="ico">🟫</span>Beet ' + (i + 1) + '</h3>' + Object.keys(WD.SEEDS).map(k => { const sd = WD.SEEDS[k]; return btn('wplant', sd.icon + ' ' + sd.name + ' · ' + T(sd.time), { cls: 'small', dis: PW.canPay(S.res, sd.cost) ? null : 'Es fehlt: ' + PW.costText(PW.missing(S.res, sd.cost)), d: { i, k }, title: 'Kosten ' + PW.costText(sd.cost) + ' → Ernte ' + PW.costText(sd.yield) }); }).join('') + '</div>';
+            else if (bd.st === 'waechst') b += '<div class="card"><h3><span class="ico">🌱</span>' + esc(WD.SEEDS[bd.seed].name) + '</h3><div class="small">reif in ' + T(bd.t) + '</div>' + bar(1 - bd.t / bd.tot, 'good') + '</div>';
+            else b += '<div class="card sel"><h3><span class="ico">' + WD.SEEDS[bd.seed].icon + '</span>' + esc(WD.SEEDS[bd.seed].name) + ' ist reif</h3>' + btn('wharv', '🧺 Ernten · ' + PW.costText(WD.SEEDS[bd.seed].yield), { cls: 'primary', d: { i } }) + '</div>';
+          }
+          b += '</div>';
+        }
+      } else {
+        b += '<div class="grid" style="margin-top:8px">' + Object.keys(WD.STAFF).map(k => {
+          const st = WD.STAFF[k], mx = WD.staffMax(S, k), c = WD.hireCost(S, k), has = W.staff[k];
+          const dis = mx <= 0 ? 'Heilstube Stufe ' + st.lv + ' nötig' : has >= mx ? 'Mehr mit höherer Heilstube' : PW.canPay(S.res, c) ? null : 'Zu wenig Münzen';
+          return '<div class="card"><h3><span class="ico">' + st.icon + '</span>' + st.name + ' · ' + has + '/' + Math.max(0, mx) + '</h3><div class="small">' + esc(st.desc) + '</div>' + btn('whire', 'Einstellen · ' + PW.costText(c), { cls: 'small', dis, d: { k } }) + '</div>';
+        }).join('') + '</div>';
+      }
+      return { body: b };
+    }, { live: true });
+  };
+  A.wtab = setTab('ward');
+  const wdo = (ok, s) => { if (ok) { U.sfx(s || 'klick'); U.redrawId('ward'); U.hud(true); U.buildNav(); } else U.sfx('fehler'); };
+  A.wexam = d => wdo(PW.Ward.exam(S_(), +d.id));
+  A.wtreat = d => wdo(PW.Ward.treat(S_(), +d.id), 'bau');
+  A.wout = d => wdo(PW.Ward.discharge(S_(), +d.id), 'erfolg');
+  A.wplant = d => wdo(PW.Ward.plant(S_(), +d.i, d.k));
+  A.wharv = d => wdo(PW.Ward.harvest(S_(), +d.i), 'fertig');
+  A.whire = d => wdo(PW.Ward.hire(S_(), d.k), 'glocke');
   U.ui = U;   // Render-Zustand liegt direkt am UI-Objekt
 
   if (typeof module !== 'undefined' && module.exports) module.exports = PW;

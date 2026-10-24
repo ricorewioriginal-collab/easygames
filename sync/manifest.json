@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "a6d8597a8e25",
- "generated": "2026-10-24T02:21:18+00:00",
- "commit": "662cb597ae1e4229f4192c639d162df4c96c032d",
+ "version": "c54bdfa7a93a",
+ "generated": "2026-10-24T04:33:37+02:00",
+ "commit": "b58882d21218d53910b552cc880287197c20fef4",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5973,8 +5973,8 @@
   },
   {
    "p": "guides.js",
-   "s": 109156,
-   "h": "f5353c2c79a9b24c070421d2afb684a2e98e76c27da4178685fa12559a789e6b"
+   "s": 109444,
+   "h": "74591b1c35c9f797dde17565df698f48eded320f6ec9ab81bcfa7fd346abb7ea"
   },
   {
    "p": "heute.html",
@@ -6658,8 +6658,8 @@
   },
   {
    "p": "pestwacht/index.html",
-   "s": 7419,
-   "h": "03bc17b0e750a969bb696629617b36370a179ad35a1542dd48c85c3ae9a6c5b8"
+   "s": 7458,
+   "h": "2829dd7149e1cb5bb50f26a5ce1f5aba79df4dd0cb837fea12a4fd603184c173"
   },
   {
    "p": "pestwacht/js/ai.js",
@@ -6673,8 +6673,8 @@
   },
   {
    "p": "pestwacht/js/battle.js",
-   "s": 16686,
-   "h": "40a687a1979327db3a761b9e4274f17d7927fa74c164a4fad33d376e11faf606"
+   "s": 17057,
+   "h": "5198f80014689055981db1d182fd1f84ee67e3ad45bb58fcd3f2b026ef211fd0"
   },
   {
    "p": "pestwacht/js/campaign.js",
@@ -6693,8 +6693,8 @@
   },
   {
    "p": "pestwacht/js/data.js",
-   "s": 42434,
-   "h": "84fb59cc0ec5877c93bd430e52dce578d0fd994105b05da6c41851961240156d"
+   "s": 43255,
+   "h": "d65f42e9c5025c2ad769271c8130d4a579b14e0417c00109d4cdd2990fe423dc"
   },
   {
    "p": "pestwacht/js/diplo.js",
@@ -6708,8 +6708,8 @@
   },
   {
    "p": "pestwacht/js/game.js",
-   "s": 16138,
-   "h": "bd62867442fc43b869e8d2981730951a923989d55ccb4407073e59e05a1e8553"
+   "s": 16176,
+   "h": "e6965409ae305931b0263633cf1ecf86234534cf323f15595d12774f4fe077d4"
   },
   {
    "p": "pestwacht/js/heroes.js",
@@ -6733,13 +6733,13 @@
   },
   {
    "p": "pestwacht/js/panels.js",
-   "s": 62987,
-   "h": "0497669c0fe1f13be6d0831b6a08e7fc52719e4a9880c138c7bae20909471b07"
+   "s": 68169,
+   "h": "9dbcf829023994643b4866d4b941698089e83466b6644491d251b6cad2faad90"
   },
   {
    "p": "pestwacht/js/render.js",
-   "s": 83514,
-   "h": "270e7a40d07ec766f602da237f928739f28d72fb1b120446d34dbf0c8ce287b6"
+   "s": 92646,
+   "h": "b5d6c0e5c3c08ad6e5ad1b9e204bcd06da6bbe115d2b76d8858e49d7ea9e4d18"
   },
   {
    "p": "pestwacht/js/save.js",
@@ -6748,8 +6748,13 @@
   },
   {
    "p": "pestwacht/js/ui.js",
-   "s": 46410,
-   "h": "5dc14f6f086211a9242dd175ff1328e341a1b2548238d44c5836d73a7aacced2"
+   "s": 47300,
+   "h": "bdddbaa3cf1c044d70bb1f34d160ac750bdbdc4b7981f5d7f5dc94576b11384a"
+  },
+  {
+   "p": "pestwacht/js/ward.js",
+   "s": 9921,
+   "h": "45e4c3a53f0b4f321bb9f07ec103d62d99db8a040fd8211e3db54a9694092fd7"
   },
   {
    "p": "pestwacht/js/waves.js",
@@ -7688,8 +7693,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 167144,
-   "h": "afac685eb496293677491ca6c2da370437adb244d82fe6974cfd677ca2779c35"
+   "s": 167437,
+   "h": "5b0a38b9887cae08772377a8272be1ed64a656cb6f6e48053fc929deabeb4fa8"
   },
   {
    "p": "taschi/card.svg",

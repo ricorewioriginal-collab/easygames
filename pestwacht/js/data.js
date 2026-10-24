@@ -350,6 +350,8 @@
   // ---------- Tägliche / wöchentliche Aufgaben (aus dem Datum, ohne Server) ----------
   PW.QUESTS = [
     { id: 'heilen', name: 'Heile {n} Patienten', stat: 'cured', n: [6, 12, 20], reward: { med: 20, coin: 60 } },
+    { id: 'visite', name: 'Entlasse {n} Patienten aus dem Lazarett', stat: 'wardCured', n: [2, 4, 7], reward: { herb: 30, coin: 60 } },
+    { id: 'beete', name: 'Ernte {n} Kräuterbeete', stat: 'harvests', n: [2, 4, 6], reward: { water: 60, med: 10 } },
     { id: 'holz', name: 'Sammle {n} Holz', stat: 'prod.wood', n: [300, 600, 1000], reward: { coin: 50, stone: 80 } },
     { id: 'nahrung', name: 'Erzeuge {n} Nahrung', stat: 'prod.food', n: [300, 600, 1000], reward: { coin: 50, herb: 40 } },
     { id: 'bauen', name: 'Schließe {n} Bauaufträge ab', stat: 'built', n: [3, 5, 8], reward: { wood: 120, stone: 120 } },
@@ -365,6 +367,10 @@
     { id: 'erstbau', icon: '🔨', title: 'Erster Stein', desc: 'Schließe deinen ersten Bau ab.', stat: 'built', n: 1 },
     { id: 'bau50', icon: '🏗️', title: 'Baumeister', desc: 'Schließe 50 Bauaufträge ab.', stat: 'built', n: 50 },
     { id: 'heil1', icon: '🩹', title: 'Erste Heilung', desc: 'Heile deinen ersten Patienten.', stat: 'cured', n: 1 },
+    { id: 'visite1', icon: '🩺', title: 'Erste Visite', desc: 'Entlasse einen Patienten aus dem Lazarett, den du selbst behandelt hast.', stat: 'wardCured', n: 1 },
+    { id: 'visite50', icon: '🧑‍⚕️', title: 'Pestarzt', desc: 'Entlasse 50 Patienten aus dem Lazarett.', stat: 'wardCured', n: 50 },
+    { id: 'hoherbesuch', icon: '🎩', title: 'Hoher Besuch', desc: 'Heile einen besonderen Gast im Lazarett.', stat: 'vipCured', n: 1 },
+    { id: 'gaertner', icon: '🌿', title: 'Grüner Daumen', desc: 'Ernte 20 Kräuterbeete.', stat: 'harvests', n: 20 },
     { id: 'heil100', icon: '🌿', title: 'Pestheilerin', desc: 'Heile 100 Patienten.', stat: 'cured', n: 100 },
     { id: 'heil500', icon: '⚕️', title: 'Schutzpatronin', desc: 'Heile 500 Patienten.', stat: 'cured', n: 500 },
     { id: 'welle1', icon: '🛡️', title: 'Das Tor hält', desc: 'Wehre deine erste Welle ab.', stat: 'waves', n: 1 },

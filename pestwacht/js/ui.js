@@ -93,7 +93,7 @@
     U.closeModal(null, true); while (U.open.length) U.closeModal(null, true);
     $('#scrTitle').hidden = true; $('#hud').hidden = false;
     U.setMode('city');
-    PW.R.focus(15, 18, 36);
+    PW.R.focus(15, 17, 27);
     PW.R.worldInvalidate();
     buildNav(); U.hud(true);
     if (PW.Audio) { PW.Audio.startMusic(); PW.Audio.mood('ruhe'); }
@@ -108,12 +108,12 @@
 
   // ---------- Navigation ----------
   const NAV = [
-    ['bauen', '🔨', 'Bauen'], ['karte', '🗺️', 'Karte'], ['zuflucht', '📊', 'Zuflucht'], ['militaer', '🛡️', 'Militär'], ['helden', '⭐', 'Helden'],
+    ['bauen', '🔨', 'Bauen'], ['karte', '🗺️', 'Karte'], ['zuflucht', '📊', 'Zuflucht'], ['lazarett', '🩺', 'Lazarett'], ['militaer', '🛡️', 'Militär'], ['helden', '⭐', 'Helden'],
     ['forschung', '📜', 'Forschung'], ['diplo', '🕊️', 'Diplomatie'], ['aufgaben', '🎯', 'Aufgaben'], ['menu', '☰', 'Menü']
   ];
   function buildNav() {
     const S = U.S; if (!S) return;
-    const dot = { diplo: S.offers.length > 0, aufgaben: S.quests.list.concat(S.quests.wlist).some(q => !q.claimed && PW.Game.questProgress(S, q) >= q.n), helden: Object.keys(S.heroes).some(h => S.heroes[h].sp > 0) };
+    const dot = { diplo: S.offers.length > 0, aufgaben: S.quests.list.concat(S.quests.wlist).some(q => !q.claimed && PW.Game.questProgress(S, q) >= q.n), helden: Object.keys(S.heroes).some(h => S.heroes[h].sp > 0), lazarett: PW.Ward && PW.Ward.todo(S) > 0 };
     $('#nav').innerHTML = NAV.map(([id, ic, l]) => '<button class="btn' + ((id === 'karte' && U.mode === 'world') ? ' on' : '') + '" data-act="nav" data-id="' + id + '" style="position:relative" title="' + l + '"><span>' + (id === 'karte' && U.mode === 'world' ? '🏰' : ic) + '</span>' + (id === 'karte' && U.mode === 'world' ? 'Zuflucht' : l) + (dot[id] ? '<i class="dot"></i>' : '') + '</button>').join('');
   }
   U.buildNav = buildNav;
@@ -123,6 +123,7 @@
       case 'bauen': if (U.mode !== 'city') U.setMode('city'); U.P.build(); break;
       case 'karte': U.setMode(U.mode === 'world' ? 'city' : 'world'); break;
       case 'zuflucht': U.P.overview(); break;
+      case 'lazarett': U.P.ward(); break;
       case 'militaer': U.P.military(); break;
       case 'helden': U.P.heroes(); break;
       case 'forschung': U.P.research(); break;
@@ -152,6 +153,7 @@
     $('#poprow').innerHTML = [
       ['zuflucht', '👪 ' + tot + '/' + (d.house || 0), 'Bewohner / Wohnraum'],
       ['gesundheit', (sick ? '🤒 ' + sick : '💚 0') + ' · 🛏 ' + (p.t || 0) + '/' + (d.beds || 0), 'Kranke · belegte/freie Betten'],
+      ['lazarett', S.ward && S.ward.list.length ? '🩺 ' + S.ward.list.length + (PW.Ward.todo(S) ? ' ❗' : '') : '', 'Lazarett: Patienten (❗ = du kannst etwas tun)'],
       ['gesundheit', (p.sat >= 60 ? '😊 ' : p.sat >= 35 ? '😐 ' : '😟 ') + Math.round(p.sat), 'Zufriedenheit (Ziel ' + (p.target != null ? p.target : '?') + ')'],
       ['militaer', '🛡 ' + PW.Econ.troopCount(S) + '/' + PW.Econ.troopCap(S), 'Truppen / Grenze'],
       ['militaer', nextW, 'Nächster Angriff']
@@ -164,7 +166,7 @@
     if (now - (U._navT || 0) > 1500) { U._navT = now; buildNav(); }
     if (PW.Audio) PW.Audio.mood(w.active ? 'gefahr' : PW.R.night ? 'nacht' : 'ruhe');
   };
-  U.A.nav2 = d => { if (d.id === 'gesundheit') U.P.health(); else if (d.id === 'zuflucht') U.P.overview(); else U.P.military(); };
+  U.A.nav2 = d => { if (d.id === 'lazarett') U.P.ward(); else if (d.id === 'gesundheit') U.P.health(); else if (d.id === 'zuflucht') U.P.overview(); else U.P.military(); };
   U.A.res = () => U.P.overview('wirtschaft');
   U.A.speed = d => { const S = U.S; const v = +d.v; if (v === 0) S.paused = !S.paused; else { S.paused = false; S.speed = v; } U.hud(true); };
   U.A.skip = () => {
@@ -202,7 +204,7 @@
   U.A.early = () => { if (PW.Waves.callEarly(U.S)) { U.sfx('glocke'); U.setMode('city'); PW.R.focus(15, 25, 30); } };
   U.A.event = d => { PW.Game.answerEvent(U.S, d.y === '1'); U.hud(true); };
   U.A.rebuild = () => { PW.Game.rebuild(U.S); U.hud(true); };
-  U.A.look = d => { if (U.mode !== 'city') U.setMode('city'); PW.R.focus(+d.x, +d.z, 30); };
+  U.A.look = d => { if (U.mode !== 'city') U.setMode('city'); PW.R.focus(+d.x, +d.z, 24); };
 
   // Kampagne: Ziele und Dialog
   function mission() {
@@ -505,6 +507,7 @@
     ['Ziel', 'Im Jahr der Graupest bist du Vorsteherin oder Vorsteher der letzten Zuflucht. Halte die Bewohner gesund, satt und zufrieden, wehre Angriffe ab, erkunde das Land und behaupte dich zwischen acht Computerfraktionen, die selbst wirtschaften, Krieg führen und Bündnisse schließen. In der Kampagne führen dich 5 Kapitel durch das Spiel, im freien Spiel wählst du Karte, Gegner und Siegziel.'],
     ['Bauen', 'Tippe auf „Bauen“, wähle ein Gebäude und dann einen freien Platz innerhalb der Mauer (grün = möglich). Bestätige mit ✔. Gebäude, die einen Weg berühren, arbeiten 10 % besser; die Torstraße bleibt frei. Das Ratshaus begrenzt die Stufe aller Gebäude. Tippe ein Gebäude an, um es zu verbessern, zu versetzen, zu reparieren, zu pausieren oder abzureißen (50 % Rückerstattung). Es arbeiten 2 Bautrupps gleichzeitig (Forschung „Baumeisterei“: 3).'],
     ['Bewohner & Arbeit', 'Gesunde Bewohner arbeiten automatisch in den Gebäuden (Medizin und Wasser zuerst). Fehlen Arbeitskräfte, produzieren Gebäude weniger. Wohnhäuser bringen Platz für neue Überlebende; sie kommen nur, wenn die Zufriedenheit hoch genug ist. Nahrung und Wasser werden jede Minute verbraucht.'],
+    ['Lazarett & Kräuterbeete', 'Im Lazarett (🩺 in der Leiste) warten einzelne Kranke mit Namen. Untersuche sie, um Krankheit und Mittel zu erfahren, bezahle die Behandlung und entlasse sie geheilt – das bringt Münzen, Wissen und Zufriedenheit. Wartende verlieren Lebenskraft: leichte Fälle gehen krank nach Hause, schwere (🔥🔥🔥) sterben. Gäste mit 🎩 zahlen besonders gut. Ab höheren Heilstufen stellst du Empfang, Pflegerinnen und Träger ein, die das von selbst erledigen. Mit einem Kräutergarten säst und erntest du eigene Beete.'],
     ['Seuche & Heilung', 'Bewohner können sich anstecken (schlechte Hygiene, Enge, Hunger und verseuchte Umgebung erhöhen das Risiko). Infizierte stecken andere an. Quarantänestationen isolieren sie, Heilstuben und das Pestlazarett behandeln sie in Betten – dafür braucht es Personal und Arznei (aus Heilkräutern im Alchemielabor). Genesene sind eine Weile immun. Ohne Behandlung sterben manche; Trauer senkt die Zufriedenheit, die Gedenkstätte mildert sie.'],
     ['Angriffe (Wellen)', 'In festen Abständen greifen Seuchenschwärme die Zuflucht an – jede 5. Welle mit einem Boss. Kundschafter warnen vorher, die roten Pfade zeigen die Laufwege. Türme feuern auf Feinde in Reichweite (Wachturm: vorderster Feind, Balliste: stärkster, Feuerbecken: dichteste Gruppe, Räucherturm: verlangsamt alle). Am Tor kämpfen deine Truppen und Helden; Heldenfähigkeiten wirken per Knopf oder automatisch. Fällt das Tor, dringen Feinde zum Ratshaus vor. Eine verlorene Welle kostet Vorräte und beschädigt Gebäude, beendet aber nicht das Spiel.'],
     ['Weltkarte & Expeditionen', 'Auf der Karte siehst du erkundete Felder, Orte und die Gebiete aller Fraktionen. Tippe ein Feld an und wähle eine Expedition: Erkunden, Sammeln, Kranke retten, Region heilen, Besetzen, Angreifen, Verteidigen oder Handeln. Du stellst Truppen, bis zu 2 Helden und eine Formation zusammen und siehst Weg, Dauer und Stärkevergleich. Kämpfe kannst du ansehen und selbst Ziele und Heldenfähigkeiten wählen oder sofort auswerten lassen. Rückkehrer bringen Beute, Patienten und Verwundete mit.'],
