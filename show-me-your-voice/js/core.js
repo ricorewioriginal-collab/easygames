@@ -333,7 +333,7 @@
   // Die Tonart lernt mit (gleitender Mittelwert), damit auch hier relativ zur eigenen Tonart gewertet wird.
   function liveScorer(len, dt) {
     dt = dt > 0 ? dt : 0.05;
-    const per = 10000 / Math.max(1, (len || 60) / dt * 0.85);
+    let per = 10000 / Math.max(1, (len || 60) / dt * 0.85);
     const st = { sx: 0, sy: 0, total: 0, combo: 0, best: 0, note: null, off: 0 };
     function close() {
       const n = st.note; st.note = null;
@@ -359,7 +359,8 @@
         st.total = Math.min(10000, st.total + Math.max(0, 1 - dev / 0.35) * per * (1 + 0.05 * Math.min(st.combo, 5)));
         return { total: Math.round(st.total), ev, r: r + st.off, ok: dev < 0.2 };
       },
-      end() { const ev = close(); return { total: Math.round(st.total), ev, best: st.best }; }
+      end() { const ev = close(); return { total: Math.round(st.total), ev, best: st.best }; },
+      setLen(l) { if (l > 0) per = 10000 / Math.max(1, l / dt * 0.85); }   // „Ganzer Song“: Länge kommt erst später vom Video
     };
   }
   // Bewertungstitel wie bei SingStar

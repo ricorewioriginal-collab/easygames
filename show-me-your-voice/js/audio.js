@@ -121,11 +121,12 @@
 
   // ---------- Mikrofon (optional) ----------
   let micWant = false;
-  // voice = true (Vorsingen): ohne Rauschunterdrückung, die lange gehaltene Töne abschneidet und die Aufnahme dumpf macht
-  async function micStart(voice) {
+  // voice = true (Vorsingen): ohne Rauschunterdrückung, die lange gehaltene Töne abschneidet und die Aufnahme dumpf macht.
+  // hp = true (Kopfhörer): auch ohne Echo-Unterdrückung und automatische Lautstärke – die verzerren Gesang; ohne Lautsprecher-Musik braucht es sie nicht.
+  async function micStart(voice, hp) {
     if (!init() || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('nosupport');
     micWant = true; if (mic) return true;
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: !voice, autoGainControl: true } });
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: !(voice && hp), noiseSuppression: !voice, autoGainControl: !(voice && hp), channelCount: 1 } });
     if (!micWant || mic) { if (!mic || mic.stream !== stream) stream.getTracks().forEach(t => t.stop()); return !!mic; }   // inzwischen wieder gestoppt
     const src = ctx.createMediaStreamSource(stream), an = ctx.createAnalyser();
     an.fftSize = 2048; src.connect(an);           // nicht mit den Lautsprechern verbunden: kein Echo, keine Aufnahme
@@ -134,23 +135,30 @@
   }
   function micStop() {
     micWant = false; if (!mic) return;
-    try { mic.stream.getTracks().forEach(t => t.stop()); mic.src.disconnect(); if (mic.rec) mic.rec.nodes.forEach(n => n.disconnect()); } catch (e) {}
+    const rn = mic.rec ? mic.rec.nodes : null;
+    try { mic.stream.getTracks().forEach(t => t.stop()); mic.src.disconnect(); } catch (e) {}
+    if (rn) setTimeout(() => rn.forEach(n => { try { n.disconnect(); } catch (e) {} }), 900);   // erst nach dem Vorlauf: das Ende des letzten Tons kommt noch in die Aufnahme
     mic = null;
   }
-  // Studio-Klang für die Aufnahme: Kompressor, etwas Präsenz und ein kurzer Hall. Geht nur in die Aufnahme, nicht in die Lautsprecher.
+  // Studio-Klang für die Aufnahme: Kompressor, etwas Präsenz, ein kurzer Hall und ein Limiter gegen Übersteuern. Geht nur in die Aufnahme, nicht in die Lautsprecher.
+  // Die Aufnahme läuft REC_PRE Sekunden verzögert: Sie startet erst beim ersten erkannten Ton und hat trotzdem den Einsatz (Konsonanten, Atem) mit drauf.
+  const REC_PRE = 0.4;
   function micRecStream() {
     if (!mic) return null;
     if (mic.rec) return mic.rec.dest.stream;
     try {
       const comp = ctx.createDynamicsCompressor(), eq = ctx.createBiquadFilter(), hp = ctx.createBiquadFilter(), dry = ctx.createGain(), wet = ctx.createGain(), rev = ctx.createConvolver(), dest = ctx.createMediaStreamDestination();
+      const pre = ctx.createDelay(1), bus = ctx.createGain(), lim = ctx.createDynamicsCompressor();
+      pre.delayTime.value = REC_PRE; bus.gain.value = 1.6;
+      lim.threshold.value = -3; lim.knee.value = 0; lim.ratio.value = 20; lim.attack.value = 0.002; lim.release.value = 0.1;
       hp.type = 'highpass'; hp.frequency.value = 80;
       eq.type = 'peaking'; eq.frequency.value = 3000; eq.Q.value = 0.8; eq.gain.value = 3;
       comp.threshold.value = -24; comp.ratio.value = 3; comp.attack.value = 0.01; comp.release.value = 0.2;
       const sr = ctx.sampleRate, n = Math.floor(sr * 1.6), ir = ctx.createBuffer(2, n, sr);
       for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3); }
-      rev.buffer = ir; dry.gain.value = 1.4; wet.gain.value = 0.35;
-      mic.src.connect(hp); hp.connect(eq); eq.connect(comp); comp.connect(dry); comp.connect(rev); rev.connect(wet); dry.connect(dest); wet.connect(dest);
-      mic.rec = { dest, nodes: [hp, eq, comp, dry, wet, rev, dest] };
+      rev.buffer = ir; dry.gain.value = 1; wet.gain.value = 0.3;
+      mic.src.connect(pre); pre.connect(hp); hp.connect(eq); eq.connect(comp); comp.connect(dry); comp.connect(rev); rev.connect(wet); dry.connect(bus); wet.connect(bus); bus.connect(lim); lim.connect(dest);
+      mic.rec = { dest, nodes: [pre, hp, eq, comp, dry, wet, rev, bus, lim, dest] };
       return dest.stream;
     } catch (e) { return mic.stream; }
   }
@@ -240,5 +248,5 @@
   }
 
   root.SMYVAudio = { radioOnLost: cb => { onLost = cb; }, radioStart, radioStop, radioMute, radioOnsets, radioSong, radioActive: () => !!radio, radioPlain: () => !!(radio && radio.plain), init, setVolume, ok, song, tick, chordTones, sfx, guide, voiceOn, voiceSet, voiceOff,
-    micStart, micStop, micPitch, micLevel, micActive: () => !!mic, micStream: () => (mic ? mic.stream : null), micRecStream, mtof, ctxTime: () => (ctx ? ctx.currentTime : 0) };
+    micStart, micStop, micPitch, micLevel, micActive: () => !!mic, micStream: () => (mic ? mic.stream : null), micRecStream, micRecPre: () => (mic && mic.rec ? REC_PRE : 0), mtof, ctxTime: () => (ctx ? ctx.currentTime : 0) };
 })(window);
