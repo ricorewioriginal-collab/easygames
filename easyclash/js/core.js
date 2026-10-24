@@ -15,22 +15,40 @@
     upper: { n: 'Himmelsfaust', h: 'mid', st: 8, act: 5, rec: 30, dmg: 16, reach: 1.25, launch: 9.5, inv: 8 },
     stomp: { n: 'Bodenbeben', h: 'low', st: 20, act: 4, rec: 22, dmg: 14, reach: 2.2, track: 180, kd: true }
   };
-  // Grundangriffe für alle; Ketten über next
+  // Befehlsliste wie bei modernen 3D-Prüglern: 1 = linke Faust, 2 = rechte Faust, 3 = linkes Bein, 4 = rechtes Bein,
+  // Richtung + Knopf (f = vor, b = zurück, d = unten, df = unten-vor), Ketten über next. pose = Animation im Modell.
   const BASE = {
-    jab: { h: 'high', st: 9, act: 2, rec: 10, dmg: 7, reach: 1.3, hs: 14, bs: 9, push: .2, next: { p: 'jab2', k: 'jabk' }, win: 12 },
-    jab2: { h: 'high', st: 9, act: 2, rec: 12, dmg: 8, reach: 1.35, hs: 15, bs: 9, push: .25, next: { p: 'jab3' }, win: 12 },
-    jab3: { h: 'mid', st: 14, act: 3, rec: 18, dmg: 14, reach: 1.45, hs: 22, bs: 12, push: .8 },
-    jabk: { h: 'high', st: 13, act: 3, rec: 18, dmg: 15, reach: 1.55, hs: 20, bs: 10, push: .7, kd: true },
-    kick: { h: 'mid', st: 13, act: 3, rec: 15, dmg: 12, reach: 1.6, hs: 18, bs: 10, push: .4, next: { k: 'kick2' }, win: 14 },
-    kick2: { h: 'high', st: 15, act: 3, rec: 20, dmg: 17, reach: 1.65, hs: 22, bs: 12, push: 1.0, kd: true },
-    low: { h: 'low', st: 10, act: 2, rec: 12, dmg: 6, reach: 1.25, hs: 13, bs: 8, push: .2 },
-    sweep: { h: 'low', st: 16, act: 3, rec: 24, dmg: 14, reach: 1.7, hs: 20, bs: 14, push: .5, kd: true, track: 40 },
-    power: { h: 'mid', st: 15, act: 3, rec: 20, dmg: 18, reach: 1.45, hs: 26, bs: 14, push: 1.2, wall: true },
-    launcher: { h: 'mid', st: 15, act: 3, rec: 20, dmg: 15, reach: 1.4, hs: 20, bs: 18, push: .3, launch: 9 },
-    air: { h: 'mid', st: 6, act: 6, rec: 8, dmg: 13, reach: 1.5, hs: 18, bs: 10, push: .6 },
-    throw: { h: 'throw', st: 10, act: 2, rec: 24, dmg: 32, reach: 1.15 },
-    finale: { h: 'mid', st: 12, act: 4, rec: 40, dmg: 58, reach: 2.0, push: 2.2, kd: true, inv: 12, super: true, dash: 2 }
+    jab: { n: '1 · Jab', h: 'high', st: 10, act: 2, rec: 9, dmg: 6, reach: 1.3, hs: 15, bs: 8, push: .15, next: { 2: 'cross' }, win: 13, pose: 'jab' },
+    cross: { n: '1,2 · Doppel', h: 'high', st: 10, act: 2, rec: 12, dmg: 10, reach: 1.35, hs: 17, bs: 9, push: .3, next: { 4: 'onetwofour', 1: 'hook' }, win: 13, pose: 'jab2' },
+    onetwofour: { n: '1,2,4 · Kickfinish', h: 'high', st: 15, act: 3, rec: 20, dmg: 18, reach: 1.6, hs: 22, bs: 12, push: .9, kd: true, pose: 'kick2' },
+    hook: { n: '1,2,1 · Haken', h: 'mid', st: 14, act: 3, rec: 18, dmg: 14, reach: 1.4, hs: 22, bs: 11, push: .8, pose: 'jab3' },
+    straight: { n: '2 · Gerade', h: 'high', st: 12, act: 2, rec: 12, dmg: 12, reach: 1.4, hs: 17, bs: 9, push: .35, next: { 1: 'hook2', 2: 'rush2' }, win: 12, pose: 'jab2' },
+    hook2: { n: '2,1 · Konter-Haken', h: 'mid', st: 13, act: 3, rec: 16, dmg: 13, reach: 1.35, hs: 20, bs: 10, push: .6, pose: 'jab3' },
+    rush2: { n: '2,2 · Doppelgerade', h: 'mid', st: 14, act: 3, rec: 18, dmg: 15, reach: 1.45, hs: 22, bs: 12, push: .9, wall: true, pose: 'power' },
+    kick: { n: '3 · Mittelkick', h: 'mid', st: 14, act: 3, rec: 15, dmg: 12, reach: 1.6, hs: 18, bs: 10, push: .4, next: { 4: 'kick2' }, win: 14, pose: 'kick' },
+    kick2: { n: '3,4 · Drehkick', h: 'high', st: 15, act: 3, rec: 20, dmg: 17, reach: 1.65, hs: 22, bs: 12, push: 1.0, kd: true, pose: 'kick2' },
+    highkick: { n: '4 · Hoher Kick', h: 'high', st: 13, act: 3, rec: 16, dmg: 15, reach: 1.65, hs: 20, bs: 11, push: .6, next: { 4: 'kick2' }, win: 12, pose: 'jabk' },
+    elbow: { n: 'f+1 · Ellbogen', h: 'mid', st: 13, act: 3, rec: 14, dmg: 13, reach: 1.25, hs: 20, bs: 9, push: .5, pose: 'power' },
+    power: { n: 'f+2 · Wuchtschlag', h: 'mid', st: 16, act: 3, rec: 20, dmg: 20, reach: 1.45, hs: 26, bs: 14, push: 1.3, wall: true, pose: 'power' },
+    knee: { n: 'f+3 · Knie', h: 'mid', st: 15, act: 3, rec: 18, dmg: 16, reach: 1.2, hs: 22, bs: 12, push: .7, pose: 'launcher' },
+    roundhouse: { n: 'f+4 · Rundkick', h: 'high', st: 18, act: 4, rec: 22, dmg: 22, reach: 1.75, hs: 24, bs: 12, push: 1.2, kd: true, track: 70, pose: 'kick2' },
+    check: { n: 'df+1 · Magenhaken', h: 'mid', st: 13, act: 2, rec: 12, dmg: 11, reach: 1.25, hs: 19, bs: 7, push: .3, pose: 'jab3' },
+    uppercut: { n: 'df+2 · Aufwärtshaken', h: 'mid', st: 15, act: 3, rec: 18, dmg: 15, reach: 1.35, hs: 20, bs: 18, push: .3, launch: 7.2, pose: 'upper' },
+    midkick: { n: 'df+3 · Frontkick', h: 'mid', st: 14, act: 3, rec: 16, dmg: 13, reach: 1.6, hs: 19, bs: 10, push: .8, pose: 'kick' },
+    launcher: { n: 'df+4 · Aushebel-Kick', h: 'mid', st: 16, act: 3, rec: 20, dmg: 14, reach: 1.45, hs: 20, bs: 18, push: .3, launch: 7.5, pose: 'launcher' },
+    low: { n: 'd+1 · Tiefer Stoß', h: 'low', st: 10, act: 2, rec: 12, dmg: 5, reach: 1.25, hs: 13, bs: 8, push: .2, pose: 'low' },
+    lowpunch: { n: 'd+2 · Tiefer Schlag', h: 'low', st: 12, act: 2, rec: 14, dmg: 8, reach: 1.3, hs: 15, bs: 10, push: .3, pose: 'low' },
+    lowkick: { n: 'd+3 · Schienbein-Kick', h: 'low', st: 13, act: 2, rec: 16, dmg: 9, reach: 1.5, hs: 16, bs: 12, push: .3, pose: 'sweep' },
+    sweep: { n: 'd+4 · Feger', h: 'low', st: 18, act: 3, rec: 26, dmg: 16, reach: 1.7, hs: 20, bs: 16, push: .5, kd: true, track: 40, pose: 'sweep' },
+    backfist: { n: 'b+1 · Rückhand', h: 'high', st: 12, act: 2, rec: 12, dmg: 11, reach: 1.45, hs: 18, bs: 8, push: .5, track: 60, pose: 'jab' },
+    body: { n: 'b+2 · Körperhaken', h: 'mid', st: 14, act: 3, rec: 16, dmg: 14, reach: 1.3, hs: 22, bs: 10, push: .6, next: { 1: 'hook' }, win: 12, pose: 'jab3' },
+    spinkick: { n: 'b+4 · Wirbelkick', h: 'mid', st: 20, act: 4, rec: 22, dmg: 20, reach: 1.75, hs: 24, bs: 12, push: 1.3, kd: true, track: 90, pose: 'kick2' },
+    air: { n: 'Sprung + Knopf', h: 'mid', st: 6, act: 6, rec: 8, dmg: 13, reach: 1.5, hs: 18, bs: 10, push: .6, pose: 'air' },
+    throw: { n: '1+3 · Wurf', h: 'throw', st: 10, act: 2, rec: 24, dmg: 32, reach: 1.15, pose: 'throw' },
+    finale: { n: 'Wut + Finale', h: 'mid', st: 12, act: 4, rec: 40, dmg: 58, reach: 2.0, push: 2.2, kd: true, inv: 12, super: true, dash: 2, pose: 'finale' }
   };
+  // Richtung + Knopf → Angriff
+  const CMD = { '1': 'jab', '2': 'straight', '3': 'kick', '4': 'highkick', f1: 'elbow', f2: 'power', f3: 'knee', f4: 'roundhouse', df1: 'check', df2: 'uppercut', df3: 'midkick', df4: 'launcher', d1: 'low', d2: 'lowpunch', d3: 'lowkick', d4: 'sweep', db1: 'low', db2: 'lowpunch', db3: 'lowkick', db4: 'sweep', b1: 'backfist', b2: 'body', b3: 'kick', b4: 'spinkick' };
   const W0 = { walk: 2.4, back: 2.0, side: 2.2, power: 1, reach: 1, speed: 1, weight: 1 };
 
   function stats(ch) { return Object.assign({}, W0, ch && ch.stats || {}); }
@@ -65,41 +83,46 @@
     W.ev.push({ k: 'swing', i: F.i, id, h: def.h });
     return true;
   }
-  // Eingabe in Aktion umsetzen
+  // Eingabe in Aktion umsetzen. inp: { fx, sy, b1..b4 (gerade gedrückt), s (Spezial), g (Wurf), f (Finale), block (gehalten) }
   function control(W, F, inp) {
     inp = inp || {};
-    if (F.state === 'thrown') { if (inp.g) tryBreak(W, F.i); return; }
-    // Tipps erkennen: Doppel-Tipp vor = Dash, zurück = Rückzug
+    // alte Namen (p = 1, k = 3) weiter erlauben
+    if (inp.p && !inp.b1) inp.b1 = true; if (inp.k && !inp.b3) inp.b3 = true;
+    if (F.state === 'thrown') { if (inp.g || inp.b1 && inp.b3 || inp.b2 && inp.b4) tryBreak(W, F.i); return; }
     const d = F.dtap; d.f = Math.max(0, d.f - 1); d.b = Math.max(0, d.b - 1);
-    const fw = inp.fx > .5, bw = inp.fx < -.5;
-    if (fw && !d.lf) { if (d.f > 0 && !busy(F)) { setState(F, 'dash'); d.f = 0; } else d.f = 12; }
-    if (bw && !d.lb) { if (d.b > 0 && !busy(F)) { setState(F, 'bdash'); d.b = 0; } else d.b = 12; }
+    const fw = inp.fx > .5, bw = inp.fx < -.5, dn = inp.sy > .5, up = inp.sy < -.5;
+    if (fw && !d.lf && !dn) { if (d.f > 0 && !busy(F)) { setState(F, 'dash'); d.f = 0; } else d.f = 12; }
+    if (bw && !d.lb && !dn) { if (d.b > 0 && !busy(F)) { setState(F, 'bdash'); d.b = 0; } else d.b = 12; }
     d.lf = fw; d.lb = bw;
-    F.block = (bw || !!inp.block) && !inp.p && !inp.k;
-    // Ducken / Springen / Seitschritt (antippen = Seitschritt, halten = ducken bzw. springen)
-    if (inp.sy > .5) F.crouch++; else { if (F.crouch > 0 && F.crouch < 8 && !busy(F)) sidestep(W, F, 1); F.crouch = 0; }
-    if (inp.sy < -.5) { F.upHeld++; if (F.upHeld === 9 && !busy(F) && F.y === 0) { setState(F, 'jump'); F.vy = 7.2; } } else { if (F.upHeld > 0 && F.upHeld < 8 && !busy(F)) sidestep(W, F, -1); F.upHeld = 0; }
-    // Knöpfe puffern (8 Takte)
-    let want = null;
-    const crouch = F.crouch >= 8;
-    if ((inp.f || inp.s && (inp.g || inp.k)) && F.rage && !F.finale) want = 'finale';
-    else if (inp.s) want = 'special';
-    else if (inp.g) want = 'throw';
-    else if (inp.p) want = crouch ? 'low' : fw ? 'power' : 'jab';
-    else if (inp.k) want = crouch ? 'sweep' : fw ? 'launcher' : 'kick';
-    if (want) F.buf = { id: want, t: 8, p: !!inp.p, k: !!inp.k };
+    const anyBtn = inp.b1 || inp.b2 || inp.b3 || inp.b4 || inp.s || inp.g || inp.f;
+    F.block = (bw || !!inp.block) && !anyBtn;
+    // Ducken / Springen / Seitschritt (antippen = Seitschritt, halten = ducken bzw. springen; mit Knopf kein Seitschritt)
+    if (anyBtn && (dn || up)) F.usedDir = true;
+    if (dn) F.crouch++; else { if (F.crouch > 0 && F.crouch < 8 && !F.usedDir && !busy(F)) sidestep(W, F, 1); F.crouch = 0; if (!up) F.usedDir = false; }
+    if (up) { F.upHeld++; if (F.upHeld === 9 && !busy(F) && F.y === 0) { setState(F, 'jump'); F.vy = 7.2; F.vx = fw ? F.fx * 2.5 : bw ? -F.fx * 2 : 0; F.vz = fw ? F.fz * 2.5 : bw ? -F.fz * 2 : 0; } } else { if (F.upHeld > 0 && F.upHeld < 8 && !F.usedDir && !busy(F)) sidestep(W, F, -1); F.upHeld = 0; if (!dn) F.usedDir = false; }
+    // Knöpfe sammeln (2 Takte für gleichzeitige Paare wie 1+3), dann Befehl auflösen
+    if (anyBtn) { const P = F.pend || (F.pend = { b: {}, t: 2, dir: '' }); for (const k of ['b1', 'b2', 'b3', 'b4', 's', 'g', 'f']) if (inp[k]) P.b[k] = true; P.dir = dn ? (fw ? 'df' : bw ? 'db' : 'd') : fw ? 'f' : bw ? 'b' : up ? 'u' : ''; }
+    if (F.pend && --F.pend.t <= 0) {
+      const P = F.pend, B = P.b; F.pend = null; let want = null;
+      if ((B.f || (B.b1 && B.b2 && P.dir === 'df')) && F.rage && !F.finale) want = 'finale';
+      else if (B.s || (B.b1 && B.b2)) want = 'special';
+      else if (B.g || (B.b1 && B.b3) || (B.b2 && B.b4)) want = 'throw';
+      else { const n = B.b1 ? 1 : B.b2 ? 2 : B.b3 ? 3 : B.b4 ? 4 : 0; if (n) want = CMD[(P.dir === 'u' ? '' : P.dir) + n] || CMD['' + n]; if (n) F.lastBtn = n; }
+      if (want) F.buf = { id: want, t: 9, n: F.lastBtn };
+    }
     if (F.buf) {
       F.buf.t--;
-      if (F.state === 'jump' && (F.buf.id === 'jab' || F.buf.id === 'kick' || F.buf.id === 'power' || F.buf.id === 'launcher')) { startMove(W, F, 'air'); }
+      if (F.state === 'jump' && BASE[F.buf.id] && BASE[F.buf.id].h !== 'throw') { startMove(W, F, 'air'); }
       else if (F.state === 'attack' && F.mv && F.mv.next && F.t >= F.mv.st && F.t <= F.mv.st + F.mv.act + (F.mv.win || 0)) {
-        const nx = F.buf.p ? F.mv.next.p : F.buf.k ? F.mv.next.k : null;
+        const nx = F.buf.n ? F.mv.next[F.buf.n] : null;
         if (nx && (F.hit || F.t > F.mv.st + F.mv.act)) startMove(W, F, nx);
       } else if (!busy(F) && F.state !== 'jump') startMove(W, F, F.buf.id);
       if (F.buf && F.buf.t <= 0) F.buf = null;
     }
-    // Gehen
+    // Gehen (unten-zurück = geduckt blocken)
     if (!busy(F) && F.state !== 'jump') {
       let mv = 0;
+      const crouch = F.crouch >= 4 || (dn && F.usedDir);
       if (crouch) F.state = 'crouch';
       else if (fw) { mv = F.st.walk; F.state = 'walk'; } else if (bw) { mv = -F.st.back; F.state = 'walkb'; }
       else F.state = 'idle';
@@ -110,6 +133,12 @@
 
   function step(W, inputs) {
     W.frame++; W.ev.length = 0;
+    for (const F of W.f) { F.px = F.x; F.py = F.y; F.pz = F.z; }
+    if (W.stop > 0) {   // Trefferstopp: kurzes Einfrieren macht Treffer spürbar – gedrückte Knöpfe bleiben gemerkt
+      W.stop--;
+      if (inputs) W.f.forEach(F => { const inp = inputs[F.i] || {}; if (inp.p) inp.b1 = true; if (inp.k) inp.b3 = true; const P = F.pend || { b: {}, t: 2, dir: '' }; let any = false; for (const k of ['b1', 'b2', 'b3', 'b4', 's', 'g', 'f']) if (inp[k]) { P.b[k] = true; any = true; } if (any) { const fw = inp.fx > .5, bw = inp.fx < -.5, dn = inp.sy > .5; P.dir = dn ? (fw ? 'df' : bw ? 'db' : 'd') : fw ? 'f' : bw ? 'b' : ''; P.t = 1; F.pend = P; } });
+      return;
+    }
     if (W.slow > 0) W.slow--;
     const [A, B] = W.f;
     if (W.phase === 'intro') { W.pt++; if (W.pt === 1) W.ev.push({ k: 'round', n: W.M.round }); if (W.pt >= 100) { W.phase = 'fight'; W.pt = 0; W.ev.push({ k: 'fight' }); } settle(W); return; }
@@ -147,7 +176,7 @@
     else if (s === 'bdash') { const v = F.t < 12 ? -5.5 : 0; F.x += F.fx * v * DT; F.z += F.fz * v * DT; if (F.t >= 18) setState(F, 'idle'); }
     else if (s === 'hit' || s === 'block') { F.x += F.vx * DT; F.z += F.vz * DT; F.vx *= .86; F.vz *= .86; if (F.wallSplat > 0) F.wallSplat--; if (F.t >= F.stun) setState(F, 'idle'); }
     else if (s === 'jump' || s === 'air') {
-      F.vy -= (s === 'air' ? 16 : 22) * DT; F.y += F.vy * DT; F.x += F.vx * DT; F.z += F.vz * DT;
+      F.vy -= (s === 'air' ? 18 : 22) * DT; F.y += F.vy * DT; F.x += F.vx * DT; F.z += F.vz * DT;
       if (F.y <= 0) { F.y = 0; F.vy = 0; F.vx = F.vz = 0; if (s === 'air') { setState(F, 'down'); W.ev.push({ k: 'land', i: F.i }); } else setState(F, 'idle'); }
     } else if (s === 'down') { F.vx *= .8; F.vz *= .8; F.x += F.vx * DT; F.z += F.vz * DT; if (F.t >= 34 && F.hp > 0) { setState(F, 'getup'); F.inv = 20; } }
     else if (s === 'getup') { if (F.t >= 20) { setState(F, 'idle'); F.juggle = 0; } }
@@ -167,7 +196,7 @@
     if (proj < -.2 || len(dx, dz) > m.reach + .35) return false;
     const ang = Math.atan2(lat, Math.max(.01, proj)) * 180 / Math.PI;
     if (m.track < 180 && ang > m.track + 8 && lat > .45) return false;
-    if (O.y > 1.6 && !m.launch) return false;
+    if (O.y > 2.8 && !m.launch) return false;
     return true;
   }
   // Treffer auswerten: Würfe, Block, Ducken unter Hohen, Konter, Luft-Kombos, Wand
@@ -188,7 +217,7 @@
     if (blocked) {
       setState(O, 'block'); O.stun = m.bs || 12; O.vx = ux * (m.push || .3) * 5 * pushW; O.vz = uz * (m.push || .3) * 5 * pushW;
       O.hp -= m.super ? Math.round(m.dmg * .15) : 0;
-      W.ev.push({ k: 'hit', i: O.i, by: F.i, block: true, x: O.x, y: 1.1, z: O.z, dmg: 0, h: m.h }); return;
+      W.ev.push({ k: 'hit', i: O.i, by: F.i, block: true, x: O.x, y: 1.1, z: O.z, dmg: 0, h: m.h }); W.stop = Math.max(W.stop || 0, 3); return;
     }
     const counter = O.state === 'attack' && O.t < (O.mv ? O.mv.st : 0);
     const inAir = O.state === 'air' || O.y > .2;
@@ -198,6 +227,7 @@
     dmg = Math.max(1, Math.round(dmg));
     O.hp -= dmg; O.dmgTaken += dmg; O.combo++; O.comboDmg += dmg;
     W.ev.push({ k: 'hit', i: O.i, by: F.i, x: O.x, y: inAir ? O.y + 1 : 1.1, z: O.z, dmg, counter, h: m.h, big: dmg >= 16 || m.launch || m.super, super: !!m.super });
+    W.stop = Math.max(W.stop || 0, m.super ? 14 : counter || dmg >= 16 || m.launch ? 8 : 4);
     if (counter) W.ev.push({ k: 'counter', i: F.i });
     if (O.hp <= 0) { O.vx = ux * 5; O.vz = uz * 5; O.vy = 6; return; }
     if (m.launch && !inAir) { setState(O, 'air'); O.vy = m.launch; O.juggle = 1; O.vx = ux * .5; O.vz = uz * .5; O.y = Math.max(O.y, .05); W.ev.push({ k: 'launch', i: O.i }); return; }
@@ -268,10 +298,10 @@
       if (A.react === 'side' && F.state === 'idle') { A.sideT = (A.sideT || 0) + 1; inp.sy = A.sideT % 6 < 3 ? -1 : 0; return inp; }
     } else A.react = undefined;
     // Gegner liegt / ist in der Luft → Kombo
-    if (O.state === 'air' && d < 1.8) { if (W.frame % 7 === 0) inp.p = true; if (W.frame % 14 === 3) inp.k = true; return inp; }
+    if (O.state === 'air' && d < 1.9) { if (d > 1.3) inp.fx = 1; const k = W.frame % 12; if (k === 0) inp.b1 = true; else if (k === 6) inp.b2 = true; return inp; }
     // bestrafen
     if ((O.state === 'attack' && O.mv && O.t > O.mv.st + O.mv.act && O.mv.rec > 18) || O.state === 'block' && O.t < 3) {
-      if (d < 1.6 && rnd(W) < L.punish) { if (O.mv && O.mv.rec > 22) { inp.fx = 1; inp.k = true; } else inp.p = true; return inp; }
+      if (d < 1.6 && rnd(W) < L.punish) { if (O.mv && O.mv.rec > 21) { inp.fx = 1; inp.sy = 1; inp.b2 = true; } else inp.b1 = true; return inp; }
     }
     A.t--;
     if (A.t <= 0) {
@@ -289,11 +319,11 @@
       case 'dash': inp.fx = A.step % 6 < 2 ? 1 : 0; break;
       case 'side': inp.sy = A.step < 3 ? (i ? 1 : -1) : 0; break;
       case 'special': if (A.step === 1) inp.s = true; break;
-      case 'jab': if (A.step === 1 || A.step === 10 && rnd(W) < L.mix) inp.p = true; if (A.step === 20 && rnd(W) < L.mix * .6) inp.p = true; break;
-      case 'kick': if (A.step === 1 || A.step === 16 && rnd(W) < L.mix) inp.k = true; break;
-      case 'sweep': inp.sy = 1; if (A.step === 9) inp.k = true; break;
-      case 'launcher': inp.fx = 1; if (A.step === 1) inp.k = true; break;
-      case 'power': inp.fx = 1; if (A.step === 1) inp.p = true; break;
+      case 'jab': if (A.step === 1) inp.b1 = true; if (A.step === 12 && rnd(W) < L.mix) inp.b2 = true; if (A.step === 26 && rnd(W) < L.mix * .6) inp[rnd(W) < .5 ? 'b4' : 'b1'] = true; break;
+      case 'kick': if (A.step === 1) inp[rnd(W) < .5 ? 'b3' : 'b4'] = true; if (A.step === 16 && rnd(W) < L.mix) inp.b4 = true; break;
+      case 'sweep': inp.sy = 1; if (A.step === 1) inp[rnd(W) < .5 ? 'b4' : 'b3'] = true; break;
+      case 'launcher': inp.fx = 1; inp.sy = 1; if (A.step === 1) inp[rnd(W) < .5 ? 'b2' : 'b4'] = true; break;
+      case 'power': inp.fx = 1; if (A.step === 1) inp[['b1', 'b2', 'b4'][Math.floor(rnd(W) * 3)]] = true; break;
       case 'throw': if (A.step === 1) inp.g = true; break;
       case 'finale': if (A.step === 1) { inp.s = true; inp.g = true; } break;
     }
@@ -303,7 +333,7 @@
   }
 
   function daily(d) { d = d || new Date(); const k = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); let h = 2166136261; for (const c of 'easyclash' + k) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return { key: k, seed: h >>> 0 }; }
-  const EC = { FPS, DT, RING, HP, SPECIAL, BASE, newMatch, newRound, step, ai, tryBreak, startMove, inReach, daily, len };
+  const EC = { FPS, DT, RING, HP, SPECIAL, BASE, CMD, newMatch, newRound, step, ai, tryBreak, startMove, inReach, daily, len };
   if (typeof module !== 'undefined' && module.exports) module.exports = EC;
   root.EC = EC;
 })(typeof window !== 'undefined' ? window : globalThis);

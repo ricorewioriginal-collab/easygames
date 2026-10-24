@@ -66,8 +66,11 @@
       const hand = mesh(robot ? bx(.14, .14, .14) : sph(.085, 10), L.gloves ? toon(L.gloves) : robot ? toon(L.bottom) : sk, el, 1.1); hand.position.y = -armLen - .03;
       if (side > 0 && L.mic) { const mic = mesh(cyl(.035, .03, .18, 8), toon('#26232b'), el, 1.1); mic.position.set(0, -armLen - .08, .07); const gr = mesh(sph(.045, 8), toon('#77757f'), mic, false); gr.position.y = .1; }
     }
+    // Hals
+    if (!L.shape && !bird && !blob) { const nk = mesh(cyl(.085 * (L.neck || 1), .1 * (L.neck || 1), .27, 10), robot ? toon(L.bottom) : sk, sp, 1.08); nk.position.y = robot ? .74 : .84; }
+    else if (blob && !L.shape) { const nk = mesh(cyl(.13, .16, .14, 10), sk, sp, false); nk.position.y = .72; }
     // Kopf
-    const hd = J.head = new T3.Group(); hd.position.y = L.shape === 'roll' ? .3 : L.shape ? .62 : blob || bird ? .78 : .92; sp.add(hd);
+    const hd = J.head = new T3.Group(); hd.position.y = L.shape === 'roll' ? .3 : L.shape ? .62 : blob || bird ? .8 : .97; sp.add(hd);
     const hr = (L.head || 1) * (L.shape === 'roll' ? .36 : L.shape ? .3 : blob || bird ? .3 : .25);
     let skull;
     if (robot) { skull = mesh(bx(hr * 1.8, hr * 1.6, hr * 1.6), toon(L.skin), hd, 1.05); skull.position.y = hr * .8; }
@@ -190,7 +193,7 @@
   function target(F, tt) {
     const s = F.state;
     if (s === 'attack' && F.mv) {
-      const id = F.mvId === 'special' ? (F.ch.sp || 'special') : F.mvId, m = F.mv, base = LIB[id] || LIB[F.mvId === 'special' ? 'special' : 'jab'];
+      const id = F.mvId === 'special' ? (F.ch.sp || 'special') : (F.mv.pose || F.mvId), m = F.mv, base = LIB[id] || LIB[F.mvId === 'special' ? 'special' : 'jab'];
       const wd = Object.assign({}, P0, WIND[id] || WIND[F.mvId === 'special' ? 'special' : ''] || {});
       if (F.t < m.st) return lerpP(P0, lerpP(wd, base, Math.max(0, (F.t - m.st * .55) / (m.st * .45))), Math.min(1, F.t / Math.max(1, m.st * .5)));
       if (F.t < m.st + m.act + 4) return base;

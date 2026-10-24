@@ -6,7 +6,7 @@
   'use strict';
   const $ = id => document.getElementById(id), P = 'easyclash-';
   const LS = { get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } } };
-  const SET = Object.assign({ sound: true, music: true, vib: true, touch: false, low: false, diff: 1, rounds: 2, stage: 0 }, LS.get(P + 'settings', {}));
+  const SET = Object.assign({ sound: true, music: true, vib: true, touch: false, low: matchMedia('(pointer: coarse)').matches, diff: 1, rounds: 2, stage: 0 }, LS.get(P + 'settings', {}));
   const saveSet = () => LS.set(P + 'settings', SET);
   const S = window.ECSound, SC = window.ECScene, RO = window.EC_ROSTER, ST = SC.STAGES;
   S.sfxOn = SET.sound; S.musicOn = SET.music;
@@ -174,7 +174,7 @@
   }
   function roundOver(e) {
     if (!G.W || G.W.phase !== 'end') return;
-    if (!e.over) { const w = e.winner; if (w >= 0) announce(G.cur[w].n.split(' ')[0] + ' siegt', true); setTimeout(() => { if (cur === 'sGame' && G.W && G.W.phase === 'end') newRound(); }, 1200); return; }
+    if (!e.over) { const w = e.winner; if (w >= 0) announce(G.cur[w].n.replace(/\s*\(.*\)$/, '') + ' siegt', true); setTimeout(() => { if (cur === 'sGame' && G.W && G.W.phase === 'end') newRound(); }, 1200); return; }
     matchOver();
   }
   function matchOver() {
@@ -206,6 +206,13 @@
   function resume() { closeOv('ovPause'); S.music('game'); }
   $('bPause').onclick = () => pause(); $('pGo').onclick = () => resume();
   $('pRestart').onclick = () => { closeOv('ovPause'); if (G.mode === 'arcade') nextArcade(); else startFight(G.cur[0], G.cur[1], G.stageNow); };
+  $('pMoves').onclick = () => { showMoves(); openOv('ovMoves'); }; $('movX').onclick = () => closeOv('ovMoves');
+  function showMoves() {
+    const me = G.cur ? G.cur[0] : RO[0], sp = EC.SPECIAL[me.sp], hl = { high: 'hoch', mid: 'mittel', low: 'tief', throw: 'Wurf' };
+    const rows = Object.entries(EC.BASE).filter(([k]) => k !== 'air').map(([k, m]) => '<div><b>' + esc(m.n) + '</b><small>' + hl[m.h] + (m.launch ? ' · hebt aus' : m.kd ? ' · wirft um' : m.wall ? ' · Wand' : '') + '</small></div>');
+    rows.splice(0, 0, '<div><b>1+2 · ' + esc(sp.n) + '</b><small>Spezial von ' + esc(me.n) + '</small></div>');
+    $('moveList').innerHTML = rows.join('');
+  }
   $('pSel').onclick = () => { closeOv('ovPause'); if (G.mode === 'online') hostLobby(); else openSelect(G.mode); }; $('pHelp').onclick = () => openOv('ovHelp'); $('pOpts').onclick = () => openOv('ovOpts');
   $('pQuit').onclick = () => { closeOv('ovPause'); if (G.mode === 'online') hostClose(); toMenu(); };
   function pressStart() { if (cur !== 'sTitle') return; S.unlock(); S.sfx('ok'); toMenu(); }
@@ -213,11 +220,12 @@
 
   /* ---------- Eingabe ---------- */
   const KEY = {}, EDGE = { kb1: {}, kb2: {}, touch: {}, pad0: {}, pad1: {} };
+  // 1 = linke Faust, 2 = rechte Faust, 3 = linkes Bein, 4 = rechtes Bein (wie bei den großen 3D-Prüglern)
   const KB = {
-    kb1: { l: ['KeyA'], r: ['KeyD'], u: ['KeyW'], d: ['KeyS'], p: ['KeyJ'], k: ['KeyK'], s: ['KeyL'], g: ['KeyI'], block: ['KeyU'], f: ['KeyO'] },
-    kb2: { l: ['ArrowLeft'], r: ['ArrowRight'], u: ['ArrowUp'], d: ['ArrowDown'], p: ['Numpad4', 'Comma'], k: ['Numpad5', 'Period'], s: ['Numpad6', 'Slash'], g: ['Numpad8', 'Backslash'], block: ['Numpad0', 'ShiftRight'], f: ['Numpad9', 'Enter'] }
+    kb1: { l: ['KeyA'], r: ['KeyD'], u: ['KeyW'], d: ['KeyS'], b1: ['KeyU'], b2: ['KeyI'], b3: ['KeyJ'], b4: ['KeyK'], g: ['KeyO'], s: ['KeyL'], f: ['Space'], block: ['KeyH'] },
+    kb2: { l: ['ArrowLeft'], r: ['ArrowRight'], u: ['ArrowUp'], d: ['ArrowDown'], b1: ['Numpad7', 'Comma'], b2: ['Numpad8', 'Period'], b3: ['Numpad4', 'KeyM'], b4: ['Numpad5', 'KeyN'], g: ['Numpad9'], s: ['Numpad6', 'Slash'], f: ['Numpad0', 'Enter'], block: ['NumpadDecimal', 'ShiftRight'] }
   };
-  const BTN = ['p', 'k', 's', 'g', 'f'];
+  const BTN = ['b1', 'b2', 'b3', 'b4', 's', 'g', 'f'];
   addEventListener('keydown', e => {
     document.body.classList.add('kbd'); const c = e.code;
     if (c === 'Escape' || (c === 'KeyP' && cur === 'sGame' && !overlays().length)) { e.preventDefault(); back(); return; }
@@ -227,7 +235,7 @@
     if (cur === 'sTitle' && !overlays().length && !e.repeat) { e.preventDefault(); pressStart(); return; }
     if (cur === 'sSelect' && !overlays().length) {
       const d = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0], KeyW: [0, -1], KeyS: [0, 1], KeyA: [-1, 0], KeyD: [1, 0] }[c];
-      if (d) { e.preventDefault(); selMove(d[0], d[1]); return; } if (c === 'Enter' || c === 'Space' || c === 'KeyJ') { e.preventDefault(); confirmPick(); return; } if (c === 'KeyR') { $('selRand').click(); return; } return;
+      if (d) { e.preventDefault(); selMove(d[0], d[1]); return; } if (c === 'Enter' || c === 'Space' || c === 'KeyU') { e.preventDefault(); confirmPick(); return; } if (c === 'KeyR') { $('selRand').click(); return; } return;
     }
     const dir = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[c];
     if (dir) { e.preventDefault(); moveFocus(dir[0], dir[1]); }
@@ -246,9 +254,9 @@
       const g = list[i], st = PADS[i]; st.on = !!g; if (!g) continue;
       const ax = g.axes || [], bt = g.buttons || [], pr = k => !!(bt[k] && (bt[k].pressed || bt[k].value > .5));
       let x = Math.abs(ax[0]) > .4 ? Math.sign(ax[0]) : 0, y = Math.abs(ax[1]) > .5 ? Math.sign(ax[1]) : 0;
-      if (pr(14)) x = -1; if (pr(15)) x = 1; if (pr(12)) y = -1; if (pr(13)) y = 1; st.x = x; st.y = y; st.block = pr(4) || pr(5) || pr(6);
+      if (pr(14)) x = -1; if (pr(15)) x = 1; if (pr(12)) y = -1; if (pr(13)) y = 1; st.x = x; st.y = y; st.block = pr(6);
       const now = []; for (let k = 0; k < 17; k++) now[k] = pr(k); const down = k => now[k] && !st.b[k], E = EDGE['pad' + i];
-      if (down(2)) E.p = true; if (down(0)) E.k = true; if (down(3)) E.s = true; if (down(1)) E.g = true; if (down(7)) E.f = true;
+      if (down(2)) E.b1 = true; if (down(3)) E.b2 = true; if (down(0)) E.b3 = true; if (down(1)) E.b4 = true; if (down(4)) E.g = true; if (down(5)) E.s = true; if (down(7)) E.f = true;
       const inGame = cur === 'sGame' && !overlays().length;
       if (!inGame) {
         document.body.classList.add('kbd');
@@ -287,7 +295,7 @@
       if (v) { if (v.x) x = v.x; if (v.y) y = v.y; if (v.block) block = true; }
       const E = EDGE[d]; for (const k of BTN) if (E[k]) { b[k] = true; E[k] = false; }
     }
-    return { fx: i === 0 ? x : -x, sy: y, block, p: b.p, k: b.k, s: b.s, g: b.g, f: b.f };
+    return { fx: i === 0 ? x : -x, sy: y, block, b1: b.b1, b2: b.b2, b3: b.b3, b4: b.b4, s: b.s, g: b.g, f: b.f };
   }
   const clearEdges = () => { for (const d in EDGE) for (const k of BTN) EDGE[d][k] = false; };
 
@@ -377,7 +385,7 @@
   function netTick(dt) { if (G.mode !== 'online' || !H.net || !G.W) return; netT -= dt; if (netT > 0) return; netT = .6; H.slots.forEach((sl, i) => { if (sl && sl.peer) { const F = G.W.f[i]; H.net.sendTo(sl.peer, { t: 'st', hp: Math.max(0, F.hp), rage: F.rage && !F.finale, round: G.M.round, wins: G.M.wins[i], target: G.M.target }); } }); }
 
   /* ---------- Handy als Controller ---------- */
-  const C = { net: null, cid: LS.get(P + 'cid', '') || Math.random().toString(36).slice(2, 10), c: { p: 0, k: 0, s: 0, g: 0, f: 0 }, bl: false, lx: 9, ly: 9, lt: 0 };
+  const C = { net: null, cid: LS.get(P + 'cid', '') || Math.random().toString(36).slice(2, 10), c: { b1: 0, b2: 0, b3: 0, b4: 0, s: 0, g: 0, f: 0 }, bl: false, lx: 9, ly: 9, lt: 0 };
   LS.set(P + 'cid', C.cid);
   function phoneOpen(code) { G.mode = 'phone'; scr('sPhone'); $('pJoin').hidden = false; $('pPad').hidden = true; $('jCode').value = code || ''; $('jName').value = LS.get(P + 'name', ''); }
   $('bJoin').onclick = async () => {
@@ -430,7 +438,7 @@
         if (G.train) for (const F of W.f) { if (F.hp < EC.HP && (F.state === 'idle' || F.state === 'crouch' || F.state === 'walk') && F.combo === 0) F.hp = Math.min(EC.HP, F.hp + 4); if (F.hp < 30) F.hp = 30; }
         if (!G.W) break;
       }
-      hud(); netTick(dt);
+      W.alpha = W.stop > 0 ? 1 : Math.min(1, G.acc / EC.DT); hud(); netTick(dt);
     } else clearEdges();
     if (has3d) SC.update(dt, slowK);
     requestAnimationFrame(loop);

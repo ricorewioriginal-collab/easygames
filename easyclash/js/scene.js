@@ -19,7 +19,7 @@
 
   function init(container, opt) {
     el = container; low = !!(opt && opt.low); M.setup({ low });
-    R = new T3.WebGLRenderer({ antialias: !low, powerPreference: 'high-performance' }); R.setPixelRatio(Math.min(devicePixelRatio || 1, low ? 1 : 1.5));
+    R = new T3.WebGLRenderer({ antialias: !low, powerPreference: 'high-performance' }); R.setPixelRatio(Math.min(devicePixelRatio || 1, low ? 1 : matchMedia('(pointer: coarse)').matches ? 1.25 : 1.5));
     el.appendChild(R.domElement);
     SC = new T3.Scene(); SC.fog = new T3.Fog('#000', 14, 40); CAM = new T3.PerspectiveCamera(40, 1, .1, 120);
     hemi = new T3.HemisphereLight(0xffffff, 0x445566, .8); SC.add(hemi); sun = new T3.DirectionalLight(0xffffff, .8); sun.position.set(-4, 10, 6); SC.add(sun);
@@ -98,7 +98,7 @@
     if (dt > 0) { perf.a += (dt - perf.a) * .05; perf.n++; if (perf.n > 90 && perf.a > 1 / 38 && R.getPixelRatio() > .75) { R.setPixelRatio(Math.max(.75, R.getPixelRatio() - .25)); resize(); perf.n = 0; } }
     if (mode === 'select') { selectView(dt); R.render(SC, CAM); return; }
     if (W) {
-      W.f.forEach((F, i) => { const m = fighters[i]; if (!m) return; m.position.set(F.x, F.y, F.z); const ry = Math.atan2(F.fx, F.fz) + (m.userData.spin || 0); m.rotation.y = ry; M.apply(m, F, dt * (slowK || 1), t); blobs[i].position.set(F.x, .01, F.z); blobs[i].scale.setScalar(Math.max(.4, 1 - F.y * .25)); m.visible = true; });
+      const al = W.alpha == null ? 1 : W.alpha; W.f.forEach((F, i) => { const m = fighters[i]; if (!m) return; const ix = F.px == null ? F.x : F.px + (F.x - F.px) * al, iy = F.py == null ? F.y : F.py + (F.y - F.py) * al, iz = F.pz == null ? F.z : F.pz + (F.z - F.pz) * al; m.position.set(ix, iy, iz); const ry = Math.atan2(F.fx, F.fz) + (m.userData.spin || 0); m.rotation.y = ry; M.apply(m, F, dt * (slowK || 1), t); blobs[i].position.set(ix, .01, iz); blobs[i].scale.setScalar(Math.max(.4, 1 - iy * .25)); m.visible = true; });
       // Energiestöße
       while (projM.length < W.proj.length) { const p = W.proj[projM.length], c = (W.f[p.o].ch.look && W.f[p.o].ch.look.fx) || '#40c4ff', m = new T3.Mesh(new T3.SphereGeometry(.3, 14, 10), new T3.MeshBasicMaterial({ color: c })); const h = new T3.Mesh(new T3.SphereGeometry(.45, 12, 8), new T3.MeshBasicMaterial({ color: c, transparent: true, opacity: .35 })); m.add(h); SC.add(m); projM.push(m); }
       while (projM.length > W.proj.length) SC.remove(projM.pop());
@@ -112,9 +112,10 @@
     R.render(SC, CAM);
   }
   function fightCam(dt) {
+    const fv = CAM.aspect < 1 ? 62 : 40; if (CAM.fov !== fv) { CAM.fov = fv; CAM.updateProjectionMatrix(); }
     const [A, B] = W.f, mx = (A.x + B.x) / 2, mz = (A.z + B.z) / 2, sep = Math.hypot(B.x - A.x, B.z - A.z);
     const a = new T3.Vector3(B.x - A.x, 0, B.z - A.z); if (a.lengthSq() > .01) { a.normalize(); const n = new T3.Vector3(-a.z, 0, a.x); camN.lerp(n, Math.min(1, dt * 3)).normalize(); }
-    const asp = CAM.aspect, tf = Math.tan(CAM.fov * Math.PI / 360), want = Math.max(4.6, (sep / 2 + 1.45) / (tf * Math.min(asp, 1.6))) * (1 - zoom * .3);
+    const asp = CAM.aspect, tf = Math.tan(CAM.fov * Math.PI / 360), want = Math.max(asp < 1 ? 2.8 : 4.6, (sep / 2 + (asp < 1 ? .78 : 1.45)) / (tf * Math.min(asp, 1.6))) * (1 - zoom * .3);
     camD += (want - camD) * Math.min(1, dt * 3); zoom = Math.max(0, zoom - dt * .5);
     shake = Math.max(0, shake - dt); const sk = shake * .4;
     const ty = Math.max(A.y, B.y) * .4 + 1.15;
@@ -129,6 +130,7 @@
   }
   const idleF = { state: 'idle', t: 0, block: false, crouch: 0, ch: {} }, winF = { state: 'win', t: 0, block: false, crouch: 0, ch: {} };
   function selectView(dt) {
+    if (CAM.fov !== 40) { CAM.fov = 40; CAM.updateProjectionMatrix(); }
     const por = CAM.aspect < 1, xs = por ? 1.15 : 1.6;
     for (let i = 0; i < 2; i++) { const m = fighters[i], p = selPods[i]; p.visible = !!m; p.position.set((i ? 1 : -1) * xs, -.15, 0); if (!m) continue; m.position.set((i ? 1 : -1) * xs, 0, 0); m.rotation.y = (i ? -1 : 1) * .45 + Math.sin(t * .7 + i) * .15; M.apply(m, idleF, dt, t); blobs[i].position.set(m.position.x, .02, 0); blobs[i].scale.setScalar(1); }
     CAM.position.set(0, por ? 1.9 : 1.6, por ? 7.4 : 5.2); CAM.lookAt(0, por ? 1.25 : 1.05, 0);
@@ -141,7 +143,7 @@
     let i = 0;
     (function next() {
       const end = Math.min(chars.length, i + 6);
-      for (; i < end; i++) { const c = chars[i], m = M.build(c); sc.add(m); const hy = (m.userData.look.kind === 'blob' || m.userData.look.kind === 'bird' ? 1.75 : 1.95) * (c.look && c.look.size || 1); cam.position.set(.35, hy, 1.55 * (c.look && c.look.size || 1) + .2); cam.lookAt(0, hy - .12, 0); m.rotation.y = .25; r.render(sc, cam); out[c.id] = r.domElement.toDataURL('image/png'); sc.remove(m); }
+      for (; i < end; i++) { const c = chars[i], m = M.build(c), sz = c.look && c.look.size || 1; sc.add(m); m.updateMatrixWorld(true); const hv = new T3.Vector3(); m.userData.J.head.getWorldPosition(hv); const hy = hv.y + m.userData.hr * sz * .85; cam.position.set(.3, hy + .05, hv.z + 1.45 * sz + .15); cam.lookAt(0, hy - .2 * sz, 0); m.rotation.y = .25; r.render(sc, cam); out[c.id] = r.domElement.toDataURL('image/png'); sc.remove(m); }
       if (i < chars.length) setTimeout(next, 0); else { r.dispose(); cb(out); }
     })();
   }

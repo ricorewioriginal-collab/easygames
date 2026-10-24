@@ -33,10 +33,10 @@ await tv.waitForFunction(() => ECApp.G.W && ECApp.G.W.phase === 'fight', null, {
 ok(await tv.evaluate(() => ECApp.G.mode === 'online'), 'Online-Kampf läuft');
 await tv.evaluate(() => { const W = ECApp.G.W; W.f[0].x = -.55; W.f[1].x = .55; W.f[0].z = W.f[1].z = 0; });
 const hp1 = await tv.evaluate(() => ECApp.G.W.f[1].hp);
-await phones[0].locator('.pBtns .tp').dispatchEvent('pointerdown'); await phones[0].waitForTimeout(80); await phones[0].locator('.pBtns .tp').dispatchEvent('pointerup');
+await phones[0].locator('.pBtns .t1').dispatchEvent('pointerdown'); await phones[0].waitForTimeout(80); await phones[0].locator('.pBtns .t1').dispatchEvent('pointerup');
 await tv.waitForTimeout(600); ok(await tv.evaluate(() => ECApp.G.W.f[1].hp) < hp1, 'Handy 1: Schlag trifft am Fernseher');
 const hp0 = await tv.evaluate(() => ECApp.G.W.f[0].hp);
-await phones[1].locator('.pBtns .tk').dispatchEvent('pointerdown'); await phones[1].waitForTimeout(80); await phones[1].locator('.pBtns .tk').dispatchEvent('pointerup');
+await phones[1].locator('.pBtns .t3').dispatchEvent('pointerdown'); await phones[1].waitForTimeout(80); await phones[1].locator('.pBtns .t3').dispatchEvent('pointerup');
 await tv.waitForTimeout(700); ok(await tv.evaluate(() => ECApp.G.W.f[0].hp) < hp0, 'Handy 2: Tritt trifft am Fernseher');
 await tv.waitForTimeout(800); ok(/Runde/.test(await phones[0].textContent('#pMsg')), 'Handy zeigt Rundenstand: ' + await phones[0].textContent('#pMsg'));
 if (out) await tv.screenshot({ path: out + '/ec-15-online-kampf.jpg', type: 'jpeg', quality: 80 });
