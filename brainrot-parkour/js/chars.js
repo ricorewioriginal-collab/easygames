@@ -383,20 +383,136 @@
     return { group: g, rig };
   };
 
+  // Hühnerbein (für Espressino)
+  function chickenLeg(len) {
+    const pivot = new T.Group(), sk = M.satin('#f2a41a', { roughness: .5, bumpMap: noiseB('scaly', 1400, .5, 1.5), bumpScale: .008 });
+    const fl = mesh(sph(.13), M.satin('#fff8ee', { roughness: .9, bumpMap: noiseB('feath3', 1500, .5, 2), bumpScale: .02 })); fl.scale.set(1, 1.2, 1); at(fl, 0, -.05, 0); pivot.add(fl);
+    const sh = mesh(cyl(.035, .03, len), sk); at(sh, 0, -len / 2 - .08, 0); pivot.add(sh);
+    for (const a of [-.55, 0, .55]) { const toe = mesh(cyl(.022, .012, .2, 8), sk); toe.rotation.x = PI / 2; toe.rotation.y = a; at(toe, Math.sin(a) * .08, -len - .08, Math.cos(a) * .09); pivot.add(toe); }
+    const back = mesh(cyl(.02, .01, .1, 8), sk); back.rotation.x = -PI / 2.4; at(back, 0, -len - .06, -.06); pivot.add(back);
+    return pivot;
+  }
+  // 15 Espressino Gallinone – Espressomaschine auf Hühnerbeinen mit Hahnenkamm
+  B.espressino = () => {
+    const g = new T.Group(), rig = { legs: [], wings: [], wig: [] };
+    const red = M.gloss('#c8141e', { roughness: .22 }), chrome = M.metal('#e2e5ea', { roughness: .15 }), dark = M.gloss('#1a1a1e', { roughness: .4 });
+    const body = mesh(extrude(roundRect(.9, .78, .12), .7, .06), red); at(body, 0, 1.08, 0); g.add(body);
+    const top = mesh(extrude(roundRect(.94, .7, .05), .08, .03), chrome); top.rotation.x = PI / 2; at(top, 0, 1.5, 0); g.add(top);
+    const panel = mesh(extrude(roundRect(.7, .34, .05), .02, .01), chrome); at(panel, 0, 1.24, .37); g.add(panel);
+    eyes(g, .1, .14, 1.26, .41, '#2a1a0a', null, .15);
+    const grp = mesh(cyl(.1, .12, .1, 24), chrome); at(grp, 0, .86, .3); g.add(grp);
+    const pf = mesh(cyl(.09, .07, .08, 24), chrome); at(pf, 0, .78, .32); g.add(pf);
+    const hdl = mesh(cyl(.035, .045, .42, 12), dark); hdl.rotation.z = PI / 2; hdl.rotation.y = -.5; at(hdl, .22, .78, .44); g.add(hdl);
+    const tray = mesh(extrude(roundRect(.86, .3, .04), .05, .02), chrome); tray.rotation.x = PI / 2; at(tray, 0, .66, .3); g.add(tray);
+    const cup = mesh(lathe([[0, 0], [.07, 0], [.09, .1], [.08, .11], [0, .11]], 24), M.gloss('#ffffff')); at(cup, 0, .68, .32); g.add(cup);
+    const wand = mesh(new T.TubeGeometry(curve([[.42, 1.3, .2], [.5, 1.1, .25], [.5, .85, .3]]), 16, .018, 8), chrome); g.add(wand);
+    const comb = new T.Group(); at(comb, 0, 1.56, 0); g.add(comb);
+    for (let i = 0; i < 4; i++) { const c = mesh(sph(.09), M.gloss('#ff2a2a', { roughness: .3 })); c.scale.set(.5, 1, 1); at(c, 0, .04 + Math.sin(i / 3 * PI) * .06, -.18 + i * .12); comb.add(c); }
+    const wat = mesh(sph(.07), M.gloss('#ff2a2a')); wat.scale.set(.6, 1.2, .6); at(wat, 0, 1.0, .4); g.add(wat);
+    const beak = mesh(new T.ConeGeometry(.06, .16, 16), M.gloss('#ffb020')); beak.rotation.x = PI / 2; at(beak, 0, 1.12, .46); g.add(beak);
+    for (const s of [-1, 1]) { const p = chickenLeg(.46); at(p, s * .2, .66, 0); g.add(p); rig.legs.push({ o: p, s, amp: .6 }); }
+    rig.steam = []; for (let i = 0; i < 3; i++) { const s = mesh(sph(.06), new T.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: .4, depthWrite: false }), false); g.add(s); rig.steam.push(s); } rig.steamAt = [0, .82, .32];
+    return { group: g, rig };
+  };
+  // 16 Cactopudel Skatini – Pudel aus Kaktus mit Blüte, Sonnenbrille und Skateboard
+  B.cactopudel = () => {
+    const g = new T.Group(), rig = { legs: [], wings: [], wig: [] };
+    const cact = tex('cactus', 128, 128, (x, w, h) => { const gr = x.createLinearGradient(0, 0, w, 0); gr.addColorStop(0, '#2a8a3a'); gr.addColorStop(.5, '#4ab84a'); gr.addColorStop(1, '#2a8a3a'); x.fillStyle = gr; x.fillRect(0, 0, w, h); x.fillStyle = 'rgba(20,70,30,.5)'; for (let i = 0; i < w; i += 16) x.fillRect(i, 0, 3, h); }, [4, 2]);
+    const cm = M.satin('#ffffff', { map: cact, roughness: .5, bumpMap: noiseB('cactB', 500, 1, 3), bumpScale: .01 }), spine = M.satin('#fff6d8');
+    const pom = (r, x, y, z, sc) => { const m = mesh(sph(r, 28, 20), cm); if (sc) m.scale.set(sc[0], sc[1], sc[2]); at(m, x, y, z); g.add(m); seed = (x * 100 + y * 77 + 3) | 0 || 5; for (let i = 0; i < 18; i++) { const a = rnd() * 7, b = rnd() * PI, d = V(Math.sin(b) * Math.cos(a), Math.cos(b), Math.sin(b) * Math.sin(a)), sp = mesh(new T.ConeGeometry(.008, .07, 4), spine, false); sp.position.set(x + d.x * r * (sc ? sc[0] : 1), y + d.y * r * (sc ? sc[1] : 1), z + d.z * r * (sc ? sc[2] : 1)); sp.quaternion.setFromUnitVectors(V(0, 1, 0), d); g.add(sp); } return m; };
+    pom(.3, 0, .95, -.1, [1, .9, 1.3]); pom(.24, 0, 1.38, .28); pom(.18, 0, 1.62, .25); pom(.16, 0, 1.05, -.55);
+    const snout = mesh(sph(.12), cm); snout.scale.set(.8, .7, 1.3); at(snout, 0, 1.33, .5); g.add(snout); const nose = mesh(sph(.04), M.gloss('#1a1a1a')); at(nose, 0, 1.35, .64); g.add(nose);
+    for (const s of [-1, 1]) { const ear = mesh(sph(.12, 20, 14), cm); ear.scale.set(.6, 1.3, .7); at(ear, s * .24, 1.3, .2); g.add(ear); }
+    const fl = new T.Group(); at(fl, .08, 1.8, .22); g.add(fl); for (let i = 0; i < 6; i++) { const pt = mesh(sph(.07, 14, 10), M.satin('#ff5aa8', { roughness: .5 })); pt.scale.set(.5, .2, 1); const a = i / 6 * PI * 2; at(pt, Math.cos(a) * .07, 0, Math.sin(a) * .07); pt.rotation.y = -a; fl.add(pt); } const ctr = mesh(sph(.04), M.satin('#ffd23a')); fl.add(ctr);
+    const sh = shades(.42, '#101018', '#ff3a9a'); at(sh, 0, 1.46, .5); g.add(sh);
+    const board = new T.Group(); at(board, 0, .12, -.05); g.add(board);
+    const deck = mesh(extrude(roundRect(.36, 1.2, .17), .04, .015), M.satin('#ffffff', { map: tex('deck', 64, 256, (x, w, h) => { const gr = x.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#ff3a9a'); gr.addColorStop(.5, '#ffd23a'); gr.addColorStop(1, '#3ad0ff'); x.fillStyle = gr; x.fillRect(0, 0, w, h); }, [1, 1]), roughness: .5 })); deck.rotation.x = PI / 2; board.add(deck);
+    for (const [x, z] of [[-.13, .4], [.13, .4], [-.13, -.4], [.13, -.4]]) { const wh = mesh(cyl(.05, .05, .05, 16), M.gloss('#ffffff')); wh.rotation.z = PI / 2; at(wh, x, -.07, z); board.add(wh); }
+    for (const [x, z] of [[-.14, .2], [.14, .2], [-.14, -.32], [.14, -.32]]) { const p = new T.Group(); at(p, x, .62, z); const l = mesh(cyl(.06, .05, .42), cm); at(l, 0, -.21, 0); p.add(l); const paw = mesh(sph(.08), cm); at(paw, 0, -.44, .02); p.add(paw); g.add(p); rig.legs.push({ o: p, s: x * z > 0 ? 1 : -1, amp: .25 }); }
+    rig.board = board;
+    return { group: g, rig };
+  };
+  // 17 Lasagnone Aviatore – fliegende Lasagne mit Pilotenmütze, Brille, Schal und Propeller
+  B.lasagnone = () => {
+    const g = new T.Group(), rig = { legs: [], wings: [], wig: [] };
+    const block = new T.Group(); at(block, 0, .5, 0); g.add(block);
+    const pasta = M.satin('#f2c66a', { roughness: .55, bumpMap: noiseB('pastaB', 700, 1, 3), bumpScale: .01 }), sauce = M.gloss('#b8261a', { roughness: .3 }), bech = M.satin('#fff2dc', { roughness: .7 });
+    for (let i = 0; i < 4; i++) { const y = i * .24; const p = mesh(extrude(roundRect(.9, .7, .05), .06, .02), pasta); p.rotation.x = PI / 2; at(p, 0, y + .06, 0); block.add(p); const s = mesh(extrude(roundRect(.86, .66, .05), .1, .02), i % 2 ? bech : sauce); s.rotation.x = PI / 2; at(s, 0, y + .16, 0); block.add(s); for (let k = 0; k < 6; k++) { const wv = mesh(sph(.06, 10, 8), pasta); wv.scale.set(1.2, .5, .6); at(wv, -.38 + k * .15, y + .06, .36); block.add(wv); } }
+    const cheese = mesh(extrude(roundRect(.92, .72, .08), .08, .04), M.satin('#ffcf5a', { roughness: .45, bumpMap: noiseB('melt', 400, 3, 9), bumpScale: .03 })); cheese.rotation.x = PI / 2; at(cheese, 0, 1.02, 0); block.add(cheese);
+    const basil = mesh(sph(.08, 12, 8), M.satin('#2a8a2a')); basil.scale.set(1.3, .2, .8); at(basil, .2, 1.08, .1); block.add(basil);
+    eyes(block, .1, .17, .6, .38, '#3a2410', null, .12);
+    const m = mesh(new T.TorusGeometry(.09, .016, 8, 20, PI * .8), M.satin('#3a0a0a')); m.rotation.z = PI * 1.1; at(m, 0, .4, .38); block.add(m);
+    const cap = mesh(new T.SphereGeometry(.32, 28, 14, 0, PI * 2, 0, PI * .5), M.satin('#6a4024', { roughness: .55, bumpMap: noiseB('leatherB2', 2000, .3, 1.2), bumpScale: .008 })); cap.scale.set(1.25, .6, 1); at(cap, 0, 1.1, -.02); block.add(cap);
+    const gog = new T.Group(); at(gog, 0, 1.2, .26); gog.rotation.x = -.35; block.add(gog);
+    for (const s of [-1, 1]) { const rim = mesh(cyl(.09, .09, .06, 24), M.metal('#9a9aa2')); rim.rotation.x = PI / 2; at(rim, s * .12, 0, 0); gog.add(rim); const gl = mesh(sph(.075, 24, 12), M.gloss('#ffb84a', { roughness: .02, transparent: true, opacity: .7 })); gl.scale.set(1, 1, .4); at(gl, s * .12, 0, .035); gog.add(gl); }
+    const scarf = mesh(new T.TubeGeometry(curve([[-.4, .3, .3], [0, .25, .42], [.4, .3, .3], [.45, .25, -.1], [.6, .2, -.5]]), 30, .045, 8), M.satin('#ffffff', { roughness: .8 })); block.add(scarf);
+    const prop = new T.Group(); at(prop, 0, 1.3, -.02); block.add(prop); const hub = mesh(cyl(.03, .03, .12, 10), M.metal('#d0d4da')); at(hub, 0, -.04, 0); prop.add(hub);
+    for (const s of [-1, 1]) { const bl = mesh(new T.BoxGeometry(.5, .015, .07), M.gloss('#3a3a44')); at(bl, s * .25, .03, 0); prop.add(bl); }
+    for (const s of [-1, 1]) { const w = new T.Group(); at(w, s * .48, .55, -.05); const wg = mesh(extrude(roundRect(.5, .18, .07), .03, .015), M.gloss('#3ab0ff')); wg.rotation.x = PI / 2; at(wg, s * .25, 0, 0); w.add(wg); block.add(w); rig.wings.push({ o: w, s, amp: .25, base: 0 }); }
+    for (const s of [-1, 1]) { const p = new T.Group(); at(p, s * .2, .5, 0); const l = mesh(cyl(.05, .045, .36), M.satin('#f2c66a')); at(l, 0, -.18, 0); p.add(l); const boot = mesh(sph(.09), M.gloss('#2a1a10')); boot.scale.set(1, .6, 1.5); at(boot, 0, -.4, .05); p.add(boot); g.add(p); rig.legs.push({ o: p, s, amp: .5 }); }
+    rig.prop = prop; rig.hover = block;
+    return { group: g, rig };
+  };
+  // 18 Formaggino Topolone – Maus, deren Körper ein Käse-Keil ist
+  B.formaggino = () => {
+    const g = new T.Group(), rig = { legs: [], wings: [], wig: [] };
+    const ch = tex('cheese', 256, 256, (x, w, h) => { x.fillStyle = '#ffc83a'; x.fillRect(0, 0, w, h); seed = 71; for (let i = 0; i < 26; i++) { const cx = rnd() * w, cy = rnd() * h, r = 6 + rnd() * 16, gr = x.createRadialGradient(cx - r * .3, cy - r * .3, 1, cx, cy, r); gr.addColorStop(0, '#c8901a'); gr.addColorStop(1, '#e8a82a'); x.fillStyle = gr; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill(); } });
+    const chB = bump('cheeseB', 256, 256, (x, w, h) => { x.fillStyle = '#fff'; x.fillRect(0, 0, w, h); seed = 71; for (let i = 0; i < 26; i++) { const cx = rnd() * w, cy = rnd() * h, r = 6 + rnd() * 16; x.fillStyle = '#000'; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill(); } });
+    const wedge = new T.Shape(); wedge.moveTo(-.45, 0); wedge.lineTo(.45, 0); wedge.lineTo(.45, .55); wedge.lineTo(-.45, 1.05); wedge.closePath();
+    const wg = new T.ExtrudeGeometry(wedge, { depth: .7, bevelEnabled: true, bevelThickness: .04, bevelSize: .04, bevelSegments: 4 }); wg.translate(0, 0, -.35); wg.computeVertexNormals();
+    const body = mesh(wg, M.satin('#ffffff', { map: ch, roughness: .45, bumpMap: chB, bumpScale: .04 })); body.rotation.y = -PI / 2; at(body, 0, .42, 0); g.add(body);
+    const fur = M.satin('#9a96a0', { roughness: .8, bumpMap: noiseB('mouseF', 2200, .4, 1.2), bumpScale: .01 }), pink = M.satin('#ffa0b4', { roughness: .6 });
+    const head = mesh(sph(.24, 32, 24), fur); head.scale.set(1, .92, 1.15); at(head, 0, 1.22, .42); g.add(head);
+    const snout = mesh(new T.ConeGeometry(.15, .3, 24), fur); snout.rotation.x = PI / 2; at(snout, 0, 1.16, .7); g.add(snout); const nose = mesh(sph(.045), pink); at(nose, 0, 1.16, .85); g.add(nose);
+    for (const s of [-1, 1]) { const ear = mesh(cyl(.2, .2, .03, 32), fur); ear.rotation.x = PI / 2; at(ear, s * .22, 1.44, .34); g.add(ear); const inner = mesh(cyl(.14, .14, .03, 32), pink); inner.rotation.x = PI / 2; at(inner, s * .22, 1.44, .36); g.add(inner); for (let k = 0; k < 3; k++) { const wh = mesh(cyl(.004, .004, .32, 4), M.satin('#2a2a2a')); wh.rotation.z = PI / 2 + (k - 1) * .2; at(wh, s * .2, 1.16 + (k - 1) * .03, .72); g.add(wh); } }
+    eyes(g, .07, .1, 1.28, .62, '#1a1a1a', null, .2);
+    const tail = mesh(taperTube(curve([[0, .5, -.4], [0, .35, -.7], [0, .6, -.95], [0, .9, -.9]]), .035, 30, 8, t => 1 - t * .7), pink); g.add(tail); rig.wig.push({ o: tail, ph: 0, amp: .1, axis: 'z' });
+    for (const s of [-1, 1]) { const a = new T.Group(); at(a, s * .48, .9, .1); const ar = mesh(cyl(.04, .035, .3, 10), fur); at(ar, 0, -.14, 0); a.add(ar); a.rotation.z = s * .5; g.add(a); rig.wings.push({ o: a, s, amp: .3, base: s * .5 }); }
+    for (const s of [-1, 1]) { const L = leg(.42, '#9a96a0', '#ff3a3a', '#ffffff', .055); at(L.pivot, s * .18, .44, 0); g.add(L.pivot); rig.legs.push({ o: L.pivot, s, amp: .55, knee: L.knee }); }
+    return { group: g, rig };
+  };
+  // 19 Lavatrice Bulldoggo – Waschmaschine mit Bulldoggen-Kopf, Bullauge voller Schaum und Stachelhalsband
+  B.lavatrice = () => {
+    const g = new T.Group(), rig = { legs: [], wings: [], wig: [] };
+    const white = M.gloss('#f2f2f4', { roughness: .25 }), chrome = M.metal('#d8dce2', { roughness: .18 });
+    const body = mesh(extrude(roundRect(.86, .9, .1), .8, .06), white); at(body, 0, .82, 0); g.add(body);
+    const ring = mesh(new T.TorusGeometry(.26, .05, 16, 40), chrome); at(ring, 0, .78, .5); g.add(ring);
+    const water = mesh(new T.CircleGeometry(.25, 40), M.gloss('#3a9aff', { map: tex('suds', 128, 128, (x, w, h) => { x.fillStyle = '#2a7ae8'; x.fillRect(0, 0, w, h); seed = 81; for (let i = 0; i < 40; i++) { x.fillStyle = 'rgba(255,255,255,.85)'; x.beginPath(); x.arc(rnd() * w, rnd() * h * .6, 4 + rnd() * 10, 0, 7); x.fill(); } }, [1, 1]), roughness: .05 })); at(water, 0, .78, .49); g.add(water); rig.drum = water;
+    const glass = mesh(sph(.25, 32, 16), M.gloss('#cfeaff', { roughness: 0, transparent: true, opacity: .25 })); glass.scale.set(1, 1, .3); at(glass, 0, .78, .5); g.add(glass);
+    const knob = mesh(cyl(.06, .06, .05, 24), chrome); knob.rotation.x = PI / 2; at(knob, .28, 1.15, .5); g.add(knob);
+    for (let i = 0; i < 3; i++) { const b = mesh(cyl(.02, .02, .03, 12), M.gloss(['#3ae07a', '#ffd23a', '#ff3a3a'][i])); b.rotation.x = PI / 2; at(b, -.3 + i * .08, 1.15, .5); g.add(b); }
+    const tan = M.satin('#c89a6a', { roughness: .7, bumpMap: noiseB('dogF', 1600, .4, 1.4), bumpScale: .01 }), lightTan = M.satin('#eed8b8', { roughness: .7 });
+    const head = mesh(sph(.34, 36, 28), tan); head.scale.set(1.15, .85, 1); at(head, 0, 1.6, .2); g.add(head);
+    const muz = mesh(sph(.22, 32, 24), lightTan); muz.scale.set(1.4, .75, .9); at(muz, 0, 1.48, .45); g.add(muz);
+    for (const s of [-1, 1]) { const jowl = mesh(sph(.13), lightTan); jowl.scale.set(1, .9, .8); at(jowl, s * .16, 1.42, .47); g.add(jowl); const ear = mesh(sph(.1), M.satin('#7a5232')); ear.scale.set(1.2, .5, .9); at(ear, s * .32, 1.83, .13); ear.rotation.z = s * .5; g.add(ear); }
+    const nose = mesh(sph(.07), M.gloss('#1a1a1a')); nose.scale.set(1.4, .8, 1); at(nose, 0, 1.58, .6); g.add(nose);
+    for (const s of [-1, 1]) { const tooth = mesh(new T.ConeGeometry(.025, .08, 8), M.gloss('#ffffff')); at(tooth, s * .1, 1.42, .6); g.add(tooth); }
+    eyes(g, .07, .15, 1.72, .45, '#3a2010', '#a87a4a', .25);
+    const collar = mesh(new T.TorusGeometry(.34, .05, 10, 32), M.satin('#1a1a1e')); collar.rotation.x = PI / 2; at(collar, 0, 1.28, 0); g.add(collar);
+    for (let i = 0; i < 10; i++) { const a = i / 10 * PI * 2, sp = mesh(new T.ConeGeometry(.025, .07, 8), chrome); sp.position.set(Math.cos(a) * .39, 1.28, Math.sin(a) * .39); sp.rotation.z = -PI / 2; sp.rotation.y = -a; g.add(sp); }
+    for (const [x, z] of [[-.3, .25], [.3, .25], [-.3, -.25], [.3, -.25]]) { const p = new T.Group(); at(p, x, .4, z); const l = mesh(cyl(.09, .08, .32), tan); at(l, 0, -.16, 0); p.add(l); const paw = mesh(sph(.1), lightTan); paw.scale.set(1, .55, 1.2); at(paw, 0, -.36, .03); p.add(paw); g.add(p); rig.legs.push({ o: p, s: x * z > 0 ? 1 : -1, amp: .35 }); }
+    return { group: g, rig };
+  };
+
   const LIST = [
-    { id: 'pinguino', name: 'Pinguino Spaghettino', color: '#f0c35c', pitch: 1.25, say: ['Pinguino Spaghettino, scivolino sul cammino!', 'Forchettina, forchettona, la polpetta è la padrona!', 'Spaghettino, spaghettone, salto sopra il cornicione!'] },
-    { id: 'toastini', name: 'Toastini Volantini', color: '#d9a85a', pitch: 1.4, say: ['Toastini Volantini, burro burro nei giardini!', 'Croccantino, croccantone, volo sopra il pentolone!', 'Briciolina! Briciolona! Il tostapane mi perdona!'] },
-    { id: 'lampadino', name: 'Lampadino Giraffino', color: '#ffd27a', pitch: .9, say: ['Lampadino Giraffino, accendino il collino!', 'Click clack, luce sul tetto, il giraffone è perfetto!', 'Lampadona, lampadella, ogni salto è una stella!'] },
-    { id: 'scarpone', name: 'Scarpone Lumacone', color: '#7a4a26', pitch: .7, say: ['Scarpone Lumacone, piano piano campione!', 'Lacci lacci, bava bava, la mia casa è una ciabatta!', 'Lumacone, scarponcino, arrivo sempre per ultimino!'] },
-    { id: 'pizzarana', name: 'Pizzarana Saltarella', color: '#e8b04a', pitch: 1.15, say: ['Pizzarana Saltarella, mozzarella in padella!', 'Cra cra cra, margherita, salto salto tutta la vita!', 'Peperoncino, ranocchiona, ogni pizza è una corona!'] },
-    { id: 'fenicottero', name: 'Fenicottero Ombrellone', color: '#ff8aa8', pitch: 1.05, say: ['Fenicottero Ombrellone, ombra rosa sul pallone!', 'Spiaggina, spiaggiona, una zampa è la padrona!', 'Ombrellino, ombrellone, ballo sopra il cornicione!'] },
-    { id: 'gelatone', name: 'Gelatone Tartarugone', color: '#bfe08a', pitch: .85, say: ['Gelatone Tartarugone, tre palline nel cialdone!', 'Pistacchio, fragola, stracciatella, la tartaruga è la più bella!', 'Lento lento, cono cono, ma il gelato è sempre buono!'] },
-    { id: 'pturbo', name: 'Pinguino Turbo', color: '#4ab0ff', pitch: 1.3, say: ['Pinguino Turbo, vrooom vrooom, sopra il ghiaccio faccio boom!', 'Occhialoni, motorino, volo più veloce del vicino!', 'Turbo turbo, pinguinello, sono il re del cielo bello!'] },
-    { id: 'llama', name: 'Llama Jetpacko', color: '#d86aff', pitch: 1.2, say: ['Llama Jetpacko, arcobaleno nel sacco!', 'Fiuuuu! Corno, razzo, lana colorata, che volata!', 'Lamalama, jetpackino, sputo stelle sul cammino!'] },
-    { id: 'raccoon', name: 'Raccoonini', color: '#9a9aa0', pitch: .95, say: ['Raccoonini, yo yo yo, la catena d’oro ce l’ho!', 'Spazzatura, rima dura, salto senza paura!', 'Berretto nero, coda a strisce, il mio flow non finisce!'] },
-    { id: 'polpo', name: 'Polpo Cappuccino', color: '#d47a3a', pitch: .8, say: ['Polpo Cappuccino, otto braccia e un biscottino!', 'Schiuma, schiuma, tentacolone, sono arrabbiato ma buono!', 'Blu blu blu, che bollore, il cappuccino è il mio amore!'] },
-    { id: 'hippo', name: 'Hippo Ballerina', color: '#ff7aaa', pitch: 1.35, say: ['Hippo Ballerina, piroetta in cucina!', 'Tutù rosa, coroncina, sono la regina della piscina!', 'Plié, plié, ippopotamo, salto come un lampadario!'] },
-    { id: 'cowboy', name: 'Scheletro Cowboy', color: '#c82a2a', pitch: .75, say: ['Scheletro Cowboy, ossa ossa, asinello nella fossa!', 'Ihaa! Cappellone, cavallino, anzi no, è un asinino!', 'Clic clac, ginocchia secche, corro sopra le bistecche!'] },
+    { id: 'pinguino', name: 'Pinguino Spaghettino', color: '#f0c35c', pitch: 1.25, say: ['Pinguino Spaghettino, scivolino sul cammino!', 'Forchettina, forchettona, la polpetta è la padrona!', 'Spaghettino, spaghettone, salto sopra il cornicione!', 'Pingu pingu, forchettone, ghiaccio nel minestrone!', 'Spaghetti sulla testa, oggi è sempre festa!'] },
+    { id: 'toastini', name: 'Toastini Volantini', color: '#d9a85a', pitch: 1.4, say: ['Toastini Volantini, burro burro nei giardini!', 'Croccantino, croccantone, volo sopra il pentolone!', 'Briciolina! Briciolona! Il tostapane mi perdona!', 'Tostato, tostatissimo, volo velocissimo!', 'Burro sul cervello, che volo bello!'] },
+    { id: 'lampadino', name: 'Lampadino Giraffino', color: '#ffd27a', pitch: .9, say: ['Lampadino Giraffino, accendino il collino!', 'Click clack, luce sul tetto, il giraffone è perfetto!', 'Lampadona, lampadella, ogni salto è una stella!', 'Lampadina accesa, giraffa sorpresa!', 'Watt watt watt, il collo fa crack!'] },
+    { id: 'scarpone', name: 'Scarpone Lumacone', color: '#7a4a26', pitch: .7, say: ['Scarpone Lumacone, piano piano campione!', 'Lacci lacci, bava bava, la mia casa è una ciabatta!', 'Lumacone, scarponcino, arrivo sempre per ultimino!', 'Bava bava, scarpa brava, piano piano si arriva!', 'Stivalone, lumacone, il più lento del cantone!'] },
+    { id: 'pizzarana', name: 'Pizzarana Saltarella', color: '#e8b04a', pitch: 1.15, say: ['Pizzarana Saltarella, mozzarella in padella!', 'Cra cra cra, margherita, salto salto tutta la vita!', 'Peperoncino, ranocchiona, ogni pizza è una corona!', 'Pizza rana, pizza rana, salto fino a Viareggio!', 'Margherita, quattro salti, cra cra cra!'] },
+    { id: 'fenicottero', name: 'Fenicottero Ombrellone', color: '#ff8aa8', pitch: 1.05, say: ['Fenicottero Ombrellone, ombra rosa sul pallone!', 'Spiaggina, spiaggiona, una zampa è la padrona!', 'Ombrellino, ombrellone, ballo sopra il cornicione!', 'Rosa rosa, ombra ombrosa, la spiaggia è favolosa!', 'Una zampa, due zampette, salto sulle bancarelle!'] },
+    { id: 'gelatone', name: 'Gelatone Tartarugone', color: '#bfe08a', pitch: .85, say: ['Gelatone Tartarugone, tre palline nel cialdone!', 'Pistacchio, fragola, stracciatella, la tartaruga è la più bella!', 'Lento lento, cono cono, ma il gelato è sempre buono!', 'Cono cono, sono buono, tre palline in un trono!', 'Lento lento, gelato contento!'] },
+    { id: 'pturbo', name: 'Pinguino Turbo', color: '#4ab0ff', pitch: 1.3, say: ['Pinguino Turbo, vrooom vrooom, sopra il ghiaccio faccio boom!', 'Occhialoni, motorino, volo più veloce del vicino!', 'Turbo turbo, pinguinello, sono il re del cielo bello!', 'Turbo pingu, motore a gelato, decollo spericolato!', 'Fiuuu boom, pinguino in orbita!'] },
+    { id: 'llama', name: 'Llama Jetpacko', color: '#d86aff', pitch: 1.2, say: ['Llama Jetpacko, arcobaleno nel sacco!', 'Fiuuuu! Corno, razzo, lana colorata, che volata!', 'Lamalama, jetpackino, sputo stelle sul cammino!', 'Lama lama, razzo in pigiama!', 'Arcobaleno nel motore, che sapore!'] },
+    { id: 'raccoon', name: 'Raccoonini', color: '#9a9aa0', pitch: .95, say: ['Raccoonini, yo yo yo, la catena d’oro ce l’ho!', 'Spazzatura, rima dura, salto senza paura!', 'Berretto nero, coda a strisce, il mio flow non finisce!', 'Yo yo raccoonini, rubo tutti i panini!', 'Catena d’oro, rima di tesoro!'] },
+    { id: 'polpo', name: 'Polpo Cappuccino', color: '#d47a3a', pitch: .8, say: ['Polpo Cappuccino, otto braccia e un biscottino!', 'Schiuma, schiuma, tentacolone, sono arrabbiato ma buono!', 'Blu blu blu, che bollore, il cappuccino è il mio amore!', 'Polpo arrabbiato, cappuccino ghiacciato!', 'Otto braccia, una schiuma, che confusione nella spuma!'] },
+    { id: 'hippo', name: 'Hippo Ballerina', color: '#ff7aaa', pitch: 1.35, say: ['Hippo Ballerina, piroetta in cucina!', 'Tutù rosa, coroncina, sono la regina della piscina!', 'Plié, plié, ippopotamo, salto come un lampadario!', 'Ippopotamo ballerino, gira gira il tutù rosino!', 'Pesante ma elegante, ballo come un elefante!'] },
+    { id: 'cowboy', name: 'Scheletro Cowboy', color: '#c82a2a', pitch: .75, say: ['Scheletro Cowboy, ossa ossa, asinello nella fossa!', 'Ihaa! Cappellone, cavallino, anzi no, è un asinino!', 'Clic clac, ginocchia secche, corro sopra le bistecche!', 'Ossa ossa, che scossa, l’asinello fa la mossa!', 'Yee-haw scheletrino, galoppo nel mulino!'] },
+    { id: 'espressino', name: 'Espressino Gallinone', color: '#c8141e', pitch: .9, say: ['Espressino Gallinone! Coccodè, coccodè, il caffè è per me!', 'Pssshhh! Crema crema, gallina estrema!', 'Ristretto, ristrettone, uovo nel bollitore!', 'Gallina caffeina, sveglia la mattina!', 'Chicchirichì espresso, salto adesso!'] },
+    { id: 'cactopudel', name: 'Cactopudel Skatini', color: '#4ab84a', pitch: 1.1, say: ['Cactopudel Skatini, spine spine nei giardini!', 'Ollie, ollie, cagnolone, punge tutto il marciapiede!', 'Bau bau, ahia ahia, skateboard nella prateria!', 'Pudel spinoso, skate pericoloso!', 'Kickflip nel deserto, cane esperto!'] },
+    { id: 'lasagnone', name: 'Lasagnone Aviatore', color: '#f2c66a', pitch: .75, say: ['Lasagnone Aviatore, besciamella nel motore!', 'Brrrrm! Strato su strato, volo sopra il gelato!', 'Decollo, ragù, sempre più su, sempre più su!', 'Pilota di pasta, il cielo mi basta!', 'Mayday mayday, besciamella ovunque!'] },
+    { id: 'formaggino', name: 'Formaggino Topolone', color: '#ffc83a', pitch: 1.3, say: ['Formaggino Topolone, buchi buchi nel groviera!', 'Squit squit, parmigiano, corro corro piano piano!', 'Topolino, formaggione, la trappola non funziona!', 'Groviera volante, topo elegante!', 'Formaggio a pois, chi corre più di noi?'] },
+    { id: 'lavatrice', name: 'Lavatrice Bulldoggo', color: '#3a9aff', pitch: .65, say: ['Lavatrice Bulldoggo, centrifuga e grrr grrr!', 'Bau, bolle, bau, sapone, lavo pure il campione!', 'Giri giri, mille giri, calzini nei ricordi!', 'Grrr centrifuga, il calzino fugge!', 'Bulldog bagnato, salto profumato!'] },
   ];
   // Farben sind als sRGB angegeben; r128 rechnet linear → einmal umrechnen (sonst wirkt alles blass)
   function build(id) { const r = (B[id] || B.pinguino)(); r.group.traverse(o => { if (!o.isMesh) return; (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => { if (m.userData.lin) return; m.userData.lin = 1; if (m.color) m.color.convertSRGBToLinear(); }); }); return r; }
@@ -406,6 +522,9 @@
     for (const w of rig.wings) { const f = w.fast ? 16 : 7, a = (air ? 1 : .25 + move * .4) * w.amp * Math.sin(t * f); if (w.axis === 'z') w.o.rotation.z = w.s * a; else w.o.rotation.z = w.base + w.s * a * .6; }
     for (const w of rig.wig) { if (w.axis === 'z') w.o.rotation.z = Math.sin(t * 3 + w.ph) * w.amp; else { w.o.rotation.x = Math.sin(t * 4 + w.ph) * w.amp * (1 + move); w.o.rotation.z = Math.cos(t * 3.4 + w.ph) * w.amp * .6; } }
     if (rig.flames) rig.flames.forEach((f, i) => { const k = (air ? 1.2 : .55) + Math.sin(t * 40 + i * 2) * .15; f.scale.set(1, k, 1); });
+    if (rig.prop) rig.prop.rotation.y += .5; if (rig.hover) rig.hover.position.y = .5 + Math.sin(t * 3) * .04 + (air ? .08 : 0);
+    if (rig.drum && rig.drum.material.map) rig.drum.material.map.rotation = t * (2 + move * 6), rig.drum.material.map.center.set(.5, .5);
+    if (rig.board) rig.board.rotation.z = air ? Math.sin(t * 8) * .3 : 0;
     if (rig.glow) rig.glow.material.opacity = .18 + Math.sin(t * 9) * .05;
     if (rig.steam) rig.steam.forEach((s, i) => { const k = (t * .6 + i / 3) % 1, b = rig.steamAt || [.42, 1.62, 0]; s.position.set(b[0] + Math.sin(k * 6 + i) * .08, b[1] + k * .5, b[2] + Math.cos(k * 5 + i) * .06); s.scale.setScalar(.6 + k * 1.4); s.material.opacity = .45 * (1 - k); });
   }

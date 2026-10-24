@@ -1776,7 +1776,7 @@
   {
    "id": "brainrot-parkour",
    "title": "Brainrot Parkour – Obby Assurdo",
-   "desc": "Verrückter 3D-Obby mit 13 eigenen Brainrot-Figuren – von Pinguino Spaghettino über Llama Jetpacko und Hippo Ballerina bis Scheletro Cowboy – samt italienischer Brainrot-Sprachausgabe und Untertiteln. Drei Welten (Cucina Cosmica, Spiaggia Assurda, Galassia Gelato) mit Lücken, Soße, Drehbalken, Schiebe-Plattformen, Sprungpolstern, Eis und Förderbändern, Checkpoints, Münzen und Bestzeiten. Minigames: Brainrot-Rennen gegen Computer-Figuren, Pavimento Lava, Torre Infinita und das Ratespiel „Chi lo dice?“ – dazu 🌐 Online-Rennen mit Freunden. Drei Stufen von Bambini (Doppelsprung, für Kinder) bis Esperto.",
+   "desc": "Verrückter 3D-Obby mit 18 eigenen Brainrot-Figuren – von Pinguino Spaghettino über Llama Jetpacko, Hippo Ballerina und Lavatrice Bulldoggo bis Espressino Gallinone – samt italienischer Brainrot-Sprachausgabe (tiefe Männerstimme oder Frauenstimme) und Untertiteln. Drei Welten (Cucina Cosmica, Spiaggia Assurda, Galassia Gelato) mit Lücken, Soße, Drehbalken, Schiebe-Plattformen, Sprungpolstern, Eis und Förderbändern, Checkpoints, Münzen und Bestzeiten. Minigames: Brainrot-Rennen gegen Computer-Figuren, Pavimento Lava, Torre Infinita und das Ratespiel „Chi lo dice?“ – dazu 🌐 Online-Rennen mit Freunden. Drei Stufen von Bambini (Doppelsprung, für Kinder) bis Esperto.",
    "icon": "🍝",
    "img": "brainrot-parkour/card.jpg",
    "bg": "linear-gradient(145deg,#6a2aff,#ff3a9a 55%,#ffd23a)",
@@ -1789,7 +1789,7 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "Brainrot Parkour ist ein verrückter 3D-Obby. Wähle eine von 13 eigenen Brainrot-Figuren – zum Beispiel Pinguino Spaghettino, Toastini Volantini, Llama Jetpacko, Hippo Ballerina, Polpo Cappuccino oder Scheletro Cowboy. Jede ruft ihre italienischen Quatsch-Sprüche (Sprachausgabe und Untertitel, beides abschaltbar). Im Obby läufst und springst du über Plattformen bis ins Ziel: Rote Soße und Abgründe schicken dich zum letzten 🚩 Checkpoint zurück, rot-weiße Drehbalken musst du überspringen, gelbe Polster schleudern dich hoch, braune Platten fallen kurz nach dem Betreten, Eis rutscht, Förderbänder schieben zurück und blaue Plattformen fahren hin und her. Sammle 🪙 Münzen, schaffe Bestzeiten und bis zu 3 Sterne – jede geschaffte Welt schaltet die nächste frei (Cucina Cosmica, Spiaggia Assurda, Galassia Gelato). Schwierigkeit: 🧸 Bambini (Doppelsprung, kürzere Lücken, Drehbalken schubsen nur – ideal für Kinder), 🙂 Normale und 🔥 Esperto. Minigames: 🏁 Brainrot-Rennen gegen drei Computer-Figuren, 🔥 Pavimento Lava (drei Fliesen-Etagen bröckeln weg – wer bleibt am längsten?), 🗼 Torre Infinita (immer höher, die Soße steigt), 🎤 Chi lo dice? (Spruch hören, Figur erraten) und 🌐 Online-Rennen: Alle laufen dieselbe Strecke auf ihrem eigenen Gerät und sehen sich gegenseitig – Beitritt per Code, Link oder QR-Code von überall.",
+    "anleitung": "Brainrot Parkour ist ein verrückter 3D-Obby. Wähle eine von 18 eigenen Brainrot-Figuren – zum Beispiel Pinguino Spaghettino, Toastini Volantini, Llama Jetpacko, Hippo Ballerina, Polpo Cappuccino, Scheletro Cowboy, Espressino Gallinone, Cactopudel Skatini, Lasagnone Aviatore, Formaggino Topolone oder Lavatrice Bulldoggo. Jede ruft ihre italienischen Quatsch-Sprüche, dazu brüllt der Ansager Brainrot-Rufe (tiefe Männerstimme, Frauenstimme oder je Figur; Sprachausgabe und Untertitel abschaltbar). Im Obby läufst und springst du über Plattformen bis ins Ziel: Rote Soße und Abgründe schicken dich zum letzten 🚩 Checkpoint zurück, rot-weiße Drehbalken musst du überspringen, gelbe Polster schleudern dich hoch, braune Platten fallen kurz nach dem Betreten, Eis rutscht, Förderbänder schieben zurück und blaue Plattformen fahren hin und her. Sammle 🪙 Münzen, schaffe Bestzeiten und bis zu 3 Sterne – jede geschaffte Welt schaltet die nächste frei (Cucina Cosmica, Spiaggia Assurda, Galassia Gelato). Schwierigkeit: 🧸 Bambini (Doppelsprung, kürzere Lücken, Drehbalken schubsen nur – ideal für Kinder), 🙂 Normale und 🔥 Esperto. Minigames: 🏁 Brainrot-Rennen gegen drei Computer-Figuren, 🔥 Pavimento Lava (drei Fliesen-Etagen bröckeln weg – wer bleibt am längsten?), 🗼 Torre Infinita (immer höher, die Soße steigt), 🎤 Chi lo dice? (Spruch hören, Figur erraten) und 🌐 Online-Rennen: Alle laufen dieselbe Strecke auf ihrem eigenen Gerät und sehen sich gegenseitig – Beitritt per Code, Link oder QR-Code von überall.",
     "steuerung": [
      "Tastatur & Maus: WASD/Pfeile laufen, Leertaste springen, Maus ziehen oder Q/E dreht die Kamera, Mausrad zoomt, Esc Pause.",
      "Touch: links der Joystick zum Laufen, rechts SPRUNG, KAMERA dreht hinter die Figur, rechts wischen dreht die Kamera.",
@@ -1801,7 +1801,7 @@
      "Bei Pavimento Lava immer in Bewegung bleiben – stehen bleiben lässt die Fliese bröckeln."
     ]
    },
-   "size": 244960,
+   "size": 267981,
    "files": 13,
    "offline": true,
    "cloud": {
