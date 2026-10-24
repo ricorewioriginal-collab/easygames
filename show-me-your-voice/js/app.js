@@ -960,7 +960,7 @@
       ${own ? `<div class="panel"><label class="field">Songtitel (optional)<input id="singTitle" type="text" maxlength="80" value="${esc(sing.title)}" placeholder="z. B. Adele – Hello"></label>
         ${sing.song === 'own' ? `<label class="field">YouTube-Link (optional)<input id="singLink" type="url" inputmode="url" value="${esc(sing.own)}" placeholder="https://youtu.be/…"></label>
         <button class="btn sm violet" type="button" id="singFind">🔍 Karaoke-Version auf YouTube suchen</button><p class="hint" style="text-align:left">Video suchen, Link kopieren und oben einfügen. Nicht jedes Video darf eingebettet werden – dann sagt dir das Spiel Bescheid.</p>` : ''}</div>` : ''}
-      <h3>3 · Länge</h3><div class="seg">${[30, 60, 90].map(n => `<button class="btn" type="button" data-sl="${n}" aria-pressed="${sing.len === n}">${n} s</button>`).join('')}</div>
+      ${sing.ctx && sing.ctx.mode === 'online' ? `<p class="hint" style="text-align:left">⏱️ Online singen alle ${ONLINE_SING} Sekunden. Such dir schnell deinen Song aus – die Runde läuft schon.</p>` : `<h3>3 · Länge</h3><div class="seg">${[30, 60, 90].map(n => `<button class="btn" type="button" data-sl="${n}" aria-pressed="${sing.len === n}">${n} s</button>`).join('')}</div>`}
       <p class="hint" style="text-align:left">🎧 Am besten mit Kopfhörern singen, sonst hört das Mikrofon die Musik mit. Die Zeit läuft ab deinem ersten Ton.${g ? ' Karaoke-Videos kommen von YouTube; alle Rechte an der Musik liegen bei den Urhebern.' : ''}</p>
       <details class="panel rew"><summary><b>🎁 Mikro & Bühne</b> · deine Sterne: <span class="stars">${st}</span> von ${D.KARAOKE.length * 3} ★</summary>
         <p class="hint" style="text-align:left">Sterne holst du in den Genre-Challenges. Damit schaltest du Mikros (Farbe deiner Notenbalken), Bühnen und Outfit-Farben für deinen Avatar frei.</p>
@@ -1023,8 +1023,10 @@
       persist();
     }
     // Blind Audition: dieselbe Jury, die am Ende entscheidet, dreht sich live um, sobald sie Ja sagen würde
-    run.panel = career ? S.panelOf(s, s.round) : D.MAIN_JURY.slice();
-    run.jseed = career ? s.seed : run.seed; run.jround = career ? s.round : 0;
+    const online = !!(cx && cx.mode === 'online');
+    run.panel = career ? S.panelOf(s, s.round) : online ? (cx.panel || D.MAIN_JURY).slice() : D.MAIN_JURY.slice();
+    run.jseed = career ? s.seed : online ? cx.seed : run.seed; run.jround = career ? s.round : online ? cx.r : 0; run.jwho = online ? ON.me : 'p';
+    if (online) run.len = ONLINE_SING;
     $('#singBox').innerHTML = `<header class="bar"><span></span><h2>${run.party ? '🎉 ' + esc(party.players[run.party.i]) + ': ' : run.daily ? '📅 ' : '🎙️ '}${esc(pk.title)}</h2><span></span></header>
       ${pk.vid ? `<div class="video"><iframe id="singVid" src="https://www.youtube-nocookie.com/embed/${pk.vid}?autoplay=1&rel=0&playsinline=1&enablejsapi=1${save.settings.mute ? '&mute=1' : ''}" title="Karaoke-Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
         <p class="hint">${esc(pk.credit)} · <a href="https://www.youtube.com/watch?v=${pk.vid}" target="_blank" rel="noopener">YouTube ↗</a></p><p class="banner lose" id="singErr" hidden>Dieses Video darf hier nicht abgespielt werden. Brich ab und wähle einen anderen Song – oder sing einfach a cappella weiter.</p>` : `<p class="hint">${esc(pk.credit)}</p>`}
@@ -1083,8 +1085,8 @@
       if (part.sing.voiced < 8) return;
       const mods = career && s ? s.mods : null;
       if (career) S.singCareer(part, s.lastPerf, mods, cx.sel.action);
-      const symp = cx ? S.mergeSymp(cx.talk.symp, mods && mods.symp) : null;
-      S.judge(part.crit, pk.style, run.jseed, run.jround, 'p', symp, run.panel).forEach(v => {
+      const symp = cx && cx.talk ? S.mergeSymp(cx.talk.symp, mods && mods.symp) : null;
+      S.judge(part.crit, cx && cx.mode === 'online' ? cx.style : pk.style, run.jseed, run.jround, run.jwho, cx && cx.mode === 'online' ? null : symp, run.panel).forEach(v => {
         if (run.turned[v.id] || !v.yes || v.score < jur(v.id).need + 1) return;
         run.turned[v.id] = true; const el = $(`#singBox .chair[data-c="${v.id}"]`); if (el) el.classList.add('on');
         A.sfx('yes'); toast('🔴 ' + jur(v.id).name + ' hat sich umgedreht!', 2000);
@@ -1143,6 +1145,12 @@
       const before = S.starSum(save);
       save.singBest = Math.max(save.singBest || 0, fin.total);
       if (run.daily) { const k = 'd' + run.daily, old = (save.daily || {})[k] || 0; save.daily = { [k]: Math.max(old, fin.total) }; out.daily = { pts: fin.total, best: Math.max(old, fin.total), rec: fin.total > old }; }
+      if (cx && cx.mode === 'online') {   // Online-Show: Ergebnis an den Gastgeber, weiter in der Show
+        sing.ctx = null; ON.mine = { r: cx.r, crit: res.crit, perf: res.perf };
+        p.xp += Math.round(res.perf / 4); persist();
+        onSend({ t: 'perf', r: cx.r, perf: res.perf, crit: res.crit });
+        go('sOnline'); toast(`${out.title} · 🎯 ${fin.total.toLocaleString('de-DE')} Punkte – gleich entscheidet die Jury!`, 3500); return;
+      }
       if (cx) {   // echtes Vorsingen in Karriere oder Freiem Casting: weiter wie nach einem Bühnenauftritt
         const career = cx.mode === 'career', s = save.season, mods = career && s ? s.mods : null;
         const f = { mode: cx.mode, playId: run.playId, seed: run.seed, sel: Object.assign({}, cx.sel, { style: run.pk.style }), talk: cx.talk, credit: run.pk.credit, bg: cx.bg, ret: career ? 'sBack' : 'sPrep' };
@@ -1358,6 +1366,7 @@
   const netErr = e => ({ nocode: 'Diese Show gibt es nicht (mehr). Stimmt der Code?', timeout: 'Keine Verbindung – bitte nochmal versuchen.', code: 'Bitte den 4-stelligen Code eingeben.' }[e && e.message] || 'Online ist gerade nicht erreichbar. Prüfe das Internet und versuche es nochmal.');
   const cleanLook = l => { const o = {}; if (l && typeof l === 'object') for (const k of ['skin', 'hair', 'hairColor', 'outfit', 'outfitColor', 'acc', 'beard', 'piercing']) { const v = l[k]; if (typeof v === 'number' || (typeof v === 'string' && v.length < 24)) o[k] = v; } return o; };
   const STYLE_ROT = ['pop', 'soul', 'rock', 'ballade'];
+  const ONLINE_SING = 60;   // Sekunden je Auftritt beim echten Vorsingen online
   // st = gemeinsamer Stand (vom Gastgeber verteilt), H = nur beim Gastgeber
   const ON = { net: null, me: '', st: null, played: -1, voted: -1, pend: '', H: null };
   function onReset() { if (ON.net) ON.net.close(); if (ON.H && ON.H.tick) clearInterval(ON.H.tick); ON.net = null; ON.me = ''; ON.st = null; ON.played = -1; ON.voted = -1; ON.H = null; }
@@ -1367,7 +1376,7 @@
   // --- Gastgeber ---
   function hostState() {
     const h = ON.H;
-    return { code: ON.net ? ON.net.code : '', phase: h.phase, round: h.round, players: h.players, field: h.field, def: h.def, seed: h.seed, style: h.style, panel: h.panel,
+    return { code: ON.net ? ON.net.code : '', phase: h.phase, sing: !!h.sing, round: h.round, players: h.players, field: h.field, def: h.def, seed: h.seed, style: h.style, panel: h.panel,
       done: Object.keys(h.perf), voted: Object.keys(h.votes), res: h.res, deadline: h.deadline };
   }
   function hostSync() { const s = hostState(); ON.st = s; ON.net.send({ t: 'state', s }); onRender(); }
@@ -1411,7 +1420,7 @@
     h.style = STYLE_ROT[(h.seed + round) % STYLE_ROT.length];
     h.panel = S.panelOf({ seed: h.seed, jury: save.settings.jury }, round);
     h.perf = {}; h.votes = {}; h.res = null; h.phase = 'perform';
-    h.deadline = Date.now() + (h.def.parts.length * h.def.len + 45) * 1000;
+    h.deadline = Date.now() + (h.sing ? ONLINE_SING + 100 : h.def.parts.length * h.def.len + 45) * 1000;   // echtes Vorsingen: Zeit für die Songwahl
     hostSync();
   }
   function hostCheck() {
@@ -1457,6 +1466,14 @@
 
   // --- Auftritt ---
   function onPerform(st) {
+    if (st.sing) {   // echtes Vorsingen: jede Person wählt ihren Song und singt ins eigene Mikrofon
+      ON.played = st.seed;
+      const g = D.KARAOKE.find(x => x.style === st.style);
+      if (g && sing.g !== g.id) { sing.g = g.id; sing.song = 0; }
+      sing.party = null; sing.daily = false; sing.len = ONLINE_SING;
+      sing.ctx = { mode: 'online', r: st.round, seed: st.seed, style: st.style, panel: st.panel, title: '🌐 ' + st.def.icon + ' ' + st.def.name };
+      backTo.sSing = 'sOnline'; go('sSing'); return;
+    }
     const sty = D.STYLES[st.style] || D.STYLES.pop, ap = D.APPROACH.gefuehl, ac = D.ACTION.publikum;
     const parts = st.def.parts.map((t, i) => t === 'rhythm'
       ? { type: 'rhythm', len: st.def.len, bpm: sty.bpm, style: st.style, density: ap.density + st.round * 0.04, seed: st.seed + i * 101, shows: i === 0 ? ac.shows : 1, title: '„' + D.SONGS[st.style] + '“', sub: st.def.name }
@@ -1481,6 +1498,9 @@
     if (stage && flow && flow.mode === 'online' && ON.st && (ON.st.phase !== 'perform' || ON.st.seed !== ON.played)) {
       stopAll(); flow = null; closeOv(); toast('⏱️ Die Zeit für den Auftritt ist um – weiter geht\'s in der Show.', 3500); go('sOnline'); return;
     }
+    if (cur === 'sSing' && sing.ctx && sing.ctx.mode === 'online' && (!ON.st || ON.st.phase !== 'perform' || ON.st.seed !== sing.ctx.seed)) {
+      singEnd(); sing.ctx = null; toast('⏱️ Die Zeit für den Auftritt ist um – weiter geht\'s in der Show.', 3500); go('sOnline'); return;
+    }
     if (cur !== 'sOnline') {
       // Auftritt automatisch starten, sobald die Runde beginnt (auch aus einer anderen Ansicht der Show heraus)
       return;
@@ -1503,13 +1523,16 @@
         <p class="hint">Mitspieler öffnen den Link oder scannen den QR-Code – von überall, auch übers Internet.</p>
         ${amHost() ? '<button class="btn sm" type="button" data-o="copy">🔗 Einladungslink kopieren</button>' : ''}</div>
         <div class="panel"><p><b>Dabei (${pls.filter(x => x.on).length}/8):</b></p><div class="onPlayers">${pls.map(x => ava(x)).join('')}</div></div>` +
-        (amHost() ? `<button class="btn gold xl" type="button" data-o="start" style="width:100%" ${pls.filter(x => x.on).length < 2 ? 'disabled' : ''}>🎤 Show starten</button><p class="hint">Ablauf: Casting → Recall → Live-Shows → Finale. Musik: eigene Beats, für alle gleich.</p>`
+        `<div class="panel"><p><b>Auftrittsart:</b> ${st.sing ? '🎙️ Echt vorsingen – alle singen einen Karaoke-Song ins eigene Mikrofon, die Jury bewertet die echte Stimme.' : '🎮 Spiel – Noten im Takt treffen, Musik für alle gleich.'}</p>
+          ${amHost() ? `<div class="seg"><button class="btn" type="button" data-o="mgame" aria-pressed="${!st.sing}">🎮 Spiel</button><button class="btn" type="button" data-o="msing" aria-pressed="${!!st.sing}">🎙️ Echt vorsingen</button></div>` : ''}</div>` +
+        (amHost() ? `<button class="btn gold xl" type="button" data-o="start" style="width:100%" ${pls.filter(x => x.on).length < 2 ? 'disabled' : ''}>🎤 Show starten</button><p class="hint">Ablauf: Casting → Recall → Live-Shows → Finale.${st.sing ? ' Jede Person braucht ein Mikrofon (am besten mit Kopfhörern).' : ' Musik: eigene Beats, für alle gleich.'}</p>`
           : '<p class="center muted">Warte, bis der Gastgeber die Show startet …</p>');
     } else if (st.phase === 'perform') {
       const jury = (st.panel || D.MAIN_JURY).map(jur).map(j => `<span class="pj">${jimg(j, 'js')}<small>${esc(j.name)}</small></span>`).join('');
-      body = `<div class="panel"><p><b>${def.icon} ${esc(def.name)}</b> · Musik: „${esc(D.SONGS[st.style])}“ (${esc(D.STYLES[st.style].name)}, eigene Beats)</p><div class="panelRow"><span class="muted">⚖️ Jury:</span>${jury}</div></div>
+      body = `<div class="panel"><p><b>${def.icon} ${esc(def.name)}</b> · ${st.sing ? '🎙️ Echt vorsingen, ' + ONLINE_SING + ' Sekunden · Stil: ' + esc(D.STYLES[st.style].name) : 'Musik: „' + esc(D.SONGS[st.style]) + '“ (' + esc(D.STYLES[st.style].name) + ', eigene Beats)'}</p><div class="panelRow"><span class="muted">⚖️ Jury:</span>${jury}</div></div>
         <div class="panel"><div class="onPlayers">${st.field.map(id => { const x = onPlayer(id) || { name: '?', look: {} }; const ok = st.done.includes(id); return `<div class="onP ${ok ? '' : 'wait'}">${AV.svg(x.look, ok ? 'happy' : 'neutral')}<b>${esc(x.name)}</b><small>${ok ? '✅ fertig' : '🎤 singt …'}</small></div>`; }).join('')}</div></div>
-        <p class="center muted">${inField ? (ON.played === st.seed ? 'Super! Warte auf die anderen …' : '') : 'Du bist diesmal Publikum – gleich darfst du abstimmen.'}</p>`;
+        <p class="center muted">${inField ? (ON.played === st.seed ? (st.sing && !st.done.includes(me) ? '' : 'Super! Warte auf die anderen …') : '') : 'Du bist diesmal Publikum – gleich darfst du abstimmen.'}</p>
+        ${inField && st.sing && ON.played === st.seed && !st.done.includes(me) ? '<button class="btn gold xl" type="button" data-o="sing" style="width:100%">🎙️ Zum Vorsingen</button>' : ''}`;
     } else if (st.phase === 'vote') {
       const can = st.field.filter(id => id !== me), done = ON.voted === st.seed || st.voted.includes(me);
       body = `<div class="panel"><h3 style="margin-top:0">📱 Publikums-Voting</h3><p>Wer hat dich am meisten überzeugt? ${def.w.votes ? 'Die Stimmen zählen ' + Math.round(def.w.votes * 100) + ' % der Wertung.' : 'Im Casting zählt nur die Jury – eure Stimmen gibt es trotzdem als Applaus.'}</p>
@@ -1547,6 +1570,8 @@
     else if (k === 'join') { const c = $('#onCode').value; ON.pend = c; onJoin(c); }
     else if (k === 'copy') { const u = ON.net && ON.net.link(); if (u && navigator.clipboard) navigator.clipboard.writeText(u).then(() => toast('🔗 Link kopiert')).catch(() => toast(u, 5000)); else toast(u || '', 5000); }
     else if (k === 'start') hostStart(0);
+    else if (k === 'mgame' || k === 'msing') { ON.H.sing = k === 'msing'; hostSync(); }
+    else if (k === 'sing' && ON.st && ON.st.phase === 'perform') { ON.played = -1; onPerform(ON.st); }
     else if (k === 'next') hostStart(ON.H.round + 1);
     else if (k === 'again') { const h = ON.H; h.phase = 'lobby'; h.res = null; h.field = []; h.round = 0; hostSync(); }
   });
