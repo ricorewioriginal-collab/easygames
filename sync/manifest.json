@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "21c609534064",
- "generated": "2026-10-24T15:58:09+02:00",
- "commit": "fd4855fefeffc7a93df585aab9c2e3525cb9e530",
+ "version": "7840494e707b",
+ "generated": "2026-10-24T14:09:22+00:00",
+ "commit": "99ca2033030c8d02540b41978cb2e20cd3b82e54",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5353,8 +5353,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22426,
-   "h": "439251513fff2371ea2a75bb3f058243fdf1207b36ab91f8645725f546e28fee"
+   "s": 22461,
+   "h": "aa41548b8d9ca3d1d703ac01b8c99091152c6790e1dae00802705d94f4e48983"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -7993,18 +7993,18 @@
   },
   {
    "p": "show-me-your-voice/index.html",
-   "s": 15586,
-   "h": "54f8c003247d9670a5d11721d5d1d9aa17dd4eedd651d86eed1b5a1a16534f1e"
+   "s": 16068,
+   "h": "1bc2cd5ae874165cbc982bc71aa6ae3eb6037aff7afc8fa506ec45b4da4f4c00"
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 120542,
-   "h": "cbf1e6fcdc78359b1ab58363b68f21e9b71f08e2d87cd48e86ed1efdac03f789"
+   "s": 127162,
+   "h": "c724850d73c4bb17900b7c105d2e0d02a630c60066063c363991e8c0f2c677b1"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
-   "s": 14899,
-   "h": "2af4813a5a7a36618237ec95a237e45523dde71660fdb0465fdff4bc4ae961e2"
+   "s": 16444,
+   "h": "ed274ad0aeb1bc42bc761bfe93144ca1ff525a635e37de8f9b449d3caf0dfeae"
   },
   {
    "p": "show-me-your-voice/js/avatar.js",
@@ -8013,8 +8013,8 @@
   },
   {
    "p": "show-me-your-voice/js/core.js",
-   "s": 27628,
-   "h": "aa6534d935c88c1e1e5488064d5b31fe07e851d5e59859f0f3e9e3dd1d778291"
+   "s": 29907,
+   "h": "c6ffddeb1f350d292d91678758a41b275df828094b3eaca274e070c0c2991f48"
   },
   {
    "p": "show-me-your-voice/js/data.js",
@@ -8033,8 +8033,8 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 21859,
-   "h": "52e936cf6d6d75795e1ecba6f76c7de792d4d6db33acb92a01ad930feb442cab"
+   "s": 23648,
+   "h": "8bca7e44f8dc8d2257250c9cf0dc453d28226e2c9fa62329ff1a4e22ca304dea"
   },
   {
    "p": "show-me-your-voice/sw.js",
@@ -8299,7 +8299,7 @@
   {
    "p": "sync/catalog.json",
    "s": 202798,
-   "h": "f24125ad719c906d4d9288649e5acbf72bd45fcba8e105875b89be3a47e3fa8d"
+   "h": "26bcbcde63742049d7e309e87df74acddfae541f12fb424125f68e5280451d97"
   },
   {
    "p": "taschi/card.svg",
