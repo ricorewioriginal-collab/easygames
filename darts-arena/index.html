@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/darts-arena-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Darts-Arena 3D"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b0710">
+<title>Darts-Arena 3D – Game On in der Neon-Kneipe</title>
+<meta name="description" content="Darts-Arena 3D: Steeldarts mit echtem Wurfgefühl an einem Board nach Turniermaß. Zielen, Wischen, Treffen – 501, 301, 701 mit Double-Out, Cricket, Cut-Throat, Elimination, Around the Clock, Shanghai, Killer, Halve-It, Bob’s 27, Count-Up und Training. Allein, gegen den Computer oder mit bis zu vier Spielern an einem Gerät.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage"></div>
+
+<section class="scr on" id="sLoad">
+  <div class="load">
+    <div class="dartLogo"><i></i><b></b></div>
+    <h1 class="title">DARTS<span>ARENA</span></h1>
+    <div class="bar"><i id="loadBar"></i></div>
+    <p class="tip" id="loadTip">Board wird aufgehängt …</p>
+  </div>
+</section>
+
+<section class="scr" id="sTitle">
+  <div class="titleBox">
+    <h1 class="title big">DARTS<span>ARENA</span></h1>
+    <p class="claim">Game on in der Neon-Kneipe</p>
+    <button class="press nav" id="bPress">▶ <span id="pressTxt">Drücke Start</span></button>
+  </div>
+  <p class="corner"><a href="../" id="backLink">← Alle Spiele</a></p>
+</section>
+
+<section class="scr" id="sMenu">
+  <div class="menuWrap">
+    <header class="mHead"><h1 class="title small">DARTS<span>ARENA</span></h1><div class="mStat" id="menuStat"></div></header>
+    <div class="tiles" id="tiles">
+      <button class="tile nav hero" data-go="quick"><i>🎯</i><b>Schnelles Spiel</b><small id="quickInfo">501 Double-Out gegen den Computer</small></button>
+      <button class="tile nav" data-go="modes"><i>🏆</i><b>Spielmodi</b><small>X01, Cricket, Elimination, Killer …</small></button>
+      <button class="tile nav" data-go="train"><i>🏋️</i><b>Training</b><small>Freies Werfen, Around the Clock, Bob’s 27</small></button>
+      <button class="tile nav" data-go="rec"><i>🏅</i><b>Rekorde</b><small>Schnitt, 180er, Checkouts</small></button>
+      <button class="tile nav" data-go="opts"><i>⚙️</i><b>Optionen</b><small>Wurfgefühl, Caller, Ton</small></button>
+      <button class="tile nav" data-go="help"><i>📖</i><b>Anleitung</b><small>Werfen &amp; Regeln</small></button>
+    </div>
+    <footer class="mFoot"><span class="hintKeys">Pfeile + Enter: wählen · Esc: zurück</span><a href="../" class="nav">← Alle Spiele</a></footer>
+  </div>
+</section>
+
+<section class="scr" id="sModes">
+  <div class="panel wide">
+    <h2>🏆 Spielmodus wählen</h2>
+    <div class="modeGrid" id="modeGrid"></div>
+    <div class="rowBtns"><button class="btn nav" id="modesBack">← Zurück</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sSetup">
+  <div class="panel">
+    <h2 id="setTitle"></h2>
+    <p class="hint" id="setDesc"></p>
+    <div id="optBox"></div>
+    <h3>Spieler</h3>
+    <div id="slots"></div>
+    <div class="rowBtns wrap"><button class="btn nav" id="slAdd">＋ Spieler</button><button class="btn nav" id="slDel">－ Spieler</button></div>
+    <div class="rowBtns"><button class="btn nav" id="setBack">← Zurück</button><button class="btn pri big nav" id="setGo">🎯 Game on!</button></div>
+  </div>
+</section>
+
+<section class="scr game" id="sGame">
+  <div class="board" id="board"></div>
+  <div class="info"><div class="turn" id="turn"></div><div class="hint2" id="hint2"></div></div>
+  <div class="msg" id="msg"></div>
+  <div class="side">
+    <button class="icon nav" id="bPause" aria-label="Pause"><i class="pz"></i></button>
+    <button class="icon nav" id="bUndo" aria-label="Board zeigen">🔍</button>
+  </div>
+  <div class="power" id="power"><div class="powIdeal"></div><div class="powFill" id="powFill"></div><span>Halten<br>&amp; loslassen</span></div>
+  <div class="swipeHint" id="swipeHint">👆 Ziehen = zielen · schnell nach oben wischen = werfen</div>
+  <div class="aimZone" id="aimZone"></div>
+  <div id="bigTxt" hidden></div>
+</section>
+
+<div class="ov end" id="ovEnd" hidden><div class="card big">
+  <p class="kicker" id="eKick"></p>
+  <h2 class="endTitle" id="eTitle"></h2>
+  <p class="hint" id="eSub"></p>
+  <div class="rank" id="eRank"></div>
+  <div class="rowBtns wrap"><button class="btn pri big nav" id="eAgain">↻ Nochmal</button><button class="btn nav" id="eMenu">☰ Menü</button></div>
+</div></div>
+
+<div class="ov" id="ovPause" hidden><div class="card">
+  <h2>Pause</h2>
+  <div class="menuBtns"><button class="btn big pri nav" id="pGo">▶ Weiter</button><button class="btn nav" id="pRestart">↻ Neu starten</button><button class="btn nav" id="pOpts">⚙️ Optionen</button><button class="btn nav" id="pHelp">📖 Anleitung</button><button class="btn nav" id="pQuit">⏹ Zum Menü</button></div>
+</div></div>
+
+<div class="ov" id="ovOpts" hidden><div class="card scroll">
+  <h2>⚙️ Optionen</h2>
+  <p class="lbl">Wurfgefühl</p>
+  <div class="seg" id="feelSeg"></div>
+  <p class="hint small" id="feelTxt"></p>
+  <label class="check"><input type="checkbox" id="sReticle"> Zielkreuz zeigen</label>
+  <label class="check"><input type="checkbox" id="sZoom"> Beim Zielen heranzoomen</label>
+  <label class="check"><input type="checkbox" id="sCaller"> Caller (Sprachausgabe der Punkte)</label>
+  <label class="check"><input type="checkbox" id="sSound"> Soundeffekte</label>
+  <label class="check"><input type="checkbox" id="sMusic"> Musik</label>
+  <label class="check"><input type="checkbox" id="sVib"> Vibration</label>
+  <label class="check"><input type="checkbox" id="sLow"> Sparmodus (ohne Schatten, nach Neustart)</label>
+  <button class="btn pri nav wide" id="optX" data-close>Fertig</button>
+</div></div>
+
+<div class="ov" id="ovRec" hidden><div class="card">
+  <h2>🏅 Rekorde</h2>
+  <div class="stats" id="recList"></div>
+  <p class="hint">Für die Rangliste zählt dein bestes Count-Up (8 Aufnahmen, höchstens 1440 Punkte).</p>
+  <button class="btn pri nav wide" id="recX" data-close>Fertig</button>
+</div></div>
+
+<div class="ov" id="ovHelp" hidden><div class="card scroll">
+  <h2>📖 So geht's</h2>
+  <h3>Werfen</h3>
+  <ul>
+    <li><b>Touch / Maus:</b> Finger aufs Bild und ziehen = Zielkreuz verschieben (feiner als der Finger). Zum Werfen <b>zügig nach oben wischen</b> und loslassen. Das Tempo bestimmt die Höhe: zu langsam fällt der Dart tiefer, zu schnell fliegt er höher. Wischst du schräg, geht der Dart zur Seite.</li>
+    <li><b>Tastatur:</b> Pfeiltasten zielen (mit Umschalt fein), Leertaste halten = Kraft, im grünen Bereich loslassen. Esc/P Pause.</li>
+    <li><b>Controller:</b> linker Stick zielen, A halten und im grünen Bereich loslassen, Start Pause.</li>
+    <li>Die Hand zittert leicht – das Zielkreuz wandert. Unter ⚙️ Wurfgefühl stellst du ein, wie ruhig sie ist.</li>
+  </ul>
+  <h3>Das Board</h3>
+  <p>Außenring = Doppel (×2), innerer Ring = Triple (×3). Bull = 25, Bullseye = 50 (zählt als Doppel). Jede Aufnahme hat 3 Darts.</p>
+  <h3>Spielmodi</h3>
+  <ul>
+    <li><b>501 / 301 / 701:</b> von der Startzahl genau auf 0 herunterspielen, der letzte Dart muss ein Doppel sein (Double-Out). Wer zu viel wirft, auf 1 stehen bleibt oder ohne Doppel auf 0 kommt, hat sich <b>überworfen (Bust)</b> – die Aufnahme zählt nicht. Optional Double-In, Master-Out (Doppel oder Triple) oder Single-Out und mehrere Legs.</li>
+    <li><b>Cricket:</b> 15 bis 20 und Bull je dreimal treffen (Single 1, Doppel 2, Triple 3 Marken) = geschlossen. Weitere Treffer auf eigene geschlossene Zahlen bringen Punkte, solange der Gegner sie noch offen hat. Wer alles geschlossen hat und vorne liegt, gewinnt. <b>Cut-Throat:</b> Punkte gehen an die Gegner – wenig ist gut. <b>Ohne Punkte:</b> nur schließen.</li>
+    <li><b>Elimination:</b> alle zählen von 0 hoch bis genau 301. Wer nach seiner Aufnahme dieselbe Punktzahl hat wie ein Gegner, <b>wirft ihn raus</b> – der muss wieder bei 0 anfangen. Über 301 = Bust.</li>
+    <li><b>Around the Clock:</b> 1 bis 20 der Reihe nach treffen, zum Schluss das Bull (wahlweise nur Doppel oder Triple).</li>
+    <li><b>Shanghai:</b> Runde 1 zählt nur die 1, Runde 2 nur die 2 … Single, Doppel und Triple derselben Zahl in einer Aufnahme = Shanghai und sofortiger Sieg.</li>
+    <li><b>Killer:</b> jeder bekommt eine Zahl. Triffst du dein Doppel, wirst du Killer und nimmst den anderen mit Treffern auf ihr Doppel Leben. Trifft ein Killer sein eigenes Doppel, verliert er ein Leben. Der Letzte gewinnt.</li>
+    <li><b>Halve-It:</b> 9 Ziele (15, 16, ein Doppel, 17, 18, ein Triple, 19, 20, Bull). Triffst du in einer Aufnahme das Ziel nicht, wird dein Punktestand halbiert.</li>
+    <li><b>Bob’s 27:</b> Doppel-Training. Start mit 27, Doppel 1 bis 20 und Bullseye: jeder Treffer gibt den Doppelwert, keiner kostet ihn. Unter 0 ist Schluss.</li>
+    <li><b>Count-Up:</b> 8 Aufnahmen, alles zählt – die höchste Summe gewinnt (bis 1440).</li>
+  </ul>
+  <button class="btn pri nav wide" id="helpX" data-close>Los geht's</button>
+</div></div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../device.js"></script>
+<script src="js/core.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="darts-arena" data-prefix="darts-arena-" defer></script>
+</body>
+</html>

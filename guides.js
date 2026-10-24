@@ -567,6 +567,19 @@ window.EASYGAMES_GUIDES = {
    "Die Ziellinie zeigt nur den geölten Teil – wo der Hook greift, musst du selbst einschätzen (oder in den Optionen die lange Ziellinie einschalten)."
   ]
  },
+ "darts-arena": {
+  "anleitung": "Darts-Arena 3D ist Steeldarts an einem Board nach Turniermaß in einer Neon-Kneipe. Jede Aufnahme hat 3 Darts. Außenring = Doppel, innerer Ring = Triple, Bull 25, Bullseye 50 (zählt als Doppel). Modi: 🎯 501/301/701 – genau auf 0 herunterspielen, der letzte Dart muss ein Doppel sein; wer zu viel wirft, auf 1 stehen bleibt oder ohne Doppel auf 0 kommt, hat sich überworfen (Bust). Optional Double-In, Master-Out, Single-Out und bis zu 3 Legs; die Checkout-Hilfe zeigt den besten Weg. 🦗 Cricket – 15 bis 20 und Bull je dreimal treffen, danach auf offenen Zahlen der Gegner punkten (Cut-Throat: Punkte gehen an die Gegner, wenig ist gut; oder ganz ohne Punkte). 💥 Elimination – alle zählen von 0 hoch bis genau 301; wer nach seiner Aufnahme dieselbe Punktzahl hat wie ein Gegner, wirft ihn auf 0 zurück. 🕐 Around the Clock (1–20 und Bull), 🀄 Shanghai (Single, Doppel und Triple derselben Zahl = Sofortsieg), 🔪 Killer (eigenes Doppel = Killer, dann Leben der anderen nehmen), ✂️ Halve-It (Ziel verfehlt = Punkte halbiert), 🎓 Bob’s 27 (Doppel-Training), 📈 Count-Up (8 Aufnahmen, zählt für die Rangliste) und freies Training. Bis zu 4 Spieler an einem Gerät, jeder Platz auch als Computer (Leicht, Mittel, Profi).",
+  "steuerung": [
+   "Touch/Maus: Finger aufs Bild und ziehen = Zielkreuz verschieben (feiner als der Finger). Zum Werfen zügig nach oben wischen und loslassen – zu langsam fällt der Dart tiefer, zu schnell fliegt er höher, schräg wischen lenkt zur Seite.",
+   "Tastatur: Pfeiltasten zielen (mit Umschalt fein), Leertaste halten = Kraft, im grünen Bereich loslassen, Z = Zoom an/aus, Esc/P Pause.",
+   "Gamecontroller: linker Stick oder Steuerkreuz zielen (LB/RB fein), A halten und im grünen Bereich loslassen, Start Pause."
+  ],
+  "tipps": [
+   "Das Zielkreuz wandert mit der zitternden Hand – wirf, wenn es gerade über dem Ziel ist.",
+   "Bei 501 zeigt die Checkout-Hilfe den Weg zum Doppel; Profis spielen gern auf D20, D16 oder D8.",
+   "In den Optionen stellst du unter Wurfgefühl ein, wie ruhig die Hand ist und wie stark Wischfehler zählen."
+  ]
+ },
  "funk-billard": {
   "anleitung": "Funk-Billard 3D ist 8-Ball-Pool in einer Neon-Lounge. Beim Anstoß liegen 15 Kugeln im Dreieck. Wer nach dem Anstoß zuerst eine Kugel versenkt, bekommt diese Gruppe: die Vollen (1–7) oder die Halben (9–15). Versenkst du eine eigene Kugel, bleibst du dran, sonst ist der andere am Zug. Wer seine Gruppe abgeräumt hat und dann die schwarze 8 versenkt, gewinnt – versenkst du die 8 zu früh oder mit einem Foul, hast du verloren. Fouls: Weiße versenkt, keine Kugel getroffen, fremde Kugel zuerst getroffen oder nach dem Kontakt weder Bande noch versenkt. Nach einem Foul hat der Gegner Ball in der Hand und legt die Weiße frei hin. Die Ziellinie zeigt die Geisterkugel und wohin beide Kugeln laufen. Effet: oben getroffen läuft die Weiße nach, unten getroffen zieht sie zurück. Modi: 🎱 Gegen CPU (Leicht, Mittel, Profi – Siege bringen 1, 2 oder 3 Punkte für die Rangliste), 👥 Zu zweit an einem Gerät, 🌐 Online gegen Freunde per Code, Link oder QR-Code (jeder auf seinem Gerät) und 🎯 Training ohne Regeln.",
   "steuerung": [

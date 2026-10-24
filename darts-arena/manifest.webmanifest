@@ -1,0 +1,38 @@
+{
+  "id": "./",
+  "name": "Darts-Arena 3D – Game On in der Neon-Kneipe",
+  "short_name": "Darts-Arena 3D",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#2e070a",
+  "theme_color": "#430a0f",
+  "categories": [
+    "games"
+  ],
+  "icons": [
+    {
+      "src": "../pwa-icons/darts-arena-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../pwa-icons/darts-arena-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../pwa-icons/darts-arena-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -1738,6 +1738,41 @@
    }
   },
   {
+   "id": "darts-arena",
+   "title": "Darts-Arena 3D – Game On in der Neon-Kneipe",
+   "desc": "Steeldarts mit echtem Wurfgefühl an einem Board nach Turniermaß: Zielkreuz ziehen, nach oben wischen – das Tempo bestimmt die Höhe, die Hand zittert leicht. 501, 301 und 701 mit Double-Out und Checkout-Hilfe, Cricket (auch Cut-Throat), Elimination mit Rauswerfen, Around the Clock, Shanghai, Killer, Halve-It, Bob’s 27, Count-Up und Training. Allein, gegen den Computer in 3 Stärken oder mit bis zu 4 Spielern an einem Gerät – mit Caller und Rekorden.",
+   "icon": "🎯",
+   "img": "darts-arena/card.jpg",
+   "bg": "linear-gradient(145deg,#d2202f,#14070c 55%,#0e8a45)",
+   "glow": "rgba(210,32,47,.5)",
+   "path": "darts-arena/",
+   "modes": {
+    "pad": true,
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Darts-Arena 3D ist Steeldarts an einem Board nach Turniermaß in einer Neon-Kneipe. Jede Aufnahme hat 3 Darts. Außenring = Doppel, innerer Ring = Triple, Bull 25, Bullseye 50 (zählt als Doppel). Modi: 🎯 501/301/701 – genau auf 0 herunterspielen, der letzte Dart muss ein Doppel sein; wer zu viel wirft, auf 1 stehen bleibt oder ohne Doppel auf 0 kommt, hat sich überworfen (Bust). Optional Double-In, Master-Out, Single-Out und bis zu 3 Legs; die Checkout-Hilfe zeigt den besten Weg. 🦗 Cricket – 15 bis 20 und Bull je dreimal treffen, danach auf offenen Zahlen der Gegner punkten (Cut-Throat: Punkte gehen an die Gegner, wenig ist gut; oder ganz ohne Punkte). 💥 Elimination – alle zählen von 0 hoch bis genau 301; wer nach seiner Aufnahme dieselbe Punktzahl hat wie ein Gegner, wirft ihn auf 0 zurück. 🕐 Around the Clock (1–20 und Bull), 🀄 Shanghai (Single, Doppel und Triple derselben Zahl = Sofortsieg), 🔪 Killer (eigenes Doppel = Killer, dann Leben der anderen nehmen), ✂️ Halve-It (Ziel verfehlt = Punkte halbiert), 🎓 Bob’s 27 (Doppel-Training), 📈 Count-Up (8 Aufnahmen, zählt für die Rangliste) und freies Training. Bis zu 4 Spieler an einem Gerät, jeder Platz auch als Computer (Leicht, Mittel, Profi).",
+    "steuerung": [
+     "Touch/Maus: Finger aufs Bild und ziehen = Zielkreuz verschieben (feiner als der Finger). Zum Werfen zügig nach oben wischen und loslassen – zu langsam fällt der Dart tiefer, zu schnell fliegt er höher, schräg wischen lenkt zur Seite.",
+     "Tastatur: Pfeiltasten zielen (mit Umschalt fein), Leertaste halten = Kraft, im grünen Bereich loslassen, Z = Zoom an/aus, Esc/P Pause.",
+     "Gamecontroller: linker Stick oder Steuerkreuz zielen (LB/RB fein), A halten und im grünen Bereich loslassen, Start Pause."
+    ],
+    "tipps": [
+     "Das Zielkreuz wandert mit der zitternden Hand – wirf, wenn es gerade über dem Ziel ist.",
+     "Bei 501 zeigt die Checkout-Hilfe den Weg zum Doppel; Profis spielen gern auf D20, D16 oder D8.",
+     "In den Optionen stellst du unter Wurfgefühl ein, wie ruhig die Hand ist und wie stark Wischfehler zählen."
+    ]
+   },
+   "size": 186622,
+   "files": 9,
+   "offline": true,
+   "cloud": {
+    "game": "darts-arena",
+    "prefix": "darts-arena-"
+   }
+  },
+  {
    "id": "funk-billard",
    "title": "Funk-Billard 3D – 8-Ball in der Radio-Lounge",
    "desc": "8-Ball-Pool mit echter Kugelphysik in einer Neon-Funk-Lounge: Volle gegen Halbe, die 8 zum Schluss. Zielen mit Wischen oder von oben, Kraftbalken ziehen und loslassen, Effet für Nachläufer und Rückzieher, Ziellinie mit Laufrichtungen, Fouls und Ball in der Hand. Gegen den Computer in 3 Stärken, zu zweit an einem Gerät, 🌐 Online gegen Freunde per Code oder freies Training.",
