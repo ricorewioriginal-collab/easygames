@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/werwolf-nacht-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Werwolf-Nacht"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b1636">
+<title>Werwolf-Nacht – Wer ist der Werwolf?</title>
+<meta name="description" content="Werwolf-Nacht: das Partyspiel im Scherenschnitt-Look. Solo auf dem Handy gegen schlaue Computer-Dorfbewohner oder als Gruppe mit dem Fernseher als Dorf und jedem Handy als geheimer Rollenkarte – online per Code, Link oder QR. Werwölfe, Seherin, Hexe, Jäger und Leibwächter, eine Erzählerstimme führt durch die Nacht.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="village" id="village"></div>
+
+<section class="scr on" id="sLoad">
+  <div class="load"><div class="moon"></div><h1 class="logo">WERWOLF<span>NACHT</span></h1><div class="bar"><i id="loadBar"></i></div><p class="tip" id="loadTip">Der Mond geht auf …</p></div>
+</section>
+
+<section class="scr" id="sTitle">
+  <div class="titleBox"><h1 class="logo big">WERWOLF<span>NACHT</span></h1><p class="claim">Wer im Dorf ist der Werwolf?</p><button class="press nav" id="bPress">▶ <span id="pressTxt">Tippe zum Start</span></button></div>
+  <p class="corner"><a href="../">← Alle Spiele</a></p>
+</section>
+
+<section class="scr" id="sMenu">
+  <div class="menuWrap">
+    <header class="mHead"><h1 class="logo small">WERWOLF<span>NACHT</span></h1><div class="mStat" id="menuStat"></div></header>
+    <div class="tiles" id="tiles">
+      <button class="tile nav hero" data-go="solo"><i>🐺</i><b>Solo spielen</b><small>Du gegen ein Dorf voller Computer-Bewohner</small></button>
+      <button class="tile nav online" data-go="host"><i>🌐</i><b>Online &amp; Handys</b><small>Fernseher = Dorf, Handys = geheime Rollen</small></button>
+      <button class="tile nav" data-go="join"><i>📱</i><b>Mitspielen</b><small>Mit Code beitreten</small></button>
+      <button class="tile nav" data-go="roles"><i>🃏</i><b>Rollen</b><small>Wer kann was?</small></button>
+      <button class="tile nav" data-go="rec"><i>🏅</i><b>Rekorde</b><small>Siege &amp; Punkte</small></button>
+      <button class="tile nav" data-go="opts"><i>⚙️</i><b>Optionen</b><small>Stimme, Ton, Tempo</small></button>
+    </div>
+    <footer class="mFoot"><span class="hintKeys">Pfeile + Enter: wählen · Esc: zurück</span><a href="../" class="nav">← Alle Spiele</a></footer>
+  </div>
+</section>
+
+<!-- Solo einrichten -->
+<section class="scr" id="sSolo">
+  <div class="panel">
+    <h2>🐺 Solo spielen</h2>
+    <input class="field nav" id="soName" maxlength="14" placeholder="Dein Name" autocomplete="nickname">
+    <p class="lbl">Dorfgröße</p><div class="seg" id="soSize"></div>
+    <p class="lbl">Deine Rolle</p><div class="seg" id="soRole"></div>
+    <p class="hint" id="soInfo"></p>
+    <div class="row"><button class="btn nav" id="soBack">← Zurück</button><button class="btn pri big nav" id="soGo">🌙 Nacht beginnen</button></div>
+  </div>
+</section>
+
+<!-- Fernseher: Raum -->
+<section class="scr" id="sLobby">
+  <div class="panel wide">
+    <h2>🌐 Online &amp; Handys</h2>
+    <p class="hint">Dieser Bildschirm ist das Dorf. Alle Mitspieler treten <b>von überall</b> mit dem Handy bei – per Code, Link oder QR-Code – und sehen dort heimlich ihre Rolle. Am besten sitzt ihr zusammen oder seid im Videoanruf.</p>
+    <div class="hostBox"><div class="qr" id="qr">…</div><div><div class="code" id="code">····</div><p class="url" id="url"></p><p class="hint" id="lobbyMsg">Raum wird eröffnet …</p></div></div>
+    <div class="lobbyList" id="lobbyList"></div>
+    <div class="row"><button class="btn nav" id="lbBot">＋ Computer</button><button class="btn nav" id="lbBotX">－ Computer</button><span class="seg small" id="lbTime"></span></div>
+    <div class="row"><button class="btn nav" id="lbBack">← Zurück</button><button class="btn pri big nav" id="lbGo" disabled>🌙 Spiel starten</button></div>
+  </div>
+</section>
+
+<!-- Spiel (Solo und Fernseher) -->
+<section class="scr game" id="sGame">
+  <header class="hud">
+    <button class="icon nav" id="bPause" aria-label="Pause">☰</button>
+    <div class="phase" id="phase"></div>
+    <div class="chip" id="wolvesLeft"></div>
+    <button class="chip nav" id="myRole" hidden></button>
+  </header>
+  <div class="ring" id="ring"></div>
+  <div class="panelBot">
+    <p class="say" id="say"></p>
+    <div class="feed" id="feed"></div>
+    <div class="ask" id="ask"></div>
+  </div>
+</section>
+
+<!-- Handy als Rollenkarte -->
+<section class="scr" id="sPhone">
+  <div class="phone">
+    <div id="pJoin">
+      <h2>📱 Mitspielen</h2>
+      <input class="field nav" id="jName" maxlength="14" placeholder="Dein Name" autocomplete="nickname">
+      <input class="field nav code" id="jCode" maxlength="4" placeholder="CODE" autocapitalize="characters">
+      <div class="row"><button class="btn nav" id="jBack">← Zurück</button><button class="btn pri big nav" id="jGo">Beitreten</button></div>
+      <p class="err" id="jMsg"></p>
+    </div>
+    <div id="pPlay" hidden>
+      <p class="pName" id="pName"></p>
+      <button class="roleCard nav" id="pCard"><span class="cardBack">🂠 Halte gedrückt, um deine Rolle zu sehen</span><span class="cardFront" id="pRole"></span></button>
+      <p class="pInfo" id="pInfo">Warte auf den Spielbeginn …</p>
+      <div class="ask" id="pAsk"></div>
+    </div>
+  </div>
+</section>
+
+<div class="ov" id="ovEnd" hidden><div class="sheet wide"><div id="endBody"></div><div class="row"><button class="btn pri big nav" id="eAgain">↻ Nochmal</button><button class="btn nav" id="eMenu">☰ Menü</button></div></div></div>
+<div class="ov" id="ovPause" hidden><div class="sheet"><h2>Pause</h2><div class="menuBtns"><button class="btn pri big nav" id="pGo">▶ Weiter</button><button class="btn nav" id="pRoles">🃏 Rollen</button><button class="btn nav" id="pOpts">⚙️ Optionen</button><button class="btn nav" id="pQuit">⏹ Spiel beenden</button></div></div></div>
+<div class="ov" id="ovRole" hidden><div class="sheet"><div id="roleBody"></div><button class="btn pri nav wideBtn" id="roleX" data-close>Verstanden</button></div></div>
+<div class="ov" id="ovRoles" hidden><div class="sheet wide scroll"><h2>🃏 Die Rollen</h2><div class="roles" id="rolesList"></div>
+  <h3>Ablauf</h3><p>Nachts erwachen die Rollen nacheinander: Leibwächter, Werwölfe, Seherin, Hexe. Am Morgen erfährt das Dorf, wer gestorben ist. Tagsüber wird diskutiert und abgestimmt – wer die meisten Stimmen hat, muss das Dorf verlassen (bei Gleichstand niemand). Das Dorf gewinnt, wenn alle Werwölfe weg sind. Die Werwölfe gewinnen, sobald sie mindestens so viele sind wie der Rest.</p>
+  <h3>Steuerung</h3><p><b>Touch/Maus:</b> Personen und Knöpfe antippen. <b>Tastatur:</b> Pfeile wählen, Enter bestätigt, Esc Pause. <b>Controller:</b> Steuerkreuz/Stick wählen, A bestätigen, B zurück, Start Pause.</p>
+  <button class="btn pri nav wideBtn" id="rolesX" data-close>Fertig</button></div></div>
+<div class="ov" id="ovRec" hidden><div class="sheet"><h2>🏅 Rekorde</h2><div class="stats" id="recList"></div><p class="hint">Punkte (Solo): Sieg 100, als Werwolf 150, Überleben +30, jede Stimme gegen einen Werwolf +15.</p><button class="btn pri nav wideBtn" id="recX" data-close>Fertig</button></div></div>
+<div class="ov" id="ovOpts" hidden><div class="sheet"><h2>⚙️ Optionen</h2>
+  <label class="check"><input type="checkbox" id="oVoice"> Erzählerstimme</label>
+  <label class="check"><input type="checkbox" id="oSound"> Geräusche</label>
+  <label class="check"><input type="checkbox" id="oAmb"> Nacht- und Tag-Atmosphäre</label>
+  <label class="check"><input type="checkbox" id="oFast"> Schnelles Erzähltempo</label>
+  <label class="check"><input type="checkbox" id="oVib"> Vibration</label>
+  <button class="btn pri nav wideBtn" id="optX" data-close>Fertig</button></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="../device.js"></script>
+<script src="../gamekit.js"></script>
+<script src="../cloud/fire-peer.js"></script>
+<script src="js/data.js"></script>
+<script src="js/core.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/voice.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="werwolf-nacht" data-prefix="werwolf-nacht-" defer></script>
+</body>
+</html>

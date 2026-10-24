@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "934993bc5220",
- "generated": "2026-10-24T10:51:20+02:00",
- "commit": "e655545c0a3b0dc3293ac76daf8d1bf534bbf79e",
+ "version": "14a86d775273",
+ "generated": "2026-10-24T11:16:15+02:00",
+ "commit": "a6027b155dcf5fdd7fb4561bced5ae454aa2a010",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5338,8 +5338,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3045,
-   "h": "e7a5cb24d8d45647ffe8912e3c14237a0e0467a5f1faf23afb981c15204ee3b5"
+   "s": 3071,
+   "h": "5d8e08edd972ccb59dad3801baa10c084fbad7a8b3fa42333374c61e7f5ef093"
   },
   {
    "p": "chat.html",
@@ -6098,8 +6098,8 @@
   },
   {
    "p": "games.js",
-   "s": 43454,
-   "h": "d42680ef0854145015e6c368952eb5ddf5ca28a1290d617da03bbc1683d8d1c7"
+   "s": 44114,
+   "h": "0dededfbf181a93240d172f78fc9e5716e3fbade78503eb9fae4379f6a650518"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6258,8 +6258,8 @@
   },
   {
    "p": "guides.js",
-   "s": 124713,
-   "h": "e760d296895a88f4456ed0ba1073cfb15df89f4af7307abab3e5d447ca4e73ce"
+   "s": 126722,
+   "h": "c24e92a9d0ee67dc5c7880caab926063dcfeb623c15e0dd7b0d0a04d572985d6"
   },
   {
    "p": "heute.html",
@@ -6743,8 +6743,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3160,
-   "h": "fc368fd116819e959df6ac418296655d788979b27bf0bae5d4360210f93d9d9b"
+   "s": 3236,
+   "h": "4ecb9ca6e4a597b53c4d6bcb53af3d01dc89d5fdf8e7986f85f63ace3020ff57"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -8138,8 +8138,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 189880,
-   "h": "26276fa6fd88dc98c9e14064275b22acdcfc270ff0ce553f9d68e46852fd4ebd"
+   "s": 192860,
+   "h": "8f89302efabe06a0293d1da62d2aefc4389b97840706419c3486d4845257e9d1"
   },
   {
    "p": "taschi/card.svg",
@@ -8650,6 +8650,61 @@
    "p": "vendor/three-r128.min.js",
    "s": 603445,
    "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
+  },
+  {
+   "p": "werwolf-nacht/card.jpg",
+   "s": 34299,
+   "h": "f87c4bf3d90da98cb53fd4fcbc6af82e23dc22a8b1e5c67e1ce998d9229b4fb4"
+  },
+  {
+   "p": "werwolf-nacht/index.html",
+   "s": 12235,
+   "h": "402a7e54b382c38dabffebd068c44c75d1934a463d7171e36173da8b192cb203"
+  },
+  {
+   "p": "werwolf-nacht/js/app.js",
+   "s": 44396,
+   "h": "b304d415db0f3c8c6b81b5f7554511312bda2b76f2ccd919b8bbdefb1ea40ec0"
+  },
+  {
+   "p": "werwolf-nacht/js/core.js",
+   "s": 14791,
+   "h": "dea2f30e7d3071d7ec5a1c228e55687547415657dee6b21f833f96616eeb5292"
+  },
+  {
+   "p": "werwolf-nacht/js/data.js",
+   "s": 3995,
+   "h": "fc1fd7a25803a721b39d7058fe9f726ceab436bd51f2e1cb968eccfd86143db7"
+  },
+  {
+   "p": "werwolf-nacht/js/scene.js",
+   "s": 7699,
+   "h": "fc1444ec06498f1673997192c0ef69963e857ad5499a4143056aa9b3d6ab0db5"
+  },
+  {
+   "p": "werwolf-nacht/js/sound.js",
+   "s": 5390,
+   "h": "54ecacf362098310ae266ecf8ab460e55c13e5717e092240d617620d85b9169e"
+  },
+  {
+   "p": "werwolf-nacht/js/voice.js",
+   "s": 3729,
+   "h": "98e7b72da54c63e660a29eab8547ffa89dbff7750d4cd1a5f7af3695fbe9214f"
+  },
+  {
+   "p": "werwolf-nacht/manifest.webmanifest",
+   "s": 794,
+   "h": "a13a2c0ec41028fca2ef14f9d8f6ed9485d0b0b441daf3869f0bbf261d2531db"
+  },
+  {
+   "p": "werwolf-nacht/style.css",
+   "s": 14886,
+   "h": "2c1f5fd35a4aa4bf96f2c3db2bff47d5fe4558be13ba8caa6af108c10b5dcc94"
+  },
+  {
+   "p": "werwolf-nacht/sw.js",
+   "s": 2014,
+   "h": "b1617229f3f843a74b6bc3392a927708700090d191f5f869176e762bd4782c6a"
   },
   {
    "p": "winzflitzer/card.jpg",

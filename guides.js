@@ -554,6 +554,19 @@ window.EASYGAMES_GUIDES = {
    "Spar dir das Finale für den Moment auf, in dem der Gegner einen Fehler macht."
   ]
  },
+ "werwolf-nacht": {
+  "anleitung": "Werwolf-Nacht ist das bekannte Partyspiel im Scherenschnitt-Look. Jeder bekommt heimlich eine Rolle: 🐺 Werwölfe suchen sich nachts gemeinsam ein Opfer, 🔮 die Seherin erfährt jede Nacht, ob jemand ein Werwolf ist, 🧪 die Hexe hat einen Heil- und einen Gifttrank, 🛡️ der Leibwächter beschützt jede Nacht jemanden (nie zweimal hintereinander denselben), 🏹 der Jäger nimmt beim Tod noch jemanden mit, 🧑‍🌾 Dorfbewohner haben nur ihre Stimme. Am Morgen erfährt das Dorf, wer gestorben ist, dann wird diskutiert und abgestimmt – wer die meisten Stimmen hat, muss gehen (bei Gleichstand niemand). Das Dorf gewinnt, wenn alle Werwölfe weg sind, die Werwölfe, sobald sie so viele sind wie der Rest. Eine Erzählerstimme liest alles vor (im Browser eine Männerstimme, in der RicoReWi-App die Android-Stimme). Modi: 🐺 Solo – du gegen 5 bis 9 Computer-Dorfbewohner, die sich gegenseitig verdächtigen, als Seherin auftreten und aus Abstimmungen lernen; du kannst verdächtigen, dich als Seherin ausgeben (auch als Werwolf lügen!) und abstimmen. 🌐 Online & Handys – der Fernseher (oder ein Tablet in der Mitte) ist Dorf und Erzähler, alle treten mit dem Handy per Code, Link oder QR-Code bei und sehen dort heimlich ihre Rolle; Computer füllen auf 5 bis 12 Spieler auf.",
+  "steuerung": [
+   "Touch/Maus: leuchtende Figuren antippen und mit ✔ bestätigen, Knöpfe unten antippen. Am Handy die Rollenkarte gedrückt halten, um die Rolle zu sehen.",
+   "Tastatur: Pfeile wählen, Enter bestätigt, Esc Pause.",
+   "Gamecontroller: Steuerkreuz/Stick wählen, A bestätigen, B zurück, Start Pause."
+  ],
+  "tipps": [
+   "Als Seherin nicht zu früh auspacken – sonst holen dich die Werwölfe in der nächsten Nacht.",
+   "Wer als Zweiter behauptet, die Seherin zu sein, macht sich verdächtig – oder entlarvt eine Lügnerin.",
+   "Als Werwolf: Verdächtige ruhig mal einen Dorfbewohner, aber stimme nicht immer gegen dieselben."
+  ]
+ },
  "fall-akte": {
   "anleitung": "FALL·AKTE ist ein Krimi-Rätsel im Noir-Comic-Stil. In jedem Fall gibt es einen Täter unter den Verdächtigen. Durchsuche die drei Schauplätze einer Welt mit der Lupe: Manche Gegenstände verbergen Spuren wie ein Haar, einen Zigarettenstummel oder einen Brillensplitter. Andere Spuren müssen ins Labor – Fußspur vermessen, Fingerabdruck-Muster vergleichen, Geheimcode mit dem Code-Rad knacken oder einen zerrissenen Brief zusammensetzen. Jede Spur verrät ein Merkmal des Täters. Haarfarbe und Brille siehst du auf den Fotos, Schuhgröße, Händigkeit, Rauchen und Fingerabdruck erfährst du nur im Verhör – die Fragen sind begrenzt. Das Notizbuch streicht automatisch alle, die nicht zu den Spuren passen. Bleibt nur eine Person übrig, klag sie an; jede falsche Anklage kostet Punkte, nach drei Fehlern ist der Fall verloren. Modi: 🗂️ Fälle lösen (6 Welten mit je 3 Fällen, 3 bis 5 Verdächtige; 2 gelöste Fälle öffnen die nächste Welt), 📅 Tagesfall (für alle gleich) und 🎲 Zufallsfall. Punkte und Sterne gibt es für wenige Fragen, wenige Tipps und keine Fehlanklage; mit den Punkten steigst du im Rang bis zum Meisterdetektiv.",
   "steuerung": [
