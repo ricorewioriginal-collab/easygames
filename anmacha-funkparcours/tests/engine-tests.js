@@ -1,5 +1,5 @@
 /* Tests für Physik, Hindernisse, Parcours (machbar? – ein Planer-Bot läuft alle Strecken) und Wertung (node tests/engine-tests.js) */
-import { Sim, COURSES, JUMP_V, G, RUN, PW, PH, DT, movePos, swingBall, rank, pointsFor, fmtTime, WALLRUN_MIN } from '../engine.js';
+import { Sim, COURSES, JUMP_V, G, RUN, PW, PH, DT, movePos, swingBall, ropeAt, rank, pointsFor, fmtTime, WALLRUN_MIN } from '../engine.js';
 import { runBot } from '../bot.js';
 let fails = 0; const ok = (c, m) => { console.log((c ? '✓ ' : '✗ ') + m); if (!c) fails++; };
 const mk = (o, startX = 2) => { const c = { name: 't', o, finish: o.find(x => x.k === 'finish'), length: 99 }; const s = new Sim(c); s.x = startX; return s; };
@@ -32,6 +32,18 @@ const P = (x, w, y = 1) => ({ k: 'plat', x, y, w });
 { const s = mk([P(0, 6), P(9.6, 4, 1.5)]); run(s, st => ({ r: st.x < 11 ? 1 : 0, j: st.x > 5.75 && st.x < 9 ? 1 : 0 }), 2.5); ok(!s.dead && s.onGround && s.x > 9.3, 'Kantenhilfe: knapp zu kurzer Sprung auf eine höhere Plattform wird noch hochgezogen'); }
 // Wand
 { const O = [P(0, 20), { k: 'wall', x: 14, y: 1, h: 4.2, w: 0.6 }, { k: 'plat', x: 14, y: 5.2, w: 4 }, { k: 'finish', x: 15.6, y: 5.2 }]; const fast = mk(O, 2); run(fast, p => ({ r: 1, j: p.x > 11.8 && p.onGround && p.vx >= WALLRUN_MIN ? 1 : 0 }), 6); ok(fast.finished, 'Wand: mit Tempo anlaufen + springen → Wandlauf bis ins Ziel'); const early = mk(O, 2); run(early, p => ({ r: p.x < 12.9 ? 1 : 0, j: p.x > 8 && p.x < 8.4 && p.onGround ? 1 : 0 }), 3); ok(!early.finished && !early.dead && early.y < 3, 'Wand: zu früh abgesprungen → normaler Sprung, kein Wandlauf'); const stand = mk(O, 12.6); run(stand, p => ({ j: 1 }), 2); ok(!stand.finished && stand.y < 3, 'Wand: aus dem Stand hochkommen geht nicht'); }
+// Drehwalze, Trampolin, Seilschwung, Sandsack, drei Versuche an der Steilwand
+{ const s = mk([{ k: 'roll', x: 0, w: 6, y: 1, r: 0.8, v: -1.5 }], 4); run(s, {}, 1); ok(s.onGround && Math.abs(s.x - 2.5) < 0.1, `Drehwalze schiebt den stehenden Läufer zurück (${(4 - s.x).toFixed(2)} m in 1 s)`); }
+{ const s = mk([P(0, 3), { k: 'tramp', x: 4, y: 0.7, w: 2.4, bounce: 12.5 }, P(7, 3)], 1); let top = 0; run(s, p => { top = Math.max(top, p.y); return { r: p.x < 4.8 ? 1 : 0, j: p.onGround && p.x > 2.4 && p.x < 3.2 ? 1 : 0 }; }, 2.5); ok(s.bounces >= 1 && top > 3.4, `Trampolin federt ohne Sprungtaste hoch (${top.toFixed(2)} m)`); }
+{ const rp = { k: 'rope', px: 8.5, py: 7, len: 3.9, amp: 0.6, period: 2.6, phase: -3.5 }, O = [P(0, 6), rp, P(11, 4)]; const s = mk(O, 3); let grabbed = false;
+  run(s, p => { grabbed = grabbed || !!p.rope; return { r: p.x < 12 ? 1 : 0, j: p.x > 11 && p.onGround ? 0 : p.rope ? (p.rope.a > 0.2 && p.rope.da > 0 ? 1 : 0) : p.onGround && p.x > 5.4 ? 1 : !p.onGround && p.vy > 0.5 ? 1 : 0 }; }, 5);
+  ok(grabbed && !s.dead && s.onGround && s.x > 11, 'Seilschwung: Läufer greift das Seil, schwingt mit und springt auf die nächste Plattform');
+  const s2 = mk(O, 3); run(s2, p => ({ r: 1, j: p.onGround && p.x > 5.4 ? 1 : !p.onGround && !p.rope && p.vy > 0.5 ? 1 : 0 }), 5); ok(!!s2.rope && !s2.dead, 'Ohne Sprung bleibt der Läufer am Seil hängen');
+  const q = Object.assign({}, rp, { phase: 0 }), r0 = ropeAt(q, 0), r1 = ropeAt(q, 0.65); ok(Math.abs(r0.a) < 1e-9 && Math.abs(r1.a - 0.6) < 0.01, 'Seil schwingt mit fester Weite und Dauer'); }
+{ const sw = { k: 'swing', px: 10, py: 6.2, len: 3.6, amp: 0.95, period: 3, phase: 0, r: 0.42, h: 1.1 }; const s = mk([P(0, 40), sw], 10); s.step({}); ok(s.hits === 1 && s.stun > 0, 'Sandsack trifft einen Läufer darunter'); }
+{ const O = [P(0, 20), { k: 'wall', x: 14, y: 1, h: 4.25, w: 0.6 }, { k: 'plat', x: 14, y: 5.25, w: 4 }, { k: 'finish', x: 15.6, y: 5.25 }]; const s = mk(O, 13.2); let tries = [];
+  run(s, p => { if (tries[tries.length - 1] !== p.wallTries) tries.push(p.wallTries); return { r: 1, j: p.onGround && p.vx < 3 ? 1 : 0 }; }, 8);
+  ok(s.dead === 'wall' && s.wallTries === 3 && tries.join() === '0,1,2,3', `Steilwand: nach drei Fehlversuchen ist der Lauf vorbei (${tries.join(' → ')})`); }
 // Ziel
 { const O = [P(0, 20), { k: 'finish', x: 10, y: 1 }]; const s = mk(O); run(s, { r: 1 }, 5); ok(s.finished && s.t > 1 && s.t < 3, 'Ziel: Buzzer beim Erreichen der Ziellinie'); }
 // Wertung
@@ -41,9 +53,9 @@ ok(fmtTime(65.432) === '1:05.43' && fmtTime(9.5) === '0:09.50', 'Zeitformat m:ss
 // Parcours
 for (const c of COURSES) {
   const plats = c.o.filter(o => o.k === 'plat'); let maxGap = 0; for (let i = 1; i < plats.length; i++) { const g = plats[i].x - (plats[i - 1].x + plats[i - 1].w); if (g > 0 && plats[i].x < c.wallX) maxGap = Math.max(maxGap, g); }
-  ok(c.finish && c.length > 80 && c.o[0].x === 0, `Parcours „${c.name}": Länge ${c.length.toFixed(0)} m, ${c.o.length} Elemente`);
-  const r = runBot(c, { maxT: 120 }); ok(r.finished && r.time > 15 && r.time < 60, `„${c.name}" ist machbar: Planer-Bot im Ziel nach ${r.time.toFixed(1)} s (Treffer: ${r.hits})`);
-  const r2 = runBot(c, { maxT: 120 }); ok(r2.finished && Math.abs(r2.time - r.time) < 1e-9, `„${c.name}": Simulation ist deterministisch`);
+  const obst = c.secs.length; ok(c.finish && c.length > 100 && c.o[0].x === 0 && obst >= 8, `Parcours „${c.name}": Länge ${c.length.toFixed(0)} m, ${obst} Hindernisse`);
+  const r = runBot(c, { maxT: 150 }); ok(r.finished && r.time > 20 && r.time < 60, `„${c.name}" ist machbar: Planer-Bot im Ziel nach ${r.time.toFixed(1)} s (Treffer: ${r.hits})`);
+  const r2 = runBot(c, { maxT: 150 }); ok(r2.finished && Math.abs(r2.time - r.time) < 1e-9, `„${c.name}": Simulation ist deterministisch`);
 }
 ok(COURSES.length === 3 && COURSES[0].length < COURSES[1].length && COURSES[1].length < COURSES[2].length, 'Drei Parcours mit steigender Länge');
 console.log(fails ? `\n${fails} Fehler` : '\nAlle Parcours-Tests bestanden'); process.exit(fails ? 1 : 0);

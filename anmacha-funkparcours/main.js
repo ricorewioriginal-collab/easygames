@@ -8,7 +8,7 @@ import { stick, hold } from './stick.js';
 import { makeCommentator } from './commentary.js';
 const $ = id => document.getElementById(id), esc = s => String(s == null ? '' : s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
 const THREE_URL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-const COLORS = [0xff6fb0, 0x00b8d9, 0xffd24a, 0x8b5cf6], CSS = ['#ff6fb0', '#00b8d9', '#ffd24a', '#8b5cf6'], LOGO = [5, 1, 8, 12], MAXT = 90, ABORT = { abort: 1 };
+const COLORS = [0xff6fb0, 0x00b8d9, 0xffd24a, 0x8b5cf6], CSS = ['#ff6fb0', '#00b8d9', '#ffd24a', '#8b5cf6'], LOGO = [5, 1, 8, 12], MAXT = 150, ABORT = { abort: 1 };
 const store = { get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} } };
 window.addEventListener('error', e => { $('errTxt').textContent = String(e.message || e); $('err').hidden = false; });
 window.addEventListener('unhandledrejection', e => { if (e.reason === ABORT) return; $('errTxt').textContent = String((e.reason && e.reason.message) || e.reason); $('err').hidden = false; });
@@ -36,7 +36,7 @@ if (JOIN) {
   let G = null, token = 0, pending = null, curCourse = -1, snd = store.get('fpSnd', true), keys = 0, touchM = 0; const phoneM = [0, 0, 0, 0];
   Audio_.setOn(snd);
   const FAST = () => window.__fpFast || 1, sleep = ms => new Promise(r => setTimeout(r, ms / FAST()));
-  const bests = () => store.get('fpBest1', {});
+  const bests = () => store.get('fpBest2', {});
   const show = id => { for (const s of ['menu', 'setup', 'game']) $(s).hidden = s !== id; if (id === 'menu') ui.menu.refresh(); };
   const setSnd = () => { const b = $('bSound'); b.querySelector('.ic').textContent = snd ? '🔊' : '🔇'; b.querySelector('.lb').textContent = snd ? 'Ton: an' : 'Ton: aus'; $('bSnd').textContent = snd ? '🔊' : '🔇'; $('aSnd').querySelector('.ai').textContent = snd ? '🔊' : '🔇'; };
   const toggleSnd = () => { snd = !snd; Audio_.setOn(snd); store.set('fpSnd', snd); setSnd(); SFX.click(); };
@@ -56,7 +56,7 @@ if (JOIN) {
     if(section===lastSection||section<0)return;
     lastSection=section;
     const name=sections[section].n;
-    const tips={Stufensprung:'Stufensprünge! Gut abspringen, bloß nicht ins Wasser!',Fahrstuhl:'Der Fahrstuhl! Jetzt muss das Timing stimmen!',Schiebebrücke:'Die Brücke bewegt sich! Der Sprung muss sitzen!','Bruchplatten':'Bruchplatten! Schnell weiter, bevor sie fallen!','Abrissbirnen':'Vorsicht, die Abrissbirnen schwingen!',Hangelstangen:'Jetzt an die Hangelstangen! Nicht loslassen!',Steilwand:'Die Schlusswand! Anlauf nehmen und hoch da!'};
+    const tips={Stufensprung:'Stufensprünge! Gut abspringen, bloß nicht ins Wasser!',Fahrstuhl:'Der Fahrstuhl! Jetzt muss das Timing stimmen!',Schiebebrücke:'Die Brücke bewegt sich! Der Sprung muss sitzen!','Bruchplatten':'Bruchplatten! Schnell weiter, bevor sie fallen!','Sandsäcke':'Vorsicht, die Sandsäcke schwingen!',Drehwalzen:'Die Drehwalzen! Nicht stehen bleiben, sonst geht es rückwärts!',Seilschwung:'Seilschwung! Seil packen und im richtigen Moment loslassen!',Trampolin:'Das Trampolin! Draufspringen und hoch an die Stangen!',Hangelstangen:'Jetzt an die Hangelstangen! Nicht loslassen!',Steilwand:'Die Steilwand! Drei Versuche. Anlauf nehmen und hoch da!'};
     commentator.speak(tips[name]||('Jetzt folgt: '+name+'.'));
   }
   function abort() { commentator.stop();lastSection=-1;token++; const p = pending; pending = null; $('card').hidden = true; $('big').hidden = true; G = null; padOn(false); arena.setGhost(null); if (p) p.res('abort'); push(); }
@@ -136,7 +136,7 @@ if (JOIN) {
     G.phase = 'count'; push(); keys = touchM = 0;
     for (const n of [3, 2, 1]) { big(String(n), '', 700); SFX.count(); await A(sleep(800)); }
     big('LOS!', '', 800); SFX.go(); arena.fire(1); G.phase = 'run'; push();
-    const sim = new Sim(course); G.sim = sim; padOn(true); const rec = []; let acc = 0, n = 0, prevG = true;
+    const sim = new Sim(course); G.sim = sim; padOn(true); const rec = []; let acc = 0, n = 0, prevG = true, wt = 0;
     const res = await A(new Promise(done => {
       G.tick = dt => {
         acc += dt;
@@ -144,6 +144,7 @@ if (JOIN) {
           acc -= DT; const o = window.__fpInput; sim.step(o ? o(sim) : readInput()); announceSection(sim); if (n++ % 3 === 0) rec.push(Math.round(sim.x * 100) / 100, Math.round(sim.y * 100) / 100);
           if (prevG && !sim.onGround && sim.vy > 0) SFX.jump(); else if (!prevG && sim.onGround) SFX.land(); prevG = sim.onGround;
           if (sim.t >= MAXT && !sim.finished) sim.dead = 'time';
+          if (sim.wallTries !== wt) { wt = sim.wallTries; if (wt < 3) { big(`Versuch ${wt + 1} von 3`, 'sm', 1100); commentator.speak(wt === 1 ? 'Nicht geschafft! Zweiter Versuch.' : 'Letzter Versuch an der Wand!', true); } }
         }
         $('clock').textContent = fmtTime(sim.t);
         if (sim.dead || sim.finished) { G.tick = null; done({ finished: sim.finished, time: sim.t, dist: sim.dist, dead: sim.dead }); }
@@ -151,12 +152,12 @@ if (JOIN) {
     }));
     G.phase = 'done'; padOn(false); phoneM[pi] = 0;
     if (res.finished) { commentator.speak('Im Ziel! '+G.players[pi].name+' mit '+res.time.toFixed(1).replace('.',',')+' Sekunden! Stark!',true); res.why = ''; SFX.top(); arena.confetti(sim.x, sim.y); SFX.clap(1.4); big('ZIEL! ' + fmtTime(res.time), 'sm', 1600); }
-    else { commentator.speak(res.dead==='time'?'Die Zeit ist abgelaufen. Das war ein spannender Lauf!':'Oh nein! Ein Sturz ins Wasser. Der Lauf ist vorbei.',true); res.why = res.dead === 'time' ? 'Zeit ab' : `Baden · ${Math.round(res.dist)} m`; if (res.dead === 'time') SFX.buzz(); else { arena.splash(sim.x); SFX.splash(); SFX.sad(); } big(res.dead === 'time' ? 'ZEIT ABGELAUFEN' : 'PLATSCH!', 'bad sm', 1500); }
+    else { const d = res.dead; commentator.speak(d === 'time' ? 'Die Zeit ist abgelaufen. Das war ein spannender Lauf!' : d === 'wall' ? 'Drei Versuche, kein Glück! Die Wand war heute zu hoch.' : 'Oh nein! Ein Sturz ins Wasser. Der Lauf ist vorbei.', true); res.why = d === 'time' ? 'Zeit ab' : d === 'wall' ? `Wand · ${Math.round(res.dist)} m` : `Baden · ${Math.round(res.dist)} m`; if (d === 'water') { arena.splash(sim.x); SFX.splash(); SFX.sad(); } else { SFX.buzz(); if (d === 'wall') SFX.sad(); } big(d === 'time' ? 'ZEIT ABGELAUFEN' : d === 'wall' ? 'WAND NICHT GESCHAFFT' : 'PLATSCH!', 'bad sm', 1500); }
     res.g = rec; G.say = res.finished ? fmtTime(res.time) : res.why; push();
     await A(sleep(1700)); return res;
   }
 
-  const bestUpdate = (ci, res, name) => { if (!res.finished) return false; const b = bests(); if (!b[ci] || res.time < b[ci].t) { b[ci] = { t: Math.round(res.time * 100) / 100, n: name, g: res.g }; store.set('fpBest1', b); return true; } return false; };
+  const bestUpdate = (ci, res, name) => { if (!res.finished) return false; const b = bests(); if (!b[ci] || res.time < b[ci].t) { b[ci] = { t: Math.round(res.time * 100) / 100, n: name, g: res.g }; store.set('fpBest2', b); return true; } return false; };
 
   async function coroutine(tok, mode) {
     const A = async p => { const v = await p; if (tok !== token) throw ABORT; return v; };

@@ -38,7 +38,7 @@ input{font-family:inherit}
 .top .rinfo{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;min-width:0}.top .rinfo b{font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:var(--pc,#fff)}
 .clock{padding:8px 12px;font-weight:900;font-size:clamp(20px,5vw,30px);font-variant-numeric:tabular-nums;color:var(--y);min-width:116px;text-align:center}
 .pad{display:none;justify-content:space-between;align-items:flex-end;width:min(1000px,100%);gap:10px;padding:0 4px max(6px,env(safe-area-inset-bottom));touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
-body.touch #game .pad:not([hidden]){display:flex}body.touch #game.pl .top .ib{visibility:hidden}
+body.touch #game .pad:not([hidden]){display:flex}body.touch #game.pl .top .ib{display:none}
 /* Analog-Stick: halbtransparenter Ring, gestrichelter Innenring, heller Knopf */
 .stick{--s:clamp(130px,36vmin,190px);position:relative;flex:none;width:var(--s);height:var(--s);border-radius:50%;background:radial-gradient(circle,rgba(20,22,50,.38) 0 58%,rgba(20,22,50,.5) 72%);border:3px solid rgba(255,255,255,.28);box-shadow:0 4px 18px rgba(0,0,0,.35),inset 0 0 0 10px rgba(255,255,255,.05);margin:0 0 18px 6px;touch-action:none}
 .stick i{position:absolute;inset:16%;border-radius:50%;border:2px dashed rgba(255,255,255,.35)}

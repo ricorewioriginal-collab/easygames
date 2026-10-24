@@ -2090,12 +2090,12 @@
      "An Hangelstangen greift der Läufer von selbst; mit Sprung kannst du früher abspringen."
     ]
    },
-   "size": 1843122,
+   "size": 1853407,
    "files": 33,
    "offline": true,
    "cloud": {
     "game": "funkparcours",
-    "prefix": "fpPhoneName,fpBest1,fpNames,fpSnd"
+    "prefix": "fpPhoneName,fpBest2,fpNames,fpChars,fpSnd"
    }
   },
   {
