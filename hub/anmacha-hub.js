@@ -31,13 +31,13 @@
     '.egh-hero-b{padding:22px;display:flex;flex-direction:column;gap:10px;justify-content:center}.egh-eyebrow{color:var(--a2);font-weight:800;letter-spacing:.12em;font-size:.72rem;text-transform:uppercase}' +
     '.egh-hero-b h3{margin:0;font-size:clamp(1.3rem,3.2vw,2rem);line-height:1.15}.egh-hero-b p{margin:0;color:var(--m);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}' +
     '.egh-play{align-self:flex-start;padding:11px 22px;border-radius:999px;border:0;background:linear-gradient(135deg,var(--a),var(--a2));color:#0a0a12;font-weight:800}' +
-    '.egh h4{margin:18px 0 10px;font-size:1.05rem}.egh-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}.egh-row .egh-card{flex:0 0 150px}' +
+    '.egh h4{margin:18px 0 10px;font-size:1.05rem}.egh-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}.egh-row .egh-it{flex:0 0 150px}' +
     '.egh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}' +
-    '.egh-card{position:relative;display:flex;flex-direction:column;text-align:left;padding:0;border-radius:var(--r);overflow:hidden;border:1px solid var(--l);background:var(--c);transition:transform .15s,border-color .15s}' +
+    '.egh-it{position:relative;min-width:0;display:flex}.egh-card{position:relative;display:flex;flex-direction:column;width:100%;min-width:0;height:100%;margin:0;color:inherit;font:inherit;text-transform:none;letter-spacing:normal;text-align:left;padding:0;border-radius:var(--r);overflow:hidden;border:1px solid var(--l);background:var(--c);transition:transform .15s,border-color .15s}' +
     '.egh-card:hover,.egh-card:focus-visible{transform:translateY(-3px);border-color:var(--a);outline:none}' +
-    '.egh-ci{aspect-ratio:4/3;display:grid;place-items:center;font-size:52px;background-size:cover;background-position:center}.egh-ci img{width:100%;height:100%;object-fit:cover;display:block}' +
-    '.egh-cb{padding:10px 12px 12px}.egh-cb b{display:block;font-size:.95rem;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.egh-cb span{color:var(--m);font-size:.78rem}' +
-    '.egh-heart{position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:17px;display:grid;place-items:center}.egh-heart[aria-pressed=true]{color:#ff5c8a}' +
+    '.egh-ci{width:100%;aspect-ratio:1/1;display:grid;place-items:center;font-size:52px;background-size:cover;background-position:center}.egh-ci img{width:100%;height:100%;object-fit:cover;display:block}.egh-ci img.egh-wide{object-fit:contain;filter:drop-shadow(0 6px 14px rgba(0,0,0,.45))}' +
+    '.egh-cb{display:block;flex:1;padding:10px 12px 12px}.egh-cb b{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;font-size:.95rem;line-height:1.25;min-height:2.5em;overflow:hidden;overflow-wrap:anywhere}.egh-cb span{color:var(--m);font-size:.78rem}' +
+    '.egh-heart{position:absolute;top:8px;right:8px;width:34px;height:34px;padding:0;margin:0;min-width:0;line-height:1;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:17px;display:grid;place-items:center}.egh-heart[aria-pressed=true]{color:#ff5c8a}' +
     '.egh-empty{padding:30px;text-align:center;color:var(--m)}.egh-toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:2147483000;padding:10px 18px;border-radius:999px;background:#161d30;color:#fff;border:1px solid var(--l,#333);box-shadow:0 10px 30px rgba(0,0,0,.4);font:600 14px system-ui}' +
     '.egh-pl{position:fixed;inset:0;z-index:2147482500;background:#000;display:flex;flex-direction:column}.egh-pl[hidden]{display:none}' +
     '.egh-pl-h{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#0b0e1a;color:#fff;font:600 15px system-ui}.egh-pl-h span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
@@ -54,7 +54,36 @@
   function css() { if (doc.getElementById('egh-css')) return; var s = doc.createElement('style'); s.id = 'egh-css'; s.textContent = CSS; doc.head.appendChild(s); }
 
   /* ───────── Daten (Spieleliste live) ───────── */
-  var S = { games: [], ver: '', q: '', cat: '', cats: null, mounts: [], pl: null };
+  var S = { games: [], ver: '', q: '', cat: '', cats: null, mounts: [], pl: null, share: undefined, cur: null, prev: null };
+  /* Teilen-Link je Spiel: eingebundene Seiten teilen ihre eigene Adresse (Standard: diese Seite + #games/<id>, z. B. https://www.ricorewi-radio.de/#games/zotik).
+   * mount(…, { share: 'https://meine-seite.de/spiele/{id}' }) eigene Vorlage, share: 'preview' = easygames-Vorschauseite mit Bild, die zu dieser Seite weiterleitet,
+   * share: false = easygames-Vorschauseite (zum Spiel auf easygames). Vorschaubild je Spiel: AnMaChaHub.preview(id) bzw. <easygames>/share/<id>.jpg (1200×630). Die Adresse geht als ?eg_share an das Spiel
+   * (dessen eigene Teilen-Knöpfe nutzen sie dann auch); #games/<id> beim Aufruf öffnet das Spiel direkt. */
+  function pageBase() { return root.location.href.split('#')[0]; }
+  function shareUrl(g) {
+    var t = S.share;
+    if (g.external || /^https?:/.test(g.path)) return g.path;
+    if (typeof t === 'function') { try { var r = t(g); if (r) return String(r); } catch (e) { } }
+    if (t === false || t === 'false' || (t == null && pageBase().indexOf(EG) === 0)) return new URL('share/' + g.id + '.html', EG).href;
+    if (t === 'preview') return new URL('share/' + g.id + '.html', EG).href + '?to=' + encodeURIComponent(pageBase() + '#games/' + encodeURIComponent(g.id));
+    if (typeof t === 'string' && t && t !== 'auto') return t.replace(/\{id\}/g, encodeURIComponent(g.id));
+    return pageBase() + '#games/' + encodeURIComponent(g.id);
+  }
+  // Adresszeile zeigt #games/<id>, solange ein Spiel offen ist (nicht auf easygames selbst, nicht mit hash: false / share: false)
+  function ownHash(g) { return S.hash === false || S.share === false || S.share === 'false' || pageBase().indexOf(EG) === 0 ? null : '#games/' + encodeURIComponent(g.id); }
+  function setHash(h) { try { root.history.replaceState(root.history.state, '', root.location.pathname + root.location.search + h); } catch (e) { } }
+  function shareCur(btn) {
+    var g = S.cur; if (!g) return; var url = shareUrl(g), title = short(g.title), nav = root.navigator;
+    if (nav.share && /Android|iPhone|iPad|Mobile/i.test(nav.userAgent || '')) { nav.share({ title: title, text: title + ' – jetzt kostenlos spielen', url: url }).catch(function () { }); return; }
+    function ok() { var t = btn.textContent; btn.textContent = '✓ Link kopiert'; setTimeout(function () { btn.textContent = t; }, 1600); }
+    function ask() { root.prompt('Link zum Teilen:', url); }
+    if (nav.clipboard && nav.clipboard.writeText) nav.clipboard.writeText(url).then(ok, ask); else ask();
+  }
+  function deep() {
+    var m = /^#games\/([\w-]+)/.exec(root.location.hash); if (!m || !S.games.length) return;
+    if (S.pl && !S.pl.hidden && S.cur && S.cur.id === m[1]) return;
+    if (S.games.some(function (x) { return x.id === m[1]; })) open(m[1]);
+  }
   function fetchJSON(u) { return root.fetch(u, { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }); }
   function loadCatalog() {
     return Promise.all([fetchJSON(EG + 'sync/catalog.json?_=' + Date.now()), fetchJSON(EG + 'sync/manifest.json?_=' + Date.now()).catch(function () { return {}; })]).then(function (r) {
@@ -127,8 +156,8 @@
   function cardHtml(g) {
     var isF = favs().indexOf(g.id) >= 0, img = g.img ? '<img src="' + esc(EG + g.img) + '" alt="" loading="lazy" decoding="async">' : esc(g.icon || '🎮');
     var c = (S.cats && S.cats.list || []).filter(function (x) { return x.id === catOf(g); })[0];
-    return '<div style="position:relative"><button class="egh-card" type="button" data-play="' + esc(g.id) + '" aria-label="' + esc(short(g.title)) + ' spielen">' +
-      '<span class="egh-ci" style="background-image:' + esc(g.img ? 'none' : (g.bg || 'none')) + '">' + img + '</span>' +
+    return '<div class="egh-it"><button class="egh-card" type="button" data-play="' + esc(g.id) + '" aria-label="' + esc(short(g.title)) + ' spielen">' +
+      '<span class="egh-ci" style="background-image:' + esc(g.bg || 'none') + '">' + img + '</span>' +
       '<span class="egh-cb"><b>' + esc(short(g.title)) + '</b><span>' + esc(c ? c.icon + ' ' + c.short : '🎮 Spiel') + (g.multiplayer ? ' · 👥' : '') + '</span></span></button>' +
       '<button class="egh-heart" type="button" data-fav="' + esc(g.id) + '" aria-pressed="' + isF + '" aria-label="' + (isF ? 'Aus Favoriten entfernen' : 'Zu Favoriten') + '">' + (isF ? '♥' : '♡') + '</button></div>';
   }
@@ -162,9 +191,10 @@
   function player() {
     if (S.pl) return S.pl;
     var d = doc.createElement('div'); d.className = 'egh-pl'; d.hidden = true; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true');
-    d.innerHTML = '<div class="egh-pl-h"><span></span><button type="button" data-fs>⛶ Vollbild</button><button type="button" data-x>✕ Schließen</button></div><iframe allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; clipboard-write" allowfullscreen title="Spiel"></iframe>';
+    d.innerHTML = '<div class="egh-pl-h"><span></span><button type="button" data-sh>📤 Teilen</button><button type="button" data-fs>⛶ Vollbild</button><button type="button" data-x>✕ Schließen</button></div><iframe allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; clipboard-write" allowfullscreen title="Spiel"></iframe>';
     doc.body.appendChild(d);
     d.querySelector('[data-x]').onclick = close;
+    d.querySelector('[data-sh]').onclick = function () { shareCur(this); };
     d.querySelector('[data-fs]').onclick = function () { try { (d.requestFullscreen || d.webkitRequestFullscreen).call(d); } catch (e) { } };
     doc.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !d.hidden && !doc.fullscreenElement) close(); });
     root.addEventListener('message', function (e) { if (e.source === d.querySelector('iframe').contentWindow && e.data && (e.data.type === 'easygames:close' || e.data === 'easygames:close')) close(); });
@@ -172,32 +202,40 @@
   }
   function open(id) {
     var g = S.games.filter(function (x) { return x.id === id; })[0]; if (!g) return;
-    var d = player(), u = new URL(g.path, EG); if (root.EASYGAMES_BUILD) u.searchParams.set('eg_build', root.EASYGAMES_BUILD);
+    var d = player(), u = new URL(g.path, EG), link = shareUrl(g), h = ownHash(g); if (root.EASYGAMES_BUILD) u.searchParams.set('eg_build', root.EASYGAMES_BUILD);
+    if (link.indexOf(EG) !== 0) u.searchParams.set('eg_share', link);
+    S.cur = g;
+    if (h && root.location.hash !== h) { if (S.prev == null) S.prev = root.location.hash; setHash(h); } else if (h && S.prev == null) S.prev = h.replace(/\/[^\/]*$/, '');
     d.querySelector('span').textContent = short(g.title);
     d.querySelector('iframe').setAttribute('src', u.href);   // easygames-iframe: die Seite reicht das Konto weiter (angemeldet im Spiel)
     d.hidden = false; doc.documentElement.style.overflow = 'hidden'; remember(id); renderAll();
   }
-  function close() { if (!S.pl) return; S.pl.hidden = true; S.pl.querySelector('iframe').setAttribute('src', 'about:blank'); doc.documentElement.style.overflow = ''; if (doc.fullscreenElement) try { doc.exitFullscreen(); } catch (e) { } }
+  function close() { if (!S.pl) return; S.pl.hidden = true; S.cur = null; if (S.prev != null) { setHash(S.prev); S.prev = null; } S.pl.querySelector('iframe').setAttribute('src', 'about:blank'); doc.documentElement.style.overflow = ''; if (doc.fullscreenElement) try { doc.exitFullscreen(); } catch (e) { } }
 
   function mount(target, o) {
     css(); o = o || {};
     var el = typeof target === 'string' ? doc.querySelector(target) : target;
     if (!el || el.__egh) return null;
     var m = el.__egh = { el: el, theme: o.theme || {} }; S.mounts.push(m);
+    if ('share' in o) S.share = o.share; else if (el.getAttribute && el.getAttribute('data-share') != null) S.share = el.getAttribute('data-share');
+    if ('hash' in o) S.hash = o.hash;
+    // Breite Kartenbilder (z. B. 1200×630) nicht beschneiden: ganz zeigen, Spielfarbe als Hintergrund
+    el.addEventListener('load', function (e) { var i = e.target; if (i.tagName === 'IMG' && i.parentNode && i.parentNode.classList.contains('egh-ci') && i.naturalWidth > i.naturalHeight * 1.25) i.classList.add('egh-wide'); }, true);
     el.addEventListener('click', function (e) {
       var h = e.target.closest('[data-fav]'), p = e.target.closest('[data-play]'), c = e.target.closest('[data-cat]');
       if (h) { e.stopPropagation(); toggleFav(h.dataset.fav); } else if (p) open(p.dataset.play); else if (c) { S.cat = c.dataset.cat; renderAll(); }
     });
     el.innerHTML = '<div class="egh"><div class="egh-empty">Spiele werden geladen …</div></div>';
-    (S.games.length ? Promise.resolve() : Promise.all([loadCatalog(), loadCats()])).then(function () { render(m); sync.seen = (LS.getItem(FAV) || '') + '|' + (LS.getItem(REC) || ''); syncNow(); })
+    (S.games.length ? Promise.resolve() : Promise.all([loadCatalog(), loadCats()])).then(function () { render(m); deep(); sync.seen = (LS.getItem(FAV) || '') + '|' + (LS.getItem(REC) || ''); syncNow(); })
       .catch(function () { el.innerHTML = '<div class="egh"><div class="egh-empty">Die Spieleliste ist gerade nicht erreichbar. <a href="' + esc(EG) + '" target="_blank" rel="noopener" style="color:inherit">Zu easygames</a></div></div>'; });
     return m;
   }
   setInterval(checkLive, 60000); setInterval(pollRemote, 45000); setInterval(watchLocal, 2000);
   doc.addEventListener('visibilitychange', function () { if (!doc.hidden) { checkLive(); pollRemote(); } });
   root.addEventListener('storage', function (e) { if (e.key === FAV || e.key === REC) renderAll(); });
+  root.addEventListener('hashchange', deep);
   root.addEventListener('anmacha-account-changed', function () { sync.ver = ''; syncNow(); });
   function auto() { [].forEach.call(doc.querySelectorAll('[data-anmacha-hub]'), function (el) { mount(el); }); }
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', auto); else auto();
-  root.AnMaChaHub = { mount: mount, open: open, base: EG };
+  root.AnMaChaHub = { mount: mount, open: open, base: EG, preview: function (id) { var g = S.games.filter(function (x) { return x.id === id; })[0]; return g ? { title: short(g.title), desc: g.desc || '', image: new URL('share/' + g.id + '.jpg', EG).href, page: new URL('share/' + g.id + '.html', EG).href } : null; }, shareUrl: function (id) { var g = S.games.filter(function (x) { return x.id === id; })[0]; return g ? shareUrl(g) : null; } };
 })(window);

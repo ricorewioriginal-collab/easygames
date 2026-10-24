@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/frequenzminen-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Frequenz-Mine…"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b0f2a">
+<title>Frequenz-Minen 3D – Finde die Störsender!</title>
+<meta name="description" content="Frequenz-Minen 3D: modernes Minesweeper auf der Radarscheibe. Decke Funkplatten auf, peile die versteckten Störsender an und räum die Frequenz frei – drei Schwierigkeiten und ein Tagesrätsel für alle.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg"></div>
+<div id="stage"></div>
+
+<!-- Ladebildschirm -->
+<section class="scr on" id="sLoad">
+  <div class="load">
+    <div class="radar"><i></i><b></b><span>📡</span></div>
+    <h1 class="logo">Frequenz<span>-Minen</span><sup>3D</sup></h1>
+    <div class="bar"><i id="loadBar"></i></div>
+    <p class="hint" id="loadTxt">Funkplatten werden kalibriert …</p>
+  </div>
+</section>
+
+<!-- Hauptmenü -->
+<section class="scr" id="sMenu">
+  <div class="box glass">
+    <div class="brand"><img src="../anmacha-memory/logos/01.png" alt="RicoReWi" width="60" height="60"><img src="../anmacha-memory/logos/07.png" alt="AnMaCha 24" width="60" height="60"></div>
+    <h1 class="logo">Frequenz<span>-Minen</span><sup>3D</sup></h1>
+    <p class="sub">Unter den Funkplatten rauschen Störsender. Peile sie an – und räum die Frequenz frei!</p>
+    <div class="chips" id="diffs">
+      <button class="chip" data-d="leicht"><b>Leicht</b><small>9×9 · 10 📡</small></button>
+      <button class="chip on" data-d="mittel"><b>Mittel</b><small>12×12 · 24 📡</small></button>
+      <button class="chip" data-d="schwer"><b>Schwer</b><small>12×18 · 44 📡</small></button>
+    </div>
+    <button class="btn big pri" id="bPlay">▶ Spielen</button>
+    <button class="btn wide" id="bDaily">📅 Tagesrätsel <small id="dailyTag"></small></button>
+    <div class="row2"><button class="btn" id="bRec">🏆 Rekorde</button><button class="btn" id="bHelp">📖 So geht's</button></div>
+    <div class="row2"><button class="btn" id="bSet">⚙️ Einstellungen</button><button class="btn" id="bRadioM">📻 Radio: aus</button></div>
+    <p class="stat" id="menuStat"></p>
+    <p class="foot"><a href="../" id="backLink">← Alle Spiele</a></p>
+  </div>
+</section>
+
+<!-- Spiel -->
+<section class="scr game" id="sGame">
+  <div class="hud" id="hud">
+    <div class="hl"><b id="hMode"></b><small id="hInfo"></small></div>
+    <div class="pills"><span class="pill" title="Störsender übrig">📡 <b id="hMines">0</b></span><span class="pill" title="Zeit">⏱ <b id="hTime">0:00</b></span></div>
+    <div class="hr"><button class="icon" id="bRadio" aria-label="Radio">📻</button><button class="icon" id="bPause" aria-label="Pause">☰</button></div>
+  </div>
+  <div class="tools" id="tools">
+    <button class="tool" id="bFlag" aria-pressed="false"><i>🚩</i><span>Peiler</span></button>
+    <button class="tool" id="bHint"><i>💡</i><span>Peilung <b id="hHints">3</b></span></button>
+    <button class="tool sm" id="bZoomOut" aria-label="Verkleinern"><i>－</i></button>
+    <button class="tool sm" id="bZoomIn" aria-label="Vergrößern"><i>＋</i></button>
+  </div>
+  <p class="ctrlHint" id="ctrlHint"></p>
+</section>
+
+<!-- Game over -->
+<div class="ov end" id="ovEnd" hidden><div class="card big">
+  <div class="endIcon" id="eIcon">🏆</div>
+  <h2 id="eTitle">Frequenz frei!</h2>
+  <p class="hint" id="eSub"></p>
+  <div class="newRec" id="eRec" hidden>⭐ Neuer Rekord!</div>
+  <div class="stats" id="eStats"></div>
+  <div class="rowBtns"><button class="btn pri" id="eAgain">↻ Nochmal</button><button class="btn" id="eMenu">☰ Menü</button></div>
+  <div class="row2"><button class="btn" id="eView">👁 Feld ansehen</button><button class="btn" id="eShare">📤 Teilen</button></div>
+</div></div>
+
+<div class="ov" id="ovPause" hidden><div class="card">
+  <h2>Pause</h2>
+  <div class="menuBtns"><button class="btn big pri" id="pGo">▶ Weiter</button><button class="btn" id="pNew">↻ Neu starten</button><button class="btn" id="pRadio">📻 Radio</button><button class="btn" id="pHelp">📖 So geht's</button><button class="btn" id="pQuit">⏹ Zum Menü</button></div>
+</div></div>
+
+<div class="ov" id="ovRec" hidden><div class="card">
+  <h2>🏆 Rekorde</h2>
+  <div class="stats" id="recList"></div>
+  <p class="hint" id="recInfo"></p>
+  <button class="btn pri" id="recX">Fertig</button>
+</div></div>
+
+<div class="ov" id="ovSet" hidden><div class="card">
+  <h2>Einstellungen</h2>
+  <label class="check"><input type="checkbox" id="sSound"> Ton</label>
+  <label class="check"><input type="checkbox" id="sVib"> Vibration</label>
+  <label class="check"><input type="checkbox" id="sChord"> Zahl antippen deckt Nachbarn auf (wenn alle Peiler stehen)</label>
+  <label class="check"><input type="checkbox" id="sLow"> Sparmodus (weniger 3D-Details, gilt nach Neustart)</label>
+  <button class="btn pri" id="setX">Fertig</button>
+</div></div>
+
+<div class="ov" id="ovRadio" hidden><div class="card">
+  <h2>📻 Radio</h2>
+  <p class="hint">Der Sender läuft live während des ganzen Spiels – hier jederzeit wechseln.</p>
+  <div class="radioGrid" id="radioList"></div>
+  <button class="btn pri" id="radioX">Fertig</button>
+</div></div>
+
+<div class="ov" id="ovHelp" hidden><div class="card scroll">
+  <h2>So geht's</h2>
+  <p>Unter einigen Funkplatten stecken <b>Störsender 📡</b>. Decke alle anderen Platten auf, ohne einen Störsender zu erwischen. Jede offene Platte zeigt, wie viele Störsender auf den <b>8 Nachbarfeldern</b> rauschen – eine leere Platte deckt ihre Nachbarn automatisch auf. Der erste Klick ist immer sicher.</p>
+  <ul>
+    <li><b>🚩 Peiler</b> markieren Felder, unter denen du einen Störsender vermutest – sie schützen vor versehentlichem Aufdecken.</li>
+    <li><b>Zahl antippen:</b> Stehen rund um eine Zahl genau so viele Peiler, deckt ein Tipp auf die Zahl alle übrigen Nachbarn auf.</li>
+    <li><b>💡 Peilung:</b> 3 × pro Runde deckt sie eine sichere Platte auf – kostet aber 20 Sekunden.</li>
+    <li><b>Punkte:</b> jede freie Platte zählt, beim Sieg gibt's einen Bonus – je schneller, desto mehr. Leicht ×1, Mittel ×2, Schwer ×4.</li>
+    <li><b>📅 Tagesrätsel:</b> ein Feld pro Tag, für alle gleich – Ergebnis teilen und vergleichen.</li>
+  </ul>
+  <h3>Steuerung</h3>
+  <ul>
+    <li><b>Maus:</b> Links aufdecken, Rechts Peiler setzen, Mausrad zoomt.</li>
+    <li><b>Touch:</b> Tippen deckt auf, lange drücken setzt einen Peiler (oder 🚩 umschalten). Zwei Finger zoomen, mit einem Finger verschieben.</li>
+    <li><b>Tastatur:</b> Pfeile/WASD bewegen den Rahmen, Leertaste/Enter aufdecken, F Peiler, H Peilung, +/− Zoom, Esc Pause.</li>
+    <li><b>Gamecontroller:</b> Steuerkreuz/Stick bewegen, A aufdecken, X Peiler, Y Peilung, LB/RB Zoom, Start Pause.</li>
+  </ul>
+  <button class="btn pri" id="helpX">Los geht's</button>
+</div></div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../device.js"></script>
+<script src="js/core.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="frequenzminen" data-prefix="frequenzminen-" defer></script>
+<script src="../gamepad.js" data-pad="rs=none x=KeyF y=KeyH lb=Minus rb=Equal select=- start=Escape" defer></script>
+</body>
+</html>

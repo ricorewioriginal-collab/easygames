@@ -471,6 +471,47 @@ window.EASYGAMES_GUIDES = {
    "Im Radio-Rhythmus ist der höchste Punkt einer Frucht genau auf dem Schlag – dort schneiden!"
   ]
  },
+ "wolkenhopser": {
+  "anleitung": "Wolkenhopser ist ein Endlos-Springspiel: Hopsi springt von allein, sobald er von oben auf einer Plattform landet – du steuerst nur links und rechts. Wer am Rand rausläuft, kommt auf der anderen Seite wieder rein; wer unten aus dem Bild fällt, verliert. Plattformen: grün normal, blau beweglich, gestrichelt verschwindet nach einem Sprung, braun mit Riss bricht weg. Federn und Trampoline schießen dich hoch, 🧢 Propellermütze und 🚀 Raketenrucksack lassen dich fliegen, 🫧 Schutzblase rettet einmal. Monster besiegst du durch Draufspringen oder Abschießen; schwarze Löcher ziehen dich an. Mit Münzen schaltest du 8 Hopsis frei. Gebiete: Blumenwiese, Wolkenmeer, Abendhimmel, Sternennacht, Weltall. Modi: Spielen, 📅 Tagesrekord (eine Welt pro Tag für alle) und 🌐 Online-Rennen (alle springen gleichzeitig durch dieselbe Welt, jeder auf seinem Gerät; per QR-Code oder Link von überall).",
+  "steuerung": [
+   "Tastatur: ← → oder A D lenken, Leertaste / ↑ / W schießen, Esc oder P Pause.",
+   "Touch: linke oder rechte Bildschirmhälfte halten, 🎯 schießen – oder in den Optionen „Handy neigen“ einschalten.",
+   "Gamecontroller: Stick oder Steuerkreuz lenken, A/X schießen, Start Pause; im Menü Steuerkreuz und A."
+  ],
+  "tipps": [
+   "Braune Plattformen mit Riss sind Fallen – sie brechen sofort weg.",
+   "Über Monstern nicht zögern: von oben draufspringen gibt einen Extra-Sprung.",
+   "Am Rand durchlaufen ist oft der kürzere Weg zur nächsten Plattform."
+  ]
+ },
+ "sendemast-sumo": {
+  "anleitung": "Sendemast-Sumo ist eine Party-Prügelei in 3D: Sumo-Ringer stehen auf einer Plattform ganz oben auf einem Sendemast über den Wolken. Schubst die anderen über den Rand – wer zuletzt oben steht, gewinnt die Runde. Nach kurzer Zeit bröckelt die Plattform Ring für Ring (der Rand blinkt vorher rot), am Ende schrumpft sie immer weiter. 💨 Schubs ist ein kurzer Sprint, der viel stärker schiebt; 💥 Stampfer ist ein Sprung mit Druckwelle bei der Landung – in der Luft kann dich niemand schubsen. Power-ups: 🍔 Mega (groß und schwer), ⚡ Turbo, 🛡️ Schild, 💥 Druckwelle. Fünf Arenen: Abendrot, Eiszacken (rutschig), Sturmmast (Böen), Gewitterspitze (Blitze) und Wackelturm (kippt). Modi: 🏆 Turnier (5 Masten gegen je 3 immer stärkere Gegner, Punkte für die Rangliste), ⚡ Schnelles Spiel, 🎮 Lokal (2–4 an einem Gerät mit zwei Tastatur-Belegungen und Controllern) und 🌐 Online & Handys (bis zu 8 Handys als Controller per QR-Code, Lücken füllt der Computer). Acht erfundene Kämpfer mit eigenen Fantasie-Sendern.",
+  "steuerung": [
+   "Tastatur links: WASD laufen, Leertaste/F Schubs, Shift/G Stampfer. Tastatur rechts: Pfeile, Enter/L Schubs, K Stampfer. Esc/P Pause.",
+   "Touch: linker Daumen auf den Stick, rechts 💨 Schubs und 💥 Stampfer.",
+   "Gamecontroller: Stick/Steuerkreuz laufen, A Schubs, B/X Stampfer, Start Pause – bis zu 4 Controller; im Menü Steuerkreuz und A.",
+   "Online: Das Handy ist der Controller (Stick und zwei Knöpfe), gekämpft wird auf dem großen Bildschirm."
+  ],
+  "tipps": [
+   "Stell dich zwischen Gegner und Mitte – dann schubst du nach außen und nicht ins Leere.",
+   "Kommt ein Schubs auf dich zu: Stampfer! In der Luft prallt alles ab, und bei der Landung schiebst du zurück.",
+   "Auf Eis nie mit Vollgas zum Rand – du rutschst weiter, als du denkst."
+  ]
+ },
+ "frequenzminen": {
+  "anleitung": "Frequenz-Minen 3D ist Minesweeper in modern: Das Spielfeld liegt auf einer Radarscheibe, unter einigen Funkplatten stecken Störsender. Decke alle anderen Platten auf – jede offene Platte zeigt, wie viele Störsender auf den 8 Nachbarfeldern rauschen, leere Platten decken ihre Nachbarn automatisch auf. Der erste Klick ist immer sicher. 🚩 Peiler markieren vermutete Störsender, eine Zahl antippen deckt die übrigen Nachbarn auf, wenn genug Peiler stehen. 💡 Peilung zeigt dreimal pro Runde eine sichere Platte (+20 Sekunden). Modi: Leicht (9×9, 10 Störsender), Mittel (12×12, 24), Schwer (12×18, 44) und 📅 Tagesrätsel – für alle gleich, Ergebnis teilen. Punkte: jede freie Platte zählt, beim Sieg Tempo-Bonus (Leicht ×1, Mittel ×2, Schwer ×4). 📻 spielt einen Sender live das ganze Spiel über.",
+  "steuerung": [
+   "Maus: Links aufdecken, Rechts Peiler setzen, Mausrad zoomt.",
+   "Touch: Tippen deckt auf, lange drücken setzt einen Peiler (oder 🚩 umschalten); zwei Finger zoomen, ein Finger verschiebt.",
+   "Tastatur: Pfeile/WASD bewegen den Rahmen, Leertaste/Enter aufdecken, F Peiler, H Peilung, +/− Zoom, Esc Pause.",
+   "Gamecontroller: Steuerkreuz/Stick bewegen, A aufdecken, X Peiler, Y Peilung, LB/RB Zoom, Start Pause."
+  ],
+  "tipps": [
+   "Eine 1 neben genau einer verdeckten Platte: Dort steckt der Störsender – Peiler drauf.",
+   "Muster 1-2-1 am Rand: Die Störsender liegen unter den beiden äußeren Platten.",
+   "Lieber erst mit Peilern sichern und dann die Zahl antippen – das spart Zeit und Fehlklicks."
+  ]
+ },
  "funkgalgen": {
   "anleitung": "Funkgalgen ist Galgenmännchen in modern und freundlich: Der Moderator steht auf einem Turm aus 8 Lautsprecher-Kisten über einer Riesen-Torte. Rate das Wort Buchstabe für Buchstabe – richtige Buchstaben erscheinen an allen Stellen, jeder falsche schießt eine Kiste aus dem Turm. Ist die letzte Kiste weg, landet der Moderator in der Torte. 💡 Joker deckt einen Buchstaben auf (kostet Punkte), ✍️ Lösen nimmt das ganze Wort (falsch kostet 2 Kisten). Modi: 🎯 Solo-Serie (9 Kategorien oder 📖 Wörterbuch mit bekannten Wörtern aus dem Wortfunk-Wörterbuch, drei Schwierigkeiten; die Serie läuft, bis es einmal schiefgeht), 📅 Tageswort (für alle gleich, Ergebnis teilen), 👥 Duell (zu zweit an einem Gerät, Wörter werden im Wörterbuch geprüft) und 🌐 Online & Handys: Der Fernseher zeigt Turm und Wort, reihum denkt sich ein Handy das Wort aus, die anderen raten um die Wette (richtiger Buchstabe +5 je Stelle, falscher −2, Wort lösen +20; landet der Moderator in der Torte, punktet der Wortgeber).",
   "steuerung": [

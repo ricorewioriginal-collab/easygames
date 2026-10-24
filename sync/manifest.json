@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "85f461ae80e6",
- "generated": "2026-10-24T02:11:00+02:00",
- "commit": "90cca22f0749b6036f10d5b38d6759f93f050145",
+ "version": "aa781da7a23b",
+ "generated": "2026-10-24T02:09:08+00:00",
+ "commit": "2c5a5aff633fdf7f1395400fab1fcbd349f7c821",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2760,
-   "h": "532cf0368b4cd544a040c883ea15424ad8450e9042f809dd5b0536f4743058cc"
+   "s": 2841,
+   "h": "e7df94feb883935c1ecd6ba750be7bcc40676a0d8fbf389cd8423610005d41ba"
   },
   {
    "p": "chat.html",
@@ -5308,8 +5308,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22218,
-   "h": "753962698faf5efce0f939fda3edc498c000335135428b785a9b0b77511a9e85"
+   "s": 22269,
+   "h": "27f41c16d00452aeef8b7b3c91168f33d7be917f4f9d222b8d4836d1df8300cd"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -5348,8 +5348,8 @@
   },
   {
    "p": "cloud/fire-peer.js",
-   "s": 27323,
-   "h": "3363c68c8f3e6ed4ef7487ef347fcf5f171b564bda430db54e411529d17adcc5"
+   "s": 28965,
+   "h": "bba293a53a222ebb77bf51787dd573f2e0a1ef501065c11981cb0197f550f58e"
   },
   {
    "p": "cloud/radio-erfolge.js",
@@ -5493,18 +5493,18 @@
   },
   {
    "p": "device.js",
-   "s": 7239,
-   "h": "f93fa48549082998a014156f40b3962bd9a3803caa3a660870a6c4f93957cfc5"
+   "s": 9119,
+   "h": "f325bd0da82c43ce6f8c1414b46fffcd1f4be650c6850d2f63726100e0b2fbec"
   },
   {
    "p": "easygames.js",
-   "s": 29512,
-   "h": "1c9c4f67def05cb76ada1880a045be32741d59711e01bbfcda42d822543bd569"
+   "s": 31422,
+   "h": "2eb7bbdb62c2132f58fd8c095504c9f5b6e661d7e465e28555af55e6e12eea18"
   },
   {
    "p": "einbinden.html",
-   "s": 80962,
-   "h": "d980a98f7674c7dd43d779d3517051408031786c331cebe8897d6235667c33ec"
+   "s": 84067,
+   "h": "d95a4674c74215204958040d810a71cfea819a5dd27cd69d38d3a39c9bb7dca0"
   },
   {
    "p": "erfolge.html",
@@ -5575,6 +5575,46 @@
    "p": "favicon.ico",
    "s": 12090,
    "h": "d5ef61cb780ac29613e137e3f5e2103928d9b1b102772d90cfe3551b52e5c6da"
+  },
+  {
+   "p": "frequenzminen/card.jpg",
+   "s": 53334,
+   "h": "9e79560717e9db7e287dcad11db15ed9213b91424bdcecee5fa649a52081073f"
+  },
+  {
+   "p": "frequenzminen/index.html",
+   "s": 11238,
+   "h": "5bc55489a62c5ea837854c0034fd9030190943d6386b0ab3daad89f9e90a6292"
+  },
+  {
+   "p": "frequenzminen/js/app.js",
+   "s": 26028,
+   "h": "eb3d4ebd191212ad5b5f0ea86d1b3f8d320700a66b73f22576a9196297e4da36"
+  },
+  {
+   "p": "frequenzminen/js/core.js",
+   "s": 5635,
+   "h": "bf2e7bb2ca12bfc1f4a4ef52c242e34944cae64748d244268c5366d5942dc779"
+  },
+  {
+   "p": "frequenzminen/js/scene.js",
+   "s": 19254,
+   "h": "c14845396e9e71016bb463c53ccc5df30f04350d4b0f6640f45189ab586835cb"
+  },
+  {
+   "p": "frequenzminen/manifest.webmanifest",
+   "s": 803,
+   "h": "1f8e76718293f29649e1012235d4fdbdf42f8c6a276bd9c464702f1da4a1366b"
+  },
+  {
+   "p": "frequenzminen/style.css",
+   "s": 12324,
+   "h": "742235f8becf20f4b5d3d14be2ca99bf2d04c5710db9fe3bbb9b83c48f136a53"
+  },
+  {
+   "p": "frequenzminen/sw.js",
+   "s": 2020,
+   "h": "a4a81882ed9cf23d5eab07ddedee8c3591a995ba5f09a3f25537906895158014"
   },
   {
    "p": "funkblasen/audio.js",
@@ -5773,8 +5813,8 @@
   },
   {
    "p": "games.js",
-   "s": 36483,
-   "h": "44e4d60ecd07dfc7b61f64562e4fd4466e866d5b8e233f12fe65c74ea6d65bd7"
+   "s": 38369,
+   "h": "9ae7ebfbbce924ee3fc8377063096cb0a4174594d5065861b5a89322273bd7da"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5933,8 +5973,8 @@
   },
   {
    "p": "guides.js",
-   "s": 104110,
-   "h": "c4d0f38c6348bd8f4818386bcbc8de6d19296e0ce7cd93fe0f7658b9f6721933"
+   "s": 109156,
+   "h": "f5353c2c79a9b24c070421d2afb684a2e98e76c27da4178685fa12559a789e6b"
   },
   {
    "p": "heute.html",
@@ -5948,8 +5988,8 @@
   },
   {
    "p": "index.html",
-   "s": 91911,
-   "h": "017a984491ccf424672d0efa3c3bc34e133a5b4c2ed64202397fd8e0def2fcd8"
+   "s": 92867,
+   "h": "ca978ef9f417e6dfaffba8fda90fab3d04f499ce4b018a00210be31de165774f"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -6373,8 +6413,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2752,
-   "h": "94984da7d92b82915cf800c542242a3e486ec8c60419f63165a1139fb92e8fe4"
+   "s": 2865,
+   "h": "2cdba20bd121b04fdf78a7267488a4ed3ddac8ec4a3b193040fde05518559e2f"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -7347,6 +7387,51 @@
    "h": "ff53e86987c0e9b090d3c353cc4d5d25c0874a907e3b6e2648531cc7c01f6a23"
   },
   {
+   "p": "sendemast-sumo/card.jpg",
+   "s": 51208,
+   "h": "da07e02867107323362837584344b782e94664634f9bb72fd93170de3940717f"
+  },
+  {
+   "p": "sendemast-sumo/index.html",
+   "s": 16058,
+   "h": "aebaa37a3e7e3e14b5b092bc33d3efda7cd0aa6b37d0c1228ad433cd0fca0e37"
+  },
+  {
+   "p": "sendemast-sumo/js/app.js",
+   "s": 48565,
+   "h": "e7bd13d4a7c33b41cc61846308ee21fabdcacdd368d6098e7132555005b9fba7"
+  },
+  {
+   "p": "sendemast-sumo/js/core.js",
+   "s": 18400,
+   "h": "69cbbe8948ec5d37788aa12c727f83c109744218c4021e9a3e7a1639b50c3a9e"
+  },
+  {
+   "p": "sendemast-sumo/js/scene.js",
+   "s": 30832,
+   "h": "7f96e9267e23fbf56402f725b881a9b01d54f4220fc60d0baa457478793700e2"
+  },
+  {
+   "p": "sendemast-sumo/js/sound.js",
+   "s": 5576,
+   "h": "96d15b4404df520ceedceda2231ee1d50ad5b3a9ecb68f69065d3aa987dce64a"
+  },
+  {
+   "p": "sendemast-sumo/manifest.webmanifest",
+   "s": 799,
+   "h": "887352077f29043add51279f7dec7bd4e00d49b4ca32c30ef1bc47b5eeb60ec6"
+  },
+  {
+   "p": "sendemast-sumo/style.css",
+   "s": 22203,
+   "h": "12056cb974154be378ec25d58dc7335fa9f08f96d3014060553d62cea44bdfa0"
+  },
+  {
+   "p": "sendemast-sumo/sw.js",
+   "s": 2017,
+   "h": "4a300da54fab86834b92b1e5630f47cdd16e129b00896834531edf69f57d193a"
+  },
+  {
    "p": "show-voice.js",
    "s": 3181,
    "h": "2affd4b5a1fbdad10a44fc25f668003ecc73add98d08e27aeab6674412b29ead"
@@ -7603,8 +7688,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 159414,
-   "h": "a91d163b7409b0406d3602034953beb1a82f2ae0bfefd8b86f4220d5c332c2d0"
+   "s": 167144,
+   "h": "7f8912dc4246dc93baac868d3bc27e427dac3b3756065adffbf8e616226c20f7"
   },
   {
    "p": "taschi/card.svg",
@@ -8390,6 +8475,51 @@
    "p": "wobbel/vendor/three.min.js",
    "s": 603445,
    "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
+  },
+  {
+   "p": "wolkenhopser/card.jpg",
+   "s": 29818,
+   "h": "7326acab36a4828aeea98299a7077132355a24f3a48834197142c3a86880382f"
+  },
+  {
+   "p": "wolkenhopser/index.html",
+   "s": 12761,
+   "h": "96b50127a3feda14f8b347f1bb6add893c411a244e3a278bdd0ee6aeb1b41eee"
+  },
+  {
+   "p": "wolkenhopser/js/app.js",
+   "s": 32248,
+   "h": "00254a021950c7ea665137c86db3ff6fc5e760ed17662795096f4e2672cb8d32"
+  },
+  {
+   "p": "wolkenhopser/js/core.js",
+   "s": 11897,
+   "h": "ff4fe9b54ab453f4ae028903c5b1d1c9d90dadebb359d7d07dc1c7b8a84bac44"
+  },
+  {
+   "p": "wolkenhopser/js/render.js",
+   "s": 16442,
+   "h": "73691e5328d165ba02cd32e472f3c114a4097f18bb3722962ee259fb4c63f66d"
+  },
+  {
+   "p": "wolkenhopser/js/sound.js",
+   "s": 5363,
+   "h": "bcd7d290c11a3e385e2903260d7abb8d7af02306bd8925174f17060c40983529"
+  },
+  {
+   "p": "wolkenhopser/manifest.webmanifest",
+   "s": 790,
+   "h": "2baab82eadf887853b6a926154990288dd01a35457bc7102234ceaad164fb546"
+  },
+  {
+   "p": "wolkenhopser/style.css",
+   "s": 14568,
+   "h": "c04ca0393fb6390585fb1c69d7775105eb66a43862a4d699b68ce9beb3b97623"
+  },
+  {
+   "p": "wolkenhopser/sw.js",
+   "s": 2012,
+   "h": "ffc30668efdf8dce5571e09c868d0529279c6c4d04ca14b10369dc6acfbc2d66"
   },
   {
    "p": "wortfunk/card.jpg",

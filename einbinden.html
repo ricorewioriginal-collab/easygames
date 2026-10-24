@@ -101,6 +101,10 @@
         <label>Maximale Breite<input id="gMax" value="960px"></label>
         <label>Vollbild-Knopf<select id="gFs"><option value="">ja (Standard)</option><option value="false">nein</option></select></label>
       </div>
+      <div class="row">
+        <label>Teilen-Link<select id="gShare"><option value="auto">deine Seite (…#games/&lt;spiel-id&gt;)</option><option value="">easygames-Seite</option></select></label>
+        <label>Adresse deiner Seite (nur für iframe)<input id="gPage" placeholder="https://meine-seite.de/spiele.html" inputmode="url"></label>
+      </div>
     </div>
     <h3>Direktlink</h3><pre id="oLink"></pre>
     <h3>iframe</h3><pre id="oIframe"></pre>
@@ -211,6 +215,7 @@
       <li>Gib dem iframe genug Höhe (z. B. <code>90vh</code>), sonst wird der Viewer klein.</li>
       <li>Ein bestimmtes Spiel gleich öffnen: <code>?embed=1#zotik</code>.</li>
     </ul>
+    <p><b>Eigener Teilen-Link je Spiel:</b> <code>data-share="auto"</code> (bzw. <code>{ share: 'auto' }</code>) – „Spiel teilen“ zeigt dann auf deine Seite mit <code>#games/&lt;spiel-id&gt;</code>, und dieser Link öffnet das Spiel direkt. Oder eine eigene Vorlage: <code>data-share="https://meine-seite.de/spiele/{id}"</code>. Gilt auch für einzelne Spiele (<code>data-easygames="zotik" data-share="auto"</code>).</p>
     <h3>URL-Parameter der Übersicht</h3>
     <div class="tw"><table>
       <tr><th>Parameter</th><th>Wirkung</th></tr>
@@ -245,6 +250,8 @@
       <li><b>Spielen:</b> Ein Tipp auf eine Karte öffnet das Spiel im Vollbild-Fenster deiner Seite (easygames-iframe). Das Konto wird weitergereicht – wer angemeldet ist, ist im Spiel angemeldet.</li>
       <li><b>Echtzeit:</b> Die Spieleliste prüft alle 60 Sekunden ihre Version – neue oder geänderte Spiele erscheinen ohne Neuladen. Favoriten und „Weiterspielen“ gleichen sich bei angemeldeten Spielern mit dem Konto ab (alle 45 Sekunden eine winzige Versions-Abfrage, nur bei sichtbarer Seite) und erscheinen sofort auf jedem Gerät.</li>
       <li><b>Ohne Anmeldung</b> bleiben Favoriten lokal auf dem Gerät.</li>
+      <li><b>Eigener Teilen-Link je Spiel:</b> „📤 Teilen“ im Spielfenster teilt die Adresse <em>deiner</em> Seite, z. B. <code>https://www.ricorewi-radio.de/#games/frequenzminen</code>. Wer den Link öffnet, landet auf deiner Seite und das Spiel startet sofort. Die Spiele selbst nutzen die Adresse für ihre „Teilen“-Knöpfe ebenfalls. Eigene Form: <code>AnMaChaHub.mount('#spiele', { share: 'https://meine-seite.de/spiele/{id}' })</code> (bzw. <code>data-share="…"</code>), <code>share: 'preview'</code> teilt die easygames-Vorschauseite mit Bild und Beschreibung, die sofort auf deine Seite weiterleitet (bekannte Seiten automatisch, andere nach einem Klick), <code>share: false</code> teilt die easygames-Vorschauseite des Spiels.</li>
+      <li><b>Vorschaubild für eigene Server-Vorschauen:</b> Jedes Spiel hat ein Bild unter <code>https://ricorewioriginal-collab.github.io/easygames/share/&lt;spiel-id&gt;.jpg</code> (1200×630); <code>AnMaChaHub.preview('&lt;spiel-id&gt;')</code> liefert Titel, Beschreibung und Bildadresse. RicoReWi Radio nutzt das für <code>/games/&lt;spiel-id&gt;</code>. Einladungs- und TV-Links für Mehrspieler bleiben auf der easygames-Homepage, damit jedes Gerät sie öffnet.</li>
       <li><b>Ohne Build und ohne Einrichtung:</b> Die Datei kommt immer in der aktuellen Fassung von GitHub Pages. Ein eigener Server oder Firebase ist nicht nötig.</li>
       <li>Die komplette easygames-Übersicht als iframe (Abschnitt 4) gibt es weiterhin – sie sieht aber immer wie easygames aus; der Hub passt sich deiner Seite an.</li>
     </ul>
@@ -757,7 +764,17 @@ function gen() {
     $('oJs').textContent = `<script src="${base}easygames.js"><\/script>\n<div id="ziel"></div>\n<script>\n  ${all ? `EasyGames.library('#ziel', { ratio: '${ratio}', maxWidth: '${max}' });` : `const spielId = '${g.id}';\n  EasyGames.embed('#ziel', { game: spielId, ratio: '${ratio}', maxWidth: '${max}'${fsOpt} });`}\n<\/script>`;
   }
 }
-['gGame', 'gMode', 'gRatio', 'gMax', 'gFs'].forEach(i => $(i).addEventListener('input', gen)); gen();
+// Eigener Teilen-Link: easygames.js-Code bekommt share 'auto' (Teilen zeigt auf die einbindende Seite, #games/<id> öffnet das Spiel),
+// der iframe-Code ?eg_share=<deine Adresse>#games/<id>, wenn die Adresse eingetragen ist.
+function shareCodes() {
+  if ($('gShare').value !== 'auto') return;
+  const all = $('gGame').value === 'all', page = ($('gPage').value || '').trim();
+  $('oAttr').textContent = $('oAttr').textContent.replace(/data-easygames="/g, 'data-share="auto" data-easygames="');
+  $('oJs').textContent = $('oJs').textContent.replace(/(EasyGames\.(?:embed|library|portal)\('#ziel', \{ )/g, "$1share: 'auto', ").replace(/EasyGames\.open\('([^']+)'\)/g, "EasyGames.open('$1', { share: 'auto' })");
+  if (/^https?:\/\/[^\s"<>]+$/.test(page)) { const tpl = page.split('#')[0] + '#games/' + (all ? '{id}' : $('gGame').value); $('oIframe').textContent = $('oIframe').textContent.replace(/src="([^"]+)"/, (m, u) => 'src="' + u + (u.includes('?') ? '&' : '?') + 'eg_share=' + encodeURIComponent(tpl) + '"'); }
+}
+const genAll = () => { gen(); shareCodes(); };
+['gGame', 'gMode', 'gRatio', 'gMax', 'gFs', 'gShare', 'gPage'].forEach(i => $(i).addEventListener('input', genAll)); genAll();
 // ---- Generator Ranglisten & Erfolge ----
 {
   const sel = $('bGame'); GAMES.forEach(g => { const o = document.createElement('option'); o.value = g.id; o.textContent = g.title; sel.appendChild(o); });

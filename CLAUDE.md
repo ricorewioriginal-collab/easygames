@@ -14,6 +14,9 @@ Ressourcensparend und fehlerfrei bauen: kleine, gezielte Änderungen, bestehende
    - Andere Homepage nur über `window.EASYGAMES_PUBLIC_BASE` (vor den Skripten setzen). Die Adresse steht in `cloud/fire-peer.js`,
      `device.js`, `ricopoly/js/game.js` und `riftzone/client/src/app.ts` – bei einer Änderung alle vier anpassen.
    - Nur Navigation auf **demselben** Gerät (z. B. „Controller hier öffnen“) bleibt lokal, damit die App offline funktioniert.
+   - Ausnahme **„Spiel teilen“ auf einbindenden Seiten**: Bekommt ein Spiel `?eg_share=<Adresse>` (Spiele-Hub, `easygames.js` mit `share`,
+     Bibliothek mit `eg_share`), zeigt der Teilen-Link für das Spiel selbst auf diese Seite (z. B. `https://www.ricorewi-radio.de/#games/<id>`).
+     `EasyGamesLink.share()` und `EasyGamesDevice.gameLink()` erledigen das; Links mit `?…`/`#…` (Einladung, TV) bleiben auf der Homepage.
 2. **Online über Firebase.** Neue Spiele mit Online- oder Handy-Modus binden `<script src="../cloud/fire-peer.js"></script>` vor dem
    Spielcode ein und nutzen PeerJS wie gewohnt (Details: [cloud/README.md](cloud/README.md)). Keine eigene Vermittlung bauen.
 3. **Sichtbar im Menü.** Jedes Spiel mit Online-Möglichkeit zeigt sie im Hauptmenü (oder in den Einstellungen) mit 🌐 und dem Wort

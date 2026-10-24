@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/wolkenhopser-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Wolkenhopser"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#7fd3ff">
+<title>Wolkenhopser – Hopsi will nach oben!</title>
+<meta name="description" content="Wolkenhopser: Spring mit Hopsi endlos nach oben – über Wiese, Wolken und Sterne bis ins Weltall. Federn, Trampoline, Propellermütze, Raketenrucksack, Monster und schwarze Löcher. Tagesrekord und Online-Rennen.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<section class="scr on" id="sLoad">
+  <div class="load">
+    <div class="loadHop"><canvas id="loadHopsi" width="160" height="160"></canvas></div>
+    <h1 class="title">Wolken<span>hopser</span></h1>
+    <div class="bar"><i id="loadBar"></i></div>
+    <p class="tip" id="loadTip">Federn werden gespannt …</p>
+  </div>
+</section>
+
+<section class="scr" id="sTitle">
+  <div class="titleBox">
+    <h1 class="title big">Wolken<span>hopser</span></h1>
+    <p class="claim">Hopsi will nach oben!</p>
+    <button class="press nav" id="bPress">▶ <span id="pressTxt">Drücke Start</span></button>
+  </div>
+  <p class="corner"><a href="../" id="backLink">← Alle Spiele</a></p>
+</section>
+
+<section class="scr" id="sMenu">
+  <div class="menuWrap">
+    <header class="mHead"><h1 class="title small">Wolken<span>hopser</span></h1><div class="coinsPill">🪙 <b id="menuCoins">0</b></div></header>
+    <div class="tiles" id="tiles">
+      <button class="tile nav hero" data-go="play"><i>☁️</i><b>Spielen</b><small id="menuBest">Spring so hoch du kannst</small></button>
+      <button class="tile nav" data-go="daily"><i>📅</i><b>Tagesrekord</b><small id="menuDaily">Gleiche Welt für alle</small></button>
+      <button class="tile nav online" data-go="online"><i>🌐</i><b>Online-Rennen</b><small>Wer kommt am höchsten?</small></button>
+      <button class="tile nav" data-go="shop"><i>🎨</i><b>Hopsis</b><small>Figuren freischalten</small></button>
+      <button class="tile nav" data-go="rec"><i>🏅</i><b>Rekorde</b><small>Bestwerte</small></button>
+      <button class="tile nav" data-go="opts"><i>⚙️</i><b>Optionen</b><small>Ton, Neigen, Grafik</small></button>
+      <button class="tile nav" data-go="help"><i>📖</i><b>Anleitung</b><small>Steuerung &amp; Tipps</small></button>
+    </div>
+    <footer class="mFoot"><span class="hintKeys" id="menuKeys"></span><a href="../" class="nav" id="backLink2">← Alle Spiele</a></footer>
+  </div>
+</section>
+
+<section class="scr game" id="sGame">
+  <div class="hud">
+    <div class="pill big"><b id="hScore">0</b><small id="hZone">Blumenwiese</small></div>
+    <div class="pill">🪙 <b id="hCoins">0</b></div>
+    <div class="pill race" id="hRace" hidden></div>
+    <button class="icon nav" id="bPause" aria-label="Pause">⏸</button>
+  </div>
+  <div class="banner" id="banner" hidden></div>
+  <div class="touch" id="touch" hidden><div class="tz l" id="tzL"><span>◀</span></div><div class="tz r" id="tzR"><span>▶</span></div><button class="shoot" id="tShoot" aria-label="Schießen">🎯</button></div>
+  <p class="startHint" id="startHint"></p>
+</section>
+
+<!-- Online-Rennen: Raum (Gastgeber) -->
+<section class="scr" id="sLobby">
+  <div class="panel">
+    <h2 class="sTitle">🌐 Online-Rennen</h2>
+    <div class="lobGrid">
+      <div>
+        <p class="sub">Alle spielen auf ihrem eigenen Gerät dieselbe Welt – <b>von überall</b> per QR-Code oder Link. Wer am höchsten kommt, gewinnt. Die anderen siehst du als Pfeile am Rand.</p>
+        <div class="lobPlayers" id="lobPlayers"></div>
+      </div>
+      <div class="qrBox"><div class="qr" id="qr">…</div><div class="code" id="code">····</div><p class="url" id="url"></p></div>
+    </div>
+    <div class="rowBtns"><button class="btn nav" id="lobBack">← Zurück</button><button class="btn pri nav" id="lobGo">▶ Rennen starten</button></div>
+  </div>
+</section>
+
+<!-- Online-Rennen: Beitreten -->
+<section class="scr" id="sJoin">
+  <div class="panel narrow">
+    <h2 class="sTitle">🌐 Online-Rennen</h2>
+    <div id="jForm">
+      <p class="sub">Gib deinen Namen ein – der Code steht beim Gastgeber.</p>
+      <input class="field" id="jName" maxlength="12" placeholder="Dein Name" autocomplete="nickname">
+      <input class="field" id="jCode" maxlength="4" placeholder="Code" autocapitalize="characters">
+      <button class="btn pri big nav" id="bJoin">Mitmachen</button>
+      <p class="err" id="jMsg"></p>
+    </div>
+    <div id="jWait" hidden><p class="sub" id="jWaitTxt">Du bist dabei! Warte auf den Start …</p><div class="lobPlayers" id="jPlayers"></div></div>
+    <div class="rowBtns"><button class="btn nav" id="jBack">← Zurück</button></div>
+  </div>
+</section>
+
+<div class="ov" id="ovEnd" hidden><div class="card big">
+  <div class="endHop"><canvas id="endHopsi" width="120" height="120"></canvas></div>
+  <h2 id="eTitle">Abgestürzt!</h2>
+  <div class="bigScore" id="eScore">0</div>
+  <div class="newRec" id="eRec" hidden>⭐ Neuer Rekord!</div>
+  <div class="stats" id="eStats"></div>
+  <div class="raceList" id="eRace" hidden></div>
+  <div class="rowBtns wrap"><button class="btn pri nav" id="eAgain">↻ Nochmal</button><button class="btn nav" id="eMenu">☰ Menü</button><button class="btn nav" id="eShare">📤 Teilen</button></div>
+</div></div>
+
+<div class="ov" id="ovPause" hidden><div class="card">
+  <h2>Pause</h2>
+  <div class="menuBtns"><button class="btn big pri nav" id="pGo">▶ Weiter</button><button class="btn nav" id="pRestart">↻ Neu starten</button><button class="btn nav" id="pOpts">⚙️ Optionen</button><button class="btn nav" id="pQuit">⏹ Zum Menü</button></div>
+</div></div>
+
+<div class="ov" id="ovShop" hidden><div class="card wide">
+  <h2>🎨 Hopsis</h2>
+  <p class="hint">Münzen sammelst du beim Springen. Gekaufte Hopsis gehören dir für immer.</p>
+  <div class="shop" id="shop"></div>
+  <button class="btn pri nav" id="shopX" data-close>Fertig</button>
+</div></div>
+
+<div class="ov" id="ovRec" hidden><div class="card">
+  <h2>🏅 Rekorde</h2>
+  <div class="stats" id="recList"></div>
+  <p class="hint">Der Rekord landet in der Rangliste und wird mit deinem Konto gespeichert.</p>
+  <button class="btn pri nav" id="recX" data-close>Fertig</button>
+</div></div>
+
+<div class="ov" id="ovOpts" hidden><div class="card">
+  <h2>⚙️ Optionen</h2>
+  <label class="check"><input type="checkbox" id="sSound"> Soundeffekte</label>
+  <label class="check"><input type="checkbox" id="sMusic"> Musik</label>
+  <label class="check"><input type="checkbox" id="sVib"> Vibration</label>
+  <label class="check"><input type="checkbox" id="sTilt"> Handy neigen zum Steuern (statt links/rechts tippen)</label>
+  <label class="check"><input type="checkbox" id="sLow"> Sparmodus (weniger Effekte)</label>
+  <button class="btn pri nav" id="optX" data-close>Fertig</button>
+</div></div>
+
+<div class="ov" id="ovHelp" hidden><div class="card scroll">
+  <h2>📖 So geht's</h2>
+  <p>Hopsi springt von allein, sobald er auf einer Plattform landet. Du steuerst nur <b>links und rechts</b> – wer am Rand rausläuft, kommt auf der anderen Seite wieder rein. Fällst du unten aus dem Bild, ist die Runde vorbei.</p>
+  <ul>
+    <li><b>Plattformen:</b> grün = normal, blau = fährt hin und her, gestrichelt = verschwindet nach einem Sprung, <b>braun mit Riss = bricht weg</b> (trägt nicht!).</li>
+    <li><b>Federn und Trampoline</b> schießen dich hoch, 🧢 Propellermütze und 🚀 Raketenrucksack lassen dich fliegen, 🫧 Schild schützt einmal.</li>
+    <li><b>Monster:</b> von oben draufspringen oder abschießen. Von der Seite oder von unten erwischen sie dich. ⚫ Schwarze Löcher ziehen dich an – Abstand halten!</li>
+    <li><b>🪙 Münzen</b> schalten neue Hopsis frei. Punkte gibt es für die Höhe und für besiegte Monster.</li>
+    <li><b>📅 Tagesrekord:</b> eine Welt pro Tag, für alle gleich. <b>🌐 Online-Rennen:</b> alle springen gleichzeitig durch dieselbe Welt, jeder auf seinem Gerät.</li>
+  </ul>
+  <h3>Steuerung</h3>
+  <ul>
+    <li><b>Tastatur:</b> ← → oder A D bewegen, Leertaste / ↑ / W schießen, Esc oder P Pause.</li>
+    <li><b>Touch:</b> linke oder rechte Bildschirmhälfte halten, 🎯 schießen – oder in den Optionen „Handy neigen“ einschalten.</li>
+    <li><b>Controller:</b> Stick oder Steuerkreuz, A/X schießen, Start Pause.</li>
+  </ul>
+  <button class="btn pri nav" id="helpX" data-close>Los geht's</button>
+</div></div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../device.js"></script>
+<script src="../gamekit.js"></script>
+<script src="../cloud/fire-peer.js"></script>
+<script src="js/core.js"></script>
+<script src="js/render.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="wolkenhopser" data-prefix="wolkenhopser-" defer></script>
+</body>
+</html>
