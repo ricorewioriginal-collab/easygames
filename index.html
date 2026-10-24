@@ -652,18 +652,20 @@ const jsSnippet = (id) => `<!-- 1. Script einbinden (einmal pro Seite) -->
 <script src="${base}easygames.js"><\/script>
 
 <!-- 2a. Nur HTML: Spiel-ID als Attribut -->
-<div data-easygames="${id}" data-ratio="16/10"></div>
+<div data-easygames="${id}" data-share="auto" data-ratio="16/10"></div>
 
 <!-- 2b. Oder per JavaScript mit Variablen -->
 <div id="spiel"></div>
 <script>
   const spielId = '${id}';          // beliebige Spiel-ID
-  EasyGames.embed('#spiel', { game: spielId, ratio: '16/10', maxWidth: '960px' });
+  EasyGames.embed('#spiel', { game: spielId, share: 'auto', ratio: '16/10', maxWidth: '960px' });
 <\/script>
 
 <!-- 3. Alle Spiele (Bibliothek) -->
-<div data-easygames="all"></div>
-<!-- oder: EasyGames.library('#ziel'); -->
+<div data-easygames="all" data-share="auto"></div>
+<!-- oder: EasyGames.library('#ziel', { share: 'auto' }); -->
+
+<!-- data-share="auto": „Spiel teilen“ zeigt auf DEINE Seite (…#games/<spiel-id>, öffnet das Spiel direkt) -->
 
 <!-- Weitere Funktionen:
   EasyGames.ready(() => console.log(EasyGames.list()));  // alle Spiele mit URL

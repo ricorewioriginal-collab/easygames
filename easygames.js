@@ -80,7 +80,11 @@
   var deepOn = false;
   function watchDeep(t) {
     if (deepOn || t.indexOf(location.href.split('#')[0] + '#games/{id}') !== 0) return; deepOn = true;
-    function go() { var m = /^#games\/([\w-]+)/.exec(location.hash); if (m) EG.ready(function () { if (find(m[1])) EG.open(m[1], { share: t }); }); }
+    function go() {   // Spiel öffnen – außer es ist auf der Seite schon eingebettet (kein zweites Exemplar)
+      var m = /^#games\/([\w-]+)/.exec(location.hash); if (!m) return;
+      EG.ready(function () { setTimeout(function () { var g = find(m[1]); if (!g || current) return; var u = new URL(g.path, base).href, fr = document.querySelectorAll('iframe');
+        for (var i = 0; i < fr.length; i++) if ((fr[i].src || '').indexOf(u) === 0) return; EG.open(m[1], { share: t }); }, 0); });
+    }
     window.addEventListener('hashchange', go); go();
   }
   function gameUrl(g, o) {

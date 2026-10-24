@@ -101,6 +101,10 @@
         <label>Maximale Breite<input id="gMax" value="960px"></label>
         <label>Vollbild-Knopf<select id="gFs"><option value="">ja (Standard)</option><option value="false">nein</option></select></label>
       </div>
+      <div class="row">
+        <label>Teilen-Link<select id="gShare"><option value="auto">deine Seite (…#games/&lt;spiel-id&gt;)</option><option value="">easygames-Seite</option></select></label>
+        <label>Adresse deiner Seite (nur für iframe)<input id="gPage" placeholder="https://meine-seite.de/spiele.html" inputmode="url"></label>
+      </div>
     </div>
     <h3>Direktlink</h3><pre id="oLink"></pre>
     <h3>iframe</h3><pre id="oIframe"></pre>
@@ -760,7 +764,17 @@ function gen() {
     $('oJs').textContent = `<script src="${base}easygames.js"><\/script>\n<div id="ziel"></div>\n<script>\n  ${all ? `EasyGames.library('#ziel', { ratio: '${ratio}', maxWidth: '${max}' });` : `const spielId = '${g.id}';\n  EasyGames.embed('#ziel', { game: spielId, ratio: '${ratio}', maxWidth: '${max}'${fsOpt} });`}\n<\/script>`;
   }
 }
-['gGame', 'gMode', 'gRatio', 'gMax', 'gFs'].forEach(i => $(i).addEventListener('input', gen)); gen();
+// Eigener Teilen-Link: easygames.js-Code bekommt share 'auto' (Teilen zeigt auf die einbindende Seite, #games/<id> öffnet das Spiel),
+// der iframe-Code ?eg_share=<deine Adresse>#games/<id>, wenn die Adresse eingetragen ist.
+function shareCodes() {
+  if ($('gShare').value !== 'auto') return;
+  const all = $('gGame').value === 'all', page = ($('gPage').value || '').trim();
+  $('oAttr').textContent = $('oAttr').textContent.replace(/data-easygames="/g, 'data-share="auto" data-easygames="');
+  $('oJs').textContent = $('oJs').textContent.replace(/(EasyGames\.(?:embed|library|portal)\('#ziel', \{ )/g, "$1share: 'auto', ").replace(/EasyGames\.open\('([^']+)'\)/g, "EasyGames.open('$1', { share: 'auto' })");
+  if (/^https?:\/\/[^\s"<>]+$/.test(page)) { const tpl = page.split('#')[0] + '#games/' + (all ? '{id}' : $('gGame').value); $('oIframe').textContent = $('oIframe').textContent.replace(/src="([^"]+)"/, (m, u) => 'src="' + u + (u.includes('?') ? '&' : '?') + 'eg_share=' + encodeURIComponent(tpl) + '"'); }
+}
+const genAll = () => { gen(); shareCodes(); };
+['gGame', 'gMode', 'gRatio', 'gMax', 'gFs', 'gShare', 'gPage'].forEach(i => $(i).addEventListener('input', genAll)); genAll();
 // ---- Generator Ranglisten & Erfolge ----
 {
   const sel = $('bGame'); GAMES.forEach(g => { const o = document.createElement('option'); o.value = g.id; o.textContent = g.title; sel.appendChild(o); });
