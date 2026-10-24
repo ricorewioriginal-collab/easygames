@@ -10,7 +10,7 @@ BI.Thumb = (function () {
       S = new THREE.Scene(); S.add(new THREE.HemisphereLight(0xffffff, 0x9fb4d0, .95)); const d = new THREE.DirectionalLight(0xffffff, .7); d.position.set(3, 6, 5); S.add(d); cam = new THREE.PerspectiveCamera(28, 1, .05, 200);
     } catch (e) { ok = false; R = null; }
   }
-  const free = o => o.traverse(c => { if (c.geometry) c.geometry.dispose(); if (c.material && c.material !== BI.mat() && c.material.dispose) c.material.dispose(); });
+  const free = o => o.traverse(c => { if (c.geometry) c.geometry.dispose(); if (c.material && c.material !== BI.mat() && !(BI.charMat && c.material === BI.charMat()) && c.material.dispose) c.material.dispose(); });
   /* obj rendern: region = Höhenbereich [von, bis] in Metern (z. B. Kopf), ohne Region wird alles eingepasst; az/el = Blickwinkel */
   T.render = function (obj, region, az, el) {
     if (!R && ok) init(); if (!ok) return null;

@@ -551,8 +551,8 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 - 🐟 Fische im Sammelbuch: 0 von 14 (am See & Strand angeln)
 - 🐞 Käfer im Sammelbuch: 0 von 14 (Kescher im Gras)
 - 🐚 Funde im Sammelbuch: 0 von 14 (glitzernde Stellen am Strand)
-- 🦋 Heute: Käfertag – Heute wimmelt es von Käfern und Faltern – seltene sind häufiger, die ersten 5 Fänge geben extra ⭐!
-- 🌟 Tagesglück: heute 🦐 Garnelchen fangen (+2 ⭐)
+- 🏖️ Heute: Buddel-Fest – Heute glitzert der Strand an mehr Stellen – seltene Funde sind häufiger, die ersten 5 geben extra ⭐!
+- 🌟 Tagesglück: heute 🦴 Dino-Knochen fangen (+2 ⭐)
 
 ### 🎬 Dampfer-Hafen
 
@@ -855,6 +855,7 @@ So bekommst du jeden Sticker:
 | 🌲 Waldläufer | Betritt die große Wald-Insel hinter der Rätsel-Insel |
 | 💪 Kampfstufe 5 | Erreiche Kampfstufe 5 auf der Wald-Insel |
 | 👑 Held des Waldes | Besiege alle fünf Wächter der Wald-Insel |
+| 🎮 Gästefreund | Sprich mit 8 Gästen am easygames-Treff |
 
 ---
 
@@ -888,6 +889,7 @@ Eingabe über ⚙️ → „🔑 Code eingeben“ (Groß-/Kleinschreibung egal).
 
 - Sterne sparen: erst Aufgaben und Tagesgeschenk, dann einkaufen.
 - Schnell reisen: 🧭 Wohin? → ✨ (im Story-Modus nur zu offenen Welten).
+- Schnelle Sterne: Am 🎮 easygames-Treff bringt jeder neue Gast, den du ansprichst, 1 ⭐.
 - Truhen in Häusern öffnen – jedes Haus hat eine, 10 Truhen geben einen Sticker.
 - Futter für das Kapselmonster: in Häusern (Tisch, Truhen) und im Laden.
 - Zwei Aktionen in der Nähe? A = erste, X = zweite Aktion.
