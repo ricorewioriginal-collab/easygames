@@ -18,7 +18,7 @@
 
   let save = load(), cur = 'sTitle', stage = null, flow = null, timers = [];
   const backTo = {};
-  const prep = { music: 'radio:ricorewi', style: 'pop', approach: 'gefuehl', action: 'publikum' };
+  const prep = { music: 'radio:ricorewi', style: 'pop', approach: 'gefuehl', action: 'publikum', how: 'game' };
   const sysReduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ---------- Speicher ----------
@@ -151,7 +151,7 @@
       { season: () => { closeOv(); startSeason(); }, ava: () => { closeOv(); openAvatar('fresh'); }, x: closeOv });
     } else if (m === 'online') openOnline();
     else if (m === 'free') { if (!p) openAvatar('free'); else sub('sPrep', 'free'); }
-    else if (m === 'sing') { if (!p) openAvatar('sing'); else sub('sSing'); }
+    else if (m === 'sing') { sing.ctx = null; if (!p) openAvatar('sing'); else sub('sSing'); }
     else if (m === 'train') sub('sTrain', 'practice');
     else if (m === 'bonus') sub('sBonus');
     else if (m === 'arch') sub('sArchive');
@@ -295,7 +295,8 @@
     const radioOn = save.settings.source === 'radio';
     if (!radioOn && String(prep.music).startsWith('radio:')) prep.music = 'own:' + prep.style;
     const opt = (group, k, title, desc) => `<button type="button" class="opt" data-g="${group}" data-v="${k}" aria-pressed="${prep[group] === k}"><b>${title}</b><small>${desc}</small></button>`;
-    const partsTxt = def.parts.map(t => t === 'rhythm' ? '🥁 Rhythmus' : t === 'pitch' ? '🎤 Gesang' : t === 'group' ? '👥 Gruppe' : '⚔️ Rivale').join(' → ');
+    const real = prep.how === 'sing';
+    const partsTxt = real ? '🎙️ Echt vorsingen: Karaoke-Song oder a cappella ins Mikrofon' : def.parts.map(t => t === 'rhythm' ? '🥁 Rhythmus' : t === 'pitch' ? '🎤 Gesang' : t === 'group' ? '👥 Gruppe' : '⚔️ Rivale').join(' → ');
     let rivalTxt = '';
     if (career && def.battle) { const op = opponent(s); if (op) rivalTxt = `<p>⚔️ Dein Gegner: <b>${esc(op.name)}</b> (${D.STYLES[op.style].name}, stark in ${op.strong})</p>`; }
     if (career && def.id === 'recall') rivalTxt = `<p>👥 Deine Gruppe: <b>${groupOf(s).map(g => esc(g.name)).join(' und ')}</b></p>`;
@@ -305,11 +306,14 @@
       <header class="bar"><button class="btn sm" data-back type="button">← Zurück</button><h2>${career ? def.icon + ' ' + def.name : '🎤 Freies Casting'}</h2><span></span></header>
       ${motto ? `<div class="banner gold" style="font-size:1.1em">Motto: ${motto.name}</div>` : ''}
       <div class="panel"><p><b>Ablauf:</b> ${partsTxt}</p><p class="muted">${esc(career ? def.rule : 'Keine Wertung für die Staffel – perfekt zum Üben. Weiter mit 2 von 3 Jury-Ja.')}</p>${rivalTxt}</div>
-      <h3>1 · Deine Musik</h3><div class="opts">${music.join('')}</div>
+      <h3>1 · Wie willst du auftreten?</h3><div class="opts">${opt('how', 'game', '🎮 Spiel (wie bisher)', 'Noten im Takt treffen – mit Tasten, Touch oder Mikrofon')}${opt('how', 'sing', '🎙️ Echt vorsingen', 'Du singst einen Karaoke-Song ins Mikrofon, die Jury bewertet deine echte Stimme')}</div>
+      ${real ? `<p class="hint" style="text-align:left">🎙️ Den Song wählst du gleich vor deinem Auftritt: Karaoke mit Lyrics, a cappella oder dein eigener Song. Gewertet werden Intonation, Stabilität, Stimmumfang und Ausdruck. Am besten mit Kopfhörern.</p>
+      <h3>2 · Bühnen-Aktion</h3><div class="opts">${Object.keys(D.ACTION).map(k => opt('action', k, D.ACTION[k].name, D.ACTION[k].desc)).join('')}</div>` : `
+      <h3>2 · Deine Musik</h3><div class="opts">${music.join('')}</div>
       <p class="hint" style="text-align:left">${radioOn ? '📻 <b>Quelle:</b> Live-Programm des gewählten RicoReWi-Senders über laut.fm. Der Sender läuft live, die Noten entstehen aus den Beats des laufenden Songs (lässt der Stream keine Analyse zu, folgen sie dem Takt des Musikstils). Interpret und Titel stehen im Auftritt oben. Alle Rechte an der Musik liegen bei den jeweiligen Urhebern. Ohne Verbindung spielt das Spiel eigene Beats.' : '🎹 Eigene Songs: Musik wird live im Browser erzeugt. Radio-Sender kannst du in den Einstellungen einschalten.'} Der Stil bestimmt, welche Jurorin oder welcher Juror einen Bonus gibt.</p>
-      <h3>2 · Dein Ansatz</h3><div class="opts">${Object.keys(D.APPROACH).map(k => opt('approach', k, D.APPROACH[k].name, D.APPROACH[k].desc)).join('')}</div>
-      <h3>3 · Bühnen-Aktion</h3><div class="opts">${Object.keys(D.ACTION).map(k => opt('action', k, D.ACTION[k].name, D.ACTION[k].desc)).join('')}</div>
-      <div class="panel">${save.settings.mic ? '<p>🎙️ <b>Mikrofon ist an:</b> Sing die Noten an, wenn sie den Ring erreichen, und triff in Gesangsteilen die Tonhöhe. Ausgewertet wird nur auf deinem Gerät.</p>' : '<p>🎙️ <b>Mit deiner Stimme spielen?</b> Mit Mikrofon triffst du die Noten, indem du sie ansingst, und im Gesangsteil zählt deine echte Tonhöhe.</p><button class="btn" type="button" id="bMic">🎙️ Mikrofon einschalten</button>'}</div>
+      <h3>3 · Dein Ansatz</h3><div class="opts">${Object.keys(D.APPROACH).map(k => opt('approach', k, D.APPROACH[k].name, D.APPROACH[k].desc)).join('')}</div>
+      <h3>4 · Bühnen-Aktion</h3><div class="opts">${Object.keys(D.ACTION).map(k => opt('action', k, D.ACTION[k].name, D.ACTION[k].desc)).join('')}</div>
+      <div class="panel">${save.settings.mic ? '<p>🎙️ <b>Mikrofon ist an:</b> Sing die Noten an, wenn sie den Ring erreichen, und triff in Gesangsteilen die Tonhöhe. Ausgewertet wird nur auf deinem Gerät.</p>' : '<p>🎙️ <b>Mit deiner Stimme spielen?</b> Mit Mikrofon triffst du die Noten, indem du sie ansingst, und im Gesangsteil zählt deine echte Tonhöhe.</p><button class="btn" type="button" id="bMic">🎙️ Mikrofon einschalten</button>'}</div>`}
       <button class="btn gold xl" type="button" id="bGo" data-focus style="width:100%">${career && def.id !== 'casting' ? '🎙️ Zum Interview mit Rico' : '🚪 Zum Wartebereich'}</button>`;
   };
   $('#prepBox').addEventListener('click', e => {
@@ -317,6 +321,7 @@
     if (o) {
       prep[o.dataset.g] = o.dataset.v; o.parentNode.querySelectorAll('.opt').forEach(x => x.setAttribute('aria-pressed', String(x === o)));
       if (o.dataset.g === 'music') prep.style = musicOf(prep).style;
+      if (o.dataset.g === 'how') { RENDER.sPrep(prepMode); const nb = $(`#prepBox [data-g="how"][data-v="${o.dataset.v}"]`); if (nb) nb.focus(); }
       return;
     }
     if (e.target.closest('#bMic')) { micConsent(() => RENDER.sPrep(prepMode)); return; }
@@ -348,7 +353,7 @@
       wait = `<div class="panel"><p><b>🚪 Wartebereich · Casting-Tag</b> – deine Startnummer: <span class="tag gold">#${me + 1}</span> von ${s.order.length}</p>
         ${before.length ? '<p class="muted">Schon vor der Jury:</p>' + before.map(c => { const a = S.aiPerf(s, c, 0), j = S.judge(a.crit, c.style, s.seed, 0, c.id), y = j.filter(x => x.yes).length; return `<span class="tag ${y >= 2 ? 'ok' : 'bad'}">${esc(c.name)} ${y >= 2 ? '✅' : '❌'} ${y}/3</span>`; }).join('') : '<p class="muted">Du bist als Erste/r dran!</p>'}</div>`;
     }
-    const mu = musicOf(prep), withRadio = mu.radio && def.parts.includes('rhythm');
+    const mu = musicOf(prep), withRadio = mu.radio && prep.how !== 'sing' && def.parts.includes('rhythm');
     $('#talkBox').innerHTML = `<header class="bar"><button class="btn sm" data-back type="button">← Zurück</button><h2>${talk.casting ? '🎤 Vor der Jury' : '🎙️ Interview'}</h2><span></span></header>
       ${withRadio ? `<div class="panel"><p id="airBox">📻 Verbinde mit ${esc(mu.name)} …</p></div>` : ''}${wait}<div class="panel" id="talkQ"></div>`;
     talkStep();
@@ -400,7 +405,7 @@
       box.innerHTML = `${log}<p><b>${talk.casting ? 'Die Jury nickt dir zu.' : 'Rico: „Viel Glück – die Bühne gehört dir!“'}</b></p>
         <p class="hint" style="text-align:left">Wirkung: ${sy.length ? 'Sympathie ' + sy.join(', ') : 'keine Sympathie-Änderung'}${talk.votes ? ' · +' + talk.votes + ' Votes' : ''}</p>
         <button class="btn gold xl" type="button" id="bStageGo" data-focus style="width:100%">🎬 Auf die Bühne!</button>`;
-      $('#bStageGo').onclick = () => { const go2 = () => { if (talk.mode === 'career') startCareerRound(); else startFree(); }; if (onAir.mode) waitForSong(go2); else go2(); };
+      $('#bStageGo').onclick = () => { const go2 = () => { if (prep.how === 'sing') openSingRound(talk.mode); else if (talk.mode === 'career') startCareerRound(); else startFree(); }; if (onAir.mode) waitForSong(go2); else go2(); };
       focusFirst(box); return;
     }
     const q = talk.list[talk.qi];
@@ -556,17 +561,20 @@
     save.wins = p.stats.wins; persist();
     showResult({ res, oc, out, free: false, credit: f.credit });
   }
+  // Casting: Bei genau einem Ja bietet die Jury eine Zugabe an, sonst direkt zur Entscheidung.
+  function decide(f, out, oc) {
+    const s = save.season;
+    f.seed = f.seed || (Date.now() >>> 0);
+    if (f.mode === 'free' || D.ROUNDS[s.round].id === 'casting') {
+      const pre = f.mode === 'free' ? S.judge(oc.crit, oc.style, f.seed, 0, 'p', oc.symp) : S.judge(oc.crit, oc.style, s.seed, s.round, 'p', oc.symp);
+      if (pre.filter(j => j.yes).length === 1) { askEncore(f, out, oc); return; }
+    }
+    resolveAndShow(f, out, oc);
+  }
   function finishStage(out) {
     const f = flow; if (!f) return;
     if (f.mode === 'career' || f.mode === 'free') {
-      const s = save.season, oc = buildOutcome(f, out, f.mode === 'career' ? s.lastPerf : null);
-      f.seed = f.seed || (Date.now() >>> 0);
-      const casting = f.mode === 'free' || D.ROUNDS[s.round].id === 'casting';
-      if (casting) {
-        const pre = f.mode === 'free' ? S.judge(oc.crit, oc.style, f.seed, 0, 'p', oc.symp) : S.judge(oc.crit, oc.style, s.seed, s.round, 'p', oc.symp);
-        if (pre.filter(j => j.yes).length === 1) { askEncore(f, out, oc); return; }
-      }
-      resolveAndShow(f, out, oc);
+      decide(f, out, buildOutcome(f, out, f.mode === 'career' ? save.season.lastPerf : null));
     } else if (f.mode === 'encore') {
       const par = f.parent; par.oc.encore = out.pitch ? out.pitch.q : 0; flow = par.f;
       resolveAndShow(par.f, par.out, par.oc);
@@ -888,7 +896,15 @@
   const stars = n => '★'.repeat(n) + '☆'.repeat(3 - n);
   const genre = id => D.KARAOKE.find(g => g.id === id);
   const ytId = s => { s = String(s || '').trim(); const m = s.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([\w-]{11})/) || s.match(/^([\w-]{11})$/); return m ? m[1] : null; };
-  const sing = { g: 'pop', song: 0, own: '', title: '', len: 60, run: null, recUrl: null };
+  const sing = { g: 'pop', song: 0, own: '', title: '', len: 60, run: null, recUrl: null, ctx: null };   // ctx: echtes Vorsingen in Karriere/Freiem Casting
+  function openSingRound(mode) {
+    const s = save.season, career = mode === 'career';
+    if (career && (!s || s.status !== 'backstage')) { go('sBack'); return; }
+    const def = career ? D.ROUNDS[s.round] : D.ROUNDS[0];
+    sing.ctx = { mode: career ? 'career' : 'free', sel: Object.assign({}, prep), talk: { symp: talk.symp, votes: career ? talk.votes : 0 },
+      title: career ? def.icon + ' ' + def.name : '🎤 Freies Casting', bg: career ? def.bg : 'stage' };
+    backTo.sSing = 'sPrep'; go('sSing');
+  }
   function singPick() {
     const g = genre(sing.g), style = g ? g.style : 'pop';
     if (g && Number.isInteger(sing.song) && g.songs[sing.song]) { const [t, v, ch] = g.songs[sing.song]; return { vid: v, title: t, credit: `🎤 ${t} · Karaoke-Video: ${ch} (YouTube) · Rechte bei den Urhebern`, style }; }
@@ -908,12 +924,12 @@
       .concat(opt('ss', 'acap', sing.song === 'acap', '🎙️ A cappella', 'Ohne Musik, nur deine Stimme'), opt('ss', 'own', sing.song === 'own', '🔗 Eigener Song', 'YouTube-Link einfügen oder einfach ohne Video'));
     const own = sing.song === 'own' || sing.song === 'acap';
     $('#singBox').innerHTML = `
-      <header class="bar"><button class="btn sm" data-back type="button">← Zurück</button><h2>🎙️ Freies Vorsingen</h2><span></span></header>
-      <div class="panel"><p>Wie im echten Casting: Du singst einen Song deiner Wahl ins Mikrofon. Das Spiel hört auf <b>Intonation, Stabilität, Stimmumfang und Ausdruck</b>, danach entscheidet die Jury.</p>
+      <header class="bar"><button class="btn sm" data-back type="button">← Zurück</button><h2>${sing.ctx ? esc(sing.ctx.title) : '🎙️ Freies Vorsingen'}</h2><span></span></header>
+      <div class="panel"><p>${sing.ctx ? '<b>Jetzt zählt’s!</b> ' : ''}Wie im echten Casting: Du singst einen Song deiner Wahl ins Mikrofon. Das Spiel hört auf <b>Intonation, Stabilität, Stimmumfang und Ausdruck</b>, danach entscheidet die Jury.</p>
         <p class="muted">Ausgewertet wird nur auf deinem Gerät. Deine Aufnahme kannst du danach anhören; sie wird nicht gespeichert oder gesendet.</p></div>
-      <h3>1 · Genre-Challenge</h3><div class="opts">${gs.join('')}</div>
-      <p class="hint" style="text-align:left">★ 2 von 3 Jury-Ja · ★★ dazu das Genre-Ziel · ★★★ dazu mindestens 80 Punkte. Der Stil bringt bei der passenden Jurorin oder dem passenden Juror einen Bonus.</p>
-      <h3>2 · Dein Song</h3><div class="opts">${ss.join('')}</div>
+      <h3>1 · ${sing.ctx ? 'Genre' : 'Genre-Challenge'}</h3><div class="opts">${gs.join('')}</div>
+      <p class="hint" style="text-align:left">${sing.ctx ? '' : '★ 2 von 3 Jury-Ja · ★★ dazu das Genre-Ziel · ★★★ dazu mindestens 80 Punkte. '}Der Stil bringt bei der passenden Jurorin oder dem passenden Juror einen Bonus.</p>
+      <h3>2 · Dein Song${g ? ` <small class="muted">(${g.songs.length} Karaoke-Songs)</small>` : ''}</h3><div class="opts songs">${ss.join('')}</div>
       ${own ? `<div class="panel"><label class="field">Songtitel (optional)<input id="singTitle" type="text" maxlength="80" value="${esc(sing.title)}" placeholder="z. B. Adele – Hello"></label>
         ${sing.song === 'own' ? `<label class="field">YouTube-Link (optional)<input id="singLink" type="url" inputmode="url" value="${esc(sing.own)}" placeholder="https://youtu.be/…"></label>
         <button class="btn sm violet" type="button" id="singFind">🔍 Karaoke-Version auf YouTube suchen</button><p class="hint" style="text-align:left">Video suchen, Link kopieren und oben einfügen. Nicht jedes Video darf eingebettet werden – dann sagt dir das Spiel Bescheid.</p>` : ''}</div>` : ''}
@@ -946,6 +962,7 @@
     removeEventListener('message', run.onMsg);
     if (run.rec && run.rec.state !== 'inactive') try { run.rec.stop(); } catch (e) { /* egal */ }
     A.micStop();
+    if (run.playId != null && !run.done && save.season && save.season.status === 'playing') { S.cancelRound(save.season); persist(); }   // abgebrochen: Runde nicht verbraucht
     const f = $('#singVid'); if (f) f.src = 'about:blank';
   }
   async function singStart() {
@@ -957,13 +974,18 @@
     try { await A.micStart(); } catch (e) { save.settings.mic = false; persist(); micConsent(() => RENDER.sSing()); return; }
     if (cur !== 'sSing' || sing.run) { if (!sing.run) A.micStop(); return; }
     if (sing.recUrl) { URL.revokeObjectURL(sing.recUrl); sing.recUrl = null; }
-    const run = sing.run = { pk, frames: [], started: false, acc: 0, last: performance.now(), raf: 0, chunks: [], rec: null, len: sing.len, ended: false, view: [] };
+    const run = sing.run = { pk, frames: [], started: false, acc: 0, last: performance.now(), raf: 0, chunks: [], rec: null, len: sing.len, ended: false, view: [], playId: null, done: false };
+    if (sing.ctx && sing.ctx.mode === 'career') {
+      const s = save.season; run.playId = s && s.status === 'backstage' ? S.startRound(s) : null;
+      if (run.playId == null) { sing.run = null; A.micStop(); go('sBack'); return; }
+      persist();
+    }
     $('#singBox').innerHTML = `<header class="bar"><span></span><h2>🎙️ ${esc(pk.title)}</h2><span></span></header>
       ${pk.vid ? `<div class="video"><iframe id="singVid" src="https://www.youtube-nocookie.com/embed/${pk.vid}?autoplay=1&rel=0&playsinline=1&enablejsapi=1${save.settings.mute ? '&mute=1' : ''}" title="Karaoke-Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
         <p class="hint">${esc(pk.credit)} · <a href="https://www.youtube.com/watch?v=${pk.vid}" target="_blank" rel="noopener">YouTube ↗</a></p><p class="banner lose" id="singErr" hidden>Dieses Video darf hier nicht abgespielt werden. Brich ab und wähle einen anderen Song – oder sing einfach a cappella weiter.</p>` : `<p class="hint">${esc(pk.credit)}</p>`}
       <div class="panel singLive"><div class="singTop"><b id="singNote">–</b><span id="singCents"></span><span id="singTime">Sing los – die Zeit startet mit deinem ersten Ton</span></div>
         <canvas id="singCv" height="170" aria-label="Deine Tonhöhe"></canvas><div class="meter"><i id="singLv"></i></div></div>
-      <div class="row2"><button class="btn gold" id="singStop" type="button" data-focus>⏹ Fertig – zur Jury</button><button class="btn" id="singX" type="button">✖ Abbrechen</button></div>`;
+      <div class="row2"><button class="btn gold" id="singStop" type="button" data-focus>⏹ Fertig – zur Jury</button>${run.playId != null ? '' : '<button class="btn" id="singX" type="button">✖ Abbrechen</button>'}</div>`;
     focusFirst($('#singBox'));
     const vid = $('#singVid');
     run.onMsg = e => {   // YouTube meldet Fehler 101/150, wenn der Kanal das Einbetten verbietet
@@ -1016,7 +1038,7 @@
   function singFinish() {
     const run = sing.run; if (!run || run.ended) return;
     if (run.frames.filter(f => f.m != null).length < 40) { RENDER.sSing(); toast('🎙️ Ich habe kaum Gesang gehört. Sing etwas länger oder näher am Mikrofon.', 3500); return; }
-    const rec = run.rec, chunks = run.chunks; run.rec = null;   // singEnd soll die Aufnahme nicht verwerfen
+    const rec = run.rec, chunks = run.chunks, cx = sing.ctx; run.rec = null; run.done = true;   // singEnd soll Aufnahme und Runde nicht verwerfen
     singEnd();
     let doneOnce = false;
     const done = () => {
@@ -1024,6 +1046,13 @@
       let url = null; try { if (chunks.length) url = URL.createObjectURL(new Blob(chunks, { type: chunks[0].type || 'audio/webm' })); } catch (e) { url = null; }
       sing.recUrl = url;
       const p = save.profile, g = genre(sing.g), res = S.singScore(run.frames, p.attrs, 0.05);
+      if (cx) {   // echtes Vorsingen in Karriere oder Freiem Casting: weiter wie nach einem Bühnenauftritt
+        const career = cx.mode === 'career', s = save.season, mods = career && s ? s.mods : null;
+        const f = { mode: cx.mode, playId: run.playId, sel: Object.assign({}, cx.sel, { style: run.pk.style }), talk: cx.talk, credit: run.pk.credit, bg: cx.bg, ret: career ? 'sBack' : 'sPrep' };
+        const oc = Object.assign(S.singCareer(res, career && s ? s.lastPerf : null, mods, cx.sel.action), { style: run.pk.style, approach: cx.sel.approach, action: cx.sel.action,
+          symp: S.mergeSymp(cx.talk.symp, mods && mods.symp), votesBonus: cx.talk.votes });
+        sing.ctx = null; flow = f; decide(f, { sing: res.sing, rec: url }, oc); return;
+      }
       const oc = Object.assign(res, { style: run.pk.style, symp: null });
       const fc = S.freeCasting(p, oc, (Date.now() >>> 0) || 1);
       let chal = null;
