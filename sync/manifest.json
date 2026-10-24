@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1a976e5aef73",
- "generated": "2026-10-24T02:47:48+02:00",
- "commit": "0799950ca4df678ec875dc8ae53f1242733243f3",
+ "version": "93ae0e697acf",
+ "generated": "2026-10-24T03:46:45+02:00",
+ "commit": "581d6581215d179ae2bb939faeff4eef3db936ab",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2795,
-   "h": "b2f9448edfb6adfa97289eda542b047c44176d86175d7d2a1f768a0835c35995"
+   "s": 2821,
+   "h": "db8acadc28ed2230b4060866bdfcc5b6ad2d322b364837d61cfd1c9673e0c9c1"
   },
   {
    "p": "chat.html",
@@ -5813,8 +5813,8 @@
   },
   {
    "p": "games.js",
-   "s": 36795,
-   "h": "619ba6a6bd264fbb8c2d8d0f361b7ce777759317e1f6ad9fba4fe9ca3b37adef"
+   "s": 37430,
+   "h": "e7b0cd15fb1e1d646292fd00bc53f1879f3162b79cd79d7c1a4bacc3b5e120b7"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5973,8 +5973,8 @@
   },
   {
    "p": "guides.js",
-   "s": 104979,
-   "h": "f4decb3e80ac9780e246830037a12258150f0974b875687e522e7fe05779c2ef"
+   "s": 106529,
+   "h": "c0a932b1f77cd24bce8fbdbe83d7278ab937dc458d39c74f6b753589cbde0a13"
   },
   {
    "p": "heute.html",
@@ -6413,8 +6413,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2829,
-   "h": "64ec9c4a1abcb18c890b7a17a39bf9cfdad5a42bd61009fc7d4026a4debe0afc"
+   "s": 2865,
+   "h": "2cdba20bd121b04fdf78a7267488a4ed3ddac8ec4a3b193040fde05518559e2f"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -7553,8 +7553,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 160855,
-   "h": "bd3a508c46a6d70ca53e9db85183ce4e4a9b53f3ff84bb1868ae8bbb0665b4f7"
+   "s": 163292,
+   "h": "5e39cfaa36c2a8ad883993b04002cebb39fd46b8032bf4ca1a6923afa60649e8"
   },
   {
    "p": "taschi/card.svg",
@@ -8340,6 +8340,51 @@
    "p": "wobbel/vendor/three.min.js",
    "s": 603445,
    "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
+  },
+  {
+   "p": "wolkenhopser/card.jpg",
+   "s": 29818,
+   "h": "7326acab36a4828aeea98299a7077132355a24f3a48834197142c3a86880382f"
+  },
+  {
+   "p": "wolkenhopser/index.html",
+   "s": 12761,
+   "h": "96b50127a3feda14f8b347f1bb6add893c411a244e3a278bdd0ee6aeb1b41eee"
+  },
+  {
+   "p": "wolkenhopser/js/app.js",
+   "s": 32248,
+   "h": "00254a021950c7ea665137c86db3ff6fc5e760ed17662795096f4e2672cb8d32"
+  },
+  {
+   "p": "wolkenhopser/js/core.js",
+   "s": 11897,
+   "h": "ff4fe9b54ab453f4ae028903c5b1d1c9d90dadebb359d7d07dc1c7b8a84bac44"
+  },
+  {
+   "p": "wolkenhopser/js/render.js",
+   "s": 16442,
+   "h": "73691e5328d165ba02cd32e472f3c114a4097f18bb3722962ee259fb4c63f66d"
+  },
+  {
+   "p": "wolkenhopser/js/sound.js",
+   "s": 5363,
+   "h": "bcd7d290c11a3e385e2903260d7abb8d7af02306bd8925174f17060c40983529"
+  },
+  {
+   "p": "wolkenhopser/manifest.webmanifest",
+   "s": 790,
+   "h": "2baab82eadf887853b6a926154990288dd01a35457bc7102234ceaad164fb546"
+  },
+  {
+   "p": "wolkenhopser/style.css",
+   "s": 14568,
+   "h": "c04ca0393fb6390585fb1c69d7775105eb66a43862a4d699b68ce9beb3b97623"
+  },
+  {
+   "p": "wolkenhopser/sw.js",
+   "s": 2012,
+   "h": "ffc30668efdf8dce5571e09c868d0529279c6c4d04ca14b10369dc6acfbc2d66"
   },
   {
    "p": "wortfunk/card.jpg",

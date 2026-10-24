@@ -33,6 +33,7 @@ window.EASYGAMES_MODES = {
   'tortenschlacht': { pad: true, online: true, multi: true, tvParam: true },
   'funkgalgen': { pad: true, online: true, multi: true, tvParam: true },
   'sendemast-sumo': { pad: true, online: true, multi: true, tvParam: true },
+  'wolkenhopser': { online: true },
   'winzflitzer': { multi: true },
   'gay-life': { online: true },
   'bunte-insel': { online: true, pad: true, multi: true, tvParam: true },

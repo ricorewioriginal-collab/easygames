@@ -470,6 +470,19 @@ window.EASYGAMES_GUIDES = {
    "Im Radio-Rhythmus ist der höchste Punkt einer Frucht genau auf dem Schlag – dort schneiden!"
   ]
  },
+ "wolkenhopser": {
+  "anleitung": "Wolkenhopser ist ein Endlos-Springspiel: Hopsi springt von allein, sobald er von oben auf einer Plattform landet – du steuerst nur links und rechts. Wer am Rand rausläuft, kommt auf der anderen Seite wieder rein; wer unten aus dem Bild fällt, verliert. Plattformen: grün normal, blau beweglich, gestrichelt verschwindet nach einem Sprung, braun mit Riss bricht weg. Federn und Trampoline schießen dich hoch, 🧢 Propellermütze und 🚀 Raketenrucksack lassen dich fliegen, 🫧 Schutzblase rettet einmal. Monster besiegst du durch Draufspringen oder Abschießen; schwarze Löcher ziehen dich an. Mit Münzen schaltest du 8 Hopsis frei. Gebiete: Blumenwiese, Wolkenmeer, Abendhimmel, Sternennacht, Weltall. Modi: Spielen, 📅 Tagesrekord (eine Welt pro Tag für alle) und 🌐 Online-Rennen (alle springen gleichzeitig durch dieselbe Welt, jeder auf seinem Gerät; per QR-Code oder Link von überall).",
+  "steuerung": [
+   "Tastatur: ← → oder A D lenken, Leertaste / ↑ / W schießen, Esc oder P Pause.",
+   "Touch: linke oder rechte Bildschirmhälfte halten, 🎯 schießen – oder in den Optionen „Handy neigen“ einschalten.",
+   "Gamecontroller: Stick oder Steuerkreuz lenken, A/X schießen, Start Pause; im Menü Steuerkreuz und A."
+  ],
+  "tipps": [
+   "Braune Plattformen mit Riss sind Fallen – sie brechen sofort weg.",
+   "Über Monstern nicht zögern: von oben draufspringen gibt einen Extra-Sprung.",
+   "Am Rand durchlaufen ist oft der kürzere Weg zur nächsten Plattform."
+  ]
+ },
  "sendemast-sumo": {
   "anleitung": "Sendemast-Sumo ist eine Party-Prügelei in 3D: Sumo-Ringer stehen auf einer Plattform ganz oben auf einem Sendemast über den Wolken. Schubst die anderen über den Rand – wer zuletzt oben steht, gewinnt die Runde. Nach kurzer Zeit bröckelt die Plattform Ring für Ring (der Rand blinkt vorher rot), am Ende schrumpft sie immer weiter. 💨 Schubs ist ein kurzer Sprint, der viel stärker schiebt; 💥 Stampfer ist ein Sprung mit Druckwelle bei der Landung – in der Luft kann dich niemand schubsen. Power-ups: 🍔 Mega (groß und schwer), ⚡ Turbo, 🛡️ Schild, 💥 Druckwelle. Fünf Arenen: Abendrot, Eiszacken (rutschig), Sturmmast (Böen), Gewitterspitze (Blitze) und Wackelturm (kippt). Modi: 🏆 Turnier (5 Masten gegen je 3 immer stärkere Gegner, Punkte für die Rangliste), ⚡ Schnelles Spiel, 🎮 Lokal (2–4 an einem Gerät mit zwei Tastatur-Belegungen und Controllern) und 🌐 Online & Handys (bis zu 8 Handys als Controller per QR-Code, Lücken füllt der Computer). Acht erfundene Kämpfer mit eigenen Fantasie-Sendern.",
   "steuerung": [

@@ -1495,6 +1495,40 @@
    }
   },
   {
+   "id": "wolkenhopser",
+   "title": "Wolkenhopser – Hopsi will nach oben!",
+   "desc": "Endlos nach oben springen: Hopsi hüpft von Plattform zu Plattform – über Blumenwiese, Wolkenmeer und Sternennacht bis ins Weltall. Bewegliche, verschwindende und brüchige Plattformen, Federn, Trampoline, Propellermütze, Raketenrucksack, Monster zum Draufspringen oder Abschießen und schwarze Löcher. Münzen schalten 8 Hopsis frei; Tagesrekord und Online-Rennen in derselben Welt.",
+   "icon": "☁️",
+   "img": "wolkenhopser/card.jpg",
+   "bg": "linear-gradient(145deg,#7fd3ff,#9be37a 60%,#ffd23f)",
+   "glow": "rgba(127,211,255,.5)",
+   "path": "wolkenhopser/",
+   "modes": {
+    "online": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Wolkenhopser ist ein Endlos-Springspiel: Hopsi springt von allein, sobald er von oben auf einer Plattform landet – du steuerst nur links und rechts. Wer am Rand rausläuft, kommt auf der anderen Seite wieder rein; wer unten aus dem Bild fällt, verliert. Plattformen: grün normal, blau beweglich, gestrichelt verschwindet nach einem Sprung, braun mit Riss bricht weg. Federn und Trampoline schießen dich hoch, 🧢 Propellermütze und 🚀 Raketenrucksack lassen dich fliegen, 🫧 Schutzblase rettet einmal. Monster besiegst du durch Draufspringen oder Abschießen; schwarze Löcher ziehen dich an. Mit Münzen schaltest du 8 Hopsis frei. Gebiete: Blumenwiese, Wolkenmeer, Abendhimmel, Sternennacht, Weltall. Modi: Spielen, 📅 Tagesrekord (eine Welt pro Tag für alle) und 🌐 Online-Rennen (alle springen gleichzeitig durch dieselbe Welt, jeder auf seinem Gerät; per QR-Code oder Link von überall).",
+    "steuerung": [
+     "Tastatur: ← → oder A D lenken, Leertaste / ↑ / W schießen, Esc oder P Pause.",
+     "Touch: linke oder rechte Bildschirmhälfte halten, 🎯 schießen – oder in den Optionen „Handy neigen“ einschalten.",
+     "Gamecontroller: Stick oder Steuerkreuz lenken, A/X schießen, Start Pause; im Menü Steuerkreuz und A."
+    ],
+    "tipps": [
+     "Braune Plattformen mit Riss sind Fallen – sie brechen sofort weg.",
+     "Über Monstern nicht zögern: von oben draufspringen gibt einen Extra-Sprung.",
+     "Am Rand durchlaufen ist oft der kürzere Weg zur nächsten Plattform."
+    ]
+   },
+   "size": 125899,
+   "files": 9,
+   "offline": true,
+   "cloud": {
+    "game": "wolkenhopser",
+    "prefix": "wolkenhopser-"
+   }
+  },
+  {
    "id": "anmacha-preisradar",
    "title": "AnMaCha Preisradar",
    "desc": "Das Preis-Schätzspiel: Gebotsduell, Frequenz-Skala, Teurer oder billiger, Einkaufswagen und Preisfinale – bis zu 4 Spieler, Computer-Gegner, geheime Tipps per Handy. 200+ Produkte, präsentiert vom RicoReWi Radioportal.",
