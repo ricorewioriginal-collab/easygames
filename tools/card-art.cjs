@@ -18,6 +18,11 @@ const dicePips = (x, y, s, L, R) => { const w = s * .866, h = s * .5; return L.m
 const sword = rot => `<g transform="rotate(${rot} 100 100)"><polygon points="100,6 108,22 108,118 92,118 92,22" fill="#e9eef7" stroke="#8b97ad" stroke-width="3" stroke-linejoin="round"/><path d="M100 14V112" stroke="#b7c2d6" stroke-width="3"/><rect x="72" y="116" width="56" height="11" rx="5" fill="#ffc53d" stroke="#8a5a00" stroke-width="3"/><rect x="95" y="126" width="10" height="30" rx="4" fill="#8a4b1c"/><circle cx="100" cy="160" r="8" fill="#ffc53d" stroke="#8a5a00" stroke-width="3"/></g>`;
 
 const E = {
+  'pestwacht': () => `<path d="M100 14L168 40V96C168 140 138 168 100 186 62 168 32 140 32 96V40Z" fill="#3c4a30" stroke="#e0aa45" stroke-width="8" stroke-linejoin="round"/><path d="M100 14L168 40V96C168 140 138 168 100 186Z" fill="#00000030"/>
+<path d="M56 150V104h12v-10h10v10h12V86h20v18h12v-10h10v10h12v46z" fill="#d8ccb0" stroke="#5e4630" stroke-width="4" stroke-linejoin="round"/><path d="M90 150v-18a10 10 0 0 1 20 0v18z" fill="#3a2a1a"/>
+<path d="M100 86V60" stroke="#5e4630" stroke-width="5" stroke-linecap="round"/><polygon points="100,60 124,68 100,76" fill="#b8392e" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="100" cy="40" r="11" fill="#ffcf6a" stroke="#fff" stroke-width="3"/><path d="M100 22v-6M84 30l-5-4M116 30l5-4" stroke="#ffcf6a" stroke-width="4" stroke-linecap="round"/>
+<path d="M44 168c10-14 20-14 30 0M126 168c10-14 20-14 30 0" stroke="#8aa84a" stroke-width="6" stroke-linecap="round" fill="none"/>`,
   'mahjong': () => {
     const tile = (x, y, rot, face) => `<g transform="rotate(${rot} ${x + 30} ${y + 40})"><rect x="${x + 6}" y="${y + 8}" width="60" height="80" rx="10" fill="#1f8a64"/><rect x="${x}" y="${y}" width="60" height="80" rx="10" fill="#fbf5e6" stroke="#d8c9a4" stroke-width="2.5"/>${face(x, y)}</g>`;
     const chung = (x, y) => `<path d="M${x + 14} ${y + 30}h32v20h-32zM${x + 30} ${y + 14}v52" fill="none" stroke="#cc2a2a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`;

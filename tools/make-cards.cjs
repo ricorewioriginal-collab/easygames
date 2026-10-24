@@ -27,7 +27,8 @@ const CARDS = {
   'partyverse': ['3D-PARTYSPIEL', ['PARTY-', 'VERSE'], '🎲', ['🎉', '🎈']],
   'winzflitzer': ['MICRO-RENNEN · 3D', ['WINZ-', 'FLITZER'], '🏎️', ['🥣', '🏁']],
   'fabelkick': ['FANTASY-FUSSBALL · 3D', ['FABEL', 'KICK'], '⚽', ['🐒', '🐉']],
-  'mahjong': ['MAHJONG SOLITAIRE · 3D', ['MAHJONG', '3D'], '🀄', ['🎋', '🐉']]
+  'mahjong': ['MAHJONG SOLITAIRE · 3D', ['MAHJONG', '3D'], '🀄', ['🎋', '🐉']],
+  'pestwacht': ['ÜBERLEBEN · AUFBAU · 3D', ['PEST-', 'WACHT'], '🏰', ['🌿', '⚔️']]
 };
 function colors(id) {
   const src = fs.readFileSync(path.join(root, 'games.js'), 'utf8'), i = src.indexOf("id: '" + id + "'");

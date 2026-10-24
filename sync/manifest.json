@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "266fde520834",
- "generated": "2026-10-23T23:57:20+00:00",
- "commit": "852fb4217011dd1bee14d95fc91084cbd2f23330",
+ "version": "85f461ae80e6",
+ "generated": "2026-10-24T02:11:00+02:00",
+ "commit": "90cca22f0749b6036f10d5b38d6759f93f050145",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2740,
-   "h": "3c91e299cade33452fb24688befbce449ac8bcb6be31382d00565c12bc4bdfb8"
+   "s": 2760,
+   "h": "532cf0368b4cd544a040c883ea15424ad8450e9042f809dd5b0536f4743058cc"
   },
   {
    "p": "chat.html",
@@ -5308,13 +5308,13 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22205,
-   "h": "bf8a8642c790cd2c39905514dd9ebbdafd155acb40179ec55ccb1a79e56124b8"
+   "s": 22218,
+   "h": "753962698faf5efce0f939fda3edc498c000335135428b785a9b0b77511a9e85"
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 34938,
-   "h": "cc1b4426432126d3d0d9dee6a58459f9cdf1d4049f5aa8a41370ea42c63b0683"
+   "s": 35357,
+   "h": "6faa7046e47538804aa903d714cfcef6349100f0350928ee4ebe2377645c2433"
   },
   {
    "p": "cloud/anmacha-bug.js",
@@ -5773,8 +5773,8 @@
   },
   {
    "p": "games.js",
-   "s": 35544,
-   "h": "f8ab752503ad1ab44eb45d75ca686b7a3be8663289757beb1c280da7ad223c1f"
+   "s": 36483,
+   "h": "44e4d60ecd07dfc7b61f64562e4fd4466e866d5b8e233f12fe65c74ea6d65bd7"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5933,8 +5933,8 @@
   },
   {
    "p": "guides.js",
-   "s": 101483,
-   "h": "7e434b8a84c7529fbd6fe6832fd660e2765585b601ef73d0f7eebca4964e6af8"
+   "s": 104110,
+   "h": "c4d0f38c6348bd8f4818386bcbc8de6d19296e0ce7cd93fe0f7658b9f6721933"
   },
   {
    "p": "heute.html",
@@ -6213,8 +6213,8 @@
   },
   {
    "p": "mahjong/js/engine.js",
-   "s": 14024,
-   "h": "f20851057ee636d607485fb08202b373b72c9e96bb6ba8e5533961d088d0207d"
+   "s": 14239,
+   "h": "a2533487e69907272abbcf26597f89b1484ed474ccb60671191e02ee9376b2d9"
   },
   {
    "p": "mahjong/js/faces.js",
@@ -6233,8 +6233,8 @@
   },
   {
    "p": "mahjong/js/main.js",
-   "s": 35162,
-   "h": "37a10fef24370528683f3a78ec96517d1bdfec3b5107ad3e99557c9bd012d86d"
+   "s": 35347,
+   "h": "e7f0f62d8575cb9f3ba1d389d02310fa2c9cb0deacca316cdc89a4fec05fe33e"
   },
   {
    "p": "mahjong/js/render.js",
@@ -6605,6 +6605,141 @@
    "p": "partyverse/sw.js",
    "s": 1976,
    "h": "62e8a79516cd0b3a130e39ca5050d271381432e99b5236be2f66d8ee51aa9940"
+  },
+  {
+   "p": "pestwacht/card.jpg",
+   "s": 41306,
+   "h": "303f6054b7bc51d6fcab924ee4440cd866c040094c1833c685775fa71fdd85b5"
+  },
+  {
+   "p": "pestwacht/icon.svg",
+   "s": 416,
+   "h": "ea7d7de336d025816a28b992710c90ad8b251deb678f04bab730a2be6ac6e755"
+  },
+  {
+   "p": "pestwacht/index.html",
+   "s": 7419,
+   "h": "03bc17b0e750a969bb696629617b36370a179ad35a1542dd48c85c3ae9a6c5b8"
+  },
+  {
+   "p": "pestwacht/js/ai.js",
+   "s": 23812,
+   "h": "5c12c166fd34eebbfefad7e5237eb90a02144375440588f9ce46cecb02334d92"
+  },
+  {
+   "p": "pestwacht/js/audio.js",
+   "s": 5321,
+   "h": "f4ad30b0fdbca97f6df069acc1b55169c5c25a0d4ba24983ec7c0d54654d2a5e"
+  },
+  {
+   "p": "pestwacht/js/battle.js",
+   "s": 16686,
+   "h": "69531f49bc5c6bcdf19063b2850fb1747ec521610310cc9bc1c020192e2f3989"
+  },
+  {
+   "p": "pestwacht/js/campaign.js",
+   "s": 17123,
+   "h": "e4918d15583a8fc86c5cf293bee342e53316b253ae13f9875d375c8c8efc9193"
+  },
+  {
+   "p": "pestwacht/js/city.js",
+   "s": 11865,
+   "h": "72cf6837fd92a11f9f0c7d66b33c0c9b8f03174da1ca273e787166c366e364a2"
+  },
+  {
+   "p": "pestwacht/js/core.js",
+   "s": 5355,
+   "h": "164e71b977379a89ef5367adb86ad42f7d85f8f3f0b70bc6b3565546d4853dd2"
+  },
+  {
+   "p": "pestwacht/js/data.js",
+   "s": 42434,
+   "h": "84fb59cc0ec5877c93bd430e52dce578d0fd994105b05da6c41851961240156d"
+  },
+  {
+   "p": "pestwacht/js/diplo.js",
+   "s": 24692,
+   "h": "9749671a0bbd57756e256894b2706336551dba52160fc4e4b7493c4a76e0ae07"
+  },
+  {
+   "p": "pestwacht/js/econ.js",
+   "s": 14646,
+   "h": "6092aaa4143937ba2280da45a6ba50e013ae8bceca4a4e1f9ce3d72f1487ec77"
+  },
+  {
+   "p": "pestwacht/js/game.js",
+   "s": 16138,
+   "h": "bd62867442fc43b869e8d2981730951a923989d55ccb4407073e59e05a1e8553"
+  },
+  {
+   "p": "pestwacht/js/heroes.js",
+   "s": 5032,
+   "h": "dcad85de23f86b9fa1945baf30f67a2b38dec86873bdb2df9cef76f973bef223"
+  },
+  {
+   "p": "pestwacht/js/input.js",
+   "s": 4897,
+   "h": "17f2cc2e327bfac7e0bd3e05014cf423f9f81d984a4096a16f33655be6cfa3cd"
+  },
+  {
+   "p": "pestwacht/js/main.js",
+   "s": 4276,
+   "h": "0bf4df4111657bf6ec16477021e61827ff2d31f09785cf2f6604e64652ad8478"
+  },
+  {
+   "p": "pestwacht/js/march.js",
+   "s": 22647,
+   "h": "c320bdd83a89043f6460dae600d32b80cc11a50a4cb0d2a1c3027f7d58cd86c6"
+  },
+  {
+   "p": "pestwacht/js/panels.js",
+   "s": 62954,
+   "h": "6a44f014a1602d6b327861b281edb5a826a19d518e27b76219dddd558d2cd82d"
+  },
+  {
+   "p": "pestwacht/js/render.js",
+   "s": 83514,
+   "h": "270e7a40d07ec766f602da237f928739f28d72fb1b120446d34dbf0c8ce287b6"
+  },
+  {
+   "p": "pestwacht/js/save.js",
+   "s": 6006,
+   "h": "60c15ab4469e9dadaf9b394f67ba75dc9c16f94575ebe4c601886b0242185329"
+  },
+  {
+   "p": "pestwacht/js/ui.js",
+   "s": 46410,
+   "h": "5dc14f6f086211a9242dd175ff1328e341a1b2548238d44c5836d73a7aacced2"
+  },
+  {
+   "p": "pestwacht/js/waves.js",
+   "s": 18511,
+   "h": "2b12b89515534ffb970eeb498ad1a169bb54c701be7cee988022a52ab602f552"
+  },
+  {
+   "p": "pestwacht/js/world.js",
+   "s": 11619,
+   "h": "d60cbc7b11f800e801bd7856e660c11f73a5974403c1f06e3784af2045a05912"
+  },
+  {
+   "p": "pestwacht/logo.svg",
+   "s": 1538,
+   "h": "8c332c9689fa5a3af9199824c05a7001b458f882aca70885f9e6e04b2005bfae"
+  },
+  {
+   "p": "pestwacht/manifest.webmanifest",
+   "s": 773,
+   "h": "cdab0ce2f972d34d942b046c8ddef4647954c93d39680856119f9392e4a3f59f"
+  },
+  {
+   "p": "pestwacht/style.css",
+   "s": 16290,
+   "h": "9da06c2cfaeec8dbe20505b1186e50afebe93c66cf15253b62b03b198f697cda"
+  },
+  {
+   "p": "pestwacht/sw.js",
+   "s": 2001,
+   "h": "62759995b42672bed9d17515b2145b873d408dddcedeb55dbe93b6918e99047b"
   },
   {
    "p": "prismrush/assets/index-Br18tWvY.js",
@@ -7468,8 +7603,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 155562,
-   "h": "2b6482d799ede576d9159685377ae17e88d942d22c3548e0ea215af0f7e52c53"
+   "s": 159414,
+   "h": "a91d163b7409b0406d3602034953beb1a82f2ae0bfefd8b86f4220d5c332c2d0"
   },
   {
    "p": "taschi/card.svg",

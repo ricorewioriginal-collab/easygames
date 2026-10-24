@@ -32,6 +32,11 @@
     'krawallvoegel': [
       { id: 'main', title: 'Gesamtpunkte (alle Level)', key: 'easygames.krawallvoegel.v1', path: 'lv.*.1', agg: 'sum', order: 'desc', unit: 'Punkte' }
     ],
+    'pestwacht': [
+      { id: 'main', title: 'Meiste abgewehrte Wellen', key: 'easygames.pestwacht.best', path: 'waves', order: 'desc', unit: 'Wellen' },
+      { id: 'pop', title: 'Größte Zuflucht', key: 'easygames.pestwacht.best', path: 'pop', order: 'desc', unit: 'Bewohner' },
+      { id: 'cured', title: 'Meiste Geheilte', key: 'easygames.pestwacht.best', path: 'cured', order: 'desc', unit: 'Geheilte' }
+    ],
     'mahjong': [
       { id: 'main', title: 'Reise-Punkte (48 Level)', key: 'easygames.mahjong.v1', path: 'lv.*.p', agg: 'sum', order: 'desc', unit: 'Punkte' },
       { id: 'blitz', title: 'Zeitjagd-Rekord', key: 'easygames.mahjong.v1', path: 'blitz.best', order: 'desc', unit: 'Punkte' },
