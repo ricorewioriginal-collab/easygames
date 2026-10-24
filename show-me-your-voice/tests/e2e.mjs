@@ -178,7 +178,7 @@ await p.waitForSelector('#sBonus.on .big', { timeout: 90000 }); await shot(p, '1
 ok((await p.evaluate(() => window.SMYVApp.state().save.best)) > 0, 'Gala-Rekord gespeichert');
 await p.click('#sBonus [data-back]'); await p.click('[data-m="arch"]'); await p.waitForSelector('#sArchive.on');
 await p.click('details[data-s="staffel-2"] summary'); await p.waitForTimeout(200);
-ok((await p.locator('details[data-s="staffel-2"] .ep').count()) === 5, 'Archiv: Staffel 2 mit 5 Folgen');
+ok((await p.locator('details[data-s="staffel-2"] .ep').count()) === 6, 'Archiv: Staffel 2 mit 6 Folgen (mit Finale)');
 await p.click('details[data-s="staffel-2"] [data-v]'); ok(/youtube-nocookie\.com\/embed\/lLvk-xvvDbw/.test(await p.innerHTML('#ovBox')), 'Archiv: Video wird eingebettet');
 await shot(p, '18-archiv'); await p.keyboard.press('Escape');
 await p.click('#sArchive [data-back]'); await p.click('[data-m="set"]'); await p.waitForSelector('#sSettings.on');

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "99ff5b803dec",
- "generated": "2026-10-24T06:50:42+00:00",
- "commit": "76b199ea319c9db8d8307daa7f36f1cd8825511c",
+ "version": "ee1d203630ed",
+ "generated": "2026-10-24T07:22:39+00:00",
+ "commit": "e2a9e78d9647e2fe758e8ddaf7075f27c5d0f4e4",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7648,18 +7648,18 @@
   },
   {
    "p": "show-me-your-voice/index.html",
-   "s": 14445,
-   "h": "325247d8e43b28c6c6c1313000247e6a5b071c6aa804b0c588b5816a3e50353f"
+   "s": 15304,
+   "h": "d8c45c413675e5f7cca56976a11041ffcf4783a971345e2ac22fc4e243f5a3d2"
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 101401,
-   "h": "68bbd29d2306e776bf09250ca7945cbe32a655a0454f0a83aa7a3c0cf477c601"
+   "s": 116480,
+   "h": "5eaf4fcf12aef19643d1ac59fd4d6cde5d2f6dbc7062cfd7b9298971ce05206a"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
-   "s": 14855,
-   "h": "ee0e5e73d7b49bf204d75f360086808f42ef0dfb3b83c436a132e430c836f8ff"
+   "s": 14899,
+   "h": "2af4813a5a7a36618237ec95a237e45523dde71660fdb0465fdff4bc4ae961e2"
   },
   {
    "p": "show-me-your-voice/js/avatar.js",
@@ -7668,13 +7668,13 @@
   },
   {
    "p": "show-me-your-voice/js/core.js",
-   "s": 23085,
-   "h": "a90470e3baf76d54eae723edbaf706414a8c7c9ca337846dc23ad8df01c53583"
+   "s": 26719,
+   "h": "4e512274195bb57951d645319282cece125dd83846d092437cf937c8b3ed803b"
   },
   {
    "p": "show-me-your-voice/js/data.js",
-   "s": 30724,
-   "h": "6c9fb5badb1d9436d1f8496929c58cf6875fa8b859cc71ae44eef256b9d66051"
+   "s": 32915,
+   "h": "eb996f92cf9bf0cc47e56b6b928cba0f7b684bb03f514a2cbebffe18177572c6"
   },
   {
    "p": "show-me-your-voice/js/stage.js",
@@ -7688,8 +7688,8 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 21181,
-   "h": "ff7c9c082f2b08eabc6f05c57e02b8273467c5b1a1c661c759e7dd37b35afaea"
+   "s": 21793,
+   "h": "7179a1b87b625b1f90b977965bb8d136ab39d82bcbfce1f8aec4eda0e18a07e4"
   },
   {
    "p": "show-me-your-voice/sw.js",
@@ -7954,7 +7954,7 @@
   {
    "p": "sync/catalog.json",
    "s": 178242,
-   "h": "a8877402031a98a8881d61f2faa95bbb3ff3e303d5caae36451e8bd4f9d298a1"
+   "h": "1d0cc031d31d5ff4f9b608746d2ec2be4659e62a3c56bc51f62ec28d040f9890"
   },
   {
    "p": "taschi/card.svg",

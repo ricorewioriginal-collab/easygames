@@ -222,5 +222,5 @@
   }
 
   root.SMYVAudio = { radioOnLost: cb => { onLost = cb; }, radioStart, radioStop, radioMute, radioOnsets, radioSong, radioActive: () => !!radio, radioPlain: () => !!(radio && radio.plain), init, setVolume, ok, song, tick, chordTones, sfx, guide, voiceOn, voiceSet, voiceOff,
-    micStart, micStop, micPitch, micLevel, micActive: () => !!mic, mtof, ctxTime: () => (ctx ? ctx.currentTime : 0) };
+    micStart, micStop, micPitch, micLevel, micActive: () => !!mic, micStream: () => (mic ? mic.stream : null), mtof, ctxTime: () => (ctx ? ctx.currentTime : 0) };
 })(window);

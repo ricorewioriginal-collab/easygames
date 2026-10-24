@@ -339,6 +339,26 @@
       a: [{ t: 'Emotional erzählen', d: 'Lena +2 Sympathie, +2 Fans', symp: { lena: 2 }, fans: 2 }, { t: 'Selbstbewusst auftreten', d: 'David +2 Sympathie', symp: { david: 2 } }] }
   ];
 
-  const DATA = { MAIN_JURY, STATIONS, INTERVIEW, HOST_Q, EVENTS, CRIT, JURY, COACH, HOST, CANDIDATES, STYLES, SONGS, MOTTOS, APPROACH, ACTION, ROUNDS, COMMUNITY, TRAINING, ACHIEVEMENTS, ARCHIVE };
+  // Freies Vorsingen: Karaoke-Videos mit Lyrics (nur Kanäle, die das Einbetten erlauben) und eine Challenge je Genre.
+  // goal: Wert aus der Stimm-Auswertung (inton, stab, range, dyn, presence), der zusätzlich erreicht werden muss.
+  const KARAOKE = [
+    { id: 'pop', name: 'Pop', icon: '💖', style: 'pop', goal: { k: 'presence', min: 80, t: 'Bühnenpräsenz: fast durchgehend singen' },
+      songs: [['Kylie Minogue – Can\'t Get You Out Of My Head', 'hWA2yF_6aJU', 'Musisi Karaoke'], ['Katy Perry – The One That Got Away', 'oVkONgfvXfA', 'Musisi Karaoke'],
+        ['Rihanna – Kiss It Better', 'LBHAa8U0lsA', 'Musisi Karaoke']] },
+    { id: 'ballade', name: 'Ballade', icon: '🕯️', style: 'ballade', goal: { k: 'inton', min: 75, t: 'Intonation: Töne sauber treffen' },
+      songs: [['Adele – Someone Like You', 'rMSQwIp4Jg8', 'Musisi Karaoke'], ['Michael Jackson – You Are Not Alone', 'tzK4WzeGkAw', 'Musisi Karaoke'],
+        ['Dolly Parton – I Will Always Love You', 'yy3EuXt9KAE', 'KaraFun']] },
+    { id: 'rock', name: 'Rock', icon: '🎸', style: 'rock', goal: { k: 'dyn', min: 50, t: 'Ausdruck: laut und leise, volle Power' },
+      songs: [['Queen – Bohemian Rhapsody', '_ih5L6S7Ejk', 'Karaoke KING'], ['Asia – Heat of the Moment', 'jjpnRTQqATE', 'KaraFun'],
+        ['The Stranglers – Golden Brown', 'UBRWwIlP39o', 'Musisi Karaoke'], ['Michael Jackson – Dirty Diana', 'h7dibTBNtjQ', 'Musisi Karaoke']] },
+    { id: 'soul', name: 'Soul', icon: '🎷', style: 'soul', goal: { k: 'stab', min: 75, t: 'Stabilität: Töne ruhig halten' },
+      songs: [['Seal – Crazy', 'MmqIm6IWy6E', 'KaraFun'], ['Smokey Robinson – Being with You', 'bxaeid10r_w', 'KaraFun'],
+        ['The Spinners – Could It Be I\'m Falling in Love', 'u9pN8KBivHM', 'KaraFun']] },
+    { id: 'party', name: 'Deutsch & Party', icon: '🎉', style: 'pop', goal: { k: 'range', min: 55, t: 'Stimmumfang: hoch und tief singen' },
+      songs: [['KITSCHKRIEG & Shirin David – Gut Genug', 'nbQEgD1LZX8', 'Musisi Karaoke'], ['INNA – Wherever You Go', 'goiTicO-fHA', 'Karaoke Songs'],
+        ['Peter, Paul and Mary – 500 Miles', 'VWdxPuOxx98', 'Musisi Karaoke']] }
+  ];
+
+  const DATA = { MAIN_JURY, STATIONS, INTERVIEW, HOST_Q, EVENTS, CRIT, JURY, COACH, HOST, CANDIDATES, STYLES, SONGS, MOTTOS, APPROACH, ACTION, ROUNDS, COMMUNITY, TRAINING, ACHIEVEMENTS, ARCHIVE, KARAOKE };
   if (typeof module !== 'undefined' && module.exports) module.exports = DATA; else root.SMYV_DATA = DATA;
 })(typeof window !== 'undefined' ? window : globalThis);
