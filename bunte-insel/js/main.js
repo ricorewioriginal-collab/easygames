@@ -1392,6 +1392,7 @@
   const room = BI.createRoom({ scene, A, fx, P, save, persist, say, setStick, changed: () => shareRoomSoon(), updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   let istory = null; let smode = null; /* Story-Modus (weiter unten) */
   const story = BI.createStory({ islandGoal: () => istory ? istory.goal() : null, worldLog: () => smode ? smode.worldLog() : null, A, fx, P, save, say, addStars: n => addStars(n), persist, earn: id => kids.earn(id), setStick, updateButtons: f => updateButtons(f), guideTo: id => { const d = DEST.find(x => x.id === id); if (d) setGuide(d); },
+    destLocked: id => { const d = DEST.find(x => x.id === id), q = d && d.at(); return !!(q && smode && smode.lockedAt(q.x, q.z)); },
     farmGoal: () => farm.questText(),
     log: () => ({ extras: [istory.log(), innen.log(), bade.log(), mplus.log(), schwamm.log(), raetsel.log(), schluessel.log(), sammeln.log(), dampf.log(), drachen.log(), prisma.log(), bauland.log(), fussball.log(), huepf.log(), taschi.log(), wunsch.log(), maerchen.log(), schatz.log(), atlantis.log(), zotik.log(), radio.log(), wald.log()].filter(Boolean), farm: farm.log(), einsatz: einsatz.log(), tycoon: tycoon.log(), mission: mission ? { icon: (MTITLE[mission.kind] || ['📦'])[0], title: (MTITLE[mission.kind] || [0, 'Auftrag'])[1], i: Math.min(mission.i + 1, mission.steps.length), n: mission.steps.length } : offer ? { icon: (MTITLE[offer.kind] || ['📦'])[0], title: (MTITLE[offer.kind] || [0, 'Auftrag'])[1] + ' (angeboten)', i: 0, n: 0 } : null,
       daily: { today: !!(save.daily && save.daily.d === (d => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate())(new Date())), streak: (save.daily && save.daily.s) || 0 } }) });
@@ -1460,6 +1461,7 @@
   const atlantis = BI.createAtlantis({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), cam, fade: cb => { fadeEl.firstElementChild.textContent = '🔱'; fadeEl.classList.add('on'); setTimeout(() => { cb(); fadeEl.classList.remove('on'); fadeEl.firstElementChild.textContent = '💤'; }, 900); }, mood: on => setAtlMood(on) }); atlantis.people(town.folk);
   const radio = BI.createRadio({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), cam, setStick, updateButtons: f => updateButtons(f) });
   const life = BI.createLife({ scene, W, P, say });
+  { const q = BI.GAESTE_TREFF, sg = textSprite('🎮 easygames-Treff', 5.6, 1.1, 60); sg.position.set(q.x, 3.6, q.z - 6); scene.add(sg); } /* Schild über dem Treffpunkt der Gäste */
   const zotik = BI.createZotik({ gear, scene, W, A, fx, P, say, save, persist, playing: () => state === 'play', addStars: n => addStars(n), cam, takeMascot: id => takeMascot(id), start: k => startGame(k, true), go: id => { const d = DEST.find(x => x.id === id); if (d) beamTo(d); } });
   const vox = BI.createVoxels({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n) });
   const einsatz = BI.createEinsatz({ scene, W, A, fx, P, say, save, persist, cam, addStars: n => addStars(n), playing: () => state === 'play', lockedAt: (x, z) => smode ? smode.lockedAt(x, z) : null });
@@ -1479,7 +1481,7 @@
   /* Satz für das Gespräch: beim ersten Mal persönliche Begrüßung, danach bunt gemischt (eigene Sätze, Plausch, Tageszeit/Wetter/Sterne) – ohne Wiederholung hintereinander */
   const localizeNpc = s => window.BunteInselI18n && window.BunteInselI18n.t ? window.BunteInselI18n.t(s) : s;
   function npcLine(p) {
-    if (!(save.talked || []).includes(p.name)) { p.last = 0; return localizeNpc('Hallo') + ' ' + heroName() + '! ' + localizeNpc(p.lines[0]); }
+    if (!(save.talked || []).includes(p.name)) { p.last = 0; const l0 = localizeNpc(p.lines[0]); return localizeNpc('Hallo') + ' ' + heroName() + '! ' + l0.charAt(0).toUpperCase() + l0.slice(1); } /* nach „!“ groß weiter */
     const r = Math.random(); if (r < .2) return localizeNpc(BI.TALK.ctx({ night: night > .5, kind: weather && weather.kind, stars: save.stars }));
     if (r < .4) { const c = BI.TALK.chat; return localizeNpc(c[(Math.random() * c.length) | 0]); }
     let k = 0; if (p.lines.length > 1) do { k = (Math.random() * p.lines.length) | 0; } while (k === p.last); p.last = k; return localizeNpc(p.lines[k]);
@@ -1489,7 +1491,8 @@
     const p = n.p, line = npcLine(p); n.wait = 5; n.h = Math.atan2(P.x - n.x, P.z - n.z); n.c.group.rotation.y = n.h; n.hop = .4;
     dlg.show({ name: p.name, icon: n.kid ? '🧒' : '🙂', look: n.c && n.c.group.userData.opts, text: line });
     { const iv = garden.inv(); if ((iv.bouquet || 0) > 0) { iv.bouquet--; addStars(3); A.fanfare(); fx.burst(n.x, 2, n.z, 16, [BI.C.pink, BI.C.red, BI.C.white], 4, 1.2, 28, 4); say('💐 ' + p.name + ': „Oh, danke für die Blumen!“ +3 ⭐', 3200); kids.earn('bouquet'); } }
-    const T = save.talked || (save.talked = []); if (!T.includes(p.name)) { T.push(p.name); persist(); if (T.length >= 5) kids.earn('chat'); }
+    const T = save.talked || (save.talked = []); if (!T.includes(p.name)) { T.push(p.name); persist(); if (T.length >= 5) kids.earn('chat');
+      if (n.guest) { const met = BI.GAESTE.filter(g => T.includes(g.name)).length; addStars(1); say('🎮 Gast getroffen: ' + p.name + ' (' + met + ' von ' + BI.GAESTE.length + ') +1 ⭐', 3200); if (met >= 8) kids.earn('gaeste'); } }
   }
   function placeNear() {
     { const iv = innen.near(); if (iv) return { src: 'innen', n: iv }; if (innen.inside) return null; }
@@ -1579,6 +1582,7 @@
     { id: 'arena', icon: '🥊', name: 'Kampfarena', at: () => ({ x: SPOT.arena.kai.x, z: SPOT.arena.kai.z + 3 }) }, { id: 'forest', icon: '🌀', name: 'Alter Wald & Waldtor (zur Wald-Insel)', at: () => ({ x: SPOT.forest.gx, z: SPOT.forest.gz }) },
     { id: 'obby', icon: '🏁', name: 'Himmels-Parcours', at: () => obby.pad },
     { id: 'park', icon: '🎡', name: 'Freizeitpark', at: () => ({ x: BI.PARK.bridge.x1 + 6, z: BI.PARK.z }) },
+    { id: 'gaeste', icon: '🎮', name: 'easygames-Treff (Gäste aus anderen Spielen)', at: () => ({ x: BI.GAESTE_TREFF.x, z: BI.GAESTE_TREFF.z - 9 }) },
     { id: 'lighthouse', icon: '💡', name: 'Leuchtturm (Hauptinsel)', at: () => ({ x: SPOT.lighthouse.x, z: SPOT.lighthouse.z + 5 }) },
     { id: 'dampf', icon: '🎬', name: 'Dampfer-Hafen', at: () => ({ x: BI.DAMPF.x + 34, z: BI.DAMPF.z }) },
     { id: 'drachen', icon: '🐉', name: 'Drachenhöhen', at: () => ({ x: BI.DRACHEN.x, z: BI.DRACHEN.z - 38 }) },
