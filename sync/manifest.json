@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c2f64a1957ac",
- "generated": "2026-10-24T23:02:46+02:00",
- "commit": "348b0c3f5d1abefdec36a88774f0ded612c8bc7d",
+ "version": "acf55e2f1826",
+ "generated": "2026-10-24T21:16:38+00:00",
+ "commit": "24b07d12d2abd3d2fb029b4fa6efea92eff23964",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5763,8 +5763,8 @@
   },
   {
    "p": "einbinden.html",
-   "s": 90308,
-   "h": "d79266372497c771b721c48195c598e401ad1d1a7e4d817aea3cf0f894dfd027"
+   "s": 90362,
+   "h": "8f2142c4a9e4f82ad3651532fb46da5a2b1d4625bba8864163d5e9a339fa5735"
   },
   {
    "p": "erfolge.html",
@@ -8483,8 +8483,8 @@
   },
   {
    "p": "stream.html",
-   "s": 8502,
-   "h": "6466b861675050bae0de2d2e9d68694af636c6971e548b0727414475eaf870ff"
+   "s": 8575,
+   "h": "a7cd9ea21aa7153668fc5342713a0fca0dff44325e67697402c20eb786e0be1c"
   },
   {
    "p": "sync/catalog.json",

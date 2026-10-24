@@ -839,7 +839,7 @@ document.addEventListener('click', e => {
 });
 // ----- Stream-Overlay (stream.html) -----
 GAMES.filter(g => !/^[a-z]+:\/\//i.test(g.path)).forEach(g => { const o = document.createElement('option'); o.value = g.id; o.textContent = g.title; $('sGame').appendChild(o); });
-{ const q = new URLSearchParams(location.search); if (q.get('stream') && GAMES.some(g => g.id === q.get('stream'))) $('sGame').value = q.get('stream'); if (/^https:\/\//.test(q.get('share') || '')) $('sShare').value = q.get('share'); }
+{ const q = new URLSearchParams(location.search); const sg = q.get('stream') && GAMES.find(g => g.id === q.get('stream') || g.path.replace(/\/$/, '') === q.get('stream')); if (sg) $('sGame').value = sg.id; if (/^https:\/\//.test(q.get('share') || '')) $('sShare').value = q.get('share'); }
 let streamSeen = !('IntersectionObserver' in window);
 if (!streamSeen) new IntersectionObserver((e, ob) => { if (e.some(x => x.isIntersecting)) { streamSeen = true; ob.disconnect(); streamGen(); } }).observe($('sPrevBox'));
 function streamGen() {

@@ -67,7 +67,7 @@
   addEventListener('resize', fit); fit();
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.textContent = h; return e; }
   var g = null, id = P.get('game');
-  for (var i = 0; i < GAMES.length; i++) if (GAMES[i].id === id) g = GAMES[i];
+  for (var i = 0; i < GAMES.length; i++) if (GAMES[i].id === id || GAMES[i].path.replace(/\/$/, '') === id) g = GAMES[i];   // Spiel-ID oder Ordnername
   if (!g || /^[a-z]+:\/\//i.test(g.path)) {   // ohne gültiges Spiel: Auswahl
     var pk = el('div'); pk.id = 'pick'; pk.appendChild(el('h1', '', 'Spiel für das Overlay wählen'));
     GAMES.filter(function (x) { return !/^[a-z]+:\/\//i.test(x.path); }).forEach(function (x) { var a = el('a', '', x.title); var q = new URLSearchParams(location.search); q.set('game', x.id); a.href = '?' + q; pk.appendChild(a); });
