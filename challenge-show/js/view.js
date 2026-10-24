@@ -92,7 +92,7 @@
     let tag = null; if (c.human) { const t = ctex('tag' + c.id + c.name, 256, 64, (x, w, h) => { x.fillStyle = 'rgba(20,8,50,.82)'; x.beginPath(); x.roundRect ? x.roundRect(4, 4, w - 8, h - 8, 26) : x.rect(4, 4, w - 8, h - 8); x.fill(); x.fillStyle = '#ffd23a'; x.font = 'bold 34px Fredoka, system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(c.name.slice(0, 12), w / 2, h / 2 + 2); }); tag = new T.Sprite(new T.SpriteMaterial({ map: t, depthTest: false, transparent: true })); tag.scale.set(1.6, .4, 1); tag.position.y = 2.05; tag.renderOrder = 9; g.add(tag); }
     scene.add(g, sh); b = { g, sh, hl, hr, fl, fr, body, tag, hg, yaw: c.yaw || 0, t: Math.random() * 9, lx: c.x, lz: c.z, crown: null, puff: false }; beans.set(c.id, b); return b;
   }
-  function clearBeans() { for (const [, b] of beans) { scene.remove(b.g, b.sh); b.sh.geometry.dispose(); } beans.clear(); }
+  function clearBeans() { for (const [, b] of beans) { scene.remove(b.g, b.sh); if (b.mark) scene.remove(b.mark); b.sh.geometry.dispose(); } beans.clear(); }
   function syncBeans(S, dt, meId) {
     for (const c of S.cons) {
       const b = bean(c), age = c.out ? S.t - (c.outT || 0) : -1, gone = c.out && (age > 2.6 || age < 0 || c.outRound !== S.k);
@@ -111,6 +111,8 @@
       if (S.round === 'stuhl' && c.seat >= 0) { b.g.rotation.x = 0; b.fl.position.z = b.fr.position.z = .3; }
       b.sh.position.set(c.x, (c.falling ? -99 : groundAt(S, c)) + .02, c.z); b.sh.material.opacity = .28 * Math.max(.2, 1 - Math.abs(c.y) * .2);
       if (b.tag) b.tag.material.opacity = c.id === meId ? 1 : .8;
+      if (c.id === meId && !b.mark) { const m = new T.Group(), ring = new T.Mesh(new T.RingGeometry(.5, .62, 32), glow('#ffd23a', .9)); ring.rotation.x = -PI / 2; ring.position.y = .04; const ar = new T.Mesh(new T.ConeGeometry(.2, .36, 4), glow('#ffd23a')); ar.rotation.x = PI; ar.position.y = 2.55; m.add(ring, ar); m.userData.ar = ar; scene.add(m); b.mark = m; }
+      if (b.mark) { b.mark.visible = c.id === meId && !c.out; b.mark.position.set(c.x, c.y, c.z); b.mark.userData.ar.position.y = 2.55 + Math.sin(time * 4) * .12; b.mark.userData.ar.rotation.y += dt * 3; }
       const win = S.done && S.winner && S.winner.id === c.id; if (win && !b.crown) { b.crown = crown(); b.g.add(b.crown); b.hg.visible = false; } if (b.crown) b.crown.rotation.y += dt * 1.5;
     }
   }
@@ -211,13 +213,13 @@
   let camYaw = 0;
   function camFor(S, meId, dt) {
     const Rr = S.R, k = S.round, me = meId !== undefined && meId !== null ? S.cons[meId] : null, al = S.cons.filter(c => c.alive);
-    let f = me && me.alive ? me : null;
-    if (k === 'ampel') { if (!f || f.safe) { const a = al.filter(c => !c.safe); f = a.length ? a.reduce((p, c) => c.z < p.z ? c : p) : (al[0] || S.cons[0]); } const z = Math.min(f.z, Rr.len - 4); tp.set(f.x * .5, 7.5, z - 10); tl.set(f.x * .3, 1, z + 7); camYaw = 0; }
+    let f = me && me.alive ? me : null; const pk = W < H ? Math.min(2, H / W * .75) : 1;   // Hochformat: weiter weg, damit alles ins Bild passt
+    if (k === 'ampel') { if (!f) { const a = al.filter(c => !c.safe); f = a.length ? a.reduce((p, c) => c.z < p.z ? c : p) : (al[0] || S.cons[0]); } const z = Math.min(f.z, Rr.len - 1); tp.set(f.x * (pk > 1 ? 1 : .6), 7.5, z - 10); tl.set(f.x * (pk > 1 ? 1 : .5), 1, z + 7); camYaw = 0; }
     else if (k === 'bruecke') { const c = Rr.cur !== null && Rr.cur !== undefined ? S.cons[Rr.cur] : null, z = c ? c.z : 0; tp.set(0, 6.5, z - 7.5); tl.set(0, -.5, z + 4); camYaw = 0; }
-    else if (k === 'seil') { tp.set(0, 7, 15); tl.set(0, .5, 0); camYaw = PI; }
+    else if (k === 'seil') { tp.set(0, 7 * pk * 1.3, 15 * pk * 1.3); tl.set(0, .5, 0); camYaw = PI; }
     else if (k === 'keks') { const c = me && me.alive ? me : null; if (c) { tp.set(c.x, 5.5, c.z - 6.5); tl.set(c.x, .6, c.z); } else { tp.set(0, 10, -10); tl.set(0, 0, 6); } camYaw = 0; }
-    else if (k === 'stuhl') { tp.set(0, 17, -13); tl.set(0, 0, 1); camYaw = 0; }
-    else if (k === 'finale') { const r = Rr ? Rr.r : 10; tp.set(0, 9 + r, -8 - r); tl.set(0, -1, 0); camYaw = 0; }
+    else if (k === 'stuhl') { tp.set(0, 17 * pk, -13 * pk); tl.set(0, 0, 1); camYaw = 0; }
+    else if (k === 'finale') { const r = Rr ? Rr.r : 10; tp.set(0, (9 + r) * pk, (-8 - r) * pk); tl.set(0, -1, 0); camYaw = 0; }
     else { tp.set(Math.sin(time * .15) * 14, 6, Math.cos(time * .15) * 14); tl.set(0, 1, 0); }
     if (S.done && S.winner) { const w = S.winner; tp.set(w.x + Math.sin(time * .4) * 6, w.y + 3, w.z + Math.cos(time * .4) * 6); tl.set(w.x, w.y + 1, w.z); }
     if (!cs.init) { cs.p.copy(tp); cs.l.copy(tl); cs.init = true; } const a = Math.min(1, dt * 2.5); cs.p.lerp(tp, a); cs.l.lerp(tl, a); cam.position.copy(cs.p); cam.lookAt(cs.l);

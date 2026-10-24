@@ -61,7 +61,7 @@ const CSCore = (() => {
     if (R.light === 'red') R.redT += dt;
     const outN = S.cons.filter(c => c.outRound === S.k).length;
     for (const c of alive(S)) {
-      if (c.safe) { move(c, { mx: 0, mz: .3 }, dt, 2); continue; }
+      if (c.safe) { move(c, { mx: 0, mz: c.z < R.len + 2.5 ? .3 : 0 }, dt, 2); continue; }   // hinter dem Ziel stehen bleiben (nicht in den Roboter laufen)
       let inp = IN[c.id] || { mx: 0, mz: 0 };
       if (!c.human || c.auto) { // Computer: bei Grün loslaufen, bei Gelb/Rot nach Reaktionszeit anhalten (manche zu spät)
         const want = R.light === 'green' || (R.light === 'turn' && R.lt > .6 - c.react) || (R.light === 'red' && R.redT < c.react - .6);

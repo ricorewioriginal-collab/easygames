@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9ed483267e9b",
- "generated": "2026-10-24T23:19:52+02:00",
- "commit": "ca4110dd2362b29ebe3cd6ec8614f47f6c81e179",
+ "version": "13e73d5eee73",
+ "generated": "2026-10-24T23:53:06+02:00",
+ "commit": "30f25ccdad8df2fdc63a42446f40299747e45773",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5428,8 +5428,8 @@
   },
   {
    "p": "challenge-show/js/core.js",
-   "s": 22330,
-   "h": "cad42b503651ac50edac876cbafaf72a7150011a1931f51a15dbb29634f86efe"
+   "s": 22420,
+   "h": "44adf957e31b903c0d96802e1eb932a36b2a9e8e079bfb02efd02bc26fda3393"
   },
   {
    "p": "challenge-show/js/env.js",
@@ -5448,8 +5448,8 @@
   },
   {
    "p": "challenge-show/js/view.js",
-   "s": 37183,
-   "h": "638711567551ca30afd5264a6fd7415d5f4e12e5adf201b41280db5483db0581"
+   "s": 37959,
+   "h": "0ae3a88f5c4655d1902368d5b4739356b9d194f8030307ab8bf2d7a7e836f4da"
   },
   {
    "p": "challenge-show/js/voice.js",
@@ -8549,7 +8549,7 @@
   {
    "p": "sync/catalog.json",
    "s": 213761,
-   "h": "193d555c97b584ffe174614ea1dadeeb72c12ab113e8d63cad180d84a93d2806"
+   "h": "446105233b1a30065501504d3794d9516e48831c621a6ac74f71fba5a105effa"
   },
   {
    "p": "taschi/card.svg",
