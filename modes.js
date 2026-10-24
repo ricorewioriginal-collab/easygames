@@ -35,6 +35,7 @@ window.EASYGAMES_MODES = {
   'sendemast-sumo': { pad: true, online: true, multi: true, tvParam: true },
   'wolkenhopser': { online: true },
   'easyclash': { pad: true, online: true, multi: true, tvParam: true },
+  'funk-billard': { pad: true, online: true, multi: true },
   'winzflitzer': { multi: true },
   'gay-life': { online: true },
   'show-me-your-voice': { online: true },
