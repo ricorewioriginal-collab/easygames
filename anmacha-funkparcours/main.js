@@ -172,7 +172,7 @@ if (JOIN) {
     for (let ci = 0; ci < COURSES.length; ci++) {
       const runs = new Array(np).fill(null); let leader = null;
       for (let pi = 0; pi < np; pi++) { const r = await turn(tok, ci, pi, runs, leader); runs[pi] = r; bestUpdate(ci, r, G.players[pi].name); if (r.finished && (!leader || r.time < leader.t)) leader = { t: r.time, g: r.g }; }
-      const ord = rank(runs); ord.forEach((i, k) => { runs[i].pts = pointsFor(k, np); G.players[i].pts += runs[i].pts; G.players[i].secs += runs[i].finished ? runs[i].time : 120; });
+      const ord = rank(runs); ord.forEach((i, k) => { runs[i].pts = pointsFor(k, np); G.players[i].pts += runs[i].pts; G.players[i].secs += runs[i].finished ? runs[i].time : MAXT + 30; });
       G.phase = 'board'; commentator.speak('Das ist die Wertung für '+COURSES[ci].name+'.',true); G.say = 'Wertung ' + COURSES[ci].name; push();
       const last = ci === COURSES.length - 1;
       await A(ask(`<div class="card"><h2>Wertung · ${esc(COURSES[ci].name)}</h2><div class="tbl">${rows(runs, G.players, 1)}</div>${np > 1 ? `<div class="sub">Gesamt: ${standings(G.players).map(i => esc(G.players[i].name) + ' ' + G.players[i].pts).join(' · ')}</div>` : ''}<button class="btn green" id="bNext">${last ? 'Endstand ▶' : 'Weiter: ' + esc(COURSES[ci + 1].name) + ' ▶'}</button></div>`, ['bNext']));
