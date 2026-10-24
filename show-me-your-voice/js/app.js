@@ -1054,15 +1054,18 @@
       pop.textContent = GRADE[ev.t] + (ev.combo >= 2 && ev.t !== 'daneben' ? ' · Combo ×' + ev.combo : '');
       pop.className = 'singPop ' + ev.t; void pop.offsetWidth; pop.classList.add('show');
     }
-    function chairs() {   // jede Sekunde: Würde jemand aus der Jury jetzt Ja sagen? Dann dreht er/sie sich um.
+    // gleiche Jury-Rechnung wie die Endwertung (crit nach singCareer), damit Stühle und Urteil zusammenpassen
+    const jmods = career && s ? s.mods : null, jsymp = cx ? S.mergeSymp(cx.talk.symp, jmods && jmods.symp) : null;
+    run.jury = crit => S.judge(crit, pk.style, run.jseed, run.jround, 'p', jsymp, run.panel);
+    function chairs() {   // jede Sekunde: Würde jemand aus der Jury jetzt Ja sagen? Dann dreht er/sie sich um – und bei Nein wieder weg.
       const p = save.profile, part = S.singScore(run.frames, p.attrs, 0.05);
       if (part.sing.voiced < 8) return;
-      const mods = career && s ? s.mods : null;
-      if (cx) S.singCareer(part, career && s ? s.lastPerf : null, mods, cx.sel.action);   // wie die Wertung am Ende
-      const symp = cx ? S.mergeSymp(cx.talk.symp, mods && mods.symp) : null;
-      S.judge(part.crit, pk.style, run.jseed, run.jround, 'p', symp, run.panel).forEach(v => {
+      if (cx) S.singCareer(part, career && s ? s.lastPerf : null, jmods, cx.sel.action);   // wie die Wertung am Ende
+      run.jury(part.crit).forEach(v => {
+        const el = $(`#singBox .chair[data-c="${v.id}"]`);
+        if (run.turned[v.id] && !v.yes) { delete run.turned[v.id]; if (el) el.classList.remove('on'); toast('↩️ ' + jur(v.id).name + ' dreht sich wieder weg …', 2000); return; }
         if (run.turned[v.id] || !v.yes || v.score < jur(v.id).need + 1) return;
-        run.turned[v.id] = true; const el = $(`#singBox .chair[data-c="${v.id}"]`); if (el) el.classList.add('on');
+        run.turned[v.id] = true; if (el) el.classList.add('on');
         A.sfx('yes'); toast('🔴 ' + jur(v.id).name + ' hat sich umgedreht!', 2000);
       });
     }
@@ -1097,6 +1100,8 @@
     }
     run.raf = requestAnimationFrame(frame);
   }
+  // Am Ende zählen nur Stühle, deren Jury-Mitglied auch im Endurteil Ja sagt
+  function finalTurned(run, crit) { return run.jury(crit).filter(v => v.yes && run.turned[v.id]).map(v => v.id); }
   function singFinish() {
     const run = sing.run; if (!run || run.ended) return;
     if (run.frames.filter(f => f.m != null).length < 40) { RENDER.sSing(); toast('🎙️ Ich habe kaum Gesang gehört. Sing etwas länger oder näher am Mikrofon.', 3500); return; }
@@ -1116,10 +1121,12 @@
         const f = { mode: cx.mode, playId: run.playId, seed: run.seed, sel: Object.assign({}, cx.sel, { style: run.pk.style }), talk: cx.talk, credit: run.pk.credit, bg: cx.bg, ret: career ? 'sBack' : 'sPrep' };
         const oc = Object.assign(S.singCareer(res, career && s ? s.lastPerf : null, mods, cx.sel.action), { style: run.pk.style, approach: cx.sel.approach, action: cx.sel.action,
           symp: S.mergeSymp(cx.talk.symp, mods && mods.symp), votesBonus: cx.talk.votes });
+        out.turned = finalTurned(run, oc.crit);
         sing.ctx = null; flow = f; decide(f, out, oc); return;
       }
       const oc = Object.assign(res, { style: run.pk.style, symp: null });
       const fc = S.freeCasting(p, oc, run.seed);
+      out.turned = finalTurned(run, oc.crit);
       let chal = null;
       if (g) {
         const stn = S.singStars(g.id, res, fc), old = save.singCh[g.id] || { best: 0, stars: 0 };
