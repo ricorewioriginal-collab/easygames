@@ -19,10 +19,28 @@
   if (!s || s.__egFix || typeof s.speak !== 'function') return;
   var speak = s.speak.bind(s), cancel = s.cancel.bind(s), live = [], pend = [], lastCancel = 0, timer = 0, keep = 0;
   try { s.__egFix = 1; } catch (e) { }
+  /* Männerstimme bevorzugt (Moderation, Caller): männliche deutsche Stimmen stehen in getVoices() vorn – Windows/Edge (Conrad,
+   * Killian, Stefan), Apple (Markus, Yannick, Viktor), Android (Google „x-deg“, Samsung „SMTm…“). Spiele, die die erste deutsche
+   * Stimme nehmen, bekommen so die Männerstimme; wer gezielt eine Frauenstimme sucht (Oma), findet sie weiter. Ansagen ohne Stimme
+   * in normaler/tiefer Tonlage sprechen mit ihr. Hat das Gerät keine männliche deutsche Stimme, bleibt alles wie bisher. */
+  var MALE = /\b(x-deg|smtm\d*|stefan|conrad|killian|florian|kasper|markus|yannick|viktor|martin|reed|grandpa|rocko|eddy|ralf|jonas|bernd|klaus|hans|male|männlich|mann)\b/i;
+  var FEM = /female|weiblich|\bfrau\b|anna|petra|helena|hedda|katja|amala|seraphina|marlene|vicki|sandy|shelley|grandma|louisa|elke|ingrid|gisela|tanja|ilse|katharina|maja|sabine|leni|hanna/i;
+  var rank = function (v) {
+    if (!v || !/^de([-_]|$)/i.test(v.lang || '') || !MALE.test(v.name || '') || FEM.test(v.name || '')) return 3;
+    return /grandpa|rocko|eddy|reed/i.test(v.name) ? 2 : /natural|neural|online|premium|enhanced/i.test(v.name) ? 0 : 1;
+  };
+  if (typeof s.getVoices === 'function') {
+    var voices = s.getVoices.bind(s);
+    s.getVoices = function () {
+      var a = voices() || [];
+      try { return a.map(function (v, i) { return [rank(v), i, v]; }).sort(function (x, y) { return x[0] - y[0] || x[1] - y[1]; }).map(function (x) { return x[2]; }); } catch (e) { return a; }
+    };
+  }
   var drop = function (u) { var i = live.indexOf(u); if (i >= 0) live.splice(i, 1); if (!live.length && keep) { clearInterval(keep); keep = 0; } };
   s.cancel = function () { lastCancel = Date.now(); clearTimeout(timer); timer = 0; pend = []; live = []; if (keep) { clearInterval(keep); keep = 0; } return cancel(); };
   s.speak = function (u) {
     if (!u) return speak(u);
+    try { if (!u.voice && !(u.pitch > 1.05) && /^de([-_]|$)/i.test(u.lang || document.documentElement.lang || 'de')) { var m = s.getVoices()[0]; if (rank(m) < 3) u.voice = m; } } catch (e) { }
     try { if (u.voice && u.voice.lang && (!u.lang || u.lang.slice(0, 2).toLowerCase() === u.voice.lang.slice(0, 2).toLowerCase())) u.lang = u.voice.lang; } catch (e) { }
     if (live.indexOf(u) < 0) { live.push(u); try { u.addEventListener('end', function () { drop(u); }); u.addEventListener('error', function () { drop(u); }); } catch (e) { } }
     var go = function () {

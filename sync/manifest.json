@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "0d450a544f5a",
- "generated": "2026-10-24T16:12:43+02:00",
- "commit": "2db67c172e35e3b804065547b5af95563a2587ce",
+ "version": "613bb35a22a2",
+ "generated": "2026-10-24T14:26:19+00:00",
+ "commit": "2cfc4cb4e92692ac71d3b5a19208e9e53a6fcafb",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5378,8 +5378,8 @@
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 50262,
-   "h": "8d7d52725067dbef6252567944312e909f1e46bcb910ae29287553a68636df36"
+   "s": 51970,
+   "h": "64752e6f8aca7aad739d779709ce4cca3e42e4f13c354b9b2225b7f08227d9ce"
   },
   {
    "p": "cloud/anmacha-engage.js",
@@ -5558,8 +5558,8 @@
   },
   {
    "p": "darts-arena/js/sound.js",
-   "s": 6670,
-   "h": "6406ceecf691f52ca9abe654461b2e5378946f187d0dcf64defd4dfa139c2136"
+   "s": 6829,
+   "h": "e463ebef24425e237eabd2ff1b322263886dfd9303afb2aebd8c8a751df30da9"
   },
   {
    "p": "darts-arena/manifest.webmanifest",
@@ -6423,8 +6423,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 50262,
-   "h": "8d7d52725067dbef6252567944312e909f1e46bcb910ae29287553a68636df36"
+   "s": 51970,
+   "h": "64752e6f8aca7aad739d779709ce4cca3e42e4f13c354b9b2225b7f08227d9ce"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -8299,7 +8299,7 @@
   {
    "p": "sync/catalog.json",
    "s": 202798,
-   "h": "0b462a2dddb5f7f2494b28e1ec81051b415f9938aa5d26d48878d88b2a1ee81d"
+   "h": "01a92ac674af179ac0916372c410287544936b180b4e4bd7ad0cb1c2c1515ac8"
   },
   {
    "p": "taschi/card.svg",
