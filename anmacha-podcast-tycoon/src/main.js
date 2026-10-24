@@ -8,12 +8,12 @@
   const FILES = [
     ['../vendor/three-r128.min.js', 30], ['../vendor/qrcode-generator-1.4.4.js', 2, true],
     ['src/core/util.js', 1], ['src/core/i18n.js', 1],
-    ['src/data/rubrics.js', 2], ['src/data/objects.js', 2], ['src/data/people.js', 2], ['src/data/districts.js', 2], ['src/data/economy.js', 2], ['src/data/missions.js', 3], ['src/data/quiz.js', 3], ['src/data/sounds.js', 1],
-    ['src/sim/build.js', 2], ['src/sim/sim.js', 3], ['src/storage/save.js', 1], ['src/audio/audio.js', 1],
+    ['src/data/rubrics.js', 2], ['src/data/objects.js', 2], ['src/data/people.js', 2], ['src/data/districts.js', 2], ['src/data/economy.js', 2], ['src/data/missions.js', 3], ['src/data/quiz.js', 3], ['src/data/sounds.js', 1], ['src/data/studio-fun.js', 1],
+    ['src/sim/build.js', 2], ['src/sim/sim.js', 3], ['src/sim/fun.js', 1], ['src/sim/radio.js', 1], ['src/storage/save.js', 1], ['src/audio/audio.js', 1], ['src/radio/player.js', 1],
     ['src/minigames/registry.js', 1]
   ].concat(['p01-pegel', 'p02-mixer', 'p03-schnitt', 'p04-stoerung', 't01-kabel', 't02-router', 't03-kamera', 't04-akustik', 'q01-blitzquiz', 'q02-wahrquatsch', 'q03-schaetzduell', 'q04-geraeusche', 'r01-parken', 'r02-bahnhof', 'r03-navigation', 'r04-kurier', 'y01-mikrofangen', 'y02-beat', 'y03-spotlight', 'y04-konfetti', 'f01-hoererpost', 'f02-interview', 'f03-gutenachrichten', 'f04-geschenke'].map(f => ['src/minigames/' + f + '.js', 1]))
-    .concat([['src/minigames/harness.js', 1], ['src/world/nav.js', 2, true], ['src/world/models.js', 4], ['src/world/world.js', 6],
-      ['src/ui/ui-core.js', 1], ['src/ui/ui-panels.js', 2], ['src/ui/ui-prod.js', 2], ['src/ui/ui-build.js', 2], ['src/ui/ui-menu.js', 1], ['src/ui/editor.js', 3, true], ['src/party/online.js', 3, true]]);
+    .concat([['src/minigames/harness.js', 1], ['src/world/nav.js', 2, true], ['src/world/textures.js', 1], ['src/world/models.js', 4], ['src/world/world.js', 6],
+      ['src/ui/ui-core.js', 1], ['src/ui/ui-panels.js', 2], ['src/ui/ui-prod.js', 2], ['src/ui/ui-build.js', 2], ['src/ui/ui-radio.js', 1], ['src/ui/ui-fun.js', 1], ['src/ui/ui-menu.js', 1], ['src/ui/editor.js', 3, true], ['src/party/online.js', 3, true]]);
 
   function loadScript(src, timeout) {
     return new Promise((res, rej) => {
@@ -53,7 +53,8 @@
     G = PT.G = {
       st: null, world: null, repo, slot: null, mode: 'menu', hist: { undo: [], redo: [] },
       qualityFor(q) { if (q && q !== 'auto') return q; const small = Math.min(screen.width, screen.height) < 700, cores = navigator.hardwareConcurrency || 4; return small || cores <= 4 ? 'low' : 'mid'; },
-      hud, afterAction, travel, loadSlot, startGame, toMenu, runMG, autosave: () => saver && saver.poke()
+      hud, afterAction, travel, loadSlot, startGame, toMenu, runMG, autosave: () => saver && saver.poke(),
+      enqueue: f => (queue = queue.then(f).catch(e => console.error(e))) // Spaß-Popups (ui-fun.js) reihen sich in die Hinweise ein
     };
     G.start = startGame;
     UI.applySettings(settings);
@@ -69,7 +70,7 @@
     saver = repo.autosaver(() => G.st, st => st.mode === 'creative' ? 'creative' : st.mode === 'challenge' ? 'challenge' : 'auto', 8000);
     addEventListener('pagehide', () => { if (G.st) saver.now(); });
     document.addEventListener('visibilitychange', () => { if (document.hidden && G.st) saver.now(); });
-    bindInput(); buildHud();
+    bindInput(); buildHud(); if (UI.Fun) UI.Fun.init();
     document.getElementById('loading').remove();
     const q = new URLSearchParams(location.search), join = q.get('join');
     UI.mainMenu();
@@ -112,7 +113,7 @@
     const UI = PT.UI;
     if (G.st) saver.now();
     if (UI.Build.active()) UI.Build.close();
-    UI.closeAll(); G.st = null; G.mode = 'menu'; document.getElementById('hud').hidden = true; UI.mainMenu();
+    UI.closeAll(); if (PT.RadioPlayer) PT.RadioPlayer.stop(); G.st = null; G.mode = 'menu'; document.getElementById('hud').hidden = true; UI.mainMenu();
   }
 
   // ── Minispiele ───────────────────────────────────────────
@@ -184,10 +185,10 @@
     const UI = PT.UI, h = document.getElementById('hud');
     h.innerHTML = '<div class="pt-hud-stats"><span id="hTime"></span><span id="hMoney"></span><span id="hFans"></span><span id="hRep"></span></div>' +
       '<div class="pt-hud-mission" id="hMission"></div><canvas id="hMap" width="150" height="150" aria-label="Minikarte"></canvas><span id="hFps" hidden></span>' +
-      '<div class="pt-hud-btns"><button data-act="build" title="Bauen">🔨<small>Bauen</small></button><button data-act="prod" title="Produktion">🎙️<small>Folge</small></button><button data-act="team" title="Team">👥<small>Team</small></button><button data-act="finance" title="Finanzen">💶<small>Geld</small></button><button data-act="journal" title="Journal">📓<small>Journal</small></button><button data-act="archive" title="Archiv">🗄️<small>Archiv</small></button><button data-act="map" title="Karte">🗺️<small>Karte</small></button><button data-act="sleep" title="Feierabend">🌙<small>Schlafen</small></button><button data-act="pause" title="Pause">⏸<small>Menü</small></button></div>' +
+      '<div class="pt-hud-btns"><button data-act="build" title="Bauen">🔨<small>Bauen</small></button><button data-act="prod" title="Produktion">🎙️<small>Folge</small></button><button data-act="team" title="Team">👥<small>Team</small></button><button data-act="finance" title="Finanzen">💶<small>Geld</small></button><button data-act="journal" title="Journal">📓<small>Journal</small></button><button data-act="archive" title="Archiv">🗄️<small>Archiv</small></button><button data-act="map" title="Karte">🗺️<small>Karte</small></button><button data-act="radio" title="Radio: AnMaCha24 hören und Radiostudio">📻<small>Radio</small></button><button data-act="sleep" title="Feierabend">🌙<small>Schlafen</small></button><button data-act="pause" title="Pause">⏸<small>Menü</small></button></div>' +
       '<div class="pt-joy" id="joy"><i></i></div><div class="pt-act" id="actBox" hidden><span id="actLabel"></span><button id="actBtn" aria-label="Benutzen">E</button></div>';
     UI.bind(h, {
-      build: () => openOr(() => UI.Build.open()), prod: () => openOr(openProd), team: () => openOr(UI.team), finance: () => openOr(UI.finance), journal: () => openOr(UI.journal), archive: () => openOr(UI.archive), map: () => openOr(UI.map), pause: () => openOr(UI.pause), sleep: () => openOr(sleep)
+      build: () => openOr(() => UI.Build.open()), prod: () => openOr(openProd), team: () => openOr(UI.team), finance: () => openOr(UI.finance), journal: () => openOr(UI.journal), archive: () => openOr(UI.archive), map: () => openOr(UI.map), radio: () => openOr(() => UI.radio()), pause: () => openOr(UI.pause), sleep: () => openOr(sleep)
     });
     document.getElementById('hMap').onclick = () => openOr(UI.map);
     document.getElementById('actBtn').onclick = () => interact();
@@ -214,6 +215,7 @@
     else if (st.endless) { const gl = st.endless.goals.find(x => !x.done); mt = '<b>♾️ Endlosmodus · Woche ' + st.endless.week + '</b><span>' + (gl ? PT.esc(gl.label) : 'Alle Wochenziele erreicht!') + '</span>'; }
     else if (st.mode === 'creative') mt = '<b>🎨 Kreativmodus</b><span>Unbegrenztes Budget</span>';
     $('hMission').innerHTML = mt;
+    if (UI.Fun) UI.Fun.hud();
     $('hFps').hidden = !UI.settings.fps; if (UI.settings.fps) $('hFps').textContent = fps + ' FPS' + (G.world && G.world.stats ? ' · ' + G.world.stats().calls + ' DC' : '');
   }
   function drawMap() {
@@ -257,13 +259,14 @@
     if (n.kind === 'build') return UI.Build.open(n.id === 'campus' ? 'campus' : 'studio');
     if (n.kind === 'lot') return UI.finance();
     if (n.kind === 'studio') return deskMenu();
+    if (n.kind === 'radio') return UI.radio('studio');
   }
   function deskMenu() {
     const UI = PT.UI, S = PT.Sim, st = G.st;
     const live = S.liveshowAvailable(st);
-    const opts = [{ label: st.prod ? '🎙️ Folge weiter produzieren' : '🎙️ Neue Folge produzieren', desc: S.canProduce(st).ok || st.prod ? '' : S.canProduce(st).err }, { label: '📺 Live-Show auf der TV-Bühne', desc: live.ok ? 'Tickets und viele neue Fans (Minispiel Spotlight)' : live.err, disabled: !live.ok }, { label: '🔨 Baumodus' }, { label: '🌙 Feierabend' }];
+    const opts = [{ label: st.prod ? '🎙️ Folge weiter produzieren' : '🎙️ Neue Folge produzieren', desc: S.canProduce(st).ok || st.prod ? '' : S.canProduce(st).err }, { label: '📺 Live-Show auf der TV-Bühne', desc: live.ok ? 'Tickets und viele neue Fans (Minispiel Spotlight)' : live.err, disabled: !live.ok }, { label: '🔨 Baumodus' }, { label: '🌙 Feierabend' }, { label: '📻 Radio & AnMaCha24', desc: 'Sendung im Radiostudio = Werbung für die nächste Folge' }];
     UI.choose('Produktionspult', 'Was steht an?', opts, { icon: '🎚️' }).then(i => {
-      if (i === 0) openProd(); else if (i === 1) runMG('Y03', { ctx: { liveshow: true }, title: 'Live-Show im eigenen Studio' }); else if (i === 2) UI.Build.open('studio'); else if (i === 3) sleep();
+      if (i === 0) openProd(); else if (i === 1) runMG('Y03', { ctx: { liveshow: true }, title: 'Live-Show im eigenen Studio' }); else if (i === 2) UI.Build.open('studio'); else if (i === 3) sleep(); else if (i === 4) UI.radio('studio');
     });
   }
   function missionGame(npcId) {
@@ -346,6 +349,7 @@
     } else if (st && G.mode === 'build') { G.world.update(dt, { mx: 0, mz: 0 }); } // dt nötig, sonst folgt die Baukamera Wischen/Zoom nicht
     else G.world.update(dt, { mx: 0, mz: 0, idle: true });
     G.world.render();
+    if (UI.Fun && st) UI.Fun.frame(dt);
     hudT += dt; if (hudT > 0.25 && st) { hudT = 0; hud(); drawMap(); }
   }
   function dayEvent() {

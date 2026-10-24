@@ -182,7 +182,7 @@
     if (fnDef.reqAny && !fnDef.reqAny.some(c => (cats[c] || 0) > 0)) miss.push({ k: fnDef.reqAny.join('/'), need: 1, have: 0 });
     return miss;
   }
-  const REQ_NAMES = { seats: 'Sitzplätze', energy: 'Energie (Kaffee/Kühlschrank)', music: 'Musikwert', storage: 'Lagerwert', shop: 'Merch-Wert', surfaceWork: 'Arbeitstisch' };
+  const REQ_NAMES = { seats: 'Sitzplätze', energy: 'Energie (Kaffee/Kühlschrank)', music: 'Musikwert', storage: 'Lagerwert', shop: 'Merch-Wert', surfaceWork: 'Arbeitstisch', onair: 'ON-AIR-Licht' };
   B.reqName = k => REQ_NAMES[k] || (D.objectCats[k] ? D.objectCats[k].name : def(k) ? def(k).name : k);
   /** Bewertet alle Räume eines Grundstücks. */
   B.evaluate = function (lot) {
@@ -249,7 +249,7 @@
   };
   /** Kurzer Text für ein Objekt (Werte), z. B. im Baumenü. */
   B.statText = function (d) {
-    const N = { audio: 'Klang', tech: 'Technik', absorb: 'Akustik', visual: 'Bild', comfort: 'Wohlfühlen', research: 'Recherche', energy: 'Energie', social: 'Reichweite', music: 'Musik', reliab: 'Zuverlässigkeit', seats: 'Sitzplätze', shop: 'Merch', storage: 'Lager' };
+    const N = { audio: 'Klang', tech: 'Technik', absorb: 'Akustik', visual: 'Bild', comfort: 'Wohlfühlen', research: 'Recherche', energy: 'Energie', social: 'Reichweite', music: 'Musik', reliab: 'Zuverlässigkeit', seats: 'Sitzplätze', shop: 'Merch', storage: 'Lager', radio: 'Radio', onair: 'ON-AIR' };
     return Object.keys(d.s).filter(k => d.s[k]).map(k => N[k] + ' ' + (d.s[k] > 0 ? '+' : '') + d.s[k]).join(' · ');
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = B;

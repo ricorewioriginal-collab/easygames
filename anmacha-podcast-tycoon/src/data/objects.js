@@ -1,10 +1,11 @@
-/* 72 platzierbare Einrichtungs- und Technikobjekte in 12 Gruppen.
+/* 78 platzierbare Einrichtungs- und Technikobjekte in 12 Gruppen.
    w/d = Grundfläche in Rasterfeldern (1 Feld = 1 m), cost = Kaufpreis (Studio-Credits), upkeep = Unterhalt je Spieltag.
    s = Werte, die in die Simulation eingehen (siehe README „Regeln“):
      audio  Aufnahmequalität (Aufnahmeraum)      tech   Technikqualität (Aufnahme/Regie)   absorb Raumakustik (Aufnahme)
      visual Bildqualität (TV-Bühne, Teaser)      comfort Wohlfühlwert (Lounge, Büros)     research Recherche (Redaktion)
      energy Energie-Erholung (Küche/Lounge)      social Reichweite (Social-Büro)          music Musikqualität (Musikraum)
      reliab Zuverlässigkeit (weniger Pannen)     seats Sitzplätze                          shop Merch-Umsatz   storage Lager
+     radio  Radiostudio-Wert                     onair  ON-AIR-Licht (Pflicht im Radiostudio)
    use = wofür Figuren das Objekt benutzen (sit, work, record, coffee, repair, rest, shop, perform, edit).
    m = Modellteile [Form, x, y, z, a, b, c, Farbe, Optionen]: b=Quader (Mitte, Maße), c=Zylinder (Mitte, rOben, Höhe, rUnten),
    s=Kugel (Mitte, Radius), o=Kegel (Mitte, Radius, Höhe); Optionen { rx, ry, rz, glow }. */
@@ -107,17 +108,29 @@
     O('rq_synth', 'requisite', 'Synthesizer', 2, 1, 690, 1, { music: 6, tech: 1 }, 'perform', 2, [['b', 0, 0.4, 0, 1.4, 0.8, 0.5, '#333'], ['b', 0, 0.85, 0, 1.4, 0.1, 0.45, '#1d1f26'], ['b', 0, 0.91, 0.08, 1.2, 0.02, 0.2, '#f2efe6']]),
     O('rq_gitarre', 'requisite', 'Akustikgitarre am Ständer', 1, 1, 260, 0, { music: 3, comfort: 1 }, 'perform', 1, [['s', 0, 0.45, 0, 0.22, 0, 0, '#a8845a'], ['b', 0, 0.95, 0, 0.06, 0.8, 0.04, '#5a4a3a'], ['b', 0, 0.2, 0.1, 0.3, 0.05, 0.3, '#333']]),
     O('rq_merch', 'requisite', 'Merch-Ständer', 1, 1, 380, 1, { shop: 5, social: 1 }, 'shop', 2, [['c', 0, 0.8, 0, 0.03, 1.6, 0.03, '#777'], ['b', 0, 1.3, 0, 0.6, 0.6, 0.05, '#ffb02e'], ['b', 0, 0.8, 0, 0.5, 0.5, 0.05, '#ff7ad9']], 1.8),
-    O('rq_onair', 'requisite', 'Rotlicht „Aufnahme läuft“', 1, 1, 90, 0, { reliab: 1, visual: 1 }, null, 1, [['b', 0, 2.1, -0.45, 0.4, 0.2, 0.06, '#222'], ['b', 0, 2.1, -0.41, 0.34, 0.14, 0.02, '#ff4d6d', { glow: true }]], 2.3),
+    O('rq_onair', 'requisite', 'Rotlicht „Aufnahme läuft“', 1, 1, 90, 0, { reliab: 1, visual: 1, onair: 1 }, null, 1, [['b', 0, 2.1, -0.45, 0.4, 0.2, 0.06, '#222'], ['b', 0, 2.1, -0.41, 0.34, 0.14, 0.02, '#ff4d6d', { glow: true }]], 2.3),
     O('rq_pokal', 'requisite', 'Pokalvitrine', 1, 1, 450, 0, { comfort: 2, social: 2, visual: 1 }, null, 4, [['b', 0, 0.9, -0.2, 0.9, 1.8, 0.5, '#9ab0c0'], ['c', 0, 1.2, -0.2, 0.08, 0.25, 0.04, '#ffd36b'], ['c', 0, 0.6, -0.2, 0.08, 0.25, 0.04, '#ffd36b']], 2),
     O('rq_kisten', 'requisite', 'Equipment-Kisten', 1, 1, 110, 0, { storage: 4, reliab: 1 }, null, 1, [['b', 0, 0.3, 0, 0.8, 0.6, 0.6, '#3a3f4d'], ['b', 0, 0.75, 0, 0.6, 0.3, 0.5, '#2b2f3a'], ['b', 0, 0.6, 0.31, 0.6, 0.05, 0.01, '#ffb02e']]),
-    O('rq_buehne', 'requisite', 'Bühnenpodest', 2, 2, 600, 1, { visual: 4, seats: 0 }, 'perform', 3, [['b', 0, 0.15, 0, 1.95, 0.3, 1.95, '#2b2f3a'], ['b', 0, 0.31, 0.95, 1.9, 0.02, 0.04, '#ffb02e', { glow: true }]])
+    O('rq_buehne', 'requisite', 'Bühnenpodest', 2, 2, 600, 1, { visual: 4, seats: 0 }, 'perform', 3, [['b', 0, 0.15, 0, 1.95, 0.3, 1.95, '#2b2f3a'], ['b', 0, 0.31, 0.95, 1.9, 0.02, 0.04, '#ffb02e', { glow: true }]]),
+    // Radiostudio (AnMaCha24): Sendepult ist eine Ablage für Mikrofon, Telefon und Jingle-Player
+    O('rd_pult', 'mixer', 'Radio-Sendepult', 2, 1, 780, 2, { radio: 6, tech: 2, audio: 1 }, 'work', 1, [['b', 0, 0.36, -0.05, 1.9, 0.72, 0.7, '#2b2f3a'], ['b', 0, 0.75, 0, 1.96, 0.06, 0.86, '#1d1f26'], ['b', 0, 0.62, 0.31, 1.7, 0.07, 0.01, '#ff3b5c', { glow: true }], ['b', -0.6, 0.36, 0.31, 0.36, 0.2, 0.01, '#f2efe6'],
+      ['b', -0.55, 0.785, 0.12, 0.5, 0.01, 0.3, '#3a3f4d'], ['b', 0.55, 0.785, 0.12, 0.5, 0.01, 0.3, '#3a3f4d'], ['b', -0.67, 0.795, 0.1, 0.03, 0.01, 0.18, '#f2efe6'], ['b', -0.55, 0.795, 0.16, 0.03, 0.01, 0.18, '#f2efe6'], ['b', -0.43, 0.795, 0.08, 0.03, 0.01, 0.18, '#f2efe6'],
+      ['b', 0.43, 0.795, 0.14, 0.03, 0.01, 0.18, '#f2efe6'], ['b', 0.55, 0.795, 0.06, 0.03, 0.01, 0.18, '#f2efe6'], ['b', 0.67, 0.795, 0.12, 0.03, 0.01, 0.18, '#f2efe6'],
+      ['b', 0, 0.79, -0.3, 1.6, 0.02, 0.1, '#4be08a', { glow: true }], ['b', 0, 0.79, -0.18, 0.3, 0.02, 0.08, '#ffb02e', { glow: true }]]),
+    O('rd_onair', 'licht', 'ON-AIR-Leuchtschild', 1, 1, 160, 0, { onair: 1, radio: 1, visual: 1 }, null, 1, [['b', 0, 2.05, -0.45, 0.8, 0.3, 0.08, '#1d1f26'], ['b', 0, 2.05, -0.4, 0.72, 0.22, 0.02, '#ff3b5c', { glow: true }], ['b', 0, 2.05, -0.39, 0.5, 0.06, 0.01, '#fff3f3', { glow: true }]], 2.3),
+    O('rd_boxen', 'mixer', 'Studio-Monitorboxen', 1, 1, 320, 1, { radio: 3, audio: 1, music: 1 }, null, 1, [['c', -0.25, 0.5, 0, 0.03, 1.0, 0.03, '#3a3f4d'], ['c', 0.25, 0.5, 0, 0.03, 1.0, 0.03, '#3a3f4d'], ['b', -0.25, 1.15, 0, 0.24, 0.34, 0.26, '#1d1f26'], ['b', 0.25, 1.15, 0, 0.24, 0.34, 0.26, '#1d1f26'],
+      ['c', -0.25, 1.1, 0.135, 0.08, 0.01, 0.08, '#c9b27a', { rx: 1.57 }], ['c', 0.25, 1.1, 0.135, 0.08, 0.01, 0.08, '#c9b27a', { rx: 1.57 }], ['c', -0.25, 1.25, 0.135, 0.03, 0.01, 0.03, '#aaa', { rx: 1.57 }], ['c', 0.25, 1.25, 0.135, 0.03, 0.01, 0.03, '#aaa', { rx: 1.57 }]], 1.4),
+    O('rd_tel', 'interface', 'Hörertelefon (Telefon-Hybrid)', 1, 1, 210, 1, { radio: 3, social: 1 }, null, 1, [['b', 0, 0.8, 0, 0.34, 0.07, 0.24, '#2b2f3a'], ['b', 0, 0.86, -0.04, 0.3, 0.05, 0.08, '#ff3b5c'], ['b', 0, 0.84, 0.08, 0.22, 0.01, 0.06, '#6ef0ff', { glow: true }]]),
+    O('rd_jingle', 'requisite', 'Jingle-Player (Cartwall)', 1, 1, 260, 1, { radio: 4, music: 1 }, null, 2, [['b', 0, 0.8, 0, 0.4, 0.06, 0.3, '#1d1f26'], ['b', -0.1, 0.84, -0.06, 0.08, 0.02, 0.08, '#ff3b5c', { glow: true }], ['b', 0, 0.84, -0.06, 0.08, 0.02, 0.08, '#ffb02e', { glow: true }], ['b', 0.1, 0.84, -0.06, 0.08, 0.02, 0.08, '#4be08a', { glow: true }],
+      ['b', -0.1, 0.84, 0.06, 0.08, 0.02, 0.08, '#6ea8ff', { glow: true }], ['b', 0, 0.84, 0.06, 0.08, 0.02, 0.08, '#c58bff', { glow: true }], ['b', 0.1, 0.84, 0.06, 0.08, 0.02, 0.08, '#ff7ad9', { glow: true }]]),
+    O('rd_uhr', 'requisite', 'Studiouhr mit Sendezeit', 1, 1, 70, 0, { radio: 1, reliab: 1 }, null, 1, [['c', 0, 1.9, -0.45, 0.22, 0.05, 0.22, '#1d1f26', { rx: 1.57 }], ['c', 0, 1.9, -0.42, 0.19, 0.01, 0.19, '#f2efe6', { rx: 1.57 }], ['b', 0, 1.95, -0.41, 0.015, 0.1, 0.005, '#ff3b5c', { glow: true }]], 2.2)
   ];
   // Ebenen: top = steht auf einer Ablage (Tisch, Schreibtisch, Tresen, Werkbank), surface = ist eine Ablage,
   // wall = hängt an einer Wand (Rückseite muss an einer Wand liegen, blockiert keine Wege), ceil = hängt an der Decke (blockiert nichts)
   const LAYER = {
-    top: ['mic_alt', 'mic_arm', 'hp_billig', 'hp_studio', 'hp_offen', 'hp_verst', 'hp_inear', 'if_2', 'if_4', 'if_recorder', 'if_dsp', 'mx_mini', 'mx_podcast', 'cam_action', 'bs_laptop', 'bs_monitor', 'bs_social', 'pf_bonsai'],
-    surface: ['mo_tisch', 'mo_schreib', 'mo_tresen', 'mo_werkbank'],
-    wall: ['hp_haken', 'ab_schaum', 'ab_paneel', 'ad_holz', 'ad_moos', 'ad_bild', 'li_neon', 'rq_onair', 'pf_kraeuter'],
+    top: ['mic_alt', 'mic_arm', 'hp_billig', 'hp_studio', 'hp_offen', 'hp_verst', 'hp_inear', 'if_2', 'if_4', 'if_recorder', 'if_dsp', 'mx_mini', 'mx_podcast', 'cam_action', 'bs_laptop', 'bs_monitor', 'bs_social', 'pf_bonsai', 'rd_tel', 'rd_jingle'],
+    surface: ['mo_tisch', 'mo_schreib', 'mo_tresen', 'mo_werkbank', 'rd_pult'],
+    wall: ['hp_haken', 'ab_schaum', 'ab_paneel', 'ad_holz', 'ad_moos', 'ad_bild', 'li_neon', 'rq_onair', 'pf_kraeuter', 'rd_onair', 'rd_uhr'],
     ceil: ['ab_decke', 'pf_haenge', 'cam_schwenk']
   };
   D.objects.forEach(o => { o.layer = 'floor'; });

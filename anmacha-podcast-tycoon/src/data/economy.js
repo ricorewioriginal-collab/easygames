@@ -16,7 +16,8 @@
     social: { name: 'Social-Media-Büro', icon: '📣', color: '#4be08a', minArea: 4, req: { bildschirm: 1, seats: 1 }, stats: ['social', 'research'], desc: 'Mehr Reichweite für jede Folge.' },
     musik: { name: 'Musikraum', icon: '🎵', color: '#c58bff', minArea: 6, req: { music: 3 }, stats: ['music', 'absorb', 'audio'], desc: 'Bonus für Musik-Anmacher und eigene Jingles.' },
     lager: { name: 'Lager', icon: '📦', color: '#6b5a3a', minArea: 3, req: { storage: 2 }, stats: ['storage', 'reliab'], desc: 'Weniger Verschleiß und Platz für Merch.' },
-    shop: { name: 'Merch-Shop', icon: '🛍️', color: '#ffd36b', minArea: 4, req: { shop: 3 }, stats: ['shop', 'social', 'comfort'], desc: 'Merch-Einnahmen bei jeder Veröffentlichung.' }
+    shop: { name: 'Merch-Shop', icon: '🛍️', color: '#ffd36b', minArea: 4, req: { shop: 3 }, stats: ['shop', 'social', 'comfort'], desc: 'Merch-Einnahmen bei jeder Veröffentlichung.' },
+    radio: { name: 'Radiostudio', icon: '📻', color: '#ff3b5c', minArea: 6, req: { rd_pult: 1, mikro: 1, onair: 1 }, stats: ['radio', 'audio', 'tech', 'absorb'], desc: 'Radiosendungen auf AnMaCha24: wenig Geld, aber Werbung für die nächste Podcast-Folge.' }
   };
 
   // Wirtschaftsregeln (dokumentiert in README „Regeln“). Werte je Spieltag bzw. je Folge.
@@ -135,7 +136,7 @@
   // Fiktive Hörerkommentare nach Qualitätsstufe
   D.comments = {
     top: ['Beste Folge bisher, ich hab beim Abwasch laut gelacht!', 'Unfassbar gut geschnitten. Respekt!', 'Ihr seid mein Lieblings-Morgenritual.', 'Diese Folge schicke ich meiner ganzen Familie.', 'Gänsehaut beim Outro.', 'Endlich mal jemand, der das verständlich erklärt.'],
-    good: ['Sehr schöne Folge, gerne mehr davon.', 'Der Gast war super sympathisch.', 'Habe wieder was gelernt.', 'Gute Mischung aus Spaß und Inhalt.', 'Euer Intro ist ein Ohrwurm.', 'Marco und Andrew harmonieren einfach.'],
+    good: ['Sehr schöne Folge, gerne mehr davon.', 'Ihr seid einfach sympathisch.', 'Habe wieder was gelernt.', 'Gute Mischung aus Spaß und Inhalt.', 'Euer Intro ist ein Ohrwurm.', 'Marco und Andrew harmonieren einfach.'],
     ok: ['Ganz nett, aber der Ton war etwas dumpf.', 'Der Mittelteil zog sich ein bisschen.', 'Thema gut, Schnitt ausbaufähig.', 'Ich hör trotzdem jede Folge!', 'Mehr Hörerfragen bitte.', 'Das Rauschen hat mich etwas gestört.'],
     bad: ['Hm, da hat es aber geknistert.', 'Ich habe nach zehn Minuten abgeschaltet, sorry.', 'War das Mikro aus?', 'Das könnt ihr besser!', 'Zu viele Ähms heute.', 'Der Ton sprang ständig – bitte nachbessern.']
   };
