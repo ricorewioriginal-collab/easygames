@@ -73,3 +73,12 @@ test('Lazarett übersteht Speichern und Laden', () => {
   assert.equal(L.ward.list.length, S.ward.list.length);
   assert.equal(L.ward.list[0].st, 'untersucht');
 });
+
+test('Lazarett bleibt im Einklang mit den Krankenzahlen', () => {
+  const S = fresh('ward-b');
+  for (let k = 0; k < 4; k++) WD.spawn(S, true);
+  S.pop.rec += S.pop.i + S.pop.q + S.pop.t; S.pop.i = S.pop.q = 0; S.pop.t = 1;   // fast alle von selbst genesen
+  G.tick(S, 0.5);
+  assert.ok(WD.state(S).list.length <= WD.sickN(S), WD.state(S).list.length + ' Patienten, ' + WD.sickN(S) + ' Kranke');
+  for (let i = 0; i < 600; i++) { G.tick(S, 0.5); assert.ok(WD.state(S).list.length <= WD.sickN(S)); }
+});

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "6b498576e6ef",
- "generated": "2026-10-24T02:54:00+00:00",
- "commit": "ec186d859758fb9067c14b30f7413c5e88e1f89b",
+ "version": "eeaa9e223a4d",
+ "generated": "2026-10-24T03:04:32+00:00",
+ "commit": "d6616a0d0a626c247ed53aca71c0128ed2a739bf",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6798,8 +6798,8 @@
   },
   {
    "p": "pestwacht/js/ward.js",
-   "s": 9921,
-   "h": "45e4c3a53f0b4f321bb9f07ec103d62d99db8a040fd8211e3db54a9694092fd7"
+   "s": 10528,
+   "h": "711827ac5782ee045fca3f044470ae6a5838a825761d5ace956167e40056c5b8"
   },
   {
    "p": "pestwacht/js/waves.js",
@@ -7739,7 +7739,7 @@
   {
    "p": "sync/catalog.json",
    "s": 169751,
-   "h": "4d72efd3c534068d9e867635c1a6685708c878cb10636578f73398c6eb40e734"
+   "h": "701b56a9485a1d6e69b6d0eee5e8db57f62e70a80faab1c4027e65a5bf47e91f"
   },
   {
    "p": "taschi/card.svg",

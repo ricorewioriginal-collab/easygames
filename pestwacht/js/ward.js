@@ -141,6 +141,12 @@
       const sick = WD.sickN(S) / Math.max(1, PW.Econ.popTotal(S.pop));
       W.next = S.time + (30 + 30 * rng(S)()) / (1 + 3 * sick);
     }
+    // Abgleich mit der Bevölkerung: Wer inzwischen von selbst genesen (oder gestorben) ist, verlässt die Liste
+    let extra = W.list.length - WD.sickN(S);
+    if (extra > 0) {
+      const order = W.list.slice().sort((x, y) => (x.st === 'wartet' ? 0 : x.st === 'untersucht' ? 1 : x.st === 'gesund' ? 3 : 2) - (y.st === 'wartet' ? 0 : y.st === 'untersucht' ? 1 : y.st === 'gesund' ? 3 : 2) || y.hp - x.hp);
+      for (const c of order) { if (extra <= 0) break; W.list.splice(W.list.indexOf(c), 1); extra--; if (c.st !== 'gesund') PW.log(S, '🏠 ' + c.name + ' hat sich zu Hause erholt', 'info'); }
+    }
     const speed = 1 + 0.2 * W.staff.pflege;
     for (let k = W.list.length - 1; k >= 0; k--) {
       const c = W.list[k];
