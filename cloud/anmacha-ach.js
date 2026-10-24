@@ -66,7 +66,7 @@
     abenteuer: ['kiko-sterneninseln', 'taschi', 'quest-rpg', 'aeru', 'urwaldlager', 'gay-life', 'zotik2'],
     action: ['kuechen-chaos', 'krawallvoegel', 'huepfstrasse', 'easyclash', 'rico-flap', 'radio-maze', 'lumo', 'pufi-farbwind', 'radio-surfer', 'funkparcours', 'kart', 'turbokick', 'riftzone', 'flipper', 'snake', 'showdown', 'fabelkick', 'funkgolf', 'bowling-bahn', 'darts-arena', 'oma-rennen', 'winzflitzer', 'saftblitz', 'tortenschlacht', 'sendemast-sumo', 'wolkenhopser'],
     denken: ['fall-akte', 'kraterkommando', 'funkblasen', 'mahjong', 'colorpop-universe', 'radio-match', 'memory', 'wobbel', 'frequenzrad', 'tower-defense', 'wortfunk', 'wortgitter', 'frequenzminen', 'deluxe-2048'],
-    quiz: ['quiz', 'gesucht', 'hoererwahl', 'preisradar', 'machmichaus', 'zeitsprung-wissen', 'zeitsprung-movie', 'zeitsprung-radio', 'zeitsprung-castingshow', 'zeitsprung-kinderserien', 'zeitsprung-eurovision', 'koffer-dealer', 'funkmaler', 'funkgalgen'],
+    quiz: ['quiz', 'gesucht', 'hoererwahl', 'preisradar', 'machmichaus', 'zeitsprung-wissen', 'zeitsprung-movie', 'zeitsprung-radio', 'zeitsprung-castingshow', 'zeitsprung-kinderserien', 'zeitsprung-eurovision', 'koffer-dealer', 'funkmaler', 'funkgalgen', 'stadt-land-plus'],
     sim: ['ricoville', 'ricolife', 'ricorail', 'mimori', 'markthalle', 'funkhaus', 'klotzfunk', 'bunte-insel', 'anmacha-podcast-tycoon', 'pestwacht'],
     tisch: ['konfetti-party', 'werwolf-nacht', 'funk-billard', 'ricopoly', 'partyverse', 'spielesammlung', 'stapelrausch', 'gold-reels', 'anmacha-undercover', 'spinwelten', 'anmacha-solitaire'],
     musik: ['beat-surfer', 'prismrush', 'show-me-your-voice']
