@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5b894b47e2d0",
- "generated": "2026-10-24T07:46:35+00:00",
- "commit": "5ece714a81a37486f3501a70b479d4a4755700c7",
+ "version": "f3f1684d12cf",
+ "generated": "2026-10-24T09:53:48+02:00",
+ "commit": "91d3f4e008cb26564b0c996195097ba364725a89",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7743,8 +7743,8 @@
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 116671,
-   "h": "b142cbfdd7665c366d1f27182ce82eec0708ca537cc2edabb09e5b7fba8917d2"
+   "s": 117231,
+   "h": "99258d271016efcd9f7fd66ff9bc272e755225788688ccf5939e1fb99bf4428d"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
@@ -8044,7 +8044,7 @@
   {
    "p": "sync/catalog.json",
    "s": 183898,
-   "h": "46109b489c52aa3ce04fdfda4dc89ad316202f9bc3398a11f53afd8370d8ef58"
+   "h": "4a3f287d2c81622305c7075212cd52e703173b62ac000242c3c7a888648a03f3"
   },
   {
    "p": "taschi/card.svg",
