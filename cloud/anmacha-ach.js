@@ -64,7 +64,7 @@
   // Kategorien der Spiele (wie die 7 Gruppen im RicoReWi-Portal) je Cloud-ID; neue Spiele hier ergänzen (tools/test-ach.mjs prüft, dass alle Katalogspiele eingetragen sind)
   var GENRES = {
     abenteuer: ['kiko-sterneninseln', 'taschi', 'quest-rpg', 'aeru', 'urwaldlager', 'gay-life', 'zotik2'],
-    action: ['krawallvoegel', 'rico-flap', 'radio-maze', 'lumo', 'pufi-farbwind', 'radio-surfer', 'funkparcours', 'kart', 'turbokick', 'riftzone', 'flipper', 'snake', 'showdown', 'fabelkick', 'funkgolf', 'winzflitzer', 'saftblitz', 'tortenschlacht', 'sendemast-sumo', 'wolkenhopser'],
+    action: ['krawallvoegel', 'huepfstrasse', 'easyclash', 'rico-flap', 'radio-maze', 'lumo', 'pufi-farbwind', 'radio-surfer', 'funkparcours', 'kart', 'turbokick', 'riftzone', 'flipper', 'snake', 'showdown', 'fabelkick', 'funkgolf', 'winzflitzer', 'saftblitz', 'tortenschlacht', 'sendemast-sumo', 'wolkenhopser'],
     denken: ['kraterkommando', 'funkblasen', 'mahjong', 'colorpop-universe', 'radio-match', 'memory', 'wobbel', 'frequenzrad', 'tower-defense', 'wortfunk', 'wortgitter', 'frequenzminen', 'deluxe-2048'],
     quiz: ['quiz', 'gesucht', 'hoererwahl', 'preisradar', 'machmichaus', 'zeitsprung-wissen', 'zeitsprung-movie', 'zeitsprung-radio', 'zeitsprung-castingshow', 'zeitsprung-kinderserien', 'zeitsprung-eurovision', 'koffer-dealer', 'funkmaler', 'funkgalgen'],
     sim: ['ricoville', 'ricolife', 'ricorail', 'mimori', 'markthalle', 'funkhaus', 'klotzfunk', 'bunte-insel', 'anmacha-podcast-tycoon', 'pestwacht'],
