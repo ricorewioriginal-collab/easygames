@@ -253,3 +253,16 @@ test('Freies Vorsingen: Rutschen durch eine Oktave zählt nicht als saubere Into
   const fc = S.freeCasting(null, Object.assign({}, slide, { style: 'ballade' }), 1);
   assert.ok(S.singStars('ballade', slide, fc) < 2);
 });
+
+test('Echt vorsingen in der Karriere: Entwicklung, Backstage-Ereignis und Rundenauswertung', () => {
+  const mel = [57, 60, 62, 64, 67, 64, 62, 60];
+  const fr = Array.from({ length: 1200 }, (_, i) => ({ m: i % 20 > 17 ? null : mel[Math.floor(i / 20) % mel.length] + 0.1, l: 0.05 + 0.03 * Math.sin(i / 15) }));
+  const res = S.singCareer(S.singScore(fr, null, 0.05), 50, { crit: { praesenz: -5 } });
+  assert.ok(res.crit.entwicklung > 60, 'Entwicklung ' + res.crit.entwicklung);
+  const base = S.singScore(fr, null, 0.05);
+  assert.ok(Math.abs(res.crit.praesenz - Math.max(0, base.crit.praesenz - 5)) < 0.11);
+  const p = S.newProfile('Testi', {}), s = S.newSeason(12345, 'normal', 'fest');
+  const id = S.startRound(s);
+  const out = S.resolveRound(s, p, Object.assign(res, { style: 'pop', action: 'publikum', symp: null, votesBonus: 0 }), id);
+  assert.ok(out && out.entries.find(e => e.id === 'p').perf === res.perf);
+});
