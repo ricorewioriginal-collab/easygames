@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "14a86d775273",
- "generated": "2026-10-24T11:16:15+02:00",
- "commit": "a6027b155dcf5fdd7fb4561bced5ae454aa2a010",
+ "version": "19cff297581f",
+ "generated": "2026-10-24T12:50:09+02:00",
+ "commit": "66a95c5012d2a24ec34e82f6faa8f827ba42a8ed",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5353,8 +5353,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22382,
-   "h": "6ebef80dd75f81dea851468d7eff2888b2ce57b9dd009da46074eaa3ca35c30f"
+   "s": 22412,
+   "h": "c9bd402c06e274bd06c0f2fb4ed417e68eef5e47eb413a8579715210eb84fb75"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -5378,8 +5378,8 @@
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 43620,
-   "h": "d4efadc112bbc714fada8320250133a5edac19a0c6e3b41b6f1b0619d95a8db7"
+   "s": 45922,
+   "h": "4fd9511f92845e062413474c24694a8f791b12000f343c6c85be51691cb8e504"
   },
   {
    "p": "cloud/anmacha-engage.js",
@@ -6423,8 +6423,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 43620,
-   "h": "d4efadc112bbc714fada8320250133a5edac19a0c6e3b41b6f1b0619d95a8db7"
+   "s": 45922,
+   "h": "4fd9511f92845e062413474c24694a8f791b12000f343c6c85be51691cb8e504"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -8139,7 +8139,7 @@
   {
    "p": "sync/catalog.json",
    "s": 192860,
-   "h": "8f89302efabe06a0293d1da62d2aefc4389b97840706419c3486d4845257e9d1"
+   "h": "01e89ee8fbe56167ec82f06364ba9233c1b64f67d86d4905750631b745c1e3da"
   },
   {
    "p": "taschi/card.svg",

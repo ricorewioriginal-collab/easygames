@@ -15,6 +15,12 @@ class NativeHtmlTest {
         assertTrue(prepared.indexOf("EasyGamesApp.notifyRequest") in 0 until prepared.indexOf("startGame()"))
     }
 
+    @Test fun speechBridgeRunsBeforeGameScripts() {
+        val prepared = NativeHtml.prepare("<html><head><script>startGame()</script></head></html>")
+        assertTrue(prepared.indexOf("EasyGamesApp.ttsSpeak") in 0 until prepared.indexOf("startGame()"))
+        assertTrue(prepared.contains("window.__egTts"))
+    }
+
     @Test fun fragmentsAreSupported() {
         assertTrue(NativeHtml.prepare("<canvas></canvas>").endsWith("<canvas></canvas>"))
     }

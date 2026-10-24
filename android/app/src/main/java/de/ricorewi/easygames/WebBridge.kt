@@ -9,7 +9,8 @@ import android.webkit.JavascriptInterface
  */
 class WebBridge(
     private val host: Host,
-    private val coordinator: SyncCoordinator
+    private val coordinator: SyncCoordinator,
+    private val tts: AppTts
 ) {
     interface Host {
         /** Aktiviert einen fertig geladenen Stand und lädt die Seite neu. */
@@ -67,5 +68,22 @@ class WebBridge(
         if (now - lastNotify < 5000) return
         lastNotify = now
         host.showNotification((title ?: "").take(80), (body ?: "").take(240), (tag ?: "").take(40))
+    }
+
+    // ---------------------------------------------------------------- Sprachausgabe (speechSynthesis der Spiele, siehe NativeHtml)
+
+    @JavascriptInterface
+    fun ttsVoices(): String = try { tts.voicesJson() } catch (e: Exception) { "[]" }
+
+    /** Länge begrenzt; id nur Buchstaben/Ziffern/_ (wird an die Seite zurückgemeldet). */
+    @JavascriptInterface
+    fun ttsSpeak(id: String?, text: String?, lang: String?, voice: String?, rate: Float, pitch: Float, volume: Float) {
+        val safe = (id ?: "").filter { it.isLetterOrDigit() || it == '_' }.take(40)
+        tts.speak(safe, (text ?: "").take(3500), (lang ?: "").take(20), (voice ?: "").take(120), rate, pitch, volume)
+    }
+
+    @JavascriptInterface
+    fun ttsStop() {
+        tts.stop()
     }
 }
