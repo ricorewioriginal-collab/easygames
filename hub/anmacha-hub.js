@@ -217,10 +217,11 @@
   function player() {
     if (S.pl) return S.pl;
     var d = doc.createElement('div'); d.className = 'egh-pl'; d.hidden = true; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true');
-    d.innerHTML = '<div class="egh-pl-h"><span></span><button type="button" data-sh>📤 Teilen</button><button type="button" data-fs>⛶ Vollbild</button><button type="button" data-x>✕ Schließen</button></div><iframe allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock" allowfullscreen title="Spiel"></iframe>';
+    d.innerHTML = '<div class="egh-pl-h"><span></span><button type="button" data-st title="Als Stream-Overlay einbinden (OBS, TikTok LIVE)">🎥 Stream</button><button type="button" data-sh>📤 Teilen</button><button type="button" data-fs>⛶ Vollbild</button><button type="button" data-x>✕ Schließen</button></div><iframe allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock" allowfullscreen title="Spiel"></iframe>';
     doc.body.appendChild(d);
     d.querySelector('[data-x]').onclick = close;
     d.querySelector('[data-sh]').onclick = function () { shareCur(this); };
+    d.querySelector('[data-st]').onclick = function () { var g = S.cur; if (!g) return; var u = new URL('einbinden.html', EG), l = shareUrl(g); u.searchParams.set('stream', g.id); if (l.indexOf(EG) !== 0 && /^https:/.test(l)) u.searchParams.set('share', l); u.hash = 'stream'; root.open(u.href, '_blank', 'noopener'); };
     d.querySelector('[data-fs]').onclick = function () { try { (d.requestFullscreen || d.webkitRequestFullscreen).call(d); } catch (e) { } };
     doc.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !d.hidden && !doc.fullscreenElement) close(); });
     root.addEventListener('message', function (e) { if (e.source === d.querySelector('iframe').contentWindow && e.data && (e.data.type === 'easygames:close' || e.data === 'easygames:close')) close(); });

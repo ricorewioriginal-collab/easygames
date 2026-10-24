@@ -67,7 +67,7 @@
   <p class="lead">Alle Möglichkeiten, easygames auf einer Webseite, in einer App oder auf dem TV zu zeigen – mit Beispielen zum Kopieren.</p>
 
   <nav class="toc" aria-label="Inhalt">
-    <a href="#wahl">Welche Variante?</a><a href="#gen">Code-Generator</a><a href="#link">Direktlink</a><a href="#iframe">iframe</a>
+    <a href="#wahl">Welche Variante?</a><a href="#gen">Code-Generator</a><a href="#stream">🎥 Stream-Overlay</a><a href="#link">Direktlink</a><a href="#iframe">iframe</a>
     <a href="#js">JavaScript</a><a href="#lib">Bibliothek</a><a href="#hub">Spiele-Hub</a><a href="#login">Login</a><a href="#vollbild">Vollbild</a><a href="#vollbild-einbinden">Vollbild einbinden</a><a href="#boards">Ranglisten &amp; Erfolge</a><a href="#nav">Zurück &amp; TV</a>
     <a href="#geraet">Geräteerkennung</a><a href="#pwa">PWA</a><a href="#pad">Gamecontroller</a><a href="#cloud">Cloud-Speicher</a><a href="#android">Android-App</a><a href="#retro">EmulationStation</a><a href="#tvlink">TV-Link</a><a href="#neu">Neues Spiel</a><a href="#msg">postMessage</a><a href="#app">App &amp; Offline</a><a href="#host">Eigener Server</a><a href="#hilfe">Fehlerhilfe</a>
   </nav>
@@ -111,6 +111,34 @@
     <h3>easygames.js (Attribute)</h3><pre id="oAttr"></pre>
     <h3>easygames.js (JavaScript mit Variable)</h3><pre id="oJs"></pre>
     <div class="row"><button class="primary" data-c="oLink">Link kopieren</button><button class="primary" data-c="oIframe">iframe kopieren</button><button class="primary" data-c="oAttr">Attribute kopieren</button><button class="primary" data-c="oJs">JS kopieren</button></div>
+  </section>
+
+  <section id="stream">
+    <h2>🎥 Stream-Overlay für OBS und TikTok LIVE <span class="tag">neu</span></h2>
+    <p>Jedes Spiel lässt sich spielbar in den Livestream holen, im Hochformat <b>9:16</b> (wie am Handy, TikTok/Shorts) oder im Querformat <b>16:9</b> (wie am PC, YouTube/Twitch).
+      Wahlweise gibt es Titel, Logo und einen QR-Code „Jetzt mitspielen“ dazu. Zuschauer scannen ihn und spielen mit, bei Online-Spielen auch im selben Raum.</p>
+    <div class="gen">
+      <label>Spiel<select id="sGame"></select></label>
+      <div class="row">
+        <label>Format<select id="sFmt"><option value="9x16">9:16 Hochformat (1080 × 1920)</option><option value="16x9">16:9 Querformat (1920 × 1080)</option></select></label>
+        <label>Gestaltung<select id="sLay"><option value="frame">Mit Titel und QR-Code</option><option value="badge">Nur Spiel + kleiner QR-Code</option><option value="full">Nur das Spiel</option></select></label>
+      </div>
+      <div class="row">
+        <label>Hintergrund<select id="sBg"><option value="">dunkel</option><option value="clear">durchsichtig (für eigene OBS-Szenen)</option></select></label>
+        <label>Größe der Bedienung<select id="sW"><option value="">normal</option><option value="s">groß (weniger Platz, größere Knöpfe)</option><option value="l">klein (mehr Spielfläche)</option></select></label>
+      </div>
+      <label>QR-Code führt zu (optional, sonst easygames-Seite)<input id="sShare" placeholder="https://meine-seite.de/#games/{id}" inputmode="url"></label>
+    </div>
+    <div id="sPrevBox" style="margin:12px 0;display:flex;justify-content:center"><div id="sPrev" style="position:relative;overflow:hidden;border-radius:12px;border:1px solid rgba(0,229,255,.25);background:#000"><iframe id="sFrame" title="Vorschau Stream-Overlay" style="border:0;transform-origin:0 0;position:absolute;left:0;top:0" allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock"></iframe></div></div>
+    <h3>Adresse für die Browser-Quelle</h3><pre id="sUrl"></pre>
+    <div class="row"><button class="primary" data-c="sUrl">Adresse kopieren</button><a class="primary" id="sOpen" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;text-decoration:none">Overlay öffnen</a></div>
+    <ul>
+      <li><b>OBS Studio:</b> Quellen → <i>+</i> → <i>Browser</i> → Adresse einfügen. Breite/Höhe <b id="sSize">1080 × 1920</b>, „Audio über OBS steuern“ aktivieren.
+        Spielen: Rechtsklick auf die Quelle → <i>Interagieren</i> (Maus und Tastatur gehen ins Spiel), Controller funktionieren direkt.</li>
+      <li><b>TikTok LIVE Studio:</b> Quelle hinzufügen → <i>Link</i> bzw. <i>Browser</i> → Adresse einfügen, Hochformat wählen. Zum Spielen das Overlay zusätzlich im Browser öffnen und per <i>Fenster</i>-Quelle aufnehmen, falls die Link-Quelle keine Eingaben annimmt.</li>
+      <li><b>Mit dem Handy spielen, am PC streamen:</b> Bei Mehrspieler-Spielen läuft das Overlay als Bildschirm (TV), Handys und Zuschauer steuern per QR-Code.</li>
+      <li>Das Spiel bekommt Handy- bzw. PC-Größe und wird scharf hochskaliert. Die Adresse funktioniert auch per JavaScript: <code>EasyGames.streamUrl('&lt;spiel-id&gt;', { format: '16x9' })</code>.</li>
+    </ul>
   </section>
 
   <section id="link">
@@ -809,6 +837,26 @@ document.addEventListener('click', e => {
   });
   b.textContent = 'Kopiert ✓'; setTimeout(() => b.textContent = old, 1500);
 });
+// ----- Stream-Overlay (stream.html) -----
+GAMES.filter(g => !/^[a-z]+:\/\//i.test(g.path)).forEach(g => { const o = document.createElement('option'); o.value = g.id; o.textContent = g.title; $('sGame').appendChild(o); });
+{ const q = new URLSearchParams(location.search); const sg = q.get('stream') && GAMES.find(g => g.id === q.get('stream') || g.path.replace(/\/$/, '') === q.get('stream')); if (sg) $('sGame').value = sg.id; if (/^https:\/\//.test(q.get('share') || '')) $('sShare').value = q.get('share'); }
+let streamSeen = !('IntersectionObserver' in window);
+if (!streamSeen) new IntersectionObserver((e, ob) => { if (e.some(x => x.isIntersecting)) { streamSeen = true; ob.disconnect(); streamGen(); } }).observe($('sPrevBox'));
+function streamGen() {
+  const land = $('sFmt').value === '16x9', u = new URL('stream.html', base), sh = $('sShare').value.trim(), w = $('sW').value;
+  u.searchParams.set('game', $('sGame').value); if (land) u.searchParams.set('format', '16x9');
+  if ($('sLay').value !== 'frame') u.searchParams.set('layout', $('sLay').value); if ($('sBg').value) u.searchParams.set('bg', 'clear');
+  if (w) u.searchParams.set('w', land ? (w === 's' ? 1024 : 1600) : (w === 's' ? 360 : 540));
+  if (/^https:\/\/\S+$/.test(sh)) u.searchParams.set('share', sh);
+  $('sUrl').textContent = u.href; $('sOpen').href = u.href; $('sSize').textContent = land ? '1920 × 1080' : '1080 × 1920';
+  const W = land ? 1920 : 1080, H = land ? 1080 : 1920, box = Math.min($('sPrevBox').clientWidth || 320, land ? 640 : 300), k = box / W;
+  $('sPrev').style.width = box + 'px'; $('sPrev').style.height = Math.round(H * k) + 'px';
+  const f = $('sFrame'); f.style.width = W + 'px'; f.style.height = H + 'px'; f.style.transform = 'scale(' + k + ')';
+  if (streamSeen && f.dataset.src !== u.href) { f.dataset.src = u.href; f.src = u.href; }   // Vorschau erst laden, wenn sie zu sehen ist
+}
+['sGame', 'sFmt', 'sLay', 'sBg', 'sW', 'sShare'].forEach(id => $(id).addEventListener('change', streamGen));
+streamGen();
+if (location.hash === '#stream') setTimeout(() => $('stream').scrollIntoView(), 50);
 </script>
 </body>
 </html>

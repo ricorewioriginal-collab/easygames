@@ -24,7 +24,9 @@ Ressourcensparend und fehlerfrei bauen: kleine, gezielte Änderungen, bestehende
 4. **In der Spieleliste eintragen.** `modes.js`: `online: true` für jedes Spiel, das über mehrere Geräte per Code/QR/Link spielbar ist.
 5. **Einbindung muss alles können.** Spiele mit Sprachausgabe laden `cloud/anmacha-cloud.js` (spricht eingebettet über die einbindende
    Seite, auch verschachtelt). iframes für Spiele nutzen die Freigaben aus `easygames.js` (`FRAME_ALLOW`, öffentlich `EasyGames.allow`);
-   dieselbe Liste steht in `index.html`, `hub/anmacha-hub.js`, `einbinden.html`, `cloud/anmacha-account.js` – `tools/check-games.js` prüft beides.
+   dieselbe Liste steht in `index.html`, `hub/anmacha-hub.js`, `einbinden.html`, `cloud/anmacha-account.js`, `stream.html` – `tools/check-games.js` prüft beides.
+   Stream-Overlay (OBS/TikTok LIVE): `stream.html?game=<id>&format=9x16|16x9` gilt automatisch für jedes Spiel; Knopf „🎥 Stream“ in
+   Bibliothek, Hub und `easygames.js`, Einrichtung unter `einbinden.html#stream`, Test `tools/test-stream.cjs`.
 
 ## Nach Änderungen
 

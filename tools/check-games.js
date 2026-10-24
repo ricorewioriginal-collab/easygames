@@ -42,7 +42,7 @@ Object.keys(GUIDES).forEach(k => { if (!ids.has(k)) warn(`guides.js: "${k}" ist 
 // Einbindung: überall dieselben iframe-Freigaben, damit eingebettete Spiele (auch neue) alles dürfen
 const ALLOW = (fs.readFileSync(path.join(root, 'easygames.js'), 'utf8').match(/var FRAME_ALLOW = '([^']+)'/) || [])[1];
 if (!ALLOW) err('easygames.js: FRAME_ALLOW nicht gefunden');
-else ['index.html', 'hub/anmacha-hub.js', 'einbinden.html', 'cloud/anmacha-account.js'].forEach(f => {
+else ['index.html', 'hub/anmacha-hub.js', 'einbinden.html', 'cloud/anmacha-account.js', 'stream.html'].forEach(f => {
   const src = fs.readFileSync(path.join(root, f), 'utf8');
   (src.match(/allow\s*=\s*["'`](fullscreen;[^"'`]*)["'`]/g) || []).forEach(a => { if (!a.includes(ALLOW)) err(`${f}: iframe-Freigabe weicht von FRAME_ALLOW (easygames.js) ab: ${a}`); });
 });
