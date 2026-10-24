@@ -35,6 +35,7 @@ const P = (x, w, y = 1) => ({ k: 'plat', x, y, w });
 // Drehwalze, Trampolin, Seilschwung, Sandsack, drei Versuche an der Steilwand
 { const s = mk([{ k: 'roll', x: 0, w: 6, y: 1, r: 0.8, v: -1.5 }], 4); run(s, {}, 1); ok(s.onGround && Math.abs(s.x - 2.5) < 0.1, `Drehwalze schiebt den stehenden Läufer zurück (${(4 - s.x).toFixed(2)} m in 1 s)`); }
 { const s = mk([P(0, 3), { k: 'tramp', x: 4, y: 0.7, w: 2.4, bounce: 12.5 }, P(7, 3)], 1); let top = 0; run(s, p => { top = Math.max(top, p.y); return { r: p.x < 4.8 ? 1 : 0, j: p.onGround && p.x > 2.4 && p.x < 3.2 ? 1 : 0 }; }, 2.5); ok(s.bounces >= 1 && top > 3.4, `Trampolin federt ohne Sprungtaste hoch (${top.toFixed(2)} m)`); }
+{ let miss = 0; for (let h = 0.3; h < 0.9; h += 0.004) { const s = mk([{ k: 'tramp', x: 0, y: 0.7, w: 4, bounce: 12.5 }], 2); s.y = 0.7 + h; s.vy = 0; s.onGround = false; run(s, p => p.bounces ? (p.dead = 'ok', {}) : {}, 1); if (!s.bounces) miss++; } ok(miss === 0, `Trampolin federt bei jeder Landehöhe (${miss} Aussetzer)`); }
 { const rp = { k: 'rope', px: 8.5, py: 7, len: 3.9, amp: 0.6, period: 2.6, phase: -3.5 }, O = [P(0, 6), rp, P(11, 4)]; const s = mk(O, 3); let grabbed = false;
   run(s, p => { grabbed = grabbed || !!p.rope; return { r: p.x < 12 ? 1 : 0, j: p.x > 11 && p.onGround ? 0 : p.rope ? (p.rope.a > 0.2 && p.rope.da > 0 ? 1 : 0) : p.onGround && p.x > 5.4 ? 1 : !p.onGround && p.vy > 0.5 ? 1 : 0 }; }, 5);
   ok(grabbed && !s.dead && s.onGround && s.x > 11, 'Seilschwung: Läufer greift das Seil, schwingt mit und springt auf die nächste Plattform');

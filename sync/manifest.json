@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "114a05d7f790",
- "generated": "2026-10-24T17:04:37+00:00",
- "commit": "99755b52b37bb73d1e26d7439179f860f5669490",
+ "version": "4ceff17e174e",
+ "generated": "2026-10-24T17:06:19+00:00",
+ "commit": "d942784bd80bfe6f192f244a1ee05c59dc817f08",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -763,8 +763,8 @@
   },
   {
    "p": "anmacha-funkparcours/engine.js",
-   "s": 17440,
-   "h": "0b18da048d73ebaf45c3b0aba01ffcfcb07f4e246b2842f4d84878e8b4a3d8f7"
+   "s": 17513,
+   "h": "153701e66059261d6f5c44cef47d266fb70272a18e243fbf9fdd72aa54d6f194"
   },
   {
    "p": "anmacha-funkparcours/index.html",
@@ -5358,8 +5358,8 @@
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 36397,
-   "h": "4685dee5c9a091a78771d6739cedebe3a63460fc57d51e133eb324151dd40438"
+   "s": 36400,
+   "h": "bb3bc541fa64d8a9a9d4b09cfeeff29c9d1c03130a381f5f86b61961c7e75fae"
   },
   {
    "p": "cloud/anmacha-bug.js",
@@ -8414,7 +8414,7 @@
   {
    "p": "sync/catalog.json",
    "s": 206757,
-   "h": "03195a1995b1c27826516a45b0202cd7b38cb42befbcfeec59bd2befd95befb8"
+   "h": "864cdf021b80a085cce3d32af34a972afd8e7cf515ed0bbf09c2271c4ff1ce02"
   },
   {
    "p": "taschi/card.svg",

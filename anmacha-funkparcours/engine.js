@@ -112,7 +112,7 @@ export class Sim {
     if (this.boost && this.vy <= 0) this.boost = false; if (!J && this.vy > 3.5 && !this.boost) this.vy -= 55 * dt;   // kurzer Tipp = kleiner Sprung
     // Greifen: in der Luft an den Stangen automatisch
     this.grabCool = (this.grabCool || 0) - dt; if (!this.onGround && ctl && this.grabCool <= 0) { const b = this.nearBar(); if (b) { this.hang = { bar: b.i }; this.vx = 0; this.vy = 0; this.y = b.o.y - PH; this.prevG = Gr; return; } const rp = this.nearRope(); if (rp) { this.rope = rp; this.boost = false; this.prevG = Gr; return; } } this.prevG = Gr;
-    this.vy -= G * dt;
+    this.vy -= G * dt; const vIn = this.vy;   // Fallgeschwindigkeit vor dem Aufsetzen (für das Trampolin)
     let carryX = 0, carryY = 0; if (this.onGround && this.ground) { carryX = this.ground.vx * dt; carryY = this.ground.vy * dt; }
     // x-Bewegung
     this.x += this.vx * dt + carryX; if (this.onGround && this.ground) { /* Plattform setzt y */ }
@@ -129,7 +129,7 @@ export class Sim {
     }
     if (this.onGround && this.ground) {
       const o = this.c.o[this.ground.i]; if (o.k === 'sink') { const k = this.sinks[this.ground.i]; if (k.touch < 0) k.touch = this.t; }
-      if (o.k === 'tramp' && y0 - this.y > 1.5 * dt) { this.vy = o.bounce; this.onGround = false; this.ground = null; this.boost = true; this.bounces = (this.bounces || 0) + 1; }
+      if (o.k === 'tramp' && vIn < -1.5) { this.vy = o.bounce; this.onGround = false; this.ground = null; this.boost = true; this.bounces = (this.bounces || 0) + 1; }
       else { this.boost = false; if (this.wallHit) { this.wallHit = false; if (this.wallTries >= 3) { this.dead = 'wall'; return; } } }
     }
     // Pendel (Sandsack = drei Kreise entlang des Seils)
