@@ -173,7 +173,7 @@
       if (!init()) { reject(new Error('noaudio')); return; }
       radioStop();
       let done = false, el, g;
-      const fail = why => { if (done) return; done = true; clearTimeout(to); radioStop(); reject(new Error(why)); };
+      const fail = why => { if (done) return; done = true; clearTimeout(to); if (radio && radio.el === el) radioStop(); else if (el) { try { el.pause(); el.removeAttribute('src'); } catch (e) {} } reject(new Error(why)); };   // nur den eigenen Stream stoppen
       const to = setTimeout(() => fail('timeout'), plain ? 12000 : 6000);
       try {
         el = new Audio(); el.preload = 'auto';

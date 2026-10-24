@@ -273,6 +273,8 @@
       const from = Math.max(this.now + this.travel, this.notes.length ? this.notes[this.notes.length - 1].t + this.minGap : 0);
       genRhythm(p).notes.forEach(n => { if (n.t >= from) this.notes.push(n); });
       this.sg = A.song(p.style || 'pop', p.bpm || 100); this.sg.step = Math.ceil(this.now / this.sg.spb);
+    } else if (p.type === 'pitch' && !p.acappella && !this.sg) {   // Gesangsteil bekommt wieder Begleitung
+      this.sg = A.song(p.style || 'pop', p.bpm || 100); this.sg.step = Math.ceil(this.now / this.sg.spb);
     }
   };
   P.updRhythm = function (now) {

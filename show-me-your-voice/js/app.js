@@ -354,16 +354,18 @@
   };
   // ---------- Radio im Wartebereich: Sender läuft schon, der Auftritt beginnt mit dem nächsten Song ----------
   const onAir = { slug: null, mode: null, poll: 0, song: null };
-  function airStop() { clearInterval(onAir.poll); onAir.poll = 0; onAir.slug = null; onAir.mode = null; onAir.song = null; A.radioStop(); }
+  let airTok = 0;   // jeder Verbindungsversuch bekommt eine Nummer; veraltete Versuche brechen ab
+  function airStop() { airTok++; clearInterval(onAir.poll); onAir.poll = 0; onAir.slug = null; onAir.mode = null; onAir.song = null; A.radioStop(); }
   function airShow(txt) { const el = $('#airBox'); if (el) el.textContent = txt; }
   function songTxt(sg) { return sg ? (sg.artist ? sg.artist + ' – ' : '') + sg.title : ''; }
   async function airStart(slug) {
     if (onAir.slug === slug && A.radioActive()) return onAir.mode;
     airStop(); onAir.slug = slug;
+    const tok = ++airTok, stale = () => tok !== airTok || onAir.slug !== slug;
     let mode = null;
     try { await A.radioStart(slug, ST.TRAVEL[save.settings.speed] || 1.5); mode = 'live'; }
-    catch (e) { try { await A.radioStart(slug, 0, null, true); mode = 'plain'; } catch (e2) { mode = null; } }
-    if (onAir.slug !== slug) { if (mode && !stage) A.radioStop(); return null; }   // inzwischen verlassen
+    catch (e) { if (stale()) return null; try { await A.radioStart(slug, 0, null, true); mode = 'plain'; } catch (e2) { mode = null; } }
+    if (stale()) { if (mode && !onAir.slug && !stage) A.radioStop(); return null; }   // inzwischen verlassen oder anderer Sender
     if (!mode) { onAir.slug = null; return null; }
     onAir.mode = mode; A.radioMute(false);
     const st = station(slug), upd = () => A.radioSong(slug).then(sg => { if (onAir.slug !== slug) return; if (sg) onAir.song = sg; airShow('📻 Läuft gerade auf ' + st.name + ': ' + (songTxt(onAir.song) || '…')); });
@@ -384,7 +386,7 @@
       const left = s0 && s0.end ? Math.round((s0.end - Date.now()) / 1000) : null, el = $('#airWait');
       if (el) el.textContent = (s0 ? 'Läuft noch: ' + songTxt(s0) : 'Warte auf den Songwechsel') + (left != null && left > 0 ? ' · ca. ' + left + ' s' : '');
       if (n > 240) { end(true); return; }   // Notbremse nach 4 Minuten
-      if (n % 3 === 0 || (left != null && left <= 0)) A.radioSong(onAir.slug).then(sg => { if (!done && sg && (!s0 || sg.title !== s0.title || sg.artist !== s0.artist)) { onAir.song = sg; sfx('cue', 0, '📻 Neuer Song'); end(true); } });
+      if (n % 3 === 0 || (left != null && left <= 0)) A.radioSong(onAir.slug).then(sg => { if (!done && sg && sg.type === 'song' && (!s0 || sg.title !== s0.title || sg.artist !== s0.artist)) { onAir.song = sg; sfx('cue', 0, '📻 Neuer Song'); end(true); } });
     }, 1000);
   }
   function talkStep() {

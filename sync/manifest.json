@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "18cd01644af5",
- "generated": "2026-10-24T05:05:15+00:00",
- "commit": "85bba40e3abbbb3c67bdd9e7474d289e46be17f2",
+ "version": "3f8da052a52b",
+ "generated": "2026-10-24T05:35:50+00:00",
+ "commit": "e2fe4c55372e39bb85fb87fa49b91de775343af1",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7553,13 +7553,13 @@
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 99214,
-   "h": "ebfe2fcbfc856b37415b71538e7df2dd45fe5fbe817ad61bb9ae5ab8c93e7fb5"
+   "s": 99473,
+   "h": "c8854a03e53d68ab4d93dca24b148c24e01f6600f464cb3b818c0a167b0de714"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
-   "s": 14712,
-   "h": "969cc0a5218ec8441ec137d1ebd88ea9b3fa1187abb6b3d2bae58c80c63f0a80"
+   "s": 14855,
+   "h": "ee0e5e73d7b49bf204d75f360086808f42ef0dfb3b83c436a132e430c836f8ff"
   },
   {
    "p": "show-me-your-voice/js/avatar.js",
@@ -7578,8 +7578,8 @@
   },
   {
    "p": "show-me-your-voice/js/stage.js",
-   "s": 31389,
-   "h": "93dfab888bfa5f8be59167c3bc1099abc638cfb441c591db4c03ce2387c85abf"
+   "s": 31603,
+   "h": "e61d286d5afc8dd9980773bbe0109591b4687233ec60de1e09bc093f7a4ef1eb"
   },
   {
    "p": "show-me-your-voice/manifest.webmanifest",
@@ -7854,7 +7854,7 @@
   {
    "p": "sync/catalog.json",
    "s": 172574,
-   "h": "c51dea1b430a87eba0f8ea0454623d3ba1ed92e7ba2deb94c7f9433e6ef2964c"
+   "h": "e4a9c05809da61b1278de93bd2328567ca0e383f8aabcfcc983daa113f1eb036"
   },
   {
    "p": "taschi/card.svg",
