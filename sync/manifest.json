@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "b67fcf413e4e",
- "generated": "2026-10-24T12:21:41+00:00",
- "commit": "10c7d81bde7f14d7d70f6f5338c9d39393004576",
+ "version": "ddbeaa3ad14a",
+ "generated": "2026-10-24T14:26:40+02:00",
+ "commit": "ce4eb872bfa81e348089b06ba5ea12ef9dbaea79",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8184,7 +8184,7 @@
   {
    "p": "sync/catalog.json",
    "s": 196196,
-   "h": "b20e8ece0b74704dfd3da4e94a4ff26643a819b50bdf016b1a92bf840b590e7b"
+   "h": "3ddab5b69fe88090d2802104ca2062fd0cc8b0776c122d2b7dd720420c34ee7f"
   },
   {
    "p": "taschi/card.svg",
@@ -8708,8 +8708,8 @@
   },
   {
    "p": "werwolf-nacht/js/app.js",
-   "s": 44396,
-   "h": "b304d415db0f3c8c6b81b5f7554511312bda2b76f2ccd919b8bbdefb1ea40ec0"
+   "s": 44912,
+   "h": "6deca0b65ac256b54c136a512d8ba7b24a3d9d11c64c135ebde0353f01c38252"
   },
   {
    "p": "werwolf-nacht/js/core.js",
@@ -8743,8 +8743,8 @@
   },
   {
    "p": "werwolf-nacht/style.css",
-   "s": 14886,
-   "h": "2c1f5fd35a4aa4bf96f2c3db2bff47d5fe4558be13ba8caa6af108c10b5dcc94"
+   "s": 14950,
+   "h": "b2154883e043d4d94216b37f02df0ea194ba644354675cc83fb07a5c500d04cf"
   },
   {
    "p": "werwolf-nacht/sw.js",
