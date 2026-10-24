@@ -366,6 +366,25 @@
   const SING_TITLES = [[90, '🌟 Superstar'], [80, '⭐ Star'], [70, '🎤 Profi'], [55, '🎶 Talent'], [40, '🙂 Amateur'], [0, '🚿 Duschsänger']];
   function singTitle(perf) { return SING_TITLES.find(t => (+perf || 0) >= t[0])[1]; }
 
+  // Song des Tages: gleicher Song für alle (Tag nach deutscher Zeit), Wertung über die Live-Punkte bei 60 Sekunden
+  function dailyDay(now) {
+    const d = now instanceof Date ? now : new Date();
+    try { return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Berlin' }).format(d).replace(/-/g, ''); } catch (e) { return d.toISOString().slice(0, 10).replace(/-/g, ''); }
+  }
+  // Wert für die Tagesrangliste: Tagesnummer * 100000 + Punkte. Steigt mit jedem neuen Tag, daher reicht eine feste Rangliste;
+  // die Ranglisten-Seite zeigt nur Einträge von heute (cloud/anmacha-board.js, fmt 'daily').
+  function dailyCode(day, pts) {
+    const s = String(day);
+    return Math.floor(Date.UTC(+s.slice(0, 4), +s.slice(4, 6) - 1, +s.slice(6, 8)) / 864e5) * 1e5 + Math.max(0, Math.min(10000, Math.round(pts) || 0));
+  }
+  function dailySong(day) {
+    const all = []; D.KARAOKE.forEach(g => g.songs.forEach((x, i) => all.push({ g: g.id, i, title: x[0], vid: x[1] })));
+    return all[hash('smyv-daily-' + day) % all.length];
+  }
+  // Belohnungen: Summe der Challenge-Sterne
+  function starSum(save) { return Object.keys((save && save.singCh) || {}).reduce((a, k) => a + (+save.singCh[k].stars || 0), 0); }
+  function unlocked(save, r) { return !!r && starSum(save) >= r.need; }
+
   // Echtes Vorsingen in der Karriere: Entwicklung zur letzten Runde, Bühnen-Aktion und Backstage-Ereignisse wie im Spiel-Modus.
   function singCareer(res, lastPerf, mods, action) {
     const c = res.crit, act = D.ACTION[action] || {};
@@ -443,13 +462,17 @@
   // ---------- Speicherstand ----------
   const DEF_SETTINGS = { source: 'radio', jury: 'wechsel', music: 0.7, sfx: 0.8, mute: false, mic: false, range: 'mittel', speed: 'normal', offset: 0,
     difficulty: 'normal', reduced: false, big: false, cb: false, captions: true };
-  function freshSave() { return { v: 1, profile: null, season: null, settings: Object.assign({}, DEF_SETTINGS), best: 0, wins: 0, tutorial: false, singCh: {} }; }
+  function freshSave() { return { v: 1, profile: null, season: null, settings: Object.assign({}, DEF_SETTINGS), best: 0, wins: 0, tutorial: false, singCh: {}, singBest: 0, daily: {}, dailyBoard: 0, rew: { mic: 'std', stage: 'chairs' } }; }
   function repair(s) {
     const f = freshSave();
     if (!s || typeof s !== 'object' || s.v !== 1) return f;
     const out = Object.assign(f, { best: +s.best || 0, wins: +s.wins || 0, tutorial: !!s.tutorial });
     if (s.singCh && typeof s.singCh === 'object') D.KARAOKE.forEach(g => { const c = s.singCh[g.id];
       if (c && typeof c === 'object') out.singCh[g.id] = { best: clamp(+c.best || 0), stars: Math.max(0, Math.min(3, Math.round(+c.stars) || 0)) }; });
+    out.singBest = Math.max(0, Math.min(10000, Math.round(+s.singBest) || 0));
+    if (s.daily && typeof s.daily === 'object') { const k = Object.keys(s.daily).filter(x => /^d\d{8}$/.test(x)).sort().pop(); if (k) out.daily[k] = Math.max(0, Math.min(10000, Math.round(+s.daily[k]) || 0)); }
+    out.dailyBoard = Math.max(0, Math.min(1e11, Math.round(+s.dailyBoard) || 0));
+    if (s.rew && typeof s.rew === 'object') ['mic', 'stage'].forEach(t => { if (D.REWARDS.some(r => r.type === t && r.id === s.rew[t])) out.rew[t] = s.rew[t]; });
     out.settings = Object.assign({}, DEF_SETTINGS, s.settings && typeof s.settings === 'object' ? s.settings : {});
     const p = s.profile;
     if (p && typeof p === 'object' && typeof p.name === 'string' && p.attrs && typeof p.attrs === 'object') {
@@ -470,7 +493,7 @@
   }
 
   const API = { D, CK, TRAINABLE, DIFF, rng, hash, clamp, cleanName, newProfile, level, newSeason, startRound, cancelRound,
-    analyze, panelOf, judge, ONLINE, onlineDef, onlineResolve, encoreFlip, comment, rollEvent, applyEvent, mergeSymp, aiPerf, rank, resolveRound, freeCasting, singScore, singCareer, liveScorer, singTitle, singStars, trainGain, applyTraining, applyCommunity, bonusScore,
+    analyze, panelOf, judge, ONLINE, onlineDef, onlineResolve, encoreFlip, comment, rollEvent, applyEvent, mergeSymp, aiPerf, rank, resolveRound, freeCasting, singScore, singCareer, liveScorer, singTitle, dailyDay, dailyCode, dailySong, starSum, unlocked, singStars, trainGain, applyTraining, applyCommunity, bonusScore,
     DEF_SETTINGS, freshSave, repair };
   if (typeof module !== 'undefined' && module.exports) module.exports = API; else root.SMYV = API;
 })(typeof window !== 'undefined' ? window : globalThis);

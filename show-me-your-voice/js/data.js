@@ -463,6 +463,23 @@
         ['Shawn Mendes – There\'s Nothing Holdin\' Me Back', 'pGVIHg2QYYo', 'Musisi Karaoke']] }
   ];
 
-  const DATA = { MAIN_JURY, STATIONS, INTERVIEW, HOST_Q, EVENTS, CRIT, JURY, COACH, HOST, CANDIDATES, STYLES, SONGS, MOTTOS, APPROACH, ACTION, ROUNDS, COMMUNITY, TRAINING, ACHIEVEMENTS, ARCHIVE, KARAOKE };
+  // Belohnungen fürs Vorsingen: freigeschaltet über Challenge-Sterne (höchstens 3 je Genre).
+  // mic = Farbe der Notenbalken beim Vorsingen, stage = Hintergrund beim Vorsingen, color = Outfit-Farbe im Avatar (idx in AV.OPT.outfitColor)
+  const REWARDS = [
+    { id: 'std', type: 'mic', name: '🎤 Standard-Mikro', color: '#ffc93c', need: 0 },
+    { id: 'silber', type: 'mic', name: '🥈 Silber-Mikro', color: '#e5e7eb', need: 2 },
+    { id: 'feuer', type: 'mic', name: '🔥 Feuer-Mikro', color: '#fb923c', need: 5 },
+    { id: 'diamant', type: 'mic', name: '💎 Diamant-Mikro', color: '#67e8f9', need: 9 },
+    { id: 'regenbogen', type: 'mic', name: '🌈 Regenbogen-Mikro', color: 'rainbow', need: 13 },
+    { id: 'chairs', type: 'stage', name: '🪑 Casting-Studio', bg: 'chairs', need: 0 },
+    { id: 'stage', type: 'stage', name: '🎭 Große Bühne', bg: 'stage', need: 3 },
+    { id: 'arena', type: 'stage', name: '🏟️ Arena', bg: 'arena', need: 7 },
+    { id: 'win', type: 'stage', name: '🏆 Finale-Bühne', bg: 'win', need: 11 },
+    { id: 'gold', type: 'color', name: '✨ Goldenes Outfit', idx: 7, need: 4 },
+    { id: 'silberoutfit', type: 'color', name: '🪩 Silbernes Outfit', idx: 8, need: 8 },
+    { id: 'neon', type: 'color', name: '💖 Neon-Outfit', idx: 9, need: 12 }
+  ];
+
+  const DATA = { MAIN_JURY, STATIONS, INTERVIEW, HOST_Q, EVENTS, CRIT, JURY, COACH, HOST, CANDIDATES, STYLES, SONGS, MOTTOS, APPROACH, ACTION, ROUNDS, COMMUNITY, TRAINING, ACHIEVEMENTS, ARCHIVE, KARAOKE, REWARDS };
   if (typeof module !== 'undefined' && module.exports) module.exports = DATA; else root.SMYV_DATA = DATA;
 })(typeof window !== 'undefined' ? window : globalThis);

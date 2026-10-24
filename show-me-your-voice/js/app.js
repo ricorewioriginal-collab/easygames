@@ -49,7 +49,7 @@
   function sfx(n, a, cap) { A.sfx(n, a); if (cap) caption(cap); }
 
   const BG = { sTitle: 'stage', sMenu: 'stage', sAvatar: 'backstage', sBack: 'backstage', sPrep: 'backstage', sResult: 'chairs', sOut: 'out', sWin: 'win',
-    sCands: 'backstage', sProfile: 'backstage', sTrain: 'backstage', sBonus: 'arena', sArchive: 'arena', sSettings: 'stage', sHelp: 'stage', sCredits: 'stage', sOnline: 'arena', sSing: 'chairs' };
+    sCands: 'backstage', sProfile: 'backstage', sTrain: 'backstage', sBonus: 'arena', sArchive: 'arena', sSettings: 'stage', sHelp: 'stage', sCredits: 'stage', sOnline: 'arena', sSing: 'chairs', sParty: 'stage' };
   function setBg(name, dim) { const el = $('#bg'); el.style.backgroundImage = 'url(img/bg-' + name + '.jpg)'; el.classList.toggle('dim', !!dim); }
   const RENDER = {};
   function go(id, arg) {
@@ -126,7 +126,8 @@
     if (running) it.push(['cont', 'gold wide', '▶ Karriere fortsetzen', esc(p.name) + ' · ' + D.ROUNDS[s.round].name]);
     it.push(['new', running ? 'violet' : 'gold wide', '🌟 Neue Karriere', 'Avatar, Casting, ganze Staffel']);
     it.push(['online', 'pink', '🌐 Online & Handys', 'Live-Show mit Freunden – jede Person auf dem eigenen Gerät']);
-    it.push(['sing', 'pink', '🎙️ Freies Vorsingen', 'Dein Song, Karaoke & Challenges']);
+    it.push(['sing', 'pink', '🎙️ Freies Vorsingen', 'Dein Song, Karaoke, Challenges & Song des Tages']);
+    it.push(['party', 'pink', '🎉 Karaoke-Abend', 'Mehrere Sänger, ein Gerät, eine Siegerehrung']);
     it.push(['free', 'pink', '🎤 Freies Casting', 'Ein Auftritt vor der Jury']);
     it.push(['train', 'violet', '🏋️ Training', 'Drei Minispiele mit Sophie']);
     it.push(['bonus', 'blue', '❄️ Winterglanz-Gala', 'Bonus-Challenge · Rekord ' + (save.best || 0)]);
@@ -151,7 +152,8 @@
       { season: () => { closeOv(); startSeason(); }, ava: () => { closeOv(); openAvatar('fresh'); }, x: closeOv });
     } else if (m === 'online') openOnline();
     else if (m === 'free') { if (!p) openAvatar('free'); else sub('sPrep', 'free'); }
-    else if (m === 'sing') { sing.ctx = null; if (!p) openAvatar('sing'); else sub('sSing'); }
+    else if (m === 'sing') { sing.ctx = null; sing.party = null; if (!p) openAvatar('sing'); else sub('sSing'); }
+    else if (m === 'party') sub('sParty');
     else if (m === 'train') sub('sTrain', 'practice');
     else if (m === 'bonus') sub('sBonus');
     else if (m === 'arch') sub('sArchive');
@@ -174,7 +176,8 @@
   function drawAva() { $('#avaPrev').innerHTML = AV.svg(edit.look, edit.expr); }
   RENDER.sAvatar = () => {
     $('#avaRows').innerHTML = ROWS.map(([k, label, kind]) => {
-      if (kind === 'sw') return `<div class="optRow"><span>${label}</span><div class="sw">${AV.OPT[k].map((c, i) => `<button type="button" data-k="${k}" data-v="${i}" style="background:${c}" aria-label="${label} ${i + 1}" aria-pressed="${edit.look[k] === i}"></button>`).join('')}</div></div>`;
+      if (kind === 'sw') return `<div class="optRow"><span>${label}</span><div class="sw">${AV.OPT[k].map((c, i) => { const rw = k === 'outfitColor' && colorReward(i), lock = rw && !S.unlocked(save, rw);
+        return `<button type="button" data-k="${k}" data-v="${i}" style="background:${c}" aria-label="${label} ${i + 1}${rw ? ' · ' + rw.name + (lock ? ', gesperrt: ab ' + rw.need + ' Sternen' : '') : ''}" ${lock ? 'disabled class="lock" title="🔒 ab ' + rw.need + ' Sternen beim Vorsingen"' : ''} aria-pressed="${edit.look[k] === i}"></button>`; }).join('')}</div></div>`;
       return `<div class="optRow"><span>${label}</span><div class="stepper"><button class="btn sm" type="button" data-k="${k}" data-d="-1" aria-label="${label} zurück">◀</button><b id="av_${k}">${AV.LABEL[k][edit.look[k]]}</b><button class="btn sm" type="button" data-k="${k}" data-d="1" aria-label="${label} weiter">▶</button></div></div>`;
     }).join('');
     edit.expr = 'happy'; drawAva();
@@ -191,8 +194,10 @@
     }
     edit.expr = rnd(['happy', 'neutral', 'shock']); drawAva();
   });
+  const colorReward = i => D.REWARDS.find(r => r.type === 'color' && r.idx === i);
   $('#avaRnd').onclick = () => {
     ROWS.forEach(([k, , kind]) => { const l = AV.OPT[k]; edit.look[k] = kind === 'sw' ? Math.floor(Math.random() * l.length) : rnd(l); });
+    if (colorReward(edit.look.outfitColor) && !S.unlocked(save, colorReward(edit.look.outfitColor))) edit.look.outfitColor = Math.floor(Math.random() * 7);
     RENDER.sAvatar();
   };
   $('#avaOk').onclick = () => {
@@ -603,7 +608,7 @@
     const rec = out.rec ? `<div class="panel"><p><b>🎧 Deine Aufnahme</b> <small class="muted">mit Studio-Hall · bleibt auf diesem Gerät, bis du sie speicherst oder teilst</small></p><audio controls preload="auto" src="${esc(out.rec)}" style="width:100%"></audio>
       <div class="row2"><a class="btn sm" href="${esc(out.rec)}" download="SHOW-ME-YOUR-VOICE-Auftritt.${ext}">⬇️ Speichern</a>${canShare ? '<button class="btn sm violet" type="button" id="recShare">📤 Teilen</button>' : ''}</div></div>` : '';
     if (out.rec) sing.shareTxt = `🎤 Mein Auftritt bei SHOW ME YOUR VOICE${out.song ? ' mit „' + out.song + '“' : ''}: ${out.title ? out.title + ', ' : ''}${nf(oc.perf)} von 100 Punkten. Trau dich auch!`;
-    const live = sg && out.pts != null ? `<div class="banner gold singRate">${esc(out.title || '')} · 🎯 ${out.pts.toLocaleString('de-DE')} Punkte${out.combo ? ' · beste Combo ×' + out.combo : ''}${out.turned && out.turned.length ? '<br><small>🔴 Umgedreht: ' + out.turned.map(id => esc(jur(id).name)).join(', ') + '</small>' : ''}</div>` : '';
+    const live = sg && out.pts != null ? `<div class="banner gold singRate">${esc(out.title || '')} · 🎯 ${out.pts.toLocaleString('de-DE')} Punkte${out.combo ? ' · beste Combo ×' + out.combo : ''}${out.daily ? `<br><small>📅 Song des Tages: ${out.daily.rec ? '🏆 neuer Tagesrekord! ' : ''}heute bestes Ergebnis ${out.daily.best.toLocaleString('de-DE')} · <a href="../ranglisten.html?game=show-me-your-voice" target="_blank" rel="noopener">Rangliste</a></small>` : ''}${out.turned && out.turned.length ? '<br><small>🔴 Umgedreht: ' + out.turned.map(id => esc(jur(id).name)).join(', ') + '</small>' : ''}</div>` : '';
     const sgHint = sg ? '<p class="hint">Intonation zählt relativ zu deiner eigenen Tonart: Wie genau triffst du Halbtöne und hältst sie? Umfang = tiefe bis hohe Töne, Dynamik = laut und leise.</p>' : '';
     const mult = oc.mult !== 1 ? `<p class="muted center">Ansatz-Faktor ×${String(oc.mult).replace('.', ',')}</p>` : '';
     return `<h2 class="center">Deine Performance</h2><div class="center"><div class="big">${nf(oc.perf)}</div><p class="muted">von 100 Punkten</p>${credit ? `<p class="hint">${esc(credit)}</p>` : ''}</div>${live}
@@ -638,7 +643,7 @@
   });
   function showResult(ctx) {
     go('sResult');
-    const box = $('#resBox'), p = save.profile, name = p.name;
+    const box = $('#resBox'), name = ctx.name || (save.profile ? save.profile.name : '');
     const steps = [];
     steps.push(() => perfHtml(ctx.oc, ctx.out, ctx.credit));
     if (ctx.free) {
@@ -911,11 +916,12 @@
   const stars = n => '★'.repeat(n) + '☆'.repeat(3 - n);
   const genre = id => D.KARAOKE.find(g => g.id === id);
   const ytId = s => { s = String(s || '').trim(); const m = s.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([\w-]{11})/) || s.match(/^([\w-]{11})$/); return m ? m[1] : null; };
-  const sing = { g: 'pop', song: 0, own: '', title: '', len: 60, run: null, recUrl: null, recBlob: null, ctx: null };   // ctx: echtes Vorsingen in Karriere/Freiem Casting
+  const sing = { g: 'pop', song: 0, own: '', title: '', len: 60, run: null, recUrl: null, recBlob: null, ctx: null, party: null, daily: false };   // ctx: echtes Vorsingen in Karriere/Freiem Casting
   function openSingRound(mode) {
     const s = save.season, career = mode === 'career';
     if (career && (!s || s.status !== 'backstage')) { go('sBack'); return; }
     const def = career ? D.ROUNDS[s.round] : D.ROUNDS[0];
+    sing.party = null;
     sing.ctx = { mode: career ? 'career' : 'free', sel: Object.assign({}, prep), talk: { symp: talk.symp, votes: career ? talk.votes : 0 },
       title: career ? def.icon + ' ' + def.name : '🎤 Freies Casting', bg: career ? def.bg : 'stage' };
     backTo.sSing = 'sPrep'; go('sSing');
@@ -937,19 +943,29 @@
       .concat(opt('sg', 'frei', !g, '🎤 Ohne Challenge', 'Freie Songwahl, nur die Jury zählt'));
     const ss = (g ? g.songs.map((x, i) => opt('ss', i, sing.song === i, '▶ ' + esc(x[0]), 'Karaoke mit Lyrics · ' + esc(x[2]))) : [])
       .concat(opt('ss', 'acap', sing.song === 'acap', '🎙️ A cappella', 'Ohne Musik, nur deine Stimme'), opt('ss', 'own', sing.song === 'own', '🔗 Eigener Song', 'YouTube-Link einfügen oder einfach ohne Video'));
-    const own = sing.song === 'own' || sing.song === 'acap';
+    const own = sing.song === 'own' || sing.song === 'acap', pt = sing.party, plain = !sing.ctx && !pt;
+    const day = S.dailyDay(), ds = S.dailySong(day), dBest = (save.daily || {})['d' + day];
+    const st = S.starSum(save), rw = t => D.REWARDS.filter(r => r.type === t).map(r => { const ok = S.unlocked(save, r);
+      return `<button type="button" class="opt${ok ? '' : ' lock'}" data-rw="${r.id}" aria-pressed="${save.rew[t] === r.id}" ${ok ? '' : 'disabled'}><b>${r.name}</b><small>${ok ? 'freigeschaltet' : '🔒 ab ' + r.need + ' ★'}</small></button>`; }).join('');
+    setBg((D.REWARDS.find(r => r.id === save.rew.stage) || D.REWARDS[5]).bg, true);
     $('#singBox').innerHTML = `
-      <header class="bar"><button class="btn sm" data-back type="button">← Zurück</button><h2>${sing.ctx ? esc(sing.ctx.title) : '🎙️ Freies Vorsingen'}</h2><span></span></header>
+      <header class="bar"><button class="btn sm" data-back type="button">← Zurück</button><h2>${pt ? '🎉 ' + esc(party.players[pt.i]) + ' ist dran' : sing.ctx ? esc(sing.ctx.title) : '🎙️ Freies Vorsingen'}</h2><span></span></header>
+      ${plain ? `<div class="panel daily"><p><b>📅 Song des Tages:</b> ${esc(ds.title)}</p><p class="muted">Für alle gleich, 60 Sekunden. ${dBest ? 'Dein Rekord heute: <b>' + dBest.toLocaleString('de-DE') + '</b> Punkte' : 'Heute noch nicht gesungen'} · <a href="../ranglisten.html?game=show-me-your-voice" target="_blank" rel="noopener">🏆 Rangliste</a></p>
+        <button class="btn gold" type="button" id="singDaily">🎤 Song des Tages singen</button></div>` : ''}
       <div class="panel"><p>${sing.ctx ? '<b>Jetzt zählt’s!</b> ' : ''}Wie im echten Casting: Du singst einen Song deiner Wahl ins Mikrofon. Das Spiel hört auf <b>Intonation, Stabilität, Stimmumfang und Ausdruck</b>, danach entscheidet die Jury.</p>
         <p class="muted">Ausgewertet wird nur auf deinem Gerät. Deine Aufnahme kannst du danach anhören; sie wird nicht gespeichert oder gesendet.</p></div>
-      <h3>1 · ${sing.ctx ? 'Genre' : 'Genre-Challenge'}</h3><div class="opts">${gs.join('')}</div>
-      <p class="hint" style="text-align:left">${sing.ctx ? '' : '★ 2 von 3 Jury-Ja · ★★ dazu das Genre-Ziel · ★★★ dazu mindestens 80 Punkte. '}Der Stil bringt bei der passenden Jurorin oder dem passenden Juror einen Bonus.</p>
+      <h3>1 · ${plain ? 'Genre-Challenge' : 'Genre'}</h3><div class="opts">${gs.join('')}</div>
+      <p class="hint" style="text-align:left">${!plain ? '' : '★ 2 von 3 Jury-Ja · ★★ dazu das Genre-Ziel · ★★★ dazu mindestens 80 Punkte. '}Der Stil bringt bei der passenden Jurorin oder dem passenden Juror einen Bonus.</p>
       <h3>2 · Dein Song${g ? ` <small class="muted">(${g.songs.length} Karaoke-Songs)</small>` : ''}</h3><div class="opts songs">${ss.join('')}</div>
       ${own ? `<div class="panel"><label class="field">Songtitel (optional)<input id="singTitle" type="text" maxlength="80" value="${esc(sing.title)}" placeholder="z. B. Adele – Hello"></label>
         ${sing.song === 'own' ? `<label class="field">YouTube-Link (optional)<input id="singLink" type="url" inputmode="url" value="${esc(sing.own)}" placeholder="https://youtu.be/…"></label>
         <button class="btn sm violet" type="button" id="singFind">🔍 Karaoke-Version auf YouTube suchen</button><p class="hint" style="text-align:left">Video suchen, Link kopieren und oben einfügen. Nicht jedes Video darf eingebettet werden – dann sagt dir das Spiel Bescheid.</p>` : ''}</div>` : ''}
-      <h3>3 · Länge</h3><div class="seg">${[30, 60, 90].map(n => `<button class="btn" type="button" data-sl="${n}" aria-pressed="${sing.len === n}">${n} s</button>`).join('')}</div>
+      ${sing.ctx && sing.ctx.mode === 'online' ? `<p class="hint" style="text-align:left">⏱️ Online singen alle ${ONLINE_SING} Sekunden. Such dir schnell deinen Song aus – die Runde läuft schon.</p>` : `<h3>3 · Länge</h3><div class="seg">${[30, 60, 90].map(n => `<button class="btn" type="button" data-sl="${n}" aria-pressed="${sing.len === n}">${n} s</button>`).join('')}</div>`}
       <p class="hint" style="text-align:left">🎧 Am besten mit Kopfhörern singen, sonst hört das Mikrofon die Musik mit. Die Zeit läuft ab deinem ersten Ton.${g ? ' Karaoke-Videos kommen von YouTube; alle Rechte an der Musik liegen bei den Urhebern.' : ''}</p>
+      <details class="panel rew"><summary><b>🎁 Mikro & Bühne</b> · deine Sterne: <span class="stars">${st}</span> von ${D.KARAOKE.length * 3} ★</summary>
+        <p class="hint" style="text-align:left">Sterne holst du in den Genre-Challenges. Damit schaltest du Mikros (Farbe deiner Notenbalken), Bühnen und Outfit-Farben für deinen Avatar frei.</p>
+        <div class="opts">${rw('mic')}</div><div class="opts">${rw('stage')}</div>
+        <p class="hint" style="text-align:left">Outfit-Farben: ${D.REWARDS.filter(r => r.type === 'color').map(r => (S.unlocked(save, r) ? '✅ ' : '🔒 ') + r.name + ' (' + r.need + ' ★)').join(' · ')} – im Avatar-Editor.</p></details>
       <button class="btn gold xl" type="button" id="singGo" data-focus style="width:100%;margin-top:10px">🎤 Vorsingen starten</button>`;
   };
   $('#singBox').addEventListener('input', e => {
@@ -960,12 +976,16 @@
     const b = e.target.closest('[data-sg],[data-ss],[data-sl]');
     if (b) {
       const k = b.dataset.sg != null ? 'sg' : b.dataset.ss != null ? 'ss' : 'sl', v = b.dataset[k];
+      sing.daily = false;
       if (k === 'sg') { sing.g = v; if (v !== 'frei' && !Number.isInteger(sing.song)) sing.song = 0; }
       else if (k === 'ss') sing.song = v === 'acap' || v === 'own' ? v : +v;
       else sing.len = +v;
       RENDER.sSing(); const nb = $(`#singBox [data-${k}="${v}"]`); if (nb) nb.focus();
       return;
     }
+    const r = e.target.closest('[data-rw]');
+    if (r) { const x = D.REWARDS.find(y => y.id === r.dataset.rw); if (x && S.unlocked(save, x)) { save.rew[x.type] = x.id; persist(); RENDER.sSing(); const d = $('#singBox details.rew'); if (d) d.open = true; const nb = $(`#singBox [data-rw="${x.id}"]`); if (nb) nb.focus(); } return; }
+    if (e.target.closest('#singDaily')) { const ds = S.dailySong(S.dailyDay()); sing.g = ds.g; sing.song = ds.i; sing.len = 60; sing.daily = true; singStart(); return; }
     if (e.target.closest('#singFind')) { window.open('https://www.youtube.com/results?search_query=' + encodeURIComponent((sing.title.trim() || 'Song') + ' karaoke lyrics'), '_blank', 'noopener'); return; }
     if (e.target.closest('#singGo')) singStart();
     else if (e.target.closest('#singStop')) singFinish();
@@ -983,7 +1003,7 @@
   const REC_TYPES = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/ogg;codecs=opus', 'audio/webm'];
   const GRADE = { perfekt: '✨ Perfekt!', super: '🔥 Super!', gut: '👍 Gut', daneben: '😬 Daneben' };
   async function singStart() {
-    if (!save.profile) { openAvatar('sing'); return; }
+    if (!save.profile && !sing.party) { openAvatar('sing'); return; }
     if (!save.settings.mic) { micConsent(() => { if (save.settings.mic) singStart(); else RENDER.sSing(); }); return; }
     const pk = singPick();
     if (sing.song === 'own' && sing.own.trim() && !pk.vid) { toast('Das ist kein YouTube-Link. Kopiere die Adresse des Videos (youtube.com/watch?v=… oder youtu.be/…).', 4000); return; }
@@ -993,16 +1013,21 @@
     if (sing.recUrl) { URL.revokeObjectURL(sing.recUrl); sing.recUrl = null; sing.recBlob = null; }
     const cx = sing.ctx, career = !!(cx && cx.mode === 'career'), s = save.season;
     const run = sing.run = { pk, frames: [], started: false, acc: 0, last: performance.now(), raf: 0, chunks: [], rec: null, len: sing.len, ended: false, view: [], playId: null, done: false,
-      seed: (Date.now() >>> 0) || 1, live: S.liveScorer(sing.len, 0.05), turned: {}, pts: 0 };
+      seed: (Date.now() >>> 0) || 1, live: S.liveScorer(sing.len, 0.05), turned: {}, pts: 0, party: sing.party,
+      mic: (D.REWARDS.find(r => r.id === save.rew.mic) || D.REWARDS[0]).color };
+    const ds = S.dailySong(S.dailyDay());
+    run.daily = !cx && !sing.party && sing.daily && pk.vid === ds.vid && run.len === 60 ? S.dailyDay() : null;
     if (career) {
       run.playId = s && s.status === 'backstage' ? S.startRound(s) : null;
       if (run.playId == null) { sing.run = null; A.micStop(); go('sBack'); return; }
       persist();
     }
     // Blind Audition: dieselbe Jury, die am Ende entscheidet, dreht sich live um, sobald sie Ja sagen würde
-    run.panel = career ? S.panelOf(s, s.round) : D.MAIN_JURY.slice();
-    run.jseed = career ? s.seed : run.seed; run.jround = career ? s.round : 0;
-    $('#singBox').innerHTML = `<header class="bar"><span></span><h2>🎙️ ${esc(pk.title)}</h2><span></span></header>
+    const isOnline = !!(cx && cx.mode === 'online');
+    run.panel = career ? S.panelOf(s, s.round) : isOnline ? (cx.panel || D.MAIN_JURY).slice() : D.MAIN_JURY.slice();
+    run.jseed = career ? s.seed : isOnline ? cx.seed : run.seed; run.jround = career ? s.round : isOnline ? cx.r : 0; run.jwho = isOnline ? ON.me : 'p';
+    if (isOnline) run.len = ONLINE_SING;
+    $('#singBox').innerHTML = `<header class="bar"><span></span><h2>${run.party ? '🎉 ' + esc(party.players[run.party.i]) + ': ' : run.daily ? '📅 ' : '🎙️ '}${esc(pk.title)}</h2><span></span></header>
       ${pk.vid ? `<div class="video"><iframe id="singVid" src="https://www.youtube-nocookie.com/embed/${pk.vid}?autoplay=1&rel=0&playsinline=1&enablejsapi=1${save.settings.mute ? '&mute=1' : ''}" title="Karaoke-Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
         <p class="hint">${esc(pk.credit)} · <a href="https://www.youtube.com/watch?v=${pk.vid}" target="_blank" rel="noopener">YouTube ↗</a></p><p class="banner lose" id="singErr" hidden>Dieses Video darf hier nicht abgespielt werden. Brich ab und wähle einen anderen Song – oder sing einfach a cappella weiter.</p>` : `<p class="hint">${esc(pk.credit)}</p>`}
       <div class="chairs" aria-label="Blind Audition: Die Jury dreht sich um, wenn du überzeugst">${run.panel.map(jur).map(j => `<div class="chair" data-c="${j.id}"><span class="back">🪑</span>${jimg(j, 'js')}<small>${esc(j.name)}</small></div>`).join('')}</div>
@@ -1042,7 +1067,8 @@
         const r = vw[i].r; if (r == null) { i++; continue; }
         let j = i, ok = 0; while (j < vw.length && vw[j].r != null && Math.round(vw[j].r * 2) === Math.round(r * 2)) { if (vw[j].ok) ok++; j++; }
         const good = ok / (j - i) >= 0.6, bx = x0(i), bw = Math.max(step, (j - i) * step - 2), by = y(r) - rh * 0.38, bh = rh * 0.76;
-        c2.fillStyle = good ? '#ffc93c' : '#60a5fa'; c2.shadowColor = good ? '#ffc93c' : 'transparent'; c2.shadowBlur = good ? 10 * dpr : 0;
+        const gc = run.mic === 'rainbow' ? `hsl(${Math.round((bx / w * 300 + performance.now() / 15) % 360)},90%,62%)` : run.mic;
+        c2.fillStyle = good ? gc : '#60a5fa'; c2.shadowColor = good ? gc : 'transparent'; c2.shadowBlur = good ? 10 * dpr : 0;
         c2.beginPath(); if (c2.roundRect) c2.roundRect(bx, by, bw, bh, bh / 2); else c2.rect(bx, by, bw, bh); c2.fill(); c2.shadowBlur = 0;
         i = j;
       }
@@ -1055,12 +1081,12 @@
       pop.className = 'singPop ' + ev.t; void pop.offsetWidth; pop.classList.add('show');
     }
     // gleiche Jury-Rechnung wie die Endwertung (crit nach singCareer), damit Stühle und Urteil zusammenpassen
-    const jmods = career && s ? s.mods : null, jsymp = cx ? S.mergeSymp(cx.talk.symp, jmods && jmods.symp) : null;
-    run.jury = crit => S.judge(crit, pk.style, run.jseed, run.jround, 'p', jsymp, run.panel);
+    const online = !!(cx && cx.mode === 'online'), jmods = career && s ? s.mods : null, jsymp = cx && cx.talk ? S.mergeSymp(cx.talk.symp, jmods && jmods.symp) : null;
+    run.jury = crit => S.judge(crit, online ? cx.style : pk.style, run.jseed, run.jround, run.jwho, online ? null : jsymp, run.panel);
     function chairs() {   // jede Sekunde: Würde jemand aus der Jury jetzt Ja sagen? Dann dreht er/sie sich um – und bei Nein wieder weg.
-      const p = save.profile, part = S.singScore(run.frames, p.attrs, 0.05);
+      const part = S.singScore(run.frames, run.party || !save.profile ? null : save.profile.attrs, 0.05);
       if (part.sing.voiced < 8) return;
-      if (cx) S.singCareer(part, career && s ? s.lastPerf : null, jmods, cx.sel.action);   // wie die Wertung am Ende
+      if (cx && cx.sel) S.singCareer(part, career && s ? s.lastPerf : null, jmods, cx.sel.action);   // wie die Wertung am Ende
       run.jury(part.crit).forEach(v => {
         const el = $(`#singBox .chair[data-c="${v.id}"]`);
         if (run.turned[v.id] && !v.yes) { delete run.turned[v.id]; if (el) el.classList.remove('on'); toast('↩️ ' + jur(v.id).name + ' dreht sich wieder weg …', 2000); return; }
@@ -1114,8 +1140,23 @@
       let url = null, blob = null;
       try { if (chunks.length) { blob = new Blob(chunks, { type: chunks[0].type || 'audio/webm' }); url = URL.createObjectURL(blob); } } catch (e) { url = null; blob = null; }
       sing.recUrl = url; sing.recBlob = blob;
-      const p = save.profile, g = genre(sing.g), res = S.singScore(run.frames, p.attrs, 0.05);
+      const p = save.profile, g = genre(sing.g), res = S.singScore(run.frames, run.party || !p ? null : p.attrs, 0.05);
       const out = { sing: res.sing, rec: url, pts: fin.total, combo: fin.best, title: S.singTitle(res.perf), turned: Object.keys(run.turned), song: run.pk.title };
+      if (run.party) {   // Karaoke-Abend: Punkte notieren, Jury-Urteil zeigen, dann zurück zur Rangliste
+        const oc = Object.assign(res, { style: run.pk.style, symp: null }), fc = S.freeCasting(null, oc, run.seed), nm = party.players[run.party.i];
+        out.turned = finalTurned(run, oc.crit);
+        party.scores[run.party.i].push({ pts: fin.total, perf: res.perf, title: out.title, song: run.pk.title, yes: fc.yes }); party.turn++; sing.party = null;
+        showResult({ fc, oc, out, free: true, ret: 'sParty', credit: run.pk.credit, name: nm }); return;
+      }
+      const before = S.starSum(save);
+      save.singBest = Math.max(save.singBest || 0, fin.total);
+      if (run.daily) { const k = 'd' + run.daily, old = (save.daily || {})[k] || 0; save.daily = { [k]: Math.max(old, fin.total) }; save.dailyBoard = Math.max(save.dailyBoard || 0, S.dailyCode(run.daily, Math.max(old, fin.total))); out.daily = { pts: fin.total, best: Math.max(old, fin.total), rec: fin.total > old }; }
+      if (cx && cx.mode === 'online') {   // Online-Show: Ergebnis an den Gastgeber, weiter in der Show
+        sing.ctx = null; ON.mine = { r: cx.r, crit: res.crit, perf: res.perf };
+        p.xp += Math.round(res.perf / 4); persist();
+        onSend({ t: 'perf', r: cx.r, perf: res.perf, crit: res.crit });
+        go('sOnline'); toast(`${out.title} · 🎯 ${fin.total.toLocaleString('de-DE')} Punkte – gleich entscheidet die Jury!`, 3500); return;
+      }
       if (cx) {   // echtes Vorsingen in Karriere oder Freiem Casting: weiter wie nach einem Bühnenauftritt
         const career = cx.mode === 'career', s = save.season, mods = career && s ? s.mods : null;
         const f = { mode: cx.mode, playId: run.playId, seed: run.seed, sel: Object.assign({}, cx.sel, { style: run.pk.style }), talk: cx.talk, credit: run.pk.credit, bg: cx.bg, ret: career ? 'sBack' : 'sPrep' };
@@ -1134,11 +1175,64 @@
         save.singCh[g.id] = { best: Math.max(old.best, res.perf), stars: Math.max(old.stars, stn) };
       }
       p.xp += Math.round(res.perf / 4); persist();
+      D.REWARDS.forEach((r, k) => { if (r.need > before && S.unlocked(save, r)) setTimeout(() => toast('🎁 Neu freigeschaltet: ' + r.name, 2600), 1200 + k * 300); });
       showResult({ fc, oc, out, free: true, ret: 'sSing', chal, credit: run.pk.credit });
     };
     if (rec && rec.state !== 'inactive') { rec.onstop = done; try { rec.stop(); } catch (e) { done(); } setTimeout(done, 1500); }
     else done();
   }
+
+  // ---------- Karaoke-Abend: mehrere Sänger nacheinander an einem Gerät ----------
+  const party = { players: ['', ''], rounds: 1, on: false, turn: 0, scores: [], cheered: false };
+  const partyTotal = i => party.scores[i].reduce((a, x) => a + x.pts, 0);
+  RENDER.sParty = () => {
+    const n = party.players.length, total = n * party.rounds, box = $('#partyBox');
+    if (!party.on) {
+      box.innerHTML = `<header class="bar"><button class="btn sm" data-back type="button">← Zurück</button><h2>🎉 Karaoke-Abend</h2><span></span></header>
+        <div class="panel"><p>Ihr singt nacheinander am selben Gerät – jede Person sucht sich ihren Song aus. Die Jury urteilt nach jedem Auftritt, am Ende gibt es die <b>Siegerehrung</b> nach Live-Punkten.</p></div>
+        <h3>Wer singt mit?</h3><div class="partyNames">${party.players.map((x, i) => `<div class="row2"><input class="pName" data-pi="${i}" type="text" maxlength="16" value="${esc(x)}" placeholder="Sänger ${i + 1}" aria-label="Name Sänger ${i + 1}">${n > 2 ? `<button class="btn sm" type="button" data-pdel="${i}" aria-label="Sänger ${i + 1} entfernen">✖</button>` : ''}</div>`).join('')}</div>
+        ${n < 8 ? '<button class="btn sm violet" type="button" id="pAdd">＋ Sänger hinzufügen</button>' : ''}
+        <h3>Runden</h3><div class="seg">${[1, 2, 3].map(r => `<button class="btn" type="button" data-pr="${r}" aria-pressed="${party.rounds === r}">${r}</button>`).join('')}</div>
+        <h3>Länge je Auftritt</h3><div class="seg">${[30, 60, 90].map(x => `<button class="btn" type="button" data-pl="${x}" aria-pressed="${sing.len === x}">${x} s</button>`).join('')}</div>
+        <p class="hint" style="text-align:left">🎧 Tipp: Fernseher oder Lautsprecher für das Karaoke-Video, das Handy als Mikrofon ganz nah am Mund.</p>
+        <button class="btn gold xl" type="button" id="pStart" data-focus style="width:100%;margin-top:10px">🎉 Los geht's!</button>`;
+      return;
+    }
+    const rank = party.players.map((x, i) => ({ i, name: x, pts: partyTotal(i), best: party.scores[i].slice().sort((a, b) => b.pts - a.pts)[0] })).sort((a, b) => b.pts - a.pts);
+    const table = `<div class="panel">${rank.map((r, k) => `<div class="crit"><span>${k + 1}. ${esc(r.name)}</span><b>${r.pts.toLocaleString('de-DE')}</b></div>`).join('')}</div>`;
+    if (party.turn < total) {
+      const i = party.turn % n, rd = Math.floor(party.turn / n) + 1;
+      box.innerHTML = `<header class="bar"><button class="btn sm" data-back type="button">← Menü</button><h2>🎉 Karaoke-Abend</h2><span>Runde ${rd}/${party.rounds}</span></header>
+        <div class="banner gold" style="font-size:1.3em">🎤 Jetzt dran: <b>${esc(party.players[i])}</b></div>
+        <button class="btn gold xl" type="button" id="pSing" data-focus style="width:100%">🎶 Song wählen & singen</button>
+        <h3>Zwischenstand</h3>${table}
+        <div class="row2"><button class="btn sm" type="button" id="pSkip">⏭ ${esc(party.players[i])} aussetzen</button><button class="btn sm red" type="button" id="pEnd">🏁 Abend beenden</button></div>`;
+      return;
+    }
+    const med = ['🥇', '🥈', '🥉'];
+    box.innerHTML = `<header class="bar"><button class="btn sm" data-back type="button">← Menü</button><h2>🏆 Siegerehrung</h2><span></span></header>
+      <div class="podium">${rank.slice(0, 3).map((r, k) => `<div class="pod p${k + 1}"><div class="medal">${med[k]}</div><b>${esc(r.name)}</b><small>${r.pts.toLocaleString('de-DE')} Punkte</small>${r.best ? `<small class="muted">${esc(r.best.title)}<br>„${esc(r.best.song)}“</small>` : ''}</div>`).join('')}</div>
+      ${rank.length > 3 ? `<div class="panel">${rank.slice(3).map((r, k) => `<div class="crit"><span>${k + 4}. ${esc(r.name)}</span><b>${r.pts.toLocaleString('de-DE')}</b></div>`).join('')}</div>` : ''}
+      <div class="panel host">${AV.svg(D.HOST.look, 'happy')}<div class="speech"><b>Rico:</b> ${rank[0] && rank[0].pts ? 'Applaus für ' + esc(rank[0].name) + ' – der Star des Abends!' : 'Was für ein Abend!'}</div></div>
+      <div class="row2"><button class="btn gold" type="button" id="pAgain" data-focus>🔁 Nochmal mit allen</button><button class="btn" type="button" id="pNew">✏️ Neue Runde einrichten</button></div>`;
+    if (!party.cheered) { party.cheered = true; sfx('applause', 2, '👏 Siegerehrung'); }
+  };
+  $('#partyBox').addEventListener('input', e => { const i = e.target.dataset.pi; if (i != null) party.players[+i] = e.target.value; });
+  $('#partyBox').addEventListener('click', e => {
+    const t = e.target, keep = sel => { RENDER.sParty(); const nb = $('#partyBox ' + sel); if (nb) nb.focus(); };
+    if (t.closest('#pAdd')) { party.players.push(''); keep('[data-pi="' + (party.players.length - 1) + '"]'); }
+    else if (t.closest('[data-pdel]')) { party.players.splice(+t.closest('[data-pdel]').dataset.pdel, 1); keep('#pAdd'); }
+    else if (t.closest('[data-pr]')) { party.rounds = +t.closest('[data-pr]').dataset.pr; keep('[data-pr="' + party.rounds + '"]'); }
+    else if (t.closest('[data-pl]')) { sing.len = +t.closest('[data-pl]').dataset.pl; keep('[data-pl="' + sing.len + '"]'); }
+    else if (t.closest('#pStart')) {
+      party.players = party.players.map((x, i) => S.cleanName(x || 'Sänger ' + (i + 1)) || 'Sänger ' + (i + 1));
+      party.on = true; party.turn = 0; party.cheered = false; party.scores = party.players.map(() => []); RENDER.sParty(); focusFirst($('#partyBox'));
+    } else if (t.closest('#pSing')) { sing.ctx = null; sing.daily = false; sing.party = { i: party.turn % party.players.length }; backTo.sSing = 'sParty'; go('sSing'); }
+    else if (t.closest('#pSkip')) { party.turn++; RENDER.sParty(); focusFirst($('#partyBox')); }
+    else if (t.closest('#pEnd')) { party.turn = party.players.length * party.rounds; RENDER.sParty(); focusFirst($('#partyBox')); }
+    else if (t.closest('#pAgain')) { party.turn = 0; party.cheered = false; party.scores = party.players.map(() => []); RENDER.sParty(); focusFirst($('#partyBox')); }
+    else if (t.closest('#pNew')) { party.on = false; RENDER.sParty(); focusFirst($('#partyBox')); }
+  });
 
   // ---------- Einstellungen ----------
   RENDER.sSettings = () => {
@@ -1280,6 +1374,7 @@
   const netErr = e => ({ nocode: 'Diese Show gibt es nicht (mehr). Stimmt der Code?', timeout: 'Keine Verbindung – bitte nochmal versuchen.', code: 'Bitte den 4-stelligen Code eingeben.' }[e && e.message] || 'Online ist gerade nicht erreichbar. Prüfe das Internet und versuche es nochmal.');
   const cleanLook = l => { const o = {}; if (l && typeof l === 'object') for (const k of ['skin', 'hair', 'hairColor', 'outfit', 'outfitColor', 'acc', 'beard', 'piercing']) { const v = l[k]; if (typeof v === 'number' || (typeof v === 'string' && v.length < 24)) o[k] = v; } return o; };
   const STYLE_ROT = ['pop', 'soul', 'rock', 'ballade'];
+  const ONLINE_SING = 60;   // Sekunden je Auftritt beim echten Vorsingen online
   // st = gemeinsamer Stand (vom Gastgeber verteilt), H = nur beim Gastgeber
   const ON = { net: null, me: '', st: null, played: -1, voted: -1, pend: '', H: null };
   function onReset() { if (ON.net) ON.net.close(); if (ON.H && ON.H.tick) clearInterval(ON.H.tick); ON.net = null; ON.me = ''; ON.st = null; ON.played = -1; ON.voted = -1; ON.H = null; }
@@ -1289,7 +1384,7 @@
   // --- Gastgeber ---
   function hostState() {
     const h = ON.H;
-    return { code: ON.net ? ON.net.code : '', phase: h.phase, round: h.round, players: h.players, field: h.field, def: h.def, seed: h.seed, style: h.style, panel: h.panel,
+    return { code: ON.net ? ON.net.code : '', phase: h.phase, sing: !!h.sing, round: h.round, players: h.players, field: h.field, def: h.def, seed: h.seed, style: h.style, panel: h.panel,
       done: Object.keys(h.perf), voted: Object.keys(h.votes), res: h.res, deadline: h.deadline };
   }
   function hostSync() { const s = hostState(); ON.st = s; ON.net.send({ t: 'state', s }); onRender(); }
@@ -1333,7 +1428,7 @@
     h.style = STYLE_ROT[(h.seed + round) % STYLE_ROT.length];
     h.panel = S.panelOf({ seed: h.seed, jury: save.settings.jury }, round);
     h.perf = {}; h.votes = {}; h.res = null; h.phase = 'perform';
-    h.deadline = Date.now() + (h.def.parts.length * h.def.len + 45) * 1000;
+    h.deadline = Date.now() + (h.sing ? ONLINE_SING + 100 : h.def.parts.length * h.def.len + 45) * 1000;   // echtes Vorsingen: Zeit für die Songwahl
     hostSync();
   }
   function hostCheck() {
@@ -1379,6 +1474,14 @@
 
   // --- Auftritt ---
   function onPerform(st) {
+    if (st.sing) {   // echtes Vorsingen: jede Person wählt ihren Song und singt ins eigene Mikrofon
+      ON.played = st.seed;
+      const g = D.KARAOKE.find(x => x.style === st.style);
+      if (g && sing.g !== g.id) { sing.g = g.id; sing.song = 0; }
+      sing.party = null; sing.daily = false; sing.len = ONLINE_SING;
+      sing.ctx = { mode: 'online', r: st.round, seed: st.seed, style: st.style, panel: st.panel, title: '🌐 ' + st.def.icon + ' ' + st.def.name };
+      backTo.sSing = 'sOnline'; go('sSing'); return;
+    }
     const sty = D.STYLES[st.style] || D.STYLES.pop, ap = D.APPROACH.gefuehl, ac = D.ACTION.publikum;
     const parts = st.def.parts.map((t, i) => t === 'rhythm'
       ? { type: 'rhythm', len: st.def.len, bpm: sty.bpm, style: st.style, density: ap.density + st.round * 0.04, seed: st.seed + i * 101, shows: i === 0 ? ac.shows : 1, title: '„' + D.SONGS[st.style] + '“', sub: st.def.name }
@@ -1403,6 +1506,9 @@
     if (stage && flow && flow.mode === 'online' && ON.st && (ON.st.phase !== 'perform' || ON.st.seed !== ON.played)) {
       stopAll(); flow = null; closeOv(); toast('⏱️ Die Zeit für den Auftritt ist um – weiter geht\'s in der Show.', 3500); go('sOnline'); return;
     }
+    if (cur === 'sSing' && sing.ctx && sing.ctx.mode === 'online' && (!ON.st || ON.st.phase !== 'perform' || ON.st.seed !== sing.ctx.seed)) {
+      singEnd(); sing.ctx = null; toast('⏱️ Die Zeit für den Auftritt ist um – weiter geht\'s in der Show.', 3500); go('sOnline'); return;
+    }
     if (cur !== 'sOnline') {
       // Auftritt automatisch starten, sobald die Runde beginnt (auch aus einer anderen Ansicht der Show heraus)
       return;
@@ -1425,13 +1531,16 @@
         <p class="hint">Mitspieler öffnen den Link oder scannen den QR-Code – von überall, auch übers Internet.</p>
         ${amHost() ? '<button class="btn sm" type="button" data-o="copy">🔗 Einladungslink kopieren</button>' : ''}</div>
         <div class="panel"><p><b>Dabei (${pls.filter(x => x.on).length}/8):</b></p><div class="onPlayers">${pls.map(x => ava(x)).join('')}</div></div>` +
-        (amHost() ? `<button class="btn gold xl" type="button" data-o="start" style="width:100%" ${pls.filter(x => x.on).length < 2 ? 'disabled' : ''}>🎤 Show starten</button><p class="hint">Ablauf: Casting → Recall → Live-Shows → Finale. Musik: eigene Beats, für alle gleich.</p>`
+        `<div class="panel"><p><b>Auftrittsart:</b> ${st.sing ? '🎙️ Echt vorsingen – alle singen einen Karaoke-Song ins eigene Mikrofon, die Jury bewertet die echte Stimme.' : '🎮 Spiel – Noten im Takt treffen, Musik für alle gleich.'}</p>
+          ${amHost() ? `<div class="seg"><button class="btn" type="button" data-o="mgame" aria-pressed="${!st.sing}">🎮 Spiel</button><button class="btn" type="button" data-o="msing" aria-pressed="${!!st.sing}">🎙️ Echt vorsingen</button></div>` : ''}</div>` +
+        (amHost() ? `<button class="btn gold xl" type="button" data-o="start" style="width:100%" ${pls.filter(x => x.on).length < 2 ? 'disabled' : ''}>🎤 Show starten</button><p class="hint">Ablauf: Casting → Recall → Live-Shows → Finale.${st.sing ? ' Jede Person braucht ein Mikrofon (am besten mit Kopfhörern).' : ' Musik: eigene Beats, für alle gleich.'}</p>`
           : '<p class="center muted">Warte, bis der Gastgeber die Show startet …</p>');
     } else if (st.phase === 'perform') {
       const jury = (st.panel || D.MAIN_JURY).map(jur).map(j => `<span class="pj">${jimg(j, 'js')}<small>${esc(j.name)}</small></span>`).join('');
-      body = `<div class="panel"><p><b>${def.icon} ${esc(def.name)}</b> · Musik: „${esc(D.SONGS[st.style])}“ (${esc(D.STYLES[st.style].name)}, eigene Beats)</p><div class="panelRow"><span class="muted">⚖️ Jury:</span>${jury}</div></div>
+      body = `<div class="panel"><p><b>${def.icon} ${esc(def.name)}</b> · ${st.sing ? '🎙️ Echt vorsingen, ' + ONLINE_SING + ' Sekunden · Stil: ' + esc(D.STYLES[st.style].name) : 'Musik: „' + esc(D.SONGS[st.style]) + '“ (' + esc(D.STYLES[st.style].name) + ', eigene Beats)'}</p><div class="panelRow"><span class="muted">⚖️ Jury:</span>${jury}</div></div>
         <div class="panel"><div class="onPlayers">${st.field.map(id => { const x = onPlayer(id) || { name: '?', look: {} }; const ok = st.done.includes(id); return `<div class="onP ${ok ? '' : 'wait'}">${AV.svg(x.look, ok ? 'happy' : 'neutral')}<b>${esc(x.name)}</b><small>${ok ? '✅ fertig' : '🎤 singt …'}</small></div>`; }).join('')}</div></div>
-        <p class="center muted">${inField ? (ON.played === st.seed ? 'Super! Warte auf die anderen …' : '') : 'Du bist diesmal Publikum – gleich darfst du abstimmen.'}</p>`;
+        <p class="center muted">${inField ? (ON.played === st.seed ? (st.sing && !st.done.includes(me) ? '' : 'Super! Warte auf die anderen …') : '') : 'Du bist diesmal Publikum – gleich darfst du abstimmen.'}</p>
+        ${inField && st.sing && ON.played === st.seed && !st.done.includes(me) ? '<button class="btn gold xl" type="button" data-o="sing" style="width:100%">🎙️ Zum Vorsingen</button>' : ''}`;
     } else if (st.phase === 'vote') {
       const can = st.field.filter(id => id !== me), done = ON.voted === st.seed || st.voted.includes(me);
       body = `<div class="panel"><h3 style="margin-top:0">📱 Publikums-Voting</h3><p>Wer hat dich am meisten überzeugt? ${def.w.votes ? 'Die Stimmen zählen ' + Math.round(def.w.votes * 100) + ' % der Wertung.' : 'Im Casting zählt nur die Jury – eure Stimmen gibt es trotzdem als Applaus.'}</p>
@@ -1469,6 +1578,8 @@
     else if (k === 'join') { const c = $('#onCode').value; ON.pend = c; onJoin(c); }
     else if (k === 'copy') { const u = ON.net && ON.net.link(); if (u && navigator.clipboard) navigator.clipboard.writeText(u).then(() => toast('🔗 Link kopiert')).catch(() => toast(u, 5000)); else toast(u || '', 5000); }
     else if (k === 'start') hostStart(0);
+    else if (k === 'mgame' || k === 'msing') { ON.H.sing = k === 'msing'; hostSync(); }
+    else if (k === 'sing' && ON.st && ON.st.phase === 'perform') { ON.played = -1; onPerform(ON.st); }
     else if (k === 'next') hostStart(ON.H.round + 1);
     else if (k === 'again') { const h = ON.H; h.phase = 'lobby'; h.res = null; h.field = []; h.round = 0; hostSync(); }
   });

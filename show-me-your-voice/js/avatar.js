@@ -6,7 +6,7 @@
     hair: ['kurz', 'undercut', 'stachelig', 'lang', 'locken', 'dutt', 'buzz'],
     hairColor: ['#2b1d16', '#6e4c2e', '#b07a3c', '#e3c16f', '#c43d2f', '#8a5cf6', '#3a86ff', '#ff5fa2', '#d9d9e3'],
     outfit: ['hoodie', 'lederjacke', 'tshirt', 'glitzer', 'sakko'],
-    outfitColor: ['#1d1f3a', '#5b2a86', '#e0245e', '#0aa4c9', '#f4b400', '#2e2e2e', '#f2f2f7'],
+    outfitColor: ['#1d1f3a', '#5b2a86', '#e0245e', '#0aa4c9', '#f4b400', '#2e2e2e', '#f2f2f7', '#d4af37', '#c0c4cc', '#ff2d95'],   // ab 7: Belohnungen
     acc: ['keine', 'brille', 'sonnenbrille', 'ohrring', 'kopfhoerer', 'cap', 'hut'],
     beard: ['keiner', 'stoppeln', 'vollbart'],
     piercing: ['keins', 'nase', 'ohr', 'beide']

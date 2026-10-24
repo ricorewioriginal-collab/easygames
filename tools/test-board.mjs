@@ -75,7 +75,7 @@ ok('Registry: mindestens ein Spiel, gültige Einträge', () => {
       assert(b.id && /^[a-z0-9-]+$/.test(b.id) && !seen.has(b.id), g + ': Board-ID ungültig/doppelt ' + b.id); seen.add(b.id);
       assert(b.title && b.key, g + '/' + b.id + ': Titel/Schlüssel fehlen');
       assert(['asc', 'desc'].includes(b.order), g + '/' + b.id + ': order');
-      assert(!b.fmt || ['int', 'sec', 'ms'].includes(b.fmt), g + '/' + b.id + ': fmt');
+      assert(!b.fmt || ['int', 'sec', 'ms', 'daily'].includes(b.fmt), g + '/' + b.id + ': fmt');
       assert(!/[\s]/.test(T.boardId(g, b)) && T.boardId(g, b).length <= 60, g + ': boardId');
     }
   }
@@ -157,6 +157,7 @@ ok('better / fmt / cleanName / entryFields', () => {
   assert.equal(T.fmt('sec', 75.5), '1:15,5');
   assert.equal(T.fmt('sec', 9.25), '9,25 s');
   assert.equal(T.fmt('ms', 61000), '1:01,0');
+  assert.equal(T.fmt('daily', 20750 * 1e5 + 744), '744 Punkte');
   assert.equal(T.cleanName('  Rico   Re  '), 'Rico Re');
   assert.equal(T.cleanName('A'), ''); assert.equal(T.cleanName('x'.repeat(21)), ''); assert.equal(T.cleanName('Ab'), 'Ab');
   assert(!/[<>&"']/.test(T.cleanName('A<b>"c\'d&e')));
