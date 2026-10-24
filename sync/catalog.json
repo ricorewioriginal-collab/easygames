@@ -1457,6 +1457,44 @@
    }
   },
   {
+   "id": "sendemast-sumo",
+   "title": "Sendemast-Sumo – Schubs sie vom Mast!",
+   "desc": "Party-Prügelei in 3D hoch über den Wolken: Sumo-Ringer schubsen sich auf einer bröckelnden Plattform ganz oben auf einem Sendemast gegenseitig über den Rand. Schubs, Stampfer mit Druckwelle, Power-ups und fünf Arenen mit Wind, Blitzen, Eis und Kipp-Plattform. Turnier gegen den Computer, schnelles Spiel, lokal zu viert mit Tastatur und Controllern oder online – Handys werden per QR-Code zum Controller.",
+   "icon": "🤼",
+   "img": "sendemast-sumo/card.jpg",
+   "bg": "linear-gradient(145deg,#ff6b35,#ffd23f 55%,#19c3b1)",
+   "glow": "rgba(255,107,53,.5)",
+   "path": "sendemast-sumo/",
+   "modes": {
+    "pad": true,
+    "online": true,
+    "multi": true,
+    "tvParam": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Sendemast-Sumo ist eine Party-Prügelei in 3D: Sumo-Ringer stehen auf einer Plattform ganz oben auf einem Sendemast über den Wolken. Schubst die anderen über den Rand – wer zuletzt oben steht, gewinnt die Runde. Nach kurzer Zeit bröckelt die Plattform Ring für Ring (der Rand blinkt vorher rot), am Ende schrumpft sie immer weiter. 💨 Schubs ist ein kurzer Sprint, der viel stärker schiebt; 💥 Stampfer ist ein Sprung mit Druckwelle bei der Landung – in der Luft kann dich niemand schubsen. Power-ups: 🍔 Mega (groß und schwer), ⚡ Turbo, 🛡️ Schild, 💥 Druckwelle. Fünf Arenen: Abendrot, Eiszacken (rutschig), Sturmmast (Böen), Gewitterspitze (Blitze) und Wackelturm (kippt). Modi: 🏆 Turnier (5 Masten gegen je 3 immer stärkere Gegner, Punkte für die Rangliste), ⚡ Schnelles Spiel, 🎮 Lokal (2–4 an einem Gerät mit zwei Tastatur-Belegungen und Controllern) und 🌐 Online & Handys (bis zu 8 Handys als Controller per QR-Code, Lücken füllt der Computer). Acht erfundene Kämpfer mit eigenen Fantasie-Sendern.",
+    "steuerung": [
+     "Tastatur links: WASD laufen, Leertaste/F Schubs, Shift/G Stampfer. Tastatur rechts: Pfeile, Enter/L Schubs, K Stampfer. Esc/P Pause.",
+     "Touch: linker Daumen auf den Stick, rechts 💨 Schubs und 💥 Stampfer.",
+     "Gamecontroller: Stick/Steuerkreuz laufen, A Schubs, B/X Stampfer, Start Pause – bis zu 4 Controller; im Menü Steuerkreuz und A.",
+     "Online: Das Handy ist der Controller (Stick und zwei Knöpfe), gekämpft wird auf dem großen Bildschirm."
+    ],
+    "tipps": [
+     "Stell dich zwischen Gegner und Mitte – dann schubst du nach außen und nicht ins Leere.",
+     "Kommt ein Schubs auf dich zu: Stampfer! In der Luft prallt alles ab, und bei der Landung schiebst du zurück.",
+     "Auf Eis nie mit Vollgas zum Rand – du rutschst weiter, als du denkst."
+    ]
+   },
+   "size": 195658,
+   "files": 9,
+   "offline": true,
+   "cloud": {
+    "game": "sendemast-sumo",
+    "prefix": "sendemast-sumo-"
+   }
+  },
+  {
    "id": "anmacha-preisradar",
    "title": "AnMaCha Preisradar",
    "desc": "Das Preis-Schätzspiel: Gebotsduell, Frequenz-Skala, Teurer oder billiger, Einkaufswagen und Preisfinale – bis zu 4 Spieler, Computer-Gegner, geheime Tipps per Handy. 200+ Produkte, präsentiert vom RicoReWi Radioportal.",

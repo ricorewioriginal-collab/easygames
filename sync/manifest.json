@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "cf229e99a50e",
- "generated": "2026-10-24T02:40:44+02:00",
- "commit": "2ea357de83bcb191414157d9cacd6a18986b06dd",
+ "version": "1a976e5aef73",
+ "generated": "2026-10-24T02:47:48+02:00",
+ "commit": "0799950ca4df678ec875dc8ae53f1242733243f3",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2767,
-   "h": "1a2550d554b8240ec4583f2c983e654c43483e86b797d4f491edc8f2a707cf45"
+   "s": 2795,
+   "h": "b2f9448edfb6adfa97289eda542b047c44176d86175d7d2a1f768a0835c35995"
   },
   {
    "p": "chat.html",
@@ -5813,8 +5813,8 @@
   },
   {
    "p": "games.js",
-   "s": 36133,
-   "h": "d6e8792ff7ee7956b30321c1a017174b0f4de1e6101b9085a51001967da8a9a8"
+   "s": 36795,
+   "h": "619ba6a6bd264fbb8c2d8d0f361b7ce777759317e1f6ad9fba4fe9ca3b37adef"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5973,8 +5973,8 @@
   },
   {
    "p": "guides.js",
-   "s": 103092,
-   "h": "5f0e98348245318da88de0f591fab0097ebbb13584081462030b9f5fb795be23"
+   "s": 104979,
+   "h": "f4decb3e80ac9780e246830037a12258150f0974b875687e522e7fe05779c2ef"
   },
   {
    "p": "heute.html",
@@ -6413,8 +6413,8 @@
   },
   {
    "p": "modes.js",
-   "s": 2752,
-   "h": "94984da7d92b82915cf800c542242a3e486ec8c60419f63165a1139fb92e8fe4"
+   "s": 2829,
+   "h": "64ec9c4a1abcb18c890b7a17a39bf9cfdad5a42bd61009fc7d4026a4debe0afc"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -7252,6 +7252,51 @@
    "h": "ff53e86987c0e9b090d3c353cc4d5d25c0874a907e3b6e2648531cc7c01f6a23"
   },
   {
+   "p": "sendemast-sumo/card.jpg",
+   "s": 51208,
+   "h": "da07e02867107323362837584344b782e94664634f9bb72fd93170de3940717f"
+  },
+  {
+   "p": "sendemast-sumo/index.html",
+   "s": 16058,
+   "h": "aebaa37a3e7e3e14b5b092bc33d3efda7cd0aa6b37d0c1228ad433cd0fca0e37"
+  },
+  {
+   "p": "sendemast-sumo/js/app.js",
+   "s": 48565,
+   "h": "e7bd13d4a7c33b41cc61846308ee21fabdcacdd368d6098e7132555005b9fba7"
+  },
+  {
+   "p": "sendemast-sumo/js/core.js",
+   "s": 18400,
+   "h": "69cbbe8948ec5d37788aa12c727f83c109744218c4021e9a3e7a1639b50c3a9e"
+  },
+  {
+   "p": "sendemast-sumo/js/scene.js",
+   "s": 30832,
+   "h": "7f96e9267e23fbf56402f725b881a9b01d54f4220fc60d0baa457478793700e2"
+  },
+  {
+   "p": "sendemast-sumo/js/sound.js",
+   "s": 5576,
+   "h": "96d15b4404df520ceedceda2231ee1d50ad5b3a9ecb68f69065d3aa987dce64a"
+  },
+  {
+   "p": "sendemast-sumo/manifest.webmanifest",
+   "s": 799,
+   "h": "887352077f29043add51279f7dec7bd4e00d49b4ca32c30ef1bc47b5eeb60ec6"
+  },
+  {
+   "p": "sendemast-sumo/style.css",
+   "s": 22203,
+   "h": "12056cb974154be378ec25d58dc7335fa9f08f96d3014060553d62cea44bdfa0"
+  },
+  {
+   "p": "sendemast-sumo/sw.js",
+   "s": 2017,
+   "h": "4a300da54fab86834b92b1e5630f47cdd16e129b00896834531edf69f57d193a"
+  },
+  {
    "p": "show-voice.js",
    "s": 3181,
    "h": "2affd4b5a1fbdad10a44fc25f668003ecc73add98d08e27aeab6674412b29ead"
@@ -7508,8 +7553,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 157993,
-   "h": "69183b6c899302937f0031467e7e8e233d564eca0041a026de2ff9cc0c057210"
+   "s": 160855,
+   "h": "bd3a508c46a6d70ca53e9db85183ce4e4a9b53f3ff84bb1868ae8bbb0665b4f7"
   },
   {
    "p": "taschi/card.svg",

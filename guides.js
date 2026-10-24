@@ -470,6 +470,20 @@ window.EASYGAMES_GUIDES = {
    "Im Radio-Rhythmus ist der höchste Punkt einer Frucht genau auf dem Schlag – dort schneiden!"
   ]
  },
+ "sendemast-sumo": {
+  "anleitung": "Sendemast-Sumo ist eine Party-Prügelei in 3D: Sumo-Ringer stehen auf einer Plattform ganz oben auf einem Sendemast über den Wolken. Schubst die anderen über den Rand – wer zuletzt oben steht, gewinnt die Runde. Nach kurzer Zeit bröckelt die Plattform Ring für Ring (der Rand blinkt vorher rot), am Ende schrumpft sie immer weiter. 💨 Schubs ist ein kurzer Sprint, der viel stärker schiebt; 💥 Stampfer ist ein Sprung mit Druckwelle bei der Landung – in der Luft kann dich niemand schubsen. Power-ups: 🍔 Mega (groß und schwer), ⚡ Turbo, 🛡️ Schild, 💥 Druckwelle. Fünf Arenen: Abendrot, Eiszacken (rutschig), Sturmmast (Böen), Gewitterspitze (Blitze) und Wackelturm (kippt). Modi: 🏆 Turnier (5 Masten gegen je 3 immer stärkere Gegner, Punkte für die Rangliste), ⚡ Schnelles Spiel, 🎮 Lokal (2–4 an einem Gerät mit zwei Tastatur-Belegungen und Controllern) und 🌐 Online & Handys (bis zu 8 Handys als Controller per QR-Code, Lücken füllt der Computer). Acht erfundene Kämpfer mit eigenen Fantasie-Sendern.",
+  "steuerung": [
+   "Tastatur links: WASD laufen, Leertaste/F Schubs, Shift/G Stampfer. Tastatur rechts: Pfeile, Enter/L Schubs, K Stampfer. Esc/P Pause.",
+   "Touch: linker Daumen auf den Stick, rechts 💨 Schubs und 💥 Stampfer.",
+   "Gamecontroller: Stick/Steuerkreuz laufen, A Schubs, B/X Stampfer, Start Pause – bis zu 4 Controller; im Menü Steuerkreuz und A.",
+   "Online: Das Handy ist der Controller (Stick und zwei Knöpfe), gekämpft wird auf dem großen Bildschirm."
+  ],
+  "tipps": [
+   "Stell dich zwischen Gegner und Mitte – dann schubst du nach außen und nicht ins Leere.",
+   "Kommt ein Schubs auf dich zu: Stampfer! In der Luft prallt alles ab, und bei der Landung schiebst du zurück.",
+   "Auf Eis nie mit Vollgas zum Rand – du rutschst weiter, als du denkst."
+  ]
+ },
  "frequenzminen": {
   "anleitung": "Frequenz-Minen 3D ist Minesweeper in modern: Das Spielfeld liegt auf einer Radarscheibe, unter einigen Funkplatten stecken Störsender. Decke alle anderen Platten auf – jede offene Platte zeigt, wie viele Störsender auf den 8 Nachbarfeldern rauschen, leere Platten decken ihre Nachbarn automatisch auf. Der erste Klick ist immer sicher. 🚩 Peiler markieren vermutete Störsender, eine Zahl antippen deckt die übrigen Nachbarn auf, wenn genug Peiler stehen. 💡 Peilung zeigt dreimal pro Runde eine sichere Platte (+20 Sekunden). Modi: Leicht (9×9, 10 Störsender), Mittel (12×12, 24), Schwer (12×18, 44) und 📅 Tagesrätsel – für alle gleich, Ergebnis teilen. Punkte: jede freie Platte zählt, beim Sieg Tempo-Bonus (Leicht ×1, Mittel ×2, Schwer ×4). 📻 spielt einen Sender live das ganze Spiel über.",
   "steuerung": [
