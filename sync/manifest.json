@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "7c602dfc1987",
- "generated": "2026-10-24T08:44:30+00:00",
- "commit": "afe2d12f3bf079468deea4368b900a968873b787",
+ "version": "934993bc5220",
+ "generated": "2026-10-24T10:51:20+02:00",
+ "commit": "e655545c0a3b0dc3293ac76daf8d1bf534bbf79e",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5338,8 +5338,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3022,
-   "h": "bac18d82ff7286a7619fb24ea0d950c0d215eb26188890020e706f68731f61dc"
+   "s": 3045,
+   "h": "e7a5cb24d8d45647ffe8912e3c14237a0e0467a5f1faf23afb981c15204ee3b5"
   },
   {
    "p": "chat.html",
@@ -5762,6 +5762,56 @@
    "h": "49454e3965a67ab1a8aa4e0503b3071b557068ccef705151a7860b8c32a5b4b1"
   },
   {
+   "p": "fall-akte/card.jpg",
+   "s": 60191,
+   "h": "820f4021c1d6bfb42362e91bdfff9c0bb05eaabbb860c3b7039b99e79087abb9"
+  },
+  {
+   "p": "fall-akte/index.html",
+   "s": 12873,
+   "h": "d52c65b1169af34115a7a8b150ea463dfd48018b1dcfa94c06d67fb1433cf175"
+  },
+  {
+   "p": "fall-akte/js/app.js",
+   "s": 35388,
+   "h": "856e1a85a764ef63a7a0c56c127c3231aab215cb6d1be285c5fca2f8261809af"
+  },
+  {
+   "p": "fall-akte/js/core.js",
+   "s": 9615,
+   "h": "632d4195ab3b0de34fbd93bef1a5203e5965ec49e6339c5bac8e490662c71ded"
+  },
+  {
+   "p": "fall-akte/js/data.js",
+   "s": 13191,
+   "h": "ddb2e9df97cbffbcc8f24bac087f19e6c481da9e2e6ed4bdfdc3860b9f47ab44"
+  },
+  {
+   "p": "fall-akte/js/scene.js",
+   "s": 24030,
+   "h": "bcad979191936ab79449780de17a5815cbf4abfe3042e760d501c62fd48b7d64"
+  },
+  {
+   "p": "fall-akte/js/sound.js",
+   "s": 4974,
+   "h": "6fff4f45721907bb5a76197c01df537bba581923f14e477cb6969cdff44e43bb"
+  },
+  {
+   "p": "fall-akte/manifest.webmanifest",
+   "s": 773,
+   "h": "e22fae297cfa5e340c8e655ffac61f13fec51cea7d19b413fbdc13dfcc75bfd4"
+  },
+  {
+   "p": "fall-akte/style.css",
+   "s": 18462,
+   "h": "c900ef54857d7cae1c7cd7cac2a1cb061b402a0a6d34ae3bd22bd9d69a17316d"
+  },
+  {
+   "p": "fall-akte/sw.js",
+   "s": 2000,
+   "h": "892a5dc7dd2bb2ebe51feefef00b84818cfaae809fda8646dfde4bd2208c2a1a"
+  },
+  {
    "p": "favicon.ico",
    "s": 12090,
    "h": "d5ef61cb780ac29613e137e3f5e2103928d9b1b102772d90cfe3551b52e5c6da"
@@ -6048,8 +6098,8 @@
   },
   {
    "p": "games.js",
-   "s": 42832,
-   "h": "03470b72c9e45888820a48c76df7ea5655667c344595769f1eb982a2b1d8bfda"
+   "s": 43454,
+   "h": "d42680ef0854145015e6c368952eb5ddf5ca28a1290d617da03bbc1683d8d1c7"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6208,8 +6258,8 @@
   },
   {
    "p": "guides.js",
-   "s": 122737,
-   "h": "62bbfe747d875f04361002c7e18fc243f39d6f6e47d44e49f529236f7595ef73"
+   "s": 124713,
+   "h": "e760d296895a88f4456ed0ba1073cfb15df89f4af7307abab3e5d447ca4e73ce"
   },
   {
    "p": "heute.html",
@@ -6693,8 +6743,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3130,
-   "h": "b4104184874af3a72e22912193f94f525cbb17ff044595f75570ef7e8faa483f"
+   "s": 3160,
+   "h": "fc368fd116819e959df6ac418296655d788979b27bf0bae5d4360210f93d9d9b"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -8088,8 +8138,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 187035,
-   "h": "967ac95a76af3b2622c55af07a5409b7a47a1d045e04b472f8fe2276900d4292"
+   "s": 189880,
+   "h": "26276fa6fd88dc98c9e14064275b22acdcfc270ff0ce553f9d68e46852fd4ebd"
   },
   {
    "p": "taschi/card.svg",

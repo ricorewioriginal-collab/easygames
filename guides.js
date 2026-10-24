@@ -554,6 +554,19 @@ window.EASYGAMES_GUIDES = {
    "Spar dir das Finale für den Moment auf, in dem der Gegner einen Fehler macht."
   ]
  },
+ "fall-akte": {
+  "anleitung": "FALL·AKTE ist ein Krimi-Rätsel im Noir-Comic-Stil. In jedem Fall gibt es einen Täter unter den Verdächtigen. Durchsuche die drei Schauplätze einer Welt mit der Lupe: Manche Gegenstände verbergen Spuren wie ein Haar, einen Zigarettenstummel oder einen Brillensplitter. Andere Spuren müssen ins Labor – Fußspur vermessen, Fingerabdruck-Muster vergleichen, Geheimcode mit dem Code-Rad knacken oder einen zerrissenen Brief zusammensetzen. Jede Spur verrät ein Merkmal des Täters. Haarfarbe und Brille siehst du auf den Fotos, Schuhgröße, Händigkeit, Rauchen und Fingerabdruck erfährst du nur im Verhör – die Fragen sind begrenzt. Das Notizbuch streicht automatisch alle, die nicht zu den Spuren passen. Bleibt nur eine Person übrig, klag sie an; jede falsche Anklage kostet Punkte, nach drei Fehlern ist der Fall verloren. Modi: 🗂️ Fälle lösen (6 Welten mit je 3 Fällen, 3 bis 5 Verdächtige; 2 gelöste Fälle öffnen die nächste Welt), 📅 Tagesfall (für alle gleich) und 🎲 Zufallsfall. Punkte und Sterne gibt es für wenige Fragen, wenige Tipps und keine Fehlanklage; mit den Punkten steigst du im Rang bis zum Meisterdetektiv.",
+  "steuerung": [
+   "Touch/Maus: Gegenstände antippen, unten zwischen Tatorte, Verdächtige, Notizen und Anklage wechseln. Hochkant lässt sich das Tatort-Bild seitlich wischen.",
+   "Tastatur: Pfeile wählen, Enter bestätigt, 1–4 Tatorte/Verdächtige/Notizen/Anklage, Q/E Schauplatz wechseln, H Tipp, +/− im Labor, Esc zurück/Pause.",
+   "Gamecontroller: Steuerkreuz/Stick wählen, A bestätigen, B zurück, LB/RB Schauplatz, X Notizen, Y Tipp, Start Pause."
+  ],
+  "tipps": [
+   "Erst alle Schauplätze absuchen, dann fragen: So weißt du, welche Merkmale überhaupt zählen.",
+   "Frag nur die, die noch nicht gestrichen sind – jede übrige Frage bringt Bonuspunkte.",
+   "Beim Code-Rad: Sobald ein deutsches Wort auftaucht, hast du die richtige Verschiebung."
+  ]
+ },
  "bowling-bahn": {
   "anleitung": "Bowling-Bahn 3D ist Bowling in einer Neon-Halle mit echter Kugel- und Kegelphysik. Ein Spiel hat 10 Frames mit je zwei Würfen. Strike (X): alle 10 Kegel mit dem ersten Wurf – zählt 10 plus die nächsten zwei Würfe. Spare (/): alle 10 mit zwei Würfen – zählt 10 plus den nächsten Wurf. Sonst zählt jeder Kegel einen Punkt; im 10. Frame gibt es nach Strike oder Spare Bonuswürfe, perfekt sind 300 Punkte. Vorne ist die Bahn geölt, hinten trocken: Dort biegt die Kugel mit Effet ab (Hook). Am meisten fallen, wenn sie schräg in die Tasche zwischen Kegel 1 und 3 (oder 1 und 2) rollt. Modi: 🎳 Einzelspiel (dein bestes Spiel zählt für die Rangliste), 🤖 Gegen CPU (Leicht, Mittel, Profi) und 👥 Party mit 2–4 Spielern an einem Gerät, jeder Platz auch als Computer. Unter 🦸 Bowler wählst du deinen Helden aus allen 69 EASYCLASH-Figuren.",
   "steuerung": [

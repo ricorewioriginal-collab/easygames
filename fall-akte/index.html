@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/fall-akte-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="FALL·AKTE"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b0b0d">
+<title>FALL·AKTE – Das Krimi-Rätsel</title>
+<meta name="description" content="FALL·AKTE: Krimi-Rätsel im Noir-Comic-Stil. Sechs Welten – Villa, Hafen, Funkhaus, Zirkus, Museum und Schneehotel – mit je drei Fällen, Tagesfall und endlosen Zufallsfällen. Tatorte mit der Lupe absuchen, Verdächtige verhören, Fußspuren vermessen, Fingerabdrücke vergleichen, Geheimcodes knacken, zerrissene Briefe zusammensetzen und den Täter überführen.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg"><div class="art" id="bgArt"></div></div>
+
+<section class="scr on" id="sLoad">
+  <div class="load">
+    <div class="mag">🔍</div>
+    <h1 class="logo">FALL<b>·</b>AKTE</h1>
+    <div class="bar"><i id="loadBar"></i></div>
+    <p class="tip" id="loadTip">Akten werden sortiert …</p>
+  </div>
+</section>
+
+<section class="scr" id="sTitle">
+  <div class="titleBox">
+    <h1 class="logo">FALL<b>·</b>AKTE<small>DAS KRIMI-RÄTSEL</small></h1>
+    <p class="claim">Sechs Welten. Viele Verdächtige. Nur ein Täter.</p>
+    <button class="press nav" id="bPress">▶ <span id="pressTxt">Fall öffnen</span></button>
+  </div>
+  <p class="corner"><a href="../">← Alle Spiele</a></p>
+</section>
+
+<section class="scr" id="sMenu">
+  <div class="menuWrap">
+    <header class="mHead"><h1 class="logo small">FALL<b>·</b>AKTE<small>KRIMI-RÄTSEL</small></h1><div class="mStat" id="menuStat"></div></header>
+    <div class="tiles" id="tiles">
+      <button class="tile nav hero" data-go="worlds"><i>🗂️</i><b>Fälle lösen</b><small id="campInfo">6 Welten · 18 Fälle</small></button>
+      <button class="tile nav" data-go="daily"><i>📅</i><b>Tagesfall</b><small id="dailyInfo">Für alle gleich</small></button>
+      <button class="tile nav" data-go="random"><i>🎲</i><b>Zufallsfall</b><small>Immer ein neuer Fall</small></button>
+      <button class="tile nav" data-go="file"><i>🏅</i><b>Meine Akte</b><small>Rang &amp; Rekorde</small></button>
+      <button class="tile nav" data-go="opts"><i>⚙️</i><b>Optionen</b><small>Ton, Regen</small></button>
+      <button class="tile nav" data-go="help"><i>📖</i><b>Anleitung</b><small>So ermittelst du</small></button>
+      <button class="tile nav" data-go="cont" id="tCont" hidden><i>⏯️</i><b>Weiter ermitteln</b><small id="contInfo"></small></button>
+    </div>
+    <footer class="mFoot"><span class="hintKeys">Pfeile + Enter: wählen · Esc: zurück</span><a href="../" class="nav">← Alle Spiele</a></footer>
+  </div>
+</section>
+
+<section class="scr" id="sWorlds">
+  <div class="menuWrap">
+    <header class="mHead"><h1 class="logo small">DIE FÄLLE</h1><div class="mStat" id="worldStat"></div></header>
+    <div class="worlds" id="worlds"></div>
+    <footer class="mFoot"><button class="btn dark nav" id="wBack">← Zurück</button><span>Löse 2 Fälle einer Welt, um die nächste zu öffnen.</span></footer>
+  </div>
+</section>
+
+<section class="scr" id="sCase">
+  <div class="top">
+    <button class="icon nav" id="bPause" aria-label="Pause">☰</button>
+    <div class="ttl" id="caseTtl"></div>
+    <span class="chip" id="chipQ" title="Übrige Fragen">🗣️ 0</span>
+    <span class="chip" id="chipC" title="Gefundene Spuren">🔍 0/0</span>
+    <button class="icon nav" id="bHint" aria-label="Tipp">💡</button>
+  </div>
+  <div class="view" id="vScene">
+    <div class="locs" id="locs"></div>
+    <div class="stageWrap"><div class="stage" id="stage"></div></div>
+    <p class="swipeTip">↔ Bild zur Seite wischen – es gibt mehr zu sehen</p>
+  </div>
+  <div class="view" id="vSus" hidden><div class="cards" id="cards"></div></div>
+  <div class="view" id="vNotes" hidden><div class="notes" id="notes"></div></div>
+  <nav class="tabs">
+    <button class="tab nav" data-v="scene"><i>🔍</i><span>Tatorte</span></button>
+    <button class="tab nav" data-v="sus"><i>🗣️</i><span>Verdächtige</span></button>
+    <button class="tab nav" data-v="notes"><i>📓</i><span>Notizen</span></button>
+    <button class="tab nav" id="bAccuse"><i>⚖️</i><span>Anklage</span></button>
+  </nav>
+</section>
+
+<div class="ov" id="ovBrief" hidden><div class="sheet"><span class="clip"></span><div id="briefBody"></div><button class="btn pri big nav wideBtn" id="briefGo">Fall übernehmen</button></div></div>
+<div class="ov" id="ovFind" hidden><div class="sheet"><span class="clip"></span><div id="findBody"></div><div class="row" id="findBtns"></div></div></div>
+<div class="ov" id="ovLab" hidden><div class="sheet wide"><span class="clip"></span><div id="labBody"></div></div></div>
+<div class="ov" id="ovSus" hidden><div class="sheet wide"><span class="clip"></span><div id="susBody"></div><div class="row"><button class="btn dark nav" id="susX" data-close>← Zurück</button></div></div></div>
+<div class="ov" id="ovAccuse" hidden><div class="sheet wide"><span class="clip"></span><h2>⚖️ Anklage</h2><p class="hint" id="accHint">Wer ist der Täter? Eine falsche Anklage kostet Punkte – nach drei Fehlern ist der Fall verloren.</p><div class="pick" id="accPick"></div><div class="row"><button class="btn dark nav" id="accX" data-close>← Zurück</button><button class="btn pri nav" id="accGo" disabled>Anklagen!</button></div></div></div>
+<div class="ov" id="ovEnd" hidden><div class="sheet wide"><span class="clip"></span><div id="endBody"></div><div class="row"><button class="btn pri big nav" id="eNext">Nächster Fall</button><button class="btn nav" id="eAgain">↻ Nochmal</button><button class="btn dark nav" id="eMenu">☰ Menü</button></div></div></div>
+<div class="ov" id="ovPause" hidden><div class="sheet"><span class="clip"></span><h2>Pause</h2><div class="menuBtns"><button class="btn pri big nav" id="pGo">▶ Weiter</button><button class="btn nav" id="pBrief">📄 Fallbeschreibung</button><button class="btn nav" id="pHelp">📖 Anleitung</button><button class="btn nav" id="pOpts">⚙️ Optionen</button><button class="btn dark nav" id="pQuit">⏹ Fall vertagen (Menü)</button></div></div></div>
+<div class="ov" id="ovOpts" hidden><div class="sheet"><span class="clip"></span><h2>⚙️ Optionen</h2>
+  <label class="check"><input type="checkbox" id="oSound"> Geräusche</label>
+  <label class="check"><input type="checkbox" id="oMusic"> Musik (Noir-Jazz)</label>
+  <label class="check"><input type="checkbox" id="oRain"> Regen im Hintergrund</label>
+  <label class="check"><input type="checkbox" id="oVib"> Vibration</label>
+  <button class="btn pri nav wideBtn" id="optX" data-close>Fertig</button></div></div>
+<div class="ov" id="ovFile" hidden><div class="sheet"><span class="clip"></span><h2>🏅 Meine Akte</h2><p class="mono" id="rankTxt"></p><div class="stats" id="fileStats"></div><p class="hint">Für die Rangliste zählt dein Detektiv-Punktestand: das beste Ergebnis je Fall plus alle Tages- und Zufallsfälle.</p><button class="btn pri nav wideBtn" id="fileX" data-close>Fertig</button></div></div>
+<div class="ov" id="ovHelp" hidden><div class="sheet wide"><span class="clip"></span><h2>📖 So ermittelst du</h2>
+  <p>Jeder Fall hat <b>einen</b> Täter unter den Verdächtigen. Die Spuren verraten Merkmale des Täters – wer nicht dazu passt, ist raus.</p>
+  <ul>
+    <li><b>🔍 Tatorte:</b> Tippe Gegenstände an und suche sie mit der Lupe ab. Manche Spuren müssen ins <b>Labor</b>: Fußspur vermessen, Fingerabdruck vergleichen, Geheimcode knacken, zerrissenen Brief zusammensetzen.</li>
+    <li><b>🗣️ Verdächtige:</b> Haarfarbe und Brille siehst du auf dem Foto. Schuhgröße, Händigkeit, Rauchen und Fingerabdrücke erfährst du nur im Verhör – Fragen sind aber begrenzt. Frag gezielt!</li>
+    <li><b>📓 Notizen:</b> Hier steht alles, was du weißt. Wer nicht zu einer Spur passt, wird automatisch gestrichen.</li>
+    <li><b>⚖️ Anklage:</b> Bist du sicher, klag den Täter an. Jede falsche Anklage kostet Punkte, nach drei Fehlern ist der Fall verloren.</li>
+    <li><b>💡 Tipp:</b> zeigt eine fehlende Spur oder eine sinnvolle Frage – kostet aber Punkte.</li>
+  </ul>
+  <h3>Steuerung</h3>
+  <ul>
+    <li><b>Touch / Maus:</b> antippen. <b>Tastatur:</b> Pfeile wählen, Enter bestätigt, 1–4 wechseln zwischen Tatorte/Verdächtige/Notizen/Anklage, Q/E wechseln den Schauplatz, H Tipp, Esc zurück/Pause.</li>
+    <li><b>Controller:</b> Steuerkreuz/Stick wählen, A bestätigen, B zurück, LB/RB Schauplatz, X Notizen, Y Tipp, Start Pause.</li>
+  </ul>
+  <button class="btn pri nav wideBtn" id="helpX" data-close>Verstanden</button></div></div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../device.js"></script>
+<script src="js/data.js"></script>
+<script src="js/core.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="fall-akte" data-prefix="fall-akte-" defer></script>
+</body>
+</html>

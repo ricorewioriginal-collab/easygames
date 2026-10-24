@@ -37,6 +37,7 @@ window.EASYGAMES_MODES = {
   'easyclash': { pad: true, online: true, multi: true, tvParam: true },
   'funk-billard': { pad: true, online: true, multi: true },
   'bowling-bahn': { pad: true, multi: true },
+  'fall-akte': { pad: true },
   'darts-arena': { pad: true, multi: true },
   'winzflitzer': { multi: true },
   'gay-life': { online: true },

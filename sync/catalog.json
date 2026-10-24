@@ -1703,6 +1703,40 @@
    }
   },
   {
+   "id": "fall-akte",
+   "title": "FALL·AKTE – Das Krimi-Rätsel",
+   "desc": "Krimi-Rätsel im Noir-Comic-Stil: Sechs Welten – Villa, Hafen, Funkhaus, Zirkus, Museum und Schneehotel – mit je drei Fällen, dazu ein Tagesfall und endlose Zufallsfälle. Tatorte mit der Lupe absuchen, Fußspuren vermessen, Fingerabdrücke vergleichen, Geheimcodes knacken, zerrissene Briefe zusammensetzen, Verdächtige mit begrenzten Fragen verhören und den einen Täter überführen.",
+   "icon": "🔍",
+   "img": "fall-akte/card.jpg",
+   "bg": "linear-gradient(145deg,#101014,#4d4a44 55%,#e0383e)",
+   "glow": "rgba(224,56,62,.45)",
+   "path": "fall-akte/",
+   "modes": {
+    "pad": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "FALL·AKTE ist ein Krimi-Rätsel im Noir-Comic-Stil. In jedem Fall gibt es einen Täter unter den Verdächtigen. Durchsuche die drei Schauplätze einer Welt mit der Lupe: Manche Gegenstände verbergen Spuren wie ein Haar, einen Zigarettenstummel oder einen Brillensplitter. Andere Spuren müssen ins Labor – Fußspur vermessen, Fingerabdruck-Muster vergleichen, Geheimcode mit dem Code-Rad knacken oder einen zerrissenen Brief zusammensetzen. Jede Spur verrät ein Merkmal des Täters. Haarfarbe und Brille siehst du auf den Fotos, Schuhgröße, Händigkeit, Rauchen und Fingerabdruck erfährst du nur im Verhör – die Fragen sind begrenzt. Das Notizbuch streicht automatisch alle, die nicht zu den Spuren passen. Bleibt nur eine Person übrig, klag sie an; jede falsche Anklage kostet Punkte, nach drei Fehlern ist der Fall verloren. Modi: 🗂️ Fälle lösen (6 Welten mit je 3 Fällen, 3 bis 5 Verdächtige; 2 gelöste Fälle öffnen die nächste Welt), 📅 Tagesfall (für alle gleich) und 🎲 Zufallsfall. Punkte und Sterne gibt es für wenige Fragen, wenige Tipps und keine Fehlanklage; mit den Punkten steigst du im Rang bis zum Meisterdetektiv.",
+    "steuerung": [
+     "Touch/Maus: Gegenstände antippen, unten zwischen Tatorte, Verdächtige, Notizen und Anklage wechseln. Hochkant lässt sich das Tatort-Bild seitlich wischen.",
+     "Tastatur: Pfeile wählen, Enter bestätigt, 1–4 Tatorte/Verdächtige/Notizen/Anklage, Q/E Schauplatz wechseln, H Tipp, +/− im Labor, Esc zurück/Pause.",
+     "Gamecontroller: Steuerkreuz/Stick wählen, A bestätigen, B zurück, LB/RB Schauplatz, X Notizen, Y Tipp, Start Pause."
+    ],
+    "tipps": [
+     "Erst alle Schauplätze absuchen, dann fragen: So weißt du, welche Merkmale überhaupt zählen.",
+     "Frag nur die, die noch nicht gestrichen sind – jede übrige Frage bringt Bonuspunkte.",
+     "Beim Code-Rad: Sobald ein deutsches Wort auftaucht, hast du die richtige Verschiebung."
+    ]
+   },
+   "size": 181497,
+   "files": 10,
+   "offline": true,
+   "cloud": {
+    "game": "fall-akte",
+    "prefix": "fall-akte-"
+   }
+  },
+  {
    "id": "bowling-bahn",
    "title": "Bowling-Bahn 3D – Strike in der Neon-Halle",
    "desc": "Bowling mit echter Kugel- und Kegelphysik in einer Neon-Halle: Kugel seitlich ziehen, nach oben wischen – Richtung, Tempo und ein Bogen am Ende für den Hook. Strikes, Spares und Rinnen, 10 Frames mit echter Zählweise und Anzeigetafel. Einzelspiel mit Rangliste, gegen den Computer in 3 Stärken oder Party mit bis zu 4 Spielern an einem Gerät – als Bowler alle 69 EASYCLASH-Helden.",
