@@ -295,11 +295,13 @@
     const fr = Array.isArray(frames) ? frames.filter(f => f && typeof f === 'object') : [];
     const okM = m => Number.isFinite(m) && m > 24 && m < 108;
     const v = fr.filter(f => okM(f.m)), voiced = v.length * dt, total = fr.length * dt;
-    const segs = []; let cur = null, prev = 0;     // gehaltene Töne: Sprung über 1,5 Halbtöne = neuer Ton
+    // gehaltene Töne: Weicht die Tonhöhe mehr als 0,6 Halbtöne vom Anfang des Tons ab, beginnt ein neuer Ton.
+    // So zählt Rutschen durch viele Töne nicht als ein sauber gehaltener Ton.
+    const segs = []; let cur = null, anchor = 0;
     fr.forEach(f => {
       if (!okM(f.m)) { cur = null; return; }
-      if (!cur || Math.abs(f.m - prev) > 1.5) { cur = []; segs.push(cur); }
-      cur.push(f.m); prev = f.m;
+      if (!cur || Math.abs(f.m - anchor) > 0.6) { cur = []; segs.push(cur); anchor = f.m; }
+      cur.push(f.m);
     });
     const notes = segs.filter(s => s.length >= 3);
     const sorted = a => a.slice().sort((x, y) => x - y), q = (a, p) => a[Math.min(a.length - 1, Math.floor(p * a.length))];
@@ -307,13 +309,14 @@
     let sx = 0, sy = 0; centers.forEach(c => { sx += Math.cos(2 * Math.PI * c); sy += Math.sin(2 * Math.PI * c); });
     const off = Math.atan2(sy, sx) / (2 * Math.PI);
     const dev = centers.length ? centers.reduce((s, c) => { const x = c - off; return s + Math.abs(x - Math.round(x)); }, 0) / centers.length * 100 : 50;
-    let ds = 0, dn = 0; notes.forEach(s => { for (let i = 1; i < s.length; i++) { ds += Math.abs(s[i] - s[i - 1]); dn++; } });
+    let ds = 0, dd = 0, dn = 0;   // Wackeln von Bild zu Bild und Abweichung von der Mitte des Tons
+    notes.forEach((s, k) => { for (let i = 1; i < s.length; i++) { ds += Math.abs(s[i] - s[i - 1]); dd += Math.abs(s[i] - centers[k]); dn++; } });
     const ms = sorted(v.map(f => f.m)), low = ms.length ? q(ms, 0.1) : 0, high = ms.length ? q(ms, 0.9) : 0;
     const db = v.map(f => 20 * Math.log10(Math.max(1e-4, +f.l || 0)));
     const dbAvg = db.length ? db.reduce((a, b) => a + b, 0) / db.length : 0;
     const dbSd = db.length ? Math.sqrt(db.reduce((a, b) => a + (b - dbAvg) * (b - dbAvg), 0) / db.length) : 0;
     const st = {
-      inton: r1(clamp(110 - dev * 3)), stab: dn ? r1(clamp(100 * (1 - ds / dn / 0.8))) : 0,
+      inton: r1(clamp(110 - dev * 3)), stab: dn ? r1(clamp(100 * (1 - ds / dn / 0.8 - dd / dn / 0.5))) : 0,
       range: r1(clamp((high - low) / 14 * 100)), dyn: r1(clamp(dbSd / 6 * 100)), presence: total ? r1(clamp(voiced / total * 130)) : 0,
       cents: Math.round(dev), semis: r1(high - low), low: Math.round(low), high: Math.round(high), voiced: r1(voiced), total: r1(total), notes: notes.length };
     const c = {

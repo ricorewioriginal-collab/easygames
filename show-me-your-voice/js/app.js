@@ -959,7 +959,7 @@
     if (sing.recUrl) { URL.revokeObjectURL(sing.recUrl); sing.recUrl = null; }
     const run = sing.run = { pk, frames: [], started: false, acc: 0, last: performance.now(), raf: 0, chunks: [], rec: null, len: sing.len, ended: false, view: [] };
     $('#singBox').innerHTML = `<header class="bar"><span></span><h2>🎙️ ${esc(pk.title)}</h2><span></span></header>
-      ${pk.vid ? `<div class="video"><iframe id="singVid" src="https://www.youtube-nocookie.com/embed/${pk.vid}?autoplay=1&rel=0&playsinline=1&enablejsapi=1" title="Karaoke-Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
+      ${pk.vid ? `<div class="video"><iframe id="singVid" src="https://www.youtube-nocookie.com/embed/${pk.vid}?autoplay=1&rel=0&playsinline=1&enablejsapi=1${save.settings.mute ? '&mute=1' : ''}" title="Karaoke-Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
         <p class="hint">${esc(pk.credit)} · <a href="https://www.youtube.com/watch?v=${pk.vid}" target="_blank" rel="noopener">YouTube ↗</a></p><p class="banner lose" id="singErr" hidden>Dieses Video darf hier nicht abgespielt werden. Brich ab und wähle einen anderen Song – oder sing einfach a cappella weiter.</p>` : `<p class="hint">${esc(pk.credit)}</p>`}
       <div class="panel singLive"><div class="singTop"><b id="singNote">–</b><span id="singCents"></span><span id="singTime">Sing los – die Zeit startet mit deinem ersten Ton</span></div>
         <canvas id="singCv" height="170" aria-label="Deine Tonhöhe"></canvas><div class="meter"><i id="singLv"></i></div></div>
@@ -971,7 +971,8 @@
       let d = null; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; }
       if (d && d.event === 'onError') { const er = $('#singErr'); if (er) er.hidden = false; }
     };
-    if (vid) { addEventListener('message', run.onMsg); vid.addEventListener('load', () => { try { vid.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 'smyv', channel: 'widget' }), '*'); } catch (x) { /* egal */ } }); }
+    if (vid) { addEventListener('message', run.onMsg); vid.addEventListener('load', () => { try { const w = vid.contentWindow; w.postMessage(JSON.stringify({ event: 'listening', id: 'smyv', channel: 'widget' }), '*');
+      w.postMessage(JSON.stringify({ event: 'command', func: 'addEventListener', args: ['onError'], id: 'smyv', channel: 'widget' }), '*'); } catch (x) { /* egal */ } }); }
     try { const ms = A.micStream(); if (ms && window.MediaRecorder) { run.rec = new MediaRecorder(ms); run.rec.ondataavailable = e => { if (e.data && e.data.size) run.chunks.push(e.data); }; } } catch (e) { run.rec = null; }
     const cv = $('#singCv'), c2 = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1);
     cv.width = Math.max(300, cv.clientWidth * dpr); cv.height = 170 * dpr;

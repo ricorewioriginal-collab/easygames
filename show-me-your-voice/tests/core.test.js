@@ -245,3 +245,11 @@ test('Genre-Challenges: Sterne nach Jury, Genre-Ziel und Punkten; Speicherstand 
   assert.deepStrictEqual(r.singCh, { pop: { best: 100, stars: 3 } });
   assert.deepStrictEqual(S.freshSave().singCh, {});
 });
+
+test('Freies Vorsingen: Rutschen durch eine Oktave zählt nicht als saubere Intonation', () => {
+  const slide = S.singScore(Array.from({ length: 600 }, (_, i) => ({ m: 60 + i * 0.02, l: 0.05 })), null, 0.05);
+  assert.ok(slide.sing.inton < 60, 'Intonation ' + slide.sing.inton);
+  assert.ok(slide.sing.stab < 75, 'Stabilität ' + slide.sing.stab);
+  const fc = S.freeCasting(null, Object.assign({}, slide, { style: 'ballade' }), 1);
+  assert.ok(S.singStars('ballade', slide, fc) < 2);
+});
