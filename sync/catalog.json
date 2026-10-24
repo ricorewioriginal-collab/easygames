@@ -1774,6 +1774,43 @@
    }
   },
   {
+   "id": "konfetti-party",
+   "title": "Konfetti-Party – Knallbonbons in der Arena",
+   "desc": "Buntes Arena-Partyspiel in 3D: Knallbonbons legen, Geschenkkartons platzen lassen, Extras wie Rollschuhe, Kick-Schuh, Luftballon-Schild und Fernzünder sammeln und die anderen Partygäste mit Konfetti aus der Runde schießen – mit Kettenreaktionen und einer Arena, die sich am Ende schließt. Fünf Arenen von der Geburtstagsparty bis zum Weltraum-Rave, Turnier mit Pokalen und Schnelle Party solo gegen Computer-Gäste, dazu 🌐 Online & Handys: bis zu 4 Gäste mit Handys, Controllern und Tastatur am Fernseher.",
+   "icon": "🎉",
+   "img": "konfetti-party/card.jpg",
+   "bg": "linear-gradient(145deg,#ff4a9a,#2a1030 55%,#ffd02a)",
+   "glow": "rgba(255,74,154,.5)",
+   "path": "konfetti-party/",
+   "modes": {
+    "pad": true,
+    "online": true,
+    "multi": true,
+    "tvParam": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Konfetti-Party ist ein buntes Arena-Partyspiel. Jeder Gast kann Knallbonbons legen. Nach gut zwei Sekunden schießt ein Bonbon einen Konfetti-Strahl in alle vier Richtungen: Geschenkkartons platzen (manchmal steckt ein Extra drin), Bonbons im Strahl knallen gleich mit, und wer im Strahl steht, ist für die Runde raus – auch du selbst, also nach dem Legen schnell um die Ecke laufen! Säulen halten den Strahl auf. Wer als Letzter übrig ist, gewinnt die Runde; wer zuerst die eingestellten Runden-Siege hat, gewinnt die Party. Ist die Zeit um, schließt sich die Arena von außen. Extras: 🍬 Extra-Bonbon, 🎉 mehr Konfetti (Reichweite), 🛼 Rollschuhe, 🦶 Kick-Schuh (Bonbons wegkicken), 🎈 Luftballon-Schild (fängt einen Treffer ab), 📡 Fernzünder (Bonbons knallen erst auf Knopfdruck) und 🌀 Wirrwarr (Richtungen kurz vertauscht). Modi: 🏆 Turnier – fünf Partys in fünf Arenen mit immer stärkeren Computer-Gästen, für jeden Sieg ein Pokal; 🎉 Schnelle Party – Arena, Gegner, Stärke und Siege frei wählen; 🌐 Online & Handys – der Fernseher zeigt die Arena, bis zu 4 Gäste spielen mit Handys (per Code, Link oder QR-Code von überall), Controllern oder Tastatur, freie Plätze übernehmen Computer-Gäste.",
+    "steuerung": [
+     "Touch (wie bei AnMaCha Kart Rush): links der Joystick zum Laufen, rechts KNALL (Bonbon legen) und – mit Fernzünder – ZÜNDEN.",
+     "Tastatur: WASD/Pfeile laufen, Leertaste/E/Enter Bonbon legen, F/Shift Fernzünder, Esc Pause.",
+     "Gamecontroller: Stick/Steuerkreuz laufen, A Bonbon legen, B/X Fernzünder, Start Pause. In der Lobby meldet A einen Controller an."
+    ],
+    "tipps": [
+     "Nie in eine Sackgasse legen: erst schauen, wohin du flüchtest.",
+     "Ecken helfen: Stell dich nach dem Legen um die nächste Säule.",
+     "Mit Kick-Schuh lassen sich Bonbons zu den Gegnern schicken."
+    ]
+   },
+   "size": 174768,
+   "files": 11,
+   "offline": true,
+   "cloud": {
+    "game": "konfetti-party",
+    "prefix": "konfetti-party-"
+   }
+  },
+  {
    "id": "kuechen-chaos",
    "title": "Küchen-Chaos – Kochen im Team",
    "desc": "Hektisches Koch-Teamspiel in 3D: Zutaten aus den Kisten holen, schnippeln, Burger braten, Suppe kochen, anrichten und servieren, bevor der Bestellzettel abläuft – und wenn die Pfanne brennt, schnell zum Feuerlöscher. Sechs verrückte Küchen von der Imbiss-Ecke über Fließband-Kantine und Eis-Bistro bis zur geteilten Küche, Sterne und Rekorde. Solo mit schlauem Computer-Koch (oder beide Köche selbst steuern) und 🌐 Online & Handys: bis zu 4 Köche mit Handys, Controllern und Tastatur am Fernseher.",

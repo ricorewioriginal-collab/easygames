@@ -567,6 +567,19 @@ window.EASYGAMES_GUIDES = {
    "Als Werwolf: Verdächtige ruhig mal einen Dorfbewohner, aber stimme nicht immer gegen dieselben."
   ]
  },
+ "konfetti-party": {
+  "anleitung": "Konfetti-Party ist ein buntes Arena-Partyspiel. Jeder Gast kann Knallbonbons legen. Nach gut zwei Sekunden schießt ein Bonbon einen Konfetti-Strahl in alle vier Richtungen: Geschenkkartons platzen (manchmal steckt ein Extra drin), Bonbons im Strahl knallen gleich mit, und wer im Strahl steht, ist für die Runde raus – auch du selbst, also nach dem Legen schnell um die Ecke laufen! Säulen halten den Strahl auf. Wer als Letzter übrig ist, gewinnt die Runde; wer zuerst die eingestellten Runden-Siege hat, gewinnt die Party. Ist die Zeit um, schließt sich die Arena von außen. Extras: 🍬 Extra-Bonbon, 🎉 mehr Konfetti (Reichweite), 🛼 Rollschuhe, 🦶 Kick-Schuh (Bonbons wegkicken), 🎈 Luftballon-Schild (fängt einen Treffer ab), 📡 Fernzünder (Bonbons knallen erst auf Knopfdruck) und 🌀 Wirrwarr (Richtungen kurz vertauscht). Modi: 🏆 Turnier – fünf Partys in fünf Arenen mit immer stärkeren Computer-Gästen, für jeden Sieg ein Pokal; 🎉 Schnelle Party – Arena, Gegner, Stärke und Siege frei wählen; 🌐 Online & Handys – der Fernseher zeigt die Arena, bis zu 4 Gäste spielen mit Handys (per Code, Link oder QR-Code von überall), Controllern oder Tastatur, freie Plätze übernehmen Computer-Gäste.",
+  "steuerung": [
+   "Touch (wie bei AnMaCha Kart Rush): links der Joystick zum Laufen, rechts KNALL (Bonbon legen) und – mit Fernzünder – ZÜNDEN.",
+   "Tastatur: WASD/Pfeile laufen, Leertaste/E/Enter Bonbon legen, F/Shift Fernzünder, Esc Pause.",
+   "Gamecontroller: Stick/Steuerkreuz laufen, A Bonbon legen, B/X Fernzünder, Start Pause. In der Lobby meldet A einen Controller an."
+  ],
+  "tipps": [
+   "Nie in eine Sackgasse legen: erst schauen, wohin du flüchtest.",
+   "Ecken helfen: Stell dich nach dem Legen um die nächste Säule.",
+   "Mit Kick-Schuh lassen sich Bonbons zu den Gegnern schicken."
+  ]
+ },
  "kuechen-chaos": {
   "anleitung": "Küchen-Chaos ist ein hektisches Koch-Teamspiel. Oben stehen die Bestellzettel mit Zeitbalken. Hol die Zutaten aus den Kisten, leg sie aufs Schneidebrett und halte BENUTZEN, bis sie geschnitten sind. Fleisch und Fisch kommen in die Pfanne, drei gleiche Tomaten oder Zwiebeln in den Topf für eine Suppe. Ist es fertig, nimm einen Teller, richte am Herd an, gib Brötchen, Käse oder Salat dazu und bring den Teller zur gelben Ausgabe. Schnelle Lieferung gibt Trinkgeld, wer die vorderste Bestellung zuerst liefert, bekommt einen Serien-Bonus; abgelaufene Bestellungen kosten 10 Münzen. Bleibt etwas zu lange auf dem Herd, brennt es an und fängt Feuer – das breitet sich aus, bis jemand mit dem Feuerlöscher löscht. In manchen Küchen kommen die Teller dreckig zurück und müssen in der Spüle gewaschen werden; außerdem gibt es ein Förderband, spiegelglatten Eis-Boden und eine geteilte Küche, in der ihr euch alles über die Theke reicht. Sechs Küchen mit je drei Sternen, ein Stern schaltet die nächste frei. Beim ersten Mal führt die 🎓 Übungsküche Schritt für Schritt durch einen Salat (gelber Pfeil zeigt, wohin), danach zeigt unten eine Tipp-Zeile immer, was du an der Station vor dir tun kannst. Modi: 🍳 Solo – du und ein Computer-Koch, oder (Einstellungen) du steuerst beide Köche und wechselst; 🌐 Online & Handys – der Fernseher zeigt die Küche, bis zu 4 Köche kochen mit Handys (per Code, Link oder QR-Code von überall), Controllern oder der Tastatur, freie Plätze übernehmen Computer-Köche.",
   "steuerung": [
