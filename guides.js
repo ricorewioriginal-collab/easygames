@@ -554,6 +554,19 @@ window.EASYGAMES_GUIDES = {
    "Spar dir das Finale für den Moment auf, in dem der Gegner einen Fehler macht."
   ]
  },
+ "funk-billard": {
+  "anleitung": "Funk-Billard 3D ist 8-Ball-Pool in einer Neon-Lounge. Beim Anstoß liegen 15 Kugeln im Dreieck. Wer nach dem Anstoß zuerst eine Kugel versenkt, bekommt diese Gruppe: die Vollen (1–7) oder die Halben (9–15). Versenkst du eine eigene Kugel, bleibst du dran, sonst ist der andere am Zug. Wer seine Gruppe abgeräumt hat und dann die schwarze 8 versenkt, gewinnt – versenkst du die 8 zu früh oder mit einem Foul, hast du verloren. Fouls: Weiße versenkt, keine Kugel getroffen, fremde Kugel zuerst getroffen oder nach dem Kontakt weder Bande noch versenkt. Nach einem Foul hat der Gegner Ball in der Hand und legt die Weiße frei hin. Die Ziellinie zeigt die Geisterkugel und wohin beide Kugeln laufen. Effet: oben getroffen läuft die Weiße nach, unten getroffen zieht sie zurück. Modi: 🎱 Gegen CPU (Leicht, Mittel, Profi – Siege bringen 1, 2 oder 3 Punkte für die Rangliste), 👥 Zu zweit an einem Gerät, 🌐 Online gegen Freunde per Code, Link oder QR-Code (jeder auf seinem Gerät) und 🎯 Training ohne Regeln.",
+  "steuerung": [
+   "Touch/Maus: auf dem Tisch wischen = zielen, ◀ ▶ fein drehen; rechts den Kraftbalken nach unten ziehen und loslassen = Stoß. 👁 Draufsicht (dann dorthin tippen, wohin du zielst), 🎱 Effet. Ball in der Hand: die Weiße mit dem Finger verschieben.",
+   "Tastatur: ← → zielen (Shift = fein), ↑ ↓ Effet, Leertaste halten = ausholen, loslassen = Stoß, V Ansicht, WASD Weiße verschieben, Esc/P Pause.",
+   "Gamecontroller: linker Stick zielen, LB/RB fein, A halten = ausholen, loslassen = Stoß, X Effet, Y Ansicht, rechter Stick/Steuerkreuz verschiebt die Weiße, Start Pause."
+  ],
+  "tipps": [
+   "Nicht immer volle Kraft: Mit halber Kraft bleibt die Weiße besser liegen.",
+   "Rückzieher (Effet unten) verhindert, dass die Weiße hinter der Kugel in die Tasche rollt.",
+   "Kein guter Stoß in Sicht? Spiel eine eigene Kugel sanft an die Bande – das ist kein Foul und lässt dem Gegner wenig übrig."
+  ]
+ },
  "frequenzminen": {
   "anleitung": "Frequenz-Minen 3D ist Minesweeper in modern: Das Spielfeld liegt auf einer Radarscheibe, unter einigen Funkplatten stecken Störsender. Decke alle anderen Platten auf – jede offene Platte zeigt, wie viele Störsender auf den 8 Nachbarfeldern rauschen, leere Platten decken ihre Nachbarn automatisch auf. Der erste Klick ist immer sicher. 🚩 Peiler markieren vermutete Störsender, eine Zahl antippen deckt die übrigen Nachbarn auf, wenn genug Peiler stehen. 💡 Peilung zeigt dreimal pro Runde eine sichere Platte (+20 Sekunden). Modi: Leicht (9×9, 10 Störsender), Mittel (12×12, 24), Schwer (12×18, 44) und 📅 Tagesrätsel – für alle gleich, Ergebnis teilen. Punkte: jede freie Platte zählt, beim Sieg Tempo-Bonus (Leicht ×1, Mittel ×2, Schwer ×4). 📻 spielt einen Sender live das ganze Spiel über.",
   "steuerung": [

@@ -1703,6 +1703,42 @@
    }
   },
   {
+   "id": "funk-billard",
+   "title": "Funk-Billard 3D – 8-Ball in der Radio-Lounge",
+   "desc": "8-Ball-Pool mit echter Kugelphysik in einer Neon-Funk-Lounge: Volle gegen Halbe, die 8 zum Schluss. Zielen mit Wischen oder von oben, Kraftbalken ziehen und loslassen, Effet für Nachläufer und Rückzieher, Ziellinie mit Laufrichtungen, Fouls und Ball in der Hand. Gegen den Computer in 3 Stärken, zu zweit an einem Gerät, 🌐 Online gegen Freunde per Code oder freies Training.",
+   "icon": "🎱",
+   "img": "funk-billard/card.jpg",
+   "bg": "linear-gradient(145deg,#ff8a3d,#3a1f4a 55%,#3dd6c4)",
+   "glow": "rgba(255,138,61,.5)",
+   "path": "funk-billard/",
+   "modes": {
+    "pad": true,
+    "online": true,
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Funk-Billard 3D ist 8-Ball-Pool in einer Neon-Lounge. Beim Anstoß liegen 15 Kugeln im Dreieck. Wer nach dem Anstoß zuerst eine Kugel versenkt, bekommt diese Gruppe: die Vollen (1–7) oder die Halben (9–15). Versenkst du eine eigene Kugel, bleibst du dran, sonst ist der andere am Zug. Wer seine Gruppe abgeräumt hat und dann die schwarze 8 versenkt, gewinnt – versenkst du die 8 zu früh oder mit einem Foul, hast du verloren. Fouls: Weiße versenkt, keine Kugel getroffen, fremde Kugel zuerst getroffen oder nach dem Kontakt weder Bande noch versenkt. Nach einem Foul hat der Gegner Ball in der Hand und legt die Weiße frei hin. Die Ziellinie zeigt die Geisterkugel und wohin beide Kugeln laufen. Effet: oben getroffen läuft die Weiße nach, unten getroffen zieht sie zurück. Modi: 🎱 Gegen CPU (Leicht, Mittel, Profi – Siege bringen 1, 2 oder 3 Punkte für die Rangliste), 👥 Zu zweit an einem Gerät, 🌐 Online gegen Freunde per Code, Link oder QR-Code (jeder auf seinem Gerät) und 🎯 Training ohne Regeln.",
+    "steuerung": [
+     "Touch/Maus: auf dem Tisch wischen = zielen, ◀ ▶ fein drehen; rechts den Kraftbalken nach unten ziehen und loslassen = Stoß. 👁 Draufsicht (dann dorthin tippen, wohin du zielst), 🎱 Effet. Ball in der Hand: die Weiße mit dem Finger verschieben.",
+     "Tastatur: ← → zielen (Shift = fein), ↑ ↓ Effet, Leertaste halten = ausholen, loslassen = Stoß, V Ansicht, WASD Weiße verschieben, Esc/P Pause.",
+     "Gamecontroller: linker Stick zielen, LB/RB fein, A halten = ausholen, loslassen = Stoß, X Effet, Y Ansicht, rechter Stick/Steuerkreuz verschiebt die Weiße, Start Pause."
+    ],
+    "tipps": [
+     "Nicht immer volle Kraft: Mit halber Kraft bleibt die Weiße besser liegen.",
+     "Rückzieher (Effet unten) verhindert, dass die Weiße hinter der Kugel in die Tasche rollt.",
+     "Kein guter Stoß in Sicht? Spiel eine eigene Kugel sanft an die Bande – das ist kein Foul und lässt dem Gegner wenig übrig."
+    ]
+   },
+   "size": 123574,
+   "files": 9,
+   "offline": true,
+   "cloud": {
+    "game": "funk-billard",
+    "prefix": "funk-billard-"
+   }
+  },
+  {
    "id": "anmacha-preisradar",
    "title": "AnMaCha Preisradar",
    "desc": "Das Preis-Schätzspiel: Gebotsduell, Frequenz-Skala, Teurer oder billiger, Einkaufswagen und Preisfinale – bis zu 4 Spieler, Computer-Gegner, geheime Tipps per Handy. 200+ Produkte, präsentiert vom RicoReWi Radioportal.",
