@@ -28,7 +28,7 @@
   /* ---------- Oma-Stimme ---------- */
   const VOICE = (function () {
     const synth = typeof speechSynthesis !== 'undefined' ? speechSynthesis : null, APP = !!(window.RRWNative && window.RRWNative.ttsSpeak) || !!window.__rrwTtsOn;
-    const FEMALE = /female|weiblich|\bfrau\b|anna|petra|helena|hedda|katja|amala|seraphina|marlene|vicki|sandy|shelley|grandma|louisa|elke|ingrid|gisela|tanja|ilse|katharina|maja|sabine|leni|hanna/i, MALE = /\b(stefan|conrad|killian|florian|markus|yannick|martin|grandpa|ralf|jonas|bernd|klaus|hans|male|männlich)\b/i;
+    const FEMALE = /female|weiblich|\bfrau\b|anna|petra|helena|hedda|katja|amala|seraphina|marlene|vicki|sandy|shelley|grandma|louisa|elke|ingrid|gisela|tanja|ilse|katharina|maja|sabine|leni|hanna/i, MALE = /\b(x-deg|smtm\d*|stefan|conrad|killian|florian|markus|yannick|martin|grandpa|ralf|jonas|bernd|klaus|hans|male|männlich)\b/i;
     let voice = null, last = 0;
     function pickV() { if (!synth || APP || voice) return; const de = synth.getVoices().filter(v => /^de([-_]|$)/i.test(v.lang)); const w = de.filter(v => FEMALE.test(v.name) && !MALE.test(v.name)); voice = w.find(v => /natural|neural|online/i.test(v.name)) || w[0] || de.find(v => !MALE.test(v.name)) || de[0] || null; }
     if (synth && synth.addEventListener) synth.addEventListener('voiceschanged', pickV);

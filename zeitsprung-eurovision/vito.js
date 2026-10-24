@@ -2,7 +2,7 @@
 // Die Stimme wird einmal gewählt und dann beibehalten, damit sie nicht zwischen männlich und weiblich wechselt.
 const synth = typeof speechSynthesis !== 'undefined' ? speechSynthesis : null;
 // Bekannte männliche deutsche Systemstimmen (Windows/Edge, macOS/iOS, Chrome OS, Android-Varianten).
-const MALE = /\b(stefan|conrad|killian|florian|kasper|markus|yannick|viktor|martin|reed|grandpa|rocko|eddy|ralf|jonas|bernd|klaus|hans|male|männlich|mann)\b/i;
+const MALE = /\b(x-deg|smtm\d*|stefan|conrad|killian|florian|kasper|markus|yannick|viktor|martin|reed|grandpa|rocko|eddy|ralf|jonas|bernd|klaus|hans|male|männlich|mann)\b/i;
 const FEMALE = /female|weiblich|\bfrau\b|anna|petra|helena|hedda|katja|amala|seraphina|marlene|vicki|sandy|shelley|flo\b|grandma|louisa|elke|ingrid|gisela|tanja|ilse|katharina|maja|sabine|leni|hanna/i;
 let voice = null, male = false, ready = null, chain = Promise.resolve();
 

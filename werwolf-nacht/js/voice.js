@@ -5,7 +5,7 @@
   'use strict';
   const synth = typeof speechSynthesis !== 'undefined' ? speechSynthesis : null;
   const APP = !!(window.RRWNative && window.RRWNative.ttsSpeak) || !!window.__rrwTtsOn;
-  const MALE = /\b(stefan|conrad|killian|florian|kasper|markus|yannick|viktor|martin|reed|grandpa|rocko|eddy|ralf|jonas|bernd|klaus|hans|male|männlich|mann)\b/i;
+  const MALE = /\b(x-deg|smtm\d*|stefan|conrad|killian|florian|kasper|markus|yannick|viktor|martin|reed|grandpa|rocko|eddy|ralf|jonas|bernd|klaus|hans|male|männlich|mann)\b/i;
   const FEMALE = /female|weiblich|\bfrau\b|anna|petra|helena|hedda|katja|amala|seraphina|marlene|vicki|sandy|shelley|flo\b|grandma|louisa|elke|ingrid|gisela|tanja|ilse|katharina|maja|sabine|leni|hanna/i;
   let voice = null, male = false, ready = null, chain = Promise.resolve(), on = true;
   function pick() {
