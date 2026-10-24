@@ -54,6 +54,8 @@
   /* ---------- Einstellungen ---------- */
   const OPT = { oSound: 'sound', oMusic: 'music', oVoice: 'voice', oSubs: 'subs', oAuto: 'auto', oVib: 'vib' };
   for (const id in OPT) { const el = $(id); el.checked = !!SET[OPT[id]]; el.onchange = () => { SET[OPT[id]] = el.checked; saveSet(); S.setVol('sfx', SET.sound ? .8 : 0); VO.on = SET.voice; if (id === 'oMusic') S.music(SET.music); }; }
+  VO.mode = SET.vmode || 'm';
+  seg($('oVoiceMode'), [{ v: 'm', n: '🧔 Männlich (tief)' }, { v: 'w', n: '👩 Weiblich' }, { v: 'f', n: '🎭 Je Figur' }], SET.vmode || 'm', v => { SET.vmode = v; saveSet(); VO.mode = v; VO.char(charOf(SET.char), true); });
   $('oName').value = SET.name; $('oName').onchange = () => { SET.name = $('oName').value.trim().slice(0, 14); saveSet(); };
   $('optX').onclick = () => closeOv('ovOpts');
 
@@ -169,6 +171,9 @@
     V.syncWorld(g.W, dt, me); V.syncActor(g.actor, me, dt); for (const b of g.bots) V.syncActor(b.a, b.P, dt);
     for (const [, gh] of g.ghosts) { gh.P.x += (gh.tx - gh.P.x) * Math.min(1, dt * 10); gh.P.y += (gh.ty - gh.P.y) * Math.min(1, dt * 10); gh.P.z += (gh.tz - gh.P.z) * Math.min(1, dt * 10); V.syncActor(gh.a, gh.P, dt); }
     const ch = V.npcNear(me.x, me.z); if (ch) VO.char(ch);
+    // zwischendurch Brainrot-Rufe (eigene Figur oder Ansager), bei Stillstand ein Anstupser
+    if (g.count <= 0 && !g.over) { g.shoutT = (g.shoutT === undefined ? 14 : g.shoutT) - dt; if (g.shoutT <= 0) { g.shoutT = 16 + Math.random() * 14; if (Math.random() < .55) VO.ann('shout'); else VO.char(charOf(SET.char)); }
+      g.idleT = inp.l > .1 || inp.jump ? 0 : (g.idleT || 0) + dt; if (g.idleT > 9 && g.mode !== 'lava') { g.idleT = -20; VO.ann('idle'); } }
     hud();
     if (g.net) netTick(dt);
   }
