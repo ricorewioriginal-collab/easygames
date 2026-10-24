@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "778a76900a4d",
- "generated": "2026-10-24T17:06:22+00:00",
- "commit": "e17df6e6e262d20dda1290f458313c582811adbb",
+ "version": "73b14c02ef31",
+ "generated": "2026-10-24T20:13:54+00:00",
+ "commit": "8aeec6238179523f75d1c0d4108e626ed4ba7aca",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -738,8 +738,8 @@
   },
   {
    "p": "anmacha-funkparcours/bot.js",
-   "s": 2764,
-   "h": "715886a310f40d3240a134b47424dce3d0dba500126b58e17c22836e1c940adc"
+   "s": 3332,
+   "h": "53768af2999a1ce39beb35d4937c3006ca5953c4161d4689b87199eafc6b8b0e"
   },
   {
    "p": "anmacha-funkparcours/card.png",
@@ -763,13 +763,13 @@
   },
   {
    "p": "anmacha-funkparcours/engine.js",
-   "s": 13235,
-   "h": "2ed7fa11a2555f33fd355505d28351aa8485e325c564825379cbc33f1b775ef2"
+   "s": 17513,
+   "h": "153701e66059261d6f5c44cef47d266fb70272a18e243fbf9fdd72aa54d6f194"
   },
   {
    "p": "anmacha-funkparcours/index.html",
-   "s": 11367,
-   "h": "64d966626a344e0a2581751f2ad6a169dbd8f24ef4578f05151afe03660f34b0"
+   "s": 11563,
+   "h": "9e0e7df6022b6bc3800352288c55b51052d56743989a4726be8173f8982a7023"
   },
   {
    "p": "anmacha-funkparcours/logo.png",
@@ -858,8 +858,8 @@
   },
   {
    "p": "anmacha-funkparcours/main.js",
-   "s": 26048,
-   "h": "4ff393111cd9bc4d3e9d531e20747e0280ca52cf55d69c52ea4efbba59789f24"
+   "s": 26717,
+   "h": "06ae8ce283a2d72881a3a3947f59278e551eac1c57b928a44224c22637645f6f"
   },
   {
    "p": "anmacha-funkparcours/manifest.webmanifest",
@@ -868,8 +868,8 @@
   },
   {
    "p": "anmacha-funkparcours/menu.js",
-   "s": 7507,
-   "h": "5831f2d31b01d0cb76979e1fee6b543846dbb469c085aab594488dc8e91ca8c4"
+   "s": 7732,
+   "h": "a258f0d01ef491fe0c019ab61ad0b6938a786e026b4f884580185d0816e5cf9a"
   },
   {
    "p": "anmacha-funkparcours/pair.js",
@@ -878,8 +878,8 @@
   },
   {
    "p": "anmacha-funkparcours/scene.js",
-   "s": 40124,
-   "h": "9449cafb9401bc1c8096a2f4ec4df984af17cd83190cf5deeb6286508a291bb5"
+   "s": 44557,
+   "h": "9a2fb0bfc976b5048b3591613fc1103a22c457aa17032ed8c15e5643fb443eb9"
   },
   {
    "p": "anmacha-funkparcours/stick.js",
@@ -888,8 +888,8 @@
   },
   {
    "p": "anmacha-funkparcours/style.css",
-   "s": 20096,
-   "h": "34c7f402443d9cdc2bb68f5d3fd8fb569b879ba011b7ba10d95f16cba78e5088"
+   "s": 20091,
+   "h": "3f34b6ca1e603fcac5cce47bfaaea6959b91e45e1bd66df8fa230938385929fb"
   },
   {
    "p": "anmacha-funkparcours/sw.js",
@@ -4768,8 +4768,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 111628,
-   "h": "083b90eb6546a272a3dfd436e67ad4a1975dffacf7f0b41d9e5f78223a8f868f"
+   "s": 111874,
+   "h": "4fee069915e948a8b2caa7b315d089d68bb95024a199ed8fcd73cabfe279f4dc"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -4808,8 +4808,8 @@
   },
   {
    "p": "bunte-insel/js/buch-data.js",
-   "s": 28488,
-   "h": "02a2443923f8c754bae50f754e7b6de752c168586779591980d30b26f9352fd6"
+   "s": 28961,
+   "h": "9b30f00e0b82fee1a8721e330d2821b5ad85d21e8f8772af7ed4757afdd9db48"
   },
   {
    "p": "bunte-insel/js/buch.js",
@@ -4833,8 +4833,8 @@
   },
   {
    "p": "bunte-insel/js/characters.js",
-   "s": 9235,
-   "h": "1d8e28859455d756e1e5ab84e7f5bc904644321c4c40f0c10924b75519f5464f"
+   "s": 10737,
+   "h": "7b86258c21ad39fc2684d4034d92a32d6c0dbb2d6f3c8a5a41f168db16edd939"
   },
   {
    "p": "bunte-insel/js/cheats.js",
@@ -4902,6 +4902,11 @@
    "h": "d627ecef49de21145dc0cd63bb7e7105e6ba03f3dec16cff25f20aa53a010844"
   },
   {
+   "p": "bunte-insel/js/gaeste.js",
+   "s": 18088,
+   "h": "179e25e5163ff73730674470d927426874ded42dcf45f282c6de04cb41d68ba1"
+  },
+  {
    "p": "bunte-insel/js/gamepad.js",
    "s": 11483,
    "h": "6e229045b901a1cd0c0147352b99bca24899edbe67bf274963671870bef458ed"
@@ -4923,18 +4928,18 @@
   },
   {
    "p": "bunte-insel/js/i18n-en.js",
-   "s": 292701,
-   "h": "5c9d0d5ca88706f807b4ec3d7660796354f40e2b632966a5540ca77313a441f9"
+   "s": 292976,
+   "h": "d4ffd2e2f4501ff5bfc327242d6c0b1919c774abd8e8738d4cf4e039b9bd246e"
   },
   {
    "p": "bunte-insel/js/i18n.js",
-   "s": 139460,
-   "h": "f74cb3dd6c2703fa93760f9ff119c1fc3456b766a7fdeb09d246e4d83f4ce79b"
+   "s": 139612,
+   "h": "d848e25aaa8e757a185a0e040e8c665f30ab9b47ba5dddf80113be25dcaea26d"
   },
   {
    "p": "bunte-insel/js/innen.js",
-   "s": 63794,
-   "h": "433a835c8426c6747c6081354bd2287c3d6f549ba4d733fe867470f3485a8190"
+   "s": 63790,
+   "h": "19f33a546cf553a56a5cb2d362d5c9058920a505595a732c8cd5d3174f026cc9"
   },
   {
    "p": "bunte-insel/js/inselstory.js",
@@ -4953,8 +4958,8 @@
   },
   {
    "p": "bunte-insel/js/kids.js",
-   "s": 29330,
-   "h": "6442cdd661be5bb092047e2452c13f846399925c77a63b5aed6c6a6035afe3ce"
+   "s": 29412,
+   "h": "76cba90808d1f73084857c636d093a050c3483acca0c02b7330445c4ee009cb2"
   },
   {
    "p": "bunte-insel/js/kitchen.js",
@@ -4963,8 +4968,8 @@
   },
   {
    "p": "bunte-insel/js/life.js",
-   "s": 43955,
-   "h": "9d61846a034deca86fdd78c7871a2f8b3d6654182209a87bd46552da6b4ebb82"
+   "s": 44969,
+   "h": "43264e799180dc71fda7251045d87ecdd5e789feeff4cb34c36d29fac51436be"
   },
   {
    "p": "bunte-insel/js/maerchen.js",
@@ -4974,12 +4979,12 @@
   {
    "p": "bunte-insel/js/maerchenplus.js",
    "s": 24615,
-   "h": "0827e63928d426cac394717ad3bed6362f10676d73938d0fa6c710d26fe97f7a"
+   "h": "d69efdacab8afd047fdbc56d840125ad90cf5f1c84b4b613d939d1d0ad4193de"
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 318733,
-   "h": "fc2054f820237fef571462d3f60c98997ee7144f430e51078926bb9cca8e5ca5"
+   "s": 320439,
+   "h": "d34986f3245349682f2e7d659b35135d269202c08ca14dd472948535fc90bea6"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -5098,8 +5103,8 @@
   },
   {
    "p": "bunte-insel/js/story.js",
-   "s": 10202,
-   "h": "574c566c8e62bfb6a649a970d0b8a55d410bfbe836558458ed070c1714e09e9c"
+   "s": 11306,
+   "h": "5af746ba16bbcd9f498df210a01f12920ded9ad04c5aad89cfe913f848470f1a"
   },
   {
    "p": "bunte-insel/js/storymode.js",
@@ -5148,8 +5153,8 @@
   },
   {
    "p": "bunte-insel/js/thumbs.js",
-   "s": 4129,
-   "h": "d1533b2c3254da332d4545ba3ca5d50383b81205cf7a43f5c5c7b9b8a5e46cde"
+   "s": 4177,
+   "h": "b6814f911de4943aceb5d6ab35b02622f960347e3ada2a0427f2c7ea1bee9543"
   },
   {
    "p": "bunte-insel/js/town.js",
@@ -5168,8 +5173,8 @@
   },
   {
    "p": "bunte-insel/js/util.js",
-   "s": 73809,
-   "h": "9fb95addf86c58d3a819bba543f2649f40aaf623c3572e4addcebd1f770ea8c3"
+   "s": 74902,
+   "h": "2248fa79999a04aa96b8fd072450d109c48437f2a0b9e4c327556ac74f1a773b"
   },
   {
    "p": "bunte-insel/js/vehicles.js",
@@ -5423,8 +5428,8 @@
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 36397,
-   "h": "93cdce0dbd6ee344721c5ed64d8a9986ee09cf30ed71c57cac70a31d05c3da0e"
+   "s": 36400,
+   "h": "bb3bc541fa64d8a9a9d4b09cfeeff29c9d1c03130a381f5f86b61961c7e75fae"
   },
   {
    "p": "cloud/anmacha-bug.js",
@@ -8478,8 +8483,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 209992,
-   "h": "a190d43667eb8185af1dcfb3c00c73fd9bc46664502ddeec18befed0e9eccec8"
+   "s": 210000,
+   "h": "f9fce906736c9c17058e229826c5e36e2deb1d79fe7275ef651b7ae5bb8a39f5"
   },
   {
    "p": "taschi/card.svg",
@@ -8867,6 +8872,11 @@
    "h": "5422276aa6cdaa5247592f97e9303bd14dee4ee04b031722d3d2da330ff24613"
   },
   {
+   "p": "thumbs/brainrot-parkour.webp",
+   "s": 14710,
+   "h": "9a7b1c83b90f966373eff690f5b14e3b286a5bb274a9344872f043818a2a3676"
+  },
+  {
    "p": "thumbs/bunte-insel.webp",
    "s": 29406,
    "h": "bdd9862e0e5e065f3074793b69770f3e3ae62e5b7ed419345e3f4c388ddb40ed"
@@ -9003,8 +9013,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2085,
-   "h": "b2ccd35efc6a45bd4de027f41cb863b7789b9ee24a3076c0669d7c77da1877e9"
+   "s": 2117,
+   "h": "8b9c20abfb7726df397b3ef2f953565eb7ac88aa0517bdc71082c356343d44f3"
   },
   {
    "p": "thumbs/tortenschlacht.webp",

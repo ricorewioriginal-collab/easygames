@@ -2126,12 +2126,12 @@
      "An Hangelstangen greift der Läufer von selbst; mit Sprung kannst du früher abspringen."
     ]
    },
-   "size": 1843146,
+   "size": 1853510,
    "files": 33,
    "offline": true,
    "cloud": {
     "game": "funkparcours",
-    "prefix": "fpPhoneName,fpBest1,fpNames,fpSnd"
+    "prefix": "fpPhoneName,fpBest2,fpNames,fpChars,fpSnd"
    }
   },
   {
@@ -2733,8 +2733,8 @@
      "Gekämpft wird nur in der Kampfarena und auf der Wald-Insel (das Waldtor im alten Verbotenen Wald bringt dich hin)."
     ]
    },
-   "size": 4384617,
-   "files": 130,
+   "size": 4410396,
+   "files": 131,
    "offline": true,
    "cloud": {
     "game": "bunte-insel",

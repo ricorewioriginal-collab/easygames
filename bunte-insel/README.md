@@ -244,6 +244,14 @@ Dateien: `js/util.js` (Geometrie-Bündelung, Figuren, Pappnase, Blitz, Partikel)
 
 
 
+### Moderner Figuren-Look und Gäste aus anderen easygames 🎮 (Oktober 2026)
+
+- **Trickfilm-Look:** Figuren haben ein eigenes Material (`BI.charMat()`, Phong mit Licht pro Bildpunkt, leichtem Glanz und weichem Randlicht) statt der kantigen Eck-Beleuchtung. Kopf etwas größer (`BI.HEAD_K`), große glänzende Augen mit zwei Lichtpunkten, runde Bärte, Sonnenbrillen, Hutkrempen, Aufdrucke, Augenklappe, Feenflügel und Ringel statt flacher Klötzchen. Kopf und Augen feiner gerundet, sonst gleiche Geometrie-Sparsamkeit (ein Material, höchstens 7 Meshes pro Figur).
+- **Gäste (`js/gaeste.js`):** 20 Figuren aus anderen easygames-Spielen (Vorbild: EASYCLASH-Kämpferliste) – Kiko und Lumi (KIKO), Hopsi (Wolkenhopser), Rudi und Zisch (Krawallvögel), Pingu, Einhorn, Panda (Hüpfstraße), Brumm, Funke, Quak (Kart Rush), Rauschi (Radio Maze), Rico, Marco, Andrew, Rosa, Lotte, Suki, Tüftlerin Zoe, Gisela Glanz. Tiere und Fantasiewesen baut `BI.makeBuddy` (runde Kugel-Wesen, Vögel, Tiere auf zwei Beinen) mit denselben Knochen und Bewegungen wie `BI.makeChar`; `makeChar({ buddy: … })` leitet automatisch weiter.
+- **easygames-Treff** auf der Hauptinsel (`BI.GAESTE_TREFF`, im 🧭 Wohin-Menü, Schild 🎮): die Gäste laufen dort herum (`life.js`, Gegend `gaeste`), erzählen beim ersten Gespräch, aus welchem Spiel sie kommen (+1 ⭐ je neuem Gast), 8 Gespräche = Sticker „Gästefreund“. Alle Gäste sind auch als Vorlage spielbar.
+- **Story-Modus roter Faden:** Das Ziel oben zeigt keine Aufgabe in einer noch gesperrten Welt, solange eine andere offen ist, und nach der Inselreise die nächste Welt zum Freischalten (bzw. die Inselgeschichte der aktuellen Insel).
+- Prüfung: `node bunte-insel/tests/characters.cjs`, `tests/gaeste.mjs`, `tests/storyfaden.mjs`.
+
 ## Figuren-Grafikupdate
 
 Das gemeinsame Figurenmodell nutzt jetzt glatte Oberflächen, abgerundete Körperformen, zusammenhängende Röcke, gebogene Brillengestelle, lesbare Augen und geschwungene Münder. Alle 23 Frisuren lassen den Augenbereich frei. Inselbewohner erhalten unterschiedliche Frisuren; Kinder größere Kopfproportionen. Namensschilder werden mit höherer Auflösung gezeichnet; Auf Handys spart die 3D-Darstellung Kantenglättung zugunsten einer gleichmäßigeren Bildrate.

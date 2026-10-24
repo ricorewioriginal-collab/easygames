@@ -33,11 +33,18 @@ BI.createStory = function (G) {
   K.data = () => ST.map(c => ({ icon: c.icon, name: c.name, intro: c.intro, tasks: c.tasks.map(t => ({ icon: t[2], text: t[3] })) }));
   K.finish = () => { S().c = ST.length; G.persist(); renderChip(); };
   const chip = $('questChip'); BI.injectLogCss();
-  function next() { const c = K.chapter(); return c ? c.tasks.find(t => !done(t)) : null; }
+  /* Story-Modus: ein Ziel in einer noch gesperrten Welt (z. B. Freizeitpark) nicht als Erstes anzeigen, solange es offene Ziele gibt */
+  const locked = t => { try { return !!(t[4] && G.destLocked && G.destLocked(t[4])); } catch (e) { return false; } };
+  function next() { const c = K.chapter(); return c ? c.tasks.find(t => !done(t) && !locked(t)) || c.tasks.find(t => !done(t)) : null; }
+  /* Nach der Inselreise (nur Story-Modus): oben die Welt zeigen, die als Nächstes aufgeht – roter Faden bis zur letzten Insel */
+  function worldGoal() {
+    const L = G.worldLog ? G.worldLog() : null; if (!L) return null; const ws = L.worlds.filter(w => !w.open).sort((a, b) => b.p / b.of - a.p / a.of); if (!ws.length) return null;
+    const w = ws[0], r = w.reqs.find(q => !q.ok); return { icon: r ? r.icon : w.icon, title: '🔓 ' + w.icon + ' ' + w.name + ' freischalten (' + w.p + '/' + w.of + ')', text: r ? r.text : '' };
+  }
   function renderChip() {
     const fq = G.farmGoal ? G.farmGoal() : ''; if (fq) { $('qcIcon').textContent = '🚜'; $('qcTitle').textContent = 'Hof-Aufgabe'; $('qcText').textContent = fq; return; } /* eine Anzeige oben: Hof-Aufgabe, sonst nächstes Inselreise-Ziel */
     { const ig = G.islandGoal ? G.islandGoal() : null; if (ig) { $('qcIcon').textContent = ig.icon; $('qcTitle').textContent = '📜 ' + ig.title; $('qcText').textContent = ig.text; return; } }
-    const c = K.chapter(); if (!c) { chip.hidden = true; return; } const n = next(), k = c.tasks.filter(done).length;
+    const c = K.chapter(); if (!c) { const wg = worldGoal(); if (wg) { $('qcIcon').textContent = wg.icon; $('qcTitle').textContent = wg.title; $('qcText').textContent = wg.text; return; } chip.hidden = true; return; } const n = next(), k = c.tasks.filter(done).length;
     $('qcIcon').textContent = n ? n[2] : c.icon; $('qcTitle').textContent = 'Kapitel ' + (S().c + 1) + '/' + ST.length + ' · ' + c.name + ' (' + k + '/3)'; $('qcText').textContent = n ? n[3] : '';
   }
   /* Fortschritt prüfen: abgehakte Ziele melden, Kapitel abschließen (beim Laden still nachholen) */
@@ -79,7 +86,7 @@ BI.createStory = function (G) {
   let introT = S().seen ? -1 : 2.5, fgT = 0;
   K.start = function () { check(true); renderChip(); };
   K.update = function (dt, playing, free) {
-    fgT -= dt; if (fgT <= 0) { fgT = .5; renderChip(); } chip.hidden = !playing || (K.finished() && !(G.farmGoal && G.farmGoal())) || !free.hud;
+    fgT -= dt; if (fgT <= 0) { fgT = .5; renderChip(); } chip.hidden = !playing || (K.finished() && !(G.farmGoal && G.farmGoal()) && !(G.islandGoal && G.islandGoal()) && !worldGoal()) || !free.hud; /* nach der Inselreise: Inselgeschichte bzw. nächste Welt */
     if (introT > 0 && playing && free.idle) { introT -= dt; if (introT <= 0) { introT = -1; S().seen = true; const c = K.chapter(); if (c) announce(c, '👩‍💼 Bürgermeisterin Rosi: '); } }
   };
   return K;

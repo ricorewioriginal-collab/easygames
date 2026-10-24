@@ -2,7 +2,7 @@
    Wasserbecken mit Unterwasserlicht, Stahl-Traversen über jedem Hindernis mit LED-Schild, Moving-Heads, steile Tribüne mit Publikum,
    LED-Bande, Startturm und Buzzer-Turm mit Flammen und Zeit-Anzeige. Läufer mit Gelenken (Knie, Ellbogen) und 8 wählbaren Figuren.
    Passt die Qualität selbst an, wenn das Gerät zu langsam ist. */
-import { movePos, swingBall, fmtTime } from './engine.js';
+import { movePos, swingBall, ropeAt, fmtTime } from './engine.js';
 import { charLook } from './chars.js';
 import { PH } from './engine.js';
 const T = window.THREE;
@@ -181,9 +181,31 @@ export class Arena {
       } else if (o.k === 'swing') {
         const grp = new T.Group(); bs.add(o.px, o.py, -2.4, o.px, o.py, 2.4, 0.3); bs.add(o.px, o.py, -2.4, o.px, 10.5, -5.6, 0.12);
         const rope = new T.Mesh(new T.CylinderGeometry(0.035, 0.035, o.len, 6), std(0xcfd6ff, { metalness: 0.8, roughness: 0.3 })); rope.position.y = -o.len / 2; grp.add(rope);
-        const ball = new T.Mesh(new T.SphereGeometry(o.r, 22, 16), std(0xd8202a, { emissive: 0x440000, roughness: 0.25, metalness: 0.5 })); ball.position.y = -o.len; ball.castShadow = true; grp.add(ball);
-        const ring = new T.Mesh(new T.TorusGeometry(o.r * 0.98, 0.06, 8, 28), glow(0xffd24a)); ring.position.y = -o.len; grp.add(ring);
-        const halo = new T.Sprite(new T.SpriteMaterial({ map: puff(), color: 0xff4040, transparent: true, opacity: 0.45, blending: T.AdditiveBlending, depthWrite: false })); halo.scale.setScalar(o.r * 4.5); halo.position.y = -o.len; grp.add(halo);
+        // Sandsack: gepolsterter Zylinder mit Kunstleder-Streifen, oben Kette
+        const h = o.h || 1.1, sack = new T.Mesh(C('sackG', () => new T.CylinderGeometry(0.4, 0.42, 1.1, 18, 1)), C('sackM', () => std(0xc81e2a, { roughness: 0.55, metalness: 0.05, emissive: 0x2a0000 }))); sack.scale.y = h / 1.1; sack.position.y = -o.len; sack.castShadow = true; grp.add(sack);
+        [-0.32, 0.32].forEach(f => { const band = new T.Mesh(C('sackB', () => new T.CylinderGeometry(0.43, 0.43, 0.09, 18, 1, true)), C('sackBM', () => std(0xf2f2f2, { roughness: 0.5 }))); band.position.y = -o.len + f * h; grp.add(band); });
+        const capT = new T.Mesh(C('sackC', () => new T.SphereGeometry(0.4, 16, 6, 0, Math.PI * 2, 0, Math.PI / 2)), C('sackM')); capT.position.y = -o.len + h / 2; capT.scale.y = 0.35; grp.add(capT);
+        grp.position.set(o.px, o.py, 0); this.root.add(grp); this.dyn.push({ o, m: grp, i });
+      } else if (o.k === 'roll') {
+        // Drehwalze: liegende Walze mit Streifen (dreht sich mit der Oberflächen-Geschwindigkeit), Achslager an beiden Enden
+        const g = new T.Group(), drum = new T.Mesh(new T.CylinderGeometry(o.r, o.r, 3.6, 28, 1), C('rollM', () => new T.MeshStandardMaterial({ map: cvs(256, 32, (x, w, h) => { for (let i = 0; i < 8; i++) { x.fillStyle = i % 2 ? '#ffd24a' : '#1b1f4a'; x.fillRect(i * w / 8, 0, w / 8, h); } }), roughness: 0.5, metalness: 0.2 })));
+        drum.rotation.x = Math.PI / 2; drum.castShadow = true; drum.receiveShadow = true; g.add(drum);
+        [-1, 1].forEach(sd => { const cap = new T.Mesh(C('rollCap', () => new T.TorusGeometry(0.62, 0.05, 6, 24)), glow(COL.y)); cap.position.z = sd * 1.82; cap.scale.setScalar(o.r / 0.62); drum.add(cap); cap.rotation.x = Math.PI / 2; cap.position.set(0, sd * 1.82, 0);
+          const post = new T.Mesh(C('rollPost', () => new T.CylinderGeometry(0.12, 0.16, 1, 8)), C('pole', () => std(0x3a4170, { metalness: 0.6, roughness: 0.35 }))); post.scale.y = o.y - o.r + 1.5; post.position.set(0, -(o.y - o.r + 1.5) / 2, sd * 1.95); g.add(post); });
+        g.position.set(o.x + o.w / 2, o.y - o.r, 0); this.root.add(g); this.dyn.push({ o, m: drum, i });
+      } else if (o.k === 'tramp') {
+        // Trampolin: schwarzes Sprungtuch im gepolsterten Rahmen
+        const g = new T.Group(), frame = new T.Mesh(new T.BoxGeometry(o.w, 0.3, 3.2), C('trampF', () => std(0x16204f, { roughness: 0.6 }))); frame.position.y = -0.2; g.add(frame);
+        const mat = new T.Mesh(new T.BoxGeometry(o.w - 0.4, 0.04, 2.8), C('trampM', () => std(0x08080e, { roughness: 0.9 }))); mat.position.y = -0.02; mat.receiveShadow = true; g.add(mat); this.dyn.push({ o, m: mat, i });
+        [-1, 1].forEach(sd => { const pad = new T.Mesh(new T.BoxGeometry(o.w, 0.12, 0.2), glow(COL.g)); pad.position.set(0, -0.02, sd * 1.5); g.add(pad); const pad2 = new T.Mesh(new T.BoxGeometry(0.2, 0.12, 3.2), glow(COL.g)); pad2.position.set(sd * (o.w / 2 - 0.1), -0.02, 0); g.add(pad2); });
+        const p = new T.Mesh(C('trampLeg', () => new T.CylinderGeometry(0.2, 0.26, 1, 10)), C('pole', () => std(0x3a4170, { metalness: 0.6, roughness: 0.35 }))); p.scale.y = o.y + 1.2; p.position.y = -0.35 - (o.y + 1.2) / 2; g.add(p);
+        g.position.set(o.x + o.w / 2, o.y, 0); this.root.add(g);
+      } else if (o.k === 'rope') {
+        // Seil am Querträger, mit Griffknoten unten
+        bs.add(o.px - 0.2, o.py, -2.4, o.px - 0.2, o.py, 2.4, 0.3); bs.add(o.px, o.py, -2.4, o.px, 10.5, -5.6, 0.12);
+        const grp = new T.Group(), rope = new T.Mesh(new T.CylinderGeometry(0.045, 0.05, o.len, 8), C('ropeM', () => std(0xd9c79a, { roughness: 0.9 }))); rope.position.y = -o.len / 2; grp.add(rope);
+        for (let k = 0; k < 3; k++) { const kn = new T.Mesh(C('knotG', () => new T.SphereGeometry(0.09, 10, 8)), C('ropeM')); kn.position.y = -o.len + 0.1 + k * 0.55; grp.add(kn); }
+        const ring = new T.Mesh(C('ropeRing', () => new T.TorusGeometry(0.16, 0.035, 6, 16)), glow(COL.b)); ring.position.y = -o.len + 1.6; ring.rotation.x = Math.PI / 2; grp.add(ring);
         grp.position.set(o.px, o.py, 0); this.root.add(grp); this.dyn.push({ o, m: grp, i });
       } else if (o.k === 'bars') {
         const len = o.x2 - o.x1, bar = new T.Mesh(new T.CylinderGeometry(0.07, 0.07, len, 10), std(0xffd24a, { emissive: 0x443300, metalness: 0.7, roughness: 0.25 })); bar.rotation.z = Math.PI / 2; bar.position.set((o.x1 + o.x2) / 2, o.y, 0); bar.castShadow = true; this.root.add(bar);
@@ -193,7 +215,7 @@ export class Arena {
       else if (o.k === 'finish') this.buildFinish(o, bs);
     });
     // Startturm und Hindernis-Portale mit LED-Schildern
-    const s0 = c.o[0]; this.gantry(bs, 0.6, 'Start', '#ff2d95'); [-1.6, 1.6].forEach(z => this.pot(1.0, s0.y, z));
+    const s0 = c.o[0]; this.gantry(bs, 0.6, 'Start', '#ff2d95'); [-1.8, 1.8].forEach(z => this.pot(0.35, s0.y, z));
     let last = 0.6; for (const s of c.secs || []) { if (s.x - last < 7) continue; last = s.x; this.gantry(bs, s.x, s.n, '#00e5ff'); }
     // Beckenende
     const capM = C('capM', () => std(0x0b0d2a, { roughness: 0.55, metalness: 0.3 }));
@@ -207,7 +229,10 @@ export class Arena {
     [-2.6, 2.6].forEach(z => { const lamp = new T.Mesh(C('headG', () => new T.CylinderGeometry(0.22, 0.3, 0.45, 10)), C('headM', () => std(0x1a1d33, { metalness: 0.7, roughness: 0.3 }))); lamp.position.set(x, 10.0, z); this.root.add(lamp);
       const col = z < 0 ? 0x00e5ff : 0xffffff, cone = new T.Mesh(C('beamG', () => { const g = new T.ConeGeometry(1.3, 10, 14, 1, true); g.translate(0, -5, 0); return g; }), new T.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.085, side: T.DoubleSide, depthWrite: false, blending: T.AdditiveBlending })); cone.position.set(x, 9.8, z); cone.visible = !this.lowFx; this.root.add(cone); this.heads.push({ cone, ph: x * 0.37 + z }); });
   }
-  pot(x, y, z) { const p = new T.Mesh(C('potG', () => new T.CylinderGeometry(0.2, 0.26, 0.3, 10)), C('potM', () => std(0x22263f, { metalness: 0.8, roughness: 0.3, emissive: 0x331100 }))); p.position.set(x, y + 0.15, z); this.root.add(p); this.pots.push({ x, y: y + 0.3, z }); }
+  pot(x, y, z) {   // Flammenwerfer: Stahlsockel mit glühendem Düsenring
+    const p = new T.Mesh(C('potG', () => new T.CylinderGeometry(0.13, 0.19, 0.5, 12)), C('potM', () => std(0x2b3050, { metalness: 0.85, roughness: 0.28 }))); p.position.set(x, y + 0.25, z); this.root.add(p);
+    const r = new T.Mesh(C('potR', () => new T.TorusGeometry(0.12, 0.03, 6, 14)), glow(COL.o)); r.rotation.x = Math.PI / 2; r.position.set(x, y + 0.51, z); this.root.add(r); this.pots.push({ x, y: y + 0.5, z });
+  }
   buildFinish(o, bs) {
     const ped = new T.Mesh(new T.CylinderGeometry(0.16, 0.22, 1.15, 12), steel()); ped.position.set(o.x + 0.9, o.y + 0.58, -0.6); this.root.add(ped);
     const b = new T.Mesh(new T.CylinderGeometry(0.34, 0.4, 0.22, 20), std(0xff2d2d, { emissive: 0x990000, roughness: 0.3 })); b.position.set(o.x + 0.9, o.y + 1.24, -0.6); b.castShadow = true; this.root.add(b); this.buzzer = b;
@@ -216,7 +241,7 @@ export class Arena {
     const zs = new T.Mesh(new T.PlaneGeometry(3.4, 0.64), new T.MeshBasicMaterial({ map: sign('Ziel', 512, 96, '#ffd24a', '#ff2d95'), fog: false })); zs.position.set(o.x, o.y + 6.95, -1.5); this.root.add(zs);
     this.clockTex = cvs(256, 80, () => {}); this.clockCtx = this.clockTex.image.getContext('2d'); this.drawClock(0);
     const ck = new T.Mesh(new T.PlaneGeometry(3.4, 1.06), new T.MeshBasicMaterial({ map: this.clockTex, fog: false })); ck.position.set(o.x, o.y + 5.4, -1.5); this.root.add(ck); this.clock = ck;
-    [-1.4, 2.0].forEach(dx => [-1.6, 1.6].forEach(z => this.pot(o.x + dx, o.y, z)));
+    [-1.4, 2.0].forEach(dx => [-1.8, 1.8].forEach(z => this.pot(o.x + dx, o.y, z)));
   }
   drawClock(t) { const g = this.clockCtx, W = 256, H = 80; g.fillStyle = '#05071c'; g.fillRect(0, 0, W, H); g.strokeStyle = '#ffd24a'; g.lineWidth = 4; g.strokeRect(3, 3, W - 6, H - 6); g.fillStyle = '#ffd24a'; g.font = '900 52px Inter,Arial,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(fmtTime(t), W / 2, H / 2 + 3); this.clockTex.needsUpdate = true; }
   buildWall(o, bs) {
@@ -242,7 +267,7 @@ export class Arena {
     const vx = sim ? sim.vx : (x - r.prevX) / dt, vy = sim ? sim.vy : (y - r.prevY) / dt; r.prevX = x; r.prevY = y;
     const face = sim ? sim.face : Math.abs(vx) > 0.2 ? Math.sign(vx) : r.face; r.face = face;
     let st = 'run';
-    if (sim) { if (sim.dead) st = 'fall'; else if (sim.finished) st = 'win'; else if (sim.hang) st = 'hang'; else if (sim.wall) st = 'wall'; else if (!sim.onGround) st = 'air'; else if (Math.abs(vx) < 0.3) st = 'idle'; }
+    if (sim) { if (sim.dead) st = 'fall'; else if (sim.finished) st = 'win'; else if (sim.hang || sim.rope) st = 'hang'; else if (sim.wall) st = 'wall'; else if (!sim.onGround) st = 'air'; else if (Math.abs(vx) < 0.3) st = 'idle'; }
     else st = Math.abs(vy) > 1.2 ? 'air' : Math.abs(vx) < 0.3 ? 'idle' : 'run';
     if (sim && sim.stun > 0 && st !== 'fall') st = 'stun';
     r.body.rotation.set(0, st === 'win' ? 0.25 : face > 0 ? 1.2 : -1.2, 0);
@@ -264,6 +289,9 @@ export class Arena {
       r.tt = (r.tt || 0) + dt * (st === 'run' ? Math.max(0.6, spd / 3.2) : 1); M.apply(r.toon, F, dt, r.tt);
       if (st === 'hang') g.position.y += PH - 2.05;
     }
+    // Am Seil: Figur um die Hände drehen (gleicher Winkel wie das Seil)
+    const a = sim && sim.rope ? sim.rope.a || 0 : 0; g.rotation.z = a;
+    if (a) { const hy = y + PH, v = g.position.y - hy; g.position.x = x - v * Math.sin(a); g.position.y = hy + v * Math.cos(a); }
     r.st = st; return st;
   }
   adapt(dt) {   // Qualität senken, wenn das Gerät nicht hinterherkommt
@@ -273,7 +301,7 @@ export class Arena {
   /** sim: laufende Simulation (oder null), ghostPos: [x,y] oder null */
   frame(sim, dt, ghostPos, idleX) {
     this.time += dt; const t = sim ? sim.t : this.time; this.wu.t.value = this.time;
-    for (const d of this.dyn) { const o = d.o; if (o.k === 'move') { const p = movePos(o, t); d.m.position.set(p.x + o.w / 2, p.y - 0.25, 0); } else if (o.k === 'sink') { const k = sim && sim.sinks[d.i]; d.m.position.y = o.y - 0.25 + (k ? k.y : 0); d.m.visible = !(k && k.gone); if (k && k.touch >= 0 && !k.gone && sim.t - k.touch < o.delay) d.m.position.x = o.x + o.w / 2 + Math.sin(this.time * 70) * 0.03; else d.m.position.x = o.x + o.w / 2; } else if (o.k === 'swing') d.m.rotation.z = swingBall(o, t).a; }
+    for (const d of this.dyn) { const o = d.o; if (o.k === 'move') { const p = movePos(o, t); d.m.position.set(p.x + o.w / 2, p.y - 0.25, 0); } else if (o.k === 'sink') { const k = sim && sim.sinks[d.i]; d.m.position.y = o.y - 0.25 + (k ? k.y : 0); d.m.visible = !(k && k.gone); if (k && k.touch >= 0 && !k.gone && sim.t - k.touch < o.delay) d.m.position.x = o.x + o.w / 2 + Math.sin(this.time * 70) * 0.03; else d.m.position.x = o.x + o.w / 2; } else if (o.k === 'swing') d.m.rotation.z = swingBall(o, t).a; else if (o.k === 'rope') d.m.rotation.z = ropeAt(o, t).a; else if (o.k === 'roll') d.m.rotation.y = t * -o.v / o.r; else if (o.k === 'tramp') { const on = sim && sim.ground && sim.ground.i === d.i, b = sim && !on && sim.bounces && sim.vy > 6 && Math.abs(sim.x - o.x - o.w / 2) < o.w; d.m.position.y = -0.02 - (b ? (sim.vy - 6) * 0.03 : 0); } }
     for (const r of this.rings) { const u = (this.time * 0.6 + r.ph) % 1; r.m.scale.setScalar(1 + u * 0.8); r.m.material.opacity = 0.5 * (1 - u); }
     // Läufer + Staub/Landung
     const x = sim ? sim.x : idleX != null ? idleX : 2;
@@ -286,7 +314,7 @@ export class Arena {
     if (this.ghost && this.ghost.g.visible && ghostPos) this.pose(this.ghost, ghostPos[0], ghostPos[1], null, dt);
     if (this.clock && (this.clockT -= dt) <= 0) { this.clockT = 0.1; this.drawClock(sim ? sim.t : 0); }
     // Kamera: leichte Vorausschau, Tempo-Zoom, Wackeln
-    const vx = sim ? sim.vx || 0 : 0, tx = (this.attract != null ? this.attract : x) + 3.0 + vx * 0.15, ty = (sim ? Math.max(sim.y, 1) : 1.4) + 1.0; this.cx += (tx - this.cx) * Math.min(1, dt * 4.5); this.cy += (ty - this.cy) * Math.min(1, dt * 3.5);
+    const vx = sim ? sim.vx || 0 : 0, halfW = Math.tan(this.cam.fov * Math.PI / 360) * this.dist * this.cam.aspect, lead = Math.min(3.0, halfW * 0.38), tx = (this.attract != null ? this.attract : x) + lead + vx * Math.min(0.15, halfW * 0.02), ty = (sim ? Math.max(sim.y, 1) : 1.4) + 1.0; this.cx += (tx - this.cx) * Math.min(1, dt * 4.5); this.cy += (ty - this.cy) * Math.min(1, dt * 3.5);
     this.shake = Math.max(0, this.shake - dt * 1.4); const sk = this.shake, sx = (Math.random() - 0.5) * sk, sy = (Math.random() - 0.5) * sk;
     this.cam.position.set(this.cx - 1.4 + sx, this.cy + 2.9 + sy, this.dist); this.cam.lookAt(this.cx, this.cy - 0.1, 0); const fov = this.baseFov + Math.min(5, Math.abs(vx) * 0.6); if (Math.abs(fov - this.cam.fov) > 0.05) { this.cam.fov += (fov - this.cam.fov) * Math.min(1, dt * 3); this.cam.updateProjectionMatrix(); }
     this.sun.position.set(this.cx + 8, 15, 11); this.sun.target.position.set(this.cx, 0, 0); this.rim.position.set(this.cx, 6, -6); this.wu.cx.value = this.cx; this.water.position.x = this.cx + 20; if (this.led) this.led.offset.x += dt * 0.05; if (this.ad) this.ad.offset.x += dt * 0.04;
