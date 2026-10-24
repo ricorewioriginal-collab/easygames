@@ -29,7 +29,9 @@
     if (!ctx) return;
     master.gain.value = vol.mute ? 0 : 1;
     mus.gain.value = vol.music * 0.55; fx.gain.value = vol.sfx * 0.8;
+    if (radio && radio.plain && !radio.muted) radio.el.volume = musVol();
   }
+  const musVol = () => (vol.mute ? 0 : Math.max(0.001, Math.min(1, vol.music)));
   function setVolume(v) { Object.assign(vol, v); apply(); }
   const ok = () => !!ctx && ctx.state === 'running' && !vol.mute;
   const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
@@ -158,25 +160,30 @@
   // Der Stream läuft durch einen Analysator (Beat-Erkennung) und dann um delaySec verzögert in die Lautsprecher:
   // So entsteht jede Note genau dann oben im Bild, wenn ihr Beat gleich unten zu hören ist.
   // Ohne CORS-Freigabe des Streams lässt der Browser keine Analyse zu – dann kommt ein Fehler und das Spiel nimmt eigene Beats.
-  function radioStart(slug, delaySec, url) {
+  // plain = true: Sender nur abspielen (ohne Analyse). So läuft er auch, wenn der Stream keine CORS-Freigabe hat.
+  function radioStart(slug, delaySec, url, plain) {
     return new Promise((resolve, reject) => {
       if (!init()) { reject(new Error('noaudio')); return; }
       radioStop();
       let done = false, el, g;
       const fail = why => { if (done) return; done = true; clearTimeout(to); radioStop(); reject(new Error(why)); };
-      const to = setTimeout(() => fail('timeout'), 9000);
+      const to = setTimeout(() => fail('timeout'), plain ? 12000 : 6000);
       try {
-        el = new Audio(); el.crossOrigin = 'anonymous'; el.preload = 'auto';
+        el = new Audio(); el.preload = 'auto';
+        if (plain) { el.volume = musVol(); radio = { el, plain: true }; }
+        else {
+        el.crossOrigin = 'anonymous';
         const src = ctx.createMediaElementSource(el), an = ctx.createAnalyser(), dl = ctx.createDelay(5);
         g = ctx.createGain(); g.gain.value = 0;
         an.fftSize = 1024; an.smoothingTimeConstant = 0; dl.delayTime.value = Math.min(4.5, Math.max(0, delaySec));
         src.connect(an); src.connect(dl); dl.connect(g); g.connect(mus);
         radio = { el, src, an, dl, g, spec: new Uint8Array(an.frequencyBinCount), prev: [0, 0, 0, 0], avg: [0.02, 0.02, 0.02, 0.02], last: [0, 0, 0, 0], alt: [0, 0, 0, 0] };
+        }
       } catch (e) { fail('graph'); return; }
       el.addEventListener('error', () => fail('error'), { once: true });
       el.addEventListener('error', () => { if (done && radio && radio.el === el) { radioStop(); if (onLost) onLost(); } });
       el.addEventListener('ended', () => { if (done && radio && radio.el === el) { radioStop(); if (onLost) onLost(); } });
-      el.addEventListener('playing', () => { if (done) return; done = true; clearTimeout(to); g.gain.setTargetAtTime(1, ctx.currentTime, 0.05); resolve(true); }, { once: true });
+      el.addEventListener('playing', () => { if (done) return; done = true; clearTimeout(to); if (g) g.gain.setTargetAtTime(1, ctx.currentTime, 0.05); resolve(true); }, { once: true });
       el.src = url || 'https://stream.laut.fm/' + encodeURIComponent(slug);
       const pr = el.play(); if (pr && pr.catch) pr.catch(() => fail('play'));
     });
@@ -184,13 +191,13 @@
   let onLost = null;   // Rückruf, wenn der Stream nach dem Start abbricht
   function radioStop() {
     if (!radio) return; const r = radio; radio = null;
-    try { r.el.pause(); r.el.removeAttribute('src'); r.el.load(); r.src.disconnect(); r.g.disconnect(); } catch (e) { /* schon weg */ }
+    try { r.el.pause(); r.el.removeAttribute('src'); r.el.load(); if (r.src) { r.src.disconnect(); r.g.disconnect(); } } catch (e) { /* schon weg */ }
   }
-  function radioMute(on) { if (radio) radio.g.gain.setTargetAtTime(on ? 0 : 1, ctx.currentTime, 0.08); }
+  function radioMute(on) { if (!radio) return; radio.muted = on; if (radio.plain) radio.el.volume = on ? 0 : musVol(); else radio.g.gain.setTargetAtTime(on ? 0 : 1, ctx.currentTime, 0.08); }
   // Beat-Erkennung: Energiezuwachs (spektraler Fluss) in vier Frequenzbändern. Liefert erkannte Schläge mit Band und Stärke.
   const BANDS = [[1, 4], [4, 12], [12, 40], [40, 120]];
   function radioOnsets(t) {
-    if (!radio) return [];
+    if (!radio || radio.plain) return [];
     const r = radio, sp = r.spec, out = []; r.an.getByteFrequencyData(sp);
     for (let b = 0; b < 4; b++) {
       let e = 0; const [lo, hi] = BANDS[b]; for (let i = lo; i < hi; i++) e += sp[i]; e /= (hi - lo) * 255;
@@ -203,9 +210,10 @@
   }
   function radioSong(slug) {
     return fetch('https://api.laut.fm/station/' + encodeURIComponent(slug) + '/current_song').then(r => (r.ok ? r.json() : null))
-      .then(j => (j && j.title ? { title: String(j.title), artist: j.artist && j.artist.name ? String(j.artist.name) : '' } : null)).catch(() => null);
+      .then(j => (j && j.title ? { title: String(j.title), artist: j.artist && j.artist.name ? String(j.artist.name) : '',
+        start: Date.parse(j.started_at) || 0, end: Date.parse(j.ends_at) || 0, type: String(j.type || 'song') } : null)).catch(() => null);
   }
 
-  root.SMYVAudio = { radioOnLost: cb => { onLost = cb; }, radioStart, radioStop, radioMute, radioOnsets, radioSong, radioActive: () => !!radio, init, setVolume, ok, song, tick, chordTones, sfx, guide, voiceOn, voiceSet, voiceOff,
+  root.SMYVAudio = { radioOnLost: cb => { onLost = cb; }, radioStart, radioStop, radioMute, radioOnsets, radioSong, radioActive: () => !!radio, radioPlain: () => !!(radio && radio.plain), init, setVolume, ok, song, tick, chordTones, sfx, guide, voiceOn, voiceSet, voiceOff,
     micStart, micStop, micPitch, micActive: () => !!mic, mtof, ctxTime: () => (ctx ? ctx.currentTime : 0) };
 })(window);

@@ -211,6 +211,7 @@
     return fill(rnd(D.HOST.intro[def.id]), { n: p.name, x: def.topX || '', motto: m.name });
   }
   RENDER.sBack = arg => {
+    airStop();
     const s = save.season, p = save.profile;
     if (!s || !p) { go('sMenu'); return; }
     if (s.status === 'out') { go('sOut'); return; }
@@ -277,6 +278,7 @@
     return { radio: null, style: k, name: null };
   }
   RENDER.sPrep = mode => {
+    airStop();   // zurück aus dem Wartebereich: Sender aus
     prepMode = mode || prepMode;
     const career = prepMode === 'career', s = save.season, def = career ? D.ROUNDS[s.round] : D.ROUNDS[0];
     const motto = career && def.id === 'motto' ? D.MOTTOS[s.motto] : null;
@@ -295,7 +297,7 @@
       ${motto ? `<div class="banner gold" style="font-size:1.1em">Motto: ${motto.name}</div>` : ''}
       <div class="panel"><p><b>Ablauf:</b> ${partsTxt}</p><p class="muted">${esc(career ? def.rule : 'Keine Wertung für die Staffel – perfekt zum Üben. Weiter mit 2 von 3 Jury-Ja.')}</p>${rivalTxt}</div>
       <h3>1 · Deine Musik</h3><div class="opts">${music.join('')}</div>
-      <p class="hint" style="text-align:left">${radioOn ? '📻 <b>Quelle:</b> Live-Programm des gewählten RicoReWi-Senders über laut.fm. Die Noten entstehen aus den Beats des laufenden Songs, Interpret und Titel stehen im Auftritt oben. Alle Rechte an der Musik liegen bei den jeweiligen Urhebern. Ohne Verbindung spielt das Spiel eigene Beats.' : '🎹 Eigene Songs: Musik wird live im Browser erzeugt. Radio-Sender kannst du in den Einstellungen einschalten.'} Der Stil bestimmt, welche Jurorin oder welcher Juror einen Bonus gibt.</p>
+      <p class="hint" style="text-align:left">${radioOn ? '📻 <b>Quelle:</b> Live-Programm des gewählten RicoReWi-Senders über laut.fm. Der Sender läuft live, die Noten entstehen aus den Beats des laufenden Songs (lässt der Stream keine Analyse zu, folgen sie dem Takt des Musikstils). Interpret und Titel stehen im Auftritt oben. Alle Rechte an der Musik liegen bei den jeweiligen Urhebern. Ohne Verbindung spielt das Spiel eigene Beats.' : '🎹 Eigene Songs: Musik wird live im Browser erzeugt. Radio-Sender kannst du in den Einstellungen einschalten.'} Der Stil bestimmt, welche Jurorin oder welcher Juror einen Bonus gibt.</p>
       <h3>2 · Dein Ansatz</h3><div class="opts">${Object.keys(D.APPROACH).map(k => opt('approach', k, D.APPROACH[k].name, D.APPROACH[k].desc)).join('')}</div>
       <h3>3 · Bühnen-Aktion</h3><div class="opts">${Object.keys(D.ACTION).map(k => opt('action', k, D.ACTION[k].name, D.ACTION[k].desc)).join('')}</div>
       <p class="muted">${def.parts.includes('pitch') ? (save.settings.mic ? '🎙️ Mikrofon ist an: In Gesangsteilen hört das Spiel deine Tonhöhe (nur lokal).' : '🎤 Gesang mit Tasten/Touch. Mikrofon kannst du in den Einstellungen einschalten.') : ''}</p>
@@ -336,10 +338,48 @@
       wait = `<div class="panel"><p><b>🚪 Wartebereich · Casting-Tag</b> – deine Startnummer: <span class="tag gold">#${me + 1}</span> von ${s.order.length}</p>
         ${before.length ? '<p class="muted">Schon vor der Jury:</p>' + before.map(c => { const a = S.aiPerf(s, c, 0), j = S.judge(a.crit, c.style, s.seed, 0, c.id), y = j.filter(x => x.yes).length; return `<span class="tag ${y >= 2 ? 'ok' : 'bad'}">${esc(c.name)} ${y >= 2 ? '✅' : '❌'} ${y}/3</span>`; }).join('') : '<p class="muted">Du bist als Erste/r dran!</p>'}</div>`;
     }
+    const mu = musicOf(prep), withRadio = mu.radio && def.parts.includes('rhythm');
     $('#talkBox').innerHTML = `<header class="bar"><button class="btn sm" data-back type="button">← Zurück</button><h2>${talk.casting ? '🎤 Vor der Jury' : '🎙️ Interview'}</h2><span></span></header>
-      ${wait}<div class="panel" id="talkQ"></div>`;
+      ${withRadio ? `<div class="panel"><p id="airBox">📻 Verbinde mit ${esc(mu.name)} …</p></div>` : ''}${wait}<div class="panel" id="talkQ"></div>`;
     talkStep();
+    if (withRadio) airStart(mu.radio).then(m => { if (!m) airShow('📻 ' + mu.name + ' ist gerade nicht erreichbar – auf der Bühne laufen eigene Beats.'); });
+    else airStop();
   };
+  // ---------- Radio im Wartebereich: Sender läuft schon, der Auftritt beginnt mit dem nächsten Song ----------
+  const onAir = { slug: null, mode: null, poll: 0, song: null };
+  function airStop() { clearInterval(onAir.poll); onAir.poll = 0; onAir.slug = null; onAir.mode = null; onAir.song = null; A.radioStop(); }
+  function airShow(txt) { const el = $('#airBox'); if (el) el.textContent = txt; }
+  function songTxt(sg) { return sg ? (sg.artist ? sg.artist + ' – ' : '') + sg.title : ''; }
+  async function airStart(slug) {
+    if (onAir.slug === slug && A.radioActive()) return onAir.mode;
+    airStop(); onAir.slug = slug;
+    let mode = null;
+    try { await A.radioStart(slug, ST.TRAVEL[save.settings.speed] || 1.5); mode = 'live'; }
+    catch (e) { try { await A.radioStart(slug, 0, null, true); mode = 'plain'; } catch (e2) { mode = null; } }
+    if (onAir.slug !== slug) { if (mode && !stage) A.radioStop(); return null; }   // inzwischen verlassen
+    if (!mode) { onAir.slug = null; return null; }
+    onAir.mode = mode; A.radioMute(false);
+    const st = station(slug), upd = () => A.radioSong(slug).then(sg => { if (onAir.slug !== slug) return; if (sg) onAir.song = sg; airShow('📻 Läuft gerade auf ' + st.name + ': ' + (songTxt(onAir.song) || '…')); });
+    airShow('📻 ' + st.name + ' läuft'); upd(); onAir.poll = setInterval(upd, 10000);
+    return mode;
+  }
+  // Werbung oder Song schon halb vorbei? Dann auf den Songwechsel warten (mit „Sofort starten“).
+  function waitForSong(start) {
+    const s0 = onAir.song, st = station(onAir.slug);
+    if (s0 && s0.type === 'song' && s0.start && Date.now() - s0.start < 15000) { start(); return; }
+    let done = false, n = 0;
+    const end = (go2) => { if (done) return; done = true; clearInterval(iv); closeOv(); if (go2) start(); };
+    overlay(`<h3>📻 Gleich geht's los …</h3><p>Dein Auftritt beginnt mit dem <b>nächsten Song</b> auf ${esc(st ? st.name : 'dem Sender')}.</p><p class="muted" id="airWait">${esc(songTxt(s0))}</p>
+      <button class="btn gold" type="button" data-act="now">▶ Sofort starten</button><button class="btn sm" type="button" data-act="x">Abbrechen</button>`,
+    { now: () => end(true), x: () => end(false), esc: () => end(false) });
+    const iv = setInterval(() => {
+      n++; if (!onAir.mode) { end(true); return; }
+      const left = s0 && s0.end ? Math.round((s0.end - Date.now()) / 1000) : null, el = $('#airWait');
+      if (el) el.textContent = (s0 ? 'Läuft noch: ' + songTxt(s0) : 'Warte auf den Songwechsel') + (left != null && left > 0 ? ' · ca. ' + left + ' s' : '');
+      if (n > 240) { end(true); return; }   // Notbremse nach 4 Minuten
+      if (n % 3 === 0 || (left != null && left <= 0)) A.radioSong(onAir.slug).then(sg => { if (!done && sg && (!s0 || sg.title !== s0.title || sg.artist !== s0.artist)) { onAir.song = sg; sfx('cue', 0, '📻 Neuer Song'); end(true); } });
+    }, 1000);
+  }
   function talkStep() {
     const box = $('#talkQ'), name = save.profile.name, done = talk.qi >= talk.list.length;
     const log = talk.log.map(l => `<p class="muted">${esc(l)}</p>`).join('');
@@ -348,7 +388,7 @@
       box.innerHTML = `${log}<p><b>${talk.casting ? 'Die Jury nickt dir zu.' : 'Rico: „Viel Glück – die Bühne gehört dir!“'}</b></p>
         <p class="hint" style="text-align:left">Wirkung: ${sy.length ? 'Sympathie ' + sy.join(', ') : 'keine Sympathie-Änderung'}${talk.votes ? ' · +' + talk.votes + ' Votes' : ''}</p>
         <button class="btn gold xl" type="button" id="bStageGo" data-focus style="width:100%">🎬 Auf die Bühne!</button>`;
-      $('#bStageGo').onclick = () => { if (talk.mode === 'career') startCareerRound(); else startFree(); };
+      $('#bStageGo').onclick = () => { const go2 = () => { if (talk.mode === 'career') startCareerRound(); else startFree(); }; if (onAir.mode) waitForSong(go2); else go2(); };
       focusFirst(box); return;
     }
     const q = talk.list[talk.qi];
@@ -397,18 +437,25 @@
   }
 
   // ---------- Bühne ----------
-  function stopAll() { if (stage) { stage.stop(); stage = null; } A.micStop(); A.radioStop(); }
+  function stopAll() { if (stage) { stage.stop(); stage = null; } A.micStop(); airStop(); }
   async function runStage(cfg) {
     A.init(); applySettings();
     let mic = false, radio = false;
-    cfg.parts.forEach(p => { if (p.type === 'rhythm') p.live = false; });
+    cfg.parts.forEach(p => { p.live = false; p.plain = false; });
     if (cfg.radio && save.settings.source === 'radio' && cfg.parts.some(p => p.type === 'rhythm')) {
       const st = station(cfg.radio);
+      if (onAir.slug === cfg.radio && onAir.mode && A.radioActive()) { radio = onAir.mode; clearInterval(onAir.poll); }   // läuft schon seit dem Wartebereich
+      else {
       overlay(`<h3>📻 Verbinde mit ${esc(st.name)} …</h3><p class="muted">Live-Stream über laut.fm</p>`, { esc: () => {} });
-      try { await A.radioStart(cfg.radio, ST.TRAVEL[save.settings.speed] || 1.5, cfg.radioUrl); radio = true; }
-      catch (e) { toast('📻 ' + st.name + ' ist gerade nicht erreichbar – du singst zu eigenen Beats.', 3500); }
-      closeOv();
-      cfg.parts.forEach(p => { if (p.type === 'rhythm') p.live = radio; });
+      // 1. Versuch: Stream mit Beat-Analyse (Noten aus der Musik). 2. Versuch: Sender nur abspielen, Noten im Takt des Musikstils.
+      try { await A.radioStart(cfg.radio, ST.TRAVEL[save.settings.speed] || 1.5, cfg.radioUrl); radio = 'live'; }
+      catch (e) {
+        try { await A.radioStart(cfg.radio, 0, cfg.radioUrl, true); radio = 'plain'; }
+        catch (e2) { toast('📻 ' + st.name + ' ist gerade nicht erreichbar – du singst zu eigenen Beats.', 3500); }
+      }
+      closeOv(); if (radio) { onAir.slug = cfg.radio; onAir.mode = radio; }
+      }
+      cfg.parts.forEach(p => { if (radio === 'live' && p.type === 'rhythm') p.live = true; if (radio === 'plain') p.plain = true; });
     }
     if (cfg.mic && save.settings.mic) { try { await A.micStart(); mic = true; A.micStop(); } catch (e) { toast('🎙️ Mikrofon nicht verfügbar – du singst mit Tasten/Touch.'); } }
     cfg.micOn = mic;   // Mikrofon nur in Gesangsteilen öffnen
@@ -446,7 +493,7 @@
         const imgs = $('#juryStrip').querySelectorAll('img'); const cls = k === 'combo' ? 'nod' : k === 'show' ? 'wow' : 'frown';
         imgs.forEach((im, i) => { if (k !== 'miss' || i === 0) { im.classList.add(cls); setTimeout(() => im.classList.remove(cls), 700); } });
       },
-      onDone: out => { stage = null; A.micStop(); A.radioStop(); finishStage(out); } });
+      onDone: out => { stage = null; A.micStop(); airStop(); finishStage(out); } });
   }
   $('#bPause').onclick = () => { if (stage) stage.pause(false); };
   function showPause(auto) {

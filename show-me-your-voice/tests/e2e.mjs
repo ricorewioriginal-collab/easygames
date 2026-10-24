@@ -26,7 +26,9 @@ async function page(vp, touch) {
   const c = await b.newContext({ viewport: vp, hasTouch: !!touch, isMobile: !!touch, serviceWorkers: 'block' });
   await c.route(/i\.ytimg\.com|youtube|anmacha-cloud\.js|gamepad\.js/, r => r.fulfill({ status: 200, body: '', contentType: 'text/javascript' }));
   await c.route(/stream\.laut\.fm/, r => r.fulfill({ status: 200, body: WAV, contentType: 'audio/wav', headers: { 'Access-Control-Allow-Origin': '*' } }));
-  await c.route(/api\.laut\.fm/, r => r.fulfill({ status: 200, body: JSON.stringify({ title: 'Testbeat', artist: { name: 'Test-Interpret' } }), contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' } }));
+  // Titel wechselt nach einigen Abfragen (Songwechsel), Startzeit liegt in der Vergangenheit (Song läuft schon)
+  let calls = 0;
+  await c.route(/api\.laut\.fm/, r => { calls++; r.fulfill({ status: 200, body: JSON.stringify({ type: 'song', title: 'Testbeat ' + Math.floor(calls / 4), artist: { name: 'Test-Interpret' }, started_at: new Date(Date.now() - 60000).toISOString(), ends_at: new Date(Date.now() + 8000).toISOString() }), contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' } }); });
   const p = await c.newPage();
   p.on('pageerror', e => errs.push(e.message));
   p.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|net::/i.test(m.text())) errs.push(m.text()); });
@@ -61,6 +63,11 @@ async function talkThrough(p) {
   await p.waitForSelector('#sTalk.on');
   for (let i = 0; i < 6; i++) { if (await p.isVisible('#bStageGo')) break; await p.click('#talkQ [data-a="0"]'); }
   await p.click('#bStageGo');
+  // Radio: Auftritt startet erst beim Songwechsel – sonst nach kurzer Zeit „Sofort starten“
+  for (let k = 0; k < 60 && !(await p.isVisible('#sStage.on')); k++) {
+    if (k > 25 && await p.isVisible('#ovBox [data-act="now"]')) { await p.click('#ovBox [data-act="now"]'); break; }
+    await p.waitForTimeout(250);
+  }
 }
 // bis zum Ergebnis warten, eine angebotene Zugabe annehmen
 async function waitResult(p) {
@@ -106,7 +113,9 @@ ok(/1 übrig/.test(await p.textContent('[data-b="train"]')), 'Trainingseinheit v
 await p.click('[data-b="stage"]'); await p.waitForSelector('#sPrep.on'); await p.click('[data-g="approach"][data-v="risiko"]'); await shot(p, '06-vorbereitung');
 await p.click('#bGo'); await p.waitForSelector('#sTalk.on'); await p.waitForTimeout(150); await shot(p, '07a-wartebereich');
 await p.click('#talkQ [data-a="0"]'); await p.click('#talkQ [data-a="1"]'); await p.click('#talkQ [data-a="0"]'); await shot(p, '07b-jury-gespraech');
-await p.click('#bStageGo'); await p.waitForSelector('#sStage.on', { timeout: 15000 }); await p.waitForTimeout(3200); await shot(p, '07-buehne');
+ok(/Läuft gerade auf RicoReWi Radio/.test(await p.textContent('#airBox')), 'Sender läuft schon im Wartebereich: ' + (await p.textContent('#airBox')));
+await p.click('#bStageGo'); await p.waitForSelector('#ovBox [data-act="now"]'); await shot(p, '07c-warte-auf-song');
+await p.waitForSelector('#sStage.on', { timeout: 20000 }); ok(true, 'Auftritt startet automatisch beim Songwechsel'); await p.waitForTimeout(3200); await shot(p, '07-buehne');
 ok(/laut\.fm/.test(await p.textContent('#stTitle')), 'Radio-Quelle wird im Auftritt genannt: ' + (await p.textContent('#stTitle')));
 ok(await p.evaluate(() => { const s = window.SMYVApp.stageObj(); return s && s.part && s.part.live && s.notes.length > 0; }), 'Noten entstehen live aus dem Radio-Stream');
 await p.keyboard.press('Escape'); await p.waitForSelector('#ov:not([hidden])'); ok(await p.evaluate(() => window.SMYVApp.stageObj().paused), 'Pause mit Esc'); await shot(p, '08-pause');
@@ -210,5 +219,22 @@ const sw = await m.evaluate(() => document.documentElement.scrollWidth <= innerW
 ok(sw, 'Kein seitliches Scrollen auf dem Handy');
 await m.close();
 
+// ---------- Radio ohne CORS-Freigabe: Sender läuft trotzdem (nur abspielen) ----------
+{
+  const c = await b.newContext({ viewport: { width: 1280, height: 800 }, serviceWorkers: 'block' });
+  await c.route(/i\.ytimg\.com|youtube|anmacha-cloud\.js|gamepad\.js/, r => r.fulfill({ status: 200, body: '', contentType: 'text/javascript' }));
+  await c.route(/stream\.laut\.fm/, r => r.fulfill({ status: 200, body: WAV, contentType: 'audio/wav' }));   // ohne Access-Control-Allow-Origin
+  await c.route(/api\.laut\.fm/, r => r.fulfill({ status: 200, body: JSON.stringify({ title: 'Testbeat', artist: { name: 'Test-Interpret' } }), contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' } }));
+  const q = await c.newPage(); q.on('pageerror', e => errs.push(e.message));
+  await q.goto(base); await q.keyboard.press('Enter'); await q.waitForSelector('#sMenu.on');
+  await q.evaluate(() => { window.SMYV.D.ROUNDS.forEach(r => { r.len = 16; }); });
+  await q.click('[data-m="new"]'); await q.click('#avaOk'); await q.waitForSelector('#sBack.on');
+  await q.evaluate(() => { const A = window.SMYVAudio, orig = A.radioStart; A.radioStart = (s, d, u, plain) => (plain ? orig(s, d, u, true) : Promise.reject(new Error('cors'))); });   // Analyse verweigert wie bei fehlender CORS-Freigabe
+  await q.click('[data-b="stage"]'); await q.waitForSelector('#sPrep.on'); await q.click('#bGo'); await talkThrough(q);
+  await q.waitForSelector('#sStage.on', { timeout: 20000 }); await q.waitForTimeout(2500);
+  const pl = await q.evaluate(() => ({ plain: window.SMYVAudio.radioPlain(), notes: window.SMYVApp.stageObj().notes.length, title: document.getElementById('stTitle').textContent }));
+  ok(pl.plain && pl.notes > 0 && /laut\.fm/.test(pl.title), 'Ohne CORS: Sender läuft hörbar, Noten im Takt des Stils (' + pl.notes + ')');
+  await c.close();
+}
 ok(!errs.length, 'Keine Laufzeitfehler' + (errs.length ? ': ' + errs.join(' | ') : ''));
 await b.close();

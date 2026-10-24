@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "666a88a9a75b",
- "generated": "2026-10-24T04:19:45+00:00",
- "commit": "9a2fc901ef2083cb5a85296cdff739a98d47119b",
+ "version": "2365e43afe6c",
+ "generated": "2026-10-24T04:32:25+00:00",
+ "commit": "a0b71652fa32cf71557583c34b722431c4605f36",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7548,18 +7548,18 @@
   },
   {
    "p": "show-me-your-voice/index.html",
-   "s": 13573,
-   "h": "86bbd6281f635d9811dd736849644b446b59bb9b1313b1c8e8e1607d1503c2f5"
+   "s": 13656,
+   "h": "3c7c6cdb067870e8ac39d22565efa3426adb8cd43ff76c0d10fb1072bcdd3565"
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 72466,
-   "h": "c24c9202a138776174dfd8f6ea3ecec0489c3a5b13bff8b705a12da2ba97b39d"
+   "s": 76536,
+   "h": "dff08b0bbf2aa125fe53096c063a8199bb1c82bc6e9c982bf4aa091267885f6b"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
-   "s": 13719,
-   "h": "4320bdfd44fd199de93718cc48e00808a8051649f9f0d57cebeca42f0f0d853b"
+   "s": 14398,
+   "h": "9bd95b7c5d729a636d808e5f521262d831571e8eebc1638465648b2e82f9c4e0"
   },
   {
    "p": "show-me-your-voice/js/avatar.js",
@@ -7578,8 +7578,8 @@
   },
   {
    "p": "show-me-your-voice/js/stage.js",
-   "s": 30160,
-   "h": "04a28e12f4ff01c2bd984e5c79a2216f3e3a74009c3b790180884743c0a3729e"
+   "s": 30218,
+   "h": "404858c4bd9a55352214afbf00f77abf14fa4bc7b80dff32e463fe7f82df08a3"
   },
   {
    "p": "show-me-your-voice/manifest.webmanifest",
@@ -7854,7 +7854,7 @@
   {
    "p": "sync/catalog.json",
    "s": 172552,
-   "h": "f9b06ba7f2f4606004a17df3db9a195bb5ce76a815ba02da9a94d73fedb9635b"
+   "h": "182380b32e2c0efb151de365d90ad14808ab4b01912248d17e885571aed85e07"
   },
   {
    "p": "taschi/card.svg",
