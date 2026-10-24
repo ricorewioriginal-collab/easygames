@@ -216,6 +216,8 @@
       const sz = L.size || 1, bulk = Math.min(1.35, Math.max(0.85, L.bulk || L.build || 1)); wrap.scale.set(sz * bulk, sz, sz * Math.sqrt(bulk));
       // Bewegungen
       const mixer = new T.AnimationMixer(rig.scene), acts = {};
+      // Wurzel-Bewegung (z. B. beim Klettern) entfernen: die Spiele setzen die Position selbst
+      if (!an.inPlace) { an.inPlace = true; for (const c of an.animations) c.tracks = c.tracks.filter(t => t.name !== 'root.position'); }
       for (const c of an.animations) acts[c.name] = mixer.clipAction(c);
       fig.mixer = mixer;
       fig.play = (name, o = {}) => {
