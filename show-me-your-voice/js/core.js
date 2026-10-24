@@ -349,7 +349,8 @@
       push(m) {
         if (!(Number.isFinite(m) && m > 24 && m < 108)) return { total: Math.round(st.total), ev: close(), r: null, ok: false };
         st.sx = st.sx * 0.98 + Math.cos(2 * Math.PI * m) * 0.02; st.sy = st.sy * 0.98 + Math.sin(2 * Math.PI * m) * 0.02;
-        st.off = Math.atan2(st.sy, st.sx) / (2 * Math.PI);
+        const raw = Math.atan2(st.sy, st.sx) / (2 * Math.PI), d = raw - st.off;
+        st.off += d - Math.round(d);   // ohne Sprung bei ±0,5: sonst wechselt die Halbton-Stufe mitten im gehaltenen Ton
         const x = m - st.off, r = Math.round(x), dev = Math.abs(x - r);
         let ev = null;
         if (st.note && st.note.r !== r) ev = close();

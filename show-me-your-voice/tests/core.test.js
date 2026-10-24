@@ -282,6 +282,9 @@ test('Live-Wertung: saubere gehaltene Töne geben Perfekt und Combo, schiefe Tö
   assert.ok(clean.evs.filter(t => t === 'perfekt').length > 20, clean.evs.join());
   assert.ok(clean.best >= 10 && clean.total > bad.total && clean.total <= 10000, clean.total + ' / ' + bad.total);
   assert.ok(bad.evs.filter(t => t === 'perfekt').length < clean.evs.filter(t => t === 'perfekt').length);
+  const edge = S.liveScorer(30, 0.05); let pf = 0;
+  for (let i = 0; i < 600; i++) { const r = edge.push(i % 20 > 16 ? null : 60.5 + (i % 2 ? 0.005 : -0.005)); if (r.ev && r.ev.t === 'perfekt') pf++; }
+  assert.ok(pf > 20 && edge.end().best > 10, 'Ton genau zwischen zwei Halbtönen bleibt ein gehaltener Ton: ' + pf);
   assert.strictEqual(S.singTitle(95), '🌟 Superstar'); assert.strictEqual(S.singTitle(10), '🚿 Duschsänger');
 });
 

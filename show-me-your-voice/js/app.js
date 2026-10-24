@@ -1084,7 +1084,7 @@
       const part = S.singScore(run.frames, run.party || !save.profile ? null : save.profile.attrs, 0.05);
       if (part.sing.voiced < 8) return;
       const mods = career && s ? s.mods : null;
-      if (career) S.singCareer(part, s.lastPerf, mods, cx.sel.action);
+      if (cx && cx.sel) S.singCareer(part, career && s ? s.lastPerf : null, mods, cx.sel.action);   // wie die Wertung am Ende
       const symp = cx && cx.talk ? S.mergeSymp(cx.talk.symp, mods && mods.symp) : null;
       S.judge(part.crit, cx && cx.mode === 'online' ? cx.style : pk.style, run.jseed, run.jround, run.jwho, cx && cx.mode === 'online' ? null : symp, run.panel).forEach(v => {
         if (run.turned[v.id] || !v.yes || v.score < jur(v.id).need + 1) return;

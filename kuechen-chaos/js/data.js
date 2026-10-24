@@ -25,7 +25,7 @@ const RECIPES = {
   fischsalat: { n: 'Fisch mit Salat', icon: '🐟', parts: ['fish:k', 'lettuce:c'], pts: 40 }
 };
 const LEVELS = [
-  { id: 'imbiss', n: 'Imbiss-Ecke', d: 'Salate schnippeln – zum Warmwerden', theme: 0, menu: ['salat', 'salat2'], stars: [190, 350, 500], time: 150, every: 16, otime: 60,
+  { id: 'imbiss', n: 'Imbiss-Ecke', d: 'Salate schnippeln – zum Warmwerden', theme: 0, menu: ['salat', 'salat2'], stars: [140, 280, 420], time: 150, every: 20, otime: 85,
     map: ['##X#AA#Q##X#', '#..........#', 'L.1......2.T', '#...####...#', '#..........#', '#E#X#Z##X###'] },
   { id: 'burger', n: 'Burger-Bude', d: 'Fleisch braten, bevor es brennt!', theme: 1, menu: ['burger', 'cheese'], stars: [140, 250, 360], time: 160, every: 19, otime: 75,
     map: ['##P#P#AA#Q##', '#..........#', 'M.1..#X..2.B', '#....#X....#', '#..........#', '##K#XZ#E#P##'] },
