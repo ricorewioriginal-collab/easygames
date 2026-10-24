@@ -11,7 +11,7 @@ import de.ricorewi.easygames.core.CancelToken
 import de.ricorewi.easygames.core.SyncResult
 import java.util.concurrent.TimeUnit
 
-/** Hintergrund-Sync über den WorkManager (nur im WLAN, nicht bei schwachem Akku). */
+/** Hintergrund-Sync über den WorkManager (mit jeder Verbindung oder – falls eingestellt – nur im WLAN; nicht bei schwachem Akku). */
 class SyncWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
 
     private val cancel = CancelToken()
@@ -39,12 +39,12 @@ class SyncWorker(context: Context, params: WorkerParameters) : Worker(context, p
             .setRequiresBatteryNotLow(true)
             .build()
 
-        fun periodicRequest(wifiOnly: Boolean = true): PeriodicWorkRequest =
+        fun periodicRequest(wifiOnly: Boolean = false): PeriodicWorkRequest =
             PeriodicWorkRequest.Builder(SyncWorker::class.java, 6L, TimeUnit.HOURS)
                 .setConstraints(constraints(wifiOnly))
                 .build()
 
-        fun oneTimeRequest(wifiOnly: Boolean = true): OneTimeWorkRequest =
+        fun oneTimeRequest(wifiOnly: Boolean = false): OneTimeWorkRequest =
             OneTimeWorkRequest.Builder(SyncWorker::class.java)
                 .setConstraints(constraints(wifiOnly))
                 .build()

@@ -26,10 +26,10 @@ android/
 
 Wann wird synchronisiert?
 
-- beim App-Start (im WLAN; im Mobilfunk nur, wenn der Nutzer „Nur im WLAN aktualisieren“ ausgeschaltet hat),
+- beim App-Start (mit jeder Verbindung, auch Mobilfunk; nur im WLAN, wenn der Nutzer „Nur im WLAN aktualisieren“ einschaltet – Standard aus),
 - sobald eine erlaubte Internetverbindung verfügbar wird, solange die App läuft,
-- alle 6 Stunden im Hintergrund (WorkManager, WLAN oder nach Freigabe Mobilfunk, nicht bei schwachem Akku),
-- ein Einmal-Job holt Verpasstes nach, sobald WLAN da ist,
+- alle 6 Stunden im Hintergrund (WorkManager, jede Verbindung – mit „Nur im WLAN“ nur WLAN –, nicht bei schwachem Akku),
+- ein Einmal-Job holt Verpasstes nach, sobald wieder eine (erlaubte) Verbindung da ist,
 - manuell über „Jetzt aktualisieren“ (Einstellungsdialog, `EasyGamesApp.syncNow()`).
 
 Es läuft nie mehr als ein Sync gleichzeitig.

@@ -74,9 +74,9 @@ class SyncCoordinator(
 
     fun snapshot(): Snapshot = current
 
-    /** "Nur im WLAN aktualisieren" – Standard AN. Nur über den nativen Dialog änderbar. */
+    /** "Nur im WLAN aktualisieren" – Standard AUS (neue Spiele und Updates kommen auch über Mobilfunk). Nur über den nativen Dialog änderbar. */
     var wifiOnly: Boolean
-        get() = prefs.getBoolean(KEY_WIFI_ONLY, true)
+        get() = prefs.getBoolean(KEY_WIFI_ONLY, false)
         set(value) {
             prefs.edit().putBoolean(KEY_WIFI_ONLY, value).apply()
             schedulePeriodic()
