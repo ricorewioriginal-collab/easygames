@@ -329,6 +329,15 @@
     return { perf: r1(clamp(perf)), crit: c, mult: 1, sing: st };
   }
 
+  // Echtes Vorsingen in der Karriere: Entwicklung zur letzten Runde, Bühnen-Aktion und Backstage-Ereignisse wie im Spiel-Modus.
+  function singCareer(res, lastPerf, mods, action) {
+    const c = res.crit, act = D.ACTION[action] || {};
+    c.entwicklung = r1(clamp(lastPerf == null ? 60 : 60 + (res.perf - lastPerf) * 1.5));
+    c.timing = r1(clamp(c.timing + (act.timing || 0))); c.praesenz = r1(clamp(c.praesenz + (act.praesenz || 0))); c.mut = r1(clamp(c.mut + 0.8 * (act.mut || 0)));
+    if (mods && mods.crit) for (const k in mods.crit) if (k in c) c[k] = r1(clamp(c[k] + (+mods.crit[k] || 0)));
+    return res;
+  }
+
   // Genre-Challenge: ★ = Jury sagt Ja (2 von 3), ★★ = dazu das Genre-Ziel, ★★★ = dazu mindestens 80 Punkte.
   function singStars(genreId, res, fc) {
     const g = D.KARAOKE.find(x => x.id === genreId);
@@ -424,7 +433,7 @@
   }
 
   const API = { D, CK, TRAINABLE, DIFF, rng, hash, clamp, cleanName, newProfile, level, newSeason, startRound, cancelRound,
-    analyze, panelOf, judge, ONLINE, onlineDef, onlineResolve, encoreFlip, comment, rollEvent, applyEvent, mergeSymp, aiPerf, rank, resolveRound, freeCasting, singScore, singStars, trainGain, applyTraining, applyCommunity, bonusScore,
+    analyze, panelOf, judge, ONLINE, onlineDef, onlineResolve, encoreFlip, comment, rollEvent, applyEvent, mergeSymp, aiPerf, rank, resolveRound, freeCasting, singScore, singCareer, singStars, trainGain, applyTraining, applyCommunity, bonusScore,
     DEF_SETTINGS, freshSave, repair };
   if (typeof module !== 'undefined' && module.exports) module.exports = API; else root.SMYV = API;
 })(typeof window !== 'undefined' ? window : globalThis);
