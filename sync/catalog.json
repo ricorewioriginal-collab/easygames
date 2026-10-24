@@ -1810,6 +1810,43 @@
    }
   },
   {
+   "id": "challenge-show",
+   "title": "Die große Challenge-Show",
+   "desc": "3D-Spielshow mit bis zu 24 Kandidaten im TV-Studio samt jubelndem Publikum und Moderator-Stimme: 🚦 Ampel-Lauf mit dem Ampel-Roboter, 🌉 Wackelbrücke über der Schaumstoffgrube, 🪢 Seilziehen im Takt, 🍪 Keks-Kunst (Form nachfahren), 🪑 Reise nach Jerusalem und das 👑 Schubs-Finale auf der schrumpfenden Plattform. Computer füllen auf, drei Stärken, kinderfreundlich – Ausscheiden heißt Konfetti-Puff. 🌐 Online & Handys: Freunde spielen von überall mit, oder der Fernseher zeigt die Show und Handys sind die Controller.",
+   "icon": "🎬",
+   "img": "challenge-show/card.jpg",
+   "bg": "linear-gradient(145deg,#ff3aa8,#4a1ab0 55%,#ffd23a)",
+   "glow": "rgba(255,58,168,.5)",
+   "path": "challenge-show/",
+   "modes": {
+    "pad": true,
+    "online": true,
+    "multi": true,
+    "tvParam": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Die große Challenge-Show ist eine 3D-Spielshow im TV-Studio: Bis zu 24 Kandidaten (12, 16 oder 24 – Computer füllen auf) treten in sechs Runden an, ein Moderator kommentiert mit Sprachausgabe und Untertiteln, das Publikum jubelt. In jeder Runde scheiden einige aus – kinderfreundlich mit Konfetti-Puff in die weiche Schaumstoffgrube – und füllen den 💰 Topf. 🚦 Ampel-Lauf: bei Grün laufen, bei Rot einfrieren, denn der Ampel-Roboter dreht sich um und sieht jede Bewegung; ins Ziel, bevor die Zeit abläuft. 🌉 Wackelbrücke: nacheinander Reihe für Reihe links oder rechts springen, nur eine Pudding-Platte hält, bekannte Platten leuchten grün. 🪢 Seilziehen: zwei Teams, wer im grünen Takt-Feld tippt, zieht doppelt so stark. 🍪 Keks-Kunst: Kreis, Dreieck, Stern oder Herz vom ⭐ aus nachfahren, ohne dass der Keks bricht. 🪑 Reise nach Jerusalem: Musik stoppt, Stühle tauchen auf, es gibt immer zu wenige. 👑 Schubs-Finale: mit dem Sprint-Stoß die anderen von der schrumpfenden Plattform ins Bällebad schubsen – der Letzte holt Krone und Topf. Wähle Name, Farbe und Hut für deinen Kandidaten, die Stärke der Computer (Leicht, Normal, Schwer) und die Länge (alle 6 Runden oder kurze Show mit 4). Bist du raus, schaust du zu, schickst Jubel-Emojis oder spulst vor. 🌐 Online & Handys: Der Gastgeber zeigt Code und QR-Code, Mitspieler treten von überall bei und sehen die Show auf dem eigenen Gerät; im Modus „📺 Nur Fernseher“ zeigt der Fernseher die Show und die Handys sind die Controller.",
+    "steuerung": [
+     "Tastatur & Maus: WASD/Pfeile laufen, Leertaste ziehen (Seil) und schubsen (Finale), ←/→ oder A/D wählen die Brückenseite, Maus gedrückt halten zum Nachfahren des Kekses, Enter überspringt die Rundenkarte, Esc Pause.",
+     "Touch: Joystick links zum Laufen, große Tasten LINKS/RECHTS, ZIEH! und SCHUBS, den Keks mit dem Finger nachfahren.",
+     "Gamecontroller: linker Stick laufen, A ziehen/schubsen, Steuerkreuz ←/→ oder LB/RB für die Brücke, beim Keks Stick bewegen und A halten, Start Pause."
+    ],
+    "tipps": [
+     "Beim Ampel-Lauf lieber bei Gelb schon stehen bleiben – wer bei Rot noch rutscht, fliegt.",
+     "Auf der Wackelbrücke lohnt es sich, später dran zu sein: Grün leuchtende Platten sind sicher.",
+     "Beim Keks langsam fahren und dem pinken Punkt folgen – Abweichen macht Risse."
+    ]
+   },
+   "size": 228822,
+   "files": 12,
+   "offline": true,
+   "cloud": {
+    "game": "challenge-show",
+    "prefix": "challenge-show-"
+   }
+  },
+  {
    "id": "stadt-land-plus",
    "title": "Stadt Land Plus – Stadt, Land und dein Thema",
    "desc": "Das moderne Stadt-Land-Fluss in 3D: Die Buchstaben-Trommel lost aus, dann schreibt ihr zu Stadt, Land und einem frei wählbaren dritten Thema – Fluss, Tier, Beruf, Vorname, Essen, Sportart, Automarke und viele mehr oder eine ganz eigene Kategorie, dazu bis zu drei Extra-Spalten. Eine große Wissensdatenbank mit allen Ländern, über 33.000 Städten (jede deutsche Gemeinde, Weltstädte auch mit deutschem Namen) und Flüssen prüft schlau mit Tippfehler-Erkennung; zu jeder Antwort gibt es Infos mit 3D-Globus. Prüfung automatisch, per Abstimmung oder mit Moderator. Solo gegen Computer-Mitspieler, zum Nachschlagen und 🌐 Online & Handys: alle schreiben auf dem eigenen Handy, der Fernseher zeigt Buchstabe, Uhr und Auswertung.",
