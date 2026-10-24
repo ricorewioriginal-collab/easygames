@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "a82c0d628da1",
- "generated": "2026-10-24T13:39:03+00:00",
- "commit": "f131186477c75cca2fcfb7fc930cdbe9d59db89e",
+ "version": "96dafdaf63c4",
+ "generated": "2026-10-24T13:46:34+00:00",
+ "commit": "1696569949d6a71baad39c6f76063b51d01e2351",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5353,8 +5353,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22426,
-   "h": "439251513fff2371ea2a75bb3f058243fdf1207b36ab91f8645725f546e28fee"
+   "s": 22443,
+   "h": "853d2f0666f65a24524a2d839317e8c7f18bf0546773592b05b513831931061e"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -7943,8 +7943,8 @@
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 126464,
-   "h": "f6b866dcfc293f98468664d1c1b3b31818f410d49d9fc5265a6b5b7182702c1b"
+   "s": 126510,
+   "h": "53d6c0242dc8490fea6c878c39963a8a9f161e69b9f72756030eb2dbaf07c584"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
@@ -7958,8 +7958,8 @@
   },
   {
    "p": "show-me-your-voice/js/core.js",
-   "s": 29763,
-   "h": "61d7e217cbde7ef9fc260b27ab4a31d9dcfe0e5436649c69f7ea8e625879c284"
+   "s": 29907,
+   "h": "c6ffddeb1f350d292d91678758a41b275df828094b3eaca274e070c0c2991f48"
   },
   {
    "p": "show-me-your-voice/js/data.js",
@@ -8244,7 +8244,7 @@
   {
    "p": "sync/catalog.json",
    "s": 199808,
-   "h": "7f39f9e23afc165ce11d6cef31d754d53a422be78e5c44601d823c1f5c239aaa"
+   "h": "9b31ae6b960d903daf2e293d1fddee44f90b1dce7b96023bcd37000411b7497a"
   },
   {
    "p": "taschi/card.svg",
