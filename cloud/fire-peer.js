@@ -23,7 +23,7 @@
       v = m ? decodeURIComponent(m[1]) : W.sessionStorage.getItem(K);
       if (v) {
         var u = new URL(v), ref = W.document.referrer ? new URL(W.document.referrer).origin : '';
-        v = W.parent !== W && /^https?:$/.test(u.protocol) && (!ref || ref === u.origin || ref === W.location.origin) ? u.href : null;
+        v = W.parent !== W && /^https?:$/.test(u.protocol) && (!ref || ref === u.origin || ref === W.location.origin || (u.origin === W.location.origin && /\/share\/[\w-]+\.html$/.test(u.pathname))) ? u.href : null;
       }
     } catch (e) { v = null; }
     if (v && m) try { W.sessionStorage.setItem(K, v); } catch (e) { }

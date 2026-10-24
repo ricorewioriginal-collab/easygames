@@ -31,13 +31,13 @@
     '.egh-hero-b{padding:22px;display:flex;flex-direction:column;gap:10px;justify-content:center}.egh-eyebrow{color:var(--a2);font-weight:800;letter-spacing:.12em;font-size:.72rem;text-transform:uppercase}' +
     '.egh-hero-b h3{margin:0;font-size:clamp(1.3rem,3.2vw,2rem);line-height:1.15}.egh-hero-b p{margin:0;color:var(--m);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}' +
     '.egh-play{align-self:flex-start;padding:11px 22px;border-radius:999px;border:0;background:linear-gradient(135deg,var(--a),var(--a2));color:#0a0a12;font-weight:800}' +
-    '.egh h4{margin:18px 0 10px;font-size:1.05rem}.egh-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}.egh-row .egh-card{flex:0 0 150px}' +
+    '.egh h4{margin:18px 0 10px;font-size:1.05rem}.egh-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}.egh-row .egh-it{flex:0 0 150px}' +
     '.egh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}' +
-    '.egh-card{position:relative;display:flex;flex-direction:column;text-align:left;padding:0;border-radius:var(--r);overflow:hidden;border:1px solid var(--l);background:var(--c);transition:transform .15s,border-color .15s}' +
+    '.egh-it{position:relative;min-width:0;display:flex}.egh-card{position:relative;display:flex;flex-direction:column;width:100%;min-width:0;height:100%;margin:0;color:inherit;font:inherit;text-transform:none;letter-spacing:normal;text-align:left;padding:0;border-radius:var(--r);overflow:hidden;border:1px solid var(--l);background:var(--c);transition:transform .15s,border-color .15s}' +
     '.egh-card:hover,.egh-card:focus-visible{transform:translateY(-3px);border-color:var(--a);outline:none}' +
-    '.egh-ci{aspect-ratio:4/3;display:grid;place-items:center;font-size:52px;background-size:cover;background-position:center}.egh-ci img{width:100%;height:100%;object-fit:cover;display:block}' +
-    '.egh-cb{padding:10px 12px 12px}.egh-cb b{display:block;font-size:.95rem;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.egh-cb span{color:var(--m);font-size:.78rem}' +
-    '.egh-heart{position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:17px;display:grid;place-items:center}.egh-heart[aria-pressed=true]{color:#ff5c8a}' +
+    '.egh-ci{width:100%;aspect-ratio:1/1;display:grid;place-items:center;font-size:52px;background-size:cover;background-position:center}.egh-ci img{width:100%;height:100%;object-fit:cover;display:block}.egh-ci img.egh-wide{object-fit:contain;filter:drop-shadow(0 6px 14px rgba(0,0,0,.45))}' +
+    '.egh-cb{display:block;flex:1;padding:10px 12px 12px}.egh-cb b{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;font-size:.95rem;line-height:1.25;min-height:2.5em;overflow:hidden;overflow-wrap:anywhere}.egh-cb span{color:var(--m);font-size:.78rem}' +
+    '.egh-heart{position:absolute;top:8px;right:8px;width:34px;height:34px;padding:0;margin:0;min-width:0;line-height:1;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:17px;display:grid;place-items:center}.egh-heart[aria-pressed=true]{color:#ff5c8a}' +
     '.egh-empty{padding:30px;text-align:center;color:var(--m)}.egh-toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:2147483000;padding:10px 18px;border-radius:999px;background:#161d30;color:#fff;border:1px solid var(--l,#333);box-shadow:0 10px 30px rgba(0,0,0,.4);font:600 14px system-ui}' +
     '.egh-pl{position:fixed;inset:0;z-index:2147482500;background:#000;display:flex;flex-direction:column}.egh-pl[hidden]{display:none}' +
     '.egh-pl-h{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#0b0e1a;color:#fff;font:600 15px system-ui}.egh-pl-h span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
@@ -56,7 +56,8 @@
   /* ───────── Daten (Spieleliste live) ───────── */
   var S = { games: [], ver: '', q: '', cat: '', cats: null, mounts: [], pl: null, share: undefined, cur: null, prev: null };
   /* Teilen-Link je Spiel: eingebundene Seiten teilen ihre eigene Adresse (Standard: diese Seite + #games/<id>, z. B. https://www.ricorewi-radio.de/#games/zotik).
-   * mount(…, { share: 'https://meine-seite.de/spiele/{id}' }) eigene Vorlage, share: false = easygames-Vorschauseite. Die Adresse geht als ?eg_share an das Spiel
+   * mount(…, { share: 'https://meine-seite.de/spiele/{id}' }) eigene Vorlage, share: 'preview' = easygames-Vorschauseite mit Bild, die zu dieser Seite weiterleitet,
+   * share: false = easygames-Vorschauseite (zum Spiel auf easygames). Vorschaubild je Spiel: AnMaChaHub.preview(id) bzw. <easygames>/share/<id>.jpg (1200×630). Die Adresse geht als ?eg_share an das Spiel
    * (dessen eigene Teilen-Knöpfe nutzen sie dann auch); #games/<id> beim Aufruf öffnet das Spiel direkt. */
   function pageBase() { return root.location.href.split('#')[0]; }
   function shareUrl(g) {
@@ -64,10 +65,12 @@
     if (g.external || /^https?:/.test(g.path)) return g.path;
     if (typeof t === 'function') { try { var r = t(g); if (r) return String(r); } catch (e) { } }
     if (t === false || t === 'false' || (t == null && pageBase().indexOf(EG) === 0)) return new URL('share/' + g.id + '.html', EG).href;
+    if (t === 'preview') return new URL('share/' + g.id + '.html', EG).href + '?to=' + encodeURIComponent(pageBase() + '#games/' + encodeURIComponent(g.id));
     if (typeof t === 'string' && t && t !== 'auto') return t.replace(/\{id\}/g, encodeURIComponent(g.id));
     return pageBase() + '#games/' + encodeURIComponent(g.id);
   }
-  function ownHash(u) { var b = pageBase(); return u.indexOf(b + '#') === 0 ? u.slice(b.length) : null; }
+  // Adresszeile zeigt #games/<id>, solange ein Spiel offen ist (nicht auf easygames selbst, nicht mit hash: false / share: false)
+  function ownHash(g) { return S.hash === false || S.share === false || S.share === 'false' || pageBase().indexOf(EG) === 0 ? null : '#games/' + encodeURIComponent(g.id); }
   function setHash(h) { try { root.history.replaceState(root.history.state, '', root.location.pathname + root.location.search + h); } catch (e) { } }
   function shareCur(btn) {
     var g = S.cur; if (!g) return; var url = shareUrl(g), title = short(g.title), nav = root.navigator;
@@ -153,8 +156,8 @@
   function cardHtml(g) {
     var isF = favs().indexOf(g.id) >= 0, img = g.img ? '<img src="' + esc(EG + g.img) + '" alt="" loading="lazy" decoding="async">' : esc(g.icon || '🎮');
     var c = (S.cats && S.cats.list || []).filter(function (x) { return x.id === catOf(g); })[0];
-    return '<div style="position:relative"><button class="egh-card" type="button" data-play="' + esc(g.id) + '" aria-label="' + esc(short(g.title)) + ' spielen">' +
-      '<span class="egh-ci" style="background-image:' + esc(g.img ? 'none' : (g.bg || 'none')) + '">' + img + '</span>' +
+    return '<div class="egh-it"><button class="egh-card" type="button" data-play="' + esc(g.id) + '" aria-label="' + esc(short(g.title)) + ' spielen">' +
+      '<span class="egh-ci" style="background-image:' + esc(g.bg || 'none') + '">' + img + '</span>' +
       '<span class="egh-cb"><b>' + esc(short(g.title)) + '</b><span>' + esc(c ? c.icon + ' ' + c.short : '🎮 Spiel') + (g.multiplayer ? ' · 👥' : '') + '</span></span></button>' +
       '<button class="egh-heart" type="button" data-fav="' + esc(g.id) + '" aria-pressed="' + isF + '" aria-label="' + (isF ? 'Aus Favoriten entfernen' : 'Zu Favoriten') + '">' + (isF ? '♥' : '♡') + '</button></div>';
   }
@@ -199,7 +202,7 @@
   }
   function open(id) {
     var g = S.games.filter(function (x) { return x.id === id; })[0]; if (!g) return;
-    var d = player(), u = new URL(g.path, EG), link = shareUrl(g), h = ownHash(link); if (root.EASYGAMES_BUILD) u.searchParams.set('eg_build', root.EASYGAMES_BUILD);
+    var d = player(), u = new URL(g.path, EG), link = shareUrl(g), h = ownHash(g); if (root.EASYGAMES_BUILD) u.searchParams.set('eg_build', root.EASYGAMES_BUILD);
     if (link.indexOf(EG) !== 0) u.searchParams.set('eg_share', link);
     S.cur = g;
     if (h && root.location.hash !== h) { if (S.prev == null) S.prev = root.location.hash; setHash(h); } else if (h && S.prev == null) S.prev = h.replace(/\/[^\/]*$/, '');
@@ -215,6 +218,9 @@
     if (!el || el.__egh) return null;
     var m = el.__egh = { el: el, theme: o.theme || {} }; S.mounts.push(m);
     if ('share' in o) S.share = o.share; else if (el.getAttribute && el.getAttribute('data-share') != null) S.share = el.getAttribute('data-share');
+    if ('hash' in o) S.hash = o.hash;
+    // Breite Kartenbilder (z. B. 1200×630) nicht beschneiden: ganz zeigen, Spielfarbe als Hintergrund
+    el.addEventListener('load', function (e) { var i = e.target; if (i.tagName === 'IMG' && i.parentNode && i.parentNode.classList.contains('egh-ci') && i.naturalWidth > i.naturalHeight * 1.25) i.classList.add('egh-wide'); }, true);
     el.addEventListener('click', function (e) {
       var h = e.target.closest('[data-fav]'), p = e.target.closest('[data-play]'), c = e.target.closest('[data-cat]');
       if (h) { e.stopPropagation(); toggleFav(h.dataset.fav); } else if (p) open(p.dataset.play); else if (c) { S.cat = c.dataset.cat; renderAll(); }
@@ -231,5 +237,5 @@
   root.addEventListener('anmacha-account-changed', function () { sync.ver = ''; syncNow(); });
   function auto() { [].forEach.call(doc.querySelectorAll('[data-anmacha-hub]'), function (el) { mount(el); }); }
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', auto); else auto();
-  root.AnMaChaHub = { mount: mount, open: open, base: EG, shareUrl: function (id) { var g = S.games.filter(function (x) { return x.id === id; })[0]; return g ? shareUrl(g) : null; } };
+  root.AnMaChaHub = { mount: mount, open: open, base: EG, preview: function (id) { var g = S.games.filter(function (x) { return x.id === id; })[0]; return g ? { title: short(g.title), desc: g.desc || '', image: new URL('share/' + g.id + '.jpg', EG).href, page: new URL('share/' + g.id + '.html', EG).href } : null; }, shareUrl: function (id) { var g = S.games.filter(function (x) { return x.id === id; })[0]; return g ? shareUrl(g) : null; } };
 })(window);

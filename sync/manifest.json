@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "59a9c4baa42a",
- "generated": "2026-10-24T02:15:53+02:00",
- "commit": "f83b249ca71c717c19927926b63e6c541d7b2f72",
+ "version": "27f966fb78c0",
+ "generated": "2026-10-24T02:30:43+02:00",
+ "commit": "e396329e86e498a931c7b1121d614221e38c2ae2",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5348,8 +5348,8 @@
   },
   {
    "p": "cloud/fire-peer.js",
-   "s": 28884,
-   "h": "e03ee93da583dc716bb572fe5ed6dce88ea446daf56915081d1dbe8eff80be66"
+   "s": 28965,
+   "h": "bba293a53a222ebb77bf51787dd573f2e0a1ef501065c11981cb0197f550f58e"
   },
   {
    "p": "cloud/radio-erfolge.js",
@@ -5493,8 +5493,8 @@
   },
   {
    "p": "device.js",
-   "s": 9038,
-   "h": "e483099fe08bdfed5447b8181331061f0b3a68de03450466878688f0bc5bb4aa"
+   "s": 9119,
+   "h": "f325bd0da82c43ce6f8c1414b46fffcd1f4be650c6850d2f63726100e0b2fbec"
   },
   {
    "p": "easygames.js",
@@ -5503,8 +5503,8 @@
   },
   {
    "p": "einbinden.html",
-   "s": 82054,
-   "h": "18be2c2609bef7868a395beb94b9a952dbcde0fe0ccbf83e6d6c708c3fd7f40a"
+   "s": 82619,
+   "h": "b9a495dda2c7727db92c429cf2058603bae1f462211615f7c320e53d4769f66b"
   },
   {
    "p": "erfolge.html",
