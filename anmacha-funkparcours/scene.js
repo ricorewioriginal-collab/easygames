@@ -153,7 +153,7 @@ export class Arena {
   addDecal(r) {
     const f = r.fig, sp = f && f.bones.spine_03; if (!sp) return;
     const m = new T.Mesh(C('decal', () => new T.PlaneGeometry(0.15, 0.15)), new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }));
-    f.root.updateMatrixWorld(true); const p = new T.Vector3(); sp.getWorldPosition(p); m.position.set(p.x, p.y + 0.02, p.z + (f.look.body === 'w' ? 0.165 : 0.155)); m.rotation.x = -0.08; f.root.add(m); f.root.updateMatrixWorld(true); sp.attach(m);
+    f.root.updateMatrixWorld(true); const p = new T.Vector3(); sp.getWorldPosition(p); f.root.worldToLocal(p); m.position.set(p.x, p.y + 0.02, p.z + (f.look.body === 'w' ? 0.165 : 0.155)); m.rotation.x = -0.08; f.root.add(m); f.root.updateMatrixWorld(true); sp.attach(m);
     r.decal = m; this.setLogo(r, r.logo);
   }
   disposeRunner(r) { r.alive = false; this.s.remove(r.g); if (r.decal) { if (r.decal.material.map) r.decal.material.map.dispose(); r.decal.material.dispose(); } if (r.fig) r.fig.dispose(); if (r.toon) r.toon.traverse(o => { if (o.isMesh && r.ghost) o.material.dispose(); }); }
