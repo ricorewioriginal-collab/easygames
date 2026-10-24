@@ -508,7 +508,7 @@
       <h2 id="dTitle"></h2>
       <div class="badges" id="dBadges"></div>
       <div id="dRating" class="drating"></div>
-      <div class="row dactions"><button class="primary" id="dPlay">▶ Spielen</button><button class="pill" id="dShare">⤴ Teilen</button><button class="pill" id="dTv">📺 TV-Link</button></div>
+      <div class="row dactions"><button class="primary" id="dPlay">▶ Spielen</button><button class="pill" id="dShare">⤴ Teilen</button><button class="pill" id="dTv">📺 TV-Link</button><button class="pill" id="dStream" title="Spiel als Overlay in OBS oder TikTok LIVE einbinden">🎥 Stream</button></div>
     </div>
     <div class="tabs" role="tablist" aria-label="Spielinfos">
       <button role="tab" data-tab="info" aria-selected="true">Übersicht</button>
@@ -854,6 +854,7 @@ function openDetail(i, tab) {
   $('dTitle').textContent = g.title; $('dBadges').textContent = ''; modeBadges(g, $('dBadges'));
   if (window.AnMaChaRating) window.AnMaChaRating.mount($('dRating'), { subject: 'game:' + g.id, title: g.title });   // Sterne (zentral, Google zur Verifizierung)
   $('dTv').classList.toggle('hidden', !isMulti(g));
+  $('dStream').classList.toggle('hidden', !!(g.external || /^https?:/.test(g.path)));
   // ähnliche Spiele: gleiche Spielart
   const m = modesOf(g), rel = GAMES.map((x, j) => j).filter(j => j !== i && BADGES.some(([k]) => m[k] && modesOf(GAMES[j])[k])).slice(0, 8);
   $('dRelated').classList.toggle('hidden', !rel.length); $('dRelRow').textContent = '';
@@ -867,6 +868,8 @@ $('vHelp').addEventListener('click', () => openDetail(cur, 'manual'));
 $('dClose').addEventListener('click', closeDetail);
 $('dPlay').addEventListener('click', () => { const i = di; closeDetail(); openGame(i); });
 $('dShare').addEventListener('click', () => openShare(di));
+// Stream-Overlay (OBS / TikTok LIVE): Einrichtung auf der Einbinden-Seite, QR-Code führt bei Einbettung zur einbindenden Seite
+$('dStream').addEventListener('click', () => { const g = GAMES[di]; if (!g) return; const u = new URL('einbinden.html', base); u.searchParams.set('stream', g.id); if (EMBED_SHARE) u.searchParams.set('share', embedLink(g)); u.hash = 'stream'; window.open(u.href, '_blank', 'noopener'); });
 $('dTv').addEventListener('click', () => { setTab('info'); const x = $('dTvLink'); if (x) { x.scrollIntoView({ block: 'center' }); x.focus(); } });
 document.querySelectorAll('#detail .tabs button').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
 $('sClose').addEventListener('click', () => $('share').classList.add('hidden'));

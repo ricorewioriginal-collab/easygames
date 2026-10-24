@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="easygames als Stream-Overlay für OBS und TikTok LIVE Studio: Spiel spielbar im Format 9:16 oder 16:9.">
+<title>easygames – Stream-Overlay</title>
+<style>
+  /* Stream-Overlay für OBS / TikTok LIVE Studio: feste Bühne 9:16 oder 16:9, das Spiel bleibt spielbar (OBS: „Interagieren“).
+     Die Bühne hat eine feste Größe in CSS-Pixeln (wie Handy bzw. PC) und wird per zoom auf die Quelle skaliert – gestochen scharf. */
+  html,body{margin:0;height:100%;overflow:hidden;background:#05070d;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  html.clear,html.clear body{background:transparent}
+  #stage{position:absolute;left:50%;top:50%;display:grid;overflow:hidden;background:#05070d;transform-origin:0 0}
+  html.clear #stage{background:transparent}
+  #stage.p{grid-template-rows:auto 1fr auto}
+  #stage.l{grid-template-columns:1fr auto}
+  #stage.full{display:block}
+  #game{width:100%;height:100%;border:0;display:block;background:#000}
+  #stage.full #game{position:absolute;inset:0}
+  .bar{display:flex;align-items:center;gap:10px;padding:8px 12px;background:linear-gradient(90deg,#101a33,#2a1036)}
+  .bar img{width:30px;height:30px;border-radius:8px}
+  .bar b{font-size:15px;line-height:1.15;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bar small{font-size:11px;color:#9fb3c8;white-space:nowrap}
+  .foot{display:flex;align-items:center;gap:12px;padding:8px 12px;background:linear-gradient(90deg,#2a1036,#101a33)}
+  .qr{background:#fff;border-radius:8px;padding:5px;line-height:0;flex:none}
+  .qr svg{width:100%;height:100%;display:block}
+  .foot .qr{width:72px;height:72px}
+  .foot p,.side p{margin:0;font-size:13px;line-height:1.35}
+  .foot p b,.side p b{display:block;font-size:15px;color:#7ff3ff}
+  .foot p span,.side p span{color:#c9d6e3;word-break:break-all;font-size:11px}
+  .side{width:250px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px;text-align:center;background:linear-gradient(180deg,#101a33,#2a1036)}
+  .side img.logo{width:64px;height:64px;border-radius:14px}
+  .side h1{margin:0;font-size:20px;line-height:1.2}
+  .side .qr{width:170px;height:170px;padding:8px}
+  .badge{position:absolute;right:10px;bottom:10px;display:flex;align-items:center;gap:8px;padding:6px;border-radius:12px;background:rgba(5,7,13,.72);pointer-events:none}
+  .badge .qr{width:64px;height:64px;padding:4px}
+  .badge p{margin:0;font-size:11px;line-height:1.3;max-width:96px}
+  .badge p b{display:block;font-size:12px;color:#7ff3ff}
+  #pick{position:absolute;inset:0;overflow:auto;padding:24px;box-sizing:border-box}
+  #pick a{display:inline-block;margin:4px;padding:8px 12px;border-radius:999px;background:#1a2440;color:#fff;text-decoration:none;font-size:14px}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script src="games.js"></script>
+<script src="device.js"></script>
+<script>
+(function () {
+  'use strict';
+  // Parameter: game=<id> | format=9x16 (Standard) oder 16x9 | layout=frame (Titel + QR, Standard), full (nur Spiel), badge (Spiel + kleiner QR)
+  //            qr=0 (ohne QR) | bg=clear (durchsichtig für OBS) | w=<Breite der Bühne in CSS-Pixeln> | share=<Adresse für den QR, {id} = Spiel>
+  var P = new URLSearchParams(location.search), $ = function (s) { return document.querySelector(s); };
+  var GAMES = window.EASYGAMES_GAMES || (typeof EASYGAMES_GAMES !== 'undefined' ? EASYGAMES_GAMES : []);
+  var land = /^(16x9|16:9|landscape|quer)$/i.test(P.get('format') || ''), layout = /^(full|badge)$/.test(P.get('layout')) ? P.get('layout') : 'frame';
+  var showQr = P.get('qr') !== '0', st = $('#stage');
+  if (P.get('bg') === 'clear') document.documentElement.classList.add('clear');
+  // Bühne in CSS-Pixeln: 9:16 wie ein Handy (432 × 768), 16:9 wie ein PC (1280 × 720); per w anpassbar
+  var W = Math.max(320, Math.min(2560, parseInt(P.get('w'), 10) || (land ? 1280 : 432))), H = Math.round(land ? W * 9 / 16 : W * 16 / 9);
+  st.style.width = W + 'px'; st.style.height = H + 'px';
+  function fit() {
+    var k = Math.min(innerWidth / W, innerHeight / H);
+    // zoom statt transform: das Spiel im iframe bekommt die höhere Pixeldichte und bleibt scharf
+    if ('zoom' in st.style) { st.style.zoom = k; st.style.left = ((innerWidth / k - W) / 2) + 'px'; st.style.top = ((innerHeight / k - H) / 2) + 'px'; }
+    else { st.style.left = '0'; st.style.top = '0'; st.style.transform = 'translate(' + (innerWidth - W * k) / 2 + 'px,' + (innerHeight - H * k) / 2 + 'px) scale(' + k + ')'; }
+  }
+  addEventListener('resize', fit); fit();
+  function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.textContent = h; return e; }
+  var g = null, id = P.get('game');
+  for (var i = 0; i < GAMES.length; i++) if (GAMES[i].id === id) g = GAMES[i];
+  if (!g || /^[a-z]+:\/\//i.test(g.path)) {   // ohne gültiges Spiel: Auswahl
+    var pk = el('div'); pk.id = 'pick'; pk.appendChild(el('h1', '', 'Spiel für das Overlay wählen'));
+    GAMES.filter(function (x) { return !/^[a-z]+:\/\//i.test(x.path); }).forEach(function (x) { var a = el('a', '', x.title); var q = new URLSearchParams(location.search); q.set('game', x.id); a.href = '?' + q; pk.appendChild(a); });
+    st.style.display = 'block'; st.appendChild(pk); return;
+  }
+  document.title = g.title + ' – Stream-Overlay';
+  // Link für den QR-Code: Spiel auf der easygames-Homepage oder auf der einbindenden Seite (share)
+  var tpl = P.get('share') || '', okTpl = /^https:\/\/[^\s"'<>]+$/i.test(tpl), link = '';
+  if (okTpl) link = tpl.replace(/\{id\}/g, encodeURIComponent(g.id));
+  else link = window.EasyGamesDevice && EasyGamesDevice.publicBase ? new URL(g.path, EasyGamesDevice.publicBase()).href : new URL(g.path, location.href).href;
+  var f = el('iframe'); f.id = 'game'; f.title = g.title;
+  f.allow = 'fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock';
+  var src = new URL(g.path, location.href); if (okTpl) src.searchParams.set('eg_share', link);
+  f.src = src.href;
+  // Das Spiel möchte zur Übersicht zurück (easygames:close): im Stream einfach neu starten
+  addEventListener('message', function (e) { if (e.source === f.contentWindow && e.data && e.data.type === 'easygames:close') f.src = src.href; });
+  function qrBox(cls) {
+    var b = el('div', 'qr' + (cls ? ' ' + cls : ''));
+    var s = document.createElement('script'); s.src = 'vendor/qrcode-generator-1.4.4.js';
+    s.onload = function () { try { var q = qrcode(0, 'M'); q.addData(link); q.make(); b.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch (x) { b.remove(); } };
+    s.onerror = function () { b.remove(); };
+    document.head.appendChild(s);
+    return b;
+  }
+  var short = link.replace(/^https:\/\//, '').replace(/\/$/, '');
+  if (layout === 'full' || layout === 'badge') {
+    st.className = 'full'; st.appendChild(f);
+    if (layout === 'badge' && showQr) { var bd = el('div', 'badge'); bd.appendChild(qrBox()); var bp = el('p'); bp.appendChild(el('b', '', 'Mitspielen')); bp.appendChild(document.createTextNode('Code scannen')); bd.appendChild(bp); st.appendChild(bd); }
+  } else if (!land) {
+    st.className = 'p';
+    var top = el('div', 'bar'), lg = el('img'); lg.src = 'logo.png'; lg.alt = ''; lg.onerror = function () { lg.remove(); };
+    top.appendChild(lg); top.appendChild(el('b', '', g.title)); top.appendChild(el('small', '', 'easygames'));
+    st.appendChild(top); st.appendChild(f);
+    var ft = el('div', 'foot'); if (showQr) ft.appendChild(qrBox());
+    var fp = el('p'); fp.appendChild(el('b', '', showQr ? 'Jetzt mitspielen!' : 'Spiel kostenlos im Browser')); fp.appendChild(el('span', '', short)); ft.appendChild(fp);
+    st.appendChild(ft);
+  } else {
+    st.className = 'l'; st.appendChild(f);
+    var sd = el('div', 'side'), sl = el('img', 'logo'); sl.src = 'logo.png'; sl.alt = ''; sl.onerror = function () { sl.remove(); };
+    sd.appendChild(sl); sd.appendChild(el('h1', '', g.title));
+    if (showQr) sd.appendChild(qrBox());
+    var sp = el('p'); sp.appendChild(el('b', '', showQr ? 'Jetzt mitspielen!' : 'Kostenlos im Browser')); sp.appendChild(el('span', '', short)); sd.appendChild(sp);
+    st.appendChild(sd);
+  }
+})();
+</script>
+</body>
+</html>

@@ -52,6 +52,8 @@
  *      EasyGames.get('zotik'); EasyGames.url('zotik');
  *      EasyGames.tvUrl('anmacha-kart');                       // Link für den TV (nur Mehrspieler-Spiele, sonst null)
  *      EasyGames.device();                                    // Geräteerkennung (siehe device.js): { type, role, os, input, … }
+ *      EasyGames.streamUrl('zotik', { format: '9x16' });       // Stream-Overlay für OBS / TikTok LIVE (format 9x16 | 16x9, layout frame | badge | full, bg 'clear')
+ *      EasyGames.stream('zotik');                             // öffnet die Overlay-Einrichtung; Knopf „🎥 Stream“ an Spielen ausblenden: data-stream="false"
  *      EasyGames.allow;                                       // Freigaben für eigene iframes: f.allow = EasyGames.allow
  *      EasyGames.guide('zotik', cb);                          // Anleitung + Steuerung (lädt guides.js bei Bedarf)
  */
@@ -114,6 +116,26 @@
     }
     window.addEventListener('hashchange', go); go();
   }
+  // Stream-Overlay (stream.html): Spiel spielbar in OBS / TikTok LIVE, 9:16 oder 16:9; Knopf „🎥 Stream“ öffnet die Einrichtung (einbinden.html#stream)
+  function streamUrl(id, o) {
+    o = o || {}; var u = new URL('stream.html', base), t = shareTpl(o);
+    u.searchParams.set('game', id); if (/^16[x:]9$/.test(o.format || '')) u.searchParams.set('format', '16x9');
+    if (/^(full|badge)$/.test(o.layout || '')) u.searchParams.set('layout', o.layout); if (o.bg === 'clear') u.searchParams.set('bg', 'clear');
+    if (o.qr === false || o.qr === 'false') u.searchParams.set('qr', '0'); if (t && /^https:/.test(t)) u.searchParams.set('share', t);
+    return u.href;
+  }
+  function streamSetup(id, o) {
+    var u = new URL('einbinden.html', base), t = shareTpl(o || {});
+    u.searchParams.set('stream', id); if (t && /^https:/.test(t)) u.searchParams.set('share', t); u.hash = 'stream';
+    window.open(u.href, '_blank', 'noopener');
+  }
+  function streamBtn(id, o, css) {
+    if (!id || id === 'all' || o.stream === false || o.stream === 'false') return null;
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = '\uD83C\uDFA5 Stream'; b.title = 'Als Stream-Overlay einbinden (OBS, TikTok LIVE)';
+    b.style.cssText = css; b.onclick = function () { streamSetup(id, o); }; return b;
+  }
+  EG.streamUrl = streamUrl;
+  EG.stream = streamSetup;
   function gameUrl(g, o) {
     var u = new URL(g.path, base), t = shareTpl(o); u.searchParams.set('eg_build', window.EASYGAMES_BUILD || 'current');
     if (t && !/^https?:/.test(g.path)) u.searchParams.set('eg_share', t.replace(/\{id\}/g, encodeURIComponent(g.id)));
@@ -151,6 +173,8 @@
     b.style.cssText = 'position:absolute;right:8px;bottom:8px;min-height:40px;padding:0 14px;border:1px solid rgba(255,255,255,.35);border-radius:999px;background:rgba(8,11,18,.7);color:#fff;font:700 13px system-ui,sans-serif;cursor:pointer;opacity:.85';
     b.onclick = function () { fullscreen(f); };
     w.appendChild(f); w.appendChild(b);
+    var sb = streamBtn(o.game, o, b.style.cssText.replace('right:8px', 'left:8px'));
+    if (sb) w.appendChild(sb);
     return w;
   }
   EG.fullscreen = fullscreen;
@@ -241,6 +265,8 @@
         b.onclick = function () { done(false); };
         box.appendChild(b);
       }
+      var sb = g && streamBtn(g.id, o, 'position:absolute;top:calc(8px + env(safe-area-inset-top,0px));right:calc(' + (o.close !== false && o.close !== 'false' ? 60 : 8) + 'px + env(safe-area-inset-right,0px));height:44px;padding:0 14px;border:1px solid rgba(255,255,255,.35);border-radius:999px;background:rgba(8,11,18,.72);color:#fff;font:700 13px system-ui,sans-serif;cursor:pointer;opacity:.85;z-index:1');
+      if (sb) box.appendChild(sb);
       Array.prototype.forEach.call(document.body.children, function (n) {   // Seite dahinter für Screenreader/Tastatur sperren, solange das Overlay offen ist
         if (n !== box && n.nodeType === 1 && !/^(SCRIPT|STYLE|LINK|NOSCRIPT)$/.test(n.tagName)) { hidden.push([n, n.getAttribute('aria-hidden'), !!n.inert]); n.setAttribute('aria-hidden', 'true'); try { n.inert = true; } catch (e) {} }
       });
@@ -401,7 +427,7 @@
     for (var i = 0; i < nodes.length; i++) {
       var n = nodes[i]; if (n.getAttribute('data-easygames-done')) continue;
       n.setAttribute('data-easygames-done', '1');
-      var d = n.dataset, o = { width: d.width, maxWidth: d.maxWidth, ratio: d.ratio, height: d.height, radius: d.radius, title: d.title, fullscreen: d.fullscreen, tvLink: d.tvLink, mode: d.mode, close: d.close, layout: d.layout, share: d.share };
+      var d = n.dataset, o = { width: d.width, maxWidth: d.maxWidth, ratio: d.ratio, height: d.height, radius: d.radius, title: d.title, fullscreen: d.fullscreen, tvLink: d.tvLink, mode: d.mode, close: d.close, layout: d.layout, share: d.share, stream: d.stream };
       if (d.easygames === 'all') EG.library(n, o); else if (d.easygames === 'portal') EG.portal(n, o); else if (d.easygames === 'ranglisten') { o.game = d.game; EG.leaderboard(n, o); } else if (d.easygames === 'erfolge') EG.achievements(n, o); else if (d.easygames === 'konto') EG.account(n, o); else if (d.easygames === 'chat') { o.room = d.room; EG.chat(n, o); } else if (d.easygames === 'bug') { o.game = d.game; EG.bug(n, o); } else if (EXTRA[d.easygames]) EG.page(d.easygames, n, o); else { o.game = d.easygames; EG.embed(n, o); }
     }
   }

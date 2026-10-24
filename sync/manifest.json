@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9759c034f7cc",
- "generated": "2026-10-24T20:45:59+00:00",
- "commit": "08ac716eb7ece07df9663f66ee977e5a65e49bcd",
+ "version": "c2f64a1957ac",
+ "generated": "2026-10-24T23:02:46+02:00",
+ "commit": "348b0c3f5d1abefdec36a88774f0ded612c8bc7d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5758,13 +5758,13 @@
   },
   {
    "p": "easygames.js",
-   "s": 34150,
-   "h": "640a75ae0983c5352d2a2c52abcc014a23c8037de2c19bf36cefed7ab203cdc5"
+   "s": 36440,
+   "h": "223e4614d41bcf020809912d7c9a6e8885977d2d7464da6546c53c9ca074d955"
   },
   {
    "p": "einbinden.html",
-   "s": 84872,
-   "h": "0c0765b722695c0989b03362b8621984607cda10ea421ac06750eff5a829f83f"
+   "s": 90308,
+   "h": "d79266372497c771b721c48195c598e401ad1d1a7e4d817aea3cf0f894dfd027"
   },
   {
    "p": "erfolge.html",
@@ -6408,8 +6408,8 @@
   },
   {
    "p": "index.html",
-   "s": 93082,
-   "h": "ac991f4ec9ee94cbaba74a8cb048ea4d0629b11bccb4accafad1d43c606b4106"
+   "s": 93700,
+   "h": "ed0b9b826545bb64875a0cf735d2a02785fc7835b8d888838e3e02c311e40e48"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -8480,6 +8480,11 @@
    "p": "stadt-land-plus/sw.js",
    "s": 2026,
    "h": "bdb5d460689b4674ea3c23fa2dd6f792bc05e0211ad4ca63509c7aa0bd22bd2f"
+  },
+  {
+   "p": "stream.html",
+   "s": 8502,
+   "h": "6466b861675050bae0de2d2e9d68694af636c6971e548b0727414475eaf870ff"
   },
   {
    "p": "sync/catalog.json",
