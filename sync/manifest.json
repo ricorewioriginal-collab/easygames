@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "41f7bfe38fc0",
- "generated": "2026-10-24T20:34:34+00:00",
- "commit": "4097dd03810b323a8dd51747671c236ed2811234",
+ "version": "3faa5f1ee689",
+ "generated": "2026-10-24T20:34:47+00:00",
+ "commit": "271ec45dfcd4c61492edccd28886974b5a321131",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4623,8 +4623,8 @@
   },
   {
    "p": "bowling-bahn/index.html",
-   "s": 12275,
-   "h": "875a1a6cc106560b994617e3f1eee85bf60dfef65d262d8b9ebee99d40049d34"
+   "s": 12380,
+   "h": "4ba222caef90585d25f746a28e7d6567b4dc0c4eeaa3ce25da88633e3e569978"
   },
   {
    "p": "bowling-bahn/js/app.js",
@@ -4638,8 +4638,8 @@
   },
   {
    "p": "bowling-bahn/js/scene.js",
-   "s": 15540,
-   "h": "63257c52a9fcebf106e8257f6c5f5df339acebf7156c49bb05ffa739ac04dc11"
+   "s": 17594,
+   "h": "4c1d157902fac9d3b39912b26b4e953d20a0f98862c8be44df27fd4dc64d2374"
   },
   {
    "p": "bowling-bahn/js/sound.js",
@@ -5893,8 +5893,8 @@
   },
   {
    "p": "figuren/figuren.js",
-   "s": 22974,
-   "h": "a435189a45e3bf0eebae4a554d2293f0253eda8539cc3374b5eab9384dc08f96"
+   "s": 23349,
+   "h": "617b8550baf1ce03e87740bfd73d4980eb5d908f2f16590410197f388d7bcd99"
   },
   {
    "p": "figuren/frau.glb",
@@ -8484,7 +8484,7 @@
   {
    "p": "sync/catalog.json",
    "s": 210250,
-   "h": "cddc37ca87e76d0d16222853e097c235173ceff5fd5607d04208b4aa06eefcf7"
+   "h": "7b7cb09d33b3b480ec5006732c9b291fda53dc3c7693e5158de8ece5b22359f1"
   },
   {
    "p": "taschi/card.svg",
