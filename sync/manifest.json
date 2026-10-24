@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3a98e0987c9b",
- "generated": "2026-10-24T08:25:36+00:00",
- "commit": "1750689673c1a74ef6967a3b846c8ab5bc53d15b",
+ "version": "7c602dfc1987",
+ "generated": "2026-10-24T08:44:30+00:00",
+ "commit": "afe2d12f3bf079468deea4368b900a968873b787",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5338,8 +5338,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2997,
-   "h": "bce255fbca68d890606839adac421ffe2780d95dc16ba53a80d06d1a0915aff5"
+   "s": 3022,
+   "h": "bac18d82ff7286a7619fb24ea0d950c0d215eb26188890020e706f68731f61dc"
   },
   {
    "p": "chat.html",
@@ -5353,8 +5353,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22367,
-   "h": "cc21a3875a413eb1cdc8eaa30b67be96147f8b32e997a45a12459d3579c9f27c"
+   "s": 22382,
+   "h": "6ebef80dd75f81dea851468d7eff2888b2ce57b9dd009da46074eaa3ca35c30f"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -5530,6 +5530,51 @@
    "p": "colorpop-universe/sw.js",
    "s": 2042,
    "h": "afd53a8670a60956a19dffc8926b0302154fbd6b0a0114a80d50b1ddf74e9b71"
+  },
+  {
+   "p": "darts-arena/card.jpg",
+   "s": 69376,
+   "h": "5b91ec11eb983d824f7e82a184d5a06f059e4449ef991ffa7b5a73b7050829b2"
+  },
+  {
+   "p": "darts-arena/index.html",
+   "s": 13265,
+   "h": "2a6d60564b825ddb6898ebea20513fd691caf9e63646f80897b0d4b67372b116"
+  },
+  {
+   "p": "darts-arena/js/app.js",
+   "s": 39510,
+   "h": "3186cd1e9ab1e48cb494ba4ce1aa5e53d2c813139c6780f622010ed5ce6c3a5e"
+  },
+  {
+   "p": "darts-arena/js/core.js",
+   "s": 19275,
+   "h": "3497ff34725ecaf3f086d6d7103fa5baf61f900248d2935e77bb5a34bb06b236"
+  },
+  {
+   "p": "darts-arena/js/scene.js",
+   "s": 18855,
+   "h": "c86ea26e1af970163150d453a648db6911134994562317f2bceccd22a2f2e819"
+  },
+  {
+   "p": "darts-arena/js/sound.js",
+   "s": 6670,
+   "h": "6406ceecf691f52ca9abe654461b2e5378946f187d0dcf64defd4dfa139c2136"
+  },
+  {
+   "p": "darts-arena/manifest.webmanifest",
+   "s": 796,
+   "h": "cf1529d6a6f4b23bb9208d2e526aa49719f4f0b904ad0975f531c080e4138545"
+  },
+  {
+   "p": "darts-arena/style.css",
+   "s": 16858,
+   "h": "a7610c4ad64a64fcfb23031b78475411c415165df90d8f9055f526b1f67b9516"
+  },
+  {
+   "p": "darts-arena/sw.js",
+   "s": 2017,
+   "h": "fbeefad5ec482300f0757ed626f85f85d76e2eb8288de33ecca806ea2b3726ea"
   },
   {
    "p": "datenschutz.html",
@@ -6003,8 +6048,8 @@
   },
   {
    "p": "games.js",
-   "s": 42123,
-   "h": "ca0b37aa199b52aa88a356c49d4fd607f8011d3186e824ac543a97e6ed48fc73"
+   "s": 42832,
+   "h": "03470b72c9e45888820a48c76df7ea5655667c344595769f1eb982a2b1d8bfda"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6163,8 +6208,8 @@
   },
   {
    "p": "guides.js",
-   "s": 120576,
-   "h": "56ea706c03cdb60bf59158158b1752ca4ec767999a8bb2029cb7efef92d613cf"
+   "s": 122737,
+   "h": "62bbfe747d875f04361002c7e18fc243f39d6f6e47d44e49f529236f7595ef73"
   },
   {
    "p": "heute.html",
@@ -6648,8 +6693,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3085,
-   "h": "9992c4b665652ab1d2414611583c16bc3cf850d870923845424b306078f372d9"
+   "s": 3130,
+   "h": "b4104184874af3a72e22912193f94f525cbb17ff044595f75570ef7e8faa483f"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -8043,8 +8088,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 183898,
-   "h": "df2b7e0b712cf133d0aaa6e7760a45f2bfa06ee9ba7a5245bbf62f9f61a56447"
+   "s": 187035,
+   "h": "967ac95a76af3b2622c55af07a5409b7a47a1d045e04b472f8fe2276900d4292"
   },
   {
    "p": "taschi/card.svg",
