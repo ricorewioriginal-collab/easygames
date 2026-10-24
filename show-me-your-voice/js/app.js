@@ -1012,7 +1012,7 @@
     onReset(); const p = save.profile;
     ON.H = { phase: 'lobby', round: 0, players: [{ id: 'host', name: p.name, look: cleanLook(p.look), on: true }], field: [], def: null, seed: 0, style: 'pop', panel: null, perf: {}, votes: {}, res: null, deadline: 0 };
     ON.me = 'host';
-    ON.net = mkNet({ onMsg: hostMsg, onLeave: id => { const pl = ON.H && ON.H.players.find(x => x.id === id); if (pl) { pl.on = false; hostSync(); hostCheck(); } } });
+    ON.net = mkNet({ onMsg: hostMsg, onLeave: id => { const pl = id !== 'host' && ON.H && ON.H.players.find(x => x.id === id); if (pl) { pl.on = false; hostSync(); hostCheck(); } } });
     ON.st = { phase: 'connecting', players: [] }; onRender();
     const net = ON.net;   // wer zwischendurch „Verlassen“ drückt, beendet diesen Versuch
     try { await net.host(); } catch (e) { if (ON.net === net) { onReset(); toast(netErr(e), 4000); onRender(); } return; }
@@ -1021,7 +1021,7 @@
     hostSync();
   }
   function hostMsg(from, d) {
-    const h = ON.H; if (!h) return;
+    const h = ON.H; if (!h || from === 'host') return;   // „host“ ist der Gastgeber selbst, nie eine fremde Verbindung
     if (d.t === 'hi') {
       let pl = h.players.find(x => x.id === from);
       if (!pl && h.phase === 'lobby') h.players = h.players.filter(x => x.on);   // Plätze von Gegangenen in der Lobby frei machen
