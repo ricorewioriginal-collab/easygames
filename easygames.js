@@ -94,7 +94,7 @@
   }
 
   // gamepad: Controller funktionieren in fremden Seiten nur, wenn der iframe es erlaubt (Permissions Policy)
-  var FRAME_ALLOW = 'fullscreen; autoplay; gamepad; accelerometer; gyroscope';
+  var FRAME_ALLOW = 'fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone';
   function frame(src, title, o) {
     var f = document.createElement('iframe');
     f.src = src; f.title = title; f.loading = 'lazy';

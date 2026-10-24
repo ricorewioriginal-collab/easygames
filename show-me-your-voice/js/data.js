@@ -272,7 +272,7 @@
     { id: 'staffel-2', title: 'Staffel 2', sub: 'Die Show geht weiter · 1.–7. Juni 2026', playlist: 'PLOTyQR2JWZQ0NtdGtM_cNmL7aD_cdIDTv',
       winners: ['Carina', 'MAX.X.X', 'GIZMO'], top4: 'Top 4: Max.x.x, GIZMO, Carina, Lord Tiger',
       eps: [['Casting 1 – Alle Kandidaten, Goldene Tickets & Entscheidungen', 'lLvk-xvvDbw'], ['Casting 2 – Wer schafft den Recall?', '2Nmls-GiXls'],
-        ['Recall – Wer schafft den Einzug in die Mottoshow?', 'HycW7hUBp_Y'], ['Mottoshow 1 – Best of 80er & 90er', 'WpylUh39YP8'], ['Halbfinale – Iconic Hits & Top 6', 'NVj_S6ocSUc']] },
+        ['Recall – Wer schafft den Einzug in die Mottoshow?', 'HycW7hUBp_Y'], ['Mottoshow 1 – Best of 80er & 90er', 'WpylUh39YP8'], ['Halbfinale – Iconic Hits & Top 6', 'NVj_S6ocSUc'], ['Finale – Carina gewinnt die Show!', 'C7pFbmiSYcE']] },
     { id: 'staffel-1', title: 'Staffel 1', sub: 'Hier begann alles · TikTok LIVE', winners: ['Becca', 'Eleven', 'Bommelchen'],
       eps: [['Folge 1 · Casting', 'kOAoSGu_76Y'], ['Folge 2 · Casting', 'ZuGQudq_owk'], ['Folge 3 · Recall', 'E7grV4u112s'], ['Folge 4 · Mottoshow', 'cxHCreutw_c'],
         ['Folge 5 · Halbfinale', 'eO3hHL3sfh0'], ['Folge 6 · Best of Exit', 'oMPvX3TwaVA']] },

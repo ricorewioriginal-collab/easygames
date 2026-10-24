@@ -923,7 +923,19 @@
     { ok: async () => {
       A.init();
       try { await A.micStart(); A.micStop(); save.settings.mic = true; persist(); closeOv(); toast('🎙️ Mikrofon bereit – sing die Noten einfach an!'); }
-      catch (e) { save.settings.mic = false; persist(); closeOv(); toast('Mikrofon nicht erlaubt oder nicht vorhanden – du spielst mit Tasten/Touch.', 3500); }
+      catch (e) {
+        save.settings.mic = false; persist(); closeOv();
+        let framed = false; try { framed = window.top !== window.self; } catch (x) { framed = true; }
+        if (framed) {   // eingebettet: die Seite drumherum kann das Mikrofon sperren
+          (after || RENDER.sSettings)();
+          overlay(`<h3>🎙️ Mikrofon gesperrt</h3><p>Hier ist das Spiel in eine andere Seite eingebettet, die das Mikrofon nicht freigibt. Öffne das Spiel direkt, dann fragt dein Browser nach dem Mikrofon.</p>
+            <p class="muted">Ist es dort auch gesperrt: In den Website-Einstellungen des Browsers das Mikrofon erlauben.</p>
+            <button class="btn gold" type="button" data-act="open">↗ Spiel direkt öffnen</button><button class="btn" type="button" data-act="no">Mit Tasten/Touch weiter</button>`,
+          { open: () => { closeOv(); window.open(location.href.split('#')[0], '_blank', 'noopener'); }, no: closeOv });
+          return;
+        }
+        toast('Mikrofon nicht erlaubt oder nicht vorhanden – du spielst mit Tasten/Touch. Tipp: In den Website-Einstellungen des Browsers das Mikrofon erlauben.', 4500);
+      }
       (after || RENDER.sSettings)();
     }, no: closeOv });
   }
