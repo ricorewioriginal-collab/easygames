@@ -121,10 +121,11 @@
 
   // ---------- Mikrofon (optional) ----------
   let micWant = false;
-  async function micStart() {
+  // voice = true (Vorsingen): ohne Rauschunterdrückung, die lange gehaltene Töne abschneidet und die Aufnahme dumpf macht
+  async function micStart(voice) {
     if (!init() || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('nosupport');
     micWant = true; if (mic) return true;
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: !voice, autoGainControl: true } });
     if (!micWant || mic) { if (!mic || mic.stream !== stream) stream.getTracks().forEach(t => t.stop()); return !!mic; }   // inzwischen wieder gestoppt
     const src = ctx.createMediaStreamSource(stream), an = ctx.createAnalyser();
     an.fftSize = 2048; src.connect(an);           // nicht mit den Lautsprechern verbunden: kein Echo, keine Aufnahme
@@ -133,8 +134,25 @@
   }
   function micStop() {
     micWant = false; if (!mic) return;
-    try { mic.stream.getTracks().forEach(t => t.stop()); mic.src.disconnect(); } catch (e) {}
+    try { mic.stream.getTracks().forEach(t => t.stop()); mic.src.disconnect(); if (mic.rec) mic.rec.nodes.forEach(n => n.disconnect()); } catch (e) {}
     mic = null;
+  }
+  // Studio-Klang für die Aufnahme: Kompressor, etwas Präsenz und ein kurzer Hall. Geht nur in die Aufnahme, nicht in die Lautsprecher.
+  function micRecStream() {
+    if (!mic) return null;
+    if (mic.rec) return mic.rec.dest.stream;
+    try {
+      const comp = ctx.createDynamicsCompressor(), eq = ctx.createBiquadFilter(), hp = ctx.createBiquadFilter(), dry = ctx.createGain(), wet = ctx.createGain(), rev = ctx.createConvolver(), dest = ctx.createMediaStreamDestination();
+      hp.type = 'highpass'; hp.frequency.value = 80;
+      eq.type = 'peaking'; eq.frequency.value = 3000; eq.Q.value = 0.8; eq.gain.value = 3;
+      comp.threshold.value = -24; comp.ratio.value = 3; comp.attack.value = 0.01; comp.release.value = 0.2;
+      const sr = ctx.sampleRate, n = Math.floor(sr * 1.6), ir = ctx.createBuffer(2, n, sr);
+      for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3); }
+      rev.buffer = ir; dry.gain.value = 1.4; wet.gain.value = 0.35;
+      mic.src.connect(hp); hp.connect(eq); eq.connect(comp); comp.connect(dry); comp.connect(rev); rev.connect(wet); dry.connect(dest); wet.connect(dest);
+      mic.rec = { dest, nodes: [hp, eq, comp, dry, wet, rev, dest] };
+      return dest.stream;
+    } catch (e) { return mic.stream; }
   }
   // Lautstärke (RMS) fürs Treffen der Noten mit der Stimme; null ohne Mikrofon
   function micLevel() {
@@ -222,5 +240,5 @@
   }
 
   root.SMYVAudio = { radioOnLost: cb => { onLost = cb; }, radioStart, radioStop, radioMute, radioOnsets, radioSong, radioActive: () => !!radio, radioPlain: () => !!(radio && radio.plain), init, setVolume, ok, song, tick, chordTones, sfx, guide, voiceOn, voiceSet, voiceOff,
-    micStart, micStop, micPitch, micLevel, micActive: () => !!mic, micStream: () => (mic ? mic.stream : null), mtof, ctxTime: () => (ctx ? ctx.currentTime : 0) };
+    micStart, micStop, micPitch, micLevel, micActive: () => !!mic, micStream: () => (mic ? mic.stream : null), micRecStream, mtof, ctxTime: () => (ctx ? ctx.currentTime : 0) };
 })(window);

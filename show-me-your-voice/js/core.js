@@ -329,6 +329,43 @@
     return { perf: r1(clamp(perf)), crit: c, mult: 1, sing: st };
   }
 
+  // Live-Wertung beim Vorsingen (SingStar-Gefühl): Punkte bis 10 000, gehaltene Töne bekommen ein Urteil, saubere Töne in Folge geben Combo.
+  // Die Tonart lernt mit (gleitender Mittelwert), damit auch hier relativ zur eigenen Tonart gewertet wird.
+  function liveScorer(len, dt) {
+    dt = dt > 0 ? dt : 0.05;
+    const per = 10000 / Math.max(1, (len || 60) / dt * 0.85);
+    const st = { sx: 0, sy: 0, total: 0, combo: 0, best: 0, note: null, off: 0 };
+    function close() {
+      const n = st.note; st.note = null;
+      if (!n || n.n < 6) return null;                     // kürzer als 0,3 s: kein Urteil
+      const d = n.dev / n.n;
+      const t = d < 0.12 ? 'perfekt' : d < 0.2 ? 'super' : d < 0.3 ? 'gut' : 'daneben';
+      if (t === 'perfekt' || t === 'super') st.combo++; else if (t === 'daneben') st.combo = 0;
+      st.best = Math.max(st.best, st.combo);
+      return { t, combo: st.combo };
+    }
+    return {
+      state: st,
+      push(m) {
+        if (!(Number.isFinite(m) && m > 24 && m < 108)) return { total: Math.round(st.total), ev: close(), r: null, ok: false };
+        st.sx = st.sx * 0.98 + Math.cos(2 * Math.PI * m) * 0.02; st.sy = st.sy * 0.98 + Math.sin(2 * Math.PI * m) * 0.02;
+        const raw = Math.atan2(st.sy, st.sx) / (2 * Math.PI), d = raw - st.off;
+        st.off += d - Math.round(d);   // ohne Sprung bei ±0,5: sonst wechselt die Halbton-Stufe mitten im gehaltenen Ton
+        const x = m - st.off, r = Math.round(x), dev = Math.abs(x - r);
+        let ev = null;
+        if (st.note && st.note.r !== r) ev = close();
+        if (!st.note) st.note = { r, n: 0, dev: 0 };
+        st.note.n++; st.note.dev += dev;
+        st.total = Math.min(10000, st.total + Math.max(0, 1 - dev / 0.35) * per * (1 + 0.05 * Math.min(st.combo, 5)));
+        return { total: Math.round(st.total), ev, r: r + st.off, ok: dev < 0.2 };
+      },
+      end() { const ev = close(); return { total: Math.round(st.total), ev, best: st.best }; }
+    };
+  }
+  // Bewertungstitel wie bei SingStar
+  const SING_TITLES = [[90, '🌟 Superstar'], [80, '⭐ Star'], [70, '🎤 Profi'], [55, '🎶 Talent'], [40, '🙂 Amateur'], [0, '🚿 Duschsänger']];
+  function singTitle(perf) { return SING_TITLES.find(t => (+perf || 0) >= t[0])[1]; }
+
   // Echtes Vorsingen in der Karriere: Entwicklung zur letzten Runde, Bühnen-Aktion und Backstage-Ereignisse wie im Spiel-Modus.
   function singCareer(res, lastPerf, mods, action) {
     const c = res.crit, act = D.ACTION[action] || {};
@@ -433,7 +470,7 @@
   }
 
   const API = { D, CK, TRAINABLE, DIFF, rng, hash, clamp, cleanName, newProfile, level, newSeason, startRound, cancelRound,
-    analyze, panelOf, judge, ONLINE, onlineDef, onlineResolve, encoreFlip, comment, rollEvent, applyEvent, mergeSymp, aiPerf, rank, resolveRound, freeCasting, singScore, singCareer, singStars, trainGain, applyTraining, applyCommunity, bonusScore,
+    analyze, panelOf, judge, ONLINE, onlineDef, onlineResolve, encoreFlip, comment, rollEvent, applyEvent, mergeSymp, aiPerf, rank, resolveRound, freeCasting, singScore, singCareer, liveScorer, singTitle, singStars, trainGain, applyTraining, applyCommunity, bonusScore,
     DEF_SETTINGS, freshSave, repair };
   if (typeof module !== 'undefined' && module.exports) module.exports = API; else root.SMYV = API;
 })(typeof window !== 'undefined' ? window : globalThis);
