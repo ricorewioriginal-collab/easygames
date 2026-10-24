@@ -1665,7 +1665,7 @@
   {
    "id": "easyclash",
    "title": "EASYCLASH – Das Turnier aller Helden",
-   "desc": "Modernes 3D-Prügelspiel mit 64 Helden aus 15 easygames – von Rico, den Sumo-Stars und Hopsis über KIKO, Krawallvögel, Kart- und Urwaldlager-Stars bis zu Ulk-Kämpfern wie Kampf-Würstchen und Klopapier-Ninja. Vier Knöpfe für Fäuste und Füße, Richtung + Knopf, Ketten, Seitschritt, Würfe, Aushebler mit Luft-Kombos, Spezialangriff je Figur und das Finale. Arcade, Versus zu zweit, Gegen CPU, Training und 🌐 Online & Handys als Controller.",
+   "desc": "Modernes 3D-Prügelspiel mit 69 Helden aus 18 easygames – von Rico, Marco und Andrew, Zotik, Jannis, den Sumo-Stars und Hopsis über KIKO, Krawallvögel, Kart- und Urwaldlager-Stars bis zu Ulk-Kämpfern wie Kampf-Würstchen und Klopapier-Ninja. Vier Knöpfe für Fäuste und Füße, Richtung + Knopf, Ketten, Seitschritt, Würfe, Aushebler mit Luft-Kombos, Spezialangriff je Figur und das Finale. Arcade, Versus zu zweit, Gegen CPU, Training und 🌐 Online & Handys als Controller.",
    "icon": "🥊",
    "img": "easyclash/card.jpg",
    "bg": "linear-gradient(145deg,#ff3d6e,#3a0f2a 55%,#ffc83d)",
@@ -1692,7 +1692,7 @@
      "Spar dir das Finale für den Moment auf, in dem der Gegner einen Fehler macht."
     ]
    },
-   "size": 209352,
+   "size": 211285,
    "files": 11,
    "offline": true,
    "cloud": {

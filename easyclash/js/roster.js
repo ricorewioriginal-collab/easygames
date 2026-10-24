@@ -113,6 +113,20 @@
   add('radio-maze', 'Radio Maze 3D', [
     { id: 'rm-rauschi', n: 'Rauschi', sp: 'shot', d: 'Das Störgeräusch aus dem Labyrinth.', stats: { walk: 2.6 }, look: { kind: 'blob', skin: '#ff2b2b', top: '#ff2b2b', bottom: '#c41a1a', shoes: '#c41a1a', eyes: '#1a3cff', fx: '#ff5252' } }
   ]);
+  // ZOTIK – Die Splitter der Welten
+  add('zotik', 'ZOTIK', [
+    { id: 'zo-zotik', n: 'Zotik', sp: 'spin', d: 'Der Fuchs aus Lunaris – mit Schwanz-Trick.', stats: { walk: 2.9, speed: 1.1 }, look: { kind: 'beast', skin: '#e8731c', top: '#e8731c', bottom: '#5a3a28', shoes: '#3a2418', belly: '#fff2e0', snout: '#fff2e0', ears: 'fox', tail: '#e8731c', scarf: '#4be3c8', eyes: '#2a6a5a', fx: '#4be3c8' } },
+    { id: 'zo-felli', n: 'Felli', sp: 'dive', d: 'Mooslingchen – macht „Pip!“.', stats: { walk: 2.8, weight: .75, power: .92 }, look: { kind: 'blob', skin: '#9be05a', top: '#9be05a', bottom: '#5a9a30', shoes: '#5a9a30', belly: '#d8f7b0', eyes: '#1b1b1b', size: .8, head: 1.15, fx: '#9be05a' } }
+  ]);
+  // Bunte Insel
+  add('bunte-insel', 'Bunte Insel', [
+    { id: 'bi-jannis', n: 'Jannis', sp: 'rush', d: 'Der Held der Bunten Insel – mit Fernsteuerung.', stats: { walk: 3.0, speed: 1.12, weight: .75, power: .92 }, look: { skin: '#f7d6c0', top: '#1f2a44', bottom: '#7a5230', shoes: '#1f2a44', hair: { style: 'bowl', color: '#f6dc8a' }, eyes: '#52759a', print: '#9be37a', size: .8, head: 1.25, antenna: '#ff3d00', fx: '#4fc3f7' } }
+  ]);
+  // AnMaCha Podcast Tycoon 3D
+  add('anmacha-podcast-tycoon', 'AnMaCha Podcast Tycoon', [
+    { id: 'pt-marco', n: 'Marco', sp: 'shot', d: 'Technik-Herz und Serienkenner – Kabel ist Leidenschaft!', stats: { power: 1.08, weight: 1.12, walk: 2.2 }, look: { skin: '#f0c8a8', top: '#16171c', bottom: '#2b2f3a', shoes: '#1b1b1b', hair: { style: 'short', color: '#6b4528' }, beard: '#6b4528', print: '#ff8a1e', headphones: true, bulk: 1.12, fx: '#6ef0ff' } },
+    { id: 'pt-andrew', n: 'Andrew', sp: 'rush', d: 'Musikgefühl, Herzlichkeit und ein Lachen bis in die Kaffeeküche.', stats: { speed: 1.05 }, look: { skin: '#f3cdb2', top: '#16171c', bottom: '#3a4f78', shoes: '#1b1b1b', hair: { style: 'short', color: '#c9844a' }, print: '#ff8a1e', mic: true, fx: '#ffb02e' } }
+  ]);
   // Ulk-Kämpfer
   add('easyclash', 'EASYCLASH-Ulk', [
     { id: 'ulk-wurst', n: 'Kampf-Würstchen', sp: 'shot', d: 'Schießt mit Senf. Riecht nach Grillfest.', stats: { weight: 1.05 }, look: { kind: 'blob', shape: 'tall', skin: '#c9683a', top: '#c9683a', bottom: '#c9683a', shoes: '#8d3f1d', print: '#ffd23f', eyes: '#1b1b1b', fx: '#ffd23f' } },
