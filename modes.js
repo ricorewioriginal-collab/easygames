@@ -42,6 +42,7 @@ window.EASYGAMES_MODES = {
   'oma-rennen': { pad: true, online: true, multi: true, tvParam: true },
   'kuechen-chaos': { pad: true, online: true, multi: true, tvParam: true },
   'konfetti-party': { pad: true, online: true, multi: true, tvParam: true },
+  'stadt-land-plus': { pad: true, online: true, multi: true, tvParam: true },
   'darts-arena': { pad: true, multi: true },
   'winzflitzer': { multi: true },
   'gay-life': { online: true },

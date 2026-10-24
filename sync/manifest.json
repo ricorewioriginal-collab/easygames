@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3523106bba60",
- "generated": "2026-10-24T14:30:06+00:00",
- "commit": "d3588be44d107e70e5a30f15dcead963d694e08a",
+ "version": "5fe24e01bdc1",
+ "generated": "2026-10-24T16:31:55+02:00",
+ "commit": "9d8bbbc13801bb76b580773708514eba970c5a68",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5338,8 +5338,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3150,
-   "h": "e41452702400957d52380a82eaebe1565bce4de591f9303cb8682aca74a1d48d"
+   "s": 3177,
+   "h": "300b260cb01913a1354308a21ac417aed7b0267dd906949a80a5d84e7695adcb"
   },
   {
    "p": "chat.html",
@@ -6098,8 +6098,8 @@
   },
   {
    "p": "games.js",
-   "s": 46418,
-   "h": "322b83bb2a1cf2920293bc8233ea3ae201a3f3cf006183221e157f4bb175e617"
+   "s": 47414,
+   "h": "6de27eb3f02b71382282edc655a5c574bf47c2cfb8da7f3e69c94d61ca2454cf"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6258,8 +6258,8 @@
   },
   {
    "p": "guides.js",
-   "s": 133425,
-   "h": "94e7c9966622fd32a4b120ea38ad51b4a4f1fa89676c02a838782d5395c4834d"
+   "s": 136066,
+   "h": "d7c2bb347d0b6e86c6401d9472a5e9b79dc6907b92f1dc04a5c3df0f6eb67f59"
   },
   {
    "p": "heute.html",
@@ -6853,8 +6853,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3462,
-   "h": "bb2fb5dbf858679f6dbdba47e1b4db7cb22723443e729a0961d1766905df0b92"
+   "s": 3540,
+   "h": "1c880047bc77798a184e351bf318081f370475c3f87e786a7fdc1e2f490af346"
   },
   {
    "p": "oma-rennen/card.jpg",
@@ -8297,9 +8297,104 @@
    "h": "8dad0a6dca23aca404d58d1c96b7918c08d881ecdba7e92d79e459a5c72d60f3"
   },
   {
+   "p": "stadt-land-plus/card.jpg",
+   "s": 33830,
+   "h": "368451e257e4ee49e3acf1885f9be2ab96bc2610a80633160c0bb6bec411e677"
+  },
+  {
+   "p": "stadt-land-plus/index.html",
+   "s": 15918,
+   "h": "2a573d9a071c2e4a353e049f27f64673abe66ed4bfa05378022d3ff002a52368"
+  },
+  {
+   "p": "stadt-land-plus/js/app.js",
+   "s": 57702,
+   "h": "951171d808b06aa060fa4ec575e7b12c27b63b1246672a79571f15f2a92668a8"
+  },
+  {
+   "p": "stadt-land-plus/js/core.js",
+   "s": 12589,
+   "h": "87bf4f9c7271c580869b8572f1774d243c0099add6fb93ba0c6e83182e324f45"
+  },
+  {
+   "p": "stadt-land-plus/js/db/fluesse.js",
+   "s": 11761,
+   "h": "cb92175b8798ef747dea8e36c1222f976a72d9f7b2e48edbc217ae17edccbdf5"
+  },
+  {
+   "p": "stadt-land-plus/js/db/laender.js",
+   "s": 67323,
+   "h": "d803049a6cb247e24f21415aa866d7aa5cb97d02f33708456984d1f44fd9cd5a"
+  },
+  {
+   "p": "stadt-land-plus/js/db/staedte.js",
+   "s": 999340,
+   "h": "f648166f63f34c860ca2da77137a0bb5daaf001840a33343b9785ac21cac0348"
+  },
+  {
+   "p": "stadt-land-plus/js/db/w-beruf.js",
+   "s": 4554,
+   "h": "61179243cbfb42e39cfd627d517bc6baaedc30bc4d1d9f015696549c04bdd0c6"
+  },
+  {
+   "p": "stadt-land-plus/js/db/w-essen.js",
+   "s": 3105,
+   "h": "e64103f9dc6f6e99d4afb6c541fb7e49419ec67cf50ee3ea9e578b7d1973907c"
+  },
+  {
+   "p": "stadt-land-plus/js/db/w-mehr.js",
+   "s": 8032,
+   "h": "65a7da9285c3a2a7767be2545622d4ff7d8e8870201470f9b844a6b9d075df30"
+  },
+  {
+   "p": "stadt-land-plus/js/db/w-pflanze.js",
+   "s": 2355,
+   "h": "6a51b6ff81900aca7c224912014b15238e18ab7a1b1d34f87e2ccdf23288002f"
+  },
+  {
+   "p": "stadt-land-plus/js/db/w-tier.js",
+   "s": 4251,
+   "h": "9390ec33682ac2bdf4cdf284ae7c63099d6ca454442885a645e12283ead71459"
+  },
+  {
+   "p": "stadt-land-plus/js/db/w-vorname.js",
+   "s": 3346,
+   "h": "e54435100a79785e18184d82e2659e2870176ee7e47ab64334b8f6f047659498"
+  },
+  {
+   "p": "stadt-land-plus/js/db/welt.js",
+   "s": 2862,
+   "h": "b9f23d410a7b58377f80b7ed9df40d8f0d0a8bb9461f338859486771661bf5ba"
+  },
+  {
+   "p": "stadt-land-plus/js/sound.js",
+   "s": 3686,
+   "h": "8c45ca6c9ae3235916e2b8f5090e33a399c6722492cae811cab0e67aca21ce20"
+  },
+  {
+   "p": "stadt-land-plus/js/view.js",
+   "s": 8145,
+   "h": "031859905254a47a160e4b74c49c7931f323d1245df5c7cc98b59d993116354e"
+  },
+  {
+   "p": "stadt-land-plus/manifest.webmanifest",
+   "s": 811,
+   "h": "f315f3a34479636d9375570f5604d05aac5a29426019f359e81d9f9882528c1c"
+  },
+  {
+   "p": "stadt-land-plus/style.css",
+   "s": 23557,
+   "h": "ec87d42ad56d08a7731455ac0a7423e31d85aaa76ecf395ed55f28b65a9819a8"
+  },
+  {
+   "p": "stadt-land-plus/sw.js",
+   "s": 2026,
+   "h": "bdb5d460689b4674ea3c23fa2dd6f792bc05e0211ad4ca63509c7aa0bd22bd2f"
+  },
+  {
    "p": "sync/catalog.json",
-   "s": 202798,
-   "h": "88592e034f0e01319dd9a42f046971b5908c165627587fd1928bb29c1314aaae"
+   "s": 206749,
+   "h": "a6df2b148a52349e89d22ff3b4b39e951e5773dcab3a0c7a1f8443fccf2ad44d"
   },
   {
    "p": "taschi/card.svg",

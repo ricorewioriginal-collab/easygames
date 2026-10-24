@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/stadt-land-plus-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Stadt Land Pl…"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2a1a6a">
+<title>Stadt Land Plus – Stadt, Land und dein Thema</title>
+<meta name="description" content="Stadt Land Plus: das moderne Stadt-Land-Fluss in 3D. Stadt und Land plus ein frei wählbares drittes Thema (Fluss, Tier, Beruf, Vorname, Essen und viele mehr, oder ganz eigene Kategorien). Große Wissensdatenbank mit allen Ländern, über 33.000 Städten und Flüssen, schlaue Prüfung mit Tippfehler-Erkennung, Infos mit 3D-Globus, Abstimmung oder Moderator. Solo gegen Computer-Spieler oder mit Handys am Fernseher – online per Code, Link oder QR. PC, Touch und Gamepad.">
+<link rel="stylesheet" href="../vendor/fonts/fredoka.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<section class="scr on" id="sLoad"><div class="load"><div class="lCube">S</div><h1 class="logo">STADT LAND<span>PLUS</span></h1><div class="bar"><i id="loadBar"></i></div><p class="tip" id="loadTip">Atlas wird aufgeschlagen …</p></div></section>
+
+<section class="scr" id="sTitle">
+  <div class="titleBox"><h1 class="logo big">STADT LAND<span>PLUS</span></h1><p class="claim">Stadt · Land · dein Thema – das Wortspiel mit Köpfchen</p><button class="press nav" id="bPress">▶ <span id="pressTxt">Tippe zum Start</span></button></div>
+  <p class="corner"><a href="../">← Alle Spiele</a></p>
+</section>
+
+<section class="scr" id="sMenu">
+  <div class="menuWrap">
+    <header class="mHead"><h1 class="logo small">STADT LAND<span>PLUS</span></h1><div class="mStat" id="menuStat"></div></header>
+    <div class="mBody">
+      <div class="mList" id="mList">
+        <button class="mi nav hero" data-go="solo" data-i="Du gegen Computer-Mitspieler – oder ganz allein auf Punktejagd. Kategorien, Runden und Zeit stellst du selbst ein."><i>🧠</i><b>Solo spielen</b></button>
+        <button class="mi nav online" data-go="host" data-i="Der Fernseher zeigt Buchstaben, Uhr und Auswertung, alle schreiben auf dem eigenen Handy – von überall per Code, Link oder QR-Code. Mit Abstimmung oder Moderator."><i>🌐</i><b>Online &amp; Handys</b></button>
+        <button class="mi nav" data-go="join" data-i="Mit dem Handy einer Runde beitreten (Code vom Fernseher)."><i>📱</i><b>Mitspielen</b></button>
+        <button class="mi nav" data-go="lex" data-i="Nachschlagen: Gibt es das? Länder, Städte, Flüsse, Tiere und mehr – mit Infos und Globus."><i>📚</i><b>Nachschlagen</b></button>
+        <button class="mi nav" data-go="opts" data-i="Ton, Musik, Vibration und dein Name."><i>⚙️</i><b>Einstellungen</b></button>
+        <button class="mi nav" data-go="help" data-i="Regeln, Punkte, Prüfung und Steuerung."><i>❓</i><b>Anleitung</b></button>
+      </div>
+      <div class="mInfo"><p id="mInfo"></p></div>
+    </div>
+    <footer class="mFoot"><span class="hintKeys">Pfeile + Enter: wählen · Esc: zurück</span><a href="../" class="nav">← Alle Spiele</a></footer>
+  </div>
+</section>
+
+<!-- Spiel einrichten (Solo und Fernseher) -->
+<section class="scr" id="sSetup">
+  <div class="panel wide">
+    <h2 id="suT">🧠 Spiel einrichten</h2>
+    <p class="lbl">Kategorien: Stadt + Land + dein Thema</p>
+    <div class="catRow"><span class="cat fix">🏙️ Stadt</span><span class="cat fix">🌍 Land</span><span class="cat third" id="thirdShow"></span></div>
+    <p class="lbl">Drittes Thema wählen</p><div class="cats" id="suThird"></div>
+    <input class="field nav" id="suCustom" maxlength="24" placeholder="Name deiner eigenen Kategorie (z. B. Promi, Film, Hobby)" hidden>
+    <p class="lbl">Weitere Spalten (optional)</p><div class="cats small" id="suExtra"></div>
+    <div class="grid2">
+      <div><p class="lbl">Runden</p><div class="seg" id="suRounds"></div></div>
+      <div><p class="lbl">Zeit pro Runde</p><div class="seg" id="suTime"></div></div>
+      <div id="suBotsBox"><p class="lbl">Computer-Mitspieler</p><div class="seg" id="suBots"></div></div>
+      <div id="suSkillBox"><p class="lbl">Stärke</p><div class="seg" id="suSkill"></div></div>
+      <div><p class="lbl">Prüfung</p><div class="seg" id="suCheck"></div></div>
+      <div><p class="lbl">Ohne diese Buchstaben</p><div class="letters" id="suExcl"></div></div>
+    </div>
+    <div class="opts row left">
+      <label class="chk"><input type="checkbox" id="suStop"> STOPP-Taste: Wer fertig ist, beendet die Runde (noch 10 Sekunden)</label>
+      <label class="chk"><input type="checkbox" id="suTypos"> Tippfehler verzeihen</label>
+      <label class="chk"><input type="checkbox" id="suPlaus"> Zusammengesetzte Wörter zählen (Zwergmaus, Apfelbaum …)</label>
+      <label class="chk"><input type="checkbox" id="suUnknown"> Unbekannte Wörter zählen (bei automatischer Prüfung)</label>
+    </div>
+    <div class="row"><button class="btn nav" id="suBack">← Zurück</button><button class="btn pri big nav" id="suGo">▶ Los geht's</button></div>
+  </div>
+</section>
+
+<!-- Spielrunde -->
+<section class="scr game" id="sGame">
+  <header class="gHead"><div class="gLetter" id="gLetter">?</div><div class="gInfo"><b id="gRound"></b><span id="gHint"></span></div><div class="gClock" id="gClock"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17"/><circle id="gArc" cx="20" cy="20" r="17"/></svg><b id="gTime">0</b></div><button class="pbtn nav" id="bPause" aria-label="Pause">⏸</button></header>
+  <div class="gBody" id="gBody">
+    <div class="sheet" id="sheet"></div>
+    <div class="side" id="side"></div>
+  </div>
+  <div class="gFoot" id="gFoot"></div>
+  <div class="osk" id="osk" hidden></div>
+  <div id="big" hidden></div>
+</section>
+
+<!-- Ende -->
+<section class="scr" id="sEnd">
+  <div class="panel">
+    <h2 id="enT">🏆 Siegerehrung</h2>
+    <div class="podium" id="enPod"></div>
+    <div class="hl" id="enHl"></div>
+    <div class="row" id="enBtns"></div>
+  </div>
+</section>
+
+<!-- Nachschlagen -->
+<section class="scr" id="sLex">
+  <div class="panel wide">
+    <h2>📚 Nachschlagen</h2>
+    <div class="row left"><select class="field nav sel" id="lxCat"></select><input class="field nav" id="lxQ" placeholder="Wort eingeben, z. B. Mailand, Peru, Moldau …" autocomplete="off"></div>
+    <div class="lxRes" id="lxRes"></div>
+    <div class="row"><button class="btn pri nav" id="lxBack">← Zurück</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sHelp">
+  <div class="panel wide">
+    <h2>❓ So wird gespielt</h2>
+    <div class="help">
+      <p><b>Ablauf:</b> Ein Buchstabe wird ausgelost. Schreib zu jeder Spalte ein Wort mit diesem Anfangsbuchstaben – Stadt, Land und dein Thema (Fluss, Tier, Beruf …). Ist die Zeit um oder hat jemand <b>STOPP</b> gerufen (dann bleiben noch 10 Sekunden), wird ausgewertet.</p>
+      <p><b>Punkte:</b> 20 Punkte, wenn nur du in einer Spalte etwas Gültiges hast · 10 Punkte für eine Antwort, die sonst niemand hat · 5 Punkte, wenn jemand dasselbe geschrieben hat · 0 Punkte für Falsches oder Leeres.</p>
+      <p><b>Prüfung:</b> Die Datenbank kennt alle Länder, über 33.000 Städte (jede deutsche Gemeinde und die Städte der Welt – auch mit deutschen Namen wie Mailand oder Kopenhagen), viele Flüsse und große Wortlisten. Groß- und Kleinschreibung, Umlaute (ue = ü), Akzente, Artikel, weibliche Formen (Ärztin) und Mehrzahl sind egal, kleine Tippfehler werden erkannt. Zusammengesetzte Wörter (Zwergmaus) gelten als wahrscheinlich richtig.<br>
+      <b>Automatisch:</b> Die Datenbank entscheidet. <b>Abstimmung:</b> Bei unsicheren Wörtern stimmen die anderen mit 👍/👎 ab. <b>Moderator:</b> Eine Person kann jede Antwort freigeben oder streichen.</p>
+      <p><b>Infos:</b> Tippe in der Auswertung auf eine Antwort – du siehst Infos zur Stadt, zum Land oder Fluss mit 3D-Globus. Unter „📚 Nachschlagen“ geht das auch außerhalb des Spiels.</p>
+      <p><b>Steuerung:</b> PC und Handy: einfach tippen, <kbd>Enter</kbd>/<kbd>Tab</kbd> springt zur nächsten Spalte. <b>Gamepad:</b> Bildschirmtastatur mit dem Steuerkreuz, <kbd>A</kbd> tippt, <kbd>B</kbd> löscht, <kbd>X</kbd> Leerzeichen, <kbd>Y</kbd> nächste Spalte, <kbd>Start</kbd> STOPP.</p>
+    </div>
+    <div class="row"><button class="btn pri nav" id="helpBack">← Zurück</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sLobby">
+  <div class="panel wide">
+    <h2>🌐 Online &amp; Handys</h2>
+    <p class="hint">Alle schreiben auf dem eigenen Handy – <b>von überall</b> per Code, Link oder QR-Code. Der Fernseher zeigt Buchstaben, Uhr und die große Auswertung.</p>
+    <div class="hostBox"><div class="qr" id="qr">…</div><div class="hostTxt"><div class="code" id="code">····</div><p class="url" id="url"></p><div class="row tight"><button class="btn small nav" id="lbCopy">🔗 Link kopieren</button></div><p class="hint" id="lobbyMsg">Die Runde wird vorbereitet …</p></div></div>
+    <div class="lobbyList" id="lobbyList"></div>
+    <div class="row left"><label class="chk"><input type="checkbox" id="lbMe"> Ich spiele hier am Bildschirm mit (Tastatur/Gamepad)</label></div>
+    <div class="row left"><span class="lbl inl">Moderator</span><span class="seg small" id="lbMod"></span><label class="chk"><input type="checkbox" id="lbModPlays"> Moderator spielt mit</label></div>
+    <div class="row"><button class="btn nav" id="lbBack">← Zurück</button><button class="btn nav" id="lbSetup">⚙️ Kategorien &amp; Regeln</button><button class="btn pri big nav" id="lbGo" disabled>▶ Spiel starten</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sPhone">
+  <div class="phone" id="pJoin">
+    <h2>📱 Mitspielen</h2>
+    <input class="field nav" id="jName" maxlength="14" placeholder="Dein Name" autocomplete="nickname">
+    <input class="field nav code" id="jCode" maxlength="4" placeholder="CODE" autocapitalize="characters">
+    <p class="hint" id="jMsg">Den Code zeigt der Fernseher bei „🌐 Online &amp; Handys“.</p>
+    <div class="row"><button class="btn nav" id="jBack">← Zurück</button><button class="btn pri nav" id="jGo">Beitreten</button></div>
+  </div>
+  <div class="phone pPlay" id="pPlay" hidden>
+    <div class="pTop"><span id="pName"></span><b class="pLetter" id="pLetter"></b><span id="pTime"></span></div>
+    <div id="pBody"></div>
+  </div>
+</section>
+
+<div class="ov" id="ovInfo" hidden><div class="panel info"><button class="x nav" id="infoX" aria-label="Schließen">✕</button><div class="infoBody"><canvas id="globe"></canvas><div id="infoTxt"></div></div></div></div>
+<div class="ov" id="ovPause" hidden><div class="panel"><h2>⏸ Pause</h2><div class="col"><button class="btn pri nav" id="paGo">▶ Weiter</button><button class="btn nav" id="paOpt">⚙️ Einstellungen</button><button class="btn nav" id="paQuit">✕ Spiel beenden</button></div></div></div>
+<div class="ov" id="ovOpts" hidden>
+  <div class="panel">
+    <h2>⚙️ Einstellungen</h2>
+    <div class="opts">
+      <label class="chk"><input type="checkbox" id="oSound"> Geräusche</label>
+      <label class="chk"><input type="checkbox" id="oMusic"> Musik</label>
+      <label class="chk"><input type="checkbox" id="oVib"> Vibration</label>
+      <label class="chk"><input type="checkbox" id="oOsk"> Bildschirmtastatur immer zeigen</label>
+      <input class="field nav" id="oName" maxlength="14" placeholder="Dein Name" autocomplete="nickname">
+    </div>
+    <div class="row"><button class="btn pri nav" id="optX">Fertig</button></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../device.js"></script>
+<script src="../gamekit.js"></script>
+<script src="../cloud/fire-peer.js"></script>
+<script src="js/db/laender.js"></script>
+<script src="js/db/welt.js"></script>
+<script src="js/core.js"></script>
+<script src="js/view.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="stadt-land-plus" data-prefix="stadt-land-plus-" defer></script>
+</body>
+</html>

@@ -17,7 +17,7 @@ window.EASYGAMES_CATS = {
     // Puzzle
     'funkblasen': 'denken', 'fall-akte': 'denken', 'mahjong': 'denken', 'colorpop-universe': 'denken', 'kraterkommando': 'denken', 'anmacha-radio-match': 'denken', 'anmacha-memory': 'denken', 'anmacha-tower-defense': 'denken', 'wobbel': 'denken', 'anmacha-frequenzrad': 'denken', 'wortfunk': 'denken', 'frequenzminen': 'denken', 'deluxe-2048': 'denken', 'wortgitter': 'denken',
     // Quiz
-    'funkmaler': 'quiz', 'funkgalgen': 'quiz', 'zeitsprung-wissen': 'quiz', 'zeitsprung-movie': 'quiz', 'zeitsprung-radio': 'quiz', 'zeitsprung-castingshow': 'quiz', 'zeitsprung-kinderserien': 'quiz', 'zeitsprung-eurovision': 'quiz', 'anmacha-quiz': 'quiz', 'anmacha-koffer-dealer': 'quiz', 'anmacha-gesucht': 'quiz', 'anmacha-hoererwahl': 'quiz', 'anmacha-preisradar': 'quiz', 'MachMichAus': 'quiz',
+    'funkmaler': 'quiz', 'funkgalgen': 'quiz', 'zeitsprung-wissen': 'quiz', 'zeitsprung-movie': 'quiz', 'zeitsprung-radio': 'quiz', 'zeitsprung-castingshow': 'quiz', 'zeitsprung-kinderserien': 'quiz', 'zeitsprung-eurovision': 'quiz', 'anmacha-quiz': 'quiz', 'stadt-land-plus': 'quiz', 'anmacha-koffer-dealer': 'quiz', 'anmacha-gesucht': 'quiz', 'anmacha-hoererwahl': 'quiz', 'anmacha-preisradar': 'quiz', 'MachMichAus': 'quiz',
     // Simulation
     'ricolife': 'sim', 'ricorail': 'sim', 'ricoville': 'sim', 'mimori': 'sim', 'FunkhausReality': 'sim', 'anmacha-markthalle': 'sim', 'anmacha-klotzfunk': 'sim', 'anmacha-podcast-tycoon': 'sim', 'bunte-insel': 'sim', 'pestwacht': 'sim',
     // Tisch
