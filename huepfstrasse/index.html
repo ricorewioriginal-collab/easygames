@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/huepfstrasse-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Hüpfstraße"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#7fd0ff">
+<title>Hüpfstraße – Hüpf so weit du kannst!</title>
+<meta name="description" content="Hüpfstraße: Endlos-Hüpfspiel im Klötzchen-Look. Über Straßen, Flüsse und Gleise hüpfen, Münzen sammeln und 9 Figuren freischalten – mit Rico, Pingu, Robo, Einhorn und mehr. Tagesstrecke für alle.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage"></div>
+
+<!-- Ladebildschirm -->
+<section class="scr on" id="sLoad">
+  <div class="load">
+    <div class="logo"><i></i><i></i><i></i></div>
+    <h1 class="title">HÜPF<span>STRASSE</span></h1>
+    <div class="bar"><i id="loadBar"></i></div>
+    <p class="tip" id="loadTip">Straßen werden gepflastert …</p>
+  </div>
+</section>
+
+<!-- Titel -->
+<section class="scr" id="sTitle">
+  <div class="titleBox">
+    <h1 class="title big">HÜPF<span>STRASSE</span></h1>
+    <p class="claim">Hüpf so weit du kannst!</p>
+    <button class="press nav" id="bPress">▶ <span id="pressTxt">Drücke Start</span></button>
+  </div>
+  <p class="corner"><a href="../" id="backLink">← Alle Spiele</a></p>
+</section>
+
+<!-- Hauptmenü im Konsolen-Stil -->
+<section class="scr" id="sMenu">
+  <div class="menuWrap">
+    <header class="mHead"><h1 class="title small">HÜPF<span>STRASSE</span></h1><div class="mStat"><span id="menuBest">🏆 0</span><span id="menuCoins">🪙 0</span></div></header>
+    <div class="tiles" id="tiles">
+      <button class="tile nav hero" data-go="play"><i>🐾</i><b>Los hüpfen!</b><small id="playInfo">Endlos – so weit du kommst</small></button>
+      <button class="tile nav" data-go="daily"><i>📅</i><b>Tagesstrecke</b><small id="dailyInfo">Gleiche Strecke für alle</small></button>
+      <button class="tile nav" data-go="chars"><i>🧸</i><b>Figuren</b><small id="charInfo">9 zum Freischalten</small></button>
+      <button class="tile nav" data-go="rec"><i>🏅</i><b>Rekorde</b><small>Bestwerte</small></button>
+      <button class="tile nav" data-go="opts"><i>⚙️</i><b>Optionen</b><small>Ton, Musik, Grafik</small></button>
+      <button class="tile nav" data-go="help"><i>📖</i><b>Anleitung</b><small>Steuerung &amp; Tipps</small></button>
+    </div>
+    <footer class="mFoot"><span class="hintKeys" id="menuKeys"></span><a href="../" class="nav" id="backLink2">← Alle Spiele</a></footer>
+  </div>
+</section>
+
+<!-- Figuren-Laden -->
+<section class="scr" id="sChars">
+  <div class="shop">
+    <div class="shopTop"><button class="btn nav" id="cBack">← Zurück</button><span class="coinBadge" id="cCoins">🪙 0</span></div>
+    <div class="shopBottom">
+      <div class="shopRow"><button class="btn arrow nav" id="cPrev" aria-label="Vorherige">◀</button>
+        <div class="cInfo"><h2 id="cName">Rico</h2><p id="cDesc"></p><p class="cIdx" id="cIdx"></p></div>
+        <button class="btn arrow nav" id="cNext" aria-label="Nächste">▶</button></div>
+      <button class="btn pri big nav" id="cAct">Auswählen</button>
+    </div>
+  </div>
+</section>
+
+<!-- Spiel -->
+<section class="scr game" id="sGame">
+  <div class="hud"><div class="score" id="hScore">0</div><div class="hRight"><span class="coinBadge" id="hCoins">🪙 0</span><button class="icon nav" id="bPause" aria-label="Pause"><i class="pz"></i></button></div></div>
+  <div class="hBest" id="hBest">Rekord 0</div>
+  <div class="biome" id="biome" hidden></div>
+  <div class="startHint" id="startHint">👆 Tippen = vorwärts · wischen = zur Seite</div>
+  <div class="swipe" id="swipe"></div>
+</section>
+
+<!-- Overlays -->
+<div class="ov end" id="ovEnd" hidden><div class="card big">
+  <p class="kicker" id="eKick">Endlos</p>
+  <h2 class="endTitle" id="eTitle">Erwischt!</h2>
+  <div class="newRec" id="eRec" hidden>⭐ Neuer Rekord!</div>
+  <div class="bigScore" id="eScore">0</div>
+  <div class="stats" id="eStats"></div>
+  <p class="unlock" id="eUnlock" hidden></p>
+  <div class="rowBtns wrap"><button class="btn pri big nav" id="eAgain">↻ Nochmal</button><button class="btn nav" id="eChars">🧸 Figuren</button><button class="btn nav" id="eShare">📤 Teilen</button><button class="btn nav" id="eMenu">☰ Menü</button></div>
+</div></div>
+
+<div class="ov" id="ovPause" hidden><div class="card">
+  <h2>Pause</h2>
+  <div class="menuBtns"><button class="btn big pri nav" id="pGo">▶ Weiter</button><button class="btn nav" id="pRestart">↻ Neu starten</button><button class="btn nav" id="pOpts">⚙️ Optionen</button><button class="btn nav" id="pHelp">📖 Steuerung</button><button class="btn nav" id="pQuit">⏹ Zum Menü</button></div>
+</div></div>
+
+<div class="ov" id="ovOpts" hidden><div class="card">
+  <h2>⚙️ Optionen</h2>
+  <label class="check"><input type="checkbox" id="sSound"> Soundeffekte</label>
+  <label class="check"><input type="checkbox" id="sMusic"> Musik</label>
+  <label class="check"><input type="checkbox" id="sVib"> Vibration</label>
+  <label class="check"><input type="checkbox" id="sLow"> Sparmodus (ohne Schatten, nach Neustart)</label>
+  <button class="btn pri nav" id="optX" data-close>Fertig</button>
+</div></div>
+
+<div class="ov" id="ovRec" hidden><div class="card">
+  <h2>🏅 Rekorde</h2>
+  <div class="stats" id="recList"></div>
+  <p class="hint">Der Rekord (Endlos und Tagesstrecke) landet in der Rangliste und wird mit deinem Konto gespeichert.</p>
+  <button class="btn pri nav" id="recX" data-close>Fertig</button>
+</div></div>
+
+<div class="ov" id="ovHelp" hidden><div class="card scroll">
+  <h2>📖 So geht's</h2>
+  <p>Hüpf Feld für Feld nach vorn – <b>jede neue Reihe ist ein Punkt</b>. Aber Vorsicht:</p>
+  <ul>
+    <li><b>🚗 Straßen:</b> Autos und Laster fahren dich platt. Lücke abwarten, dann rüber.</li>
+    <li><b>🌊 Flüsse:</b> Nur auf Baumstämmen oder Seerosen stehen bleiben – Wasser heißt platsch! Stämme tragen dich mit, am Rand ist Schluss.</li>
+    <li><b>🚆 Gleise:</b> Blinkt das rote Licht und bimmelt es, kommt gleich ein Zug. Schnell weg!</li>
+    <li><b>🌳 Bäume und Steine</b> versperren den Weg.</li>
+    <li><b>🛸 Funk-Drohne:</b> Wer zu lange trödelt oder zu weit zurückhüpft, wird geschnappt.</li>
+    <li><b>🪙 Münzen</b> sammeln und im Figuren-Laden neue Figuren freischalten – mit dabei: Rico, Pingu, Fuchs, Robo, Panda, Astronautin, Mietze, Dino und Einhorn.</li>
+    <li><b>Gebiete:</b> Frühlingswiese, Sommerfeld, Herbstwald, Winterland und Neonnacht – alle 60 Reihen ein neues.</li>
+    <li><b>📅 Tagesstrecke:</b> jeden Tag dieselbe Strecke für alle – vergleich dich mit Freunden.</li>
+  </ul>
+  <h3>Steuerung</h3>
+  <ul>
+    <li><b>Touch:</b> tippen = vorwärts, wischen = in die Richtung (auch zurück).</li>
+    <li><b>Tastatur:</b> Pfeiltasten oder WASD, Leertaste = vorwärts, Esc/P Pause.</li>
+    <li><b>Controller:</b> Steuerkreuz oder Stick, A = vorwärts, Start Pause.</li>
+  </ul>
+  <button class="btn pri nav" id="helpX" data-close>Los geht's</button>
+</div></div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../device.js"></script>
+<script src="js/core.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="huepfstrasse" data-prefix="huepfstrasse-" defer></script>
+</body>
+</html>

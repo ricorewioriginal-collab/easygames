@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "2365e43afe6c",
- "generated": "2026-10-24T04:32:25+00:00",
- "commit": "a0b71652fa32cf71557583c34b722431c4605f36",
+ "version": "dbe1e03cefde",
+ "generated": "2026-10-24T05:05:15+00:00",
+ "commit": "85bba40e3abbbb3c67bdd9e7474d289e46be17f2",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "categories.js",
-   "s": 2897,
-   "h": "6360a4f858f3eede5885b8b4edc2b577560b3b36d6e2e8a5ffcd1ba0d42962f7"
+   "s": 2923,
+   "h": "f5ae5bdd2f96bf675d2b91630461f31ebe22ccb3e81232f2a25efd1ba1f32f48"
   },
   {
    "p": "chat.html",
@@ -5858,8 +5858,8 @@
   },
   {
    "p": "games.js",
-   "s": 39478,
-   "h": "7b52dfa26fc26bb7a5ea0374a9d64ed3eb89e23d7e85451236357b62810765a0"
+   "s": 40070,
+   "h": "301452c667e51b1ee93d35938e59c2f07483a72663163a6c34e1feb2be2d51b3"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6018,13 +6018,58 @@
   },
   {
    "p": "guides.js",
-   "s": 112992,
-   "h": "6110f6b7b482e3ae405c55694d40d16fb15aa0ac67cd1574c409b361b8b16ed9"
+   "s": 114382,
+   "h": "01333781381f391ae3e7d91594a6483dba6f6ec8fc606e0ad63e1d289f22a430"
   },
   {
    "p": "heute.html",
    "s": 10577,
    "h": "b69f43a57c3441bd3133dca3f563f304b3a2b28346b6afcdccf6fd5ed256dd3d"
+  },
+  {
+   "p": "huepfstrasse/card.jpg",
+   "s": 50089,
+   "h": "62146374d4695fa7ae87f4c7784ec1f04975824ecbd4ccc124d2ef90ff8bc892"
+  },
+  {
+   "p": "huepfstrasse/index.html",
+   "s": 11263,
+   "h": "79a3821bb2c409f844c7d22bdb4c31b8a23327667e45bfe0dd5bbe5970a03f49"
+  },
+  {
+   "p": "huepfstrasse/js/app.js",
+   "s": 21096,
+   "h": "a5bc469f927d698399c4ec3f68034cb0a3fd7299283777593602a120bf763c6b"
+  },
+  {
+   "p": "huepfstrasse/js/core.js",
+   "s": 12194,
+   "h": "725699d3e1f267bd98ab8737c314ed58608d74a91f64831c57d07a1515ab1bf5"
+  },
+  {
+   "p": "huepfstrasse/js/scene.js",
+   "s": 19996,
+   "h": "ca40d28a17f64ffa437e5850e2a8e6a436b59d0aa1df1c67fcdefc64f1b01b4a"
+  },
+  {
+   "p": "huepfstrasse/js/sound.js",
+   "s": 5461,
+   "h": "74bd0b7546ed72a3587c1a3008d7b1bfa11ed378bf9713f9e206241946416f30"
+  },
+  {
+   "p": "huepfstrasse/manifest.webmanifest",
+   "s": 793,
+   "h": "5e26e2906591db17781fed577f042ef21acc340fe710cd5eab3071f475b60de0"
+  },
+  {
+   "p": "huepfstrasse/style.css",
+   "s": 12535,
+   "h": "edb4800d5d1731a209dd13b2fa676fc61ef761c854762b0f5c117770d9eb791e"
+  },
+  {
+   "p": "huepfstrasse/sw.js",
+   "s": 2015,
+   "h": "95db3d0a9895b13baaeb5fd390c8e29f8451cb7b16be206295aefe9959865115"
   },
   {
    "p": "impressum.html",
@@ -7853,8 +7898,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 172552,
-   "h": "182380b32e2c0efb151de365d90ad14808ab4b01912248d17e885571aed85e07"
+   "s": 174764,
+   "h": "87d04c6661559ff82f97a75eaaa534943226bfaf2bfd38623381fbbcff8d7749"
   },
   {
    "p": "taschi/card.svg",
