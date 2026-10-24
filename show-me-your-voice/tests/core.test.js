@@ -299,3 +299,12 @@ test('Song des Tages, Belohnungen und Speicherstand', () => {
   const r = id => S.D.REWARDS.find(x => x.id === id);
   assert.ok(S.unlocked(sv, r('feuer')) && !S.unlocked(sv, r('diamant')) && S.unlocked(sv, r('gold')));
 });
+
+test('Tagesrangliste: Wert steigt mit jedem Tag, Punkte bleiben ablesbar', () => {
+  const a = S.dailyCode('20261024', 744), b = S.dailyCode('20261025', 10), c = S.dailyCode('20261024', 9999);
+  assert.ok(b > c && c > a);
+  assert.strictEqual(a % 1e5, 744);
+  assert.ok(S.dailyCode('20991231', 10000) <= 1e12);   // Grenze der Firestore-Regel
+  assert.strictEqual(S.repair({ v: 1, dailyBoard: a }).dailyBoard, a);
+  assert.strictEqual(S.repair({ v: 1, dailyBoard: 'x' }).dailyBoard, 0);
+});

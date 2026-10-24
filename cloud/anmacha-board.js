@@ -16,17 +16,13 @@
   try { LS = window.localStorage; } catch (e) {}
 
   // ---- Registry: je Spiel die Ranglisten. key = localStorage-Schlüssel, path = Pfad im JSON-Wert ('' = Zahl direkt),
-  // order 'desc' = höher ist besser, 'asc' = niedriger ist besser (Zeiten), fmt: 'int' | 'sec' (Sekunden) | 'ms' (Millisekunden)
+  // order 'desc' = höher ist besser, 'asc' = niedriger ist besser (Zeiten), fmt: 'int' | 'sec' (Sekunden) | 'ms' (Millisekunden) | 'daily' (Tag * 100000 + Punkte, nur heute)
   var REG = {
-    // Song des Tages: eine Rangliste pro Tag (deutsche Zeit); der Spielstand hält nur den heutigen Wert (daily.dJJJJMMTT)
-    'show-me-your-voice': (function () {
-      var d = new Date(), day;
-      try { day = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Berlin' }).format(d).replace(/-/g, ''); } catch (e) { day = d.toISOString().slice(0, 10).replace(/-/g, ''); }
-      return [
-        { id: 'tag' + day, title: 'Song des Tages', key: 'smyv-save', path: 'daily.d' + day, order: 'desc', unit: 'Punkte' },
-        { id: 'main', title: 'Bester Auftritt (Vorsingen)', key: 'smyv-save', path: 'singBest', order: 'desc', unit: 'Punkte' }
-      ];
-    })(),
+    // Song des Tages: Wert = Tagesnummer * 100000 + Punkte (steigt jeden Tag), fmt 'daily' zeigt nur Einträge von heute (deutsche Zeit)
+    'show-me-your-voice': [
+      { id: 'tag', title: 'Song des Tages (heute)', key: 'smyv-save', path: 'dailyBoard', order: 'desc', fmt: 'daily' },
+      { id: 'main', title: 'Bester Auftritt (Vorsingen)', key: 'smyv-save', path: 'singBest', order: 'desc', unit: 'Punkte' }
+    ],
     'spinwelten': [
       { id: 'main', title: 'Wiederhergestellte Inseln', key: 'spinweltenSave', path: 'islandsDone', order: 'desc', unit: 'Inseln' },
       { id: 'mg', title: 'Minispiel-Siege', key: 'spinweltenSave', path: 'stats.mg_wins', order: 'desc', unit: 'Siege' }
@@ -176,7 +172,15 @@
     return num(v);
   }
   function better(order, a, b) { return b == null ? true : (order === 'asc' ? a < b : a > b); }
+  // Heutige Tagesnummer (deutsche Zeit) für Tagesranglisten (fmt 'daily': Wert = Tag * 100000 + Punkte)
+  function berlinDay() {
+    var d = new Date(), t;
+    try { t = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Berlin' }).format(d); } catch (e) { t = d.toISOString().slice(0, 10); }
+    var p = t.split('-');
+    return Math.floor(Date.UTC(+p[0], +p[1] - 1, +p[2]) / 864e5);
+  }
   function fmt(kind, v) {
+    if (kind === 'daily') return Math.round(v % 1e5).toLocaleString('de-DE') + ' Punkte';
     if (kind === 'sec' || kind === 'ms') {
       var s = kind === 'ms' ? v / 1000 : v, m = Math.floor(s / 60), r = s - m * 60;
       return (m ? m + ':' + (r < 10 ? '0' : '') : '') + r.toFixed(m ? 1 : 2).replace('.', ',') + (m ? '' : ' s');
@@ -300,7 +304,7 @@
       return (j || []).filter(function (x) { return x.document; }).map(function (x) {
         var f = x.document.fields || {}, nm = x.document.name || '';
         return { uid: nm.slice(nm.lastIndexOf('/') + 1), n: cleanName(f.n && f.n.stringValue) || '–', s: Number(f.s && (f.s.doubleValue != null ? f.s.doubleValue : f.s.integerValue)) };
-      });
+      }).filter(function (r) { return b.fmt !== 'daily' || Math.floor(r.s / 1e5) === berlinDay(); });
     });
   }
   // Welche Ranglisten eines Spiels gibt es? Kuratierte: alle; automatische: nur mit Einträgen oder eigenem Wert (pairs = lokale Spielstand-Schlüssel).

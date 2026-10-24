@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "53e90ff4e81a",
- "generated": "2026-10-24T13:59:07+00:00",
- "commit": "8b2f3675d98689d3fe70b2b951bdb08432cc4589",
+ "version": "37adb4f592ed",
+ "generated": "2026-10-24T14:10:37+00:00",
+ "commit": "ab2765339a5a25db7bfc5fb4ceaeb024786fcf8c",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5358,8 +5358,8 @@
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 36022,
-   "h": "257a6f71ab7266d346e03c58c8cf0c920ed58adc08243c67228218181774dd9c"
+   "s": 36397,
+   "h": "93cdce0dbd6ee344721c5ed64d8a9986ee09cf30ed71c57cac70a31d05c3da0e"
   },
   {
    "p": "cloud/anmacha-bug.js",
@@ -7993,13 +7993,13 @@
   },
   {
    "p": "show-me-your-voice/index.html",
-   "s": 16965,
-   "h": "20617520388a595f18542452dcc7baf9843f1e1c9799e5e6254171a0d7068470"
+   "s": 16828,
+   "h": "085ca7850ab2bd3ee98987ac5ea8229b2550a9a41d91cf5c62f1171e9d44b830"
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 141441,
-   "h": "fad8e1628ddf62a0ad0d67076d26ba67e69caecb06c7f560870461c3fd4a2fa0"
+   "s": 141541,
+   "h": "02c381b35b7db9766c9c28574d81ab7eaf6a57d1e3a6b8507b6b02d81de4dada"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
@@ -8013,8 +8013,8 @@
   },
   {
    "p": "show-me-your-voice/js/core.js",
-   "s": 31305,
-   "h": "11da31f424ff5d9e67776edf174f89dbcbf322aec651eb2d49a36dafce327617"
+   "s": 31853,
+   "h": "12a90acb8ded49baed4fec291a4197a537dd8cd7d3534d3b8d2ce30d18758900"
   },
   {
    "p": "show-me-your-voice/js/data.js",
@@ -8299,7 +8299,7 @@
   {
    "p": "sync/catalog.json",
    "s": 202798,
-   "h": "f142be2b843d2f06219b3531101c215d4a221a5723ec9527432b8a8b0e71dceb"
+   "h": "fbb48e39301a94d3579062bcda70278373dc31b21273170025a46ba00f44eca9"
   },
   {
    "p": "taschi/card.svg",

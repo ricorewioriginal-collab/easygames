@@ -1150,7 +1150,7 @@
       }
       const before = S.starSum(save);
       save.singBest = Math.max(save.singBest || 0, fin.total);
-      if (run.daily) { const k = 'd' + run.daily, old = (save.daily || {})[k] || 0; save.daily = { [k]: Math.max(old, fin.total) }; out.daily = { pts: fin.total, best: Math.max(old, fin.total), rec: fin.total > old }; }
+      if (run.daily) { const k = 'd' + run.daily, old = (save.daily || {})[k] || 0; save.daily = { [k]: Math.max(old, fin.total) }; save.dailyBoard = Math.max(save.dailyBoard || 0, S.dailyCode(run.daily, Math.max(old, fin.total))); out.daily = { pts: fin.total, best: Math.max(old, fin.total), rec: fin.total > old }; }
       if (cx && cx.mode === 'online') {   // Online-Show: Ergebnis an den Gastgeber, weiter in der Show
         sing.ctx = null; ON.mine = { r: cx.r, crit: res.crit, perf: res.perf };
         p.xp += Math.round(res.perf / 4); persist();
