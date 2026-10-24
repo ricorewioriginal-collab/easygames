@@ -3,7 +3,8 @@
    LED-Bande, Startturm und Buzzer-Turm mit Flammen und Zeit-Anzeige. Läufer mit Gelenken (Knie, Ellbogen) und 8 wählbaren Figuren.
    Passt die Qualität selbst an, wenn das Gerät zu langsam ist. */
 import { movePos, swingBall, fmtTime } from './engine.js';
-import { CHARS } from './chars.js';
+import { charLook } from './chars.js';
+import { PH } from './engine.js';
 const T = window.THREE;
 const COL = { a: 0x00c8ea, b: 0xff2d95, y: 0xffd24a, o: 0xff9a1f, p: 0x8b5cf6, g: 0x00e07a };
 const cache = {}, C = (k, f) => cache[k] || (cache[k] = f());
@@ -14,6 +15,9 @@ const sign = (txt, w = 512, h = 96, fg = '#ffffff', edge = '#00e5ff') => cvs(w, 
 const puff = () => C('puff', () => cvs(64, 64, (g) => { const r = g.createRadialGradient(32, 32, 0, 32, 32, 32); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, 64, 64); }));
 const DUMMY = new T.Object3D(), BD = new T.Object3D(), COLTMP = new T.Color(), V0 = new T.Vector3(), UP = new T.Vector3(0, 1, 0);
 const CROWD_W = 96;
+// Toon-Figuren (Tiere, Wesen) kommen aus EASYCLASH – Modell-Skript erst laden, wenn eine gewählt wird
+let toonP = null;
+const toonReady = () => toonP || (toonP = new Promise((res, rej) => { if (window.ECModel) return res(); const s = document.createElement('script'); s.src = '../easyclash/js/model.js'; s.onload = res; s.onerror = () => { toonP = null; rej(new Error('Figur nicht ladbar')); }; document.head.appendChild(s); }).then(() => { if (!toonP.setup) { window.ECModel.setup({ low: matchMedia('(pointer:coarse)').matches }); toonP.setup = 1; } return window.ECModel; }));
 
 /** Sammelt Stahlträger als Instanzen eines Würfels: viele Traversen = ein einziger Zeichenaufruf */
 class Beams {
@@ -45,9 +49,10 @@ export class Arena {
     this.boom = new T.PointLight(0xff8a2a, 0, 26); this.boom.position.set(0, 6, 3); this.s.add(this.boom);
     this.attract = null; this.root = new T.Group(); this.s.add(this.root); this.dyn = []; this.rings = []; this.heads = []; this.pots = []; this.time = 0; this.energy = 0.3; this.ghost = null; this.ghostFrames = null; this.prevG = true; this.lastVy = 0; this.dustT = 0; this.clockT = 0;
     this.pool = []; this.live = []; this.initPool(); this.buildWater(); this.buildSet();
+    this.kit = window.EasyFiguren ? window.EasyFiguren.create({ THREE: T, base: '../figuren/' }) : null;
     this.runner = this.makeRunner(0xff6fb0, 6, 0); this.s.add(this.runner.g); this.fpsT = 0; this.fpsN = 0; this.slow = 0; this.resize();
   }
-  resize() { const w = this.cv.clientWidth || innerWidth, h = this.cv.clientHeight || innerHeight, port = w / h < 1; this.r.setPixelRatio(this.pr); this.r.setSize(w, h, false); this.cam.aspect = w / h; this.baseFov = port ? 58 : 44; this.dist = port ? 13.5 : 11.5; this.cam.fov = this.baseFov; this.cam.updateProjectionMatrix(); }
+  resize() { const w = this.cv.clientWidth || innerWidth, h = this.cv.clientHeight || innerHeight, port = w / h < 1; this.r.setPixelRatio(this.pr); this.r.setSize(w, h, false); this.cam.aspect = w / h; this.baseFov = port ? 58 : 44; this.dist = port ? 11.5 : 9.5; this.cam.fov = this.baseFov; this.cam.updateProjectionMatrix(); }
   // ---------------------------------------------------------------- Partikel (Pool aus Sprites)
   initPool() { for (let i = 0; i < 240; i++) { const sp = new T.Sprite(new T.SpriteMaterial({ map: puff(), transparent: true, depthWrite: false })); sp.visible = false; this.s.add(sp); this.pool.push(sp); } }
   emit(x, y, z, vx, vy, vz, o) {
@@ -126,46 +131,37 @@ export class Arena {
     const pg = new T.BufferGeometry(); pg.setAttribute('position', new T.BufferAttribute(pos, 3)); this.flash = new T.Points(pg, new T.PointsMaterial({ map: puff(), color: 0xffffff, size: 1.0, transparent: true, opacity: 0.7, depthWrite: false, blending: T.AdditiveBlending })); this.flash.frustumCulled = false; rig.add(this.flash);
   }
   // ---------------------------------------------------------------- Läufer (Figuren mit Gelenken)
-  makeRunner(color, logo, ci = 0) {
-    const ch = CHARS[((ci % CHARS.length) + CHARS.length) % CHARS.length], bw = ch.build;
+  // ---------------------------------------------------------------- Läufer: realistische easygames-Figur (../figuren) oder Toon-Figur aus EASYCLASH
+  makeRunner(color, logo, ci = 0, ghost = false) {
     const g = new T.Group(), body = new T.Group(); g.add(body);
-    const skin = std(ch.skin, { roughness: 0.65, metalness: 0 }), shirt = std(color, { roughness: 0.5, metalness: 0.05 }), hairM = std(ch.hc, { roughness: 0.85, metalness: 0 });
-    const pants = C('pants', () => std(0x161d3a, { roughness: 0.7 })), shoe = C('shoe', () => std(0xf5f5ff, { roughness: 0.4 })), sole = C('sole', () => std(0x00c8ea, { emissive: 0x004455, roughness: 0.4 }));
-    const geo = (k, f) => C('g' + k, f), mesh = (gm, mat, par, x = 0, y = 0, z = 0) => { const m = new T.Mesh(gm, mat); m.position.set(x, y, z); par.add(m); return m; };
-    const limb = (par, x, y, len, rad, mat) => { const p = new T.Group(); p.position.set(x, y, 0); par.add(p); mesh(geo('l' + len + rad, () => new T.CylinderGeometry(rad, rad * 0.85, len, 10)), mat, p, 0, -len / 2, 0); const e = new T.Group(); e.position.y = -len; p.add(e); mesh(geo('j' + rad, () => new T.SphereGeometry(rad, 10, 8)), mat, p); return { p, e }; };
-    // Becken + Oberkörper (Oberkörper kippt um die Hüfte)
-    const pelvis = mesh(geo('pelvis', () => new T.CylinderGeometry(0.19, 0.2, 0.22, 12)), pants, body, 0, 0.98, 0); pelvis.scale.set(bw, 1, 0.8);
-    const chest = new T.Group(); chest.position.y = 0.97; body.add(chest);
-    const torso = mesh(geo('torso', () => new T.CylinderGeometry(0.25, 0.18, 0.52, 14)), shirt, chest, 0, 0.29, 0); torso.scale.set(bw, 1, 0.68);
-    if (ch.top === 'tank') { const tm = mesh(geo('trim', () => new T.TorusGeometry(0.115, 0.018, 6, 16, Math.PI)), C('trimM', () => glow(0xffffff)), chest, 0, 0.53, 0.07); tm.rotation.x = -0.3; tm.rotation.z = Math.PI; }
-    mesh(geo('neck', () => new T.CylinderGeometry(0.065, 0.075, 0.12, 8)), skin, chest, 0, 0.6, 0);
-    const head = new T.Group(); head.position.y = 0.74; chest.add(head);
-    mesh(geo('head', () => new T.SphereGeometry(0.17, 18, 14)), skin, head).scale.set(1, 1.1, 1);
-    const faceTex = C('face' + (ch.beard ? 'b' : ''), () => cvs(128, 96, (gx, W, H) => { gx.fillStyle = '#ffffff'; [[42, 40], [86, 40]].forEach(([x, y]) => { gx.beginPath(); gx.ellipse(x, y, 10, 12, 0, 0, 7); gx.fill(); }); gx.fillStyle = '#14162e'; [[45, 42], [89, 42]].forEach(([x, y]) => { gx.beginPath(); gx.arc(x, y, 6.5, 0, 7); gx.fill(); }); gx.strokeStyle = '#2a1a12'; gx.lineWidth = 5; gx.lineCap = 'round'; [[30, 22, 52, 19], [76, 19, 98, 22]].forEach(([a, b, c, d]) => { gx.beginPath(); gx.moveTo(a, b); gx.lineTo(c, d); gx.stroke(); }); if (!ch.beard) { gx.strokeStyle = '#7a2a2a'; gx.lineWidth = 4; gx.beginPath(); gx.arc(64, 62, 13, 0.3, Math.PI - 0.3); gx.stroke(); } }));
-    const face = mesh(geo('faceP', () => new T.PlaneGeometry(0.24, 0.18)), C('faceM' + (ch.beard ? 'b' : ''), () => new T.MeshBasicMaterial({ map: faceTex, transparent: true, depthWrite: false })), head, 0, 0.0, 0.172);
-    face.renderOrder = 2;
-    const cap = (th, r = 0.178) => geo('hair' + th + r, () => new T.SphereGeometry(r, 18, 10, 0, Math.PI * 2, 0, Math.PI * th));
-    let tail = null;
-    if (ch.hair !== 'bald' && ch.hair !== 'cap') { const hm = mesh(cap(ch.hair === 'buzz' ? 0.36 : 0.44), hairM, head, 0, 0.02, -0.012); hm.scale.set(1.02, 1.1, 1.04); hm.rotation.x = -0.25; }
-    if (ch.hair === 'ponytail') { tail = new T.Group(); tail.position.set(0, 0.1, -0.15); head.add(tail); mesh(geo('tail', () => new T.CylinderGeometry(0.055, 0.025, 0.3, 8)), hairM, tail, 0, -0.15, 0); }
-    if (ch.hair === 'bun') mesh(geo('bun', () => new T.SphereGeometry(0.08, 10, 8)), hairM, head, 0, 0.17, -0.1);
-    if (ch.hair === 'long') mesh(geo('long', () => new T.BoxGeometry(0.3, 0.34, 0.08)), hairM, head, 0, -0.1, -0.13);
-    if (ch.hair === 'mohawk') mesh(geo('mohawk', () => new T.BoxGeometry(0.05, 0.11, 0.3)), hairM, head, 0, 0.18, -0.02);
-    if (ch.hair === 'cap') { const cm = std(color, { roughness: 0.6 }); mesh(cap(0.42, 0.182), cm, head, 0, 0.03, 0).rotation.x = -0.15; mesh(geo('brim', () => new T.BoxGeometry(0.22, 0.025, 0.14)), cm, head, 0, 0.07, 0.2); }
-    if (ch.beard) { const bd = mesh(geo('beard', () => new T.SphereGeometry(0.172, 14, 8, 0, Math.PI * 2, Math.PI * 0.55, Math.PI * 0.42)), hairM, head, 0, -0.01, 0.012); bd.scale.set(1.02, 1.1, 1.05); }
-    // Brustlogo
-    const decal = mesh(C('decal', () => new T.PlaneGeometry(0.24, 0.24)), new T.MeshBasicMaterial({ color: 0xffffff, transparent: true }), chest, 0, 0.32, 0.25 * 0.68 + 0.012);
-    // Arme (Schulter → Ellbogen → Hand) und Beine (Hüfte → Knie → Fuß)
-    const sx = 0.27 * bw, armR = 0.058 * bw;
-    const mkArm = side => { const up = limb(chest, side * sx, 0.48, 0.29, armR, skin), lo = limb(up.e, 0, 0, 0.27, armR * 0.85, skin); mesh(geo('hand', () => new T.SphereGeometry(0.058, 10, 8)), skin, lo.e); if (ch.top === 'tee') mesh(geo('sleeve' + bw, () => new T.CylinderGeometry(armR + 0.022, armR + 0.016, 0.14, 10)), shirt, up.p, 0, -0.06, 0); return { sh: up.p, el: lo.p }; };
-    const mkLeg = side => { const th = limb(body, side * 0.105 * bw, 0.94, 0.45, 0.082 * bw, skin), sh = limb(th.e, 0, 0, 0.42, 0.064 * bw, skin); mesh(geo('short' + bw, () => new T.CylinderGeometry(0.098 * bw, 0.092 * bw, 0.2, 10)), pants, th.p, 0, -0.08, 0); mesh(geo('foot', () => new T.BoxGeometry(0.13, 0.08, 0.27)), shoe, sh.e, 0, -0.035, 0.05); mesh(geo('sole', () => new T.BoxGeometry(0.135, 0.025, 0.275)), sole, sh.e, 0, -0.07, 0.05); return { hip: th.p, knee: sh.p }; };
-    const aL = mkArm(-1), aR = mkArm(1), lL = mkLeg(-1), lR = mkLeg(1);
-    g.traverse(o => { if (o.isMesh && o !== face) o.castShadow = true; });
-    const r = { g, body, chest, head, tail, aL, aR, lL, lR, shirt, decal, own: [skin, shirt, hairM, decal.material], ci, face: 1, prevX: 0, phase: 0 }; this.setLogo(r, logo); return r;
+    const r = { g, body, ci, color, logo, ghost, fig: null, toon: null, F: { state: 'idle' }, face: 1, prevX: 0, prevY: 0, st: '', alive: true };
+    const L = charLook(ci, color, this.kit && this.kit.fromRoster), done = () => { if (!r.alive) return false; return true; };
+    if (L.look && this.kit) {
+      r.ready = this.kit.make(L.look).then(f => {
+        if (!done()) { f.dispose(); return; } r.fig = f; body.add(f.root);
+        if (ghost) f.ghost(0.38, 0x2a8aa8); else { f.root.traverse(o => { o.castShadow = !!o.isMesh; }); this.addDecal(r); }
+      }).catch(e => console.warn('Figur', e));
+    } else if (L.toon) {
+      r.ready = toonReady().then(M => {
+        if (!done()) return; const m = M.build(L.toon); m.scale.setScalar(1.12); r.toon = m; body.add(m);
+        m.traverse(o => { if (o.isMesh) { o.castShadow = !ghost; if (ghost) { o.material = o.material.clone(); o.material.transparent = true; o.material.opacity = 0.38; o.material.depthWrite = false; } } });
+      }).catch(e => console.warn('Figur', e));
+    }
+    return r;
   }
-  disposeRunner(r) { this.s.remove(r.g); r.own.forEach(m => { if (m.map && m.map !== cache.puff) m.map.dispose(); m.dispose(); }); r.g.traverse(o => { if (o.isMesh && !Object.values(cache).includes(o.material)) o.material.dispose(); }); }
-  setLogo(r, i) { new T.TextureLoader().load(this.logos[i % this.logos.length], t => { if (r.decal.material.map) r.decal.material.map.dispose(); r.decal.material.map = t; r.decal.material.needsUpdate = true; }); }
-  setLook(color, logo, ci) { if (ci != null && ci !== this.runner.ci) { const x = this.runner.prevX; this.disposeRunner(this.runner); this.runner = this.makeRunner(color, logo, ci); this.runner.prevX = x; this.s.add(this.runner.g); return; } this.runner.shirt.color.setHex(color); this.setLogo(this.runner, logo); }
+  // Senderlogo auf der Brust (am Brustknochen, folgt der Bewegung)
+  addDecal(r) {
+    const f = r.fig, sp = f && f.bones.spine_03; if (!sp) return;
+    const m = new T.Mesh(C('decal', () => new T.PlaneGeometry(0.15, 0.15)), new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }));
+    f.root.updateMatrixWorld(true); const p = new T.Vector3(); sp.getWorldPosition(p); f.root.worldToLocal(p); m.position.set(p.x, p.y + 0.02, p.z + (f.look.body === 'w' ? 0.165 : 0.155)); m.rotation.x = -0.08; f.root.add(m); f.root.updateMatrixWorld(true); sp.attach(m);
+    r.decal = m; this.setLogo(r, r.logo);
+  }
+  disposeRunner(r) { r.alive = false; this.s.remove(r.g); if (r.decal) { if (r.decal.material.map) r.decal.material.map.dispose(); r.decal.material.dispose(); } if (r.fig) r.fig.dispose(); if (r.toon) r.toon.traverse(o => { if (o.isMesh && r.ghost) o.material.dispose(); }); }
+  setLogo(r, i) { r.logo = i; if (!r.decal) return; new T.TextureLoader().load(this.logos[i % this.logos.length], t => { if (!r.alive || !r.decal) { t.dispose(); return; } if (r.decal.material.map) r.decal.material.map.dispose(); r.decal.material.map = t; r.decal.material.needsUpdate = true; }); }
+  setLook(color, logo, ci) {
+    if (ci != null && ci !== this.runner.ci) { const x = this.runner.prevX; this.disposeRunner(this.runner); this.runner = this.makeRunner(color, logo, ci); this.runner.prevX = x; this.s.add(this.runner.g); return this.runner.ready; }
+    const r = this.runner; r.color = color; if (r.fig) { const L = charLook(r.ci, color, this.kit.fromRoster).look; if (L) r.fig.recolor({ top: L.top, hat: L.hat }); } this.setLogo(r, logo); return r.ready;
+  }
   // ---------------------------------------------------------------- Parcours
   setCourse(c) {
     this.course = c; const keep = new Set(Object.values(cache)); while (this.root.children.length) { const ch = this.root.children[0]; this.root.remove(ch); ch.traverse(o => { if (o.geometry && !keep.has(o.geometry) && o.geometry !== cache.ubox) o.geometry.dispose(); const ms = o.material ? [].concat(o.material) : []; ms.forEach(m => { if (!keep.has(m)) { if (m.map && m.map !== cache.puff) m.map.dispose(); m.dispose(); } }); }); }
@@ -237,29 +233,38 @@ export class Arena {
   // ---------------------------------------------------------------- Bild
   setGhost(frames) {
     this.ghostFrames = frames;
-    if (frames && !this.ghost) { this.ghost = this.makeRunner(0x9fe8ff, 0, 0); this.ghost.g.traverse(o => { if (o.isMesh) { o.castShadow = false; o.material = o.material.clone(); o.material.transparent = true; o.material.opacity = 0.38; o.material.depthWrite = false; if (o.material.emissive) o.material.emissive.setHex(0x2a8aa8); } }); this.s.add(this.ghost.g); }
+    if (frames && !this.ghost) { this.ghost = this.makeRunner(0x9fe8ff, 0, this.runner.ci, true); this.s.add(this.ghost.g); }
     if (this.ghost) this.ghost.g.visible = !!frames;
   }
-  pose(r, x, y, sim) {
-    const g = r.g, t = this.time; g.position.set(x, y, 0); const dx = x - r.prevX; r.prevX = x; const mov = Math.abs(dx) > 0.001; r.phase += Math.abs(dx) * 4.6; const face = sim ? sim.face : r.face; r.face = face; r.body.rotation.set(0, face > 0 ? 1.15 : -1.15, 0);
-    let st = 'run'; if (sim) { if (sim.dead) st = 'fall'; else if (sim.finished) st = 'win'; else if (sim.hang) st = 'hang'; else if (sim.wall) st = 'wall'; else if (!sim.onGround) st = sim.vy > 0 ? 'air' : 'drop'; else if (!mov) st = 'idle'; } else if (!mov) st = 'idle';
-    const { aL, aR, lL, lR, chest } = r, set = (j, x2, z2 = 0) => { j.rotation.set(x2, 0, z2); };
-    const sw = Math.sin(r.phase), cw = Math.cos(r.phase), spd = sim ? Math.min(1, Math.abs(sim.vx) / 5.6) : 0.6;
-    chest.rotation.set(0, 0, 0); r.head.rotation.set(0, 0, 0);
-    if (st === 'run' || st === 'wall') {
-      const k = st === 'wall' ? 1.15 : 0.55 + spd * 0.45, ph = st === 'wall' ? t * 22 : r.phase, s2 = Math.sin(ph), c2 = Math.cos(ph);
-      set(lL.hip, -s2 * 0.95 * k); set(lR.hip, s2 * 0.95 * k); set(lL.knee, 0.15 + Math.max(0, c2) * 1.5 * k); set(lR.knee, 0.15 + Math.max(0, -c2) * 1.5 * k);
-      set(aL.sh, s2 * 0.9 * k, 0.08); set(aR.sh, -s2 * 0.9 * k, -0.08); set(aL.el, -1.45); set(aR.el, -1.45);
-      chest.rotation.x = (st === 'wall' ? 0.55 : 0.12 + spd * 0.2); g.position.y += Math.abs(s2) * 0.07 * k;
-    } else if (st === 'air') { set(lL.hip, -1.2); set(lL.knee, 1.5); set(lR.hip, -0.3); set(lR.knee, 0.9); set(aL.sh, -2.6, 0.2); set(aR.sh, -2.3, -0.2); set(aL.el, -0.3); set(aR.el, -0.3); chest.rotation.x = 0.15; }
-    else if (st === 'drop') { set(lL.hip, -0.7); set(lL.knee, 0.8); set(lR.hip, -0.35); set(lR.knee, 0.5); set(aL.sh, -1.2, 0.9); set(aR.sh, -1.0, -0.9); set(aL.el, -0.5); set(aR.el, -0.5); chest.rotation.x = 0.1; }
-    else if (st === 'hang') { const hm = sim && sim.vx ? Math.sin(t * 9) : 0, swg = Math.sin(t * 4) * 0.18; set(aL.sh, Math.PI - 0.15 + hm * 0.35, 0.12); set(aR.sh, Math.PI - 0.15 - hm * 0.35, -0.12); set(aL.el, -0.15 - Math.max(0, hm) * 0.6); set(aR.el, -0.15 - Math.max(0, -hm) * 0.6); set(lL.hip, -0.35 + swg); set(lR.hip, -0.15 + swg); set(lL.knee, 0.6); set(lR.knee, 0.35); chest.rotation.x = -0.05; g.position.y -= 0.36; }
-    else if (st === 'win') { const j = Math.abs(Math.sin(t * 8)); set(aL.sh, Math.PI * 0.92, 0.5); set(aR.sh, Math.PI * 0.92, -0.5); set(aL.el, -0.2); set(aR.el, -0.2); set(lL.hip, -0.3 * j); set(lR.hip, -0.3 * j); set(lL.knee, 0.6 * j); set(lR.knee, 0.6 * j); g.position.y += j * 0.25; r.body.rotation.y = 0; }
-    else if (st === 'fall') { r.body.rotation.z = t * 7; set(aL.sh, 2.6 + Math.sin(t * 20) * 0.6, 0.5); set(aR.sh, 2.6 - Math.sin(t * 20) * 0.6, -0.5); set(aL.el, -0.4); set(aR.el, -0.4); set(lL.hip, -0.6); set(lR.hip, 0.3); set(lL.knee, 1.0); set(lR.knee, 0.4); }
-    else { const b = Math.sin(t * 2.2); set(aL.sh, 0.05 + b * 0.04, 0.14); set(aR.sh, 0.05 - b * 0.04, -0.14); set(aL.el, -0.25); set(aR.el, -0.25); set(lL.hip, -0.05); set(lR.hip, 0.05); set(lL.knee, 0.08); set(lR.knee, 0.08); chest.rotation.x = 0.03 + b * 0.015; g.position.y += (b + 1) * 0.005; r.head.rotation.y = Math.sin(t * 0.7) * 0.35; }
-    if (r.tail) r.tail.rotation.x = 0.3 + (st === 'run' ? 0.5 + Math.sin(r.phase * 2) * 0.25 : st === 'air' || st === 'drop' ? -0.4 : 0.05);
-    if (sim && sim.stun > 0) r.body.rotation.z = Math.sin(t * 40) * 0.25;
-    return st;
+  /** Läufer an Position x/y stellen und passende Bewegung abspielen. sim = laufende Simulation (sonst nur Position, z. B. Geist) */
+  pose(r, x, y, sim, dt) {
+    const g = r.g, t = this.time; g.position.set(x, y, 0); dt = Math.max(1e-3, dt || 1 / 60);
+    const vx = sim ? sim.vx : (x - r.prevX) / dt, vy = sim ? sim.vy : (y - r.prevY) / dt; r.prevX = x; r.prevY = y;
+    const face = sim ? sim.face : Math.abs(vx) > 0.2 ? Math.sign(vx) : r.face; r.face = face;
+    let st = 'run';
+    if (sim) { if (sim.dead) st = 'fall'; else if (sim.finished) st = 'win'; else if (sim.hang) st = 'hang'; else if (sim.wall) st = 'wall'; else if (!sim.onGround) st = 'air'; else if (Math.abs(vx) < 0.3) st = 'idle'; }
+    else st = Math.abs(vy) > 1.2 ? 'air' : Math.abs(vx) < 0.3 ? 'idle' : 'run';
+    if (sim && sim.stun > 0 && st !== 'fall') st = 'stun';
+    r.body.rotation.set(0, st === 'win' ? 0.25 : face > 0 ? 1.2 : -1.2, 0);
+    const spd = Math.abs(vx), f = r.fig;
+    if (f) {
+      let clip = 'idle', sp = 1, once = false, reach = 0, oy = 0;
+      if (st === 'run') { if (spd > 3.4) { clip = 'sprint'; sp = Math.min(1.45, Math.max(0.75, spd / 5.2)); } else { clip = 'jog'; sp = Math.min(1.3, Math.max(0.6, spd / 2.8)); } }
+      else if (st === 'wall') { clip = sim.wall.p > 0.72 ? 'climb' : 'sprint'; sp = clip === 'climb' ? 1.3 : 1.5; once = clip === 'climb'; }
+      else if (st === 'air') clip = 'jump';
+      else if (st === 'hang') { clip = 'jump'; reach = 1; sp = 0.4; oy = PH - 2.18 * (f.root.scale.y || 1) + Math.sin(t * 3.6) * 0.03; }
+      else if (st === 'win') clip = 'dance';
+      else if (st === 'fall') { clip = y < (this.course ? this.course.o[0].y : 1) - 0.6 ? 'swim' : 'knock'; once = clip === 'knock'; }
+      else if (st === 'stun') { clip = 'knock'; once = true; }
+      if (st !== r.st || clip !== r.clip) { f.play(clip, { once, fade: st === 'air' || r.st === 'air' ? 0.12 : 0.2 }); r.clip = clip; }
+      f.speed(sp); f.reach(reach); g.position.y += oy; f.update(dt);
+      if (st === 'wall') r.body.rotation.x = 0;
+    } else if (r.toon) {
+      const M = window.ECModel, F = r.F; F.state = { run: 'walk', wall: 'dash', air: 'air', hang: 'finale', win: 'win', fall: 'thrown', stun: 'hit' }[st] || 'idle';
+      r.tt = (r.tt || 0) + dt * (st === 'run' ? Math.max(0.6, spd / 3.2) : 1); M.apply(r.toon, F, dt, r.tt);
+      if (st === 'hang') g.position.y += PH - 2.05;
+    }
+    r.st = st; return st;
   }
   adapt(dt) {   // Qualität senken, wenn das Gerät nicht hinterherkommt
     this.fpsT += dt; this.fpsN++; if (this.fpsT < 1.5) return; const fps = this.fpsN / this.fpsT; this.fpsT = 0; this.fpsN = 0;
@@ -273,17 +278,17 @@ export class Arena {
     // Läufer + Staub/Landung
     const x = sim ? sim.x : idleX != null ? idleX : 2;
     if (sim) {
-      this.pose(this.runner, sim.x, sim.y, sim);
+      this.pose(this.runner, sim.x, sim.y, sim, dt);
       if (!sim.onGround) this.lastVy = sim.vy;
       if (sim.onGround && !this.prevG && this.lastVy < -5 && !sim.dead) { this.dust(sim.x, sim.y, 8, 3); this.shake = Math.max(this.shake, Math.min(0.14, -this.lastVy * 0.012)); }
       this.prevG = sim.onGround; this.dustT -= dt; if (sim.onGround && Math.abs(sim.vx) > 3 && !sim.dead && !sim.finished && this.dustT <= 0) { this.dustT = 0.13; this.dust(sim.x - sim.face * 0.2, sim.y, 1, 1); }
-    } else { this.pose(this.runner, x, this.course ? this.course.o[0].y : 1, null); this.prevG = true; }
-    if (this.ghost && this.ghost.g.visible && ghostPos) this.pose(this.ghost, ghostPos[0], ghostPos[1], null);
+    } else { this.pose(this.runner, x, this.course ? this.course.o[0].y : 1, null, dt); this.prevG = true; }
+    if (this.ghost && this.ghost.g.visible && ghostPos) this.pose(this.ghost, ghostPos[0], ghostPos[1], null, dt);
     if (this.clock && (this.clockT -= dt) <= 0) { this.clockT = 0.1; this.drawClock(sim ? sim.t : 0); }
     // Kamera: leichte Vorausschau, Tempo-Zoom, Wackeln
     const vx = sim ? sim.vx || 0 : 0, tx = (this.attract != null ? this.attract : x) + 3.0 + vx * 0.15, ty = (sim ? Math.max(sim.y, 1) : 1.4) + 1.0; this.cx += (tx - this.cx) * Math.min(1, dt * 4.5); this.cy += (ty - this.cy) * Math.min(1, dt * 3.5);
     this.shake = Math.max(0, this.shake - dt * 1.4); const sk = this.shake, sx = (Math.random() - 0.5) * sk, sy = (Math.random() - 0.5) * sk;
-    this.cam.position.set(this.cx - 1.6 + sx, this.cy + 3.6 + sy, this.dist); this.cam.lookAt(this.cx, this.cy - 0.1, 0); const fov = this.baseFov + Math.min(5, Math.abs(vx) * 0.6); if (Math.abs(fov - this.cam.fov) > 0.05) { this.cam.fov += (fov - this.cam.fov) * Math.min(1, dt * 3); this.cam.updateProjectionMatrix(); }
+    this.cam.position.set(this.cx - 1.4 + sx, this.cy + 2.9 + sy, this.dist); this.cam.lookAt(this.cx, this.cy - 0.1, 0); const fov = this.baseFov + Math.min(5, Math.abs(vx) * 0.6); if (Math.abs(fov - this.cam.fov) > 0.05) { this.cam.fov += (fov - this.cam.fov) * Math.min(1, dt * 3); this.cam.updateProjectionMatrix(); }
     this.sun.position.set(this.cx + 8, 15, 11); this.sun.target.position.set(this.cx, 0, 0); this.rim.position.set(this.cx, 6, -6); this.wu.cx.value = this.cx; this.water.position.x = this.cx + 20; if (this.led) this.led.offset.x += dt * 0.05; if (this.ad) this.ad.offset.x += dt * 0.04;
     if (this.buzzer) this.buzzer.scale.y = 1 + Math.sin(this.time * 6) * 0.12;
     if (this.boom.intensity > 0) this.boom.intensity = Math.max(0, this.boom.intensity - dt * 4);

@@ -2,7 +2,7 @@
 import { Sim, COURSES, DT, fmtTime, rank, pointsFor, standings } from './engine.js';
 import { SFX, Audio_ } from './audio.js';
 import { initPair, JOIN, loadScript } from './pair.js';
-import { CHARS } from './chars.js';
+import { CHARS, validChar, charName, charGame, charGroups } from './chars.js';
 import { createUI } from './menu.js';
 import { stick, hold } from './stick.js';
 import { makeCommentator } from './commentary.js';
@@ -21,16 +21,18 @@ if (JOIN) {
   // ------------------------------------------------------------ Laden mit echtem Fortschritt: 3D-Bibliothek → Studio → Logos
   ui.boot.progress(6, 'Lade 3D-Grafik …');
   try { await loadScript(THREE_URL); } catch (e) { $('errTxt').textContent = 'Die 3D-Bibliothek konnte nicht geladen werden (Internet?).'; $('err').hidden = false; throw e; }
+  // Figuren: Lader + gemeinsame easygames-Figuren + Figuren-Liste aller Spiele (fehlt etwas, läuft das Spiel trotzdem)
+  await Promise.all(['../vendor/three-r128-gltfloader.js', '../figuren/figuren.js', '../easyclash/js/roster.js'].map(u => loadScript(u).catch(e => console.warn(e))));
   ui.boot.progress(38, 'Baue das Studio …'); await frame();
   const { Arena } = await import('./scene.js');
-  let booting = true; const texDone = new Promise(res => { const M = window.THREE.DefaultLoadingManager; M.onProgress = (u, n, total) => { if (booting) ui.boot.progress(60 + 38 * n / total, `Lade Senderlogos (${n}/${total}) …`); }; M.onLoad = () => res(); setTimeout(res, 8000); });
+  let booting = true; const texDone = new Promise(res => { const M = window.THREE.DefaultLoadingManager; M.onProgress = (u, n, total) => { if (booting) ui.boot.progress(60 + 38 * n / total, `Lade Läufer und Logos (${n}/${total}) …`); }; M.onLoad = () => res(); setTimeout(res, 8000); });
   const arena = new Arena($('cv'), Array.from({ length: 16 }, (_, i) => `logos/${String(i + 1).padStart(2, '0')}.png`));
   addEventListener('resize', () => arena.resize());
   ui.boot.progress(60, 'Lade Senderlogos …');
   { const im = new Image(); im.onload = () => { $('brandImg').src = im.src; $('brandImg').hidden = false; $('brandText').hidden = true; document.querySelector('.cm-tag').hidden = true; }; im.onerror = () => {}; im.src = 'logo.png'; }
 
   const S = { mode: 'show', n: 2, names: store.get('fpNames', []).slice(0, 4), chars: store.get('fpChars', [0, 1, 3, 2]).slice(0, 4), tc: 0 };
-  for (let i = 0; i < 4; i++) { if (!S.names[i]) S.names[i] = 'Läufer ' + (i + 1); if (!(S.chars[i] >= 0 && S.chars[i] < CHARS.length)) S.chars[i] = i; }
+  for (let i = 0; i < 4; i++) { if (!S.names[i]) S.names[i] = 'Läufer ' + (i + 1); if (!validChar(S.chars[i])) S.chars[i] = i; }
   let G = null, token = 0, pending = null, curCourse = -1, snd = store.get('fpSnd', true), keys = 0, touchM = 0; const phoneM = [0, 0, 0, 0];
   Audio_.setOn(snd);
   const FAST = () => window.__fpFast || 1, sleep = ms => new Promise(r => setTimeout(r, ms / FAST()));
@@ -89,8 +91,8 @@ if (JOIN) {
 
   // ------------------------------------------------------------ Menü / Einrichtung
   function fillNames() {
-    const n = S.mode === 'train' ? 1 : S.n; $('names').innerHTML = Array.from({ length: n }, (_, i) => `<div class="nm" style="--pc:${CSS[i]}"><input data-i="${i}" maxlength="14" value="${esc(S.names[i])}" aria-label="Name Läufer ${i + 1}" autocomplete="off"><button class="chb" data-c="${i}" aria-label="Figur wechseln">🧍 ${esc(CHARS[S.chars[i]].n)} ▸</button></div>`).join('');
-    $('names').querySelectorAll('.chb').forEach(b => b.onclick = () => { const i = +b.dataset.c; S.chars[i] = (S.chars[i] + 1) % CHARS.length; store.set('fpChars', S.chars); b.textContent = '🧍 ' + CHARS[S.chars[i]].n + ' ▸'; SFX.click(); look(i); });
+    const n = S.mode === 'train' ? 1 : S.n; $('names').innerHTML = Array.from({ length: n }, (_, i) => `<div class="nm" style="--pc:${CSS[i]}"><input data-i="${i}" maxlength="14" value="${esc(S.names[i])}" aria-label="Name Läufer ${i + 1}" autocomplete="off"><button class="chb" data-c="${i}" aria-label="Figur wählen">🧍 ${esc(charName(S.chars[i]))} ▸</button></div>`).join('');
+    $('names').querySelectorAll('.chb').forEach(b => b.onclick = () => { SFX.click(); pickChar(+b.dataset.c); });
     $('names').querySelectorAll('input').forEach(inp => inp.oninput = () => { S.names[+inp.dataset.i] = inp.value.trim().slice(0, 14) || 'Läufer ' + (+inp.dataset.i + 1); store.set('fpNames', S.names); });
   }
   function setupView(mode) {
@@ -102,7 +104,18 @@ if (JOIN) {
   const seg = (id, fn) => $(id).addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (!b) return; SFX.click(); $(id).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); fn(+b.dataset.v); });
   seg('sgPl', v => { S.n = v; fillNames(); push(); }); seg('sgCourse', v => { S.tc = v; loadScene(v); });
   function loadScene(ci) { if (curCourse !== ci) { curCourse = ci; arena.setCourse(COURSES[ci]); } }
-  function look(i) { arena.setLook(COLORS[i], LOGO[i], S.chars[i]); }
+  function look(i) { return arena.setLook(COLORS[i], LOGO[i], S.chars[i]); }
+  // Figur wählen: eigene Läufer und alle Figuren aus anderen easygames (nach Spiel gruppiert); Vorschau läuft im Studio mit
+  function pickChar(i) {
+    const cur = S.chars[i];
+    $('pickTitle').textContent = 'Figur für ' + S.names[i]; $('pickBox').style.setProperty('--pc', CSS[i]);
+    $('pickList').innerHTML = charGroups().map(g => `<h3>${esc(g.n)}</h3><div class="pk-g">${g.list.map(c => `<button class="pk${c.k === cur ? ' on' : ''}" data-k="${esc(c.k)}" style="--cc:${esc(c.c)}"><i></i>${esc(c.n)}</button>`).join('')}</div>`).join('');
+    $('pick').hidden = false; look(i);
+    const on = $('pickList').querySelector('.pk.on') || $('pickList').querySelector('.pk'); if (on) { on.focus({ preventScroll: true }); on.scrollIntoView({ block: 'center' }); }
+    $('pickList').onclick = e => { const b = e.target.closest('.pk'); if (!b) return; SFX.click(); const k = /^\d+$/.test(b.dataset.k) ? +b.dataset.k : b.dataset.k; S.chars[i] = k; store.set('fpChars', S.chars); $('pickList').querySelectorAll('.pk').forEach(x => x.classList.toggle('on', x === b)); look(i); $('pickWho').textContent = charGame(k) ? 'aus ' + charGame(k) : ''; };
+    $('pickWho').textContent = charGame(cur) ? 'aus ' + charGame(cur) : '';
+  }
+  $('bPickOk').onclick = () => { SFX.click(); $('pick').hidden = true; fillNames(); };
 
   // ------------------------------------------------------------ Lauf
   const ghostAt = (g, t) => { if (!g || g.length < 4) return null; const f = t * 20, i = Math.min(Math.floor(f), g.length / 2 - 2); if (i < 0) return [g[0], g[1]]; const u = Math.min(1, f - i); return [g[2 * i] + (g[2 * i + 2] - g[2 * i]) * u, g[2 * i + 1] + (g[2 * i + 3] - g[2 * i + 1]) * u]; };
@@ -193,7 +206,7 @@ if (JOIN) {
   const go = (id, l) => `<button class="btn green cm-go" data-go="${id}">${l} ▶</button>`;
   function panel(id) {
     const b = bests(), done = COURSES.filter((c, i) => b[i]).length;
-    if (id === 'show') return `<h3>Show starten</h3><p>Die große Hindernis-Show: Vorrunde, Halbfinale und Finale. Jeder Läufer geht allein auf den Parcours, die Zeiten werden verglichen – am Ende gewinnt, wer die meisten Punkte hat.</p><div class="cm-stats"><div><b>1–4</b><small>Läufer</small></div><div><b>3</b><small>Parcours</small></div><div><b>${CHARS.length}</b><small>Figuren</small></div></div>${go('show', 'Show einrichten')}`;
+    if (id === 'show') return `<h3>Show starten</h3><p>Die große Hindernis-Show: Vorrunde, Halbfinale und Finale. Jeder Läufer geht allein auf den Parcours, die Zeiten werden verglichen – am Ende gewinnt, wer die meisten Punkte hat.</p><div class="cm-stats"><div><b>1–4</b><small>Läufer</small></div><div><b>3</b><small>Parcours</small></div><div><b>${charGroups().reduce((a, g) => a + g.list.length, 0)}</b><small>Figuren</small></div></div>${go('show', 'Show einrichten')}`;
     if (id === 'train') return `<h3>Training</h3><p>Ein Parcours, so oft du willst. Deine Bestzeit wird gespeichert und läuft als Geist mit.</p><div class="cm-stats">${COURSES.map((c, i) => `<div><b>${b[i] ? fmtTime(b[i].t) : '–'}</b><small>${esc(c.name)}</small></div>`).join('')}</div><p class="h">${done ? `${done} von ${COURSES.length} Parcours geschafft.` : 'Noch keine Bestzeit – ab ins Ziel!'}</p>${go('train', 'Training wählen')}`;
     if (id === 'pair') return `<h3>Online & Handys</h3><p>QR-Code scannen oder Code eingeben, auch übers Internet: Jedes Handy wird das Steuer-Pad eines Läufers (bis zu 4) und meldet „Bereit".</p><p class="h">Ohne Handy spielt ihr abwechselnd an diesem Gerät.</p>${go('pair', 'Koppeln')}`;
     if (id === 'rules') return `<h3>So wird gespielt</h3><div class="cm-keys2">${touch ? '<span>🕹️ Stick</span><span>laufen</span><span>⤒ Springen</span><span>springen (länger halten = höher)</span>' : '<span><kbd>←</kbd><kbd>→</kbd> <kbd>A</kbd><kbd>D</kbd></span><span>laufen</span><span><kbd>Leertaste</kbd> <kbd>W</kbd></span><span>springen (länger halten = höher)</span>'}<span>🎮</span><span>Steuerkreuz/Stick laufen, A springen</span></div><p class="h">An den Hangelstangen greift dein Läufer von selbst. Wer ins Wasser fällt, ist raus – dann zählt die Strecke.</p>${go('rules', 'Alle Regeln')}`;
