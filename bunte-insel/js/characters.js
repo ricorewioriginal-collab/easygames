@@ -18,12 +18,16 @@
       }
     }
     sph(x, y, z, r, c, detail = 1, sx = 1, sy = 1, sz = 1) {
-      const small = detail === 0 || r < .08, w = small ? 8 : 16, h = small ? 6 : 10;
+      /* detail 2 = große, nah gesehene Kugel (Kopf): feinere Rundung für eine glatte Silhouette */
+      /* detail 3 = kleine, aber gut sichtbare Teile (Augen): rund statt achteckig */
+      const mid = detail === 3 || (detail === 1 && r < .08), small = detail === 0 || r < .08, w = detail === 2 ? 24 : mid ? 12 : small ? 8 : 16, h = detail === 2 ? 16 : mid ? 8 : small ? 6 : 10;
       this.add(geometry('sphere' + w, () => new T.SphereGeometry(1, w, h)), x, y, z, r * sx, r * sy, r * sz, c);
     }
     cyl(x, y, z, rt, rb, h, c, seg = 8, rx = 0, ry = 0, rz = 0) {
-      seg = Math.max(10, seg); this.add(geometry(['c', rt, rb, seg].join(':'), () => new T.CylinderGeometry(rt, rb, 1, seg)), x, y + h / 2, z, 1, h, 1, c, rx, ry, rz);
+      seg = Math.max(12, seg); this.add(geometry(['c', rt, rb, seg].join(':'), () => new T.CylinderGeometry(rt, rb, 1, seg)), x, y + h / 2, z, 1, h, 1, c, rx, ry, rz);
     }
+    /* gedrehte, gestauchte Kugel (Flügel, Hasenohren, Krempen-Rollen) */
+    ell(x, y, z, r, c, sx = 1, sy = 1, sz = 1, rx = 0, ry = 0, rz = 0) { this.add(geometry('sphere16', () => new T.SphereGeometry(1, 16, 10)), x, y, z, r * sx, r * sy, r * sz, c, rx, ry, rz); }
     box(x, y, z, w, h, d, c, ry = 0, rx = 0, rz = 0) {
       // Tiny badges stay flat. Major clothing forms get softened corners.
       const radius = Math.min(w, h, d) * .22;
@@ -45,32 +49,42 @@
       this.add(g,0,0,0,1,1,1,color);
     }
     profile(x,y,z,points,depth,color){
-      const key='profile:'+JSON.stringify(points);const g=geometry(key,()=>new T.LatheGeometry(points.map(p=>new T.Vector2(p[0],p[1])),16));this.add(g,x,y,z,1,1,depth,color);
+      const key='profile:'+JSON.stringify(points);const g=geometry(key,()=>new T.LatheGeometry(points.map(p=>new T.Vector2(p[0],p[1])),20));this.add(g,x,y,z,1,1,depth,color);
     }
     scalp(x,y,z,rx,ry,rz,color) {
       // Upper hemisphere: hair never forms a solid ball in front of the face.
-      this.add(geometry('scalp',()=>new T.SphereGeometry(1,16,8,0,Math.PI*2,0,Math.PI*.52)),x,y,z,rx,ry,rz,color);
+      this.add(geometry('scalp',()=>new T.SphereGeometry(1,24,10,0,Math.PI*2,0,Math.PI*.52)),x,y,z,rx,ry,rz,color);
     }
   };
+  /* Figuren-Material: Licht pro Bildpunkt (Phong) statt pro Ecke – keine sichtbaren Kanten auf Kopf und Körper –, ein zarter Glanz und
+     ein weiches Randlicht (heller Saum an den Konturen) für den modernen Trickfilm-Look. Ein gemeinsames Material für alle Figuren (ein Shader). */
+  let charMat = null;
+  BI.charMat = () => charMat || (charMat = (() => {
+    const m = new T.MeshPhongMaterial({ vertexColors: true, shininess: 26, specular: 0x1c1c1c });
+    m.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace('gl_FragColor = vec4( outgoingLight, diffuseColor.a );',
+      'float biRim = 1.0 - clamp( dot( normal, normalize( vViewPosition ) ), 0.0, 1.0 );\n\toutgoingLight *= 1.0 + 0.5 * biRim * biRim * biRim;\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );'); };
+    return m;
+  })());
   BI.characterFace = function (b, o, skin, hair, faceScale, isJannis) {
     const color = (a,c,t)=>new T.Color(a).lerp(new T.Color(c),t).getHex();
     const surface=(x,y)=>.285*faceScale[2]*Math.sqrt(Math.max(.1,1-(x/(.285*faceScale[0]))**2-((y-1.42)/(.285*faceScale[1]))**2));
     const eye=o.eye==null?(isJannis?0x52759a:0x654b36):o.eye, expression=o.eyeS|0, lip=o.lip==null?color(skin,0x743c3a,.72):o.lip;
-    const ey=1.458, ex=.105, eyeSize=expression===1?.058:.049;
+    /* große, glänzende Trickfilm-Augen: weiß, farbige Iris, dunkle Pupille, zwei Lichtpunkte */
+    const ey=1.458, ex=.108, eyeSize=expression===1?.066:.058;
     for(const sign of [-1,1]) {
-      const x=sign*ex,z=surface(x,ey)+.008, sy=expression===2?.48:expression===3?.72:1.15;
-      b.sph(x,ey,z,eyeSize,0xfffbef,0,1,sy,.37);
-      b.sph(x,ey,z+.016,eyeSize*.67,eye,0,.9,sy,.32);
-      b.sph(x,ey-.002,z+.024,eyeSize*.36,0x253449,0,.84,sy,.32);
-      b.sph(x-.010,ey+.015,z+.031,.008,0xffffff,0,1,1,.45);
-      if(expression===4)b.sph(x+.010,ey-.014,z+.030,.006,0xffffff,0,1,1,.5);
+      const x=sign*ex,z=surface(x,ey)+.006, sy=expression===2?.48:expression===3?.72:1.18;
+      b.sph(x,ey,z,eyeSize,0xfffbef,3,1,sy,.36);
+      b.sph(x,ey-.002,z+.016,eyeSize*.72,eye,3,.92,sy,.32);
+      b.sph(x,ey-.004,z+.024,eyeSize*.4,0x1d2433,0,.86,sy,.32);
+      b.sph(x-.016,ey+.018,z+.031,.0115,0xffffff,0,1,1,.45);
+      b.sph(x+.012,ey-.016,z+.030,.006,0xffffff,0,1,1,.5);
       const brow=o.brow==null?1:o.brow|0;
-      if(brow)b.arc(x,1.502,surface(x,1.53)+.005,.058,.022,brow===2?.012:.008,color(hair,0x372c2d,.25),brow===3?.12:.15,Math.PI-.15,6);
+      if(brow)b.arc(x,1.533,surface(x,1.555)+.005,.06,.022,brow===2?.012:.008,color(hair,0x372c2d,.25),brow===3?.12:.15,Math.PI-.15,6);
       if(o.blush!==false)b.sph(sign*.161,1.369,surface(sign*.161,1.369)+.003,.045,color(skin,0xe8807d,.27),0,1,.53,.13);
       if(o.freckles)for(let j=0;j<3;j++){const fx=sign*(.13+j*.021),fy=1.39+(j%2)*.012;b.sph(fx,fy,surface(fx,fy)+.008,.006,color(skin,0x805238,.65),0,1,1,.45);}
     }
     const nose=[.029,.042,.031,.039][(o.nose|0)&3];b.sph(0,1.398,.288,nose,color(skin,0xd69a7b,.12),0,(o.nose|0)===3?1.3:1,.78,1);
-    const mouth=o.mouth||'smile', mz=surface(0,1.326)+.01+((o.beard|0)>=5?.035:0);
+    const mouth=o.mouth||'smile', mz=surface(0,1.326)+.01+((o.beard|0)>=5||(o.beard|0)===1?.035:0);
     if(mouth==='smile'||mouth==='grin'||isJannis){b.arc(0,1.35,mz,mouth==='grin'?.081:.064,.032,.009,lip,Math.PI*1.08,Math.PI*1.92,10);if(mouth==='grin')b.sph(0,1.331,mz+.004,.05,0xfffbef,0,1,.20,.15);}
     else if(mouth==='open'||mouth==='tongue'){b.sph(0,1.328,mz,.043,0x763b3e,0,1,.8,.23);b.sph(.008,1.310,mz+.01,.024,0xe88e98,0,1,mouth==='tongue'?1:.45,.23);}
     else if(mouth==='pout')b.sph(0,1.326,mz,.027,lip,0,1,.6,.25);

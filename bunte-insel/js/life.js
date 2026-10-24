@@ -42,6 +42,12 @@ BI.createLife = function (G) {
     const n = base({ spd: o.spd || 1.1 + rng() * .8, r: .45, kind: 'person', mode: o.mode || 'walk', rad: o.rad || 10, dancer: o.dance, bursts: o.bursts }, c.group); n.c = c; n.pose = (ph, amp, wave) => c.pose(ph, amp, wave);
     const nm = o.names ? (o.uniqueNames ? o.names[((o._nameIndex = (o._nameIndex || 0) + 1) - 1) % o.names.length] : pick(o.names)) : 'Bewohner', lines = o.lines || ['schön, dich zu sehen!']; n.p = { name: nm, lines: lines.slice(), i: 0 }; K.talkers.push(n); return n;
   };
+  /* Gäste aus anderen easygames (js/gaeste.js): jeder genau einmal, mit Namensschild; beim ersten Gespräch sagen sie, aus welchem Spiel sie kommen */
+  F.guest = (reg, o) => {
+    const G0 = BI.GAESTE || [], g = G0[((o._i = (o._i || 0) + 1) - 1) % Math.max(1, G0.length)]; if (!g) return F.person(reg, o);
+    const c = BI.makeChar(Object.assign({ name: g.name }, g.o)), n = base({ spd: 1 + rng() * .5, r: .5, kind: 'person', mode: 'walk', rad: 5, bursts: true }, c.group); n.c = c; n.pose = (ph, amp, wave) => c.pose(ph, amp, wave);
+    const l0 = g.lines[0]; n.guest = g.id; n.p = { name: g.name, lines: ['ich bin zu Besuch aus dem Spiel „' + g.game + '“! ' + l0.charAt(0).toUpperCase() + l0.slice(1)].concat(g.lines.slice(1)), i: 0 }; K.talkers.push(n); return n;
+  };
   F.pet = (reg, o) => { const p = BI.makePet(o.pet || pick(['bello', 'mieze', 'hoppel'])); p.group.scale.setScalar(o.scale || 1); const n = base({ spd: o.spd || .9 + rng() * .5, r: .4, rad: 8, c: p }, p.group); n.pose = (ph, amp) => p.pose(ph, amp, amp > 0 || Math.sin(ph) > .5); return n; };
   F.dragon = (reg, o) => { const cols = pick([[0x5fd6a8, 0xffb347, 0x6cc6ff], [0xff8a6b, 0xffe27a, 0xffb0a0], [0xb48aff, 0xffd0f0, 0xc8b8ff], [0x6bb8ff, 0xfff0a0, 0xa8d8ff], [0xffd23f, 0xfff4c0, 0xffb347]]), d = BI.makeDrache({ body: cols[0], belly: cols[1], wing: cols[2] }); d.root.scale.setScalar(o.scale || R_(.4, .6)); const n = base({ spd: .7 + rng() * .4, r: .5, rad: 8 }, d.root); n.pose = (ph, amp) => d.set(amp > 0 ? 'walk' : (Math.sin(ph * .3) > .8 ? 'happy' : 'idle'), ph / 7); return n; };
   F.moosling = (reg, o) => { const d = BI.makeMoosling(); d.root.scale.setScalar(R_(.7, 1)); const n = base({ spd: .9 + rng() * .5, r: .4, rad: 9 }, d.root); n.pose = (ph, amp) => d.set(amp > 0 ? 'walk' : (Math.sin(ph * .4) > .85 ? 'happy' : 'idle'), ph / 8); return n; };
@@ -59,6 +65,7 @@ BI.createLife = function (G) {
       ['pet', 4, { pet: 'bello' }], ['pet', 4, { pet: 'mieze' }], ['pet', 3, { pet: 'hoppel' }],
       ['critter', 5, { k: 'squirrel', rad: 8 }], ['critter', 4, { k: 'hedgehog', rad: 5, spd: .5 }], ['critter', 10, { k: 'pigeon', rad: 5 }], ['critter', 6, { k: 'rabbit', rad: 8 }],
       ['float', 10, { k: 'butterfly', c: 0xffb347, alt: [1, 2.4], amp: 4 }], ['fly', 8, { k: 'gull', alt: [14, 28], w: .1 }], ['float', 10, { k: 'owl', alt: [3, 6], amp: 5, sp: .3 }], ['beach', 6, {}]] },
+    { id: 'gaeste', x: BI.GAESTE_TREFF.x, z: BI.GAESTE_TREFF.z, R: 16, pad: 2, ok: land, spec: [['guest', (BI.GAESTE || []).length, {}]] }, /* easygames-Treff */
     { id: 'city', x: 0, z: -290, R: 62, pad: 6, spec: [
       ['person', 8, { names: ['Herr Meier', 'Frau Schulz', 'Herr Braun', 'Frau Weiss', 'Herr Kaiser', 'Frau Lange'], shirts: [0xffffff, 0xcfe0ff, 0xf0f0f0], pants: [0x23262d, 0x3d4a7a, 0x5a5a66], hats: ['none', 'tophat'], spd: 1.7, rad: 18, lines: ['ich habe gleich einen wichtigen Termin! 💼', 'Die Stadt schläft nie – hier ist immer was los.', 'Hast du schon die Läden angeschaut?', 'Kaffee gibt es beim Bäcker, ganz frisch.'] }],
       ['person', 6, { names: ['Touristin Tina', 'Tourist Tom', 'Reisende Rita'], hats: ['cap', 'cowboy'], rad: 14, lines: ['ich mache lauter Fotos von der Stadt! 📸', 'Wo geht es zum Hafen?', 'Bei euch ist es wunderschön!'] }],
@@ -128,7 +135,7 @@ BI.createLife = function (G) {
       if (kind === 'beach') { const a = rng() * TAU, r = R_(168, 175), x = Math.sin(a) * r, z = Math.cos(a) * r; if (!W.free(x, z, .5)) continue; n = F.critter(reg, { k: 'crab', rad: 5, spd: .5, side: true }); place(n, reg, x, z); n.beach = true; }
       else if (F[kind]) {
         n = F[kind](reg, o || {}); if (n.mode === 'fly') { n.root.position.set(reg.x, n.alt, reg.z); n.x = reg.x; n.z = reg.z; }
-        else { const s = spot(reg, n.r + .3); if (!s) { const ti = K.talkers.indexOf(n); if (ti >= 0) K.talkers.splice(ti, 1); continue; } place(n, reg, s[0], s[1]); }
+        else { let s = spot(reg, n.r + .3); if (!s && kind === 'guest') s = [reg.x, reg.z]; /* Gäste nie verlieren */ if (!s) { const ti = K.talkers.indexOf(n); if (ti >= 0) K.talkers.splice(ti, 1); continue; } place(n, reg, s[0], s[1]); }
       } else continue;
       const sp = kind === 'beach' ? 'crab' : o && o.k; if (DAY[sp]) n.day = true; if (sp === 'owl') n.nite = true; if (o && o.awake) n.awake = true;
       n.reg = reg; n.root.visible = false; scene.add(n.root); reg.list.push(n);
