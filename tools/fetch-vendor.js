@@ -16,6 +16,8 @@ const PACKAGES = [
   { pkg: 'qrcode-generator@1.4.4', files: { 'package/qrcode.js': 'qrcode-generator-1.4.4.js' } },
   { pkg: 'jsqr@1.4.0', files: { 'package/dist/jsQR.js': 'jsqr-1.4.0.js', 'package/LICENSE': 'licenses/jsqr-MIT.txt' } },
   { pkg: 'planck@1.4.2', files: { 'package/dist/planck.min.js': 'planck-1.4.2.min.js', 'package/LICENSE.txt': 'licenses/planck-MIT.txt' } },
+  // Körper-Erkennung für Tanzspiele (Kamera, läuft lokal; nur das „lite“-Modell) – Apache-2.0
+  { pkg: '@mediapipe/pose@0.5.1675469404', files: Object.fromEntries(['pose.js', 'pose_landmark_lite.tflite', 'pose_solution_packed_assets.data', 'pose_solution_packed_assets_loader.js', 'pose_solution_simd_wasm_bin.js', 'pose_solution_simd_wasm_bin.wasm', 'pose_solution_simd_wasm_bin.data', 'pose_solution_wasm_bin.js', 'pose_solution_wasm_bin.wasm', 'pose_web.binarypb', 'README.md'].map(f => ['package/' + f, f === 'README.md' ? 'licenses/mediapipe-pose-Apache-2.0-README.md' : 'mediapipe-pose/' + f])) },
   { pkg: '@fontsource-variable/fredoka@5.3.0', files: { 'package/files/fredoka-latin-wght-normal.woff2': 'fonts/fredoka-latin-wght-normal.woff2' } }
 ];
 const FREDOKA_CSS = `/* Fredoka (lokal, ersetzt Google Fonts) – SIL Open Font License */

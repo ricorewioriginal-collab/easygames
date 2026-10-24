@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "174675957571",
- "generated": "2026-10-24T22:36:15+00:00",
- "commit": "4f0a1159cb2e99908ff4eb9ab213f276df8a72ac",
+ "version": "62584717234e",
+ "generated": "2026-10-24T22:43:26+00:00",
+ "commit": "53f433998bdcf5b771d615e9154625259e8b2210",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5443,8 +5443,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3235,
-   "h": "fd1ac8cb5757d96b8a698a6bea0e97994d09a3654ccc6622288f12f71713a8a3"
+   "s": 3260,
+   "h": "c9f9a2b97d3af871cf532921b48f72a4f62a5d1eecc0824114a73eb3f24cb23a"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -6283,8 +6283,8 @@
   },
   {
    "p": "games.js",
-   "s": 49135,
-   "h": "17bcf4b9e01c12d434789de337badd53318f07af1f82098504bb96c2d07d9038"
+   "s": 50056,
+   "h": "1976afb09751e1ddbc5c86bcafac7762bbba5ce18ba048033397c66d9a283e4f"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6442,9 +6442,69 @@
    "h": "05a56d74e96f128cc4e816f043846d6eba0ec0418afb6f13f0a1b83ec8ce083f"
   },
   {
+   "p": "groove-arena/card.jpg",
+   "s": 30498,
+   "h": "58dd8e9cfcaa8ac120cc68b6b03483e761cffda005c0a0309e4298c620e4b603"
+  },
+  {
+   "p": "groove-arena/index.html",
+   "s": 15761,
+   "h": "738b3c147f7650cc23874da53c681f8db3c48e0d93d2fff6b98080516a73f08d"
+  },
+  {
+   "p": "groove-arena/js/app.js",
+   "s": 46862,
+   "h": "3d39a680f7b5f067c13a7f2ae39529dd8ad317440cd544f64598033dbc2258e9"
+  },
+  {
+   "p": "groove-arena/js/core.js",
+   "s": 38402,
+   "h": "ae975f1d8d7b385a5f7036a31ec76eadecc0fc707633536df6d3afb6f76fbd14"
+  },
+  {
+   "p": "groove-arena/js/env.js",
+   "s": 2083,
+   "h": "f42c97c3d5c82171be0e8f86a3a7e0944860ccf3c39a3054f9d9305d5dab50fa"
+  },
+  {
+   "p": "groove-arena/js/media.js",
+   "s": 8994,
+   "h": "6d29235778b37ba860d5268c234df1de86dd563b5a7814dbce5a1c75fe08aabb"
+  },
+  {
+   "p": "groove-arena/js/sense.js",
+   "s": 6324,
+   "h": "4697acdb77a9785858062265c5573f1846bbb14bba10d128165c0d9c5dcd08e8"
+  },
+  {
+   "p": "groove-arena/js/sound.js",
+   "s": 1565,
+   "h": "547df858e99e512482c7b76edb6adfb24fb8455685ce03dd6c55dedb6e0b5e09"
+  },
+  {
+   "p": "groove-arena/js/view.js",
+   "s": 17136,
+   "h": "d6d377f1b1bc61ee1d52f92e87dfc6c533eeebc4c30d151d3f34e435c51787c8"
+  },
+  {
+   "p": "groove-arena/manifest.webmanifest",
+   "s": 778,
+   "h": "2e1c8f5a115f0babbb262612cfa0943b1fffe9a2f9eb6a08037f82a607bb3667"
+  },
+  {
+   "p": "groove-arena/style.css",
+   "s": 19703,
+   "h": "ddfbbb76604e845301ddd3d8bc7b4aa614226d0ad94ef4a511720d5e344f3727"
+  },
+  {
+   "p": "groove-arena/sw.js",
+   "s": 2000,
+   "h": "3ef82aa39c6b8742d48f7511b38b39012f06fff32b47c139966776515ccaa188"
+  },
+  {
    "p": "guides.js",
-   "s": 140744,
-   "h": "9367c4b95e26d8422dbca16bbb0ee0de46e5c880d476cb73ee95c8b4f9d468c6"
+   "s": 142889,
+   "h": "54f612ff84554e9025dd0efd1cd20b12cb3b89af6976f86487e973c6e66d469c"
   },
   {
    "p": "heute.html",
@@ -7038,8 +7098,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3681,
-   "h": "3034b0fd0054daf30de5c1f88eb4f3c58207575365b1d41dde324a4d4f0a6cea"
+   "s": 3756,
+   "h": "4d89500d26adf8c57c0b47bdbd7d07689e2c0a459af2bfbb08cda43f8e9b0845"
   },
   {
    "p": "oma-rennen/card.jpg",
@@ -8583,8 +8643,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 213762,
-   "h": "a15287479cff82a6a2fde44cbfa6c01490bad7ef33d49f8c0f75bca5d5fe01d0"
+   "s": 217138,
+   "h": "fb6cf22e60d8641b5e271ccd0358d5cbd4550d8864564a8c0d44f7357d386ae4"
   },
   {
    "p": "taschi/card.svg",
@@ -9042,6 +9102,11 @@
    "h": "cdc9c2c73b4b4d8f4f43ebed66870e4eff37166ae187ff64d2c6c32495b9355c"
   },
   {
+   "p": "thumbs/groove-arena.webp",
+   "s": 13380,
+   "h": "8b196614b4605df4c6fb93a953fe57ff9ed3212a8faf4288f55f6eae4552d95e"
+  },
+  {
    "p": "thumbs/huepfstrasse.webp",
    "s": 25524,
    "h": "72c4990a6e09e1051d54c05aa1d1b08f346bfafc432941b6427537d3599ef391"
@@ -9118,8 +9183,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2147,
-   "h": "823b87c67b538877ac48776ee1da071395b15b1958a878f4fd7bc11dfbe8eb2c"
+   "s": 2175,
+   "h": "4e4f117ad312bdc3b7c0b1a526d0e83bc2c9f29135032225157d813c73526994"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
@@ -9420,6 +9485,56 @@
    "p": "vendor/licenses/jsqr-MIT.txt",
    "s": 11358,
    "h": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08"
+  },
+  {
+   "p": "vendor/mediapipe-pose/pose.js",
+   "s": 47089,
+   "h": "fcb703afcce65d0a1c540f6a70c3bb45fc84521498c21a9d4160265dde648ab4"
+  },
+  {
+   "p": "vendor/mediapipe-pose/pose_landmark_lite.tflite",
+   "s": 2819824,
+   "h": "f17bfbecadb61c3be1baa8b8d851cc6619c870a87167b32848ad20db306b9d61"
+  },
+  {
+   "p": "vendor/mediapipe-pose/pose_solution_packed_assets.data",
+   "s": 2962288,
+   "h": "a63c614bef30d35947f13be361820b1e4e3bec9cfeebf4d11216a18373108e85"
+  },
+  {
+   "p": "vendor/mediapipe-pose/pose_solution_packed_assets_loader.js",
+   "s": 8002,
+   "h": "d7aa29b7d8e11b5c97a58d719e982dd15c2de72995d95112d60492b854840a36"
+  },
+  {
+   "p": "vendor/mediapipe-pose/pose_solution_simd_wasm_bin.data",
+   "s": 0,
+   "h": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+   "p": "vendor/mediapipe-pose/pose_solution_simd_wasm_bin.js",
+   "s": 276478,
+   "h": "3983d1dca31d945d81abb70b18dd61f28ef4736e112463d7cfb1cbadef588127"
+  },
+  {
+   "p": "vendor/mediapipe-pose/pose_solution_simd_wasm_bin.wasm",
+   "s": 6104372,
+   "h": "195a929430e2ce130b3efb82e64ba27c8e68cb0f6bad870b715688060ea6f7e2"
+  },
+  {
+   "p": "vendor/mediapipe-pose/pose_solution_wasm_bin.js",
+   "s": 276473,
+   "h": "3fcfd9574a04fcf4a0b9271b9b4429c6b9a70278300a5e54c45ddf2001e41422"
+  },
+  {
+   "p": "vendor/mediapipe-pose/pose_solution_wasm_bin.wasm",
+   "s": 5994571,
+   "h": "a5589369289e1f1e007c106e8ffb26e85a5be762c6db9551ed36213f8f58378d"
+  },
+  {
+   "p": "vendor/mediapipe-pose/pose_web.binarypb",
+   "s": 1007,
+   "h": "dc8efd1c2d62007b34278467407fda5f70847f41310e0e39f0f59fc17b1d01f7"
   },
   {
    "p": "vendor/peerjs-1.5.4.min.js",
@@ -10433,6 +10548,16 @@
   }
  ],
  "vendor": {
+  "https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose_landmark_lite.tflite": "vendor/mediapipe-pose/pose_landmark_lite.tflite",
+  "https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose_solution_packed_assets_loader.js": "vendor/mediapipe-pose/pose_solution_packed_assets_loader.js",
+  "https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose_solution_packed_assets.data": "vendor/mediapipe-pose/pose_solution_packed_assets.data",
+  "https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose_solution_simd_wasm_bin.data": "vendor/mediapipe-pose/pose_solution_simd_wasm_bin.data",
+  "https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose_solution_simd_wasm_bin.js": "vendor/mediapipe-pose/pose_solution_simd_wasm_bin.js",
+  "https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose_solution_simd_wasm_bin.wasm": "vendor/mediapipe-pose/pose_solution_simd_wasm_bin.wasm",
+  "https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose_solution_wasm_bin.js": "vendor/mediapipe-pose/pose_solution_wasm_bin.js",
+  "https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose_solution_wasm_bin.wasm": "vendor/mediapipe-pose/pose_solution_wasm_bin.wasm",
+  "https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose_web.binarypb": "vendor/mediapipe-pose/pose_web.binarypb",
+  "https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js": "vendor/mediapipe-pose/pose.js",
   "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js": "vendor/jsqr-1.4.0.js",
   "https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js": "vendor/peerjs-1.5.4.min.js",
   "https://cdn.jsdelivr.net/npm/planck@1.4.2/dist/planck.min.js": "vendor/planck-1.4.2.min.js",

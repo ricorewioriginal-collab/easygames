@@ -580,6 +580,19 @@ window.EASYGAMES_GUIDES = {
    "Bei Pavimento Lava immer in Bewegung bleiben – stehen bleiben lässt die Fliese bröckeln."
   ]
  },
+ "groove-arena": {
+  "anleitung": "Groove Arena ist ein Tanzspiel zum Nachmachen mit Songs von YouTube. Wähle eine Kategorie (Pop, Hip-Hop, Latin, K-Pop, Disco & 80er, Kids, Fitness, Line Dance, Party, Schlager) oder suche einen Song – Groove Arena sucht das passende YouTube-Video, du kannst auch einen YouTube-Link einfügen. Eine 3D-Vortänzerin (je Stil ein eigener Typ) tanzt eine Choreografie, die für genau diesen Song erzeugt wird und immer gleich bleibt: über die ganze Songlänge mit Intro, Strophen, dem Refrain mit festen Wiederholungs-Moves, Bridge, ✨ Gold-Moves und Finale; den Songaufbau liest das Spiel aus den Liedtext-Zeitstempeln. Unten laufen die Piktogramme der nächsten Moves. Du machst spiegelbildlich nach – wie vor einem Spiegel. 📷 Mit Kamera erkennt die Körper-Erkennung (läuft nur auf dem Gerät) deine Haltung und vergleicht sie mit der Vortänzerin: Perfekt, Super, Gut, OK oder Daneben, Combos und Sterne. 📱 Mit dem Handy in der rechten Hand wird die Arm-Bewegung bewertet. Den Takt erkennt das Spiel beim ersten Mal über das Mikrofon und merkt ihn sich, ohne Mikrofon klopfst du 8× mit; mit ◀ ▶ schiebst du die Choreo früher oder später. 🎬 Tanz-Videos: Choreo- und Tanz-Videos laufen groß, bewertet werden Takt und Bewegung. 🌐 Online & Handys: Der Bildschirm zeigt Code und QR-Code; im selben Raum tanzen alle mit dem Handy in der Hand mit, Freunde von woanders sehen das Video auf ihrem Gerät – die Punkte erscheinen live.",
+  "steuerung": [
+   "Kamera: Gerät so aufstellen, dass du von Kopf bis Knie zu sehen bist (2–3 m Abstand, gutes Licht), dann einfach tanzen.",
+   "Handy: fest in die rechte Hand nehmen und die Arm-Bewegungen der Vortänzerin mitmachen.",
+   "Menüs: Maus/Touch, Pfeiltasten + Enter oder Gamepad (A wählen, B zurück). Beim Tanzen: Leertaste/A = Takt klopfen, [ ] = Choreo früher/später, Esc/Start = Pause."
+  ],
+  "tipps": [
+   "Große, deutliche Bewegungen werden besser erkannt als kleine.",
+   "Der Refrain kommt immer mit denselben Moves wieder – beim zweiten Mal sitzt er!",
+   "Gold-Moves am Ende des Refrains geben Extrapunkte."
+  ]
+ },
  "challenge-show": {
   "anleitung": "Die große Challenge-Show ist eine 3D-Spielshow im TV-Studio: Bis zu 24 Kandidaten (12, 16 oder 24 – Computer füllen auf) treten in sechs Runden an, ein Moderator kommentiert mit Sprachausgabe und Untertiteln, das Publikum jubelt. In jeder Runde scheiden einige aus – kinderfreundlich mit Konfetti-Puff in die weiche Schaumstoffgrube – und füllen den 💰 Topf. 🚦 Ampel-Lauf: bei Grün laufen, bei Rot einfrieren, denn der Ampel-Roboter dreht sich um und sieht jede Bewegung; ins Ziel, bevor die Zeit abläuft. 🌉 Wackelbrücke: nacheinander Reihe für Reihe links oder rechts springen, nur eine Pudding-Platte hält, bekannte Platten leuchten grün. 🪢 Seilziehen: zwei Teams, wer im grünen Takt-Feld tippt, zieht doppelt so stark. 🍪 Keks-Kunst: Kreis, Dreieck, Stern oder Herz vom ⭐ aus nachfahren, ohne dass der Keks bricht. 🪑 Reise nach Jerusalem: Musik stoppt, Stühle tauchen auf, es gibt immer zu wenige. 👑 Schubs-Finale: mit dem Sprint-Stoß die anderen von der schrumpfenden Plattform ins Bällebad schubsen – der Letzte holt Krone und Topf. Wähle Name, Farbe und Hut für deinen Kandidaten, die Stärke der Computer (Leicht, Normal, Schwer) und die Länge (alle 6 Runden oder kurze Show mit 4). Bist du raus, schaust du zu, schickst Jubel-Emojis oder spulst vor. 🌐 Online & Handys: Der Gastgeber zeigt Code und QR-Code, Mitspieler treten von überall bei und sehen die Show auf dem eigenen Gerät; im Modus „📺 Nur Fernseher“ zeigt der Fernseher die Show und die Handys sind die Controller.",
   "steuerung": [

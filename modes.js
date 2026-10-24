@@ -45,6 +45,7 @@ window.EASYGAMES_MODES = {
   'stadt-land-plus': { pad: true, online: true, multi: true, tvParam: true },
   'brainrot-parkour': { pad: true, online: true, multi: true },
   'challenge-show': { pad: true, online: true, multi: true, tvParam: true },
+  'groove-arena': { pad: true, online: true, multi: true, tvParam: true },
   'darts-arena': { pad: true, multi: true },
   'winzflitzer': { multi: true },
   'gay-life': { online: true },

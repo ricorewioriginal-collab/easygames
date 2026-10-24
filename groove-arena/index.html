@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/groove-arena-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Groove Arena"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1a0838">
+<title>Groove Arena – Tanz mit!</title>
+<meta name="description" content="Groove Arena: Tanzspiel zum Mitmachen mit YouTube-Songs. Such jeden Song (oder füge einen Link ein), eine 3D-Vortänzerin tanzt dazu eine eigene Choreografie über den ganzen Song – Strophe, Refrain mit Wiederholungs-Moves, Gold-Moves, Finale – und die Kamera (Körper-Erkennung direkt auf dem Gerät) oder das Handy in der Hand bewertet jede Bewegung: Perfekt, Super, Gut. Takt automatisch über das Mikrofon oder Mitklopfen. Kategorien Pop, Hip-Hop, Latin, K-Pop, Disco, Kids, Fitness, Line Dance, Party und Schlager sowie Tanz-Videos (Choreos) zum Nachtanzen. Online & Handys: Freunde tanzen von überall mit.">
+<link rel="stylesheet" href="../vendor/fonts/fredoka.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage"><canvas id="cv"></canvas></div>
+<div id="ytWrap"></div>
+<div id="camBox"><video id="camv" playsinline muted></video><canvas id="camSk"></canvas></div>
+
+<section class="scr on" id="sLoad"><div class="load"><div class="lSpin">💃</div><h1 class="logo">GROOVE<span>ARENA</span></h1><div class="bar"><i id="loadBar"></i></div><p class="tip">Die Tanzfläche wird poliert …</p></div></section>
+
+<section class="scr" id="sTitle">
+  <div class="titleBox"><h1 class="logo big">GROOVE<span>ARENA</span></h1><p class="claim">Jeder Song · deine Moves · tanz mit! 💃🕺</p><button class="press nav" id="bPress">▶ Los geht's</button></div>
+  <p class="corner"><a href="../">← Alle Spiele</a></p>
+</section>
+
+<section class="scr" id="sMenu">
+  <div class="menuWrap">
+    <header class="mHead"><h1 class="logo small">GROOVE<span>ARENA</span></h1><div class="mStat" id="menuStat"></div></header>
+    <div class="mBody">
+      <div class="mList" id="mList">
+        <button class="mi nav hero" data-go="songs" data-i="Such dir einen Song aus – die Vortänzerin tanzt eine eigene Choreografie über den ganzen Song, du machst nach. Kategorien von Pop bis Schlager."><i>💃</i><b>Tanzen</b></button>
+        <button class="mi nav" data-go="videos" data-i="Tanz-Videos und Choreos von YouTube zum Nachtanzen (Kids, Zumba, Trend-Tänze, K-Pop, Line Dance …). Bewertet werden Takt und Bewegung."><i>🎬</i><b>Tanz-Videos</b></button>
+        <button class="mi nav online" data-go="online" data-i="Online & Handys: Freunde tanzen mit – im selben Raum mit dem Handy in der Hand oder von überall mit Video und Kamera. Beitritt per Code, Link oder QR-Code."><i>🌐</i><b>Online &amp; Handys</b></button>
+        <button class="mi nav" data-go="mine" data-i="Deine zuletzt getanzten Songs mit Sternen und Bestwerten."><i>⭐</i><b>Meine Songs</b></button>
+        <button class="mi nav" data-go="opts" data-i="Schwierigkeit, Takt-Verzögerung, Kamera-Spiegel, Klänge."><i>⚙️</i><b>Einstellungen</b></button>
+        <button class="mi nav" data-go="help" data-i="So funktioniert das Tanzen mit Kamera, Handy und Takt."><i>❓</i><b>Anleitung</b></button>
+      </div>
+      <div class="mInfo"><p id="mInfo"></p></div>
+    </div>
+    <footer class="mFoot"><span class="hintKeys">Pfeile + Enter: wählen · Esc: zurück</span><a href="../" class="nav">← Alle Spiele</a></footer>
+  </div>
+</section>
+
+<section class="scr" id="sSongs">
+  <div class="panel wide songs">
+    <div class="sHead"><button class="btn small nav" id="sBack">←</button><div class="search"><input class="field nav" id="sq" placeholder="Song oder Interpret suchen …" autocomplete="off"><button class="btn pri nav" id="sGo">🔎</button></div></div>
+    <div class="cats" id="cats"></div><div class="cats" id="vcats" hidden></div>
+    <p class="hint" id="sMsg" hidden></p>
+    <div class="grid" id="grid"></div>
+    <p class="hint small">Songs: iTunes-Suche · Videos: YouTube · Du kannst auch einen YouTube-Link ins Suchfeld einfügen.</p>
+  </div>
+</section>
+
+<section class="scr" id="sPrep">
+  <div class="panel prep">
+    <div class="pHead"><img id="pCover" alt=""><div><h2 id="pTitle"></h2><p class="hint" id="pArtist"></p></div></div>
+    <p class="hint" id="pInfo"></p>
+    <div class="vids" id="pVids"></div>
+    <p class="lbl">Wie tanzt du?</p><div class="seg" id="pInput"></div>
+    <div id="pCamBox" class="note"><p id="camMsg">📷 Kamera …</p><p class="hint small">Die Körper-Erkennung läuft nur auf diesem Gerät – es wird kein Bild hochgeladen.</p></div>
+    <div id="pPhoneTip" class="note" hidden><p>📱 Halte das Handy fest in der <b>rechten Hand</b> und mach die Arm-Bewegungen der Vortänzerin nach.</p></div>
+    <p class="lbl">Schwierigkeit</p><div class="seg" id="pDiff"></div>
+    <div id="pStyleRow"><p class="lbl">Tanzstil</p><div class="seg small" id="pStyle"></div></div>
+    <p class="hint" id="pLook"></p><p class="hint" id="pSync"></p>
+    <div class="row"><button class="btn nav" id="pBack">← Zurück</button><button class="btn pri big nav" id="pGo" disabled>💃 Tanzen!</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sDance">
+  <div id="dHud" hidden>
+    <div class="dTop"><span class="chip" id="dTitle"></span><span class="chip" id="dSec"></span><span class="chip" id="dTime"></span><button class="pbtn nav" id="dPause" aria-label="Pause">⏸</button></div>
+    <div class="dScore"><b id="dScore">0</b><div class="stars" id="dStars"></div><div class="sbar"><i id="dBar"></i></div><span id="dCombo"></span></div>
+    <div class="dLive" id="dLive"></div>
+    <div class="dSync" id="dSync" hidden></div>
+    <div class="dTools"><button class="btn small" id="dNudgeL" title="Choreo früher">◀</button><button class="btn small" id="dTap">👆 Takt</button><button class="btn small" id="dNudgeR" title="Choreo später">▶</button></div>
+    <div class="fl" id="dFlash"></div>
+    <canvas id="pics"></canvas>
+  </div>
+</section>
+
+<section class="scr" id="sResult"><div class="panel"><h2 id="rsT"></h2><div id="rsBody"></div><div class="row" id="rsBtns"></div></div></section>
+
+<section class="scr" id="sMine"><div class="panel wide"><h2>⭐ Meine Songs</h2><div class="grid" id="mineGrid"></div><div class="row"><button class="btn pri nav" id="mineBack">← Zurück</button></div></div></section>
+
+<section class="scr" id="sHelp">
+  <div class="panel wide"><h2>❓ So wird getanzt</h2><div class="help">
+    <p><b>Song wählen:</b> Kategorie antippen oder suchen – Groove Arena findet das passende YouTube-Video (oder du fügst einen Link ein). Die Vortänzerin tanzt eine <b>eigene Choreografie für genau diesen Song</b>, über die ganze Länge: Intro, Strophen, der Refrain kommt immer mit denselben Moves wieder, ✨ Gold-Moves und ein großes Finale.</p>
+    <p><b>Nachmachen wie vor einem Spiegel:</b> Hebt die Vortänzerin den Arm auf der rechten Bildseite, hebst du deinen rechten Arm. Unten laufen die Piktogramme der nächsten Moves – wenn ein Bild die Linie erreicht, zählt die Pose.</p>
+    <p><b>📷 Kamera:</b> Stell das Gerät so, dass du von Kopf bis Knie zu sehen bist (2–3 Meter Abstand, gutes Licht). Die Körper-Erkennung läuft nur auf deinem Gerät. <b>📱 Handy in der Hand:</b> Handy fest in die rechte Hand – bewertet wird die Bewegung deines Arms.</p>
+    <p><b>Takt:</b> Beim ersten Mal hört das Spiel über das Mikrofon auf den Beat und merkt ihn sich für das Video. Ohne Mikrofon klopfst du 8× im Takt (Leertaste oder 👆). Passt es nicht ganz, schiebst du die Choreo mit ◀ ▶ früher oder später.</p>
+    <p><b>🎬 Tanz-Videos:</b> Choreo- und Tanz-Videos laufen groß – du tanzt dem Video nach, bewertet werden Takt und Bewegung.</p>
+    <p><b>🌐 Online & Handys:</b> Der Bildschirm zeigt Code und QR-Code. Im selben Raum tanzen alle mit dem Handy in der Hand mit, Freunde von woanders sehen das Video auf ihrem Gerät und tanzen mit Kamera oder Handy – die Punkte erscheinen live.</p>
+    <p><b>Steuerung:</b> Menüs mit Maus/Touch, Pfeiltasten + Enter oder Gamepad (A wählen, B zurück). Beim Tanzen: Leertaste/A = Takt klopfen, Esc/Start = Pause, [ ] = Choreo früher/später.</p>
+  </div><div class="row"><button class="btn pri nav" id="helpBack">← Zurück</button></div></div>
+</section>
+
+<section class="scr" id="sLobby">
+  <div class="panel wide"><h2>🌐 Online &amp; Handys</h2>
+    <p class="hint">Mitspieler treten <b>von überall</b> per Code, Link oder QR-Code bei: im selben Raum tanzen sie mit dem Handy in der Hand, von woanders mit Video und Kamera auf ihrem Gerät.</p>
+    <div class="hostBox"><div class="qr" id="qr">…</div><div class="hostTxt"><div class="code" id="code">····</div><p class="url" id="url"></p><div class="row tight"><button class="btn small nav" id="lbCopy">🔗 Link kopieren</button></div><p class="hint" id="lobbyMsg"></p></div></div>
+    <div class="lobbyList" id="lobbyList"></div>
+    <div class="row"><button class="btn nav" id="lbBack">← Zurück</button><button class="btn pri big nav" id="lbGo">🎵 Song auswählen</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sPhone">
+  <div class="panel" id="jWrap"><h2>🌐 Mittanzen</h2>
+    <input class="field nav" id="jName" maxlength="12" placeholder="Dein Name" autocomplete="nickname">
+    <input class="field nav code" id="jCode" maxlength="4" placeholder="CODE" autocapitalize="characters">
+    <div class="seg" id="jWhere"></div>
+    <p class="hint" id="jMsg"></p>
+    <div class="row"><button class="btn nav" id="jBack">← Zurück</button><button class="btn pri nav" id="jGo">Beitreten</button></div>
+  </div>
+  <div class="panel phPlay" id="phPlay" hidden><p class="phMsg" id="phMsg"></p><p class="hint" id="phSub"></p><div class="phRate" id="phRate">💃</div><div class="phScore" id="phScore">0</div><p class="hint" id="phNext"></p><button class="btn pri big" id="phJoinVid" hidden>▶ Video starten &amp; mittanzen</button></div>
+</section>
+
+<div class="ov" id="ovOnline" hidden><div class="panel"><h2>🌐 Online &amp; Handys</h2><p class="hint">Mitspieler können per Link oder Code von überall beitreten.</p><div class="col"><button class="btn pri nav" id="onHost">📺 Tanzfläche öffnen</button><button class="btn nav" id="onJoin">🔑 Mit Code mittanzen</button><button class="btn nav" id="onX">← Zurück</button></div></div></div>
+<div class="ov" id="ovPause" hidden><div class="panel"><h2>⏸ Pause</h2><div class="col"><button class="btn pri nav" id="paGo">▶ Weiter</button><button class="btn nav" id="paRe">🎤 Takt neu erkennen</button><button class="btn nav" id="paQuit">✕ Song beenden</button></div></div></div>
+<div class="ov" id="ovOpts" hidden><div class="panel"><h2>⚙️ Einstellungen</h2><div class="opts">
+  <p class="lbl">Schwierigkeit</p><div class="seg" id="oDiff"></div>
+  <p class="lbl">Takt-Verzögerung (Mikrofon) <span id="oLatV"></span></p><input type="range" id="oLat" min="0" max="350" step="10">
+  <label class="chk"><input type="checkbox" id="oMirror"> Kamera-Bild spiegeln</label>
+  <label class="chk"><input type="checkbox" id="oSkel"> Erkanntes Skelett anzeigen</label>
+  <label class="chk"><input type="checkbox" id="oSfx"> Klänge</label>
+  <label class="chk"><input type="checkbox" id="oVib"> Vibration</label>
+</div><div class="row"><button class="btn pri nav" id="optX">Fertig</button></div></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../device.js"></script>
+<script src="../gamekit.js"></script>
+<script src="../cloud/fire-peer.js"></script>
+<script src="js/env.js"></script>
+<script src="js/core.js"></script>
+<script src="js/media.js"></script>
+<script src="js/sense.js"></script>
+<script src="js/view.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="groove-arena" data-prefix="groove-arena-" defer></script>
+</body>
+</html>

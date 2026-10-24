@@ -1810,6 +1810,43 @@
    }
   },
   {
+   "id": "groove-arena",
+   "title": "Groove Arena – Tanz mit!",
+   "desc": "Tanzspiel zum Mitmachen mit YouTube: Such jeden Song (iTunes-Suche) oder füge einen Link ein – eine 3D-Vortänzerin tanzt dazu eine eigene Choreografie über den ganzen Song, jeder Song anders: Strophen, Refrain mit Wiederholungs-Moves, ✨ Gold-Moves und Finale, Piktogramme zeigen die nächsten Moves. Die Kamera (Körper-Erkennung direkt auf dem Gerät) oder das Handy in der Hand bewertet jede Pose: Perfekt, Super, Gut. Takt automatisch per Mikrofon oder Mitklopfen. Kategorien Pop, Hip-Hop, Latin, K-Pop, Disco, Kids, Fitness, Line Dance, Party, Schlager und 🎬 Tanz-Videos zum Nachtanzen. 🌐 Online & Handys: Freunde tanzen im selben Raum mit dem Handy oder von überall mit.",
+   "icon": "💃",
+   "img": "groove-arena/card.jpg",
+   "bg": "linear-gradient(145deg,#1a0838,#ff3aa8 55%,#3ad8ff)",
+   "glow": "rgba(255,58,168,.5)",
+   "path": "groove-arena/",
+   "modes": {
+    "pad": true,
+    "online": true,
+    "multi": true,
+    "tvParam": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Groove Arena ist ein Tanzspiel zum Nachmachen mit Songs von YouTube. Wähle eine Kategorie (Pop, Hip-Hop, Latin, K-Pop, Disco & 80er, Kids, Fitness, Line Dance, Party, Schlager) oder suche einen Song – Groove Arena sucht das passende YouTube-Video, du kannst auch einen YouTube-Link einfügen. Eine 3D-Vortänzerin (je Stil ein eigener Typ) tanzt eine Choreografie, die für genau diesen Song erzeugt wird und immer gleich bleibt: über die ganze Songlänge mit Intro, Strophen, dem Refrain mit festen Wiederholungs-Moves, Bridge, ✨ Gold-Moves und Finale; den Songaufbau liest das Spiel aus den Liedtext-Zeitstempeln. Unten laufen die Piktogramme der nächsten Moves. Du machst spiegelbildlich nach – wie vor einem Spiegel. 📷 Mit Kamera erkennt die Körper-Erkennung (läuft nur auf dem Gerät) deine Haltung und vergleicht sie mit der Vortänzerin: Perfekt, Super, Gut, OK oder Daneben, Combos und Sterne. 📱 Mit dem Handy in der rechten Hand wird die Arm-Bewegung bewertet. Den Takt erkennt das Spiel beim ersten Mal über das Mikrofon und merkt ihn sich, ohne Mikrofon klopfst du 8× mit; mit ◀ ▶ schiebst du die Choreo früher oder später. 🎬 Tanz-Videos: Choreo- und Tanz-Videos laufen groß, bewertet werden Takt und Bewegung. 🌐 Online & Handys: Der Bildschirm zeigt Code und QR-Code; im selben Raum tanzen alle mit dem Handy in der Hand mit, Freunde von woanders sehen das Video auf ihrem Gerät – die Punkte erscheinen live.",
+    "steuerung": [
+     "Kamera: Gerät so aufstellen, dass du von Kopf bis Knie zu sehen bist (2–3 m Abstand, gutes Licht), dann einfach tanzen.",
+     "Handy: fest in die rechte Hand nehmen und die Arm-Bewegungen der Vortänzerin mitmachen.",
+     "Menüs: Maus/Touch, Pfeiltasten + Enter oder Gamepad (A wählen, B zurück). Beim Tanzen: Leertaste/A = Takt klopfen, [ ] = Choreo früher/später, Esc/Start = Pause."
+    ],
+    "tipps": [
+     "Große, deutliche Bewegungen werden besser erkannt als kleine.",
+     "Der Refrain kommt immer mit denselben Moves wieder – beim zweiten Mal sitzt er!",
+     "Gold-Moves am Ende des Refrains geben Extrapunkte."
+    ]
+   },
+   "size": 190106,
+   "files": 12,
+   "offline": true,
+   "cloud": {
+    "game": "groove-arena",
+    "prefix": "groove-arena-"
+   }
+  },
+  {
    "id": "challenge-show",
    "title": "Die große Challenge-Show",
    "desc": "3D-Spielshow mit bis zu 24 Kandidaten im TV-Studio samt jubelndem Publikum und Moderator-Stimme: 🚦 Ampel-Lauf mit dem Ampel-Roboter, 🌉 Wackelbrücke über der Schaumstoffgrube, 🪢 Seilziehen im Takt, 🍪 Keks-Kunst (Form nachfahren), 🪑 Reise nach Jerusalem und das 👑 Schubs-Finale auf der schrumpfenden Plattform. Computer füllen auf, drei Stärken, kinderfreundlich – Ausscheiden heißt Konfetti-Puff. 🌐 Online & Handys: Freunde spielen von überall mit, oder der Fernseher zeigt die Show und Handys sind die Controller.",
