@@ -1014,7 +1014,9 @@
     ON.me = 'host';
     ON.net = mkNet({ onMsg: hostMsg, onLeave: id => { const pl = ON.H && ON.H.players.find(x => x.id === id); if (pl) { pl.on = false; hostSync(); hostCheck(); } } });
     ON.st = { phase: 'connecting', players: [] }; onRender();
-    try { await ON.net.host(); } catch (e) { onReset(); toast(netErr(e), 4000); onRender(); return; }
+    const net = ON.net;   // wer zwischendurch „Verlassen“ drückt, beendet diesen Versuch
+    try { await net.host(); } catch (e) { if (ON.net === net) { onReset(); toast(netErr(e), 4000); onRender(); } return; }
+    if (ON.net !== net) { net.close(); return; }
     ON.H.tick = setInterval(hostCheck, 1000);
     hostSync();
   }
@@ -1022,7 +1024,8 @@
     const h = ON.H; if (!h) return;
     if (d.t === 'hi') {
       let pl = h.players.find(x => x.id === from);
-      if (!pl) { if (h.players.length >= 8) { ON.net.sendTo(from, { t: 'full' }); return; } pl = { id: from }; h.players.push(pl); }
+      if (!pl && h.phase === 'lobby') h.players = h.players.filter(x => x.on);   // Plätze von Gegangenen in der Lobby frei machen
+      if (!pl) { if (h.players.filter(x => x.on).length >= 8) { ON.net.sendTo(from, { t: 'full' }); return; } pl = { id: from }; h.players.push(pl); }
       pl.name = S.cleanName(d.name) || 'Gast'; pl.look = cleanLook(d.look); pl.on = true;
       ON.net.sendTo(from, { t: 'you', id: from }); hostSync();
       if (h.phase === 'lobby') sfx('cue', 0, '🙋 ' + pl.name + ' ist dabei');
@@ -1082,8 +1085,10 @@
       },
       onLeave: () => { const was = ON.st; onReset(); if (was) { if (stage && flow && flow.mode === 'online') { stopAll(); flow = null; } toast('📡 Die Verbindung zum Gastgeber ist weg – die Show ist beendet.', 4500); go('sOnline'); } } });
     ON.st = { phase: 'connecting', players: [] }; onRender();
-    try { await ON.net.join(code); } catch (e) { onReset(); toast(netErr(e), 4500); onRender(); return; }
-    ON.net.send({ t: 'hi', name: save.profile.name, look: cleanLook(save.profile.look) });
+    const net = ON.net;
+    try { await net.join(code); } catch (e) { if (ON.net === net) { onReset(); toast(netErr(e), 4500); onRender(); } return; }
+    if (ON.net !== net) { net.close(); return; }
+    net.send({ t: 'hi', name: save.profile.name, look: cleanLook(save.profile.look) });
   }
   function onSend(d) { if (amHost()) hostInput('host', d); else if (ON.net) ON.net.send(d); }
 
