@@ -67,7 +67,7 @@
     '.egh-empty{padding:30px;text-align:center;color:var(--m)}.egh-toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:2147483000;padding:10px 18px;border-radius:999px;background:#161d30;color:#fff;border:1px solid var(--l,#333);box-shadow:0 10px 30px rgba(0,0,0,.4);font:600 14px system-ui}' +
     '.egh-pl{position:fixed;inset:0;z-index:2147482500;background:#000;display:flex;flex-direction:column}.egh-pl[hidden]{display:none}' +
     '.egh-pl-h{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#0b0e1a;color:#fff;font:600 15px system-ui}.egh-pl-h span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
-    '.egh-pl-h button{border:0;border-radius:10px;padding:8px 14px;background:rgba(255,255,255,.12);color:#fff;font:600 14px system-ui;cursor:pointer}.egh-pl iframe{flex:1;border:0;width:100%;background:#000}' +
+    '.egh-pl-h button{border:0;border-radius:10px;padding:8px 14px;background:rgba(255,255,255,.12);color:#fff;font:600 14px system-ui;cursor:pointer}.egh-pl iframe{flex:1;border:0;width:100%;background:#000}@media (max-width:620px){.egh-pl-h{gap:6px;padding:6px 8px;overflow-x:auto}.egh-pl-h span{min-width:60px}.egh-pl-h button{flex:none;padding:7px 9px;font-size:12.5px}}' +
     '@media(max-width:700px){.egh-hero{grid-template-columns:1fr;max-height:none}.egh-hero-i{min-height:140px;max-height:190px}.egh-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}}';
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -217,11 +217,12 @@
   function player() {
     if (S.pl) return S.pl;
     var d = doc.createElement('div'); d.className = 'egh-pl'; d.hidden = true; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true');
-    d.innerHTML = '<div class="egh-pl-h"><span></span><button type="button" data-st title="Als Stream-Overlay einbinden (OBS, TikTok LIVE)">🎥 Stream</button><button type="button" data-sh>📤 Teilen</button><button type="button" data-fs>⛶ Vollbild</button><button type="button" data-x>✕ Schließen</button></div><iframe allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock" allowfullscreen title="Spiel"></iframe>';
+    d.innerHTML = '<div class="egh-pl-h"><span></span><button type="button" data-st title="Als Stream-Overlay einbinden (OBS, TikTok LIVE)">🎥 Stream</button><button type="button" data-gd title="Spielanleitung, Ratgeber und Lösungsbuch">📖 Anleitung</button><button type="button" data-sh>📤 Teilen</button><button type="button" data-fs>⛶ Vollbild</button><button type="button" data-x>✕ Schließen</button></div><iframe allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock" allowfullscreen title="Spiel"></iframe>';
     doc.body.appendChild(d);
     d.querySelector('[data-x]').onclick = close;
     d.querySelector('[data-sh]').onclick = function () { shareCur(this); };
     d.querySelector('[data-st]').onclick = function () { var g = S.cur; if (!g) return; var u = new URL('einbinden.html', EG), l = shareUrl(g); u.searchParams.set('stream', g.id); if (l.indexOf(EG) !== 0 && /^https:/.test(l)) u.searchParams.set('share', l); u.hash = 'stream'; root.open(u.href, '_blank', 'noopener'); };
+    d.querySelector('[data-gd]').onclick = function () { var g = S.cur; if (!g) return; var u = new URL('anleitung.html', EG); u.searchParams.set('game', g.id); root.open(u.href, '_blank', 'noopener'); };
     d.querySelector('[data-fs]').onclick = function () { try { (d.requestFullscreen || d.webkitRequestFullscreen).call(d); } catch (e) { } };
     doc.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !d.hidden && !doc.fullscreenElement) close(); });
     root.addEventListener('message', function (e) { if (e.source === d.querySelector('iframe').contentWindow && e.data && (e.data.type === 'easygames:close' || e.data === 'easygames:close')) close(); });

@@ -1,0 +1,222 @@
+{
+  "id": "zeitsprung-radio",
+  "kurz": {
+    "anleitung": "ZEITSPRUNG RADIO ist eine moderierte Musikshow im 3D-Studio mit Moderator Vito. Reihum bekommt jeder Spieler eine Runde: In Musikrunden hörst du einen Song im eingebetteten Player (Deezer, Spotify oder YouTube) und wählst sein Erscheinungsjahr aus A–D – oder du setzt ihn an die richtige Stelle deiner Zeitleiste. In Quizrunden beantwortest du eine von 790 Fragen zu Charts, Interpreten, Songtiteln, Biografien, Songtexten, ESC und Castingshows mit vier Antworten. Jede richtige Antwort bringt einen Punkt, wer zuerst 8 Punkte hat, gewinnt. 1 bis 4 Spieler spielen an einem Gerät oder im TV-Modus mit Handys als Controller (WR-Code und PIN). Eine laufende Show wird gespeichert und lässt sich im Hauptmenü fortsetzen.",
+    "steuerung": [
+      "Touch/Maus: Antwort A–D oder die passende Lücke (+) der Zeitleiste antippen, „▶ Musik abspielen“ öffnet den Player, darin auf Play tippen.",
+      "PC: A, B, C, D oder 1–4 wählen die Antwort, in der Zeitleiste wählen 1–9 die Lücke von links.",
+      "Controller: Steuerkreuz springt zwischen den Knöpfen, A drückt.",
+      "Handy-Controller: Code und PIN vom Fernseher eingeben, dann am Handy antworten, Musik am TV starten und weiterschalten."
+    ],
+    "tipps": [
+      "Bei „Jahr aus A–D“ liegen die falschen Jahre höchstens 6 Jahre neben dem richtigen – achte auf Jahrzehnt und Klang.",
+      "In der Zeitleiste zählt bei gleichem Jahr jede passende Lücke.",
+      "Sperrt ein Anbieter den Clip, hilft „♫ Quelle wechseln“ oder „↻ Anderer Song“."
+    ]
+  },
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "ZEITSPRUNG RADIO ist eine Musik-Quizshow aus dem 3D-Studio. Moderator Vito führt durch die Show, liest die Fragen vor und löst auf. Ihr spielt reihum: Jede Runde gehört einem Spieler. Wer richtig antwortet, bekommt 1 Punkt.",
+        "Wer zuerst 8 Punkte erreicht, gewinnt die Show („… gewinnt Zeitsprung Radio! Acht Punkte, was für eine Show!“). Es gibt keine Strafpunkte – eine falsche Antwort bringt nur keinen Punkt."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "p": [
+        "Nach dem Ladebildschirm („Bereit für deine Musikshow!“) führt „▶ Zum Hauptmenü“ ins Menü. Dort bereitest du rechts im Spielstudio die Show vor."
+      ],
+      "list": [
+        "▶ Neue Show starten: beginnt eine neue Show mit den gewählten Einstellungen.",
+        "↺ Show fortsetzen: erscheint, wenn eine unfertige Show gespeichert ist.",
+        "🌐 Online, TV & Handys: schaltet den TV-Modus ein und öffnet das Kopplungsfenster.",
+        "KATEGORIE: „Große Mischung · alle Themen“ oder eine einzelne Kategorie; hinter jeder steht die Zahl ihrer Fragen.",
+        "MUSIKRUNDEN SPIELEN ALS: „Jahr aus A–D wählen · einfach“ (Voreinstellung) oder „Song in Zeitleiste einordnen“.",
+        "SPIELER: bis zu 4 Namen (bis 22 Zeichen), weitere mit „＋ Spieler hinzufügen“.",
+        "📱 Dieses Gerät als Handy-Controller verwenden: macht das Gerät zum Controller für einen Fernseher oder PC, auf dem die Show läuft.",
+        "Oben rechts: ⌂ Hauptmenü, ▣ TV-Modus an/aus, ♧ Handys koppeln, ♫/♪ Vito (Sprachausgabe und Töne) an/aus."
+      ]
+    },
+    {
+      "t": "Kategorien",
+      "p": [
+        "Die Song-Kategorien enthalten je 30 Songs. Aus ihnen entstehen die Jahresfragen, die Interpretenfragen („Wer veröffentlichte …?“) und die Songtitelfragen („Welcher dieser Songs stammt von …?“): 60er & frühe Klassiker, Disco & Soul, Rock & Alternative, 80er Pop & New Wave, 90er Charts, 2000er Hits, 2010er Pop, Deutschsprachige Songs, Hip-Hop & R&B, Dance & Elektronik.",
+        "Dazu kommen die Wissenskategorien mit eigenen Fragen und nur Quizrunden: Charts & Rekorde (20), Jahrescharts & Hits (20), Eurovision Song Contest (25), DSDS & Castingshows (25), Bands & Musikgeschichte (20), Musikshows & Wissen (20), Künstlerbiografien (40) und Songtexte ergänzen (20, Lückentexte aus gemeinfreien Liedern). Insgesamt sind es 790 Quizfragen."
+      ]
+    },
+    {
+      "t": "Rundenarten",
+      "list": [
+        "Musikrunde „Jahr aus A–D“: Du spielst den Song ab und wählst aus vier Jahreszahlen. Die drei falschen liegen 1, 2, 3, 4 oder 6 Jahre vor oder nach dem richtigen Jahr.",
+        "Musikrunde „Zeitleiste“: Jeder Spieler startet mit demselben Startsong, dessen Jahr bekannt ist. Den neuen Song setzt du in eine Lücke (+) vor, zwischen oder hinter deine Songs. Richtig ist jede Lücke, in der das Jahr passt – bei gleichem Jahr zählen alle passenden Lücken. Richtig eingeordnete Songs bleiben mit Jahr auf deiner Zeitleiste, das macht spätere Runden leichter und schwerer zugleich.",
+        "Quizrunde: eine Frage mit vier Antworten A–D. Vito löst danach auf.",
+        "Die erste Runde ist immer eine Musikrunde (wenn die Kategorie Clips hat), danach wird jede Runde mit 42 % Wahrscheinlichkeit eine Musikrunde, sonst eine Quizrunde.",
+        "Musikrunden gibt es nur mit den 28 Songs, für die ein Player bekannt ist. Wissenskategorien und „Deutschsprachige Songs“ haben deshalb nur Quizrunden."
+      ]
+    },
+    {
+      "t": "Musik abspielen",
+      "steps": [
+        "Tippe auf „▶ Musik abspielen“. Das Spiel sucht zuerst bei Deezer („Deezer wird gesucht …“).",
+        "Der Player erscheint im Studio. Tippe darin auf Play – das Spiel startet die Musik nicht selbst.",
+        "Sperrt der Anbieter den Clip, wechselt „♫ Quelle wechseln“ zur nächsten Quelle (Deezer, Spotify, YouTube – je nachdem, welche es für den Song gibt).",
+        "„↻ Anderer Song“ tauscht den Song gegen einen anderen aus derselben Auswahl.",
+        "Deezer und Spotify spielen ohne Konto je nach Region oft nur eine Vorschau. Für Musik brauchst du Internet."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch/Maus: Antwortknopf oder Lücke antippen, danach „Nächste Runde →“ bzw. „Weiter: Name →“.",
+        "Tastatur: A, B, C, D oder 1, 2, 3, 4 wählen in Quiz- und Jahresrunden die Antwort. In der Zeitleiste wählen 1 bis 9 die Lücke von links.",
+        "Controller: Das Steuerkreuz springt zwischen den sichtbaren Knöpfen (Leuchtrahmen), A drückt den Knopf.",
+        "Handy-Controller: Wer am Zug ist, sieht die Antworten A–D bzw. die Lücken („Vor …“, „Zwischen … und …“, „Nach …“) und die Knöpfe „▶ Musik am TV starten“, „♫ Quelle am TV wechseln“ und „Nächste Runde →“. Die anderen sehen, wer gerade dran ist."
+      ]
+    },
+    {
+      "t": "Online, TV und Handys",
+      "steps": [
+        "Am Fernseher oder PC „🌐 Online, TV & Handys“ oder ♧ wählen. Das Spiel zeigt einen sechsstelligen WR-Code (beginnt mit WR), eine vierstellige PIN und einen QR-Code.",
+        "Am Handy den QR-Code scannen oder die Spielseite öffnen und „📱 Dieses Gerät als Handy-Controller verwenden“ antippen. Der Link funktioniert von überall.",
+        "WR-Code, Namen und PIN eingeben und „Mit TV verbinden“. Die PIN steht nicht im QR-Link, sie ist nur am Fernseher zu sehen.",
+        "Jedes Handy übernimmt einen Spielerplatz, bis zu vier. Der Fernseher bleibt trotzdem direkt bedienbar.",
+        "„Zurück zur Show“ schließt das Fenster. ▣ schaltet den TV-Modus wieder aus und trennt die Handys."
+      ]
+    },
+    {
+      "t": "Speichern und Fortsetzen",
+      "p": [
+        "Die laufende Show wird nach jeder Runde und beim Verlassen der Seite gespeichert: Spieler, Punkte, Zeitleisten, aktuelle Frage und die restlichen Fragen. Im Hauptmenü setzt „↺ Show fortsetzen“ sie fort. Ist die Show gewonnen, wird der Spielstand gelöscht.",
+        "Mit dem Cloud-Knopf im Spielstudio kannst du dich anmelden; dann wird der Spielstand mit deinem Konto (Google) abgeglichen. Die App-Oberfläche startet nach dem ersten Besuch auch offline, Musik und Handy-Kopplung brauchen aber Internet."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Starte mit „Jahr aus A–D“ – das ist die einfache Variante, und Vito sagt dir nach jeder Runde das richtige Jahr.",
+        "Die Große Mischung verteilt die Quizfragen gleichmäßig auf Interpreten, Songtitel, Biografien, Songtexte und die übrigen Wissensfragen.",
+        "Wenn der Player nicht startet: Im Player selbst auf Play tippen, dann erst Quelle wechseln.",
+        "Schalte Vito mit ♫ aus, wenn ihr schneller spielen wollt – die Texte stehen auch auf dem Bildschirm."
+      ]
+    },
+    {
+      "t": "Jahresfragen sicher lösen",
+      "list": [
+        "Die falschen Jahre liegen nie weiter als 6 Jahre weg. Steht ein Jahr klar in der Mitte der vier Zahlen, ist das oft ein guter Tipp – aber nicht immer, weil die Abstände zufällig gewählt werden.",
+        "Denke in Jahrzehnten: Disco-Sound spricht für die späten 70er, Grunge für die frühen 90er.",
+        "Gezählt wird das Jahr der ersten Single, sonst der ersten Albumveröffentlichung – nicht das Jahr eines Remixes oder Videos."
+      ]
+    },
+    {
+      "t": "Strategien für die Zeitleiste",
+      "list": [
+        "Deine Zeitleiste wächst mit jedem Treffer. Am Anfang sind die Lücken groß und leicht, später musst du genauer schätzen.",
+        "Liegt der Song genau im Jahr eines vorhandenen Songs, sind beide Lücken daneben richtig.",
+        "Ganz vorn („Vor …“) und ganz hinten („Nach …“) sind offene Lücken – wenn du unsicher bist, ob ein Song sehr alt oder sehr neu ist, sind sie die sicherere Wahl.",
+        "Am Handy zeigen die Knöpfe direkt die Jahre der Lücke („Zwischen 1983 und 1991“)."
+      ]
+    },
+    {
+      "t": "Quizfragen",
+      "list": [
+        "Interpretenfragen: Die falschen Antworten stammen aus derselben Kategorie – achte auf Details wie „feat.“.",
+        "Songtitelfragen: Die falschen Titel sind von anderen Interpreten. Kennst du nur einen Titel des Künstlers, reicht das meist.",
+        "Songtexte ergänzen: Es sind bekannte Volks- und Kinderlieder. Sing die Zeile im Kopf mit.",
+        "Wer gezielt üben will, wählt eine einzelne Kategorie – dort kommen alle Fragen dieser Kategorie in gemischter Reihenfolge, bevor sich etwas wiederholt."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "In der Zeitleiste die Taste 1 für „A“ halten: Hier bedeutet 1 die erste Lücke ganz links.",
+        "Am Handy die PIN aus dem QR-Code erwarten – die PIN musst du vom Fernseher abtippen.",
+        "Eine Wissenskategorie wählen und Musik erwarten – dort gibt es nur Quizrunden."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Alle Songs der Musikrunden mit Jahr",
+      "p": [
+        "Musikrunden gibt es nur mit diesen 28 Songs, sortiert nach Kategorie. Wer die Jahre kennt, holt jede Musikrunde. Wählst du eine einzelne Song-Kategorie, kommen nur deren Songs als Musikrunde; sind sie aufgebraucht, gibt es Quizrunden."
+      ],
+      "list": [
+        "60er & frühe Klassiker: Bohemian Rhapsody (Queen) 1975",
+        "Disco & Soul: Stayin' Alive (Bee Gees) 1977, Billie Jean (Michael Jackson) 1983, Thriller (Michael Jackson) 1983, Never Gonna Give You Up (Rick Astley) 1987",
+        "Rock & Alternative: Smells Like Teen Spirit (Nirvana) 1991, Numb (Linkin Park) 2003",
+        "80er Pop & New Wave: Africa (Toto) 1982, Take On Me (a-ha) 1985, Like a Prayer (Madonna) 1989",
+        "90er Charts: I Will Always Love You (Whitney Houston) 1992",
+        "2000er Hits: Lose Yourself (Eminem) 2002, Toxic (Britney Spears) 2003, Viva la Vida (Coldplay) 2008, Bad Romance (Lady Gaga) 2009",
+        "2010er Pop: Gangnam Style (PSY) 2012, Get Lucky (Daft Punk feat. Pharrell Williams) 2013, Happy (Pharrell Williams) 2013, Shake It Off (Taylor Swift) 2014, Uptown Funk (Mark Ronson feat. Bruno Mars) 2014, Hello (Adele) 2015, Shape of You (Ed Sheeran) 2017, Despacito (Luis Fonsi feat. Daddy Yankee) 2017, Old Town Road (Lil Nas X) 2018, bad guy (Billie Eilish) 2019, Blinding Lights (The Weeknd) 2019",
+        "Hip-Hop & R&B: HUMBLE. (Kendrick Lamar) 2017",
+        "Dance & Elektronik: Don't Start Now (Dua Lipa) 2019",
+        "Deutschsprachige Songs: keine Musikrunde, nur Quizfragen."
+      ]
+    },
+    {
+      "t": "Beispiele aus dem Fragenkatalog",
+      "p": [
+        "Der Katalog ist mit 790 Fragen zu groß für eine Komplettliste. Diese Beispiele zeigen die Art der Fragen:"
+      ],
+      "list": [
+        "Charts & Rekorde: Welches Album von Michael Jackson gilt als eines der meistverkauften Alben aller Zeiten? – Thriller",
+        "Charts & Rekorde: Welcher Song von PSY erreichte als erstes YouTube-Video eine Milliarde Aufrufe? – Gangnam Style",
+        "Eurovision Song Contest: Welches Land gewann 2010 mit Lenas „Satellite“? – Deutschland",
+        "Eurovision Song Contest: Wer sang 1982 für Deutschland „Ein bißchen Frieden“? – Nicole",
+        "Eurovision Song Contest: Welches Land gewann 1974 mit ABBA? – Schweden",
+        "DSDS & Castingshows: Wofür steht die Abkürzung DSDS? – Deutschland sucht den Superstar",
+        "Künstlerbiografien: In welchem Land wurde Rihanna geboren? – Barbados",
+        "Songtexte ergänzen: „Alle meine Entchen schwimmen auf dem …“ – See",
+        "Songtexte ergänzen: „Stille Nacht, heilige Nacht, alles schläft, einsam …“ – wacht",
+        "Songtexte ergänzen: „Am Brunnen vor dem Tore, da steht ein …“ – Lindenbaum"
+      ]
+    },
+    {
+      "t": "Beste Strategie je Modus",
+      "list": [
+        "Solo: Du hast jede Runde selbst. Mit einer Kategorie, die du gut kennst, sind 8 Punkte schnell erreicht.",
+        "Mehrspieler: Es gibt keinen Vorteil für Schnelligkeit – nur wer am Zug ist, antwortet. Wählt die Große Mischung für faire Runden.",
+        "Zeitleiste mit mehreren Spielern: Jeder hat seine eigene Zeitleiste. Wer viele Treffer hat, bekommt mehr, aber kleinere Lücken.",
+        "Party am TV: Handys koppeln, damit jeder auf seinem Gerät antwortet und niemand die Antwort am Fernseher vorher sieht."
+      ]
+    },
+    {
+      "t": "Besonderheiten",
+      "list": [
+        "Der Startsong der Zeitleiste wird zufällig aus der gewählten Kategorie gezogen und steht bei allen Spielern mit Jahr auf der Leiste.",
+        "Fragen wiederholen sich erst, wenn der Stapel der Kategorie aufgebraucht ist.",
+        "Auch bei „Jahr aus A–D“ sammelt das Spiel richtig erratene Songs im Hintergrund; sie kommen in dieser Show nicht noch einmal als Musikrunde.",
+        "Kommt ein Handy dazu, während die Show läuft, übernimmt es einen freien Spielerplatz oder legt einen neuen an (bis 4)."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Die Musik spielt nicht.",
+      "a": "Tippe im eingebetteten Player selbst auf Play. Klappt es nicht, „♫ Quelle wechseln“ oder „↻ Anderer Song“. Deezer und Spotify geben Gästen je nach Region nur Vorschauen frei, und ohne Internet gibt es keine Musik."
+    },
+    {
+      "q": "Mein Handy findet den Fernseher nicht.",
+      "a": "Prüfe den WR-Code (sechs Zeichen, beginnt mit WR) und die PIN am Fernseher. Meldungen wie „WR-Code nicht gefunden. Läuft der TV-Modus?“ bedeuten, dass das Kopplungsfenster am Fernseher neu geöffnet werden muss. Beide Geräte brauchen Internet; manche Firewalls verhindern die direkte Verbindung."
+    },
+    {
+      "q": "„PIN falsch“ – was nun?",
+      "a": "Die PIN wird bei jedem neuen Raum neu erzeugt. Lies sie erneut am Fernseher ab."
+    },
+    {
+      "q": "Wo ist meine Show geblieben?",
+      "a": "Unfertige Shows lassen sich im Hauptmenü mit „↺ Show fortsetzen“ weiterspielen. Nach einem Sieg oder nach dem Löschen der Browserdaten ist der Spielstand weg – außer du bist mit der Cloud angemeldet."
+    },
+    {
+      "q": "Vito spricht nicht.",
+      "a": "Prüfe, ob ♫ oben rechts aktiv ist. Vito nutzt die Sprachausgabe deines Browsers mit einer deutschen Stimme. Auf manchen Geräten startet sie erst nach dem ersten Tippen."
+    },
+    {
+      "q": "Wie viele Spieler sind möglich?",
+      "a": "1 bis 4 Spieler – an einem Gerät abwechselnd oder mit bis zu vier Handys als Controller."
+    }
+  ]
+}

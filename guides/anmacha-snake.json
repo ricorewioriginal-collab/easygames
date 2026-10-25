@@ -1,0 +1,192 @@
+{
+  "id": "anmacha-snake",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AnMaCha Snake 3D ist der Snake-Klassiker in 3D. Du steuerst eine Schlange über ein Spielfeld aus 21 × 21 Feldern, frisst die Sender-Logos und wirst mit jedem Logo um ein Glied länger.",
+        "Ziel ist eine möglichst hohe Punktzahl. Die Runde endet, sobald die Schlange gegen die Wand (im Modus Klassisch), gegen sich selbst oder gegen einen Rauschen-Block fährt. Schaffst du es, das Feld fast komplett zu füllen, gewinnst du mit der Meldung „FELD VOLL! 🏆“."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "p": [
+        "Beim Start lädt das Spiel zuerst die Senderlogos („Logos werden geladen …“). Erst danach wird der Knopf „LADEN …“ zu „SPIELEN“."
+      ],
+      "list": [
+        "MODUS Klassisch: Die Wände sind tödlich. Der Rahmen leuchtet pink.",
+        "MODUS Portal (Wände wrappen): Fährst du über den Rand, kommst du auf der gegenüberliegenden Seite wieder heraus. Der Rahmen leuchtet türkis. Dafür gibt es hier etwas weniger Rauschen-Blöcke.",
+        "KAMERA Schräg 3D: Blick schräg von oben auf das ganze Feld. Du lenkst in Bildschirm-Richtungen.",
+        "KAMERA Verfolger: Die Kamera fliegt hinter dem Kopf der Schlange her. Du lenkst nur noch nach links oder rechts, aus Sicht der Schlange.",
+        "SPIELEN startet die Runde (auch mit Enter oder Leertaste).",
+        "Unter dem Startknopf steht die lokale Bestenliste TOP 10, sobald du einen Eintrag hast.",
+        "Modus, Kamera und Ton merkt sich das Spiel für den nächsten Besuch."
+      ]
+    },
+    {
+      "t": "Regeln und Spielablauf",
+      "list": [
+        "Die Schlange startet mit 3 Gliedern in der Mitte des Feldes und fährt nach rechts. Am Anfang hast du gut eine Sekunde Vorlauf, bevor sie losfährt.",
+        "Es liegt immer genau ein Sender-Logo auf dem Feld. Frisst du es, wächst die Schlange um 1 und ein neues Logo erscheint an einer freien Stelle.",
+        "Nach jedem 5. gefressenen Logo steigst du ein Level auf: neuer Sender oben im Abzeichen, neue Farben, mehr Tempo und neue Rauschen-Blöcke.",
+        "Du kannst nicht direkt umdrehen (180 Grad). Das Spiel merkt sich bis zu zwei Lenkbefehle im Voraus, damit schnelle Doppelkurven klappen.",
+        "Die Schwanzspitze rückt im selben Schritt weiter, in dem der Kopf fährt. Du darfst also genau in das Feld fahren, das dein Schwanz gerade verlässt – außer du frisst dabei ein Logo.",
+        "Rauschen-Blöcke bleiben liegen: Neue Blöcke kommen bei jedem Level dazu, alte verschwinden nicht. Sie erscheinen nie direkt neben deinem Kopf (mindestens 6 Felder Abstand).",
+        "Wechselst du den Tab oder die App, pausiert das Spiel automatisch."
+      ]
+    },
+    {
+      "t": "Spezial-Logos (Power-ups)",
+      "p": [
+        "Nach einem gefressenen Logo erscheint mit 34 Prozent Wahrscheinlichkeit zusätzlich ein rundes Spezial-Logo (nicht in dem Moment, in dem du ein Level aufsteigst). Es bleibt 9 Sekunden liegen und blinkt in den letzten 3 Sekunden. Jedes Spezial-Logo bringt sofort 25 Punkte. Aktive Effekte stehen mit Restzeit oben unter der Anzeige."
+      ],
+      "list": [
+        "TURBO (orange, 6 Sekunden): Tempo hoch und alle Logo-Punkte x2. Beendet ein laufendes CHILL.",
+        "CHILL (hellblau, 7 Sekunden): Zeitlupe, die Schlange fährt deutlich langsamer. Beendet ein laufendes TURBO.",
+        "GEIST (lila, 6 Sekunden): Du fährst durch dich selbst, durch Rauschen-Blöcke und sogar im Modus Klassisch durch die Wand auf die andere Seite. Die Schlange wird dabei halb durchsichtig.",
+        "x3 (pink, 9 Sekunden): Alle Logo-Punkte x3.",
+        "KÜRZER (grün, sofort): Die Schlange verliert bis zu 4 Glieder, wird aber nie kürzer als 3."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "PC, Kamera Schräg 3D: Pfeiltasten oder W, A, S, D lenken in die jeweilige Bildschirm-Richtung.",
+        "PC, Kamera Verfolger: Pfeil links/A biegt nach links ab, Pfeil rechts/D nach rechts (aus Sicht der Schlange). Hoch und runter haben hier keine Wirkung.",
+        "C: Kamera wechseln (auch mitten im Spiel), P oder Esc: Pause und weiter, M: Ton an/aus, Enter oder Leertaste: im Menü starten.",
+        "Touch, Schräg 3D: in die gewünschte Richtung wischen (mindestens ein kurzes Stück).",
+        "Touch, Verfolger: linke oder rechte Bildschirmhälfte antippen oder nach links/rechts wischen.",
+        "Knöpfe oben: ☰ öffnet die Pause mit Hauptmenü, 🎥 wechselt die Kamera, ⏸ Pause, 🔊/🔇 Ton.",
+        "Controller: Steuerkreuz oder linker Stick lenken wie die Pfeiltasten, A oder X startet im Menü, Y wechselt die Kamera, Start oder B pausiert, Select schaltet den Ton."
+      ]
+    },
+    {
+      "t": "Punkte und Wertung",
+      "list": [
+        "Logo fressen: 10 Punkte × Combo × Power-up-Faktor.",
+        "Combo: Frisst du das nächste Logo innerhalb von 3,2 Sekunden, steigt die Combo um 1, höchstens bis x6. Sonst beginnt sie wieder bei x1. Oben erscheint „🔥 x… COMBO“ mit den Punkten.",
+        "Faktor: TURBO x2, x3 x3, beide zusammen x6. Höchstwert für ein Logo also 10 × 6 × 6 = 360 Punkte.",
+        "Spezial-Logo einsammeln: +25 Punkte.",
+        "Level-Aufstieg: +50 × neues Level (Level 2 bringt 100, Level 10 bringt 500 Punkte).",
+        "Oben siehst du PUNKTE, LEVEL und LÄNGE."
+      ]
+    },
+    {
+      "t": "Spielende, Bestwert und Bestenliste",
+      "p": [
+        "Nach einem Zusammenstoß zeigt „GAME OVER“ Punkte, Level und Länge sowie deinen Bestwert („🏆 Neuer Bestwert!“, wenn du ihn geknackt hast). Reicht deine Punktzahl für die lokale TOP 10, gibst du einen Namen (bis 14 Zeichen) ein und tippst „Speichern“ oder drückst Enter. Ohne Namen wirst du als „Anonym“ eingetragen.",
+        "Bestwert, Bestenliste, dein zuletzt benutzter Name, Modus und Kamera liegen nur im Speicher dieses Browsers. Es gibt keinen Online- oder Mehrspielermodus."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Starte mit Kamera Schräg 3D: Dort siehst du das ganze Feld und lenkst in feste Richtungen.",
+        "Spiel die ersten Runden im Modus Portal. Die Wände verzeihen dort Fehler, du lernst Tempo und Kurven in Ruhe.",
+        "Fahr nicht direkt am Rand entlang. Im Modus Klassisch fehlt dir dort eine Ausweichrichtung.",
+        "Ein Tipp oder Wischer pro Kurve reicht. Das Spiel puffert höchstens zwei Befehle – hektisches Mehrfachdrücken bringt nichts."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Combo halten: 3,2 Sekunden sind kurz. Nimm das Logo auf dem kürzesten Weg, statt große Bögen zu fahren – bei x6 ist jedes Logo 60 statt 10 Punkte wert.",
+        "TURBO und x3 sind die eigentlichen Punktebringer. Wenn beide gleichzeitig laufen, zählt jedes Logo das Sechsfache. Jag in dieser Zeit möglichst viele Logos.",
+        "CHILL ist ideal, wenn die Schlange lang und das Feld voll Rauschen ist: Nutze die Zeitlupe für enge Wege.",
+        "KÜRZER ist ab etwa Level 8 Gold wert, weil die Schlange dann viel Platz frisst.",
+        "Spezial-Logos verschwinden nach 9 Sekunden. Blinkt eins, lohnt sich ein riskanter Umweg selten."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Das Tempo steigt bis etwa Level 13 und bleibt dann gleich. Die Rauschen-Blöcke wachsen im Modus Klassisch bis 30 Stück (Level 12), im Modus Portal bis 24 (Level 14). Danach wird es nur noch durch deine Länge schwerer.",
+        "Mit GEIST kannst du dich gefahrlos durch deinen eigenen Körper oder durch eine Blockreihe abkürzen – aber achte auf die Restzeit oben. Sobald der Effekt endet, sind Körper, Blöcke und (im Modus Klassisch) die Wand im nächsten Schritt wieder tödlich.",
+        "Dein Schwanzende ist ein sicheres Ziel: Fährst du ihm hinterher, kommst du nie in eine Sackgasse, solange du dabei kein Logo frisst.",
+        "Bei großer Länge in Schlangenlinien (Bahnen) fahren: Das hält Platz frei und verhindert, dass du dich selbst einschließt.",
+        "In der Verfolger-Kamera hilft es, die Kurven vorauszuplanen: Zwei schnelle Tipps auf dieselbe Seite ergeben eine Kehrtwende in die Nachbarbahn."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "In der Verfolger-Kamera nach oben/unten wischen oder Pfeil hoch drücken – dort gibt es nur links und rechts.",
+        "Zu früh nach einem Logo wieder in den Rand fahren: Ein neues Logo kann direkt an der Wand liegen.",
+        "Vergessen, dass Rauschen-Blöcke liegen bleiben: Merke dir die Lage der Blöcke aus den vorigen Levels.",
+        "In GEIST über den Rand fahren und kurz danach endet der Effekt – im Modus Klassisch ist die Wand dann wieder tödlich."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Level-Übersicht",
+      "p": [
+        "Ein Level dauert immer 5 Logos. Ab Level 1 wird der Sender im Abzeichen oben angezeigt; nach den verfügbaren Logos beginnt die Reihe von vorn. Die Senderliste: RicoReWi Music & Media, YourTime-FM, RapRadio 24, SchlagerPop 24, ChartRadio 24, ClubRadio 24, AnMaCha 24, RadioFloh!, RockRadio 24, ChristmasRadio 24, KultRadio 24, Zocker-FM, Special-Radio. Auch die 13 Farbthemen wiederholen sich danach."
+      ],
+      "list": [
+        "Level 1 und 2: keine Rauschen-Blöcke, ruhiges Tempo.",
+        "Level 3: 3 Blöcke (Klassisch) bzw. 2 Blöcke (Portal).",
+        "Jedes weitere Level: +3 Blöcke (Klassisch) bzw. +2 Blöcke (Portal).",
+        "Klassisch: 30 Blöcke ab Level 12 – mehr werden es nicht.",
+        "Portal: 24 Blöcke ab Level 14 – mehr werden es nicht.",
+        "Tempo: Mit jedem Level fährt die Schlange etwas schneller, bis etwa Level 13 die Höchstgeschwindigkeit erreicht ist."
+      ]
+    },
+    {
+      "t": "Beste Strategie je Phase",
+      "list": [
+        "Level 1–2 (leeres Feld): Combo aufbauen. Fahr direkt auf jedes Logo zu, damit du schnell bei x6 bist. Fehler kosten hier am wenigsten.",
+        "Level 3–7: Blöcke merken, weiter auf Combo spielen. Spezial-Logos fast immer mitnehmen – 25 Punkte und meist ein nützlicher Effekt.",
+        "Level 8–12: Länge wird zum Hauptproblem. Sicherheit vor Combo: Lieber eine Combo verlieren als eingeschlossen werden. KÜRZER und CHILL gezielt holen.",
+        "Ab Level 13: Höchsttempo. Fahre Bahnen, halte eine große freie Fläche offen und nimm Logos nur, wenn der Rückweg frei bleibt."
+      ]
+    },
+    {
+      "t": "So holst du Höchstpunkte",
+      "steps": [
+        "Wähle den Modus Portal: weniger Blöcke und keine tödlichen Wände.",
+        "Baue sofort eine x6-Combo auf und halte sie, indem du jedes Logo in unter 3,2 Sekunden erreichst.",
+        "Sobald TURBO oder x3 erscheint, hol es – laufen beide, ist jedes Logo bis zu 360 Punkte wert.",
+        "Steig möglichst viele Level auf: Der Level-Bonus wächst mit (50 × Level), Level 20 allein bringt 1.000 Punkte.",
+        "Halte die Schlange mit KÜRZER klein, damit du lange überlebst."
+      ]
+    },
+    {
+      "t": "Geheimnisse und Besonderheiten",
+      "list": [
+        "Sieg: Erreicht die Schlange 437 Glieder (das Feld hat 441 Felder), endet die Runde mit „FELD VOLL! 🏆“.",
+        "GEIST hebt im Modus Klassisch auch die Wände auf – die Schlange taucht auf der Gegenseite wieder auf.",
+        "Jedes gefressene Logo spielt einen Ton, der mit der Combo höher klingt. Den Combo-Stand kannst du also auch hören.",
+        "Der Hintergrund-Beat läuft im Takt der Schlange mit und wird mit dem Tempo schneller."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Der Startknopf zeigt nur „LADEN …“. Was tun?",
+      "a": "Das Spiel wartet, bis alle Senderlogos geladen sind. Lädt es dauerhaft nicht oder erscheint „three.js konnte nicht geladen werden“, prüfe deine Internetverbindung und lade die Seite neu."
+    },
+    {
+      "q": "Meine Bestenliste ist weg.",
+      "a": "Bestwert und TOP 10 liegen nur im Speicher deines Browsers. Wenn du Browserdaten löschst, im privaten Fenster spielst oder ein anderes Gerät nutzt, ist die Liste leer."
+    },
+    {
+      "q": "Warum reagiert Pfeil hoch nicht?",
+      "a": "In der Kamera Verfolger gibt es nur links und rechts aus Sicht der Schlange. Mit C oder dem Knopf 🎥 wechselst du zu Schräg 3D, dort funktionieren alle vier Richtungen."
+    },
+    {
+      "q": "Kann ich zu zweit oder online spielen?",
+      "a": "Nein, AnMaCha Snake 3D ist ein Einzelspieler-Spiel mit lokaler Bestenliste."
+    },
+    {
+      "q": "Wie schalte ich den Ton aus?",
+      "a": "Mit M, dem Knopf 🔊 oben oder Select am Controller. Die Einstellung bleibt gespeichert."
+    },
+    {
+      "q": "Das Spiel hat plötzlich pausiert.",
+      "a": "Beim Wechsel in einen anderen Tab oder eine andere App pausiert das Spiel automatisch. Mit WEITER, P oder Esc geht es weiter."
+    }
+  ]
+}

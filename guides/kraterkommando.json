@@ -1,0 +1,252 @@
+{
+  "id": "kraterkommando",
+  "kurz": {
+    "anleitung": "Kraterkommando 3D ist ein rundenbasiertes Artilleriespiel wie Worms: Dein Trupp (Rot) kämpft gegen Blau auf einer zerstörbaren 3D-Insel. Wer dran ist, hat 45 Sekunden, um zu laufen, zu zielen und eine von 14 Waffen abzufeuern – von Bazooka und Granate über Schaf und Bananenbombe bis zur Heiligen Granate. Nach dem Schuss bleiben 4 Sekunden zum Weglaufen. Wasser (bzw. Lava) ist tödlich, Stürze kosten Lebenspunkte, und ab einer bestimmten Runde steigt im Sudden Death das Wasser. Im Feldzug schaltest du Level für Level frei, in denen beide Trupps wachsen; dazu gibt es Schnelle Gefechte gegen den Computer und Zu-zweit-Duelle an einem Gerät.",
+    "steuerung": [
+      "Touch: Stick links = laufen und drehen, Bildschirm ziehen = drehen und Winkel, Gegner antippen = hindrehen, FEUER halten = Kraft aufladen, loslassen = Schuss; Knöpfe für Waffe, Sprung, Salto, Pass und 👁 Übersicht, zwei Finger = zoomen.",
+      "PC: W/S laufen, A/D drehen, Pfeil hoch/runter = Winkel, Leertaste halten = Kraft, Enter = Sprung, Rücktaste = Salto, 1–0 = Waffe, Tab = Waffenliste, V = Übersicht, Esc = Pause; Maus ziehen = zielen, Klick auf Gegner = hindrehen, Mausrad = Zoom.",
+      "Controller: wird nicht unterstützt – gespielt wird mit Touch oder Tastatur und Maus."
+    ],
+    "tipps": [
+      "Achte auf den Wind: Bazooka, Zielsuchrakete und Luftangriff werden abgetrieben, Granaten nicht.",
+      "Schieße Gegner in die Nähe des Wassers – ein Schubser reicht dann für den K.o.",
+      "Nach dem Schuss sofort weglaufen – die eigene Explosion trifft auch deinen Wurm."
+    ]
+  },
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Zwei Trupps aus Würmern stehen sich auf einer 3D-Insel gegenüber: Team ROT (du) und Team BLAU (der Computer oder dein Mitspieler). Abwechselnd ist je ein Wurm am Zug. Gewonnen hat das Team, das als letztes noch einen lebenden Wurm hat. Sind beide Trupps gleichzeitig ausgelöscht, endet das Gefecht unentschieden.",
+        "Würmer verlieren Lebenspunkte (LP) durch Explosionen, Schüsse, Schläge und harte Stürze. Bei 0 LP scheiden sie aus und explodieren noch einmal kurz. Wer ins Wasser oder in die Lava fällt, ist sofort raus – egal wie viele LP er hatte."
+      ]
+    },
+    {
+      "t": "Hauptmenü und Einstellungen",
+      "list": [
+        "Spielmodus: „Feldzug mit Leveln“, „Schnelles Gefecht“ (gegen den Computer) oder „Zu zweit an einem Gerät“.",
+        "Schwierigkeit: Locker, Normal oder Knifflig. Sie macht den Computer schwächer oder stärker und bestimmt die Zielhilfe: Bei Locker zeigt eine lange Flugbahn-Linie, wohin der Schuss fliegt, bei Normal nur ein kurzes Stück, bei Knifflig gar keine.",
+        "Im Feldzug: Level-Auswahl mit ◀ und ▶. Angezeigt werden Truppgrößen, Karte und Minenzahl. „NEU“ steht am höchsten freigeschalteten Level, „✓“ an geschafften.",
+        "Im Schnellen Gefecht und zu zweit: „Würmer pro Team“ von 2 bis 8 und die Karte – 🌴 Smaragdinsel (Inselgruppe und Brücken), 🏜️ Staub-Canyon (Tafelberge und Fluss), ❄️ Frostfestung (zwei Burgen mit Mauern), 🌋 Lava-Krater (Ringinsel im Lavasee). Jede Karte wird jedes Mal neu gebaut.",
+        "„Gefecht fortsetzen ▶“ erscheint, wenn ein gespeichertes Gefecht vorhanden ist. „Gefecht starten ▶“ beginnt ein neues (ein gespeichertes wird nach Rückfrage ersetzt).",
+        "🔊 Spielsound an/aus."
+      ]
+    },
+    {
+      "t": "Ablauf eines Zuges",
+      "steps": [
+        "Zu Beginn eines Zuges zeigt das Spiel, wer dran ist („Du ist dran: Nova“, „Computer ist dran“ oder „Team Rot/Blau ist dran“). Die Würmer eines Teams kommen reihum dran. Du beginnst immer.",
+        "Du hast 45 Sekunden (Anzeige oben, ab 10 Sekunden rot). Während du die Feuertaste hältst, läuft die Zeit nicht weiter.",
+        "Laufen, drehen, springen und Salto schlagen, um eine gute Position zu finden. Steile Wände kannst du nicht hochlaufen, Ölfässer versperren den Weg.",
+        "Waffe wählen, Richtung und Winkel einstellen (−80° bis 85°) und feuern. Bei Wurfwaffen und Raketen hältst du Feuer gedrückt, um Kraft aufzuladen; bei 100 % geht der Schuss von selbst los.",
+        "Nach dem Schuss beginnt der Rückzug: Du hast 4 Sekunden („LAUF!“), um in Deckung zu gehen. Die Zeit läuft erst, wenn das Geschoss eingeschlagen ist.",
+        "Danach wartet das Spiel, bis alles zur Ruhe gekommen ist, verteilt den Schaden und gibt den Zug weiter.",
+        "Statt zu schießen kannst du mit » PASS den Zug beenden. Läuft die Zeit ab, ist der Zug ebenfalls vorbei („Zeit abgelaufen!“).",
+        "Wird dein Wurm während seines eigenen Zuges verletzt (zum Beispiel durch eine Mine), endet der Zug sofort."
+      ]
+    },
+    {
+      "t": "Wind, Gelände und Gefahren",
+      "list": [
+        "Wind: Die Anzeige oben zeigt Richtung und Stärke. Er ändert sich jeden Zug und treibt Bazooka, Zielsuchrakete und die Bomben des Luftangriffs ab.",
+        "Zerstörbares Gelände: Jede Explosion reißt einen Krater. So entstehen Deckungen oder Abgründe.",
+        "Rückstoß: Explosionen schleudern Würmer weg – auch ins Wasser.",
+        "Fallschaden: Wer mit hoher Geschwindigkeit aufprallt, verliert Lebenspunkte. An Steilhängen rutschen Würmer ab.",
+        "Minen: liegen zu Beginn verstreut. Kommt ein Wurm nahe heran, piepen sie und gehen nach gut einer Sekunde hoch (45 Schaden).",
+        "Ölfässer: explodieren, wenn eine Explosion sie trifft (40 Schaden, großer Radius) und können Kettenreaktionen auslösen.",
+        "Kisten: Ab Runde 2 fällt manchmal eine Kiste am Fallschirm herab (höchstens 3 gleichzeitig). Erste-Hilfe-Kisten geben +25 LP, Waffenkisten eine Extra-Ladung einer Waffe. Einsammeln, indem du hinläufst. Explosionen zerstören Kisten.",
+        "Sudden Death: Ab einer festen Runde (Schnelles Gefecht: Runde 12, Feldzug je nach Level) steigt das Wasser bzw. die Lava jede Runde ein Stück an."
+      ]
+    },
+    {
+      "t": "Die 14 Waffen",
+      "p": [
+        "Bazooka, Granate und Schrotflinte haben unbegrenzte Munition (∞), alle anderen eine feste Anzahl pro Team. Mit den Tasten 1 bis 0 wählst du die ersten zehn Waffen direkt (1 = Bazooka … 0 = Schaf), alle 14 findest du in der Waffenliste (Tab oder Waffen-Knopf)."
+      ],
+      "list": [
+        "1 🚀 Bazooka (∞): fliegt mit dem Wind, explodiert beim Aufprall. 50 Schaden.",
+        "2 💣 Granate (∞): 3 Sekunden Zünder, springt vom Boden ab, kein Windeinfluss. 50 Schaden.",
+        "3 🔫 Schrotflinte (∞): zwei gerade Schüsse pro Zug, je 25 Schaden bei Treffer.",
+        "4 ✨ Streubombe (3×): 3 s Zünder, zerplatzt in 5 kleine Bomben (30 + je 24 Schaden).",
+        "5 🎯 Zielsuchrakete (2×): Ziel antippen (ohne Ziel nimmt sie den nächsten Gegner), lenkt nach kurzer Flugzeit selbst zum Ziel. 50 Schaden.",
+        "6 ✈️ Luftangriff (1×): Ziel auf der Karte antippen, fünf Bomben (je 30) fallen in einer Reihe, sie fliegen mit dem Wind.",
+        "7 🏏 Baseballschläger (2×): Nahkampf direkt vor dir, 30 Schaden und ein gewaltiger Schlag – „Homerun!“.",
+        "8 🧨 Dynamit (2×): ablegen und weglaufen, nach 5 Sekunden 75 Schaden mit großem Radius.",
+        "9 ⚙️ Mine (2×): ablegen, nach etwa 2 Sekunden scharf.",
+        "0 🐑 Schaf (2×): läuft los und hüpft über Hindernisse; nochmal Feuer = Bumm, spätestens nach 7 Sekunden. 70 Schaden. Schafe können nicht schwimmen.",
+        "🍌 Bananenbombe (1×): riesige Streuwirkung, 55 Schaden plus 5 Splitter zu je 42.",
+        "🔆 Heilige Granate (1×): „Halleluja!“ – 95 Schaden und der größte Radius im Spiel.",
+        "⛏️ Bohrrakete (2×): bohrt sich ins Gelände und explodiert dort (42 Schaden), gut gegen eingegrabene Gegner.",
+        "🌀 Teleporter (2×): Ziel antippen, dein Wurm erscheint dort; der Zug endet sofort. Auf Wasser kann man nicht landen."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Handy und Tablet: Stick unten links = laufen (vor/zurück) und drehen. Über den Bildschirm ziehen = Blickrichtung drehen (waagerecht) und Winkel ändern (senkrecht). Einen Gegner antippen = dein Wurm dreht sich zu ihm. Zwei Finger = zoomen. FEUER halten = Kraft, loslassen = Schuss. Knöpfe: Waffe, ↗ SPRUNG, ⤺ SALTO, » PASS, 👁 Übersicht, Ⅱ Pause.",
+        "PC: W/S = vor und zurück laufen, A/D = drehen (Pfeil links/rechts dreht feiner), Pfeil hoch/runter = Winkel, Leertaste halten = Kraft aufladen, loslassen = Feuer, Enter = Sprung nach vorn, Rücktaste = Salto rückwärts, 1–0 = Waffe, Tab = Waffenliste, V = Übersicht, Esc = Pause bzw. Waffenliste schließen. Maus ziehen = zielen, Klick auf Gegner = hindrehen, Mausrad = Zoom.",
+        "Bei Luftangriff, Teleporter und Zielsuchrakete setzt ein Tippen oder Klick auf die Karte das Ziel. Für Luftangriff und Teleporter schaltet das Spiel dazu in die Übersicht; dort dreht Ziehen die Karte.",
+        "Einen Gamecontroller unterstützt das Spiel nicht.",
+        "Wenn du die App verlässt oder den Tab wechselst, pausiert das Spiel automatisch."
+      ]
+    },
+    {
+      "t": "Spielmodi",
+      "list": [
+        "Feldzug mit Leveln: Du spielst Level 1, 2, 3 … gegen den Computer. Von Level zu Level wachsen beide Trupps, der Gegner schneller als du, dazu kommen mehr Minen und Fässer, stärkerer Wind, früherer Sudden Death und ein klügerer Computer. Die Bananenbombe gibt es im Feldzug erst ab Level 3, die Heilige Granate ab Level 6.",
+        "Schnelles Gefecht: du gegen den Computer mit 2 bis 8 Würmern pro Team, freier Kartenwahl, 6 Minen, 5 Fässern und Sudden Death ab Runde 12. Alle 14 Waffen sind dabei.",
+        "Zu zweit an einem Gerät: wie das Schnelle Gefecht, nur steuert ein zweiter Mensch Team Blau. Ihr gebt das Gerät nach jedem Zug weiter."
+      ]
+    },
+    {
+      "t": "Speichern und Fortschritt",
+      "p": [
+        "Das laufende Gefecht wird zu Beginn jedes Zuges im Browser gespeichert – samt zerstörtem Gelände, Lebenspunkten, Munition und Kisten. Über Pause und „Hauptmenü (Zugbeginn ist gespeichert)“ kannst du jederzeit aufhören und später mit „Gefecht fortsetzen“ am Anfang des aktuellen Zuges weitermachen.",
+        "Im Feldzug merkt sich das Spiel das höchste freigeschaltete Level. Nach einem Sieg kommst du mit „Nächstes Level ▶“ weiter, kannst das Level wiederholen oder ins Hauptmenü gehen. Nach einer Niederlage heißt es „Nochmal versuchen“.",
+        "Das Endfenster zeigt im Schnellen Gefecht und zu zweit, wer gewonnen hat, nach wie vielen Runden, und die übrigen LP beider Teams."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Fang mit der Schwierigkeit Locker an. Die lange Flugbahn-Linie zeigt dir genau, wo Bazooka und Granate landen.",
+        "Granaten sind windunabhängig und prallen ab – ideal, um Gegner hinter Hügeln zu treffen.",
+        "Tippe einen Gegner an, dann dreht sich dein Wurm automatisch zu ihm. Danach nur noch Winkel und Kraft einstellen.",
+        "Lauf nach dem Schuss weg und such dir eine Stelle mit Abstand zum Wasser.",
+        "Kisten lohnen sich: +25 LP können ein Gefecht entscheiden."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Wasser ist dein bester Freund: Ein Gegner am Ufer ist mit einem Treffer erledigt, egal wie viele LP er hat. Baseballschläger und Explosionen mit viel Rückstoß sind dafür perfekt.",
+        "Wind lesen: Bei starkem Gegenwind lieber Granate, Streubombe oder Schrotflinte nehmen. Rückenwind verlängert die Bazooka-Flugbahn.",
+        "Ölfässer und Minen neben Gegnern sind Gratis-Schaden. Ein Schuss auf ein Fass kann mehrere Würmer gleichzeitig erwischen.",
+        "Die Schrotflinte hat zwei Schüsse: Mit dem ersten kannst du Gelände wegschießen, mit dem zweiten den Gegner treffen.",
+        "Spar dir Heilige Granate, Bananenbombe und Dynamit für Gruppen von Gegnern auf. Ein Schaf läuft zuverlässig auf ebenem Boden – mit Feuer zündest du es genau neben dem Ziel.",
+        "Hebe einen Teleporter für den Sudden Death auf: Steigt das Wasser, rettest du damit einen Wurm auf einen hohen Punkt."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Die Zeit steht, solange du Feuer hältst – du verlierst beim Aufladen also keine Sekunden.",
+        "Bei 100 % Kraft geht der Schuss von selbst los. Für weite Schüsse also voll aufladen, für kurze früh loslassen.",
+        "Mit dem Salto rückwärts kommst du hoch und dicht hinter dich, mit dem normalen Sprung weiter nach vorn – gut, um über kleine Gräben zu springen.",
+        "Auf Knifflig gibt es keine Zielhilfe. Merk dir, welche Kraft bei 30° bis 45° ungefähr welche Entfernung bringt.",
+        "Die Bohrrakete trifft Gegner, die sich in Krater oder hinter Mauern verkrochen haben (Frostfestung).",
+        "Leg Minen oder Dynamit dort ab, wo der Gegner hinlaufen muss, etwa auf Brücken der Smaragdinsel oder Graten des Lava-Kraters."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Nach dem Schuss stehen bleiben – die eigene Explosion trifft auch dich.",
+        "Am Ufer stehen: Ein Treffer in der Nähe genügt, und der Wurm landet im Wasser.",
+        "Zu nah an eine Mine laufen. Hörst du das Piepen, sofort weg.",
+        "Den Wind ignorieren und mit der Bazooka bei starkem Gegenwind schießen.",
+        "Den Teleporter ins Wasser oder an den Kartenrand setzen wollen – das geht nicht („Dort kann man nicht landen“)."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Feldzug: alle Level im Überblick",
+      "p": [
+        "Die Zahlen bedeuten: deine Würmer gegen die des Computers, Karte, Minen, Ölfässer und ab welcher Runde Sudden Death beginnt. Der Computer wird mit jedem Level treffsicherer (bis Level 16)."
+      ],
+      "list": [
+        "Level 1: 2 gegen 2 · Smaragdinsel · 3 Minen · 3 Fässer · Sudden Death ab Runde 15",
+        "Level 2: 2 gegen 3 · Staub-Canyon · 4 Minen · 4 Fässer · ab Runde 14",
+        "Level 3: 3 gegen 3 · Frostfestung · 5 Minen · 4 Fässer · ab Runde 14 · Bananenbombe frei",
+        "Level 4: 3 gegen 4 · Lava-Krater · 6 Minen · 5 Fässer · ab Runde 13",
+        "Level 5: 3 gegen 4 · Smaragdinsel · 7 Minen · 5 Fässer · ab Runde 13",
+        "Level 6: 4 gegen 5 · Staub-Canyon · 8 Minen · 6 Fässer · ab Runde 12 · Heilige Granate frei",
+        "Level 7: 4 gegen 5 · Frostfestung · 9 Minen · 6 Fässer · ab Runde 12",
+        "Level 8: 4 gegen 6 · Lava-Krater · 10 Minen · 7 Fässer · ab Runde 11",
+        "Level 9: 5 gegen 6 · Smaragdinsel · 11 Minen · 7 Fässer · ab Runde 11",
+        "Level 10: 5 gegen 7 · Staub-Canyon · 12 Minen · 8 Fässer · ab Runde 10",
+        "Level 11: 6 gegen 7 · Frostfestung · 13 Minen · 8 Fässer · ab Runde 10",
+        "Level 12: 6 gegen 8 · Lava-Krater · 14 Minen · 9 Fässer · ab Runde 9",
+        "Ab Level 13 geht es endlos weiter: 6 gegen 8, die Karten wechseln reihum (Smaragdinsel, Canyon, Festung, Lava), 14 Minen, 9 Fässer. Die gegnerischen Würmer bekommen pro Level 10 LP mehr (bis 150 LP ab Level 17), Sudden Death beginnt immer früher (frühestens ab Runde 7)."
+      ]
+    },
+    {
+      "t": "Lösungsweg für den Feldzug",
+      "steps": [
+        "Level 1 bis 2: Lerne Bazooka und Granate. Der Computer zielt noch ungenau; konzentriere dich auf den nächsten Gegner.",
+        "Level 3 bis 5: Ab jetzt bist du oft in Unterzahl. Nutze die Bananenbombe für zwei nah beieinanderstehende Gegner und schubse Ufer-Würmer ins Wasser bzw. in die Lava.",
+        "Level 4 und 8 (Lava-Krater): Die Ringinsel ist schmal, überall droht Lava. Hier wirkt jeder Rückstoß doppelt – bleib selbst weg vom Rand und treib Gegner hinaus.",
+        "Level 6 bis 9: Mit der Heiligen Granate kannst du einen ganzen Pulk ausschalten. Spare sie für den Moment, in dem drei Gegner nah beieinander stehen.",
+        "Level 10 bis 12: Viele Minen machen Laufwege gefährlich. Ziehe mit Fässern und Minen Kettenreaktionen auf Gegnergruppen und sammle jede Kiste ein, die in deiner Nähe landet.",
+        "Spätestens kurz vor Sudden Death solltest du in der Überzahl sein, denn das steigende Wasser trifft beide Seiten. Stell deine Würmer dann auf hohe Punkte (Tafelberge, Burgmauern, Vulkankegel)."
+      ]
+    },
+    {
+      "t": "Schadenstabelle",
+      "list": [
+        "Heilige Granate: 95 (größter Radius)",
+        "Dynamit: 75",
+        "Schaf: 70",
+        "Bananenbombe: 55 + 5 × 42",
+        "Bazooka, Zielsuchrakete, Granate: je 50",
+        "Mine: 45",
+        "Bohrrakete: 42",
+        "Ölfass: 40",
+        "Streubombe: 30 + 5 × 24",
+        "Luftangriff: 5 × 30",
+        "Baseballschläger: 30 (plus sehr weiter Flug)",
+        "Schrotflinte: 2 × 25",
+        "Ausscheidender Wurm: kleine Explosion mit 20",
+        "Der volle Schaden gilt nur im Zentrum; je weiter weg, desto weniger. Jeder Wurm startet mit 100 LP, eine Erste-Hilfe-Kiste gibt +25 (höchstens 50 über dem Startwert)."
+      ]
+    },
+    {
+      "t": "Startmunition pro Team",
+      "list": [
+        "Unbegrenzt: Bazooka, Granate, Schrotflinte",
+        "3×: Streubombe",
+        "2×: Zielsuchrakete, Baseballschläger, Dynamit, Mine, Schaf, Bohrrakete, Teleporter",
+        "1×: Luftangriff, Bananenbombe (Feldzug ab Level 3), Heilige Granate (Feldzug ab Level 6)",
+        "Waffenkisten können Streubombe, Bananenbombe, Zielsuchrakete, Luftangriff, Schaf, Dynamit, Teleporter, Mine, Bohrrakete, Baseballschläger oder Heilige Granate enthalten."
+      ]
+    },
+    {
+      "t": "Kleine Geheimnisse",
+      "list": [
+        "Jeder Wurm hat einen Namen – Team Rot: Nova, Keks, Pixel, Bolt, Rübe, Zappa, Krümel, Wumme; Team Blau: Funk, Momo, Komet, Blitz, Boris, Fussel, Tango, Wanze.",
+        "Einige Würmer haben eigene Sprüche, die sie manchmal zu Beginn ihres Zuges sagen – Pixel etwa: „Ich ziele in 4K. Du weichst in 144p aus.“",
+        "Schlägst du mit dem Baseballschläger daneben, kommentiert das Spiel: „Luftschlag… im wörtlichen Sinn.“",
+        "Das Schaf kann nicht schwimmen – läuft es ins Wasser, ist es weg."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Mein gespeichertes Gefecht ist weg.",
+      "a": "Gespeichert wird im Browser zu Beginn jedes Zuges. Ist das Gefecht zu Ende oder startest du ein neues und bestätigst die Rückfrage, wird der Stand gelöscht. Auch das Löschen der Browserdaten entfernt ihn."
+    },
+    {
+      "q": "Warum endet mein Zug plötzlich?",
+      "a": "Wird dein Wurm in seinem eigenen Zug verletzt – etwa durch eine Mine oder einen harten Sturz, bevor du geschossen hast – endet der Zug sofort. Auch nach 45 Sekunden ist Schluss."
+    },
+    {
+      "q": "Kann ich mit einem Gamecontroller spielen?",
+      "a": "Nein. Kraterkommando unterstützt Touch sowie Tastatur und Maus."
+    },
+    {
+      "q": "Gibt es einen Online-Modus?",
+      "a": "Nein. Du spielst gegen den Computer oder zu zweit an einem Gerät und gebt es nach jedem Zug weiter."
+    },
+    {
+      "q": "Wie schalte ich weitere Level frei?",
+      "a": "Gewinne im Feldzug das höchste freigeschaltete Level. Danach kannst du mit ◀ und ▶ auch geschaffte Level noch einmal spielen."
+    },
+    {
+      "q": "Der Ton nervt.",
+      "a": "Im Hauptmenü oder in der Pause auf „🔊 Spielsound an“ tippen, dann ist er aus. Die Einstellung bleibt gespeichert."
+    }
+  ]
+}

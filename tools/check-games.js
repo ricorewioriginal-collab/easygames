@@ -33,6 +33,7 @@ GAMES.forEach((x, i) => {
   const gd = GUIDES[x.id];
   if (!gd) warn(`${n}: keine Anleitung in guides.js (es wird die Kurzbeschreibung gezeigt)`);
   else { if (!gd.anleitung) warn(`${n}: guides.js ohne "anleitung"`); if (!Array.isArray(gd.steuerung) || !gd.steuerung.length) warn(`${n}: guides.js ohne "steuerung"`); }
+  if (!fs.existsSync(path.join(root, 'guides', x.id + '.json'))) warn(`${n}: kein Handbuch/Ratgeber/Lösungsbuch in guides/${x.id}.json (node tools/check-guides.js)`);
   const m = Object.assign({}, MODES[x.id], x.modes);
   Object.keys(m).forEach(k => { if (!KEYS.includes(k)) warn(`${n}: unbekannter Modus "${k}" (erlaubt: ${KEYS.join(', ')})`); });
 });

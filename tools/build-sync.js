@@ -15,7 +15,7 @@ const args = process.argv.slice(2), has = f => args.includes(f), val = f => { co
 
 const LINKS = { radio: 'https://www.ricorewi-radio.de', githubPage: 'https://ricorewioriginal-collab.github.io/easygames/' };
 const SHELL = ['index.html', 'einbinden.html', 'games.js', 'modes.js', 'guides.js', 'device.js', 'gamekit.js', 'easygames.js'];
-const SHELL_OPTIONAL = ['categories.js', 'stream.html', 'ranglisten.html', 'erfolge.html', 'konto.html', 'chat.html', 'heute.html', 'radio-erfolge.html', 'radio-profil.html', 'konto-loeschen.html', 'impressum.html', 'datenschutz.html', 'profil.html', 'bug.html', 'cloud/anmacha-board.js', 'cloud/anmacha-account.js', 'cloud/anmacha-ach.js', 'cloud/radio-erfolge.js', 'cloud/radio-profil.js', 'cloud/anmacha-gameach.js', 'cloud/anmacha-chatfilter.js', 'cloud/anmacha-chat.js', 'cloud/anmacha-engage.js', 'cloud/anmacha-bug.js', 'logo.png', 'logo.jpg', 'logo.jpeg', 'logo.svg', 'logo.webp', 'favicon.ico', 'manifest.webmanifest', 'branding/easygames-icon-192.png', 'branding/easygames-icon-512.png', 'branding/easygames-icon-512-maskable.png', 'branding/easygames-apple-touch-icon.png', 'cloud/anmacha-cloud.js', 'cloud/fire-peer.js', 'show-voice.js', 'gamepad.js'];
+const SHELL_OPTIONAL = ['categories.js', 'guidebook.js', 'anleitung.html', 'stream.html', 'ranglisten.html', 'erfolge.html', 'konto.html', 'chat.html', 'heute.html', 'radio-erfolge.html', 'radio-profil.html', 'konto-loeschen.html', 'impressum.html', 'datenschutz.html', 'profil.html', 'bug.html', 'cloud/anmacha-board.js', 'cloud/anmacha-account.js', 'cloud/anmacha-ach.js', 'cloud/radio-erfolge.js', 'cloud/radio-profil.js', 'cloud/anmacha-gameach.js', 'cloud/anmacha-chatfilter.js', 'cloud/anmacha-chat.js', 'cloud/anmacha-engage.js', 'cloud/anmacha-bug.js', 'logo.png', 'logo.jpg', 'logo.jpeg', 'logo.svg', 'logo.webp', 'favicon.ico', 'manifest.webmanifest', 'branding/easygames-icon-192.png', 'branding/easygames-icon-512.png', 'branding/easygames-icon-512-maskable.png', 'branding/easygames-apple-touch-icon.png', 'cloud/anmacha-cloud.js', 'cloud/fire-peer.js', 'show-voice.js', 'gamepad.js'];
 // Nicht ins Offline-Paket: Quellcode, Doku, Tests, Build-Hilfen
 const SKIP_DIRS = new Set(['node_modules', '.git', '.github', '.vscode', 'docs', 'doc', 'test', 'tests', '__tests__', 'tools', 'coverage', 'source', 'push-server', 'promo', 'share']);
 const SKIP_FILE = /(^|\/)(README[^/]*|[^/]*\.md|package(-lock)?\.json|tsconfig[^/]*\.json|eslint\.config\.[^/]*|\.[^/]*|THIRD_PARTY[^/]*|LICENSE[^/]*)$|\.(map|ts|tsx|sh|py|psd|blend|log)$/i;
@@ -52,6 +52,8 @@ SHELL.forEach(f => { if (!fs.existsSync(path.join(root, f))) errors.push('Pflich
 // Gemeinsame easygames-Figuren (figuren/figuren.js + Modelle), von mehreren Spielen genutzt
 if (fs.existsSync(path.join(root, 'figuren'))) fs.readdirSync(path.join(root, 'figuren')).sort().forEach(f => { if (/\.(js|glb)$/.test(f)) add('figuren/' + f, '_shell'); });
 SHELL_OPTIONAL.forEach(f => { if (fs.existsSync(path.join(root, f))) add(f, '_shell'); });
+// Spielanleitungen (Handbuch, Ratgeber, Lösungsbuch) – werden erst beim Öffnen geladen
+if (fs.existsSync(path.join(root, 'guides'))) fs.readdirSync(path.join(root, 'guides')).sort().forEach(f => { if (/\.json$/.test(f)) add('guides/' + f, '_shell'); });
 // Vorschaubilder der Spieleliste (tools/make-thumbs.py)
 if (fs.existsSync(path.join(root, 'thumbs'))) fs.readdirSync(path.join(root, 'thumbs')).sort().forEach(f => { if (/\.(webp|js)$/.test(f)) add('thumbs/' + f, '_shell'); });
 

@@ -1,0 +1,190 @@
+{
+  "id": "anmacha-gesucht",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AnMaCha Gesucht & Gefunden ist ein Ratestudio in 3D mit Moderator, Publikum, Vorhang und Podesten. In vier Spielarten erratest, befragst, kombinierst und mimst du Begriffe – allein oder mit bis zu 4 Spielern oder Teams an einem Gerät.",
+        "Wer am Ende die meisten Punkte hat, gewinnt. Im Gesichter-Radar spielst du allein gegen den Moderator."
+      ]
+    },
+    {
+      "t": "Start und Menü",
+      "list": [
+        "SPIELART: 💡 Hinweis-Raten, ❓ Fragen-Raten, 🙂 Gesichter-Radar oder 🎉 Stirnband-Party.",
+        "THEMEN: 🐾 Tiere, 👷 Berufe, 🌍 Länder, ⭐ Persönlichkeiten, 📦 Gegenstände und 🎙️ Radio & Musik – zusammen 174 Begriffe. Antippen schaltet ein Thema an oder aus, mindestens eins bleibt immer an. Beim Fragen-Raten ist Radio & Musik gesperrt, weil es dafür keine Ja/Nein-Fragen gibt. Beim Gesichter-Radar gibt es keine Themen.",
+        "RUNDEN: beim Hinweis-Raten 3, 5 oder 8 Runden; beim Fragen-Raten und bei der Stirnband-Party 1, 2 oder 3 Runden pro Spieler. Beim Gesichter-Radar wählst du stattdessen die Moderator-Stärke: Anfänger, Normal oder Profi.",
+        "SPIELER / TEAMS: 1 bis 4. Für jeden Platz trägst du einen Namen ein (bis 14 Zeichen); ein Tipp auf das Logo gibt dem Spieler ein anderes Sender-Shirt (13 Sender, zum Beispiel RicoReWi Music & Media, YourTime-FM oder AnMaCha 24).",
+        "SPIEL STARTEN (oder Enter am PC). Darunter: 🏆 Bestenliste, 🔊 Ton und 🎙 Stimme (der Moderator liest seine Sätze vor, wenn der Browser eine Sprachausgabe hat).",
+        "Alle Einstellungen merkt sich das Spiel."
+      ]
+    },
+    {
+      "t": "💡 Hinweis-Raten",
+      "steps": [
+        "Der Moderator nennt das Thema der Runde. Dann wird Hinweis 1 aufgedeckt – er ist der schwerste, Hinweis 5 ist der leichteste.",
+        "Reihum ist jeder Spieler dran und wählt „🙋 Ich rate“ oder „Weiter“. Wer anfängt, wechselt von Runde zu Runde.",
+        "Wer rät, wählt aus vier Antworten aus demselben Thema. Richtig bringt die Punkte des aktuellen Hinweises: bei Hinweis 1 5 Punkte, bei Hinweis 2 4 Punkte, dann 3, 2 und bei Hinweis 5 nur noch 1 Punkt.",
+        "Ein falscher Tipp scheidet dich für diese Runde aus.",
+        "Kommt niemand drauf, wird der nächste Hinweis aufgedeckt. Beim fünften Hinweis gibt es kein „Weiter“ mehr – jetzt muss geraten werden.",
+        "Zum Schluss öffnet sich der Vorhang und zeigt die Lösung („Gesucht – gefunden!“)."
+      ]
+    },
+    {
+      "t": "❓ Fragen-Raten",
+      "steps": [
+        "Jeder Spieler bekommt nacheinander einen eigenen geheimen Begriff aus den gewählten Themen.",
+        "Du stellst Ja/Nein-Fragen aus einer festen Liste, zum Beispiel bei Tieren „Ist es ein Säugetier?“ oder „Kann es fliegen?“, bei Ländern „Liegt es in Europa?“. Jede Antwort steht im Fragenprotokoll.",
+        "Mit „🎯 Lösung raten“ wählst du aus allen Begriffen des Themas. Richtig bringt 15 Punkte minus der Zahl deiner bisherigen Fragen, mindestens 1 Punkt.",
+        "Falsch raten kostet 3 Punkte (nie unter 0), zählt wie eine Frage und streicht den Begriff aus der Auswahl.",
+        "Nach 15 Fragen musst du raten („Letzter Tipp!“). Ist der falsch, ist die Runde verloren."
+      ]
+    },
+    {
+      "t": "🙂 Gesichter-Radar",
+      "p": [
+        "Allein gegen den Moderator: Es gibt 20 gezeichnete Gesichter (zum Beispiel Anna, Ben, Clara … Uwe), jedes mit einer eigenen Kombination von Merkmalen. Du bekommst ein geheimes Gesicht, der Moderator ein anderes.",
+        "Abwechselnd stellt ihr Ja/Nein-Fragen aus 14 Merkmalen: Brille, Bart, Mütze, Lächeln, lange Haare, Glatze, Haarfarbe blond, braun, schwarz, rot oder grau, Ohrringe, Sommersprossen und Fliege. Gesichter, die nicht mehr passen, werden auf deiner Tafel automatisch ausgegraut.",
+        "Tippe ein Gesicht an und noch einmal an, um deinen Tipp abzugeben. Richtig gewinnst du, falsch gewinnt der Moderator. Der Moderator rät, sobald er sich sicher ist – liegt er daneben, hast du gewonnen.",
+        "Für einen Sieg gibt es 13 Punkte minus deiner Fragenzahl, mindestens 1 Punkt."
+      ]
+    },
+    {
+      "t": "🎉 Stirnband-Party",
+      "steps": [
+        "Der Spieler, der dran ist, hält das Gerät mit dem Bildschirm nach außen an die Stirn und tippt vorher auf „BEREIT!“.",
+        "Nach dem Countdown 3, 2, 1 erscheint ein Begriff. Die anderen beschreiben ihn, ohne ihn zu nennen.",
+        "✅ RICHTIG zählt einen Punkt, ⏭ WEITER überspringt den Begriff ohne Abzug.",
+        "Jede Runde dauert 60 Sekunden; in den letzten 10 Sekunden tickt es. Dann ist der Nächste dran."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch und Maus: Antworten, Fragen, Knöpfe und Gesichter antippen. ☰ oben links öffnet die Pause mit „WEITER“ und „Spiel beenden“.",
+        "PC-Tastatur: Enter startet im Menü das Spiel, M schaltet den Ton um. Bei der Stirnband-Party: Pfeil rechts oder Enter = Richtig, Pfeil links oder Leertaste = Weiter.",
+        "Gamecontroller: Das Steuerkreuz springt zwischen den Knöpfen, A drückt den gewählten Knopf. Bei der Stirnband-Party ist A = Richtig und X = Weiter.",
+        "Oben rechts schalten 🎙 die Moderator-Stimme und 🔊 den Ton um."
+      ]
+    },
+    {
+      "t": "Bestenliste und Speichern",
+      "p": [
+        "Am Ende zeigt das Spiel die Rangliste der Runde. Jede Punktzahl über 0 kommt in die lokale 🏆 Bestenliste der jeweiligen Spielart – dort stehen die besten 10 mit Name und Datum. Bestenliste, Namen, Shirts, Themen, Runden und Ton-Einstellungen werden im Browser gespeichert."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Beim Hinweis-Raten lieber einen Hinweis abwarten, wenn du unsicher bist: Ein falscher Tipp kostet dich die ganze Runde.",
+        "Die vier Antworten stammen aus demselben Thema – vergleiche sie mit allen bisherigen Hinweisen, nicht nur mit dem letzten.",
+        "Beim Fragen-Raten zuerst breite Fragen stellen, die viele Begriffe ausschließen.",
+        "Wähle zum Üben nur ein Thema aus, dann kennst du die Begriffe schneller."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Hinweis-Raten im Mehrspieler: Wer früh richtig rät, holt bis zu 5 Punkte und beendet die Runde für alle. Bist du dir zu 75 Prozent sicher, lohnt sich das Risiko bei Hinweis 2 oder 3.",
+        "Fragen-Raten: Jede Frage kostet einen Trefferpunkt, ein Fehltipp zusätzlich 3 Punkte und zählt als Frage. Rate erst, wenn höchstens zwei Begriffe übrig sind.",
+        "Gesichter-Radar: Frag immer nach Merkmalen, die ungefähr die Hälfte der noch übrigen Gesichter haben – so findest du das Gesicht in 4 bis 5 Fragen.",
+        "Stirnband-Party: Schwere Begriffe sofort mit ⏭ überspringen – Weiter kostet nichts, Zeit aber schon."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Im Gesichter-Radar sind seltene Merkmale wie Mütze, Fliege, Ohrringe oder Sommersprossen schlechte erste Fragen, weil meist „Nein“ kommt. Besser: Lächeln (bei etwa der Hälfte) oder lange Haare.",
+        "Bei der Haarfarbe gilt: Wer eine Glatze hat, hat bei den Haarfarben-Fragen immer „Nein“.",
+        "Gegen den Profi-Moderator musst du schnell sein: Er halbiert jedes Mal perfekt und rät bei zwei übrigen Gesichtern manchmal schon auf Verdacht.",
+        "Beim Fragen-Raten im Protokoll mitdenken: Eine Frage, deren Antwort du aus den bisherigen schon ableiten kannst, verschenkt einen Punkt."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Beim Hinweis-Raten beim ersten Hinweis blind raten – meist fliegt man raus.",
+        "Beim Fragen-Raten nach 15 Fragen ohne Plan raten: Der letzte Tipp beendet die Runde.",
+        "Im Gesichter-Radar ein Gesicht nur einmal antippen und warten – erst der zweite Tipp gibt die Antwort ab.",
+        "Bei der Stirnband-Party den Bildschirm Richtung eigenes Gesicht halten."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Punktetabellen",
+      "list": [
+        "Hinweis-Raten: richtig bei Hinweis 1 = 5 Punkte, Hinweis 2 = 4, Hinweis 3 = 3, Hinweis 4 = 2, Hinweis 5 = 1. Falsch = raus für diese Runde, kein Abzug.",
+        "Fragen-Raten: richtig nach 0 Fragen = 15 Punkte, nach 5 Fragen = 10, nach 10 Fragen = 5, ab 14 Fragen = 1 Punkt. Falscher Tipp = −3 Punkte und zählt als Frage.",
+        "Gesichter-Radar: Sieg nach 3 Fragen = 10 Punkte, nach 5 Fragen = 8, nach 8 Fragen = 5, ab 12 Fragen = 1 Punkt. Niederlage = 0.",
+        "Stirnband-Party: 1 Punkt je richtigem Begriff, Überspringen ohne Abzug.",
+        "Höchstwerte: Hinweis-Raten 8 Runden × 5 = 40 Punkte; Fragen-Raten 3 Runden × 15 = 45 Punkte."
+      ]
+    },
+    {
+      "t": "Lösungsweg Hinweis-Raten (Beispiel)",
+      "p": [
+        "Die Hinweise werden von schwer nach leicht aufgedeckt. Beispiel Tiere: 1. „Seine Tragzeit dauert etwa 22 Monate“, 2. „Ist das schwerste an Land lebende Tier“, 3. „Hat riesige Fächerohren und Stoßzähne aus Elfenbein“, 4. „Trinkt und greift mit einer muskulösen, bis zum Boden reichenden Nase“, 5. „Graues Riesentier mit Rüssel …“ – Lösung Elefant. Spätestens Hinweis 2 verrät es, das sind 4 Punkte.",
+        "Weiteres Beispiel: „Sein Sehvermögen ist ein Mehrfaches schärfer als das des Menschen“ und „Baut riesige Nester, sogenannte Horste“ – das ist der Adler."
+      ]
+    },
+    {
+      "t": "Begriffe je Thema (Auswahl)",
+      "list": [
+        "🐾 Tiere (30): zum Beispiel Elefant, Delfin, Biene, Fledermaus, Kobra, Komodowaran, Riesenschildkröte.",
+        "👷 Berufe (30): zum Beispiel Bäcker, Pilot, Förster, Programmierer, Schornsteinfeger, Astronaut, Bildhauer.",
+        "🌍 Länder (30): zum Beispiel Spanien, Island, Luxemburg, Mongolei, Botswana, Madagaskar, Fidschi.",
+        "⭐ Persönlichkeiten (30): zum Beispiel Albert Einstein, Marie Curie, Frida Kahlo, Pelé, Roald Amundsen, Rosa Parks.",
+        "📦 Gegenstände (30): zum Beispiel Fahrrad, Fernglas, Dosenöffner, Mundharmonika, Schubkarre, Mikroskop.",
+        "🎙️ Radio & Musik (24): zum Beispiel Mischpult, Jingle, UKW, Reggae, Plattenspieler, Remix – nur für Hinweis-Raten und Stirnband-Party."
+      ]
+    },
+    {
+      "t": "Beste Fragen beim Fragen-Raten",
+      "list": [
+        "🐾 Tiere: zuerst „Ist es ein Säugetier?“, dann „Lebt es hauptsächlich im Wasser?“ oder „Kann es fliegen?“, danach „Ist es größer als ein Hund?“.",
+        "🌍 Länder: „Liegt es in Europa?“, dann „Hat es Zugang zum Meer?“ und „Ist es größer als Deutschland?“. Für den Rest „Ist es eine Insel oder ein Inselstaat?“ und „Liegt es in Asien?“.",
+        "⭐ Persönlichkeiten: „Ist es eine Frau?“, „Wurde die Person vor 1850 geboren?“, dann den Bereich (Musik, Wissenschaft, Sport, Kunst, Politik).",
+        "👷 Berufe: „Arbeitet man überwiegend draußen?“, „Braucht man meist ein Studium?“, „Trägt man Dienstkleidung oder Uniform?“.",
+        "📦 Gegenstände: „Braucht es Strom?“, „Passt es in eine Hosentasche?“, „Findet man es typischerweise in der Küche?“."
+      ]
+    },
+    {
+      "t": "Gesichter-Radar: Moderator-Stärken",
+      "list": [
+        "Anfänger: Der Moderator stellt zufällige Fragen, die zwar etwas bringen, aber oft wenig ausschließen – gut zu schlagen.",
+        "Normal: Meist wählt er die Frage, die seine Kandidaten am besten halbiert, ab und zu aber eine zufällige.",
+        "Profi: Er halbiert immer bestmöglich und tippt bei zwei Kandidaten oft schon auf Verdacht. Du brauchst selbst perfekte Halbierungsfragen.",
+        "Lösungsweg: Bei 20 Gesichtern reichen theoretisch 5 gute Fragen (20, 10, 5, 3, 2, 1). Danach das letzte helle Gesicht zweimal antippen."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Das Studio lädt nicht („Oh nein“).",
+      "a": "Die 3D-Grafik wird beim Start aus dem Internet geladen. Prüfe die Internetverbindung und lade die Seite neu."
+    },
+    {
+      "q": "Der Moderator spricht nicht.",
+      "a": "Schalte „🎙 Stimme“ ein. Die Stimme kommt aus der Sprachausgabe des Browsers; fehlt sie, ist der Knopf ausgeblendet und der Moderator spricht nur in der Sprechblase."
+    },
+    {
+      "q": "Warum kann ich Radio & Musik beim Fragen-Raten nicht wählen?",
+      "a": "Für dieses Thema gibt es keine Ja/Nein-Fragen. Es läuft beim Hinweis-Raten und bei der Stirnband-Party."
+    },
+    {
+      "q": "Kann man online gegeneinander spielen?",
+      "a": "Nein, alle Spielarten laufen an einem Gerät. Bis zu 4 Spieler oder Teams wechseln sich ab."
+    },
+    {
+      "q": "Meine Bestenliste ist leer.",
+      "a": "Die Bestenliste liegt im Browser des Geräts. Nach dem Löschen der Website-Daten oder im privaten Fenster ist sie leer. Eingetragen werden nur Ergebnisse über 0 Punkte."
+    },
+    {
+      "q": "Wiederholen sich die Begriffe?",
+      "a": "Innerhalb eines Spiels kommt jeder Begriff nur einmal, bis alle Begriffe der gewählten Themen gespielt wurden."
+    }
+  ]
+}

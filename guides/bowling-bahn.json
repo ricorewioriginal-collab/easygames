@@ -1,0 +1,180 @@
+{
+  "id": "bowling-bahn",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Bowling-Bahn 3D ist Zehn-Kegel-Bowling in einer Neon-Halle mit echter Kugel- und Kegelphysik. Kugel und Kegel stoßen sich, Kegel fallen um, rutschen weiter, landen in der Rinne oder im Schacht – es gibt dabei keinen Zufall: Derselbe Wurf ergibt immer dasselbe Bild.",
+        "Ein Spiel hat 10 Frames. Ziel ist eine möglichst hohe Punktzahl, perfekt sind 300 Punkte (12 Strikes hintereinander)."
+      ]
+    },
+    {
+      "t": "Start und Menü",
+      "p": [
+        "Nach dem Ladebildschirm („Bahn wird geölt …“) erscheint der Titel. Tippe, klicke oder drücke eine Taste (am Controller A oder Start), um ins Menü zu kommen. Im Hintergrund wirft ein Computer-Bowler als Vorführung."
+      ],
+      "list": [
+        "🎳 Einzelspiel: 10 Frames allein, dein Ergebnis zählt für den Rekord. Darunter stehen Schnitt und Rekord.",
+        "🤖 Gegen CPU: Duell gegen den Computer in drei Stärken – 🙂 Leicht (trifft öfter daneben), 😎 Mittel (solider Kegler), 🔥 Profi (wirft Strike um Strike).",
+        "👥 Party: 2 bis 4 Spieler werfen abwechselnd an einem Gerät. Jeder Platz kann Mensch oder CPU Leicht, Mittel oder Profi sein.",
+        "🦸 Bowler: deinen Helden aus allen 69 EASYCLASH-Figuren wählen, mit 3D-Vorschau.",
+        "🏅 Rekorde: bestes Spiel, Schnitt, Spiele, Strikes, Spares, Strikes am Stück, besiegte CPUs je Stärke und perfekte Spiele.",
+        "⚙️ Optionen: Soundeffekte, Musik, Ziellinie zeigen, Ziellinie bis zu den Kegeln (mit Hook), Vibration und Sparmodus (ohne Schatten, gilt nach dem nächsten Neustart).",
+        "📖 Anleitung: Zählweise und Steuerung im Spiel."
+      ]
+    },
+    {
+      "t": "Ablauf eines Wurfs",
+      "steps": [
+        "Startpunkt wählen: Die Kugel seitlich auf der Bahn verschieben.",
+        "Richtung einstellen: leicht nach links oder rechts zielen. Die Ziellinie zeigt den Weg über den geölten Teil der Bahn.",
+        "Effet einstellen: in Schritten von 25 Prozent bis 100 Prozent nach links (↶) oder rechts (↷). Die Anzeige zeigt zum Beispiel „Effet ↶ 50 %“ oder „Effet gerade“.",
+        "Kraft geben und werfen: Dein Bowler läuft an, holt aus und lässt die Kugel los. Mehr Kraft heißt mehr Tempo.",
+        "Die Kugel rollt über die geölten ersten Meter fast gerade. Im trockenen hinteren Teil greift das Effet, und die Kugel biegt ab (Hook).",
+        "Danach zeigt das Spiel das Ergebnis: STRIKE!, SPARE!, Rinne, Daneben! oder die Zahl der gefallenen Kegel und wie viele noch stehen."
+      ]
+    },
+    {
+      "t": "Zählweise",
+      "list": [
+        "In jedem Frame hast du zwei Würfe, um alle 10 Kegel umzuwerfen.",
+        "Strike (X): alle 10 mit dem ersten Wurf. Zählt 10 plus die Kegel der nächsten zwei Würfe. Der Frame ist sofort vorbei.",
+        "Spare (/): alle 10 mit zwei Würfen. Zählt 10 plus die Kegel des nächsten Wurfs.",
+        "Sonst zählt jeder umgeworfene Kegel einen Punkt. Ein Strich (-) auf der Tafel heißt 0 Kegel.",
+        "10. Frame: Nach einem Strike oder Spare gibt es Bonuswürfe, insgesamt also bis zu drei Würfe. Nach einem Strike oder einem Spare werden die Kegel wieder voll aufgestellt.",
+        "Kegel, die von ihrem Platz weggeschoben wurden, aber noch stehen, zählen nach dem Wurf ebenfalls als gefallen.",
+        "Die Anzeigetafel oben zeigt für jeden Spieler alle Frames mit Zeichen und laufender Summe; der aktuelle Frame ist hervorgehoben."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch und Maus: Kugel seitlich ziehen setzt den Startpunkt. Nach oben wischen wirft: Die Richtung des Wischens zielt, schnelles Wischen gibt mehr Tempo, ein Bogen am Ende des Wischens gibt Effet. Der Wisch muss mindestens ein Stück nach oben gehen.",
+        "Touch und Maus, Knöpfe: ↶ und ↷ an der Seite stellen das Effet ein. Alternativ den Kraftbalken gedrückt halten: Er steigt und fällt immer wieder, beim Loslassen wird geworfen.",
+        "Tastatur: ← → Startpunkt, A und D Richtung, ↑ Effet nach links, ↓ Effet nach rechts, Leertaste (oder Enter) halten lädt die Kraft, loslassen wirft. Esc oder P öffnet die Pause. In Menüs wählst du mit den Pfeiltasten und Enter.",
+        "Gamecontroller: linker Stick oder Steuerkreuz links/rechts Startpunkt, rechter Stick oder LB/RB Richtung, X Effet nach links, Y Effet nach rechts, A halten = Kraft, loslassen = Wurf, Start oder B Pause. In Menüs Steuerkreuz und A, B zurück."
+      ]
+    },
+    {
+      "t": "Party und Gegen CPU",
+      "p": [
+        "In der Party gibst du jedem Platz einen Namen (bis 12 Zeichen), stellst mit dem Art-Knopf zwischen 🙂 Mensch und 🤖 CPU Leicht, Mittel oder Profi um und wählst mit ◀ ▶ oder 🎲 den Bowler. Mit ＋ Spieler und － Spieler stellst du 2 bis 4 Plätze ein. Die Aufstellung merkt sich das Spiel.",
+        "Die Spieler werfen reihum je einen ganzen Frame. Am Ende gibt es eine Rangliste mit 🥇 🥈 🥉. „↻ Nochmal“ startet dieselbe Partie neu, „☰ Menü“ führt zurück."
+      ]
+    },
+    {
+      "t": "Rekorde und Speichern",
+      "p": [
+        "Als Rekord und für die Rangliste zählt dein bestes Spiel im Einzelspiel oder gegen den Computer, höchstens 300 Punkte. Strikes, Spares, Rinnen und Spiele werden für menschliche Spieler in allen Modi gezählt. Alles, auch Optionen, Bowler und Party-Aufstellung, wird im Browser des Geräts gespeichert."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Lass die Ziellinie in den Optionen an – sie zeigt, wohin die Kugel über den geölten Teil rollt.",
+        "Wirf anfangs ohne Effet gerade auf den Kopfkegel (Kegel 1), dann fallen schon viele Kegel.",
+        "Wenn das Wischen schwerfällt, nutze den Kraftbalken: Halten, warten bis er fast oben ist, loslassen.",
+        "Zu schwacher Kraftbalken (fast leer) löst keinen Wurf aus – dann einfach nochmal halten."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Die Tasche: Am meisten fallen, wenn die Kugel schräg zwischen Kegel 1 und 3 (rechts vom Kopfkegel) oder zwischen 1 und 2 (links) einschlägt.",
+        "Für einen Rechtshänder-Strike: leicht rechts starten und mit Effet nach links (↶, Pfeil nach oben, X) in die Tasche 1-3 hooken.",
+        "Für die linke Tasche spiegelst du das: links starten, Effet nach rechts (↷, Pfeil nach unten, Y).",
+        "Das Effet wirkt erst im trockenen hinteren Teil der Bahn. Die normale Ziellinie zeigt nur den geölten Teil – schalte „Ziellinie bis zu den Kegeln (mit Hook)“ ein, um den ganzen Weg zu sehen.",
+        "Beim zweiten Wurf (Spare) lieber gerade und ohne Effet direkt auf die stehenden Kegel zielen."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Die Physik hat keinen Zufall: Hast du einen Strike-Wurf gefunden, wirf genauso noch einmal. Startpunkt, Richtung und Effet deines letzten Wurfs bleiben für deinen nächsten Wurf eingestellt.",
+        "Tempo zählt: Langsame Kugeln haken stärker, schnelle schlagen härter ein. Mit dem Kraftbalken wirfst du reproduzierbar, mit dem Wischen variabler.",
+        "Gegen CPU Profi brauchst du fast nur Strikes und Spares. Übe die Tasche vorher im Einzelspiel.",
+        "Abgeräumte Kegel bleiben weg: Beim zweiten Wurf stehen nur die übrigen. Ziele bei einem Split auf den vorderen Kegel und versuche, ihn seitlich in den anderen zu stoßen."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu viel Effet beim zweiten Wurf – die Kugel läuft an einzelnen Kegeln vorbei.",
+        "Zu weit außen starten: Die Kugel fällt in die Rinne (Anzeige „Rinne“).",
+        "Beim Wischen nur seitlich ziehen: Das verschiebt nur den Startpunkt, ein Wurf braucht eine deutliche Bewegung nach oben.",
+        "Sparmodus eingeschaltet, aber keine Änderung? Er wirkt erst nach dem nächsten Neustart des Spiels."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Der Strike-Wurf",
+      "steps": [
+        "Startpunkt etwas rechts der Mitte wählen.",
+        "Richtung ganz leicht nach links oder gerade.",
+        "Effet nach links (↶) auf 50 bis 75 Prozent.",
+        "Kraft kräftig, aber nicht voll – so hat das Effet im trockenen Teil Zeit zu greifen.",
+        "Beobachte, wo die Kugel einschlägt, und korrigiere nur einen Wert pro Wurf (Startpunkt oder Effet). Weil die Physik ohne Zufall arbeitet, wiederholt sich ein guter Wurf zuverlässig."
+      ]
+    },
+    {
+      "t": "Spares abräumen",
+      "list": [
+        "Einzelner Kegel rechts (zum Beispiel 6 oder 10): links starten und gerade schräg nach rechts zielen, kein Effet.",
+        "Einzelner Kegel links (zum Beispiel 4 oder 7): rechts starten und schräg nach links zielen, kein Effet.",
+        "Mehrere Kegel in einer Gruppe: auf den vordersten Kegel der Gruppe zielen.",
+        "Split (Lücke zwischen den Kegeln): den äußeren Kegel seitlich treffen, damit er in den anderen fliegt – oder sicher einen Kegel nehmen."
+      ]
+    },
+    {
+      "t": "Wertungstabelle",
+      "list": [
+        "Kegel-Anordnung: Kegel 1 vorn, dahinter 2 und 3, dann 4, 5, 6 und hinten 7, 8, 9, 10 (jeweils von links nach rechts).",
+        "Strike-Frame: 10 plus die nächsten zwei Würfe, also höchstens 30 Punkte.",
+        "Spare-Frame: 10 plus der nächste Wurf, also höchstens 20 Punkte.",
+        "Offener Frame: Summe der Kegel, höchstens 9 Punkte.",
+        "Perfektes Spiel: 12 Strikes hintereinander (9 Frames plus drei im 10. Frame) = 300 Punkte.",
+        "Neun Strikes und im 10. Frame Spare plus Bonuswurf bringen schon über 270 Punkte."
+      ]
+    },
+    {
+      "t": "Strategie gegen die CPU-Stärken",
+      "list": [
+        "🙂 Leicht: Der Computer streut seine Würfe stark. Saubere Spares reichen meist zum Sieg.",
+        "😎 Mittel: Solide Würfe mit mittlerer Streuung – du brauchst regelmäßige Strikes.",
+        "🔥 Profi: Kaum Streuung und schnelle Kugeln, er wirft Strike um Strike. Nur mit einem gut eingeübten Tasche-Wurf zu schlagen.",
+        "Siege werden in 🏅 Rekorde je Stärke gezählt; im Unentschieden zählt kein Sieg."
+      ]
+    },
+    {
+      "t": "Rekord-Werte",
+      "p": [
+        "Feste Erfolge gibt es nicht, aber die Rekordliste sammelt: 🏆 Bestes Spiel, Ø Schnitt, 🎳 Spiele, ❌ Strikes, ／ Spares, 🔥 Strikes am Stück, 🙂 😎 🔥 CPU besiegt je Stärke und 💯 Perfekte Spiele (300 Punkte). Strikes am Stück zählen über Frames hinweg, bis ein Wurf kein Strike ist."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Mein Rekord ist weg – warum?",
+      "a": "Rekorde und Einstellungen liegen im Browser des Geräts. Werden die Website-Daten gelöscht oder spielst du im privaten Fenster, sind sie weg."
+    },
+    {
+      "q": "Zählt die Party für meinen Rekord?",
+      "a": "Nein, der Rekord zählt nur im Einzelspiel und gegen die CPU. Strikes, Spares und Spiele in der Party werden aber in der Statistik gezählt."
+    },
+    {
+      "q": "Das Spiel zeigt keine 3D-Grafik.",
+      "a": "Dann unterstützt das Gerät kein WebGL („3D wird auf diesem Gerät nicht unterstützt“). Auf schwachen Geräten hilft der Sparmodus, der nach einem Neustart ohne Schatten zeichnet."
+    },
+    {
+      "q": "Wie kann ich das Effet sehen?",
+      "a": "Neben der Bahn steht die Anzeige „Effet ↶ … %“ oder „Effet ↷ … %“. Mit der Option „Ziellinie bis zu den Kegeln (mit Hook)“ zeigt die Linie den ganzen Bogen."
+    },
+    {
+      "q": "Kein Ton?",
+      "a": "Prüfe in den Optionen Soundeffekte und Musik. Browser erlauben Ton oft erst nach dem ersten Tippen oder Tastendruck auf dem Titelbildschirm."
+    }
+  ]
+}

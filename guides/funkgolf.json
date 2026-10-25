@@ -1,0 +1,191 @@
+{
+  "id": "funkgolf",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Funk-Minigolf 3D – Die Radioportal-Tour ist Minigolf auf 18 Bahnen quer durch das RicoReWi × AnMaCha Radioportal: von der Begrüßung über die Senderstudios bis zum Funkturm. Bring den Ball mit möglichst wenigen Schlägen ins Loch.",
+        "Jede Bahn hat ein Par (die Sollzahl an Schlägen). Die ganze Runde hat Par 55. Wer am Ende die wenigsten Schläge hat, gewinnt."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "list": [
+        "Wer spielt mit?: Namen eintragen (bis 14 Zeichen). Mit ＋ Spieler fügst du bis zu 4 Spieler hinzu, mit ✕ entfernst du einen. Jeder Spieler hat eine eigene Ballfarbe.",
+        "Runde: Alle 18 Bahnen, Bahn 1–9 oder Bahn 10–18.",
+        "⛳ Abschlag! startet die Runde.",
+        "📖 So geht's: kurze Anleitung im Spiel.",
+        "⚙️ Einstellungen: Ton, Ziellinie anzeigen (Hilfe) – die gepunktete Linie vor dem Ball – und Sparmodus (weniger Details, für schwache Geräte; die Seite lädt dafür neu).",
+        "📻 Radio: wählt einen Sender, der live während des ganzen Spiels läuft.",
+        "Unter den Knöpfen steht deine Statistik: gespielte Runden, beste 18er-Runde, Zahl der Hole-in-Ones und dein Rekord in Punkten."
+      ]
+    },
+    {
+      "t": "Regeln und Spielablauf",
+      "list": [
+        "Zu Beginn jeder Bahn zeigt ein Banner Nummer, Name und Par. Oben links stehen Bahn und Hindernis, daneben der aktive Spieler mit Schlagnummer und Gesamtschlägen (in Klammern über oder unter Par).",
+        "Gespielt wird reihum: Spieler 1 spielt die Bahn zu Ende, dann ist Spieler 2 dran und so weiter.",
+        "Höchstens 8 Schläge pro Bahn. Ist der Ball nach dem 8. Schlag nicht im Loch, werden 8 Schläge notiert („Maximal 8 Schläge – Weiter geht's!“).",
+        "Wasser oder ins Aus: „Platsch! 💦 +1 Strafschlag – zurück an den Ausgangspunkt“. Der Ball liegt wieder dort, wo du geschlagen hast, und du bekommst einen Schlag dazu.",
+        "Zu schnell über das Loch rollt der Ball darüber hinweg oder springt am Rand ab. Langsam ankommende Bälle zieht das Loch am Rand leicht an.",
+        "Nach jeder Bahn kommt die Scorekarte mit allen Bahnen, Par und Schlägen (Hole-in-One, unter und über Par sind farbig markiert).",
+        "Am Ende zeigt die Rangliste alle Spieler mit Schlägen und Abstand zum Par. Bei mehreren Spielern heißt es „🏆 … gewinnt!“."
+      ]
+    },
+    {
+      "t": "Ergebnis-Namen pro Bahn",
+      "list": [
+        "1 Schlag: Hole-in-One! 🎉",
+        "2 oder mehr unter Par: Eagle 🦅",
+        "1 unter Par: Birdie 🐦",
+        "genau Par: Par 👍",
+        "1 über Par: Bogey",
+        "2 über Par: Doppel-Bogey",
+        "noch mehr: einfach die Zahl der Schläge"
+      ]
+    },
+    {
+      "t": "Hindernisse und Untergründe",
+      "list": [
+        "Sand bremst den Ball stark.",
+        "Eis ist glatt – der Ball rollt sehr weit.",
+        "Hänge (Schrägen) schieben den Ball seitlich oder zurück.",
+        "Hügel und Wellen: Der Ball rollt bergauf langsamer und kann zurückrollen.",
+        "Bumper (runde Pfosten, Discokugeln) prallen den Ball kräftig ab.",
+        "Schieber und Mischpult-Regler fahren hin und her und stoßen den Ball an.",
+        "Drehende Arme, Plattenteller und Kassettenspulen nehmen den Ball in ihrer Drehrichtung mit.",
+        "Windmühle: Die Tür ist zu, wenn ein Flügel nach unten zeigt.",
+        "Looping: Nur mit genug Schwung kommt der Ball ganz herum, sonst rollt er zurück („Zu wenig Schwung für den Looping – fester schlagen!“).",
+        "Portal: beamt den Ball an eine andere Stelle der Bahn."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch und Maus: Den Ball antippen und wie eine Steinschleuder nach hinten wegziehen – der Schuss geht in die Gegenrichtung, je weiter du ziehst, desto fester. Loslassen schlägt, zurück zum Ball ziehen bricht ab. Neben dem Ball wischen dreht die Kamera (hoch/runter neigt sie), Mausrad oder zwei Finger zoomen.",
+        "Tastatur: ← → (oder A D) zielen, mit zusätzlich gehaltenem ↓ fein zielen. Leertaste gedrückt halten – die Stärke pendelt auf und ab – und loslassen zum Schlagen. Q/E dreht die Kamera, W/S neigt sie, + und − zoomen, C schaltet die Draufsicht, Esc öffnet die Pause.",
+        "Gamecontroller: linker Stick zielt (Steuerkreuz links/rechts fein), A halten und loslassen schlägt, rechter Stick oder LB/RB dreht die Kamera, Y Draufsicht, Start Pause. In Menüs Steuerkreuz und A.",
+        "Oben rechts: 📻 Radio, 🎥 Kamera (Draufsicht an/aus), 📋 Scorekarte und das Pausenmenü."
+      ]
+    },
+    {
+      "t": "Pause, Radio und Speichern",
+      "list": [
+        "Pausenmenü: ▶ Weiter, ⏭ Bahn aufgeben (es zählen dann 8 Schläge), 🔊 Ton an/aus, ⏹ Zum Menü. Wechselst du den Tab, pausiert das Spiel von selbst.",
+        "📻 Radio: Aus, „Passend zur Bahn“ oder einer der 13 Sender (RicoReWi Radio, YourTime-FM, Rapradio 24, Schlagerpop 24, Chartradio 24, Clubradio 24, AnMaCha 24, RadioFloh!, Rockradio 24, Christmasradio 24, Kultradio 24, Zocker-FM, Special-Radio). „Passend zur Bahn“ schaltet auf jeder Sender-Bahn um; auf Bahnen ohne eigenen Sender läuft der letzte weiter. Beim Wechsel zeigt das Spiel kurz den aktuellen Titel.",
+        "Auf dem Gerät gespeichert werden Spielernamen, Einstellungen, Radiowahl, Statistik und Rekord.",
+        "Rangliste: Nur ganze Runden über alle 18 Bahnen allein zählen. Punkte = 100 + 10 je Schlag unter Par 55 (über Par entsprechend weniger, nie unter 0). Mit dem Google-Knopf unten links kannst du dich anmelden und deinen Stand sichern."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Lass die Ziellinie in den Einstellungen eingeschaltet – sie zeigt die Schlagrichtung.",
+        "Schau dir jede neue Bahn mit 🎥 (C, Y) von oben an, bevor du schlägst.",
+        "Lieber etwas zu schwach als zu stark: Zu schnelle Bälle springen über das Loch, und Wasser kostet einen Strafschlag.",
+        "Nach jedem Schlag richtet das Spiel die Zielrichtung wieder auf das Loch aus. Prüfe aber, ob eine Wand dazwischen ist."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Bandenschläge: Die Wände geben den Ball recht stark zurück. Über die Bande kommst du um Zwischenwände herum, ohne zwei Schläge zu brauchen.",
+        "Bewegliche Hindernisse: Beobachte Schieber, Arme und die Windmühle einen Moment und schlag, wenn die Lücke beim Eintreffen des Balls frei ist.",
+        "Auf Eis mit wenig Kraft spielen, im Sand mit deutlich mehr.",
+        "Am Hügelloch (Vulkan, Inselhügel, Funkturm-Gipfel) muss der Ball bergauf genug Schwung haben, darf aber oben nicht zu schnell sein. Spiel lieber einen sicheren zweiten Putt.",
+        "Mit der Tastatur pendelt die Stärke: Lass die Leertaste genau beim gewünschten Ausschlag der Kraftleiste los. Für kurze Putts am Anfang des Pendels loslassen."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Mit ↓ beim Zielen (Tastatur) oder dem Steuerkreuz (Controller) zielst du deutlich feiner als mit dem Stick.",
+        "Plattenteller und Spulen nehmen den Ball nur in den ersten Sekunden nach dem Schlag mit. Ein kräftiger Schlag fährt fast gerade durch, ein schwacher wird stark abgelenkt.",
+        "Hänge wirken seitlich: Ziele bergauf vor, damit der Ball zum Loch hinunterläuft.",
+        "Für den Rekord zählt jeder Schlag: 10 Punkte pro Schlag. Eine Runde mit 45 Schlägen bringt 200 Punkte, Par 55 genau 100 Punkte."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu fest auf das Loch: Ab einer gewissen Geschwindigkeit fällt der Ball nicht hinein.",
+        "Beim Looping zu zaghaft – er braucht einen kräftigen Schlag.",
+        "Auf der Gitarrenhals- und der Insel-Bahn schräg schlagen: Das Wasser links und rechts kostet jedes Mal einen Strafschlag.",
+        "Im Ziehen zurück zum Ball wischen – das bricht den Schlag ab. Ziehe klar vom Ball weg."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Bahn 1 bis 9",
+      "list": [
+        "Bahn 1 – Willkommen im Radioportal (Par 2): gerade Bahn mit einer kleinen Welle und einem Tor in der Mitte. Gerade durch das Tor spielen; mit gutem Gefühl ein Hole-in-One-Kandidat.",
+        "Bahn 2 – YourTime-FM Strandbar (Par 3): L-förmig, erst geradeaus über die Düne, dann rechts um die Ecke. An der Ecke steht ein Bumper, ums Loch liegen Sandbunker. Erst bis kurz hinter die Düne spielen, dann nach rechts zum Loch.",
+        "Bahn 3 – Rapradio 24 Blitz (Par 4): Zickzack mit drei versetzten Zwischenwänden und einem Schieber („Vorsicht Verkehr!“) dazwischen. Spiel von Lücke zu Lücke, notfalls über die Bande, und warte am Schieber auf freie Bahn.",
+        "Bahn 4 – Schlagerpop 24 Vulkan (Par 3): drei Discokugeln als Bumper, das Loch liegt auf dem Vulkanhügel am Ende. Zwischen den Kugeln durch und mit mittlerer Kraft den Hügel hinauf.",
+        "Bahn 5 – Chartradio 24 Looping (Par 3): Ein Trichter führt in den Looping. Kräftig gerade schlagen, damit der Ball ganz herumkommt. Hinter dem Looping liegt ein Hang, der zurückschiebt – das Loch kommt danach.",
+        "Bahn 6 – Clubradio 24 Plattenteller (Par 3): In der Mitte dreht ein Plattenteller mit Arm und nimmt den Ball mit. Kräftig durchspielen oder warten, bis der Arm aus dem Weg ist.",
+        "Bahn 7 – AnMaCha 24 Studio (Par 3): Drei Mischpult-Regler fahren quer über die Bahn, jeder mit eigenem Tempo. Am besten durch die Mitte, wenn die Regler gerade außen sind.",
+        "Bahn 8 – Sendeplan (Par 3): Zwei Wände mit versetzten Lücken (erst rechts, dann links) und kleine Pfosten. Den ersten Schlag rechts durch die Lücke, den zweiten links durch, dann einlochen.",
+        "Bahn 9 – Voting (Par 3): Ein Block in der Mitte teilt die Bahn. Links liegt Sand, rechts ein Hang, der zur Mitte drückt; das Loch liegt auf einem kleinen Hügel. Der rechte Weg ist schneller, der linke durch den Sand langsamer."
+      ]
+    },
+    {
+      "t": "Bahn 10 bis 18",
+      "list": [
+        "Bahn 10 – RadioFloh! Windmühle (Par 3): U-Form: erst geradeaus nach oben, über die Querbahn (Bumper in der Mitte) und rechts wieder herunter durch die Windmühle zum Loch. Warte vor der Mühle, bis kein Flügel nach unten zeigt.",
+        "Bahn 11 – Rockradio 24 Gitarrenhals (Par 3): ein schmaler Steg mit zwei Bünden (kleinen Wellen) zwischen zwei Wasserbecken. Ganz gerade und nicht zu fest spielen.",
+        "Bahn 12 – Christmasradio 24 Winterwald (Par 3): langes Glatteis mit drei Bumpern, dann ein Schneehügel vor dem Loch. Auf dem Eis mit wenig Kraft spielen.",
+        "Bahn 13 – Kultradio 24 Kassette (Par 3): zwei Spulen drehen gegenläufig und haben je einen Arm. Genau durch die Mitte zwischen den Spulen spielen, dort heben sich die Kräfte auf.",
+        "Bahn 14 – Zocker-FM Arcade (Par 3): Die Bahn besteht aus zwei getrennten Teilen. Spiel links an der Zwischenwand vorbei ins Portal oben links – es beamt den Ball in den zweiten Teil. Dort warten drei Flipper-Bumper vor dem Loch.",
+        "Bahn 15 – Special-Radio Insel (Par 3): Ein Steg führt über das Wasser auf die Insel mit dem Inselhügel und dem Loch. Gerade über den Steg und mit wenig Kraft auf die Insel – dahinter ist wieder Wasser.",
+        "Bahn 16 – AnMaChaCast Podcast (Par 3): zwei hohe Wellen hintereinander, danach ein Hang, der nach rechts drückt, und ein Mikrofon-Bumper vor dem Loch. Mit genug Kraft über die Wellen und am Hang leicht links vorhalten.",
+        "Bahn 17 – Sleep-Timer (Par 3): Eine Wand quer mit Lücke in der Mitte, dort dreht ein Arm („Warte auf den Mond“). Warte, bis die Lücke frei ist. Dahinter drückt ein Hang nach rechts, zwei Pfosten stehen vor dem Loch.",
+        "Bahn 18 – Funkturm-Finale (Par 4): Erst durch die Schranke (ein Schieber), dann rechts um die Ecke an zwei Bumpern vorbei, oben noch einmal links ums Eck, einen Hang hinauf, der zurückschiebt, bis zum Loch auf dem Gipfel."
+      ]
+    },
+    {
+      "t": "Par, Wertung und Rekord",
+      "list": [
+        "Par pro Bahn: Bahn 1 Par 2, Bahn 3 und 18 Par 4, alle anderen Par 3. Bahn 1–9 zusammen Par 27, Bahn 10–18 Par 28, alle 18 Bahnen Par 55.",
+        "Ranglistenpunkte (nur 18 Bahnen allein): 100 + (55 − Schläge) × 10. Beispiele: 55 Schläge = 100 Punkte, 50 = 150, 40 = 250, 65 = 0.",
+        "Ein neuer Rekord wird am Ende gemeldet („🏆 Neuer Rekord: … Schläge (… Punkte für die Rangliste)“).",
+        "Hole-in-Ones werden gezählt und im Hauptmenü angezeigt."
+      ]
+    },
+    {
+      "t": "Partie zu mehreren",
+      "p": [
+        "Bis zu 4 Spieler spielen an einem Gerät. Jeder spielt die Bahn für sich zu Ende, dann ist der Nächste dran. Wer am Ende die wenigsten Schläge hat, gewinnt; die Rangliste zeigt alle mit Abstand zum Par. Mehrspieler-Runden zählen nicht für den Rekord. Für einen kurzen Abend reicht Bahn 1–9 oder Bahn 10–18."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Das Radio spielt nicht.",
+      "a": "Wähle mit 📻 einen Sender. Ist er gerade nicht erreichbar, meldet das Spiel das. Manche Browser starten Ton erst nach einem Tippen ins Spiel."
+    },
+    {
+      "q": "Warum zählt meine Runde nicht für die Rangliste?",
+      "a": "Nur Runden über alle 18 Bahnen mit genau einem Spieler zählen."
+    },
+    {
+      "q": "Das Spiel ruckelt auf meinem Handy.",
+      "a": "Schalte in den Einstellungen den Sparmodus ein. Die Seite lädt dann neu und zeigt weniger Details."
+    },
+    {
+      "q": "Kann ich online gegen Freunde spielen?",
+      "a": "Nein, Funk-Minigolf ist für bis zu 4 Spieler an einem Gerät gedacht."
+    },
+    {
+      "q": "Ich komme an einer Bahn nicht weiter.",
+      "a": "Nach 8 Schlägen geht es automatisch weiter. Im Pausenmenü kannst du die Bahn auch mit ⏭ aufgeben – es zählen dann 8 Schläge."
+    },
+    {
+      "q": "Wo sind meine Statistik und mein Rekord gespeichert?",
+      "a": "Auf diesem Gerät im Browser. Mit dem Google-Knopf unten links kannst du sie zusätzlich in deinem Google-Konto sichern."
+    }
+  ]
+}

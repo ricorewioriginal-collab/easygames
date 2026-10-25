@@ -1,0 +1,213 @@
+{
+  "id": "funkgalgen",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Funkgalgen ist Galgenmännchen in freundlich und in 3D: Der Moderator steht auf einem Turm aus 8 Lautsprecher-Kisten über einer Riesen-Torte. Du rätst ein verdecktes Wort Buchstabe für Buchstabe.",
+        "Jeder richtige Buchstabe erscheint an allen Stellen, an denen er im Wort vorkommt. Jeder falsche Buchstabe schießt eine Kiste aus dem Turm. Ist die letzte Kiste weg, plumpst der Moderator in die Torte und die Runde ist verloren. Deckst du alle Buchstaben auf, ist er gerettet."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "list": [
+        "🎯 Solo-Serie: Kategorie und Schwierigkeit wählen, dann Wort für Wort weiterspielen, bis es einmal schiefgeht.",
+        "📅 Tageswort: ein Wort pro Tag, für alle Spieler gleich.",
+        "👥 Duell: zu zweit an einem Gerät, abwechselnd Wort ausdenken und raten.",
+        "🌐 Online & Handys: Der Fernseher oder PC zeigt Turm und Wort, die Mitspieler raten auf ihren Handys. Sie treten per QR-Code, Link oder 4-stelligem Code von überall bei.",
+        "📖 So geht's: die Kurzanleitung im Spiel.",
+        "⚙️ Einstellungen: Ton, Vibration und Sparmodus (weniger 3D-Details für schwächere Geräte).",
+        "📻 Radio: 13 Live-Sender von laut.fm (zum Beispiel RicoReWi Radio, Schlagerpop 24, Rockradio 24) oder aus. Der Sender läuft während des ganzen Spiels und lässt sich auch im Spiel über 📻 oder im Pausenmenü wechseln.",
+        "Unten im Menü steht deine Bilanz: Rekord-Punkte, gerettete Wörter, beste Serie und ob das Tageswort heute schon gespielt ist."
+      ]
+    },
+    {
+      "t": "Regeln einer Runde",
+      "list": [
+        "Das Wort besteht nur aus Buchstaben A bis Z sowie Ä, Ö und Ü. Ein ß wird als SS geschrieben.",
+        "Über dem Wort steht die Kategorie und die Zahl der Buchstaben, darunter die Liste deiner falschen Buchstaben.",
+        "Einen Buchstaben, den du schon probiert hast, kannst du nicht noch einmal raten (Hinweis „… hattest du schon“); auf der Bildschirmtastatur ist er grün oder rot markiert und gesperrt.",
+        "💡 Joker: deckt einen zufälligen noch verdeckten Buchstaben auf. Er kostet 25 Punkte bei der Wertung und geht nicht mehr, wenn nur noch ein Buchstabe fehlt („Nur noch ein Buchstabe – den schaffst du!“). Im Duell gibt es keinen Joker.",
+        "✍️ Lösen: Du tippst das ganze Wort ein. Richtig heißt sofort geschafft, falsch kostet 2 Kisten auf einmal."
+      ]
+    },
+    {
+      "t": "Solo-Serie",
+      "p": [
+        "Wähle eine Kategorie: 🎲 Alle, 🐾 Tiere, 🍕 Essen & Trinken, 📻 Musik & Radio, 🧑‍🍳 Berufe, ⚽ Sport, 🏠 Zuhause, 🌦️ Natur & Wetter, 🚂 Unterwegs, 🎲 Spiel & Spaß oder 📖 Wörterbuch. Das Wörterbuch zieht bekannte Wörter aus dem Wortfunk-Wörterbuch, auch gebeugte Formen, und filtert derbe oder gruselige Wörter heraus.",
+        "Die Schwierigkeit bestimmt die Wortlänge: Leicht 3 bis 7 Buchstaben, Mittel 6 bis 10, Schwer 9 bis 20. Im Wörterbuch-Modus sind es mindestens 5 und höchstens 14 Buchstaben. Kategorie und Schwierigkeit merkt sich das Spiel.",
+        "Nach jedem geretteten Wort geht es mit „Nächstes Wort ▶“ weiter. Die zuletzt gespielten 60 Wörter kommen so schnell nicht wieder. Landet der Moderator in der Torte, endet die Serie, und du siehst Wörterzahl, Punkte und deinen Rekord."
+      ]
+    },
+    {
+      "t": "Tageswort",
+      "p": [
+        "Jeden Tag gibt es ein Wort mit mindestens 5 Buchstaben aus allen Kategorien, das aus dem Datum berechnet wird und deshalb für alle gleich ist. Du hast einen Versuch. Danach zeigt das Spiel beim erneuten Öffnen nur noch dein Ergebnis („Heute schon geschafft!“ oder „Heute schon gespielt“).",
+        "Mit 📤 Teilen kopierst du dein Ergebnis als Text mit Datum, Fehlerzahl und Kisten-Emojis (📦 für übrige, ▫️ für verlorene Kisten) samt Link zum Spiel – am Handy über das Teilen-Menü, am PC in die Zwischenablage."
+      ]
+    },
+    {
+      "t": "Duell zu zweit",
+      "steps": [
+        "Namen der beiden Spieler eintragen und die Runden pro Spieler wählen: 2, 3 oder 5.",
+        "Der erste Spieler tippt verdeckt sein geheimes Wort ein, der andere schaut weg. Mit 👁 kannst du die Eingabe kurz sichtbar machen, 🎲 Zufallswort wählt ein Wort für dich.",
+        "Das Wort muss 3 bis 20 Buchstaben haben, im Wortfunk-Wörterbuch stehen und freundlich sein; sonst kommt eine Fehlermeldung.",
+        "Der andere rät. Schafft er es, bekommt er so viele Punkte, wie noch Kisten im Turm stehen. Landet der Moderator in der Torte, gibt es 0 Punkte.",
+        "Dann werden die Rollen getauscht. Nach allen Runden gewinnt, wer mehr Punkte hat; bei Gleichstand ist es unentschieden. „Revanche ▶“ startet sofort neu."
+      ]
+    },
+    {
+      "t": "Online & Handys",
+      "steps": [
+        "Am Fernseher oder PC auf 🌐 Online & Handys tippen. Ein Raum mit QR-Code, Link und 4-stelligem Code wird eröffnet.",
+        "Die Mitspieler scannen den QR-Code oder öffnen den Link, geben ihren Namen ein und tippen auf „Mitmachen“. Bis zu 8 Spieler passen in einen Raum, mindestens 2 Handys sind zum Start nötig.",
+        "Reihum denkt sich jedes Handy einmal ein Wort aus (auch hier Wörterbuch-Prüfung, 🎲 Zufall möglich). Alle anderen raten gleichzeitig auf ihren Handys um die Wette.",
+        "Der Fernseher zeigt Turm, Wort, falsche Buchstaben, eine Punkteliste und die letzten Aktionen. Nach jeder Runde wird das Wort 4 Sekunden lang aufgedeckt, dann ist der Nächste dran.",
+        "Wenn jeder einmal ein Wort gestellt hat, kommt die Endwertung mit Platzierung. „Zur Lobby ▶“ setzt die Punkte zurück für eine neue Partie."
+      ],
+      "list": [
+        "Richtiger Buchstabe: +5 Punkte je Stelle, an der er vorkommt; wer den letzten Buchstaben findet, bekommt 10 Extrapunkte.",
+        "Falscher Buchstabe: −2 Punkte (nie unter 0) und eine Kiste weniger.",
+        "Ganzes Wort lösen: +20 Punkte plus 3 je noch verdecktem Buchstaben. Falsch gelöst: −5 Punkte und 2 Kisten.",
+        "Fällt der Moderator in die Torte, bekommt der Wortgeber +25 Punkte.",
+        "Wer erst während des Spiels kommt, wartet bis zur nächsten Partie; wer kurz die Verbindung verliert, wird automatisch wieder mit seinem Punktestand verbunden."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Tastatur: Buchstaben einfach tippen (auch Ä, Ö, Ü), Enter öffnet „Wort lösen“, Esc öffnet die Pause oder schließt Fenster.",
+        "Touch und Maus: Bildschirmtastatur (QWERTZ mit Ü, Ö, Ä) antippen; 💡 Joker und ✍️ Lösen stehen rechts in der unteren Tastenreihe. ☰ oben rechts ist die Pause.",
+        "Gamecontroller: Steuerkreuz wählt die Taste auf der Bildschirmtastatur, A drückt sie, B geht zurück, Start öffnet die Pause.",
+        "Online: Jedes Handy hat seine eigene Tastatur mit ✍️ Lösen; der Fernseher braucht keine Eingabe."
+      ]
+    },
+    {
+      "t": "Punkte, Rekord und Speichern",
+      "p": [
+        "In der Solo-Serie bringt jedes gerettete Wort: 10 Punkte Grundwert, plus 5 für jeden verschiedenen Buchstaben im Wort, plus 10 für jede übrige Kiste, minus 25 für jeden Joker. Dazu kommt ein Serien-Bonus von 10 Prozent für jedes Wort, das du vorher in dieser Serie schon gerettet hast, höchstens das Doppelte. Mindestens gibt es 5 Punkte pro Wort.",
+        "Rekord, gerettete Wörter, beste Serie, Tageswort-Ergebnisse, Duell-Namen und Einstellungen speichert das Spiel im Browser des Geräts."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Fang mit häufigen Buchstaben an: E, N, R, I, S, T, A.",
+        "Kläre zuerst die Vokale, dann die Mitlaute – so zeigt sich das Muster des Wortes schnell.",
+        "Achte auf die Kategorie und die Buchstabenzahl über dem Wort: Bei „Tiere · 5 Buchstaben“ bleiben nur wenige Kandidaten.",
+        "Starte auf Leicht, dort sind die Wörter höchstens 7 Buchstaben lang."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Typische deutsche Wortteile mitdenken: SCH, CH, EI, IE, ER am Ende, EN bei Mehrzahl (zum Beispiel NUDELN).",
+        "Lösen statt raten: Wenn du dir sicher bist, löse das Wort früh. Jede übrige Kiste ist in der Solo-Serie 10 Punkte wert.",
+        "Lösen nur bei echter Sicherheit: Ein Fehlversuch kostet 2 Kisten, also so viel wie zwei falsche Buchstaben.",
+        "Wörter mit vielen verschiedenen Buchstaben bringen mehr Punkte (5 je verschiedenem Buchstaben) – lange Wörter auf Schwer lohnen sich doppelt."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Der Joker kostet 25 Punkte, eine verlorene Kiste nur 10. Setze ihn deshalb nur ein, wenn du sonst mehr als zwei Fehlversuche befürchtest oder kurz vor der Torte stehst – die Serie zu retten ist mehr wert als jeder Einzelpunkt.",
+        "Der Serien-Bonus wächst mit jedem Wort um 10 Prozent bis zum Doppelten nach 10 geretteten Wörtern. Eine lange Serie schlägt also wenige perfekte Wörter.",
+        "Im Online-Modus zählt Tempo: Wer zuerst den richtigen Buchstaben tippt, bekommt die Punkte. Häufige Buchstaben schnell tippen, seltene lieber den anderen überlassen.",
+        "Als Wortgeber online ein Wort wählen, das zwar im Wörterbuch steht, aber ungewöhnliche Buchstaben hat (zum Beispiel mit Y, X oder Q): Landet der Moderator in der Torte, bekommst du 25 Punkte."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu früh lösen: Ein falsches Wort kostet 2 Kisten auf einmal.",
+        "Den Joker beim letzten fehlenden Buchstaben suchen – dann geht er nicht mehr.",
+        "Im Duell einen Namen oder ein Fantasiewort eingeben: Das Wort muss im Wörterbuch stehen.",
+        "Online den Fernseher als Eingabe nutzen wollen: Geraten wird nur auf den Handys."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Beste Reihenfolge der Buchstaben",
+      "p": [
+        "Es gibt kein festes Lösungswort – die Wörter kommen zufällig aus 9 Kategorien mit zusammen über 400 Wörtern oder aus dem Wörterbuch. Am sichersten ist diese Reihenfolge:"
+      ],
+      "steps": [
+        "E und N – sie stecken in den meisten deutschen Wörtern.",
+        "Dann R, I, S, T, A.",
+        "Danach je nach Muster: H und C (für SCH und CH), U, L, O, D, G.",
+        "Erst am Ende Umlaute und seltene Buchstaben (Ä, Ö, Ü, Z, P, F, W, K, B, M).",
+        "Steht das Muster fest, das Wort mit ✍️ Lösen abschließen."
+      ]
+    },
+    {
+      "t": "Wortlisten und Beispiele je Kategorie",
+      "list": [
+        "🐾 Tiere (52 Wörter): zum Beispiel HUND, PINGUIN, SCHMETTERLING, EICHHÖRNCHEN, KÄNGURU.",
+        "🍕 Essen & Trinken (54): zum Beispiel PIZZA, GUMMIBÄRCHEN, PFANNKUCHEN, MILCHSHAKE.",
+        "📻 Musik & Radio (48): zum Beispiel MODERATOR, LAUTSPRECHER, HITPARADE, FUNKTURM.",
+        "🧑‍🍳 Berufe (49): zum Beispiel BÄCKER, FEUERWEHRMANN, ASTRONAUT.",
+        "⚽ Sport (44), 🏠 Zuhause (42), 🌦️ Natur & Wetter (50), 🚂 Unterwegs (41), 🎲 Spiel & Spaß (36).",
+        "Alle Kategorie-Wörter stehen im Wortfunk-Wörterbuch, ß ist als SS geschrieben."
+      ]
+    },
+    {
+      "t": "Punktetabelle Solo-Serie",
+      "list": [
+        "Grundwert: 10 Punkte.",
+        "Je verschiedenem Buchstaben im Wort: +5.",
+        "Je übriger Kiste: +10 (alle 8 Kisten = +80).",
+        "Je Joker: −25.",
+        "Serien-Bonus: +10 Prozent je vorher gerettetem Wort, höchstens ×2.",
+        "Beispiel: ein Wort mit 7 verschiedenen Buchstaben, ohne Fehler und Joker, als erstes Wort: 10 + 35 + 80 = 125 Punkte. Dasselbe als elftes Wort der Serie: 250 Punkte."
+      ],
+      "p": [
+        "Höchstpunkte holst du mit langen Wörtern auf Schwer, ohne Fehler, ohne Joker und in einer möglichst langen Serie."
+      ]
+    },
+    {
+      "t": "Strategie je Modus",
+      "list": [
+        "Solo-Serie: Sicherheit vor Tempo. Ein einziges verlorenes Wort beendet die Serie und damit den Bonus.",
+        "Tageswort: Du hast nur einen Versuch. Erst die häufigen Buchstaben, Lösen nur bei vollem Muster. Das Ergebnis zeigt die Fehler an – null Fehler sind das Ziel.",
+        "Duell: Punkte gibt es nur für übrige Kisten. Wähle als Wortgeber lange Wörter mit seltenen Buchstaben, als Rater vorsichtig vorgehen.",
+        "Online: Schnell sein bei häufigen Buchstaben, den letzten Buchstaben (10 Extrapunkte) oder das ganze Wort (20 plus 3 je verdecktem Buchstaben) abstauben."
+      ]
+    },
+    {
+      "t": "Geheimnisse",
+      "list": [
+        "Das Tageswort hängt nur vom Datum ab – alle Spieler bekommen am gleichen Tag dasselbe Wort, ideal für einen Vergleich über den geteilten Ergebnistext.",
+        "Im Duell und online füllt 🎲 Zufallswort das Feld mit einem Wort mittlerer Länge aus den Kategorien – praktisch, wenn dir nichts einfällt."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Warum wird mein Wort im Duell nicht angenommen?",
+      "a": "Es muss 3 bis 20 Buchstaben haben, im Wortfunk-Wörterbuch stehen und freundlich sein. Namen, Fantasiewörter und derbe Wörter werden abgelehnt."
+    },
+    {
+      "q": "Kann ich das Tageswort noch einmal spielen?",
+      "a": "Nein, pro Tag gibt es einen Versuch. Danach zeigt das Spiel dein Ergebnis, und am nächsten Tag kommt ein neues Wort."
+    },
+    {
+      "q": "Online klappt nicht – was tun?",
+      "a": "Prüfe die Internetverbindung auf Fernseher und Handys und gib den 4-stelligen Code genau wie angezeigt ein. Kommt „Diesen Raum gibt es nicht (mehr)“, öffne am Fernseher den Raum neu. Ein Spiel, das schon läuft, nimmt neue Spieler erst in der nächsten Partie auf."
+    },
+    {
+      "q": "Wo werden Rekord und Statistik gespeichert?",
+      "a": "Im Browser des Geräts. Wenn du die Website-Daten löschst oder im privaten Fenster spielst, sind sie weg."
+    },
+    {
+      "q": "Das Radio spielt nicht.",
+      "a": "Browser starten Ton oft erst nach dem ersten Tippen oder Tastendruck. Kommt „Sender gerade nicht erreichbar“, wähle einen anderen Sender oder versuche es später."
+    },
+    {
+      "q": "Das Spiel ruckelt auf meinem Handy.",
+      "a": "Schalte in den Einstellungen den Sparmodus ein, dann zeigt die 3D-Szene weniger Details."
+    }
+  ]
+}

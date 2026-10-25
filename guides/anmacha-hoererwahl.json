@@ -1,0 +1,176 @@
+{
+  "id": "anmacha-hoererwahl",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AnMaCha Hörerwahl ist das große Umfrage-Duell: 100 Hörer wurden befragt. An der Tafel stehen die häufigsten Antworten – je öfter eine Antwort genannt wurde, desto mehr Punkte ist sie wert. Zwei Teams versuchen, die Antworten zu erraten.",
+        "Wer nach allen Runden mehr Punkte hat, gewinnt und darf zum Schluss das Hörer-Finale spielen: 5 Schnellfragen, bei denen 100 Punkte erreicht werden müssen."
+      ]
+    },
+    {
+      "t": "Start und Einstellungen",
+      "list": [
+        "▶ Spielen öffnet „Neues Spiel“.",
+        "👥 2 Teams: zwei Teams an einem Bildschirm (oder mit Handys). Namen für Team 1 und Team 2 frei wählbar (Standard: Team Antenne und Team Frequenz).",
+        "🤖 Gegen das Funkhaus-Team: Dein Team spielt gegen den Computer.",
+        "Runden: 3, 4 oder 5.",
+        "Gegner-Stufe (nur gegen das Funkhaus-Team): leicht, normal oder schwer.",
+        "Antwortzeit: ohne, 25 s oder 15 s. Läuft die Zeit ab, zählt das als „weiß es nicht“.",
+        "Hörer-Finale: an oder aus.",
+        "❓ Regeln zeigt die Kurzregeln, 🔊 Ton schaltet den Ton. Die Einstellungen werden auf dem Gerät gespeichert."
+      ]
+    },
+    {
+      "t": "Ablauf einer Runde",
+      "steps": [
+        "Duell: Eine Frage erscheint, die Tafel zeigt, wie viele Antworten es gibt. Das erste Team nennt eine Antwort. Trifft es die Top-Antwort (Platz 1), gewinnt es das Duell sofort.",
+        "Sonst antwortet das andere Team. Wer die höher bewertete Antwort getroffen hat, gewinnt das Duell. Liegen beide daneben, gibt es einen zweiten Versuch für beide; danach entscheidet das Los. Punkte aus dem Duell landen schon in der Bank.",
+        "Das Siegerteam entscheidet: ▶ Wir spielen oder ↪ Weitergeben (dann muss das andere Team spielen).",
+        "Das spielende Team nennt der Reihe nach Antworten. Jeder Treffer deckt eine Antwort auf und wandert mit seinen Punkten in die Bank.",
+        "Jede falsche Antwort ist ein Fehler (✕). Auch 🤷 („weiß es nicht“) und eine abgelaufene Antwortzeit zählen als Fehler. Eine schon aufgedeckte Antwort nochmal zu nennen, zählt dagegen nicht als Fehler.",
+        "Sind alle Antworten aufgedeckt, bekommt das spielende Team die Bank.",
+        "Nach drei Fehlern darf das andere Team klauen: Es hat genau eine Antwort. Trifft sie, holt es sich die ganze Bank (inklusive der neuen Antwort). Liegt es daneben, behält das spielende Team die Bank.",
+        "Zum Rundenende werden alle übrigen Antworten aufgedeckt. Mit „Nächste Runde ▶“ bzw. „Ergebnis ▶“ geht es weiter. Das Team, das das Duell beginnt, wechselt jede Runde."
+      ]
+    },
+    {
+      "t": "Punkte und Multiplikator",
+      "p": [
+        "Die Punkte einer Antwort entsprechen der Zahl der Hörer, die sie genannt haben. In späteren Runden zählt die Bank doppelt oder dreifach:"
+      ],
+      "list": [
+        "3 Runden: Runde 1 und 2 einfach, Runde 3 dreifach.",
+        "4 Runden: Runde 1 und 2 einfach, Runde 3 doppelt, Runde 4 dreifach.",
+        "5 Runden: Runde 1 bis 3 einfach, Runde 4 doppelt, Runde 5 dreifach."
+      ]
+    },
+    {
+      "t": "⭐ Hörer-Finale",
+      "p": [
+        "Ist das Finale eingeschaltet und gibt es einen Sieger (kein Gleichstand), spielt das Siegerteam das Hörer-Finale. Gegen das Funkhaus-Team gibt es das Finale nur, wenn dein Team gewinnt.",
+        "Es gibt 5 Fragen und für jede genau eine Antwort; insgesamt hast du 45 Sekunden. Die Punkte deiner Antworten werden zusammengezählt. Mit 100 oder mehr Punkten seid ihr „Hörer-Champions!“. Nach jeder Antwort siehst du, was du bekommen hast, und bei einem Fehlgriff die Top-Antwort."
+      ]
+    },
+    {
+      "t": "Antworten eingeben",
+      "list": [
+        "Antwort ins Feld tippen und mit Enter oder „Antworten“ abschicken; 🤷 heißt „weiß es nicht“.",
+        "Tippfehler, Artikel und Mehrzahl sind egal: „die Katzen“ zählt wie „Katze“. Bei kurzen Wörtern bis 4 Buchstaben muss die Schreibweise stimmen, bis 8 Buchstaben wird 1 Fehler verziehen, darüber 2.",
+        "Zu jeder Antwort kennt das Spiel auch gängige andere Wörter (z. B. „Mitgrölen“ für „Mitsingen“).",
+        "Enthält deine Antwort eine Tafel-Antwort als Wort, wird sie meist erkannt („ein schöner Garten“ → „Garten“). Passt die Eingabe zu zwei Antworten gleich gut, gilt sie als daneben.",
+        "Die Knöpfe (▶ Wir spielen, ↪ Weitergeben, Weiter ▶) per Maus oder Antippen bedienen."
+      ]
+    },
+    {
+      "t": "🌐 Online & Handys",
+      "steps": [
+        "Im Menü „🌐 Online & Handys“ oder im Spiel 📱 antippen. Es erscheinen QR-Code, Link und Code.",
+        "Mitspieler scannen den QR-Code oder öffnen die Seite und geben den Code ein. Das klappt auch online von überall – im Browser, in der App oder an einem anderen Gerät.",
+        "Jedes Handy wird zum Antwort-Pad für Team 1 oder Team 2, bis zu 3 Handys pro Team.",
+        "Wer an der Reihe ist, tippt die Antwort auf dem Handy ein. Auch das Weiterklicken und das Finale lassen sich vom Handy des Teams aus bedienen; der große Bildschirm zeigt Tafel und Studio."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Denk wie die Mehrheit, nicht originell: Gesucht sind die häufigsten Antworten von 100 Hörern.",
+        "Kurz antworten: Ein Wort reicht meistens, z. B. „Schlüssel“ statt „meinen Haustürschlüssel“.",
+        "Im Duell immer die naheliegendste Antwort nennen – die Top-Antwort gewinnt sofort.",
+        "Ohne Antwortzeit kannst du in Ruhe überlegen; mit 15 s wird es richtig spannend."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Spielen oder weitergeben? Hast du die Top-Antwort schon aufgedeckt, ist die Bank gut gefüllt und die Tafel schwerer – Weitergeben kann sich lohnen, wenn ihr dann klauen wollt.",
+        "Fragen mit 7 oder 8 Antworten sind schwer komplett zu lösen; hier sind drei Fehler schnell erreicht.",
+        "Die letzte Runde zählt dreifach: Ein Rückstand ist bis zum Schluss aufholbar.",
+        "Eine schon aufgedeckte Antwort nochmal zu nennen kostet keinen Fehler – aber Zeit, wenn eine Antwortzeit läuft."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Beim Klauen kommt es auf genau eine Antwort an: Wähle die wahrscheinlichste noch verdeckte Antwort, keine Spezialantwort.",
+        "Während das andere Team spielt, schon Antworten für den Klau-Versuch sammeln.",
+        "Im Finale brauchst du im Schnitt 20 Punkte pro Antwort. Die Top-Antworten bringen im Schnitt etwa 31 Punkte – nenne immer die offensichtlichste Antwort und verliere keine Zeit.",
+        "Gegen das Funkhaus-Team auf schwer: Es kennt deutlich mehr Antworten und spielt jede Runde selbst. Auf leicht gibt es auch mal weiter."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu lange oder zu ausgefallene Antworten, die zu zwei Tafel-Antworten passen – dann zählt die Antwort als daneben.",
+        "🤷 drücken, obwohl noch eine Antwort einfällt: Das ist ein voller Fehler.",
+        "Im Finale an einer Frage hängen bleiben: Die 45 Sekunden gelten für alle 5 Fragen zusammen, nicht beantwortete Fragen zählen 0."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Fragenkatalog",
+      "p": [
+        "Das Spiel hat 120 Fragen in 15 Kategorien zu je 8 Fragen: Radio & Musik, Alltag & Haushalt, Essen & Trinken, Urlaub & Reisen, Schule & Arbeit, Tiere & Natur, Freizeit & Sport, Technik & Handy, Familie & Freunde, Feste & Feiertage, Film & Fernsehen, Kleidung & Aussehen, Zuhause & Garten, Gesundheit & Körper sowie Peinlich & Lustig.",
+        "Jede Frage hat 5 bis 8 Antworten auf der Tafel, die zusammen 80 bis 98 Punkte ergeben. Die Top-Antwort bringt zwischen 22 und 50 Punkte. Aufeinanderfolgende Fragen stammen möglichst aus unterschiedlichen Kategorien."
+      ]
+    },
+    {
+      "t": "Beispiele mit Top-Antworten",
+      "list": [
+        "Was macht man im Auto, wenn plötzlich ein richtiger Ohrwurm läuft? Mitsingen 34, Lauter drehen 24, Mitwippen 12",
+        "Nenne etwas, das man ständig sucht: Schlüssel 30, Handy 20, Brille 14",
+        "Nenne etwas, das auf eine Pizza gehört: Käse 26, Salami 22, Pilze 14",
+        "Nenne etwas, das in jeden Koffer gehört: Unterwäsche 24, Zahnbürste 20, T-Shirts 16",
+        "Nenne ein Tier, das viele Menschen als Haustier halten: Hund 34, Katze 30, Hamster 8",
+        "Wofür benutzt man das Handy am häufigsten? Nachrichten schreiben 30, Telefonieren 24, Fotos machen 14",
+        "Was gehört zu Weihnachten unbedingt dazu? Tannenbaum 28, Geschenke 24, Plätzchen 12",
+        "Nenne einen Snack, den man im Kino isst: Popcorn 45, Nachos 16, Süßigkeiten 12",
+        "Was hilft angeblich gegen Schluckauf? Luft anhalten 38, Wasser trinken 26, Erschrecken 12",
+        "Nenne etwas Peinliches, das beim Essen passieren kann: Kleckern 28, Rülpsen 20, Verschlucken 14"
+      ]
+    },
+    {
+      "t": "Beste Strategie je Phase",
+      "list": [
+        "Duell: Die erste, offensichtlichste Antwort nennen. Trifft sie Platz 1, ist das Duell sofort gewonnen.",
+        "Spielen: Erst die naheliegenden Antworten, dann Oberbegriffe und Synonyme. Wenn nichts mehr einfällt, lieber eine Antwort raten als 🤷 – beides kostet gleich viel.",
+        "Klauen: Eine einzige, sehr wahrscheinliche Antwort; die verbleibenden Antworten sind meist die mit mittleren Punkten.",
+        "Finale: Fünf schnelle, typische Antworten; mit drei Top-Antworten bist du meist schon nah an 100 Punkten."
+      ]
+    },
+    {
+      "t": "Wertung und Siegrechnung",
+      "list": [
+        "Rundengewinn = Bank × Multiplikator (×1, ×2 oder ×3, siehe Handbuch).",
+        "Bei 4 Runden zählt die letzte Runde dreifach – eine Bank von 80 Punkten bringt dann 240.",
+        "Bei Gleichstand nach allen Runden gibt es keinen Sieger und kein Finale.",
+        "Finale gewonnen: mindestens 100 Punkte aus 5 Antworten."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Warum wurde meine Antwort nicht erkannt?",
+      "a": "Entweder steht sie nicht auf der Tafel, oder sie passt gleich gut zu zwei Antworten. Bei sehr kurzen Wörtern (bis 4 Buchstaben) muss die Schreibweise genau stimmen. Probier es mit einem einfachen, gängigen Wort."
+    },
+    {
+      "q": "Wie viele Handys können mitmachen?",
+      "a": "Bis zu 3 Handys pro Team, also 6 insgesamt."
+    },
+    {
+      "q": "Das Handy verbindet sich nicht.",
+      "a": "Alle Geräte brauchen Internet. Prüfe den Code und lass das Koppeln-Fenster am großen Bildschirm offen, bis das Handy in der Liste steht."
+    },
+    {
+      "q": "Warum gab es kein Finale?",
+      "a": "Das Finale ist entweder in den Einstellungen ausgeschaltet, es gab Gleichstand, oder im Modus gegen das Funkhaus-Team hat der Computer gewonnen."
+    },
+    {
+      "q": "Kann ich ohne Zeitdruck spielen?",
+      "a": "Ja, stelle die Antwortzeit auf „ohne“. Das Finale hat immer 45 Sekunden."
+    }
+  ]
+}

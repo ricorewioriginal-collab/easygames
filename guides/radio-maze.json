@@ -1,0 +1,186 @@
+{
+  "id": "radio-maze",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AnMaCha Radio Maze 3D ist der Arcade-Labyrinth-Klassiker in 3D-Optik. Du steuerst die gelbe Figur durch ein Labyrinth aus 28 × 31 Feldern und sammelst alle 240 Frequenzpunkte und die 4 Verstärker ein. Sind alle eingesammelt, ist die Frequenz gerettet und das Level geschafft.",
+        "Vier Störsender jagen dich dabei: Rauschi (rot), Pfeifi (rosa), Knacki (cyan) und Brummi (orange). Berührt dich ein Störsender, verlierst du ein Leben. Du startest mit 3 Leben; sind alle weg, heißt es „Sendepause auf unbestimmt“.",
+        "Insgesamt gibt es 60 Level in sechs Radiowelten. Wie am Automaten werden die Störsender von Level zu Level schneller und die Turbo-Zeit kürzer."
+      ]
+    },
+    {
+      "t": "Hauptmenü",
+      "list": [
+        "▶ SPIEL FORTSETZEN: macht dort weiter, wo du aufgehört hast – auch mitten im Level mit den schon gesammelten Punkten, deinem Punktestand und deinen Leben. Daneben steht, welches Level startet.",
+        "↺ Neues Spiel ab Level 1: löscht den laufenden Stand (nicht die Freischaltungen) und beginnt bei Level 1.",
+        "▦ Levelauswahl: zeigt die sechs Welten als Reiter und darin je 10 Level. Gesperrte Level tragen ein 🔒. In der Klammer steht, wie viele Level schon offen sind.",
+        "⛶ Vollbild aktivieren.",
+        "☁ Google Cloud · Spielstände: freiwillige Anmeldung mit Google, um Level, Punkte und Rekorde auf allen Geräten abzugleichen. Ohne Anmeldung wird nur auf dem Gerät gespeichert.",
+        "Oben steht „Freigeschaltet: x / 60“ und dein Highscore."
+      ]
+    },
+    {
+      "t": "Spielregeln im Detail",
+      "list": [
+        "Jeder Frequenzpunkt bringt 10 Punkte, jeder Verstärker 50 Punkte.",
+        "Ein Verstärker schaltet die TURBO-FREQUENZ ein (oben erscheint „⚡ TURBO-FREQUENZ“ mit den Restsekunden): Die Störsender werden blau, langsamer, laufen zufällig und kehren um. Jetzt kannst du sie fangen. Der erste bringt 200, der zweite 400, der dritte 800, der vierte 1600 Punkte. Gefangene Störsender fliegen als Augen ins Geisterhaus zurück und kommen von dort wieder heraus.",
+        "Zweimal pro Level erscheint unter dem Geisterhaus ein Senderlogo als Bonus: nach 70 und nach 170 gesammelten Punkten. Es bleibt etwa 9 bis 10 Sekunden liegen.",
+        "Bei 10.000 Punkten gibt es einmalig ein Extraleben.",
+        "Der Seitentunnel in der Mitte verbindet den linken und rechten Rand. Störsender sind im Tunnel deutlich langsamer.",
+        "Beim Fressen eines Punktes hältst du ganz kurz an (bei einem Verstärker etwas länger) – in leeren Gängen bist du also schneller als in vollen.",
+        "Vor jedem Start und nach jedem verlorenen Leben steht kurz READY! im Bild. Nach einem verlorenen Leben bleiben die schon gesammelten Punkte eingesammelt, nur die Figuren starten neu."
+      ]
+    },
+    {
+      "t": "Die vier Störsender",
+      "list": [
+        "Rauschi (rot) jagt dich direkt und zielt immer auf dein Feld. Wenn nur noch wenige Punkte übrig sind, wird er schneller und jagt dich auch in der Streuphase weiter.",
+        "Pfeifi (rosa) lauert dir auf: Er zielt 4 Felder vor dich. Schaust du nach oben, liegt sein Ziel wie am Original zusätzlich 4 Felder nach links versetzt.",
+        "Knacki (cyan) ist unberechenbar: Sein Ziel ergibt sich aus Rauschis Position, gespiegelt über das Feld 2 vor dir. Zusammen mit Rauschi schneidet er dir oft den Weg ab.",
+        "Brummi (orange) jagt dich, solange er mehr als 8 Felder entfernt ist. Kommt er näher, wird er scheu und läuft in seine Ecke unten links.",
+        "Streu- und Jagdphase wechseln sich ab: In der Streuphase läuft jeder Störsender in seine Ecke (Rauschi oben rechts, Pfeifi oben links, Knacki unten rechts, Brummi unten links). Bei jedem Wechsel drehen alle um.",
+        "An vier Stellen (über dem Geisterhaus und auf Höhe deines Startpunkts) dürfen die Störsender wie am Original nicht nach oben abbiegen, außer sie sind blau."
+      ]
+    },
+    {
+      "t": "Steuerung",
+      "list": [
+        "PC: Pfeiltasten oder W A S D lenken, P oder Esc pausiert, C wechselt die Kamera, M schaltet den Ton, F das Vollbild.",
+        "Smartphone und Tablet: das Steuerkreuz unten (▲ ◀ ▶ ▼) oder Wischen auf dem Spielfeld in die gewünschte Richtung. Du kannst auch während der Bewegung weiterwischen.",
+        "Controller: Steuerkreuz oder linker Stick lenken, Start pausiert.",
+        "Richtungen werden vorgemerkt: Drückst du schon vor der Abzweigung die neue Richtung, biegt die Figur dort automatisch ab. Die Gegenrichtung wirkt sofort.",
+        "Oben rechts im Spiel: 🗺/🎥 Kamera (klassische 3D-Übersicht oder Verfolger-Kamera), ♫ Ton, ⛶ Vollbild, Ⅱ Pause.",
+        "Die Anzeige oben zeigt Welt, Level (x / 60), deine Punkte (♪), den Highscore (🏆), die Leben (❤) und die übrigen Punkte (●)."
+      ]
+    },
+    {
+      "t": "Speichern und Fortschritt",
+      "list": [
+        "Gespeichert wird automatisch auf dem Gerät: freigeschaltete Level, Highscore, Zahl der geschafften Level, Ton- und Kamera-Einstellung und der laufende Stand mitten im Level.",
+        "Beim Pausieren, beim Verlassen der Seite und beim Wechseln des Tabs wird der Stand gesichert. Das Spiel pausiert dann von selbst („Sendepause“).",
+        "Ein geschafftes Level schaltet das nächste dauerhaft frei. Mit ▶ Nächstes Level nimmst du Punkte, Leben und das schon erhaltene Extraleben mit.",
+        "Nach dem Verlust aller Leben startest du mit „↺ Level erneut spielen“ dasselbe Level mit 0 Punkten und 3 Leben neu. Der Highscore bleibt gespeichert.",
+        "Mit der Google-Cloud-Anmeldung im Menü wird der Spielstand zusätzlich über dein Konto abgeglichen."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Level 1 ist am langsamsten: Du läufst mit 80 % Tempo, die Störsender mit 75 %. Lerne hier die Wege.",
+        "Drücke die Richtung schon kurz vor der Kurve – die Figur biegt dann genau an der Abzweigung ab.",
+        "Iss die Verstärker nicht sofort. Warte, bis mehrere Störsender in der Nähe sind, und fang dann möglichst alle vier: Das sind zusammen 3.000 Punkte.",
+        "Flüchte durch den Seitentunnel: Dort werden die Störsender stark gebremst (in Level 1 auf 40 %).",
+        "Probier die Verfolger-Kamera (C oder 🎥) aus, wenn du die Gänge lieber von hinten siehst – oder bleib bei der Übersicht, um alle Störsender im Blick zu behalten."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Nutze die Streuphasen: Zu Beginn des Levels und nach jedem Leben laufen die Störsender erst in ihre Ecken (in Level 1 für 7 Sekunden). Räume in dieser Zeit die Gänge ab, die weit weg von den Ecken liegen.",
+        "Brummi ist ungefährlich, solange du in seiner Nähe bleibst: Unter 8 Feldern Abstand zieht er sich in die Ecke unten links zurück.",
+        "Pfeifi zielt vor dich: Läufst du direkt auf ihn zu, biegt er oft vorher ab. Gegen Rauschi hilft das nicht – er zielt genau auf dein Feld.",
+        "Fange die Störsender, solange sie nah sind – blaue Störsender laufen zufällig und entkommen leicht in lange Gänge.",
+        "Hebe dir einen Verstärker in einer Ecke für das Levelende auf, wenn Rauschi schneller wird.",
+        "Sammle das Senderlogo unter dem Geisterhaus ein, wenn der Weg frei ist. Ab Level 13 bringt es 5.000 Punkte – mehr als alle vier Störsender zusammen."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Leere Gänge sind schneller: Jeder gefressene Punkt bremst dich kurz. Auf der Flucht nutzt du deshalb Wege, die du schon abgegrast hast.",
+        "Rauschi wird zum Schluss schneller (Elroy-Modus): in Level 1 ab 20 übrigen Punkten, ab Level 19 schon ab 120. Bei der Hälfte dieser Zahl legt er noch einmal zu. Lass die letzten Punkte also nicht über das ganze Labyrinth verstreut.",
+        "Ab Level 17 sowie ab Level 19 gibt es keine Turbo-Zeit mehr: Ein Verstärker lässt die Störsender nur noch umdrehen. Nutze das als Notbremse, wenn dir jemand direkt im Nacken sitzt.",
+        "Nach einem verlorenen Leben kommen die Störsender nach einem festen Zähler aus dem Haus (Pfeifi nach 7, Knacki nach 17, Brummi nach 32 gesammelten Punkten). Bleibst du einige Sekunden ohne Punkt stehen, lässt der Leerlauf-Timer sie ebenfalls heraus (4 Sekunden bis Level 4, danach 3)."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu spät lenken: Die Richtung muss schon vor der Abzweigung gedrückt sein, sonst läufst du geradeaus weiter.",
+        "Alle vier Verstärker früh essen: Dann fehlt dir später die Rettung.",
+        "Blaue Störsender jagen, wenn die Turbo-Zeit fast vorbei ist: In den letzten 2 Sekunden blinken die Störsender – brich dann lieber ab.",
+        "Im Tunnel umkehren, wenn ein Störsender dir folgt: Du verschenkst den Tempovorteil."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Die sechs Radiowelten",
+      "list": [
+        "Welt 1, Level 1–10: Neon-Frequenzen (blau).",
+        "Welt 2, Level 11–20: Disco-Labyrinth (pink).",
+        "Welt 3, Level 21–30: Goldene Hits (gold).",
+        "Welt 4, Level 31–40: Rock-Frequenz (rot).",
+        "Welt 5, Level 41–50: Cosmic Radio (violett).",
+        "Welt 6, Level 51–60: Finale: Senderturm (türkis).",
+        "Das Labyrinth ist in allen Leveln gleich, nur Optik und Tempo ändern sich. Nach Level 60 heißt es „Alle 60 Sender gerettet!“ und du kannst noch einmal ab Level 1 spielen."
+      ]
+    },
+    {
+      "t": "Level-Tabelle: Tempo und Turbo-Zeit",
+      "list": [
+        "Dein Tempo: Level 1 80 %, Level 2–4 90 %, Level 5–20 100 %, ab Level 21 90 %. Während der Turbo-Zeit läufst du etwas schneller (Level 1 90 %, 2–4 95 %, danach 100 %).",
+        "Störsender-Tempo: Level 1 75 %, Level 2–4 85 %, ab Level 5 95 %. Im Tunnel 40 / 45 / 50 %, blau 50 / 55 / 60 %.",
+        "Turbo-Zeit in Sekunden: Level 1: 6, 2: 5, 3: 4, 4: 3, 5: 2, 6: 5, 7: 2, 8: 2, 9: 1, 10: 5, 11: 2, 12: 1, 13: 1, 14: 3, 15: 1, 16: 1, 17: 0, 18: 1, ab Level 19: 0.",
+        "Rauschi wird schneller, wenn noch so viele Punkte übrig sind: Level 1: 20, Level 2: 30, Level 3–5: 40, Level 6–8: 50, Level 9–11: 60, Level 12–14: 80, Level 15–18: 100, ab Level 19: 120.",
+        "Streu- und Jagdphasen: In Level 1 wechseln sie nach 7 s Streuen, 20 s Jagd, 7 s, 20 s, 5 s, 20 s, 5 s, danach nur noch Jagd. Ab Level 2 dauert die dritte Jagdphase über 17 Minuten und das letzte Streuen nur einen Augenblick; ab Level 5 sind die ersten beiden Streuphasen nur noch 5 Sekunden lang.",
+        "Aus dem Haus: Pfeifi kommt sofort. In Level 1 folgt Knacki nach 30 und Brummi nach 60 gesammelten Punkten, in Level 2 Brummi nach 50, danach kommen alle sofort."
+      ]
+    },
+    {
+      "t": "Wertungstabelle und Senderlogos",
+      "list": [
+        "Frequenzpunkt 10, Verstärker 50 – zusammen 2.600 Punkte pro Level.",
+        "Störsender während einer Turbo-Zeit: 200, 400, 800, 1600 (zusammen 3.000). Mit jedem neuen Verstärker beginnt die Reihe wieder bei 200.",
+        "Senderlogo-Bonus je Level: Level 1: 100, Level 2: 300, Level 3–4: 500, Level 5–6: 700, Level 7–8: 1.000, Level 9–10: 2.000, Level 11–12: 3.000, ab Level 13: 5.000.",
+        "Höchstwert pro Level: 2.600 für alle Punkte, bis zu 12.000 für vier perfekte Turbo-Phasen (nur solange es Turbo-Zeit gibt) und zweimal das Senderlogo.",
+        "Das einzige Extraleben gibt es bei 10.000 Punkten. Spielst du die Level am Stück mit ▶ Nächstes Level, erreichst du es meist schon in den ersten Leveln."
+      ]
+    },
+    {
+      "t": "Weg zu Höchstpunkten",
+      "steps": [
+        "Spiele die Level am Stück, damit Punkte und Leben mitgenommen werden – nur so steigt der Highscore immer weiter.",
+        "In den Leveln mit langer Turbo-Zeit (1, 2, 3, 6, 10 und 14) jeden Verstärker erst essen, wenn mindestens zwei Störsender in der Nähe sind, und dann alle vier fangen.",
+        "Beide Senderlogos pro Level holen: Merke dir die Zahlen 70 und 170 gesammelte Punkte – dann erscheint das Logo unter dem Geisterhaus.",
+        "Ab Level 17 und ab 19 lohnt sich das Störsender-Fangen nicht mehr. Konzentriere dich auf saubere Wege und die 5.000-Punkte-Logos.",
+        "Gegen Levelende die letzten Punkte so legen, dass sie nah beieinander liegen, bevor Rauschi schneller wird."
+      ]
+    },
+    {
+      "t": "Freischaltungen",
+      "p": [
+        "Jedes geschaffte Level schaltet das nächste in der Levelauswahl frei. Freigeschaltete Level bleiben für immer offen, auch wenn du ein neues Spiel ab Level 1 beginnst. Spielst du ein Level aus der Levelauswahl, startest du mit 0 Punkten und 3 Leben. Weitere Geheimnisse oder Erfolge gibt es im Spiel nicht."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Mein Spielstand ist weg – was nun?",
+      "a": "Der Stand liegt im Browser des Geräts. Wurden die Browserdaten gelöscht oder spielst du in einem privaten Fenster, ist er weg. Melde dich im Menü unter „☁ Google Cloud · Spielstände“ an, dann wird er über dein Konto gesichert."
+    },
+    {
+      "q": "Kann ich mitten im Level aufhören?",
+      "a": "Ja. Der Stand wird beim Pausieren und Verlassen gesichert. Mit ▶ SPIEL FORTSETZEN geht es mit denselben gesammelten Punkten, Punkten und Leben weiter."
+    },
+    {
+      "q": "Warum frieren die Störsender in hohen Leveln nicht mehr ein?",
+      "a": "Wie am Automaten gibt es in Level 17 und ab Level 19 keine Turbo-Zeit mehr. Ein Verstärker bringt dort nur 50 Punkte und lässt die Störsender umdrehen."
+    },
+    {
+      "q": "Meine Figur biegt nicht ab.",
+      "a": "Drücke oder wische die neue Richtung schon vor der Abzweigung. Die Richtung wird vorgemerkt und an der nächsten möglichen Stelle ausgeführt."
+    },
+    {
+      "q": "Der Controller reagiert nicht.",
+      "a": "Drücke einmal eine Taste am Controller, damit der Browser ihn erkennt. Dann erscheint „🎮 Controller verbunden“. Gelenkt wird mit Steuerkreuz oder linkem Stick, Start pausiert."
+    },
+    {
+      "q": "Kein Ton?",
+      "a": "Prüfe den Knopf ♫ oben rechts oder drücke M. Browser spielen Ton erst nach der ersten Berührung oder Taste ab."
+    }
+  ]
+}

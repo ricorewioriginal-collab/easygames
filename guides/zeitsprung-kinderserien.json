@@ -1,0 +1,212 @@
+{
+  "id": "zeitsprung-kinderserien",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "ZEITSPRUNG KINDERSERIEN ist eine moderierte Quizshow rund um Kinderserien von 1990 bis 2026 – von Disneys Große Pause über SpongeBob und Kim Possible bis Bluey. Moderator Vito führt durch die Show und liest Fragen und Auflösungen vor.",
+        "Jede richtige Antwort gibt einen Punkt. Wer zuerst 8 Punkte hat, gewinnt die Zeitreise. Nebenbei baut sich jeder Spieler mit richtig eingeordneten Serienmomenten seinen eigenen Zeitstrahl auf."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "list": [
+        "▶ Neue Zeitreise starten: beginnt eine neue Show mit den gewählten Einstellungen.",
+        "↺ Spiel fortsetzen: erscheint, wenn eine angefangene Show gespeichert ist.",
+        "🌐 Online, TV & Handys: schaltet den TV-Modus ein und öffnet das Koppel-Fenster für Handys.",
+        "Themenwelt: Große Mischung (alle Serien) oder eine einzelne Welt – Disney & Disney Channel, Nickelodeon, Anime & Action, KiKA & deutsche Serien, Kultserien der 90er oder Neue Favoriten. Hinter jeder Welt steht, wie viele Momente und Fragen sie enthält.",
+        "Zeitstrahlrunden spielen als: „Jahr aus A–D wählen · einfach“ oder „Moment in den Zeitstrahl einordnen · Profi“.",
+        "Spieler: bis zu 4, Namen frei wählbar, mit „＋ Spieler hinzufügen“ ergänzen.",
+        "Oben in der Leiste: ⌂ Hauptmenü, ▣ TV-Modus an/aus, ♧ Handys koppeln, ♫ Vitos Moderation (Sprachausgabe) an/aus."
+      ]
+    },
+    {
+      "t": "Spielablauf",
+      "steps": [
+        "Zu Beginn wird ein zufälliger Startmoment gezogen. Er liegt bei allen Spielern als erste Karte auf dem Zeitstrahl.",
+        "Reihum ist ein Spieler dran. Die erste Runde ist immer eine Zeitstrahlrunde, danach entscheidet der Zufall, welche Rundenart kommt.",
+        "Nach deiner Antwort löst Vito auf und erklärt den Moment. Richtig gibt „✓ Punkt für dich!“ und +1 Punkt, sonst „✕ Aufgelöst“.",
+        "Mit „Weiter: Name →“ (bzw. „Nächste Runde →“ im Solospiel) ist der Nächste dran.",
+        "Wer 8 Punkte erreicht, gewinnt sofort. Mit „Neues Spiel starten ↻“ geht es zurück ins Menü."
+      ]
+    },
+    {
+      "t": "Die Rundenarten",
+      "list": [
+        "Zeitstrahlrunde (einfach): Ein Serienmoment wird genannt, z. B. „SpongeBob Schwammkopf startet“. Du wählst das passende Jahr aus vier Antworten A–D. Richtig beantwortet wandert der Moment auf deinen Zeitstrahl.",
+        "Zeitstrahlrunde (Profi): Du siehst deinen Zeitstrahl mit Lücken („Vor …“, „Zwischen … und …“, „Nach …“) und tippst auf die Lücke, in die der neue Moment gehört. Richtig eingeordnet bleibt er liegen – der Zeitstrahl wird länger und schwerer.",
+        "Serienfrage: Eine Frage zu Figuren und Serienwelten mit vier Antworten, z. B. „Wer ist Kim Possibles bester Freund?“.",
+        "Was war zuerst?: Vier Serienmomente aus verschiedenen Jahren – tippe auf den ältesten.",
+        "Hörfrage (Intro): „▶ Intro abspielen“ startet ein bekanntes Serienintro im eingebetteten YouTube- oder Deezer-Player. Welche Serie ist es?",
+        "Symbolrätsel: Drei Emojis stehen für eine Kinderserie, z. B. 🧽 🍍 🌊. Welche ist gemeint?",
+        "Zu manchen Zeitstrahl-Momenten gibt es zusätzlich ein Intro-Video oder Intro-Lied als Hilfe („↔ Intro dazu“ wechselt zwischen beiden)."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Maus und Touch: Antwort A–D oder eine Lücke im Zeitstrahl antippen.",
+        "Tastatur: A–D oder 1–4 für Antworten, 1–9 für die Lücken im Zeitstrahl (von links nach rechts).",
+        "▶ Intro abspielen startet die Hörfrage; ↻ Anderer Moment tauscht das Intro bzw. den Moment gegen einen anderen aus, solange die Runde nicht aufgelöst ist.",
+        "Gamecontroller: Die Knöpfe werden über die gemeinsame Controller-Steuerung der Spielesammlung bedient (Steuerkreuz zum Wählen, A zum Bestätigen).",
+        "Handy-Controller im TV-Modus: Das Handy zeigt die gleichen Antworten bzw. Lücken als Knöpfe, dazu Intro abspielen, Quelle wechseln und Weiter. Nur der Spieler, der gerade dran ist, kann antworten."
+      ]
+    },
+    {
+      "t": "TV-Modus mit Handys",
+      "steps": [
+        "Am Fernseher oder PC „🌐 Online, TV & Handys“ (oder ♧) wählen. Das Fenster „Dein TV-Studio verbinden“ zeigt einen QR-Code, einen sechsstelligen WR-Code (z. B. WRABCD) und eine vierstellige PIN.",
+        "Jeder Mitspieler scannt den QR-Code oder öffnet am Handy den Controller und gibt Namen, WR-Code und PIN ein, dann „Mit TV verbinden“. Mitspieler können per Link oder Code von überall beitreten.",
+        "Ein verbundenes Handy übernimmt automatisch einen Spielerplatz. Es passen 4 Spieler; ein fünftes Handy erhält „Alle vier Plätze sind belegt.“",
+        "Mit „Zurück zum Spiel“ das Fenster schließen und die Show starten. Auf dem eigenen Gerät kannst du mit „📱 Dieses Gerät als Handy-Controller verwenden“ ebenfalls einen Controller öffnen."
+      ]
+    },
+    {
+      "t": "Speichern und Fortsetzen",
+      "p": [
+        "Die laufende Show wird automatisch gespeichert – nach jeder Runde und beim Verlassen der Seite. Im Hauptmenü erscheint dann „↺ Spiel fortsetzen“ mit Spielern, Punkten, Zeitstrahlen und Einstellungen. Mit Google-Anmeldung wird der Stand zusätzlich geräteübergreifend gesichert.",
+        "Ist eine Show mit einem Sieger beendet, wird der Spielstand gelöscht."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Starte mit „Jahr aus A–D wählen · einfach“. Die falschen Jahre liegen nur 1 bis 6 Jahre neben dem richtigen und nie in der Zukunft.",
+        "Das Jahr meint den Originalstart der Serie. Bei Rückkehrern und neuen Intros zählt das Jahr des genannten Ereignisses (z. B. „DuckTales kehrt als Neuauflage zurück“).",
+        "Hör bei den Intros genau hin. Startet ein Player in deinem Land nicht, wähle mit ↻ einfach ein anderes Intro.",
+        "Lies Vitos Auflösungen: Die Infos zu jedem Moment helfen bei späteren Runden."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Im Profimodus zählt die Lücke, nicht das genaue Jahr. Ein Moment aus demselben Jahr wie ein Nachbar passt auf beide Seiten.",
+        "Merke dir Ankerjahre: Pokémon und Disneys Große Pause 1997, SpongeBob 1999, Kim Possible 2002, Avatar und Ben 10 2005, Phineas und Ferb 2007, Gravity Falls 2012, PAW Patrol 2013, Bluey 2018.",
+        "Bei „Was war zuerst?“ zuerst die eindeutig neuen Serien (z. B. ab 2015) ausschließen, dann die ältesten vergleichen.",
+        "Eine Themenwelt macht die Show leichter, wenn ihr dort Experten seid – die Große Mischung bringt die meisten Momente."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Kennst du einen Zeitstrahl-Moment nicht, darfst du vor der Antwort mit „↻ Anderer Moment“ tauschen – das kostet nichts.",
+        "Zu vielen Momenten gibt es ein Intro als Hörhilfe. Wer die Melodie erkennt, weiß oft auch das Jahrzehnt.",
+        "Im Profimodus wird dein Zeitstrahl mit jedem Treffer feiner. Präge dir deine eigenen Karten gut ein, dann findest du die Lücke schneller.",
+        "Für schnelle Partien am PC: Tasten A–D bzw. 1–9 statt Maus."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Das Jahr der deutschen Ausstrahlung tippen statt des Originalstarts.",
+        "Neuauflagen mit dem Original verwechseln (X-Men 1992 gegen X-Men ’97 im Jahr 2024, Phineas und Ferb 2007 gegen die neuen Folgen 2025).",
+        "Im TV-Modus am falschen Handy antworten – nur wer dran ist, kann tippen.",
+        "Vito ist zu laut oder stört? ♫ schaltet die Moderation stumm, das Intro bleibt hörbar."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Zeitstrahl-Lösungen 1990–2003",
+      "list": [
+        "1990: Die Gummibärenbande beendet ihre Originalserie",
+        "1991: Darkwing Duck · Die Rugrats · Doug",
+        "1992: Batman: The Animated Series · X-Men: The Animated Series",
+        "1993: Animaniacs · Power Rangers",
+        "1994: Der Zauberschulbus",
+        "1995: Pinky und der Brain",
+        "1996: Arthur · Hey Arnold!",
+        "1997: Die Teletubbies · Disneys Große Pause · Pokémon",
+        "1998: Die Powerpuff Girls · Schloss Einstein",
+        "1999: Die Pfefferkörner · Digimon Adventure · Rocket Power · SpongeBob Schwammkopf",
+        "2000: Bernd das Brot taucht bei KiKA auf · Dora · Yu-Gi-Oh! Duel Monsters",
+        "2001: Cosmo und Wanda · Lizzie McGuire · Totally Spies!",
+        "2002: Jimmy Neutron · Kim Possible",
+        "2003: Teen Titans"
+      ]
+    },
+    {
+      "t": "Zeitstrahl-Lösungen 2004–2026",
+      "list": [
+        "2004: LazyTown · Winx Club",
+        "2005: Avatar – Der Herr der Elemente · Ben 10",
+        "2006: H2O – Plötzlich Meerjungfrau · Hannah Montana",
+        "2007: Phineas und Ferb · iCarly",
+        "2008: Die Pinguine aus Madagaskar · Star Wars: The Clone Wars",
+        "2010: Adventure Time · Victorious",
+        "2011: Die fantastische Welt von Gumball",
+        "2012: Die Wilden Kerle als Zeichentrickserie · Gravity Falls · Mia and me · Violetta",
+        "2013: PAW Patrol",
+        "2014: Henry Danger",
+        "2015: Der kleine Drache Kokosnuss als Serie · Miraculous",
+        "2016: Elena von Avalor · Willkommen bei den Louds",
+        "2017: DuckTales kehrt als Neuauflage zurück",
+        "2018: Bluey · Hilda",
+        "2019: Amphibia",
+        "2020: The Owl House",
+        "2021: Gabby's Dollhouse · Kamp Koral · Spidey und seine Super-Freunde",
+        "2022: Hamster & Gretel",
+        "2023: Kiff",
+        "2024: X-Men ’97",
+        "2025: Phineas und Ferb kehrt mit neuen Folgen zurück",
+        "2026: Nina Chuba singt das neue Pfefferkörner-Intro"
+      ]
+    },
+    {
+      "t": "Hörfragen: diese Intros kommen vor",
+      "p": [
+        "Disneys Große Pause, SpongeBob Schwammkopf, Kim Possible, Phineas und Ferb, Gravity Falls, Bluey, PAW Patrol, Die Rugrats, Hey Arnold!, Die Powerpuff Girls, Der Zauberschulbus, Die fantastische Welt von Gumball, DuckTales, iCarly, Victorious, Hannah Montana, Pokémon, Digimon Adventure, Winx Club, Miraculous, Darkwing Duck, Die Gummibärenbande, Schloss Einstein, Die Pfefferkörner, H2O – Plötzlich Meerjungfrau, Der kleine Drache Kokosnuss, Cosmo und Wanda, Dora, Avatar – Der Herr der Elemente, Ben 10, Adventure Time, The Owl House und Gabby's Dollhouse.",
+        "Beispiele: „Call Me, Beep Me!“ von Christina Milian gehört zu Kim Possible, „Today Is Gonna Be a Great Day“ von Bowling for Soup zu Phineas und Ferb, „Leave It All to Me“ von Miranda Cosgrove zu iCarly."
+      ]
+    },
+    {
+      "t": "Symbolrätsel: Beispiele mit Lösung",
+      "list": [
+        "🏫 ⏰ ⚽ = Disneys Große Pause",
+        "🧽 🍍 🌊 = SpongeBob Schwammkopf",
+        "📟 🥋 🦸 = Kim Possible",
+        "🛠️ 🏖️ 🦆 = Phineas und Ferb",
+        "🔎 🌶️ 🚢 = Die Pfefferkörner",
+        "🍞 😒 📺 = Bernd das Brot",
+        "🐉 🥥 🏝️ = Der kleine Drache Kokosnuss",
+        "⌚ 👽 🔟 = Ben 10",
+        "🗝️ 🌲 📖 = Gravity Falls",
+        "🐞 🐈 🗼 = Miraculous",
+        "🐕 👨‍👩‍👧‍👧 💙 = Bluey",
+        "🎒 🗺️ 🐒 = Dora"
+      ]
+    },
+    {
+      "t": "Serienfragen: Beispiele und Strategie",
+      "p": [
+        "Die Serienfragen (98 Stück) haben vier Antworten; die falschen stammen oft aus anderen Serien. Frage dich zuerst, aus welcher Serie die Namen kommen – meist passt nur eine Antwort zur gefragten Serie."
+      ],
+      "list": [
+        "Anführer der Kinder in Disneys Große Pause: T. J. Detweiler",
+        "Schule aus Disneys Große Pause: Third Street School",
+        "Kim Possibles bester Freund: Ron Stoppable; ihr Helfer am Computer: Wade; Rufus ist ein Nacktmull",
+        "Schnabeltier bei Phineas und Ferb: Perry; Phineas' Bruder: Ferb; wer petzt: Candace",
+        "Zwillinge in Gravity Falls: Dipper und Mabel; Betreiber der Mystery Shack: Gronkel Stan",
+        "Hauptfigur von The Owl House: Luz Noceda"
+      ]
+    },
+    {
+      "t": "Beste Strategie je Modus",
+      "list": [
+        "Einfach (A–D): Bei unsicherem Jahr das Jahrzehnt über bekannte Nachbarserien eingrenzen – die falschen Jahre liegen höchstens 6 Jahre daneben.",
+        "Profi (Zeitstrahl): Im Zweifel die Lücke mit dem größten Zeitraum wählen; je breiter die Lücke, desto größer die Trefferchance.",
+        "Mit mehreren Spielern: Die Rundenarten sind zufällig gemischt, ungefähr ein Drittel Zeitstrahl, ein Drittel Serienfragen und Was-war-zuerst, der Rest Intros und Symbole."
+      ]
+    }
+  ],
+  "faq": [
+    { "q": "Das Intro startet nicht.", "a": "Die Intros laufen über externe Player (YouTube bzw. Deezer). Ist ein Video in deinem Land gesperrt oder blockiert, wähle mit „↻ Anderer Moment“ ein anderes Intro oder öffne den angezeigten Link direkt." },
+    { "q": "Mein Handy verbindet sich nicht mit dem TV.", "a": "Prüfe WR-Code und PIN (stehen nur am Fernseher). „WR-Code nicht gefunden“ heißt: Der TV-Modus läuft dort nicht mehr – am TV ▣ oder ♧ erneut öffnen. Ohne Internetverbindung kann die Kopplung nicht starten." },
+    { "q": "Wie viele Spieler können mitmachen?", "a": "Bis zu 4 Spieler – am selben Gerät oder mit je einem Handy im TV-Modus." },
+    { "q": "Wo ist mein angefangenes Spiel?", "a": "Im Hauptmenü auf „↺ Spiel fortsetzen“. Der Stand liegt im Browser; nach einem Sieg oder nach dem Löschen der Website-Daten ist er weg." },
+    { "q": "Wie schalte ich Vitos Stimme aus?", "a": "Oben auf ♫ tippen. Das Symbol wechselt zu ♪, die Texte stehen weiter in Vitos Sprechblase." },
+    { "q": "Warum zählt mein Jahr nicht, obwohl die Serie bei uns damals lief?", "a": "Gemeint ist immer der Originalstart der Serie bzw. das Jahr des genannten Ereignisses, nicht die deutsche Erstausstrahlung." }
+  ]
+}

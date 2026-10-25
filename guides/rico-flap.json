@@ -1,0 +1,161 @@
+{
+  "id": "rico-flap",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Rico Flap 3D ist der Flatter-Klassiker in 3D. Du steuerst Rico, einen kleinen gelben Vogel im RicoReWi-Hoodie mit Kopfhörern, durch die Lücken zwischen Funktürmen. Jeder Druck lässt Rico kurz nach oben flattern, ohne Eingabe sinkt er durch die Schwerkraft wieder ab.",
+        "Im Level-Modus fliegst du durch eine feste Zahl von Türmen bis zum Zielring und sammelst unterwegs Noten für Sterne. Im Endlos-Modus geht es so weit wie möglich – jeder Turm und jede Note zählt einen Punkt für deinen Rekord."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "list": [
+        "Weiterspielen: Level X – startet das Level, bei dem du zuletzt warst (nach einem geschafften Level das nächste).",
+        "Level wählen – zeigt alle 10 Level mit Weltname, Anzahl der Türme und deinen Sternen. Gesperrte Level tragen ein 🔒.",
+        "Endlos-Modus – mit deinem bisherigen Rekord daneben (· Rekord …).",
+        "Ton: an/aus – schaltet die Geräusche ein oder aus.",
+        "Mit Google anmelden (Cloud-Bereich) – speichert Level, Sterne und Rekorde auf allen Geräten.",
+        "Steuerung – klappt eine kurze Tastenübersicht auf.",
+        "← Zur easygames-Spielesammlung – zurück zur Übersicht."
+      ]
+    },
+    {
+      "t": "Spielablauf",
+      "steps": [
+        "Nach dem Start schwebt Rico auf der Stelle und der Hinweis „Tippen, Klicken, Leertaste oder A zum Flattern“ erscheint. Die Uhr läuft erst, wenn du zum ersten Mal flatterst.",
+        "Ab jetzt fallen die Türme von rechts heran. Flattere so, dass Rico genau durch die Lücke zwischen oberem und unterem Turmteil passt.",
+        "In jeder zweiten Lücke (Level-Modus) bzw. in jeder dritten Lücke (Endlos-Modus) schwebt eine Note. Fliegst du mitten durch, sammelst du sie ein.",
+        "Berührst du einen Turm oder den Boden, stürzt Rico ab („Autsch!“). Oben kannst du nicht über die Türme hinwegfliegen – die Türme reichen bis über den Bildrand.",
+        "Im Level-Modus kommt nach dem letzten Turm der Zielring. Fliegst du hindurch, ist das Level geschafft."
+      ]
+    },
+    {
+      "t": "Die Modi",
+      "p": [
+        "Level-Modus: 10 Level in fünf Welten – Morgenrot-Stadt, Funkwald, Sonnenwüste, Eisgipfel und Neon-Nacht, je zwei Level pro Welt. Von Level zu Level gibt es mehr Türme, das Tempo steigt, die Lücken werden enger und der Abstand zwischen den Türmen kürzer. Ab Level 4 bewegen sich die Lücken zusätzlich auf und ab.",
+        "Endlos-Modus: Es kommen unendlich viele Türme. Mit jedem Punkt wird es schwerer: Die Lücke schrumpft langsam bis auf das Minimum, das Tempo steigt bis zur Höchstgeschwindigkeit und der Turmabstand wird kürzer. Ab 12 geschafften Türmen beginnen die Lücken zu wandern. Alle 15 Türme wechselt die Welt, nach der Neon-Nacht geht es wieder mit der Morgenrot-Stadt los."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Smartphone und Tablet: irgendwo auf den Bildschirm tippen zum Flattern. Der Pause-Knopf ❚❚ sitzt oben rechts.",
+        "PC: Leertaste, Pfeil hoch, W oder Mausklick zum Flattern. Gedrückt halten flattert nicht dauernd – jeder Flatterer braucht einen neuen Druck. P oder Esc pausiert und setzt fort, M schaltet den Ton um. Esc schließt auch die Levelauswahl.",
+        "Controller: A, B, X, Y oder der rechte Trigger (RT) zum Flattern, Start pausiert. In den Menüs wählst du mit Steuerkreuz oder linkem Stick, A bestätigt, B schließt die Levelauswahl bzw. setzt die Pause fort, Start setzt fort. Select schaltet den Ton um.",
+        "Wechselst du den Tab oder die App, pausiert das Spiel automatisch."
+      ]
+    },
+    {
+      "t": "Punkte, Sterne und Ende",
+      "list": [
+        "Level-Modus: Die große Zahl oben zeigt die geschafften Türme, darunter ein Fortschrittsbalken und der Notenzähler (♪ gesammelt/gesamt).",
+        "★ = Level geschafft, ★★ = mindestens die Hälfte der Noten (aufgerundet) gesammelt, ★★★ = alle Noten gesammelt. Gespeichert wird immer dein bestes Ergebnis.",
+        "Absturz im Level: Das Fenster zeigt „Turm X von Y geschafft“ und die Noten. Mit „Nochmal“ startest du das Level von vorn – es gibt keine Kontrollpunkte.",
+        "Endlos-Modus: Jeder Turm und jede Note gibt einen Punkt. Nach dem Absturz siehst du Punkte, Türme, Noten und deinen Rekord; bei einer Bestmarke steht „Neuer Rekord!“."
+      ]
+    },
+    {
+      "t": "Fortschritt und Speichern",
+      "p": [
+        "Jedes geschaffte Level schaltet das nächste frei. Freigeschaltete Level, Sterne, Endlos-Rekord und die Ton-Einstellung werden automatisch im Browser gespeichert. Mit der Google-Anmeldung im Hauptmenü wird der Spielstand zusätzlich auf allen Geräten abgeglichen.",
+        "Nach Level 10 heißt es „Alle Level geschafft! Weiter geht es im Endlos-Modus.“ und der Hauptknopf führt direkt in den Endlos-Modus."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Lieber oft und kurz flattern als selten. Ein Flatterer gibt immer den gleichen Schwung nach oben, egal wie schnell Rico gerade fällt.",
+        "Starte erst, wenn du bereit bist: Solange Rico schwebt, läuft nichts.",
+        "Schau nicht auf Rico, sondern auf die nächste Lücke. So hast du mehr Zeit, die Höhe anzupassen.",
+        "Die Noten liegen genau in der Mitte der Lücke. Wer sie trifft, fliegt automatisch auf dem sichersten Weg."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Die Höhe der Lücken springt von Turm zu Turm um bis zu drei Einheiten nach oben oder unten. Nach dem Durchfliegen einer Lücke sofort zur Mitte der nächsten steuern, nicht erst kurz davor.",
+        "Bei beweglichen Lücken (ab Level 4) auf die Mitte der Bewegung zielen, nicht auf die gerade sichtbare Kante. Dann reicht ein kleiner Flatterer zur Korrektur.",
+        "Ab Level 7 sind die Lücken nur noch knapp über drei Einheiten hoch. Gleichmäßiger Rhythmus ist jetzt wichtiger als schnelle Reaktion.",
+        "Nach einem hohen Flatterer fällt Rico schnell. Kurz vor einer tief liegenden Lücke also früh aufhören zu flattern und Rico sinken lassen."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Für drei Sterne brauchst du alle Noten. Da nur jede zweite Lücke eine Note hat, kannst du dich bei den Lücken ohne Note mit dem sichersten Weg begnügen und bei den Noten-Lücken genau in die Mitte zielen.",
+        "Im Endlos-Modus zählen Noten wie Türme. Jede dritte Lücke hat eine, also sind etwa ein Drittel Bonuspunkte drin.",
+        "Am PC ist die Leertaste am präzisesten: Ein Tastendruck ist genau ein Flatterer, Halten löst keine Wiederholung aus.",
+        "Wenn das Bild ruckelt, schaltet das Spiel die Grafik selbstständig herunter. Ein ruhiger Bildlauf hilft beim Timing."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu viel flattern und oben gegen den Turm knallen – über die Türme hinweg geht es nicht.",
+        "Zu spät reagieren, wenn die nächste Lücke deutlich tiefer liegt.",
+        "Den Boden vergessen: Auch der Boden beendet den Flug.",
+        "Bei beweglichen Türmen die Kante anpeilen, die gleich weiterwandert."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Alle Level im Überblick",
+      "p": [
+        "Die Zahl der Noten ist immer die Hälfte der Türme (abgerundet). Für ★★ brauchst du die Hälfte davon (aufgerundet), für ★★★ alle."
+      ],
+      "list": [
+        "Level 1 – Morgenrot-Stadt: 8 Türme, 4 Noten (★★ ab 2). Feste Lücken, gemütliches Tempo.",
+        "Level 2 – Morgenrot-Stadt: 10 Türme, 5 Noten (★★ ab 3). Etwas engere Lücken.",
+        "Level 3 – Funkwald: 12 Türme, 6 Noten (★★ ab 3). Letztes Level ohne Bewegung.",
+        "Level 4 – Funkwald: 14 Türme, 7 Noten (★★ ab 4). Die Lücken wandern zum ersten Mal leicht auf und ab.",
+        "Level 5 – Sonnenwüste: 15 Türme, 7 Noten (★★ ab 4). Stärkere Bewegung.",
+        "Level 6 – Sonnenwüste: 16 Türme, 8 Noten (★★ ab 4).",
+        "Level 7 – Eisgipfel: 18 Türme, 9 Noten (★★ ab 5).",
+        "Level 8 – Eisgipfel: 20 Türme, 10 Noten (★★ ab 5).",
+        "Level 9 – Neon-Nacht: 22 Türme, 11 Noten (★★ ab 6).",
+        "Level 10 – Neon-Nacht: 25 Türme, 12 Noten (★★ ab 6). Engste Lücken, höchstes Tempo und die stärkste Bewegung."
+      ]
+    },
+    {
+      "t": "Lösungsweg je Welt",
+      "list": [
+        "Morgenrot-Stadt (Level 1–2): Rhythmus finden. Ruhig flattern, Rico etwa in der Bildmitte halten und die Lücken in Ruhe ansteuern.",
+        "Funkwald (Level 3–4): In Level 4 bewegen sich die Lücken nur wenig. Zur Mitte zielen und kleine Korrekturen machen.",
+        "Sonnenwüste (Level 5–6): Die Bewegung wird deutlich. Beobachte beim Anflug, ob die Lücke gerade steigt oder fällt, und flattere entsprechend früher oder später.",
+        "Eisgipfel (Level 7–8): 18 und 20 Türme verlangen Ausdauer. Nach jeder Lücke gleich die Höhe der nächsten anpeilen.",
+        "Neon-Nacht (Level 9–10): Höchstes Tempo bis zum Zielring. Konzentration bis zum Schluss – ein Fehler am letzten Turm heißt alles von vorn."
+      ]
+    },
+    {
+      "t": "Freischaltungen",
+      "list": [
+        "Level 2 bis 10: je durch das vorherige Level (ein Stern reicht).",
+        "Der Endlos-Modus ist von Anfang an spielbar.",
+        "Nach Level 10 führt der Abschluss-Dialog direkt in den Endlos-Modus.",
+        "Volle Sammlung: 30 Sterne – drei in jedem der 10 Level."
+      ]
+    },
+    {
+      "t": "Endlos-Modus: so holst du Höchstpunkte",
+      "list": [
+        "Turm 0–11: feste Lücken, noch recht großzügig. Hier ohne Risiko Punkte und Noten sammeln.",
+        "Ab Turm 12: Die Lücken beginnen zu wandern, die Bewegung wird mit jedem Turm stärker.",
+        "Welt-Wechsel: alle 15 Türme (15 Morgenrot-Stadt → Funkwald, 30 Sonnenwüste, 45 Eisgipfel, 60 Neon-Nacht, 75 wieder Morgenrot-Stadt).",
+        "Mit steigender Punktzahl werden Lücke, Tempo und Abstand bis zu festen Grenzen schwerer; danach bleibt die Schwierigkeit gleich – wer den Rhythmus hält, kann beliebig weit kommen.",
+        "Jede dritte Lücke hat eine Note. Wer sie alle einsammelt, holt rund ein Drittel mehr Punkte."
+      ]
+    }
+  ],
+  "faq": [
+    { "q": "Warum flattert Rico nicht, wenn ich die Taste gedrückt halte?", "a": "Jeder Flatterer braucht einen neuen Druck. Halten löst keine Wiederholung aus – so bleibt die Steuerung genau." },
+    { "q": "Mein Spielstand ist weg – was tun?", "a": "Der Fortschritt liegt im Browser. Wurden Website-Daten gelöscht oder spielst du im privaten Fenster, ist er weg. Melde dich im Hauptmenü mit Google an, dann wird er auf allen Geräten gesichert." },
+    { "q": "Wie bekomme ich drei Sterne?", "a": "Du musst im Level alle Noten einsammeln. Sie hängen in jeder zweiten Lücke genau in der Mitte." },
+    { "q": "Kann ich ein Level ab einem Kontrollpunkt fortsetzen?", "a": "Nein, nach einem Absturz beginnt das Level von vorn. Dafür sind die Level kurz – zwischen 8 und 25 Türmen." },
+    { "q": "Wie schalte ich den Ton aus?", "a": "Im Hauptmenü auf „Ton: an“ tippen, am PC M drücken oder am Controller Select." },
+    { "q": "Das Spiel ruckelt auf meinem Handy.", "a": "Das Spiel senkt die Grafikqualität automatisch, wenn es zu langsam läuft. Schließe andere Apps oder Tabs, dann läuft es meist flüssiger." }
+  ]
+}

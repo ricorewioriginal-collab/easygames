@@ -1,0 +1,175 @@
+{
+  "id": "anmacha-preisradar",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AnMaCha Preisradar ist eine Preis-Schätzshow, präsentiert vom RicoReWi Radioportal. In mehreren Spielen schätzt ihr, was Alltagsprodukte kosten – vom Liter Vollmilch bis zu teuren Geräten. Über 200 Produkte aus Supermarkt, Technik, Haushalt und mehr sind dabei.",
+        "Für jedes Spiel gibt es Punkte. Wer nach dem großen Preisfinale die meisten Punkte hat, gewinnt den Hauptgewinn „Ruhm & Ehre“. Alle Preise sind handelsübliche Durchschnittswerte ohne Gewähr."
+      ]
+    },
+    {
+      "t": "Start und Einstellungen",
+      "list": [
+        "▶ Spielen öffnet „Neue Show“.",
+        "Menschen: 1 bis 4 Spieler. Spielst du allein ohne Computer, kommt automatisch ein Computer-Gegner dazu.",
+        "Computer-Gegner: 0, 1 oder 2 (Preis-Paula und Radio-Rudi). Mit mindestens einem Computer wählst du die Stufe: leicht, normal oder schwer.",
+        "Namen: Jeder Mensch kann seinen Namen eintragen (bis 14 Zeichen).",
+        "Länge der Show: 4 Spiele + Finale, 6 + Finale oder 8 + Finale.",
+        "📱 Koppeln: Handys als geheime Eingabe-Pads verbinden.",
+        "Los geht's! startet die Show. Die Einstellungen merkt sich das Spiel.",
+        "Im Hauptmenü außerdem: 🌐 Online & Handys, ❓ Regeln und 🔊 Ton."
+      ]
+    },
+    {
+      "t": "Ablauf einer Show",
+      "p": [
+        "Die Spiele kommen immer in derselben Reihenfolge: Gebotsduell, Frequenz-Skala, Teurer oder billiger?, Einkaufswagen – bei 6 oder 8 Spielen beginnt die Reihe danach wieder von vorn. Zum Schluss folgt immer das Preisfinale. Ein Produkt kommt in einer Show möglichst nur einmal vor.",
+        "Oben steht „Spiel X von Y“, darunter die Punktestände aller Spieler. Der Moderator 🎙 kommentiert alles; mit dem Mikrofon-Knopf oben kannst du die gesprochene Moderation ein- oder ausschalten (falls dein Gerät Sprachausgabe hat).",
+        "Ohne Handys wird das Gerät herumgereicht: „🎩 … ist dran – Alle anderen bitte wegschauen“. Erst nach Bereit sieht der Spieler sein Eingabefeld. Computer-Gegner geben ihren Tipp sofort ab.",
+        "Sind alle Tipps da, wird der echte Preis aufgedeckt und die Punkte werden verteilt. Mit „Nächstes Spiel ▶“, „Zum Finale ▶“ und „Ergebnis ▶“ geht es weiter. Am Ende zeigt der Schlussbildschirm den Sieger oder „Unentschieden!“, dazu Nochmal und Menü."
+      ]
+    },
+    {
+      "t": "Die fünf Spiele und ihre Wertung",
+      "list": [
+        "💶 Gebotsduell: Ein Produkt wird gezeigt, jeder bietet geheim einen Preis (Eingabe in Euro, z. B. 12,50, dann Bieten). Wer am nächsten dran ist, ohne drüber zu liegen, bekommt 3 Punkte. Liegen alle drüber, bekommt der niedrigste Tipp 1 Trostpunkt.",
+        "📻 Frequenz-Skala: Stelle mit dem Regler die Nadel auf den Preis und tippe Festlegen. Abweichung bis 2 %: 5 Punkte, bis 5 %: 4, bis 10 %: 3, bis 20 %: 2, bis 35 %: 1 Punkt, darüber 0.",
+        "⚖️ Teurer oder billiger?: Vier Produkte in einer Kette, nur der Preis des ersten ist bekannt. Bei drei Fragen entscheidest du, ob das rechte Produkt ⬆ teurer oder ⬇ billiger als das linke ist. Jede richtige Antwort 1 Punkt, alle drei richtig +1 Bonus (also bis 4 Punkte).",
+        "🛒 Einkaufswagen: Acht Artikel mit sichtbaren Preisen. Wähle Artikel so, dass die Summe das Ziel möglichst genau trifft – nicht drüber! 45 Sekunden Zeit, dann wird der Wagen automatisch abgegeben. Bis 0,50 € unter dem Ziel: 5 Punkte, bis 2 €: 3, bis 5 €: 2, bis 8 € (bei großen Zielen bis 20 % des Ziels): 1 Punkt. Zu viel oder leerer Wagen: 0.",
+        "🏆 Preisfinale: Ein Paket aus drei Produkten. Schätze den Gesamtpreis. Am nächsten dran ohne drüber: 5 Punkte. Liegen alle drüber, bekommt der niedrigste Tipp 2 Punkte.",
+        "Gleichstand: Liegen mehrere Spieler gleich gut, bekommen alle die vollen Punkte."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch: Felder antippen, Preis eintippen, Regler ziehen, Knöpfe antippen.",
+        "PC: Preis eintippen und mit Enter oder Bieten bestätigen, Regler mit der Maus ziehen (oder nach Anklicken mit den Pfeiltasten verschieben), alles andere anklicken.",
+        "Controller: Das Steuerkreuz springt zwischen den Knöpfen, A klickt; der rechte Stick bewegt einen Mauszeiger, A klickt dort. Zum Eintippen von Geboten ist ein Handy oder eine Tastatur praktischer.",
+        "Oben im Spiel: ☰ bricht die Show nach Rückfrage ab, 📱 koppelt Handys, 🔊 schaltet den Ton."
+      ]
+    },
+    {
+      "t": "Online und Handys",
+      "list": [
+        "🌐 Online & Handys (oder 📱 Koppeln) zeigt einen QR-Code, einen Code und einen Link. Mitspieler können von überall beitreten – im Browser, in der App oder an einem anderen Gerät.",
+        "Jedes Handy übernimmt einen Spielerplatz (bis zu 4). Auf dem Handy gibst du deinen Namen ein und trittst bei („Verbunden ✓ – du bist Spieler …“).",
+        "Gebote, Skala, Teurer/Billiger und Einkaufswagen gibst du dann geheim am Handy ein. Nach der Abgabe steht dort „✔ Abgegeben – geheim!“ und später dein Ergebnis.",
+        "Wartet das Spiel auf ein Handy, zeigt der große Bildschirm „⏳ Warte auf: …“ mit dem Knopf Überspringen. Übersprungene Spieler bekommen einen leeren Tipp (meist 0 Punkte)."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Lies die Produktangaben genau: Packungsgröße und Zusatzinfo (z. B. „Bodenhaltung, Größe M“) helfen beim Schätzen.",
+        "Beim Gebotsduell und im Finale lieber etwas zu niedrig als zu hoch – drüber bedeutet fast immer 0 Punkte.",
+        "Beim Einkaufswagen sind alle Preise sichtbar. Hier gewinnt, wer gut rechnet, nicht wer gut schätzt.",
+        "Spiel die erste Show mit 4 Spielen + Finale und einem leichten Computer-Gegner."
+      ]
+    },
+    {
+      "t": "Strategie je Spiel",
+      "list": [
+        "Gebotsduell: Schätze den Preis und zieh dann ein kleines Stück ab. Wer knapp darunter liegt, schlägt alle, die genau schätzen, aber drüber liegen.",
+        "Frequenz-Skala: Hier gibt es kein „drüber“ – stelle die Nadel genau auf deine beste Schätzung. Die Skala reicht immer deutlich unter und über den echten Preis – siehe den Skalen-Trick im Lösungsbuch.",
+        "Teurer oder billiger?: Benachbarte Produkte unterscheiden sich fast immer um mindestens 20 %. Ist der Unterschied nicht klar, vergleiche Größe und Art (Technik ist meist teurer als Lebensmittel).",
+        "Einkaufswagen: Das Ziel ist immer genau die Summe aus 3 bis 5 der 8 Artikel – eine perfekte Lösung gibt es also immer. Beginne mit den teuersten passenden Artikeln und fülle mit kleinen auf. Die Anzeige zeigt dir laufend, wie viel noch fehlt.",
+        "Preisfinale: Schätze jedes der drei Produkte einzeln, zähle zusammen und zieh einen Sicherheitsabstand ab."
+      ]
+    },
+    {
+      "t": "Gegen die Computer",
+      "list": [
+        "Preis-Paula und Radio-Rudi bieten beim Gebotsduell und im Finale ungefähr 80 % des echten Preises, mit Streuung. Willst du sie schlagen, musst du näher am Preis liegen, aber trotzdem darunter bleiben.",
+        "Auf der Stufe schwer streuen die Computer weniger und packen den Einkaufswagen näher ans Ziel, auf leicht deutlich mehr.",
+        "Beim Einkaufswagen gehen die Computer grob vor (teure Artikel zuerst). Mit genauem Rechnen holst du hier gegen sie die 5 Punkte."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Im Gebotsduell genau schätzen und dabei knapp drüber liegen – das bringt 0 Punkte.",
+        "Beim Einkaufswagen die Zeit vergessen: Nach 45 Sekunden wird abgegeben, was im Wagen liegt.",
+        "Ohne Handy beim Herumreichen auf den Bildschirm der anderen schauen – dafür gibt es den Bereit-Schirm.",
+        "Den Regler bei der Skala nicht anfassen und nur Festlegen tippen: Dann zählt die Mitte der Skala."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Punktetabelle auf einen Blick",
+      "list": [
+        "Gebotsduell: 3 Punkte für den besten Tipp ohne drüber, sonst 1 Trostpunkt für den niedrigsten.",
+        "Frequenz-Skala: 5 / 4 / 3 / 2 / 1 Punkte bei bis zu 2 / 5 / 10 / 20 / 35 % Abweichung.",
+        "Teurer oder billiger?: 1 Punkt je richtiger Antwort, alle drei richtig = 4 Punkte.",
+        "Einkaufswagen: 5 Punkte bis 0,50 € unter dem Ziel, 3 bis 2 €, 2 bis 5 €, 1 bis 8 € bzw. 20 % des Ziels; zu viel = 0.",
+        "Preisfinale: 5 Punkte für den besten Tipp ohne drüber, sonst 2 für den niedrigsten."
+      ]
+    },
+    {
+      "t": "Höchstpunktzahl je Show",
+      "list": [
+        "4 Spiele + Finale: Gebotsduell 3 + Skala 5 + Teurer/Billiger 4 + Einkaufswagen 5 + Finale 5 = 22 Punkte.",
+        "6 Spiele + Finale: zusätzlich ein Gebotsduell und eine Skala = 30 Punkte.",
+        "8 Spiele + Finale: jede Disziplin zweimal plus Finale = 39 Punkte."
+      ],
+      "p": [
+        "Die meisten Punkte holst du in Skala, Einkaufswagen und Finale. Wer im Einkaufswagen immer die perfekte Summe findet, hat einen sicheren Vorsprung."
+      ]
+    },
+    {
+      "t": "Einkaufswagen sicher lösen",
+      "steps": [
+        "Merke dir den Zielbetrag. Er liegt immer zwischen 14 und 55 €, und alle Artikel kosten höchstens 16 €.",
+        "Die Lösung besteht aus 3 bis 5 Artikeln. Suche zuerst einen großen Artikel, der knapp unter einem Drittel bis der Hälfte des Ziels liegt.",
+        "Tippe Artikel an, um sie in den Wagen zu legen, und nochmal, um sie herauszunehmen. Die Leiste zeigt „… fehlen“ oder „zu viel!“.",
+        "Passt es nicht genau, tausche einen Artikel gegen einen ähnlich teuren. Achte auf die Cent-Beträge – sie verraten oft, welche Artikel zusammengehören.",
+        "Bist du bis 0,50 € dran, tippe Fertig. Nach der Runde zeigt das Spiel die perfekte Lösung."
+      ]
+    },
+    {
+      "t": "Der Skalen-Trick",
+      "p": [
+        "Bei der Frequenz-Skala beginnt die Skala bei 30 bis 65 % des echten Preises und endet bei 170 bis 270 % (auf runde Werte gerundet). Der echte Preis liegt deshalb immer im linken Teil der Skala – grob zwischen einem Sechstel und der Hälfte der Strecke, meist um ein Drittel. Die Mitte der Skala ist also fast immer zu teuer.",
+        "Nutze das als Kontrolle: Liegt deine Schätzung rechts von der Mitte, ist sie mit hoher Wahrscheinlichkeit zu hoch. Ein guter Startwert ohne Ahnung ist etwa ein Drittel der Strecke von links."
+      ]
+    },
+    {
+      "t": "Bieten im Duell und Finale",
+      "list": [
+        "Gegen Menschen: Die Tipps sind geheim, du kannst also nur schätzen. Wer bei gleicher Schätzung einen kleineren Sicherheitsabstand nimmt, liegt näher dran – aber auch näher am Risiko, drüber zu liegen.",
+        "Gegen Computer: Sie liegen meist um 80 % des Preises. Ein Gebot bei etwa 90 % deiner Schätzung liegt oft darüber und bleibt trotzdem unter dem Preis.",
+        "Ein Gebot von 0 ist erlaubt und liegt nie drüber, gewinnt aber nur, wenn alle anderen drüber liegen – dann reicht schon der Trostpunkt."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Das Koppeln klappt nicht.",
+      "a": "Für Handys und Online braucht das Spiel Internet. Prüfe den Code, lass das Spiel auf dem großen Bildschirm geöffnet und scanne den QR-Code erneut. Meldet das Handy „Raum … nicht gefunden“, läuft das Spiel nicht mehr."
+    },
+    {
+      "q": "Kann ich allein spielen?",
+      "a": "Ja. Mit 1 Mensch und 0 Computern kommt automatisch Preis-Paula als Gegnerin dazu."
+    },
+    {
+      "q": "Sind die Preise echt?",
+      "a": "Es sind handelsübliche Durchschnittswerte ohne Gewähr. Im Laden kann es abweichen."
+    },
+    {
+      "q": "Ein Mitspieler am Handy reagiert nicht mehr.",
+      "a": "Tippe am großen Bildschirm auf Überspringen. Er bekommt für diese Runde einen leeren Tipp, und es geht weiter."
+    },
+    {
+      "q": "Kann ich die Moderation leiser stellen?",
+      "a": "Der Mikrofon-Knopf oben schaltet die gesprochene Moderation aus, 🔊 schaltet Musik und Effekte."
+    },
+    {
+      "q": "Wie viele können mitspielen?",
+      "a": "Bis zu 4 Menschen und dazu bis zu 2 Computer-Gegner."
+    }
+  ]
+}

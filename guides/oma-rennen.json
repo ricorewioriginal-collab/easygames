@@ -1,0 +1,236 @@
+{
+  "id": "oma-rennen",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Oma-Rennen ist ein 3D-Funracer: Sieben Omas und Opa Kalle rasen auf Raketen-Rollatoren durch die Stadt. Wer nach allen Runden als Erste über die Ziellinie fährt, gewinnt – ganz egal, wer im Weg steht.",
+        "Unterwegs sammelst du aus bunten Geschenkboxen Oma-Gegenstände, driftest durch Kurven für einen Turbo und nutzt Windschatten und gelbe Schub-Pfeile am Boden. Ein Rennen hat bis zu 8 Fahrerinnen."
+      ]
+    },
+    {
+      "t": "Start und Menü",
+      "p": [
+        "Nach dem Ladebildschirm („Rollatoren werden aufgepumpt …“) tippst du auf den Titel. Im Menü steht rechts zu jedem Punkt eine kurze Erklärung. Im Hintergrund fahren alle Omas ein Vorführrennen."
+      ],
+      "list": [
+        "🏆 Grand Prix: drei Cups mit je 3 oder 4 Rennen. Punkte sammeln, aufs Podest fahren und neue Omas freischalten.",
+        "🏁 Einzelrennen: ein Rennen auf einer Strecke deiner Wahl gegen 7 Computer-Omas.",
+        "⏱️ Zeitfahren: allein auf der Strecke, ohne Gegenstände und Hindernisse, 3 Runden – jag deine Bestzeit.",
+        "👵👵 Zu zweit: geteilter Bildschirm an einem Gerät, mit Tastatur (WASD und Pfeile) oder zwei Controllern.",
+        "🌐 Online & Handys: Der Fernseher zeigt das Rennen, bis zu 4 Handys sind die Lenkräder.",
+        "📱 Mitfahren: mit dem Handy einem Rennen beitreten (Code vom Fernseher).",
+        "👵 Omas & Rekorde: alle Omas mit ihren Werten, wie du sie freischaltest, deine Bestzeiten, Karriere-Punkte und Podestplätze.",
+        "⚙️ Einstellungen: Geräusche, Musik (Schlager-Orgel), Oma-Stimme, Lenkhilfe, Vibration, Kamera weiter weg, Runden im Einzelrennen (2, 3 oder 5) und dein Name.",
+        "❓ Anleitung: Steuerung und alle Gegenstände."
+      ]
+    },
+    {
+      "t": "Ablauf eines Rennens",
+      "steps": [
+        "Oma wählen: links die Vorschau mit Werten für Tempo, Antritt, Lenken, Gewicht und Gelände, rechts die Auswahl. Gesperrte Omas zeigen 🔒 und die Bedingung.",
+        "Strecke oder Cup wählen, dazu die Schwierigkeit: Kaffeefahrt (gemütlich – die anderen Omas trödeln), Seniorenteller (ordentlich Tempo) oder Rentenrebellion (Vollgas, keine Gnade!). Im Einzelrennen und zu zweit wählst du auch 2, 3 oder 5 Runden; Grand Prix und Zeitfahren haben immer 3 Runden.",
+        "Nach dem Countdown geht es los. Oben siehst du Platz, Runde und deinen Gegenstand, dazu eine Minikarte. In der letzten Runde kommt „🔔 LETZTE RUNDE!“.",
+        "Nach der Ziellinie folgt der Zieleinlauf mit Platzierung und Zeiten. Ein Rennen endet spätestens nach 12 Minuten."
+      ]
+    },
+    {
+      "t": "Die Strecken",
+      "list": [
+        "⛪ Marktplatz-Meile: Kopfsteinpflaster, Marktstände und Kirchturm.",
+        "⛲ Kurpark-Kurven: Springbrunnen, Musikpavillon und freche Tauben, die über die Strecke laufen und dich anrempeln.",
+        "🛍️ Einkaufszentrum: Rolltreppen-Abkürzungen, die dich ein Stück der Strecke weiter nach vorn bringen.",
+        "🏖️ Strandpromenade: Sonnenuntergang, Strandkörbe und Möwen auf der Fahrbahn.",
+        "🎄 Weihnachtsmarkt: Nacht, Schnee, Lichter, Lebkuchenstände und Brücken – hier liegen besonders viele Hindernisse.",
+        "👻 Geisterstunde im Altenheim: Mitternacht, Kürbisse und Gespenster auf dem Flur; die Schub-Pfeile geben hier den längsten Schub.",
+        "Auf allen Strecken (außer im Zeitfahren) liegen feste Hindernisse am Rand, neben denen immer eine freie Spur bleibt."
+      ]
+    },
+    {
+      "t": "Gegenstände",
+      "p": [
+        "Fahr durch eine Geschenkbox, kurz danach bekommst du einen Gegenstand (manche gibt es dreifach, angezeigt mit ×3). Du kannst immer nur einen Gegenstand tragen. Wer weiter hinten liegt, bekommt eher starke Sachen wie Raketen und Pralinen-Lenkraketen; den Hörgeräte-Pfiff gibt es nur für die letzten Plätze."
+      ],
+      "list": [
+        "🚀 Rheuma-Rakete: kurzer Raketenschub am Rollator.",
+        "🦷 Gebiss: hinter dir fallen lassen – wer drüberfährt, schleudert.",
+        "👜 Handtasche: nach vorne schleudern, prallt von Wänden ab.",
+        "🧶 Wollknäuel: hinterlegen, verheddert Verfolger.",
+        "🍫 Pralinen-Lenkrakete: sucht sich die Oma direkt vor dir.",
+        "☂️ Regenschirm: wehrt einen Treffer ab (etwa 7 Sekunden lang).",
+        "📢 Hörgeräte-Pfiff: alle vor dir drehen sich vor Schreck.",
+        "💨 Puderwolke: nimmt allen vor dir für ein paar Sekunden die Sicht."
+      ]
+    },
+    {
+      "t": "Fahrtechnik: Drift, Windschatten, Schub",
+      "list": [
+        "Drift: In der Kurve bei ordentlichem Tempo lenken und Drift halten. Die Funken werden erst blau, dann orange, dann pink. Loslassen gibt einen Raketenschub – je länger gedriftet, desto länger der Schub. Auf Rasen oder Gelände kann man nicht driften.",
+        "Windschatten: Fährst du dicht hinter einer anderen Oma, lädt sich ein Extra-Schub auf, der dann von selbst zündet.",
+        "Gelbe Pfeile am Boden: geben Schub.",
+        "Rammen: Schwere Omas schieben leichtere zur Seite. Oma Hilde ist mit Abstand die Schwerste.",
+        "Lenkhilfe: Ist sie eingeschaltet, lenkt das Spiel leicht mit, am Handy und per Touch stärker als mit Tastatur."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch (wie bei AnMaCha Kart Rush): links der Joystick lenkt, rechts die Tasten-Raute – unten GAS, links BREMSE, rechts DRIFT (halten), oben ITEM. Mit dem Daumen zwischen GAS und DRIFT drückst du beides.",
+        "Tastatur allein: Pfeile oder WASD fahren, Leertaste, Enter oder X Gegenstand, Shift oder Z (auch Q oder M) gedrückt halten = Driften, Esc Pause.",
+        "Tastatur zu zweit: Spielerin 1 WASD, Q oder Shift links Drift, E oder Leertaste Gegenstand. Spielerin 2 Pfeile, Shift rechts oder M Drift, Enter Gegenstand.",
+        "Gamecontroller: Stick oder Steuerkreuz lenkt, A oder RT Gas, B oder LT Bremse, RB oder X Drift, LB oder Y Gegenstand, Start Pause. Zu zweit fährt jeder mit seinem eigenen Controller.",
+        "Handy als Lenkrad (Online): dieselbe Joystick-Tasten-Raute; zusätzlich „📱 Kippen“, um durch Neigen zu lenken, und ⇄ zum Umdrehen der Lenkrichtung.",
+        "Menüs: Pfeile und Enter zum Wählen, Esc zurück."
+      ]
+    },
+    {
+      "t": "Grand Prix und Wertung",
+      "p": [
+        "Die drei Cups: ☕ Kaffee-Cup (Marktplatz-Meile, Kurpark-Kurven, Einkaufszentrum), 🍰 Kuchen-Cup (Strandpromenade, Weihnachtsmarkt, Geisterstunde im Altenheim) und 🏆 Großer Rentenpokal (Einkaufszentrum, Geisterstunde im Altenheim, Kurpark-Kurven, Strandpromenade).",
+        "Jedes Rennen bringt Cup-Punkte nach Platz: 10, 8, 6, 5, 4, 3, 2, 1. Ab dem zweiten Rennen starten die Führenden weiter hinten. Nach dem letzten Rennen folgt die Siegerehrung auf dem Podest. Deine beste Cup-Platzierung (🥇 🥈 🥉) steht danach auf der Cup-Karte.",
+        "Karriere-Punkte: In jedem Rennen außer dem Zeitfahren bekommst du die Platzpunkte mal Schwierigkeit – Kaffeefahrt ×1, Seniorenteller ×2, Rentenrebellion ×3. Ein Sieg auf Rentenrebellion bringt also 30 Karriere-Punkte."
+      ]
+    },
+    {
+      "t": "Online & Handys",
+      "steps": [
+        "Am Fernseher oder PC „🌐 Online & Handys“ wählen. Ein Raum mit QR-Code, Link (mit „🔗 Link kopieren“) und 4-stelligem Code wird eröffnet.",
+        "Mitspielerinnen öffnen den Link oder wählen am Handy „📱 Mitfahren“, geben Namen und Code ein, suchen sich ihre Oma aus und tippen auf „Beitreten“. Sie können von überall beitreten.",
+        "Am Fernseher wählst du Einzelrennen oder Grand Prix, die Schwierigkeit und die Strecke oder den Cup. Mit „Ich fahre hier am Bildschirm mit“ fährst du selbst per Tastatur oder Controller mit.",
+        "Bis zu 4 Menschen fahren mit, freie Plätze übernehmen Computer-Omas. Das Handy zeigt Platz, Runde und den Gegenstand.",
+        "Nach dem Rennen geht es mit „↻ Nochmal“ oder „← Zur Lobby“ weiter."
+      ]
+    },
+    {
+      "t": "Freischalten und Speichern",
+      "list": [
+        "Von Anfang an: Oma Erna, Oma Gertrud, Oma Hilde und Oma Lotti.",
+        "Opa Kalle: hol einen Podestplatz (Platz 1 bis 3) in einem Rennen.",
+        "Oma Frieda: gewinne den Kaffee-Cup.",
+        "Uroma Trude: gewinne den Kuchen-Cup.",
+        "Oma Rosi: gewinne den Großen Rentenpokal.",
+        "Bestzeiten je Strecke, Karriere-Punkte, Podestplätze, Siege, freigeschaltete Omas und Einstellungen speichert das Spiel im Browser des Geräts."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Starte auf Kaffeefahrt mit eingeschalteter Lenkhilfe.",
+        "Gas fast immer halten und in engen Kurven nur kurz bremsen.",
+        "Fahr gezielt durch die Geschenkboxen – ein Gegenstand ist immer besser als keiner.",
+        "Oma Erna ist die Allround-Oma ohne Schwächen, ideal zum Lernen.",
+        "Willst du einen ruhigeren Blick, schalte „Kamera weiter weg“ ein."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Drift so lange halten, bis die Funken pink werden – dann gibt es den längsten Raketenschub.",
+        "Hänge dich auf Geraden in den Windschatten der Oma vor dir und zieh kurz vor der Kurve vorbei.",
+        "Hebe dir den Regenschirm auf, wenn du vorne fährst: Pralinen-Lenkraketen suchen sich die Oma vor dem Werfer, also oft die Erste.",
+        "Gebiss und Wollknäuel kurz vor einer Kurve oder Engstelle fallen lassen, damit Verfolgerinnen nicht ausweichen können.",
+        "Die Handtasche prallt von Wänden ab – in engen Abschnitten trifft sie oft noch nach einer Bande."
+      ]
+    },
+    {
+      "t": "Die richtige Oma",
+      "list": [
+        "Oma Erna: Allround-Oma, alle Werte ausgeglichen.",
+        "Oma Gertrud: Rentnerrakete – höchstes Grundtempo der Startomas, aber schwächerer Antritt und Lenkung.",
+        "Oma Hilde: Schwergewicht – rammt alles weg, im Gedränge schiebt sie die anderen einfach zur Seite.",
+        "Oma Lotti: Drift-Queen – beste Lenkung und lädt den Drift-Turbo am schnellsten, dafür leicht.",
+        "Opa Kalle: der Startblitz mit dem stärksten Antritt – gut, wenn du oft getroffen wirst.",
+        "Oma Frieda: Querfeldein – verliert auf Rasen kaum Tempo, perfekt für Abkürzungen.",
+        "Uroma Trude: 103 Jahre und die Schnellste im Feld, mit gutem Drift.",
+        "Oma Rosi: Disco-Oma, rundum etwas über dem Durchschnitt."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Den Drift zu früh loslassen: Ohne Funkenfarbe gibt es keinen Schub.",
+        "Auf Rasen driften wollen – im Gelände klappt der Drift nicht.",
+        "Den Regenschirm sofort benutzen: Er schützt nur etwa 7 Sekunden.",
+        "Den Hörgeräte-Pfiff oder die Puderwolke als Erste zünden – sie wirken nur auf Omas vor dir.",
+        "Im Zeitfahren Gegenstände suchen: Dort gibt es weder Boxen noch Hindernisse."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Alle Omas freischalten",
+      "steps": [
+        "Fahr ein Einzelrennen auf Kaffeefahrt und komm aufs Podest – Opa Kalle ist frei.",
+        "Gewinne den ☕ Kaffee-Cup (Gesamtsieg nach 3 Rennen) – Oma Frieda ist frei.",
+        "Gewinne den 🍰 Kuchen-Cup – Uroma Trude ist frei.",
+        "Gewinne den 🏆 Großen Rentenpokal (4 Rennen) – Oma Rosi ist frei.",
+        "Die Cups zählen auf jeder Schwierigkeit. Am leichtesten gelingt es auf Kaffeefahrt."
+      ]
+    },
+    {
+      "t": "Grand-Prix-Strategie",
+      "list": [
+        "Konstanz schlägt Einzelsiege: Mit vier zweiten Plätzen (32 Punkte) hast du oft mehr als eine Gegnerin mit einem Sieg und zwei schwachen Rennen.",
+        "Wer führt, startet im nächsten Rennen weiter hinten – rechne im ersten Drittel mit Gedränge und nutze es für Windschatten.",
+        "Im Kaffee-Cup ist das Einkaufszentrum das Schlüsselrennen: Rolltreppen-Abkürzungen bringen dich ein gutes Stück nach vorn.",
+        "Im Kuchen-Cup auf dem Weihnachtsmarkt die vielen Hindernisse meiden – lieber einen Hauch langsamer und sauber durch.",
+        "Im Großen Rentenpokal kommen Einkaufszentrum und Geisterstunde schon früh: Dort kannst du mit Abkürzungen und langen Schub-Pfeilen einen Vorsprung herausfahren."
+      ]
+    },
+    {
+      "t": "Punktetabellen",
+      "list": [
+        "Cup-Punkte je Rennen: 1. Platz 10, 2. Platz 8, 3. Platz 6, 4. Platz 5, 5. Platz 4, 6. Platz 3, 7. Platz 2, 8. Platz 1.",
+        "Karriere-Punkte: Cup-Punkte × 1 (Kaffeefahrt), × 2 (Seniorenteller) oder × 3 (Rentenrebellion).",
+        "Höchste Karriere-Punkte pro Rennen: 30 für einen Sieg auf Rentenrebellion. Für viele Punkte also auf der höchsten Stufe fahren – auch ein 3. Platz bringt dort 18.",
+        "Drift-Schub: blaue Funken kurzer Schub, orange mittlerer, pinke Funken der längste."
+      ]
+    },
+    {
+      "t": "Bestzeiten im Zeitfahren",
+      "list": [
+        "Im Zeitfahren liegen keine Hindernisse, die Ideallinie ist frei.",
+        "Uroma Trude oder Oma Gertrud haben das höchste Tempo – ideal für Bestzeiten, sobald Trude frei ist.",
+        "Jede Kurve mit Drift nehmen und erst bei pinken Funken loslassen.",
+        "Alle gelben Pfeile mitnehmen; im Einkaufszentrum die Rolltreppen-Abkürzungen nutzen.",
+        "Neben Gesamtzeit zeigt der Zieleinlauf deine schnellste Runde. Die Bestzeit je Strecke steht in „Omas & Rekorde“ und auf der Streckenkarte."
+      ]
+    },
+    {
+      "t": "Geheimnisse und Sprüche",
+      "list": [
+        "Jede Oma hat ihren eigenen Spruch, zum Beispiel Oma Erna: „Ich fahr seit 1958 unfallfrei!“ oder Opa Kalle: „Früher war mehr Lametta!“.",
+        "Bei Treffern, Gegenständen, Schub, Führung, Sieg und Niederlage rufen die Omas Sprüche wie „Meine Hüfte!“, „Nimm das, Jungspund!“ oder „Und jetzt Kaffee und Kuchen!“. Mit der Oma-Stimme werden sie vorgelesen – im Browser mit einer Frauenstimme, in der RicoReWi-App mit der Android-Stimme.",
+        "Die Computer-Omas passen ihr Tempo leicht an deinen Abstand an – wer weit vorne liegt, wird ein wenig gejagt, wer hinten liegt, kann aufholen."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Meine freigeschalteten Omas sind weg – warum?",
+      "a": "Fortschritt, Bestzeiten und Einstellungen liegen im Browser des Geräts. Werden die Website-Daten gelöscht oder spielst du im privaten Fenster, beginnt alles neu."
+    },
+    {
+      "q": "Online klappt nicht – was tun?",
+      "a": "Fernseher und Handys brauchen Internet. Gib den 4-stelligen Code genau ein oder scanne den QR-Code. Sind schon 4 Plätze belegt, meldet das Spiel „Alle 4 Plätze sind belegt“."
+    },
+    {
+      "q": "Die Omas sprechen nicht.",
+      "a": "Prüfe in den Einstellungen „Oma-Stimme (Sprüche vorlesen)“ und die Lautstärke. Die Stimme kommt aus der Sprachausgabe des Browsers oder der App; fehlt dort eine deutsche Stimme, bleibt es still."
+    },
+    {
+      "q": "Wie lenke ich am Handy durch Kippen?",
+      "a": "Im Lenkrad-Bildschirm auf „📱 Kippen“ tippen. Die Knöpfe funktionieren weiter. Lenkt es verkehrt herum, tippe auf ⇄."
+    },
+    {
+      "q": "Warum kann ich nicht driften?",
+      "a": "Für einen Drift brauchst du Tempo und einen deutlichen Lenkeinschlag, und du darfst nicht auf Rasen oder Gelände sein. Dann Drift gedrückt halten."
+    },
+    {
+      "q": "Wie spiele ich zu zweit mit Controllern?",
+      "a": "Schließe zwei Controller an und wähle „👵👵 Zu zweit“. Der erste Controller lenkt Spielerin 1, der zweite Spielerin 2; die Tastatur funktioniert parallel."
+    }
+  ]
+}

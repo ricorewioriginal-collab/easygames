@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080B12">
+<title>Spielanleitung – easygames</title>
+<meta name="description" content="Spielanleitung, Ratgeber und Lösungsbuch für die easygames-Minispiele.">
+<link rel="icon" href="favicon.ico" sizes="any">
+<style>
+  *{box-sizing:border-box}
+  :root{--cy:#00E5FF;--ma:#FF2D95;--pu:#8B5CF6;--bg:#080B12;--tx:#d5e2ee}
+  html,body{margin:0;background:var(--bg);color:#fff;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.55}
+  body{background:radial-gradient(900px 500px at 10% -10%,rgba(0,229,255,.12),transparent 60%),radial-gradient(800px 600px at 100% 0,rgba(139,92,246,.14),transparent 60%),var(--bg);min-height:100vh}
+  a{color:var(--cy)}
+  .wrap{max-width:860px;margin:0 auto;padding:max(14px,env(safe-area-inset-top)) 16px 60px}
+  .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px}
+  .top a{text-decoration:none;font-weight:700}
+  .hero{display:flex;gap:16px;align-items:center;margin:18px 0 10px}
+  .ic{flex:none;width:84px;height:84px;border-radius:22%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:42px;box-shadow:0 8px 22px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.14)}
+  .ic img{width:100%;height:100%;object-fit:cover}
+  h1{margin:0;font-size:clamp(22px,4.5vw,32px);line-height:1.2}
+  .kick{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--cy)}
+  .desc{color:var(--tx);margin:6px 0 0}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+  .btn{display:inline-flex;align-items:center;gap:6px;height:42px;padding:0 16px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:var(--cy);font:700 14px inherit;text-decoration:none;cursor:pointer}
+  .btn.pri{background:linear-gradient(90deg,var(--cy),var(--pu));color:#061018;border:0}
+  nav.parts{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;padding:10px 0;margin:0 0 6px;background:linear-gradient(var(--bg) 70%,transparent)}
+  nav.parts a{flex:none;padding:7px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);text-decoration:none;font-weight:700;font-size:14px;white-space:nowrap}
+  .part{margin:26px 0 0;padding:18px 18px 8px;border:1px solid rgba(255,255,255,.1);border-radius:20px;background:rgba(255,255,255,.035);scroll-margin-top:60px}
+  .part>h2{margin:0 0 6px;font-size:22px}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+  .toc a{font-size:13px;padding:3px 10px;border-radius:999px;background:rgba(0,229,255,.08);text-decoration:none}
+  .egb-sec{margin:14px 0;scroll-margin-top:60px}
+  .egb-h{margin:0 0 6px;font-size:16px;color:var(--cy)}
+  p,li{color:var(--tx)} p{margin:0 0 8px} ul,ol{margin:0 0 8px;padding-left:22px} li{margin:3px 0}
+  .ctrl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0 0 8px}.ctrl b{color:#fff}
+  details.egb-faq{margin:8px 0;padding:10px 14px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.04)}
+  details.egb-faq summary{cursor:pointer;font-weight:700}
+  details.egb-faq p{margin:8px 0 2px}
+  .spoil{margin:10px 0;padding:14px;border-left:4px solid var(--ma);background:rgba(255,45,149,.08);border-radius:0 12px 12px 0}
+  .note{color:#9fb4c8;font-size:14px}
+  .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:16px}
+  .list a{display:flex;gap:10px;align-items:center;padding:10px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);text-decoration:none;color:#fff;font-weight:700}
+  .list .ic{width:44px;height:44px;font-size:22px;box-shadow:none}
+  .list input{grid-column:1/-1}
+  input[type=search]{width:100%;height:44px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#fff;padding:0 16px;font:16px inherit}
+  @media print{body{background:#fff;color:#000}nav.parts,.btns,.top{display:none}.part{border:0;background:none;padding:0}p,li,.egb-h,a{color:#000}.spoil{display:none}[hidden].sol{display:block!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a href="./" id="home">← Alle Spiele</a><span class="note">easygames · Spielanleitungen</span></div>
+  <main id="main"><p class="note">⏳ Anleitung wird geladen …</p></main>
+</div>
+<script src="games.js"></script>
+<script src="guides.js"></script>
+<script src="guidebook.js"></script>
+<script>
+'use strict';
+(function () {
+  const G = window.EASYGAMES_GAMES || [], K = window.EASYGAMES_GUIDES || {}, B = window.EasyGamesBook, main = document.getElementById('main');
+  const q = new URLSearchParams(location.search), want = (q.get('game') || '').trim();
+  const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
+  const icon = g => { const d = el('div', 'ic'); d.style.background = g.bg || '#222'; if (g.img) { const i = el('img'); i.src = g.img; i.alt = ''; i.loading = 'lazy'; d.appendChild(i); } else d.textContent = g.icon || '🎮'; return d; };
+  const app = !!window.EasyGamesApp; let framed = false; try { framed = window.top !== window.self; } catch (e) { framed = true; }
+  if (framed) document.getElementById('home').target = '_top';
+  // Spiel über ID oder Ordnernamen finden
+  const g = want && (G.find(x => x.id === want) || G.find(x => (x.path || '').replace(/\/.*$/, '') === want));
+  if (!g) return overview();
+  document.title = 'Anleitung & Lösungsbuch: ' + g.title.replace(/\s[–-]\s.*$/, '') + ' – easygames';
+  const md = document.querySelector('meta[name=description]'); md.content = 'Spielanleitung, Ratgeber und Lösungsbuch für ' + g.title + ': Steuerung, Tipps, Strategien und Komplettlösung.';
+  main.textContent = '';
+  const hero = el('div', 'hero'), ht = el('div'); ht.append(el('div', 'kick', 'Anleitung · Ratgeber · Lösungsbuch'), el('h1', '', g.title), el('p', 'desc', g.desc || '')); hero.append(icon(g), ht); main.appendChild(hero);
+  const btns = el('div', 'btns'), play = el('a', 'btn pri', '▶ Spielen'); play.href = g.path; if (framed) play.target = '_top'; btns.appendChild(play);
+  if (!app) { const pr = el('button', 'btn', '🖨 Drucken / PDF'); pr.onclick = () => { document.querySelectorAll('.sol').forEach(s => s.hidden = false); window.print(); }; btns.appendChild(pr); }
+  main.appendChild(btns);
+  const nav = el('nav', 'parts'); main.appendChild(nav);
+  const part = (id, title) => { const s = el('section', 'part'); s.id = id; s.appendChild(el('h2', '', title)); main.appendChild(s); const a = el('a', '', title); a.href = '#' + id; nav.appendChild(a); return s; };
+  // Kurzüberblick aus guides.js (immer da)
+  const k = K[g.id], over = part('ueberblick', '⚡ Kurz erklärt');
+  over.appendChild(el('p', '', k && k.anleitung || g.desc || ''));
+  if (k && k.steuerung && k.steuerung.length) { over.appendChild(el('h3', 'egb-h', 'Bedienung')); const c = el('div', 'ctrl'); k.steuerung.forEach(l => { const m = /^([^:]{2,18}):\s*(.+)$/.exec(l); c.append(el('b', '', m ? m[1] : '•'), el('span', '', m ? m[2] : l)); }); over.appendChild(c); }
+  const toc = (box, list, pre) => { if (!list || list.length < 3) return; const t = el('div', 'toc'); list.forEach((s, i) => { const a = el('a', '', s.t); a.href = '#' + pre + '-' + (i + 1); t.appendChild(a); }); box.insertBefore(t, box.children[1]); };
+  const ids = (box, pre) => box.querySelectorAll('.egb-sec').forEach((s, i) => { s.id = pre + '-' + (i + 1); });
+  B.load(g.id).then(book => {
+    if (!book) { over.appendChild(el('p', 'note', 'Das ausführliche Handbuch mit Ratgeber und Lösungsbuch folgt.')); return; }
+    const h = part('handbuch', '📘 Spielanleitung'); B.render(h, book, 'handbuch', { h: 'h3' }); ids(h, 'handbuch'); toc(h, book.handbuch, 'handbuch');
+    const r = part('ratgeber', '💡 Ratgeber'); if (k && k.tipps && k.tipps.length) { const s = el('section', 'egb-sec'), ul = el('ul'); s.appendChild(el('h3', 'egb-h', 'Kurztipps')); k.tipps.forEach(t => ul.appendChild(el('li', '', t))); s.appendChild(ul); r.appendChild(s); }
+    B.render(r, book, 'ratgeber', { h: 'h3' }); ids(r, 'ratgeber'); toc(r, book.ratgeber, 'ratgeber');
+    const l = part('loesung', '🗝️ Lösungsbuch'), sol = el('div', 'sol'); B.render(sol, book, 'loesung', { h: 'h3' }); ids(sol, 'loesung');
+    const open = location.hash.indexOf('#loesung') === 0;
+    if (!open) { sol.hidden = true; const sp = el('div', 'spoil'); sp.appendChild(el('p', '', 'Achtung, Spoiler: Hier stehen die Lösungen. Erst selbst probieren?')); const b = el('button', 'btn', '🗝️ Lösungen aufdecken'); b.onclick = () => { sol.hidden = false; sp.remove(); }; sp.appendChild(b); l.appendChild(sp); }
+    l.appendChild(sol); toc(l, book.loesung, 'loesung'); l.querySelectorAll('.toc a').forEach(a => a.addEventListener('click', () => { sol.hidden = false; const sp = l.querySelector('.spoil'); if (sp) sp.remove(); }));
+    if (book.faq && book.faq.length) { const f = part('faq', '❓ Häufige Fragen'); B.render(f, book, 'faq'); }
+    if (location.hash) { const t = document.getElementById(location.hash.slice(1)); if (t) setTimeout(() => t.scrollIntoView(), 0); }
+  });
+  // Ohne Spiel: Übersicht aller Anleitungen
+  function overview() {
+    main.textContent = ''; main.append(el('h1', '', '📖 Spielanleitungen'), el('p', 'desc', 'Handbuch, Ratgeber und Lösungsbuch zu jedem easygames-Spiel.'));
+    const box = el('div', 'list'), s = el('input'); s.type = 'search'; s.placeholder = 'Spiel suchen …'; s.setAttribute('aria-label', 'Spiel suchen'); box.appendChild(s);
+    const items = G.map(x => { const a = el('a'); a.href = '?game=' + encodeURIComponent(x.id); a.append(icon(x), el('span', '', x.title)); box.appendChild(a); return [a, x.title.toLowerCase()]; });
+    s.oninput = () => { const v = s.value.toLowerCase().trim(); items.forEach(([a, t]) => { a.hidden = !!v && t.indexOf(v) < 0; }); };
+    main.appendChild(box); if (want) main.insertBefore(el('p', 'note', 'Spiel „' + want + '“ nicht gefunden.'), box);
+  }
+})();
+</script>
+</body>
+</html>

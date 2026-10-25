@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f63f2b6860ea",
- "generated": "2026-10-25T02:44:35+01:00",
- "commit": "b268deee3ce009961b906c4a0a649f341dc18c9c",
+ "version": "6f899696f3f6",
+ "generated": "2026-10-25T03:04:22+01:00",
+ "commit": "f453802e4ca3fb0e144c14befb4ac410ec937280",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -390,6 +390,11 @@
    "p": "aeru/vendor/three.min.js",
    "s": 545986,
    "h": "57bf8f9f062349ed05116bf375972004ac130d084e4fefd3fb4fc433304560fa"
+  },
+  {
+   "p": "anleitung.html",
+   "s": 10274,
+   "h": "ea0ba3a65ed8047e3e047d8ea078df888610cbb022638e3b68fd278e61f1f5ed"
   },
   {
    "p": "anmacha-beat-surfer/card.jpg",
@@ -5853,13 +5858,13 @@
   },
   {
    "p": "easygames.js",
-   "s": 36440,
-   "h": "223e4614d41bcf020809912d7c9a6e8885977d2d7464da6546c53c9ca074d955"
+   "s": 38259,
+   "h": "c109b876b3f966aecfbafe08472778389764a44d23dbe8535546be4782b1e9c9"
   },
   {
    "p": "einbinden.html",
-   "s": 90362,
-   "h": "8f2142c4a9e4f82ad3651532fb46da5a2b1d4625bba8864163d5e9a339fa5735"
+   "s": 91148,
+   "h": "f6c99d2f953359947b06de321c46b9d0aa3748449a6b10e922428629e611edda"
   },
   {
    "p": "erfolge.html",
@@ -6507,9 +6512,184 @@
    "h": "3ef82aa39c6b8742d48f7511b38b39012f06fff32b47c139966776515ccaa188"
   },
   {
+   "p": "guidebook.js",
+   "s": 2502,
+   "h": "8a0db7a1a4bfa01a2cfc1a06fcc524cbfe1357bb436e20382b78b59b22c7cb10"
+  },
+  {
    "p": "guides.js",
    "s": 143227,
    "h": "eee92317180ae0641e583b94d6a462463bfdd47b27178b8741356734c1de81d4"
+  },
+  {
+   "p": "guides/anmacha-frequenzrad.json",
+   "s": 11438,
+   "h": "6fcd6625d57150e01472ea25ba869eddb7c54cc53db4e27a917634f8de606cdd"
+  },
+  {
+   "p": "guides/anmacha-funkparcours.json",
+   "s": 15381,
+   "h": "f30a5a2e0ab0416ca6d0fd8f885247268a27ee34242b0489ceb9172abe7a668c"
+  },
+  {
+   "p": "guides/anmacha-gesucht.json",
+   "s": 13287,
+   "h": "8c4e5309b137f83d0f607227aff32c7fc66bab03fa10525881a336ba146ac86a"
+  },
+  {
+   "p": "guides/anmacha-hoererwahl.json",
+   "s": 11190,
+   "h": "88fae07a026e237b72a2757611de6f72fcf8e2ef307d4cdb69f4dfdf01e508ab"
+  },
+  {
+   "p": "guides/anmacha-koffer-dealer.json",
+   "s": 13691,
+   "h": "24314f3d150e03fcb7f76d12d42807b041d9eb76de3855d6aa5a6c5c092f2ed0"
+  },
+  {
+   "p": "guides/anmacha-memory.json",
+   "s": 13681,
+   "h": "5443f5cd040916eef932c200ce691653fcf3d709ee493aad2e0d92e90bd81aa4"
+  },
+  {
+   "p": "guides/anmacha-preisradar.json",
+   "s": 12315,
+   "h": "20410e1933aab5d13018472b2e93ba03e84cc78820f4443332559042e3b4ca10"
+  },
+  {
+   "p": "guides/anmacha-radio-surfer.json",
+   "s": 11677,
+   "h": "95f3f08db829fe39ad6e4985bb54cb84a3d2726a14d46e19fa3aae66e1439bb4"
+  },
+  {
+   "p": "guides/anmacha-showdown.json",
+   "s": 11449,
+   "h": "45fb123d01dc1da64d3c0cd4623a325046fff0c612d0d725b4ba90ce446b39f7"
+  },
+  {
+   "p": "guides/anmacha-snake.json",
+   "s": 12961,
+   "h": "a8a8127e260374a5bcc1bdb0b3cf6790b4da8c9131e4c778c1e99c3804efbf3b"
+  },
+  {
+   "p": "guides/anmacha-solitaire.json",
+   "s": 14347,
+   "h": "7f79fd8fb81f82e89b520b571f1c8323829d7fbfa8bab36a48b92160dbeda6d0"
+  },
+  {
+   "p": "guides/bowling-bahn.json",
+   "s": 11819,
+   "h": "d07f6a3efa9e1d8d41439b50c8ce4ec7f62f7f9d438a6bcb737ef233be555ef3"
+  },
+  {
+   "p": "guides/darts-arena.json",
+   "s": 14668,
+   "h": "4f4748c2a6592984e79e0f085ff64d5a8a8c0ebf62e972a114df0249d5748888"
+  },
+  {
+   "p": "guides/deluxe-2048.json",
+   "s": 15901,
+   "h": "4b06081ab0d0e8534d6035539c019572056b16066e1a9f402ae5cb5e2a516372"
+  },
+  {
+   "p": "guides/frequenzminen.json",
+   "s": 13804,
+   "h": "f93bc2788474f314a11cc28a0e01705cce7a29c916de9d2fad04cab6d6c57a54"
+  },
+  {
+   "p": "guides/funk-billard.json",
+   "s": 12861,
+   "h": "e32db2e3d21e4e765d5baee029723d666c6e1d25ce6074a4247879d1e5d58c29"
+  },
+  {
+   "p": "guides/funkgalgen.json",
+   "s": 14470,
+   "h": "a2ae0f3d5dbabaf670e67546521f05997fa0405069fa689fd4bb5de18ec9e489"
+  },
+  {
+   "p": "guides/funkgolf.json",
+   "s": 14330,
+   "h": "79773aa432602de2f41638896d6fb0123e2b1648d50ac2ecbe6421d315bdbfb0"
+  },
+  {
+   "p": "guides/funkmaler.json",
+   "s": 11990,
+   "h": "416959a026d644cf25b5a8802ee956f9bde3d888be6522c9519346ff66d41f75"
+  },
+  {
+   "p": "guides/huepfstrasse.json",
+   "s": 10858,
+   "h": "8dee19da0134ae466e27973608c4a656833e101ae9aeef37797372a223589219"
+  },
+  {
+   "p": "guides/konfetti-party.json",
+   "s": 11250,
+   "h": "01ec87b68b572919c1abcb0133ad62675693d5cd00144e06918fee2d5d292d20"
+  },
+  {
+   "p": "guides/kraterkommando.json",
+   "s": 19645,
+   "h": "027a70a3f912f421250acfeb68f20dc7f67317b662d41834c8fdabb2bf18c43d"
+  },
+  {
+   "p": "guides/lumo.json",
+   "s": 15776,
+   "h": "b7952c46547d2d15719c8da517f729f8143049e7d20314ec1cbef33ad55f9760"
+  },
+  {
+   "p": "guides/oma-rennen.json",
+   "s": 15776,
+   "h": "3259f5ebc269c877ec09e37423d9291219767cf79a9740db871e4a69ce436b0c"
+  },
+  {
+   "p": "guides/radio-maze.json",
+   "s": 14401,
+   "h": "a5f24ee66fb3acbb40a123789defea4cf78cb9326e8fe407d1b2cf9095b33cae"
+  },
+  {
+   "p": "guides/rico-flap.json",
+   "s": 11639,
+   "h": "7084aa96b11c3259a7d4250ecbfc4cd997927ebb92ab836d2b067effc0f39cfe"
+  },
+  {
+   "p": "guides/saftblitz.json",
+   "s": 15012,
+   "h": "589701d611c31c13555ecdc5be8ac03f82bad44aae1035ae616e9502456e79d3"
+  },
+  {
+   "p": "guides/tortenschlacht.json",
+   "s": 13452,
+   "h": "613ff85e5e821503caab7479e4860c26744f33a0d370db4afaaa89b7ce41e7c0"
+  },
+  {
+   "p": "guides/werwolf-nacht.json",
+   "s": 15208,
+   "h": "6658b49f60bad5cdfb417a13b7e801b2a39e1d7c18626cc9ac1494455e82d34c"
+  },
+  {
+   "p": "guides/wolkenhopser.json",
+   "s": 12362,
+   "h": "15a7d6cc026cfe1f4e8cb746a4b7f93dbf609ed3e9607902c4de4793d77cd26c"
+  },
+  {
+   "p": "guides/wortgitter.json",
+   "s": 12542,
+   "h": "19b9f7288cda024058141193469175352899b4b4734a8f84d828e18a439636f7"
+  },
+  {
+   "p": "guides/zeitsprung-eurovision.json",
+   "s": 23687,
+   "h": "5606e6a829c44070effad903d6160b5981ca3afcca1a3075e09f30a2974b55af"
+  },
+  {
+   "p": "guides/zeitsprung-kinderserien.json",
+   "s": 14270,
+   "h": "91f2fd0519ed549c55e114ec36d510534f7bb67fd0158aaaea137ce66006f020"
+  },
+  {
+   "p": "guides/zeitsprung-radio.json",
+   "s": 16318,
+   "h": "29dd7cc45def24fa622180321ffa7816e7a95fc5d8f024d8c6f7e1bb870eb2dd"
   },
   {
    "p": "heute.html",
@@ -6568,8 +6748,8 @@
   },
   {
    "p": "index.html",
-   "s": 93700,
-   "h": "ed0b9b826545bb64875a0cf735d2a02785fc7835b8d888838e3e02c311e40e48"
+   "s": 95755,
+   "h": "f5436ee007daa318cb9d91284b7f4f5e03b7b1dcc2e065ca42f0596ac61fec04"
   },
   {
    "p": "kiko-sterneninseln/card.svg",

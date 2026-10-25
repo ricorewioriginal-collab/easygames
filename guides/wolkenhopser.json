@@ -1,0 +1,198 @@
+{
+  "id": "wolkenhopser",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Wolkenhopser ist ein Endlos-Springspiel: Der kleine Hopsi will nach oben. Er springt von allein, sobald er von oben auf einer Plattform landet. Du steuerst nur nach links und rechts und suchst dir den Weg von Plattform zu Plattform.",
+        "Es gibt kein Ende – je höher du kommst, desto mehr Punkte. Fällst du unten aus dem Bild, wirst du von einem Monster erwischt oder von einem schwarzen Loch verschluckt, ist die Runde vorbei."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "p": [
+        "Nach dem Ladebildschirm erscheint der Titel „Hopsi will nach oben!“. Drücke Enter, tippe auf den Bildschirm oder drücke A am Controller. Im Menü siehst du oben rechts deine gesammelten Münzen (🪙)."
+      ],
+      "list": [
+        "☁️ Spielen: eine neue, zufällige Welt. Darunter steht dein Rekord.",
+        "📅 Tagesrekord: eine Welt pro Tag, für alle gleich. Dein bestes Ergebnis des Tages wird gespeichert.",
+        "🌐 Online-Rennen: einen Raum eröffnen und gegen bis zu 7 andere gleichzeitig springen.",
+        "🎨 Hopsis: neue Figuren mit Münzen freischalten und auswählen.",
+        "🏅 Rekorde: Rekord, größte Höhe, Runden, besiegte Monster, gesammelte Münzen, Tagesrekord heute und wie viele Hopsis du hast.",
+        "⚙️ Optionen: Soundeffekte, Musik, Vibration, „Handy neigen zum Steuern“ und Sparmodus (weniger Effekte).",
+        "📖 Anleitung: Kurzregeln und Steuerung im Spiel."
+      ]
+    },
+    {
+      "t": "Plattformen und Hilfen",
+      "list": [
+        "Grün: normale Plattform.",
+        "Blau: fährt hin und her (ab Höhe 60). Je höher, desto schneller.",
+        "Gestrichelt: verschwindet, nachdem du einmal darauf abgesprungen bist (ab Höhe 250).",
+        "Braun mit Riss: bricht sofort weg und trägt nicht (ab Höhe 40). Sie liegen gern zwischen den echten Plattformen.",
+        "Feder: schießt dich viel höher als ein normaler Sprung.",
+        "Trampolin (ab Höhe 80): noch höher als die Feder, mit Salto.",
+        "🧢 Propellermütze (ab Höhe 120): 3 Sekunden Flug nach oben.",
+        "🚀 Raketenrucksack (ab Höhe 300): 3,4 Sekunden schneller Flug – der stärkste Schub im Spiel.",
+        "🫧 Schutzblase (ab Höhe 180): rettet dich einmal vor einem Monster oder schwarzen Loch; danach bist du kurz unverwundbar.",
+        "🪙 Münzen: hängen in kleinen Bögen über Plattformen und werden nach der Runde deinem Konto gutgeschrieben."
+      ]
+    },
+    {
+      "t": "Gefahren",
+      "list": [
+        "Monster ab Höhe 150: lila Glibber (wackelt auf der Stelle) und Fledermäuse (fliegen hin und her).",
+        "UFOs ab Höhe 600: größer, schweben weit hin und her und brauchen zwei Treffer.",
+        "Monster besiegst du, indem du von oben draufspringst (das gibt sogar einen etwas höheren Sprung) oder sie abschießt. Von der Seite oder von unten erwischen sie dich.",
+        "Während du mit Propellermütze oder Raketenrucksack fliegst, räumst du jedes Monster einfach ab.",
+        "⚫ Schwarze Löcher ab Höhe 400: Sie ziehen dich schon aus einiger Entfernung an. Berührst du die Mitte, wirst du verschluckt.",
+        "Unten aus dem Bild fallen beendet die Runde („Abgestürzt!“), ein Monster ergibt „Erwischt!“, ein schwarzes Loch „Verschluckt!“."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Tastatur: ← → oder A D lenken, Leertaste, ↑ oder W schießen, Esc oder P Pause. Im Menü Pfeile wählen, Enter OK, Esc zurück.",
+        "Touch: linke oder rechte Bildschirmhälfte gedrückt halten, 🎯 schießt. In den Optionen kannst du „Handy neigen“ einschalten, dann lenkst du durch Kippen des Handys.",
+        "Gamecontroller: Stick oder Steuerkreuz lenken, A, X, RB oder RT schießen, Start Pause. Im Menü Steuerkreuz wählen, A OK, B zurück.",
+        "Am linken oder rechten Rand läufst du durch und kommst auf der anderen Seite wieder herein.",
+        "Geschossen wird immer senkrecht nach oben. Während des Flugs kannst du nicht schießen.",
+        "Im Pausenmenü: ▶ Weiter, ↻ Neu starten, ⚙️ Optionen, ⏹ Zum Menü. Wechselst du die App, pausiert das Spiel (außer im Online-Rennen)."
+      ]
+    },
+    {
+      "t": "Punkte, Gebiete und Rekorde",
+      "list": [
+        "Punkte = erreichte Höhe plus 25 Punkte für jedes besiegte Monster.",
+        "Gebiete: Blumenwiese ab Start, Wolkenmeer ab Höhe 250, Abendhimmel ab 600, Sternennacht ab 1000, Weltall ab 1500. Beim Wechsel erscheint ein Banner.",
+        "Eine Linie „★ Rekord“ zeigt dir während der Runde, wo dein bisheriger Rekord liegt. Überholst du ihn, kommt „⭐ Neuer Rekord!“.",
+        "Am Ende siehst du Punkte, Höhe, Rekord, Münzen, Monster und das Gebiet (im Tagesrekord: „Heute bestes“). Mit 📤 Teilen schickst du dein Ergebnis mit Link.",
+        "Rekord, Münzen, Statistik, Figuren und Einstellungen werden auf dem Gerät gespeichert; mit Konto auch in der Rangliste."
+      ]
+    },
+    {
+      "t": "Online-Rennen",
+      "steps": [
+        "Wähle im Menü 🌐 Online-Rennen. Es öffnet sich ein Raum mit QR-Code, 4-stelligem Code und Link.",
+        "Mitspieler scannen den QR-Code oder öffnen den Link – von überall, jeder auf seinem eigenen Gerät. Sie geben ihren Namen ein (der Code ist schon eingetragen) und tippen auf „Mitmachen“.",
+        "Bis zu 8 Spieler passen in einen Raum. Der Gastgeber startet mit „▶ Rennen starten“.",
+        "Alle springen durch genau dieselbe Welt. Die anderen siehst du als farbige Pfeile mit Namen am Rand.",
+        "Wer abstürzt, wartet auf die anderen. Sind alle raus, zeigt die Liste die Platzierung nach Punkten – „🏆 Du gewinnst das Rennen!“ oder „Platz … von …“.",
+        "Wer während eines laufenden Rennens beitritt, ist beim nächsten Rennen dabei."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Lenke sanft: Hopsi hat Schwung und rutscht nach. Kurze Tipper sind genauer als langes Halten.",
+        "Braune Plattformen mit Riss sind Fallen – nie darauf zielen.",
+        "Nutze den Bildschirmrand: Liegt die nächste Plattform weit rechts, ist der Weg über den linken Rand oft kürzer.",
+        "Federn und Trampoline immer mitnehmen – sie bringen dich schnell durch schwierige Stellen.",
+        "Wer am Handy schlecht trifft, probiert in den Optionen „Handy neigen“."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Monster von oben treffen: Das gibt 25 Punkte und einen etwas höheren Sprung als eine Plattform.",
+        "Schieß früh: Schüsse fliegen senkrecht nach oben. Stell dich unter das Monster, solange es noch oben im Bild ist.",
+        "UFOs brauchen zwei Treffer – zweimal schießen oder einmal schießen und dann draufspringen.",
+        "Halte vor schwarzen Löchern seitlich großen Abstand; der Sog wirkt schon in der Nähe und zieht dich nach innen.",
+        "Bei blauen Plattformen auf die Fahrtrichtung achten und etwas vorhalten.",
+        "Gestrichelte Plattformen tragen nur einmal – nicht zurückfallen lassen."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Mit Propellermütze oder Raketenrucksack fliegst du durch Monster hindurch und besiegst sie dabei – lenke gezielt hinein für Extrapunkte.",
+        "Die Schutzblase rettet auch vor einem schwarzen Loch und schleudert dich mit einem Sprung wieder heraus.",
+        "Nach dem Platzen der Schutzblase bist du etwa eine Sekunde unverwundbar – nutze das, um durch ein Monster durchzuspringen.",
+        "Im Tagesrekord ist die Welt jeden Tag gleich: Lerne die Stellen der Federn und Raketen und versuche es mehrmals.",
+        "Im Online-Rennen zählt die Punktzahl, nicht wer zuerst abstürzt. Sicher spielen lohnt sich, wenn du vorn liegst."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu weit lenken und über die Plattform hinausschießen – lieber früher loslassen.",
+        "Auf eine braune Plattform zielen, weil sie näher ist.",
+        "Von unten in ein Monster springen: Das kostet die Runde, wenn du keine Schutzblase hast.",
+        "Neben einem schwarzen Loch vorbeispringen wollen, ohne den Sog einzuplanen."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Strategie je Gebiet",
+      "list": [
+        "Blumenwiese (Höhe 0 bis 250): Plattformen liegen dicht. Ab 40 tauchen braune Bruch-Plattformen auf, ab 60 blaue, ab 80 Trampoline, ab 120 Propellermützen, ab 150 erste Monster, ab 180 Schutzblasen. Sammle hier ruhig Münzen.",
+        "Wolkenmeer (250 bis 600): gestrichelte Plattformen kommen dazu, ab 300 der Raketenrucksack. Die Abstände wachsen – konzentriere dich auf saubere Landungen.",
+        "Abendhimmel (600 bis 1000): UFOs mit zwei Lebenspunkten und ab 400 bereits schwarze Löcher. Monster werden häufiger, blaue Plattformen schneller.",
+        "Sternennacht (1000 bis 1500) und Weltall (ab 1500): Die Schwierigkeit steigt bis etwa Höhe 1400 und bleibt dann auf dem Höchststand – große Lücken, viele bewegliche, verschwindende und brüchige Plattformen. Jede Hilfe mitnehmen, Schutzblase möglichst lange aufheben."
+      ]
+    },
+    {
+      "t": "Alle Hopsis zum Freischalten",
+      "p": [
+        "Münzen sammelst du beim Springen; sie werden nach jeder Runde gutgeschrieben. Gekaufte Hopsis gehören dir für immer und werden gleich ausgewählt."
+      ],
+      "list": [
+        "Hopsi – von Anfang an",
+        "Kiki Kirsche – 150 Münzen",
+        "Ninja-Hopsi – 300 Münzen",
+        "Astro-Hopsi – 500 Münzen",
+        "Robo-Hopsi – 800 Münzen",
+        "Eis-Hopsi – 1100 Münzen",
+        "Mini-Drache – 1500 Münzen",
+        "Gold-Hopsi – 2500 Münzen",
+        "Für alle sieben Figuren brauchst du zusammen 6850 Münzen. Die Figuren sehen anders aus, spielen sich aber gleich."
+      ]
+    },
+    {
+      "t": "So holst du Höchstpunkte",
+      "list": [
+        "Höhe ist die Hauptquelle: Jeder Höhenpunkt ist ein Punkt. Die große Zahl oben links ist deine aktuelle Punktzahl, darunter steht das Gebiet.",
+        "Jedes Monster bringt 25 Punkte zusätzlich – im Weltall, wo viele Monster sind, lohnt sich das Abschießen besonders.",
+        "Raketenrucksack und Propellermütze bringen gefahrlose Höhe – lenke beim Fliegen schon zur nächsten sicheren Plattform.",
+        "Die Rekordlinie zeigt, wie weit es noch ist – kurz davor lieber vorsichtig spielen."
+      ]
+    },
+    {
+      "t": "Geheimnisse und Wissenswertes",
+      "list": [
+        "Im Menü springt Hopsi im Hintergrund von selbst – eine Demo, die nie auf braune Plattformen zielt.",
+        "Der Tagesrekord lässt sich auch direkt mit dem Zusatz ?daily in der Adresse starten.",
+        "Das Spiel merkt sich die Tagesrekorde der letzten 30 Tage."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Meine Münzen und Figuren sind weg – warum?",
+      "a": "Alles wird im Browser des Geräts gespeichert. Hast du die Website-Daten gelöscht, ein anderes Gerät oder einen privaten Tab benutzt, fängst du neu an. Mit Konto werden Rekord und Fortschritt mitgespeichert."
+    },
+    {
+      "q": "Das Online-Rennen verbindet nicht.",
+      "a": "Alle brauchen Internet. Prüfe, ob der 4-stellige Code stimmt („Diesen Raum gibt es nicht (mehr)“), und lass den Gastgeber den Raum offen. Ein Raum fasst höchstens 8 Spieler."
+    },
+    {
+      "q": "Neigen funktioniert nicht.",
+      "a": "Schalte in ⚙️ Optionen „Handy neigen“ ein. Auf dem iPhone fragt der Browser nach der Erlaubnis für Bewegungssensoren – wird sie abgelehnt, steuerst du wieder per Bildschirmhälften."
+    },
+    {
+      "q": "Kann ich mitten im Spiel schießen, während ich fliege?",
+      "a": "Nein. Mit Propellermütze oder Raketenrucksack ist Schießen gesperrt – dafür besiegst du Monster einfach durch Hineinfliegen."
+    },
+    {
+      "q": "Ist der Tagesrekord für alle gleich?",
+      "a": "Ja. Jeden Tag gibt es eine neue Welt, die auf allen Geräten gleich aufgebaut ist."
+    },
+    {
+      "q": "Das Spiel ruckelt auf meinem Handy.",
+      "a": "Schalte in den Optionen den Sparmodus ein – dann gibt es weniger Effekte."
+    }
+  ]
+}

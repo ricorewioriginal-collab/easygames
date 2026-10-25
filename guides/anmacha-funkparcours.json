@@ -1,0 +1,240 @@
+{
+  "id": "anmacha-funkparcours",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Funkparcours ist ein Hindernis-Zeitspiel im Stil der großen TV-Shows. Jeder Läufer geht allein auf den Parcours über dem Wasser und rennt, springt, schwingt und hangelt sich bis ins Ziel auf der Steilwand. Es zählt die Zeit.",
+        "Wer ins Wasser fällt, an der Steilwand dreimal scheitert oder länger als 2:30 Minuten braucht, ist raus. Gewertet wird dann die geschaffte Strecke in Metern. In der Show treten bis zu 4 Läufer auf drei Parcours gegeneinander an; wer am Ende die meisten Punkte hat, gewinnt."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "p": [
+        "Nach dem Laden erscheint „Drücke eine beliebige Taste“ (auf dem Handy „Tippe zum Starten“). Im Hauptmenü steht rechts zu jedem Punkt ein Info-Feld."
+      ],
+      "list": [
+        "🏆 Show starten: 1 bis 4 Läufer, 3 Parcours (Vorrunde, Halbfinale, Finale).",
+        "⏱ Training: ein Parcours deiner Wahl, so oft du willst; das Info-Feld zeigt deine Bestzeiten je Parcours und wie viele du schon geschafft hast.",
+        "🌐 Online & Handys: Handys als Steuer-Pads koppeln, auch übers Internet.",
+        "📖 So wird gespielt: alle Regeln und Hindernisse.",
+        "🔊 Ton: an/aus für Musik und Effekte.",
+        "🏠 Alle Spiele: zurück zur Sammlung."
+      ]
+    },
+    {
+      "t": "Show oder Training einrichten",
+      "list": [
+        "Bei „Neue Show“ wählst du die Zahl der Läufer (1 bis 4). Beim Training wählst du einen der drei Parcours; darunter steht deine Bestzeit.",
+        "Jeder Läufer bekommt einen Namen (bis 14 Zeichen) und eine Farbe: Pink, Türkis, Gelb, Lila.",
+        "Mit dem 🧍-Knopf neben dem Namen wählst du die Figur: die 8 eigenen Läufer Kira, Tobi, Mo, Lena, Jonas, Aylin, Ole und Bruno sowie viele Figuren aus anderen easygames, nach Spiel sortiert.",
+        "Namen und Figuren merkt sich das Spiel für das nächste Mal.",
+        "„Los geht's!“ startet, „📱 Koppeln“ öffnet das Handy-Fenster, „Zurück“ führt ins Menü."
+      ]
+    },
+    {
+      "t": "Ablauf eines Laufs",
+      "steps": [
+        "Vor jedem Lauf zeigt eine Karte den Namen des Läufers, den Parcours und bisherige Zeiten. Leertaste, Enter, der Knopf „Bereit!“ oder am gekoppelten Handy „Bereit!“ startet.",
+        "Der Kommentator stellt den Läufer vor, dann läuft der Countdown 3 – 2 – 1 – LOS!",
+        "Oben läuft die Uhr (Minuten:Sekunden,Hundertstel). Beim Erreichen eines neuen Hindernisses sagt der Kommentator an, was kommt.",
+        "Im Ziel erscheint „ZIEL!“ mit deiner Zeit. Bei einem Sturz „PLATSCH!“, an der Wand „WAND NICHT GESCHAFFT“, nach 2:30 Minuten „ZEIT ABGELAUFEN“.",
+        "In der Show kommen alle Läufer nacheinander dran, danach folgt die Wertung des Parcours und der nächste Parcours."
+      ]
+    },
+    {
+      "t": "Die Hindernisse",
+      "list": [
+        "Stufensprung: kleine Plattformen mit Lücken und Höhenunterschieden – sauber von Stein zu Stein springen.",
+        "Drehwalzen: rotierende Walzen, deren Oberfläche dich zurückschiebt. Nicht stehen bleiben!",
+        "Sandsäcke: pendeln über einer langen Plattform. Ein Treffer stößt dich zurück und lähmt dich kurz.",
+        "Bruchplatten: geben kurz nach dem Betreten nach und stürzen ins Wasser (im Vorrundenparcours nach 0,7 Sekunden, im Halbfinale nach 0,55, im Finale nach 0,45).",
+        "Seilschwung: In der Luft greift dein Läufer das Seil von selbst. Springen = loslassen, mit dem Schwung des Seils.",
+        "Schiebebrücke: Plattform, die waagerecht hin und her fährt.",
+        "Fahrstuhl: Plattform, die auf und ab fährt.",
+        "Trampolin: Springst du darauf, federt es dich hoch an Hangelstangen, die man sonst nicht erreicht.",
+        "Hangelstangen: Dein Läufer greift in der Luft automatisch zu, wenn er nah genug ist. Mit links/rechts hangelst du, am Ende schwingt er selbst ab; mit Sprung springst du früher ab.",
+        "Steilwand: das Ziel. Mit vollem Tempo anlaufen und kurz vor der Wand springen, dann läuft dein Läufer hoch. Du hast wie im Fernsehen drei Versuche („Versuch 2 von 3“, „Letzter Versuch an der Wand!“).",
+        "Kantenhilfe: Knapp verfehlte Kanten erwischt dein Läufer noch."
+      ]
+    },
+    {
+      "t": "Die drei Parcours",
+      "list": [
+        "Vorrunde: Stufensprung (5 Steine), Drehwalzen (3), Sandsäcke (2), Bruchplatten (4), Seilschwung, Schiebebrücke, Hangelstangen, Steilwand mit 4,25 m.",
+        "Halbfinale: Stufensprung (6 Steine), Drehwalzen (4, schneller), Fahrstuhl, Sandsäcke (3), Seilschwung, Bruchplatten (5), Trampolin mit Hangelstangen, Schiebebrücke, Steilwand mit 4,5 m.",
+        "Finale: Stufensprung (7 kleine Steine), Drehwalzen (5, am schnellsten), Schiebebrücke, Bruchplatten (6), Sandsäcke (3), Seilschwung, Fahrstuhl, Trampolin mit langen Hangelstangen, noch einmal Bruchplatten (4), lange Hangelstangen, Steilwand mit 5 m."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "PC: A/D oder Pfeil links/rechts = laufen. Leertaste, Pfeil hoch oder W = springen; länger halten = höher, kurz tippen = kleiner Hüpfer. Esc = Show beenden (mit Rückfrage). In Menüs: Pfeiltasten, Enter/Leertaste, Esc.",
+        "Touch: Stick links ziehen = laufen, Knopf ⤒ Springen rechts (länger halten = höher). Oben ☰ Menü und 🔊 Ton.",
+        "Gamecontroller: Steuerkreuz oder linker Stick = laufen, A, X oder Y = springen. Im Menü Steuerkreuz/Stick zum Wählen, A oder Start = OK, B oder Select = zurück.",
+        "Gekoppeltes Handy: Stick zum Laufen, Knopf zum Springen, gegriffen wird automatisch. Vor dem eigenen Lauf erscheint auf dem Handy der große Knopf „Bereit!“.",
+        "🎙️ oben schaltet den Live-Kommentator (Sprachausgabe) ein und aus, 🔊 den Ton."
+      ]
+    },
+    {
+      "t": "Wertung und Punkte",
+      "list": [
+        "Platzierung je Parcours: Wer im Ziel ist, steht vor allen, die ausgeschieden sind. Im Ziel entscheidet die kürzere Zeit, bei Ausgeschiedenen die längere Strecke.",
+        "Punkte je Parcours: Platz 1 bekommt so viele Punkte, wie Läufer mitspielen, jeder weitere Platz einen weniger. Bei 4 Läufern also 4, 3, 2, 1 Punkte.",
+        "Gesamtwertung nach dem Finale: die meisten Punkte gewinnen. Bei Gleichstand gewinnt die kleinere Gesamtzeit; ein nicht beendeter Lauf zählt dabei als 180 Sekunden.",
+        "Der Endstand zeigt Platz, Punkte und Gesamtzeit sowie den Hauptgewinn „Ruhm & Ehre“. Danach „Nochmal“ oder „Menü“."
+      ]
+    },
+    {
+      "t": "Geist und Bestzeiten",
+      "p": [
+        "Jede Bestzeit pro Parcours wird mit Namen und dem kompletten Laufweg im Browser gespeichert. Im Training läuft deine Bestzeit als Geist neben dir her. In der Show zeigt der Geist den bisher Schnellsten dieses Parcours – so siehst du sofort, ob du vorn liegst.",
+        "Auch Zieleinläufe in der Show zählen als Bestzeit. Nach einem Trainingslauf siehst du „🏅 Neue Bestzeit!“ oder deine bisherige Bestzeit und kannst mit „▶ Nochmal“ sofort neu starten."
+      ]
+    },
+    {
+      "t": "Online und Handys koppeln",
+      "p": [
+        "Über „🌐 Online & Handys“ zeigt das Spiel einen QR-Code, einen Link und einen vierstelligen Code. Mitspieler scannen den Code oder öffnen den Link – das klappt auch übers Internet, im Browser, in der App oder an einem anderen Gerät. Jedes Handy wird das Steuer-Pad eines Läufers (bis zu 4), sein Name wird übernommen.",
+        "Ohne Handys spielt ihr abwechselnd an einem Gerät. Bild und Parcours laufen immer auf dem Hauptgerät, ideal auf dem Fernseher oder PC."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Fang mit dem Training auf der Vorrunde an und lerne jedes Hindernis einzeln kennen.",
+        "Lauf fast immer voll nach rechts. Abbremsen lohnt sich nur vor den Sandsäcken.",
+        "Kurz tippen für kleine Hüpfer zwischen nahen Steinen, lange halten für weite Lücken.",
+        "Auf Bruchplatten nie stehen bleiben – direkt weiterspringen.",
+        "Auf den Drehwalzen weiterlaufen. Wer stehen bleibt, wird zurückgeschoben."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Seilschwung: Lass das Seil los, wenn es nach vorn schwingt – dann fliegst du am weitesten.",
+        "Sandsäcke: Beobachte den Takt und lauf direkt hinter einem Sack durch, wenn er gerade wegschwingt. Ein Treffer kostet viel Zeit, weil du zurückfliegst und kurz nicht steuern kannst.",
+        "Schiebebrücke und Fahrstuhl: Spring ab, wenn die Plattform auf dich zukommt bzw. oben ist. Auf der Plattform fährst du mit.",
+        "Hangelstangen: Halte die Richtung nach rechts gedrückt. Mit einem Sprung kurz vor dem Ende geht es schneller weiter als mit dem automatischen Abschwingen.",
+        "Trampolin: Springe aus dem Lauf darauf – nur wer von oben aufkommt, wird hoch an die Stangen katapultiert."
+      ]
+    },
+    {
+      "t": "Die Steilwand meistern",
+      "list": [
+        "Du brauchst fast volles Lauftempo. Beschleunige auf der Anlaufplattform durchgehend.",
+        "Spring erst kurz vor der Wand (innerhalb von etwa zweieinhalb Metern). Zu früh gesprungen prallst du an die Wand – das kostet einen Versuch.",
+        "Nach einem Fehlversuch etwas zurücklaufen, wieder voll beschleunigen und neu springen.",
+        "Nach dem dritten Fehlversuch ist der Lauf vorbei („Drei Versuche, kein Glück!“). Im Finale ist die Wand 5 m hoch, das Prinzip bleibt gleich."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Lauf gegen den Geist: Bleib knapp vor ihm, dann ist die Bestzeit fällig.",
+        "Die Kantenhilfe fängt Sprünge, die knapp zu kurz sind. Riskiere lieber einen etwas weiteren Sprung als einen zu kurzen.",
+        "Zwischen nahen Stufensteinen kurze Hüpfer statt großer Sprünge: Du landest schneller wieder und läufst gleich weiter.",
+        "In der Show zählt zuerst die Platzierung. Im Finale kann ein sicherer Lauf mehr bringen als ein riskanter Bestzeitversuch."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Auf Bruchplatten zögern – im Finale bleibt nicht einmal eine halbe Sekunde.",
+        "Auf den Walzen stehen bleiben und rückwärts ins Wasser rutschen.",
+        "Zu langsam an die Steilwand laufen oder zu früh springen.",
+        "Am Seil zu früh loslassen, während es noch zurückschwingt."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Komplettlösung Vorrunde",
+      "steps": [
+        "Stufensprung: fünf Steine, zwei davon höher, zwei tiefer. Mit vollem Lauf und mittellangem Sprung von Stein zu Stein.",
+        "Drehwalzen (3): ohne Pause drüberlaufen, am Ende auf die Plattform springen.",
+        "Sandsäcke (2): auf der langen Plattform den Takt abwarten und durchlaufen, wenn der Sack zur Seite schwingt.",
+        "Bruchplatten (4): jede Platte trägt dich 0,7 Sekunden – im Lauf von Platte zu Platte springen.",
+        "Seilschwung: von der Kante abspringen, das Seil greift automatisch; loslassen, wenn es nach vorn schwingt.",
+        "Schiebebrücke: abspringen, wenn sie auf dich zukommt, und auf der anderen Seite weiter.",
+        "Hangelstangen: hochspringen, greifen, rechts halten, am Ende abschwingen oder abspringen.",
+        "Steilwand (4,25 m): voll anlaufen, kurz vorher springen – Ziel!"
+      ]
+    },
+    {
+      "t": "Komplettlösung Halbfinale",
+      "steps": [
+        "Stufensprung: sechs kleinere Steine mit größeren Lücken – lange Sprünge, auf die Höhenwechsel achten.",
+        "Drehwalzen (4): sie schieben stärker, also durchgehend Tempo halten.",
+        "Fahrstuhl: draufspringen, wenn er unten ist, und oben abspringen.",
+        "Sandsäcke (3): drei Pendel auf 14 m – nacheinander im Takt durch.",
+        "Seilschwung: wie in der Vorrunde, nur etwas schneller.",
+        "Bruchplatten (5): nur 0,55 Sekunden Halt pro Platte.",
+        "Trampolin: aus dem Sprung drauf, hoch an die Stangen, hangeln und zur nächsten Plattform.",
+        "Schiebebrücke mit weitem Weg: Timing abwarten.",
+        "Steilwand (4,5 m): voll anlaufen und springen."
+      ]
+    },
+    {
+      "t": "Komplettlösung Finale",
+      "steps": [
+        "Stufensprung: sieben sehr kleine Steine (1,4 bis 1,5 m), hoch und tief im Wechsel. Präzision vor Tempo.",
+        "Drehwalzen (5): die schnellsten im Spiel – nicht eine Sekunde stehen bleiben.",
+        "Schiebebrücke: fährt weit und schnell. Direkt danach folgen die Bruchplatten.",
+        "Bruchplatten (6): nur 0,45 Sekunden pro Platte – springen, sobald du landest.",
+        "Sandsäcke (3): schwingen weiter und versetzt. Geduld lohnt sich mehr als ein Treffer.",
+        "Seilschwung und Fahrstuhl: wie gewohnt, der Fahrstuhl fährt höher.",
+        "Trampolin mit langen Stangen (10,5 m): durchhangeln.",
+        "Noch einmal 4 Bruchplatten mit 0,45 Sekunden.",
+        "Lange Hangelstangen (12,5 m) zur letzten Plattform.",
+        "Steilwand (5 m): Volltempo und Sprung kurz vor der Wand."
+      ]
+    },
+    {
+      "t": "Punkte-Tabelle der Show",
+      "list": [
+        "4 Läufer: 4 · 3 · 2 · 1 Punkte je Parcours, maximal 12 Punkte",
+        "3 Läufer: 3 · 2 · 1 Punkte, maximal 9 Punkte",
+        "2 Läufer: 2 · 1 Punkte, maximal 6 Punkte",
+        "1 Läufer: 1 Punkt je Parcours – hier geht es um deine Zeiten (Endkarte „Show geschafft!“)",
+        "Gleichstand: kleinere Gesamtzeit gewinnt (Ausgeschiedene zählen mit 180 Sekunden)."
+      ]
+    },
+    {
+      "t": "Kleine Geheimnisse",
+      "list": [
+        "Der Hauptgewinn der Show ist „Ruhm & Ehre“, gestiftet vom RicoReWi Radioportal.",
+        "Der Kommentator hat für jedes Hindernis einen eigenen Spruch, zum Beispiel „Die Drehwalzen! Nicht stehen bleiben, sonst geht es rückwärts!“.",
+        "Neben den 8 eigenen Läufern kannst du Figuren aus anderen easygames wählen – Tiere und Wesen erscheinen im Look ihres Spiels."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Meine Bestzeit ist weg.",
+      "a": "Bestzeiten, Namen und Figuren werden lokal im Browser gespeichert. Nach dem Löschen der Browserdaten oder in einem privaten Fenster sind sie nicht mehr da."
+    },
+    {
+      "q": "Das Handy verbindet sich nicht.",
+      "a": "Prüfe, ob beide Geräte Internet haben und das Spiel auf dem Hauptgerät noch läuft. Meldet das Handy „Raum nicht gefunden“, öffne das Koppel-Fenster neu und scanne den aktuellen Code."
+    },
+    {
+      "q": "Kann ich gegen den Computer spielen?",
+      "a": "Nein, jeder Läufer wird von einem Menschen gesteuert. Allein spielst du gegen die Uhr und gegen deinen Geist."
+    },
+    {
+      "q": "Der Kommentator spricht nicht.",
+      "a": "Schalte ihn oben mit 🎙️ ein. Ist der Knopf grau, unterstützt dein Browser keine Sprachausgabe."
+    },
+    {
+      "q": "Wie breche ich eine Show ab?",
+      "a": "Mit ☰ Menü oder Esc und der Bestätigung „Show wirklich beenden?“."
+    },
+    {
+      "q": "Das Spiel lädt nicht.",
+      "a": "Erscheint „Die 3D-Bibliothek konnte nicht geladen werden (Internet?)“, fehlt die Internetverbindung beim ersten Laden. Verbinde dich und lade neu."
+    }
+  ]
+}
