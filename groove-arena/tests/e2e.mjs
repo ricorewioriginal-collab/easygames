@@ -67,6 +67,14 @@ await p.evaluate(() => GAApp.lock(98, GAApp.S.player.time())); const cid2 = awai
 await p.evaluate(() => GAApp.sim(8)); ok(await p.evaluate(() => GAApp.D.max > 0 && /Neuer Hit/.test(document.getElementById('dTitle').textContent)), 'Radio: Wertung + Titel oben');
 await p.keyboard.press('Escape'); await p.waitForSelector('#ovPause:not([hidden])'); ok(/Beenden/.test(await p.textContent('#paQuit')), 'Pause: Radio beenden'); await p.click('#paQuit'); await p.waitForSelector('#sResult.on'); await p.waitForTimeout(300); await shot('radio-result');
 ok(await p.evaluate(() => /Neuer Hit/.test(document.getElementById('rsBody').textContent) && /laut\.fm/.test(document.getElementById('rsBody').textContent)), 'Ergebnis mit getanzten Titeln und Quelle');
+// Sender gleich hören (Werbespot läuft schon vorab), Tanz startet beim nächsten Titelwechsel
+RADIO.now = { title: 'Vorher', artist: 'Testa', len: 200 }; await p.evaluate(() => GAApp.toMenu()); await p.click('[data-go="radio"]'); await p.waitForSelector('#sRadio.on'); await p.click('#rGrid .card[data-i="1"]'); await p.waitForSelector('#sPrep.on');
+await p.waitForFunction(() => GAApp.S.player.playing(), null, { timeout: 8000 }).then(() => ok(true, 'Sender läuft schon in der Vorbereitung'), () => ok(false, 'Sender läuft schon in der Vorbereitung'));
+await p.waitForFunction(() => /Vorher/.test(document.getElementById('rbNow').textContent), null, { timeout: 8000 }).catch(() => {});
+await p.click('#pNext'); ok(await p.evaluate(() => GAApp.S.waitNext && /nächsten Song/.test(document.getElementById('pNext').textContent)), 'Ab nächstem Song: wartet'); await shot('radio-wartet');
+RADIO.now = { title: 'Danach', artist: 'Testa', len: 200 }; await p.evaluate(() => GAApp.radioPoll());
+await p.waitForSelector('#sDance.on', { timeout: 8000 }).then(() => ok(true, 'startet beim Titelwechsel'), () => ok(false, 'startet beim Titelwechsel'));
+ok(await p.evaluate(() => GAApp.D && GAApp.D.songs[0] && /Danach/.test(GAApp.D.songs[0].title) && !GAApp.S.waitNext), 'Tanz beginnt mit dem neuen Song'); await p.evaluate(() => GAApp.toMenu());
 // Stream ohne Analyse-Freigabe: Tempo aus der iTunes-Hörprobe (Attrappe: 128 BPM), sofort tanzbar; 4× tippen setzt die Phase
 RADIO.nocors = true; RADIO.now = { title: 'Holding Out For A Hero', artist: 'Bonnie Tyler', len: 260 };
 await p.evaluate(() => { GAApp.toMenu(); GAApp.openRadio(GAApp.STATIONS[0]); }); await p.waitForSelector('#sPrep.on'); await p.waitForFunction(() => /Bonnie/.test(document.getElementById('rbNow').textContent), null, { timeout: 8000 }).catch(() => {});

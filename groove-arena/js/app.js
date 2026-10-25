@@ -88,7 +88,7 @@
     seg($('pInput'), [{ v: 'cam', n: '📷 Kamera' }, { v: 'phone', n: '📱 Handy in der Hand' }, { v: 'none', n: '👀 Nur tanzen (ohne Wertung)' }], SET.input, v => { SET.input = v; saveSet(); inputReady(); });
     seg($('pDiff'), Object.keys(DIFF).map(v => ({ v, n: DIFF[v].n })), SET.diff, v => { SET.diff = v; saveSet(); });
     const styles = Object.keys(C.STYLES); seg($('pStyle'), styles.map(v => ({ v, n: C.STYLES[v] })), S.song.style || 'pop', v => { S.song.style = v; showDancer(v); prepInfo(); }); showDancer(S.song.style || 'pop'); dancerChips($('pDancer'), S.song.style || 'pop', () => prepInfo()); $('pStyleRow').hidden = S.mode === 'video';
-    $('pVids').innerHTML = ''; $('pGo').disabled = !rad; inputReady(); prepInfo(); if (rad) radioUi(); }
+    $('pVids').innerHTML = ''; $('pGo').disabled = !rad; nextBtn(); inputReady(); prepInfo(); if (rad) radioUi(); }
   function prepInfo() { if (!S) return; $('pSrc').innerHTML = srcHtml(); if (S.mode === 'radio') { $('pSync').textContent = '📻 Der Takt kommt aus dem Radio oder aus der iTunes-Hörprobe des laufenden Titels – bei jedem neuen Song neu, mit eigener Choreografie.'; $('pLook').textContent = `💃 Vortänzer: ${dancerOf(S.song.style || 'pop').name} · ${SET.input === 'none' ? 'frei tanzen ohne Wertung' : 'jeder Titel bekommt eigene Moves'}`; return; } const v = S.vids[S.vi], sy = v && SYNC[v.id]; $('pSync').textContent = S.mode === 'video' ? '🎬 Tanz-Video: du tanzt dem Video nach – bewertet werden Takt und Bewegung.' : sy ? `🎵 Takt gespeichert: ${sy.bpm.toFixed(1)} BPM ✓ ${S.sections ? '· 📜 Songaufbau aus dem Liedtext' : ''}` : `🎤 Der Takt wird beim Start über das Mikrofon erkannt (oder du klopfst mit). ${S.sections ? '· 📜 Songaufbau aus dem Liedtext' : ''}`;
     $('pLook').textContent = S.mode === 'video' ? '' : `💃 Vortänzer: ${dancerOf(S.song.style || 'pop').name} · eigene Choreografie für genau diesen Song`; }
   function loadVid(i) { if (!S) return; S.vi = i; const v = S.vids[i]; if (S.player) S.player.destroy(); $('ytWrap').innerHTML = '<div id="yt"></div>'; S.ready = false; $('pGo').disabled = true; $('pInfo').textContent = '⏳ Video lädt …';
@@ -97,7 +97,7 @@
       if (ev === 'state' && D) danceState(P); });
     $('pVids').innerHTML = S.vids.slice(0, 6).map((x, k) => `<button class="vchip nav${k === i ? ' on' : ''}" data-k="${k}"><img alt="" referrerpolicy="no-referrer" src="${esc(x.thumb || ('https://i.ytimg.com/vi/' + x.id + '/default.jpg'))}"><span>${esc((x.title || '').slice(0, 42))}</span></button>`).join('') + '<button class="vchip nav" id="pLink2">🔗 Eigener Link</button>';
     $('pVids').querySelectorAll('.vchip[data-k]').forEach(b => b.onclick = () => loadVid(+b.dataset.k)); $('pLink2').onclick = askLink; }
-  function closeSong() { if (S && S.player) S.player.destroy(); S = null; clearInterval(rPoll); $('ytWrap').innerHTML = ''; document.body.classList.remove('hasVideo', 'hasRadio'); }
+  function closeSong() { if (S && S.player) S.player.destroy(); S = null; clearInterval(rPoll); clearTimeout(rEnd); $('ytWrap').innerHTML = ''; document.body.classList.remove('hasVideo', 'hasRadio'); }
   function prepBack() { const rad = S && S.mode === 'radio'; closeSong(); SE.Cam.stop(); document.body.classList.remove('camOn'); if (rad) radioScreen(); else scr('sSongs'); }
   // Quellenangaben (rechtlich: woher Video/Audio und Infos kommen)
   function srcHtml() { if (!S) return ''; if (S.mode === 'radio') { const st = S.station; return `Quelle: Livestream und Titelinfos von <a href="${esc(st.page)}" target="_blank" rel="noopener">laut.fm/${esc(st.slug)} ↗</a> · Sender: ${esc(st.name)}${S.itTempo ? ' · Tempo aus der Hörprobe von Apple iTunes' : ''} · Rechte bei den Urhebern.`; }
@@ -106,13 +106,19 @@
   function srcShort() { if (!S) return ''; if (S.mode === 'radio') return '📻 Quelle: laut.fm · ' + S.station.name; const v = S.vids[S.vi]; return '▶ Quelle: YouTube' + (v && v.by ? ' · ' + v.by : ''); }
 
   /* ---------- RicoReWi-Radio: live zu unseren Sendern tanzen ---------- */
-  let rPoll = 0;
+  let rPoll = 0, rEnd = 0;
   function radioScreen() { scr('sRadio'); const draw = () => { $('rGrid').innerHTML = STATIONS.map((st, i) => `<button class="card nav radio" data-i="${i}">${st.logo ? `<img alt="" referrerpolicy="no-referrer" src="${esc(st.logo)}">` : '<i class="rLogo">📻</i>'}<b>${esc(st.name)}</b><small>${esc(st.desc)}</small>${st.adv ? '<em class="adv">🅴 Explicit</em>' : ''}</button>`).join(''); $('rGrid').querySelectorAll('.card').forEach(b => b.onclick = () => { sfx('ok'); openRadio(STATIONS[+b.dataset.i]); }); };
     draw(); Promise.all(STATIONS.map(st => st.logo ? null : M.station(st.slug).then(j => { if (j) { st.logo = j.logo; st.page = j.page; } }))).then(() => { if (cur !== 'sRadio') return; const f = document.activeElement && document.activeElement.dataset.i; draw(); if (f != null) { const e = $('rGrid').querySelector(`[data-i="${f}"]`); if (e) e.focus({ preventScroll: true }); } }); }
   function openRadio(st) { closeSong(); S = { mode: 'radio', station: st, song: { title: st.name, artist: '📻 Live-Radio', style: st.style, cover: st.logo }, vids: [{ id: 'radio:' + st.slug, title: st.name, by: 'laut.fm' }], vi: 0, now: null, nowKey: '', ready: true };
     S.player = M.radio(st.slug, (ev, P) => { if (!S || S.player !== P) return; if (ev === 'plain' && D && SE.Mic.src === 'radio') { SE.Mic.stop(); if (!D.locked) radioTempo(S.now, true); } if (ev === 'blocked') toast('▶ Tippe auf „Tanzen!“, um das Radio zu starten'); if (ev === 'error') toast('📶 Der Sender ist gerade nicht erreichbar.'); });
-    prep(); radioPoll(); rPoll = setInterval(radioPoll, 15000); }
-  function radioPoll() { const s0 = S; if (!s0 || s0.mode !== 'radio') return; M.nowPlaying(s0.station.slug).then(n => { if (S !== s0 || !n) return; const k = n.title + '|' + n.artist, chg = !!S.nowKey && S.nowKey !== k; S.now = n; S.nowKey = k; radioUi(); if (chg && D && D.mode === 'radio' && !D.over && !D.remote) radioNext(n); }); }
+    prep(); S.player.play(); radioPoll(); rPoll = setInterval(radioPoll, 15000); }   // Sender gleich hören (Werbespot beim Verbinden läuft schon vor dem Tanzen)
+  // „Ab nächstem Song“: das Spiel startet von selbst beim nächsten Titelwechsel
+  function nextBtn() { const b = $('pNext'), rad = S && S.mode === 'radio'; b.hidden = !rad; if (!rad) return; b.textContent = S.waitNext ? '⏳ Wartet auf nächsten Song ✕' : '⏭ Ab nächstem Song'; b.classList.toggle('on', !!S.waitNext); }
+  $('pNext').onclick = () => { if (!S || S.mode !== 'radio') return; S.waitNext = !S.waitNext; sfx('ok'); if (S.waitNext) S.player.play(); nextBtn(); };
+  function radioPoll() { const s0 = S; if (!s0 || s0.mode !== 'radio') return; M.nowPlaying(s0.station.slug).then(n => { if (S !== s0 || !n) return; const k = n.title + '|' + n.artist, chg = !!S.nowKey && S.nowKey !== k; S.now = n; S.nowKey = k; radioUi();
+      clearTimeout(rEnd); const w = n.end ? n.end - Date.now() + 1500 : 0; if (w > 0 && w < 15000) rEnd = setTimeout(radioPoll, w);   // Wechsel pünktlich zum Songende erkennen
+      if (chg && S.waitNext && !D && cur === 'sPrep' && n.type === 'song') { toast('🎵 ' + nowTxt(n), 3000); return startDance(); }
+      if (chg && D && D.mode === 'radio' && !D.over && !D.remote) radioNext(n); }); }
   const nowTxt = n => n ? (n.artist ? n.artist + ' – ' : '') + n.title : '';
   function radioUi() { if (!S || S.mode !== 'radio') return; const st = S.station, n = S.now; $('rbLogo').src = st.logo || ''; $('rbLogo').hidden = !st.logo; $('rbName').textContent = st.name; $('rbNow').textContent = n ? '🎵 ' + nowTxt(n) : '📻 Live'; $('rbAdv').hidden = !st.adv; $('rbSrc').innerHTML = srcHtml();
     if (cur === 'sPrep') { $('pInfo').textContent = n ? '🎵 Läuft gerade: ' + nowTxt(n) : '📻 Live-Radio – der aktuelle Titel wird geladen …'; $('pCover').src = st.logo || ''; $('pCover').hidden = !st.logo; } if (D) $('dTitle').textContent = '📻 ' + (n ? nowTxt(n) : st.name); }
@@ -145,7 +151,7 @@
   /* ---------- Tanzen ---------- */
   let D = null; // { ch, hits, hi, score, max, combo, counts, golds, locked, t, … }
   function startDance(remote) {
-    if (!S || !S.player) return; const v = S.vids[S.vi], rad = S.mode === 'radio', sy = remote ? { bpm: remote.bpm, beat0: remote.beat0 } : rad ? null : SYNC[v.id];
+    if (!S || !S.player) return; S.waitNext = false; const v = S.vids[S.vi], rad = S.mode === 'radio', sy = remote ? { bpm: remote.bpm, beat0: remote.beat0 } : rad ? null : SYNC[v.id];
     D = { v, mode: S.mode, input: remote ? remote.input : SET.input, diff: DIFF[SET.diff], score: 0, max: 0, combo: 0, best: 0, counts: { perfekt: 0, super: 0, gut: 0, ok: 0, daneben: 0 }, golds: 0, hi: 0, win: null, locked: false, est: 0, t0: 0, secs: 0, moves: 0, lastI: -1, seen: new Set(), songs: [], energy: [], beatScored: -1, remote: !!remote, taps: [] };
     scr('sDance'); document.body.classList.add('dancing'); document.body.classList.toggle('free', D.input === 'none'); fitStage(); SN.ctx();
     if (!remote) { S.player.seek(0); S.player.play(); }
@@ -224,7 +230,7 @@
     if (free) { $('rsT').textContent = '💃 Frei getanzt!'; $('rsBody').innerHTML = `<div class="bigNum">${fmt(D.secs)}</div><p class="hint">Minuten getanzt – ganz ohne Wertung</p>` + (D.moves ? `<div class="rgrid"><span class="super">MOVES <b>${D.moves}</b></span><span class="gut">VERSCHIEDENE <b>${D.seen.size}</b></span><span class="gold">GOLD-MOVES <b>${D.golds}</b></span>${rad ? `<span class="ok">SONGS <b>${D.songs.length}</b></span>` : ''}</div>` : '') + songs + `<p class="hint">${esc(rad ? S.station.name : S.song.title)}</p>` + src; }
     else { $('rsT').textContent = st >= 5 ? '🌟 Superstar!' : st >= 3 ? '🎉 Stark getanzt!' : '💃 Geschafft!'; $('rsBody').innerHTML = `<div class="bigStars">${'★'.repeat(st)}<span>${'★'.repeat(5 - st)}</span></div><div class="bigNum">${D.score}</div>${nb ? '<p class="hint">🆕 Neuer Bestwert!</p>' : ''}<div class="rgrid"><span class="perfekt">PERFEKT <b>${c.perfekt}</b></span><span class="super">SUPER <b>${c.super}</b></span><span class="gut">GUT <b>${c.gut}</b></span><span class="ok">OK <b>${c.ok}</b></span><span class="daneben">DANEBEN <b>${c.daneben}</b></span><span class="gold">GOLD <b>${D.golds}</b></span></div>` + songs + `<p class="hint">Beste Combo: ${D.best} · ${esc(rad ? S.station.name : S.song.title)}</p>` + src + (netBoard() || ''); }
     $('rsBtns').innerHTML = '<button class="btn nav" id="rsMenu">☰ Menü</button><button class="btn nav" id="rsSongs">🎵 Anderer Song</button><button class="btn pri big nav" id="rsAgain">↻ Nochmal</button>'; scr('sResult');
-    $('rsMenu').onclick = () => toMenu(); $('rsSongs').onclick = () => { endDance(); if (rad) prepBack(); else { closeSong(); songsScreen(cat); } }; if (rad) $('rsSongs').textContent = '📻 Anderer Sender'; $('rsAgain').onclick = () => { endDance(); scr('sPrep'); $('pGo').disabled = !S.ready; radioUi(); };
+    $('rsMenu').onclick = () => toMenu(); $('rsSongs').onclick = () => { endDance(); if (rad) prepBack(); else { closeSong(); songsScreen(cat); } }; if (rad) $('rsSongs').textContent = '📻 Anderer Sender'; $('rsAgain').onclick = () => { endDance(); scr('sPrep'); $('pGo').disabled = !S.ready; radioUi(); if (rad) { S.player.play(); nextBtn(); } };
     endDance();
   }
   // Pause
