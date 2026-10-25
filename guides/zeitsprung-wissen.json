@@ -1,0 +1,208 @@
+{
+  "id": "zeitsprung-wissen",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "ZEITSPRUNG WISSEN ist eine 3D-Wissensshow nach dem Zeitstrahl-Prinzip – wie Hitster, nur mit Weltgeschichte statt Hits. Moderator Vito führt per Sprachausgabe durch die Show.",
+        "Jeder Spieler beginnt mit demselben Startereignis auf seinem Zeitstrahl. In jeder Runde beantwortest du eine Aufgabe. Jede richtige Antwort bringt einen Punkt. Wer zuerst 8 Punkte hat, gewinnt."
+      ]
+    },
+    {
+      "t": "Hauptmenü und Show vorbereiten",
+      "list": [
+        "▶ Neue Zeitreise starten: beginnt eine neue Show mit den Einstellungen darunter.",
+        "↺ Zeitreise fortsetzen: erscheint, wenn eine laufende Show gespeichert ist, und macht genau dort weiter.",
+        "🌐 Online, TV & Handys: schaltet den TV-Modus ein und öffnet die Handy-Kopplung.",
+        "Themenwelt: Große Mischung (alle Themen) oder nur Geschichte, Politik, Erdkunde & Geographie, Wissenschaft & Entdeckungen oder Kultur & Allgemeinwissen. Hinter jeder Welt steht, wie viele Ereignisse und Fragen sie hat.",
+        "Zeitstrahlrunden spielen als: „Jahr aus A–D wählen · einfach“ oder „Ereignis in den Zeitstrahl einordnen · Profi“.",
+        "Spieler: bis zu 4 Namen; mit „＋ Spieler hinzufügen“ kommt ein weiterer Platz dazu.",
+        "„📱 Dieses Gerät als Handy-Controller verwenden“ macht das Gerät zum Controller für einen Fernseher."
+      ]
+    },
+    {
+      "t": "Die Rundenarten",
+      "list": [
+        "Zeitstrahlrunde (einfach): Ein Ereignis wird gezeigt, du wählst das richtige Jahr aus vier Jahreszahlen A–D. Richtig = 1 Punkt, und das Ereignis kommt auf deinen Zeitstrahl.",
+        "Zeitstrahlrunde (Profi): Du legst das Ereignis direkt in die passende Lücke deines Zeitstrahls („Vor …“, „Zwischen … und …“, „Nach …“). Richtig = 1 Punkt und eine Karte mehr; dein Zeitstrahl wird länger und damit schwieriger.",
+        "Wissensrunde: eine Frage mit vier Antworten – Geschichte, Politik, Erdkunde, Wissenschaft & Natur, Allgemeinwissen sowie Hauptstädte, Kontinente und Landeshauptstädte der Bundesländer.",
+        "Was war zuerst?: Vier Ereignisse – tippe auf das, das zuerst geschah.",
+        "Songrunde: Ein Song über ein Ereignis läuft im Deezer-Player. Welches Ereignis besingt er?",
+        "Bildrunde: Drei Symbole stehen für ein Ereignis – welches ist gemeint?",
+        "Die erste Runde ist immer eine Zeitstrahlrunde, danach mischt das Spiel: etwa die Hälfte Zeitstrahlrunden, dazu Wissens-, Song- und Bildrunden."
+      ]
+    },
+    {
+      "t": "Clips, Songs und Vito",
+      "list": [
+        "Zu 16 Ereignissen gibt es einen historischen Clip von Wikimedia Commons (z. B. Mondlandung, Hindenburg, Mauerbau, Grenzöffnung 1989). Er startet erst mit „▶ Clip abspielen“.",
+        "Zu 25 Ereignissen gibt es einen passenden Song (z. B. „Wind of Change“ zum Fall der Mauer). „↔ Song dazu“ wechselt zwischen Clip und Song.",
+        "„↻ Anderes Ereignis“ tauscht das aktuelle Ereignis bzw. den Song gegen einen anderen, solange die Runde noch nicht beantwortet ist.",
+        "Vito liest Fragen und Antworten vor und kommentiert. Mit dem ♫-Knopf oben schaltest du Vito und die Töne aus und wieder ein.",
+        "Clips, Songs und der Mehrspieler brauchen Internet. Quiz-, Bild- und Zeitstrahlrunden funktionieren auch offline."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Maus/Touch: Antwort A–D oder die Lücke im Zeitstrahl antippen. Danach „Nächste Runde →“ bzw. „Weiter: Name →“.",
+        "Tastatur: A–D oder 1–4 wählen die Antworten, 1–9 die Lücken im Zeitstrahl (von links nach rechts).",
+        "TV-Modus: Die Handys zeigen die Antworten bzw. Lücken des Spielers, der dran ist, und können Clip oder Song am Fernseher starten."
+      ]
+    },
+    {
+      "t": "Wertung und Spielablauf mit mehreren Spielern",
+      "list": [
+        "Die Spieler sind reihum dran; jeder beantwortet genau eine Aufgabe pro Zug.",
+        "Richtig: „✓ Punkt für dich!“ und +1 Punkt. Falsch: „✕ Aufgelöst“, kein Punkt – Vito nennt die richtige Lösung mit Jahr und Einordnung.",
+        "Die Punktetafel zeigt jeden Spieler mit Punkten von 8 (z. B. 5/8).",
+        "Wer 8 Punkte erreicht, gewinnt sofort. Danach startest du mit „Neue Zeitreise starten ↻“ neu."
+      ]
+    },
+    {
+      "t": "TV-Modus und Handys",
+      "steps": [
+        "Am Fernseher oder PC „🌐 Online, TV & Handys“ wählen. Es erscheinen WR-Code, PIN und QR-Code.",
+        "Jedes Handy scannt den QR-Code (oder öffnet den Link) – das geht von überall. Auf dem Handy Namen und die 4-stellige PIN vom Fernseher eingeben.",
+        "Bis zu vier Handys verbinden sich; jedes übernimmt automatisch einen Spielerplatz.",
+        "Wer dran ist, antwortet auf seinem Handy. Die PIN ist nur auf dem Fernseher sichtbar – so können nur Leute im Raum mitmachen."
+      ]
+    },
+    {
+      "t": "Speichern",
+      "list": [
+        "Eine laufende Show wird automatisch gespeichert, auch beim Schließen der Seite. Mit „↺ Zeitreise fortsetzen“ geht es weiter.",
+        "Ist die Show beendet (jemand hat 8 Punkte), wird der Spielstand gelöscht.",
+        "Mit Google-Anmeldung wird der Spielstand zusätzlich geräteübergreifend gesichert."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Starte mit „Jahr aus A–D wählen“ – das ist deutlich leichter als das Einordnen.",
+        "Lies die kurze Einordnung beim Ereignis (Ort, beteiligte Personen) – sie hilft beim Schätzen.",
+        "Nutze Clips und Songs: Schwarz-Weiß-Bilder, Musikstil und Sprache verraten oft das Jahrzehnt.",
+        "Wähle eine Themenwelt, die dir liegt, statt der Großen Mischung."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Im Profi-Modus zählt nur die Reihenfolge. Gleiches Jahr wie ein Nachbar ist auch richtig – das Ereignis darf direkt daneben liegen.",
+        "Je länger dein Zeitstrahl, desto enger die Lücken. Merke dir deine Karten und frage dich zuerst: vor oder nach dem mittleren Ereignis?",
+        "Bei „Was war zuerst?“ zuerst die offensichtlich jüngsten Ereignisse streichen (Raumfahrt, Internet, Euro) und unter dem Rest vergleichen.",
+        "Bei Hauptstadt- und Kontinentfragen hilft das Ausschlussprinzip: Die falschen Antworten sind andere echte Hauptstädte oder Kontinente.",
+        "Bei Bildrätseln die drei Symbole zusammen lesen: Ort, Gegenstand, Ergebnis – etwa Schiff, Eisberg, Welle."
+      ]
+    },
+    {
+      "t": "Profi-Tricks für A–D",
+      "list": [
+        "Die drei falschen Jahre liegen immer in festen Schritten um das richtige Jahr herum: ab 1800 im Abstand von 1 Jahr, von 1500 bis 1799 in 5er-Schritten, im Mittelalter in 10er-Schritten und vor Christus in 25er-Schritten.",
+        "Die falschen Jahre sind bis zu 6 Schritte entfernt, mal davor, mal danach. Deshalb ist die richtige Antwort in den meisten Fällen eine der beiden mittleren Jahreszahlen – nur selten die kleinste oder größte.",
+        "Weißt du das Jahrzehnt, aber nicht das Jahr: Tipp auf eine der mittleren Zahlen.",
+        "„v. Chr.“ heißt rückwärts zählen: 490 v. Chr. liegt vor 480 v. Chr."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Im Profi-Modus die Lücke falsch zählen. Die Lücken heißen „Vor …“, „Zwischen … und …“, „Nach …“ – lies die Beschriftung.",
+        "Ein Ereignis mit seinen Folgen verwechseln: Es zählt das Jahr, in dem es stattfand bzw. begann.",
+        "Songrunden ohne Ton spielen – starte den Song, Titel und Interpret stehen erst in der Auflösung.",
+        "Vor v. Chr. und n. Chr. nicht unterscheiden."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Umfang der Show",
+      "list": [
+        "236 Ereignisse aus elf Bereichen: Antike, Mittelalter, Frühe Neuzeit, 19. Jahrhundert, 20. Jahrhundert, Deutsche Geschichte, Politik & Gesellschaft, Erdkunde & Naturereignisse, Wissenschaft & Erfindungen, Raumfahrt & Entdeckungen, Kultur & Alltag.",
+        "Die Spanne reicht von den ersten überlieferten Olympischen Spielen 776 v. Chr. bis heute.",
+        "377 Wissensfragen: 40 Geschichte, 38 Politik, 45 Erdkunde, 29 Wissenschaft & Natur, 30 Allgemeinwissen, 94 Hauptstädte, 88 Kontinente und 13 Landeshauptstädte der Bundesländer.",
+        "16 Clips, 25 Songs und 38 Bildrätsel; dazu beliebig viele „Was war zuerst?“-Runden aus dem Ereigniskatalog."
+      ]
+    },
+    {
+      "t": "Ankerjahre für den Zeitstrahl",
+      "p": [
+        "Mit ein paar sicheren Jahreszahlen kannst du fast alles einordnen. Diese Ereignisse kommen im Spiel vor:"
+      ],
+      "list": [
+        "776 v. Chr.: Erste überlieferte Olympische Spiele in Olympia",
+        "44 v. Chr.: Ermordung Julius Caesars",
+        "9: Varusschlacht",
+        "79: Vesuvausbruch verschüttet Pompeji",
+        "476: Ende des Weströmischen Reiches",
+        "800: Kaiserkrönung Karls des Großen",
+        "1492: Kolumbus erreicht Amerika",
+        "1517: Luther veröffentlicht 95 Thesen",
+        "1789: Sturm auf die Bastille",
+        "1903: Erster Motorflug der Brüder Wright",
+        "1912: Untergang der Titanic",
+        "1954: Wunder von Bern",
+        "1969: Mondlandung von Apollo 11 und Woodstock-Festival",
+        "1986: Reaktorkatastrophe von Tschernobyl",
+        "1989: Fall der Berliner Mauer",
+        "2002: Einführung des Euro-Bargelds"
+      ]
+    },
+    {
+      "t": "Beispiele mit Lösung",
+      "list": [
+        "Wissensrunde: „Wer war der erste Bundeskanzler der Bundesrepublik Deutschland?“ – Konrad Adenauer.",
+        "Wissensrunde: „Wer war der erste römische Kaiser?“ – Augustus (nicht Julius Caesar).",
+        "Wissensrunde: „In welchen Städten wurde der Westfälische Frieden geschlossen?“ – Münster und Osnabrück.",
+        "Wissensrunde: „Wer führte die DDR, als 1961 die Berliner Mauer gebaut wurde?“ – Walter Ulbricht.",
+        "Songrunde: „Wind of Change“ (Scorpions) – Fall der Berliner Mauer; „Heroes“ (David Bowie) – Bau der Berliner Mauer; „Sunday Bloody Sunday“ (U2) – Blutsonntag in Derry; „Biko“ (Peter Gabriel) – Tod von Steve Biko.",
+        "Bildrunde: 🧱 🔨 🎉 = Fall der Berliner Mauer; 🚀 🌕 👨‍🚀 = Mondlandung von Apollo 11; 🚢 🧊 🌊 = Untergang der Titanic; ⛪ 📜 🔨 = Luther veröffentlicht 95 Thesen; 🌋 🏛️ 🌫️ = Vesuvausbruch verschüttet Pompeji."
+      ]
+    },
+    {
+      "t": "Beste Strategie je Modus",
+      "list": [
+        "Solo, einfacher Modus: Jede Runde ist ein Punkt – 8 richtige Antworten in Folge sind das Ziel. Nutze bei Ereignissen die Mitte-Regel für A–D.",
+        "Solo, Profi-Modus: In den ersten Runden ist dein Zeitstrahl kurz und das Einordnen leicht. Später lohnt es, sich die eigenen Karten mit Jahr zu merken.",
+        "Mehrspieler: Alle bekommen gleich viele Züge, solange niemand 8 Punkte hat. Wer zuerst dran ist, hat einen kleinen Vorteil – wechselt bei mehreren Shows den Startspieler.",
+        "TV-Party: Startet bei Song- und Clip-Ereignissen ruhig die Medien – sie machen die Show und sind oft der beste Hinweis."
+      ]
+    },
+    {
+      "t": "Geheimnisse und Wissenswertes",
+      "list": [
+        "Die erste Runde zeigt bevorzugt ein Ereignis mit Clip oder Song.",
+        "Ereignisse, die schon auf einem Zeitstrahl liegen, kommen in dieser Show nicht noch einmal.",
+        "Ein Jahr 0 gibt es nicht – das Spiel bietet es auch nie als Antwort an."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Der Clip oder Song startet nicht.",
+      "a": "Clips kommen von Wikimedia Commons, Songs über Deezer – beides braucht Internet. Ist ein Song gerade nicht verfügbar, zeigt das Spiel „KEIN AUDIO“; mit „↻ Anderes Ereignis“ kannst du tauschen."
+    },
+    {
+      "q": "Vito spricht nicht.",
+      "a": "Vito nutzt die Sprachausgabe des Browsers. Prüfe den ♫-Knopf oben und die Lautstärke. Manche Browser sprechen erst nach dem ersten Tippen."
+    },
+    {
+      "q": "Mein Handy kommt nicht in den Raum.",
+      "a": "Prüfe WR-Code und PIN – „PIN falsch. Bitte am Fernseher nachsehen.“ heißt, die PIN stimmt nicht. Beide Geräte brauchen Internet; höchstens vier Handys können mitspielen."
+    },
+    {
+      "q": "Kann ich eine Show später fortsetzen?",
+      "a": "Ja. Die laufende Show wird automatisch gespeichert. Im Hauptmenü erscheint dann „↺ Zeitreise fortsetzen“."
+    },
+    {
+      "q": "Kommen die Fragen immer wieder?",
+      "a": "Die Fragen werden gemischt und erst wiederholt, wenn der Stapel aufgebraucht ist. Ereignisse auf euren Zeitstrahlen kommen in derselben Show nicht doppelt."
+    },
+    {
+      "q": "Was ist der Unterschied zwischen einfach und Profi?",
+      "a": "Einfach: Du wählst das Jahr aus vier Zahlen. Profi: Du legst das Ereignis ohne Jahresangaben in die richtige Lücke deines Zeitstrahls."
+    }
+  ]
+}

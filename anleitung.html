@@ -82,11 +82,11 @@
   over.appendChild(el('p', '', k && k.anleitung || g.desc || ''));
   if (k && k.steuerung && k.steuerung.length) { over.appendChild(el('h3', 'egb-h', 'Bedienung')); const c = el('div', 'ctrl'); k.steuerung.forEach(l => { const m = /^([^:]{2,18}):\s*(.+)$/.exec(l); c.append(el('b', '', m ? m[1] : '•'), el('span', '', m ? m[2] : l)); }); over.appendChild(c); }
   const toc = (box, list, pre) => { if (!list || list.length < 3) return; const t = el('div', 'toc'); list.forEach((s, i) => { const a = el('a', '', s.t); a.href = '#' + pre + '-' + (i + 1); t.appendChild(a); }); box.insertBefore(t, box.children[1]); };
-  const ids = (box, pre) => box.querySelectorAll('.egb-sec').forEach((s, i) => { s.id = pre + '-' + (i + 1); });
+  const ids = (box, pre) => box.querySelectorAll('.egb-sec:not(.egb-kurz)').forEach((s, i) => { s.id = pre + '-' + (i + 1); });
   B.load(g.id).then(book => {
     if (!book) { over.appendChild(el('p', 'note', 'Das ausführliche Handbuch mit Ratgeber und Lösungsbuch folgt.')); return; }
     const h = part('handbuch', '📘 Spielanleitung'); B.render(h, book, 'handbuch', { h: 'h3' }); ids(h, 'handbuch'); toc(h, book.handbuch, 'handbuch');
-    const r = part('ratgeber', '💡 Ratgeber'); if (k && k.tipps && k.tipps.length) { const s = el('section', 'egb-sec'), ul = el('ul'); s.appendChild(el('h3', 'egb-h', 'Kurztipps')); k.tipps.forEach(t => ul.appendChild(el('li', '', t))); s.appendChild(ul); r.appendChild(s); }
+    const r = part('ratgeber', '💡 Ratgeber'); if (k && k.tipps && k.tipps.length) { const s = el('section', 'egb-sec egb-kurz'), ul = el('ul'); s.appendChild(el('h3', 'egb-h', 'Kurztipps')); k.tipps.forEach(t => ul.appendChild(el('li', '', t))); s.appendChild(ul); r.appendChild(s); }
     B.render(r, book, 'ratgeber', { h: 'h3' }); ids(r, 'ratgeber'); toc(r, book.ratgeber, 'ratgeber');
     const l = part('loesung', '🗝️ Lösungsbuch'), sol = el('div', 'sol'); B.render(sol, book, 'loesung', { h: 'h3' }); ids(sol, 'loesung');
     const open = location.hash.indexOf('#loesung') === 0;

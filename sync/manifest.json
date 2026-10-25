@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "be995619f087",
- "generated": "2026-10-25T02:23:51+00:00",
- "commit": "0db8f37c3a4247ebdc3ff5426cb5367aa23091c5",
+ "version": "9bf14849992f",
+ "generated": "2026-10-25T02:27:11+00:00",
+ "commit": "cbdc3446a8dbb996e4faf37c7a7c6894fcdfcbbe",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -393,8 +393,8 @@
   },
   {
    "p": "anleitung.html",
-   "s": 10306,
-   "h": "cf8d042181924bc87032f690d713585218fb3023367d47ebc93a054aceb18ea1"
+   "s": 10330,
+   "h": "ea63fc18cd015e900b6f177cbce29b5d63861b5ca72fb019b470e8ed62e62dd4"
   },
   {
    "p": "anmacha-beat-surfer/card.jpg",
@@ -6687,6 +6687,11 @@
    "h": "8dee19da0134ae466e27973608c4a656833e101ae9aeef37797372a223589219"
   },
   {
+   "p": "guides/kiko-sterneninseln.json",
+   "s": 15398,
+   "h": "944302abe0d94aa61cc9e404708e21496015e91091a41d8ca6ac365a409a6668"
+  },
+  {
    "p": "guides/konfetti-party.json",
    "s": 11250,
    "h": "01ec87b68b572919c1abcb0133ad62675693d5cd00144e06918fee2d5d292d20"
@@ -6792,6 +6797,11 @@
    "h": "29dd7cc45def24fa622180321ffa7816e7a95fc5d8f024d8c6f7e1bb870eb2dd"
   },
   {
+   "p": "guides/zeitsprung-wissen.json",
+   "s": 13164,
+   "h": "5c72fb9fbbe10e95531f494c04e17386b941b321d7103d354fbc986786db77d0"
+  },
+  {
    "p": "heute.html",
    "s": 10577,
    "h": "b69f43a57c3441bd3133dca3f563f304b3a2b28346b6afcdccf6fd5ed256dd3d"
@@ -6848,8 +6858,8 @@
   },
   {
    "p": "index.html",
-   "s": 95755,
-   "h": "f5436ee007daa318cb9d91284b7f4f5e03b7b1dcc2e065ca42f0596ac61fec04"
+   "s": 95824,
+   "h": "8eaf6f13f72e204eb2a7a6b6987895d221459563a54c574560e25149d9056fd0"
   },
   {
    "p": "kiko-sterneninseln/card.svg",

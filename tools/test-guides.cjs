@@ -28,13 +28,16 @@ const server = http.createServer((req, res) => {
     assert.equal(await p.$eval('#loesung .sol', e => e.hidden), true, 'Lösungen erst verdeckt'); await p.click('#loesung .spoil button');
     assert.equal(await p.$eval('#loesung .sol', e => e.hidden), false); console.log('PASS Spoiler-Schutz im Lösungsbuch');
     assert.ok(await p.$$eval('.egb-sec', a => a.length) >= 10, 'Abschnitte'); assert.match(await p.title(), /Lösungsbuch/);
+    const toc = await p.$$eval('#ratgeber .toc a', a => a.map(x => [x.textContent, (document.querySelector(x.getAttribute('href')) || {}).textContent || '']));
+    assert.ok(toc.every(([t, s]) => s.indexOf(t) === 0), 'Inhaltsverzeichnis trifft die Abschnitte'); console.log('PASS Inhaltsverzeichnis im Ratgeber');
     await p.goto(base + 'anleitung.html?game=' + id + '#loesung'); await p.waitForSelector('#loesung .sol'); assert.equal(await p.$eval('#loesung .sol', e => e.hidden), false, '#loesung öffnet direkt'); console.log('PASS Direktlink #loesung');
     await p.goto(base + 'anleitung.html'); await p.waitForSelector('.list a'); assert.ok(await p.$$eval('.list a', a => a.length) > 50); await p.fill('.list input', 'snake'); assert.ok(await p.$$eval('.list a', a => a.filter(x => x.offsetParent).length) < 5, 'Suche filtert'); console.log('PASS Übersicht aller Anleitungen mit Suche');
     // Startseite: Reiter Ratgeber und Lösungsbuch laden das Buch nach
     await p.goto(base + 'index.html'); await p.waitForFunction(() => typeof openDetail === 'function' && typeof GAMES !== 'undefined' && GAMES.length);
     const i = await p.evaluate(id => GAMES.findIndex(g => g.id === id), id);
     for (const t of ['manual', 'ratgeber', 'loesung']) { await p.evaluate(([i, t]) => openDetail(i, t), [i, t]); await p.waitForSelector('#dBody .egb-sec'); }
-    assert.ok(await p.$('#dBody a.gbook[href*="anleitung.html"]'), 'Link zur Anleitungsseite'); console.log('PASS Startseite: Handbuch, Ratgeber, Lösungsbuch');
+    assert.ok(await p.$('#dBody a.gbook[href*="anleitung.html"]'), 'Link zur Anleitungsseite');
+    await p.evaluate(i => { openDetail(i, 'manual'); setTab('ratgeber'); setTab('manual'); }, i); await p.waitForTimeout(500); assert.equal(await p.$$eval('#dBody a.gbook', a => a.length), 1, 'schneller Reiterwechsel: Handbuch nur einmal'); console.log('PASS Startseite: Handbuch, Ratgeber, Lösungsbuch');
     assert.deepEqual(errs, [], 'keine Skriptfehler auf Anleitungsseite und Startseite');
     // easygames.js: book(), guideUrl(), Knopf im Overlay; Hub: Knopf im Spielfenster
     await p.route('**/host.html', r => r.fulfill({ contentType: 'text/html', body: '<!doctype html><body><button id="b" data-easygames="' + id + '" data-mode="overlay" data-fullscreen="false">Spiel</button><script src="/easygames.js"></script>' }));

@@ -850,7 +850,7 @@ function renderTab(g, tab) {
 function bookPart(g, tab, body, parts) {
   const wait = el('p', 'note', '⏳ Anleitung wird geladen …'); body.appendChild(wait);
   const B = window.EasyGamesBook; (B ? B.load(g.id) : Promise.resolve(null)).then(book => {
-    if (dtab !== tab || di < 0 || GAMES[di] !== g) return; wait.remove(); let n = 0;
+    if (!wait.isConnected || dtab !== tab || di < 0 || GAMES[di] !== g) return; wait.remove(); let n = 0;   // nur die zuletzt angezeigte Fassung füllen
     parts.forEach(p => { if (p === 'faq' && book && book.faq && book.faq.length) body.appendChild(el('h4', '', 'Häufige Fragen')); n += B.render(body, book, p, { h: 'h4' }); });
     if (!n) { if (parts[0] !== 'handbuch') body.appendChild(el('p', 'note', 'Für dieses Spiel gibt es den ' + (tab === 'loesung' ? 'Lösungsbuch' : 'Ratgeber') + '-Teil noch nicht.')); return; }
     const a = el('a', 'pill gbook', '📖 Ganze Anleitung als Seite'); a.href = 'anleitung.html?game=' + encodeURIComponent(g.id) + (tab === 'manual' ? '' : '#' + tab); if (!window.EasyGamesApp) { a.target = '_blank'; a.rel = 'noopener'; } body.appendChild(a);
