@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "54cf4bd3ebbe",
- "generated": "2026-10-25T02:44:57+02:00",
- "commit": "3bc1a4f01b0ec427e96f504c6aa21fce096c8ccf",
+ "version": "2c43749a9fea",
+ "generated": "2026-10-25T01:41:18+00:00",
+ "commit": "b22d3fbd5a52330d9a0bc1480ad0ff5f1213bc61",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8243,18 +8243,18 @@
   },
   {
    "p": "show-me-your-voice/index.html",
-   "s": 17932,
-   "h": "a1875e03e75b0c83afaf3fc73cf05248fdcbb2139637df0ccfac77bfb2d469b3"
+   "s": 18976,
+   "h": "bc085ef29e8e7ef9facc0eeb37cd982d9e179306dcc337d549893a2cc5d4f8ae"
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 153394,
-   "h": "1234f55f151d3dd977003ce1d795ca6ae9c0d04190ece3e703c53d4fc83bf808"
+   "s": 167914,
+   "h": "04d274eb20b3cf29b5d92b5b4b6cbbd322271b687a269250b8314f189cf29712"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
-   "s": 17421,
-   "h": "17963f5be7be5302ac033edbf2b7597a2d5b1fc841ec145b83d4cb3d78310c35"
+   "s": 16327,
+   "h": "e7900bfd21b9f6e1489f484b663126fc960707565ff5892e7e217bdc7ce087e0"
   },
   {
    "p": "show-me-your-voice/js/avatar.js",
@@ -8263,18 +8263,23 @@
   },
   {
    "p": "show-me-your-voice/js/core.js",
-   "s": 31985,
-   "h": "b36938a3927919c90a59c1c448396745b71cbad1fed221622874b0e6deb9d9a1"
+   "s": 32262,
+   "h": "47a6dd8196f8e4dac0ddd6563e0da4358558b6356d0357f1035de1c9d153e662"
   },
   {
    "p": "show-me-your-voice/js/data.js",
-   "s": 52490,
-   "h": "19a4821d1adf828fe3215e18e7a332db59722c3ec3ab2ea18f4054d79407a499"
+   "s": 64448,
+   "h": "f8dc39f27c266bb87e5225e1801abe7380891d64a314115979f80129da5a901d"
+  },
+  {
+   "p": "show-me-your-voice/js/media.js",
+   "s": 13426,
+   "h": "2e325f8a56b30c3c19a6bfa55c2ee53576033a0995b1b2fead722c9de1311b25"
   },
   {
    "p": "show-me-your-voice/js/stage.js",
-   "s": 31638,
-   "h": "a662bbb3a79c39c277dc77a9285d2eddb2a365f1b18ae061058afd5bf6607ef8"
+   "s": 32319,
+   "h": "f8d5680a103fe68ff9081e5dfdb59731691ccb131acc571c82dba00441ec5759"
   },
   {
    "p": "show-me-your-voice/manifest.webmanifest",
@@ -8283,8 +8288,8 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 28024,
-   "h": "306b3929b49dce3d38138fa024c5aec71aa1da4292c09106da1f4b2a822c2ba8"
+   "s": 28842,
+   "h": "6077677e35789ad0808ee83321441cefde3d40e00c2033af366708c3b492edac"
   },
   {
    "p": "show-me-your-voice/sw.js",
@@ -8649,7 +8654,7 @@
   {
    "p": "sync/catalog.json",
    "s": 217662,
-   "h": "b7e54f8d3c190c18c32fd4292db853f3a9c0e4701f7097db0760c51970278306"
+   "h": "29c869df7b95538b8dfcfea64b3cb9c1b76c1c6a7ec86ac58af2bcdf7dfe2170"
   },
   {
    "p": "taschi/card.svg",

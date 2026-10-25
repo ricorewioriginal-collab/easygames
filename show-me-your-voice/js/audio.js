@@ -1,7 +1,7 @@
-/* SHOW ME YOUR VOICE – Audio: im Browser erzeugte Beats, Melodien und Effekte (Web Audio, keine Dateien)
+/* SHOW ME YOUR VOICE – Audio: Effekte und Treffer-Klänge (Web Audio, keine Dateien), Radio-Stream mit Beat-Analyse
    sowie optionale Tonhöhenerkennung über das Mikrofon. Das Mikrofon wird nur nach ausdrücklicher Freigabe geöffnet,
    nur lokal ausgewertet (Tonhöhe und Lautstärke), nie aufgenommen, gespeichert oder übertragen.
-   Austauschbar: Songs liefern nur bpm/Stil/Akkorde – später können hier echte Audiodateien eingehängt werden. */
+   Musik kommt von echten Songs (YouTube, siehe media.js) oder den RicoReWi-Sendern – im Spiel erzeugte Songs gibt es nicht mehr. */
 (function (root) {
   'use strict';
   const AC = root.AudioContext || root.webkitAudioContext;
@@ -60,22 +60,6 @@
     rock: { k: 'x.x...x.x.x...x.', s: '....x.......x...', h: 'x.x.x.x.x.x.x.x.', prog: [[45, 48, 52], [41, 45, 48], [48, 52, 55], [43, 47, 50]], bass: [33, 29, 36, 31] },
     winter: { k: 'x.......x...x...', s: '....x.......x...', h: 'x.x.x.x.x.x.x.x.', prog: [[48, 52, 55], [57, 60, 64], [53, 57, 60], [55, 59, 62]], bass: [36, 45, 41, 43], bell: true }
   };
-  function song(style, bpm) { return { pat: PAT[style] || PAT.pop, step: 0, spb: 60 / bpm / 4, on: true }; }
-  // Plant alle Schläge bis songNow + 0,15 s. songNow = Spielzeit in Sekunden (Taktbeginn bei 0).
-  function tick(sg, songNow) {
-    if (!sg || !sg.on || !ok()) { if (sg) sg.step = Math.max(sg.step, Math.ceil(songNow / sg.spb)); return; }
-    while (sg.step * sg.spb < songNow + 0.15) {
-      const st = sg.step * sg.spb; sg.step++;
-      if (st < songNow - 0.05) continue;
-      const t = ctx.currentTime + (st - songNow), i = (sg.step - 1) % 16, bar = Math.floor((sg.step - 1) / 16) % 4, p = sg.pat;
-      if (p.k[i] === 'x') tone('sine', 140, t, 0.22, 0.9, mus, 42);
-      if (p.s[i] === 'x') { noise(t, 0.14, 0.45, 1400, mus); tone('triangle', 190, t, 0.08, 0.25, mus); }
-      if (p.h[i] === 'x') noise(t, 0.035, 0.12, 7000, mus);
-      if (i % 4 === 0) tone('triangle', mtof(p.bass[bar]), t, sg.spb * 3.2, 0.35, mus);
-      if (i === 0) p.prog[bar].forEach(m => tone('sine', mtof(m + 12), t, sg.spb * 15, 0.06, mus));
-      if (p.bell && i % 8 === 4) tone('sine', mtof(p.prog[bar][2] + 24), t, 0.5, 0.08, mus);
-    }
-  }
   function chordTones(style, songTime, bpm) {
     const p = PAT[style] || PAT.pop, bar = Math.floor(songTime / (240 / bpm)) % 4; return p.prog[(bar + 4) % 4];
   }
@@ -192,7 +176,7 @@
   // ---------- Radio (laut.fm-Sender der RicoReWi-Familie) ----------
   // Der Stream läuft durch einen Analysator (Beat-Erkennung) und dann um delaySec verzögert in die Lautsprecher:
   // So entsteht jede Note genau dann oben im Bild, wenn ihr Beat gleich unten zu hören ist.
-  // Ohne CORS-Freigabe des Streams lässt der Browser keine Analyse zu – dann kommt ein Fehler und das Spiel nimmt eigene Beats.
+  // Ohne CORS-Freigabe des Streams lässt der Browser keine Analyse zu – dann kommt ein Fehler und der Sender läuft ohne Analyse (Noten im Takt des Stils).
   // plain = true: Sender nur abspielen (ohne Analyse). So läuft er auch, wenn der Stream keine CORS-Freigabe hat.
   function radioStart(slug, delaySec, url, plain) {
     return new Promise((resolve, reject) => {
@@ -247,6 +231,6 @@
         start: Date.parse(j.started_at) || 0, end: Date.parse(j.ends_at) || 0, type: String(j.type || 'song') } : null)).catch(() => null);
   }
 
-  root.SMYVAudio = { radioOnLost: cb => { onLost = cb; }, radioStart, radioStop, radioMute, radioOnsets, radioSong, radioActive: () => !!radio, radioPlain: () => !!(radio && radio.plain), init, setVolume, ok, song, tick, chordTones, sfx, guide, voiceOn, voiceSet, voiceOff,
+  root.SMYVAudio = { radioOnLost: cb => { onLost = cb; }, radioStart, radioStop, radioMute, radioOnsets, radioSong, radioActive: () => !!radio, radioPlain: () => !!(radio && radio.plain), init, setVolume, ok, chordTones, sfx, guide, voiceOn, voiceSet, voiceOff,
     micStart, micStop, micPitch, micLevel, micActive: () => !!mic, micStream: () => (mic ? mic.stream : null), micRecStream, micRecPre: () => (mic && mic.rec ? REC_PRE : 0), mtof, ctxTime: () => (ctx ? ctx.currentTime : 0) };
 })(window);

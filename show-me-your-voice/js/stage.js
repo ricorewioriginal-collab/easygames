@@ -17,7 +17,7 @@
 
   // ---------- Inhalte erzeugen ----------
   function genRhythm(p) {
-    const R = S.rng(p.seed), beat = 60 / p.bpm, notes = [], lead = Math.ceil(2.0 / beat - 1e-9) * beat, end = p.len - 0.8;   // Einsatz auf dem Beat der Begleitmusik
+    const R = S.rng(p.seed), beat = 60 / p.bpm, ph = p.phase || 0, notes = [], lead = ph + Math.ceil((2.0 - ph) / beat - 1e-9) * beat, end = p.len - 0.8;   // Einsatz auf dem Beat der Musik (phase: Taktlage des Songs)
     const shows = [];
     for (let k = 0; k < (p.shows || 0); k++) shows.push({ t: lead + (end - lead) * (k + 1) / ((p.shows || 0) + 1), lane: Math.floor(R() * 4), win: p.fastShows ? 0.95 : 1.35, st: 0 });
     const minGap = Math.max(0.2, beat / 2 * 0.95);
@@ -82,21 +82,22 @@
     this.w = Math.max(200, r.width); this.h = Math.max(200, r.height); this.dpr = dpr;
     this.cv.width = Math.round(this.w * dpr); this.cv.height = Math.round(this.h * dpr);
   };
-  P.clock = function (ts) { return ((ts == null ? performance.now() : ts) - this.t0) / 1000; };
+  // Mit Song (o.ext, YouTube): Uhr = Videozeit seit Teil-Beginn – Noten bleiben auch bei Ruckeln und Pausen im Takt
+  P.clock = function (ts) { const pn = performance.now(); if (this.o.ext) return this.o.ext.time() - this.v0 - (ts == null || ts > pn ? 0 : (pn - ts) / 1000); return ((ts == null ? pn : ts) - this.t0) / 1000; };
   P.next = function () {
     if (this.part) this.res.push(this.summary());
     this.pi++;
     A.voiceOff();
     if (this.pi >= this.parts.length) return this.finish();
     const p = this.part = Object.assign({}, this.parts[this.pi]);
-    this.t0 = performance.now(); this.pauseAt = 0; this.combo = 0; this.maxCombo = 0; this.streak = 0;
+    const ex = this.o.ext; this.v0 = ex ? ex.time() : 0; if (ex && (p.type === 'rhythm' || p.type === 'pitch')) { p.bpm = ex.bpm; const B = 60 / ex.bpm; p.phase = (((ex.beat0 - this.v0) % B) + B) % B; }
+    this.t0 = performance.now(); this.pauseAt = 0; this.lastBeat = -1; this.combo = 0; this.maxCombo = 0; this.streak = 0;
     this.cnt = { n: 0, p: 0, g: 0, o: 0, m: 0 }; this.pitchT = 0; this.pitchGot = 0; this.trail = []; this.lv = 3.5;
     this.showHit = 0; this.cueSum = 0; this.cuePts = 0; this.missRow = 0; this.partStars = 0; this.curSeg = null; this.voiced = false; this.now = 0; this.vArm = true; this.vLast = -9;
     if (p.type === 'rhythm') { const g = genRhythm(p); this.notes = p.live ? [] : g.notes; this.shows = g.shows; this.lastSpawn = -9; this.minGap = Math.max(0.2, 0.62 - 0.4 * (p.density || 0.75)); }
     if (p.type === 'pitch') this.segs = genPitch(p);
     if (p.type === 'cues') this.cues = genCues(p);
-    this.sg = p.type === 'rival' || p.live || p.plain || p.acappella ? null : A.song(p.style || 'pop', p.bpm || 100);
-    A.radioMute(!(p.live || p.plain)); this.lowT = 0;
+    this.sg = null; this.lowT = 0;   // Musik: Radio (live/plain), YouTube-Song (o.ext) oder nur ein leiser Takt-Klick (p.click)
     if (p.type === 'pitch' && !this.mic) A.voiceOn();
     if (this.o.onPart) this.o.onPart(this.pi, p);
   };
@@ -146,8 +147,9 @@
   };
   P.resume = function () {
     if (!this.paused || this.done) return; this.paused = false; this.t0 += performance.now() - this.pauseAt;
-    if (this.sg) this.sg.step = Math.ceil(this.clock() / this.sg.spb);
   };
+  // Song-Sync von Hand: alle noch offenen Noten um d Sekunden verschieben (◀ ▶ auf der Bühne)
+  P.shift = function (d) { if (!this.part || this.part.type !== 'rhythm') return; this.notes.forEach(n => { if (!n.st) n.t += d; }); this.notes.sort((a, b) => a.t - b.t); if (this.part.phase != null) this.part.phase += d; };
 
   // ---------- Eingaben ----------
   P.key = function (e) {
@@ -220,7 +222,7 @@
     this.energy = Math.min(1, this.energy + [0, 0.035, 0.025, 0.012][g]);
     if (g === 1) { if (++this.streak % 8 === 0) this.addStar(); } else this.streak = 0;
     this.pop(['', 'PERFECT!', 'GUT', 'OK'][g], ['', '#ffd23f', '#7cf29a', '#9ec5ff'][g], n.lane);
-    if (this.part.live) A.sfx('tick');
+    if (this.part.live || this.o.ext) A.sfx('tick');
     else { const ch = A.chordTones(this.part.style, n.t, this.part.bpm); A.sfx('hit', ch[n.lane % 3] + (n.lane === 3 ? 24 : 12)); }
     if (this.o.onEvent && (this.combo === 10 || this.combo === 25 || this.combo === 50)) this.o.onEvent('combo', this.combo);
   };
@@ -244,7 +246,7 @@
     if (this.paused) return;
     const now = this.clock(ts), dt = Math.min(0.05, Math.max(0, now - (this.last == null ? now : this.last))); this.last = now; this.now = now;
     const p = this.part; if (!p) return;
-    if (this.sg) A.tick(this.sg, now);
+    if (p.click && (p.type === 'rhythm' || p.type === 'pitch')) { const b = Math.floor((now - (p.phase || 0)) * p.bpm / 60); if (b > this.lastBeat) { this.lastBeat = b; if (b >= 0) A.sfx('tick'); } }   // ohne Musik: leiser Takt
     if (p.type === 'rhythm') {
       if (p.live) this.spawnLive(now);
       this.updRhythm(now);
@@ -264,7 +266,7 @@
     if (t - this.lastSpawn < this.minGap || this.shows.some(s => t > s.t - 0.6 && t < s.t + s.win + 0.4)) return;
     this.notes.push({ t, lane: o.lane, st: 0 }); this.lastSpawn = t;
   };
-  // Radio bricht mitten im Auftritt ab: ab jetzt eigene Beats und vorbereitete Noten
+  // Radio bricht mitten im Auftritt ab: ab jetzt vorbereitete Noten zu einem leisen Takt-Klick
   P.radioLost = function () {
     this.parts.forEach(q => { q.live = false; q.plain = false; });
     const p = this.part; if (!p || this.done) return;
@@ -272,10 +274,8 @@
     if (p.type === 'rhythm') {
       const from = Math.max(this.now + this.travel, this.notes.length ? this.notes[this.notes.length - 1].t + this.minGap : 0);
       genRhythm(p).notes.forEach(n => { if (n.t >= from) this.notes.push(n); });
-      this.sg = A.song(p.style || 'pop', p.bpm || 100); this.sg.step = Math.ceil(this.now / this.sg.spb);
-    } else if (p.type === 'pitch' && !p.acappella && !this.sg) {   // Gesangsteil bekommt wieder Begleitung
-      this.sg = A.song(p.style || 'pop', p.bpm || 100); this.sg.step = Math.ceil(this.now / this.sg.spb);
     }
+    this.parts.forEach(q => { q.click = true; }); p.click = true;
   };
   P.updRhythm = function (now) {
     const t = now - this.offset;

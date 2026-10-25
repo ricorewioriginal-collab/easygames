@@ -285,37 +285,63 @@
   // ---------- Vorbereitung ----------
   let prepMode = 'career';
   const station = slug => D.STATIONS.find(x => x.slug === slug);
-  function musicOf(sel) {   // { radio: slug|null, style, song }
+  function musicOf(sel) {   // { radio: slug|null, yt: Song|null, style, name } – Musik kommt vom Radio oder als echter Song von YouTube
     const m = String(sel.music || ''), st = m.startsWith('radio:') ? station(m.slice(6)) : null;
-    if (st && save.settings.source === 'radio') return { radio: st.slug, style: st.style, name: st.name };
-    const k = m.startsWith('own:') && D.STYLES[m.slice(4)] ? m.slice(4) : (D.STYLES[sel.style] ? sel.style : 'pop');
-    return { radio: null, style: k, name: null };
+    if (st) return { radio: st.slug, yt: null, style: st.style, name: st.name };
+    if (m === 'yt' && sel.song) return { radio: null, yt: sel.song, style: D.STYLES[sel.song.style] ? sel.song.style : 'pop', name: songTxt(sel.song) };
+    return { radio: null, yt: null, style: D.STYLES[sel.style] ? sel.style : 'pop', name: null };
   }
+  // ---------- Song-Suche: iTunes (Titel, Cover, Hörprobe fürs Tempo) + YouTube-Video, ohne API-Schlüssel ----------
+  const MD = window.SMYVMedia;
+  function styleOfGenre(g) { g = String(g || '').toLowerCase(); if (/rock|metal|punk|grunge|alternative/.test(g)) return 'rock'; if (/r&b|soul|hip|rap|funk|reggae|urban/.test(g)) return 'soul'; if (/ballad|singer|songwriter|klassik|classical|jazz|soundtrack|vocal/.test(g)) return 'ballade'; return 'pop'; }
+  const mmss = d => Math.floor(d / 60) + ':' + String(d % 60).padStart(2, '0');
+  function songSearchOv(onPick, q0) {
+    let my = 0, list = [];
+    const run = async () => { const inp = $('#ovQ'), res = $('#ovRes'); if (!inp || !res) return; const q = inp.value.trim(); if (!q) return; const id = MD.idFromUrl(q);
+      if (id) { closeOv(); onPick({ title: 'YouTube-Video', artist: '', vid: id, style: prep.style || 'pop' }); return; }
+      const k = ++my; res.innerHTML = '<p class="muted">🔎 Suche …</p>';
+      try { list = await MD.songs(q, 20); } catch (e) { list = null; } if (k !== my || !$('#ovRes')) return;
+      if (!list) { res.innerHTML = '<p class="muted">📶 Die Suche ist gerade nicht erreichbar – prüfe das Internet oder füge einen YouTube-Link ein.</p>'; return; }
+      res.innerHTML = list.length ? list.map((x, i) => `<button type="button" class="opt song" data-i="${i}"><img class="cov art" src="${esc(x.cover)}" alt="" referrerpolicy="no-referrer" onerror="this.classList.add('x')"><span><b>${esc(x.title)}</b><small>${esc(x.artist)}${x.dur ? ' · ' + mmss(x.dur) : ''}${x.genre ? ' · ' + esc(x.genre) : ''}</small></span></button>`).join('') : '<p class="muted">Nichts gefunden – anderer Suchbegriff?</p>';
+      const f = res.querySelector('[data-i]'); if (f && !coarseIn()) f.focus(); };
+    overlay(`<h3>🎵 Song suchen</h3><p class="muted">Songs über die iTunes-Suche, das Video kommt von YouTube – das Tempo erkennt das Spiel selbst. Du kannst auch einen YouTube-Link einfügen.</p>
+      <div class="songFind"><input id="ovQ" type="search" enterkeyhint="search" autocomplete="off" value="${esc(q0 || '')}" placeholder="Song oder Interpret …" aria-label="Song suchen"><button class="btn sm violet" type="button" data-act="go">🔎</button></div>
+      <div class="opts songs" id="ovRes"></div><p class="hint">Quellen: Songinfos &amp; Cover von Apple iTunes · Videos von YouTube · Songaufbau von LRCLIB · Rechte bei den Urhebern</p><button class="btn" type="button" data-act="x">Abbrechen</button>`, { go: run, x: closeOv });
+    const inp = $('#ovQ'); inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); run(); } if (e.key === 'Escape') closeOv(); });
+    $('#ovRes').addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (!b || !list[+b.dataset.i]) return; const x = list[+b.dataset.i]; closeOv(); onPick(Object.assign({}, x, { style: styleOfGenre(x.genre) })); });
+    if (q0) run(); inp.focus();
+  }
+  const coarseIn = () => matchMedia('(pointer: coarse)').matches;
   RENDER.sPrep = mode => {
     airStop();   // zurück aus dem Wartebereich: Sender aus
     prepMode = mode || prepMode;
     const career = prepMode === 'career', s = save.season, def = career ? D.ROUNDS[s.round] : D.ROUNDS[0];
     const motto = career && def.id === 'motto' ? D.MOTTOS[s.motto] : null;
     const songOf = k => motto ? motto.songs[k] : D.SONGS[k];
-    const radioOn = save.settings.source === 'radio';
-    if (!radioOn && String(prep.music).startsWith('radio:')) prep.music = 'own:' + prep.style;
+    const asg = career ? assignOf(s) : null;
+    if (asg) { if (!prep.song || prep.song.asg !== asg.t) prep.song = { artist: asg.artist, title: asg.title, style: asg.style, asg: asg.t }; prep.music = 'yt'; prep.style = asg.style; }
+    else if (prep.song && prep.song.asg) { prep.song = null; prep.music = 'radio:ricorewi'; }
+    if (prep.music === 'yt' && !prep.song) prep.music = 'radio:ricorewi';
     const opt = (group, k, title, desc) => `<button type="button" class="opt" data-g="${group}" data-v="${k}" aria-pressed="${prep[group] === k}"><b>${title}</b><small>${desc}</small></button>`;
     const real = prep.how === 'sing';
     const partsTxt = real ? '🎙️ Echt vorsingen: Karaoke-Song oder a cappella ins Mikrofon' : def.parts.map(t => t === 'rhythm' ? '🥁 Rhythmus' : t === 'pitch' ? '🎤 Gesang' : t === 'group' ? '👥 Gruppe' : '⚔️ Rivale').join(' → ');
     let rivalTxt = '';
     if (career && def.battle) { const op = opponent(s); if (op) rivalTxt = `<p>⚔️ Dein Gegner: <b>${esc(op.name)}</b> (${D.STYLES[op.style].name}, stark in ${op.strong})</p>`; }
     if (career && def.id === 'recall') rivalTxt = `<p>👥 Deine Gruppe: <b>${groupOf(s).map(g => esc(g.name)).join(' und ')}</b></p>`;
-    const music = (radioOn ? D.STATIONS.filter(x => x.style !== 'winter').map(st => opt('music', 'radio:' + st.slug, '📻 ' + st.name, `${st.desc} · Stil: ${D.STYLES[st.style].name}`)) : [])
-      .concat(Object.keys(D.STYLES).map(k => opt('music', 'own:' + k, `🎹 ${D.STYLES[k].name}: „${songOf(k)}“`, `Eigener Song (offline) · ${D.STYLES[k].bpm} BPM · ${D.STYLES[k].desc}`)));
+    const sg = prep.song, music = asg ? [opt('music', 'yt', '🎯 ' + esc(asg.t), `Von ${esc(asg.name)} zugeteilt · Stil: ${D.STYLES[asg.style].name} · Original-Video von YouTube`)] : [sg ? opt('music', 'yt', '🎵 ' + esc(songTxt(sg)), `Echter Song von YouTube · Stil: ${D.STYLES[sg.style] ? D.STYLES[sg.style].name : 'Pop'} · Tempo wird automatisch erkannt`) : opt('music', 'yt', '🎵 Song suchen', 'Jeden Song spielen: Suche über iTunes, Video von YouTube, Noten im Tempo des Songs')]
+      .concat(D.STATIONS.filter(x => x.style !== 'winter').map(st => opt('music', 'radio:' + st.slug, '📻 ' + st.name, `${st.desc} · Stil: ${D.STYLES[st.style].name}`)));
+    void songOf;
     $('#prepBox').innerHTML = `
       <header class="bar"><button class="btn sm" data-back type="button">← Zurück</button><h2>${career ? def.icon + ' ' + def.name : '🎤 Freies Casting'}</h2><span></span></header>
       ${motto ? `<div class="banner gold" style="font-size:1.1em">Motto: ${motto.name}</div>` : ''}
       <div class="panel"><p><b>Ablauf:</b> ${partsTxt}</p><p class="muted">${esc(career ? def.rule : 'Keine Wertung für die Staffel – perfekt zum Üben. Weiter mit 2 von 3 Jury-Ja.')}</p>${rivalTxt}</div>
       <h3>1 · Wie willst du auftreten?</h3><div class="opts">${opt('how', 'game', '🎮 Spiel (wie bisher)', 'Noten im Takt treffen – mit Tasten, Touch oder Mikrofon')}${opt('how', 'sing', '🎙️ Echt vorsingen', 'Du singst einen Karaoke-Song ins Mikrofon, die Jury bewertet deine echte Stimme')}</div>
+      ${real && asg ? `<div class="banner gold assign">${asg.img ? `<img class="jimg" src="${asg.img}" alt="" style="width:46px;height:64px">` : ''}<span>🎯 <b>${esc(asg.name)}</b> hat dir einen Song zugeteilt: <b>„${esc(asg.t)}“</b> – die Karaoke-Version liegt bereit.</span></div>` : ''}
       ${real ? `<p class="hint" style="text-align:left">🎙️ Den Song wählst du gleich vor deinem Auftritt: Karaoke mit Lyrics, a cappella oder dein eigener Song. Gewertet werden Intonation, Stabilität, Stimmumfang und Ausdruck. Am besten mit Kopfhörern.</p>
       <h3>2 · Bühnen-Aktion</h3><div class="opts">${Object.keys(D.ACTION).map(k => opt('action', k, D.ACTION[k].name, D.ACTION[k].desc)).join('')}</div>` : `
-      <h3>2 · Deine Musik</h3><div class="opts">${music.join('')}</div>
-      <p class="hint" style="text-align:left">${radioOn ? '📻 <b>Quelle:</b> Live-Programm des gewählten RicoReWi-Senders über laut.fm. Der Sender läuft live, die Noten entstehen aus den Beats des laufenden Songs (lässt der Stream keine Analyse zu, folgen sie dem Takt des Musikstils). Interpret und Titel stehen im Auftritt oben. Alle Rechte an der Musik liegen bei den jeweiligen Urhebern. Ohne Verbindung spielt das Spiel eigene Beats.' : '🎹 Eigene Songs: Musik wird live im Browser erzeugt. Radio-Sender kannst du in den Einstellungen einschalten.'} Der Stil bestimmt, welche Jurorin oder welcher Juror einen Bonus gibt.</p>
+      ${asg ? `<div class="banner gold assign">${asg.img ? `<img class="jimg" src="${asg.img}" alt="" style="width:46px;height:64px">` : ''}<span>🎯 <b>${esc(asg.name)}</b> hat dir einen Song zugeteilt: <b>„${esc(asg.t)}“</b> – ${prep.how === 'sing' ? 'die Karaoke-Version liegt bereit.' : 'der läuft auf der Bühne.'}</span></div>` : ''}
+      <h3>2 · Deine Musik</h3><div class="opts">${music.join('')}</div>${sg && !asg ? '<button class="btn sm violet" type="button" id="bSongFind">🔎 Anderen Song suchen</button>' : ''}
+      <p class="hint" style="text-align:left">${sg && prep.music === 'yt' ? `🎵 <b>Quelle:</b> Video von YouTube (der Kanal steht im Auftritt oben), Songinfos &amp; Cover von Apple iTunes, Songaufbau von LRCLIB. Das Tempo erkennt das Spiel aus der iTunes-Hörprobe, die Taktlage aus dem Liedtext – passt es nicht ganz, schiebst du die Noten auf der Bühne mit ◀ ▶. Rechte bei den Urhebern.` : '📻 <b>Quelle:</b> Live-Programm des gewählten RicoReWi-Senders über laut.fm. Der Sender läuft live, die Noten entstehen aus den Beats des laufenden Songs (lässt der Stream keine Analyse zu, folgen sie dem Takt des Musikstils). Interpret und Titel stehen im Auftritt oben. Alle Rechte an der Musik liegen bei den jeweiligen Urhebern.'} Ohne Internet laufen die Noten zu einem leisen Takt. Der Stil bestimmt, welche Jurorin oder welcher Juror einen Bonus gibt.</p>
       <h3>3 · Dein Ansatz</h3><div class="opts">${Object.keys(D.APPROACH).map(k => opt('approach', k, D.APPROACH[k].name, D.APPROACH[k].desc)).join('')}</div>
       <h3>4 · Bühnen-Aktion</h3><div class="opts">${Object.keys(D.ACTION).map(k => opt('action', k, D.ACTION[k].name, D.ACTION[k].desc)).join('')}</div>
       <div class="panel">${save.settings.mic ? '<p>🎙️ <b>Mikrofon ist an:</b> Sing die Noten an, wenn sie den Ring erreichen, und triff in Gesangsteilen die Tonhöhe. Ausgewertet wird nur auf deinem Gerät.</p>' : '<p>🎙️ <b>Mit deiner Stimme spielen?</b> Mit Mikrofon triffst du die Noten, indem du sie ansingst, und im Gesangsteil zählt deine echte Tonhöhe.</p><button class="btn" type="button" id="bMic">🎙️ Mikrofon einschalten</button>'}</div>`}
@@ -325,13 +351,28 @@
     const o = e.target.closest('.opt');
     if (o) {
       prep[o.dataset.g] = o.dataset.v; o.parentNode.querySelectorAll('.opt').forEach(x => x.setAttribute('aria-pressed', String(x === o)));
+      if (o.dataset.g === 'music' && o.dataset.v === 'yt' && !prep.song) { prep.music = 'radio:ricorewi'; pickSong(); return; }
       if (o.dataset.g === 'music') prep.style = musicOf(prep).style;
       if (o.dataset.g === 'how') { RENDER.sPrep(prepMode); const nb = $(`#prepBox [data-g="how"][data-v="${o.dataset.v}"]`); if (nb) nb.focus(); }
       return;
     }
+    if (e.target.closest('#bSongFind')) { pickSong(); return; }
     if (e.target.closest('#bMic')) { micConsent(() => RENDER.sPrep(prepMode)); return; }
     if (e.target.closest('#bGo')) { backTo.sTalk = 'sPrep'; go('sTalk', prepMode); }
   });
+  // ---------- Jury verteilt Songs (wie bei DSDS): manchmal im Recall und in der Mottoshow ----------
+  const ASSIGN_POOL = { retro: ['retro'], iconic: ['pop', 'rock', 'soul', 'party'], herz: ['ballade', 'soul', 'deutsch'] };
+  function assignOf(s) {
+    const def = s && D.ROUNDS[s.round]; if (!def || (def.id !== 'recall' && def.id !== 'motto')) return null;
+    const R = S.rng(S.hash(s.seed + ':assign:' + s.round)); if (R() > 0.45) return null;   // nicht immer – etwa jedes zweite Mal
+    const panel = S.panelOf(s, s.round), jid = panel[Math.floor(R() * panel.length)], j = jur(jid), motto = def.id === 'motto' ? D.MOTTOS[s.motto] : null;
+    const ids = motto && ASSIGN_POOL[motto.id] ? ASSIGN_POOL[motto.id] : D.KARAOKE.map(g => g.id);
+    let gs = D.KARAOKE.filter(g => ids.includes(g.id)); const fav = Object.keys(D.STYLES).find(k => D.STYLES[k].fav === jid), fg = gs.filter(g => g.style === fav);
+    if (fg.length && R() < 0.6) gs = fg;   // Juroren verteilen gern Songs aus ihrem Lieblingsstil
+    if (!gs.length) return null; const g = gs[Math.floor(R() * gs.length)], i = Math.floor(R() * g.songs.length), [t, vid, ch] = g.songs[i], parts = t.split(' – ');
+    return { by: jid, name: j ? j.name : 'Die Jury', img: j ? j.img : '', g: g.id, i, t, artist: parts.length > 1 ? parts[0] : '', title: parts.length > 1 ? parts.slice(1).join(' – ') : t, vid, ch, style: D.STYLES[g.style] ? g.style : 'pop' };
+  }
+  function pickSong() { songSearchOv(x => { prep.song = x; prep.music = 'yt'; prep.style = x.style; RENDER.sPrep(prepMode); const b = $('#prepBox [data-v="yt"]'); if (b) b.focus(); }, prep.song && prep.song.artist ? prep.song.artist : ''); }
   function opponent(s) {
     const prev = (s.lastRank || []).filter(id => s.field.includes(id));
     s.field.forEach(id => { if (!prev.includes(id)) prev.push(id); });
@@ -362,7 +403,7 @@
     $('#talkBox').innerHTML = `<header class="bar"><button class="btn sm" data-back type="button">← Zurück</button><h2>${talk.casting ? '🎤 Vor der Jury' : '🎙️ Interview'}</h2><span></span></header>
       ${withRadio ? `<div class="panel"><p id="airBox">📻 Verbinde mit ${esc(mu.name)} …</p></div>` : ''}${wait}<div class="panel" id="talkQ"></div>`;
     talkStep();
-    if (withRadio) airStart(mu.radio).then(m => { if (!m) airShow('📻 ' + mu.name + ' ist gerade nicht erreichbar – auf der Bühne laufen eigene Beats.'); });
+    if (withRadio) airStart(mu.radio).then(m => { if (!m) airShow('📻 ' + mu.name + ' ist gerade nicht erreichbar – auf der Bühne läuft ein leiser Takt.'); });
     else airStop();
   };
   // ---------- Radio im Wartebereich: Sender läuft schon, der Auftritt beginnt mit dem nächsten Song ----------
@@ -441,30 +482,32 @@
   function startCareerRound() {
     const s = save.season; if (!s || s.status !== 'backstage') { go('sBack'); return; }
     const def = D.ROUNDS[s.round], motto = def.id === 'motto' ? D.MOTTOS[s.motto] : null, mu = musicOf(prep);
-    const song = mu.radio ? mu.name : motto ? motto.songs[mu.style] : D.SONGS[mu.style];
+    const song = mu.name || D.STYLES[mu.style].name + '-Takt'; void motto;
     let rival = null, group = null;
     if (def.battle) { const op = opponent(s); if (op) rival = { c: op, perf: S.aiPerf(s, op, s.round).perf }; }
     if (def.parts.includes('group')) group = groupOf(s).map(c => ({ c, perf: S.aiPerf(s, c, s.round).perf }));
     const playId = S.startRound(s); if (playId == null) return;
     persist();
-    runStage({ mode: 'career', playId, panel: S.panelOf(s, s.round), sel: Object.assign({}, prep, { style: mu.style }), radio: mu.radio, talk: { symp: talk.symp, votes: talk.votes },
+    runStage({ mode: 'career', playId, panel: S.panelOf(s, s.round), sel: Object.assign({}, prep, { style: mu.style }), radio: mu.radio, yt: mu.yt, talk: { symp: talk.symp, votes: talk.votes },
       parts: buildParts(def, S.hash(s.seed + ':perf:' + s.round), song, s.round, mu), juryStop: def.id === 'casting',
       title: def.icon + ' ' + def.name + (mu.radio ? '' : ' · „' + song + '“'), bg: def.bg, rival, group, ret: 'sBack' });
   }
   function startFree() {
     const def = D.ROUNDS[0], mu = musicOf(prep);
-    runStage({ mode: 'free', sel: Object.assign({}, prep, { style: mu.style }), radio: mu.radio, talk: { symp: talk.symp, votes: 0 }, juryStop: true,
-      parts: buildParts(def, (Date.now() & 0xffffff) >>> 0, mu.radio ? mu.name : D.SONGS[mu.style], 0, mu),
-      title: '🎤 Freies Casting' + (mu.radio ? '' : ' · „' + D.SONGS[mu.style] + '“'), bg: 'stage', ret: 'sPrep' });
+    const song = mu.name || D.STYLES[mu.style].name + '-Takt';
+    runStage({ mode: 'free', sel: Object.assign({}, prep, { style: mu.style }), radio: mu.radio, yt: mu.yt, talk: { symp: talk.symp, votes: 0 }, juryStop: true,
+      parts: buildParts(def, (Date.now() & 0xffffff) >>> 0, song, 0, mu),
+      title: '🎤 Freies Casting' + (mu.radio ? '' : ' · „' + song + '“'), bg: 'stage', ret: 'sPrep' });
   }
 
   // ---------- Bühne ----------
-  function stopAll() { if (stage) { stage.stop(); stage = null; } A.micStop(); airStop(); }
+  function stopAll() { if (stage) { stage.stop(); stage = null; } A.micStop(); airStop(); ytStop(); }
   async function runStage(cfg) {
     A.init(); applySettings();
     let mic = false, radio = false;
-    cfg.parts.forEach(p => { p.live = false; p.plain = false; });
-    if (cfg.radio && save.settings.source === 'radio' && cfg.parts.some(p => p.type === 'rhythm')) {
+    cfg.parts.forEach(p => { p.live = false; p.plain = false; p.click = !p.acappella; });
+    cfg.ext = null; if (cfg.yt && cfg.parts.some(p => p.type === 'rhythm' || p.type === 'pitch')) { cfg.ext = await ytPrepare(cfg); if (cfg.ext) cfg.parts.forEach(p => { p.click = false; }); }
+    if (cfg.radio && cfg.parts.some(p => p.type === 'rhythm')) {
       const st = station(cfg.radio);
       if (onAir.slug === cfg.radio && onAir.mode && A.radioActive()) { radio = onAir.mode; clearInterval(onAir.poll); }   // läuft schon seit dem Wartebereich
       else {
@@ -477,14 +520,16 @@
       }
       closeOv(); if (radio) { onAir.slug = cfg.radio; onAir.mode = radio; }
       }
-      cfg.parts.forEach(p => { if (radio === 'live' && p.type === 'rhythm') p.live = true; if (radio === 'plain') p.plain = true; });
+      cfg.parts.forEach(p => { if (radio === 'live' && p.type === 'rhythm') p.live = true; if (radio === 'plain') p.plain = true; if (radio) p.click = false; });
     }
     if (cfg.mic !== false && save.settings.mic && cfg.parts.some(p => p.type === 'pitch' || p.type === 'rhythm')) { try { await A.micStart(); mic = true; A.micStop(); } catch (e) { toast('🎙️ Mikrofon nicht verfügbar – du singst mit Tasten/Touch.'); } }
     cfg.micOn = mic;   // Mikrofon nur in Noten- und Gesangsteilen öffnen
-    A.radioOnLost(() => { if (stage && flow === cfg) { stage.radioLost(); cfg.credit = ''; $('#stTitle').textContent = cfg.title; toast('📻 Radio-Verbindung verloren – weiter mit eigenen Beats.', 3500); } });
+    A.radioOnLost(() => { if (stage && flow === cfg) { stage.radioLost(); cfg.credit = ''; $('#stTitle').textContent = cfg.title; toast('📻 Radio-Verbindung verloren – weiter im Takt.', 3500); } });
     flow = cfg; go('sStage'); setBg(cfg.bg || 'stage', true);
     $('#stTitle').textContent = cfg.title;
     cfg.credit = '';
+    if (cfg.ext) { const e = cfg.ext; cfg.credit = '▶ Quelle: YouTube' + (e.by ? ' · ' + e.by : '') + (e.cover ? ' · Songinfos: iTunes' : '') + (e.lrc ? ' · Songaufbau: LRCLIB' : ''); $('#stTitle').textContent = cfg.title + ' · ' + cfg.credit; }
+    $('#stSync').hidden = !cfg.ext;
     if (radio) {
       const st = station(cfg.radio); cfg.credit = '📻 ' + st.name + ' (laut.fm)'; $('#stTitle').textContent = cfg.title + ' · ' + cfg.credit;
       A.radioSong(cfg.radio).then(sg => { if (sg && flow === cfg) { cfg.credit = '📻 Quelle: ' + st.name + ' auf laut.fm – ' + (sg.artist ? sg.artist + ' – ' : '') + sg.title; $('#stTitle').textContent = cfg.title + ' · ' + cfg.credit.replace('📻 Quelle: ', '📻 '); } });
@@ -493,7 +538,7 @@
     $('#snow').hidden = !cfg.bonus || reduced();
     $('#rivalBox').hidden = true;
     const pads = $('#pads'); pads.className = 'pads' + (('ontouchstart' in window || navigator.maxTouchPoints > 0) ? '' : ' auto');
-    stage = new ST.Stage({ canvas: $('#cv'), pads, parts: cfg.parts, settings: save.settings, mic, bonus: !!cfg.bonus, hints: cfg.hints, captions: caption, juryStop: !!cfg.juryStop,
+    stage = new ST.Stage({ canvas: $('#cv'), pads, parts: cfg.parts, settings: save.settings, mic, ext: cfg.ext, bonus: !!cfg.bonus, hints: cfg.hints, captions: caption, juryStop: !!cfg.juryStop,
       onPart: (i, p) => {
         if (mic && (p.type === 'pitch' || p.type === 'rhythm')) A.micStart().catch(() => {}); else A.micStop();
         pads.classList.toggle('pitch', p.type === 'pitch'); pads.classList.toggle('hide', p.type === 'rival');
@@ -515,11 +560,33 @@
         const imgs = $('#juryStrip').querySelectorAll('[data-j]'); const cls = k === 'combo' ? 'nod' : k === 'show' ? 'wow' : 'frown';
         imgs.forEach((im, i) => { if (k !== 'miss' || i === 0) { im.classList.add(cls); setTimeout(() => im.classList.remove(cls), 700); } });
       },
-      onDone: out => { stage = null; A.micStop(); airStop(); finishStage(out); } });
+      onDone: out => { stage = null; A.micStop(); airStop(); ytStop(); finishStage(out); } });
+    if (cfg.ext) { cfg.ext.P.play(); setTimeout(() => { if (stage && flow === cfg && cfg.ext && !cfg.ext.P.playing() && !stage.paused) overlay(`<h3>▶ Song starten</h3><p class="muted">Der Browser wartet auf deinen Tipp, bevor das Video mit Ton startet.</p><button class="btn gold" type="button" data-act="go">▶ Los geht's</button>`, { go: () => { closeOv(); if (cfg.ext) cfg.ext.P.play(); }, esc: () => { closeOv(); if (cfg.ext) cfg.ext.P.play(); } }); }, 3000); }
   }
+  // ---------- Echter Song (YouTube): Video suchen, Tempo aus der iTunes-Hörprobe, Taktlage aus lrclib ----------
+  let ytCur = null;
+  function ytStop() { if (ytCur) { ytCur.P.destroy(); ytCur = null; } const b = $('#stVid'); if (b) { b.innerHTML = ''; b.hidden = true; } const sy = $('#stSync'); if (sy) sy.hidden = true; }
+  async function ytPrepare(cfg) {
+    ytStop(); const sg = cfg.yt;
+    overlay(`<h3>🎵 „${esc(sg.title)}“ wird vorbereitet …</h3><p class="muted">Video suchen · Tempo erkennen · Songaufbau laden</p>`, { esc: () => {} });
+    if (!sg.preview && sg.artist && !sg.vid) { try { const l = await MD.songs(sg.artist + ' ' + sg.title, 5), n = x => String(x).toLowerCase(), m = l.find(x => n(x.title).includes(n(sg.title).slice(0, 10))) || l[0]; if (m) Object.assign(sg, { preview: m.preview, dur: m.dur, cover: m.cover }); } catch (e) { /* ohne Hörprobe: Tempo des Stils */ } }   // zugeteilter Song: Infos nachladen
+    const [vids, tp, lrc] = await Promise.all([sg.vid ? Promise.resolve([{ id: sg.vid, title: sg.title, by: '' }]) : MD.videoFor(sg, 'official').catch(() => []), MD.tempoOf(sg.preview).catch(() => null), sg.artist ? MD.lyrics(sg) : Promise.resolve(null)]);
+    if (!vids.length) { closeOv(); toast('📶 Kein Video gefunden – du singst zum Takt.', 3500); return null; }
+    const box = $('#stVid'); box.hidden = false;
+    const got = await new Promise(res => { let i = 0; const tryVid = () => { box.innerHTML = '<div id="stYt"></div>'; const v = vids[i], P = MD.player($('#stYt'), v.id, (ev, P2) => {
+      if (ev === 'ready') res({ v, P: P2 }); if (ev === 'error' && !P2.used) { P2.used = true; P2.destroy(); if (P2.err !== 'api' && ++i < Math.min(vids.length, 5)) tryVid(); else res(null); } }); void P; }; tryVid(); setTimeout(() => res(null), 20000); });
+    closeOv(); if (!got) { ytStop(); toast('📶 YouTube ist gerade nicht erreichbar – du singst zum Takt.', 3500); return null; }
+    const { v, P } = got, vd = P.duration() || 0, off = sg.dur && vd - sg.dur > 1 && vd - sg.dur < 20 ? vd - sg.dur : 0;   // Musikvideos haben oft ein Intro
+    const bpm = tp && tp.bpm ? tp.bpm : D.STYLES[cfg.sel.style].bpm, times = lrc ? MD.lrcTimes(lrc) : [], ph = times.length ? MD.phaseFrom(times, bpm) : null;
+    const fix = ((save.ytSync || {})[v.id]) || 0, start = times.length ? Math.max(0, times[0] + off - 4) : 0;
+    P.seek(start); ytCur = { P, vid: v.id, bpm, beat0: (ph ? ph.beat0 : 0) + off + fix, by: v.by || P.info().author || '', cover: !!(sg.artist && !sg.vid), lrc: !!lrc, time: () => P.time(), tempo: tp ? 'hörprobe' : 'stil', phase: ph ? 'liedtext' : 'keine' };
+    return ytCur;
+  }
+  $('#stSync').addEventListener('click', e => { const b = e.target.closest('[data-d]'); if (!b || !stage || !ytCur) return; const d = +b.dataset.d; stage.shift(d); ytCur.beat0 += d; save.ytSync = save.ytSync || {}; save.ytSync[ytCur.vid] = Math.round(((save.ytSync[ytCur.vid] || 0) + d) * 1000) / 1000; persist(); toast((d > 0 ? '▶ Noten später ' : '◀ Noten früher ') + Math.abs(d * 1000) + ' ms', 1200); });
   $('#bPause').onclick = () => { if (stage) stage.pause(false); };
   function showPause(auto) {
     A.micStop();   // in der Pause hört niemand zu
+    if (ytCur) ytCur.P.pause();
     const career = flow && (flow.mode === 'career' || flow.mode === 'encore' || flow.mode === 'online');
     overlay(`<h3>⏸ Pause</h3>${auto ? '<p class="muted">Automatisch angehalten.</p>' : ''}${flow && flow.credit ? `<p class="hint">${esc(flow.credit)}</p>` : ''}
       <button class="btn gold" type="button" data-act="go">▶ Weiter</button>
@@ -530,7 +597,7 @@
       end: () => { closeOv(); if (stage) stage.abort(); },
       re: () => { closeOv(); stopAll(); runStage(flow); },
       quit: () => { closeOv(); stopAll(); go(flow.ret || 'sMenu'); } });
-    function resume() { closeOv(); if (stage) { if (flow && flow.micOn && stage.part && (stage.part.type === 'pitch' || stage.part.type === 'rhythm')) A.micStart().catch(() => {}); stage.resume(); } }
+    function resume() { closeOv(); if (ytCur) ytCur.P.play(); if (stage) { if (flow && flow.micOn && stage.part && (stage.part.type === 'pitch' || stage.part.type === 'rhythm')) A.micStart().catch(() => {}); stage.resume(); } }
   }
   // Während der Pause: P/Start setzt ebenfalls fort
   addEventListener('keydown', e => { if (cur === 'sStage' && stage && stage.paused && e.code === 'KeyP' && !$('#ov').hidden) { e.preventDefault(); const r = $('#ovBox [data-act="go"]'); if (r) r.click(); } });
@@ -924,13 +991,14 @@
     sing.party = null;
     sing.ctx = { mode: career ? 'career' : 'free', sel: Object.assign({}, prep), talk: { symp: talk.symp, votes: career ? talk.votes : 0 },
       title: career ? def.icon + ' ' + def.name : '🎤 Freies Casting', bg: career ? def.bg : 'stage' };
+    const asg = career ? assignOf(s) : null; if (asg) { sing.ctx.asg = asg; sing.g = asg.g; sing.song = asg.i; sing.q = ''; }
     backTo.sSing = 'sPrep'; go('sSing');
   }
   function singPick() {
     const g = genre(sing.g), style = g ? g.style : 'pop';
     if (g && Number.isInteger(sing.song) && g.songs[sing.song]) { const [t, v, ch] = g.songs[sing.song]; return { vid: v, title: t, credit: `🎤 ${t} · Karaoke-Video: ${ch} (YouTube) · Rechte bei den Urhebern`, style }; }
     const t = sing.title.trim().slice(0, 80) || (sing.song === 'own' ? 'Eigener Song' : 'A cappella');
-    if (sing.song === 'own') { const v = ytId(sing.own); return { vid: v, title: t, credit: `🎤 ${t}${v ? ' · Video: YouTube · Rechte bei den Urhebern' : ''}`, style }; }
+    if (sing.song === 'own') { const v = ytId(sing.own); return { vid: v, title: t, credit: `🎤 ${t}${v ? ' · Video: ' + (sing.ch ? sing.ch + ' (YouTube)' : 'YouTube') + ' · Rechte bei den Urhebern' : ''}`, style }; }
     return { vid: null, title: t, credit: `🎤 ${t} · a cappella`, style };
   }
   // Album-Cover über die iTunes-Suche (JSONP, kein Schlüssel nötig): nur sichtbare Songs, nacheinander, auf dem Gerät gemerkt.
@@ -983,7 +1051,7 @@
     list.hidden = !!q; box.hidden = !q;
     if (!q) { box.innerHTML = ''; return; }
     box.innerHTML = hits.map(h => songOpt(`data-sq="${h.g.id}:${h.i}"`, sing.g === h.g.id && sing.song === h.i, h.x, h.g.icon + ' ' + esc(h.g.name) + ' · ' + esc(h.x[2]))).join('')
-      + `<button type="button" class="opt" data-yt="1"><b>🔎 „${esc(q.slice(0, 60))}“ auf YouTube suchen</b><small>${hits.length ? 'Nicht dabei? ' : 'Nichts gefunden. '}Karaoke-Video suchen, Link kopieren und hier einfügen</small></button>`;
+      + `<button type="button" class="opt" data-yt="1"><b>🔎 „${esc(q.slice(0, 60))}“ auf YouTube suchen</b><small>${hits.length ? 'Nicht dabei? ' : 'Nichts gefunden. '}Karaoke-Videos direkt hier im Spiel finden</small></button>`;
     covLoad(box);
   }
   RENDER.sSing = () => {
@@ -996,7 +1064,8 @@
       .concat(opt('sg', 'frei', !g, '🎤 Ohne Challenge', 'Freie Songwahl, nur die Jury zählt'));
     const ss = (g ? g.songs.map((x, i) => songOpt(`data-ss="${i}"`, sing.song === i, x, 'Karaoke mit Lyrics · ' + esc(x[2]))) : [])
       .concat(opt('ss', 'acap', sing.song === 'acap', '🎙️ A cappella', 'Ohne Musik, nur deine Stimme'), opt('ss', 'own', sing.song === 'own', '🔗 Eigener Song', 'YouTube-Link einfügen oder einfach ohne Video'));
-    const own = sing.song === 'own' || sing.song === 'acap', pt = sing.party, plain = !sing.ctx && !pt;
+    const asg = sing.ctx && sing.ctx.asg; if (asg) { sing.g = asg.g; sing.song = asg.i; }
+    const own = !asg && (sing.song === 'own' || sing.song === 'acap'), pt = sing.party, plain = !sing.ctx && !pt;
     const day = S.dailyDay(), ds = S.dailySong(day), dBest = (save.daily || {})['d' + day];
     const st = S.starSum(save), rw = t => D.REWARDS.filter(r => r.type === t).map(r => { const ok = S.unlocked(save, r);
       return `<button type="button" class="opt${ok ? '' : ' lock'}" data-rw="${r.id}" aria-pressed="${save.rew[t] === r.id}" ${ok ? '' : 'disabled'}><b>${r.name}</b><small>${ok ? 'freigeschaltet' : '🔒 ab ' + r.need + ' ★'}</small></button>`; }).join('');
@@ -1007,11 +1076,12 @@
         <button class="btn gold" type="button" id="singDaily">🎤 Song des Tages singen</button></div>` : ''}
       <div class="panel"><p>${sing.ctx ? '<b>Jetzt zählt’s!</b> ' : ''}Wie im echten Casting: Du singst einen Song deiner Wahl ins Mikrofon. Das Spiel hört auf <b>Intonation, Stabilität, Stimmumfang und Ausdruck</b>, danach entscheidet die Jury.</p>
         <p class="muted">Ausgewertet wird nur auf deinem Gerät. Deine Aufnahme kannst du danach anhören; sie wird nicht gespeichert oder gesendet.</p></div>
+      ${asg ? `<div class="banner gold assign">${asg.img ? `<img class="jimg" src="${asg.img}" alt="" style="width:46px;height:64px">` : ''}<span>🎯 <b>${esc(asg.name)}</b> hat dir diesen Song zugeteilt – jetzt zeig, was du draus machst!</span></div><div class="opts songs">${songOpt('data-ss="' + asg.i + '"', true, [asg.t, asg.vid, asg.ch], 'Karaoke mit Lyrics · ' + esc(asg.ch))}</div>` : `
       <h3>1 · ${plain ? 'Genre-Challenge' : 'Genre'}</h3><div class="opts">${gs.join('')}</div>
       <p class="hint" style="text-align:left">${!plain ? '' : '★ 2 von 3 Jury-Ja · ★★ dazu das Genre-Ziel · ★★★ dazu mindestens 80 Punkte. '}Der Stil bringt bei der passenden Jurorin oder dem passenden Juror einen Bonus.</p>
       <h3>2 · Dein Song${g ? ` <small class="muted">(${g.songs.length} Karaoke-Songs)</small>` : ''}</h3>
       <div class="songFind"><input id="singQ" type="search" enterkeyhint="search" autocomplete="off" value="${esc(sing.q)}" placeholder="🔎 Song oder Interpret suchen (${D.KARAOKE.reduce((n, x) => n + x.songs.length, 0)} Songs)" aria-label="Song suchen"><button class="btn sm violet" type="button" data-yt="1">YouTube ↗</button></div>
-      <div class="opts songs" id="singRes" hidden></div><div class="opts songs" id="singList">${ss.join('')}</div>
+      <div class="opts songs" id="singRes" hidden></div><div class="opts songs" id="singList">${ss.join('')}</div>`}
       ${own ? `<div class="panel"><label class="field">Songtitel (optional)<input id="singTitle" type="text" maxlength="80" value="${esc(sing.title)}" placeholder="z. B. Adele – Hello"></label>
         ${sing.song === 'own' ? `<label class="field">YouTube-Link (optional)<input id="singLink" type="url" inputmode="url" value="${esc(sing.own)}" placeholder="https://youtu.be/…"></label>
         <div class="row2"><button class="btn sm violet" type="button" id="singFind">🔍 Karaoke-Version auf YouTube suchen</button>${navigator.clipboard && navigator.clipboard.readText ? '<button class="btn sm" type="button" id="singPaste">📋 Link einfügen</button>' : ''}</div>
@@ -1028,7 +1098,7 @@
   };
   $('#singBox').addEventListener('input', e => {
     if (e.target.id === 'singTitle') sing.title = e.target.value;
-    else if (e.target.id === 'singLink') sing.own = e.target.value;
+    else if (e.target.id === 'singLink') { sing.own = e.target.value; sing.ch = ''; }
     else if (e.target.id === 'singQ') { sing.q = e.target.value; songRes(); }
   });
   $('#singBox').addEventListener('click', e => {
@@ -1044,12 +1114,7 @@
     }
     const sq = e.target.closest('[data-sq]');
     if (sq) { const [gi, i] = sq.dataset.sq.split(':'); sing.g = gi; sing.song = +i; sing.q = ''; sing.daily = false; RENDER.sSing(); const nb = $(`#singBox [data-ss="${i}"]`); if (nb) { nb.focus(); nb.scrollIntoView({ block: 'nearest' }); } return; }
-    if (e.target.closest('[data-yt]')) {   // YouTube-Suche im neuen Tab, danach Link als „Eigener Song“ einfügen
-      const q = sing.q.trim() || sing.title.trim();
-      window.open('https://www.youtube.com/results?search_query=' + encodeURIComponent((q || 'Song') + ' karaoke lyrics'), '_blank', 'noopener');
-      if (q) sing.title = q.slice(0, 80);
-      sing.song = 'own'; sing.q = ''; sing.daily = false; RENDER.sSing(); const li = $('#singLink'); if (li) li.focus(); return;
-    }
+    if (e.target.closest('[data-yt]')) { karaSearch(sing.q.trim() || sing.title.trim()); return; }   // Karaoke-Suche direkt im Spiel (YouTube über Piped/Invidious)
     if (e.target.closest('#singPaste')) {
       navigator.clipboard.readText().then(t => { const v = ytId(t); if (!v) { toast('In der Zwischenablage ist kein YouTube-Link.', 2500); return; } sing.own = t.trim(); const li = $('#singLink'); if (li) li.value = sing.own; toast('✅ Link eingefügt', 1500); }).catch(() => toast('Einfügen nicht erlaubt – halte lange ins Feld und wähle „Einfügen“.', 3000));
       return;
@@ -1057,7 +1122,7 @@
     const r = e.target.closest('[data-rw]');
     if (r) { const x = D.REWARDS.find(y => y.id === r.dataset.rw); if (x && S.unlocked(save, x)) { save.rew[x.type] = x.id; persist(); RENDER.sSing(); const d = $('#singBox details.rew'); if (d) d.open = true; const nb = $(`#singBox [data-rw="${x.id}"]`); if (nb) nb.focus(); } return; }
     if (e.target.closest('#singDaily')) { const ds = S.dailySong(S.dailyDay()); sing.g = ds.g; sing.song = ds.i; sing.len = 60; sing.daily = true; singStart(); return; }
-    if (e.target.closest('#singFind')) { window.open('https://www.youtube.com/results?search_query=' + encodeURIComponent((sing.title.trim() || 'Song') + ' karaoke lyrics'), '_blank', 'noopener'); return; }
+    if (e.target.closest('#singFind')) { karaSearch(sing.title.trim()); return; }
     if (e.target.closest('#singHp')) { save.settings.hp = !save.settings.hp; persist(); RENDER.sSing(); const nb = $('#singHp'); if (nb) nb.focus(); return; }
     if (e.target.closest('#singGo')) singStart();
     else if (e.target.closest('#singStop')) singFinish();
@@ -1066,6 +1131,23 @@
     else if (e.target.closest('#singFs')) { const sc = $('#singScr'); if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); else if (sc && sc.requestFullscreen) sc.requestFullscreen().catch(() => toast('Vollbild geht hier leider nicht.', 2000)); }
     else if (e.target.closest('#singX')) RENDER.sSing();
   });
+  // Karaoke-Videos direkt im Spiel suchen (ohne API-Schlüssel) – Auswahl wird zum „Eigenen Song“ mit Kanal als Quelle
+  function karaSearch(q0) {
+    let my = 0, list = [];
+    const run = async () => { const inp = $('#ovQ'), res = $('#ovRes'); if (!inp || !res) return; const q = inp.value.trim(); if (!q) return; const k = ++my; res.innerHTML = '<p class="muted">🔎 Suche auf YouTube …</p>';
+      try { list = await MD.videos(/karaoke/i.test(q) ? q : q + ' karaoke'); } catch (e) { list = null; } if (k !== my || !$('#ovRes')) return;
+      if (!list) { res.innerHTML = '<p class="muted">📶 Die YouTube-Suche ist gerade nicht erreichbar. Du kannst einen Link einfügen.</p>'; return; }
+      list.sort((a, b) => (/karaoke/i.test(b.title) ? 1 : 0) - (/karaoke/i.test(a.title) ? 1 : 0));
+      res.innerHTML = list.length ? list.slice(0, 15).map((x, i) => `<button type="button" class="opt song" data-i="${i}"><img class="cov" src="${esc(x.thumb)}" alt="" referrerpolicy="no-referrer" onerror="this.classList.add('x')"><span><b>${esc(x.title)}</b><small>Kanal: ${esc(x.by || '–')}${x.dur ? ' · ' + mmss(x.dur) : ''}</small></span></button>`).join('') : '<p class="muted">Nichts gefunden.</p>';
+      const f = res.querySelector('[data-i]'); if (f && !coarseIn()) f.focus(); };
+    overlay(`<h3>🔎 Karaoke-Video suchen</h3><p class="muted">Direkt auf YouTube – ohne das Spiel zu verlassen. Kanal und Song stehen später beim Auftritt.</p>
+      <div class="songFind"><input id="ovQ" type="search" enterkeyhint="search" autocomplete="off" value="${esc(q0 || '')}" placeholder="Song oder Interpret …" aria-label="Karaoke-Video suchen"><button class="btn sm violet" type="button" data-act="go">🔎</button></div>
+      <div class="opts songs" id="ovRes"></div><button class="btn" type="button" data-act="x">Abbrechen</button>`, { go: run, x: closeOv });
+    $('#ovQ').addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); run(); } if (e.key === 'Escape') closeOv(); });
+    $('#ovRes').addEventListener('click', e => { const b = e.target.closest('[data-i]'), x = b && list[+b.dataset.i]; if (!x) return; closeOv();
+      sing.song = 'own'; sing.own = 'https://youtu.be/' + x.id; sing.title = x.title.replace(/\s*[([](?:karaoke|lyrics?|instrumental)[^)\]]*[)\]]/gi, '').slice(0, 80); sing.ch = x.by || ''; sing.q = ''; sing.daily = false; RENDER.sSing(); const go2 = $('#singGo'); if (go2) go2.focus(); });
+    if (q0) run(); $('#ovQ').focus();
+  }
   function singEnd() {
     const run = sing.run; if (!run) return;
     sing.run = null; run.ended = true; cancelAnimationFrame(run.raf);
@@ -1075,6 +1157,17 @@
     if (run.playId != null && !run.done && save.season && save.season.status === 'playing') { S.cancelRound(save.season); persist(); }   // abgebrochen: Runde nicht verbraucht
     const f = $('#singVid'); if (f) f.src = 'about:blank';
     if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  }
+ // Karaoke-Video darf nicht eingebettet werden (oder ist weg): selbst eine andere Karaoke-Version suchen und einsetzen
+  async function karaSwap(run, pk) {
+    const er = $('#singErr'); run.tried = run.tried || new Set([pk.vid]); toast('🔄 Dieses Video ist gesperrt – ich suche eine andere Karaoke-Version …', 3000);
+    let alt = null; try { alt = (await MD.videoFor({ artist: '', title: pk.title.replace(/\s+[–-]\s+/, ' '), dur: 0 }, 'karaoke')).find(v => !run.tried.has(v.id) && v.s > 0); } catch (e) { alt = null; }
+    if (alt) run.tried.add(alt.id);
+    if (run.ended || sing.run !== run) return;
+    const f = $('#singVid'); if (!alt || !f) { if (er) er.hidden = false; return; }
+    pk.vid = alt.id; f.src = 'https://www.youtube-nocookie.com/embed/' + alt.id + '?autoplay=1&rel=0&playsinline=1&enablejsapi=1' + (save.settings.mute ? '&mute=1' : '');
+    const cr = $('#singBox .ssCredit span'); if (cr) cr.innerHTML = `🎤 ${esc(pk.title)} · Karaoke-Video: ${esc(alt.by || 'YouTube')} (YouTube) · Rechte bei den Urhebern · <a href="https://www.youtube.com/watch?v=${alt.id}" target="_blank" rel="noopener">YouTube ↗</a>`;
+    run.swapped = false; toast('✅ Andere Karaoke-Version gefunden', 1800);
   }
   const REC_TYPES = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/ogg;codecs=opus', 'audio/webm'];
   const LANES = ['top', 'bottom', 'below'];
@@ -1125,7 +1218,7 @@
     run.onMsg = e => {   // YouTube meldet Fehler 101/150, wenn der Kanal das Einbetten verbietet
       if (!vid || e.source !== vid.contentWindow) return;
       let d = null; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; }
-      if (d && d.event === 'onError') { const er = $('#singErr'); if (er) er.hidden = false; }
+      if (d && d.event === 'onError' && !run.swapped) { run.swapped = true; karaSwap(run, pk); }
       if (!d || !run.full || run.ended) return;
       if (d.event === 'onStateChange' && d.info === 0) { if (run.started) singFinish(); return; }   // Video zu Ende
       const inf = d.event === 'infoDelivery' && d.info;   // Länge und Position des Videos für „Ganzer Song“
@@ -1366,7 +1459,6 @@
     $('#setBox').innerHTML =
       row('🎵 Musik', 'Lautstärke der Beats', `<input type="range" min="0" max="1" step="0.05" value="${s.music}" data-r="music" aria-label="Musik">`) +
       row('🔊 Effekte', 'Jury, Applaus, Treffer', `<input type="range" min="0" max="1" step="0.05" value="${s.sfx}" data-r="sfx" aria-label="Effekte">`) +
-      row('📻 Musikquelle', 'Radio: Noten entstehen live aus der Musik der RicoReWi-Sender auf laut.fm (Sender und Titel werden angezeigt). Eigene Beats: im Spiel erzeugt, ohne Internet.', seg('source', [['radio', '📻 Radio'], ['beats', '🥁 Eigene Beats']])) +
       row('⚖️ Jury', 'Wechselnd: Ab dem Recall sitzen Gastjuroren mit eigenem Geschmack in der Jury. Gilt ab der nächsten Staffel.', seg('jury', [['wechsel', 'Wechselnd'], ['fest', 'Stammjury']])) +
       row('🔇 Stumm', 'Alles aus – das Spiel läuft trotzdem', tog('mute')) +
       row('💬 Untertitel', 'Wichtige Töne als Text einblenden', tog('captions')) +
@@ -1607,11 +1699,11 @@
     }
     const sty = D.STYLES[st.style] || D.STYLES.pop, ap = D.APPROACH.gefuehl, ac = D.ACTION.publikum;
     const parts = st.def.parts.map((t, i) => t === 'rhythm'
-      ? { type: 'rhythm', len: st.def.len, bpm: sty.bpm, style: st.style, density: ap.density + st.round * 0.04, seed: st.seed + i * 101, shows: i === 0 ? ac.shows : 1, title: '„' + D.SONGS[st.style] + '“', sub: st.def.name }
+      ? { type: 'rhythm', len: st.def.len, bpm: sty.bpm, style: st.style, density: ap.density + st.round * 0.04, seed: st.seed + i * 101, shows: i === 0 ? ac.shows : 1, title: '🥁 ' + D.STYLES[st.style].name + '-Takt', sub: st.def.name }
       : { type: 'pitch', len: st.def.len, bpm: sty.bpm, style: st.style, seed: st.seed + i * 101, title: '🎤 Gesangsteil', sub: st.def.name });
     ON.played = st.seed;   // jede Runde hat einen neuen Seed, auch nach „Neue Show“
     runStage({ mode: 'online', r: st.round, style: st.style, panel: st.panel, parts, bg: st.def.final ? 'arena' : 'stage', ret: 'sOnline',
-      title: '🌐 ' + st.def.icon + ' ' + st.def.name + ' · „' + D.SONGS[st.style] + '“' });
+      title: '🌐 ' + st.def.icon + ' ' + st.def.name + ' · 🥁 ' + D.STYLES[st.style].name + '-Takt' });
   }
   function onFinish(f, out) {
     flow = null;
@@ -1660,7 +1752,7 @@
           : '<p class="center muted">Warte, bis der Gastgeber die Show startet …</p>');
     } else if (st.phase === 'perform') {
       const jury = (st.panel || D.MAIN_JURY).map(jur).map(j => `<span class="pj">${jimg(j, 'js')}<small>${esc(j.name)}</small></span>`).join('');
-      body = `<div class="panel"><p><b>${def.icon} ${esc(def.name)}</b> · ${st.sing ? '🎙️ Echt vorsingen, ' + ONLINE_SING + ' Sekunden · Stil: ' + esc(D.STYLES[st.style].name) : 'Musik: „' + esc(D.SONGS[st.style]) + '“ (' + esc(D.STYLES[st.style].name) + ', eigene Beats)'}</p><div class="panelRow"><span class="muted">⚖️ Jury:</span>${jury}</div></div>
+      body = `<div class="panel"><p><b>${def.icon} ${esc(def.name)}</b> · ${st.sing ? '🎙️ Echt vorsingen, ' + ONLINE_SING + ' Sekunden · Stil: ' + esc(D.STYLES[st.style].name) : 'Takt: ' + esc(D.STYLES[st.style].name) + ' (' + D.STYLES[st.style].bpm + ' BPM, für alle gleich)'}</p><div class="panelRow"><span class="muted">⚖️ Jury:</span>${jury}</div></div>
         <div class="panel"><div class="onPlayers">${st.field.map(id => { const x = onPlayer(id) || { name: '?', look: {} }; const ok = st.done.includes(id); return `<div class="onP ${ok ? '' : 'wait'}">${AV.svg(x.look, ok ? 'happy' : 'neutral')}<b>${esc(x.name)}</b><small>${ok ? '✅ fertig' : '🎤 singt …'}</small></div>`; }).join('')}</div></div>
         <p class="center muted">${inField ? (ON.played === st.seed ? (st.sing && !st.done.includes(me) ? '' : 'Super! Warte auf die anderen …') : '') : 'Du bist diesmal Publikum – gleich darfst du abstimmen.'}</p>
         ${inField && st.sing && ON.played === st.seed && !st.done.includes(me) ? '<button class="btn gold xl" type="button" data-o="sing" style="width:100%">🎙️ Zum Vorsingen</button>' : ''}`;
@@ -1713,5 +1805,5 @@
 
   // ---------- Start ----------
   applySettings();
-  window.SMYVApp = { state: () => ({ cur, save, stage: !!stage, flow: flow && flow.mode }), go, stageObj: () => stage };
+  window.SMYVApp = { state: () => ({ cur, save, stage: !!stage, flow: flow && flow.mode }), go, stageObj: () => stage, assignOf, prepGo: m => { RENDER.sPrep(m); go('sPrep', m); } };
 })();
