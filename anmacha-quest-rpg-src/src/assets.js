@@ -51,6 +51,7 @@ export function makeActor(gltf, height, tint) {
       if (!o.isMesh) return;
       const tintOne = (m) => { const d = m.clone(); d.color = d.color.clone().multiply(c); return d; };
       o.material = Array.isArray(o.material) ? o.material.map(tintOne) : tintOne(o.material);
+      o.userData.ownMat = true;   // eigene Kopie: wird beim Abbau der Szene freigegeben
     });
   }
   const box = gltf.box;

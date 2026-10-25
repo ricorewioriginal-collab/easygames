@@ -9,6 +9,18 @@ import { VIS, treesFor, palette, baseTheme } from './view.js';
 const C = (c) => new THREE.Color(c);
 const ATTACK = ['sword_attack', 'staff_attack', 'bow_attack_shoot', 'dagger_attack', 'attack', 'punch'];
 
+// Gibt GPU-Speicher frei, den die Kampfszene selbst angelegt hat (geteilte Modelle aus dem Cache bleiben erhalten)
+function disposeOwned(root) {
+  root.traverse((o) => {
+    if (o.userData.ownGeo) o.geometry?.dispose();
+    if (o.userData.ownMat) for (const m of [].concat(o.material)) {
+      if (!m) continue;
+      if (m.userData.ownTex) { m.map?.dispose(); m.normalMap?.dispose(); }
+      m.dispose();
+    }
+  });
+}
+
 export class Battle {
   constructor(view) {
     this.v = view;
@@ -59,6 +71,8 @@ export class Battle {
     geo.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
     const ground = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, map, normalMap: nm, roughness: 0.92 }));
     ground.receiveShadow = true;
+    ground.userData.ownGeo = ground.userData.ownMat = true;
+    ground.material.userData.ownTex = true;
     sc.add(ground);
     // Kulisse
     const rng = mulberry(hashStr(bg));
@@ -91,6 +105,7 @@ export class Battle {
     for (const l of this.pool) { l.intensity = 0; l.userData.busy = false; sc.add(l); }
     this.parts = makeParticles(vis.part[0], Math.round(Q.parts * 0.7), vis.part[1], new THREE.Vector3(24, 8, 16));
     this.parts.material.uniforms.center.value.set(0, 0, -2);
+    this.parts.userData.ownGeo = this.parts.userData.ownMat = true;
     sc.add(this.parts);
     // Figuren
     const n = enemies.length;
@@ -127,6 +142,7 @@ export class Battle {
     g.translate(0, 0.17, 0);
     const mat = addWind(new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide, roughness: 0.85 }), 0.07, 0.34);
     const im = new THREE.InstancedMesh(g, mat, count);
+    im.userData.ownGeo = im.userData.ownMat = true;
     const m = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3(), p = new THREE.Vector3(), col = new THREE.Color();
     for (let i = 0; i < count; i++) {
       const a = Math.random() * Math.PI * 2, r = 2.5 + Math.sqrt(Math.random()) * 15;
@@ -148,7 +164,7 @@ export class Battle {
     for (const c of sc.children.slice()) {
       if (c === sc.userData.sky || c === sc.userData.sun || c === sc.userData.hemi || c === sc.userData.sun?.target) continue;
       sc.remove(c);
-      if (c.isInstancedMesh || c === this.parts) { c.geometry.dispose(); }
+      disposeOwned(c);
     }
     this.enemies = [];
     this.heroes = [];

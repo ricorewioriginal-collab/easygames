@@ -36,11 +36,7 @@ async function boot() {
   const canvas = $('cv');
   const test = document.createElement('canvas');
   if (!(test.getContext('webgl2') || test.getContext('webgl'))) throw new Error('Dein Browser unterstützt kein WebGL.');
-  // Alter Spielstand der Godot-Fassung wird einmalig übernommen
-  if (!store.has(SAVE_KEY)) {
-    const old = await readGodotSave();
-    if (old) store.set(SAVE_KEY, JSON.stringify(old));
-  }
+  await importLegacySave();
   const game = new Game(null, null, { store, debug: params.has('debug') });
   const ui = new UI(game);
   const view = new View(canvas, game, quality);
@@ -76,6 +72,24 @@ async function boot() {
   };
   requestAnimationFrame(loop);
   game.showTitle();
+}
+
+// Spielstand der Godot-Fassung übernehmen. Die Cloud kann eine neuere alte Datei erst nach dem Start
+// zurückspielen (und lädt dann neu) – daher merken wir uns, was übernommen wurde, und übernehmen eine
+// geänderte alte Datei erneut, solange in der neuen Fassung seitdem nicht gespeichert wurde.
+const LEGACY = 'anmachaQuest_legacy';
+const fp = (str) => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36) + ':' + str.length; };
+async function importLegacySave() {
+  const old = await readGodotSave();
+  if (!old) return;
+  const json = JSON.stringify(old), mark = { src: fp(json), save: fp(json) };
+  let prev = null;
+  try { prev = JSON.parse(store.get(LEGACY)); } catch (e) { }
+  const cur = store.get(SAVE_KEY);
+  if (prev && prev.src === mark.src) return;                   // diese alte Datei ist schon übernommen
+  if (cur !== null && (!prev || fp(cur) !== prev.save)) return; // in der neuen Fassung wurde schon gespielt
+  store.set(SAVE_KEY, json);
+  store.set(LEGACY, JSON.stringify(mark));
 }
 
 const KEYMAP = {

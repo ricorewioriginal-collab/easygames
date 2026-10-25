@@ -226,7 +226,7 @@ export class View {
       sc.remove(c);
       c.traverse?.((o) => {
         if (o.isInstancedMesh || o.userData.ownGeo) o.geometry?.dispose();
-        if (o.userData.ownMat) [].concat(o.material).forEach(m => m?.dispose());
+        if (o.userData.ownMat) [].concat(o.material).forEach(m => { if (m?.userData.ownTex) { m.map?.dispose(); m.normalMap?.dispose(); } m?.dispose(); });
       });
     }
     this.dyn.clear();
@@ -424,6 +424,7 @@ export class View {
     const mesh = new THREE.Mesh(geo, mat);
     mesh.receiveShadow = true;
     mesh.userData.ownGeo = mesh.userData.ownMat = true;
+    mat.userData.ownTex = true;
     const group = new THREE.Group();
     group.add(mesh);
     // Umland außerhalb der Karte (Meeresgrund bzw. dunkler Fels)
