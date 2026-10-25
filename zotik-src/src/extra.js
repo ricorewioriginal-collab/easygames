@@ -73,7 +73,7 @@ export function createExtra(C) {
       const b = S().bst || (S().bst = {}), n = e.d.name || e.k, r = b[n] || (b[n] = { n: 0, hp: e.max, dmg: e.d.dmg, w: C.weakOf(e), boss: !!e.boss });
       r.n++; if (r.n === 1) toast('📖 Bestiarium: ' + n);
       const m = S().mat || (S().mat = {}), g = (k, c) => { if (Math.random() < c) m[k] = (m[k] || 0) + 1 };
-      g('fell', e.boss ? 1 : .35); g('staub', e.boss ? 1 : .22); g('kern', e.boss ? 1 : .05); if (e.boss) m.kern = (m.kern || 0) + 1;
+      const mm = Math.max(1, Math.round(C.matMul ? C.matMul() : 1)); for (let i = 0; i < mm; i++) { g('fell', e.boss ? 1 : .35); g('staub', e.boss ? 1 : .22); g('kern', e.boss ? 1 : .05); } if (e.boss) m.kern = (m.kern || 0) + 1;
     },
     rew: () => dif()[3],
     god: () => !!chx().god,
@@ -105,7 +105,7 @@ export function createExtra(C) {
     tick(dt) {
       timeline(dt);
       achT -= dt; if (achT <= 0) { achT = 2; unlock(); }
-      const h = C.fox().head; if (h) h.scale.setScalar(chx().big ? 1.9 : 1);
+      const h = C.fox().head; if (h) h.scale.setScalar(chx().big || (C.gimBig && C.gimBig()) ? 1.9 : 1);
     },
     note: () => { const r = RADIO[S().rad || 0]; return r; },
     radioScale: () => RADIO[S().rad || 0],

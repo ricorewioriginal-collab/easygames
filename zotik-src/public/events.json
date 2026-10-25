@@ -1,0 +1,12 @@
+{
+  "_info": "Live-Events für ZOTIK. Diese Datei kann auf GitHub geändert werden, ohne das Spiel neu zu bauen. daily: Rotation pro Tag (Felder: n Name, d Beschreibung, xp/sh/mat/hp Faktoren, bxp Boss-EP-Faktor, herb Kräuter-Chance, emo Event-Emote). special: Sonderevents mit from/to (Datum, ISO).",
+  "daily": [
+    { "id": "xp", "n": "Bonus-EP-Tag", "d": "+50 % Erfahrung", "xp": 1.5 },
+    { "id": "sh", "n": "Schatztag", "d": "+50 % Rissplitter", "sh": 1.5 },
+    { "id": "mat", "n": "Materialtag", "d": "Doppelte Materialien", "mat": 2 },
+    { "id": "inv", "n": "Riss-Invasion", "d": "Gegner +25 % Leben, doppelte Belohnung", "hp": 1.25, "xp": 2, "sh": 2 },
+    { "id": "boss", "n": "Bossrotation", "d": "Bosse geben dreifache Erfahrung", "bxp": 3 },
+    { "id": "herb", "n": "Kräutertag", "d": "Gegner lassen oft Kräuter fallen", "herb": 0.35 }
+  ],
+  "special": []
+}
