@@ -513,6 +513,7 @@ BI.buildWorld = function (scene) {
   BI.buildRaetselGround({ W, st, lamp, ROADY });
   if (BI.buildWaldGround) BI.buildWaldGround({ W, st, lamp, ROADY });
   BI.buildBadeGround({ W, st, lamp, ROADY });
+  if (BI.buildThemenGround) BI.buildThemenGround({ W, st });
   BI.buildAtlantisGround({ W, st, lamp, ROADY, scene });
   BI.buildZotikGround({ W, st, lamp, scene });
   BI.buildRadioGround({ W, st, lamp, scene });
@@ -678,15 +679,16 @@ BI.buildWorld = function (scene) {
     W.trees.push(T);
   }
   function finalizeTrees() {
-    const flat = g => { const n = g.toNonIndexed(); n.computeVertexNormals(); return n; };
-    const geos = { trunk: flat(new THREE.CylinderGeometry(.3, .42, 1, 6).translate(0, .5, 0)), crown: flat(new THREE.IcosahedronGeometry(1, 1)), cone: flat(new THREE.ConeGeometry(1, 1, 7).translate(0, .5, 0)) };
-    const mat = new THREE.MeshLambertMaterial({ color: 0xffffff }); W.treeMat = mat;
+    /* weich schattiert (runde Normalen) + sanfter Farbverlauf: unten dunkler, oben heller (wirkt wie Schatten im Laub) – kostet keine zusätzlichen Zeichenaufrufe */
+    const shade = (g, y0, y1, lo, hi) => { const P = g.attributes.position, c = new Float32Array(P.count * 3); for (let i = 0; i < P.count; i++) { const k = BI.lerp(lo, hi, BI.clamp((P.getY(i) - y0) / (y1 - y0), 0, 1)); c[i * 3] = c[i * 3 + 1] = c[i * 3 + 2] = k; } g.setAttribute('color', new THREE.BufferAttribute(c, 3)); return g; };
+    const geos = { trunk: shade(new THREE.CylinderGeometry(.3, .42, 1, 9).translate(0, .5, 0), 0, 1, .78, 1.04), crown: shade(new THREE.IcosahedronGeometry(1, 1), -1, 1, .7, 1.1), cone: shade(new THREE.ConeGeometry(1, 1, 10).translate(0, .5, 0), 0, 1, .74, 1.08) };
+    const mat = new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: true }); W.treeMat = mat;
     /* je 120-m-Kachel eine eigene Instanz-Gruppe mit passender Hülle (Platz für umfallende Bäume): unsichtbare Kacheln werden übersprungen */
     const CELL = 120, PAD = 14;
     for (const k of ['trunk', 'crown', 'cone']) {
       const cells = new Map(); for (const e of IL[k]) { const key = Math.floor(e.m.elements[12] / CELL) + ',' + Math.floor(e.m.elements[14] / CELL); (cells.get(key) || cells.set(key, []).get(key)).push(e); }
       for (const list of cells.values()) {
-        const g = new THREE.BufferGeometry(); for (const a in geos[k].attributes) g.setAttribute(a, geos[k].attributes[a]);
+        const g = new THREE.BufferGeometry(); for (const a in geos[k].attributes) g.setAttribute(a, geos[k].attributes[a]); if (geos[k].index) g.setIndex(geos[k].index);
         const bb = new THREE.Box3(); for (const e of list) bb.expandByPoint(_ip.set(e.m.elements[12], e.m.elements[13], e.m.elements[14]));
         g.boundingSphere = bb.getBoundingSphere(new THREE.Sphere()); g.boundingSphere.radius += PAD;
         const m = new THREE.InstancedMesh(g, mat, list.length); m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -781,6 +783,7 @@ BI.buildWorld = function (scene) {
     sh.absarc(0, 0, 900, 0, Math.PI * 2, false); ho.moveTo(c[0][0], c[0][1]); for (let i = 1; i < 4; i++) ho.lineTo(c[i][0], c[i][1]); ho.closePath(); sh.holes.push(ho); water.geometry.dispose(); water.geometry = new THREE.ShapeGeometry(sh, 40);
   }
   water.rotation.x = -Math.PI / 2; water.position.y = -.35; scene.add(water); W.water = water; W.bigMeshes.push(water);
+  BI.prettyWater(water);
   const foam = new THREE.Mesh(new THREE.RingGeometry(K.R + 8, K.R + 16, 64), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .45, depthWrite: false }));
   foam.rotation.x = -Math.PI / 2; foam.position.y = -.2; scene.add(foam); W.foam = foam; W.bigMeshes.push(foam);
   { const f2 = new THREE.Mesh(new THREE.RingGeometry(W.city.R + 7, W.city.R + 13, 56), foam.material); f2.rotation.x = -Math.PI / 2; f2.position.set(W.city.x, -.2, W.city.z); scene.add(f2); const f3 = new THREE.Mesh(new THREE.RingGeometry(W.park.R + 7, W.park.R + 13, 56), foam.material); f3.rotation.x = -Math.PI / 2; f3.position.set(W.park.x, -.2, W.park.z); scene.add(f3); const f4 = new THREE.Mesh(new THREE.RingGeometry(W.rainbow.R + 7, W.rainbow.R + 13, 56), foam.material); f4.rotation.x = -Math.PI / 2; f4.position.set(W.rainbow.x, -.2, W.rainbow.z); scene.add(f4); const f5 = new THREE.Mesh(new THREE.RingGeometry(W.pups.R + 7, W.pups.R + 13, 56), foam.material); f5.rotation.x = -Math.PI / 2; f5.position.set(W.pups.x, -.2, W.pups.z); scene.add(f5); const f6 = new THREE.Mesh(new THREE.RingGeometry(W.dampf.R + 7, W.dampf.R + 13, 56), foam.material); f6.rotation.x = -Math.PI / 2; f6.position.set(W.dampf.x, -.2, W.dampf.z); scene.add(f6); const f7 = new THREE.Mesh(new THREE.RingGeometry(W.drachen.R + 7, W.drachen.R + 13, 56), foam.material); f7.rotation.x = -Math.PI / 2; f7.position.set(W.drachen.x, -.2, W.drachen.z); scene.add(f7); const f8 = new THREE.Mesh(new THREE.RingGeometry(W.bauland.R + 7, W.bauland.R + 13, 96), foam.material); f8.rotation.x = -Math.PI / 2; f8.position.set(W.bauland.x, -.2, W.bauland.z); scene.add(f8); for (const I of W.isles || []) { const fi = new THREE.Mesh(new THREE.RingGeometry(I.R + 7, I.R + 13, 56), foam.material); fi.rotation.x = -Math.PI / 2; fi.position.set(I.x, -.2, I.z); scene.add(fi); } }

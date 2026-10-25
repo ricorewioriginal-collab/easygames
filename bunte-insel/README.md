@@ -244,6 +244,16 @@ Dateien: `js/util.js` (Geometrie-Bündelung, Figuren, Pappnase, Blitz, Partikel)
 
 
 
+### 🎪 Themenbereiche, schönere Grafik, ruhiger Ton und Vite (Oktober 2026)
+- **Minigolf ⛳** (neben der Fußball-Arena): 3 Bahnen mit Hindernissen und Windmühle. Richtung antippen, dann Kraft antippen; nach 6 Schlägen rollt der Ball von selbst ins Loch. Sterne je nach Schlägen, Sticker „Minigolf-Ass“.
+- **Dino-Ausgrabung 🦕** (Rätsel-Insel): 6 Hügel je dreimal ausgraben, die Knochen wandern aufs Museums-Skelett, Professorin Fossi schenkt den Sticker „Dino-Forscher“.
+- **Zuckerland 🍭** (Regenbogenwelt): Lolli startet die Bonbon-Jagd (12 Bonbons in 100 s), Zuckerwatte-Stand, Sticker „Naschkatze“.
+- **Sternwarte 🔭** (Hauptinsel): 5 Sternbilder durch Antippen verbinden, Sticker „Sternengucker“. Alle vier stehen im „Wohin?“-Menü (Reiter Spiele), im Aufgaben-Log und im Handbuch/Lösungsbuch (`js/themen.js`, Test `tests/themen.mjs`).
+- **Grafik ohne Low-Poly-Look**: weiche Normalen für runde Formen (`?soft=0` schaltet ab), Bäume mit Farbverlauf und runden Kronen, Wasser mit hellen Flachwasser-Säumen und wandernden Lichtstreifen (`?wasser=0`), runde Haustiere und Hunde. Kleine Teile verschwinden in der Ferne (Detailstufen `BI.DETAIL`, `?lod=0`) – 15–25 % weniger Dreiecke.
+- **Ton ohne Ruckeln**: ein gemeinsamer Rauschpuffer statt neuer Puffer pro Geräusch, Stimmen-Begrenzer, Limiter am Ausgang, ausgedünnte Motor-/Sirenen-Automation, Ton pausiert, wenn die Seite im Hintergrund ist.
+- **Stabilität**: Ein Fehler in einem Bild bringt das Spiel nicht mehr zum Stehen (die Welt wird weiter gezeichnet, der Fehler einmal gemeldet).
+- **Vite** (`bunte-insel-src/`): Im Netz und in der App lädt das Spiel EINE verkleinerte Datei `js/bunte-insel.min.js` statt 89 einzelner Skripte (schnellerer Start). Lokal (localhost) oder mit `?dev=1` kommen die Einzeldateien, `?bundle=1` erzwingt das Bündel; fehlt es, springen die Einzeldateien ein. Nach jeder Änderung an `js/*.js`: `cd bunte-insel-src && npm install && npm run build` (die CI prüft mit `node bunte-insel-src/check-bundle.mjs`, Test `tests/bundle.mjs`).
+
 ### Moderner Figuren-Look und Gäste aus anderen easygames 🎮 (Oktober 2026)
 
 - **Trickfilm-Look:** Figuren haben ein eigenes Material (`BI.charMat()`, Phong mit Licht pro Bildpunkt, leichtem Glanz und weichem Randlicht) statt der kantigen Eck-Beleuchtung. Kopf etwas größer (`BI.HEAD_K`), große glänzende Augen mit zwei Lichtpunkten, runde Bärte, Sonnenbrillen, Hutkrempen, Aufdrucke, Augenklappe, Feenflügel und Ringel statt flacher Klötzchen. Kopf und Augen feiner gerundet, sonst gleiche Geometrie-Sparsamkeit (ein Material, höchstens 7 Meshes pro Figur).

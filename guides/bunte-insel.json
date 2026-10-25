@@ -109,6 +109,16 @@
    ]
   },
   {
+   "t": "Themenbereiche: Minigolf, Dinos, Zuckerland, Sternwarte",
+   "list": [
+    "⛳ Minigolf neben der Fußball-Arena: an der Kasse bei Gustl starten. Einmal tippen legt die Richtung fest, ein zweites Mal die Kraft. 3 Bahnen mit Hindernissen und Windmühle; nach 6 Schlägen rollt der Ball von selbst ins Loch.",
+    "🦕 Dino-Ausgrabung auf der Rätsel-Insel: jeden der 6 Erdhügel dreimal ausgraben. Die Knochen kommen aufs Skelett im kleinen Museum; danach zu Professorin Fossi.",
+    "🍭 Zuckerland in der Regenbogenwelt: Lolli startet die Bonbon-Jagd (12 Bonbons in 100 Sekunden). Am Stand gibt es Zuckerwatte für einen Stern.",
+    "🔭 Sternwarte auf der Hauptinsel: bei Stella durchs Fernrohr schauen und die Sterne eines Sternbilds der Reihe nach antippen – 5 Sternbilder.",
+    "Alle vier findest du im „Wohin möchtest du?“-Menü unter Spiele und im Aufgaben-Log."
+   ]
+  },
+  {
    "t": "Die Welten",
    "p": [
     "Brücken führen von der Hauptinsel zu den Welten. In Klammern stehen die drei Sticker, die im Story-Modus die Welt öffnen – die Lösung dazu steht im Lösungsbuch."
@@ -355,6 +365,15 @@
     "🏁 Kart-Rennen: ins gelbe Flitzer-Kart steigen und durchs Start-Tor fahren (oder am Tor „Rennen starten“). 3 Runden gegen Ferdi, Pia und Pelle. Glitzerkisten ✦ geben Turbo, Münzen oder eine Kicher-Wolke, gelbe Pfeile machen schnell. Abkürzen über den Rasen zählt nicht. Platz 1 = 5 ⭐.",
     "🦖 Hüpf-Abenteuer: Automat am Platz – 2D-Level mit Röhren, Sternblöcken (von unten anstoßen) und Schnecken zum Draufhüpfen. Achtung, wenn die Kicher-Blume aus der Röhre schaut!",
     "🪨 Burg Felsenstein: Am Tor „Mutprobe starten“. Lauf auf den leuchtenden Knopf, dann auf den nächsten – Brocko lässt Kiesel rollen, über die du springst. Nach 3 Knöpfen lacht er und gibt den Sonnenstern zurück (+10 ⭐). Erwischen dich 3 Kiesel, fängst du einfach neu an."
+   ]
+  },
+  {
+   "t": "Themenbereiche komplett",
+   "list": [
+    "Minigolf: Richtung möglichst gerade aufs Loch, Kraft etwa zwei Drittel. Für jede Bahn gibt es 3/2/1 Sterne je nach Schlägen; alle 3 Bahnen → Sticker ⛳ Minigolf-Ass.",
+    "Dino-Ausgrabung: alle 6 Hügel je dreimal graben (6 Knochen), dann Professorin Fossi ansprechen → +5 ⭐ und Sticker 🦕 Dino-Forscher.",
+    "Zuckerland: Bonbon-Jagd bei Lolli starten und alle 12 Bonbons auf der Regenbogen-Insel einsammeln, bevor die Zeit abläuft → Sticker 🍭 Naschkatze (danach jederzeit wiederholbar).",
+    "Sternwarte: immer den Stern antippen, der gerade pulsiert – so verbindest du das Sternbild Stern für Stern. Je +2 ⭐, alle 5 → Sticker 🔭 Sternengucker."
    ]
   },
   {

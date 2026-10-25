@@ -18,9 +18,10 @@
 12. ⭐ Sterne, Sticker und Läden
 13. ⚔️ Kämpfen und Monster
 14. 🕹️ Mini-Spiele und Spielautomaten
-15. 🗺️ Die Welten
-16. 👥 Mitspielen
-17. 🛟 Hilfe, Eltern, Fehler melden
+15. 🎪 Themenbereiche
+16. 🗺️ Die Welten
+17. 👥 Mitspielen
+18. 🛟 Hilfe, Eltern, Fehler melden
 
 ---
 
@@ -211,6 +212,17 @@ Alle massiven Gebäude der Welten haben eine echte Haustür und eine goldene Tü
 
 ---
 
+## 🎪 Themenbereiche
+
+Auf vier Inseln gibt es kleine Themenbereiche mit eigenem Spiel (🧭 Wohin? → Spiele):
+
+- ⛳ Minigolf (Fußball-Insel): bei Gustl starten. Einmal tippen = Richtung, noch einmal = Kraft. 3 Bahnen, wenig Schläge = mehr ⭐.
+- 🦕 Dino-Ausgrabung (Rätsel-Insel): jeden Sandhügel dreimal graben, alle 6 Knochen zu Professorin Fossi bringen.
+- 🍭 Zuckerland (Regenbogeninsel): Lolli startet die Bonbon-Jagd – 12 Bonbons in 100 Sekunden. Daneben dreht die Zuckerwatte-Maschine.
+- 🔭 Sternwarte (Hauptinsel): am Fernrohr Sternbilder verbinden – die Sterne der Reihe nach antippen, der blinkende ist der nächste.
+
+---
+
 ## 🗺️ Die Welten
 
 Brücken führen von der Hauptinsel zu den Welten. Im Story-Modus öffnen sie sich nach und nach (Aufgaben in Klammern).
@@ -238,7 +250,7 @@ Brücken führen von der Hauptinsel zu den Welten. Im Story-Modus öffnen sie si
 
 **🏠 Hauptinsel:** 🏠 Meine Wohnung · 🌻 Mein Garten · 🧸 Spielzeugladen · 🎯 Schießbude · 🥕 Hofladen · 🌾 Felder & Maschinen · 🛒 Einkaufsstraße · 🥊 Kampfarena · 🌀 Alter Wald & Waldtor (zur Wald-Insel) · 🏁 Himmels-Parcours · 🎮 easygames-Treff (Gäste aus anderen Spielen) · 💡 Leuchtturm (Hauptinsel) · 🏖️ Badestrand & Wasserpark · ⛺ Camp · 🐮 Streichelzoo · 🏊 Freibad · 🚂 Bahnhof · 🏥 Krankenhaus · 🛝 Spielplatz · 🎬 Kino & Autokino
 
-**🕹️ Spiele:** 🗺️ Schatzmeister Piet – Schatzsuche · 🏆 Fußball-Turnier (Pokal) · 🕹️ Greifer-Automat (Spielzeug-Land) · 💠 Tor zum Zotik-Spiel (Schwesterspiel) · 🚁 Heli-Rettung (Spielautomat) · 🚕 Taxi-Rush (Spielautomat) · 🥫 Dosen-Knall (Spielautomat) · 💃 Pride-Disco (Spielautomat) · 🏗️ Hafen-Kran (Spielautomat) · 🐶 Fellretter-Sprint (Spielautomat) · 🏗️ Pixel-Plan (Spielautomat) · 💧 Strömungs-Rätsel (Spielautomat) · ⚔️ Elementar-Kampf (Spielautomat) · 📻 Frequenz-Dreher (Spielautomat) · 🦋 Schmetterlinge fangen (Spielautomat) · 🚦 Ampel-Held (Spielautomat) · 🎠 Karussell-Ringe (Spielautomat) · 🌈 Farben-Suche (Spielautomat) · 🎣 Fische fangen (Spielautomat) · 🥚 Drachen-Eier (Spielautomat) · 🐶 Welpen-Suche (Spielautomat) · ⚽ Elfmeter (Spielautomat) · 🔷 Formen-Suche (Spielautomat) · 🎵 Noten-Fang (Spielautomat) · ⭐ Sternschnuppen (Spielautomat) · 🗝️ Schatten-Jagd (Spielautomat) · 🚀 Weltenreise (Spielautomat) · 🔥 Zauber-Suche (Spielautomat) · 🦖 Hüpf-Abenteuer (Spielautomat) · 🫧 Blasen-Pop (Spielautomat)
+**🕹️ Spiele:** 🗺️ Schatzmeister Piet – Schatzsuche · ⛳ Minigolf (Fußball-Insel) · 🦕 Dino-Ausgrabung (Rätsel-Insel) · 🍭 Zuckerland (Regenbogeninsel) · 🔭 Sternwarte (Hauptinsel) · 🏆 Fußball-Turnier (Pokal) · 🕹️ Greifer-Automat (Spielzeug-Land) · 💠 Tor zum Zotik-Spiel (Schwesterspiel) · 🚁 Heli-Rettung (Spielautomat) · 🚕 Taxi-Rush (Spielautomat) · 🥫 Dosen-Knall (Spielautomat) · 💃 Pride-Disco (Spielautomat) · 🏗️ Hafen-Kran (Spielautomat) · 🐶 Fellretter-Sprint (Spielautomat) · 🏗️ Pixel-Plan (Spielautomat) · 💧 Strömungs-Rätsel (Spielautomat) · ⚔️ Elementar-Kampf (Spielautomat) · 📻 Frequenz-Dreher (Spielautomat) · 🦋 Schmetterlinge fangen (Spielautomat) · 🚦 Ampel-Held (Spielautomat) · 🎠 Karussell-Ringe (Spielautomat) · 🌈 Farben-Suche (Spielautomat) · 🎣 Fische fangen (Spielautomat) · 🥚 Drachen-Eier (Spielautomat) · 🐶 Welpen-Suche (Spielautomat) · ⚽ Elfmeter (Spielautomat) · 🔷 Formen-Suche (Spielautomat) · 🎵 Noten-Fang (Spielautomat) · ⭐ Sternschnuppen (Spielautomat) · 🗝️ Schatten-Jagd (Spielautomat) · 🚀 Weltenreise (Spielautomat) · 🔥 Zauber-Suche (Spielautomat) · 🦖 Hüpf-Abenteuer (Spielautomat) · 🫧 Blasen-Pop (Spielautomat)
 
 **📍 Orte:** 🕳️ Geheime Schlucht (Wunsch-Insel) · 🗼 Aussichtsturm (Wunsch-Insel) · 🏟️ Schattenarena (Wunsch-Insel) · 🔬 Professor Ulme (Taschi-Labor) · 🏟️ Taschi-Arena (Orden) · 💖 Taschi-Heilhaus · 🗿 Statue von Professor Ulme · 🎈 Team Funke & Heißluftballon · ⚽ Fußballplatz (Eingang) · ⭐ Wunschbrunnen (Märchenland) · 🏰 Schloss Sternenglanz · ❄️ Eispalast Frostgipfel (Eisberg) · 🦁 Königsfels (Savanne) · 🏴‍☠️ Piratenschiff „Salzige Möwe“ · 🧜 Perlenlagune · 🪔 Wüsten-Basar (Wunschgeist) · 🐉 Drachenhöhle (Drachenei) · 🗽 Statue des Lichtwanderers Lio · 🌴 Strand der Freunde (Sternfrüchte) · 🕰️ Dämmerstadt & Uhrturm · 🏰 Kristall-Burg (Licht-Rätsel) · 🌲 Wald der Schatten · 🗼 Schleier-Turm · 🚀 Sternen-Hafen & Schlüsselschwert-Mobil · 🍄 Wuschel-Dorf & Laden · 🦀 Die Knusper-Krabbe (Restaurant & Burger braten) · 🍍 Schwammis Fruchthaus, Sternchen & Sunny · 🪼 Quallenfeld (Quallenfischen) · 🛁 Heldenheim & Wannen-Mobil · 🏕️ Waldlager & Händlerin Fenja (Wald-Insel) · 🗿 Titanenkreis (Wald-Insel) · 🗝️ Schattenhain (Wald-Insel) · 🌙 Mondlichtung (Wald-Insel) · 🎬 Tintenschlucht (Wald-Insel) · 🫧 Muschelstrand (Wald-Insel) · 🏯 Prüfungsturm (Rätsel-Verlies) · 🥚 Kapsel-Schrein (Kapselmonster) · ⚒️ Schmiede (Schwert verbessern) · 🕳️ Uralte Höhle (Mini-Spiel) · 🌙 Nimmerland (Fee Glimmer, Fliegen) · 🌴 Dschungel & Honigwald · 🧸 Spielzeug-Land · 🎃 Gruselhügel · 🏖️ Strand der Träume · 🤖 Roboter-Ecke · 🏢 Park-Büro (Park-Tycoon) · 🚗 Autoscooter · 📡 Funkturm (13 Sender) · 🛒 Lunaris: Markt „Wanderhand“ · 🍺 Lunaris: Taverne · 🎓 Lunaris: Akademie · 🏰 Lunaris: Burg auf dem Hügel · ⚓ Lunaris: Hafen (Luftschiff) · 🌀 Lunaris: Weltentore · 🦊 Lunaris: Zotik-Statue
 

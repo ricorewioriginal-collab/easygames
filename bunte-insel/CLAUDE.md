@@ -8,6 +8,8 @@ Das Spiel ist dicht geschriebenes ES5-ähnliches JS (global `BI`, THREE r128). K
 2b. **Inselgeschichte** – `BI.INSELSTORY` (`js/inselstory.js`) + Abschluss-Sticker `geschichte_<key>` in `js/kids.js`; Freischaltbares (Tiere/Begleiter) in `BI.PETS`.
 3. **Geheimcodes** – `js/cheats.js` (`unlockAll`, ggf. neue Specials).
 4. **Türen/Gebäude** – `BI.registerDoors` (`js/innen.js`).
-5. Test + README-Abschnitt; Cache-Versionen/Ladezähler in `index.html` anpassen.
+5. Test + README-Abschnitt; Cache-Versionen/Ladezähler in `index.html` anpassen (neue Datei: in `window.BI_FILES` eintragen, `all=` +1).
+
+**Vite-Bündel:** Nach JEDER Änderung an `js/*.js` oder `BI_FILES` neu bauen: `cd bunte-insel-src && npm install && npm run build` (schreibt `js/bunte-insel.min.js` + Version in `index.html`; CI: `node bunte-insel-src/check-bundle.mjs`). Lokal laufen die Einzeldateien, im Netz/in der App das Bündel.
 
 Spielstand-Kompatibilität wahren (nur Felder ergänzen). Namen fremder Marken nur „inspiriert“, original/neutral benennen.

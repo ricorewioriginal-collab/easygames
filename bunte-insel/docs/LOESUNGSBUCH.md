@@ -15,11 +15,12 @@
 9. 🌊 Weitere Welten
 10. 🔴 Taschi-Land: fangen, kämpfen, Orden
 11. 🌠 Wunsch-Insel (hinter dem Schlüsselreich)
-12. 🍄 Hüpfland (Insel im Westen)
-13. 📋 Alle Aufgaben der Welten
-14. 🏅 Alle Sticker
-15. 🔑 Geheimcodes
-16. 💡 Tipps und Tricks
+12. 🎪 Themenbereiche
+13. 🍄 Hüpfland (Insel im Westen)
+14. 📋 Alle Aufgaben der Welten
+15. 🏅 Alle Sticker
+16. 🔑 Geheimcodes
+17. 💡 Tipps und Tricks
 
 ---
 
@@ -457,6 +458,15 @@ Steuerung im Kampf: ⚔️ Angriff (J), 🌀 Ausweichen (K), ✨ Lichtwelle (L, 
 
 ---
 
+## 🎪 Themenbereiche
+
+- ⛳ Minigolf: Bahn 1 hat einen Klotz in der Mitte – schräg an der Bande vorbei spielen. Bahn 2: im Zickzack um die zwei Klötze. Bahn 3: warten, bis die Windmühlen-Flügel quer stehen. Halbe Kraft reicht meistens; nach 6 Schlägen rollt der Ball von selbst ins Loch.
+- 🦕 Dino: Die 6 Hügel liegen im Kreis um den Museumssockel. Jeder gefundene Knochen erscheint auf dem Sockel. Danach Professorin Fossi ansprechen (+5 ⭐, Sticker). Später gibt es in den Hügeln noch Fossil-Splitter.
+- 🍭 Zuckerland: Die Bonbons schweben über der ganzen Regenbogeninsel, nicht nur im Zuckerland. Alle 12 = 4 ⭐ und Sticker „Naschkatze“.
+- 🔭 Sternwarte: 5 Sternbilder (Großer Wagen, Herz, Fisch, Rakete, Katze). Jedes neue +2 ⭐, alle 5 = Sticker „Sternengucker“.
+
+---
+
 ## 🍄 Hüpfland (Insel im Westen)
 
 Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). Pia und Pelle helfen dir, Flitzefuchs Ferdi fordert dich heraus, und in der Burg grummelt Felsenkönig Brocko. Alles hier ist selbst erfunden.
@@ -472,6 +482,13 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 ---
 
 ## 📋 Alle Aufgaben der Welten
+
+### 🎪 Themenbereiche
+
+- ⛳ Minigolf: alle 3 Bahnen spielen (Fußball-Insel)
+- 🦕 Dino-Ausgrabung: 6 Knochen finden und zu Professorin Fossi bringen (Rätsel-Insel) · 0 von 6
+- 🍭 Zuckerland: alle 12 Bonbons bei Lollis Bonbon-Jagd sammeln (Regenbogeninsel)
+- 🔭 Sternwarte: alle 5 Sternbilder verbinden (Hauptinsel) · 0 von 5
 
 ### 🏖️ Badestrand
 
@@ -551,8 +568,8 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 - 🐟 Fische im Sammelbuch: 0 von 14 (am See & Strand angeln)
 - 🐞 Käfer im Sammelbuch: 0 von 14 (Kescher im Gras)
 - 🐚 Funde im Sammelbuch: 0 von 14 (glitzernde Stellen am Strand)
-- 🏖️ Heute: Buddel-Fest – Heute glitzert der Strand an mehr Stellen – seltene Funde sind häufiger, die ersten 5 geben extra ⭐!
-- 🌟 Tagesglück: heute 🦴 Dino-Knochen fangen (+2 ⭐)
+- 🌈 Heute: Regenbogen-Tag – Heute zeigt sich immer wieder ein Regenbogen mit bunten Sternen!
+- 🌟 Tagesglück: heute 🦷 Dino-Zahn fangen (+2 ⭐)
 
 ### 🎬 Dampfer-Hafen
 
@@ -856,6 +873,10 @@ So bekommst du jeden Sticker:
 | 💪 Kampfstufe 5 | Erreiche Kampfstufe 5 auf der Wald-Insel |
 | 👑 Held des Waldes | Besiege alle fünf Wächter der Wald-Insel |
 | 🎮 Gästefreund | Sprich mit 8 Gästen am easygames-Treff |
+| ⛳ Minigolf-Ass | Spiel alle 3 Bahnen beim Minigolf auf der Fußball-Insel |
+| 🦕 Dino-Forscher | Grab alle 6 Dino-Knochen auf der Rätsel-Insel aus und bring sie ins Museum |
+| 🍭 Naschkatze | Sammle alle 12 Bonbons bei Lollis Bonbon-Jagd im Zuckerland |
+| 🔭 Sternengucker | Verbinde alle 5 Sternbilder in der Sternwarte |
 
 ---
 
