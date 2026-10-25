@@ -314,3 +314,54 @@ details.rew summary { cursor: pointer; padding: 4px 0; }
 .ssScreen.novid:fullscreen .ssLane { height: 60vh; }
 @media (prefers-reduced-motion: reduce) { .ssPhrase.show { animation: none; opacity: 1; } }
 .banner.assign { display: flex; gap: 12px; align-items: center; text-align: left; font-size: 1em; font-weight: 600; padding: 10px 14px; } .banner.assign .jimg { flex: none; object-fit: cover; border-radius: 10px; }
+
+/* ---------- TV-Show-Look: Ladebildschirm, Konsolen-Menü, Vorbereitung ---------- */
+.bg::before { content: ''; position: absolute; inset: -20%; z-index: 1; pointer-events: none; opacity: .5; mix-blend-mode: screen;
+  background: conic-gradient(from 200deg at 20% -10%, transparent 0 8deg, rgba(255, 77, 141, .28) 12deg, transparent 18deg 360deg), conic-gradient(from 150deg at 80% -10%, transparent 0 8deg, rgba(58, 134, 255, .28) 12deg, transparent 18deg 360deg);
+  animation: sweep 9s ease-in-out infinite alternate; }
+@keyframes sweep { to { transform: rotate(4deg) translateX(2%); } }
+@media (prefers-reduced-motion: reduce) { .bg::before { animation: none; } }
+.onair { display: inline-block; font-weight: 900; font-size: .78em; letter-spacing: .12em; color: #fff; background: #e11d48; border-radius: 8px; padding: 3px 9px; box-shadow: 0 0 14px rgba(225, 29, 72, .7); animation: onair 1.6s ease-in-out infinite; }
+.onair.big { font-size: 1.1em; padding: 6px 16px; }
+@keyframes onair { 50% { box-shadow: 0 0 4px rgba(225, 29, 72, .3); opacity: .85; } }
+.loadBox { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
+.loadBar { width: min(70vw, 360px); height: 10px; border-radius: 10px; background: rgba(255, 255, 255, .12); overflow: hidden; border: 1px solid var(--line); }
+.loadBar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--pink), var(--gold)); transition: width .25s; }
+.logo.sm { width: 64px; height: 64px; border-radius: 14px; margin: 0; }
+.tvMenu { max-width: 980px; margin: 0 auto; }
+.tvHead { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.tvWho { display: flex; flex-direction: column; } .tvWho b { font-size: 1.2em; } .tvWho small { color: var(--muted); } .tvWho .onair { align-self: flex-start; margin-bottom: 4px; }
+.tvBody { display: grid; grid-template-columns: minmax(260px, 380px) 1fr; gap: 16px; align-items: start; }
+.menu { display: flex; flex-direction: column; gap: 6px; max-width: none; margin: 0; }
+.mGroup { margin: 8px 0 0; font-size: .78em; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); opacity: .9; }
+.mGroup:first-child { margin-top: 0; }
+.mi { display: grid; grid-template-columns: 34px 1fr; grid-template-rows: auto auto; align-items: center; column-gap: 8px; text-align: left; padding: 9px 12px; border-radius: 12px; cursor: pointer;
+  border: 2px solid transparent; background: rgba(255, 255, 255, .06); color: #fff; font-weight: 800; transition: transform .1s, background .15s; }
+.mi i { font-style: normal; font-size: 1.35em; grid-row: 1 / 3; text-align: center; } .mi small { grid-column: 2; font-weight: 600; color: var(--muted); font-size: .8em; }
+.mi:hover, .mi:focus-visible { outline: none; border-color: var(--gold); background: linear-gradient(90deg, rgba(255, 201, 60, .25), rgba(138, 92, 246, .25)); transform: translateX(4px); }
+.mi.hero { background: linear-gradient(180deg, #ffd96a, #f29f05); color: #2a1600; } .mi.hero small { color: #5a3500; }
+.tvInfo { position: sticky; top: 0; min-height: 260px; border-radius: 22px; padding: 26px; text-align: center; border: 2px solid var(--line);
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 77, 141, .3), transparent 60%), linear-gradient(180deg, rgba(40, 22, 110, .9), rgba(12, 8, 40, .92)); box-shadow: inset 0 0 40px rgba(0, 0, 0, .5), 0 10px 40px rgba(0, 0, 0, .4); }
+.tvInfo i { display: block; font-style: normal; font-size: 4em; line-height: 1.1; filter: drop-shadow(0 6px 18px rgba(255, 201, 60, .4)); }
+.tvInfo b { display: block; font-size: 1.5em; margin: 8px 0; } .tvInfo p { color: var(--muted); margin: 0; }
+@media (max-width: 720px) { .tvBody { grid-template-columns: 1fr; } .tvInfo { display: none; } .mi small { display: none; } .mi.hero small { display: block; } }
+/* Vorbereitung: aufgeräumt */
+.bar .onair { justify-self: end; }
+.showCard { position: relative; padding: 12px 14px 12px 18px; margin-bottom: 10px; border-radius: 14px; background: linear-gradient(90deg, rgba(255, 201, 60, .18), rgba(18, 12, 54, .85) 40%); border: 1px solid var(--line); }
+.showCard::before { content: ''; position: absolute; left: 0; top: 10px; bottom: 10px; width: 5px; border-radius: 4px; background: var(--gold); }
+.showCard p { margin: .3em 0; } .showCard .motto { color: var(--gold); }
+.flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-weight: 800; } .flow span { background: rgba(255, 255, 255, .1); border-radius: 999px; padding: 3px 10px; } .flow i { font-style: normal; color: var(--gold); }
+.stepN { display: inline-grid; place-items: center; width: 1.6em; height: 1.6em; border-radius: 50%; background: var(--gold); color: #2a1600; font-size: .85em; margin-right: 6px; }
+.opts.two { grid-template-columns: 1fr 1fr; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.opt.chip { min-height: 40px; padding: 7px 12px; border-radius: 999px; font-size: .92em; }
+.optDesc { color: var(--muted); font-size: .88em; margin: 6px 2px 0; }
+.tabs { display: flex; gap: 6px; margin-bottom: 8px; } .tab { flex: 1; padding: 10px; border-radius: 12px; border: 2px solid var(--line); background: rgba(255, 255, 255, .06); color: #fff; font-weight: 800; cursor: pointer; }
+.tab[aria-pressed="true"] { border-color: var(--gold); background: rgba(255, 201, 60, .2); }
+.pane { display: flex; flex-direction: column; gap: 8px; }
+.opt.songCard b { display: flex; align-items: center; gap: 10px; font-size: 1.05em; } .opt.songCard img { width: 46px; height: 46px; border-radius: 8px; object-fit: cover; }
+.row2.tight > * { flex: 1 1 120px; }
+.micRow { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 12px 0; padding: 8px 12px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); }
+.goBtn { width: 100%; margin-top: 6px; position: sticky; bottom: 4px; z-index: 2; }
+.banner.assign .jimg { width: 46px; height: 64px; }
+.joinCard { display: flex; gap: 14px; align-items: center; } .joinCard .qr { margin: 0; flex: none; width: 128px; height: 128px; } .joinCard p { margin: .2em 0; text-align: left; } .joinCard .hint { text-align: left; }

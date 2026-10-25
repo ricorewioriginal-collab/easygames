@@ -26,6 +26,7 @@ async function page(vp, touch) {
   const c = await b.newContext({ viewport: vp, hasTouch: !!touch, isMobile: !!touch, serviceWorkers: 'block' });
   await c.route(/i\.ytimg\.com|youtube|anmacha-cloud\.js|gamepad\.js/, r => r.fulfill({ status: 200, body: '', contentType: 'text/javascript' }));
   await c.route(/stream\.laut\.fm/, r => r.fulfill({ status: 200, body: WAV, contentType: 'audio/wav', headers: { 'Access-Control-Allow-Origin': '*' } }));
+  await c.route(/\/api\/v1\/search|\/search\?filter=videos|instances\.json|piped-instances|itunes\.apple\.com|lrclib\.net/, r => r.fulfill({ status: 503, body: '' }));   // keine echten Song-Dienste im Test
   // Titel wechselt nach einigen Abfragen (Songwechsel), Startzeit liegt in der Vergangenheit (Song läuft schon)
   let calls = 0;
   await c.route(/api\.laut\.fm/, r => { calls++; r.fulfill({ status: 200, body: JSON.stringify({ type: 'song', title: 'Testbeat ' + Math.floor(calls / 4), artist: { name: 'Test-Interpret' }, started_at: new Date(Date.now() - 60000).toISOString(), ends_at: new Date(Date.now() + 8000).toISOString() }), contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' } }); });
@@ -91,7 +92,7 @@ async function playRound(p) {
 const p = await page({ width: 1280, height: 800 });
 await shot(p, '01-titel');
 await p.keyboard.press('Enter'); await p.waitForSelector('#sMenu.on'); await shot(p, '02-menue');
-await p.keyboard.press('ArrowDown'); ok(await p.evaluate(() => document.activeElement && document.activeElement.dataset.m === 'online'), 'Pfeiltasten bewegen den Fokus im Menü');
+await p.keyboard.press('ArrowDown'); ok(await p.evaluate(() => document.activeElement && document.activeElement.dataset.m === 'free'), 'Pfeiltasten bewegen den Fokus im Menü');
 await p.click('[data-m="new"]'); await p.waitForSelector('#sAvatar.on');
 await p.fill('#avaName', 'Testy <Star>'); await p.click('[data-k="hair"][data-d="1"]'); await p.click('[data-k="skin"][data-v="3"]'); await shot(p, '03-avatar');
 await p.click('#avaOk'); await p.waitForSelector('#sBack.on');
@@ -165,8 +166,8 @@ ok(!/fortsetzen/.test(await p.textContent('#menuList')), 'Nach dem Ausscheiden k
 await bot(p, 0.95, 7);
 await p.click('[data-m="free"]'); await p.waitForSelector('#sPrep.on'); await p.click('#bGo'); await talkThrough(p);
 await p.waitForSelector('#sStage.on'); await p.waitForTimeout(2500);
-const lost = await p.evaluate(() => { const s = window.SMYVApp.stageObj(); const n0 = s.notes.length; s.radioLost(); return { live: s.part.live, sg: !!s.sg, more: s.notes.length > n0 }; });
-ok(!lost.live && lost.sg, 'Radio bricht ab → eigene Beats und Noten übernehmen');
+const lost = await p.evaluate(() => { const s = window.SMYVApp.stageObj(); const n0 = s.notes.length; s.radioLost(); return { live: s.part.live, click: !!s.part.click, more: s.notes.length > n0 }; });
+ok(!lost.live && lost.click, 'Radio bricht ab → leiser Takt-Klick und Noten übernehmen');
 await waitResult(p);
 for (let k = 0; k < 8 && !(await p.isVisible('#sPrep.on')); k++) { await p.click('#bNext'); await p.waitForTimeout(150); }
 await p.waitForSelector('#sPrep.on'); ok(true, 'Freies Casting durchgespielt');
@@ -224,7 +225,7 @@ await m.close();
   await c.route(/stream\.laut\.fm/, r => r.fulfill({ status: 200, body: WAV, contentType: 'audio/wav' }));   // ohne Access-Control-Allow-Origin
   await c.route(/api\.laut\.fm/, r => r.fulfill({ status: 200, body: JSON.stringify({ title: 'Testbeat', artist: { name: 'Test-Interpret' } }), contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' } }));
   const q = await c.newPage(); q.on('pageerror', e => errs.push(e.message));
-  await q.goto(base); await q.keyboard.press('Enter'); await q.waitForSelector('#sMenu.on');
+  await q.goto(base); await q.waitForSelector('#sTitle.on'); await q.keyboard.press('Enter'); await q.waitForSelector('#sMenu.on');
   await q.evaluate(() => { window.SMYV.D.ROUNDS.forEach(r => { r.len = 16; }); });
   await q.click('[data-m="new"]'); await q.click('#avaOk'); await q.waitForSelector('#sBack.on');
   await q.evaluate(() => { const A = window.SMYVAudio, orig = A.radioStart; A.radioStart = (s, d, u, plain) => (plain ? orig(s, d, u, true) : Promise.reject(new Error('cors'))); });   // Analyse verweigert wie bei fehlender CORS-Freigabe
