@@ -39,7 +39,14 @@
   // bestes Video zu einem Song: offizielle Videos/Audio bevorzugt, Länge passend
   async function videoFor(song) {
     const list = await videos(song.artist + ' ' + song.title + ' official'); const nm = s => s.toLowerCase();
-    const score = v => { let s = 0; const t = nm(v.title); if (t.includes(nm(song.title).slice(0, 12))) s += 3; if (t.includes(nm(song.artist).split(/[ ,&]/)[0])) s += 2; if (/official|offiziell/.test(t)) s += 2; if (/live|cover|karaoke|reaction|tutorial|lyrics? video|8d|sped up|slowed|remix/.test(t)) s -= 3; if (song.dur && v.dur) s -= Math.min(4, Math.abs(v.dur - song.dur) / 10); return s; };
+    const art = nm(song.artist).split(/[ ,&]/)[0], compact = x => nm(x).replace(/[^a-z0-9äöüß]/g, '');
+    const score = v => { let s = 0; const t = nm(v.title), by = compact(v.by || '');
+      if (t.includes(nm(song.title).slice(0, 12))) s += 3; if (t.includes(art)) s += 1.5;
+      if (by && (by.includes(compact(song.artist).slice(0, 10)) || by.endsWith('vevo') || by.includes(compact(art)))) s += 4;   // offizieller Kanal des Interpreten
+      if (/official (music )?video|offizielles musikvideo|official visuali[sz]er/.test(t)) s += 3; else if (/official|offiziell/.test(t)) s += 1.5;
+      if (/\blyrics?\b|songtext|letra/.test(t)) s -= 2.5; if (/\blive\b|cover|karaoke|reaction|tutorial|8d|sped up|slowed|nightcore|remix|instrumental|1 hour|loop/.test(t)) s -= 4;
+      if (song.dur && v.dur) { const d = Math.abs(v.dur - song.dur); s -= d < 25 ? 0 : Math.min(3, (d - 25) / 20); }   // Musikvideos haben oft Intro/Outro
+      return s; };
     return list.map(v => Object.assign(v, { s: score(v) })).sort((a, b) => b.s - a.s);
   }
 
@@ -63,7 +70,33 @@
     P.play = () => { try { P.yt.playVideo(); } catch (e) { } }; P.pause = () => { try { P.yt.pauseVideo(); } catch (e) { } }; P.seek = s => { try { P.yt.seekTo(s, true); P.t0 = s; P.at = performance.now(); } catch (e) { } };
     P.vol = v => { try { P.yt.setVolume(v); } catch (e) { } }; P.destroy = () => { try { P.yt.destroy(); } catch (e) { } };
     P.playing = () => P.state === 1; P.ended = () => P.state === 0; P.duration = () => { try { return P.yt.getDuration() || P.dur; } catch (e) { return P.dur; } };
+    P.info = () => { try { return P.yt.getVideoData() || {}; } catch (e) { return {}; } };   // { author: Kanal, title }
     return P;
   }
-  window.GAMedia = { songs, videos, videoFor, lyrics, idFromUrl, parseTitle, player, loadApi, hosts: () => ({ piped: PIPED, inv: INV }) };
+
+  /* ---------- RicoReWi-Radio (laut.fm): Livestream mit derselben Schnittstelle wie der YouTube-Player ---------- */
+  // Der Stream hat eine CORS-Freigabe – dann wird der Takt direkt aus dem Stream erkannt. Klappt das nicht, läuft er ohne Analyse (plain).
+  function radio(slug, cb) {
+    const P = { ready: true, radio: true, slug, t0: 0, at: 0, state: -1, err: null, plain: false, want: false };
+    const make = cors => { const el = new Audio(); el.preload = 'none'; if (cors) el.crossOrigin = 'anonymous';
+      el.addEventListener('playing', () => { P.sync(); P.state = 1; cb && cb('state', P); });
+      el.addEventListener('pause', () => { P.sync(); P.state = 2; cb && cb('state', P); });
+      el.addEventListener('waiting', () => { P.sync(); P.state = 3; });
+      el.addEventListener('error', () => { if (P.el !== el) return; if (cors && P.state !== 1) { P.plain = true; P.el = make(false); cb && cb('plain', P); if (P.want) P.play(); } else { P.err = 'stream'; P.state = 2; cb && cb('error', P); } });
+      el.src = 'https://stream.laut.fm/' + encodeURIComponent(slug); return el; };
+    P.el = make(true);
+    P.sync = () => { const t = P.el.currentTime || 0, now = performance.now(), pred = P.t0 + (P.state === 1 ? (now - P.at) / 1000 : 0), d = t - pred; P.t0 = P.state === 1 && Math.abs(d) < .25 ? pred + d * .25 : Math.max(t, P.t0); P.at = now; };
+    P.time = () => { const now = performance.now(); if (now - P.at > 250) P.sync(); return P.state === 1 ? P.t0 + (now - P.at) / 1000 : P.t0; };
+    P.play = () => { P.want = true; try { const pr = P.el.play(); if (pr && pr.catch) pr.catch(() => cb && cb('blocked', P)); } catch (e) { } };
+    P.pause = () => { P.want = false; try { P.el.pause(); } catch (e) { } };
+    P.seek = () => { }; P.vol = v => { P.el.volume = v / 100; };
+    P.destroy = () => { P.want = false; try { P.el.pause(); P.el.removeAttribute('src'); P.el.load(); } catch (e) { } };
+    P.playing = () => P.state === 1; P.ended = () => false; P.duration = () => 0; P.info = () => ({});
+    return P;
+  }
+  const stInfo = {};
+  function station(slug) { return stInfo[slug] || (stInfo[slug] = getJSON('https://api.laut.fm/station/' + encodeURIComponent(slug), 6000).then(j => ({ name: j.display_name || j.name || slug, logo: (j.images || {}).station_120x120 || (j.images || {}).station || '', page: j.page_url || 'https://laut.fm/' + slug, genres: j.genres || [], format: j.format || '' })).catch(() => { delete stInfo[slug]; return null; })); }
+  const pd = v => Date.parse(String(v || '').replace(/^(\S+) (\S+) ([+-]\d\d)(\d\d)$/, '$1T$2$3:$4')) || 0;   // „2026-10-25 02:14:09 +0200“ → ISO
+  function nowPlaying(slug) { return getJSON('https://api.laut.fm/station/' + encodeURIComponent(slug) + '/current_song', 6000).then(j => j && j.title ? { title: String(j.title), artist: j.artist && j.artist.name ? String(j.artist.name) : '', type: String(j.type || 'song'), start: pd(j.started_at), end: pd(j.ends_at), length: +j.length || 0 } : null).catch(() => null); }
+  window.GAMedia = { songs, videos, videoFor, lyrics, idFromUrl, parseTitle, player, radio, station, nowPlaying, loadApi, hosts: () => ({ piped: PIPED, inv: INV }) };
 })();

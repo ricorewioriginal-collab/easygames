@@ -11,7 +11,7 @@
     pose.onResults(r => { Cam.busy = false; Cam.frames++; const now = performance.now(); if (Cam.at) Cam.fps = Cam.fps * .9 + 100 / Math.max(10, now - Cam.at); Cam.at = now; Cam.lm = r.poseLandmarks || null; if (Cam.onPose) Cam.onPose(Cam.lm); }); await pose.initialize(); return pose; })(); return loadP; }
   Cam.start = async function (videoEl) {
     Cam.err = ''; Cam.video = videoEl;
-    try { Cam.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false }); } catch (e) { Cam.err = e && e.name === 'NotAllowedError' ? 'Kamera nicht erlaubt' : 'Keine Kamera gefunden'; throw e; }
+    try { Cam.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false }); } catch (e) { Cam.lastErr = e; Cam.err = e && e.name === 'NotAllowedError' ? 'Kamera nicht erlaubt' : 'Keine Kamera gefunden'; throw e; }
     videoEl.srcObject = Cam.stream; videoEl.muted = true; videoEl.playsInline = true; await videoEl.play().catch(() => { });
     await initPose(); Cam.on = true; const tick = async () => { if (!Cam.on) return; if (!Cam.busy && videoEl.readyState >= 2) { Cam.busy = true; Cam.aspect = (videoEl.videoWidth || 4) / (videoEl.videoHeight || 3); try { await pose.send({ image: videoEl }); } catch (e) { Cam.busy = false; } } setTimeout(tick, 33); }; tick();
   };
@@ -31,20 +31,24 @@
   Motion.series = function (t0, t1, hz) { const o = [], b = Motion.buf; let j = 0; for (let t = t0; t <= t1 + 1e-9; t += 1 / hz) { while (j + 1 < b.length && b[j + 1].t <= t) j++; let m = 0, c = 0; for (let k = Math.max(0, j - 2); k < Math.min(b.length, j + 3); k++) if (Math.abs(b[k].t - t) < 1 / hz) { m += b[k].m; c++; } o.push(c ? m / c : 0); } return o; };
   Motion.alive = () => Motion.on && performance.now() / 1000 - Motion.last < 1.5;
 
-  /* ---------- Mikrofon-Takt ---------- */
-  const Mic = { on: false, samples: [], err: '', level: 0 };
+  /* ---------- Takt-Erkennung: Mikrofon oder direkt aus dem Radio-Stream (Audio-Element mit CORS-Freigabe) ---------- */
+  const Mic = { on: false, samples: [], err: '', level: 0, src: '' };
   let ac = null, an = null, src = null, stream = null, prev = null, raf = 0, getT = null;
-  Mic.start = async function (timeFn) {
-    getT = timeFn; Mic.samples = []; prev = null;
-    try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }, video: false }); } catch (e) { Mic.err = 'Mikrofon nicht erlaubt'; throw e; }
-    ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === 'suspended') await ac.resume().catch(() => { });
-    src = ac.createMediaStreamSource(stream); an = ac.createAnalyser(); an.fftSize = 1024; an.smoothingTimeConstant = 0; src.connect(an); Mic.on = true;
+  function run(node, timeFn, kind) {
+    getT = timeFn; Mic.samples = []; prev = null; src = node; Mic.src = kind; an = an || ac.createAnalyser(); an.fftSize = 1024; an.smoothingTimeConstant = 0; node.connect(an); Mic.on = true; cancelAnimationFrame(raf);
     const bins = new Float32Array(an.frequencyBinCount), loop = () => { if (!Mic.on) return; an.getFloatFrequencyData(bins); let flux = 0, lvl = 0; const lim = Math.min(bins.length, 200);
       for (let i = 1; i < lim; i++) { const v = Math.pow(10, bins[i] / 20); lvl += v; if (prev) { const d = v - prev[i]; if (d > 0) flux += d * (i < 12 ? 2.2 : 1); } }
       prev = prev || new Float32Array(bins.length); for (let i = 1; i < lim; i++) prev[i] = Math.pow(10, bins[i] / 20);
       Mic.level = Mic.level * .9 + lvl * .1; const t = getT(); if (t > 0) Mic.samples.push({ t, v: flux }); if (Mic.samples.length > 60 * 20) Mic.samples.splice(0, 60 * 4); raf = requestAnimationFrame(loop); }; loop();
+  }
+  async function actx() { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === 'suspended') await ac.resume().catch(() => { }); return ac; }
+  Mic.start = async function (timeFn) {
+    Mic.stop(); try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }, video: false }); } catch (e) { Mic.err = 'Mikrofon nicht erlaubt'; throw e; }
+    await actx(); run(ac.createMediaStreamSource(stream), timeFn, 'mic');
   };
-  Mic.stop = function () { Mic.on = false; cancelAnimationFrame(raf); try { src && src.disconnect(); } catch (e) { } if (stream) stream.getTracks().forEach(t => t.stop()); stream = null; };
+  // Radio: der Stream läuft durch den Analysator und weiter in die Lautsprecher (Quelle je Element nur einmal anlegbar)
+  Mic.startEl = async function (el, timeFn) { Mic.stop(); await actx(); if (!el.__gaSrc) { el.__gaSrc = ac.createMediaElementSource(el); el.__gaSrc.connect(ac.destination); } run(el.__gaSrc, timeFn, 'radio'); };
+  Mic.stop = function () { Mic.on = false; cancelAnimationFrame(raf); try { src && an && src.disconnect(an); } catch (e) { } src = null; if (stream) stream.getTracks().forEach(t => t.stop()); stream = null; };
   Mic.estimate = () => GACore.tempo(Mic.samples.filter(s => s.t > (Mic.samples.length ? Mic.samples[Mic.samples.length - 1].t - 14 : 0)));
   window.GASense = { Cam, Motion, Mic };
 })();

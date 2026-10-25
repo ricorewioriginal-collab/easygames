@@ -15,6 +15,8 @@ ok(sig(ch) !== sig(ch2), 'jeder Song bekommt eine andere Choreografie'); ok(sig(
 const chor = []; let cur = null; ch.list.forEach(x => { if (x.sec === 'chorus') { if (!cur) { cur = []; chor.push(cur); } cur.push(x.mv.n + (x.mv.mirror ? '~' : '')); } else cur = null; });
 ok(chor.length >= 2 && chor[0].slice(0, 6).join() === chor[1].slice(0, 6).join(), `Refrain wiederholt dieselben Moves (${chor.length} Refrains)`);
 ok(ch.golds >= 3, 'Gold-Moves: ' + ch.golds); ok(new Set(ch.list.map(x => x.mv.n)).size >= 12, 'Abwechslung: ' + new Set(ch.list.map(x => x.mv.n)).size + ' verschiedene Moves');
+const ownA = ch.own, ownB = ch2.own, usedOwn = ch.list.filter(x => x.mv.own).length; ok(ownA.length === 8 && ownA.join() !== ownB.join() && usedOwn >= 20, `Song-eigene Moves: ${ownA.slice(0, 3).join(', ')} … (${usedOwn}× im Song)`);
+const chR = C.choreograph(Object.assign({}, song, { mode: 'radio' })); ok(sig(chR) !== sig(ch), 'Radio-Modus tanzt eigene Moves');
 const H = C.hits(ch); ok(H.length > 150 && H.every((h, i) => !i || h.t >= H[i - 1].t), 'Treffer-Zeitpunkte: ' + H.length);
 const styles = Object.keys(C.STYLES).map(st => sig(C.choreograph(Object.assign({}, song, { style: st })))); ok(new Set(styles).size === styles.length, 'jeder Stil tanzt anders');
 // Songaufbau aus Liedtext

@@ -590,7 +590,10 @@ window.EASYGAMES_GUIDES = {
   "tipps": [
    "Große, deutliche Bewegungen werden besser erkannt als kleine.",
    "Der Refrain kommt immer mit denselben Moves wieder – beim zweiten Mal sitzt er!",
-   "Gold-Moves am Ende des Refrains geben Extrapunkte."
+   "Gold-Moves am Ende des Refrains geben Extrapunkte.",
+   "📻 Radio: Tanz live zu den RicoReWi-Sendern – Senderlogo und aktueller Titel stehen oben, bei jedem neuen Song gibt es neue Moves.",
+   "👀 Nur tanzen: ohne Punkte und Bewertung einfach mitmachen – am Ende siehst du Dauer und Moves.",
+   "Bei jedem Video steht der YouTube-Kanal mit Link, beim Radio der Sender auf laut.fm."
   ]
  },
  "challenge-show": {

@@ -170,9 +170,29 @@ const GACore = (() => {
   /* ---------- Choreograf ---------- */
   const GENRE2STYLE = [[/hip.?hop|rap|r&b|trap/i, 'hiphop'], [/latin|reggae|salsa|bachata|cumbia|samba|urbano/i, 'latin'], [/k-?pop|j-?pop/i, 'kpop'], [/disco|funk|80|dance|electronic|house/i, 'disco'], [/kinder|children|kids/i, 'kids'], [/schlager|volks|party|stimmung/i, 'schlager'], [/country/i, 'line'], [/fitness|workout|zumba/i, 'fitness'], [/pop|rock|alternative/i, 'pop']];
   const styleOf = genre => { for (const [re, s] of GENRE2STYLE) if (re.test(genre || '')) return s; return 'pop'; };
-  function pool(style, r) { const ok = d => d.st === 'all' || d.st.split(' ').includes(style); return { arms: Object.values(ARMS).filter(ok), steps: Object.values(STEPS).filter(ok), sigs: SIG.filter(ok) }; }
+  // Song-eigene Moves: für jeden Song (Seed) neu erfundene Bewegungen – Arm-Haltungen aus der Bibliothek, zufällig verändert und
+  // zu 2–4 Haltepunkten verbunden, dazu passende Beinarbeit. So hat jeder Song und jeder Modus eigene Moves, nicht nur andere Kombinationen.
+  const ADJ = ['Funky', 'Wilder', 'Sternen', 'Turbo', 'Glitzer', 'Wirbel', 'Neon', 'Blitz', 'Groove', 'Sonnen', 'Wolken', 'Disco', 'Raketen', 'Zauber', 'Party', 'Mond'];
+  const NOUN = ['Welle', 'Schwung', 'Kick', 'Klatsch', 'Dreh', 'Stoß', 'Schritt', 'Flügel', 'Kreis', 'Zacke', 'Pose', 'Hüpfer', 'Wippe', 'Fächer', 'Schlag', 'Funke'];
+  const MODE_STEP = { radio: ['wippen', 'seitTipp', 'hueftSchwung', 'twist'], video: ['wippen', 'seitTipp'] };
+  function genMoves(seed, style, n, mode) {
+    const r = rng(seed ^ 0x5bd1e995), shapes = Object.keys(SH), out = [], used = new Set(); const okS = d => d.st === 'all' || d.st.split(' ').includes(style);
+    const stepsAll = Object.values(STEPS).filter(okS), modeSteps = (MODE_STEP[mode] || []).map(k => STEPS[k]).filter(Boolean), steps = modeSteps.length ? stepsAll.concat(modeSteps, modeSteps) : stepsAll;
+    const jit = (v, a, lo, hi) => clamp(Math.round(v + (r() - .5) * 2 * a), lo, hi);
+    const arm = () => { const b = SH[shapes[(r() * shapes.length) | 0]]; return { E: jit(b.E, 22, 5, 178), Z: jit(b.Z, 28, -60, 160), e: jit(b.e, 25, 0, 145), r: b.r }; };
+    for (let i = 0; i < n; i++) {
+      const b = r() < .55 ? 2 : 4, nk = b === 2 ? 2 + ((r() * 2) | 0) : 2 + ((r() * 3) | 0), mirrorArms = r() < .35, st = steps[(r() * steps.length) | 0], keys = [];
+      for (let k = 0; k < nk; k++) { const t = +(k * b / nk).toFixed(3), L0 = arm(), R0 = mirrorArms ? Object.assign({}, L0) : arm(), sk = st.keys[k % st.keys.length][1];
+        keys.push([t, Object.assign({}, sk, { aEL: L0.E, aZL: L0.Z, eL: L0.e, rL: L0.r, aER: R0.E, aZR: R0.Z, eR: R0.e, rR: R0.r }, r() < .25 ? { tilt: jit(0, 12, -14, 14) } : {}, r() < .2 ? { hip: (r() - .5) * .2 } : {})]); }
+      let nm; do { nm = ADJ[(r() * ADJ.length) | 0] + '-' + NOUN[(r() * NOUN.length) | 0]; } while (used.has(nm) && used.size < 200); used.add(nm);
+      out.push({ n: nm, b, st: style, gold: r() < .3, gen: true, keys });
+    }
+    return out;
+  }
+  function pool(style, r, gen) { const ok = d => d.st === 'all' || d.st.split(' ').includes(style); return { arms: Object.values(ARMS).filter(ok), steps: Object.values(STEPS).filter(ok), sigs: SIG.filter(ok), gen: gen || [] }; }
   function pickMove(P, r, opt) { // eine Bewegung erzeugen (Arm × Schritt oder Signatur)
     opt = opt || {};
+    if (P.gen.length && (opt.own || r() < .42)) { const g = P.gen.filter(x => x.b <= (opt.maxB || 4) && (!opt.gold || x.gold)); const d = g.length ? g : P.gen.filter(x => x.b <= (opt.maxB || 4)); if (d.length) { const s = d[(r() * d.length) | 0]; return finalize({ kind: 'sig', n: s.n, def: s, b: s.b, gold: !!opt.gold, own: true }, r() < .5); } }
     if ((opt.sig || r() < .14) && P.sigs.length) { const d = opt.gold ? (P.sigs.filter(s => s.gold).length ? P.sigs.filter(s => s.gold) : P.sigs) : P.sigs; const s = d[(r() * d.length) | 0]; return finalize({ kind: 'sig', n: s.n, def: s, b: s.b, gold: !!opt.gold }, r() < .5); }
     const maxB = opt.maxB || 4, arms = P.arms.filter(a => a.b <= maxB), steps = P.steps.filter(s => s.b <= maxB);
     const a = arms[(r() * arms.length) | 0], s = steps.filter(x => Math.abs(x.en - a.en) <= 1 || r() < .25)[(r() * steps.length) | 0] || steps[(r() * steps.length) | 0];
@@ -181,7 +201,7 @@ const GACore = (() => {
   // eine Phrase = 8 Schläge, aus Moves zusammengesetzt (typisch: Move + gespiegelt, wie im Tanzkurs)
   function phrase(P, r, opt) {
     const out = []; let t = 0; opt = opt || {};
-    while (t < 8) { const rest = 8 - t; let mv = pickMove(P, r, { maxB: Math.min(4, rest), sig: opt.sig && t === 0 }); if (mv.b > rest) mv = pickMove(P, r, { maxB: rest });
+    while (t < 8) { const rest = 8 - t; let mv = pickMove(P, r, { maxB: Math.min(4, rest), sig: opt.sig && t === 0, own: opt.own && t === 0 }); if (mv.b > rest) mv = pickMove(P, r, { maxB: rest });
       if (mv.b > rest) { mv = finalize({ kind: 'combo', n: 'locker+wippen', arm: ARMS.locker, step: STEPS.wippen, b: rest, en: 1 }); }
       out.push(mv); t += mv.b;
       if (t + mv.b <= 8 && r() < .7) { out.push(finalize(Object.assign({}, mv, { keys: null }), !mv.mirror)); t += mv.b; } }
@@ -200,12 +220,12 @@ const GACore = (() => {
   // Hauptfunktion: komplette Choreografie für einen Song
   // song: { id, dur (s), bpm, beat0 (s, Zeit des ersten Schlags), style?, genre?, sections? [{t0,t1,type}] }
   function choreograph(song) {
-    const style = song.style || styleOf(song.genre), seed = hash((song.id || 'x') + '|' + style), r = rng(seed), P = pool(style, r);
+    const style = song.style || styleOf(song.genre), seed = hash((song.id || 'x') + '|' + style + '|' + (song.mode || '')), r = rng(seed), own = genMoves(seed, style, 8, song.mode), P = pool(style, r, own);
     const spb = 60 / song.bpm, nBeats = Math.max(16, Math.floor((song.dur - song.beat0) / spb)), nPh = Math.max(2, Math.ceil(nBeats / 8));
     const secs = song.sections ? song.sections.map(s => ({ type: s.type, p0: Math.round((s.t0 - song.beat0) / spb / 8), p1: Math.round((s.t1 - song.beat0) / spb / 8) })) : null;
     const lab = structure(nPh, secs, r);
     // feste Routinen: Refrain (4 Phrasen, immer gleich), Strophe A/B, Bridge
-    const chorus = [phrase(P, r, { sig: true }), phrase(P, r), phrase(P, r), phrase(P, r)]; const g = pickMove(P, r, { sig: true, gold: true }); chorus[3] = chorus[3].slice(0, 0); let tt = 0; const c3 = []; while (tt + g.b < 8) { const m = pickMove(P, r, { maxB: Math.min(4, 8 - g.b - tt) }); if (tt + m.b > 8 - g.b) break; c3.push(m); tt += m.b; } while (tt < 8 - g.b) { c3.push(finalize({ kind: 'combo', n: 'locker+wippen', arm: ARMS.locker, step: STEPS.wippen, b: 1, en: 1 })); tt += 1; } c3.push(g); chorus[3] = c3;
+    const chorus = [phrase(P, r, { own: true }), phrase(P, r, { own: true }), phrase(P, r), phrase(P, r, { own: true })]; const g = pickMove(P, r, { sig: true, gold: true }); chorus[3] = chorus[3].slice(0, 0); let tt = 0; const c3 = []; while (tt + g.b < 8) { const m = pickMove(P, r, { maxB: Math.min(4, 8 - g.b - tt) }); if (tt + m.b > 8 - g.b) break; c3.push(m); tt += m.b; } while (tt < 8 - g.b) { c3.push(finalize({ kind: 'combo', n: 'locker+wippen', arm: ARMS.locker, step: STEPS.wippen, b: 1, en: 1 })); tt += 1; } c3.push(g); chorus[3] = c3;
     const verseA = [phrase(P, r), phrase(P, r), phrase(P, r), phrase(P, r)], verseB = [verseA[0], verseA[1], phrase(P, r), phrase(P, r)], bridge = [phrase(P, r, { sig: true }), phrase(P, r, { sig: true })];
     const introPh = [finalize({ kind: 'combo', n: 'locker+wippen', arm: ARMS.locker, step: STEPS.wippen, b: 8, en: 1 })], outroPh = [pickMove(P, r, { sig: true, gold: true }), finalize({ kind: 'sig', n: 'Siegerpose', def: SIG.find(s => s.n === 'Siegerpose'), b: 4, gold: true })];
     const list = []; let verseN = 0, chorusIdx = 0, verseIdx = 0, bridgeIdx = 0, prev = '';
@@ -215,7 +235,7 @@ const GACore = (() => {
       let t = p * 8; for (const mv of ph) { list.push({ b0: t, mv, sec: L0, gold: !!mv.gold }); t += mv.b; }
     }
     function fitOutro(ph) { const tot = ph.reduce((s, m) => s + m.b, 0); if (tot === 8) return ph; return ph.slice(-1).concat([finalize({ kind: 'combo', n: 'locker+wippen', arm: ARMS.locker, step: STEPS.wippen, b: 8 - ph[ph.length - 1].b, en: 1 })]).reverse(); }
-    return { style, seed, bpm: song.bpm, beat0: song.beat0, spb, nBeats, nPh, lab, list, dur: song.dur, golds: list.filter(x => x.gold).length };
+    return { style, seed, bpm: song.bpm, beat0: song.beat0, spb, nBeats, nPh, lab, list, dur: song.dur, golds: list.filter(x => x.gold).length, own: own.map(m => m.n) };
   }
   // Pose der Vortänzerin zur Songzeit t (Sekunden)
   function at(ch, t) {
@@ -309,6 +329,6 @@ const GACore = (() => {
     const idx = [0]; for (let i = 1; i < taps.length; i++) idx.push(idx[i - 1] + Math.max(1, Math.round((taps[i] - taps[i - 1]) / med)));
     const n = taps.length, mx = idx.reduce((s, x) => s + x, 0) / n, my = taps.reduce((s, x) => s + x, 0) / n; let sxy = 0, sxx = 0; for (let i = 0; i < n; i++) { sxy += (idx[i] - mx) * (taps[i] - my); sxx += (idx[i] - mx) ** 2; } const P = sxy / sxx; let beat0 = my - P * mx; while (beat0 - P > 0) beat0 -= P; return { bpm: 60 / P, beat0, conf: 1 }; }
 
-  return { NEUTRAL, KEYS, L, SEGS, SH, ARMS, STEPS, SIG, STYLES, joints, mirrorPose, choreograph, at, hits, poseAt, idle, styleOf, sectionsFromLyrics, parseLRC, coachVec, userVec, compare, change, rate, RATE, handAccel, motionScore, rhythmScore, tempo, tapTempo, rng, hash, clamp };
+  return { genMoves, NEUTRAL, KEYS, L, SEGS, SH, ARMS, STEPS, SIG, STYLES, joints, mirrorPose, choreograph, at, hits, poseAt, idle, styleOf, sectionsFromLyrics, parseLRC, coachVec, userVec, compare, change, rate, RATE, handAccel, motionScore, rhythmScore, tempo, tapTempo, rng, hash, clamp };
 })();
 if (typeof module !== 'undefined') module.exports = GACore;
