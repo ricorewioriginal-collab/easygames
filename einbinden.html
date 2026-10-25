@@ -213,6 +213,8 @@
       <tr><td><code>EasyGames.list()</code></td><td>Alle Spiele: <code>id, title, desc, icon, url, card, bg, glow</code> (bg/glow = Spielfarben für eigene App-Kacheln). Praktisch für eigene Menüs.</td></tr>
       <tr><td><code>EasyGames.get(id)</code> / <code>url(id)</code></td><td>Ein Spiel bzw. nur seine URL.</td></tr>
       <tr><td><code>EasyGames.guide(id, cb)</code></td><td>Anleitung und Bedienung als Objekt <code>{anleitung, steuerung, tipps}</code>.</td></tr>
+      <tr><td><code>EasyGames.book(id, cb)</code></td><td>Vollständige Spielanleitung, Ratgeber und Lösungsbuch als Objekt <code>{handbuch, ratgeber, loesung, faq}</code> (Format: <code>guides/README.md</code>) oder <code>null</code>.</td></tr>
+      <tr><td><code>EasyGames.guideUrl(id)</code></td><td>Link zur Anleitungsseite (<code>anleitung.html?game=id</code>) mit Spielanleitung, Ratgeber und Lösungsbuch. An eingebetteten Spielen und im Overlay steht dafür der Knopf „📖 Anleitung“; ausblenden mit <code>data-guide="false"</code> bzw. <code>guide: false</code>.</td></tr>
       <tr><td><code>EasyGames.open(id | 'all', optionen)</code></td><td>Öffnet ein Spiel oder den ganzen Katalog vollflächig als Overlay (<code>close</code>, <code>fullscreen</code>, <code>title</code>, <code>onClose</code>).</td></tr>
       <tr><td><code>EasyGames.close()</code></td><td>Schließt das offene Overlay.</td></tr>
       <tr><td><code>EasyGames.fullscreen(iframe)</code></td><td>Startet Vollbild; fällt auf einen neuen Tab zurück, wenn der Browser es nicht kann (z. B. iPhone).</td></tr>
@@ -624,7 +626,7 @@ python3 easygames/tools/emulationstation.py install --mode offline</pre>
       <tr><td>1</td><td><code>mein-spiel/index.html</code></td><td>Das Spiel. Vorlage: <code>tools/spiel-vorlage/index.html</code></td></tr>
       <tr><td>2</td><td><code>games.js</code></td><td><code>id</code>, <code>title</code>, <code>icon</code> oder <code>img</code>, <code>bg</code>, <code>glow</code>, <code>path</code>, <code>desc</code></td></tr>
       <tr><td>3</td><td><code>modes.js</code> oder <code>modes:{…}</code> am Eintrag</td><td><code>pad</code> (Handy-Controller), <code>online</code>, <code>multi</code>, <code>tvParam</code></td></tr>
-      <tr><td>4</td><td><code>guides.js</code></td><td><code>anleitung</code>, <code>steuerung</code>, <code>tipps</code></td></tr>
+      <tr><td>4</td><td><code>guides.js</code> und <code>guides/&lt;id&gt;.json</code></td><td>Kurzfassung (<code>anleitung</code>, <code>steuerung</code>, <code>tipps</code>) und vollständige Spielanleitung, Ratgeber und Lösungsbuch (<code>guides/README.md</code>, Prüfung: <code>node tools/check-guides.js</code>)</td></tr>
       <tr><td>5</td><td><code>python3 tools/make-pwa.py</code></td><td>Macht das Spiel als App installierbar (<a href="#pwa">PWA</a>)</td></tr>
       <tr><td>6</td><td><code>gamepad.js</code> (optional)</td><td>Gamecontroller-Unterstützung, wenn das Spiel keine eigene hat (<a href="#pad">Gamecontroller</a>)</td></tr>
       <tr><td>7</td><td><code>anmacha-cloud.js</code> (optional)</td><td>Cloud-Speicherstand per Google (<a href="#cloud">Cloud-Speicher</a>)</td></tr>

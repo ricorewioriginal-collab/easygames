@@ -1,0 +1,191 @@
+{
+  "id": "anmacha-showdown",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AnMaCha Showdown ist das Mikro-Duell im 3D-Fernsehstudio: Zwei Spieler treten in sieben Mini-Spielen gegeneinander an. Das erste Spiel zählt 1 Punkt, das zweite 2 Punkte und so weiter bis 7 Punkte im letzten Spiel. Wer zuerst 15 Punkte hat, gewinnt sofort.",
+        "Da insgesamt 28 Punkte vergeben werden, ist bis zum Schluss alles offen: Selbst wer die ersten vier Spiele verliert, kann mit den Spielen 5, 6 und 7 noch gewinnen."
+      ]
+    },
+    {
+      "t": "Start und Einstellungen",
+      "list": [
+        "GEGNER: „Gegen den Moderator“ (der Computer spielt) oder „Zu zweit“ (ein Gerät, abwechselnd).",
+        "MODERATOR-STÄRKE (nur gegen den Moderator): Anfänger, Normal oder Profi.",
+        "SPIELER: Namen eintragen (bis 14 Zeichen). Tippst du auf das Logo, wechselst du zum nächsten Sender-Logo.",
+        "🔊 Ton und 🎙 Stimme: Musik/Geräusche und die Sprachausgabe des Moderators ein- oder ausschalten (Taste M schaltet den Ton).",
+        "DUELL STARTEN (oder Enter) beginnt die Show. Solange das Studio aufgebaut wird, steht dort „LADEN …“.",
+        "Unten siehst du deine Bilanz gegen den Moderator auf der gewählten Stärke (Siege und Niederlagen)."
+      ]
+    },
+    {
+      "t": "Ablauf eines Duells",
+      "steps": [
+        "Der Moderator begrüßt beide Spieler. Aus den acht Mini-Spielen werden sieben zufällig ausgewählt und in zufälliger Reihenfolge gespielt.",
+        "Vor jedem Spiel sagt der Moderator an, wie viele Punkte es gibt; die Regel wird angezeigt. Mit LOS! (oder Enter/Leertaste) startet ein Countdown 3, 2, 1.",
+        "Beide spielen nacheinander dasselbe Spiel – bei Schätzduell, Logo-Gedächtnis, Kopfrechnen und Sortier-Blitz sogar mit derselben Aufgabe. Wer anfängt, wechselt jede Runde.",
+        "Das bessere Ergebnis bekommt die Punkte des Spiels. Bei exakt gleichem Ergebnis gibt es „Unentschieden – kein Punkt“.",
+        "Sobald jemand 15 Punkte hat, ist das Duell vorbei. Oben zeigt die Punkteleiste den Stand beider Spieler.",
+        "Steht es nach allen sieben Spielen unentschieden, folgt ein Stechen im Tipp-Fieber über 6 Sekunden – so lange, bis jemand vorne liegt."
+      ]
+    },
+    {
+      "t": "Die acht Mini-Spiele",
+      "list": [
+        "Reaktionstest: Tippe sofort, wenn der Kreis GRÜN wird. 3 Versuche, gewertet wird der Durchschnitt in Millisekunden – weniger ist besser. Zu früh getippt zählt der Versuch als 600 ms.",
+        "Schätzduell: Schätze eine Zahl (z. B. die Höhe der Zugspitze). Wer prozentual näher dran liegt, gewinnt. Eingabe ins Zahlenfeld, dann „Festlegen“ oder Enter.",
+        "Logo-Gedächtnis: Sechs Sender-Logos leuchten in einer Folge auf; tippe sie in derselben Reihenfolge nach. Die Folge wird jedes Mal um ein Logo länger, höchstens 12. Gewertet wird die längste fehlerfreie Folge.",
+        "Tipp-Fieber: Tippe so oft du kannst auf TIPPEN! – 10 Sekunden ab dem ersten Tipp. Mehr Tipps gewinnen.",
+        "Zielscheibe: Stoppe das Fadenkreuz erst waagerecht, dann senkrecht möglichst nah an der Mitte. 3 Schüsse; jeder Schuss wird schneller. Bis zu 10 Punkte pro Schuss, höchstens 30.",
+        "Farb-Verwirrung: Tippe die FARBE, in der das Wort geschrieben ist – nicht, was dort steht (ROT, BLAU, GRÜN, GELB). 20 Sekunden, richtig +1, falsch −1.",
+        "Kopfrechnen: Sechs Aufgaben (Plus, Minus, Mal) mit je vier Antworten. Gewertet wird die Zeit; jede falsche Antwort kostet 3 Sekunden Strafzeit.",
+        "Sortier-Blitz: Sieben Zahlen zwischen 1 und 99 von klein nach groß antippen. Gewertet wird die Zeit; ein falscher Tipp kostet 2 Sekunden."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch und Maus: Knöpfe, Felder und Flächen der Mini-Spiele antippen bzw. anklicken.",
+        "Tastatur: Enter startet im Menü das Duell, Enter oder Leertaste bestätigt LOS!, im Schätzduell Zahl eintippen und Enter, M schaltet den Ton.",
+        "☰ oben öffnet die Pause mit WEITER und Spiel beenden.",
+        "Zu zweit spielen beide abwechselnd am selben Gerät; vor jedem Zug steht, wer dran ist und dass das Gerät weitergegeben werden soll."
+      ]
+    },
+    {
+      "t": "Ergebnis und Speichern",
+      "p": [
+        "Am Ende zeigt der Ergebnis-Bildschirm Sieger und Endstand. REVANCHE startet sofort ein neues Duell mit denselben Einstellungen, Hauptmenü bringt dich zurück.",
+        "Gespeichert werden auf dem Gerät: Gegner-Art, Stärke, Namen, Logos und die Bilanz gegen den Moderator getrennt nach Anfänger, Normal und Profi.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Fang mit der Stärke Anfänger an, um alle Mini-Spiele kennenzulernen.",
+        "Lies vor jedem Spiel die Regel – sie steht über dem LOS!-Knopf. Erst LOS! drücken, wenn du bereit bist; der Moderator wartet.",
+        "Beim Reaktionstest nie raten: Ein Frühstart zählt als 600 ms und ruiniert den Durchschnitt.",
+        "Bei der Farb-Verwirrung kosten Fehler einen Punkt. Lieber einen Moment länger hinschauen."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Die späten Spiele entscheiden: Spiel 6 und 7 bringen zusammen 13 Punkte. Bleib konzentriert, auch wenn du hinten liegst.",
+        "Zielscheibe: Achte auf den Rhythmus der Linie. Sie schwingt gleichmäßig hin und her – tippe kurz bevor sie die Mitte erreicht. Die Mitte (gelb) gibt 10 Punkte, der nächste Ring 9, dann 7, 5, 4, 2 und 1.",
+        "Kopfrechnen: Die falschen Antworten liegen oft nur 1, 2 oder 10 neben dem richtigen Ergebnis. Achte bei Mal-Aufgaben auf die letzte Ziffer.",
+        "Sortier-Blitz: Erst alle sieben Zahlen überblicken, dann zügig tippen. Ein falscher Tipp (+2 s) ist teurer als eine Sekunde Nachdenken.",
+        "Logo-Gedächtnis: Merk dir die Folge als Positionen (z. B. oben links, Mitte, unten rechts) statt als Logos. Die Folge wird nur verlängert, die ersten Logos bleiben gleich."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Tipp-Fieber: Die 10 Sekunden starten erst mit deinem ersten Tipp. Leg zwei Finger bereit und tippe abwechselnd.",
+        "Schätzduell: Gewertet wird die prozentuale Abweichung. Bei Jahreszahlen liegt man fast immer nah dran – hier zählt jedes Jahr.",
+        "Zu zweit: Wer anfängt, wechselt jedes Spiel. Wer als Zweiter dran ist, kennt das Ergebnis des Ersten nicht vorher – spiel also immer auf Bestleistung.",
+        "Gegen den Profi brauchst du Werte wie etwa 235 ms Reaktion, 62 Tipps, 25 Zielscheiben-Punkte oder 18 Punkte in der Farb-Verwirrung."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Im Reaktionstest beim Wechsel von „Warte …“ zu früh tippen.",
+        "In der Farb-Verwirrung das Wort lesen statt die Farbe anzuschauen.",
+        "Im Schätzduell in der falschen Einheit schätzen – die Einheit steht im Eingabefeld (z. B. km, Mio. oder Tsd. km).",
+        "Bei der Zielscheibe beim zweiten Tipp hetzen: Die senkrechte Linie ist etwas schneller als die waagerechte."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Punkteplan und Siegrechnung",
+      "list": [
+        "Spiel 1: 1 Punkt, Spiel 2: 2, Spiel 3: 3, Spiel 4: 4, Spiel 5: 5, Spiel 6: 6, Spiel 7: 7 – zusammen 28 Punkte.",
+        "15 Punkte gewinnen sofort. Beispiel: Gewinnst du Spiel 2, 6 und 7, hast du genau 15.",
+        "Nach Spiel 4 können höchstens 10 Punkte verteilt sein – wer dann hinten liegt, hat noch alle Chancen.",
+        "Unentschiedene Spiele geben keine Punkte. Steht es am Ende gleich, folgt das Stechen (Tipp-Fieber, 6 Sekunden, 1 Punkt), bis es einen Sieger gibt."
+      ]
+    },
+    {
+      "t": "Moderator-Werte je Stärke (Richtwerte, mit Zufall)",
+      "list": [
+        "Reaktionstest: Anfänger etwa 380 ms, Normal 300 ms, Profi 235 ms (nie unter 150 ms).",
+        "Schätzduell: Anfänger liegt im Schnitt weit daneben (Streuung etwa 45 %), Normal etwa 20 %, Profi etwa 7 %.",
+        "Logo-Gedächtnis: Anfänger etwa 3–4 Logos, Normal 5–6, Profi etwa 8.",
+        "Tipp-Fieber (10 s): Anfänger etwa 40 Tipps, Normal 52, Profi 62.",
+        "Zielscheibe: Anfänger etwa 14 Punkte, Normal 20, Profi 25 (von 30).",
+        "Farb-Verwirrung: Anfänger etwa 8 Punkte, Normal 13, Profi 18.",
+        "Kopfrechnen: Anfänger etwa 38 s, Normal 26 s, Profi 17 s.",
+        "Sortier-Blitz: Anfänger etwa 14 s, Normal 9,5 s, Profi 6,5 s."
+      ],
+      "p": [
+        "Die Werte streuen jedes Mal etwas. Die besten Chancen gegen den Profi hast du meist im Logo-Gedächtnis (bis 12 möglich) und beim Kopfrechnen."
+      ]
+    },
+    {
+      "t": "Schätzduell: alle Fragen mit Lösung",
+      "list": [
+        "Zugspitze: 2962 m",
+        "Knochen eines Erwachsenen: 206",
+        "Länge des Rheins: 1233 km",
+        "Zähne mit Weisheitszähnen: 32",
+        "Stufen des Eiffelturms bis zur obersten Besucherplattform: etwa 1665",
+        "Bau der Berliner Mauer: 1961",
+        "Einwohner Deutschlands: etwa 84 Mio.",
+        "Tasten eines Klaviers: 88",
+        "Entfernung zum Mond: 384 Tsd. km",
+        "Afrikanischer Elefantenbulle: etwa 6000 kg",
+        "Marathon: 42,2 km",
+        "Fall der Berliner Mauer: 1989",
+        "EU-Mitgliedsländer (Stand 2026): 27",
+        "Mount Everest: 8849 m",
+        "Fußballspiel ohne Nachspielzeit: 90 min",
+        "Planeten im Sonnensystem: 8",
+        "Sekunden pro Tag: 86400",
+        "Bundesländer: 16",
+        "Erdumlauf um die Sonne: 365 Tage",
+        "Saiten einer Geige: 4",
+        "Chinesische Mauer: etwa 21 Tsd. km",
+        "Erste Mondlandung: 1969",
+        "Olympisches Schwimmbecken: 50 m",
+        "Karten im Skatblatt: 32"
+      ]
+    },
+    {
+      "t": "Höchstwerte je Mini-Spiel",
+      "list": [
+        "Zielscheibe: 30 Punkte (3 × Mitte).",
+        "Logo-Gedächtnis: 12 Logos – danach endet das Spiel automatisch.",
+        "Schätzduell: 0 % daneben mit der genauen Lösung aus der Liste oben.",
+        "Kopfrechnen und Sortier-Blitz: keine Strafzeit – jede falsche Antwort kostet 3 bzw. 2 Sekunden.",
+        "Farb-Verwirrung: jede richtige Antwort +1, jede falsche −1; das nächste Wort erscheint sofort nach dem Tipp, Tempo lohnt sich also."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Das Studio lädt nicht – was tun?",
+      "a": "Das 3D-Studio wird beim Start aus dem Internet geladen. Erscheint „Das Studio konnte nicht geladen werden“, prüfe die Internetverbindung und lade die Seite neu."
+    },
+    {
+      "q": "Kann ich online gegen Freunde spielen?",
+      "a": "Nein. Zu zweit spielt ihr abwechselnd an einem Gerät; ansonsten trittst du gegen den Moderator an."
+    },
+    {
+      "q": "Der Moderator spricht nicht.",
+      "a": "Schalte 🎙 Stimme ein. Die Sprachausgabe nutzt die Stimme deines Geräts bzw. Browsers; ohne sie erscheinen die Ansagen als Sprechblase."
+    },
+    {
+      "q": "Wo ist meine Bilanz gespeichert?",
+      "a": "Auf deinem Gerät, getrennt nach Anfänger, Normal und Profi. Ohne Google-Anmeldung ist sie weg, wenn du die Browserdaten löschst. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+    },
+    {
+      "q": "Warum habe ich trotz Sieg im Spiel keinen Punkt bekommen?",
+      "a": "Bei exakt gleichem Ergebnis (zum Beispiel gleich viele Tipps) wertet das Spiel Unentschieden – dann gibt es keinen Punkt."
+    }
+  ]
+}

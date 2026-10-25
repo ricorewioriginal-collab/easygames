@@ -1,0 +1,223 @@
+{
+  "id": "sendemast-sumo",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Sendemast-Sumo ist eine Party-Prügelei in 3D. Runde Sumo-Ringer stehen auf einer Plattform ganz oben auf einem Sendemast über den Wolken. Schubst euch gegenseitig über den Rand – wer als Letzter oben steht, gewinnt die Runde.",
+        "Ein Match gewinnt, wer zuerst die eingestellte Zahl an Rundensiegen hat (im Turnier immer 2). Die Siege siehst du oben als Punkte ● neben jedem Kämpfer."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "list": [
+        "🏆 Turnier: 5 Masten nacheinander gegen je 3 Computer-Gegner, die immer stärker werden.",
+        "⚡ Schnelles Spiel: Kämpfer wählen und ein Match gegen den Computer frei einstellen.",
+        "🎮 Lokal: 2 bis 4 Spieler an einem Gerät – mit zwei Tastatur-Hälften und bis zu 4 Controllern.",
+        "🌐 Online & Handys: Der große Bildschirm zeigt die Arena, bis zu 8 Handys sind Controller.",
+        "🥋 Kämpfer: alle 8 Sumo-Stars mit ihren Fantasie-Sendern und Werten für Tempo, Gewicht und Schubs.",
+        "🏅 Rekorde: Turnier-Highscore, weitester Mast, Turniersiege, gewonnene Matches und KOs.",
+        "⚙️ Optionen: Soundeffekte, Musik, Vibration, Namen über den Kämpfern und Sparmodus (weniger 3D-Details, nach Neustart).",
+        "📖 Anleitung: Regeln und Steuerung im Spiel."
+      ]
+    },
+    {
+      "t": "Ablauf einer Runde",
+      "steps": [
+        "Countdown 3 – 2 – 1, dann geht es los. Alle starten im Kreis um die Mitte.",
+        "Nach 16 Sekunden bröckelt der äußere Ring der Plattform weg. Kurz vorher blinkt der Rand rot und es erscheint „⚠ Der Rand bröckelt!“.",
+        "Danach bricht alle 8 Sekunden ein weiterer Ring ab – insgesamt fünfmal.",
+        "Etwa eine Minute nach dem Start beginnt „⏳ Sudden Death“: Die Plattform schrumpft immer weiter, bis nur noch ein winziger Rest übrig ist.",
+        "Wer über den Rand rutscht, fällt in die Tiefe. Steht nur noch einer, gewinnt er die Runde. Fallen die letzten gleichzeitig, gibt es keinen Sieger.",
+        "Bist du innerhalb von 3 Sekunden nach einem Stoß gefallen, bekommt der Schubser ein KO gutgeschrieben."
+      ]
+    },
+    {
+      "t": "Aktionen und Power-ups",
+      "list": [
+        "💨 Schubs: ein kurzer Sprint in Laufrichtung. Wer so trifft, stößt viel stärker und bekommt kaum Rückstoß. Danach gut eine Sekunde Pause.",
+        "💥 Stampfer: ein kurzer Sprung mit Druckwelle bei der Landung, die alle ringsum wegschiebt und kurz benommen macht. In der Luft kann dich niemand schubsen. Lädt 4 Sekunden.",
+        "Ohne Aktion schiebt ihr euch beim Zusammenstoßen nur leicht – schwere Kämpfer verlieren dabei weniger.",
+        "Power-ups erscheinen alle paar Sekunden auf der Plattform (höchstens zwei gleichzeitig):",
+        "🍔 Mega: 7 Sekunden groß und mehr als doppelt so schwer, größere Stampfer-Welle.",
+        "⚡ Turbo: 6 Sekunden schneller, der Schubs lädt fast sofort nach.",
+        "🛡️ Schild: 5 Sekunden kaum schubsbar (nur ein Viertel der Wucht).",
+        "💥 Druckwelle: wirkt sofort – eine extrastarke Welle rund um dich."
+      ]
+    },
+    {
+      "t": "Die fünf Arenen",
+      "list": [
+        "Abendrot-Mast: klassisch, die Plattform bröckelt Ring für Ring.",
+        "Eiszacken-Gipfel: spiegelglatt – wer zu schnell ist, rutscht ins Leere.",
+        "Sturmmast: Böen schieben alle in eine Richtung. Vorher kommt „🌬️ Böe kommt!“ mit einem Pfeil – gegen den Pfeil halten. Leichte Kämpfer trifft der Wind stärker.",
+        "Gewitterspitze: Blitze schlagen ein. Raus aus dem leuchtenden gelben Kreis, bevor er einschlägt! Mit der Zeit kommen mehr Blitze auf einmal.",
+        "Wackelturm: Die Plattform kippt hin und her – immer stärker, je länger die Runde dauert.",
+        "Im Schnellen Spiel, Lokal und Online kannst du auch 🎲 Zufall wählen: Dann wechselt die Arena jede Runde."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Tastatur links: WASD laufen, Leertaste oder F Schubs, linke Shift-Taste oder G Stampfer.",
+        "Tastatur rechts: Pfeiltasten laufen, Enter oder L Schubs, K, rechte Shift-Taste oder Ziffernblock 0 Stampfer.",
+        "Esc oder P: Pause (Weiter, Runde neu, Optionen, Steuerung, Zum Menü).",
+        "Touch: linker Daumen irgendwo auf die linke Seite – dort erscheint der Stick. Rechts die Knöpfe 💨 Schubs und 💥 Stampfer.",
+        "Gamecontroller: Stick oder Steuerkreuz laufen, A Schubs, B oder X Stampfer, Start Pause. Im Menü Steuerkreuz wählen, A OK, B zurück. Bis zu 4 Controller gleichzeitig.",
+        "Online: Das Handy zeigt einen Stick und die zwei Knöpfe; in der Lobby wählst du dort mit ◀ ▶ deinen Kämpfer."
+      ]
+    },
+    {
+      "t": "Schnelles Spiel und Lokal einstellen",
+      "steps": [
+        "Schnelles Spiel: Kämpfer wählen, Weiter. Lokal: Jeder drückt seine Schubs-Taste (Leertaste, Enter oder A am Controller), wählt mit links/rechts einen Kämpfer und drückt die Schubs-Taste nochmal für „bereit“. Sind alle bereit, geht es nach kurzer Zeit automatisch weiter.",
+        "Im Fenster „Kampf einstellen“ wählst du die Arena (oder 🎲 Zufall), die Zahl der Computer-Gegner, ihre Stärke (Locker, Normal, Profi) und die Siege zum Gewinnen (1, 2, 3 oder 5).",
+        "Insgesamt kämpfen bis zu 8 Ringer. Spielst du allein, ist mindestens ein Computer-Gegner dabei.",
+        "Mit ⚔ Kampf! geht es los. Am Ende zeigt die Auswertung Siegerpodest und eine Tabelle mit Siegen, KOs, Schubsern, Stampfern und Stürzen. ↻ Revanche startet dasselbe Match neu."
+      ]
+    },
+    {
+      "t": "Online & Handys",
+      "steps": [
+        "Wähle am großen Bildschirm (Fernseher, PC, Tablet) 🌐 Online & Handys. Es erscheinen QR-Code, 4-stelliger Code und Link.",
+        "Mitspieler scannen den QR-Code oder öffnen den Link – von überall. Name eingeben, Mitmachen tippen. Das Handy wird zum Controller.",
+        "Mit „🎮 Hier mitspielen“ kann auch jemand direkt am großen Bildschirm (Tastatur, Controller oder Touch) mitmachen.",
+        "Bis zu 8 Spieler passen in einen Raum. Mit „▶ Weiter“ kommst du zu den Kampf-Einstellungen; freie Plätze füllt der Computer.",
+        "Wer runtergefallen ist, sieht auf dem Handy „Du bist runtergefallen – warte auf die nächste Runde“. Nach dem Match geht es zurück in die Lobby. Wer während eines Kampfes beitritt, ist danach dabei."
+      ]
+    },
+    {
+      "t": "Punkte und Speichern",
+      "list": [
+        "Im Turnier bekommst du 250 Punkte pro gewonnener Runde und 100 Punkte pro KO.",
+        "Für jeden eroberten Mast gibt es einen Bonus: 500 Punkte am ersten Mast, 1000 am zweiten, 1500 am dritten, 2000 am vierten und 2500 am fünften.",
+        "Gewinnst du einen Mast, ohne dass ein Gegner auch nur eine Runde holt, gibt es 300 Punkte extra.",
+        "Der Turnier-Highscore und alle Statistiken werden auf dem Gerät gespeichert; der Highscore landet in der Rangliste und wird mit deinem Konto gespeichert.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Bleib in der Mitte. Wer am Rand steht, ist das liebste Ziel aller anderen.",
+        "Stell dich zwischen Gegner und Mitte – dann schubst du nach außen und nicht ins Leere.",
+        "Schubs nur, wenn der Gegner nah ist. Ein verfehlter Schubs trägt dich selbst Richtung Rand.",
+        "Achte auf den roten, blinkenden Rand: Dieser Ring fällt gleich weg.",
+        "Auf Eis nie mit Vollgas zum Rand – du rutschst weiter, als du denkst."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Kommt ein Schubs auf dich zu: Stampfer! In der Luft prallt alles ab, und bei der Landung schiebst du zurück.",
+        "Stampfer lohnen sich am meisten, wenn mehrere Gegner um dich herum stehen.",
+        "Ein Treffer macht den Gegner kurz schwerfällig. Setz direkt einen zweiten Stoß nach.",
+        "Schwere Kämpfer wie Kalle Koloss oder Bruno Brummer halten viel aus; schnelle wie Mimi Mikro oder Nova Neon kommen schneller an Power-ups.",
+        "Schnapp dir das 🛡️ Schild kurz vor Sudden Death – dann kann dich kaum jemand von der kleinen Plattform schieben.",
+        "Im Sturmmast nach der Warnung gegen den Pfeil laufen. Wer die Böe nutzt, schubst Gegner mit Rückenwind besonders weit."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Mit ⚡ Turbo lädt der Schubs in einer knappen halben Sekunde nach – schubse in schneller Folge.",
+        "Mit 🍔 Mega bist du so schwer, dass normale Zusammenstöße dich kaum bewegen. Lauf einfach in die Gegner hinein.",
+        "Lass zwei Gegner aufeinander los und räume dann den geschwächten ab. Die Computer-Gegner zielen bevorzugt auf den, der am weitesten außen steht.",
+        "In der Gewitterspitze Gegner in den gelben Kreis drängen – der Blitz stößt jeden darin kräftig weg.",
+        "Auf dem Wackelturm die Kipprichtung beobachten und Gegner bergab schubsen."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Am Rand einen Schubs ansetzen, der vom Gegner wegführt – du fliegst selbst.",
+        "Den Stampfer zu früh verbrauchen. Er braucht 4 Sekunden zum Aufladen.",
+        "Einem Power-up am Rand hinterherjagen. Power-ups nah am Rand verschwinden oft, bevor du da bist.",
+        "Im Sudden Death zu hektisch laufen – die Plattform ist winzig, kleine Bewegungen reichen."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Komplettlösung Turnier",
+      "p": [
+        "Das Turnier hat 5 Masten in fester Reihenfolge. An jedem Mast kämpfst du gegen 3 zufällig gewählte Kämpfer; zwei Rundensiege bringen dich weiter. Verlierst du ein Match, ist das Turnier vorbei („💫 Turnier vorbei“). Gewinnst du alle fünf, wirst du „👑 Turnier-Champion!“."
+      ],
+      "list": [
+        "Mast 1 – Abendrot-Mast: alle drei Gegner auf Locker. Lern hier Schubs und Stampfer; in der Mitte bleiben reicht oft.",
+        "Mast 2 – Eiszacken-Gipfel: ein Gegner auf Profi, zwei auf Normal. Langsam laufen, wenig schubsen, Gegner in Randnähe mit kurzen Stößen rausrutschen lassen.",
+        "Mast 3 – Sturmmast: wieder ein Profi und zwei Normal. Bei „Böe kommt!“ sofort gegen den Pfeil in Richtung Mitte laufen; Gegner auf der Windseite schubsen.",
+        "Mast 4 – Gewitterspitze: alle drei auf Profi. Blitzkreise sofort verlassen und Gegner hineinschieben. Mehr Blitze, je länger die Runde dauert – lieber früh angreifen.",
+        "Mast 5 – Wackelturm: alle drei auf Profi. Die Neigung wird immer stärker; bleib bergauf und schubse nach unten. Ein Schild oder Mega in der Endphase entscheidet oft das Match."
+      ]
+    },
+    {
+      "t": "Wertungstabelle Turnier",
+      "list": [
+        "Gewonnene Runde: 250 Punkte",
+        "KO (Gegner fällt innerhalb von 3 Sekunden nach deinem Stoß): 100 Punkte",
+        "Mast erobert: 500 × Mastnummer (500, 1000, 1500, 2000, 2500)",
+        "Mast ohne Rundenverlust an einen Gegner gewonnen: +300 Punkte",
+        "Höchstwert: Alle 5 Masten mit 2:0 und vielen KOs. Allein die Mast-Boni und 10 Rundensiege ergeben 7500 + 2500 + 1500 = 11.500 Punkte, plus 100 je KO."
+      ]
+    },
+    {
+      "t": "Die Kämpfer",
+      "list": [
+        "Toni Tornado (Sturmwelle 99): Allrounder – alle Werte ausgeglichen.",
+        "Bella Bass (Basswerk FM): etwas schneller und leichter, guter Schubs.",
+        "Kalle Koloss (Bergfunk 7): der Schwerste – langsam, aber kaum zu verschieben.",
+        "Mimi Mikro (Pling Radio): die Schnellste und Leichteste, starker Schubs. Fällt aber auch leicht.",
+        "Ole Orkan (Tiefsee-Welle): ausgeglichen, ein wenig schwerer als Toni.",
+        "Frieda Frost (Polarstern 104): etwas flinker, etwas leichter.",
+        "Bruno Brummer (Honig-FM): schwer und robust, eher gemächlich.",
+        "Nova Neon (Kosmo 3000): schnell mit dem stärksten Schubs, eher leicht.",
+        "Für das Turnier empfehlen sich schwere Kämpfer (Kalle, Bruno) gegen das Abgedrängtwerden, für Online-Partys schnelle Kämpfer (Mimi, Nova) für Power-ups."
+      ]
+    },
+    {
+      "t": "Strategie je Phase einer Runde",
+      "list": [
+        "Start bis 16 Sekunden: Die Plattform ist groß. Power-ups einsammeln (das erste erscheint nach 6 bis 9 Sekunden) und Gegner am Rand angreifen.",
+        "Bröckel-Phase (16 bis etwa 56 Sekunden): Vor jedem Abbruch weg vom blinkenden Ring. Gegner, die gerade am Rand kämpfen, sind leichte Beute.",
+        "Sudden Death: Die Plattform schrumpft stetig. Stampfer bereithalten, in der Mitte bleiben und nur auf sichere Stöße gehen."
+      ]
+    },
+    {
+      "t": "Erfolge und Statistik",
+      "list": [
+        "In 🏅 Rekorde findest du: Turnier-Highscore, Weitester Mast (x / 5), Turniersiege, Matches gewonnen (von gespielt), KOs gesamt und die Zahl der Kämpfer.",
+        "„⭐ Neuer Rekord!“ erscheint, wenn ein Turnier deinen bisherigen Highscore übertrifft – auch wenn du nicht alle Masten schaffst.",
+        "Alle 8 Kämpfer sind von Anfang an spielbar; es muss nichts freigeschaltet werden."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Das Handy verbindet sich nicht.",
+      "a": "Beide Geräte brauchen Internet. Prüfe den 4-stelligen Code und lass die Lobby am großen Bildschirm offen. Ein Raum fasst höchstens 8 Spieler; während eines laufenden Kampfes kommst du erst danach dazu."
+    },
+    {
+      "q": "Kann ich online ohne Handy am großen Bildschirm mitspielen?",
+      "a": "Ja, schalte in der Lobby „🎮 Hier mitspielen“ ein. Dann steuerst du mit Tastatur, Controller oder Touch am großen Bildschirm."
+    },
+    {
+      "q": "Wie spielen zwei Leute an einer Tastatur?",
+      "a": "Wähle 🎮 Lokal. Einer nutzt WASD mit Leertaste/F und Shift links/G, der andere die Pfeile mit Enter/L und K/Shift rechts. Dazu passen bis zu 4 Controller."
+    },
+    {
+      "q": "Mein Highscore ist weg.",
+      "a": "Er wird im Browser gespeichert. Ohne Google-Anmeldung ist er nach dem Löschen der Website-Daten oder auf einem anderen Gerät nicht da. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+    },
+    {
+      "q": "Das Spiel ruckelt.",
+      "a": "Schalte in den Optionen den Sparmodus ein (weniger 3D-Details) und starte das Spiel neu."
+    },
+    {
+      "q": "Warum bewegt mich ein Schubs manchmal kaum?",
+      "a": "Wahrscheinlich hatte dein Gegner ein 🛡️ Schild oder ist ein schwerer Kämpfer bzw. hat 🍔 Mega. In der Luft beim Stampfer bist du außerdem unantastbar."
+    }
+  ]
+}

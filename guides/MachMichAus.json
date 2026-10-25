@@ -1,0 +1,187 @@
+{
+  "id": "MachMichAus",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "„Mach mich aus!“ ist eine Funk-Dating-Show im Radiostudio. Im Studio stehen 20 Funk-Pulte mit je einer Lampe. Ein Kandidat betritt die Bühne und zeigt sich in vier Enthüllungen. Nach jeder Enthüllung entscheidet jedes Pult: Lampe an lassen oder ausmachen. Am Ende wählt der Kandidat ein Pult, dessen Lampe noch brennt, und geht mit dieser Person auf ein Date.",
+        "Ihr spielt mit 1 bis 4 Menschen. Jeder Mensch ist einmal selbst Kandidat und sitzt in den anderen Runden an einem der Pulte. Wer am Ende die meisten Punkte hat, gewinnt die Show – Hauptgewinn: Ruhm und Ehre."
+      ]
+    },
+    {
+      "t": "Start und Menü",
+      "list": [
+        "▶ Neue Show: Wähle, wie viele Menschen mitspielen (1, 2, 3 oder 4). Für jeden stellst du Name, Geschlecht (♀, ♂, ⚧), Stil, drei Vorlieben (Mag ①②③) und zwei Nogos ein. 🎲 würfelt ein zufälliges Profil. Mit „Bühne frei!“ geht es los.",
+        "🌐 Online & Handys: Handys als private Pads koppeln (siehe unten).",
+        "❓ Regeln: die Spielregeln im Überblick.",
+        "🔊 Ton: Geräusche an/aus. Im Spiel gibt es oben zusätzlich 📜 (Verlauf), 🗣️ (Moderatorstimme an/aus), 🔊 (Ton) und ☰ (Menü).",
+        "Die Show hat so viele Runden wie Menschen plus 3, höchstens 6. Bei einem Menschen also 4 Runden: einmal bist du Kandidat, dreimal kommen Computer-Kandidaten und du sitzt am Pult."
+      ]
+    },
+    {
+      "t": "Typen: Stil, Vorlieben, Nogos",
+      "p": [
+        "Jede Person hat einen Stil, drei Vorlieben und zwei Nogos. Ein Pult mag zwei Stilrichtungen."
+      ],
+      "list": [
+        "Stile: 👟 sportlich, 🕴️ elegant, 😎 lässig, 🦄 schräg.",
+        "Vorlieben und Nogos: 😂 Humor, 🧗 Abenteuer, 🛋️ Gemütlichkeit, 🏃 Sport, 🎸 Musik, 🍕 Essen, 🐶 Tiere, 🎨 Kreativität, 🧹 Ordnung, 🎉 Party, 🌹 Romantik, 🏆 Ehrgeiz.",
+        "Ein Thema kann nicht gleichzeitig Vorliebe und Nogo sein."
+      ]
+    },
+    {
+      "t": "Ablauf einer Runde",
+      "steps": [
+        "Auftritt: Der Kandidat läuft auf die Bühne, alle 20 Lampen brennen.",
+        "Erster Eindruck: Name, Alter, Beruf und Stil werden gezeigt. Danach entscheiden die Pulte.",
+        "Steckbrief-Einspieler: Die ersten zwei Vorlieben des Kandidaten kommen heraus (bei Computer-Kandidaten mit Motto, Macke und Traum-Date). Die Pulte entscheiden erneut.",
+        "Talent: Der Kandidat zeigt sein Talent. Ist ein Mensch Kandidat, spielt er das Minispiel „Funk-Takt“ (0 bis 12 Punkte). Ein gutes Talent macht die Pulte wohlwollender. Die Pulte entscheiden.",
+        "Quiz: Der Kandidat beantwortet 2 Fragen mit je 3 Antworten. Jede Antwort verrät ein Thema. Danach kommt die dritte Vorliebe heraus und ein Nogo des Kandidaten wird enthüllt. Die Pulte entscheiden ein letztes Mal.",
+        "Anmach-Joker: Einmal pro Runde darf der Kandidat eine ausgemachte Lampe wieder einschalten.",
+        "Wahl: Der Kandidat wählt eines der Pulte mit brennender Lampe – oder geht allein. Dabei sieht er pro Pult ein Thema als Hinweis.",
+        "Date: Je nach Passgenauigkeit wird das Date ein Kurzschluss oder ein Funkenflug. Danach gibt es die Punkte der Runde und den Gesamtstand."
+      ]
+    },
+    {
+      "t": "Am Pult: Lampe an oder aus",
+      "p": [
+        "Sitzt du am Pult, siehst du nach jeder Enthüllung deinen eigenen Typ und Herzen, die zeigen, wie gut der Kandidat nach dem bisher Bekannten zu dir passt. Dann tippst du „💡 Bleibt AN“ oder „🌑 AUS“. Eine ausgemachte Lampe bleibt aus – außer der Kandidat holt sie mit dem Joker zurück.",
+        "Passt der Kandidat wirklich gut zu dir, ist es richtig, die Lampe anzulassen. Passt er schlecht, ist Ausmachen richtig. Richtige Entscheidungen bringen Punkte, falsche kosten welche."
+      ]
+    },
+    {
+      "t": "Als Kandidat",
+      "list": [
+        "Talent „Funk-Takt“: Ein Ring wächst achtmal auf das Ziel zu. Tippe „TIPP!“ genau, wenn er das Ziel trifft. Je genauer, desto mehr Beifall (bis 12 von 12).",
+        "Quiz: Antworten, die zu deinen Vorlieben passen, sind mit „✔ stimmt“ markiert, andere mit „⚠ geflunkert“. Flunkern kann Lampen anlassen, weil es Vorlieben vortäuscht – beim Date fliegt es aber auf: Jede geflunkerte Vorliebe, die dein Date wirklich mag, kostet 12 % Passgenauigkeit.",
+        "Joker: Wähle eine ausgemachte Lampe zum Wiedereinschalten oder „Kein Joker“.",
+        "Wahl: Wähle ein Pult und tippe „Das Date! ▶“ oder „Allein gehen“.",
+        "Blackout: Gehen alle Lampen aus, bleibt der Kandidat allein und es gibt kein Date."
+      ]
+    },
+    {
+      "t": "Punkte",
+      "list": [
+        "Kandidat mit Date: 70 % der Passgenauigkeit plus 1,5 Punkte je brennender Lampe am Ende (abgerundet auf ganze Punkte). Ohne Date (allein oder Blackout): 8 Punkte.",
+        "Pult, pro Entscheidung: Passt der Kandidat sehr gut (Passgenauigkeit ab 55 %): an lassen +9, ausmachen −9. Mittel (35 bis 54 %): an lassen +3, ausmachen 0. Schlecht (unter 35 %): ausmachen +9, an lassen −6.",
+        "Pult, wenn du gewählt wirst: +40 bei einer Passgenauigkeit ab 55 %, sonst +12.",
+        "Im Endstand stehen alle Menschen mit Punkten, wie oft sie Kandidat (🎤) und Pult (💡) waren."
+      ]
+    },
+    {
+      "t": "Handys koppeln und Online",
+      "p": [
+        "Über „🌐 Online & Handys“ eröffnest du einen Raum mit 4-stelligem Code, QR-Code und Link. Mitspieler scannen den QR-Code oder öffnen die Seite und geben den Code ein – das klappt auch online von überall, im Browser, in der App oder an einem anderen Gerät.",
+        "Jedes Handy wird das private Pad eines Menschen (bis zu 4): Lampe, Quiz, Talent, Joker und Wahl bleiben geheim. Ohne Handy wird das Gerät herumgereicht – vor geheimen Eingaben erscheint „🙈 … ist dran – Alle anderen bitte wegschauen“."
+      ]
+    },
+    {
+      "t": "Steuerung",
+      "list": [
+        "Touch: Lampe, Antworten und Knöpfe antippen, im Funk-Takt auf „TIPP!“ tippen.",
+        "PC: alles mit der Maus anklicken.",
+        "Die Moderatorstimme liest Ansagen vor; mit 🗣️ schaltest du sie ab."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Achte auf die Vorlieben: Gleiche Themen lassen die Lampen leuchten.",
+        "Nogos sind tabu: Mag der Kandidat eines deiner Nogos, ist das der größte Minuspunkt.",
+        "Auch der Stil zählt: Jedes Pult mag zwei Stilrichtungen.",
+        "Die Herzen am Pult sind nur eine Schätzung mit dem, was bisher bekannt ist – nach dem Quiz sind sie am genauesten.",
+        "Am Anfang lieber Lampe anlassen, wenn du unsicher bist. Ausmachen kannst du später noch, wieder anmachen nicht."
+      ]
+    },
+    {
+      "t": "Strategien am Pult",
+      "list": [
+        "Ein guter Kandidat (ab 55 %) bringt dir bei jeder Phase +9, wenn du anbleibst – über vier Phasen 36 Punkte. Wählt er dich, kommen 40 dazu.",
+        "Ein schlechter Kandidat (unter 35 %) kostet −6 pro Phase, in der du anbleibst. Mach früh aus, sobald ein Nogo von dir als Vorliebe auftaucht.",
+        "Im Mittelfeld (35 bis 54 %) lohnt sich Anbleiben leicht (+3), Ausmachen kostet nichts.",
+        "Achtung bei Quiz-Antworten: Sie können geflunkert sein. Wenn ein Kandidat im Quiz plötzlich genau deine Vorlieben nennt, kann das Taktik sein."
+      ]
+    },
+    {
+      "t": "Strategien als Kandidat",
+      "list": [
+        "Das Talent ist bares Geld: Jeder Punkt im Funk-Takt erhöht die Schätzung aller Pulte. Konzentriere dich auf den Moment, in dem der Ring das Ziel trifft.",
+        "Ehrlich bleiben, wenn viele Lampen brennen. Flunkern nur, wenn sonst ein Blackout droht.",
+        "Wähle nicht einfach die letzte Lampe: Schau auf den Themen-Hinweis jedes Pults und nimm, wer zu deinen Vorlieben passt.",
+        "Viele brennende Lampen bringen dir am Ende Extrapunkte (1,5 je Lampe) – setze den Joker lieber auf jemanden, der zu dir passt.",
+        "Allein gehen bringt nur 8 Punkte. Schon ein mittelmäßiges Date ist meistens mehr wert."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu früh alle Lampen ausmachen, nur weil der Stil nicht passt – Stil zählt weniger als gemeinsame Vorlieben.",
+        "Als Kandidat beide Quizfragen flunkern: Jede Lüge, die das Date mag, kostet 12 % Passgenauigkeit.",
+        "Beim Herumreichen auf den Bildschirm der anderen schauen – dann ist der ganze Spaß weg."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "So wird die Passgenauigkeit berechnet",
+      "p": [
+        "Die echte Passgenauigkeit zwischen Pult und Kandidat liegt zwischen 0 und 100 %. Sie bestimmt die Punkte und den Ausgang des Dates."
+      ],
+      "list": [
+        "Grundwert 25.",
+        "+22 für jede Vorliebe, die beide teilen.",
+        "−28 für jede Vorliebe des Kandidaten, die ein Nogo des Pults ist.",
+        "−10 für jedes Nogo des Kandidaten, das das Pult mag.",
+        "+12, wenn der Stil des Kandidaten zu den Stilen des Pults passt.",
+        "Dazu ein kleiner zufälliger Funke von bis zu ±8.",
+        "Beim Date: −12 für jede geflunkerte Quiz-Vorliebe, die das gewählte Pult wirklich mag."
+      ]
+    },
+    {
+      "t": "Wie die Computer-Pulte entscheiden",
+      "list": [
+        "Sie schätzen die Passgenauigkeit mit dem bisher Bekannten. Ein gutes Talent erhöht die Schätzung direkt um die Talentpunkte (0 bis 12).",
+        "Nach dem ersten Eindruck gehen sie unter etwa 24 % Schätzung aus, nach dem Steckbrief unter 30 %, nach dem Talent unter 35 %, nach dem Quiz unter 40 % – jedes Pult ist dabei etwas wählerischer oder großzügiger.",
+        "Ab einer Schätzung von 62 % bleiben sie fast immer an.",
+        "Manchmal entscheiden sie aus Laune anders (etwa jedes 20. Mal).",
+        "Computer-Kandidaten setzen den Joker nur ein, wenn höchstens 2 Lampen brennen."
+      ]
+    },
+    {
+      "t": "Die Date-Stufen",
+      "list": [
+        "0 bis 20 %: Kurzschluss – „Der Kellner trennt sogar die Rechnung.“",
+        "20 bis 40 %: Funkbekanntschaft – nett, aber kein Funke.",
+        "40 bis 60 %: solides Mittelfeld, ein zweites Treffen ist nicht ausgeschlossen.",
+        "60 bis 80 %: gute Chemie, Konfetti und Fanfare.",
+        "Ab 80 %: Funkenflug – „Die Straßenlaternen blinzeln.“"
+      ]
+    },
+    {
+      "t": "Der perfekte Kandidat-Durchgang",
+      "steps": [
+        "Profil so wählen, dass deine Vorlieben häufig vorkommen – Humor, Gemütlichkeit und Abenteuer mögen die meisten Pult-Personen (je 11 von 40).",
+        "Im Funk-Takt 12 von 12 anstreben: genau auf das Ziel tippen, achtmal im gleichen Abstand.",
+        "Im Quiz ehrlich antworten, solange genug Lampen brennen.",
+        "Den Joker für ein Pult nutzen, das ausgegangen ist, aber gut zu dir passen könnte.",
+        "Bei der Wahl das Pult mit passendem Themen-Hinweis nehmen. Mit 90 % Passgenauigkeit und 10 brennenden Lampen holst du 78 Punkte."
+      ]
+    },
+    {
+      "t": "Kandidaten, Pulte und Fragen",
+      "p": [
+        "Es gibt 18 Computer-Kandidaten (zum Beispiel Jonas, Personal Trainer, sportlich; Lena, Museumsführerin, elegant; Mika aus der Landschaftsgärtnerei, lässig; Svenja, Puppenspielerin, schräg) mit eigenem Motto, Macke, Traum-Date und Talent, dazu 40 verschiedene Pult-Personen und 14 Quizfragen wie „Dein Wecker klingelt am Sonntag. Was machst du?“ oder „Du gewinnst 500 Euro. Wohin damit?“. Jede Show mischt sie neu."
+      ]
+    }
+  ],
+  "faq": [
+    { "q": "Wie koppele ich ein Handy?", "a": "Im Menü „🌐 Online & Handys“ öffnen und den QR-Code scannen oder den Code auf der Seite eingeben. Jedes Handy wird das private Pad eines Menschen." },
+    { "q": "Koppeln klappt nicht.", "a": "Für das Koppeln braucht das Spiel Internet. Ohne Verbindung erscheint „Koppeln nicht möglich (Internet?)“ – dann einfach das Gerät herumreichen." },
+    { "q": "Die Moderatorstimme ist zu laut oder nervt.", "a": "Oben im Spiel auf 🗣️ tippen, dann wird nur noch Text angezeigt." },
+    { "q": "Kann ich allein spielen?", "a": "Ja. Mit 1 Mensch spielst du 4 Runden: einmal als Kandidat und dreimal am Pult gegen Computer-Kandidaten." },
+    { "q": "Werden meine Profile gespeichert?", "a": "Ja, Namen, Stil, Vorlieben und Nogos der Menschen bleiben im Browser gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du sie zusätzlich in deinem Google-Konto und nutzt sie auch auf anderen Geräten." },
+    { "q": "Was bringt das Flunkern genau?", "a": "Geflunkerte Antworten zählen für die Pulte wie echte Vorlieben und können Lampen retten. Beim Date kostet jede Lüge, die dein Date mag, 12 % Passgenauigkeit." }
+  ]
+}

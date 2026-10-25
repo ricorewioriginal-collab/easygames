@@ -56,6 +56,8 @@
  *      EasyGames.stream('zotik');                             // öffnet die Overlay-Einrichtung; Knopf „🎥 Stream“ an Spielen ausblenden: data-stream="false"
  *      EasyGames.allow;                                       // Freigaben für eigene iframes: f.allow = EasyGames.allow
  *      EasyGames.guide('zotik', cb);                          // Anleitung + Steuerung (lädt guides.js bei Bedarf)
+ *      EasyGames.book('zotik', cb);                           // Handbuch, Ratgeber, Lösungsbuch (guides/<id>.json, Format guides/README.md) oder null
+ *      EasyGames.guideUrl('zotik');                           // Seite mit Anleitung, Ratgeber und Lösungsbuch; Knopf „📖 Anleitung“ an Spielen ausblenden: data-guide="false"
  */
 (function () {
   'use strict';
@@ -134,6 +136,23 @@
     var b = document.createElement('button'); b.type = 'button'; b.textContent = '\uD83C\uDFA5 Stream'; b.title = 'Als Stream-Overlay einbinden (OBS, TikTok LIVE)';
     b.style.cssText = css; b.onclick = function () { streamSetup(id, o); }; return b;
   }
+  // Anleitung, Ratgeber und Lösungsbuch (anleitung.html): Knopf „📖 Anleitung“ neben „🎥 Stream“
+  function guideUrl(id) { var u = new URL('anleitung.html', base); u.searchParams.set('game', id); return u.href; }
+  function guideBtn(id, o, css) {
+    if (!id || id === 'all' || o.guide === false || o.guide === 'false') return null;
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = '\uD83D\uDCD6 Anleitung'; b.title = 'Spielanleitung, Ratgeber und L\u00F6sungsbuch';
+    b.style.cssText = css; b.onclick = function () { window.open(guideUrl(id), '_blank', 'noopener'); }; return b;
+  }
+  // Knöpfe „🎥 Stream“ und „📖 Anleitung“ nebeneinander in einer Leiste (pos: CSS für die Lage)
+  function toolRow(id, o, pos, css) {
+    var s = streamBtn(id, o, css), gd = guideBtn(id, o, css); if (!s && !gd) return null;
+    var r = document.createElement('div'); r.style.cssText = 'position:absolute;display:flex;gap:6px;' + pos; if (s) r.appendChild(s); if (gd) r.appendChild(gd); return r;
+  }
+  EG.guideUrl = guideUrl;
+  EG.book = function (id, cb) {
+    if (!/^[\w-]+$/.test(id || '')) return cb(null);
+    fetch(new URL('guides/' + id + '.json', base).href).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }).then(cb);
+  };
   EG.streamUrl = streamUrl;
   EG.stream = streamSetup;
   function gameUrl(g, o) {
@@ -173,7 +192,7 @@
     b.style.cssText = 'position:absolute;right:8px;bottom:8px;min-height:40px;padding:0 14px;border:1px solid rgba(255,255,255,.35);border-radius:999px;background:rgba(8,11,18,.7);color:#fff;font:700 13px system-ui,sans-serif;cursor:pointer;opacity:.85';
     b.onclick = function () { fullscreen(f); };
     w.appendChild(f); w.appendChild(b);
-    var sb = streamBtn(o.game, o, b.style.cssText.replace('right:8px', 'left:8px'));
+    var sb = toolRow(o.game, o, 'left:8px;bottom:8px', 'min-height:40px;padding:0 14px;border:1px solid rgba(255,255,255,.35);border-radius:999px;background:rgba(8,11,18,.7);color:#fff;font:700 13px system-ui,sans-serif;cursor:pointer;opacity:.85');
     if (sb) w.appendChild(sb);
     return w;
   }
@@ -265,7 +284,7 @@
         b.onclick = function () { done(false); };
         box.appendChild(b);
       }
-      var sb = g && streamBtn(g.id, o, 'position:absolute;top:calc(8px + env(safe-area-inset-top,0px));right:calc(' + (o.close !== false && o.close !== 'false' ? 60 : 8) + 'px + env(safe-area-inset-right,0px));height:44px;padding:0 14px;border:1px solid rgba(255,255,255,.35);border-radius:999px;background:rgba(8,11,18,.72);color:#fff;font:700 13px system-ui,sans-serif;cursor:pointer;opacity:.85;z-index:1');
+      var sb = g && toolRow(g.id, o, 'top:calc(8px + env(safe-area-inset-top,0px));right:calc(' + (o.close !== false && o.close !== 'false' ? 60 : 8) + 'px + env(safe-area-inset-right,0px));z-index:1', 'height:44px;padding:0 14px;border:1px solid rgba(255,255,255,.35);border-radius:999px;background:rgba(8,11,18,.72);color:#fff;font:700 13px system-ui,sans-serif;cursor:pointer;opacity:.85');
       if (sb) box.appendChild(sb);
       Array.prototype.forEach.call(document.body.children, function (n) {   // Seite dahinter für Screenreader/Tastatur sperren, solange das Overlay offen ist
         if (n !== box && n.nodeType === 1 && !/^(SCRIPT|STYLE|LINK|NOSCRIPT)$/.test(n.tagName)) { hidden.push([n, n.getAttribute('aria-hidden'), !!n.inert]); n.setAttribute('aria-hidden', 'true'); try { n.inert = true; } catch (e) {} }
@@ -427,7 +446,7 @@
     for (var i = 0; i < nodes.length; i++) {
       var n = nodes[i]; if (n.getAttribute('data-easygames-done')) continue;
       n.setAttribute('data-easygames-done', '1');
-      var d = n.dataset, o = { width: d.width, maxWidth: d.maxWidth, ratio: d.ratio, height: d.height, radius: d.radius, title: d.title, fullscreen: d.fullscreen, tvLink: d.tvLink, mode: d.mode, close: d.close, layout: d.layout, share: d.share, stream: d.stream };
+      var d = n.dataset, o = { width: d.width, maxWidth: d.maxWidth, ratio: d.ratio, height: d.height, radius: d.radius, title: d.title, fullscreen: d.fullscreen, tvLink: d.tvLink, mode: d.mode, close: d.close, layout: d.layout, share: d.share, stream: d.stream, guide: d.guide };
       if (d.easygames === 'all') EG.library(n, o); else if (d.easygames === 'portal') EG.portal(n, o); else if (d.easygames === 'ranglisten') { o.game = d.game; EG.leaderboard(n, o); } else if (d.easygames === 'erfolge') EG.achievements(n, o); else if (d.easygames === 'konto') EG.account(n, o); else if (d.easygames === 'chat') { o.room = d.room; EG.chat(n, o); } else if (d.easygames === 'bug') { o.game = d.game; EG.bug(n, o); } else if (EXTRA[d.easygames]) EG.page(d.easygames, n, o); else { o.game = d.easygames; EG.embed(n, o); }
     }
   }

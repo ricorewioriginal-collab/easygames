@@ -1,0 +1,268 @@
+{
+  "id": "winzflitzer",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Winzflitzer 3D ist ein Micro-Rennspiel: „Winzige Flitzer. Riesige Tische. Ein Ziel.“ Du rast mit winzigen Fahrzeugen über acht riesige Alltagswelten mit je 3 Strecken – insgesamt 24 Strecken. Wer von der Tischkante fällt oder die Strecke verlässt, wird zurückgesetzt und verliert Zeit.",
+        "Ziel ist es, Rennen zu gewinnen, die Meisterschaft über alle 24 Strecken zu holen, im Kopf-an-Kopf-Turnier alle 11 Gegner zu schlagen und im Zeitfahren Bestzeiten aufzustellen."
+      ]
+    },
+    {
+      "t": "Hauptmenü und Modi",
+      "list": [
+        "🏆 Meisterschaft: 24 Rennen gegen je 3 Computer-Gegner, mit Leben und Bonusrunden.",
+        "⚔️ Kopf-an-Kopf: Du gegen einen Gegner auf einem Bildschirm – 11 Duelle der Reihe nach.",
+        "👥 Mehrspieler (1 Gerät): 2 bis 4 Spieler an einem Gerät (Tastatur zu zweit, Controller, Touch), auf Wunsch mit Computer-Fahrern.",
+        "🏁 Einzelrennen: ein Rennen auf einer frei gewählten Strecke gegen 3 zufällige Gegner.",
+        "⏱️ Zeitfahren: allein auf einer Strecke, mit dem Geist deiner besten Runde.",
+        "⚙️ Einstellungen und 📖 So geht's. Unter dem Titel stehen deine Statistik: Rennen, Siege, Meistertitel und Zahl der Bestzeiten."
+      ]
+    },
+    {
+      "t": "Fahrer und Gegnerstärke",
+      "p": [
+        "Vor Meisterschaft, Kopf-an-Kopf, Einzelrennen und Zeitfahren wählst du deinen Fahrer. Alle 12 Fahrer sind frei erfunden und fahren gleich schnell, wenn du sie steuerst; als Computer-Gegner sind sie unterschiedlich stark (von schwach nach stark): Lotte, Jaro, Mika, Ben, Yara und Emil, Nele und Kofi, Pia, Ole, Sami, Rosa („Die amtierende Küchentisch-Meisterin“).",
+        "Bei Meisterschaft, Kopf-an-Kopf und Einzelrennen stellst du außerdem die Gegner auf Leicht, Normal oder Schwer. Die Computer fahren unterschiedlich: „sauber“ auf der Ideallinie, „wild“ oder als „Rempler“."
+      ]
+    },
+    {
+      "t": "Welten und Fahrzeuge",
+      "list": [
+        "🥣 Frühstückstisch – 🏎️ Sportflitzer: ausgewogen.",
+        "✏️ Schreibtisch – 🏁 Formel-Winzling: das schnellste Fahrzeug mit viel Haftung.",
+        "🛁 Badewanne – 🚤 Speedboot: gleitet auf dem Wasser und rutscht stark in Kurven.",
+        "🌼 Garten – 🚁 Hubschrauber: schwebt über Kanten hinweg, beschleunigt aber langsam und driftet.",
+        "🏖️ Sandkasten – 🚙 Geländewagen: schwer und robust, steckt Hügel gut weg.",
+        "🎱 Billardtisch – 🛞 Kugelflitzer: sehr wendig mit starker Beschleunigung.",
+        "🔧 Werkbank – 🛡️ Panzer: langsam, schwer, klebt am Boden und kann schießen. Ein Treffer wirbelt den Gegner kurz herum.",
+        "🧸 Kinderzimmer – 🛻 Monstertruck: schwer, mit großen Rädern für Rampen."
+      ]
+    },
+    {
+      "t": "Strecke und Hindernisse",
+      "list": [
+        "Pinke Pfeil-Streifen geben etwa eine Sekunde lang Turbo – deutlich mehr Höchsttempo und Beschleunigung.",
+        "Rutschige Flächen (Milch, Öl, Seife) nehmen fast die ganze Seitenhaftung.",
+        "Bremsende Flächen (Honig, Sägespäne) halbieren dein Höchsttempo.",
+        "Der Abfluss-Strudel in der Badewanne zieht dich zu sich.",
+        "Hügel im Sandkasten heben und senken die Strecke.",
+        "Rampen lassen dich springen – über Lücken (Bücherberg, Spielzeugkisten-Chaos) kommst du nur mit Schwung.",
+        "Fällst du von der Platte oder bleibst du zu lange neben der Strecke, wirst du auf die Strecke zurückgesetzt und bist kurz durchsichtig."
+      ]
+    },
+    {
+      "t": "Meisterschaft",
+      "list": [
+        "Du startest mit 3 Leben (❤️). Vor jedem Rennen siehst du Strecke, Fahrzeug und deine 3 Gegner.",
+        "Platz 1 oder 2 bringt dich weiter. Bei Platz 3 oder 4 verlierst du ein Leben und fährst das Rennen noch einmal.",
+        "Wer als letzter Computer-Fahrer ins Ziel kommt, scheidet aus (❌). Sind zu wenige Gegner übrig, kommen alle zurück: „Revanche! Alle ausgeschiedenen Fahrer sind zurück.“",
+        "Die Gegner werden im Lauf der Meisterschaft stärker – am Anfang fahren eher die schwächeren Fahrer mit, zum Schluss die stärksten.",
+        "Nach jedem dritten geschafften Rennen gibt es eine ⭐ Bonusrunde: Schaffe 2 Runden allein in der vorgegebenen Zeit, dann bekommst du ein Extraleben (höchstens 5 Leben).",
+        "Aufgeben im Pausenmenü kostet ebenfalls ein Leben.",
+        "Ohne Leben ist die Meisterschaft vorbei. Nach allen 24 Strecken heißt es „🏆 MEISTER! 🏆“. Eine laufende Meisterschaft wird gespeichert und beim nächsten Start fortgesetzt."
+      ]
+    },
+    {
+      "t": "Kopf-an-Kopf",
+      "list": [
+        "Du fährst gegen einen einzelnen Gegner auf einem gemeinsamen Bildschirm. Die Kamera folgt dem Führenden.",
+        "Wer zurückfällt und aus dem Bild gerät oder tief von der Platte stürzt, verliert die Runde. Nach höchstens 40 Sekunden bekommt der Führende den Punkt.",
+        "Beide starten mit 4 von 8 Lichtern. Wer eine Runde gewinnt, holt sich ein Licht vom anderen. Mit allen 8 Lichtern gewinnst du das Duell.",
+        "Die 11 Gegner kommen der Reihe nach, vom schwächsten zum stärksten. Ein verlorenes Duell kostet eines von 3 Leben, dann versuchst du es nochmal.",
+        "Schlägst du alle 11, bist du „🏆 Duell-Champion!“. Auch das Turnier wird gespeichert."
+      ]
+    },
+    {
+      "t": "Mehrspieler an einem Gerät",
+      "steps": [
+        "👥 Mehrspieler wählen. Zum Mitmachen Gas geben: Pfeiltaste ↑ (Spieler mit Pfeilen), W (Spieler mit WASD), A am Controller oder auf einen freien Platz tippen. Bis zu 4 Spieler.",
+        "Tippe auf einen belegten Platz, um den Fahrer zu wechseln; „✕ Raus“ entfernt einen Spieler.",
+        "Wähle das Ziel (3, 5 oder 8 Punkte) und ob Computer-Fahrer auffüllen sollen (keine, +1, +2, +3). Es müssen mindestens 2 Fahrer sein.",
+        "Strecke wählen und losfahren. Wie im Kopf-an-Kopf gewinnt die Runde, wer vorne bleibt und die anderen aus dem Bild fährt. Zu zweit wird mit 8 Lichtern gespielt, ab 3 Fahrern mit Punkten bis zum Ziel.",
+        "Danach: ↻ Nochmal, 🗺️ Strecke, 👥 Lobby oder 🏠 Menü."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Tastatur: ↑ Gas, ↓ Bremse/Rückwärts, ← → lenken (aus Sicht des Fahrers), Leertaste oder Enter schießen (Panzer), Esc Pause. Allein kannst du auch W A S D benutzen.",
+        "Zwei Spieler an einer Tastatur: Spieler 1 fährt mit den Pfeiltasten und schießt mit Enter, Shift rechts, Strg rechts oder Punkt; Spieler 2 fährt mit W A S D und schießt mit Leertaste, Shift links, Q oder E.",
+        "Gamecontroller: linker Stick oder Steuerkreuz lenkt, A oder RT Gas, B oder LT Bremse, X, Y oder RB schießen, Start Pause. Mit „Controller-Lenkung: Stick-Richtung“ fährt der Flitzer dorthin, wohin du den Stick drückst.",
+        "Touch: Links den Stick in die gewünschte Richtung ziehen – der Flitzer fährt los und lenkt selbst; rechts Bremse und 💥 (Panzer). Mit „Touch-Steuerung: Tasten“ bekommst du klassische Knöpfe ◀ ▶, GAS und BREMSE.",
+        "Pausenmenü (⏸): ▶ Weiter, ↻ Neu starten, 🔊 Ton, 🎵 Musik, 🏠 Aufgeben."
+      ]
+    },
+    {
+      "t": "Einstellungen und Speichern",
+      "list": [
+        "Ton und Musik: an oder aus.",
+        "Grafik: Sparsam, Normal oder Schön (auf Handys ist Normal voreingestellt).",
+        "Kamera: Nah, Normal oder Weit.",
+        "Touch-Steuerung: Stick-Richtung oder Tasten. Controller-Lenkung: Klassisch oder Stick-Richtung.",
+        "Gegner: Leicht, Normal oder Schwer.",
+        "Gespeichert werden im Browser: Einstellungen, Statistik, Rundenbestzeit und Gesamtbestzeit je Strecke (in der Streckenauswahl mit ⏱ angezeigt), der Geist deiner schnellsten Zeitfahr-Runde je Strecke sowie laufende Meisterschaft und Kopf-an-Kopf-Turnier.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück. Die Geister der Zeitfahr-Runden bleiben immer nur auf diesem Gerät."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Vor engen Kurven kurz vom Gas – wer zu schnell ist, rutscht über die Tischkante.",
+        "Auf dem Handy ist die Stick-Richtung am einfachsten: Zeig einfach dorthin, wohin du willst.",
+        "Fahr dich im Zeitfahren auf einer Strecke ein, bevor du die Meisterschaft startest.",
+        "Stell die Gegner zu Beginn auf Leicht. Du kannst die Stufe für jede neue Meisterschaft neu wählen."
+      ]
+    },
+    {
+      "t": "Fahrtechnik je Welt",
+      "list": [
+        "Frühstückstisch und Schreibtisch: Rutschige Milch-Pfützen umfahren oder geradeaus durchqueren, nicht darin lenken.",
+        "Badewanne: Das Speedboot rutscht stark – früh einlenken und im Strudel am Abfluss nah am Außenrand bleiben.",
+        "Garten: Der Hubschrauber beschleunigt langsam. Vermeide Stopps und fliege runde Linien.",
+        "Sandkasten: Auf Hügeln nicht lenken, sondern gerade drüber – der Geländewagen ist schwer und stabil.",
+        "Billardtisch: Der Kugelflitzer ist sehr wendig, aber leicht – Rempler werfen ihn schnell aus der Bahn.",
+        "Werkbank: Der Panzer ist langsam, aber schießt. Ziele auf Gegner direkt vor dir, ein Treffer wirbelt sie kurz herum.",
+        "Kinderzimmer: Rampen mit Vollgas und gerade anfahren, damit der Monstertruck sauber landet."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Turbo-Streifen vor Rampen nutzen: Über die Lücken auf dem Schreibtisch (Bücherberg) und im Kinderzimmer (Spielzeugkisten-Chaos) kommst du nur mit vollem Tempo.",
+        "Im Duell vorne bleiben: Die Kamera folgt dem Führenden – wer hinten aus dem Bild fällt, verliert das Licht.",
+        "Im Duell in Führung lieber sicher fahren: Ein Absturz kostet die Runde sofort.",
+        "Im Rennen startest du immer hinter den Computer-Fahrern und musst dich nach vorn kämpfen. Nutze die ersten Kurven zum Überholen, solange das Feld dicht ist.",
+        "Meisterschaft: Platz 2 reicht zum Weiterkommen. Riskiere nichts, wenn du sicher auf Platz 2 liegst.",
+        "Bonusrunden sind Zeitfahren über 2 Runden – fahr sauber statt am Limit."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu schnell in Kurven an der Tischkante – der Absturz kostet mehr Zeit als jedes Bremsen.",
+        "Auf bremsenden Flächen (Honig, Sägespäne) Gas geben und hoffen – fahre lieber außen herum.",
+        "Mit Rückwärtsgang vom Rand weg wollen: Bleibst du zu lange neben der Strecke, setzt dich das Spiel sowieso zurück.",
+        "Mehrspieler: zwei Spieler auf derselben Tastenhälfte. Spieler 1 nutzt die Pfeile, Spieler 2 W A S D."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Alle 24 Strecken",
+      "list": [
+        "🥣 Müsli-Runde (3 Runden): 2 Turbo-Streifen, eine rutschige und eine bremsende Fläche.",
+        "🥣 Toast-Tour (3 Runden): Rampe gleich nach dem Start, 2 Turbos, 2 rutschige und eine bremsende Fläche.",
+        "🥣 Marmeladen-Acht (3 Runden): Achterbahn mit Brücke über die Kreuzung, 2 Turbos.",
+        "✏️ Bleistift-Ring (3 Runden): Rampe am Start, 2 Turbos, eine rutschige Stelle.",
+        "✏️ Bücherberg (3 Runden): erhöhter Abschnitt über die Bücher mit Rampe und Lücke – nur mit Schwung, 2 Turbos.",
+        "✏️ Lineal-Brücke (3 Runden): Acht mit Brücke, 2 Turbos.",
+        "🛁 Schaumbad-Sprint (3 Runden): kurze Runde, 2 Turbos, 2 bremsende Schaumstellen.",
+        "🛁 Ententeich (3 Runden): kurvig um die Enten, 2 Turbos.",
+        "🛁 Strudel am Abfluss (3 Runden): Der Abfluss-Strudel zieht dich in der Mitte zu sich, 2 Turbos.",
+        "🌼 Blumenbeet-Flug (3 Runden): weite Bögen, 2 Turbos.",
+        "🌼 Schlauch-Schleife (2 Runden): lang und verwinkelt, 2 Turbos.",
+        "🌼 Gartenzwerg-Tal (2 Runden): Zickzack zwischen den Bäumen, 2 Turbos.",
+        "🏖️ Burggraben (3 Runden): um die Sandburg, 2 Hügel, 2 Turbos.",
+        "🏖️ Dünen-Rallye (3 Runden): 3 Hügel, nur ein Turbo.",
+        "🏖️ Eimer-Express (3 Runden): 3 Hügel, 2 Turbos.",
+        "🎱 Acht-Kugel-Kurve (3 Runden): 2 Turbos, eine rutschige Stelle.",
+        "🎱 Bande an Bande (3 Runden): enge Haken, ein Turbo.",
+        "🎱 Tascheneck (3 Runden): ohne Sonderflächen, 2 Turbos – reines Fahrkönnen.",
+        "🔧 Schrauben-Slalom (2 Runden): Ölfleck und Sägespäne, 2 Turbos.",
+        "🔧 Hobelbank-Gefecht (2 Runden): Öl und Sägespäne, 2 Turbos.",
+        "🔧 Werkzeugkasten-Arena (3 Runden): Auffahrt auf einen erhöhten Abschnitt, 2 Turbos.",
+        "🧸 Bauklotz-Boulevard (3 Runden): große Rampe am Start, ein Turbo.",
+        "🧸 Teppich-Schanze (3 Runden): 2 große Rampen, ein Turbo.",
+        "🧸 Spielzeugkisten-Chaos (3 Runden): erhöhter Abschnitt mit Rampe und Lücke, ein Turbo."
+      ]
+    },
+    {
+      "t": "Meisterschaft: Reihenfolge und Bonusrunden",
+      "steps": [
+        "Müsli-Runde, Bleistift-Ring, Burggraben – danach Bonusrunde",
+        "Schaumbad-Sprint, Acht-Kugel-Kurve, Blumenbeet-Flug – Bonusrunde",
+        "Schrauben-Slalom, Bauklotz-Boulevard, Toast-Tour – Bonusrunde",
+        "Bücherberg, Ententeich, Dünen-Rallye – Bonusrunde",
+        "Bande an Bande, Schlauch-Schleife, Hobelbank-Gefecht – Bonusrunde",
+        "Teppich-Schanze, Marmeladen-Acht, Lineal-Brücke – Bonusrunde",
+        "Strudel am Abfluss, Eimer-Express, Tascheneck – Bonusrunde",
+        "Gartenzwerg-Tal, Werkzeugkasten-Arena, Spielzeugkisten-Chaos – geschafft: MEISTER!"
+      ]
+    },
+    {
+      "t": "Meisterschaft: so kommst du durch",
+      "list": [
+        "Insgesamt gibt es 7 Bonusrunden, jede auf der nächsten Strecke der Meisterschaft. Mit Glück und sauberem Fahren kannst du bis zu 5 Leben ansammeln.",
+        "Die Zielzeit einer Bonusrunde liegt etwas über einer guten Referenzzeit für 2 Runden – Abstürze sind dort tödlich, sauberes Fahren reicht.",
+        "Ein schwieriges Rennen darfst du so oft wiederholen, wie du Leben hast. Nutze den Wiederholungsversuch, um die Strecke kennenzulernen.",
+        "Weil jedes Mal der langsamste Computer ausscheidet, werden die Gegner im Lauf der Meisterschaft automatisch stärker."
+      ]
+    },
+    {
+      "t": "Kopf-an-Kopf: alle 11 Duelle",
+      "p": [
+        "Die Gegner kommen nach Stärke sortiert (du selbst fehlst in der Liste): Lotte, Jaro, Mika, Ben, Yara, Emil, Nele, Kofi, Pia, Ole, Sami, Rosa. Die Strecken der Duelle sind immer dieselben:"
+      ],
+      "steps": [
+        "Duell 1: Bleistift-Ring (Schreibtisch)",
+        "Duell 2: Schaumbad-Sprint (Badewanne)",
+        "Duell 3: Blumenbeet-Flug (Garten)",
+        "Duell 4: Bauklotz-Boulevard (Kinderzimmer)",
+        "Duell 5: Bücherberg (Schreibtisch)",
+        "Duell 6: Dünen-Rallye (Sandkasten)",
+        "Duell 7: Schlauch-Schleife (Garten)",
+        "Duell 8: Teppich-Schanze (Kinderzimmer)",
+        "Duell 9: Lineal-Brücke (Schreibtisch)",
+        "Duell 10: Eimer-Express (Sandkasten)",
+        "Duell 11: Gartenzwerg-Tal (Garten) – danach bist du Duell-Champion."
+      ]
+    },
+    {
+      "t": "Zeitfahren und Bestzeiten",
+      "list": [
+        "Der Geist (halb durchsichtig) fährt deine schnellste gespeicherte Runde auf dieser Strecke mit. Fährst du schneller, wird der neue Geist gespeichert.",
+        "Nach dem Ziel meldet das Spiel „🌟 Neue Rundenbestzeit!“ und/oder „🏁 Neue Gesamtbestzeit!“. Runden mit Bestzeit tragen ein ⭐.",
+        "Für jede Strecke zählt eine Bestzeit für die Titelstatistik („… Bestzeiten“).",
+        "Profi-Tipp: Fahre in der ersten Runde die Ideallinie und setze die Turbo-Streifen genau mittig – im nächsten Durchgang ist der Geist dein Gegner."
+      ]
+    },
+    {
+      "t": "Titel und Erfolge",
+      "list": [
+        "🏆 MEISTER!: alle 24 Rennen der Meisterschaft geschafft – zählt als Meistertitel in der Statistik.",
+        "🏆 Duell-Champion!: alle 11 Kopf-an-Kopf-Gegner besiegt – zählt ebenfalls als Titel.",
+        "⭐ Extraleben gewonnen!: Bonusrunde in der Zielzeit geschafft.",
+        "Die Titelstatistik zeigt Rennen, Siege, Meistertitel und Bestzeiten."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Meine Meisterschaft ist weg.",
+      "a": "Sie wird im Browser gespeichert und beim Wählen von 🏆 Meisterschaft fortgesetzt. Ohne Google-Anmeldung beginnt sie nach dem Löschen der Website-Daten oder auf einem anderen Gerät neu. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+    },
+    {
+      "q": "Das Spiel ruckelt.",
+      "a": "Stell in den Einstellungen die Grafik auf Sparsam. Auch die Kamera auf Nah kann helfen."
+    },
+    {
+      "q": "Wie spielen zwei Personen an einer Tastatur?",
+      "a": "Im Mehrspieler-Menü drückt Spieler 1 Pfeil ↑ und Spieler 2 W. Spieler 1 fährt mit den Pfeilen, Spieler 2 mit W A S D."
+    },
+    {
+      "q": "Mein Controller reagiert nicht.",
+      "a": "Drück einmal eine Taste am Controller, damit der Browser ihn erkennt. Im Mehrspieler-Menü trittst du mit A bei."
+    },
+    {
+      "q": "Warum kann ich nicht schießen?",
+      "a": "Schießen geht nur mit dem Panzer auf der Werkbank."
+    },
+    {
+      "q": "Gibt es einen Online-Modus?",
+      "a": "Nein, Mehrspieler läuft an einem Gerät mit bis zu 4 Spielern über Tastatur, Controller und Touch."
+    }
+  ]
+}

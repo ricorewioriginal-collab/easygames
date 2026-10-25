@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "247138a54361",
- "generated": "2026-10-25T02:33:46+00:00",
- "commit": "71c02eecd1fc90ec8df102297393b265530e271e",
+ "version": "55a2b191639a",
+ "generated": "2026-10-25T02:52:20+00:00",
+ "commit": "3777916e3c0d0eb8bb3f4c481cb07b99a54edddd",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -390,6 +390,11 @@
    "p": "aeru/vendor/three.min.js",
    "s": 545986,
    "h": "57bf8f9f062349ed05116bf375972004ac130d084e4fefd3fb4fc433304560fa"
+  },
+  {
+   "p": "anleitung.html",
+   "s": 10330,
+   "h": "ea63fc18cd015e900b6f177cbce29b5d63861b5ca72fb019b470e8ed62e62dd4"
   },
   {
    "p": "anmacha-beat-surfer/card.jpg",
@@ -5853,13 +5858,13 @@
   },
   {
    "p": "easygames.js",
-   "s": 36440,
-   "h": "223e4614d41bcf020809912d7c9a6e8885977d2d7464da6546c53c9ca074d955"
+   "s": 38259,
+   "h": "c109b876b3f966aecfbafe08472778389764a44d23dbe8535546be4782b1e9c9"
   },
   {
    "p": "einbinden.html",
-   "s": 90362,
-   "h": "8f2142c4a9e4f82ad3651532fb46da5a2b1d4625bba8864163d5e9a339fa5735"
+   "s": 91148,
+   "h": "f6c99d2f953359947b06de321c46b9d0aa3748449a6b10e922428629e611edda"
   },
   {
    "p": "erfolge.html",
@@ -6507,9 +6512,459 @@
    "h": "3ef82aa39c6b8742d48f7511b38b39012f06fff32b47c139966776515ccaa188"
   },
   {
+   "p": "guidebook.js",
+   "s": 2502,
+   "h": "8a0db7a1a4bfa01a2cfc1a06fcc524cbfe1357bb436e20382b78b59b22c7cb10"
+  },
+  {
    "p": "guides.js",
-   "s": 143227,
-   "h": "eee92317180ae0641e583b94d6a462463bfdd47b27178b8741356734c1de81d4"
+   "s": 158209,
+   "h": "19a01bfe80113bf8b319bcb6782b742b568f4338978cc0caee7e3c009a42a14d"
+  },
+  {
+   "p": "guides/FunkhausReality.json",
+   "s": 15674,
+   "h": "471ad8f811bab04c8bfc93e722abf8e5654858dd893ff44e4f912aae63c8de41"
+  },
+  {
+   "p": "guides/MachMichAus.json",
+   "s": 12880,
+   "h": "0735daf8fc293a54ab66c93954953d63db66bd4a90df6800557cdf327744e362"
+  },
+  {
+   "p": "guides/aeru.json",
+   "s": 17827,
+   "h": "f0342bdec5b03b410f130d7596ace8e8f8a55437d5ee7902a2b2a3720e4d0fe5"
+  },
+  {
+   "p": "guides/anmacha-beat-surfer.json",
+   "s": 10466,
+   "h": "90f46b9af0491983c8441a870bd4dfebc7d92f0b3440c7db2133699d73dce7d9"
+  },
+  {
+   "p": "guides/anmacha-flipper.json",
+   "s": 13300,
+   "h": "7f18d086aaddfe4ad4b953488f4c6b9d482fbd9914fff88c375a1facf0d06b57"
+  },
+  {
+   "p": "guides/anmacha-frequenzrad.json",
+   "s": 11438,
+   "h": "6fcd6625d57150e01472ea25ba869eddb7c54cc53db4e27a917634f8de606cdd"
+  },
+  {
+   "p": "guides/anmacha-funkparcours.json",
+   "s": 15998,
+   "h": "ea22b99f8327bf59d052904a0fb2ce4b8d8bd175b7aeee11bcddb60f8b61ae24"
+  },
+  {
+   "p": "guides/anmacha-gesucht.json",
+   "s": 13903,
+   "h": "b1249508f3d7f3b73ad9bf57f30833735a735f5d3f9db8e7a6e17b17c643db7d"
+  },
+  {
+   "p": "guides/anmacha-gold-reels.json",
+   "s": 15702,
+   "h": "2f3e447bbf1a73b177a93770a0a925c3b6636535d84e894e30e3dccc99ab71d4"
+  },
+  {
+   "p": "guides/anmacha-hoererwahl.json",
+   "s": 11190,
+   "h": "88fae07a026e237b72a2757611de6f72fcf8e2ef307d4cdb69f4dfdf01e508ab"
+  },
+  {
+   "p": "guides/anmacha-kart.json",
+   "s": 15357,
+   "h": "0ff5db35a25c7680f283a53c51719e151d49d88b31b48b89c70e0a389a5709c0"
+  },
+  {
+   "p": "guides/anmacha-kartenrausch.json",
+   "s": 16227,
+   "h": "3cdc567b38f23fbe46dee708ef7f79ad9d8ce9ec4574cc167080c21f95f03d39"
+  },
+  {
+   "p": "guides/anmacha-klotzfunk.json",
+   "s": 19910,
+   "h": "4f2a1ee357f90ad5b540161619db0e269bb38cdeeb36f9cdc965829e2be05270"
+  },
+  {
+   "p": "guides/anmacha-koffer-dealer.json",
+   "s": 14304,
+   "h": "b4e5f4cb1864cd49228ec6f24bb8dc688377a829c2bfac7182d9955f9b5f3870"
+  },
+  {
+   "p": "guides/anmacha-markthalle.json",
+   "s": 24592,
+   "h": "9f086ec5d0443a56d0599b6c0d95baa8ee54b83433e85c6d064e534f7bd99dc3"
+  },
+  {
+   "p": "guides/anmacha-memory.json",
+   "s": 13681,
+   "h": "5443f5cd040916eef932c200ce691653fcf3d709ee493aad2e0d92e90bd81aa4"
+  },
+  {
+   "p": "guides/anmacha-podcast-tycoon.json",
+   "s": 34450,
+   "h": "67e1b654bdfe5778eda64cf125f796a5ebd95f9fe629381b55334fa0b07632b0"
+  },
+  {
+   "p": "guides/anmacha-preisradar.json",
+   "s": 12315,
+   "h": "20410e1933aab5d13018472b2e93ba03e84cc78820f4443332559042e3b4ca10"
+  },
+  {
+   "p": "guides/anmacha-quest-rpg.json",
+   "s": 14624,
+   "h": "32a111a4da219f338f415a2e2c9672a8a023e4c4af062b7cbde808d846e6c66f"
+  },
+  {
+   "p": "guides/anmacha-quiz.json",
+   "s": 16998,
+   "h": "7dfdf25ab5e86be612f2b3f9597b8f49e7c25e956e4f70c8f6acfb1815ae6a2b"
+  },
+  {
+   "p": "guides/anmacha-radio-match.json",
+   "s": 35462,
+   "h": "9aa361e8bdcb28c9898cbbb404384d8868aef10a33d6c7e38d528d2b1a193947"
+  },
+  {
+   "p": "guides/anmacha-radio-surfer.json",
+   "s": 12294,
+   "h": "c0ae4b0065aed0f12f354435b62dd0b4c8233ba81ed75684045e7607d5a4c3a3"
+  },
+  {
+   "p": "guides/anmacha-showdown.json",
+   "s": 12066,
+   "h": "1cdbf2739aea6b41ba42d0a5a8035d67c497d047d663d2a10978b711b2992009"
+  },
+  {
+   "p": "guides/anmacha-snake.json",
+   "s": 13550,
+   "h": "b3522ccf88de3174966ff5ac2b7a23ad95c226c4ba22ccb364b6f3abb7caecf1"
+  },
+  {
+   "p": "guides/anmacha-solitaire.json",
+   "s": 14347,
+   "h": "7f79fd8fb81f82e89b520b571f1c8323829d7fbfa8bab36a48b92160dbeda6d0"
+  },
+  {
+   "p": "guides/anmacha-spielesammlung.json",
+   "s": 13123,
+   "h": "b8cfa5788ab62ab4a86a38681e252d9e4ba8472a48394bbcf2563e7528285ca8"
+  },
+  {
+   "p": "guides/anmacha-tower-defense.json",
+   "s": 13747,
+   "h": "da3a45b4b0f28cc2f83923d1ccf6d87d694d3c7b20d6f5fc8a41cfd5dbf6d20b"
+  },
+  {
+   "p": "guides/anmacha-undercover.json",
+   "s": 23121,
+   "h": "e6d39c6e522c879da7c3443fe421eb9e5e1d82f54df2bdca6322ddb114f7417a"
+  },
+  {
+   "p": "guides/anmacha-urwaldlager.json",
+   "s": 19470,
+   "h": "b27c726cd87e55bb3f79c1be42dd114d6d08f8880d867f06ed7a412246abec07"
+  },
+  {
+   "p": "guides/bowling-bahn.json",
+   "s": 12447,
+   "h": "d89d51f1905517a01cfa51ef5891271644ac1ede0811f3f630b383314dd9b828"
+  },
+  {
+   "p": "guides/brainrot-parkour.json",
+   "s": 13366,
+   "h": "3fbfbb38a3c077116dc1f9578c058676f6ce68c18f029850c4e83c83e6a76f1a"
+  },
+  {
+   "p": "guides/bunte-insel.json",
+   "s": 48775,
+   "h": "50db379030a3a6eb78ea54031f7c66681dfd45307871e427cd316bda5d288018"
+  },
+  {
+   "p": "guides/challenge-show.json",
+   "s": 14268,
+   "h": "f56a7a1f19ada44784ba5dd481ef9eca52d0912a60b6dff679f4ff91bde2a35b"
+  },
+  {
+   "p": "guides/colorpop-universe.json",
+   "s": 29386,
+   "h": "3271ee689446befd69a0077d7bb6335a2d0bd84fbe302bc6e5d8403228522a0a"
+  },
+  {
+   "p": "guides/darts-arena.json",
+   "s": 15291,
+   "h": "b2c773f7fe056c533e580a41c42226071261d1c1d8378203f8baa47e368f5a78"
+  },
+  {
+   "p": "guides/deluxe-2048.json",
+   "s": 16518,
+   "h": "d967f60867ef4ec9188ba23e1b4cf46da7896fefb6dbd74cfa0a9f30577cf1f3"
+  },
+  {
+   "p": "guides/easyclash.json",
+   "s": 18393,
+   "h": "0dc6f06f8c59ec48e2df94938e5e0e3993ffe39e575d519d8ebb4dbf4a0d61e7"
+  },
+  {
+   "p": "guides/fabelkick.json",
+   "s": 15309,
+   "h": "b7480b767f682c742780e25c949c1da8e1ffad3d305ff170fcaf2fadfb4bd730"
+  },
+  {
+   "p": "guides/fall-akte.json",
+   "s": 24658,
+   "h": "b0a060c8f6f8f164fe6f101ae09257b07a8a15d25531c93bd556f47e622e5a7d"
+  },
+  {
+   "p": "guides/frequenzminen.json",
+   "s": 14396,
+   "h": "44bd810804063ea6c580bf8264ce0dcc6561cab407d801409faf71f2dba4ee73"
+  },
+  {
+   "p": "guides/funk-billard.json",
+   "s": 12861,
+   "h": "e32db2e3d21e4e765d5baee029723d666c6e1d25ce6074a4247879d1e5d58c29"
+  },
+  {
+   "p": "guides/funkblasen.json",
+   "s": 35608,
+   "h": "9bb5af455248b5c854ffde45533ac2ea1a740683412173367410d1fe4f3e434b"
+  },
+  {
+   "p": "guides/funkgalgen.json",
+   "s": 15093,
+   "h": "ec5a0affbe23f66fb6ca63a2ae2e2770a19809ce26b87cfb977b687d34e5e023"
+  },
+  {
+   "p": "guides/funkgolf.json",
+   "s": 14330,
+   "h": "79773aa432602de2f41638896d6fb0123e2b1648d50ac2ecbe6421d315bdbfb0"
+  },
+  {
+   "p": "guides/funkmaler.json",
+   "s": 11990,
+   "h": "416959a026d644cf25b5a8802ee956f9bde3d888be6522c9519346ff66d41f75"
+  },
+  {
+   "p": "guides/gay-life.json",
+   "s": 20874,
+   "h": "cf4a00abf4d0577a713fa9b0ae8701ef31ae55e7876316fb04f8a90ef8d788f3"
+  },
+  {
+   "p": "guides/groove-arena.json",
+   "s": 12971,
+   "h": "ae3ee1bf8aae22eca2f28879a0ad5bd36ed92350cf76f343715588e317bf45e5"
+  },
+  {
+   "p": "guides/huepfstrasse.json",
+   "s": 11439,
+   "h": "d8671109ce7c587c8b6c2c629196d945980e2044435474190b2302cd206bc55f"
+  },
+  {
+   "p": "guides/kiko-sterneninseln.json",
+   "s": 13055,
+   "h": "3908a24d5979a200d39e371817f768343aa2c5dcb408b00bf5e4bb7112316f64"
+  },
+  {
+   "p": "guides/konfetti-party.json",
+   "s": 11878,
+   "h": "621dc8aef7b050d53b2b9e11f393a583995a512211fc215affcf15e5f4904af3"
+  },
+  {
+   "p": "guides/kraterkommando.json",
+   "s": 17851,
+   "h": "2b86bb0d442b80f3a015104a407d5bc64e13d045a257ee7123148a7b75efb1ec"
+  },
+  {
+   "p": "guides/krawallvoegel.json",
+   "s": 36341,
+   "h": "428548a00d39fab8a97f209b90c993adb8756f56cc8bebfa58dd2246d4258347"
+  },
+  {
+   "p": "guides/kuechen-chaos.json",
+   "s": 14187,
+   "h": "56d265b2a668fef17b7ee37d0f5250c10d8b29ac77880534e31460990366351e"
+  },
+  {
+   "p": "guides/lumo.json",
+   "s": 13824,
+   "h": "935d96a6f6dd96213c6f550aa6a143e9061056ec165bd666b9c787ebcc371d08"
+  },
+  {
+   "p": "guides/mahjong.json",
+   "s": 14071,
+   "h": "71713fbf60da34dd99b5e6aad3827169f933330df5df9ae171e26679471256a1"
+  },
+  {
+   "p": "guides/mimori.json",
+   "s": 15866,
+   "h": "cbce010221a31cc20f664f21edb53361d286a135e781a30b3aa31d2882884a0b"
+  },
+  {
+   "p": "guides/oma-rennen.json",
+   "s": 16404,
+   "h": "c6ee8e2d1526cc0d4f13e116faa4ccfe9c75e6c9abf93e1f6989e0c1cf101e52"
+  },
+  {
+   "p": "guides/partyverse.json",
+   "s": 31779,
+   "h": "635deb18c14ef1a0cdad8125c7e4cf331033bd9ac2b8475316de724469260104"
+  },
+  {
+   "p": "guides/pestwacht.json",
+   "s": 42047,
+   "h": "50db96fabdda2da78efcc9fda1a65cec52d930de501fc3d077cd646b81132dba"
+  },
+  {
+   "p": "guides/prismrush.json",
+   "s": 16357,
+   "h": "12c675113e7cebb8d5c59cb216d8b4330419e0c7ccd0f1198e6780ee156f353d"
+  },
+  {
+   "p": "guides/pufi-farbwind.json",
+   "s": 13725,
+   "h": "92698d911a1b6f7033290beb538ffe8f0bfbf7bbfaad458d404504bac5724b86"
+  },
+  {
+   "p": "guides/radio-maze.json",
+   "s": 14401,
+   "h": "a5f24ee66fb3acbb40a123789defea4cf78cb9326e8fe407d1b2cf9095b33cae"
+  },
+  {
+   "p": "guides/rico-flap.json",
+   "s": 11639,
+   "h": "7084aa96b11c3259a7d4250ecbfc4cd997927ebb92ab836d2b067effc0f39cfe"
+  },
+  {
+   "p": "guides/ricolife.json",
+   "s": 26384,
+   "h": "3295ca67377df23e638b0e7b176948cb0e086c0871a8c0d9c3fad7704d5ec6ba"
+  },
+  {
+   "p": "guides/ricopoly.json",
+   "s": 16547,
+   "h": "c24a94510b04503a67c71e01dcc4eea4d9b751131967a34bde942f6613b61dea"
+  },
+  {
+   "p": "guides/ricorail.json",
+   "s": 36339,
+   "h": "c89d52b250c4f5e28e3063b99c200826d79fa0e73d4c5cfe8fd4dfb742223cc9"
+  },
+  {
+   "p": "guides/ricoville.json",
+   "s": 37289,
+   "h": "5f403a66c79d9ec26206119269ce37e13741bfe769882d412c9d2044c88f6e37"
+  },
+  {
+   "p": "guides/riftzone.json",
+   "s": 19945,
+   "h": "c339ba993bc4f70b6df31ecd636e127448923309fe1884cbad7cb99d53d4ce94"
+  },
+  {
+   "p": "guides/saftblitz.json",
+   "s": 15012,
+   "h": "589701d611c31c13555ecdc5be8ac03f82bad44aae1035ae616e9502456e79d3"
+  },
+  {
+   "p": "guides/sendemast-sumo.json",
+   "s": 15246,
+   "h": "efdfe19bb6815df681e1b4e1237a2da1f0bbaa94004a43b2d826af946784da86"
+  },
+  {
+   "p": "guides/show-me-your-voice.json",
+   "s": 20038,
+   "h": "a5e5f4fe1999643622d7d42e5ab3df3b18371ca925721e838352413b3696a570"
+  },
+  {
+   "p": "guides/spinwelten.json",
+   "s": 34782,
+   "h": "664fbd67fe34a3ce5de76b60cbe87601928695efceb08fd368cd4efb94fefd23"
+  },
+  {
+   "p": "guides/stadt-land-plus.json",
+   "s": 14717,
+   "h": "609a8cbfb5d1e4b5f330d4cc4f6ece5e6a9549a2c24782ba0d5ec09e66116134"
+  },
+  {
+   "p": "guides/taschi.json",
+   "s": 30200,
+   "h": "60534ca440fc3ecdbdefd27bcf8204033aae42dddbeb825c322c92f7e0f8c088"
+  },
+  {
+   "p": "guides/tortenschlacht.json",
+   "s": 14075,
+   "h": "a2e6cea38b72920d5941852d5868e1d8ca7add874ac2d0486196d216d7c2423a"
+  },
+  {
+   "p": "guides/turbokick.json",
+   "s": 13432,
+   "h": "983b4cc3d3cd4c5aba90024dbc984c07d24b382ad302721c05fc67eb7a5efae5"
+  },
+  {
+   "p": "guides/werwolf-nacht.json",
+   "s": 15831,
+   "h": "af34784c39a760eba03b5886f575870fb6aa940fb2d680e4b169fdd63e4eac9f"
+  },
+  {
+   "p": "guides/winzflitzer.json",
+   "s": 18056,
+   "h": "2f83b1988a26db6c86e350560981f9f9f93a5ff17a7b9fb087e13cd68febc415"
+  },
+  {
+   "p": "guides/wobbel.json",
+   "s": 31218,
+   "h": "e744bdbda4fd398bbd476e9e1490a1e16ed63a5be8c8e05c803cd43bc377a3ad"
+  },
+  {
+   "p": "guides/wolkenhopser.json",
+   "s": 12934,
+   "h": "458bcef7500cedfdc96fe366f5a31da9f4bd0b61c714aeaba5d274178fafa947"
+  },
+  {
+   "p": "guides/wortfunk.json",
+   "s": 15138,
+   "h": "8ffcbc45f794024c703fecb5aae51f346f2436e17abfc1e10f535ac3484445f6"
+  },
+  {
+   "p": "guides/wortgitter.json",
+   "s": 13159,
+   "h": "b1ec075c3dea4363bf56f8daee282f8297aad706afea350807208f384bd28a3c"
+  },
+  {
+   "p": "guides/zeitsprung-castingshow.json",
+   "s": 12412,
+   "h": "20b7ede9f1f1c8095deff0d008af0ecba557b56f3ba297460560112122cd7520"
+  },
+  {
+   "p": "guides/zeitsprung-eurovision.json",
+   "s": 24243,
+   "h": "6d07e3a0b5b3668991c695ebca4bd7c24ef68d22a68a5c6bc87cc849742afb7b"
+  },
+  {
+   "p": "guides/zeitsprung-kinderserien.json",
+   "s": 14453,
+   "h": "268e63b9ef491ecedc16727906ac2a55b3eb7070a1a401293a66ed44604a84ba"
+  },
+  {
+   "p": "guides/zeitsprung-movie.json",
+   "s": 24108,
+   "h": "f3709b1a72c2fc6b53409445077419126c23da4bb1da31e14858394348a05141"
+  },
+  {
+   "p": "guides/zeitsprung-radio.json",
+   "s": 14094,
+   "h": "85cd140a55b77bd94d9c5d9a81b19262d5c8fd46a22c90f6433f73b220f64327"
+  },
+  {
+   "p": "guides/zeitsprung-wissen.json",
+   "s": 13164,
+   "h": "5c72fb9fbbe10e95531f494c04e17386b941b321d7103d354fbc986786db77d0"
+  },
+  {
+   "p": "guides/zotik.json",
+   "s": 20586,
+   "h": "2fccc2f75e85a9f71be8a9bcda08b877f0e2c51278c1713837310404e2471e47"
   },
   {
    "p": "heute.html",
@@ -6568,8 +7023,8 @@
   },
   {
    "p": "index.html",
-   "s": 93700,
-   "h": "ed0b9b826545bb64875a0cf735d2a02785fc7835b8d888838e3e02c311e40e48"
+   "s": 95824,
+   "h": "8eaf6f13f72e204eb2a7a6b6987895d221459563a54c574560e25149d9056fd0"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -8653,8 +9108,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 217662,
-   "h": "6b7913b86e2028503b6210dea22019782509603996b43f3e549f6cb28f2c5735"
+   "s": 233016,
+   "h": "08e09a6e5cb92bd66329a55bf02fbc469f5778fa7ae0b5af4a8d9813787a7347"
   },
   {
    "p": "taschi/card.svg",

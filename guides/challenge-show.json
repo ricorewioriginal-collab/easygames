@@ -1,0 +1,187 @@
+{
+  "id": "challenge-show",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Die große Challenge-Show ist eine 3D-Spielshow im TV-Studio mit jubelndem Publikum und einem Moderator, der jede Runde mit Stimme und Untertiteln ansagt. Bis zu 24 Kandidaten treten in sechs Runden an; fehlende Plätze füllen Computer-Kandidaten auf.",
+        "In jeder Runde scheiden einige aus – kinderfreundlich mit einem Konfetti-Puff in die weiche Schaumstoffgrube. Jeder Ausgeschiedene füllt den 💰 Topf um 100. Wer als Letzter übrig bleibt, holt die 👑 Krone und den ganzen Topf."
+      ]
+    },
+    {
+      "t": "Start und Menü",
+      "list": [
+        "Titelbild: „Tippe zum Start“ – eine beliebige Taste, ein Tipp oder A am Controller.",
+        "🎬 Show starten: Einstellungen für die Solo-Show, dann „▶ Show starten“.",
+        "🌐 Online & Handys: „🏠 Show erstellen“ oder „🔑 Mit Code beitreten“.",
+        "🙋 Kandidat: Name, Farbe und Hut (🧢 Kappe, 🥳 Partyhut, 🎀 Schleife, 🧶 Mütze, 📡 Antenne, 🎩 Zylinder).",
+        "🏆 Ruhmeshalle: Siege, Shows, beste Platzierung, überstandene Runden und Punkte-Rekord.",
+        "⚙️ Einstellungen: Geräusche, Musik, Moderator-Stimme, Untertitel und Vibration.",
+        "❓ Anleitung: „So läuft die Show“. Im Menü wählst du mit Pfeiltasten und Enter, Esc geht zurück."
+      ]
+    },
+    {
+      "t": "Show-Einstellungen",
+      "list": [
+        "Kandidaten (Computer füllen auf): 12, 16 oder 24.",
+        "Stärke der Computer: Leicht, Normal oder Schwer. Leicht: mehr Zeit, mehr Spielraum beim Keks, Computer machen mehr Fehler. Schwer: knapp und gnadenlos.",
+        "Länge: 🎬 Alle 6 Runden oder ⚡ Kurze Show (4) – dann werden drei der ersten fünf Spiele zufällig gewählt, das Schubs-Finale kommt immer zum Schluss.",
+        "Sind nur noch zwei Kandidaten übrig, geht es direkt ins Finale."
+      ]
+    },
+    {
+      "t": "Die sechs Runden",
+      "list": [
+        "🚦 Ampel-Lauf: Bei Grün laufen, bei Rot sofort stehen bleiben – der Ampel-Roboter dreht sich um (kurze Gelb-Phase) und sieht jede Bewegung. Wer sich bei Rot noch bewegt, fliegt. Wer nicht bis zum Ende der Zeit im Ziel ist, scheidet ebenfalls aus.",
+        "🌉 Wackelbrücke: Die Kandidaten springen nacheinander (nach Startnummer) Reihe für Reihe auf die linke oder rechte Platte. Nur eine Pudding-Platte pro Reihe hält. Was die anderen schon herausgefunden haben, leuchtet grün und wird automatisch genommen. Wer trödelt, springt nach 8 Sekunden zufällig. Läuft die Gesamtzeit ab, scheiden alle aus, die noch nicht drüben sind.",
+        "🪢 Seilziehen: Zwei Teams ziehen 45 Sekunden. Tippe, wenn der Zeiger im grünen Feld ist – das zieht doppelt so stark (genauer: fast dreimal so stark wie ein Tipp daneben). Das unterlegene Team scheidet komplett aus. Bei ungerader Zahl bekommt ein Kandidat (bevorzugt ein Computer) ein Freilos.",
+        "🍪 Keks-Kunst: Jeder bekommt eine Form – Kreis, Dreieck, Stern oder Herz – und fährt sie vom ⭐ aus in Reihenfolge nach. Weichst du von der Linie ab, bekommt der Keks Risse; bei zu vielen bricht er. Wer bis zum Ende der Zeit nicht fertig ist, scheidet aus.",
+        "🪑 Reise nach Jerusalem: Solange die Musik spielt, herumlaufen. Stoppt sie, tauchen überall Stühle auf – es gibt immer zu wenige (etwa ein Viertel fehlt). Du hast 7 Sekunden, um dich auf einen freien Stuhl zu setzen. Es gibt mehrere Durchgänge, bis höchstens 5 bzw. etwa die Hälfte übrig sind.",
+        "👑 Schubs-Finale: Alle stehen auf einer runden Plattform über dem Bällebad. Nach 5 Sekunden beginnt sie zu schrumpfen (nach einer Minute doppelt so schnell). Mit dem Sprint-Stoß rammst du andere von der Plattform. Der Letzte, der oben steht, gewinnt."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Tastatur und Maus: WASD oder Pfeile laufen, Leertaste (oder Enter) ziehen beim Seil und schubsen im Finale, ←/→ oder A/D wählen die Brückenseite, Maus gedrückt halten zum Nachfahren des Kekses (alternativ Cursor mit WASD/Pfeilen bewegen und Leertaste halten), Enter überspringt die Rundenkarte, Esc Pause.",
+        "Touch: Joystick links zum Laufen (Ampel, Stühle, Finale), große Tasten ◀ LINKS / RECHTS ▶, 💪 ZIEH! und 💥 SCHUBS, den Keks mit dem Finger nachfahren.",
+        "Gamecontroller: linker Stick laufen, A ziehen/schubsen, Steuerkreuz ←/→ oder LB/RB für die Brücke, beim Keks Stick bewegen und A halten, Start Pause. In den Menüs: Stick/Steuerkreuz wählen, A bestätigt, B zurück.",
+        "Vor jeder Runde zeigt eine Rundenkarte Name, Regel und die passende Steuerung für dein Gerät."
+      ]
+    },
+    {
+      "t": "Zuschauen, Pause und Ergebnis",
+      "list": [
+        "Bist du ausgeschieden, schaust du zu und schickst Jubel-Emojis (👏 🎉 😂 😱 ❤️). In der Solo-Show kannst du mit „⏩ Schneller“ vorspulen oder mit „⏭ Zum Ergebnis“ direkt zum Ende springen.",
+        "Pause (⏸ oder Esc): ▶ Weiter, ⚙️ Einstellungen, ✕ Show verlassen. Nur die Solo-Show hält dabei wirklich an.",
+        "Am Ende siehst du deinen Platz, deine Punkte und die Rangliste der besten 8 mit der Runde, in der jeder ausgeschieden ist."
+      ]
+    },
+    {
+      "t": "Punkte und Ruhmeshalle",
+      "list": [
+        "Sieger: der ganze Topf – 100 Punkte für jeden Ausgeschiedenen (bei 24 Kandidaten also 2300).",
+        "Alle anderen: 20 Punkte für jeden Kandidaten, der vor dir ausgeschieden ist, plus 50 Punkte pro erreichter Runde.",
+        "Die Ruhmeshalle speichert auf dem Gerät Siege, Shows, beste Platzierung, überstandene Runden und den Punkte-Rekord. Dein Kandidat (Name, Farbe, Hut) und die Einstellungen bleiben ebenfalls gespeichert.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    },
+    {
+      "t": "🌐 Online & Handys",
+      "steps": [
+        "Der Gastgeber wählt „🏠 Show erstellen“. Es erscheinen Code, QR-Code und „🔗 Link kopieren“.",
+        "Mitspieler treten von überall per Code, Link oder QR-Code bei – mit Handy, Tablet oder PC – und sehen die Show auf dem eigenen Gerät.",
+        "Der Gastgeber wählt „🙋 Ich spiele mit“ oder „📺 Nur Fernseher“: Dann zeigt der Fernseher die Show und die Handys sind die Controller. Dazu Kandidatenzahl (12, 16, 24), Stärke der Computer und 🎬 6 oder ⚡ 4 Runden.",
+        "Bis zu 12 Mitspieler können beitreten; Computer füllen die restlichen Plätze auf. Während einer laufenden Show kann niemand neu beitreten („bei der nächsten bist du dabei“).",
+        "Verlässt jemand die Show, übernimmt ein Computer seinen Kandidaten. Ausgeschiedene schicken Jubel-Emojis, die alle sehen."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Spiel deine erste Show auf Leicht: Dort hast du mehr Zeit und mehr Spielraum beim Keks.",
+        "Lies die Rundenkarte: Sie zeigt die Steuerung genau für dein Gerät.",
+        "Beim Ampel-Lauf lieber schon bei Gelb stehen bleiben – wer bei Rot noch rutscht, fliegt.",
+        "Beim Keks langsam fahren und dem pinken Punkt folgen – Abweichen macht Risse."
+      ]
+    },
+    {
+      "t": "Strategien je Runde",
+      "list": [
+        "Ampel-Lauf: Das Ziel ist 58 Schritte entfernt und die Zeit ist großzügig (75 Sekunden auf Normal, 25 Prozent mehr auf Leicht, 15 Prozent weniger auf Schwer). Kurze, sichere Sprints bei Grün reichen. Die Grünphasen werden im Laufe der Runde kürzer.",
+        "Wackelbrücke: Je später du dran bist, desto mehr Platten sind schon bekannt (grün). Du hast pro Sprung 8 Sekunden Bedenkzeit – danach wird zufällig gesprungen.",
+        "Seilziehen: Nicht hektisch hämmern, sondern im Takt tippen. Ein Tipp im grünen Feld zählt viel mehr als mehrere daneben. Gegen Ende der 45 Sekunden wirkt jeder Zug immer stärker.",
+        "Keks-Kunst: Bleib dicht auf der Linie – kleine Abweichungen machen kleine Risse, große Abweichungen große. Kreis ist am leichtesten, Stern und Herz am schwersten.",
+        "Reise nach Jerusalem: Bleib während der Musik in der Mitte der Arena; von dort erreichst du die meisten Stühle schnell. Ziel einen Stuhl an, zu dem kein anderer näher steht.",
+        "Schubs-Finale: Der Sprint-Stoß hat eine Abklingzeit von etwa einer Sekunde. Stoße nur, wenn ein Gegner nah ist und zwischen dir und dem Rand steht."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Im Finale gilt: Wer gerade stößt, gewinnt den Zusammenstoß. Wirst du angerammt, ohne selbst zu stoßen, fliegst du weg. Stoße also zurück, wenn jemand auf dich zusprintet.",
+        "Bleib im Finale nah an der Mitte, wenn die Plattform kleiner wird – die Computer drängen dann ebenfalls zur Mitte und rammen sich gegenseitig herunter.",
+        "Der Stoß geht in deine Laufrichtung: Richte den Stick bzw. die Tasten auf den Gegner, bevor du stößt.",
+        "Auf der Brücke: Die Computer raten etwa so gut wie der Zufall (auf Schwer etwas besser). Bist du früh dran, ist es Glück – plane also, in den anderen Runden sicher zu sein."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Beim Ampel-Lauf bei Rot weiter auf der Taste bleiben: Nach einem kurzen Moment wird jede Bewegung erkannt.",
+        "Im Finale am Rand stehen bleiben, während die Plattform schrumpft – wer über den Rand gerät, fällt ins Bällebad.",
+        "Beim Keks den Finger absetzen und woanders neu ansetzen: Weit weg von der Linie gibt es große Risse.",
+        "Bei der Reise nach Jerusalem zu einem Stuhl laufen, den ein anderer gleich erreicht – lieber den nächsten freien wählen."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Rundenablauf und Ausscheiden",
+      "list": [
+        "Runde 1 – Ampel-Lauf: Computer scheiden höchstens bis zu etwa 30 Prozent der Starter aus; wer bei Rot läuft oder nicht rechtzeitig ankommt, ist raus.",
+        "Runde 2 – Wackelbrücke: 3 bis 12 Reihen (etwa 70 Prozent der Kandidatenzahl). Jede falsche Platte kostet einen Kandidaten; danach ist die richtige Seite bekannt.",
+        "Runde 3 – Seilziehen: Etwa die Hälfte scheidet aus (das komplette Verliererteam).",
+        "Runde 4 – Keks-Kunst: Höchstens etwa 40 Prozent der Computer brechen ihren Keks; du selbst bist nur sicher, wenn du die Form fertig nachfährst.",
+        "Runde 5 – Reise nach Jerusalem: Durchgänge mit jeweils etwa einem Viertel zu wenigen Stühlen, bis höchstens 5 übrig sind.",
+        "Runde 6 – Schubs-Finale: Der Letzte auf der Plattform gewinnt. Es scheidet nie die ganze Runde aus – wenn alle auf einmal rausfliegen würden, bleibt der zuletzt Ausgeschiedene im Spiel."
+      ]
+    },
+    {
+      "t": "Die vier Keks-Formen",
+      "list": [
+        "Kreis: am leichtesten, eine gleichmäßige Kurve.",
+        "Dreieck: mittel – an den Ecken sauber abbiegen.",
+        "Stern: schwer – fünf spitze Zacken, langsam um die Spitzen fahren.",
+        "Herz: schwer – an der oberen Einbuchtung und unten an der Spitze aufpassen.",
+        "Toleranz: Auf Leicht ist der Spielraum um 35 Prozent größer, auf Schwer um 15 Prozent kleiner als auf Normal. Die Zeit beträgt 45 Sekunden auf Normal (Leicht mehr, Schwer weniger)."
+      ]
+    },
+    {
+      "t": "Computer-Stärken",
+      "list": [
+        "Leicht: Computer reagieren langsamer (Ampel und Stühle), treffen im Seilziehen seltener das grüne Feld (etwa 45 Prozent) und brechen den Keks öfter.",
+        "Normal: Mittlere Reaktionszeit, etwa 60 Prozent Takt-Treffer beim Seil.",
+        "Schwer: Schnelle Reaktion, etwa 75 Prozent Takt-Treffer, Kekse gelingen fast immer, und im Finale stoßen sie häufiger.",
+        "Jeder Computer-Kandidat kann zufällig eine Stufe schwächer oder stärker sein als die gewählte Stärke."
+      ]
+    },
+    {
+      "t": "So holst du Höchstpunkte",
+      "steps": [
+        "24 Kandidaten wählen: Der Topf wird mit jedem Ausgeschiedenen größer (bis 2300 Punkte für den Sieg).",
+        "Alle 6 Runden spielen – die kurze Show hat weniger Runden und damit weniger Punkte für erreichte Runden.",
+        "In jeder Runde auf Sicherheit spielen: Ampel bei Gelb stoppen, Keks langsam, beim Seil im Takt.",
+        "Im Finale zur Mitte und erst stoßen, wenn ein Gegner zwischen dir und dem Rand steht."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Der Moderator spricht nicht.",
+      "a": "Prüfe in den Einstellungen „Moderator-Stimme“. Die Sprachausgabe nutzt die Stimme des Geräts bzw. Browsers. Mit „Untertitel“ siehst du die Ansagen auch als Text."
+    },
+    {
+      "q": "Online klappt nicht – was tun?",
+      "a": "Alle Geräte brauchen Internet. Prüfe den Code; ist die Show voll (12 Mitspieler) oder läuft sie schon, kannst du erst bei der nächsten Show beitreten."
+    },
+    {
+      "q": "Was passiert, wenn ein Mitspieler die Verbindung verliert?",
+      "a": "Ein Computer übernimmt seinen Kandidaten, die Show läuft weiter."
+    },
+    {
+      "q": "Wo ist meine Ruhmeshalle gespeichert?",
+      "a": "Auf deinem Gerät im Browser bzw. in der App. Ohne Google-Anmeldung löschen gelöschte Browserdaten auch Siege und Rekorde. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+    },
+    {
+      "q": "Kann ich die Show abkürzen?",
+      "a": "Ja: ⚡ Kurze Show (4 Runden) wählen. Bist du ausgeschieden, kannst du in der Solo-Show vorspulen oder direkt zum Ergebnis springen."
+    },
+    {
+      "q": "Ist das Spiel für Kinder geeignet?",
+      "a": "Ja. Wer ausscheidet, verschwindet mit einem Konfetti-Puff in der weichen Schaumstoffgrube oder im Bällebad – ohne Gewalt."
+    }
+  ]
+}

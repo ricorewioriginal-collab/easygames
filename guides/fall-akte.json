@@ -1,0 +1,255 @@
+{
+  "id": "fall-akte",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "FALL·AKTE ist ein Krimi-Rätsel im Noir-Comic-Stil. In jedem Fall ist ein Verbrechen geschehen, und genau eine Person unter den Verdächtigen war es. Du suchst die Schauplätze mit der Lupe ab, bringst Spuren ins Labor, verhörst die Verdächtigen und klagst am Ende den Täter an.",
+        "Jede Spur verrät ein Merkmal des Täters oder entlastet eine Person. Wer nicht zu einer gefundenen Spur passt, wird im Notizbuch automatisch gestrichen („ENTLASTET“). Bleibt nur eine Person übrig, ist der Fall reif für die Anklage. Nach drei falschen Anklagen ist der Fall verloren („Drei falsche Anklagen – der Täter ist entkommen.“)."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "p": [
+        "Nach dem Ladebildschirm tippst du auf „▶ Fall öffnen“ (mit Controller „Drücke A“). Oben rechts im Menü stehen dein Rang und deine Detektiv-Punkte."
+      ],
+      "list": [
+        "🗂️ Fälle lösen: 6 Welten mit je 3 Fällen (18 Fälle). Löse 2 Fälle einer Welt, um die nächste zu öffnen.",
+        "📅 Tagesfall: jeden Tag ein neuer Fall mit 4 Verdächtigen, für alle gleich. Punkte gibt es nur beim ersten Lösen am Tag („Heute schon gelöst – nochmal spielen bringt keine Punkte.“).",
+        "🎲 Zufallsfall: immer ein neuer Fall in einer zufälligen Welt mit 4 oder 5 Verdächtigen.",
+        "🏅 Meine Akte: Rang, Punkte, gelöste und ungelöste Fälle, Sterne (von 54), perfekte Fälle und genutzte Tipps.",
+        "⚙️ Optionen: Geräusche, Musik (Noir-Jazz), Regen im Hintergrund, Vibration.",
+        "📖 Anleitung: die Kurzanleitung im Spiel.",
+        "⏯️ Weiter ermitteln: erscheint, wenn ein angefangener Fall gespeichert ist."
+      ]
+    },
+    {
+      "t": "Die sechs Welten",
+      "list": [
+        "Villa Rabenstein – Der Rabenstein-Diamant ist aus der Vitrine verschwunden. Schauplätze: Salon, Bibliothek, Wintergarten.",
+        "Hafen Nebelstadt – Eine Kiste mit wertvollen Gewürzen ist aus dem Lager verschwunden. Schauplätze: Kai, Lagerhalle, Kapitänskajüte.",
+        "Funkhaus – Mitten in der Live-Sendung wurde das Mischpult sabotiert. Schauplätze: Studio, Plattenarchiv, Kantine.",
+        "Zirkus Stella – Die Abendkasse ist leer, mitten in der Vorstellung. Schauplätze: Manege, Wohnwagen, Stall.",
+        "Museum der Zeiten – Ein berühmtes Gemälde wurde gegen eine Fälschung vertauscht. Schauplätze: Galerie, Restaurierung, Sicherheitsraum.",
+        "Schneehotel Alpenblick – Das geheime Rezeptbuch des Küchenchefs wurde gestohlen. Schauplätze: Lobby, Küche, Skikeller.",
+        "In jeder Welt hat Fall 1 drei, Fall 2 vier und Fall 3 fünf Verdächtige („Ein kniffliger Abend“, „Ein Fall für Profis“, „Die harte Nuss“)."
+      ]
+    },
+    {
+      "t": "Ablauf eines Falls",
+      "steps": [
+        "Die Fallbeschreibung nennt das Verbrechen, die Tatzeit, die Zahl der Verdächtigen, die Schauplätze, deine Fragen fürs Verhör (Verdächtige × 2 + 2, also 8, 10 oder 12) und die Zahl der Spuren. „Fall übernehmen“ startet.",
+        "🔍 Tatorte: Wechsle oben zwischen den drei Schauplätzen (die Zahl zeigt, wie viele Gegenstände noch nicht durchsucht sind) und tippe Gegenstände an. Meist heißt es „Nichts Auffälliges.“, manchmal findest du eine Spur.",
+        "Manche Spuren müssen ins Labor – direkt mit dem Labor-Knopf oder „Später“ und dann aus den Notizen.",
+        "🗣️ Verdächtige: Antippen öffnet das Verhör. Haarfarbe, Brille und Initiale stehen schon da, die anderen vier Fragen kosten je eine Frage aus deinem Vorrat.",
+        "📓 Notizen: Tabelle aller Personen mit ✓/✗ je Spur und dem Stand „raus“, „offen“ oder „passt!“, darunter alle Spuren.",
+        "⚖️ Anklage: Person wählen und „Anklagen!“. Richtig: Fall gelöst. Falsch: Punktabzug und ein Versuch weniger.",
+        "Am Ende zeigt die Auswertung Täter, Motiv, Sterne, Punkte und die Beweisführung – welche Spur wen ausgeschlossen hat."
+      ]
+    },
+    {
+      "t": "Spuren und Merkmale",
+      "list": [
+        "🧶 Haar: verrät die Haarfarbe (schwarz, blond, rot, grau oder braun). Siehst du auf dem Foto.",
+        "👓 Brillensplitter oder Zeugen-Zettel: Täter trägt eine Brille oder nicht. Siehst du auf dem Foto.",
+        "👣 Schuhabdruck: Schuhgröße (37–45) – erfährst du nur im Verhör.",
+        "✍️ Verwischte Notiz: Händigkeit links oder rechts – nur im Verhör.",
+        "🚬 Zigarettenstummel oder unberührter Aschenbecher: Raucher ja oder nein – nur im Verhör.",
+        "🖐️ Fingerabdruck: Muster Bogen, Schlaufe oder Wirbel – nur im Verhör („Darf ich Ihre Fingerabdrücke nehmen?“).",
+        "📜 Zerrissener Brief: bestätigt das Alibi einer Person – sie ist sofort entlastet.",
+        "Eine einfache Spur je Fall ist als Geheimnachricht verschlüsselt (z. B. „SCHREIBT MIT LINKS“, „HASST ZIGARETTEN“, „TRAEGT EINE BRILLE“, „HAT ROTE HAARE“).",
+        "Je Merkmal gibt es höchstens eine Spur und höchstens einen Alibi-Brief pro Fall. Keine Spur klärt den Fall allein."
+      ]
+    },
+    {
+      "t": "Das Labor",
+      "list": [
+        "👣 Fußspur vermessen: Stell die gestrichelte Schablone mit − und + so ein, dass sie genau passt, dann „Passt genau!“. Das Spiel sagt dir „zu groß“ oder „zu klein“.",
+        "🖐️ Fingerabdruck vergleichen: Wähle unter drei Mustern (Bogen, Schlaufe, Wirbel) das passende.",
+        "🔐 Geheimcode knacken: Jeder Buchstabe ist um dieselbe Zahl verschoben. Dreh das Code-Rad mit ◀ ▶, bis unten ein Satz entsteht, dann „Das ergibt Sinn!“.",
+        "🧩 Zerrissener Brief: Tippe ein Teil an und dann ein zweites, um sie zu tauschen; ⟳ Drehen dreht das gewählte Teil. Liegen alle vier Teile richtig herum an ihrem Platz, ist der Brief gelöst.",
+        "Jeder Fehlversuch im Labor zählt wie ein zusätzlich angeschauter Gegenstand und kostet so ein wenig Bonus."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch/Maus: Gegenstände, Personen und Knöpfe antippen. Unten wechselst du zwischen Tatorte, Verdächtige, Notizen und Anklage. Hochkant lässt sich das Tatort-Bild seitlich wischen („es gibt mehr zu sehen“).",
+        "Tastatur: Pfeile wählen, Enter bestätigt, Esc geht zurück bzw. öffnet im Fall die Pause. Im Fall: 1 Tatorte, 2 Verdächtige, 3 Notizen, 4 Anklage, H Tipp, P Pause, Q/E vorheriger/nächster Schauplatz. Im Labor: + und − für Schablone und Code-Rad.",
+        "Controller: Steuerkreuz oder Stick wählen, A bestätigt, B zurück, LB/RB Schauplatz wechseln, X Notizen ein/aus, Y Tipp, Start Pause.",
+        "☰ oben links: Pause mit Weiter, Fallbeschreibung, Anleitung, Optionen und „Fall vertagen (Menü)“. 💡 oben rechts: Tipp."
+      ]
+    },
+    {
+      "t": "Punkte, Sterne und Rang",
+      "list": [
+        "Punkte für einen gelösten Fall: 1.000 Grundwert + 40 je übrige Frage + 10 je Gegenstand unter 20 angeschauten − 150 je Tipp − 300 je Fehlanklage + 150 je Verdächtigem über 3. Mindestens 100 Punkte, ungelöste Fälle bringen 0.",
+        "3 Sterne: keine Fehlanklage und höchstens 1 Tipp. 2 Sterne: höchstens 1 Fehlanklage. Sonst 1 Stern.",
+        "Detektiv-Punkte: das beste Ergebnis je Kampagnenfall plus alle Tages- und Zufallsfälle.",
+        "Ränge: Spürnase in Ausbildung (0), Hilfskommissar (3.000), Kommissar (9.000), Oberkommissar (18.000), Chefinspektor (30.000), Meisterdetektiv (45.000). Eine Beförderung meldet die Auswertung mit „🎖️ Befördert“."
+      ]
+    },
+    {
+      "t": "Speichern",
+      "p": [
+        "Fortschritt, beste Ergebnisse je Fall, Statistik, Optionen und der laufende Fall werden auf dem Gerät gespeichert; ein angefangener Fall geht über „⏯️ Weiter ermitteln“ weiter. Ein unfertiger Tagesfall verfällt am nächsten Tag („Der Tagesfall von gestern ist abgelaufen.“). Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Erst alle drei Schauplätze absuchen, dann fragen. So weißt du, welche Merkmale überhaupt zählen, und verschwendest keine Fragen.",
+        "Löse alle Labor-Spuren – erst danach streicht das Notizbuch die passenden Personen.",
+        "Haarfarbe und Brille kosten keine Frage, sie stehen auf jeder Karte. Diese Spuren wirken sofort.",
+        "Die Zahl auf jedem Schauplatz-Reiter zeigt, wie viele Gegenstände dort noch nicht angeschaut sind."
+      ]
+    },
+    {
+      "t": "Gezielt verhören",
+      "list": [
+        "Frag nur Personen, die noch nicht gestrichen sind, und nur nach Merkmalen, zu denen es eine Spur gibt. Jede übrige Frage bringt 40 Punkte.",
+        "Ein Alibi-Brief erledigt eine Person ohne jede Frage.",
+        "Steht in den Notizen „Nur noch eine Person passt – Zeit für die Anklage!“, brauchst du keine weitere Frage.",
+        "Sind die Fragen aufgebraucht, kannst du nur noch kombinieren – bei mehreren Kandidaten hilft dann der Tipp, um eine fehlende Spur zu finden."
+      ]
+    },
+    {
+      "t": "Labor-Tricks",
+      "list": [
+        "Code-Rad: Sobald ein deutsches Wort auftaucht, hast du die richtige Verschiebung. Die Lösungen sind kurze Sätze wie „HAT BRAUNE HAARE“ oder „RAUCHT WIE EIN SCHLOT“.",
+        "Fußspur: Die Startgröße liegt immer genau 3 Größen neben der richtigen. Drei Klicks in die richtige Richtung, und es passt.",
+        "Fingerabdruck: Achte auf die Linien in der Mitte – Bogen ohne Kern, Schlaufe mit einer Wendung, Wirbel mit Kreisen.",
+        "Brief: Erst die Reihenfolge herstellen, dann jedes Teil mit ⟳ aufrichten."
+      ]
+    },
+    {
+      "t": "Profi-Strategie für 3 Sterne und Höchstpunkte",
+      "list": [
+        "Keine Fehlanklage und höchstens ein Tipp – das sind die drei Sterne.",
+        "Klick nicht wild alles an: Nur die ersten 20 angeschauten Gegenstände sind „kostenlos“ für den Bonus; jeder Labor-Fehlversuch zählt mit. Mit der Komplettlösung unten findest du jede Spur direkt.",
+        "Im 5er-Fall gibt es 300 Punkte Zusatz für die Schwierigkeit. Wer dort keine Frage stellt, keinen Tipp nutzt und nur die Spurenorte anschaut, kommt auf über 1.900 Punkte.",
+        "Ein Tipp kostet 150 Punkte, eine Fehlanklage 300 – im Zweifel lieber den Tipp."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Anklagen, obwohl im Notizbuch noch mehrere Personen „offen“ sind.",
+        "Spuren mit „Später“ liegen lassen und vergessen – ungelöste Labor-Spuren zählen nicht.",
+        "Alle Verdächtigen nach allem fragen: Die Fragen reichen nicht für jeden.",
+        "Den Tagesfall mehrmals spielen und Punkte erwarten – es zählt nur das erste Lösen am Tag."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "So liest du die Komplettlösung",
+      "p": [
+        "Die 18 Kampagnenfälle sind fest und für alle gleich. Je Fall stehen hier der Täter, die Verdächtigen und alle Spuren mit Fundort (Schauplatz → Gegenstand), Labor-Lösung und wen sie ausschließt. Tagesfall und Zufallsfälle werden neu erzeugt – dafür gilt die Strategie im Ratgeber."
+      ]
+    },
+    {
+      "t": "Welt 1: Villa Rabenstein",
+      "p": [
+        "Der Rabenstein-Diamant ist aus der Vitrine verschwunden. Diese Welt ist von Anfang an offen."
+      ],
+      "list": [
+        "Fall 1 (3 Verdächtige, 8 Fragen, Tatzeit 21:15 Uhr) – Täter: Baronin Adele (Hausherrin). Verdächtige: Viktor Rabe, Baronin Adele, Dr. Kurt Faber. Spuren: Salon → Palme: zerrissener Brief, entlastet Viktor Rabe (Labor: Teile tauschen und drehen); Bibliothek → Fenster: Fingerabdruck Wirbel (Labor: Muster Wirbel wählen), schließt aus: Dr. Kurt Faber.",
+        "Fall 2 (4 Verdächtige, 10 Fragen, Tatzeit 20:00 Uhr) – Täter: Gräfin Lotte (Nichte). Verdächtige: Viktor Rabe, Gärtner Emil, Butler Bertram, Gräfin Lotte. Spuren: Salon → Kamin: Fingerabdruck Bogen (Labor: Muster Bogen wählen), schließt aus: Viktor Rabe, Butler Bertram; Bibliothek → Fenster: Haarfarbe: braun (Geheimcode, Code-Rad auf 09), schließt aus: Viktor Rabe, Butler Bertram; Wintergarten → Brunnen: zerrissener Brief, entlastet Gärtner Emil (Labor: Teile tauschen und drehen); Salon → Ölgemälde: Brille: nein, schließt aus: Viktor Rabe.",
+        "Fall 3 (5 Verdächtige, 12 Fragen, Tatzeit 21:30 Uhr) – Täter: Gräfin Lotte (Nichte). Verdächtige: Gärtner Emil, Baronin Adele, Butler Bertram, Hilde Sommer, Gräfin Lotte. Spuren: Salon → Ölgemälde: Brille: nein (Geheimcode, Code-Rad auf 17), schließt aus: Baronin Adele, Hilde Sommer; Bibliothek → Regal mit Atlanten: zerrissener Brief, entlastet Butler Bertram (Labor: Teile tauschen und drehen); Wintergarten → Gartenbank: Raucher: nein, schließt aus: Gärtner Emil."
+      ]
+    },
+    {
+      "t": "Welt 2: Hafen Nebelstadt",
+      "p": [
+        "Eine Kiste mit wertvollen Gewürzen ist aus dem Lager verschwunden. Öffnet sich, sobald 2 Fälle der vorigen Welt gelöst sind."
+      ],
+      "list": [
+        "Fall 1 (3 Verdächtige, 8 Fragen, Tatzeit 20:15 Uhr) – Täter: Sven Kran (Kranführer). Verdächtige: Olaf Netz, Marie Wellen, Sven Kran. Spuren: Kai → Fass: Brille: nein (Geheimcode, Code-Rad auf 15), schließt aus: Olaf Netz; Lagerhalle → Mülltonne: zerrissener Brief, entlastet Marie Wellen (Labor: Teile tauschen und drehen); Kapitänskajüte → Bullauge: Händigkeit: rechts, schließt aus: Olaf Netz.",
+        "Fall 2 (4 Verdächtige, 10 Fragen, Tatzeit 22:45 Uhr) – Täter: Kapitän Hark (Kapitän). Verdächtige: Paula Möwe, Jette Tau, Marie Wellen, Kapitän Hark. Spuren: Kai → Laterne: Haarfarbe: schwarz (Geheimcode, Code-Rad auf 03), schließt aus: Jette Tau, Marie Wellen; Lagerhalle → Oberlicht: Raucher: nein, schließt aus: Paula Möwe, Jette Tau; Kapitänskajüte → Kartentisch: zerrissener Brief, entlastet Marie Wellen (Labor: Teile tauschen und drehen); Kai → Poller: Fingerabdruck Wirbel (Labor: Muster Wirbel wählen), schließt aus: Paula Möwe, Jette Tau.",
+        "Fall 3 (5 Verdächtige, 12 Fragen, Tatzeit 20:00 Uhr) – Täter: Sven Kran (Kranführer). Verdächtige: Kapitän Hark, Jette Tau, Paula Möwe, Olaf Netz, Sven Kran. Spuren: Kai → Poller: Fingerabdruck Schlaufe (Labor: Muster Schlaufe wählen), schließt aus: Jette Tau; Lagerhalle → Offene Kiste: Brille: nein (Geheimcode, Code-Rad auf 18), schließt aus: Jette Tau, Paula Möwe; Kapitänskajüte → Öllampe: zerrissener Brief, entlastet Jette Tau (Labor: Teile tauschen und drehen); Kai → Tauwerk: Händigkeit: rechts, schließt aus: Paula Möwe; Lagerhalle → Pult mit Frachtbuch: Raucher: nein, schließt aus: Kapitän Hark, Olaf Netz."
+      ]
+    },
+    {
+      "t": "Welt 3: Funkhaus",
+      "p": [
+        "Mitten in der Live-Sendung wurde das Mischpult sabotiert. Öffnet sich, sobald 2 Fälle der vorigen Welt gelöst sind."
+      ],
+      "list": [
+        "Fall 1 (3 Verdächtige, 8 Fragen, Tatzeit 21:00 Uhr) – Täter: Uli Ultrakurz (Wettermann). Verdächtige: Uli Ultrakurz, Toni Tonband, Dora Dezibel. Spuren: Studio → Drehstuhl: Raucher: nein (Geheimcode, Code-Rad auf 11), schließt aus: Toni Tonband; Plattenarchiv → Konzertplakat: Brille: ja, schließt aus: Dora Dezibel; Kantine → Mülleimer: zerrissener Brief, entlastet Dora Dezibel (Labor: Teile tauschen und drehen).",
+        "Fall 2 (4 Verdächtige, 10 Fragen, Tatzeit 21:45 Uhr) – Täter: Uli Ultrakurz (Wettermann). Verdächtige: Uli Ultrakurz, Toni Tonband, Nora Netz, Dora Dezibel. Spuren: Studio → Lautsprecher: zerrissener Brief, entlastet Dora Dezibel (Labor: Teile tauschen und drehen); Plattenarchiv → Plattenregal: Fingerabdruck Bogen (Labor: Muster Bogen wählen), schließt aus: Toni Tonband, Nora Netz; Kantine → Mülleimer: Schuhabdruck Größe 40 (Labor: Schablone auf Gr. 40), schließt aus: Toni Tonband, Nora Netz; Studio → Monitorbox: Brille: nein (Geheimcode, Code-Rad auf 20), schließt aus: Nora Netz.",
+        "Fall 3 (5 Verdächtige, 12 Fragen, Tatzeit 22:30 Uhr) – Täter: Dora Dezibel (Musikchefin). Verdächtige: Uli Ultrakurz, Felix Frequenz, Dora Dezibel, Toni Tonband, Rita Rauschen. Spuren: Studio → Mikrofon: Fingerabdruck Wirbel (Labor: Muster Wirbel wählen), schließt aus: Felix Frequenz, Rita Rauschen; Plattenarchiv → Kiste mit Singles: zerrissener Brief, entlastet Toni Tonband (Labor: Teile tauschen und drehen); Kantine → Ecktisch: Raucher: ja (Geheimcode, Code-Rad auf 19), schließt aus: Uli Ultrakurz, Felix Frequenz; Studio → Drehstuhl: Händigkeit: rechts, schließt aus: Uli Ultrakurz."
+      ]
+    },
+    {
+      "t": "Welt 4: Zirkus Stella",
+      "p": [
+        "Die Abendkasse ist leer – mitten in der Vorstellung. Öffnet sich, sobald 2 Fälle der vorigen Welt gelöst sind."
+      ],
+      "list": [
+        "Fall 1 (3 Verdächtige, 8 Fragen, Tatzeit 22:00 Uhr) – Täter: Direktor Bruno (Zirkusdirektor). Verdächtige: Lena Löwe, Kalle Kraft, Direktor Bruno. Spuren: Manege → Vorhang: zerrissener Brief, entlastet Kalle Kraft (Labor: Teile tauschen und drehen); Wohnwagen → Kostümständer: Händigkeit: rechts (Geheimcode, Code-Rad auf 05), schließt aus: Lena Löwe; Stall → Heuballen: Raucher: nein, schließt aus: Lena Löwe.",
+        "Fall 2 (4 Verdächtige, 10 Fragen, Tatzeit 21:45 Uhr) – Täter: Kalle Kraft (Gewichtheber). Verdächtige: Kalle Kraft, Stella Stern, Lena Löwe, Clown Pippo. Spuren: Manege → Pauke: Haarfarbe: rot (Geheimcode, Code-Rad auf 06), schließt aus: Stella Stern, Lena Löwe; Wohnwagen → Klappbett: Schuhabdruck Größe 40 (Labor: Schablone auf Gr. 40), schließt aus: Stella Stern, Clown Pippo; Stall → Wassertonne: Fingerabdruck Bogen (Labor: Muster Bogen wählen), schließt aus: Stella Stern, Lena Löwe; Manege → Scheinwerfer: Brille: nein, schließt aus: Stella Stern, Clown Pippo.",
+        "Fall 3 (5 Verdächtige, 12 Fragen, Tatzeit 22:30 Uhr) – Täter: Clown Pippo (Clown). Verdächtige: Stella Stern, Direktor Bruno, Mira Magie, Kalle Kraft, Clown Pippo. Spuren: Manege → Vorhang: Fingerabdruck Schlaufe (Labor: Muster Schlaufe wählen), schließt aus: Mira Magie, Kalle Kraft; Wohnwagen → Klappbett: Raucher: ja (Geheimcode, Code-Rad auf 21), schließt aus: Stella Stern, Kalle Kraft; Stall → Wassertonne: zerrissener Brief, entlastet Direktor Bruno (Labor: Teile tauschen und drehen)."
+      ]
+    },
+    {
+      "t": "Welt 5: Museum der Zeiten",
+      "p": [
+        "Ein berühmtes Gemälde wurde gegen eine Fälschung vertauscht. Öffnet sich, sobald 2 Fälle der vorigen Welt gelöst sind."
+      ],
+      "list": [
+        "Fall 1 (3 Verdächtige, 8 Fragen, Tatzeit 22:45 Uhr) – Täter: Wächter Willi (Nachtwächter). Verdächtige: Wächter Willi, Gina Gold, Kuratorin Clara. Spuren: Galerie → Kamera: Haarfarbe: schwarz (Geheimcode, Code-Rad auf 12), schließt aus: Gina Gold; Restaurierung → Fenster: zerrissener Brief, entlastet Kuratorin Clara (Labor: Teile tauschen und drehen).",
+        "Fall 2 (4 Verdächtige, 10 Fragen, Tatzeit 22:45 Uhr) – Täter: Hugo Hall (Hausmeister). Verdächtige: Prof. Ida Eich, Hugo Hall, Gina Gold, Rosa Rahmen. Spuren: Galerie → Porträt: Händigkeit: links (Geheimcode, Code-Rad auf 10), schließt aus: Prof. Ida Eich, Gina Gold; Restaurierung → Rahmenkiste: Raucher: nein, schließt aus: Gina Gold; Sicherheitsraum → Uhr: Brille: nein, schließt aus: Gina Gold, Rosa Rahmen; Galerie → Marmorbüste: zerrissener Brief, entlastet Rosa Rahmen (Labor: Teile tauschen und drehen).",
+        "Fall 3 (5 Verdächtige, 12 Fragen, Tatzeit 22:30 Uhr) – Täter: Hugo Hall (Hausmeister). Verdächtige: Malte Pinsel, Wächter Willi, Gina Gold, Prof. Ida Eich, Hugo Hall. Spuren: Galerie → Stillleben: Händigkeit: links (Geheimcode, Code-Rad auf 11), schließt aus: Wächter Willi, Gina Gold; Restaurierung → Fenster: Raucher: ja, schließt aus: Wächter Willi, Prof. Ida Eich; Sicherheitsraum → Stuhl: zerrissener Brief, entlastet Malte Pinsel (Labor: Teile tauschen und drehen); Galerie → Absperrkordel: Brille: nein, schließt aus: Gina Gold, Prof. Ida Eich."
+      ]
+    },
+    {
+      "t": "Welt 6: Schneehotel Alpenblick",
+      "p": [
+        "Das geheime Rezeptbuch des Küchenchefs wurde gestohlen. Öffnet sich, sobald 2 Fälle der vorigen Welt gelöst sind."
+      ],
+      "list": [
+        "Fall 1 (3 Verdächtige, 8 Fragen, Tatzeit 20:45 Uhr) – Täter: Kritikerin Yvonne (Restaurantkritikerin). Verdächtige: Zimmermädchen Ella, Portier Jakob, Kritikerin Yvonne. Spuren: Lobby → Tanne im Topf: Fingerabdruck Wirbel (Labor: Muster Wirbel wählen), schließt aus: Portier Jakob; Küche → Abfalleimer: zerrissener Brief, entlastet Zimmermädchen Ella (Labor: Teile tauschen und drehen); Skikeller → Skiständer: Haarfarbe: braun (Geheimcode, Code-Rad auf 17), schließt aus: Zimmermädchen Ella.",
+        "Fall 2 (4 Verdächtige, 10 Fragen, Tatzeit 21:30 Uhr) – Täter: Skilehrer Ben (Skilehrer). Verdächtige: Chefkoch Anton, Zimmermädchen Ella, Skilehrer Ben, Frau Berger. Spuren: Lobby → Kamin: zerrissener Brief, entlastet Zimmermädchen Ella (Labor: Teile tauschen und drehen); Küche → Kühlraum: Raucher: nein (Geheimcode, Code-Rad auf 20), schließt aus: Frau Berger; Skikeller → Wandlampe: Fingerabdruck Bogen (Labor: Muster Bogen wählen), schließt aus: Chefkoch Anton, Frau Berger.",
+        "Fall 3 (5 Verdächtige, 12 Fragen, Tatzeit 20:45 Uhr) – Täter: Zimmermädchen Ella (Zimmermädchen). Verdächtige: Zimmermädchen Ella, Frau Berger, Portier Jakob, Gast Sir Henry, Skilehrer Ben. Spuren: Lobby → Ledercouch: zerrissener Brief, entlastet Portier Jakob (Labor: Teile tauschen und drehen); Küche → Suppentopf: Händigkeit: rechts (Geheimcode, Code-Rad auf 04), schließt aus: Frau Berger; Skikeller → Kiste mit Mützen: Haarfarbe: braun, schließt aus: Gast Sir Henry, Skilehrer Ben."
+      ]
+    },
+    {
+      "t": "Freischaltungen und Erfolge",
+      "list": [
+        "Welt 2 bis 6 öffnen sich jeweils, wenn du 2 der 3 Fälle der vorigen Welt gelöst hast.",
+        "Je Fall bis zu 3 Sterne, insgesamt 54 Sterne. Die Akte zählt außerdem „🎯 Perfekte Fälle“ (gelöst mit 3 Sternen).",
+        "Der höchste Rang „Meisterdetektiv“ braucht 45.000 Detektiv-Punkte. Die 18 Kampagnenfälle allein bringen bei sehr guten Ergebnissen gut 25.000 bis 30.000 Punkte, den Rest holst du mit Tages- und Zufallsfällen.",
+        "Nach einem gelösten Kampagnenfall führt „Nächster Fall“ zum nächsten ungelösten Fall einer offenen Welt; „↻ Nochmal“ spielt denselben Fall erneut, gezählt wird nur dein bestes Ergebnis."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Mein Fortschritt ist weg – was ist passiert?",
+      "a": "Ohne Google-Anmeldung liegt der Spielstand nur im Speicher dieses Browsers: Nach dem Löschen der Browserdaten oder auf einem anderen Gerät beginnt alles neu. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+    },
+    {
+      "q": "Warum ist eine Welt gesperrt?",
+      "a": "Jede Welt öffnet sich erst, wenn du 2 Fälle der Welt davor gelöst hast."
+    },
+    {
+      "q": "Ich habe keine Fragen mehr. Kann ich den Fall noch lösen?",
+      "a": "Ja. Suche fehlende Spuren (der 💡 Tipp zeigt dir eine) und löse alle Labor-Spuren. Oft reicht das, damit nur eine Person übrig bleibt."
+    },
+    {
+      "q": "Der Tagesfall bringt keine Punkte.",
+      "a": "Punkte gibt es nur beim ersten Lösen am jeweiligen Tag. Danach kannst du ihn zum Spaß wiederholen."
+    },
+    {
+      "q": "Kann ich einen Fall unterbrechen?",
+      "a": "Ja, über ☰ und „Fall vertagen (Menü)“ oder einfach die Seite schließen. Im Menü geht es mit „⏯️ Weiter ermitteln“ weiter."
+    },
+    {
+      "q": "Wie schalte ich Musik oder Regen aus?",
+      "a": "Unter ⚙️ Optionen: Geräusche, Musik (Noir-Jazz), Regen im Hintergrund und Vibration lassen sich einzeln ein- und ausschalten."
+    }
+  ]
+}

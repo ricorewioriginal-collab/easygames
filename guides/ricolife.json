@@ -1,0 +1,322 @@
+{
+  "id": "ricolife",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "RicoLife 3D ist eine Lebenssimulation in der Hafenstadt Lindenhafen. Du lenkst einen Haushalt mit bis zu acht Personen: Bedürfnisse erfüllen, Freundschaften und Liebe pflegen, einen Beruf ausüben, Kinder großziehen, das Haus bauen und einrichten und dabei die eigenen Lebensziele erreichen.",
+        "Es gibt kein festes Ende und kein Verlieren – drei Geschichten mit je 8 Aufgaben führen dich auf Wunsch durch das Spiel, alles andere bleibt frei."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "list": [
+        "▶ Weiterspielen: lädt den zuletzt gespielten Stand.",
+        "✨ Neues Leben: 📖 Geschichte spielen, 🏡 Familie aus Lindenhafen (Familie Sonnberg mit Lena, Mats, Pia und Hund Bolle; die Loft-WG Kaiweg mit Kofi, Yuki, Ana und Katze Sardine; Hedwig & Jonas) oder 🧑‍🎨 Eigene Familie mit 20.000 RT Startkapital. Bei eigener Familie wählst du danach ein freies Grundstück zum Einziehen.",
+        "📂 Spielstände: 3 Plätze mit Laden, Sicherung laden, Exportieren, Importieren und Löschen.",
+        "🌐 Mehrspieler, ⚙️ Einstellungen und ❓ Hilfe."
+      ]
+    },
+    {
+      "t": "Figuren erstellen",
+      "p": [
+        "Im Figureneditor gestaltest du Name, Altersstufe, Aussehen (Haut, Haare, Augen, Gesichtsform, Nase, Brauen, Bart, Brille, Accessoires), Kleidung für jeden Anlass (Alltag, Arbeit, Sport, Feier, Schlafen, Baden), Merkmale und ein Lebensziel. Haustiere (Hund oder Katze) kommen dazu. Ein Haushalt hat höchstens 8 Personen."
+      ]
+    },
+    {
+      "t": "Bedürfnisse, Stimmung und Wünsche",
+      "list": [
+        "Sieben Bedürfnisse zwischen 0 und 100: Hunger, Energie, Hygiene, Blase, Soziales, Spaß und Komfort. Im grünen Bereich ist die Stimmung gut und alles gelingt besser.",
+        "Stimmungen (zum Beispiel nach einem guten Essen, einer Beförderung oder einem Streit) ergeben die vorherrschende Emotion; Merkmale verschieben die Grundstimmung.",
+        "Jede Figur hat bis zu 3 Wünsche, etwa „Etwas Leckeres kochen“, „Jemanden Neues kennenlernen“ oder „Befördert werden“. Erfüllte Wünsche bringen Wunschpunkte und gute Laune. Antippen eines Wunsches schlägt die passende Aktion vor.",
+        "Babys verhungern nie (die Nachbarschaft hilft), Erwachsene schlafen bei Erschöpfung von selbst ein.",
+        "Autonomie: Lässt du Figuren in Ruhe, kümmern sie sich selbst um ihre Bedürfnisse (einstellbar: Normal, nur bei dringenden Bedürfnissen, Aus)."
+      ]
+    },
+    {
+      "t": "Leben, Zeit und Aktionen",
+      "list": [
+        "Tippe oder klicke auf Gegenstände, Personen, Haustiere oder den Boden und wähle eine Aktion. Deine Figur läuft hin und führt sie aus.",
+        "Bis zu acht Aktionen stehen unten in der Warteschlange; Antippen bricht eine Aktion ab.",
+        "Zeit: 1 Spielminute dauert bei Tempo 1 eine Sekunde, dazu gibt es Tempo 3 und 10 sowie Pause. Eine Woche hat 7 Tage, eine Jahreszeit dauert 7 Tage (einstellbar 3, 5, 7 oder 14).",
+        "Wetter (Sonnig, Bewölkt, Regen, Gewitter, Schnee, Windig) beeinflusst Stimmung, Garten und Aktivitäten draußen.",
+        "Altersstufen: Baby, Kleinkind, Kind, Jugendlich, Junge Erwachsene, Erwachsen, Senior. Kinder und Jugendliche gehen von 8 bis 15 Uhr zur Schule und bekommen Hausaufgaben und Noten."
+      ]
+    },
+    {
+      "t": "Beziehungen",
+      "list": [
+        "Jedes Paar hat Freundschaft (−100 bis 100), Romantik (0 bis 100) und Vertrauen (0 bis 100) sowie gemeinsame Erinnerungen.",
+        "44 soziale Handlungen in sechs Gruppen: freundlich (Vorstellen, Plaudern, Kompliment, Umarmen, Trösten, Zusammen tanzen, Geschenk …), tiefgründig (Tiefgründiges Gespräch, Geheimnis anvertrauen, Entschuldigen …), Familie (Kitzeln, Vorlesen, Bei Hausaufgaben helfen …), lustig (Witz erzählen, Streich spielen, Grimassen schneiden), gemein (Diskutieren, Beleidigen, Streit anfangen …) und romantisch.",
+        "Erfolg hängt von Beziehung, Stimmung, Merkmalen und Charisma ab.",
+        "Romantik gibt es nur zwischen Erwachsenen bzw. zwischen Jugendlichen untereinander, nie in der Familie oder mit Kindern."
+      ]
+    },
+    {
+      "t": "Beruf, Geld und Rechnungen",
+      "list": [
+        "Über das Handy (Jobs) bewirbst du dich auf 9 Berufe. Im Café Möwe (Gastronomie), in der Klinik (Medizin) und bei Radio Lindenwelle (Medien) arbeitest du sichtbar vor Ort und erledigst Aufgaben, die Leistung bringen. Die anderen Berufe laufen, während die Figur weg ist, mit Schichtereignissen.",
+        "Lohn gibt es je Schicht nach Stunden und Leistung. Ab 100 Prozent Leistung wirst du befördert, wenn die nötigen Fähigkeiten erreicht sind (das Spiel sagt, was fehlt). Bei einer Beförderung gibt es eine Prämie von 4 Stundenlöhnen.",
+        "Verpasste Schichten und schlechte Laune senken die Leistung – erst droht die Rückstufung, dann die Kündigung.",
+        "Währung sind RicoTaler (RT). Montags kommen Rechnungen (abhängig vom Hauswert, der Zahl der Bewohner und der Elektrogeräte). Bezahle sie am Briefkasten oder im Handy, sonst wird nach drei Tagen der Strom abgestellt.",
+        "Zusätzliches Geld: Möbel verkaufen (85 Prozent), Bilder, Manuskripte, Fotos, Ernte und Fisch verkaufen."
+      ]
+    },
+    {
+      "t": "Kauf- und Baumodus",
+      "list": [
+        "Kaufmodus (B): Objekt im Katalog wählen und auf dein Grundstück tippen. Grün = passt, Rot = geht nicht (der Grund steht oben). R oder der Drehknopf dreht. Antippen eines vorhandenen Objekts: verschieben, drehen, verkaufen.",
+        "Baumodus (N): Wände ziehen, Räume aufziehen, Böden legen, Türen und Fenster in Wände setzen, Treppen für das Obergeschoss, Wandfarben ändern, Abreißen. Es gibt zwei Etagen, Dächer entstehen automatisch.",
+        "Rückgängig und Wiederholen (Strg+Z / Strg+Y) erstatten bzw. buchen Beträge zurück. Auch Fertighäuser lassen sich aufstellen.",
+        "Gebaut wird nur auf dem eigenen Grundstück. Jede Figur muss Türen, Betten und Geräte erreichen können – zugestellte Wege werden rot angezeigt.",
+        "Kreativmodus (Einstellungen): Bauen und Kaufen kostet nichts."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Smartphone und Tablet: Tippen wählt aus, ein Finger zieht die Kamera, zwei Finger zoomen und drehen, langes Tippen öffnet das Aktionsmenü. Die Knöpfe rechts öffnen Menü, Kauf- und Baumodus, Handy, Karte, Etage und Wandansicht; das Porträt oben links wechselt die Figur, das Tempo steht oben.",
+        "Maus und Tastatur: Linksklick wählt aus, rechte Maustaste ziehen oder Q/E dreht, mittlere Maustaste, W A S D oder Pfeiltasten verschieben, Mausrad oder +/− zoomt. Leertaste Pause, 1/2/3 Tempo, Tab nächste Figur, B Kaufen, N Bauen, F Leben, P Handy, M Karte, R Objekt drehen, Strg+Z / Strg+Y Rückgängig/Wiederholen, Bild↑/↓ Stockwerk, V Wände, Esc Menü schließen. Alle Tasten sind in den Einstellungen umbelegbar.",
+        "Controller: linker Stick Kamera, rechter Stick drehen und zoomen, A Aktion in der Bildmitte, B zurück, X Handy, Y eigene Aktionen, LB/RB Figur wechseln, Steuerkreuz links/rechts Tempo, hoch/runter Stockwerk, Back Stadtkarte, Start Menü. In Dialogen bewegt das Steuerkreuz den Fokus. Bauen geht nur per Touch oder Maus."
+      ]
+    },
+    {
+      "t": "Die Stadt Lindenhafen",
+      "p": [
+        "Drei Bezirke: Sonnenhain (ruhige Vorstadt mit Gärten, Park, Schule und Spielplatz), Altstadt (Rathausplatz, Bibliothek, Klinik, Galerie, Restaurant und Geschäfte) und Hafenviertel (Promenade mit Café, Bar, Markt, Radiosender und Pier). 47 Stadtbewohner haben einen eigenen Tagesablauf."
+      ],
+      "list": [
+        "Wohnhäuser: Ahornweg 1 (Sonnenhain, 18×14 m), Ahornweg 3 (Sonnenhain, 19×14 m), Lindenallee 2 (Sonnenhain, 20×16 m), Lindenallee 4 (Sonnenhain, 18×14 m), Birkenstraße 7 (Sonnenhain, 18×14 m), Birkenstraße 9 (Sonnenhain, 18×14 m), Marktgasse 5 (Altstadt, 10×14 m), Marktgasse 7 (Altstadt, 10×14 m), Kaiweg 12 (Loft-WG) (Hafenviertel, 18×16 m), Kaiweg 14 (Hafenviertel, 18×16 m).",
+        "Treffpunkte und Arbeitsorte: Sonnenhain-Park, Schule am Lindenhain, Spielplatz & Gemeinschaftsgarten, Rathausplatz, Stadtbibliothek, Klinik Lindenhafen, Galerie Farbenspiel, Trattoria Zur Linde, Fitnessstudio Kraftwerk, Kaufhaus Kranich, Café Möwe, Bar Leuchtfeuer, Supermarkt Frischekorb, Radio Lindenwelle, Hafenpromenade & Pier."
+      ]
+    },
+    {
+      "t": "Mehrspieler, Speichern und Einstellungen",
+      "list": [
+        "Mehrspieler: Im Menü „🌐 Mehrspieler“ eröffnest du einen Raum und bekommst einen Code. Bis zu drei Freund:innen treten mit dem Code bei und bringen ihre eigene Figur mit („Figur gestalten“). Das Gerät des Gastgebers rechnet und speichert. Gäste steuern ihre Figur, plaudern (Chat), arbeiten und erleben die Stadt mit, können aber nicht bauen, nicht das Tempo ändern und keine Haushaltsaktionen (Beruf, Umzug, Familie, Verkauf) ausführen.",
+        "Speichern: drei Plätze im Browser, „💾 Speichern“ und „📂 Speichern auf Platz …“ im Pausenmenü, Sicherungskopien, Export und Import als Datei, optional mit Google auf allen Geräten.",
+        "Spiel-Einstellungen: Autonomie, Altern und Familienzuwachs, Lebensdauer (kurz, normal, lang), Sanfter Abschied im hohen Alter (aus = Senior:innen bleiben für immer), Tempo der Bedürfnisse (50 bis 150 Prozent), Tage pro Jahreszeit, feste Jahreszeit, Zufallsereignisse, Kreativmodus.",
+        "Grafik, Ton (Effekte, Musik), Barrierefreiheit (große Schrift, hoher Kontrast, weniger Bewegung, Kamera am Bildschirmrand) und Tastenbelegung."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Kochen lohnt sich: Nudeln mit Tomatensoße reichen für vier Personen und machen satter als ein Snack.",
+        "Rechnungen pünktlich am Briefkasten oder im Handy bezahlen, sonst wird nach drei Tagen der Strom abgestellt.",
+        "Morgens zuerst Blase, Hygiene und Hunger erledigen, dann ist die Figur gut gelaunt bei der Arbeit.",
+        "Die Warteschlange nutzen: Mehrere Aktionen hintereinander einplanen spart Klicks.",
+        "Wenn dir alles zu schnell geht, stell die Bedürfnisse in den Einstellungen auf „langsam“."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Gute Stimmung vor der Arbeit bringt mehr Leistung: Bei sehr guter Laune steigt die Leistung pro Schicht deutlich, bei schlechter sinkt sie.",
+        "In den aktiven Berufen (Café, Klinik, Radio) möglichst viele Arbeitsaufgaben erledigen – das bringt die meiste Leistung.",
+        "Fähigkeiten gezielt trainieren: Beförderungen brauchen bestimmte Fähigkeiten, zum Beispiel Kochen und Charisma in der Gastronomie oder Charisma, Schreiben und Musik beim Radio.",
+        "Merkmale passend wählen: Feinschmecker lernen Kochen schneller, Genies Logik und Programmieren, Kreative Malen, Musik und Schreiben, Sportliche Fitness.",
+        "Freundschaften verblassen, wenn man sich lange nicht sieht: ab und zu anrufen oder einladen."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Hauswert steigern: Wertvolle Möbel und Deko heben den Hauswert – wichtig für das Lebensziel Traumhaus und die Geschichte der Sonnbergs. Bedenke aber, dass die Rechnungen mit dem Hauswert steigen.",
+        "Geld nebenbei: Ab Malerei 2 Bilder verkaufen, ab Schreiben 3 Manuskripte, ab Programmieren 2 freiberufliche Aufträge, ab Musik 3 für Trinkgeld spielen, ab Fotografie 2 Fotos verkaufen.",
+        "Gärtnern ab Stufe 5 bringt doppelte Ernte, Angeln ab Stufe 3 Zander und ab Stufe 6 den Hafenhecht.",
+        "Romantik Schritt für Schritt: Flirten, ab etwas Romantik ein Date vorschlagen, mit genug Romantik und Freundschaft „Beziehung vorschlagen“, mit viel Romantik „Heiratsantrag machen“, dann „Heiraten“ und „Zusammenziehen“.",
+        "Rückgängig im Baumodus gibt das Geld komplett zurück – probier Grundrisse ruhig aus."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Rechnungen vergessen – ohne Strom funktionieren Herd, Kühlschrank, Fernseher und Licht nicht.",
+        "Schichten verpassen: Dreimal verpasst bei schwacher Leistung führt zur Rückstufung oder Kündigung.",
+        "Wege zustellen: Wenn eine Figur Tür, Bett oder Gerät nicht erreicht, wird der Weg rot – dann ein Möbel verschieben.",
+        "Zu viele Aktionen auf einmal planen, während die Bedürfnisse im roten Bereich sind.",
+        "Romantische Aktionen zu früh probieren: Ohne genug Romantik heißt es „Noch nicht genug Funken“ oder die Figur wird abgewiesen."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "🏡 Geschichte: Vom alten Elternhaus zum Traumhaus",
+      "p": [
+        "Familie Sonnberg hat ein Haus geerbt, das mehr Macken als Zimmer hat. Repariere, baue, richte ein und mach aus der Baustelle am Ahornweg ein Zuhause, auf das alle stolz sind. Du startest mit Familie Sonnberg und 9.000 RT auf dem Konto."
+      ],
+      "steps": [
+        "Ein Haus voller Macken: Repariere 3 kaputte Geräte, Räume 2-mal gründlich auf. Belohnung 500 RT.",
+        "Herzstück Küche: Kaufe 3 Küchenobjekte, Koche 3 Mahlzeiten. Belohnung 400 RT.",
+        "Hallo, Ahornweg!: Lerne 5 Leute kennen, Plaudere 5-mal mit anderen. Belohnung 300 RT.",
+        "Mehr Platz für alle: Baue 12 Wandsegmente, Habe 4 geschlossene Räume. Belohnung 800 RT. Danach wählst du: „Werkstatt im Keller einrichten“ (Werkstatt im Keller: Erreiche Handwerk Stufe 4, Tüftle 3-mal an der Werkbank, 700 RT) oder „Einen Gemüsegarten anlegen“ (Gemüsegarten: Erreiche Gärtnern Stufe 4, Ernte 5-mal im Garten, 700 RT).",
+        "Ein Haus mit Wert: Kaufe 5 Dekorationen, Steigere den Hauswert auf 60.000 RT. Belohnung 1.000 RT.",
+        "Das große Gartenfest: Grille 3-mal für deine Gäste, Habe 4 Freundschaften, Tanze 2-mal mit Gästen. Belohnung 2.000 RT."
+      ]
+    },
+    {
+      "t": "⚓ Geschichte: Neuanfang im Hafenviertel",
+      "p": [
+        "Neue Stadt, neues Loft, neues Leben: Komm im Hafenviertel an, finde Arbeit, Freund:innen und deinen Stammplatz im Café Möwe – und entscheide, ob dein Herz für die Liebe oder die Karriere schlägt. Du startest mit einer eigenen Figur und 5.000 RT auf dem Konto."
+      ],
+      "steps": [
+        "Moin, Hafenviertel!: Besuche die Hafenpromenade, Lerne 3 Leute kennen. Belohnung 200 RT.",
+        "Anheuern: Finde einen Job, Arbeite 3 Schichten. Belohnung 500 RT.",
+        "Stammgast im Café Möwe: Besuche das Café Möwe, Trink 5 Kaffee, Freunde dich mit Marlene an. Belohnung 300 RT.",
+        "Leute vom Kai: Erzähle 5 Witze, Habe 3 Freundschaften. Belohnung 400 RT.",
+        "Petri Heil am Pier: Angle 5-mal am Pier, Erreiche Angeln Stufe 3. Belohnung 500 RT. Danach wählst du: „Der Liebe eine Chance geben“ (Herzklopfen an der Promenade: Baue eine romantische Beziehung auf, Lade jemanden zu einem Date ein, 300 RT) oder „Voll auf die Karriere setzen“ (Volle Kraft voraus: Erreiche Karrierestufe 3, Verdiene 3.000 RT, 1.000 RT).",
+        "Das Hafenfest: Tanze 2-mal, Habe 4 Freundschaften, Habe 10.000 RT auf dem Konto. Belohnung 1.500 RT."
+      ]
+    },
+    {
+      "t": "📻 Geschichte: Auf Sendung: Aufstieg bei Radio Lindenwelle",
+      "p": [
+        "Vom Kaffeekochen im Studio bis ans große Mikro: Starte bei Radio Lindenwelle, trainiere Stimme und Schreibkunst, finde deinen eigenen Stil in Musik oder Nachrichten – und werde zur Stimme von Lindenhafen. Du startest mit einer eigenen Figur und 7.000 RT auf dem Konto."
+      ],
+      "steps": [
+        "Der erste Tag im Studio: Starte bei Radio Lindenwelle, Übe 3-mal vor dem Spiegel. Belohnung 300 RT.",
+        "Das Team der Lindenwelle: Freunde dich mit Deniz an, Tausche dich 3-mal über Interessen aus. Belohnung 400 RT.",
+        "Stimme & Feder: Erreiche Charisma Stufe 4, Erreiche Schreiben Stufe 3. Belohnung 600 RT.",
+        "Rotes Licht: Live!: Arbeite 5 Schichten beim Radio, Erreiche Stufe 2 bei Radio Lindenwelle. Belohnung 800 RT. Danach wählst du: „Musikredaktion: Sound für die Stadt“ (Die Musikredaktion: Erreiche Musik Stufe 4, Spiele 5-mal Gitarre, Erreiche Stufe 3 bei Radio Lindenwelle, 1.000 RT) oder „Nachrichten & Interviews: nah dran“ (Nachrichten & Interviews: Führe 5 tiefgründige Gespräche, Diskutiere 3-mal fair, Erreiche Stufe 3 bei Radio Lindenwelle, 1.000 RT).",
+        "Die Stimme der Stadt: Habe 4 Freundschaften, Habe 15.000 RT auf dem Konto. Belohnung 1.200 RT.",
+        "Auf Sendung – ganz oben: Erreiche Stufe 4 bei Radio Lindenwelle, Arbeite 10 Schichten beim Radio. Belohnung 2.000 RT."
+      ]
+    },
+    {
+      "t": "Alle Lebensziele",
+      "p": [
+        "Jede Figur hat ein Lebensziel mit drei Meilensteinen."
+      ],
+      "list": [
+        "👨‍👩‍👧 Großfamilie: Eine feste Beziehung führen → Ein Kind bekommen oder adoptieren → Drei Kinder großziehen.",
+        "⭐ Karrierestern: Beruf Stufe 2 erreichen → Beruf Stufe 4 erreichen → Höchste Stufe erreichen.",
+        "💰 Wohlstand: 15.000 RicoTaler besitzen → 50.000 RicoTaler besitzen → 150.000 RicoTaler besitzen.",
+        "🎨 Kreativgenie: Eine kreative Fähigkeit auf Stufe 4 → Ein Werk verkaufen → Kreative Fähigkeit auf Stufe 8.",
+        "💞 Große Liebe: Ein erstes Date → Verlobung → Hochzeit feiern.",
+        "🔭 Wissensdurst: Drei Fähigkeiten auf Stufe 3 → Logik auf Stufe 6 → Sechs Fähigkeiten auf Stufe 5.",
+        "🤝 Beliebt: Drei Freundschaften → Zehn Bekannte → Acht Freundschaften.",
+        "💪 Topform: Fitness Stufe 3 → Fitness Stufe 6 → Fitness Stufe 10.",
+        "🏠 Traumhaus: Hauswert 30.000 → Hauswert 70.000 → Hauswert 150.000.",
+        "🌻 Naturverbunden: Gartenarbeit Stufe 3 → Angeln Stufe 5 → Gartenarbeit Stufe 8."
+      ]
+    },
+    {
+      "t": "Alle Berufe und Stufen",
+      "p": [
+        "Lohn je Stunde und Stufe, von der ersten bis zur höchsten Stufe. Für jede Beförderung braucht es 100 Prozent Leistung und die passenden Fähigkeiten."
+      ],
+      "list": [
+        "☕ Gastronomie (vor Ort spielbar): Spülhilfe 15 RT/Std. → Servicekraft 22 RT/Std. → Barista 34 RT/Std. → Küchenchef*in 52 RT/Std. → Café-Leitung 75 RT/Std..",
+        "🩺 Medizin (vor Ort spielbar): Praktikant*in 18 RT/Std. → Pflegekraft 30 RT/Std. → Assistenzärzt*in 50 RT/Std. → Fachärzt*in 85 RT/Std. → Chefärzt*in 130 RT/Std..",
+        "🎙️ Medien (vor Ort spielbar): Redaktionshilfe 16 RT/Std. → Nachrichtensprecher*in 28 RT/Std. → Moderator*in 45 RT/Std. → Programmchef*in 70 RT/Std. → Senderdirektor*in 110 RT/Std..",
+        "🔧 Handwerk: Werkstatthilfe 17 RT/Std. → Geselle / Gesellin 27 RT/Std. → Bootsbauer*in 40 RT/Std. → Meister*in 60 RT/Std. → Werftleitung 90 RT/Std..",
+        "🍎 Bildung: Schulbegleitung 16 RT/Std. → Referendar*in 28 RT/Std. → Lehrkraft 42 RT/Std. → Oberstudienrat / -rätin 60 RT/Std. → Schulleitung 85 RT/Std..",
+        "🎨 Kunst & Kreatives: Galerieaufsicht 14 RT/Std. → Atelierassistenz 24 RT/Std. → Kunstfotograf*in 38 RT/Std. → Kurator*in 62 RT/Std. → Gefeierte*r Künstler*in 120 RT/Std..",
+        "💻 IT & Technik: IT-Support 20 RT/Std. → Junior-Entwickler*in 34 RT/Std. → Softwareentwickler*in 55 RT/Std. → Systemarchitekt*in 85 RT/Std. → Technische Leitung 125 RT/Std..",
+        "🛍️ Handel: Regalauffüller*in 15 RT/Std. → Verkäufer*in 23 RT/Std. → Schaufenstergestalter*in 35 RT/Std. → Abteilungsleitung 55 RT/Std. → Kaufhausdirektor*in 90 RT/Std..",
+        "🛒 Nebenjob im Supermarkt: Aushilfe 8 RT/Std. → Regalprofi 10 RT/Std. → Kassenkraft 13 RT/Std. → Schichtleitung Frische 16 RT/Std. → Marktleitung-Assistenz 20 RT/Std. – schon für Jugendliche."
+      ]
+    },
+    {
+      "t": "Fähigkeiten und Freischaltungen",
+      "p": [
+        "12 Fähigkeiten mit je 10 Stufen."
+      ],
+      "list": [
+        "🍳 Kochen: Stufe 1 Nudeln und Pfannkuchen, Stufe 3 Linsen-Curry, Stufe 5 Lasagne, Essen gelingt fast immer, Stufe 7 Festtagsbraten.",
+        "💪 Fitness: Stufe 3 Weniger Energieverbrauch, Stufe 6 Schwimmen ohne Ermüdung, Stufe 8 Muskulöser Körper.",
+        "🎨 Malerei: Stufe 2 Bilder verkaufen, Stufe 5 Wertvolle Gemälde, Stufe 8 Meisterwerke.",
+        "🎸 Musik: Stufe 3 Für Trinkgeld spielen, Stufe 6 Eigene Songs, Stufe 9 Konzert in der Bar.",
+        "😎 Charisma: Stufe 2 Überzeugen, Stufe 4 Motivationsrede, Stufe 6 Mitreißende Geschichte.",
+        "🔧 Handwerk: Stufe 1 Reparieren, Stufe 4 Reparaturen ohne Rückfall, Stufe 6 Basteln von Deko.",
+        "🌱 Gartenarbeit: Stufe 2 Kürbisse, Stufe 5 Doppelte Ernte, Stufe 8 Prämiertes Gemüse.",
+        "✍️ Schreiben: Stufe 3 Manuskripte verkaufen, Stufe 6 Bestseller möglich.",
+        "💻 Programmieren: Stufe 2 Freiberufliche Aufträge, Stufe 5 Eigene App, Stufe 8 Große Aufträge.",
+        "🎣 Angeln: Stufe 3 Zander, Stufe 6 Hafenhecht.",
+        "📷 Fotografie: Stufe 2 Fotos verkaufen, Stufe 5 Porträts.",
+        "♟️ Logik: Stufe 3 Hausaufgaben-Hilfe, Stufe 6 Schachmeister."
+      ]
+    },
+    {
+      "t": "Alle Rezepte",
+      "list": [
+        "🥪 Käsetoast: ab Kochen 0, 10 Minuten, 1 Portion, 4 RT, sättigt 35.",
+        "🥣 Müsli: ab Kochen 0, 4 Minuten, 1 Portion, 3 RT, sättigt 30.",
+        "🍝 Nudeln mit Tomatensoße: ab Kochen 1, 25 Minuten, 4 Portionen, 8 RT, sättigt 60.",
+        "🥞 Pfannkuchen: ab Kochen 1, 20 Minuten, 4 Portionen, 6 RT, sättigt 50.",
+        "🍲 Gemüsesuppe: ab Kochen 2, 35 Minuten, 4 Portionen, 9 RT, sättigt 65.",
+        "🥗 Bunter Salat: ab Kochen 2, 15 Minuten, 2 Portionen, 7 RT, sättigt 40.",
+        "🍛 Linsen-Curry: ab Kochen 3, 40 Minuten, 4 Portionen, 12 RT, sättigt 75.",
+        "🐟 Hafenteller mit Fisch: ab Kochen 4, 35 Minuten, 4 Portionen, 14 RT, sättigt 80.",
+        "🧀 Lasagne: ab Kochen 5, 60 Minuten, 6 Portionen, 18 RT, sättigt 90.",
+        "🍣 Maki-Platte: ab Kochen 6, 45 Minuten, 4 Portionen, 20 RT, sättigt 70.",
+        "🍖 Festtagsbraten (vegetarisch möglich): ab Kochen 7, 90 Minuten, 8 Portionen, 26 RT, sättigt 100.",
+        "🎂 Geburtstagstorte: ab Kochen 4, 60 Minuten, 8 Portionen, 16 RT, sättigt 35."
+      ]
+    },
+    {
+      "t": "Alle Merkmale",
+      "list": [
+        "🗣️ Gesellig: Blüht unter Menschen auf, wird allein schnell einsam.",
+        "🌙 Einzelgänger: Braucht wenig Gesellschaft und genießt die Ruhe.",
+        "🎨 Kreativ: Lernt Malen, Musik und Schreiben schneller und wird oft inspiriert.",
+        "📈 Ehrgeizig: Will im Beruf hoch hinaus – Beförderungen beflügeln, Rückschläge schmerzen.",
+        "🧽 Ordentlich: Räumt freiwillig auf und hasst schmutziges Geschirr.",
+        "🧦 Chaotisch: Lässt Dinge gern liegen – Unordnung stört kaum.",
+        "🐾 Tierlieb: Liebt Haustiere über alles.",
+        "🏃 Sportlich: Braucht Bewegung, trainiert gern und schneller.",
+        "🛋️ Bequem: Liebt Sofa und Bett, meidet Anstrengung.",
+        "💘 Romantisch: Sucht Liebe und kann besonders charmant flirten.",
+        "🙈 Schüchtern: Braucht Zeit, um aufzutauen – Fremde sind anstrengend.",
+        "😄 Humorvoll: Witze kommen besser an, lacht gern.",
+        "🍳 Feinschmecker: Kocht leidenschaftlich und genießt gutes Essen.",
+        "📚 Bücherwurm: Liest viel und lernt durch Bücher schneller.",
+        "🌞 Fröhlich: Meist gut gelaunt, schlechte Stimmung hält nicht lange.",
+        "🌧️ Grummelig: Schnell genervt, aber mit weichem Kern.",
+        "🧠 Genie: Lernt Logik und Programmieren schneller, liebt Schach.",
+        "🎵 Musikalisch: Musik ist Lebenselixier – lernt Instrumente schneller.",
+        "🌳 Naturfreund: Gern draußen: Garten, Angeln, Parks.",
+        "🏡 Familienmensch: Familie geht vor; Zeit mit Kindern macht glücklich.",
+        "🔥 Hitzkopf: Wird schnell wütend und streitet leichter.",
+        "💛 Herzensgut: Hilfsbereit, tröstet gern, freundliche Gesten kommen gut an.",
+        "🎮 Technikfan: Liebt Computer und Spiele, programmiert schneller.",
+        "✨ Perfektionist: Braucht länger, aber Ergebnisse werden besser."
+      ]
+    },
+    {
+      "t": "Zufallsereignisse",
+      "p": [
+        "Es gibt 46 Zufallsereignisse mit Entscheidungen, zum Beispiel: Überraschungsbesuch, Alte Schulfreundschaft, Straßenmusik, Schnäppchenalarm, Nachhilfe gesucht, Stromausfall, Kuschelalarm, Tombola beim Stadtfest, Talentshow in der Bar Leuchtfeuer, Schwere Einkaufstüten, Der Eiswagen kommt!, Was für ein Tag!, Montagmorgen, Der rätselhafte Fehler, Lob vom Chef, Drachenwetter. Sie lassen sich in den Einstellungen abschalten."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Mein Spielstand ist weg – was tun?",
+      "a": "Spielstände liegen im Browser. Unter „📂 Spielstände“ kannst du eine Sicherung laden, wenn eine vorhanden ist. Exportiere wichtige Stände als Datei oder nutze den Google-Spielstand, dann bist du auf der sicheren Seite."
+    },
+    {
+      "q": "Der Strom ist weg.",
+      "a": "Die Rechnungen wurden nicht innerhalb von drei Tagen bezahlt. Bezahle sie am Briefkasten (oder im Handy), dann gibt es wieder Strom."
+    },
+    {
+      "q": "Mehrspieler: Wie tritt ein Freund bei?",
+      "a": "Der Gastgeber eröffnet im Menü „🌐 Mehrspieler“ einen Raum und nennt den Code. Der Freund wählt ebenfalls „Mehrspieler“, gestaltet seine Figur und tippt auf „Beitreten“. Beide brauchen Internet; höchstens drei Gäste."
+    },
+    {
+      "q": "Warum kann mein Gast nicht bauen?",
+      "a": "Bauen, Tempo und Haushaltsaktionen sind dem Gastgeber vorbehalten."
+    },
+    {
+      "q": "Das Spiel ruckelt.",
+      "a": "Stell in den Grafik-Einstellungen eine niedrigere Qualität ein, schalte Schatten aus, senke die Auflösung oder die Zahl der sichtbaren Stadtbewohner."
+    },
+    {
+      "q": "Meine Figuren werden zu schnell alt.",
+      "a": "Stell die Lebensdauer auf „Lang“ oder schalte „Altern und Familienzuwachs“ aus. Mit ausgeschaltetem „Sanften Abschied“ bleiben Senior:innen für immer."
+    }
+  ]
+}

@@ -1,0 +1,325 @@
+{
+  "id": "zeitsprung-eurovision",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "ZEITSPRUNG EUROVISION ist eine moderierte Quizshow durch die Geschichte des Eurovision Song Contest von 1956 bis 2026. Moderator Vito führt durch die Runden, stellt die Fragen und löst jede Antwort auf.",
+        "Jede richtige Antwort bringt einen Punkt. Wer zuerst 8 Punkte hat, gewinnt die Show. Du spielst allein oder mit bis zu vier Spielern – am selben Gerät oder am Fernseher mit Handys als Controller.",
+        "Grundlage ist ein Fanarchiv mit allen 71 ESC-Jahren: 70 ausgetragene Wettbewerbe mit Austragungsstadt, Gastgeberland, Siegerland, Künstler und Siegersong, dazu die abgesagte Ausgabe 2020. 1969 sind alle vier Sieger aufgeführt."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "list": [
+        "▶ Neue Zeitreise starten: beginnt ein neues Spiel mit den gewählten Einstellungen.",
+        "↺ Spiel fortsetzen: erscheint, wenn ein unfertiges Spiel gespeichert ist, und macht genau dort weiter.",
+        "🌐 Online, TV & Handys: schaltet den TV-Modus ein und öffnet das Koppelfenster für die Handys.",
+        "✦ Alle ESC-Ausgaben im Archiv: öffnet das durchsuchbare Fanarchiv.",
+        "Themenwelt: Große Mischung aus allen Jahrzehnten oder ein einzelnes Jahrzehnt (1950er bis 2020er). Neben jedem Eintrag steht, wie viele Momente und Fragen es enthält.",
+        "Zeitstrahlrunden spielen als: „Jahr aus A–D wählen · einfach“ (Grundeinstellung) oder „Moment in den Zeitstrahl einordnen · Profi“.",
+        "Spieler: bis zu 4 Namen eintragen, mit ＋ Spieler hinzufügen kommen weitere dazu.",
+        "Im Spielstudio kannst du dich außerdem für die Cloud-Speicherung anmelden, und über „📱 Dieses Gerät als Handy-Controller verwenden“ wird das Gerät zum Controller.",
+        "Oben rechts: ARCHIV, ⌂ Hauptmenü, ▣ TV-Modus, ♧ Handys koppeln, ♫ Vito (Moderation und Töne) an oder aus."
+      ]
+    },
+    {
+      "t": "Die Rundenarten",
+      "p": [
+        "Die Spieler sind reihum dran; immer nur der Spieler, dessen Name oben steht, antwortet. Die erste Runde ist immer eine Zeitstrahlrunde. Danach wählt das Spiel zufällig: Zeitstrahl- und Quizrunden kommen am häufigsten, Hörrunden etwas seltener, Bildrunden am seltensten."
+      ],
+      "list": [
+        "ZEITSTRAHLRUNDE (einfach): Ein ESC-Moment wird genannt, zum Beispiel „Lys Assia gewinnt in Lugano“. Du wählst das richtige Jahr aus vier Jahreszahlen A–D. Die falschen Jahre liegen 1 bis 6 Jahre daneben und nie in der Zukunft.",
+        "ZEITSTRAHLRUNDE (Profi): Du legst den Moment in die passende Lücke deines eigenen Zeitstrahls. Jeder Spieler beginnt mit demselben Startmoment; jeder richtig eingeordnete Moment kommt dazu, so wird der Zeitstrahl immer länger und die Lücken enger. Gleiche Jahre an der Grenze zählen als richtig.",
+        "QUIZRUNDE: eine Frage mit vier Antworten – wo der ESC eines Jahres stattfand, welcher Beitrag gewann, wer den Siegersong sang oder welches Land gewann, dazu Sonderfragen.",
+        "WAS WAR ZUERST?: Vier ESC-Momente aus verschiedenen Jahren – tippe auf den ältesten. Diese Runde kommt als Teil der Quizrunden.",
+        "HÖRRUNDE: Starte den Siegersong im Player und wähle die passende ESC-Ausgabe (zum Beispiel „ESC 1974 · Schweden“). Mit ↻ Anderer Song bekommst du einen anderen Titel, wenn einer nicht läuft.",
+        "BILDRUNDE: Drei Symbole stehen für einen Siegertitel. Wähle die passende Ausgabe (zum Beispiel „ESC 1974“).",
+        "In Zeitstrahlrunden kannst du mit ♫ Song anhören den Siegersong des gesuchten Jahres hören. Mit ↻ Anderer Moment tauschst du den Moment ohne Nachteil aus."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Maus und Touch: Antwort A–D oder die Lücke (+) im Zeitstrahl antippen, danach „Nächste Runde →“ beziehungsweise „Weiter: Name →“.",
+        "Tastatur: A, B, C, D oder 1 bis 4 wählen die Antworten, 1 bis 9 wählen die Lücken im Zeitstrahl von links nach rechts.",
+        "Gamecontroller: Das Steuerkreuz springt zwischen den sichtbaren Knöpfen, A drückt den markierten Knopf, der rechte Stick bewegt einen Mauszeiger.",
+        "Handy-Controller im TV-Modus: Das Handy zeigt dieselben Antworten oder Zeitstrahl-Lücken, die Bildsymbole, kann den Song starten und zur nächsten Runde schalten. Nach dem Tippen steht dort „Antwort gesendet. Warte auf die Auflösung am TV.“"
+      ]
+    },
+    {
+      "t": "Wertung, Sieg und Speichern",
+      "list": [
+        "Jede richtige Antwort: +1 Punkt. Falsch: kein Punkt, keine Strafe. Die Punktetafel zeigt jeden Spieler mit „Punkte/8“.",
+        "Wer 8 Punkte erreicht, gewinnt sofort – die Show endet in diesem Moment, auch wenn noch nicht alle gleich oft dran waren.",
+        "Der Spielstand wird nach jeder Runde und beim Verlassen der Seite im Browser gespeichert (Spieler, Punkte, Zeitstrahl, aktuelle Frage). Mit ↺ Spiel fortsetzen geht es weiter. Ist das Spiel gewonnen, wird der Stand gelöscht.",
+        "Mit der Cloud-Anmeldung im Spielstudio wird der Stand über dein Konto auf andere Geräte übertragen.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (Bereich im Spielstudio) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    },
+    {
+      "t": "TV-Modus und Handys",
+      "steps": [
+        "Am Fernseher oder PC auf „🌐 Online, TV & Handys“, ▣ oder ♧ tippen. Es erscheinen WR-Code (WR und vier Zeichen), eine vierstellige PIN, ein QR-Code und ein Link.",
+        "Jeder Mitspieler scannt mit dem Handy den QR-Code oder öffnet den Link – von überall, auch aus einem anderen Netz.",
+        "Am Handy Namen, WR-Code und PIN eingeben und „Mit TV verbinden“ tippen.",
+        "Jedes verbundene Handy übernimmt automatisch einen freien Spielerplatz (bis zu 4). Sind alle belegt, kommt „Alle vier Plätze sind belegt.“",
+        "Mit „Zurück zum Spiel“ das Koppelfenster schließen und die Show starten. Antworten kann nur das Handy des Spielers, der gerade dran ist."
+      ]
+    },
+    {
+      "t": "Das Fanarchiv",
+      "p": [
+        "Unter ARCHIV (archiv.html) findest du alle Ausgaben von 1956 bis 2026 als Karten. Du kannst nach Jahr, Stadt, Land, Künstler oder Song suchen und ein Jahrzehnt auswählen. Eigene Kapitel erklären den vierfachen Sieg 1969, die abgesagte Ausgabe 2020 und den 70. Wettbewerb 2026. Songlinks führen zu Deezer."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Starte mit „Jahr aus A–D wählen“ – das ist deutlich leichter als das Einordnen in den Zeitstrahl.",
+        "Lies den Moment genau: Er nennt Künstler und Stadt, zum Beispiel „ABBA gewinnt in Brighton“. Wer Stadt oder Künstler kennt, kennt meist auch das Jahr.",
+        "Hör dir in Zeitstrahlrunden den Siegersong an – Klang und Produktion verraten oft das Jahrzehnt.",
+        "Wähle eine Themenwelt, die du gut kennst, etwa die 2010er oder 2020er, um sicher in die Show zu finden.",
+        "Läuft ein Song nicht (Deezer ist je nach Region eingeschränkt), tausche ihn mit ↻ aus. Das kostet nichts."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Faustregel: Der Gewinner des Vorjahres richtet meist den nächsten ESC aus. Das Gastgeberland eines Jahres verrät also fast immer das Siegerland des Vorjahres – Ausnahmen sind 1957, 1960, 1963, 1972, 1974, 1980 und 2023 – fünfmal sprang dabei das Vereinigte Königreich ein. 1969 gab es vier Sieger, ausgerichtet hat 1970 die Niederlande; 2021 richteten die Niederlande den 2020 ausgefallenen Wettbewerb aus.",
+        "Im Profi-Zeitstrahl lohnt sich ein breites Wissen über die Jahrzehnte: Je mehr Momente du richtig einordnest, desto enger werden die Lücken. Nutze die Beschriftungen „Vor …“, „Zwischen … und …“, „Nach …“ am Handy.",
+        "Bei „Was war zuerst?“ zählt nur der älteste Moment. Kennst du einen sehr frühen Sieger (Lugano 1956, Frankfurt 1957), ist die Runde schnell gelöst.",
+        "Bei Hörrunden verraten Sprache und Stil viel: Französische Chansons gewinnen in den 1950er- bis 1980er-Jahren häufig, englische Popsongs dominieren ab den 1990ern.",
+        "Spielt ihr zu mehreren, ist der erste Spieler leicht im Vorteil, weil das Spiel beim ersten Spieler mit 8 Punkten sofort endet."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Bei Jahresfragen liegen die falschen Jahre nie in der Zukunft. Bei der jüngsten Ausgabe ist deshalb das späteste angebotene Jahr richtig, solange es das aktuelle Jahr ist.",
+        "2020 ist ein eigener Moment: „ESC-Ausgabe wegen Pandemie abgesagt“ – das Jahr ist 2020, Gastgeber wäre Rotterdam gewesen.",
+        "Doppelsieger merken: Johnny Logan (1980 und 1987) und Loreen (2012 und 2023). Irland gewann 1992, 1993 und 1994 hintereinander.",
+        "Lerne mit dem Archiv: Die Quizfragen werden direkt aus den Archivdaten erzeugt (Stadt, Siegertitel, Künstler, Siegerland). Wer das Archiv kennt, kennt die Antworten.",
+        "Schalte Vito mit ♫ aus, wenn du schnell spielen willst – die Fragen stehen trotzdem im Bild."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Gastgeberland mit Siegerland verwechseln: Die Frage „Welches Land gewann den ESC …?“ fragt nach dem Sieger, nicht nach dem Austragungsort.",
+        "1969 vergessen: Damals gab es vier Sieger (Spanien, Vereinigtes Königreich, Niederlande und Frankreich).",
+        "Im TV-Modus mit dem falschen Handy antworten: Nur der Spieler, der dran ist, kann antworten.",
+        "Den Controller-Link auf demselben Gerät öffnen, auf dem die Show läuft – der Controller gehört aufs Handy."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "So funktionieren die Fragen",
+      "p": [
+        "Der Fragenkatalog umfasst 301 Quizfragen: zu jeder der 70 Ausgaben je eine Frage nach Austragungsort, Siegertitel und Künstler sowie (außer 1969) nach dem Siegerland, dazu 22 Sonderfragen. Hinzu kommen 71 Zeitstrahl-Momente, 73 Siegersongs für Hörrunden (1969 mit allen vier Liedern) und 26 Bildrätsel.",
+        "Alle Antworten ergeben sich aus der folgenden Tabelle. Zeitstrahlrunden fragen das Jahr, Quizrunden Stadt, Land, Künstler oder Song, Hörrunden die Ausgabe zum Song, Bildrunden die Ausgabe zu den Symbolen."
+      ]
+    },
+    {
+      "t": "Lösungstabelle 1950er",
+      "list": [
+        "1956: Lugano (Schweiz) – Sieger Schweiz: Lys Assia – „Refrain“",
+        "1957: Frankfurt am Main (Deutschland) – Sieger Niederlande: Corry Brokken – „Net als toen“",
+        "1958: Hilversum (Niederlande) – Sieger Frankreich: André Claveau – „Dors, mon amour“",
+        "1959: Cannes (Frankreich) – Sieger Niederlande: Teddy Scholten – „Een beetje“"
+      ]
+    },
+    {
+      "t": "Lösungstabelle 1960er",
+      "list": [
+        "1960: London (Vereinigtes Königreich) – Sieger Frankreich: Jacqueline Boyer – „Tom Pillibi“",
+        "1961: Cannes (Frankreich) – Sieger Luxemburg: Jean-Claude Pascal – „Nous les amoureux“",
+        "1962: Luxemburg (Luxemburg) – Sieger Frankreich: Isabelle Aubret – „Un premier amour“",
+        "1963: London (Vereinigtes Königreich) – Sieger Dänemark: Grethe und Jørgen Ingmann – „Dansevise“",
+        "1964: Kopenhagen (Dänemark) – Sieger Italien: Gigliola Cinquetti – „Non ho l'età“",
+        "1965: Neapel (Italien) – Sieger Luxemburg: France Gall – „Poupée de cire, poupée de son“",
+        "1966: Luxemburg (Luxemburg) – Sieger Österreich: Udo Jürgens – „Merci, Chérie“",
+        "1967: Wien (Österreich) – Sieger Vereinigtes Königreich: Sandie Shaw – „Puppet on a String“",
+        "1968: London (Vereinigtes Königreich) – Sieger Spanien: Massiel – „La La La“",
+        "1969: Madrid (Spanien) – Sieger Spanien, Vereinigtes Königreich, Niederlande und Frankreich: Salomé; Lulu; Lenny Kuhr; Frida Boccara – „Vivo cantando; Boom Bang-a-Bang; De troubadour; Un jour, un enfant“"
+      ]
+    },
+    {
+      "t": "Lösungstabelle 1970er",
+      "list": [
+        "1970: Amsterdam (Niederlande) – Sieger Irland: Dana – „All Kinds of Everything“",
+        "1971: Dublin (Irland) – Sieger Monaco: Séverine – „Un banc, un arbre, une rue“",
+        "1972: Edinburgh (Vereinigtes Königreich) – Sieger Luxemburg: Vicky Leandros – „Après toi“",
+        "1973: Luxemburg (Luxemburg) – Sieger Luxemburg: Anne-Marie David – „Tu te reconnaîtras“",
+        "1974: Brighton (Vereinigtes Königreich) – Sieger Schweden: ABBA – „Waterloo“",
+        "1975: Stockholm (Schweden) – Sieger Niederlande: Teach-In – „Ding-a-dong“",
+        "1976: Den Haag (Niederlande) – Sieger Vereinigtes Königreich: Brotherhood of Man – „Save Your Kisses for Me“",
+        "1977: London (Vereinigtes Königreich) – Sieger Frankreich: Marie Myriam – „L'Oiseau et l'Enfant“",
+        "1978: Paris (Frankreich) – Sieger Israel: Izhar Cohen & The Alphabeta – „A-Ba-Ni-Bi“",
+        "1979: Jerusalem (Israel) – Sieger Israel: Milk and Honey – „Hallelujah“"
+      ]
+    },
+    {
+      "t": "Lösungstabelle 1980er",
+      "list": [
+        "1980: Den Haag (Niederlande) – Sieger Irland: Johnny Logan – „What's Another Year“",
+        "1981: Dublin (Irland) – Sieger Vereinigtes Königreich: Bucks Fizz – „Making Your Mind Up“",
+        "1982: Harrogate (Vereinigtes Königreich) – Sieger Deutschland: Nicole – „Ein bißchen Frieden“",
+        "1983: München (Deutschland) – Sieger Luxemburg: Corinne Hermès – „Si la vie est cadeau“",
+        "1984: Luxemburg (Luxemburg) – Sieger Schweden: Herreys – „Diggi-Loo Diggi-Ley“",
+        "1985: Göteborg (Schweden) – Sieger Norwegen: Bobbysocks! – „La det swinge“",
+        "1986: Bergen (Norwegen) – Sieger Belgien: Sandra Kim – „J'aime la vie“",
+        "1987: Brüssel (Belgien) – Sieger Irland: Johnny Logan – „Hold Me Now“",
+        "1988: Dublin (Irland) – Sieger Schweiz: Céline Dion – „Ne partez pas sans moi“",
+        "1989: Lausanne (Schweiz) – Sieger Jugoslawien: Riva – „Rock Me“"
+      ]
+    },
+    {
+      "t": "Lösungstabelle 1990er",
+      "list": [
+        "1990: Zagreb (Jugoslawien) – Sieger Italien: Toto Cutugno – „Insieme: 1992“",
+        "1991: Rom (Italien) – Sieger Schweden: Carola – „Fångad av en stormvind“",
+        "1992: Malmö (Schweden) – Sieger Irland: Linda Martin – „Why Me?“",
+        "1993: Millstreet (Irland) – Sieger Irland: Niamh Kavanagh – „In Your Eyes“",
+        "1994: Dublin (Irland) – Sieger Irland: Paul Harrington & Charlie McGettigan – „Rock 'n' Roll Kids“",
+        "1995: Dublin (Irland) – Sieger Norwegen: Secret Garden – „Nocturne“",
+        "1996: Oslo (Norwegen) – Sieger Irland: Eimear Quinn – „The Voice“",
+        "1997: Dublin (Irland) – Sieger Vereinigtes Königreich: Katrina and the Waves – „Love Shine a Light“",
+        "1998: Birmingham (Vereinigtes Königreich) – Sieger Israel: Dana International – „Diva“",
+        "1999: Jerusalem (Israel) – Sieger Schweden: Charlotte Nilsson – „Take Me to Your Heaven“"
+      ]
+    },
+    {
+      "t": "Lösungstabelle 2000er",
+      "list": [
+        "2000: Stockholm (Schweden) – Sieger Dänemark: Olsen Brothers – „Fly on the Wings of Love“",
+        "2001: Kopenhagen (Dänemark) – Sieger Estland: Tanel Padar, Dave Benton & 2XL – „Everybody“",
+        "2002: Tallinn (Estland) – Sieger Lettland: Marie N – „I Wanna“",
+        "2003: Riga (Lettland) – Sieger Türkei: Sertab Erener – „Everyway That I Can“",
+        "2004: Istanbul (Türkei) – Sieger Ukraine: Ruslana – „Wild Dances“",
+        "2005: Kyjiw (Ukraine) – Sieger Griechenland: Helena Paparizou – „My Number One“",
+        "2006: Athen (Griechenland) – Sieger Finnland: Lordi – „Hard Rock Hallelujah“",
+        "2007: Helsinki (Finnland) – Sieger Serbien: Marija Šerifović – „Molitva“",
+        "2008: Belgrad (Serbien) – Sieger Russland: Dima Bilan – „Believe“",
+        "2009: Moskau (Russland) – Sieger Norwegen: Alexander Rybak – „Fairytale“"
+      ]
+    },
+    {
+      "t": "Lösungstabelle 2010er",
+      "list": [
+        "2010: Oslo (Norwegen) – Sieger Deutschland: Lena – „Satellite“",
+        "2011: Düsseldorf (Deutschland) – Sieger Aserbaidschan: Ell & Nikki – „Running Scared“",
+        "2012: Baku (Aserbaidschan) – Sieger Schweden: Loreen – „Euphoria“",
+        "2013: Malmö (Schweden) – Sieger Dänemark: Emmelie de Forest – „Only Teardrops“",
+        "2014: Kopenhagen (Dänemark) – Sieger Österreich: Conchita Wurst – „Rise Like a Phoenix“",
+        "2015: Wien (Österreich) – Sieger Schweden: Måns Zelmerlöw – „Heroes“",
+        "2016: Stockholm (Schweden) – Sieger Ukraine: Jamala – „1944“",
+        "2017: Kyjiw (Ukraine) – Sieger Portugal: Salvador Sobral – „Amar pelos dois“",
+        "2018: Lissabon (Portugal) – Sieger Israel: Netta – „Toy“",
+        "2019: Tel Aviv (Israel) – Sieger Niederlande: Duncan Laurence – „Arcade“"
+      ]
+    },
+    {
+      "t": "Lösungstabelle 2020er",
+      "list": [
+        "2020: abgesagt (geplant in Rotterdam, Niederlande) – kein Sieger",
+        "2021: Rotterdam (Niederlande) – Sieger Italien: Måneskin – „Zitti e buoni“",
+        "2022: Turin (Italien) – Sieger Ukraine: Kalush Orchestra – „Stefania“",
+        "2023: Liverpool (Vereinigtes Königreich) – Sieger Schweden: Loreen – „Tattoo“",
+        "2024: Malmö (Schweden) – Sieger Schweiz: Nemo – „The Code“",
+        "2025: Basel (Schweiz) – Sieger Österreich: JJ – „Wasted Love“",
+        "2026: Wien (Österreich) – Sieger Bulgarien: DARA – „Bangaranga“"
+      ]
+    },
+    {
+      "t": "Sonderfragen mit Lösung",
+      "list": [
+        "In welcher Schweizer Stadt begann der ESC 1956? – Lugano",
+        "Was war am ESC 1969 ungewöhnlich? – Vier Länder teilten sich den Sieg",
+        "Wie hieß Udo Jürgens' Siegertitel von 1966? – Merci, Chérie",
+        "Welche Band gewann 1974 mit Waterloo? – ABBA",
+        "Mit welchem Lied gewann Vicky Leandros 1972? – Après toi",
+        "Welcher deutsche Beitrag gewann 1982? – Ein bißchen Frieden",
+        "Welcher Sänger gewann 1980 und 1987? – Johnny Logan",
+        "Für welches Land trat Céline Dion 1988 an? – Schweiz",
+        "Welches Land gewann 1992, 1993 und 1994 hintereinander? – Irland",
+        "Welche Sängerin gewann 1998 mit Diva? – Dana International",
+        "Welche Band brachte 2006 Hard Rock Hallelujah zum Sieg? – Lordi",
+        "Welches Land gewann 2004 mit Ruslanas Wild Dances? – Ukraine",
+        "Welcher Sieger spielte 2009 Geige zu Fairytale? – Alexander Rybak",
+        "Mit welchem Lied gewann Lena 2010? – Satellite",
+        "Welches Land holte 2017 seinen ersten ESC-Sieg? – Portugal",
+        "Wer gewann 2012 mit Euphoria? – Loreen",
+        "Wie heißt der Siegersong von Conchita Wurst? – Rise Like a Phoenix",
+        "Was geschah mit dem für Rotterdam geplanten ESC 2020? – Er wurde wegen der Pandemie abgesagt",
+        "Welches Land gewann 2022, obwohl Liverpool 2023 Gastgeber war? – Ukraine",
+        "Welche Künstlerin gewann zum zweiten Mal 2023? – Loreen",
+        "Welches Land gewann erstmals 2026? – Bulgarien",
+        "Wie heißt DARAs Siegersong von 2026? – Bangaranga"
+      ]
+    },
+    {
+      "t": "Alle Bildrätsel mit Lösung",
+      "p": [
+        "Die richtige Antwort ist immer die Ausgabe „ESC Jahr“."
+      ],
+      "list": [
+        "🪆 🎶 🇱🇺 = ESC 1965 (France Gall – „Poupée de cire, poupée de son“)",
+        "🎹 🌹 🇦🇹 = ESC 1966 (Udo Jürgens – „Merci, Chérie“)",
+        "4️⃣ 🏆 🤝 = ESC 1969 (Salomé; Lulu; Lenny Kuhr; Frida Boccara – „Vivo cantando; Boom Bang-a-Bang; De troubadour; Un jour, un enfant“)",
+        "👋 💔 🇱🇺 = ESC 1972 (Vicky Leandros – „Après toi“)",
+        "💧 ⚔️ 🇸🇪 = ESC 1974 (ABBA – „Waterloo“)",
+        "💋 💌 🇬🇧 = ESC 1976 (Brotherhood of Man – „Save Your Kisses for Me“)",
+        "🙌 🎶 🇮🇱 = ESC 1979 (Milk and Honey – „Hallelujah“)",
+        "🕊️ ☮️ 🇩🇪 = ESC 1982 (Nicole – „Ein bißchen Frieden“)",
+        "👯 💃 🇳🇴 = ESC 1985 (Bobbysocks! – „La det swinge“)",
+        "🎤 🇨🇭 ✨ = ESC 1988 (Céline Dion – „Ne partez pas sans moi“)",
+        "🌙 🎻 🇳🇴 = ESC 1995 (Secret Garden – „Nocturne“)",
+        "👑 💃 🇮🇱 = ESC 1998 (Dana International – „Diva“)",
+        "🪘 💃 🇺🇦 = ESC 2004 (Ruslana – „Wild Dances“)",
+        "🤘 👹 🇫🇮 = ESC 2006 (Lordi – „Hard Rock Hallelujah“)",
+        "🎻 🧚 🇳🇴 = ESC 2009 (Alexander Rybak – „Fairytale“)",
+        "🛰️ 🎤 🇩🇪 = ESC 2010 (Lena – „Satellite“)",
+        "✨ 💃 🇸🇪 = ESC 2012 (Loreen – „Euphoria“)",
+        "🔥 🪽 🇦🇹 = ESC 2014 (Conchita Wurst – „Rise Like a Phoenix“)",
+        "1️⃣ 9️⃣ 4️⃣ 4️⃣ = ESC 2016 (Jamala – „1944“)",
+        "🕹️ 💔 🇳🇱 = ESC 2019 (Duncan Laurence – „Arcade“)",
+        "🎸 🔥 🇮🇹 = ESC 2021 (Måneskin – „Zitti e buoni“)",
+        "👩‍👦 🎤 🇺🇦 = ESC 2022 (Kalush Orchestra – „Stefania“)",
+        "💉 ❤️ 🇸🇪 = ESC 2023 (Loreen – „Tattoo“)",
+        "🔐 🌀 🇨🇭 = ESC 2024 (Nemo – „The Code“)",
+        "💔 🎭 🇦🇹 = ESC 2025 (JJ – „Wasted Love“)",
+        "🥁 🎉 🇧🇬 = ESC 2026 (DARA – „Bangaranga“)"
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Der Siegersong spielt nicht ab.",
+      "a": "Die Songs werden über Deezer gesucht und eingebettet; die Verfügbarkeit hängt von der Region ab. Tippe im Player selbst auf Play, nutze „Auf Deezer suchen ↗“ oder wähle mit ↻ einen anderen Song. Ohne Internet gibt es keine Musik."
+    },
+    {
+      "q": "Vito spricht nicht oder mit einer anderen Stimme.",
+      "a": "Vito nutzt die Sprachausgabe deines Geräts und sucht eine deutsche Männerstimme. Ist keine installiert, nimmt er eine andere deutsche Stimme. Prüfe, ob ♫ eingeschaltet ist und das Gerät nicht stumm ist."
+    },
+    {
+      "q": "Das Handy verbindet sich nicht mit dem Fernseher.",
+      "a": "WR-Code und PIN genau so eingeben, wie sie am Fernseher stehen. „WR-Code nicht gefunden. Läuft der TV-Modus?“ heißt: Am Fernseher muss das Koppelfenster offen bzw. der TV-Modus aktiv sein. Beide Geräte brauchen Internet; manche Netze blockieren direkte Verbindungen."
+    },
+    {
+      "q": "Mein Spiel ist weg.",
+      "a": "Der Stand liegt im Browser. Nach dem Sieg wird er gelöscht. In privaten Fenstern oder nach dem Löschen der Browserdaten ist er ebenfalls weg. Ohne Google-Anmeldung bleibt er nur lokal. Hast du dich vorher mit „Mit Google speichern“ (Bereich im Spielstudio) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+    },
+    {
+      "q": "Warum gibt es kein Jahr 2020 mit Sieger?",
+      "a": "Der ESC 2020 in Rotterdam wurde wegen der COVID-19-Pandemie abgesagt. Im Spiel taucht er als eigener Moment ohne Sieger auf; 2021 fand der Wettbewerb in Rotterdam statt."
+    },
+    {
+      "q": "Wie viele Spieler können mitmachen?",
+      "a": "Bis zu vier – am selben Gerät abwechselnd oder im TV-Modus mit je einem Handy."
+    }
+  ]
+}

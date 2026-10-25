@@ -1,0 +1,188 @@
+{
+  "id": "frequenzminen",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Frequenz-Minen 3D ist Minesweeper auf einer Radarscheibe. Das Spielfeld besteht aus Funkplatten, unter einigen davon stecken Störsender (📡). Deine Aufgabe: Decke alle freien Platten auf, ohne eine einzige Störsender-Platte zu erwischen.",
+        "Jede aufgedeckte Platte zeigt eine Zahl: So viele Störsender rauschen auf den 8 Nachbarfeldern (waagerecht, senkrecht und schräg). Eine Platte ohne Störsender in der Nähe ist leer und deckt ihre Nachbarn automatisch mit auf – so öffnen sich ganze Flächen auf einmal.",
+        "Der erste Klick ist immer sicher: Die Störsender werden erst verteilt, nachdem du die erste Platte gewählt hast, und weder diese Platte noch ihre 8 Nachbarn bekommen einen Störsender. Dein erster Klick öffnet deshalb immer eine kleine Fläche."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "p": [
+        "Nach dem kurzen Ladebildschirm („Funkplatten werden kalibriert …“) siehst du das Hauptmenü. Im Hintergrund dreht sich ein Vorführ-Feld."
+      ],
+      "list": [
+        "Leicht: 9×9 Platten, 10 Störsender.",
+        "Mittel: 12×12 Platten, 24 Störsender (Grundeinstellung).",
+        "Schwer: 12×18 Platten, 44 Störsender. Auf einem Querformat-Bildschirm wird das Feld gedreht und als 18×12 angezeigt.",
+        "▶ Spielen startet eine Runde in der gewählten Stufe. Die zuletzt gewählte Stufe merkt sich das Spiel.",
+        "📅 Tagesrätsel: ein festes 12×12-Feld mit 26 Störsendern, für alle Spieler am selben Tag gleich. Daneben steht „neu“, deine Zeit (✅) oder „💥 versucht“.",
+        "🏆 Rekorde: Highscore, Siege, Bestzeit je Stufe und beste Siegesserie.",
+        "📖 So geht's: die Spielhilfe mit Regeln und Steuerung.",
+        "⚙️ Einstellungen und 📻 Radio (siehe unten).",
+        "Unter den Knöpfen steht dein Rekord und wie viele Runden du gewonnen hast."
+      ]
+    },
+    {
+      "t": "Spielablauf und Regeln",
+      "list": [
+        "Oben links steht die Stufe und die Feldgröße, rechts zählt 📡 die Störsender, die noch nicht mit einem Peiler markiert sind, und ⏱ die Zeit.",
+        "Die Uhr läuft erst ab der ersten aufgedeckten Platte.",
+        "Triffst du einen Störsender, ist die Runde verloren („Störsender erwischt!“). Das Spiel zeigt dir dann, wie viel Prozent der Frequenz schon frei waren.",
+        "Hast du alle freien Platten aufgedeckt, ist die Runde gewonnen („Frequenz frei!“). Peiler musst du dafür nicht setzen.",
+        "🚩 Peiler markieren Platten, unter denen du einen Störsender vermutest. Eine Platte mit Peiler lässt sich nicht versehentlich aufdecken („Erst den Peiler entfernen“). Ein zweiter Peiler-Befehl auf dieselbe Platte nimmt ihn wieder weg.",
+        "Zahl antippen: Stehen rund um eine aufgedeckte Zahl genau so viele Peiler, wie die Zahl angibt, deckt ein Tipp auf die Zahl alle übrigen Nachbarn auf. Steht ein Peiler falsch, kann dabei ein Störsender hochgehen. Die Funktion lässt sich in den Einstellungen abschalten.",
+        "💡 Peilung: Dreimal pro Runde deckt sie eine sichere Platte auf, möglichst am Rand des bereits offenen Bereichs. Jede Peilung kostet 20 Sekunden auf der Uhr und Punkte. Sie geht erst, wenn schon eine Platte offen ist („Erst eine Platte aufdecken“)."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Maus: Linksklick deckt auf, Rechtsklick setzt oder entfernt einen Peiler, Mausrad zoomt. Ein Rechtsklick auf eine offene Zahl wirkt wie Zahl antippen.",
+        "Touch: Tippen deckt auf, lange drücken (knapp eine halbe Sekunde) setzt einen Peiler. Mit dem Knopf 🚩 Peiler schaltest du um, dann setzt Tippen Peiler und langes Drücken deckt auf. Zwei Finger zoomen, mit einem Finger verschiebst du das gezoomte Feld. Die Knöpfe － und ＋ zoomen ebenfalls.",
+        "Tastatur: Pfeiltasten oder W A S D bewegen den Rahmen, Leertaste oder Enter deckt auf, F (oder E) setzt einen Peiler, T schaltet den Peiler-Modus um, H nutzt eine Peilung, + und − zoomen, Esc oder P pausiert. Der erste Tastendruck zeigt den Rahmen in der Feldmitte.",
+        "Gamecontroller: Steuerkreuz oder Stick bewegen den Rahmen, A deckt auf, X setzt einen Peiler, Y nutzt eine Peilung, LB und RB zoomen, Start pausiert.",
+        "Oben rechts: 📻 öffnet die Senderwahl, ☰ die Pause mit Weiter, Neu starten, Radio, So geht's und Zum Menü. Wechselst du die App oder den Tab, pausiert das Spiel von selbst."
+      ]
+    },
+    {
+      "t": "Punkte und Wertung",
+      "p": [
+        "Jede aufgedeckte freie Platte bringt Punkte, multipliziert mit dem Faktor der Stufe: Leicht ×1, Mittel ×2, Schwer ×4, Tagesrätsel ×2. Verlierst du, bekommst du nur diese Plattenpunkte.",
+        "Beim Sieg kommt ein Bonus dazu: Faktor × (500 + 5 Punkte für jede Sekunde unter der Richtzeit). Die Richtzeit beträgt bei Leicht 2:00, bei Mittel und beim Tagesrätsel 5:00, bei Schwer 10:00. Für jede genutzte Peilung werden 50 × Faktor abgezogen – das Ergebnis sinkt aber nie unter die reinen Plattenpunkte.",
+        "Die Auswertung zeigt Punkte, Zeit, freie Platten, richtig gesetzte Peiler, genutzte Peilungen, Bestzeit oder Rekord sowie Siege und Serie. Mit 👁 Feld ansehen blendest du das Fenster aus und schaust dir das aufgedeckte Feld an; ein Tipp oder Tastendruck holt die Auswertung zurück."
+      ]
+    },
+    {
+      "t": "Rekorde, Speichern und Tagesrätsel",
+      "list": [
+        "Gespeichert werden Highscore, Anzahl Runden und Siege, aktuelle und beste Siegesserie sowie die Bestzeit je Stufe. Bestzeiten zählen nur in den drei normalen Stufen, nicht im Tagesrätsel.",
+        "Highscore und Rangliste werden mit deinem Konto gespeichert, wenn du angemeldet bist.",
+        "Das Tagesrätsel wird für jeden Tag aus dem Datum erzeugt. Der erste Zug wird automatisch in der Feldmitte gemacht, damit alle mit derselben Fläche starten.",
+        "Gewertet wird beim Tagesrätsel nur dein erster Versuch des Tages. Das Spiel merkt sich die letzten 30 Tage; im Rekordfenster steht, wie viele davon du gelöst hast.",
+        "📤 Ergebnis teilen erzeugt einen Text mit Datum, Zeit und Zahl der Peilungen (oder „ohne Peilung“) und einem Link zum Spiel – auf dem Handy über das Teilen-Menü, am PC wird er in die Zwischenablage kopiert.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    },
+    {
+      "t": "Einstellungen und Radio",
+      "list": [
+        "Ton: Klick- und Effektgeräusche an oder aus.",
+        "Vibration: kurzes Rütteln beim Setzen von Peilern, großen Öffnungen, Sieg und Niederlage.",
+        "Zahl antippen deckt Nachbarn auf (wenn alle Peiler stehen): an oder aus.",
+        "Sparmodus: weniger 3D-Details für schwächere Geräte, gilt nach einem Neustart.",
+        "📻 Radio spielt einen Sender live während des ganzen Spiels: RicoReWi Radio, YourTime-FM, Rapradio 24, Schlagerpop 24, Chartradio 24, Clubradio 24, AnMaCha 24 und weitere aus der Liste – oder Aus. Beim Einschalten zeigt ein Hinweis den laufenden Titel."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Fang mit Leicht an: 10 Störsender auf 81 Platten verzeihen viel.",
+        "Klick zuerst irgendwo in die Mitte – der erste Klick ist sicher und öffnet eine Fläche, von der aus du logisch weiterarbeiten kannst.",
+        "Eine 1 neben genau einer verdeckten Platte: Dort steckt der Störsender. Peiler drauf.",
+        "Zeigt eine Zahl genauso viele Peiler wie ihr Wert, sind alle anderen Nachbarn sicher – Zahl antippen deckt sie in einem Zug auf.",
+        "Zähle oben rechts mit: 📡 zeigt, wie viele Störsender noch ohne Peiler sind. Gegen Ende hilft das beim Abzählen."
+      ]
+    },
+    {
+      "t": "Muster für Fortgeschrittene",
+      "list": [
+        "1-2-1 an einer geraden Kante: Die Störsender liegen unter den beiden Platten gegenüber den äußeren Einsen, die mittlere ist frei.",
+        "1-2-2-1 an einer Kante: Die Störsender liegen gegenüber den beiden Zweien.",
+        "Ziehe bei zwei benachbarten Zahlen die gemeinsamen Felder ab: Was übrig bleibt, muss die Differenz der Zahlen an Störsendern enthalten.",
+        "Ecken sind gefährlich, weil sie wenige Nachbarn haben und selten Informationen liefern. Arbeite dich lieber von großen offenen Flächen nach außen."
+      ]
+    },
+    {
+      "t": "Profi-Tricks für Bestzeiten",
+      "list": [
+        "Peiler nur dort setzen, wo du danach Zahl antippen willst. Alles andere kostet Zeit – für den Sieg braucht es keine Peiler.",
+        "Am PC ist Rechtsklick auf eine offene Zahl gleich Zahl antippen: So bleibt die Hand auf der Maus und du sparst Wege.",
+        "Auf dem Handy lohnt sich der 🚩-Modus, wenn du viele Peiler hintereinander setzt; schalte danach direkt zurück.",
+        "Eine Peilung kostet 20 Sekunden (also 100 Bonuspunkte × Faktor) plus 50 × Faktor. Nutze sie nur bei einem echten 50:50-Raten – dort ist sie billiger als eine verlorene Runde.",
+        "Wenn wirklich geraten werden muss, rate früh: Eine verlorene Runde nach 20 Sekunden kostet weniger als eine nach acht Minuten."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zahl antippen mit einem falsch gesetzten Peiler: Dann deckst du einen echten Störsender auf. Prüfe die Peiler, bevor du antippst.",
+        "Zu langes Drücken auf dem Handy setzt einen Peiler statt aufzudecken – tippe kurz.",
+        "Beim Tagesrätsel einfach losklicken: Es zählt nur der erste Versuch des Tages. Lies das Feld lieber in Ruhe.",
+        "Im gezoomten Feld beim Verschieben mit dem Finger loslassen, ohne sich bewegt zu haben, zählt als Tipp. Verschiebe mit deutlicher Bewegung."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Die Stufen im Überblick",
+      "list": [
+        "Leicht: 9×9, 10 Störsender, 71 freie Platten, Faktor ×1, Richtzeit 2:00.",
+        "Mittel: 12×12, 24 Störsender, 120 freie Platten, Faktor ×2, Richtzeit 5:00.",
+        "Schwer: 12×18, 44 Störsender, 172 freie Platten, Faktor ×4, Richtzeit 10:00.",
+        "Tagesrätsel: 12×12, 26 Störsender, 118 freie Platten, Faktor ×2, Richtzeit 5:00, erster Zug automatisch in der Mitte."
+      ]
+    },
+    {
+      "t": "Rechenbeispiele für Höchstpunkte",
+      "list": [
+        "Leicht in 0:40 ohne Peilung: 71 + 1 × (500 + 80 × 5) = 971 Punkte.",
+        "Mittel in 2:00 ohne Peilung: 240 + 2 × (500 + 180 × 5) = 3.040 Punkte.",
+        "Schwer in 5:00 ohne Peilung: 688 + 4 × (500 + 300 × 5) = 8.688 Punkte.",
+        "Schwer in 5:00 mit einer Peilung: Die Uhr steht dann auf 5:20, also 688 + 4 × (500 + 280 × 5) − 200 = 8.088 Punkte.",
+        "Der Highscore ist stufenübergreifend. Für einen hohen Highscore lohnt sich deshalb Schwer: Schon ein Sieg knapp unter der Richtzeit bringt über 2.600 Punkte."
+      ]
+    },
+    {
+      "t": "Beste Strategie je Phase",
+      "steps": [
+        "Eröffnung: In die Feldmitte klicken (beim Tagesrätsel macht das Spiel diesen Zug selbst). Die Fläche öffnet sich.",
+        "Rand abarbeiten: Alle sicheren Störsender um die Fläche herum mit Peilern markieren (Einsen mit nur einer verdeckten Nachbarplatte, Muster 1-2-1 und 1-2-2-1).",
+        "Zahlen antippen: Jede Zahl, um die genug Peiler stehen, antippen. So wächst die Fläche schnell.",
+        "Wiederholen, bis nichts Sicheres mehr übrig ist.",
+        "Festgefahren: Erst mit dem Störsender-Zähler oben rechts abzählen, ob das Endfeld eindeutig ist. Sonst eine Peilung einsetzen, solange noch welche übrig sind.",
+        "Letzter Ausweg Raten: Wähle die Platte mit der geringsten Wahrscheinlichkeit, meist eine Platte weit weg von hohen Zahlen."
+      ]
+    },
+    {
+      "t": "Rekorde und Statistiken",
+      "list": [
+        "⭐ Neuer Rekord! erscheint, wenn deine Punkte den bisherigen Highscore übertreffen.",
+        "⭐ Neue Bestzeit! erscheint bei einem schnelleren Sieg in der gleichen Stufe (nur Leicht, Mittel, Schwer).",
+        "Die Siegesserie zählt Siege hintereinander; jede Niederlage setzt sie auf 0, die beste Serie bleibt gespeichert.",
+        "Im Tagesrätsel-Feld im Menü steht nach dem Versuch ✅ mit deiner Zeit oder 💥 versucht."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Kann ich gleich beim ersten Klick verlieren?",
+      "a": "Nein. Die Störsender werden erst nach deinem ersten Klick verteilt, und diese Platte samt ihren 8 Nachbarn bleibt immer frei."
+    },
+    {
+      "q": "Warum passiert nichts, wenn ich auf eine Zahl tippe?",
+      "a": "Zahl antippen wirkt nur, wenn rund um die Zahl genau so viele Peiler stehen, wie die Zahl angibt. Außerdem muss die Einstellung „Zahl antippen deckt Nachbarn auf“ eingeschaltet sein."
+    },
+    {
+      "q": "Ich habe das Tagesrätsel nochmal gespielt, aber das Ergebnis hat sich nicht geändert.",
+      "a": "Gewertet und gespeichert wird nur der erste Versuch des Tages. Du kannst das Rätsel erneut spielen, das Ergebnis im Menü bleibt aber das erste."
+    },
+    {
+      "q": "Wo sind meine Rekorde gespeichert?",
+      "a": "Im Browser auf deinem Gerät. Ohne Google-Anmeldung sind sie weg, wenn du die Browserdaten löschst. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät. Highscore und Rangliste werden dann auch mit deinem Konto gespeichert."
+    },
+    {
+      "q": "Das Radio spielt nicht.",
+      "a": "Browser starten Ton erst nach einer Berührung oder Taste. Tipp einmal ins Spiel. Kommt „Sender gerade nicht erreichbar“, wähle im 📻-Fenster einen anderen Sender. Für das Radio brauchst du Internet."
+    },
+    {
+      "q": "Das Spiel ruckelt auf meinem Handy.",
+      "a": "Schalte in den Einstellungen den Sparmodus ein und starte das Spiel neu. Dann werden weniger 3D-Details gezeichnet."
+    }
+  ]
+}

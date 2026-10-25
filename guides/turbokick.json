@@ -1,0 +1,203 @@
+{
+  "id": "turbokick",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "TURBOKICK ist 3D-Auto-Fußball: Zwei Teams – Funken (orange) und Frost (blau) – versuchen, eine große Plasmakugel mit ihren Autos ins gegnerische Tor zu schießen. Wer nach der Spielzeit mehr Tore hat, gewinnt.",
+        "Bei Gleichstand gibt es eine Verlängerung: Das nächste Tor gewinnt (Golden Goal)."
+      ]
+    },
+    {
+      "t": "Hauptmenü",
+      "list": [
+        "Spielen: Spielart, Teamgröße, Spieldauer, Bot-Stärke, Arena und Nitro-Felder wählen, dann „Anstoß!“.",
+        "Online mit Freunden: Direktverbindung zwischen den Browsern per QR-Code oder Text-Code, ohne Server und ohne Konto.",
+        "Garage: Name, Karosserie, Aufkleber und Akzentfarbe deines Autos.",
+        "Statistik: Spiele, Siege, Siegquote, Tore, Vorlagen, Crashs, Siegesserie und Rekord, Online-Spiele und Spielzeit.",
+        "Anleitung: Regeln und die vollständige Tastentabelle.",
+        "Optionen und Credits."
+      ]
+    },
+    {
+      "t": "Spielarten und Einstellungen",
+      "list": [
+        "Schnelles Spiel: Du gegen Bots – allein oder mit Bot-Teamkameraden.",
+        "Splitscreen zu zweit: Zwei Spieler an einem Gerät, geteilter Bildschirm (Tastatur oder Gamepads). Zweiter Spieler: „Gegeneinander“ oder „Zusammen gegen Bots“.",
+        "Training: Freies Spiel ohne Gegner und ohne Uhr: Ball, Nitro, Wände – übe Schüsse und Sprünge (R setzt zurück).",
+        "Teamgröße: 1 vs 1, 2 vs 2 oder 3 vs 3. Freie Plätze füllen Bots.",
+        "Spieldauer: 1, 3, 5 oder 10 Minuten.",
+        "Bot-Stärke: Anfänger, Fahrer, Profi oder Legende.",
+        "Arena: Neon-Metropole, Eis-Dom, Sonnen-Canyon oder Zufall.",
+        "Nitro-Felder: „Nitro-Felder an“ oder „Nur Start-Nitro“.",
+        "Deine letzte Auswahl wird gespeichert."
+      ]
+    },
+    {
+      "t": "Regeln und Spielablauf",
+      "list": [
+        "Vor jedem Anstoß läuft ein Countdown von 3 Sekunden („Mach dich bereit“).",
+        "Nach jedem Tor („TOR!“) gibt es eine kurze Pause und einen neuen Anstoß. Eigentore zählen für den Gegner. Hat ein Teamkamerad den Ball direkt vor dem Torschützen berührt, bekommt er eine Vorlage.",
+        "Mit dem Ende der Uhr endet das Spiel sofort; ein Tor im selben Moment zählt noch.",
+        "Steht es unentschieden, beginnt die „Verlängerung“ – „Das nächste Tor gewinnt“.",
+        "Am Ende zeigt die Tabelle Fahrer, Tore, Vorlagen und Crashs. „Revanche“ startet sofort neu."
+      ]
+    },
+    {
+      "t": "Nitro",
+      "list": [
+        "Jedes Auto startet mit 33 Nitro, das Maximum ist 100. Volles Nitro reicht für etwa 3 Sekunden Dauerschub.",
+        "Kleine Nitro-Felder geben +12 und sind nach 4 Sekunden wieder da, große Kanister geben +100 und kommen nach 10 Sekunden zurück. Die Arena hat 6 große und 28 kleine Felder.",
+        "Halte die Boost-Taste für kräftigen Schub – am Boden und in der Luft.",
+        "Supersonic: Bei sehr hohem Tempo kannst du Gegner mit einem Rammstoß zerstören („Crash“). Sie kehren nach 3 Sekunden zurück."
+      ]
+    },
+    {
+      "t": "Fahrkünste",
+      "list": [
+        "Sprung: öffnet die Luftsteuerung (Nase, Drehung, Rollen). Länger halten springt etwas höher.",
+        "Ein zweiter Druck kurz danach löst mit Richtung einen Salto-Stoß (Ausweichmanöver, Flip) aus, ohne Richtung einen Doppelsprung. Dafür hast du nach dem Sprung etwa 1,5 Sekunden Zeit.",
+        "In der Luft: hoch/runter neigt die Nase, links/rechts dreht (Gieren). Mit gehaltener Air-Roll-Taste rollst du stattdessen.",
+        "Wände: Mit genug Tempo fährst du die Wände und die Rundungen hinauf.",
+        "Handbremse/Drift: enge Kurven und schnelles Wenden.",
+        "Ball-Kamera: schaltet um, damit du Auto und Ball im Blick behältst. Rückblick zeigt kurz nach hinten."
+      ]
+    },
+    {
+      "t": "Steuerung (vollständig)",
+      "list": [
+        "Gas/Rückwärts: W/S · Pfeil hoch/runter · Gamepad RT/LT · Touch Stick hoch/runter.",
+        "Lenken: A/D · Pfeil links/rechts · linker Stick · Touch Stick seitlich.",
+        "Luft – Nase runter/hoch und Gieren: wie Gas/Lenken (W/S, A/D bzw. linker Stick).",
+        "Air-Roll (mit Lenken = Rollen): Strg links oder E · Strg rechts oder Num 2 · RB.",
+        "Sprung (zweimal = Flip): Leertaste · Enter oder Num 0 · A · SPRUNG.",
+        "Boost (halten): Shift links · Shift rechts oder Num 1 · X · BOOST.",
+        "Handbremse/Drift: Q · Num 3 oder Punkt · B · DRIFT.",
+        "Ballkamera umschalten: C · Num 5 oder Komma · Y · BALL.",
+        "Rückblick: F · Num 6 · LB oder R3.",
+        "Zurücksetzen (Training): R · Num 4 · Back.",
+        "Pause: Esc oder P · Num 9 (Esc geht auch) · Start · II.",
+        "Im Einzelspiel funktionieren beide Tastatur-Belegungen und das erste Gamepad gleichzeitig. Im Splitscreen fährt Spieler 1 mit WASD bzw. Gamepad 1, Spieler 2 mit den Pfeiltasten bzw. Gamepad 2."
+      ]
+    },
+    {
+      "t": "Touch-Steuerung",
+      "p": [
+        "Links der Stick, rechts die Knöpfe SPRUNG, BOOST und DRIFT, oben BALL (Ball-Kamera) und II (Pause).",
+        "In den Optionen gibt es die „Einfache Touch-Steuerung“: Der Stick zeigt die Richtung auf dem Bildschirm – das Auto lenkt selbst dorthin und gibt Gas. Aus = klassisch (hoch = Gas, seitlich = lenken)."
+      ]
+    },
+    {
+      "t": "Online mit Freunden",
+      "steps": [
+        "Gastgeber: „Online mit Freunden“ → „Raum erstellen“ → „+ Mitspieler einladen“. Es erscheint ein Einladungs-Code als QR-Code und als Text. Du kannst bis zu fünf Mitspieler einladen, jeder bekommt einen eigenen Code.",
+        "Mitspieler: „Raum beitreten“, den QR-Code scannen oder den Text-Code einfügen, „Weiter“. Es erscheint ein Antwort-Code.",
+        "Gastgeber: den Antwort-Code scannen („Antwort scannen“) oder einfügen und „Verbinden“ drücken. Der Mitspieler erscheint in der Lobby.",
+        "In der Lobby wählt jeder sein Team (⇄) und drückt „Ich bin bereit“. Der Gastgeber wählt Teamgröße, Minuten und Arena; leere Plätze werden beim Start mit Bots aufgefüllt.",
+        "Die Codes kannst du auch per Messenger schicken. Seid ihr in verschiedenen Netzen (z. B. WLAN und Mobilfunk), lass „Verbindungshilfe nutzen (STUN)“ eingeschaltet."
+      ],
+      "list": [
+        "Der Gastgeber rechnet das Spiel; verlässt er es, endet die Partie.",
+        "Bricht ein Mitspieler ab, übernimmt ein Bot seinen Platz. Ein Wiedereintreten in dieselbe Partie gibt es nicht.",
+        "In der Pause läuft das Spiel online für die anderen weiter."
+      ]
+    },
+    {
+      "t": "Optionen und Speichern",
+      "list": [
+        "Ton: Gesamtlautstärke, Musik, Effekte, Stumm, Hörprobe.",
+        "Grafik: Qualität Automatisch, Niedrig, Mittel, Hoch.",
+        "Kamera: Sichtfeld, Kameraabstand, Ball-Kamera beim Start, Kamerawackeln.",
+        "Barrierefreiheit: Weniger Bewegung und Effekte, Hoher Kontrast, Große Schrift, Teamfarben für Rot-, Grün- oder Blau-Schwäche.",
+        "Daten: „Spielstand sichern“ (Datei), „Spielstand laden“, „Alles zurücksetzen“.",
+        "Statistik, Garage und Einstellungen liegen in deinem Browser; mit Google-Anmeldung werden sie geräteübergreifend gesichert."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Starte mit Bot-Stärke „Anfänger“ im 1 vs 1. Diese Bots springen nicht und nutzen kaum Nitro.",
+        "Schalte die Ball-Kamera ein (C, Y oder BALL), dann verlierst du die Kugel nie aus den Augen.",
+        "Fahr über die kleinen Nitro-Felder auf deinem Weg – sie sind nach 4 Sekunden wieder voll.",
+        "Übe im Training: Ball zurücksetzen mit R, so oft du willst."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Nicht alle auf den Ball: Im 2 vs 2 und 3 vs 3 sollte einer hinten bleiben und das Tor sichern.",
+        "Große Kanister (+100) in den Ecken und an den Seiten gezielt mitnehmen, wenn du ohnehin zurückfährst.",
+        "Flip zum Schuss: Kurz vor dem Ball springen und mit Richtung erneut drücken – der Salto-Stoß gibt dem Ball viel Kraft.",
+        "Wände nutzen: Mit Tempo die Wand hochfahren und den Ball von oben in die Mitte spielen.",
+        "Supersonic-Rammstöße schalten einen Verteidiger für 3 Sekunden aus – ideal kurz vor einem Torschuss."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Doppelsprung ohne Richtung erreicht hohe Bälle; mit Boost in der Luft kommst du noch höher.",
+        "Air-Roll (Strg/E/RB) hilft, das Auto in der Luft auszurichten und auf allen vier Rädern zu landen – so fährst du sofort weiter.",
+        "Handbremse in der Ecke: Drift um 180 Grad, um nach einem verpassten Ball schnell zurückzukommen.",
+        "Spar Nitro für die Verlängerung: Das nächste Tor entscheidet, und der erste am Ball hat die beste Chance.",
+        "Rückblick (F, LB/R3) zeigt dir, ob ein Gegner dich gleich rammt."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Dauerboost: Nitro ist nach 3 Sekunden leer. Lieber kurz und gezielt.",
+        "Den eigenen Strafraum leer lassen – Konter gegen leere Tore sind tödlich.",
+        "Den Ball ins eigene Tor drücken: Eigentore zählen für den Gegner.",
+        "Online: Als Gastgeber das Spiel verlassen beendet die Partie für alle."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Die Bot-Stufen und wie du sie schlägst",
+      "list": [
+        "Anfänger: reagiert spät (0,35 s), zielt ungenau, springt nicht, nutzt selten Nitro und macht oft Fehler. Strategie: Ball flach vor dir hertreiben, die Bots kommen an hohe Bälle nicht heran.",
+        "Fahrer: springt, nutzt Nitro öfter, dosiert die Schusskraft und holt sich Nitro-Felder. Strategie: hohe Bälle und Wandspiel nutzen – Doppelsprünge und Flips kann diese Stufe noch nicht.",
+        "Profi: reagiert schnell (0,1 s), kann Doppelsprung, Flip und Handbremse und macht nur selten Fehler. Strategie: Positionsspiel, Nitro kontrollieren und auf seine seltenen Patzer warten.",
+        "Legende: reagiert fast sofort (0,04 s), zielt präzise auf das Tor, nutzt immer Nitro, rammt Gegner (Crash) und erreicht sehr hohe Bälle. Strategie: Nie ohne Rückendeckung angreifen, Nitro-Felder kontrollieren und Supersonic-Rammstöße vermeiden, indem du nicht frontal entgegenfährst."
+      ]
+    },
+    {
+      "t": "Beste Strategie je Spielart",
+      "list": [
+        "1 vs 1: Du bist Stürmer und Torwart zugleich. Schieße nur, wenn du danach rechtzeitig zurückkommst.",
+        "2 vs 2: Einer greift an, einer sichert. Nach jedem Angriff Rollen tauschen.",
+        "3 vs 3: Dreieck bilden – einer am Ball, einer in Lauerstellung, einer hinten.",
+        "Splitscreen zusammen: Teilt euch Angriff und Abwehr fest auf.",
+        "Kurze Spiele (1 Minute): Gleich zum Anstoß voll auf den Ball, jeder Fehler zählt.",
+        "Nur Start-Nitro: Die 33 Start-Nitro sind alles, was du hast – für den entscheidenden Schuss aufheben."
+      ]
+    },
+    {
+      "t": "Anstoß-Plan",
+      "steps": [
+        "Beim Countdown Gas halten, damit du sofort losfährst.",
+        "Mit Nitro direkt auf den Ball zu, kurz davor springen und nach vorn flippen.",
+        "Im Team: Der Spieler, der am nächsten am Ball steht, geht zum Anstoß, die anderen sammeln Nitro und sichern."
+      ]
+    },
+    {
+      "t": "Arenen und Statistik",
+      "list": [
+        "Arenen: Neon-Metropole, Eis-Dom und Sonnen-Canyon. „Zufall“ wählt eine davon aus. Die Spielregeln sind überall gleich.",
+        "Statistik: Spiele, Siege, Siegquote, Tore, Vorlagen, Crashs, aktuelle Siegesserie und Rekordserie, Online-Spiele und gesamte Spielzeit. Die Statistik liegt nur in deinem Browser.",
+        "Garage: 5 Karosserien (Flitzer, Brocken, Libelle, Pfeil, Käfer), 4 Aufkleber (Keins, Streifen, Blitz, Punkte) und Akzentfarben (Team, Lime, Magenta, Gold, Violett, Weiß, Türkis, Rot) – alles von Anfang an frei."
+      ]
+    }
+  ],
+  "faq": [
+    { "q": "Mein Freund kann sich online nicht verbinden.", "a": "Lass „Verbindungshilfe nutzen (STUN)“ an, wenn ihr in verschiedenen Netzen seid. Sehr strenge Netze (Firma, Schule, manche Mobilfunk-Anbieter) blockieren Direktverbindungen – dann hilft ein anderes Netz oder der Wechsel von WLAN auf Mobilfunk." },
+    { "q": "Die Kamera zum Scannen geht nicht.", "a": "Erlaube den Kamerazugriff im Browser. Ohne Kamera kannst du den Text-Code kopieren und einfügen – zum Beispiel über einen Messenger." },
+    { "q": "Wie viele Spieler gehen online?", "a": "Bis zu 6 (3 vs 3): der Gastgeber und bis zu fünf eingeladene Mitspieler. Leere Plätze füllen Bots." },
+    { "q": "Wie sichere ich meinen Spielstand?", "a": "In den Optionen unter „Daten“ mit „Spielstand sichern“ als Datei speichern und mit „Spielstand laden“ wiederherstellen." },
+    { "q": "Auf dem Handy ist die Steuerung schwer.", "a": "Schalte in den Optionen die „Einfache Touch-Steuerung“ ein: Das Auto fährt selbst in die Richtung, in die du den Stick ziehst." },
+    { "q": "Das Spiel ruckelt.", "a": "Stelle in den Optionen die Grafikqualität auf „Niedrig“ oder „Mittel“ und schalte „Weniger Bewegung und Effekte“ ein." }
+  ]
+}

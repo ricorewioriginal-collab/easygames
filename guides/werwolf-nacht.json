@@ -1,0 +1,189 @@
+{
+  "id": "werwolf-nacht",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Werwolf-Nacht ist das bekannte Partyspiel im Scherenschnitt-Look. In einem Dorf leben harmlose Bewohner – und heimlich ein bis drei Werwölfe. Jede Nacht suchen sich die Werwölfe ein Opfer, jeden Tag berät das Dorf und verbannt per Abstimmung jemanden, den es für einen Werwolf hält.",
+        "Das Dorf gewinnt, sobald alle Werwölfe tot oder verbannt sind („☀️ Das Dorf gewinnt!“). Die Werwölfe gewinnen, sobald sie mindestens so viele sind wie alle anderen zusammen („🐺 Die Werwölfe gewinnen!“). Eine Erzählerstimme führt durch jede Phase."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "p": [
+        "Auf dem Titelbild tippst du (oder drückst eine Taste bzw. A am Controller), um zu starten. Im Hauptmenü siehst du deine Gesamtpunkte und Siege."
+      ],
+      "list": [
+        "🐺 Solo spielen – du gegen ein Dorf voller Computer-Bewohner.",
+        "🌐 Online & Handys – der Fernseher (oder ein Tablet in der Mitte) ist das Dorf, die Handys zeigen die geheimen Rollen.",
+        "📱 Mitspielen – mit Name und vierstelligem Code einem Online-Dorf beitreten.",
+        "🃏 Rollen – alle Rollen mit Beschreibung, Ablauf und Steuerung.",
+        "🏅 Rekorde – Punkte, Siege, Siege als Werwolf, wie oft du überlebt hast und wie viele Werwölfe du mit entlarvt hast.",
+        "⚙️ Optionen – Erzählerstimme, Geräusche, Nacht- und Tag-Atmosphäre, Schnelles Erzähltempo, Vibration."
+      ]
+    },
+    {
+      "t": "Die Rollen",
+      "list": [
+        "🐺 Werwolf: Nachts sucht ihr Werwölfe euch gemeinsam ein Opfer (bei Uneinigkeit entscheidet die Mehrheit, bei Gleichstand der Zufall). Ihr kennt euch gegenseitig – in deiner Ansicht stehen Mitwölfe als „🐺 Rudel“. Tagsüber tarnst du dich.",
+        "🔮 Seherin: Jede Nacht blickst du in eine Person und erfährst, ob sie ein Werwolf ist. Bereits geprüfte Personen werden in deiner Ansicht mit „🔮 Werwolf!“ oder „🔮 unschuldig“ markiert und können nicht noch einmal gewählt werden.",
+        "🧪 Hexe: Du hast einen Heiltrank (rettet das Opfer der Nacht, auch dich selbst) und einen Gifttrank (tötet jemanden, nicht dich selbst) – jeden nur einmal im Spiel. Du erfährst, wen die Werwölfe angegriffen haben.",
+        "🛡️ Leibwächter: Jede Nacht beschützt du eine Person vor den Werwölfen, auch dich selbst – aber nie zweimal hintereinander dieselbe. Gift kann er nicht verhindern.",
+        "🏹 Jäger: Stirbst du (nachts oder durch Verbannung), darfst du mit dem letzten Schuss sofort jemanden mitnehmen.",
+        "🧑‍🌾 Dorfbewohner: keine Fähigkeit, aber deine Stimme zählt."
+      ]
+    },
+    {
+      "t": "Rollenverteilung nach Dorfgröße",
+      "p": [
+        "Die Rollen werden je nach Spielerzahl verteilt. Es gibt immer eine Seherin."
+      ],
+      "list": [
+        "5 Personen: 1 Werwolf, Seherin, 3 Dorfbewohner.",
+        "6 Personen: 1 Werwolf, Seherin, Hexe, 3 Dorfbewohner.",
+        "7 Personen: 2 Werwölfe, Seherin, Hexe, Jäger, 2 Dorfbewohner.",
+        "8 Personen: 2 Werwölfe, Seherin, Hexe, Jäger, Leibwächter, 2 Dorfbewohner.",
+        "9 Personen: 2 Werwölfe, Seherin, Hexe, Jäger, Leibwächter, 3 Dorfbewohner.",
+        "10 bis 12 Personen: 3 Werwölfe, Seherin, Hexe, Jäger, Leibwächter, der Rest Dorfbewohner."
+      ]
+    },
+    {
+      "t": "Ablauf einer Runde",
+      "steps": [
+        "Nacht: Alle schließen die Augen. Nacheinander erwachen Leibwächter, Werwölfe, Seherin und Hexe und treffen ihre Wahl. Rollen, die niemand Lebendes hat, werden übersprungen; die Hexe erwacht nur, solange sie noch einen Trank hat.",
+        "Morgen: Der Erzähler verkündet, wer gestorben ist und welche Rolle die Person hatte. Ist der Angriff abgewehrt (Leibwächter oder Heiltrank), stirbt niemand. Ein Gifttrank-Opfer wird zusätzlich genannt. War ein Toter der Jäger, schießt er sofort.",
+        "Tag: Das Dorf diskutiert. Computer-Bewohner verdächtigen andere, zweifeln, beruhigen oder behaupten, die Seherin zu sein. Ihre Aussagen erscheinen als Sprechblasen und im Verlauf.",
+        "Abstimmung: Jeder Lebende stimmt, wer verbannt werden soll, oder enthält sich. Die Stimmen werden nacheinander gezeigt. Wer die meisten Stimmen hat, muss gehen und seine Rolle wird aufgedeckt. Bei Gleichstand wird niemand verbannt.",
+        "Danach beginnt die nächste Nacht – bis eine Seite gewinnt. Am Ende werden alle Rollen aufgedeckt."
+      ]
+    },
+    {
+      "t": "Solo-Modus",
+      "p": [
+        "Du wählst die Dorfgröße (6, 7, 8, 9 oder 10 Personen, also 5 bis 9 Computer) und deine Rolle: 🎲 Zufall, 🐺 Werwolf, 🔮 Seherin, 🧪 Hexe, 🏹 Jäger oder 🧑‍🌾 Dorf. Den Jäger gibt es erst ab 7 Personen, deshalb springt die Größe dann automatisch auf mindestens 7. Darunter steht, welche Rollen im Dorf vorkommen. Optional gibst du deinen Namen ein. Mit „🌙 Nacht beginnen“ geht es los.",
+        "Am Tag kannst du bis zu achtmal etwas sagen: „🗣️ Jemanden verdächtigen“, „🔮 Ich bin die Seherin …“ (mit der Aussage „ein Werwolf!“ oder „unschuldig“ – auch gelogen, etwa als Werwolf) oder „⚖️ Zur Abstimmung“. Auf deine Aussagen reagieren zwei Bewohner mit Zustimmung, Widerspruch oder einem Gegenangriff.",
+        "Die Computer haben ein Verdachts-Gedächtnis: Anklagen färben auf andere ab, besonders von glaubwürdigen Bewohnern. Wer gegen einen Unschuldigen gestimmt hat, wird danach verdächtiger, wer gegen einen Werwolf stimmte, gewinnt Vertrauen. Behaupten zwei Personen, die Seherin zu sein, werden beide verdächtiger. Stirbt jemand nachts, der einen Verdacht geäußert hatte, wirkt dieser Verdacht glaubwürdiger. Bist du tot, schaust du bis zum Ende zu."
+      ]
+    },
+    {
+      "t": "Online & Handys",
+      "p": [
+        "Der Bildschirm, auf dem du „🌐 Online & Handys“ wählst, ist das Dorf und der Erzähler. Ein Raum mit Code, Link und QR-Code wird eröffnet. Alle Mitspieler treten von überall mit dem Handy bei – per Code über „📱 Mitspielen“, per Link oder QR-Code – und sehen dort heimlich ihre Rolle. Am besten sitzt ihr zusammen oder seid im Videoanruf.",
+        "In der Lobby fügst du mit „＋ Computer“ Computer-Bewohner hinzu oder entfernst sie mit „－ Computer“. Gestartet werden kann mit 5 bis 12 Personen, mindestens eine davon ein Mensch. Du stellst die Diskussionszeit ein: 1, 2 oder 3 Minuten.",
+        "Am Handy: Halte die Rollenkarte gedrückt, um deine Rolle zu sehen (Werwölfe sehen dort auch ihr Rudel). Nachts und bei der Abstimmung erscheinen die Auswahlknöpfe auf dem Handy. Am Tag läuft auf dem Fernseher der Countdown; mit „✋ Bereit“ zeigst du, dass du abstimmen willst. Sind alle bereit, die Zeit abgelaufen oder drückt jemand am Fernseher „⚖️ Abstimmung jetzt“, beginnt die Abstimmung.",
+        "Antwortet jemand nachts oder bei der Abstimmung nicht, wählt das Spiel nach 75 Sekunden automatisch (bei der Abstimmung: Enthaltung). Verliert ein Handy die Verbindung, kann es mit demselben Gerät wieder beitreten und bekommt seine Rolle zurück. Während ein Spiel läuft, können keine neuen Spieler dazukommen."
+      ]
+    },
+    {
+      "t": "Steuerung",
+      "list": [
+        "Touch/Maus: leuchtende Figuren im Dorfkreis antippen und Knöpfe unten antippen. Ein Antippen einer nicht wählbaren Figur zeigt im Solo-Spiel ihren Namen (und bei Toten die Rolle).",
+        "Tastatur: Pfeiltasten wählen, Enter bestätigt, Esc öffnet die Pause bzw. geht zurück oder schließt ein Fenster.",
+        "Gamecontroller: Steuerkreuz oder linker Stick wählen, A bestätigt, B zurück, Start öffnet und schließt die Pause.",
+        "Pause (☰): ▶ Weiter, 🃏 Rollen, ⚙️ Optionen, ⏹ Spiel beenden. Während der Pause bleibt auch der Diskussions-Countdown stehen."
+      ]
+    },
+    {
+      "t": "Punkte und Rekorde",
+      "p": [
+        "Punkte gibt es im Solo-Spiel. Sie werden zu deinem Gesamtpunktestand addiert und mit deinen Statistiken im Browser gespeichert.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ],
+      "list": [
+        "Sieg deines Teams: 100 Punkte, als Werwolf 150 Punkte.",
+        "Bis zum Ende überlebt: +30 Punkte (auch bei einer Niederlage).",
+        "Jede deiner Stimmen gegen einen Werwolf: +15 Punkte."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Hör genau auf den Erzähler: Am Morgen und nach jeder Verbannung wird die Rolle des Toten verraten – das ist deine wichtigste Information.",
+        "Beobachte die Abstimmung: Wer gegen einen Unschuldigen gestimmt hat, ist verdächtig, wer einen Werwolf mit verbannt hat, eher nicht.",
+        "Enthalte dich lieber, wenn du gar keine Ahnung hast – eine Stimme gegen einen Unschuldigen macht dich bei den Computern verdächtig.",
+        "Schalte „Schnelles Erzähltempo“ ein, wenn dir die Nächte zu lange dauern."
+      ]
+    },
+    {
+      "t": "Strategien je Rolle",
+      "list": [
+        "Seherin: Nicht zu früh auspacken. Die Werwölfe greifen bevorzugt an, wer sich als Seherin ausgibt oder sie verdächtigt. Hast du einen Werwolf gefunden, ist die Behauptung „Ich bin die Seherin – X ist ein Werwolf!“ sehr stark: Die Computer glauben dir, solange niemand anderes Seherin spielt.",
+        "Hexe: Den Heiltrank am besten in der ersten Nacht oder für jemanden einsetzen, der sich glaubhaft als Seherin gezeigt hat. Den Gifttrank erst, wenn du dir sicher bist – zum Beispiel nach einer Seherin-Aussage.",
+        "Leibwächter: Beschütze eine aufgedeckte Seherin. Weil du nicht zweimal hintereinander dieselbe Person schützen darfst, wechsle ab, z. B. mit dir selbst.",
+        "Jäger: Dein letzter Schuss ist ein Trumpf. Denk vorher darüber nach, wen du mitnehmen würdest.",
+        "Dorfbewohner: Verdächtige, wer andere ständig beschuldigt, aber selbst nie etwas Konkretes weiß.",
+        "Werwolf: Verdächtige ruhig einen Dorfbewohner, aber nicht immer dieselben. Mit einer falschen Seherin-Behauptung kannst du die echte Seherin unglaubwürdig machen – beide werden dadurch verdächtiger."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Zweite Seherin: Behauptet ein Bewohner kurz nach einer anderen Person, die Seherin zu sein, lügt einer von beiden. Die echte Seherin unter den Computern weiß das sofort und verdächtigt die Lügnerin stark.",
+        "Ein Computer, der nachts stirbt, war oft gefährlich für die Wölfe – wen er vorher verdächtigt hatte, ist ein heißer Kandidat.",
+        "Als Hexe: Wurde der Angriff vom Leibwächter abgewehrt, ist dein Heiltrank trotzdem verbraucht, wenn du ihn eingesetzt hast. Nutze ihn deshalb nicht reflexartig.",
+        "Im Online-Spiel: Am Fernseher sind die Rollen geheim, nur die Handys zeigen sie. Haltet die Handys verdeckt und hebt sie nachts gleichzeitig an, damit niemand am Verhalten erkennt, wer gerade handelt."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Als Werwolf gegen den eigenen Rudel-Kollegen stimmen, nur um unschuldig zu wirken – das kostet euch schnell das Spiel.",
+        "Zu viele Anklagen ohne Grund: Die Computer reagieren mit „Wer so laut beschuldigt, hat selbst etwas zu verbergen!“ und werden dir gegenüber misstrauischer.",
+        "Bei knapper Lage Gleichstand riskieren: Bei Gleichstand wird niemand verbannt, und die Werwölfe bekommen eine weitere Nacht."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Siegbedingungen genau",
+      "list": [
+        "Das Dorf gewinnt, sobald kein Werwolf mehr lebt.",
+        "Die Werwölfe gewinnen, sobald lebende Werwölfe mindestens so viele sind wie alle anderen Lebenden.",
+        "Geprüft wird nach jeder Nacht, nach jeder Verbannung und nach dem Schuss des Jägers.",
+        "Gewonnen hast du, wenn dein Team gewinnt – auch wenn du selbst schon tot bist."
+      ]
+    },
+    {
+      "t": "Beste Strategie als Dorf",
+      "steps": [
+        "Erste Nacht und erster Tag: Noch weiß niemand viel. Achte darauf, wer sich als Seherin meldet.",
+        "Meldet sich genau eine Seherin mit einem Werwolf-Fund, stimme mit ihr. Melden sich zwei, vergleiche: Wer von beiden hat schon früher vernünftig geurteilt?",
+        "Merke dir nach jeder Verbannung, wer gegen wen gestimmt hat. Werwölfe stimmen nie gegen ihr Rudel.",
+        "Wenn nur noch wenige leben, ist jede Stimme entscheidend: Bei 2 gegen 1 entscheidet die nächste Abstimmung über alles."
+      ]
+    },
+    {
+      "t": "Beste Strategie als Werwolf",
+      "steps": [
+        "Fresse nachts bevorzugt, wer sich als Seherin gezeigt hat oder euch verdächtigt.",
+        "Tagsüber sparsam und unauffällig verdächtigen – am besten Bewohner, die das Dorf ohnehin schon misstrauisch beäugt.",
+        "Behauptet eine echte Seherin etwas, kannst du dich selbst als Seherin ausgeben und das Gegenteil behaupten. Danach misstrauen die Computer beiden Seherinnen.",
+        "Nähert ihr euch dem Gleichstand, entscheidet jede Nacht. Ein Werwolf-Sieg gibt 150 Punkte."
+      ]
+    },
+    {
+      "t": "So holst du die meisten Punkte",
+      "list": [
+        "Spiele bevorzugt als Werwolf (Sieg 150 statt 100 Punkte) und überlebe (+30): bis zu 180 Punkte.",
+        "Als Dorf: Sieg 100 + Überleben 30 + je 15 Punkte für jede deiner Stimmen gegen einen Werwolf. Stimme gezielt, nicht wahllos.",
+        "In größeren Dörfern (10 Personen, 3 Werwölfe) gibt es mehr Werwölfe zum Entlarven und damit mehr Punkte für richtige Stimmen."
+      ]
+    },
+    {
+      "t": "Die Bewohner des Dorfes",
+      "p": [
+        "Die Computer heißen zum Beispiel Bäcker Bruno, Müllerin Mia, Schmied Kalle, Hirtin Greta, Pfarrer Paul, Wirtin Rosi, Förster Hubert, Bürgermeister Egon, Kräuterfrau Ilse oder Apothekerin Vera – insgesamt 28 Namen, die jedes Spiel neu gemischt werden. Hinter den Namen steckt keine feste Rolle."
+      ]
+    }
+  ],
+  "faq": [
+    { "q": "Ich höre den Erzähler nicht.", "a": "Prüfe unter ⚙️ Optionen „Erzählerstimme“ und die Lautstärke deines Geräts. Im Browser spricht eine Männerstimme des Systems, in der RicoReWi-App die Android-Stimme." },
+    { "q": "Wie viele Spieler braucht man online?", "a": "Mindestens 5 und höchstens 12 Personen. Fehlende Mitspieler füllst du mit „＋ Computer“ auf. Mindestens ein echter Mensch mit Handy muss dabei sein." },
+    { "q": "Ein Handy hat die Verbindung verloren – was jetzt?", "a": "Einfach mit demselben Handy erneut beitreten. Das Spiel erkennt es wieder und schickt die Rolle und offene Fragen noch einmal." },
+    { "q": "Wie sehe ich am Handy meine Rolle?", "a": "Halte die Rollenkarte gedrückt. Lässt du los, wird sie wieder verdeckt." },
+    { "q": "Werden meine Punkte gespeichert?", "a": "Ja, Punkte und Statistiken aus dem Solo-Spiel bleiben im Browser gespeichert. Ohne Google-Anmeldung sind sie weg, wenn du die Browserdaten löschst. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät." },
+    { "q": "Was passiert, wenn jemand nicht antwortet?", "a": "Nach 75 Sekunden wählt das Spiel automatisch: nachts zufällig, bei der Abstimmung eine Enthaltung." }
+  ]
+}

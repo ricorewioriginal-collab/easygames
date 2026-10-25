@@ -1,0 +1,465 @@
+{
+  "id": "pestwacht",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Pestwacht – Die letzte Zuflucht ist ein Überlebens-, Aufbau- und Strategiespiel in 3D. Im Jahr der Graupest bist du Vorsteherin oder Vorsteher der letzten ummauerten Zuflucht. Du hältst die Bewohner gesund, satt und zufrieden, wehrst Seuchenwellen ab, erkundest das Land und behauptest dich zwischen Computerfraktionen, die selbst wirtschaften, Krieg führen und Bündnisse schließen.",
+        "Es gibt zwei Spielarten: die Kampagne mit 5 Kapiteln und 19 Missionen sowie das Freie Spiel mit eigener Karte, Gegnerzahl und Siegbedingung. Verlorene Wellen beenden das Spiel nicht – erst wenn niemand mehr in der Zuflucht lebt, ist sie verlassen."
+      ]
+    },
+    {
+      "t": "Hauptmenü und Freies Spiel",
+      "list": [
+        "▶ Fortsetzen: lädt den letzten Spielstand.",
+        "📖 Kampagne: Die letzte Zuflucht: startet die Geschichte (immer dieselbe Welt, 5 Fraktionen, mittlere Karte).",
+        "🗺️ Freies Spiel: Name deiner Zuflucht, Startwert der Welt (gleicher Wert = gleiche Karte, 🎲 Neuer Startwert), Kartengröße Klein 16×12, Mittel 22×16 oder Groß 28×20, 2 bis 8 Computerfraktionen, Landschaft (Ausgewogen, Waldreich, Bergig, Sumpfig mit mehr Seuche), Startvorräte Karg/Normal/Reich, Schwierigkeit (Entspannt, Normal, Anspruchsvoll, Strategisch/Experte), Ereignisse selten/normal/häufig, Siegbedingung, Seuchenwellen an/aus und Jahreszeitliche Feste.",
+        "Siegbedingungen: Territoriale Dominanz (45 % der Regionen), Heilung der Seuche (Heilmittel erforscht und alle Seuchennester zerstört), Diplomatischer Zusammenschluss (mit allen Fraktionen verbündet), Wirtschaftliche Vorherrschaft (20.000 Münzen und 120 Bewohner) oder Endlosspiel. Nach dem Sieg kannst du weiterspielen.",
+        "💾 Spielstände, ⚙️ Einstellungen, ❓ Hilfe und Mitwirkende.",
+        "Höhere Schwierigkeit: Die Fraktionen denken schneller, schätzen dich genauer ein und schicken stärkere Wellen (Wellenstärke Entspannt ×0,7, Normal ×1, Anspruchsvoll ×1,25, Experte ×1,5). Sie nutzen dieselben Regeln und Kosten wie du."
+      ]
+    },
+    {
+      "t": "Die Zuflucht: Bauen und Versorgen",
+      "list": [
+        "Unten in der Leiste: Bauen, Karte, Zuflucht, Lazarett (🩺), Militär, Helden, Forschung, Diplomatie, Aufgaben und Menü.",
+        "Bauen: Gebäude wählen, einen freien Platz innerhalb der Mauer antippen (grün = möglich), mit R drehen und mit ✔ bestätigen. Gebäude an einem Pflasterweg arbeiten 10 % besser; die Torstraße bleibt frei.",
+        "Das Ratshaus begrenzt die Stufe aller anderen Gebäude und erhöht Lager und Steuern. Antippen eines Gebäudes: verbessern, versetzen, reparieren, pausieren oder abreißen (50 % Rückerstattung).",
+        "Es arbeiten 2 Bautrupps gleichzeitig, mit der Forschung Baumeisterei 3. ⏩ spult bis zum nächsten fertigen Auftrag vor (höchstens 10 Minuten, ohne Angriff).",
+        "Jeder Bewohner isst und trinkt je Minute 0,5 Nahrung und 0,5 Wasser. Gesunde arbeiten automatisch in den Gebäuden (Medizin und Wasser zuerst). Fehlen Arbeitskräfte, sinkt die Produktion.",
+        "Zufriedenheit: Unter 25 fliehen Bewohner, über 55 kommen neue Überlebende – aber nur, wenn Wohnraum frei ist. Münzen kommen als Steuer je Bewohner, abhängig von der Zufriedenheit.",
+        "10 Rohstoffe: Holz, Stein, Eisen, Nahrung, Wasser, Heilkräuter, Arznei, Stoff, Münzen und Wissen. Münzen und Wissen haben keine Lagergrenze, alles andere ist durch Ratshaus und Lagerhaus begrenzt.",
+        "Du startest mit 22 Bewohnern (darunter 2 Kranke), 10 Spießträgern und 4 Armbrustschützen."
+      ]
+    },
+    {
+      "t": "Seuche, Heilstuben und Lazarett",
+      "list": [
+        "Bewohner stecken sich an – schlechte Hygiene, Enge, Hunger und verseuchte Umgebung erhöhen das Risiko. Infizierte stecken andere an.",
+        "Quarantänestationen isolieren Infizierte, Heilstuben und das Pestlazarett behandeln sie in Betten. Dafür braucht es Personal und Arznei, die das Alchemielabor aus Heilkräutern herstellt. Genesene sind eine Weile immun. Ohne Behandlung sterben manche; Trauer senkt die Zufriedenheit, die Gedenkstätte mildert sie.",
+        "Lazarett (🩺): Hier warten einzelne Kranke mit Namen. Untersuchen zeigt Krankheit und Mittel, dann bezahlst du die Behandlung und entlässt den Geheilten. Das bringt Münzen (8 + 6 je Schweregrad), Wissen und Zufriedenheit.",
+        "Wartende verlieren Lebenskraft: leichte Fälle gehen nach etwa 6 Minuten krank nach Hause, schwere (🔥🔥🔥) sterben nach etwa 2 Minuten. Gäste mit 🎩 zahlen besonders gut.",
+        "Plätze im Lazarett: 2 + Heilstuben-Stufe + 2 × Pestlazarett-Stufe (höchstens 12).",
+        "Personal (Kosten 60 Münzen × Anzahl): Empfang untersucht von selbst, Pflegerinnen beginnen Behandlungen (+20 % Tempo je Pflegerin), Träger entlassen Geheilte und ernten reife Beete. Höhere Heilstuben-Stufen erlauben mehr Personal.",
+        "Kräuterbeete: Mit einem Kräutergarten säst du eigene Beete (1 + Gartenstufe, höchstens 6). Heilkraut: 6 Wasser, 45 s, ergibt 14 Heilkräuter. Bergminze: 10 Wasser und 4 Heilkräuter, 90 s, ergibt 26 Heilkräuter und 3 Arznei."
+      ]
+    },
+    {
+      "t": "Seuchenwellen",
+      "list": [
+        "Die erste Welle kommt nach 7 Minuten Spielzeit, danach alle 7 Minuten. Kundschafter warnen 60 Sekunden vorher, jede Stufe des Kundschafterpostens bringt 15 Sekunden mehr. Die roten Pfade zeigen die Laufwege.",
+        "Jede 5. Welle bringt einen Boss: Welle 5 Die Fäulnismutter, Welle 10 Der Eiserne Hauptmann, Welle 15 Der Schwarmfürst, danach von vorn und stärker.",
+        "Ab Welle 2 kommen Plünderer, ab Welle 3 Aaskrähen, ab Welle 4 Seuchenbestien dazu. Mit jeder Welle wächst die Stärke um 40 % des Anfangswerts und es öffnen sich mehr Laufwege (bis 4).",
+        "Türme: Wachturm trifft den vordersten Feind, Balliste den stärksten, Feuerbecken die dichteste Gruppe, der Räucherturm verlangsamt alle. Am Tor kämpfen Truppen und Helden; Heldenfähigkeiten wirken per Knopf (F) oder automatisch.",
+        "Fällt das Tor, ziehen Feinde zum Ratshaus. Eine verlorene Welle kostet ein Viertel aller Vorräte (außer Wissen) und beschädigt Gebäude – das Spiel geht weiter.",
+        "Gewonnene Wellen bringen Münzen, Wissen, Heilkräuter und Eisen, Bosse zusätzlich Münzen und Arznei. Wer eine Welle früher ruft, bekommt 25 % mehr Beute."
+      ]
+    },
+    {
+      "t": "Weltkarte, Expeditionen und Diplomatie",
+      "list": [
+        "Die Karte (M) zeigt erkundete Felder mit Kriegsnebel, Orte und die Gebiete aller Fraktionen. Landschaften: Karge Ebene, Wald, Verseuchter Sumpf, Gebirge, Verfallene Stadt.",
+        "Orte: Holzfällerlager, Steinbruch, Erzader, Kräuterhain, Gehöft (laufende Rohstoffe), Ruine (Beute), Verlassene Siedlung (Kranke retten), Seuchennest, Handelsplatz, Hort einer Seuchenbestie und Hauptstädte.",
+        "Expeditionen: Erkunden, Sammeln, Kranke retten, Region heilen, Besetzen, Angreifen, Verteidigen oder Handeln. Du stellst Truppen, bis zu 2 Helden und eine Formation zusammen und siehst Weg, Dauer und Stärkevergleich. Der Kommandoposten erlaubt 1 + Stufe gleichzeitige Expeditionen.",
+        "Kämpfe kannst du ansehen und selbst Ziele und Heldenfähigkeiten wählen oder sofort auswerten lassen (Einstellung). Rückkehrer bringen Beute, Patienten und Verwundete mit.",
+        "Diplomatie: Jede Fraktion hat eine Persönlichkeit und erinnert sich an deine Taten. Du kannst Handel, Nichtangriffspakt, Verteidigungspakt, Bündnis, Frieden, Geschenke, Hilfe oder gemeinsame Angriffe vorschlagen; die Einschätzung zeigt vorher Gründe dafür und dagegen. Pakte und Bündnisse brauchen eine Diplomatiehalle."
+      ]
+    },
+    {
+      "t": "Forschung und Helden",
+      "list": [
+        "Die Forschungsakademie erzeugt Wissen; ihre Stufe schaltet höhere Forschungsstufen frei. Drei Bäume: Heilkunst, Wirtschaft & Verwaltung, Krieg & Verteidigung (je 8 Techniken).",
+        "Helden sammeln Erfahrung (Wellen, Kämpfe), steigen bis Stufe 10 auf (+10 je Aufwertung, bis 30) und bekommen pro Stufe einen Fähigkeitspunkt für Kraft (+6 % Angriff), Zähigkeit (+8 % Leben) oder Führung (+3 % Angriff der Truppen), je höchstens 5.",
+        "Aufwerten in der Heldengilde (Stufe 2 bzw. 4 nötig): 300 Münzen, 120 Wissen und 20 Arznei, beim zweiten Mal doppelt.",
+        "Die Schmiede fertigt Waffe, Rüstung und Talisman in drei Stufen (Schmiede Stufe 1, 3 und 5)."
+      ]
+    },
+    {
+      "t": "Steuerung",
+      "list": [
+        "Touch: mit einem Finger die Ansicht verschieben, mit zwei Fingern zoomen und drehen, Gebäude oder Felder antippen.",
+        "Maus: Linksklick wählt, Ziehen verschiebt, rechte Maustaste gedrückt halten dreht, Mausrad zoomt.",
+        "Tastatur: W A S D oder Pfeile Kamera, Q/E drehen, + und − zoomen, Leertaste oder P Pause, 1–3 Tempo, B Bauen, M Weltkarte, R drehen beim Platzieren, Enter bestätigen, U verbessern, Entf abreißen, F Heldenfähigkeit in der Welle, H Hilfe, Esc zurück oder Menü. Die Tasten für Kamera, Drehen, Pause, Karte und Bauen sind unter Einstellungen › Tasten frei belegbar.",
+        "Gamecontroller: linker Stick Kamera, LB/RB drehen, LT/RT zoomen, A bestätigen, B zurück, Y Bauen, Select Weltkarte, Start Pause; das Steuerkreuz springt zwischen den Knöpfen, der rechte Stick ist ein Zeiger."
+      ]
+    },
+    {
+      "t": "Speichern und Einstellungen",
+      "list": [
+        "Das Spiel speichert alle 60 Sekunden und beim Verlassen automatisch. Unter „Spielstände“ gibt es zusätzlich drei eigene Plätze sowie Export und Import als Datei. Mit Google-Anmeldung (Startbildschirm) werden die Spielstände auch im Konto gesichert.",
+        "Kommst du später zurück, wird die Abwesenheit verrechnet – nur Produktion und laufende Aufträge, keine Angriffe. Wie lange, stellst du ein (gar nicht, 30 Minuten, 1 Stunde als Grundwert, 4 oder 12 Stunden).",
+        "Einstellungen Allgemein: Musik, Klänge, Schriftgröße, Kamera-Empfindlichkeit, Grafikqualität (Automatisch, Niedrig, Mittel, Hoch mit Schatten), Hoher Kontrast, Weniger Effekte, Mausrad-Zoom umkehren, Hinweise einblenden.",
+        "Einstellungen Spiel: Heldenfähigkeiten automatisch, Schlachten ansehen, automatisch kämpfen, Gemächlichere Wellen (Feinde 20 % langsamer), Abwesenheit, Name der Zuflucht.",
+        "Das Spiel läuft auch ohne Internet."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Zuerst Wasser, Nahrung und Unterkünfte sichern: Brunnen, Bauernhof, Wohnhaus. Halte Nahrung und Wasser immer im Plus – Hunger macht krank.",
+        "Früh einen Kräutergarten, ein Alchemielabor und eine Heilstube bauen. Ohne Arznei gibt es keine Heilung.",
+        "Schau oft ins Lazarett: Schwere Fälle (🔥🔥🔥) zuerst untersuchen und behandeln, Gäste mit 🎩 zahlen besonders gut.",
+        "Baue Wachtürme nahe dem Tor – dort treffen sie alle Laufwege.",
+        "Vor jeder Welle Tor und Mauer reparieren.",
+        "Pflasterwege an Produktionsgebäude legen: +10 % für nur 5 Stein."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Das Ratshaus ist der Engpass: Es begrenzt alle Stufen. Baue es regelmäßig aus, sobald Holz und Stein reichen.",
+        "Forschungs-Reihenfolge für eine gesunde Zuflucht: Kräuterkunde → Seife & Hygiene (Räucherturm) → Quarantäneordnung → Lazarettwesen (Pestlazarett). In der Wirtschaft lohnt Bessere Werkzeuge → Baumeisterei früh (dritter Bautrupp).",
+        "Heldenfähigkeiten bewusst einsetzen: Kalkbombe (Bruder Anselm) macht dreifachen Schaden gegen Seuchenwesen, Segen der Linde heilt alle Verbündeten, Schildwall halbiert den Schaden.",
+        "Gegen die Fäulnismutter Ballisten und Heldenfähigkeiten auf sie konzentrieren – ihr Atem heilt andere Seuchenwesen.",
+        "Gegen den Eisernen Hauptmann helfen Pfeile wenig (halber Schaden). Ballisten, Feuerbecken und Nahkämpfer sind besser.",
+        "Gegen den Schwarmfürsten brauchst du Flächenschaden (Feuerbecken, Pfeilhagel, Kalkbombe), weil er ständig neue Rattenschwärme ruft.",
+        "Gefährliche Fraktionen mit Geschenken, Handels- und Nichtangriffsverträgen beruhigen. Verärgere nicht alle Nachbarn gleichzeitig."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "„Jetzt rufen (+25 % Beute)“ bei der Wellenwarnung holt die nächste Welle sofort – lohnt sich, wenn Tor und Türme stark sind.",
+        "Erkunde zuerst die nähere Umgebung: Ruinen bringen Beute und manchmal Helden, Siedlungen bringen Bewohner (und Patienten, die Betten brauchen).",
+        "Kräuterbeete mit Bergminze liefern auch Arznei – praktisch, wenn das Alchemielabor nicht nachkommt.",
+        "Ein Rammbock hilft gegen Hauptstädte und Festungen mit Mauern; Meister Brand gibt +30 % Schaden gegen Mauern.",
+        "Pestjäger (Forschung Pestjägerorden) machen doppelten Schaden gegen Seuchenwesen und sind ideal für Seuchennester.",
+        "Mit „Gemächlichere Wellen“ werden Feinde 20 % langsamer – eine gute Hilfe, wenn die Verteidigung noch wackelt."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu viele Wohnhäuser ohne Versorgung: Mehr Bewohner essen und trinken mehr – und Enge erhöht die Ansteckung.",
+        "Kranke ohne Betten: Quarantäne isoliert nur, heilt aber nicht. Ohne Heilstube und Arznei steigt die Sterblichkeit.",
+        "Lazarett-Patienten zu lange warten lassen: Schwere Fälle sterben nach etwa 2 Minuten.",
+        "Die Mauer vernachlässigen: Fällt das Tor, laufen die Feinde direkt zum Ratshaus.",
+        "Alle Truppen auf Expedition schicken, kurz bevor eine Welle kommt."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Kampagne im Überblick",
+      "p": [
+        "Die Kampagne „Die letzte Zuflucht“ hat 5 Kapitel mit 19 Missionen. Jede Mission zeigt ihre Ziele mit Fortschritt; der Hinweis-Knopf führt direkt zum passenden Gebäude, Fenster oder zur Karte. Nach der letzten Mission läuft das Spiel frei weiter. In den Missionen 1a und 1b gibt es noch keine Angriffe.",
+        "Helden aus der Kampagne: Mira Falkenaug nach Mission 1c, Bruder Anselm mit Mission 2a, Jorin Nebelpfad mit 2b, Gräfin Ysolde mit 3a, Meister Brand mit 4a und Ottokar der Graue mit 4b. Kampagnen-Ende: Erfolg „Die letzte Zuflucht“."
+      ]
+    },
+    {
+      "t": "Kapitel 1: Asche und Glocken (Karge Ebene)",
+      "steps": [
+        "Mission 1a „Die ersten Mauern“ (Versorgung stabilisieren): Baue einen Kräutergarten; Baue einen zweiten Brunnen. Belohnung: 150 Holz, 100 Stein. Keine Angriffe.",
+        "Mission 1b „Fieber in der Zuflucht“ (Patienten retten): Baue eine Heilstube; Heile 5 Patienten. Belohnung: 30 Arznei, 40 Heilkräuter. Keine Angriffe.",
+        "Mission 1c „Rattenflut“ (Wellenangriff überstehen): Baue einen weiteren Wachturm; Wehre die erste Welle ab. Belohnung: 150 Münzen, 60 Eisen. Neuer Held: Mira Falkenaug.",
+        "Mission 1d „Die Ruine im Osten“ (Außenposten sichern): Bilde 10 Spießträger aus; Erobere die markierte Ruine. Belohnung: 200 Münzen, 80 Wissen."
+      ]
+    },
+    {
+      "t": "Kapitel 2: Das Moor der Flüsterer (Verseuchter Sumpf)",
+      "steps": [
+        "Mission 2a „Wissen gegen Fieber“ (Heilmittel erforschen): Erforsche Kräuterkunde; Erforsche Seife & Hygiene. Belohnung: 100 Wissen, 60 Heilkräuter.",
+        "Mission 2b „Stimmen im Nebel“ (Patienten retten): Rette 6 Überlebende aus Siedlungen. Belohnung: 40 Arznei, 40 Stoff.",
+        "Mission 2c „Volle Speicher“ (Versorgung stabilisieren): Nahrung und Wasser 3 Minuten im Plus; Erreiche 30 Bewohner. Belohnung: 200 Nahrung, 200 Wasser, 100 Münzen.",
+        "Mission 2d „Die Fäulnismutter“ (Bosskampf): Besiege die Fäulnismutter. Belohnung: 300 Münzen, 50 Arznei, 120 Wissen."
+      ]
+    },
+    {
+      "t": "Kapitel 3: Zwischen Bannern (Wälder)",
+      "steps": [
+        "Mission 3a „Salz und Silber“ (Handelsvertrag): Schließe einen Handelsvertrag. Belohnung: 200 Münzen.",
+        "Mission 3b „Der Konvoi“ (Konvoi eskortieren): Baue eine Handelsstation; Liefere eine Karawane aus. Belohnung: 250 Münzen, 50 Stoff.",
+        "Mission 3c „Der Lindenhof“ (Verbündete Stadt befreien): Befreie und besetze den Lindenhof. Belohnung: 300 Nahrung, 150 Münzen.",
+        "Mission 3d „Ein Bund gegen die Nacht“ (Bündnis): Schließe ein Bündnis. Belohnung: 300 Münzen, 150 Wissen."
+      ]
+    },
+    {
+      "t": "Kapitel 4: Die Eisenfeste (Gebirge)",
+      "steps": [
+        "Mission 4a „Pässe sichern“ (Außenposten sichern): Besetze 3 weitere Regionen. Belohnung: 150 Eisen, 200 Stein.",
+        "Mission 4b „Stein auf Stein“ (Wellenangriff überstehen): Stadtmauer auf Stufe 3; Wehre 2 Wellen ab. Belohnung: 300 Münzen, 100 Eisen.",
+        "Mission 4c „Die Eisenfeste“ (Feindliche Festung einnehmen): Nimm die Eisenfeste ein. Belohnung: 500 Münzen, 200 Eisen, 200 Wissen."
+      ]
+    },
+    {
+      "t": "Kapitel 5: Der Schwarmfürst (Verfallene Stadt)",
+      "steps": [
+        "Mission 5a „Das Heilmittel“ (Heilmittel erforschen): Erforsche „Das Heilmittel“. Belohnung: 100 Arznei, 100 Wissen.",
+        "Mission 5b „Saubere Gassen“ (Seuche eindämmen): Kranke unter 10 %; Mindestens 40 Bewohner. Belohnung: 200 Münzen.",
+        "Mission 5c „Nester ausräuchern“ (Seuchennester zerstören): Zerstöre 3 Seuchennester (auch frühere zählen). Belohnung: 80 Arznei, 300 Münzen.",
+        "Mission 5d „Die Seuchenquelle“ (Finale): Besiege den Schwarmfürsten an der Seuchenquelle. Belohnung: 1000 Münzen, 500 Wissen."
+      ]
+    },
+    {
+      "t": "Lösungen für die Kampagnen-Hürden",
+      "list": [
+        "1c Rattenflut: Die Welle kommt 2 Minuten nach Missionsbeginn. Drei Wachtürme dicht am Tor reichen.",
+        "1d Ruine im Osten: Erst 10 neue Spießträger in der Kaserne ausbilden (die Start-Truppen zählen nicht), dann auf der Karte die markierte Ruine von Ostwacht angreifen.",
+        "2b Stimmen im Nebel: Rettungsexpedition zur Flüstermoor-Siedlung (dort warten mindestens 8 Kranke). Vorher Betten schaffen.",
+        "2c Volle Speicher: Bauernhöfe und Brunnen ausbauen, bis beide Werte drei Minuten am Stück im Plus sind; dazu 30 Bewohner (Wohnhäuser, Zufriedenheit über 55).",
+        "2d Fäulnismutter: Sie kommt 2½ Minuten nach Missionsbeginn. Ballistenturm (Ratshaus 3) und Heldenfähigkeiten auf sie richten.",
+        "3a: Diplomatie öffnen und einer Fraktion einen Handelsvertrag anbieten – zum Beispiel dem Bund der Salzhändler, dessen Händler-Persönlichkeit Handel besonders schätzt.",
+        "3c Lindenhof: Er wird von 14 Spießträgern und 10 Armbrustschützen bewacht. Schicke eine klar überlegene Armee.",
+        "3d: Diplomatiehalle auf Stufe 2 und das Vertrauen deines Partners aufbauen (Handel, Geschenke), dann Bündnis vorschlagen.",
+        "4c Eisenfeste: Verteidigt von 50 Spießträgern, 35 Armbrustschützen und dem Eisernen Hauptmann. Belagerungskunst erforschen, Rammböcke (Schießplatz 3) und viele Schützen mitnehmen, Meister Brand als Held.",
+        "5a: „Das Heilmittel“ kostet 700 Wissen, 120 Arznei und 150 Heilkräuter und braucht den Pestjägerorden. Akademie früh ausbauen.",
+        "5c: Auch früher zerstörte Seuchennester zählen. Pestjäger und Bruder Anselm sind ideal.",
+        "5d Seuchenquelle: 60 Pestratten, 25 Faule Wanderer, 4 Seuchenbestien und der Schwarmfürst. Viel Flächenschaden, Heiler und Pestjäger mitnehmen."
+      ]
+    },
+    {
+      "t": "Alle Gebäude: Zentrum und Versorgung",
+      "list": [
+        "🏛️ Ratshaus (bis Stufe 10): Herz der Zuflucht. Seine Stufe begrenzt die Stufe aller anderen Gebäude, erhöht Lager und Steuern. Kosten Stufe 1: 200 Holz, 150 Stein.",
+        "🏠 Wohnhaus (bis Stufe 8): Wohnraum für 6 Bewohner je Stufe. Ohne Wohnraum kommen keine Überlebenden und die Zufriedenheit sinkt. Kosten Stufe 1: 60 Holz, 20 Stein.",
+        "⛲ Brunnen (bis Stufe 6): Kosten Stufe 1: 40 Stein, 10 Holz. Erzeugt je Minute: 16 Wasser.",
+        "🌾 Bauernhof (bis Stufe 8): Kosten Stufe 1: 80 Holz, 20 Stein. Erzeugt je Minute: 15 Nahrung, 1.2 Stoff. Verbraucht: 2 Wasser.",
+        "🕯️ Gedenkstätte (bis Stufe 5): Ein Ort des Gedenkens: mildert Trauer nach Verlusten (weniger Flucht) und hebt die Zufriedenheit. Kosten Stufe 1: 80 Stein, 30 Holz."
+      ]
+    },
+    {
+      "t": "Alle Gebäude: Medizin",
+      "list": [
+        "🌿 Kräutergarten (bis Stufe 8): Baut Heilkräuter an – Grundstoff aller Arzneien. Kosten Stufe 1: 50 Holz, 10 Stein. Erzeugt je Minute: 7 Heilkräuter. Verbraucht: 1 Wasser.",
+        "⚗️ Alchemielabor (bis Stufe 8): Verarbeitet Heilkräuter zu Arznei für die Behandlung. Kosten Stufe 1: 80 Holz, 60 Stein, 10 Eisen. Erzeugt je Minute: 2.5 Arznei. Verbraucht: 5 Heilkräuter. Voraussetzung: Ratshaus Stufe 2.",
+        "🩹 Heilstube (bis Stufe 8): Betten für Kranke. Behandlung verbraucht Arznei und braucht Personal. Kosten Stufe 1: 70 Holz, 30 Stein, 10 Heilkräuter.",
+        "🏥 Pestlazarett (bis Stufe 8): Großes Lazarett mit besserer Heilung. Pflegt auch verwundete Soldaten. Kosten Stufe 1: 160 Holz, 140 Stein, 20 Stoff. Voraussetzung: Ratshaus Stufe 3 und Forschung „Lazarettwesen“.",
+        "🚧 Quarantänestation (bis Stufe 8): Isoliert Infizierte. Isolierte stecken niemanden an, warten aber auf ein Bett. Kosten Stufe 1: 90 Holz, 50 Stein."
+      ]
+    },
+    {
+      "t": "Alle Gebäude: Produktion und Verwaltung",
+      "list": [
+        "🪚 Sägewerk (bis Stufe 8): Kosten Stufe 1: 40 Holz, 20 Stein. Erzeugt je Minute: 13 Holz.",
+        "⛏️ Steinbruch (bis Stufe 8): Kosten Stufe 1: 60 Holz. Erzeugt je Minute: 9 Stein.",
+        "⚒️ Erzmine (bis Stufe 8): Kosten Stufe 1: 90 Holz, 60 Stein. Erzeugt je Minute: 5 Eisen. Voraussetzung: Ratshaus Stufe 2.",
+        "📦 Lagerhaus (bis Stufe 8): Erhöht die Lagergrenze aller Waren. Kosten Stufe 1: 80 Holz, 40 Stein.",
+        "🏪 Marktplatz (bis Stufe 8): Kosten Stufe 1: 120 Holz, 80 Stein. Erzeugt je Minute: 5 Münzen. Voraussetzung: Ratshaus Stufe 2.",
+        "🎓 Forschungsakademie (bis Stufe 8): Kosten Stufe 1: 150 Holz, 120 Stein, 50 Münzen. Erzeugt je Minute: 5 Wissen. Voraussetzung: Ratshaus Stufe 2.",
+        "🔭 Kundschafterposten (bis Stufe 6): Größere Sicht auf der Weltkarte, frühere Wellenwarnung, schnellere Kundschafter. Kosten Stufe 1: 90 Holz, 30 Stein.",
+        "🕊️ Diplomatiehalle (bis Stufe 6): Erlaubt Bündnisse und Verteidigungspakte und verbessert Beziehungen. Kosten Stufe 1: 140 Holz, 100 Stein, 20 Stoff, 60 Münzen. Voraussetzung: Ratshaus Stufe 3.",
+        "🐪 Handelsstation (bis Stufe 6): Karawanen zu Computerfraktionen. Je Stufe eine Karawane mehr und bessere Preise. Kosten Stufe 1: 110 Holz, 50 Stein, 40 Münzen. Voraussetzung: Ratshaus Stufe 2."
+      ]
+    },
+    {
+      "t": "Alle Gebäude: Militär, Verteidigung, Wege & Deko",
+      "list": [
+        "🔨 Schmiede (bis Stufe 8): Fertigt Ausrüstung für Helden. Höhere Stufen verbessern Waffen der Truppen (+3 % Angriff je Stufe). Kosten Stufe 1: 100 Holz, 80 Stein, 20 Eisen. Voraussetzung: Ratshaus Stufe 2.",
+        "🛡️ Kaserne (bis Stufe 8): Bildet Fußtruppen aus und erhöht die Truppengrenze. Kosten Stufe 1: 120 Holz, 100 Stein.",
+        "🎯 Schießplatz (bis Stufe 8): Bildet Armbrustschützen und Belagerungsgerät aus. Kosten Stufe 1: 140 Holz, 60 Stein. Voraussetzung: Ratshaus Stufe 2.",
+        "🐎 Stall (bis Stufe 8): Reiterei für schnelle Märsche. Pferde brauchen Futter. Kosten Stufe 1: 150 Holz, 60 Stein, 80 Nahrung. Verbraucht: 3 Nahrung. Voraussetzung: Ratshaus Stufe 3 und Forschung „Reiterei“.",
+        "⚔️ Heldengilde (bis Stufe 8): Wirbt Helden an und bildet sie aus (Heldenplätze und Übungs-Erfahrung). Kosten Stufe 1: 160 Holz, 120 Stein, 80 Münzen. Voraussetzung: Ratshaus Stufe 3.",
+        "🚩 Kommandoposten (bis Stufe 6): Mehr gleichzeitige Expeditionen auf der Weltkarte (1 + Stufe). Kosten Stufe 1: 100 Holz, 70 Stein.",
+        "🗼 Wachturm (bis Stufe 10): Schneller Armbrustturm gegen einzelne Ziele. Kosten Stufe 1: 70 Holz, 40 Stein.",
+        "🏹 Ballistenturm (bis Stufe 10): Schwere Bolzen durchschlagen jede Panzerung. Kosten Stufe 1: 120 Holz, 80 Stein, 30 Eisen. Voraussetzung: Ratshaus Stufe 3.",
+        "🔥 Feuerbecken (bis Stufe 10): Wirft brennendes Pech: Flächenschaden und Brand. Kosten Stufe 1: 90 Holz, 90 Stein, 20 Eisen. Voraussetzung: Forschung „Griechisches Feuer“.",
+        "💨 Räucherturm (bis Stufe 10): Kräuterrauch verlangsamt alle Feinde und schadet Seuchenwesen. Kosten Stufe 1: 80 Holz, 50 Stein, 30 Heilkräuter. Voraussetzung: Forschung „Seife & Hygiene“.",
+        "🧱 Stadtmauer & Tor (bis Stufe 10): Umschließt die Zuflucht. Feinde müssen das Tor brechen. Höhere Stufen: mehr Torstärke. Kosten Stufe 1: 150 Stein, 60 Holz.",
+        "🟫 Pflasterweg (bis Stufe 1): Gebäude, die einen Weg berühren, arbeiten 10 % besser. Kosten Stufe 1: 5 Stein.",
+        "🏮 Laterne (bis Stufe 1): Warmes Licht in der Nacht (+Zufriedenheit, Sicherheit). Kosten Stufe 1: 10 Holz, 2 Eisen.",
+        "🌳 Ziergarten (bis Stufe 1): Bäume und Blumen heben die Stimmung. Kosten Stufe 1: 15 Holz, 2 Heilkräuter.",
+        "🗿 Wächterstatue (bis Stufe 1): Steinerne Wächterin – ein Denkmal für die Pestwacht. Kosten Stufe 1: 60 Stein. Voraussetzung: Ratshaus Stufe 3."
+      ]
+    },
+    {
+      "t": "Forschung: Heilkunst",
+      "list": [
+        "Stufe 1 · Kräuterkunde: +20 % Heilkräuter, +5 % Heilung. Kosten: 40 Wissen.",
+        "Stufe 1 · Seife & Hygiene: +10 Hygiene, −15 % Ansteckung. Schaltet den Räucherturm frei. Kosten: 60 Wissen, 20 Heilkräuter; benötigt Kräuterkunde.",
+        "Stufe 2 · Quarantäneordnung: +50 % Quarantäneplätze, −10 % Ansteckung. Kosten: 110 Wissen, 40 Münzen; benötigt Seife & Hygiene.",
+        "Stufe 2 · Destillierkunst: +25 % Arznei. Kosten: 120 Wissen, 40 Heilkräuter; benötigt Kräuterkunde.",
+        "Stufe 3 · Lazarettwesen: +30 % Betten. Schaltet das Pestlazarett frei. Kosten: 200 Wissen, 30 Stoff; benötigt Quarantäneordnung.",
+        "Stufe 3 · Feldscherschule: Feldscher ausbilden; +20 % Verwundete überleben. Kosten: 220 Wissen, 30 Arznei; benötigt Destillierkunst.",
+        "Stufe 4 · Pestjägerorden: Schaltet Pestjäger frei (doppelter Schaden gegen Seuchenwesen). Kosten: 350 Wissen, 50 Arznei, 40 Eisen; benötigt Lazarettwesen und Feldscherschule.",
+        "Stufe 4 · Das Heilmittel: Durchbruch gegen die Graupest: +40 % Heilung, −40 % Ansteckung. Kosten: 700 Wissen, 120 Arznei, 150 Heilkräuter; benötigt Pestjägerorden."
+      ]
+    },
+    {
+      "t": "Forschung: Wirtschaft & Verwaltung",
+      "list": [
+        "Stufe 1 · Fruchtfolge: +20 % Nahrung. Kosten: 40 Wissen.",
+        "Stufe 1 · Bessere Werkzeuge: +15 % Holz und Stein. Kosten: 50 Wissen, 10 Eisen.",
+        "Stufe 2 · Lagerverwaltung: +30 % Lagergrenze. Kosten: 100 Wissen, 80 Holz; benötigt Fruchtfolge.",
+        "Stufe 2 · Tiefer Bergbau: +25 % Eisen. Kosten: 110 Wissen, 60 Holz; benötigt Bessere Werkzeuge.",
+        "Stufe 3 · Münzrecht: +25 % Münzen. Kosten: 180 Wissen, 60 Münzen; benötigt Lagerverwaltung.",
+        "Stufe 3 · Handelsrecht: +15 % Handelspreise, schnellere Karawanen. Kosten: 200 Wissen, 80 Münzen; benötigt Münzrecht.",
+        "Stufe 2 · Baumeisterei: +25 % Baugeschwindigkeit und ein weiterer Bautrupp. Kosten: 120 Wissen, 60 Stein; benötigt Bessere Werkzeuge.",
+        "Stufe 4 · Kanzlei: +20 % Forschungstempo, +5 Zufriedenheit. Kosten: 320 Wissen, 120 Münzen; benötigt Handelsrecht und Baumeisterei."
+      ]
+    },
+    {
+      "t": "Forschung: Krieg & Verteidigung",
+      "list": [
+        "Stufe 1 · Drill: +10 % Angriff aller Truppen. Kosten: 50 Wissen, 40 Nahrung.",
+        "Stufe 1 · Gefiederte Bolzen: +20 % Turmschaden. Kosten: 50 Wissen, 50 Holz.",
+        "Stufe 2 · Kettenhemden: +15 % Verteidigung aller Truppen. Kosten: 110 Wissen, 40 Eisen; benötigt Drill.",
+        "Stufe 2 · Mauerbau: +30 % Torstärke. Kosten: 110 Wissen, 100 Stein; benötigt Gefiederte Bolzen.",
+        "Stufe 2 · Reiterei: Schaltet den Stall und Reiter frei. Kosten: 130 Wissen, 80 Nahrung; benötigt Drill.",
+        "Stufe 3 · Belagerungskunst: Schaltet den Rammbock frei, +25 % Belagerungsschaden. Kosten: 200 Wissen, 120 Holz, 40 Eisen; benötigt Kettenhemden.",
+        "Stufe 3 · Griechisches Feuer: Schaltet das Feuerbecken frei, +10 % Turmreichweite. Kosten: 220 Wissen, 40 Heilkräuter, 30 Eisen; benötigt Mauerbau.",
+        "Stufe 4 · Feldlogistik: +20 % Marschtempo, −15 % Unterhalt. Kosten: 320 Wissen, 150 Nahrung; benötigt Reiterei und Belagerungskunst."
+      ]
+    },
+    {
+      "t": "Lazarett: Krankheit und richtiges Mittel",
+      "p": [
+        "Nach dem Untersuchen ist das Mittel festgelegt. Die Behandlungszeit steigt mit dem Schweregrad."
+      ],
+      "list": [
+        "🌡️ Brennfieber („glüht und fantasiert“) → 🍵 Weidenrindentee: 4 Heilkräuter, 4 Wasser, 20 s Grundzeit.",
+        "🟣 Graubeulen („dunkle Schwellungen am Hals“) → 🫙 Beulensalbe: 3 Heilkräuter, 1 Arznei, 30 s Grundzeit.",
+        "💨 Rasselhusten („ringt nach Luft“) → ♨️ Kräuterdampf: 5 Heilkräuter, 3 Holz, 24 s Grundzeit.",
+        "🥀 Auszehrung („zu schwach zum Stehen“) → 🥣 Kraftbrei: 8 Nahrung, 1 Heilkräuter, 18 s Grundzeit.",
+        "🩸 Faulende Wunde („Biss einer Pestratte“) → 🩹 Leinenverband: 2 Stoff, 1 Arznei, 22 s Grundzeit.",
+        "Hoher Besuch (🎩, ab Tag 2, mindestens mittelschwer) zahlt zusätzlich: Ratsherr: 150 Münzen, 30 Wissen; Händlerin aus dem Süden: 220 Münzen; Hauptmann der Torwache: 80 Münzen, 40 Eisen; Gelehrte vom Kloster: 90 Wissen; Älteste der Bauern: 160 Nahrung, 40 Heilkräuter."
+      ]
+    },
+    {
+      "t": "Truppen",
+      "list": [
+        "🔱 Spießträger: Solide Fußtruppe, stark gegen Reiter. Leben 60, Angriff 8, Verteidigung 6. Kosten: 20 Nahrung, 10 Holz, 4 Eisen, 4 Münzen. Bonus ×1.6 gegen Reiter. Benötigt Kaserne.",
+        "🏹 Armbrustschützen: Fernkampf, stark gegen Fußtruppen. Leben 40, Angriff 10, Verteidigung 3. Kosten: 15 Nahrung, 25 Holz, 5 Eisen, 2 Stoff. Bonus ×1.3 gegen Nahkampf, ×1.3 gegen Belagerung. Benötigt Schießplatz.",
+        "🐎 Reiter: Schnell, stark gegen Schützen. Beschleunigt Märsche. Leben 85, Angriff 12, Verteidigung 5. Kosten: 30 Nahrung, 10 Eisen, 6 Stoff, 10 Münzen. Bonus ×1.6 gegen Fernkampf, ×1.4 gegen Unterstützung. Benötigt Stall und Forschung „Reiterei“.",
+        "⚕️ Feldscher: Heilt Verbündete im Kampf, mehr Verwundete überleben. Leben 35, Angriff 2, Verteidigung 3. Kosten: 10 Nahrung, 10 Heilkräuter, 4 Arznei, 4 Stoff. Benötigt Heilstube Stufe 2 und Forschung „Feldscherschule“.",
+        "🪵 Rammbock: Bricht Mauern und Tore, schwach gegen Truppen. Leben 160, Angriff 4, Verteidigung 8. Kosten: 60 Holz, 18 Eisen, 8 Münzen. Benötigt Schießplatz Stufe 3 und Forschung „Belagerungskunst“.",
+        "🗡️ Pestjäger: Spezialisten mit Räucherklingen: doppelter Schaden gegen Seuchenwesen. Leben 70, Angriff 11, Verteidigung 6. Kosten: 15 Nahrung, 6 Arznei, 8 Eisen, 14 Münzen. Benötigt Kaserne Stufe 4 und Forschung „Pestjägerorden“."
+      ]
+    },
+    {
+      "t": "Feinde und Bosse",
+      "list": [
+        "Pestratten: Leben 18, Panzerung 0, Schaden 2, Seuchenwesen.",
+        "Fauler Wanderer: Leben 75, Panzerung 2, Schaden 6, Seuchenwesen.",
+        "Plünderer: Leben 60, Panzerung 4, Schaden 8.",
+        "Seuchenbestie: Leben 280, Panzerung 9, Schaden 22, Seuchenwesen.",
+        "Aaskrähen: Leben 26, Panzerung 0, Schaden 5, fliegt, Seuchenwesen.",
+        "Welle 5: Die Fäulnismutter – Eine aufgedunsene Moorgestalt, deren Atem andere Seuchenwesen heilt. Leben 2000, Panzerung 4, Belohnung 160 Münzen.",
+        "Welle 10: Der Eiserne Hauptmann – Anführer der Plündererbanden in voller Platte. Pfeile prallen an ihm ab. Leben 2400, Panzerung 14, Belohnung 180 Münzen.",
+        "Welle 15: Der Schwarmfürst – Ein riesiger, verfilzter Rattenkönig auf einer Sänfte aus Unrat. Ruft unablässig neue Schwärme. Leben 2600, Panzerung 6, Belohnung 200 Münzen.",
+        "Die Fäulnismutter heilt Seuchenwesen in ihrer Nähe, der Eiserne Hauptmann nimmt von Pfeilen nur halben Schaden, der Schwarmfürst ruft alle 5 Sekunden 4 neue Pestratten."
+      ]
+    },
+    {
+      "t": "Alle 12 Helden",
+      "list": [
+        "Hildrun von Aschental (Heiler, Episch) – Passiv „Klostermedizin“: +15 % Heilung in der Stadt. Fähigkeit „Segen der Linde“ (alle 18 s): Heilt alle Verbündeten um 25 % ihrer Lebenspunkte. Erhältlich: von Anfang an.",
+        "Veit Eisenhand (Schildwächter, Selten) – Passiv „Eiserne Reihen“: +10 % Verteidigung der Truppen. Fähigkeit „Schildwall“ (alle 20 s): Verbündete erleiden 6 s lang 50 % weniger Schaden. Erhältlich: von Anfang an.",
+        "Mira Falkenaug (Fernkämpfer, Episch) – Passiv „Adlerblick“: +15 % Angriff der Fernkämpfer. Fähigkeit „Pfeilhagel“ (alle 16 s): Großer Flächenschaden auf die dichteste Feindgruppe. Erhältlich: Kampagne oder Expeditionen (Ruinen).",
+        "Bruder Anselm (Alchemist, Selten) – Passiv „Destillat“: +20 % Arznei. Fähigkeit „Kalkbombe“ (alle 15 s): Flächenschaden, dreifach gegen Seuchenwesen. Erhältlich: Kampagne oder Expeditionen (Ruinen).",
+        "Jorin Nebelpfad (Kundschafter, Selten) – Passiv „Pfadfinder“: +20 % Marschtempo, +1 Sicht. Fähigkeit „Hinterhalt“ (alle 22 s): Betäubt die nächste Feindgruppe 3 s lang. Erhältlich: Kampagne oder Expeditionen (Ruinen).",
+        "Gräfin Ysolde Rabenstein (Taktiker, Legendär) – Passiv „Feldherrin“: +10 % Angriff aller Truppen. Fähigkeit „Flankenbefehl“ (alle 20 s): Reiter und Nahkämpfer verursachen 8 s lang doppelten Schaden. Erhältlich: Kampagne oder Expeditionen (Ruinen).",
+        "Meister Brand (Belagerungsspezialist, Episch) – Passiv „Zimmermannsauge“: +30 % Schaden gegen Mauern. Fähigkeit „Rammstoß“ (alle 20 s): Schwerer Treffer gegen Tor oder Mauer (sonst gegen das stärkste Ziel). Erhältlich: Kampagne oder Expeditionen (Ruinen).",
+        "Ottokar der Graue (Schildwächter, Legendär) – Passiv „Bollwerk“: +20 % Torstärke. Fähigkeit „Letztes Bollwerk“ (alle 25 s): Zieht 6 s lang alle Angriffe auf sich und erleidet nur ein Drittel Schaden. Erhältlich: Kampagne oder Expeditionen (Ruinen).",
+        "Lene Wacholder (Heiler, Selten) – Passiv „Grüner Daumen“: +20 % Heilkräuter. Fähigkeit „Kräuterdunst“ (alle 14 s): Verbündete regenerieren 6 s lang Lebenspunkte. Erhältlich: Heldengilde ab Stufe 1 für 200 Münzen, 60 Wissen.",
+        "Sera Dornfeld (Fernkämpfer, Selten) – Passiv „Durchschlag“: +10 % Turmschaden. Fähigkeit „Panzerbrecher“ (alle 14 s): Ein Bolzen ignoriert Panzerung und trifft hart. Erhältlich: Heldengilde ab Stufe 2 für 320 Münzen, 100 Wissen.",
+        "Kasimir Quecksilber (Alchemist, Episch) – Passiv „Gelehrsamkeit“: +15 % Wissen. Fähigkeit „Feuerphiole“ (alle 16 s): Setzt eine Feindgruppe in Brand (Schaden über Zeit). Erhältlich: Heldengilde ab Stufe 3 für 450 Münzen, 180 Wissen.",
+        "Edda Sturmhaupt (Taktiker, Episch) – Passiv „Sturmreiterin“: +15 % Angriff der Reiter. Fähigkeit „Sturmangriff“ (alle 18 s): Starker Ansturm auf die Fernkämpfer des Gegners. Erhältlich: Heldengilde ab Stufe 4 für 600 Münzen, 240 Wissen."
+      ]
+    },
+    {
+      "t": "Alle 26 Erfolge",
+      "list": [
+        "🔨 Erster Stein: Schließe deinen ersten Bau ab.",
+        "🏗️ Baumeister: Schließe 50 Bauaufträge ab.",
+        "🩹 Erste Heilung: Heile deinen ersten Patienten.",
+        "🩺 Erste Visite: Entlasse einen Patienten aus dem Lazarett, den du selbst behandelt hast.",
+        "🧑‍⚕️ Pestarzt: Entlasse 50 Patienten aus dem Lazarett.",
+        "🎩 Hoher Besuch: Heile einen besonderen Gast im Lazarett.",
+        "🌿 Grüner Daumen: Ernte 20 Kräuterbeete.",
+        "🌿 Pestheilerin: Heile 100 Patienten.",
+        "⚕️ Schutzpatronin: Heile 500 Patienten.",
+        "🛡️ Das Tor hält: Wehre deine erste Welle ab.",
+        "🏰 Unbezwingbar: Wehre 20 Wellen ab.",
+        "💀 Bestienbezwinger: Besiege einen Boss.",
+        "👑 Fall des Schwarmfürsten: Besiege den Schwarmfürsten.",
+        "⚔️ Erste Schlacht: Gewinne eine Schlacht auf der Weltkarte.",
+        "🎖️ Feldherr: Gewinne 25 Schlachten.",
+        "🗺️ Landesherr: Besitze 10 Regionen gleichzeitig.",
+        "🤝 Verbündet: Schließe ein Bündnis mit einer Computerfraktion.",
+        "🕊️ Friedensstifter: Schließe Frieden nach einem Krieg.",
+        "🐪 Karawanenmeister: Liefere 10 Karawanen aus.",
+        "⭐ Heldenrunde: Versammle 6 Helden.",
+        "🌟 Alle Zwölf: Versammle alle 12 Helden.",
+        "📜 Gelehrte Zuflucht: Erforsche 12 Techniken.",
+        "💡 Das Heilmittel: Erforsche „Das Heilmittel“.",
+        "👪 Lebendige Zuflucht: Erreiche 100 Bewohner.",
+        "📖 Die letzte Zuflucht: Schließe die Kampagne ab.",
+        "🏰 Festungsbrecher: Erobere eine feindliche Hauptstadt."
+      ]
+    },
+    {
+      "t": "Tages- und Wochenaufgaben",
+      "p": [
+        "Jeden Tag gibt es 3 Aufgaben, jede Woche 2 größere (dreifache Ziele). Die Zielzahl hat drei Stufen; höhere Stufen bringen mehr Belohnung. Mögliche Aufgaben (Zielstufen):"
+      ],
+      "list": [
+        "Heile 6/12/20 Patienten – Belohnung 20 Arznei, 60 Münzen",
+        "Entlasse 2/4/7 Patienten aus dem Lazarett – Belohnung 30 Heilkräuter, 60 Münzen",
+        "Ernte 2/4/6 Kräuterbeete – Belohnung 60 Wasser, 10 Arznei",
+        "Sammle 300/600/1000 Holz – Belohnung 50 Münzen, 80 Stein",
+        "Erzeuge 300/600/1000 Nahrung – Belohnung 50 Münzen, 40 Heilkräuter",
+        "Schließe 3/5/8 Bauaufträge ab – Belohnung 120 Holz, 120 Stein",
+        "Wehre 1/2/3 Welle(n) ab – Belohnung 60 Eisen, 80 Münzen",
+        "Bilde 10/20/40 Soldaten aus – Belohnung 150 Nahrung, 60 Münzen",
+        "Schließe 1/2/4 Expedition(en) ab – Belohnung 60 Wissen, 60 Münzen",
+        "Erforsche 1/2/3 Technik(en) – Belohnung 80 Wissen",
+        "Liefere 1/2/3 Karawane(n) aus – Belohnung 120 Münzen"
+      ]
+    },
+    {
+      "t": "Ereignisse und Feste",
+      "list": [
+        "☣️ Neue Epidemie: Ein neuer Ausbruch: Ansteckung in der Zuflucht 3 Minuten lang verdoppelt.",
+        "🧳 Flüchtlingswelle: Überlebende stehen vor dem Tor. Aufnehmen bringt Bewohner (einige davon krank).",
+        "📦 Verspätete Lieferung: Ein Händlerkonvoi trifft verspätet ein: Waren gegen Münzen.",
+        "⛏️ Reiche Erzader: Bergleute stoßen auf eine reiche Ader: +60 % Eisen für 5 Minuten.",
+        "❄️ Harter Winter: Bittere Kälte: Bewohner essen 4 Minuten lang 40 % mehr.",
+        "🐪 Wandernder Händler: Ein Händler bietet seltene Arznei an.",
+        "🗡️ Banditenüberfall: Plünderer nähern sich der Zuflucht! Eine kleine Welle greift in 45 s an.",
+        "💡 Heilmittel-Durchbruch: Eine Heilerin entdeckt eine neue Rezeptur: +80 Wissen und +20 Arznei.",
+        "Fest Erntedank (20.09. bis 31.10.): +15 % Nahrung",
+        "Fest Lichterfest (01.12. bis 31.12.): +6 Zufriedenheit",
+        "Fest Frühlingserwachen (15.03. bis 30.04.): +20 % Heilkräuter",
+        "Fest Mittsommer (15.06. bis 15.07.): +10 % Münzen"
+      ]
+    },
+    {
+      "t": "Die Computerfraktionen",
+      "p": [
+        "Persönlichkeiten: Haus Morvain (Eroberer), Bund der Salzhändler (Händler), Orden vom Lichten Wall (Verteidiger), Kollegium von Sankt Ilse (Forscher), Die Rabengilde (Opportunist), Freie Mark Hohenweid (Expansionist), Rat der Brücken (Diplomat), Die Moorläufer (Überlebenskünstler). In der Kampagne treten Haus Morvain, der Bund der Salzhändler, der Orden vom Lichten Wall, das Kollegium von Sankt Ilse und die Rabengilde an."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Mein Spielstand ist weg.",
+      "a": "Das Spiel speichert automatisch im Browser. Sichere wichtige Stände unter „Spielstände“ auf einem eigenen Platz oder per Export als Datei. Mit Google-Anmeldung auf dem Startbildschirm liegen sie zusätzlich im Konto."
+    },
+    {
+      "q": "Was passiert, während ich weg bin?",
+      "a": "Beim Zurückkehren wird die Zeit verrechnet – nur Produktion und laufende Aufträge, keine Angriffe. Standardmäßig höchstens 1 Stunde, einstellbar bis 12 Stunden oder gar nicht."
+    },
+    {
+      "q": "Ist das Spiel vorbei, wenn eine Welle durchbricht?",
+      "a": "Nein. Du verlierst ein Viertel der Vorräte (außer Wissen) und Gebäude werden beschädigt. Repariere Tor und Gebäude und baue die Verteidigung aus."
+    },
+    {
+      "q": "Warum kann ich ein Gebäude nicht weiter verbessern?",
+      "a": "Das Ratshaus begrenzt die Stufe aller Gebäude. Manche Gebäude brauchen außerdem eine Ratshaus-Stufe oder Forschung (zum Beispiel Pestlazarett: Ratshaus 3 und Lazarettwesen)."
+    },
+    {
+      "q": "Das Spiel ruckelt.",
+      "a": "Stelle in den Einstellungen die Grafikqualität auf Niedrig und schalte „Weniger Effekte und Bewegung“ ein."
+    },
+    {
+      "q": "Wie bekomme ich mehr Helden?",
+      "a": "Hildrun und Veit sind von Anfang an da. Mira, Anselm, Jorin, Ysolde, Brand und Ottokar kommen in der Kampagne oder auf Expeditionen (Ruinen); Lene, Sera, Kasimir und Edda wirbst du in der Heldengilde an."
+    },
+    {
+      "q": "Brauche ich Internet?",
+      "a": "Nein, Pestwacht läuft auch offline. Nur die Cloud-Sicherung braucht eine Verbindung."
+    }
+  ]
+}

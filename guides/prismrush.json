@@ -1,0 +1,206 @@
+{
+  "id": "prismrush",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "PRISMRUSH ist ein 3D-Rhythmusspiel aus Licht, Farbe und synthetischem Klang. Dein Gleiter fliegt durch einen Tunnel auf drei Spuren. Die Musik wird im Browser erzeugt und ist deine Strecke: Kristalle (die Noten) fliegen im Takt auf dich zu.",
+        "Triff jeden Kristall genau dann, wenn er den Ring unter deinem Gleiter erreicht. Orbs sammelst du, indem du in ihrer Spur bist. Prismenwänden weichst du durch Spurwechsel aus. Fehler und Wandtreffer kosten Energie des Gleiters – ist sie leer, ist der Lauf gescheitert. Erreichst du das Ende des Stücks, hast du das Level geschafft."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "list": [
+        "Titelbild: „Enter zum Starten · Kopfhörer empfohlen“ – Enter, Klick oder Tippen.",
+        "Oben im Menü stehen deine Sterne (★ x / 96) und geschaffte Level (Level x / 32).",
+        "Kampagne: 32 Level in vier Welten.",
+        "Spielmodi: alle weiteren Modi (siehe unten). Zen, Präzision, Spiegelwelt, Turbo, Blindflug, Gleitflug und Wandlauf spielst du auf den freigeschalteten Kampagnen-Leveln.",
+        "Tutorial: lerne Steuerung, Orbs, Wände und Overdrive – ohne Scheitern.",
+        "Effekte: Gleiter, Leuchtspur, Farbwelt und Trefferexplosion auswählen und freischalten.",
+        "Rekorde: gespielte Läufe, Treffer, perfekte Treffer, Orbs, beste Combo, Spielzeit, Bestwerte in Tagesrhythmus, Sprint 90 und Remix sowie eine Tabelle aller Level mit Highscore, Genauigkeit und Sternen – jeweils pro Schwierigkeit.",
+        "Einstellungen: Gesamtlautstärke, Musik, Effekte, Audio-Latenz (mit „Latenz kalibrieren“), Grafikqualität, Touch-Spurtasten, Kamerawackeln, Bewegung reduzieren, Vibration und „Fortschritt zurücksetzen“."
+      ]
+    },
+    {
+      "t": "Treffer und Wertung",
+      "list": [
+        "PERFEKT: höchstens 0,05 Sekunden daneben – 300 Punkte.",
+        "SUPER: höchstens 0,095 Sekunden daneben – 200 Punkte.",
+        "GUT: höchstens 0,14 Sekunden daneben – 100 Punkte.",
+        "VERFEHLT: Kristall nicht getroffen – 0 Punkte, die Combo ist weg und der Gleiter verliert Energie.",
+        "Auf Leicht ist das Zeitfenster 30 Prozent größer, auf Normal 10 Prozent größer, auf Extrem 15 Prozent kleiner.",
+        "Orb: 50 Punkte, wenn du beim Vorbeiflug in seiner Spur bist.",
+        "Combo-Multiplikator: ab 10 Treffern in Folge ×2, ab 25 ×3, ab 50 ×4. Er gilt für Treffer und Orbs.",
+        "Overdrive: verdoppelt alle Punkte für 4 Takte. Er wird mit voller Energieleiste gezündet.",
+        "Wandtreffer: setzt die Combo auf 0 und kostet viel Energie.",
+        "Gute Treffer heilen den Gleiter ein wenig (perfekte mehr als andere)."
+      ]
+    },
+    {
+      "t": "Energie und Overdrive",
+      "p": [
+        "Es gibt zwei Leisten: die Energie des Gleiters (dein Leben) und die Overdrive-Energie. Die Overdrive-Leiste füllt sich mit jedem Treffer – Perfekt bringt 4,5 Prozent, Super 3 Prozent, Gut 1,5 Prozent. Ist sie voll, heißt es „Energie voll!“ und du kannst den Overdrive zünden (PC: E oder Umschalt, Handy: ⚡ oder nach oben wischen)."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "PC: Pfeil links/rechts = eine Spur wechseln (trifft dort gleich mit). A, S, D oder J, K, L = linke, mittlere bzw. rechte Spur direkt wählen und treffen. Leertaste, Pfeil hoch/runter oder W = in der aktuellen Spur treffen. E oder Umschalt = Overdrive. Mausklick = Spur unter dem Zeiger treffen. Esc oder P = Pause.",
+        "Touch: die drei großen Spurtasten unten antippen = Spur wählen und treffen; mit dem Finger über die Tasten gleiten = Spur wechseln ohne abzusetzen; links/rechts wischen = Spur wechseln; nach oben wischen oder ⚡ = Overdrive; II = Pause.",
+        "Gamecontroller: Steuerkreuz links/rechts = Spur wechseln, Steuerkreuz hoch/runter oder A = in der Spur treffen, Y, RB oder LT = Overdrive, B oder Start = Pause. In Menüs Steuerkreuz und A.",
+        "Pause-Menü: Fortsetzen, Neustart, Hauptmenü."
+      ]
+    },
+    {
+      "t": "Schwierigkeitsstufen",
+      "list": [
+        "Leicht: wenige Kristalle, wenig Wände, langsames Tempo, großes Zeitfenster, wenig Schaden. Punkte ×1.",
+        "Normal: mehr Kristalle und Wände, schneller. Punkte ×1,25.",
+        "Schwer: dichte Noten, viele Wände, auch doppelte Wände (zwei Spuren gleichzeitig gesperrt). Punkte ×1,5.",
+        "Extrem: maximale Dichte, Wände bei jeder Gelegenheit, höchstes Tempo, kleinstes Zeitfenster, höchster Schaden. Punkte ×2.",
+        "Die Schwierigkeit wählst du vor dem Start; Highscores und Sterne werden je Stufe getrennt geführt."
+      ]
+    },
+    {
+      "t": "Die Spielmodi",
+      "list": [
+        "Kampagne: 32 Level in vier Welten. Schalte Level und Effekte frei.",
+        "Endlos: unendliche, immer schnellere Musik (Endlosstrom). Wie lange überlebst du? Pro überlebter Sekunde gibt es 10 Bonuspunkte; gespeichert wird die Bestzeit.",
+        "Tagesrhythmus: jeden Tag ein neues, für alle gleiches Stück. Punkte ×1,2.",
+        "Sprint 90: 90 Sekunden Punktejagd auf frisch generierter Musik, die immer schneller wird.",
+        "Remix: jedes Mal ein brandneues Zufallsstück mit eigener Strecke und Farbwelt. Punkte ×1,1.",
+        "Zen: kein Scheitern, keine Wandschäden. Nur Fluss und Licht. Punkte ×0,5.",
+        "Präzision: Ein Fehler (Verfehlt oder Wand) beendet den Lauf. Dafür 1,5-fache Punkte.",
+        "Spiegelwelt: bekannte Level, aber links und rechts sind vertauscht. Punkte ×1,1.",
+        "Turbo: Musik und Strecke laufen 30 Prozent schneller. 1,4-fache Punkte.",
+        "Blindflug: Kristalle und Orbs verblassen kurz vor dir. Hör auf den Takt! 1,3-fache Punkte.",
+        "Gleitflug: nur lenken – Kristalle sammelst du automatisch in ihrer Spur. Ideal fürs Handy. Punkte ×0,8.",
+        "Wandlauf: doppelt so viele Prismenwände, dafür weniger Kristalle. Jede ausgewichene Wand bringt 40 Punkte (mal Multiplikator).",
+        "Tutorial: lerne Steuerung, Orbs, Wände und Overdrive."
+      ]
+    },
+    {
+      "t": "Ergebnis, Sterne und Speichern",
+      "list": [
+        "Nach jedem Lauf zeigt der Ergebnisbildschirm Punkte, Note, Sterne, Genauigkeit, Treffer je Wertung, maximale Combo, Orbs und Wandtreffer sowie „Neuer Highscore!“, „Neue Bestzeit!“ und neu freigeschaltete Effekte. Danach „Nochmal“, „Nächstes Level“ oder „Hauptmenü“.",
+        "Genauigkeit: Perfekt zählt 100 Prozent, Super 70, Gut 40, Verfehlt 0.",
+        "Note: S ab 95 Prozent, A ab 88, B ab 78, C ab 65, sonst D. Gescheitert = F.",
+        "Sterne (nur wenn das Level geschafft ist): 3 Sterne ab 95 Prozent Genauigkeit, 2 Sterne ab 85 Prozent, sonst 1 Stern. Gescheitert = 0 Sterne. Pro Level zählt dein bester Wert aus allen Schwierigkeiten, maximal 3 Sterne, also 96 insgesamt. Sterne gibt es nur in der Kampagne.",
+        "Alles wird im Browser gespeichert. „Fortschritt zurücksetzen“ löscht Highscores, Sterne, Bestzeiten und freigeschaltete Effekte; die Einstellungen bleiben.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Spiel zuerst das Tutorial – es schaltet außerdem die Farbwelt „Mondlicht“ frei.",
+        "Starte auf Leicht. Das Zeitfenster ist dort 30 Prozent größer.",
+        "Trag Kopfhörer, wie der Titelbildschirm empfiehlt. Die Kristalle liegen immer auf Kick, Snare oder Melodie.",
+        "Wirken alle Treffer zu früh oder zu spät (zum Beispiel mit Bluetooth-Kopfhörern), stell in den Einstellungen die Audio-Latenz ein oder nutze „Latenz kalibrieren“: im Takt der Klicks auf den großen Knopf (oder die Leertaste) tippen, ab dem dritten Klick mitmachen.",
+        "Auf dem Handy ist Gleitflug ideal zum Reinkommen: Du lenkst nur noch."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Benutze A/S/D bzw. J/K/L oder die drei Spurtasten: Ein Tastendruck wechselt die Spur und trifft gleichzeitig. Das ist schneller als erst wechseln und dann treffen.",
+        "Pfeil links/rechts trifft beim Wechsel ebenfalls mit – praktisch, wenn der nächste Kristall direkt in der Nachbarspur liegt.",
+        "Die Combo ist dein wichtigster Punktefaktor: Ab 50 Treffern in Folge gibt es ×4. Ein einziger Fehlschlag oder eine Wand setzt sie auf 0.",
+        "Zünde den Overdrive bei einem dichten Abschnitt mit hoher Combo: ×4 und ×2 ergeben ×8.",
+        "Achte auf Wände früh: Sie stehen nie in einer Spur, in der gerade ein Kristall kommt. Die freie Spur ist also meist dort, wo die nächste Note liegt."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Für 3 Sterne brauchst du 95 Prozent Genauigkeit – fast nur Perfekt-Treffer. Ein Super zählt nur 70 Prozent.",
+        "Präzision lohnt sich erst, wenn du ein Level sicher kannst. Ein Präzisions-Abschluss schaltet die Trefferexplosion „Pixelsturm“ frei.",
+        "Im Wandlauf kommen weniger Kristalle, aber jede ausgewichene Wand bringt 40 Punkte mal Multiplikator – mit Overdrive sehr lohnend.",
+        "Höchste Punkte pro Lauf: Extrem (×2) in Kombination mit langen Combos und Overdrive. Turbo (×1,4) und Präzision (×1,5) multiplizieren ebenfalls.",
+        "Im Blindflug blenden Kristalle kurz vor dem Ring aus. Zähl im Takt mit und triff auf Kick und Snare."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Wild drücken: Ein Tastendruck ohne Kristall kostet zwar nichts, aber ein zu früher Druck verpasst den richtigen Moment.",
+        "Den Overdrive gleich bei voller Leiste zünden, obwohl gerade ein ruhiger Abschnitt läuft.",
+        "In der Spiegelwelt vergessen, dass links und rechts vertauscht sind.",
+        "Mit Bluetooth-Kopfhörern ohne Latenz-Kalibrierung spielen."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Kampagne: alle 32 Level",
+      "p": [
+        "Die Level werden nacheinander freigeschaltet: Ein Level wird spielbar, wenn du das vorige abgeschlossen hast („Schließe Level … ab“). Angegeben sind Name, Musikstil und Tempo in BPM. Mit jedem Level steigen Notendichte, Wände, Kurven und Drehung des Tunnels."
+      ],
+      "list": [
+        "Welt 1 · Neon-Aufbruch (Synthwave unter violettem Himmel): 1 Erster Funke (Synthwave, 96) · 2 Lichtpuls (Synthwave, 100) · 3 Neonregen (Synthwave, 102) · 4 Chromdämmerung (Breakbeat, 104) · 5 Pixelhorizont (Ambient, 100) · 6 Laservenen (Synthwave, 108) · 7 Synthsonne (Breakbeat, 110) · 8 Mitternachtsgitter (Synthwave, 112)",
+        "Welt 2 · Kristallhallen (Trance zwischen gläsernen Facetten): 9 Prismentor (Trance, 118) · 10 Glasharfe (Ambient, 116) · 11 Facettenflug (Trance, 122) · 12 Spektralbrücke (Trance, 124) · 13 Eisstrom (Synthwave, 120) · 14 Kaleidoskop (Trance, 126) · 15 Lichtbrechung (Techno, 128) · 16 Diamantherz (Trance, 132)",
+        "Welt 3 · Pulsar-Tiefe (Techno aus dem Herz eines Sterns): 17 Pulsar (Techno, 124) · 18 Schwerkraftbass (Techno, 128) · 19 Ereignishorizont (Ambient, 120) · 20 Quantenschaum (Breakbeat, 130) · 21 Tiefenecho (Techno, 132) · 22 Nebelkern (Trance, 134) · 23 Magnetsturm (Techno, 136) · 24 Singularität (Breakbeat, 140)",
+        "Welt 4 · Hyperprisma (Drum & Bass in Lichtgeschwindigkeit): 25 Hyperraum (Drum & Bass, 150) · 26 Fraktalflut (Breakbeat, 146) · 27 Lichtgeschwindigkeit (Drum & Bass, 160) · 28 Chromatische Aberration (Techno, 142) · 29 Supernova (Drum & Bass, 166) · 30 Zeitkristall (Trance, 140) · 31 Prismensturm (Drum & Bass, 170) · 32 Prismrush (Drum & Bass, 174)"
+      ]
+    },
+    {
+      "t": "Lösungsweg durch die Welten",
+      "steps": [
+        "Welt 1: Lerne den Takt. Ambient-Level wie Pixelhorizont sind ruhiger, Breakbeat-Level haben unregelmäßigere Rhythmen. Ziel: überall 3 Sterne auf Leicht, das bringt schon 24 Sterne und schaltet Oktaeder, Infrarot, Funkenregen und Schockwelle frei.",
+        "Mit Level 8 (Mitternachtsgitter) bekommst du den Gleiter „Pfeil“.",
+        "Welt 2: Ab hier dreht sich der Tunnel. Halte den Blick auf den Ring, nicht auf die Kurve. Level 16 (Diamantherz) schaltet die Farbwelt „Aurora“ frei.",
+        "Welt 3: Techno mit stetem Kick – ideal für lange Combos. Level 24 (Singularität) schaltet die Trefferexplosion „Nova“ frei.",
+        "Welt 4: Drum & Bass mit bis zu 174 BPM. Spiele hier zuerst auf Leicht, nutze A/S/D bzw. die Spurtasten und spare den Overdrive für die dichten Drops.",
+        "Für alle 96 Sterne musst du jedes Level einmal in der Kampagne mit mindestens 95 Prozent Genauigkeit schaffen. Gezählt wird pro Level der beste Wert über alle Schwierigkeiten – 3 Sterne auf Leicht reichen also."
+      ]
+    },
+    {
+      "t": "Alle Effekte und ihre Freischaltung",
+      "list": [
+        "Gleiter: Prisma (von Anfang an) · Oktaeder (6 Sterne) · Pfeil (Level 8 abschließen) · Ikosaeder (30 Sterne) · Halo (120 Sekunden im Endlos-Modus überleben)",
+        "Leuchtspur: Lichtband (von Anfang an) · Funkenregen (12 Sterne) · Doppelhelix (Combo von 150 erreichen) · Komet (45 Sterne)",
+        "Farbwelt: Levelfarben (von Anfang an) · Mondlicht (Tutorial abschließen) · Infrarot (9 Sterne) · Aurora (Level 16 abschließen) · Sonnengold (einen Tagesrhythmus spielen) · Spektrum (72 Sterne)",
+        "Trefferexplosion: Splitter (von Anfang an) · Schockwelle (18 Sterne) · Nova (Level 24 abschließen) · Pixelsturm (ein Level im Präzisionsmodus schaffen)",
+        "Insgesamt 19 Effekte. Unter „Effekte“ siehst du, wie viele du schon hast, und kannst sie ausrüsten."
+      ]
+    },
+    {
+      "t": "Höchstpunkte holen",
+      "list": [
+        "Punkte pro Treffer = Grundwert (300/200/100) × Combo-Stufe (×1 bis ×4) × Overdrive (×2) × Modus-Faktor × Schwierigkeits-Faktor.",
+        "Bestes Beispiel: Ein Perfekt-Treffer mit Combo ab 50 im Overdrive bringt 300 × 4 × 2 = 2.400 Punkte vor Modus und Schwierigkeit – auf Extrem doppelt so viel.",
+        "Endlos: Neben den Treffern zählt jede überlebte Sekunde 10 Punkte. 120 Sekunden schalten den Gleiter Halo frei.",
+        "Sprint 90: Die Musik wird immer schneller. In den ersten 30 Sekunden eine hohe Combo aufbauen und den Overdrive für das Finale aufheben.",
+        "Tagesrhythmus: gleiches Stück für alle, Punkte ×1,2 – ideal, um sich mit Freunden zu vergleichen."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Die Treffer fühlen sich verschoben an.",
+      "a": "Öffne die Einstellungen und nutze „Latenz kalibrieren“ oder stelle die Audio-Latenz von Hand ein. Das ist vor allem bei Bluetooth-Kopfhörern nötig."
+    },
+    {
+      "q": "Mein Fortschritt ist weg.",
+      "a": "Fortschritt, Sterne und Effekte liegen im Browser. Ohne Google-Anmeldung sind sie nach dem Löschen der Browserdaten oder in einem privaten Fenster weg. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät. „Fortschritt zurücksetzen“ löscht sie bewusst."
+    },
+    {
+      "q": "Es kommt kein Ton.",
+      "a": "Prüfe Gesamtlautstärke und Musik in den Einstellungen. Steht dort „Audio ist auf diesem Gerät nicht verfügbar“, unterstützt der Browser keine Audio-Ausgabe."
+    },
+    {
+      "q": "Es erscheint „WebGL nicht verfügbar“.",
+      "a": "PRISMRUSH braucht WebGL. Aktiviere die Hardwarebeschleunigung des Browsers oder nutze einen aktuellen Browser."
+    },
+    {
+      "q": "Das Spiel ruckelt.",
+      "a": "Senke die Grafikqualität, schalte Kamerawackeln aus oder aktiviere „Bewegung reduzieren“."
+    },
+    {
+      "q": "Warum ist ein Level gesperrt?",
+      "a": "Level werden nacheinander freigeschaltet. Schließe das vorherige Level ab, dann geht das nächste auf."
+    }
+  ]
+}

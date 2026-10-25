@@ -1,0 +1,220 @@
+{
+  "id": "deluxe-2048",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "2048 Deluxe ist das bekannte Zahlen-Schiebespiel als 3D-Show mit Moderator Rico. Auf dem Brett liegen Kacheln mit Zahlen. Bei jedem Zug rutschen alle Kacheln gleichzeitig in die Richtung, in die du schiebst. Treffen zwei gleiche Zahlen aufeinander, verschmelzen sie zur doppelten Zahl.",
+        "Ziel ist die Kachel 2048. Hast du sie gebaut, darfst du weiterspielen – Rico ruft dann „auf zur 4096“. Die Show ist vorbei, wenn das Brett voll ist und keine zwei gleichen Zahlen mehr nebeneinander liegen."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "p": [
+        "Nach dem Ladebildschirm erscheint der Titel „2048 DELUXE – Die Zahlen-Show mit Rico“. Tippe irgendwo hin, drücke eine Taste oder am Controller A, um ins Menü zu kommen. Im Hintergrund schiebt eine Demo-Partie von selbst."
+      ],
+      "list": [
+        "▶ Weiterspielen: erscheint nur, wenn ein gespeichertes Spiel (Klassisch, Zen oder Antippen) vorhanden ist; daneben stehen Modus, Brettgröße und Punkte.",
+        "🎯 Klassisch: bis 2048 – und weiter. Vor dem Start wählst du die Brettgröße.",
+        "👆 Antippen: zwei gleiche Zahlen antippen statt schieben, ebenfalls mit Brettwahl.",
+        "⚡ Blitz: 3 Minuten auf 4×4, so viele Punkte wie möglich.",
+        "📅 Tages-2048: jeden Tag dieselben Kacheln für alle Spieler (immer 4×4). Im Menü steht dein heutiger Bestwert.",
+        "🧘 Zen: ohne Druck, alles rückgängig, mit Brettwahl.",
+        "🏅 Rekorde: alle Bestwerte und die größte Kachel.",
+        "⚙️ Optionen: Soundeffekte, Musik, Vibration, „Rico kommentiert (Sprechblasen)“ und „Sparmodus (weniger 3D-Details, nach Neustart)“.",
+        "📖 Anleitung: Regeln, Modi und Steuerung kurz erklärt."
+      ]
+    },
+    {
+      "t": "Regeln im Detail",
+      "list": [
+        "Ein Zug bewegt alle Kacheln so weit wie möglich in die gewählte Richtung.",
+        "Zwei gleiche Zahlen, die dabei aufeinandertreffen, werden zu einer Kachel mit dem doppelten Wert.",
+        "Jede Kachel verschmilzt pro Zug nur einmal. Aus 2-2-2-2 wird also 4-4, nicht 8.",
+        "Bei drei gleichen Zahlen in einer Reihe verschmelzen die beiden vordersten (in Schieberichtung).",
+        "Bewegt sich bei einem Zug gar nichts, zählt er nicht; das Brett wackelt nur kurz.",
+        "Nach jedem gültigen Zug erscheint auf einem freien Feld eine neue Kachel: zu 90 Prozent eine 2, zu 10 Prozent eine 4.",
+        "Zum Start liegen zwei Kacheln auf dem Brett.",
+        "Das Spiel endet, wenn kein Feld frei ist und keine zwei gleichen Zahlen waagerecht oder senkrecht nebeneinander liegen („Keine Züge mehr“)."
+      ]
+    },
+    {
+      "t": "Die Modi",
+      "list": [
+        "🎯 Klassisch: Brett 3×3 („Knifflig: wenig Platz, jeder Zug zählt“), 4×4 („Das Original“), 5×5 („Mehr Luft – große Zahlen möglich“) oder 6×6 („Riesig: für lange Sessions“). Start mit 2× Rückgängig und 1× Hammer. Wird automatisch gespeichert und zählt für die Rangliste.",
+        "👆 Antippen: Du tippst eine Zahl an (sie schwebt, passende Partner wippen) und danach eine gleiche Zahl mit freier Sicht in derselben Reihe oder Spalte – nur leere Felder dürfen dazwischen liegen. Die Kacheln verschmelzen auf dem zweiten Feld, danach kommt eine neue Kachel. Gibt es kein Paar mehr, legt das Spiel so lange neue Kacheln nach, bis wieder eins da ist oder das Brett voll ist. Start mit 2× Rückgängig und 1× Hammer, eigener Bestwert, wird gespeichert, keine Rangliste.",
+        "⚡ Blitz: 3 Minuten auf 4×4. Bei 30 Sekunden Restzeit warnt Rico, ab 10 Sekunden tickt die Uhr. Nur 1× Rückgängig und kein Hammer. Zählt für die Rangliste, wird nicht gespeichert.",
+        "📅 Tages-2048: 4×4 mit festgelegtem Zufall – alle bekommen heute dieselben neuen Kacheln. 2× Rückgängig, 1× Hammer, zählt für die Rangliste. Ergebnis lässt sich teilen.",
+        "🧘 Zen: Rückgängig und Hammer unbegrenzt (∞), keine Rangliste. Statt Rekord zeigt die Anzeige deine größte Kachel. Wird gespeichert."
+      ]
+    },
+    {
+      "t": "Joker: Rückgängig und Hammer",
+      "list": [
+        "↶ Rückgängig nimmt den letzten Zug zurück. Es lassen sich bis zu 30 Züge zurückspulen (nach dem Laden eines Spielstands die letzten 10).",
+        "🔨 Hammer: erst den Hammer wählen, dann die Kachel, die verschwinden soll. Die letzte Kachel auf dem Brett bleibt immer liegen. Ein Hammerschlag kann selbst wieder rückgängig gemacht werden.",
+        "Neue Joker: Jede gebaute 256 (und jede 2048) gibt +1 Rückgängig, höchstens bis 5 Stück. Jede gebaute 1024 (und jede 2048) gibt +1 Hammer, höchstens bis 3 Stück – im Blitz gibt es keinen Hammer.",
+        "Im Zen-Modus sind beide Joker unbegrenzt.",
+        "Ist das Spiel vorbei und du hast noch Rückgängig übrig, bietet der Endbildschirm „↶ Letzten Zug zurück“ an."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch und Maus: in die gewünschte Richtung wischen bzw. mit gedrückter Maus ziehen. Der Zug kommt, sobald eine Richtung klar überwiegt; kurze Wischer zählen beim Loslassen. Im Antippen-Modus und beim Hammer tippst du die Kachel einfach an.",
+        "Tastatur: Pfeiltasten oder WASD schieben. U, Z oder Rücktaste = Rückgängig, H = Hammer an/aus, dann mit den Pfeilen eine Kachel wählen und Enter oder Leertaste drücken. Im Antippen-Modus bewegen die Pfeile den Rahmen und Enter/Leertaste wählt die Kachel. Esc oder P = Pause bzw. zurück.",
+        "Gamecontroller: Steuerkreuz oder linker Stick schieben, X oder LB = Rückgängig, Y oder RB = Hammer, A = Kachel wählen (Hammer und Antippen), B = abbrechen bzw. Pause, Start = Pause. In den Menüs Steuerkreuz zum Wählen, A bestätigen, B zurück.",
+        "Oben siehst du Punkte, Rekord (bzw. Größte im Zen und Bestwert im Antippen-Modus) und im Blitz die Zeit. Unten liegen die Knöpfe ↶ und 🔨 mit der Anzahl übriger Joker.",
+        "Pause-Menü: Weiter, Neues Spiel, Optionen, Steuerung, Zum Menü (der Stand wird dabei gespeichert)."
+      ]
+    },
+    {
+      "t": "Punkte, Rekorde und Speichern",
+      "p": [
+        "Für jede Verschmelzung gibt es so viele Punkte, wie die neue Kachel zeigt: zwei 8er ergeben eine 16 und 16 Punkte. Mehrere Verschmelzungen in einem Zug zählen zusammen; ab drei auf einmal ruft Rico „Kombo!“.",
+        "Klassisch, Zen und Antippen werden nach jedem Zug automatisch im Browser gespeichert; ist das Spiel vorbei, wird der Spielstand gelöscht. Startest du denselben Modus neu über die Brettwahl, wird ein alter Spielstand dieses Modus ersetzt.",
+        "Unter 🏅 Rekorde stehen: Rekord, größte Kachel, Blitz-Bestwert, Antippen-Bestwert, heutiger Tages-2048-Wert, Bestwerte je Brettgröße 3×3 bis 6×6 im Klassisch-Modus, wie oft du 2048 geschafft hast, und die Zahl der Spiele. Der Rekord aus Klassisch, Blitz und Tages-2048 landet in der Rangliste und wird mit deinem Konto gespeichert, wenn du angemeldet bist.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    },
+    {
+      "t": "Rico, der Moderator",
+      "p": [
+        "Rico steht mit Mikro neben dem Brett. Er feiert jede neue Höchstkachel ab 64, jubelt bei 256 und 512, wirft Konfetti bei 1024 und tanzt bei 2048 und bei einem neuen Rekord. Werden die freien Felder knapp (höchstens 2 frei, auf 3×3 höchstens 1), warnt er. Wenn du 25 Sekunden nichts tust, meldet er sich ebenfalls.",
+        "Die Sprechblasen lassen sich in den Optionen abschalten. Unterstützt dein Gerät kein 3D, spielst du auf einem einfachen flachen Brett weiter."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Leg die größte Zahl in eine Ecke und lass sie dort. Rico sagt es selbst: „größte Zahl in die Ecke“.",
+        "Schiebe vor allem in zwei Richtungen, zum Beispiel nach unten und nach links. Die dritte nimmst du, wenn nichts anderes geht, die vierte nur im Notfall.",
+        "Fange auf 4×4 an. 3×3 ist sehr eng, 5×5 und 6×6 verzeihen mehr Fehler, dauern aber lange.",
+        "Schiebe nicht wild hin und her. Schau vor jedem Zug, wo die neue Kachel landen kann."
+      ]
+    },
+    {
+      "t": "Strategie für Fortgeschrittene",
+      "list": [
+        "Die Schlange: Baue entlang der Eckreihe eine absteigende Kette (zum Beispiel 512, 256, 128, 64) und führe sie in der nächsten Reihe in Gegenrichtung weiter. So kannst du Kacheln nacheinander in die Ecke zusammenschieben.",
+        "Halte die Eckreihe voll. Ist sie lückenlos besetzt, bewegt ein Seitwärtszug sie nicht, und die große Kachel rutscht nie aus der Ecke.",
+        "Bereite Ketten vor: Liegen 64, 32, 16, 8, 8 hintereinander, löst ein einziger Zug eine ganze Kombo aus.",
+        "Gleich große Kacheln gehören nebeneinander, nicht weit verstreut. Eine einzelne kleine Kachel zwischen großen Zahlen ist der häufigste Grund für ein verlorenes Spiel.",
+        "Halte immer zwei oder mehr Felder frei. Sobald Rico warnt, ist es Zeit, aufzuräumen."
+      ]
+    },
+    {
+      "t": "Joker richtig einsetzen",
+      "list": [
+        "Rückgängig ist am wertvollsten nach einem Zug, der die große Kachel aus der Ecke gerissen hat.",
+        "Den Hammer aufheben für die eine kleine Kachel, die deine Kette blockiert – zum Beispiel eine 2, die in der Eckreihe zwischen 128 und 64 steckt.",
+        "Joker sind gedeckelt: mehr als 5 Rückgängig und 3 Hämmer kannst du nicht ansammeln. Bist du am Limit, darfst du ruhig einen einsetzen, bevor die nächste 256 oder 1024 entsteht.",
+        "Im Blitz gibt es nur 1 Rückgängig und keinen Hammer. Hier geht Tempo vor Perfektion."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Tages-2048 benutzt einen festgelegten Zufall. Die Kacheln kommen in derselben Folge, wenn du dieselben Züge machst – ein zweiter Versuch mit dem gleichen Anfang führt zur gleichen Lage.",
+        "Im Antippen-Modus gibt es keine Schieberichtung: Plane, welche Felder frei bleiben, damit gleiche Zahlen freie Sicht bekommen. Verschmelze möglichst so, dass die neue Kachel neben ihrer nächsten Partnerin landet (sie entsteht immer auf dem zweiten angetippten Feld).",
+        "Im Zen-Modus kannst du gefahrlos neue Strategien üben – etwa, wie lange du eine Schlange auf 5×5 halten kannst.",
+        "Auf 3×3 ist eine 512 schon ein großer Erfolg; mehr als neun Felder hast du nicht."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Die vierte Richtung drücken, obwohl noch ein anderer Zug ging – dann rutscht die große Kachel aus der Ecke.",
+        "Kleine Kacheln überall verteilen statt sie nahe der Kette zu sammeln.",
+        "Den Hammer früh für eine harmlose 2 verbrauchen.",
+        "Im Blitz zu lange nachdenken: Nach 3 Minuten ist Schluss, egal wie das Brett aussieht."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Gibt es eine Lösung?",
+      "p": [
+        "2048 Deluxe hat keine festen Level. Jede Partie wird vom Zufall bestimmt (außer Tages-2048, das für alle gleich ist). Es gibt aber eine Strategie, mit der die 2048 auf 4×4 sehr zuverlässig klappt: die Eck- und Schlangen-Strategie aus dem Ratgeber."
+      ],
+      "steps": [
+        "Wähle eine Ecke, zum Beispiel unten links, und schiebe nur nach unten und links.",
+        "Fülle die unterste Reihe vollständig. Dann darfst du auch nach rechts schieben, ohne dass die Ecke sich bewegt.",
+        "Ordne die unterste Reihe absteigend von links nach rechts, die zweite Reihe absteigend von rechts nach links.",
+        "Lass neue Kacheln oben entstehen und bau dort kleine Zahlen zusammen, bis sie in die Kette passen.",
+        "Nach oben schiebst du nur, wenn wirklich kein anderer Zug geht; danach sofort mit links/unten weitermachen.",
+        "Geht etwas schief, sofort Rückgängig benutzen – vor allem, wenn die große Kachel die Ecke verlassen hat."
+      ]
+    },
+    {
+      "t": "Punkte-Tabelle",
+      "p": [
+        "Jede Verschmelzung bringt den Wert der neuen Kachel. Wer eine Kachel nur aus Zweien aufbaut, sammelt dabei insgesamt diese Punkte (durch 4er-Kacheln wird es etwas weniger):"
+      ],
+      "list": [
+        "8: 16 Punkte",
+        "16: 48 Punkte",
+        "32: 128 Punkte",
+        "64: 320 Punkte",
+        "128: 768 Punkte",
+        "256: 1.792 Punkte (+1 Rückgängig)",
+        "512: 4.096 Punkte",
+        "1024: 9.216 Punkte (+1 Hammer)",
+        "2048: 20.480 Punkte (+1 Rückgängig und +1 Hammer)",
+        "4096: 45.056 Punkte"
+      ]
+    },
+    {
+      "t": "Beste Strategie je Modus",
+      "list": [
+        "Klassisch 4×4: Eck-Strategie, alle Joker für Notfälle aufheben. Rund 20.000 Punkte sind der Lohn für die 2048, wer bis 4096 weiterspielt, knackt die 40.000.",
+        "Klassisch 3×3: nur neun Felder. Sammle konsequent in einer Ecke und nutze Rückgängig großzügig; über 512 hinaus wird es extrem eng.",
+        "Klassisch 5×5 und 6×6: viel Platz, also lange Ketten bauen. Hier kommst du bis 4096 und darüber; die Bestwerte werden je Brettgröße getrennt gespeichert.",
+        "Blitz: In 3 Minuten zählt jeder Zug. Schiebe zügig nach dem Muster unten-links-unten-rechts und behalte die Ecke. Das eine Rückgängig nur für einen echten Absturz. Bei 0:30 warnt Rico – dann noch einmal Tempo machen.",
+        "Tages-2048: Weil der Zufall festgelegt ist, kannst du mehrmals spielen und aus Fehlern lernen. Dein bester Wert des Tages steht im Menü und lässt sich mit 📤 Teilen an Freunde schicken.",
+        "Antippen: Merge möglichst oft, damit Platz frei bleibt, und lass große Zahlen an Rändern, wo sie wenig Sicht blockieren.",
+        "Zen: Nutze ihn zum Üben und zum Jagen einer Riesenkachel – Rückgängig und Hammer sind unbegrenzt."
+      ]
+    },
+    {
+      "t": "Meilensteine und Belohnungen",
+      "list": [
+        "64, 128: Rico gratuliert („Nice, 64!“, „128 – jetzt wird’s spannend!“).",
+        "256: „Radio-Gold“ und +1 Rückgängig (bis höchstens 5).",
+        "512: „Gänsehaut im Studio!“",
+        "1024: Konfetti und +1 Hammer (bis höchstens 3, nicht im Blitz).",
+        "2048: Siegbildschirm „Du hast es geschafft!“ mit Zügen und Punkten, Zähler „2048 geschafft“ in den Rekorden steigt. Danach Weiterspielen, Neues Spiel oder Menü.",
+        "4096 und mehr: Rico ist fassungslos („Legendär!“).",
+        "Neuer Rekord: Am Ende erscheint „⭐ Neuer Rekord!“ und Rico tanzt."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Mein Spielstand ist weg – warum?",
+      "a": "Gespeichert wird nur in Klassisch, Zen und Antippen, und zwar im Browser. Ist das Spiel vorbei oder startest du denselben Modus über die Brettwahl neu, wird der alte Stand gelöscht. Ohne Google-Anmeldung geht er auch beim Löschen der Browserdaten oder im privaten Fenster verloren. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+    },
+    {
+      "q": "Warum zählt mein Zen- oder Antippen-Ergebnis nicht für den Rekord?",
+      "a": "In die Rangliste kommen nur Klassisch, Blitz und Tages-2048. Zen zeigt deine größte Kachel, Antippen hat einen eigenen Bestwert."
+    },
+    {
+      "q": "Ich habe keinen Hammer mehr. Wie bekomme ich neue?",
+      "a": "Für jede gebaute 1024 (und 2048) gibt es einen Hammer dazu, höchstens bis 3. Im Blitz gibt es keinen Hammer."
+    },
+    {
+      "q": "Kann ich nach der 2048 weiterspielen?",
+      "a": "Ja. Im Siegbildschirm tippst du auf „Weiterspielen“ und baust weiter bis 4096 und mehr."
+    },
+    {
+      "q": "Das Spiel ruckelt auf meinem Handy.",
+      "a": "Schalte in den Optionen den Sparmodus ein (weniger 3D-Details) und lade die Seite neu."
+    },
+    {
+      "q": "Rico redet zu viel.",
+      "a": "In den Optionen „Rico kommentiert (Sprechblasen)“ ausschalten. Musik und Soundeffekte lassen sich dort getrennt abschalten."
+    }
+  ]
+}

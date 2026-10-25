@@ -1,0 +1,211 @@
+{
+  "id": "brainrot-parkour",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Brainrot Parkour – Obby Assurdo ist ein verrückter 3D-Obby (Hindernis-Parcours). Mit einer von 18 Brainrot-Figuren läufst und springst du über Plattformen, Balken und Fallen bis ins Ziel – möglichst schnell, mit wenigen Stürzen und vielen 🪙 Münzen.",
+        "Dazu gibt es vier Minigames (Brainrot-Rennen, Pavimento Lava, Torre Infinita, Chi lo dice?) und ein Online-Rennen mit Freunden."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "p": [
+        "Nach dem Ladebildschirm tippst du auf „▶ Tippe zum Start“ (am Controller: A oder Start). Im Hauptmenü siehst du oben deine Gesamtwerte: 🪙 gesammelte Münzen, 🏆 Siege und 🗼 Turm-Rekord, rechts deine gewählte Figur."
+      ],
+      "list": [
+        "🏃 Obby: das Hauptspiel – drei Welten mit je 10 Abschnitten.",
+        "🏁 Brainrot-Rennen: Wettrennen gegen drei Computer-Figuren über eine kurze Strecke.",
+        "🔥 Pavimento Lava: Die Fliesen bröckeln – wer bleibt am längsten stehen?",
+        "🗼 Torre Infinita: immer höher springen, unten steigt die Tomatensoße.",
+        "🎤 Chi lo dice?: Spruch hören, Figur erraten.",
+        "🌐 Online-Rennen: mit Freunden auf eigenen Geräten.",
+        "🧑‍🎤 Figuren, ⚙️ Einstellungen und ❓ Anleitung."
+      ]
+    },
+    {
+      "t": "Welten und Schwierigkeit",
+      "list": [
+        "🍝 Cucina Cosmica – tödlich ist die Tomatensoße.",
+        "🏖️ Spiaggia Assurda – tödlich ist das Brausewasser; hier gibt es auch Eis.",
+        "🍨 Galassia Gelato – tödlich ist die Schoko-Lava; die schwerste Welt.",
+        "🧸 Bambini: Doppelsprung, kürzere Lücken, langsamere Balken und Plattformen, breitere Wege, Drehbalken schubsen nur – ideal für Kinder.",
+        "🙂 Normale: der echte Obby-Spaß – ein Fehler bringt dich zum Checkpoint, auch ein Treffer vom Drehbalken.",
+        "🔥 Esperto: lange Lücken, schnelle Balken, schmale Wege und nur nach jedem zweiten Abschnitt ein Checkpoint."
+      ],
+      "p": [
+        "Im Obby ist zu Beginn nur Cucina Cosmica offen. Jede geschaffte Welt schaltet die nächste frei – egal auf welcher Stufe. Die Strecke einer Welt ist pro Schwierigkeit immer gleich, so kannst du sie lernen. Beim Rennen ist jede Strecke neu ausgewürfelt und alle Welten sind wählbar."
+      ]
+    },
+    {
+      "t": "Hindernisse",
+      "list": [
+        "Rote Soße (bzw. Brausewasser, Schoko-Lava) und Abgründe: zurück zum letzten 🚩 Checkpoint, der Sturz zählt bei 💀.",
+        "Rot-weiße Drehbalken: drüberspringen. Auf Bambini schubsen sie dich nur weg.",
+        "Gelbe Polster: schleudern dich hoch auf eine höhere Plattform.",
+        "Braune Platten: fallen kurz nach dem Betreten herunter und tauchen nach ein paar Sekunden wieder auf.",
+        "Eis: rutschig, du bremst und beschleunigst nur langsam.",
+        "Förderbänder: schieben dich zurück.",
+        "Blaue Plattformen: fahren hin und her und nehmen dich mit.",
+        "Schmale Balken, Treppen, Säulen und Zickzack-Pfade über der Soße."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Tastatur und Maus: WASD oder Pfeiltasten laufen, Leertaste (oder K) springen. Maus ziehen dreht und neigt die Kamera, Q/E drehen sie, das Mausrad zoomt. Esc öffnet die Pause. In Menüs: Pfeiltasten und Enter wählen, Esc zurück; im Ratespiel wählen 1–4 die Antwort.",
+        "Touch: links der Joystick zum Laufen, rechts die Tasten SPRUNG und KAMERA (dreht die Kamera hinter die Figur). Rechts auf dem Bildschirm wischen dreht die Kamera.",
+        "Gamecontroller: linker Stick oder Steuerkreuz laufen, A springen, rechter Stick oder LB/RB Kamera, Start Pause. In Menüs Stick/Steuerkreuz wählen, A bestätigen, B zurück.",
+        "Sprunghöhe: kurz tippen = kleiner Sprung, länger halten = großer Sprung. Kurz nach dem Verlassen einer Kante kannst du noch abspringen, und ein knapp zu früh gedrückter Sprung wird nach der Landung ausgeführt."
+      ]
+    },
+    {
+      "t": "Wertung, Sterne und Speichern",
+      "list": [
+        "Oben im Spiel: 🚩 Checkpoint-Stand, ⏱ Zeit, 🪙 Münzen, 💀 Stürze und ein Fortschrittsbalken.",
+        "Sterne im Obby (pro Welt und Stufe): 1 Stern fürs Ziel, +1 für höchstens 3 Stürze, +1 für mindestens 60 % der Münzen.",
+        "Bestzeit pro Welt und Stufe wird gespeichert („🆕 Bestzeit!“), ebenso die besten Sterne.",
+        "Gespeichert werden außerdem alle gesammelten Münzen, Siege (Rennen und Lava), Turm-Rekord, Lava-Rekord, Quiz-Rekord, freigeschaltete Welten, Figur und Einstellungen. Mit dem Google-Knopf unten links kannst du den Stand in deinem Google-Konto sichern.",
+        "Pause: ▶ Weiter, 🚩 Zum Checkpoint (im Obby und Rennen – praktisch, wenn du feststeckst), ⚙️ Einstellungen, ✕ Beenden."
+      ]
+    },
+    {
+      "t": "Figuren und Einstellungen",
+      "p": [
+        "Alle 18 Figuren sind von Anfang an frei: Pinguino Spaghettino, Toastini Volantini, Lampadino Giraffino, Scarpone Lumacone, Pizzarana Saltarella, Fenicottero Ombrellone, Gelatone Tartarugone, Pinguino Turbo, Llama Jetpacko, Raccoonini, Polpo Cappuccino, Hippo Ballerina, Scheletro Cowboy, Espressino Gallinone, Cactopudel Skatini, Lasagnone Aviatore, Formaggino Topolone und Lavatrice Bulldoggo. Mit 🔊 Spruch hörst du ihre Sprüche, mit ✔ Auswählen spielst du mit ihr. Die Figur ändert nur das Aussehen und die Sprüche, nicht das Springen."
+      ],
+      "list": [
+        "Geräusche, Musik und Brainrot-Sprachausgabe einzeln an/aus.",
+        "Brainrot-Stimme: 🧔 Männlich (tief), 👩 Weiblich oder 🎭 Je Figur.",
+        "Untertitel, „Kamera dreht sich automatisch mit“, Vibration und dein Name (für Rennen und Online)."
+      ]
+    },
+    {
+      "t": "Online-Rennen",
+      "steps": [
+        "🌐 Online-Rennen wählen, dann 🏠 Rennen erstellen oder 🔑 Mit Code beitreten.",
+        "Der Gastgeber sieht einen QR-Code, einen 4-stelligen Code und einen Link (🔗 Link kopieren). Freunde können von überall beitreten.",
+        "Beim Beitreten Namen und Code eingeben und Beitreten tippen.",
+        "Der Gastgeber wählt Welt und Schwierigkeit und startet mit ▶ Rennen starten, sobald mindestens 2 Spieler da sind. Bis zu 8 Spieler passen in ein Rennen.",
+        "Alle laufen dieselbe Strecke auf ihrem eigenen Gerät und sehen sich gegenseitig. Wer im Ziel ist, wird gemeldet („🏁 … ist im Ziel!“)."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Fang mit 🧸 Bambini an: Der Doppelsprung rettet viele verpatzte Sprünge.",
+        "Lass „Kamera dreht sich automatisch mit“ an, dann schaut die Kamera meist in Laufrichtung.",
+        "Schau vor großen Lücken kurz nach vorn (Kamera drehen), bevor du springst.",
+        "Steckst du fest oder bist falsch abgebogen, nimm in der Pause 🚩 Zum Checkpoint."
+      ]
+    },
+    {
+      "t": "Springen wie ein Profi",
+      "list": [
+        "Für weite Sprünge: mit vollem Tempo anlaufen und die Sprungtaste lange halten. Wer früh loslässt, springt nur kurz – gut für kleine Hüpfer auf Treppen und Zickzack-Wege.",
+        "Spring an der Kante ab: Ein winziger Moment nach dem Verlassen der Plattform zählt noch als Boden.",
+        "Auf Eis rechtzeitig loslassen und gegensteuern, du rutschst weit nach.",
+        "Auf Förderbändern kräftig nach vorn laufen und am Ende gleich abspringen.",
+        "Gelbe Polster nicht hektisch anspringen – einfach drauflaufen, sie werfen dich hoch.",
+        "Braune Platten: nicht stehen bleiben, sofort weiterspringen."
+      ]
+    },
+    {
+      "t": "Drehbalken und bewegte Plattformen",
+      "list": [
+        "Über Drehbalken springst du am besten kurz bevor der Balken bei dir ist.",
+        "Blaue Schiebe-Plattformen fahren gegenläufig und kommen sich regelmäßig nah – warte auf diesen Moment und spring dann hinüber.",
+        "Auf einer fahrenden Plattform fährst du mit, du musst nicht dagegen anlaufen."
+      ]
+    },
+    {
+      "t": "Minigames meistern",
+      "list": [
+        "Pavimento Lava: Immer in Bewegung bleiben – jede Fliese, auf der du stehst, bröckelt nach kurzer Zeit weg. Zusätzlich bröckeln zufällig Fliesen. Wenn du durchfällst, landest du auf der nächsten Etage; erst unter der dritten Etage wartet die Soße.",
+        "Torre Infinita: Die Soße steigt immer schneller. Nicht zögern, aber sauber springen: Ein Sturz in die Tiefe beendet den Lauf sofort. Weiter oben kommen fallende und fahrende Plattformen dazu.",
+        "Brainrot-Rennen: Die Computer werden mit der Stufe stärker (Bambini leicht, Esperto schwer). Ein Sturz kostet viel Zeit – lieber sicher als riskant.",
+        "Chi lo dice?: Hör genau hin und antworte, bevor du den Text einblendest – das gibt Bonuspunkte."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu früh loslassen bei großen Lücken – der Sprung wird dann kurz.",
+        "Auf Normale und Esperto den Drehbalken unterschätzen: Ein Treffer schickt dich zum Checkpoint.",
+        "Auf Esperto ohne Plan rennen: Checkpoints gibt es nur nach jedem zweiten Abschnitt, ein Sturz kostet viel Weg.",
+        "Bei Pavimento Lava auf einer Fliese stehen bleiben."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Obby-Komplettlösung: so schaffst du alle Welten",
+      "steps": [
+        "Cucina Cosmica auf Bambini oder Normale spielen. Nach dem Ziel ist Spiaggia Assurda freigeschaltet („🔓 … ist freigeschaltet!“).",
+        "Spiaggia Assurda schaffen – damit öffnet sich Galassia Gelato.",
+        "Galassia Gelato schaffen. Am Ende heißt es „Alle Welten geschafft – Campionissimo!“.",
+        "Danach jede Welt auf jeder Stufe für 3 Sterne wiederholen: höchstens 3 Stürze und mindestens 60 % der Münzen."
+      ],
+      "p": [
+        "Jede Welt hat 10 Abschnitte, ab der Hälfte mit drei statt zwei Hindernissen. Die Strecke wird mit jedem Abschnitt schwerer, und jede Welt ist von Grund auf etwas schwerer als die vorige. Die Abfolge ist für jede Welt und Stufe fest – übe schwierige Stellen also gezielt."
+      ]
+    },
+    {
+      "t": "3 Sterne holen",
+      "list": [
+        "Stern 1: Ziel erreichen.",
+        "Stern 2: höchstens 3 Stürze (💀). Spiel lieber langsam und sicher, die Zeit zählt für die Sterne nicht.",
+        "Stern 3: mindestens 60 % der Münzen. Münzen liegen auf Balken, Polster-Zielen und Treppen – sammle sie bei jedem Durchgang mit.",
+        "Bestzeit und Sterne zählen getrennt: Für Sterne langsam spielen, für die Bestzeit einen eigenen Lauf machen."
+      ]
+    },
+    {
+      "t": "Chi lo dice? – Punktetabelle",
+      "list": [
+        "10 Fragen, je 4 Figuren zur Auswahl.",
+        "Richtige Antwort: 10 Punkte.",
+        "+5 Punkte, wenn du antwortest, bevor der Text gezeigt wird (nur mit Sprachausgabe).",
+        "Serienbonus: +2 Punkte pro richtiger Antwort in Folge, höchstens +10.",
+        "Höchstpunktzahl: 220 Punkte. Ab 120 Punkten gibt es den Titel „🏆 Brainrot-Experte!“.",
+        "🔊 Nochmal hören spielt den Spruch erneut, 📝 Text zeigen blendet ihn ein (dann ohne die +5)."
+      ]
+    },
+    {
+      "t": "Rekorde in den Minigames",
+      "list": [
+        "Pavimento Lava: Du spielst gegen drei Computer-Figuren. Wer zuletzt übrig ist, gewinnt („🏆 Du bleibst stehen!“) und bekommt einen Sieg. Gespeichert wird deine längste Überlebenszeit. Auf Bambini halten die Fliesen länger (1,5 s), auf Esperto kürzer (0,9 s).",
+        "Torre Infinita: Rekord in Metern. Die Soße steigt auf Bambini langsam, auf Esperto am schnellsten und wird mit der Zeit immer schneller.",
+        "Brainrot-Rennen: Platz 1 bringt einen Sieg.",
+        "Gesamtwertung für die Rangliste: alle Münzen + 2 Punkte pro Turm-Meter + 50 Punkte pro Sieg."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Warum ist eine Welt gesperrt?",
+      "a": "Im Obby schaltet jede geschaffte Welt die nächste frei. Spiel zuerst Cucina Cosmica bis ins Ziel. Im Rennen sind alle Welten offen."
+    },
+    {
+      "q": "Online-Rennen klappt nicht.",
+      "a": "Alle brauchen Internet. Prüfe den 4-stelligen Code oder nutze den Link bzw. QR-Code. Der Gastgeber kann erst ab 2 Spielern starten; läuft ein Rennen schon, musst du auf das nächste warten. Maximal 8 Spieler."
+    },
+    {
+      "q": "Ich höre keine Sprüche.",
+      "a": "Schalte in den Einstellungen Brainrot-Sprachausgabe ein und prüfe die Lautstärke. Manche Geräte haben keine Sprachausgabe – dann helfen die Untertitel."
+    },
+    {
+      "q": "Das 3D ruckelt oder startet nicht.",
+      "a": "Das Spiel braucht WebGL. Schließe andere Apps und Tabs. Meldet das Spiel „3D wird von diesem Gerät nicht unterstützt“, klappt es auf diesem Gerät leider nicht."
+    },
+    {
+      "q": "Sind meine Münzen und Rekorde weg?",
+      "a": "Sie liegen im Browser. Gelöschte Website-Daten oder ein privates Fenster löschen sie. Sichere sie mit dem Google-Knopf unten links."
+    },
+    {
+      "q": "Ist das Spiel für Kinder geeignet?",
+      "a": "Ja – die Stufe 🧸 Bambini ist für Kinder gemacht, und Chi lo dice? ist ein einfaches Hörspiel."
+    }
+  ]
+}

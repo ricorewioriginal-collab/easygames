@@ -1,0 +1,191 @@
+{
+  "id": "anmacha-flipper",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AnMaCha Pinball ist ein 3D-Flipper im Radio-Look mit 13 Tischen. Du schießt die Kugel ins Spielfeld und hältst sie mit den beiden Flippern im Spiel. Jeder Treffer an Bumpern, Schleudern und Rollovern bringt Punkte. Fällt die Kugel zwischen den Flippern hindurch ins Aus, ist sie verloren.",
+        "In der Kampagne musst du auf jedem Tisch ein Punkteziel erreichen, um zum nächsten zu kommen. Im Freien Spiel jagst du auf einem Tisch deiner Wahl den Highscore. Sind alle Kugeln weg, heißt es GAME OVER."
+      ]
+    },
+    {
+      "t": "Start und Menü",
+      "list": [
+        "🏁 Kampagne: Tisch 1 bis 13 nacheinander. Erreiche auf jedem Tisch das Punkteziel, dann geht es zum nächsten – jeder Tisch ist schwerer. Alle 3 Tische gibt es eine Extra-Kugel. Die Leiste mit den Zahlen 1 bis 13 zeigt, welche Tische du schon einmal geschafft hast. Die Kampagne beginnt immer bei Tisch 1.",
+        "🎯 Freies Spiel: Such dir mit ◀ und ▶ einen beliebigen Tisch aus. Die Vorschau zeigt Name, Schwierigkeit in Sternen (1 bis 5) und Logo. 5 Kugeln, so viele Punkte wie möglich.",
+        "Das Spiel merkt sich Modus, zuletzt gewählten Tisch, Bestwert und Ton-Einstellung.",
+        "Oben links stehen SCORE, BEST, Tischname und in der Kampagne das Ziel mit Fortschrittsbalken („ZIEL 1200 / 2200“). Oben in der Mitte siehst du die übrigen KUGELN und den aktuellen Multiplikator (zum Beispiel x3). Oben rechts: ⏸ Pause, 🔊 Ton, ↻ Neustart."
+      ]
+    },
+    {
+      "t": "Spielablauf",
+      "steps": [
+        "Die Kugel liegt rechts in der Abschussbahn. Halte START (bzw. die Leertaste) gedrückt – die Kraft lädt sich etwa eine Sekunde lang auf – und lass los, um die Kugel abzuschießen.",
+        "Im Feld prallt die Kugel an Bumpern, Schleudern und Wänden ab. Fange sie mit den Flippern und schlage sie wieder nach oben.",
+        "Rollt die Kugel zurück in die Abschussbahn, kannst du sie erneut abschießen.",
+        "Fällt sie unten ins Aus, verlierst du eine Kugel („KUGEL VERLOREN · noch 3“, bei der letzten „LETZTE KUGEL!“). Combo und Multiplikator werden dabei zurückgesetzt.",
+        "Hast du in der Kampagne das Tischziel erreicht, erscheint „TISCH … GESCHAFFT!“, und nach einer kurzen Pause wird der nächste Tisch geladen. Die Punkte für das Tischziel zählen dann wieder ab 0, dein Gesamtscore läuft weiter.",
+        "Nach Tisch 13 erscheint „ALLE 13 TISCHE GESCHAFFT! 🏆“."
+      ]
+    },
+    {
+      "t": "Punkte und Multiplikator",
+      "list": [
+        "BASS BOOST (großer Bumper): 500 Punkte",
+        "HIT ZONE: 250 Punkte – und für 12 Sekunden +1 auf den Multiplikator",
+        "ON AIR: 100 Punkte",
+        "Lautsprecher (kleine Bumper): 50 Punkte",
+        "Störsender (pendeln vor den Flippern, ab Tisch 5): 50 Punkte",
+        "Schleudern über den Flippern: 20 Punkte",
+        "Rollover oben (drei Lichter): je 100 Punkte, wenn du ein unbeleuchtetes triffst. Leuchten alle drei: ON AIR BONUS +1000.",
+        "Combo: Jeder Treffer an Bumpern, Schleudern oder Störsendern zählt zur Combo. Alle 4 Treffer steigt der Multiplikator um 1 („COMBO x2“, „COMBO x3“ …), höchstens bis x8. Gibt es 3 Sekunden keinen Treffer, fällt die Combo auf 0.",
+        "Alle Bumper-, Schleuder-, Störsender- und Rollover-Punkte werden mit dem aktuellen Multiplikator malgenommen. Nur der ON-AIR-Bonus von 1000 zählt immer gleich."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "PC: Pfeil links oder A = linker Flipper, Pfeil rechts oder D = rechter Flipper. Leertaste halten und loslassen = Kugel starten. P oder Esc = Pause, R = Neustart, M = Ton an/aus. Im Menü und nach GAME OVER startet Enter oder Leertaste.",
+        "Touch: unten die Tasten ◀ LINKS und RECHTS ▶ für die Flipper und START (halten und loslassen) für den Abschuss. Beide Flipper gleichzeitig gehen mit zwei Fingern. Pause, Ton und Neustart oben rechts.",
+        "Gamecontroller: LB oder LT (und Steuerkreuz links) = linker Flipper, RB oder RT (und Steuerkreuz rechts) = rechter Flipper, X halten und loslassen = Abschuss, Start oder B = Pause, A = Bestätigen, Select = Ton.",
+        "Pause-Menü: WEITER, ↻ Neustart oder Tischwahl. Nach GAME OVER: PLAY AGAIN oder Anderer Tisch."
+      ]
+    },
+    {
+      "t": "Die 13 Tische",
+      "p": [
+        "Es gibt fünf Layouts, die sich wiederholen, aber mit jedem Tisch schwerer werden: stärkere Schwerkraft (die Kugel fällt schneller), etwas kürzere Flipper, mehr Störsender und ein höheres Punkteziel. Jeder Tisch hat eigene Farben und ein eigenes Logo."
+      ],
+      "list": [
+        "Studio: ON AIR und HIT ZONE oben nebeneinander, BASS BOOST in der Mitte, zwei Lautsprecher.",
+        "Mixer: BASS BOOST ganz oben, ON AIR und HIT ZONE darunter, drei Lautsprecher, Führungsschienen unten.",
+        "Antenne: HIT ZONE, ON AIR und BASS BOOST übereinander in der Mitte, vier Lautsprecher, Schienen oben.",
+        "Equalizer: ON AIR, HIT ZONE und BASS BOOST oben, darunter eine Reihe aus fünf Lautsprechern, Schienen unten.",
+        "Satellit: großer BASS BOOST in der Mitte, umringt von fünf Lautsprechern, ON AIR oben, zwei HIT ZONES unten."
+      ]
+    },
+    {
+      "t": "Speichern und Bestwert",
+      "p": [
+        "Dein Bestwert (BEST) und die geschafften Kampagnen-Tische werden im Browser gespeichert. Ein laufendes Spiel wird nicht gespeichert – nach dem Schließen beginnt es neu. Im GAME-OVER-Fenster siehst du deine Punkte, in der Kampagne den erreichten Tisch und bei einem neuen Rekord „🏆 Neuer Bestwert!“.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Halte START bis zur vollen Kraft gedrückt und lass dann los. Ein schwacher Abschuss (mindestens 30 Prozent Kraft werden immer benutzt) bringt die Kugel kaum ins Feld.",
+        "Drück nicht beide Flipper dauernd. Schlage erst, wenn die Kugel auf dem Flipper ankommt.",
+        "Fang auf Tisch 1 bis 4 an: Dort gibt es noch keine Störsender, die Schwerkraft ist am schwächsten und die Flipper sind am längsten.",
+        "Rollt die Kugel zurück in die Abschussbahn, verlierst du sie nicht – schieß sie einfach noch einmal ab."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Triff zuerst die HIT ZONE: 12 Sekunden lang ist dein Multiplikator um 1 höher. In dieser Zeit lohnen sich BASS BOOST und Combos doppelt.",
+        "Halte die Combo am Leben: Mehr als 3 Sekunden ohne Treffer, und sie fällt auf 0. Auf Tischen wie Satellit und Equalizer mit vielen Lautsprechern geht das leichter.",
+        "Die drei Rollover oben: Wenn zwei leuchten, ziele gezielt nach oben auf das dritte – das bringt den ON AIR BONUS von 1000 Punkten.",
+        "Ab Tisch 5 pendeln Störsender vor den Flippern. Sie bringen 50 Punkte, lenken die Kugel aber unberechenbar ab. Warte mit dem Schlag, bis der Störsender aus dem Weg ist."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Multiplikator stapeln: HIT ZONE (+1) und eine lange Combo (alle 4 Treffer +1) zusammen bringen x8 – dann ist ein BASS BOOST 4000 Punkte wert.",
+        "In der Kampagne zählt nur das Tischziel. Spiele auf den ersten Tischen sicher, um mit möglichst vielen Kugeln in die schweren Tische zu kommen.",
+        "Auf hohen Tischen fällt die Kugel schneller und die Flipper sind kürzer. Schlage dort etwas früher.",
+        "Pausiere (P) vor einer schwierigen Phase, um durchzuatmen – die Kugel bleibt stehen."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Die Leertaste nur antippen statt halten – der Abschuss ist dann zu schwach.",
+        "Hektisch mit beiden Flippern schlagen; die Kugel springt dann oft genau durch die Mitte.",
+        "Nach dem Verlust einer Kugel vergessen, dass Combo und Multiplikator wieder bei null beginnen."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Kampagne: alle Tische mit Punkteziel",
+      "list": [
+        "Tisch 1 · Studio: Ziel 2.200 Punkte · ★☆☆☆☆ · keine Störsender",
+        "Tisch 2 · Mixer: Ziel 2.900 · ★☆☆☆☆ · keine Störsender",
+        "Tisch 3 · Antenne: Ziel 3.600 · ★★☆☆☆ · keine Störsender · danach +1 Kugel",
+        "Tisch 4 · Equalizer: Ziel 4.300 · ★★☆☆☆ · keine Störsender",
+        "Tisch 5 · Satellit: Ziel 5.000 · ★★☆☆☆ · 1 Störsender",
+        "Tisch 6 · Studio: Ziel 5.700 · ★★★☆☆ · 1 Störsender · danach +1 Kugel",
+        "Tisch 7 · Mixer: Ziel 6.400 · ★★★☆☆ · 1 Störsender",
+        "Tisch 8 · Antenne: Ziel 7.100 · ★★★☆☆ · 1 Störsender",
+        "Tisch 9 · Equalizer: Ziel 7.800 · ★★★★☆ · 2 Störsender · danach +1 Kugel",
+        "Tisch 10 · Satellit: Ziel 8.500 · ★★★★☆ · 2 Störsender",
+        "Tisch 11 · Studio: Ziel 9.200 · ★★★★☆ · 2 Störsender",
+        "Tisch 12 · Mixer: Ziel 9.900 · ★★★★★ · 2 Störsender · danach +1 Kugel",
+        "Tisch 13 · Antenne: Ziel 10.600 · ★★★★★ · 3 Störsender – Finale",
+        "Insgesamt brauchst du für die ganze Kampagne mindestens 83.200 Punkte. Du startest mit 5 Kugeln und bekommst nach Tisch 3, 6, 9 und 12 je eine dazu."
+      ]
+    },
+    {
+      "t": "Lösungsweg nach Layout",
+      "list": [
+        "Studio (Tisch 1, 6, 11): ON AIR und HIT ZONE liegen oben nebeneinander. Schieße schräg nach oben, die Kugel fällt danach oft auf den BASS BOOST in der Mitte – eine schnelle Combo.",
+        "Mixer (Tisch 2, 7, 12): Der BASS BOOST sitzt ganz oben. Ein kräftiger Schlag aus der Flipperspitze trifft ihn; die Schienen unten führen die Kugel zurück zu den Flippern.",
+        "Antenne (Tisch 3, 8, 13): Alle drei großen Bumper liegen übereinander in der Mitte. Gerade Schüsse nach oben treffen gleich mehrere. Die Schienen oben lenken die Kugel zu den Rollovern.",
+        "Equalizer (Tisch 4, 9): Die Reihe aus fünf Lautsprechern in der Mitte ist eine Combo-Maschine. Hier steigt der Multiplikator am schnellsten.",
+        "Satellit (Tisch 5, 10): Der riesige BASS BOOST in der Mitte ist von fünf Lautsprechern umringt – Kugeln, die dort hineinfallen, sammeln viele Treffer hintereinander. Die zwei HIT ZONES unten halten den Bonus fast dauerhaft aktiv."
+      ]
+    },
+    {
+      "t": "Wertungstabelle für Highscores",
+      "list": [
+        "BASS BOOST: 500 · bei x2 1.000 · bei x4 2.000 · bei x8 4.000",
+        "HIT ZONE: 250 · bei x2 500 · bei x4 1.000 · bei x8 2.000",
+        "ON AIR: 100 · bei x8 800",
+        "Lautsprecher und Störsender: 50 · bei x8 400",
+        "Schleuder: 20 · bei x8 160",
+        "Rollover: 100 · bei x8 800; alle drei = +1000 Bonus",
+        "Der Multiplikator ergibt sich aus 1 + (Combo ÷ 4, abgerundet) + 1, solange die HIT ZONE aktiv ist – höchstens x8."
+      ]
+    },
+    {
+      "t": "Eigene Logos",
+      "p": [
+        "Jeder Tisch zeigt ein Logo aus dem Ordner logos (Tisch 1 = 01.jpg bis Tisch 13 = 13.jpg). Fehlt eins, steht in der Vorschau „Platzhalter“ und auf dem Tisch erscheint „LOGO“ mit der Tischnummer."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Mein Spiel ist nach dem Schließen weg.",
+      "a": "Ein laufendes Spiel wird nicht gespeichert. Gespeichert bleiben nur Bestwert, geschaffte Kampagnen-Tische, Modus, Tischwahl und Ton."
+    },
+    {
+      "q": "Kann ich in der Kampagne bei einem späteren Tisch anfangen?",
+      "a": "Nein, die Kampagne startet immer bei Tisch 1. Jeden Tisch einzeln spielen kannst du im Freien Spiel."
+    },
+    {
+      "q": "Die Kugel startet nicht.",
+      "a": "START bzw. die Leertaste muss gedrückt gehalten und dann losgelassen werden. Die Kugel muss dazu ruhig in der Abschussbahn rechts liegen."
+    },
+    {
+      "q": "Es erscheint „three.js konnte nicht geladen werden“.",
+      "a": "Die 3D-Bibliothek fehlt, meist wegen fehlender Internetverbindung beim ersten Laden. Verbinde dich und lade neu."
+    },
+    {
+      "q": "Wie schalte ich den Ton aus?",
+      "a": "Mit M, dem 🔊-Knopf oben rechts oder Select am Controller. Die Einstellung bleibt gespeichert."
+    },
+    {
+      "q": "Gibt es Mehrspieler?",
+      "a": "Nein, AnMaCha Pinball ist ein Einzelspieler-Flipper."
+    },
+    {
+      "q": "Ist mein Spielstand weg, wenn ich die Browserdaten lösche?",
+      "a": "Ohne Google-Anmeldung liegt alles nur lokal in diesem Browser: Nach dem Löschen der Browserdaten, im privaten Fenster oder auf einem anderen Gerät ist es nicht da. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+    }
+  ]
+}

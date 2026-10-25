@@ -1,0 +1,179 @@
+{
+  "id": "anmacha-radio-surfer",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AnMaCha Radio Surfer ist ein Endlos-Läufer in 3D: Deine Spielfigur surft auf drei Spuren durch das Internet – vorbei an Server-Racks, Lichtbögen und Bildschirmen – und muss den Sendern und Hindernissen ausweichen.",
+        "Das Spiel hat 10 Level. Jedes Level ist 600 Meter lang; schaffst du alle 6000 Meter, erscheint „GESCHAFFT! 🏆 – Alle 10 Level – du bist der beste Radio Surfer!“. Du hast dafür 3 Leben (♥♥♥)."
+      ]
+    },
+    {
+      "t": "Start und Anzeige",
+      "p": [
+        "Beim Öffnen lädt das Spiel zuerst die Sender-Bilder (Knopf „LADE …“). Sobald START erscheint, tippst du darauf oder drückst Enter bzw. Leertaste. Auf dem Startbildschirm steht die Kurzanleitung für Handy und PC sowie die Farberklärung der Hindernisse; über „🏆 Top 10“ öffnest du die Bestenliste."
+      ],
+      "list": [
+        "Oben links: SCORE (aktuelle Punkte) und deine Leben als Herzen (♥ = übrig, ♡ = verloren).",
+        "Mitte: LEVEL x/10 und BEST (dein bisher bester Score auf diesem Gerät).",
+        "Ein Balken zeigt, wie weit du im aktuellen Level bist.",
+        "Beim Levelwechsel erscheint ein Banner mit Levelnummer und Namen, neuen Hindernissen („Neu: …“) und ab Level 4 dem Hinweis „⚡ Tempo steigt“.",
+        "Etwa alle 12 Sekunden blendet das Spiel einen kleinen Radio-Witz oder ein Musik-Wissen ein (z. B. dass die erste reguläre Radiosendung in Deutschland am 29. Oktober 1923 lief)."
+      ]
+    },
+    {
+      "t": "Die drei Bewegungen",
+      "list": [
+        "Spur wechseln: Es gibt drei Spuren (links, Mitte, rechts). Jeder Wechsel verschiebt dich um genau eine Spur.",
+        "Springen: Nur möglich, wenn du auf dem Boden stehst. Damit kommst du über niedrige Hindernisse.",
+        "Rutschen: Du duckst dich etwa 0,7 Sekunden lang flach. Damit kommst du unter hängenden Hindernissen durch. Drückst du Rutschen in der Luft, fällt die Figur schnell zu Boden und rutscht direkt nach der Landung."
+      ]
+    },
+    {
+      "t": "Hindernisse erkennen",
+      "p": [
+        "Die Hindernisse tragen die Logos und Bilder der Sender. Ihre Rahmenfarbe verrät dir, was zu tun ist:"
+      ],
+      "list": [
+        "Gelber Rahmen – niedrig: springen.",
+        "Pinker Rahmen – hängt oben: rutschen.",
+        "Blauer Rahmen – hoch: über diese Hindernisse kommst du weder drüber noch drunter, du musst die Spur wechseln."
+      ]
+    },
+    {
+      "t": "Die 10 Level",
+      "p": [
+        "In Level 1 bis 3 bleibt das Tempo gleich, ab Level 4 wird es mit jedem Level schneller (bis etwa doppelt so schnell in Level 10). Gleichzeitig kommen die Hindernisreihen dichter. Jedes Level hat eigene Lichtfarben und bringt neue Internet-Hindernisse mit:"
+      ],
+      "list": [
+        "Level 1 – Einwahl: niedrige und hohe Sender-Hindernisse.",
+        "Level 2 – Router: dazu die hängenden (pinken) Hindernisse, neu: Kabelsalat (niedrig, springen).",
+        "Level 3 – Switch: neu: Firewall (hoch, ausweichen).",
+        "Level 4 – DNS: neu: Pop-up „GEWONNEN!“ (hängt oben, rutschen). Ab hier steigt das Tempo.",
+        "Level 5 – Backbone: neu: Server-Rack und Funkmast (beide hoch, ausweichen).",
+        "Level 6 – Glasfaser: neu: Glasfaser-Laser (hängt oben, rutschen).",
+        "Level 7 – Cloud: neu: Datenwolke (niedrig, springen).",
+        "Level 8 – Rechenzentrum: neu: Computer-Virus (hoch, ausweichen).",
+        "Level 9 – Satellit: neu: Satellitenschüssel (hängt oben, rutschen).",
+        "Level 10 – Livestream: neu: Paketflut (niedrig, springen) und Mikrofon (hoch, ausweichen)."
+      ]
+    },
+    {
+      "t": "Leben, Treffer und Ende",
+      "p": [
+        "Triffst du ein Hindernis, verlierst du ein Leben („♥ Noch 2 Leben“, „♥ Letztes Leben!“). Die ganze Hindernisreihe, in die du gelaufen bist, verschwindet, die Figur blinkt und ist etwa 1,8 Sekunden lang unverwundbar. Nach dem dritten Treffer heißt es GAME OVER mit erreichtem Level, Score und Bestwert; mit NEUSTART (oder Enter/Leertaste) geht es von vorn los.",
+        "Es gibt keine Zwischenstände: Jede Runde beginnt wieder in Level 1 mit 3 Leben."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Handy/Tablet: nach links oder rechts wischen = Spur wechseln, nach oben wischen oder kurz tippen = springen, nach unten wischen = rutschen. Der ⏸-Knopf oben rechts pausiert.",
+        "PC-Tastatur: Pfeil links/rechts oder A/D = Spur, Pfeil hoch, W oder Leertaste = springen, Pfeil runter oder S = rutschen, P oder Esc = Pause und weiter, Enter oder Leertaste = Start, Weiter oder Neustart.",
+        "Gamecontroller: Steuerkreuz oder linker Stick wie die Pfeiltasten (links/rechts Spur, hoch springen, runter rutschen), A springt bzw. startet, Start oder B pausiert.",
+        "Wechselst du den Tab oder die App, pausiert das Spiel automatisch. Nach dem Weiterspielen bist du eine Sekunde lang geschützt."
+      ]
+    },
+    {
+      "t": "Punkte, Bestwert und Top 10",
+      "p": [
+        "Punkte gibt es für die zurückgelegte Strecke: pro Meter 0,5 Punkte, mit jedem Level 10 Prozent mehr (Level 10 zählt also das 1,9-fache von Level 1). Ausweichen selbst bringt keine Extrapunkte.",
+        "Dein bester Score wird im Browser gespeichert (BEST). Kommst du nach einer Runde in die Top 10, erscheint „Du bist in den Top 10! Dein Name:“ – Namen eintippen (bis 12 Zeichen) und auf Speichern tippen oder Enter drücken. Die Top 10 liegen ebenfalls in deinem Browser; der zuletzt benutzte Name wird vorgeschlagen.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Achte nur auf die Rahmenfarbe, nicht auf das Bild: gelb springen, pink rutschen, blau Spur wechseln.",
+        "In jeder normalen Reihe bleibt immer mindestens eine Spur frei. Schau früh nach dieser Lücke, statt im letzten Moment zu reagieren.",
+        "Die Mittelspur ist die beste Grundposition: Von dort erreichst du beide Seiten mit nur einem Wechsel.",
+        "Ab Level 2 kommen auch Wände über alle drei Spuren. Sie bestehen immer aus Hindernissen, die man überspringen oder unterrutschen kann – Spurwechsel hilft hier nicht, Farbe prüfen und springen oder rutschen."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Rutschen in der Luft: Merkst du im Sprung, dass als Nächstes etwas Pinkes kommt, drück sofort Rutschen. Die Figur fällt schnell und rutscht direkt nach der Landung weiter.",
+        "Ein Sprung ist kurz. Spring nicht zu früh vor einem gelben Hindernis, sonst landest du darauf.",
+        "Ab Level 5 kann auch in der freien Spur noch ein überwindbares Hindernis stehen. Rechne also damit, dass du nach dem Spurwechsel zusätzlich springen oder rutschen musst.",
+        "Ab Level 6 haben manche Wände eine Lücke. Wenn du die Lücke sicher erreichst, ist der Spurwechsel oft entspannter als ein Sprung.",
+        "Nutze die Unverwundbarkeit nach einem Treffer (Figur blinkt): Die nächste Reihe kann dir in dieser Zeit nichts anhaben."
+      ]
+    },
+    {
+      "t": "Profi-Tricks und häufige Fehler",
+      "list": [
+        "Doppeltes Wischen vermeiden: Pro Wischbewegung zählt nur eine Aktion. Für zwei Spuren musst du zweimal wischen.",
+        "Am PC löst gedrückt gehaltenes Pfeil-Drücken keine Wiederholung aus – jeder Spurwechsel braucht einen neuen Tastendruck.",
+        "Pause nicht vergessen: Musst du kurz weg, P oder Esc drücken. Das Weiterspielen schenkt dir eine Sekunde Schutz.",
+        "Häufiger Fehler: bei blauen Hindernissen springen. Hohe Hindernisse lassen sich nur umgehen.",
+        "Häufiger Fehler: in Level 9 und 10 zu weit nach außen fahren. Bleib nahe der Mitte, damit du auf beide Seiten ausweichen kannst."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Komplettlösung Level für Level",
+      "list": [
+        "Level 1–3 (Einwahl, Router, Switch): gleichbleibendes Tempo, eine Reihe etwa alle 1,5 Sekunden. Hier lernst du die Farben. Ab Level 2 kommen erste Sprung- oder Rutsch-Wände (in rund 15 Prozent der Reihen).",
+        "Level 4 (DNS): Das Tempo steigt zum ersten Mal, das Pop-up hängt oben – rutschen.",
+        "Level 5 (Backbone): Server-Rack und Funkmast sind hoch – nur ausweichen. In der freien Spur kann jetzt ein Zusatzhindernis stehen.",
+        "Level 6 (Glasfaser): Laser hängt oben – rutschen. Wände können jetzt eine freie Spur haben.",
+        "Level 7–8 (Cloud, Rechenzentrum): Datenwolke springen, Virus umgehen. Reihen kommen bis zu 40 Prozent als Wand, die Abstände werden kürzer.",
+        "Level 9–10 (Satellit, Livestream): höchstes Tempo und kürzeste Abstände (etwa alle 0,9 Sekunden eine Reihe). Satellitenschüssel rutschen, Paketflut springen, Mikrofon ausweichen. Ruhig bleiben und immer zuerst die Farbe lesen."
+      ]
+    },
+    {
+      "t": "Wertungstabelle",
+      "p": [
+        "Weil Punkte nur für die Strecke vergeben werden, hängt dein Score allein davon ab, wie weit du kommst. Ein komplett geschafftes Level bringt ungefähr:"
+      ],
+      "list": [
+        "Level 1: 300 Punkte, Level 2: 330, Level 3: 360, Level 4: 390, Level 5: 420",
+        "Level 6: 450, Level 7: 480, Level 8: 510, Level 9: 540, Level 10: 570",
+        "Alle 10 Level geschafft: rund 4350 Punkte – das ist der Höchstwert einer Runde."
+      ]
+    },
+    {
+      "t": "So holst du die Höchstpunktzahl",
+      "steps": [
+        "Spiele die ersten drei Level ohne Treffer, um alle drei Leben für die schnellen Level aufzuheben.",
+        "Nutze in Level 4 bis 8 die Mittelspur als Grundposition und lies jede Reihe früh.",
+        "Ein verlorenes Leben kostet keine Punkte – wichtig ist nur, die 6000 Meter zu erreichen.",
+        "Nach dem Sieg trägst du dich mit rund 4350 Punkten in die Top 10 ein; ein höherer Wert ist nicht möglich."
+      ]
+    },
+    {
+      "t": "Kleine Geheimnisse",
+      "list": [
+        "Im Menü läuft die Figur von selbst und schwingt zwischen den Spuren hin und her – das ist nur die Vorschau.",
+        "Die eingeblendeten Sprüche wechseln zufällig zwischen sechs Radio-Witzen (z. B. „Wie nennt man ein Radio, das nie ausgeht? Dauerwelle.“) und sieben Musik-Fakten."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Mein Bestwert oder die Top 10 sind weg – warum?",
+      "a": "Beides wird im Speicher deines Browsers abgelegt. Ohne Google-Anmeldung starten privates Surfen, das Löschen der Website-Daten oder ein anderes Gerät/ein anderer Browser mit leerer Liste. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+    },
+    {
+      "q": "Der Knopf zeigt nur „LADE …“ oder „OFFLINE“.",
+      "a": "Das Spiel lädt erst die 3D-Grafik und die Sender-Bilder. Erscheint „OFFLINE“ mit dem Hinweis „three.js konnte nicht geladen werden“, fehlt die Internetverbindung beim ersten Start – Verbindung prüfen und neu laden."
+    },
+    {
+      "q": "Kann ich mit dem Controller spielen?",
+      "a": "Ja. Steuerkreuz oder linker Stick wechseln die Spur (links/rechts), hoch springt, runter rutscht. A springt und startet, Start oder B pausiert."
+    },
+    {
+      "q": "Warum wurde ich getroffen, obwohl ich gesprungen bin?",
+      "a": "Wahrscheinlich war es ein blaues, hohes Hindernis. Darüber kommst du nicht, du musst die Spur wechseln. Oder du bist zu früh gesprungen und vor dem Hindernis gelandet."
+    },
+    {
+      "q": "Gibt es einen Mehrspieler-Modus?",
+      "a": "Nein, Radio Surfer ist ein Einzelspieler-Spiel. Du kannst aber mit Freunden reihum spielen und euch in die Top 10 eintragen."
+    }
+  ]
+}

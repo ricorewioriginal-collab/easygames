@@ -1,0 +1,180 @@
+{
+  "id": "huepfstrasse",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Hüpfstraße ist ein Endlos-Hüpfspiel im Klötzchen-Look. Deine Figur hüpft Feld für Feld nach vorn über Wiesen, Straßen, Flüsse und Gleise. Jede neue Reihe, die du zum ersten Mal erreichst, ist ein Punkt.",
+        "Es gibt kein Ziel und kein Ende – du versuchst, so weit wie möglich zu kommen. Die Runde ist vorbei, wenn dich ein Auto oder Zug erwischt, du ins Wasser fällst, ein Baumstamm dich aus dem Bild trägt oder die Funk-Drohne dich schnappt."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "p": [
+        "Nach dem Ladebildschirm kommt der Titel „Hüpf so weit du kannst!“. Tippe, drücke Enter oder A am Controller. Oben im Menü stehen dein Rekord (🏆) und deine Münzen (🪙)."
+      ],
+      "list": [
+        "🐾 Los hüpfen!: Endlos-Modus mit einer neuen, zufälligen Strecke.",
+        "📅 Tagesstrecke: jeden Tag dieselbe Strecke für alle. Darunter steht dein bestes Ergebnis von heute.",
+        "🧸 Figuren: der Figuren-Laden mit 13 Figuren.",
+        "🏅 Rekorde: Rekord, heutiges Tagesergebnis, gesammelte Münzen, Spiele, wie oft du überfahren wurdest, ins Wasser gefallen bist, vom Zug oder der Drohne erwischt wurdest, und wie viele Figuren du hast.",
+        "⚙️ Optionen: Soundeffekte, Musik, Vibration und Sparmodus (ohne Schatten, gilt nach dem Neuladen).",
+        "📖 Anleitung: Regeln und Steuerung im Spiel."
+      ]
+    },
+    {
+      "t": "Die Reihen und ihre Gefahren",
+      "list": [
+        "Wiese: sicher. Bäume und Steine versperren einzelne Felder – dort kannst du nicht hin. Auf manchen Feldern liegen Münzen.",
+        "🚗 Straße: Autos und Laster fahren in eine Richtung. Laster sind fast doppelt so lang wie Autos. Je weiter du kommst, desto schneller und dichter der Verkehr. Auch auf Straßen liegen manchmal Münzen.",
+        "🌊 Fluss mit Baumstämmen: Spring nur auf einen Stamm. Er trägt dich mit; erreichst du dabei den Rand, heißt es „Abgetrieben!“. Auf Stämmen darfst du auch seitlich hüpfen.",
+        "🌊 Fluss mit Seerosen: Die Seerosen stehen still. Es gibt immer einen durchgehenden Weg über die Seerosen.",
+        "🚆 Gleise: Blinkt das rote Licht und bimmelt es, kommt etwa anderthalb Sekunden später ein sehr schneller Zug.",
+        "🛸 Funk-Drohne: Sobald du losgehüpft bist, schiebt sich das Bild langsam von selbst nach vorn – mit der Zeit immer schneller. Fällst du zu weit zurück (durch Trödeln oder Rückwärtshüpfen), schnappt dich die Drohne.",
+        "Die Spielfläche ist 9 Felder breit. Am Rand geht es nicht weiter."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch: kurz tippen = einen Schritt vorwärts, wischen = in die Wischrichtung (links, rechts, zurück oder vorwärts).",
+        "Tastatur: Pfeiltasten oder WASD hüpfen in die Richtung, Leertaste = vorwärts, Esc oder P Pause. Im Menü Pfeiltasten und Enter.",
+        "Gamecontroller: Steuerkreuz oder linker Stick hüpfen, A = vorwärts, B oder Start = Pause. Im Menü Steuerkreuz und A, B zurück.",
+        "Drückst du während eines Hüpfers schon die nächste Richtung, wird sie gleich danach ausgeführt.",
+        "Im Pausenmenü: ▶ Weiter, ↻ Neu starten, ⚙️ Optionen, 📖 Steuerung, ⏹ Zum Menü."
+      ]
+    },
+    {
+      "t": "Punkte, Gebiete und Ende einer Runde",
+      "list": [
+        "Punkte = die weiteste erreichte Reihe. Zurückhüpfen und wieder vor zählt nicht doppelt.",
+        "Alle 60 Reihen beginnt ein neues Gebiet: Frühlingswiese (0–59), Sommerfeld (60–119), Herbstwald (120–179), Winterland (180–239), Neonnacht (240–299). Danach geht es wieder mit der Frühlingswiese los.",
+        "Oben siehst du die Punkte, deine Münzen und deinen Rekord.",
+        "Am Ende zeigt die Karte den Grund („Überfahren! 🚗“, „Vom Zug erwischt! 🚆“, „Platsch! 🌊“, „Abgetrieben! 🪵“, „Die Drohne hat dich! 🛸“), Punkte, Rekord, eingesammelte Münzen, das Gebiet und wie viele Münzen dir bis zur nächsten Figur fehlen.",
+        "Knöpfe am Ende: ↻ Nochmal, 🧸 Figuren, 📤 Teilen (Ergebnis mit Link), ☰ Menü."
+      ]
+    },
+    {
+      "t": "Fortschritt und Speichern",
+      "list": [
+        "Rekord, Münzen, gekaufte Figuren, Statistik, Tagesergebnis und Einstellungen werden automatisch auf dem Gerät gespeichert.",
+        "Der Rekord (Endlos und Tagesstrecke) landet in der Rangliste und wird mit deinem Konto gespeichert.",
+        "Münzen werden nach jeder Runde deinem Münzkonto gutgeschrieben – auch wenn die Runde schlecht lief.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Auf Wiesen kurz durchatmen und die nächste Straße anschauen, bevor du losspringst.",
+        "Laster sind länger, als sie aussehen – lieber eine größere Lücke abwarten.",
+        "Auf Baumstämmen nicht lange stehen bleiben, sonst treibst du an den Rand.",
+        "Hörst du das Bimmeln, bleib vor dem Gleis stehen, bis der Zug durch ist.",
+        "Aber trödle nicht zu lange: Das Bild läuft weiter, und die Drohne holt dich."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Bleib möglichst in der Mitte der Spielfläche. Dann hast du nach beiden Seiten Platz zum Ausweichen und Stämme tragen dich nicht so schnell an den Rand.",
+        "Benachbarte Flussreihen fließen meist in entgegengesetzte Richtungen. Hüpf auf einem Stamm seitlich, um wieder Richtung Mitte zu kommen.",
+        "Ein Auto erwischt dich erst in der zweiten Hälfte des Hüpfers – du darfst also knapp hinter einem Auto losspringen.",
+        "Auf mehrspurigen Straßen eine Spur nach der anderen nehmen und auf der freien Lücke warten, statt alles in einem Zug zu versuchen.",
+        "Seerosen sind ungefährlich, wenn du ruhig bleibst – sie bewegen sich nicht. Such den durchgehenden Weg."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Gib Hüpfer im Takt vor: Eine Eingabe während des Hüpfers wird direkt danach ausgeführt. So rennst du flüssig über breite Wiesen.",
+        "Das Bild schiebt sich ab dem ersten Hüpfer immer schneller nach vorn (bis zu einer Höchstgeschwindigkeit). Hohe Punktzahlen brauchen deshalb ein gleichmäßiges Tempo statt langer Pausen.",
+        "Bis etwa Reihe 220 wird alles schwerer: schnellerer Verkehr, kürzere Stämme, häufigere Züge. Danach bleibt die Schwierigkeit gleich.",
+        "In der Tagesstrecke ist alles jeden Tag gleich aufgebaut – merke dir knifflige Stellen für den nächsten Versuch."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Im Wasser neben den Stamm springen – auf Stämmen genau zielen, an den Enden ist kaum Spielraum.",
+        "Zu weit zurückhüpfen, um einem Auto auszuweichen. Die Drohne wartet nicht.",
+        "Auf einem Stamm bis zum Rand mitfahren.",
+        "Vor einem Gleis stehen bleiben, obwohl kein Licht blinkt – dann lieber sofort rüber."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Strategie je Gebiet",
+      "list": [
+        "Frühlingswiese (Reihe 0–59): Die ersten Reihen sind eine sichere Startwiese. Verkehr ist langsam, Straßenabschnitte kurz. Ideal zum Münzensammeln.",
+        "Sommerfeld (60–119): breitere Straßen und Flüsse, erste längere Abschnitte. Achte auf Laster.",
+        "Herbstwald (120–179): spürbar schnellere Autos, Stämme werden kürzer. Seitliches Hüpfen auf Stämmen wird wichtig.",
+        "Winterland (180–239): fast höchste Schwierigkeit, Züge kommen häufiger. Bleib in der Mitte.",
+        "Neonnacht (240–299) und danach: volle Schwierigkeit. Das Bild läuft schnell – ruhig, aber ohne Pausen hüpfen."
+      ]
+    },
+    {
+      "t": "Alle Figuren und Preise",
+      "p": [
+        "Figuren kaufst du im Figuren-Laden (🧸) mit Münzen. Mit ◀ und ▶ blätterst du, der große Knopf kauft oder wählt aus. Alle Figuren spielen sich gleich – sie sehen nur anders aus."
+      ],
+      "list": [
+        "Rico – von Anfang an: der Moderator mit Bart, Nasenring und Mikro.",
+        "Kleiner Flitzer – 100 Münzen",
+        "Pingu – 100 Münzen",
+        "Flinker Fuchs – 100 Münzen",
+        "Glamour-Star – 150 Münzen",
+        "Waldläuferin (mit weißem Hund) – 150 Münzen",
+        "Hallen-Fan – 150 Münzen",
+        "Robo – 150 Münzen",
+        "Panda – 150 Münzen",
+        "Astronautin – 200 Münzen",
+        "Mietze – 200 Münzen",
+        "Dino – 250 Münzen",
+        "Einhorn – 300 Münzen",
+        "Für alle 12 Figuren zum Kaufen brauchst du zusammen 2000 Münzen."
+      ]
+    },
+    {
+      "t": "So holst du Höchstpunkte",
+      "list": [
+        "Punkte gibt es nur für neue Reihen. Münzen erhöhen die Punktzahl nicht – sammle sie nur, wenn sie auf deinem Weg liegen oder du Figuren kaufen willst.",
+        "Münzen gibt es auf Wiesen und gelegentlich auf Straßen, nie im Fluss oder auf Gleisen.",
+        "Ein Signal alle 25 Reihen zeigt dir, dass du gut unterwegs bist.",
+        "Den Rekord siehst du während der Runde oben; ab dann zählt jede Reihe als neuer Rekord."
+      ]
+    },
+    {
+      "t": "Statistik und Wissenswertes",
+      "list": [
+        "Unter 🏅 Rekorde zählt das Spiel, wie oft du überfahren wurdest, im Wasser gelandet bist, vom Zug oder von der Drohne erwischt wurdest – so siehst du, woran du am häufigsten scheiterst.",
+        "Nach jeder Runde verrät dir die Endkarte, wie viele Münzen bis zur günstigsten noch fehlenden Figur fehlen, oder dass du sie dir jetzt holen kannst.",
+        "Die Tagesstrecke wechselt um Mitternacht."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Meine Münzen und Figuren sind weg.",
+      "a": "Der Spielstand liegt im Browser des Geräts. Ohne Google-Anmeldung fängst du nach dem Löschen der Website-Daten, auf einem anderen Gerät oder im privaten Tab neu an. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+    },
+    {
+      "q": "Warum hat mich die Drohne erwischt, obwohl ich nicht zurückgehüpft bin?",
+      "a": "Das Bild schiebt sich langsam von selbst weiter. Wer zu lange an einer Stelle wartet, fällt zurück und wird geschnappt."
+    },
+    {
+      "q": "Das Spiel ruckelt.",
+      "a": "Schalte in den Optionen den Sparmodus ein (ohne Schatten) und lade die Seite neu."
+    },
+    {
+      "q": "Kann ich zu zweit spielen?",
+      "a": "Es gibt keinen Mehrspieler-Modus. Mit der Tagesstrecke könnt ihr aber auf derselben Strecke um die meisten Reihen wetteifern und das Ergebnis mit 📤 Teilen verschicken."
+    },
+    {
+      "q": "Ich höre keinen Ton.",
+      "a": "Browser spielen Ton erst nach der ersten Berührung ab. Prüfe außerdem in den Optionen Soundeffekte und Musik."
+    }
+  ]
+}

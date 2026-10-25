@@ -1,0 +1,203 @@
+{
+  "id": "stadt-land-plus",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Stadt Land Plus ist das moderne Stadt-Land-Fluss. Eine 3D-Buchstaben-Trommel lost einen Buchstaben aus. Dann schreibt jeder zu jeder Spalte ein Wort mit diesem Anfangsbuchstaben. Stadt und Land sind immer dabei, das dritte Thema wählst du frei.",
+        "Nach der eingestellten Zahl an Runden gewinnt, wer die meisten Punkte gesammelt hat. Seltene Antworten bringen mehr Punkte als Antworten, die auch andere haben."
+      ]
+    },
+    {
+      "t": "Hauptmenü",
+      "list": [
+        "🧠 Solo spielen: allein oder gegen bis zu 5 Computer-Mitspieler.",
+        "🌐 Online & Handys: Der Fernseher oder PC wird zur Spielleitung, alle schreiben auf dem eigenen Handy.",
+        "📱 Mitspielen: mit dem Code eines Fernsehers einem Online-Spiel beitreten.",
+        "📚 Nachschlagen: Städte, Länder und Flüsse mit Infos und 3D-Globus nachschlagen – auch außerhalb des Spiels.",
+        "⚙️ Einstellungen: Geräusche, Musik, Vibration und „Bildschirmtastatur immer zeigen“.",
+        "❓ Anleitung: die Regeln im Spiel.",
+        "Oben im Menü stehen deine Siege, dein Rekord (beste Gesamtpunktzahl) und die Zahl deiner Wörter.",
+        "Siege, Rekord, Wörter und Einstellungen werden im Browser gespeichert. Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    },
+    {
+      "t": "Spiel einrichten",
+      "list": [
+        "Kategorien: 🏙️ Stadt und 🌍 Land sind fest. Als drittes Thema wählst du Fluss, Tier, Beruf, Vorname, Pflanze, Essen & Trinken, Sportart, Musikinstrument, Gegenstand, Farbe, Marke, Automarke, Berg & Gebirge, Körperteil oder eine eigene Kategorie mit eigenem Namen (z. B. Promi oder Film).",
+        "Weitere Spalten (optional): bis zu drei zusätzliche Themen – höchstens 6 Spalten insgesamt.",
+        "Runden: 3, 5, 8 oder 10.",
+        "Zeit pro Runde: 45 s, 1 min, 1,5 min, 2 min oder 3 min.",
+        "Computer-Mitspieler: keine bis 5 (Atlas-Anton, Lexi, Globus-Gabi, Quiz-Quentin, Wortwitz-Wanda), Stärke Leicht, Mittel oder Profi.",
+        "Prüfung: 🤖 Automatisch, 👍 Abstimmung oder 🧑‍⚖️ Moderator.",
+        "Ohne diese Buchstaben: Tippe Buchstaben an, die nicht ausgelost werden sollen. Von Anfang an sind Q, X und Y ausgeschlossen (bis zu 20 Buchstaben möglich).",
+        "STOPP-Taste: Wer fertig ist, beendet die Runde – dann bleiben noch 10 Sekunden.",
+        "Tippfehler verzeihen, Zusammengesetzte Wörter zählen (Zwergmaus, Apfelbaum …) und Unbekannte Wörter zählen (bei automatischer Prüfung) schaltest du einzeln an oder aus."
+      ]
+    },
+    {
+      "t": "Ablauf einer Runde",
+      "steps": [
+        "Die Trommel dreht sich und lost einen Buchstaben aus. Jeder Buchstabe kommt pro Spiel nur einmal, bis alle erlaubten verbraucht sind.",
+        "Schreib zu jeder Spalte ein Wort mit diesem Anfangsbuchstaben. Ä zählt als A, Ö als O, Ü als U. Fängt ein Wort mit dem falschen Buchstaben an, wird das Feld rot markiert.",
+        "Die Uhr läuft ab, in den letzten 10 Sekunden wird sie hektisch. Mit STOPP beendest du die Runde früher; alle anderen haben dann noch 10 Sekunden.",
+        "Auswertung: Jede Antwort wird geprüft und bekommt Punkte. Tippe eine Antwort an, um Infos dazu zu sehen.",
+        "Mit „▶ Nächste Runde“ geht es weiter, nach der letzten Runde kommt „🏆 Zur Siegerehrung“."
+      ]
+    },
+    {
+      "t": "Punkte",
+      "list": [
+        "20 Punkte: Nur du hast in dieser Spalte etwas Gültiges.",
+        "10 Punkte: Deine Antwort ist gültig und sonst hat niemand dieselbe.",
+        "5 Punkte: Jemand anderes hat dasselbe geschrieben.",
+        "0 Punkte: falsch, falscher Anfangsbuchstabe oder leer.",
+        "Gleich ist gleich, auch wenn es anders geschrieben ist: „München“ und „muenchen“ zählen als dieselbe Antwort.",
+        "In der Siegerehrung siehst du das Podest, das längste gültige Wort, wie oft jemand allein etwas wusste (20 Punkte) und alle Buchstaben des Spiels."
+      ]
+    },
+    {
+      "t": "So prüft die Wissensdatenbank",
+      "list": [
+        "Sie kennt alle 250 Länder und Gebiete, über 33.000 Städte (jede deutsche Gemeinde und die Städte der Welt, auch mit deutschem Namen wie Mailand oder Kopenhagen), viele Flüsse und große Wortlisten.",
+        "Egal sind: Groß- und Kleinschreibung, Umlaute (ue = ü), Akzente, Artikel (der, die, das), weibliche Formen (Ärztin) und die Mehrzahl.",
+        "Kleine Tippfehler erkennt sie („Hambrug“ wird zu Hamburg), ein vertauschter Buchstabe zählt als ein Fehler. Bei langen Wörtern ab 9 Buchstaben sind zwei Fehler erlaubt.",
+        "Zusammengesetzte Wörter wie Zwergmaus gelten als „wahrscheinlich richtig – eine Art Maus“.",
+        "Bundesländer (z. B. Bayern) sind beim Land unsicher: „Bundesland – kein eigener Staat“. Historische Länder ebenfalls.",
+        "Eigene Kategorien kann die Datenbank nicht prüfen – da entscheidet die Runde.",
+        "🤖 Automatisch: Die Datenbank entscheidet. 👍 Abstimmung: Bei unsicheren Wörtern stimmen die anderen mit 👍/👎 ab. 🧑‍⚖️ Moderator: Eine Person gibt jede Antwort frei oder streicht sie und kann auf Wunsch selbst mitspielen oder nur leiten."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch/Handy: in die Felder tippen, „Weiter“ auf der Handytastatur springt zur nächsten Spalte, unten der STOPP-Knopf. In der Auswertung Antworten antippen für Infos, 👍/👎 zum Abstimmen.",
+        "Tastatur: einfach tippen, Enter oder Tab springt zur nächsten Spalte. In den Menüs Pfeiltasten und Enter, Esc zurück bzw. Pause.",
+        "Gamecontroller: Mit dem Steuerkreuz bedienst du die Bildschirmtastatur. A tippt, B löscht, X setzt ein Leerzeichen, Y oder RB springt zur nächsten Spalte, Start ruft STOPP. In der Auswertung bringt Start dich weiter.",
+        "Pausenmenü: ▶ Weiter, ⚙️ Einstellungen, ✕ Spiel beenden."
+      ]
+    },
+    {
+      "t": "Online & Handys",
+      "steps": [
+        "Am Fernseher oder PC „🌐 Online & Handys“ wählen. Es erscheinen Code, QR-Code und „🔗 Link kopieren“.",
+        "Mitspieler scannen den QR-Code, öffnen den Link oder tippen auf ihrem Handy „📱 Mitspielen“ und geben den Code ein – das geht von überall.",
+        "Wer am großen Bildschirm selbst mitschreiben will, setzt „Ich spiele hier am Bildschirm mit (Tastatur/Gamepad)“.",
+        "Bei Prüfung „Moderator“ legst du fest, wer moderiert (der Fernseher oder ein Handy) und ob der Moderator mitspielt.",
+        "Über „⚙️ Kategorien & Regeln“ stellst du das Spiel ein, dann „▶ Spiel starten“. Es braucht mindestens 2 Teilnehmer (Computer-Mitspieler zählen mit).",
+        "Der Fernseher zeigt Buchstabe, Uhr und die große Auswertung, die Handys das Schreibblatt, die Abstimmung und die eigenen Punkte."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Schreib zuerst die leichten Spalten, dann die schweren. Ein leeres Feld bringt nie Punkte.",
+        "Bei Stadt helfen kleinere deutsche Orte – jede deutsche Gemeinde zählt.",
+        "Länder mit deutschem Namen schreiben (Österreich, Elfenbeinküste); auch Kurzformen wie Holland, England oder USA werden erkannt.",
+        "Keine Angst vor Rechtschreibung: Umlaute, Groß/klein und kleine Tippfehler sind egal.",
+        "Übe vorher im 📚 Nachschlagen: Welche Städte mit Q gibt es?"
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Seltene Antworten lohnen sich: Eine Stadt, die sonst keiner hat, gibt 10 statt 5 Punkte.",
+        "Ist eine Spalte für alle schwer, lohnt sich jedes Wort – allein gewusst sind es 20 Punkte.",
+        "Gegen Computer-Mitspieler: Sie wählen bekannte, große Städte. Nimm lieber eine kleine Stadt.",
+        "Profi-Computer rufen gern STOPP, sobald sie fertig sind. Füll die Spalten deshalb zügig und nicht in Schönschrift.",
+        "Bei der Abstimmung gilt eine Antwort ohne Stimmen nach der Datenbank; bei Gleichstand der Stimmen zählt sie als richtig."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Zusammengesetzte Wörter retten schwere Buchstaben: Kennt die Datenbank das Wort nicht, aber das Ende (wie bei „Zwergmaus“ die Maus), gilt es als wahrscheinlich richtig – solange „Zusammengesetzte Wörter zählen“ an ist. Viele Wörter wie Zitronenbaum oder Kinderarzt stehen sogar direkt in den Listen.",
+        "Beim Beruf ist die weibliche Form genauso gültig (Ärztin, Lehrerin).",
+        "Für Land gibt es mit Q, X und Y keinen Staat – deshalb sind diese Buchstaben am Anfang ausgeschlossen. Schaltest du sie ein, ist die Land-Spalte für alle leer.",
+        "Mit „Ohne diese Buchstaben“ machst du das Spiel leichter (C, J, V weg) oder schwerer (nur seltene Buchstaben übrig lassen).",
+        "Eine eigene Kategorie wird nicht geprüft – macht vorher aus, was gilt."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Bundesland als Land eintragen (Bayern, Sachsen) – das ist unsicher und gilt bei automatischer Prüfung nicht.",
+        "Den Artikel weglassen ist kein Problem, aber das Wort muss nach dem Artikel mit dem richtigen Buchstaben anfangen.",
+        "Zu spät tippen: Nach einem STOPP bleiben nur 10 Sekunden.",
+        "Unbekannte Wörter verlassen sich auf die Einstellung „Unbekannte Wörter zählen“ – ist sie aus, bringen sie bei automatischer Prüfung nichts."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Lösungshilfe für schwere Buchstaben",
+      "p": [
+        "Diese Beispiele kennt die Datenbank sicher. Für Land gibt es mit Q, X und Y keine Antwort."
+      ],
+      "list": [
+        "C – Land: Chile, China, Costa Rica · Stadt: Cottbus, Chemnitz, Chennai · Fluss: Colorado, Columbia · Tier: Chamäleon, Chinchilla",
+        "E – Land: Ecuador, Estland, Eritrea · Stadt: Essen, Edmonton · Fluss: Elbe, Euphrat · Tier: Echse, Eichelhäher",
+        "I – Land: Indien, Indonesien, Irland · Stadt: Istanbul, Incheon · Fluss: Indus, Irtysch · Tier: Igel, Iltis, Ibis",
+        "J – Land: Japan, Jamaika, Jordanien · Stadt: Jakarta, Johannesburg, Jaipur · Fluss: Jangtse, Jenissei · Tier: Jaguar, Jak",
+        "O – Land: Österreich, Oman, Osttimor · Stadt: Osaka, Omsk · Fluss: Ob, Oranje, Orinoko · Tier: Ochse, Ohrwurm",
+        "Q – Stadt: Quedlinburg, Quito, Qingdao · Fluss: Queich · Tier: Qualle, Quastenflosser, Quokka",
+        "U – Land: Ungarn, Ukraine, Uganda, Uruguay, Usbekistan · Stadt: Ulm, Ufa, Ulan Bator · Fluss: Ural, Uruguay · Tier: Uhu, Unke",
+        "V – Land: Vereinigte Staaten, Vereinigtes Königreich, Vereinigte Arabische Emirate · Stadt: Valencia, Varanasi · Fluss: Volta, Vardar · Tier: Varan, Vielfraß, Vogelspinne",
+        "X – Stadt: Xanten, Xi’an, Xiamen · Fluss: Xingu · Tier: Xerus",
+        "Y – Stadt: Yokohama, Yaoundé, Ypsilanti · Fluss: Yukon, Yamuna · Tier: Yak, Yorkshire Terrier",
+        "Z – Land: Zypern, Zentralafrikanische Republik · Stadt: Zapopan, Zhengzhou · Fluss: Ziller, Zschopau · Tier: Zander, Zebra, Zaunkönig"
+      ]
+    },
+    {
+      "t": "Wertungstabelle und Höchstpunktzahl",
+      "list": [
+        "Pro Spalte und Runde sind höchstens 20 Punkte möglich (nur du hast etwas Gültiges).",
+        "Höchstwert pro Runde = 20 × Zahl der Spalten: bei 3 Spalten 60 Punkte, bei 6 Spalten 120 Punkte.",
+        "Höchstwert pro Spiel bei 10 Runden und 6 Spalten: 1200 Punkte.",
+        "Spielst du ganz allein ohne Computer-Mitspieler, ist jede gültige Antwort automatisch allein gewusst – also 20 Punkte.",
+        "Realistisch gegen Computer: Jede einzigartige Antwort 10 Punkte, jede Spalte, in der die Computer nichts haben, 20 Punkte."
+      ]
+    },
+    {
+      "t": "Beste Strategie je Prüfmodus",
+      "list": [
+        "🤖 Automatisch: Schreib nur, was die Datenbank sicher kennt – echte Städte, Staaten, Flüsse. Unsichere Wörter zählen nur mit „Unbekannte Wörter zählen“ (zusammengesetzte Wörter mit der eigenen Einstellung).",
+        "👍 Abstimmung: Kreative, aber nachvollziehbare Antworten haben gute Chancen – die anderen stimmen ab, bei Gleichstand zählt die Antwort.",
+        "🧑‍⚖️ Moderator: Der Moderator hat das letzte Wort. Kläre vorher, ob z. B. Stadtteile oder Fantasie-Namen gelten."
+      ]
+    },
+    {
+      "t": "Computer-Gegner",
+      "list": [
+        "Leicht: schreibt nur in etwa der Hälfte der Spalten etwas, fast immer sehr bekannte Wörter.",
+        "Mittel: füllt die meisten Spalten, eher bekannte Wörter.",
+        "Profi: füllt fast alle Spalten, wählt auch seltene Wörter und ruft STOPP, wenn er fertig ist.",
+        "Computer schreiben nie etwas in eigene Kategorien."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Warum gilt mein Wort nicht?",
+      "a": "Prüfe den Anfangsbuchstaben und tippe die Antwort in der Auswertung an – dort steht, was die Datenbank erkannt hat. Unbekannte Wörter zählen bei automatischer Prüfung nur, wenn „Unbekannte Wörter zählen“ an ist."
+    },
+    {
+      "q": "Das Handy verbindet sich nicht.",
+      "a": "Alle Geräte brauchen Internet. Prüfe den Code vom Fernseher oder scanne den QR-Code erneut. Die Lobby am Fernseher muss offen bleiben."
+    },
+    {
+      "q": "Wie spiele ich mit dem Controller?",
+      "a": "Schließ den Controller an – es erscheint „🎮 Controller verbunden – Bildschirmtastatur bereit“. Mit dem Steuerkreuz wählst du Buchstaben, A tippt, B löscht, Y/RB nächste Spalte, Start STOPP."
+    },
+    {
+      "q": "Meine Statistik ist weg.",
+      "a": "Siege, Rekord und Wörter werden im Browser gespeichert. Ohne Google-Anmeldung sind sie nach dem Löschen der Website-Daten oder auf einem anderen Gerät nicht da. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+    },
+    {
+      "q": "Kann ich ohne Internet spielen?",
+      "a": "Solo und Nachschlagen funktionieren mit geladener Seite auch ohne Netz. Online & Handys braucht eine Verbindung."
+    }
+  ]
+}

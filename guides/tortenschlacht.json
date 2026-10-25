@@ -1,0 +1,228 @@
+{
+  "id": "tortenschlacht",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Im Radioportal ist Tortenschlacht! Du hast 90 Sekunden, um so viele Leute wie möglich mit Sahne zu treffen: Moderatoren, Praktikantinnen, Radfahrer, DJs, Leute in den Studiofenstern, Techniker am Funkturm, Fallschirmspringer, Ballonfahrer, Jetpack-Flieger, menschliche Kanonenkugeln, den Werbeflieger, den Chef und den goldenen Fan. Alle Figuren sind frei erfunden – und keiner ist böse, nur eingesaut.",
+        "Wie bei der Moorhuhn-Jagd trifft jeder Wurf sofort dort, wo du hinzielst; die fliegende Torte ist nur Optik. Pass aber auf den Konditor auf: Er wirft zurück."
+      ]
+    },
+    {
+      "t": "Hauptmenü",
+      "list": [
+        "🎂 Solo – 90 Sekunden: allein gegen die Uhr, die breite Radiolandschaft scrollt, wenn du an den Bildschirmrand zielst.",
+        "👥 Mehrspieler: bis zu 4 Spieler an einem Bildschirm mit Maus/Touch, Tastatur und Gamecontrollern.",
+        "🌐 Online & Handys: Mitspieler scannen den QR-Code oder öffnen den Link – von überall, das Handy wird zum Zielgerät.",
+        "📖 So geht's: die Spielregeln im Spiel.",
+        "⚙️ Einstellungen: Ton, Vibration und Sparmodus (weniger Details).",
+        "📻 Radio: einen Sender wählen, der live während des ganzen Spiels läuft (z. B. RicoReWi Radio, YourTime-FM, Rapradio 24, Schlagerpop 24, Chartradio 24, Clubradio 24, AnMaCha 24, RadioFloh!, Rockradio 24, Christmasradio 24, Kultradio 24, Zocker-FM, Special-Radio).",
+        "Unter den Knöpfen stehen Rekord, Zahl der Schlachten, eingesaute Leute insgesamt und deine beste Serie."
+      ]
+    },
+    {
+      "t": "Waffen",
+      "list": [
+        "🎂 Torte: 8 pro Ladung, trifft sofort, ein Treffer reicht für jede Figur. Ist die Ladung leer, wird automatisch nachgeladen (0,7 Sekunden).",
+        "💦 Sahnespritze: gedrückt halten, 30 Spritzer pro Ladung, 3 Spritzer pro Person. Ein Spritzer daneben setzt die Serie nicht zurück.",
+        "🍒 Kirschbombe: bekommst du für jeden Treffer am goldenen Fan. Sie trifft alle Figuren in einem großen Umkreis auf einmal. Auswählen mit Q, Y, Mausrad oder 🎂; nach der letzten Bombe springt die Waffe zurück auf die Torte."
+      ]
+    },
+    {
+      "t": "Ziele und Punkte",
+      "list": [
+        "Moderator 10 (steht am Mikrofon)",
+        "Praktikantin 15",
+        "Sender-Aufsteller 15",
+        "DJ 20 (taucht kurz hinter dem Pult auf)",
+        "Leute im Fenster 20",
+        "Radfahrer 25 (sehr schnell)",
+        "Konditor 25",
+        "Techniker am Funkturm 30",
+        "Fallschirmspringer 30 (landet er, läuft er als Praktikantin weiter)",
+        "Ballonfahrer 40, Kanonenkugel 40, Chef 40, goldener Fan 40",
+        "Jetpack 50",
+        "Werbeflieger mit Banner 75 (erst nach den ersten 12 Sekunden)",
+        "Ganz nah vorn 5 – manchmal taucht jemand direkt vor dir auf"
+      ]
+    },
+    {
+      "t": "Kopftreffer, Serie und Multiplikator",
+      "list": [
+        "Kopftreffer zählen doppelt.",
+        "Jeder Treffer in Folge erhöht die Serie. Alle 4 Treffer steigt der Multiplikator um 1, höchstens bis ×5 (ab 16 Treffern in Folge).",
+        "Alle 5 Treffer in Folge gibt es eine „SAHNE-SERIE!“-Einblendung.",
+        "Ein Fehlwurf mit Torte oder Kirschbombe setzt die Serie zurück, ebenso Sahne im Gesicht.",
+        "Punkte pro Figur = Grundpunkte × Multiplikator × 2 bei Kopftreffer."
+      ]
+    },
+    {
+      "t": "Der Konditor und der Chef",
+      "p": [
+        "Der Konditor erscheint nach etwa 8 Sekunden. Er läuft kurz, bleibt stehen, holt aus und wirft dann eine Torte auf dich. Triff ihn vorher, oder schieß seine Torte im Flug ab (Bonuspunkte, die Serie läuft weiter). Landet die Torte, klebt dir gut 2 Sekunden Sahne im Gesicht – du kannst nicht werfen und deine Serie ist weg.",
+        "Triffst du den Chef, ist er sauer: 6 Sekunden lang rennen und fliegen alle schneller."
+      ]
+    },
+    {
+      "t": "Geheimnisse in der Kulisse",
+      "list": [
+        "Das Schild „Schön, dass du da bist!“ gibt +10 Sekunden (und 20 Punkte) – einmal pro Spiel.",
+        "Jedes ON-AIR-Schild an den Studiogebäuden: +25 Punkte.",
+        "Jede Lampe oben an den Funktürmen: +25 Punkte.",
+        "Wirfst du eine Torte in ein leeres Fenster, schaut jemand verärgert heraus – ein neues Ziel für 20 Punkte."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Maus: zielen und klicken (mit der Spritze gedrückt halten), rechte Taste lädt nach, Mausrad wechselt die Waffe.",
+        "Touch: antippen wirft, 🎂 wechselt die Waffe, 🔄 lädt nach. Im Solo scrollt die Landschaft, wenn du an den Rand zielst.",
+        "Tastatur: Pfeile oder WASD zielen (Shift schneller), Leertaste wirft, R lädt nach, Q (auch Tab oder E) wechselt die Waffe, Esc oder P pausiert.",
+        "Gamecontroller: linker Stick oder Steuerkreuz zielt, A oder RT wirft, X lädt nach, Y, RB oder LB wechselt, Start pausiert.",
+        "Handy als Zielgerät (online): Finger auf dem Zielfeld bewegen, WERFEN tippen (mit der Spritze halten), 🔄 lädt nach.",
+        "Pause (☰): Weiter, 📻 Radio, Ton an/aus, Zum Menü. Im Solo pausiert das Spiel automatisch, wenn du die Seite verlässt."
+      ]
+    },
+    {
+      "t": "Mehrspieler an einem Bildschirm",
+      "steps": [
+        "Im Menü „👥 Mehrspieler“ wählen.",
+        "Jeder tritt mit seinem Gerät bei: „🖱️ Mit Maus/Touch mitspielen“, Leertaste für die Tastatur, A am Controller (B nimmt den Controller wieder heraus).",
+        "Mindestens 2 und höchstens 4 Spieler. Mit „▶ Los geht's!“ (am Controller auch Start) beginnt die Schlacht.",
+        "Jeder hat ein farbiges Fadenkreuz, das ganze Feld ist sichtbar (kein Scrollen). Mit mehr Spielern sind auch mehr Figuren unterwegs; der Konditor zielt auf einen zufälligen Spieler.",
+        "Nach 90 Sekunden zeigt die Rangliste Punkte, Treffer, Kopftreffer, beste Serie und Trefferquote. „Nochmal ▶“ startet mit denselben Spielern."
+      ]
+    },
+    {
+      "t": "🌐 Online & Handys",
+      "steps": [
+        "Der Fernseher oder PC wählt „🌐 Online & Handys“ und zeigt einen vierstelligen Code und einen QR-Code.",
+        "Mitspieler scannen den QR-Code oder öffnen den Link, geben ihren Namen ein und tippen „🎂 Mitmachen“. Das klappt von überall.",
+        "Online reicht 1 Spieler zum Start; zusätzlich können Maus, Tastatur und Controller am Fernseher mitspielen – insgesamt bis zu 4.",
+        "Geworfen wird auf dem Fernseher, das Handy ist das Zielgerät. Wer nach dem Start dazukommt, ist ab der nächsten Runde dabei.",
+        "Am Ende sieht jedes Handy seinen Platz und seine Punkte."
+      ]
+    },
+    {
+      "t": "Speichern",
+      "p": [
+        "Auf deinem Gerät gespeichert werden der Solo-Rekord, die Statistik (Schlachten, eingesaute Leute, beste Serie), die Einstellungen, der gewählte Radiosender und dein Online-Name. Ein neuer Solo-Rekord wird am Ende mit „🏆 Neuer Rekord!“ angezeigt.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Die Torte reicht für alles: Ein Treffer genügt, egal ob Moderator oder Werbeflieger.",
+        "Zähl mit: Nach 8 Torten wird automatisch nachgeladen. Lade lieber in einer ruhigen Sekunde selbst nach (R, rechte Maustaste, X oder 🔄).",
+        "Wirf nicht ins Leere – jeder Fehlwurf mit der Torte kostet dich die Serie.",
+        "Achte auf das rote „!“ über dem Konditor: dann sofort auf ihn werfen."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Serie schützen: Der Multiplikator steigt alle 4 Treffer. Lieber einen sicheren Treffer setzen als einen riskanten Weitwurf.",
+        "Stehende Moderatoren und DJs auf den Kopf treffen: doppelte Punkte, und die Serie bleibt.",
+        "Weit weg und in der Luft gibt es die meisten Punkte: Jetpack 50, Werbeflieger 75. Mit einem hohen Multiplikator ist ein Kopftreffer am Jetpack bei ×5 satte 500 Punkte wert.",
+        "Den Techniker am Funkturm nicht vergessen – klein, aber 30 Punkte.",
+        "Mit der Sahnespritze verlierst du bei einem Fehlspritzer die Serie nicht. Sie eignet sich für bewegliche Ziele, wenn du dir mit der Torte unsicher bist."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Hebe die Kirschbombe für Gedränge auf: Wenn mehrere Figuren nah beieinander stehen, triffst du alle auf einmal – jeder Treffer zählt in die Serie.",
+        "Die Torte des Konditors abzuschießen bringt Bonuspunkte und erhöht die Serie. Ziel dafür auf die Torte, die auf dich zufliegt.",
+        "Gleich am Anfang das Schild „Schön, dass du da bist!“ treffen: +10 Sekunden bedeuten mehr Zeit für Punkte.",
+        "ON-AIR-Schilder und Turmlampen sind feste Ziele ohne Risiko – ideal, wenn gerade keine Figur im Bild ist. Sie zählen als Treffer.",
+        "Den Chef triffst du am besten erst, wenn du gut im Rhythmus bist: Danach ist 6 Sekunden lang alles schneller."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Dauerfeuer mit der Torte: Leere Ladung, Nachladen und gerissene Serie.",
+        "Den Konditor ignorieren: Sahne im Gesicht blockiert dich gut 2 Sekunden und setzt die Serie auf 0.",
+        "Im Solo nicht scrollen: Die Landschaft ist breiter als der Bildschirm. Ziel an den Rand, um weitere Figuren und Geheimnisse zu finden.",
+        "Fallschirmspringer zu lange warten lassen: Nach der Landung ist er nur noch eine Praktikantin mit 15 statt 30 Punkten."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Ablauf einer Runde",
+      "list": [
+        "Sekunde 0 bis 8: Nur normale Figuren – sammel ruhig Treffer und baue die Serie auf. Jetzt das Schild „Schön, dass du da bist!“ suchen.",
+        "Ab Sekunde 8: Der Konditor kann auftauchen (immer nur einer gleichzeitig, vorn).",
+        "Ab Sekunde 12: Der Werbeflieger (75 Punkte) kann erscheinen.",
+        "Mit der Zeit werden es immer mehr Figuren gleichzeitig: anfangs bis zu 8, alle 12 Sekunden eine mehr, höchstens 17 (im Mehrspieler kommen pro weiterem Spieler welche dazu).",
+        "Ballonfahrer, Jetpack, Werbeflieger, Techniker, Chef, goldener Fan und „ganz nah“ gibt es jeweils nur einmal gleichzeitig, Fallschirmspringer höchstens zwei."
+      ]
+    },
+    {
+      "t": "Wertungstabelle (Grundpunkte, Kopftreffer ×2)",
+      "list": [
+        "Ganz nah 5 / 10",
+        "Moderator 10 / 20",
+        "Praktikantin 15 / 30, Aufsteller 15",
+        "DJ 20 / 40, Fenster 20 / 40",
+        "Radfahrer 25 / 50, Konditor 25 / 50",
+        "Techniker 30 / 60, Fallschirmspringer 30 / 60",
+        "Ballonfahrer, Kanonenkugel, Chef, goldener Fan je 40 / 80",
+        "Jetpack 50 / 100",
+        "Werbeflieger 75",
+        "Multiplikator: Treffer 1–3 in Folge ×1, ab dem 4. ×2, ab dem 8. ×3, ab dem 12. ×4, ab dem 16. ×5"
+      ]
+    },
+    {
+      "t": "Alle Geheimnisse",
+      "list": [
+        "Schild „Schön, dass du da bist!“: +10 Sekunden und 20 Punkte.",
+        "ON-AIR-Schilder auf den Studiogebäuden: je +25 Punkte (jedes nur einmal).",
+        "Turmlampen an den Funktürmen: je +25 Punkte (jede nur einmal).",
+        "Leeres Fenster bewerfen: Es erscheint jemand, der verärgert herausschaut.",
+        "Goldener Fan: bringt eine Kirschbombe.",
+        "Chef: macht alle 6 Sekunden lang schneller."
+      ]
+    },
+    {
+      "t": "So holst du Höchstpunkte",
+      "steps": [
+        "Zuerst das Zeit-Schild treffen und mit sicheren Zielen (Moderator, Praktikantin, Geheimnisse) die Serie auf ×5 bringen.",
+        "Die Serie nicht mehr reißen lassen: nur werfen, wenn du sicher triffst, bei Unsicherheit zur Spritze wechseln.",
+        "Bei ×5 gezielt auf teure Luftziele gehen: Jetpack, Werbeflieger, Ballonfahrer und Kanonenkugel.",
+        "Den goldenen Fan treffen und die Kirschbombe in eine Gruppe werfen.",
+        "Den Konditor immer zuerst treffen, sobald er stehen bleibt – sonst verlierst du deine ×5-Serie."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Warum kann ich plötzlich nicht mehr werfen?",
+      "a": "Entweder lädt deine Waffe gerade nach (Anzeige „Nachladen …“), oder der Konditor hat dich getroffen – dann klebt dir gut 2 Sekunden Sahne im Gesicht."
+    },
+    {
+      "q": "Wie bekomme ich die Kirschbombe?",
+      "a": "Triff den goldenen Fan. Danach wählst du die Bombe mit Q, Y, Mausrad oder dem 🎂-Knopf aus."
+    },
+    {
+      "q": "Wo ist mein Rekord gespeichert?",
+      "a": "Auf deinem Gerät im Browser bzw. in der App. Ohne Google-Anmeldung löschen gelöschte Browserdaten oder privates Surfen auch Rekord und Statistik. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+    },
+    {
+      "q": "Online klappt nicht – was tun?",
+      "a": "Prüfe das Internet auf beiden Geräten und den vierstelligen Code auf dem Fernseher. Meldet das Handy „Das Spiel ist voll (4 Spieler).“, sind alle Plätze belegt; läuft das Spiel schon, bist du ab der nächsten Runde dabei."
+    },
+    {
+      "q": "Das Radio spielt nicht.",
+      "a": "Das Radio braucht Internet. Erscheint „📻 Sender gerade nicht erreichbar“, wähle im Radio-Fenster einen anderen Sender. Manche Browser starten den Ton erst nach dem ersten Tippen oder Klicken."
+    },
+    {
+      "q": "Das Spiel ruckelt auf meinem Handy.",
+      "a": "Schalte in den Einstellungen den Sparmodus (weniger Details) ein."
+    }
+  ]
+}

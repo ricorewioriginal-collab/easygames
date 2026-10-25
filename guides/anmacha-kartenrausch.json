@@ -1,0 +1,243 @@
+{
+  "id": "anmacha-kartenrausch",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AnMaCha Kartenrausch 3D ist eine Sammlung von sechs Kartenspielen an einem 3D-Tisch: Stapelrausch, Farbflash, Phasenjagd, Mau-Mau, Schwimmen und Kartendomino. Jede Mitspielerin und jeder Mitspieler sitzt als 3D-Figur am Tisch.",
+        "In fünf Spielen gewinnt, wer zuerst alle Karten los ist bzw. als Erste:r das Ziel erreicht. Bei Schwimmen gewinnt, wer als Letzte:r übrig bleibt."
+      ]
+    },
+    {
+      "t": "Start, Menü und Spielerwahl",
+      "steps": [
+        "Wähle im Hauptmenü eines der sechs Spiele.",
+        "Wähle, wie gespielt wird: 🤖 Computer (1, 2 oder 3 Gegner), 👥 Ein Gerät (2, 3 oder 4 Spieler), 🌐 Online oder 📺 TV + Handys.",
+        "Stelle die Optionen ein, falls das Spiel welche hat: Stapelrausch „Zielstapel: Kurz 15 / Normal 30“, Phasenjagd „Länge: Kurz 5 / Alle 10“.",
+        "Gib deinen Namen ein und wähle deine Figur: Robo, Fuchs, Mieze, Pingu, Zorg, Hoppel, Quaki oder Krone. Beim Spiel an einem Gerät bekommt jede Person Name und Figur.",
+        "Mit „Los geht's“ startet die Partie. Beim ersten Start eines Spiels erscheint automatisch seine Anleitung; später findest du sie jederzeit unter ? oder 📖 Anleitung."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch und Maus: Karte antippen bzw. anklicken, dann das Ziel antippen (Turm, Ablage, Auslage oder Mitte). Karten, die gerade passen, leuchten. Knöpfe unter dem Tisch dienen zum Ziehen, Auslegen, Behalten, Passen, Schieben oder Klopfen.",
+        "Oben: ☰ öffnet die Pause (Weiterspielen, 📖 Anleitung, Spiel beenden), 🔊 schaltet den Ton, ? zeigt die Anleitung des laufenden Spiels.",
+        "Gamecontroller: Der rechte Stick bewegt einen Mauszeiger, A klickt damit auf Karten und Ziele. Das Steuerkreuz springt zwischen den Knöpfen der Menüs, A drückt den markierten Knopf.",
+        "Farbwahl (Farbflash) und Wunschfarbe (Mau-Mau): Nach einer Farbwahl-Karte oder einem Buben erscheint „Welche Farbe?“ mit vier Knöpfen.",
+        "Ein Gerät: Nach jedem Zug erscheint der Übergabe-Bildschirm „… ist dran – Gerät übergeben, die Karten sind verdeckt“. Erst mit Aufdecken sieht die nächste Person ihre Karten."
+      ]
+    },
+    {
+      "t": "Stapelrausch",
+      "list": [
+        "Gespielt wird mit Zahlenkarten 1 bis 12 (je 12-mal) und 18 Jokern (★).",
+        "Ziel: Werde als Erste:r deinen Zielstapel los (goldener Platz links, 15 oder 30 Karten). Nur seine oberste Karte ist offen.",
+        "In der Mitte stehen 4 Türme. Jeder beginnt mit 1 und wird lückenlos bis 12 gebaut. Unter jedem Turm steht, welche Zahl als Nächstes passt. Ein fertiger Turm (12 Karten) wird abgeräumt und später neu gemischt.",
+        "Dein Zug: Du bekommst automatisch 5 Handkarten. Spiele so viele Karten wie möglich auf die Türme – von der Hand, vom Zielstapel oder von deinen 4 Ablagen (jeweils die oberste).",
+        "★ Joker passen auf jede Zahl. Hast du alle 5 Handkarten gespielt, ziehst du sofort 5 neue.",
+        "Zum Schluss legst du eine Handkarte auf eine deiner 4 Ablagen. Damit endet dein Zug."
+      ]
+    },
+    {
+      "t": "Farbflash",
+      "list": [
+        "Kartenspiel mit vier Farben (Rot, Gelb, Grün, Blau), Zahlen 0 bis 9, Aktionskarten und schwarzen Karten. Jede:r startet mit 7 Karten.",
+        "Lege eine Karte auf die Ablage, die in Farbe oder Zahl/Zeichen zur obersten Karte passt.",
+        "Keine passt? Tippe auf den Ziehstapel. Passt die gezogene Karte, darfst du sie gleich spielen oder behalten; sonst ist die nächste Person dran.",
+        "⊘ Aussetzen: Die nächste Person wird übersprungen.",
+        "⇄ Richtungswechsel: Die Spielrichtung dreht sich (zu zweit wirkt er wie Aussetzen).",
+        "+2: Die nächste Person zieht 2 Karten und setzt aus.",
+        "★ Farbwahl (schwarz, passt immer): Du bestimmst die neue Farbe.",
+        "+4 (schwarz, passt immer): Farbe wählen, die nächste Person zieht 4 und setzt aus.",
+        "Bei der letzten Karte ruft deine Figur automatisch „Flash!“. Wer zuerst keine Karte mehr hat, gewinnt."
+      ]
+    },
+    {
+      "t": "Phasenjagd",
+      "p": [
+        "Jede:r bekommt pro Runde 10 Karten. Im Spiel sind Zahlen 1 bis 12 in vier Farben (jede doppelt), 8 Joker (★) und 4 Aussetzen-Karten (⊘). Erfülle die Phasen der Reihe nach; bei „Kurz 5“ nur die ersten fünf."
+      ],
+      "list": [
+        "Phase 1: 3 gleiche Zahlen + 3 gleiche Zahlen",
+        "Phase 2: 3 gleiche Zahlen + Folge aus 4",
+        "Phase 3: 4 gleiche Zahlen + Folge aus 4",
+        "Phase 4: Folge aus 7",
+        "Phase 5: Folge aus 8",
+        "Phase 6: Folge aus 9",
+        "Phase 7: 4 gleiche Zahlen + 4 gleiche Zahlen",
+        "Phase 8: 7 Karten einer Farbe",
+        "Phase 9: 5 gleiche Zahlen + 2 gleiche Zahlen",
+        "Phase 10: 5 gleiche Zahlen + 3 gleiche Zahlen",
+        "Dein Zug: Ziehstapel oder oberste Karte der Ablage antippen (eine Aussetzen-Karte kann man nicht von der Ablage nehmen). Hast du deine Phase, tippe die Karten an und dann „Phase auslegen“. Danach darfst du einzelne Karten an jede Auslage anlegen. Zum Schluss eine Karte abwerfen.",
+        "Begriffe: Gleiche Zahlen = Farbe egal. Folge = lückenlos aufsteigend, z. B. 4-5-6-7. Farbe = alle Karten in einer Farbe. ★ Joker ersetzt jede Karte. ⊘ Aussetzen abwerfen: Die nächste Person setzt einmal aus.",
+        "Rundenende: Hat jemand keine Karte mehr, endet die Runde. Wer seine Phase ausgelegt hat, kommt zur nächsten Phase. Restkarten zählen als Minuspunkte: 1–9 = 5, 10–12 = 10, Aussetzen = 15, Joker = 25.",
+        "Wer zuerst die letzte Phase schafft, gewinnt. Schaffen es mehrere in derselben Runde, gewinnt, wer die wenigsten Minuspunkte hat."
+      ]
+    },
+    {
+      "t": "Mau-Mau",
+      "list": [
+        "32er-Blatt (7 bis Ass) in ♣ ♠ ♥ ♦. Jede:r startet mit 5 Karten.",
+        "Lege eine Karte gleicher Farbe oder gleichen Werts auf die Ablage. Kannst du nicht, ziehst du eine Karte – passt sie, darfst du sie gleich legen oder behalten.",
+        "7: Die nächste Person zieht 2 Karten. Sie kann mit einer eigenen 7 kontern, dann zieht die übernächste 4 usw.",
+        "8: Die nächste Person setzt aus.",
+        "Bube: passt auf alles außer auf einen Buben – du wünschst dir eine Farbe.",
+        "Bleibt dir nur noch eine Karte, ruft deine Figur „Mau!“, mit der letzten Karte „Mau-Mau!“. Wer zuerst alle Karten los ist, gewinnt."
+      ]
+    },
+    {
+      "t": "Schwimmen",
+      "list": [
+        "Jede:r hat 3 Leben ❤️ und 3 Karten, in der Mitte liegen 3 offene Karten (32er-Blatt).",
+        "Gezählt wird nur eine Farbe: Ass = 11, Bube/Dame/König = 10, sonst der Kartenwert. Drei gleiche Werte (z. B. drei Damen) zählen 30,5. Bestwert: 31.",
+        "Dein Zug – eins davon: Tauschen (eine eigene Karte antippen, dann eine Karte in der Mitte), Alle tauschen (deine 3 gegen die 3 der Mitte), Schieben (nichts tun; schieben alle nacheinander, kommen 3 neue Karten in die Mitte) oder Klopfen (du bist zufrieden – alle anderen haben noch genau einen Zug).",
+        "Rundenende: Nach dem Klopfen wird gezählt. Der niedrigste Wert verliert ein Leben. Hat jemand 31, endet die Runde sofort und alle anderen verlieren ein Leben.",
+        "Ist das letzte Leben weg, „schwimmt“ man noch eine Runde; verliert man dann erneut, ist man raus. Wer als Letzte:r übrig ist, gewinnt."
+      ]
+    },
+    {
+      "t": "Kartendomino",
+      "list": [
+        "Alle 52 Karten (2 bis Ass) werden verteilt.",
+        "Wer die ♥ 7 hat, beginnt und muss sie legen.",
+        "Eine neue 7 eröffnet die Reihe ihrer Farbe. An jede Reihe passt nur die Karte direkt darunter (6, 5 … 2) oder direkt darüber (8, 9 … Ass) in derselben Farbe.",
+        "Kannst du nicht, tippe auf Passen. Wer legen kann, muss legen.",
+        "Wer zuerst alle Karten los ist, gewinnt."
+      ]
+    },
+    {
+      "t": "Online, Ein Gerät und TV + Handys",
+      "list": [
+        "🌐 Online: Du tippst auf „🏠 Raum erstellen“ und bekommst einen 4-stelligen Code, einen Link und einen QR-Code. Mitspieler treten von überall bei (bis 4 Spieler): im Hauptmenü „🌐 Online beitreten“ den Code eingeben und „🔑 Beitreten“, den Link öffnen oder den QR-Code scannen. Das Spiel wählt der Gastgeber, der mit „Spiel starten“ beginnt.",
+        "📺 TV + Handys: Dieses Gerät (TV, PC oder Tablet) zeigt den Tisch für alle. 2 bis 4 Spieler treten online mit dem eigenen Handy bei und sehen dort nur ihre eigenen Karten. „📺 TV-Tisch öffnen“ erstellt den Raum.",
+        "👥 Ein Gerät: 2 bis 4 Personen spielen abwechselnd; die Karten bleiben bis zum Aufdecken verdeckt.",
+        "🤖 Computer: 1 bis 3 Computer-Gegner mit eigenen Figuren."
+      ]
+    },
+    {
+      "t": "Ende und Speichern",
+      "p": [
+        "Am Ende zeigt das Spiel „Gewonnen! 🏆“ oder „… gewinnt!“, mit den Knöpfen Nochmal und Zum Menü. Gespeichert werden dein Name, deine Figur, die zuletzt gewählten Optionen und welche Anleitungen du schon gesehen hast – nicht aber eine laufende Partie oder eine Siegstatistik."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Achte auf die leuchtenden Karten – sie zeigen dir immer, was gerade passt.",
+        "Starte gegen 1 Computer-Gegner, um ein neues Spiel kennenzulernen, und lies die Anleitung unter ?.",
+        "Stapelrausch und Phasenjagd haben eine kurze Variante (Zielstapel 15, Phasen 5) für schnelle Partien."
+      ]
+    },
+    {
+      "t": "Stapelrausch und Phasenjagd",
+      "list": [
+        "Stapelrausch: Spiele Karten vom Zielstapel immer zuerst – nur er entscheidet über den Sieg.",
+        "Stapelrausch: Lege auf eine Ablage absteigend (z. B. 9, 8, 7), dann kannst du sie später nacheinander spielen.",
+        "Stapelrausch: Hebe Joker auf, um eine Lücke direkt unter deiner obersten Zielstapel-Karte zu schließen.",
+        "Phasenjagd: Nach dem Auslegen darfst du Karten an alle Auslagen anlegen – so wirst du deine Hand schneller los und senkst die Minuspunkte.",
+        "Phasenjagd: Wirf zuerst hohe Karten (10–12 = 10 Minuspunkte) ab, Joker (25) möglichst schnell verwenden statt halten.",
+        "Phasenjagd: Bei Folgen-Phasen (4–6) lieber die Ablage beobachten – nimm Karten, die eine Lücke schließen."
+      ]
+    },
+    {
+      "t": "Farbflash und Mau-Mau",
+      "list": [
+        "Halte schwarze Karten (Farbwahl, +4) und Buben für den Schluss oder für Notfälle zurück – sie passen fast immer.",
+        "Spiele Aussetzen, +2 und +4 vor allem dann, wenn die nächste Person nur noch wenige Karten hat.",
+        "Wähle bei Farbwahl bzw. Wunschfarbe die Farbe, von der du die meisten Karten hast.",
+        "Mau-Mau: Behalte eine 7 als Konter – wird dir eine 7 gespielt, gibst du die Strafe weiter.",
+        "Wechsle bei gleichem Wert die Farbe, wenn du in der aktuellen Farbe kaum noch Karten hast."
+      ]
+    },
+    {
+      "t": "Schwimmen und Kartendomino",
+      "list": [
+        "Schwimmen: Konzentriere dich früh auf eine Farbe mit Ass und Bildkarten.",
+        "Schwimmen: Klopfe, sobald du um die 27 Punkte hast – danach hat jede:r nur noch einen Zug.",
+        "Schwimmen: Drei gleiche Werte (30,5) sind fast so gut wie 31.",
+        "Kartendomino: Halte Karten zurück, die anderen weiterhelfen würden, und spiele zuerst dort, wo du selbst noch Karten nachlegen kannst.",
+        "Kartendomino: Eine 7 erst legen, wenn du Karten dieser Farbe hast – sonst öffnest du die Reihe nur für die anderen."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Stapelrausch: den Zug zu früh beenden. Erst alles spielen, was passt, dann eine Karte auf die Ablage legen.",
+        "Phasenjagd: Karten anlegen wollen, bevor die eigene Phase ausliegt – das geht erst danach.",
+        "Ein Gerät: Das Gerät nicht verdeckt übergeben. Erst die nächste Person tippt auf Aufdecken.",
+        "Online: Mitspieler suchen das Spiel selbst aus – das Spiel wählt aber der Gastgeber."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Beste Strategie je Spiel",
+      "list": [
+        "Stapelrausch: Zielstapel-Karte zuerst, Handkarten danach, Ablagen zuletzt. Ablagen absteigend sortieren und eine Ablage für hohe Karten (10–12) reservieren.",
+        "Farbflash: Aktionskarten gezielt gegen die Person mit den wenigsten Karten einsetzen; schwarze Karten bis zum Schluss aufheben.",
+        "Phasenjagd: Erst die Phase sichern, dann so viele Karten wie möglich anlegen. Die Runde selbst beenden, wenn deine Gegner noch viele Minuspunkte auf der Hand haben.",
+        "Mau-Mau: Achter und Siebener gegen Mitspieler mit 1–2 Karten, Bube als letzte oder vorletzte Karte.",
+        "Schwimmen: Ab 27 Punkten klopfen; mit schwacher Hand lieber tauschen als schieben.",
+        "Kartendomino: Reihen dort öffnen, wo du die längste Kette hast; Schlüsselkarten (6 und 8) zurückhalten, wenn andere sie brauchen."
+      ]
+    },
+    {
+      "t": "Phasenjagd: Lösungshilfe für jede Phase",
+      "list": [
+        "Phase 1 und 2: Paare sammeln und aus der Ablage zu Drillingen ergänzen.",
+        "Phase 3: Vierlinge sind schwer – halte einen Joker dafür zurück.",
+        "Phase 4 bis 6 (Folgen 7, 8, 9): Sammle eine durchgehende Mitte (z. B. 4 bis 9) und schließe die Ränder mit Jokern.",
+        "Phase 7: zwei Vierlinge – sammle die zwei häufigsten Zahlen deiner Hand.",
+        "Phase 8: sieben Karten einer Farbe – entscheide dich schnell für die Farbe, von der du am meisten hast.",
+        "Phase 9 und 10: Fünflinge brauchen fast immer einen oder zwei Joker; wirf keinen Joker ab.",
+        "Minuspunkte im Blick: Joker 25, Aussetzen 15, 10–12 je 10, 1–9 je 5 Punkte."
+      ]
+    },
+    {
+      "t": "Schwimmen: Wertungstabelle",
+      "list": [
+        "31 = Ass + zwei Zehner-Karten (10, Bube, Dame oder König) in einer Farbe – beendet die Runde sofort, alle anderen verlieren ein Leben.",
+        "30,5 = drei gleiche Werte in beliebigen Farben (z. B. drei Siebenen).",
+        "30 = drei Zehner-Karten einer Farbe; 29 bis 21 je nach Kombination, z. B. Ass + König einer Farbe = 21.",
+        "Es zählt immer nur die beste Farbe deiner Hand."
+      ]
+    },
+    {
+      "t": "Kleine Geheimnisse",
+      "list": [
+        "Deine Figur kommentiert die Partie: Bei der letzten Karte ruft sie „Flash!“ (Farbflash) bzw. „Mau!“ und beim Ablegen der letzten Karte „Mau-Mau!“.",
+        "Im Spiel an einem Gerät wählt jede Person ihre eigene Figur aus den acht Figuren.",
+        "Die Anleitung eines Spiels öffnet sich nur beim allerersten Start automatisch; danach merkt sich das Spiel, dass du sie gesehen hast."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Online beitreten klappt nicht.",
+      "a": "Der Code hat genau 4 Zeichen und funktioniert nur, solange der Gastgeber den Raum offen hat. Beide Geräte brauchen Internet. Alternativ den Link oder QR-Code des Gastgebers nutzen."
+    },
+    {
+      "q": "Wie spielen wir mit dem Fernseher?",
+      "a": "Öffne das Spiel auf dem Fernseher, PC oder Tablet und wähle 📺 TV + Handys und „📺 TV-Tisch öffnen“. Jedes Handy tritt per Code, Link oder QR-Code bei und zeigt nur die eigenen Karten."
+    },
+    {
+      "q": "Kann ich eine Partie speichern und später weiterspielen?",
+      "a": "Nein. Gespeichert werden nur Name, Figur, Optionen und die gesehenen Anleitungen. Eine Partie musst du am Stück spielen."
+    },
+    {
+      "q": "Wo finde ich die Regeln während des Spiels?",
+      "a": "Tippe oben auf ? oder öffne im Pausenmenü ☰ den Punkt 📖 Anleitung."
+    },
+    {
+      "q": "Das 3D läuft nicht oder ruckelt.",
+      "a": "Das Spiel braucht beim ersten Laden Internet für die 3D-Grafik. Auf schwachen Geräten hilft es, andere Tabs zu schließen."
+    },
+    {
+      "q": "Kann ich mit dem Controller spielen?",
+      "a": "Ja: Der rechte Stick bewegt einen Zeiger, A klickt auf Karten und Ziele; mit dem Steuerkreuz springst du zwischen Knöpfen."
+    }
+  ]
+}

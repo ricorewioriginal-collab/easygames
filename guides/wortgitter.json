@@ -1,0 +1,194 @@
+{
+  "id": "wortgitter",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Wortgitter ist ein Wischspiel mit Buchstaben. Im quadratischen Gitter liegen zufällige Buchstaben. Du verbindest benachbarte Felder – waagerecht, senkrecht oder schräg – zu deutschen Wörtern. Jedes Feld darf in einem Wort nur einmal vorkommen.",
+        "Ziel ist es, vor Ablauf der Zeit so viele und vor allem so lange Wörter wie möglich zu finden. Längere Wörter bringen deutlich mehr Punkte."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "p": [
+        "Beim Start lädt das Spiel zuerst das Wörterbuch („Wörterbuch wird geladen …“). Solange das läuft, sind die Stufen, das Tagesgitter und der Online-Knopf noch gesperrt."
+      ],
+      "list": [
+        "4×4 Leicht: Wörter ab 3 Buchstaben, 3 Minuten Zeit.",
+        "5×5 Mittel: Wörter ab 4 Buchstaben, 3½ Minuten Zeit.",
+        "6×6 Schwer: Wörter ab 4 Buchstaben, 4 Minuten Zeit.",
+        "📅 Tagesgitter: jeden Tag ein neues 5×5-Gitter (Stufe Mittel), das für alle Spieler gleich ist.",
+        "🌐 Online & Handys: Raum eröffnen oder per Code beitreten.",
+        "📖 Anleitung: die Kurzanleitung im Spiel.",
+        "⚙️ Einstellungen: Ton an/aus und „Ohne Zeitlimit (Zen) – nicht beim Tagesgitter“.",
+        "Unter den Stufen-Knöpfen steht dein Rekord (🏆) je Stufe, darunter die Gesamtzahl der gefundenen Wörter und gespielten Runden."
+      ]
+    },
+    {
+      "t": "Regeln und Spielablauf",
+      "list": [
+        "Ein Wort besteht aus benachbarten Feldern; auch die acht schrägen Nachbarn zählen.",
+        "Jedes Feld nur einmal pro Wort, aber in verschiedenen Wörtern beliebig oft.",
+        "Erlaubt sind alle Formen deutscher Wörter aus dem Wortfunk-Wörterbuch: Mehrzahl, Fälle, gebeugte Verben. Keine Namen und keine Abkürzungen.",
+        "ß gibt es als SS. Die Umlaute Ä, Ö und Ü kommen als eigene Buchstaben vor; Q, X und Y gibt es im Gitter nicht.",
+        "Jedes Wort zählt nur einmal. Doppelte Eingaben meldet das Spiel mit „hast du schon“.",
+        "Zu kurze Wörter („mindestens … Buchstaben“) und unbekannte Wörter („kenne ich nicht“) bringen nichts, kosten aber auch nichts.",
+        "Oben läuft die Zeitleiste; in den letzten 15 Sekunden wird sie rot, in den letzten 10 Sekunden tickt es.",
+        "Ist die Zeit um, siehst du die Auswertung: gefundene Wörter, Zahl der möglichen Wörter und Punkte und eine Liste der Wörter, die du verpasst hast (bekannte und lange zuerst)."
+      ]
+    },
+    {
+      "t": "Punkte",
+      "list": [
+        "3 Buchstaben: 1 Punkt",
+        "4 Buchstaben: 2 Punkte",
+        "5 Buchstaben: 3 Punkte",
+        "6 Buchstaben: 5 Punkte",
+        "7 Buchstaben: 8 Punkte",
+        "8 Buchstaben: 12 Punkte",
+        "jeder weitere Buchstabe: +4 Punkte (9 Buchstaben 16, 10 Buchstaben 20 …)"
+      ],
+      "p": [
+        "Ab 5 Punkten pro Wort gibt es einen besonderen Erfolgston. In der Auswertung werden Wörter mit 7 und mehr Buchstaben hervorgehoben."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Wischen (Finger oder Maus): über die Buchstaben ziehen, loslassen prüft das Wort. Zurückwischen auf das vorletzte Feld nimmt den letzten Buchstaben weg.",
+        "Tippen: Buchstaben nacheinander antippen. Den letzten Buchstaben nochmal antippen oder ✓ prüft das Wort. Ein früherer Buchstabe im Weg kürzt den Weg bis dorthin. Ein nicht benachbartes Feld beginnt einen neuen Weg.",
+        "✕ (Weg löschen): verwirft den ganzen aktuellen Weg.",
+        "Tastatur: Wort einfach tippen – das Spiel sucht den Weg im Gitter selbst. Enter prüft, Rücktaste löscht einen Buchstaben, Esc öffnet das Menü. Passt ein getippter Buchstabe nicht, erscheint „liegt so nicht im Gitter“.",
+        "Tastatur alternativ: Pfeiltasten bewegen den Rahmen, Leertaste nimmt den Buchstaben dazu; Leertaste auf dem letzten Buchstaben prüft.",
+        "Gamecontroller: Steuerkreuz bewegt den Rahmen, A nimmt den Buchstaben dazu (auf dem letzten nochmal: prüfen), X prüft, B löscht einen Buchstaben, Start öffnet das Menü.",
+        "Im Spielmenü (☰ oben): Weiter, Hilfe, Ton an/aus und „Runde beenden“ (beendet die Runde sofort mit Auswertung)."
+      ]
+    },
+    {
+      "t": "Zen-Modus",
+      "p": [
+        "In den Einstellungen kannst du „Ohne Zeitlimit (Zen)“ einschalten. Dann läuft keine Uhr (Anzeige „∞ Zen“), und du beendest die Runde selbst mit dem Knopf „Fertig“. Zen gilt nicht für das Tagesgitter und nicht für Online-Runden."
+      ]
+    },
+    {
+      "t": "Fortschritt und Speichern",
+      "p": [
+        "Das Spiel speichert auf deinem Gerät: Rekord je Stufe, Zahl der Runden und Wörter, dein heutiges Tagesgitter-Ergebnis (der Knopf zeigt dann „📅 Tagesgitter · heute … Punkte“; spielst du es nochmal, zählt das bessere Ergebnis), die Einstellungen und deinen Online-Namen. Ein neuer Rekord wird in der Auswertung mit „neuer Rekord! 🏆“ angezeigt.",
+        "Nach einer Runde startet „Nochmal ▶“ ein neues Gitter derselben Stufe; nach dem Tagesgitter heißt der Knopf „Neues Gitter ▶“ und startet ein zufälliges 5×5-Gitter.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    },
+    {
+      "t": "🌐 Online & Handys",
+      "steps": [
+        "Ein Gerät (gern der Fernseher) tippt auf „📺 Raum eröffnen“. Es erscheinen ein vierstelliger Code, ein QR-Code und ein Link zum Kopieren.",
+        "Mitspieler treten per Link, QR-Code oder Code von überall bei: Namen eingeben, Code eintippen, „Beitreten“.",
+        "Der Gastgeber wählt die Stufe, ob „Wörter, die mehrere finden, zählen nicht“ gelten soll und ob „Dieses Gerät spielt mit“. Ist das abgeschaltet, zeigt das Gerät nur Gitter, Zeit und Wortzahlen aller Spieler (Fernseher-Modus).",
+        "Mit „＋ Computer“ kommen Computer-Mitspieler dazu (Rita Radio, DJ Bit, Funky Fred, Lexi Loop; abwechselnd Mittel, Leicht, Schwer). Insgesamt gibt es 6 Plätze, mindestens ein Mensch muss mitspielen.",
+        "Start: Alle wischen gleichzeitig im selben Gitter, oben siehst du, wie viele Wörter jeder hat.",
+        "Am Ende zeigt die Rangliste Punkte der Runde und die Gesamtsumme über alle Runden; „Nächste Runde ▶“ startet das nächste Gitter."
+      ],
+      "p": [
+        "Wer während einer laufenden Runde die Verbindung verliert und mit demselben Namen wieder beitritt, spielt die restliche Zeit weiter („Runde läuft schon – leg los!“)."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Beginne mit 4×4 Leicht: Dort zählen schon Wörter mit 3 Buchstaben, und die Zeit reicht gut zum Ausprobieren.",
+        "Suche zuerst die Vokale. Fast jedes Wort braucht einen, und das Gitter hat immer 35 bis 50 Prozent Vokale.",
+        "Häufige Buchstabenpaare wie EN, ER, EI, IE, CH, ST und SCH sind gute Startpunkte.",
+        "Falsche Wörter kosten keine Punkte – probier ruhig aus.",
+        "Am PC ist Tippen oft am schnellsten: Das Spiel findet den Weg selbst."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Wortfamilien abarbeiten: Aus einem gefundenen Wort werden mit Endungen wie -E, -EN, -ER, -ES, -TE oft mehrere (z. B. ROT, ROTE, ROTEN, ROTER). Jede Form zählt einzeln.",
+        "Verben beugen: Stamm plus -EN, -ET, -TE, -TEN. Das Wörterbuch kennt gebeugte Formen.",
+        "Lange Wörter sind Gold: Ein Wort mit 8 Buchstaben bringt 12 Punkte – so viel wie zwölf Wörter mit 3 Buchstaben.",
+        "Bei 5×5 und 6×6 zählen erst Wörter ab 4 Buchstaben. Verschwende dort keine Zeit mit Dreiern.",
+        "Arbeite das Gitter systematisch ab, etwa Feld für Feld von oben links, statt wild zu suchen."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Nach jeder Runde die Liste „Nicht gefunden“ lesen: Dort lernst du wiederkehrende Muster und Wörter, die du übersiehst.",
+        "Zusammengesetzte Wörter suchen: Hast du zwei kurze Wörter nebeneinander, prüfe, ob sie zusammen ein langes Wort bilden.",
+        "Mit dem Tagesgitter kannst du dich mit Freunden vergleichen: Alle spielen am selben Tag dasselbe Gitter.",
+        "Online mit „doppelt zählt nicht“: Suche gezielt ungewöhnliche und lange Wörter. Häufige kurze Wörter finden die anderen auch – dann zählen sie für niemanden.",
+        "Der Zen-Modus ist ideal zum Üben: Ohne Uhr findest du in Ruhe, wie viele Wörter ein Gitter hergibt."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Namen und Abkürzungen eingeben – die kennt das Wörterbuch absichtlich nicht.",
+        "ß benutzen: Im Gitter steht dafür SS.",
+        "Beim schrägen Wischen das Nachbarfeld streifen: Fahr möglichst durch die Mitte der Felder, nur der innere Kreis zählt beim Wischen.",
+        "Zu lange an einem Wort festhalten. Wenn es nicht passt, lieber weiterziehen und später zurückkommen."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Gibt es eine feste Lösung?",
+      "p": [
+        "Nein. Jedes Gitter wird zufällig erzeugt; das Spiel sucht dabei unter bis zu 24 Versuchen ein Gitter mit vielen Wörtern aus (Ziel: etwa 45 Wörter bei 4×4, 110 bei 5×5 und 220 bei 6×6). Die vollständige Lösung eines Gitters siehst du nach jeder Runde: Das Spiel zeigt, wie viele Wörter und Punkte möglich waren, und listet bis zu 80 verpasste Wörter auf."
+      ]
+    },
+    {
+      "t": "Beste Strategie je Stufe",
+      "list": [
+        "4×4 Leicht (3 Minuten, ab 3 Buchstaben): Erst schnell alle kurzen Wörter einsammeln, dann gezielt Vierer und Fünfer aus ihnen verlängern.",
+        "5×5 Mittel (3½ Minuten, ab 4 Buchstaben): Auf Wortfamilien setzen – jede Endung (-EN, -ER, -ES) ist ein weiteres Wort mit mindestens 2 Punkten.",
+        "6×6 Schwer (4 Minuten, ab 4 Buchstaben): Hier stecken die meisten langen Wörter. Nimm dir in der ersten Minute Zeit, nach 6 bis 8 Buchstaben langen Wörtern zu suchen, denn sie bringen 5 bis 12 Punkte.",
+        "Tagesgitter (5×5): Du kannst es beliebig oft spielen, gespeichert wird dein bestes Ergebnis des Tages. Nutze den ersten Versuch zum Kennenlernen und lies die verpassten Wörter."
+      ]
+    },
+    {
+      "t": "Wertungstabelle und Höchstpunkte",
+      "list": [
+        "3 Buchstaben = 1, 4 = 2, 5 = 3, 6 = 5, 7 = 8, 8 = 12, 9 = 16, 10 = 20 Punkte.",
+        "Vergleich: Fünf Wörter mit 4 Buchstaben (10 Punkte) sind weniger wert als ein Wort mit 8 Buchstaben (12 Punkte).",
+        "Ab 6 Buchstaben steigen die Punkte überproportional – das ist der Schlüssel zu Rekorden."
+      ]
+    },
+    {
+      "t": "Online gegen Computer",
+      "p": [
+        "Computer-Mitspieler finden über die Rundenzeit verteilt einen Teil der gängigen Wörter des Gitters: auf Leicht etwa 12 Prozent, auf Mittel etwa 22 Prozent und auf Schwer etwa 35 Prozent. Sie suchen nur bekannte Alltagswörter – seltene und lange Wörter sind deshalb deine beste Chance, sie zu schlagen, besonders mit der Regel „Wörter, die mehrere finden, zählen nicht“."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Warum kann ich nicht starten?",
+      "a": "Das Wörterbuch wird beim Start geladen. Erst danach sind Stufen, Tagesgitter und Online freigeschaltet. Warte, bis der Hinweis „Wörterbuch wird geladen …“ verschwindet."
+    },
+    {
+      "q": "Warum wird mein Wort nicht anerkannt?",
+      "a": "Entweder ist es zu kurz (bei 5×5 und 6×6 mindestens 4 Buchstaben), ein Name oder eine Abkürzung, oder es steht nicht im Wortfunk-Wörterbuch. Denk auch daran, dass ß als SS geschrieben wird."
+    },
+    {
+      "q": "Wo sind meine Rekorde gespeichert?",
+      "a": "Im Browser bzw. in der App auf deinem Gerät. Ohne Google-Anmeldung sind Rekorde und Statistik weg, wenn du die Browserdaten löschst oder privat surfst. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+    },
+    {
+      "q": "Kann ich ohne Zeitdruck spielen?",
+      "a": "Ja, in den Einstellungen „Ohne Zeitlimit (Zen)“ einschalten. Das gilt nicht für das Tagesgitter und Online-Runden."
+    },
+    {
+      "q": "Online klappt nicht – was tun?",
+      "a": "Prüfe, ob alle Geräte Internet haben und der vierstellige Code stimmt. Meldet das Spiel „Der Raum ist voll.“, sind alle 6 Plätze belegt. Am einfachsten tritt man per QR-Code oder Link bei."
+    },
+    {
+      "q": "Wie schalte ich den Ton aus?",
+      "a": "In den Einstellungen oder im Spielmenü (☰) über „🔊 Ton an“ bzw. „🔇 Ton aus“."
+    }
+  ]
+}

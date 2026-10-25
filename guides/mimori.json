@@ -1,0 +1,240 @@
+{
+  "id": "mimori",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Mimori ist ein 3D-Haustier mit klassischer Pflege wie bei einem Tamagotchi. Du kümmerst dich um dein Wesen: füttern, spielen, baden, schlafen legen, aufs Klo bringen, aufräumen und bei Krankheit Medizin geben. Gut gepflegt wächst es über vier Stufen bis zum Sternenwesen.",
+        "In der Spielhalle verdienst du mit fünf Minigames Sterne. Damit kaufst du Accessoires, Zimmerwelten, neue 3D-Räume und Möbel. Bis zu vier Mimoris können zusammen in einem Haushalt leben, Dates haben und heiraten. Es gibt kein Echtgeld, keine Werbung und kein Game Over."
+      ]
+    },
+    {
+      "t": "Die vier Mimori-Arten",
+      "list": [
+        "Fluffi, Nubbi, Foxi und Drachi – jede Art ist eigenständig geformt und hat eine eigene Stimme.",
+        "Vier Fellfarben: Rosa, Mint, Lavendel und Gold („🎨 Nächste Farbe“).",
+        "Drei Erscheinungsvarianten für jede Art: ♂ Männlich, ♀ Weiblich, ⚧ Divers. Sie verändern sichtbare 3D-Details wie Stirn, Augenakzente, Blumen oder einen asymmetrischen Schopf.",
+        "Den Namen änderst du mit „✏️ Name ändern“ (bis 18 Zeichen).",
+        "Fehlt im Android-WebView WebGL, zeigt Mimori eine drehbare, streichelbare 2D-Ersatzfigur – die Pflege funktioniert trotzdem."
+      ]
+    },
+    {
+      "t": "Die Pflegewerte",
+      "p": [
+        "Unter dem Namen stehen fünf Kurzwerte: Freude, Hunger (Sättigung), Energie, Hygiene und Gesundheit. Tippe darauf für Details. Alle Werte laufen auch weiter, wenn die App geschlossen ist (bis zu 14 Tage werden nachgerechnet)."
+      ],
+      "list": [
+        "Sättigung sinkt um 8 pro Stunde, Freude um 4,5, Energie um 5,5 (solange Mimori wach ist).",
+        "Hygiene sinkt um 5 pro Stunde – mit Hinterlassenschaften im Zimmer deutlich schneller.",
+        "Toilettendrang steigt um 24 pro Stunde. Ab etwa 1,5 bis knapp 4 Stunden passiert in unregelmäßigen Abständen ein Unfall: Dann liegt etwas im Zimmer, Hygiene und Freude sinken.",
+        "Gesundheit steigt langsam (+0,3 pro Stunde), solange kein Wert unter 20 liegt. Jeder Wert unter 20 kostet Gesundheit, Dreck im Zimmer ebenfalls. Ab dem 6. Lebenstag wird Mimori langsam empfindlicher. Gesundheit fällt aber nie unter 10.",
+        "Krank wird Mimori, wenn die Gesundheit unter 42 fällt oder der Dreck 3 Stunden liegen bleibt. Kranke Mimoris verlieren schneller Freude."
+      ]
+    },
+    {
+      "t": "Pflege-Aktionen",
+      "list": [
+        "🍓 Füttern: kostet 1 Beere – Sättigung +30, Freude +5, Hygiene −5.",
+        "🪀 Spielen: Freude +25, Energie −15, Sättigung −7. Geht nicht, wenn Mimori zu müde ist (Energie unter 9).",
+        "🫧 Baden: kostet 1 Seife – Hygiene +38, Freude +4.",
+        "🌙 Schlafen: Mimori schläft, bis du es mit demselben Knopf wieder aufweckst.",
+        "💡 Licht aus/an: Nur schlafend und im Dunkeln erholt sich Mimori richtig (+27 Energie pro Stunde, mit Licht nur +1).",
+        "💞 Kuscheln: Freude +14, Gesundheit +3 – mit Schnurren.",
+        "🚽 Toilette: ab 30 % Drang möglich. Setzt den Drang zurück und verschiebt den nächsten Unfall, Freude +4.",
+        "🧹 Aufräumen: entfernt alle Hinterlassenschaften, Hygiene +30, Freude +4. Kostet nichts.",
+        "💊 Medizin: bei Krankheit oder Gesundheit unter 70 – Gesundheit +48, Freude +6, heilt die Krankheit. Kostet nichts. Liegt noch Dreck herum, musst du zusätzlich aufräumen.",
+        "Dazu gibt es 🎵 Tanzen, 🎶 Stimme und 🎁 Überraschung – kleine Animationen ohne Wertveränderung – und Drehknöpfe für die Ansicht."
+      ]
+    },
+    {
+      "t": "Wachstum",
+      "p": [
+        "Jede Pflege-Aktion bringt Erfahrung: Füttern 8, Spielen 10, Baden 7, Kuscheln 4, Toilette 4, Aufräumen 8, Medizin 5, Schlafen legen 3. Minigames bringen bis zu 35 Erfahrung pro Runde."
+      ],
+      "list": [
+        "Wolkenbaby (Baby): zu Beginn.",
+        "Kleines Wesen (Jungtier): ab 35 Erfahrung.",
+        "Mutiger Freund: ab 145 Erfahrung und mindestens einem halben Tag Alter.",
+        "Sternenwesen: ab 390 Erfahrung und mindestens 2 Tagen Alter."
+      ]
+    },
+    {
+      "t": "Oberfläche und Steuerung",
+      "list": [
+        "Alles spielt sich in einem großen 3D-Fenster ab. Ganz oben die Raumleiste mit ‹ und › zum Raumwechsel, darunter die fünf Kurzwerte.",
+        "Unten eine sechsfach geteilte Leiste: Pflege, Werte, Räume, Familie, Radio, Spiele. Antippen öffnet den Bereich im selben Fenster; dasselbe Symbol erneut oder ✕ schließt ihn.",
+        "Die Styling-Leiste führt zu Figur (Art, Fellfarbe, Variante), Kleidung (Accessoires) und Optionen.",
+        "Touch: Mimori mit dem Finger drehen, Knöpfe antippen. PC: mit der Maus drehen und klicken.",
+        "Die blinkende 🔔 Glocke zeigt Hilferufe (Hunger, Dreck, Toilette, Krankheit, Licht an beim Schlafen …). Antippen klappt den Text auf. Einen Piepton dafür schaltest du im ⚙-Menü ein; mit erlaubten Browser-Benachrichtigungen erinnert Mimori dich, solange die Seite läuft."
+      ]
+    },
+    {
+      "t": "Spielhalle",
+      "p": [
+        "Unter „Spiele“ starten die fünf Minigames im selben Fenster. Jede Runde gibt Sterne (Punkte geteilt durch 25, bei Sieg +14, höchstens 65) und Erfahrung (Punkte geteilt durch 40, bei Sieg +12, höchstens 35). Ein Sieg bringt Freude +15, sonst +5, jede Runde kostet 6 Energie. Bestwerte werden gespeichert. Esc führt zurück zur Spielauswahl."
+      ],
+      "list": [
+        "🍓 Beerensturm (34 Sekunden): Korb per Touch oder Pfeil links/rechts bewegen, Früchte fangen, Bomben meiden. 3 Leben. Frucht 15 Punkte, Bonusfrucht 🌟 35, plus Combo-Bonus bis 10. Bombe: −1 Leben, −15 Punkte. Sieg ab 160 Punkten.",
+        "🃏 Zauber-Memory (50 Sekunden): 6 Paare in einem 3×4-Raster finden. Jedes Paar 100 Punkte plus Bonus für wenige Versuche. Sieg, wenn alle Paare gefunden sind.",
+        "🎵 Beat-Party (32 Sekunden): 64 Noten auf 4 Spuren. Auf die vier Touch-Flächen tippen oder D, F, J, K drücken. Genau getroffen 45 Punkte, sonst 25. Sieg ab 27 Treffern.",
+        "☁️ Wolken-Sprint (34 Sekunden): automatischer Lauf. Springen per Touch, Sprung-Knopf, Leertaste oder Pfeil hoch. Sterne +55, Hindernisse kosten ein Leben (3 Leben). Sieg ab 150 Punkten.",
+        "🫧 Blasenlabor (30 Sekunden): helle Seifenblasen antippen (20 Punkte plus Combo-Bonus), roten Schleim meiden (−1 Leben). Sieg mit mindestens 20 Blasen und übrigen Leben."
+      ]
+    },
+    {
+      "t": "Räume, Möbel und Radio",
+      "list": [
+        "12 echte 3D-Räume: Wohnzimmer, Schlafzimmer, Badezimmer, Küche und Garten sind frei, sieben weitere kosten Sterne.",
+        "24 3D-Möbel und Dekorationen kannst du pro Zimmer kaufen und aufstellen.",
+        "Jeder Mimori merkt sich seinen zuletzt gewählten Raum.",
+        "📻 Radio: Im Wohnzimmer steht ein großes 3D-Radio. Antippen (oder unten „Radio“) öffnet 13 Sender mit Fantasienamen, echtem Sendernamen und der Quelle laut.fm. Mit ⏹ schaltest du ab. Radio braucht Internet, alles andere funktioniert offline."
+      ]
+    },
+    {
+      "t": "Familie, Dates und Hochzeit",
+      "list": [
+        "Unter 🏠 Familie legst du bis zu vier Mimoris an (Name, Art, Aussehen). Jeder hat eigene Pflegewerte, Gesundheit, Fellfarbe und Inventar. Die Familienkarten wechseln den aktiven Mimori.",
+        "Schnellpflege für alle: 🍓 Alle füttern, 🫧 Alle baden, 🧹 Alle säubern, 💊 Alle heilen, 💗 Alle kuscheln, 🚽 Alle aufs Klo. Es werden nur die versorgt, bei denen die Aktion gerade möglich ist.",
+        "Date: Partner auswählen und „💗 Verabreden“ drücken – jede Beziehung wächst um 35 Herzen (höchstens 100).",
+        "Hochzeit: ab 60 Herzen pro gewähltem Partner mit 1 bis 3 anderen Mimoris, ohne Einschränkung bei Geschlecht oder Variante. Danach stehen die Partner als kleinere 3D-Wesen mit Namensschild im Raum.",
+        "Nach einer Hochzeit gibt es „🎉 Familienfest“: Alle Mimoris werden gekuschelt."
+      ]
+    },
+    {
+      "t": "Speichern",
+      "p": [
+        "Pflege, Sterne, Bestwerte, Räume, Möbel und Familie werden lokal im Browser gespeichert. Optional synchronisierst du alles über Google auf andere Geräte. Auf Android und Desktop lässt sich Mimori über das Browsermenü als App installieren, auf iPhone und iPad über „Zum Home-Bildschirm“ in Safari."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Schau regelmäßig nach: Toiletten-Unfälle passieren auch, wenn die App geschlossen war.",
+        "Bring Mimori aufs Klo, sobald der Toilettenwert über 30 % liegt – das verschiebt den nächsten Unfall.",
+        "Abends: Schlafen drücken und Licht aus. Morgens mit demselben Knopf wecken.",
+        "Hol jeden Tag das 🎁 Tagesgeschenk: 25 Sterne, 3 Beeren und 2 Seifen. Beeren und Seife gibt es sonst nirgends neu – geh sparsam damit um.",
+        "Kuscheln kostet nichts und bringt Freude und etwas Gesundheit."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Krankheit vermeiden: Dreck sofort aufräumen. Nach 3 Stunden im Dreck wird Mimori krank.",
+        "Krank? Erst aufräumen, dann Medizin. Medizin allein reicht nicht, wenn der Boden schmutzig ist.",
+        "Halte alle Werte über 20 – jeder Wert darunter kostet pro Stunde Gesundheit.",
+        "Spielen und Minigames kosten Energie. Plane danach eine Schlafpause im Dunkeln ein.",
+        "Bei mehreren Mimoris spart die Schnellpflege viel Zeit."
+      ]
+    },
+    {
+      "t": "Profi-Tricks für Sterne",
+      "list": [
+        "Ein Sieg bringt 14 Sterne extra – spiele die Minigames, die du sicher gewinnst.",
+        "Memory: Im Idealfall (jedes Paar beim ersten Versuch) bringt gut 800 Punkte – mit Siegbonus 46 Sterne.",
+        "Beat-Party: 64 Noten, perfekt getroffen je 45 Punkte. Schon 30 genaue Treffer bringen über 1.300 Punkte.",
+        "Mehr als 65 Sterne pro Runde gibt es nicht. Ab etwa 1.275 Punkten (plus Sieg) bist du am Limit."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Schlafen ohne Licht aus: Mimori erholt sich dann kaum („Licht aus!“).",
+        "Vergessen, Mimori zu wecken – im Schlaf sinken Hunger und Freude weiter.",
+        "Beeren für Füttern verschwenden, wenn die Sättigung noch hoch ist.",
+        "Radio offline starten wollen – die Sender brauchen Internet."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Alle Accessoires und Preise",
+      "list": [
+        "🔔 Glöckchen: 60 Sterne",
+        "🎀 Schleife: 110 Sterne",
+        "👑 Sternkrone: 180 Sterne",
+        "🕶️ Sonnenbrille: 90 Sterne",
+        "🎩 Zauberhut: 95 Sterne",
+        "🌺 Blütenkranz: 120 Sterne",
+        "🧣 Schal: 145 Sterne",
+        "🎧 Kopfhörer: 170 Sterne",
+        "👒 Strohhut: 190 Sterne",
+        "💎 Diamantenstirnband: 210 Sterne",
+        "🧢 Sportkappe: 230 Sterne",
+        "🌈 Regenbogenflügel: 255 Sterne",
+        "🦋 Schmetterlingsfühler: 280 Sterne",
+        "🪄 Zauberstab: 315 Sterne",
+        "🎭 Maskenball: 350 Sterne",
+        "🏵️ Orden: 380 Sterne",
+        "🎄 Wintermütze: 410 Sterne",
+        "⚡ Blitzsymbol: 445 Sterne",
+        "🪶 Federkrone: 480 Sterne",
+        "Zimmerwelten: 🏡 Kuschelzimmer (frei), 🌿 Waldtraum 80 Sterne, 🌌 Sternennacht 140 Sterne.",
+        "Einmal gekaufte Sachen gehören dir und lassen sich jederzeit wieder auswählen."
+      ]
+    },
+    {
+      "t": "Alle Räume und Preise",
+      "list": [
+        "Kostenlos: 🛋️ Wohnzimmer, 🛏️ Schlafzimmer, 🛁 Badezimmer, 🍲 Küche, 🌳 Garten.",
+        "🎉 Partyraum: 70 Sterne",
+        "🎹 Musikstudio: 90 Sterne",
+        "🔭 Sternwarte: 110 Sterne",
+        "❄️ Winterhütte: 125 Sterne",
+        "☁️ Wolkeninsel: 145 Sterne",
+        "🧪 Zauberlabor: 165 Sterne",
+        "🎮 Spielzimmer: 185 Sterne"
+      ]
+    },
+    {
+      "t": "Alle Möbel und Dekorationen",
+      "p": [
+        "Möbel gelten für den Raum, in dem du sie kaufst. Jedes Stück lässt sich pro Raum einmal aufstellen."
+      ],
+      "list": [
+        "🌼 Pflanzen & Blumen 25 · 🖼️ Wandbilder 35 · ✨ Lichterkette 45 · 🧶 Teppich 55 · 🛋️ Bodenkissen 65",
+        "🐠 Aquarium 70 · 📌 Pinnwand 70 · 🕯️ Leselampe 75 · 🪴 Blumentopf-Set 80 · 🔥 Kamin 85",
+        "📚 Bücherregal 95 · 🌟 Sternenmobile 100 · 🧸 Spielzeugkiste 105 · 🌐 Globus 110 · 🪑 Sitzgruppe 115",
+        "🪑 Hängesessel 120 · 🐈 Katzenkratzbaum 125 · 🎼 Musikbox 135 · 🛏️ Kuschelbett 145 · 🌥️ Wolkenlampe 155",
+        "💿 Plattenspieler 180 · 📺 Fernsehkonsole 185 · 🏆 Pokalvitrine 195 · 🪩 Discokugel 220"
+      ]
+    },
+    {
+      "t": "Beste Strategie je Minigame",
+      "list": [
+        "Beerensturm: Bleib unter der Mitte und bewege den Korb nur kurz. Combos (bis +10 je Frucht) lohnen sich mehr als riskante Sprints zu weit entfernten Früchten. Eine Bombe kostet ein Leben, 15 Punkte und die Combo.",
+        "Zauber-Memory: Decke systematisch Reihe für Reihe auf und merke dir die Positionen. Je weniger Versuche, desto größer der Bonus pro Paar (bis zu 44 Punkte extra).",
+        "Beat-Party: Die Noten kommen in festem Abstand (etwa alle 0,45 Sekunden) – finde den Takt. Unter 0,1 Sekunden Abweichung zählt als genau (45 Punkte).",
+        "Wolken-Sprint: Punkte gibt es auch fürs Durchhalten (5 pro Sekunde). Spring früh, nach einem Treffer bist du kurz unverwundbar.",
+        "Blasenlabor: Etwa jede fünfte Blase ist roter Schleim. Tippe gezielt auf helle Blasen; die Combo bringt bis zu +24 Punkte pro Blase."
+      ]
+    },
+    {
+      "t": "So bekommst du ein Sternenwesen",
+      "steps": [
+        "Pflege Mimori jeden Tag mit allen Aktionen, die gerade nötig sind – jede bringt Erfahrung.",
+        "Spiele regelmäßig Minigames: Ein Sieg bringt bis zu 35 Erfahrung.",
+        "Ab 35 Erfahrung wird Mimori zum Kleinen Wesen, ab 145 Erfahrung und einem halben Tag Alter zum Mutigen Freund.",
+        "Mit 390 Erfahrung und mindestens 2 Tagen Alter entwickelt es sich zum Sternenwesen („Wow! Ich bin größer geworden! ✨“)."
+      ]
+    },
+    {
+      "t": "Der Weg zur Hochzeit",
+      "steps": [
+        "Unter 🏠 Familie einen zweiten Mimori anlegen.",
+        "Partner auswählen und zweimal „💗 Verabreden“ drücken – das ergibt 70 Herzen.",
+        "„💍 Hochzeit feiern“ drücken: Ab 60 Herzen pro Partner wird gefeiert. Mit bis zu drei Partnern gleichzeitig geht es auch.",
+        "Danach das Familienfest starten."
+      ]
+    }
+  ],
+  "faq": [
+    { "q": "Warum hatte Mimori einen Unfall, obwohl die App zu war?", "a": "Die Zeit läuft weiter. Beim nächsten Öffnen rechnet Mimori nach, was in der Zwischenzeit passiert ist – auch Toiletten-Unfälle. Einfach aufräumen." },
+    { "q": "Wo bekomme ich neue Beeren und Seife?", "a": "Mit dem 🎁 Tagesgeschenk: jeden Tag 3 Beeren, 2 Seifen und 25 Sterne." },
+    { "q": "Das Radio spielt nicht.", "a": "Die 13 laut.fm-Sender brauchen eine Internetverbindung. Pflege und Minigames gehen auch offline." },
+    { "q": "Ich sehe nur eine 2D-Figur.", "a": "Dein Gerät oder WebView stellt kein WebGL bereit. Mimori zeigt dann eine drehbare 2D-Ersatzfigur – alle Funktionen bleiben nutzbar." },
+    { "q": "Bekomme ich Benachrichtigungen, wenn die App zu ist?", "a": "Nein. Erinnerungen und Pieptöne funktionieren nur, solange die Seite läuft. Sie sind freiwillig und im ⚙-Menü einstellbar." },
+    { "q": "Kann ich auf mehreren Geräten spielen?", "a": "Ja, mit der optionalen Google-Speicherung werden Pflege, Sterne, Räume und Familie synchronisiert." }
+  ]
+}

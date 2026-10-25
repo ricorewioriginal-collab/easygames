@@ -1,0 +1,170 @@
+{
+  "id": "konfetti-party",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Konfetti-Party ist ein buntes Arena-Partyspiel für bis zu 4 Gäste. Du legst Knallbonbons 🍬, die nach kurzer Zeit einen Konfetti-Strahl in alle vier Richtungen schießen. Der Strahl lässt Geschenkkartons platzen und wirft Partygäste aus der Runde – auch dich selbst.",
+        "Wer als Letzter übrig bleibt, gewinnt die Runde. Wer zuerst die eingestellte Zahl an Runden-Siegen hat (im Turnier 2), gewinnt die Party."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "p": [
+        "Nach dem Ladebildschirm erscheint der Titel „▶ Tippe zum Start“ (mit Controller: „Drücke A“). Im Hintergrund feiern Computer-Gäste eine Demo-Party."
+      ],
+      "list": [
+        "🏆 Turnier: fünf Partys in fünf Arenen mit immer stärkeren Computer-Gästen, für jeden Sieg ein Pokal.",
+        "🎉 Schnelle Party: Arena, Zahl der Gegner (1–3), Stärke (Leicht, Normal, Schwer) und Siege (2, 3 oder 5) frei wählen.",
+        "🌐 Online & Handys: Der Fernseher zeigt die Arena, bis zu 4 Gäste spielen mit Handys, Controllern oder Tastatur.",
+        "📱 Mitspielen: mit dem Handy einer Online-Party beitreten.",
+        "⚙️ Einstellungen: Geräusche, Musik, Vibration und dein Name.",
+        "❓ Anleitung: die Regeln im Spiel.",
+        "Unten im Menü siehst du deine Pokale (🏆 je gewonnener Turnier-Arena) und wie viele Partys du gewonnen hast."
+      ]
+    },
+    {
+      "t": "Regeln im Detail",
+      "list": [
+        "Jeder startet in einer Ecke mit 1 Bonbon gleichzeitig und einer Strahl-Reichweite von 2 Feldern.",
+        "Ein Bonbon knallt nach 2,4 Sekunden. Der Strahl geht vom Bonbon aus in alle vier Richtungen so weit, wie die Reichweite reicht.",
+        "Säulen halten den Strahl auf. Ein Geschenkkarton wird getroffen, platzt und stoppt den Strahl ebenfalls. In etwa jedem dritten Karton (38 %) steckt ein Extra.",
+        "Liegt ein Extra im Strahl, verbrennt es. Ein anderes Bonbon im Strahl knallt sofort mit – so entstehen Kettenreaktionen.",
+        "Wer im Strahl steht, ist für diese Runde raus („Konfettiert!“ oder „Ups, selbst erwischt!“).",
+        "Auf dein frisch gelegtes Bonbon kannst du noch heruntergehen; danach ist es für alle ein Hindernis.",
+        "Jede Runde dauert 2:30. Ab 30 Sekunden wird die Musik schneller. Ist die Zeit um, schließt sich die Arena spiralförmig von außen nach innen – wer dort steht, ist raus, auch mit Schild.",
+        "Sind alle gleichzeitig raus, heißt es „Unentschieden – alle konfettiert!“ und niemand bekommt den Sieg."
+      ]
+    },
+    {
+      "t": "Die Extras",
+      "list": [
+        "🍬 Extra-Bonbon: ein Knallbonbon mehr gleichzeitig (bis 8).",
+        "🎉 Mehr Konfetti: Der Strahl reicht ein Feld weiter (bis 9).",
+        "🛼 Rollschuhe: schneller laufen (bis zu 6 Stufen).",
+        "🦶 Kick-Schuh: Läufst du gegen ein Bonbon, rutscht es weg, bis es auf ein Hindernis oder einen Gast trifft.",
+        "🎈 Luftballon-Schild: fängt einen Treffer ab, danach bist du kurz unverwundbar.",
+        "📡 Fernzünder: Deine Bonbons knallen erst, wenn du ZÜNDEN drückst (spätestens nach 30 Sekunden). Ein Druck zündet dein ältestes Bonbon.",
+        "🌀 Wirrwarr: Huch! 10 Sekunden lang sind die Richtungen vertauscht.",
+        "Am häufigsten kommen Extra-Bonbon und Mehr Konfetti, am seltensten Fernzünder und Wirrwarr. Extras gelten nur für die laufende Runde."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch: links der Joystick zum Laufen, rechts KNALL (Bonbon legen) und – nur mit Fernzünder sichtbar – ZÜNDEN.",
+        "Tastatur: WASD oder Pfeiltasten laufen, Leertaste, E oder Enter Bonbon legen, F oder Shift Fernzünder, Esc oder P Pause. Im Menü wählen die Pfeiltasten, Enter bestätigt, Esc geht zurück.",
+        "Gamecontroller: Stick oder Steuerkreuz laufen, A Bonbon legen, B oder X Fernzünder, Start Pause. In den Menüs B zurück. In der Online-Lobby meldet A einen Controller an.",
+        "Pause-Menü: ▶ Weiterfeiern, ↻ Neustart, ⚙️ Einstellungen, ✕ Party verlassen."
+      ]
+    },
+    {
+      "t": "Online & Handys",
+      "steps": [
+        "Am Fernseher oder PC „🌐 Online & Handys“ wählen. Es erscheinen Raum-Code, QR-Code und „🔗 Link kopieren“. Mitspieler können per Link, Code oder QR-Code von überall beitreten.",
+        "Am Handy den QR-Code scannen oder „📱 Mitspielen“ wählen, Namen und Code eingeben und „Beitreten“. Das Handy wird zum Controller mit Joystick, KNALL und ZÜNDEN.",
+        "Controller melden sich mit A an (B meldet wieder ab). Mit dem Haken „Tastatur spielt mit“ spielt auch die Tastatur des Bildschirm-Geräts mit.",
+        "Zahl der Computer-Gäste, Stärke, Siege und Arena einstellen, dann „🎉 Party starten“ – am Fernseher oder am Handy.",
+        "Verlässt ein Handy die Party, springt ein Computer-Gast für ihn ein. Bricht die Verbindung kurz ab, verbindet sich das Handy selbst neu."
+      ]
+    },
+    {
+      "t": "Wertung, Fortschritt und Speichern",
+      "p": [
+        "Die Siege jeder Runde siehst du oben als ★ neben den Namen. Nach der Party gibt es ein Podest mit 👑 für den Sieger. Im Turnier gibt ein Partysieg den Pokal der Arena und schaltet die nächste frei.",
+        "Einstellungen, Pokale, Turnierfortschritt und Statistik (Partys, Siege, Runden) werden automatisch im Browser gespeichert.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Nie in eine Sackgasse legen: Erst schauen, wohin du flüchtest, dann legen.",
+        "Ecken helfen: Stell dich nach dem Legen um die nächste Säule – der Strahl geht nur gerade.",
+        "Am Anfang erst die Kartons rund um deine Startecke sprengen, um Platz und Extras zu bekommen.",
+        "Zähl mit: 2,4 Sekunden sind kurz. Lauf sofort nach dem Legen los."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Sammle zuerst 🍬 und 🎉 – mehr Bonbons und mehr Reichweite machen dich gefährlich.",
+        "Kettenreaktionen: Ein Bonbon im Strahl eines anderen knallt sofort. Achte darauf, dass fremde Bonbons deinen Fluchtweg nicht plötzlich abschneiden.",
+        "Mit dem Kick-Schuh schickst du Bonbons durch lange Gänge zu den Gegnern.",
+        "Den Wirrwarr meiden: Er liegt wie jedes Extra im Weg, also nicht blind über alles laufen.",
+        "Hebe das Schild für den Endkampf auf – es rettet dich vor einem Strahl, aber nicht vor der zuschließenden Arena."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Fernzünder: Leg ein Bonbon in einen Gang, warte, bis ein Gegner daneben ist, und zünde. Ein Bonbon hält bis zu 30 Sekunden.",
+        "Falle stellen: Schließe einen Gegner mit zwei Bonbons von beiden Seiten eines Gangs ein.",
+        "Gegen Ende: Die Arena schließt sich von außen. Bleib in der Mitte, sonst wirst du eingeklemmt.",
+        "Computer-Gäste auf „Schwer“ reagieren sehr schnell und jagen öfter. Gegen sie lohnt es sich, ruhig auf Fehler zu warten."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Sich selbst einsperren: Bonbon legen, wenn auf beiden Seiten Kartons stehen.",
+        "Zu nah am eigenen Bonbon stehen bleiben, wenn die Reichweite gewachsen ist.",
+        "In der Disco-Arena in der offenen Mitte bleiben – dort gibt es kaum Deckung.",
+        "Den Fernzünder vergessen: Bonbons mit Fernzünder knallen nicht von selbst nach 2,4 Sekunden."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Die fünf Arenen",
+      "list": [
+        "Geburtstagsparty: Torte, Luftballons und jede Menge Geschenke. Klassisches Säulenraster, viele Kartons.",
+        "Zirkuszelt: kleine Manege – hier knallt es schnell. Wenig Platz und eine freie Mitte.",
+        "Eisdiele: Waffeln, Kugeln und schräge Säulenreihen. Die Säulen stehen versetzt, die Deckung ist anders als gewohnt.",
+        "Disco-Fieber: freie Tanzfläche in der Mitte – nirgends verstecken.",
+        "Weltraum-Rave: riesige Arena mit offenem Kreuz. Lange Wege, ideal für hohe Reichweite."
+      ]
+    },
+    {
+      "t": "Turnier: Komplettlösung",
+      "p": [
+        "Jede Turnier-Party ist auf 2 Runden-Siege ausgelegt, du spielst gegen drei Computer-Gäste: Konfetti-Kalle, Luftschlangen-Lisa und Wunderkerzen-Willi. Auf der Arenakarte stehen die Stärken als Anfangsbuchstaben (L = Leicht, N = Normal, S = Schwer)."
+      ],
+      "steps": [
+        "Party 1 – Geburtstagsparty (LLL): Alle Gegner leicht. Übe Legen und Flüchten, sammle Extras.",
+        "Party 2 – Zirkuszelt (LNL): Ein normaler Gegner. Die Manege ist eng – nicht in die Mitte locken lassen.",
+        "Party 3 – Eisdiele (NNL): Zwei normale Gegner. Die versetzten Säulen nutzen, um um die Ecke zu flüchten.",
+        "Party 4 – Disco-Fieber (NNS): Ein schwerer Gegner. In den Randbereichen kämpfen, die offene Tanzfläche meiden.",
+        "Party 5 – Weltraum-Rave (SSN): Zwei schwere Gegner. Früh Reichweite sammeln und die langen Gänge mit Kick-Schuh und Fernzünder beherrschen.",
+        "Hast du alle fünf Pokale, heißt es „Alle Pokale geholt – du bist der Party-König!“."
+      ]
+    },
+    {
+      "t": "Freischaltungen",
+      "list": [
+        "Turnier-Arena 2 bis 5: je durch den Sieg in der vorherigen Turnier-Party.",
+        "In der Schnellen Party und online sind alle Arenen von Anfang an wählbar.",
+        "Pokale: einer pro gewonnener Turnier-Arena, angezeigt im Hauptmenü."
+      ]
+    },
+    {
+      "t": "Beste Strategie je Phase einer Runde",
+      "list": [
+        "Start (2:30 bis etwa 1:30): Kartons sprengen, Extras sammeln, Abstand halten.",
+        "Mitte: Mit mehr Reichweite die Gegner in Gänge drängen. Kettenreaktionen nutzen.",
+        "Unter 30 Sekunden: Die Musik wird schneller. Zur Arenamitte orientieren.",
+        "Zeit um: Die Arena schließt sich alle 0,3 Sekunden um ein Feld. Wer übrig bleibt, gewinnt."
+      ]
+    }
+  ],
+  "faq": [
+    { "q": "Wie viele Leute können mitspielen?", "a": "Bis zu 4 Gäste. Online spielen Handys, Controller und die Tastatur gemischt; freie Plätze übernehmen auf Wunsch Computer-Gäste." },
+    { "q": "Das Handy kommt nicht in die Party.", "a": "Prüfe den Code auf dem Fernseher. Ist die Party voll oder der Raum geschlossen, bekommst du eine Meldung. Bei kurzem Verbindungsabbruch verbindet sich das Handy selbst neu." },
+    { "q": "Wo sind meine Pokale gespeichert?", "a": "Im Browser dieses Geräts. Ohne Google-Anmeldung sind Pokale und Turnierfortschritt weg, wenn Website-Daten gelöscht werden. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät." },
+    { "q": "Wie schalte ich Musik oder Vibration aus?", "a": "Unter ⚙️ Einstellungen gibt es getrennte Schalter für Geräusche, Musik und Vibration." },
+    { "q": "Warum knallt mein Bonbon nicht?", "a": "Du hast den 📡 Fernzünder: Deine Bonbons knallen erst, wenn du ZÜNDEN (F/Shift, Controller B/X) drückst, spätestens nach 30 Sekunden." },
+    { "q": "Warum laufe ich plötzlich verkehrt herum?", "a": "Du hast den 🌀 Wirrwarr eingesammelt. Für 10 Sekunden sind alle Richtungen vertauscht." }
+  ]
+}

@@ -1,0 +1,217 @@
+{
+  "id": "ricopoly",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "RicoPoly 3D ist ein Grundstücks-Brettspiel für 2 bis 6 Spieler in drei 3D-Welten. Motto: Würfeln. Kaufen. Handeln. Herrschen!",
+        "Werde der reichste Spieler. Im klassischen Modus gewinnt, wer als Letzter nicht bankrott ist. Mit Runden- oder Zeitlimit gewinnt das größte Vermögen (Bargeld + Grundstücke + Gebäude, Hypotheken abgezogen). Die Währung heißt RC."
+      ]
+    },
+    {
+      "t": "Hauptmenü",
+      "list": [
+        "Spielen / Einzelspieler: gegen Computergegner (Leicht, Mittel, Schwer). Standardmäßig sind drei Computer dabei, bis zu 6 Spieler insgesamt.",
+        "Lokal (ein Gerät): mehrere Menschen reihum an einem Gerät, auf Wunsch mit Computern gemischt. Vor jedem Zug heißt es „Gib das Gerät weiter“.",
+        "Online: Raum erstellen (privat oder öffentlich) oder per Code/Link beitreten.",
+        "Fortsetzen: gespeicherte Partien (automatisch und Platz 1–3) laden.",
+        "Freunde, Rangliste (weltweit und du mit deinen Freunden), Profil mit Statistik.",
+        "Charaktere, Welten, Erfolge, Einstellungen und „Regeln & Tutorial“."
+      ]
+    },
+    {
+      "t": "Partie einrichten",
+      "list": [
+        "Spielmodus Klassisch: alle Regeln, 1.500 RC Startgeld, gespielt wird bis nur noch einer übrig ist.",
+        "Spielmodus Schnell: 20 Runden, 2 zufällige Grundstücke zum Start, 300 RC über Los, nur 2 Versuche im Gefängnis. Am Ende gewinnt das größte Vermögen.",
+        "Eigene Regeln: Startgeld (300–10.000), Geld über Los, Rundenlimit, Zeitlimit in Minuten, Zugzeit in Sekunden, Grundstücke zum Start (0–4), Kaution, Häuser und Hotels in der Bank, max. Versuche im Gefängnis sowie Versteigerungen, „Doppeltes Geld genau auf Los“ und „Steuern und Strafen in den Topf auf Frei Parken“.",
+        "Spieler: Mensch oder Computer hinzufügen, Stärke je Computer wählen, mindestens 2 Spieler.",
+        "Welt: Metropolis (moderne Großstadt), Fantasy Kingdom (Burgen, Zauberwälder, Drachenstatue) oder Future City (Neonlicht, Roboter, Raumhafen). Die Welten unterscheiden sich in Namen, Karten-Texten, Grafik und Musik – Preise und Regeln sind überall gleich."
+      ]
+    },
+    {
+      "t": "Ablauf eines Zuges",
+      "steps": [
+        "Würfeln und die Augensumme vorwärts ziehen.",
+        "Das Feld auswerten: kaufen, Miete zahlen, Karte ziehen, Steuer zahlen …",
+        "Bei einem Pasch noch einmal würfeln. Drei Pasche hintereinander: ab ins Gefängnis.",
+        "Jederzeit im eigenen Zug: bauen, Hypotheken, handeln (Knöpfe „Besitz“ und „Handeln“). Dann „Zug beenden“."
+      ]
+    },
+    {
+      "t": "Regeln im Detail",
+      "list": [
+        "Start: Wer über Start zieht oder darauf landet, bekommt 200 RC (Schnellmodus 300 RC). Mit „Doppeltes Geld“ gibt es beim genauen Landen das Doppelte.",
+        "Kaufen: Landest du auf einem freien Grundstück, darfst du es zum Preis kaufen. Willst oder kannst du nicht, wird es sofort versteigert. Es gibt 22 Straßen in 8 Farbgruppen, 4 Bahnhöfe und 2 Werke.",
+        "Versteigerung: Alle aktiven Spieler bieten reihum, auch wer abgelehnt hat. Wer passt, scheidet aus. Das letzte Gebot gewinnt; bietet niemand, bleibt das Grundstück bei der Bank.",
+        "Miete Straßen: Grundmiete, mit der ganzen Farbgruppe doppelt, mit Häusern und Hotel laut Tabelle. Bahnhöfe: 25/50/100/200 RC je nach Anzahl. Werke: 4× Augenzahl, mit beiden Werken 10×. Belastete Grundstücke bringen keine Miete. Auch im Gefängnis kassierst du Miete.",
+        "Bauen: nur mit der kompletten Farbgruppe, ohne Hypothek in der Gruppe, gleichmäßig (höchstens ein Haus Vorsprung). Nach 4 Häusern folgt ein Hotel. Die Bank hat nur 32 Häuser und 12 Hotels. Verkaufen bringt den halben Baupreis, ebenfalls gleichmäßig.",
+        "Hypothek: Unbebaute Grundstücke bringen den halben Kaufpreis. Ablösen kostet die Hypothek plus 10 % Zinsen. Wer ein belastetes Grundstück im Handel bekommt, zahlt sofort 10 % Zinsen.",
+        "Gefängnis: über „Ab ins Gefängnis“, eine Karte oder drei Pasche. Raus mit Pasch (du ziehst sofort), 50 RC Kaution oder Freikarte. Nach dem dritten Fehlversuch musst du zahlen und ziehen.",
+        "Karten: je 20 Ereignis- und Gemeinschaftskarten pro Welt – Geld, Kosten, Versetzen, Freikarte. Gezogene Karten kommen unter den Stapel; Freikarten behältst du, bis du sie nutzt oder handelst.",
+        "Steuern: Auf den Steuerfeldern (200 und 100 RC) zahlst du an die Bank. Mit der Topf-Regel kommen Steuern, Strafen und Kautionen in einen Topf, den bekommt, wer auf Frei Parken landet.",
+        "Handeln: jederzeit außer während einer Versteigerung – Grundstücke, Geld und Freikarten. Bebaute Gruppen müssen erst geräumt werden. Der andere kann annehmen, ablehnen oder ein Gegenangebot machen.",
+        "Schulden und Bankrott: Kannst du nicht zahlen, musst du erst Häuser verkaufen und Hypotheken aufnehmen. Reicht das nicht, bist du bankrott. Schuldest du einem Spieler, bekommt er alles; schuldest du der Bank, werden deine Grundstücke wieder frei."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Smartphone und Tablet: Knöpfe unten antippen, mit einem Finger die Kamera drehen, mit zwei Fingern zoomen, ein Feld antippen für die Besitzurkunde (Miete, Hauspreis, Hypothekenwert).",
+        "PC: Leertaste oder Enter für die Hauptaktion (Würfeln, Kaufen, Zug beenden), Q/E oder Pfeiltasten drehen, + / − zoomen, O Übersicht, S Animation überspringen, M Ton, Esc oder P Pause.",
+        "Controller: A Hauptaktion, LB/RB drehen, LT/RT zoomen, X überspringen, Y Übersicht, Start Pause, Select Ton; der rechte Stick dient als Zeiger für alle anderen Knöpfe.",
+        "Oben im Spiel: Menü, Übersicht und Protokoll. Emotes: Winken, Tanzen, Verbeugen, Lachen, Schulterzucken."
+      ]
+    },
+    {
+      "t": "Online spielen",
+      "steps": [
+        "„Online“ → „Privaten Raum erstellen“ oder „Öffentlichen Raum erstellen“. Der Ersteller ist Gastgeber: Sein Browser prüft alle Züge, würfelt und verteilt den Spielstand.",
+        "Mitspieler treten mit dem 6-stelligen Raumcode oder dem Einladungslink bei – von überall. Öffentliche Räume findest du unter „Öffentliche Räume“.",
+        "Alle drücken „Ich bin bereit“, der Gastgeber startet die Partie (mindestens 2 Spieler).",
+        "Bricht die Verbindung ab, kannst du mit demselben Gerät zurückkehren; läuft deine Zugzeit ab, zieht der Computer für dich.",
+        "Verlässt der Gastgeber das Spiel, kann er den Raum später aus „Fortsetzen“ wieder öffnen; Mitspieler kehren mit demselben Code zurück."
+      ]
+    },
+    {
+      "t": "Speichern und Profil",
+      "p": [
+        "Lokale Partien werden automatisch gespeichert; im Pausenmenü kannst du zusätzlich in Platz 1–3 speichern. Profil, Statistik (Partien, Siege, Siegquote, höchstes Vermögen, beste Siegesserie, Lieblingsfigur und -welt), Erfolge und Spielstände liegen auf dem Gerät – mit Google-Anmeldung auch geräteübergreifend. Im Profil kannst du Daten exportieren oder alles löschen."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Starte das Tutorial unter „Regeln & Tutorial“ – gegen einen leichten Computer, mit Checkliste (würfeln, kaufen, Miete, handeln, bauen, Hypothek, Versteigerung, Zug beenden).",
+        "Am Anfang fast alles kaufen, was du dir leisten kannst. Jedes Grundstück ist ein Tauschmittel für später.",
+        "Lass dir einen Puffer von etwa 150–200 RC für Mieten.",
+        "Tippe ein Feld an, um Miete, Hauspreis und Hypothekenwert zu sehen."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Die beiden Farbgruppen direkt hinter dem Gefängnis (Pink und Orange) werden besonders oft betreten – wer aus dem Gefängnis kommt, landet häufig dort.",
+        "Drei Häuser pro Straße bringen im Verhältnis am meisten Miete: Der Sprung von 2 auf 3 Häuser verdreifacht die Miete fast.",
+        "Häuser knapp halten: Die Bank hat nur 32 Häuser. Wer viele Häuser stehen lässt statt Hotels zu bauen, blockiert die anderen.",
+        "Ein fairer Tausch, der beiden eine Farbgruppe bringt, lohnt sich fast immer – wenn deine Gruppe die bessere ist.",
+        "Versteigerungen nutzen: Lehnst du ein Grundstück ab, das keiner braucht, bekommst du es vielleicht billiger."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Im Spätspiel ist das Gefängnis ein sicherer Ort: Du kassierst weiter Miete und betrittst keine teuren Hotels. Der schwere Computer wartet dann absichtlich im Gefängnis.",
+        "Hypotheken gezielt auf einzelne Grundstücke ohne Gruppe legen, um Geld für Häuser auf einer kompletten Gruppe zu haben.",
+        "Bahnhöfe bringen mit allen vier 200 RC und sind gegen späte Verluste robust.",
+        "Freikarten sind handelbar – im Spätspiel sind sie mehr wert als 50 RC.",
+        "Im Schnellmodus zählt das Vermögen am Ende. Kurz vor Runde 20 keine Gebäude mehr verkaufen: Gebäude zählen im Vermögen voll, verkauft bringen sie nur den halben Preis."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Das ganze Geld in Häuser stecken und dann die nächste Miete nicht zahlen können.",
+        "Gegnern im Tausch die letzte Straße ihrer Farbgruppe geben, ohne selbst eine Gruppe zu bekommen.",
+        "Ungleichmäßig bauen wollen – das Spiel verlangt erst Häuser auf den anderen Straßen der Gruppe.",
+        "Zu früh Bankrott erklären: Erst Häuser verkaufen und Hypotheken aufnehmen; oft reicht es noch."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Spielbrett mit Preisen (Namen aus Metropolis)",
+      "list": [
+        "Braun (Haus 50): Hafengasse 60, Kanalweg 60.",
+        "Hellblau (Haus 50): Lindenallee 100, Ahornweg 100, Birkenplatz 120.",
+        "Pink (Haus 100): Atelierstraße 140, Galeriegasse 140, Theaterplatz 160.",
+        "Orange (Haus 100): Marktstraße 180, Bäckerzeile 180, Kaufhausplatz 200.",
+        "Rot (Haus 150): Ringboulevard 220, Opernstraße 220, Rathausplatz 240.",
+        "Gelb (Haus 150): Parkallee 260, Seepromenade 260, Uferstraße 280.",
+        "Grün (Haus 200): Glasturm-Allee 300, Finanzmeile 300, Skyline-Platz 320.",
+        "Blau (Haus 200): Panoramahöhe 350, Goldene Krone 400.",
+        "Bahnhöfe je 200: Nordbahnhof, Ostbahnhof, Südbahnhof, Westbahnhof. Werke je 150: Stadtwerke Strom, Wasserwerk.",
+        "Sonderfelder: START, Stadtsteuer 200, Verwahrung (Gefängnis), Stadtpark (Frei Parken), Ab in die Verwahrung, Luxusabgabe 100."
+      ]
+    },
+    {
+      "t": "Mietentabelle (Grund / 1 / 2 / 3 / 4 Häuser / Hotel)",
+      "list": [
+        "Braun: 2/10/30/90/160/250 und 4/20/60/180/320/450.",
+        "Hellblau: 6/30/90/270/400/550 (zweimal), teuerste 8/40/100/300/450/600.",
+        "Pink: 10/50/150/450/625/750 (zweimal), teuerste 12/60/180/500/700/900.",
+        "Orange: 14/70/200/550/750/950 (zweimal), teuerste 16/80/220/600/800/1000.",
+        "Rot: 18/90/250/700/875/1050 (zweimal), teuerste 20/100/300/750/925/1100.",
+        "Gelb: 22/110/330/800/975/1150 (zweimal), teuerste 24/120/360/850/1025/1200.",
+        "Grün: 26/130/390/900/1100/1275 (zweimal), teuerste 28/150/450/1000/1200/1400.",
+        "Blau: 35/175/500/1100/1300/1500 und 50/200/600/1400/1700/2000.",
+        "Ohne Häuser verdoppelt die komplette Farbgruppe die Grundmiete."
+      ]
+    },
+    {
+      "t": "Beste Gruppen nach Kosten und Nutzen",
+      "list": [
+        "Orange: drei Häuser auf allen drei Straßen kosten 900 RC Häuser plus 560 RC Kaufpreis und bringen 550–600 RC Miete pro Treffer. Oft betreten – sehr stark.",
+        "Hellblau: billig (320 RC Kauf, 450 RC für je drei Häuser) und schon mit 3 Häusern 270–300 RC Miete. Ideal für einen frühen Start.",
+        "Pink: guter Mittelweg, ebenfalls oft betreten.",
+        "Blau: höchste Mieten (bis 2.000 RC mit Hotel), aber nur zwei Felder und teuer – stark, wenn du genug Geld hast.",
+        "Braun: kaum Miete, lohnt sich nur als billige Gruppe zum Blockieren oder Tauschen."
+      ]
+    },
+    {
+      "t": "Die Computergegner",
+      "list": [
+        "Leicht: kauft fast alles, solange noch viele Felder frei sind, bietet bei Versteigerungen eher wenig und handelt nur einfache Tauschgeschäfte, bei denen beide eine Gruppe bekommen. Baut höchstens bis 3 Häuser.",
+        "Mittel: hält eine Geldreserve, bietet bis etwa zum Wert des Grundstücks und handelt, wenn sich der Tausch für ihn lohnt.",
+        "Schwer: bewertet Grundstücke, die einem Gegner die Gruppe verbauen, besonders hoch, überbietet gezielt und wartet im Spätspiel im Gefängnis. Mittel und Schwer nehmen für sehr wertvolle Felder auch Hypotheken auf, um sie kaufen zu können.",
+        "Gegen Schwer: Ihm keine Gruppe überlassen, Versteigerungen nicht kampflos hergeben und Tauschangebote genau prüfen."
+      ]
+    },
+    {
+      "t": "Erfolge und Freischaltungen",
+      "list": [
+        "🎲 Erste Partie: eine Partie zu Ende spielen – schaltet den Kleinen Drachen frei.",
+        "🏆 Erster Sieg: eine Partie gewinnen – schaltet den Futuristischen Androiden frei.",
+        "👑 Imperator: 10 Partien gewinnen.",
+        "🧩 Komplett!: eine ganze Farbgruppe besitzen – schaltet den Ritter frei.",
+        "🤝 Händler: einen Handel abschließen – schaltet das Magische Katzenwesen frei.",
+        "🔨 Hammerpreis: etwas für mindestens 300 RC ersteigern.",
+        "💰 Millionär im Kleinen: 5.000 RC Vermögen erreichen.",
+        "🪙 Aus wenig viel: mit höchstens 800 RC Startgeld gewinnen (Eigene Regeln).",
+        "🔥 Serie: 3 Partien hintereinander gewinnen.",
+        "🧠 Meisterhirn: eine Partie gegen einen schweren Computergegner gewinnen.",
+        "🎓 Gelernt ist gelernt: das Tutorial abschließen.",
+        "🌍 Weltenbummler: in allen drei Welten spielen.",
+        "🌐 Vernetzt: eine Online-Partie zu Ende spielen.",
+        "🏨 Hotelier: das erste Hotel bauen.",
+        "Erfolge schalten nur Figuren frei – nie spielerische Vorteile."
+      ]
+    },
+    {
+      "t": "Charaktere",
+      "p": [
+        "Menschen: Geschäftsmann, Geschäftsfrau, Abenteurer, Abenteurerin, König, Königin, Pirat, Detektiv. Fantasy: Kleiner Drache, Zauberer, Elfenkriegerin, Kobold, Ritter, Magisches Katzenwesen. Science-Fiction: Freundlicher Roboter, Futuristischer Android.",
+        "Jede Figur lässt sich anpassen: Hauptfarbe, Akzentfarbe, Outfit, Accessoire (Schal, Brille, Rucksack, Blume, Kopfhörer), Siegerpose und Lieblings-Emote."
+      ]
+    },
+    {
+      "t": "Schnelle Erfolge sammeln",
+      "steps": [
+        "Tutorial spielen – das bringt „Gelernt ist gelernt“ und meist schon „Erste Partie“.",
+        "In einer Partie gegen Leicht einen Tausch anbieten, der beiden eine Gruppe bringt: „Händler“ und „Komplett!“.",
+        "Mit Eigenen Regeln 800 RC Startgeld gegen Leicht spielen und gewinnen: „Aus wenig viel“ und „Erster Sieg“.",
+        "Je eine Partie in Metropolis, Fantasy Kingdom und Future City beenden: „Weltenbummler“."
+      ]
+    }
+  ],
+  "faq": [
+    { "q": "Wie viele Spieler können mitmachen?", "a": "2 bis 6 – Menschen und Computer gemischt, an einem Gerät oder online." },
+    { "q": "Mein Mitspieler kommt nicht in den Raum.", "a": "Der Raumcode hat 6 Zeichen. „Raum nicht gefunden“ heißt meist, dass der Gastgeber den Raum geschlossen hat. „Andere Spielversion“: Seite bei allen neu laden." },
+    { "q": "Wo finde ich meine gespeicherte Partie?", "a": "Im Hauptmenü unter „Fortsetzen“. Ohne Google-Anmeldung liegen Spielstände nur auf diesem Gerät." },
+    { "q": "Warum kann ich nicht bauen?", "a": "Du brauchst die ganze Farbgruppe, keine Hypothek in der Gruppe, genug Geld und musst gleichmäßig bauen. Außerdem muss die Bank noch Häuser oder Hotels haben." },
+    { "q": "Die Partie dauert zu lange.", "a": "Wähle den Modus „Schnell“ (20 Runden) oder setze unter „Eigene Regeln“ ein Runden- oder Zeitlimit. „S“ bzw. X am Controller überspringt Animationen, das Animationstempo lässt sich in den Einstellungen auf Schnell oder Turbo stellen." },
+    { "q": "Das Spiel ruckelt.", "a": "In den Einstellungen Qualität auf „Niedrig“, Schatten und Partikel aus oder den Energiesparmodus (30 FPS) einschalten." }
+  ]
+}

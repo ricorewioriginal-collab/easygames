@@ -1,0 +1,189 @@
+{
+  "id": "anmacha-frequenzrad",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AnMaCha Frequenzrad ist ein Buchstaben-Rätsel für 2 bis 4 Spieler: Auf der Tafel steckt ein Satz oder Begriff, nur die Kategorie ist bekannt. Wer an der Reihe ist, dreht das Rad, nennt Buchstaben, kauft Vokale und löst am Ende das Rätsel.",
+        "Wer nach allen Runden die meisten Gesamtpunkte hat, gewinnt. Punkte zählen nur, wenn du ein Rätsel löst – sonst verfallen die Rundenpunkte."
+      ]
+    },
+    {
+      "t": "Start und Einstellungen",
+      "list": [
+        "▶ Spielen öffnet „Neues Spiel“.",
+        "Menschen: 1 bis 4 Spieler mit eigenem Namen (bis 14 Zeichen).",
+        "Computer-Gegner: 0, 1 oder 2. Insgesamt sind höchstens 4 Plätze möglich; spielst du allein, kommt automatisch ein Computer-Gegner dazu.",
+        "Stufe der Computer: leicht, normal oder schwer (nur sichtbar, wenn Computer mitspielen).",
+        "Runden (Rätsel): 3, 4 oder 5.",
+        "📱 Koppeln: Handys als Pads verbinden.",
+        "❓ Regeln zeigt die Spielregeln, 🔊 Ton schaltet den Ton. Deine Einstellungen werden auf dem Gerät gespeichert."
+      ]
+    },
+    {
+      "t": "Das Rad",
+      "p": [
+        "Das Frequenzrad hat 24 Felder:"
+      ],
+      "list": [
+        "17 Zahlenfelder: 100, 150, 200 (zweimal), 250 (zweimal), 300 (zweimal), 350, 400, 450, 500 (zweimal), 600, 700, 800 und 900 Punkte pro Buchstabe.",
+        "3 × 💣 Bankrott: Deine Rundenpunkte sind weg, der Nächste ist dran.",
+        "2 × ⏸ Aussetzen: Der Zug geht an den Nächsten, deine Punkte bleiben.",
+        "2 × 🎁 Gratis-Vokal: Du darfst einen Vokal kostenlos nennen. Sind alle Vokale schon aufgedeckt, drehst du nochmal."
+      ]
+    },
+    {
+      "t": "Regeln und Spielablauf",
+      "steps": [
+        "Zu Beginn jeder Runde erscheint ein neues Rätsel mit Kategorie. Wer anfängt, wechselt von Runde zu Runde.",
+        "Drehen: Zeigt das Rad eine Zahl, nennst du einen Konsonanten. Kommt er vor, bekommst du die Zahl für jedes Vorkommen gutgeschrieben und bleibst dran. Kommt er nicht vor, ist der nächste Spieler an der Reihe.",
+        "Nach einem Treffer hast du drei Möglichkeiten: 🎡 Drehen, 🅰 Vokal kaufen (250 Punkte) oder 💬 Lösen.",
+        "Vokal kaufen: kostet 250 Punkte aus deinen Rundenpunkten, auch wenn der Vokal nicht vorkommt. Ein Vokal bringt keine Punkte, deckt aber Felder auf. Kommt er nicht vor, ist der Zug weg.",
+        "Lösen: Tippe die ganze Lösung ein. Richtig = deine Rundenpunkte plus 500 Bonus wandern in deine Gesamtpunkte, die anderen verlieren ihre Rundenpunkte. Falsch = der Zug geht weiter.",
+        "Ist der letzte Buchstabe aufgedeckt, gilt das Rätsel als gelöst für den Spieler, der ihn genannt hat – auch dann gibt es die 500 Bonuspunkte.",
+        "Nach der letzten Runde siehst du das Spielende mit der Rangliste. Bei Punktgleichstand gibt es mehrere Sieger."
+      ]
+    },
+    {
+      "t": "Lösung eintippen",
+      "list": [
+        "Groß- und Kleinschreibung, Leerzeichen und Satzzeichen sind egal.",
+        "Umlaute dürfen auch als AE, OE und UE geschrieben werden, ß als SS.",
+        "Kleine Tippfehler werden bei längeren Rätseln verziehen: 1 Fehler ab 14 Buchstaben, 2 Fehler ab 28 Buchstaben. Kurze Rätsel müssen genau stimmen."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch und Maus: 🎡 Drehen, Buchstaben auf der Bildschirmtastatur antippen, 🅰 Vokal kaufen und 💬 Lösen antippen. Bereits genannte Buchstaben und gerade nicht erlaubte (Vokal statt Konsonant) sind ausgegraut.",
+        "PC-Tastatur: Enter dreht das Rad, Buchstaben direkt auf der Tastatur tippen, die Lösung ins Feld schreiben und mit Enter oder „Lösen“ abschicken.",
+        "☰ oben öffnet das Menü (Spiel abbrechen), 📱 öffnet das Koppeln, 🔊 schaltet den Ton.",
+        "Nach jeder Runde geht es mit „Nächste Runde ▶“ bzw. „Ergebnis ▶“ weiter."
+      ]
+    },
+    {
+      "t": "🌐 Online & Handys",
+      "steps": [
+        "Im Menü „🌐 Online & Handys“, in den Einstellungen „📱 Koppeln“ oder im Spiel 📱 antippen. Es erscheinen QR-Code, Link und ein vierstelliger Code.",
+        "Mitspieler scannen den QR-Code oder öffnen den Link bzw. geben den Code ein, tragen ihren Namen ein und treten bei. Das klappt auch online von überall – im Browser, in der App oder an einem anderen Gerät.",
+        "Jedes Handy übernimmt einen freien menschlichen Spielerplatz (bis zu 4). Drehen, Buchstaben wählen, Vokale kaufen und lösen geht dann auf dem Handy; der große Bildschirm zeigt Rad und Tafel.",
+        "Ist ein Handy dran, steht auf dem großen Bildschirm „📱 … spielt am Handy …“. Bei Verbindungsabbruch auf „Beitreten“ tippen, um zurückzukehren."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Fang mit den häufigsten Konsonanten an: N, S, R, T, D und H kommen in fast jedem Rätsel vor.",
+        "Kauf Vokale nur, wenn du mindestens 250 Rundenpunkte hast und sie wirklich weiterhelfen. Das E steckt in jedem der 150 Rätsel.",
+        "Lies die Kategorie genau: Bei „Sprichwort“ oder „Redewendung“ erkennst du oft schon nach wenigen Buchstaben den ganzen Satz.",
+        "Achte auf kurze Wörter: Drei Buchstaben am Satzanfang sind häufig DER, DIE, DAS oder EIN."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Rundenpunkte sind nicht sicher: Jede Drehung hat 3 von 24 Chancen auf Bankrott (12,5 Prozent). Wenn du das Rätsel kennst, löse sofort, statt weiterzudrehen.",
+        "Mit hohen Rundenpunkten lohnt es, früh zu lösen – die anderen verlieren dann ihre Rundenpunkte.",
+        "Nach einem Treffer musst du nicht drehen: Vokal kaufen oder Lösen ist ohne Bankrott-Risiko.",
+        "Seltene Konsonanten (J, Y, Q, X, V) fast nie nennen – ein Fehlversuch kostet den Zug.",
+        "Mehrfach vorkommende Buchstaben bringen das Vielfache: Ein N, das viermal vorkommt, bringt bei 900 auf dem Rad 3600 Punkte."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Den letzten fehlenden Buchstaben selbst nennen: Wer ihn aufdeckt, löst automatisch und bekommt die 500 Bonuspunkte.",
+        "Hast du gerade eine hohe Zahl gedreht und kennst die Lösung schon, nenne zuerst noch einen sicheren Konsonanten, der mehrfach vorkommt, und löse dann.",
+        "Typische Endungen: -EN, -ER, -UNG, -ICH, -SCH, -CHT. Ist C aufgedeckt, steht fast immer ein H daneben.",
+        "Gegen schwere Computer früh lösen: Sie lösen schon, wenn etwa 55 Prozent der Buchstaben offen liegen."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Einen Vokal kaufen, der nicht vorkommt – die 250 Punkte sind trotzdem weg und der Zug auch.",
+        "Mit vielen Rundenpunkten immer weiterdrehen und auf Bankrott landen.",
+        "Bei kurzen Rätseln (unter 14 Buchstaben) unsauber tippen: Dort wird kein Tippfehler verziehen.",
+        "Vergessen, dass ß im Rätsel als SS steht (z. B. TOMATENSOSSE, FLEISSIG)."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Die 15 Kategorien mit Beispielen",
+      "p": [
+        "Das Spiel hat 150 Rätsel in 15 Kategorien zu je 10 Rätseln. Zwei aufeinanderfolgende Runden haben möglichst unterschiedliche Kategorien. Einige Beispiele:"
+      ],
+      "list": [
+        "Sprichwort: DER FRÜHE VOGEL FÄNGT DEN WURM · STILLE WASSER SIND TIEF",
+        "Redewendung: JEMANDEM DEN DAUMEN DRÜCKEN · ETWAS AUF DIE LANGE BANK SCHIEBEN",
+        "Essen & Trinken: SPAGHETTI MIT TOMATENSOSSE · HEISSE SCHOKOLADE MIT SAHNE",
+        "Radio & Musik: DIE MORGENSHOW MIT GUTER LAUNE · EIN LIED ZUM MITSINGEN",
+        "Alltag: DER BUS KOMMT WIEDER ZU SPÄT · DIE WÄSCHE AUF DIE LEINE HÄNGEN",
+        "Tiere & Natur: EIN EICHHÖRNCHEN SAMMELT NÜSSE",
+        "Orte & Reisen: DER ZUG FÄHRT AUF GLEIS DREI",
+        "Beruf & Schule: DIE PAUSE BEGINNT UM ZEHN UHR",
+        "Freizeit & Sport: EIN TOR IN DER LETZTEN MINUTE",
+        "Technik & Handy: DER AKKU IST LEIDER SCHON LEER",
+        "Film & Fernsehen: POPCORN FÜR DEN KINOABEND",
+        "Zuhause & Garten: TOMATEN WACHSEN AUF DEM BALKON",
+        "Feste & Feiertage: DER CHRISTBAUM STEHT SCHIEF",
+        "Gesundheit & Körper: VIEL WASSER TRINKEN IST GESUND",
+        "Lustige Szenen: OPA TANZT MIT DEM STAUBSAUGER"
+      ]
+    },
+    {
+      "t": "Buchstaben-Statistik aller 150 Rätsel",
+      "p": [
+        "So viele der 150 Rätsel enthalten den jeweiligen Buchstaben mindestens einmal. Nenne Konsonanten in dieser Reihenfolge, dann triffst du am häufigsten:"
+      ],
+      "list": [
+        "Konsonanten: N 139 · T 135 · R 124 · S 124 · H 122 · D 120 · L 98 · M 96 · C 93 · G 81 · F 79 · B 67 · K 53 · W 48 · Z 38 · P 31 · V 14 · J 4 · Y 3 · Q 1 · X 1",
+        "Vokale: E 150 · I 134 · A 125 · U 98 · O 63 · Ü 24 · Ä 21 · Ö 9",
+        "Ein gekauftes E trifft also immer, I und A fast immer."
+      ]
+    },
+    {
+      "t": "Beste Strategie je Phase",
+      "list": [
+        "Anfang der Runde: Drehen und die Top-Konsonanten N, T, R, S, H, D nennen.",
+        "Mitte: Mit mindestens 250 Rundenpunkten E kaufen (sicherer Treffer), danach I oder A. So erkennst du die Wortgrenzen und kurze Wörter.",
+        "Ende: Sobald du den Satz sicher erkennst, sofort lösen – jede weitere Drehung riskiert Bankrott oder Aussetzen.",
+        "Letzter Konsonant offen: Wenn nur noch Vokale fehlen, gibt das Rad keine Konsonanten-Punkte mehr; kaufe dann Vokale oder löse direkt."
+      ]
+    },
+    {
+      "t": "Wertung und Computer-Gegner",
+      "list": [
+        "Rundenpunkte = Radwert × Anzahl des Konsonanten, minus 250 pro gekauftem Vokal.",
+        "Lösen bringt Rundenpunkte + 500 Bonus in die Gesamtwertung; nur diese zählt am Spielende.",
+        "Der Durchschnitt der Zahlenfelder liegt bei etwa 410 Punkten pro Buchstabe, der Höchstwert ist 900.",
+        "Computer leicht lösen erst, wenn etwa 82 Prozent der Buchstaben offen sind, normal ab etwa 68 Prozent, schwer ab etwa 55 Prozent. Leichte Computer verraten sich öfter mit falschen Lösungen."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Meine Lösung war richtig, wurde aber nicht angenommen.",
+      "a": "Bei kurzen Rätseln (unter 14 Buchstaben) muss jeder Buchstabe stimmen. Prüfe auch, ob du ein Wort ausgelassen hast – nur 1 bzw. 2 Tippfehler werden bei längeren Sätzen verziehen."
+    },
+    {
+      "q": "Warum kann ich keinen Vokal kaufen?",
+      "a": "Du brauchst mindestens 250 Rundenpunkte, musst nach einem Treffer an der Reihe sein, und es muss noch ein Vokal verdeckt sein."
+    },
+    {
+      "q": "Das Handy verbindet sich nicht.",
+      "a": "Beide Geräte brauchen Internet. Prüfe den vierstelligen Code; meldet das Handy „Keine Antwort vom Spiel. Code richtig?“, öffne das Koppeln-Fenster am großen Bildschirm erneut. Jedes Handy braucht einen freien menschlichen Spielerplatz."
+    },
+    {
+      "q": "Kann ich allein spielen?",
+      "a": "Ja. Stellst du 1 Mensch und 0 Computer ein, kommt automatisch ein Computer-Gegner dazu."
+    },
+    {
+      "q": "Werden Spielstände gespeichert?",
+      "a": "Gespeichert werden nur deine Einstellungen (Spieler, Namen, Computer, Stufe, Runden, Ton). Ein laufendes Spiel wird nicht gespeichert."
+    }
+  ]
+}

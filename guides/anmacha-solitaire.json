@@ -1,0 +1,203 @@
+{
+  "id": "anmacha-solitaire",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AnMaCha Solitaire vereint drei klassische Kartenspiele für eine Person: Patience (Klondike), Spider und FreeCell. Gespielt wird mit AnMaCha-Karten; die Werte heißen A (Ass), 2 bis 10, B (Bube), D (Dame) und K (König), die Farben ♠ ♥ ♦ ♣.",
+        "Bei Patience und FreeCell gewinnst du, wenn alle 52 Karten nach Farben sortiert von Ass bis König auf den 4 Ablagen liegen. Bei Spider gewinnst du, wenn du alle 8 vollständigen Reihen König bis Ass abgelegt hast."
+      ]
+    },
+    {
+      "t": "Hauptmenü und Optionen",
+      "list": [
+        "♠♥ Patience (Klassiker): Wähle „Ziehen 1 Karte“ oder „3 Karten“. Mit dem Häkchen „nur lösbare“ bekommst du nur Partien, die nachweislich lösbar sind (je 250 geprüfte Partien für 1 und für 3 Karten).",
+        "🕷 Spider (2 Kartenspiele): Wähle 1, 2 oder 4 Farben.",
+        "♦♣ FreeCell (alles offen): 4 freie Zellen, fast jede Partie lösbar.",
+        "▶ Weiterspielen: erscheint, wenn eine angefangene Partie gespeichert ist, und zeigt deren Variante.",
+        "Neues Spiel: startet eine neue Partie mit der gewählten Variante.",
+        "📅 Tagesspiel: jeden Tag eine feste, lösbare Patience-Partie (1 Karte ziehen). Hast du sie geschafft, steht im Knopf ein Häkchen mit deiner Zeit.",
+        "📖 Anleitung und ⚙️ Einstellungen. Unter den Spielen zeigt 🏆 die Zahl deiner Siege je Spiel, darunter steht die Gesamtzahl der Siege, Partien und deine beste Serie."
+      ]
+    },
+    {
+      "t": "Patience – Regeln",
+      "list": [
+        "Aufbau: 7 Spalten mit 1 bis 7 Karten, jeweils nur die oberste offen. Der Rest liegt als Stapel oben links.",
+        "In den Spalten baust du absteigend in wechselnden Farben (rote auf schwarze Karte und umgekehrt, z. B. rote 9 auf schwarze 10). Offene, richtig gebaute Reihen lassen sich gemeinsam verschieben.",
+        "Wird eine verdeckte Karte frei, dreht sie sich von selbst um.",
+        "Leere Spalten nehmen nur einen König (oder eine Reihe, die mit einem König beginnt).",
+        "Stapel antippen deckt 1 oder 3 Karten auf den Abwurf auf; nur die oberste Karte des Abwurfs ist spielbar. Ist der Stapel leer, legt ein Tipp den Abwurf wieder zurück – das geht beliebig oft.",
+        "Die 4 Ablagen oben rechts beginnen mit dem Ass und werden je Farbe bis zum König gefüllt. Karten von der Ablage dürfen auch zurück in eine Spalte."
+      ]
+    },
+    {
+      "t": "Spider – Regeln",
+      "list": [
+        "Zwei Kartenspiele (104 Karten) in 10 Spalten: die ersten 4 Spalten mit 6, die übrigen mit 5 Karten, jeweils die oberste offen. Die restlichen 50 Karten liegen im Stapel.",
+        "Du darfst jede Karte auf eine um eins höhere legen, egal welche Farbe. Gemeinsam verschieben lassen sich aber nur Reihen derselben Farbe.",
+        "Eine leere Spalte nimmt jede Karte oder Reihe auf.",
+        "Der Stapel teilt auf jede der 10 Spalten eine neue Karte aus (insgesamt 5-mal). Dafür darf keine Spalte leer sein – sonst kommt der Hinweis „Zum Austeilen darf keine Spalte leer sein“.",
+        "Liegt eine komplette Reihe König bis Ass in einer Farbe, wird sie automatisch abgelegt. Oben steht, wie viele der 8 Reihen geschafft sind.",
+        "Mit 1 Farbe (nur ♠) ist es am leichtesten, mit 2 Farben (♠ und ♥) mittel, mit 4 Farben am schwersten."
+      ]
+    },
+    {
+      "t": "FreeCell – Regeln",
+      "list": [
+        "Alle 52 Karten liegen offen in 8 Spalten (4 Spalten mit 7, 4 mit 6 Karten).",
+        "Oben links liegen 4 freie Zellen, die je eine beliebige Karte zwischenspeichern; oben rechts die 4 Ablagen.",
+        "In den Spalten baust du absteigend in wechselnden Farben. Eine leere Spalte nimmt jede Karte auf.",
+        "Wie viele Karten du auf einmal verschieben darfst, hängt vom freien Platz ab: (freie Zellen + 1) × 2 hoch (Zahl der leeren Spalten). Ohne leere Spalte und mit 4 freien Zellen sind das 5 Karten, mit einer leeren Spalte 10. Ziehst du in eine leere Spalte, zählt diese nicht mit."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch und Maus: Karten mit dem Finger oder der Maus auf das Ziel ziehen – oder einfach antippen: Die Karte springt an die beste Stelle. Passt sie nirgends hin, wackelt sie. Stapel antippen zieht neue Karten.",
+        "Knöpfe oben: ☰ Menü, ↶ rückgängig (unbegrenzt in der laufenden Sitzung), 💡 Tipp (mehrmals drücken zeigt nacheinander verschiedene Züge), ⚡ automatisch fertig (sobald alle Karten offen sind und bei Patience Stapel und Abwurf fast leer sind).",
+        "Tastatur: Pfeiltasten bewegen den Rahmen, Leertaste oder Enter nimmt Karten auf und legt sie ab, F legt die markierte Karte automatisch an die beste Stelle, D zieht vom Stapel, Z oder Strg+Z rückgängig, H Tipp, A automatisch fertig, Rücktaste bricht das Aufnehmen ab (hast du nichts aufgenommen, nimmt sie einen Zug zurück), Esc öffnet das Menü.",
+        "Gamecontroller: Steuerkreuz bewegt den Rahmen, A aufnehmen/ablegen, X automatisch legen, Y Stapel ziehen, B abbrechen (sonst rückgängig), LB rückgängig, RB Tipp, Select automatisch fertig, Start Menü.",
+        "Im Pausenmenü (☰): Weiter, 🔀 Neue Partie, ↺ Diese Partie neu starten, Anleitung, Ton an/aus, Zum Menü."
+      ]
+    },
+    {
+      "t": "Einstellungen",
+      "list": [
+        "Ton: Kartengeräusche und Klänge an oder aus.",
+        "Sichere Karten automatisch ablegen: Karten, die du sicher nicht mehr in den Spalten brauchst (Asse, Zweien und Karten, deren Gegenfarben schon weit genug abgelegt sind), wandern von selbst auf die Ablage. Gilt für Patience und FreeCell.",
+        "Antippen legt Karten automatisch ab: Ist das aus, nimmt ein Tipp die Karte nur auf, ein zweiter Tipp aufs Ziel legt sie ab.",
+        "Linkshänder (Stapel rechts): spiegelt die obere Reihe."
+      ]
+    },
+    {
+      "t": "Wertung, Statistik und Speichern",
+      "p": [
+        "Es gibt keine Punkte, sondern Zeit und Züge. Die Uhr läuft ab deinem ersten Zug und hält an, solange ein Fenster offen oder die Seite im Hintergrund ist. Nach einem Sieg fliegen die Karten davon, und du siehst Zeit (mit „Bestzeit!“), Züge (mit „Rekord!“), wie viele Partien dieser Variante du gewonnen hast und deine Siege in Folge.",
+        "Bestzeit und Bestwert der Züge werden getrennt je Variante geführt (z. B. Patience 1 Karte, Patience 3 Karten, Spider 1/2/4 Farben, FreeCell). Beginnst du eine neue Partie, obwohl die alte schon Züge hat und nicht gewonnen ist, reißt deine Siegesserie ab.",
+        "Die laufende Partie wird automatisch im Browser gespeichert (auch beim Schließen der Seite) und lässt sich mit ▶ Weiterspielen fortsetzen. Mit Google angemeldet werden Spielstand und Statistik auf allen Geräten gespeichert, und Siege zählen für die Ranglisten.",
+        "Geht wirklich nichts mehr, meldet das Spiel „Keine Züge mehr“ mit den Knöpfen ↶ Rückgängig, ↺ Neu starten und Neue Partie."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Fang mit Patience „1 Karte“ und „nur lösbare“ oder mit Spider „1 Farbe“ an.",
+        "Lass „Sichere Karten automatisch ablegen“ eingeschaltet – das spart viele Züge.",
+        "Nutze ↶ ohne schlechtes Gewissen: Rückgängig ist unbegrenzt und kostet nichts außer einem Zug auf dem Zähler.",
+        "Weißt du nicht weiter, drück mehrmals 💡 – jeder Druck zeigt einen anderen sinnvollen Zug. Findet der Tipp nichts, rät er zum Stapel."
+      ]
+    },
+    {
+      "t": "Patience-Strategie",
+      "list": [
+        "Decke zuerst verdeckte Karten in den langen Spalten (rechts) auf – dort liegen die meisten verdeckten Karten.",
+        "Mache eine Spalte nur leer, wenn du einen König dafür hast. Eine leere Spalte ohne König bringt nichts.",
+        "Hast du zwei Könige zur Auswahl, nimm den, zu dem schon eine passende Dame in der anderen Farbe bereitliegt.",
+        "Lege Karten nicht vorschnell auf die Ablage, wenn du sie noch als Unterlage brauchst (z. B. eine schwarze 5 für eine rote 4).",
+        "Bei 3 Karten ziehen ändert jede genommene Karte, welche Karten im nächsten Durchgang oben liegen – manchmal lohnt sich eine Karte vom Abwurf nur deshalb."
+      ]
+    },
+    {
+      "t": "Spider-Strategie",
+      "list": [
+        "Baue möglichst gleichfarbig: Nur gleichfarbige Reihen lassen sich gemeinsam verschieben und am Ende ablegen.",
+        "Eine leere Spalte ist in Spider das Wertvollste: Sie nimmt jede Karte auf und hilft beim Umsortieren. Fülle sie vor dem Austeilen aber wieder, denn mit leerer Spalte darfst du nicht austeilen.",
+        "Teile erst aus, wenn du keine sinnvollen Züge mehr hast – jede Austeilung legt neue Karten auf alle Spalten.",
+        "Könige lassen sich nur in leere Spalten bewegen. Lege möglichst nichts Unpassendes auf Könige ganz unten."
+      ]
+    },
+    {
+      "t": "FreeCell-Strategie",
+      "list": [
+        "Halte freie Zellen und leere Spalten frei – jede verdoppelt bzw. erhöht, wie viele Karten du auf einmal bewegen kannst.",
+        "Suche zuerst die Asse und Zweien und plane den Weg dorthin, bevor du Zellen belegst.",
+        "Eine leere Spalte ist mehr wert als eine freie Zelle: Mit 4 freien Zellen bewegst du 5 Karten, mit zusätzlich einer leeren Spalte 10.",
+        "Lege keine Karte in eine Zelle, die du danach nicht mehr herausbekommst."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Neue Partie starten, obwohl die alte noch läuft: Das beendet deine Siegesserie.",
+        "In Spider eine gemischtfarbige Reihe bauen und dann vergeblich versuchen, sie zu verschieben.",
+        "In Patience die letzte verdeckte Karte unter einem König vergessen – leere Spalten entstehen nur, wenn auch der König weg ist.",
+        "⚡ funktioniert noch nicht? Erst wenn alle Karten offen sind (bei Patience Stapel leer und höchstens eine Karte im Abwurf), legt der Knopf alles ab."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Lösbare Partien und Tagesspiel",
+      "p": [
+        "Die Partien werden zufällig gemischt, eine feste Komplettlösung gibt es deshalb nicht. Für Patience liefert das Spiel aber mit „nur lösbare“ geprüfte Partien: je 250 Startwerte für 1 Karte und für 3 Karten, die vorab mit einem Lösungsprogramm durchgespielt wurden. Das Spiel geht diese Liste der Reihe nach durch, damit du nicht sofort Wiederholungen bekommst.",
+        "Das 📅 Tagesspiel ist immer eine lösbare Patience-Partie (1 Karte ziehen) aus dieser Liste – für alle Spieler am selben Tag gleich. Mit ↺ „Diese Partie neu starten“ kannst du sie beliebig oft neu versuchen."
+      ]
+    },
+    {
+      "t": "Musterlösung Patience Schritt für Schritt",
+      "steps": [
+        "Lege alle Asse und Zweien sofort ab (das passiert automatisch, wenn die Einstellung an ist).",
+        "Verschiebe Karten innerhalb der Spalten so, dass möglichst eine verdeckte Karte frei wird – das hat immer Vorrang.",
+        "Erst wenn in den Spalten nichts mehr geht, ziehe vom Stapel und spiele den Abwurf an.",
+        "Leere Spalten nur mit Königen füllen, am besten mit Reihen ab König.",
+        "Sobald alle Karten offen sind und der Stapel leer ist, ⚡ drücken – der Rest legt sich selbst ab."
+      ]
+    },
+    {
+      "t": "Musterlösung Spider Schritt für Schritt",
+      "steps": [
+        "Ordne zuerst innerhalb der offenen Karten gleichfarbige Folgen.",
+        "Versuche, eine Spalte komplett zu leeren, und nutze sie als Zwischenlager.",
+        "Bevor du austeilst, alle Spalten wieder belegen.",
+        "Volle Reihen König bis Ass werden automatisch abgelegt – 8 Reihen bedeuten den Sieg."
+      ]
+    },
+    {
+      "t": "Musterlösung FreeCell und Rekorde",
+      "steps": [
+        "Plane zuerst, wie du an die Asse kommst, und nutze dafür möglichst wenige Zellen.",
+        "Lass sichere Karten automatisch ablegen – das hält die Spalten frei.",
+        "Erzeuge früh eine leere Spalte; sie verdoppelt die Zahl der Karten, die du auf einmal verschieben darfst.",
+        "Für Bestzeit und Zugrekord: Überlege zuerst, dann ziehe zügig. Jedes Ziehen vom Stapel, jede Austeilung und jeder automatische Zug zählt als Zug; Rückgängig setzt den Zähler zurück auf den alten Stand."
+      ]
+    },
+    {
+      "t": "Erfolge und Statistik",
+      "list": [
+        "🏆 im Menü: Zahl deiner Siege je Spiel (Patience, Spider, FreeCell).",
+        "„x Siege in y Partien · beste Serie z“: Gesamtstatistik unter den Spielen.",
+        "Bestzeit und Zugrekord je Variante werden beim Sieg gemeldet.",
+        "📅 Tagesspiel ✓ mit Zeit, wenn du die heutige Partie gelöst hast."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Meine angefangene Partie ist weg – was nun?",
+      "a": "Die Partie liegt im Speicher deines Browsers. Nach dem Löschen der Website-Daten, im privaten Modus oder auf einem anderen Gerät ist sie nicht da. Mit Google angemeldet wird sie auf allen Geräten gespeichert."
+    },
+    {
+      "q": "Warum kann ich in Spider nicht austeilen?",
+      "a": "Zum Austeilen darf keine Spalte leer sein. Lege zuerst eine Karte in jede leere Spalte."
+    },
+    {
+      "q": "Warum lässt sich meine Reihe nicht verschieben?",
+      "a": "In Patience und FreeCell muss die Reihe absteigend in wechselnden Farben gebaut sein, in Spider in einer Farbe. In FreeCell begrenzen außerdem die freien Zellen und leeren Spalten, wie viele Karten auf einmal gehen."
+    },
+    {
+      "q": "Ist jede Partie lösbar?",
+      "a": "Bei Patience nur mit dem Häkchen „nur lösbare“ und beim Tagesspiel garantiert. FreeCell ist fast immer lösbar, Spider und Patience ohne Häkchen nicht immer."
+    },
+    {
+      "q": "Die Karte springt beim Antippen an eine Stelle, die ich nicht wollte.",
+      "a": "Antippen wählt den besten Zug. Ziehe die Karte dann lieber selbst ans Ziel oder schalte in den Einstellungen „Antippen legt Karten automatisch ab“ aus."
+    },
+    {
+      "q": "Wie stelle ich den Ton aus?",
+      "a": "In den Einstellungen (⚙️) oder während der Partie im Menü ☰ über „🔊 Ton an / 🔇 Ton aus“."
+    }
+  ]
+}

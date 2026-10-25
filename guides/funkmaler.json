@@ -1,0 +1,163 @@
+{
+  "id": "funkmaler",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Funkmaler ist ein Mal- und Ratespiel für 2 bis 8 Spieler. Reihum ist jemand Maler und zeichnet ein Wort, alle anderen raten. Wer schnell richtig rät, bekommt viele Punkte – und der Maler wird für jeden belohnt, der sein Bild erkennt.",
+        "Nach allen Runden gewinnt, wer die meisten Punkte hat. Zum Schluss gibt es ein Podest und eine Galerie mit allen gemalten Bildern."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "list": [
+        "📺 🌐 Online & Handys: Dieses Gerät wird der Bildschirm (Fernseher, PC oder Tablet). Alle spielen mit ihrem Handy.",
+        "📱 Mitspielen: Du hast einen Code oder QR-Code? Hier trittst du mit dem Handy bei.",
+        "🖐 Ein Gerät: Ohne Handys – einer malt auf diesem Gerät, die anderen raten laut.",
+        "So geht's: die Kurzregeln im Spiel.",
+        "← Alle Spiele: zurück zur Spielesammlung."
+      ]
+    },
+    {
+      "t": "Online & Handys: Raum eröffnen und beitreten",
+      "steps": [
+        "Am großen Bildschirm „🌐 Online & Handys“ wählen. Es erscheinen ein QR-Code, ein 4-stelliger Raum-Code und ein Link (mit „🔗 Link kopieren“). Mitspieler können per Link oder Code von überall beitreten – auch von unterwegs.",
+        "Jeder Mitspieler hält die Handy-Kamera auf den QR-Code oder öffnet den Link, gibt seinen Namen ein und tippt „Beitreten ▶“. Wer manuell beitritt, gibt zusätzlich den Raum-Code vom Fernseher ein.",
+        "In der Lobby stellst du ein: Runden (1, 2 oder 3; Standard 2), Zeit zum Malen (60, 80 oder 100 Sekunden; Standard 80) und Wörter (Leicht, Mittel, Schwer oder Gemischt; Standard Mittel).",
+        "Sind mindestens 2 Handys verbunden, „Spiel starten ▶“ drücken. Bis zu 8 Spieler passen in einen Raum, ein neunter bekommt „Der Raum ist voll (8 Spieler).“",
+        "Auch während des Spiels zeigt der Bildschirm unten Code und Link – Nachzügler können jederzeit dazukommen."
+      ]
+    },
+    {
+      "t": "Ablauf einer Runde",
+      "steps": [
+        "Wort wählen: Das Handy des Malers zeigt 3 Wörter. Er hat 15 Sekunden Zeit, eins anzutippen – sonst wird zufällig gewählt. Die anderen sehen „… sucht sich auf dem Handy ein Wort aus“.",
+        "Malen: Der Maler malt mit dem Finger auf seinem Handy. Die Zeichnung erscheint live auf dem Fernseher und auf allen Handys. Buchstaben und Zahlen malen ist nicht erlaubt!",
+        "Raten: Alle anderen tippen ihre Vermutung ins Handy und drücken „Raten“ – so oft sie wollen. Ist ein Tipp fast richtig, steht nur bei dir „knapp daneben!“, auf dem Fernseher nur „… ist knapp dran!“.",
+        "Hinweise: Auf dem Fernseher steht das Wort als Striche mit der Buchstabenzahl in Klammern. Nach 40, 60 und 80 Prozent der Zeit wird je ein Buchstabe aufgedeckt (bei kurzen Wörtern weniger, unter 4 Buchstaben gar keiner).",
+        "Auflösung: Wenn alle geraten haben oder die Zeit abläuft, wird das Wort gezeigt, dazu die Punkte jedes Spielers. Nach 7 Sekunden geht es mit dem nächsten Maler weiter.",
+        "Eine Runde ist vorbei, wenn jeder einmal gemalt hat. Nach der letzten Runde folgt der Endstand."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Bildschirm (TV/PC): Maus, Tastatur, Fernbedienung oder Gamecontroller (Steuerkreuz und A). Esc schließt offene Fenster.",
+        "⏭ am Bildschirm: in der Wortwahl „Wort zufällig“, beim Malen „Auflösen“, in der Auflösung „Weiter“.",
+        "☰ Spielleitung: ▶ Weiter spielen, ↩ Zurück zur Lobby (Punkte zurücksetzen), 🔊 Ton an/aus, ⏹ Raum schließen.",
+        "Handy als Maler: Wort antippen, dann mit dem Finger malen. 14 Farben, 3 Stiftgrößen (•, ●, ⬤), Radierer (radiert etwas breiter), ↶ macht den letzten Strich rückgängig, 🗑 löscht alles – dafür innerhalb von 2,5 Sekunden zweimal tippen.",
+        "Handy als Rater: Vermutung eintippen, mit „Raten“ oder Enter abschicken.",
+        "Fällt ein Handy kurz aus (Bildschirm aus, Funkloch), meldet es „Verbindung weg – verbinde neu …“ und verbindet sich von selbst wieder; die Punkte bleiben erhalten."
+      ]
+    },
+    {
+      "t": "Punkte und Wertung",
+      "list": [
+        "Rater: 40 Punkte plus bis zu 60 Punkte je nach verbleibender Zeit – je schneller, desto mehr.",
+        "Reihenfolge-Bonus: der Erste bekommt +20, der Zweite +10, der Dritte +5. Höchstens sind also 120 Punkte pro Wort möglich.",
+        "Maler: 15 Punkte für jeden, der richtig rät. Raten alle Mitspieler das Wort, gibt es zusätzlich +10.",
+        "Groß- und Kleinschreibung, Umlaute (ä = ae usw.) und Satzzeichen spielen beim Raten keine Rolle. Das Wort darf auch in einem Satz stehen. Manche Begriffe haben Alternativen, die ebenfalls zählen (z. B. Schiff oder Boot, Handy oder Telefon).",
+        "Endstand: Podest mit 🥇🥈🥉, darunter alle weiteren Plätze und die Galerie. Ein Bild in der Galerie antippen lädt es als PNG herunter. „Nochmal ▶“ startet eine neue Partie, „↩ Zur Lobby“ führt zurück zur Lobby."
+      ]
+    },
+    {
+      "t": "Ein Gerät: ohne Handys",
+      "steps": [
+        "„🖐 Ein Gerät“ wählen. 3 Spieler sind vorgegeben, mit „＋ Spieler“ geht es bis 8, mit ✕ entfernst du jemanden (mindestens 2 bleiben). Die Namen werden fürs nächste Mal gespeichert.",
+        "Runden, Zeit und Wörter wie im Online-Modus wählen und „Los geht's ▶“ drücken.",
+        "Das Gerät geht an den Maler. Er tippt „Ich bin … – Wörter zeigen“, während alle anderen kurz wegschauen, und wählt eins von 3 Wörtern.",
+        "Gerät so halten, dass alle die Zeichnung sehen. Mit „🙈 Wort verbergen“ wird das Wort auf dem Gerät zu Strichen.",
+        "Die anderen raten laut. Wer es zuerst sagt: „✓ Erraten!“ tippen und den Spieler antippen (oder „Niemand“). Beide bekommen Punkte nach derselben Formel wie online; „Aufgeben“ oder abgelaufene Zeit lösen ohne Punkte auf."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Maler",
+      "list": [
+        "Erst die Umrisse groß malen, dann Details. Je schneller die anderen raten, desto mehr Punkte bekommst du – 15 pro Rater.",
+        "Wähle das Wort, das du am leichtesten zeichnen kannst, nicht das kürzeste.",
+        "Nutze Farben als Hinweis: ein gelber Kreis wird eher als Sonne erkannt als ein schwarzer.",
+        "Ein falscher Strich? ↶ nimmt ihn zurück, statt alles mit 🗑 zu löschen.",
+        "Schaffen alle das Wort, gibt es +10 Bonus. Male also so, dass auch die Langsamsten eine Chance haben."
+      ]
+    },
+    {
+      "t": "Tipps für Rater",
+      "list": [
+        "Rate früh und oft – falsche Tipps kosten nichts. Der Zeitanteil macht bis zu 60 Punkte aus, der Platz bis zu 20.",
+        "Achte auf die Striche und die Buchstabenzahl in Klammern auf dem Fernseher und auf die aufgedeckten Buchstaben.",
+        "„knapp daneben!“ heißt: Du bist nah dran – oft fehlt nur eine Endung oder ein Buchstabe. Probiere Singular, Plural oder ein verwandtes Wort.",
+        "Ganze Sätze sind erlaubt: Das richtige Wort darf irgendwo im Tipp stehen."
+      ]
+    },
+    {
+      "t": "Für die Spielleitung",
+      "list": [
+        "Für Kinder oder gemischte Gruppen „Leicht“ wählen, für Profis „Schwer“ (Begriffe rund um Radio, Musik und mehr).",
+        "100 Sekunden Malzeit helfen Anfängern, 60 Sekunden machen es hektisch.",
+        "Hängt ein Maler bei der Wortwahl, wählt ⏭ ein Wort zufällig. Ist ein Bild offensichtlich fertig, löst ⏭ sofort auf.",
+        "Kein Fernseher da? Ein Laptop oder Tablet als Bildschirm reicht – oder spielt „Ein Gerät“."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Buchstaben oder Zahlen malen – das ist gegen die Regeln.",
+        "Zu klein malen: Auf dem Fernseher sieht man feine Details schlecht.",
+        "Den Raum-Code falsch abtippen: Er hat genau 4 Zeichen und steht groß auf dem Fernseher.",
+        "Den Bildschirm-Tab schließen – dann ist der Raum für alle weg („Das Spiel auf dem Fernseher wurde beendet.“)."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Wortlisten im Überblick",
+      "p": [
+        "Funkmaler hat drei feste Wortlisten. Bei „Gemischt“ wird aus allen drei gezogen. Bereits gemalte Wörter kommen in derselben Partie nicht noch einmal, solange genug andere übrig sind."
+      ],
+      "list": [
+        "Leicht (129 Begriffe): Alltag, Tiere, Essen, Körper – z. B. Haus, Baum, Sonne, Katze, Pizza, Regenbogen, Schneemann, Giraffe, Rakete, Roboter.",
+        "Mittel (160 Begriffe): Orte, Berufe, Fantasie – z. B. Leuchtturm, Vulkan, Pyramide, Windmühle, Riesenrad, Achterbahn, Pirat, Ritter, Hexe, Astronaut.",
+        "Schwer (140 Begriffe): viel rund um Radio und Musik – z. B. Radiosender, Moderator, Hitparade, Ohrwurm, Karaoke, Konzert, Festival, Discokugel, Dirigent, Orchester."
+      ]
+    },
+    {
+      "t": "Wertungstabelle",
+      "list": [
+        "Sofort geraten als Erster: 40 + 60 + 20 = 120 Punkte.",
+        "Bei halber Zeit als Erster: 40 + 30 + 20 = 90 Punkte.",
+        "Bei halber Zeit als Zweiter: 40 + 30 + 10 = 80 Punkte.",
+        "In letzter Sekunde als Vierter oder später: etwa 40 Punkte.",
+        "Maler bei 5 Ratern, alle richtig: 5 × 15 + 10 = 85 Punkte.",
+        "Maler bei 5 Ratern, 3 richtig: 3 × 15 = 45 Punkte."
+      ]
+    },
+    {
+      "t": "Beste Strategie für Höchstpunkte",
+      "steps": [
+        "Als Rater: sofort den ersten Einfall tippen. Wer früh trifft, sichert sich Zeit- und Platzbonus zugleich.",
+        "Als Rater: bei „knapp daneben!“ systematisch Varianten probieren (Endungen, Zusammensetzungen, Synonyme).",
+        "Als Maler: das Wort wählen, das sich mit einem einzigen typischen Umriss zeigen lässt (Leuchtturm, Pyramide, Riesenrad).",
+        "Als Maler: zuerst das Erkennungsmerkmal malen (Rüssel beim Elefanten, Hals bei der Giraffe), erst danach den Rest.",
+        "Für den Allesgeraten-Bonus: Wenn die Schnellen fertig sind, Details für die Übrigen ergänzen – die Zeit läuft sowieso weiter."
+      ]
+    },
+    {
+      "t": "Kleine Geheimnisse",
+      "list": [
+        "Alternativen zählen: Zu manchen Wörtern gibt es zweite Lösungen, z. B. Fahrrad oder Rad, Ballon oder Luftballon, Gespenst oder Geist, Karotte oder Möhre, Teddy oder Teddybär.",
+        "Lange Wörter (ab 8 Buchstaben) verzeihen beim „knapp“-Check zwei Tippfehler, mittlere (ab 5) einen.",
+        "Galerie-Bilder lassen sich nach dem Spiel als PNG speichern – einfach antippen."
+      ]
+    }
+  ],
+  "faq": [
+    { "q": "Wie viele Handys brauche ich?", "a": "Mindestens 2 Handys neben dem Bildschirm, höchstens 8 Spieler. Ohne Handys spielt ihr „🖐 Ein Gerät“." },
+    { "q": "Mein Handy hat die Verbindung verloren.", "a": "Es verbindet sich von selbst neu und behält deine Punkte. Klappt das nach vielen Versuchen nicht, prüfe, ob das Spiel auf dem Fernseher noch läuft, und tritt am selben Handy erneut bei – das Handy wird wiedererkannt." },
+    { "q": "„Diesen Raum gibt es nicht (mehr)“ – was tun?", "a": "Prüfe den 4-stelligen Code auf dem Fernseher. Wurde der Raum geschlossen oder der Tab am Bildschirm zugemacht, muss der Bildschirm einen neuen Raum eröffnen." },
+    { "q": "Müssen alle im selben WLAN sein?", "a": "Nein. Mitspieler können per Link oder Code von überall beitreten – auch von unterwegs." },
+    { "q": "Kann man während des Spiels noch einsteigen?", "a": "Ja. Code und Link stehen während des Spiels unten auf dem Bildschirm. Neue Spieler raten sofort mit und kommen in der nächsten Runde als Maler dran." },
+    { "q": "Wie schalte ich den Ton aus?", "a": "Am Bildschirm über ☰ Spielleitung: Der Knopf „🔊 Ton an“ wechselt zu „🔇 Ton aus“. Die Einstellung wird gespeichert." }
+  ]
+}

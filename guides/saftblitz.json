@@ -1,0 +1,199 @@
+{
+  "id": "saftblitz",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Saftblitz ist ein Frucht-Schneidespiel. Früchte fliegen von unten ins Bild, erreichen einen Gipfel und fallen wieder herunter. Mit deiner Klinge wischst du durch sie hindurch, bevor sie unten verschwinden. Bomben darfst du dabei nicht treffen.",
+        "Jede geschnittene Frucht bringt Punkte. Schneidest du mehrere Früchte in einem einzigen Wischzug, gibt es eine Combo mit Extrapunkten. Ziel ist ein möglichst hoher Punktestand in jedem Modus – und über viele Runden genug Gesamtpunkte, um alle Klingen und Schauplätze freizuschalten."
+      ],
+      "list": [
+        "Früchte: Apfel, Orange, Wassermelone, Kiwi, Zitrone, Pflaume, Erdbeere und Drachenfrucht – jede zählt 1 Grundpunkt.",
+        "Bombe: im Klassik-Modus ist die Runde sofort vorbei, in allen anderen Modi kostet sie 10 Punkte.",
+        "Power-Früchte (Arcade, teils Radio-Rhythmus): ❄ Frost, » Rausch und ×2 Doppelt.",
+        "Herzfrucht (nur Klassik): gibt ein verlorenes Leben zurück.",
+        "Gold-Kokosnuss mit AnMaCha-Logo (nur Arcade, gegen Ende): mehrfach treffen."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "p": [
+        "Im Hauptmenü fliegen im Hintergrund schon Früchte – du kannst sie zum Üben schneiden, das zählt aber nicht. Unter den Modus-Knöpfen steht nach der ersten Runde deine Statistik: geschnittene Früchte, Gesamtpunkte und wie viele der 18 Erfolge du hast. Neben jedem Modus erscheint dein Rekord mit 🏆."
+      ],
+      "list": [
+        "🍉 Klassik – 3 Leben, Bomben.",
+        "⚡ Arcade – 60 Sekunden, Power-Früchte.",
+        "🌿 Zen – 90 Sekunden, keine Bomben.",
+        "📻 Radio-Rhythmus – im Takt schneiden.",
+        "⚔️ 2 Spieler – geteilter Bildschirm.",
+        "🗡️ Sammlung – Klingen und Schauplätze ansehen und auswählen.",
+        "🏅 Erfolge – alle 18 Erfolge mit Häkchen, wenn erreicht.",
+        "⚙️ Einstellungen – Ton, Musik im Radio-Rhythmus, „Maus schneidet ohne Klicken“, Vibration bei Bomben (Handy) und Sparmodus (weniger Effekte).",
+        "So geht's – die Kurzanleitung im Spiel."
+      ]
+    },
+    {
+      "t": "Die Modi im Detail",
+      "list": [
+        "Klassik: kein Zeitlimit, 3 Leben (oben als ✖-Zeichen). Jede Frucht, die unten aus dem Bild fällt, kostet ein Leben. Triffst du eine Bombe, heißt es „BUMM!“ und die Runde endet sofort („💥 Bombe erwischt!“). Herzfrüchte tauchen nur auf, wenn dir ein Leben fehlt, und geben eins zurück (höchstens 3).",
+        "Arcade: 60 Sekunden. Bomben kosten 10 Punkte, beenden die Runde aber nicht. Power-Früchte erscheinen, jeder Fruchtschnitt kann ein kritischer Treffer sein (+10). In den letzten 18 Sekunden kann einmal pro Runde die Gold-Kokosnuss kommen.",
+        "Zen: 90 Sekunden ohne Bomben und ohne Power-Früchte. Die Schwierigkeit steigt langsamer und bleibt gedeckelt – ideal zum Entspannen und für Combos.",
+        "Radio-Rhythmus: 90 Sekunden, ein Beat mit 112 BPM läuft. Auf jeden zweiten Schlag wird eine Gruppe Früchte geworfen, und ihr höchster Punkt liegt genau auf einem Schlag. Schneidest du eine Frucht höchstens 0,1 Sekunden neben dem Schlag, gibt es „Perfekt!“-Bonuspunkte und deine Serie wächst. Bomben kosten 10 Punkte, ab und zu kommen Frost oder Doppelt.",
+        "2 Spieler: 60 Sekunden, der Bildschirm ist in der Mitte geteilt. Jeder hat eigene Früchte in seiner Hälfte und kann nur dort schneiden. Bomben kosten 10 Punkte, kritische Treffer sind möglich, Power-Früchte gibt es nicht. Wer am Ende mehr Punkte hat, gewinnt – bei Gleichstand heißt es „Unentschieden!“."
+      ]
+    },
+    {
+      "t": "Power-Früchte und Sonderobjekte",
+      "list": [
+        "❄ Frost: 5 Sekunden lang läuft alles nur mit 45 % Geschwindigkeit. Die Spielzeit läuft normal weiter.",
+        "» Rausch: 4,5 Sekunden lang schießen alle 0,55 Sekunden 3 bis 6 Früchte von den Seiten quer durchs Bild – ohne Bomben.",
+        "×2 Doppelt: 6 Sekunden lang zählen alle Punkte doppelt, auch Combo-Boni und die Gold-Kokosnuss.",
+        "Herzfrucht: nur in Klassik, +1 Leben.",
+        "Gold-Kokosnuss: Beim ersten Treffer bleibt sie 2,6 Sekunden in der Luft stehen. Jeder Treffer bringt +1 (bei Doppelt +2). Nach 8 Treffern oder wenn die 2,6 Sekunden um sind, platzt sie und gibt noch einmal so viele Bonuspunkte, wie du sie getroffen hast.",
+        "Im Spiel zeigt die Anzeige oben die Restzeit jeder aktiven Power (z. B. ❄ 3.2)."
+      ]
+    },
+    {
+      "t": "Punkte und Wertung",
+      "list": [
+        "Jede Frucht: 1 Punkt.",
+        "Combo: Schneidest du in einem Wischzug 3 oder mehr Früchte, bekommst du zusätzlich so viele Punkte, wie du Früchte erwischt hast (3er-Combo +3, 5er-Combo +5). Ein Wischzug endet, wenn du loslässt oder die Klinge kurz (rund 0,16 Sekunden) stillsteht. Nach einer Combo verlangsamt sich die Zeit für einen Moment.",
+        "Kritischer Treffer (Arcade, 2 Spieler): Etwa jede 32. Frucht ist „Kritisch!“ und bringt 10 Punkte extra.",
+        "Perfekt im Takt (Radio-Rhythmus): Zusätzlich zum Grundpunkt gibt es Bonus je nach Serie – Serie 1 bis 3: +1, ab 4: +2, ab 8: +3, ab 12: +4. Eine Frucht neben dem Takt setzt die Serie auf 0 zurück.",
+        "Doppelt verdoppelt das Ergebnis eines Treffers.",
+        "Bombe: −10 Punkte (nie unter 0) – außer in Klassik, dort endet die Runde.",
+        "Am Rundenende siehst du Früchte, beste Combo, je nach Modus kritische Treffer, Perfekt im Takt, Power-Früchte oder Verpasst, und deine Gesamtpunkte. Ein neuer Bestwert wird mit „🏆 Neuer Rekord im Modus …“ gefeiert."
+      ]
+    },
+    {
+      "t": "Steuerung",
+      "list": [
+        "Touch: einfach durch die Früchte wischen. Mehrere Finger funktionieren gleichzeitig, im 2-Spieler-Modus schneidet jeder Finger in seiner Hälfte.",
+        "Maus: mit gedrückter linker Taste ziehen. Mit der Einstellung „Maus schneidet ohne Klicken“ schneidet schon die bloße Bewegung.",
+        "Tastatur: Pfeiltasten oder WASD führen die Klinge, Shift macht sie schneller. Esc oder P pausiert. In Fenstern schließt Esc das Fenster bzw. setzt die Pause fort.",
+        "Gamecontroller: linker oder rechter Stick (auch das Steuerkreuz) führt die Klinge, RT, A oder RB beschleunigen sie. Start pausiert. In den Menüs steuerst du mit Steuerkreuz und A.",
+        "Geschnitten wird nur bei schneller Bewegung – langsames Schieben schneidet nicht.",
+        "Im 2-Spieler-Modus: zwei Finger, Maus plus Controller oder zwei Controller. Der erste Controller ist Spieler 1, der zweite Spieler 2; spielt jemand mit der Maus und nur ein Controller ist verbunden, übernimmt der Controller Spieler 2. Die Tastatur steuert immer Spieler 1."
+      ]
+    },
+    {
+      "t": "Pause, Fortschritt und Speichern",
+      "p": [
+        "Über ❚❚ oben, Esc/P oder Start öffnest du die Pause mit „▶ Weiter“, „↺ Neu starten“, dem Tonschalter und „⏹ Zum Menü“. Wechselst du die App oder den Tab, pausiert das Spiel automatisch.",
+        "Rekorde je Modus (nicht im 2-Spieler-Modus), Gesamtpunkte, gezählte Früchte, Erfolge, gewählte Klinge, Schauplatz und Einstellungen werden im Browser gespeichert. Mit Google angemeldet werden Fortschritt und Bestwerte auf allen Geräten gespeichert."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Wische mit schnellen, langen Bewegungen – zu langsame Bewegungen schneiden nicht.",
+        "Fang in Zen an: ohne Bomben lernst du in Ruhe, wie hoch die Früchte fliegen.",
+        "In Klassik ist jede verlorene Frucht ein Leben. Lieber eine Frucht einzeln schneiden als auf die perfekte Combo zu warten.",
+        "Achte auf das Zischen der Lunte: Bomben kündigen sich mit einem Geräusch an.",
+        "Wenn dir die Effekte zu viel sind oder das Handy ruckelt, schalte den Sparmodus ein."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Combo-Timing: Früchte stehen am Gipfel fast still. Warte, bis mehrere oben sind, und ziehe dann eine lange Linie durch alle – erst ab 3 Früchten in einem Zug gibt es den Bonus.",
+        "Nicht absetzen: Solange du ohne Pause weiterwischst, zählt alles als ein Zug. Ein kurzes Stillstehen beendet die Combo.",
+        "Frost zuerst: In 5 Sekunden Zeitlupe gelingen lange Combos fast von selbst.",
+        "Doppelt gezielt einsetzen: Schneide Doppelt und hebe dir in den 6 Sekunden große Gruppen auf – auch der Combo-Bonus verdoppelt sich.",
+        "Rausch: Die Früchte kommen waagerecht. Ziehe senkrechte Linien quer durch ihre Bahn.",
+        "Arcade-Bomben kosten nur 10 Punkte. Wenn eine riesige Combo eine Bombe mitnimmt, kann sich das trotzdem lohnen."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Gold-Kokosnuss: Sie kommt nur in Arcade in den letzten 18 Sekunden. Triff sie, dann bleibt sie stehen – kreise oder zickzacke schnell darüber. Mit Doppelt gleichzeitig zählt jeder Treffer und der Schlussbonus doppelt.",
+        "Radio-Rhythmus: Die Früchte erreichen ihren höchsten Punkt genau auf dem Schlag. Schneide am Gipfel und halte deine Serie – ab Serie 12 bringt jede Frucht 5 statt 1 Punkt.",
+        "Im Radio-Rhythmus kosten verfrühte Schnitte die Serie. Lieber eine Frucht kurz auslassen und den nächsten Schlag treffen.",
+        "Am Controller RT/A gedrückt halten, wenn du quer über den Bildschirm musst, und für Combos wieder loslassen, damit du präziser bist.",
+        "Mit der Einstellung „Maus schneidet ohne Klicken“ schneidest du am PC deutlich flüssiger."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Hektisches Hin-und-her-Wischen in Klassik: Bomben fliegen mitten zwischen den Früchten.",
+        "Zu früh schneiden: Früchte, die gerade erst aufsteigen, sind weit verteilt – am Gipfel liegen sie enger beisammen.",
+        "Im 2-Spieler-Modus über die Mitte wischen: Früchte des Gegners kannst du nicht schneiden.",
+        "Kokosnuss ignorieren: Sie ist in Arcade die größte Punktequelle am Ende der Runde."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Beste Strategie je Modus",
+      "list": [
+        "Klassik: Sicherheit vor Combos. Die Schwierigkeit steigt mit der Zeit (voll nach etwa 2 Minuten) oder ab 400 Punkten. Herzfrüchte immer mitnehmen. Für den Erfolg ohne Fehler (100 Punkte, keine Frucht fallen lassen) lieber jede Frucht einzeln sichern.",
+        "Arcade: Power-Früchte haben Vorrang, vor allem Frost und Doppelt. In den letzten 18 Sekunden auf die Gold-Kokosnuss achten.",
+        "Zen: Hier holst du die längsten Combos. Warte auf volle Gipfel und zieh lange Linien – 4er- und 6er-Combos für die Erfolge gelingen hier am leichtesten.",
+        "Radio-Rhythmus: Rhythmus statt Tempo. Mit Musik einschalten (Einstellung „Musik im Radio-Rhythmus“) hörst du die Schläge. Jeder Schnitt am Gipfel ist ein Perfekt.",
+        "2 Spieler: In deiner Hälfte ist alles deins – Combos und kritische Treffer entscheiden. Bomben kosten 10 Punkte, also nicht blind wischen."
+      ]
+    },
+    {
+      "t": "Klingen und Schauplätze freischalten",
+      "p": [
+        "Freigeschaltet wird über die Gesamtpunkte aller Runden (im 2-Spieler-Modus zählen beide Spieler zusammen). In der Sammlung siehst du, ab wie vielen Punkten etwas frei wird, und wählst Klinge und Schauplatz aus."
+      ],
+      "list": [
+        "Klinge Neon: von Anfang an.",
+        "Klinge AnMaCha: ab 300 Punkten.",
+        "Klinge Feuer (mit Funken): ab 900 Punkten.",
+        "Klinge Regenbogen: ab 2000 Punkten.",
+        "Klinge Blitz: ab 3500 Punkten.",
+        "Klinge Gold (mit Funken): ab 6000 Punkten.",
+        "Schauplatz Funkstudio: von Anfang an.",
+        "Schauplatz Strand: ab 600 Punkten.",
+        "Schauplatz Neon-Nacht: ab 1500 Punkten.",
+        "Schauplatz Club: ab 3000 Punkten."
+      ]
+    },
+    {
+      "t": "Alle 18 Erfolge",
+      "list": [
+        "Erster Schnitt: spiele eine Runde und schneide mindestens eine Frucht.",
+        "Klassik: 50 Punkte.",
+        "Klassik: 150 Punkte.",
+        "Klassik: 300 Punkte.",
+        "Arcade: 200 Punkte.",
+        "Arcade: 400 Punkte – nur mit Power-Früchten, kritischen Treffern und der Gold-Kokosnuss realistisch.",
+        "Zen: 150 Punkte.",
+        "Radio-Rhythmus: 250 Punkte – halte lange Serien.",
+        "30 Schnitte genau im Takt in einer Runde (Radio-Rhythmus).",
+        "4er-Combo.",
+        "6er-Combo – am besten in Zen oder während Frost.",
+        "3 kritische Treffer in einer Runde – Arcade oder 2 Spieler, viele Früchte schneiden erhöht die Chance.",
+        "Gold-Kokosnuss ganz zerlegt – Arcade, letzte 18 Sekunden.",
+        "3 Power-Früchte in einer Runde – Arcade (in Klassik zählt auch die Herzfrucht).",
+        "Klassik: 100 Punkte, ohne eine Frucht fallen zu lassen.",
+        "2-Spieler-Runde gespielt.",
+        "1000 Früchte insgesamt – kommt mit der Zeit von selbst.",
+        "Alle Klingen freigeschaltet: 6000 Gesamtpunkte."
+      ]
+    },
+    {
+      "t": "So holst du Höchstpunkte",
+      "steps": [
+        "Spiele Arcade und schneide jede Power-Frucht sofort.",
+        "Sammle während Frost und Doppelt Früchte am Gipfel und schneide sie in langen Zügen – jede Combo bringt doppelt so viele Extrapunkte, wie Früchte im Zug waren.",
+        "Hebe dir für die letzten 18 Sekunden Aufmerksamkeit für die Gold-Kokosnuss auf: 8 Treffer plus 8 Bonuspunkte, mit Doppelt 32 Punkte.",
+        "Bomben meiden – jede kostet 10 Punkte."
+      ]
+    }
+  ],
+  "faq": [
+    { "q": "Warum schneidet meine Klinge nicht?", "a": "Geschnitten wird nur bei schneller Bewegung. Mit der Maus musst du die linke Taste gedrückt halten, außer du hast „Maus schneidet ohne Klicken“ eingeschaltet." },
+    { "q": "Mein Fortschritt ist weg – was tun?", "a": "Fortschritt und Rekorde liegen im Browser. Wer Browserdaten löscht oder privat surft, verliert sie. Melde dich mit Google an, dann werden sie auf allen Geräten gespeichert." },
+    { "q": "Wieso höre ich im Radio-Rhythmus keinen Beat?", "a": "Prüfe in den Einstellungen „Ton“ und „Musik im Radio-Rhythmus“. Der Takt läuft auch ohne Musik weiter, ist dann aber schwerer zu treffen." },
+    { "q": "Warum gibt es im 2-Spieler-Modus keinen Rekord?", "a": "Rekorde werden nur für die Einzelmodi gespeichert. Die Punkte beider Spieler zählen aber für die Gesamtpunkte und damit für Freischaltungen." },
+    { "q": "Wie spielen wir zu zweit an einem Gerät?", "a": "Wähle ⚔️ 2 Spieler. Jeder wischt in seiner Bildschirmhälfte – mit je einem Finger, mit Maus und Controller oder mit zwei Controllern." },
+    { "q": "Das Spiel ruckelt auf meinem Handy.", "a": "Schalte in den Einstellungen den Sparmodus ein. Er zeichnet weniger Saftspritzer und Partikel und rechnet mit niedrigerer Auflösung." }
+  ]
+}

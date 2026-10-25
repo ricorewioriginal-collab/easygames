@@ -1,0 +1,507 @@
+{
+ "id": "ricoville",
+ "handbuch": [
+  {
+   "t": "Ziel des Spiels",
+   "p": [
+    "RicoVille ist ein gemütliches 3D-Städtebauspiel. Du gründest eine eigene Stadt, legst Straßen an, baust Häuser für Einwohner und kassierst ihre Miete. Auf Äckern wachsen Feldfrüchte, Produktionsgebäude machen daraus Waren, und Geschäfte verkaufen sie. Mit Erfahrung steigst du Stadtlevel für Stadtlevel auf (bis Level 60) und schaltest neue Gebäude frei.",
+    "Es gibt kein Verlieren und keinen Zeitdruck: Die Stadt verfällt nie, alle Zeiten laufen auch weiter, wenn das Spiel geschlossen ist. Bürgermeisterin Lotte Lindner und fünf weitere Bewohner führen dich mit Aufgaben durch die Stadtgeschichte bis zur Metropole."
+   ]
+  },
+  {
+   "t": "Start, Menü und Spielweisen",
+   "list": [
+    "Meine Stadt: weiterspielen (mit Name, Level, Einwohnern und Münzen).",
+    "✨ Neue Stadt: Stadtname eingeben und Spielweise wählen. Ersetzt eine bestehende Stadt, eine Sicherung bleibt.",
+    "⚡ Nostalgisch: der klassische Energie- und Sammelzyklus. Aktionen kosten Energie, die sich alle 3 Minuten um 1 auflädt.",
+    "🌿 Entspannt: keine Energie, alle Wartezeiten halbiert.",
+    "🎨 Kreativ-Sandkasten: frei bauen auf einem eigenen Speicherplatz, ohne Wertung, ohne Aufgaben und ohne Nachbarn. Du hast 999.999 Münzen, Level 60, und Bauzeiten sind auf ein Zehntel verkürzt.",
+    "🏆 Rangliste, 👥 Nachbarn, Profil (Stadtname, Wappen, Motto), ⚙️ Einstellungen, ❓ Hilfe, ⛶ Vollbild.",
+    "Die Spielweise Nostalgisch/Entspannt kannst du in den Einstellungen jederzeit wechseln."
+   ]
+  },
+  {
+   "t": "So startet deine Stadt",
+   "p": [
+    "Eine neue Stadt beginnt mit 1.200 Münzen, 6 Weizen und 4 Erdbeeren im Lager, einem Rathaus, einer Kreuzung aus Straßen, zwei Häuschen (Kirschrot und Seeblau), zwei Äckern, einer Eiche, einer Birke, einem Tulpenbeet und einer Parkbank. Erschlossen sind 4 Gebiete in der Mitte der Karte. Das Lager fasst anfangs 50 Waren, das Rathaus erlaubt 60 Einwohner."
+   ]
+  },
+  {
+   "t": "Der Kreislauf der Stadt",
+   "list": [
+    "🏠 Häuser brauchen eine Straße direkt daneben. Fertige Häuser bringen Einwohner und zahlen regelmäßig Miete – tippe auf die 💰-Blase.",
+    "👥 Einwohnergrenze: Ein neues Haus passt nur, wenn die geplanten Einwohner unter der Grenze bleiben. Gemeinschaftsgebäude wie Rathaus, Schule, Polizei oder Feuerwache erhöhen sie.",
+    "🌾 Auf Äckern säst du Pflanzen (das Saatgut kostet Münzen). Nach der Wachstumszeit erntest du (🌾-Blase), die Ernte kommt ins Lager.",
+    "🏭 Produktionsgebäude machen aus Ernte Waren: Weizen → Mehl, Erdbeeren → Saft, Baumwolle → Stoff …",
+    "🏪 Geschäfte an Straßen brauchen Waren (📦-Blase). Nach der Verkaufszeit kassierst du die Einnahmen (💵).",
+    "🚂 Bahnhof, Hafen und Flughafen bringen Baumaterial und Importwaren oder kaufen deine Waren für Münzen.",
+    "🏗️ Großbauten entstehen in Phasen: Fundament → Material liefern → Bauzeit → fertig. Material kommt per Zug und Schiff, aus dem Sägewerk oder sofort (aber teurer) vom Baustoffhändler im Lager: Holzstämme 25, Bretter 45, Ziegel 55, Glasscheiben 70, Stahlträger 80 Münzen pro Stück.",
+    "📦 Das Lager hat Platz für 50 Waren, Scheune (+40), Getreidesilo (+80) und Lagerhaus Kontor (+180) schaffen mehr."
+   ]
+  },
+  {
+   "t": "Miete, Zufriedenheit und Deko",
+   "list": [
+    "Zufriedenheit (0 bis 100): Grundwert 50, plus 1,5 je Zufriedenheitspunkt deiner Gemeinschaftsgebäude, plus 0,5 je Dekoration (höchstens 30). Ab 100 Einwohnern sinkt sie leicht mit der Größe der Stadt.",
+    "Mietfaktor: Die Zufriedenheit setzt alle Mieten auf 85 % bis 115 %.",
+    "Attraktivität: Jede Deko gibt Häusern und Geschäften in ihrem Umkreis (3 Felder, bei großen Deko-Teilen 4 Felder) einen Bonus – je Attraktivitätspunkt 1,5 %, höchstens +50 % auf Miete und Erlös.",
+    "Ausbau: Häuser und Geschäfte lassen sich zweimal ausbauen (bis Stufe 3). Jede Stufe bringt +20 % Miete bzw. Erlös und kostet 75 % des Baupreises mal aktueller Stufe.",
+    "Wahrzeichen (je einmal): Leuchtturm Rico-Licht +10 % auf alle Mieten (muss am Wasser stehen), Riesenrad Himmelsblick +10 % auf alle Geschäftserlöse, Uhrturm am Ring +10 % Erfahrung."
+   ]
+  },
+  {
+   "t": "Energie im Modus Nostalgisch",
+   "list": [
+    "Energie kosten: Miete kassieren, Säen, Ernten, Geschäft beliefern, Einnahmen kassieren und das Bauen von Gebäuden (Deko und Straßen kosten keine).",
+    "Höchstens 15 Energie plus 1 je zwei Stadtlevel, maximal 40.",
+    "Alle 3 Minuten lädt sich 1 Energie auf. Bei einem Levelaufstieg wird die Energie auf das neue Maximum gefüllt.",
+    "Ist sie leer, erscheint „Keine Energie mehr – sie lädt sich von selbst wieder auf.“"
+   ]
+  },
+  {
+   "t": "Gebiete erschließen",
+   "p": [
+    "Die Karte ist 48 × 48 Felder groß und in 36 Gebiete zu je 8 × 8 Feldern geteilt; am linken Rand liegt Wasser. Mit 🗺️ Erweitern tippst du ein gelbes Gebiet an, das an deine Stadt grenzt. Das 5. Gebiet kostet 800 Münzen und braucht 25 Einwohner, jedes weitere kostet etwa ein Drittel mehr (1.060, 1.390, 1.840 …) und braucht 25 Einwohner mehr. Jedes neue Gebiet gibt Erfahrung."
+   ]
+  },
+  {
+   "t": "Stadtlevel und Erfahrung",
+   "list": [
+    "Erfahrung bekommst du für fertige Gebäude, Ernten, Produktion, Kassieren, Aufträge, Ausbauten, Erweiterungen und Erfolge (+25).",
+    "Für das nächste Level brauchst du 30 × Level hoch 1,55 + 20 Erfahrungspunkte (Level 1: 50, Level 10: rund 1.080).",
+    "Jeder Aufstieg schenkt dir 50 Münzen mal das neue Level.",
+    "Viele Gebäude, Pflanzen und Aufträge gibt es erst ab einem bestimmten Stadtlevel. Höchstes Level ist 60."
+   ]
+  },
+  {
+   "t": "Steuerung",
+   "list": [
+    "PC: Maus ziehen verschiebt die Karte, Mausrad zoomt, Klick baut oder öffnet ein Gebäude. W A S D oder Pfeiltasten verschieben, + und − zoomen.",
+    "Q und E drehen die Ansicht, R dreht das Gebäude beim Platzieren, Enter bestätigt den Bauplatz.",
+    "B öffnet das Baumenü, T schaltet den Straßenmodus, L öffnet die Aufgaben, F schaltet Vollbild, Esc schließt ein Fenster bzw. bricht ab.",
+    "Smartphone und Tablet: Ein Finger verschiebt die Karte, zwei Finger zoomen. Gebäude antippen kassiert, beliefert oder öffnet das Fenster. Beim Bauen erst den Platz antippen, dann mit ✓ bestätigen.",
+    "Straßen: im Straßenmodus ziehen oder tippen (10 Münzen pro Feld). „↶ Rückgängig“ nimmt den letzten Straßenzug zurück.",
+    "Leiste unten: 🏗️ Bauen, 🛣️ Straße, 🌾 Farm, 🏪 Geschäfte, 📜 Aufgaben, 🚂 Transport, 📦 Lager, 🗺️ Erweitern, 👥 Nachbarn, ⚙️ Optionen, 🏠 Menü. Werkzeuge: 👆 Spielen, ↔️ Versetzen, 🔄 Drehen, 💥 Abriss (die Hälfte des Baupreises zurück; das Rathaus bleibt stehen), ℹ️ Info."
+   ]
+  },
+  {
+   "t": "Einstellungen",
+   "list": [
+    "Spielweise (Nostalgisch/Entspannt), Lautstärke von Musik, Effekten und Umgebung, Stumm.",
+    "Grafik: Automatisch, Niedrig (schont Akku), Mittel, Hoch.",
+    "🌗 Tag und Nacht: nachts leuchten Fenster und Laternen.",
+    "🌦️ Wetter & Jahreszeiten: Die Stadt folgt den echten Jahreszeiten (Frühlingsblüten, Herbstlaub, Schnee im Winter). Zeitweise regnet es (im Winter schneit es) – im Herbst und Winter öfter, im Sommer selten. Das ist nur Optik.",
+    "💬 Sprechblasen der Bewohner, 🎞️ Animationen."
+   ]
+  },
+  {
+   "t": "Speichern, Google und Nachbarn",
+   "list": [
+    "Gespeichert wird automatisch im Browser, mit einer Sicherung. Mit Google-Anmeldung folgt dir die Stadt auf andere Geräte.",
+    "Wurde die Stadt inzwischen in einem anderen Tab oder auf einem anderen Gerät weitergespielt, überschreibt das Spiel nichts und fragt nach („Neuerer Spielstand gefunden“).",
+    "👥 Nachbarn gibt es mit Google-Anmeldung: Du siehst die Städte anderer Spieler, besuchst sie, hilfst beim Wachsen und schickst Baumaterial. Unter „Neue finden“ gibt es fremde Städte, über deinen Einladungslink kommen Freunde dazu.",
+    "Pro Nachbar und Tag: 5× helfen (je +10 Münzen und Erfahrung für dich) und ein Geschenk – 2 Stück Bretter, Ziegel, Glas, Stahl oder Holz, das dich nichts kostet. Wer dir hilft, bringt dir Münzen und Erfahrung.",
+    "Andere sehen nur Stadtname, Wappen, Motto, Level, Einwohnerzahl und deine Gebäude. Dein Google-Name und deine E-Mail bleiben privat."
+   ]
+  }
+ ],
+ "ratgeber": [
+  {
+   "t": "Tipps für Einsteiger",
+   "list": [
+    "Folge den Aufgaben der Bürgermeisterin: Die ersten acht führen dich durch Häuser, Straßen, Miete, Weizen, Mehl und Bäckerei und bringen ordentlich Münzen.",
+    "Häuser brauchen eine Straße direkt daneben, sonst zieht niemand ein.",
+    "Erdbeeren wachsen in 2 Minuten – ideal für den Anfang. Weizen braucht 5 Minuten, wird aber in der Mühle zu Mehl für die Bäckerei.",
+    "Halte im Lager immer etwas Ware bereit: Läden verkaufen nur, wenn sie beliefert sind.",
+    "Wird es eng: Scheune bauen oder Waren verbrauchen – bei vollem Lager kannst du nicht ernten."
+   ]
+  },
+  {
+   "t": "Strategien für Fortgeschrittene",
+   "list": [
+    "Deko gezielt setzen: Bäume, Blumenbeete und Brunnen mitten zwischen Häusern und Läden erhöhen Miete und Erlös um bis zu 50 %. Große Deko wie Großer Stadtbrunnen (+14) oder Solarfeld (+12) wirkt im Umkreis von 4 Feldern.",
+    "Gemeinschaftsgebäude zuerst: Ohne Einwohnergrenze wächst nichts. Mit Schule, Polizei und Feuerwache hast du schnell Platz für 280 Einwohner.",
+    "Kurze Wege: Lieferungen und Ernte laufen weiter, wenn das Spiel zu ist. Vor einer Pause lange Pflanzen säen (Kürbisse, Trauben, Kaffee, Kakao) und lange Aufträge starten.",
+    "Exportaufträge am Bahnhof wie „Getreide ins Umland“ (12 Weizen → 420 Münzen) sind eine gute Geldquelle.",
+    "Wähle Entspannt, wenn du ohne Energie und mit halben Wartezeiten spielen möchtest."
+   ]
+  },
+  {
+   "t": "Profi-Tricks",
+   "list": [
+    "Ausbauen lohnt sich vor allem bei teuren Häusern und Läden: +20 % pro Stufe, und der Ausbau braucht keinen neuen Bauplatz.",
+    "Leuchtturm und Riesenrad früh planen – sie wirken auf die ganze Stadt.",
+    "Halte die Zufriedenheit hoch: Viele Deko-Teile (bis 60 Stück zählen voll) und Gemeinschaftsgebäude gleichen den Abzug großer Städte aus.",
+    "Gewächshaus-Beete (ab Level 15) lassen Pflanzen 30 % schneller wachsen.",
+    "Material vom Baustoffhändler ist teuer. Plane Großbauten mit Zug- und Schiffslieferungen vor."
+   ]
+  },
+  {
+   "t": "Häufige Fehler",
+   "list": [
+    "Zu viele Häuser ohne Gemeinschaftsgebäude – dann heißt es „Einwohnergrenze erreicht“.",
+    "Das Lager vollstopfen: Ernte und fertige Produktion lassen sich dann nicht abholen.",
+    "Geschäfte ohne passende Waren bauen. Jedes Geschäft nimmt nur bestimmte Waren an.",
+    "Den Hafen nicht ans Wasser stellen – er muss direkt am Ufer stehen."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "Hauptgeschichte – alle 32 Aufgaben",
+   "p": [
+    "Die Hauptaufgaben kommen nacheinander. In Klammern die Belohnung."
+   ],
+   "steps": [
+    "Willkommen in RicoVille (Lotte Lindner): Schön, dass du da bist! Unsere Gemeinde schläft noch. Bau ein Häuschen, damit neue Leute einziehen. – 100 Münzen, 10 EP.",
+    "Wege für alle (Kalle Klotz): Häuser brauchen eine Straße vor der Tür. Leg drei Straßenstücke an. – 60 Münzen, 10 EP.",
+    "Die erste Miete (Lotte Lindner): Fertige Häuser bringen Miete. Tipp auf ein Haus mit Münze und kassiere. – 80 Münzen, 10 EP.",
+    "Grüner Daumen (Frieda Feld): Ohne Ernte keine Waren. Säe Weizen auf einem Acker. – 60 Münzen, 10 EP, +3 Energie.",
+    "Erntezeit (Frieda Feld): Wenn die Ähren golden sind, ernte sie. – 80 Münzen, 12 EP.",
+    "Mehl für die Stadt (Emil Eckstein): In der Windmühle wird aus Weizen Mehl. Stell sie auf und mahle eine Ladung. – 120 Münzen, 15 EP.",
+    "Frische Brötchen (Emil Eckstein): Bau eine Bäckerei an einer Straße und beliefere sie mit Mehl. – 150 Münzen, 15 EP.",
+    "Kasse klingelt (Emil Eckstein): Wenn alles verkauft ist, kassiere die Einnahmen der Bäckerei. – 200 Münzen, 20 EP.",
+    "Kleine Nachbarschaft (Lotte Lindner): Wir brauchen mehr Leute. Erreiche 30 Einwohner. – 250 Münzen, 25 EP.",
+    "Ordnung im Lager (Kalle Klotz): Die Ernte stapelt sich. Eine Scheune schafft Platz. – 150 Münzen, 20 EP.",
+    "Bunte Felder (Frieda Feld): Ernte 10 Erdbeeren für die Saftpresse. – 180 Münzen, 25 EP.",
+    "Saft für alle (Emil Eckstein): Presse Saft und beliefere eine Saftbar. – 300 Münzen, 30 EP.",
+    "Bildung zuerst (Lotte Lindner): Mit einer Grundschule dürfen mehr Familien herziehen. – 350 Münzen, 35 EP.",
+    "Neues Land (Kalle Klotz): Die Stadt wird zu klein. Erschließe ein neues Gebiet. – 300 Münzen, 40 EP.",
+    "Sicherheit (Lotte Lindner): Polizei und Feuerwehr geben allen ein gutes Gefühl. – 500 Münzen, 50 EP.",
+    "Ladenzeile (Emil Eckstein): Betreibe vier verschiedene Geschäfte gleichzeitig. – 500 Münzen, 50 EP.",
+    "Wachsende Gemeinde (Lotte Lindner): Erreiche 120 Einwohner. – 600 Münzen, 60 EP.",
+    "Der Zug kommt (Kalle Klotz): Ein Bahnhof verbindet uns mit dem Umland. Bau ihn fertig. – 800 Münzen, 80 EP.",
+    "Holz auf Schienen (Kalle Klotz): Bestelle eine Zuglieferung und hol sie ab. – 400 Münzen, 50 EP.",
+    "Säge an! (Kalle Klotz): Im Sägewerk werden aus Stämmen Bretter. Stelle 6 Bretter her. – 450 Münzen, 60 EP.",
+    "Bücher für alle (Lotte Lindner): Bau die Stadtbibliothek – sie braucht Bretter. – 700 Münzen, 80 EP.",
+    "Großbäuerin (Frieda Feld): Ernte insgesamt 80 Feldfrüchte. – 600 Münzen, 70 EP.",
+    "Stadtgespräch (Lotte Lindner): Erreiche Stadtlevel 12. – 900 Münzen.",
+    "Gesund bleiben (Lotte Lindner): Das Krankenhaus ist ein Großbau: Fundament, Ziegel und Glas. – 1.500 Münzen, 150 EP.",
+    "Ahoi, RicoVille! (Mia Möwe): Bau den Hafen direkt am Wasser. – 1.500 Münzen, 150 EP.",
+    "Frachter in Sicht (Mia Möwe): Schließe zwei Schiffsaufträge ab. – 1.000 Münzen, 120 EP.",
+    "Zu Tisch! (Emil Eckstein): Eröffne das Fischrestaurant und beliefere es. – 1.200 Münzen, 120 EP.",
+    "Kleinstadt-Charme (Lotte Lindner): Erreiche 500 Einwohner. – 2.000 Münzen, 200 EP.",
+    "Kultur erleben (Lotte Lindner): Museum und Theater machen die Stadt berühmt. – 3.000 Münzen, 300 EP.",
+    "Abheben (Paul Propeller): Ein Flughafen bringt die Welt nach RicoVille. – 4.000 Münzen, 400 EP.",
+    "Luftbrücke (Paul Propeller): Schließe drei Flugaufträge ab. – 3.000 Münzen, 300 EP.",
+    "Metropole RicoVille (Lotte Lindner): Erreiche 1500 Einwohner und 12 erschlossene Gebiete. – 8.000 Münzen, 800 EP."
+   ]
+  },
+  {
+   "t": "Nebenaufgaben nach Stadtlevel",
+   "p": [
+    "Nach der Aufgabe „Kasse klingelt“ erscheinen zusätzlich Nebenaufgaben, sobald du das genannte Level erreicht hast."
+   ],
+   "list": [
+    "Level 2 – Salat-Saison: Ernte 9 Köpfe Salat. (120 Münzen)",
+    "Level 2 – Schöne Straßen: Pflanze fünf Bäume an deine Straßen. (150 Münzen)",
+    "Level 2 – Ecke mit Charme: Eröffne einen Mini-Markt. (120 Münzen)",
+    "Level 3 – Sitzplätze: Stelle drei Parkbänke auf. (100 Münzen)",
+    "Level 3 – Möhrenmeisterin: Ernte 16 Karotten. (200 Münzen)",
+    "Level 4 – Gemüsekisten: Packe 6 Gemüsekisten in der Feinkostküche. (250 Münzen)",
+    "Level 4 – Ackerland: Besitze 8 Äcker. (200 Münzen)",
+    "Level 5 – Pasta und Pizza: Beliefere die Pizzeria zweimal. (350 Münzen)",
+    "Level 5 – Blühende Stadt: Setze 10 Blumenbeete. (300 Münzen)",
+    "Level 5 – Winterzauber: Stelle einen Schneemann und einen Festtagsbaum auf. (300 Münzen)",
+    "Level 6 – Kino-Abend: Stelle 8 Tüten Popcorn her. (300 Münzen)",
+    "Level 6 – Kartoffelfest: Ernte 24 Kartoffeln. (350 Münzen)",
+    "Level 6 – Fleißige Vermieterin: Kassiere 25-mal Miete. (400 Münzen)",
+    "Level 6 – Herbststimmung: Dekoriere mit Kürbisstapel und Herbstahorn. (350 Münzen)",
+    "Level 7 – Ladenbesitzer: Kassiere 20-mal in deinen Geschäften. (450 Münzen)",
+    "Level 7 – Sonnenfelder: Ernte 15 Sonnenblumen und binde 6 Sträuße. (450 Münzen)",
+    "Level 7 – Ausbauprofi: Baue drei Gebäude eine Stufe aus. (500 Münzen)",
+    "Level 8 – Spiel und Spaß: Bau einen Spielplatz und eine Schaukel. (400 Münzen)",
+    "Level 8 – Pflasterkunst: Lege 20 Straßenstücke. (300 Münzen)",
+    "Level 9 – Kuscheltiere: Beliefere den Spielzeugladen dreimal. (600 Münzen)",
+    "Level 9 – Kürbiszeit: Ernte 12 Kürbisse. (500 Münzen)",
+    "Level 9 – Marktplatz-Leben: Bau den Marktplatz und zwei Marktstände. (700 Münzen)",
+    "Level 10 – Süße Sache: Stelle 12 Zucker her. (600 Münzen)",
+    "Level 10 – Exportschlager: Liefere Weizen per Zug ins Umland. (700 Münzen)",
+    "Level 10 – Leseratten: Eröffne eine Buchhandlung. (600 Münzen)",
+    "Level 11 – Baumwollpflückerin: Ernte 20 Baumwolle. (700 Münzen)",
+    "Level 12 – Mode aus RicoVille: Beliefere die Boutique zweimal. (900 Münzen)",
+    "Level 12 – Grüne Lunge: Setze 30 Dekorationen in deiner Stadt. (800 Münzen)",
+    "Level 12 – Feld an Feld: Besitze 16 Äcker. (1.200 Münzen)",
+    "Level 13 – Weitblick: Erschließe drei Gebiete. (1.200 Münzen)",
+    "Level 13 – Kaffeeklatsch: Beliefere das Café mit Röstkaffee oder Kuchen. (900 Münzen)",
+    "Level 13 – Weinlese: Ernte 24 Trauben. (1.000 Münzen)",
+    "Level 14 – Leuchtfeuer: Errichte den Leuchtturm am Ufer. (1.500 Münzen)",
+    "Level 15 – Ganz schön was los: Besitze 25 Wohngebäude. (1.500 Münzen)",
+    "Level 15 – Gut versorgt: Besitze 8 Gemeinschaftsgebäude. (2.500 Münzen)",
+    "Level 16 – Uhrwerk: Errichte den Uhrturm. (1.800 Münzen)",
+    "Level 16 – Barista: Röste 16 Tüten Kaffee. (1.400 Münzen)",
+    "Level 16 – Gewürzroute: Hol 3 Gewürzfrachter ab. (1.800 Münzen)",
+    "Level 18 – Konzertsommer: Bau die Konzertbühne. (2.000 Münzen)",
+    "Level 18 – Wohnen mit Aussicht: Bau einen Wohnturm. (2.000 Münzen)",
+    "Level 19 – Schokoladenseite: Stelle 12 Tafeln Schokolade her. (1.800 Münzen)",
+    "Level 19 – Rundblick: Bau das Riesenrad. (2.500 Münzen)",
+    "Level 19 – Kakaobäuerin: Ernte 30 Kakaofrüchte. (2.200 Münzen)",
+    "Level 20 – Unter Glas: Eröffne den Botanischen Garten. (3.000 Münzen)",
+    "Level 20 – Ladenkette: Besitze 12 Geschäfte. (3.000 Münzen)",
+    "Level 21 – Gemütlich eingerichtet: Fertige 6 Möbelstücke. (2.500 Münzen)",
+    "Level 23 – Tierisch gut: Eröffne den Tierpark. (4.000 Münzen)",
+    "Level 25 – Feiern wie die Großen: Bau die Große Festhalle. (4.500 Münzen)",
+    "Level 26 – Shopping-Paradies: Eröffne das Kaufhaus. (5.000 Münzen)",
+    "Level 28 – Anpfiff: Bau das Stadion. (7.000 Münzen)",
+    "Level 32 – Achterbahnfieber: Eröffne den Freizeitpark. (9.000 Münzen)",
+    "Level 40 – Hoch hinaus: Bau den Rico-Tower. (15.000 Münzen)"
+   ]
+  },
+  {
+   "t": "Saison-Events",
+   "p": [
+    "Ab Level 3 gibt es in jeder echten Jahreszeit drei Event-Aufgaben nacheinander. Die letzte schaltet eine besondere Deko frei, die es sonst nicht gibt. Jedes Jahr startet das Event neu."
+   ],
+   "list": [
+    "🌸 Frühlingsputz: Neues Grün: Der Winter ist vorbei! Säe zehnmal, damit die Felder wieder sprießen. (250 Münzen)",
+    "🌸 Frühlingsputz: Blütenpracht: Setze fünf Dekorationen und kassiere zehnmal Miete. (350 Münzen)",
+    "🌸 Frühlingsputz: Tanz in den Mai: Ernte 25 Feldfrüchte für das große Frühlingsfest. Als Dank gibt es einen Maibaum! (500 Münzen)",
+    "☀️ Sommerfest: Eis und Limo: Bei der Hitze kaufen alle ein. Kassiere achtmal in deinen Geschäften. (300 Münzen)",
+    "☀️ Sommerfest: Volle Körbe: Ernte 30 Feldfrüchte für das Grillbuffet. (350 Münzen)",
+    "☀️ Sommerfest: Alle sind da: Kassiere 20-mal Miete – die ganze Stadt feiert mit. Belohnung: ein Karussell! (600 Münzen)",
+    "🍂 Herbstfest: Erntedank: Die Felder sind reif. Ernte 30 Feldfrüchte. (300 Münzen)",
+    "🍂 Herbstfest: Laternen basteln: Setze drei Dekorationen und kassiere zehnmal Miete. (350 Münzen)",
+    "🍂 Herbstfest: Großer Festmarkt: Beliefere fünf Geschäfte für den Festmarkt. Als Dank gibt es den Laternenbogen! (600 Münzen)",
+    "❄️ Wintermarkt: Leckereien: Stelle zehn Waren für die Marktstände her. (300 Münzen)",
+    "❄️ Wintermarkt: Buden öffnen: Beliefere vier Geschäfte. (350 Münzen)",
+    "❄️ Wintermarkt: Warme Stuben: Kassiere 15-mal Miete. Belohnung: eine Eisbahn für alle! (600 Münzen)"
+   ]
+  },
+  {
+   "t": "Tages- und Wochenziele",
+   "p": [
+    "Jeden Tag gibt es 3 Tagesziele, jede Woche 2 Wochenziele. Die Menge steigt mit deinem Level, die Belohnung ist der Grundbetrag plus 10 Münzen je Level."
+   ],
+   "list": [
+    "Tag: Kassiere N-mal Miete – 120 Münzen + Level-Bonus, 15 EP",
+    "Tag: Kassiere N-mal in Geschäften – 150 Münzen + Level-Bonus, 15 EP",
+    "Tag: Ernte N Feldfrüchte – 140 Münzen + Level-Bonus, 15 EP",
+    "Tag: Säe N-mal – 100 Münzen + Level-Bonus, 10 EP",
+    "Tag: Beliefere N Geschäfte – 150 Münzen + Level-Bonus, 15 EP",
+    "Tag: Stelle N Waren her – 130 Münzen + Level-Bonus, 15 EP",
+    "Tag: Setze N Dekorationen – 90 Münzen + Level-Bonus, 10 EP",
+    "Woche: Kassiere diese Woche N-mal Miete – 900 Münzen + Level-Bonus, 120 EP",
+    "Woche: Ernte diese Woche N Feldfrüchte – 900 Münzen + Level-Bonus, 120 EP",
+    "Woche: Schließe diese Woche N Lieferaufträge ab – 1.200 Münzen + Level-Bonus, 150 EP",
+    "Woche: Beliefere diese Woche N Geschäfte – 1.000 Münzen + Level-Bonus, 130 EP"
+   ]
+  },
+  {
+   "t": "Alle 18 Erfolge",
+   "p": [
+    "Jeder Erfolg gibt +25 Erfahrung."
+   ],
+   "list": [
+    "🏠 Hausverwaltung: 10× Miete kassieren",
+    "👑 Mietkönig: 100× Miete kassieren",
+    "🏙️ Immobilienlegende: 1.000× Miete kassieren",
+    "🌾 Erntehelfer: 50× Feldfrüchte ernten",
+    "🚜 Großbauer: 500× Feldfrüchte ernten",
+    "🏆 Kornkammer: 5.000× Feldfrüchte ernten",
+    "🛍️ Kaufmann: 25× in Geschäften kassieren",
+    "💰 Handelsfürst: 250× in Geschäften kassieren",
+    "🏭 Fabrikant: 50× Waren herstellen",
+    "⚙️ Industriekapitän: 500× Waren herstellen",
+    "🚂 Logistiker: 10× Lieferaufträge abschließen",
+    "✈️ Weltspediteur: 100× Lieferaufträge abschließen",
+    "🛣️ Straßenbauer: 100× Straßenfelder bauen",
+    "🌷 Stadtgärtner: 50× Dekorationen bauen",
+    "🎨 Gestaltungsgenie: 300× Dekorationen bauen",
+    "🗺️ Landvermesser: 5× Gebiete erschließen",
+    "🔧 Modernisierer: 10× Ausbauten",
+    "💎 Erste Million: 1.000.000 Münzen insgesamt verdienen"
+   ]
+  },
+  {
+   "t": "Feldfrüchte",
+   "list": [
+    "🍓 Erdbeeren: Saatgut 10 Münzen, 2 Min. Wachstum, Ertrag 3, ab Level 1",
+    "🌾 Weizen: Saatgut 15 Münzen, 5 Min. Wachstum, Ertrag 4, ab Level 1",
+    "🥬 Salat: Saatgut 20 Münzen, 4 Min. Wachstum, Ertrag 3, ab Level 2",
+    "🥕 Karotten: Saatgut 25 Münzen, 8 Min. Wachstum, Ertrag 4, ab Level 3",
+    "🍅 Tomaten: Saatgut 30 Münzen, 12 Min. Wachstum, Ertrag 4, ab Level 4",
+    "🌽 Mais: Saatgut 35 Münzen, 15 Min. Wachstum, Ertrag 5, ab Level 5",
+    "🥔 Kartoffeln: Saatgut 40 Münzen, 20 Min. Wachstum, Ertrag 6, ab Level 6",
+    "🌻 Sonnenblumen: Saatgut 45 Münzen, 30 Min. Wachstum, Ertrag 5, ab Level 7",
+    "🎃 Kürbisse: Saatgut 60 Münzen, 45 Min. Wachstum, Ertrag 4, ab Level 9",
+    "🫜 Zuckerrüben: Saatgut 70 Münzen, 1,5 Std. Wachstum, Ertrag 6, ab Level 10",
+    "☁️ Baumwolle: Saatgut 80 Münzen, 1 Std. Wachstum, Ertrag 5, ab Level 11",
+    "🍇 Trauben: Saatgut 90 Münzen, 2 Std. Wachstum, Ertrag 6, ab Level 13",
+    "🫘 Kaffeesträucher: Saatgut 110 Münzen, 3 Std. Wachstum, Ertrag 6, ab Level 16",
+    "🍫 Kakao: Saatgut 130 Münzen, 4 Std. Wachstum, Ertrag 6, ab Level 19"
+   ]
+  },
+  {
+   "t": "Produktionsketten",
+   "list": [
+    "Windmühle Mahlwerk (ab Level 1): 3 Weizen → 3 Mehl in 3 Min.",
+    "Snackfabrik (ab Level 5): 3 Mais → 4 Popcorn in 5 Min.",
+    "Snackfabrik (ab Level 5): 3 Kartoffeln → 4 Pommes in 6 Min.",
+    "Saftpresse (ab Level 3): 4 Erdbeeren → 3 Saft in 3 Min.",
+    "Saftpresse (ab Level 3): 3 Trauben → 5 Saft in 6 Min.",
+    "Feinkostküche (ab Level 4): 3 Tomaten → 3 Tomatensoße in 5 Min.",
+    "Feinkostküche (ab Level 4): 2 Karotten + 2 Salat → 3 Gemüsekiste in 4 Min.",
+    "Zuckerfabrik (ab Level 10): 3 Zuckerrüben → 4 Zucker in 8 Min.",
+    "Süßwarenfabrik (ab Level 19): 2 Kakao + 1 Zucker → 3 Schokolade in 15 Min.",
+    "Konditorei-Backstube (ab Level 12): 2 Mehl + 1 Kürbisse + 1 Zucker → 3 Kürbiskuchen in 12 Min.",
+    "Kaffeerösterei (ab Level 16): 3 Kaffeesträucher → 4 Röstkaffee in 10 Min.",
+    "Weberei Spindel (ab Level 11): 3 Baumwolle → 3 Stoff in 10 Min.",
+    "Gärtnerei Blütenwerk (ab Level 6): 3 Sonnenblumen → 3 Blumenstrauß in 5 Min.",
+    "Sägewerk Spanplatte (ab Level 7): 2 Holzstämme → 3 Bretter in 6 Min.",
+    "Möbelwerkstatt (ab Level 21): 3 Bretter + 1 Stoff → 2 Möbel in 20 Min."
+   ]
+  },
+  {
+   "t": "Geschäfte und ihre Waren",
+   "list": [
+    "🥐 Bäckerei Goldkruste (ab Level 1, 300 Münzen): 4 Stück Mehl / Kürbiskuchen → 90 Münzen in 3 Min.",
+    "🛒 Mini-Markt Ecke (ab Level 1, 260 Münzen): 4 Stück Gemüsekiste / Salat / Karotten / Erdbeeren / Weizen → 70 Münzen in 2 Min.",
+    "🧃 Saftbar Frischkick (ab Level 3, 420 Münzen, ab 15 Einwohnern): 4 Stück Saft → 150 Münzen in 5 Min.",
+    "💐 Blumenladen Blütezeit (ab Level 4, 520 Münzen, ab 25 Einwohnern): 3 Stück Blumenstrauß → 170 Münzen in 6 Min.",
+    "🍕 Pizzeria Bella Rico (ab Level 5, 700 Münzen, ab 35 Einwohnern): 5 Stück Tomatensoße / Mehl → 260 Münzen in 10 Min.",
+    "🍿 Popcorn-Kiosk (ab Level 6, 640 Münzen, ab 40 Einwohnern): 4 Stück Popcorn → 220 Münzen in 8 Min.",
+    "🍟 Pommesbude Knusper (ab Level 7, 760 Münzen, ab 50 Einwohnern): 5 Stück Pommes → 280 Münzen in 10 Min.",
+    "🧸 Spielzeugladen Kreisel (ab Level 8, 980 Münzen, ab 60 Einwohnern): 4 Stück Spielzeug → 420 Münzen in 20 Min.",
+    "📚 Buchhandlung Seitenwind (ab Level 10, 1.100 Münzen, ab 80 Einwohnern): 4 Stück Bücher → 480 Münzen in 25 Min.",
+    "🍦 Eisdiele Kugelglück (ab Level 11, 1.250 Münzen, ab 90 Einwohnern): 5 Stück Zucker / Erdbeeren → 430 Münzen in 15 Min.",
+    "👗 Boutique Faden & Form (ab Level 12, 1.500 Münzen, ab 110 Einwohnern): 4 Stück Stoff → 620 Münzen in 30 Min.",
+    "☕ Café Bohnenglück (ab Level 13, 1.700 Münzen, ab 130 Einwohnern): 5 Stück Röstkaffee / Kürbiskuchen → 680 Münzen in 30 Min.",
+    "🐟 Fischrestaurant Kombüse (ab Level 14, 2.200 Münzen, ab 160 Einwohnern): 6 Stück Fisch / Gewürze → 980 Münzen in 45 Min.",
+    "🍫 Chocolaterie Zartbitter (ab Level 17, 2.600 Münzen, ab 200 Einwohnern): 4 Stück Schokolade → 1.050 Münzen in 40 Min.",
+    "🧀 Feinkost Gaumenfreude (ab Level 18, 3.000 Münzen, ab 240 Einwohnern): 6 Stück Gewürze / Tomatensoße / Gemüsekiste → 1.250 Münzen in 1 Std.",
+    "📱 Elektronik Funkwerk (ab Level 20, 4.200 Münzen, ab 300 Einwohnern): 5 Stück Elektronik → 1.900 Münzen in 1,5 Std.",
+    "🛋️ Möbelhaus Gemütlich (ab Level 22, 5.000 Münzen, ab 360 Einwohnern): 3 Stück Möbel → 2.400 Münzen in 2 Std.",
+    "🏬 Kaufhaus Rico-Galerie (ab Level 26, 9.000 Münzen, ab 500 Einwohnern): 8 Stück Spielzeug / Bücher / Elektronik / Stoff / Möbel / Schokolade → 4.200 Münzen in 3 Std."
+   ]
+  },
+  {
+   "t": "Gemeinschaftsgebäude und Einwohnergrenze",
+   "list": [
+    "Rathaus: +60 Einwohner, Zufriedenheit +5 (steht von Anfang an)",
+    "Grundschule Pusteblume: +80 Einwohner, Zufriedenheit +4, ab Level 3, 900 Münzen",
+    "Polizeiwache: +70 Einwohner, Zufriedenheit +3, ab Level 4, 1.100 Münzen",
+    "Feuerwache Florian: +70 Einwohner, Zufriedenheit +3, ab Level 5, 1.200 Münzen",
+    "Postamt Brieftaube: +50 Einwohner, Zufriedenheit +2, ab Level 6, 800 Münzen",
+    "Parkverwaltung: +40 Einwohner, Zufriedenheit +5, ab Level 7, 700 Münzen",
+    "Stadtbibliothek: +90 Einwohner, Zufriedenheit +4, ab Level 8, 1.600 Münzen, Material: 4 Bretter",
+    "Marktplatz: +70 Einwohner, Zufriedenheit +6, ab Level 9, 1.400 Münzen",
+    "Sporthalle Sprungfeder: +110 Einwohner, Zufriedenheit +4, ab Level 11, 2.200 Münzen, Material: 6 Bretter, 4 Ziegel",
+    "Krankenhaus Lindenblick: +180 Einwohner, Zufriedenheit +6, ab Level 13, 3.800 Münzen, Material: 10 Ziegel, 6 Glasscheiben",
+    "Stadtmuseum: +160 Einwohner, Zufriedenheit +7, ab Level 15, 4.200 Münzen, Material: 8 Ziegel, 6 Glasscheiben, 4 Stahlträger",
+    "Theater am Brunnen: +170 Einwohner, Zufriedenheit +8, ab Level 17, 5.000 Münzen, Material: 10 Bretter, 4 Stahlträger",
+    "Konzertbühne Sternklang: +120 Einwohner, Zufriedenheit +8, ab Level 18, 3.600 Münzen, Material: 8 Bretter, 4 Stahlträger",
+    "Botanischer Garten: +200 Einwohner, Zufriedenheit +10, ab Level 20, 5.600 Münzen, Material: 12 Glasscheiben, 6 Bretter",
+    "Tierpark Wildwiese: +240 Einwohner, Zufriedenheit +10, ab Level 23, 7.200 Münzen, Material: 12 Bretter, 6 Stahlträger",
+    "Große Festhalle: +230 Einwohner, Zufriedenheit +9, ab Level 25, 8.200 Münzen, Material: 14 Ziegel, 8 Glasscheiben, 8 Stahlträger",
+    "Stadion Ricoarena: +320 Einwohner, Zufriedenheit +10, ab Level 28, 12.000 Münzen, Material: 16 Stahlträger, 12 Ziegel, 6 Glasscheiben",
+    "Freizeitpark Wirbelwind: +300 Einwohner, Zufriedenheit +14, ab Level 32, 15.000 Münzen, Material: 18 Stahlträger, 12 Bretter",
+    "Quartierszentrum: +100 Einwohner, Zufriedenheit +6, ab Level 12, 2.600 Münzen, Material: 4 Bretter, 4 Ziegel"
+   ]
+  },
+  {
+   "t": "Transport-Aufträge",
+   "list": [
+    "🚂 Bahnhof – Holz aus dem Bergland: 120 Münzen, bringt 10 Holzstämme, 5 Min.",
+    "🚂 Bahnhof – Ziegelwagen: 200 Münzen, bringt 8 Ziegel, 8 Min.",
+    "🚂 Bahnhof – Spielwaren-Express: 260 Münzen, bringt 8 Spielzeug, 12 Min.",
+    "🚂 Bahnhof – Bücherzug: 260 Münzen, bringt 8 Bücher, 12 Min., ab Level 10",
+    "🚂 Bahnhof – Stahlwerk-Lieferung: 380 Münzen, bringt 6 Stahlträger, 20 Min., ab Level 12",
+    "🚂 Bahnhof – Getreide ins Umland: liefert 12 Weizen für 420 Münzen, 10 Min.",
+    "🚂 Bahnhof – Mehl für die Großbäckerei: liefert 10 Mehl für 640 Münzen, 15 Min., ab Level 10",
+    "⚓ Hafen – Fischkutter: 220 Münzen, bringt 10 Fisch, 10 Min.",
+    "⚓ Hafen – Gewürzfrachter: 340 Münzen, bringt 8 Gewürze, 20 Min.",
+    "⚓ Hafen – Glas aus Übersee: 360 Münzen, bringt 8 Glasscheiben, 25 Min.",
+    "⚓ Hafen – Holzflöße: 200 Münzen, bringt 20 Holzstämme, 15 Min.",
+    "⚓ Hafen – Stoffballen für den Export: liefert 8 Stoff für 1.100 Münzen, 30 Min.",
+    "⚓ Hafen – Saftkisten nach Norden: liefert 10 Saft für 760 Münzen, 20 Min.",
+    "✈️ Flughafen – Elektronik-Luftfracht: 520 Münzen, bringt 10 Elektronik, 25 Min.",
+    "✈️ Flughafen – Eilfracht Stahl: 640 Münzen, bringt 10 Stahlträger, 15 Min.",
+    "✈️ Flughafen – Spielzeugmesse: 560 Münzen, bringt 16 Spielzeug, 20 Min.",
+    "✈️ Flughafen – Pralinen in die Hauptstadt: liefert 8 Schokolade für 1.600 Münzen, 30 Min.",
+    "✈️ Flughafen – Designermöbel-Export: liefert 4 Möbel für 1.800 Münzen, 40 Min."
+   ]
+  },
+  {
+   "t": "Wohnhäuser von klein bis groß",
+   "p": [
+    "Die Liste zeigt Einwohner und Miete je Haus. Wichtig für die Wahl: Miete pro Minute und Platz. Kleine Häuser zahlen oft, große sind effizienter pro Feld."
+   ],
+   "list": [
+    "Gartenhäuschen (2×2, ab Level 1, 120 Münzen): 3 Einwohner, 18 Miete alle 3 Min.",
+    "Häuschen Kirschrot (2×2, ab Level 1, 180 Münzen): 5 Einwohner, 25 Miete alle 5 Min.",
+    "Häuschen Seeblau (2×2, ab Level 1, 180 Münzen): 5 Einwohner, 25 Miete alle 5 Min.",
+    "Häuschen Sonnengelb (2×2, ab Level 2, 200 Münzen): 5 Einwohner, 28 Miete alle 5 Min.",
+    "Bungalow Wiesengrund (2×2, ab Level 2, 260 Münzen): 6 Einwohner, 34 Miete alle 8 Min.",
+    "Holzhaus Tannenduft (2×2, ab Level 3, 300 Münzen): 6 Einwohner, 38 Miete alle 10 Min.",
+    "Fachwerkhaus (2×2, ab Level 4, 380 Münzen): 8 Einwohner, 48 Miete alle 12 Min.",
+    "Reihenhaus Lindenreihe (2×2, ab Level 4, 420 Münzen): 9 Einwohner, 52 Miete alle 15 Min.",
+    "Doppelhaus Zwillinge (2×2, ab Level 5, 480 Münzen): 10 Einwohner, 60 Miete alle 15 Min.",
+    "Landhaus Kornblume (2×2, ab Level 6, 560 Münzen): 11 Einwohner, 70 Miete alle 20 Min.",
+    "Backsteinhaus (2×2, ab Level 7, 640 Münzen): 12 Einwohner, 80 Miete alle 25 Min.",
+    "Stadthaus am Markt (2×2, ab Level 8, 760 Münzen): 14 Einwohner, 95 Miete alle 30 Min.",
+    "Strandhaus Möwenblick (2×2, ab Level 9, 820 Münzen): 13 Einwohner, 105 Miete alle 30 Min.",
+    "Altbau Rosengasse (2×2, ab Level 10, 900 Münzen): 16 Einwohner, 115 Miete alle 40 Min.",
+    "Mehrfamilienhaus (2×2, ab Level 11, 1.100 Münzen): 20 Einwohner, 140 Miete alle 45 Min.",
+    "Ökohaus Grünes Dach (2×2, ab Level 12, 1.200 Münzen): 18 Einwohner, 150 Miete alle 45 Min.",
+    "Lofthaus Hafenkante (2×2, ab Level 13, 1.400 Münzen): 22 Einwohner, 175 Miete alle 1 Std.",
+    "Studentenwohnheim (2×2, ab Level 14, 1.600 Münzen): 28 Einwohner, 190 Miete alle 1 Std.",
+    "Apartmenthaus Sonnenhof (2×2, ab Level 15, 1.900 Münzen): 30 Einwohner, 230 Miete alle 1,25 Std.",
+    "Gründerzeitvilla (3×3, ab Level 16, 2.400 Münzen): 20 Einwohner, 300 Miete alle 1,5 Std.",
+    "Seniorenresidenz Abendrot (3×3, ab Level 17, 2.800 Münzen): 36 Einwohner, 320 Miete alle 1,5 Std.",
+    "Wohnturm Lichtblick (2×2, ab Level 18, 3.200 Münzen): 42 Einwohner, 360 Miete alle 2 Std.",
+    "Villa Seerose (3×3, ab Level 20, 3.800 Münzen): 24 Einwohner, 460 Miete alle 2 Std.",
+    "Terrassenhaus (3×3, ab Level 22, 4.300 Münzen): 48 Einwohner, 480 Miete alle 2,5 Std.",
+    "Hochhaus Stadtkrone (3×3, ab Level 24, 5.200 Münzen): 70 Einwohner, 620 Miete alle 3 Std.",
+    "Penthouse-Turm (2×2, ab Level 26, 6.000 Münzen): 50 Einwohner, 700 Miete alle 3 Std.",
+    "Landvilla Weinberg (3×3, ab Level 28, 6.500 Münzen): 30 Einwohner, 780 Miete alle 4 Std.",
+    "Glasturm Horizont (3×3, ab Level 30, 8.000 Münzen): 95 Einwohner, 900 Miete alle 4 Std.",
+    "Schlossvilla Rosenhain (4×4, ab Level 34, 12.000 Münzen): 60 Einwohner, 1400 Miete alle 6 Std.",
+    "Wolkenkratzer Rico-Tower (4×4, ab Level 40, 18.000 Münzen): 160 Einwohner, 2000 Miete alle 8 Std."
+   ]
+  },
+  {
+   "t": "Wahrzeichen, Lager und Transport",
+   "list": [
+    "Leuchtturm Rico-Licht (ab Level 14, 3.500 Münzen, Material: 8 Ziegel, 4 Glasscheiben): Wahrzeichen am Wasser: +10 % auf alle Mieten.",
+    "Riesenrad Himmelsblick (ab Level 19, 6.000 Münzen, Material: 12 Stahlträger): Wahrzeichen: +10 % auf alle Geschäftserlöse.",
+    "Uhrturm am Ring (ab Level 16, 4.500 Münzen, Material: 10 Ziegel, 4 Stahlträger): Wahrzeichen: +10 % Erfahrung für alle Aktionen.",
+    "Scheune (ab Level 2, 300 Münzen): +40 Lagerplätze.",
+    "Getreidesilo (ab Level 8, 900 Münzen): +80 Lagerplätze.",
+    "Lagerhaus Kontor (ab Level 14, 2.600 Münzen): +180 Lagerplätze.",
+    "Bahnhof Rico-Mitte (ab Level 8, 2.500 Münzen, Material: 6 Bretter): Lieferaufträge per Zug: Holz, Ziegel, Spielzeug, Bücher, Stahl – oder Export.",
+    "Hafen Möwenkai (ab Level 15, 6.000 Münzen, Material: 10 Bretter, 4 Stahlträger): Frachter bringen Fisch, Gewürze, Glas und Holz. Muss am Wasser stehen.",
+    "Flughafen Wolkenfeld (ab Level 25, 15.000 Münzen, Material: 14 Stahlträger, 10 Glasscheiben): Luftfracht für Elektronik, Stahl und Spielzeug sowie lukrative Exporte."
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Meine Stadt ist weg – was tun?",
+   "a": "Die Stadt liegt im Browser, mit einer Sicherung. Werden Browserdaten gelöscht, ist sie weg. Melde dich mit Google an, dann folgt dir die Stadt auf alle Geräte."
+  },
+  {
+   "q": "Warum zieht niemand in mein neues Haus?",
+   "a": "Häuser brauchen eine angrenzende Straße. Ist die Einwohnergrenze erreicht, baue Gemeinschaftsgebäude wie Schule, Polizei oder Feuerwache."
+  },
+  {
+   "q": "Ich kann nicht ernten.",
+   "a": "Wahrscheinlich ist das Lager voll. Baue eine Scheune, ein Silo oder ein Lagerhaus oder verbrauche Waren in Produktion und Geschäften."
+  },
+  {
+   "q": "Keine Energie mehr?",
+   "a": "Im Modus Nostalgisch lädt sich alle 3 Minuten 1 Energie auf. Wer ohne Energie spielen will, stellt in den Einstellungen auf Entspannt."
+  },
+  {
+   "q": "Wie bekomme ich Nachbarn?",
+   "a": "Nachbarn gibt es mit Google-Anmeldung. Unter 👥 Nachbarn → „Neue finden“ oder über deinen Einladungslink."
+  },
+  {
+   "q": "Das Spiel ruckelt oder der Akku leert sich schnell.",
+   "a": "Stelle in den Einstellungen die Grafik auf „Niedrig (schont Akku)“. Dann fallen auch Regen und Schnee weg."
+  },
+  {
+   "q": "Es erscheint ein WebGL-Fehler.",
+   "a": "RicoVille braucht 3D-Grafik. Aktiviere die Hardwarebeschleunigung oder nutze einen aktuellen Browser."
+  }
+ ]
+}

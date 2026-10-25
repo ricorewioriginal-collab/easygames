@@ -1,0 +1,287 @@
+{
+  "id": "aeru",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AERU – Die Sterneninseln ist ein 3D-Abenteuer mit dem jungen Winddrachen Aeru. Der Wind über den Inseln verstummt. Du folgst seiner Spur über sechs Sterneninseln: Windwiesen, Bernsteinhain, Sternenwarte, Wolkenriffe, Kristallklamm und Morgenruinen. Nach dem Abspann wartet als Epilog der Nachtgarten.",
+        "Du läufst, springst, gleitest und fliegst, sprichst mit den Inselbewohnern, erfüllst Quests, weckst Laternen, fliegst durch Himmelsringe und vertreibst Gegner mit dem Windstoß. Jede Insel endet mit einem Leuchtkern; erst mit dem Kern öffnet sich das Sternentor zur nächsten Insel."
+      ]
+    },
+    {
+      "t": "Start und Pausenmenü",
+      "list": [
+        "Titelbild: „Reise fortsetzen“ lädt deinen Spielstand, „Neues Abenteuer“ beginnt von vorn (der alte Stand wird vorher gesichert), „Spielesammlung“ führt zurück. Bedienung mit ↑/↓ und Enter.",
+        "Pause (Esc, P oder Ⅱ) mit den Reitern Reise, Tagebuch und Einstellungen.",
+        "Reise: Weiterfliegen, Zum letzten Rastpunkt, Zum Inselstart, Speichern & Titelbild sowie die INSELWAHL (Insel 1 bis 7). Freigeschaltete Inseln kannst du jederzeit wieder besuchen.",
+        "Das Zielfeld oben zeigt Kapitel, aktuelles Ziel, Fortschritt (z. B. 2 / 3) und einen Kompass mit Entfernung. Über dem Ziel steht ein goldener Lichtstrahl, auf der Minikarte ein Marker.",
+        "Oben zählen die Anzeigen Himmelssplitter (◆ x/168), Leuchtkerne (✺) und Himmelstruhen (▣ x/21)."
+      ]
+    },
+    {
+      "t": "Bewegen, Fliegen und Kämpfen",
+      "list": [
+        "Sprung: kurz antippen springt niedrig, halten springt höher. Kurz nach dem Verlassen einer Kante darfst du noch springen, und ein Druck kurz vor der Landung wird nach dem Aufsetzen ausgeführt.",
+        "Gleiten: in der Luft die Sprungtaste halten – du fällst deutlich langsamer.",
+        "Kantenhilfe: Stößt du knapp unter einer Kante an, zieht sich Aeru hinauf. An Kanten bleibt Aeru kurz stehen; wer weiter drückt, geht bewusst hinunter.",
+        "Flug: G bzw. FLUG startet den Flug, erneut drücken landet. In der Luft wechselt ein Flügelschlag in den Flug. Sprung halten = steigen (kostet Flügelkraft), Umschalt bzw. ROLLE = sinken, sonst sinkst du langsam.",
+        "Flügelkraft: Die Leiste FLÜGELKRAFT lädt am Boden, in türkisen Aufwinden (die dich zusätzlich anheben) und langsam im Flug ohne Steigen. Bei wenig Kraft warnt die Anzeige.",
+        "Schwung-Ringe (hellblau): Durchfliegen gibt 2,4 Sekunden lang 50 % mehr Flugtempo und füllt die Flügelkraft.",
+        "Windstoß (F bzw. WIND): trifft Gegner, Laternen, Kugeln und Bossschilde in Blickrichtung.",
+        "Rammstoß (Umschalt bzw. RAMM/ROLLE am Boden): kurzer Schub, in dem Aeru unverwundbar ist. Getroffene Gegner werden geschlagen, Dornenkugeln zerstreut."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "PC: WASD oder Pfeile bewegen, Maus ziehen, Q/E oder Mausrad steuern die Kamera, C dreht sie hinter Aeru. Leertaste = Springen/Flügelschlag/Gleiten, G = Flug ein/aus, Umschalt = Rammstoß bzw. im Flug sinken, F = Windstoß, R oder Enter = Sprechen und Tor benutzen, J = Tagebuch, Esc oder P = Pause.",
+        "Dialoge: R, Leertaste oder Enter blättert weiter; bereits gesehene Dialoge überspringst du mit X, Backspace oder „Überspringen ⏭“.",
+        "Touch: linker Stick bewegt, rechts wischen dreht die Kamera. Das Aktionsrad rechts hat SPRUNG (groß, unten), FLUG (oben), WIND (links) und RAMM/ROLLE (rechts). REDEN erscheint nur, wenn jemand in der Nähe ist. ☰ = Tagebuch, Ⅱ = Pause.",
+        "Controller: linker Stick oder Steuerkreuz bewegt, A springt bzw. bestätigt, X = Windstoß, Y = Sprechen, RT = Flug, LT = Rammstoß/sinken, LB/RB = Kamera drehen, Select = Tagebuch, Start oder B = Pause."
+      ]
+    },
+    {
+      "t": "Gegner und Gesundheit",
+      "list": [
+        "Nebelkäfer: Sprungangriff.",
+        "Sturmfunke: schießt Kugeln.",
+        "Stille-Schatten: weicht aus und ist nur nach seinem eigenen Angriff verwundbar.",
+        "Nachtmotte (Nachtgarten): fliegt im Zickzack, schneller Sturzflug, 1 Treffer genügt.",
+        "Wurzelwächter (Nachtgarten): braucht 3 Treffer, setzt drei Warnkreise, die nach 1 Sekunde einschlagen.",
+        "Jeder Angriff wird mit einem roten Kristall über dem Gegner angekündigt, dann folgt der Angriff, dann eine Erholungspause. Nach einem Treffer bist du kurz unverwundbar.",
+        "Besiegte Gegner kehren erst nach 20 Sekunden zurück und nur, wenn Aeru weit genug weg ist.",
+        "Aeru startet mit 5 Herzen. Alle 6 gesammelten Splitter füllen ein Herz auf. Verlierst du alle Herzen, geht es mit vollen Herzen zum letzten Rastpunkt (graue Steinplatte) – dein Questfortschritt bleibt."
+      ]
+    },
+    {
+      "t": "Quests und Tagebuch",
+      "p": [
+        "Jede Insel hat Hauptquests in fester Reihenfolge und eine freiwillige Nebenquest. Questschritte zählen nur, wenn du eine Figur wirklich ansprichst. Das Tagebuch (J oder ☰) zeigt das aktuelle Ziel, die Kapitelübersicht, erledigte Schritte und Nebenquests; künftige Kapitel bleiben verborgen."
+      ],
+      "list": [
+        "Questzustände: Noch nicht verfügbar, Verfügbar, Aktiv, Teilziel erfüllt, Bereit zum Abschluss, Abgeschlossen.",
+        "Nebenquests werden verfügbar, sobald die Hauptquest der Insel begonnen hat. Sie verlangen zwei bestimmte Splitter von den Außeninseln (schon gesammelte zählen) und belohnen mit voller Heilung.",
+        "Figuren ziehen um, erscheinen oder verschwinden je nach Fortschritt und reagieren nach wichtigen Ereignissen mit neuen Sätzen."
+      ]
+    },
+    {
+      "t": "Himmelsinseln, Truhen und Splitter",
+      "list": [
+        "Jede der 7 Welten hat drei kleine Himmelsinseln (Ost-Nord, West-Nord, Süd). Du erreichst sie über einen Aufwind der Hauptinsel; auf dem Weg liegen Schwung-Ringe. Auf jeder steht eine Himmelstruhe (füllt Herzen und Flügelkraft) und ein Rastpunkt – insgesamt 21 Truhen.",
+        "Himmelssplitter: 24 pro Insel, 168 insgesamt. Sie sind freiwillig, bleiben aber gespeichert und schalten Upgrades frei."
+      ]
+    },
+    {
+      "t": "Einstellungen",
+      "list": [
+        "Lautstärke und Musik, Grafikqualität (Sparsam, Ausgewogen, Hoch, Automatisch), Kamera- und Touchempfindlichkeit getrennt, Kamerahilfe (dreht nach kurzer Zeit hinter Aeru), Flughilfe, Zielhilfe (Lichtstrahl/Kompass), reduzierte Bewegung, Textgeschwindigkeit, große Schrift, Leistungsanzeige und Vollbild.",
+        "Ohne WebGL zeichnet ein vereinfachter 2D-Modus die Karte; Quests und Spielstand bleiben gleich."
+      ]
+    },
+    {
+      "t": "Speichern",
+      "p": [
+        "Das Spiel speichert automatisch im Browser (Spielstand und Einstellungen getrennt). „Speichern & Titelbild“ sichert sofort. Vor einem neuen Abenteuer wird der alte Stand gesichert. Ältere Spielstände werden beim Laden übernommen; ein Hinweis „SPIELSTAND ÜBERNOMMEN“ erklärt dann, was übernommen wurde. Wechselst du Fenster oder Tab, pausiert das Spiel.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Folge dem goldenen Pfeil im Zielfeld und dem Lichtstrahl – sie führen immer zum nächsten Questziel.",
+        "Türkise Aufwinde und der Boden laden die Flügelkraft. Plane lange Flüge von Aufwind zu Aufwind.",
+        "Graue Steinplatten sind Rastpunkte. Lauf darüber, bevor du einen schwierigen Abschnitt beginnst.",
+        "Sprich mit allen Figuren mehrmals – nach Ereignissen haben sie neue Sätze und Hinweise."
+      ]
+    },
+    {
+      "t": "Kampf-Tipps",
+      "list": [
+        "Warte auf den roten Kristall: Er kündigt jeden Angriff an. Weiche aus und schlage in der Erholungsphase zu.",
+        "Der Rammstoß macht kurz unverwundbar – ideal, um durch einen Angriff hindurch zu kommen.",
+        "Stille-Schatten erst nach ihrem Angriff treffen, vorher weichen sie aus.",
+        "Wurzelwächter: Aus den drei Warnkreisen heraus gehen, sie schlagen nach 1 Sekunde ein."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Sammle die Splitter der Außeninseln früh – die Nebenquests jeder Insel brauchen genau zwei davon, und gesammelte zählen rückwirkend.",
+        "Die ersten 3 Himmelstruhen verdoppeln die Reichweite des Rammstoßes (1,7 m auf 3,2 m) – das macht viele Kämpfe einfacher.",
+        "Splitter füllen Herzen auf (alle 6 Splitter ein Herz). Vor einem Bosskampf lohnt sich eine Sammelrunde.",
+        "Schwung-Ringe hintereinander durchfliegen hält das Tempo hoch und die Flügelkraft voll."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Laternen im Bernsteinhain in falscher Reihenfolge wecken – ein Fehler löscht alle wieder, das Lied wird erneut angezeigt.",
+        "Bosse vor dem passenden Questschritt suchen: Der Kampf beginnt erst, wenn der Schritt aktiv ist und Aeru die Arena betritt.",
+        "Im Flug ohne Flügelkraft weit hinaus fliegen. Achte auf die Warnung der Leiste.",
+        "Das Sternentor benutzen wollen, bevor der Leuchtkern der Insel da ist („Das Sternentor schläft“)."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Kapitel 1: Windwiesen – Der Himmel verstummt",
+      "steps": [
+        "Wach auf – du startest auf den Windwiesen.",
+        "Sprich mit Mira (Hüterin der Windwiesen).",
+        "Wecke die drei Windlaternen mit dem Windstoß.",
+        "Erzähl Mira von den Laternen.",
+        "Sprich mit Edda an der Treppe.",
+        "Vertreibe drei Nebelkäfer.",
+        "Flieg zur Ostinsel und finde die Spur: die Dunkle Feder.",
+        "Bring Mira die Feder – Belohnung: Leuchtkern 1, das Sternentor öffnet sich.",
+        "Nebenquest „Post mit Höhenangst“ (Pip): Hol die Splitter-Briefe von beiden Außeninseln und bring sie Pip."
+      ]
+    },
+    {
+      "t": "Kapitel 2: Bernsteinhain – Die Stimmen der Vergangenheit",
+      "steps": [
+        "Reise durch das Sternentor in den Bernsteinhain.",
+        "Sprich mit Oru (Gärtner der Erinnerungen).",
+        "Finde die drei Bernsteintropfen: „Der Ruf“ im Bernsteinnest ganz im Nordosten (über die verborgenen Stufen, dort ist auch ein Rastpunkt), „Das Tor“ auf der Westinsel und „Die Nacht“ am Teich im Südosten.",
+        "Bring Oru die Erinnerungen.",
+        "Lied der Laternen: Wecke die Laternen in der Reihenfolge „Morgen Ost, Abend West, Nacht Treppe“ – also zuerst die Laterne im Osten, dann die im Westen, zuletzt die an der Treppe.",
+        "Sprich mit Oru – Leuchtkern 2.",
+        "Nebenquest „Sternensamen“ (Nim): Splitter von beiden Außeninseln holen."
+      ]
+    },
+    {
+      "t": "Kapitel 3: Sternenwarte – Das gebrochene Sternentor",
+      "steps": [
+        "Reise zur Sternenwarte und sprich mit Sela (Kartografin der Sterne).",
+        "Sprich mit Ivo am Treppenfuß.",
+        "Vertreibe vier Sturmfunken.",
+        "Wecke die drei Windlaternen.",
+        "Sag Sela, dass die Laternen leuchten.",
+        "Stell dich Vesper oben am Tor (Bosskampf).",
+        "Sprich mit Sela – Leuchtkern 3.",
+        "Nebenquest „Die alte Sternkarte“ (Tavi): Kartenteile von beiden Außeninseln holen."
+      ]
+    },
+    {
+      "t": "Bosskampf: Vesper",
+      "list": [
+        "6 Treffer, 3 Phasen.",
+        "Die Wellen am Boden überspringst du mit einem Sprung.",
+        "Aus den Warnkreisen herausgehen, bevor sie einschlagen.",
+        "Ist der Schild offen, schlägst du mit dem Windstoß zu.",
+        "Stirbst du, beginnst du am Arenaeingang; Vesper wird nur auf den Beginn der aktuellen Phase zurückgesetzt."
+      ]
+    },
+    {
+      "t": "Kapitel 4: Wolkenriffe – Die verlorenen Windwege",
+      "steps": [
+        "Reise zu den Wolkenriffen und sprich mit Luma (Lotsin der Wolkenriffe).",
+        "Rette Tessa auf dem Westriff (ansprechen).",
+        "Knüpfe die drei Windwege: Flieg durch die drei Himmelsringe.",
+        "Such Vesper auf dem Ostriff und sprich mit ihm.",
+        "Kehr zu Luma zurück.",
+        "Hör zu, was Vesper Luma sagt (Vesper ansprechen) – Leuchtkern 4.",
+        "Nebenquest „Flaschenpost“ (Kito): Flaschenpost von beiden Außenriffen holen."
+      ]
+    },
+    {
+      "t": "Kapitel 5: Kristallklamm – Das Echo der Wahrheit",
+      "steps": [
+        "Reise in die Kristallklamm und sprich mit Yara (Stimmerin der Kristalle).",
+        "Wecke die Laternen auf den Kristalltürmen (auf zwei Türmen gibt es Rastpunkte).",
+        "Sprich mit Elin an der Treppe.",
+        "Vertreibe drei Stille-Schatten.",
+        "Stimme die drei Himmelsringe – durchfliegen.",
+        "Lausch dem Echo mit Yara – Leuchtkern 5.",
+        "Nebenquest „Geräusche im Stein“ (Boro): Klangsplitter von beiden Außeninseln holen."
+      ]
+    },
+    {
+      "t": "Kapitel 6: Morgenruinen – Der letzte Morgen",
+      "steps": [
+        "Reise in die Morgenruinen und sprich mit Neri (Architektin des Morgens).",
+        "Sprich mit Juno über die Leuchtfeuer.",
+        "Entzünde die Leuchtfeuer auf den Kaimauern (dort sind auch Rastpunkte).",
+        "Öffne die Hafenwindwege: Flieg durch die Ringe.",
+        "Sprich mit Neri.",
+        "Stell dich der Stille am Hafentor (Bosskampf).",
+        "Sprich mit Neri und Vesper – Leuchtkern 6 und Abspann („Sechs Kerne. Ein offener Himmel.“). Danach kannst du mit „Weiter erkunden“ frei weiterspielen.",
+        "Nebenquest „Die Hafensiegel“ (Vela): Siegel von beiden Außeninseln holen."
+      ]
+    },
+    {
+      "t": "Bosskampf: Die Stille",
+      "list": [
+        "9 Treffer, 3 Phasen.",
+        "Phase 1: Wellen überspringen, Treffer landen.",
+        "Phase 2: Schwebende Anker müssen im Flug zerstört werden – temporäre Aufwinde helfen dir nach oben.",
+        "Phase 3: Doppelwellen – zweimal hintereinander springen."
+      ]
+    },
+    {
+      "t": "Kapitel 7 (Epilog): Nachtgarten – Samen im Himmel",
+      "steps": [
+        "Reise durch das Sternentor in den Nachtgarten und sprich mit Sorel (Gärtnerin der Nacht).",
+        "Vertreibe vier Nachtmotten.",
+        "Finde die drei Nachtsamen auf den Himmelsinseln: Ost, West und Süd.",
+        "Bring Pilla (Samenhüterin) die Samen.",
+        "Stell dich der Nachtblüte am Gartentor (Bosskampf).",
+        "Sprich mit Sorel – Leuchtkern 7.",
+        "Nebenquest „Laternen für die Nacht“ (Mott): drei Windlaternen entzünden und Mott vom Licht erzählen."
+      ]
+    },
+    {
+      "t": "Bosskampf: Die Nachtblüte",
+      "list": [
+        "8 Treffer, 3 Phasen.",
+        "Phase 1: Wellen überspringen.",
+        "Phase 2: Dornenkugeln mit dem Windstoß oder dem Rammstoß zerstreuen.",
+        "Phase 3: Doppelwellen und rote Kreise – springen und ausweichen."
+      ]
+    },
+    {
+      "t": "Alle Freischaltungen",
+      "list": [
+        "24 Splitter: Weite Schwingen – Flügelkraft +25.",
+        "48 Splitter: Splitterherz – ein zusätzliches Herz.",
+        "72 Splitter: Weiter Wind – Windstoß reicht weiter.",
+        "96 Splitter: Zweites Splitterherz – noch ein Herz.",
+        "120 Splitter: Sturmschwingen – 12 % schnellerer Flug.",
+        "144 Splitter: Sternenglanz – unbegrenzte Flügelkraft (Steigen, Gleiten, Flügelschlag) und goldene Flugspur.",
+        "3 Himmelstruhen: Starker Rammstoß – Rammen trifft doppelt so weit.",
+        "9 Himmelstruhen: Himmelsherz – ein zusätzliches Herz.",
+        "15 Himmelstruhen: Himmelsschwingen – Flügelkraft +25.",
+        "21 Himmelstruhen: Himmelskrone – alle Himmelstruhen gefunden.",
+        "Mit allem hat Aeru 8 Herzen (statt 5) und 150 Flügelkraft (statt 100)."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Mein Spielstand ist weg.",
+      "a": "Ohne Google-Anmeldung liegt der Spielstand nur im Speicher dieses Browsers: Nach dem Löschen der Browserdaten oder auf einem anderen Gerät beginnt das Abenteuer neu. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät. „Neues Abenteuer“ sichert den alten Stand vorher."
+    },
+    {
+      "q": "Das Sternentor öffnet sich nicht.",
+      "a": "Das Tor zur nächsten Insel braucht den Leuchtkern der aktuellen Insel. Den gibt es erst am Ende der letzten Hauptquest der Insel. Bereits besuchte Inseln erreichst du über die Inselwahl im Pausenmenü."
+    },
+    {
+      "q": "Die Laternen im Bernsteinhain gehen wieder aus.",
+      "a": "Sie müssen in der Reihenfolge des Lieds geweckt werden: Morgen Ost, Abend West, Nacht Treppe. Ein Fehler löscht alle, dann beginnst du neu."
+    },
+    {
+      "q": "Ich sehe nur eine einfache 2D-Karte.",
+      "a": "Dein Browser hat kein WebGL. Das Spiel läuft dann im vereinfachten 2D-Modus weiter. In einem aktuellen Browser mit Hardwarebeschleunigung siehst du die 3D-Welt."
+    },
+    {
+      "q": "Das Spiel ruckelt.",
+      "a": "Stell in den Einstellungen die Grafik auf „Sparsam“ oder lass „Automatisch“ die Qualität anpassen."
+    },
+    {
+      "q": "Muss ich alle Splitter sammeln?",
+      "a": "Nein. Splitter, Truhen und Nebenquests sind freiwillig. Sie machen Aeru aber stärker und sind für den Sternenglanz nötig."
+    }
+  ]
+}

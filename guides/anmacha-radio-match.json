@@ -1,0 +1,545 @@
+{
+ "id": "anmacha-radio-match",
+ "handbuch": [
+  {
+   "t": "Ziel des Spiels",
+   "p": [
+    "Royal Radio Match 3D ist ein 3D-Match-3-Spiel mit 200 Leveln in 10 Radio-Welten. Die Störwelle hat die Sender verrauscht – mit RAY, dem kleinen Radio-Roboter, und DJ Mira Mix bringst du Welt für Welt das Funkhaus wieder auf Sendung.",
+    "In jedem Level tauschst du zwei benachbarte Bauteile. Drei oder mehr gleiche in einer Reihe oder Spalte verschwinden. Du musst die Ziele oben erfüllen, bevor die Züge ausgehen."
+   ]
+  },
+  {
+   "t": "Die Bauteile",
+   "list": [
+    "Mikrofon (●)",
+    "Kopfhörer (▲)",
+    "Schallplatte (■)",
+    "Sendeturm (◆)",
+    "Equalizer (✚)",
+    "Radio (★)",
+    "Fader (✱)"
+   ],
+   "p": [
+    "Je nach Level sind 4 bis 6 Sorten im Spiel. Im Farbenblind-Modus tragen die Bauteile zusätzlich die Symbole in Klammern."
+   ]
+  },
+  {
+   "t": "Hauptmenü",
+   "list": [
+    "Großer Knopf „Level …“: das nächste Level mit Vorschau (Ziele, Züge, Start-Booster).",
+    "🗺️ Karte: alle Welten und Level mit Sternen; gesperrte Level zeigen ein Schloss.",
+    "🏰 Funkhaus: mit Sternen Etagen ausbauen.",
+    "🎧 Bonus: das Bonus-Studio mit 10 Extra-Leveln.",
+    "⚔️ Duell: zu zweit auf einem Gerät oder gegen die KI.",
+    "🛒 Shop: Booster gegen Münzen kaufen.",
+    "🎁 Tagesbonus: jeden Tag eine Belohnung.",
+    "❓ Hilfe: alle Regeln, Spezialteile, Kombos, Hindernisse und Booster.",
+    "⚙️ Optionen: Musik, Effekte, Weniger Bewegung, Farbenblind-Modus (Symbole) und Grafik (Auto, Niedrig, Mittel, Hoch)."
+   ]
+  },
+  {
+   "t": "Regeln und Spielablauf",
+   "list": [
+    "Ein Tausch zählt nur, wenn dabei ein Match entsteht. Ein Tausch ohne Match springt zurück und kostet keinen Zug.",
+    "Nach jedem Match rutschen Bauteile nach und neue fallen von oben. Entstehen dabei weitere Matches, ist das eine Combo.",
+    "Hindernisse blockieren Felder oder Bauteile und müssen oft für die Ziele entfernt werden.",
+    "Ziel-Arten: Bauteile einer Sorte sammeln, Hindernisse räumen (Kisten, Moos, Eis, Rauschfelder …), Plattenpakete oder Kassetten nach unten bringen, eine Punktzahl erreichen, eine bestimmte Zahl Spezialteile bauen oder eine Combo-Länge erreichen.",
+    "Gewonnen hast du, sobald alle Ziele erfüllt sind. Übrige Züge bringen je 120 Punkte Zugbonus.",
+    "Sind die Züge aufgebraucht, kannst du gegen Münzen +5 Züge kaufen (600, dann 1200 Münzen – höchstens zweimal pro Versuch) oder neu starten. Ist das Brett blockiert, wird neu gemischt; geht gar nichts mehr, ist das Level verloren.",
+    "Nach 7 Sekunden ohne Zug hüpft ein möglicher Zug als Hinweis."
+   ]
+  },
+  {
+   "t": "Spezialteile",
+   "list": [
+    "Wellenrakete: Vierer in einer Reihe oder Spalte – räumt die ganze Reihe bzw. Spalte.",
+    "Bassbombe: L- oder T-Form – Frequenzimpuls auf die Fläche rundherum.",
+    "Funkdrohne: 2×2-Quadrat – fliegt zu einem wichtigen Ziel und trifft es.",
+    "Frequenzkugel: fünf in einer Reihe – tausche sie mit einem Bauteil, alle Bauteile dieser Sorte verschwinden.",
+    "Remix-Orb: sechs in einer Reihe oder großes Kreuz (7+ Bauteile) – räumt eine breite Reihe und Spalte.",
+    "Spezialteile löst du aus, indem du sie tauschst oder mitmatchst; auch Treffer anderer Spezialteile lösen sie aus."
+   ]
+  },
+  {
+   "t": "Kombos: zwei Spezialteile tauschen",
+   "list": [
+    "Rakete + Rakete: Kreuz: Reihe und Spalte",
+    "Rakete + Bassbombe: drei Reihen und drei Spalten",
+    "Bassbombe + Bassbombe: riesige 7×7-Explosion",
+    "Drohne + Rakete: Drohne fliegt hin und zündet dort eine Rakete",
+    "Drohne + Bassbombe: Drohne trägt die Bombe zum Ziel",
+    "Drohne + Drohne: drei Drohnen gleichzeitig",
+    "Kugel + Rakete: alle Teile einer Farbe werden zu Raketen",
+    "Kugel + Bassbombe: alle Teile einer Farbe werden zu Bomben",
+    "Kugel + Drohne: alle Teile einer Farbe werden zu Drohnen",
+    "Kugel + Kugel: das ganze Brett wird geräumt",
+    "Remix-Orb + Rakete/Bombe/Drohne: Mega-Explosion mit breitem Kreuz",
+    "Remix-Orb + Kugel oder Remix-Orb: das ganze Brett wird geräumt"
+   ]
+  },
+  {
+   "t": "Hindernisse",
+   "list": [
+    "Transportkiste: Wird durch Matches daneben oder Spezialteile abgebaut (1–3 Lagen).",
+    "Frequenzmoos: Wächst auf einen Nachbarstein, wenn du in einem Zug kein Moos entfernst.",
+    "Rauschfeld: Liegt unter Steinen. Löse Steine auf dem Feld auf, um es zu entstören.",
+    "Kabelsalat: Hält einen Stein fest. Der Stein kann mitmatchen, dabei reißt eine Kabellage.",
+    "Sendesperre: Unzerstörbar. Verschwindet, sobald alle Schalter bzw. Generatoren aktiv sind.",
+    "Verstaubte Platte: Braucht 2–3 Treffer, dann ist die Platte freigelegt.",
+    "Röhrenverstärker: Lädt sich mit Treffern auf und zündet bei voller Ladung eine Bassexplosion.",
+    "Glasvitrine: Bricht nach 1–2 Treffern und gibt ein Plattenpaket frei.",
+    "Frequenzeis: Friert einen Stein ein. Nur Matches daneben oder Spezialteile tauen ihn auf.",
+    "Funkloch: Kein Feld. Steine fallen darüber hinweg.",
+    "Empfangsantenne: Nach genügend Treffern repariert, sendet dann einen Strahl durch ihre Reihe.",
+    "Signal-Portal: Was unten in den Eingang fällt, kommt oben am Ausgang heraus.",
+    "Störsender: Erzeugt alle paar Züge ein Rauschfeld, bis er zerstört ist.",
+    "Generator: Sammelt Energie aus Matches seiner Farbe daneben. Voll geladen ist er aktiv.",
+    "Schutzschild: Nur Matches der Schildfarbe daneben oder Spezialteile brechen es.",
+    "Rollende Platte: Rollt nach jedem Zug ein Feld weiter und kehrt an Hindernissen um.",
+    "Ketten-Schalter: Nur in der Reihenfolge 1, 2, 3 … auslösbar. Alle zusammen öffnen die Sendesperren.",
+    "Zielkassette: Kommt aus dem Kassettenspender. Bring sie ganz nach unten zum Ausgang.",
+    "Plattenpaket: Bring das Paket ganz nach unten zum Ausgang."
+   ]
+  },
+  {
+   "t": "Booster",
+   "p": [
+    "Booster liegen im Inventar. Zu Beginn hast du einige gratis (unter anderem 3 Königshämmer, je 2 Königspfeile, Kanonen, Narrenkappen und Raketen). Neue gibt es im Tagesbonus oder für Münzen im Shop. Ist ein Booster leer, bietet das Spiel direkt den Kauf an."
+   ],
+   "list": [
+    "🚀 Rakete: Eine Wellenrakete liegt zu Beginn auf dem Brett. Vor dem Level in der Vorschau wählen. Ab Level 4, Preis 300 Münzen.",
+    "💣 Bombe: Eine Bassbombe liegt zu Beginn auf dem Brett. Vor dem Level in der Vorschau wählen. Ab Level 8, Preis 400 Münzen.",
+    "🔮 Frequenzkugel: Eine Frequenzkugel liegt zu Beginn auf dem Brett. Vor dem Level in der Vorschau wählen. Ab Level 14, Preis 600 Münzen.",
+    "🔨 Königshammer: Zerschlägt einen Stein oder eine Hindernislage. Im Level unten antippen, dann das Zielfeld antippen (nochmal auf den Booster = abbrechen). Ab Level 3, Preis 250 Münzen.",
+    "🏹 Königspfeil: Fliegt durch eine komplette Reihe. Im Level unten antippen, dann das Zielfeld antippen (nochmal auf den Booster = abbrechen). Ab Level 6, Preis 350 Münzen.",
+    "💥 Kanone: Schießt durch eine komplette Spalte. Im Level unten antippen, dann das Zielfeld antippen (nochmal auf den Booster = abbrechen). Ab Level 10, Preis 350 Münzen.",
+    "🥁 Pauke: Ein Paukenschlag trifft eine 3×3-Fläche. Im Level unten antippen, dann das Zielfeld antippen (nochmal auf den Booster = abbrechen). Ab Level 12, Preis 450 Münzen.",
+    "🃏 Narrenkappe: Mischt alle beweglichen Steine neu. Wirkt sofort beim Antippen im Level. Ab Level 16, Preis 200 Münzen."
+   ]
+  },
+  {
+   "t": "Sterne, Münzen und Funkhaus",
+   "list": [
+    "Sterne: 1 Stern fürs Schaffen, 2 Sterne, wenn mindestens 12 Prozent der Züge übrig sind, 3 Sterne ab 30 Prozent. Hast du +5 Züge gekauft, gibt es nur 1 Stern. Gespeichert wird dein bestes Ergebnis.",
+    "Münzen gibt es nur fürs Spielen und im Tagesbonus (kein Echtgeld): 15 plus 10 pro Stern, +20 bei Spezial-Leveln, +60 bei Welt-Finalen und +25 beim ersten Schaffen eines Levels.",
+    "Funkhaus: Mit freien Sternen baust du Etage für Etage aus – Mischpult 20, Mikrofonkabine 40, Empfangshalle 40, Vinyl-Archiv 50, Liveshow-Bühne 50, Sendeantenne 55, Podcastraum 55, Open-Air-Bühne 60, Nachtstudio 60, VIP-Lounge 70 Sterne (zusammen 500). Jede Etage gehört zu einer Welt und lässt sich erst bauen, wenn du diese Welt erreicht hast und die Etage darunter steht.",
+    "Tagesbonus: 7 Tage in Folge immer besser – Tag 1: 100 Münzen, Tag 2: Königshammer, Tag 3: 150 Münzen, Tag 4: Narrenkappe, Tag 5: 200 Münzen, Tag 6: Pauke, Tag 7: 300 Münzen und Frequenzkugel. Lässt du einen Tag aus, beginnt die Serie von vorn."
+   ]
+  },
+  {
+   "t": "Bedienung",
+   "list": [
+    "Touch: Bauteil antippen und Nachbarfeld antippen oder in die Richtung wischen. Pause oben links, Booster unten; die Zurück-Taste öffnet die Pause.",
+    "Maus: Bauteil anklicken und Nachbarn anklicken oder hinziehen.",
+    "Tastatur: Pfeiltasten bewegen den Rahmen, Enter oder Leertaste wählt aus; mit einer Pfeiltaste in Richtung Nachbar wird getauscht. Esc (oder Rücktaste) öffnet die Pause bzw. schließt Fenster.",
+    "Controller: Steuerkreuz oder linker Stick bewegen den Rahmen, A wählt und tauscht, B entspricht Esc (Pause/Zurück), X wählt ebenfalls aus. In Menüs springt das Steuerkreuz zwischen den Knöpfen.",
+    "Pause: „↻ Neu starten“ beginnt das Level von vorn (der Versuch zählt als verloren)."
+   ]
+  },
+  {
+   "t": "Duell",
+   "p": [
+    "Im Duell spielen zwei abwechselnd auf demselben 8×8-Brett mit 6 Sorten: 👥 2 Spieler (ein Gerät), 🤖 Gegen KI (leicht) oder 🤖 Gegen KI (stark). Jeder hat 10 Züge; wer am Ende mehr Punkte hat, gewinnt. Ein Sieg gegen die KI bringt 30 Münzen; die Bilanz (Siege, Niederlagen, Unentschieden) wird gespeichert. Ein Online-Duell über zwei Geräte gibt es nicht."
+   ]
+  },
+  {
+   "t": "Speichern und Fortschritt",
+   "p": [
+    "Der Spielstand liegt auf deinem Gerät: freigeschaltete Level, Sterne, Bestwerte, Münzen, Booster, Funkhaus, Tagesbonus und Einstellungen. Alter Radio-Match-Fortschritt (Level 1–100) wurde automatisch übernommen. Beim ersten Betreten einer Welt gibt es eine kurze Zwischenszene mit RAY und Mira Mix, neue Mechaniken erklärt ein Tutorial – beides lässt sich überspringen.",
+    "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (Bereich unter ⚙️ Optionen) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+   ]
+  }
+ ],
+ "ratgeber": [
+  {
+   "t": "Tipps für Einsteiger",
+   "list": [
+    "Schau zuerst auf die Ziele oben und spiele gezielt dafür, nicht nur für Punkte.",
+    "Matche möglichst weit unten: Dann rutscht viel nach und es entstehen kostenlose Combos.",
+    "Warte nicht zu lange: Nach 7 Sekunden zeigt das Spiel einen möglichen Zug.",
+    "Nutze den Tagesbonus jeden Tag – am 7. Tag in Folge gibt es 300 Münzen und eine Frequenzkugel."
+   ]
+  },
+  {
+   "t": "Strategien für Fortgeschrittene",
+   "list": [
+    "Spezialteile vor einfachen Matches: Ein Vierer oder eine L-Form ist fast immer besser als ein normaler Dreier.",
+    "Spezialteile sammeln und miteinander tauschen statt einzeln zünden – Rakete + Bombe räumt drei Reihen und drei Spalten.",
+    "Bei Paket- und Kassetten-Zielen in der Spalte darunter matchen; Raketen senkrecht durch die Paketspalte sind ideal.",
+    "Funkdrohnen fliegen selbst zu wichtigen Zielen – perfekt für Hindernisse in Ecken.",
+    "Moos sofort angehen: Jeder Zug ohne Moos-Treffer lässt es wachsen.",
+    "Bei Generatoren und Schilden auf die Farbe achten: Nur Matches dieser Farbe daneben (oder Spezialteile) wirken."
+   ]
+  },
+  {
+   "t": "Profi-Tricks",
+   "list": [
+    "Kugel + Kugel oder Remix-Orb + Kugel räumen das ganze Brett – ideal für das letzte Hindernis-Ziel.",
+    "Kugel + Rakete verwandelt alle Teile einer Farbe in Raketen: Wähle die häufigste Farbe auf dem Brett.",
+    "Drei Sterne holst du, wenn bei Spielende noch mindestens 30 Prozent der Züge übrig sind. Ein Level mit 20 Zügen musst du also mit mindestens 6 Zügen Rest beenden.",
+    "Übrige Züge bringen je 120 Punkte – für Bestwerte lieber schnell gewinnen.",
+    "Kaufe +5 Züge nur, wenn nur noch wenig fehlt: Danach gibt es nur noch 1 Stern, und der zweite Kauf kostet 1200 Münzen.",
+    "Start-Booster (Rakete, Bombe, Frequenzkugel) lohnen sich vor allem bei Welt-Finalen und Spezial-Leveln, die auch mehr Münzen bringen."
+   ]
+  },
+  {
+   "t": "Häufige Fehler",
+   "list": [
+    "Oben am Brett matchen, obwohl die Ziele unten liegen.",
+    "Spezialteile zu früh und ohne Ziel zünden.",
+    "Bei Ketten-Schaltern die Reihenfolge vergessen – nur 1, dann 2, dann 3 … lassen sich auslösen.",
+    "Booster sparen, bis das Level verloren ist: Ein Königshammer auf das letzte Hindernis rettet oft den Versuch."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "So liest du die Level-Liste",
+   "p": [
+    "Für alle 200 Level stehen hier Zugzahl, Zahl der Bauteil-Sorten (weniger Sorten = mehr Matches), Besonderheit (Spezial, schwer, Welt-Finale) und die Ziele, die du erfüllen musst. „neu:“ zeigt, welche Mechanik in diesem Level mit einem kurzen Tutorial eingeführt wird. Jedes 10. Level ist ein Spezial-Level, jedes 20. ein Welt-Finale. Jedes Level ist nachweislich lösbar: Zu jedem Level gibt es einen gespeicherten Siegpfad, der in den Tests nachgespielt wird."
+   ]
+  },
+  {
+   "t": "Welt 1: Das erste Sendestudio (Level 1–20)",
+   "p": [
+    "Die Einsteigerwelt mit 4 bis 5 Bauteil-Sorten. Hier lernst du alle Spezialteile kennen. Level 10 ist das erste Spezial-Level (nur Spezialteile zählen): Suche gezielt nach Vierern, L/T-Formen und 2×2-Quadraten."
+   ],
+   "list": [
+    "Level 1 (12 Züge, 4 Sorten, leicht): 36 Kopfhörer – neu: Tauschen",
+    "Level 2 (12 Züge, 4 Sorten, leicht): 42 Schallplatten + 42 Sendetürme – neu: Wellenrakete",
+    "Level 3 (12 Züge, 4 Sorten, leicht): 7 Kisten – neu: Transportkiste",
+    "Level 4 (16 Züge, 4 Sorten, leicht): 33 Mikrofone – neu: Funkdrohne",
+    "Level 5 (19 Züge, 4 Sorten, leicht): 16 Kisten + 36 Sendetürme – neu: Bassbombe",
+    "Level 6 (17 Züge, 4 Sorten, leicht): 64 Schallplatten – neu: Frequenzkugel",
+    "Level 7 (15 Züge, 4 Sorten, schwer): 18 Rauschfelder – neu: Rauschfeld",
+    "Level 8 (15 Züge, 4 Sorten): 16 Kisten – neu: Kisten mit mehreren Lagen",
+    "Level 9 (15 Züge, 5 Sorten): 7 Kisten + 18 Equalizer",
+    "Level 10 (15 Züge, 5 Sorten, Spezial, schwer): 8 Spezialteile bauen – neu: Spezialteile-Mission",
+    "Level 11 (17 Züge, 5 Sorten): 20 Rauschfelder + 15 Schallplatten",
+    "Level 12 (35 Züge, 5 Sorten): 7 Kisten + 38 Kopfhörer",
+    "Level 13 (15 Züge, 5 Sorten, schwer): 13 Rauschfelder + 26 Mikrofone",
+    "Level 14 (19 Züge, 5 Sorten): 16 Kisten + 14 Schallplatten",
+    "Level 15 (24 Züge, 5 Sorten, schwer): 24 Rauschfelder + 38 Schallplatten – neu: Remix-Orb",
+    "Level 16 (20 Züge, 5 Sorten): 9 Kisten + 23 Kopfhörer",
+    "Level 17 (19 Züge, 5 Sorten, schwer): 24 Rauschfelder + 38 Kopfhörer",
+    "Level 18 (22 Züge, 5 Sorten): 13 Kisten + 14 Equalizer",
+    "Level 19 (15 Züge, 5 Sorten, schwer): 22 Rauschfelder + 22 Sendetürme",
+    "Level 20 (19 Züge, 5 Sorten, Welt-Finale): 6 Kisten + 16 Rauschfelder + 20 Schallplatten"
+   ]
+  },
+  {
+   "t": "Welt 2: Vinyl Lounge (Level 21–40)",
+   "p": [
+    "Verstaubte Platten brauchen mehrere Treffer, Glasvitrinen geben Plattenpakete frei. Pakete müssen ganz nach unten: Räume die Spalte unter dem Paket frei, dann rutscht es von selbst. Raketen in der Paketspalte helfen besonders."
+   ],
+   "list": [
+    "Level 21 (17 Züge, 5 Sorten): 1 Verstaubte Platte + 38 Schallplatten – neu: Verstaubte Platte",
+    "Level 22 (22 Züge, 5 Sorten): 6 Platten + 33 Schallplatten",
+    "Level 23 (25 Züge, 5 Sorten): 8 Platten + 38 Mikrofone",
+    "Level 24 (40 Züge, 5 Sorten): 3 Plattenpakete nach unten bringen – neu: Glasvitrine",
+    "Level 25 (25 Züge, 5 Sorten): 4 Plattenpakete nach unten bringen + 18 Kopfhörer",
+    "Level 26 (19 Züge, 5 Sorten): 8 Platten",
+    "Level 27 (19 Züge, 5 Sorten, schwer): 2 Plattenpakete nach unten bringen + 7 Kisten – neu: Plattenpaket",
+    "Level 28 (45 Züge, 5 Sorten): 4 Plattenpakete nach unten bringen",
+    "Level 29 (17 Züge, 5 Sorten): 32 Equalizer + 32 Kopfhörer",
+    "Level 30 (15 Züge, 5 Sorten, Spezial, schwer): Combo 4 erreichen + 2 Platten – neu: Combo-Mission",
+    "Level 31 (31 Züge, 5 Sorten): 3 Plattenpakete nach unten bringen + 6 Platten + 18 Schallplatten",
+    "Level 32 (36 Züge, 5 Sorten): 2 Plattenpakete nach unten bringen + 8 Kisten",
+    "Level 33 (22 Züge, 5 Sorten, schwer): 16 Platten",
+    "Level 34 (37 Züge, 5 Sorten): 4 Plattenpakete nach unten bringen + 15 Schallplatten",
+    "Level 35 (19 Züge, 5 Sorten, schwer): 8 Platten",
+    "Level 36 (22 Züge, 5 Sorten): 9 Rauschfelder + 38 Schallplatten",
+    "Level 37 (26 Züge, 5 Sorten, schwer): 4 Platten + 35 Sendetürme",
+    "Level 38 (45 Züge, 5 Sorten): 6 Plattenpakete nach unten bringen",
+    "Level 39 (23 Züge, 5 Sorten, schwer): 12 Platten + 9 Kisten",
+    "Level 40 (28 Züge, 5 Sorten, Welt-Finale): 4 Plattenpakete nach unten bringen + 8 Platten + 22 Equalizer"
+   ]
+  },
+  {
+   "t": "Welt 3: Frequenzgarten (Level 41–60)",
+   "p": [
+    "Frequenzmoos wächst in jedem Zug, in dem du kein Moos entfernst. Arbeite dich immer am Moos entlang. Level 50 ist eine reine Punkte-Mission – sammle Spezialteile und tausche sie miteinander."
+   ],
+   "list": [
+    "Level 41 (15 Züge, 5 Sorten): 3 Moos + 38 Schallplatten – neu: Frequenzmoos",
+    "Level 42 (18 Züge, 5 Sorten): 4 Moos + 38 Schallplatten",
+    "Level 43 (17 Züge, 5 Sorten): 28 Rauschfelder",
+    "Level 44 (20 Züge, 5 Sorten): 2 Moos + 10 Kisten + 38 Equalizer",
+    "Level 45 (20 Züge, 5 Sorten): 17 Rauschfelder + 38 Sendetürme",
+    "Level 46 (20 Züge, 5 Sorten): 6 Moos + 12 Rauschfelder",
+    "Level 47 (15 Züge, 5 Sorten, schwer): 2 Moos + 46 Equalizer",
+    "Level 48 (31 Züge, 5 Sorten): 16 Rauschfelder + 1 Transportkiste + 38 Mikrofone",
+    "Level 49 (17 Züge, 5 Sorten): 2 Platten",
+    "Level 50 (19 Züge, 5 Sorten, Spezial, schwer): 7.000 Punkte – neu: Punkte-Mission",
+    "Level 51 (26 Züge, 5 Sorten): 17 Rauschfelder + 20 Schallplatten",
+    "Level 52 (22 Züge, 5 Sorten): 8 Moos + 38 Kopfhörer",
+    "Level 53 (22 Züge, 5 Sorten, schwer): 36 Rauschfelder",
+    "Level 54 (36 Züge, 5 Sorten): 6 Moos + 97 Schallplatten",
+    "Level 55 (17 Züge, 5 Sorten, schwer): 24 Rauschfelder + 4 Kisten",
+    "Level 56 (15 Züge, 5 Sorten): 6 Moos + 38 Schallplatten",
+    "Level 57 (24 Züge, 5 Sorten, schwer): 20 Rauschfelder + 1 Frequenzmoos",
+    "Level 58 (20 Züge, 5 Sorten): 4 Moos + 12 Rauschfelder + 18 Mikrofone",
+    "Level 59 (36 Züge, 5 Sorten, schwer): 8 Moos + 51 Sendetürme",
+    "Level 60 (19 Züge, 5 Sorten, Welt-Finale): 9 Moos + 25 Rauschfelder + 38 Sendetürme"
+   ]
+  },
+  {
+   "t": "Welt 4: Die Mischpult-Werkstatt (Level 61–80)",
+   "p": [
+    "Viele neue Mechaniken: Kabelsalat, Ketten-Schalter (nur in der Reihenfolge 1, 2, 3), Röhrenverstärker, Generatoren (nur Matches ihrer Farbe daneben) und Sendesperren, die erst verschwinden, wenn alle Schalter oder Generatoren aktiv sind."
+   ],
+   "list": [
+    "Level 61 (19 Züge, 5 Sorten): 12 Kabel + 38 Schallplatten – neu: Kabelsalat",
+    "Level 62 (23 Züge, 5 Sorten): 10 Kabel + 61 Schallplatten",
+    "Level 63 (17 Züge, 5 Sorten): 10 Kabel",
+    "Level 64 (28 Züge, 5 Sorten): 2 Schalter + 55 Fader – neu: Ketten-Schalter",
+    "Level 65 (17 Züge, 5 Sorten): 3 Kisten + 18 Sendetürme – neu: Röhrenverstärker",
+    "Level 66 (22 Züge, 5 Sorten): 9 Kabel + 38 Schallplatten",
+    "Level 67 (28 Züge, 5 Sorten, schwer): 1 Generator + 70 Radios – neu: Generator",
+    "Level 68 (17 Züge, 5 Sorten): 6 Kabel",
+    "Level 69 (19 Züge, 5 Sorten): 4 Verstärker + 12 Rauschfelder",
+    "Level 70 (33 Züge, 5 Sorten, Spezial, schwer): 16 Spezialteile bauen + 12 Kabel + 38 Radios",
+    "Level 71 (27 Züge, 5 Sorten): 1 Generator + 38 Schallplatten – neu: Sendesperre",
+    "Level 72 (35 Züge, 5 Sorten): 27 Kabel",
+    "Level 73 (17 Züge, 5 Sorten, schwer): 4 Schalter + 2 Verstärker + 38 Fader",
+    "Level 74 (28 Züge, 5 Sorten): 4 Verstärker + 16 Kabel",
+    "Level 75 (19 Züge, 5 Sorten, schwer): 1 Generator + 2 Platten + 38 Sendetürme",
+    "Level 76 (17 Züge, 5 Sorten): 14 Kabel + 17 Radios",
+    "Level 77 (28 Züge, 5 Sorten, schwer): 5 Schalter + 12 Kabel",
+    "Level 78 (18 Züge, 5 Sorten): 2 Verstärker + 1 Generator",
+    "Level 79 (30 Züge, 5 Sorten, schwer): 20 Kabel + 4 Moos",
+    "Level 80 (24 Züge, 5 Sorten, Welt-Finale): 2 Verstärker + 8 Kabel"
+   ]
+  },
+  {
+   "t": "Welt 5: Antennenhöhe (Level 81–100)",
+   "p": [
+    "Funklöcher und Portale verändern, wie Steine fallen. Empfangsantennen senden nach der Reparatur einen Strahl durch ihre Reihe. Kassetten kommen aus dem Spender oben und müssen ganz nach unten – arbeite unten am Brett."
+   ],
+   "list": [
+    "Level 81 (17 Züge, 5 Sorten): 22 Kopfhörer + 8 Kisten – neu: Funklöcher",
+    "Level 82 (20 Züge, 5 Sorten): 42 Radios + 18 Rauschfelder – neu: Signal-Portal",
+    "Level 83 (27 Züge, 5 Sorten): 2 Antennen + 38 Mikrofone – neu: Empfangsantenne",
+    "Level 84 (28 Züge, 5 Sorten): 2 Antennen + 6 Kisten + 38 Equalizer",
+    "Level 85 (45 Züge, 5 Sorten): 2 Kassetten nach unten bringen – neu: Zielkassette",
+    "Level 86 (19 Züge, 5 Sorten): 46 Radios",
+    "Level 87 (28 Züge, 5 Sorten, schwer): 38 Fader + 38 Equalizer",
+    "Level 88 (45 Züge, 5 Sorten): 4 Kassetten nach unten bringen",
+    "Level 89 (17 Züge, 5 Sorten): 4 Antennen + 16 Rauschfelder + 38 Equalizer",
+    "Level 90 (16 Züge, 5 Sorten, Spezial, schwer): 10 Spezialteile bauen + 2 Antennen",
+    "Level 91 (40 Züge, 5 Sorten): 5 Kassetten nach unten bringen + 2 Antennen",
+    "Level 92 (27 Züge, 5 Sorten): 18 Rauschfelder + 46 Kopfhörer",
+    "Level 93 (17 Züge, 5 Sorten, schwer): 6 Antennen + 38 Mikrofone",
+    "Level 94 (36 Züge, 5 Sorten): 51 Mikrofone",
+    "Level 95 (33 Züge, 5 Sorten, schwer): 4 Kassetten nach unten bringen + 12 Rauschfelder",
+    "Level 96 (19 Züge, 5 Sorten): 4 Antennen + 38 Fader",
+    "Level 97 (21 Züge, 5 Sorten, schwer): 15 Rauschfelder + 26 Fader",
+    "Level 98 (42 Züge, 5 Sorten): 4 Antennen + 2 Kassetten nach unten bringen",
+    "Level 99 (29 Züge, 5 Sorten, schwer): 16 Kisten",
+    "Level 100 (45 Züge, 5 Sorten, Welt-Finale): 1 Empfangsantenne + 2 Kassetten nach unten bringen + 18 Rauschfelder"
+   ]
+  },
+  {
+   "t": "Welt 6: Elektronische Nacht (Level 101–120)",
+   "p": [
+    "Schutzschilde brechen nur durch Matches der Schildfarbe daneben oder durch Spezialteile. Der Störsender (6 Treffer) verteilt alle paar Züge Rauschen – zerstöre ihn so früh wie möglich."
+   ],
+   "list": [
+    "Level 101 (17 Züge, 5 Sorten): 3 Schilde + 38 Schallplatten – neu: Schutzschild",
+    "Level 102 (15 Züge, 5 Sorten): 30 Rauschfelder + 38 Kopfhörer",
+    "Level 103 (24 Züge, 5 Sorten): 7 Schilde + 32 Radios",
+    "Level 104 (34 Züge, 5 Sorten): 32 Rauschfelder + 4 Schilde",
+    "Level 105 (32 Züge, 5 Sorten): 8 Schilde",
+    "Level 106 (19 Züge, 5 Sorten): 26 Rauschfelder + 6 Kabel + 38 Schallplatten",
+    "Level 107 (29 Züge, 6 Sorten, schwer): 5 Schilde + 4 Kisten",
+    "Level 108 (20 Züge, 5 Sorten): 22 Rauschfelder + 24 Mikrofone",
+    "Level 109 (35 Züge, 5 Sorten): 8 Schilde + 1 Röhrenverstärker + 18 Radios",
+    "Level 110 (15 Züge, 6 Sorten, Spezial, schwer): Combo 5 erreichen + 9 Rauschfelder",
+    "Level 111 (28 Züge, 5 Sorten): 7 Schilde + 18 Rauschfelder",
+    "Level 112 (40 Züge, 5 Sorten): 54 Rauschfelder",
+    "Level 113 (21 Züge, 6 Sorten, schwer): 4 Moos + 18 Kopfhörer",
+    "Level 114 (38 Züge, 5 Sorten): 17 Rauschfelder + 4 Platten",
+    "Level 115 (15 Züge, 6 Sorten, schwer): 1 Störsender + 8 Rauschfelder + 18 Sendetürme – neu: Störsender",
+    "Level 116 (23 Züge, 5 Sorten): 10 Schilde + 24 Equalizer",
+    "Level 117 (45 Züge, 6 Sorten, schwer): 27 Rauschfelder + 12 Kabel",
+    "Level 118 (23 Züge, 5 Sorten): 6 Schilde",
+    "Level 119 (37 Züge, 6 Sorten, schwer): 1 Störsender + 8 Rauschfelder + 4 Kisten",
+    "Level 120 (20 Züge, 5 Sorten, Welt-Finale): 1 Störsender + 10 Rauschfelder + 8 Schilde"
+   ]
+  },
+  {
+   "t": "Welt 7: Senderwelt Festival (Level 121–140)",
+   "p": [
+    "Das Festival mischt Schalter, Sperren, Generatoren, Verstärker und Schilde. Erledige zuerst die Schalter bzw. Generatoren, damit die Sendesperren verschwinden und das Brett frei wird."
+   ],
+   "list": [
+    "Level 121 (31 Züge, 5 Sorten): 2 Schalter + 97 Kopfhörer",
+    "Level 122 (23 Züge, 5 Sorten): 2 Generatoren + 18 Equalizer",
+    "Level 123 (15 Züge, 5 Sorten): 5 Verstärker + 38 Mikrofone",
+    "Level 124 (24 Züge, 5 Sorten): 1 Plattenpaket nach unten bringen + 3 Schalter",
+    "Level 125 (22 Züge, 5 Sorten): 3 Generatoren",
+    "Level 126 (23 Züge, 5 Sorten): 4 Verstärker + 4 Schilde + 26 Schallplatten",
+    "Level 127 (16 Züge, 6 Sorten, schwer): 6 Rauschfelder",
+    "Level 128 (45 Züge, 5 Sorten): 2 Plattenpakete nach unten bringen",
+    "Level 129 (15 Züge, 5 Sorten): 6 Kabel + 38 Equalizer",
+    "Level 130 (22 Züge, 6 Sorten, Spezial, schwer): 9 Spezialteile bauen + 2 Verstärker",
+    "Level 131 (15 Züge, 5 Sorten): 5 Schalter + 38 Schallplatten",
+    "Level 132 (31 Züge, 5 Sorten): 4 Verstärker + 55 Mikrofone",
+    "Level 133 (32 Züge, 6 Sorten, schwer): 2 Generatoren + 6 Schilde",
+    "Level 134 (27 Züge, 5 Sorten): 3 Plattenpakete nach unten bringen + 2 Verstärker",
+    "Level 135 (32 Züge, 6 Sorten, schwer): 5 Schalter + 26 Schallplatten",
+    "Level 136 (19 Züge, 5 Sorten): 3 Verstärker + 38 Schallplatten",
+    "Level 137 (44 Züge, 6 Sorten, schwer): 2 Generatoren + 20 Rauschfelder",
+    "Level 138 (27 Züge, 5 Sorten): 2 Schalter + 22 Equalizer",
+    "Level 139 (31 Züge, 6 Sorten, schwer): 6 Verstärker + 4 Schilde",
+    "Level 140 (45 Züge, 6 Sorten, Welt-Finale): 2 Generatoren + 2 Verstärker + 18 Equalizer"
+   ]
+  },
+  {
+   "t": "Welt 8: Der Tiefbass-Tunnel (Level 141–160)",
+   "p": [
+    "Frequenzeis taut nur durch Matches direkt daneben oder Spezialteile. Rollende Platten wandern nach jedem Zug ein Feld weiter – triff sie, wenn sie in Reichweite deiner Matches sind."
+   ],
+   "list": [
+    "Level 141 (19 Züge, 5 Sorten): 18 Eisblöcke – neu: Frequenzeis",
+    "Level 142 (24 Züge, 5 Sorten): 9 Eisblöcke + 67 Schallplatten",
+    "Level 143 (35 Züge, 5 Sorten): 26 Eisblöcke",
+    "Level 144 (20 Züge, 5 Sorten): 2 Rollende Platten + 88 Mikrofone – neu: Rollende Platte",
+    "Level 145 (24 Züge, 5 Sorten): 16 Eisblöcke + 1 Rollende Platte",
+    "Level 146 (28 Züge, 5 Sorten): 23 Eisblöcke",
+    "Level 147 (16 Züge, 6 Sorten, schwer): 2 Rollende Platten + 12 Rauschfelder",
+    "Level 148 (23 Züge, 5 Sorten): 12 Eisblöcke",
+    "Level 149 (39 Züge, 5 Sorten): 26 Eisblöcke + 8 Kabel",
+    "Level 150 (26 Züge, 6 Sorten, Spezial, schwer): 9.000 Punkte + 6 Eisblöcke",
+    "Level 151 (45 Züge, 5 Sorten): 2 Rollende Platten + 15 Eisblöcke",
+    "Level 152 (17 Züge, 5 Sorten): 6 Eisblöcke + 24 Equalizer",
+    "Level 153 (23 Züge, 6 Sorten, schwer): 10 Eisblöcke",
+    "Level 154 (19 Züge, 5 Sorten): 2 Rollende Platten + 38 Equalizer",
+    "Level 155 (44 Züge, 6 Sorten, schwer): 10 Eisblöcke + 4 Moos",
+    "Level 156 (26 Züge, 5 Sorten): 18 Eisblöcke + 2 Rollende Platten",
+    "Level 157 (28 Züge, 6 Sorten, schwer): 16 Eisblöcke + 2 Verstärker",
+    "Level 158 (20 Züge, 5 Sorten): 2 Rollende Platten + 16 Eisblöcke + 32 Schallplatten",
+    "Level 159 (45 Züge, 6 Sorten, schwer): 14 Eisblöcke + 6 Kabel",
+    "Level 160 (25 Züge, 6 Sorten, Welt-Finale): 8 Eisblöcke + 2 Rollende Platten"
+   ]
+  },
+  {
+   "t": "Welt 9: Die Wolkenfrequenz (Level 161–180)",
+   "p": [
+    "Viele Pakete, Portale und gemischte Hindernisse in großen Leveln mit 21 bis 45 Zügen. Plane Lieferwege frei und nutze Drohnen, die selbst zu wichtigen Zielen fliegen."
+   ],
+   "list": [
+    "Level 161 (45 Züge, 5 Sorten): 4 Kassetten nach unten bringen + 18 Kopfhörer",
+    "Level 162 (27 Züge, 5 Sorten): 3 Plattenpakete nach unten bringen + 10 Rauschfelder",
+    "Level 163 (28 Züge, 5 Sorten): 4 Plattenpakete nach unten bringen + 6 Eisblöcke",
+    "Level 164 (45 Züge, 5 Sorten): 3 Kassetten nach unten bringen",
+    "Level 165 (45 Züge, 5 Sorten): 3 Plattenpakete nach unten bringen + 4 Antennen",
+    "Level 166 (42 Züge, 5 Sorten): 4 Plattenpakete nach unten bringen + 8 Kabel",
+    "Level 167 (33 Züge, 6 Sorten, schwer): 18 Eisblöcke + 2 Kassetten nach unten bringen",
+    "Level 168 (45 Züge, 5 Sorten): 4 Plattenpakete nach unten bringen + 4 Schilde",
+    "Level 169 (32 Züge, 5 Sorten): 2 Antennen + 7 Rauschfelder + 38 Radios",
+    "Level 170 (23 Züge, 6 Sorten, Spezial, schwer): Combo 5 erreichen + 4 Plattenpakete nach unten bringen",
+    "Level 171 (45 Züge, 5 Sorten): 3 Plattenpakete nach unten bringen + 20 Eisblöcke",
+    "Level 172 (30 Züge, 5 Sorten): 4 Kassetten nach unten bringen + 4 Moos",
+    "Level 173 (45 Züge, 6 Sorten, schwer): 30 Rauschfelder + 17 Kopfhörer",
+    "Level 174 (43 Züge, 5 Sorten): 2 Plattenpakete nach unten bringen + 1 Rollende Platte",
+    "Level 175 (45 Züge, 6 Sorten, schwer): 4 Plattenpakete nach unten bringen + 2 Verstärker",
+    "Level 176 (45 Züge, 5 Sorten): 3 Kassetten nach unten bringen + 4 Kabel",
+    "Level 177 (36 Züge, 6 Sorten, schwer): 2 Plattenpakete nach unten bringen + 10 Kisten",
+    "Level 178 (45 Züge, 5 Sorten): 2 Plattenpakete nach unten bringen + 2 Kassetten nach unten bringen + 4 Rauschfelder",
+    "Level 179 (21 Züge, 6 Sorten, schwer): 3 Antennen + 9 Eisblöcke",
+    "Level 180 (45 Züge, 6 Sorten, Welt-Finale): 3 Plattenpakete nach unten bringen + 10 Sendetürme"
+   ]
+  },
+  {
+   "t": "Welt 10: Royal Radio Tower (Level 181–200)",
+   "p": [
+    "Die letzte Welt vereint alle Hindernisse. Im Welt-Finale (Level 200) muss der Störsender fallen. Hebe Booster wie Königspfeil, Kanone und Pauke für die schwersten Level auf."
+   ],
+   "list": [
+    "Level 181 (19 Züge, 5 Sorten): 1 Störsender + 8 Rauschfelder + 4 Kisten",
+    "Level 182 (22 Züge, 5 Sorten): 6 Eisblöcke",
+    "Level 183 (23 Züge, 5 Sorten): 10 Schilde + 2 Verstärker",
+    "Level 184 (45 Züge, 5 Sorten): 3 Plattenpakete nach unten bringen + 4 Moos + 12 Rauschfelder",
+    "Level 185 (19 Züge, 5 Sorten): 1 Generator + 1 Frequenzeis + 38 Sendetürme",
+    "Level 186 (44 Züge, 5 Sorten): 4 Kassetten nach unten bringen + 5 Schilde",
+    "Level 187 (45 Züge, 6 Sorten, schwer): 1 Störsender + 8 Rauschfelder + 17 Kabel",
+    "Level 188 (27 Züge, 5 Sorten): 2 Rollende Platten + 4 Platten + 22 Sendetürme",
+    "Level 189 (17 Züge, 5 Sorten): 4 Antennen + 3 Plattenpakete nach unten bringen",
+    "Level 190 (19 Züge, 6 Sorten, Spezial, schwer): 10 Spezialteile bauen + 1 Störsender",
+    "Level 191 (31 Züge, 5 Sorten): 2 Schalter + 1 Plattenpaket nach unten bringen",
+    "Level 192 (43 Züge, 5 Sorten): 26 Eisblöcke",
+    "Level 193 (18 Züge, 6 Sorten, schwer): 1 Störsender + 10 Rauschfelder + 18 Sendetürme",
+    "Level 194 (32 Züge, 5 Sorten): 2 Generatoren + 3 Kassetten nach unten bringen",
+    "Level 195 (45 Züge, 6 Sorten, schwer): 9 Moos + 18 Eisblöcke + 12 Schallplatten",
+    "Level 196 (15 Züge, 5 Sorten): 1 Störsender + 10 Rauschfelder + 2 Rollende Platten",
+    "Level 197 (45 Züge, 6 Sorten, schwer): 5 Schalter + 3 Plattenpakete nach unten bringen",
+    "Level 198 (30 Züge, 5 Sorten): 2 Verstärker + 14 Eisblöcke + 12 Rauschfelder",
+    "Level 199 (45 Züge, 6 Sorten, schwer): 1 Störsender + 10 Rauschfelder + 1 Plattenpaket nach unten bringen + 10 Kabel",
+    "Level 200 (28 Züge, 6 Sorten, Welt-Finale): 1 Störsender + 12 Rauschfelder + 3 Eisblöcke + 24 Sendetürme"
+   ]
+  },
+  {
+   "t": "Die 10 Bonuslevel im Bonus-Studio",
+   "p": [
+    "Bonuslevel B1 wird nach Level 10 frei, danach alle 20 Level ein weiteres (B2 nach Level 30, B3 nach Level 50 … B10 nach Level 190). Bei Zeit-Leveln gibt es 3 Sterne, wenn noch mindestens 40 Prozent der Zeit übrig sind, 2 Sterne ab 20 Prozent. Belohnung: 30 Münzen plus 15 pro Stern."
+   ],
+   "list": [
+    "B1: 4.000 Punkte in 60 Sekunden",
+    "B2: Combo 4 erreichen in 15 Zügen",
+    "B3: 6 Spezialteile bauen in 15 Zügen",
+    "B4: 6.000 Punkte in 60 Sekunden",
+    "B5: Combo 5 erreichen in 15 Zügen",
+    "B6: 8 Spezialteile bauen in 15 Zügen",
+    "B7: 8.000 Punkte in 75 Sekunden",
+    "B8: Combo 6 erreichen in 15 Zügen",
+    "B9: 10 Spezialteile bauen in 15 Zügen",
+    "B10: 12.000 Punkte in 90 Sekunden"
+   ]
+  },
+  {
+   "t": "Freischaltungen",
+   "list": [
+    "Booster: Königshammer ab Level 3, Rakete (Start) ab 4, Königspfeil ab 6, Bombe (Start) ab 8, Kanone ab 10, Pauke ab 12, Frequenzkugel (Start) ab 14, Narrenkappe ab 16.",
+    "Welten: alle 20 Level eine neue Welt, beim ersten Betreten mit Zwischenszene.",
+    "Funkhaus-Etagen: je Welt eine neue Etage, bezahlt mit Sternen.",
+    "Bonuslevel: B1 nach Level 10, dann alle 20 Level ein weiteres."
+   ]
+  },
+  {
+   "t": "Wertung im Detail",
+   "list": [
+    "Jedes entfernte Bauteil bringt 20 Punkte, bei Combos mehr: In der zweiten Welle eines Zugs zählt es das 1,5-Fache, in der dritten das Doppelte usw.",
+    "Jeder Treffer auf ein Hindernis bringt 80 Punkte, jedes neu entstandene Spezialteil 40 Punkte.",
+    "Zugbonus beim Sieg: 120 Punkte pro übrigem Zug.",
+    "Sterne: 1 (geschafft), 2 (mindestens 12 Prozent Züge übrig), 3 (mindestens 30 Prozent übrig)."
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Ist mein Spielstand weg?",
+   "a": "Ohne Google-Anmeldung liegt der Spielstand nur lokal im Browser bzw. in der App; gelöschte Browserdaten oder privates Surfen löschen ihn. Hast du dich vorher mit „Mit Google speichern“ (Bereich unter ⚙️ Optionen) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät. Alter Radio-Match-Fortschritt (Level 1–100) wird beim ersten Start automatisch übernommen."
+  },
+  {
+   "q": "Das Spiel zeigt „3D-Grafik nicht verfügbar“.",
+   "a": "Aktualisiere den Browser, schalte die Hardware-Beschleunigung ein oder probiere ein anderes Gerät. Bei Ruckeln hilft unter Optionen die Grafik „Niedrig“ oder „Weniger Bewegung“."
+  },
+  {
+   "q": "Wie komme ich an Münzen?",
+   "a": "Nur durchs Spielen (Level, Bonuslevel, Duell-Siege gegen die KI) und im Tagesbonus. Es gibt kein Echtgeld und kein Energiesystem."
+  },
+  {
+   "q": "Gibt es ein Online-Duell?",
+   "a": "Nein. Das Duell läuft auf einem Gerät – zu zweit abwechselnd oder gegen die KI."
+  },
+  {
+   "q": "Warum zählt mein Tausch nicht?",
+   "a": "Ein Tausch ohne Match springt zurück und kostet keinen Zug. Festgehaltene Bauteile (z. B. unter Frequenzeis) lassen sich nicht bewegen."
+  },
+  {
+   "q": "Ich komme bei einem Level nicht weiter.",
+   "a": "Jedes Level ist lösbar. Schau in die Level-Liste im Lösungsbuch, baue Spezialteile und setze Booster gezielt auf die letzten Hindernisse ein."
+  }
+ ]
+}

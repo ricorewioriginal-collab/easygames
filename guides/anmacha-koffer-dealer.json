@@ -1,0 +1,205 @@
+{
+  "id": "anmacha-koffer-dealer",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AnMaCha Koffer DEALER ist eine Spielshow im 3D-Studio. Auf der Bühne stehen 13 Flightcases mit Sender-Logos, darin liegen 13 Beträge von 1 € bis 1.000.000 €. Du weißt nicht, welcher Betrag in welchem Koffer steckt.",
+        "Du suchst dir einen eigenen Koffer aus, öffnest Runde für Runde die anderen und bekommst vom Dealer per Funkspruch Geldangebote. Nimmst du ein Angebot an (DEAL), ist das dein Gewinn. Spielst du bis zum Ende, gewinnst du den Betrag in deinem eigenen Koffer. Ziel ist eine möglichst hohe Auszahlung – im Mehrspieler-Spiel mehr als die anderen."
+      ]
+    },
+    {
+      "t": "Die 13 Beträge",
+      "p": [
+        "Oben im Studio zeigt die Frequenzskala alle Beträge, die noch im Spiel sind. Geöffnete Beträge werden durchgestrichen und dunkel. Die drei großen Beträge ab 100.000 € leuchten pink. Beim Angebot zeigt eine rote Nadel, wo das Angebot auf der Skala liegt."
+      ],
+      "list": [
+        "1 € · 10 € · 50 € · 100 € · 250 € · 500 € · 1.000 €",
+        "5.000 € · 10.000 € · 25.000 €",
+        "100.000 € · 500.000 € · 1.000.000 €"
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "list": [
+        "SPIELFORM Solo: du allein, mit Tauschoption am Ende.",
+        "SPIELFORM Reihum: 2 bis 4 Spieler, jeder hat einen eigenen Koffer. Mit „+ Spieler“ fügst du Plätze hinzu, mit ✕ entfernst du sie wieder.",
+        "SPIELFORM Duell: 1 gegen 1.",
+        "DER DEALER: Freundlich (großzügige Angebote), Normal oder Gnadenlos (knallhart).",
+        "SPIELER: Namen eintragen (bis 14 Zeichen). Ein Tipp auf das Logo wählt ein anderes Sender-Shirt.",
+        "🌐 Online & Handys: Handys koppeln oder Mitspieler von woanders einladen.",
+        "SHOW STARTEN beginnt die Show (auch mit Enter). Solange das Studio lädt, steht dort „LADEN …“.",
+        "🔊 Ton und 🎙 Stimme: Musik/Geräusche an oder aus, und der Moderator und der Dealer lesen ihre Sätze mit der Sprachausgabe deines Geräts vor (nur wenn dein Gerät eine Sprachausgabe hat; anfangs aus).",
+        "💰 HÖCHSTE GEWINNE: die fünf besten Auszahlungen auf diesem Gerät."
+      ]
+    },
+    {
+      "t": "Ablauf einer Show",
+      "steps": [
+        "Moderator und Dealer begrüßen dich.",
+        "Jeder Spieler wählt nacheinander seinen eigenen Koffer. Er bekommt einen goldenen Rahmen und ★ mit deinem Namen und gehört dir bis zum Schluss.",
+        "Runde für Runde werden Koffer geöffnet: Runde 1 drei Koffer, Runde 2 drei, Runde 3 zwei, Runde 4 zwei, danach je einer. Bei mehreren Spielern öffnet ihr reihum.",
+        "Ein geöffneter Betrag bis 1.000 € ist gut („Raus damit!“), ab 100.000 € schlecht („Autsch – ein dicker Fisch ist weg“).",
+        "Nach jeder Runde bekommt jeder Spieler, der noch nicht gedealt hat, ein Angebot: DEAL! oder WEITER. Darunter steht der Durchschnitt der restlichen Werte.",
+        "Einmal pro Angebot darfst du handeln: +10 %, +25 % oder +50 %.",
+        "Am Ende werden die eigenen Koffer aufgedeckt. Hast du gedealt, siehst du, ob es „Gute Wahl!“ oder „Verdealt!“ war.",
+        "Die Ergebnisliste zeigt alle Auszahlungen. NOCHMAL startet eine neue Show, Hauptmenü führt zurück."
+      ]
+    },
+    {
+      "t": "Spielformen im Detail",
+      "list": [
+        "Solo: Neben deinem Koffer gibt es 12 weitere. Du spielst 5 Runden (3, 3, 2, 2 und 1 Koffer) und bekommst 5 Angebote. Bleiben nur noch dein Koffer und einer auf der Bühne, heißt der letzte Knopf „WEITER (Tausch)“ – lehnst du ab, darfst du deinen Koffer gegen den letzten tauschen (TAUSCHEN) oder behalten (BEHALTEN).",
+        "Reihum und Duell: Es werden alle Koffer geöffnet, bis keiner mehr zu ist. Wer gedealt hat, ist raus aus dem Öffnen, die anderen spielen weiter. Einen Tausch gibt es hier nicht. Am Ende gewinnt, wer die höchste Auszahlung hat (Deal-Betrag oder Inhalt des eigenen Koffers).",
+        "Koppelt sich in Solo ein zweites Handy, wechselt das Spiel automatisch zu Reihum; ab drei Spielern wird aus Duell ebenfalls Reihum."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Maus/Touch: Koffer im 3D-Studio antippen oder unten in der Kofferleiste (Nummern 1–13) wählen. Angebote mit den Knöpfen DEAL!, WEITER und den Handeln-Knöpfen beantworten.",
+        "Tastatur beim Angebot: D oder Enter = DEAL, W oder N = WEITER.",
+        "Tastatur bei der Tauschfrage: T = TAUSCHEN, B = BEHALTEN.",
+        "P oder Esc = Pause (WEITER oder Spiel beenden), M = Ton an/aus, Enter im Menü = Show starten.",
+        "☰ oben links öffnet die Pause, 🎙 schaltet die Stimme, 🔊 den Ton.",
+        "Controller: Das Steuerkreuz springt zwischen den Knöpfen, A drückt den markierten Knopf. B oder Start = Pause, Select = Ton. Achtung: A wirkt zugleich wie Enter – während eines Angebots bedeutet das DEAL.",
+        "Gekoppeltes Handy: Wer dran ist, sieht „🎯 DU BIST DRAN“, die Koffer als Raster, die Werteskala und beim Angebot die Knöpfe DEAL!, WEITER und Handeln. Wer nicht dran ist, sieht, wer gerade entscheidet."
+      ]
+    },
+    {
+      "t": "Online und Handys",
+      "steps": [
+        "Tippe im Hauptmenü auf 🌐 Online & Handys. Das Spiel zeigt einen QR-Code, einen 4-stelligen Code und einen Link.",
+        "Mitspieler scannen den QR-Code oder öffnen den Link – das klappt auch von überall, im Browser, in der App oder auf einem anderen Gerät.",
+        "Auf dem Handy Namen eingeben und mit einem Tipp auf das Logo das Sender-Shirt wählen. Danach steht dort „Du bist dabei! 🎉“.",
+        "Bis zu 4 Spieler sind möglich, auch gemischt: ein Teil spielt am Hauptbildschirm, ein Teil am Handy. Jeder Spieler entscheidet nur auf seinem eigenen Gerät.",
+        "Mit FERTIG zurück ins Menü und SHOW STARTEN. Läuft die Show schon, kann niemand mehr beitreten („bitte nach der Runde beitreten“)."
+      ]
+    },
+    {
+      "t": "Speichern",
+      "p": [
+        "Das Spiel merkt sich auf diesem Gerät Spielform, Dealer, Spielernamen, Sender-Shirts, Ton- und Stimme-Einstellung sowie die Liste der höchsten Gewinne (bis zu 10 Einträge, im Menü stehen die besten fünf). Eine einzelne Show wird nicht zwischengespeichert – brichst du ab, beginnt die nächste neu.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Schau beim Angebot auf die Zeile „Ø der restlichen Werte“. Das ist der Durchschnitt aller noch geschlossenen Koffer, dein eigener zählt mit.",
+        "Frühe Angebote sind schwach: In Runde 1 bietet der Dealer nur rund ein Fünftel des Durchschnitts. Ein Deal lohnt sich am Anfang fast nie.",
+        "Welchen Koffer du nimmst, ist reines Glück – die Beträge werden jedes Mal neu gemischt. Nummer und Logo verraten nichts.",
+        "Starte mit dem Dealer Freundlich, um ein Gefühl für die Angebote zu bekommen."
+      ]
+    },
+    {
+      "t": "Wie der Dealer rechnet",
+      "p": [
+        "Das Angebot ist ein Anteil vom Durchschnitt der restlichen Werte, mit einer kleinen Zufallsschwankung von etwa ±6 %, und wird auf glatte Beträge gerundet. Der Anteil wächst mit jeder Runde:"
+      ],
+      "list": [
+        "Runde 1: 20 % · Runde 2: 32 % · Runde 3: 46 % · Runde 4: 60 % · Runde 5: 74 % · Runde 6: 86 % · ab Runde 7: 94 % (bei Dealer Normal).",
+        "Dealer Freundlich legt 15 % drauf, Gnadenlos zieht 12 % ab.",
+        "Mehr als etwa 102 % des Durchschnitts bietet der Dealer nie (vor dem Handeln)."
+      ]
+    },
+    {
+      "t": "Handeln – deine Chancen",
+      "p": [
+        "Du kannst pro Angebot einmal handeln. Klappt es, steigt das Angebot um den gewählten Prozentsatz („Letztes Wort“) und du entscheidest erneut DEAL oder WEITER. Lehnt der Dealer ab („Abgelehnt!“), ist das Angebot weg und es geht automatisch weiter. Ungefähre Erfolgschancen laut Spiellogik:"
+      ],
+      "list": [
+        "Freundlich: +10 % etwa 75 %, +25 % etwa 53 %, +50 % etwa 26 %.",
+        "Normal: +10 % etwa 70 %, +25 % etwa 44 %, +50 % etwa 11 %.",
+        "Gnadenlos: +10 % etwa 62 %, +25 % etwa 29 %, +50 % klappt nie."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Solange noch zwei oder drei Beträge ab 100.000 € auf der Skala sind, ist WEITER meist die bessere Wahl – der Durchschnitt bleibt hoch und die späteren Angebote werden deutlich besser.",
+        "Sind die großen Beträge weg, sinkt der Durchschnitt stark. Dann ist ein solides Angebot in Runde 4 oder 5 oft die beste Lösung.",
+        "Handeln nur, wenn du das Angebot auch ohne Aufschlag annehmen würdest – wer verliert, bekommt kein Angebot mehr in dieser Runde.",
+        "Im Mehrspieler-Spiel zählt nur der Vergleich: Liegt ein Mitspieler mit einem Deal schon vorn, musst du eventuell mehr riskieren."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Gleich in Runde 1 oder 2 dealen – dort sind die Angebote am schlechtesten.",
+        "Bei Gnadenlos auf +50 % handeln: Das lehnt der Dealer immer ab.",
+        "Am Controller auf A drücken, während ein Angebot läuft, obwohl man WEITER wollte – A zählt wie Enter und damit als DEAL.",
+        "Glauben, der Tausch am Ende sei besser oder schlechter: Beide Koffer sind gleich wahrscheinlich der höhere."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Solo – Runde für Runde",
+      "list": [
+        "Runde 1: 3 Koffer öffnen, Angebot mit 20 % vom Durchschnitt (Normal). Fast immer WEITER.",
+        "Runde 2: 3 Koffer öffnen, Angebot 32 %. Meist WEITER.",
+        "Runde 3: 2 Koffer öffnen, Angebot 46 %. WEITER, außer alle großen Beträge sind schon weg.",
+        "Runde 4: 2 Koffer öffnen, Angebot 60 %. Jetzt genau rechnen: Liegen noch zwei hohe Beträge im Spiel, ist WEITER spannend; sonst dealen.",
+        "Runde 5: 1 Koffer öffnen, nur noch dein Koffer und einer bleiben. Angebot 74 % des Durchschnitts dieser beiden. WEITER (Tausch) führt zur Tauschfrage.",
+        "Tauschfrage: TAUSCHEN oder BEHALTEN ist ein echter Münzwurf – beide Koffer sind gleich wahrscheinlich."
+      ]
+    },
+    {
+      "t": "Beste Strategie nach Lage",
+      "list": [
+        "Sicherer Spieler: Ab Runde 4 dealen, wenn das Angebot über dem drittgrößten noch offenen Betrag liegt.",
+        "Jackpot-Jäger: Bis zum Schluss spielen, wenn 1.000.000 € noch im Spiel ist. Das Risiko: Du endest mit dem kleineren der beiden letzten Beträge.",
+        "Handeln lohnt sich bei Freundlich und Normal vor allem mit +10 % – das klappt in etwa 70 bis 75 % der Fälle.",
+        "Mehrspieler: Wer früh dealt, steigt aus dem Öffnen aus und die anderen bekommen weitere Angebote. Ein mittlerer Deal reicht oft, wenn die anderen hohes Risiko gehen."
+      ]
+    },
+    {
+      "t": "Reihum und Duell",
+      "p": [
+        "Mit zwei Spielern bleiben nach den eigenen Koffern 11 Koffer. Runde 1 öffnet 3, Runde 2 öffnet 3, Runde 3 öffnet 2, Runde 4 öffnet 2 und Runde 5 den letzten – danach gibt es kein Angebot mehr, sondern sofort das Aufdecken. Mit zwei Spielern bekommt jeder also höchstens 4 Angebote. Bei mehr Spielern ist schneller Schluss, weil weniger Koffer übrig bleiben.",
+        "Die Siegerehrung zeigt für jeden: Deal-Betrag und den tatsächlichen Inhalt des eigenen Koffers oder „Koffer behalten“."
+      ]
+    },
+    {
+      "t": "Meldungen und Besonderheiten",
+      "list": [
+        "„Jackpot!“: Dein eigener Koffer enthält 100.000 € oder mehr.",
+        "„Ordentlich!“: 5.000 € bis 25.000 € im eigenen Koffer.",
+        "„Hätte besser laufen können“: weniger als 5.000 €.",
+        "„💰 DICKER GEWINN!“ als Titel im Solo-Ergebnis ab 100.000 € Auszahlung.",
+        "„Gute Wahl!“ nach einem Deal, wenn dein Koffer weniger oder gleich viel enthielt; „Verdealt!“, wenn mehr drin war.",
+        "Auch nach einem Deal wird dein Koffer am Ende geöffnet – so siehst du, ob sich der Deal gelohnt hat.",
+        "In die Liste HÖCHSTE GEWINNE kommen alle Auszahlungen über 0 €."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Das Studio lädt nicht („LADEN …“ bleibt stehen).",
+      "a": "Das 3D-Studio braucht beim ersten Laden Internet. Erscheint „Das Studio konnte nicht geladen werden“, prüfe die Verbindung und lade neu."
+    },
+    {
+      "q": "Online oder Handy koppeln klappt nicht.",
+      "a": "Für das Koppeln braucht jedes Gerät Internet. Steht dort „Koppeln nicht möglich (Internet?)“ oder „nicht gefunden. Läuft das Spiel noch?“, öffne Online & Handys am Hauptbildschirm neu und scanne den neuen Code. Während eine Show läuft, kann niemand beitreten."
+    },
+    {
+      "q": "Warum kann ich keinen Koffer antippen?",
+      "a": "Dann ist ein anderer Spieler dran – oder der Spieler am Zug ist mit einem Handy gekoppelt und wählt dort („📱 … wählt am Handy …“)."
+    },
+    {
+      "q": "Die Stimme spricht nicht.",
+      "a": "Schalte im Menü oder oben mit 🎙 die Stimme ein und den Ton an. Der Knopf erscheint nur, wenn dein Browser eine Sprachausgabe hat; eine deutsche Stimme wird bevorzugt."
+    },
+    {
+      "q": "Kann ich am Ende immer tauschen?",
+      "a": "Nein, nur in Solo, wenn du bis zum Schluss ohne Deal spielst. In Reihum und Duell gibt es keinen Tausch."
+    },
+    {
+      "q": "Wo sind meine Rekorde?",
+      "a": "Die höchsten Gewinne werden in diesem Browser gespeichert. Ohne Google-Anmeldung ist die Liste nach dem Löschen der Browserdaten oder auf einem anderen Gerät leer. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+    }
+  ]
+}

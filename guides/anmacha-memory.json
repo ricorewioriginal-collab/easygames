@@ -1,0 +1,198 @@
+{
+  "id": "anmacha-memory",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AnMaCha Memory ist das klassische Paare-Suchen mit den Logos der Sender aus dem RicoReWi-Netzwerk – von RicoReWi Music & Media, YourTime-FM, RapRadio 24 und SchlagerPop 24 über RadioFloh!, Zocker-FM und AnMaChaCast bis SenderWelt und RicoReWi Radioportal. Insgesamt gibt es 16 Logos, also bis zu 16 Paare.",
+        "Du deckst immer zwei verdeckte Karten auf. Zeigen beide dasselbe Logo, bleiben sie offen und du bekommst Punkte. Sonst drehen sie sich wieder um. Ziel ist es, alle Paare mit möglichst wenigen Zügen und möglichst schnell zu finden."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "p": [
+        "Beim Start lädt das Spiel zuerst die Logos („Logos werden geladen …“). Danach steht unter dem Spielen-Knopf, wie viele Logos geladen wurden und wie viele Paare damit möglich sind. Erst dann wird der Knopf SPIELEN aktiv."
+      ],
+      "list": [
+        "🏁 Kampagne: 10 Level hintereinander. Jedes Level-Feld zeigt deine Sterne (★/☆) oder ein 🔒, solange es noch gesperrt ist. Fährst du mit der Maus darüber, siehst du Paare, Mischer und Zeitlimit.",
+        "🎯 Freies Spiel: Du wählst selbst die Zahl der PAARE (4, 6, 8, 10, 12, 14 oder 16), die SPIELER (1 Spieler oder ⚔ Duell) und den MISCHER (Aus, Leicht, Mittel, Schwer).",
+        "SPIELEN startet die Auswahl. In der Kampagne ist automatisch das höchste freigeschaltete Level gewählt, du kannst aber jedes freie Level antippen.",
+        "← Alle Spiele führt zurück zur Spieleübersicht (in eingebetteten Seiten ausgeblendet)."
+      ]
+    },
+    {
+      "t": "Regeln und Spielablauf",
+      "list": [
+        "Ein Zug besteht aus zwei aufgedeckten Karten. Die Anzeige ZÜGE oben zählt jeden Zug.",
+        "Treffer: Die beiden Karten leuchten kurz auf, bleiben aufgedeckt und verschwinden dann aus dem Spiel. Oben erscheint der Name des Senders mit den Punkten.",
+        "Fehlzug: Beide Karten färben sich rot und drehen sich nach knapp einer Sekunde wieder um. Tippst du schon vorher eine neue Karte an, werden die beiden sofort zugedeckt – so geht es schneller weiter.",
+        "Die Zeit (ZEIT) läuft erst ab der ersten aufgedeckten Karte. In Leveln mit Zeitlimit heißt die Anzeige REST und zählt herunter.",
+        "Läuft das Zeitlimit ab, ist das Level verloren („ZEIT ABGELAUFEN“) und du siehst, wie viele Paare du gefunden hast.",
+        "Der Mischer: In Leveln oder Einstellungen mit Mischer tauschen nach einer bestimmten Zahl von Fehlzügen alle verdeckten Karten ihre Plätze („🔀 MISCHER! Die Karten wechseln die Plätze“). Bereits gefundene Paare bleiben, wo sie sind. Gemischt wird erst, wenn noch mindestens drei verdeckte Karten übrig sind."
+      ]
+    },
+    {
+      "t": "Punkte, Combo und Zeitbonus",
+      "list": [
+        "Jeder Treffer bringt 100 Punkte mal Combo-Stufe: 1. Treffer in Folge 100, 2. Treffer 200, 3. Treffer 300, 4. Treffer 400, ab dem 5. Treffer in Folge immer 500 Punkte.",
+        "Ab zwei Treffern in Folge zeigt das Spiel „🔥 x2 COMBO“ (höchstens x5). Ein Fehlzug setzt die Combo auf null zurück.",
+        "Zeitbonus beim Gewinnen (nicht im Duell): Für jede Sekunde unter Paare × 8 Sekunden gibt es 5 Punkte. Beispiel 8 Paare: Zielzeit 64 Sekunden – schaffst du es in 40 Sekunden, bekommst du 24 × 5 = 120 Bonuspunkte.",
+        "Hinweis 👁: zeigt für gut eine Sekunde alle noch verdeckten Karten, kostet aber 150 Punkte (der Punktestand fällt nie unter 0). Du hast 3 Hinweise pro Runde, im Duell gibt es keine. Der Hinweis geht nur, wenn gerade keine Karte offen liegt."
+      ]
+    },
+    {
+      "t": "Sterne",
+      "p": [
+        "Die Sterne hängen nur von den Zügen ab, nicht von Punkten oder Zeit. Das Spiel teilt deine Züge durch die Zahl der Paare: bis 1,6 Züge pro Paar gibt es 3 Sterne (Titel „PERFEKT! 🏆“), bis 2,4 Züge pro Paar 2 Sterne, darüber 1 Stern („GESCHAFFT!“). Eine genaue Tabelle pro Level steht im Lösungsbuch."
+      ]
+    },
+    {
+      "t": "Duell zu zweit",
+      "p": [
+        "Im Freien Spiel kannst du mit ⚔ Duell zu zweit an einem Gerät spielen. Oben siehst du Spieler 1 und Spieler 2 mit der Zahl ihrer Paare; der aktive Spieler ist hervorgehoben.",
+        "Wer ein Paar findet, darf weitermachen. Nach einem Fehlzug ist der andere Spieler dran. Am Ende gewinnt, wer mehr Paare hat („SPIELER 1 GEWINNT! 🏆“), bei Gleichstand heißt es „UNENTSCHIEDEN!“. Im Duell gibt es keinen Zeitbonus, keine Hinweise und keinen gespeicherten Bestwert."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch: Karten antippen. Oben links ☰ öffnet die Pause, rechts 👁 Hinweis, ⏸ Pause und 🔊/🔇 Ton.",
+        "PC: Karten mit der Maus anklicken. P oder Esc schaltet Pause an und aus, M schaltet den Ton an oder aus.",
+        "Controller: Das Steuerkreuz springt zwischen den Knöpfen und Karten (Leuchtrahmen), A klickt. Mit dem rechten Stick steuerst du einen Mauszeiger, A klickt dann dort. Start (wie P) pausiert, B (wie Esc) ebenfalls, Select (wie M) schaltet den Ton."
+      ]
+    },
+    {
+      "t": "Pause, Ergebnis und Speichern",
+      "list": [
+        "In der Pause sind die Karten unsichtbar – Schummeln geht also nicht. Wechselst du den Tab oder die App, pausiert das Spiel automatisch.",
+        "Im Pausenmenü: WEITER, ↻ Neu starten oder Hauptmenü.",
+        "Nach dem Sieg zeigt der Ergebnisschirm Sterne, Zeit, Züge und Punkte. Der Knopf NÄCHSTES LEVEL (Kampagne) oder NOCHMAL, dazu ↻ Nochmal und Hauptmenü.",
+        "Gespeichert werden auf dem Gerät: dein Kampagnen-Fortschritt, die besten Sterne je Level, der Bestwert (Punkte) je Kampagnen-Level und je Paaranzahl im Freien Spiel sowie die Ton-Einstellung. Ein neuer Bestwert wird mit „🏆 Neuer Bestwert!“ gemeldet.",
+        "Über den runden Google-Knopf unten links kannst du dich anmelden und den Spielstand zusätzlich in deinem Google-Konto sichern und auf anderen Geräten wiederherstellen."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Beginne mit Level 1 (4 Paare) oder im Freien Spiel mit wenigen Paaren und ohne Mischer.",
+        "Merke dir jede Karte, die du siehst – auch die der Fehlzüge. Gerade die Fehlzüge sind deine wichtigste Information.",
+        "Sag dir die Sendernamen im Kopf vor („Rock oben links, Floh Mitte“). Namen und Plätze merkt man sich leichter als Bilder.",
+        "Hetz dich nicht: Die Sterne zählen nur Züge, nicht die Zeit. Nur in den Leveln 6, 8, 9 und 10 gibt es ein Zeitlimit."
+      ]
+    },
+    {
+      "t": "Strategie für wenige Züge",
+      "list": [
+        "Deck als erste Karte eines Zuges immer eine unbekannte Karte auf. Kennst du ihr Gegenstück schon, nimm es als zweite Karte – sicherer Treffer.",
+        "Kennst du das Gegenstück noch nicht, deck als zweite Karte ebenfalls eine unbekannte auf. So lernst du pro Zug zwei neue Karten statt nur einer.",
+        "Kennst du schon beide Karten eines Paares, räum es sofort ab, bevor du sie vergisst – und bevor der Mischer zuschlägt.",
+        "Arbeite das Feld systematisch ab, etwa Reihe für Reihe. Das hilft dem Gedächtnis mehr als wildes Herumtippen."
+      ]
+    },
+    {
+      "t": "Punkte holen mit Combos",
+      "list": [
+        "Combos bringen viel: Fünf Treffer hintereinander sind 100 + 200 + 300 + 400 + 500 = 1500 Punkte, fünf einzelne Treffer nur 500.",
+        "Sammle deshalb lieber erst Wissen und räume dann mehrere sichere Paare direkt nacheinander ab.",
+        "Ein Hinweis kostet 150 Punkte, kann sich aber lohnen, wenn du danach viele Paare am Stück abräumst und dadurch weniger Züge brauchst.",
+        "Der Zeitbonus ist 5 Punkte pro Sekunde unter Paare × 8 Sekunden. Schnelles Antippen lohnt sich: Ein neuer Klick während eines Fehlzugs deckt die falschen Karten sofort zu."
+      ]
+    },
+    {
+      "t": "Mischer und Zeitlimit meistern",
+      "list": [
+        "Zähle deine Fehlzüge mit. Weißt du, dass der Mischer nach dem nächsten Fehlzug kommt, räume vorher alle Paare ab, die du sicher kennst.",
+        "Nach dem Mischen ist dein Wissen über die verdeckten Karten wertlos – fang mit dem Merken von vorn an.",
+        "Gefundene Paare werden nie gemischt. Je weniger verdeckte Karten übrig sind, desto weniger Schaden richtet der Mischer an.",
+        "Bei Zeitlimit lieber ein bis zwei Hinweise einsetzen als zu raten: Ein Hinweis kostet nur Punkte, kein Leben."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Eine bekannte Karte als erste Karte aufdecken – damit verschenkst du die Chance, eine neue Karte kennenzulernen.",
+        "Den Hinweis zu früh verschwenden: Am Anfang sind alle Karten unbekannt, aber du kannst sie dir in 1,3 Sekunden kaum alle merken. Mitten im Spiel, wenn nur noch wenige Karten übrig sind, hilft er mehr.",
+        "Im Duell kurz vor Schluss raten: Ein Fehlzug gibt dem Gegner die Chance, mit deinem Wissen abzuräumen."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Kampagne Level für Level",
+      "list": [
+        "Level 1: 4 Paare, kein Mischer, kein Zeitlimit. 3 Sterne bis 6 Züge, 2 Sterne bis 9 Züge.",
+        "Level 2: 6 Paare. 3 Sterne bis 9 Züge, 2 Sterne bis 14 Züge.",
+        "Level 3: 8 Paare. 3 Sterne bis 12 Züge, 2 Sterne bis 19 Züge.",
+        "Level 4: 8 Paare, Mischer nach jedem 6. Fehlzug. 3 Sterne bis 12 Züge, 2 Sterne bis 19 Züge.",
+        "Level 5: 10 Paare. 3 Sterne bis 16 Züge, 2 Sterne bis 24 Züge.",
+        "Level 6: 10 Paare, Mischer nach jedem 5. Fehlzug, Zeitlimit 80 Sekunden. 3 Sterne bis 16 Züge, 2 Sterne bis 24 Züge.",
+        "Level 7: 12 Paare, Mischer nach jedem 5. Fehlzug. 3 Sterne bis 19 Züge, 2 Sterne bis 28 Züge.",
+        "Level 8: 12 Paare, Mischer nach jedem 4. Fehlzug, Zeitlimit 80 Sekunden. 3 Sterne bis 19 Züge, 2 Sterne bis 28 Züge.",
+        "Level 9: 14 Paare, Mischer nach jedem 4. Fehlzug, Zeitlimit 90 Sekunden. 3 Sterne bis 22 Züge, 2 Sterne bis 33 Züge.",
+        "Level 10: 16 Paare (alle Logos), Mischer nach jedem 3. Fehlzug, Zeitlimit 100 Sekunden. 3 Sterne bis 25 Züge, 2 Sterne bis 38 Züge."
+      ],
+      "p": [
+        "Jedes geschaffte Level schaltet das nächste frei – auch mit nur einem Stern. Wer Level 10 schafft, liest „Alle 10 Level geschafft – du bist Memory-Champion!“. Die Sterne eines Levels kannst du jederzeit durch Wiederholen verbessern; gespeichert wird immer das beste Ergebnis."
+      ]
+    },
+    {
+      "t": "Die schweren Level 8 bis 10",
+      "steps": [
+        "Spiel die ersten Züge ruhig und deck nur neue Karten auf, bis du mehrere Paare sicher kennst.",
+        "Zähl die Fehlzüge mit: In Level 8 und 9 mischt das Spiel nach jedem 4., in Level 10 nach jedem 3. Fehlzug.",
+        "Räum vor dem drohenden Mischer alle bekannten Paare in einer Combo ab – das bringt Punkte und verkleinert das Feld.",
+        "Behalte die REST-Anzeige im Blick: Level 10 hat 100 Sekunden für 16 Paare, also gut 6 Sekunden pro Paar. Tipp nach einem Fehlzug sofort weiter, statt das Zudecken abzuwarten.",
+        "Setze die drei Hinweise ein, wenn nach einem Mischer noch viele Karten verdeckt sind und die Zeit knapp wird."
+      ]
+    },
+    {
+      "t": "Höchstpunkte und Bestwerte",
+      "list": [
+        "Maximale Treffer-Punkte erreichst du, wenn du nach der Erkundung alle restlichen Paare in einer einzigen Serie abräumst – ab dem 5. Treffer in Folge zählt jeder Treffer 500.",
+        "Keinen Hinweis nehmen: Jeder kostet 150 Punkte.",
+        "Schnell spielen: Unter der Zielzeit Paare × 8 Sekunden gibt es 5 Punkte pro gesparter Sekunde (bei 16 Paaren also bis zu 128 Sekunden × 5).",
+        "Bestwerte werden getrennt gespeichert: je Kampagnen-Level und im Freien Spiel je Paaranzahl (Einzelspieler). Mischer-Einstellung und Spielerzahl spielen für den Freispiel-Bestwert keine Rolle, im Duell wird aber keiner gespeichert."
+      ]
+    },
+    {
+      "t": "Freies Spiel: Mischer-Stufen",
+      "list": [
+        "Aus: kein Mischen.",
+        "Leicht: nach jedem 6. Fehlzug.",
+        "Mittel: nach jedem 4. Fehlzug.",
+        "Schwer: nach jedem 3. Fehlzug."
+      ],
+      "p": [
+        "Für ein faires Duell empfiehlt sich Mischer Aus oder Leicht. Für eine echte Gedächtnisprobe nimm 16 Paare mit Mischer Schwer."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Warum ist ein Level gesperrt?",
+      "a": "Level werden nacheinander freigeschaltet. Schaffe das vorherige Level, egal mit wie vielen Sternen."
+    },
+    {
+      "q": "Mein Fortschritt ist weg – was ist passiert?",
+      "a": "Der Spielstand liegt im Browser des Geräts. Löschst du die Website-Daten oder spielst im privaten Fenster, ist er weg. Mit dem Google-Knopf unten links kannst du ihn in deinem Google-Konto sichern und wiederherstellen."
+    },
+    {
+      "q": "Warum ist der Hinweis-Knopf grau oder verschwunden?",
+      "a": "Du hast pro Runde nur 3 Hinweise. Im Duell gibt es gar keine. Außerdem geht der Hinweis nicht, solange eine Karte aufgedeckt ist."
+    },
+    {
+      "q": "Der Knopf zeigt „KEINE LOGOS“.",
+      "a": "Die Logo-Bilder konnten nicht geladen werden. Prüfe die Verbindung und lade die Seite neu."
+    },
+    {
+      "q": "Kann ich gegen jemanden online spielen?",
+      "a": "Nein, das Duell läuft zu zweit an einem Gerät. Ihr wechselt euch nach jedem Fehlzug ab."
+    },
+    {
+      "q": "Kein Ton?",
+      "a": "Tippe auf 🔇 oder drücke M. Auf manchen Handys startet der Ton erst nach dem ersten Tippen auf SPIELEN."
+    }
+  ]
+}

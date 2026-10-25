@@ -1,0 +1,295 @@
+{
+  "id": "riftzone",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "RIFTZONE ist ein 3D-Battle-Royale in der Third-Person-Ansicht. Bis zu 100 Teilnehmer springen aus der Riftfähre über der Insel Aurelia (1,5 × 1,5 km) ab, gleiten zu einem der 14 Orte, plündern Waffen, Heilung, Munition und Material und bauen sich Deckung.",
+        "Der Riftsturm zieht sich in sieben Phasen zusammen; wer außerhalb steht, verliert Leben. Wer als Letzte·r übrig bleibt – oder als letztes Team in Duo und Squad –, gewinnt das Match („SIEG!“)."
+      ]
+    },
+    {
+      "t": "Lobby und Hauptmenü",
+      "list": [
+        "Spielen (großer Knopf): startet ein Match mit dem eingestellten Modus.",
+        "Modus ändern: Spielweise, Teamgröße, Bauen und – offline bzw. in privaten Lobbys – Teilnehmer, Bot-Stärke, Zonen-Tempo, Tageszeit und Wetter.",
+        "Gruppe & Freunde: online spielen (Raum eröffnen oder per Code beitreten, mit eigenem Server auch Gruppen und Freundesliste).",
+        "Herausforderungen: drei tägliche („Heute“) und zwei wöchentliche („Woche“) Aufgaben mit EP-Belohnung.",
+        "Spind: Outfit, Kopfbedeckung, Rücken, Gleiter, Spitzhacke, Hautton, Emotes und Siegerpose.",
+        "Statistik: Übersicht, Matchhistorie (50 Matches), lokale Bestenliste und Server-Rangliste.",
+        "Einstellungen: Grafik, Audio, Steuerung (alle Tasten frei belegbar), Barrierefreiheit und Online."
+      ]
+    },
+    {
+      "t": "Modi und Einstellungen",
+      "list": [
+        "Spielweise: Offline mit Bots, Online öffentlich (Matchmaking mit Spielern, aufgefüllt mit Bots; nur mit eigenem Server) oder Online privat (Lobby mit Code).",
+        "Teamgröße: Solo, Duo oder Squad (4).",
+        "Bauen: Mit Bausystem oder Ohne Bauen.",
+        "Teilnehmer: 10 bis 100 in Fünferschritten. Auf älteren Handys sind 30–50 empfehlenswert.",
+        "Bot-Stärke: Leicht, Normal, Schwer.",
+        "Zonen-Tempo: Normal (≈ 9 min) oder Schnell (≈ 5 min).",
+        "Tageszeit: Zufall, Tag, Abend, Nacht. Wetter: Zufall, Klar, Regen, Nebel. Die Tageszeit läuft im Match weiter."
+      ]
+    },
+    {
+      "t": "Ablauf eines Matches",
+      "steps": [
+        "Riftfähre: Alle starten in 300 m Höhe in der Fähre, die über die Insel fliegt. Mit Springen (Leertaste, ⤒ oder A) springst du ab.",
+        "Freier Fall: Steuere die Richtung; mit Ducken gehst du in den Sturzflug und fällst schneller.",
+        "Gleiter: Er öffnet sich automatisch in 70 m Höhe – mit Springen klappst du ihn früher auf.",
+        "Landen und plündern: Am Boden liegt Beute an rund 500 Punkten, dazu goldene Riftkisten und Munitionskisten. Alles wird jedes Match neu ausgewürfelt.",
+        "Überleben: Der Sturm bildet sich nach dem Überflug. Karte und Minikarte zeigen den nächsten Zielkreis. Bleib im sicheren Bereich und kämpfe dich bis zum Schluss durch.",
+        "Ergebnis: Platz, Ausschaltungen, Schaden und EP. Danach geht es zurück in die Lobby („Nochmal“ bzw. „Zur Lobby“). Wer ausscheidet, kann weiter zuschauen."
+      ]
+    },
+    {
+      "t": "Bewegung",
+      "list": [
+        "Gehen 5,2 m/s, Sprinten 7,4 m/s, Ducken 2,7 m/s, Schwimmen 3,6 m/s.",
+        "Rutschen: aus dem Sprint ducken.",
+        "Klettern: Kanten bis 2,4 m Höhe werden automatisch erklommen.",
+        "Fallschaden ab hoher Aufprallgeschwindigkeit – Sprungpads (z. B. im Riftkrater) schleudern dich hoch, danach kannst du gleiten.",
+        "Türen öffnest du mit Interagieren."
+      ]
+    },
+    {
+      "t": "Waffen",
+      "p": [
+        "Es gibt sieben Waffen und die Granate, jede in bis zu fünf Seltenheitsstufen: Grundform, Verstärkt, Präzise, Meisterwerk und Rift. Jede Stufe erhöht den Schaden (bis +25 Prozent) und verkürzt das Nachladen (bis −18 Prozent). Kopftreffer machen mehr Schaden, auf Entfernung nimmt der Schaden ab."
+      ],
+      "list": [
+        "Funkpistole: 24 Schaden, 16 Schuss, leichte Munition, halbautomatisch.",
+        "Hornisse MP: 17 Schaden, 30 Schuss, 12 Schuss pro Sekunde, leichte Munition – für kurze Distanz.",
+        "Pulsar Sturmgewehr: 30 Schaden, 30 Schuss, mittlere Munition – der Allrounder.",
+        "Triade Salvengewehr: 27 Schaden pro Kugel, Dreiersalven, 24 Schuss, mittlere Munition – präzise auf mittlere Distanz.",
+        "Brecher Schrotflinte: 10 Kugeln à 10,5 Schaden, 5 Schuss, Schrot – verheerend im Nahkampf, ab 8 m nimmt der Schaden stark ab.",
+        "Weitblick Präzisionsgewehr: 98 Schaden, Kopftreffer ×2,4, 1 Schuss, schwere Munition, 4-fach-Zoom – nur Präzise, Meisterwerk oder Rift.",
+        "Donnerrohr Raketenwerfer: 85 Schaden mit Explosion, 1 Schuss, Raketen – reißt Bauteile ein; nur Meisterwerk oder Rift.",
+        "Riftgranate: 85 Schaden, wird geworfen, bis zu 6 im Inventar.",
+        "Munition: Leichte (max. 360), Mittlere (300), Schwere (60), Schrot (60), Raketen (12)."
+      ]
+    },
+    {
+      "t": "Leben, Schild und Heilung",
+      "list": [
+        "Du hast 100 Leben und bis zu 100 Schild.",
+        "Pflaster: +15 Leben bis höchstens 75, 3,2 s, bis 15 Stück.",
+        "Medipack: Leben voll auf 100, 8 s, bis 3 Stück.",
+        "Schildkapsel: +25 Schild bis höchstens 50, 2 s, bis 6 Stück.",
+        "Schildtank: +50 Schild bis 100, 4,5 s, bis 3 Stück.",
+        "Riftnektar: +25 Leben und +25 Schild, 2,2 s, bis 2 Stück.",
+        "Duo/Squad: Wer alle Leben verliert, wird zuerst niedergeschlagen, kriecht langsam und blutet aus. Ein Teamkamerad belebt ihn mit 5 Sekunden gehaltenem Interagieren in der Nähe wieder. Wer im Sturm oder beim Schwimmen fällt, scheidet sofort aus."
+      ]
+    },
+    {
+      "t": "Material und Bauen",
+      "list": [
+        "Mit der Spitzhacke (F) baust du Holz (Bäume, 7 pro Schlag), Stein (Felsen und Kristalle, 6 pro Schlag) und Metall (Autos, 8 pro Schlag) ab; andere Objekte geben 4. Höchstens 999 pro Material.",
+        "Baumodus (Q): Wand (Z), Boden (X), Rampe (C), Material wechseln (V). Jedes Bauteil kostet 10 Material.",
+        "Gebaut wird im 4-m-Raster in 2-m-Höhenstufen. Neue Teile beginnen mit 30 Prozent Stärke und wachsen in etwa 2,4 Sekunden auf volle Stärke.",
+        "Stärke voll ausgebaut: Holz 150, Stein 280, Metall 420.",
+        "Bauteile ohne Halt stürzen ein. Auch Häuser, Bäume, Felsen, Autos, Zäune und Kisten sind zerstörbar – Fundamente und Brücken nicht.",
+        "Im Modus „Ohne Bauen“ zählen Deckung und Bewegung umso mehr."
+      ]
+    },
+    {
+      "t": "Der Rift-Buggy",
+      "p": [
+        "Rift-Buggys haben 4 Sitze und 650 Lebenspunkte. Ein- und Aussteigen mit Interagieren (Beifahrer steigen auch mit Springen aus), Gas mit Vorwärts/Rückwärts, Sprint ist der Boost (bis 31 statt 25 m/s, die Boost-Anzeige lädt sich wieder auf), Springen ist für den Fahrer die Handbremse. Mit dem Buggy kannst du rammen; Beifahrer können schießen. Zu viel Schaden lässt ihn explodieren."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "PC: WASD laufen, Maus zielen, Linksklick feuern, Rechtsklick zielen, Leertaste springen/Gleiter/Abspringen, Strg ducken/rutschen/Sturzflug, Umschalt sprinten, E interagieren (halten = wiederbeleben), R nachladen, 1–5 Waffen, F Spitzhacke, Mausrad wechseln, Q Baumodus, Z/X/C Wand/Boden/Rampe, V Material, G Gegenstand fallen lassen, T Markierung, M Karte, Tab Inventar, B Emotes, Esc Pause. Alle Tasten sind unter Einstellungen → Steuerung belegbar.",
+        "Touch: linker Daumen = schwebender Bewegungs-Stick (an den Rand ziehen oder » = sprinten), rechte Seite wischen = umsehen, große Feuertaste halten und gleichzeitig wischen = zielen und schießen, ◎ zielen, ⤒ springen, ⤓ ducken (umschalten), ↻ nachladen, ▦ Bauen mit Wand/Boden/Rampe/Mat, ◫ Karte, ☰ Inventar, ☺ Emotes, II Pause. „Aufheben/Öffnen …“ erscheint bei Bedarf; Schnellzugriff unten antippen. Markierungen setzt du durch Tippen auf die Karte.",
+        "Gamepad: linker Stick laufen (drücken = sprinten), rechter Stick zielen (drücken = Baumodus), RT feuern, LT zielen, A springen, B ducken, X interagieren, Y nachladen, LB/RB Waffe wechseln, Steuerkreuz ← Spitzhacke, ↑ Emotes, ↓ Inventar, → Markierung, Select Karte, Start Pause. Im Baumodus: LB Wand, ↑ Boden, RB Rampe, ↓ Material.",
+        "Touch-Optionen: Tastengröße, Deckkraft, Empfindlichkeit, Sprint am Stick-Rand und automatisch feuern (feuert, wenn das Fadenkreuz auf einem Gegner liegt)."
+      ]
+    },
+    {
+      "t": "Online spielen",
+      "list": [
+        "Online ohne Server: In der Lobby unter „Gruppe & Freunde“ auf „Raum eröffnen“ tippen. Dein Gerät ist dann der Server – lass das Spiel geöffnet, solange gespielt wird. Freunde treten mit dem 5-stelligen Raumcode oder dem Einladungslink bei, von überall. Der Gastgeber legt Modus und Teilnehmer fest und startet das Match.",
+        "Eigener RIFTZONE-Server: In den Einstellungen unter „Online“ die Server-Adresse eintragen (Anleitung in riftzone/docs/SERVER.md). Dann gibt es öffentliche Warteschlangen, private Lobbys mit Code, Gruppen mit Einladungslink, eine Freundesliste per Spieler-ID und die Server-Rangliste.",
+        "Bricht die Verbindung ab, verbindet das Spiel dich wieder mit deinem Match."
+      ]
+    },
+    {
+      "t": "Fortschritt und Speichern",
+      "p": [
+        "Du sammelst EP für Überlebenszeit, Platzierung, Ausschaltungen (120 EP), Vorlagen (40), Wiederbelebungen (90), Riftkisten (35) und Siege (1500) und steigst bis Stufe 50 auf. Jede Stufe schaltet Kosmetik frei. Fortschritt, Statistik, Matchhistorie und Einstellungen werden lokal im Browser gespeichert (nicht geräteübergreifend)."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Starte mit wenigen Teilnehmern (z. B. 30) und Bot-Stärke Leicht, um die Insel kennenzulernen.",
+        "Lande an einem ruhigen Ort und sammle zuerst eine Waffe und Schild.",
+        "Riftkisten leuchten golden – sie enthalten immer eine Waffe, dazu Heilung, doppelte Munition und 30 Material.",
+        "Behalte die Minikarte im Blick und lauf früh in den nächsten Kreis.",
+        "Schild vor Leben auffüllen: Schildkapseln gehen in 2 Sekunden, ein Medipack braucht 8."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Gute Ausrüstung: Sturmgewehr oder Salvengewehr für mittlere Distanz plus Schrotflinte oder MP für den Nahkampf, dazu Heilung im Schnellzugriff.",
+        "Kopftreffer zählen viel mehr: Pistole ×1,75, Präzisionsgewehr ×2,4. Zielen (Rechtsklick/LT) verringert die Streuung deutlich.",
+        "Im Lauf schießen streut stärker – für Treffer auf Distanz stehen bleiben oder ducken.",
+        "Sammle früh Material: Mit 100–200 Holz kannst du unter Beschuss schnell Wände und Rampen bauen.",
+        "Neue Bauteile sind anfangs schwach (30 Prozent). Bau Deckung, bevor du sie brauchst.",
+        "Im Duo/Squad zusammenbleiben: Wiederbeleben dauert 5 Sekunden und gelingt nur, wenn ihr euch gegenseitig deckt."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Sturzflug (Ducken im freien Fall) bringt dich schneller zum Boden als die Gegner – wichtig an beliebten Orten.",
+        "Rutschen aus dem Sprint macht dich kurz schneller und schwerer zu treffen.",
+        "Der Raketenwerfer macht fünffachen Schaden an Bauteilen, die Granate vierfachen – ideal gegen eingebaute Gegner.",
+        "Metall hält mit 420 fast dreimal so viel aus wie Holz (150). Für das Endspiel Metall aufheben.",
+        "Rift-Buggys sind ideal, um spät aus dem Sturm zu fliehen; Bots fahren nie selbst.",
+        "Mit „Geräusche anzeigen“ (Barrierefreiheit) erscheinen Schüsse, Schritte und Kisten als Richtungsmarken."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu lange plündern und dann vom Sturm überrascht werden – die späten Phasen machen bis zu 14 Schaden pro Sekunde.",
+        "Mit der Schrotflinte auf Distanz schießen: Ab etwa 8 m verliert sie massiv an Schaden.",
+        "Heilen ohne Deckung: Ein Medipack dauert 8 Sekunden.",
+        "Auf älteren Handys mit 100 Teilnehmern und Grafik „Ultra“ spielen – lieber „Automatisch“ und weniger Teilnehmer."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Die 14 Orte von Aurelia",
+      "p": [
+        "Die Beutestufe zeigt, wie gut die Beute dort ist (1 = einfach, 3 = sehr gut). Gute Orte ziehen viele Gegner an. Himmelsrichtungen beziehen sich auf die Karte (Norden oben)."
+      ],
+      "list": [
+        "Leuchtturmspitze (Nordwesten, Beutestufe 1)",
+        "Frostgipfel (Norden, verschneiter Berg, Beutestufe 2)",
+        "Nebelmühle (Norden, Beutestufe 2)",
+        "Neonviertel (Nordosten, Stadt, Beutestufe 3)",
+        "Glimmerwald (Westen, Wald, Beutestufe 2)",
+        "Riftkrater (Inselmitte, mit Sprungpads, Beutestufe 3)",
+        "Flusswerk (östlich der Mitte, Staudamm, Beutestufe 2)",
+        "Sonnenhof (Osten, Bauernhof, Beutestufe 2)",
+        "Kristallbucht (Westküste, Ferienanlage, Beutestufe 1)",
+        "Rastplatz Neun (südwestlich der Mitte, Motel, Beutestufe 1)",
+        "Funkstation Ost (am Ostrand, Beutestufe 1)",
+        "Kobalthafen (Südwesten, Hafen, Beutestufe 3)",
+        "Kupfermine (Südosten, Beutestufe 2)",
+        "Rostschlucht (Süden, Wüstenschlucht, Beutestufe 2)"
+      ]
+    },
+    {
+      "t": "Die sieben Sturmphasen",
+      "p": [
+        "Jede Phase besteht aus Wartezeit und Schrumpfen. Angegeben sind Normal-Werte; mit „Schnell“ dauern alle Zeiten nur etwa 55 Prozent."
+      ],
+      "list": [
+        "Phase 1: 70 s warten, 55 s schrumpfen auf 480 m Radius – 1 Schaden pro Sekunde außerhalb.",
+        "Phase 2: 50 s warten, 45 s schrumpfen auf 290 m – 2 Schaden/s.",
+        "Phase 3: 45 s warten, 40 s schrumpfen auf 170 m – 4 Schaden/s.",
+        "Phase 4: 35 s warten, 32 s schrumpfen auf 95 m – 6 Schaden/s.",
+        "Phase 5: 30 s warten, 28 s schrumpfen auf 48 m – 8 Schaden/s.",
+        "Phase 6: 22 s warten, 22 s schrumpfen auf 20 m – 10 Schaden/s.",
+        "Phase 7: 15 s warten, 30 s schrumpfen bis 0 m – 14 Schaden/s.",
+        "Der neue Kreis liegt immer innerhalb des alten und möglichst auf Land."
+      ]
+    },
+    {
+      "t": "Beste Strategie je Phase",
+      "steps": [
+        "Absprung: Ruhige Orte mit Beutestufe 1–2 für sichere Starts, Neonviertel, Riftkrater und Kobalthafen für schnelle Top-Beute mit viel Gegenwehr.",
+        "Phasen 1–2: Plündern, Riftkisten öffnen, Material farmen (Ziel: über 200). Der Sturmschaden ist noch gering.",
+        "Phasen 3–4: Rechtzeitig in den Kreis, gute Position auf Anhöhen oder in Gebäuden suchen, Heilung auffüllen.",
+        "Phasen 5–7: Wenig Platz – bau Deckung mit Metall, wechsle auf Nahkampfwaffen und nutze Granaten gegen Gegner hinter Wänden."
+      ]
+    },
+    {
+      "t": "Beute-Wahrscheinlichkeiten",
+      "list": [
+        "Bodenbeute: zu 50 Prozent eine Waffe mit passender Munition, zu 32 Prozent ein Verbrauchsgut (Heilung, Schild oder Granaten), sonst Munition.",
+        "Waffenhäufigkeit: am häufigsten Sturmgewehr, MP und Schrotflinte, dann Pistole und Salvengewehr; Präzisionsgewehr und Raketenwerfer sind selten.",
+        "Riftkisten: immer Waffe (mit besserer Chance auf hohe Seltenheit) + Verbrauchsgut + doppelte Munition + 30 Material, zu 30 Prozent ein zweites Verbrauchsgut.",
+        "Munitionskisten: 2–3 Munitionspakete, zu 40 Prozent zusätzlich 2 Granaten."
+      ]
+    },
+    {
+      "t": "Herausforderungen",
+      "p": [
+        "Jeden Tag gibt es drei, jede Woche zwei Herausforderungen – für alle Spieler gleich. Mögliche Aufgaben:"
+      ],
+      "list": [
+        "Täglich: Schalte 3 Gegner aus (900 EP), Füge 600 Schaden zu (800), Öffne 5 Riftkisten (700), Sammle 300 Material (600), Baue 40 Bauteile (600), Überlebe insgesamt 15 Minuten (800), Lege 3 km zu Fuß zurück (600), Erreiche die Top 10 (900), Spiele 3 Matches (500), Triff 5 Kopftreffer (700), Belebe 2 Teamkameraden wieder (700).",
+        "Wöchentlich: Gewinne ein Match (3000 EP), Schalte 20 Gegner aus (2500), Füge 5000 Schaden zu (2500), Öffne 30 Riftkisten (2000), Erreiche 5-mal die Top 10 (2200)."
+      ]
+    },
+    {
+      "t": "Alle Freischaltungen nach Stufe",
+      "list": [
+        "Outfits: Rekrut Kobalt und Rekrutin Koralle (1), Moosläufer (2), Sandsturm (4), Frostwache (6), Neonfalter (8), Hafenkapitänin (10), Glutschmied (13), Kristallwandler (16), Solarwächter (20), Leerenläufer (25), Riftkönigin (30).",
+        "Kopfbedeckungen: Strickmütze (1), Funk-Kopfhörer (3), Schirmkappe (5), Pilotenhelm (9), Kristallkrone (15), Antennenhaube (19), Visierhelm (24).",
+        "Rückenteile: Wanderrucksack (2), Energiezelle (7), Riftflügel (14), Funkantenne (18), Kristallköcher (27).",
+        "Gleiter: Segler Standard (1), Sonnensegel (4), Nachtfalter (11), Korallenschirm (17), Polarlicht (22), Riftschwinge (29).",
+        "Spitzhacken: Werkhacke (1), Funkenpickel (6), Kristallsplitter (12), Glutzinke (21).",
+        "Emotes: Winken, Wellenschritt, Jubelsprung (1), Salut (3), Lachanfall (5), Pendeltanz (8), Muskelspiel (12), Kreiseltanz (16), Pause machen (20), Riftbeben (26).",
+        "Siegerposen: Jubelsprung (1), Kraftpose (9), Siegestanz (18), Riftbeben (28).",
+        "Hauttöne: sechs, von Anfang an verfügbar."
+      ]
+    },
+    {
+      "t": "EP schnell sammeln",
+      "list": [
+        "Ein Sieg bringt allein 1500 EP plus bis zu 900 EP für Platz 1.",
+        "Überlebenszeit zählt 1,4 EP pro Sekunde (bis 15 Minuten) – lange überleben lohnt sich.",
+        "Jede Ausschaltung bringt 120 EP, jede Wiederbelebung 90 EP, jede Riftkiste 35 EP.",
+        "Herausforderungen bringen bis zu 3000 EP auf einmal – plane deine Matches danach (z. B. Kisten öffnen oder bauen).",
+        "Für den Aufstieg von Stufe n braucht es etwa 900 + 260 × n + 6 × n² EP; Stufe 2 also rund 1166 EP."
+      ]
+    },
+    {
+      "t": "Bot-Stärken",
+      "list": [
+        "Leicht: Reaktionszeit etwa 0,7 Sekunden, große Zielfehler.",
+        "Normal: etwa 0,42 Sekunden.",
+        "Schwer: etwa 0,24 Sekunden, dazu Seitwärtsbewegung, Rückzug, Heilen und Bauen unter Beschuss.",
+        "Bots steigen nie in Fahrzeuge und bleiben in verwinkelten Gebäuden manchmal hängen."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Wie spiele ich mit Freunden online?",
+      "a": "Am einfachsten in der Lobby unter „Gruppe & Freunde“ auf „Raum eröffnen“ tippen und den 5-stelligen Code oder Link teilen. Dein Gerät ist dabei der Server und muss offen bleiben. Mit einem eigenen Server (Einstellungen → Online) gibt es zusätzlich öffentliche Warteschlangen und Gruppen."
+    },
+    {
+      "q": "Online öffentlich ist ausgegraut.",
+      "a": "Öffentliche Warteschlangen gibt es nur mit einem eigenen RIFTZONE-Server. Ohne Server nutzt du „Online privat“ über einen Raum mit Code."
+    },
+    {
+      "q": "Das Spiel ruckelt.",
+      "a": "Stelle die Grafikqualität auf „Automatisch“ – sie passt sich der Bildrate an. Auf älteren Handys helfen niedrigere Auflösung, kürzere Sichtweite, eine Bildratenbegrenzung und 30–50 Teilnehmer."
+    },
+    {
+      "q": "Ist mein Fortschritt weg?",
+      "a": "Stufe, Kosmetik, Statistik und Einstellungen liegen lokal im Browser. Gelöschte Browserdaten löschen sie, und auf einem anderen Gerät beginnst du neu – es gibt kein Konto."
+    },
+    {
+      "q": "Kann ich meine Tasten ändern?",
+      "a": "Ja, unter Einstellungen → Steuerung → Tastenbelegung. „Standardbelegung“ stellt alles zurück."
+    },
+    {
+      "q": "Kann ich gebaute Teile bearbeiten?",
+      "a": "Nein, Bearbeiten (Editieren) gebauter Teile gibt es nicht. Zerstöre ein Teil mit der Spitzhacke und baue neu."
+    }
+  ]
+}

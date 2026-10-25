@@ -1,0 +1,200 @@
+{
+  "id": "mahjong",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Mahjong 3D – Jadepalast ist Mahjong Solitaire in echtem 3D. Auf dem Tisch liegen bis zu 144 Steine in mehreren Schichten. Du räumst sie paarweise ab: Tippe zwei gleiche Steine an, die beide frei sind – dann verschwinden sie.",
+        "Ist das Brett leer, hast du gewonnen. Jedes Brett wird so gemischt, dass es lösbar ist (im Freien Spiel und Zen abschaltbar)."
+      ]
+    },
+    {
+      "t": "Wann ist ein Stein frei?",
+      "list": [
+        "Es liegt kein Stein darauf – auch nicht halb.",
+        "Und mindestens eine lange Seite (links oder rechts) hat keinen direkten Nachbarn.",
+        "Blockierte Steine sind abgedunkelt (abschaltbar). Tippst du einen blockierten Stein an, wackelt er.",
+        "Oben im Spiel zeigt „Paare frei“, wie viele Paare gerade möglich sind. Steht dort 0, musst du zurücknehmen oder mischen."
+      ]
+    },
+    {
+      "t": "Welche Steine passen?",
+      "list": [
+        "Gleiche Bilder passen zusammen: Kreise 1–9, Bambus 1–9, Zeichen 1–9, die vier Winde und die drei Drachen – jeweils viermal vorhanden.",
+        "Ausnahme Blumen: Alle vier Blumen passen untereinander.",
+        "Ausnahme Jahreszeiten: Alle vier Jahreszeiten passen untereinander.",
+        "Die Steinbilder kannst du in den Einstellungen auf „Klar“ stellen – dann zeigen sie große Zahlen."
+      ]
+    },
+    {
+      "t": "Hauptmenü und Spielarten",
+      "list": [
+        "▶ Weiterspielen: setzt die gespeicherte Partie fort.",
+        "🗺️ Reise: 48 Level in 8 Welten, jede Welt mit eigenem Tisch, bis zu drei Sterne pro Level.",
+        "🀄 Freies Spiel: alle 29 Layouts frei wählbar, sortiert nach Größe, A–Z oder 🎲 Zufall. Für jedes Layout wird ein Bestwert gespeichert.",
+        "📅 Tagesrätsel: jeden Tag ein neues großes Brett (mindestens 100 Steine), für alle gleich. Löst du es an aufeinanderfolgenden Tagen, wächst deine Serie 🔥.",
+        "⏱️ Zeitjagd: Bretter gegen die Uhr. Du startest mit 2:30 Minuten, jedes Paar gibt +3 Sekunden, jedes abgeräumte Brett +30 Sekunden. Gespielt werden mittelgroße Layouts mit 40 bis 90 Steinen.",
+        "🍵 Zen: ohne Uhr und Punkte, Bretter folgen endlos. Gibt es keine Paare mehr, wird gratis neu gemischt.",
+        "🏆 Erfolge, ⚙️ Einstellungen, 📖 Anleitung, ☁️ Mit Google speichern, ⛶ Vollbild."
+      ]
+    },
+    {
+      "t": "Hilfen im Spiel",
+      "list": [
+        "💡 Tipp: zeigt ein freies Paar (−20 Punkte).",
+        "↶ Zurück: nimmt Züge zurück, so oft du willst. Die Punkte des Paars werden abgezogen.",
+        "🔀 Mischen: verteilt die restlichen Steine neu, und zwar lösbar (−50 Punkte).",
+        "Gibt es keinen Zug mehr, meldet das Spiel das sofort (abschaltbar). In der Zeitjagd wird dann automatisch gemischt (−10 Sekunden), im Zen gratis.",
+        "In Welt 1 der Reise zeigt das Spiel nach 25 Sekunden ohne Aktion von selbst einen kostenlosen Tipp.",
+        "Option „Passende Steine zeigen“: Nach dem Antippen leuchten freie Partner auf – das zählt nicht als Tipp."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch: Stein antippen. Mit zwei Fingern zoomen und drehen, gezoomt mit einem Finger verschieben, Doppeltippen auf den Tisch zoomt. Unten die Knöpfe ↶ Zurück, 💡 Tipp, 🔀 Mischen, − / + Zoom und ⟲ Ansicht zurücksetzen.",
+        "Maus: Klick wählt einen Stein, Mausrad zoomt, rechte Maustaste gedrückt halten dreht die Ansicht.",
+        "Tastatur: Pfeiltasten springen zwischen freien Steinen, Enter oder Leertaste wählt, H Tipp, U Zurück, R Mischen, + und − Zoom, Q/E drehen, V Ansicht, M Ton, F Vollbild, P oder Esc Pause.",
+        "Gamecontroller: Steuerkreuz oder linker Stick springen, A wählt, B abwählen/Pause, X Tipp, Y Zurück, Select Mischen, LB/RB drehen, LT/RT Zoom, rechter Stick verschieben, Start Pause."
+      ]
+    },
+    {
+      "t": "Punkte, Kombos und Sterne",
+      "list": [
+        "Jedes Paar bringt 10 Punkte. Folgt das nächste Paar innerhalb von 4,5 Sekunden, steigt die Kombo: 20, 30, 40 und höchstens 50 Punkte pro Paar.",
+        "Zeitbonus am Ende: 3 Punkte für jede Sekunde unter der Zielzeit.",
+        "Perfekt-Bonus: +250 für einen Sieg ohne Tipp, Mischen und Zurück.",
+        "Reise-Sterne: ★ geschafft · ★★ unter der Zielzeit · ★★★ unter der Zielzeit ohne Tipp und Mischen (Zurück ist erlaubt).",
+        "Zeitjagd: Punkte aller Bretter werden addiert, der Rekord wird gespeichert."
+      ]
+    },
+    {
+      "t": "Einstellungen",
+      "list": [
+        "Soundeffekte und Musik: je ein Lautstärkeregler.",
+        "Steinbilder: Klassisch oder Klar (große Zahlen).",
+        "Hilfszeichen: kleine Zahl bzw. Buchstabe in der Ecke jedes Steins.",
+        "Blockierte Steine abdunkeln, Passende Steine zeigen, Immer lösbar mischen (Freies Spiel und Zen), Hinweis bei „keine Züge“.",
+        "Tisch, Steinrücken (Jade, Rubin, Saphir, Gold, Ebenholz), Blickwinkel (Von oben, Normal, Flach), Grafik (Automatisch, Hoch, Mittel, Sparsam) und Linkshänder (Knöpfe gespiegelt)."
+      ]
+    },
+    {
+      "t": "Speichern",
+      "p": [
+        "Dein Fortschritt – Sterne, Bestwerte, Erfolge, Einstellungen und die laufende Partie – wird immer automatisch auf diesem Gerät gespeichert. Mit einer Google-Anmeldung (☁️ Mit Google speichern) kommt er zusätzlich in die Cloud und folgt dir auf Handy, Tablet und PC. Es gilt immer der zuletzt gespielte Stand. Eine Zeitjagd wird nicht zum Fortsetzen gespeichert."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Räume zuerst Steine ab, die andere blockieren: hohe Stapel und die langen Reihen von außen.",
+        "Schau vor jedem Paar auf „Paare frei“. Sinkt die Zahl auf 1, wird es eng.",
+        "Lass „Blockierte Steine abdunkeln“ an – so siehst du sofort, was spielbar ist.",
+        "Auf kleinen Bildschirmen hilft der Steinstil „Klar“ mit großen Zahlen."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Liegen drei gleiche Steine frei, überlege, welcher den meisten Platz schafft. Nimm die zwei, die jeweils am meisten blockieren.",
+        "Liegen alle vier gleichen frei, räume sie sofort ab – sie können sich nicht gegenseitig blockieren.",
+        "Arbeite die Stapel von oben ab, damit untere Schichten früh erreichbar werden.",
+        "Merke dir, wo der vierte Stein einer Sorte steckt. Liegt er unter seinem eigenen Partner, musst du die Reihenfolge planen.",
+        "Lange waagerechte Reihen von beiden Enden her abbauen, damit die Mitte nicht dauerhaft blockiert."
+      ]
+    },
+    {
+      "t": "Profi-Tricks für Punkte und Sterne",
+      "list": [
+        "Kombos: Suche erst mehrere Paare, dann tippe sie zügig nacheinander an – jedes innerhalb von 4,5 Sekunden. Ab dem 5. Paar gibt es dauerhaft 50 Punkte pro Paar.",
+        "Für ★★★ darfst du ↶ Zurück benutzen, aber keinen Tipp und kein Mischen. Ein Fehler lässt sich also korrigieren.",
+        "Für den Perfekt-Bonus (+250) und den Erfolg „Ohne Netz“ ist auch Zurück tabu.",
+        "Zeitjagd: Jedes Paar bringt 3 Sekunden. Schnell spielen lohnt sich doppelt, Zurücknehmen kostet die 3 Sekunden wieder."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Paare aus derselben Reihe abräumen, die ohnehin bald frei wären, statt blockierende Steine zu lösen.",
+        "Zu früh mischen: Kostet 50 Punkte – oft hilft ein paar Züge zurück.",
+        "Blumen und Jahreszeiten übersehen: Sie passen innerhalb ihrer Gruppe alle zusammen.",
+        "Im Tagesrätsel an zwei Tagen hintereinander vergessen zu spielen – dann beginnt die Serie wieder bei 1."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Reise Welt 1–4 (Zielzeiten für ★★)",
+      "list": [
+        "Welt 1 Teegarten: 1-1 Teeschale (30 Steine, 1:48) · 1-2 Laterne (32, 1:53) · 1-3 Fächer (32, 2:03) · 1-4 Herz (42, 2:19) · 1-5 Treppe (48, 2:35) · 1-6 Brücke (30, 1:48)",
+        "Welt 2 Bambuswald: 2-1 Lotusblüte (26, 1:44) · 2-2 Kreuz (40, 2:08) · 2-3 Pyramide (86, 4:11) · 2-4 Zwei Ringe (58, 2:42) · 2-5 Goldfisch (80, 3:46) · 2-6 Pagode (68, 3:27)",
+        "Welt 3 Lotusteich: 3-1 Diamant (72, 3:26) · 3-2 Schmetterling (102, 4:25) · 3-3 Mondtor (78, 3:29) · 3-4 Glückskatze (78, 3:29) · 3-5 Glückswolke (86, 3:58) · 3-6 Spinne (50, 2:35)",
+        "Welt 4 Kirschblütenfest: 4-1 Stern (56, 2:30) · 4-2 Schlange (70, 2:51) · 4-3 Kaiserkrone (106, 4:18) · 4-4 Festung (140, 5:41) · 4-5 Herz (42, 2:00) · 4-6 Jadetempel (144, 5:40)"
+      ]
+    },
+    {
+      "t": "Reise Welt 5–8 (Zielzeiten für ★★)",
+      "list": [
+        "Welt 5 Drachenberg: 5-1 Drache (68, 2:46) · 5-2 Heiliger Berg (124, 4:58) · 5-3 Zwillingstürme (108, 4:36) · 5-4 Arena (112, 4:04) · 5-5 Pyramide (86, 3:32) · 5-6 Schildkröte (144, 5:38)",
+        "Welt 6 Mondpalast: 6-1 Mondtor (78, 2:54) · 6-2 Kaiserpalast (144, 5:16) · 6-3 Schmetterling (102, 3:39) · 6-4 Diamant (72, 2:53) · 6-5 Glückswolke (86, 3:19) · 6-6 Festung (140, 4:59)",
+        "Welt 7 Jadetempel: 7-1 Jadetempel (144, 4:35) · 7-2 Spinne (50, 2:05) · 7-3 Heiliger Berg (124, 4:21) · 7-4 Kaiserkrone (106, 3:30) · 7-5 Drache (68, 2:26) · 7-6 Arena (112, 3:30)",
+        "Welt 8 Kaiserstadt: 8-1 Kaiserpalast (144, 4:33) · 8-2 Zwillingstürme (108, 3:47) · 8-3 Stern (56, 1:57) · 8-4 Schlange (70, 2:09) · 8-5 Festung (140, 4:17) · 8-6 Schildkröte (144, 4:33)",
+        "Jedes Reise-Level hat eine feste Mischung – du kannst also üben und dir die Lage der Steine merken."
+      ]
+    },
+    {
+      "t": "Freischaltungen",
+      "list": [
+        "Innerhalb einer Welt öffnet jedes geschaffte Level das nächste.",
+        "Eine neue Welt öffnet sich, wenn alle 6 Level der vorherigen Welt geschafft sind (ein Stern pro Level reicht).",
+        "Freies Spiel, Tagesrätsel, Zeitjagd und Zen sind von Anfang an offen.",
+        "Nach Level 8-6: „Du hast die ganze Reise geschafft! 👑“"
+      ]
+    },
+    {
+      "t": "Alle 29 Layouts",
+      "p": [
+        "Klein: Lotusblüte (26 Steine), Teeschale (30), Brücke (30), Laterne (32), Fächer (32), Kreuz (40), Herz (42), Treppe (48), Spinne (50), Stern (56), Zwei Ringe (58).",
+        "Mittel: Pagode (68), Drache (68), Schlange (70), Diamant (72), Mondtor (78), Glückskatze (78), Goldfisch (80), Pyramide (86), Glückswolke (86).",
+        "Groß: Schmetterling (102), Kaiserkrone (106), Zwillingstürme (108, 6 Ebenen), Arena (112), Heiliger Berg (124), Festung (140), Schildkröte (144), Jadetempel (144), Kaiserpalast (144)."
+      ]
+    },
+    {
+      "t": "Erfolge und Bedingungen",
+      "list": [
+        "🀄 Erstes Paar: dein erstes Steinpaar. 🧺 Fleißige Hände: 500 Paare. 🏯 Steinmeister: 3.000 Paare.",
+        "🎉 Erster Sieg: ein Brett komplett abräumen. 🏅 Routiniert: 25 Siege. 🏆 Großmeister: 100 Siege.",
+        "🔥 Im Fluss: 5er-Kombo. 🌊 Unaufhaltsam: 12er-Kombo.",
+        "🧘 Ohne Netz: Sieg ohne Tipp, Mischen und Rückgängig.",
+        "🐢 Die Schildkröte: das klassische Schildkröten-Layout abräumen.",
+        "⚡ Blitzhand: ein Brett mit 144 Steinen in unter 4 Minuten.",
+        "📅 Tagesrätsel: eins lösen. 🗓️ Sieben Tage: 7 Tage in Folge.",
+        "⏱️ Zeitjäger: 3 Bretter in einer Zeitjagd-Runde.",
+        "🍵 Innere Ruhe: insgesamt 30 Minuten im Zen-Modus.",
+        "⭐ Sternensammler: 50 Sterne auf der Reise. 🌟 Sternenhimmel: alle 144 Sterne.",
+        "🍵 Teegarten, 🎋 Bambuswald, 🪷 Lotusteich, 🌸 Kirschblütenfest, 🐉 Drachenberg, 🌙 Mondpalast, ⛩️ Jadetempel, 👑 Kaiserstadt: die jeweilige Welt abschließen.",
+        "🗺️ Weltenbummler: jedes der 29 Layouts mindestens einmal abräumen (zählt in allen Spielarten)."
+      ]
+    },
+    {
+      "t": "Strategie je Spielart",
+      "list": [
+        "Reise: Erst einmal sicher lösen (★), dann mit Kombos auf Zeit (★★), zuletzt ohne Tipp und Mischen (★★★). Die Zielzeiten werden ab Welt 2 von Welt zu Welt knapper.",
+        "Tagesrätsel: Ziel ist das 1,9-Fache der Steinzahl in Sekunden plus 10 Sekunden pro Ebene. Ruhig, aber zügig spielen.",
+        "Freies Spiel: Ziel ist das 2,2-Fache der Steinzahl in Sekunden plus 10 Sekunden pro Ebene – gut zum Bestwerte-Jagen.",
+        "Zeitjagd: Mittelgroße Bretter schnell abräumen. Jedes Brett bringt +30 Sekunden; drei Bretter in einer Runde geben den Erfolg „Zeitjäger“.",
+        "Zen: Perfekt für den Erfolg „Innere Ruhe“ und um das Weltenbummler-Ziel bei Layouts ab 50 Steinen zu sammeln."
+      ]
+    }
+  ],
+  "faq": [
+    { "q": "Ist jedes Brett lösbar?", "a": "Ja, solange „Immer lösbar mischen“ an ist (Standard). In Reise, Tagesrätsel und Zeitjagd ist das immer so, und auch Mischen verteilt die Steine lösbar. Nur wenn du die Option fürs Freie Spiel und Zen ausschaltest, ist echter Zufall möglich." },
+    { "q": "Ich habe keine Züge mehr – was nun?", "a": "Nimm mit ↶ Zurück ein paar Paare zurück oder drücke 🔀 Mischen (−50 Punkte). Im Zen wird automatisch gratis gemischt, in der Zeitjagd kostet es 10 Sekunden." },
+    { "q": "Warum habe ich nur zwei Sterne, obwohl ich schnell war?", "a": "Für drei Sterne darfst du weder Tipp noch Mischen benutzen. Zurücknehmen ist erlaubt." },
+    { "q": "Mein Fortschritt ist weg.", "a": "Er liegt im Browser dieses Geräts. Melde dich über „☁️ Mit Google speichern“ an, dann ist er zusätzlich in der Cloud und auf allen Geräten verfügbar." },
+    { "q": "Die Steine sind auf dem Handy zu klein.", "a": "Stelle in den Einstellungen die Steinbilder auf „Klar“, zoome mit zwei Fingern oder wähle den Blickwinkel „Von oben“." },
+    { "q": "Das Spiel ruckelt oder der Akku wird schnell leer.", "a": "Stelle unter Einstellungen die Grafik auf „Sparsam“ oder „Mittel“." }
+  ]
+}

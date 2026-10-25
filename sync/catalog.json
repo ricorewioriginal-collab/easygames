@@ -22,7 +22,7 @@
     "anleitung": "RicoLife 3D ist eine Lebenssimulation in der Hafenstadt Lindenhafen. Du spielst eine der drei Familien (Familie Sonnberg, die Loft-WG Kaiweg oder Hedwig & Jonas) oder erstellst im Figureneditor deinen eigenen Haushalt mit bis zu acht Personen, Haustieren, Merkmalen, Lebenszielen und Aussehen. Deine Figuren haben sieben Bedürfnisse wie Hunger, Energie und Spaß und zeigen Gefühle; tippe Gegenstände, Personen oder den Boden an und wähle eine Handlung, oder lass sie selbst entscheiden. Bis zu acht Befehle stehen in der Warteschlange und lassen sich abbrechen. Kochen, essen, abwaschen, duschen, schlafen, Fähigkeiten üben, Freundschaften und Liebe pflegen, Kinder großziehen, eine Feier geben oder in der Stadt Freunde besuchen. Über das Handy bewirbst du dich auf neun Berufe; im Café, in der Praxis und beim Radio arbeitest du sichtbar vor Ort. Im Kauf- und Baumodus richtest du dein Haus ein, ziehst Wände, Räume, Türen, Fenster und Treppen auf bis zu zwei Etagen, mit Rückgängig und Wiederholen, oder stellst ein Fertighaus auf. Rechnungen kommen jeden Montag. Drei Geschichten mit je acht Aufgaben und viele Zufallsereignisse begleiten dich, Jahreszeiten und Wetter verändern die Stadt. Im Mehrspieler besuchen dich bis zu drei Freunde über einen Raumcode mit ihrer eigenen Figur. Gespeichert wird auf drei Plätzen im Browser, mit Export und Import, optional mit Google auf allen Geräten.",
     "steuerung": [
      "Smartphone und Tablet: Antippen öffnet das Aktionsmenü, ein Finger verschiebt die Kamera, zwei Finger drehen und zoomen. Die Knöpfe rechts öffnen Menü, Kauf- und Baumodus, Handy, Karte, Etage und Wandansicht.",
-     "PC: Klick wählt Aktionen, linke Maustaste ziehen verschiebt, rechte dreht, Mausrad zoomt. WASD/Pfeile bewegen, Q/E drehen, Leertaste pausiert, 1–3 Tempo, Tab nächste Figur, B Kaufen, N Bauen, P Handy, M Karte, R dreht Möbel, Strg+Z/Strg+Y rückgängig/wiederholen, Esc Menü. Tasten sind umbelegbar.",
+     "PC: Klick wählt Aktionen, linke Maustaste ziehen verschiebt, rechte dreht, Mausrad zoomt. WASD/Pfeile bewegen, Q/E drehen, Leertaste pausiert, 1–3 Tempo, Tab nächste Figur, B Kaufen, N Bauen, F Lebensmodus, P Handy, M Karte, R dreht Möbel, Strg+Z/Strg+Y rückgängig/wiederholen, V Wände, Bild↑/↓ Stockwerk, Esc Menü. Tasten sind umbelegbar.",
      "Controller: linker Stick Kamera, rechter Stick drehen/zoomen, A wählt in der Bildmitte, LB/RB wechseln die Figur, Steuerkreuz Tempo und Etage, Start Pausemenü, B zurück; in Menüs bewegt das Steuerkreuz den Fokus."
     ],
     "tipps": [
@@ -125,7 +125,7 @@
     "steuerung": [
      "Smartphone und Tablet: Knöpfe unten antippen, mit einem Finger die Kamera drehen, mit zwei Fingern zoomen, ein Feld antippen für die Besitzurkunde.",
      "PC: Leertaste oder Enter für die Hauptaktion (Würfeln, Kaufen, Zug beenden), Q/E oder Pfeiltasten drehen, +/− zoomen, O Übersicht, S Animation überspringen, M Ton, Esc oder P Pause.",
-     "Controller: A Hauptaktion, LB/RB drehen, Trigger zoomen, X überspringen, Y Übersicht, Start Pause; rechter Stick als Zeiger für alle anderen Knöpfe."
+     "Controller: A Hauptaktion, LB/RB drehen, Trigger zoomen, X überspringen, Y Übersicht, Start Pause, Select Ton an/aus; rechter Stick als Zeiger für alle anderen Knöpfe."
     ],
     "tipps": [
      "Die beiden Farbgruppen direkt hinter dem Gefängnis werden besonders oft betreten.",
@@ -255,7 +255,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Pestwacht – Die letzte Zuflucht ist ein Überlebens-, Aufbau- und Strategiespiel in 3D. Im Jahr der Graupest führst du die letzte ummauerte Zuflucht: Baue Häuser, Brunnen, Felder, Werkstätten, Heilstuben und Türme (34 Gebäudearten, jede mit Stufen), halte 10 Rohstoffe im Gleichgewicht und sorge dafür, dass Kranke gesund werden, bevor sich die Seuche ausbreitet. Im Lazarett untersuchst und behandelst du einzelne Patienten mit dem passenden Mittel, stellst Personal ein und erntest eigene Kräuterbeete. Drei Wissensbäume (Heilkunst, Wirtschaft, Krieg) schalten Verbesserungen frei. In regelmäßigen Abständen greifen Seuchenwellen mit Ratten, Wanderern, Plünderern, Bestien und Krähen an, später auch drei Bosse – Mauer, Tor, Türme, Truppen und Heldenfähigkeiten halten sie auf. 12 Helden steigen auf, lernen Talente und tragen Ausrüstung. Auf der Weltkarte mit Kriegsnebel schickst du Expeditionen zum Erkunden, Sammeln, Kranke retten, Heilen, Handeln und Erobern; Kämpfe kannst du live verfolgen und lenken. 8 Computer-Fraktionen bauen nach denselben Regeln wie du, verhandeln, schließen Bündnisse und führen Kriege untereinander. Die Kampagne erzählt 5 Kapitel, im Freien Spiel stellst du Karte, Fraktionen und Schwierigkeit selbst ein. Dazu kommen Ereignisse, Tages- und Wochenaufgaben und Erfolge. Gespeichert wird automatisch (dazu 3 eigene Plätze, Export und Import als Datei); beim Zurückkehren wird die Zeit dazwischen als Produktion verrechnet, ohne Angriffe.",
+    "anleitung": "Pestwacht – Die letzte Zuflucht ist ein Überlebens-, Aufbau- und Strategiespiel in 3D. Im Jahr der Graupest führst du die letzte ummauerte Zuflucht: Baue Häuser, Brunnen, Felder, Werkstätten, Heilstuben und Türme (34 Gebäudearten, jede mit Stufen), halte 10 Rohstoffe im Gleichgewicht und sorge dafür, dass Kranke gesund werden, bevor sich die Seuche ausbreitet. Im Lazarett untersuchst und behandelst du einzelne Patienten mit dem passenden Mittel, stellst Personal ein und erntest eigene Kräuterbeete. Drei Wissensbäume (Heilkunst, Wirtschaft, Krieg) schalten Verbesserungen frei. In regelmäßigen Abständen greifen Seuchenwellen mit Ratten, Wanderern, Plünderern, Bestien und Krähen an, später auch drei Bosse – Mauer, Tor, Türme, Truppen und Heldenfähigkeiten halten sie auf. 12 Helden steigen auf, lernen Talente und tragen Ausrüstung. Auf der Weltkarte mit Kriegsnebel schickst du Expeditionen zum Erkunden, Sammeln, Kranke retten, Heilen, Handeln und Erobern; Kämpfe kannst du live verfolgen und lenken. Computer-Fraktionen (im Freien Spiel 2 bis 8, Standard 6, in der Kampagne 5) bauen nach denselben Regeln wie du, verhandeln, schließen Bündnisse und führen Kriege untereinander. Die Kampagne erzählt 5 Kapitel, im Freien Spiel stellst du Karte, Fraktionen und Schwierigkeit selbst ein. Dazu kommen Ereignisse, Tages- und Wochenaufgaben und Erfolge. Gespeichert wird automatisch (dazu 3 eigene Plätze, Export und Import als Datei); beim Zurückkehren wird die Zeit dazwischen als Produktion verrechnet, ohne Angriffe.",
     "steuerung": [
      "Touch: mit einem Finger die Ansicht verschieben, mit zwei Fingern zoomen und drehen, Gebäude oder Felder antippen. Unten: Bauen, Karte, Zuflucht, Lazarett, Militär, Helden, Forschung, Diplomatie, Aufgaben und Menü.",
      "Maus: Linksklick wählt, Ziehen verschiebt, rechte Maustaste gedrückt halten dreht, Mausrad zoomt.",
@@ -295,7 +295,7 @@
     "anleitung": "ColorPop Universe ist ein Knobelspiel nach dem SameGame-Prinzip. Tippe auf eine Gruppe aus mindestens 2 gleichfarbigen Steinen, die sich waagerecht oder senkrecht berühren: Die Gruppe knallt weg, alles darüber fällt nach unten und leere Spalten rücken nach links. Punkte: (Steine − 2)² × 10, ein komplett leeres Brett bringt +1000. Die Runde endet, wenn das Brett leer ist oder keine Gruppe mehr übrig ist. Im Abenteuer warten 300 Level in 12 Welten mit Zielen (Punkte, Brett leeren, Farben sammeln, Eis brechen, Sammelobjekte nach unten bringen …), Sternen und neuen Steinen wie Bombe, Rakete, Prisma, Regenbogen, Kettenblitz, Anker, Neonstein und Windpfeil sowie Hindernissen wie Eis, Holz, Fels, Inseln und Portalen. Dazu 13 weitere Modi: Klassiker, Zen, Sprint 60, Zeitattacke, Zuglimit, Puzzle-Labor, Farbchaos, Gravitation+, Daily Pop, Wochenliga, Endlos-Turm, KI-Duell gegen einen Bot und Lokal zu zweit. Funken gibt es nur fürs Spielen; sie kaufen Booster. Kein Echtgeld, keine Werbung. Der Spielstand wird lokal gespeichert und optional mit Google synchronisiert.",
     "steuerung": [
      "Smartphone/Tablet: Gruppe antippen. Gedrückt halten zeigt Gruppe und Punkte, ohne zu ziehen. Zwei Finger = Zoom. Optional Bestätigungs-Tipp in den Einstellungen.",
-     "PC: Mausklick wählt, Darüberfahren zeigt die Gruppe, Mausrad zoomt. Tastatur: Pfeile oder W A S D bewegen den Cursor, Enter/Leertaste wählt, H Hinweis, U Rückgängig, R Neustart, P/Esc Pause, M Ton, F Vollbild, 1–4 Booster (Tasten frei belegbar).",
+     "PC: Mausklick wählt, Darüberfahren zeigt die Gruppe, Mausrad zoomt. Tastatur: Pfeile oder W A S D bewegen den Cursor, Enter/Leertaste wählt, H Hinweis, U Rückgängig (nur Zen und Puzzle-Labor), R Neustart, P Pause, Esc zurück, M Ton, F Vollbild, 1–4 Booster (Tasten frei belegbar).",
      "Controller: Steuerkreuz bewegt den Cursor, A wählt, B zurück, X Hinweis, Y Rückgängig, LB/RB Booster, Start Pause, Select Ton."
     ],
     "tipps": [
@@ -329,7 +329,7 @@
     "steuerung": [
      "Smartphone und Tablet: irgendwo auf den Bildschirm tippen.",
      "PC: Leertaste, Pfeil hoch, W oder Mausklick; P oder Esc Pause, M Ton.",
-     "Controller: A, B, X, Y oder rechter Trigger zum Flattern, Start für Pause, Steuerkreuz und A in den Menüs."
+     "Controller: A, B, X, Y oder rechter Trigger zum Flattern, Start für Pause, Select Ton an/aus, Steuerkreuz und A in den Menüs."
     ],
     "tipps": [
      "Lieber oft und kurz flattern als selten und kräftig.",
@@ -356,7 +356,19 @@
    "path": "kiko-sterneninseln/",
    "modes": {},
    "multiplayer": false,
-   "guide": null,
+   "guide": {
+    "anleitung": "KIKO – Das Geheimnis der Sterneninseln ist ein 3D-Hüpfabenteuer: Der Himmelskristall ist zerbrochen, und du hilfst Kiko, seine Splitter zu sammeln und die Sterneninseln wieder zu verbinden. In 20 Leveln in vier Welten (Sonnenwiesen, Glitzerwald, Frosthöhen, Sternenhimmel) sammelst du auf jeder Insel fünf blaue Kristalle, löst das Inselrätsel – Schalter, Sternenplatten, Lichtsteine in der richtigen Reihenfolge, Leuchtfeuer oder Uhrschalter – und gehst durch das grüne Portal. Ein Kompass zeigt immer das nächste Ziel. Du hast drei Herzen; goldene Bonussterne heilen ein Herz, der Checkpoint füllt alle auf. Der Sternenpuls betäubt Schattenwesen, auf Hüpfer kannst du auch von oben springen. Vier Figuren mit eigenen Stärken stehen zur Wahl: Kiko, Mira, Boro und Lumi. Im letzten Level wartet das Sternenherz mit drei Angriffsphasen. Fortschritt, Sterne, Medaillen und Bestzeiten werden lokal gespeichert, optional mit Google auf allen Geräten.",
+    "steuerung": [
+     "Touch: links der Joystick zum Laufen, rechts SPRUNG und AKTION; rechts auf dem Bild wischen dreht die Kamera.",
+     "PC: WASD oder Pfeiltasten laufen, Leertaste springen, E Aktion (Schalter, Sternenpuls), Maus ziehen dreht die Kamera, Esc Pause. Tasten in den Einstellungen änderbar.",
+     "Controller: linker Stick laufen, rechter Stick Kamera, A springen, X Aktion, Start Pause."
+    ],
+    "tipps": [
+     "Folge dem Kompass-Pfeil – er führt dich Insel für Insel zum nächsten Kristall oder Schalter.",
+     "Erst den goldenen Checkpoint erreichen, dann Risiken eingehen: Er füllt alle Herzen auf.",
+     "Auf Hüpfer von oben springen spart den Sternenpuls für Leuchtfeuer und fliegende Schatten."
+    ]
+   },
    "size": 773555,
    "files": 23,
    "offline": true,
@@ -376,7 +388,19 @@
    "path": "kraterkommando/",
    "modes": {},
    "multiplayer": false,
-   "guide": null,
+   "guide": {
+    "anleitung": "Kraterkommando 3D ist ein rundenbasiertes Artilleriespiel wie Worms: Dein Trupp (Rot) kämpft gegen Blau auf einer zerstörbaren 3D-Insel. Wer dran ist, hat 45 Sekunden, um zu laufen, zu zielen und eine von 14 Waffen abzufeuern – von Bazooka und Granate über Schaf und Bananenbombe bis zur Heiligen Granate. Nach dem Schuss bleiben 4 Sekunden zum Weglaufen. Wasser (bzw. Lava) ist tödlich, Stürze kosten Lebenspunkte, und ab einer bestimmten Runde steigt im Sudden Death das Wasser. Im Feldzug schaltest du Level für Level frei, in denen beide Trupps wachsen; dazu gibt es Schnelle Gefechte gegen den Computer und Zu-zweit-Duelle an einem Gerät.",
+    "steuerung": [
+     "Touch: Stick links = laufen und drehen, Bildschirm ziehen = drehen und Winkel, Gegner antippen = hindrehen, FEUER halten = Kraft aufladen, loslassen = Schuss; Knöpfe für Waffe, Sprung, Salto, Pass und 👁 Übersicht, zwei Finger = zoomen.",
+     "PC: W/S laufen, A/D drehen, Pfeil hoch/runter = Winkel, Leertaste halten = Kraft, Enter = Sprung, Rücktaste = Salto, 1–0 = Waffe, Tab = Waffenliste, V = Übersicht, Esc = Pause; Maus ziehen = zielen, Klick auf Gegner = hindrehen, Mausrad = Zoom.",
+     "Controller: wird nicht unterstützt – gespielt wird mit Touch oder Tastatur und Maus."
+    ],
+    "tipps": [
+     "Achte auf den Wind: Bazooka, Zielsuchrakete und Luftangriff werden abgetrieben, Granaten nicht.",
+     "Schieße Gegner in die Nähe des Wassers – ein Schubser reicht dann für den K.o.",
+     "Nach dem Schuss sofort weglaufen – die eigene Explosion trifft auch deinen Wurm."
+    ]
+   },
    "size": 142492,
    "files": 7,
    "offline": true,
@@ -432,12 +456,17 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "ZEITSPRUNG WISSEN funktioniert wie Hitster, nur mit Weltgeschehen statt Hits: Jeder Spieler startet mit einem Ereignis auf seinem Zeitstrahl. In Zeitstrahlrunden ordnest du ein neues Ereignis zeitlich ein – entweder per Jahreswahl aus A–D oder als Profi direkt in die passende Lücke deines Zeitstrahls. Zu vielen Ereignissen gibt es einen historischen Clip von Wikimedia Commons oder einen passenden Song über Deezer. Dazwischen kommen Wissensfragen zu Geschichte, Politik, Erdkunde, Wissenschaft und Allgemeinwissen, „Was war zuerst?“-Runden, Songrunden und Bildrätsel. Jede richtige Antwort bringt einen Punkt, wer zuerst 8 Punkte hat, gewinnt. Im TV-Modus verbinden sich bis zu vier Handys per WR-Code und PIN.",
+    "anleitung": "ZEITSPRUNG WISSEN funktioniert wie Hitster, nur mit Weltgeschehen statt Hits: Alle starten mit demselben Ereignis auf ihrem Zeitstrahl. In Zeitstrahlrunden ordnest du ein neues Ereignis zeitlich ein – entweder per Jahreswahl aus A–D oder als Profi direkt in die passende Lücke deines Zeitstrahls. Zu vielen Ereignissen gibt es einen historischen Clip von Wikimedia Commons oder einen passenden Song über Deezer. Dazwischen kommen Wissensfragen zu Geschichte, Politik, Erdkunde, Wissenschaft und Allgemeinwissen, „Was war zuerst?“-Runden, Songrunden und Bildrätsel. Jede richtige Antwort bringt einen Punkt, wer zuerst 8 Punkte hat, gewinnt. Im TV-Modus verbinden sich bis zu vier Handys per WR-Code und PIN.",
     "steuerung": [
      "Maus/Touch: Antwort A–D oder Lücke im Zeitstrahl antippen",
      "Tastatur: A–D bzw. 1–4 für Antworten, 1–9 für Lücken im Zeitstrahl",
      "▶ Clip / ♫ Song startet die Medien zum Ereignis, ↻ wählt ein anderes Ereignis",
      "TV-Modus: Handys scannen den QR-Code und geben die PIN ein"
+    ],
+    "tipps": [
+     "Starte mit „Jahr aus A–D wählen“ – das ist deutlich leichter als das Einordnen.",
+     "Nutze Clips und Songs: Schwarz-Weiß-Bilder, Musikstil und Sprache verraten oft das Jahrzehnt.",
+     "Im Profi-Modus zählt nur die Reihenfolge – gleiches Jahr wie ein Nachbar gilt auch als richtig."
     ]
    },
    "size": 243774,
@@ -462,7 +491,20 @@
     "online": true
    },
    "multiplayer": true,
-   "guide": null,
+   "guide": {
+    "anleitung": "ZEITSPRUNG MOVIE ist eine moderierte 3D-Filmshow: Moderator Vito stellt 318 Quizfragen zu Filmen, Studios, Serien und Filmwissen, 38 Hörfragen mit Filmmusik und Serienintros (Deezer/Spotify) und 42 Bildrätsel. In Trailerrunden siehst du einen von 12 Filmtrailern und wählst das Kinostartjahr aus A–D oder ordnest den Film auf deiner Zeitleiste ein. Jede richtige Antwort bringt einen Punkt, wer zuerst 8 Punkte hat, gewinnt. Solo oder mit bis zu vier Spielern – am selben Gerät oder im TV-Modus mit Handys als Controller (WR-Code und PIN).",
+    "steuerung": [
+     "Touch: Antwort A–D oder Lücke in der Zeitleiste antippen, dann „Nächste Runde →“.",
+     "PC: Maus wie Touch; Tastatur A–D oder 1–4 für Antworten, 1–9 für Zeitleisten-Lücken.",
+     "Controller: Steuerkreuz springt zwischen den Knöpfen, A drückt, rechter Stick ist ein Mauszeiger.",
+     "TV-Modus: Handys scannen den QR-Code und geben WR-Code und PIN ein; jedes Handy ist ein Spielerplatz."
+    ],
+    "tipps": [
+     "Läuft ein Trailer oder Song nicht, tausche ihn mit ↻ ohne Nachteil aus.",
+     "Gefragt ist immer der ursprüngliche Kinostart, nicht der deutsche Start.",
+     "Studiofragen kommen oft – merk dir, welches Studio hinter welchem Film steht."
+    ]
+   },
    "size": 328371,
    "files": 17,
    "offline": true,
@@ -485,7 +527,20 @@
     "online": true
    },
    "multiplayer": true,
-   "guide": null,
+   "guide": {
+    "anleitung": "ZEITSPRUNG RADIO ist eine moderierte Musikshow im 3D-Studio mit Moderator Vito. Reihum bekommt jeder Spieler eine Runde: In Musikrunden hörst du einen Song im eingebetteten Player (Deezer, Spotify oder YouTube) und wählst sein Erscheinungsjahr aus A–D – oder du setzt ihn an die richtige Stelle deiner Zeitleiste. In Quizrunden beantwortest du eine von 790 Fragen zu Charts, Interpreten, Songtiteln, Biografien, Songtexten, ESC und Castingshows mit vier Antworten. Jede richtige Antwort bringt einen Punkt, wer zuerst 8 Punkte hat, gewinnt. 1 bis 4 Spieler spielen an einem Gerät oder im TV-Modus mit Handys als Controller (WR-Code und PIN). Eine laufende Show wird gespeichert und lässt sich im Hauptmenü fortsetzen.",
+    "steuerung": [
+     "Touch/Maus: Antwort A–D oder die passende Lücke (+) der Zeitleiste antippen, „▶ Musik abspielen“ öffnet den Player, darin auf Play tippen.",
+     "PC: A, B, C, D oder 1–4 wählen die Antwort, in der Zeitleiste wählen 1–9 die Lücke von links.",
+     "Controller: Steuerkreuz springt zwischen den Knöpfen, A drückt.",
+     "Handy-Controller: Code und PIN vom Fernseher eingeben, dann am Handy antworten, Musik am TV starten und weiterschalten."
+    ],
+    "tipps": [
+     "Bei „Jahr aus A–D“ liegen die falschen Jahre höchstens 6 Jahre neben dem richtigen – achte auf Jahrzehnt und Klang.",
+     "In der Zeitleiste zählt bei gleichem Jahr jede passende Lücke.",
+     "Sperrt ein Anbieter den Clip, hilft „♫ Quelle wechseln“ oder „↻ Anderer Song“."
+    ]
+   },
    "size": 279079,
    "files": 14,
    "offline": true,
@@ -537,7 +592,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Mimori ist ein 3D-Haustier mit vier unterschiedlich gebauten Wesen, Fellfarben, einer Spielhalle mit fünf Minigames, Belohnungen und langfristiger Entwicklung. Klassische Haustierpflege: Mache Toilettengänge, bevor Mimori einen Unfall hat. Unangekündigte Hinterlassenschaften müssen im Zimmer zeitnah mit 'Aufräumen' entfernt werden. Verschmutzung senkt Hygiene und Gesundheit und kann Mimori krank machen. 'Medizin' hilft gegen Krankheit; bei einem dreckigen Zimmer musst du zusätzlich aufräumen. Bei 'Schlafen' bleibt Mimori im Schlafmodus, bis du es wieder aufweckst. Schalte mit 'Licht aus' das Zimmer dunkel, damit sich Mimori viel besser erholt. Die blinkende Glocke zeigt Hunger, Dreck, Toilettenbedarf, Unwohlsein und andere Bedürfnisse an. Einen Piepton kannst du freiwillig einschalten. Sterne und Rekorde aus Minigames werden gespeichert. Kein Echtgeld. NEU: Zwölf unterschiedliche, echte 3D-Zimmer besuchen! Die ersten fünf Räume sind frei, sieben weitere und acht Dekorationsarten werden mit Spielsternen freigeschaltet. Alle vier Mimori-Arten haben drei unabhängige wählbare Erscheinungsvarianten: männlich, weiblich oder divers. Unter 🏠 lassen sich bis zu vier Mimoris aufnehmen, pro Tier gesondert pflegen oder alle auf einmal versorgen. Mit Dates sammelt ihr Beziehungspunkte; ab 60 Herzen kann eine Hochzeit mit 1 bis 3 Partnern gefeiert werden, ohne Einschränkung der Geschlechter. Jeder Mimori merkt sich seinen persönlichen Raum. Im Wohnzimmer ist ein fest eingebautes 3D-Radio mit 13 echten Streams: Fantasiename plus echter Sendername, Quelle laut.fm. Radio braucht Internet, Pflege und Minigames funktionieren offline. NEUE OBERFLÄCHE: Alle Spielfunktionen befinden sich jetzt im großen, fast bildschirmfüllenden Fenster. Unten im 3D-Fenster gibt es eine sechsfach unterteilte Leiste für Pflege, Werte, Räume, Familie, Radio und Spiele. Durch Antippen öffnet sich im selben Fenster nur der gewählte Bereich; die Glocke zeigt Hilferufe kompakt an. Fehlt WebGL im Android-WebView, bleibt das Tier mit einer interaktiven energiesparenden 2D-Darstellung versorgbar. Neu: Raumleiste direkt ganz oben, darunter kompakte Live-Anzeigen für Freude, Hunger, Energie, Hygiene und Gesundheit. Tippe auf die Werte für Details. Die direkte Styling-Leiste führt zu Figur, Kleidung und Optionen. Für alle Mimori-Arten stehen vier Fellfarben und drei Erscheinungsvarianten zur Wahl; die gewählte Taste leuchtet sichtbar und wird gespeichert. Jetzt sind 20 3D-Accessoires und 24 echte 3D-Möbel und Dekorationen verfügbar. Bei einer Hochzeit werden die Partner im 3D-Zimmer mit Namensmarkierungen angezeigt. Das Wohnzimmer enthält ein vergrößertes antippbares 3D-Radio mit 13 laut.fm-Sendern. Auch der untere Radio-Button öffnet die Senderauswahl.",
+    "anleitung": "Mimori ist ein 3D-Haustier mit vier unterschiedlich gebauten Wesen, Fellfarben, einer Spielhalle mit fünf Minigames, Belohnungen und langfristiger Entwicklung. Klassische Haustierpflege: Mache Toilettengänge, bevor Mimori einen Unfall hat. Unangekündigte Hinterlassenschaften müssen im Zimmer zeitnah mit 'Aufräumen' entfernt werden. Verschmutzung senkt Hygiene und Gesundheit und kann Mimori krank machen. 'Medizin' hilft gegen Krankheit; bei einem dreckigen Zimmer musst du zusätzlich aufräumen. Bei 'Schlafen' bleibt Mimori im Schlafmodus, bis du es wieder aufweckst. Schalte mit 'Licht aus' das Zimmer dunkel, damit sich Mimori viel besser erholt. Die blinkende Glocke zeigt Hunger, Dreck, Toilettenbedarf, Unwohlsein und andere Bedürfnisse an. Einen Piepton kannst du freiwillig einschalten. Sterne und Rekorde aus Minigames werden gespeichert. Kein Echtgeld. NEU: Zwölf unterschiedliche, echte 3D-Zimmer besuchen! Die ersten fünf Räume sind frei, sieben weitere sowie 24 Möbel und Dekorationen werden mit Spielsternen freigeschaltet. Alle vier Mimori-Arten haben drei unabhängige wählbare Erscheinungsvarianten: männlich, weiblich oder divers. Unter 🏠 lassen sich bis zu vier Mimoris aufnehmen, pro Tier gesondert pflegen oder alle auf einmal versorgen. Mit Dates sammelt ihr Beziehungspunkte; ab 60 Herzen kann eine Hochzeit mit 1 bis 3 Partnern gefeiert werden, ohne Einschränkung der Geschlechter. Jeder Mimori merkt sich seinen persönlichen Raum. Im Wohnzimmer ist ein fest eingebautes 3D-Radio mit 13 echten Streams: Fantasiename plus echter Sendername, Quelle laut.fm. Radio braucht Internet, Pflege und Minigames funktionieren offline. NEUE OBERFLÄCHE: Alle Spielfunktionen befinden sich jetzt im großen, fast bildschirmfüllenden Fenster. Unten im 3D-Fenster gibt es eine sechsfach unterteilte Leiste für Pflege, Werte, Räume, Familie, Radio und Spiele. Durch Antippen öffnet sich im selben Fenster nur der gewählte Bereich; die Glocke zeigt Hilferufe kompakt an. Fehlt WebGL im Android-WebView, bleibt das Tier mit einer interaktiven energiesparenden 2D-Darstellung versorgbar. Neu: Raumleiste direkt ganz oben, darunter kompakte Live-Anzeigen für Freude, Hunger, Energie, Hygiene und Gesundheit. Tippe auf die Werte für Details. Die direkte Styling-Leiste führt zu Figur, Kleidung und Optionen. Für alle Mimori-Arten stehen vier Fellfarben und drei Erscheinungsvarianten zur Wahl; die gewählte Taste leuchtet sichtbar und wird gespeichert. Jetzt sind 20 3D-Accessoires und 24 echte 3D-Möbel und Dekorationen verfügbar. Bei einer Hochzeit werden die Partner im 3D-Zimmer mit Namensmarkierungen angezeigt. Das Wohnzimmer enthält ein vergrößertes antippbares 3D-Radio mit 13 laut.fm-Sendern. Auch der untere Radio-Button öffnet die Senderauswahl.",
     "steuerung": [
      "Mobil: Mimori mit dem Finger drehen und die großen Pflegebuttons nutzen. Unter den Haupttasten findest du Toilette, Aufräumen, Medizin und Licht an/aus. Die Glocke oben am 3D-Bereich zeigt aktuelle Hilferufe. Im Zahnrad-Menü den Hilferuf-Ton einstellen.",
      "PC: Maus zum Drehen benutzen; Pflegebuttons anklicken. Über ⚙ den Hilferuf-Ton aktivieren und Zimmer oder Wesen wechseln. Mit einer aktiven Browserbenachrichtigungs-Berechtigung können lokale Erinnerungen bei laufender Seite angezeigt werden.",
@@ -553,14 +608,13 @@
      "Lass Mimori bei Dunkelheit schlafen und wecke es mit demselben Schlafbutton wieder auf.",
      "Krankheiten durch schlechte Hygiene behebst du mit Medizin UND Aufräumen. Kein Echtgeld erforderlich.",
      "Die Glocke blinkt bei Bedarf. Akustische Signale und Browser-Erinnerungen sind freiwillig.",
-     "Das neue 1200×630-Cover wird separat vom quadratischen App-Icon im Spielekatalog verwendet.",
      "Google-Speichern bleibt optional; lokale Pflege- und Minigame-Daten bleiben erhalten.",
      "Über das Haus-Symbol kommst du zum Ausbau der zwölf 3D-Kulissen. Kaufe Deko mit erspielten Sternen.",
      "Verabredungen erhöhen den Beziehungswert. Ab 60 Herzen kannst du mit einer, zwei oder drei anderen Figuren heiraten; jede Paarkombination ist erlaubt.",
      "Nach der Hochzeit erscheinen andere Partner als kleinere 3D-Wesen im Raum. Über Schnellpflege versorgst du alle gleichzeitig.",
      "Die 13 Sender stehen mit Originalnamen und Quelle laut.fm im Radio. Live-Streaming funktioniert nur online.",
      "Bei fehlender WebGL-Grafik schaltet Mimori automatisch auf eine einfache, aber drehbare 2D-Ansicht um. Die volle 3D-Szene benötigt eine WebGL-fähige App/WebView.",
-     "20 verschiedene Accessoires werden im 3D-Modell getragen. Möbel sind bis zu 24 Varianten pro Zimmer mit Sternen freischaltbar.",
+     "20 verschiedene Accessoires werden im 3D-Modell getragen. 24 Möbel und Dekorationen lassen sich pro Zimmer mit Sternen freischalten.",
      "Nach der Hochzeit treten bis zu drei Ehepartner als eigene kleine 3D-Wesen im Vordergrund auf. Familiennamen stehen außerdem über ihnen.",
      "Tappe auf die kleinen Werte oben, um bei Bedarf alle Pflegewerte im Detail zu sehen."
     ]
@@ -620,7 +674,19 @@
    "path": "lumo/",
    "modes": {},
    "multiplayer": false,
-   "guide": null,
+   "guide": {
+    "anleitung": "Lumo – Wolkenpfad ist ein Retro-Jump-and-Run im 16-Bit-Stil: Lauf mit Lumo durch 20 Level in vier Welten (Wolkenwiese, Bernsteinhöhlen, Frostgipfel, Sternenschloss) bis zur Fahnenstange. Springe Krabblern, Hüpfern und Fledermäusen auf den Kopf – nur den Stachelkäfer darfst du nicht treten. ?-Blöcke geben Münzen, der +-Block einen Schutzpilz (macht dich groß und schützt einmal), der ★-Block einen Stern (kurz unbesiegbar). Herzen und je 100 Münzen bringen ein Extraleben. Nach jeder Welt folgt ein Münzgarten als 20-Sekunden-Bonusrunde. Übrige Zeit gibt 50 Punkte pro Sekunde. Fortschritt und Hi-Score werden gespeichert, mit Google auch geräteübergreifend.",
+    "steuerung": [
+     "Touch: ◀ ▶ unten links laufen, roter A-Knopf springen.",
+     "PC: Pfeil links/rechts oder A/D laufen, Leertaste, Z, Pfeil hoch oder W springen, P oder Esc Pause; im Titel Pfeil runter wählen, Enter starten.",
+     "Controller: Steuerkreuz/Stick laufen, A springen, X oder Start bestätigen, B oder Select Pause."
+    ],
+    "tipps": [
+     "Sprungtaste länger halten = höher springen; beim Treten halten = höher abfedern.",
+     "Der Zeitbonus bringt die meisten Punkte – zügig zur Fahne laufen.",
+     "Groß sein schützt nicht vor Gruben."
+    ]
+   },
    "size": 43957,
    "files": 4,
    "offline": true,
@@ -640,7 +706,19 @@
    "path": "taschi/",
    "modes": {},
    "multiplayer": false,
-   "guide": null,
+   "guide": {
+    "anleitung": "TASCHI – Die 16 Lichter ist ein 3D-Sammelrollenspiel: Wähle bei Professor Ulme in Sonnenhain deinen Starter (Glutzahn, Plätscherchen oder Samenling), fang wilde Taschis im hohen Gras und bau ein Team aus bis zu sechs Begleitern auf. In jeder der 16 Regionen löst du ein Rätsel, besiegst die Arenaleitung für ein Licht-Siegel und danach den regionalen Champion, der das Tor zur nächsten Region öffnet. Unterwegs stellst du dich deinem Rivalen Rian und der Schattengilde, die wilde Taschis einfängt. Mit allen 16 Siegeln geht es zum Sternengipfel und in die Sternenliga mit fünf Meisterprüfungen. Kämpfe laufen rundenbasiert mit zehn Typen (Feuer schlägt Pflanze, Wasser schlägt Feuer …), Statusveränderungen, Einzel- und Doppelkämpfen. Drei Speicherplätze, mit Google auch geräteübergreifend.",
+    "steuerung": [
+     "Touch: Joystick links laufen, Aktionsknopf rechts, 🏃 sprinten, oben ☰ Menü, ◉ Team, 🗺 Karte.",
+     "PC: WASD/Pfeile laufen, Shift sprinten, E/Enter/Leertaste Aktion, Q/Rücktaste zurück, Esc/P Menü, T Team, M Karte, Z/C Kamera.",
+     "Controller: Stick/Steuerkreuz laufen, A bestätigen, B zurück, X sprinten, Y Team, LB/RB Reiter, Select Karte, Start Menü."
+    ],
+    "tipps": [
+     "Schwäche wilde Taschis vor dem Fangen – wenig KP, Schlaf oder Eis erhöhen die Fangchance.",
+     "Das Nordtor öffnet erst der regionale Champion, die Arena erst das gelöste Regionsrätsel.",
+     "Rian nimmt immer den Starter, der deinen schlägt – nimm ein Taschi mit, das dagegen stark ist."
+    ]
+   },
    "size": 870289,
    "files": 52,
    "offline": true,
@@ -665,9 +743,10 @@
    "guide": {
     "anleitung": "Zotik ist ein 3D-Action-Rollenspiel mit zehn Welten von Lunaris bis Elyndra und einem Endspiel im Weltenriss. Du erkundest die Welten, sprichst mit Figuren, erfüllst Quests (Hauptgeschichte und Nebenaufgaben), löst Rätsel, kämpfst mit deinen Gefährten gegen Gegner und Bosse und sammelst Rissplitter, Heiltränke und Erfahrung. Rote Kreise am Boden zeigen Angriffe an, denen du rechtzeitig ausweichen musst. Im Menü findest du Quests, Weltreise, Inventar, Fähigkeiten, Steuerung mit Optionen und Koop; das Spiel speichert automatisch, zusätzlich über das Menü.",
     "steuerung": [
-     "PC: WASD bewegen, Maus ziehen = Kamera, J oder Klick = Angriff (3-Hieb-Kombo), Shift = Ausweichen, 1 / 2 = Fähigkeiten (Funkenwirbel, Lichtstoß), 3 oder R = Heiltrank, E = Sprechen/Öffnen, Esc = Menü, Antworten in Gesprächen mit 1–9, Befehlsleiste mit ↑ ↓ Enter, Q = Ziel erfassen, F = Reaktion, T = Team-Angriff, G = Rissform, 4/5/6 = IP-Techniken, C/X = Werkzeug benutzen/wechseln",
+     "PC: WASD bewegen, Maus ziehen = Kamera, J, K oder Klick = Angriff (3-Hieb-Kombo), Shift oder Leertaste = Ausweichen, 1 / 2 = Fähigkeiten (Funkenwirbel, Lichtstoß), 3 oder R = Heiltrank, E = Sprechen/Öffnen, Esc oder Tab = Menü, I = Inventar, Antworten in Gesprächen mit 1–9, Befehlsleiste mit ↑ ↓ Enter, Q = Ziel erfassen, F = Reaktion, T = Spezial-Befehlsleiste (Team, Form, IP, Werkzeug), G = Rissform, 4/5/6 = IP-Techniken, C/X = Werkzeug benutzen/wechseln",
      "PC (Nautilux, sobald freigeschaltet): V = ein-/aussteigen, B = Form wechseln",
-     "Touch: Stick links = Bewegen, rechts wischen = Kamera, Tasten für Angriff und Ausweichen, Fähigkeit-Taste (tippen = einsetzen, halten = wechseln), Aktion-Taste (Sprechen, Öffnen, Einsteigen), Menü-Taste ☰ oben links"
+     "Touch: Stick links = Bewegen, rechts wischen = Kamera, Tasten für Angriff und Ausweichen, Fähigkeit-Taste (tippen = einsetzen, halten = wechseln), Aktion-Taste (Sprechen, Öffnen, Einsteigen), Menü-Taste ☰ oben links",
+     "Controller: linker Stick bewegen, X Angriff, A Ausweichen, Y Sprechen/Öffnen, LB Funkenwirbel, RB Lichtstoß, LT Ziel, RT Heiltrank, B oder Start Menü, Select Befehl ausführen; der rechte Stick steuert einen Zeiger für Menüs"
     ],
     "tipps": [
      "Treffer laden Mana auf, nutze Fähigkeiten also im Kampf.",
@@ -699,14 +778,14 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "Battle Royale in 3D: Bis zu 100 Teilnehmer springen aus der Riftfähre über der Insel Aurelia ab, gleiten zu einem der 14 Orte und suchen Waffen, Heilung, Munition und Material. Der Riftsturm zieht sich in sieben Phasen zusammen – wer außerhalb steht, verliert Leben. Wer als Letzte·r (oder letztes Team) übrig ist, gewinnt. Mit der Spitzhacke sammelst du Holz, Stein und Metall und baust Wände, Böden und Rampen (oder spielst im Modus „Ohne Bauen“). Riftkisten enthalten immer eine Waffe, Rift-Buggys bringen dich schnell durch die Zone, Sprungpads schleudern dich in die Luft. Im Duo und Squad werden Teamkameraden zuerst niedergeschlagen und können wiederbelebt werden. Offline gegen Bots (leicht/normal/schwer) oder online über einen eigenen Server mit Gruppen, öffentlichen und privaten Lobbys.",
+    "anleitung": "Battle Royale in 3D: Bis zu 100 Teilnehmer springen aus der Riftfähre über der Insel Aurelia ab, gleiten zu einem der 14 Orte und suchen Waffen, Heilung, Munition und Material. Der Riftsturm zieht sich in sieben Phasen zusammen – wer außerhalb steht, verliert Leben. Wer als Letzte·r (oder letztes Team) übrig ist, gewinnt. Mit der Spitzhacke sammelst du Holz, Stein und Metall und baust Wände, Böden und Rampen (oder spielst im Modus „Ohne Bauen“). Riftkisten enthalten immer eine Waffe, Rift-Buggys bringen dich schnell durch die Zone, Sprungpads schleudern dich in die Luft. Im Duo und Squad werden Teamkameraden zuerst niedergeschlagen und können wiederbelebt werden. Offline gegen Bots (leicht/normal/schwer) oder online ohne eigenen Server: in der Lobby unter „Gruppe & Freunde“ auf „Raum eröffnen“ tippen und Freunde per Code oder Link einladen; mit eigenem Server gibt es zusätzlich Gruppen und öffentliche Lobbys.",
     "steuerung": [
-     "PC: WASD laufen, Maus zielen, Linksklick feuern, Rechtsklick zielen, Leertaste springen/Gleiter, Strg ducken/rutschen, Umschalt sprinten, E interagieren (halten = wiederbeleben), R nachladen, 1–5 Waffen, F Spitzhacke, Q Baumodus, Z/X/C Wand/Boden/Rampe, V Material, M Karte, Tab Inventar, B Emotes, Esc Pause – alle Tasten sind belegbar.",
+     "PC: WASD laufen, Maus zielen, Linksklick feuern, Rechtsklick zielen, Leertaste springen/Gleiter, Strg ducken/rutschen, Umschalt sprinten, E interagieren (halten = wiederbeleben), R nachladen, 1–5 Waffen, F Spitzhacke, Mausrad wechseln, Q Baumodus, Z/X/C Wand/Boden/Rampe, V Material, G fallen lassen, T Markierung, M Karte, Tab Inventar, B Emotes, Esc Pause – alle Tasten sind belegbar.",
      "Touch: linker Daumen = Bewegungs-Stick (am Rand sprinten), rechte Seite wischen = umsehen, große Feuertaste halten und gleichzeitig wischen = zielen und schießen, Tasten für Springen, Ducken, Zielen, Nachladen, Bauen; „Aufheben/Öffnen“ erscheint bei Bedarf; Schnellzugriff unten antippen.",
-     "Gamepad: linker Stick laufen, rechter Stick zielen, RT feuern, LT zielen, A springen, B ducken, X interagieren, Y nachladen, LB/RB Waffe wechseln, rechter Stick drücken = Baumodus, Start = Pause, Select = Karte."
+     "Gamepad: linker Stick laufen (drücken = sprinten), rechter Stick zielen, RT feuern, LT zielen, A springen, B ducken, X interagieren, Y nachladen, LB/RB Waffe wechseln, rechter Stick drücken = Baumodus, Steuerkreuz ← Spitzhacke, ↑ Emotes, ↓ Inventar, → Markierung, Start = Pause, Select = Karte."
     ],
     "tipps": [
-     "Für Online-Matches in den Einstellungen unter „Online“ die Adresse deines RIFTZONE-Servers eintragen (Anleitung in riftzone/README.md).",
+     "Online mit Freunden geht ohne Server: „Gruppe & Freunde“ → „Raum eröffnen“ und Code oder Link teilen; dein Gerät bleibt dabei offen. Öffentliche Warteschlangen gibt es nur mit eigenem Server (Einstellungen → Online).",
      "Grafikqualität „Automatisch“ passt sich der Bildrate an; auf älteren Handys hilft eine niedrigere Auflösung und eine Bildratenbegrenzung."
     ]
    },
@@ -730,10 +809,11 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Aeru ist ein 3D-Drachenabenteuer über sechs Sterneninseln: Der Wind ist verstummt und du folgst der Spur durch die Geschichte (Kapitel, Quests, Bosse wie Vesper und Die Stille). Du läufst, springst, fliegst und kämpfst mit Windstößen gegen Gegner. Optional kannst du 144 Himmelssplitter sammeln, die Upgrades freischalten. Bei Tod geht es zurück zum letzten Rastpunkt, der Questfortschritt bleibt.",
+    "anleitung": "Aeru ist ein 3D-Drachenabenteuer über sechs Sterneninseln: Der Wind ist verstummt und du folgst der Spur durch die Geschichte (Kapitel, Quests, Bosse wie Vesper und Die Stille). Du läufst, springst, fliegst und kämpfst mit Windstößen gegen Gegner. Optional kannst du 168 Himmelssplitter sammeln (24 pro Insel), die Upgrades freischalten – ab 144 gibt es Sternenglanz. Bei Tod geht es zurück zum letzten Rastpunkt, der Questfortschritt bleibt.",
     "steuerung": [
      "PC: WASD/Pfeile = Bewegen, Maus ziehen/Q/E/Mausrad = Kamera (C = hinter Aeru), Leertaste = Springen/Flügelschlag (halten = höher, in der Luft halten = gleiten), G = Flug ein/aus (im Flug Leertaste halten = steigen), Umschalt = Ausweichen bzw. im Flug sinken, F = Windstoß, R oder Enter = Sprechen/Tor, J = Tagebuch, Esc oder P = Pause",
-     "Touch: linker Stick = Bewegen, rechts wischen = Kamera, Tasten SPRUNG, FLUG, WIND, ROLLE, REDEN (nur wenn jemand in der Nähe ist), ☰ = Tagebuch, Ⅱ = Pause"
+     "Touch: linker Stick = Bewegen, rechts wischen = Kamera, Tasten SPRUNG, FLUG, WIND, RAMM, REDEN (nur wenn jemand in der Nähe ist), ☰ = Tagebuch, Ⅱ = Pause",
+     "Controller: linker Stick oder Steuerkreuz = Bewegen, A = Springen/Bestätigen, X = Windstoß, Y = Sprechen, RT = Flug, LT = Rammstoß/sinken, LB/RB = Kamera drehen, Select = Tagebuch, Start oder B = Pause"
     ],
     "tipps": [
      "Türkise Aufwinde und der Boden laden die Flügelkraft wieder auf.",
@@ -763,9 +843,14 @@
     "anleitung": "Du surfst durch das Internet und weichst Hindernissen aus. Es gibt 10 Level, du hast 3 Leben, und ab Level 4 wird es schneller. Hindernisse sind farbig markiert: niedrige (gelb) überspringst du, hängende (pink) unterrutschst du, hohe (blau) umgehst du durch Spurwechsel. Am Ende kannst du dich in die Top 10 eintragen.",
     "steuerung": [
      "PC: Pfeil links/rechts oder A/D = Spur wechseln, Pfeil hoch/W/Leertaste = Springen, Pfeil runter/S = Rutschen, P oder Esc = Pause, Enter/Leertaste = Start bzw. Weiter",
-     "Touch: Wischen links/rechts = Spur wechseln, Wischen nach oben oder Tippen = Springen, Wischen nach unten = Rutschen, Pause-Knopf oben rechts"
+     "Touch: Wischen links/rechts = Spur wechseln, Wischen nach oben oder Tippen = Springen, Wischen nach unten = Rutschen, Pause-Knopf oben rechts",
+     "Controller: Steuerkreuz oder linker Stick wie die Pfeiltasten (Spur, springen, rutschen), A springt bzw. startet, Start oder B Pause"
     ],
-    "tipps": []
+    "tipps": [
+     "Achte auf die Rahmenfarbe: gelb springen, pink rutschen, blau Spur wechseln.",
+     "In jeder normalen Reihe bleibt mindestens eine Spur frei – schau früh nach der Lücke.",
+     "Die Mittelspur ist die beste Grundposition: Von dort erreichst du beide Seiten mit einem Wechsel."
+    ]
    },
    "size": 3097759,
    "files": 21,
@@ -820,10 +905,11 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Ein 3D-Flipper mit 13 Tischen (jeder mit eigenem Layout und Schwierigkeit). In der Kampagne musst du auf jedem Tisch das Punkteziel erreichen, dann geht es zum nächsten Tisch; alle 3 Tische gibt es eine Extra-Kugel. Im Freien Spiel wählst du einen beliebigen Tisch und sammelst mit 5 Kugeln möglichst viele Punkte. Bumper (ON AIR, HIT ZONE, BASS BOOST, Lautsprecher) bringen Punkte, Störsender pendeln vor den Flippern.",
+    "anleitung": "Ein 3D-Flipper mit 13 Tischen (jeder mit eigenem Layout und Schwierigkeit). In der Kampagne musst du auf jedem Tisch das Punkteziel erreichen, dann geht es zum nächsten Tisch; alle 3 Tische gibt es eine Extra-Kugel. Im Freien Spiel wählst du einen beliebigen Tisch und sammelst mit 5 Kugeln möglichst viele Punkte. Bumper (ON AIR, HIT ZONE, BASS BOOST, Lautsprecher) bringen Punkte, ab Tisch 5 pendeln Störsender vor den Flippern.",
     "steuerung": [
      "PC: Pfeil links/rechts oder A/D = linker/rechter Flipper, Leertaste halten und loslassen = Kugel starten, P = Pause, R = Neustart, M = Ton",
-     "Touch: Tasten LINKS und RECHTS für die Flipper, Taste START (halten und loslassen) zum Abschuss; Pause, Ton und Neustart oben rechts"
+     "Touch: Tasten LINKS und RECHTS für die Flipper, Taste START (halten und loslassen) zum Abschuss; Pause, Ton und Neustart oben rechts",
+     "Controller: LB oder LT = linker Flipper, RB oder RT = rechter Flipper, X halten und loslassen = Abschuss, Start oder B = Pause, Select = Ton"
     ],
     "tipps": [
      "Die Start-Taste halten und erst zum Abschuss loslassen."
@@ -852,7 +938,8 @@
     "anleitung": "Ein Rhythmusspiel auf 4 Spuren: Triff die Noten im Takt der Musik. Verpasste Noten senken die Welle (Lebensleiste); fällt sie auf null, ist der Song verloren. In der Kampagne spielst du 13 Sender (Genres) von entspannt bis schwer, im Freien Spiel wählst du einen beliebigen Sender. Am Ende gibt es Sterne, Genauigkeit, maximale Combo und Perfekt-Treffer.",
     "steuerung": [
      "PC: D, F, J, K oder Pfeil links, runter, hoch, rechts = die vier Spuren treffen, P/Esc = Pause, R = Neustart, M = Ton, Enter/Leertaste = Start bzw. Weiter",
-     "Touch: Die vier großen Tasten unten antippen (links, runter, hoch, rechts); Pause, Ton, Neustart oben rechts"
+     "Touch: Die vier großen Tasten unten antippen (links, runter, hoch, rechts); Pause, Ton, Neustart oben rechts",
+     "Controller: Steuerkreuz links, runter, hoch, rechts oder LB, LT, RT, RB = die vier Spuren, A startet/bestätigt, B oder Start = Pause, Select = Ton"
     ],
     "tipps": [
      "Treffer wirken zu früh oder zu spät (z. B. Bluetooth-Kopfhörer)? In der Pause lässt sich der Audio-Versatz anpassen."
@@ -917,8 +1004,9 @@
    "guide": {
     "anleitung": "Ein 3D-Rhythmusspiel auf 3 Spuren: Kristalle fliegen im Takt der im Browser erzeugten Musik heran. Triff sie genau, wenn sie den Ring unter deinem Gleiter erreichen (Perfekt, Super, Gut). Orbs sammelst du, indem du in ihrer Spur bist, Prismenwänden weichst du aus. Combos erhöhen den Multiplikator bis ×4, volle Energie zündet den Overdrive für doppelte Punkte. Kampagne mit 32 Leveln in 4 Welten und 4 Schwierigkeitsgraden, dazu Endlos (Bestzeiten), Tagesrhythmus, Sprint 90, Remix, Zen, Präzision, Spiegelwelt, Turbo, Blindflug, Gleitflug, Wandlauf und ein Tutorial.",
     "steuerung": [
-     "PC: Pfeil links/rechts = eine Spur wechseln (trifft dort gleich mit), A, S, D oder J, K, L = Spur direkt wählen und treffen, Leertaste/Pfeil hoch/runter = in aktueller Spur treffen, E/Umschalt = Overdrive, Mausklick = Spur unter dem Zeiger treffen, Esc/P = Pause",
-     "Touch: Die drei großen Spurtasten unten antippen oder mit dem Finger darüber gleiten, Tippen = treffen, links/rechts wischen = Spur wechseln, nach oben wischen oder ⚡ = Overdrive, II = Pause"
+     "PC: Pfeil links/rechts = eine Spur wechseln (trifft dort gleich mit), A, S, D oder J, K, L = Spur direkt wählen und treffen, Leertaste/Pfeil hoch/runter/W = in aktueller Spur treffen, E/Umschalt = Overdrive, Mausklick = Spur unter dem Zeiger treffen, Esc/P = Pause",
+     "Touch: Die drei großen Spurtasten unten antippen oder mit dem Finger darüber gleiten, Tippen = treffen, links/rechts wischen = Spur wechseln, nach oben wischen oder ⚡ = Overdrive, II = Pause",
+     "Controller: Steuerkreuz links/rechts = Spur wechseln, Steuerkreuz hoch/runter oder A = treffen, Y, RB oder LT = Overdrive, B oder Start = Pause"
     ],
     "tipps": [
      "Treffer wirken zu früh oder zu spät (z. B. Bluetooth-Kopfhörer)? In den Einstellungen gibt es eine Latenz-Kalibrierung."
@@ -949,7 +1037,8 @@
     "anleitung": "Finde die zusammengehörigen Logo-Paare, indem du immer zwei Karten aufdeckst. Treffer in Folge bauen eine Combo auf und bringen mehr Punkte; am Ende gibt es bis zu 3 Sterne je nach Anzahl der Züge. Die Kampagne hat 10 Level (teils mit Mischer oder Zeitlimit), im Freien Spiel wählst du die Anzahl der Paare, 1 Spieler oder Duell zu zweit und die Mischer-Stufe. Der Mischer tauscht nach Fehlzügen verdeckte Karten.",
     "steuerung": [
      "PC: Karten mit der Maus anklicken, P oder Esc = Pause, M = Ton",
-     "Touch: Karten antippen; Knöpfe für Menü, Hinweis (Auge), Pause und Ton"
+     "Touch: Karten antippen; Knöpfe für Menü, Hinweis (Auge), Pause und Ton",
+     "Controller: Steuerkreuz springt zwischen Knöpfen und Karten, A klickt; rechter Stick steuert einen Zeiger; Start oder B Pause, Select Ton"
     ],
     "tipps": [
      "Der Hinweis (Auge) zeigt kurz alle Karten, kostet aber 150 Punkte und ist begrenzt."
@@ -1010,6 +1099,7 @@
     "steuerung": [
      "PC: Pfeiltasten oder WASD zum Lenken; C Kamera wechseln, P oder Esc Pause, M Ton an/aus; Enter oder Leertaste im Menü startet das Spiel",
      "Touch: In der Kamera Schräg 3D in die gewünschte Richtung wischen; in der Verfolger-Kamera links oder rechts auf den Bildschirm tippen (oder wischen), um abzubiegen",
+     "Controller: Steuerkreuz oder linker Stick lenken, A oder X startet, Y wechselt die Kamera, Start oder B Pause, Select Ton",
      "Knöpfe oben: Menü, Kamera, Pause, Ton"
     ],
     "tipps": [
@@ -1074,10 +1164,11 @@
     "steuerung": [
      "PC: Antwort mit Taste A, B, C oder D wählen, dann Enter, J oder Leertaste für Ja (endgültig), N für Nein; Joker mit Taste 1 bis 4; P oder Esc Pause, M Ton",
      "Touch/Maus: Antwort antippen oder anklicken, dann Ja, final! oder Nein bestätigen; Joker über die Knöpfe; Aussteigen über den Knopf Aussteigen",
+     "Controller: Steuerkreuz springt zwischen den Knöpfen, A drückt den markierten Knopf, X bestätigt, B oder Start Pause, Select Ton",
      "Handy-Kopplung und online: im Menü „Online & Handys“ wählen, QR-Code scannen oder Code eingeben, dann dient das Handy als Eingabegerät"
     ],
     "tipps": [
-     "Jeder Joker kann pro Spieler nur einmal eingesetzt werden."
+     "Jeder Joker kann pro Spieler nur einmal eingesetzt werden, im Team-Modus hat jedes Team jeden Joker einmal."
     ]
    },
    "size": 1529617,
@@ -1107,9 +1198,15 @@
     "steuerung": [
      "PC/Maus: Koffer in der 3D-Ansicht anklicken, um ihn zu wählen oder zu öffnen; beim Angebot Knöpfe benutzen oder Taste D bzw. Enter für Deal, W oder N für Weiter; bei der Tauschoption T zum Tauschen, B zum Behalten; P oder Esc Pause, M Ton",
      "Touch: Koffer antippen; Angebote über die Knöpfe unten beantworten",
+     "Controller: Steuerkreuz springt zwischen den Knöpfen, A drückt den markierten Knopf (beim Angebot wirkt A wie Enter = DEAL), B oder Start Pause, Select Ton",
      "Handy-Kopplung und online: im Menü „Online & Handys“, bis zu 4 Spieler"
     ],
-    "tipps": []
+    "tipps": [
+     "Achte beim Angebot auf „Ø der restlichen Werte“: der Durchschnitt aller noch geschlossenen Koffer, deiner zählt mit.",
+     "Frühe Angebote sind schwach – in Runde 1 und 2 lohnt ein Deal fast nie.",
+     "Solange noch zwei oder drei Beträge ab 100.000 € offen sind, ist WEITER meist besser.",
+     "Handle nur, wenn du das Angebot auch ohne Aufschlag nehmen würdest – bei Gnadenlos klappt +50 % nie."
+    ]
    },
    "size": 1425905,
    "files": 22,
@@ -1133,13 +1230,18 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "Das Mikro-Duell: Sieben zufällig gewählte Mini-Spiele werden nacheinander gespielt, jedes zählt mehr Punkte als das vorige (1 bis 7). Wer zuerst 15 Punkte erreicht, gewinnt. Du spielst gegen den Moderator (Stärke Anfänger, Normal oder Profi) oder zu zweit abwechselnd an einem Gerät. Bei Gleichstand gibt es ein Stechen im Tipp-Fieber. Mini-Spiele sind zum Beispiel Reaktionstest, Schätzduell, Logo-Gedächtnis, Tipp-Fieber, Zielscheibe, Farb-Verwirrung, Kopfrechnen und Sortier-Blitz; vor jedem Spiel wird die Regel angezeigt.",
+    "anleitung": "Das Mikro-Duell: Aus acht Mini-Spielen werden je Duell sieben zufällig gewählt und nacheinander gespielt, jedes zählt mehr Punkte als das vorige (1 bis 7). Wer zuerst 15 Punkte erreicht, gewinnt. Du spielst gegen den Moderator (Stärke Anfänger, Normal oder Profi) oder zu zweit abwechselnd an einem Gerät. Bei Gleichstand gibt es ein Stechen im Tipp-Fieber. Mini-Spiele sind zum Beispiel Reaktionstest, Schätzduell, Logo-Gedächtnis, Tipp-Fieber, Zielscheibe, Farb-Verwirrung, Kopfrechnen und Sortier-Blitz; vor jedem Spiel wird die Regel angezeigt.",
     "steuerung": [
      "PC/Maus: Mini-Spiele per Klick bedienen; Enter oder Leertaste bestätigt Hinweise, Enter im Menü startet; im Schätzduell Zahl eintippen und Enter; M Ton",
      "Touch: Knöpfe, Felder und Flächen der Mini-Spiele antippen",
      "Zu zweit spielen beide abwechselnd am selben Gerät"
     ],
-    "tipps": []
+    "tipps": [
+     "Fang mit der Stärke Anfänger an, um alle Mini-Spiele kennenzulernen.",
+     "Lies vor jedem Spiel die Regel und drück LOS! erst, wenn du bereit bist – der Moderator wartet.",
+     "Beim Reaktionstest nie raten: Ein Frühstart zählt als 600 ms.",
+     "Bei der Farb-Verwirrung kostet jeder Fehler einen Punkt – lieber kurz genauer hinschauen."
+    ]
    },
    "size": 1407535,
    "files": 22,
@@ -1167,9 +1269,14 @@
     "steuerung": [
      "PC/Maus: Antworten, Fragen und Gesichter anklicken; Stirnband-Party: Pfeil rechts oder Enter für Richtig, Pfeil links oder Leertaste für Weiter; M Ton",
      "Touch: Knöpfe und Gesichter antippen; bei der Stirnband-Party die Knöpfe Richtig und Weiter antippen",
+     "Controller: Steuerkreuz springt zwischen den Knöpfen, A drückt; Stirnband-Party: A Richtig, X Weiter",
      "Gesichter-Radar: Gesicht antippen und nochmal antippen gibt den Tipp ab"
     ],
-    "tipps": []
+    "tipps": [
+     "Beim Hinweis-Raten lieber noch einen Hinweis abwarten, wenn du unsicher bist – ein falscher Tipp kostet die ganze Runde.",
+     "Vergleiche die vier Antworten mit allen bisherigen Hinweisen, nicht nur mit dem letzten.",
+     "Beim Fragen-Raten zuerst breite Fragen stellen, die viele Begriffe ausschließen."
+    ]
    },
    "size": 1419797,
    "files": 23,
@@ -1196,7 +1303,7 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "Arcade-Rennen mit Sender-Logos: Driften, Mini-Turbos, Boost-Felder und Items wie Boost, Banane, Stein, Mine, Rakete, Schild, Blitz und Nebel. Du fährst solo am Handy oder im Mehrspieler-Modus mit bis zu 4 Handys als Lenkrad vor einem großen Bildschirm (Splitscreen). Modi: Einzelrennen, Cup (3 Strecken) und Zeitfahren (allein, ohne Items). Du wählst Strecke, Figur, Kart, Rundenzahl, Gegnerstärke und Lenkhilfe; Bestzeiten werden gespeichert.",
+    "anleitung": "Arcade-Rennen mit Sender-Logos: Driften, Mini-Turbos, Boost-Felder und Items wie Boost, Banane, Stein, Mine, Rakete, Schild, Blitz und Nebel. Du fährst solo am Handy oder im Mehrspieler-Modus mit bis zu 4 Handys als Lenkrad vor einem großen Bildschirm (Splitscreen). Modi: Einzelrennen, Cup (3 Strecken), Zeitfahren (allein, ohne Items) und Freies Fahren (allein, ohne Zeit- und Rundendruck). Du wählst Strecke, Figur, Kart, Rundenzahl, Gegnerstärke und Lenkhilfe; Bestzeiten werden gespeichert.",
     "steuerung": [
      "PC: Pfeil hoch oder W Gas, Pfeil links/rechts oder A/D lenken, Pfeil runter oder S bremsen, Shift oder Z driften, Leertaste, Enter oder X Item; Esc Pause, M Ton",
      "Touch: links Joystick zum Lenken; rechts 4 Tasten (unten Gas, links Bremse, rechts Drift, oben Item); der Daumen zwischen Gas und Drift drückt beide; optional Kippen zum Lenken",
@@ -1226,10 +1333,11 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Wobbel, ein kleiner rosa Blob, schiebt Kisten auf Zielfelder. Kisten können nur geschoben werden, nicht gezogen und nicht zwei auf einmal. Ein Level ist geschafft, wenn jedes Zielfeld eine passende Kiste trägt. Es gibt 55 Level in mehreren Welten mit neuen Elementen wie Wasser, Farben, Eis, Schlüssel und Türen, Pfeilfelder und brüchiger Boden. Sterne gibt es je nach Zahl der Züge; das nächste Level wird nach dem vorigen freigeschaltet. Zusätzlich gibt es Bonusspiele, einen Laden, Erfolge, ein Tageslevel und einen Level-Editor.",
+    "anleitung": "Wobbel, ein kleiner rosa Blob, schiebt Kisten auf Zielfelder. Kisten können nur geschoben werden, nicht gezogen und nicht zwei auf einmal. Ein Level ist geschafft, wenn jedes Zielfeld eine passende Kiste trägt. Es gibt 65 Level in 6 Welten mit neuen Elementen wie Wasser, Farben, Eis, Schlüssel und Türen, Pfeilfelder und brüchiger Boden. Sterne gibt es je nach Zahl der Züge; das nächste Level wird nach dem vorigen freigeschaltet. Zusätzlich gibt es Bonusspiele, einen Laden, Erfolge, ein Tageslevel und einen Level-Editor.",
     "steuerung": [
-     "PC: Pfeiltasten oder WASD zum Bewegen; Klick auf ein Feld läuft dorthin; Z oder Backspace Zug zurück, R Neustart, Q/E Kamera drehen, Esc Menü",
+     "PC: Pfeiltasten oder WASD zum Bewegen; Klick auf ein Feld läuft dorthin; Z, U oder Backspace Zug zurück, R Neustart, Q/E Kamera drehen, Esc oder M Menü",
      "Touch: Auf dem Spielfeld wischen oder ziehen zum Bewegen (optional Steuerkreuz); Feld antippen läuft dorthin; Knöpfe oben für Zug zurück, Neustart, Kamera drehen und Menü",
+     "Controller: Steuerkreuz oder linker Stick bewegen, X Zug zurück, Y Neustart, LB/RB Kamera drehen, Start oder B Menü",
      "Die Richtungen beziehen sich auf den Bildschirm, auch nach dem Drehen der Kamera."
     ],
     "tipps": [
@@ -1301,7 +1409,7 @@
      "Handys koppeln: Jedes Handy wird das Pad eines Spielers (bis zu 4); drehen, Buchstaben wählen, Vokale kaufen und lösen geht dann am Handy."
     ],
     "tipps": [
-     "Ein Gratis-Vokal ist kostenlos.",
+     "Landet das Rad auf 🎁 Gratis-Vokal, nennst du einen Vokal, ohne 250 Punkte zu zahlen.",
      "Falsch gelöst bedeutet, der Zug ist weg."
     ]
    },
@@ -1330,7 +1438,7 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "Funkmaler ist ein Mal- und Ratespiel für 2 bis 8 Spieler. Ein großer Bildschirm (Fernseher, PC oder Tablet) öffnet „🌐 Online & Handys“ und zeigt einen QR-Code mit Raum-Code; alle anderen scannen ihn mit dem Handy (oder öffnen den Link), geben ihren Namen ein und sind drin – auch von unterwegs. Reihum ist jemand Maler: Sein Handy zeigt 3 Wörter, eins wird gewählt und gemalt (Buchstaben und Zahlen sind tabu). Die Zeichnung erscheint live auf dem Fernseher und den Handys. Alle anderen tippen ihre Vermutung ins Handy; „knapp daneben“ sieht nur, wer geraten hat. Je schneller richtig, desto mehr Punkte (bis 120), der Maler bekommt für jeden, der es errät, 15 Punkte. Im Lauf der Zeit werden Buchstaben aufgedeckt. Nach allen Runden gibt es Podest und Galerie aller Bilder. Fällt ein Handy kurz aus, verbindet es sich von selbst wieder und behält seine Punkte. Ohne Handys: „Ein Gerät“ – einer malt, alle raten laut, der Maler tippt an, wer es zuerst hatte.",
+    "anleitung": "Funkmaler ist ein Mal- und Ratespiel für 2 bis 8 Spieler. Ein großer Bildschirm (Fernseher, PC oder Tablet) öffnet „🌐 Online & Handys“ und zeigt einen QR-Code mit Raum-Code; alle anderen scannen ihn mit dem Handy (oder öffnen den Link), geben ihren Namen ein und sind drin – auch von unterwegs. Reihum ist jemand Maler: Sein Handy zeigt 3 Wörter, eins wird gewählt und gemalt (Buchstaben und Zahlen sind tabu). Die Zeichnung erscheint live auf dem Fernseher und den Handys. Alle anderen tippen ihre Vermutung ins Handy; „knapp daneben“ sieht nur, wer geraten hat. Je schneller richtig, desto mehr Punkte (bis 120), der Maler bekommt für jeden, der es errät, 15 Punkte, raten es alle, gibt es +10 obendrauf. Im Lauf der Zeit werden Buchstaben aufgedeckt. Nach allen Runden gibt es Podest und Galerie aller Bilder. Fällt ein Handy kurz aus, verbindet es sich von selbst wieder und behält seine Punkte. Ohne Handys: „Ein Gerät“ – einer malt, alle raten laut, der Maler tippt an, wer es zuerst hatte.",
     "steuerung": [
      "Fernseher/PC: Lobby mit QR-Code, Einstellungen (Runden, Zeit, Wörter) und Start – mit Maus, Tastatur, Fernbedienung oder Gamecontroller (Steuerkreuz + A). ⏭ überspringt, ☰ Spielleitung.",
      "Handy Maler: Wort antippen, mit dem Finger malen; Farben, 3 Stiftgrößen, Radierer, ↶ zurück, 🗑 alles löschen (zweimal tippen).",
@@ -1366,8 +1474,8 @@
    "guide": {
     "anleitung": "Winzflitzer 3D ist ein Micro-Rennspiel: Winzige Fahrzeuge rasen über riesige Alltagswelten – Frühstückstisch, Schreibtisch, Badewanne, Garten, Sandkasten, Billardtisch, Werkbank und Kinderzimmer, je 3 Strecken. Jede Welt hat ihr Fahrzeug: Sportflitzer, Formel-Winzlinge, Speedboote, Hubschrauber, Geländewagen, Kugelflitzer, Panzer (können schießen) und Monstertrucks. Wer von der Tischkante fällt oder die Strecke verlässt, wird zurückgesetzt und verliert Zeit. Pinke Pfeil-Streifen geben Turbo, Milch, Öl und Seife sind rutschig, Honig und Sägespäne bremsen, der Abfluss-Strudel zieht dich mit; über Lücken kommst du nur mit Schwung. Meisterschaft: 24 Rennen gegen je 3 Gegner, Platz 1 oder 2 bringt dich weiter, sonst kostet es ein Leben; der letzte Computer-Fahrer scheidet aus, nach jedem dritten Rennen gibt es eine Bonusrunde um ein Extraleben. Kopf-an-Kopf: Du gegen einen Gegner auf einem Bildschirm – wer zurückfällt und aus dem Bild gerät, verliert ein Licht; mit allen 8 Lichtern gewinnst du das Duell, 11 Gegner warten der Reihe nach. Mehrspieler: 2–4 Spieler an einem Gerät (Tastatur zu zweit, Controller, Touch), optional mit Computer-Fahrern, Ziel 3, 5 oder 8 Punkte. Dazu Einzelrennen und Zeitfahren mit dem Geist deiner besten Runde.",
     "steuerung": [
-     "Tastatur: ↑ Gas, ↓ Bremse/Rückwärts, ← → lenken (aus Sicht des Fahrers), Leertaste oder Enter schießen (Panzer), Esc Pause. Zweiter Spieler: W A S D, Shift links oder Q schießt.",
-     "Gamecontroller: linker Stick oder Steuerkreuz lenkt, A oder RT Gas, B oder LT Bremse, X oder RB schießen, Start Pause. In den Einstellungen „Stick-Richtung“: der Flitzer fährt dorthin, wohin der Stick zeigt.",
+     "Tastatur: ↑ Gas, ↓ Bremse/Rückwärts, ← → lenken (aus Sicht des Fahrers), Leertaste oder Enter schießen (Panzer), Esc Pause. Zu zweit schießt der Pfeiltasten-Spieler mit Enter, Shift rechts, Strg rechts oder Punkt, der WASD-Spieler mit Leertaste, Shift links, Q oder E.",
+     "Gamecontroller: linker Stick oder Steuerkreuz lenkt, A oder RT Gas, B oder LT Bremse, X, Y oder RB schießen, Start Pause. In den Einstellungen „Stick-Richtung“: der Flitzer fährt dorthin, wohin der Stick zeigt.",
      "Touch: links den Stick in die gewünschte Fahrtrichtung ziehen – der Flitzer gibt selbst Gas und lenkt; rechts Bremse und 💥 (Panzer). In den Einstellungen gibt es auch klassische Tasten (◀ ▶, Gas, Bremse)."
     ],
     "tipps": [
@@ -1402,7 +1510,7 @@
     "steuerung": [
      "Touch/Maus: den Ball antippen und wie eine Steinschleuder nach hinten wegziehen – je weiter, desto fester; loslassen schlägt, zurück zum Ball ziehen bricht ab. Daneben wischen dreht und neigt die Kamera, Mausrad oder zwei Finger zoomen.",
      "Tastatur: ← → zielen (mit ↓ fein), Leertaste halten (Stärke pendelt) und loslassen, Q/E Kamera drehen, W/S neigen, +/− Zoom, C Draufsicht, Esc Pause.",
-     "Gamecontroller: linker Stick zielt, A halten und loslassen schlägt, rechter Stick oder LB/RB Kamera drehen, Y Draufsicht, Start Pause. In Menüs Steuerkreuz + A."
+     "Gamecontroller: linker Stick zielt (Steuerkreuz links/rechts fein), A halten und loslassen schlägt, rechter Stick oder LB/RB Kamera drehen, Y Draufsicht, Start Pause. In Menüs Steuerkreuz + A."
     ],
     "tipps": [
      "Mit 🎥 bzw. C/Y siehst du die ganze Bahn von oben – ideal, um Bandenschläge zu planen.",
@@ -1438,8 +1546,8 @@
     "anleitung": "Tortenschlacht ist ein Wurfspiel im Stil der Moorhuhn-Jagd – nur mit Sahne: Im Radioportal ist viel los (alle Figuren frei erfunden): Moderatoren, Praktikantinnen, Radfahrer, DJs, Leute in den Studiofenstern, Techniker am Funkturm, Fallschirmspringer, Ballonfahrer, Jetpack-Flieger, menschliche Kanonenkugeln, ein Werbeflieger mit Banner, der Chef und ein goldener Fan – manchmal taucht auch jemand ganz nah vorn auf. Triff in 90 Sekunden so viele wie möglich. 🎂 Torte (8 pro Ladung, trifft sofort, ein Treffer reicht), 💦 Sahnespritze (gedrückt halten, 3 Spritzer pro Person) und 🍒 Kirschbombe vom goldenen Fan (trifft alle in der Nähe). Kopftreffer zählen doppelt, Treffer in Folge steigern den Multiplikator bis ×5, ein Fehlwurf setzt ihn zurück. Der Konditor holt aus und wirft zurück – triff ihn vorher oder schieß seine Torte im Flug ab, sonst klebt dir Sahne im Gesicht. Geheimnisse: Das Schild „Schön, dass du da bist!“ gibt +10 Sekunden, ON-AIR-Schilder und Turmlampen je +25, und wer ans Fenster wirft, holt jemanden heraus. Solo scrollt eine breite Landschaft; im Mehrspieler spielen bis zu 4 an einem Bildschirm, bei „🌐 Online & Handys“ wird jedes Handy per QR-Code zum Zielgerät – auch von unterwegs. 📻 spielt einen Sender live das ganze Spiel über.",
     "steuerung": [
      "Maus: zielen und klicken (gedrückt halten mit der Spritze), rechte Taste lädt nach, Mausrad wechselt die Waffe. Touch: antippen wirft, 🎂 wechselt, 🔄 lädt nach.",
-     "Tastatur: Pfeile/WASD zielen (Shift schneller), Leertaste wirft, R lädt nach, Q wechselt die Waffe, Esc Pause.",
-     "Gamecontroller: linker Stick oder Steuerkreuz zielt, A/RT wirft, X lädt nach, Y/RB wechselt, Start Pause. In der Lobby tritt jeder Controller mit A bei.",
+     "Tastatur: Pfeile/WASD zielen (Shift schneller), Leertaste wirft, R lädt nach, Q, Tab oder E wechselt die Waffe, Esc oder P Pause.",
+     "Gamecontroller: linker Stick oder Steuerkreuz zielt, A/RT wirft, X lädt nach, Y/RB/LB wechselt, Start Pause. In der Lobby tritt jeder Controller mit A bei.",
      "Handy als Zielgerät: Finger auf dem Zielfeld bewegen, WERFEN tippen (halten mit der Spritze), 🔄 lädt nach."
     ],
     "tipps": [
@@ -1474,7 +1582,7 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "Funkgalgen ist Galgenmännchen in modern und freundlich: Der Moderator steht auf einem Turm aus 8 Lautsprecher-Kisten über einer Riesen-Torte. Rate das Wort Buchstabe für Buchstabe – richtige Buchstaben erscheinen an allen Stellen, jeder falsche schießt eine Kiste aus dem Turm. Ist die letzte Kiste weg, landet der Moderator in der Torte. 💡 Joker deckt einen Buchstaben auf (kostet Punkte), ✍️ Lösen nimmt das ganze Wort (falsch kostet 2 Kisten). Modi: 🎯 Solo-Serie (9 Kategorien oder 📖 Wörterbuch mit bekannten Wörtern aus dem Wortfunk-Wörterbuch, drei Schwierigkeiten; die Serie läuft, bis es einmal schiefgeht), 📅 Tageswort (für alle gleich, Ergebnis teilen), 👥 Duell (zu zweit an einem Gerät, Wörter werden im Wörterbuch geprüft) und 🌐 Online & Handys: Der Fernseher zeigt Turm und Wort, reihum denkt sich ein Handy das Wort aus, die anderen raten um die Wette (richtiger Buchstabe +5 je Stelle, falscher −2, Wort lösen +20; landet der Moderator in der Torte, punktet der Wortgeber).",
+    "anleitung": "Funkgalgen ist Galgenmännchen in modern und freundlich: Der Moderator steht auf einem Turm aus 8 Lautsprecher-Kisten über einer Riesen-Torte. Rate das Wort Buchstabe für Buchstabe – richtige Buchstaben erscheinen an allen Stellen, jeder falsche schießt eine Kiste aus dem Turm. Ist die letzte Kiste weg, landet der Moderator in der Torte. 💡 Joker deckt einen Buchstaben auf (kostet Punkte), ✍️ Lösen nimmt das ganze Wort (falsch kostet 2 Kisten). Modi: 🎯 Solo-Serie (9 Kategorien oder 📖 Wörterbuch mit bekannten Wörtern aus dem Wortfunk-Wörterbuch, drei Schwierigkeiten; die Serie läuft, bis es einmal schiefgeht), 📅 Tageswort (für alle gleich, Ergebnis teilen), 👥 Duell (zu zweit an einem Gerät, Wörter werden im Wörterbuch geprüft) und 🌐 Online & Handys: Der Fernseher zeigt Turm und Wort, reihum denkt sich ein Handy das Wort aus, die anderen raten um die Wette (richtiger Buchstabe +5 je Stelle, falscher −2, wer das Wort komplett aufdeckt +10, Lösen +20 plus 3 je verdecktem Buchstaben, falsch lösen −5 und 2 Kisten; landet der Moderator in der Torte, punktet der Wortgeber).",
     "steuerung": [
      "Tastatur: Buchstaben einfach tippen (auch Ä, Ö, Ü), Enter = Wort lösen, Esc = Pause.",
      "Touch/Maus: Bildschirmtastatur antippen; 💡 Joker und ✍️ Lösen unten rechts.",
@@ -1511,7 +1619,7 @@
     "steuerung": [
      "Maus: Links aufdecken, Rechts Peiler setzen, Mausrad zoomt.",
      "Touch: Tippen deckt auf, lange drücken setzt einen Peiler (oder 🚩 umschalten); zwei Finger zoomen, ein Finger verschiebt.",
-     "Tastatur: Pfeile/WASD bewegen den Rahmen, Leertaste/Enter aufdecken, F Peiler, H Peilung, +/− Zoom, Esc Pause.",
+     "Tastatur: Pfeile/WASD bewegen den Rahmen, Leertaste/Enter aufdecken, F oder E Peiler, T Peiler-Modus, H Peilung, +/− Zoom, Esc oder P Pause.",
      "Gamecontroller: Steuerkreuz/Stick bewegen, A aufdecken, X Peiler, Y Peilung, LB/RB Zoom, Start Pause."
     ],
     "tipps": [
@@ -1545,9 +1653,9 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "Sendemast-Sumo ist eine Party-Prügelei in 3D: Sumo-Ringer stehen auf einer Plattform ganz oben auf einem Sendemast über den Wolken. Schubst die anderen über den Rand – wer zuletzt oben steht, gewinnt die Runde. Nach kurzer Zeit bröckelt die Plattform Ring für Ring (der Rand blinkt vorher rot), am Ende schrumpft sie immer weiter. 💨 Schubs ist ein kurzer Sprint, der viel stärker schiebt; 💥 Stampfer ist ein Sprung mit Druckwelle bei der Landung – in der Luft kann dich niemand schubsen. Power-ups: 🍔 Mega (groß und schwer), ⚡ Turbo, 🛡️ Schild, 💥 Druckwelle. Fünf Arenen: Abendrot, Eiszacken (rutschig), Sturmmast (Böen), Gewitterspitze (Blitze) und Wackelturm (kippt). Modi: 🏆 Turnier (5 Masten gegen je 3 immer stärkere Gegner, Punkte für die Rangliste), ⚡ Schnelles Spiel, 🎮 Lokal (2–4 an einem Gerät mit zwei Tastatur-Belegungen und Controllern) und 🌐 Online & Handys (bis zu 8 Handys als Controller per QR-Code, Lücken füllt der Computer). Acht erfundene Kämpfer mit eigenen Fantasie-Sendern.",
+    "anleitung": "Sendemast-Sumo ist eine Party-Prügelei in 3D: Sumo-Ringer stehen auf einer Plattform ganz oben auf einem Sendemast über den Wolken. Schubst die anderen über den Rand – wer zuletzt oben steht, gewinnt die Runde. Nach kurzer Zeit bröckelt die Plattform Ring für Ring (der Rand blinkt vorher rot), am Ende schrumpft sie immer weiter. 💨 Schubs ist ein kurzer Sprint, der viel stärker schiebt; 💥 Stampfer ist ein Sprung mit Druckwelle bei der Landung – in der Luft kann dich niemand schubsen. Power-ups: 🍔 Mega (groß und schwer), ⚡ Turbo, 🛡️ Schild, 💥 Druckwelle. Fünf Arenen: Abendrot, Eiszacken (rutschig), Sturmmast (Böen), Gewitterspitze (Blitze) und Wackelturm (kippt). Modi: 🏆 Turnier (5 Masten gegen je 3 immer stärkere Gegner, Punkte für die Rangliste), ⚡ Schnelles Spiel, 🎮 Lokal (bis zu 4 an einem Gerät mit zwei Tastatur-Belegungen und Controllern, Start schon mit einem Menschen, den Rest übernimmt der Computer) und 🌐 Online & Handys (bis zu 8 Handys als Controller per QR-Code, Lücken füllt der Computer). Acht erfundene Kämpfer mit eigenen Fantasie-Sendern.",
     "steuerung": [
-     "Tastatur links: WASD laufen, Leertaste/F Schubs, Shift/G Stampfer. Tastatur rechts: Pfeile, Enter/L Schubs, K Stampfer. Esc/P Pause.",
+     "Tastatur links: WASD laufen, Leertaste/F Schubs, Shift/G Stampfer. Tastatur rechts: Pfeile, Enter/L Schubs, K/Shift rechts/Ziffernblock 0 Stampfer. Esc/P Pause.",
      "Touch: linker Daumen auf den Stick, rechts 💨 Schubs und 💥 Stampfer.",
      "Gamecontroller: Stick/Steuerkreuz laufen, A Schubs, B/X Stampfer, Start Pause – bis zu 4 Controller; im Menü Steuerkreuz und A.",
      "Online: Das Handy ist der Controller (Stick und zwei Knöpfe), gekämpft wird auf dem großen Bildschirm."
@@ -1584,7 +1692,7 @@
     "steuerung": [
      "Tastatur: ← → oder A D lenken, Leertaste / ↑ / W schießen, Esc oder P Pause.",
      "Touch: linke oder rechte Bildschirmhälfte halten, 🎯 schießen – oder in den Optionen „Handy neigen“ einschalten.",
-     "Gamecontroller: Stick oder Steuerkreuz lenken, A/X schießen, Start Pause; im Menü Steuerkreuz und A."
+     "Gamecontroller: Stick oder Steuerkreuz lenken, A/X/RB/RT schießen, Start Pause; im Menü Steuerkreuz und A."
     ],
     "tipps": [
      "Braune Plattformen mit Riss sind Fallen – sie brechen sofort weg.",
@@ -1616,7 +1724,7 @@
     "steuerung": [
      "Touch / Maus: in die gewünschte Richtung wischen; im Antippen-Modus und beim Hammer die Kachel antippen bzw. anklicken.",
      "Tastatur: Pfeiltasten oder WASD schieben, U/Z/Rücktaste rückgängig, H Hammer (Pfeile + Enter), Esc/P Pause.",
-     "Gamecontroller: Steuerkreuz oder Stick schieben, X rückgängig, Y Hammer (Steuerkreuz + A), B abbrechen, Start Pause; im Menü Steuerkreuz und A."
+     "Gamecontroller: Steuerkreuz oder Stick schieben, X oder LB rückgängig, Y oder RB Hammer (Steuerkreuz + A), B abbrechen, Start Pause; im Menü Steuerkreuz und A."
     ],
     "tipps": [
      "Leg die größte Zahl in eine Ecke und lass sie dort.",
@@ -1648,7 +1756,7 @@
     "steuerung": [
      "Touch: tippen = vorwärts, wischen = in die Richtung (auch zurück).",
      "Tastatur: Pfeiltasten oder WASD, Leertaste = vorwärts, Esc/P Pause.",
-     "Gamecontroller: Steuerkreuz oder Stick hüpfen, A = vorwärts, Start Pause; im Menü Steuerkreuz und A."
+     "Gamecontroller: Steuerkreuz oder Stick hüpfen, A = vorwärts, B oder Start Pause; im Menü Steuerkreuz und A."
     ],
     "tipps": [
      "Auf Straßen lieber kurz warten als blind losspringen – Laster sind länger, als sie aussehen.",
@@ -1684,7 +1792,7 @@
     "anleitung": "EASYCLASH ist ein 3D-Prügelspiel mit den Helden aus den easygames. Zwei Kämpfer stehen in einer runden Arena mit Wand; wer zuerst die Lebensleiste des anderen leert, gewinnt die Runde, wer zuerst 2 Runden holt, den Kampf. Vier Knöpfe wie bei den großen 3D-Prüglern: 1 linke Faust, 2 rechte Faust, 3 linkes Bein, 4 rechtes Bein – mit einer Richtung wird daraus ein anderer Angriff (alle in der Befehlsliste im Pausenmenü). Ketten: 1,2 · 1,2,4 · 1,2,1 · 2,2 · 3,4. Unten-vor + 2 ist der Aufwärtshaken für Luft-Kombos, vor + 2 an der Wand lässt den Gegner kleben, unten + 4 ist ein Feger. Ducken lässt hohe Angriffe drübergehen. Blocken mit zurück oder dem Block-Knopf: stehend hoch und mittel, geduckt tief. Mit dem Stick läufst du frei in alle Richtungen: vor/zurück zum Gegner, hoch/runter seitwärts im Kreis um ihn herum; kurz antippen ist ein schneller Seitschritt, gegen den gerade Angriffe danebengehen. Ducken mit unten-zurück oder unten-vor. Würfe gehen durch jeden Block und lassen sich mit Wurf befreien. Jede Figur hat einen eigenen Spezialangriff (Energiestoß, Sturmangriff, Wirbel, Sturzflug, Himmelsfaust oder Bodenbeben). Unter 25 % Leben glühst du vor Wut und hast einmal pro Runde das Finale. Modi: 🏆 Arcade (8 Gegner, Punkte für die Rangliste), ⚔️ Versus zu zweit, 🤖 Gegen CPU (3 Stärken), 🥊 Training und 🌐 Online & Handys (der große Bildschirm zeigt den Kampf, zwei Handys sind die Controller).",
     "steuerung": [
      "Tastatur Spieler 1: WASD bewegen, U = 1, I = 2, J = 3, K = 4, O Wurf, L Spezial, Leertaste Finale, H Block, Esc/P Pause.",
-     "Tastatur Spieler 2 (Versus): Pfeile bewegen, Ziffernblock 7 = 1, 8 = 2, 4 = 3, 5 = 4, 9 Wurf, 6 Spezial, 0 Finale.",
+     "Tastatur Spieler 2 (Versus): Pfeile bewegen, Ziffernblock 7 = 1, 8 = 2, 4 = 3, 5 = 4, 9 Wurf, 6 Spezial, 0 Finale, Ziffernblock-Komma Block. Ohne Ziffernblock: Komma = 1, Punkt = 2, M = 3, N = 4, „/“ Spezial, Enter Finale, Shift rechts Block.",
      "Gamecontroller: Stick/Steuerkreuz bewegen, X = 1, Y = 2, A = 3, B = 4, LB Wurf, RB Spezial, RT Finale, LT Block, Start Pause – zwei Controller für zwei Spieler.",
      "Touch: linker Daumen auf den Stick, rechts die Knöpfe; online ist das Handy der Controller."
     ],
@@ -1756,7 +1864,7 @@
     "anleitung": "FALL·AKTE ist ein Krimi-Rätsel im Noir-Comic-Stil. In jedem Fall gibt es einen Täter unter den Verdächtigen. Durchsuche die drei Schauplätze einer Welt mit der Lupe: Manche Gegenstände verbergen Spuren wie ein Haar, einen Zigarettenstummel oder einen Brillensplitter. Andere Spuren müssen ins Labor – Fußspur vermessen, Fingerabdruck-Muster vergleichen, Geheimcode mit dem Code-Rad knacken oder einen zerrissenen Brief zusammensetzen. Jede Spur verrät ein Merkmal des Täters. Haarfarbe und Brille siehst du auf den Fotos, Schuhgröße, Händigkeit, Rauchen und Fingerabdruck erfährst du nur im Verhör – die Fragen sind begrenzt. Das Notizbuch streicht automatisch alle, die nicht zu den Spuren passen. Bleibt nur eine Person übrig, klag sie an; jede falsche Anklage kostet Punkte, nach drei Fehlern ist der Fall verloren. Modi: 🗂️ Fälle lösen (6 Welten mit je 3 Fällen, 3 bis 5 Verdächtige; 2 gelöste Fälle öffnen die nächste Welt), 📅 Tagesfall (für alle gleich) und 🎲 Zufallsfall. Punkte und Sterne gibt es für wenige Fragen, wenige Tipps und keine Fehlanklage; mit den Punkten steigst du im Rang bis zum Meisterdetektiv.",
     "steuerung": [
      "Touch/Maus: Gegenstände antippen, unten zwischen Tatorte, Verdächtige, Notizen und Anklage wechseln. Hochkant lässt sich das Tatort-Bild seitlich wischen.",
-     "Tastatur: Pfeile wählen, Enter bestätigt, 1–4 Tatorte/Verdächtige/Notizen/Anklage, Q/E Schauplatz wechseln, H Tipp, +/− im Labor, Esc zurück/Pause.",
+     "Tastatur: Pfeile wählen, Enter bestätigt, 1–4 Tatorte/Verdächtige/Notizen/Anklage, Q/E Schauplatz wechseln, H Tipp, P Pause, +/− im Labor, Esc zurück/Pause.",
      "Gamecontroller: Steuerkreuz/Stick wählen, A bestätigen, B zurück, LB/RB Schauplatz, X Notizen, Y Tipp, Start Pause."
     ],
     "tipps": [
@@ -1791,7 +1899,7 @@
    "guide": {
     "anleitung": "Brainrot Parkour ist ein verrückter 3D-Obby. Wähle eine von 18 eigenen Brainrot-Figuren – zum Beispiel Pinguino Spaghettino, Toastini Volantini, Llama Jetpacko, Hippo Ballerina, Polpo Cappuccino, Scheletro Cowboy, Espressino Gallinone, Cactopudel Skatini, Lasagnone Aviatore, Formaggino Topolone oder Lavatrice Bulldoggo. Jede ruft ihre italienischen Quatsch-Sprüche, dazu brüllt der Ansager Brainrot-Rufe (tiefe Männerstimme, Frauenstimme oder je Figur; Sprachausgabe und Untertitel abschaltbar). Im Obby läufst und springst du über Plattformen bis ins Ziel: Rote Soße und Abgründe schicken dich zum letzten 🚩 Checkpoint zurück, rot-weiße Drehbalken musst du überspringen, gelbe Polster schleudern dich hoch, braune Platten fallen kurz nach dem Betreten, Eis rutscht, Förderbänder schieben zurück und blaue Plattformen fahren hin und her. Sammle 🪙 Münzen, schaffe Bestzeiten und bis zu 3 Sterne – jede geschaffte Welt schaltet die nächste frei (Cucina Cosmica, Spiaggia Assurda, Galassia Gelato). Schwierigkeit: 🧸 Bambini (Doppelsprung, kürzere Lücken, Drehbalken schubsen nur – ideal für Kinder), 🙂 Normale und 🔥 Esperto. Minigames: 🏁 Brainrot-Rennen gegen drei Computer-Figuren, 🔥 Pavimento Lava (drei Fliesen-Etagen bröckeln weg – wer bleibt am längsten?), 🗼 Torre Infinita (immer höher, die Soße steigt), 🎤 Chi lo dice? (Spruch hören, Figur erraten) und 🌐 Online-Rennen: Alle laufen dieselbe Strecke auf ihrem eigenen Gerät und sehen sich gegenseitig – Beitritt per Code, Link oder QR-Code von überall.",
     "steuerung": [
-     "Tastatur & Maus: WASD/Pfeile laufen, Leertaste springen, Maus ziehen oder Q/E dreht die Kamera, Mausrad zoomt, Esc Pause.",
+     "Tastatur & Maus: WASD/Pfeile laufen, Leertaste oder K springen, Maus ziehen oder Q/E dreht die Kamera, Mausrad zoomt, Esc Pause.",
      "Touch: links der Joystick zum Laufen, rechts SPRUNG, KAMERA dreht hinter die Figur, rechts wischen dreht die Kamera.",
      "Gamecontroller: linker Stick laufen, A springen, rechter Stick oder LB/RB Kamera, Start Pause."
     ],
@@ -1866,7 +1974,7 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "Die große Challenge-Show ist eine 3D-Spielshow im TV-Studio: Bis zu 24 Kandidaten (12, 16 oder 24 – Computer füllen auf) treten in sechs Runden an, ein Moderator kommentiert mit Sprachausgabe und Untertiteln, das Publikum jubelt. In jeder Runde scheiden einige aus – kinderfreundlich mit Konfetti-Puff in die weiche Schaumstoffgrube – und füllen den 💰 Topf. 🚦 Ampel-Lauf: bei Grün laufen, bei Rot einfrieren, denn der Ampel-Roboter dreht sich um und sieht jede Bewegung; ins Ziel, bevor die Zeit abläuft. 🌉 Wackelbrücke: nacheinander Reihe für Reihe links oder rechts springen, nur eine Pudding-Platte hält, bekannte Platten leuchten grün. 🪢 Seilziehen: zwei Teams, wer im grünen Takt-Feld tippt, zieht doppelt so stark. 🍪 Keks-Kunst: Kreis, Dreieck, Stern oder Herz vom ⭐ aus nachfahren, ohne dass der Keks bricht. 🪑 Reise nach Jerusalem: Musik stoppt, Stühle tauchen auf, es gibt immer zu wenige. 👑 Schubs-Finale: mit dem Sprint-Stoß die anderen von der schrumpfenden Plattform ins Bällebad schubsen – der Letzte holt Krone und Topf. Wähle Name, Farbe und Hut für deinen Kandidaten, die Stärke der Computer (Leicht, Normal, Schwer) und die Länge (alle 6 Runden oder kurze Show mit 4). Bist du raus, schaust du zu, schickst Jubel-Emojis oder spulst vor. 🌐 Online & Handys: Der Gastgeber zeigt Code und QR-Code, Mitspieler treten von überall bei und sehen die Show auf dem eigenen Gerät; im Modus „📺 Nur Fernseher“ zeigt der Fernseher die Show und die Handys sind die Controller.",
+    "anleitung": "Die große Challenge-Show ist eine 3D-Spielshow im TV-Studio: Bis zu 24 Kandidaten (12, 16 oder 24 – Computer füllen auf) treten in sechs Runden an, ein Moderator kommentiert mit Sprachausgabe und Untertiteln, das Publikum jubelt. In jeder Runde scheiden einige aus – kinderfreundlich mit Konfetti-Puff in die weiche Schaumstoffgrube – und füllen den 💰 Topf. 🚦 Ampel-Lauf: bei Grün laufen, bei Rot einfrieren, denn der Ampel-Roboter dreht sich um und sieht jede Bewegung; ins Ziel, bevor die Zeit abläuft. 🌉 Wackelbrücke: nacheinander Reihe für Reihe links oder rechts springen, nur eine Pudding-Platte hält, bekannte Platten leuchten grün. 🪢 Seilziehen: zwei Teams, wer im grünen Takt-Feld tippt, zieht doppelt so stark. 🍪 Keks-Kunst: Kreis, Dreieck, Stern oder Herz vom ⭐ aus nachfahren, ohne dass der Keks bricht. 🪑 Reise nach Jerusalem: Musik stoppt, Stühle tauchen auf, es gibt immer zu wenige. 👑 Schubs-Finale: mit dem Sprint-Stoß die anderen von der schrumpfenden Plattform ins Bällebad schubsen – der Letzte holt Krone und Topf. Wähle Name, Farbe und Hut für deinen Kandidaten, die Stärke der Computer (Leicht, Normal, Schwer) und die Länge (alle 6 Runden oder kurze Show mit 4). Bist du raus, schaust du zu, schickst Jubel-Emojis oder spulst vor. 🌐 Online & Handys: Der Gastgeber zeigt Code und QR-Code, bis zu 12 Mitspieler treten von überall bei und sehen die Show auf dem eigenen Gerät; im Modus „📺 Nur Fernseher“ zeigt der Fernseher die Show und die Handys sind die Controller.",
     "steuerung": [
      "Tastatur & Maus: WASD/Pfeile laufen, Leertaste ziehen (Seil) und schubsen (Finale), ←/→ oder A/D wählen die Brückenseite, Maus gedrückt halten zum Nachfahren des Kekses, Enter überspringt die Rundenkarte, Esc Pause.",
      "Touch: Joystick links zum Laufen, große Tasten LINKS/RECHTS, ZIEH! und SCHUBS, den Keks mit dem Finger nachfahren.",
@@ -1980,8 +2088,8 @@
     "anleitung": "Küchen-Chaos ist ein hektisches Koch-Teamspiel. Oben stehen die Bestellzettel mit Zeitbalken. Hol die Zutaten aus den Kisten, leg sie aufs Schneidebrett und halte BENUTZEN, bis sie geschnitten sind. Fleisch und Fisch kommen in die Pfanne, drei gleiche Tomaten oder Zwiebeln in den Topf für eine Suppe. Ist es fertig, nimm einen Teller, richte am Herd an, gib Brötchen, Käse oder Salat dazu und bring den Teller zur gelben Ausgabe. Schnelle Lieferung gibt Trinkgeld, wer die vorderste Bestellung zuerst liefert, bekommt einen Serien-Bonus; abgelaufene Bestellungen kosten 10 Münzen. Bleibt etwas zu lange auf dem Herd, brennt es an und fängt Feuer – das breitet sich aus, bis jemand mit dem Feuerlöscher löscht. In manchen Küchen kommen die Teller dreckig zurück und müssen in der Spüle gewaschen werden; außerdem gibt es ein Förderband, spiegelglatten Eis-Boden und eine geteilte Küche, in der ihr euch alles über die Theke reicht. Sechs Küchen mit je drei Sternen, ein Stern schaltet die nächste frei. Beim ersten Mal führt die 🎓 Übungsküche Schritt für Schritt durch einen Salat (gelber Pfeil zeigt, wohin), danach zeigt unten eine Tipp-Zeile immer, was du an der Station vor dir tun kannst. Modi: 🍳 Solo – du und ein Computer-Koch, oder (Einstellungen) du steuerst beide Köche und wechselst; 🌐 Online & Handys – der Fernseher zeigt die Küche, bis zu 4 Köche kochen mit Handys (per Code, Link oder QR-Code von überall), Controllern oder der Tastatur, freie Plätze übernehmen Computer-Köche.",
     "steuerung": [
      "Touch (wie bei AnMaCha Kart Rush): links der Joystick zum Laufen, rechts die Tasten-Raute – unten NEHMEN, links BENUTZEN (halten), rechts SPRINT, oben WECHSELN (am Handy als Controller: RUFEN).",
-     "Tastatur: WASD/Pfeile laufen, Leertaste/E Nehmen/Ablegen, F/Strg Benutzen (schneiden, spülen, löschen), Shift Sprint, Tab/Q Koch wechseln, Esc Pause.",
-     "Gamecontroller: Stick/Steuerkreuz laufen, A Nehmen/Ablegen, X/RT Benutzen, B Sprint, Y Koch wechseln, Start Pause. In der Lobby meldet A einen Controller an."
+     "Tastatur: WASD/Pfeile laufen, Leertaste/E/Enter Nehmen/Ablegen, F/Strg/J Benutzen (schneiden, spülen, löschen), Shift Sprint, Tab/Q Koch wechseln, Esc/P Pause.",
+     "Gamecontroller: Stick/Steuerkreuz laufen, A Nehmen/Ablegen, X/RT Benutzen, B/LT Sprint, Y Koch wechseln, Start Pause. In der Lobby meldet A einen Controller an."
     ],
     "tipps": [
      "Teilt euch auf: einer schneidet, einer kocht und serviert.",
@@ -2052,8 +2160,8 @@
     "anleitung": "Bowling-Bahn 3D ist Bowling in einer Neon-Halle mit echter Kugel- und Kegelphysik. Ein Spiel hat 10 Frames mit je zwei Würfen. Strike (X): alle 10 Kegel mit dem ersten Wurf – zählt 10 plus die nächsten zwei Würfe. Spare (/): alle 10 mit zwei Würfen – zählt 10 plus den nächsten Wurf. Sonst zählt jeder Kegel einen Punkt; im 10. Frame gibt es nach Strike oder Spare Bonuswürfe, perfekt sind 300 Punkte. Vorne ist die Bahn geölt, hinten trocken: Dort biegt die Kugel mit Effet ab (Hook). Am meisten fallen, wenn sie schräg in die Tasche zwischen Kegel 1 und 3 (oder 1 und 2) rollt. Modi: 🎳 Einzelspiel (dein bestes Spiel zählt für die Rangliste), 🤖 Gegen CPU (Leicht, Mittel, Profi) und 👥 Party mit 2–4 Spielern an einem Gerät, jeder Platz auch als Computer. Unter 🦸 Bowler wählst du deinen Helden aus allen 69 EASYCLASH-Figuren.",
     "steuerung": [
      "Touch/Maus: Kugel seitlich ziehen = Startpunkt. Nach oben wischen = Wurf – die Richtung zielt, schnell wischen = mehr Tempo, ein Bogen am Ende gibt Effet. ↶ ↷ stellen das Effet auch per Knopf ein; alternativ den Kraftbalken halten und loslassen.",
-     "Tastatur: ← → Startpunkt, A/D Richtung, ↑ ↓ Effet, Leertaste halten = Kraft, loslassen = Wurf, Esc/P Pause.",
-     "Gamecontroller: linker Stick Startpunkt, rechter Stick oder LB/RB Richtung, X/Y Effet, A halten = Kraft, loslassen = Wurf, Start Pause."
+     "Tastatur: ← → Startpunkt, A/D Richtung, ↑ ↓ Effet, Leertaste oder Enter halten = Kraft, loslassen = Wurf, Esc/P Pause.",
+     "Gamecontroller: linker Stick Startpunkt, rechter Stick oder LB/RB Richtung, X/Y Effet, A halten = Kraft, loslassen = Wurf, Start oder B Pause."
     ],
     "tipps": [
      "Für Strikes: leicht rechts starten und mit Effet nach links in die Tasche zwischen 1 und 3 hooken.",
@@ -2163,7 +2271,7 @@
      "Handys koppeln: Jedes Handy ist das geheime Pad eines Spielers (bis zu 4) für Gebote, Skala und Einkaufswagen. Ohne Handy wird das Gerät herumgereicht (Bereit?-Schirm)."
     ],
     "tipps": [
-     "Bei Gebotsduell und Finale verliert, wer über dem Preis liegt.",
+     "Bei Gebotsduell und Finale verliert, wer über dem Preis liegt. Liegen alle drüber, bekommt der niedrigste Tipp Trostpunkte (Gebotsduell 1, Finale 2).",
      "Alle Preise sind Durchschnittswerte ohne Gewähr."
     ]
    },
@@ -2193,7 +2301,7 @@
    "guide": {
     "anleitung": "Hindernis-Zeitspiel: Jeder Läufer rennt allein über den Parcours, es zählt die Zeit; wer ins Wasser fällt, ist raus und wird nach der Strecke gewertet. Die Show hat Vorrunde, Halbfinale und Finale (3 Parcours, 1 bis 4 Läufer), Platz 1 bekommt die meisten Punkte. Im Training jagst du auf einem Parcours deine Bestzeit; ein Geist zeigt den bisher Schnellsten.",
     "steuerung": [
-     "PC: Laufen mit A/D oder Pfeil links/rechts; Springen mit Leertaste, Pfeil hoch oder W (länger halten = höher); Menü mit Esc; im Menü Pfeiltasten, Enter, Esc.",
+     "PC: Laufen mit A/D oder Pfeil links/rechts; Springen mit Leertaste, Pfeil hoch oder W (länger halten = höher); Esc beendet die Show (nach Rückfrage), ein Pausenmenü gibt es nicht; im Menü Pfeiltasten, Enter, Esc.",
      "Touch: Stick links ziehen zum Laufen, Knopf Springen.",
      "Gamepad: Stick oder Steuerkreuz zum Laufen, A/X/Y zum Springen; im Menü A = OK, B = Zurück, Start.",
      "Handys koppeln: Jedes Handy wird das Steuer-Pad eines Läufers (bis zu 4) und meldet Bereit."
@@ -2292,11 +2400,11 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "FABELKICK 3D ist Fußball wie bei den großen Konsolenspielen, nur mit Fabelwesen. Acht Teams treten 11 gegen 11 an: Urwald-Affen, Silberrücken, Ork-Brecher, Elfenhain, Zwergenhammer, Trollbrücke, Drachenbrut und Frostpranken. Jedes Team hat eigene Werte für Tempo, Schuss, Pass, Abwehr und Torwart und eine Spezialkraft (z. B. Lianen-Sprint, Donnerschuss, Zauberschuss, Steinwall, Eiszeit). Der Kraftbalken füllt sich mit der Zeit, mit Pässen, Zweikämpfen und Schüssen; ist er voll, löst du die Kraft aus. Es gibt Einwürfe, Ecken, Abstöße, Freistöße mit Mauer, Fouls und Elfmeter, Kopfbälle und Paraden. Modi: Anstoß (schnelles Spiel, auch zu zweit gegeneinander oder zusammen), Fabel-Pokal mit Viertelfinale, Halbfinale und Finale, Elfmeterschießen und Training gegen den Torwart. Drei Arenen, vier Schwierigkeitsstufen, Halbzeitlänge 2 bis 6 Minuten. Siege, Tore und Pokale werden lokal gespeichert, optional mit Google auf allen Geräten.",
+    "anleitung": "FABELKICK 3D ist Fußball wie bei den großen Konsolenspielen, nur mit Fabelwesen. Acht Teams treten 11 gegen 11 an: Urwald-Affen, Silberrücken, Ork-Brecher, Elfenhain, Zwergenhammer, Trollbrücke, Drachenbrut und Frostpranken. Jedes Team hat eigene Werte für Tempo, Schuss, Pass, Abwehr und Torwart und eine Spezialkraft (z. B. Lianen-Sprint, Donnerschuss, Zauberschuss, Steinwall, Eiszeit). Der Kraftbalken füllt sich mit der Zeit, bei Balleroberungen, gewonnenen Zweikämpfen und Schüssen; ist er voll, löst du die Kraft aus. Es gibt Einwürfe, Ecken, Abstöße, Freistöße mit Mauer, Fouls und Elfmeter, Kopfbälle und Paraden. Modi: Anstoß (schnelles Spiel, auch zu zweit gegeneinander oder zusammen), Fabel-Pokal mit Viertelfinale, Halbfinale und Finale, Elfmeterschießen und Training gegen den Torwart. Drei Arenen, vier Schwierigkeitsstufen, Halbzeitlänge 2 bis 6 Minuten. Siege, Tore und Pokale werden lokal gespeichert, optional mit Google auf allen Geräten.",
     "steuerung": [
      "Controller: linker Stick laufen, RT sprinten, A Pass, Y Steilpass, X Flanke, B Schuss (halten = mehr Kraft). Abwehr: A Tackling (halten = Pressing), B Grätsche, LB Spieler wechseln. RB Fabel-Kraft, Start Pause.",
-     "PC: WASD oder Pfeile laufen, Shift sprinten, Leertaste oder K Pass, L Steilpass, I Flanke, J Schuss. Abwehr: K Tackling, J Grätsche, Q wechseln. E Fabel-Kraft, Esc oder P Pause.",
-     "Smartphone und Tablet: Daumen-Stick auf der linken Hälfte, rechts Tasten für Schuss, Pass, Steil, Flanke, Sprint, Wechsel und ★ für die Fabel-Kraft. Am besten quer halten.",
+     "PC: WASD oder Pfeile laufen, Shift sprinten, Leertaste oder K Pass, L Steilpass, I Flanke, J Schuss. Abwehr: K Tackling, I Pressing, J Grätsche, Q oder L wechseln. E Fabel-Kraft, Esc oder P Pause.",
+     "Smartphone und Tablet: Daumen-Stick auf der linken Hälfte (ganz an den Rand = Sprint), rechts vier Tasten: A Pass, B Schuss, X Flanke, Y Steil; in der Abwehr A Tackling, B Grätsche, X Druck, Y Wechsel. ★ erscheint, wenn die Fabel-Kraft voll ist. Am besten quer halten.",
      "Zu zweit: In der Teamauswahl jedes Gerät (Tastatur/Touch, Controller 1, 2 …) auf HEIM oder GAST stellen. Beide auf einer Seite = zusammen gegen den Computer."
     ],
     "tipps": [
@@ -2331,9 +2439,9 @@
    "guide": {
     "anleitung": "3D-Auto-Fußball: Fahre mit deinem Boliden, nutze Nitro und Sprünge und schieße die große Plasmakugel ins gegnerische Tor. Modi: schnelles Spiel gegen Bots (1v1, 2v2, 3v3, 4 Stufen), Splitscreen zu zweit, Training und Online mit Freunden per QR-Code oder Text-Code. Bei Gleichstand gibt es eine Verlängerung (Golden Goal).",
     "steuerung": [
-     "PC Spieler 1: W/S Gas und Rückwärts, A/D Lenken, Leertaste Sprung (zweimal = Doppelsprung/Flip), Shift Nitro (halten), Q Handbremse/Drift, Strg oder E Air-Roll, C Ball-Kamera, Esc oder P Pause.",
-     "PC Spieler 2 (Splitscreen): Pfeile fahren und lenken, Enter Sprung, rechte Shift Nitro, Num 3 Handbremse, rechte Strg Air-Roll, Num 5 Ball-Kamera.",
-     "Gamepad: RT/LT Gas/Rückwärts, linker Stick Lenken, A Sprung, X Nitro, B Handbremse, RB Air-Roll, Y Ball-Kamera, Start Pause.",
+     "PC Spieler 1: W/S Gas und Rückwärts, A/D Lenken, Leertaste Sprung (zweimal = Doppelsprung/Flip), Shift Nitro (halten), Q Handbremse/Drift, linke Strg oder E Air-Roll, C Ball-Kamera, F Rückblick, R Training zurücksetzen, Esc oder P Pause.",
+     "PC Spieler 2 (Splitscreen): Pfeile fahren und lenken, Enter Sprung, rechte Shift Nitro, Num 3 Handbremse, rechte Strg Air-Roll, Num 5 Ball-Kamera, Num 6 Rückblick, Num 4 Training zurücksetzen.",
+     "Gamepad: RT/LT Gas/Rückwärts, linker Stick Lenken, A Sprung, X Nitro, B Handbremse, RB Air-Roll, Y Ball-Kamera, LB oder R3 Rückblick, Back Training zurücksetzen, Start Pause.",
      "Touch: Stick (hoch/runter Gas, seitlich Lenken), Knöpfe SPRUNG, BOOST, DRIFT, BALL, II für Pause."
     ],
     "tipps": [
@@ -2430,7 +2538,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Du führst deinen eigenen Supermarkt: Kartons von der Rampe holen, Regale einräumen, Preise prüfen, den Laden öffnen und die Kunden an der Kasse bedienen. Mit dem Gewinn bestellst du am Bestell-PC nach und baust den Laden mit Lizenzen, Personal, Ausbauten und Anbau aus. Ein Tag dauert 12 Minuten, gespeichert wird automatisch.",
+    "anleitung": "Du führst deinen eigenen Supermarkt: Kartons von der Rampe holen, Regale einräumen, Preise prüfen, den Laden öffnen und die Kunden an der Kasse bedienen. Mit dem Gewinn bestellst du am Bestell-PC nach und baust den Laden mit Lizenzen, Personal, Ausbauten und Anbau aus. Ein Ladentag (8 bis 20 Uhr) dauert bei normalem Tempo rund 10 Minuten, gespeichert wird automatisch.",
     "steuerung": [
      "PC: W A S D oder Pfeiltasten laufen, Shift rennen; Maus ziehen = umsehen (Q fängt die Maus ein, Esc gibt sie frei). E oder Leertaste = Aktion (Karton nehmen, einräumen, scannen; gedrückt halten = schnell). Klick oder F zeigt Infos und Preise. V wechselt Draufsicht und Ego-Ansicht, Mausrad zoomt, R dreht beim Bauen.",
      "PC Fenster: Tasten 1 bis 9 und 0 öffnen Bestell-PC, Laden, Bauen, Preise, Personal, Radio, Ausbau, Zahlen, Ziele und Menü; H = Anleitung, O = Laden öffnen/Feierabend, P = Pause, + und − = Tempo, Esc schließt Fenster.",
@@ -2464,7 +2572,8 @@
     "anleitung": "Ein begehbares 3D-Dschungelcamp mit erfundenen Mitcampern. Du hältst das Camp am Laufen (Holz, Wasser, Feuer, Kochen, Schlafen), pflegst Beziehungen und bestehst täglich Prüfungen. Eine simulierte Publikumsgunst aus Sympathie, Leistung und Unterhaltung entscheidet über Ausscheidungen und den Champion am Ende der Staffel.",
     "steuerung": [
      "PC: W A S D laufen, Shift rennen; Maus ziehen oder Klick ins Bild = umsehen (Esc gibt die Maus frei), Mausrad = Zoom. E = Aktion (zeigt immer, was gerade geht), Q = Frucht essen, Tab = Übersicht (Buschtrommel), P oder Esc = Pause, 1 bis 4 oder Klick = Antworten im Gespräch.",
-     "Touch: Links ziehen = virtueller Joystick (ganz außen = rennen), rechts wischen = umsehen. Große grüne Kontext-Taste = Aktion, Taste Essen, 🥁 oben rechts = Übersicht, ❚❚ = Pause, Antworten antippen."
+     "Touch: Links ziehen = virtueller Joystick (ganz außen = rennen), rechts wischen = umsehen. Große grüne Kontext-Taste = Aktion, Taste Essen, 🥁 oben rechts = Übersicht, ❚❚ = Pause, Antworten antippen.",
+     "Controller: linker Stick laufen, A Aktion, X Frucht essen, Y Übersicht, LT rennen, B zurück, Start Pause."
     ],
     "tipps": [
      "Jede Prüfung erklärt vor dem Start ihre eigene Steuerung für PC und Touch.",
@@ -2496,7 +2605,8 @@
     "anleitung": "Sammlung von sieben 3D-Brettspielen: Rausschmeißer, Würfelfieber, Schach, Leiterspiel, Vier in einer Reihe, Dame und Mühle. Du spielst gegen den Computer (leicht, mittel, schwer) oder zu mehreren an einem Gerät. Wähle im Menü ein Spiel, lege die Plätze fest (Mensch, Computer oder nicht dabei) und starte; die Regeln stehen bei jedem Spiel unter Regeln (?).",
     "steuerung": [
      "PC: Mit der Maus auf Figuren, Felder, Würfel oder Spalten klicken. Ziehen mit gedrückter Maus dreht die Ansicht, Mausrad zoomt; ↻ dreht die Ansicht um 90 Grad.",
-     "Touch: Figur, Feld, Würfel oder Spalte antippen (Schach: Figur antippen, mögliche Züge leuchten grün, Schlagen rot). Mit einem Finger wischen = Ansicht drehen, mit zwei Fingern zusammenziehen = zoomen."
+     "Touch: Figur, Feld, Würfel oder Spalte antippen (Schach: Figur antippen, mögliche Züge leuchten grün, Schlagen rot). Mit einem Finger wischen = Ansicht drehen, mit zwei Fingern zusammenziehen = zoomen.",
+     "Controller: Der rechte Stick bewegt einen Zeiger, A klickt; in Menüs springt das Steuerkreuz zwischen den Knöpfen."
     ],
     "tipps": [
      "Würfelfieber: Würfel antippen, um sie zu halten; danach ein Feld auf dem Zettel wählen.",
@@ -2530,7 +2640,8 @@
     "anleitung": "Sammlung von sechs Kartenspielen in 3D. Vor dem Start wählst du das Spiel und deine 3D-Figur. Stapelrausch: Zahlentürme von 1 bis 12 bauen und als Erste:r den Zielstapel (15 oder 30 Karten) leeren; Sterne sind Joker. Farbflash: Karte gleicher Farbe oder gleichen Zeichens ablegen, Aktionskarten (Aussetzen, Richtungswechsel, +2, Farbwahl, +4) nutzen – wer zuerst keine Karte mehr hat, gewinnt. Phasenjagd: 10 Phasen aus gleichen Zahlen, Folgen und Farben nacheinander erfüllen (oder kurz 5). Mau-Mau: Farbe oder Wert bedienen; 7 = zwei ziehen, 8 = aussetzen, Bube = Wunschfarbe. Schwimmen: mit der Mitte tauschen und 31 Punkte in einer Farbe sammeln; wer am wenigsten hat, verliert ein Leben. Kartendomino: von den Siebenern aus Reihen je Farbe nach oben und unten anlegen. Du spielst gegen 1 bis 3 Computer-Gegner, zu 2 bis 4 an einem Gerät, 🌐 online mit Code, Link oder QR (bis 4 Spieler) oder mit 📺 TV + Handys: Fernseher oder PC zeigt den Tisch, jedes Handy nur die eigenen Karten. Jedes Spiel erklärt sich beim ersten Start; die Anleitung ist jederzeit unter ? zu finden.",
     "steuerung": [
      "PC: Karte anklicken, dann das Ziel anklicken (Turm, Ablage oder Auslage). Knöpfe unter dem Tisch zum Ziehen, Auslegen oder Behalten.",
-     "Touch: Karte antippen, dann Ziel antippen. Passende Karten leuchten. Beim Spielen an einem Gerät erscheint nach jedem Zug ein Übergabe-Bildschirm; ? zeigt die Anleitung, ☰ das Menü."
+     "Touch: Karte antippen, dann Ziel antippen. Passende Karten leuchten. Beim Spielen an einem Gerät erscheint nach jedem Zug ein Übergabe-Bildschirm; ? zeigt die Anleitung, ☰ das Menü.",
+     "Controller: Der rechte Stick bewegt einen Zeiger, A klickt auf Karten und Ziele; in Menüs springt das Steuerkreuz zwischen den Knöpfen."
     ],
     "tipps": [
      "Stapelrausch: Ein Zug endet, wenn du eine Handkarte auf eine deiner 4 Ablagen legst.",
@@ -2560,8 +2671,8 @@
     "anleitung": "AnMaCha Solitaire vereint drei Kartenspiele für eine Person mit AnMaCha-Karten. Patience: In 7 Spalten absteigend in wechselnden Farben bauen (rot auf schwarz), leere Spalten nehmen nur Könige; Ziel sind die 4 Ablagen von Ass bis König. Vom Stapel deckst du 1 oder 3 Karten auf; mit „nur lösbare“ ist jede Partie garantiert lösbar. Spider: Zwei Kartenspiele in 10 Spalten, Karten auf eine um eins höhere legen, verschieben lassen sich aber nur Reihen derselben Farbe; komplette Reihen König bis Ass werden abgelegt; mit 1, 2 oder 4 Farben. FreeCell: alle Karten offen, 4 freie Zellen, absteigend in wechselnden Farben. Unbegrenzt rückgängig, Tipps, sichere Karten werden automatisch abgelegt und am Ende legt ⚡ alles von selbst ab. Täglich gibt es ein Tagesspiel (lösbare Patience). Siege, Bestzeiten und der Spielstand werden gespeichert, mit Google-Konto auf allen Geräten.",
     "steuerung": [
      "Touch & Maus: Karten ziehen oder einfach antippen – sie springen an die beste Stelle. Stapel antippen zieht neue Karten. ↶ rückgängig, 💡 Tipp, ⚡ automatisch fertig.",
-     "Tastatur: Pfeile bewegen den Rahmen, Leertaste/Enter nimmt Karten auf und legt sie ab, F legt automatisch, D zieht vom Stapel, Z rückgängig, H Tipp, A automatisch fertig, Rücktaste abbrechen, Esc Menü.",
-     "Gamecontroller: Steuerkreuz bewegt den Rahmen, A aufnehmen/ablegen, X automatisch legen, Y Stapel ziehen, B abbrechen, LB rückgängig, RB Tipp, Select automatisch fertig, Start Menü."
+     "Tastatur: Pfeile bewegen den Rahmen, Leertaste/Enter nimmt Karten auf und legt sie ab, F legt automatisch, D zieht vom Stapel, Z rückgängig, H Tipp, A automatisch fertig, Rücktaste abbrechen (ohne aufgenommene Karte: Zug zurück), Esc Menü.",
+     "Gamecontroller: Steuerkreuz bewegt den Rahmen, A aufnehmen/ablegen, X automatisch legen, Y Stapel ziehen, B abbrechen (ohne aufgenommene Karte: Zug zurück), LB rückgängig, RB Tipp, Select automatisch fertig, Start Menü."
     ],
     "tipps": [
      "Patience: Decke zuerst verdeckte Karten in den langen Spalten auf und leere Spalten nur, wenn du einen König dafür hast.",
@@ -2701,7 +2812,8 @@
     "anleitung": "GayLife ist eine 3D-Lebenssimulation in der Stadt Rainbow City (Regenbogenkiez und weitere Viertel) für Erwachsene. Du achtest auf Essen, Schlaf, Dusche und Menschen, verdienst Geld mit Jobs, lernst Bewohner kennen, gehst auf Dates, richtest deine Wohnung ein und spielst Minispiele und eine Hauptgeschichte. Alle Figuren sind frei erfunden; bis zu 4 Spieler können sich per PIN oder QR-Code besuchen.",
     "steuerung": [
      "PC: W A S D oder Pfeiltasten laufen; Kamera mit Maus ziehen oder Q/R drehen. E, Enter oder Leertaste = Aktion (sprechen, Orte betreten). P oder Tab = Handy, M = Karte/Orte, F = Vollbild, Esc = Pause. Im Startmenü Pfeiltasten, Enter und Esc.",
-     "Touch: Fester Stick links zum Laufen; vier Tasten rechts: A Aktion, B Orte, X Handy, Y Menü. Kamera durch Wischen auf dem Bild."
+     "Touch: Fester Stick links zum Laufen; vier Tasten rechts: A Aktion, B Orte, X Handy, Y Menü. Kamera durch Wischen auf dem Bild.",
+     "Controller: linker Stick oder Steuerkreuz laufen, A Aktion, B Karte/Orte, X Handy, Y oder Start Menü, LB/RB drehen die Kamera."
     ],
     "tipps": [
      "Dein Spielstand liegt auf dem Gerät; im Pausenmenü kannst du jederzeit speichern.",
@@ -2767,7 +2879,7 @@
     "anleitung": "Klotzfunk 3D ist eine Voxel-Sandbox: Blöcke abbauen und setzen, bauen und erkunden. Es gibt die Modi Überleben (Werkzeuge herstellen, Hunger und Herzen, Tiere, Dörfer mit Handel), Kreativ (alle Blöcke unbegrenzt, Fliegen) und Story (Das große Rauschen mit Aufträgen). Dazu kommen ein Funknetz mit Schaltern und Radio-Blöcken, eine Weltkarte und Mehrspieler für bis zu 4 Gäste.",
     "steuerung": [
      "PC: W A S D oder Pfeiltasten laufen, Maus = umschauen (Klick ins Bild fängt die Maus), Leertaste springen, Strg oder Umschalt rennen. Linksklick abbauen, Rechtsklick setzen (halten wiederholt). 1 bis 9 oder Mausrad = Block wählen, E = Inventar, Q = Seilhaken, M = Weltkarte, B = Wegpunkt, G = Bauform wechseln, J = Aufträge (Story). Kreativ: F oder doppelt Leertaste = Fliegen, Umschalt = runter.",
-     "Touch: Linke Bildschirmhälfte wischen = laufen (weit ziehen = rennen), rechte Hälfte wischen = umschauen. Tasten Sprung, Abbauen, Setzen, Haken (halten wiederholt), Hotbar antippen, 🎒 Inventar, 🗺 Karte, 📍 Wegpunkt, ▦ Bauform. Touch-Tasten lassen sich in den Einstellungen verschieben.",
+     "Touch: Linke Bildschirmhälfte wischen = laufen (weit ziehen = rennen), rechte Hälfte wischen = umschauen. Tasten Sprung, Runter, Abbauen, Setzen, Fliegen, Haken (halten wiederholt), Hotbar antippen, 🎒 Inventar, 🗺 Karte, 📍 Wegpunkt, ▦ Bauform. Touch-Tasten lassen sich in den Einstellungen verschieben.",
      "Gamepad: Linker Stick laufen, rechter Stick umschauen, A springen, B runter und Fenster schließen, X Seilhaken, Y Inventar, LB/RB Hotbar-Platz, RT abbauen, LT setzen, L3 rennen, Select Weltkarte, Start Pause."
     ],
     "tipps": [
@@ -2800,9 +2912,9 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "Kinderspiel mit einer kleinen offenen Insel-Welt: Du läufst mit Held und Haustier umher, fährst Fahrzeuge, besuchst Läden, Bauernhof, Freibad, Kino und Spielplätze, sammelst Sterne und spielst Mini-Spiele. Die Inselreise mit Bürgermeisterin Rosi führt in 8 Kapiteln mit kleinen Zielen durch das Spiel, nichts ist gesperrt. Mitspielen geht mit bis zu 4 Geräten über einen Code oder QR-Code.",
+    "anleitung": "Kinderspiel mit einer kleinen offenen Insel-Welt: Du läufst mit Held und Haustier umher, fährst Fahrzeuge, besuchst Läden, Bauernhof, Freibad, Kino und Spielplätze, sammelst Sterne und spielst Mini-Spiele. Die Inselreise mit Bürgermeisterin Rosi führt in 9 Kapiteln (bis zum Parkdirektor) mit kleinen Zielen durch das Spiel, nichts ist gesperrt. Mitspielen geht mit bis zu 4 Geräten über einen Code oder QR-Code.",
     "steuerung": [
-     "PC: W A S D oder Pfeile laufen/fahren, Shift rennen/Turbo, Leertaste springen/hupen (Hubschrauber: steigen, X sinken), E = Aktion (fahrende Autos anhalten, dann einsteigen), F Sirene/Türen/Baum hauen, 1 bis 8 Spaß-Aktionen, B Bauen, V Ego-Kamera, N Nacht, M Ton, P oder Esc Pause. Kamera: Maus ziehen, Mausrad Abstand, Q/R drehen.",
+     "PC: W A S D oder Pfeile laufen/fahren, Shift rennen/Turbo, Leertaste springen/hupen (Hubschrauber: steigen, X sinken), E = Aktion (fahrende Autos anhalten, dann einsteigen), F Sirene/Türen/Baum hauen, 1 bis 9 und 0 Spaß-Aktionen (10 Stück), B Bauen, V Ego-Kamera, N Nacht, M Ton, P oder Esc Pause. Kamera: Maus ziehen, Mausrad Abstand, Q/R drehen.",
      "Touch: Joystick links zum Laufen/Lenken (ganz außen = rennen), rechts wischen = Kamera. Rechts eine Knopf-Raute: unten der große Aktion-Knopf, rechts Springen/Turbo/Steigen, links Hallo/Hupe, oben Sirene/Türen/Sinken (nur wenn passend)."
     ],
     "tipps": [
@@ -2832,7 +2944,7 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "AnMaCha UNDERCOVER 3D ist eine Social-Deduction-Party im Funkhaus: Wem kannst du trauen? Es gibt sechs Modi. Verräter-Jagd: Die Crew erledigt Aufgaben als Minispiele, 1–3 Verräter knipsen heimlich aus, sabotieren und nutzen Geheimgänge; wer etwas findet, meldet, dann wird diskutiert und anonym abgestimmt. Die Crew gewinnt mit vollem Aufgabenbalken oder wenn alle Verräter rausgewählt sind. Imposter – Das geheime Wort: Alle sehen ein geheimes Wort, nur der Imposter kennt bloß die Kategorie (oder bekommt ein ähnliches Wort). Reihum gibt jeder einen Hinweis, dann wird diskutiert und abgestimmt; ein enttarnter Imposter darf das Wort noch raten. Detektiv & Alibi: Ermittler untersuchen Fußspuren, Türlogbücher, Kameras und Zeugenaussagen, Verräter manipulieren Spuren – legt die Spuren in der Besprechung vor. Sabotage-Chaos: Stromausfall, Funkstille und kaputte Sendetürme – repariert im Team, oft an zwei Orten gleichzeitig, bis zum Sendeschluss. Verstecken & Jagen: 1–2 Jäger gegen Flüchtende, die Funkbaken aktivieren, sich verstecken, Gefangene befreien und durch die Ausgänge entkommen. Rollen-Chaos: Verräter-Jagd mit Sonderrollen wie Ermittler, Techniker, Beschützer, Kurier, Trickser, Gestaltwandler, Spurenleser und Störsender. Solo spielst du offline gegen Bots (3–12 Teilnehmer, drei Schwierigkeiten). Online erstellst du einen Raum und lädst per Link, Code oder QR ein; jeder spielt auf seinem eigenen Gerät mit geheimer Rolle, leere Plätze füllen Bots.",
+    "anleitung": "AnMaCha UNDERCOVER 3D ist eine Social-Deduction-Party im Funkhaus: Wem kannst du trauen? Es gibt sechs Modi. Verräter-Jagd: Die Crew erledigt Aufgaben als Minispiele, 1–3 Verräter knipsen heimlich aus, sabotieren und nutzen Geheimgänge; wer etwas findet, meldet, dann wird diskutiert und anonym abgestimmt. Die Crew gewinnt mit vollem Aufgabenbalken oder wenn alle Verräter rausgewählt sind. Imposter – Das geheime Wort: Alle sehen ein geheimes Wort, nur der Imposter kennt bloß die Kategorie (oder bekommt ein ähnliches Wort). Reihum gibt jeder einen Hinweis, dann wird diskutiert und abgestimmt; ein enttarnter Imposter darf das Wort noch raten. Detektiv & Alibi: Ermittler untersuchen Fußspuren, Türlogbücher, Kameras und Zeugenaussagen, Verräter manipulieren Spuren – legt die Spuren in der Besprechung vor. Sabotage-Chaos: Stromausfall, Funkstille und kaputte Sendetürme – repariert im Team, oft an zwei Orten gleichzeitig, bis zum Sendeschluss. Verstecken & Jagen: 1–2 Jäger gegen Flüchtende, die Funkbaken aktivieren, sich verstecken, Gefangene befreien und durch die Ausgänge entkommen. Rollen-Chaos: Verräter-Jagd mit Sonderrollen wie Ermittler, Techniker, Beschützer, Kurier, Trickser, Gestaltwandler, Spurenleser und Störsender. Solo spielst du offline gegen Bots (drei Schwierigkeiten). Teilnehmer: Imposter und Verstecken & Jagen 3–12, Verräter-Jagd, Detektiv & Alibi und Sabotage-Chaos 4–12, Rollen-Chaos 5–12. Online erstellst du einen Raum und lädst per Link, Code oder QR ein; jeder spielt auf seinem eigenen Gerät mit geheimer Rolle, leere Plätze füllen Bots.",
     "steuerung": [
      "Smartphone und Tablet: Daumen links auf den Bildschirm legen und ziehen zum Laufen. Rechts unten der große Benutzen-Knopf (Aufgabe, Reparatur, Aufzug), daneben Melden, Ausknipsen/Fangen/Verstecken, Fähigkeit, Geheimgang und Sabotage – nur was gerade passt, ist hell. Oben Aufgabenliste, Karte und Menü.",
      "PC: WASD oder Pfeiltasten laufen, E benutzen, F melden, Leertaste Spezialaktion (Ausknipsen, Fangen, Verstecken), V Geheimgang, G Sabotage, T Fähigkeit, Umschalt Sprint, M Karte, Tab Aufgaben, Q Kamera, Enter Chat, C Schnellchat, Esc Pause. Alle Tasten lassen sich in den Einstellungen neu belegen.",
@@ -2904,7 +3016,7 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "ZEITSPRUNG KINDERSERIEN ist ein moderiertes Zeitstrahlspiel mit bekannten Serien von 1990 bis 2026. Jeder startet mit einem Serienmoment. Ordne weitere Serienstarts und besondere Momente zeitlich ein: wähle einfach ein Jahr aus A–D oder setze als Profi die Karte direkt in deinen Zeitstrahl. Dazwischen folgen Fragen zu Figuren und Serienwelten, Intro-Hörfragen, Symbolrätsel und ‚Was war zuerst?‘-Runden. Bekannte Intros von Disneys Große Pause, SpongeBob, Kim Possible und vielen weiteren Serien starten im eingebetteten YouTube- oder Deezer-Player. Jede richtige Antwort gibt einen Punkt; mit acht Punkten gewinnst du. Solo oder mit bis zu vier Spielern am TV und Handy-Controllern.",
+    "anleitung": "ZEITSPRUNG KINDERSERIEN ist ein moderiertes Zeitstrahlspiel mit bekannten Serien von 1990 bis 2026. Zu Beginn wird ein zufälliger Startmoment gezogen, der bei allen als erste Karte im Zeitstrahl liegt. Ordne weitere Serienstarts und besondere Momente zeitlich ein: wähle einfach ein Jahr aus A–D oder setze als Profi die Karte direkt in deinen Zeitstrahl. Dazwischen folgen Fragen zu Figuren und Serienwelten, Intro-Hörfragen, Symbolrätsel und ‚Was war zuerst?‘-Runden. Bekannte Intros von Disneys Große Pause, SpongeBob, Kim Possible und vielen weiteren Serien starten im eingebetteten YouTube- oder Deezer-Player. Jede richtige Antwort gibt einen Punkt; mit acht Punkten gewinnst du. Solo oder mit bis zu vier Spielern am TV und Handy-Controllern.",
     "steuerung": [
      "Maus/Touch: A–D-Antwort oder Lücke im Zeitstrahl antippen",
      "Tastatur: A–D oder 1–4 für Antworten, 1–9 für Zeitstrahl-Lücken",

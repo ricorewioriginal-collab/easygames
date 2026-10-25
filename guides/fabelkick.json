@@ -1,0 +1,231 @@
+{
+  "id": "fabelkick",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "FABELKICK 3D ist Fußball 11 gegen 11 mit Fabelwesen: Affen, Gorillas, Orks, Elfen, Zwerge, Trolle, Drachen und Yetis. Wie im echten Fußball gewinnt, wer nach zwei Halbzeiten mehr Tore geschossen hat. Im Pokal und im Elfmeterschießen entscheidet bei Gleichstand der Elfmeterpunkt.",
+        "Jedes Team hat eigene Werte und eine Spezialkraft, die Fabel-Kraft. Du steuerst immer den Spieler mit dem farbigen Ring; die anderen laufen von selbst in ihre Positionen."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "list": [
+        "ANSTOSS (Schnelles Spiel): 11 gegen 11 – Team, Gegner und Arena wählen. Allein, zu zweit zusammen oder gegeneinander.",
+        "FABEL-POKAL (Turnier): 8 Teams, K.-o.-Runden: Viertelfinale, Halbfinale, Finale.",
+        "ELFMETER (Nervensache): Elfmeterschießen – schießen und halten.",
+        "TRAINING (Üben): dein Team gegen den Torwart, ohne Zeitlimit.",
+        "TEAMS (Kader): alle 8 Fabel-Teams mit Werten, Motto und Spezialkraft.",
+        "EINSTELLUNGEN: Halbzeit (2, 3, 4 oder 6 Minuten), Schwierigkeit (Amateur, Profi, Weltklasse, Legende), Kamera (TV, Nah, Weit), Grafik (Automatisch, Hoch, Mittel, Niedrig/Akku), Ton, Menümusik, Vibration, Radar.",
+        "STEUERUNG: alle Tasten für Touch, PC und Controller.",
+        "Oben im Menü stehen deine Spiele, Siege/Unentschieden/Niederlagen, Tore und gewonnenen Pokale. ⛶ schaltet Vollbild."
+      ]
+    },
+    {
+      "t": "Teamauswahl",
+      "list": [
+        "Mit ‹ und › blätterst du durch die Teams für HEIM und GAST. Jede Karte zeigt Sterne, Gesamtwert und die Balken Tempo, Schuss, Pass, Abwehr und Torwart sowie die Spezialkraft.",
+        "Darunter stellst du Arena, Schwierigkeit und (bei Anstoß und Pokal) die Halbzeitlänge ein.",
+        "Für jedes Eingabegerät (Tastatur/Touch, Controller 1, 2 …) wählst du ◀ HEIM, GAST ▶ oder „– zuschauen –“. Bis zu 4 Controller werden erkannt.",
+        "Zwei Geräte auf verschiedenen Seiten = Duell gegeneinander. Beide auf derselben Seite = ihr spielt zusammen gegen den Computer. Im Pokal und im Training spielt nur die Heim-Seite.",
+        "ANPFIFF, POKAL STARTEN, ZUM PUNKT oder TRAINING STARTEN beginnt."
+      ]
+    },
+    {
+      "t": "Regeln im Spiel",
+      "list": [
+        "Zwei Halbzeiten. Die Uhr läuft im Spiel bis 45 bzw. 90 Minuten, in Wirklichkeit dauert eine Halbzeit so lange, wie eingestellt (2 bis 6 Minuten).",
+        "Geht der Ball ins Aus, gibt es Einwurf, Eckstoß oder Abstoß.",
+        "Fouls: Eine Grätsche von hinten ist oft ein Foul. Dann gibt es Freistoß (mit Mauer) und im Strafraum Elfmeter. Manchmal gibt es dazu eine Gelbe Karte.",
+        "Kopfbälle nach Flanken und Paraden der Torhüter gehören dazu.",
+        "Nach einem Tor stößt das Team an, das das Gegentor bekommen hat.",
+        "Im Fabel-Pokal folgt bei Unentschieden nach 90 Minuten sofort ein Elfmeterschießen. Im Anstoß-Modus bleibt ein Unentschieden stehen."
+      ]
+    },
+    {
+      "t": "Fabel-Kraft",
+      "p": [
+        "Der Kraftbalken jedes Teams startet bei 20 Prozent und füllt sich mit der Zeit, bei Balleroberungen, gewonnenen Zweikämpfen und Schüssen. Ist er voll, erscheint auf dem Handy der ★-Knopf und du kannst die Kraft auslösen (Controller RB, PC E). Danach ist der Balken wieder leer.",
+        "Schuss-Kräfte (Donnerschuss, Zauberschuss, Feuerball) gelten für den nächsten Schuss innerhalb von 15 Sekunden. Der Computer setzt seine Kraft ebenfalls ein."
+      ],
+      "list": [
+        "🐒 Urwald-Affen – Lianen-Sprint: Das ganze Team rennt 6 Sekunden lang viel schneller.",
+        "🦍 Silberrücken – Brustklopfen: Die Gegner werden 4 Sekunden lang langsamer.",
+        "👹 Ork-Brecher – Donnerschuss: Der nächste Schuss ist blitzschnell und kaum zu halten.",
+        "🧝 Elfenhain – Zauberschuss: Der nächste Schuss fliegt im Bogen um den Torwart herum.",
+        "⛏️ Zwergenhammer – Steinwall: Der Torwart wird 12 Sekunden lang zum Felsen und hält fast alles.",
+        "🪨 Trollbrücke – Steinhaut: 8 Sekunden lang kann dem Team niemand den Ball abnehmen.",
+        "🐉 Drachenbrut – Feuerball: Der nächste Schuss brennt, der Torwart kann ihn nicht festhalten.",
+        "❄️ Frostpranken – Eiszeit: Die Gegner frieren 2,5 Sekunden lang fast ein."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Controller: linker Stick oder Steuerkreuz laufen, RT sprinten. Mit Ball: A Pass, Y Steilpass, X Flanke/Lupfer, B Schuss (halten = mehr Kraft). Ohne Ball: A Tackling (halten im Stand = Pressing), X Pressing, B Grätsche, LB oder Y Spieler wechseln. RB Fabel-Kraft, Start Pause.",
+        "PC: WASD oder Pfeile laufen, Shift sprinten. Mit Ball: Leertaste oder K Pass, L Steilpass, I Flanke, J Schuss (halten = mehr Kraft). Ohne Ball: K Tackling, I Pressing, J Grätsche, Q oder L Spieler wechseln. E Fabel-Kraft, Esc oder P Pause.",
+        "Touch: Auf der linken Bildschirmhälfte erscheint der Daumen-Stick dort, wo du tippst; Stick ganz an den Rand = Sprint. Rechts vier Tasten: A Pass, B Schuss, X Flanke, Y Steil. In der Abwehr: A Tackling, B Grätsche, X Druck (Pressing), Y Wechsel. ★ erscheint, sobald die Fabel-Kraft voll ist. Handy am besten quer halten.",
+        "Menüs: Pfeile/WASD oder Steuerkreuz wählen, Enter/Leertaste oder A bestätigen, Esc/Rücktaste oder B zurück, links/rechts ändert Werte.",
+        "Pause: Weiterspielen, Kamera umschalten, Steuerung ansehen, Neu starten, Zum Hauptmenü."
+      ]
+    },
+    {
+      "t": "Elfmeterschießen",
+      "list": [
+        "Jedes Team schießt zunächst 5 Elfmeter abwechselnd. Steht der Sieger vorher fest, ist früher Schluss. Steht es danach unentschieden, geht es Paar für Paar weiter, bis einer vorn liegt.",
+        "Als Schütze: Mit dem Stick (bzw. WASD/Pfeilen) bewegst du die Zielmarke im Tor, Schuss-Taste (B/J, auch A/K) halten bestimmt die Kraft, loslassen schießt. Zu viel Kraft oder eine Marke außerhalb des Tors heißt: vorbei. Nach 12 Sekunden schießt der Schütze von selbst.",
+        "Als Torwart: Stick nach links oder rechts, in die Ecke, in die du springen willst. A ohne Richtung = in der Mitte bleiben.",
+        "Ohne Mitspieler übernimmt der Computer die andere Seite."
+      ]
+    },
+    {
+      "t": "Training",
+      "p": [
+        "Im Training spielt dein Team allein gegen einen Torwart (Ork-Brecher, wenn du nicht selbst die Orks nimmst, sonst Zwergenhammer). Es gibt keine Zeit. Nach jedem Tor beginnst du neu am Anstoßpunkt, hält der Torwart oder geht der Ball ins Aus, gibt es Abstoß. Ideal, um Schusskraft, Flanken und Steilpässe zu üben."
+      ]
+    },
+    {
+      "t": "Wertung, Fortschritt und Speichern",
+      "list": [
+        "Nach dem Abpfiff zeigt das Spiel SIEG!, UNENTSCHIEDEN oder NIEDERLAGE, die Torschützen mit Minute (ET = Eigentor) und Statistiken wie Ballbesitz, Schüsse, Schüsse aufs Tor und Pässe. Danach „Revanche“ oder „Hauptmenü“.",
+        "Gespeichert werden Spiele, Siege, Unentschieden, Niederlagen, Tore, Pokalsiege und der höchste Sieg. Trainingsspiele zählen nicht mit.",
+        "Ein laufender Pokal wird gespeichert und lässt sich später fortsetzen. „Pokal beenden“ bricht ihn ab.",
+        "Mit Google angemeldet werden Siege, Tore und Pokale auf all deinen Geräten gespeichert; sonst bleiben sie lokal im Browser."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Starte auf Amateur und mit 3 Minuten Halbzeit. Im Training lernst du die Schusskraft ohne Druck.",
+        "Kurz drücken für flache Schüsse, länger halten für mehr Wucht. Wer zu lange hält, schießt über die Latte.",
+        "Spiel einfache Pässe (A/Leertaste) statt alleine durchzulaufen – Pässe öffnen Räume.",
+        "Sprinten kostet Ausdauer. Der grüne Balken zeigt, wie viel noch übrig ist; sprinte gezielt.",
+        "Der Radar zeigt dir alle Spieler auf einen Blick – er lässt sich in den Einstellungen ein- und ausschalten."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Steilpässe (Y/L) in den Lauf sind gegen langsame Teams wie Zwergenhammer (Tempo 62) und Trollbrücke (66) besonders stark.",
+        "Flanken (X/I) aus dem Halbfeld finden den Kopf deiner Stürmer – gut gegen starke Abwehrreihen.",
+        "In der Abwehr lieber Tackling (A/K) und Pressing als Grätsche. Grätsche nie von hinten: Das gibt Freistoß, im Strafraum Elfmeter.",
+        "Wechsle früh den Spieler (LB/Q), damit der Verteidiger zwischen Ball und Tor steht.",
+        "Nutze die Stärken deines Teams: Orks und Drachen schießen am härtesten, Elfen passen am besten, Affen sind am schnellsten, Zwerge haben den besten Torwart."
+      ]
+    },
+    {
+      "t": "Fabel-Kraft richtig einsetzen",
+      "list": [
+        "Schuss-Kräfte (Donnerschuss, Zauberschuss, Feuerball) erst kurz vor dem Strafraum zünden – du hast 15 Sekunden für den Schuss.",
+        "Lianen-Sprint, wenn du einen Konter fährst: 6 Sekunden reichen über das halbe Feld.",
+        "Steinhaut, wenn du den Ball halten musst – dir kann niemand den Ball abnehmen, Grätschen prallen ab.",
+        "Brustklopfen und Eiszeit, wenn der Gegner kontert. Eiszeit stoppt einen Durchbruch fast komplett.",
+        "Steinwall in der Schlussphase bei knapper Führung: 12 Sekunden lang hält dein Torwart fast alles."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Auf Legende reagiert der Computer sehr schnell und presst aggressiv. Spiel schnell ab, bevor er ankommt.",
+        "Ein Ballgewinn gegen den Gegner lädt die Fabel-Kraft zusätzlich auf, ein gewonnener Zweikampf noch mehr.",
+        "Beim Elfmeter als Torwart: Drück den Stick erst kurz vor dem Schuss in eine Ecke.",
+        "Als Schütze: Hohe Schüsse in die Ecke sind am sichersten – selbst wenn der Torwart richtig springt, hält er sie nur selten. Ziele aber nicht über die Latte."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Den Schuss zu lange halten – der Ball fliegt in den Himmel.",
+        "Grätschen von hinten im eigenen Strafraum.",
+        "Die ganze Zeit sprinten und dann ohne Ausdauer dastehen.",
+        "Die Fabel-Kraft im Mittelfeld verschenken, wenn es eine Schuss-Kraft ist."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Die Teams im Vergleich",
+      "p": [
+        "Werte in der Reihenfolge Tempo / Schuss / Pass / Abwehr / Torwart, dahinter der Gesamtwert (Durchschnitt)."
+      ],
+      "list": [
+        "🐒 Urwald-Affen: 90 / 72 / 82 / 64 / 70 – Gesamt 76. Schnellstes Team, schwache Abwehr. Motto: „Flink, frech und immer am Ball.“",
+        "🦍 Silberrücken: 70 / 84 / 70 / 86 / 78 – Gesamt 78. Stark in Abwehr und Schuss.",
+        "👹 Ork-Brecher: 74 / 90 / 64 / 80 / 68 – Gesamt 75. Härtester Schuss, schwächster Pass und Torwart.",
+        "🧝 Elfenhain: 84 / 76 / 92 / 62 / 74 – Gesamt 78. Beste Pässe, schwächste Abwehr.",
+        "⛏️ Zwergenhammer: 62 / 80 / 74 / 88 / 90 – Gesamt 79. Bester Torwart und beste Abwehr, langsamstes Team.",
+        "🪨 Trollbrücke: 66 / 82 / 66 / 84 / 76 – Gesamt 75. Robust, aber langsam.",
+        "🐉 Drachenbrut: 82 / 86 / 72 / 70 / 72 – Gesamt 76. Schnell und schussstark.",
+        "❄️ Frostpranken: 72 / 78 / 76 / 82 / 84 – Gesamt 78. Ausgewogen mit starkem Torwart."
+      ]
+    },
+    {
+      "t": "Lösungsweg Fabel-Pokal",
+      "steps": [
+        "Wähle dein Team. Die 8 Teams werden zufällig in vier Viertelfinal-Paarungen gelost.",
+        "Spiele dein Viertelfinale. Die anderen Partien werden nach Teamstärke simuliert; stärkere Teams gewinnen öfter, Überraschungen sind möglich.",
+        "Unentschieden nach 90 Minuten: Elfmeterschießen. Übe vorher im Modus ELFMETER.",
+        "Halbfinale und Finale folgen nach demselben Prinzip. Der Turnierbaum zeigt alle Ergebnisse, Elfmeter in Klammern.",
+        "Gewinnst du das Finale, erscheint „🏆 POKALSIEGER!“ und dein Pokalzähler steigt. Danach startet „NEUER POKAL“ ein neues Turnier, nach dem Ausscheiden „NEUER VERSUCH“.",
+        "Für Einsteiger eignen sich Zwergenhammer oder Frostpranken (starker Torwart), für Angreifer Drachenbrut oder Ork-Brecher."
+      ]
+    },
+    {
+      "t": "Beste Strategie je Gegner",
+      "list": [
+        "Gegen Urwald-Affen und Elfenhain: Ihre Abwehr ist schwach (64 bzw. 62). Spiel direkt aufs Tor und schieß oft.",
+        "Gegen Zwergenhammer: Torwart 90 – Schüsse aus der Distanz halten sie meist. Spiel dich mit Steilpässen frei, ihr Tempo ist nur 62. Achtung bei Steinwall.",
+        "Gegen Ork-Brecher: Ihr Torwart ist mit 68 der schwächste. Fernschüsse lohnen sich. Verteidige gegen den Donnerschuss mit frühem Tackling.",
+        "Gegen Trollbrücke: Langsam, aber mit Steinhaut 8 Sekunden unangreifbar. Stell dann die Passwege zu statt zu grätschen.",
+        "Gegen Silberrücken und Frostpranken: starke Abwehr. Flanken und Kopfbälle sind hier oft der Schlüssel.",
+        "Gegen Drachenbrut: schnell und schussstark. Bei Feuerball kann dein Torwart den Ball nicht festhalten – Abpraller sofort klären."
+      ]
+    },
+    {
+      "t": "Schwierigkeitsstufen",
+      "list": [
+        "Amateur: Der Computer reagiert langsam, zielt ungenau, der Torwart hält wenig und presst kaum.",
+        "Profi: ausgewogen – die Standardstufe.",
+        "Weltklasse: schnelle Reaktion, genaue Schüsse, starkes Pressing.",
+        "Legende: noch eine Stufe über Weltklasse – der Computer reagiert fast sofort, schießt präzise, sein Torwart hält am besten und er presst am härtesten."
+      ]
+    },
+    {
+      "t": "Arenen",
+      "list": [
+        "Dschungel-Arena: sonnige Arena zwischen Riesenbäumen.",
+        "Mondkristall-Stadion: Flutlicht, zwei Monde und leuchtende Kristalle (Nachtspiel).",
+        "Vulkan-Kessel: Abendrot, Lavaflüsse und schwebende Felsen.",
+        "Die Arena ändert nur das Aussehen, nicht die Spielregeln."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Wie spielen wir zu zweit?",
+      "a": "In der Teamauswahl stellst du jedes Gerät (Tastatur/Touch, Controller 1, 2 …) auf HEIM oder GAST. Verschiedene Seiten = gegeneinander, gleiche Seite = zusammen gegen den Computer."
+    },
+    {
+      "q": "Mein Controller reagiert nicht.",
+      "a": "Drücke eine Taste am Controller, damit der Browser ihn erkennt. Er erscheint dann in der Teamauswahl als „Controller 1“. Stelle ihn dort auf HEIM oder GAST."
+    },
+    {
+      "q": "Meine Statistik ist weg.",
+      "a": "Ohne Anmeldung liegen Siege, Tore und Pokale nur im Browser. Melde dich mit Google an, dann werden sie auf allen Geräten gespeichert."
+    },
+    {
+      "q": "Das Spiel ruckelt.",
+      "a": "Stelle in den Einstellungen die Grafik auf Mittel oder Niedrig (Akku)."
+    },
+    {
+      "q": "Warum ist der ★-Knopf nicht da?",
+      "a": "Er erscheint erst, wenn der Kraftbalken deines Teams voll ist."
+    },
+    {
+      "q": "Gibt es einen Online-Modus?",
+      "a": "Nein. Gespielt wird an einem Gerät, mit bis zu 4 Controllern plus Tastatur oder Touch."
+    }
+  ]
+}

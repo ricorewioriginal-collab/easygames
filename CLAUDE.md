@@ -33,4 +33,5 @@ Ressourcensparend und fehlerfrei bauen: kleine, gezielte Änderungen, bestehende
 - `node tools/build-sync.js` (Dateiliste der App aktualisieren), bei neuen Spielen auch `python3 tools/make-pwa.py <ordner>` und
   `python3 tools/make-thumbs.py` (kleine WebP-Vorschaubilder für die Spieleliste; macht sonst auch der Sync-Workflow auf `main`).
 - Neue Spiele: `node tools/make-share.cjs <spiel-id>` erzeugt die Teilen-Vorschau (`share/<id>.jpg` und `share/<id>.html`, Bild und Beschreibung für Chats/soziale Netze) – mit einchecken; die Teilen-Dialoge verweisen darauf.
+- Jedes Spiel braucht eine vollständige Spielanleitung mit Ratgeber und Lösungsbuch in `guides/<id>.json` (Format `guides/README.md`, Prüfung `node tools/check-guides.js <id>`); angezeigt auf der Startseite (Reiter Handbuch/Ratgeber/Lösungsbuch), in `anleitung.html?game=<id>` und über „📖 Anleitung“ in Hub und `easygames.js`.
 - `node tools/check-games.js` prüft alle Spiele; RIFTZONE nach Quelländerung neu bauen: `cd riftzone && node scripts/build.mjs`.

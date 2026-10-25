@@ -158,6 +158,10 @@
   .dbody p{margin:0 0 8px;color:#d5e2ee;line-height:1.6}
   .dbody ul{margin:0;padding-left:20px;color:#d5e2ee}
   .dbody li{margin:4px 0}
+  .dbody ol{margin:0 0 8px;padding-left:22px;color:#d5e2ee}.dbody .egb-sec ul{margin:0 0 8px}
+  .dbody details{margin:6px 0;padding:8px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.04)}.dbody summary{cursor:pointer;font-weight:700;color:#fff}.dbody details p{margin:8px 0 2px}
+  .dbody h4.egb-h{margin:16px 0 6px;font-size:16px;letter-spacing:0;text-transform:none;color:#fff}
+  .dbody .gbook{display:inline-flex;align-items:center;margin:14px 0 4px;text-decoration:none}
   .ctrl{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:baseline;color:#d5e2ee}
   .ctrl b{font-size:12.5px;padding:2px 10px;border-radius:999px;background:rgba(0,229,255,.16);color:var(--cy);white-space:nowrap}
   .facts{display:grid;grid-template-columns:minmax(110px,auto) 1fr;gap:0;border:1px solid rgba(255,255,255,.12);border-radius:14px;overflow:hidden}
@@ -513,6 +517,8 @@
     <div class="tabs" role="tablist" aria-label="Spielinfos">
       <button role="tab" data-tab="info" aria-selected="true">Übersicht</button>
       <button role="tab" data-tab="manual" aria-selected="false">Handbuch</button>
+      <button role="tab" data-tab="ratgeber" aria-selected="false">Ratgeber</button>
+      <button role="tab" data-tab="loesung" aria-selected="false">Lösungsbuch</button>
       <button role="tab" data-tab="facts" aria-selected="false">Details</button>
     </div>
     <div class="dbody" id="dBody" role="tabpanel"></div>
@@ -540,6 +546,7 @@
 <script src="thumbs/thumbs.js"></script>
 <script src="modes.js"></script>
 <script src="guides.js"></script>
+<script src="guidebook.js"></script>
 <script src="cloud/anmacha-rating.js" defer></script>
 <script src="cloud/anmacha-cloud.js" data-game="home" data-prefix="eg-fav,eg-recent" data-ui="off" data-board="off" defer></script>
 <script src="cloud/anmacha-account.js" defer></script>
@@ -820,7 +827,10 @@ function renderTab(g, tab) {
     const cs = controls(d);
     if (cs.length) { h4('Bedienung'); const grid = el('div', 'ctrl'); cs.forEach(([k, t]) => { grid.appendChild(k ? el('b', '', k) : el('span')); grid.appendChild(el('span', '', t)); }); body.appendChild(grid); }
     if (d && d.tipps && d.tipps.length) { h4('Tipps'); const ul = el('ul'); d.tipps.forEach(t => ul.appendChild(el('li', '', t))); body.appendChild(ul); }
-    if (!d) body.appendChild(el('p', 'note', 'Für dieses Spiel gibt es noch kein ausführliches Handbuch.'));
+    bookPart(g, tab, body, ['handbuch', 'faq']);
+  } else if (tab === 'ratgeber' || tab === 'loesung') {
+    h4(tab === 'ratgeber' ? 'Ratgeber: Tipps & Strategien' : 'Lösungsbuch'); if (tab === 'ratgeber' && d && d.tipps && d.tipps.length) { const ul = el('ul'); d.tipps.forEach(t => ul.appendChild(el('li', '', t))); body.appendChild(ul); }
+    bookPart(g, tab, body, [tab]);
   } else {
     h4('Alle Details');
     const dl = el('dl', 'facts'), row = (k, v, link) => { dl.appendChild(el('dt', '', k)); const dd = el('dd'); if (link) { const a = el('a', '', v); a.href = link; a.target = '_blank'; a.rel = 'noopener'; a.style.color = 'var(--cy)'; dd.appendChild(a); } else dd.textContent = v; dl.appendChild(dd); };
@@ -835,6 +845,16 @@ function renderTab(g, tab) {
     body.appendChild(dl);
     const more = el('p'); more.style.marginTop = '14px'; const bt = el('button', 'pill', '</> Einbetten & Teilen'); bt.onclick = () => openShare(di); more.appendChild(bt); body.appendChild(more);
   }
+}
+// Ausführliche Anleitung (guides/<id>.json) erst beim Öffnen laden; Link zur ganzen Anleitung als Seite
+function bookPart(g, tab, body, parts) {
+  const wait = el('p', 'note', '⏳ Anleitung wird geladen …'); body.appendChild(wait);
+  const B = window.EasyGamesBook; (B ? B.load(g.id) : Promise.resolve(null)).then(book => {
+    if (!wait.isConnected || dtab !== tab || di < 0 || GAMES[di] !== g) return; wait.remove(); let n = 0;   // nur die zuletzt angezeigte Fassung füllen
+    parts.forEach(p => { if (p === 'faq' && book && book.faq && book.faq.length) body.appendChild(el('h4', '', 'Häufige Fragen')); n += B.render(body, book, p, { h: 'h4' }); });
+    if (!n) { if (parts[0] !== 'handbuch') body.appendChild(el('p', 'note', 'Für dieses Spiel gibt es den ' + (tab === 'loesung' ? 'Lösungsbuch' : 'Ratgeber') + '-Teil noch nicht.')); return; }
+    const a = el('a', 'pill gbook', '📖 Ganze Anleitung als Seite'); a.href = 'anleitung.html?game=' + encodeURIComponent(g.id) + (tab === 'manual' ? '' : '#' + tab); if (!window.EasyGamesApp) { a.target = '_blank'; a.rel = 'noopener'; } body.appendChild(a);
+  });
 }
 function setTab(tab) {
   dtab = tab; document.querySelectorAll('#detail .tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === tab));

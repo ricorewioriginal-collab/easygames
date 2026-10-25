@@ -1,0 +1,196 @@
+{
+  "id": "funk-billard",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Funk-Billard 3D ist 8-Ball-Pool in einer Neon-Radio-Lounge. Auf dem Tisch liegen die weiße Spielkugel und 15 farbige Kugeln: die Vollen (1–7), die Halben (9–15) und die schwarze 8.",
+        "Du spielst eine Gruppe – Volle oder Halbe. Hast du alle Kugeln deiner Gruppe versenkt, musst du zum Schluss die 8 versenken. Wer das zuerst schafft, gewinnt die Partie."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "p": [
+        "Auf dem Titelbild tippst du auf „▶ Drücke Start“ (oder drückst eine Taste bzw. A am Controller). Danach erscheint das Hauptmenü:"
+      ],
+      "list": [
+        "🎱 Gegen CPU: 8-Ball gegen den Computer in drei Stufen – Leicht 🙂 („Der Computer verfehlt öfter“), Mittel 😎 („Solider Gegner“), Profi 🔥 („Trifft fast alles – mit Rückzieher“). Gegen den Computer hast du immer den Anstoß.",
+        "👥 Zu zweit: abwechselnd an einem Gerät (Spieler 1 und Spieler 2). Bei der Revanche wechselt der Anstoß.",
+        "🌐 Online: gegen Freunde per Code, Link oder QR-Code, jeder auf seinem eigenen Gerät.",
+        "🎯 Training: freies Spiel ohne Regeln. Sind alle Kugeln versenkt, wird automatisch neu aufgebaut.",
+        "🏅 Rekorde: Punkte, Serien, Siege und Niederlagen je Stufe, Online-Siege, Duelle zu zweit und versenkte Kugeln.",
+        "⚙️ Optionen: Soundeffekte, Musik, Ziellinie und Laufrichtungen, Vibration, Sparmodus (ohne Schatten, wirkt nach einem Neustart).",
+        "📖 Anleitung: Regeln und Steuerung."
+      ]
+    },
+    {
+      "t": "Regeln: Anstoß und Gruppen",
+      "list": [
+        "Die Kugeln liegen im Dreieck, die 8 in der Mitte, in den hinteren Ecken je eine Volle und eine Halbe.",
+        "Beim Anstoß darfst du die Weiße hinter der Kopflinie (im ersten Viertel des Tisches) frei hinlegen.",
+        "Versenkst du beim Anstoß eine Kugel, bleibst du am Tisch. Die Gruppen werden beim Anstoß aber noch nicht verteilt – der Tisch ist „offen“.",
+        "Fällt die 8 beim Anstoß, kommt sie zurück auf den Tisch („Die 8 beim Anstoß – sie kommt zurück.“).",
+        "Wer nach dem Anstoß zuerst ohne Foul eine Kugel versenkt, bekommt deren Gruppe, der andere die übrige. Das Spiel meldet z. B. „🎱 Du spielst die Vollen (1–7)“."
+      ]
+    },
+    {
+      "t": "Regeln: Weiterspielen, Wechsel und Fouls",
+      "list": [
+        "Versenkst du eine eigene Kugel (bei offenem Tisch: irgendeine außer der 8), bist du nochmal dran („👍 Treffer – … bleibt dran“). Sonst wechselt der Zug.",
+        "Foul „Weiße versenkt“: Die weiße Kugel fällt in eine Tasche.",
+        "Foul „Keine Kugel getroffen“: Die Weiße berührt gar keine Kugel.",
+        "Foul „Falsche Kugel zuerst getroffen“: Die Weiße trifft zuerst eine Kugel der anderen Gruppe (oder die 8, solange du noch eigene Kugeln hast).",
+        "Foul „Die 8 zuerst getroffen“: bei offenem Tisch die 8 als erste Kugel anspielen.",
+        "Foul „Keine Bande nach dem Kontakt“: Nach dem ersten Kontakt muss irgendeine Kugel eine Bande berühren oder eine Kugel fallen.",
+        "Nach einem Foul ist der Gegner dran und hat Ball in der Hand: Er darf die Weiße überall auf dem Tisch hinlegen."
+      ]
+    },
+    {
+      "t": "Regeln: Die schwarze 8",
+      "list": [
+        "Hast du alle Kugeln deiner Gruppe versenkt, ist die 8 deine Zielkugel.",
+        "Versenkst du die 8 regelgerecht, gewinnst du: „Die 8 versenkt – gewonnen!“",
+        "Versenkst du die 8, bevor deine Gruppe abgeräumt ist, verlierst du sofort.",
+        "Versenkst du die 8 mit einem Foul (z. B. fällt auch die Weiße), verlierst du ebenfalls: „Die 8 mit Foul versenkt – verloren.“"
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch/Maus: Auf dem Tisch nach links oder rechts ziehen = zielen, ◀ ▶ gedrückt halten = fein drehen. Rechts den Kraftbalken nach unten ziehen und loslassen = Stoß (je weiter, desto fester). 👁 wechselt zwischen Queue-Ansicht und Draufsicht – in der Draufsicht tippst du einfach dorthin, wohin du zielen willst. 🎱 öffnet die Effet-Wahl. Bei Ball in der Hand die Weiße mit dem Finger verschieben.",
+        "Tastatur: ← → zielen (mit Shift fein), ↑ ↓ Effet (in Viertelschritten), Leertaste oder Enter halten = ausholen, loslassen = Stoß, V Ansicht, W A S D Weiße verschieben (Ball in der Hand und beim Anstoß), Esc oder P Pause.",
+        "Gamecontroller: linker Stick zielen, LB/RB fein drehen, A halten = ausholen, loslassen = Stoß, X schaltet das Effet durch (Nachläufer, Rückzieher, kein Effet), Y Ansicht, rechter Stick oder Steuerkreuz verschiebt die Weiße, Start oder B Pause.",
+        "Pause-Menü: Weiter, ↻ Neu aufbauen, Optionen, Regeln, Zum Menü. Online geht Neu aufbauen nur über die Revanche."
+      ]
+    },
+    {
+      "t": "Ziellinie und Effet",
+      "p": [
+        "Mit eingeschalteter Option „Ziellinie und Laufrichtungen“ zeigt das Spiel die Geisterkugel (wo die Weiße die erste Kugel trifft) und in welche Richtung beide Kugeln danach laufen.",
+        "Effet oben (Nachläufer): Die Weiße läuft nach dem Treffer weiter nach vorn. Effet unten (Rückzieher): Die Weiße zieht nach dem Treffer zurück. Ohne Effet bleibt sie eher liegen bzw. läuft seitlich ab."
+      ]
+    },
+    {
+      "t": "Rekorde und Speichern",
+      "p": [
+        "Für die Rangliste zählt jeder Sieg gegen den Computer: Leicht 1 Punkt, Mittel 2 Punkte, Profi 3 Punkte. Im Menü siehst du „🏆 Punkte · 🔥 Serie“. Jede Niederlage gegen den Computer setzt die Serie auf 0; die beste Serie bleibt gespeichert.",
+        "Nach jeder Partie zeigt das Ergebnisfenster für beide Spieler die Zahl der Stöße und der versenkten Kugeln, mit ↻ Revanche oder ☰ Menü.",
+        "Rekorde und Optionen werden im Browser gespeichert; über das Google-Konto (AnMaCha Cloud) lassen sie sich auf mehreren Geräten nutzen."
+      ]
+    },
+    {
+      "t": "Online spielen",
+      "steps": [
+        "Im Menü 🌐 Online wählen und deinen Namen eintragen (bis 12 Zeichen).",
+        "Einer tippt auf „➕ Raum eröffnen“. Es erscheinen ein 4-stelliger Code, ein Link und ein QR-Code – „Warte auf deinen Gegner …“.",
+        "Der andere gibt den Code ein und tippt auf Beitreten, öffnet den Link oder scannt den QR-Code – von überall, jeder auf seinem eigenen Gerät.",
+        "Sobald beide verbunden sind, startet die Partie; der Gastgeber hat den ersten Anstoß, bei jeder Revanche wechselt er.",
+        "Verlässt der Gegner das Spiel, meldet das Spiel „📴 Gegner hat das Spiel verlassen“ und kehrt ins Menü zurück."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Nicht immer volle Kraft: Mit halber Kraft bleibt die Weiße besser liegen und fällt seltener in eine Tasche.",
+        "Nutze die Draufsicht (👁 oder V), um Winkel zu sehen, und wechsle zum Stoß zurück in die Queue-Ansicht.",
+        "Lass die Ziellinie eingeschaltet: Die Laufrichtung der getroffenen Kugel zeigt dir, ob sie in die Tasche geht.",
+        "Fange gegen den Computer auf Leicht an – er verfehlt öfter."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Rückzieher (Effet unten) verhindert, dass die Weiße hinter der Objektkugel in die Tasche rollt – ideal bei geraden Stößen nahe einer Tasche.",
+        "Nachläufer (Effet oben) bringt die Weiße nach vorn zur nächsten Kugel.",
+        "Wähle bei offenem Tisch die Gruppe, deren Kugeln leichter liegen – die erste versenkte Kugel entscheidet.",
+        "Spiele die 8 erst an, wenn sie sicher fällt. Ein Fehlschuss auf die 8 ist kein Verlust, ein Foul beim Versenken schon.",
+        "Ball in der Hand: Lege die Weiße so, dass du einen geraden, kurzen Stoß auf eine eigene Kugel nahe einer Tasche hast."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Sicherheitsstoß: Kein guter Stoß in Sicht? Spiel eine eigene Kugel sanft an die Bande – das ist kein Foul und lässt dem Gegner wenig übrig.",
+        "Plane zwei Kugeln voraus: Wo soll die Weiße nach diesem Stoß liegen? Kraft und Effet bestimmen das.",
+        "Am Controller und an der Tastatur mit Shift bzw. LB/RB fein zielen – schon kleine Winkel entscheiden über Treffer.",
+        "Der Profi-Computer rechnet mehrere Stöße voraus und spielt mit Rückzieher. Gib ihm keine einfachen Kugeln vor der Tasche."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu fest gestoßen: Die Weiße springt durch den Tisch und fällt in eine Tasche – Foul und Ball in der Hand für den Gegner.",
+        "Zu sanft gestoßen: Die Kugel bleibt liegen, ohne dass eine Bande berührt wurde – Foul „Keine Bande nach dem Kontakt“.",
+        "Falsche Gruppe zuerst getroffen: Achte bei engen Lagen darauf, dass deine eigene Kugel zuerst berührt wird.",
+        "Die 8 zu früh versenkt: Solange noch eigene Kugeln liegen, bedeutet die 8 in der Tasche sofort die Niederlage."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Beste Strategie je Phase",
+      "list": [
+        "Anstoß: Lege die Weiße mittig hinter die Kopflinie und stoße mit voller Kraft gerade auf die Spitze. Fällt eine Kugel, bleibst du am Tisch.",
+        "Offener Tisch: Versenke die einfachste Kugel – damit wählst du deine Gruppe. Die 8 nicht zuerst anspielen.",
+        "Mittelspiel: Räume zuerst Kugeln vor den Taschen ab, die dem Gegner sonst helfen würden, und löse Haufen mit sanften Stößen.",
+        "Endspiel: Bring die Weiße mit der letzten eigenen Kugel in eine gute Position für die 8. Erst dann die 8."
+      ]
+    },
+    {
+      "t": "Gegen den Computer: Stufe für Stufe",
+      "list": [
+        "Leicht 🙂: Der Computer zielt ungenau. Spiele sicher und warte auf seine Fehler – 1 Punkt pro Sieg.",
+        "Mittel 😎: Rechnet die besten Stöße kurz durch und vermeidet Fouls. Lass ihm keine geraden Stöße – 2 Punkte pro Sieg.",
+        "Profi 🔥: Sehr genau, rechnet sechs Kandidaten durch und nutzt Rückzieher. Hier helfen vor allem Sicherheitsstöße und ein sauberes Endspiel – 3 Punkte pro Sieg.",
+        "Findet der Computer keinen Stoß, spielt er die nächste eigene Kugel direkt mit halber Kraft an. Liegen deine Kugeln vor seinen, zwingst du ihn so oft in schwierige Lagen."
+      ]
+    },
+    {
+      "t": "Punkte und Serien maximieren",
+      "steps": [
+        "Übe die Grundstöße im 🎯 Training – dort gibt es keine Fouls und keine Wertung.",
+        "Sammle Siege auf Mittel, bis du sicher gewinnst.",
+        "Wechsle dann auf Profi: Jeder Sieg zählt 3 Punkte und damit so viel wie drei Siege auf Leicht.",
+        "Für die beste Serie spiele die Stufe, auf der du am sichersten gewinnst – jede Niederlage gegen den Computer setzt die aktuelle Serie auf 0."
+      ]
+    },
+    {
+      "t": "Rekordliste im Überblick",
+      "list": [
+        "🏆 Punkte: Siege Leicht × 1 + Mittel × 2 + Profi × 3.",
+        "🔥 Beste Serie: meiste Siege gegen den Computer hintereinander.",
+        "🙂 Leicht, 😎 Mittel, 🔥 Profi: jeweils Siege : Niederlagen.",
+        "🌐 Online-Siege: gewonnene von allen Online-Partien.",
+        "👥 Duelle zu zweit und 🎱 Versenkt."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Online klappt nicht – was tun?",
+      "a": "Prüfe die Internetverbindung beider Geräte. Meldet das Spiel „Diesen Raum gibt es nicht (mehr). Stimmt der Code?“, hat der Gastgeber den Raum geschlossen oder der Code ist falsch. Der Code hat genau 4 Zeichen. Bei „Keine Verbindung“ einfach nochmal versuchen."
+    },
+    {
+      "q": "Das Spiel ruckelt auf meinem Handy.",
+      "a": "Schalte in den Optionen den Sparmodus ein (ohne Schatten). Er wirkt nach einem Neustart des Spiels."
+    },
+    {
+      "q": "Meine Rekorde sind weg.",
+      "a": "Rekorde liegen im Browser-Speicher. Nach dem Löschen der Website-Daten oder auf einem anderen Gerät beginnen sie bei null, außer du nutzt das Google-Konto der AnMaCha Cloud."
+    },
+    {
+      "q": "Warum wurde mein Stoß als Foul gewertet, obwohl ich eine Kugel getroffen habe?",
+      "a": "Nach dem ersten Kontakt muss eine Kugel eine Bande berühren oder versenkt werden. Außerdem muss die erste getroffene Kugel zu deiner Gruppe gehören."
+    },
+    {
+      "q": "Kann ich die Musik ausschalten, aber die Geräusche behalten?",
+      "a": "Ja. In den Optionen lassen sich Soundeffekte und Musik getrennt ein- und ausschalten, ebenso die Vibration."
+    },
+    {
+      "q": "Wer hat den Anstoß?",
+      "a": "Gegen den Computer immer du. Zu zweit und online wechselt der Anstoß bei jeder Revanche."
+    }
+  ]
+}

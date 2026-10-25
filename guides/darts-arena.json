@@ -1,0 +1,209 @@
+{
+  "id": "darts-arena",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Darts-Arena 3D ist Steeldarts in einer Neon-Kneipe – an einem Board nach Turniermaß. Du wirfst pro Aufnahme 3 Darts und spielst je nach Modus herunter auf 0, schließt Zahlen, jagst Leben oder sammelst so viele Punkte wie möglich.",
+        "Bis zu 4 Spieler spielen an einem Gerät abwechselnd. Jeder Platz kann ein Mensch oder ein Computer der Stufen Leicht, Mittel oder Profi sein."
+      ]
+    },
+    {
+      "t": "Das Board",
+      "list": [
+        "Die Zahlen im Uhrzeigersinn von oben: 20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5.",
+        "Großes Feld = Single (einfacher Wert).",
+        "Innerer schmaler Ring = Triple (×3). T20 = 60 ist das höchste Feld.",
+        "Äußerer schmaler Ring = Doppel (×2).",
+        "Bull (grüner Ring in der Mitte) = 25, Bullseye (roter Punkt) = 50 – das Bullseye zählt als Doppel.",
+        "Außerhalb des Doppelrings: Daneben, 0 Punkte.",
+        "Höchste Aufnahme: 3 × T20 = 180."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "list": [
+        "🎯 Schnelles Spiel – sofort 501 Double-Out gegen einen Computer der Stufe Mittel.",
+        "🏆 Spielmodi – X01, Cricket, Elimination, Killer, Shanghai, Halve-It, Around the Clock, Bob’s 27, Count-Up und Freies Training.",
+        "🏋️ Training – Freies Werfen, Around the Clock, Bob’s 27 und weitere Solo-Übungen.",
+        "🏅 Rekorde – Schnitt, 180er, Checkouts und Bestwerte je Modus.",
+        "⚙️ Optionen – Wurfgefühl (Locker, Normal, Profi), Zielkreuz zeigen, Beim Zielen heranzoomen, Caller (Sprachausgabe der Punkte), Soundeffekte, Musik, Vibration, Sparmodus (ohne Schatten, nach Neustart).",
+        "📖 Anleitung – Werfen und Regeln.",
+        "Nach der Moduswahl stellst du die Optionen des Modus ein und legst die Spieler fest: ＋ Spieler / － Spieler, Name eintragen und je Platz 🙂 Mensch oder 🤖 Leicht, Mittel oder Profi wählen. Mit „🎯 Game on!“ geht es los. Deine letzte Aufstellung wird gemerkt."
+      ]
+    },
+    {
+      "t": "Werfen und Steuerung",
+      "list": [
+        "Touch/Maus: Finger aufs Bild legen und ziehen verschiebt das Zielkreuz (feiner als der Finger). Zum Werfen zügig nach oben wischen und loslassen. Das Tempo bestimmt die Höhe: zu langsam fällt der Dart tiefer, zu schnell fliegt er höher. Wischst du schräg, geht der Dart zur Seite.",
+        "Tastatur: Pfeiltasten zielen, mit gedrückter Umschalttaste fein. Leertaste (oder Enter) halten lädt die Kraft – im grünen Bereich loslassen. Z schaltet den Zoom an/aus, Esc oder P pausiert.",
+        "Gamecontroller: linker Stick oder Steuerkreuz zielen, LB/RB gedrückt halten = fein zielen. A halten und im grünen Bereich loslassen. Start (oder B) pausiert. In Menüs wählt das Steuerkreuz, A bestätigt, B geht zurück.",
+        "Die Hand zittert leicht, das Zielkreuz wandert. Nach dem Wurf siehst du Hinweise wie „Zu fest ↑“, „Zu sanft ↓“ oder „Nach rechts verzogen →“.",
+        "Pause: ▶ Weiter, ↻ Neu starten, ⚙️ Optionen, 📖 Anleitung, ⏹ Zum Menü."
+      ]
+    },
+    {
+      "t": "Wurfgefühl",
+      "list": [
+        "Locker: ruhige Hand, Wischfehler zählen nur halb.",
+        "Normal: wie am echten Board – leichtes Zittern, das Wischtempo zählt.",
+        "Profi: spürbar zitternde Hand, jeder Wisch zählt voll."
+      ]
+    },
+    {
+      "t": "X01 – 301, 501, 701",
+      "p": [
+        "Jeder startet mit 301, 501 oder 701 Punkten und spielt genau auf 0 herunter. Bei Double Out muss der letzte Dart ein Doppel (oder das Bullseye) sein.",
+        "Bust (überworfen): Wer unter 0 kommt, auf 1 stehen bleibt oder ohne passendes Doppel auf 0 kommt, hat sich überworfen. Die ganze Aufnahme zählt nicht, der Stand springt auf den Anfang der Aufnahme zurück."
+      ],
+      "list": [
+        "Einstieg: Single In (jeder Dart zählt) oder Double In (erst ab einem Doppel zählt etwas – „Erst ein Doppel zum Start“).",
+        "Ausstieg: Double Out, Master Out (Doppel oder Triple zum Schluss) oder Single Out (beliebiges Feld, dann ist auch 1 als Rest erlaubt).",
+        "Legs zum Sieg: 1, 2 oder 3. Nach jedem Leg beginnt der nächste Spieler.",
+        "Ab 170 Rest zeigt die Checkout-Hilfe den besten Weg, z. B. „✔ Checkout: T20 · T20 · Bullseye“, oder „Kein Finish mit 2 Darts“."
+      ]
+    },
+    {
+      "t": "Cricket",
+      "p": [
+        "Gespielt werden nur 15, 16, 17, 18, 19, 20 und Bull. Single zählt 1 Marke, Doppel 2, Triple 3. Mit 3 Marken ist eine Zahl geschlossen. Weitere Treffer auf eine eigene geschlossene Zahl bringen Punkte (den Feldwert je zusätzlicher Marke), solange mindestens ein Gegner sie noch offen hat.",
+        "Wer alle sieben Ziele geschlossen hat und bei den Punkten vorne liegt (oder gleichauf ist), gewinnt sofort. Nach 20 Runden entscheidet die Wertung."
+      ],
+      "list": [
+        "Standard: Punkte gehen an dich, viele Punkte sind gut.",
+        "Cut-Throat: Punkte gehen an alle Gegner, die die Zahl noch offen haben – wenig ist gut.",
+        "Ohne Punkte: Es zählt nur das Schließen, wer zuerst alles zu hat, gewinnt."
+      ]
+    },
+    {
+      "t": "Die weiteren Modi",
+      "list": [
+        "💥 Elimination (mind. 2 Spieler): Alle zählen von 0 hoch bis genau 301 (oder 501). Über dem Ziel = Bust. Wer nach seiner Aufnahme dieselbe Punktzahl hat wie ein Gegner, wirft diesen auf 0 zurück. Wer das Ziel genau trifft, gewinnt.",
+        "🔪 Killer (mind. 2 Spieler): Jeder bekommt zufällig eine Zahl und 3 oder 5 Leben. Triffst du dein eigenes Doppel, wirst du Killer 🔪. Als Killer nimmst du anderen mit Treffern auf ihr Doppel ein Leben. Trifft ein Killer sein eigenes Doppel noch einmal, verliert er selbst ein Leben. Der Letzte gewinnt.",
+        "🀄 Shanghai: Runde 1 zählt nur die 1, Runde 2 nur die 2 – über 7 oder 20 Runden. Single, Doppel und Triple derselben Zahl in einer Aufnahme ist ein Shanghai und sofortiger Sieg. Sonst gewinnt die höchste Summe.",
+        "✂️ Halve-It: 9 Ziele der Reihe nach – 15, 16, ein beliebiges Doppel, 17, 18, ein beliebiges Triple, 19, 20, Bull. Triffst du in einer Aufnahme das Ziel nicht, wird dein Punktestand halbiert (abgerundet).",
+        "🕐 Around the Clock: 1 bis 20 der Reihe nach treffen, zum Schluss das Bull. Treffer wahlweise auf alle Felder, nur Doppel oder nur Triple (das Bull zählt bei Nur Triple einfach).",
+        "🎓 Bob’s 27: Doppel-Training. Start mit 27 Punkten. Runde für Runde D1 bis D20 und zum Schluss das Bullseye: Jeder Treffer gibt den Doppelwert dazu, eine Aufnahme ohne Treffer zieht ihn einmal ab. Unter 0 ist Schluss.",
+        "📈 Count-Up: 8 oder 10 Aufnahmen, alles zählt, die höchste Summe gewinnt. Das beste Count-Up mit 8 Aufnahmen (höchstens 1440) zählt für die Rangliste.",
+        "🏋️ Freies Training: werfen ohne Regeln, nur für einen Spieler."
+      ]
+    },
+    {
+      "t": "Rekorde und Speichern",
+      "p": [
+        "Alle Rekorde werden im Browser gespeichert und unter 🏅 Rekorde angezeigt. Im Hauptmenü siehst du deinen 3-Dart-Schnitt und die Zahl deiner 180er.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ],
+      "list": [
+        "📈 Bestes Count-Up (Rangliste), Ø 3-Dart-Schnitt (X01), 🔥 Bester Leg-Schnitt (501), 💯 180er.",
+        "🏁 Höchstes Checkout, ⚡ Kürzestes 501-Leg (Double-Out, in Darts), 🎯 Höchste Aufnahme.",
+        "🎓 Bestes Bob’s 27, 🕐 Schnellste Runde um die Uhr (in Darts), ✂️ Bestes Halve-It, 🀄 Shanghais, 💥 Rausgeworfen (Elimination).",
+        "🎮 Spiele sowie besiegte Computer je Stufe (Leicht, Mittel, Profi) – gezählt, wenn du allein gegen Computer gewinnst."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Starte mit Wurfgefühl „Locker“: ruhige Hand, Wischfehler zählen nur halb.",
+        "Ziel zuerst, dann werfen: Das Zielkreuz wandert mit der zitternden Hand – wirf, wenn es gerade über dem Ziel steht.",
+        "Am Handy gleichmäßig wischen. Kommen oft „Zu fest ↑“ oder „Zu sanft ↓“, wische etwas langsamer bzw. schneller.",
+        "An der Tastatur: Leertaste halten und im grünen Bereich loslassen – genau in der Mitte gibt es keinen Höhenfehler.",
+        "Übe in Around the Clock und Count-Up, bevor du gegen den Profi-Computer spielst."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "X01-Scoring: Spiele auf T20, solange der Rest über 170 liegt. Liegt dir die T20 nicht, ist T19 eine gute Alternative.",
+        "Checkout-Hilfe nutzen: Sie bevorzugt die Doppel D20, D16, D8, D18, D12 und D10 – gerade Doppel, bei denen ein Single-Treffer noch ein neues Doppel übrig lässt (z. B. D16 verfehlt mit S16 → D8).",
+        "Nie auf 1 stehen bleiben: Bei Double Out ist das ein Bust.",
+        "Cricket: Schließe zuerst die hohen Zahlen (20, 19, 18). Liegst du hinten, punkte auf Zahlen, die der Gegner noch offen hat.",
+        "Cut-Throat: Schließe schnell Zahlen, die der Gegner schon zu hat – sonst gibt er dir Punkte.",
+        "Halve-It: Bei Doppel- und Triple-Runden lieber ein sicheres Doppel/Triple treffen als hoch zu pokern – ohne Treffer wird halbiert."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Elimination: Ziele genau auf die Differenz zum Gegner direkt vor dir. Liegt er 40 Punkte vor dir, wirft dich ein D20 auf seine Zahl und ihn zurück auf 0.",
+        "Killer: Werde schnell Killer und nimm dann zuerst dem Gegner mit den wenigsten Leben eins weg. Vorsicht beim eigenen Doppel – als Killer kostet es dich ein Leben.",
+        "Shanghai: Die Runde mit der Zahl gezielt mit S, D und T angehen. Schon nach zwei Treffern lohnt sich der Versuch aufs fehlende Feld.",
+        "Bob’s 27: In den frühen Runden kosten Fehler wenig (D1 = 2 Punkte). Baue dort ein Polster auf, die späten Doppel sind teuer (D20 = 40, Bullseye = 50).",
+        "Mit „Beim Zielen heranzoomen“ (Taste Z) siehst du kleine Felder wie Doppel und Bullseye besser."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu schnell nach oben wischen – der Dart fliegt über das Ziel.",
+        "Bei Double In vergessen, dass erst ein Doppel zählt.",
+        "In Elimination über das Ziel werfen: Die Aufnahme zählt dann nicht.",
+        "In Cricket wahllos auf offene Zahlen werfen, statt die zu schließen, auf denen der Gegner punktet."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Wichtige Checkout-Wege (Double Out)",
+      "p": [
+        "Die Checkout-Hilfe im Spiel rechnet den besten Weg für den aktuellen Rest und die verbleibenden Darts aus. Diese Wege sind die Klassiker:"
+      ],
+      "list": [
+        "170: T20 · T20 · Bullseye – das höchste Finish.",
+        "167: T20 · T19 · Bullseye.",
+        "164: T20 · T18 · Bullseye.",
+        "161: T20 · T17 · Bullseye.",
+        "160: T20 · T20 · D20.",
+        "121: T20 · T15 · D8.",
+        "100: T20 · D20.",
+        "81: T19 · D12.",
+        "60: S20 · D20.",
+        "50: Bullseye.",
+        "40: D20, 32: D16, 16: D8 – die beliebtesten Doppel.",
+        "Unmögliche Finishes mit 3 Darts: 169, 168, 166, 165, 163, 162, 159 – hier stellst du dir einen guten Rest."
+      ]
+    },
+    {
+      "t": "Beste Strategie je Modus",
+      "list": [
+        "501: Scoring auf T20, ab 170 dem Checkout folgen. Ein schnelles Leg zählt für „⚡ Kürzestes 501-Leg“; der Profi-Rekord liegt bei 9 Darts (z. B. 180, 180, 141).",
+        "Cricket: 20, 19, 18 zuerst schließen, Bull zuletzt. Punkte nur so viele machen, dass du sicher vorne liegst, dann weiter schließen.",
+        "Elimination: Immer prüfen, ob ein Gegner knapp vor dir liegt (bis 60 Punkte Abstand) – Rauswurf ist wichtiger als eigene Punkte.",
+        "Killer: Zuerst eigenes Doppel, dann den schwächsten Gegner jagen.",
+        "Shanghai: Triple zuerst – es bringt die meisten Punkte und ist für den Shanghai nötig.",
+        "Halve-It: In Zahlenrunden auf das Triple der Zahl, in der Doppelrunde auf D20, in der Triple-Runde auf T20, zum Schluss aufs Bull.",
+        "Around the Clock: Im Modus „Alle Felder“ aufs große Single zielen – das ist die größte Fläche.",
+        "Bob’s 27: Jedes Doppel genau anvisieren; ein Treffer pro Runde reicht, um nicht abzurutschen."
+      ]
+    },
+    {
+      "t": "Höchstwerte",
+      "list": [
+        "Count-Up (8 Aufnahmen): höchstens 1440 Punkte (8 × 180).",
+        "Bob’s 27: höchstens 1437 Punkte (27 Start + je 3 Treffer auf D1 bis D20 und Bullseye).",
+        "Halve-It: höchstens 1425 Punkte (3 × T15, 3 × T16, 3 × Bullseye, 3 × T17, 3 × T18, 3 × T20, 3 × T19, 3 × T20, 3 × Bullseye).",
+        "Shanghai: S + D + T derselben Zahl in einer Aufnahme gewinnt sofort und zählt für „🀄 Shanghais“.",
+        "Around the Clock: mindestens 21 Darts (jeder Dart ein Treffer)."
+      ]
+    },
+    {
+      "t": "Die Computer-Gegner",
+      "list": [
+        "🙂 Leicht: streut stark, Schnitt um 35. Zielt außerhalb von X01 und Count-Up bei Triple-Zielen lieber aufs große Single.",
+        "😎 Mittel: Schnitt um 60 – das ist der Gegner im Schnellen Spiel.",
+        "🔥 Profi: sehr genau, Schnitt um 90. Spielt die Checkout-Wege und stellt sich gute Doppel.",
+        "Ein Sieg allein gegen Computer wird in den Rekorden für die stärkste Stufe im Spiel gezählt."
+      ]
+    }
+  ],
+  "faq": [
+    { "q": "Warum zählt meine Aufnahme nicht?", "a": "Du hast dich überworfen (Bust): unter 0, auf 1 stehen geblieben oder ohne Doppel auf 0 gekommen. Der Stand springt auf den Beginn der Aufnahme zurück." },
+    { "q": "Meine Darts landen immer zu hoch oder zu tief.", "a": "Das Wischtempo bestimmt die Höhe. Achte auf die Hinweise „Zu fest“ oder „Zu sanft“ und stelle unter ⚙️ Optionen das Wurfgefühl auf „Locker“, wenn es zu schwer ist." },
+    { "q": "Wie spielen wir zu mehreren?", "a": "Wähle einen Modus und füge mit ＋ Spieler bis zu 4 Plätze hinzu. Jeder Platz kann Mensch oder Computer sein; ihr werft abwechselnd am selben Gerät." },
+    { "q": "Wie schalte ich die Sprachausgabe der Punkte aus?", "a": "Unter ⚙️ Optionen „Caller (Sprachausgabe der Punkte)“ ausschalten." },
+    { "q": "Das Spiel ruckelt.", "a": "Schalte den Sparmodus ein (ohne Schatten). Er wirkt nach einem Neustart des Spiels." },
+    { "q": "Sind meine Rekorde gespeichert?", "a": "Ja, im Browser auf diesem Gerät. Ohne Google-Anmeldung sind die Rekorde weg, wenn die Browserdaten gelöscht werden. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät." }
+  ]
+}

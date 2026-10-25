@@ -1,0 +1,232 @@
+{
+  "id": "anmacha-quiz",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "„Machst du mich an? DAS QUIZ!“ ist eine Quizshow in einem 3D-TV-Studio mit Moderator, Publikum und Podesten. Im Modus Leiter spielst du dich mit 15 Fragen bis zur Million hoch, in der Quiznight sammelst du Punkte in Kategorien deiner Wahl.",
+        "Im Fragenkatalog stecken rund 600 Fragen in 10 Kategorien, jeweils in 5 Schwierigkeitsstufen von leicht bis schwer. Die Reihenfolge der Antworten A bis D wird bei jeder Frage neu gemischt."
+      ]
+    },
+    {
+      "t": "Hauptmenü und Einstellungen",
+      "list": [
+        "SPIELMODUS: 🪜 Leiter (15 Fragen bis 1 Million €) oder 🎤 Quiznight (Kategorie wählen, 10 Fragen).",
+        "SPIELFORM: Solo, Reihum (2–4 Spieler), Duell (1 gegen 1) oder Teams (Rot gegen Blau).",
+        "LÄNGE DER SHOW (nur Quiznight): 1, 3, 5 oder alle 10 Kategorien.",
+        "ZEIT PRO FRAGE: Standard (Leiter ohne Zeitlimit, Quiznight 20–25 Sekunden) oder ⏱ 60 Sekunden – Zeitdruck in jedem Modus.",
+        "SPIELER: Für jeden Spieler Namen eintippen und durch Antippen des Logos ein Sender-Logo wählen (13 Sender, z. B. RicoReWi Music & Media, RadioFloh! oder Zocker-FM). Bei Reihum fügt „+ Spieler“ bis zu 4 Spieler hinzu. Bei Teams gibst du Teamnamen und Mitspieler (mit Komma getrennt) ein.",
+        "🌐 Online & Handys: Handys koppeln und Mitspieler von überall einladen.",
+        "🔊 Ton und 🎙 Moderator-Stimme (Sprachausgabe) lassen sich hier und während der Show oben rechts schalten.",
+        "SHOW STARTEN beginnt die Show, sobald das Studio aufgebaut ist. Darunter steht die Ruhmeshalle: „🪜 Leiter – höchste Gewinne“ und „🎤 Quiznight – Bestpunkte“."
+      ]
+    },
+    {
+      "t": "Ablauf einer Frage",
+      "steps": [
+        "Der Moderator stellt die Frage, die vier Antworten A bis D erscheinen nacheinander.",
+        "Wähle eine Antwort. Es folgt die Rückfrage „… – endgültige Antwort?“.",
+        "„Ja, final!“ loggt die Antwort ein, „Nein“ lässt dich neu wählen.",
+        "Nach einem kurzen Trommelwirbel zeigt das Studio RICHTIG! oder FALSCH und die richtige Lösung."
+      ]
+    },
+    {
+      "t": "Modus Leiter",
+      "p": [
+        "15 Fragen führen dich die Gewinnleiter hinauf: 50 €, 100 €, 200 €, 300 €, 500 €, 1.000 €, 2.000 €, 4.000 €, 8.000 €, 16.000 €, 32.000 €, 64.000 €, 125.000 €, 500.000 € und 1.000.000 €.",
+        "Die Fragen werden alle drei Stufen schwerer: Fragen 1–3 Stufe 1 (leicht), 4–6 Stufe 2, 7–9 Stufe 3, 10–12 Stufe 4, 13–15 Stufe 5 (schwer). Zwei Fragen hintereinander kommen möglichst aus verschiedenen Kategorien."
+      ],
+      "list": [
+        "Sicherheitsstufen: Frage 5 (500 €) und Frage 10 (16.000 €). Diese Beträge behältst du auch bei einer falschen Antwort.",
+        "Falsche Antwort oder abgelaufene Zeit: Du scheidest aus und bekommst die letzte erreichte Sicherheitsstufe (0 €, 500 € oder 16.000 €).",
+        "Aussteigen: Ab der zweiten Frage zeigt der Knopf „Aussteigen · Betrag“. Nach Bestätigung nimmst du deinen aktuellen Gewinn sicher mit.",
+        "Bei der 15. richtigen Antwort heißt es „MILLIONÄR!“.",
+        "Mit mehreren Spielern beantwortet jeder reihum eine Frage auf seiner eigenen Leiter, bis alle ausgeschieden oder ausgestiegen sind. Gewonnen hat, wer den höchsten Betrag mitnimmt."
+      ]
+    },
+    {
+      "t": "Die vier Joker (nur Leiter)",
+      "list": [
+        "½ 50:50: Zwei falsche Antworten fallen weg.",
+        "👥 Publikum: Das Studiopublikum stimmt ab und zeigt Prozente je Antwort. Bei leichten Fragen liegt es fast immer richtig, bei schweren immer seltener – ab Stufe 4 führt manchmal sogar eine falsche Antwort.",
+        "📞 Telefon: Du rufst einen Bekannten an (z. B. Oma Gerda, Kumpel Tom, Tante Heidi, Opa Willi, Praktikant Ben, Nachbarin Frau Meier oder Onkel Dieter). Er nennt eine Antwort und sagt, wie sicher er sich ist.",
+        "🔄 Tausch: Die Frage wird gegen eine neue Frage derselben Schwierigkeit getauscht.",
+        "Jeder Joker kann pro Spieler bzw. Team nur einmal eingesetzt werden. Joker lassen sich auch kombinieren, z. B. erst 50:50, dann Publikum."
+      ]
+    },
+    {
+      "t": "Modus Quiznight",
+      "list": [
+        "Wer an der Reihe ist, wählt eine Kategorie: 🎵 Musik, 🎬 TV & Film, 📱 Social Media, 🔬 Wissen & Technik, ⚽ Sport, 🏛️ Politik, 📜 Geschichte, 🌍 Geografie, 🐾 Natur & Tiere oder 🍕 Essen & Genuss. Gespielte Kategorien sind danach gesperrt („schon gespielt“).",
+        "Jede Kategorie hat 10 Fragen, von leicht bis schwer: je 2 Fragen der Stufen 1 bis 5. Mit mehreren Spielern wechselt die Frage reihum, beginnend bei dem, der die Kategorie gewählt hat; das Wählen der Kategorie wechselt ebenfalls.",
+        "Punkte: 100 × Stufe (100 bis 500 Punkte) plus Zeitbonus. Der Zeitbonus beträgt bis zu die Hälfte der Grundpunkte – je schneller du antwortest, desto mehr.",
+        "Zeit: Stufe 1–3 haben 20 Sekunden, Stufe 4–5 25 Sekunden (mit der Einstellung ⏱ immer 60 Sekunden).",
+        "Falsche Antworten kosten keine Punkte. Es gibt keine Joker.",
+        "Die Show endet nach der eingestellten Zahl an Kategorien oder vorher über „Show beenden & Wertung“ in der Kategorie-Auswahl."
+      ]
+    },
+    {
+      "t": "Spielformen",
+      "list": [
+        "Solo: Du allein.",
+        "Reihum: 2 bis 4 Spieler an einem Gerät oder mit gekoppelten Handys, jeder spielt für sich.",
+        "Duell: genau 2 Spieler (höchstens 2 Handys).",
+        "Teams: Team Rot gegen Team Blau. Die Mitglieder eines Teams beantworten die Fragen abwechselnd; Joker teilt sich das Team. Über Handys können bis zu 8 Mitspieler beitreten, sie werden automatisch auf das kleinere Team verteilt."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch/Maus: Antwort antippen, dann „Ja, final!“ oder „Nein“. Joker über die Knöpfe ½ 👥 📞 🔄, Aussteigen über den Knopf „Aussteigen“. ☰ öffnet die Pause mit WEITER und „Spiel beenden“. Auf schmalen Bildschirmen klappt ein Tipp auf die Leiste die Gewinnleiter auf.",
+        "PC-Tastatur: A, B, C oder D wählt die Antwort, Enter, J oder Leertaste bestätigt (Ja), N lehnt ab (Nein), 1 bis 4 setzt die Joker 50:50, Publikum, Telefon, Tausch ein, P oder Esc pausiert, M schaltet den Ton. Im Hauptmenü startet Enter die Show.",
+        "Gamecontroller: Das Steuerkreuz springt zwischen den Knöpfen (Leuchtrahmen), A drückt den markierten Knopf, X bestätigt, B oder Start pausiert, Select schaltet den Ton.",
+        "Handy als Eingabegerät: Gekoppelte Handys zeigen Frage, Antworten, Joker und Kategorien – wer dran ist, tippt direkt auf dem Handy („🎯 DU BIST DRAN“)."
+      ]
+    },
+    {
+      "t": "Online und Handys koppeln",
+      "steps": [
+        "Im Hauptmenü auf „🌐 Online & Handys“ tippen. Das Spiel zeigt einen Code, einen Link und einen QR-Code.",
+        "Mitspieler scannen den QR-Code, öffnen den Link oder geben auf der Spielseite den Code ein – im Browser, in der App oder an einem anderen Gerät, von überall.",
+        "Auf dem Handy gibt jeder seinen Namen ein und wählt sein Sender-Shirt (Logo), dann „Du bist dabei! 🎉 – Warte, bis die Show startet …“.",
+        "Bis zu 4 Spieler (bei Teams bis zu 8 Handys). Tritt ein Handy einer Solo-Show bei, wechselt die Spielform automatisch auf Reihum.",
+        "FERTIG schließt das Fenster; danach SHOW STARTEN. Der große Bildschirm (PC oder Fernseher) zeigt das Studio, die Handys dienen als Buzzer."
+      ]
+    },
+    {
+      "t": "Wertung und Speichern",
+      "p": [
+        "Am Ende zeigt das Ergebnis die Rangliste: in der Leiter nach mitgenommenem Gewinn, in der Quiznight nach Punkten. Mit NOCHMAL startest du die gleiche Show neu, mit Hauptmenü kehrst du zurück.",
+        "Die besten 10 Ergebnisse je Modus kommen in die Ruhmeshalle. Sie und deine Einstellungen (Modus, Spielform, Länge, Zeit, Namen, Logos) werden im Browser gespeichert; über die AnMaCha Cloud lassen sie sich mit Google auf mehreren Geräten nutzen."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Die ersten fünf Fragen der Leiter sind leicht – spare dir die Joker möglichst bis nach der Sicherheitsstufe bei 500 €.",
+        "Nimm dir Zeit: In der Leiter gibt es ohne die 60-Sekunden-Einstellung kein Zeitlimit.",
+        "Nutze die Rückfrage „endgültige Antwort?“ als zweite Bedenkzeit und drück notfalls „Nein“.",
+        "Schalte die Moderator-Stimme aus, wenn dir das Vorlesen zu lange dauert – dann erscheinen die Antworten schneller."
+      ]
+    },
+    {
+      "t": "Joker richtig einsetzen",
+      "list": [
+        "Publikum lohnt sich vor allem bei leichten und mittleren Fragen – je schwerer die Frage, desto unsicherer die Abstimmung.",
+        "50:50 zuerst und dann Publikum oder Telefon: Mit nur noch zwei Antworten liegt der zweite Joker deutlich öfter richtig.",
+        "Tausch ist ideal, wenn eine Frage aus einer Kategorie kommt, in der du dich gar nicht auskennst – die neue Frage hat dieselbe Schwierigkeit.",
+        "Hebe dir mindestens einen Joker für die Fragen 13 bis 15 (Stufe 5) auf."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Freischüsse: Direkt nach einer Sicherheitsstufe kostet ein Fehler nichts. Bei Frage 6 (du stehst auf 500 €) und Frage 11 (du stehst auf 16.000 €) fällst du bei einer falschen Antwort genau auf deinen aktuellen Betrag zurück – hier lohnt sich Raten statt Aussteigen immer.",
+        "Bei Frage 14 (500.000 €) und 15 (1.000.000 €) gilt: Weißt du es nicht sicher und sind alle Joker weg, ist Aussteigen fast immer die bessere Wahl. Eine falsche Antwort fällt auf 16.000 € zurück.",
+        "Quiznight: Schnelligkeit zahlt sich aus – bei einer Stufe-5-Frage bringt eine sofortige Antwort bis zu 750 statt 500 Punkte.",
+        "Quiznight mit mehreren Spielern: Wähle Kategorien, in denen du stark bist, wenn du an der Reihe bist – die erste Frage der Kategorie geht an dich."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Nach dem Antippen der Antwort vergessen zu bestätigen: Erst „Ja, final!“ zählt – beim 60-Sekunden-Zeitlimit läuft die Uhr weiter.",
+        "Alle Joker in den ersten Fragen verbrauchen.",
+        "Zu spät aussteigen: Der Aussteigen-Knopf ist nur zu sehen, bevor du eine Antwort gewählt hast.",
+        "Handy gekoppelt, aber am großen Bildschirm geantwortet: Ist ein Spieler per Handy dabei, antwortet er nur über sein Handy."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Die Gewinnleiter im Überblick",
+      "list": [
+        "Frage 1: 50 € · Frage 2: 100 € · Frage 3: 200 € (Stufe 1)",
+        "Frage 4: 300 € · Frage 5: 500 € – Sicherheitsstufe · Frage 6: 1.000 € (Stufe 2)",
+        "Frage 7: 2.000 € · Frage 8: 4.000 € · Frage 9: 8.000 € (Stufe 3)",
+        "Frage 10: 16.000 € – Sicherheitsstufe · Frage 11: 32.000 € · Frage 12: 64.000 € (Stufe 4)",
+        "Frage 13: 125.000 € · Frage 14: 500.000 € · Frage 15: 1.000.000 € (Stufe 5)"
+      ]
+    },
+    {
+      "t": "Der Weg zur Million",
+      "steps": [
+        "Fragen 1 bis 5 ohne Joker beantworten und die 500 € sichern.",
+        "Bis Frage 10 nur bei echter Unsicherheit einen Joker nehmen – am besten 50:50 oder Publikum, solange die Fragen noch mittelschwer sind.",
+        "Nach der Sicherheitsstufe 16.000 € die restlichen Joker für Stufe 5 aufheben.",
+        "Bei den Fragen 13 bis 15: 50:50 und danach Telefon oder Publikum kombinieren, für die unbekannteste Frage den Tausch.",
+        "Ohne Joker und ohne sichere Antwort aussteigen – der mitgenommene Betrag zählt für die Ruhmeshalle."
+      ]
+    },
+    {
+      "t": "Profi-Trick: den Telefon-Joker richtig lesen",
+      "p": [
+        "Achte auf die Prozentzahl, die dein Telefonjoker nennt. Sagt er „Hmm … ja, das weiß ich! Ich bin mir zu 80 % sicher“ oder mehr, liegt er richtig. Antwortet er „Puh … keine Ahnung“ mit einer Zahl unter 55 %, hat er nur geraten – dann lieber auf das Publikum oder dein eigenes Wissen setzen.",
+        "Wie oft der Anrufer Bescheid weiß, hängt von der Schwierigkeit ab: bei leichten Fragen fast immer, bei Stufe 5 nur noch in weniger als der Hälfte der Fälle. Nach einem 50:50 steigt die Chance etwas."
+      ]
+    },
+    {
+      "t": "Quiznight: Höchstpunkte",
+      "list": [
+        "Eine Kategorie hat 2 Fragen je Stufe: 2 × 100 + 2 × 200 + 2 × 300 + 2 × 400 + 2 × 500 = 3.000 Grundpunkte.",
+        "Mit vollem Zeitbonus (sofort richtig) sind bis zu 4.500 Punkte pro Kategorie möglich, solo bei allen 10 Kategorien also bis zu 45.000 Punkte.",
+        "Spielt ihr zu mehreren, verteilen sich die 10 Fragen einer Kategorie reihum auf die Spieler.",
+        "Mit der 60-Sekunden-Einstellung hast du mehr Bedenkzeit; der Zeitbonus richtet sich dann nach dem Anteil der verbliebenen 60 Sekunden."
+      ]
+    },
+    {
+      "t": "Beispielfragen aus allen Kategorien",
+      "p": [
+        "Der Katalog ist zu groß zum Abschreiben – hier je eine leichte und eine schwere Frage pro Kategorie als Vorgeschmack:"
+      ],
+      "list": [
+        "🎵 Musik: Welche Band sang „Wind of Change“? – Scorpions. In welcher Tonart steht Beethovens 5. Sinfonie? – c-Moll.",
+        "🎬 TV & Film: Wie heißt die gelbe Zeichentrickfamilie aus Springfield? – Die Simpsons. In welchem Jahr wurde die erste „Tagesschau“ ausgestrahlt? – 1952.",
+        "📱 Social Media: Welche App hat ein Gespenst als Logo? – Snapchat. Wie viele Zeichen durfte ein Tweet ursprünglich höchstens haben? – 140.",
+        "🔬 Wissen & Technik: Wie viele Planeten hat unser Sonnensystem? – 8. Wer formulierte die drei Gesetze der Planetenbewegung? – Johannes Kepler.",
+        "⚽ Sport: Wie viele Spieler einer Fußballmannschaft stehen gleichzeitig auf dem Feld? – 11. Wie oft wurde Deutschland Fußball-Weltmeister der Herren? – 4-mal.",
+        "🏛️ Politik: Wie heißt die Hauptstadt von Deutschland? – Berlin. Wer wählt den Bundespräsidenten? – Die Bundesversammlung.",
+        "📜 Geschichte: Wer entdeckte 1492 Amerika (aus europäischer Sicht)? – Christoph Kolumbus. Wie hieß die Mondlandefähre von Apollo 11? – Eagle.",
+        "🌍 Geografie: Auf welchem Kontinent liegt Ägypten? – Afrika. Wie heißt die Meerenge zwischen Europa und Afrika im Westen des Mittelmeers? – Straße von Gibraltar.",
+        "🐾 Natur & Tiere: Welches ist das größte Landtier der Erde? – Afrikanischer Elefant. Welches Landtier wird am ältesten? – Riesenschildkröte.",
+        "🍕 Essen & Genuss: Aus welchem Land stammt die Pizza ursprünglich? – Italien. Wie nennt man das Garen im Vakuumbeutel bei niedriger Temperatur? – Sous-vide."
+      ]
+    },
+    {
+      "t": "Lösungsstrategie für unbekannte Fragen",
+      "list": [
+        "Ausschlussverfahren: Meist ist mindestens eine Antwort offensichtlich falsch oder ein Scherz – streiche sie zuerst.",
+        "Bei Jahreszahlen und Mengen auf bekannte Eckdaten stützen (z. B. Kriegsende, Mauerfall, Olympische Spiele).",
+        "Innerhalb einer Show wiederholt sich keine Frage. Wer oft spielt, lernt die Antworten trotzdem mit der Zeit kennen – der Katalog hat rund 60 Fragen je Kategorie."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Das Handy findet die Show nicht.",
+      "a": "Prüfe, ob der Code stimmt und das Fenster „Online & Handys“ am großen Bildschirm geöffnet wurde. Meldet das Handy „nicht gefunden. Läuft das Quiz noch?“, ist die Show beendet oder der Code falsch. Beide Geräte brauchen Internet."
+    },
+    {
+      "q": "Ich höre keinen Moderator.",
+      "a": "Schalte 🎙 Moderator-Stimme ein und prüfe, ob der Ton (🔊) an ist. Die Sprachausgabe nutzt die Stimmen deines Geräts bzw. Browsers – ohne deutsche Stimme bleibt sie stumm."
+    },
+    {
+      "q": "Wie schalte ich das Zeitlimit ein oder aus?",
+      "a": "Unter ZEIT PRO FRAGE: Standard (Leiter ohne Zeit, Quiznight 20–25 Sekunden) oder ⏱ 60 Sekunden für jeden Modus."
+    },
+    {
+      "q": "Kann ich in der Quiznight Joker benutzen?",
+      "a": "Nein, die vier Joker und das Aussteigen gibt es nur im Modus Leiter."
+    },
+    {
+      "q": "Meine Ruhmeshalle ist leer.",
+      "a": "Die Ergebnisse werden im Browser gespeichert. Nach dem Löschen der Website-Daten oder auf einem anderen Gerät ist die Liste leer, außer du bist über die AnMaCha Cloud mit Google angemeldet."
+    },
+    {
+      "q": "Wie viele Spieler können mitmachen?",
+      "a": "Solo 1, Duell 2, Reihum bis zu 4 Spieler, Teams zwei Teams mit beliebig vielen eingetippten Mitspielern und bis zu 8 gekoppelten Handys."
+    }
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "id": "wortfunk",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Wortfunk ist ein Wortlegespiel für 2 bis 4 Spieler auf einem 15×15-Brett. Jeder hat 7 Buchstabensteine in seiner Bank und legt daraus Wörter waagerecht oder senkrecht aufs Brett, wie im Kreuzworträtsel. Für jedes neue Wort gibt es Punkte. Wer am Ende die meisten Punkte hat, gewinnt.",
+        "Das Wörterbuch kennt fast 400.000 deutsche Wortformen (german-pos-dict von LanguageTool). Erlaubt sind alle Formen: Mehrzahl, Fälle, gebeugte Verben. Namen und Abkürzungen sind nicht erlaubt, ß wird als SS gelegt."
+      ]
+    },
+    {
+      "t": "Start und Menü",
+      "list": [
+        "▶ Weiterspielen: setzt eine gespeicherte Partie an einem Gerät fort.",
+        "🎮 Neues Spiel: 2 bis 4 Plätze einrichten. Jeder Platz ist ein Mensch oder ein Computer (leicht, mittel, schwer), frei gemischt. Mit ＋ Spieler kommt ein Platz dazu. Mehrere Menschen spielen abwechselnd an diesem Gerät. Die Computer heißen Rita Radio, DJ Bit, Funky Fred und Lexi Loop.",
+        "🌐 Online & Handys: Raum eröffnen oder beitreten (siehe unten).",
+        "📖 Anleitung und ⚙️ Einstellungen: Ton, „Punkte schon beim Legen anzeigen“ und „💡 Tipps erlauben (3 pro Partie)“.",
+        "Unter dem Menü stehen deine Statistik: Bestwert, Siege, Partien und dein bestes Wort mit Punkten.",
+        "Solange das Wörterbuch lädt („Wörterbuch wird geladen …“), kann noch nicht gelegt werden."
+      ]
+    },
+    {
+      "t": "Regeln im Detail",
+      "list": [
+        "Zu Beginn zieht jeder 7 Steine aus dem Beutel. Nach jedem Zug wird die Bank wieder auf 7 aufgefüllt, solange der Beutel reicht (oben zeigt 👜 die Zahl der Steine im Beutel).",
+        "Alle Steine eines Zuges müssen in einer Reihe oder Spalte liegen, ohne Lücke dazwischen (bereits liegende Steine dürfen die Lücke füllen).",
+        "Das erste Wort muss über den Stern ★ in der Mitte gehen und mindestens zwei Buchstaben haben. Der Stern verdoppelt das erste Wort.",
+        "Jedes weitere Wort muss an vorhandene Steine anschließen – durch Kreuzen, Verlängern oder Anlegen.",
+        "Alle neu entstandenen Wörter (das Hauptwort und alle Querwörter) müssen im Wörterbuch stehen. Sonst meldet das Spiel „Nicht im Wörterbuch: …“ und der Zug wird nicht gelegt – er kostet aber nichts.",
+        "Alle neuen Wörter zählen Punkte, auch die Querwörter.",
+        "Tauschen: Statt zu legen gibst du beliebig viele Steine in den Beutel zurück und ziehst neue. Das geht nur, solange noch mindestens 7 Steine im Beutel sind, und du setzt diese Runde aus.",
+        "Passen: Du lässt den Zug aus."
+      ]
+    },
+    {
+      "t": "Punkte und Bonusfelder",
+      "list": [
+        "Jeder Buchstabe hat einen Wert, der auf dem Stein steht. Ein Wort zählt die Summe seiner Buchstaben.",
+        "2×B / 3×B: verdoppelt bzw. verdreifacht den Buchstaben auf diesem Feld (24 Felder 2×B, 12 Felder 3×B).",
+        "2×W / 3×W: verdoppelt bzw. verdreifacht das ganze Wort (12 Felder 2×W plus der Stern, 8 Felder 3×W).",
+        "Bonusfelder wirken nur in dem Zug, in dem du sie belegst. Ein Stein auf einem Bonusfeld zählt für alle Wörter, die durch ihn entstehen.",
+        "Alle 7 Steine in einem Zug: +50 Extrapunkte (🎉 im Verlauf).",
+        "Der Joker (leerer Stein, 2 Stück im Spiel) steht für jeden Buchstaben, zählt aber 0 Punkte. Beim Legen fragt das Spiel „Joker – welcher Buchstabe?“."
+      ]
+    },
+    {
+      "t": "Die Buchstaben",
+      "p": [
+        "Im Beutel liegen 104 Steine mit einer eigenen Verteilung nach Häufigkeit im Deutschen. Werte und Anzahl:"
+      ],
+      "list": [
+        "1 Punkt: A (6), D (4), E (15), I (6), N (9), R (6), S (7), T (6), U (6)",
+        "2 Punkte: G (3), H (4), L (3), M (4), O (3)",
+        "3 Punkte: B (2), W (2)",
+        "4 Punkte: C (2), F (2), K (2)",
+        "5 Punkte: P (1), Z (1)",
+        "6 Punkte: J (1), V (1), Ä (1), Ü (1)",
+        "7 Punkte: Ö (1)",
+        "8 Punkte: X (1)",
+        "10 Punkte: Q (1), Y (1)",
+        "0 Punkte: Joker (2)"
+      ]
+    },
+    {
+      "t": "Spielende",
+      "list": [
+        "Die Partie endet, wenn ein Spieler alle seine Steine gelegt hat und der Beutel leer ist. Er bekommt die Restpunkte aller anderen dazu, die anderen verlieren ihre Restpunkte.",
+        "Sie endet auch, wenn hintereinander nur gepasst oder getauscht wird: bei 2 Spielern nach 4 Zügen ohne Punkte, bei 3 nach 6, bei 4 nach 8 – also wenn alle zweimal hintereinander nichts gelegt haben. Dann verliert jeder seine Restpunkte.",
+        "Es gewinnt, wer die meisten Punkte hat. Bei Gleichstand heißt es „Unentschieden!“. Danach geht es mit „Nochmal ▶“ in eine neue Partie mit denselben Plätzen oder zurück ins Menü."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch und Maus: Stein in der Bank antippen, dann ein Feld antippen – oder den Stein aufs Feld ziehen. Einen gelegten (noch nicht abgeschickten) Stein antippen nimmt ihn zurück. Steine in der Bank lassen sich durch Ziehen umsortieren. ✓ Legen schickt den Zug ab. Auf kleinen Bildschirmen vergrößert 🔍 das Brett.",
+        "Knöpfe: ↺ alle Steine zurück, ⇄ Bank mischen, 💡 Tipp, Tauschen, Passen, ☰ Menü (Pause mit Weiter, Anleitung, Ton, Partie beenden).",
+        "Tastatur: Pfeile bewegen den Rahmen auf dem Brett, Buchstaben tippen legt sie nacheinander (Tab wechselt die Richtung → oder ↓), Enter legt den Zug, Rücktaste nimmt den letzten Stein zurück, Entf alle. 1–7 bzw. − / + wählt einen Stein, Leertaste legt ihn ins Feld unter dem Rahmen. 8 = Tauschen, 9 = Mischen, 0 = Tipp, Esc = Menü.",
+        "Gamecontroller: Steuerkreuz bewegt den Rahmen, LB/RB wählt den Stein, A legt bzw. nimmt zurück, X legt den Zug, B nimmt den letzten Stein zurück, LT alle zurück, Y mischt, RT tauscht, Select = Tipp, Start = Menü.",
+        "Ist „Punkte schon beim Legen anzeigen“ an, zeigt eine Vorschau die entstehenden Wörter und Punkte, bevor du ✓ drückst."
+      ]
+    },
+    {
+      "t": "Mehrere Spieler an einem Gerät",
+      "p": [
+        "Spielen mehrere Menschen an einem Gerät, verdeckt das Spiel vor jedem Zug die Steine: Ein Fenster zeigt „… ist dran“ und den letzten Zug, zum Beispiel „Rita Radio hat … für … Punkte gelegt.“ Reiche das Gerät weiter und tippe auf „Meine Steine zeigen“.",
+        "Partien an einem Gerät werden automatisch im Browser gespeichert und lassen sich über „Weiterspielen“ fortsetzen.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    },
+    {
+      "t": "Online & Handys",
+      "steps": [
+        "Ein Gerät eröffnet den Raum mit „📺 Raum eröffnen“ – am besten der Fernseher oder PC. Er zeigt das Brett für alle.",
+        "Mitspieler treten per Link, QR-Code oder vierstelligem Code von überall bei („Beitreten“). Auf jedem Handy siehst du nur deine eigenen Steine und legst von dort aus.",
+        "Der Gastgeber kann mit „Dieses Gerät spielt mit“ selbst mitspielen und mit „＋ Computer“ Computergegner hinzufügen. Es gibt höchstens 4 Plätze.",
+        "„Spiel starten ▶“ beginnt die Partie. Mit „🔗 Link kopieren“ lässt sich die Einladung verschicken.",
+        "Verliert ein Mitspieler die Verbindung, spielt der Computer für ihn weiter, bis er wieder da ist."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Fang gegen den Computer auf leicht an. Er legt eher kurze Wörter und lässt dir Raum.",
+        "Lass „Punkte schon beim Legen anzeigen“ an. So probierst du verschiedene Stellen aus, bevor du dich festlegst.",
+        "Kurze Wörter sind nicht schlecht: Zwei Buchstaben wie JA, JE, OH, ZU, AB, AN, DU, ER, ES, IN, OB, UM passen fast überall hin.",
+        "Nutze die 3 Tipps pro Partie, wenn du feststeckst. Ein Tipp zeigt einen guten Zug und wie viele Punkte er bringt."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Teure Buchstaben auf Bonusfelder: Ein X (8) auf 3×B bringt allein 24 Punkte – und wenn es in zwei Richtungen zählt, sogar doppelt.",
+        "Parallel legen: Ein Wort direkt neben ein liegendes Wort bildet mehrere kurze Querwörter, die alle mitzählen.",
+        "Wortbonus kombinieren: Ein Wort über zwei 2×W-Felder zählt vierfach, über zwei 3×W-Felder neunfach.",
+        "Halte deine Bank ausgewogen: etwa gleich viele Vokale und Konsonanten. Gut zu behalten sind E, N, R und S – mit ihnen bildest du viele Endungen (-EN, -ER, -ES, -NS).",
+        "Doppelte Buchstaben und viele schwere Steine (J, V, Ä, Ö, Ü, X, Y) blockieren. Lieber früh loswerden oder tauschen.",
+        "Tauschen lohnt sich, wenn deine Bank nur aus Konsonanten oder lauter Vokalen besteht – aber nur, solange noch 7 Steine im Beutel sind."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Hebe den Joker für einen Zug mit allen 7 Steinen auf. 50 Extrapunkte schlagen fast jedes Bonusfeld.",
+        "Deutsche Wortformen sind dein Vorteil: Viele Wörter lassen sich mit -E, -EN, -ER, -ES, -S verlängern. So erreichst du 3×W-Felder am Rand.",
+        "Öffne dem Gegner keine 3×W-Felder: Lege nicht so, dass ein Buchstabe nahe einer 3×W-Reihe frei liegt.",
+        "Gegen Ende: Zähle mit, welche Steine noch fehlen. Wer zuerst alle Steine los ist, bekommt die Restpunkte der anderen – ein schneller Abschluss kann die Partie drehen.",
+        "Behalte Q nicht zu lange: Es braucht fast immer ein U (QUARK, QUIZ)."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Steine nicht in einer Reihe oder mit Lücke legen („Alle Steine müssen in einer Reihe liegen“, „Zwischen deinen Steinen darf keine Lücke sein“).",
+        "Beim ersten Zug den Stern vergessen („Das erste Wort muss über den Stern ★ in der Mitte gehen“).",
+        "Ein Querwort übersehen, das nicht im Wörterbuch steht – dann wird der ganze Zug abgelehnt.",
+        "ß tippen: Es gibt kein ß, das Wort wird mit SS gelegt.",
+        "Am Ende mit vielen teuren Steinen dastehen – die Restpunkte werden abgezogen."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Gibt es eine Lösung?",
+      "p": [
+        "Wortfunk hat keine festen Level: Die Steine werden zufällig gezogen, jede Partie ist anders. Die beste Strategie hängt vom Gegner und der Spielphase ab. Hier findest du, wie du in jeder Phase die meisten Punkte holst."
+      ]
+    },
+    {
+      "t": "Beste Strategie je Phase",
+      "steps": [
+        "Eröffnung: Das erste Wort verdoppelt der Stern. Lege ein möglichst langes Wort, aber achte darauf, dass kein Buchstabe direkt neben einem 2×W-Feld landet, das dem Gegner einen großen Zug schenkt.",
+        "Mittelspiel: Suche jeden Zug zuerst nach 3×W- und 2×W-Feldern, die du erreichst, dann nach 3×B-Feldern für deinen teuersten Buchstaben. Parallele Züge mit Querwörtern bringen oft mehr als ein langes Wort.",
+        "Bank pflegen: Behalte nach dem Zug lieber S, E, N, R und den Joker als schwere Einzelbuchstaben. Hast du keine gute Möglichkeit, tausche 4 bis 6 Steine.",
+        "Endspiel (weniger als 7 Steine im Beutel): Tauschen geht nicht mehr. Plane so, dass du deine letzten Steine in zwei Zügen loswirst – dann bekommst du die Restpunkte der anderen."
+      ]
+    },
+    {
+      "t": "So spielen die Computergegner",
+      "list": [
+        "Leicht: legt meist kurze Wörter (höchstens 4 Steine) aus dem mittleren Punktebereich, benutzt den Joker ungern und nur bekannte Alltagswörter. Hier gewinnst du mit Bonusfeldern sicher.",
+        "Mittel: wählt einen Zug aus den besten 12 Prozent, ebenfalls nur bekannte Wörter. Schließe 3×W-Felder ab, die er sonst nutzt.",
+        "Schwer: nimmt immer den Zug mit den meisten Punkten plus dem besten Rest in der Bank und kennt alle Wörter des Wörterbuchs, auch seltene. Gegen ihn hilft nur defensives Spiel (Bonusfelder zumachen) und ein sauberer 7-Steine-Zug.",
+        "Findet ein Computer kein Wort, tauscht er (wenn möglich) oder passt."
+      ]
+    },
+    {
+      "t": "Punktebeispiele",
+      "list": [
+        "XI auf ein 3×B-Feld mit dem X: 8 × 3 + 1 = 25 Punkte.",
+        "QUIZ (10 + 1 + 1 + 5 = 17) auf einem 3×W-Feld: 51 Punkte.",
+        "TAXI (1 + 1 + 8 + 1 = 11) mit dem X auf 2×B und über ein 2×W-Feld: (1 + 1 + 16 + 1) × 2 = 38 Punkte.",
+        "Ein 7-Buchstaben-Wort über 2×W zählt doppelt und bekommt +50 – schnell über 70 Punkte.",
+        "Wortbeispiele mit teuren Buchstaben, die das Wörterbuch kennt: JA, JE, JO, JUX, ÖL, ÄXTE, HEXE, YETI, TAXI, TAXIS, BOXT, QUARK, QUIZ, FJORD, KUH, ZOO, ZOOS, XYLOPHON."
+      ]
+    },
+    {
+      "t": "Statistik und Bestleistungen",
+      "list": [
+        "Gespeichert werden Bestwert (höchste Punktzahl), Siege, Partien und dein bestes einzelnes Wort mit Punkten.",
+        "Ein Sieg zählt, wenn genau ein Mensch an deinem Gerät mitgespielt und allein gewonnen hat.",
+        "Im Endbildschirm siehst du außerdem das beste Wort der Partie."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Warum wird mein Wort nicht angenommen?",
+      "a": "Entweder steht ein entstandenes Wort nicht im Wörterbuch (auch Querwörter zählen), oder die Steine liegen nicht in einer Reihe, haben eine Lücke oder schließen nicht an. Namen und Abkürzungen sind nicht erlaubt, ß wird als SS gelegt."
+    },
+    {
+      "q": "Meine Partie ist weg.",
+      "a": "Gespeichert wird nur die Partie an einem Gerät, im Browser. Online-Partien werden nicht gespeichert. Ohne Google-Anmeldung ist der Stand nach dem Löschen der Browserdaten weg. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+    },
+    {
+      "q": "Warum kann ich nicht mehr tauschen?",
+      "a": "Tauschen geht nur, solange noch mindestens 7 Steine im Beutel sind."
+    },
+    {
+      "q": "Der Tipp-Knopf fehlt oder ist grau.",
+      "a": "Tipps lassen sich in den Einstellungen ein- und ausschalten. Pro Partie gibt es 3 Tipps; danach ist der Knopf gesperrt."
+    },
+    {
+      "q": "Online klappt nicht.",
+      "a": "Alle Geräte brauchen Internet. Prüfe den Code (4 Zeichen). Meldet das Spiel „Der Raum ist voll (4 Spieler)“, sind alle Plätze belegt. Lass den Gastgeber den Raum offen, bis alle drin sind."
+    },
+    {
+      "q": "Ein Mitspieler ist rausgeflogen.",
+      "a": "Dann spielt der Computer für ihn weiter. Tritt er mit demselben Code und Namen wieder bei, übernimmt er seinen Platz wieder („… ist wieder da“)."
+    }
+  ]
+}

@@ -1,0 +1,394 @@
+{
+ "id": "ricorail",
+ "handbuch": [
+  {
+   "t": "Ziel des Spiels",
+   "p": [
+    "RicoRail Simulator 3D („Deine Eisenbahn. Deine Strecken. Deine Welt.“) ist ein Eisenbahnsimulator im Browser. Du fährst Züge aus dem Führerstand über vier vereinfacht nachgebildete deutsche Strecken und durch vier Fantasiewelten, rangierst Güterwagen, stellst im Stellwerk Fahrstraßen, steigst in der Karriere vom Lokführer-Anwärter zum Meister-Lokführer auf, führst eine eigene Bahngesellschaft und baust im Editor eigene Strecken.",
+    "Signale, PZB, Sifa und Stellwerk sind vereinfachte Spielmodelle, nicht zertifiziert und nicht sicherheitsrelevant. RicoRail ist eine Simulation und kein offizielles Produkt der Deutschen Bahn."
+   ]
+  },
+  {
+   "t": "Hauptmenü",
+   "list": [
+    "▶ Weiterfahren: startet die letzte Fahrt neu.",
+    "🚆 Fahren: 🚆 Freies Fahren (Strecke, Zug, Startbahnhof, optional Ziel, Uhrzeit, Wetter, Jahreszeit, Verkehr und Schwierigkeit wählen; mit „Aufrüsten“ startet das Fahrzeug abgeschaltet), 🕒 Fahrplanfahrt (eine Linie nach Fahrplan fahren) und 📦 Güterverkehr & Rangieren.",
+    "🎫 Schaffner: Der Zug fährt selbst – du kontrollierst Fahrkarten.",
+    "🎓 Karriere: Ränge, Prüfungen und Fahrerlaubnisse.",
+    "📋 Aufgaben: alle 64 Szenarien in 6 Kategorien.",
+    "🚦 Stellwerk: Stellwerks-Szenarien oder freies Stellwerk an einem Bahnhof deiner Wahl.",
+    "🏢 Bahngesellschaft: Fahrzeuge kaufen, Linien betreiben.",
+    "🌍 Zuschauen (Freie Eisenbahnwelt): Alle Züge fahren nach Fahrplan, du beobachtest mit Kameras und Zeitraffer.",
+    "✏️ Editor: eigene Strecken bauen und testen.",
+    "🌐 Online: in Entwicklung, noch nicht verfügbar.",
+    "Außerdem: ⚙ Einstellungen, 📖 Handbuch, Profile und Mitwirkende."
+   ]
+  },
+  {
+   "t": "Die Strecken",
+   "list": [
+    "Hannover – Celle – Uelzen – Lüneburg – Hamburg: lange zweigleisige Hauptbahn durch die Lüneburger Heide, bis 200 km/h, Fern-, Regional- und Güterverkehr, Güterbahnhof Lüneburg. Halte u. a. Celle, Eschede, Unterlüß, Uelzen, Bad Bevensen, Lüneburg, Winsen (Luhe), Hamburg-Harburg, Hamburg Hbf.",
+    "Hannover – Wunstorf – Nienburg – Verden – Bremen: bis 160 km/h, Rangierbahnhof Seelze, Überholungen in Nienburg und Verden.",
+    "Köln – Bonn – Remagen – Koblenz: linke Rheinstrecke am Fluss, dichter Regionalverkehr, Burgen, Mosel-Brücke vor Koblenz, Chemiepark Hürth.",
+    "München – Tutzing – Weilheim – Murnau – Garmisch-Partenkirchen: Steigungen bis 25 ‰, eingleisige Kreuzungsbahnhöfe, Winterwetter, Kieswerk und Sägewerk Weilheim.",
+    "Sonnenland-Express (Fantasie): großes Netz mit grünen Tälern von Sonnenstadt Hbf bis Seeblick Hbf, Güterzentrum Kornfeld mit sechs Ladestellen und Museumsbahn zur Burg Sonnenstein.",
+    "Nebelgebirge (Fantasie): lange Tunnel, Viadukte, Rampen bis 40 ‰ und die Gipfel-Zahnradbahn zum Nebelhorn (120 ‰) – Schnee und Nebel.",
+    "NeonCity Rail (Fantasie): futuristischer S-Bahn-Ring mit Hochbahn und Tunneln, dichter Takt bei Nacht und Stadtbahn ins Hafenviertel.",
+    "Inselbahn & Küstenlinie (Fantasie): nicht elektrifiziert, Hafen- und Rangierbahnhof Möwenkap, Leuchtturm und lange Brücke zur Insel Nordstrand."
+   ]
+  },
+  {
+   "t": "Die Züge",
+   "list": [
+    "RR Aero 300 (8 Wagen): Hochgeschwindigkeitszug, 400 t, 10 MW – kombinierter Fahr-/Bremshebel.",
+    "Regionalexpress Doppelstock (Lok + 4): Wendezug mit Steuerwagen, E-Lok schiebt; am Zugende mit F den Führerstand wechseln.",
+    "S-Bahn Takt 3 (3 Wagen oder Doppeltraktion): hohe Beschleunigung, viele Türen.",
+    "Heideflitzer (Solo oder Doppel): Dieseltriebwagen für Nebenbahnen – Motor mit U starten.",
+    "Intercity (E-Lok + 6 Wagen) und Nachtzug (E-Lok + 5 mit Schlaf- und Speisewagen): lokbespannt, längere Bremswege.",
+    "Güterzüge: Containerzug (E-Lok + 12, ≈ 950 t), Schotterzug (Diesel + 10, ≈ 920 t), Gemischter Güterzug (Diesel), Kesselwagenzug (E-Lok + 14, ≈ 1.300 t – Vorsicht im Gefälle).",
+    "Museumszug (Dampflok „Rheinpfeil 01“ + 4): Regler, Steuerung, Feuer und Wasser im Blick behalten.",
+    "Rangierlok „Igel R60“, E-Lok und Diesellok solo.",
+    "Fantasie: NeonLiner N9, Gipfelstürmer Z10 (Zahnrad) und Stadtbahn „Glühwürmchen“."
+   ]
+  },
+  {
+   "t": "Losfahren: so geht's",
+   "steps": [
+    "Bei Ellok-Zügen den Stromabnehmer heben (P) und den Hauptschalter einlegen (U); bei Diesel den Motor mit U starten. Normalerweise startet dein Zug schon aufgerüstet – nur wenn du beim freien Fahren „Aufrüsten: Fahrzeug startet abgeschaltet“ wählst, musst du das selbst tun.",
+    "Richtungswender auf vorwärts stellen (R, zurück mit Shift+R).",
+    "Bremse lösen (Q).",
+    "Fahrhebel nach vorn (W oder Pfeil hoch). Mit S bzw. Pfeil runter nimmst du die Leistung zurück.",
+    "Signale und Geschwindigkeitstafeln beachten, vor dem Bahnsteig rechtzeitig bremsen (E = mehr bremsen).",
+    "Am Bahnsteig anhalten und die Türen auf der Bahnsteigseite freigeben (T), danach schließen (Shift+T) und weiterfahren.",
+    "Mit der Einstellung „Bedienung: Einfach (nur Hebel, Rest automatisch)“ übernimmt das Spiel Richtungswender, Türen und PZB für dich; „Realistisch“ lässt dich alles selbst bedienen."
+   ]
+  },
+  {
+   "t": "Tastatur",
+   "list": [
+    "W / ↑ Fahren bzw. Leistung +, S / ↓ Leistung − / Bremsen, E Führerbremsventil mehr bremsen, Q Bremse lösen, Leertaste Schnellbremsung.",
+    "R Richtungswender vor, Shift+R zurück, F Führerstand wechseln, X Feststellbremse.",
+    "H (halten) Signalhorn bzw. Pfeife, T Türen freigeben, Shift+T Türen schließen, I gestörte Tür absperren.",
+    "P Stromabnehmer heben/senken, U Hauptschalter bzw. Motor an/aus, L Spitzenlicht, Shift+L Führerstandslicht, O Scheibenwischer, G (halten) Sanden.",
+    "V Wachsam bzw. Sifa quittieren, Z Ersatzsignal anfordern.",
+    "Güter: K Kuppeln vorbereiten, J Entkuppeln, N Beladen, Shift+N Entladen, A Rangierfahrt an/aus.",
+    "Dampflok: Komma und Punkt Steuerung, B Feuern, Shift+I Injektor (Wasser).",
+    "C oder 1–7 Kamera, M Gleisplan/Karte, Tab Zeitraffer, Esc Pause, F1 Hilfe, F2 Anzeige, F4 Schaffner-Modus an/aus, Enter Fahrkarte prüfen, F8 Wiederholung der letzten Minute, F9 Bildschirmfoto."
+   ]
+  },
+  {
+   "t": "Touch und Gamepad",
+   "list": [
+    "Smartphone und Tablet: Hebel am Bildschirmrand nach oben ziehen = fahren, nach unten = bremsen. Knöpfe für Horn, Schnellbremsung, Wachsam und Türen; mit einem Finger umsehen, mit zwei Fingern zoomen, Doppeltippen setzt den Blick zurück. Bedienelemente im Führerstand lassen sich antippen.",
+    "Gamepad: rechter Trigger fahren, linker Trigger bremsen (ohne Trigger: linker Stick hoch/runter), A Türen, B Schnellbremsung, X Horn, Y Kamera, LB Wachsam, RB Richtungswender, Back Karte, Start Pause, rechter Stick umsehen, Steuerkreuz hoch/runter Leistung, links Bremse lösen, rechts mehr bremsen."
+   ]
+  },
+  {
+   "t": "Schwierigkeit, Signale und Sicherung",
+   "list": [
+    "Leicht: Der Bremsassistent hält vor dem Halt (Haltepunkte zählen dann nur halb).",
+    "Normal: Geschwindigkeitsüberwachung – wer mehr als 10 km/h zu schnell ist und das länger als 4 Sekunden, bekommt eine Zwangsbremsung.",
+    "Experte: zusätzlich PZB- und Sifa-Spielmodell.",
+    "Prüfungsfahrten laufen immer mit der Schwierigkeit Normal.",
+    "Signale (vereinfacht): Rot = Halt, Gelb = Halt erwarten bzw. Langsamfahrt, Grün = Fahrt. Im Farbenblind-Modus wird Fahrt blau angezeigt.",
+    "Ersatzsignal (Z) nur bei gestörtem Signal und nach Freigabe; danach höchstens 40 km/h.",
+    "PZB (Experte): Etwa 1.000 m vor einem Halt zeigenden Signal ertönt 1000 Hz – innerhalb von 4 Sekunden Wachsam (V) drücken, sonst Zwangsbremsung. Danach darfst du nach 23 Sekunden nicht schneller als 85 km/h sein, und 250 m vor dem Halt zeigenden Signal nicht schneller als 65 km/h.",
+    "Sifa (Experte): Während der Fahrt alle 30 Sekunden mit V quittieren, nach 35 Sekunden folgt die Sifa-Zwangsbremsung.",
+    "Nach einer Zwangsbremsung im Stillstand: Bremse lösen und weiterfahren."
+   ]
+  },
+  {
+   "t": "Führerstände im Überblick",
+   "list": [
+    "Hochgeschwindigkeitszug: kombinierter Fahr-/Bremshebel (Mitte = 0). Elektrische Bremse wird beim Bremsen zuerst genutzt.",
+    "Doppelstock-Wendezug: Fahrschalter und Führerbremsventil getrennt; am Zugende über den Steuerwagen weiterfahren (F im Stillstand).",
+    "S-Bahn: starke Beschleunigung, kurze Halte – Türen rechtzeitig freigeben und schließen, sonst steigt die Verspätung.",
+    "Dieseltriebwagen: Motor mit U starten, Leistung stufenlos.",
+    "Ellok: Stromabnehmer (P) heben, Hauptschalter (U) ein; schwere Züge vorsichtig anfahren, bei Schleudern sanden (G).",
+    "Diesellok: Motor (U) starten, Fahrstufen 0–8. Bei langen Güterzügen früh bremsen – die Luftbremse wirkt verzögert.",
+    "Dampflok: Regler (W/S), Steuerung (Komma und Punkt), Feuern (B), Injektor (Shift+I) für Wasser; Wasserstand und Kesseldruck im Blick halten.",
+    "Rangierlok: Rangierfahrt (A) begrenzt auf 25 km/h, Kuppeln (K), Entkuppeln (J), Beladen (N).",
+    "NeonLiner: Kombihebel, sehr starke Bremse. Zahnradbahn: auf Zahnstangenabschnitten nur langsam, bergab die Zahnradbremse nutzen. Straßenbahn: Pedale für Sifa, Sand und Klingel, Fahren auf Sicht."
+   ]
+  },
+  {
+   "t": "Wertung und Sterne",
+   "p": [
+    "Nach jeder Aufgabe zeigt die Wertung deine Punkte. Wer das Ziel schafft, startet mit 1.000 Punkten; dazu kommen Zu- und Abschläge:"
+   ],
+   "list": [
+    "Pünktlichkeit: −25 je Minute Verspätung (über 1 Minute je Halt), höchstens −400.",
+    "Haltgenauigkeit: bis +100 (100 minus 10 je Meter durchschnittlicher Abweichung, höchstens −150).",
+    "Fahrgastkomfort: (Komfort − 80) × 3, also über 80 % Plus, darunter Minus.",
+    "Geschwindigkeitsüberschreitung mit Zwangsbremsung −100, Signal überfahren −500, Prellbock-Aufprall −150, Weiche aufgefahren −200, Türen nicht geöffnet −50 je Halt.",
+    "Fahrgäste befördert: bis +150. Schaffner: +10 je richtig geprüfter gültiger Fahrkarte, +25 je erwischtem Fahrgast ohne gültige Fahrkarte, −20 bei falschem Verdacht, −15 bei übersehenem Fehler.",
+    "Jeder Halt wird bewertet: Perfekter Halt (bis 2 m) 100, Sehr guter Halt (bis 5 m) 75, Guter Halt (bis 10 m) 50, Halt in Ordnung (bis 25 m) 25, Am Bahnsteig 10 Punkte; pünktlich (bis 1 Minute) +50, bis 3 Minuten +20.",
+    "Sterne: ab 1.100 Punkten 3 Sterne, ab 850 Punkten 2 Sterne, sonst 1 Stern."
+   ]
+  },
+  {
+   "t": "Karriere und Ränge",
+   "p": [
+    "Erfahrung (XP) sammelst du in den Aufgaben: XP der Aufgabe × (0,5 + Sterne/4), also 75 % bei 1 Stern, 100 % bei 2 und 125 % bei 3 Sternen. Wiederholst du eine bereits geschaffte Aufgabe, gibt es nur noch 20 Prozent. Für einen neuen Rang brauchst du die nötige Erfahrung und die passende bestandene Prüfung; eine Prüfung wird freigeschaltet, sobald du 60 % der nötigen Erfahrung hast."
+   ],
+   "steps": [
+    "Lokführer-Anwärter: Start (0 XP).",
+    "Triebfahrzeugführer Rangier/Nebenbahn: 400 XP und „Prüfung Rangierdienst: Kieswerk“.",
+    "Triebfahrzeugführer Regionalverkehr: 1.200 XP und „Prüfung Regionalverkehr: Wunstorf – Nienburg“.",
+    "Triebfahrzeugführer Güterverkehr: 2.400 XP und „Prüfung Güterverkehr: Kies nach München“.",
+    "Triebfahrzeugführer Fernverkehr: 4.000 XP und „Prüfung Fernverkehr: Köln – Koblenz“.",
+    "Hochgeschwindigkeits-Lokführer: 6.000 XP und „Prüfung Hochgeschwindigkeit: Hannover – Uelzen“.",
+    "Meister-Lokführer: 9.000 XP."
+   ]
+  },
+  {
+   "t": "Stellwerk",
+   "p": [
+    "Im Stellwerk tippst du zuerst das Startsignal und dann das Zielsignal an – die Fahrstraße wird eingestellt, wenn alle Weichen frei sind. Eine eingestellte Fahrstraße am Startsignal antippen nimmt sie zurück, eine Weiche antippen stellt sie um. Die Hauptsignale rund um den gewählten Bahnhof stellst du selbst, der übrige Bereich läuft automatisch. Ziel: alle Züge ohne Verklemmung und mit wenig Verspätung durchleiten."
+   ]
+  },
+  {
+   "t": "Güterverkehr und Rangieren",
+   "list": [
+    "Rangierfahrt (A) begrenzt auf 25 km/h.",
+    "Ankuppeln: Kupplung bereit machen (K) und langsam an die Wagen heranfahren.",
+    "Entkuppeln mit J, Beladen mit N und Entladen mit Shift+N an der richtigen Ladestelle (Industrie).",
+    "Abstellen: Wagen an der Ladestelle stehen lassen, Feststellbremse (X) anziehen, Lok abziehen.",
+    "Weichen stellst du im Gleisplan (M)."
+   ]
+  },
+  {
+   "t": "Schaffner-Modus",
+   "p": [
+    "Im Schaffner-Modus fährt der Zug selbst; du gehst mit W/S durch den Zug und prüfst mit Enter die Fahrkarten. Gut ein Viertel der Fahrgäste hat ein Problem: gar keine Fahrkarte, eine Karte vom Vortag, eine Karte der 2. Klasse in der 1. Klasse oder eine Karte, die nur bis zu einem bereits passierten Bahnhof gilt. Entscheide jeweils „gültig“ oder „ungültig“."
+   ]
+  },
+  {
+   "t": "Bahngesellschaft",
+   "list": [
+    "Du startest als „RicoRail AG“ mit 600.000 RicoTalern (fiktive Währung, keine Käufe mit Echtgeld) und der Strecke Sonnenland-Express.",
+    "Weitere Strecken kaufst du dazu: Inselbahn & Küstenlinie 150.000, Nebelgebirge 200.000, NeonCity Rail 220.000, München – Garmisch 300.000, Köln – Koblenz 350.000, Hannover – Bremen 380.000, Hannover – Hamburg 450.000 RT.",
+    "Fahrzeuge kaufen (Preis z. B. Heideflitzer Solo 24.000, Rangierlok 18.000, S-Bahn 90.000, Museumszug 90.000, Regionalexpress Doppelstock 143.000, Containerzug 151.000, Intercity 156.000, RR Aero 300 390.000 RT), einer Linie zuweisen und mit „▶ 1 Tag“ Betriebstage simulieren. Verkaufen bringt 70 % des Preises, mit dem Alter weniger (mindestens 25 %).",
+    "Passt nicht jeder Zug auf jede Linie: E-Fahrzeuge brauchen Fahrdraht (Museumsbahn und Küstenlinie sind nicht elektrifiziert), Güterlinien brauchen Güterwagen, Personenlinien Sitzplätze, die Zahnradbahn ein Zahnradfahrzeug und die Stadtbahnlinie Stadtbahnwagen.",
+    "Tagesbilanz: Einnahmen aus Fahrgästen und Fracht, Kosten für Abstellung, Energie, Trassen und Wartung; gelegentlich Störungen (Reparatur, Ruf sinkt) oder Sonderverkehr (+15 % Einnahmen). Der Ruf steigt mit jeder Linie im Betrieb und erhöht die Nachfrage.",
+    "Bei jeder gekauften Strecke steht „✔ Nutzungsrecht“; mit „In 3D ansehen“ öffnest du sie in der freien Eisenbahnwelt und schaust dem Betrieb zu."
+   ]
+  },
+  {
+   "t": "Strecken-Editor",
+   "list": [
+    "Neues leeres Netz oder Vorlage (Kopie einer Strecke) wählen, Gelände (Flachland, Hügel, Gebirge, Küste, Fluss, Stadt …), Bebauung und Jahreszeit festlegen.",
+    "Werkzeuge: Gleis zeichnen (Gerade oder Bogen), Weiche/Knoten, Bahnsteig/Station (Bahnhof, Haltepunkt, Güter- und Rangierbahnhof, Betriebswerk), Hauptsignal, Blocksignal, Rangiersignal, Bahnübergang, Brücke, Tunnel, Löschen.",
+    "Eigenschaften wie Höchstgeschwindigkeit, Höhe, Elektrifizierung und Fahrgäste/h einstellen; Rückgängig/Wiederholen.",
+    "„Prüfen“ zeigt Fehler, „Testfahrt“ startet das Netz sofort im Führerstand. Netze lassen sich speichern, exportieren und importieren."
+   ]
+  },
+  {
+   "t": "Einstellungen und Speichern",
+   "list": [
+    "Drei Spielstände (Profile); der Fortschritt wird automatisch gespeichert. Spielstand exportieren (JSON) und importieren.",
+    "Steuerung: Bedienung Einfach (nur Hebel, Rest automatisch) oder Realistisch (Wender, Türen, PZB selbst) sowie die Schwierigkeit für neue Fahrten.",
+    "Grafik: Qualität (Niedrig für schwache Handys bis Hoch), Bildrate begrenzen; Änderungen gelten ab der nächsten Fahrt.",
+    "Barrierefreiheit & Sprache: Textgröße, Weniger Bewegung, Farbenblind-Modus (Fahrt-Signal blau), Untertitel für Ansagen, Haltestellenansagen, Umsehen vertikal umkehren, Touch-Hebel links oder rechts, Deutsch oder English (teilweise).",
+    "Im privaten Fenster gibt es keinen dauerhaften Speicher – der Fortschritt geht beim Schließen verloren."
+   ]
+  }
+ ],
+ "ratgeber": [
+  {
+   "t": "Tipps für Einsteiger",
+   "list": [
+    "Erst Richtungswender auf vorwärts (R) und Bremse lösen (Q), dann Fahrhebel nach vorn.",
+    "Beginne mit der Schwierigkeit Leicht – der Bremsassistent hält dich am Bahnsteig an.",
+    "Fahre die ersten Aufgaben „Erste Schicht: Hannover – Celle“, „S-Bahn Hannover – Wunstorf“ und die Rangierschule auf der Küstenlinie.",
+    "Mit M öffnest du den Gleisplan, mit Tab den Zeitraffer auf langen Abschnitten.",
+    "Vergiss die Türen nicht: Jeder Halt ohne Türfreigabe kostet 50 Punkte und oft ein Ziel."
+   ]
+  },
+  {
+   "t": "Bremsen und Halten",
+   "list": [
+    "Lange Güterzüge bremsen verzögert: im Gefälle früh bremsen.",
+    "Lokbespannte Züge (Intercity) haben längere Bremswege als Triebzüge.",
+    "Für einen perfekten Halt (bis 2 m) rechtzeitig kräftig bremsen und zuletzt mit wenig Bremse an den Haltepunkt rollen – nachbremsen kurz vor dem Stillstand kostet Komfort.",
+    "Bei nasser oder glatter Schiene sanft anfahren und sanden (G). Bei Laub und Glatteis deutlich früher bremsen.",
+    "Nutze bergab die elektrische Bremse – in „Energiesparend bergab“ zählt jede Kilowattstunde."
+   ]
+  },
+  {
+   "t": "Strategien für Fortgeschrittene",
+   "list": [
+    "Am Vorsignal die Wachsam-Taste drücken, sonst bremst die PZB den Zug (Experte).",
+    "Nach dem Quittieren 23 Sekunden lang Tempo unter 85 km/h bringen – sonst greift die PZB-Überwachung.",
+    "Fahre gleichmäßig: Ruckartiges Beschleunigen und Bremsen senkt den Fahrgastkomfort und damit Punkte.",
+    "In Stellwerks-Aufgaben Fahrstraßen früh stellen und eingleisige Abschnitte nie gleichzeitig von beiden Seiten belegen – sonst droht die Verklemmung.",
+    "Bahngesellschaft: Starte mit günstigen, gut ausgelasteten Personenlinien im Sonnenland und kaufe Strecken erst, wenn die Tagesbilanz stabil positiv ist."
+   ]
+  },
+  {
+   "t": "Häufige Fehler",
+   "list": [
+    "Fahrhebel vor, aber nichts passiert: Richtungswender steht auf 0, die Bremse ist angelegt, der Stromabnehmer ist unten oder der Motor aus.",
+    "Signal bei Halt überfahren: −500 Punkte und meist ein verfehltes Ziel – im Zweifel lieber anhalten.",
+    "Ersatzsignal ohne Störung anfordern: Zs 1 gibt es nur bei gestörtem Signal; danach höchstens 40 km/h.",
+    "Beim Rangieren zu schnell an die Wagen: Kupplung vorher mit K vorbereiten und mit Schrittgeschwindigkeit heranfahren.",
+    "Wagen abstellen ohne Feststellbremse (X)."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "Der schnellste Weg durch die Karriere",
+   "steps": [
+    "Rang 0 → 1: Sammle 400 XP mit leichten Aufgaben ab Anfang (z. B. Erste Schicht, S-Bahn Hannover – Wunstorf, Rangierschule, Fantasiefahrten) und bestehe die Prüfung Rangierdienst: Kieswerk (10 Schüttgutwagen beladen und vollständig abstellen).",
+    "Rang 1 → 2: Mit den Aufgaben ab Rang „Rangier/Nebenbahn“ bis 1.200 XP, dann Prüfung Regionalverkehr: Wunstorf – Nienburg (höchstens 2 min Verspätung, Türen an jedem Halt, kein Signal überfahren, keine Zwangsbremsung).",
+    "Rang 2 → 3: Güter- und Stellwerksaufgaben bis 2.400 XP, dann Prüfung Güterverkehr: 10 Wagen Kies in Weilheim laden und nach München Hbf bringen.",
+    "Rang 3 → 4: Intercity- und Wetteraufgaben bis 4.000 XP, dann Prüfung Fernverkehr: Köln – Koblenz (2 min Verspätung, Komfort mindestens 75 %).",
+    "Rang 4 → 5: bis 6.000 XP, dann Prüfung Hochgeschwindigkeit: Hannover – Uelzen im Aero 300 (2 min Verspätung, Komfort mindestens 80 %).",
+    "Rang 5 → 6: 9.000 XP – Meister-Lokführer. Alle Aufgaben zusammen bringen bei 2 Sternen über 34.000 XP, du musst also nicht alle fahren.",
+    "Tipp: 3 Sterne bringen 125 % der XP – eine Aufgabe sauber fahren lohnt mehr als zwei schnell. Wiederholungen bringen nur 20 %."
+   ]
+  },
+  {
+   "t": "Alle Aufgaben: Personenverkehr",
+   "steps": [
+    "Erste Schicht: Hannover – Celle (ab Anfang, 80 XP): Regionalexpress mit Doppelstockwagen. Halte pünktlich und öffne an jedem Halt die Türen. Ziele: Fahrplan (max. 5 min Verspätung), Türen an jedem Halt, kein Signal überfahren.",
+    "Durch die Heide: Celle – Uelzen (ab Anfang, 100 XP): Lange Abschnitte mit 160 km/h. Achte auf saubere Halte an Eschede und Unterlüß. Ziele: Fahrplan (max. 4 min Verspätung), Halt auf 15  m genau, kein Signal überfahren.",
+    "Prüfung Hochgeschwindigkeit: Hannover – Uelzen (ab Rang „Fernverkehr“, 300 XP, Prüfung): Prüfungsfahrt mit dem Aero 300. Keine Zwangsbremsung, ruhig fahren, pünktlich ankommen. Ziele: Fahrplan (max. 2 min Verspätung), keine Zwangsbremsung wegen Tempo, Komfort mind. 80  %, kein Signal überfahren.",
+    "Abendverkehr: Hamburg – Lüneburg (ab Rang „Güterverkehr“, 160 XP): Fernzug aus Hamburg Hbf in den Sonnenuntergang. Harburg ist dicht befahren. Ziele: Fahrplan (max. 3 min Verspätung), kein Signal überfahren.",
+    "Intercity Lüneburg – Hamburg Hbf (ab Rang „Güterverkehr“, 150 XP): Lokbespannter Intercity: längere Bremswege als ein Triebzug. Ziele: Fahrplan (max. 3 min Verspätung), kein Signal überfahren.",
+    "S-Bahn Hannover – Wunstorf (ab Anfang, 90 XP): Kurze Halteabstände, zentimetergenaue Halte und schneller Fahrgastwechsel. Ziele: Fahrplan (max. 3 min Verspätung), Halt auf 8  m genau, Türen an jedem Halt.",
+    "Prüfung Regionalverkehr: Wunstorf – Nienburg (ab Rang „Rangier/Nebenbahn“, 220 XP, Prüfung): Prüfungsfahrt: pünktlich, ohne Signalverstoß, Türen an jedem Halt. Ziele: Fahrplan (max. 2 min Verspätung), Türen an jedem Halt, kein Signal überfahren, keine Zwangsbremsung wegen Tempo.",
+    "Intercity Hannover – Bremen (ab Rang „Güterverkehr“, 220 XP): Die ganze Strecke im Intercity mit Überholungen in Nienburg und Verden. Ziele: Fahrplan (max. 4 min Verspätung), kein Signal überfahren.",
+    "Rückfahrt Bremen – Verden (ab Rang „Rangier/Nebenbahn“, 110 XP): Regionalexpress am frühen Nachmittag. Ziele: Fahrplan (max. 4 min Verspätung), Türen an jedem Halt.",
+    "Regionalbahn Köln – Bonn (ab Rang „Rangier/Nebenbahn“, 130 XP): Dichter Verkehr südlich von Köln: Signale können kurzfristig Halt zeigen. Ziele: Fahrplan (max. 4 min Verspätung), Türen an jedem Halt, kein Signal überfahren.",
+    "Am Rhein: Bonn – Remagen (ab Rang „Rangier/Nebenbahn“, 120 XP): Regionalexpress am Fluss entlang, Rolandseck und Burgen im Blick. Ziele: Fahrplan (max. 3 min Verspätung), Türen an jedem Halt.",
+    "Prüfung Fernverkehr: Köln – Koblenz (ab Rang „Güterverkehr“, 300 XP, Prüfung): Prüfungsfahrt im Intercity über die linke Rheinstrecke. Ziele: Fahrplan (max. 2 min Verspätung), kein Signal überfahren, keine Zwangsbremsung wegen Tempo, Komfort mind. 75  %.",
+    "Feierabend: Remagen – Bonn (ab Rang „Rangier/Nebenbahn“, 120 XP): Regionalbahn zurück nach Bonn in der Dämmerung. Ziele: Fahrplan (max. 4 min Verspätung), Türen an jedem Halt.",
+    "S-Bahn München – Starnberg (ab Anfang, 100 XP): Aus der Großstadt an den See. Pasing ist ein wichtiger Knoten. Ziele: Fahrplan (max. 3 min Verspätung), Halt auf 10  m genau, Türen an jedem Halt.",
+    "Eingleisig ins Werdenfelser Land (ab Rang „Rangier/Nebenbahn“, 150 XP): Regionalexpress Tutzing – Murnau. In den Kreuzungsbahnhöfen wartet Gegenverkehr. Ziele: Fahrplan (max. 4 min Verspätung), kein Signal überfahren.",
+    "Energiesparend bergab: Garmisch – Weilheim (ab Rang „Regionalverkehr“, 170 XP): Nutze das Gefälle und die elektrische Bremse. Verbrauche höchstens 250 kWh. Ziele: Fahrplan (max. 4 min Verspätung), höchstens 250  kWh.",
+    "Alle Halte: Weilheim – Garmisch (ab Rang „Rangier/Nebenbahn“, 160 XP): Regionalbahn mit allen Bedarfshalten bis Garmisch-Partenkirchen. Ziele: Fahrplan (max. 4 min Verspätung), Türen an jedem Halt.",
+    "Nachtfahrt Uelzen – Lüneburg (ab Rang „Rangier/Nebenbahn“, 140 XP): Späte Regionalfahrt bei Dunkelheit. Signale sind früh zu sehen, Bahnsteige dagegen spät. Ziele: Fahrplan (max. 3 min Verspätung), Halt auf 15  m genau.",
+    "S-Bahn Nienburg – Hannover (ab Anfang, 130 XP): Zurück in die Landeshauptstadt im Berufsverkehr. Ziele: Fahrplan (max. 4 min Verspätung), Türen an jedem Halt.",
+    "Berufsverkehr Lüneburg – Hamburg-Harburg (ab Rang „Rangier/Nebenbahn“, 150 XP): Volle Züge und dichter Takt Richtung Hamburg. Ziele: Fahrplan (max. 4 min Verspätung), Türen an jedem Halt, kein Signal überfahren."
+   ]
+  },
+  {
+   "t": "Alle Aufgaben: Güterverkehr",
+   "steps": [
+    "Container nach Lüneburg (ab Rang „Regionalverkehr“, 200 XP): Bringe den Containerzug von Hamburg-Harburg zum Containerterminal Lüneburg und entlade 12 Wagen. Ziele: 12 Wagen zustellen und entladen, kein Signal überfahren.",
+    "Heizöl für das Tanklager (ab Rang „Regionalverkehr“, 260 XP): Schwerer Kesselwagenzug von Hamburg-Harburg zum Tanklager Lüneburg. Lange Bremswege einplanen. Ziele: 14 Wagen zustellen und entladen, kein Signal überfahren, keine Zwangsbremsung wegen Tempo.",
+    "Holz aus der Heide (ab Rang „Regionalverkehr“, 220 XP): Lade 8 Holzwagen am Holzumschlag Lüneburg und fahre nach Hamburg-Harburg. Ziele: 8 Wagen beladen, im Zielbahnhof halten.",
+    "Neuwagen nach Bremen (ab Rang „Regionalverkehr“, 220 XP): Belade 6 Autotransportwagen an der Autoverladung Seelze und bringe sie nach Bremen Hbf. Ziele: 6 Wagen beladen, im Zielbahnhof halten.",
+    "Stückgut für Seelze (ab Rang „Regionalverkehr“, 230 XP): Containerzug von Bremen zum Logistikzentrum Seelze, dort entladen. Ziele: 12 Wagen zustellen und entladen, kein Signal überfahren.",
+    "Chemiepark Hürth (ab Rang „Regionalverkehr“, 240 XP): Lade 10 Kesselwagen im Chemiepark und fahre bis Koblenz Hbf. Ziele: 10 Wagen beladen, im Zielbahnhof halten.",
+    "Baustoffe für Hürth (ab Rang „Regionalverkehr“, 230 XP): Schotterwagen aus Koblenz zum Baustoffhandel Hürth bringen und entladen. Ziele: 10 Wagen zustellen und entladen, kein Signal überfahren.",
+    "Prüfung Güterverkehr: Kies nach München (ab Rang „Regionalverkehr“, 320 XP, Prüfung): Prüfungsfahrt: 10 Wagen Kies in Weilheim laden und über Tutzing nach München Hbf bringen. Ziele: 10 Wagen beladen, im Zielbahnhof halten, kein Signal überfahren, keine Zwangsbremsung wegen Tempo.",
+    "Rundholz zum Sägewerk (ab Rang „Regionalverkehr“, 220 XP): Holzzug von München zum Sägewerk Weilheim, dort entladen. Ziele: 8 Wagen zustellen und entladen, kein Signal überfahren.",
+    "Eilgüterzug mit Zeitlimit (ab Rang „Güterverkehr“, 260 XP): Containerzug von Seelze nach Bremen in höchstens 75 Minuten. Ziele: im Zielbahnhof halten, Zeitlimit 75 min, kein Signal überfahren."
+   ]
+  },
+  {
+   "t": "Alle Aufgaben: Rangieren",
+   "steps": [
+    "Rangierschule: Ankuppeln (ab Anfang, 80 XP): Kupple die Rangierlok an die vier Containerwagen am Containerkai. Kupplung bereit machen (K), langsam heranfahren. Ziele: Zug auf 5  Fahrzeuge kuppeln, kein Signal überfahren.",
+    "Kesselwagen abstellen (ab Anfang, 100 XP): Stelle die drei Kesselwagen am Tanklager Möwenkap ab, ziehe die Handbremse an und fahre die Lok weg. Ziele: 3  Wagen abstellen (Handbremse).",
+    "Fischkisten laden (ab Anfang, 100 XP): Belade drei gedeckte Wagen am Fischereihafen. Ziele: 3 Wagen beladen.",
+    "Heizöl ins Tanklager Kornfeld (ab Rang „Rangier/Nebenbahn“, 160 XP): Bringe vier beladene Kesselwagen vom Containerterminal zum Tanklager und entlade sie. Weichen im Gleisplan (M) stellen. Ziele: 4 Wagen zustellen und entladen.",
+    "Autowerk Sonnenland (ab Anfang, 110 XP): Lade sechs Autotransportwagen am Autowerk. Ziele: 6 Wagen beladen.",
+    "Warenlager umsetzen (ab Rang „Rangier/Nebenbahn“, 170 XP): Lade vier gedeckte Wagen am Warenlager und stelle sie im Containerterminal ab. Ziele: 4 Wagen beladen, 4  Wagen abstellen (Handbremse).",
+    "Holzwagen bereitstellen (ab Anfang, 120 XP): Lade fünf Holzwagen am Holzumschlag Lüneburg und stelle sie dort ab. Ziele: 5 Wagen beladen, 5  Wagen abstellen (Handbremse).",
+    "Rangierbahnhof Seelze: Zug bilden (ab Rang „Rangier/Nebenbahn“, 150 XP): Kupple die sechs bereitstehenden Autowagen an die Rangierlok. Ziele: Zug auf 7  Fahrzeuge kuppeln.",
+    "Chemiepark: Wagen zustellen (ab Rang „Rangier/Nebenbahn“, 150 XP): Stelle vier leere Kesselwagen im Chemiepark Hürth ab (Handbremse!). Ziele: 4  Wagen abstellen (Handbremse).",
+    "Prüfung Rangierdienst: Kieswerk (ab Anfang, 220 XP, Prüfung): Prüfung: zehn Schüttgutwagen am Kieswerk beladen und vollständig abstellen. Ziele: 10 Wagen beladen, 10  Wagen abstellen (Handbremse)."
+   ]
+  },
+  {
+   "t": "Alle Aufgaben: Stellwerk",
+   "steps": [
+    "Stellwerk Talheim (ab Anfang, 140 XP): Leite alle Züge durch Talheim inklusive Museumsbahn-Abzweig. Fahrstraßen per Klick: Startsignal, dann Ziel. Ziele: 5 Züge durchleiten, max. 10 min Verspätung.",
+    "Zugkreuzungen an der Küste (ab Anfang, 140 XP): Eingleisige Küstenlinie: plane die Kreuzungen in Dünenhof und Leuchtturm. Ziele: 4 Züge durchleiten, max. 10 min Verspätung.",
+    "Kreuzungsbahnhof Murnau (ab Rang „Rangier/Nebenbahn“, 180 XP): Kreuze die Regionalzüge auf der eingleisigen Strecke in Uffing und Murnau. Ziele: 5 Züge durchleiten, max. 8 min Verspätung.",
+    "Überholung in Nienburg (ab Rang „Regionalverkehr“, 200 XP): Lass den Intercity den Güterzug in Nienburg überholen. Ziele: 5 Züge durchleiten, max. 7 min Verspätung.",
+    "Knoten Remagen (ab Rang „Regionalverkehr“, 240 XP): Dichter Rheinverkehr: Regionalbahnen enden hier und müssen wenden. Ziele: 6 Züge durchleiten, max. 7 min Verspätung.",
+    "NeonCity Zentrale (ab Rang „Rangier/Nebenbahn“, 200 XP): Der Ring im Viertelstundentakt: halte Neon Zentrum und Datenhafen frei. Ziele: 8 Züge durchleiten, max. 6 min Verspätung.",
+    "Weichenstörung in Uelzen (ab Rang „Regionalverkehr“, 260 XP): Eine Weiche in Uelzen ist gestört. Leite die Züge über die anderen Gleise. Ziele: 5 Züge durchleiten, max. 10 min Verspätung.",
+    "Passhöhe im Schnee (ab Rang „Rangier/Nebenbahn“, 200 XP): Regionalzüge und Zahnradbahn treffen an der Passhöhe zusammen. Ziele: 5 Züge durchleiten, max. 10 min Verspätung."
+   ]
+  },
+  {
+   "t": "Alle Aufgaben: Wetter & Störungen",
+   "steps": [
+    "Laub auf den Schienen (ab Rang „Rangier/Nebenbahn“, 180 XP): Herbst in der Heide: schlechte Haftung. Früh bremsen, Sand geben (Taste G). Ziele: Fahrplan (max. 7 min Verspätung), kein Signal überfahren.",
+    "Schneetreiben vor Garmisch (ab Rang „Regionalverkehr“, 240 XP): Winter im Gebirge. Ein Signal fällt aus: Ersatzsignal anfordern. Ziele: Fahrplan (max. 10 min Verspätung), kein Signal überfahren.",
+    "Dichter Nebel am Rhein (ab Rang „Rangier/Nebenbahn“, 180 XP): Sichtweite unter 100 m und eine Baustelle mit 40 km/h. Ziele: Fahrplan (max. 7 min Verspätung), keine Zwangsbremsung wegen Tempo.",
+    "Sturmtief über der Weser (ab Rang „Regionalverkehr“, 240 XP): Orkanböen: rechne mit umgestürzten Bäumen und fahre auf Sicht. Ziele: Fahrplan (max. 10 min Verspätung), kein Signal überfahren.",
+    "Gewitter und Stromabnehmer (ab Rang „Fernverkehr“, 280 XP): Hochgeschwindigkeitsfahrt im Gewitter. Eine Fahrdrahtstörung senkt den Stromabnehmer. Ziele: Fahrplan (max. 7 min Verspätung), kein Signal überfahren.",
+    "Türstörung in Gauting (ab Anfang, 140 XP): Eine Tür schließt nicht. Tür absperren (I) und weiterfahren. Ziele: Fahrplan (max. 7 min Verspätung), Türen an jedem Halt.",
+    "Bahnübergang gestört (ab Rang „Rangier/Nebenbahn“, 200 XP): Nachts, Gewitter: ein Bahnübergang meldet Störung. Mit 20 km/h und Achtungssignal vorbei. Ziele: Fahrplan (max. 10 min Verspätung), keine Zwangsbremsung wegen Tempo.",
+    "Glatteis: schwerer Güterzug (ab Rang „Güterverkehr“, 260 XP): Containerzug bei Eisregen von Seelze nach Verden. Gleitschutz hilft nur begrenzt. Ziele: im Zielbahnhof halten, kein Signal überfahren."
+   ]
+  },
+  {
+   "t": "Alle Aufgaben: Fantasiewelten",
+   "steps": [
+    "Sonnenland-Express (ab Anfang, 120 XP): Der Schnellzug durch die grünen Täler von Sonnenstadt nach Seeblick. Ziele: Fahrplan (max. 4 min Verspätung), kein Signal überfahren.",
+    "Dampf zur Burg Sonnenstein (ab Rang „Rangier/Nebenbahn“, 180 XP): Museumszug mit Dampflok: Regler, Steuerung, Wasser und Feuer im Blick behalten. Ziele: Fahrplan (max. 7 min Verspätung).",
+    "Zahnradbahn zum Nebelhorn (ab Anfang, 120 XP): Mit 120 ‰ hinauf zum Gipfel – ruhig anfahren, im Gefälle elektrisch bremsen. Ziele: Fahrplan (max. 5 min Verspätung), Komfort mind. 70  %.",
+    "Gebirgs-Express im Schnee (ab Rang „Rangier/Nebenbahn“, 180 XP): Lange Tunnel und Viadukte bis zur Passhöhe. Ziele: Fahrplan (max. 7 min Verspätung), kein Signal überfahren.",
+    "NeonCity bei Nacht (ab Anfang, 120 XP): Eine Runde im Ring im Uhrzeigersinn, dichter Takt. Ziele: Fahrplan (max. 4 min Verspätung), Halt auf 10  m genau.",
+    "Stadtbahn ins Hafenviertel (ab Anfang, 100 XP): Mit der Stadtbahn vom Datenhafen zum Hafenviertel. Ziele: Fahrplan (max. 4 min Verspätung), Türen an jedem Halt.",
+    "Küstenbahn (ab Anfang, 120 XP): Dieseltriebwagen von Hafenstadt bis Nordstrand auf der Insel. Ziele: Fahrplan (max. 5 min Verspätung), Türen an jedem Halt.",
+    "Dampfsonderzug zur Insel (ab Rang „Rangier/Nebenbahn“, 180 XP): Historischer Sonderzug über die lange Brücke. Ziele: Fahrplan (max. 7 min Verspätung)."
+   ]
+  },
+  {
+   "t": "Lösungen für Störungen",
+   "list": [
+    "Signal ausgefallen (Schneetreiben vor Garmisch): vor dem gestörten Signal anhalten, mit Z das Ersatzsignal anfordern und danach höchstens 40 km/h fahren.",
+    "Türstörung (Gauting): Die gestörte Tür mit I absperren, dann Türen schließen und weiterfahren.",
+    "Fahrdrahtstörung (Gewitter und Stromabnehmer): Wird der Stromabnehmer gesenkt, nach der Störung mit P wieder heben und den Hauptschalter (U) einlegen.",
+    "Bahnübergang gestört: mit 20 km/h und Achtungssignal (H) vorbeifahren.",
+    "Langsamfahrstelle (Nebel am Rhein, Glatteis): Die Baustelle ist auf 40 bzw. 60 km/h begrenzt – früh bremsen, sonst Zwangsbremsung.",
+    "Hindernis im Gleis (Sturmtief): auf Sicht fahren – ein Zusammenstoß mit einem Baum über 5 km/h beendet die Fahrt.",
+    "Weichenstörung (Uelzen): Fahrstraßen über die anderen Gleise legen."
+   ]
+  },
+  {
+   "t": "Höchstpunkte holen",
+   "list": [
+    "1.000 Grundpunkte + bis 100 Haltgenauigkeit + Komfortbonus + bis 150 für Fahrgäste – für 3 Sterne brauchst du 1.100 Punkte.",
+    "Pünktlich bleiben: Jede Minute Verspätung über 1 Minute je Halt kostet 25 Punkte.",
+    "Komfort über 80 % bringt Plus: sanft anfahren, früh und gleichmäßig bremsen, Kurven nicht zu schnell.",
+    "Schaffner-Modus: Erwischte Schwarzfahrer bringen 25 Punkte, falsche Verdächtigungen kosten 20 – lies die Fahrkarte genau (Datum, Klasse, Zielbahnhof)."
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Der Zug fährt nicht los.",
+   "a": "Prüfe Richtungswender (R), Bremse (Q lösen), Stromabnehmer (P) und Hauptschalter bzw. Motor (U). Nach einer Zwangsbremsung musst du erst stehen bleiben, dann die Bremse lösen."
+  },
+  {
+   "q": "Mein Spielstand ist weg.",
+   "a": "RicoRail speichert im Browser, in drei Profilen. Im privaten Fenster gibt es keinen dauerhaften Speicher. Sichere deinen Stand mit „Spielstand exportieren (JSON)“."
+  },
+  {
+   "q": "Die Grafik ruckelt.",
+   "a": "Stelle in den Einstellungen die Qualität auf Niedrig (schwache Handys) oder begrenze die Bildrate. Änderungen gelten ab der nächsten Fahrt. RicoRail braucht WebGL."
+  },
+  {
+   "q": "Warum ist eine Aufgabe gesperrt (🔒)?",
+   "a": "Sie verlangt einen höheren Rang. Sammle Erfahrung in der Karriere und bestehe die nötige Prüfung."
+  },
+  {
+   "q": "Gibt es einen Online-Modus?",
+   "a": "Noch nicht – der Online-Modus ist in Entwicklung."
+  },
+  {
+   "q": "Ist das ein echtes Lokführer-Training?",
+   "a": "Nein. Ränge, Prüfungen und Fahrerlaubnisse sind Spielelemente und keine echte Qualifikation. PZB, Sifa und Stellwerk sind vereinfachte Spielmodelle."
+  }
+ ]
+}
