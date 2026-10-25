@@ -14,8 +14,9 @@ class Builder {
   mover({ g, w = 2.6, ax = 3, ay = 0, period = 4.2, phase = 0, dy = 0 }) { this.sec(ay ? 'Fahrstuhl' : 'Schiebebrücke'); this.y += dy; const bx = this.x + g + ax; this.o.push({ k: 'move', x: bx, y: this.y, w, ax, ay, period, phase }); this.x = bx + ax + w; return this; }
   sinkers(count, g, w, delay = 0.55, dy = 0) { this.sec('Bruchplatten'); for (let i = 0; i < count; i++) { this.y += i === 0 ? dy : 0; this.o.push({ k: 'sink', x: this.x + g, y: this.y, w, delay }); this.x += g + w; } return this; }
   swings(span, n, { len = 3.6, amp = 0.95, period = 2.6, spread = 0 } = {}) { this.sec('Sandsäcke'); const x0 = this.x; this.plat(x0, span, this.y); for (let i = 0; i < n; i++) this.o.push({ k: 'swing', px: x0 + (span / (n + 1)) * (i + 1), py: this.y + 5.2, len, amp, period, phase: i * (spread || 1.3), r: 0.42, h: 1.1 }); this.x += span; return this; }
-  /** Drehwalzen: liegende, rotierende Walzen – die Oberfläche schiebt den Läufer zurück (v < 0) */
-  rolls(n, { g = 1.3, r = 0.8, v = -1.4 } = {}) { this.sec('Drehwalzen'); for (let i = 0; i < n; i++) { const cx = this.x + g + r; this.o.push({ k: 'roll', x: cx - r * 0.92, w: r * 1.84, y: this.y, r, v: v * (i % 2 ? 1.15 : 1) }); this.x = cx + r; } return this; }
+  /** Drehwalzen: liegende, rotierende Walzen dicht an dicht (Spalt g schmaler als der Läufer) – die Oberfläche schiebt zurück (v < 0).
+      Man kommt immer laufend rüber; Springen ist schneller, aber riskant. g0 = Lücke vor der ersten Walze */
+  rolls(n, { g0 = 1.3, g = 0.35, r = 0.8, v = -1.4 } = {}) { this.sec('Drehwalzen'); for (let i = 0; i < n; i++) { const w = r * 1.84, x0 = this.x + (i ? g : g0); this.o.push({ k: 'roll', x: x0, w, y: this.y, r, v: v * (i % 2 ? 1.15 : 1) }); this.x = x0 + w; } return this; }
   /** Seilschwung über eine Lücke: Seil schwingt von selbst, in der Luft greift der Läufer automatisch, Sprung = loslassen */
   rope(gap, { len = 3.9, top = 6.0, amp = 0.6, period = 2.6, phase = 0 } = {}) { this.sec('Seilschwung'); this.o.push({ k: 'rope', px: this.x + gap / 2, py: this.y + top, len, amp, period, phase }); this.x += gap; return this; }
   /** Trampolin: federt nach dem Sprung hoch an Hangelstangen, die man sonst nicht erreicht */
@@ -27,13 +28,13 @@ class Builder {
 export const COURSES = [
   // Vorrunde wie im TV: 8 Hindernisse, am Ende die Steilwand (4,25 m)
   new Builder('Vorrunde').start(6).stones([{ g: 2.0, w: 2.0 }, { g: 2.2, w: 1.8, dy: 0.3 }, { g: 2.2, w: 1.8, dy: 0.3 }, { g: 2.4, w: 1.8, dy: -0.3 }, { g: 2.2, w: 2.2, dy: -0.3 }]).rest(3, 0, 2.0)
-    .rolls(3, { g: 1.3, r: 0.8, v: -1.4 }).rest(3, 0, 1.6).swings(11, 2, { period: 3.0 }).sinkers(4, 2.0, 2.0, 0.7).rest(3, 0, 2.0)
+    .rolls(3, { g0: 1.3, r: 0.8, v: -1.6 }).rest(3, 0, 1.6).swings(11, 2, { period: 3.0 }).sinkers(4, 2.0, 2.0, 0.7).rest(3, 0, 2.0)
     .rope(5.0).rest(3.2, 0, 0).mover({ g: 2.4, w: 2.8, ax: 2.2, period: 4.4 }).rest(2.6, 0, 2.0).bars(8.5, 2.3, 3, 0).wall(1.5, 4.25).build(),
   new Builder('Halbfinale').start(5).stones([{ g: 2.6, w: 1.8 }, { g: 2.8, w: 1.6, dy: 0.4 }, { g: 2.8, w: 1.6, dy: -0.4 }, { g: 3.0, w: 1.8 }, { g: 2.8, w: 1.6, dy: 0.3 }, { g: 3.0, w: 1.8 }]).rest(2.6, 0, 2.0)
-    .rolls(4, { g: 1.4, r: 0.75, v: -1.7 }).rest(2.6, 0, 1.6).mover({ g: 2.2, w: 2.2, ax: 0, ay: 0.9, period: 3.6, dy: 0.2 }).rest(3, 0, 2.0).swings(14, 3, { period: 2.8 })
+    .rolls(4, { g0: 1.4, r: 0.75, v: -2.2 }).rest(2.6, 0, 1.6).mover({ g: 2.2, w: 2.2, ax: 0, ay: 0.9, period: 3.6, dy: 0.2 }).rest(3, 0, 2.0).swings(14, 3, { period: 2.8 })
     .rope(5.2, { amp: 0.62, period: 2.5 }).rest(2.8, 0, 0).sinkers(5, 2.2, 1.7, 0.55).rest(2.6, 0, 2.0).trampBars(7.5).mover({ g: 2.6, w: 2.2, ax: 3.0, period: 4.0 }).rest(2.4, 0, 2.0).wall(1.4, 4.5).build(),
   new Builder('Finale').start(5).stones([{ g: 2.8, w: 1.5 }, { g: 2.6, w: 1.4, dy: 0.5 }, { g: 3.2, w: 1.4, dy: -0.5 }, { g: 3.0, w: 1.4 }, { g: 2.6, w: 1.4, dy: 0.4 }, { g: 3.0, w: 1.4 }, { g: 3.0, w: 1.5, dy: -0.3 }]).rest(2.4, 0, 2.0)
-    .rolls(5, { g: 1.5, r: 0.7, v: -2.0 }).rest(2.4, 0, 1.6).mover({ g: 2.4, w: 2.0, ax: 3.4, period: 3.4 }).sinkers(6, 2.4, 1.5, 0.45).rest(2.6, 0, 2.2).swings(16, 3, { period: 2.6, amp: 1.0, spread: 1.6 })
+    .rolls(5, { g0: 1.5, r: 0.7, v: -2.8 }).rest(2.4, 0, 1.6).mover({ g: 2.4, w: 2.0, ax: 3.4, period: 3.4 }).sinkers(6, 2.4, 1.5, 0.45).rest(2.6, 0, 2.2).swings(16, 3, { period: 2.6, amp: 1.0, spread: 1.6 })
     .rope(5.4, { amp: 0.64, period: 2.4 }).rest(2.4, 0, 0).mover({ g: 2.4, w: 2.0, ax: 0, ay: 1.2, period: 3.0, dy: 0.3 }).rest(2.4, 0, 2.2).trampBars(10.5).sinkers(4, 2.4, 1.5, 0.45).rest(2.4, 0, 2.2)
     .bars(12.5, 2.5, 2.6, 0.4).wall(1.2, 5.0).build()
 ];

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f63f2b6860ea",
- "generated": "2026-10-25T02:44:35+01:00",
- "commit": "b268deee3ce009961b906c4a0a649f341dc18c9c",
+ "version": "247d5fb85769",
+ "generated": "2026-10-25T03:04:22+01:00",
+ "commit": "f453802e4ca3fb0e144c14befb4ac410ec937280",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -738,8 +738,8 @@
   },
   {
    "p": "anmacha-funkparcours/bot.js",
-   "s": 3332,
-   "h": "53768af2999a1ce39beb35d4937c3006ca5953c4161d4689b87199eafc6b8b0e"
+   "s": 3586,
+   "h": "20f0e307f523cecfcd37777169e2e64201fdf3cebe0a2bf5f82dde8a44c7b17e"
   },
   {
    "p": "anmacha-funkparcours/card.png",
@@ -763,13 +763,13 @@
   },
   {
    "p": "anmacha-funkparcours/engine.js",
-   "s": 17513,
-   "h": "153701e66059261d6f5c44cef47d266fb70272a18e243fbf9fdd72aa54d6f194"
+   "s": 17675,
+   "h": "dfeed9d15c6bb00c3576b574211b4747897971365d31735d99da6374a603608d"
   },
   {
    "p": "anmacha-funkparcours/index.html",
-   "s": 11563,
-   "h": "9e0e7df6022b6bc3800352288c55b51052d56743989a4726be8173f8982a7023"
+   "s": 11593,
+   "h": "3d70cd304a7cfacaaa9f32801def0dec4211c8af68d8dbdd61a17b755993a470"
   },
   {
    "p": "anmacha-funkparcours/logo.png",
@@ -858,8 +858,8 @@
   },
   {
    "p": "anmacha-funkparcours/main.js",
-   "s": 26717,
-   "h": "06ae8ce283a2d72881a3a3947f59278e551eac1c57b928a44224c22637645f6f"
+   "s": 26742,
+   "h": "ce0684103e289308ef64435023d223d2399379c680f4c90289e5017adedc8289"
   },
   {
    "p": "anmacha-funkparcours/manifest.webmanifest",
@@ -868,8 +868,8 @@
   },
   {
    "p": "anmacha-funkparcours/menu.js",
-   "s": 7732,
-   "h": "a258f0d01ef491fe0c019ab61ad0b6938a786e026b4f884580185d0816e5cf9a"
+   "s": 7765,
+   "h": "0e4f9971dd3be78daa7b1be94cb93b5ae2cf0036368439067d62ec95ff9dd1fa"
   },
   {
    "p": "anmacha-funkparcours/pair.js",
@@ -8654,7 +8654,7 @@
   {
    "p": "sync/catalog.json",
    "s": 217662,
-   "h": "f631697da6ec64741ff2b18425243a8b4a7056b27b2e372f90b43ffa33b0abf3"
+   "h": "6806b28b25c9ce86d2d1da12db577bd089b8c5b48204dfdca272e3329df012be"
   },
   {
    "p": "taschi/card.svg",
