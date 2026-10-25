@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "705fd6769804",
- "generated": "2026-10-25T02:27:44+00:00",
- "commit": "8bc6d34c8dd7bd8049845489caa7b4966062b155",
+ "version": "3fc4b871d216",
+ "generated": "2026-10-25T02:28:08+00:00",
+ "commit": "a26430a3de448a9bf2d3a87cb2a15dab6792ec7f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6532,6 +6532,11 @@
    "h": "c2039be164a86e33d5bbb7eda0745a805f8a7bd6f4e7e5f0b929029c2160b016"
   },
   {
+   "p": "guides/anmacha-flipper.json",
+   "s": 12385,
+   "h": "be6201f7df5a22f7e7f4e3504a509bb524d03741fe57caf2ff55e311e9456713"
+  },
+  {
    "p": "guides/anmacha-frequenzrad.json",
    "s": 11438,
    "h": "6fcd6625d57150e01472ea25ba869eddb7c54cc53db4e27a917634f8de606cdd"
@@ -6728,8 +6733,8 @@
   },
   {
    "p": "guides/pufi-farbwind.json",
-   "s": 13666,
-   "h": "3195b32d2a430aed9b282a318c65023d26933d9a989c5ebd78e366f8fa7a4785"
+   "s": 13725,
+   "h": "92698d911a1b6f7033290beb538ffe8f0bfbf7bbfaad458d404504bac5724b86"
   },
   {
    "p": "guides/radio-maze.json",
@@ -6763,8 +6768,13 @@
   },
   {
    "p": "guides/winzflitzer.json",
-   "s": 17184,
-   "h": "b7f6ae65b9e15236661874120060a32c46bc3fe9b73cdf749bb1f93246a2b284"
+   "s": 17364,
+   "h": "b0ac226b3c06090349f92ddf5f1a4086500db89af42e17253ee88f90a89d0ea6"
+  },
+  {
+   "p": "guides/wobbel.json",
+   "s": 30521,
+   "h": "b8b1ccf73147c98da27616c7ae36fbb348bae96adb48c514beba8f2d99a31238"
   },
   {
    "p": "guides/wolkenhopser.json",

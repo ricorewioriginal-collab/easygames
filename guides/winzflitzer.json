@@ -133,6 +133,7 @@
         "Turbo-Streifen vor Rampen nutzen: Über die Lücken auf dem Schreibtisch (Bücherberg) und im Kinderzimmer (Spielzeugkisten-Chaos) kommst du nur mit vollem Tempo.",
         "Im Duell vorne bleiben: Die Kamera folgt dem Führenden – wer hinten aus dem Bild fällt, verliert das Licht.",
         "Im Duell in Führung lieber sicher fahren: Ein Absturz kostet die Runde sofort.",
+        "Im Rennen startest du immer hinter den Computer-Fahrern und musst dich nach vorn kämpfen. Nutze die ersten Kurven zum Überholen, solange das Feld dicht ist.",
         "Meisterschaft: Platz 2 reicht zum Weiterkommen. Riskiere nichts, wenn du sicher auf Platz 2 liegst.",
         "Bonusrunden sind Zeitfahren über 2 Runden – fahr sauber statt am Limit."
       ]
@@ -221,7 +222,7 @@
     {
       "t": "Zeitfahren und Bestzeiten",
       "list": [
-        "Ab der zweiten Runde fährt der Geist (halb durchsichtig) deine schnellste Runde nach. Fährst du schneller, wird der neue Geist gespeichert.",
+        "Der Geist (halb durchsichtig) fährt deine schnellste gespeicherte Runde auf dieser Strecke mit. Fährst du schneller, wird der neue Geist gespeichert.",
         "Nach dem Ziel meldet das Spiel „🌟 Neue Rundenbestzeit!“ und/oder „🏁 Neue Gesamtbestzeit!“. Runden mit Bestzeit tragen ein ⭐.",
         "Für jede Strecke zählt eine Bestzeit für die Titelstatistik („… Bestzeiten“).",
         "Profi-Tipp: Fahre in der ersten Runde die Ideallinie und setze die Turbo-Streifen genau mittig – im nächsten Durchgang ist der Geist dein Gegner."

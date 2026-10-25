@@ -1,0 +1,332 @@
+{
+  "id": "wobbel",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Wobbel ist ein 3D-Schiebe-Puzzle nach dem Sokoban-Prinzip. Du steuerst Wobbel, einen kleinen rosa Blob, und schiebst Kisten auf die leuchtenden Zielfelder. Ein Level ist geschafft, wenn jedes Zielfeld eine passende Kiste trägt.",
+        "Wobbel kann Kisten nur schieben – nicht ziehen und nie zwei auf einmal. Steht eine Kiste in einer Ecke, bekommst du sie nicht mehr heraus. Dann hilft nur Zug zurück oder Neustart. Es gibt 65 Level in 6 Welten, jedes vom Löser auf Lösbarkeit geprüft."
+      ]
+    },
+    {
+      "t": "Hauptmenü",
+      "list": [
+        "▶ Spielen: startet das erste noch nicht gelöste Level.",
+        "🗺 Levelauswahl: Welten als Reiter, je Level die Nummer und deine Sterne. Gesperrte Level sind ausgegraut; dazu die 🌍 Community-Level.",
+        "📅 Tageslevel: jeden Tag ein anderes der Hauptlevel, mit Muschel-Bonus und Serie.",
+        "🎁 Bonus & Laden: Bonusspiele, Wobbel-Laden und Erfolge.",
+        "🛠 Level-Editor: eigene Level bauen, prüfen, testen und teilen.",
+        "❓ Anleitung und ⚙ Optionen (Soundeffekte, Musik, Steuerkreuz anzeigen, Fortschritt zurücksetzen)."
+      ]
+    },
+    {
+      "t": "Die Spielelemente",
+      "list": [
+        "Kiste und Zielfeld: Jede neutrale Kiste passt auf jedes normale Zielfeld.",
+        "💧 Wasser (ab Welt 2): Wobbel kann nicht schwimmen. Schiebst du eine Kiste hinein, wird sie zur Brücke – sie ist damit verbraucht und zählt für kein Ziel mehr. Jede Kiste füllt nur ein Wasserfeld.",
+        "🎨 Farben (ab Welt 3): Rote, grüne und blaue Kisten gehören auf Zielfelder derselben Farbe. Kleckse färben jede Kiste um, die darauf landet oder darüber rutscht – die letzte Farbe zählt.",
+        "🧊 Eis (ab Welt 4): Kisten rutschen auf Eis weiter, bis sie anstoßen. Auf festem Boden bleiben sie sofort liegen.",
+        "🔑 Schlüssel und Türen (ab Welt 5): Lauf über einen Schlüssel, um ihn einzusammeln. Eine Tür öffnet sich, wenn du mit Schlüssel hineinläufst – jeder Schlüssel öffnet genau eine Tür. Kisten können nicht über Schlüssel oder durch geschlossene Türen geschoben werden.",
+        "Pfeilfelder (Welt 6): Wobbel und Kisten dürfen sie nur in Pfeilrichtung betreten und verlassen.",
+        "Brüchiger Boden (Welt 6): bricht weg, sobald Wobbel ihn verlässt. Danach ist das Feld für alle unpassierbar."
+      ]
+    },
+    {
+      "t": "Spielbildschirm",
+      "list": [
+        "Oben: ☰ Menü, Welt und Level, 🔊 Ton, Stoppuhr ⏱, Züge 👣, Schübe 📦, erledigte Ziele 🎯 und gehaltene Schlüssel 🔑.",
+        "Unten: ↶ Zug zurück, ⟲ Neustart, 💡 Tipp, ⏭ Überspringen, ⟳ Kamera drehen und auf Wunsch das Steuerkreuz ▲ ◀ ▶ ▼.",
+        "Nach dem Lösen zeigt das Fenster Sterne, Züge, Schübe, Zeit und die Bestmarke, dazu „Nächstes Level ▶“, Nochmal, Menü und „📤 Teilen“."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "PC: Pfeiltasten oder W, A, S, D bewegen. Klick auf ein Feld lässt Wobbel dorthin laufen. Z, U oder Backspace = Zug zurück, R = Neustart, Q/E = Kamera drehen, Esc oder M = Menü.",
+        "Touch: auf dem Spielfeld wischen oder ziehen (jede Teilstrecke ist ein Schritt), ein Feld antippen läuft dorthin. Das Steuerkreuz kannst du in den Optionen einblenden; gedrückt halten wiederholt den Schritt.",
+        "Controller: Steuerkreuz oder linker Stick bewegen, X = Zug zurück, Y = Neustart, LB/RB = Kamera drehen, Start oder B = Menü.",
+        "Die Richtungen beziehen sich immer auf den Bildschirm: „hoch“ geht in die Richtung, die auf dem Bildschirm am ehesten nach oben zeigt – auch nach dem Drehen der Kamera."
+      ]
+    },
+    {
+      "t": "Sterne und Wertung",
+      "p": [
+        "Jedes Level hat eine Bestmarke: die kürzeste mögliche Lösung in Zügen (jeder Schritt zählt, auch ohne Kiste)."
+      ],
+      "list": [
+        "3 Sterne: höchstens Bestmarke × 1,2 (aufgerundet) + 2 Züge.",
+        "2 Sterne: höchstens Bestmarke × 1,8 (aufgerundet) + 6 Züge.",
+        "1 Stern: jede andere Lösung.",
+        "Gespeichert werden je Level die besten Sterne, die wenigsten Züge und die Bestzeit („🏆 Neuer persönlicher Rekord!“, „⏱ Neue Bestzeit!“).",
+        "Das nächste Level wird freigeschaltet, sobald das vorige gelöst (oder übersprungen) ist."
+      ]
+    },
+    {
+      "t": "Muscheln, Tipp und Überspringen",
+      "list": [
+        "Gelöstes Hauptlevel: beim ersten Mal 5 🐚 (nach Überspringen 3), dazu 3 🐚 für jeden neu erreichten Stern.",
+        "Tageslevel: 10 🐚 plus 2 je Serientag, höchstens 20 🐚.",
+        "Erfolge geben einmalig Muscheln, Bonusspiele höchstens 15 🐚 pro Runde.",
+        "💡 Tipp (5 🐚): Der Löser sucht von deiner aktuellen Stellung die kürzeste Lösung und zeigt die nächsten Züge als grüne Pfeile.",
+        "⏭ Überspringen (25 🐚): öffnet das nächste Level, ohne Sterne."
+      ]
+    },
+    {
+      "t": "Bonusspiele",
+      "list": [
+        "🫧 Perlenfang: Perlen fangen, Seeigeln ausweichen (Maus, Finger oder ← →). 1 🐚 je 2 Perlen.",
+        "🎵 Melodie-Memory: Farbfolge merken und nachtippen, jede Runde länger. 2 🐚 je Runde.",
+        "🔨 Wobbel-Huschen: auftauchende Wobbel antippen, goldene zählen 3, Kisten kosten Punkte. 1 🐚 je 2 Punkte.",
+        "📦 Kisten-Sortierer: das Fach in der Farbe der fallenden Kiste tippen (oder Tasten 1 2 3 bzw. ← ↓ →), es wird immer schneller. 1 🐚 je 2 Kisten.",
+        "Jede Runde bringt höchstens 15 🐚."
+      ]
+    },
+    {
+      "t": "Wobbel-Laden",
+      "list": [
+        "Farben: Bonbon-Pink (gratis), Himmelblau 15, Minze 15, Sonnengelb 20, Traube 20, Türkis 20, Erdbeere 20, Feuerorange 25, Schneeweiß 25, Schatten 30, Regenbogen 60.",
+        "Kopfschmuck: Blümchen 10, Partyhut 15, Schleife 20, Sonnenbrille 20, Katzenohren 25, Zylinder 30, Piratenhut 35, Propeller 40, Krone 60.",
+        "Spuren: Blasen 20, Sternchen 25, Herzchen 25.",
+        "Kisten-Looks: Eiskiste 25, Beerenkiste 25, Steinkiste 30, Goldkiste 50.",
+        "Alle Preise in Muscheln; Gekauftes ist im 3D-Spiel sichtbar."
+      ]
+    },
+    {
+      "t": "Level-Editor und Community",
+      "list": [
+        "Raster bis 16 × 14 Felder: Werkzeug wählen und malen, Rechtsklick radiert, Strg+Z / Strg+Y, Größe ändern, „Rand mauern“, Welt-Thema wählen.",
+        "🔍 Prüfen lässt den Löser die kürzeste Lösung suchen, „▶ Lösung ansehen“ spielt sie vor, „▶ Testen“ öffnet das Level im Spiel.",
+        "Meine Level (📁) liegen im Browser. Teilen per Code WOBBEL1-… oder Link; „📥 Code einfügen“ lädt einen Code.",
+        "🌍 Community-Level in der Levelauswahl: spielen oder im Editor öffnen. Einreichen über „Als Community-Level einreichen“."
+      ]
+    },
+    {
+      "t": "Speichern",
+      "p": [
+        "Fortschritt, Muscheln, Gekauftes, Erfolge, Tagesserie, eigene Level und Einstellungen liegen im Browser. „Fortschritt zurücksetzen“ in den Optionen löscht auch Muscheln und Erfolge. Nach dem ersten Besuch läuft Wobbel auch offline und lässt sich als App installieren."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Schau dir das Level erst an, bevor du losläufst. Drehe die Kamera mit ⟳ oder Q/E, wenn etwas verdeckt ist.",
+        "Ecken sind Sackgassen: Eine Kiste in einer Ecke ohne Ziel bekommst du nie wieder heraus.",
+        "Eine Kiste an einer Wand kannst du nur noch an dieser Wand entlang schieben.",
+        "↶ nimmt beliebig viele Züge zurück – trau dich, Dinge auszuprobieren.",
+        "Ein Tipp auf ein Feld lässt Wobbel den kürzesten Weg laufen. Das spart Wischen, zählt aber jeden Schritt als Zug."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Plane die Reihenfolge: Das Ziel, das am tiefsten in einer Sackgasse liegt, zuerst füllen.",
+        "Wasser: Zähle Wasserfelder und Kisten. Jede Brücke kostet eine Kiste, die dann für kein Ziel mehr da ist.",
+        "Farben: Merke dir, über welche Kleckse eine Kiste noch rutscht – die letzte Farbe zählt.",
+        "Eis: Eine Kiste auf Eis hält nur an einer Wand, einer anderen Kiste oder auf festem Boden. Stelle dir vorher einen Stopper hin.",
+        "Schlüssel: Kisten können nicht über Schlüssel geschoben werden. Sammle Schlüssel früh ein, wenn sie im Weg liegen.",
+        "Ruinen: Brüchigen Boden betrittst du nur einmal – lauf ihn zuletzt."
+      ]
+    },
+    {
+      "t": "Profi-Tricks für 3 Sterne",
+      "list": [
+        "Für 3 Sterne darfst du nur etwa 20 % plus 2 Züge über der Bestmarke liegen. Im Lösungsbuch steht die Grenze für jedes Level.",
+        "Unnötige Wege kosten mehr als Schübe: Lauf nicht um Kisten herum, wenn es einen kürzeren Weg gibt.",
+        "Der 💡 Tipp rechnet ab der aktuellen Stellung. Wenn du festsitzt, lieber erst ein paar Züge zurück, dann Tipp.",
+        "Erfolg „Blitzschnell“: ein Level ab 10 Zügen in unter 15 Sekunden – mit einer bekannten Lösung aus dem Lösungsbuch und Pfeiltasten gut machbar.",
+        "Erfolg „Ohne Wenn und Aber“: 5 Level ab 10 Zügen ohne Rückgängig lösen – nimm dafür kurze Level wie 2-1 oder 3-3."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Eine Kiste ins Wasser schieben, die eigentlich für ein Ziel gebraucht wird.",
+        "In Welt 6 über brüchigen Boden laufen, ohne den Rückweg zu bedenken.",
+        "Eine Kiste auf Eis anschieben, ohne dass am Ende etwas zum Anhalten steht.",
+        "Nach dem Drehen der Kamera vergessen, dass die Richtungen sich mitdrehen."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "So liest du die Lösungen",
+      "p": [
+        "Hier stehen für alle 65 Level die kürzesten Lösungen, die der Löser des Spiels gefunden hat. Jeder Pfeil ist ein Schritt: ↑ hoch, → rechts, ↓ runter, ← links. Die Gruppen zu fünf Pfeilen dienen nur der Lesbarkeit.",
+        "Die Pfeile gelten für die Startansicht der Kamera (nicht gedreht). Gibst du sie genau so mit den Pfeiltasten ein, löst du das Level mit der Bestmarke und bekommst 3 Sterne. Hast du die Kamera gedreht, drehe sie vorher zurück."
+      ]
+    },
+    {
+      "t": "Welt 1: Wiesenhain 🌳 – Lösungen",
+      "p": [
+        "Neu in dieser Welt: klassisches Schieben. Kürzeste Lösungen des Lösers in Zügen."
+      ],
+      "list": [
+        "1-1 „Erster Schubs“ – Bestmarke 3 Züge (3 ★ bis 6, 2 ★ bis 12): →→→",
+        "1-2 „Um die Ecke“ – Bestmarke 4 Züge (3 ★ bis 7, 2 ★ bis 14): ←↓←↑",
+        "1-3 „Zwei Töpfchen“ – Bestmarke 29 Züge (3 ★ bis 37, 2 ★ bis 59): ←←↑←← ←←←↓↑ →→→→↓ ↓←←←↑ ↓→→→↑ ↑←←←",
+        "1-4 „Mooswiese“ – Bestmarke 31 Züge (3 ★ bis 40, 2 ★ bis 62): ↓→↓→→ →→↑↑↑ ←←←←↓ ↓←↓→→ →→↓→↑ →↑↑←↓ ↓",
+        "1-5 „Pilzring“ – Bestmarke 48 Züge (3 ★ bis 60, 2 ★ bis 93): ↓←←←↑ ←←↑↑→ →↓↓←← ↓←←↑↑ →←↓↓→ →↑→→↑ ↑←←↓↓ →→↑→→ ↓↓←↓← ↑↑↑",
+        "1-6 „Fuchsbau“ – Bestmarke 50 Züge (3 ★ bis 62, 2 ★ bis 96): ↓↓←↓← ←↑←←↑ ↑→→↑→ →↓↓↑↑ ←←↓←← ↓↓→→↑ ↓←←↑↑ ↑←←↓← ↓→→←↑ ↑→→↓↓",
+        "1-7 „Hasenpfad“ – Bestmarke 56 Züge (3 ★ bis 70, 2 ★ bis 107): ←↑↑→↓ →→↓↓← ↑→↑←← ←↓→↑→ →↓↓←↑ →↑←→↓ ↓→↓↓← ↑↑←↑↑ ←↓←↑→ ↑←→↓→ →↓←↓→ →",
+        "1-8 „Blumenbeet“ – Bestmarke 66 Züge (3 ★ bis 82, 2 ★ bis 125): →↑→→→ →→↓→↓ ↓↓←←← →→→↑↑ ↑←↑←← ←←←↓← ↓↓→↓↓ →→↑↓← ←↑↑←↑ ↑→↓↓↓ ↑↑↑↑→ →→→↓↓ ←↑→↑← ←",
+        "1-9 „Eichhörnchen“ – Bestmarke 72 Züge (3 ★ bis 89, 2 ★ bis 136): ↑↑↑→→ →→↓↓↓ ↓←↓←← ←←↑←↑ ↑←↑↓→ ↓↓→↓→ →→↑→↑ ↑→↑↑← ←←←↓↓ →↑↓←↓ ←↓←↑→ ↓↓→→→ ↑→↑↑→ ↑↑←←← ←←",
+        "1-10 „Windmühle“ – Bestmarke 92 Züge (3 ★ bis 113, 2 ★ bis 172): →↓↓←← ←↓←↑↑ →↑↑↑← ←←←↓↓ →→→↑→ ↓←↓↓→ →→→↑↑ ←↓→↓← ←←↓←↑ ↑↑→↓← ↓→→→↑ →↓←←← ↑↑↑↑← ←←↓←↓ →→→←← ↑↑→→↓ →↓↓←↓ →↑↑↑← ↓↓",
+        "1-11 „Wiesenhain“ – Bestmarke 103 Züge (3 ★ bis 126, 2 ★ bis 192): ←↓↓→→ →↑→↑→ →→↑↓← ←←←↑↑ →→→↓→ ↓←←←→ →↑↑←← ↓←↓→↓ ↓←←←← ↑↑→↓← ↓→→→↓ →↑↑↑← ↓→↓←← ←↑←↓→ →→↑↑↑ ↑→→→↓ ↓←←→→ ↑↑←←↓ ←↓↓→↓ ←←→↑↑ ↑→↓"
+      ]
+    },
+    {
+      "t": "Welt 2: Sandstrand 🏖️ – Lösungen",
+      "p": [
+        "Neu in dieser Welt: Wasser und Brücken. Kürzeste Lösungen des Lösers in Zügen."
+      ],
+      "list": [
+        "2-1 „Erste Welle“ – Bestmarke 13 Züge (3 ★ bis 18, 2 ★ bis 30): ↑→→↓↓ ←↑←↑→ →→→",
+        "2-2 „Kleiner Teich“ – Bestmarke 24 Züge (3 ★ bis 31, 2 ★ bis 50): →↓↓↓↓ ←←↑←↑ →→→↓↓ ←↑←↑→ →→→→",
+        "2-3 „Muschelbucht“ – Bestmarke 27 Züge (3 ★ bis 35, 2 ★ bis 55): →↑↑↑← ←↓→→↓ ↓←↑→↑ ↑←←↓→ →→→→↓ →↑",
+        "2-4 „Sandburg“ – Bestmarke 38 Züge (3 ★ bis 48, 2 ★ bis 75): →↑→↓← ↓→→→→ ←↑↑←↓ ←↓→→→ →←←↓↓ ←←←↑← ↑→→→→ →→→",
+        "2-5 „Zwei Gräben“ – Bestmarke 51 Züge (3 ★ bis 64, 2 ★ bis 98): →↑→↑↑ →→↑←↑ ←↓←←← ↓→→→→ →→←←← ←←←↓↓ →→←↑← ↑→→→↓ ↓→↓←↑ ↑↑→→→ →",
+        "2-6 „Drei Becken“ – Bestmarke 56 Züge (3 ★ bis 70, 2 ★ bis 107): ↑→→→→ ↓↓←←← ↑←↑→→ →→→→↓ →↑↓←↓ ←←←↑↓ ←←↑↑→ →→→→↓ →↑↑↑→ ↑↑←↓↓ ↓↓→↓← ←",
+        "2-7 „Lagune“ – Bestmarke 60 Züge (3 ★ bis 74, 2 ★ bis 114): →↓→↑↓ →→↑←↑ ↑←←←↓ ↓→→↑→ ↑←↓↓↓ →↑↑←↑ →←←→↓ ↓←←↑↑ ↑↑→→↓ ↑→↓↓← ↓↓→↑← ↑←→→→",
+        "2-8 „Flussmündung“ – Bestmarke 62 Züge (3 ★ bis 77, 2 ★ bis 118): ↓→→↑↓ ←←↑→↑ →→←←↓ ↓→↑←↑ →→→→→ →↓→↓↓ ←↑←←→ ↑↑→↓→ ↓←←←← →→→↓↓ ←←↑→↓ →↑←↑← ←←",
+        "2-9 „Korallenriff“ – Bestmarke 71 Züge (3 ★ bis 88, 2 ★ bis 134): →→↓↓→ →↑↓←← ↑↑→→↓ →↑↑↑→ →↑↑←↑ ←↓↓↓↓ ↓↓↑↑↑ →→↑←↑ ←↓↓↓↓ →↓↓←↑ ↓←←→↑ ↑→↑↑↑ ↑↑←←← ←↓←↓→ →",
+        "2-10 „Piratenbucht“ – Bestmarke 78 Züge (3 ★ bis 96, 2 ★ bis 147): →↓→→↑ ←↓←↑↓ ←←←←↓ ↓→↑←↑ →→→↓↓ ↓→→↓→ ↑↑↑←↑ ↑→↓←↓ →→→→↓ ↓←↑→↑ ←↑↑→↓ ←↓←←← ←→→↓↓ ←←←↑↑ →↑↑↑↓ ↓←←",
+        "2-11 „Zwei Inseln“ – Bestmarke 92 Züge (3 ★ bis 113, 2 ★ bis 172): ↓↓←←← ↓↓→→→ ↑↑←↑↑ →↓←↓→ →→→↑↑ ←↓→↓← ←←←←→ →→→→↓ ↓←↑→↑ ←←←↓↓ ←←←↑↑ →↑←→→ →↓←←→ →↓↓←↓ ↓→↑↑↑ ↓←←←↑ ↑→↑←← →→→↓→ →→"
+      ]
+    },
+    {
+      "t": "Welt 3: Farbfabrik 🎨 – Lösungen",
+      "p": [
+        "Neu in dieser Welt: Farben und Kleckse. Kürzeste Lösungen des Lösers in Zügen."
+      ],
+      "list": [
+        "3-1 „Rote Erdbeere“ – Bestmarke 4 Züge (3 ★ bis 7, 2 ★ bis 14): →→→→",
+        "3-2 „Zwei Pinsel“ – Bestmarke 7 Züge (3 ★ bis 11, 2 ★ bis 19): →↑→→↓ →→",
+        "3-3 „Bunte Bande“ – Bestmarke 18 Züge (3 ★ bis 24, 2 ★ bis 39): →→→↑→ ↓←↓→↓ ←←↑←↑ →→→",
+        "3-4 „Klecks!“ – Bestmarke 10 Züge (3 ★ bis 14, 2 ★ bis 24): →→→↑→ ↓↓→↓←",
+        "3-5 „Zwei Töpfe“ – Bestmarke 20 Züge (3 ★ bis 26, 2 ★ bis 42): →→←↓← ↓→→→→ →←↑←↑ ←↑→→→",
+        "3-6 „Falsche Farbe“ – Bestmarke 25 Züge (3 ★ bis 32, 2 ★ bis 51): ↑→→→↑ →↓↓←← ↑←↓↓← ↓→→→→ ←↑→→→",
+        "3-7 „Farbmischer“ – Bestmarke 21 Züge (3 ★ bis 28, 2 ★ bis 44): ↑→→→→ →→↓←← ←←←←↓ →→→→→ →",
+        "3-8 „Fließband“ – Bestmarke 26 Züge (3 ★ bis 34, 2 ★ bis 53): ↓↓→→↑ ↑↓↓←← ↑→→↓→ →↑↑↓← ←←↓←↑ ↑",
+        "3-9 „Dreierlei“ – Bestmarke 29 Züge (3 ★ bis 37, 2 ★ bis 59): ↓→→→→ →→↑←← ↓←←↑↑ ↓→↓→↑ ↑↓←←← ↓←↑↑",
+        "3-10 „Farbturm“ – Bestmarke 41 Züge (3 ★ bis 52, 2 ★ bis 80): ←↓←↓← ↑→→↑↑ ←↑←←↓ ←↓↓→↓ →→↑→↑ ↑←←→→ ↓↓←↓← ←↑←↑↑ →",
+        "3-11 „Pinselfabrik“ – Bestmarke 41 Züge (3 ★ bis 52, 2 ★ bis 80): ↓↓↓←← ←←↑↑↓ ↓→→↑← ←↓←←↑ →→→↓→ ↑↑↓↓→ →↑←←← ←←↓←↑ ↑"
+      ]
+    },
+    {
+      "t": "Welt 4: Eishöhle ❄️ – Lösungen",
+      "p": [
+        "Neu in dieser Welt: Eis. Kürzeste Lösungen des Lösers in Zügen."
+      ],
+      "list": [
+        "4-1 „Erstes Eis“ – Bestmarke 3 Züge (3 ★ bis 6, 2 ★ bis 12): ←↑→",
+        "4-2 „Zwei Bahnen“ – Bestmarke 6 Züge (3 ★ bis 10, 2 ★ bis 17): ↓↑→→→ ↓",
+        "4-3 „Um die Ecke“ – Bestmarke 9 Züge (3 ★ bis 13, 2 ★ bis 23): →↑→→→ →→→↓",
+        "4-4 „Schneetor“ – Bestmarke 13 Züge (3 ★ bis 18, 2 ★ bis 30): →↓←↓→ →→→→↓ →↑↑",
+        "4-5 „Schneewehe“ – Bestmarke 33 Züge (3 ★ bis 42, 2 ★ bis 66): →→→→→ ↓→→↑↑ ←↓→↓← ↓←↓←← ←←←↑↑ ←↑→→→ →→→",
+        "4-6 „Eisbrücke“ – Bestmarke 31 Züge (3 ★ bis 40, 2 ★ bis 62): →←↓→↑ →→↓↓← ↑↑→↑← ↑←←↓→ ↓↓←←↑ →→→→→ →",
+        "4-7 „Frostpfad“ – Bestmarke 40 Züge (3 ★ bis 50, 2 ★ bis 78): →→↓↓← ↑↓↓←↑ ↑↑→→→ →→↓→→ ↑↑←↓← ←←↑↑← ←←↓←↓ →→→→→",
+        "4-8 „Gletscherspalt“ – Bestmarke 58 Züge (3 ★ bis 72, 2 ★ bis 111): ←↓→→↑ →→→→↓ ↓↓←←← ↑↑←←← ←↓↓→↓ →↑↑↑← ↑→↓→↑ →↓↓↓← ↓←↑↑↑ ←↑→↑→ ↓↓→↑← ↑→→",
+        "4-9 „Eiszapfenhöhle“ – Bestmarke 53 Züge (3 ★ bis 66, 2 ★ bis 102): ↑←←←← ↓→↓↓↓ →↑↑↑← ↑→→↑→ →→↓→↓ ↓←←←← ←↓←↑↑ ←↓↑↑→ →→↓→↑ →←↓↓→ →↑↑",
+        "4-10 „Kristallgrotte“ – Bestmarke 80 Züge (3 ★ bis 98, 2 ★ bis 150): ←←←↑↑ ↑→↑→→ ↓←←↓← ↓↓→→↑ ↑←↑↑→ →↓←↑← ↓→↓↓↓ ←←↑↑← ↑→↓↓↓ →→↑↑← ↑↑→→↓ →↓←←← ↑←↓↓↑ ↑→↑→↓ →↓←↑← ←↓↑←↓",
+        "4-11 „Eispalast“ – Bestmarke 82 Züge (3 ★ bis 101, 2 ★ bis 154): ↑←↑←← ↓←←↓↑ →→↑→→ ↓←↓←← ↓↓→→↑ ↑←↑↑→ →↓←↑← ↓→↓↓↓ ←←↑↑← ↑→↓↓↓ →→↑↑← ↑←↓↓↑ ↑→↑→→ ↓→↓←← ←↑←↓↑ →↑→↓→ ↓←"
+      ]
+    },
+    {
+      "t": "Welt 5: Zauberschloss 🏰 – Lösungen",
+      "p": [
+        "Neu in dieser Welt: Schlüssel und Türen – und alles zusammen. Kürzeste Lösungen des Lösers in Zügen."
+      ],
+      "list": [
+        "5-1 „Der erste Schlüssel“ – Bestmarke 9 Züge (3 ★ bis 13, 2 ★ bis 23): →→↓↓→ →↑→→",
+        "5-2 „Versteckter Schlüssel“ – Bestmarke 18 Züge (3 ★ bis 24, 2 ★ bis 39): →→→↓→ →↑↓→← ←←←↓↓ →→→",
+        "5-3 „Torwächter“ – Bestmarke 24 Züge (3 ★ bis 31, 2 ★ bis 50): →→→↓↓ →←↑←← ←↓→→→ →→→→← ←↑→→",
+        "5-4 „Eisige Pforte“ – Bestmarke 43 Züge (3 ★ bis 54, 2 ★ bis 84): →→↓↓→ ←↑←←↓ →→→→← ←↓↓↓← ←↑↑←↑ →→→→→ ↑→→→↓ ←↓→←← ↓→→",
+        "5-5 „Brückenschlüssel“ – Bestmarke 45 Züge (3 ★ bis 56, 2 ★ bis 87): →→↓←↓ →↑←←← ↓→→→→ →→→↑↑ →↓→↓↓ ↓↓←←← ←↑→→↓ →→↑↑↑ ↑←←↓→",
+        "5-6 „Zwei Tore“ – Bestmarke 56 Züge (3 ★ bis 70, 2 ★ bis 107): →→↓↓→ →→↑↑↓ ↓→←←← ←↑←←↓ →→→→→ ↑↑←↓→ ↓→→↑↑ →→↓←← ↓←←←← ←↑←←↓ →→→→→ →",
+        "5-7 „Turmtreppe“ – Bestmarke 84 Züge (3 ★ bis 103, 2 ★ bis 158): ↓↓↓↓← ←↑↑↑→ →→→↑→ →→→↓↓ ←←↑↑← ←↓↓↓↓ →→→↑↓ ←←←↑↑ ↑↑→→↓ ↓←↓←↓ →↑↑→↑ ↑←←↓↓ →↓↓←↑ ↑↑↓→→ ↑↑→→↓ ↓←↓↓← ←↑↑→",
+        "5-8 „Farbenzauber“ – Bestmarke 98 Züge (3 ★ bis 120, 2 ★ bis 183): →↑→↑→ →↓↑←← ↓→↑→↓ ↓→→→← ←↓↓←← ↓←↑←← ↓↑→→↓ ↓↓←↓→ →→↑←← →→↓→→ ↑←←↓← ←↑↑↑↑ ←←↓→↑ →↓↓↓← ↓→→→↑ ←↓←↑→ →→→↓← ←←↑←↑ ↑←↑→→ →→→",
+        "5-9 „Zauberbibliothek“ – Bestmarke 139 Züge (3 ★ bis 169, 2 ★ bis 257): ←↓←↓↓ ←←↓←← ←↑←↑↑ →↓←↓↓ →→→↑↑ ↑←←↑← ↓↓↑→→ →↓↓↓← ←↑↑←↑ →↓↓↓→ →↑↑←→ ↓↓←←↑ ↑←↑↑→ ↓↓→→↑ ←↓←←↑ ↑→↓←↓ →↑→→↓ ↓↓←←↑ ↑←↑→→ →→→→→ →↓↑←← ←←←↓← →↓↓←← ↑↑←↑→ ↓↓↓←↑ ↑→↑→→ →→→→↑ →↓↓↓",
+        "5-10 „Zauberturm“ – Bestmarke 220 Züge (3 ★ bis 266, 2 ★ bis 402): ↓→↓→→ ↑→↓→→ ↓↑→↑↑ ←←↓←↓ ←←↓↑← ↑→→↓→ →↑↑→→ ↓↓←←← ←↑→↓→ →→↑↑← ←↓←↓→ →↓→↑← ←↑↑→→ ↓→↓←← ←←↑←← ↓↓↓↓→ →→→→→ ↑↓←←← ↓↓→→↑ ↓←←←← ←←↑↑← ↑→↓→↑ ↑↑←↑→ →→↓→→ →↑↑←← ↓←↓←↑ ←↓↓↓← ↓→←↓↓ →→→→↑ ↑→→←← ←←→→↓ ↓←←←← ↑↑→↑↑ ↑→→→→ ↓→↑←← ↑↑→→↓ →↓←←← ←←↑←↓ ↓↓←↓↓ ↓→→→→ ↑↑←←← ↑←↓↓↑ →→→→↓ ↓←←←←",
+        "5-11 „Das Zauberschloss“ – Bestmarke 217 Züge (3 ★ bis 263, 2 ★ bis 397): ↓↓↓←← ↑↑↑↓↓ ↓→→↑↑ →→↓↑↑ →→→→↓ ↓←↓←↓ →↓→↓↓ ←←←↓← ←←←←→ ↑→→→→ →→→↑↑ ←↑↑↑→ ↑↑←←← ←↓↓↓→ ←↓↓↑↑ ↑↑↑→→ →→↓↓← ↓↓↓→↓ ↓←←←← ↑↑↑↑↑ ↓↓↓↓→ →↓→→↑ ↑←↑↑↑ →↑↑←← ←←↓↓↓ ↓↓↓→→ ↓→→↑↑ ←↑↑←→ ↓↓→↓↓ ←←↑←← ↑↑↑↑↓ →→↑→→ ↑↑←←← ←↓↓↓↓ ↓↓→↓← ←↓←←↑ →→→→↓ ←↑↑↑↑ ↑→→→↓ ↓→↓↓← ←↑←←↓ ↓→↑←← ←↓→→↑ ↑→"
+      ]
+    },
+    {
+      "t": "Welt 6: Alte Ruinen 🏛️ – Lösungen",
+      "p": [
+        "Neu in dieser Welt: Pfeilfelder und brüchiger Boden. Kürzeste Lösungen des Lösers in Zügen."
+      ],
+      "list": [
+        "6-1 „Einbahnstraße“ – Bestmarke 5 Züge (3 ★ bis 8, 2 ★ bis 15): →→→→→",
+        "6-2 „Wendeplatz“ – Bestmarke 24 Züge (3 ★ bis 31, 2 ★ bis 50): →↓↓↓↓ ←←←←← ←→→→→ →→↑↑↑ ↑←←←",
+        "6-3 „Bröckelsteg“ – Bestmarke 26 Züge (3 ★ bis 34, 2 ★ bis 53): ←←↓↑→ →→↓↓← ←←↑←↓ ←↓↓→↑ ↑↑→↑← ←",
+        "6-4 „Brüchige Kammer“ – Bestmarke 27 Züge (3 ★ bis 35, 2 ★ bis 55): →→↓→→ ↓→→↑↑ ↑←←↓→ ↓←←←← ←←↑←↓ ↓→",
+        "6-5 „Sandsteinhalle“ – Bestmarke 41 Züge (3 ★ bis 52, 2 ★ bis 80): ↑↑→↓↓ ↓↓←←← ↑↑←←↑ ↑→↓↓→ ↓←↑←↓ ↑→→→→ ↑↑→→→ →→→↓↓ ←",
+        "6-6 „Tempel“ – Bestmarke 49 Züge (3 ★ bis 61, 2 ★ bis 95): →↑↑←↓ ↓→↓↓← ↑→↑←← ←←←→↓ ↓←←↑← ↑↑→↓↓ ↑→→→→ →→↓↓→ →↑↑↑→ ↑←←←",
+        "6-7 „Wendeltreppe“ – Bestmarke 55 Züge (3 ★ bis 68, 2 ★ bis 105): ←←↓↓→ →→→→↑ ↑↑↑←← ←←←←← ←↓↓→→ →→→→→ ←←←←↓ ↓→→→→ →↑→↑↑ ←↓↓→↓ ←←←←←",
+        "6-8 „Versunkene Brücke“ – Bestmarke 76 Züge (3 ★ bis 94, 2 ★ bis 143): →↑↑←← ←↓↓←← ←←←←→ ↑↑↑←← ↓↓→↓→ ↑↑↓←← ↑↑→→→ →↓→→→ →→→↓↓ ←←←↑↑ ←←←↑↑ →↓←↓→ →→↓↓← →→→→↑ ↑←←←← ←",
+        "6-9 „Eisgruft“ – Bestmarke 75 Züge (3 ★ bis 92, 2 ★ bis 141): ←↓↓→→ ↑↓↓→→ →→→→→ →↑↑←← ←↓↑←← ↑←←←↑ ←←↓→→ →→←←↓ ↓↓→→→ →→↑↑→ →→↓↓← ←←←←→ →↑↑←← ↑↓→→→ ↑↑←←←",
+        "6-10 „Pharaos Palette“ – Bestmarke 89 Züge (3 ★ bis 109, 2 ★ bis 167): →↓↓↓← ←↑→↓→ ↑↑↓↓→ →→→→→ →→↑↑← ↑←↑←← ←↓←←← ↑←←↓→ →→→↑→ →→→↓↓ ←↓↑←← ↑←←←↓ ↓↓→→→ →→↑↑→ ↑↑←←← →→→↓→ ↓→↓↓← ←←←←"
+      ]
+    },
+    {
+      "t": "Alle 25 Erfolge",
+      "list": [
+        "👣 Erste Schritte: 1 Level lösen (5 🐚).",
+        "🔟 Warmgelaufen: 10 Level lösen (10 🐚).",
+        "🏃 Dauerläufer: 30 Level lösen (20 🐚).",
+        "🏆 Wobbel-Meister: alle Level lösen (60 🐚).",
+        "⭐ Sternesammler: 30 Sterne (15 🐚).",
+        "🌟 Sternenhimmel: 100 Sterne (30 🐚).",
+        "💎 Perfektionist: 3 Sterne in 10 Leveln (15 🐚).",
+        "🧠 Ohne Wenn und Aber: 5 Level ab 10 Zügen ohne Rückgängig (10 🐚).",
+        "🌳 🏖️ 🎨 ❄️ 🏰 🏛️ … gemeistert: alle Level einer Welt lösen (je 10 🐚, sechs Erfolge).",
+        "🎮 Spielkind: jedes Bonusspiel einmal spielen (10 🐚).",
+        "🕹 Bonus-Fan: 20 Bonusrunden (15 🐚).",
+        "🛍 Modebewusst: 3 Dinge im Laden kaufen (10 🐚).",
+        "👑 Königlich: 8 Dinge kaufen (20 🐚).",
+        "🛠 Baumeister: ein eigenes Level im Editor speichern (10 🐚).",
+        "🧩 Rätselbauer: ein selbst gebautes Level lösen (10 🐚).",
+        "🔥 Dranbleiber: 3 Tage in Folge das Tageslevel (10 🐚).",
+        "☀️ Wochensieger: 7 Tage in Folge das Tageslevel (25 🐚).",
+        "⚡ Blitzschnell: ein Level ab 10 Zügen in unter 15 Sekunden (15 🐚).",
+        "🌍 Weltenbummler: ein Community-Level lösen (10 🐚)."
+      ]
+    },
+    {
+      "t": "Geheimnisse und Besonderheiten",
+      "list": [
+        "Mit ?unlock=1 hinter der Adresse sind alle Level spielbar, mit ?level=12 startest du direkt Level 12 (gezählt über alle Welten).",
+        "Das Tageslevel ist nie zweimal hintereinander dasselbe Level.",
+        "Übersprungene Level lassen sich später noch lösen und bringen dann 3 🐚 statt 5."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Ich komme nicht weiter – was tun?",
+      "a": "Nimm mit ↶ Züge zurück oder starte mit ⟲ neu. Der 💡 Tipp (5 🐚) zeigt die nächsten Züge, ⏭ (25 🐚) überspringt das Level. Im Lösungsbuch steht jede Lösung."
+    },
+    {
+      "q": "Mein Fortschritt ist weg.",
+      "a": "Alles liegt im Speicher dieses Browsers. Nach dem Löschen der Browserdaten oder auf einem anderen Gerät beginnt alles neu."
+    },
+    {
+      "q": "Die Richtungen stimmen nicht mehr.",
+      "a": "Nach dem Drehen der Kamera passen sich die Richtungen dem Bildschirm an. Dreh die Kamera mit ⟳ oder Q/E zurück, wenn du nach Lösungsbuch spielst."
+    },
+    {
+      "q": "Warum ist ein Level gesperrt?",
+      "a": "Jedes Level öffnet sich erst, wenn das vorige gelöst oder übersprungen ist."
+    },
+    {
+      "q": "Kann ich offline spielen?",
+      "a": "Ja. Nach dem ersten Besuch läuft Wobbel offline und lässt sich als App installieren."
+    },
+    {
+      "q": "Wie teile ich ein eigenes Level?",
+      "a": "Im Editor auf Teilen: Du bekommst einen Code (WOBBEL1-…) oder einen Link. Wer den Link öffnet, spielt das Level sofort."
+    }
+  ]
+}
