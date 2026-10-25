@@ -309,15 +309,16 @@ test('Tagesrangliste: Wert steigt mit jedem Tag, Punkte bleiben ablesbar', () =>
   assert.strictEqual(S.repair({ v: 1, dailyBoard: 'x' }).dailyBoard, 0);
 });
 
-test('Karaoke-Songs: je Genre mindestens 40, gültige und eindeutige Video-IDs', () => {
+test('Karaoke-Songs: Haupt-Genres mindestens 40 (neue ab 15), insgesamt über 350, gültige und eindeutige Video-IDs', () => {
   const seen = new Set();
   for (const g of D.KARAOKE) {
-    assert.ok(g.songs.length >= 40, g.id + ' hat nur ' + g.songs.length);
+    assert.ok(g.songs.length >= (['deutsch', 'retro'].includes(g.id) ? 15 : 40), g.id + ' hat nur ' + g.songs.length);
     for (const [t, v, ch] of g.songs) {
       assert.ok(/ – /.test(t) && /^[\w-]{11}$/.test(v) && ch, g.id + ': ' + t);
       assert.ok(!seen.has(v), 'doppelt: ' + t); seen.add(v);
     }
   }
+  assert.ok(seen.size > 350, 'nur ' + seen.size + ' Songs');
 });
 
 test('Live-Wertung: setLen verteilt die Punkte auf eine neue Länge', () => {

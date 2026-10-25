@@ -313,3 +313,4 @@ details.rew summary { cursor: pointer; padding: 4px 0; }
 .ssScreen:fullscreen[data-lane="below"] .ssLane, .ssScreen.novid:fullscreen .ssLane { height: 28vh; }
 .ssScreen.novid:fullscreen .ssLane { height: 60vh; }
 @media (prefers-reduced-motion: reduce) { .ssPhrase.show { animation: none; opacity: 1; } }
+.banner.assign { display: flex; gap: 12px; align-items: center; text-align: left; font-size: 1em; font-weight: 600; padding: 10px 14px; } .banner.assign .jimg { flex: none; object-fit: cover; border-radius: 10px; }

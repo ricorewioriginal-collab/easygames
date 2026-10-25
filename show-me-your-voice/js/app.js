@@ -318,6 +318,9 @@
     const career = prepMode === 'career', s = save.season, def = career ? D.ROUNDS[s.round] : D.ROUNDS[0];
     const motto = career && def.id === 'motto' ? D.MOTTOS[s.motto] : null;
     const songOf = k => motto ? motto.songs[k] : D.SONGS[k];
+    const asg = career ? assignOf(s) : null;
+    if (asg) { if (!prep.song || prep.song.asg !== asg.t) prep.song = { artist: asg.artist, title: asg.title, style: asg.style, asg: asg.t }; prep.music = 'yt'; prep.style = asg.style; }
+    else if (prep.song && prep.song.asg) { prep.song = null; prep.music = 'radio:ricorewi'; }
     if (prep.music === 'yt' && !prep.song) prep.music = 'radio:ricorewi';
     const opt = (group, k, title, desc) => `<button type="button" class="opt" data-g="${group}" data-v="${k}" aria-pressed="${prep[group] === k}"><b>${title}</b><small>${desc}</small></button>`;
     const real = prep.how === 'sing';
@@ -325,7 +328,7 @@
     let rivalTxt = '';
     if (career && def.battle) { const op = opponent(s); if (op) rivalTxt = `<p>⚔️ Dein Gegner: <b>${esc(op.name)}</b> (${D.STYLES[op.style].name}, stark in ${op.strong})</p>`; }
     if (career && def.id === 'recall') rivalTxt = `<p>👥 Deine Gruppe: <b>${groupOf(s).map(g => esc(g.name)).join(' und ')}</b></p>`;
-    const sg = prep.song, music = [sg ? opt('music', 'yt', '🎵 ' + esc(songTxt(sg)), `Echter Song von YouTube · Stil: ${D.STYLES[sg.style] ? D.STYLES[sg.style].name : 'Pop'} · Tempo wird automatisch erkannt`) : opt('music', 'yt', '🎵 Song suchen', 'Jeden Song spielen: Suche über iTunes, Video von YouTube, Noten im Tempo des Songs')]
+    const sg = prep.song, music = asg ? [opt('music', 'yt', '🎯 ' + esc(asg.t), `Von ${esc(asg.name)} zugeteilt · Stil: ${D.STYLES[asg.style].name} · Original-Video von YouTube`)] : [sg ? opt('music', 'yt', '🎵 ' + esc(songTxt(sg)), `Echter Song von YouTube · Stil: ${D.STYLES[sg.style] ? D.STYLES[sg.style].name : 'Pop'} · Tempo wird automatisch erkannt`) : opt('music', 'yt', '🎵 Song suchen', 'Jeden Song spielen: Suche über iTunes, Video von YouTube, Noten im Tempo des Songs')]
       .concat(D.STATIONS.filter(x => x.style !== 'winter').map(st => opt('music', 'radio:' + st.slug, '📻 ' + st.name, `${st.desc} · Stil: ${D.STYLES[st.style].name}`)));
     void songOf;
     $('#prepBox').innerHTML = `
@@ -333,9 +336,11 @@
       ${motto ? `<div class="banner gold" style="font-size:1.1em">Motto: ${motto.name}</div>` : ''}
       <div class="panel"><p><b>Ablauf:</b> ${partsTxt}</p><p class="muted">${esc(career ? def.rule : 'Keine Wertung für die Staffel – perfekt zum Üben. Weiter mit 2 von 3 Jury-Ja.')}</p>${rivalTxt}</div>
       <h3>1 · Wie willst du auftreten?</h3><div class="opts">${opt('how', 'game', '🎮 Spiel (wie bisher)', 'Noten im Takt treffen – mit Tasten, Touch oder Mikrofon')}${opt('how', 'sing', '🎙️ Echt vorsingen', 'Du singst einen Karaoke-Song ins Mikrofon, die Jury bewertet deine echte Stimme')}</div>
+      ${real && asg ? `<div class="banner gold assign">${asg.img ? `<img class="jimg" src="${asg.img}" alt="" style="width:46px;height:64px">` : ''}<span>🎯 <b>${esc(asg.name)}</b> hat dir einen Song zugeteilt: <b>„${esc(asg.t)}“</b> – die Karaoke-Version liegt bereit.</span></div>` : ''}
       ${real ? `<p class="hint" style="text-align:left">🎙️ Den Song wählst du gleich vor deinem Auftritt: Karaoke mit Lyrics, a cappella oder dein eigener Song. Gewertet werden Intonation, Stabilität, Stimmumfang und Ausdruck. Am besten mit Kopfhörern.</p>
       <h3>2 · Bühnen-Aktion</h3><div class="opts">${Object.keys(D.ACTION).map(k => opt('action', k, D.ACTION[k].name, D.ACTION[k].desc)).join('')}</div>` : `
-      <h3>2 · Deine Musik</h3><div class="opts">${music.join('')}</div>${sg ? '<button class="btn sm violet" type="button" id="bSongFind">🔎 Anderen Song suchen</button>' : ''}
+      ${asg ? `<div class="banner gold assign">${asg.img ? `<img class="jimg" src="${asg.img}" alt="" style="width:46px;height:64px">` : ''}<span>🎯 <b>${esc(asg.name)}</b> hat dir einen Song zugeteilt: <b>„${esc(asg.t)}“</b> – ${prep.how === 'sing' ? 'die Karaoke-Version liegt bereit.' : 'der läuft auf der Bühne.'}</span></div>` : ''}
+      <h3>2 · Deine Musik</h3><div class="opts">${music.join('')}</div>${sg && !asg ? '<button class="btn sm violet" type="button" id="bSongFind">🔎 Anderen Song suchen</button>' : ''}
       <p class="hint" style="text-align:left">${sg && prep.music === 'yt' ? `🎵 <b>Quelle:</b> Video von YouTube (der Kanal steht im Auftritt oben), Songinfos &amp; Cover von Apple iTunes, Songaufbau von LRCLIB. Das Tempo erkennt das Spiel aus der iTunes-Hörprobe, die Taktlage aus dem Liedtext – passt es nicht ganz, schiebst du die Noten auf der Bühne mit ◀ ▶. Rechte bei den Urhebern.` : '📻 <b>Quelle:</b> Live-Programm des gewählten RicoReWi-Senders über laut.fm. Der Sender läuft live, die Noten entstehen aus den Beats des laufenden Songs (lässt der Stream keine Analyse zu, folgen sie dem Takt des Musikstils). Interpret und Titel stehen im Auftritt oben. Alle Rechte an der Musik liegen bei den jeweiligen Urhebern.'} Ohne Internet laufen die Noten zu einem leisen Takt. Der Stil bestimmt, welche Jurorin oder welcher Juror einen Bonus gibt.</p>
       <h3>3 · Dein Ansatz</h3><div class="opts">${Object.keys(D.APPROACH).map(k => opt('approach', k, D.APPROACH[k].name, D.APPROACH[k].desc)).join('')}</div>
       <h3>4 · Bühnen-Aktion</h3><div class="opts">${Object.keys(D.ACTION).map(k => opt('action', k, D.ACTION[k].name, D.ACTION[k].desc)).join('')}</div>
@@ -355,6 +360,18 @@
     if (e.target.closest('#bMic')) { micConsent(() => RENDER.sPrep(prepMode)); return; }
     if (e.target.closest('#bGo')) { backTo.sTalk = 'sPrep'; go('sTalk', prepMode); }
   });
+  // ---------- Jury verteilt Songs (wie bei DSDS): manchmal im Recall und in der Mottoshow ----------
+  const ASSIGN_POOL = { retro: ['retro'], iconic: ['pop', 'rock', 'soul', 'party'], herz: ['ballade', 'soul', 'deutsch'] };
+  function assignOf(s) {
+    const def = s && D.ROUNDS[s.round]; if (!def || (def.id !== 'recall' && def.id !== 'motto')) return null;
+    const R = S.rng(S.hash(s.seed + ':assign:' + s.round)); if (R() > 0.45) return null;   // nicht immer – etwa jedes zweite Mal
+    const panel = S.panelOf(s, s.round), jid = panel[Math.floor(R() * panel.length)], j = jur(jid), motto = def.id === 'motto' ? D.MOTTOS[s.motto] : null;
+    const ids = motto && ASSIGN_POOL[motto.id] ? ASSIGN_POOL[motto.id] : D.KARAOKE.map(g => g.id);
+    let gs = D.KARAOKE.filter(g => ids.includes(g.id)); const fav = Object.keys(D.STYLES).find(k => D.STYLES[k].fav === jid), fg = gs.filter(g => g.style === fav);
+    if (fg.length && R() < 0.6) gs = fg;   // Juroren verteilen gern Songs aus ihrem Lieblingsstil
+    if (!gs.length) return null; const g = gs[Math.floor(R() * gs.length)], i = Math.floor(R() * g.songs.length), [t, vid, ch] = g.songs[i], parts = t.split(' – ');
+    return { by: jid, name: j ? j.name : 'Die Jury', img: j ? j.img : '', g: g.id, i, t, artist: parts.length > 1 ? parts[0] : '', title: parts.length > 1 ? parts.slice(1).join(' – ') : t, vid, ch, style: D.STYLES[g.style] ? g.style : 'pop' };
+  }
   function pickSong() { songSearchOv(x => { prep.song = x; prep.music = 'yt'; prep.style = x.style; RENDER.sPrep(prepMode); const b = $('#prepBox [data-v="yt"]'); if (b) b.focus(); }, prep.song && prep.song.artist ? prep.song.artist : ''); }
   function opponent(s) {
     const prev = (s.lastRank || []).filter(id => s.field.includes(id));
@@ -552,6 +569,7 @@
   async function ytPrepare(cfg) {
     ytStop(); const sg = cfg.yt;
     overlay(`<h3>🎵 „${esc(sg.title)}“ wird vorbereitet …</h3><p class="muted">Video suchen · Tempo erkennen · Songaufbau laden</p>`, { esc: () => {} });
+    if (!sg.preview && sg.artist && !sg.vid) { try { const l = await MD.songs(sg.artist + ' ' + sg.title, 5), n = x => String(x).toLowerCase(), m = l.find(x => n(x.title).includes(n(sg.title).slice(0, 10))) || l[0]; if (m) Object.assign(sg, { preview: m.preview, dur: m.dur, cover: m.cover }); } catch (e) { /* ohne Hörprobe: Tempo des Stils */ } }   // zugeteilter Song: Infos nachladen
     const [vids, tp, lrc] = await Promise.all([sg.vid ? Promise.resolve([{ id: sg.vid, title: sg.title, by: '' }]) : MD.videoFor(sg, 'official').catch(() => []), MD.tempoOf(sg.preview).catch(() => null), sg.artist ? MD.lyrics(sg) : Promise.resolve(null)]);
     if (!vids.length) { closeOv(); toast('📶 Kein Video gefunden – du singst zum Takt.', 3500); return null; }
     const box = $('#stVid'); box.hidden = false;
@@ -973,6 +991,7 @@
     sing.party = null;
     sing.ctx = { mode: career ? 'career' : 'free', sel: Object.assign({}, prep), talk: { symp: talk.symp, votes: career ? talk.votes : 0 },
       title: career ? def.icon + ' ' + def.name : '🎤 Freies Casting', bg: career ? def.bg : 'stage' };
+    const asg = career ? assignOf(s) : null; if (asg) { sing.ctx.asg = asg; sing.g = asg.g; sing.song = asg.i; sing.q = ''; }
     backTo.sSing = 'sPrep'; go('sSing');
   }
   function singPick() {
@@ -1045,7 +1064,8 @@
       .concat(opt('sg', 'frei', !g, '🎤 Ohne Challenge', 'Freie Songwahl, nur die Jury zählt'));
     const ss = (g ? g.songs.map((x, i) => songOpt(`data-ss="${i}"`, sing.song === i, x, 'Karaoke mit Lyrics · ' + esc(x[2]))) : [])
       .concat(opt('ss', 'acap', sing.song === 'acap', '🎙️ A cappella', 'Ohne Musik, nur deine Stimme'), opt('ss', 'own', sing.song === 'own', '🔗 Eigener Song', 'YouTube-Link einfügen oder einfach ohne Video'));
-    const own = sing.song === 'own' || sing.song === 'acap', pt = sing.party, plain = !sing.ctx && !pt;
+    const asg = sing.ctx && sing.ctx.asg; if (asg) { sing.g = asg.g; sing.song = asg.i; }
+    const own = !asg && (sing.song === 'own' || sing.song === 'acap'), pt = sing.party, plain = !sing.ctx && !pt;
     const day = S.dailyDay(), ds = S.dailySong(day), dBest = (save.daily || {})['d' + day];
     const st = S.starSum(save), rw = t => D.REWARDS.filter(r => r.type === t).map(r => { const ok = S.unlocked(save, r);
       return `<button type="button" class="opt${ok ? '' : ' lock'}" data-rw="${r.id}" aria-pressed="${save.rew[t] === r.id}" ${ok ? '' : 'disabled'}><b>${r.name}</b><small>${ok ? 'freigeschaltet' : '🔒 ab ' + r.need + ' ★'}</small></button>`; }).join('');
@@ -1056,11 +1076,12 @@
         <button class="btn gold" type="button" id="singDaily">🎤 Song des Tages singen</button></div>` : ''}
       <div class="panel"><p>${sing.ctx ? '<b>Jetzt zählt’s!</b> ' : ''}Wie im echten Casting: Du singst einen Song deiner Wahl ins Mikrofon. Das Spiel hört auf <b>Intonation, Stabilität, Stimmumfang und Ausdruck</b>, danach entscheidet die Jury.</p>
         <p class="muted">Ausgewertet wird nur auf deinem Gerät. Deine Aufnahme kannst du danach anhören; sie wird nicht gespeichert oder gesendet.</p></div>
+      ${asg ? `<div class="banner gold assign">${asg.img ? `<img class="jimg" src="${asg.img}" alt="" style="width:46px;height:64px">` : ''}<span>🎯 <b>${esc(asg.name)}</b> hat dir diesen Song zugeteilt – jetzt zeig, was du draus machst!</span></div><div class="opts songs">${songOpt('data-ss="' + asg.i + '"', true, [asg.t, asg.vid, asg.ch], 'Karaoke mit Lyrics · ' + esc(asg.ch))}</div>` : `
       <h3>1 · ${plain ? 'Genre-Challenge' : 'Genre'}</h3><div class="opts">${gs.join('')}</div>
       <p class="hint" style="text-align:left">${!plain ? '' : '★ 2 von 3 Jury-Ja · ★★ dazu das Genre-Ziel · ★★★ dazu mindestens 80 Punkte. '}Der Stil bringt bei der passenden Jurorin oder dem passenden Juror einen Bonus.</p>
       <h3>2 · Dein Song${g ? ` <small class="muted">(${g.songs.length} Karaoke-Songs)</small>` : ''}</h3>
       <div class="songFind"><input id="singQ" type="search" enterkeyhint="search" autocomplete="off" value="${esc(sing.q)}" placeholder="🔎 Song oder Interpret suchen (${D.KARAOKE.reduce((n, x) => n + x.songs.length, 0)} Songs)" aria-label="Song suchen"><button class="btn sm violet" type="button" data-yt="1">YouTube ↗</button></div>
-      <div class="opts songs" id="singRes" hidden></div><div class="opts songs" id="singList">${ss.join('')}</div>
+      <div class="opts songs" id="singRes" hidden></div><div class="opts songs" id="singList">${ss.join('')}</div>`}
       ${own ? `<div class="panel"><label class="field">Songtitel (optional)<input id="singTitle" type="text" maxlength="80" value="${esc(sing.title)}" placeholder="z. B. Adele – Hello"></label>
         ${sing.song === 'own' ? `<label class="field">YouTube-Link (optional)<input id="singLink" type="url" inputmode="url" value="${esc(sing.own)}" placeholder="https://youtu.be/…"></label>
         <div class="row2"><button class="btn sm violet" type="button" id="singFind">🔍 Karaoke-Version auf YouTube suchen</button>${navigator.clipboard && navigator.clipboard.readText ? '<button class="btn sm" type="button" id="singPaste">📋 Link einfügen</button>' : ''}</div>
@@ -1784,5 +1805,5 @@
 
   // ---------- Start ----------
   applySettings();
-  window.SMYVApp = { state: () => ({ cur, save, stage: !!stage, flow: flow && flow.mode }), go, stageObj: () => stage };
+  window.SMYVApp = { state: () => ({ cur, save, stage: !!stage, flow: flow && flow.mode }), go, stageObj: () => stage, assignOf, prepGo: m => { RENDER.sPrep(m); go('sPrep', m); } };
 })();

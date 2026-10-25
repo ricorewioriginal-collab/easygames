@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3db880ff5f94",
- "generated": "2026-10-25T02:44:57+02:00",
- "commit": "3bc1a4f01b0ec427e96f504c6aa21fce096c8ccf",
+ "version": "be3c01649620",
+ "generated": "2026-10-25T02:18:37+01:00",
+ "commit": "1bba435e34b13e6e1b537b014ae8d4e3a9c2a452",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8248,8 +8248,8 @@
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 164277,
-   "h": "6fa9d15b415f2c569043ccf013854727bf7d775d13f48a1ca685428510bff002"
+   "s": 167914,
+   "h": "04d274eb20b3cf29b5d92b5b4b6cbbd322271b687a269250b8314f189cf29712"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
@@ -8268,8 +8268,8 @@
   },
   {
    "p": "show-me-your-voice/js/data.js",
-   "s": 52490,
-   "h": "19a4821d1adf828fe3215e18e7a332db59722c3ec3ab2ea18f4054d79407a499"
+   "s": 64448,
+   "h": "f8dc39f27c266bb87e5225e1801abe7380891d64a314115979f80129da5a901d"
   },
   {
    "p": "show-me-your-voice/js/media.js",
@@ -8288,8 +8288,8 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 28627,
-   "h": "e225b9a8bf4804aa213c18447ca0354d7e466c1902ff282a87951a98ec962208"
+   "s": 28842,
+   "h": "6077677e35789ad0808ee83321441cefde3d40e00c2033af366708c3b492edac"
   },
   {
    "p": "show-me-your-voice/sw.js",
@@ -8654,7 +8654,7 @@
   {
    "p": "sync/catalog.json",
    "s": 217662,
-   "h": "b01a9332b854cdde24d203620d76fa358f966e349f569e93e18b729f5e9f8f71"
+   "h": "ea91d3fb87095991b1ed059bd7212019a9d4faa1e04e90f0b26e32dad15fd70d"
   },
   {
    "p": "taschi/card.svg",

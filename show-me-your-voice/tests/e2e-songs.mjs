@@ -60,5 +60,12 @@ await p.waitForSelector('#sSing.on'); await p.click('#singBox .songFind [data-yt
 await p.waitForSelector('#ovRes [data-i="0"]'); await shot(p, 'karaoke-suche'); await p.click('#ovRes [data-i="0"]');
 const k = await p.evaluate(() => ({ link: (document.getElementById('singLink') || {}).value, title: (document.getElementById('singTitle') || {}).value }));
 ok(/youtu\.be\/KKKKKKKKKKK/.test(k.link) && /Sommerhit/.test(k.title) && !/Karaoke Version/.test(k.title), 'Karaoke-Video im Spiel gefunden: ' + k.title + ' · ' + k.link);
+// Jury verteilt Songs: in Recall/Mottoshow manchmal (nicht immer)
+const as = await p.evaluate(() => { const A = window.SMYVApp, sv = A.state().save, s = sv.season; s.status = 'backstage'; let hit = 0, n = 0;
+  for (let k = 0; k < 40; k++) { s.seed = 1000 + k; s.round = 2; if (A.assignOf(s)) hit++; n++; }
+  s.round = 0; const cast = A.assignOf(s); s.round = 2; for (let k = 0; k < 40 && !A.assignOf(s); k++) s.seed = 2000 + k; return { hit, n, cast: !!cast, a: A.assignOf(s) }; });
+ok(as.hit > 5 && as.hit < 35 && !as.cast, `Jury verteilt manchmal Songs (${as.hit} von ${as.n} Mottoshows, nie im Casting)`);
+await p.evaluate(() => { window.SMYVApp.go('sMenu'); window.SMYVApp.go('sBack'); }); await p.waitForSelector('#sBack.on'); await p.click('[data-b="stage"]'); await p.waitForSelector('#sPrep.on');
+ok(/hat dir einen Song zugeteilt/.test(await p.textContent('#prepBox')) && (await p.locator('#prepBox [data-g="music"]').count()) === 1, 'Zugeteilter Song: ' + as.a.name + ' → ' + as.a.t); await shot(p, 'jury-song');
 ok(!errs.length, 'Keine Laufzeitfehler' + (errs.length ? ': ' + errs.join(' | ') : ''));
 await b.close();
