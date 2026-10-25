@@ -340,7 +340,7 @@
       <h3><span class="stepN">2</span> Bühnen-Aktion</h3>${pickRow('action', D.ACTION)}` : `
       <h3><span class="stepN">2</span> Musik</h3>${asg ? '' : `<div class="tabs"><button type="button" class="tab" data-tab="song" aria-pressed="${prep.tab === 'song'}">🎵 Song (YouTube)</button><button type="button" class="tab" data-tab="radio" aria-pressed="${prep.tab === 'radio'}">📻 Radio</button></div>`}
       <div class="pane">${prep.tab === 'song' ? songPane : radioPane}</div>
-      <p class="optDesc">${prep.tab === 'song' ? (prep.music === 'yt' ? '▶ Video von YouTube · Infos von iTunes & LRCLIB – das Tempo erkennt das Spiel selbst, auf der Bühne schiebst du mit ◀ ▶ nach.' : 'Such dir einen Song aus oder lass dich überraschen – sonst läuft RicoReWi Radio.') : selSt ? `📻 ${esc(selSt.name)}: ${esc(selSt.desc)} · live von laut.fm, die Noten kommen aus den Beats.` : 'Wähle einen Sender.'}</p>
+      <p class="optDesc">${prep.tab === 'song' ? (prep.music === 'yt' ? '▶ Video von YouTube · Infos von iTunes & LRCLIB – das Tempo erkennt das Spiel selbst, auf der Bühne schiebst du mit ◀ ▶ nach.' : 'Such dir einen Song aus – ohne Auswahl spielt ein Zufalls-Song.') : selSt ? `📻 ${esc(selSt.name)}: ${esc(selSt.desc)} · live von laut.fm, die Noten kommen aus den Beats.` : 'Wähle einen Sender.'}</p>
       <h3><span class="stepN">3</span> Dein Stil</h3>${pickRow('approach', D.APPROACH)}
       <h3><span class="stepN">4</span> Bühnen-Aktion</h3>${pickRow('action', D.ACTION)}
       <div class="micRow"><span>🎙️ ${save.settings.mic ? '<b>Mikrofon an</b> – sing die Noten an' : 'Mit deiner Stimme spielen?'}</span>${save.settings.mic ? '' : '<button class="btn sm" type="button" id="bMic">Mikro an</button>'}</div>`}
@@ -357,9 +357,10 @@
       return;
     }
     if (e.target.closest('#bSongFind')) { pickSong(); return; }
-    if (e.target.closest('#bSongRnd')) { const g = D.KARAOKE[Math.floor(Math.random() * D.KARAOKE.length)], x = g.songs[Math.floor(Math.random() * g.songs.length)], pt = x[0].split(' – '); prep.song = { artist: pt[0], title: pt.slice(1).join(' – ') || x[0], style: D.STYLES[g.style] ? g.style : 'pop' }; prep.music = 'yt'; prep.style = prep.song.style; RENDER.sPrep(prepMode); toast('🎲 ' + x[0], 2000); return; }
+    if (e.target.closest('#bSongRnd')) { randomSong(); RENDER.sPrep(prepMode); return; }
     const tb = e.target.closest('[data-tab]'); if (tb) { prep.tab = tb.dataset.tab; if (prep.tab === 'radio' && !String(prep.music).startsWith('radio:')) prep.music = 'radio:ricorewi'; if (prep.tab === 'song' && prep.song) prep.music = 'yt'; prep.style = musicOf(prep).style; RENDER.sPrep(prepMode); const nb = $(`#prepBox [data-tab="${tb.dataset.tab}"]`); if (nb) nb.focus(); return; }
     if (e.target.closest('#bMic')) { micConsent(() => RENDER.sPrep(prepMode)); return; }
+    if (e.target.closest('#bGo') && prep.how !== 'sing' && prep.tab === 'song' && !prep.song) randomSong();   // Reiter „Song“ ohne Auswahl: Zufalls-Song statt Radio
     if (e.target.closest('#bGo')) { backTo.sTalk = 'sPrep'; go('sTalk', prepMode); }
   });
   // ---------- Jury verteilt Songs (wie bei DSDS): manchmal im Recall und in der Mottoshow ----------
@@ -374,6 +375,7 @@
     if (!gs.length) return null; const g = gs[Math.floor(R() * gs.length)], i = Math.floor(R() * g.songs.length), [t, vid, ch] = g.songs[i], parts = t.split(' – ');
     return { by: jid, name: j ? j.name : 'Die Jury', img: j ? j.img : '', g: g.id, i, t, artist: parts.length > 1 ? parts[0] : '', title: parts.length > 1 ? parts.slice(1).join(' – ') : t, vid, ch, style: D.STYLES[g.style] ? g.style : 'pop' };
   }
+  function randomSong() { const g = D.KARAOKE[Math.floor(Math.random() * D.KARAOKE.length)], x = g.songs[Math.floor(Math.random() * g.songs.length)], pt = x[0].split(' – '); prep.song = { artist: pt[0], title: pt.slice(1).join(' – ') || x[0], style: D.STYLES[g.style] ? g.style : 'pop' }; prep.music = 'yt'; prep.style = prep.song.style; toast('🎲 ' + x[0], 2200); }
   function pickSong() { songSearchOv(x => { prep.song = x; prep.music = 'yt'; prep.style = x.style; RENDER.sPrep(prepMode); const b = $('#prepBox [data-v="yt"]'); if (b) b.focus(); }, prep.song && prep.song.artist ? prep.song.artist : ''); }
   function opponent(s) {
     const prev = (s.lastRank || []).filter(id => s.field.includes(id));
@@ -1825,5 +1827,5 @@
     imgs.forEach(u => { const im = new Image(); im.onload = im.onerror = () => { n++; $('#loadBar').style.width = Math.round(n / imgs.length * 100) + '%'; $('#loadTip').textContent = tips[Math.min(tips.length - 1, Math.floor(n / imgs.length * tips.length))]; if (n === imgs.length) setTimeout(done, 400); }; im.src = u; });
     setTimeout(done, 4000);
   })();
-  window.SMYVApp = { state: () => ({ cur, save, stage: !!stage, flow: flow && flow.mode }), go, stageObj: () => stage, assignOf, prepGo: m => { RENDER.sPrep(m); go('sPrep', m); } };
+  window.SMYVApp = { state: () => ({ cur, save, prep, stage: !!stage, flow: flow && flow.mode }), go, stageObj: () => stage, assignOf, prepGo: m => { RENDER.sPrep(m); go('sPrep', m); } };
 })();
