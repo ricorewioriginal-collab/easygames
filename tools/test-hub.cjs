@@ -53,6 +53,7 @@ const srv = http.createServer((q, r) => {
   // Spielen: Vollbild-Fenster mit iframe auf die Spielseite
   await p.click('.egh-grid .egh-card'); await p.waitForSelector('.egh-pl:not([hidden]) iframe');
   assert.match(await p.$eval('.egh-pl iframe', f => f.getAttribute('src')), /^http:\/\/127\.0\.0\.1:\d+\/[^?]+\/?/); console.log('PASS Spielen: Vollbild-Fenster dieser Seite');
+  await p.click('.egh-pl .egh-pl-t');   // Navigation ist beim Start ausgeblendet: erst über „▾“ einblenden
   await p.click('.egh-pl [data-x]'); assert.ok(await p.$eval('.egh-pl', e => e.hidden));
   assert.deepStrictEqual(errors.filter(e => !/three|Failed to load/.test(e)), [], 'Seitenfehler: ' + errors.join('; '));
   await b.close(); srv.close();
