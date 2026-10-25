@@ -36,7 +36,7 @@ if (JOIN) {
   let G = null, token = 0, pending = null, curCourse = -1, snd = store.get('fpSnd', true), keys = 0, touchM = 0; const phoneM = [0, 0, 0, 0];
   Audio_.setOn(snd);
   const FAST = () => window.__fpFast || 1, sleep = ms => new Promise(r => setTimeout(r, ms / FAST()));
-  const bests = () => store.get('fpBest2', {});
+  const bests = () => store.get('fpBest3', {});
   const show = id => { for (const s of ['menu', 'setup', 'game']) $(s).hidden = s !== id; if (id === 'menu') ui.menu.refresh(); };
   const setSnd = () => { const b = $('bSound'); b.querySelector('.ic').textContent = snd ? '🔊' : '🔇'; b.querySelector('.lb').textContent = snd ? 'Ton: an' : 'Ton: aus'; $('bSnd').textContent = snd ? '🔊' : '🔇'; $('aSnd').querySelector('.ai').textContent = snd ? '🔊' : '🔇'; };
   const toggleSnd = () => { snd = !snd; Audio_.setOn(snd); store.set('fpSnd', snd); setSnd(); SFX.click(); };
@@ -56,7 +56,7 @@ if (JOIN) {
     if(section===lastSection||section<0)return;
     lastSection=section;
     const name=sections[section].n;
-    const tips={Stufensprung:'Stufensprünge! Gut abspringen, bloß nicht ins Wasser!',Fahrstuhl:'Der Fahrstuhl! Jetzt muss das Timing stimmen!',Schiebebrücke:'Die Brücke bewegt sich! Der Sprung muss sitzen!','Bruchplatten':'Bruchplatten! Schnell weiter, bevor sie fallen!','Sandsäcke':'Vorsicht, die Sandsäcke schwingen!',Drehwalzen:'Die Drehwalzen! Nicht stehen bleiben, sonst geht es rückwärts!',Seilschwung:'Seilschwung! Seil packen und im richtigen Moment loslassen!',Trampolin:'Das Trampolin! Draufspringen und hoch an die Stangen!',Hangelstangen:'Jetzt an die Hangelstangen! Nicht loslassen!',Steilwand:'Die Steilwand! Drei Versuche. Anlauf nehmen und hoch da!'};
+    const tips={Stufensprung:'Stufensprünge! Gut abspringen, bloß nicht ins Wasser!',Fahrstuhl:'Der Fahrstuhl! Jetzt muss das Timing stimmen!',Schiebebrücke:'Die Brücke bewegt sich! Der Sprung muss sitzen!','Bruchplatten':'Bruchplatten! Schnell weiter, bevor sie fallen!','Sandsäcke':'Vorsicht, die Sandsäcke schwingen!',Drehwalzen:'Die Drehwalzen! Weiterlaufen, die schieben zurück! Springen ist schneller, aber riskant!',Seilschwung:'Seilschwung! Seil packen und im richtigen Moment loslassen!',Trampolin:'Das Trampolin! Draufspringen und hoch an die Stangen!',Hangelstangen:'Jetzt an die Hangelstangen! Nicht loslassen!',Steilwand:'Die Steilwand! Drei Versuche. Anlauf nehmen und hoch da!'};
     commentator.speak(tips[name]||('Jetzt folgt: '+name+'.'));
   }
   function abort() { commentator.stop();lastSection=-1;token++; const p = pending; pending = null; $('card').hidden = true; $('big').hidden = true; G = null; padOn(false); arena.setGhost(null); if (p) p.res('abort'); push(); }
@@ -157,7 +157,7 @@ if (JOIN) {
     await A(sleep(1700)); return res;
   }
 
-  const bestUpdate = (ci, res, name) => { if (!res.finished) return false; const b = bests(); if (!b[ci] || res.time < b[ci].t) { b[ci] = { t: Math.round(res.time * 100) / 100, n: name, g: res.g }; store.set('fpBest2', b); return true; } return false; };
+  const bestUpdate = (ci, res, name) => { if (!res.finished) return false; const b = bests(); if (!b[ci] || res.time < b[ci].t) { b[ci] = { t: Math.round(res.time * 100) / 100, n: name, g: res.g }; store.set('fpBest3', b); return true; } return false; };
 
   async function coroutine(tok, mode) {
     const A = async p => { const v = await p; if (tok !== token) throw ABORT; return v; };
