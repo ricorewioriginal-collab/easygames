@@ -630,6 +630,19 @@ window.EASYGAMES_GUIDES = {
    "Bei jedem Video steht der YouTube-Kanal mit Link, beim Radio der Sender auf laut.fm."
   ]
  },
+ "beat-studio": {
+  "anleitung": "Im Beat-Studio baust du deinen eigenen Song. Der Song-Assistent erstellt in Sekunden einen kompletten Song – du wählst Genre (Pop, Hip-Hop, House, Schlager, Rock, Lo-Fi), Tonart, Tempo und Länge. Danach machst du ihn zu deinem: Im Drum-Computer setzt du Schläge, Bass und Melodie zeichnest du im Tonleiter-Raster (jeder Ton passt zur Tonart), Akkorde wählst du je Takt oder als bekannte Folge. Jeder Abschnitt – Intro, Strophe, Pre-Chorus, Refrain, Bridge, Outro – hat eigene Beats und Noten, im Aufbau ordnest du sie zum ganzen Song. Gesang nimmst du übers Mikrofon auf, mit Hall, Echo, Radio- oder Roboter-Stimme. Fertig? Exportiere den Song als WAV-Datei, als Einzelspuren, als MIDI-Datei oder als Projekt – und lass ihn von der Radio-Jury bewerten.",
+  "steuerung": [
+   "Maus/Touch: Felder im Raster antippen, oben Bereich (Aufbau, Drums, Bass, Akkorde, Melodie, Gesang, Mixer) und darunter den Abschnitt wählen.",
+   "Tastatur: Leertaste = Song abspielen, L = Abschnitt in Schleife, 1–7 oder [ ] = Bereich, Pfeile + Enter im Raster, Strg+Z rückgängig, Esc zurück.",
+   "Gamecontroller: Steuerkreuz + A, X = Abspielen, Y = Schleife, LB/RB = Bereich wechseln, B = zurück."
+  ],
+  "tipps": [
+   "Mach Strophe und Refrain deutlich unterschiedlich – der Refrain darf voller und höher sein.",
+   "„🎲 Neu“ würfelt eine einzelne Spur neu, wenn dir eine Idee fehlt.",
+   "Die Jury mag Songs zwischen 2:30 und 3:30, eine eingängige Refrain-Melodie, Gesang und deine eigene Handschrift."
+  ]
+ },
  "challenge-show": {
   "anleitung": "Die große Challenge-Show ist eine 3D-Spielshow im TV-Studio: Bis zu 24 Kandidaten (12, 16 oder 24 – Computer füllen auf) treten in sechs Runden an, ein Moderator kommentiert mit Sprachausgabe und Untertiteln, das Publikum jubelt. In jeder Runde scheiden einige aus – kinderfreundlich mit Konfetti-Puff in die weiche Schaumstoffgrube – und füllen den 💰 Topf. 🚦 Ampel-Lauf: bei Grün laufen, bei Rot einfrieren, denn der Ampel-Roboter dreht sich um und sieht jede Bewegung; ins Ziel, bevor die Zeit abläuft. 🌉 Wackelbrücke: nacheinander Reihe für Reihe links oder rechts springen, nur eine Pudding-Platte hält, bekannte Platten leuchten grün. 🪢 Seilziehen: zwei Teams, wer im grünen Takt-Feld tippt, zieht doppelt so stark. 🍪 Keks-Kunst: Kreis, Dreieck, Stern oder Herz vom ⭐ aus nachfahren, ohne dass der Keks bricht. 🪑 Reise nach Jerusalem: Musik stoppt, Stühle tauchen auf, es gibt immer zu wenige. 👑 Schubs-Finale: mit dem Sprint-Stoß die anderen von der schrumpfenden Plattform ins Bällebad schubsen – der Letzte holt Krone und Topf. Wähle Name, Farbe und Hut für deinen Kandidaten, die Stärke der Computer (Leicht, Normal, Schwer) und die Länge (alle 6 Runden oder kurze Show mit 4). Bist du raus, schaust du zu, schickst Jubel-Emojis oder spulst vor. 🌐 Online & Handys: Der Gastgeber zeigt Code und QR-Code, bis zu 12 Mitspieler treten von überall bei und sehen die Show auf dem eigenen Gerät; im Modus „📺 Nur Fernseher“ zeigt der Fernseher die Show und die Handys sind die Controller.",
   "steuerung": [
