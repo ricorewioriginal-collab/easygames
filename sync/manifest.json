@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "55a2b191639a",
- "generated": "2026-10-25T02:52:20+00:00",
- "commit": "3777916e3c0d0eb8bb3f4c481cb07b99a54edddd",
+ "version": "5b06941f2b91",
+ "generated": "2026-10-25T03:54:58+01:00",
+ "commit": "643f3d6e5b3742e206fe31ec381a452fd94f1f2d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4657,6 +4657,46 @@
    "h": "7263f09ae3d0d49870b730b0aaf77f27d347f481544a68d870c038ec44630bfb"
   },
   {
+   "p": "beat-studio/card.jpg",
+   "s": 24754,
+   "h": "0e2246fcce95d0b5b56599f6b462648e7bdbe8fdb65dcb7b014ab458f17bd64d"
+  },
+  {
+   "p": "beat-studio/index.html",
+   "s": 8075,
+   "h": "0bfc5d7b937df395c4ef0875b4ffbf3e219744551d2610dd1bdb26631ba4c1be"
+  },
+  {
+   "p": "beat-studio/js/app.js",
+   "s": 49099,
+   "h": "82414091732c0e790a84ea10c31e78c620c0cb2f2b24d9fa4c3e468f5abf064c"
+  },
+  {
+   "p": "beat-studio/js/core.js",
+   "s": 25529,
+   "h": "fedde1e979c72524a07b9cb52da91eb293ee663e8ff5ddb589ea809a441cdebc"
+  },
+  {
+   "p": "beat-studio/js/engine.js",
+   "s": 22690,
+   "h": "3251364ed25c6cceffc7478c6a9ad12fc5bfdf2ed3cfceab8ceec3f6c43d7f91"
+  },
+  {
+   "p": "beat-studio/manifest.webmanifest",
+   "s": 778,
+   "h": "b47e6b73ede6a62bd0f63acaee8cc27cc9f6e4be494fca65cd044af6a81ca2d0"
+  },
+  {
+   "p": "beat-studio/style.css",
+   "s": 15629,
+   "h": "7267cc8a8807adc0394b214ab92a78f7a2045283096e87629c319c91253ba804"
+  },
+  {
+   "p": "beat-studio/sw.js",
+   "s": 2002,
+   "h": "d194970e2735c0e831ca3502f8d6e11e088ff2204813e8f0d19db1b94849c1c5"
+  },
+  {
    "p": "bowling-bahn/card.jpg",
    "s": 45397,
    "h": "c5b581f65b2b83e20e92785896d2ef7cbea0182859dea5e444d0343a47757343"
@@ -5448,8 +5488,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3260,
-   "h": "c9f9a2b97d3af871cf532921b48f72a4f62a5d1eecc0824114a73eb3f24cb23a"
+   "s": 3284,
+   "h": "14d856ea5360a022e24eb50c3c058cc57975297ebb74fcea565837a1a297dde9"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -6288,8 +6328,8 @@
   },
   {
    "p": "games.js",
-   "s": 50236,
-   "h": "5a664ff4db9833abdb3c9a64e4019d1a44c7268e4fd5d2c19f1b3e0ed8208777"
+   "s": 51138,
+   "h": "61f46beab05a2e49908d94785b34bc9f582898fd6c2a527d3a133699d5c7f4aa"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6518,8 +6558,8 @@
   },
   {
    "p": "guides.js",
-   "s": 158209,
-   "h": "19a01bfe80113bf8b319bcb6782b742b568f4338978cc0caee7e3c009a42a14d"
+   "s": 159766,
+   "h": "97326055aaf8cc945bf5e062425b32e146eafab2b3272bfb975f5ab5f90c2f0b"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -7558,8 +7598,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3756,
-   "h": "4d89500d26adf8c57c0b47bdbd7d07689e2c0a459af2bfbb08cda43f8e9b0845"
+   "s": 3788,
+   "h": "943003aa38fd46ccaa36741259bf79f3c0a4720db39f9d8d13c01e103919c410"
   },
   {
    "p": "oma-rennen/card.jpg",
@@ -9108,8 +9148,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 233016,
-   "h": "08e09a6e5cb92bd66329a55bf02fbc469f5778fa7ae0b5af4a8d9813787a7347"
+   "s": 235723,
+   "h": "7cb528a858a9abf19670b9ee6cd9b555651acd0edf1efcf469059fd68fe62c41"
   },
   {
    "p": "taschi/card.svg",
@@ -9492,6 +9532,11 @@
    "h": "7ac6b18805592af736dc6dda855cc461acf52caecbca5ee3c29ed5cf7b832b38"
   },
   {
+   "p": "thumbs/beat-studio.webp",
+   "s": 9782,
+   "h": "dddbc017bf5d4cfed4b24d9afee1ce48720b9bd6c8edff2e367fbff281848e25"
+  },
+  {
    "p": "thumbs/bowling-bahn.webp",
    "s": 21336,
    "h": "5422276aa6cdaa5247592f97e9303bd14dee4ee04b031722d3d2da330ff24613"
@@ -9648,8 +9693,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2175,
-   "h": "4e4f117ad312bdc3b7c0b1a526d0e83bc2c9f29135032225157d813c73526994"
+   "s": 2202,
+   "h": "8bc7cc04775a4846c50d85579233725ea556d05e29b738dee4051095725167d4"
   },
   {
    "p": "thumbs/tortenschlacht.webp",

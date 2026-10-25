@@ -23,6 +23,6 @@ window.EASYGAMES_CATS = {
     // Tisch
     'ricopoly': 'tisch', 'partyverse': 'tisch', 'anmacha-gold-reels': 'tisch', 'anmacha-spielesammlung': 'tisch', 'anmacha-kartenrausch': 'tisch', 'anmacha-solitaire': 'tisch', 'anmacha-undercover': 'tisch', 'werwolf-nacht': 'tisch', 'spinwelten': 'tisch', 'funk-billard': 'tisch',
     // Musik
-    'anmacha-beat-surfer': 'musik', 'prismrush': 'musik', 'show-me-your-voice': 'musik'
+    'anmacha-beat-surfer': 'musik', 'prismrush': 'musik', 'show-me-your-voice': 'musik', 'beat-studio': 'musik'
   }
 };

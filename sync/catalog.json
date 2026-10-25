@@ -1958,6 +1958,40 @@
    }
   },
   {
+   "id": "beat-studio",
+   "title": "Beat-Studio – Bau deinen Hit",
+   "desc": "Bau deinen eigenen Song – vom ersten Beat bis zur fertigen WAV-Datei: Der Song-Assistent baut in Sekunden einen kompletten Song (Pop, Hip-Hop, House, Schlager, Rock, Lo-Fi) mit Intro, Strophe, Pre-Chorus, Refrain, Bridge und Outro – dann machst du ihn zu deinem: Drum-Computer mit 8 Instrumenten, Bass und Melodie im Tonleiter-Raster (alles passt automatisch zur Tonart), Akkorde mit bekannten Folgen, Gesang übers Mikrofon mit Hall, Echo, Radio- oder Roboter-Stimme, Arrangement und Mischpult. Export als WAV (44,1 kHz Stereo), Einzelspuren, MIDI-Datei für andere Musikprogramme und Projektdatei. Die Radio-Jury bewertet deinen Song und vergibt Chart-Plätze.",
+   "icon": "🎛️",
+   "img": "beat-studio/card.jpg",
+   "bg": "linear-gradient(145deg,#0d0a24,#ff4d8d 55%,#3ad8ff)",
+   "glow": "rgba(58,216,255,.5)",
+   "path": "beat-studio/",
+   "modes": {
+    "pad": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Im Beat-Studio baust du deinen eigenen Song. Der Song-Assistent erstellt in Sekunden einen kompletten Song – du wählst Genre (Pop, Hip-Hop, House, Schlager, Rock, Lo-Fi), Tonart, Tempo und Länge. Danach machst du ihn zu deinem: Im Drum-Computer setzt du Schläge, Bass und Melodie zeichnest du im Tonleiter-Raster (jeder Ton passt zur Tonart), Akkorde wählst du je Takt oder als bekannte Folge. Jeder Abschnitt – Intro, Strophe, Pre-Chorus, Refrain, Bridge, Outro – hat eigene Beats und Noten, im Aufbau ordnest du sie zum ganzen Song. Gesang nimmst du übers Mikrofon auf, mit Hall, Echo, Radio- oder Roboter-Stimme. Fertig? Exportiere den Song als WAV-Datei, als Einzelspuren, als MIDI-Datei oder als Projekt – und lass ihn von der Radio-Jury bewerten.",
+    "steuerung": [
+     "Maus/Touch: Felder im Raster antippen, oben Bereich (Aufbau, Drums, Bass, Akkorde, Melodie, Gesang, Mixer) und darunter den Abschnitt wählen.",
+     "Tastatur: Leertaste = Song abspielen, L = Abschnitt in Schleife, 1–7 oder [ ] = Bereich, Pfeile + Enter im Raster, Strg+Z rückgängig, Esc zurück.",
+     "Gamecontroller: Steuerkreuz + A, X = Abspielen, Y = Schleife, LB/RB = Bereich wechseln, B = zurück."
+    ],
+    "tipps": [
+     "Mach Strophe und Refrain deutlich unterschiedlich – der Refrain darf voller und höher sein.",
+     "„🎲 Neu“ würfelt eine einzelne Spur neu, wenn dir eine Idee fehlt.",
+     "Die Jury mag Songs zwischen 2:30 und 3:30, eine eingängige Refrain-Melodie, Gesang und deine eigene Handschrift."
+    ]
+   },
+   "size": 148556,
+   "files": 8,
+   "offline": true,
+   "cloud": {
+    "game": "beat-studio",
+    "prefix": "beat-studio-"
+   }
+  },
+  {
    "id": "challenge-show",
    "title": "Die große Challenge-Show",
    "desc": "3D-Spielshow mit bis zu 24 Kandidaten im TV-Studio samt jubelndem Publikum und Moderator-Stimme: 🚦 Ampel-Lauf mit dem Ampel-Roboter, 🌉 Wackelbrücke über der Schaumstoffgrube, 🪢 Seilziehen im Takt, 🍪 Keks-Kunst (Form nachfahren), 🪑 Reise nach Jerusalem und das 👑 Schubs-Finale auf der schrumpfenden Plattform. Computer füllen auf, drei Stärken, kinderfreundlich – Ausscheiden heißt Konfetti-Puff. 🌐 Online & Handys: Freunde spielen von überall mit, oder der Fernseher zeigt die Show und Handys sind die Controller.",
