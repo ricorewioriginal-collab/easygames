@@ -92,7 +92,8 @@
         "Im Turnier bekommst du 250 Punkte pro gewonnener Runde und 100 Punkte pro KO.",
         "Für jeden eroberten Mast gibt es einen Bonus: 500 Punkte am ersten Mast, 1000 am zweiten, 1500 am dritten, 2000 am vierten und 2500 am fünften.",
         "Gewinnst du einen Mast, ohne dass ein Gegner auch nur eine Runde holt, gibt es 300 Punkte extra.",
-        "Der Turnier-Highscore und alle Statistiken werden auf dem Gerät gespeichert; der Highscore landet in der Rangliste und wird mit deinem Konto gespeichert."
+        "Der Turnier-Highscore und alle Statistiken werden auf dem Gerät gespeichert; der Highscore landet in der Rangliste und wird mit deinem Konto gespeichert.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     }
   ],
@@ -208,7 +209,7 @@
     },
     {
       "q": "Mein Highscore ist weg.",
-      "a": "Er wird im Browser gespeichert. Nach dem Löschen der Website-Daten oder auf einem anderen Gerät ist er nicht da. Mit Konto wird er mitgespeichert."
+      "a": "Er wird im Browser gespeichert. Ohne Google-Anmeldung ist er nach dem Löschen der Website-Daten oder auf einem anderen Gerät nicht da. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
     },
     {
       "q": "Das Spiel ruckelt.",

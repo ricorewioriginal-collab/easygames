@@ -59,7 +59,8 @@
       "list": [
         "Rekord, Münzen, gekaufte Figuren, Statistik, Tagesergebnis und Einstellungen werden automatisch auf dem Gerät gespeichert.",
         "Der Rekord (Endlos und Tagesstrecke) landet in der Rangliste und wird mit deinem Konto gespeichert.",
-        "Münzen werden nach jeder Runde deinem Münzkonto gutgeschrieben – auch wenn die Runde schlecht lief."
+        "Münzen werden nach jeder Runde deinem Münzkonto gutgeschrieben – auch wenn die Runde schlecht lief.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     }
   ],
@@ -157,7 +158,7 @@
   "faq": [
     {
       "q": "Meine Münzen und Figuren sind weg.",
-      "a": "Der Spielstand liegt im Browser des Geräts. Nach dem Löschen der Website-Daten, auf einem anderen Gerät oder im privaten Tab fängst du neu an. Mit Konto wird der Rekord mitgespeichert."
+      "a": "Der Spielstand liegt im Browser des Geräts. Ohne Google-Anmeldung fängst du nach dem Löschen der Website-Daten, auf einem anderen Gerät oder im privaten Tab neu an. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
     },
     {
       "q": "Warum hat mich die Drohne erwischt, obwohl ich nicht zurückgehüpft bin?",

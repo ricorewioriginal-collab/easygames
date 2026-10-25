@@ -78,7 +78,7 @@
     {
       "t": "Speichern und Einstellungen",
       "list": [
-        "Welten liegen nur in diesem Browser. Im Pausemenü gibt es 💾 Speichern; mit ⤓ sicherst du eine Welt als Datei, unter ☁ Speicherdaten lädst du sie wieder in einen freien Platz. Optional sichert die Google-Anmeldung deine Welten.",
+        "Welten liegen in diesem Browser, ohne Google-Anmeldung nur dort. Im Pausemenü gibt es 💾 Speichern; mit ⤓ sicherst du eine Welt als Datei, unter ☁ Speicherdaten lädst du sie wieder in einen freien Platz. Optional sichert die Google-Anmeldung deine Welten.",
         "Pausemenü: Sichtweite, Tageszeit, ⏱ Zeit läuft, 👥 Mehrspieler, 📜 Aufträge, Ton, Vollbild, Hauptmenü.",
         "Einstellungen: Grafik (Automatisch, Eco, Mobil, Standard, Hoch), Empfindlichkeiten, Tastengröße, drei Lautstärken (Effekte, Radio-Musik, Umgebung), Verhalten beim Umkippen, Linkshänder, Blick umkehren, Setzen-Wiederholung, Bildrate, Gegner im Überleben an/aus, Vorschau des nächsten Blocks, Tastenbelegung und Touch-Tasten verschieben."
       ]
@@ -122,7 +122,7 @@
         "Eisenerz mit der Holzspitzhacke abbauen: Das bringt nichts – erst die Steinspitzhacke herstellen.",
         "Ohne Licht tief graben: In tiefen Höhlen warten Höhlenwesen.",
         "Aus großer Höhe springen: Ab etwa 16 Blöcken Fallhöhe kostet der Aufprall Herzen – lieber gleiten.",
-        "Welt nicht sichern: Welten liegen nur im Browser. Exportiere wichtige Welten mit ⤓ als Datei."
+        "Welt nicht sichern: Ohne Google-Anmeldung liegen Welten nur im Browser. Exportiere wichtige Welten mit ⤓ als Datei oder sichere sie unter ☁ Speicherdaten mit Google."
       ]
     }
   ],
@@ -259,7 +259,7 @@
   "faq": [
     {
       "q": "Meine Welt ist weg.",
-      "a": "Welten liegen nur in diesem Browser. Nach dem Löschen der Browserdaten oder in einem privaten Fenster sind sie verloren. Sichere Welten mit ⤓ als Datei oder melde dich unter ☁ Speicherdaten mit Google an. Über ↺ lässt sich manchmal eine ältere Sicherung laden."
+      "a": "Ohne Google-Anmeldung liegen Welten nur in diesem Browser. Nach dem Löschen der Browserdaten oder in einem privaten Fenster sind sie verloren. Sichere Welten mit ⤓ als Datei oder melde dich unter ☁ Speicherdaten mit Google an. Über ↺ lässt sich manchmal eine ältere Sicherung laden."
     },
     {
       "q": "Der Mehrspieler verbindet sich nicht.",

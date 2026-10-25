@@ -109,7 +109,8 @@
         "Oma Frieda: gewinne den Kaffee-Cup.",
         "Uroma Trude: gewinne den Kuchen-Cup.",
         "Oma Rosi: gewinne den Großen Rentenpokal.",
-        "Bestzeiten je Strecke, Karriere-Punkte, Podestplätze, Siege, freigeschaltete Omas und Einstellungen speichert das Spiel im Browser des Geräts."
+        "Bestzeiten je Strecke, Karriere-Punkte, Podestplätze, Siege, freigeschaltete Omas und Einstellungen speichert das Spiel im Browser des Geräts.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     }
   ],
@@ -210,7 +211,7 @@
   "faq": [
     {
       "q": "Meine freigeschalteten Omas sind weg – warum?",
-      "a": "Fortschritt, Bestzeiten und Einstellungen liegen im Browser des Geräts. Werden die Website-Daten gelöscht oder spielst du im privaten Fenster, beginnt alles neu."
+      "a": "Fortschritt, Bestzeiten und Einstellungen liegen im Browser des Geräts. Ohne Google-Anmeldung beginnt alles neu, wenn die Website-Daten gelöscht werden oder du im privaten Fenster spielst. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
     },
     {
       "q": "Online klappt nicht – was tun?",

@@ -67,7 +67,8 @@
     {
       "t": "Speichern und Bestwert",
       "p": [
-        "Dein Bestwert (BEST) und die geschafften Kampagnen-Tische werden im Browser gespeichert. Ein laufendes Spiel wird nicht gespeichert – nach dem Schließen beginnt es neu. Im GAME-OVER-Fenster siehst du deine Punkte, in der Kampagne den erreichten Tisch und bei einem neuen Rekord „🏆 Neuer Bestwert!“."
+        "Dein Bestwert (BEST) und die geschafften Kampagnen-Tische werden im Browser gespeichert. Ein laufendes Spiel wird nicht gespeichert – nach dem Schließen beginnt es neu. Im GAME-OVER-Fenster siehst du deine Punkte, in der Kampagne den erreichten Tisch und bei einem neuen Rekord „🏆 Neuer Bestwert!“.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     }
   ],
@@ -181,6 +182,10 @@
     {
       "q": "Gibt es Mehrspieler?",
       "a": "Nein, AnMaCha Pinball ist ein Einzelspieler-Flipper."
+    },
+    {
+      "q": "Ist mein Spielstand weg, wenn ich die Browserdaten lösche?",
+      "a": "Ohne Google-Anmeldung liegt alles nur lokal in diesem Browser: Nach dem Löschen der Browserdaten, im privaten Fenster oder auf einem anderen Gerät ist es nicht da. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
     }
   ]
 }

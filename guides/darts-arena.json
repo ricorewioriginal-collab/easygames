@@ -91,7 +91,8 @@
     {
       "t": "Rekorde und Speichern",
       "p": [
-        "Alle Rekorde werden im Browser gespeichert und unter 🏅 Rekorde angezeigt. Im Hauptmenü siehst du deinen 3-Dart-Schnitt und die Zahl deiner 180er."
+        "Alle Rekorde werden im Browser gespeichert und unter 🏅 Rekorde angezeigt. Im Hauptmenü siehst du deinen 3-Dart-Schnitt und die Zahl deiner 180er.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ],
       "list": [
         "📈 Bestes Count-Up (Rangliste), Ø 3-Dart-Schnitt (X01), 🔥 Bester Leg-Schnitt (501), 💯 180er.",
@@ -203,6 +204,6 @@
     { "q": "Wie spielen wir zu mehreren?", "a": "Wähle einen Modus und füge mit ＋ Spieler bis zu 4 Plätze hinzu. Jeder Platz kann Mensch oder Computer sein; ihr werft abwechselnd am selben Gerät." },
     { "q": "Wie schalte ich die Sprachausgabe der Punkte aus?", "a": "Unter ⚙️ Optionen „Caller (Sprachausgabe der Punkte)“ ausschalten." },
     { "q": "Das Spiel ruckelt.", "a": "Schalte den Sparmodus ein (ohne Schatten). Er wirkt nach einem Neustart des Spiels." },
-    { "q": "Sind meine Rekorde gespeichert?", "a": "Ja, im Browser auf diesem Gerät. Werden die Browserdaten gelöscht, sind auch die Rekorde weg." }
+    { "q": "Sind meine Rekorde gespeichert?", "a": "Ja, im Browser auf diesem Gerät. Ohne Google-Anmeldung sind die Rekorde weg, wenn die Browserdaten gelöscht werden. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät." }
   ]
 }

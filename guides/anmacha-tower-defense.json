@@ -11,7 +11,7 @@
     {
       "t": "Start, Karten und Schwierigkeit",
       "p": [
-        "Im Hauptmenü wählst du eine Karte und die Schwierigkeit. Unten steht die lokale Top 10 deiner besten Punktzahlen. Nach dem Start erscheint „BEREIT?“ – du hast Zeit, deine Verteidigung zu bauen, bevor die erste Welle kommt."
+        "Im Hauptmenü wählst du eine Karte und die Schwierigkeit. Unten steht die Top 10 deiner besten Punktzahlen. Nach dem Start erscheint „BEREIT?“ – du hast Zeit, deine Verteidigung zu bauen, bevor die erste Welle kommt."
       ],
       "list": [
         "Karten: Funkhafen (S-förmiger Weg mit drei langen Geraden), Frequenz-Spirale (der Weg windet sich nach innen) und Zickzack-Studio (viele enge Kurven). Das Spielfeld ist 14 × 10 Felder groß.",
@@ -81,7 +81,8 @@
       "list": [
         "Jeder Abschuss bringt das Zehnfache seines Geldwerts als Punkte, mal Schwierigkeitsfaktor (Leicht ×0,8, Normal ×1, Schwer ×1,3).",
         "Sieg-Bonus: 200 Punkte pro übrigem Basis-Leben, ebenfalls mal Schwierigkeitsfaktor.",
-        "Am Ende siehst du Punkte, erreichte Welle und abgeschossene Gegner. Schaffst du es in die Top 10, gibst du einen Namen ein und speicherst. Die Liste liegt lokal im Browser."
+        "Am Ende siehst du Punkte, erreichte Welle und abgeschossene Gegner. Schaffst du es in die Top 10, gibst du einen Namen ein und speicherst. Die Liste liegt im Browser.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     }
   ],
@@ -189,7 +190,7 @@
   ],
   "faq": [
     { "q": "Die Türme zeigen nur Buchstaben statt Logos.", "a": "Die Sender-Logos werden beim Start geladen. Klappt das nicht, zeigt das Spiel den Anfangsbuchstaben des Turms – spielen kannst du trotzdem ganz normal." },
-    { "q": "Wo ist meine Bestenliste?", "a": "Die Top 10 liegt lokal im Browser dieses Geräts. Werden die Browserdaten gelöscht, ist sie weg." },
+    { "q": "Wo ist meine Bestenliste?", "a": "Die Top 10 liegt im Browser dieses Geräts. Ohne Google-Anmeldung ist sie weg, wenn die Browserdaten gelöscht werden. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät." },
     { "q": "Ich kann am Handy keinen Turm bauen.", "a": "Am Handy zeigt das erste Tippen nur die Vorschau. Tippe ein zweites Mal auf dasselbe Feld, um zu bauen." },
     { "q": "Kann ich die Welle schneller starten?", "a": "Ja, mit dem Knopf „▶ WELLE“, der Leertaste oder Enter. Du bekommst dafür sogar einen Frühstart-Bonus." },
     { "q": "Wie schalte ich den Ton aus?", "a": "Mit der Taste M oder dem Ton-Knopf im Spiel. Die Einstellung wird gespeichert." },

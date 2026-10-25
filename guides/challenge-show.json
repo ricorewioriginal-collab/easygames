@@ -62,7 +62,8 @@
       "list": [
         "Sieger: der ganze Topf – 100 Punkte für jeden Ausgeschiedenen (bei 24 Kandidaten also 2300).",
         "Alle anderen: 20 Punkte für jeden Kandidaten, der vor dir ausgeschieden ist, plus 50 Punkte pro erreichter Runde.",
-        "Die Ruhmeshalle speichert auf dem Gerät Siege, Shows, beste Platzierung, überstandene Runden und den Punkte-Rekord. Dein Kandidat (Name, Farbe, Hut) und die Einstellungen bleiben ebenfalls gespeichert."
+        "Die Ruhmeshalle speichert auf dem Gerät Siege, Shows, beste Platzierung, überstandene Runden und den Punkte-Rekord. Dein Kandidat (Name, Farbe, Hut) und die Einstellungen bleiben ebenfalls gespeichert.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     },
     {
@@ -172,7 +173,7 @@
     },
     {
       "q": "Wo ist meine Ruhmeshalle gespeichert?",
-      "a": "Lokal auf deinem Gerät im Browser bzw. in der App. Gelöschte Browserdaten löschen auch Siege und Rekorde."
+      "a": "Auf deinem Gerät im Browser bzw. in der App. Ohne Google-Anmeldung löschen gelöschte Browserdaten auch Siege und Rekorde. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
     },
     {
       "q": "Kann ich die Show abkürzen?",

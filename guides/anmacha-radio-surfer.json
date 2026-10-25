@@ -78,7 +78,8 @@
       "t": "Punkte, Bestwert und Top 10",
       "p": [
         "Punkte gibt es für die zurückgelegte Strecke: pro Meter 0,5 Punkte, mit jedem Level 10 Prozent mehr (Level 10 zählt also das 1,9-fache von Level 1). Ausweichen selbst bringt keine Extrapunkte.",
-        "Dein bester Score wird im Browser gespeichert (BEST). Kommst du nach einer Runde in die Top 10, erscheint „Du bist in den Top 10! Dein Name:“ – Namen eintippen (bis 12 Zeichen) und auf Speichern tippen oder Enter drücken. Die Top 10 liegen ebenfalls lokal in deinem Browser; der zuletzt benutzte Name wird vorgeschlagen."
+        "Dein bester Score wird im Browser gespeichert (BEST). Kommst du nach einer Runde in die Top 10, erscheint „Du bist in den Top 10! Dein Name:“ – Namen eintippen (bis 12 Zeichen) und auf Speichern tippen oder Enter drücken. Die Top 10 liegen ebenfalls in deinem Browser; der zuletzt benutzte Name wird vorgeschlagen.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     }
   ],
@@ -156,7 +157,7 @@
   "faq": [
     {
       "q": "Mein Bestwert oder die Top 10 sind weg – warum?",
-      "a": "Beides wird im Speicher deines Browsers abgelegt. Privates Surfen, das Löschen der Website-Daten oder ein anderes Gerät/ein anderer Browser starten mit leerer Liste."
+      "a": "Beides wird im Speicher deines Browsers abgelegt. Ohne Google-Anmeldung starten privates Surfen, das Löschen der Website-Daten oder ein anderes Gerät/ein anderer Browser mit leerer Liste. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
     },
     {
       "q": "Der Knopf zeigt nur „LADE …“ oder „OFFLINE“.",

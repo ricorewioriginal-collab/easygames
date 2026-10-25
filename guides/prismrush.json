@@ -86,7 +86,8 @@
         "Genauigkeit: Perfekt zählt 100 Prozent, Super 70, Gut 40, Verfehlt 0.",
         "Note: S ab 95 Prozent, A ab 88, B ab 78, C ab 65, sonst D. Gescheitert = F.",
         "Sterne (nur wenn das Level geschafft ist): 3 Sterne ab 95 Prozent Genauigkeit, 2 Sterne ab 85 Prozent, sonst 1 Stern. Gescheitert = 0 Sterne. Pro Level zählt dein bester Wert aus allen Schwierigkeiten, maximal 3 Sterne, also 96 insgesamt. Sterne gibt es nur in der Kampagne.",
-        "Alles wird lokal im Browser gespeichert. „Fortschritt zurücksetzen“ löscht Highscores, Sterne, Bestzeiten und freigeschaltete Effekte; die Einstellungen bleiben."
+        "Alles wird im Browser gespeichert. „Fortschritt zurücksetzen“ löscht Highscores, Sterne, Bestzeiten und freigeschaltete Effekte; die Einstellungen bleiben.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     }
   ],
@@ -183,7 +184,7 @@
     },
     {
       "q": "Mein Fortschritt ist weg.",
-      "a": "Fortschritt, Sterne und Effekte liegen nur im Browser. Nach dem Löschen der Browserdaten, in einem privaten Fenster oder nach „Fortschritt zurücksetzen“ sind sie weg."
+      "a": "Fortschritt, Sterne und Effekte liegen im Browser. Ohne Google-Anmeldung sind sie nach dem Löschen der Browserdaten oder in einem privaten Fenster weg. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät. „Fortschritt zurücksetzen“ löscht sie bewusst."
     },
     {
       "q": "Es kommt kein Ton.",

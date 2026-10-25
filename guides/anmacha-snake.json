@@ -19,7 +19,7 @@
         "KAMERA Schräg 3D: Blick schräg von oben auf das ganze Feld. Du lenkst in Bildschirm-Richtungen.",
         "KAMERA Verfolger: Die Kamera fliegt hinter dem Kopf der Schlange her. Du lenkst nur noch nach links oder rechts, aus Sicht der Schlange.",
         "SPIELEN startet die Runde (auch mit Enter oder Leertaste).",
-        "Unter dem Startknopf steht die lokale Bestenliste TOP 10, sobald du einen Eintrag hast.",
+        "Unter dem Startknopf steht die Bestenliste TOP 10, sobald du einen Eintrag hast.",
         "Modus, Kamera und Ton merkt sich das Spiel für den nächsten Besuch."
       ]
     },
@@ -74,8 +74,8 @@
     {
       "t": "Spielende, Bestwert und Bestenliste",
       "p": [
-        "Nach einem Zusammenstoß zeigt „GAME OVER“ Punkte, Level und Länge sowie deinen Bestwert („🏆 Neuer Bestwert!“, wenn du ihn geknackt hast). Reicht deine Punktzahl für die lokale TOP 10, gibst du einen Namen (bis 14 Zeichen) ein und tippst „Speichern“ oder drückst Enter. Ohne Namen wirst du als „Anonym“ eingetragen.",
-        "Bestwert, Bestenliste, dein zuletzt benutzter Name, Modus und Kamera liegen nur im Speicher dieses Browsers. Es gibt keinen Online- oder Mehrspielermodus."
+        "Nach einem Zusammenstoß zeigt „GAME OVER“ Punkte, Level und Länge sowie deinen Bestwert („🏆 Neuer Bestwert!“, wenn du ihn geknackt hast). Reicht deine Punktzahl für die TOP 10, gibst du einen Namen (bis 14 Zeichen) ein und tippst „Speichern“ oder drückst Enter. Ohne Namen wirst du als „Anonym“ eingetragen.",
+        "Bestwert, Bestenliste, dein zuletzt benutzter Name, Modus und Kamera werden im Browser gespeichert. Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück. Es gibt keinen Online- oder Mehrspielermodus."
       ]
     }
   ],
@@ -170,7 +170,7 @@
     },
     {
       "q": "Meine Bestenliste ist weg.",
-      "a": "Bestwert und TOP 10 liegen nur im Speicher deines Browsers. Wenn du Browserdaten löschst, im privaten Fenster spielst oder ein anderes Gerät nutzt, ist die Liste leer."
+      "a": "Ohne Google-Anmeldung liegen Bestwert und TOP 10 nur im Speicher deines Browsers: Wenn du Browserdaten löschst, im privaten Fenster spielst oder ein anderes Gerät nutzt, ist die Liste leer. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
     },
     {
       "q": "Warum reagiert Pfeil hoch nicht?",
@@ -178,7 +178,7 @@
     },
     {
       "q": "Kann ich zu zweit oder online spielen?",
-      "a": "Nein, AnMaCha Snake 3D ist ein Einzelspieler-Spiel mit lokaler Bestenliste."
+      "a": "Nein, AnMaCha Snake 3D ist ein Einzelspieler-Spiel mit eigener Bestenliste."
     },
     {
       "q": "Wie schalte ich den Ton aus?",

@@ -86,7 +86,8 @@
     {
       "t": "Punkte und Rekorde",
       "p": [
-        "Punkte gibt es im Solo-Spiel. Sie werden zu deinem Gesamtpunktestand addiert und mit deinen Statistiken im Browser gespeichert."
+        "Punkte gibt es im Solo-Spiel. Sie werden zu deinem Gesamtpunktestand addiert und mit deinen Statistiken im Browser gespeichert.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ],
       "list": [
         "Sieg deines Teams: 100 Punkte, als Werwolf 150 Punkte.",
@@ -182,7 +183,7 @@
     { "q": "Wie viele Spieler braucht man online?", "a": "Mindestens 5 und höchstens 12 Personen. Fehlende Mitspieler füllst du mit „＋ Computer“ auf. Mindestens ein echter Mensch mit Handy muss dabei sein." },
     { "q": "Ein Handy hat die Verbindung verloren – was jetzt?", "a": "Einfach mit demselben Handy erneut beitreten. Das Spiel erkennt es wieder und schickt die Rolle und offene Fragen noch einmal." },
     { "q": "Wie sehe ich am Handy meine Rolle?", "a": "Halte die Rollenkarte gedrückt. Lässt du los, wird sie wieder verdeckt." },
-    { "q": "Werden meine Punkte gespeichert?", "a": "Ja, Punkte und Statistiken aus dem Solo-Spiel bleiben im Browser gespeichert. Wenn du die Browserdaten löschst, sind sie weg." },
+    { "q": "Werden meine Punkte gespeichert?", "a": "Ja, Punkte und Statistiken aus dem Solo-Spiel bleiben im Browser gespeichert. Ohne Google-Anmeldung sind sie weg, wenn du die Browserdaten löschst. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät." },
     { "q": "Was passiert, wenn jemand nicht antwortet?", "a": "Nach 75 Sekunden wählt das Spiel automatisch: nachts zufällig, bei der Abstimmung eine Enthaltung." }
   ]
 }

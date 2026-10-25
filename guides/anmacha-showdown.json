@@ -56,7 +56,8 @@
       "t": "Ergebnis und Speichern",
       "p": [
         "Am Ende zeigt der Ergebnis-Bildschirm Sieger und Endstand. REVANCHE startet sofort ein neues Duell mit denselben Einstellungen, Hauptmenü bringt dich zurück.",
-        "Gespeichert werden auf dem Gerät: Gegner-Art, Stärke, Namen, Logos und die Bilanz gegen den Moderator getrennt nach Anfänger, Normal und Profi."
+        "Gespeichert werden auf dem Gerät: Gegner-Art, Stärke, Namen, Logos und die Bilanz gegen den Moderator getrennt nach Anfänger, Normal und Profi.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     }
   ],
@@ -180,7 +181,7 @@
     },
     {
       "q": "Wo ist meine Bilanz gespeichert?",
-      "a": "Lokal auf deinem Gerät, getrennt nach Anfänger, Normal und Profi. Wenn du die Browserdaten löschst, ist sie weg."
+      "a": "Auf deinem Gerät, getrennt nach Anfänger, Normal und Profi. Ohne Google-Anmeldung ist sie weg, wenn du die Browserdaten löschst. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
     },
     {
       "q": "Warum habe ich trotz Sieg im Spiel keinen Punkt bekommen?",

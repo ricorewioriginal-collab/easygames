@@ -63,7 +63,8 @@
         "Highscore und Rangliste werden mit deinem Konto gespeichert, wenn du angemeldet bist.",
         "Das Tagesrätsel wird für jeden Tag aus dem Datum erzeugt. Der erste Zug wird automatisch in der Feldmitte gemacht, damit alle mit derselben Fläche starten.",
         "Gewertet wird beim Tagesrätsel nur dein erster Versuch des Tages. Das Spiel merkt sich die letzten 30 Tage; im Rekordfenster steht, wie viele davon du gelöst hast.",
-        "📤 Ergebnis teilen erzeugt einen Text mit Datum, Zeit und Zahl der Peilungen (oder „ohne Peilung“) und einem Link zum Spiel – auf dem Handy über das Teilen-Menü, am PC wird er in die Zwischenablage kopiert."
+        "📤 Ergebnis teilen erzeugt einen Text mit Datum, Zeit und Zahl der Peilungen (oder „ohne Peilung“) und einem Link zum Spiel – auf dem Handy über das Teilen-Menü, am PC wird er in die Zwischenablage kopiert.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     },
     {
@@ -173,7 +174,7 @@
     },
     {
       "q": "Wo sind meine Rekorde gespeichert?",
-      "a": "Im Browser auf deinem Gerät. Bist du angemeldet, werden Highscore und Rangliste zusätzlich mit deinem Konto gespeichert. Löschst du die Browserdaten, sind die lokalen Werte weg."
+      "a": "Im Browser auf deinem Gerät. Ohne Google-Anmeldung sind sie weg, wenn du die Browserdaten löschst. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät. Highscore und Rangliste werden dann auch mit deinem Konto gespeichert."
     },
     {
       "q": "Das Radio spielt nicht.",

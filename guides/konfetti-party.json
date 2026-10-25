@@ -72,7 +72,8 @@
       "t": "Wertung, Fortschritt und Speichern",
       "p": [
         "Die Siege jeder Runde siehst du oben als ★ neben den Namen. Nach der Party gibt es ein Podest mit 👑 für den Sieger. Im Turnier gibt ein Partysieg den Pokal der Arena und schaltet die nächste frei.",
-        "Einstellungen, Pokale, Turnierfortschritt und Statistik (Partys, Siege, Runden) werden automatisch im Browser gespeichert."
+        "Einstellungen, Pokale, Turnierfortschritt und Statistik (Partys, Siege, Runden) werden automatisch im Browser gespeichert.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     }
   ],
@@ -161,7 +162,7 @@
   "faq": [
     { "q": "Wie viele Leute können mitspielen?", "a": "Bis zu 4 Gäste. Online spielen Handys, Controller und die Tastatur gemischt; freie Plätze übernehmen auf Wunsch Computer-Gäste." },
     { "q": "Das Handy kommt nicht in die Party.", "a": "Prüfe den Code auf dem Fernseher. Ist die Party voll oder der Raum geschlossen, bekommst du eine Meldung. Bei kurzem Verbindungsabbruch verbindet sich das Handy selbst neu." },
-    { "q": "Wo sind meine Pokale gespeichert?", "a": "Im Browser dieses Geräts. Werden Website-Daten gelöscht, sind Pokale und Turnierfortschritt weg." },
+    { "q": "Wo sind meine Pokale gespeichert?", "a": "Im Browser dieses Geräts. Ohne Google-Anmeldung sind Pokale und Turnierfortschritt weg, wenn Website-Daten gelöscht werden. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät." },
     { "q": "Wie schalte ich Musik oder Vibration aus?", "a": "Unter ⚙️ Einstellungen gibt es getrennte Schalter für Geräusche, Musik und Vibration." },
     { "q": "Warum knallt mein Bonbon nicht?", "a": "Du hast den 📡 Fernzünder: Deine Bonbons knallen erst, wenn du ZÜNDEN (F/Shift, Controller B/X) drückst, spätestens nach 30 Sekunden." },
     { "q": "Warum laufe ich plötzlich verkehrt herum?", "a": "Du hast den 🌀 Wirrwarr eingesammelt. Für 10 Sekunden sind alle Richtungen vertauscht." }

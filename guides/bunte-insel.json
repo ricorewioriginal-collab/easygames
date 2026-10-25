@@ -15,7 +15,8 @@
     "📖 Story-Modus: gleiche Welt, aber die Welten müssen nach und nach freigespielt werden. Du startest zuhause; jede Welt öffnet sich, wenn du ihre 3 Sticker-Aufgaben geschafft hast. Gesperrte Welten liegen hinter einer durchsichtigen Glaswand mit Schlössern, ein Schild zeigt, was zu tun ist.",
     "Beide Modi teilen einen Spielstand: Sterne, Sticker und Aufgaben zählen in beiden. Den Modus wechselst du jederzeit im Pause-Menü oder unter ⚙️.",
     "Das Spiel speichert automatisch im Browser. Im Hauptmenü gibt es 💾 Spielstand 1 bis 3 (unter „Wechseln“), im Pause-Menü „Jetzt speichern“ und „Sichern (Datei)“.",
-    "Beim ersten Start jedes Tages wartet ein Tagesgeschenk; wer 3 Tage hintereinander spielt, bekommt den Sticker „Stammgast“."
+    "Beim ersten Start jedes Tages wartet ein Tagesgeschenk; wer 3 Tage hintereinander spielt, bekommt den Sticker „Stammgast“.",
+    "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (Bereich im Hauptmenü unter den Spielständen) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
    ]
   },
   {
@@ -193,7 +194,7 @@
     "Im Story-Modus eine Welt suchen, die noch gesperrt ist – schau an der Glaswand oder im 🧭 Wohin?, welche drei Aufgaben fehlen.",
     "Ein fahrendes Auto direkt betreten wollen: erst anhalten, dann einsteigen.",
     "Taschis abgeschaltet und wundern, wo das Fanggras ist: ⚙️ → „🔴 Taschis: an“.",
-    "Browserdaten löschen, ohne vorher „Sichern (Datei)“ im Pause-Menü zu nutzen – dann ist der Spielstand weg."
+    "Browserdaten löschen, ohne vorher „Sichern (Datei)“ im Pause-Menü zu nutzen oder mit Google zu speichern – dann ist der Spielstand weg."
    ]
   }
  ],
@@ -562,7 +563,7 @@
  "faq": [
   {
    "q": "Mein Spielstand ist weg – was nun?",
-   "a": "Das Spiel speichert im Browser. Schau im Hauptmenü unter „Wechseln“, ob ein anderer Spielstand (1 bis 3) gewählt ist. Für den Notfall sicherst du deinen Stand im Pause-Menü mit „Sichern (Datei)“."
+   "a": "Das Spiel speichert im Browser. Schau im Hauptmenü unter „Wechseln“, ob ein anderer Spielstand (1 bis 3) gewählt ist. Hast du dich vorher mit „Mit Google speichern“ (Bereich im Hauptmenü unter den Spielständen) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät. Für den Notfall sicherst du deinen Stand im Pause-Menü mit „Sichern (Datei)“."
   },
   {
    "q": "Im Story-Modus komme ich nicht in eine Welt.",

@@ -205,7 +205,7 @@
     { "q": "Das Intro startet nicht.", "a": "Die Intros laufen über externe Player (YouTube bzw. Deezer). Ist ein Video in deinem Land gesperrt oder blockiert, wähle mit „↻ Anderer Moment“ ein anderes Intro oder öffne den angezeigten Link direkt." },
     { "q": "Mein Handy verbindet sich nicht mit dem TV.", "a": "Prüfe WR-Code und PIN (stehen nur am Fernseher). „WR-Code nicht gefunden“ heißt: Der TV-Modus läuft dort nicht mehr – am TV ▣ oder ♧ erneut öffnen. Ohne Internetverbindung kann die Kopplung nicht starten." },
     { "q": "Wie viele Spieler können mitmachen?", "a": "Bis zu 4 Spieler – am selben Gerät oder mit je einem Handy im TV-Modus." },
-    { "q": "Wo ist mein angefangenes Spiel?", "a": "Im Hauptmenü auf „↺ Spiel fortsetzen“. Der Stand liegt im Browser; nach einem Sieg oder nach dem Löschen der Website-Daten ist er weg." },
+    { "q": "Wo ist mein angefangenes Spiel?", "a": "Im Hauptmenü auf „↺ Spiel fortsetzen“. Der Stand liegt im Browser; nach einem Sieg ist er weg, ohne Google-Anmeldung auch nach dem Löschen der Website-Daten. Hast du dich im Hauptmenü unter den Spielern mit „Mit Google speichern“ angemeldet, holst du ihn mit „Spielstand mit Google wiederherstellen“ zurück." },
     { "q": "Wie schalte ich Vitos Stimme aus?", "a": "Oben auf ♫ tippen. Das Symbol wechselt zu ♪, die Texte stehen weiter in Vitos Sprechblase." },
     { "q": "Warum zählt mein Jahr nicht, obwohl die Serie bei uns damals lief?", "a": "Gemeint ist immer der Originalstart der Serie bzw. das Jahr des genannten Ereignisses, nicht die deutsche Erstausstrahlung." }
   ]

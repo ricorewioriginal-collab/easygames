@@ -129,7 +129,8 @@
     {
       "t": "Fortschritt und Speichern",
       "p": [
-        "Profil, laufende Staffel, Einstellungen, Rekorde und Challenge-Sterne werden auf dem Gerät gespeichert. Dein Profil sammelt Erfahrung (XP) für Auftritte und Training; das Level steigt mit der Erfahrung. Bricht ein Auftritt ab (z. B. durch Neuladen), geht es zurück in den Backstage, die Runde bleibt gleich."
+        "Profil, laufende Staffel, Einstellungen, Rekorde und Challenge-Sterne werden auf dem Gerät gespeichert. Dein Profil sammelt Erfahrung (XP) für Auftritte und Training; das Level steigt mit der Erfahrung. Bricht ein Auftritt ab (z. B. durch Neuladen), geht es zurück in den Backstage, die Runde bleibt gleich.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     }
   ],
@@ -271,6 +272,10 @@
     {
       "q": "Wo sind meine Aufnahmen?",
       "a": "Aufnahmen aus dem Freien Vorsingen bleiben auf deinem Gerät. Du kannst sie nach dem Auftritt anhören, speichern und teilen."
+    },
+    {
+      "q": "Ist mein Spielstand weg, wenn ich die Browserdaten lösche?",
+      "a": "Ohne Google-Anmeldung liegt alles nur lokal in diesem Browser: Nach dem Löschen der Browserdaten, im privaten Fenster oder auf einem anderen Gerät ist es nicht da. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät. Aufnahmen aus dem Freien Vorsingen bleiben nur auf deinem Gerät."
     }
   ]
 }

@@ -86,7 +86,8 @@
       "t": "Punkte, Rekord und Speichern",
       "p": [
         "In der Solo-Serie bringt jedes gerettete Wort: 10 Punkte Grundwert, plus 5 für jeden verschiedenen Buchstaben im Wort, plus 10 für jede übrige Kiste, minus 25 für jeden Joker. Dazu kommt ein Serien-Bonus von 10 Prozent für jedes Wort, das du vorher in dieser Serie schon gerettet hast, höchstens das Doppelte. Mindestens gibt es 5 Punkte pro Wort.",
-        "Rekord, gerettete Wörter, beste Serie, Tageswort-Ergebnisse, Duell-Namen und Einstellungen speichert das Spiel im Browser des Geräts."
+        "Rekord, gerettete Wörter, beste Serie, Tageswort-Ergebnisse, Duell-Namen und Einstellungen speichert das Spiel im Browser des Geräts.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     }
   ],
@@ -199,7 +200,7 @@
     },
     {
       "q": "Wo werden Rekord und Statistik gespeichert?",
-      "a": "Im Browser des Geräts. Wenn du die Website-Daten löschst oder im privaten Fenster spielst, sind sie weg."
+      "a": "Im Browser des Geräts. Ohne Google-Anmeldung sind sie weg, wenn du die Website-Daten löschst oder im privaten Fenster spielst. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
     },
     {
       "q": "Das Radio spielt nicht.",

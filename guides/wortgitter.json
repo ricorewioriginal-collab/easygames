@@ -74,7 +74,8 @@
       "t": "Fortschritt und Speichern",
       "p": [
         "Das Spiel speichert auf deinem Gerät: Rekord je Stufe, Zahl der Runden und Wörter, dein heutiges Tagesgitter-Ergebnis (der Knopf zeigt dann „📅 Tagesgitter · heute … Punkte“; spielst du es nochmal, zählt das bessere Ergebnis), die Einstellungen und deinen Online-Namen. Ein neuer Rekord wird in der Auswertung mit „neuer Rekord! 🏆“ angezeigt.",
-        "Nach einer Runde startet „Nochmal ▶“ ein neues Gitter derselben Stufe; nach dem Tagesgitter heißt der Knopf „Neues Gitter ▶“ und startet ein zufälliges 5×5-Gitter."
+        "Nach einer Runde startet „Nochmal ▶“ ein neues Gitter derselben Stufe; nach dem Tagesgitter heißt der Knopf „Neues Gitter ▶“ und startet ein zufälliges 5×5-Gitter.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     },
     {
@@ -175,7 +176,7 @@
     },
     {
       "q": "Wo sind meine Rekorde gespeichert?",
-      "a": "Lokal im Browser bzw. in der App auf deinem Gerät. Wenn du die Browserdaten löschst oder privat surfst, sind Rekorde und Statistik weg."
+      "a": "Im Browser bzw. in der App auf deinem Gerät. Ohne Google-Anmeldung sind Rekorde und Statistik weg, wenn du die Browserdaten löschst oder privat surfst. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
     },
     {
       "q": "Kann ich ohne Zeitdruck spielen?",

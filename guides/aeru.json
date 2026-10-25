@@ -81,7 +81,8 @@
     {
       "t": "Speichern",
       "p": [
-        "Das Spiel speichert automatisch im Browser (Spielstand und Einstellungen getrennt). „Speichern & Titelbild“ sichert sofort. Vor einem neuen Abenteuer wird der alte Stand gesichert. Ältere Spielstände werden beim Laden übernommen; ein Hinweis „SPIELSTAND ÜBERNOMMEN“ erklärt dann, was übernommen wurde. Wechselst du Fenster oder Tab, pausiert das Spiel."
+        "Das Spiel speichert automatisch im Browser (Spielstand und Einstellungen getrennt). „Speichern & Titelbild“ sichert sofort. Vor einem neuen Abenteuer wird der alte Stand gesichert. Ältere Spielstände werden beim Laden übernommen; ein Hinweis „SPIELSTAND ÜBERNOMMEN“ erklärt dann, was übernommen wurde. Wechselst du Fenster oder Tab, pausiert das Spiel.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     }
   ],
@@ -260,7 +261,7 @@
   "faq": [
     {
       "q": "Mein Spielstand ist weg.",
-      "a": "Der Spielstand liegt im Speicher dieses Browsers. Nach dem Löschen der Browserdaten oder auf einem anderen Gerät beginnt das Abenteuer neu. „Neues Abenteuer“ sichert den alten Stand vorher."
+      "a": "Ohne Google-Anmeldung liegt der Spielstand nur im Speicher dieses Browsers: Nach dem Löschen der Browserdaten oder auf einem anderen Gerät beginnt das Abenteuer neu. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät. „Neues Abenteuer“ sichert den alten Stand vorher."
     },
     {
       "q": "Das Sternentor öffnet sich nicht.",

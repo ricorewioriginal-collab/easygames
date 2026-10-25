@@ -145,7 +145,8 @@
   {
    "t": "Speichern und Fortschritt",
    "p": [
-    "Der Spielstand liegt lokal auf deinem Gerät: freigeschaltete Level, Sterne, Bestwerte, Münzen, Booster, Funkhaus, Tagesbonus und Einstellungen. Alter Radio-Match-Fortschritt (Level 1–100) wurde automatisch übernommen. Beim ersten Betreten einer Welt gibt es eine kurze Zwischenszene mit RAY und Mira Mix, neue Mechaniken erklärt ein Tutorial – beides lässt sich überspringen."
+    "Der Spielstand liegt auf deinem Gerät: freigeschaltete Level, Sterne, Bestwerte, Münzen, Booster, Funkhaus, Tagesbonus und Einstellungen. Alter Radio-Match-Fortschritt (Level 1–100) wurde automatisch übernommen. Beim ersten Betreten einer Welt gibt es eine kurze Zwischenszene mit RAY und Mira Mix, neue Mechaniken erklärt ein Tutorial – beides lässt sich überspringen.",
+    "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (Bereich unter ⚙️ Optionen) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
    ]
   }
  ],
@@ -518,7 +519,7 @@
  "faq": [
   {
    "q": "Ist mein Spielstand weg?",
-   "a": "Der Spielstand liegt lokal im Browser bzw. in der App. Gelöschte Browserdaten oder privates Surfen löschen ihn. Alter Radio-Match-Fortschritt (Level 1–100) wird beim ersten Start automatisch übernommen."
+   "a": "Ohne Google-Anmeldung liegt der Spielstand nur lokal im Browser bzw. in der App; gelöschte Browserdaten oder privates Surfen löschen ihn. Hast du dich vorher mit „Mit Google speichern“ (Bereich unter ⚙️ Optionen) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät. Alter Radio-Match-Fortschritt (Level 1–100) wird beim ersten Start automatisch übernommen."
   },
   {
    "q": "Das Spiel zeigt „3D-Grafik nicht verfügbar“.",

@@ -79,7 +79,8 @@
     {
       "t": "Speichern",
       "p": [
-        "Das Spiel merkt sich auf diesem Gerät Spielform, Dealer, Spielernamen, Sender-Shirts, Ton- und Stimme-Einstellung sowie die Liste der höchsten Gewinne (bis zu 10 Einträge, im Menü stehen die besten fünf). Eine einzelne Show wird nicht zwischengespeichert – brichst du ab, beginnt die nächste neu."
+        "Das Spiel merkt sich auf diesem Gerät Spielform, Dealer, Spielernamen, Sender-Shirts, Ton- und Stimme-Einstellung sowie die Liste der höchsten Gewinne (bis zu 10 Einträge, im Menü stehen die besten fünf). Eine einzelne Show wird nicht zwischengespeichert – brichst du ab, beginnt die nächste neu.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     }
   ],
@@ -198,7 +199,7 @@
     },
     {
       "q": "Wo sind meine Rekorde?",
-      "a": "Die höchsten Gewinne werden nur lokal in diesem Browser gespeichert. Nach dem Löschen der Browserdaten oder auf einem anderen Gerät ist die Liste leer."
+      "a": "Die höchsten Gewinne werden in diesem Browser gespeichert. Ohne Google-Anmeldung ist die Liste nach dem Löschen der Browserdaten oder auf einem anderen Gerät leer. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
     }
   ]
 }

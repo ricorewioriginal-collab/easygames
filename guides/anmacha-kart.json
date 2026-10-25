@@ -84,8 +84,9 @@
       "list": [
         "Oben im Rennen siehst du Platz, Runde (z. B. 🏁 2/3), Tempo in km/h und dein Item. „LETZTE RUNDE!“ kündigt die Schlussrunde an.",
         "Im Ergebnis stehen alle Fahrer mit Zeiten; im Cup die Gesamtpunkte.",
-        "🏆 Bestzeiten: Für jede Strecke speichert das Spiel deine beste Runde, außerdem deine beste Gesamtzeit je Rundenzahl. Gespeichert wird lokal im Browser und nur bei Solo-Rennen.",
-        "Fährst du eine neue Bestrunde, steht im Ergebnis „🏆 Neue Bestrunde“."
+        "🏆 Bestzeiten: Für jede Strecke speichert das Spiel deine beste Runde, außerdem deine beste Gesamtzeit je Rundenzahl. Gespeichert wird nur bei Solo-Rennen.",
+        "Fährst du eine neue Bestrunde, steht im Ergebnis „🏆 Neue Bestrunde“.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     }
   ],
@@ -211,7 +212,7 @@
     },
     {
       "q": "Meine Bestzeiten sind weg.",
-      "a": "Bestzeiten werden lokal im Browser gespeichert und nur bei Solo-Rennen. Nach dem Löschen der Website-Daten oder auf einem anderen Gerät sind sie nicht vorhanden."
+      "a": "Bestzeiten werden nur bei Solo-Rennen gespeichert. Ohne Google-Anmeldung liegen sie nur lokal im Browser – nach dem Löschen der Website-Daten oder auf einem anderen Gerät sind sie nicht vorhanden. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
     },
     {
       "q": "Kippen zum Lenken funktioniert nicht.",

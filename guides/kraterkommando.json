@@ -90,7 +90,8 @@
    "p": [
     "Das laufende Gefecht wird zu Beginn jedes Zuges im Browser gespeichert – samt zerstörtem Gelände, Lebenspunkten, Munition und Kisten. Über Pause und „Hauptmenü (Zugbeginn ist gespeichert)“ kannst du jederzeit aufhören und später mit „Gefecht fortsetzen“ am Anfang des aktuellen Zuges weitermachen.",
     "Im Feldzug merkt sich das Spiel das höchste freigeschaltete Level. Nach einem Sieg kommst du mit „Nächstes Level ▶“ weiter, kannst das Level wiederholen oder ins Hauptmenü gehen. Nach einer Niederlage heißt es „Nochmal versuchen“.",
-    "Das Endfenster zeigt im Schnellen Gefecht und zu zweit, wer gewonnen hat, nach wie vielen Runden, und die übrigen LP beider Teams."
+    "Das Endfenster zeigt im Schnellen Gefecht und zu zweit, wer gewonnen hat, nach wie vielen Runden, und die übrigen LP beider Teams.",
+    "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (Bereich im Hauptmenü) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
    ]
   }
  ],
@@ -213,7 +214,7 @@
  "faq": [
   {
    "q": "Mein gespeichertes Gefecht ist weg.",
-   "a": "Gespeichert wird im Browser zu Beginn jedes Zuges. Ist das Gefecht zu Ende oder startest du ein neues und bestätigst die Rückfrage, wird der Stand gelöscht. Auch das Löschen der Browserdaten entfernt ihn."
+   "a": "Gespeichert wird im Browser zu Beginn jedes Zuges. Ist das Gefecht zu Ende oder startest du ein neues und bestätigst die Rückfrage, wird der Stand gelöscht. Ohne Google-Anmeldung entfernt ihn auch das Löschen der Browserdaten. Hast du dich vorher mit „Mit Google speichern“ (Bereich im Hauptmenü) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
   },
   {
    "q": "Warum endet mein Zug plötzlich?",

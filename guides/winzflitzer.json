@@ -101,7 +101,8 @@
         "Kamera: Nah, Normal oder Weit.",
         "Touch-Steuerung: Stick-Richtung oder Tasten. Controller-Lenkung: Klassisch oder Stick-Richtung.",
         "Gegner: Leicht, Normal oder Schwer.",
-        "Gespeichert werden im Browser: Einstellungen, Statistik, Rundenbestzeit und Gesamtbestzeit je Strecke (in der Streckenauswahl mit ⏱ angezeigt), der Geist deiner schnellsten Zeitfahr-Runde je Strecke sowie laufende Meisterschaft und Kopf-an-Kopf-Turnier."
+        "Gespeichert werden im Browser: Einstellungen, Statistik, Rundenbestzeit und Gesamtbestzeit je Strecke (in der Streckenauswahl mit ⏱ angezeigt), der Geist deiner schnellsten Zeitfahr-Runde je Strecke sowie laufende Meisterschaft und Kopf-an-Kopf-Turnier.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück. Die Geister der Zeitfahr-Runden bleiben immer nur auf diesem Gerät."
       ]
     }
   ],
@@ -241,7 +242,7 @@
   "faq": [
     {
       "q": "Meine Meisterschaft ist weg.",
-      "a": "Sie wird im Browser gespeichert und beim Wählen von 🏆 Meisterschaft fortgesetzt. Nach dem Löschen der Website-Daten oder auf einem anderen Gerät beginnt sie neu."
+      "a": "Sie wird im Browser gespeichert und beim Wählen von 🏆 Meisterschaft fortgesetzt. Ohne Google-Anmeldung beginnt sie nach dem Löschen der Website-Daten oder auf einem anderen Gerät neu. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
     },
     {
       "q": "Das Spiel ruckelt.",

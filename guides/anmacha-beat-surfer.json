@@ -151,7 +151,7 @@
     { "q": "Ich höre keine Musik.", "a": "Prüfe den Ton-Knopf 🔊 oder drücke M. Im Browser startet der Ton erst nach dem ersten Antippen oder Tastendruck." },
     { "q": "Es steht „three.js konnte nicht geladen werden“.", "a": "Das Spiel lädt die 3D-Grafik beim Start aus dem Internet. Prüfe die Internetverbindung und lade die Seite neu." },
     { "q": "Wie fange ich die Kampagne neu an?", "a": "Im Menü unter Kampagne auf „↺ Kampagne von vorn“ tippen. Deine Bestwerte bleiben dabei erhalten." },
-    { "q": "Wird mein Fortschritt gespeichert?", "a": "Ja, Kampagne, Bestwerte und Einstellungen liegen im Browser. Werden Browserdaten gelöscht, geht der Stand verloren." },
+    { "q": "Wird mein Fortschritt gespeichert?", "a": "Ja, Kampagne, Bestwerte und Einstellungen liegen im Browser. Ohne Google-Anmeldung geht der Stand verloren, wenn Browserdaten gelöscht werden. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät." },
     { "q": "Kann ich mit Controller spielen?", "a": "Ja: Steuerkreuz oder LB, LT, RT, RB treffen die vier Spuren, A bestätigt, Start pausiert." }
   ]
 }

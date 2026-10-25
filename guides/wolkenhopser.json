@@ -67,7 +67,8 @@
         "Gebiete: Blumenwiese ab Start, Wolkenmeer ab Höhe 250, Abendhimmel ab 600, Sternennacht ab 1000, Weltall ab 1500. Beim Wechsel erscheint ein Banner.",
         "Eine Linie „★ Rekord“ zeigt dir während der Runde, wo dein bisheriger Rekord liegt. Überholst du ihn, kommt „⭐ Neuer Rekord!“.",
         "Am Ende siehst du Punkte, Höhe, Rekord, Münzen, Monster und das Gebiet (im Tagesrekord: „Heute bestes“). Mit 📤 Teilen schickst du dein Ergebnis mit Link.",
-        "Rekord, Münzen, Statistik, Figuren und Einstellungen werden auf dem Gerät gespeichert; mit Konto auch in der Rangliste."
+        "Rekord, Münzen, Statistik, Figuren und Einstellungen werden auf dem Gerät gespeichert; mit Konto auch in der Rangliste.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     },
     {
@@ -172,7 +173,7 @@
   "faq": [
     {
       "q": "Meine Münzen und Figuren sind weg – warum?",
-      "a": "Alles wird im Browser des Geräts gespeichert. Hast du die Website-Daten gelöscht, ein anderes Gerät oder einen privaten Tab benutzt, fängst du neu an. Mit Konto werden Rekord und Fortschritt mitgespeichert."
+      "a": "Alles wird im Browser des Geräts gespeichert. Ohne Google-Anmeldung fängst du neu an, wenn du die Website-Daten gelöscht, ein anderes Gerät oder einen privaten Tab benutzt hast. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
     },
     {
       "q": "Das Online-Rennen verbindet nicht.",

@@ -73,7 +73,8 @@
       "p": [
         "Für jede Verschmelzung gibt es so viele Punkte, wie die neue Kachel zeigt: zwei 8er ergeben eine 16 und 16 Punkte. Mehrere Verschmelzungen in einem Zug zählen zusammen; ab drei auf einmal ruft Rico „Kombo!“.",
         "Klassisch, Zen und Antippen werden nach jedem Zug automatisch im Browser gespeichert; ist das Spiel vorbei, wird der Spielstand gelöscht. Startest du denselben Modus neu über die Brettwahl, wird ein alter Spielstand dieses Modus ersetzt.",
-        "Unter 🏅 Rekorde stehen: Rekord, größte Kachel, Blitz-Bestwert, Antippen-Bestwert, heutiger Tages-2048-Wert, Bestwerte je Brettgröße 3×3 bis 6×6 im Klassisch-Modus, wie oft du 2048 geschafft hast, und die Zahl der Spiele. Der Rekord aus Klassisch, Blitz und Tages-2048 landet in der Rangliste und wird mit deinem Konto gespeichert, wenn du angemeldet bist."
+        "Unter 🏅 Rekorde stehen: Rekord, größte Kachel, Blitz-Bestwert, Antippen-Bestwert, heutiger Tages-2048-Wert, Bestwerte je Brettgröße 3×3 bis 6×6 im Klassisch-Modus, wie oft du 2048 geschafft hast, und die Zahl der Spiele. Der Rekord aus Klassisch, Blitz und Tages-2048 landet in der Rangliste und wird mit deinem Konto gespeichert, wenn du angemeldet bist.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     },
     {
@@ -193,7 +194,7 @@
   "faq": [
     {
       "q": "Mein Spielstand ist weg – warum?",
-      "a": "Gespeichert wird nur in Klassisch, Zen und Antippen, und zwar lokal im Browser. Ist das Spiel vorbei oder startest du denselben Modus über die Brettwahl neu, wird der alte Stand gelöscht. Auch beim Löschen der Browserdaten oder im privaten Fenster geht er verloren."
+      "a": "Gespeichert wird nur in Klassisch, Zen und Antippen, und zwar im Browser. Ist das Spiel vorbei oder startest du denselben Modus über die Brettwahl neu, wird der alte Stand gelöscht. Ohne Google-Anmeldung geht er auch beim Löschen der Browserdaten oder im privaten Fenster verloren. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
     },
     {
       "q": "Warum zählt mein Zen- oder Antippen-Ergebnis nicht für den Rekord?",

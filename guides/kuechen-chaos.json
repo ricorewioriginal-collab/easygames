@@ -90,7 +90,8 @@
     {
       "t": "Fortschritt und Speichern",
       "p": [
-        "Bestwert und Sterne jeder Küche, die Gesamtzahl der servierten Gerichte und die Einstellungen werden automatisch im Browser gespeichert. Online gespielte Küchen zählen genauso."
+        "Bestwert und Sterne jeder Küche, die Gesamtzahl der servierten Gerichte und die Einstellungen werden automatisch im Browser gespeichert. Online gespielte Küchen zählen genauso.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     }
   ],
@@ -186,7 +187,7 @@
     { "q": "Wie viele Köche können mitspielen?", "a": "Bis zu 4 – Handys, Controller und Tastatur gemischt. Freie Plätze übernehmen auf Wunsch Computer-Köche." },
     { "q": "Ich kann online nicht mehr einsteigen.", "a": "Während einer laufenden Schicht nimmt die Küche keine neuen Köche auf. Warte bis zum Feierabend und tritt dann bei." },
     { "q": "Kann ich solo ohne Computer-Koch spielen?", "a": "Ja. Schalte in den Einstellungen „Solo: Computer-Koch hilft mit“ aus. Dann steuerst du beide Köche und wechselst mit Tab/Q, Y oder WECHSELN." },
-    { "q": "Wo sind meine Sterne gespeichert?", "a": "Im Browser dieses Geräts. Werden Website-Daten gelöscht, beginnst du wieder bei der Imbiss-Ecke." },
+    { "q": "Wo sind meine Sterne gespeichert?", "a": "Im Browser dieses Geräts. Ohne Google-Anmeldung beginnst du nach dem Löschen der Website-Daten wieder bei der Imbiss-Ecke. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät." },
     { "q": "Warum kann ich nichts auf den Teller legen?", "a": "Auf einen Teller passt nur, was zu einem Gericht der aktuellen Karte gehört – und die Zutat muss geschnitten bzw. gebraten sein." },
     { "q": "Wie stelle ich Musik oder Vibration aus?", "a": "Unter ⚙️ Einstellungen gibt es Schalter für Geräusche, Musik und Vibration." }
   ]

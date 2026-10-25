@@ -82,7 +82,7 @@
       "t": "Einstellungen und Speichern",
       "list": [
         "Einstellungen: Schwierigkeit, Takt-Verzögerung (Mikrofon), Kamera-Bild spiegeln, Erkanntes Skelett anzeigen, Klänge und Vibration.",
-        "Gespeichert werden auf dem Gerät: Einstellungen, dein bestes Ergebnis je Song, Video und Sender, die zuletzt getanzten Songs, der erkannte Takt je Video, eigene Figuren und deine Statistik. Mit der easygames-Cloud-Anmeldung lässt sich der Stand mit deinem Konto abgleichen.",
+        "Gespeichert werden auf dem Gerät: Einstellungen, dein bestes Ergebnis je Song, Video und Sender, die zuletzt getanzten Songs, der erkannte Takt je Video, eigene Figuren und deine Statistik. Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück.",
         "Bei Rap-Kategorien weist das Spiel darauf hin, dass Texte derbe Sprache enthalten können (🅴 Explicit-Hinweis)."
       ]
     }
@@ -190,7 +190,11 @@
     },
     {
       "q": "Wo finde ich meine Rekorde?",
-      "a": "Unter ⭐ Meine Songs stehen die zuletzt getanzten Songs mit deinem besten Ergebnis. Die Daten liegen auf deinem Gerät."
+      "a": "Unter ⭐ Meine Songs stehen die zuletzt getanzten Songs mit deinem besten Ergebnis. Die Daten liegen auf deinem Gerät und – mit „Mit Google speichern“ (runder Google-Knopf unten links) – zusätzlich in deinem Google-Konto."
+    },
+    {
+      "q": "Ist mein Spielstand weg, wenn ich die Browserdaten lösche?",
+      "a": "Ohne Google-Anmeldung liegt alles nur lokal in diesem Browser: Nach dem Löschen der Browserdaten, im privaten Fenster oder auf einem anderen Gerät ist es nicht da. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
     }
   ]
 }

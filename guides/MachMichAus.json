@@ -181,7 +181,7 @@
     { "q": "Koppeln klappt nicht.", "a": "Für das Koppeln braucht das Spiel Internet. Ohne Verbindung erscheint „Koppeln nicht möglich (Internet?)“ – dann einfach das Gerät herumreichen." },
     { "q": "Die Moderatorstimme ist zu laut oder nervt.", "a": "Oben im Spiel auf 🗣️ tippen, dann wird nur noch Text angezeigt." },
     { "q": "Kann ich allein spielen?", "a": "Ja. Mit 1 Mensch spielst du 4 Runden: einmal als Kandidat und dreimal am Pult gegen Computer-Kandidaten." },
-    { "q": "Werden meine Profile gespeichert?", "a": "Ja, Namen, Stil, Vorlieben und Nogos der Menschen bleiben im Browser gespeichert." },
+    { "q": "Werden meine Profile gespeichert?", "a": "Ja, Namen, Stil, Vorlieben und Nogos der Menschen bleiben im Browser gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du sie zusätzlich in deinem Google-Konto und nutzt sie auch auf anderen Geräten." },
     { "q": "Was bringt das Flunkern genau?", "a": "Geflunkerte Antworten zählen für die Pulte wie echte Vorlieben und können Lampen retten. Beim Date kostet jede Lüge, die dein Date mag, 12 % Passgenauigkeit." }
   ]
 }

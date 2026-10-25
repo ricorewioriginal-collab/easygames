@@ -76,7 +76,7 @@
         "Status: Stufe, LP, SP, Werte und EXP jedes Helden.",
         "Speichern: von Hand speichern. Automatisch gespeichert wird beim Betreten von Funkhafen, nach jedem Boss und am Heilbrunnen.",
         "Titel: zurück zum Titelbild (speichert vorher). Dort geht es mit „Fortsetzen“ weiter.",
-        "Es gibt nur einen Spielstand, lokal im Browser dieses Geräts. „Neues Spiel“ überschreibt ihn; das Löschen der Browserdaten entfernt ihn."
+        "Es gibt nur einen Spielstand. Ohne Anmeldung liegt er nur lokal im Browser dieses Geräts; mit dem runden Knopf „Mit Google speichern“ wird er zusätzlich im Google-Konto gesichert und lässt sich über „Spielstand mit Google wiederherstellen“ zurückholen, auch auf anderen Geräten. „Neues Spiel“ überschreibt ihn."
       ]
     }
   ],
@@ -181,7 +181,7 @@
   "faq": [
     {
       "q": "Mein Spielstand ist weg.",
-      "a": "Es gibt nur einen Spielstand, lokal im Browser des Geräts. „Neues Spiel“ überschreibt ihn, das Löschen der Browserdaten entfernt ihn. Auf einem anderen Gerät beginnst du neu."
+      "a": "Es gibt nur einen Spielstand. „Neues Spiel“ überschreibt ihn. Ohne Anmeldung liegt er nur im Browser dieses Geräts und ist nach dem Löschen der Browserdaten weg; mit „Mit Google speichern“ ist er zusätzlich im Google-Konto gesichert und über „Spielstand mit Google wiederherstellen“ auch auf einem anderen Gerät wieder da."
     },
     {
       "q": "Wie spreche ich jemanden an oder öffne eine Truhe?",

@@ -66,7 +66,8 @@
         "Punkte pro gewonnenem Kampf: 1.000 + 10 je übrigem Lebenspunkt + 20 je übriger Sekunde + 1.500, wenn der Gegner keine Runde gewonnen hat.",
         "Verlierst du, kannst du mit ↻ Revanche gegen denselben Gegner weitermachen – deine Punkte werden dabei halbiert.",
         "Der Arcade-Highscore wird gespeichert, wenn du verlierst oder den Titel holst, und landet mit deinem Konto in der Rangliste.",
-        "🏅 Rekorde zeigt: Arcade-Highscore, Titel, gewonnene Kämpfe, beste Kombo (Schaden), Perfekt-Siege und deinen Lieblingskämpfer. Alles wird im Browser gespeichert."
+        "🏅 Rekorde zeigt: Arcade-Highscore, Titel, gewonnene Kämpfe, beste Kombo (Schaden), Perfekt-Siege und deinen Lieblingskämpfer. Alles wird im Browser gespeichert.",
+        "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
     },
     {
@@ -237,7 +238,7 @@
     },
     {
       "q": "Mein Highscore ist weg.",
-      "a": "Rekorde liegen im Browser. Bist du angemeldet, wird der Arcade-Highscore zusätzlich mit deinem Konto gespeichert. Nach dem Löschen der Browserdaten sind die lokalen Werte weg."
+      "a": "Rekorde liegen im Browser. Ohne Google-Anmeldung sind die Werte nach dem Löschen der Browserdaten weg. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät. Dann zählt der Arcade-Highscore auch für die Rangliste."
     },
     {
       "q": "Ich sehe keine Touch-Knöpfe am PC mit Touchscreen.",
