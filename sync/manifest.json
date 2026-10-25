@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5b06941f2b91",
- "generated": "2026-10-25T03:54:58+01:00",
- "commit": "643f3d6e5b3742e206fe31ec381a452fd94f1f2d",
+ "version": "e95fcb792c51",
+ "generated": "2026-10-25T04:01:32+01:00",
+ "commit": "32a3de16d335726fa97ecf01d7455ef99c653e48",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6705,6 +6705,11 @@
    "p": "guides/anmacha-urwaldlager.json",
    "s": 19470,
    "h": "b27c726cd87e55bb3f79c1be42dd114d6d08f8880d867f06ed7a412246abec07"
+  },
+  {
+   "p": "guides/beat-studio.json",
+   "s": 8853,
+   "h": "2a9dcb5d6d9382d1e819dc170f4d965ce6218b1d9c706fd2ccfa38951df05acb"
   },
   {
    "p": "guides/bowling-bahn.json",
