@@ -1,0 +1,16 @@
+{
+  "name": "bunte-insel-src",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vite-Build für Bunte Insel: bündelt und verkleinert die Spieldateien zu bunte-insel/js/bunte-insel.min.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config vite.config.mjs",
+    "build": "vite build --config vite.config.mjs",
+    "check": "node check-bundle.mjs"
+  },
+  "engines": { "node": ">=20.19" },
+  "devDependencies": {
+    "vite": "7.3.7"
+  }
+}

@@ -849,7 +849,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <noscript>Bitte JavaScript aktivieren.</noscript>
 
 <script>(function(){var b=document.body;if(matchMedia('(pointer:coarse)').matches||'ontouchstart' in window)b.classList.add('touch');addEventListener('touchstart',function(){b.classList.add('touch')},{once:true,passive:true})})()</script>
-<script>(function(){var T=['Tipp: Mit einem Freund im selben Auto fahren – einer lenkt, der andere fährt mit! 🚗','Tipp: Sammle Sterne ⭐ und kaufe damit tolle Sachen im Spielzeugladen.','Tipp: Mit Hubschrauber 🚁 und Segelboot ⛵ kannst du die ganze Insel entdecken.','Tipp: Unter „Mein Held“ änderst du Aussehen, Namen und Haustier.','Tipp: Mini-Spiele machen zu zweit am meisten Spaß! 🎮','Tipp: Im Bauland 🧱 kannst du eigene Häuser aus Blöcken bauen.'],ld=document.getElementById('ldTip'),b=document.getElementById('ldBar'),p=document.getElementById('ldPct'),tx=document.getElementById('ldTxt'),all=89,k=0;if(ld)ld.textContent=T[(Math.random()*T.length)|0];window.__ld=function(){k++;var v=Math.min(96,Math.round(k/all*100));if(b)b.style.width=v+'%';if(p)p.textContent=v+' %';if(tx)tx.textContent=v<50?'Lade Spielwelt …':v<90?'Baue die Insel …':'Gleich geht’s los!'}})()</script>
+<script>(function(){var T=['Tipp: Mit einem Freund im selben Auto fahren – einer lenkt, der andere fährt mit! 🚗','Tipp: Sammle Sterne ⭐ und kaufe damit tolle Sachen im Spielzeugladen.','Tipp: Mit Hubschrauber 🚁 und Segelboot ⛵ kannst du die ganze Insel entdecken.','Tipp: Unter „Mein Held“ änderst du Aussehen, Namen und Haustier.','Tipp: Mini-Spiele machen zu zweit am meisten Spaß! 🎮','Tipp: Im Bauland 🧱 kannst du eigene Häuser aus Blöcken bauen.'],ld=document.getElementById('ldTip'),b=document.getElementById('ldBar'),p=document.getElementById('ldPct'),tx=document.getElementById('ldTxt'),all=90,k=0;if(ld)ld.textContent=T[(Math.random()*T.length)|0];window.__ldAll=function(){k=Math.max(k,all-1);window.__ld()};window.__ld=function(){k++;var v=Math.min(96,Math.round(k/all*100));if(b)b.style.width=v+'%';if(p)p.textContent=v+' %';if(tx)tx.textContent=v<50?'Lade Spielwelt …':v<90?'Baue die Insel …':'Gleich geht’s los!'}})()</script>
 <script>
 /* Startdiagnose: sichtbar auch wenn die Engine ein Teilobjekt bereits angelegt hat. */
 (function(){
@@ -868,101 +868,19 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
     if(!document.getElementById('ldRetry')){var btn=document.createElement('button');btn.id='ldRetry';btn.textContent='🔄 Erneut laden';btn.style.cssText='padding:12px 20px;margin:10px auto;background:white;color:#173c75;border:0;border-radius:16px;font:bold 17px system-ui;cursor:pointer;display:block';btn.onclick=function(){location.reload()};target.appendChild(btn);}
   }
   function record(message,stack){errors.push({message:String(message).slice(0,300),stack:String(stack||'').slice(0,4000)});report('JavaScript-Fehler');}
-  addEventListener('error',function(e){if(e.target&&e.target.tagName==='SCRIPT')record('Spieldatei fehlt: '+e.target.getAttribute('src'),'');else if(e.message)record(e.message,e.error&&e.error.stack||((e.filename||'')+':'+(e.lineno||0)+':'+(e.colno||0)));},true);
+  addEventListener('error',function(e){if(e.target&&e.target.tagName==='SCRIPT'){if(/bunte-insel\.min\.js/.test(e.target.src||''))return;record('Spieldatei fehlt: '+e.target.getAttribute('src'),'')}else if(e.message)record(e.message,e.error&&e.error.stack||((e.filename||'')+':'+(e.lineno||0)+':'+(e.colno||0)));},true);
   addEventListener('unhandledrejection',function(e){record('Promise: '+String(e.reason&&e.reason.message||e.reason),e.reason&&e.reason.stack);});
   setTimeout(function(){if(!finished&&visible())report('12-Sekunden-Watchdog');},12000);
   setInterval(function(){if(!finished&&visible()&&Date.now()-startAt>12000)report('Start-Watchdog');else if(!visible())finished=true;},4000);
 })();
 </script>
-<script src="js/i18n.js?v=gast1" onload="__ld()"></script>
-<script src="js/i18n-en.js?v=gast1" onload="__ld()"></script>
 <script src="vendor/three.min.js?v=r128" onload="__ld()"></script>
-<script src="js/util.js?v=gast1" onload="__ld()"></script>
-<script src="js/bugreport.js?v=1" onload="__ld()"></script>
-<script src="js/characters.js?v=modern1" onload="__ld()"></script>
-<script src="js/gaeste.js?v=1" onload="__ld()"></script>
-<script src="js/audio.js?v=i18n3" onload="__ld()"></script>
-<script src="js/town.js?v=wi1" onload="__ld()"></script>
-<script src="js/world.js?v=wi1" onload="__ld()"></script>
-<script src="js/places.js?v=wf1" onload="__ld()"></script>
-<script src="js/vehicles.js?v=fp2" onload="__ld()"></script>
-<script src="js/fun.js?v=wi1" onload="__ld()"></script>
-<script src="js/thumbs.js?v=gast1" onload="__ld()"></script>
-<script src="js/build.js" onload="__ld()"></script>
-<script src="js/range.js" onload="__ld()"></script>
-<script src="js/net.js" onload="__ld()"></script>
-<script src="js/jump.js?v=fp1" onload="__ld()"></script>
-<script src="js/minis2.js" onload="__ld()"></script>
-<script src="js/minis3.js?v=rz1" onload="__ld()"></script>
-<script src="js/mini.js" onload="__ld()"></script>
-<script src="js/kids.js?v=gast1" onload="__ld()"></script>
-<script src="js/garden.js" onload="__ld()"></script>
-<script src="js/farm.js?v=nc1" onload="__ld()"></script>
-<script src="js/pool.js?v=bd1" onload="__ld()"></script>
-<script src="js/play.js" onload="__ld()"></script>
-<script src="js/obby.js" onload="__ld()"></script>
-<script src="js/express.js" onload="__ld()"></script>
-<script src="js/gadgets.js" onload="__ld()"></script>
-<script src="js/parcours.js" onload="__ld()"></script>
-<script src="js/meta.js?v=sk1" onload="__ld()"></script>
-<script src="js/pack.js?v=wf1" onload="__ld()"></script>
-<script src="js/themes.js?v=hpf1" onload="__ld()"></script>
-<script src="js/park.js?v=wi1" onload="__ld()"></script>
-<script src="js/tycoon.js?v=ifx1" onload="__ld()"></script>
-<script src="js/rainbow.js?v=wi1" onload="__ld()"></script>
-<script src="js/pups.js?v=wi1" onload="__ld()"></script>
-<script src="js/dampfer.js?v=br1" onload="__ld()"></script>
-<script src="js/drachen.js?v=wi1" onload="__ld()"></script>
-<script src="js/prisma.js?v=wi1" onload="__ld()"></script>
-<script src="js/bauland.js?v=wi1" onload="__ld()"></script>
-<script src="js/fussball.js?v=wi1" onload="__ld()"></script>
-<script src="js/huepf.js?v=2" onload="__ld()"></script>
-<script src="js/maerchenplus.js?v=gast1" onload="__ld()"></script>
-<script src="js/maerchen.js?v=wi1" onload="__ld()"></script>
-<script src="js/schatz.js?v=ins2" onload="__ld()"></script>
-<script src="js/sammeln.js?v=wi1" onload="__ld()"></script>
-<script src="js/schluessel.js?v=wf1" onload="__ld()"></script>
-<script src="js/badestrand.js?v=1" onload="__ld()"></script>
-<script src="js/schwamm.js?v=wf1" onload="__ld()"></script>
-<script src="js/raetsel.js?v=wf1" onload="__ld()"></script>
-<script src="js/wald.js?v=wf2" onload="__ld()"></script>
-<script src="js/tafeln.js?v=rz1" onload="__ld()"></script>
-<script src="js/innen.js?v=gast1" onload="__ld()"></script>
-<script src="js/storymode.js?v=wf1" onload="__ld()"></script>
-<script src="js/tv.js?v=sm2" onload="__ld()"></script>
-<script src="js/gamepad.js?v=2" onload="__ld()"></script>
-<script src="js/keys.js?v=1" onload="__ld()"></script>
-<script src="js/inselstory.js?v=wf1" onload="__ld()"></script>
-<script src="js/buch-data.js?v=gast1" onload="__ld()"></script>
-<script src="js/buch.js?v=1" onload="__ld()"></script>
-<script src="js/cheats.js?v=hpf1" onload="__ld()"></script>
-<script src="js/voxel.js" onload="__ld()"></script>
-<script src="js/atlantis.js?v=nc1" onload="__ld()"></script>
-<script src="js/zotik.js?v=wf1" onload="__ld()"></script>
-<script src="js/radio.js?v=nc1" onload="__ld()"></script>
-<script src="js/dialog.js?v=dl1" onload="__ld()"></script>
-<script src="js/wunsch.js?v=wi1" onload="__ld()"></script>
-<script src="js/wunsch-game.js?v=wu1" onload="__ld()"></script>
-<script src="js/taschi-data.js?v=ta1" onload="__ld()"></script>
-<script src="js/taschi.js?v=wi1" onload="__ld()"></script>
-<script src="js/taschi-welten.js?v=ts1" onload="__ld()"></script>
-<script src="js/taschi-game.js?v=gfx1" onload="__ld()"></script>
-<script src="js/home.js" onload="__ld()"></script>
-<script src="js/life.js?v=gast1" onload="__ld()"></script>
-<script src="js/einsatz.js?v=fp1" onload="__ld()"></script>
-<script src="js/arcade.js" onload="__ld()"></script>
-<script src="js/cinema.js?v=ins7" onload="__ld()"></script>
-<script src="js/tasklog.js?v=fp1" onload="__ld()"></script>
-<script src="js/story.js?v=gast1" onload="__ld()"></script>
-<script src="js/kitchen.js" onload="__ld()"></script>
-<script src="js/room.js?v=ins13" onload="__ld()"></script>
-<script src="js/camp.js" onload="__ld()"></script>
-<script src="js/beauty.js?v=ifx1" onload="__ld()"></script>
-<script src="js/ausruestung.js?v=wf1" onload="__ld()"></script>
-<script src="js/combat.js?v=wf7" onload="__ld()"></script>
-<script src="js/weather.js?v=ins10" onload="__ld()"></script>
-<script src="js/talk.js?v=wf1" onload="__ld()"></script>
-<script src="js/main.js?v=gast2" onload="__ld()"></script>
+<script>/* Spielcode laden: im Netz und in der App EINE gebündelte, verkleinerte Datei (js/bunte-insel.min.js, gebaut mit Vite in bunte-insel-src/ – schneller,
+   weniger Anfragen); lokal (localhost) oder mit ?dev=1 die einzelnen Dateien aus BI_FILES, ?bundle=1 erzwingt das Bündel. Fehlt das Bündel, kommen die einzelnen Dateien. */
+(function(){var F=window.BI_FILES=['js/i18n.js?v=gast1','js/i18n-en.js?v=gast1','js/util.js?v=gast1','js/bugreport.js?v=1','js/characters.js?v=modern1','js/gaeste.js?v=1','js/audio.js?v=i18n3','js/town.js?v=wi1','js/world.js?v=wi1','js/places.js?v=wf1','js/vehicles.js?v=fp2','js/fun.js?v=wi1','js/thumbs.js?v=gast1','js/build.js','js/range.js','js/net.js','js/jump.js?v=fp1','js/minis2.js','js/minis3.js?v=rz1','js/mini.js','js/kids.js?v=gast1','js/garden.js','js/farm.js?v=nc1','js/pool.js?v=bd1','js/play.js','js/obby.js','js/express.js','js/gadgets.js','js/parcours.js','js/meta.js?v=sk1','js/pack.js?v=wf1','js/themes.js?v=hpf1','js/park.js?v=wi1','js/tycoon.js?v=ifx1','js/rainbow.js?v=wi1','js/pups.js?v=wi1','js/dampfer.js?v=br1','js/drachen.js?v=wi1','js/prisma.js?v=wi1','js/bauland.js?v=wi1','js/fussball.js?v=wi1','js/huepf.js?v=2','js/maerchenplus.js?v=gast1','js/maerchen.js?v=wi1','js/schatz.js?v=ins2','js/sammeln.js?v=wi1','js/schluessel.js?v=wf1','js/badestrand.js?v=1','js/themen.js?v=1','js/schwamm.js?v=wf1','js/raetsel.js?v=wf1','js/wald.js?v=wf2','js/tafeln.js?v=rz1','js/innen.js?v=gast1','js/storymode.js?v=wf1','js/tv.js?v=sm2','js/gamepad.js?v=2','js/keys.js?v=1','js/inselstory.js?v=wf1','js/buch-data.js?v=gast1','js/buch.js?v=1','js/cheats.js?v=hpf1','js/voxel.js','js/atlantis.js?v=nc1','js/zotik.js?v=wf1','js/radio.js?v=nc1','js/dialog.js?v=dl1','js/wunsch.js?v=wi1','js/wunsch-game.js?v=wu1','js/taschi-data.js?v=ta1','js/taschi.js?v=wi1','js/taschi-welten.js?v=ts1','js/taschi-game.js?v=gfx1','js/home.js','js/life.js?v=gast1','js/einsatz.js?v=fp1','js/arcade.js','js/cinema.js?v=ins7','js/tasklog.js?v=fp1','js/story.js?v=gast1','js/kitchen.js','js/room.js?v=ins13','js/camp.js','js/beauty.js?v=ifx1','js/ausruestung.js?v=wf1','js/combat.js?v=wf7','js/weather.js?v=ins10','js/talk.js?v=wf1','js/main.js?v=gast2'],V='01fc8d5ce29f',q=location.search,h=location.hostname,dev=/[?&]dev=1/.test(q)||((h==='localhost'||h==='127.0.0.1')&&!/[?&]bundle=1/.test(q));
+window.__biFallback=function(){if(window.__biFb)return;window.__biFb=1;for(var i=0;i<F.length;i++){var s=document.createElement('script');s.src=F[i];s.async=false;s.onload=window.__ld;document.body.appendChild(s)}};
+if(dev){var o='';for(var i=0;i<F.length;i++)o+='<script src="'+F[i]+'" onload="__ld()"><\/script>';document.write(o)}
+else document.write('<script src="js/bunte-insel.min.js?v='+V+'" onload="__ldAll()" onerror="__biFallback()"><\/script>')})();</script>
 <script src="../cloud/anmacha-cloud.js" data-mount="#cloudLoginMount" data-game="bunte-insel" data-prefix="bunteInsel.,bunteInsel_" defer></script>
 </body>
 </html>

@@ -48,24 +48,28 @@ BI.store = {
 };
 (function () { let s = 0; try { s = parseInt(sessionStorage.getItem('bi_slot'), 10); } catch (e) { } if (!(s >= 1 && s <= 3)) s = (BI.store.meta().last | 0); BI.store.slot = s >= 1 && s <= 3 ? s : 1; })();
 
-/* ---- Batch: viele einfache Körper zu EINEM Mesh bündeln (Vertexfarben, flache Schattierung) ---- */
+/* ---- Batch: viele einfache Körper zu EINEM Mesh bündeln (Vertexfarben). Runde Körper (Kugel, Zylinder/Kegel ab 6 Ecken) bekommen weiche Normalen
+   aus ihrer Vorlage – gleiche Dreiecke, aber rund schattiert statt kantig (kein Low-Poly-Look). Kisten/Dächer bleiben scharfkantig. ?soft=0 = alt. ---- */
 (function () {
   const _m = new THREE.Matrix4(), _v = new THREE.Vector3(), _q = new THREE.Quaternion(), _e = new THREE.Euler(), _s = new THREE.Vector3(), _c = new THREE.Color();
   const _t = new Float32Array(9), cache = {};
-  const nonIdx = g => (g.index ? g.toNonIndexed() : g).attributes.position.array;
+  const SOFT = !(typeof location !== 'undefined' && /[?&]soft=0/.test(location.search));
+  const nonIdx = (g, soft) => { const n = g.index ? g.toNonIndexed() : g; return { p: n.attributes.position.array, n: soft && SOFT && n.attributes.normal ? n.attributes.normal.array : null }; };
   function prismBase() {
     const a = [-.5, 0, -.5], b = [.5, 0, -.5], c = [0, 1, -.5], d = [-.5, 0, .5], e = [.5, 0, .5], f = [0, 1, .5];
-    return new Float32Array([].concat(a, c, b, d, e, f, a, d, f, a, f, c, b, c, f, b, f, e));
+    return { p: new Float32Array([].concat(a, c, b, d, e, f, a, d, f, a, f, c, b, c, f, b, f, e)), n: null };
   }
   function base(key, make) { return cache[key] || (cache[key] = make()); }
 
   BI.Batch = class Batch {
     constructor() { this.p = []; this.n = []; this.c = []; }
-    _push(src, px, py, pz, rx, ry, rz, sx, sy, sz, color, jit) {
+    _push(base, px, py, pz, rx, ry, rz, sx, sy, sz, color, jit) {
       _m.compose(_v.set(px, py, pz), _q.setFromEuler(_e.set(rx, ry, rz, 'YXZ')), _s.set(sx, sy, sz));
-      const e = _m.elements; _c.set(color);
+      const e = _m.elements, src = base.p; _c.set(color);
       let r = _c.r, g = _c.g, b = _c.b;
       if (jit) { const k = 1 + (Math.random() - .5) * jit; r *= k; g *= k; b *= k; }
+      /* weiche Normalen: Normalenmatrix = Drehung · Skalierung⁻¹ → Spalte k von e geteilt durch s_k² */
+      const SN = base.n && Math.abs(sx) > 1e-6 && Math.abs(sy) > 1e-6 && Math.abs(sz) > 1e-6 ? base.n : null, ix = 1 / (sx * sx), iy = 1 / (sy * sy), iz = 1 / (sz * sz);
       for (let i = 0; i < src.length; i += 9) {
         for (let k = 0; k < 3; k++) {
           const x = src[i + k * 3], y = src[i + k * 3 + 1], z = src[i + k * 3 + 2];
@@ -77,7 +81,15 @@ BI.store = {
         let nx = uy * wz - uz * wy, ny = uz * wx - ux * wz, nz = ux * wy - uy * wx;
         const l = Math.hypot(nx, ny, nz); if (l < 1e-9) continue;
         nx /= l; ny /= l; nz /= l;
-        for (let k = 0; k < 3; k++) { this.p.push(_t[k * 3], _t[k * 3 + 1], _t[k * 3 + 2]); this.n.push(nx, ny, nz); this.c.push(r, g, b); }
+        for (let k = 0; k < 3; k++) {
+          this.p.push(_t[k * 3], _t[k * 3 + 1], _t[k * 3 + 2]); this.c.push(r, g, b);
+          if (SN) {
+            const ax = SN[i + k * 3] * ix, ay = SN[i + k * 3 + 1] * iy, az = SN[i + k * 3 + 2] * iz;
+            let mx = e[0] * ax + e[4] * ay + e[8] * az, my = e[1] * ax + e[5] * ay + e[9] * az, mz = e[2] * ax + e[6] * ay + e[10] * az; const ml = Math.hypot(mx, my, mz);
+            if (ml > 1e-9 && (mx * nx + my * ny + mz * nz) / ml > -.2) { this.n.push(mx / ml, my / ml, mz / ml); continue; }
+          }
+          this.n.push(nx, ny, nz);
+        }
       }
     }
     /* alle Körper stehen mit der Unterkante auf y (Kugel: y = Mitte) */
@@ -86,11 +98,11 @@ BI.store = {
     }
     cyl(x, y, z, rt, rb, h, color, seg = 8, rx = 0, ry = 0, rz = 0, jit = 0) {
       const key = 'cyl' + seg + '|' + rt + '|' + rb;
-      this._push(base(key, () => nonIdx(new THREE.CylinderGeometry(rt, rb, 1, seg))), x, y + h / 2, z, rx, ry, rz, 1, h, 1, color, jit);
+      this._push(base(key, () => nonIdx(new THREE.CylinderGeometry(rt, rb, 1, seg), seg >= 6)), x, y + h / 2, z, rx, ry, rz, 1, h, 1, color, jit);
     }
     cone(x, y, z, r, h, color, seg = 6, jit = 0) { this.cyl(x, y, z, 0, r, h, color, seg, 0, 0, 0, jit); }
     sph(x, y, z, r, color, detail = 1, sx = 1, sy = 1, sz = 1, jit = 0) {
-      this._push(base('sphere' + detail, () => nonIdx(new THREE.SphereGeometry(1, Math.max(8, 8 + detail * 4), Math.max(6, 6 + detail * 2)))), x, y, z, 0, 0, 0, r * sx, r * sy, r * sz, color, jit);
+      this._push(base('sphere' + detail, () => nonIdx(new THREE.SphereGeometry(1, Math.max(8, 8 + detail * 4), Math.max(6, 6 + detail * 2)), true)), x, y, z, 0, 0, 0, r * sx, r * sy, r * sz, color, jit);
     }
     /* Dachprisma: Breite w (x), Höhe h, Länge len (z); ry=π/2 dreht den First */
     prism(x, y, z, w, h, len, color, ry = 0, jit = 0) {
@@ -160,7 +172,8 @@ BI.store = {
     return out;
   };
   const LAYERS = [.0005, .006, .016, .021, .0255, .0265, .0275, .0285, .035, .055, .065, .071, .075, .08, .09, .11, .2], lmats = [], pmats = [];
-  const PAINT = !(typeof location !== 'undefined' && /[?&]zl=0/.test(location.search)); /* ?zl=0 = alte Schichten mit Polygon-Offset (zum Vergleichen) */
+  const PAINT = !(typeof location !== 'undefined' && /[?&]zl=0/.test(location.search));
+  const LOD = !(typeof location !== 'undefined' && /[?&]lod=0/.test(location.search)); BI.DETAIL = []; /* ?zl=0 = alte Schichten mit Polygon-Offset (zum Vergleichen) */
   /* Höhenkarte der dünnen Bodenbeläge (Gehwege, Plätze, Straßen, Böden bis 20 cm): 0,5-m-Raster in 32×32-Kacheln, Höhe in mm (0–255).
      W.groundY kannte bisher nur den Grundboden (0) – Figuren, Autos und Spieler standen auf Gehwegen mit den Schuhen im Belag. */
   BI.HeightMap = class {
@@ -185,7 +198,20 @@ BI.store = {
       for (let j = 0; j < 9; j++) { d.p.push(p[i + j]); d.n.push(n[i + j]); d.c.push(c[i + j]); }
     }
     const mk = (bb, mt) => chunk ? BI.chunkMeshes(bb, mt, chunk) : [bb.mesh(mt)];
-    const out = mk(M, BI.mat());
+    /* Detail-Ebene (nur große Welt mit Kacheln): winzige Dreiecke (< 0,03 m² – Blumen, Schrauben, kleine Kugeln, ~55 % aller Dreiecke) kommen in eigene,
+       feinere Kacheln, die main.js ab einer Entfernung ausblendet (BI.DETAIL, je nach Grafikstufe 70–150 m); kleine Teile (< 0,3 m²) erst ab 150–360 m. Nah sieht alles gleich aus. ?lod=0 = aus. */
+    let out;
+    if (chunk && LOD) {
+      const big = new BI.Batch(), det = new BI.Batch(), mid = new BI.Batch(), q = M.p;
+      for (let i = 0; i < q.length; i += 9) {
+        const ux = q[i + 3] - q[i], uy = q[i + 4] - q[i + 1], uz = q[i + 5] - q[i + 2], wx = q[i + 6] - q[i], wy = q[i + 7] - q[i + 1], wz = q[i + 8] - q[i + 2];
+        const ar = .5 * Math.hypot(uy * wz - uz * wy, uz * wx - ux * wz, ux * wy - uy * wx), d = ar < .03 ? det : ar < .3 ? mid : big;
+        for (let j = 0; j < 9; j++) { d.p.push(q[i + j]); d.n.push(M.n[i + j]); d.c.push(M.c[i + j]); }
+      }
+      out = mk(big, BI.mat());
+      /* Stufe 1 = winzige Teile (verschwinden zuerst), Stufe 2 = kleine Teile (erst weit draußen, z. B. Häuser-Details auf fernen Inseln) */
+      for (const [bb, tier] of [[det, 1], [mid, 2]]) if (!bb.empty) for (const m of BI.chunkMeshes(bb, BI.mat(), 56, 0, 0)) { m.userData.detail = tier; BI.DETAIL.push(m); out.push(m); }
+    } else out = mk(M, BI.mat());
     if (PAINT) {
       /* Gegen Flackern: Bodenflächen werden wie von einem Maler von unten nach oben aufgetragen (zuerst gezeichnet, Tiefentest „immer“, nach Höhe sortiert).
          Vorher lagen in einer Schicht Wege/Plätze/Markierungen 0–4 mm übereinander und kämpften um jedes Pixel. Das ist sicher, weil die Kamera
@@ -350,23 +376,25 @@ BI.makePet = function (kind, name) {
     einhorn: { c: 0xffffff, c2: 0xff9ad8, ear: 'point', sn: .12, tail: 'long', sz: 1.05 }, baerchen: { c: 0x8a5a33, c2: 0xe0b890, ear: 'fsmall', sn: .06, tail: 'puff', sz: 1.05 }
   }[def.id], mat = BI.mat(), C = K.c, C2 = K.c2, DK = 0x2a2a33;
   const root = new THREE.Group(), b = new BI.Batch(), inner = new THREE.Group(); root.add(inner);
-  b.box(0, .42, 0, .44, .4, .95, C); b.box(0, .3, .02, .38, .2, .8, C2); b.box(0, .5, .52, .36, .42, .34, C);
-  b.box(0, .8, .84, .34, .3, .3, C); b.box(0, .76, 1.03 + K.sn * .5, .22, .16, .2 + K.sn, C2); b.box(0, .85, 1.14 + K.sn, .09, .06, .05, def.id === 'schnuffel' ? 0xff3a7a : DK);
-  b.box(-.09, .9, 1.0, .06, .07, .03, DK); b.box(.09, .9, 1.0, .06, .07, .03, DK);
-  if (K.ear === 'floppy') { b.box(-.19, .86, .84, .08, .3, .14, 0x8a5a33, 0, 0, .15); b.box(.19, .86, .84, .08, .3, .14, 0x8a5a33, 0, 0, -.15); }
-  else if (K.ear === 'fsmall') { b.box(-.15, 1.0, .8, .1, .12, .1, C2, 0, 0, .5); b.box(.15, 1.0, .8, .1, .12, .1, C2, 0, 0, -.5); }
-  else if (K.ear === 'point') { b.cone(-.12, .95, .8, .07, .2, C, 4); b.cone(.12, .95, .8, .07, .2, C, 4); for (const sd of [-1, 1]) { b.box(sd * .12, .84, 1.12, .2, .01, .01, 0xffffff); b.box(sd * .12, .81, 1.12, .2, .01, .01, 0xffffff); } b.box(0, .6, -.05, .3, .1, .6, 0x5e6478); }
-  else if (K.ear === 'long') { b.box(-.08, 1.15, .78, .07, .42, .05, C, 0, 0, .1); b.box(.08, 1.15, .78, .07, .42, .05, C, 0, 0, -.1); b.box(-.08, 1.15, .8, .035, .3, .03, C2, 0, 0, .1); b.box(.08, 1.15, .8, .035, .3, .03, C2, 0, 0, -.1); }
-  if (K.spikes) { for (let i = 0; i < 5; i++) b.cone(0, .62, .35 - i * .22, .08 - i * .008, .2, 0xffb02e, 4); b.box(0, .82, 1.05, .2, .06, .06, 0xffffff); }
+  /* runde, weiche Formen (Kugeln/Kapseln) statt Kisten */
+  b.sph(0, .5, 0, 1, C, 2, .23, .21, .46); b.sph(0, .4, .04, 1, C2, 2, .18, .13, .36); b.sph(0, .55, .44, 1, C, 2, .19, .2, .17);
+  b.sph(0, .83, .84, .2, C, 2, 1, .95, 1); b.sph(0, .77, 1.02 + K.sn * .5, 1, C2, 2, .11, .08, .1 + K.sn * .5); b.sph(0, .81, 1.12 + K.sn, .045, def.id === 'schnuffel' ? 0xff3a7a : DK, 1);
+  for (const sd of [-1, 1]) { b.sph(sd * .085, .9, .98, .05, 0xffffff, 1); b.sph(sd * .085, .9, 1.017, .031, DK, 1); b.sph(sd * .075, .915, 1.04, .011, 0xffffff, 0); }
+  if (K.ear === 'floppy') { for (const sd of [-1, 1]) b.sph(sd * .19, .8, .84, 1, 0x8a5a33, 1, .05, .15, .08); }
+  else if (K.ear === 'fsmall') { for (const sd of [-1, 1]) b.sph(sd * .14, 1.0, .8, .075, C2, 1); }
+  else if (K.ear === 'point') { for (const sd of [-1, 1]) { b.cyl(sd * .12, .95, .8, .006, .07, .2, C, 8, 0, 0, -sd * .25); b.box(sd * .12, .82, 1.1, .2, .01, .01, 0xffffff); b.box(sd * .12, .79, 1.1, .2, .01, .01, 0xffffff); } b.sph(0, .64, -.05, 1, 0x5e6478, 1, .14, .05, .3); }
+  else if (K.ear === 'long') { for (const sd of [-1, 1]) { b.cyl(sd * .08, .94, .78, .035, .045, .44, C, 8, 0, 0, -sd * .1); b.cyl(sd * .08, .98, .805, .018, .024, .34, C2, 8, 0, 0, -sd * .1); } }
+  if (def.id === 'einhorn') b.cyl(0, 1.0, .95, .005, .05, .28, 0xffd23f, 8, .45);
+  if (K.spikes) { for (let i = 0; i < 5; i++) b.cone(0, .66, .35 - i * .22, .08 - i * .008, .2, 0xffb02e, 8); b.sph(0, .8, 1.05, 1, 0xffffff, 1, .1, .03, .03); }
   inner.add(b.mesh(mat));
-  function leg(x, z) { const g = new THREE.Group(), l = new BI.Batch(); l.box(0, -.36, 0, .13, .36, .13, C); l.box(0, -.4, .03, .15, .08, .19, C2); g.add(l.mesh(mat)); g.position.set(x, .38, z); inner.add(g); return g; }
+  function leg(x, z) { const g = new THREE.Group(), l = new BI.Batch(); l.cyl(0, -.36, 0, .066, .058, .36, C, 10); l.sph(0, -.37, .03, 1, C2, 1, .08, .05, .1); g.add(l.mesh(mat)); g.position.set(x, .38, z); inner.add(g); return g; }
   const fl = leg(-.15, .5), fr = leg(.15, .5), bl = leg(-.15, -.36), br = leg(.15, -.36);
   const tg = new THREE.Group(), t = new BI.Batch();
-  if (K.tail === 'long') { t.box(0, .05, -.3, .08, .08, .6, C, 0, -.4); t.box(0, .3, -.62, .08, .3, .08, C); t.box(0, .5, -.64, .09, .09, .09, 0x5e6478); }
-  else if (K.tail === 'puff') t.sph(0, .02, -.14, .17, C2, 1);
-  else if (K.tail === 'curl') { t.sph(0, .05, -.1, .07, C2, 0); t.sph(0, .16, -.16, .07, C2, 0); t.sph(0, .2, -.06, .06, C2, 0); }
-  else if (K.tail === 'thick') { t.box(0, 0, -.3, .2, .2, .6, C, 0, -.2); t.box(0, -.05, -.7, .1, .1, .3, C); }
-  else { t.box(0, 0, -.2, .1, .1, .42, C, 0, -.5); t.box(0, .05, -.4, .07, .07, .16, C2, 0, -.5); }
+  if (K.tail === 'long') { t.cyl(0, -.22, -.24, .028, .05, .5, C, 8, -.95); t.sph(0, .2, -.43, .05, def.id === 'einhorn' ? 0xff9ad8 : 0x5e6478, 1); }
+  else if (K.tail === 'puff') t.sph(0, .02, -.14, .17, C2, 2);
+  else if (K.tail === 'curl') { t.sph(0, .05, -.1, .07, C2, 1); t.sph(0, .16, -.16, .07, C2, 1); t.sph(0, .2, -.06, .06, C2, 1); }
+  else if (K.tail === 'thick') { t.cyl(0, -.32, -.32, .06, .12, .64, C, 10, -1.35); t.sph(0, .07, -.64, .06, C, 1); }
+  else { t.cyl(0, -.16, -.2, .03, .055, .42, C, 8, -1.1); t.sph(0, .14, -.39, .05, C2, 1); }
   tg.add(t.mesh(mat)); tg.position.set(0, .62, -.46); inner.add(tg);
   const cv = document.createElement('canvas'); cv.width = 192; cv.height = 56; const cx = cv.getContext('2d'); cx.font = 'bold 36px Fredoka, system-ui, sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.lineWidth = 7; cx.strokeStyle = '#16335e'; cx.strokeText(name, 96, 30); cx.fillStyle = '#fff'; cx.fillText(name, 96, 30);
   const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: BI.labelTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(1.1, .32, 1); sp.position.set(0, 1.6 + (K.ear === 'long' ? .2 : 0), .3); root.add(sp);
@@ -544,18 +572,19 @@ BI.makePappnase = function () {
 /* ---- Blitz: Polizeihund-Helfer (eigener Entwurf, Schäferhund-Look mit blauer Mütze) ---- */
 BI.makeDog = function (o) {
   o = o || {}; const root = new THREE.Group(), b = new BI.Batch(), TAN = o.fur != null ? o.fur : 0xc9944f, BLK = o.dark != null ? o.dark : 0x2a2a33, BLUE = o.uni != null ? o.uni : 0x2d6be0, GOLD = o.trim != null ? o.trim : 0xffd23f, mat = BI.mat(), hat = o.hat || 'cap';
-  b.box(0, .42, 0, .44, .4, .95, TAN); b.box(0, .6, -.05, .46, .14, .6, BLK); b.box(0, .5, .52, .36, .42, .34, TAN); b.box(0, .5, .52, .42, .22, .36, BLUE); b.box(0, .52, .71, .1, .1, .03, GOLD);
-  b.box(0, .8, .84, .32, .3, .3, TAN); b.box(0, .76, 1.04, .2, .15, .22, BLK); b.box(0, .84, 1.16, .09, .06, .05, 0x111111);
-  b.box(-.15, .98, .78, .09, .24, .09, BLK, 0, 0, .25); b.box(.15, .98, .78, .09, .24, .09, BLK, 0, 0, -.25);
-  b.box(-.08, .88, 1.0, .06, .06, .03, 0x111111); b.box(.08, .88, 1.0, .06, .06, .03, 0x111111);
-  if (hat === 'cap') { b.box(0, 1.08, .84, .36, .1, .36, BLUE); b.box(0, 1.17, .82, .24, .07, .24, BLUE); b.box(0, 1.07, 1.03, .32, .04, .13, 0x1c3f9e); b.box(0, 1.2, 1.0, .07, .06, .03, GOLD); }
-  else if (hat === 'helmet') { b.sph(0, 1.02, .84, .24, BLUE, 1, 1, .8, 1); b.box(0, 1.2, .84, .07, .05, .34, GOLD); b.box(0, 1.1, 1.05, .22, .04, .08, GOLD); }
-  else if (hat === 'hard') { b.sph(0, 1.04, .84, .22, BLUE, 1, 1, .75, 1); b.box(0, 1.06, 1.05, .36, .03, .2, BLUE); b.box(0, 1.2, .84, .06, .04, .3, GOLD); }
-  else if (hat === 'goggles') { b.box(0, 1.07, .84, .34, .12, .34, BLK); b.box(0, 1.03, .84, .38, .05, .38, BLUE); b.sph(-.1, 1.12, 1.0, .07, GOLD, 1); b.sph(.1, 1.12, 1.0, .07, GOLD, 1); b.box(0, 1.12, 1.0, .12, .03, .03, BLK); }
+  /* runde Formen: Körper, Weste, Kopf, Schnauze, große Augen (statt Kisten) */
+  const MUZ = new THREE.Color(TAN).lerp(new THREE.Color(0xffffff), .35).getHex();
+  b.sph(0, .5, 0, 1, TAN, 2, .24, .22, .46); b.sph(0, .62, -.06, 1, BLK, 2, .2, .1, .32); b.sph(0, .54, .4, 1, BLUE, 2, .255, .235, .2); b.sph(0, .56, .6, .05, GOLD, 1, 1, 1, .5);
+  b.sph(0, .86, .82, .22, TAN, 2, 1, .95, 1); b.sph(0, .79, 1.02, 1, MUZ, 2, .12, .09, .14); b.sph(0, .835, 1.155, .048, 0x111111, 1);
+  for (const sd of [-1, 1]) { b.sph(sd * .085, .92, .985, .052, 0xffffff, 1); b.sph(sd * .085, .92, 1.024, .032, 0x111111, 1); b.sph(sd * .074, .936, 1.048, .012, 0xffffff, 0); b.cyl(sd * .15, .94, .76, .01, .075, .26, BLK, 8, 0, 0, -sd * .3); }
+  if (hat === 'cap') { b.cyl(0, 1.02, .82, .19, .21, .1, BLUE, 16); b.sph(0, 1.12, .82, 1, BLUE, 2, .19, .08, .19); b.sph(0, 1.035, 1.0, 1, 0x1c3f9e, 1, .16, .02, .12); b.sph(0, 1.14, 1.0, .035, GOLD, 1, 1, 1, .5); }
+  else if (hat === 'helmet') { b.sph(0, 1.02, .84, .24, BLUE, 2, 1, .8, 1); b.box(0, 1.2, .84, .07, .05, .34, GOLD); b.box(0, 1.1, 1.05, .22, .04, .08, GOLD); }
+  else if (hat === 'hard') { b.sph(0, 1.04, .84, .22, BLUE, 2, 1, .75, 1); b.sph(0, 1.06, 1.0, 1, BLUE, 1, .18, .02, .12); b.box(0, 1.2, .84, .06, .04, .3, GOLD); }
+  else if (hat === 'goggles') { b.cyl(0, 1.0, .84, .19, .2, .12, BLK, 16); b.cyl(0, 1.0, .84, .205, .205, .05, BLUE, 16); b.sph(-.1, 1.12, 1.0, .07, GOLD, 1); b.sph(.1, 1.12, 1.0, .07, GOLD, 1); b.box(0, 1.12, 1.0, .12, .03, .03, BLK); }
   const inner = new THREE.Group(); root.add(inner); inner.add(b.mesh(mat));
-  function leg(x, z) { const g = new THREE.Group(), l = new BI.Batch(); l.box(0, -.36, 0, .13, .36, .13, TAN); l.box(0, -.4, .03, .15, .08, .19, BLK); g.add(l.mesh(mat)); g.position.set(x, .38, z); inner.add(g); return g; }
+  function leg(x, z) { const g = new THREE.Group(), l = new BI.Batch(); l.cyl(0, -.36, 0, .068, .06, .36, TAN, 10); l.sph(0, -.37, .03, 1, BLK, 1, .08, .05, .1); g.add(l.mesh(mat)); g.position.set(x, .38, z); inner.add(g); return g; }
   const fl = leg(-.15, .5), fr = leg(.15, .5), bl = leg(-.15, -.36), br = leg(.15, -.36);
-  const tg = new THREE.Group(), t = new BI.Batch(); t.box(0, 0, -.2, .1, .1, .42, TAN, 0, -.5); t.box(0, .05, -.4, .07, .07, .16, BLK, 0, -.5); tg.add(t.mesh(mat)); tg.position.set(0, .62, -.46); inner.add(tg);
+  const tg = new THREE.Group(), t = new BI.Batch(); t.cyl(0, -.16, -.2, .03, .055, .42, TAN, 8, -1.1); t.sph(0, .14, -.39, .05, BLK, 1); tg.add(t.mesh(mat)); tg.position.set(0, .62, -.46); inner.add(tg);
   const cv = document.createElement('canvas'); cv.width = 192; cv.height = 56; const cx = cv.getContext('2d'); cx.font = 'bold 36px Fredoka, system-ui, sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.lineWidth = 7; cx.strokeStyle = '#16335e'; cx.strokeText(o.name || 'Blitz', 96, 30); cx.fillStyle = '#fff'; cx.fillText(o.name || 'Blitz', 96, 30);
   const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: BI.labelTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(1.1, .32, 1); sp.position.set(0, 1.65, .3); if (!o.noName) root.add(sp);
   return {
@@ -625,3 +654,27 @@ BI.C = { // Farben für Partikel (r,g,b 0..1)
   gold: [1, .82, .2], white: [1, 1, 1], pink: [1, .45, .7], blue: [.35, .7, 1], water: [.5, .8, 1], green: [.4, .9, .5], red: [1, .35, .35], dust: [.85, .8, .7], purple: [.7, .45, 1], orange: [1, .6, .2]
 };
 
+
+/* Meer: hellere Flachwasser-Säume um alle Inseln und sanft wandernde Lichtstreifen (im Shader berechnet, kostet kaum etwas, keine Textur).
+   Die Grundfarbe bleibt material.color (Tag/Nacht wie bisher). Inseln = alle BI.<WELT> mit x, z, R plus die Hauptinsel. ?wasser=0 = schlicht. */
+BI.prettyWater = function (water) {
+  if (!water || !water.material || /[?&]wasser=0/.test(location.search)) return;
+  const N = 24, isl = [new THREE.Vector3(0, 0, BI.WORLD ? BI.WORLD.R + 6 : 196)];
+  for (const k in BI) { const v = BI[k]; if (isl.length < N && v && typeof v === 'object' && typeof v.x === 'number' && typeof v.z === 'number' && v.R > 20 && v.bridge !== undefined) isl.push(new THREE.Vector3(v.x, v.z, v.R + 8)); }
+  for (const k in BI) { const v = BI[k]; if (isl.length < N && v && typeof v === 'object' && typeof v.x === 'number' && typeof v.z === 'number' && v.R > 20 && v.bridge === undefined && !isl.some(q => q.x === v.x && q.y === v.z)) isl.push(new THREE.Vector3(v.x, v.z, v.R + 8)); }
+  while (isl.length < N) isl.push(new THREE.Vector3(1e5, 1e5, 1));
+  const uT = { value: 0 }, m = water.material;
+  m.onBeforeCompile = sh => {
+    sh.uniforms.uT = uT; sh.uniforms.uIsl = { value: isl };
+    sh.vertexShader = 'varying vec2 vWp;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vWp = (modelMatrix * vec4(transformed, 1.0)).xz;');
+    sh.fragmentShader = 'uniform float uT;\nuniform vec3 uIsl[' + N + '];\nvarying vec2 vWp;\n' + sh.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
+  float shal = 0.0;
+  for (int i = 0; i < ${N}; i++) { float d = distance(vWp, uIsl[i].xy) - uIsl[i].z; shal = max(shal, 1.0 - smoothstep(0.0, 24.0, d)); }
+  diffuseColor.rgb = mix(diffuseColor.rgb * 0.9, diffuseColor.rgb * vec3(1.0, 1.16, 1.08) + vec3(0.02, 0.05, 0.04), shal);
+  float w1 = sin(vWp.x * 0.071 + uT * 0.55) * sin(vWp.y * 0.083 - uT * 0.47);
+  float w2 = sin((vWp.x - vWp.y) * 0.19 + uT * 1.1) * sin((vWp.x + vWp.y) * 0.13 - uT * 0.8);
+  diffuseColor.rgb += vec3(0.05, 0.07, 0.08) * smoothstep(0.35, 0.95, w1 * 0.55 + w2 * 0.45);`);
+  };
+  m.customProgramCacheKey = () => 'biWater' + N;
+  water.onBeforeRender = () => { uT.value = (performance.now() / 1000) % 3600; };
+};
