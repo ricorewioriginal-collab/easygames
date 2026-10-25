@@ -1,0 +1,296 @@
+{
+  "id": "anmacha-undercover",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AnMaCha UNDERCOVER 3D – Wem kannst du trauen? ist eine Social-Deduction-Party im Funkhaus. Unter den Teilnehmern verstecken sich Verräter (oder ein Imposter), die täuschen, sabotieren und lügen. Die Crew muss herausfinden, wer es ist – die Verräter müssen unentdeckt bleiben.",
+        "Gespielt wird mit 3 bis 12 Teilnehmern: solo offline gegen Bots oder online, wobei jeder auf seinem eigenen Gerät spielt und seine geheime Rolle nur selbst sieht. Es gibt sechs Modi, sechs 3D-Karten, 24 Minispiele in drei Stufen, über 500 Wörter in 11 Kategorien und 34 Erfolge."
+      ]
+    },
+    {
+      "t": "Hauptmenü",
+      "list": [
+        "▶ Solo gegen Computer: Modus wählen, Karte, Teilnehmer (du + Bots), Bot-Schwierigkeit (Leicht, Mittel, Schwer) und auf Wunsch deine Rolle („Meine Rolle“ – zum Ausprobieren).",
+        "🌐 Online: Raum erstellen – du bist Gastgeber und legst Modus, Karte und Regeln fest.",
+        "🔗 Mit Code/Link beitreten und 🔎 Öffentlichen Raum finden.",
+        "🎭 Spielmodi: alle Modi mit Regeln (📖 Regeln) und direktem Solo-Start.",
+        "👤 Charakter gestalten: Figuren-Editor für dein Aussehen.",
+        "🏅 Erfolge & Statistik, ⚙ Einstellungen (Tasten neu belegen, Grafikstufe, Lautstärke) und 📖 Spielanleitung / Regeln."
+      ]
+    },
+    {
+      "t": "Die Karten",
+      "list": [
+        "Funkhaus Zentral – mit Studio A, Dach, Moderationsraum, Redaktion, Foyer, Leitstand, Pausenraum, Archiv und Technik; dazu ein Aufzug Foyer ↔ Dach und ein Kamerapult.",
+        "RadioCity bei Nacht, Frequenz-Express, Festivalgelände, Inselstation und Orbital-Sendestation.",
+        "Jede Karte hat ein Notrufpult, Aufgabenstationen und Geheimgänge für Verräter."
+      ]
+    },
+    {
+      "t": "Modus 1: Verräter-Jagd",
+      "list": [
+        "Rollen: 🎧 Crew erledigt eigene Aufgaben (Minispiele), meldet Ausgeknipste und stimmt ab. 🎭 1–3 Verräter täuschen Aufgaben nur vor, knipsen mit Abklingzeit aus, sabotieren (Stromausfall, Funkstille, Türen, Sendeausfall) und nutzen Geheimgänge. Verräter kennen sich gegenseitig.",
+        "Findest du eine ausgeknipste Person, melde sie. Am Notrufpult kannst du selbst eine Besprechung einberufen (begrenzte Notrufe pro Person, gesperrt während eines Sendeausfalls).",
+        "Besprechung: erst Diskussion (Chat oder Schnellnachrichten), dann anonyme Abstimmung. Bei Gleichstand – oder wenn genauso viele überspringen – fliegt niemand raus. Die Rolle der rausgewählten Person wird nicht verraten.",
+        "Ausgeschiedene spielen als 👻 Geist weiter: Sie erledigen ihre Aufgaben und schreiben nur im Geisterkanal.",
+        "Sieg Crew: alle Verräter rausgewählt oder der Aufgabenbalken ist voll.",
+        "Sieg Verräter: so viele Verräter wie übrige Personen oder ein Sendeausfall wird nicht rechtzeitig behoben."
+      ]
+    },
+    {
+      "t": "Modus 2: Imposter – Das geheime Wort",
+      "list": [
+        "💡 Wissende sehen Wort und Kategorie. 🤫 Der Imposter kennt in der Variante „Imposter kennt nur die Kategorie“ nur die Kategorie. In der Variante „Imposter bekommt ein ähnliches Wort“ hat er ein ähnliches Wort und erfährt seine Rolle erst bei Enttarnung oder am Ende. Ab 9 Personen kann es 2 Imposter geben.",
+        "Reihum gibt jede Person einen Hinweis – höchstens drei Wörter, nicht das Wort selbst und nichts zu Ähnliches. Je nach Einstellung frei getippt oder per Hinweiskarte, meist zwei Runden.",
+        "Danach Diskussion und Abstimmung. Wird niemand eindeutig gewählt, gibt es einmalig eine Zusatzrunde.",
+        "Wird der Imposter rausgewählt, darf er das Wort raten. Liegt er richtig, gewinnt er trotzdem.",
+        "Sieg Wissende: alle Imposter rausgewählt und das Wort nicht erraten. Sieg Imposter: ein Wissender wird rausgewählt, niemand wird gewählt oder das Wort wird erraten.",
+        "Kategorien: Alltag, Berufe, Essen, Fantasy, Film & Fernsehen, Musik, Orte, Radio, Sport, Technik, Tiere."
+      ]
+    },
+    {
+      "t": "Modus 3: Detektiv & Alibi",
+      "list": [
+        "Jede Partie ist einer von 12 Fällen: Das verschwundene Master-Band, Funkstille um Mitternacht, Der Fall Mischpult, Doppelte Frequenz, Das falsche Alibi, Spuren im Kabelsalat, Der Zeuge, der zu viel wusste, Blackout im Sendesaal, Das Rauschen im Archiv, Die Kamera lügt nicht, Der Notruf ohne Absender und Sendeschluss.",
+        "🔍 Ermittler (ab 9 Personen zwei) untersuchen Spuren an Fundorten mit „Benutzen“. Jede Spur landet in der Fallakte – Schlüsse ziehst du selbst.",
+        "🎭 Der Täter (meist einer, im Fall „Doppelte Frequenz“ zwei) kann einige Spuren manipulieren. 🎧 Die Crew liefert Alibis und stimmt ab.",
+        "Spurenarten: 👣 Fußspuren (Schuhgröße S/M/L), 🧵 Stofffaser (warm, kühl oder neutral), 💇 Haarfund (kurz, lang, keine), 🔊 Geräusch (mit oder ohne Kopfbedeckung/Accessoire), 🚪 Türlogbuch, 📹 Kameraaufnahme, ⏱️ Zeitpunkt, 🗣️ Zeugenaussage (Zeugen können sich irren), 📓 Stationslogbuch und 📡 Bewegungsmelder.",
+        "Es gibt ein Zeitlimit bis zum Sendeschluss. Aufgaben helfen beim Tarnen, bringen aber keinen Sieg.",
+        "Sieg Crew: alle Täter rausgewählt. Sieg Täter: Gleichstand oder bis zum Sendeschluss unentdeckt."
+      ]
+    },
+    {
+      "t": "Modus 4: Sabotage-Chaos",
+      "list": [
+        "Rettet die Sendung bis zum Sendeschluss! Störungen: 💡 Stromausfall, 📻 Funkstille, 🎛️ Mischpult zerstört, 🗼 Sendeturm defekt, 🚨 Sendeausfall und 🚪 Türen verriegelt.",
+        "Jede offene Störung senkt die Sendequalität, ohne Störung erholt sie sich langsam. In drei Eskalationsstufen kommen Umgebungsstörungen immer häufiger.",
+        "Manche Reparaturen müssen an zwei Orten fast gleichzeitig gelingen – sprecht euch ab.",
+        "Teamaufträge (z. B. „Behebt 4 Störungen“) bringen +15 % Sendequalität. Besprechungen gibt es per Notrufpult.",
+        "Die Verräter knipsen hier niemanden aus, sie sabotieren und täuschen Arbeit vor.",
+        "Sieg Crew: Sendung läuft bis zum Sendeschluss oder alle Verräter rausgewählt. Sieg Verräter: Sendequalität auf 0, Sendeausfall nicht behoben oder Überzahl."
+      ]
+    },
+    {
+      "t": "Modus 5: Verstecken & Jagen",
+      "list": [
+        "1–2 🔦 Jäger, die alle kennen, gegen die 🏃 Flüchtenden.",
+        "Flüchtende aktivieren Funkbaken (12 s dranbleiben), verstecken sich (bis 15 s), sprinten (kostet Ausdauer und macht Lärm) und befreien Gefangene am Käfig.",
+        "Jäger starten nach 10 s Pause, fangen per Berührung, durchsuchen Verstecke, sprinten kurz und senden alle 45 s einen Ortungsimpuls, der nicht versteckte Flüchtende kurz zeigt (sie werden vorgewarnt).",
+        "Sind genug Funkbaken an (3–5, je nach Anzahl), öffnen sich nach 15 s die Ausgänge – die Jäger werden gewarnt.",
+        "Gefangene landen im Käfig, um den Käfig gibt es eine Schutzzone. Wer dreimal gefangen wurde, ist raus. Laufen macht Geräusche, Sprinten verrät die Richtung noch deutlicher.",
+        "Sieg Flüchtende: mindestens die Hälfte entkommt. Sieg Jäger: zu viele gefangen oder die Zeit läuft ab."
+      ]
+    },
+    {
+      "t": "Modus 6: Rollen-Chaos und die Sonderrollen",
+      "p": [
+        "Verräter-Jagd mit Sonderrollen. Pro Partie kommen einige Rollen ins Spiel (Standard: bis zu 4) – niemand weiß, welche. Fähigkeiten haben eine Abklingzeit."
+      ],
+      "list": [
+        "🔍 Ermittler: prüft bis zu 3-mal eine Person in der Nähe – Ergebnis „verdächtig“, „unklar“ oder „unauffällig“ (Abklingzeit 35 s).",
+        "🔧 Techniker: repariert Sabotagen leichter, hält Doppelreparaturen länger und ist gegen Störsender immun.",
+        "🛡️ Beschützer: schützt eine Person in der Nähe 25 s lang – ein Angriff prallt ab und alle Beteiligten merken es (Abklingzeit 40 s).",
+        "📦 Kurier: holt an einer Paketstation ein Info-Paket und bringt es zum Notrufpult – ein Funkspruch entlastet eine Person garantiert.",
+        "🃏 Trickser: gehört zu niemandem und gewinnt allein, wenn er rausgewählt wird.",
+        "🦎 Gestaltwandler (Verräter): nimmt 15 s lang das Aussehen einer anderen Person an. Spurenleser sehen seine echten Spuren.",
+        "👣 Spurenleser: sieht frische Fußspuren mit dem Symbol der Person – auch die eines Gestaltwandlers.",
+        "📡 Störsender (Verräter): stört 12 s lang Aufgaben und Karte aller in der Nähe (Techniker sind immun)."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "PC: WASD oder Pfeiltasten laufen, E benutzen, F melden, Leertaste Spezialaktion (Ausknipsen, Fangen, Verstecken), V Geheimgang, G Sabotage, T Fähigkeit, Umschalt Sprint, M Karte, Tab Aufgaben, Q Kamera (folgt dir / Übersicht), + und − zoomen, Enter Chat, C Schnellnachricht, Esc Menü/Pause. Alle Tasten lassen sich in den Einstellungen neu belegen.",
+        "Smartphone und Tablet: linke Bildschirmhälfte = schwebender Stick zum Laufen. Rechts die runden Aktionsknöpfe – der große ist „Benutzen“, die anderen (Melden, Ausknipsen/Fangen/Verstecken, Fähigkeit, Geheimgang, Sabotage) erscheinen, wenn sie gerade möglich sind.",
+        "Controller: linker Stick laufen, rechter Stick Kamera, A benutzen, B Spezialaktion, X melden, Y Karte, LB Kamera-Ansicht, RB Geheimgang, LT Sabotage, RT Sprint, Zurück/Ansicht Aufgabenliste, Steuerkreuz ↑ Schnellnachricht, ← → zoomen, Start Menü. In Menüs bewegt der Stick den Fokus, A bestätigt, B geht zurück.",
+        "Im Wortspiel: Hinweis eintippen oder Hinweiskarte wählen, zum Abstimmen die Person antippen bzw. anklicken."
+      ]
+    },
+    {
+      "t": "Online spielen",
+      "steps": [
+        "🌐 Online: Raum erstellen, Modus, Karte und Regeln festlegen. Privat oder Öffentlich wählen.",
+        "Link kopieren (📋), 📤 Teilen oder den QR-Code zeigen. Mitspieler treten per Link, Raumcode oder QR-Code von überall bei – im Browser, am Handy oder in der App.",
+        "In der Lobby setzt jeder ✔ Bereit. Der Gastgeber startet mit ▶ Runde starten (auch wenn noch nicht alle bereit sind). Freie Plätze füllen Bots.",
+        "Jeder spielt auf seinem eigenen Gerät; Rolle, Wort und Hinweise sieht nur man selbst.",
+        "Bricht eine Verbindung ab, kann ein Bot vorübergehend übernehmen (Einstellung „Bots übernehmen bei Verbindungsabbruch“). Verlässt der Gastgeber das Spiel, endet die Runde für alle ohne Sieger."
+      ]
+    },
+    {
+      "t": "Regeln einstellen",
+      "list": [
+        "Teilnehmer je Modus: Verräter-Jagd, Detektiv & Alibi und Sabotage-Chaos 4–12 (Standard 8), Imposter und Verstecken & Jagen 3–12 (Standard 6), Rollen-Chaos 5–12 (Standard 9).",
+        "Plätze bzw. Teilnehmer (Rest füllen Bots), Anzahl Verräter, Abklingzeit Ausknipsen, Aufgaben pro Person, Notrufe pro Person, Diskussions- und Abstimmungszeit, Spieltempo (Gemütlich, Normal, Flott, Turbo) und „Sendeausfall entscheidet“.",
+        "Wortspiel: Variante, Kategorien, Hinweisrunden, Zeit pro Hinweis, Hinweise (Nur tippen, Nur Karten oder Tippen oder Karten), Rateversuche des Imposters, Imposter (ab 9 Personen).",
+        "Rollen-Chaos: erlaubte Sonderrollen und Sonderrollen (höchstens).",
+        "Detektiv und Chaos: Sendezeit bzw. Zeitlimit."
+      ]
+    },
+    {
+      "t": "Speichern",
+      "p": [
+        "Figur, Einstellungen, Statistik und Erfolge werden auf dem Gerät gespeichert und lassen sich über die Google-Anmeldung geräteübergreifend sichern. Solo-Partien zählen für Statistik und Erfolge (getrennt von Online), aber nie für eine Rangliste."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Fang solo mit wenigen Bots auf Leicht an und probiere über „Meine Rolle“ gezielt Crew, Verräter und Imposter aus.",
+        "Lies vor jeder Partie die Rollenkarte und den Ersttipp – vor allem im Rollen-Chaos.",
+        "Merke dir, wer wann in welchem Raum war: In der Besprechung zählen Alibis.",
+        "Stimm nur ab, wenn du einen Grund hast. Überspringen ist erlaubt und oft klüger als raten."
+      ]
+    },
+    {
+      "t": "Als Crew",
+      "list": [
+        "Erledige deine Aufgaben zügig – ein voller Aufgabenbalken ist ein Sieg.",
+        "Beobachte, wer an Stationen steht, ohne dass der Balken steigt – Verräter täuschen nur vor.",
+        "Bei einem Sendeausfall sofort zu den Reparaturstellen: beide Stellen müssen kurz nacheinander repariert werden, sonst gewinnen die Verräter.",
+        "Bleib nicht allein in abgelegenen Räumen. In Gruppen wird es für Verräter schwer."
+      ]
+    },
+    {
+      "t": "Als Verräter",
+      "list": [
+        "Wirk beschäftigt und stell dich an Aufgabenstationen.",
+        "Knipse nur ohne Zeugen aus und verschwinde durch einen Geheimgang.",
+        "Nutze Sabotagen, um die Crew zu trennen: Türen verriegeln, Stromausfall oder Funkstille.",
+        "Ein Sendeausfall zwingt alle zu den Reparaturstellen – ideal, um Abstand zu gewinnen oder die Crew unter Zeitdruck zu setzen.",
+        "Melde selbst eine Leiche, wenn du gesehen wurdest – das wirkt unschuldig."
+      ]
+    },
+    {
+      "t": "Im Wortspiel",
+      "list": [
+        "Als Wissender: Gib Hinweise, die Mitwissende verstehen, aber nicht so deutlich, dass der Imposter das Wort errät. Ein guter Hinweis spricht eine Eigenschaft an, die nur Kenner zuordnen können.",
+        "Als Imposter: Hör gut zu, was die anderen sagen, und gib einen allgemeinen Hinweis, der zur Kategorie passt. Wirst du enttarnt, kombiniere alle Hinweise beim Rateversuch.",
+        "In der Variante „ähnliches Wort“ weißt du anfangs nicht, ob du Imposter bist. Passen deine Gedanken nicht zu den Hinweisen der anderen, bist du es vermutlich.",
+        "Wer sehr vage bleibt, wirkt schnell verdächtig – auch als Wissender."
+      ]
+    },
+    {
+      "t": "Detektiv, Chaos und Jagen",
+      "list": [
+        "Detektiv: Vergleiche Spuren mit dem Aussehen der Figuren (Schuhgröße, Kleidungsfarbe, Haare, Kopfbedeckung) und mit Alibis. Mehrere unabhängige Spuren schlagen eine einzelne Zeugenaussage.",
+        "Chaos: Achte auf Doppelreparaturen und sprecht euch ab, wer welche Station übernimmt. Teamaufträge bringen +15 % Sendequalität.",
+        "Flüchtende: Aktiviere Funkbaken, wenn der Ortungsimpuls gerade vorbei ist, und versteck dich bei Warnung. Nicht unnötig sprinten – das macht Lärm.",
+        "Jäger: Warte die Startpause ab, nutze den Ortungsimpuls alle 45 s und durchsuche Verstecke in der Nähe von Funkbaken."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Im Wortspiel das Wort fast verraten – dann rät es der Imposter nach der Enttarnung.",
+        "Bei Gleichstand blind mitwählen: Gleichstand heißt, niemand fliegt – das hilft eher den Verrätern.",
+        "Als Gastgeber die Seite schließen: Dann endet die Runde für alle ohne Sieger.",
+        "Auf schwachen Geräten mit 12 Figuren die Grafikstufe Mittel lassen – „Niedrig“ läuft flüssiger."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Die 24 Minispiele (Aufgaben) mit Lösungsweg",
+      "list": [
+        "🎚️ Pegel mischen: alle Regler in die grüne Zone bringen.",
+        "🔌 Studiokabel zuordnen: jeden Stecker links mit der Buchse gleicher Farbe und Form rechts verbinden.",
+        "🎼 Musikreihenfolge sortieren: Titel wählen, dann seinen Zielplatz, bis die Liste stimmt.",
+        "🎯 Senderfokus justieren: Regler drehen, bis das Bild scharf ist, dann fixieren.",
+        "📻 Frequenz abstimmen: die Frequenzen der Liste nacheinander exakt einstellen und jede speichern (auch Reparatur bei Funkstille).",
+        "🎙️ Mikrofon prüfen: Kanäle genau in der Reihenfolge der Liste prüfen – ein Fehler startet neu.",
+        "📡 Signalverluste lokalisieren: Felder messen; die Zahl nennt die Schritte zum nächsten Defekt. Alle Defekte finden.",
+        "⚡ Stromkreise reparieren: Leitungsstücke drehen, bis Strom von ⚡ zur Lampe 💡 fließt.",
+        "🔀 Schalterfolge merken: Folge merken und wiederholen, jede Runde länger.",
+        "💿 Plattenspieler ausrichten: Nadel auf die orange Einlaufrille, Drehzahl vom Etikett wählen, starten.",
+        "🎛️ Mischpultkanäle verbinden: jeden Eingang laut Patch-Plan auf den richtigen Bus legen und prüfen (auch Reparatur „Mischpult zerstört“).",
+        "📦 Paket verteilen: im Hausverzeichnis nachsehen und jedes Paket in den richtigen Raum schicken.",
+        "❄️ Tower-Kühlung: Lüfter und Ventil schalten und Takte geben, bis die Temperatur mehrere Takte im Zielbereich bleibt.",
+        "🗼 Antennen ausrichten: jede Antenne in Azimut und Elevation auf ihr Ziel ausrichten (auch Reparatur „Sendeturm defekt“).",
+        "🔢 Codefolge: Code aus den Hinweis-Schnipseln zusammensetzen und eingeben.",
+        "🎧 Audiospur filtern: Filter wählen, die alle Störspitzen ✖ abdecken, aber keine Stimme ♪ beschneiden.",
+        "🌉 Kabelbrücke: Kabelstücke von links nach rechts legen, Steine umgehen, Stückzahl begrenzt.",
+        "〰️ Radiowellen leiten: Reflektoren kippen, bis die Welle den Empfänger 📡 erreicht.",
+        "🔧 Sicherungen wechseln: Hauptschalter aus, defekte Sicherungen mit passendem Ampere-Wert ersetzen, Hauptschalter ein (auch Reparatur bei Stromausfall).",
+        "💡 Studio-Licht-Memory: je zwei Lichter aufdecken und alle Paare finden.",
+        "🔋 Akkus laden: Ladepakete so verteilen, dass alle Akkus genau voll sind – ohne Überladung.",
+        "🚨 Notfunk schalten: die Notfall-Karte exakt der Reihe nach abarbeiten und zum Schluss die Sendetaste halten (auch Reparatur bei Sendeausfall).",
+        "🧹 Playlist räumen: alle Titel markieren, die gegen eine Regel verstoßen, dann übernehmen.",
+        "🎭 Bühnenpanels einstellen: Ein Panel schaltet sich und seine direkten Nachbarn um – das Zielmuster herstellen."
+      ]
+    },
+    {
+      "t": "Sabotagen und ihre Reparatur",
+      "list": [
+        "💡 Stromausfall → Minispiel „Sicherungen wechseln“ an der Reparaturstelle.",
+        "📻 Funkstille → „Frequenz abstimmen“.",
+        "🚨 Sendeausfall → „Notfunk schalten“ an zwei Stationen, die innerhalb von 12 s nacheinander gelingen müssen. Countdown 45 s (im Chaos 50 s). Wird er nicht behoben, gewinnen die Verräter.",
+        "🎛️ Mischpult zerstört (nur Chaos) → „Mischpultkanäle verbinden“.",
+        "🗼 Sendeturm defekt (nur Chaos) → „Antennen ausrichten“ an zwei Stellen innerhalb von 15 s.",
+        "🚪 Türen verriegelt → die Türen eines Raums bleiben 9 s zu und öffnen sich von selbst; danach ist derselbe Raum eine Weile gesperrt."
+      ]
+    },
+    {
+      "t": "Alle 34 Erfolge",
+      "list": [
+        "🔎 Erster Verdacht: zum ersten Mal richtig abstimmen (gegen Verräter oder Imposter).",
+        "🎭 Alibi-Künstler: als Verräter nach mindestens 2 Besprechungen gewinnen, ohne rausgewählt zu werden.",
+        "🛟 Fünf Runden überlebt: 5 Partien in Folge überleben. 🔥 Unverwüstlich: 10 Partien in Folge.",
+        "📻 Meister der Frequenz: insgesamt 50 Aufgaben. 🏅 Dauersendung: insgesamt 200 Aufgaben. ✅ Fleißige Hände: 5 Aufgaben in einer Partie.",
+        "🕵️ Wortdetektiv: im Wortspiel gegen den Imposter stimmen und mit den Wissenden gewinnen. 👑 Bluff-König: als Imposter gewinnen, ohne rausgewählt zu werden. 🧠 Gedankenleser: als enttarnter Imposter das Wort erraten.",
+        "🔧 Technikretter: 3 Reparaturen in einer Partie.",
+        "📡 Unentdeckter Störsender: als Störsender gewinnen und bis zum Schluss im Spiel bleiben.",
+        "Sechs Modus-Siege: Sieg in Verräter-Jagd, Imposter, Detektiv & Alibi, Sabotage-Chaos, Verstecken & Jagen und Rollen-Chaos. 🌈 Allrounder: in allen sechs Modi mindestens einmal gewinnen.",
+        "🎙️ Auf Sendung: erste Partie. 📅 Stammgast: 25 Partien.",
+        "🚪 Entkommen!: bei Verstecken & Jagen durch einen Ausgang entkommen. 🏃 Fluchtprofi: insgesamt 10-mal entkommen. 🔓 Käfig-Knacker: Gefangene befreien. 📶 Bakenbauer: insgesamt 10 Funkbaken aktivieren.",
+        "👃 Spürnase: als Ermittler 5 Spuren in einer Partie. 🗂️ Aktenberg: insgesamt 25 Spuren.",
+        "🔦 Scharfes Auge: als Jäger 3 Flüchtende in einer Partie fangen. 🌙 Schattenschicht: als Verräter 3 Personen in einer Partie ausknipsen.",
+        "🃏 Trickser-Triumph: als Trickser gewinnen, indem du dich rauswählen lässt. 🛡️ Schutzengel: als Beschützer gewinnen, nachdem du deinen Schutz eingesetzt hast.",
+        "📣 Alarm im Funkhaus: eine ausgeknipste Person melden. ⚖️ Gerechte Stimme: insgesamt 10-mal helfen, einen Verräter rauszuwählen.",
+        "🌐 Weltempfänger: eine Online-Partie mit anderen Geräten spielen."
+      ]
+    },
+    {
+      "t": "Erfolge schnell freischalten",
+      "steps": [
+        "Solo mit „Meine Rolle“ gezielt Rollen wählen: als Trickser auffällig spielen (Trickser-Triumph), als Beschützer früh schützen (Schutzengel), als Störsender unauffällig bleiben.",
+        "Im Detektiv-Modus als Ermittler alle Fundorte abklappern – 5 Spuren pro Partie für die Spürnase.",
+        "Bei Verstecken & Jagen als Flüchtender Baken aktivieren und durch einen Ausgang fliehen; als Jäger 3 Fänge für Scharfes Auge.",
+        "Für den Allrounder jeden Modus einmal auf Leicht gewinnen.",
+        "Eine Online-Runde mit einem zweiten Gerät bringt den Weltempfänger."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Öffentliche Räume zeigen „Freischaltung erforderlich“.",
+      "a": "Öffentliche Räume funktionieren erst, wenn sie auf dem Server freigeschaltet sind. Private Räume per Link, Code oder QR-Code gehen trotzdem."
+    },
+    {
+      "q": "Online-Verbindung klappt nicht.",
+      "a": "Online braucht Internet und eine direkte Verbindung zwischen den Geräten. In sehr strengen Netzen (manche Firmen- oder Schul-WLANs) kann sie scheitern – dann ein anderes Netz oder mobile Daten probieren."
+    },
+    {
+      "q": "Was passiert, wenn der Gastgeber geht?",
+      "a": "Dann endet die Runde für alle neutral, ohne Sieger. Der Gastgeber sollte bis zum Ende online bleiben."
+    },
+    {
+      "q": "Kann ich offline spielen?",
+      "a": "Ja. Solo gegen Computer läuft komplett offline gegen Bots."
+    },
+    {
+      "q": "Das Spiel ruckelt mit vielen Figuren.",
+      "a": "Stell in den Einstellungen die Grafikstufe auf Niedrig."
+    },
+    {
+      "q": "Kann ich die Tasten ändern?",
+      "a": "Ja, in den Einstellungen lassen sich alle Tasten neu belegen. Konflikte werden angezeigt."
+    },
+    {
+      "q": "Wird die Rolle von Rausgewählten verraten?",
+      "a": "Nein. Die Abstimmung ist anonym, und das Ergebnis zeigt nicht, welche Rolle die Person hatte."
+    }
+  ]
+}

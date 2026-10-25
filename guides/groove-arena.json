@@ -1,0 +1,196 @@
+{
+  "id": "groove-arena",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Groove Arena ist ein Tanzspiel zum Nachmachen. Du wählst einen Song, eine 3D-Vortänzerin oder ein Vortänzer tanzt eine Choreografie, und du machst die Moves spiegelbildlich nach – wie vor einem Spiegel. Hebt die Figur den Arm auf der rechten Bildseite, hebst du deinen rechten Arm.",
+        "Die Choreografie wird für genau diesen Song erzeugt und bleibt immer gleich: über die ganze Songlänge mit Intro, Strophen, einem Refrain mit festen Wiederholungs-Moves, Bridge, ✨ Gold-Moves und einem großen Finale. Den Songaufbau liest das Spiel aus den Liedtext-Zeitstempeln. Ziel sind möglichst viele PERFEKT-Treffer, lange Combos und fünf Sterne."
+      ]
+    },
+    {
+      "t": "Hauptmenü",
+      "list": [
+        "💃 Tanzen: Kategorie antippen oder Song suchen. Kategorien: Pop, Hip-Hop, Latin, K-Pop, Disco & 80er, Kids, Fitness, Line Dance, Party und Schlager. In das Suchfeld kannst du auch einen YouTube-Link einfügen.",
+        "🎬 Tanz-Videos: Choreo- und Tanz-Videos laufen groß (Kids-Tanz, Zumba, Trend-Tänze, K-Pop gespiegelt, Line Dance, Hip-Hop Choreo, Disco-Workout, Party-Tänze). Bewertet werden Takt und Bewegung.",
+        "📻 Radio: live zu den RicoReWi-Sendern tanzen. Senderlogo und aktueller Titel stehen oben, bei jedem neuen Titel gibt es neue Moves.",
+        "🌐 Online & Handys: Tanzfläche öffnen oder mit Code mittanzen.",
+        "🧑‍🎤 Tänzer & Editor: alle 3D-Figuren ansehen und eigene bauen.",
+        "⭐ Meine Songs: zuletzt getanzte Songs mit deinem besten Ergebnis.",
+        "⚙️ Einstellungen und ❓ Anleitung.",
+        "Bedienung im Menü: Pfeile + Enter wählen, Esc zurück."
+      ]
+    },
+    {
+      "t": "Vorbereitung: Wie tanzt du?",
+      "list": [
+        "📷 Kamera: Stell das Gerät so auf, dass du von Kopf bis Knie zu sehen bist (2–3 Meter Abstand, gutes Licht). Die Körper-Erkennung läuft nur auf deinem Gerät, es wird kein Bild hochgeladen.",
+        "📱 Handy in der Hand: Halte das Handy fest in der rechten Hand und mach die Arm-Bewegungen der Vortänzerin nach. Bewertet wird die Bewegung deines Arms.",
+        "👀 Nur tanzen (ohne Wertung): ganz ohne Punkte – am Ende siehst du, wie lange und wie viele Moves du getanzt hast.",
+        "Schwierigkeit: 🧸 Leicht (nur die Arme zählen, großzügige Wertung), 🙂 Normal oder 🔥 Profi (strengere Wertung).",
+        "Vortänzer und Tanzstil: Je Stil gibt es eigene Figuren (z. B. Mila für Pop, Kenzo für Hip-Hop, Zotik im Fuchs-Kostüm und Kiki für Kids). „⏭ Ab nächstem Song“ merkt sich deine Wahl.",
+        "💃 Tanzen! startet den Song."
+      ]
+    },
+    {
+      "t": "Takt und Synchronisierung",
+      "list": [
+        "Beim ersten Mal hört das Spiel über das Mikrofon auf den Beat und merkt sich den Takt für dieses Video.",
+        "Ohne Mikrofon klopfst du 8× im Takt mit – Leertaste, 👆 oder A am Controller.",
+        "Beim Radio erkennt das Spiel den Takt direkt aus dem Stream (du kannst auch mitklopfen).",
+        "Passt die Choreo nicht ganz, schiebst du sie mit ◀ ▶ bzw. [ und ] (oder Komma/Punkt) früher oder später.",
+        "In der Pause: „🎤 Takt neu erkennen“. In den Einstellungen lässt sich die Takt-Verzögerung des Mikrofons einstellen."
+      ]
+    },
+    {
+      "t": "Bewertung und Punkte",
+      "list": [
+        "Unten laufen die Piktogramme der nächsten Moves. Wenn ein Bild die Linie erreicht, zählt deine Pose.",
+        "PERFEKT! = 100 Punkte, SUPER! = 67, GUT = 33, OK = 17, DANEBEN = 0.",
+        "PERFEKT und SUPER bauen die Combo auf (ab 5 wird ×Combo angezeigt), alles darunter setzt sie zurück.",
+        "✨ Gold-Moves: Triffst du sie mit PERFEKT oder SUPER, gibt es 150 Extrapunkte („✨ GOLD!“).",
+        "Sterne (bis zu 5) richten sich nach dem Anteil an der möglichen Punktzahl: ab 72 % fünf Sterne, ab etwa 61 % vier, ab 48 % drei, ab 32 % zwei und ab 16 % einer.",
+        "Am Ende: „🌟 Superstar!“ bei 5 Sternen, „🎉 Stark getanzt!“ ab 3 Sternen, sonst „💃 Geschafft!“, dazu die Zahl der Treffer je Stufe."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Menüs: Maus/Touch, Pfeiltasten + Enter oder Gamepad (Steuerkreuz/Stick wählen, A bestätigt, B zurück).",
+        "Beim Tanzen: Leertaste oder A = Takt klopfen, Esc, P oder Start = Pause, [ ] = Choreo früher/später.",
+        "Pause: ▶ Weiter, 🎤 Takt neu erkennen, ✕ Song beenden. Beim Radio führt „Beenden“ zum Ergebnis."
+      ]
+    },
+    {
+      "t": "Tänzer & Editor",
+      "list": [
+        "16 fertige 3D-Figuren, darunter Rico, Zotik, Mila, Kenzo, Luz, Yuna, Dex, Kiki, Max, Dolly, Toni, Sepp, Nova, Bruno, Frieda und Ole – antippen zum Ansehen.",
+        "✏️ Charakter-Editor: Körper, Hautton, Frisur, Bart, Oberteil, Hose, Schuhe und Kopfbedeckung wählen, 🎲 Zufall, ⭐ Speichern, 🗑 Löschen.",
+        "Eigene Figuren tanzen danach als Vortänzer mit."
+      ]
+    },
+    {
+      "t": "Online & Handys",
+      "steps": [
+        "Am Fernseher oder PC „🌐 Online & Handys“ und „📺 Tanzfläche öffnen“ wählen. Der Bildschirm zeigt Code und QR-Code, mit „🔗 Link kopieren“ teilst du den Link.",
+        "Mitspieler treten von überall per Code, Link oder QR-Code bei („🔑 Mit Code mittanzen“) – bis zu 8 Personen.",
+        "Im selben Raum tanzen alle mit dem Handy in der Hand. Freunde von woanders sehen das Video auf ihrem Gerät („▶ Video starten & mittanzen“) und tanzen mit Kamera oder Handy.",
+        "Der Gastgeber wählt den Song („🎵 Song auswählen“). Die Punkte aller erscheinen live auf der Tanzfläche, am Ende gibt es eine Rangliste."
+      ]
+    },
+    {
+      "t": "Einstellungen und Speichern",
+      "list": [
+        "Einstellungen: Schwierigkeit, Takt-Verzögerung (Mikrofon), Kamera-Bild spiegeln, Erkanntes Skelett anzeigen, Klänge und Vibration.",
+        "Gespeichert werden auf dem Gerät: Einstellungen, dein bestes Ergebnis je Song, Video und Sender, die zuletzt getanzten Songs, der erkannte Takt je Video, eigene Figuren und deine Statistik. Mit der easygames-Cloud-Anmeldung lässt sich der Stand mit deinem Konto abgleichen.",
+        "Bei Rap-Kategorien weist das Spiel darauf hin, dass Texte derbe Sprache enthalten können (🅴 Explicit-Hinweis)."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Große, deutliche Bewegungen werden besser erkannt als kleine.",
+        "Tanz spiegelbildlich: rechte Bildseite der Figur = dein rechter Arm.",
+        "Starte auf „Leicht“ – dort zählen nur die Arme.",
+        "Mit der Kamera: Kopf bis Knie im Bild, Licht von vorne, kein Gegenlicht. „Erkanntes Skelett anzeigen“ hilft beim Ausrichten.",
+        "Schau auf die Piktogramme unten – sie zeigen dir den nächsten Move früher als die Figur."
+      ]
+    },
+    {
+      "t": "Strategien für mehr Punkte",
+      "list": [
+        "Der Refrain kommt immer mit denselben Moves wieder – beim zweiten Mal sitzt er.",
+        "Gold-Moves kommen am Ende des Refrains und im Finale. Hier lohnt volle Konzentration: PERFEKT oder SUPER bringt 150 Extrapunkte.",
+        "Die Combo zählt nur bei PERFEKT und SUPER. Lieber jeden Move sauber halten als hektisch wechseln.",
+        "Stimmt der Takt nicht, korrigiere ihn sofort mit [ oder ] – sonst zählt jede Pose zu früh oder zu spät.",
+        "Mit dem Handy: fest greifen und den ganzen Arm bewegen, nicht nur das Handgelenk."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Fünf Sterne gibt es schon ab 72 % der möglichen Punkte – du musst nicht jeden Move perfekt treffen.",
+        "Derselbe Song bekommt immer dieselbe Choreografie. Übe einen Song mehrmals, um ihn auswendig zu können.",
+        "Für Online-Partys: Im selben Raum ist „Handy in der Hand“ am fairsten, weil alle gleich bewertet werden.",
+        "Beim Radio bekommt jeder neue Titel eigene Moves. Bleib locker – das Ziel ist Ausdauer."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu nah an der Kamera stehen – die Knie müssen im Bild sein.",
+        "Seitenverkehrt tanzen: Du bist das Spiegelbild der Figur.",
+        "Den Takt nicht klopfen, wenn das Spiel ohne Mikrofon danach fragt – dann läuft die Choreo nicht synchron.",
+        "Das Handy in der linken Hand halten – bewertet wird die rechte."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Beste Strategie je Modus",
+      "list": [
+        "💃 Tanzen (Songs): Song mehrmals spielen, bis Refrain und Gold-Moves sitzen. Profi-Schwierigkeit erst, wenn du auf Normal regelmäßig 5 Sterne holst.",
+        "🎬 Tanz-Videos: Hier wird nach Takt und Bewegung bewertet. Bleib in Bewegung und triff die Betonungen.",
+        "📻 Radio: Kein festes Ende – über Pause → Beenden siehst du dein Ergebnis. Für hohe Punktzahl lange durchtanzen.",
+        "👀 Nur tanzen: ohne Wertung, ideal zum Aufwärmen oder für Kinder.",
+        "🌐 Online: Wer zuerst den Takt sicher hat, sammelt die Combo. Klopf als Gastgeber den Takt sauber ein."
+      ]
+    },
+    {
+      "t": "Wertungstabelle",
+      "list": [
+        "PERFEKT! – 100 Punkte, Combo +1.",
+        "SUPER! – 67 Punkte, Combo +1.",
+        "GUT – 33 Punkte, Combo endet.",
+        "OK – 17 Punkte, Combo endet.",
+        "DANEBEN – 0 Punkte, Combo endet.",
+        "Gold-Move mit PERFEKT oder SUPER: +150 Punkte zusätzlich.",
+        "5 ★ ab 72 % · 4 ★ ab ca. 61 % · 3 ★ ab 48 % · 2 ★ ab 32 % · 1 ★ ab 16 % der möglichen Punkte."
+      ]
+    },
+    {
+      "t": "Moves, die du kennen solltest",
+      "p": [
+        "Die Choreografien setzen sich aus Arm- und Schritt-Moves sowie besonderen Figuren zusammen. Einige Namen, die als Piktogramm erscheinen: Superheld, Disco-Fieber, Diva, Floss, Herz-Pose, Kickbox-Kombi, Lasso, Pferdchen, Schaufeln, Schulter-Shimmy, Sternsprung, Stierhörner, Windmühle und zum Schluss die Siegerpose. Das Intro beginnt locker mit Wippen, das Finale endet mit einem Gold-Move und der Siegerpose."
+      ]
+    },
+    {
+      "t": "Vortänzer je Stil",
+      "list": [
+        "Pop: Mila und Rico.",
+        "Party: Toni und Rico.",
+        "Kids: Zotik (Fuchs-Kostüm) und Kiki.",
+        "Hip-Hop: Kenzo · Latin: Luz · K-Pop: Yuna · Disco & 80er: Dex · Fitness: Max · Line Dance: Dolly · Schlager: Sepp.",
+        "Nova, Bruno, Frieda und Ole sind ohne festen Stil und lassen sich frei wählen – ebenso deine eigenen Figuren aus dem Editor."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Die Kamera erkennt mich nicht.",
+      "a": "Erlaube den Kamerazugriff, stell dich 2–3 Meter entfernt hin, sodass Kopf bis Knie im Bild sind, und sorge für gutes Licht. Mit „Erkanntes Skelett anzeigen“ siehst du, was das Spiel erkennt. Es wird kein Bild hochgeladen."
+    },
+    {
+      "q": "Die Moves sind nicht im Takt.",
+      "a": "Schieb die Choreo mit [ und ] (oder ◀ ▶) früher oder später, oder wähle in der Pause „🎤 Takt neu erkennen“. Ohne Mikrofon klopfst du 8× im Takt mit der Leertaste oder 👆."
+    },
+    {
+      "q": "Es wird kein Video gefunden.",
+      "a": "Füge einen YouTube-Link ins Suchfeld ein oder nutze „🔗 Link einfügen“. Videos und Songsuche brauchen Internet."
+    },
+    {
+      "q": "Online klappt nicht.",
+      "a": "Alle Geräte brauchen Internet. Der Gastgeber öffnet „📺 Tanzfläche öffnen“, die anderen geben den Code ein oder scannen den QR-Code. Mehr als 8 Mitspieler gehen nicht."
+    },
+    {
+      "q": "Mein Handy wird nicht als Controller erkannt.",
+      "a": "Für „Handy in der Hand“ braucht das Spiel den Bewegungssensor. Auf manchen Geräten musst du den Zugriff erst erlauben."
+    },
+    {
+      "q": "Wo finde ich meine Rekorde?",
+      "a": "Unter ⭐ Meine Songs stehen die zuletzt getanzten Songs mit deinem besten Ergebnis. Die Daten liegen auf deinem Gerät."
+    }
+  ]
+}

@@ -1,0 +1,412 @@
+{
+ "id": "spinwelten",
+ "handbuch": [
+  {
+   "t": "Ziel des Spiels",
+   "p": [
+    "Spinwelten 3D ist ein Insel-Abenteuer mit der Runenmaschine. Der große Sternensturm hat den Himmelsarchipel zerbrochen – du bist die neue Weltenhüterin bzw. der neue Weltenhüter. Zusammen mit Kivi, einem fliegenden Kompass, baust du die 30 schwebenden Wunderinseln wieder auf, bis das Sternenherz wieder schlägt.",
+    "Jede Insel hat 5 Bauwerke mit je 5 Stufen, also 25 Ausbauschritte. Ist alles auf Stufe 5 gebaut und nichts beschädigt, schließt du die Insel ab und dein Luftschiff reist über den Weltenatlas zur nächsten Insel. Die Münzen dafür bringt die Runenmaschine. Es gibt keine Einsätze mit echtem Geld, nichts zum Auszahlen und keine Käufe."
+   ]
+  },
+  {
+   "t": "Start, Ansichten und Menü",
+   "list": [
+    "Beim ersten Start erzählt Kivi die Vorgeschichte und führt dich durch ein kurzes Tutorial; es lässt sich in den Einstellungen unter „Spiel“ neu starten.",
+    "Unten wechselst du zwischen den Ansichten Maschine (Runenmaschine), Dorf (deine Insel mit den Bauwerken), Atlas (Weltenatlas mit allen Inseln) und Mehr.",
+    "Unter „Mehr“ findest du Sammlung (Karten, Alben, Truhen, Laden), Begleiter, Aufgabenbuch, Minispiele, Erfolge, Verlauf & Rangliste, Online, Einstellungen, Anleitung, Profil und den Weg zurück ins Hauptmenü.",
+    "Einmal pro Kalendertag gibt es einen Gratis-Bonus mit Spins und Münzen (Entspannt 60, Klassisch 25, Herausfordernd 15 Spins)."
+   ]
+  },
+  {
+   "t": "Die Runenmaschine",
+   "p": [
+    "Ein Spin kostet Energie (⚡) mal Multiplikator. Die Energie lädt sich mit der Zeit auf: Klassisch bis 50 Energie, 1 Punkt alle 3 Minuten; Entspannt bis 200, alle 20 Sekunden; Herausfordernd bis 40, alle 4 Minuten. „Drehen“ gedrückt halten startet das Auto-Drehen, erneutes Tippen stoppt es. Das Ergebnis steht fest, bevor die Walzen drehen – es gibt kein Nachschieben und keine Anpassung an deinen Kontostand.",
+    "Drei Walzen zeigen zehn Runen: ☼ Sonnenrune, ✦ Sternkristall, ⚙ Zahnrad, ☄ Sturmrune, ◈ Kompass, ◉ Schutzorb, ↻ Energieschleife, ❖ Relikt, ✧ Portalfunke und ✪ Wunderrune."
+   ],
+   "list": [
+    "3× Sonne: 20 × Basis Münzen · 2×: 4 × Basis · eine Sonne neben einem Paar oder in einer gemischten Reihe: +1 × Basis.",
+    "3× Sternkristall: 60 × Basis Münzen und 30 Erfahrung · 2×: 10 × Basis und 5 Erfahrung · einzeln: +2 × Basis.",
+    "3× Zahnrad: 8 × Basis Münzen und 3 Baumaterial · 2×: 1 Baumaterial.",
+    "3× Sturmrune: freundlicher Sturmangriff auf eine Computer-Insel · 2×: 2 × Basis Münzen.",
+    "3× Kompass: Schatzexpedition · 2×: 3 × Basis Münzen.",
+    "3× Schutzorb: ein Schutzorb (höchstens 3, mit Runo 4; ist kein Platz mehr frei, gibt es 10 × Basis Münzen) · 2×: 1 × Basis.",
+    "3× Energieschleife: 10 Spins · 2×: 2 Spins.",
+    "3× Relikt: eine Silbertruhe · 2×: 5 Relikte.",
+    "3× Portalfunke: 30 Eventpunkte und ein Minispiel-Ticket · 2×: 8 Eventpunkte.",
+    "3× Wunderrune: Wunder-Jackpot mit 500 × Basis Münzen · 2×: 25 × Basis · einzeln: +2 × Basis.",
+    "Alle Gewinne werden mit dem Multiplikator malgenommen (Baumaterial höchstens ×10)."
+   ]
+  },
+  {
+   "t": "Multiplikator und Basis",
+   "list": [
+    "Die Basis ist der Münzwert der aktuellen Insel: Insel 1 = 50, danach jeweils 25 Prozent mehr (Insel 10 = 373, Insel 20 = 3.469, Insel 30 = 32.312). Baukosten steigen im gleichen Maß.",
+    "Multiplikatoren schaltest du über abgeschlossene Inseln frei: ×1 von Anfang an, ×2 nach 1 Insel, ×3 nach 2, ×5 nach 3, ×10 nach 5, ×25 nach 8 und ×50 nach 12 Inseln.",
+    "Ein Spin mit ×10 kostet 10 Energie, bringt aber auch zehnfache Belohnung. Der Erwartungswert pro Energie ist bei jedem Multiplikator gleich."
+   ]
+  },
+  {
+   "t": "Bauen, Schaden und Reparatur",
+   "list": [
+    "Im Dorf tippst du ein Bauwerk an (am PC auch Tasten 1 bis 5) und baust die nächste Stufe für Münzen. Jede Stufe kostet mehr als die vorige.",
+    "Baumaterial (aus Zahnrädern, höchstens 99) kannst du beim Bauen einsetzen: bis zu 3 Material geben je 10 Prozent Rabatt. Mokka gibt zusätzlich Werkstatt-Rabatt (insgesamt höchstens 30 Prozent).",
+    "Trifft dich ein Sturm, ist das Bauwerk zuerst nur beschädigt. Ein beschädigtes Bauwerk kann erst wieder ausgebaut werden, wenn du es repariert hast (die Reparatur kostet etwa ein Drittel einer Stufe). Ein zweiter Treffer auf ein beschädigtes Bauwerk kostet eine Stufe.",
+    "Inselabschluss: Spins (20 + Inselnummer), Münzen (60 × Basis, mit Soli mehr), eine Silbertruhe (bei jeder fünften Insel eine Goldtruhe) und Relikte (10 + Inselnummer)."
+   ]
+  },
+  {
+   "t": "Sturmangriff und Schatzexpedition",
+   "list": [
+    "Sturmangriff (3× Sturmrune): Wähle eine Insel eines Computer-Spielers und ein Bauwerk. Hat das Ziel einen Schutzorb, wehrt er den Sturm ab – du bekommst trotzdem Münzen (25 × Basis statt 40 × Basis bei einem Treffer). Ein Treffer beschädigt das Bauwerk, ein zweiter Treffer kostet eine Stufe. Zuerst stehen Rache-Ziele zur Wahl (Computer-Spieler, die dich in den letzten 48 Stunden angegriffen haben).",
+    "Schatzexpedition (3× Kompass): Du wählst eine reiche Computer-Insel und gräbst an 3 von 6 Fundstellen: zwei große Funde (55 und 45 × Basis), zwei mittlere (25 und 20), ein Reliktfund (8 × Basis und 15 Relikte) und eine leere Stelle. Triffst du beide großen Funde, gibt es eine Holztruhe dazu. Die Beute ist auf 20 Prozent des Vorrats des Ziels begrenzt.",
+    "Eine offene Aktion musst du erst erledigen, bevor du wieder drehst. Du kannst sie überspringen (kleiner Trost: 8 × Basis Münzen), eine angefangene Expedition aber nicht.",
+    "Computer-Spieler greifen dich auch an oder rauben Münzen – höchstens dreimal in acht Stunden, jeder höchstens alle 3 Stunden, nie vor Ende des Tutorials und nie in den ersten 20 Minuten. Im friedlichen Modus gar nicht; dort geben Sturmrunen stattdessen Münzen."
+   ]
+  },
+  {
+   "t": "Karten, Alben und Truhen",
+   "list": [
+    "240 Sammelkarten in 30 Alben – ein Album pro Insel mit je 8 Karten: 4 gewöhnliche, 2 seltene, 1 epische, 1 mythische. Karten kommen nur aus Alben bereits erreichter Inseln (im Neuen Spiel+ aus allen).",
+    "Holztruhe: 2 Karten (80 % gewöhnlich, 17 % selten, 3 % episch) – 25 Relikte im Laden.",
+    "Silbertruhe: 4 Karten (64/26/8/2 %) – 70 Relikte.",
+    "Goldtruhe: 6 Karten (45/33/17/5 %) – 160 Relikte.",
+    "Sternentruhe: 10 Karten (25/35/28/12 %) – 420 Relikte.",
+    "Doppelte Karten werden zu Relikten: gewöhnlich 2, selten 5, episch 12, mythisch 30.",
+    "Ein vollständiges Album bringt Spins (20 + Inselnummer), 80 × Basis Münzen und 25 Relikte.",
+    "Im Laden gibt es außerdem 3 Funkelsnacks für 15 Relikte und einmal am Tag einen Schutzorb für 40 Relikte. Bei den Computer-Händlern tauschst du Duplikate fair gegen fehlende Karten oder Relikte."
+   ]
+  },
+  {
+   "t": "Begleiter",
+   "p": [
+    "Begleiter bringen Boni. Der aktive Begleiter wirkt voll, ein zweiter als Helfer zur Hälfte. Jeder Begleiter steigt bis Stufe 10 auf; seine Wirkung wächst mit der Stufe. Training kostet einen Funkelsnack oder Relikte und Münzen und bringt 45 Erfahrung; einmal am Tag kannst du jeden Begleiter pflegen (+15 Erfahrung), und gewonnene Minispiele geben dem aktiven Begleiter 10 Erfahrung."
+   ],
+   "list": [
+    "Kivi (von Anfang an): findet Bonusrelikte bei jedem Spin.",
+    "Glim (nach 1 Insel): verstärkt Kristall- und Sonnenfunde.",
+    "Mira (nach 3 Schatzexpeditionen): mehr Beute bei Expeditionen, zeigt ab Stufe 3 eine große Fundstelle.",
+    "Runo (nach 2 abgewehrten Stürmen): ein Schutzorb-Platz mehr und Chance, Stürme abzuwehren.",
+    "Blixi (nach 4 Sturmangriffen): mehr Münzen bei Sturmangriffen.",
+    "Mokka (nach 25 Ausbauschritten): Werkstatt-Rabatt auf alle Ausbauten.",
+    "Nori (nach 20 Karten): Chance auf eine Zusatzkarte in Truhen.",
+    "Ferdi (nach 5 Inseln): Bonusmünzen, wenn ein Bauwerk fertig wird.",
+    "Zuna (nach 400 Spins): Spin-Energie lädt schneller nach.",
+    "Plumi (nach 8 geöffneten Truhen): entdeckt beim Drehen seltene Truhen.",
+    "Orbit (nach 400 Eventpunkten): mehr Eventpunkte.",
+    "Soli (nach 10 Inseln): größere Belohnung beim Inselabschluss."
+   ]
+  },
+  {
+   "t": "Minispiele",
+   "p": [
+    "Es gibt 8 Minispiele; jede Insel stellt eine eigene Variante vor. Pro Tag sind 3 Runden frei, danach brauchst du Tickets (aus 3× Portalfunke). Ein Sieg bringt je Stern 12 × Basis Münzen und 4 Relikte."
+   ],
+   "list": [
+    "💡 Lichtpfad: Drehe die Leitungen, bis das Licht des Kristalls alle Laternen erreicht.",
+    "💎 Kristallsuche: Finde alle versteckten Kristalle, bevor die Zeit abläuft. Ziehen dreht die Insel, Tippen sammelt.",
+    "☁️ Wolkengleiter: Gleite mit Kivi ans Ziel, sammle Sterne und weiche den Sturmwolken aus. Halten = steigen, Loslassen = sinken.",
+    "🔮 Runen-Memory: Finde alle Paare mit möglichst wenigen Fehlversuchen.",
+    "✨ Funkel-Puzzle: Schiebe die Platten, bis das Bild wieder vollständig ist. Auge bzw. X zeigt die Vorschau.",
+    "🔧 Reparaturwerk: Schweiße fünf Nähte – drücke genau, wenn der Zeiger im grünen Bereich ist.",
+    "🌀 Portalsprung: Springe über Lücken und Kristalle; Portale machen dich schneller oder langsamer.",
+    "🗺️ Schatzkarte: Grabe nach dem Schatz – jede Zahl verrät die Schritte bis zum nächsten Schatz."
+   ]
+  },
+  {
+   "t": "Aufgaben, Events und Erfolge",
+   "list": [
+    "Story: 60 Aufgaben in 6 Kapiteln, jede von einer Inselbewohnerin oder einem Inselbewohner (siehe Lösungsbuch).",
+    "Tagesziele (z. B. „Drehe 30-mal“, „Baue 3 Stufen aus“, „Gewinne ein Minispiel“) bringen je 10 Spins und 8 Relikte; Wochenziele (z. B. „Drehe 300-mal“, „Finde 15 neue Karten“) je 40 Spins und eine Goldtruhe.",
+    "Alle drei Tage startet eines von 12 Events (Bau-Festival, Sternenregen, Kristalljagd, Schatzkompass-Tage, Portalmarathon, Kartenfest, Freundeshilfe, Begleiter-Rallye, Sturmmeisterschaft, Insel-Rennen, Reliktfest, Team-Expedition). Eventpunkte schalten Stufen frei: 60 Punkte = 10 Spins, 180 = Münzen und 10 Relikte, 400 = Silbertruhe, 750 = 40 Spins, 1.200 = Goldtruhe und Münzen, 2.000 = Sternentruhe und 60 Spins.",
+    "66 Erfolge belohnen Meilensteine (siehe Lösungsbuch)."
+   ]
+  },
+  {
+   "t": "Bedienung",
+   "list": [
+    "Touch: DREHEN-Knopf tippen (gedrückt halten = Auto-Drehen), Multiplikator links, AUTO rechts. Unten wechseln Maschine, Dorf, Atlas und Mehr. Insel mit einem Finger drehen, mit zwei Fingern zoomen, Bauwerke antippen.",
+    "PC: Leertaste oder Enter drehen und bestätigen, Esc oder Rücktaste zurück, Pfeile oder W A S D bewegen Kamera und Auswahl, X Auto-Drehen, Tab bzw. Shift+Tab und V wechseln die Ansicht, Minus/Plus Multiplikator (im Dorf und Atlas: zoomen), R/T oder Bild auf/ab zoomen, E interagieren, M Weltenatlas, I Sammlung, Q Aufgaben, P Pause, F Vollbild. Im Dorf bauen die Tasten 1 bis 5.",
+    "Controller: A drehen/bestätigen, B zurück, X Auto-Drehen, Y Ansicht wechseln, LB/RB vorherige/nächste Ansicht, LT/RT Multiplikator, Steuerkreuz und linker Stick bewegen Auswahl bzw. Kamera, rechter Stick dreht die Kamera, Back Weltenatlas, Start Pause.",
+    "Alle Tasten und Controller-Knöpfe lassen sich in den Einstellungen unter „Steuerung“ umbelegen."
+   ]
+  },
+  {
+   "t": "Einstellungen, Spielstil und Speichern",
+   "list": [
+    "Spielstil: Entspannt (mehr Energie, 20 Prozent günstiger), Klassisch oder Herausfordernd (knapper, 30 Prozent teurer).",
+    "Friedlicher Modus: Niemand greift dich an; Sturmrunen geben stattdessen Münzen.",
+    "Stärke der Computer-Spieler: Leicht, Normal oder Stark (wie oft sie handeln).",
+    "Grafikqualität: Auto, Niedrig, Mittel oder Hoch. Auto senkt die Qualität von selbst, wenn es ruckelt. Unter „Allgemein“ stellst du die Sprache ein (Deutsch oder English).",
+    "Gespeichert wird automatisch im Browser, dazu gibt es 2 Sicherungsplätze, Export und Import als Datei. Mit Google angemeldet folgt dein Stand dir auf jedes Gerät."
+   ]
+  },
+  {
+   "t": "Online mit Freunden",
+   "list": [
+    "Private Räume für 2 bis 8 Spieler: Raum erstellen, Code, Link oder QR-Code teilen – Mitspieler treten von überall bei (Handy, Tablet oder PC). Freie Plätze übernehmen Computer-Spieler.",
+    "Inselrennen: Alle drehen gleichzeitig; wer nach 10 Runden die meisten Baupunkte hat, gewinnt.",
+    "Schatzduell: 8 Runden mit je sechs verdeckten Fundstellen. Wählen mehrere dieselbe, wird die Beute geteilt.",
+    "Weltenhilfe: Gemeinsam eine Insel aufbauen – alle Spins zählen für das Teamziel (45 Punkte pro Spieler) in 10 Runden.",
+    "Jede Online-Runde bringt 6 Spins und 4 Relikte, ein Sieg 12 Spins und 10 Relikte. Öffentliche Räume und weltweite Ranglisten brauchen einen eigenen Spinwelten-Server; private Räume per Code funktionieren ohne."
+   ]
+  },
+  {
+   "t": "Ende und Neues Spiel+",
+   "p": [
+    "Hast du alle 30 Inseln wiederhergestellt, endet die Geschichte am Sternenherz. Im Profil kannst du dann „Neues Spiel+“ starten: Du beginnst wieder auf Insel 1, Kosten und Belohnungen sind ×8, Karten, Begleiter und Erfolge bleiben erhalten, und Truhen enthalten Karten aus allen 30 Alben."
+   ]
+  }
+ ],
+ "ratgeber": [
+  {
+   "t": "Tipps für Einsteiger",
+   "list": [
+    "Hol dir jeden Tag den Gratis-Bonus und die Tagesziele ab – das sind die sichersten Spins.",
+    "Spiele Schutzorbs nicht auf: Jeder Orb wehrt genau einen Sturm ab.",
+    "Bauwerke, die ein Sturm beschädigt hat, erst reparieren, dann weiter ausbauen – ein zweiter Treffer kostet sonst eine Stufe.",
+    "Im Modus Entspannt lädt die Energie schneller und alles ist günstiger.",
+    "Grafik ruckelt? In den Einstellungen die Grafikqualität auf Niedrig stellen."
+   ]
+  },
+  {
+   "t": "Strategien für Fortgeschrittene",
+   "list": [
+    "Höhere Multiplikatoren lohnen sich erst, wenn genug Energie da ist. Weil der Erwartungswert pro Energie gleich bleibt, verändern sie vor allem das Tempo und die Schwankung.",
+    "Spiele mit hohem Multiplikator vor allem während Events wie dem Portalmarathon: Die Eventpunkte aus Portalfunken werden mit dem Multiplikator malgenommen.",
+    "Setze Baumaterial gezielt bei den teuren Stufen 4 und 5 ein: Der Rabatt wirkt prozentual.",
+    "Mache beim Sturm Rache-Ziele zuerst – das zählt für die Erfolge „Mit Augenzwinkern“ und „Letztes Lachen“.",
+    "Wähle Kivi oder Glim als aktiven und Mokka als Helfer, solange du viel baust; vor Expeditionen lohnt sich Mira (ab Stufe 3 zeigt sie eine große Fundstelle)."
+   ]
+  },
+  {
+   "t": "Profi-Tricks",
+   "list": [
+    "Schatzexpedition: Mit Mira auf Stufe 3 siehst du eine große Fundstelle – grab sie zuerst. Triffst du beide großen Funde, gibt es zusätzlich eine Holztruhe.",
+    "Vor dem Neuen Spiel+ möglichst viele Alben vervollständigen: Im NG+ kommen Karten aus allen 30 Alben, die Chance auf neue Karten sinkt also.",
+    "Truhen richtig kaufen: Holztruhen sind pro Karte am günstigsten (12,5 Relikte je Karte), Sternentruhen haben dafür die besten Chancen auf epische (28 %) und mythische (12 %) Karten – ideal, wenn dir in vielen Alben nur noch die seltenen Karten fehlen.",
+    "Wenn alle Schutzorb-Plätze voll sind, ist 3× Schutzorb trotzdem nicht verloren: Du bekommst 10 × Basis Münzen."
+   ]
+  },
+  {
+   "t": "Häufige Fehler",
+   "list": [
+    "Eine offene Aktion (Sturm oder Expedition) verhindert neue Spins – erst erledigen oder überspringen.",
+    "Alle Münzen sofort verbauen: Computer-Spieler rauben einen Teil deines Vorrats (bis zu 8 Prozent). Bau lieber zügig, statt zu horten.",
+    "Minispiel-Tickets verfallen lassen: Nach 3 freien Runden pro Tag brauchst du Tickets – nutze sie für Minispiele, die du gut kannst.",
+    "Den Spielstand nur lokal haben: Exportiere ihn ab und zu oder melde dich mit Google an."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "Wahrscheinlichkeiten der Runenmaschine",
+   "p": [
+    "Die Gewichte sind fest und offen gelegt. Pro Spin wird genau eines dieser Ergebnisse gezogen (von 1.000):"
+   ],
+   "list": [
+    "Drei gleiche: Sonne 60, Sternkristall 25, Zahnrad 35, Sturmrune 70, Kompass 55, Schutzorb 45, Energieschleife 30, Relikt 30, Portalfunke 30, Wunderrune 4 (Jackpot also 0,4 Prozent).",
+    "Zwei gleiche: Sonne 120, Sternkristall 50, Zahnrad 60, Sturmrune 30, Kompass 30, Schutzorb 30, Energieschleife 40, Relikt 50, Portalfunke 50, Wunderrune 12.",
+    "Drei verschiedene: 144.",
+    "Ein Großgewinn (für Erfolge und Aufgaben) ist jeder Spin mit mindestens 20 × Basis × Multiplikator Münzen – also 3× Sonne, 3× Sternkristall oder der Jackpot.",
+    "Eine Insel ist im Modus Klassisch mit ×1 auf etwa so viele Spins ausgelegt: Insel 1 = 35, danach 90 + 9 je Insel (Insel 2 ≈ 99, Insel 30 ≈ 351)."
+   ]
+  },
+  {
+   "t": "Alle 30 Inseln mit Bauwerken und Minispiel",
+   "steps": [
+    "Insel 1 – Sternenbucht („Wo jede Reise beginnt“): Leuchtturm, Sternenpier, Segelwerft, Glasmarkt, Observatorium. Minispiel: Strandgut-Rätsel (Schatzkarte).",
+    "Insel 2 – Mooshafen („Weich, grün und gemütlich“): Pilzherberge, Wurzelbrücke, Honigladen, Waldschmiede, Baumhaus. Minispiel: Pilzversteck (Kristallsuche).",
+    "Insel 3 – Regenlicht („Jeder Tropfen ein Regenbogen“): Regenbogenbrunnen, Wolkengarten, Tropfenturm, Gewächshaus, Café. Minispiel: Farbrinnen (Lichtpfad).",
+    "Insel 4 – Bambusklang („Der Wind spielt Melodien“): Bambusvilla, Teegarten, Klangtor, Laternenweg, Quellenhaus. Minispiel: Klangpaare (Runen-Memory).",
+    "Insel 5 – Wurzelwinkel („Das Herz des alten Waldes“): Eichentempel, Tierschutzhaus, Moosmühle, Gärtnerhof, Waldforum. Minispiel: Jahresringe (Funkel-Puzzle).",
+    "Insel 6 – Wolkenwerft („Hier lernen Schiffe fliegen“): Luftschiffdock, Aufwindturm, Segelhalle, Windmühle, Pilotenhaus. Minispiel: Probeflug (Wolkengleiter).",
+    "Insel 7 – Mechanopolis („Stadt der tausend Zahnräder“): Uhrwerkrathaus, Zahnradturm, Roboterwerkstatt, U-Bahn-Halle, Fabrikpark. Minispiel: Zahnrad-Takt (Reparaturwerk).",
+    "Insel 8 – Glaswüste („Sand, der wie Glas singt“): Oasenpalast, Sanduhr, Kristallbrunnen, Karawanentor, Glashalle. Minispiel: Dünenfunkeln (Kristallsuche).",
+    "Insel 9 – Vulkanflamme („Warm bis in den Kern“): Lava-Schild, Basaltschmiede, Aschegarten, Glutrestaurant, Gipfelbahn. Minispiel: Lavahüpfer (Portalsprung).",
+    "Insel 10 – Eisleuchten („Kalt, aber voller Herz“): Sterneniglu, Frostbrücke, Nordlichtgalerie, Schlittenwerk, Eisresidenz. Minispiel: Nordlichtbahnen (Lichtpfad).",
+    "Insel 11 – Korallenreich („Ein Riff im Himmel“): Tauchglocke, Perlenturm, Riffgarten, Muscheltheater, Uferhafen. Minispiel: Muschelpaare (Runen-Memory).",
+    "Insel 12 – Prisma-Delta („Licht in tausend Farben“): Lichtbrücke, Farblichtlabor, Prismaschule, Spektralwerk, Spiegelkuppel. Minispiel: Strahlenweg (Lichtpfad).",
+    "Insel 13 – Mondgarten („Blüten, die nachts erwachen“): Silberteich, Nachtblütenhaus, Mondlichttempel, Sternentor, Hängematte. Minispiel: Glühwürmchenjagd (Kristallsuche).",
+    "Insel 14 – Spiegelwald („Nichts ist, wie es scheint“): Spiegelsee, Echohaus, Baumportal, Irrlichtturm, Glasbaum. Minispiel: Spiegelscherben (Funkel-Puzzle).",
+    "Insel 15 – Kristallkaverne („Wo Steine singen“): Grottenbahn, Edelsteinbörse, Lichtschacht, Kristalltheater, Bergstation. Minispiel: Stollenkarte (Schatzkarte).",
+    "Insel 16 – Drachenwiesen („Kleine Flügel, großer Mut“): Drachenstall, Federnest, Feuerbrücke, Flugschule, Wolkenburg. Minispiel: Drachenflug (Wolkengleiter).",
+    "Insel 17 – Himmelsbibliothek („Jede Wolke eine Geschichte“): Leseturm, Schriftgarten, Papiermühle, Archivkuppel, Geschichtensaal. Minispiel: Seitensuche (Runen-Memory).",
+    "Insel 18 – Uhrwerkstadt („Hier tickt die Zeit“): Zeittor, Glockenhaus, Automatenplatz, Pendelturm, Museum. Minispiel: Glockenschlag (Reparaturwerk).",
+    "Insel 19 – Nebelzirkus („Manege frei im Nebel“): Luftartistenzelt, Zauberbühne, Spiegelkabinett, Jahrmarkt, Lichtorgel. Minispiel: Trapezsprung (Portalsprung).",
+    "Insel 20 – Jadeparadies („Ruhe im grünen Wasser“): Wasserpalast, Blätterterrasse, Zenbrücke, Pflanzenlabor, Jadeportal. Minispiel: Jademosaik (Funkel-Puzzle).",
+    "Insel 21 – Ruinenatoll („Steine voller Geheimnisse“): Tempelhof, Moosstele, Brückenrest, Entdeckerhütte, Sonnentor. Minispiel: Ruinenrätsel (Schatzkarte).",
+    "Insel 22 – Sturmkap („Mutig gegen jeden Wind“): Blitzfänger, Kapitänshaus, Sturmbarriere, Hafenkran, Kommandoturm. Minispiel: Blitzableiter (Reparaturwerk).",
+    "Insel 23 – Tieflichtsee („Leuchten aus der Tiefe“): Leuchtboot, Schwimmgarten, Lichtfisch-Zentrum, Wasserturm, Seebühne. Minispiel: Lichtfischzählung (Kristallsuche).",
+    "Insel 24 – Pilzkönigreich („Hüpfen ist hier Pflicht“): Pilzpalast, Sporenfarm, Trampolinplatz, Heilgarten, Zunfthaus. Minispiel: Pilzhüpfen (Portalsprung).",
+    "Insel 25 – Polarlichtstadt („Die Stadt unter Lichtschleiern“): Lichtkristall, Eispalast, Sternenstraße, Wintermarkt, Himmelsbahn. Minispiel: Polarlichtsegeln (Wolkengleiter).",
+    "Insel 26 – Zuckerwind („Süße Lüfte, bunte Wirbel“): Bonbonwerkstatt, Wirbelmühle, Zuckerbrücke, Konditorei, Wolkenpalast. Minispiel: Tortenpuzzle (Funkel-Puzzle).",
+    "Insel 27 – Gluttempel („Die Sonne wohnt hier“): Sonnenaltar, Hitzeschmiede, Feuergalerie, Steinweg, Tempelwache. Minispiel: Sonnenspiegel (Lichtpfad).",
+    "Insel 28 – Weltenbahn („Nächster Halt: überall“): Lokwerkstatt, Portalbahnhof, Signalsäule, Reisehotel, Bahnhofshalle. Minispiel: Weichenstellen (Reparaturwerk).",
+    "Insel 29 – Ewiger Horizont („Am Rand des Himmels“): Luftgarten, Nebelwarte, Himmelstreppe, Portalring, Panorama-Palast. Minispiel: Horizontsprung (Portalsprung).",
+    "Insel 30 – Sternenherz („Das Licht aller Welten“): Kernreaktor (magisch), Denkmal, Bündnishalle, Lichtbaum, Finalportal. Minispiel: Sternbilder (Runen-Memory)."
+   ]
+  },
+  {
+   "t": "Kapitel 1: Das Erwachen (Hafenmeisterin Lunara)",
+   "steps": [
+    "Die Runenmaschine erwacht (Kivi): 10-mal drehen – Belohnung: Münzen (×10 Basis), 5 Spins",
+    "Licht für den Leuchtturm (Hafenmeisterin Lunara): 3 Ausbaustufen bauen – Belohnung: Münzen (×15 Basis)",
+    "Ein freundlicher Sturmstreich (Kivi): 1 Sturmstreich(e) spielen – Belohnung: 10 Spins",
+    "Schatzsuche am Strand (Hafenmeisterin Lunara): 1 Schatzexpedition(en) – Belohnung: Münzen (×20 Basis)",
+    "Erste Sammelkarten (Pilzwirt Bruno): 1 Truhe öffnen – Belohnung: Münzen (×15 Basis), Holztruhe",
+    "Fleißige Hände (Kivi): 10 Ausbaustufen bauen – Belohnung: Münzen (×25 Basis), 10 Spins",
+    "Ein Spiel im Bambus (Klangmeisterin Suyin): 1 Minispiel(e) gewinnen – Belohnung: 10 Relikte",
+    "Karten für das Album (Pilzwirt Bruno): 10 verschiedene Karten sammeln – Belohnung: Münzen (×30 Basis), Silbertruhe",
+    "Schwung in der Maschine (Försterin Birka): 40-mal drehen – Belohnung: 15 Spins",
+    "Fünf Inseln im Licht (Hafenmeisterin Lunara): 5 Inseln wiederherstellen – Belohnung: Münzen (×60 Basis), 20 Spins, Goldtruhe"
+   ]
+  },
+  {
+   "t": "Kapitel 2: Maschinen und Magie (Erfinder Bolzwig)",
+   "steps": [
+    "Aufwind gesucht (Erfinder Bolzwig): 60-mal drehen – Belohnung: Münzen (×20 Basis), 10 Spins",
+    "Schraube um Schraube (Erfinder Bolzwig): 2 Bauwerke reparieren – Belohnung: Münzen (×25 Basis)",
+    "Die Stadt läuft wieder (Bürgermeisterin Kurbel): 20 Ausbaustufen bauen – Belohnung: Münzen (×35 Basis), 10 Relikte",
+    "Ein treuer Begleiter (Kivi): 1 Begleiter freischalten – Belohnung: 15 Relikte",
+    "Schutz für die Oase (Oasenwächterin Nima): 2 Stürme abwehren – Belohnung: Münzen (×30 Basis), 10 Spins",
+    "Doppelt hält besser (Köchin Pfefferli): mit Multiplikator ×3 drehen – Belohnung: 15 Spins",
+    "Expedition in die Tiefe (Erfinder Bolzwig): 4 Schatzexpedition(en) – Belohnung: Münzen (×40 Basis), Silbertruhe",
+    "Training im Schnee (Schlittenbauer Grummel): Begleiter 3-mal trainieren – Belohnung: 20 Relikte",
+    "Ein volles Album (Bürgermeisterin Kurbel): 1 Album/Alben vervollständigen – Belohnung: Münzen (×50 Basis), Goldtruhe",
+    "Maschinen und Magie (Erfinder Bolzwig): 10 Inseln wiederherstellen – Belohnung: Münzen (×70 Basis), 25 Spins, Goldtruhe"
+   ]
+  },
+  {
+   "t": "Kapitel 3: Farben und Strömungen (Malerin Perlyn)",
+   "steps": [
+    "Farbe für das Riff (Malerin Perlyn): 100-mal drehen – Belohnung: Münzen (×25 Basis), 15 Spins",
+    "Besuch im Atlas (Clownfisch Blubb): 3 fremde Inseln im Atlas besuchen – Belohnung: Münzen (×20 Basis), 10 Relikte",
+    "Strahlen lenken (Professorin Lumina): 2 Minispiel(e) „Lichtpfad“ gewinnen – Belohnung: 20 Relikte, Silbertruhe",
+    "Tauschen macht Freude (Malerin Perlyn): 2-mal Karten tauschen – Belohnung: Münzen (×30 Basis)",
+    "Nachtwache (Traumhüterin Selene): 4 Stürme abwehren – Belohnung: Münzen (×35 Basis), 15 Spins",
+    "Spiegelstreiche (Waldhüter Ivo): 5 Sturmstreich(e) spielen – Belohnung: 20 Spins",
+    "Ein großer Fund (Edelsteinschleiferin Opala): 3 Großgewinne landen – Belohnung: Münzen (×40 Basis)",
+    "Galerie der Inseln (Malerin Perlyn): 60 verschiedene Karten sammeln – Belohnung: Münzen (×45 Basis), Goldtruhe",
+    "Bauen im Berg (Steingolem Grobi): 40 Ausbaustufen bauen – Belohnung: Münzen (×50 Basis), 15 Relikte",
+    "Der Regenbogen kehrt zurück (Malerin Perlyn): 15 Inseln wiederherstellen – Belohnung: Münzen (×75 Basis), 30 Spins, Goldtruhe"
+   ]
+  },
+  {
+   "t": "Kapitel 4: Sagen der Inseln (Geschichtenerzählerin Fabula)",
+   "steps": [
+    "Der Anfang einer Sage (Geschichtenerzählerin Fabula): 150-mal drehen – Belohnung: Münzen (×30 Basis), 20 Spins",
+    "Flugstunde (Fluglehrerin Windja): 3 Minispiel(e) „Wolkengleiter“ gewinnen – Belohnung: 25 Relikte",
+    "Neue Freunde (Drachenküken Pusti): 2 Begleiter freischalten – Belohnung: 30 Relikte, Silbertruhe",
+    "Uhr um Uhr (Uhrmacher Sekundus): 5 Bauwerke reparieren – Belohnung: Münzen (×40 Basis)",
+    "Die große Show (Gauklerin Pimpa): 1 Wunder-Jackpot(s) – Belohnung: Münzen (×60 Basis), Sternentruhe",
+    "Zurück mit Humor (Geschichtenerzählerin Fabula): 2-mal zurückschlagen – Belohnung: 20 Spins",
+    "Ein Fest der Inseln (Gärtnermeisterin Mei): 500 Eventpunkte sammeln – Belohnung: Münzen (×50 Basis), 20 Relikte",
+    "Vier volle Bücher (Geschichtenerzählerin Fabula): 4 Album/Alben vervollständigen – Belohnung: Münzen (×60 Basis), Goldtruhe",
+    "Schatzjäger (Kivi): 8 Schatzexpedition(en) – Belohnung: Münzen (×50 Basis), 15 Spins",
+    "Und sie lebten glücklich (Geschichtenerzählerin Fabula): 20 Inseln wiederherstellen – Belohnung: Münzen (×80 Basis), 30 Spins, Sternentruhe"
+   ]
+  },
+  {
+   "t": "Kapitel 5: Die vergessenen Pfade (Kundschafter Rasmo)",
+   "steps": [
+    "Spuren im Sand (Kundschafter Rasmo): 200-mal drehen – Belohnung: Münzen (×35 Basis), 20 Spins",
+    "Die Stelen sprechen (Kundschafter Rasmo): 2 Minispiel(e) „Schatzkarte“ gewinnen – Belohnung: 30 Relikte",
+    "Sturmerprobt (Kapitänin Wella): 6 Stürme abwehren – Belohnung: Münzen (×45 Basis), 20 Spins",
+    "Wirbelwind (Kapitänin Wella): 10 Sturmstreich(e) spielen – Belohnung: 25 Spins, Silbertruhe",
+    "Licht unter Wasser (Seehüterin Nerina): 60 Ausbaustufen bauen – Belohnung: Münzen (×60 Basis), 20 Relikte",
+    "Starke Begleiter (Zunftmeister Pilzbart): Begleiter 10-mal trainieren – Belohnung: 35 Relikte, Goldtruhe",
+    "Handel am Wintermarkt (Marktfrau Brumhild): 5-mal Karten tauschen – Belohnung: Münzen (×45 Basis)",
+    "Weltenwanderer (Kundschafter Rasmo): 10 fremde Inseln im Atlas besuchen – Belohnung: Münzen (×40 Basis), 20 Spins",
+    "Fast alle Karten (Kivi): 140 verschiedene Karten sammeln – Belohnung: Münzen (×70 Basis), Sternentruhe",
+    "Der Weg ins Licht (Kundschafter Rasmo): 25 Inseln wiederherstellen – Belohnung: Münzen (×80 Basis), 35 Spins, Sternentruhe"
+   ]
+  },
+  {
+   "t": "Kapitel 6: Das Sternenherz (Sternenweberin Aurelia)",
+   "steps": [
+    "Funken sammeln (Sternenweberin Aurelia): 300-mal drehen – Belohnung: Münzen (×40 Basis), 25 Spins",
+    "Süße Belohnung (Konditor Sahnefein): 5 Großgewinne landen – Belohnung: Münzen (×50 Basis), 20 Relikte",
+    "Die Prüfung der Glut (Wächter Basaltor): 6 Minispiel(e) gewinnen – Belohnung: 35 Relikte, Goldtruhe",
+    "Volle Fahrt (Lokführerin Dampfi): mit Multiplikator ×10 drehen – Belohnung: 30 Spins",
+    "Das große Inselfest (Sternenweberin Aurelia): 3000 Eventpunkte sammeln – Belohnung: Münzen (×70 Basis), Sternentruhe",
+    "Expedition zum Horizont (Wolkenkartografin Vela): 15 Schatzexpedition(en) – Belohnung: Münzen (×60 Basis), 25 Spins",
+    "Jackpot der Sterne (Kivi): 3 Wunder-Jackpot(s) – Belohnung: Münzen (×80 Basis), Sternentruhe",
+    "Zwölf Bücher des Lichts (Sternenweberin Aurelia): 12 Album/Alben vervollständigen – Belohnung: Münzen (×80 Basis), 40 Relikte",
+    "Ein echtes Team (Kivi): 4 Begleiter freischalten – Belohnung: 30 Spins, 40 Relikte",
+    "Das Sternenherz schlägt (Sternenweberin Aurelia): 30 Inseln wiederherstellen – Belohnung: Münzen (×80 Basis), 40 Spins, 40 Relikte, Sternentruhe"
+   ]
+  },
+  {
+   "t": "Minispiele meistern",
+   "list": [
+    "Lichtpfad: Das Licht startet am Kristall und läuft nur durch Leitungen, deren Enden sich berühren. Arbeite dich vom Kristall aus Feld für Feld zu den Laternen vor; jedes Antippen dreht ein Teil um 90 Grad.",
+    "Kristallsuche: Die Zeit läuft – dreh die Insel durch Ziehen und such systematisch Seite für Seite ab.",
+    "Wolkengleiter: Halten lässt Kivi steigen, Loslassen sinken. Gleichmäßiger Rhythmus statt hektischer Wechsel hält dich zwischen den Sturmwolken.",
+    "Runen-Memory: Gewertet werden die Fehlversuche – merke dir jede aufgedeckte Rune und decke zuerst unbekannte Felder auf.",
+    "Funkel-Puzzle: Nutze die Vorschau (Auge bzw. X) und löse das Bild Reihe für Reihe von oben.",
+    "Reparaturwerk: Fünf Nähte – drück erst, wenn der Zeiger wirklich im grünen Bereich ist, nicht schon beim Hineinlaufen.",
+    "Portalsprung: Springe rechtzeitig über Lücken und Kristalle und achte darauf, dass dich Portale schneller oder langsamer machen.",
+    "Schatzkarte: Jede Zahl nennt die Schritte bis zum nächsten Schatz. Grabe dort, wo die Angaben zweier Zahlen zusammenpassen.",
+    "Mehr Sterne bedeuten mehr Belohnung: je Stern 12 × Basis Münzen und 4 Relikte."
+   ]
+  },
+  {
+   "t": "Alle 66 Erfolge",
+   "list": [
+    "Spins: Erster Schwung (10), Runendreher (100), Wirbelwind (1.000), Herr der Walzen (10.000).",
+    "Münzen verdient: Klingende Taschen (10.000), Münzmeister (1 Million), Schatzkammer des Himmels (1 Milliarde), Sternengold (1 Billion).",
+    "Ausbau: Erster Stein (1), Baumeisterin (50), Architekt der Wolken (500 Ausbauschritte).",
+    "Inseln: Die erste Insel, Erwacht (5), Maschinenflüsterer (10), Sagenhaft (20), Hüter des Sternenherzens (alle 30).",
+    "Sturm: Kleiner Wirbel (1), Sturmkobold (25), Wettermacher (250 Sturmstreiche).",
+    "Expeditionen: Schatzsucher (1), Kartenleser (25), Legendärer Entdecker (250).",
+    "Abwehr: Schutzschild (1 Sturm abgewehrt), Unerschütterlich (50).",
+    "Reparatur: Flickschuster (1), Meistermechaniker (50).",
+    "Karten: Sammelfieber (10 verschiedene), Kartenkenner (100), Alle Geschichten (alle 240).",
+    "Alben: Erstes Album, Bibliothekar (10), Archiv des Himmels (alle 30).",
+    "Truhen: Truhenöffner (10), Truhenkönig (100).",
+    "Minispiele: Spielkind (erstes), Inselspieler (50 gespielt), Geschickte Pfoten (10 gewonnen), Champion der Inseln (100 gewonnen).",
+    "Begleiter: Nie mehr allein (1 freigeschaltet), Bunte Truppe (4), Trainerin (10-mal trainiert), Meistertrainer (100-mal).",
+    "Story: Hilfsbereit (10 Story-Aufgaben), Held der Geschichte (alle 60).",
+    "Events: Festgast (1.000 Eventpunkte), Seele des Festes (25.000).",
+    "Tausch: Faire Hand (erster Tausch), Marktplatzstar (25 Tausche).",
+    "Glück: Großer Fang (erster Großgewinn), Glückspilz (50), Wunder geschehen (ein Wunder-Jackpot), Sternenregen (10 Jackpots).",
+    "Multiplikator: Mutig (×5), Volle Kraft (×50).",
+    "Online: Weltverbunden (eine Online-Runde), Himmelsfunker (25), Erster Online-Sieg, Weltenmeister (10 Siege).",
+    "Treue: Stammgast (an 3 verschiedenen Tagen gespielt), Treue Seele (30 Tage).",
+    "Rache: Mit Augenzwinkern (einmal zurückgeschlagen), Letztes Lachen (25-mal).",
+    "Atlas: Neugierig (5 fremde Inseln besucht), Weltreisender (50).",
+    "Neues Spiel+: Neue Wirbel (einmal begonnen), Ewiger Weltenhüter (dreimal)."
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Mein Spielstand ist weg – was nun?",
+   "a": "Prüfe in den Einstellungen unter „Spielstand“ die 2 Sicherungsplätze oder importiere eine exportierte Datei. Mit Google angemeldet wird der Stand automatisch gesichert und auf anderen Geräten geladen."
+  },
+  {
+   "q": "Ich habe keine Energie mehr.",
+   "a": "Energie lädt mit der Zeit nach (Klassisch alle 3 Minuten ein Punkt). Spins gibt es außerdem aus dem täglichen Gratis-Bonus, aus 3× bzw. 2× Energieschleife, Tages- und Wochenzielen, Events, Alben, Inselabschlüssen und Online-Runden. Im Modus Entspannt geht es schneller."
+  },
+  {
+   "q": "Muss ich etwas bezahlen?",
+   "a": "Nein. Es gibt kein Echtgeld, keine Käufe und nichts zum Auszahlen. Alle Wahrscheinlichkeiten stehen offen im Spiel."
+  },
+  {
+   "q": "Online klappt nicht.",
+   "a": "Private Räume funktionieren per Code, Link oder QR-Code ohne eigenen Server; beide Geräte brauchen Internet. Meldet das Spiel „Der Raum ist voll“ oder „Das Spiel läuft schon“, erstelle einen neuen Raum. Öffentliche Räume brauchen einen eingetragenen Spinwelten-Server."
+  },
+  {
+   "q": "Ein Computer-Spieler greift mich ständig an.",
+   "a": "Höchstens dreimal in acht Stunden. Schutzorbs wehren Stürme ab, Runo erhöht die Abwehr. Im friedlichen Modus (Einstellungen → Spiel) greift dich niemand an."
+  },
+  {
+   "q": "Warum kann ich nicht drehen?",
+   "a": "Entweder fehlt Energie für den gewählten Multiplikator, oder ein Sturmangriff bzw. eine Schatzexpedition ist noch offen. Erledige oder überspringe sie zuerst."
+  },
+  {
+   "q": "Gibt es eine englische Version?",
+   "a": "Ja. In den Einstellungen unter „Allgemein“ stellst du die Sprache auf Deutsch oder English."
+  }
+ ]
+}

@@ -1,0 +1,307 @@
+{
+ "id": "colorpop-universe",
+ "handbuch": [
+  {
+   "t": "Ziel des Spiels",
+   "p": [
+    "ColorPop Universe ist ein Knobelspiel nach dem SameGame-Prinzip. Tippe auf eine Gruppe aus mindestens 2 gleichfarbigen Steinen, die sich oben, unten, links oder rechts berühren (nicht schräg). Die ganze Gruppe knallt weg, alles darüber fällt nach unten, und leere Spalten rücken nach links.",
+    "Je größer eine Gruppe, desto mehr Punkte. Im Abenteuer erfüllst du in 300 Leveln in 12 Welten Aufträge und sammelst bis zu 3 Sterne pro Level; dazu kommen 13 weitere Modi. Es gibt kein Echtgeld und keine Werbung – Funken verdienst du nur durchs Spielen."
+   ]
+  },
+  {
+   "t": "Die Steine",
+   "p": [
+    "Es gibt bis zu sieben Farben, jede mit eigener Form und eigenem Symbol, damit sie auch bei Farbfehlsichtigkeit erkennbar sind: Rubinwürfel (rot), Sonnensplitter (gelb), Wasserglas (blau), Blattkristall (grün), Sternprisma (lila), Blitzkern (orange) und Mondperle (weiß). Im Lösungsbuch heißen sie kurz Rubin, Sonne, Wasser, Blatt, Stern, Blitz und Mond."
+   ],
+   "list": [
+    "Bombenstein: Platzt er mit seiner Gruppe, sprengt er das 3×3-Feld um sich. Hitzebombe (rot glühend): zündet auch, wenn daneben etwas platzt.",
+    "Raketenstein: räumt beim Platzen seine ganze Reihe (↔) oder Spalte (↕).",
+    "Prismastein: farbloser Joker, gehört zu jeder angrenzenden Gruppe und verbindet sie. Nicht allein antippbar.",
+    "Regenbogen: färbt beim Platzen alle Steine seiner Zielfarbe (kleiner Punkt) in seine eigene Farbe um.",
+    "Kettenblitz: Platzt er, platzen alle direkt verbundenen Kettensteine mit – egal welche Farbe.",
+    "Steinanker: normaler Farbstein, der nie fällt. Spalten mit Anker rücken nicht zur Seite.",
+    "Neonstein: wechselt nach jedem Zug zur nächsten Farbe (Rubin → Sonne → Wasser …).",
+    "Windpfeil: Platzt er, fällt in diesem Zug alles in Pfeilrichtung.",
+    "Holz- bzw. Korallenblock: farblos, fällt, zerbricht, wenn direkt daneben ein Stein platzt.",
+    "Fels bzw. Lavagestein: farblos und fest; die Zahl zeigt, wie viele Treffer durch benachbarte Gruppen oder Explosionen nötig sind.",
+    "Sammelobjekt (Sternfragment, Muschel, Schlüssel, Edelstein): fällt und wird eingesammelt, sobald es ganz unten ankommt.",
+    "Insel/Loch: kein Spielfeld; Steine landen darauf, Spalten mit Insel rücken nicht zur Seite.",
+    "Portal: feste Felder am Boden, immer paarweise; nach jedem Zug tauschen die Steine direkt darüber ihre Plätze.",
+    "Eis bzw. Harz (1–3 Schichten): hält einen Farbstein fest, er ist nicht wählbar. Jede Gruppe daneben bricht eine Schicht.",
+    "Zielmarker: leuchten unter manchen Steinen; entferne den Stein darüber, dann erlischt der Marker.",
+    "Förderband (gelbe Pfeile am Rand): schiebt nach jedem Zug alle beweglichen Steine seiner Reihe ein Feld nach rechts, der letzte springt nach links vorn."
+   ]
+  },
+  {
+   "t": "Punkte und Sterne",
+   "list": [
+    "Eine Gruppe mit n Steinen bringt (n − 2)² × 10 Punkte: 2 Steine = 0, 3 = 10, 4 = 40, 6 = 160, 10 = 640, 20 = 2.560 Punkte.",
+    "Komplett leeres Brett: +1.000 Punkte.",
+    "In Leveln mit Zuglimit und Restzug-Bonus: +100 Punkte je übrigem Zug.",
+    "Im Abenteuer und in einigen Modi: +5 Punkte je Stein, den ein Spezialstein zusätzlich entfernt.",
+    "Sterne im Abenteuer: 1 Stern für das erfüllte Ziel, 2 und 3 Sterne für das Erreichen der beiden Punktgrenzen des Levels."
+   ]
+  },
+  {
+   "t": "Abenteuer: Ablauf",
+   "p": [
+    "Jedes Level hat ein Ziel, das oben angezeigt wird, zum Beispiel „Räume das Brett komplett leer“, „Höchstens 5 Steine übrig lassen“, „1.640 Punkte erreichen“, „12× Rubinwürfel entfernen“, „Muscheln nach unten bringen“, „Alle Eis-/Harzschichten brechen“, „Alle Holz- und Felsblöcke zerstören“, „Alle Zielmarker freiräumen“ oder „4 Gruppen mit mindestens 6 Steinen bilden“. Manche Level haben zwei Aufträge gleichzeitig oder ein Zuglimit (👣).",
+    "Die Runde endet, wenn das Brett leer ist, keine Gruppe mehr übrig ist oder die Züge aufgebraucht sind. Ist das Ziel erreicht, meldet das Spiel „Ziel erreicht!“ – du kannst weiterspielen, um mehr Punkte und Sterne zu holen, oder mit „Abschließen“ beenden. Ein geschafftes Level öffnet das nächste; jede Welt öffnet sich, sobald das letzte Level der vorigen geschafft ist. Im Abenteuer gibt es kein Rückgängig, aber Hinweise und Booster."
+   ]
+  },
+  {
+   "t": "Die 12 Welten",
+   "list": [
+    "Welt 1 – Bonbon-Bucht (Level 1–25): Einführung. Grundregeln, Brett leeren, Punkte, wenige Reststeine.",
+    "Welt 2 – Kristallgarten (26–50): Zielmarker und Sammelaufträge nach Farbe, erste Edelsteine und Zuglimits.",
+    "Welt 3 – Wolkenstadt (51–75): Inseln (Löcher im Brett) und Windpfeile; in den Sonderleveln 58, 66 und 72 fällt alles dauerhaft in eine andere Richtung (nach oben, links bzw. rechts).",
+    "Welt 4 – Tiefsee-Lagune (76–100): Muscheln nach unten bringen, Korallenblöcke und Felsen.",
+    "Welt 5 – Funkelwald (101–125): Harz hält Steine fest, Kettenblitze.",
+    "Welt 6 – Vulkan-Vibe (126–150): Lavagestein (zwei Treffer), Bomben und Hitzebomben, viele Level mit Zuglimit.",
+    "Welt 7 – Neon-Metropole (151–175): Neonsteine und Raketen, viele Aufträge für große Gruppen und Farben.",
+    "Welt 8 – Frostpalast (176–200): Eis mit bis zu drei Schichten und Steinanker.",
+    "Welt 9 – Zahnrad-Zirkus (201–225): Förderbänder in fast jedem Level.",
+    "Welt 10 – Sternenarchipel (226–250): Portale und Sternfragmente, bis zu 5 Farben.",
+    "Welt 11 – Traumlabor (251–275): Regenbogensteine; alle Mechaniken treffen aufeinander, fast immer mit zwei Aufträgen.",
+    "Welt 12 – Prisma-Kosmos (276–300): Prismen als Farb-Joker und das große Finale (Level 300 „Aurorafinale“).",
+    "In jeder Welt ist Level 13 (13, 38, 63 … 288) ein Herausforderungs-Level mit festem, von Hand gebautem Brett und Zuglimit, Level 25 ist das Welt-Finale."
+   ]
+  },
+  {
+   "t": "Die 14 Modi",
+   "list": [
+    "Abenteuer: 300 Level in 12 Welten mit Sternen und neuen Mechaniken.",
+    "Klassiker: reines Abräumen nach Originalregeln. Brett Leicht 8×10, Normal 12×12, Groß 16×12 oder Experte 20×15, 3 bis 6 Farben. Keine Booster, keine Zeit, kein Rückgängig. Mit „Herausforderung teilen“ schickst du einen Link mit demselben Brett.",
+    "Zen: kein Zeitdruck, Rückgängig erlaubt, ruhige Musik, 3 bis 5 Farben. Geht nichts mehr, kommt einfach ein neues Brett.",
+    "Sprint 60: 60 Sekunden Punktejagd. Ist ein Brett leer oder ohne Zug, kommt sofort das nächste. Ein Zug innerhalb von 2 Sekunden nach dem letzten erhöht den Combo-Faktor um ×0,1 (bis ×2,0).",
+    "Zeitattacke: 2, 3 oder 5 Minuten. Entfernte Steine werden von oben nachgefüllt, Spalten rücken nicht zusammen. Gruppen ab 8 Steinen bringen +2 Sekunden.",
+    "Zuglimit: 15, 25 oder 40 Züge mit Nachfüllen – hol das Maximum heraus.",
+    "Puzzle-Labor: 30 Knobelrätsel, jedes nachweislich komplett leerbar. 1 Stern: leer. 2 Sterne: höchstens 2 Züge über dem Bestwert. 3 Sterne: mit der kleinsten möglichen Zugzahl. Rückgängig ist erlaubt. Die ersten 3 Rätsel sind offen, jedes gelöste Rätsel öffnet ein weiteres.",
+    "Farbchaos: 6 oder 7 Farben mit Neonsteinen, Regenbogen und Bomben; +5 Punkte je Stein, den ein Spezialstein zusätzlich entfernt.",
+    "Gravitation+: Die Schwerkraft wechselt alle 3 Züge reihum (unten → links → oben → rechts). Pfeile am Rand und die Vorschau zeigen aktuelle und nächste Richtung.",
+    "Daily Pop: ein Brett pro Tag aus dem heutigen UTC-Datum, auf allen Geräten gleich. Klassische Regeln, beliebig oft spielbar, dein Bestwert zählt.",
+    "Wochenliga: 7 Aufgaben pro Kalenderwoche mit eigenem Ziel, jederzeit spielbar und wiederholbar.",
+    "Endlos-Turm: Jedes Stockwerk hat ein Ziel und wird größer; ab Stockwerk 4 kommen Holzblöcke, ab 7 Eis, ab 10 Bomben und Sammelobjekte, ab 14 Raketen und Kettenblitze, ab 20 Prismen und Neonsteine. Nach einer Niederlage startest du das Stockwerk neu.",
+    "KI-Duell: Du spielst zuerst, danach spielt der Bot (Einfach, Mittel oder Schwer) exakt dasselbe Brett mit echten Zügen. Wer mehr Punkte hat, gewinnt; den Bot-Durchgang kannst du dir ansehen.",
+    "Lokal zu zweit: „Zugwechsel“ – ihr spielt abwechselnd auf einem Brett, jeder sammelt eigene Punkte; „Nacheinander“ – beide spielen dasselbe Brett, erst Spieler 1, dann Spieler 2."
+   ]
+  },
+  {
+   "t": "Booster, Hinweise und Funken",
+   "list": [
+    "Hammer: entfernt einen einzelnen Stein, Block oder Fels (kostet 3 Funken).",
+    "Mini-Bombe: sprengt ein 3×3-Feld (4 Funken).",
+    "Farbpinsel: färbt einen Stein in die nächste Farbe um (2 Funken).",
+    "Mischen: verteilt die Farben neu, mit mindestens einem möglichen Zug (3 Funken).",
+    "Booster gibt es nur im Abenteuer, im Endlos-Turm und im Zen-Modus. Zum Start hast du von jedem 2 Stück und 5 Funken.",
+    "Hinweis (💡 bzw. H) zeigt eine gute Gruppe – nicht im KI-Duell, Lokal zu zweit, Daily Pop und in der Wochenliga.",
+    "Funken bekommst du für jeden neuen Stern (1 Funke), alle 10 geschafften Level (+5), jeden Erfolg (+2), Tagesaufgaben (je 3), Wochenaufgaben (je 10) und wenn du alle 7 Aufgaben einer Wochenliga löst (+10). Wiederholte Level bringen keine doppelten Funken."
+   ]
+  },
+  {
+   "t": "Bedienung",
+   "list": [
+    "Smartphone/Tablet: Gruppe antippen. Gedrückt halten zeigt Gruppe und Punkte, ohne zu ziehen. Zwei Finger = Zoom. In den Einstellungen gibt es den Bestätigungs-Tipp (1. Tipp zeigt die Gruppe, 2. Tipp entfernt sie).",
+    "PC mit Maus: Klick wählt, Darüberfahren zeigt die Gruppe, Mausrad zoomt.",
+    "Tastatur: Pfeile oder W A S D bewegen den Cursor, Enter oder Leertaste wählt, H Hinweis, U Rückgängig (nur Zen und Puzzle-Labor), R Neustart, P Pause, Esc oder Rücktaste zurück, M Ton, F Vollbild, 1–4 Booster. Die Buchstabentasten sind in den Einstellungen frei belegbar („Standardbelegung“ setzt sie zurück).",
+    "Controller: Steuerkreuz bzw. linker Stick bewegt den Cursor, A wählt, B zurück, X Hinweis, Y Rückgängig, LB/RB wechselt den Booster, Start Pause, Select Ton."
+   ]
+  },
+  {
+   "t": "Einstellungen, Profile und Speichern",
+   "list": [
+    "Musik und Effekte getrennt regelbar, Grafikqualität (Automatisch, Akku sparen …), Bewegung (Wie System, Reduziert), Hoher Kontrast, Bestätigungs-Tipp, Vorschau beim Gedrückthalten, Vibration, Punkte-Vorschau und schwebende Punkte, Tutorials wieder zeigen.",
+    "Bis zu 3 Profile pro Gerät, jedes mit eigenem Namen, Fortschritt und Funken.",
+    "Der Spielstand wird automatisch im Browser gespeichert; eine unterbrochene Runde wartet beim nächsten Start („Weiterspielen“). Über Exportieren/Importieren und „Sicherung wiederherstellen“ sicherst du den Stand, mit „Mit Google speichern“ synchronisierst du ihn auf mehrere Geräte."
+   ]
+  },
+  {
+   "t": "Sammlung: Aufgaben, Erfolge, Designs und Statistik",
+   "p": [
+    "In der Sammlung findest du täglich 3 Tagesaufgaben und wöchentlich 3 Wochenaufgaben (z. B. „Entferne 300 Steine“, „Bilde eine Gruppe mit mindestens 10 Steinen“, „Schaffe 2 neue Abenteuer-Level“, „Spiele 3 verschiedene Modi“), 53 Erfolge, die Designs und deine Statistik (entfernte Steine, größte Gruppe, leere Bretter, Rekorde je Modus, bestes Turm-Stockwerk, Daily-Serie und mehr). Designs sind rein kosmetisch; Formen und Symbole der Farben bleiben immer gleich."
+   ]
+  }
+ ],
+ "ratgeber": [
+  {
+   "t": "Tipps für Einsteiger",
+   "list": [
+    "Große Gruppen lohnen sich enorm: 10 Steine bringen 640 Punkte, zwei Gruppen mit je 5 Steinen nur 2 × 90 = 180.",
+    "Räume zuerst kleine Farben weg, die große Gruppen einer anderen Farbe trennen – so wachsen die großen Gruppen zusammen.",
+    "Achte auf einzelne Steine: Übrig gebliebene Einzelsteine verhindern das leere Brett und den Bonus von 1.000 Punkten.",
+    "Halte den Finger auf einer Gruppe, um Größe und Punkte zu sehen, bevor du sie entfernst.",
+    "Im Abenteuer kannst du nach erreichtem Ziel weiterspielen und mit „Abschließen“ beenden, wann du willst."
+   ]
+  },
+  {
+   "t": "Strategien für Fortgeschrittene",
+   "list": [
+    "Arbeite von unten nach oben: Entfernte Steine unten verändern das ganze Brett, Züge oben nur wenig. Plane zuerst die unteren Reihen.",
+    "Leere Spalten rücken nach links – eine fast leere linke Spalte kann zwei Gruppen auf einmal zusammenführen.",
+    "Zuglimit-Level: Jeder unbenutzte Zug ist 100 Punkte wert, wenn ein Restzug-Bonus gilt. Mit wenigen großen Gruppen schaffst du Ziel und Sterne gleichzeitig.",
+    "Eis und Harz brechen nur durch Gruppen direkt daneben – lege Gruppen so, dass sie mehrere Eisfelder berühren.",
+    "Sammelobjekte (Muscheln, Sternfragmente) fallen nur, wenn darunter Platz entsteht. Räume die Spalte unter dem Objekt frei.",
+    "Neonsteine wechseln nach jedem Zug die Farbe in fester Reihenfolge – rechne einen Zug voraus, um sie in eine Gruppe zu holen.",
+    "Portale tauschen nach jedem Zug die Steine direkt darüber. Nutze das, um Farben zu verbinden."
+   ]
+  },
+  {
+   "t": "Profi-Tricks",
+   "list": [
+    "Sprint 60: Spiele schnell hintereinander – jeder Zug innerhalb von 2 Sekunden hebt den Combo-Faktor bis ×2,0. Lieber viele mittlere Gruppen in schneller Folge als lange überlegen.",
+    "Zeitattacke: Gruppen ab 8 Steinen geben +2 Sekunden; weil Steine nachfallen, entstehen immer wieder neue große Gruppen.",
+    "Gravitation+: Achte auf die Vorschau der nächsten Richtung und lass große Gruppen für den nächsten Richtungswechsel zusammenlaufen.",
+    "Booster sparen: Spiele Level zuerst ohne Booster. Erfolge wie „Pur gespielt“ und „Puristin & Purist“ (50 Level ohne Booster) belohnen das.",
+    "KI-Duell: Der Bot spielt dasselbe Brett. Ein komplett leeres Brett (+1.000) entscheidet fast jedes Duell."
+   ]
+  },
+  {
+   "t": "Häufige Fehler",
+   "list": [
+    "Gierig die größte Gruppe sofort nehmen: Oft wird sie noch größer, wenn du vorher eine trennende Farbe entfernst.",
+    "Zweiergruppen wegklicken, ohne Plan: Sie bringen 0 Punkte – nutze sie nur, um Steine zu verbinden oder einzelne Reste zu vermeiden.",
+    "Im Abenteuer auf Rückgängig hoffen: Das gibt es nur in Zen und Puzzle-Labor. Nutze stattdessen das Gedrückthalten zur Vorschau.",
+    "Das Ziel übersehen: Ein Level mit „Höchstens 5 Steine übrig lassen“ verlangt keine Punkte – räume sauber ab statt große Gruppen zu jagen."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "So liest du die Lösungen",
+   "p": [
+    "Die Lösungen unten stammen aus den Lösungszertifikaten des Spiels und wurden mit der Spiel-Logik nachgespielt. Jeder Schritt nennt die Farbe der Gruppe, die du antippst, dann Spalte/Reihe eines Steins dieser Gruppe – Spalten von links, Reihen von unten gezählt, jeweils zum Zeitpunkt des Zugs – und in Klammern die Größe der Gruppe. Beispiel: „Sonne 2/3 (6)“ heißt: Tippe die gelbe Gruppe an, zu der der Stein in Spalte 2, Reihe 3 von unten gehört; sie hat 6 Steine.",
+    "Farben: Rubin = rot, Sonne = gelb, Wasser = blau, Blatt = grün."
+   ]
+  },
+  {
+   "t": "Herausforderungs-Level (Level 13 jeder Welt)",
+   "p": [
+    "Diese 12 Level haben ein festes Brett und das Ziel „Räume das Brett komplett leer“. Alle Lösungen schaffen das Ziel mit Zügen übrig und erreichen 3 Sterne."
+   ],
+   "steps": [
+    "Level 13 „Kirschboje“ (Bonbon-Bucht, 7 Züge erlaubt, Ziel: Brett leeren): Sonne 2/5 (2) → Sonne 2/3 (6) → Rubin 1/4 (2) → Rubin 1/1 (2) → Wasser 3/4 (8) – 5 Züge, 1.720 Punkte inkl. Restzug-Bonus",
+    "Level 38 „Opalpfad“ (Kristallgarten, 6 Züge erlaubt, Ziel: Brett leeren): Rubin 1/5 (6) → Wasser 4/5 (12) → Rubin 4/3 (3) → Sonne 1/1 (4) – 4 Züge, 2.410 Punkte inkl. Restzug-Bonus",
+    "Level 63 „Federgasse“ (Wolkenstadt, 8 Züge erlaubt, Ziel: Brett leeren): Rubin 5/4 (2) → Rubin 3/3 (4) → Wasser 1/5 (12) → Sonne 2/1 (2) → Rubin 1/1 (3) → Sonne 1/1 (2) – 6 Züge, 2.250 Punkte inkl. Restzug-Bonus",
+    "Level 88 „Seesterngraben“ (Tiefsee-Lagune, 9 Züge erlaubt, Ziel: Brett leeren): Wasser 1/3 (3) → Sonne 4/2 (2) → Rubin 2/3 (6) → Sonne 4/4 (8) → Wasser 3/1 (3) → Wasser 1/2 (4) → Rubin 2/3 (4) – 7 Züge, 1.820 Punkte inkl. Restzug-Bonus",
+    "Level 113 „Farnsenke“ (Funkelwald, 8 Züge erlaubt, Ziel: Brett leeren): Wasser 4/5 (2) → Wasser 5/3 (2) → Wasser 1/2 (2) → Rubin 3/6 (3) → Sonne 2/5 (18) → Rubin 1/2 (3) – 6 Züge, 3.780 Punkte inkl. Restzug-Bonus",
+    "Level 138 „Magmakammer“ (Vulkan-Vibe, 8 Züge erlaubt, Ziel: Brett leeren): Rubin 1/6 (2) → Sonne 5/5 (13) → Wasser 3/2 (7) → Wasser 1/3 (4) → Rubin 1/1 (2) → Sonne 1/1 (2) – 6 Züge, 2.700 Punkte inkl. Restzug-Bonus",
+    "Level 163 „Laserdach“ (Neon-Metropole, 9 Züge erlaubt, Ziel: Brett leeren): Blatt 3/3 (3) → Wasser 4/3 (4) → Rubin 1/4 (12) → Wasser 2/3 (5) → Sonne 3/3 (2) → Blatt 3/2 (2) → Sonne 1/1 (2) – 7 Züge, 2.340 Punkte inkl. Restzug-Bonus",
+    "Level 188 „Glitzerthron“ (Frostpalast, 10 Züge erlaubt, Ziel: Brett leeren): Wasser 4/3 (5) → Blatt 4/1 (3) → Rubin 4/2 (3) → Sonne 2/6 (13) → Blatt 3/2 (4) → Rubin 1/1 (2) → Rubin 2/4 (4) → Wasser 1/1 (2) – 8 Züge, 2.600 Punkte inkl. Restzug-Bonus",
+    "Level 213 „Federbühne“ (Zahnrad-Zirkus, 10 Züge erlaubt, Ziel: Brett leeren): Rubin 4/5 (2) → Blatt 6/2 (2) → Rubin 4/2 (6) → Blatt 2/1 (3) → Sonne 1/5 (3) → Sonne 5/3 (10) → Blatt 3/4 (7) → Wasser 1/1 (3) – 8 Züge, 2.280 Punkte inkl. Restzug-Bonus",
+    "Level 238 „Orbitbucht“ (Sternenarchipel, 9 Züge erlaubt, Ziel: Brett leeren): Sonne 1/6 (17) → Blatt 6/4 (2) → Wasser 2/3 (6) → Sonne 2/2 (2) → Rubin 3/1 (3) → Blatt 2/1 (2) → Rubin 1/3 (4) – 7 Züge, 3.660 Punkte inkl. Restzug-Bonus",
+    "Level 263 „Funkellabor“ (Traumlabor, 11 Züge erlaubt, Ziel: Brett leeren): Rubin 1/5 (3) → Wasser 6/4 (3) → Sonne 4/3 (5) → Wasser 2/2 (3) → Blatt 2/1 (2) → Wasser 2/3 (6) → Rubin 2/1 (2) → Sonne 3/4 (7) → Blatt 3/3 (5) – 9 Züge, 1.820 Punkte inkl. Restzug-Bonus",
+    "Level 288 „Lichtspirale“ (Prisma-Kosmos, 11 Züge erlaubt, Ziel: Brett leeren): Wasser 1/6 (6) → Sonne 4/6 (2) → Rubin 2/4 (2) → Wasser 3/2 (3) → Sonne 3/2 (4) → Blatt 2/3 (6) → Rubin 2/1 (3) → Wasser 3/4 (6) → Rubin 2/2 (4) – 9 Züge, 1.780 Punkte inkl. Restzug-Bonus"
+   ]
+  },
+  {
+   "t": "Puzzle-Labor: alle 30 Rätsel",
+   "p": [
+    "Jede Lösung leert das Brett mit der kleinsten möglichen Zugzahl (Bestwert) und bringt damit 3 Sterne. Rückgängig ist im Puzzle-Labor erlaubt – probiere ruhig."
+   ],
+   "steps": [
+    "Rätsel 1 (4×4, 3 Farben, Bestwert 4 Züge): Wasser 3/3 (2) → Sonne 4/3 (2) → Rubin 2/4 (9) → Wasser 1/1 (3)",
+    "Rätsel 2 (4×4, 3 Farben, Bestwert 4 Züge): Rubin 1/4 (2) → Rubin 4/3 (3) → Sonne 2/2 (6) → Wasser 2/2 (5)",
+    "Rätsel 3 (4×4, 3 Farben, Bestwert 4 Züge): Rubin 2/4 (2) → Rubin 2/1 (2) → Sonne 1/4 (7) → Wasser 3/3 (5)",
+    "Rätsel 4 (4×4, 3 Farben, Bestwert 4 Züge): Sonne 2/4 (4) → Sonne 1/3 (5) → Wasser 3/2 (2) → Rubin 4/2 (5)",
+    "Rätsel 5 (4×5, 3 Farben, Bestwert 6 Züge): Sonne 3/4 (3) → Wasser 1/5 (5) → Rubin 4/3 (3) → Rubin 1/2 (2) → Wasser 3/1 (2) → Sonne 2/3 (5)",
+    "Rätsel 6 (4×5, 3 Farben, Bestwert 5 Züge): Sonne 1/3 (2) → Rubin 1/2 (2) → Wasser 3/5 (10) → Rubin 3/3 (4) → Sonne 1/1 (2)",
+    "Rätsel 7 (4×5, 3 Farben, Bestwert 5 Züge): Rubin 2/5 (2) → Sonne 1/4 (2) → Rubin 4/4 (2) → Wasser 1/3 (5) → Sonne 2/4 (9)",
+    "Rätsel 8 (4×5, 3 Farben, Bestwert 5 Züge): Wasser 3/5 (9) → Sonne 1/1 (3) → Rubin 2/2 (4) → Rubin 1/2 (2) → Sonne 1/1 (2)",
+    "Rätsel 9 (5×5, 3 Farben, Bestwert 6 Züge): Wasser 2/5 (4) → Sonne 5/3 (2) → Rubin 5/3 (6) → Rubin 3/2 (2) → Sonne 1/4 (9) → Wasser 1/1 (2)",
+    "Rätsel 10 (5×5, 3 Farben, Bestwert 5 Züge): Sonne 3/4 (9) → Wasser 1/3 (2) → Wasser 4/3 (6) → Rubin 1/2 (5) → Sonne 2/2 (3)",
+    "Rätsel 11 (5×5, 3 Farben, Bestwert 7 Züge): Wasser 4/2 (2) → Rubin 3/2 (2) → Sonne 4/3 (6) → Wasser 2/4 (6) → Sonne 1/5 (2) → Sonne 1/2 (4) → Rubin 1/2 (3)",
+    "Rätsel 12 (5×5, 3 Farben, Bestwert 6 Züge): Sonne 1/5 (3) → Wasser 4/4 (2) → Sonne 4/4 (3) → Sonne 2/2 (4) → Rubin 3/3 (7) → Wasser 3/2 (6)",
+    "Rätsel 13 (5×6, 3 Farben, Bestwert 6 Züge): Rubin 3/5 (9) → Sonne 1/3 (4) → Wasser 4/3 (2) → Sonne 3/4 (8) → Wasser 1/2 (4) → Rubin 1/2 (3)",
+    "Rätsel 14 (5×6, 3 Farben, Bestwert 6 Züge): Sonne 1/4 (5) → Sonne 4/4 (4) → Wasser 3/3 (5) → Rubin 4/5 (11) → Sonne 2/1 (2) → Wasser 1/2 (3)",
+    "Rätsel 15 (5×6, 3 Farben, Bestwert 6 Züge): Rubin 1/6 (2) → Rubin 3/5 (4) → Rubin 1/3 (6) → Wasser 5/2 (3) → Wasser 4/3 (8) → Sonne 1/2 (7)",
+    "Rätsel 16 (5×6, 3 Farben, Bestwert 7 Züge): Wasser 1/6 (7) → Rubin 2/6 (5) → Sonne 1/3 (5) → Rubin 4/3 (3) → Rubin 1/2 (3) → Wasser 2/2 (5) → Sonne 1/1 (2)",
+    "Rätsel 17 (6×6, 3 Farben, Bestwert 7 Züge): Wasser 5/4 (6) → Rubin 2/6 (11) → Rubin 2/3 (6) → Rubin 5/2 (4) → Wasser 2/1 (2) → Sonne 3/2 (4) → Wasser 1/1 (3)",
+    "Rätsel 18 (6×6, 3 Farben, Bestwert 7 Züge): Wasser 4/6 (2) → Rubin 4/5 (10) → Sonne 6/6 (8) → Sonne 3/5 (6) → Sonne 1/3 (2) → Rubin 4/2 (3) → Wasser 1/3 (5)",
+    "Rätsel 19 (6×6, 3 Farben, Bestwert 7 Züge): Sonne 3/6 (12) → Rubin 2/3 (3) → Sonne 4/3 (8) → Wasser 4/2 (2) → Rubin 5/2 (3) → Wasser 1/3 (6) → Sonne 1/2 (2)",
+    "Rätsel 20 (6×6, 3 Farben, Bestwert 7 Züge): Sonne 4/6 (5) → Rubin 5/4 (4) → Rubin 2/4 (3) → Rubin 1/2 (3) → Rubin 6/2 (3) → Sonne 3/4 (9) → Wasser 1/3 (9)",
+    "Rätsel 21 (5×5, 4 Farben, Bestwert 7 Züge): Blatt 1/5 (3) → Rubin 1/4 (3) → Wasser 2/4 (4) → Blatt 4/2 (4) → Sonne 3/2 (4) → Rubin 4/2 (4) → Wasser 2/2 (3)",
+    "Rätsel 22 (5×5, 4 Farben, Bestwert 7 Züge): Rubin 3/5 (2) → Wasser 4/5 (2) → Blatt 4/3 (5) → Wasser 2/1 (2) → Sonne 1/3 (5) → Wasser 1/3 (7) → Blatt 1/1 (2)",
+    "Rätsel 23 (5×5, 4 Farben, Bestwert 8 Züge): Wasser 4/5 (3) → Rubin 3/4 (2) → Rubin 1/2 (2) → Rubin 4/2 (4) → Sonne 3/1 (2) → Wasser 2/1 (2) → Sonne 2/4 (6) → Blatt 3/2 (4)",
+    "Rätsel 24 (5×5, 4 Farben, Bestwert 7 Züge): Wasser 3/4 (2) → Rubin 4/4 (2) → Blatt 2/4 (7) → Wasser 1/4 (2) → Sonne 1/3 (4) → Rubin 3/2 (6) → Wasser 1/1 (2)",
+    "Rätsel 25 (5×6, 4 Farben, Bestwert 10 Züge): Blatt 1/3 (2) → Sonne 2/3 (2) → Sonne 3/1 (2) → Rubin 4/5 (10) → Wasser 3/2 (2) → Blatt 3/2 (2) → Sonne 2/3 (2) → Rubin 2/2 (2) → Wasser 1/2 (3) → Blatt 1/2 (3)",
+    "Rätsel 26 (5×6, 4 Farben, Bestwert 8 Züge): Rubin 2/6 (4) → Blatt 2/2 (3) → Sonne 3/3 (2) → Wasser 4/3 (8) → Blatt 4/1 (2) → Rubin 5/3 (5) → Blatt 3/2 (3) → Sonne 1/2 (3)",
+    "Rätsel 27 (5×6, 4 Farben, Bestwert 11 Züge): Blatt 2/6 (3) → Wasser 3/4 (3) → Sonne 4/2 (2) → Rubin 2/4 (3) → Rubin 3/1 (2) → Blatt 1/1 (3) → Sonne 3/2 (3) → Rubin 1/5 (3) → Wasser 2/2 (3) → Wasser 2/3 (3) → Blatt 1/1 (2)",
+    "Rätsel 28 (5×6, 4 Farben, Bestwert 8 Züge): Blatt 1/6 (2) → Sonne 3/5 (3) → Blatt 2/4 (3) → Wasser 4/5 (5) → Rubin 4/3 (5) → Sonne 1/5 (8) → Blatt 2/1 (2) → Rubin 1/1 (2)",
+    "Rätsel 29 (6×6, 4 Farben, Bestwert 9 Züge): Wasser 1/6 (5) → Sonne 5/4 (4) → Sonne 3/4 (2) → Rubin 3/4 (8) → Blatt 1/3 (5) → Wasser 3/1 (3) → Blatt 2/3 (4) → Sonne 2/2 (3) → Rubin 1/1 (2)",
+    "Rätsel 30 (6×6, 4 Farben, Bestwert 9 Züge): Rubin 6/6 (3) → Blatt 2/4 (2) → Sonne 1/4 (4) → Wasser 4/6 (10) → Sonne 4/1 (3) → Blatt 4/2 (3) → Rubin 2/1 (3) → Blatt 1/3 (3) → Wasser 2/2 (5)"
+   ]
+  },
+  {
+   "t": "Abenteuer: Strategie je Zieltyp",
+   "list": [
+    "Brett leeren: Plane von unten nach oben und vermeide Einzelsteine; die +1.000 Punkte bringen meist auch die Sterne.",
+    "Höchstens X Steine übrig: Kleine Gruppen sind erlaubt – wichtig ist nur, dass am Ende wenige Steine liegen bleiben.",
+    "Punkte erreichen: Sammle Farben zu wenigen, sehr großen Gruppen.",
+    "Farben sammeln („12× Rubinwürfel entfernen“): Entferne störende andere Farben, bis die Zielfarbe große Gruppen bildet.",
+    "Sammelobjekte nach unten bringen: Räume gezielt die Spalte unter dem Objekt; Raketen (↕) und Bomben helfen.",
+    "Eis/Harz brechen und Blöcke zerstören: Jede Gruppe direkt daneben zählt; Bomben treffen mehrere Felder gleichzeitig.",
+    "Zielmarker freiräumen: Der Stein über dem Marker muss weg – die Farbe ist egal.",
+    "Gruppen mit mindestens 6 Steinen bilden: Lass Gruppen wachsen und tippe sie erst an, wenn sie groß genug sind."
+   ]
+  },
+  {
+   "t": "Freischaltbare Designs",
+   "list": [
+    "Steinoberflächen frei: Gelee, Kristall, Flach & klar. Keramik ab 15 Sternen, Marmor ab 60, Glas ab 120, Goldrand ab 300 Sternen, Pixel ab 10 Erfolgen.",
+    "Pro geschaffter Welt eine Oberfläche: Bonbon (Welt 1), Edelstein (2), Wolkenweich (3), Perlmutt (4), Bernstein (5), Magma (6), Neonröhre (7), Raureif (8), Messing (9), Nebula (10), Traumschaum (11), Prisma (12).",
+    "Knall-Effekte: Funken und Konfetti frei; Splitter (Welt 2), Blasen (Welt 4), Blätter (Welt 5), Flammen (Welt 6), Ringwellen (Welt 7), Schneeflocken (Welt 8), Prismenlicht (Welt 12), Sternchen ab 30 Sternen, Herzen ab 90 Sternen, Pixelregen ab 5 Erfolgen.",
+    "Hintergründe: Welt-Thema, Nachthimmel und Ruhig (wenig Bewegung) frei; Abendrot ab 45 Sternen, Tiefblau (Welt 4), Polarlicht (Welt 8)."
+   ]
+  },
+  {
+   "t": "Alle 53 Erfolge",
+   "list": [
+    "Gruppen: Erster Knall (erste Gruppe), Knallfrosch (100 Gruppen), Dauerknaller (1.000 Gruppen).",
+    "Steine: Steinbrecher (1.000 Steine), Abrissprofi (10.000), Universumsfeger (50.000).",
+    "Große Gruppen: Achterpack (8+ Steine), Dutzendknall (12+), Riesengruppe (20+), Mega-Pop (30+).",
+    "Leere Bretter: Blitzblank (1), Saubermacher (10), Glanzleistung (50).",
+    "Level: Erster Schritt (Level 1), Hundert Level (100 verschiedene), Universum gerettet (alle 300).",
+    "Welten: je ein Erfolg „… geschafft“ für alle 25 Level jeder der 12 Welten (Bonbon-Bucht geschafft bis Prisma-Kosmos geschafft).",
+    "Sterne: Sternenregen (100), Sternenstaub (450), Perfektes Universum (alle 900 – überall 3 Sterne), Sternenwelt (alle 75 Sterne einer Welt).",
+    "Booster: Pur gespielt (ein Level ohne Booster), Puristin & Purist (50 Level ohne Booster), Werkzeugkiste (einen Booster einsetzen).",
+    "Daily und Woche: Tagesform (ein Daily Pop), Wochenserie (7 Tage hintereinander Daily Pop), Ligameisterin & Ligameister (alle 7 Aufgaben einer Wochenliga).",
+    "Turm: Turmkletterer (Stockwerk 10), Wolkenkratzer (Stockwerk 25).",
+    "Duelle: Erster Sieg (Bot besiegt), Bot-Bezwinger (schweren Bot besiegt), Zu zweit (eine Runde Lokal zu zweit).",
+    "Rätsel: Rätselfuchs (10 Rätsel gelöst), Labor-Genie (alle 30 Rätsel mit 3 Sternen).",
+    "Rekorde: Sprintstar (3.000 Punkte in Sprint 60), Klassik-Profi (5.000 Punkte im Klassiker), Chaosbändiger (3.000 im Farbchaos), Schwerelos (2.000 in Gravitation+).",
+    "Sonstiges: Schatzsucher (50 Sammelobjekte nach unten), Eisbrecher (200 Eis- oder Harzschichten), Innere Ruhe (10 Bretter im Zen-Modus), Allrounder (jeden der 14 Modi mindestens einmal).",
+    "Tipp: Allrounder, Zu zweit, Tagesform, Werkzeugkiste und Erster Sieg (Bot auf Einfach) holst du in wenigen Minuten – jeder Erfolg bringt 2 Funken."
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Mein Spielstand ist weg – was nun?",
+   "a": "Der Stand liegt im Browser des Geräts. Prüfe zuerst, ob das richtige der bis zu 3 Profile aktiv ist. Mit „Sicherung wiederherstellen“ oder einem Import holst du einen gesicherten Stand zurück; mit „Mit Google speichern“ ist er auf allen Geräten verfügbar."
+  },
+  {
+   "q": "Warum ist Rückgängig ausgegraut?",
+   "a": "Rückgängig gibt es nur im Zen-Modus und im Puzzle-Labor. Im Abenteuer und in den anderen Modi zählt jeder Zug."
+  },
+  {
+   "q": "Wie bekomme ich neue Booster?",
+   "a": "In der Sammlung kaufst du Booster mit Funken: Farbpinsel 2, Hammer 3, Mischen 3, Mini-Bombe 4 Funken. Funken gibt es nur fürs Spielen (neue Sterne, Erfolge, Aufgaben)."
+  },
+  {
+   "q": "Das nächste Level oder die nächste Welt ist gesperrt.",
+   "a": "Level öffnen sich der Reihe nach. Eine Welt öffnet sich, wenn du das letzte Level der vorigen Welt geschafft hast. Im Puzzle-Labor öffnet jedes gelöste Rätsel ein weiteres."
+  },
+  {
+   "q": "Das Spiel ruckelt oder der Akku leert sich schnell.",
+   "a": "Stell in den Einstellungen die Grafik auf „Akku sparen“ und die Bewegung auf „Reduziert“, oder wähle den Hintergrund „Ruhig (wenig Bewegung)“."
+  },
+  {
+   "q": "Ich kann die Farben schlecht unterscheiden.",
+   "a": "Jede Farbe hat eine eigene Form und ein eigenes Symbol. Zusätzlich hilft „Hoher Kontrast“ in den Einstellungen."
+  },
+  {
+   "q": "Ist der Daily Pop für alle gleich?",
+   "a": "Ja. Das Brett entsteht aus dem heutigen UTC-Datum und ist weltweit auf allen Geräten gleich. Du kannst ihn beliebig oft spielen, dein Bestwert zählt."
+  }
+ ]
+}

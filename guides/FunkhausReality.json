@@ -105,8 +105,8 @@
         "herzlich: Plaudern gelingt besser, wird jeden Tag ein wenig beliebter, versteht sich mit fast allen.",
         "lustig: Auftritte und Sticheln kommen gut an, steigt täglich etwas in der Beliebtheit, passt besonders zu Chaoten und Herzlichen.",
         "ehrlich: Allianzen und Geheimnisse gelingen leichter, Gerüchte fliegen eher auf; Intrigante mögen Ehrliche gar nicht.",
-        "ehrgeizig: wird täglich etwas beliebter und ist stärker in den Wochenaufgaben.",
-        "ruhig: gut in Reflex- und Melodie-Aufgaben, aber schwächer bei Auftritten; verträgt sich schlecht mit Chaoten.",
+        "ehrgeizig: wird täglich etwas beliebter; verträgt sich schlecht mit anderen Ehrgeizigen und mit Chaoten.",
+        "ruhig: wird täglich ein klein wenig beliebter, ist aber schwächer bei Auftritten; verträgt sich gut mit Herzlichen und Ehrlichen, schlecht mit Chaoten.",
         "intrigant: Gerüchte gelingen öfter, verliert aber täglich etwas Beliebtheit und eckt bei vielen an.",
         "eitel: Auftritte kommen gut an, kostet aber täglich etwas Beliebtheit; zwei Eitle mögen sich nicht.",
         "chaot: Sticheln kommt an, aber Kochen und Entspannen gehen öfter schief.",
@@ -137,7 +137,7 @@
     {
       "t": "Die Wochenaufgaben mit Wertung",
       "list": [
-        "Die Aufgaben wechseln sich ab: Woche 1, 4, 7 Funk-Reflex, Woche 2 und 5 Merk-Melodie, Woche 3 und 6 Schätz-Radar.",
+        "Die Aufgaben wechseln sich ab: Woche 1 und 4 Funk-Reflex, Woche 2 und 5 Merk-Melodie, Woche 3 Schätz-Radar. In der Finalwoche gibt es keine Aufgabe.",
         "⚡ Funk-Reflex: Fünfmal tippen, sobald das Signal GRÜN wird. Punkte = (700 − durchschnittliche Reaktionszeit in ms) ÷ 5. Ein Schnitt von 200 ms gibt 100 Punkte, 300 ms gibt 80. Zu früh tippen zählt als 700 ms.",
         "🎵 Merk-Melodie: Die Tonfolge auf vier farbigen Feldern nachspielen; sie beginnt mit 3 Tönen und wird jedes Mal länger. Wer 9 Töne schafft, bekommt 100 Punkte. Ein Fehler beendet die Aufgabe: Fehler bei Länge 3 = 8 Punkte, jede weitere Länge +16.",
         "📡 Schätz-Radar: 3 Sekunden lang sind 40 bis 109 Funkpunkte zu sehen. Punkte = 100 − (Abweichung ÷ richtige Zahl × 250). Liegst du 10 % daneben, sind es 75 Punkte, ab 40 % daneben 0.",

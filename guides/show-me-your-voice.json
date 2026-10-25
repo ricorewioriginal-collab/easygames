@@ -1,0 +1,276 @@
+{
+  "id": "show-me-your-voice",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "In SHOW ME YOUR VOICE bist du Kandidatin oder Kandidat in einer Castingshow. Du erstellst deinen Avatar, trittst gegen 11 erfundene Mitbewerber an und kämpfst dich durch eine ganze Staffel: Casting, Gruppen-Recall, Mottoshow, Battle, Halbfinale und Finale. Ziel ist der Sieg im Finale.",
+        "Auf der Bühne triffst du Noten im Takt, hältst beim Gesang den Punkt auf der Melodielinie und reagierst auf Show-Momente. Die Jury bewertet dich offen nach ihren eigenen Kriterien, ab dem Recall zählen auch die Votes des Publikums. Wer ausscheidet, beginnt eine neue Staffel."
+      ]
+    },
+    {
+      "t": "Hauptmenü",
+      "list": [
+        "▶ Karriere fortsetzen: deine laufende Staffel im Backstage weiterspielen.",
+        "🌟 Neue Karriere: Avatar, Casting, ganze Staffel.",
+        "🌐 Online & Handys: Live-Show mit Freunden, jede Person auf dem eigenen Gerät.",
+        "🎙️ Freies Vorsingen: dein Song, Karaoke, Genre-Challenges und Song des Tages.",
+        "🎉 Karaoke-Abend: mehrere Sänger, ein Gerät, eine Siegerehrung.",
+        "🎤 Freies Casting: ein einzelner Auftritt vor der Jury.",
+        "🏋️ Training: drei Minispiele mit Vocal-Coach Sophie.",
+        "❄️ Winterglanz-Gala: Bonus-Challenge mit Rekord.",
+        "📺 Show-Archiv: alle Folgen der echten Show auf YouTube.",
+        "👤 Profil & Erfolge, ⚙️ Einstellungen, 🎮 Steuerung & Tutorial (Tutorial dauert 1 Minute), ℹ️ Credits."
+      ]
+    },
+    {
+      "t": "Die Staffel",
+      "list": [
+        "🎤 Casting: Du kommst mit mindestens 2 von 3 Jury-Ja weiter. Bei genau einem Ja gibt es eine Zugabe a cappella. Rico hat einmal pro Staffel ein Goldenes Ticket: Bei genau einem Ja und mindestens 55 Punkten Performance bist du trotzdem weiter.",
+        "🔁 Gruppen-Recall: Du singst in einer Dreiergruppe (Rhythmus, Gruppenteil, Gesang), bewertet wird jede Stimme einzeln. Die Top 8 der Gesamtwertung kommen in die Mottoshow.",
+        "🎭 Mottoshow: Motto „Best of 80er & 90er“, „Iconic Hits“ oder „Herzensmomente“. Die Top 6 kommen ins Battle.",
+        "⚔️ Battle: Duelle nach der Rangfolge der Vorrunde (Platz 1 gegen Letzten, 2 gegen Vorletzten …). Die Jury-Mehrheit gewinnt das Duell. Von den Verlierern wird der mit den meisten Votes gerettet.",
+        "⭐ Halbfinale: Gesang und Rhythmus. Die Top 3 erreichen das Finale, Votes zählen 30 %.",
+        "👑 Finale: Platz 1 bis 3 nach Gesamtwertung."
+      ]
+    },
+    {
+      "t": "Gesamtwertung",
+      "list": [
+        "Recall, Mottoshow und Battle: Performance 50 %, Jury 30 %, Votes 20 %.",
+        "Halbfinale: Performance 45 %, Jury 25 %, Votes 30 %.",
+        "Finale: Performance 40 %, Jury 30 %, Votes 30 %.",
+        "Votes entstehen aus deinen Fans und deiner Performance, dazu kommen getroffene Show-Momente und die Bühnen-Aktion „Publikum einbeziehen“ (+4 Votes)."
+      ]
+    },
+    {
+      "t": "Die Jury",
+      "p": [
+        "Im Casting sitzt immer die Stammjury. Danach gibt es je nach Einstellung „wechselnde Jury“ (drei aus acht, mindestens eine Person aus der Stammjury) oder eine feste Jury. Jede Wertung zeigt offen: Kriterien, Tagesform (höchstens ±3), Lieblingsstil (+3) und Sympathie (höchstens ±4). Ja gibt es ab der persönlichen Grenze."
+      ],
+      "list": [
+        "Marc – Der Perfektionist (Ja ab 60): Timing 45 %, Stimme 35 %, Ausdruck 20 %. Mag Soul.",
+        "Lena – Die Gefühlsjägerin (Ja ab 55): Ausdruck 40 %, Bühnenpräsenz 35 %, Stimme 25 %. Mag Balladen.",
+        "David – Der Produzent (Ja ab 57): Mut 30 %, Timing 25 %, Entwicklung 25 %, Bühnenpräsenz 20 %. Mag Rock.",
+        "Nina Sturm – Die Rockröhre (58): Stimme 35 %, Mut 35 %, Bühnenpräsenz 30 %.",
+        "Kofi Mensah – Der Gesangslehrer (60): Stimme 50 %, Timing 30 %, Ausdruck 20 %.",
+        "Jule Winter – Die Social-Media-Queen (54): Bühnenpräsenz 45 %, Ausdruck 30 %, Entwicklung 25 %.",
+        "Tarik Aydın – Der Beat-Bauer (58): Timing 50 %, Mut 30 %, Bühnenpräsenz 20 %.",
+        "Greta Lind – Die Musical-Diva (60): Ausdruck 40 %, Stimme 40 %, Bühnenpräsenz 20 %."
+      ]
+    },
+    {
+      "t": "Vor dem Auftritt",
+      "list": [
+        "Wartebereich mit Startnummer, dann ein Gespräch mit der Jury (Casting) oder ein Interview mit Showmaster Rico. Gute Antworten bringen Sympathie oder Votes.",
+        "Musikstil: Ballade (80 BPM), Pop (108 BPM, Allrounder), Soul (94 BPM) oder Rock (132 BPM).",
+        "Ansatz: Sicher (weniger Noten, Wertung ×0,95, wenig Mut), Mit Gefühl (normale Notendichte, +10 Ausdruck) oder Volles Risiko (viele Noten, ab 70 % Treffern ×1,08, darunter ×0,94, viel Mut).",
+        "Bühnen-Aktion: Publikum einbeziehen (3 Show-Momente, +6 Bühnenpräsenz, +4 Votes), Ganz bei mir (1 Show-Moment, +4 Timing) oder Großer Auftritt (+10 Bühnenpräsenz, +12 Mut, Show-Momente kommen schneller).",
+        "Modus: „🎮 Spiel (wie bisher)“ mit Noten oder „🎙️ Echt vorsingen“ – dann bewertet die Jury deine Stimme aus dem Mikrofon."
+      ]
+    },
+    {
+      "t": "Auf der Bühne",
+      "list": [
+        "Rhythmus: Noten fallen in vier Spuren. Drück, wenn sie den Kreis unten berühren: Perfect (±50 ms), Gut (±100 ms), OK (±150 ms). Treffer in Folge bauen die Combo auf.",
+        "Show-Momente: Mitten im Song erscheint ein Publikums-Signal (👏 🙌 💃 🎤) mit einer Spur. Drück diese Spur rechtzeitig – das bringt Bühnenpräsenz, Applaus und Votes.",
+        "Gesang: Halte den Mikro-Punkt auf der blauen Melodielinie.",
+        "Im Casting kann die Jury bei schwacher Leistung abbrechen („✋ Die Jury bricht ab“)."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Tastatur: ← ↓ ↑ → oder D F J K für die vier Spuren. Beim Gesang ↑/↓ (oder W/S, J/F) halten. Esc oder P = Pause. Menüs mit Pfeiltasten und Enter, zurück mit Esc.",
+        "Touch: die vier großen Tasten unten oder direkt in die Spur tippen; beim Gesang auf dem Bildschirm ziehen.",
+        "Controller: Steuerkreuz oder X · A · Y · B für die Spuren, Start = Pause, Ⓐ bestätigt, Ⓑ zurück.",
+        "Mikrofon (freiwillig): in den Einstellungen oder in der Auftritts-Vorbereitung einschalten, dann singst du jede Note an. Das Spiel erkennt nur die Tonhöhe. Kopfhörer helfen, damit die Musik nicht mitzählt."
+      ]
+    },
+    {
+      "t": "Backstage zwischen den Runden",
+      "list": [
+        "Training: 2 Einheiten pro Runde – Rhythmus-Training (Timing), Bühnenpräsenz und Ton-Training (Stimme). Je besser du spielst, desto mehr steigt der Wert (höchstens +7, bei hohen Werten weniger).",
+        "Community: 1 Aktion pro Runde – Fan-Livestream (+8 Fans, kostet 1 Training), Backstage-Video (+5 Fans) oder Spontan-Duett (+3 Fans, dauerhaft +3 Ausdruck).",
+        "Ereignisse: Ab dem Recall passiert in jeder Runde etwas, z. B. Heiserkeit, Lästerei, Fan-Plakat, Lampenfieber, Duett-Angebot oder Kamera-Interview. Du wählst eine von zwei Reaktionen.",
+        "Coach Sophie gibt Tipps zu Jury und Auftritt."
+      ]
+    },
+    {
+      "t": "Freies Vorsingen, Karaoke-Abend und Song des Tages",
+      "list": [
+        "Freies Vorsingen: a cappella, zu einem Karaoke-Video oder einem eigenen YouTube-Link, 30, 60 oder 90 Sekunden oder „🎵 Ganzer Song“ (höchstens 5 Minuten). Gemessen werden Intonation, Stabilität, Stimmumfang, Dynamik und wie viel du singst.",
+        "Live wie SingStar: Deine Töne erscheinen als Notenbalken, jeder gehaltene Ton bekommt ein Urteil von „Perfekt!“ bis „Daneben“, Combo-Punkte bis 10.000. Blind Audition: Überzeugte Juroren drehen sich schon während des Songs um.",
+        "Titel am Ende: 🚿 Duschsänger (unter 40), 🙂 Amateur (ab 40), 🎶 Talent (ab 55), 🎤 Profi (ab 70), ⭐ Star (ab 80), 🌟 Superstar (ab 90).",
+        "Deine Aufnahme kannst du anhören, speichern und teilen – sie bleibt auf deinem Gerät. „🎧 Ich singe mit Kopfhörern“ verbessert die Aufnahme.",
+        "🎉 Karaoke-Abend: mehrere Leute singen nacheinander am selben Gerät, am Ende Siegerehrung nach Live-Punkten.",
+        "📅 Song des Tages: jeden Tag ein Karaoke-Song für alle, 60 Sekunden; das beste Ergebnis zählt für die Tages-Rangliste."
+      ]
+    },
+    {
+      "t": "Online & Handys",
+      "steps": [
+        "Eine Person eröffnet über 🌐 Online & Handys die Show und bekommt einen 4-stelligen Code, Link und QR-Code.",
+        "Bis zu 8 Personen treten bei – von überall, auch übers Internet.",
+        "Alle singen gleichzeitig auf dem eigenen Gerät zur gleichen Musik, die Jury bewertet, danach stimmt ihr gegenseitig ab.",
+        "Ablauf: Casting (2 von 3 Ja, mindestens zwei kommen weiter) → Recall → Live-Shows (die besten 60 % kommen weiter) → Finale mit höchstens drei Personen.",
+        "Wer ausscheidet, bleibt als Publikum dabei und stimmt weiter mit ab."
+      ]
+    },
+    {
+      "t": "Musikquellen und Einstellungen",
+      "list": [
+        "📻 Radio (Standard): Live-Programm der RicoReWi-Sender auf laut.fm; die Noten entstehen live aus dem Programm, Sender und Titel stehen oben. Erlaubt der Stream keine Analyse, folgen die Noten dem Takt des Stils.",
+        "🎵 Songs von YouTube: Suche über die iTunes-Suche, Video von YouTube, Taktlage aus Liedtext-Zeitstempeln.",
+        "Ohne Internet laufen die Noten zu einem leisen Takt-Klick.",
+        "Einstellungen: Musikquelle, Jury (wechselnd oder fest), Musik- und Effekt-Lautstärke, Mikrofon, Stimmlage, Notentempo, Audio-Versatz (Noten früher/später), Schwierigkeit (leicht, normal, schwer), Weniger Bewegung, große Schrift, Farbenblind-Modus und Untertitel."
+      ]
+    },
+    {
+      "t": "Fortschritt und Speichern",
+      "p": [
+        "Profil, laufende Staffel, Einstellungen, Rekorde und Challenge-Sterne werden auf dem Gerät gespeichert. Dein Profil sammelt Erfahrung (XP) für Auftritte und Training; das Level steigt mit der Erfahrung. Bricht ein Auftritt ab (z. B. durch Neuladen), geht es zurück in den Backstage, die Runde bleibt gleich."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Spiel zuerst das Tutorial (1 Minute) – dort lernst du Spuren, Show-Momente und Gesang.",
+        "„Mit Gefühl“ ist der beste Standard-Ansatz: normale Notendichte und +10 Ausdruck.",
+        "Lieber sicher treffen als hektisch drücken: Combo bringt Ausdruck.",
+        "Beim Gesang ruhig bleiben – kleine Bewegungen halten den Punkt besser auf der Linie.",
+        "Stell bei Verzögerungen (Bluetooth-Kopfhörer) den Audio-Versatz ein."
+      ]
+    },
+    {
+      "t": "Die Jury gewinnen",
+      "list": [
+        "Wähl den Musikstil nach der Jury: Lena mag Balladen, Marc Soul, David Rock – das bringt je 3 Punkte.",
+        "Im Jury-Gespräch zählt die passende Antwort: Lena mag Ehrlichkeit und Gefühl, David Selbstbewusstsein und Anderssein, Marc Fleiß und Bescheidenheit. Sympathie zählt höchstens ±4 Punkte.",
+        "Marc braucht saubere Einsätze (Timing 45 %). Mit „Ganz bei mir“ bekommst du +4 Timing.",
+        "Lena will Bühnenpräsenz: „Publikum einbeziehen“ und getroffene Show-Momente helfen bei ihr.",
+        "David liebt Mut und Entwicklung: „Volles Risiko“ oder „Großer Auftritt“ und eine Steigerung zur letzten Runde."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Volles Risiko lohnt sich nur, wenn du mindestens 70 % triffst – sonst kostet es 6 % der Wertung.",
+        "Ab dem Halbfinale zählen Votes 30 %. Sammle vorher Fans mit Community-Aktionen und Show-Momenten.",
+        "Nutze jede Runde beide Trainings und die eine Community-Aktion. Training wirkt bei niedrigen Werten am stärksten.",
+        "Bei Backstage-Ereignissen auf die Jury schauen: „Durchziehen“ bei Heiserkeit kostet 6 Stimme im nächsten Auftritt – vor Marc oder Kofi eine schlechte Idee.",
+        "Im Battle entscheidet die Jury-Mehrheit. Wer verliert, kann mit den meisten Votes unter den Verlierern trotzdem gerettet werden."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Das Mikrofon ohne Kopfhörer nutzen – dann zählt die Musik mit.",
+        "Im Casting mit „Volles Risiko“ starten, ohne die Lieder zu kennen.",
+        "Die Zugabe a cappella unterschätzen: Ab 70 % auf der Linie wechselt eine Nein-Stimme zu Ja.",
+        "Fans vernachlässigen: Ab dem Recall entscheiden Votes mit."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Der Weg zum Sieg – Runde für Runde",
+      "steps": [
+        "Casting: Stil nach der Stammjury wählen (Soul für Marc, Ballade für Lena, Rock für David) und im Gespräch ehrlich antworten. Ziel: 2 von 3 Ja. Bei genau einem Ja die Zugabe a cappella mit mindestens 70 % auf der Linie singen – oder auf das Goldene Ticket hoffen (ab 55 Punkten Performance, einmal pro Staffel).",
+        "Gruppen-Recall: Die Top 8 kommen weiter. Hier zählt zum ersten Mal das Voting (20 %). Vorher trainieren, Community-Aktion nutzen.",
+        "Mottoshow: Top 6. Ein sauberer Rhythmus-Auftritt reicht meist; achte auf Bühnenpräsenz für die Votes.",
+        "Battle: Gegen die gegenüberliegende Platzierung der Vorrunde. Eine gute Platzierung in der Mottoshow bringt dir einen schwächeren Gegner.",
+        "Halbfinale: Gesang zuerst, dann Rhythmus. Votes zählen 30 % – Fans sind jetzt Gold wert.",
+        "Finale: Rhythmus, Gesang, Rhythmus. Performance 40 %, Jury 30 %, Votes 30 %. Platz 1 schaltet den Erfolg „Sieger“ frei."
+      ]
+    },
+    {
+      "t": "Die Mitbewerber",
+      "list": [
+        "Mira Sonnfeld (Soul): stark in Stimme, schwach bei Lampenfieber.",
+        "Jaxx Delmar (Rock): stark im Mut, schwach in der Konstanz.",
+        "Lio Kerner (Pop): stark im Timing, schwach im Ausdruck.",
+        "Nova Brandt (Pop): stark in Bühnenpräsenz, schwach in Stimme.",
+        "Tamo Eke (Soul): stark im Timing, schwach im Mut.",
+        "Elif Akar (Ballade): stark im Ausdruck, schwach bei Lampenfieber.",
+        "Benno Wiese (Rock): stark im Mut, schwach in der Stimme.",
+        "Clara Fink (Ballade): stark im Ausdruck, schwach im Mut.",
+        "Ruben Holm (Pop): stark in Bühnenpräsenz, schwach im Timing.",
+        "Yuki Arendt (Ballade): stark in Stimme, schwach in Bühnenpräsenz.",
+        "Fenja Lux (Rock): stark im Mut, schwach im Timing.",
+        "Auf „leicht“ treten die Mitbewerber schwächer auf, auf „schwer“ stärker."
+      ]
+    },
+    {
+      "t": "Alle Backstage-Ereignisse und die beste Wahl",
+      "list": [
+        "🤒 Heiserkeit: „Kräutertee und schonen“ (–1 Training, keine Nachteile) oder „Durchziehen“ (Stimme –6 im nächsten Auftritt). Meist besser: Kräutertee.",
+        "🗯️ Lästerei im Backstage: „Souverän ignorieren“ (Lena +2) oder „Vor der Kamera kontern“ (+6 Fans, Marc –2). Vor dem Halbfinale lohnen die Fans.",
+        "🪧 Fan-Plakat: „Selfie mit den Fans“ (+4 Fans) oder „Fokus auf den Auftritt“ (+1 Training).",
+        "😰 Lampenfieber: „Atemübung mit Sophie“ (–1 Training, +4 Ausdruck im Auftritt) oder „Augen zu und durch“ (Mut +6, Timing –4).",
+        "🎶 Duett-Angebot: „Klar, gerne!“ (+3 Fans, dauerhaft +2 Ausdruck) oder „Lieber proben“ (dauerhaft +2 Timing).",
+        "🎙️ Kamera-Interview: „Emotional erzählen“ (Lena +2, +2 Fans) oder „Selbstbewusst auftreten“ (David +2)."
+      ]
+    },
+    {
+      "t": "Interview-Antworten mit Wirkung",
+      "list": [
+        "Marc: „Erzähl kurz – wer steht da vor uns?“ – „Ich bin …, und Musik ist mein Leben.“ (Lena +1, Marc +1). „Ich bin der nächste Superstar …“ (David +2, Marc –1). „Ehrlich? Ich bin total nervös …“ (Lena +2, David –1).",
+        "Lena: „Was bedeutet dir dieser Auftritt?“ – Familie (Lena +2), Weiterentwicklung (David +1, Marc +1), „Spaß!“ (David +2, Lena –1).",
+        "David: „Warum sollten wir gerade dich nehmen?“ – „Weil ich hart arbeite …“ (Marc +2), „Weil ich anders bin …“ (David +2), „Das entscheidet ihr …“ (Marc +1, Lena +1).",
+        "Rico fragt nach den Fans: „Danke für jeden Vote – ihr seid der Wahnsinn!“ bringt die meisten Votes (+5)."
+      ]
+    },
+    {
+      "t": "Erfolge",
+      "list": [
+        "Talent: das erste Casting bestanden.",
+        "Starke Stimme: im Gesangsteil 90 % auf der Linie.",
+        "Herz der Community: in einer Runde die meisten Votes geholt.",
+        "Top 6: die Mottoshow überstanden.",
+        "Durchhalter: das Finale erreicht.",
+        "Sieger: eine Staffel gewonnen."
+      ]
+    },
+    {
+      "t": "Genre-Challenges und Belohnungen",
+      "p": [
+        "Im Freien Vorsingen hat jedes der 7 Genres eine Challenge: 1 ★ wenn die Jury Ja sagt (2 von 3), 2 ★ wenn zusätzlich das Genre-Ziel erreicht ist, 3 ★ mit mindestens 80 Punkten dazu. Insgesamt gibt es 21 Sterne."
+      ],
+      "list": [
+        "Genre-Ziele: Pop und Deutsch & Schlager – Bühnenpräsenz (fast durchgehend singen); Ballade – Intonation (Töne sauber treffen); Rock – Ausdruck (laut und leise, volle Power); Soul – Stabilität (Töne ruhig halten); Party & Musical und 80er & 90er – Stimmumfang (hoch und tief singen).",
+        "Mikros: Standard (0 ★), Silber (2 ★), Feuer (5 ★), Diamant (9 ★), Regenbogen (13 ★).",
+        "Bühnen: Casting-Studio (0 ★), Große Bühne (3 ★), Arena (7 ★), Finale-Bühne (11 ★).",
+        "Outfits: Goldenes Outfit (4 ★), Silbernes Outfit (8 ★), Neon-Outfit (12 ★)."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Das Mikrofon funktioniert nicht.",
+      "a": "Schalte das Mikrofon in den Einstellungen ein und erlaube den Zugriff im Browser. Das Spiel erkennt nur die Tonhöhe und nimmt in der Karriere nichts auf. Mit Kopfhörern zählt die Musik nicht mit."
+    },
+    {
+      "q": "Die Noten passen nicht zur Musik.",
+      "a": "Stell in den Einstellungen den Audio-Versatz ein (Noten früher oder später). Erlaubt ein Radiostream keine Analyse, folgen die Noten dem Takt des gewählten Stils."
+    },
+    {
+      "q": "Ohne Internet höre ich keine Musik.",
+      "a": "Radio, YouTube und Karaoke-Videos brauchen Internet. Ohne Verbindung laufen die Noten zu einem leisen Takt-Klick."
+    },
+    {
+      "q": "Ich bin rausgeflogen – ist alles weg?",
+      "a": "Nein. Dein Profil mit Erfahrung, Werten, Fans und Erfolgen bleibt. Du startest einfach eine neue Staffel."
+    },
+    {
+      "q": "Online-Show: Freunde kommen nicht rein.",
+      "a": "Sie brauchen den 4-stelligen Code, den Link oder den QR-Code der Person, die die Show eröffnet hat. Bis zu 8 Personen können beitreten, alle brauchen Internet."
+    },
+    {
+      "q": "Wo sind meine Aufnahmen?",
+      "a": "Aufnahmen aus dem Freien Vorsingen bleiben auf deinem Gerät. Du kannst sie nach dem Auftritt anhören, speichern und teilen."
+    }
+  ]
+}

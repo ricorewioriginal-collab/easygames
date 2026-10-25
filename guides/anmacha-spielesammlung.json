@@ -1,0 +1,209 @@
+{
+  "id": "anmacha-spielesammlung",
+  "handbuch": [
+    {
+      "t": "Was ist die Spielesammlung?",
+      "p": [
+        "Die AnMaCha 3D-Spielesammlung enthält sieben Brettspiel-Klassiker in 3D: Rausschmeißer, Würfelfieber, Schach, Leiterspiel, Vier in einer Reihe, Dame und Mühle. Du spielst gegen den Computer oder mit mehreren Menschen abwechselnd an einem Gerät – auf Handy und PC.",
+        "Jedes Spiel hat seine eigenen Regeln und sein eigenes Ziel. Die Regeln findest du im Spiel jederzeit unter „Regeln“ bzw. dem ?-Knopf."
+      ]
+    },
+    {
+      "t": "Menü und Spieleinrichtung",
+      "steps": [
+        "Im Menü tippst du eine Spielkarte an. Auf jeder Karte steht, für wie viele Spieler das Spiel ist.",
+        "In der Einrichtung legst du für jeden Platz fest, wer spielt: Mensch, Computer leicht, Computer mittel oder Computer schwer. Im Leiterspiel gibt es nur „Computer“, weil dort allein der Würfel entscheidet. Plätze über der Mindestzahl kannst du auf „— nicht dabei —“ stellen.",
+        "„Regeln“ zeigt die Spielregeln, „Spiel starten“ beginnt, „Zurück“ führt ins Menü. Die Platzwahl wird pro Spiel gespeichert.",
+        "Im Spiel oben: ☰ zurück zum Menü, ↻ dreht die Ansicht um 90 Grad, ? zeigt die Regeln, 🔊 schaltet den Ton.",
+        "Am Ende erscheint das Ergebnis mit „Nochmal“ oder „Zum Menü“."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "PC: mit der Maus auf Figuren, Felder, Würfel oder Spalten klicken. Mit gedrückter Maustaste ziehen dreht die Ansicht, das Mausrad zoomt. ↻ dreht um 90 Grad.",
+        "Touch: Figur, Feld, Würfel oder Spalte antippen. Mit einem Finger wischen dreht die Ansicht, mit zwei Fingern zusammenziehen oder spreizen zoomt.",
+        "Gamecontroller: Der rechte Stick bewegt einen Mauszeiger, A klickt. Mit dem Steuerkreuz springst du zwischen den Knöpfen der Menüs.",
+        "Ist der Computer dran, steht oben „… denkt …“ – dann einfach kurz warten."
+      ]
+    },
+    {
+      "t": "🎲 Rausschmeißer (2–4 Spieler)",
+      "list": [
+        "Farben: Rot, Gelb, Grün, Blau. Jeder hat vier Figuren im Haus. Der Rundkurs hat 40 Felder, dazu 4 Zielfelder pro Farbe.",
+        "Zum Würfeln den Würfel in der Mitte antippen.",
+        "Wer eine 6 würfelt, muss eine Figur auf sein Startfeld setzen und darf nochmal würfeln.",
+        "Solange noch Figuren im Haus stehen, muss das eigene Startfeld frei gemacht werden.",
+        "Landest du auf einer gegnerischen Figur, fliegt sie zurück ins Haus. Eigene Figuren kann man nicht schlagen und nicht überdecken.",
+        "Ohne Figur auf dem Feld hast du drei Versuche für eine 6.",
+        "Ins Ziel geht es nur mit passender Augenzahl. Wer zuerst alle vier Figuren im Ziel hat, gewinnt.",
+        "Gibt es mehrere mögliche Züge, tippst du die Figur an, die ziehen soll."
+      ]
+    },
+    {
+      "t": "🎯 Würfelfieber (1–4 Spieler)",
+      "list": [
+        "5 Würfel, pro Zug bis zu drei Würfe. Tippe Würfel an, um sie zu halten (sie wandern nach hinten).",
+        "Danach trägst du das Ergebnis in ein freies Feld des Zettels ein. Passt nichts, streichst du ein Feld mit 0.",
+        "Oberer Teil: Einer bis Sechser zählen die Summe dieser Augen. Ab 63 Punkten oben gibt es 35 Bonus.",
+        "Unterer Teil: Dreierpasch und Viererpasch = Summe aller Augen, Full House (3 + 2 gleiche) = 25, Kleine Straße (4 in Folge) = 30, Große Straße (5 in Folge) = 40, Fünferpasch (5 gleiche) = 50, Chance = Summe aller Augen.",
+        "Nach 13 Runden gewinnt die höchste Gesamtsumme. Allein gespielt jagst du deinen eigenen Rekord."
+      ]
+    },
+    {
+      "t": "♞ Schach (2 Spieler)",
+      "list": [
+        "Weiß beginnt. Tippe eine Figur an – mögliche Züge leuchten grün, Schlagzüge rot.",
+        "Es gelten alle Regeln: Rochade, en passant, Bauernumwandlung (du wählst die Figur), Schach und Matt.",
+        "Remis bei Patt, dreifacher Stellungswiederholung, 50 Zügen ohne Schlagen oder Bauernzug oder zu wenig Material."
+      ]
+    },
+    {
+      "t": "🪜 Leiterspiel (2–4 Spieler)",
+      "list": [
+        "Würfle und ziehe so viele Felder weiter. Am Fuß einer Leiter kletterst du hoch, auf dem Kopf einer Schlange rutschst du runter. Leiterfelder sind grün, Schlangenfelder rot beschriftet.",
+        "Mit einer 6 darfst du nochmal würfeln.",
+        "Feld 100 muss genau erreicht werden – würfelst du zu viel, bleibst du stehen.",
+        "Wer zuerst auf Feld 100 steht, gewinnt."
+      ]
+    },
+    {
+      "t": "🔴 Vier in einer Reihe (2 Spieler)",
+      "list": [
+        "Rot gegen Gelb. Tippe auf eine Spalte, um deinen Stein einzuwerfen; er fällt nach unten.",
+        "Wer zuerst vier Steine waagerecht, senkrecht oder diagonal in einer Reihe hat, gewinnt.",
+        "Ist das Brett voll, endet das Spiel unentschieden."
+      ]
+    },
+    {
+      "t": "⚪ Dame (2 Spieler)",
+      "list": [
+        "Weiß gegen Rot auf einem 8×8-Brett, je 12 Steine auf den dunklen Feldern.",
+        "Steine ziehen ein Feld diagonal nach vorn. Geschlagen wird durch Überspringen – auch rückwärts.",
+        "Es herrscht Schlagpflicht. Mehrfachsprünge werden bis zum Ende ausgeführt; tippe direkt das letzte Zielfeld an.",
+        "Wer die gegnerische Grundreihe erreicht, wird zur Dame: Sie zieht und schlägt beliebig weit diagonal.",
+        "Wer nicht mehr ziehen kann, verliert."
+      ]
+    },
+    {
+      "t": "⚫ Mühle (2 Spieler)",
+      "list": [
+        "Weiß gegen Schwarz auf dem Mühlebrett mit 24 Punkten.",
+        "Zuerst setzt jeder abwechselnd seine 9 Steine. Danach werden Steine entlang der Linien auf ein freies Nachbarfeld gezogen.",
+        "Wer nur noch 3 Steine hat, darf springen – auf jedes freie Feld.",
+        "Drei eigene Steine in einer Linie sind eine Mühle. Dann darfst du einen gegnerischen Stein nehmen; Steine in Mühlen nur, wenn es keine anderen gibt.",
+        "Wer weniger als 3 Steine hat oder nicht mehr ziehen kann, verliert."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Fang gegen „Computer leicht“ an. Er macht absichtlich öfter zufällige Züge.",
+        "Dreh die Ansicht (↻ oder Wischen), wenn Figuren verdeckt sind. In Schach, Dame und Mühle siehst du so alle Felder.",
+        "Lies vor dem ersten Spiel die Regeln (?) – sie gelten genau so im Spiel.",
+        "Würfelfieber: Halte die Würfel, die du behalten willst, bevor du erneut würfelst."
+      ]
+    },
+    {
+      "t": "Strategien je Spiel",
+      "list": [
+        "Rausschmeißer: Bring früh mehrere Figuren aufs Feld, damit du bei jedem Wurf eine Wahl hast. Bleib nicht direkt vor gegnerischen Figuren stehen (1 bis 6 Felder dahinter ist gefährlich) und wirf Gegner, die kurz vor ihrem Ziel sind.",
+        "Würfelfieber: Kümmere dich früh um den oberen Bonus – dafür brauchst du im Schnitt drei gleiche je Zahl (3 Einer, 3 Zweier … ergibt genau 63). Nutze die Chance als Reserve für einen schlechten Wurf.",
+        "Schach: Entwickle Springer und Läufer, rochiere früh und lass deine Dame nicht ungeschützt. Gegen „schwer“ hilft solides Spiel mehr als schnelle Angriffe.",
+        "Vier in einer Reihe: Die mittlere Spalte ist die stärkste. Baue Drohungen auf zwei Stellen gleichzeitig, dann kann der Gegner nur eine abwehren.",
+        "Dame: Halte die eigene Grundreihe lange besetzt, damit der Gegner keine Dame bekommt. Denk an die Schlagpflicht – du kannst den Gegner zu Zügen zwingen.",
+        "Mühle: In der Setzphase nicht zu früh auf Mühlen gehen, sondern bewegliche Steine an Kreuzungspunkten platzieren. Eine „Zwickmühle“ (ein Stein, der hin und her eine Mühle schließt) gewinnt fast immer.",
+        "Leiterspiel: Hier entscheidet nur der Würfel. Genieße die Leitern!"
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Würfelfieber: Eine Kleine Straße (30) bekommst du auch, wenn ein Würfel nicht passt – halte 3-4-5 oder 2-3-4 und würfle den Rest neu.",
+        "Würfelfieber: Ein Fünferpasch zählt nicht als Full House. Trag ihn lieber als Fünferpasch (50) ein.",
+        "Rausschmeißer: Steht noch eine Figur im Haus, musst du dein Startfeld räumen – plane, welche Figur du dafür nimmst.",
+        "Dame: Bei Mehrfachsprüngen gleich das letzte Zielfeld antippen; die Zwischenschritte führt das Spiel automatisch aus.",
+        "Mühle: Mit 3 Steinen springst du. Nutze das, um gegnerische Mühlen in letzter Sekunde zu blockieren."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Rausschmeißer: zu dicht hinter dem eigenen Startfeld auf Figuren von Gegnern warten, die gleich herauskommen.",
+        "Vier in einer Reihe: nur auf die eigene Reihe schauen und die Drohung des Gegners übersehen.",
+        "Schach: bei Schach nicht den König schützen – das Spiel lässt nur legale Züge zu, aber ein Matt ist schnell passiert.",
+        "Mühle: in der Setzphase alle Steine am Rand verteilen; dann fehlen später Zugmöglichkeiten."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Leiterspiel: alle Leitern und Schlangen",
+      "p": [
+        "Das Brett hat die Felder 1 bis 100 in Schlangenlinien. Diese Verbindungen sind fest:"
+      ],
+      "list": [
+        "Leitern: 1 → 38, 4 → 14, 9 → 31, 21 → 42, 28 → 84, 36 → 44, 51 → 67, 71 → 91, 80 → 100",
+        "Schlangen: 16 → 6, 47 → 26, 49 → 11, 56 → 53, 62 → 19, 64 → 60, 87 → 24, 93 → 73, 95 → 75, 98 → 78",
+        "Die größten Sprünge: Leiter 28 → 84 (+56) und die Leiter 80 → 100 direkt ins Ziel.",
+        "Die gefährlichste Schlange: 87 → 24 (−63), gefolgt von 62 → 19 (−43) und 49 → 11 (−38).",
+        "Kurz vor dem Ziel warten drei Schlangen auf 93, 95 und 98."
+      ]
+    },
+    {
+      "t": "Würfelfieber: Wertungstabelle und Höchstpunkte",
+      "list": [
+        "Einer bis Sechser: höchstens 5, 10, 15, 20, 25 bzw. 30 Punkte (fünf gleiche).",
+        "Oberer Bonus: 35 Punkte ab 63 Punkten im oberen Teil.",
+        "Dreierpasch und Viererpasch: höchstens 30 (fünf Sechsen).",
+        "Full House: 25 · Kleine Straße: 30 · Große Straße: 40 · Fünferpasch: 50 · Chance: höchstens 30.",
+        "Theoretisches Maximum: 105 oben + 35 Bonus + 235 unten = 375 Punkte.",
+        "Strategie: Fünferpasch und Große Straße früh offen halten, Chance und Einer als Streichfelder für schlechte Würfe nutzen."
+      ]
+    },
+    {
+      "t": "Die Computergegner",
+      "list": [
+        "Schach: leicht rechnet 1 Halbzug voraus und wählt zufällig unter guten Zügen, mittel 2, schwer 3 Halbzüge.",
+        "Vier in einer Reihe: leicht 2 Züge voraus (und manchmal zufällig), mittel 5, schwer 8 – auf schwer kaum zu schlagen. Spiel aus der Mitte und vermeide, ihm eine Doppeldrohung zu erlauben.",
+        "Dame: leicht 2, mittel 4, schwer 7 Züge voraus. Gegen schwer zählt jede Schlagpflicht-Falle.",
+        "Mühle: leicht 1, mittel 2, schwer 2 bis 4 Züge voraus (in der Setzphase weniger, gegen Ende mehr).",
+        "Würfelfieber: Der Computer probiert für jede Haltemöglichkeit viele Würfe im Kopf durch (leicht 10, mittel 40, schwer 120) und trägt auf leicht manchmal zufällig ein.",
+        "Rausschmeißer: leicht zieht oft zufällig, mittel und schwer bewerten jeden Zug (Schlagen, Sicherheit, Ziel)."
+      ]
+    },
+    {
+      "t": "Beste Strategie gegen schwere Computer",
+      "steps": [
+        "Vier in einer Reihe: Nimm Rot (Rot beginnt) und setze den ersten Stein in die Mitte. Versuche, Drohungen in ungeraden Reihen (von unten gezählt) aufzubauen.",
+        "Schach: Spiele sichere Eröffnungen (Bauer e4 oder d4, Springer raus, Rochade). Der Computer schaut nur wenige Züge voraus – lange Pläne und Fallen über mehrere Züge funktionieren.",
+        "Dame: Tausche nur, wenn du danach mehr Steine hast. Biete keine Doppelschläge an.",
+        "Mühle: Belege in der Setzphase die vier Kreuzungspunkte der mittleren Reihe und baue eine Zwickmühle auf."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Es erscheint „Keine Verbindung“.",
+      "a": "Die 3D-Grafik (three.js) wird beim ersten Spielstart aus dem Internet geladen. Prüfe die Verbindung und versuche es noch einmal."
+    },
+    {
+      "q": "Kann ich ein Spiel speichern?",
+      "a": "Nein. Gespeichert werden nur die Platzwahl pro Spiel und die Ton-Einstellung. Eine Partie beginnt nach dem Schließen neu."
+    },
+    {
+      "q": "Kann ich online gegen andere spielen?",
+      "a": "Nein. Mehrere Menschen spielen abwechselnd an einem Gerät; ansonsten spielst du gegen den Computer."
+    },
+    {
+      "q": "Ich sehe die Figuren nicht gut.",
+      "a": "Dreh die Ansicht mit ↻ oder durch Wischen bzw. Ziehen mit der Maus und zoome mit zwei Fingern oder dem Mausrad."
+    },
+    {
+      "q": "Warum kann ich im Leiterspiel keinen Schwierigkeitsgrad wählen?",
+      "a": "Im Leiterspiel entscheidet allein der Würfel, deshalb gibt es dort nur „Computer“."
+    }
+  ]
+}

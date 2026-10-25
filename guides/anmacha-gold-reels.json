@@ -1,0 +1,210 @@
+{
+  "id": "anmacha-gold-reels",
+  "handbuch": [
+    {
+      "t": "Ziel und Spielgeld",
+      "p": [
+        "AnMaCha Casino ist ein 3D-Casino nur mit Spielgeld: 18 Spielautomaten und vier Tischspiele (Roulette, Blackjack, Video-Poker, Glücksrad). Es gibt keine Einzahlung und keine echten Gewinne – Ziel ist einfach, dein Spielgeld zu vermehren und die Features der Automaten zu erleben.",
+        "Du startest mit 100 € Spielgeld. Einmal am Tag holst du dir in der Lobby den 🎁 Tagesbonus (+25 €). Fällt dein Konto unter 10 €, erscheint „💰 Spielgeld nachfüllen“ (+100 €). Reicht das Geld für einen Einsatz nicht, bietet das Spiel das Nachfüllen ebenfalls an."
+      ]
+    },
+    {
+      "t": "Die Lobby",
+      "list": [
+        "Reiter Alle, 🎰 Slots und 🃏 Tischspiele filtern die Spiele.",
+        "💎 MYSTERY JACKPOT: der gemeinsame Topf aller Automaten.",
+        "💶 Euro / 💲 Dollar: schaltet nur die Anzeige der Währung um.",
+        "⛶ Vollbild an/aus: Spiele öffnen sich automatisch im Vollbild (nur, wenn das Gerät Vollbild kann).",
+        "☁ Mit Google anmelden: Dein Spielgeld bleibt auf allen Geräten erhalten.",
+        "Oben: ← zurück zur Lobby, dein Kontostand, 🔊 Ton und ⛶ Vollbild."
+      ]
+    },
+    {
+      "t": "Spielautomaten bedienen",
+      "list": [
+        "SPIN dreht die Walzen. Drückst du während des Drehens noch einmal, stoppen die Walzen schneller.",
+        "SPIN gedrückt halten oder AUTO startet Autoplay; nochmal drücken beendet es.",
+        "− und + ändern den Einsatz in festen Stufen von 0,10 € bis 100 € (Neon 40 Hot ab 0,40 €). MAX setzt den höchsten Einsatz.",
+        "⚡ Turbo macht die Drehungen schneller.",
+        "ℹ️ zeigt die Gewinntabelle mit den echten Beträgen für deinen aktuellen Einsatz, die Regeln des Automaten und die Sonderfunktionen.",
+        "Gewinne zählen auf Gewinnlinien von links nach rechts (bei Golden Dragon 243 Wege). Scatter-Symbole zahlen überall auf den Walzen, als Vielfaches des Gesamteinsatzes.",
+        "In Bonusspielen tippst du Felder an (oder wählst sie mit Pfeilen bzw. Controller und A). Im Autoplay wählt das Spiel selbst.",
+        "Auf dem Handy die Automaten quer halten – dann füllen sie den ganzen Bildschirm."
+      ]
+    },
+    {
+      "t": "Sonderfunktionen aller Automaten",
+      "list": [
+        "Glücks-Features: Bei jedem Dreh kann zufällig (im Schnitt etwa jeder 55. Dreh) eines starten – Wild-Walze, Mystery-Symbole, Wild-Regen, Multiplikator ×2 bis ×5, Geldregen oder Goldhammer. Nicht jeder Automat hat alle.",
+        "NACHDREH: Nach einem Dreh ohne Gewinn, bei dem eine Walze knapp danebenlag, bietet der lila Knopf an, genau diese Walze gegen Aufpreis neu zu drehen. Dabei landen keine Scatter oder Bonus-Symbole.",
+        "RISIKO nach einem Gewinn: Rot oder Schwarz richtig = ×2, das richtige Kartensymbol (♠ ♥ ♦ ♣) = ×4, falsch = alles weg. NEHMEN sichert den Gewinn.",
+        "🪜 LEITER (im RISIKO, ab dem 1-fachen Einsatz): Die Sprossen sind 1×, 2×, 4× und 8× Einsatz. Bei STOP entscheidet das Licht: oben eine Sprosse höher, unten alles weg. Ganz oben warten 10 Sonderspiele mit doppeltem Gewinn. NEHMEN steigt jederzeit aus.",
+        "Mystery-Jackpot: 1,5 % jedes Automaten-Einsatzes fließen in einen gemeinsamen Topf, der bei 25 € beginnt. Er fällt zufällig an einer geheimen Schwelle – spätestens bei 75 €."
+      ]
+    },
+    {
+      "t": "Tischspiele",
+      "list": [
+        "Roulette (europäisch, eine Null): Chip wählen (0,10 € bis 50 €) und auf Felder tippen; „LÖSCHEN“ räumt alle Einsätze ab. Zahl (Plein) 35:1, Dutzend und Kolonne 2:1, Rot/Schwarz, Gerade/Ungerade, 1–18/19–36 jeweils 1:1.",
+        "Blackjack: Komm näher an 21 als die Bank, ohne zu überkaufen. Bildkarten zählen 10, Asse 1 oder 11. Blackjack (Ass + 10er) zahlt 3:2, ein normaler Sieg 1:1. Die Bank zieht bis 16 und steht ab 17. Knöpfe: KARTE, HALTEN, VERDOPPELN (auf den ersten zwei Karten, auch nach dem Teilen) und TEILEN (einmal bei gleichem Wert; geteilte Asse bekommen je eine Karte). 6 Kartendecks.",
+        "Video-Poker „Jacks or Better“: 5 Karten, gute Karten antippen zum Halten, die anderen neu ziehen. Gewinn ab einem Paar Buben.",
+        "Glücksrad: 54 Felder – 24× „1“, 15× „2“, 7× „5“, 4× „10“, 2× „20“ und je einmal ★ und A. Setze auf ein oder mehrere Felder; zeigt der Zeiger darauf, gewinnst du den aufgedruckten Wert mal Einsatz plus Einsatz zurück."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch/Maus: Knöpfe antippen, an den Tischen Chip wählen und auf Felder tippen.",
+        "Tastatur: Pfeiltasten wählen Knöpfe und Spiele, Enter drückt, Leertaste dreht oder gibt, + und − ändern den Einsatz, A Autoplay, I Info, M Ton, Esc oder Rücktaste zurück.",
+        "Gamecontroller: Steuerkreuz/Stick wählen, A drücken, B zurück, X Autoplay, Y Info, LB/RB Einsatz, Start oder RT drehen, Select Ton."
+      ]
+    },
+    {
+      "t": "Speichern",
+      "list": [
+        "Kontostand, Einsätze je Automat, Tagesbonus, Mystery-Jackpot, Währung und Einstellungen werden automatisch im Browser gespeichert.",
+        "Mit Google-Anmeldung (☁ in der Lobby) wird dein Spielgeld geräteübergreifend gesichert."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Starte mit kleinen Einsätzen: Mit 0,10 € bis 0,50 € pro Dreh hält dein Startgeld lange, und du erlebst mehr Freispiele.",
+        "Hol dir jeden Tag den Tagesbonus ab.",
+        "Schau in ℹ️ die Gewinntabelle an: Dort steht, welche Symbole Freispiele oder Bonusspiele auslösen.",
+        "Probier verschiedene Automaten – die Features unterscheiden sich stark (Freispiele, Hold & Win, Bonusrad, Schatzkisten)."
+      ]
+    },
+    {
+      "t": "Wissen für Fortgeschrittene",
+      "list": [
+        "Die Automaten sind auf etwa 95 % Auszahlungsquote eingestellt: Im Schnitt kommen von 100 € Einsatz 95 € zurück – auf lange Sicht verliert man also leicht.",
+        "Die Tischspiele sind auf Dauer günstiger: Roulette 97,3 %, Blackjack und Video-Poker etwa 99,5 % bei bester Spielweise.",
+        "RISIKO ist auf lange Sicht fair (50 % für ×2, 25 % für ×4) – es macht Gewinne aber unberechenbarer. Wer seinen Stand halten will, nimmt lieber.",
+        "Der NACHDREH kostet etwas mehr, als er im Schnitt bringt (rund 4 % Aufschlag). Er wird nur angeboten, wenn sich im Schnitt mindestens das 1,5-fache des Einsatzes erwarten lässt – also wirklich bei knappen Situationen.",
+        "Der Mystery-Jackpot zahlt auch bei kleinen Einsätzen den vollen Topf aus."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Bei Hold & Win (Gold Mine) und dem Nugget-Feature (Nugget Rush) sind die Jackpots ein Vielfaches deines Einsatzes. Mit höherem Einsatz wächst der GRAND entsprechend mit.",
+        "Fortune Wheel 7: In den Freispielen steigt der Multiplikator nach jedem Gewinn um 1 bis ×10 – lange Freispiel-Serien sind hier besonders wertvoll.",
+        "Sticky Fire Fruits und Star Fruits: Klebende bzw. wandernde Wilds machen die Freispiele mit 4 oder 5 Scattern (bis 15 Freispiele) besonders lohnend.",
+        "Mit ⚡ Turbo und Autoplay spielst du viele Drehs schnell – achte dabei auf deinen Kontostand."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Mit MAX-Einsatz beginnen: 100 € pro Dreh verbrauchen das Startgeld mit einem Dreh.",
+        "Jeden kleinen Gewinn ins RISIKO schicken – auf Dauer bleibt es Glück.",
+        "Beim Blackjack auf harte 12 bis 16 gegen eine kleine Karte der Bank ziehen (siehe Lösungsbuch).",
+        "Beim Video-Poker einen Kicker zu einem Paar halten – das verschlechtert die Chancen."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Alle 18 Automaten im Überblick",
+      "list": [
+        "AnMaCha Gold Reels (20 Linien, Sender-Logos): 3+ Bonus-Symbole = 10 Freispiele mit doppeltem Gewinn (+5 erneut auslösbar). 3 Mikrofone auf Walze 1, 3 und 5 = Studio-Bonus: 3 von 12 Sender-Logos wählen, Gewinne von 2× bis 100× Einsatz.",
+        "Nugget Rush (20 Linien): 5+ Goldnuggets starten das Nugget-Feature mit 3 Respins (jedes neue Nugget setzt sie auf 3). Volle Mittelwalze öffnet ein zweites Feld (DOPPEL), dort genauso ein drittes (DREIFACH). Jackpots: MINI 10×, MINOR 25×, MAXI 75×, SUPER 250× und GRAND 1000× Einsatz bei drei vollen Feldern.",
+        "Fruit Blaze (5 Linien, Klassik): kein Wild, Kirschen zahlen schon ab 2, Sterne zahlen überall.",
+        "Triple Diamond 7 (3 Walzen): Der Diamant ist Wild und verdoppelt jeden Gewinn (zwei Diamanten = ×4). 3 Diamanten zahlen den Höchstgewinn.",
+        "Book of Funk (10 Linien): Das Buch ist Wild und Scatter. 3 Bücher = 10 Freispiele mit einem Sondersymbol, das sich über ganze Walzen ausdehnt und auf allen Linien zahlt.",
+        "Golden Dragon (243 Wege): 3, 4 oder 5 Gongs = 8, 12 oder 20 Freispiele mit dreifachem Gewinn.",
+        "Gold Mine Hold & Win (25 Linien): 6+ Goldmünzen starten Hold & Win mit 3 Respins. Jackpots MINI 20×, MINOR 50×, MAJOR 200×, volles Feld GRAND 1000× Einsatz.",
+        "Neon 40 Hot (5×4, 40 feste Linien): Sterne zahlen überall. Mindesteinsatz 0,40 €.",
+        "Lucky Clover (25 Linien): Gewinne mit Regenbogen-Wild zählen doppelt. 3, 4 oder 5 Goldtöpfe = 10, 15 oder 20 Freispiele.",
+        "Red Hot Respin (3 Walzen): Feuer-Wild auf der mittleren Walze füllt sie ganz und bringt einen Gratis-Respin, bei dem sie stehen bleibt.",
+        "Eye of Ra (10 Linien): Das Auge ist Wild. 3 Pyramiden = 12 Freispiele; jedes Freispiel mit Auge wertet das niedrigste Symbol auf (10 → B → D → K) und bringt ein Freispiel extra.",
+        "Tempel des Anubis (10 Linien): Anubis ist Wild und dehnt sich auf Walze 2 bis 4 über die ganze Walze aus. 3 Pyramiden = 10 Freispiele mit Symbol-Upgrade.",
+        "Lady Luna (10 Linien): Der Mond ist Wild und verdoppelt. 3+ Kristallkugeln = 15 Freispiele mit dreifachem Gewinn, erneut auslösbar.",
+        "Pirate Treasure (20 Linien): 3 Schatzkisten auf Walze 1, 3 und 5 = 4 von 12 Kisten wählen, je bis 200× Einsatz. Der Totenkopf ersetzt alles außer der Kiste.",
+        "Fortune Wheel 7 (20 Linien): 3 Bonusräder auf Walze 1, 3 und 5 drehen das Rad: 5×, 10×, 20×, 25×, 50× oder 100× Einsatz oder 8, 10, 12 bzw. 15 Freispiele mit steigendem Multiplikator bis ×10.",
+        "Sticky Fire Fruits (20 Linien): 3, 4 oder 5 Bonus-Symbole = 10, 12 oder 15 Freispiele; jedes Feuer-Wild klebt bis zum Ende.",
+        "Joker Star (10 Linien): Der Joker ersetzt alle Früchte. 3+ Sterne = 10 Freispiele mit doppeltem Gewinn.",
+        "Star Fruits (20 Linien): Sterne zahlen überall. 3, 4 oder 5 Sterne = 10, 12 oder 15 Freispiele mit Walking Wilds, die jedes Freispiel eine Walze nach links wandern."
+      ]
+    },
+    {
+      "t": "Blackjack: beste Spielweise",
+      "p": [
+        "Mit dieser Grundstrategie erreichst du die angegebenen etwa 99,5 %. „Bank“ meint die offene Karte der Bank."
+      ],
+      "list": [
+        "Harte 17 und mehr: immer stehen.",
+        "Harte 13 bis 16: stehen gegen 2 bis 6, ziehen gegen 7 bis Ass.",
+        "Harte 12: stehen gegen 4 bis 6, sonst ziehen.",
+        "Harte 11: verdoppeln (gegen Ass nur ziehen). Harte 10: verdoppeln gegen 2 bis 9. Harte 9: verdoppeln gegen 3 bis 6. 8 und weniger: ziehen.",
+        "Weiche Hände (mit Ass als 11): Soft 19 und mehr stehen; Soft 18 stehen gegen 2, 7 und 8, verdoppeln gegen 3 bis 6, sonst ziehen; Soft 17 verdoppeln gegen 3 bis 6, Soft 15 und 16 gegen 4 bis 6, Soft 13 und 14 gegen 5 und 6 – sonst ziehen.",
+        "Teilen: Asse und Achten immer teilen; Zehnen und Fünfen nie; Neunen gegen 2 bis 9 außer 7; Zweien, Dreien und Siebenen gegen 2 bis 7; Sechsen gegen 2 bis 6."
+      ]
+    },
+    {
+      "t": "Video-Poker: Gewinntabelle und Halteregeln",
+      "list": [
+        "Gewinntabelle (9/6) je Einsatz: Royal Flush 800, Straight Flush 50, Vierling 25, Full House 9, Flush 6, Straße 4, Drilling 3, Zwei Paare 2, Bubenpaar oder besser 1.",
+        "Fertige Gewinnhände ab Straße immer halten. Vier Karten zum Royal Flush brechen sogar einen Flush oder eine Straße.",
+        "Drilling, zwei Paare und ein hohes Paar (Buben bis Asse) halten – ohne Kicker.",
+        "Vier Karten zu einem Flush halten, ebenso ein kleines Paar (2 bis 10).",
+        "Ohne Paar: vier Karten zur offenen Straße, drei Karten zum Royal Flush, sonst die hohen Karten (B, D, K, A), möglichst in derselben Farbe.",
+        "Gar nichts? Alle fünf Karten neu ziehen."
+      ]
+    },
+    {
+      "t": "Roulette und Glücksrad: Zahlen, die zählen",
+      "list": [
+        "Roulette: Jede Wette hat dieselbe Auszahlungsquote von 97,3 %, egal ob Zahl oder Farbe. Einfache Chancen (Rot/Schwarz) schwanken am wenigsten, eine Zahl bringt seltene, große Gewinne.",
+        "Glücksrad – Quote je Feld (aus der Felderverteilung berechnet): „1“ etwa 88,9 %, „2“ etwa 83,3 %, „10“ etwa 81,5 %, „5“ und „20“ je etwa 77,8 %, ★ und A je etwa 75,9 % (zahlen 40:1).",
+        "Am Glücksrad ist also „1“ das beste Feld, ★ und A sind die riskantesten."
+      ]
+    },
+    {
+      "t": "So holst du das Meiste aus den Automaten",
+      "list": [
+        "Lange spielen statt hoch setzen: Freispiele und Bonusspiele kommen häufiger, je mehr Drehs du machst.",
+        "Die Leiter lohnt sich am ehesten, wenn dein Gewinn schon auf einer hohen Sprosse startet – dann ist der Weg zu den 10 Sonderspielen ×2 kürzer.",
+        "Bei Book of Funk, Eye of Ra und Tempel des Anubis bringen 4 oder 5 Scatter deutlich mehr Sofortgewinn (bis 200× Einsatz) als drei.",
+        "Hold & Win und Nugget-Feature: Jede neue Münze bzw. jedes Nugget setzt die Respins auf 3 zurück. Je mehr Felder voll, desto höher der Gewinn – drei volle Felder bei Nugget Rush bringen den GRAND."
+      ]
+    },
+    {
+      "t": "Freischaltungen und Geheimnisse",
+      "list": [
+        "Alle Automaten und Tische sind von Anfang an offen – es muss nichts freigeschaltet werden.",
+        "Der Mystery-Jackpot ist für alle Automaten derselbe – an welchem Automaten du spielst, ist egal.",
+        "Das Spielgeld lässt sich jederzeit kostenlos nachfüllen, sobald du unter 10 € fällst."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Kann ich echtes Geld gewinnen?",
+      "a": "Nein. AnMaCha Casino ist nur Spielgeld – keine Einzahlung, keine Auszahlung, keine echten Gewinne."
+    },
+    {
+      "q": "Mein Spielgeld ist weg.",
+      "a": "Der Kontostand liegt im Browser. Nach dem Löschen der Website-Daten oder auf einem anderen Gerät beginnst du mit 100 €. Mit Google-Anmeldung in der Lobby bleibt dein Spielgeld überall erhalten. Fällt es unter 10 €, kannst du kostenlos nachfüllen."
+    },
+    {
+      "q": "Wie stoppe ich Autoplay?",
+      "a": "Tippe noch einmal auf AUTO oder auf SPIN. Autoplay endet auch, wenn das Geld für den nächsten Einsatz nicht reicht."
+    },
+    {
+      "q": "Warum erscheint der NACHDREH-Knopf nur manchmal?",
+      "a": "Er erscheint nur nach einem Dreh ohne Gewinn, wenn eine Walze sich wirklich lohnen würde – nicht im Autoplay und nicht bei Automaten mit eigenem Respin."
+    },
+    {
+      "q": "Der Automat passt nicht auf den Bildschirm.",
+      "a": "Halte das Handy quer. In der Lobby kannst du außerdem „⛶ Vollbild“ einschalten."
+    },
+    {
+      "q": "Der Tagesbonus geht nicht.",
+      "a": "Er lässt sich einmal pro Kalendertag abholen. Danach steht „✓ Bonus abgeholt“ – morgen wieder."
+    }
+  ]
+}

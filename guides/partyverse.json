@@ -1,0 +1,348 @@
+{
+  "id": "partyverse",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "PARTYVERSE ist ein 3D-Brett-Partyspiel für 2 bis 4 Spieler. Ihr würfelt, zieht über eines von 50 Brettern in 5 Welten, sammelt Glimmer (✦) und kauft dafür am Chrono-Altar Siegpunkt-Splitter (◈). Nach jeder Runde spielen alle ein Minispiel um Glimmer.",
+        "Wer nach der letzten Runde – inklusive der Bonus-Splitter – die meisten Splitter hat, gewinnt. Bei Gleichstand entscheiden die Glimmer, dann die gewonnenen Minispiele, dann die Zugreihenfolge."
+      ]
+    },
+    {
+      "t": "Hauptmenü und Spiel einrichten",
+      "list": [
+        "Gegen Bots spielen, Lokal zu zweit bis viert (ein Gerät, Hot-Seat) und 🌐 Online mit Freunden.",
+        "Dazu Kosmetik, Erfolge, Anleitung, Optionen und Credits.",
+        "Einrichtung: Spieler hinzufügen oder entfernen, je Platz Mensch oder Bot (leicht, mittel, schwer), Name und Figur. Mindestens ein Mensch muss mitspielen, die Namen müssen unterschiedlich sein.",
+        "Brett: eines der 50 Bretter. Beim Wählen wird die empfohlene Rundenzahl eingestellt; du kannst sie zwischen 5 und 30 ändern.",
+        "8 Figuren: Pip (Hüpfknäuel), Brumm (Moosgolem), Lumi (Laternenqualle), Zapp (Blitzfuchs), Mokka, Quirl, Flora und Vex. Die Figuren unterscheiden sich nur im Aussehen."
+      ]
+    },
+    {
+      "t": "Ablauf einer Runde",
+      "steps": [
+        "Zu Beginn der Partie wird die Zugreihenfolge ausgewürfelt. Jeder startet mit 10 Glimmer.",
+        "Wer dran ist, kann vor dem Würfeln einen Gegenstand einsetzen (höchstens 3 im Gepäck).",
+        "Würfeln: Der Würfel dreht sich, bis du „✋ Stopp!“ drückst. Du ziehst 1 bis 6 Felder weit und wählst an Abzweigungen den Weg.",
+        "Überholen: Ziehst du an einem Gegner vorbei, schnappst du dir 1 Glimmer. Rempler: Landest du auf seinem Feld, bekommst du 2 Glimmer.",
+        "Chrono-Altar: Betrittst du ihn – auch im Vorbeilaufen – und hast mindestens 20 Glimmer, kannst du einen Splitter kaufen. Danach springt der Altar an einen neuen Ort. Oben zeigt die Anzeige, wie weit der Altar entfernt ist.",
+        "Das Feld, auf dem du stehen bleibst, wirkt.",
+        "Haben alle gezogen, spielen alle ein Minispiel. Dann beginnt die nächste Runde."
+      ]
+    },
+    {
+      "t": "Die Felder",
+      "list": [
+        "Start: kein Effekt.",
+        "Glimmer-Feld: +3 Glimmer (im Endspurt +6).",
+        "Dornenfeld: −3 Glimmer (im Endspurt −6); der Phasenmantel schützt.",
+        "Ereignisfeld: ein zufälliges Ereignis.",
+        "Gegenstandsfeld: ein zufälliger Gegenstand (bei vollem Gepäck stattdessen 4 Glimmer).",
+        "Laden: Hier musst du anhalten; drei zufällige Gegenstände stehen zum Kauf.",
+        "Portal: teleportiert dich zum Partner-Portal.",
+        "Mautbrücke (Dornentor): 3 Glimmer zahlen, ein Schlüsselfragment nutzen oder umkehren. Ohne beides bleibt sie zu.",
+        "Chaos-Feld: Platztausch mit einem zufälligen Mitspieler; Phasenmantel und Schutzschild verhindern das.",
+        "Gestrichelte Wege (4D-Faltung): Auf manchen Brettern gehört jede Runde zu einer Faltungsphase; nur Wege dieser Phase sind begehbar. Die Phase wechselt mit jeder Runde."
+      ]
+    },
+    {
+      "t": "Gegenstände",
+      "list": [
+        "🎲 Zwillingswürfel (6 Glimmer): zwei Würfel, die Summe zählt.",
+        "🎯 Präzisionswürfel (5): zweimal würfeln, der höhere Wurf zählt.",
+        "🗝️ Schlüsselfragment (5): öffnet eine Mautbrücke kostenlos.",
+        "🧥 Phasenmantel (7): bis zum Zugende wirken negative Felder und Ereignisse nicht auf dich. Achtung: Solange du ihn trägst, schnappst du dir beim Überholen und Rempeln selbst keine Glimmer.",
+        "🔮 Tauschkristall (9): Platztausch mit einem Mitspieler deiner Wahl.",
+        "🪞 Taschenspiegel (8): spiegelt bis zu 6 Glimmer eines Mitspielers in deine Tasche.",
+        "🛡️ Schutzschild (6): hält den nächsten Diebstahl, Platztausch oder Rempler ab.",
+        "⏳ Frostuhr (7): Der nächste Wurf eines Mitspielers wird halbiert."
+      ]
+    },
+    {
+      "t": "Ereignisse",
+      "list": [
+        "✨ Glitzerregen: +6 Glimmer.",
+        "🌪️ Dornenwind: −4 Glimmer.",
+        "🎁 Schatzkiste: ein Gegenstand.",
+        "🦝 Taschendieb: 5 Glimmer wandern zu einem Mitspieler.",
+        "💝 Großzügige Spende: alle +2, du +4.",
+        "⚖️ Umverteilung: Der Reichste gibt dem Ärmsten 3 Glimmer.",
+        "🌀 Raumfaltung: Die Faltungsphase springt sofort weiter.",
+        "💨 Rückenwind: nächster Wurf +3. 🍃 Gegenwind: nächster Wurf −2.",
+        "🌠 Sternschnuppe: +5 Glimmer für das Schlusslicht.",
+        "⚡ Portalblitz: schleudert dich zu einem Portal (ohne Portal +3 Glimmer).",
+        "🔔 Ruf des Altars: Der Chrono-Altar wandert.",
+        "🦇 Splitterräuber: Für 15 Glimmer holt dir eine Fledermaus einen Splitter vom Führenden; reicht dein Glimmer nicht, stibitzt sie 5 Glimmer."
+      ]
+    },
+    {
+      "t": "Minispiele, Endspurt und Bonus-Splitter",
+      "list": [
+        "Nach jeder Runde spielen alle eines von 22 Minispielen (die letzten sechs werden nicht wiederholt). Vor dem Spiel steht die Anleitung, dann folgt ein Countdown.",
+        "Belohnung zu zweit: 8 und 3 Glimmer; zu dritt: 10, 5 und 2; zu viert: 10, 6, 3 und 1. Gleichstand teilt sich die Plätze.",
+        "Zu viert gibt es manchmal Teamrunden (2 gegen 2): Siegerteam je 8, Gleichstand je 5, Verlierer je 2 Glimmer.",
+        "Endspurt: In Partien ab 6 Runden zählen Glimmer- und Dornenfelder in den letzten 3 Runden doppelt, und der Letzte bekommt zu Beginn 10 Glimmer Aufholhilfe.",
+        "Bonus-Splitter am Ende: je einer für die meisten gewonnenen Minispiele, die meisten Glimmer und die meisten erlebten Ereignisse. Bei Gleichstand bekommen alle Gleichauf-Liegenden den Splitter."
+      ]
+    },
+    {
+      "t": "Steuerung",
+      "list": [
+        "PC: Würfeln per Knopf, Leertaste oder Enter; Weg per Knopf oder Feld anklicken; Kamera ziehen = drehen, Mausrad = Zoom; Esc oder ☰ für die Pause (Weiterspielen, Kurzanleitung, Spiel verlassen).",
+        "Touch: Knöpfe und Felder antippen; Wischen dreht die Kamera, zwei Finger zoomen.",
+        "Minispiele am PC: Pfeiltasten oder W A S D bewegen, Leertaste oder Enter für Aktion A, Umschalt oder X für Aktion B; manche Spiele nutzen die Maus. Die genaue Belegung steht vor jedem Minispiel.",
+        "Minispiele am Handy: links ein Stick, rechts die Knöpfe A und B, wo sie gebraucht werden. In den Optionen lässt sich die Touch-Steuerung erzwingen oder abschalten.",
+        "Hot-Seat: Die Spieler reichen das Gerät weiter; vor Minispielen bestätigt jeder, dass er bereit ist."
+      ]
+    },
+    {
+      "t": "Online mit Freunden",
+      "steps": [
+        "Im Menü „🌐 Online mit Freunden“ → „Neuen Raum eröffnen“. Es erscheinen ein 5-stelliger Raumcode, ein QR-Code, „Einladung teilen“ und „Link kopieren“.",
+        "Freunde scannen den QR-Code, öffnen den Link oder geben den Code unter „Raum beitreten“ ein – von überall, im Browser, in der easygames-App oder auf dem Handy. Bis zu 3 Mitspieler.",
+        "In der Lobby wählt jeder seine Figur und drückt „Ich bin bereit“. Der Gastgeber wählt Brett und Runden und kann freie Plätze mit Bots füllen.",
+        "Das Spiel startet, sobald alle bereit sind. Der Gastgeber führt das Spiel aus; verlässt er es, endet die Partie."
+      ]
+    },
+    {
+      "t": "Speichern, Optionen und Kosmetik",
+      "list": [
+        "Gespeichert werden im Browser: Statistiken, Erfolge, freigeschaltete Kosmetik, Optionen und die letzte Einrichtung. Eine laufende Partie wird nicht gespeichert – wer sie verlässt, verliert sie.",
+        "Optionen: Sprache, Lautstärke (Gesamt, Musik, Effekte, Stumm), Grafikqualität (Automatisch, Niedrig, Mittel, Hoch), Barrierefreiheit (Weniger Bewegung, Hoher Kontrast, Große Schrift, Kamera-Wackeln, Farbmodus) und Touch-Steuerung.",
+        "Kosmetik: Hüte, Spuren und Würfel-Skins. Frei verfügbar sind Propellerkappe, Blumenkranz, die Spuren Rosa, Türkis, Gelb und Grün sowie die Würfel Klassisch und Holz; der Rest wird über Erfolge freigeschaltet."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Glimmer sind nur Mittel zum Zweck: Ab 20 Glimmer lohnt sich jeder Weg, der am Altar vorbeiführt – auch im Vorbeilaufen.",
+        "Achte auf die Anzeige „Altar … entfernt“ und wähle an Abzweigungen den Weg dorthin.",
+        "Glimmer-Felder und Gegenstandsfelder ansteuern, Dornen- und Chaos-Felder meiden.",
+        "Minispiele lohnen sich immer: Selbst der Letzte bekommt meist noch etwas, und die meisten Minispiel-Siege bringen am Ende einen Bonus-Splitter.",
+        "Lies vor jedem Minispiel die Anleitung – die Punkteregeln unterscheiden sich stark."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Präzisions- und Zwillingswürfel einsetzen, wenn der Altar knapp außer Reichweite ist: Mit zwei Würfeln erreichst du bis zu 12 Felder.",
+        "Ein Schlüsselfragment öffnet eine Mautbrücke ohne die 3 Glimmer Maut – praktisch, wenn du knapp bei Kasse bist oder die Glimmer für den Altar brauchst.",
+        "Hinter dem Führenden herlaufen lohnt: Überholen bringt 1, Landen auf seinem Feld 2 Glimmer.",
+        "Die Frostuhr gegen den Führenden einsetzen, wenn er kurz vor dem Altar steht.",
+        "Plane die Faltung: Ein Weg, der jetzt offen ist, kann nächste Runde fehlen. Oben steht „Faltung x/y“.",
+        "Im Endspurt (letzte 3 Runden ab 6 Runden) zählen Glimmer- und Dornenfelder doppelt – jetzt sind Phasenmantel und gute Wegwahl doppelt wertvoll."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Bonus-Splitter im Blick behalten: Die meisten Ereignisse zählen auch – wer bei den Splittern hinten liegt, kann gezielt Ereignisfelder ansteuern.",
+        "Mit dem Splitterräuber-Ereignis kannst du dem Führenden für 15 Glimmer einen Splitter abnehmen – halte dafür Glimmer bereit.",
+        "Den Tauschkristall nutzen, um mit einem Spieler direkt vor dem Altar die Plätze zu tauschen.",
+        "Das Schutzschild hilft vor allem, wenn du viele Glimmer trägst und andere in deiner Nähe stehen.",
+        "Online rechnet der Gastgeber die Minispiel-Ergebnisse aus deinen Eingaben nach – Mogeln bringt nichts, saubere Eingaben schon."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Glimmer horten statt Splitter kaufen: Gewonnen wird mit Splittern, Glimmer zählen nur beim Gleichstand und für einen Bonus-Splitter.",
+        "In den Laden laufen ohne genug Glimmer: Dort musst du anhalten.",
+        "Vor der Mautbrücke ohne 3 Glimmer und ohne Schlüssel – dann geht es nicht weiter.",
+        "Mehr als 3 Gegenstände sammeln wollen: Ein weiterer Fund wird zu 4 Glimmer.",
+        "Eine Online-Partie als Gastgeber verlassen: Dann endet sie für alle."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Wertungstabelle",
+      "list": [
+        "Start: 10 Glimmer. Splitter am Altar: 20 Glimmer.",
+        "Glimmer-Feld +3 (Endspurt +6), Dornenfeld −3 (Endspurt −6), Überholen +1, Rempler +2, Mautbrücke −3.",
+        "Minispiel zu zweit 8/3, zu dritt 10/5/2, zu viert 10/6/3/1; Team 8/5/2.",
+        "Aufholhilfe im Endspurt: +10 für den Letzten.",
+        "Bonus-Splitter am Ende: meiste Minispiel-Siege, meiste Glimmer, meiste Ereignisse."
+      ]
+    },
+    {
+      "t": "Beste Strategie je Phase der Partie",
+      "list": [
+        "Erste Runden: Gegenstände sammeln (Gegenstandsfelder, günstige Läden) und Glimmer aufbauen, bis 20 erreicht sind.",
+        "Mittelteil: Jede Gelegenheit am Altar nutzen. Würfel-Gegenstände gezielt einsetzen, um den Altar zu erreichen, bevor er umzieht.",
+        "Endspurt: Glimmer-Felder bringen jetzt 6, Dornen kosten 6. Vor der letzten Runde prüfen, welcher Bonus-Splitter noch erreichbar ist.",
+        "Letzte Runde: Hast du mehr als 20 Glimmer, alles auf den Altar setzen; ein Splitter ist mehr wert als der Glimmer-Bonus, wenn ein anderer ohnehin reicher ist."
+      ]
+    },
+    {
+      "t": "Welt PRISMARA: alle 10 Bretter",
+      "p": [
+        "Schwebende Kristallinseln, Lichtbrücken und Regenbogenwege; viele Portale."
+      ],
+      "list": [
+        "Prismen-Archipel: 26 Felder, Schwierigkeit 1, empfohlen 10 Runden · 1 Portal-Paar, 2 Läden",
+        "Regenbogen-Reigen: 34 Felder, Schwierigkeit 1, empfohlen 12 Runden · 2 Portal-Paare, 3 Läden",
+        "Kristall-Blüte: 40 Felder, Schwierigkeit 2, empfohlen 14 Runden · 2 Portal-Paare, 3 Läden, 1 Chaos-Feld",
+        "Lichtband: 28 Felder, Schwierigkeit 2, empfohlen 13 Runden · 2 Portal-Paare, 3 Läden, 1 Mautbrücke",
+        "Zwillingsspiegel: 33 Felder, Schwierigkeit 2, empfohlen 14 Runden · 3 Portal-Paare, 3 Läden, 1 Mautbrücke",
+        "Schimmerspirale: 30 Felder, Schwierigkeit 1, empfohlen 13 Runden · 2 Portal-Paare, 3 Läden",
+        "Prisma-Kreuzung: 42 Felder, Schwierigkeit 3, empfohlen 16 Runden · 3 Portal-Paare, 4 Läden, 1 Mautbrücke, 1 Chaos-Feld",
+        "Kaleidoskop-Knoten: 42 Felder, Schwierigkeit 3, empfohlen 17 Runden · 3 Portal-Paare, 4 Läden, 2 Mautbrücken",
+        "Zinnen des Lichts: 48 Felder, Schwierigkeit 2, empfohlen 15 Runden · 2 Portal-Paare, 4 Läden",
+        "Kristallpyramide: 48 Felder, Schwierigkeit 3, empfohlen 18 Runden · 4 Portal-Paare, 5 Läden, 2 Mautbrücken, 1 Chaos-Feld"
+      ]
+    },
+    {
+      "t": "Welt NOVA NEXUS: alle 10 Bretter",
+      "p": [
+        "Kosmische Plattformen und Planetensysteme, Raumportale, Strahlenwege und Chaos-Felder."
+      ],
+      "list": [
+        "Erste Umlaufbahn: 26 Felder, Schwierigkeit 1, empfohlen 10 Runden · 1 Portal-Paar, 2 Läden, 1 Chaos-Feld",
+        "Doppelstern-Pfad: 30 Felder, Schwierigkeit 1, empfohlen 11 Runden · 1 Portal-Paar, 2 Läden, 2 Chaos-Felder",
+        "Asteroidengürtel: 38 Felder, Schwierigkeit 2, empfohlen 13 Runden · 2 Portal-Paare, 3 Läden, 3 Chaos-Felder",
+        "Planetenkette: 36 Felder, Schwierigkeit 2, empfohlen 14 Runden · 2 Portal-Paare, 3 Läden, 1 Mautbrücke, 2 Chaos-Felder",
+        "Raumportal-Archipel: 32 Felder, Schwierigkeit 3, empfohlen 16 Runden · 3 Portal-Paare, 4 Läden, 1 Mautbrücke, 2 Chaos-Felder",
+        "Orbitalaufzug: 40 Felder, Schwierigkeit 2, empfohlen 15 Runden · 2 Portal-Paare, 4 Läden, 2 Chaos-Felder",
+        "Kometenbahn: 42 Felder, Schwierigkeit 3, empfohlen 16 Runden · 2 Portal-Paare, 3 Läden, 2 Mautbrücken, 3 Chaos-Felder",
+        "Mondleiter: 24 Felder, Schwierigkeit 1, empfohlen 10 Runden · 1 Portal-Paar, 2 Läden, 1 Chaos-Feld",
+        "Gravitationsbrücken: 40 Felder, Schwierigkeit 2, empfohlen 14 Runden · 2 Portal-Paare, 4 Läden, 2 Chaos-Felder",
+        "Nexus-Zentrum: 49 Felder, Schwierigkeit 3, empfohlen 19 Runden · 4 Portal-Paare, 6 Läden, 2 Mautbrücken, 4 Chaos-Felder"
+      ]
+    },
+    {
+      "t": "Welt WURZELWILD: alle 10 Bretter",
+      "p": [
+        "Naturwelt mit Rankenbrücken, wachsenden Wegen (Faltung), Dornentoren und vielen Läden und Gegenstandsfeldern."
+      ],
+      "list": [
+        "Moosweg: 28 Felder, Schwierigkeit 1, empfohlen 10 Runden · 3 Läden, 1 Mautbrücke",
+        "Pilzkreis-Archipel: 28 Felder, Schwierigkeit 1, empfohlen 12 Runden · 3 Läden, 1 Mautbrücke",
+        "Wurzelgeflecht: 30 Felder, Schwierigkeit 2, empfohlen 13 Runden · 3 Läden, 1 Mautbrücke, Faltung: 4 (2 Phasen)",
+        "Der große Stamm: 40 Felder, Schwierigkeit 2, empfohlen 15 Runden · 4 Läden, 2 Mautbrücken, Faltung: 3 (2 Phasen)",
+        "Rankenzickzack: 32 Felder, Schwierigkeit 2, empfohlen 14 Runden · 4 Läden, 1 Mautbrücke, Faltung: 3 (2 Phasen)",
+        "Blattkamm: 34 Felder, Schwierigkeit 1, empfohlen 13 Runden · 4 Läden, 1 Mautbrücke",
+        "Dornenspirale: 49 Felder, Schwierigkeit 3, empfohlen 16 Runden · 4 Läden, 3 Mautbrücken, Faltung: 4 (2 Phasen)",
+        "Lianenband: 30 Felder, Schwierigkeit 3, empfohlen 15 Runden · 4 Läden, 2 Mautbrücken, Faltung: 5 (3 Phasen)",
+        "Hexenhain: 35 Felder, Schwierigkeit 2, empfohlen 16 Runden · 4 Läden, 2 Mautbrücken, Faltung: 3 (2 Phasen)",
+        "Urwald-Kleeblatt: 51 Felder, Schwierigkeit 3, empfohlen 19 Runden · 6 Läden, 3 Mautbrücken, Faltung: 6 (3 Phasen)"
+      ]
+    },
+    {
+      "t": "Welt PARADOX CITY: alle 10 Bretter",
+      "p": [
+        "Unmögliche Architektur: Treppen, Raumfaltungen mit vielen faltbaren Wegen (2–3 Phasen), Schleifen und drehende Plattformen."
+      ],
+      "list": [
+        "Treppenhaus ohne Ende: 32 Felder, Schwierigkeit 1, empfohlen 12 Runden · 1 Portal-Paar, 3 Läden, Faltung: 6 (2 Phasen)",
+        "Flurschleife: 26 Felder, Schwierigkeit 1, empfohlen 12 Runden · 1 Portal-Paar, 3 Läden, Faltung: 6 (2 Phasen)",
+        "Möbius-Boulevard: 30 Felder, Schwierigkeit 2, empfohlen 14 Runden · 2 Portal-Paare, 3 Läden, 1 Chaos-Feld, Faltung: 8 (3 Phasen)",
+        "Wendelwahn: 37 Felder, Schwierigkeit 2, empfohlen 14 Runden · 2 Portal-Paare, 3 Läden, Faltung: 7 (2 Phasen)",
+        "Stadtraster Null: 36 Felder, Schwierigkeit 3, empfohlen 16 Runden · 2 Portal-Paare, 3 Läden, 1 Mautbrücke, 2 Chaos-Felder, Faltung: 10 (3 Phasen)",
+        "Überführungs-Irrsinn: 49 Felder, Schwierigkeit 2, empfohlen 15 Runden · 2 Portal-Paare, 4 Läden, Faltung: 8 (2 Phasen)",
+        "Zickzack-Paradox: 48 Felder, Schwierigkeit 3, empfohlen 18 Runden · 3 Portal-Paare, 5 Läden, 2 Mautbrücken, 2 Chaos-Felder, Faltung: 12 (3 Phasen)",
+        "Kleeblatt-Knoten: 44 Felder, Schwierigkeit 3, empfohlen 17 Runden · 3 Portal-Paare, 4 Läden, 2 Mautbrücken, 1 Chaos-Feld, Faltung: 12 (3 Phasen)",
+        "Uhrwerk-Bahnen: 48 Felder, Schwierigkeit 2, empfohlen 16 Runden · 2 Portal-Paare, 5 Läden, 1 Chaos-Feld, Faltung: 10 (2 Phasen)",
+        "Das unmögliche Haus: 39 Felder, Schwierigkeit 3, empfohlen 19 Runden · 3 Portal-Paare, 4 Läden, 2 Mautbrücken, 2 Chaos-Felder, Faltung: 14 (3 Phasen)"
+      ]
+    },
+    {
+      "t": "Welt INFINITY CARNIVAL: alle 10 Bretter",
+      "p": [
+        "Kosmischer Jahrmarkt mit Schienen und allen Mechaniken gemischt; die Bretter 7 bis 10 sind die Finale-Bretter."
+      ],
+      "list": [
+        "Zirkuszelt-Zickzack: 28 Felder, Schwierigkeit 1, empfohlen 11 Runden · 1 Portal-Paar, 3 Läden, 1 Mautbrücke, 1 Chaos-Feld",
+        "Karussell-Blüte: 29 Felder, Schwierigkeit 1, empfohlen 12 Runden · 1 Portal-Paar, 3 Läden, 1 Chaos-Feld",
+        "Doppelrad: 30 Felder, Schwierigkeit 2, empfohlen 14 Runden · 2 Portal-Paare, 3 Läden, 1 Mautbrücke, 2 Chaos-Felder, Faltung: 3 (2 Phasen)",
+        "Jahrmarkt-Kamm: 36 Felder, Schwierigkeit 1, empfohlen 14 Runden · 1 Portal-Paar, 4 Läden, 1 Chaos-Feld",
+        "Achterbahn-Leiter: 30 Felder, Schwierigkeit 2, empfohlen 14 Runden · 2 Portal-Paare, 3 Läden, 1 Mautbrücke, 2 Chaos-Felder, Faltung: 2 (2 Phasen)",
+        "Spiegelkabinett-Stadt: 30 Felder, Schwierigkeit 2, empfohlen 15 Runden · 2 Portal-Paare, 4 Läden, 1 Mautbrücke, 2 Chaos-Felder, Faltung: 4 (2 Phasen)",
+        "Feuerwerks-Flechte: 44 Felder, Schwierigkeit 3, empfohlen 18 Runden · 3 Portal-Paare, 6 Läden, 2 Mautbrücken, 3 Chaos-Felder, Faltung: 8 (3 Phasen)",
+        "Kosmischer Knoten: 52 Felder, Schwierigkeit 3, empfohlen 19 Runden · 4 Portal-Paare, 6 Läden, 2 Mautbrücken, 3 Chaos-Felder, Faltung: 9 (3 Phasen)",
+        "Sternen-Karussell: 54 Felder, Schwierigkeit 3, empfohlen 20 Runden · 4 Portal-Paare, 6 Läden, 2 Mautbrücken, 3 Chaos-Felder, Faltung: 8 (2 Phasen)",
+        "Das große Finale: 52 Felder, Schwierigkeit 3, empfohlen 20 Runden · 4 Portal-Paare, 7 Läden, 3 Mautbrücken, 4 Chaos-Felder, Faltung: 12 (3 Phasen)"
+      ]
+    },
+    {
+      "t": "Alle 22 Minispiele mit Regeln und Tipps",
+      "list": [
+        "Ausweich-Orbit: Du läufst auf einem Ring um eine leuchtende Sonne. Weiche Kometen, rotierenden Balken und Druckwellen aus – Warnmarken zeigen, wo es gleich knallt. Sammle Münzen für Extrapunkte. Nach drei Treffern ist Schluss. Pro Sekunde gibt es 10 Punkte, pro Münze 25. Tipp: Überleben geht vor Münzen: 10 Punkte pro Sekunde summieren sich.",
+        "Balancier-Brett: Neige das Brett, damit die Kugel in die gewünschte Richtung rollt – sie hat echte Trägheit. Rolle über das leuchtende Ziel. Danach erscheint das nächste. Meide die Löcher und den Rand: Wer abstürzt, startet in der Mitte neu und verliert Punkte. Pro Ziel gibt es 100 Punkte, dazu zählt die Zeit auf dem Brett. Tipp: Kleine Neigungen und früh gegenlenken – die Kugel hat Trägheit.",
+        "Blitzfunke: Die Funkbake leuchtet erst rot. Warte ab! Sobald sie GRÜN wird, drückst du so schnell wie möglich. Zu früh gedrückt? Fehlstart – das bringt in dieser Runde keine Punkte. Fünf Runden – die schnellste Reaktion gewinnt. Tipp: Nicht raten – ein Fehlstart kostet die ganze Runde.",
+        "Brückenbauer: Halte A: Ein Brückenstab wächst aus dem Turm. Loslassen – und er kippt um. Er muss genau bis auf den nächsten Turm reichen: nicht zu kurz, nicht zu lang! Triffst du den roten Punkt in der Mitte, gibt es einen Perfekt-Bonus. Ein Fehltritt bedeutet Absturz und Ende. Du hast 30 Sekunden. Tipp: Den Abstand schätzen und lieber knapp loslassen – der rote Punkt in der Mitte gibt den Perfekt-Bonus.",
+        "Echo-Muster: Die Kristallsäulen leuchten nacheinander auf und klingen. Spiele die Folge danach in derselben Reihenfolge nach. Jede Runde kommt eine Note dazu, später gibt es sechs Säulen. Ein Fehler beendet das Spiel. Wer schneller nachspielt, bekommt Bonuspunkte. Tipp: Sprich die Folge leise mit (oben, links …) und spiele zügig nach – Tempo gibt Bonus.",
+        "Eisrutsche: Du bist ein Pinguin auf glattem Eis: Steuern beschleunigt dich, aber du rutschst weiter. Sammle möglichst viele Sterne – goldene zählen dreifach. Wer in ein Wasserloch rutscht, landet wieder am Start, verliert Zeit und Punkte. Halte A gedrückt, um zu bremsen und die Krallen ins Eis zu schlagen. Tipp: Früh bremsen (A halten), goldene Sterne zählen dreifach.",
+        "Falt-Labyrinth: Laufe vom grünen Start zum goldenen Ziel. Jedes geschaffte Labyrinth bringt 100 Punkte. Alle paar Sekunden faltet sich das Labyrinth: Manche Wände gibt es nur in Phase A (blau), andere nur in Phase B (orange). Wenn die Falte naht, leuchten die betroffenen Wände auf. Warte im sicheren Gang oder nutze den Wechsel zu deinem Vorteil. Der Checkpunkt in der Mitte und schnelle Zeiten geben Bonuspunkte. Danach folgt gleich das nächste Labyrinth. Tipp: Kurz vor der Falte im sicheren Gang warten, den Checkpunkt mitnehmen.",
+        "Farbwechsel-Arena: Oben steht die Zielfarbe. Renn auf eine Fliese in dieser Farbe! Nach der Warnzeit brechen alle anderen Fliesen weg – wer darauf steht, fällt. Mit A springst du ein Stück in Laufrichtung. In der Luft kannst du nicht fallen. Jede Runde wird kürzer und es kommen mehr Farben. Pro Runde 100 Punkte, schnelles Ankommen gibt Bonus. Tipp: Sofort zur nächsten Fliese der Zielfarbe laufen und kurz vor dem Bruch mit A springen.",
+        "Gravitationsfänger: Dein Raumschiff dreht sich mit links/rechts. Mit A (oder vor) zündest du den Schub. Die Planeten ziehen dich an. Nutze das für Schwung, aber stürze nicht ab – das kostet Punkte und Treibstoff. Der Treibstoff ist begrenzt und füllt sich nur langsam wieder auf. Spare ihn! Jeder Orb bringt 100 Punkte, übrig gebliebener Treibstoff gibt einen Bonus. Tipp: Treibstoff sparen und die Anziehung der Planeten für Schwung nutzen.",
+        "Hindernis-Dash: Du rennst auf einer Bahn mit drei Spuren immer schneller nach vorn. Links/rechts wechselt die Spur, hoch springt über Hürden, runter rutscht unter Balken durch. Mauern musst du umlaufen. Wer anstößt, wird kurz betäubt und verliert Tempo. Sammle Münzen – Strecke und Münzen zählen. Tipp: Mauern früh umlaufen; Anstoßen kostet mehr als eine verpasste Münze.",
+        "Kristallsammler: Laufe über die Plattform und sammle Kristalle ein: Blau zählt 1, Grün 3 und Gold 5 Punkte. Schwarze Bomben-Kristalle betäuben dich kurz und kosten Punkte. Weiche ihnen aus! Mit A sprintest du ein Stück – aber die Ausdauerleiste leert sich schnell. Kristalle verschwinden nach einigen Sekunden wieder. Wer die meisten Punkte holt, gewinnt. Tipp: Gold (5) und Grün (3) zuerst, Sprint nur für weit entfernte Goldkristalle.",
+        "Münzregen: Bewege dein Körbchen nach links und rechts und fange Münzen (1 Punkt) und Sterne (5 Punkte). Steine und Bomben im Körbchen kosten Punkte – bei Bomben wackelst du kurz. Mit A löst du einen Magnet-Stoß aus, der nahe Münzen und Sterne heranzieht. Er braucht 6 Sekunden zum Aufladen. Der Regen wird mit der Zeit immer schneller. Tipp: Magnet (Aufladung 6 s) bei vielen Sternen einsetzen, Steinen und Bomben ausweichen.",
+        "Pendel-Punkt: Ein Pendel schwingt hin und her über einer leuchtenden Zielzone. Drücke A, um es genau über der Mitte der Zone zu stoppen. Je näher an der Mitte, desto mehr Punkte (bis 1000 pro Runde). Acht Runden – die Zone wird immer kleiner und das Pendel schneller. Tipp: Den Takt des Pendels mitzählen und im Rhythmus drücken.",
+        "Raketenflug: Halte A (oder drücke mit dem Finger/der Maus), um zu steigen – loslassen heißt fallen. Fliege durch die leuchtenden Ringe: Jedes Tor gibt 100 Punkte, die Strecke zählt auch. Weiche Felsen und den Höhlenwänden aus. Ein Aufprall kostet eines von drei Leben. Tipp: Kurze Schübe statt Dauerhalten – so bleibst du ruhig in der Mitte.",
+        "Schleuderflug: Zeiger gedrückt halten und von der Schleuder wegziehen: Richtung und Stärke einstellen, loslassen schießt. Tastatur: Pfeile stellen Winkel/Stärke ein, Leertaste halten und loslassen. Der Wind schiebt dein Geschoss – schau auf die Fahne und die Windanzeige. Ferne Inseln bringen mehr Punkte, ein Treffer in die Mitte der Scheibe gibt Bonus. Du hast sechs Schüsse. Tipp: Windanzeige beachten und gegen den Wind vorhalten; ferne Inseln bringen mehr.",
+        "Seilsprung: Zwei Freunde schwingen das Seil, du springst in der Mitte. Drücke A genau dann, wenn das Seil von oben herunterkommt – nicht zu früh, nicht zu spät. Tempo und Rhythmus wechseln. Schau auf das Seil, nicht auf die Uhr! Jeder Sprung in Serie bringt mehr Punkte. Nach drei Stolperern ist Schluss. Tipp: Aufs Seil achten, nicht auf die Uhr – die Serie bringt die Punkte.",
+        "Spürnase: Auf der Tafel sehen alle Symbole gleich aus – bis auf eines. Es hat eine andere Form, Farbe oder Drehung. Klicke es an! Ein falscher Treffer kostet Zeit. Schnelle Funde geben Bonuspunkte. Mit jedem Fund wird das Raster größer. Tipp: Nach Form, Farbe und Drehung suchen; Fehlklicks kosten Zeit.",
+        "Stapelturm: Der Kran schwingt einen Block hin und her. Mit A (oder Klick) lässt du ihn fallen. Was über den Block darunter hinausragt, wird abgeschnitten – der Turm wird schmaler. Perfekt getroffen bleibt der Block breit und bringt Bonuspunkte, mehrere Perfekte hintereinander zählen mehr. Pro Stockwerk gibt es 50 Punkte. Verfehlt = Ende. Der Kran wird immer schneller. Tipp: Gleichmäßiger Rhythmus: Perfekte Treffer in Serie zählen mehr.",
+        "Takt-Treffer: Leuchtende Noten fallen auf drei Spuren zur Trefferlinie. Drücke die passende Spur genau dann, wenn die Note die Linie berührt. Perfekte Treffer bringen mehr Punkte, eine Kombo erhöht den Multiplikator. Wer danebendrückt oder eine Note verpasst, verliert die Kombo. Das Tempo steigt! Tipp: Auf die Trefferlinie schauen, nicht auf die fallenden Noten – die Kombo ist mehr wert als einzelne Perfekte.",
+        "Tippkraft: Tippe abwechselnd A und B (links und rechts), um Kraft aufzubauen. Die Kraftleiste fällt ständig ab – bleib im Rhythmus! Zweimal dieselbe Taste kostet Kraft. Kündigt sich eine Böe an, halte eine Taste gedrückt, bis sie vorbei ist. Tippen hilft dann nicht. Je mehr Kraft, desto schneller zieht deine Figur den Felsen. Tipp: Streng abwechseln; bei einer angekündigten Böe eine Taste halten.",
+        "Wolkenhüpfer: Dein Wölkchen-Läufer rennt von allein über die schwebenden Wolken. Springe mit A über die Lücken – je länger du hältst, desto höher fliegst du. Federwolken schleudern dich hoch, bewegliche Wolken wandern hin und her. Drei Leben: Wer abstürzt, landet auf der letzten Wolke und verliert Zeit. Tipp: Kurz tippen für kleine Lücken, lange halten nur für große.",
+        "Zielschuss: Zielen: Maus oder Finger bewegen, Klick/Tippen schießt. Alternativ Pfeiltasten bewegen das Fadenkreuz, Leertaste schießt. Enten, Raketen und Pop-ups bringen Punkte, goldene Sterne die meisten. Finger weg von den schwarzen Bomben – sie kosten Punkte! Sechs Schuss pro Magazin, dann lädt die Bude nach. B lädt früher nach. Tipp: Bomben nie anklicken; goldene Sterne zuerst, mit B rechtzeitig nachladen."
+      ]
+    },
+    {
+      "t": "Erfolge und Freischaltungen",
+      "list": [
+        "Erster Schritt: erste Partie beenden.",
+        "Stammgast: 10 Partien beenden – schaltet die Spur Violett frei.",
+        "Veteran: 50 Partien – Würfel Neon.",
+        "Erster Triumph: eine Partie gewinnen.",
+        "Serienmeister: 10 Partien gewinnen – Hut Krone.",
+        "Unbesiegbar: 25 Partien gewinnen – Spur Gold.",
+        "Minispieler: 10 Minispiele spielen.",
+        "Minispiel-Profi: 25 Minispiele gewinnen – Hut Zylinder.",
+        "Minispiel-Legende: 100 Minispiele spielen.",
+        "Glimmersammler: insgesamt 100 Glimmer sammeln.",
+        "Glimmerhort: insgesamt 1000 Glimmer – Würfel Kristall.",
+        "Wanderer: 500 Felder laufen.",
+        "Weltenbummler: 5000 Felder – Spur Orange.",
+        "Online-Debüt: eine Online-Partie beenden – Spur Weiß.",
+        "Weltenreisende: auf allen 5 Welten spielen – Hut Sternenband.",
+        "Ausdauer: insgesamt eine Stunde spielen.",
+        "Allein gegen alle: eine Partie mit vier Spielern gewinnen.",
+        "Minispiel-Dominator: in einer Partie mindestens 3 Minispiele gewinnen.",
+        "Lange Reise: eine Partie mit mindestens 15 Runden beenden.",
+        "Splittersammler: am Ende einer Partie mindestens 3 Splitter haben."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Kann ich eine Partie speichern und später weiterspielen?",
+      "a": "Nein. Eine laufende Partie wird nicht gespeichert. Gespeichert werden nur Statistiken, Erfolge, Kosmetik und Optionen."
+    },
+    {
+      "q": "Der Raumcode funktioniert nicht.",
+      "a": "Der Code hat 5 Zeichen (Buchstaben und Ziffern). Der Gastgeber muss den Raum offen haben. Kommt „Dein Browser unterstützt diese Verbindung nicht“, fehlt WebRTC – nimm einen aktuellen Browser."
+    },
+    {
+      "q": "Die Verbindung zum Gastgeber ist beendet – was nun?",
+      "a": "Der Gastgeber führt das Spiel aus. Hat er die Seite geschlossen oder das Internet verloren, endet die Partie. Eröffnet einen neuen Raum."
+    },
+    {
+      "q": "Wie spielen wir zu viert an einem Gerät?",
+      "a": "„Lokal zu zweit bis viert“ wählen. Ihr reicht das Gerät weiter; vor jedem Minispiel bestätigt jeder, dass er bereit ist."
+    },
+    {
+      "q": "Das Spiel ruckelt.",
+      "a": "Stelle in den Optionen die Grafikqualität auf Niedrig oder lass „Automatisch“ – dann senkt das Spiel die Qualität selbst. „Weniger Bewegung“ hilft zusätzlich."
+    },
+    {
+      "q": "Sind die Bots im Vorteil?",
+      "a": "Nein. Bots nutzen dieselben Regeln und Informationen wie Menschen, ohne versteckte Boni. Sie spielen nur unterschiedlich gut (leicht, mittel, schwer)."
+    }
+  ]
+}

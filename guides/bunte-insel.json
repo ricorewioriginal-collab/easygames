@@ -1,0 +1,592 @@
+{
+ "id": "bunte-insel",
+ "handbuch": [
+  {
+   "t": "Ziel des Spiels",
+   "p": [
+    "Die Bunte Insel ist eine große, offene 3D-Spielwelt für Kinder ab etwa 4 Jahren – mit Bildern und Vorlesen, Lesen ist nicht nötig. Du läufst, fährst, schwimmst und fliegst mit deinem Helden und deinem Haustier über die Hauptinsel und viele kleine Welten, besuchst Läden, Bauernhof, Freibad, Kino und Spielplätze, spielst Mini-Spiele, sammelst Sterne ⭐ und Sticker 🏅 und gestaltest dein Zuhause.",
+    "Es gibt kein Verlieren: Wer im Kampf keine Herzen mehr hat, verliert nichts und darf es gleich noch einmal versuchen. Als roter Faden führt dich Bürgermeisterin Rosi mit der Inselreise in 9 Kapiteln durch das Spiel, dazu erzählt jede Welt ihre eigene Inselgeschichte."
+   ]
+  },
+  {
+   "t": "Start, Spielmodi und Speichern",
+   "list": [
+    "🌍 Freie Welt: alles ist offen, du kannst überall hin und alles ausprobieren.",
+    "📖 Story-Modus: gleiche Welt, aber die Welten müssen nach und nach freigespielt werden. Du startest zuhause; jede Welt öffnet sich, wenn du ihre 3 Sticker-Aufgaben geschafft hast. Gesperrte Welten liegen hinter einer durchsichtigen Glaswand mit Schlössern, ein Schild zeigt, was zu tun ist.",
+    "Beide Modi teilen einen Spielstand: Sterne, Sticker und Aufgaben zählen in beiden. Den Modus wechselst du jederzeit im Pause-Menü oder unter ⚙️.",
+    "Das Spiel speichert automatisch im Browser. Im Hauptmenü gibt es 💾 Spielstand 1 bis 3 (unter „Wechseln“), im Pause-Menü „Jetzt speichern“ und „Sichern (Datei)“.",
+    "Beim ersten Start jedes Tages wartet ein Tagesgeschenk; wer 3 Tage hintereinander spielt, bekommt den Sticker „Stammgast“."
+   ]
+  },
+  {
+   "t": "Bildschirm und Menüs",
+   "list": [
+    "⭐ oben links: deine Sterne. 📋 Aufgaben und Hinweise, ⚙️ Einstellungen, ⏸ Pause, runde Minikarte oben rechts.",
+    "Oben zeigt eine Anzeige immer das nächste Ziel (Hof-Aufgabe oder Inselreise). Antippen öffnet das Aufgaben-Log mit „▶ Als Nächstes“, Inselreise, Hof-Aufgaben, Fellretter-Einsätzen, Aufträgen und Tagesgeschenk – offene Ziele haben einen „👣 Weg“-Knopf.",
+    "Links: 🎒 Tasche (Futter, Gegenstände), 🎉 Spaß (Tanz, Spiele, Karten …), ☰ Mehr (Wohin, Kamera, Bauen, Taschis …).",
+    "🧭 Wohin?: alle Orte nach Themen. 👣 zeigt den Weg mit Pfeil, Entfernung und Leuchtsäule, ✨ zaubert dich hin. Im Story-Modus sind gesperrte Orte mit 🔒 markiert. Im Reiter 🚗 Fahrzeuge stehen alle Fahrzeuge zum Herholen oder Hinfinden.",
+    "⚙️ Einstellungen: Tag und Nacht, Vorlesen, Musik, Geräusche, 🔴 Taschis an/aus, 📚 Handbuch & Lösungen, 🔑 Code eingeben, 🐞 Fehler melden und der Moduswechsel.",
+    "Pause-Menü: speichern, Mitspielen, Eltern-Bereich (Knopf „👪 Eltern“ gedrückt halten), ⌨️ Tasten & Controller belegen, Modus wechseln."
+   ]
+  },
+  {
+   "t": "Steuerung: Touch",
+   "list": [
+    "Links im Bild: Joystick zum Laufen und Lenken – er erscheint dort, wo dein Finger hintippt. Ganz außen = rennen.",
+    "Rechts wischen: Kamera drehen.",
+    "Rechts unten liegen die Aktionsknöpfe als Raute: A unten (groß) = wichtigste Aktion wie Einsteigen, Einkaufen, Tür öffnen; B rechts = Springen, im Fahrzeug Turbo bzw. Steigen; Y links = Hallo bzw. Hupe oder eine dritte Aktion wie „Reden“; X oben = zweite Aktion, z. B. „Baum hauen“ direkt am Baum, Sirene, Türen oder Sinken.",
+    "Die Knöpfe zeigen nur, was gerade möglich ist, und ihre Beschriftung verrät, was passiert. Ist nichts in der Nähe, verschwinden sie.",
+    "Figuren sprechen im Textfeld unten mit Bild und Namen. Tippen schließt es."
+   ]
+  },
+  {
+   "t": "Steuerung: Tastatur und Maus",
+   "p": [
+    "Alle Tasten lassen sich im Pause-Menü unter „⌨️ Tasten & Controller belegen“ frei ändern. Die Standardbelegung:"
+   ],
+   "list": [
+    "W A S D (oder Pfeiltasten): laufen und fahren.",
+    "E (oder Enter): Aktion, Einsteigen, Reden – fahrende Autos erst anhalten, dann einsteigen.",
+    "Leertaste: Springen bzw. Hupe; im Hubschrauber steigen. X: sinken.",
+    "Shift links: Rennen bzw. Turbo.",
+    "F: Hauen, Sirene, Türen, zweite Aktion. H: Hallo bzw. Hupe.",
+    "Q und R: Kamera drehen. V: Ego-Kamera. C: Kamera-Abstand. Maus ziehen dreht, Mausrad ändert den Abstand.",
+    "I: Rucksack. B: Bauen. N: Tag/Nacht. M: Ton an/aus. P oder Esc: Pause.",
+    "Zifferntasten 1 bis 0: Spaß-Aktionen – 1 Tanzen, 2 Kaugummi, 3 Ball, 4 Feuerwerk, 5 Luftballons, 6 Boxen, 7 Bellen, 8 Suchen, 9 Seifenblasen, 0 XXL."
+   ]
+  },
+  {
+   "t": "Steuerung: Controller und Fernseher",
+   "list": [
+    "Controller (Xbox, PlayStation, Switch …) werden automatisch erkannt, sobald du eine Taste drückst. Unbekannte Controller bekommen einen kurzen Einrichtungs-Assistenten.",
+    "Linker Stick laufen/fahren, rechter Stick Kamera, A Aktion, B Springen/Turbo, X zweite Aktion/Baum hauen, Y dritte Aktion/Hupe.",
+    "RT/LT Gas und Bremse, Start Pause, Select Aufgaben, LB Kamera.",
+    "Steuerkreuz: ↑ Wohin, ← Spaß, → Tasche, ↓ Aufgaben. In Menüs bewegt das Steuerkreuz die Markierung, A drückt, B geht zurück. In Mini-Spielen: Stick/Steuerkreuz = Pfeiltasten, A = Leertaste.",
+    "Fernseher: Hauptmenü → „📺 Spiel am Fernseher öffnen“ zeigt Link, 4-stelligen Code und QR-Code. Mit der Fernbedienung wählen die Pfeiltasten, OK drückt.",
+    "Handys als Controller: Hauptmenü → „📱 Handy-Controller öffnen“ (oder Link/QR) und den Code eingeben. Bis zu 4 Spieler: Spieler 1 steuert die Hauptfigur und die Menüs, Spieler 2 bis 4 sind Mitspieler-Figuren, optional mit Splitscreen (🪟). Bricht die Verbindung ab, verbindet sich das Handy von selbst neu und bekommt seinen Platz 30 Sekunden lang reserviert."
+   ]
+  },
+  {
+   "t": "Fahren, Schwimmen, Fliegen",
+   "list": [
+    "An ein Fahrzeug herangehen und „Einsteigen“ drücken. Laufende Autos erst anhalten, dann einsteigen. Hupe, Turbo, bei Polizei und Feuerwehr Sirene.",
+    "Mitfahren: Bei einem Freund einsteigen – nur der Fahrer lenkt.",
+    "Im Fahrzeug bekommst du manchmal Aufträge; mit „Ja“ nimmst du sie an.",
+    "Zug, Segelboot ⛵ und Hubschrauber 🚁 zeigen dir die Insel vom Wasser oder von oben und geben Sticker.",
+    "Schwimmen geht überall am Strand und im Meer – keine unsichtbaren Mauern, nur ganz weit draußen ist Schluss.",
+    "Herholen über 🧭 Wohin? → 🚗 Fahrzeuge: Auto, Polizei, Krankenwagen, Feuerwehr, Bus, Traktor, Mähdrescher, Hubschrauber, RC-Auto und alle Spielzeug-Fahrzeuge. Welt-Fahrzeuge (z. B. Schlüsselschwert-Mobil, Reit-Drache, Wannen-Mobil, Aqua-Gleiter, Nautilux) findest du per Weg oder Hinzaubern.",
+    "Spielzeug-Fahrzeuge wie Tretroller, Fahrrad, Autoscooter, Aufsitzmäher, Rutschauto, Motorrad, Taxi, Eiswagen, Limousine, RC-Hubschrauber, Skateboard und Rollator kaufst du im Spielzeugladen 🧸."
+   ]
+  },
+  {
+   "t": "Zuhause, Bauernhof und Gebäude",
+   "list": [
+    "Jeder Held hat eine eigene Wohnung mit Garten: Zimmer einrichten, im Bett schlafen, im Garten ernten. Freunde besuchen und ❤️ Herzen für ihr Zimmer schenken.",
+    "Bauernhof von Bauer Heinz: Tiere streicheln, Felder mit dem Traktor mähen, in der Hofküche kochen. Die Hof-Aufgaben stehen oben in der Anzeige.",
+    "Gebäude: Alle massiven Häuser haben eine Haustür mit goldener Türmatte. Auf die Matte stellen und „… betreten“ drücken. Drinnen gibt es je nach Haus Bett, Tisch (Snack ⭐), Bücherregal (Tipps), eine Schatztruhe (einmal pro Haus: ⭐ und Futter), Bewohner, Läden und mehr. Neu betretene Häuser geben ⭐."
+   ]
+  },
+  {
+   "t": "Haustiere, Figuren und Läden",
+   "list": [
+    "Unter „Mein Held → 🐾 Haustier“ wählst du dein Tier. „Mitnehmen“ lässt es überall mitkommen, „Zu Hause lassen“ lässt es in der Wohnung warten.",
+    "Freischaltbare Tiere: 🦊 Funki (Sticker Schlüsselreisender), 🦝 Räubi (Bucht-Besucher), 🦄 Sternenstaub (Karussell-Kind), 🐻 Brummi (Türöffner). Maskottchen aus den Welten werden dort als Partner frei, dein Kapselmonster von der Rätsel-Insel begleitet dich ebenfalls.",
+    "Unter „Mein Held“ gibt es über 70 Figuren – Klassiker wie Jannis, Mia, Fee Luna und Ritter Ben, Helden aus den Welten, Gäste aus anderen easygames-Spielen und deinen eigenen Helden aus dem Studio.",
+    "🎮 easygames-Treff (Hauptinsel, östlich vom Startplatz): 20 Gäste aus anderen easygames-Spielen. Jeder neue Gast, den du ansprichst, gibt +1 ⭐.",
+    "Spielzeugladen 🧸 mit 7 Reitern: Mützen, Zubehör, Spielzeug, Zimmer, Hüte & mehr, 🚗 Fahrzeuge und 💍 Style. Gekauftes liegt im Rucksack 🎒.",
+    "⭐ Sterne gibt es für Aufträge, Kapitel, Mini-Spiele, Tagesgeschenk, Schätze und Truhen. Jeder Sticker gibt zusätzlich +2 ⭐."
+   ]
+  },
+  {
+   "t": "Kämpfen",
+   "list": [
+    "Gekämpft wird nur in der Kampfarena der Hauptinsel und auf der Wald-Insel (das Waldtor im alten Wald bringt dich hin), außerdem in einzelnen Welt-Abenteuern wie der Schattenarena oder bei den Taschis.",
+    "Ausrüstung kaufst du bei Waldhändlerin Fenja (Wald-Insel), Rurik in Lunaris oder Kampfmeister Kai (Arena): Stock, Schwert, Bogen, Hammer, Zauberstab, Schilde, Herz-Amulett und Tränke. Das Schwert verbesserst du in der Schmiede der Rätsel-Insel gegen ⭐.",
+    "💪 Kampfstufe: Jedes besiegte Monster gibt Erfahrung, höhere Stufe = mehr Herzen und stärkere Schläge.",
+    "Das Kapselmonster kämpft mit, wird gefüttert und entwickelt sich bis Stufe 5.",
+    "Wird die Lebensanzeige leer, ist der Kampf vorbei – verloren geht nichts."
+   ]
+  },
+  {
+   "t": "Die Welten",
+   "p": [
+    "Brücken führen von der Hauptinsel zu den Welten. In Klammern stehen die drei Sticker, die im Story-Modus die Welt öffnen – die Lösung dazu steht im Lösungsbuch."
+   ],
+   "list": [
+    "🏙️ Stadtinsel: große Stadt mit Hochhäusern, Läden und Verkehr, alle Gebäude begehbar.",
+    "🐶 Fellretter-Bucht: Einsatz-Tafel und Rettungs-Einsätze.",
+    "🌈 Regenbogeninsel: bunte Insel zum Entdecken.",
+    "🚢 Dampfer-Hafen: Schiff, Orchester, Farbeimer und Freiluftkino.",
+    "🐉 Drachenhöhen: Aufwind, Flugringe, Kristall-Freunde und das Himmelstor.",
+    "🎡 Freizeitpark: Attraktionen fahren, im Park-Büro einen eigenen Park bauen und verwalten.",
+    "⚽ Fußball-Insel: Tore schießen und Turniere gewinnen.",
+    "🧱 Bauland: eigene Häuser aus Blöcken bauen.",
+    "🎠 Märchenland: Schloss, Karussell, Basar, Taxi und Umzug.",
+    "🗝️ Schlüsselreich: Lichtschlüssel, Schlüssellöcher, Tor der Herzen – dahinter die 🌠 Wunsch-Insel.",
+    "🧽 Schwammi-Bucht: Unterwasser-Stadt mit Knusper-Krabbe und Fruchthaus.",
+    "🗿 Rätsel-Insel: Prüfungsturm, Kapselmonster, Schmiede, Uralte Höhle – dahinter die 🌲 Wald-Insel.",
+    "🦊 Zotik & Lunaris: Mond-Welt mit Luftschiff, Quest und Elementar-Kampf.",
+    "📻 Radio-Insel Funkwelle: 13 Radiosender, Visual Radio, Noten sammeln.",
+    "🔱 Atlantis: versunkene Stadt mit Hologramm-Archiv, Harfe und Aqua-Gleitern.",
+    "🔴 Taschi-Land: Taschis fangen, rundenweise kämpfen, 8 Orden sammeln.",
+    "🍄 Hüpfland: Dino Tupfi, Röhren, Sternblöcke, Kart-Rennen und Brockos Burg.",
+    "🌀 Prisma-Archipel: Ki-Garten, Runen-Arena, Datenhain, Sternkugeln und goldene Flugwolke."
+   ]
+  },
+  {
+   "t": "Mitspielen, Eltern und Hilfe",
+   "list": [
+    "Hauptmenü → „👥 Mitspielen“: „Neues Spiel eröffnen“ gibt einen Code zum Teilen, „Spiel beitreten“ nimmt einen Code oder QR-Code. Ein Fernseher-Code im Beitreten-Feld macht das Handy automatisch zum Controller.",
+    "Eltern-Bereich (im Pause-Menü „👪 Eltern“ gedrückt halten): Lautstärke, Sparmodus, Vorlesen, Jahreszeit, Pausen-Erinnerung.",
+    "🐞 Fehler melden: kurze Beschreibung schreiben; das Spiel hängt Gerät, Welt und letzte Fehler an. „Per Mail senden“ oder „Kopieren“.",
+    "Läuft etwas ruckelig, im Eltern-Bereich den Sparmodus einschalten."
+   ]
+  }
+ ],
+ "ratgeber": [
+  {
+   "t": "Tipps für Einsteiger",
+   "list": [
+    "Folge der Anzeige oben: Sie zeigt immer das nächste Ziel, und „👣 Weg“ führt dich mit Pfeil und Leuchtsäule hin.",
+    "Nutze 🧭 Wohin? → ✨, um schnell zu reisen (im Story-Modus nur zu offenen Welten).",
+    "Hol dir jeden Tag das Tagesgeschenk – 3 Tage hintereinander geben den Sticker „Stammgast“.",
+    "Öffne in jedem Haus die Schatztruhe: Sie gibt ⭐ und Futter, 10 Truhen geben einen Sticker.",
+    "Sterne sparen: erst Aufgaben und Tagesgeschenk, dann einkaufen.",
+    "Zwei Aktionen in der Nähe? A ist die erste, X die zweite."
+   ]
+  },
+  {
+   "t": "Schnell an Sterne kommen",
+   "list": [
+    "easygames-Treff: jeder neue Gast +1 ⭐.",
+    "Jeder Sticker +2 ⭐ – viele gibt es für einfache Dinge wie Foto machen, Rucksack öffnen oder Seifenblasen pusten.",
+    "Inselreise: pro Ziel +1 ⭐, pro Kapitel +5 ⭐, am Ende das Insel-Fest mit +20 ⭐.",
+    "Inselgeschichten: pro Akt +3 ⭐, am Ende +10 ⭐ und ein Sticker.",
+    "Funkwelle: jeder der 13 Sender 20 Sekunden lang hören +1 ⭐, alle 13 zusammen +10 ⭐.",
+    "Hüpfland: Sternblöcke +1 ⭐ (alle 12 +5 ⭐), 20 Münzen = 1 ⭐, Kart-Sieg 5 ⭐, Brocko +10 ⭐.",
+    "Sammelsachen in den Welten: je 10 Orichalcum-Splitter (Atlantis), Splitter (Lunaris) oder Noten (Funkwelle) geben 1 ⭐, je 10 Wert Funkelsteine (Drachenhöhen) ebenfalls."
+   ]
+  },
+  {
+   "t": "Strategien für Fortgeschrittene",
+   "list": [
+    "Story-Modus: Viele Freischalt-Aufgaben erledigst du ganz nebenbei auf der Hauptinsel (Fahren, Reden, Einkaufen, Schlafen, Fotografieren). Mach zuerst die Inselreise, dann öffnen sich die ersten Welten fast von selbst.",
+    "Wald-Insel: Kauf zuerst bei Fenja Ausrüstung. Ein Schild nimmt Monstern viel Kraft. Mit Sternenbogen kämpfst du aus der Ferne, mit dem Donnerhammer wird der Tritt zur Schockwelle, der Funkelstab macht ✨ billiger und weiter.",
+    "Titan Kron wird mit verbessertem Schwert und Kapselmonster viel leichter – erst die Rätsel-Insel spielen.",
+    "Taschis: Schwäche die wilden Taschis vor dem Fangen – je weniger Lebenspunkte, desto besser klappt es. Nutze die Typen-Vorteile.",
+    "Futter für das Kapselmonster gibt es in Häusern (Tisch, Truhen) und im Laden."
+   ]
+  },
+  {
+   "t": "Profi-Tricks",
+   "list": [
+    "Umbra in der Schattenarena: Sein Panzer hält jeden Treffer ab. Lock ihn beim Sturmangriff gegen einen Pfeiler – dann ist er betäubt und verwundbar.",
+    "Kampf auf der Wunsch-Insel: ⚔️ Angriff (J), 🌀 Ausweichen (K), ✨ Lichtwelle (L, lädt sich durch Treffer auf). Die dritte Angriffs-Kombo trifft doppelt.",
+    "Hüpfland-Kart: Glitzerkisten ✦ geben Turbo, Münzen oder eine Kicher-Wolke, gelbe Pfeile machen schnell. Abkürzen über den Rasen zählt nicht.",
+    "Sternblöcke erreichst du auf Dino Tupfi mit dem Riesensprung (Hupe-Knopf).",
+    "Runen-Duell im Prisma-Archipel: Feuer schlägt Pflanze, Pflanze schlägt Wasser, Wasser schlägt Feuer."
+   ]
+  },
+  {
+   "t": "Häufige Fehler",
+   "list": [
+    "Im Story-Modus eine Welt suchen, die noch gesperrt ist – schau an der Glaswand oder im 🧭 Wohin?, welche drei Aufgaben fehlen.",
+    "Ein fahrendes Auto direkt betreten wollen: erst anhalten, dann einsteigen.",
+    "Taschis abgeschaltet und wundern, wo das Fanggras ist: ⚙️ → „🔴 Taschis: an“.",
+    "Browserdaten löschen, ohne vorher „Sichern (Datei)“ im Pause-Menü zu nutzen – dann ist der Spielstand weg."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "Die Inselreise – alle 9 Kapitel",
+   "p": [
+    "Bürgermeisterin Rosi führt dich durch die Kapitel. Jedes hat 3 Ziele; schon Geschafftes wird automatisch abgehakt. Nach dem letzten Kapitel gibt es das Insel-Fest und den Sticker „Inselheld“."
+   ],
+   "steps": [
+    "Kapitel 1: 🏝️ Ankommen – 💬 Sprich mit jemandem (tippe auf eine Person); 🎒 Öffne deinen Rucksack (🎒 oben links); 🧭 Lass dir den Weg zeigen (🧭 oben links)",
+    "Kapitel 2: 🚗 Unterwegs – 🚗 Steig in ein Fahrzeug; 📦 Erledige einen Auftrag (im Fahrzeug „Ja“ sagen); 🚂 Fahr mit dem Zug",
+    "Kapitel 3: 🏠 Zuhause – 🛋️ Richte dein Zimmer ein; 🌻 Ernte etwas im Garten; 😴 Schlaf in deinem Bett",
+    "Kapitel 4: 🚜 Auf dem Bauernhof – 🐄 Streichle ein Tier auf dem Hof; 🌾 Mäh ein Feld mit dem Traktor; 🍳 Koche etwas in der Hofküche",
+    "Kapitel 5: 🛍️ Im Ort – 🛒 Kaufe etwas in einem Laden; 🎯 Spiel in der Schießbude; 📸 Mach ein Foto (📷 oben links)",
+    "Kapitel 6: 🗺️ Abenteuer – 🌳 Hau einen Baum (geh nah ran und tippe 🪓); 🗺️ Finde einen Schatz (🎉 → Spiele → Schatzsuche); 🏁 Schaffe den Himmels-Parcours",
+    "Kapitel 7: 🛡️ Mutprobe – 🥊 Gewinne einen Kampf in der Arena; ⛵ Segle mit dem Boot; 🚁 Flieg mit dem Hubschrauber",
+    "Kapitel 8: 🎉 Spaß-Tag – 🎡 Fahr eine Attraktion im Freizeitpark; 🎬 Schau einen Film im Kino; 🏊 Spring ins Freibad",
+    "Kapitel 9: 🎢 Parkdirektor – 🔨 Baue etwas im Freizeitpark (Park-Büro am Eingang); 📋 Schließe eine Park-Mission ab; 🌟 Erreiche 3 Sterne Parkbewertung"
+   ]
+  },
+  {
+   "t": "Story-Modus: Welten freischalten",
+   "p": [
+    "Für jede Welt brauchst du die drei genannten Sticker – was du dafür tun musst, steht unten in der Sticker-Liste. Die Aufgaben stehen auch an der Glaswand, im 🧭 Wohin? und im Aufgaben-Buch."
+   ],
+   "list": [
+    "🏙️ Stadtinsel: 🚗 Erste Fahrt, 💬 Plaudertasche, 🛒 Einkäufer",
+    "🐶 Fellretter-Bucht: 😴 Gut geschlafen, 🛋️ Einrichter, 🌻 Gärtner",
+    "🌈 Regenbogeninsel: 📸 Fotograf, 🐄 Tierfreund, 🍳 Hobbykoch",
+    "🚢 Dampfer-Hafen: ⛵ Kapitän, 🚂 Lokführer, 🚁 Hubschrauber-Pilot",
+    "🐉 Drachenhöhen: 🌳 Baumhauer, 🏁 Parcours-Meister, 🥊 Kämpfer",
+    "🎡 Freizeitpark: 🍿 Kino-Fan, 🏊 Schwimmer, 🎯 Zielschütze",
+    "⚽ Fußball-Insel: 🎠 Spielplatz-Profi, 🎭 Ausdruckskünstler, 🎮 Spielprofi",
+    "🧱 Bauland: 🏠 Baumeister, 🎨 Maler, 🎹 Musikant",
+    "🎠 Märchenland: 📖 Märchenonkel, 📚 Leseratte, 🕺 Tänzer",
+    "🗝️ Schlüsselreich: 🎣 Angler, ⛏️ Schatzgräber, 🗺️ Schatzsucher",
+    "🧽 Schwammi-Bucht: 🐴 Seepferdchen, 🛝 Rutschmeister, 🥅 Käferfreund",
+    "🗿 Rätsel-Insel: 🥊 Kämpfer, 📖 Buchleser, 🧠 Schlaukopf",
+    "🦊 Zotik & Lunaris: 🎠 Karussell-Kind, 🗝️ Schlüsselreisender, 🧽 Bucht-Besucher",
+    "📻 Radio-Insel: 🗿 Rätsel-Reisender, 🕳️ Höhlenforscher, 🥚 Kapsel-Freund",
+    "🔱 Atlantis: 🏆 Turm-Bezwinger, ⚒️ Schwertschmied, 🏘️ Dorfentdecker",
+    "🔴 Taschi-Land: 😋 Feinschmecker, 🐾 Haustierfreund, 👑 Waldheld",
+    "🍄 Hüpfland: 🏆 Pokalsieger, 🎡 Freizeitpark-Fan, 🚀 Gadget-Fan",
+    "🌀 Prisma-Archipel: 🥊 Kämpfer, 🚀 Gadget-Fan, 💬 Plaudertasche"
+   ]
+  },
+  {
+   "t": "Inselgeschichten aller Welten",
+   "p": [
+    "Betrittst du eine Welt, erzählt dir eine Figur dort ihre Geschichte in Akten. Jeder Akt hat ein Ziel; schon Geschafftes zählt gleich mit. Pro Akt +3 ⭐, am Ende +10 ⭐ und ein Sticker. Die Akte der Reihe nach:"
+   ],
+   "list": [
+    "🍄 Der Sonnenstern – erzählt von Pia: Akt 1: Reite auf Dino Tupfi (Dino-Stall) → 🦕 Dino-Reiter · Akt 2: Reise durch eine Röhre und stoß alle Sternblöcke an → 🟢 Röhren-Reisender + ⭐ Blockstoßer · Akt 3: Fahr ein Kart-Rennen und schaffe das Hüpf-Abenteuer → 🏁 Kart-Flitzer + 🦖 Hüpf-Profi · Akt 4: Kitzle Felsenkönig Brocko in seiner Burg durch → 🪨 Brocko-Kitzler",
+    "🗿 Die Prüfung der Uralten – erzählt von Kapselmeisterin Pim: Akt 1: Schaffe alle Rätsel im Prüfungsturm (Block, Pfeil, Bombe, Enterhaken) → 🏆 Turm-Bezwinger · Akt 2: Wähle am Kapsel-Schrein ein Ei und schmiede ein Silberschwert → 🥚 Kapsel-Freund + ⚒️ Schwertschmied · Akt 3: Steige in die Uralte Höhle hinab → 🕳️ Höhlenforscher · Akt 4: Besiege Titan Kron auf der Wald-Insel → 🗿 Titanen-Bezwinger",
+    "🗝️ Das Licht der Schlüssel – erzählt von Lichtwanderer Lio: Akt 1: Zünde 12 Laternen mit dem Lichtschlüssel an → 🔦 Laternenanzünder · Akt 2: Sammle alle Sterne der Ringstraße und flieg mit dem Schlüsselschwert-Mobil → 🚗 Rundfahrer + 🛹 Schlüsselflieger · Akt 3: Öffne das Tor der Herzen im Schlüsselreich → 🌟 Lichtwanderer · Akt 4: Besiege den Dunkelriesen auf der Wald-Insel → 👑 Schlüsselträger · Akt 5: Besuche die Wunsch-Insel, finde 3 Wunschfrüchte und das geheime Zeichen am Baum · Akt 6: Öffne das Tor in der Schlucht, bau das Floß und mach die Probefahrt · Akt 7: Besteige den Aussichtsturm und öffne 3 Truhen · Akt 8: Überstehe den Einbruch der Dunkelheit (40 Sekunden) · Akt 9: Gewinne 3 Runden in der Schattenarena und besiege Umbra",
+    "🧽 Das Geheimrezept der Knusper-Krabbe – erzählt von Schwammi: Akt 1: Iss drei verschiedene Gerichte in der Knusper-Krabbe → 🦀 Stammgast · Akt 2: Fang 15 Quallen und übe zehnmal Karate bei Sunny → 🪼 Quallenfischer + 🥋 Karate-Kind · Akt 3: Besiege Planktos Riesen-Roboter auf der Wald-Insel → 🧪 Plankto-Bezwinger",
+    "🎠 Das verlorene Märchenbuch – erzählt von Fee Glimmer: Akt 1: Fahr mit dem Märchen-Karussell und dem Schwanenboot → 🎠 Karussell-Kind + 🦢 Schwanenkapitän · Akt 2: Rutsch vom Frostgipfel und lauf beim Märchen-Umzug mit → 🛷 Eisrutscher + 🎭 Umzugsläufer · Akt 3: Fülle das Stempelheft und starte die Schloss-Show → 🔖 Stempelsammler + 🎆 Showstar",
+    "🎡 Der Traumpark – erzählt von Parkchef Bruno: Akt 1: Fahr eine Attraktion im Freizeitpark → 🎡 Freizeitpark-Fan · Akt 2: Baue etwas im Park und schließe eine Park-Mission ab → 🔨 Parkbauer + 📋 Park-Manager · Akt 3: Erreiche 3 Sterne Parkbewertung und schaffe alle Park-Missionen → 🌟 Sterne-Park + 👑 Parkdirektor",
+    "🧱 Die Stadt aus Blöcken – erzählt von Baumeisterin Berta: Akt 1: Bau ein Teil (Bauen-Knopf 🧱) → 🏠 Baumeister · Akt 2: Schaffe deinen selbst gebauten Parcours → 🧗 Parcours-Baumeister",
+    "🏙️ Die Lichter der Großstadt – erzählt von Stadtführerin Luna: Akt 1: Sprich mit 3 Stadtbewohnern der Stadtinsel · Akt 2: Spiele das Ampel-Spiel am Spielautomaten der Stadtinsel · Akt 3: Sprich mit 8 Stadtbewohnern der Stadtinsel",
+    "🐶 Die große Fellretter-Parade – erzählt von Bürgermeister Berti: Akt 1: Schließe 1 Einsatz an der Einsatz-Tafel ab · Akt 2: Schließe 3 Einsätze ab · Akt 3: Schaffe alle Fellretter-Einsätze (Medaille)",
+    "🌈 Jeder gehört dazu – erzählt von Regenbogen-Romy: Akt 1: Sprich mit 3 Bewohnern der Regenbogeninsel · Akt 2: Teile Freude am großen Regenbogen der Plaza (Aktionstaste direkt am Regenbogen) · Akt 3: Sprich mit 8 Bewohnern der Regenbogeninsel",
+    "🚢 Das Orchester der Farben – erzählt von Käpt’n Muschel: Akt 1: Öffne alle 6 Farbeimer im Dampfer-Hafen · Akt 2: Spiele alle 6 Instrumente und finde alle 8 Noten · Akt 3: Sieh dir einen Stummfilm im Freiluftkino an",
+    "🐉 Zündels Himmelsflug – erzählt von Drachenwächterin Brisa: Akt 1: Zünde alle 6 Fackeln an (Zündel hilft) · Akt 2: Befreie alle 6 Kristall-Freunde und fliege durch alle 8 Flugringe · Akt 3: Öffne das Himmelstor und spiele „Drachenflug“",
+    "⚽ Der goldene Pokal – erzählt von Trainerin Lena: Akt 1: Schieß einmal richtig (Knopf am Ball) · Akt 2: Schieße 5 Tore · Akt 3: Schieße 25 Tore · Akt 4: Gewinne das Fußball-Turnier → 🏆 Pokalsieger",
+    "🦊 Der Ruf des Kristalls – erzählt von Mira: Akt 1: Besuche Lunaris und sprich mit Mira in der Taverne · Akt 2: Finde den Hinweis im Hafen · Akt 3: Untersuche den Riss an der Akademie (Elementar-Kampf) · Akt 4: Berichte Mira vom Kampf",
+    "📻 Die dreizehn Sender – erzählt von Funkmeisterin Frida: Akt 1: Höre einen Sender (Radio am Platz, 20 Sekunden zuhören) · Akt 2: Sieh dir das Visual Radio an einem Bildschirm an · Akt 3: Höre alle 13 Sender",
+    "🔱 Das Herz von Atlantis – erzählt von Orakel Okeana: Akt 1: Sieh dir alle 5 Hologramme im Archiv an · Akt 2: Berühre das Herz auf dem Stufenberg und spiele die Kristall-Harfe · Akt 3: Hüpfe in die Schwerelos-Halle und fahre mit einem Aqua-Gleiter",
+    "🔴 Der Weg zum Meister – erzählt von Professor Ulme: Akt 1: Wähle bei Professor Ulme dein erstes Taschi und fang ein wildes im Gras · Akt 2: Besiege die 4 Arena-Leiter (4 Orden) · Akt 3: Forscher-Orden (8 Taschis) und Ballon-Orden (Team Funke besiegen) · Akt 4: Besiege Meisterin Aurelia (Meister-Orden)",
+    "🌀 Die drei Lichtsignale – erzählt von Nuri: Akt 1: Löse die Lichtfolge im Ki-Garten → 🥋 Ki-Prüfung · Akt 2: Löse das Zeichenrätsel in der Runen-Arena → 🃏 Runenmeister · Akt 3: Repariere die Signalfolge im Datenhain → 💠 Datenhüter · Akt 4: Sammle 7 Sternkugeln und rufe den Lichtdrachen → 🐉 Lichtdrachen-Ruf · Akt 5: Gewinne ein Runen-Duell gegen Kaia → 🎴 Duell-Sieger · Akt 6: Lass deinen Digi-Partner bis zur 3. Stufe wachsen → 💠 Digi-Partner"
+   ]
+  },
+  {
+   "t": "Rätsel-Insel und Prüfungsturm",
+   "list": [
+    "Truhe in der Vorhalle des Prüfungsturms öffnen → Bomben.",
+    "Raum 1 – Block-Rätsel: den Block (Aktion „Block schieben“) zuerst nach oben, dann auf die leuchtende Platte (Lichtstrahl, Schild „Block hierher schieben!“) schieben → Tor A öffnet, dahinter die Bogen-Truhe.",
+    "Raum 2: mit dem Bogen den blauen Kristall treffen (von weit weg zielen) → Wasser/Tor öffnet sich.",
+    "Rissige Wand: in Raum 2 leuchtet an der Seitenwand eine Platte mit Rissen und dem Schild „💣 Rissige Wand“. Davorstellen, A „Bombe legen“, Abstand halten → Wand bricht, dahinter die Truhe mit dem Enterhaken.",
+    "Abgrund: an den Haken-Pfosten „Enterhaken“ benutzen und hinüberschwingen → Schatz des Turms.",
+    "Kapsel-Schrein: ein Ei wählen, Kapselmonster füttern (Futter aus Truhen/Läden) bis Stufe 5.",
+    "Schmiede: Schwert gegen ⭐ verbessern. Dorf: 6 Schatztruhen im Umland.",
+    "Uralte Höhle: Tür betreten, über die Stufen ins Mini-Spiel absteigen."
+   ]
+  },
+  {
+   "t": "Wald-Insel",
+   "list": [
+    "🏕️ Waldlager: sicher, keine Monster. Herzen und Energie füllen sich schnell wieder auf. Heilquelle = sofort voll.",
+    "🎒 Waldhändlerin Fenja: Waffen, Schilde, Amulett und Tränke kaufen und anlegen.",
+    "Fünf Lichtungen mit Monstern aus den Welten: 🗿 Titanenkreis, 🗝️ Schattenhain, 🌙 Mondlichtung, 🎬 Tintenschlucht, 🫧 Muschelstrand.",
+    "Auf einer Lichtung 8 Monster besiegen → der Wächter erscheint (Titan Kron, Dunkelriese, Mondwolf-König, Der große Klecks, Planktos Riesen-Roboter).",
+    "Alle fünf Wächter besiegt → Sticker „Held des Waldes“."
+   ]
+  },
+  {
+   "t": "Schlüsselreich",
+   "list": [
+    "🌴 Strand der Freunde: 5 Sternfrüchte von der krummen Palme und am Strand sammeln.",
+    "🕰️ Dämmerstadt: Meersalz-Eis kaufen → zu Uhrmacher Tilo bringen → die Glocke am Uhrturm läuten.",
+    "🏰 Kristall-Burg: Licht-Rätsel im Burghof (Platten in der gezeigten Reihenfolge betreten; die Folge wird jede Runde länger).",
+    "🌲 Wald der Schatten: 8 Glühpilze sammeln. 🗼 Schleier-Turm: 3 Licht-Splitter finden.",
+    "Alle fünf Schlüssellöcher offen → Tor der Herzen öffnen (Feuerwerk!). Laternen anzünden (12), Ringstraße abfahren, Schlüsselschwert-Mobil fliegen."
+   ]
+  },
+  {
+   "t": "Wunsch-Insel",
+   "list": [
+    "🌟 Wunschfrüchte: 3 Stück – an der krummen Palme am Strand, hinter der Hütte und unter dem großen Baum. Danach leuchtet am Baum ein geheimes Zeichen: ☀️ → 🌙 → ⭐ → 💖 → 🗝️.",
+    "🕳️ Geheime Schlucht: Erst den Kristall am Eingang berühren, dann die 5 Wandzeichen in der Reihenfolge vom Baum berühren – das Tor öffnet sich, du bekommst den Wunschschlüssel (im Wuschel-Laden wählbar).",
+    "🛶 Floß: 3 Stämme 🪵, 2 Seile 🧵, 1 Segel ⛵ finden (auch auf Felsen und am Turm), am Bauplatz zusammensetzen, dann Probefahrt zur roten Boje.",
+    "🗼 Aussichtsturm: Stufen hochklettern, durchs Fernrohr schauen. 📦 3 Truhen (Turm, zwei Felsen) und 5 Sternscherben auf den Felsen. Ein Holzsteg verbindet Turm und Felsen C.",
+    "🌑 Einbruch der Dunkelheit: Wenn alles andere fertig ist, löst die Hängematte den Sonnenuntergang aus. 40 Sekunden gegen Schattenwesen durchhalten (⚔️ schlagen, 🌀 ausweichen, ✨ Lichtwelle).",
+    "🏟️ Schattenarena: 3 Runden mit Krabblern, Springern, Schützen und Wirblern, dann Endgegner Umbra. Umbras Panzer hält jeden Treffer ab – lock ihn beim Sturmangriff gegen einen Pfeiler, dann ist er betäubt und verwundbar."
+   ]
+  },
+  {
+   "t": "Schwammi-Bucht",
+   "list": [
+    "In der Knusper-Krabbe an der Theke essen (drei verschiedene Gerichte → „Stammgast“); dort gibt es auch das Burger-Mini-Spiel.",
+    "An Schwammis Fruchthaus klingeln, Sternchens Stein hochheben, bei Plankto am Eimerchen vorbeischauen.",
+    "Quallen fangen (5), Karate bei Sunny (10×), Wannen-Mobil im Heldenheim fahren.",
+    "Die Häuser der Bucht lassen sich betreten (Truhen!)."
+   ]
+  },
+  {
+   "t": "Märchenland",
+   "list": [
+    "Karussell, Schwanenboot (Perlenlagune), Eisrutsche vom Frostgipfel, Schloss-Show am Pult vor dem Schloss, Umzug (8 Sekunden bei den Wagen bleiben).",
+    "Wunschbrunnen: 3 Wünsche (+1 ⭐ je Wunsch). Feenstaub von Fee Glimmer holen und fliegen. Greifer im Spielzeug-Land: 5 Gewinne.",
+    "Basar mit Zelten und Händler Aladin; Taxi fährt zwischen den Orten. Stempelheft: 10 Orte besuchen."
+   ]
+  },
+  {
+   "t": "Taschi-Land",
+   "list": [
+    "🔬 Professor Ulme (Labor, große Statue auf dem Platz): Erstes Taschi wählen (Glutzahn 🔥, Samenling 🌿 oder Plätscherchen 💧), Taschidex, Orden, Geschenke.",
+    "🌿 Hohes Gras (4 Zonen: Blumenwiese, Teichufer, Felsgrat, Glut-Hügel): wilde Taschis erscheinen. Fangen mit Taschibällen 🔴 – je weniger Lebenspunkte, desto besser klappt es.",
+    "⚔️ Kampf: abwechselnd. Wähle Attacke, Beutel (Bälle, Tränke), Team oder Flucht. Typen: 🔥 schlägt 🌿, 🌿 schlägt 💧, 💧 schlägt 🔥🪨, ⚡ schlägt 💧🕊️, 🪨 schlägt 🔥🕊️, 🕊️ schlägt 🌿, 👻 schlägt 👻.",
+    "⬆️ Level & Entwicklung: Gewinner bekommen EP, steigen auf und entwickeln sich. Fellino wird mit einem Stein zu Wellino, Flamino, Blitzino oder Laubino.",
+    "💖 Heilhaus (Schwester Hanna) heilt dein Team gratis. 🛒 Fangladen: Bälle, Tränke, Steine für Sterne. Wird dein Team müde, wachst du im Heilhaus auf.",
+    "🏟️ Arena: Fels-Fiete, Perla, Käpt’n Volt, Blüte – jeder gibt einen Orden. Meisterin Aurelia wartet erst, wenn du 7 Orden hast.",
+    "🎈 Team Funke (Jette, Jim, Mauzi) im Lager hinten: drei Kämpfe in Folge, dann gehört dir ihr Heißluftballon (Fahrzeug).",
+    "💛 Freunde: Blitzi, Fellino, Flamino & Co. laufen auf dem Platz herum. Sie sind nie Gegner – streicheln erlaubt!",
+    "🌍 Taschis gibt es in ALLEN Welten: überall liegt Fanggras (dunkle Flecken mit hohen Halmen), dort erscheinen die Taschis dieser Welt (3 Arten je Welt plus starke Entwicklungen). Wilde Taschis sind in späteren Welten stärker.",
+    "🔴 Taschi-Menü überall: ☰ Mehr → „Taschis“ (Team, Taschidex nach Welten, Orden, Weltforscher, Flug zum Heilhaus). Dein vorderstes Taschi läuft als Begleiter hinter dir her.",
+    "📘 Taschidex-Meilensteine: 25 und 50 Taschis, alle Taschis und „Weltforscher“ (in jeder Welt 2 Taschis) geben Sterne und Sticker. 12 Typen: dazu kommen 🐉 Drache, ❄️ Eis, 🌑 Dunkel und ✨ Licht."
+   ]
+  },
+  {
+   "t": "Hüpfland",
+   "list": [
+    "🦕 Dino Tupfi (Dino-Stall): einsteigen wie bei einem Fahrzeug, Hupe-Knopf = Riesensprung. Verlassen trabt er nach einer Weile zurück in den Stall.",
+    "🟢 Röhren: Vor einer Röhre „In die Röhre!“ drücken – du kommst bei der Röhre mit derselben Farbe wieder heraus. Die Kicher-Blume schaut nur zum Hallo-Sagen heraus.",
+    "⭐ Sternblöcke: 12 goldene Blöcke schweben in Sprunghöhe. Stell dich darunter und spring – dein Kopf stößt sie an (+1 ⭐, alle 12 = +5 ⭐). Auf Tupfi geht es mit dem Riesensprung.",
+    "🪙 Münzen: auf Wegen, Hügeln und vor der Burg – 20 Münzen = 1 ⭐. Sie kommen nach einer Weile wieder.",
+    "🏁 Kart-Rennen: ins gelbe Flitzer-Kart steigen und durchs Start-Tor fahren (oder am Tor „Rennen starten“). 3 Runden gegen Ferdi, Pia und Pelle. Glitzerkisten ✦ geben Turbo, Münzen oder eine Kicher-Wolke, gelbe Pfeile machen schnell. Abkürzen über den Rasen zählt nicht. Platz 1 = 5 ⭐.",
+    "🦖 Hüpf-Abenteuer: Automat am Platz – 2D-Level mit Röhren, Sternblöcken (von unten anstoßen) und Schnecken zum Draufhüpfen. Achtung, wenn die Kicher-Blume aus der Röhre schaut!",
+    "🪨 Burg Felsenstein: Am Tor „Mutprobe starten“. Lauf auf den leuchtenden Knopf, dann auf den nächsten – Brocko lässt Kiesel rollen, über die du springst. Nach 3 Knöpfen lacht er und gibt den Sonnenstern zurück (+10 ⭐). Erwischen dich 3 Kiesel, fängst du einfach neu an."
+   ]
+  },
+  {
+   "t": "Weitere Welten",
+   "list": [
+    "🏖️ Badestrand: Meer, Wasserrutsche, Hüpfburg, Rutschen-Sticker.",
+    "🔱 Atlantis (Treppe nach unten an der Küste): Hologramm-Archiv, Stufenberg, Kristall-Harfe, Schwerelos-Halle, Aqua-Gleiter.",
+    "🦊 Zotik – Lunaris: Quest „Der Ruf des Kristalls“ (Mira → Hinweis im Hafen → Riss an der Akademie → Bericht).",
+    "📻 Funkwelle: 13 Sender je 20 Sekunden hören (+1 ⭐, alle +10 ⭐).",
+    "🐉 Drachenhöhen: Fackeln, Kristall-Freunde, Flugringe, Himmelstor „Drachenflug“.",
+    "🚢 Dampfer-Hafen: Farbeimer, Orchester, Noten, Stummfilm. 🏗️ Bauland: Blöcke bauen, Startblock. ⚽ Fußball-Arena: Tore schießen, Turnier.",
+    "🗺️ Schatzsuche: mit Schatzmeister Piet reden und alle 8 Kisten finden.",
+    "🌀 Prisma-Archipel: drei Licht-Rätsel (Hinweis-Tafel lesen), 7 orange Sternkugeln einsammeln und am Altar den Lichtdrachen rufen, im Turnier-Ring mit der Ki-Welle alle 3 Kristalle treffen, im Duell-Stadion gegen Kaia 3 von 5 Runden gewinnen (Feuer > Pflanze > Wasser > Feuer), am Kartenautomaten 12 Runenkarten sammeln, im Datenhain das Partner-Ei nehmen und mit Datenwürfeln füttern (4 → Byton, 10 → Gigaflux)."
+   ]
+  },
+  {
+   "t": "Alle Sticker und wie du sie bekommst",
+   "p": [
+    "Über 150 Sticker gibt es im Spiel, jeder bringt +2 ⭐. Hier alle mit ihrer Aufgabe:"
+   ],
+   "list": [
+    "🚗 Erste Fahrt: Steig in ein Fahrzeug",
+    "🎠 Spielplatz-Profi: Schaukle, rutsche oder wippe",
+    "🏁 Parcours-Meister: Schaffe den Himmels-Parcours",
+    "🎭 Ausdruckskünstler: Zeig ein Emote oder sag etwas",
+    "🚀 Gadget-Fan: Kauf ein Gadget",
+    "🦽 Rollator-Rowdy: Gib mit dem Rollator Vollgas",
+    "🧑‍🎨 Figuren-Künstler: Gestalte eine eigene Figur",
+    "🍿 Kino-Fan: Schau einen Film im Kino",
+    "🏆 Inselheld: Schaffe die ganze Inselreise",
+    "🎡 Freizeitpark-Fan: Fahr eine Attraktion im Freizeitpark",
+    "🎒 Rucksack-Profi: Öffne deinen Rucksack",
+    "🎁 Geschenke-Fee: Verschenke oder tausche etwas",
+    "😋 Feinschmecker: Iss etwas aus dem Rucksack",
+    "🥚 Tierfreund: Schlüpfe ein Haustier aus einem Ei",
+    "🍭 Bonbon-Boss: Kauf eine Maschine in der Fabrik",
+    "🧗 Parcours-Baumeister: Schaffe deinen selbst gebauten Parcours",
+    "🚁 Hubschrauber-Pilot: Flieg mit dem Hubschrauber",
+    "🚂 Lokführer: Fahr den Zug",
+    "⛵ Kapitän: Segle mit dem Boot",
+    "🎯 Zielschütze: Spiel in der Schießbude",
+    "🔨 Parkbauer: Baue etwas im Freizeitpark",
+    "🏆 Pokalsieger: Gewinne das Fußball-Turnier",
+    "🗺️ Schatzjäger: Finde den großen Schatz",
+    "📋 Park-Manager: Schließe eine Park-Mission ab",
+    "🌟 Sterne-Park: Erreiche 3 Sterne Parkbewertung",
+    "👑 Parkdirektor: Schaffe alle Park-Missionen",
+    "🌳 Baumhauer: Hau einen Baum",
+    "🏠 Baumeister: Bau ein Teil",
+    "😴 Gut geschlafen: Schlaf in deinem Bett",
+    "📸 Fotograf: Mach ein Foto",
+    "🎹 Musikant: Spiel auf dem Klavier",
+    "🎨 Maler: Mal ein Bild",
+    "🧠 Schlaukopf: Spiel ein Lernspiel",
+    "🐾 Haustierfreund: Füttere dein Haustier",
+    "🗺️ Schatzsucher: Finde einen Schatz",
+    "👥 Freunde: Spiel mit einem Freund",
+    "🎮 Spielprofi: Spiel ein Mini-Spiel",
+    "🫧 Seifenblasen: Puste Seifenblasen",
+    "🕺 Tänzer: Tanz mit dem Dorf",
+    "🌻 Gärtner: Ernte etwas im Garten",
+    "🚜 Landwirt: Mäh ein Feld",
+    "👨‍🌾 Hofmeister: Schaff alle Aufgaben vom Bauern",
+    "🐄 Tierfreund: Streichle ein Tier auf dem Hof",
+    "🧭 Entdecker: Lass dir den Weg zeigen",
+    "🍳 Hobbykoch: Koche etwas in der Hofküche",
+    "🎯 Fotoreporter: Löse 5 Foto-Aufgaben",
+    "📅 Stammgast: Komm 3 Tage hintereinander",
+    "🛋️ Einrichter: Richte dein Zimmer ein",
+    "📖 Märchenonkel: Hör am Lagerfeuer eine Geschichte",
+    "🎂 Partykind: Feiere mit Freunden eine Party",
+    "💬 Plaudertasche: Sprich mit 5 Leuten auf der Insel",
+    "🥊 Kämpfer: Gewinne einen Kampf in der Arena",
+    "🌲 Waldläufer: Besiege 10 Waldmonster",
+    "👑 Waldheld: Besiege den Waldgeist auf der Wald-Insel",
+    "📺 Fernsehgucker: Schau Fernsehen in einem Haus",
+    "📚 Leseratte: Lass dir 3 Märchen vorlesen",
+    "🛒 Einkäufer: Kaufe etwas in einem Laden",
+    "💐 Schenker: Verschenke einen Blumenstrauß",
+    "🏠 Besucher: Besuche die Wohnung eines Freundes",
+    "📖 Tierforscher: Entdecke alle Tiere",
+    "🎣 Angler: Fang deinen ersten Fisch",
+    "🗝️ Schlüsselreisender: Besuche das Schlüsselreich",
+    "🌑 Schattenfreund: Begrüße den Schattenwächter oder besiege einen Dunkelwichtel auf der Wald-Insel",
+    "⚔️ Schattenbezwinger: Besiege 10 Dunkelwichtel auf der Wald-Insel",
+    "👑 Schlüsselträger: Besiege den Dunkelriesen auf der Wald-Insel",
+    "🎠 Karussell-Kind: Fahr mit dem Märchen-Karussell",
+    "🦢 Schwanenkapitän: Fahr mit dem Schwanenboot durch die Lagune",
+    "🛷 Eisrutscher: Rutsch vom Frostgipfel hinunter",
+    "🎆 Showstar: Starte die Schloss-Show",
+    "🎭 Umzugsläufer: Lauf beim Märchen-Umzug mit",
+    "🔖 Stempelsammler: Fülle das Stempelheft im Märchenland",
+    "🐭 Mausohren-Star: Setz die Mausohren auf",
+    "🖋️ Klecks-Bezwinger: Besiege den großen Klecks auf der Wald-Insel",
+    "🎞️ Trickfilm-Held: Besiege 10 Trickfilm-Monster (Tinte, Käfer-Roboter …) auf der Wald-Insel",
+    "🗿 Rätsel-Reisender: Besuche die Rätsel-Insel der Uralten",
+    "🏆 Turm-Bezwinger: Schaffe alle Rätsel im Prüfungsturm",
+    "🥚 Kapsel-Freund: Wähle am Kapsel-Schrein ein Ei",
+    "✨ Kapsel-Meister: Entwickle dein Kapselmonster bis Stufe 5",
+    "⚒️ Schwertschmied: Schmiede ein Silberschwert",
+    "🕳️ Höhlenforscher: Betritt die Uralte Höhle",
+    "🚪 Türöffner: Betritt 5 Gebäude",
+    "🗿 Held der Uralten: Schaffe die Geschichte der Rätsel-Insel (Die Prüfung der Uralten)",
+    "🗝️ Schlüsselheld: Schaffe die Geschichte des Schlüsselreichs (Das Licht der Schlüssel)",
+    "🧽 Rezept-Retter: Schaffe die Geschichte der Schwammi-Bucht (Das Geheimrezept)",
+    "📖 Märchenretter: Schaffe die Geschichte des Märchenlands (Das verlorene Märchenbuch)",
+    "🎡 Traumpark-Chef: Schaffe die Geschichte des Freizeitparks (Der Traumpark)",
+    "🧱 Block-Baumeister: Schaffe die Geschichte vom Bauland (Die Stadt aus Blöcken)",
+    "🏙️ Ehren-Stadtkind: Schaffe die Geschichte der Stadtinsel (Die Lichter der Großstadt)",
+    "🐶 Fellretter-Held: Schaffe die Geschichte der Fellretter-Bucht (Die große Fellretter-Parade)",
+    "🌈 Regenbogen-Freund: Schaffe die Geschichte der Regenbogeninsel (Jeder gehört dazu)",
+    "🚢 Ehren-Matrose: Schaffe die Geschichte vom Dampfer-Hafen (Das Orchester der Farben)",
+    "🐉 Drachenfreund: Schaffe die Geschichte der Drachenhöhen (Zündels Himmelsflug)",
+    "⚽ Arena-Meisterin: Schaffe die Geschichte der Fußball-Arena (Der goldene Pokal)",
+    "🦊 Held von Lunaris: Schaffe die Geschichte von Zotik & Lunaris (Der Ruf des Kristalls)",
+    "📻 Funkmeister: Schaffe die Geschichte der Funkwelle (Die dreizehn Sender)",
+    "🔱 Hüter von Atlantis: Schaffe die Geschichte von Atlantis (Das Herz von Atlantis)",
+    "🌠 Wunschreisender: Besuche die Wunsch-Insel hinter dem Schlüsselreich",
+    "🕳️ Zeichendeuter: Öffne das Tor in der geheimen Schlucht",
+    "🛶 Floßkapitän: Mach die Probefahrt mit dem selbstgebauten Floß",
+    "📦 Truhenjäger: Finde alle 3 versteckten Truhen der Wunsch-Insel",
+    "🌑 Dunkelheits-Trotzer: Überstehe den Einbruch der Dunkelheit",
+    "🏟️ Schattenbezwinger: Besiege Umbra in der Schattenarena",
+    "🔴 Taschi-Held: Schaffe die Geschichte von Taschi-Land (Der Weg zum Meister)",
+    "🍄 Hüpfland-Gast: Besuche das Hüpfland im Westen",
+    "🦕 Dino-Reiter: Reite auf Dino Tupfi",
+    "🟢 Röhren-Reisender: Reise durch eine Röhre im Hüpfland",
+    "⭐ Blockstoßer: Stoß alle Sternblöcke im Hüpfland von unten an",
+    "🏁 Kart-Flitzer: Fahr ein Kart-Rennen im Hüpfland",
+    "🏆 Kart-Champion: Gewinne ein Kart-Rennen im Hüpfland",
+    "🦖 Hüpf-Profi: Schaffe das Hüpf-Abenteuer am Automaten",
+    "🪨 Brocko-Kitzler: Kitzle Felsenkönig Brocko in seiner Burg durch",
+    "🌞 Hüpf-Held: Schaffe die Geschichte des Hüpflands (Der Sonnenstern)",
+    "📘 Taschi-Sammler: Fang 25 verschiedene Taschis",
+    "📚 Taschi-Profi: Fang 50 verschiedene Taschis",
+    "🌍 Weltforscher: Fang in jeder Welt 2 Taschis",
+    "🎯 Taschi-Fänger: Fang dein erstes wildes Taschi",
+    "👑 Taschi-Meister: Hol alle 8 Orden in Taschi-Land",
+    "🏘️ Dorfentdecker: Betritt 20 Gebäude",
+    "🗺️ Weltenbummler: Betritt 40 Gebäude",
+    "🎁 Truhenfinder: Öffne 10 Schatztruhen in Gebäuden",
+    "🗿 Titanen-Bezwinger: Besiege Titan Kron auf der Wald-Insel",
+    "🧽 Bucht-Besucher: Besuche die Schwammi-Bucht",
+    "🦀 Stammgast: Iss drei verschiedene Gerichte in der Knusper-Krabbe",
+    "🥋 Karate-Kind: Übe zehnmal Karate bei Sunny",
+    "🪼 Quallenfischer: Fang 15 Quallen im Quallenfeld",
+    "🧪 Plankto-Bezwinger: Besiege Planktos Riesen-Roboter auf der Wald-Insel",
+    "🌟 Lichtwanderer: Öffne das Tor der Herzen im Schlüsselreich",
+    "🔦 Laternenanzünder: Zünde 12 Laternen im Schlüsselreich an",
+    "🚗 Rundfahrer: Sammle alle Sterne auf der Ringstraße im Schlüsselreich",
+    "🛹 Schlüsselflieger: Flieg auf dem Schlüsselschwert-Mobil",
+    "❤️ Herzensfreund: Schenke einem Freund ein Herz im Zimmer",
+    "🏠 Gastgeber: Bekomme 5 Herzen für dein Zimmer",
+    "🎪 Festgast: Fang etwas am Festtag",
+    "🥅 Käferfreund: Fang einen Käfer mit dem Kescher",
+    "⛏️ Schatzgräber: Grab etwas am Strand aus",
+    "📖 Buchleser: Öffne das Sammelbuch",
+    "🏆 Sammelmeister: Vervollständige ein Kapitel im Sammelbuch",
+    "🏊 Schwimmer: Spring ins Freibad",
+    "🐴 Seepferdchen: Schwimm im Meer am Badestrand",
+    "🏰 Hüpfburg-Held: Hüpf auf der Hüpfburg oder dem Luftkissen",
+    "🌊 Wasserpark-Profi: Rutsch von der Riesenrutsche ins Meer",
+    "🛝 Rutschmeister: Rutsch die Wasserrutsche",
+    "🥋 Ki-Prüfung: Löse die Lichtfolge im Ki-Garten",
+    "🃏 Runenmeister: Löse das Zeichenrätsel in der Runen-Arena",
+    "💠 Datenhüter: Repariere die Signalfolge im Datenhain",
+    "🐉 Lichtdrachen-Ruf: Sammle alle 7 Sternkugeln und rufe am Altar den Lichtdrachen",
+    "🌀 Ki-Welle: Triff im Turnier-Ring alle drei Kristalle mit der Ki-Welle",
+    "🎴 Duell-Sieger: Gewinne ein Runen-Duell gegen Kaia im Stadion",
+    "🃏 Kartensammler: Sammle alle 12 Runenkarten am Kartenautomaten",
+    "💠 Digi-Partner: Lass dein Partner-Ei mit Datenwürfeln bis zur 3. Stufe wachsen",
+    "🌀 Prisma-Chronik: Schließe die Geschichte des Prisma-Archipels ab",
+    "🎒 Gut gerüstet: Kauf dir Ausrüstung für den Wald",
+    "🌲 Waldläufer: Betritt die große Wald-Insel hinter der Rätsel-Insel",
+    "💪 Kampfstufe 5: Erreiche Kampfstufe 5 auf der Wald-Insel",
+    "👑 Held des Waldes: Besiege alle fünf Wächter der Wald-Insel",
+    "🎮 Gästefreund: Sprich mit 8 Gästen am easygames-Treff"
+   ]
+  },
+  {
+   "t": "Geheimcodes",
+   "p": [
+    "Eingabe über ⚙️ → „🔑 Code eingeben“. Groß- und Kleinschreibung, Leer- und Sonderzeichen sind egal, Umlaute werden zu AE/OE/UE. Specials schaltest du mit demselben Code wieder aus."
+   ],
+   "list": [
+    "🌠 WUNSCHSTERN: Wunsch-Insel (hinter dem Schlüsselreich): alle Aufgaben fertig – Wunschfrüchte, Schlucht, Floß, Truhen, Dunkelheit, Schattenarena, Umbra besiegt, Wunschschlüssel.",
+    "🍄 HUEPFHELD: Hüpfland: alle Aufgaben fertig – Sternblöcke, Dino, Röhre, Kart-Pokal, Hüpf-Abenteuer und Brocko durchgekitzelt.",
+    "🔴 TASCHIMEISTER: Taschi-Land: alle 8 Orden, alle Taschis im Taschidex und viele Fangbälle, Tränke und Steine (+ ein Starter-Team).",
+    "♾️ UNENDLICHSTERNE: Unendlich Sterne: nichts kostet mehr Sterne, der Vorrat ist immer voll (999.999).",
+    "🔓 ALLESFREI: Schaltet ALLE Inhalte frei: alle Sticker, die ganze Inselreise, alle Welten im Story-Modus (auch künftige), alle Läden-Gegenstände.",
+    "🌟 STERNENREGEN: +500 Sterne sofort.",
+    "🕊️ FLIEGEN: Flugmodus: Springen (B/Leertaste) flattert nach oben, man schwebt langsam herab – Special, gibt es sonst nicht.",
+    "🌙 MONDSPRUNG: Mondsprung: doppelte Sprunghöhe, weniger Schwerkraft.",
+    "🚀 RAKETENSCHUH: Raketenschuhe: doppeltes Lauftempo.",
+    "🗿 RIESE: Riesen-Held: doppelt so groß.",
+    "🐭 ZWERG: Zwerg-Held: halb so groß.",
+    "🌈 REGENBOGENSPUR: Regenbogenspur: bunte Sterne und Funken hinter dir.",
+    "🛡️ UNSTERBLICH: Unbesiegbar: Gegner können dir nichts mehr tun.",
+    "⚔️ HELDENKRAFT: Heldenkraft: zehnfache Schwertstärke in allen Kämpfen.",
+    "🎁 TAGESGESCHENK: Das Tagesgeschenk noch einmal abholen.",
+    "🏠 ZUHAUSE: Sofort nach Hause beamen.",
+    "↩️ ALLESAUS: Schaltet alle Specials wieder aus (Freischaltungen bleiben)."
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Mein Spielstand ist weg – was nun?",
+   "a": "Das Spiel speichert im Browser. Schau im Hauptmenü unter „Wechseln“, ob ein anderer Spielstand (1 bis 3) gewählt ist. Für den Notfall sicherst du deinen Stand im Pause-Menü mit „Sichern (Datei)“."
+  },
+  {
+   "q": "Im Story-Modus komme ich nicht in eine Welt.",
+   "a": "Die Welt ist noch gesperrt. An der Glaswand, im 🧭 Wohin? und im Lösungsbuch steht, welche drei Sticker dafür fehlen. In der Freien Welt ist alles sofort offen."
+  },
+  {
+   "q": "Das Handy verbindet sich nicht mit dem Fernseher.",
+   "a": "Am Fernseher „📺 Spiel am Fernseher öffnen“ wählen, am Handy „📱 Handy-Controller öffnen“ und den 4-stelligen Code eingeben oder den QR-Code scannen. Bricht die Verbindung ab, verbindet sich das Handy automatisch neu."
+  },
+  {
+   "q": "Das Spiel ruckelt.",
+   "a": "Im Pause-Menü „👪 Eltern“ gedrückt halten und den Sparmodus einschalten."
+  },
+  {
+   "q": "Wie schalte ich das Vorlesen oder die Musik aus?",
+   "a": "Unter ⚙️ Einstellungen lassen sich Vorlesen, Musik und Geräusche einzeln schalten. M schaltet den Ton am PC komplett an und aus."
+  },
+  {
+   "q": "Mein Controller wird nicht erkannt.",
+   "a": "Drück einmal eine Taste am Controller. Unbekannte Controller bekommen einen kurzen Einrichtungs-Assistenten; die Belegung änderst du im Pause-Menü unter „⌨️ Tasten & Controller belegen“."
+  },
+  {
+   "q": "Wo finde ich Hilfe im Spiel?",
+   "a": "Unter ⚙️ → „📚 Handbuch & Lösungen“ steht dasselbe Handbuch und Lösungsbuch direkt im Spiel."
+  }
+ ]
+}

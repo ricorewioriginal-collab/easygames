@@ -1,0 +1,436 @@
+{
+  "id": "anmacha-podcast-tycoon",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AnMaCha Podcast Tycoon 3D ist eine Wirtschaftssimulation mit Marco und Andrew. Als Studioleitung machst du aus einer kleinen, maroden Garage ein Podcast-Imperium: Studio bauen und einrichten, Folgen produzieren, Fans, Ruf und Einnahmen steigern, Personal einstellen, Sponsoren gewinnen und durch eine begehbare 3D-Stadt mit acht Vierteln fahren.",
+        "Die Karriere führt durch 60 Hauptmissionen in 6 Kapiteln mit drei möglichen Enden. Danach geht es im Endlosmodus mit wöchentlichen Zielen weiter. Fanprojekt, kein offizielles Produkt; den echten Podcast gibt es auf anmacha.de."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "list": [
+        "✨ Neue Karriere mit drei Schwierigkeiten: Locker (mehr Geld, geringere Kosten, mehr Hörer, weniger Pannen), Standard und Profi (knappe Kasse, mehr Chaos, anspruchsvolle Minispiele). Start mit 6.000 SC (Studio-Credits), 12 Fans und 5 Ruf.",
+        "📂 Laden: 3 Speicherplätze plus Autosave.",
+        "🎨 Kreativmodus: Kreativ-Studio ohne Geldgrenze.",
+        "🏆 Herausforderungen: feste Regeln, festes Ziel, begrenzte Tage, mit eigenem Speicherplatz.",
+        "🎉 Party (lokal, 1–4), 🌐 Online-Quizshow, 🕹️ Minispiele, ⚙️ Optionen und 🎮 Steuerung."
+      ]
+    },
+    {
+      "t": "Eine Folge produzieren",
+      "steps": [
+        "Planung: Thema (60 Themen in 6 Rubriken), Rubriken-Blöcke, Format, Gast, Moderation (Marco, Andrew oder beide) und Veröffentlichungszeit wählen. Kurzfolge (20 min, 40 SC, 2–3 Blöcke), Normalfolge (45 min, 90 SC, 2–4 Blöcke) oder Spezial (90 min, 180 SC, 3–5 Blöcke). Eine Kurzfolge geht auch ohne Geld. Videofolgen brauchen eine TV-Bühne.",
+        "Recherche in drei Tiefen (30, 60 oder 120 Spielminuten) – die Redaktion und Redaktionspersonal bringen Punkte.",
+        "Team und Gast: Der Gast kostet Gage; eine Gäste-Lounge hebt seine Laune.",
+        "Technikcheck: Je nach Zuverlässigkeit der Technik kann eine Panne auftreten. Lösen per Minispiel (Störungssuche), für 120 SC reparieren lassen oder mit Qualitätsabzug ignorieren.",
+        "Aufnahme mit drei Dialog-Weichen pro Rubrik.",
+        "Schnitt im Mehrspur-Editor: „Ähm“-Stellen herausschneiden, Lücken schließen, Überlappungen vermeiden. Mit Schnitt-Personal geht auch automatischer Schnitt.",
+        "Verpackung: Titel, Cover (Klassisch, Neon, Retro, Studio-Szene) und Teaser (Hörschnipsel, Video-Teaser mit Kamera, Fan-Aktion ab Kapitel 2).",
+        "Veröffentlichen mit kurzer Show (Countdown, Hörerzähler, Kommentare, Sterne), danach der Auswertungsbericht.",
+        "⚡ Express erledigt alle weiteren Schritte automatisch – schnell, aber etwas schwächer."
+      ]
+    },
+    {
+      "t": "Qualität und Wertung",
+      "list": [
+        "Die Qualität (0–100 Prozent) setzt sich zusammen aus Planung (bis 15), Recherche (bis 15), Technik (bis 20), Aufnahme (bis 20), Schnitt (bis 20) und Hosts (bis 10, aus Energie, Kreativität und Laune), plus oder minus Ereignisse.",
+        "Sterne: ab 30 Prozent 2, ab 50 Prozent 3, ab 70 Prozent 4, ab 85 Prozent 5 Sterne.",
+        "Hörer hängen ab von Fans, Gast-Bekanntheit, Qualität, Trend des Themas, Beliebtheit der Rubrik, Zielgruppe, Sendezeit (abends ×1,1, morgens ×0,95, mittags ×0,9), Wochenende (+8 Prozent), Format, Reichweite durch Cover, Teaser und Social Media, Ruf und Video (+20 Prozent).",
+        "Einnahmen: 0,35 SC pro Hörer, dazu Merch, Sponsoren und Nachläufer in den Tagen danach. Neue Fans: etwa 5 Prozent der Hörer, je nach Qualität. Unter 30 Prozent Qualität verlierst du Fans.",
+        "Ruf steigt mit Folgen über 55 Prozent Qualität und sinkt darunter."
+      ]
+    },
+    {
+      "t": "Studio bauen",
+      "list": [
+        "Im Baumodus ziehst du Wände, legst Böden, setzt Türen und Fenster und stellst über 70 Objekte aus 12 Kategorien auf, etwa Mikrofone, Mischpulte, Akustikplatten und Sofas. Rückgängig und Wiederholen sowie eine Wegprüfung helfen.",
+        "Räume bekommen eine Raumfunktion, wenn Wände sie umschließen und die nötigen Objekte darin stehen:",
+        "🎙️ Aufnahmeraum (ab 6 m²): Hier wird aufgenommen. Mikrofone, Absorber und Technik bestimmen die Klangqualität.",
+        "🎚️ Regie & Schnitt (ab 4 m²): Bessere Schnittwerte und automatischer Schnitt durch das Schnitt-Team.",
+        "📝 Redaktion (ab 4 m²): Recherchepunkte für jede Folge.",
+        "🛋️ Gäste-Lounge (ab 6 m²): Bekannte Gäste kommen nur mit Lounge. Gute Laune der Gäste.",
+        "☕ Kaffeeküche (ab 3 m²): Energie-Erholung für Hosts und Team, bessere Stimmung.",
+        "🔧 Technikwerkstatt (ab 4 m²): Repariert Technik günstiger und hält die Zuverlässigkeit hoch.",
+        "📺 TV-Bühne (ab 12 m²): Videofolgen und Live-Shows (mehr Reichweite für TV-Anmacher).",
+        "❓ Quizbühne (ab 10 m²): Quizshow-Aufzeichnungen mit Ticketeinnahmen.",
+        "📣 Social-Media-Büro (ab 4 m²): Mehr Reichweite für jede Folge.",
+        "🎵 Musikraum (ab 6 m²): Bonus für Musik-Anmacher und eigene Jingles.",
+        "📦 Lager (ab 3 m²): Weniger Verschleiß und Platz für Merch.",
+        "🛍️ Merch-Shop (ab 4 m²): Merch-Einnahmen bei jeder Veröffentlichung.",
+        "📻 Radiostudio (ab 6 m²): Radiosendungen auf AnMaCha24: wenig Geld, aber Werbung für die nächste Podcast-Folge.",
+        "Verkaufen bringt 60 Prozent des Preises zurück."
+      ]
+    },
+    {
+      "t": "Team, Finanzen und Technik",
+      "list": [
+        "Team (T): Personal in den Rollen Redaktion, Tontechnik, Schnitt, Social & Marketing, Booking und Kamera einstellen und zur Schulung schicken (250 SC, 1 Tag).",
+        "Finanzen (F): Kontostand, Miete (Studio 140 SC pro Tag, Campus 420 SC), Sponsorenverträge und Reparaturen.",
+        "Technik nutzt sich mit jeder Folge ab. Liegt die Zuverlässigkeit unter 35 Prozent, gibt es eine Gratis-Grundreparatur auf 45 Prozent; eine volle Reparatur kostet Geld je fehlendem Punkt. Eine Technikwerkstatt macht Reparaturen günstiger.",
+        "Marco und Andrew haben Energie und Laune (im HUD). Kaffeeküche und Nachtruhe bringen Energie zurück. Mehr als 2 Folgen am Tag überlasten.",
+        "Moderation: Marco ist Technik-Profi (+3 Qualität bei TEC News und TV-Anmacher, sonst +1), Andrew ist Publikumsliebling (+10 Prozent neue Fans), beide zusammen haben Doppel-Chemie (+2 Qualität, gute Laune, aber mehr Energieverbrauch).",
+        "Nebenjobs in der Stadt (Minispiele, 45 Spielminuten) bringen schnelles Geld; ab dem vierten Job am selben Tag sinkt der Lohn deutlich."
+      ]
+    },
+    {
+      "t": "Studio-Stufe, Tagesziele und Studio-Momente",
+      "list": [
+        "Studio-Stufe mit Erfahrungspunkten und Titeln von „Garagen-Podcaster“ über „Lokalfunk-Helden“ und „Podcast-Promis“ bis „AnMaCha-Ikonen“.",
+        "Jeden Tag 3 Tagesziele, zum Beispiel „Veröffentliche eine Folge“, „Folge mit Gast“, „Gewinne ein Minispiel“ oder „Plaudere mit 2 Leuten“.",
+        "Sende-Serie: Veröffentlichst du an aufeinanderfolgenden Tagen, gibt es ab dem zweiten Tag Extra-Fans (2 je Serientag, höchstens 20).",
+        "16 Studio-Momente mit Entscheidungen, etwa „Ein Fan steht vor der Tür!“, „Andrews Lachen geht viral“, „Mini-Shitstorm!“, „Kaffee ist alle!“ oder „Ein Thema trendet!“.",
+        "📻 Radiostudio: Sendungen auf AnMaCha24 bringen wenig Geld, aber Werbung für die nächste Folge (bis +25 Prozent Reichweite). Außerdem lassen sich 12 echte Sender live hören (laut.fm)."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Smartphone und Tablet: Joystick links unten zum Laufen, Knopf zum Sprechen oder Benutzen, Knöpfe rechts unten für Bauen, Folge, Team, Geld, Journal, Karte und Menü. Im Baumodus mit einem Finger verschieben, mit zwei Fingern zoomen, antippen zum Platzieren.",
+        "PC: WASD oder Pfeiltasten laufen, Umschalt rennen, E oder Enter sprechen/benutzen, B Bauen, P Produktion, T Team, F Finanzen, J Journal, O Archiv, M Karte, Esc Pause. Im Baumodus Maus zum Platzieren, Mausrad zoomt, R dreht, Strg+Z/Y rückgängig/wiederholen. Tasten in den Optionen änderbar.",
+        "Controller: linker Stick laufen, A sprechen/benutzen, B zurück, Start Pause, rechter Stick als Mauszeiger für alle Knöpfe."
+      ]
+    },
+    {
+      "t": "Party und Online-Quizshow",
+      "list": [
+        "🎉 Party: 1 bis 4 Spieler an einem Gerät spielen Minispiele reihum.",
+        "🌐 Online-Quizshow: 2 bis 8 Spieler treten von überall per Code, Link oder QR bei. Der Host wählt 8, 12 oder 16 Fragen und die Mischung (Bunt gemischt, Nur A–D, A–D + Wahr/Quatsch) und die Kategorie.",
+        "Punkte online: A–D und Wahr/Quatsch richtig = 500 plus bis zu 500 Tempobonus. Schätzfragen bis 800 Punkte nach Abstand. Wer die Verbindung verliert, behält beim Wiederverbinden seinen Platz und seine Punkte."
+      ]
+    },
+    {
+      "t": "Speichern",
+      "p": [
+        "Gespeichert wird in 3 Plätzen plus Autosave, mit automatischer Sicherung des letzten guten Stands. Optional mit Google auf allen Geräten. Herausforderungen haben einen eigenen Speicherplatz."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Akustikplatten (Schallabsorber) und gute Mikrofone heben die Aufnahmequalität am stärksten – der Aufnahmeraum liefert den größten Teil der Technik-Punkte.",
+        "Technik nutzt sich mit jeder Folge ab: rechtzeitig reparieren – unter 35 Prozent Zuverlässigkeit ist die Grundreparatur gratis.",
+        "Im Schnitteditor zuerst die Ähms schneiden und Pausen schließen, das bringt die meisten Punkte.",
+        "Wenig Geld? Kurzfolgen gehen immer, Nebenjobs in der Stadt bringen schnelles Geld.",
+        "Folge der Mission im Journal (J) – die Dialoge sagen genau, was zu tun ist."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Thema und Blöcke passend wählen: Enthält die Folge einen Block der Rubrik des Themas, gibt es 5 Planungspunkte; doppelte Blöcke kosten.",
+        "Gast passend zum Thema einladen: passende Gäste bringen bis zu 4 Planungspunkte, unpassende kosten einen.",
+        "Abends um 19 Uhr veröffentlichen bringt die meisten Hörer, am Wochenende noch 8 Prozent mehr.",
+        "Sende-Serie pflegen: täglich eine Folge bringt Extra-Fans, aber nicht mehr als 2 Folgen am Tag, sonst überlastest du die Hosts.",
+        "Sponsoren passend zu deinen Lieblingsrubriken wählen und die Mindestqualität sicher erreichen – verfehlte Ziele bringen kein Geld.",
+        "Personal früh einstellen: Tontechnik senkt Pannen, Schnitt erlaubt Auto-Schnitt, Redaktion bringt Recherche, Social mehr Reichweite."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Marco moderiert TEC News und TV-Anmacher (+3 Qualität), Andrew Feelgood und Wenig Interessantes (+10 Prozent Fans).",
+        "Pannen im Technikcheck lieber per Minispiel lösen: Ein Sieg gibt keinen Abzug und sogar +6 Zuverlässigkeit.",
+        "Recherche auf maximaler Tiefe bei Serious 15 zahlt sich doppelt aus: mehr Qualität und Punkte für das Legenden-Ende.",
+        "Ab Kapitel 3 Videofolgen auf der TV-Bühne – sie bringen 20 Prozent mehr Hörer.",
+        "Radiosendungen vor einer wichtigen Folge senden: die Radio-Werbung gibt bis zu 25 Prozent mehr Reichweite."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Räume ohne geschlossene Wände – dann bekommt der Raum keine Funktion.",
+        "Zu viele Folgen am Tag: Energie und Laune der Hosts sinken, die Qualität leidet.",
+        "Panne ignorieren: kostet 7 Qualitätspunkte.",
+        "Teure Spezialfolgen mit schwachem Studio – lieber erst ausbauen.",
+        "Qualität unter 30 Prozent veröffentlichen: Du verlierst Fans."
+      ]
+    },
+    {
+      "t": "Minispiele meistern",
+      "list": [
+        "Jedes Minispiel gibt es in Locker, Standard und Profi; die Regeln stehen vor dem Start im Spiel.",
+        "Quiz (A–D-Blitzquiz, Wahr oder Quatsch, Schätzduell, Geräuscheraten): Tempo bringt Bonuspunkte, beim Schätzduell gibt es bis 2 Prozent Abweichung volle 100 Punkte.",
+        "Studio-Störungssuche: in der Mitte der Signalkette messen und so halbieren – der Messgeräte-Akku reicht nur für wenige Messungen.",
+        "Kabelnetz: zuerst die Paare verbinden, die nah beieinander liegen, Kabel dürfen sich nicht kreuzen.",
+        "Interview-Rapport: persönliche Fragen erst ab 60 Rapport, Komplimente wirken nur einmal, auf die Reaktionen des Gastes achten.",
+        "Beat-Session: Combo halten, verpasste Noten leeren die Stimmungsleiste.",
+        "Camper-Parken: Lenken wirkt nur beim Rollen – langsam fahren; im Profi-Modus rückwärts einparken."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "So liest du die Komplettlösung",
+      "p": [
+        "Alle 60 Hauptmissionen der Karriere in Reihenfolge, mit Ort, Zielen und Belohnung. SC = Studio-Credits. Bei zwei Missionen triffst du eine Entscheidung, die – zusammen mit deiner Spielweise – das Ende bestimmt."
+      ]
+    },
+    {
+      "t": "Kapitel 1: Kabel, Kaffee, Chaos",
+      "p": [
+        "Ein kleines, marodes Tonstudio, zwei klapprige Mikrofone und eine Kaffeemaschine mit Charakter. Hier beginnt alles."
+      ],
+      "steps": [
+        "Willkommen im Chaos (Altes AnMaCha-Studio): Sprich mit: Marco. Belohnung: keine.",
+        "Erste Bestandsaufnahme (Altes AnMaCha-Studio): Kaufe und platziere einen Kopfhörer (auf dem Tisch). Belohnung: 120 SC.",
+        "Ein Mikrofon raucht (Altes AnMaCha-Studio): Repariere die Studiotechnik (Werkzeug-Knopf oder Störungssuche). Belohnung: 150 SC, 1 Ruf.",
+        "Ab in den TEC-Park (TEC-Park): Fahre zu: TEC-Park + Sprich mit: Herr Pixelberg. Belohnung: 250 SC.",
+        "Die erste Folge (Altes AnMaCha-Studio): Produziere und veröffentliche deine erste Folge. Belohnung: 300 SC, 5 Fans.",
+        "Kaffee ist Treibstoff (Altes AnMaCha-Studio): Richte eine Kaffeeküche ein (Raumfunktion zuweisen). Belohnung: 150 SC.",
+        "Hilfe in der Medienstraße (Medienstraße): Fahre zu: Medienstraße + Sprich mit: Lea Lautsprecher + Stelle eine erste Person ein (Team-Menü). Belohnung: 200 SC.",
+        "Besser klingen (Altes AnMaCha-Studio): Platziere 2 Schallabsorber + Veröffentliche eine Folge mit mindestens 35 % Qualität. Belohnung: 250 SC, 2 Ruf.",
+        "Die ersten 25 Fans (Medienstraße): Erreiche 25 Fans. Belohnung: 300 SC, 3 Fans.",
+        "Die Nacht der kaputten Kabel (Altes AnMaCha-Studio): Verkable das Studio neu (Kabelnetz spielen) + Veröffentliche eine Folge mit mindestens 40 %. Belohnung: 500 SC, 5 Ruf, schaltet frei: Gäste, Sponsoren."
+      ]
+    },
+    {
+      "t": "Kapitel 2: Jetzt wird gesendet!",
+      "p": [
+        "Die ersten Fans sind da. Jetzt braucht es Redaktion, Gäste – und vielleicht einen Sponsor."
+      ],
+      "steps": [
+        "Eine echte Redaktion (Altes AnMaCha-Studio): Baue eine Redaktion (Schreibtisch + Sitz). Belohnung: 300 SC.",
+        "Fünfzehn ernste Minuten (Altes AnMaCha-Studio): Eine Folge mit Hauptthema „Serious 15“ (≥ 40 %). Belohnung: 300 SC, 4 Ruf.",
+        "Der erste Gast (Medienstraße): Sprich mit: Elif Termin + Veröffentliche eine Folge mit Gast. Belohnung: 350 SC, 8 Fans.",
+        "Gästen ein Zuhause (Altes AnMaCha-Studio): Richte eine Gäste-Lounge ein (2 Sitzplätze). Belohnung: 300 SC.",
+        "Fanpost-Flut (Medienstraße): Sortiere die Hörerpost. Belohnung: 200 SC, 10 Fans.",
+        "Das erste Sponsorengespräch (Medienstraße): Nimm einen Sponsorenvertrag an (Finanzen → Sponsoren). Belohnung: 200 SC.",
+        "Mikrofonpanne live! (Altes AnMaCha-Studio): Halte den Pegel bei einer Aufnahme (Mikrofon-Pegel ≥ 50 Punkte). Belohnung: 300 SC, 2 Ruf.",
+        "Sauber geschnitten (Medienstraße): Schneide eine Folge mit mindestens 60 % Schnittwertung. Belohnung: 350 SC.",
+        "Teaser-Taktik (Medienstraße): Veröffentliche eine Folge mit Teaser. Belohnung: 250 SC, 10 Fans.",
+        "Der Sponsor ruft an (Medienstraße): Erfülle einen Sponsorenvertrag + Erreiche 120 Fans. Belohnung: 800 SC, 5 Ruf, schaltet frei: TV- und Quizstudio."
+      ]
+    },
+    {
+      "t": "Kapitel 3: Fernsehfieber",
+      "p": [
+        "Das TV- und Quizstudio öffnet seine Tore. Kameras, Licht, Publikum!"
+      ],
+      "steps": [
+        "Studiohalle 1 (TV- und Quizstudio): Fahre zu: TV- und Quizstudio + Sprich mit: Tom Linse. Belohnung: 300 SC.",
+        "Kamera läuft (Altes AnMaCha-Studio): Platziere 2 Kameras + Platziere 2 Lichter. Belohnung: 400 SC.",
+        "Unsere TV-Bühne (Altes AnMaCha-Studio): Richte eine TV-Bühne ein (ab 12 m², 2 Kameras, 2 Lichter). Belohnung: 500 SC, 3 Ruf.",
+        "TV-Anmacher (Altes AnMaCha-Studio): Videofolge mit Hauptthema „TV-Anmacher“ (≥ 50 %). Belohnung: 500 SC, 15 Fans.",
+        "Kalibrieren will gelernt sein (TV- und Quizstudio): Gewinne die Kamerakalibrierung. Belohnung: 300 SC.",
+        "Quizfieber (TV- und Quizstudio): Gewinne 2 Quizspiele. Belohnung: 400 SC, 2 Ruf.",
+        "Partyabend im Studio (Altes AnMaCha-Studio): Spiele eine Party-Runde (Hauptmenü oder Pause → Party). Belohnung: 250 SC, 10 Fans.",
+        "Die Quizshow-Aufzeichnung (TV- und Quizstudio): Zeichne die Quizshow in Studiohalle 1 auf (bei Nele). Belohnung: 900 SC, 40 Fans, 4 Ruf.",
+        "Der Bildschirm wird schwarz (TV- und Quizstudio): Leite die Datenpakete um (Routerpakete) + Videofolge mit mindestens 55 %. Belohnung: 600 SC, 3 Ruf, schaltet frei: Festivalgelände.",
+        "Die Festivalanfrage (Festivalgelände): Fahre zu: Festivalgelände + Sprich mit: Jule Bass. Belohnung: 1.000 SC, 5 Ruf, schaltet frei: Bahnhofsviertel, Campingplatz & Roadtrip-Garage. Entscheidung: „Was versprecht ihr Jule für die Festival-Show?“ – „Wildes Chaos mit Überraschungen“ (Chaos), „Eine große Fan-Party zum Mitmachen“ (Publikum), „Eine perfekt produzierte Show“ (Legende)."
+      ]
+    },
+    {
+      "t": "Kapitel 4: On the Road",
+      "p": [
+        "Raus aus dem Studio: Camper, Bahnhof, Außendrehs – und eine Tonspur verschwindet."
+      ],
+      "steps": [
+        "Der Camper (Campingplatz & Roadtrip-Garage): Fahre zu: Campingplatz & Roadtrip-Garage + Sprich mit: Oskar Hering. Belohnung: 300 SC.",
+        "Einparken für Profis (Campingplatz & Roadtrip-Garage): Parke Herbert sauber ein (Camper-Parken gewinnen). Belohnung: 400 SC.",
+        "Unterwegs aufnehmen (Campingplatz & Roadtrip-Garage): Kaufe einen mobilen Rekorder und platziere ihn im Studio. Belohnung: 300 SC.",
+        "Ab zum Bahnhof (Bahnhofsviertel): Fahre zu: Bahnhofsviertel + Sprich mit: Frau Gleis. Belohnung: 300 SC.",
+        "Fahrplanchaos (Bahnhofsviertel): Löse die Bahnhofsplanung. Belohnung: 450 SC, 2 Ruf.",
+        "Interview am Bahnsteig (Bahnhofsviertel): Folge mit einem Bahn-Gast (Bahnexpertin/-experte). Belohnung: 500 SC, 20 Fans.",
+        "Roadtrip zum Interview (Campingplatz & Roadtrip-Garage): Navigiere den Roadtrip (Roadtrip-Navigation gewinnen). Belohnung: 500 SC, 15 Fans.",
+        "Die verschwundene Tonspur (Medienstraße): Rekonstruiere die Folge (Schnitt-Challenge gewinnen) + Bring die Sicherungskopie ins Studio (Mikrofon-Kurier). Belohnung: 700 SC, 3 Ruf.",
+        "Deadline! (Altes AnMaCha-Studio): Veröffentliche 2 Folgen mit mindestens 55 %. Belohnung: 700 SC.",
+        "Zurück mit Geschichten (Altes AnMaCha-Studio): Eine Folge mit mindestens 600 Hörern + Erreiche 400 Fans. Belohnung: 1.200 SC, 5 Ruf, schaltet frei: Mediencampus."
+      ]
+    },
+    {
+      "t": "Kapitel 5: Die große Sende-Welt",
+      "p": [
+        "Das Team wächst, die Funkfüchse fordern euch freundlich heraus."
+      ],
+      "steps": [
+        "Die Funkfüchse (Mediencampus): Fahre zu: Mediencampus + Sprich mit: Ronja Funkfuchs. Belohnung: 400 SC.",
+        "Das Team wächst (Medienstraße): Beschäftige 4 Leute. Belohnung: 600 SC.",
+        "Training macht Profis (Altes AnMaCha-Studio): Schicke jemanden zur Schulung (Team-Menü). Belohnung: 300 SC.",
+        "Technik-Upgrade (TEC-Park): Platziere 2 Mischpulte. Belohnung: 600 SC.",
+        "Quiz-Duell gegen die Füchse (Mediencampus): A–D-Blitzquiz mit mindestens 70 Punkten. Belohnung: 500 SC, 3 Ruf.",
+        "Der Musikraum (Altes AnMaCha-Studio): Richte einen Musikraum ein + Musik-Anmacher-Folge mit mindestens 60 %. Belohnung: 800 SC, 25 Fans.",
+        "Fans helfen mit (Medienstraße): Packe Fan-Geschenke (Geschenkepacken) + Erreiche 1.000 Fans. Belohnung: 900 SC, 50 Fans.",
+        "Die große Live-Aufzeichnung (Altes AnMaCha-Studio): Veranstalte eine Live-Show auf eurer TV-Bühne. Belohnung: 1.500 SC, 60 Fans, 5 Ruf.",
+        "Server in Flammen? (TEC-Park): Rette das Netzwerk (Routerpakete gewinnen) + Repariere die Studiotechnik. Belohnung: 800 SC, 4 Ruf.",
+        "Medienpreis-Nominierung (Mediencampus): Erreiche 50 Reputation + Habe 25 Folgen im Archiv. Belohnung: 2.000 SC, 5 Ruf, schaltet frei: Campus-Grundstück."
+      ]
+    },
+    {
+      "t": "Kapitel 6: Festival der Anmacher",
+      "p": [
+        "Der Mediencampus wartet – und das größte Festival, das die Stadt je gesehen hat."
+      ],
+      "steps": [
+        "Der Mediencampus (Mediencampus): Pachte das Campus-Grundstück (Baumodus → Grundstück). Belohnung: 500 SC, 3 Ruf.",
+        "Campus einrichten (Mediencampus): Richte 2 Räume auf dem Campus ein. Belohnung: 1.200 SC.",
+        "Festivalplanung (Festivalgelände): Fahre zu: Festivalgelände + Sprich mit: Jule Bass. Belohnung: 800 SC. Entscheidung: „Was wird der Höhepunkt des Festivals?“ – „Eine Live-Folge mit überraschenden Pannen-Spielen“ (Chaos), „Die Fans stehen mit auf der Bühne“ (Publikum), „Eine perfekt inszenierte Jubiläumsfolge“ (Legende).",
+        "Bühnentechnik (Festivalgelände): Richte die Scheinwerfer ein (Spotlight gewinnen). Belohnung: 700 SC.",
+        "Die Festival-Hymne (Altes AnMaCha-Studio): Probe die Hymne (Beat-Session gewinnen) + Musik-Anmacher-Folge mit mindestens 65 %. Belohnung: 1.000 SC, 60 Fans.",
+        "Konfetti-Generalprobe (Festivalgelände): Probe die Konfettikanonen (Konfetti-Chaos). Belohnung: 600 SC, 30 Fans.",
+        "Fans als Crew (Festivalgelände): Erreiche 2.500 Fans. Belohnung: 1.200 SC, 3 Ruf.",
+        "Die Störung im Finale (Festivalgelände): Finde die Störung im Signalweg (Störungssuche gewinnen) + Verkable die Bühne neu (Kabelnetz gewinnen). Belohnung: 1.500 SC, 5 Ruf.",
+        "Mikrofonfangen auf der Bühne (Festivalgelände): Spiele Mikrofonfangen mit dem Publikum. Belohnung: 800 SC, 50 Fans.",
+        "Festival der Anmacher (Festivalgelände): Die große Festival-Show: Spezial-Videofolge mit mindestens 60 %. Belohnung: 5.000 SC, 300 Fans, 10 Ruf."
+      ]
+    },
+    {
+      "t": "Die drei Enden",
+      "list": [
+        "🌀 Chaos-Champion: Punkte für Chaos sammelst du durch Entscheidungen für „Chaos“, ignorierte Pannen und viele Reparaturen.",
+        "💛 Publikumsliebling: Entscheidungen für „Publikum“, Folgen mit mehr als 50 neuen Fans und viele Fans insgesamt (jede 5.000 Fans zählen extra).",
+        "🏆 Medienlegende: Entscheidungen für „Legende“, Folgen mit mindestens 80 Prozent Qualität, Serious-15-Folgen mit tiefster Recherche und ein Qualitätsschnitt über 60 Prozent. Bei Gleichstand gewinnt die Medienlegende.",
+        "Für ein bestimmtes Ende wählst du bei „Die Festivalanfrage“ und „Festivalplanung“ zweimal dieselbe Richtung (je +2) und spielst passend dazu."
+      ]
+    },
+    {
+      "t": "Alle 24 Nebenaufträge",
+      "list": [
+        "Stachel-Uwe braucht Freunde (Altes AnMaCha-Studio): Platziere 3 Pflanzen – 150 SC, 1 Ruf.",
+        "Kassensturz (Medienstraße): Habe 7.000 SC auf dem Konto – 300 SC.",
+        "Plattenkiste (Medienstraße): Spiele eine Beat-Session im Plattenladen – 200 SC, 5 Fans.",
+        "Kühl bleiben (Altes AnMaCha-Studio): Stelle einen Kühlschrank auf – 150 SC.",
+        "Retro-Liebe (TEC-Park): Platziere einen Röhrenfernseher + Folge mit Nostalgie-Thema – 350 SC, 10 Fans.",
+        "Die Stimme der Hörer (Medienstraße): Folge mit der Hörervertretung als Gast – 250 SC, 15 Fans.",
+        "Werkstattkurs (TEC-Park): Richte eine Technikwerkstatt ein – 400 SC.",
+        "Ordnung im Lager (Altes AnMaCha-Studio): Richte ein Lager ein – 250 SC.",
+        "Social-Offensive (Medienstraße): Richte ein Social-Media-Büro ein – 400 SC, 15 Fans.",
+        "Comedy-Abend (Medienstraße): Folge mit einem Comedy-Gast – 400 SC, 20 Fans.",
+        "Serienmarathon (TV- und Quizstudio): 2 Folgen mit Hauptthema TV-Anmacher – 450 SC, 15 Fans.",
+        "Schätzkönig (TV- und Quizstudio): Gewinne das Schätzduell – 300 SC.",
+        "Geräuschdetektiv (TV- und Quizstudio): Gewinne das Geräuscheraten – 300 SC.",
+        "Die Merch-Ecke (Altes AnMaCha-Studio): Richte einen Merch-Shop ein – 500 SC.",
+        "Lagerfeuer-Session (Campingplatz & Roadtrip-Garage): Folge mit Camping-Thema – 400 SC, 20 Fans.",
+        "Das Fundbüro (Bahnhofsviertel): Löse die Gute-Nachrichten-Recherche – 350 SC, 2 Ruf.",
+        "Wanda und ihr Wohnmobil (Campingplatz & Roadtrip-Garage): Folge mit Wanda Wohnmobil – 450 SC, 20 Fans.",
+        "Interview-Training (Medienstraße): Gewinne den Interview-Rapport – 350 SC.",
+        "Rack-Upgrade (TEC-Park): Platziere ein Rack-Interface – 600 SC.",
+        "Mischmeister (Altes AnMaCha-Studio): Gewinne den Soundmixer – 400 SC.",
+        "Die Maske (Medienstraße): Folge mit dem Überraschungsgast „Die Maske“ – 800 SC, 60 Fans.",
+        "Tiefe Töne (Altes AnMaCha-Studio): Platziere 2 Eck-Bassfallen – 350 SC.",
+        "Pokalvitrine (Mediencampus): Platziere eine Pokalvitrine + Erreiche 60 Reputation – 900 SC, 3 Ruf.",
+        "Lichtdesign (TV- und Quizstudio): Platziere 6 Lichter – 700 SC."
+      ]
+    },
+    {
+      "t": "Nebenjobs",
+      "list": [
+        "Schnittauftrag für die Agentur (Medienstraße, Minispiel Schnitt-Challenge, bis 180 SC)",
+        "Hörerpost für andere Podcasts sortieren (Medienstraße, Minispiel Hörerpost, bis 140 SC)",
+        "Kabelservice in der Werkstatt (TEC-Park, Minispiel Kabelnetz, bis 200 SC)",
+        "Netzwerk im Rechenzentrum entwirren (TEC-Park, Minispiel Routerpakete, bis 220 SC)",
+        "Quiz-Assistenz in Halle 1 (TV- und Quizstudio, Minispiel A–D-Blitzquiz, bis 240 SC)",
+        "Quizshow aufzeichnen (TV- und Quizstudio, Minispiel Wahr oder Quatsch, bis 380 SC)",
+        "Fahrpläne für Reisegruppen planen (Bahnhofsviertel, Minispiel Bahnhofsplanung, bis 230 SC)",
+        "Camper für Gäste einparken (Campingplatz & Roadtrip-Garage, Minispiel Camper-Parken, bis 200 SC)",
+        "DJ-Probe auf der Festivalbühne (Festivalgelände, Minispiel Beat-Session, bis 260 SC)",
+        "Fan-Pakete packen (Festivalgelände, Minispiel Geschenkepacken, bis 220 SC)",
+        "Sprachaufnahme für die Nachbarschaft (Altes AnMaCha-Studio, Minispiel Mikrofon-Pegel, bis 150 SC)",
+        "Kurierdienst für die Funkfüchse (Mediencampus, Minispiel Mikrofon-Kurier, bis 240 SC)"
+      ]
+    },
+    {
+      "t": "Sponsoren",
+      "list": [
+        "Röstwerk Bohnenglück: Drei Folgen mit mindestens 45 % Qualität. 140 SC pro erfüllter Folge.",
+        "Kabelkönig Strippe & Söhne: Drei TEC-News-Folgen mit mindestens 50 % Qualität. 220 SC pro erfüllter Folge.",
+        "Zeltwerk Heringsdorf: Vier Folgen mit Camping-Bezug (Thema oder Gast). 300 SC pro erfüllter Folge.",
+        "Funkbahn Reiseservice: Drei Folgen rund um Bahn und Reisen mit 60 % Qualität. 420 SC pro erfüllter Folge.",
+        "Sofawelt Kuschelmeister: Vier TV-Anmacher-Folgen mit 60 % Qualität. 520 SC pro erfüllter Folge.",
+        "Klangfabrik Oszillator: Drei Musik-Anmacher-Folgen mit 65 % Qualität. 700 SC pro erfüllter Folge.",
+        "Stiftung Sonnenschein: Vier Feelgood-Folgen – ohne Malus, für den guten Zweck. 800 SC pro erfüllter Folge.",
+        "Festival-Kollektiv Bassgeflüster: Fünf Videofolgen mit mindestens 70 % Qualität. 1.100 SC pro erfüllter Folge."
+      ]
+    },
+    {
+      "t": "Herausforderungen",
+      "list": [
+        "💸 Pleite-Studio: Nur 1.200 SC Startgeld: Erreiche in 20 Tagen 300 Fans.",
+        "💾 Nur TEC News: Sechs TEC-Folgen mit Ø 70 % Qualität in 15 Tagen.",
+        "🌀 Chaos-Woche: Dreifache Pannen: Veröffentliche fünf Folgen mit mindestens 50 % in 7 Tagen.",
+        "🦊 Sparfuchs: Ohne Bauen: Habe nach 25 Tagen 9.000 SC auf dem Konto.",
+        "❓ Quizmarathon: Gewinne acht Quizspiele in 10 Tagen.",
+        "📇 Gästeliste: Sechs verschiedene Gäste in 30 Tagen."
+      ]
+    },
+    {
+      "t": "Erfolge",
+      "list": [
+        "🎙️ Auf Sendung: Veröffentliche die erste Folge.",
+        "📼 Archivar: Veröffentliche 10 Folgen.",
+        "🗄️ Sendeanstalt: Veröffentliche 50 Folgen.",
+        "💎 Goldene Ohren: Eine Folge mit mindestens 90 % Qualität.",
+        "👥 Tausend Freunde: Erreiche 1.000 Fans.",
+        "🏟️ Stadionstimmung: Erreiche 10.000 Fans.",
+        "💰 Studio-Mogul: Habe 50.000 SC auf dem Konto.",
+        "🌈 Allrounder: Veröffentliche in allen sechs Rubriken.",
+        "🤝 Starkes Team: Beschäftige fünf Leute gleichzeitig.",
+        "🏗️ Baumeister: Platziere 60 Objekte.",
+        "🕹️ Minispiel-Profi: Gewinne alle 24 Minispiele mindestens einmal.",
+        "📺 Fernsehreif: Schließe Kapitel 3 ab.",
+        "🎆 Festival der Anmacher: Schließe das große Finale ab.",
+        "⭐ Gästebuch: Begrüße 10 verschiedene Gäste.",
+        "🤑 Gut gesponsert: Erfülle einen Sponsorenvertrag.",
+        "🎉 Partylöwe: Spiele eine Party-Runde mit mindestens zwei Personen."
+      ]
+    },
+    {
+      "t": "Alle 24 Minispiele",
+      "list": [
+        "✉️ Hörerpost (Fan & Feelgood): Das Postfach quillt über – sortiere Lob, Fragen, Wünsche, Kritik und Spam.",
+        "🎤 Interview-Rapport (Fan & Feelgood): Führe ein Gespräch, bei dem dein Gast richtig auftaut.",
+        "📰 Gute-Nachrichten-Recherche (Fan & Feelgood): Welche schöne Meldung ist wirklich passiert? Kombiniere die Hinweise!",
+        "🎁 Geschenkepacken (Fan & Feelgood): Fan-Pakete packen: richtiger Inhalt, passender Karton, sparsam mit Füllmaterial.",
+        "🎙️ Mikrofon-Pegel (Produktion): Halte die Stimme im grünen Bereich – leise anheben, laut absenken.",
+        "🎚️ Soundmixer (Produktion): Alle Spuren gleichzeitig ins Wertungsfenster mischen – während sich die Pegel ständig ändern.",
+        "✂️ Schnitt-Challenge (Produktion): Clips vorhören, Versprecher rauswerfen, Folge nach Sendeplan sortieren.",
+        "🔍 Studio-Störungssuche (Produktion): Signalkette durchmessen, defektes Teil eingrenzen und tauschen.",
+        "❓ A–D-Blitzquiz (Die verrückte Quizshow): Vier Antworten, eine stimmt – und die Uhr tickt.",
+        "🤔 Wahr oder Quatsch (Die verrückte Quizshow): Stimmt das – oder ist es kompletter Quatsch?",
+        "📏 Schätzduell (Die verrückte Quizshow): Wie hoch, wie weit, wie viele? Schieb den Regler so nah wie möglich ran.",
+        "🔊 Geräuscheraten (Die verrückte Quizshow): Ohren auf! Welches Geräusch spielt der Studio-Synthesizer gerade?",
+        "🚐 Camper-Parken (Roadtrip): Park den Podcast-Camper rempelfrei in die markierte Lücke.",
+        "🚆 Bahnhofsplanung (Roadtrip): Finde mit Funkbahn und Regio-Anmacher die einzige Verbindung, die pünktlich zum Interview führt.",
+        "🗺️ Roadtrip-Navigation (Roadtrip): Plane die Tour Straße für Straße – Wegpunkte in der richtigen Reihenfolge, ohne das Zeitbudget zu sprengen.",
+        "🛴 Mikrofon-Kurier (Roadtrip): Flitz mit dem Scooter durchs Lager und bring Mikros und Kabel zur richtigen Studio-Station.",
+        "🔌 Kabelnetz (TEC Trouble): Gleiche Anschlüsse verkabeln – ohne Kreuzung, ohne Kabelsalat.",
+        "📦 Routerpakete (TEC Trouble): Weichen schalten, damit jedes Datenpaket im richtigen Netzsegment ankommt.",
+        "📷 Kamerakalibrierung (TEC Trouble): Stell die Kamera so ein, dass das Live-Bild dem Referenzbild gleicht.",
+        "🔊 Akustikpuzzle (TEC Trouble): Absorber an die Wände hängen, bis das Mikro kaum noch Hall abbekommt.",
+        "🧺 Mikrofonfangen (Party): Fang die herabregnenden Mikros mit dem Korb – aber Finger weg von Feedback-Bomben!",
+        "🥁 Beat-Session (Party): Trommel Kick, Snare, Hi-Hat und Glocke genau im Takt zum Studio-Groove.",
+        "🔦 Spotlight (Party): Halte den Scheinwerfer auf alle, die gerade sprechen – auch wenn sie herumlaufen.",
+        "🎊 Konfetti-Chaos (Party): Schieß Konfetti in der richtigen Farbe auf die Party-Podeste, bevor ihr Zeitfenster schließt."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Mein Spielstand ist weg – was tun?",
+      "a": "Lade über „📂 Laden“ einen anderen Platz oder den Autosave. Das Spiel hält zusätzlich den letzten guten Stand als Sicherung. Mit Google gespeichert ist der Stand auch auf anderen Geräten da."
+    },
+    {
+      "q": "Ich habe kein Geld mehr für eine Folge.",
+      "a": "Eine Kurzfolge geht immer, auch ohne Geld. Außerdem bringen Nebenjobs in der Stadt und Nebenaufträge schnell neues Geld."
+    },
+    {
+      "q": "Online-Quizshow klappt nicht.",
+      "a": "Alle Geräte brauchen Internet. Mitspieler treten per Code, Link oder QR-Code bei; es braucht mindestens 2 und höchstens 8 Spieler. Wer kurz rausfliegt, verbindet sich mit seinem Platz und seinen Punkten neu."
+    },
+    {
+      "q": "Warum hat mein Raum keine Funktion?",
+      "a": "Der Raum muss rundherum Wände haben, groß genug sein und die nötigen Objekte enthalten, zum Beispiel für den Aufnahmeraum 2 Mikrofone und 2 Sitzplätze auf mindestens 6 m²."
+    },
+    {
+      "q": "Das Radio spielt nicht.",
+      "a": "Die Sender laufen erst nach einem Klick und brauchen Internet. Solange das Radio läuft, wird die Spielmusik leise."
+    },
+    {
+      "q": "Kann ich nach dem Finale weiterspielen?",
+      "a": "Ja. Nach dem Festival der Anmacher siehst du dein Ende und spielst im Endlosmodus mit wöchentlichen Zielen weiter."
+    }
+  ]
+}

@@ -1,215 +1,220 @@
 {
-  "id": "kiko-sterneninseln",
-  "kurz": {
-    "anleitung": "KIKO – Das Geheimnis der Sterneninseln ist ein 3D-Hüpfabenteuer: Der Himmelskristall ist zerbrochen, und du hilfst Kiko, seine Splitter zu sammeln und die Sterneninseln wieder zu verbinden. In 20 Leveln in vier Welten (Sonnenwiesen, Glitzerwald, Frosthöhen, Sternenhimmel) sammelst du auf jeder Insel fünf blaue Kristalle, löst das Inselrätsel – Schalter, Sternenplatten, Lichtsteine in der richtigen Reihenfolge, Leuchtfeuer oder Uhrschalter – und gehst durch das grüne Portal. Ein Kompass zeigt immer das nächste Ziel. Du hast drei Herzen; goldene Bonussterne heilen ein Herz, der Checkpoint füllt alle auf. Der Sternenpuls betäubt Schattenwesen, auf Hüpfer kannst du auch von oben springen. Vier Figuren mit eigenen Stärken stehen zur Wahl: Kiko, Mira, Boro und Lumi. Im letzten Level wartet das Sternenherz mit drei Angriffsphasen. Fortschritt, Sterne, Medaillen und Bestzeiten werden lokal gespeichert, optional mit Google auf allen Geräten.",
-    "steuerung": [
-      "Touch: links der Joystick zum Laufen, rechts SPRUNG und AKTION; rechts auf dem Bild wischen dreht die Kamera.",
-      "PC: WASD oder Pfeiltasten laufen, Leertaste springen, E Aktion (Schalter, Sternenpuls), Maus ziehen dreht die Kamera, Esc Pause. Tasten in den Einstellungen änderbar.",
-      "Controller: linker Stick laufen, rechter Stick Kamera, A springen, X Aktion, Start Pause."
-    ],
-    "tipps": [
-      "Folge dem Kompass-Pfeil – er führt dich Insel für Insel zum nächsten Kristall oder Schalter.",
-      "Erst den goldenen Checkpoint erreichen, dann Risiken eingehen: Er füllt alle Herzen auf.",
-      "Auf Hüpfer von oben springen spart den Sternenpuls für Leuchtfeuer und fliegende Schatten."
-    ]
+ "id": "kiko-sterneninseln",
+ "handbuch": [
+  {
+   "t": "Ziel des Spiels",
+   "p": [
+    "Der Himmelskristall ist zerbrochen. Hilf Kiko, seine Splitter zu sammeln und die 20 Sterneninseln in vier Welten wieder zu verbinden.",
+    "Jedes Level folgt drei Schritten: fünf blaue Kristalle finden, das Inselrätsel lösen und durch das grüne Portal gehen. Erst wenn alle fünf Kristalle gesammelt und das Rätsel gelöst sind, leuchtet das Portal. Die drei goldenen Sterne pro Level sind freiwillig."
+   ]
   },
-  "handbuch": [
-    {
-      "t": "Ziel des Spiels",
-      "p": [
-        "Der Himmelskristall ist zerbrochen. Hilf Kiko, seine Splitter zu sammeln und die 20 Sterneninseln in vier Welten wieder zu verbinden.",
-        "Jedes Level folgt drei Schritten: fünf blaue Kristalle finden, das Inselrätsel lösen und durch das grüne Portal gehen. Erst wenn alle fünf Kristalle gesammelt und das Rätsel gelöst sind, leuchtet das Portal. Die drei goldenen Sterne pro Level sind freiwillig."
-      ]
-    },
-    {
-      "t": "Start und Hauptmenü",
-      "list": [
-        "Spielen: startet das nächste offene Level, das du noch nicht geschafft hast. Beim allerersten Start erklärt dir das Spiel vorher kurz alles („Bereit für deine Reise?“).",
-        "Figur wählen: Kiko, Mira, Boro oder Lumi. Alle vier können jede Insel schaffen; du kannst auch in der Pause wechseln.",
-        "Levelauswahl: alle freigeschalteten Abenteuer, ☆ zeigt deine besten Bonussterne.",
-        "Einstellungen: Musiklautstärke, Effektlautstärke, Kameraempfindlichkeit, Grafikqualität (Automatisch, Niedrig, Hoch), Sprache (Deutsch/English), Tastenbelegung, Vollbild und „Spielstand zurücksetzen“.",
-        "Spielanleitung: Abenteuer-Anleitung mit Kapiteln (Mission, Steuerung, Fähigkeiten und Hindernisse, Insel-Tagebuch).",
-        "Über das Spiel und der Bereich „☁ Google-Spielstand“."
-      ]
-    },
-    {
-      "t": "Spielablauf und Regeln",
-      "list": [
-        "Kompass und Ziel: Oben steht immer das nächste Ziel, z. B. „Blaue Kristalle sammeln · 2/5“, mit Pfeil und Entfernung. Liegt das Ziel weiter weg, führt dich der Kompass Insel für Insel („Weg: …“).",
-        "Herzen: Du hast drei. Gegner, Lichtstrahlen, Angriffe und Stürze kosten je ein Herz; danach bist du kurz unverwundbar. Nach einem Sturz kommst du auf sicheren Boden zurück.",
-        "Bonussterne: Jeder der drei goldenen Sterne füllt ein Herz auf und bringt Punkte.",
-        "Checkpoint: Etwa in der Mitte jedes Levels steht ein goldener Checkpoint. Er füllt alle Herzen auf und speichert die Rückkehrposition für diesen Versuch.",
-        "Drei Herzen verloren: „Kiko braucht eine Pause“ – am Checkpoint neu starten, das Level neu starten oder zur Levelauswahl.",
-        "Pause: Fortsetzen, Level neu starten, Figur wechseln, Anleitung, Einstellungen, Hauptmenü."
-      ]
-    },
-    {
-      "t": "Die Inselrätsel",
-      "list": [
-        "Keins: Kristalle sammeln und ins Portal.",
-        "Brückenschalter: hingehen und AKTION drücken.",
-        "Schlüssel: den goldenen Schlüssel finden – er öffnet das Tor.",
-        "Zwei Schalter: beide Schalter mit AKTION aktivieren.",
-        "Lichtsteine: in der Reihenfolge 1 → 2 → 3 aktivieren. Ein falscher Stein setzt alles zurück („Falsche Reihenfolge. Beginne bei 1.“).",
-        "Sternenplatten: kurz (etwa eine halbe Sekunde) stehen bleiben, bis die Platte dauerhaft geladen ist.",
-        "Leuchtfeuer: in der Nähe den Sternenpuls auslösen (AKTION) – das entzündet sie.",
-        "Uhrschalter: AKTION startet ein Zeitfenster (18 bzw. 26 Sekunden), in dem das Tor zum Portal offen ist. Läuft es ab, einfach den Uhrschalter erneut starten.",
-        "Sternenherz (Endgegner): siehe Lösungsbuch."
-      ]
-    },
-    {
-      "t": "Hindernisse und Hilfen",
-      "list": [
-        "Schattenhüpfer: Lande von oben auf ihnen, dann federst du ab und betäubst sie. Oder Sternenpuls.",
-        "Fliegende Schatten: nur mit dem Sternenpuls betäuben oder ausweichen.",
-        "Sternenpuls (AKTION ohne Objekt in der Nähe): betäubt nahe Schattenwesen 3,5 Sekunden lang, lädt danach je nach Figur 2,5 bis 3,3 Sekunden auf.",
-        "Bewegliche Inseln tragen dich mit.",
-        "Bröckelnde Inseln fallen 1,5 Sekunden nach dem Betreten weg und kehren nach 3 Sekunden zurück. Orange Blinken warnt vor verschwindenden Inseln.",
-        "Zeitinseln werden abwechselnd fest und durchlässig – warte, bis sie fest sind.",
-        "Rosa Federpilze schleudern dich automatisch hoch nach oben.",
-        "Windfahnen zeigen Böen an – lenke gegen den Wind.",
-        "Magentafarbene Lichtstrahlen bewegen sich – überspringe sie.",
-        "Eis (Frosthöhen): Du rutschst weiter. Schneebälle rollen auf dich zu."
-      ]
-    },
-    {
-      "t": "Die vier Figuren",
-      "list": [
-        "Kiko: der ausgeglichene Sternenwächter. Sein Sternenpuls erreicht besonders weit; Aufladezeit 3 Sekunden.",
-        "Mira: die mutige Mondhüterin springt höher; Puls kleiner, Aufladezeit 3 Sekunden.",
-        "Boro: gemütlicher Felsenfreund. Ein Schutzschild fängt pro Level einen Gegnertreffer ab (nicht bei Stürzen); Aufladezeit 3,3 Sekunden.",
-        "Lumi: die flinke Morgenbotin läuft schneller und lädt ihren Sternenpuls früher wieder auf (2,5 Sekunden)."
-      ]
-    },
-    {
-      "t": "Bedienung",
-      "list": [
-        "Die Bewegung richtet sich nach der Kamera: Rechts bewegt dich zur rechten Seite des Bildes.",
-        "Tastatur und Maus: WASD oder Pfeiltasten bewegen, Leertaste springt, E betätigt Objekte oder löst einen Puls aus, Maus ziehen dreht die Kamera, Esc pausiert. Bewegung, Springen und Interagieren lassen sich in den Einstellungen neu belegen.",
-        "Smartphone und Tablet: linker Joystick laufen. Halte ihn bei einer Lücke nach vorn und tippe auf SPRUNG. AKTION betätigt nahe Objekte oder löst einen Puls aus. Rechts wischen dreht die Kamera. Im Querformat siehst du mehr vom Weg. Ⅱ oben pausiert.",
-        "Gamepad: linker Stick laufen, rechter Stick Kamera, A springen, X Aktion, Start Pause. Lass die Sprungtaste los, bevor du erneut springst."
-      ]
-    },
-    {
-      "t": "Punkte, Medaillen und Speichern",
-      "list": [
-        "Kristall: 100 Punkte. Sammelst du den nächsten innerhalb von 6 Sekunden, gibt es +25 bzw. +50 Kettenbonus.",
-        "Bonusstern: 50 Punkte. Sprungtreffer auf einen Hüpfer: 40 Punkte. Mit dem Puls betäubtes Schattenwesen: 10 Punkte.",
-        "Medaillen: Gold für drei Sterne ohne Schaden und ohne Sturz, Silber für mindestens zwei Sterne, sonst Bronze.",
-        "Gespeichert werden freigeschaltete Level, beste Sterne, Bestpunkte, Medaillen, Bestzeiten, Figur, Tastenbelegung und Einstellungen – automatisch im Browser, mit „☁ Google-Spielstand“ auch auf allen Geräten."
-      ]
-    }
-  ],
-  "ratgeber": [
-    {
-      "t": "Tipps für Einsteiger",
-      "list": [
-        "Folge dem Kompass – er kennt den Weg zu jedem Kristall und Schalter.",
-        "Springe kurz vor der Kante einer Lücke und halte die Richtung dabei gedrückt.",
-        "Spiele im Querformat, dann siehst du mehr vom Weg.",
-        "Erreiche zuerst den Checkpoint. Danach kostet ein Fehler nur den Weg ab der Mitte."
-      ]
-    },
-    {
-      "t": "Strategien für Fortgeschrittene",
-      "list": [
-        "Hol die Bonussterne erst, wenn dir Herzen fehlen – sie heilen ein Herz.",
-        "Auf Schattenhüpfer von oben springen: Das gibt 40 Punkte und spart den Puls.",
-        "Vor Leuchtfeuern prüfen, ob der Puls geladen ist („Sternenpuls bereit“ statt „Puls lädt“).",
-        "Bei Uhrschaltern den Weg zum Portal vorher anschauen und erst dann starten.",
-        "Auf bröckelnden Inseln nie stehen bleiben – 1,5 Sekunden sind schnell vorbei."
-      ]
-    },
-    {
-      "t": "Die richtige Figur",
-      "list": [
-        "Für Leuchtfeuer-Level (Glocken der Sonne, Auroraturm, Letzter Funke) ist Kiko mit dem weitesten Puls bequem.",
-        "Für hohe Stufen und Lücken springt Mira am höchsten.",
-        "Für die Gold-Medaille ohne Schaden hilft Boros Schild – es fängt einen Gegnertreffer pro Level ab.",
-        "Lumi läuft am schnellsten – gut für Uhrschalter-Level und Bestzeiten."
-      ]
-    },
-    {
-      "t": "Häufige Fehler",
-      "list": [
-        "Bei Lichtsteinen die Reihenfolge verwechseln – dann beginnt alles bei 1.",
-        "Sternenplatten nur überlaufen: Du musst kurz stehen bleiben.",
-        "Im Wind nicht gegenlenken und von der Insel geweht werden.",
-        "Auf Eis zu spät bremsen – du rutschst weiter.",
-        "Die Sprungtaste gedrückt halten: Lass sie los, bevor du erneut springst."
-      ]
-    }
-  ],
-  "loesung": [
-    {
-      "t": "Welt 1: Sonnenwiesen",
-      "steps": [
-        "Das erste Sternenlicht: Sammle fünf Kristalle, lerne den Sprung und betrete das grüne Portal. Beim ersten Mal gibt es drei Tipps (laufen, Kristall, springen).",
-        "Die vergessene Brücke: Aktiviere den Brückenschalter auf der mittleren Insel. Ein Schattenhüpfer und eine bewegliche Insel.",
-        "Der Windmühlenpfad: Stehe auf allen drei Sonnenplatten. Halte im Wind gegen (zwei Windinseln in entgegengesetzter Richtung).",
-        "Die Wasserfall-Kaskaden: Finde den Wasserfallschlüssel. Die Federpilze geben dir einen hohen Sprung; eine Zeitinsel kurz vor dem Ziel.",
-        "Die Glocken der Sonne: Entzünde die drei Sonnenglocken mit dem Sternenpuls. Überspringe den Lichtstrahl."
-      ]
-    },
-    {
-      "t": "Welt 2: Glitzerwald",
-      "steps": [
-        "Der tanzende Wald: Springe über die großen Pilze. Ein Bonusstern wartet auf einer Seiteninsel.",
-        "Das Rätsel der Lichtsteine: Aktiviere die Lichtsteine in der Reihenfolge 1 → 2 → 3.",
-        "Das Laternenlabyrinth: Lade drei Laternenplatten durch kurzes Stehenbleiben. Bröckelnde Inseln nicht zu lange belasten.",
-        "Die fliegende Pilzpost: Öffne beide Poststationen. Federpilze, Seitenwege und ein Windkorridor begleiten die Lieferung.",
-        "Die Nachtwache: Sammle die Splitter. Der Uhrschalter öffnet das Tor für 18 Sekunden. Lichtstrahl und Zeitinsel liegen auf dem Weg."
-      ]
-    },
-    {
-      "t": "Welt 3: Frosthöhen",
-      "steps": [
-        "Der eisige Aufstieg: Auf Eis rutschst du weiter. Weiche dem Schneeball aus und nutze den Checkpoint.",
-        "Die Kristallhöhle: Finde den goldenen Schlüssel und warte vor der Zeitplattform.",
-        "Das Frostpendel: Aktiviere zwei Frostschalter. Überspringe pendelnde Lichtstrahlen und warte auf feste Eisbrücken. Der Checkpoint liegt hier schon auf der zweiten Insel.",
-        "Die Eisschollenflucht: Sichere drei Eissiegel. Auf bröckelnden Schollen rasch weiterlaufen und im Wind gegenlenken.",
-        "Der Auroraturm: Entzünde drei Polarlichter mit dem Puls und erklimme die höchste Insel. Federpilze helfen beim Aufstieg."
-      ]
-    },
-    {
-      "t": "Welt 4: Sternenhimmel",
-      "steps": [
-        "Die zerbrochene Himmelsstraße: Zwei Schalter laden das Himmelstor. Ein Seitenweg verbirgt einen Bonusstern.",
-        "Der Orbitgarten: Lade drei Orbitplatten. Bewege dich mit den Inseln und achte auf den Sternenwind.",
-        "Die Sekunden der Zeit: Der frühe Uhrschalter startet 26 Sekunden. Überquere die beiden Zeitinseln bis zum Portal – nicht trödeln, der Lichtstrahl kurz vor dem Ziel kostet Zeit.",
-        "Der letzte Funke: Sichere drei Sternenflammen (Puls). Bröckelnde Wege und zwei Energiebahnen bewachen den letzten Funken.",
-        "Das Herz der Sterne: Endgegner, siehe nächster Abschnitt."
-      ]
-    },
-    {
-      "t": "Endgegner: Das Sternenherz",
-      "steps": [
-        "Sammle zuerst alle fünf Kristalle – vorher lässt sich das Herz nicht treffen („Sammle zuerst alle fünf Kristalle.“).",
-        "Geh zum Herz. Violett warnt 1,2 Sekunden vor einem Angriff: zum Sprung bereitmachen. Bei „JETZT SPRINGEN!“ springen.",
-        "Phase 1: Überspringe den wachsenden Ring.",
-        "Nach jedem Angriff leuchtet das Herz 3,2 sichere Sekunden blau. Geh bis auf etwa 2,5 Schritte heran und drücke einmal AKTION – die Säule musst du nicht direkt berühren.",
-        "Phase 2: Über den niedrigen Drehbalken springen oder seitlich ausweichen. Bei Blau AKTION.",
-        "Phase 3: Über den schnelleren Ring springen. Bei Blau AKTION.",
-        "Nach drei Treffern ist das Sternenherz gereinigt und das Portal öffnet sich. Danach: „Der Himmelskristall leuchtet wieder!“"
-      ]
-    },
-    {
-      "t": "Freischaltungen und Medaillen",
-      "list": [
-        "Jedes geschaffte Level schaltet das nächste frei (insgesamt 20).",
-        "Alle vier Figuren sind von Anfang an wählbar.",
-        "Pro Level gibt es 3 Bonussterne – insgesamt 60. Die Levelauswahl zeigt dein bestes Ergebnis.",
-        "Gold-Medaille: alle 3 Sterne, kein Treffer und kein Sturz in einem Durchgang. Silber: mindestens 2 Sterne. Bronze: geschafft.",
-        "Bestzeit und Anzahl der Durchgänge werden pro Level gespeichert."
-      ]
-    }
-  ],
-  "faq": [
-    { "q": "Das Portal leuchtet nicht.", "a": "Es öffnet sich erst, wenn alle fünf blauen Kristalle gesammelt und das Inselrätsel gelöst sind. Schau auf das Ziel oben – es sagt, was noch fehlt." },
-    { "q": "Mein Spielstand ist weg.", "a": "Ohne Anmeldung speichert Kiko nur in diesem Browser. Melde dich unter „☁ Google-Spielstand“ an, dann reist dein Fortschritt auf alle Geräte mit." },
-    { "q": "Kann ich die Tasten ändern?", "a": "Ja, in den Einstellungen unter „Tastatur“: Feld anklicken und die neue Taste drücken („Taste drücken …“)." },
-    { "q": "Die Kamera dreht zu schnell oder zu langsam.", "a": "Stelle in den Einstellungen die Kameraempfindlichkeit ein." },
-    { "q": "Gibt es das Spiel auch auf Englisch?", "a": "Ja. In den Einstellungen unter „Sprache“ auf English umstellen." },
-    { "q": "Das Spiel ruckelt.", "a": "Stelle die Grafikqualität auf „Niedrig“. Auf „Automatisch“ senkt das Spiel die Auflösung selbst, wenn es zu langsam läuft." }
-  ]
+  {
+   "t": "Start und Hauptmenü",
+   "list": [
+    "Spielen: startet das nächste offene Level, das du noch nicht geschafft hast. Beim allerersten Start erklärt dir das Spiel vorher kurz alles („Bereit für deine Reise?“).",
+    "Figur wählen: Kiko, Mira, Boro oder Lumi. Alle vier können jede Insel schaffen; du kannst auch in der Pause wechseln.",
+    "Levelauswahl: alle freigeschalteten Abenteuer, ☆ zeigt deine besten Bonussterne.",
+    "Einstellungen: Musiklautstärke, Effektlautstärke, Kameraempfindlichkeit, Grafikqualität (Automatisch, Niedrig, Hoch), Sprache (Deutsch/English), Tastenbelegung, Vollbild und „Spielstand zurücksetzen“.",
+    "Spielanleitung: Abenteuer-Anleitung mit Kapiteln (Mission, Steuerung, Fähigkeiten und Hindernisse, Insel-Tagebuch).",
+    "Über das Spiel und der Bereich „☁ Google-Spielstand“."
+   ]
+  },
+  {
+   "t": "Spielablauf und Regeln",
+   "list": [
+    "Kompass und Ziel: Oben steht immer das nächste Ziel, z. B. „Blaue Kristalle sammeln · 2/5“, mit Pfeil und Entfernung. Liegt das Ziel weiter weg, führt dich der Kompass Insel für Insel („Weg: …“).",
+    "Herzen: Du hast drei. Gegner, Lichtstrahlen, Angriffe und Stürze kosten je ein Herz; danach bist du kurz unverwundbar. Nach einem Sturz kommst du auf sicheren Boden zurück.",
+    "Bonussterne: Jeder der drei goldenen Sterne füllt ein Herz auf und bringt Punkte.",
+    "Checkpoint: Etwa in der Mitte jedes Levels steht ein goldener Checkpoint. Er füllt alle Herzen auf und speichert die Rückkehrposition für diesen Versuch.",
+    "Drei Herzen verloren: „Kiko braucht eine Pause“ – am Checkpoint neu starten, das Level neu starten oder zur Levelauswahl.",
+    "Pause: Fortsetzen, Level neu starten, Figur wechseln, Anleitung, Einstellungen, Hauptmenü."
+   ]
+  },
+  {
+   "t": "Die Inselrätsel",
+   "list": [
+    "Keins: Kristalle sammeln und ins Portal.",
+    "Brückenschalter: hingehen und AKTION drücken.",
+    "Schlüssel: den goldenen Schlüssel finden – er öffnet das Tor.",
+    "Zwei Schalter: beide Schalter mit AKTION aktivieren.",
+    "Lichtsteine: in der Reihenfolge 1 → 2 → 3 aktivieren. Ein falscher Stein setzt alles zurück („Falsche Reihenfolge. Beginne bei 1.“).",
+    "Sternenplatten: kurz (etwa eine halbe Sekunde) stehen bleiben, bis die Platte dauerhaft geladen ist.",
+    "Leuchtfeuer: in der Nähe den Sternenpuls auslösen (AKTION) – das entzündet sie.",
+    "Uhrschalter: AKTION startet ein Zeitfenster (18 bzw. 26 Sekunden), in dem das Tor zum Portal offen ist. Läuft es ab, einfach den Uhrschalter erneut starten.",
+    "Sternenherz (Endgegner): siehe Lösungsbuch."
+   ]
+  },
+  {
+   "t": "Hindernisse und Hilfen",
+   "list": [
+    "Schattenhüpfer: Lande von oben auf ihnen, dann federst du ab und betäubst sie. Oder Sternenpuls.",
+    "Fliegende Schatten: nur mit dem Sternenpuls betäuben oder ausweichen.",
+    "Sternenpuls (AKTION ohne Objekt in der Nähe): betäubt nahe Schattenwesen 3,5 Sekunden lang, lädt danach je nach Figur 2,5 bis 3,3 Sekunden auf.",
+    "Bewegliche Inseln tragen dich mit.",
+    "Bröckelnde Inseln fallen 1,5 Sekunden nach dem Betreten weg und kehren nach 3 Sekunden zurück. Orange Blinken warnt vor verschwindenden Inseln.",
+    "Zeitinseln werden abwechselnd fest und durchlässig – warte, bis sie fest sind.",
+    "Rosa Federpilze schleudern dich automatisch hoch nach oben.",
+    "Windfahnen zeigen Böen an – lenke gegen den Wind.",
+    "Magentafarbene Lichtstrahlen bewegen sich – überspringe sie.",
+    "Eis (Frosthöhen): Du rutschst weiter. Schneebälle rollen auf dich zu."
+   ]
+  },
+  {
+   "t": "Die vier Figuren",
+   "list": [
+    "Kiko: der ausgeglichene Sternenwächter. Sein Sternenpuls erreicht besonders weit; Aufladezeit 3 Sekunden.",
+    "Mira: die mutige Mondhüterin springt höher; Puls kleiner, Aufladezeit 3 Sekunden.",
+    "Boro: gemütlicher Felsenfreund. Ein Schutzschild fängt pro Level einen Gegnertreffer ab (nicht bei Stürzen); Aufladezeit 3,3 Sekunden.",
+    "Lumi: die flinke Morgenbotin läuft schneller und lädt ihren Sternenpuls früher wieder auf (2,5 Sekunden)."
+   ]
+  },
+  {
+   "t": "Bedienung",
+   "list": [
+    "Die Bewegung richtet sich nach der Kamera: Rechts bewegt dich zur rechten Seite des Bildes.",
+    "Tastatur und Maus: WASD oder Pfeiltasten bewegen, Leertaste springt, E betätigt Objekte oder löst einen Puls aus, Maus ziehen dreht die Kamera, Esc pausiert. Bewegung, Springen und Interagieren lassen sich in den Einstellungen neu belegen.",
+    "Smartphone und Tablet: linker Joystick laufen. Halte ihn bei einer Lücke nach vorn und tippe auf SPRUNG. AKTION betätigt nahe Objekte oder löst einen Puls aus. Rechts wischen dreht die Kamera. Im Querformat siehst du mehr vom Weg. Ⅱ oben pausiert.",
+    "Gamepad: linker Stick laufen, rechter Stick Kamera, A springen, X Aktion, Start Pause. Lass die Sprungtaste los, bevor du erneut springst."
+   ]
+  },
+  {
+   "t": "Punkte, Medaillen und Speichern",
+   "list": [
+    "Kristall: 100 Punkte. Sammelst du den nächsten innerhalb von 6 Sekunden, gibt es +25 bzw. +50 Kettenbonus.",
+    "Bonusstern: 50 Punkte. Sprungtreffer auf einen Hüpfer: 40 Punkte. Mit dem Puls betäubtes Schattenwesen: 10 Punkte.",
+    "Medaillen: Gold für drei Sterne ohne Schaden und ohne Sturz, Silber für mindestens zwei Sterne, sonst Bronze.",
+    "Gespeichert werden freigeschaltete Level, beste Sterne, Bestpunkte, Medaillen, Bestzeiten, Figur, Tastenbelegung und Einstellungen – automatisch im Browser, mit „☁ Google-Spielstand“ auch auf allen Geräten."
+   ]
+  }
+ ],
+ "ratgeber": [
+  {
+   "t": "Tipps für Einsteiger",
+   "list": [
+    "Folge dem Kompass – er kennt den Weg zu jedem Kristall und Schalter.",
+    "Springe kurz vor der Kante einer Lücke und halte die Richtung dabei gedrückt.",
+    "Spiele im Querformat, dann siehst du mehr vom Weg.",
+    "Erreiche zuerst den Checkpoint. Danach kostet ein Fehler nur den Weg ab der Mitte."
+   ]
+  },
+  {
+   "t": "Strategien für Fortgeschrittene",
+   "list": [
+    "Hol die Bonussterne erst, wenn dir Herzen fehlen – sie heilen ein Herz.",
+    "Auf Schattenhüpfer von oben springen: Das gibt 40 Punkte und spart den Puls.",
+    "Vor Leuchtfeuern prüfen, ob der Puls geladen ist („Sternenpuls bereit“ statt „Puls lädt“).",
+    "Bei Uhrschaltern den Weg zum Portal vorher anschauen und erst dann starten.",
+    "Auf bröckelnden Inseln nie stehen bleiben – 1,5 Sekunden sind schnell vorbei."
+   ]
+  },
+  {
+   "t": "Die richtige Figur",
+   "list": [
+    "Für Leuchtfeuer-Level (Glocken der Sonne, Auroraturm, Letzter Funke) ist Kiko mit dem weitesten Puls bequem.",
+    "Für hohe Stufen und Lücken springt Mira am höchsten.",
+    "Für die Gold-Medaille ohne Schaden hilft Boros Schild – es fängt einen Gegnertreffer pro Level ab.",
+    "Lumi läuft am schnellsten – gut für Uhrschalter-Level und Bestzeiten."
+   ]
+  },
+  {
+   "t": "Häufige Fehler",
+   "list": [
+    "Bei Lichtsteinen die Reihenfolge verwechseln – dann beginnt alles bei 1.",
+    "Sternenplatten nur überlaufen: Du musst kurz stehen bleiben.",
+    "Im Wind nicht gegenlenken und von der Insel geweht werden.",
+    "Auf Eis zu spät bremsen – du rutschst weiter.",
+    "Die Sprungtaste gedrückt halten: Lass sie los, bevor du erneut springst."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "Welt 1: Sonnenwiesen",
+   "steps": [
+    "Das erste Sternenlicht: Sammle fünf Kristalle, lerne den Sprung und betrete das grüne Portal. Beim ersten Mal gibt es drei Tipps (laufen, Kristall, springen).",
+    "Die vergessene Brücke: Aktiviere den Brückenschalter auf der mittleren Insel. Ein Schattenhüpfer und eine bewegliche Insel.",
+    "Der Windmühlenpfad: Stehe auf allen drei Sonnenplatten. Halte im Wind gegen (zwei Windinseln in entgegengesetzter Richtung).",
+    "Die Wasserfall-Kaskaden: Finde den Wasserfallschlüssel. Die Federpilze geben dir einen hohen Sprung; eine Zeitinsel kurz vor dem Ziel.",
+    "Die Glocken der Sonne: Entzünde die drei Sonnenglocken mit dem Sternenpuls. Überspringe den Lichtstrahl."
+   ]
+  },
+  {
+   "t": "Welt 2: Glitzerwald",
+   "steps": [
+    "Der tanzende Wald: Springe über die großen Pilze. Ein Bonusstern wartet auf einer Seiteninsel.",
+    "Das Rätsel der Lichtsteine: Aktiviere die Lichtsteine in der Reihenfolge 1 → 2 → 3.",
+    "Das Laternenlabyrinth: Lade drei Laternenplatten durch kurzes Stehenbleiben. Bröckelnde Inseln nicht zu lange belasten.",
+    "Die fliegende Pilzpost: Öffne beide Poststationen. Federpilze, Seitenwege und ein Windkorridor begleiten die Lieferung.",
+    "Die Nachtwache: Sammle die Splitter. Der Uhrschalter öffnet das Tor für 18 Sekunden. Lichtstrahl und Zeitinsel liegen auf dem Weg."
+   ]
+  },
+  {
+   "t": "Welt 3: Frosthöhen",
+   "steps": [
+    "Der eisige Aufstieg: Auf Eis rutschst du weiter. Weiche dem Schneeball aus und nutze den Checkpoint.",
+    "Die Kristallhöhle: Finde den goldenen Schlüssel und warte vor der Zeitplattform.",
+    "Das Frostpendel: Aktiviere zwei Frostschalter. Überspringe pendelnde Lichtstrahlen und warte auf feste Eisbrücken. Der Checkpoint liegt hier schon auf der zweiten Insel.",
+    "Die Eisschollenflucht: Sichere drei Eissiegel. Auf bröckelnden Schollen rasch weiterlaufen und im Wind gegenlenken.",
+    "Der Auroraturm: Entzünde drei Polarlichter mit dem Puls und erklimme die höchste Insel. Federpilze helfen beim Aufstieg."
+   ]
+  },
+  {
+   "t": "Welt 4: Sternenhimmel",
+   "steps": [
+    "Die zerbrochene Himmelsstraße: Zwei Schalter laden das Himmelstor. Ein Seitenweg verbirgt einen Bonusstern.",
+    "Der Orbitgarten: Lade drei Orbitplatten. Bewege dich mit den Inseln und achte auf den Sternenwind.",
+    "Die Sekunden der Zeit: Der frühe Uhrschalter startet 26 Sekunden. Überquere die beiden Zeitinseln bis zum Portal – nicht trödeln, der Lichtstrahl kurz vor dem Ziel kostet Zeit.",
+    "Der letzte Funke: Sichere drei Sternenflammen (Puls). Bröckelnde Wege und zwei Energiebahnen bewachen den letzten Funken.",
+    "Das Herz der Sterne: Endgegner, siehe nächster Abschnitt."
+   ]
+  },
+  {
+   "t": "Endgegner: Das Sternenherz",
+   "steps": [
+    "Sammle zuerst alle fünf Kristalle – vorher lässt sich das Herz nicht treffen („Sammle zuerst alle fünf Kristalle.“).",
+    "Geh zum Herz. Violett warnt 1,2 Sekunden vor einem Angriff: zum Sprung bereitmachen. Bei „JETZT SPRINGEN!“ springen.",
+    "Phase 1: Überspringe den wachsenden Ring.",
+    "Nach jedem Angriff leuchtet das Herz 3,2 sichere Sekunden blau. Geh bis auf etwa 2,5 Schritte heran und drücke einmal AKTION – die Säule musst du nicht direkt berühren.",
+    "Phase 2: Über den niedrigen Drehbalken springen oder seitlich ausweichen. Bei Blau AKTION.",
+    "Phase 3: Über den schnelleren Ring springen. Bei Blau AKTION.",
+    "Nach drei Treffern ist das Sternenherz gereinigt und das Portal öffnet sich. Danach: „Der Himmelskristall leuchtet wieder!“"
+   ]
+  },
+  {
+   "t": "Freischaltungen und Medaillen",
+   "list": [
+    "Jedes geschaffte Level schaltet das nächste frei (insgesamt 20).",
+    "Alle vier Figuren sind von Anfang an wählbar.",
+    "Pro Level gibt es 3 Bonussterne – insgesamt 60. Die Levelauswahl zeigt dein bestes Ergebnis.",
+    "Gold-Medaille: alle 3 Sterne, kein Treffer und kein Sturz in einem Durchgang. Silber: mindestens 2 Sterne. Bronze: geschafft.",
+    "Bestzeit und Anzahl der Durchgänge werden pro Level gespeichert."
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Das Portal leuchtet nicht.",
+   "a": "Es öffnet sich erst, wenn alle fünf blauen Kristalle gesammelt und das Inselrätsel gelöst sind. Schau auf das Ziel oben – es sagt, was noch fehlt."
+  },
+  {
+   "q": "Mein Spielstand ist weg.",
+   "a": "Ohne Anmeldung speichert Kiko nur in diesem Browser. Melde dich unter „☁ Google-Spielstand“ an, dann reist dein Fortschritt auf alle Geräte mit."
+  },
+  {
+   "q": "Kann ich die Tasten ändern?",
+   "a": "Ja, in den Einstellungen unter „Tastatur“: Feld anklicken und die neue Taste drücken („Taste drücken …“)."
+  },
+  {
+   "q": "Die Kamera dreht zu schnell oder zu langsam.",
+   "a": "Stelle in den Einstellungen die Kameraempfindlichkeit ein."
+  },
+  {
+   "q": "Gibt es das Spiel auch auf Englisch?",
+   "a": "Ja. In den Einstellungen unter „Sprache“ auf English umstellen."
+  },
+  {
+   "q": "Das Spiel ruckelt.",
+   "a": "Stelle die Grafikqualität auf „Niedrig“. Auf „Automatisch“ senkt das Spiel die Auflösung selbst, wenn es zu langsam läuft."
+  }
+ ]
 }

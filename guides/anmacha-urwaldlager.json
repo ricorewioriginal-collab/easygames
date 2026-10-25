@@ -1,0 +1,233 @@
+{
+  "id": "anmacha-urwaldlager",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Urwaldlager – Die große Wildnis-Show ist ein begehbares 3D-Dschungelcamp. Du ziehst mit erfundenen Mitcampern ins Lager, hältst das Camp am Laufen, pflegst Beziehungen und bestehst Prüfungen. Jeden Abend entscheidet ein simuliertes Publikum, wer gehen muss – am letzten Tag spielen die drei Finalisten das große Finale und der Champion bekommt die Lianenkrone.",
+        "Alle Figuren, Namen und Moderationen (Kiki Klack und Boris Busch) sind frei erfunden, alle Tiere sind virtuell oder Requisiten, und das Publikum ist ausdrücklich nur eine Simulation."
+      ]
+    },
+    {
+      "t": "Hauptmenü",
+      "list": [
+        "▶ Weiterspielen: setzt die gespeicherte Staffel fort (mit Tag, Name und Stand).",
+        "🌴 Neue Staffel: Figur bauen und Staffel einstellen.",
+        "⭐ Prüfungs-Arena: jede Prüfung einzeln üben (Leicht, Normal, Schwer), Bestwerte werden gespeichert – auch das große Finale.",
+        "⚙️ Einstellungen: Grafikqualität (Auto, Niedrig, Mittel, Hoch), Ton, Lautstärke von Effekten und Dschungel-Ambiente, Kamera-Empfindlichkeit, Kamera vertikal umkehren, Maus fangen, Tipps an/aus, Größe der Touch-Tasten, Spieltempo und Vollbild.",
+        "📖 Anleitung: Steuerung, Camp-Leben, Staffelablauf und Prüfungen im Überblick."
+      ]
+    },
+    {
+      "t": "Neue Staffel einrichten",
+      "list": [
+        "Dein Name und dein Aussehen (Haut, Haare, Frisur, Shirt).",
+        "Typ: 🦁 Mutprobe-Held (Brücken und Höhen liegen dir), 🦈 Magen aus Stahl (Ekel-Prüfungen), 🦉 Schlaukopf (Nerven und Gedächtnis) oder 💖 Publikumsliebling (startet mit mehr Sympathie).",
+        "Staffel-Länge: Kurz (6 Camper, 5 Tage), Normal (8 Camper, 7 Tage) oder Lang (12 Camper, 11 Tage).",
+        "Schwierigkeit der Prüfungen: 🙂 Leicht, 😬 Normal, 🔥 Schwer – auf Schwer sind die Zeitlimits deutlich kürzer.",
+        "Prüfungs-Modus: ⭐ Täglich antreten (empfohlen) – du spielst jeden Tag selbst, das Publikum wählt deine Begleitung. Oder 📺 Publikum nominiert – das Publikum schickt, wen es leiden sehen will; manchmal dich, manchmal andere (deren Ergebnis wird simuliert).",
+        "Mitcamper: Wähle bis zu 5, 7 oder 11 aus Tina Tornado, Dr. Bernd Brummel, Mandy Möhre, Kalle Kranich, Gisela Glanz, Ace Aksoy, Lilo Lindner, Dschörg Dreher, Sunny Sonnleitner, Rocco Rüstig, Nele Nebel und Prinz Egon. Der Rest wird ausgelost (🎲 Zufällige Besetzung).",
+        "„Ab in den Dschungel ▶“ startet die Staffel."
+      ]
+    },
+    {
+      "t": "Ein Tag im Camp",
+      "steps": [
+        "Morgens verkündet die Buschtrommel die Prüfung des Tages – um 10 Uhr am Prüfungstor im Süden.",
+        "Tagsüber hältst du das Camp am Laufen: Holz, Wasser, Feuer, Essen. Mitcamper sprechen dich an, es passieren Überraschungen.",
+        "Abends wird am Feuer gekocht und gegessen. Ab Tag 2 ruft die Abendrunde zum Moderationsfelsen im Westen: Dort muss jemand das Camp verlassen.",
+        "Ab 21:30 Uhr kannst du im Bett schlafen gehen. Bleibst du zu lange wach, schläfst du irgendwann vor Erschöpfung im Stehen ein.",
+        "Am letzten Tag ist Finaltag: Die drei Finalisten spielen die große Urwald-Krone, abends wird der Champion gekürt."
+      ],
+      "p": [
+        "Bei normalem Spieltempo dauert ein Camp-Tag etwa 12 Minuten. Bei Pflichtterminen (Prüfung, Abendrunde) wartet die Uhr auf dich."
+      ]
+    },
+    {
+      "t": "Camp-Leben: Bedürfnisse und Vorräte",
+      "list": [
+        "Hunger, Energie und Laune sinken mit der Zeit. Bist du müde oder hungrig, werden die Prüfungen schwerer (Hinweis „erschöpft“).",
+        "Holz: 🪵 Äste im Dschungel aufheben, „Holz auf den Stapel“ legen und mit „Holz ins Feuer legen“ bzw. „Feuer schüren“ das Lagerfeuer füttern. Ohne Feuer frieren alle nachts und schlafen schlechter.",
+        "Wasser: 🪣 Eimer am Fass nehmen, an der Lagune Wasser schöpfen und „Wasser ins Fass gießen“. Ohne Wasser kein Essen; auch tagsüber wird getrunken.",
+        "Essen: 🍌 Früchte pflücken und mit Q essen (+14 Sattheit). Abends „🍳 Abendessen kochen“ – je mehr Prüfungssterne der Tag gebracht hat, desto besser die Zutaten. Danach „🍲 Essen nehmen“. Kocht niemand, gibt es nur kalten Reis und schlechte Laune.",
+        "Kochen ist ein Minispiel: Hitze im grünen Bereich halten (Leertaste bzw. „Anfachen“), rühren (Maus kreisen oder A/D abwechselnd, am Handy im Kreis wischen) und Zutaten in den Topf ziehen (oder 1–4).",
+        "Erholen: 😴 Schlafen gehen, 💤 Nickerchen (1 Stunde, +14 Energie), 😌 Hängematte, 🌊 Frisch machen an der Lagune (+Stimmung, +Energie).",
+        "🎥 Plauderhöhle: Video-Tagebuch aufnehmen – bringt Unterhaltung fürs Publikum. 🔥 Lagerfeuer-Runde am Abend stärkt den Teamgeist."
+      ]
+    },
+    {
+      "t": "Mitcamper und Gespräche",
+      "p": [
+        "Die Mitcamper haben Persönlichkeiten (Diva, Kumpel, Stratege, Clown, Sensibel, Tough) und eigene Tagesabläufe. Sie arbeiten oder faulenzen, kochen, quatschen, streiten und schließen Freundschaften. Gehst du zu ihnen und drückst E, kannst du wählen:"
+      ],
+      "list": [
+        "💬 Plaudern, 😂 Witz erzählen (gut fürs Publikum), 🌸 Kompliment, 🤝 Hilfe anbieten.",
+        "🤫 Über jemanden lästern – riskant, es kann sich herumsprechen und später zur Konfrontation führen.",
+        "🛡️ Bündnis vorschlagen – erst ab Beziehung 40.",
+        "😤 Zur Rede stellen (Faulheit ansprechen), 🫂 Trösten (wenn jemand traurig ist), 🍌 Essen teilen, 🔥 Zum Lagerfeuer einladen (Geheimauftrag), 🙏 Entschuldigen (für das Lästern).",
+        "Mitcamper sprechen dich auch selbst an – mit Bitten („Du, kannst du mir helfen?“), Camp-Momenten mit drei Antworten oder Konfrontationen („Wir müssen reden!“). Antworten wählst du mit 1–4 oder Antippen."
+      ]
+    },
+    {
+      "t": "Das simulierte Publikum",
+      "list": [
+        "Jeder Camper hat drei Werte: Sympathie, Leistung und Unterhaltung. Die Publikumsgunst ist Sympathie × 45 % + Leistung × 25 % + Unterhaltung × 30 %.",
+        "Jede Änderung steht mit Grund in der Buschtrommel-Übersicht (Tab bzw. 🥁).",
+        "Prüfungen verändern vor allem die Leistung: Viele Sterne bringen viel, wenige Sterne kosten Leistung. Ein Abbruch mit „🔔 Raus“ kostet Sympathie, bringt aber etwas Unterhaltung.",
+        "In der Abendrunde muss gehen, wer die niedrigste Gunst hat (mit kleinem Zufall). Erst werden die Sicheren verkündet, dann bleiben zwei übrig.",
+        "Über Nacht gleichen sich die Werte etwas in Richtung Mitte an.",
+        "Fliegst du raus, läuft die restliche Staffel vereinfacht simuliert weiter und du siehst den Staffel-Rückblick und deinen Platz."
+      ]
+    },
+    {
+      "t": "Prüfungen allgemein",
+      "list": [
+        "Jede Prüfung erklärt vor dem Start ihre Steuerung, getrennt für PC und Touch. Eine Staffel-Prüfung bringt bis zu 6 Sterne.",
+        "Oben siehst du Zeit, Sterne und gegebenenfalls Anzeigen wie Ekel-Meter, Luft oder Strecke.",
+        "Mit „🔔 Raus“ kannst du jederzeit abbrechen („Urwald, ich will raus!“) – die Sterne bis dahin zählen. ❚❚ pausiert.",
+        "Die Prüfungen kommen in wechselnder Reihenfolge, jede Staffel mischt neu.",
+        "Das große Finale besteht aus drei Kurzfassungen hintereinander: 🧗 Der Höhenparcours, 🧩 Das Rätsel-Labyrinth und 🍽️ Das Ekel-Dinner, je bis zu 3 Sterne (insgesamt 9)."
+      ]
+    },
+    {
+      "t": "Bedienung im Camp",
+      "list": [
+        "PC: W A S D laufen, Shift rennen. Maus ziehen oder Klick ins Bild = umsehen (die Maus wird gefangen, Esc gibt sie frei), Mausrad = Zoom. E = Aktion (zeigt immer, was gerade geht), Q = Frucht essen, Tab = Buschtrommel-Übersicht, P oder Esc = Pause, 1–4 = Antworten im Gespräch.",
+        "Smartphone: links drücken und ziehen = virtueller Joystick (ganz außen = rennen), rechts wischen = umsehen. Die große grüne Kontext-Taste ist die Aktion, dazu die Taste Essen, 🥁 oben = Übersicht, ❚❚ = Pause. Am besten im Querformat und Vollbild.",
+        "Gamecontroller: linker Stick laufen, A = Aktion (E), X = Frucht essen (Q), Y = Übersicht (Tab), LT = rennen, B = Esc, Start = Pause. In Menüs wählen Steuerkreuz/Stick hoch und runter, A bestätigt, B geht zurück."
+      ]
+    },
+    {
+      "t": "Speichern",
+      "p": [
+        "Das Spiel speichert automatisch: beim Tagesbeginn, nach Prüfungen und Abendrunden, jede Minute und beim Verlassen der Seite. Nach dem Ende einer Staffel wird der Spielstand gelöscht, Bestwerte und Statistik (Staffeln, Siege, beste Platzierung, Sterne, Arena-Bestwerte) bleiben. Im Titel- und Pausenmenü kannst du dich mit Google anmelden und den Stand geräteübergreifend sichern."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Starte mit einer kurzen Staffel, Schwierigkeit Leicht und dem Modus „Täglich antreten“.",
+        "Üb neue Prüfungen zuerst in der Prüfungs-Arena – dort kostet ein Fehlschlag nichts.",
+        "Iss und schlaf rechtzeitig: Mit wenig Energie oder Hunger bist du in der Prüfung „erschöpft“, und sie wird schwerer.",
+        "Folge der Aktionsanzeige: E bzw. die grüne Taste zeigt immer, was du gerade tun kannst.",
+        "Auf schwachen Handys in den Einstellungen Grafik: Niedrig wählen."
+      ]
+    },
+    {
+      "t": "So gewinnst du das Publikum",
+      "list": [
+        "Sympathie zählt am meisten (45 %). Hilf mit, teile Essen, tröste, schlichte Streit und kümmere dich um Holz und Wasser.",
+        "Unterhaltung (30 %): Witze, Video-Tagebuch in der Plauderhöhle, mutige oder lustige Reaktionen in Camp-Momenten.",
+        "Leistung (25 %): Sterne in den Prüfungen. Viele Sterne zahlen sich doppelt aus – sie heben die Leistung und machen das Abendessen besser.",
+        "Lästern bringt kurzfristig Nähe, kann aber auffliegen. Wenn es passiert: entschuldigen.",
+        "Schau regelmäßig in die Buschtrommel-Übersicht, um zu sehen, was dir Punkte gebracht oder gekostet hat."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Kümmere dich morgens um Wasser und Holz, damit das Camp versorgt ist – das gibt dir abends Ruhe zum Kochen.",
+        "Bündnisse lohnen sich ab Beziehung 40. Gute Beziehungen machen Gespräche erfolgreicher.",
+        "Im Modus „Publikum nominiert“ kannst du nicht jeden Tag selbst punkten. Sammle dann umso mehr Sympathie und Unterhaltung im Camp.",
+        "Brich Prüfungen nur ab, wenn gar nichts mehr geht: Der Abbruch kostet Sympathie.",
+        "Für das Finale zählt die Publikumsgunst zu 75 % und die Finalsterne zu 25 %. Ein starkes Finale kann einen kleinen Rückstand ausgleichen, aber keinen großen."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Den Termin verpassen: Die Prüfung ist um 10 Uhr am Tor im Süden, die Abendrunde am Moderationsfelsen im Westen.",
+        "Kein Wasser im Fass – dann gibt es kein gutes Essen.",
+        "Das Feuer ausgehen lassen – nachts friert das ganze Camp.",
+        "Nur Prüfungen spielen und das Camp-Leben ignorieren: Sympathie zählt fast doppelt so viel wie Leistung."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Prüfungen 1 bis 6 (Zeitlimits für Leicht / Normal / Schwer)",
+      "list": [
+        "🌉 Die Wackelbrücke (Mut, 70 / 54 / 38 s): W/S gehen, A/D gegen die Neigung lehnen, Leertaste über fehlende Planken. 5 Sterne hängen an den Seilen – weit zur jeweiligen Seite lehnen, um sie zu greifen. Der 6. Stern wartet am Ende der Brücke. Ein Sturz ins Sicherungsnetz kostet Zeit.",
+        "🪲 Der Krabbeltunnel (Ekel, 128 / 102 / 76 s): In Ego-Sicht durch das Tunnel-Labyrinth kriechen. Gelbe Leuchtpfeile zeigen zu Sternen in den Seitengängen, weiße zum Ausgang (letzter Stern). C/Strg = flach machen unter Deckentieren, E = pusten verscheucht Tiere. Zu viel Gewimmel füllt das Ekel-Meter, dann gibt es Panik.",
+        "🔦 Die Dunkelkammer (Mut, 90 / 74 / 58 s): 6 goldene Amulette in Kisten, Körben, Töpfen und Wandlöchern ertasten (E halten vor einem Behälter). Die Lampe (Q oder E tippen) hat wenig Batterie – such Ersatzbatterien. Hör hin: Amulette klimpern, Schreck-Requisiten rasseln. Kopfhörer helfen.",
+        "🧗 Der Höhenparcours (Mut, 108 / 88 / 68 s): Pfähle, Balken, Gondeln, Netz und rollende Stämme. Der dunkle Schattenpunkt zeigt die Landestelle, Leertaste länger halten = höher springen. 5 Sterne liegen auf Nebenwegen, der 6. auf dem Ziel-Turm. Ein Absturz zieht dich zum Checkpoint zurück (+3 s).",
+        "🤿 Die Schlammlagune (Mut, 155 / 130 / 105 s): Muscheln und Amulette vom Grund holen – offen, unter Steinen (E halten), in Kisten und Höhlen. Ein Fund zählt erst auf dem Floß, das Netz fasst zwei. Leertaste = auftauchen, C/Shift = abtauchen. Luft leer = Notauftauchen, Netz weg. Blasen verraten Verstecke.",
+        "🏃 Der Schlamm-Parcours (Geschick): Du läufst von selbst. W/Shift sprinten, S bremsen, Leertaste springen, C ducken, an der Wand E halten zum Klettern. 5 Etappen: jede unter der Zielzeit bringt einen Stern (jede eingesammelte Fahne zieht 1,5 s ab), der 6. Stern im Ziel."
+      ]
+    },
+    {
+      "t": "Prüfungen 7 bis 12",
+      "list": [
+        "🗺️ Die Schatzsuche (Kopf, 172 / 142 / 112 s): Jeder Hinweis beschreibt ein Versteck anhand der Landmarken (Wasserfall, Brücke, Totempfahl, hohler Baum …). 1 Schritt = 1 Meter. Öffne mit M/Tab die Karte, geh zur Stelle und halte E zum Graben. Falsch graben kostet Zeit („Hier ist nur Wasser!“). Mehr Truhen = mehr Sterne.",
+        "🧩 Das Rätsel-Labyrinth (Kopf, 165 / 130 / 95 s): 5 Tempelräume – Hebel (schalten Tore um), Schiebesteine (auf die Druckplatten), Schlüssel (farbige Türen), Symboltür (die Tierfolge von den Wandbildern betreten; falsches Tier = −3 s, von vorn) und ein gemischter Raum. In jedem Raum ein Stern, der 6. am Ausgang. Steckt ein Stein fest: Q bzw. „↺ Neu“ setzt den Raum zurück.",
+        "🍽️ Das Ekel-Dinner (Ekel): 5 Gänge, je ein Stern: Sumpfsuppe (Löffel eintauchen und langsam zum Mund), Knusper-Käfer-Krokant (im Takt links/rechts kauen), Glibber-Augen-Gelee (zielen und zustechen), Stinkfrucht-Smoothie (halten = saugen, keine Stückchen), Schleimnudeln (kreisen, dann essen). Q halten = Durchatmen senkt den Würgreiz. Der 6. Stern ist der Bonus „eiserner Magen“: kein Würgeanfall, Würgreiz nie über 85 % und höchstens ein verpasster Gang.",
+        "🐒 Der Lianen-Schwung (Geschick, 95 / 80 / 65 s): A/D im Takt des Schwungs, Leertaste = loslassen, Greifen geht automatisch. Luftsterne erreichst du nur mit viel Schwung, der letzte Stern am anderen Ufer. Manche Lianen reißen, der Wind schiebt.",
+        "🗿 Der Totem-Turm (Geschick, 105 / 90 / 75 s): Laufkatze mit A/D fahren, Seil mit W/S kürzer oder länger, Leertaste lässt den Block los. 6 Höhenmarken – eine zählt erst, wenn der Turm stehen bleibt. Masken sind kopflastig, Keile haben wenig Auflage.",
+        "🏅 Der Dschungel-Dreikampf: Krabbelkiste (Sterne antippen, Krabbler meiden), Tierstimmen-Echo (Reihenfolge merken und nachspielen, 1–4) und Schleimbecken (halten = tauchen, Luft beachten). Jede Aufgabe bringt bis zu 2 Sterne."
+      ]
+    },
+    {
+      "t": "Das große Finale",
+      "steps": [
+        "Am letzten Tag spielen alle drei Finalisten. Du trittst nacheinander in Kurzfassungen an: Höhenparcours, Rätsel-Labyrinth, Ekel-Dinner – je bis zu 3 Sterne.",
+        "Die Computer-Finalisten werden je nach ihren Werten (Mut, Ekel, Kopf), Laune und Energie simuliert.",
+        "Abends zählt: Publikumsgunst × 75 % + Finalsterne-Anteil × 25 %. Wer vorn liegt, gewinnt die Lianenkrone.",
+        "Bereite dich vor: Am Vortag gut essen und früh schlafen, damit du nicht erschöpft ins Finale gehst. Üb das Finale in der Prüfungs-Arena (Bestwert bis 9 ★)."
+      ]
+    },
+    {
+      "t": "Überraschungen im Camp und die besten Reaktionen",
+      "list": [
+        "🐒 Ein frecher Affe klaut den Gewürzbeutel vom Kochplatz – schnapp ihn dir, bevor er im Dschungel verschwindet, sonst wird das Abendessen fade (schlechtere Qualität).",
+        "⛈️ Unwetter: Die Plane über den Schlafplätzen ist an zwei Stellen eingerissen – flick sie, bevor alles nass wird (nasse Betten erholen schlechter).",
+        "💥 Zoff im Camp: Zwei Mitcamper streiten am Holzstapel. Am meisten Sympathie (+4) bringt „🤝 Beide anhören und einen Arbeitsplan vorschlagen“. Partei ergreifen bringt Unterhaltung, kostet aber Sympathie; nur zuschauen bringt kaum etwas.",
+        "🐍 Schlange im Bett: nur aus Gummi – ein Mitcamper hat dich reingelegt. „😂 Mitlachen“ bringt Sympathie und eine bessere Beziehung, „😱 Theatralisch kreischen“ die meiste Unterhaltung, „😈 Sie heimlich zurücklegen“ Unterhaltung, aber etwas Beziehung. „😠 Beschweren“ kostet Sympathie und Beziehung.",
+        "🌙 Geraschel in der Nacht: Jemand nascht vom Notfall-Reis. Du entscheidest, ob du das Geheimnis bewahrst.",
+        "Dazu Heimweh-Momente und Geheimaufträge (z. B. jemanden zum Lagerfeuer einladen). Jede Staffel bringt pro Tag ab Tag 2 eine oder zwei Überraschungen."
+      ]
+    },
+    {
+      "t": "Schnell zum Champion",
+      "steps": [
+        "Typ Publikumsliebling wählen – du startest mit mehr Sympathie.",
+        "Jeden Tag: Wasser holen, Holz bringen, mit mindestens zwei Mitcampern freundlich reden (Plaudern, Witz, Hilfe).",
+        "In der Prüfung möglichst viele Sterne holen, nie abbrechen.",
+        "Abends kochen oder beim Kochen helfen und in die Plauderhöhle gehen (Unterhaltung).",
+        "Rechtzeitig schlafen, um mit voller Energie in die nächste Prüfung zu gehen.",
+        "Im Finale ruhig spielen – 75 % entscheidet ohnehin deine Gunst."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Mein Spielstand ist weg.",
+      "a": "Der Stand liegt im Browser (automatisch gespeichert). Gelöschte Website-Daten oder ein privates Fenster löschen ihn, und nach dem Staffelende wird er bewusst entfernt. Mit der Google-Sicherung im Titel- oder Pausenmenü kannst du ihn sichern."
+    },
+    {
+      "q": "Das Spiel ruckelt auf dem Handy.",
+      "a": "Stell in den Einstellungen Grafik auf Niedrig. Die Auflösung passt sich zusätzlich automatisch an, wenn es ruckelt."
+    },
+    {
+      "q": "Sind die Zuschauerstimmen echt?",
+      "a": "Nein. Das Publikum ist komplett simuliert, es gibt keine echten Zuschauer und keine echten Stimmen."
+    },
+    {
+      "q": "Wie breche ich eine Prüfung ab?",
+      "a": "Mit „🔔 Raus“ oben rechts. Die bis dahin gesammelten Sterne zählen, die Sympathie sinkt aber etwas."
+    },
+    {
+      "q": "Die Maus ist im Spiel gefangen.",
+      "a": "Drück Esc, dann ist die Maus frei. In den Einstellungen kannst du „Maus im Spiel fangen“ auch ausschalten."
+    },
+    {
+      "q": "Der Tag vergeht zu schnell oder zu langsam.",
+      "a": "In den Einstellungen unter Spieltempo: Gemütlich, Normal oder Schnell."
+    },
+    {
+      "q": "Gibt es Mehrspieler?",
+      "a": "Nein, Urwaldlager ist ein Einzelspieler-Spiel. Die Mitcamper werden vom Computer gesteuert."
+    }
+  ]
+}

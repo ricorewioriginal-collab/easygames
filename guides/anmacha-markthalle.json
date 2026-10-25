@@ -30,7 +30,7 @@
         "Kartons holen: Lauf zur Warenannahme (Rampe), ein Karton wird automatisch genommen. Der gelbe Wegweiser oben zeigt immer den nächsten Schritt.",
         "Regale einräumen: Geh zum markierten Regal, die Ware räumt sich Stück für Stück ein. Leere Kartons kommen in den ♻️ Altpapier-Container.",
         "Preise prüfen: unter „Preise“ oder per Tippen aufs Regal. Marktpreis plus 8 Prozent gilt als fair. Bleib kurz am Regal stehen, dann steckst du das Preisschild auf.",
-        "Laden öffnen: oben auf „LADEN ÖFFNEN“. Der Tag läuft von 8 bis 20 Uhr (laut Anleitung etwa 12 Minuten, mit 2× oder 4× schneller).",
+        "Laden öffnen: oben auf „LADEN ÖFFNEN“. Geöffnet ist von 8 bis 20 Uhr – bei Tempo 1× sind das rund 10 Minuten, mit 2× oder 4× schneller. Danach heißt es „Feierabend!“ und die letzten Kunden werden noch bedient.",
         "Kassieren: Stell dich hinter die Kasse und scanne die Artikel.",
         "Nachbestellen: Am Bestell-PC Ware in den Warenkorb legen – die Lieferung kommt morgen früh.",
         "Feierabend: Am Tagesende zeigt die Abrechnung Umsatz, Wareneinsatz, Kosten, verdorbene Ware, Diebstahl, Gewinn, die Top-Artikel und erfüllte Ziele."
@@ -42,7 +42,7 @@
         "Scannen: Stell dich auf das Feld hinter der Kasse. Jeder Artikel auf dem Band wird mit E (oder dem gelben Knopf) gescannt, gedrückt halten scannt schnell.",
         "Barzahlung: Der Kunde gibt einen Schein. Rückgeld = Gegeben minus Summe. Passend gibt 3 Prozent Trinkgeld, zu viel kostet dich Geld, zu wenig ärgert den Kunden.",
         "Kartenzahlung: Betrag vom Kassen-Display ohne Komma ins Terminal tippen (1249 für 12,49 €) und bestätigen.",
-        "Ausweis: Bier, Radler und Wein gibt es ab 16, Sekt, Likör und Korn ab 18. Rechne das Alter nach und achte auf Hologramm, Foto und Druck. Richtig abgelehnte Minderjährige bringen Ruf.",
+        "Ausweis: Bier, Radler und Wein gibt es ab 16, Sekt, Likör und Korn ab 18. Rechne das Alter nach und achte auf Hologramm, Foto und Druck. Richtig abgelehnte Minderjährige bringen Ruf. Alkohol an Minderjährige kostet 500 € Bußgeld und Ruf, einen Erwachsenen zu Unrecht abzulehnen ärgert ihn.",
         "Automatisch: Das Kassensystem rechnet Rückgeld und Kartenbetrag selbst, der Alterscheck-Scanner prüft Ausweise, Kassenkräfte übernehmen die Kasse ganz."
       ]
     },
@@ -53,7 +53,7 @@
         "Kunden kaufen bis zu einer Schmerzgrenze über dem Marktpreis. Darüber lassen sie Ware zunehmend liegen („💸“). Sparfüchse vergleichen immer mit Billigo, andere manchmal.",
         "Ohne Preisschild greifen viele Kunden nicht zu. Änderst du einen Preis, ist das Schild veraltet und muss neu aufgesteckt werden – „Mein Laden“ warnt dich.",
         "Unter „Preise“ setzt „Billigo unterbieten“ alle Preise knapp darunter, aber nie unter den Einkaufspreis.",
-        "Der Ruf (Sterne) steigt mit zufriedenen Kunden, ausgelieferten Vorbestellungen und Jugendschutz. Leere Regale, Pfützen, lange Schlangen und verpasste Vorbestellungen schaden. Bewertungen erscheinen in der Liste der Kundenmeinungen; Influencerinnen und Testerinnen wirken besonders stark auf den Online-Hype."
+        "Der Ruf (Sterne) folgt der Zufriedenheit deiner Kunden. Die setzt sich zusammen aus: alles Gesuchte gefunden (am wichtigsten), kurze Wartezeit an der Kasse, faire Preise, Sauberkeit und Laune. Ausgelieferte Vorbestellungen und richtig abgelehnte Minderjährige bringen Ruf, verpasste Vorbestellungen, Diebe, falsches Rückgeld und zu langsames Kassieren kosten Ruf. Bewertungen erscheinen in der Liste der Kundenmeinungen; Influencerinnen und Testerinnen wirken besonders stark auf den Online-Hype."
       ]
     },
     {
@@ -153,15 +153,15 @@
         "Stufe 3: 🥫 Konserven & Gewürze – 500 €",
         "Stufe 3: 🧻 Haushalt – 700 €",
         "Stufe 4: 🧊 Tiefkühl – 900 €",
-        "Stufe 5: 🥩 Fleisch & Wurst – 1200 €",
-        "Stufe 5: 🍷 Bier, Wein & Spirituosen (ab 16/18) – 1800 €",
-        "Stufe 6: 🌱 Bio & Regional – 1400 €",
-        "Stufe 6: 🧼 Drogerie – 1500 €",
-        "Stufe 7: 🐾 Tierbedarf – 1600 €",
-        "Stufe 7: 🧸 Spielzeug & Hobby – 1800 €",
-        "Stufe 8: ☂️ Saison & Wetter – 2000 €",
-        "Stufe 8: 🔌 Elektro & Technik – 2500 €",
-        "Stufe 9: 🌻 Garten & Heimwerken – 2200 €"
+        "Stufe 5: 🥩 Fleisch & Wurst – 1.200 €",
+        "Stufe 5: 🍷 Bier, Wein & Spirituosen (ab 16/18) – 1.800 €",
+        "Stufe 6: 🌱 Bio & Regional – 1.400 €",
+        "Stufe 6: 🧼 Drogerie – 1.500 €",
+        "Stufe 7: 🐾 Tierbedarf – 1.600 €",
+        "Stufe 7: 🧸 Spielzeug & Hobby – 1.800 €",
+        "Stufe 8: ☂️ Saison & Wetter – 2.000 €",
+        "Stufe 8: 🔌 Elektro & Technik – 2.500 €",
+        "Stufe 9: 🌻 Garten & Heimwerken – 2.200 €"
       ]
     },
     {
@@ -174,24 +174,24 @@
         "Stufe 3: 📱 Bestell-App – 800 €: Du bestellst von überall im Laden, ohne zum Bestell-PC zu gehen.",
         "Stufe 4: 📹 Kameras – 800 €: Diebe werden mit 🚨 markiert, Wachmänner sehen sie schon aus 16 Feldern.",
         "Stufe 4: 🌬️ Klimaanlage – 900 €: Kunden bleiben länger zufrieden, Strom +€3/Tag.",
-        "Stufe 4: 🧾 Kassensystem – 1800 €: Berechnet Wechselgeld und Kartenbetrag automatisch – kein Kopfrechnen und Tippen an der Kasse.",
-        "Stufe 5: 🚁 Express-Drohne – 1000 €: Bestellungen kommen in 40 Sekunden (+25 % Gebühr).",
-        "Stufe 5: 📚 Regal-Plus – 1200 €: +25 % Fassungsvermögen aller Regale.",
-        "Stufe 5: 🪪 Alterscheck-Scanner – 1200 €: Prüft Ausweise automatisch: erkennt Fälschungen, Jugendschutz ohne Kopfrechnen.",
-        "Stufe 5: 🚪 Automatik-Schiebetür – 2500 €: Die Tür öffnet von selbst. +3 % Kundschaft.",
-        "Stufe 6: 🔋 Notstrom – 1100 €: Stromausfälle verderben nichts mehr.",
-        "Stufe 7: 🅿️ Parkplatz – 5000 €: Parkplätze vor dem Laden. +6 % Kundschaft.",
-        "Stufe 8: 🔁 Nachbestell-Regeln – 1400 €: Schaltet am Bestell-PC Regeln frei: Der PC bestellt Waren automatisch nach."
+        "Stufe 4: 🧾 Kassensystem – 1.800 €: Berechnet Wechselgeld und Kartenbetrag automatisch – kein Kopfrechnen und Tippen an der Kasse.",
+        "Stufe 5: 🚁 Express-Drohne – 1.000 €: Bestellungen kommen in 40 Sekunden (+25 % Gebühr).",
+        "Stufe 5: 📚 Regal-Plus – 1.200 €: +25 % Fassungsvermögen aller Regale.",
+        "Stufe 5: 🪪 Alterscheck-Scanner – 1.200 €: Prüft Ausweise automatisch: erkennt Fälschungen, Jugendschutz ohne Kopfrechnen.",
+        "Stufe 5: 🚪 Automatik-Schiebetür – 2.500 €: Die Tür öffnet von selbst. +3 % Kundschaft.",
+        "Stufe 6: 🔋 Notstrom – 1.100 €: Stromausfälle verderben nichts mehr.",
+        "Stufe 7: 🅿️ Parkplatz – 5.000 €: Parkplätze vor dem Laden. +6 % Kundschaft.",
+        "Stufe 8: 🔁 Nachbestell-Regeln – 1.400 €: Schaltet am Bestell-PC Regeln frei: Der PC bestellt Waren automatisch nach."
       ]
     },
     {
       "t": "Anbau und Bodenbeläge",
       "list": [
-        "Laden (22×14 Felder) ab Stufe 3 für 1500 €",
-        "Markt (26×16 Felder) ab Stufe 6 für 4000 €",
-        "Supermarkt (30×18 Felder) ab Stufe 10 für 9000 €",
-        "Großmarkt (36×20 Felder) ab Stufe 14 für 20000 €",
-        "Hypermarkt (42×22 Felder) ab Stufe 18 für 45000 €",
+        "Laden (22×14 Felder) ab Stufe 3 für 1.500 €",
+        "Markt (26×16 Felder) ab Stufe 6 für 4.000 €",
+        "Supermarkt (30×18 Felder) ab Stufe 10 für 9.000 €",
+        "Großmarkt (36×20 Felder) ab Stufe 14 für 20.000 €",
+        "Hypermarkt (42×22 Felder) ab Stufe 18 für 45.000 €",
         "Bodenbeläge: Fliesen (Start), Parkett ab Stufe 4 für 1.800 € (+3 Prozent Kundschaft), Marmor ab Stufe 9 für 6.000 € (+6 Prozent)."
       ]
     },
@@ -232,7 +232,7 @@
         "🧹 Reinigungskraft (ab Stufe 3): 35 € Lohn pro Tag – Wischt Pfützen & Chaos weg.",
         "💂 Wachmann (ab Stufe 5): 50 € Lohn pro Tag – Schreckt Ladendiebe ab.",
         "🧑‍🍳 Bäckerin (ab Stufe 4): 55 € Lohn pro Tag – Backt tagsüber frische Ware in der Backstation nach.",
-        "🤖 Regalbot (ab Stufe 7): einmalig 1500 €, kein Lohn – Füllt tagsüber leise Regale. Kein Lohn, nur Strom."
+        "🤖 Regalbot (ab Stufe 7): einmalig 1.500 €, kein Lohn – Füllt tagsüber leise Regale. Kein Lohn, nur Strom."
       ]
     },
     {
@@ -242,7 +242,7 @@
         "🎒 Student: akzeptiert bis 5 % über Marktpreis, mag besonders Snacks & Süßes, Getränke, Tiefkühl, Musik Rock",
         "👵 Senior: akzeptiert bis 10 % über Marktpreis, mag besonders Backwaren, Presse & Hefte, Frische & Kühlung, Musik Schlager",
         "💼 Berufstätige: akzeptiert bis 25 % über Marktpreis, mag besonders Getränke, Backwaren, Presse & Hefte, Musik Chillout",
-        "🏷️ Sparfuchs: akzeptiert bis 0 % über Marktpreis, Musik Pop",
+        "🏷️ Sparfuchs: akzeptiert keinen Aufschlag und vergleicht immer mit Billigo, Musik Pop",
         "🤳 Influencerin: akzeptiert bis 30 % über Marktpreis, Musik Pop, erst ab Stufe 6",
         "🧐 Testerin: akzeptiert bis 20 % über Marktpreis, Musik Chillout, erst ab Stufe 4"
       ]

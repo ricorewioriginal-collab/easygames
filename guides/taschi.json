@@ -1,0 +1,274 @@
+{
+ "id": "taschi",
+ "handbuch": [
+  {
+   "t": "Ziel des Spiels",
+   "p": [
+    "TASCHI – Die 16 Lichter ist ein 3D-Sammelrollenspiel. Über dem Moostal verblassen die sechzehn Himmelslichter, und die Schattengilde fängt wilde Taschis ein. Professor Ulme schickt dich los, die sechzehn Licht-Siegel der Arenen zu sammeln.",
+    "Du reist durch 16 Regionen, fängst Taschis, trainierst ein Team aus bis zu sechs Begleitern, löst Rätsel, besiegst Arenaleitungen und Champions, stoppst die Schattengilde am Sternengipfel und wirst in der Sternenliga Sternenmeister. Danach warten vier legendäre Wächter, Champion-Revanchen und ein Taschidex mit 260 Arten."
+   ]
+  },
+  {
+   "t": "Titelmenü, Spielstände und Charakter",
+   "list": [
+    "▶ Fortsetzen: lädt den gewählten Speicherplatz (mit Name, Siegeln und Spielzeit).",
+    "✦ Neues Abenteuer: startet mit der Charaktererstellung – Männlich, Weiblich oder Divers, eigener Name und Trainer-Outfit.",
+    "▤ Spielstand wählen: drei Speicherplätze; jeder zeigt Name, Siegel (x/16), gefangene Taschis und Spielzeit.",
+    "⚙ Einstellungen: Steuerung, Grafik, Ton und Kamera.",
+    "☁ Mit Google anmelden: synchronisiert die Spielstände auf allen Geräten. Ohne Anmeldung wird nur im Browser gespeichert.",
+    "Gespeichert wird automatisch nach wichtigen Ereignissen. Zusätzlich sicherst du am Reisetagebuch im Heilzentrum („Der Spielstand wurde gesichert“). Das Outfit änderst du später unter Menü › Trainer › Umkleiden oder am Kleiderschrank."
+   ]
+  },
+  {
+   "t": "Der Anfang in Sonnenhain",
+   "steps": [
+    "Sprich mit Professor Ulme vor der Glaskuppel.",
+    "Geh unter die Kuppel und untersuche die drei Taschibälle auf dem Podest. Wähle deinen Starter: Glutzahn (Feuer), Plätscherchen (Wasser) oder Samenling (Pflanze).",
+    "Besiege das wilde Taschi im Beet vor der Kuppel – dein erster Kampf.",
+    "Sprich noch einmal mit Ulme: Du bekommst 5 Taschibälle, 2 Heilbälle, 3 Tränke und die Pfadkarte. Dein erster Auftrag ist das Mühlstein-Rätsel an der alten Wassermühle."
+   ]
+  },
+  {
+   "t": "Der Weg durch jede Region",
+   "p": [
+    "Das Ziel steht immer oben im Bild und im Quest-Buch. Jede Region folgt demselben Muster:"
+   ],
+   "steps": [
+    "Neue Region betreten (manchmal wartet dein Rivale Rian am Eingang).",
+    "Falls die Schattengilde in der Region ist: zuerst ihre Mitglieder besiegen – vorher lässt dich die Arenaleitung nicht antreten.",
+    "Das Regionsrätsel lösen – erst dann öffnet sich die Arena.",
+    "In der Arena: Arena-Schüler besiegen und die Herausforderung in der Mitte lösen. Dann öffnet sich das Gitter zur Arenaleitung.",
+    "Arenaleitung besiegen: Licht-Siegel, Sternmünzen und Tränke.",
+    "Den regionalen Champion im Champion-Pavillon besiegen. Erst dann öffnet sich das Nordtor zur nächsten Region.",
+    "Nebenbei: Aufträge der Bewohner, Forschungsauftrag des Professors, Truhen, Höhlen und Trainer auf den Routen."
+   ]
+  },
+  {
+   "t": "Kämpfe",
+   "list": [
+    "Im Kampf wählst du Kampf (Attacke), Tasche (Bälle, Tränke, Pulver), Taschis (wechseln) oder Flucht. Aus Trainerkämpfen kannst du nicht fliehen.",
+    "Jede Attacke hat einen Typ und begrenzte AP. Volltreffer machen 1,5-fachen Schaden.",
+    "Typen: Normal, Feuer, Wasser, Pflanze, Elektro, Gestein, Flug, Geist, Eis und Erde. „Das ist sehr effektiv!“ = doppelter Schaden, „nicht sehr effektiv“ = halber, „keine Wirkung“ = null.",
+    "Statusveränderungen: Verbrannt (halber Schaden), Vergiftet, Schläft (1 bis 3 Runden), Paralysiert (manchmal bewegungsunfähig, langsamer), Eingefroren. Feuer-Taschis verbrennen nicht, Eis-Taschis frieren nicht ein, Elektro-Taschis werden nicht paralysiert, Geist-Taschis nicht vergiftet.",
+    "Es gibt Einzel- und Doppelkämpfe (z. B. gegen Geschwisterpaare auf jeder zweiten Route).",
+    "Verlierst du einen Kampf, wachst du am letzten Heilzentrum auf; dein Team ist geheilt, aber 10 % deiner Sternmünzen sind weg."
+   ]
+  },
+  {
+   "t": "Fangen und Team",
+   "list": [
+    "Wilde Taschis findest du im hohen Gras, an Ufern, in Blumenwiesen und in Höhlen – nachts zeigen sich andere Arten.",
+    "Fangen geht nur in Einzelkämpfen gegen wilde Taschis. Wirf einen Ball über Tasche.",
+    "Die Fangchance steigt, je weniger KP das Taschi hat (bis fast dreifach), bei Schlaf oder Eis um 60 %, bei anderen Statusveränderungen um 25 %. Über Level 40 wird es etwas schwerer.",
+    "Dein Team hat sechs Plätze, weitere Taschis landen im Taschi-Lager im Heilzentrum.",
+    "Taschis bekommen Erfahrung (EP) und steigen auf. Schwächere Taschis holen schneller auf; mit hoher Freundschaft gibt es 20 % mehr EP.",
+    "Entwicklungen passieren beim Levelaufstieg, die Starter z. B. mit Level 16 und 36. Manche Arten brauchen Kristallsplitter oder Eiskristall.",
+    "Mit vier Attacken fragt das Spiel, welche vergessen werden soll. Unter Team › Taschi › Attacken verwalten kannst du Attacken vergessen und beim Attacken-Erinnerer für ★80 verpasste Attacken neu lernen."
+   ]
+  },
+  {
+   "t": "Orte in der Stadt",
+   "list": [
+    "Heilzentrum: Rezeption (Team heilen, KP und AP auffüllen), Taschi-Lager, Reisetagebuch (speichern) und Flugtaxi-Schalter (in freigeschaltete Regionen reisen).",
+    "Laden: Bälle, Tränke und Pulver. Mit jedem Siegel kommen neue Waren dazu. Verkaufen bringt den halben Preis.",
+    "Champion-Pavillon, Arena, Rätselplatz, Truhe, Professorenlabor und sieben Bewohner pro Region.",
+    "Höhlen (Flüsterhöhle, Bernsteingrotte, Kristallgrotte, Mondhöhle) mit Leuchtkristallen und einem funkelnden Spalt.",
+    "Wegweiser, Minikarte und die Karte (M) zeigen dir den Weg."
+   ]
+  },
+  {
+   "t": "Bedienung",
+   "list": [
+    "PC: WASD oder Pfeiltasten laufen, Shift halten = sprinten, E, Enter oder Leertaste = Aktion/Bestätigen, Rücktaste oder Q = zurück, Esc oder P = Menü, T = Team, M = Karte, Z/C = Kamera drehen, [ ] oder Bild↑/Bild↓ oder 1/3 = Reiter wechseln.",
+    "Touch: links der Joystick, rechts der Aktionsknopf (zeigt, was gerade möglich ist) und 🏃 zum Sprinten; oben ☰ Menü, ◉ Team, 🗺 Karte.",
+    "Gamecontroller: linker Stick oder Steuerkreuz bewegen, A bestätigen, B zurück, X sprinten, Y Team, LB/RB Reiter, LT/RT Kamera, Select Karte, Start Menü.",
+    "Unter Einstellungen kannst du Tasten frei belegen, den Joystick links oder rechts platzieren, Größe, Deckkraft und Totzone anpassen und die Grafikqualität wählen."
+   ]
+  },
+  {
+   "t": "Menü",
+   "list": [
+    "Team: Werte, Attacken, Entwicklung, Reihenfolge.",
+    "Taschidex: gesehene und gefangene Arten.",
+    "Tasche: Bälle, Heilung, Status, Kampf, Entwicklung, Wachstum und Basis-Items.",
+    "Quests: Hauptziel und aktive Aufträge mit Fortschritt (z. B. 1/2).",
+    "Karte, Trainer (Trainerkarte, Umkleiden), Optionen und System."
+   ]
+  }
+ ],
+ "ratgeber": [
+  {
+   "t": "Tipps für Einsteiger",
+   "list": [
+    "Fang früh viele verschiedene Taschis – die Aufträge verlangen bestimmte Typen und der Taschidex bringt Belohnungen.",
+    "Schwäche wilde Taschis vor dem Fangen, ohne sie zu besiegen. Schlaf oder Einfrieren erhöhen die Chance zusätzlich.",
+    "Heile vor jeder Arena und jedem Champion an der Rezeption.",
+    "Kaufe am Anfang Tränke und Taschibälle; der Heilball heilt das gefangene Taschi gleich mit.",
+    "Sprich mit den Bewohnern: Sie verraten Hinweise zu Rätseln, Typvorteilen und dem nächsten Ziel."
+   ]
+  },
+  {
+   "t": "Typen geschickt nutzen",
+   "list": [
+    "Feuer schlägt Pflanze und Eis; Wasser schlägt Feuer, Gestein und Erde; Pflanze schlägt Wasser, Gestein und Erde.",
+    "Elektro schlägt Wasser und Flug, wirkt aber nicht gegen Erde. Erde schlägt Feuer, Elektro und Gestein, wirkt nicht gegen Flug.",
+    "Gestein schlägt Feuer, Flug und Eis; Eis schlägt Pflanze, Flug und Erde; Flug schlägt Pflanze.",
+    "Geist schlägt Geist und wirkt nicht gegen Normal; Normal wirkt nicht gegen Geist.",
+    "Bei Taschis mit zwei Typen multipliziert sich alles: Ein Feuer/Flug-Taschi nimmt von Gestein vierfachen Schaden.",
+    "Stell dein Team so zusammen, dass es mindestens fünf verschiedene Angriffstypen abdeckt."
+   ]
+  },
+  {
+   "t": "Strategien für Fortgeschrittene",
+   "list": [
+    "Der Levelball wirkt bis vierfach, wenn dein Taschi höher ist; der Flinkball in der ersten Runde vierfach; der Timerball wird mit jeder Runde besser.",
+    "Netzball (dreifach bei Wasser und Pflanze) und Dämmerball (dreifach nachts und in Höhlen) gezielt einsetzen.",
+    "Der Freundball sorgt sofort für hohe Freundschaft – das gibt 20 % mehr EP.",
+    "Kraftpulver und Schutzpulver erhöhen im Kampf Angriff bzw. Verteidigung – ideal gegen Arenaleitungen.",
+    "Rian wählt immer das Taschi, das gegen deinen Starter im Vorteil ist. Hab ein zweites Taschi dabei, das dagegen stark ist.",
+    "Vor der Arenaleitung warten zwei Arena-Schüler – eine gute Gelegenheit, EP zu sammeln."
+   ]
+  },
+  {
+   "t": "Profi-Tricks",
+   "list": [
+    "Den Meisterball von Brix nur für einen legendären Wächter verwenden – er fängt jedes wilde Taschi ohne Fehlschlag, du bekommst aber nur einen.",
+    "Der funkelnde Spalt in Höhlen ruft einmal pro Tag und Region ein besonders kräftiges Taschi (5 Level über normal).",
+    "Leuchtkristalle in Höhlen geben Kristallsplitter, Eiskristall oder Sternsplitter – und lösen eine Begegnung aus.",
+    "Sternsplitter verkaufst du für ★400, EP-Bonbons für ★300 – oder du benutzt das Bonbon für einen sofortigen Levelaufstieg samt Entwicklung.",
+    "Nach jedem Champion lohnt das Flugtaxi zurück, um offene Aufträge abzugeben."
+   ]
+  },
+  {
+   "t": "Häufige Fehler",
+   "list": [
+    "Das Nordtor ist zu: Erst der regionale Champion öffnet den Weg.",
+    "Die Arenaleitung kämpft nicht: In Regionen mit Schattengilde musst du zuerst die Gilde vertreiben.",
+    "Die Arena ist verschlossen: Löse zuerst das Regionsrätsel.",
+    "Ein Schiebe-Rätsel steckt fest: Benutze den Rücksetzhebel.",
+    "Alle Bälle verbraucht – vor langen Routen immer Vorrat kaufen."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "Komplettlösung: alle 16 Regionen",
+   "p": [
+    "Levelangaben sind die stärksten Taschis der Gegner. Die Rätsel sind für jede Region fest vorgegeben; die Lösungswege stehen weiter unten."
+   ],
+   "list": [
+    "1. Moostal (Stadt Sonnenhain, Typen Pflanze/Normal): Rätsel „Mühlstein-Runen“ (Runen drehen) – Hinweis: Die Wandbilder an der Mühle zeigen, welches Zeichen jeder Stein tragen muss. Arena: Moosgarten-Arena (Schiebe-Platten) mit Fels-Fiete, 2 Taschis bis Level 8, Ass Felsling. Champion: Meisterin Lin, 3 Taschis bis Level 11, Ass Blütling. Stark dagegen: Feuer, Flug, Eis. Aufträge: „Waldwege bewahren“ (Waldhüterin Mira: Zeige Waldhüterin Mira zwei verschiedene Pflanzen-Taschis. Belohnung 8× Taschiball, 4× Trank); „Der verlorene Mühlenschlüssel“ (Müller Henrik: Henrik hat den Schlüssel zum Mühlenkeller am Bach verloren. Suche glitzernde Stellen am Ufer. Belohnung ★150, 1× Supertrank).",
+    "2. Korallküste (Stadt Perlenhafen, Typen Wasser/Flug): Rätsel „Gezeitenschleusen“ (Laternen-Schalter) – Hinweis: Jeder Hebel bewegt auch die benachbarten Schleusen. Alle Laternen müssen leuchten. Arena: Muschel-Arena (Reihenfolge-Platten) mit Perla, 2 Taschis bis Level 11, Ass Quappi. Champion: Kapitän Marek, 3 Taschis bis Level 14, Ass Quappi. Stark dagegen: Pflanze, Elektro, Gestein, Eis. Aufträge: „Geschichten des Meeres“ (Fischerin Nele: Fange zwei verschiedene Wasser-Taschis für Fischerin Nele. Belohnung 8× Taschiball, 4× Trank); „Die Signalflagge“ (Netzflickerin Ylva: Ein Sturm hat die Signalflagge des Leuchtturms weggeweht. Sie muss irgendwo am Strand liegen. Belohnung ★200, 3× Superball). Legende: Tiefenlied am uralten Schrein (nach dem Champion).",
+    "3. Funkenfeld (Stadt Voltheim, Typen Elektro/Normal): Rätsel „Transformator-Platten“ (Schiebe-Platten) – Hinweis: Schiebe die Spulen auf die Kontaktplatten. Jede Platte braucht genau eine Spule. Vorher Schattengilde stoppen: Kett & Kora mit Gildenhelfer. Arena: Generator-Arena (Laternen-Schalter) mit Käpt’n Volt, 2 Taschis bis Level 14, Ass Blitzi. Champion: Donnerfürstin Edda, 3 Taschis bis Level 17, Ass Blitzor. Stark dagegen: Erde. Aufträge: „Leuchtende Felder“ (Elektrikerin Sanne: Fange zwei Elektro-Taschis, damit Sanne ihr Verhalten studieren kann. Belohnung ★220, 3× Heilkraut); „Das verlorene Kabel“ (Ingenieur Paul: Eine Kabeltrommel ist vom Wagen gefallen. Sie liegt irgendwo auf den Feldwegen. Belohnung ★180, 2× Kraftpulver).",
+    "4. Blütenhain (Stadt Blütenruh, Typen Pflanze/Geist): Rätsel „Laternenpfad“ (Reihenfolge-Platten) – Hinweis: Die steinernen Laternen am Schrein zeigen Punkte. Betritt die Platten von wenigen zu vielen Punkten. Arena: Blütenpavillon (Reihenfolge-Platten) mit Blüte, 3 Taschis bis Level 17, Ass Blütling. Champion: Hüterin Flora, 4 Taschis bis Level 20, Ass Blütling. Stark dagegen: Feuer, Flug, Geist, Eis. Aufträge: „Lichter im Hain“ (Suki: Fange ein Geist-Taschi und zeige es Suki. Belohnung ★150, 1× Belebungskraut); „Die verlorene Schriftrolle“ (Archivarin Noemi: Eine Schriftrolle wurde unter den Kirschbäumen verloren. Belohnung ★200, 1× Ätherperle).",
+    "5. Käferwald (Stadt Waldsaum, Typen Pflanze/Flug): Rätsel „Wurzelpfad“ (Labyrinth) – Hinweis: Zwischen den Wurzeln glimmen manche Blätter. Folge ihnen. Vorher Schattengilde stoppen: Selma mit Gildenhelfer. Arena: Heckenlabyrinth (Labyrinth) mit Forscher Nilo, 3 Taschis bis Level 19, Ass Käferon. Champion: Waldmeister Rian, 4 Taschis bis Level 22, Ass Käferon. Stark dagegen: Feuer, Elektro, Gestein, Flug, Eis. Aufträge: „Flügel im Blätterdach“ (Professor Bork: Registriere zwei Flug-Taschis für Professor Borks Waldbericht. Belohnung ★240, 4× Superball); „Ole verliert ein Messer“ (Holzschnitzer Ole: Oles Lieblingsmesser liegt irgendwo bei den Riesenpilzen. Belohnung ★200, 3× Heilkraut). Höhle: Flüsterhöhle.",
+    "6. Sturmklippe (Stadt Windwacht, Typen Flug/Elektro): Rätsel „Spiegel der Windwacht“ (Lichtspiegel) – Hinweis: Drehe die Spiegel, bis das Sonnenlicht den Turm erreicht. Arena: Windkanal-Arena (Laternen-Schalter) mit Jette vom Team Funke, 3 Taschis bis Level 21, Ass Knistrion. Champion: Sturmmeister Taro, 4 Taschis bis Level 24, Ass Segelfalk. Stark dagegen: Elektro, Gestein, Eis, Erde. Aufträge: „Über den Hügeln“ (Pilotin Liv: Zeige Pilotin Liv zwei verschiedene Flug-Taschis. Belohnung 8× Taschiball, 4× Trank); „Bennos Drachen“ (Benno: Bennos Drachen hat sich losgerissen und hängt irgendwo an der Klippe. Belohnung ★220, 2× Supertrank).",
+    "7. Glutland (Stadt Essenfeld, Typen Feuer/Gestein): Rätsel „Schmiedesiegel“ (Runen drehen) – Hinweis: Die Ambosse in der Werkstatt zeigen die Zeichen der drei Säulen. Vorher Schattengilde stoppen: Brix mit Schnurrik und zwei Gildenhelfern (Forschungsstation am Glutkegel). Arena: Schmiede-Arena (Schiebe-Platten) mit Kapitän Rumo, 4 Taschis bis Level 24, Ass Glutdrach. Champion: Glutkönigin Sina, 5 Taschis bis Level 27, Ass Glutdrach. Stark dagegen: Wasser, Pflanze, Gestein, Erde. Aufträge: „Mut des Schmiedefeuers“ (Schmiedin Sira: Zeige Schmiedin Sira zwei verschiedene Feuer-Taschis. Belohnung 8× Taschiball, 4× Trank); „Der Hammer des Meisters“ (Händler Kasim: Ein alter Schmiedehammer wurde in den Lavafeldern zurückgelassen. Belohnung ★300, 1× Sternsplitter). Höhle: Bernsteingrotte.",
+    "8. Sternenau (Stadt Lichtenau, Typen Geist/Normal): Rätsel „Sternbild-Steine“ (Laternen-Schalter) – Hinweis: Ein Sternbild ist vollständig, wenn alle Steine leuchten. Jeder Stein beeinflusst seine Nachbarn. Arena: Planetarium-Arena (Lichtspiegel) mit Meisterin Aurelia, 4 Taschis bis Level 27, Ass Blitzor. Champion: Sternenhüter Aven, 5 Taschis bis Level 30, Ass Funkolo. Stark dagegen: Geist. Aufträge: „Nachtlichter“ (Professorin Nova: Registriere 30 gefangene Arten im Taschidex. Belohnung ★400, 2× Sternball); „Die Linse“ (Linsenschleifer Benedikt: Eine frisch geschliffene Linse ist aus dem Korb gefallen. Belohnung ★250, 2× Ätherperle).",
+    "9. Nebelmoor (Stadt Nebelsteg, Typen Geist/Wasser): Rätsel „Stelzenwippen“ (Schiebe-Platten) – Hinweis: Die Wippen senken sich, wenn auf jeder Platte ein Schilfballen liegt. Vorher Schattengilde stoppen: Kommandantin Varga mit Gildenhelfer. Arena: Nebelarena (Labyrinth) mit Kira vom Nebelpass, 4 Taschis bis Level 30, Ass Gruselgeist. Champion: Nebelkönig Nox, 5 Taschis bis Level 33, Ass Gruselgeist. Stark dagegen: Pflanze, Elektro, Geist. Aufträge: „Sanfte Geister“ (Forscherin Noa: Bringe Forscherin Noa zwei verschiedene Geist-Taschis. Belohnung 8× Taschiball, 4× Trank); „Die Mondlaterne“ (Laternenverkäufer Jasper: Jaspers wertvollste Laterne trieb im Moor davon. Belohnung ★300, Mondlaterne).",
+    "10. Frosttal (Stadt Reifenstein, Typen Eis/Gestein): Rätsel „Rutschende Eisblöcke“ (Rutsch-Eis) – Hinweis: Eisblöcke gleiten, bis sie gegen etwas stoßen. Bring sie auf die Frostplatten. Arena: Gletscher-Arena (Rutsch-Eis) mit Rokko vom Gletscher, 4 Taschis bis Level 32, Ass Panzerlon. Champion: Frostmeisterin Elin, 5 Taschis bis Level 35, Ass Panzerlon. Stark dagegen: Feuer, Wasser, Pflanze, Gestein, Erde. Aufträge: „Kristallklar“ (Professorin Fjella: Fange zwei Eis-Taschis für Professorin Fjellas Studie. Belohnung ★350, 1× Eiskristall, 1× Vitaltrank); „Kalles Handschuh“ (Kalle: Kalle hat seinen Handschuh irgendwo am Spiegelsee verloren. Belohnung ★250, 4× Heilkraut).",
+    "11. Wipfelreich (Stadt Kronendorf, Typen Pflanze/Flug): Rätsel „Sonnenstrahlen der Krone“ (Lichtspiegel) – Hinweis: Drehe die Blattspiegel, bis das Licht die Knospe trifft. Vorher Schattengilde stoppen: Selma mit Gildenhelfer. Arena: Baumkronen-Arena (Laternen-Schalter) mit Taro vom Waldturm, 5 Taschis bis Level 34, Ass Blütling. Champion: Wipfelmeister Fynn, 6 Taschis bis Level 37, Ass Florakron. Stark dagegen: Feuer, Elektro, Gestein, Flug, Eis. Aufträge: „Nester im Weltenbaum“ (Vogelkundlerin Ines: Fange drei Pflanzen-Taschis, um Ines bei ihrer Zählung zu helfen. Belohnung ★350, Kletterhaken); „Ellas Hut“ (Ella: Ellas Sonnenhut ist vom Baumhaus gefallen. Belohnung ★300, 5× Superball).",
+    "12. Donnersteppe (Stadt Grollhagen, Typen Elektro/Feuer): Rätsel „Trommeln der Steppe“ (Reihenfolge-Platten) – Hinweis: Die Totempfähle tragen Kerben. Schlage die Trommeln von wenigen zu vielen Kerben. Arena: Blitzleiter-Arena (Lichtspiegel) mit Mira vom Sturmfeld, 5 Taschis bis Level 36, Ass Voltrion. Champion: Donnerkönigin Ira, 6 Taschis bis Level 39, Ass Voltrion. Stark dagegen: Wasser, Gestein, Erde. Aufträge: „Funken und Flammen“ (Professorin Tessa: Registriere drei Feuer-Taschis für Professorin Tessa. Belohnung ★400, 2× Sternball); „Die Steppenglocke“ (Kupferschmied Amon: Eine kleine Kupferglocke ist aus einer Karawane gefallen. Belohnung ★350, 1× Vitaltrank). Legende: Sturmkron am uralten Schrein (nach dem Champion).",
+    "13. Kristallberg (Stadt Glimmerstadt, Typen Gestein/Geist): Rätsel „Erzloren“ (Schiebe-Platten) – Hinweis: Schiebe die Erzloren auf die Gleisplatten, um die Mine zu öffnen. Vorher Schattengilde stoppen: Kett & Kora (Doppelkampf) mit Gildenhelfer. Arena: Kristallgrotten-Arena (Lichtspiegel) mit Nona der Kristallhöhle, 5 Taschis bis Level 38, Ass Bergkoloss. Champion: Kristallhüter Kai, 6 Taschis bis Level 41, Ass Bergkoloss. Stark dagegen: Wasser, Pflanze, Geist, Erde. Aufträge: „Summende Kristalle“ (Bergführer Bruno: Fange zwei verschiedene Gestein-Taschis für Bergführer Bruno. Belohnung 8× Taschiball, 4× Trank); „Die Grubenlampe“ (Bergmann Kurt: Kurts Grubenlampe liegt irgendwo zwischen den Kristallspitzen. Belohnung ★400, 1× Kristallsplitter). Höhle: Kristallgrotte.",
+    "14. Mondbucht (Stadt Silberbucht, Typen Geist/Wasser): Rätsel „Mondphasen-Säulen“ (Runen drehen) – Hinweis: Die Muscheln am Strand zeigen die Phase, die jede Säule tragen muss. Arena: Gezeiten-Arena (Reihenfolge-Platten) mit Lio der Mondbucht, 5 Taschis bis Level 40, Ass Flammaro. Champion: Mondmeisterin Nova, 6 Taschis bis Level 43, Ass Phantomfürst. Stark dagegen: Pflanze, Elektro, Geist. Aufträge: „Silberne Gezeiten“ (Professorin Luna: Registriere vier Wasser-Taschis für Professorin Lunas Gezeitenatlas. Belohnung ★450, 2× Vitaltrank); „Die verlorene Perle“ (Perlenhändlerin Marisol: Marisols schönste Perle liegt irgendwo am Strand der Bucht. Belohnung ★500, 1× Sternsplitter). Legende: Mondhüter am uralten Schrein (nach dem Champion). Höhle: Mondhöhle.",
+    "15. Sonnenhöhe (Stadt Sonnfeste, Typen Feuer/Flug): Rätsel „Sonnenstrahl des Tempels“ (Lichtspiegel) – Hinweis: Lenke das Sonnenlicht durch die Bronzespiegel in das Tempelauge. Vorher Schattengilde stoppen: Selma mit Gildenhelfer. Arena: Sonnenuhr-Arena (Schiebe-Platten) mit Sora vom Sonnenplateau, 6 Taschis bis Level 42, Ass Magmadrach. Champion: Sonnenmeister Sol, 6 Taschis bis Level 45, Ass Magmadrach. Stark dagegen: Wasser, Elektro, Gestein, Eis, Erde. Aufträge: „Feuervögel“ (Professor Solan: Registriere vier Flug-Taschis für Professor Solans Sonnenstudie. Belohnung ★500, 3× Sternball); „Der Sonnenkrug“ (Töpferin Ines: Ein Krug wurde zum Trocknen auf den Terrassen vergessen. Belohnung ★450, 2× Ätherperle). Legende: Auraflamme am uralten Schrein (nach dem Champion).",
+    "16. Himmelskrone (Stadt Wolkenhort, Typen Flug/Feuer): Rätsel „Wolkenlaternen“ (Laternen-Schalter) – Hinweis: Jede Laterne entzündet auch ihre Nachbarn. Bring alle zum Leuchten. Arena: Himmelsspiegel-Arena (Lichtspiegel) mit Großmeisterin Aurelia, 6 Taschis bis Level 45, Ass Donnarion. Champion: Himmelsmeisterin Auri, 6 Taschis bis Level 48, Ass Donnarion. Stark dagegen: Wasser, Elektro, Gestein, Eis, Erde. Aufträge: „Chronik der Taschis“ (Professorin Astra: Registriere 80 gefangene Arten im Taschidex. Belohnung ★1000, 5× Sternball); „Der Wolkenkompass“ (Wolkenweberin Alva: Alvas Kompass ist auf einer der Wolkeninseln liegen geblieben. Belohnung ★600, 2× Vitaltrank)."
+   ]
+  },
+  {
+   "t": "So löst du die Rätseltypen",
+   "list": [
+    "Runen drehen: Jeder Stein hat vier Zeichen. Dreh jeden Stein so lange, bis er dasselbe Zeichen zeigt wie das Wandbild bzw. die Säule dahinter (anfangs 3 Steine, ab Region 5 vier).",
+    "Laternen-Schalter: Jeder Hebel schaltet seine eigene Laterne und beide Nachbarn um. Lösung: Arbeite dich von einem Ende der Reihe zum anderen – ist eine Laterne aus, drücke den Hebel der nächsten Laterne dahinter. Bleibt am Ende eine aus, setze neu an und drücke zuerst den Hebel am Anfang der Reihe. Ab Region 9 sind die Laternen im Kreis verbunden: Erste und letzte beeinflussen sich dann gegenseitig – notfalls an einer anderen Laterne anfangen.",
+    "Reihenfolge-Platten: Zähle die Punkte bzw. Kerben an den Säulen und betritt die Platten von wenigen zu vielen. Ein falscher Schritt setzt die Folge zurück (4 bis 6 Platten).",
+    "Schiebe-Platten: Schiebe jeden Block auf eine Platte (2 Blöcke, ab Region 9 drei). Nie einen Block in eine Ecke schieben, aus der er nicht mehr herauskommt. Der Rücksetzhebel stellt alles zurück.",
+    "Rutsch-Eis (Frosttal): Eisblöcke gleiten, bis sie gegen etwas stoßen. Plane den Stopp: Erst den Block an eine Wand oder einen anderen Block lenken, dann in Richtung Platte schieben.",
+    "Labyrinth: Folge den glimmenden Blättern bzw. Hinweisen an den Kreuzungen – sie markieren den richtigen Weg.",
+    "Lichtspiegel: Dreh die Spiegel (je zwei Stellungen), bis der Lichtstrahl das Ziel trifft. Am besten vom Ziel rückwärts denken.",
+    "Ab Region 5, 9 und 13 werden alle Rätsel eine Stufe größer."
+   ]
+  },
+  {
+   "t": "Rivale Rian",
+   "list": [
+    "Rian nimmt das Starter-Taschi, das deinen schlägt: gegen Glutzahn Plätscherchen, gegen Plätscherchen Samenling, gegen Samenling Glutzahn.",
+    "Treffen: Korallküste (Level 10, 2 Taschis), Käferwald (Level 20, 3), Nebelmoor (Level 31, 4), Kristallberg (Level 40, 5) und Himmelskrone (Level 48, 6).",
+    "Tipp: Halte immer ein Taschi bereit, das gegen Rians Starter-Linie stark ist."
+   ]
+  },
+  {
+   "t": "Schattengilde und Sternengipfel",
+   "steps": [
+    "Funkenfeld: Gildenhelfer und die Zwillinge Kett & Kora (Doppelkampf) – „Fangnetze im Windradfeld“.",
+    "Käferwald: Gildenhelfer und Selma – „Käfige im Unterholz“.",
+    "Glutland: „Die Forschungsstation“ am Glutkegel – zwei Gildenhelfer und der Tüftler Brix mit Schnurrik.",
+    "Nebelmoor: Gildenhelfer und Kommandantin Varga – „Begegnung am Stelzensteg“.",
+    "Wipfelreich: Gildenhelfer und Selma – „Der Ballon im Weltenbaum“.",
+    "Kristallberg: Gildenhelfer und Kett & Kora im Doppelkampf – „Das versteckte Lager“.",
+    "Sonnenhöhe: Gildenhelfer und Selma – „Brix’ Entscheidung“. Danach hilft dir Brix: Du bekommst Brix’ Zugangskarte und einmalig den Meisterball.",
+    "Jeder vertriebene Gildenstandort bringt Sternmünzen, Superbälle und Tränke; die gefangenen Taschis kommen frei.",
+    "Sternengipfel: Mit allen 16 Siegeln, dem Sieg über Himmelsmeisterin Auri und der Zugangskarte öffnet der Torwächter das Nordtor von Himmelskrone. „Die Maschine am Sternengipfel“: Oben warten zwei Doppelkämpfe (Gildenhelfer, Kett & Kora) und Kommandantin Varga mit 6 Taschis um Level 49. Danach leuchten die sechzehn Lichter wieder."
+   ]
+  },
+  {
+   "t": "Sternenliga",
+   "list": [
+    "Meisterprüfung 1 – Hüterin des Waldes: Pflanze/Erde, Ass Blütling-Linie, Level 46. Feuer, Eis und Flug mitnehmen.",
+    "Meisterprüfung 2 – Hüter des Meeres: Wasser/Eis, Ass Panzerlon-Linie, Level 49. Pflanze und Elektro.",
+    "Meisterprüfung 3 – Hüterin der Berge: Gestein/Erde, Ass Felsling-Linie, Level 52. Wasser, Pflanze und Eis.",
+    "Meisterprüfung 4 – Hüter des Sturms: Elektro/Flug, Ass Blitzor-Linie, Level 55. Erde gegen Elektro, Gestein und Eis gegen Flug.",
+    "Meisterprüfung 5 – Sternenmeisterin Lyra: Feuer/Geist/Normal, Ass Glutdrach-Linie, Level 58. Wasser, Gestein und Geist.",
+    "Die Prüfungen gehen nur der Reihe nach. Nach dem Sieg über Lyra bist du Sternenmeister, Schnurrik (Level 50) schließt sich deinem Team an und der Abspann läuft."
+   ]
+  },
+  {
+   "t": "Postgame, Legenden und Freischaltungen",
+   "list": [
+    "Vier uralte Wächter an Schreinen – erst nach dem Champion der jeweiligen Region: Tiefenlied (Wasser) in der Korallküste, Sturmkron (Elektro/Flug) in der Donnersteppe, Mondhüter (Geist) in der Mondbucht und Auraflamme (Feuer/Flug) in der Sonnenhöhe, alle um Level 51 bis 54. Besiegst du einen statt ihn zu fangen, kannst du ihn später erneut rufen.",
+    "Champion-Revanchen: Alle 16 Champions mit 6 Taschis auf Level 55 bis 64.",
+    "Laden-Freischaltungen nach Siegeln: Superball ab 1; Netzball, Flinkball, Kraft- und Schutzpulver ab 2; Dämmerball und Belebungskraut ab 3; Freundball ab 4; Levelball und Supertrank ab 5; Timerball und Ätherperle ab 6; Sternball ab 7; Vitaltrank ab 10.",
+    "Basis-Items: Mondlaterne (Auftrag in Nebelmoor), Kletterhaken (Auftrag in Wipfelreich), Gildenschlüssel (öffnet die Forschungsstation im Glutland) und Brix’ Zugangskarte (Sonnenhöhe).",
+    "Großer Taschidex-Auftrag: 30 gefangene Arten für Professorin Nova (Sternenau, ★400 und 2 Sternbälle) und 80 Arten für Professorin Astra (Himmelskrone, ★1000 und 5 Sternbälle).",
+    "Jeder regionale Professor vergibt einen Forschungsauftrag: Arten der Regionstypen ansehen, ein Taschi in der Region fangen und im Labor berichten."
+   ]
+  },
+  {
+   "t": "Starter und wichtige Entwicklungen",
+   "list": [
+    "Glutzahn (Feuer) → Glutdrach (Level 16) → Magmadrach (Feuer/Flug, Level 36).",
+    "Plätscherchen (Wasser) → Panzerlon (Level 16) → Gezeitenlon (Wasser/Eis, Level 36).",
+    "Samenling (Pflanze) → Blütling (Level 16) → Florakron (Pflanze/Erde, Level 36).",
+    "Fellino → Fellisto (18) → Fellmajor (34); Blitzi → Blitzor (18) → Donnarion (36); Quappi → Quappor (18) → Strudelquapp (34).",
+    "Felsling → Felsbrock (22) → Bergkoloss (38); Geisterchen → Gruselgeist (20) → Phantomfürst (38); Flatterling → Segelfalk (17) → Sturmfalk (35).",
+    "Knister → Knistrion (20) → Voltrion (36); Käferli → Käferon (12) → Panzerkäfer (26); Funkli → Funkolo (18) → Flammaro (34).",
+    "Flöckchen → Frostpfote (20) → Gletscherlöwe (38); Laternchen → Irrlicht (22) → Sternlaterne (38)."
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Mein Spielstand ist weg.",
+   "a": "Spielstände liegen im Browser auf drei Speicherplätzen. Prüfe unter „Spielstand wählen“ den richtigen Platz. Mit Google-Anmeldung im Titelmenü werden sie geräteübergreifend gesichert. Im Menü unter System kannst du einen Spielstand auch als Datei sichern und wieder laden."
+  },
+  {
+   "q": "Ich komme nicht in die nächste Region.",
+   "a": "Das Nordtor öffnet sich erst, wenn du den regionalen Champion besiegt hast. Das Ziel steht immer oben im Bild."
+  },
+  {
+   "q": "Warum kämpft die Arenaleitung nicht gegen mich?",
+   "a": "In Funkenfeld, Käferwald, Glutland, Nebelmoor, Wipfelreich, Kristallberg und Sonnenhöhe musst du zuerst die Schattengilde vertreiben. Außerdem muss das Regionsrätsel gelöst und die Herausforderung in der Arena erledigt sein."
+  },
+  {
+   "q": "Kann ich mit dem Controller spielen?",
+   "a": "Ja, Standard-Controller werden erkannt („🎮 Controller verbunden“). A bestätigt, B geht zurück, Start öffnet das Menü, Y das Team."
+  },
+  {
+   "q": "Das Spiel ruckelt auf dem Handy.",
+   "a": "Stelle in den Einstellungen die Grafikqualität auf Performance. Das Spiel passt die Auflösung zusätzlich selbst an."
+  },
+  {
+   "q": "Kann ich Trainer-Taschis fangen?",
+   "a": "Nein. „Taschis von Trainern kann man nicht fangen!“ – gefangen werden nur wilde Taschis in Einzelkämpfen."
+  }
+ ]
+}

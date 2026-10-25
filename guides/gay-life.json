@@ -1,0 +1,284 @@
+{
+  "id": "gay-life",
+  "handbuch": [
+    {
+      "t": "Worum geht es?",
+      "p": [
+        "Gay Life! ist eine queere 3D-Lebenssimulation für Erwachsene in Rainbow City. Du startest im Pride District (dem Regenbogenkiez) mit eigener Wohnung und 150 € auf dem Konto. Du kümmerst dich um deinen Alltag, verdienst Geld, findest Freunde, gehst auf Dates, richtest deine Wohnung ein, spielst vierzehn Minispiele und erlebst die Hauptgeschichte „Ein Leben in allen Farben“.",
+        "Es gibt kein festes Spielende: Du kannst jederzeit frei weiterspielen. Alle Figuren sind frei erfunden und erwachsen; ein Nein wird im Spiel immer respektiert, Intimes wird nur angedeutet."
+      ]
+    },
+    {
+      "t": "Startmenü",
+      "list": [
+        "Spiel starten bzw. Weiterspielen: in die 3D-Stadt.",
+        "Charakter: der Editor „Dein Look“ mit drehbarer 3D-Vorschau.",
+        "Minispiele: die Spielesammlung mit allen 14 Minispielen, Bestwerten und Erfolgen.",
+        "Mehrspieler: Raum öffnen oder per PIN beitreten.",
+        "Einstellungen: Ton, Grafik, Touch-Steuerung, Vollbild, Speichern.",
+        "Info & Hilfe.",
+        "Bedienung im Startmenü: Pfeiltasten (oder W/S), Enter und Esc, Maus oder Touch."
+      ]
+    },
+    {
+      "t": "Deine Figur",
+      "p": [
+        "Im Editor wählst du Hautton, Frisur (Kurz, Tolle, Locken, Buzz, Lang, Undercut, Glatze), Haarfarbe, Augenfarbe, Bart (Glatt, Dreitage, Vollbart, Ziegenbart, Schnauzer), Extra (Brille, Sonnenbrille, Cap, Ohrring, Goldkette und mehr), Oberteil (Shirt, Tanktop, Hemd, Hoodie, Jacke, Pride-Shirt, Anzug) und Farbe, außerdem Körperbau (schlank, normal, kräftig), Größe (klein, mittel, groß) und Tattoos (Armband, Regenbogen-Armband, Herz, Stern).",
+        "Drei Outfit-Plätze speichern Frisur, Haarfarbe, Bart, Extra, Oberteil, Farbe und Tattoo. Besondere Teile kosten Glitzer oder sind Belohnungen aus Nebenaufträgen: Krone (150 ✨), Kopfhörer (70 ✨), Federboa (90 ✨), Herzbrille (60 ✨), Pride-Shirt (120 ✨) und Anzug (100 ✨)."
+      ]
+    },
+    {
+      "t": "Alltag: Zeit, Bedürfnisse und Stimmung",
+      "list": [
+        "Ein Spieltag dauert 16 Minuten echte Zeit. Oben siehst du Wochentag, Uhrzeit, Kontostand, Bedürfnisse und Stimmung (antippen öffnet den Status).",
+        "Bedürfnisse: Energie, Satt, Hygiene, Kontakte und Stress. Daraus ergibt sich deine Stimmung.",
+        "Sehr müde läufst du langsamer und darfst nicht zur Schicht. Gute Stimmung erhöht Trinkgeld und Leistungsboni.",
+        "Wohnung: Schlafen (nachts bis 7 Uhr, tagsüber Nickerchen), Duschen, Kochen (braucht Lebensmittel), Fernsehen, Kleiderschrank, Laptop (Speichern, Möbel, Miete).",
+        "Essen gibt es im Späti Lecker (Brezel, Kaffee, Smoothie, Nudelbox, Lebensmittel zum Kochen).",
+        "Wetter: Jeder Tag hat ein Wetter (sonnig, bewölkt, Regen, Nebel). Sonne hebt die Laune (+2), Regen senkt sie (−3); die Handy-App „Wetter“ zeigt die nächsten Tage."
+      ]
+    },
+    {
+      "t": "Geld, Jobs und Miete",
+      "list": [
+        "Barkeeper im Club Glitzer: Minispiel-Schicht, Stundenlohn × 4 plus Trinkgeldanteil × Laune.",
+        "Verkäufer in der Boutique Fabelhaft (10–20 Uhr, Stufen Aushilfe, Verkäufer, Stylist, Filialleiter).",
+        "Fitnesstrainer in der Muckibude Muskelkater (8–21 Uhr).",
+        "Fotograf im Studio Klappe Auf (10–20 Uhr).",
+        "DJ auf der Regenbogen-Bühne (20–2 Uhr, erst ab Barkeeper-Stufe 2).",
+        "Performer im Karaoke Mikro-Mimosa (11–24 Uhr) und Eventmanager in der Festwagen-Werkstatt (10–18 Uhr).",
+        "Eine Schicht dauert 4 Stunden mit drei Situationen und je drei Antworten (0–2 Punkte). Lohn = Grundlohn nach Stufe plus Leistungsbonus × Laune. Höchstens 2 Schichten pro Tag, nicht unter 25 Energie. Erfahrung bringt Stufen 1–8 und neue Titel.",
+        "Miete: 70 € pro Woche, montags abgebucht (erstmals an Tag 8). Fehlt das Geld, wird sie zur Schuld mit Stress. Wohnt dein Partner bei dir, zahlst du nur noch 40 €."
+      ]
+    },
+    {
+      "t": "Rainbow City",
+      "p": [
+        "Der Pride District ist dein Zuhause mit Café Sonntag, Club Glitzer, Regenbogen-Bühne, Boutique Fabelhaft, Buchladen Bunte Seiten, Muckibude Muskelkater, Arcade Funkel, Festwagen-Werkstatt, Tanzschule Pirouette, Strandbad Sonnenbrand, Karaoke Mikro-Mimosa, Sauna Heißer Stein, Dunkelkammer Blackout, Studio Klappe Auf, Späti Lecker und deinem Apartment.",
+        "Mit der Tram (3 €, 20 Minuten; Haltestelle am Brunnenplatz oder Handy-App „Tram“) erreichst du sieben weitere Viertel: Downtown, Neon Nights, Rainbow Beach, Love Gardens, Fashion Boulevard, Rainbow Heights und Crystal Coast. Jedes hat Orte mit echter Wirkung – etwa Kino, Ramen, Schwimmen, Picknick, Friseur, Dach-Yoga, Angeln oder den Leuchtturm – und zwei Bewohner mit eigenem Tagesplan."
+      ]
+    },
+    {
+      "t": "Freunde, Dating und Beziehungen",
+      "list": [
+        "Jedes Gespräch legt einen Kontakt an; das erste Gespräch pro Tag steigert die Freundschaft (neu, bekannt, befreundet, eng).",
+        "Fünf Dating-Figuren mit Tagesplan und eigener Geschichte: Jonas (29, Brunch-Prinz), Mehmet (31, Personal Trainer), Luca (26, Influencer), Kai (34, Grafikdesigner mit Kater Pixel) und Dennis (40, spätberufen, mit Dackel Gerd).",
+        "Gesprächsmenü: Quatschen (Thema wählen), Tiefes Gespräch (Geschichte in drei Kapiteln ab Freundschaft 20, 45 und 70), Kompliment, Flirten (ab Freundschaft 30), Zum Date einladen (ab Freundschaft 30), Beziehung ansprechen, Entschuldigen/Blumen.",
+        "Flirten entscheidet die Figur selbst. Nach einer Absage bittet sie um zwei Tage Abstand; nach drei Absagen bleibt Flirten gesperrt.",
+        "Dates: Ort (Café Sonntag 12 €, Park im Osten gratis, Karaoke 10 €, Strandbad 8 €, Club Glitzer 20 €, bei dir zu Hause 8 €) und Zeit wählen, pünktlich erscheinen, drei Gesprächsszenen. Verpasste Dates schaden der Beziehung. Ein Kuss klappt nur, wenn er es auch möchte (Romantik ab 45).",
+        "Beziehung: ab Romantik 65 und zwei Dates. Zusammenziehen ab Romantik 75 und drei Dates. Wer fünf Tage keinen Kontakt hält, bekommt Streit – ohne Versöhnung innerhalb von vier Tagen trennt sich die Figur.",
+        "Die 14 Viertel-Bewohner kannst du ebenfalls kennenlernen und ab Freundschaft 30 zu einem Date einladen; sie entscheiden frei."
+      ]
+    },
+    {
+      "t": "Nachtleben und Veranstaltungen",
+      "list": [
+        "Club Glitzer: 20–5 Uhr geöffnet, Eintritt je nach Themenabend einmal pro Nacht. Drinnen: Tanzfläche (3 Songs, passende Bewegung zum Musikstil wählen), Bar (Cocktail 8 €, höchstens 3 pro Nacht, Wasser gratis), DJ-Pult und Barkeeper-Schicht.",
+        "Karaoke-Wettbewerb: jeden Freitag 19–23 Uhr, drei Lieder gegen drei Stammgäste; Preise 60 €, 30 € und 15 € für die Plätze 1 bis 3.",
+        "Pride-Parade: jeder 28. Tag, 12–18 Uhr an der Regenbogen-Bühne – mitgehen bringt Kontakte, weniger Stress und Glitzer.",
+        "Die Handy-App „Events“ zeigt die nächsten Termine."
+      ]
+    },
+    {
+      "t": "Das Handy",
+      "p": [
+        "Das Handy (📱, Taste P oder Tab) bündelt Status, Aufgaben, Karte (mit Schnellreise), Kontakte, Finanzen, Nachrichten, Dating-App, Kalender, Tram, Geschichte, Bewohner, Events, Wetter, Zusammen, Fotos und Einstellungen. Ein Abzeichen zeigt neue Nachrichten."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "PC: W A S D oder Pfeiltasten laufen; Kamera mit der Maus ziehen oder Q/R drehen. E, Enter oder Leertaste = Aktion (sprechen, Orte betreten). P oder Tab = Handy, M = Karte/Orte, F = Vollbild, Esc = Pause bzw. schließen.",
+        "Touch: fester Stick links zum Laufen; vier Tasten rechts: A Aktion, B Orte, X Handy, Y Menü. Kamera durch Wischen auf dem Bild. Die Touch-Steuerung erscheint automatisch und lässt sich in den Einstellungen erzwingen oder abschalten.",
+        "Gamecontroller: linker Stick oder Steuerkreuz laufen, A = Aktion, B = Karte/Orte, X = Handy, Y oder Start = Pause-Menü, LB/RB drehen die Kamera.",
+        "Pausenmenü: Weiter, Charakter, Ton, Speichern, Startmenü. Die Stadt läuft dabei weiter."
+      ]
+    },
+    {
+      "t": "Speichern und Mehrspieler",
+      "p": [
+        "Der Spielstand liegt auf deinem Gerät und wird regelmäßig automatisch gesichert; im Pausenmenü und am Laptop kannst du jederzeit speichern. Optional lässt er sich mit einem Google-Konto abgleichen. Wer in der Wohnung speichert, startet dort; sonst beginnt man nach dem Neuladen im Pride District.",
+        "Mehrspieler: Ein Gerät öffnet einen Raum mit 6-stelliger PIN und QR-Code, bis zu 4 Spieler treten bei. Du siehst Mitspieler, die am selben Ort sind. Gemeinsam könnt ihr euch in der Wohnung besuchen (nur mit Zustimmung des Gastgebers), im Club gemeinsam tanzen und Gruppenfotos machen (Bild bleibt auf dem Gerät)."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Folge dem Hauptauftrag oben: Ein Lichtstrahl und ein Pfeil zeigen dir das Ziel.",
+        "Iss und schlaf regelmäßig – mit wenig Energie bekommst du keine Schicht.",
+        "Verdiene dein erstes Geld als Barkeeper im Club Glitzer oder als Verkäufer in der Boutique, bevor die erste Miete an Tag 8 fällig wird.",
+        "Sprich jeden Tag mit möglichst vielen Leuten: Das erste Gespräch pro Tag steigert die Freundschaft.",
+        "Sammle die Regenbogen-Sterne in der Stadt – jeder bringt 5 Glitzer."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Schau in den Kontakten nach, wo eine Person gerade ist: Alle haben einen Tagesplan und sind nachts zu Hause (nicht ansprechbar).",
+        "Achte auf Vorlieben und Abneigungen beim Quatschen – das passende Thema bringt deutlich mehr.",
+        "Plane Dates im Kalender und erscheine pünktlich; verpasste Dates senken Romantik und Freundschaft.",
+        "Halte Kontakt zu deinem Partner: Nach fünf Tagen ohne Kontakt gibt es Streit. Mit Entschuldigung oder Blumen versöhnst du dich.",
+        "Kaufe Möbel am Laptop: Kaffeemaschine, Bücherregal und Hantelbank sparen Wege, Deko hebt die Stimmung (bis +6).",
+        "Mehrere Jobs lohnen sich: Jede Stufe erhöht den Grundlohn um 8 Prozent; gute Antworten in den Situationen bringen den Bonus."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Zusammenziehen halbiert fast die Miete (40 statt 70 € pro Woche).",
+        "Für die Hauptgeschichte schon früh Freundschaften auf 30 bringen – Unterstützer zählen bis zu 6 Punkte bei der Abstimmung.",
+        "Für den Medien-Auftritt vor dem Stadtrat brauchst du 500 Glitzer: Minispiele und Aufträge bringen schnell Glitzer.",
+        "Vor einer Schicht gute Laune sammeln (Dusche, Essen, Sonne): Die Laune multipliziert den Bonus.",
+        "Der Blumenstrauß von der Blumenhändlerin in den Love Gardens (6 €, höchstens 5 auf Vorrat) ist günstiger als Blumen beim Entschuldigen (15 €)."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Die Miete vergessen: Schulden erzeugen Stress, bis sie bezahlt sind.",
+        "Eine Figur nach einer Absage bedrängen – das Spiel respektiert ein Nein, nach drei Absagen bleibt Flirten gesperrt.",
+        "Nachts Leute suchen: Die meisten sind dann zu Hause und unsichtbar.",
+        "Zu viele Cocktails einplanen: Höchstens 3 pro Nacht."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Hauptaufträge im Pride District",
+      "p": [
+        "Die Hauptaufträge laufen nacheinander. Jeder verlangt einen Bestwert in einem Minispiel am jeweiligen Ort und bringt Glitzer."
+      ],
+      "steps": [
+        "Erstes Date (Café Sonntag): ein Date mit mindestens 4 Herzen im Date-Roulette – 30 Glitzer.",
+        "Schicht im Club (Club Glitzer): 120 Trinkgeld in einer Schicht – 40 Glitzer.",
+        "Auftritt (Regenbogen-Bühne): mindestens 3000 Punkte im Regenbogen-Rave – 50 Glitzer.",
+        "Stilfrage (Boutique Fabelhaft): mindestens 26 Punkte im Outfit-Check – 50 Glitzer.",
+        "Kluger Kopf (Buchladen Bunte Seiten): mindestens 100 Punkte im Klischee-Quiz – 60 Glitzer.",
+        "Beinetag (Muckibude): 10 Wiederholungen – 60 Glitzer.",
+        "High Score (Arcade Funkel): mindestens 1500 Punkte im Glitzer-Match – 60 Glitzer.",
+        "Festwagen-Test (Festwagen-Werkstatt): mindestens 400 Punkte im Parade-Runner – 70 Glitzer.",
+        "Tanzschule (Tanzschule Pirouette): 7 Runden im Tanzbattle – 60 Glitzer.",
+        "Sprung ins Glück (Strandbad Sonnenbrand): mindestens 300 Punkte beim Sprung – 60 Glitzer.",
+        "Karaoke-Abend (Karaoke Mikro-Mimosa): mindestens 1800 Punkte – 70 Glitzer.",
+        "Heiße Phase (Sauna Heißer Stein): mindestens 250 Punkte beim Aufguss – 70 Glitzer.",
+        "Licht aus (Dunkelkammer Blackout): mindestens 300 Punkte – 70 Glitzer.",
+        "Klappe, die Erste (Studio Klappe Auf): mindestens 400 Punkte beim Casting – 80 Glitzer.",
+        "Die große Parade: Geh zum Brunnen auf dem Platz – die Pride-Parade startet mit Konfetti, 200 Glitzer."
+      ]
+    },
+    {
+      "t": "Nebenaufträge und Belohnungen",
+      "list": [
+        "Oma Ilse – Regenbogenkuchen: drei rosa Backzutaten auf den Gehwegen finden. Belohnung 50 Glitzer und Pride-Shirt.",
+        "Chantal – Fotoshooting: 30 Punkte im Outfit-Check. Belohnung 40 Glitzer und Herzbrille.",
+        "Madame Mimosa – Showtime: 250 Trinkgeld in einer Club-Schicht. Belohnung 60 Glitzer und Krone.",
+        "Torsten – Sprung ins kalte Wasser: 250 Punkte beim Strandbad-Sprung. Belohnung 50 Glitzer und Federboa.",
+        "Sven – Highscore-Jagd: 3000 Punkte im Glitzer-Match. Belohnung 60 Glitzer und Kopfhörer.",
+        "Bruno – Gästeliste: 8 Runden im Tanzbattle. Belohnung 40 Glitzer und Anzug.",
+        "Dennis – Finde Gerd: Der Dackel mit der pinken Schleife ist am östlichen Stadtrand hinter den Häusern. Streicheln, zu Dennis bringen: 40 Glitzer.",
+        "Kai – Pixel: Der graue Kater ist im Park im Osten hinter den Bäumen. Streicheln, zu Kai auf den Platz bringen: 40 Glitzer.",
+        "26 Regenbogen-Sterne liegen in der Stadt verteilt, jeder bringt 5 Glitzer. Die Aufgaben-Anzeige zeigt, wie viele du hast."
+      ]
+    },
+    {
+      "t": "Hauptgeschichte „Ein Leben in allen Farben“",
+      "p": [
+        "Ab Tag 3 spricht dich Tante Gerda an: Ihr Regenbogen-Zentrum soll einem Investor (Falk & Söhne) weichen. Die Geschichte ist freiwillig und hat fünf Kapitel."
+      ],
+      "steps": [
+        "Kapitel 1 – Der Brief: 3 Unterstützer gewinnen (Freundschaft ab 30 mit anderen Leuten). Belohnung 40 Glitzer.",
+        "Kapitel 2 – Spendenaktion: 200 € sammeln – bei Gerda in Schritten von 25, 50 oder 100 € spenden oder einen gelungenen Benefiz-Tanzabend im Club tanzen. Belohnung 60 Glitzer und 40 €.",
+        "Kapitel 3 – Der Stadtrat: Auftritt wählen. Laut und sichtbar ist am stärksten ab 5 Unterstützern, Ruhig und im Gespräch ab Freundschaft 40 mit Gerda, Über die Medien ab 500 Glitzer. Belohnung 40 Glitzer.",
+        "Kapitel 4 – Das Straßenfest: mit der Tram 4 verschiedene Viertel besuchen und das Fest planen – Live-Musik (50 €) oder Gemeinsames Essen (30 €) wirken voll, Mit eigenen Mitteln (gratis) nur halb. Belohnung 80 Glitzer und 30 €.",
+        "Kapitel 5 – Die Abstimmung: Gerda zeigt deine Chancen (schlecht, offen, gut, sehr gut). Du kannst weiter vorbereiten oder zur Abstimmung gehen."
+      ]
+    },
+    {
+      "t": "Die drei Enden und wie du sie erreichst",
+      "list": [
+        "Punkte für die Abstimmung: 1 pro Unterstützer (höchstens 6), +2 für 200 € Spenden, +1 zusätzlich ab 400 € Spenden, +1 für einen festen Partner, +2 bzw. +1 für den Stadtrat-Auftritt, +2 bzw. +1 für das Straßenfest. Höchstens 14 Punkte.",
+        "Zentrum gerettet (ab 11 Punkten): 7 zu 2 im Stadtrat, 300 Glitzer, 150 € und dauerhaft +4 Stimmung.",
+        "Kompromiss (7 bis 10 Punkte): 5 zu 4, das Zentrum bleibt kleiner – 150 Glitzer, 60 € und dauerhaft +2 Stimmung.",
+        "Zentrum verloren (unter 7 Punkten): 50 Glitzer, aber die Gemeinschaft bleibt.",
+        "Sicherer Weg zum besten Ende: 6 Unterstützer, 400 € Spenden, ein Partner, der passende Auftritt mit voller Stärke und Live-Musik oder Essen beim Fest ergeben 14 Punkte.",
+        "Nach dem Ende gibt es täglich einen Kaffee mit Gerda (mehr Kontakte, weniger Stress). Die App „Geschichte“ zeigt Kapitel, Ziele und Entscheidungen."
+      ]
+    },
+    {
+      "t": "Die 14 Minispiele",
+      "list": [
+        "Date-Roulette (Café Sonntag): fünf Typen, fünf Dates – wer meldet sich danach noch?",
+        "Clubnacht-Manager (Club Glitzer): aus einer Eckkneipe den angesagtesten Laden machen.",
+        "Regenbogen-Rave (Regenbogen-Bühne): als DJ die Beats treffen.",
+        "Outfit-Check (Boutique Fabelhaft): fünf Anlässe, strenge Jury (bis 45 Punkte).",
+        "Beinetag (Muckibude): im richtigen Moment stemmen und die Spannung halten.",
+        "Glitzer-Match (Arcade Funkel): Match-3 mit 25 Zügen.",
+        "Parade-Runner (Festwagen-Werkstatt): Glitzer sammeln, Spaßbremsen ausweichen.",
+        "Tanzbattle (Tanzschule Pirouette): Chantals Schritte nachmachen, die Folgen werden länger.",
+        "Strandbad-Sprung (Strandbad Sonnenbrand): fünf Sprünge, Kraft und Winkel treffen (bis 500 Punkte).",
+        "Karaoke (Karaoke Mikro-Mimosa): im Takt auf die Silben tippen.",
+        "Sauna-Aufguss (Sauna Heißer Stein): Hitze im grünen Bereich halten, das Handtuch retten.",
+        "Dunkelkammer (Dunkelkammer Blackout): mit der Taschenlampe Sachen finden, niemanden anrempeln.",
+        "Casting-Tag (Studio Klappe Auf): blitzschnell die passende Miene zeigen.",
+        "Klischee-Quiz (Buchladen Bunte Seiten): zehn Fragen zu Geschichte, Pop und Klischees."
+      ]
+    },
+    {
+      "t": "Erfolge",
+      "list": [
+        "Erstes Date: ein Date im Date-Roulette.",
+        "Casanova: drei Dates mit mindestens 7 Herzen.",
+        "Club-Besitzer: 1000 im Clubnacht-Manager verdient; Club-Tycoon: 100.000.",
+        "Rave-Königin: 8000 Punkte im Regenbogen-Rave.",
+        "Stilikone: 36 Punkte im Outfit-Check.",
+        "Wissens-Diva: 140 Punkte im Klischee-Quiz.",
+        "Tanzbär: 10 Runden im Tanzbattle.",
+        "Sprungbrett-Star: 400 Punkte beim Strandbad-Sprung.",
+        "Superstar: 2500 Punkte beim Karaoke.",
+        "Saunameister: 450 Punkte beim Sauna-Aufguss.",
+        "Nachtschwärmer: 550 Punkte in der Dunkelkammer.",
+        "Nachwuchsstar: 800 Punkte beim Casting-Tag.",
+        "Muskelprotz: 12 Wiederholungen beim Beinetag.",
+        "Match-Meisterin: 2500 Punkte im Glitzer-Match.",
+        "Paradenläufer: 600 Punkte im Parade-Runner."
+      ]
+    },
+    {
+      "t": "Geheimnisse und Extras",
+      "list": [
+        "Der Leuchtturm an der Crystal Coast bringt einmalig 10 Glitzer.",
+        "Beim Angeln an der Crystal Coast fängst du Fisch fürs Kochen.",
+        "Die Tiefen Gespräche schalten die Geschichten der Dating-Figuren frei – Dennis ist anfangs noch nicht bereit für Flirts und öffnet sich erst nach seiner Geschichte.",
+        "Mit deinem Partner kannst du am Ende eines Dates gemeinsam nach Hause gehen (feste Beziehung, Romantik ab 70) – nur angedeutet per Szenenwechsel."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Ist mein Speicherstand weg?",
+      "a": "Der Spielstand liegt lokal auf dem Gerät. Gelöschte Browserdaten oder privates Surfen löschen ihn. Mit dem Google-Konto-Abgleich kannst du ihn sichern. Speichere vor dem Schließen im Pausenmenü oder am Laptop."
+    },
+    {
+      "q": "Die 3D-Stadt startet nicht.",
+      "a": "Gay Life! braucht WebGL und lädt die 3D-Grafik aus dem Internet. Ohne WebGL bleiben die Minispiele spielbar. Bei Ruckeln die Grafik in den Einstellungen niedriger stellen; „Automatisch“ senkt die Auflösung selbst."
+    },
+    {
+      "q": "Warum kann ich nicht arbeiten?",
+      "a": "Prüfe die Öffnungszeiten, deine Energie (mindestens 25) und ob du heute schon zwei Schichten hattest. DJ geht erst ab Barkeeper-Stufe 2."
+    },
+    {
+      "q": "Ich finde eine Person nicht.",
+      "a": "Alle haben einen Tagesplan und sind nachts zu Hause. In den Kontakten bzw. in der App „Bewohner“ siehst du, wo sie gerade sind."
+    },
+    {
+      "q": "Mehrspieler verbindet nicht.",
+      "a": "Alle Geräte brauchen Internet. Prüfe die 6-stellige PIN oder scanne den QR-Code. Ein Raum hat Platz für bis zu 4 Spieler; Mitspieler siehst du nur, wenn ihr am selben Ort seid."
+    },
+    {
+      "q": "Läuft die Zeit in der Pause weiter?",
+      "a": "Ja, das Pausenmenü hält die Stadt nicht an. Nur im Charakter-Editor pausiert die Welt."
+    }
+  ]
+}

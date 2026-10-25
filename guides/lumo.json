@@ -1,222 +1,209 @@
 {
-  "id": "lumo",
-  "handbuch": [
-    {
-      "t": "Ziel des Spiels",
-      "p": [
-        "Lumo – Wolkenpfad ist ein klassisches Jump-and-Run im 16-Bit-Stil. Du steuerst Lumo von links nach rechts durch die Level, springst über Gruben und Stacheln, besiegst Gegner durch Draufspringen, sammelst Münzen und erreichst am Ende jedes Levels die Fahnenstange.",
-        "Das Abenteuer hat 20 Level in vier Welten. Nach jeder Welt folgt ein Münzgarten als Bonusrunde. Hast du das letzte Level geschafft, erscheint der Abspann „ENDE – LUMO HAT DEN WOLKENPFAD GEMEISTERT!“."
-      ]
-    },
-    {
-      "t": "Titelbildschirm und Menü",
-      "list": [
-        "NEUES SPIEL: startet ab Welt 1-1 mit 3 Leben, 0 Punkten und 0 Münzen.",
-        "WEITER (z. B. 2-3): erscheint, sobald du über das erste Level hinausgekommen bist, und setzt beim zuletzt erreichten Level fort – wieder mit 3 Leben und 0 Punkten.",
-        "Mit Pfeil runter oder S wechselst du den Menüpunkt, mit Enter, Leertaste oder Controller-A bestätigst du. Du kannst die Menüpunkte auch direkt antippen oder anklicken.",
-        "Unter dem Menü steht dein HI-SCORE.",
-        "Oben rechts gibt es die Leiste mit ♫ An/Aus (Musik und Töne), Ⅱ Pause, ⛶ Vollbild und ← Spiele (zurück zur Spieleliste).",
-        "Im Feld unten auf dem Titelbildschirm stehen die Kurzsteuerung und der Bereich „☁ Google-Speicher & Spielstand“."
-      ]
-    },
-    {
-      "t": "Spielablauf und Anzeige",
-      "p": [
-        "Vor jedem Level zeigt eine Tafel kurz den Levelnamen (z. B. WELT 1-1), den Namen der Welt und deine Leben. Danach läuft die Zeit."
-      ],
-      "list": [
-        "Oben links: LUMO x03 = deine Leben, daneben ★ mit den restlichen Sekunden der Sternzeit und ◎ = gesammelte Münzen.",
-        "Oben Mitte: WELT und Levelname, oben rechts: deine Punkte.",
-        "Unten links: ZEIT – sie läuft rückwärts und wird unter 60 rot. Unten rechts: der Name der Welt.",
-        "Läuft die Zeit ab, verlierst du ein Leben („Zeit abgelaufen“). Fällst du in eine Grube, heißt es „Abgestürzt“, bei einem Treffer „Erwischt“.",
-        "Nach einem verlorenen Leben beginnt das Level von vorn. Sind alle Leben weg, kommt GAME OVER mit Punkten und Hi-Score; Enter bringt dich zum Titel (oder nach kurzer Zeit automatisch).",
-        "Erreichst du die Fahnenstange, heißt es „WELT … GESCHAFFT!“ und es gibt einen ZEITBONUS von 50 Punkten pro übriger Sekunde."
-      ]
-    },
-    {
-      "t": "Welten und Level",
-      "list": [
-        "Welt 1 – Wolkenwiese: Level 1-1 bis 1-5, danach Bonus 1-B.",
-        "Welt 2 – Bernsteinhöhlen: Level 2-1 bis 2-5, danach Bonus 2-B.",
-        "Welt 3 – Frostgipfel: Level 3-1 bis 3-5, danach Bonus 3-B.",
-        "Welt 4 – Sternenschloss (Nachthimmel mit Sternen): Level 4-1 bis 4-5, danach Bonus 4-B und der Abspann.",
-        "Das erste Level jeder Welt ist von Hand gebaut, die übrigen vier werden nach festen Regeln erzeugt – sie sehen bei jedem Spiel gleich aus.",
-        "Die Zeit pro Level sinkt langsam: 1-1 hat 300 Sekunden, 2-1 und 3-1 je 280, 4-1 und 4-5 nur 260."
-      ]
-    },
-    {
-      "t": "Blöcke, Gegenstände und Gefahren",
-      "list": [
-        "Gelber ?-Block: von unten anstoßen = 1 Münze (200 Punkte), danach ist er leer (braun).",
-        "Blauer +-Block: gibt einen Schutzpilz, der losläuft. Einsammeln macht Lumo groß (1000 Punkte).",
-        "Lila ★-Block: gibt einen Stern (1000 Punkte) – etwa 8 Sekunden unbesiegbar, jeder berührte Gegner fliegt weg (200 Punkte).",
-        "Ziegel: Als großer Lumo zerschlägst du sie von unten (50 Punkte), klein prallst du nur ab.",
-        "Grüne Säulen sind feste Hindernisse, auf die du springen kannst.",
-        "Bewegliche Plattformen pendeln hin und her und nehmen dich mit.",
-        "Herz: ein Extraleben (1UP). Auch je 100 Münzen gibt es ein Extraleben.",
-        "Stachelspitzen am Boden: Berührung ist ein Treffer.",
-        "Gruben: hineinfallen kostet sofort ein Leben, auch wenn du groß bist."
-      ]
-    },
-    {
-      "t": "Gegner",
-      "list": [
-        "Krabbler: läuft hin und her und dreht an Kanten und Wänden um. Draufspringen besiegt ihn (100 Punkte).",
-        "Hüpfer: oranger Pilz mit Beinen, springt von allein in die Luft. Ebenfalls durch Draufspringen besiegbar.",
-        "Fledermaus: fliegt in Wellen hin und her in der Luft. Von oben treffen besiegt sie.",
-        "Stachelkäfer: rot mit grauen Stacheln – kann nicht getreten werden. Nur ausweichen oder mit einem Stern umrennen.",
-        "Seitliche Berührung mit einem Gegner ist ein Treffer: Bist du groß, wirst du klein und bist 2 Sekunden lang unverwundbar (Lumo blinkt), bist du klein, verlierst du ein Leben."
-      ]
-    },
-    {
-      "t": "Bedienung",
-      "list": [
-        "Touch: unten links ◀ und ▶ laufen, unten rechts der rote A-Knopf springt. Die Knöpfe erscheinen nur während des Spiels.",
-        "Tastatur: Pfeil links/rechts oder A/D laufen; Leertaste, Z, Pfeil hoch oder W springen; P oder Esc Pause, P, Esc oder Enter weiter. Im Titel Pfeil runter/S zum Wählen, Enter zum Starten.",
-        "Gamecontroller: Steuerkreuz oder linker Stick laufen (hoch springt ebenfalls), A springen, X oder Start bestätigen, B oder Select Pause.",
-        "Je länger du Springen gedrückt hältst, desto höher springst du. Lässt du früh los, bleibt der Sprung kurz.",
-        "Wechselst du das Fenster oder die App, pausiert das Spiel von selbst."
-      ]
-    },
-    {
-      "t": "Punkte, Leben und Speichern",
-      "list": [
-        "Münze 200, Gegner treten 100, Gegner mit Stern 200, Ziegel 50, Schutzpilz 1000, Stern 1000, Zeitbonus 50 je Sekunde.",
-        "Start mit 3 Leben; Extraleben durch Herzen und alle 100 Münzen.",
-        "Gespeichert werden automatisch auf dem Gerät: Hi-Score, das zuletzt erreichte Level (für WEITER) und deine Bestzeit je Level.",
-        "Mit „☁ Google-Speicher & Spielstand“ meldest du dich bei Google an und behältst Fortschritt und Bestwerte auf allen Geräten.",
-        "Die Einstellung Ton an/aus merkt sich das Spiel ebenfalls."
-      ]
-    }
-  ],
-  "ratgeber": [
-    {
-      "t": "Tipps für Einsteiger",
-      "list": [
-        "Nimm dir Zeit: 260 bis 300 Sekunden reichen locker. Lieber einmal stehen bleiben und die Gegnerbewegung beobachten.",
-        "Stoße jeden +-Block an. Als großer Lumo hast du einen Treffer frei.",
-        "Springe Gegnern von oben auf den Kopf – seitlich berühren kostet immer.",
-        "Bei Gruben früh abspringen: Das Spiel verzeiht einen kurzen Moment nach der Kante, und ein knapp vor der Landung gedrückter Sprung wird gemerkt.",
-        "Stachelkäfer erkennst du an den grauen Stacheln. Einfach drüberspringen."
-      ]
-    },
-    {
-      "t": "Strategien für Fortgeschrittene",
-      "list": [
-        "Halte beim Treten die Sprungtaste gedrückt: Dann federst du deutlich höher vom Gegner ab und erreichst damit hohe Plattformen oder Münzreihen.",
-        "Kurze Sprünge (Taste nur antippen) sind unter niedrigen Decken und zwischen Stacheln sicherer als volle Sprünge.",
-        "Fledermäuse fliegen in Wellen – warte, bis sie oben sind, und laufe dann darunter durch, oder triff sie von oben, wenn sie unten sind.",
-        "Hüpfer lieber angehen, wenn sie gerade gelandet sind; in der Luft treffen sie dich leicht von unten.",
-        "Auf beweglichen Plattformen nicht hektisch laufen – sie tragen dich mit.",
-        "Ab etwa der Mitte des Spiels werden Gruben bis zu drei Felder breit und es gibt mehr Stachelkäfer und Hüpfer. Volle Sprünge mit Anlauf einplanen."
-      ]
-    },
-    {
-      "t": "Profi-Tricks für den Hi-Score",
-      "list": [
-        "Der Zeitbonus ist der größte Punkteblock: 200 übrige Sekunden bringen 10.000 Punkte. Schnelle Durchläufe lohnen sich mehr als jede Münze.",
-        "Münzen sind trotzdem doppelt wertvoll: 200 Punkte und alle 100 Stück ein Leben.",
-        "Mit einem Stern einfach durchrennen – jeder Gegner bringt 200 statt 100 Punkte und die Stacheln stören nicht.",
-        "Als großer Lumo Ziegel zerschlagen bringt kleine Extrapunkte und öffnet manchmal einen Weg nach oben.",
-        "Im Münzgarten zählt jede Sekunde – laufe ohne Pause und sammle zuerst die langen Münzreihen."
-      ]
-    },
-    {
-      "t": "Häufige Fehler",
-      "list": [
-        "Groß sein schützt nicht vor Gruben – ein Absturz kostet immer ein Leben.",
-        "Stachelkäfer treten wollen: Das ist immer ein Treffer.",
-        "Nach einem Treffer sofort weiterrennen: Die 2 Sekunden Unverwundbarkeit sind kurz, danach trifft dich derselbe Gegner erneut.",
-        "WEITER startet mit 0 Punkten. Für einen hohen Hi-Score lohnt sich ein kompletter Lauf mit NEUES SPIEL."
-      ]
-    }
-  ],
-  "loesung": [
-    {
-      "t": "Komplettlösung Welt 1 – Wolkenwiese",
-      "list": [
-        "1-1 (300 Sekunden, handgebaut): Gleich am Anfang hängen ?-Blöcke mit Münzen in der Luft. Etwa in der Mitte des Levels wartet eine Reihe mit Ziegeln und einem +-Block (Schutzpilz) sowie dahinter ein lila ★-Block. Im ersten Drittel schwebt ein Herz (Extraleben) in der Luft, in der Levelmitte fliegt eine Fledermaus. Am Boden laufen Krabbler und ein Hüpfer, im hinteren Teil wartet ein Stachelkäfer vor der grünen Säule. Eine doppelte Stachelspitze liegt in der Mitte, eine einzelne kurz vor dem Ziel – drüberspringen. Die Gruben sind 2 bis 3 Felder breit. Die Fahne steht am Ende.",
-        "1-2 bis 1-5 (298 bis 292 Sekunden): erzeugte Level mit Gruben von 1 bis 2 Feldern, Plattformen mit Münzen darüber, ?-Reihen (manchmal mit +-Block), Münzreihen knapp über dem Boden, einzelnen Stacheln oder Säulen und einem Stern am Boden etwa in der Levelmitte. Überwiegend Krabbler.",
-        "1-B Münzgarten: 20 Sekunden, keine Gegner, keine Gruben. Sechs Stufen mit je vier Münzen und eine lange Münzreihe oben. Das Level endet mit der Zeit, nicht an einer Fahne."
-      ]
-    },
-    {
-      "t": "Komplettlösung Welt 2 und 3",
-      "list": [
-        "2-1 Bernsteinhöhlen (280 Sekunden, handgebaut): Am Start ?-Blöcke, darüber in der Mitte ein +-Block zwischen zwei ?-Blöcken. Links davon liegen bewegliche Plattformen. Rechts davon hängt ein ★-Block, gleich dahinter schwebt ein Stern frei in der Luft. Eine Fledermaus kreist früh im Level. Am Boden: Krabbler, ein Hüpfer und ein Stachelkäfer; eine Stachelspitze sitzt neben einer Plattform. Die Gruben sind hier bis zu 4 Felder breit – mit Anlauf springen.",
-        "2-2 bis 2-5 (289 bis 281 Sekunden): mehr Hüpfer und Fledermäuse, ab 2-4 werden Gruben bis zu 3 Felder breit und in ?-Reihen kann ein ★-Block stecken.",
-        "3-1 Frostgipfel (280 Sekunden, handgebaut): Ein +-Block und kurz dahinter ein ★-Block hängen im Mittelteil, rechts davon schwebt ein Herz, weiter hinten fliegt eine Fledermaus. Bewegliche Plattformen kommen erst kurz vor dem Ziel. Am Boden viele Krabbler, ein Hüpfer, ein Stachelkäfer und zwei Stachelspitzen. Die Gruben sind 3 bis 5 Felder breit – die größten des Spiels, also vollen Anlauf nehmen.",
-        "3-2 bis 3-5 (277 bis 271 Sekunden): Stachelkäfer und Hüpfer häufen sich, Stacheln ersetzen immer öfter die Säulen.",
-        "2-B und 3-B: Münzgärten wie 1-B, nur in den Farben der Welt."
-      ]
-    },
-    {
-      "t": "Komplettlösung Welt 4 – Sternenschloss",
-      "list": [
-        "4-1 (260 Sekunden, handgebaut): Ein Herz hängt weit hinten in der Luft, ein ?-Ziegel-+-Block-Paket liegt im hinteren Drittel. Bewegliche Plattformen und viele kleine Plattformen bilden einen Weg in der Höhe; ein frei schwebender Stern wartet im hinteren Teil. Säulen, ein Stachelkäfer, Krabbler, ein Hüpfer und zwei Stachelspitzen bewachen den Boden; eine Fledermaus fliegt im hinteren Teil.",
-        "4-2 bis 4-5 (266 bis 260 Sekunden): die schwersten Level. Viele Stachelkäfer, Hüpfer und Fledermäuse, Gruben bis 3 Felder. Nimm jeden Schutzpilz mit und nutze den Stern in der Levelmitte zum Durchrennen.",
-        "4-B: letzter Münzgarten. Danach erscheint ENDE mit deinen Punkten; Enter bringt dich zurück zum Titel."
-      ]
-    },
-    {
-      "t": "Freischaltungen und Geheimnisse",
-      "list": [
-        "Es gibt keine Figuren oder Gegenstände zum Freischalten. Freigeschaltet wird nur der Menüpunkt WEITER mit dem zuletzt erreichten Level.",
-        "Jedes Level hat genau einen Stern am Boden in der Levelmitte; in späteren Leveln kann zusätzlich ein ★-Block in einer ?-Reihe stecken.",
-        "Die erzeugten Level sind fest: Wer sich eine schwere Stelle merkt, findet sie beim nächsten Versuch genau so wieder.",
-        "Der Stern hält ungefähr 8 Sekunden; die Restzeit siehst du oben links neben dem ★."
-      ]
-    },
-    {
-      "t": "Wertungstabelle",
-      "list": [
-        "Münze (auch aus ?-Blöcken): 200 Punkte",
-        "Gegner treten: 100 Punkte",
-        "Gegner mit Stern umrennen: 200 Punkte",
-        "Ziegel zerschlagen (nur groß): 50 Punkte",
-        "Schutzpilz oder Stern einsammeln: je 1000 Punkte",
-        "Zeitbonus im Ziel: 50 Punkte pro übriger Sekunde",
-        "Herz und je 100 Münzen: 1 Extraleben"
-      ]
-    }
-  ],
-  "faq": [
-    {
-      "q": "Wo ist mein Spielstand?",
-      "a": "Hi-Score und das erreichte Level werden automatisch auf diesem Gerät im Browser gespeichert. Löschst du die Website-Daten, ist er weg. Mit „☁ Google-Speicher & Spielstand“ auf dem Titelbildschirm bleibt er auf allen Geräten erhalten."
-    },
-    {
-      "q": "Warum fange ich bei WEITER mit 3 Leben und 0 Punkten an?",
-      "a": "WEITER merkt sich nur das Level, nicht Leben, Münzen und Punkte. Du startest dort wie bei einem neuen Spiel."
-    },
-    {
-      "q": "Ich höre keine Musik.",
-      "a": "Browser spielen Ton erst nach der ersten Berührung oder Taste ab. Prüfe außerdem oben rechts den Knopf ♫ – steht dort „♫ Aus“, tippe ihn an."
-    },
-    {
-      "q": "Kann ich mit dem Controller spielen?",
-      "a": "Ja. Steuerkreuz oder Stick laufen, A springt, X oder Start bestätigt im Menü, B oder Select pausiert."
-    },
-    {
-      "q": "Warum kann ich den roten Käfer nicht treten?",
-      "a": "Das ist der Stachelkäfer. Er ist nur mit einem Stern zu besiegen – sonst drüberspringen oder ausweichen."
-    },
-    {
-      "q": "Gibt es einen Mehrspieler-Modus?",
-      "a": "Nein, Lumo ist ein Einzelspieler-Spiel."
-    }
-  ],
-  "kurz": {
-    "anleitung": "Lumo – Wolkenpfad ist ein Retro-Jump-and-Run im 16-Bit-Stil: Lauf mit Lumo durch 20 Level in vier Welten (Wolkenwiese, Bernsteinhöhlen, Frostgipfel, Sternenschloss) bis zur Fahnenstange. Springe Krabblern, Hüpfern und Fledermäusen auf den Kopf – nur den Stachelkäfer darfst du nicht treten. ?-Blöcke geben Münzen, der +-Block einen Schutzpilz (macht dich groß und schützt einmal), der ★-Block einen Stern (kurz unbesiegbar). Herzen und je 100 Münzen bringen ein Extraleben. Nach jeder Welt folgt ein Münzgarten als 20-Sekunden-Bonusrunde. Übrige Zeit gibt 50 Punkte pro Sekunde. Fortschritt und Hi-Score werden gespeichert, mit Google auch geräteübergreifend.",
-    "steuerung": [
-      "Touch: ◀ ▶ unten links laufen, roter A-Knopf springen.",
-      "PC: Pfeil links/rechts oder A/D laufen, Leertaste, Z, Pfeil hoch oder W springen, P oder Esc Pause; im Titel Pfeil runter wählen, Enter starten.",
-      "Controller: Steuerkreuz/Stick laufen, A springen, X oder Start bestätigen, B oder Select Pause."
-    ],
-    "tipps": [
-      "Sprungtaste länger halten = höher springen; beim Treten halten = höher abfedern.",
-      "Der Zeitbonus bringt die meisten Punkte – zügig zur Fahne laufen.",
-      "Groß sein schützt nicht vor Gruben."
-    ]
+ "id": "lumo",
+ "handbuch": [
+  {
+   "t": "Ziel des Spiels",
+   "p": [
+    "Lumo – Wolkenpfad ist ein klassisches Jump-and-Run im 16-Bit-Stil. Du steuerst Lumo von links nach rechts durch die Level, springst über Gruben und Stacheln, besiegst Gegner durch Draufspringen, sammelst Münzen und erreichst am Ende jedes Levels die Fahnenstange.",
+    "Das Abenteuer hat 20 Level in vier Welten. Nach jeder Welt folgt ein Münzgarten als Bonusrunde. Hast du das letzte Level geschafft, erscheint der Abspann „ENDE – LUMO HAT DEN WOLKENPFAD GEMEISTERT!“."
+   ]
+  },
+  {
+   "t": "Titelbildschirm und Menü",
+   "list": [
+    "NEUES SPIEL: startet ab Welt 1-1 mit 3 Leben, 0 Punkten und 0 Münzen.",
+    "WEITER (z. B. 2-3): erscheint, sobald du über das erste Level hinausgekommen bist, und setzt beim zuletzt erreichten Level fort – wieder mit 3 Leben und 0 Punkten.",
+    "Mit Pfeil runter oder S wechselst du den Menüpunkt, mit Enter, Leertaste oder Controller-A bestätigst du. Du kannst die Menüpunkte auch direkt antippen oder anklicken.",
+    "Unter dem Menü steht dein HI-SCORE.",
+    "Oben rechts gibt es die Leiste mit ♫ An/Aus (Musik und Töne), Ⅱ Pause, ⛶ Vollbild und ← Spiele (zurück zur Spieleliste).",
+    "Im Feld unten auf dem Titelbildschirm stehen die Kurzsteuerung und der Bereich „☁ Google-Speicher & Spielstand“."
+   ]
+  },
+  {
+   "t": "Spielablauf und Anzeige",
+   "p": [
+    "Vor jedem Level zeigt eine Tafel kurz den Levelnamen (z. B. WELT 1-1), den Namen der Welt und deine Leben. Danach läuft die Zeit."
+   ],
+   "list": [
+    "Oben links: LUMO x03 = deine Leben, daneben ★ mit den restlichen Sekunden der Sternzeit und ◎ = gesammelte Münzen.",
+    "Oben Mitte: WELT und Levelname, oben rechts: deine Punkte.",
+    "Unten links: ZEIT – sie läuft rückwärts und wird unter 60 rot. Unten rechts: der Name der Welt.",
+    "Läuft die Zeit ab, verlierst du ein Leben („Zeit abgelaufen“). Fällst du in eine Grube, heißt es „Abgestürzt“, bei einem Treffer „Erwischt“.",
+    "Nach einem verlorenen Leben beginnt das Level von vorn. Sind alle Leben weg, kommt GAME OVER mit Punkten und Hi-Score; Enter bringt dich zum Titel (oder nach kurzer Zeit automatisch).",
+    "Erreichst du die Fahnenstange, heißt es „WELT … GESCHAFFT!“ und es gibt einen ZEITBONUS von 50 Punkten pro übriger Sekunde."
+   ]
+  },
+  {
+   "t": "Welten und Level",
+   "list": [
+    "Welt 1 – Wolkenwiese: Level 1-1 bis 1-5, danach Bonus 1-B.",
+    "Welt 2 – Bernsteinhöhlen: Level 2-1 bis 2-5, danach Bonus 2-B.",
+    "Welt 3 – Frostgipfel: Level 3-1 bis 3-5, danach Bonus 3-B.",
+    "Welt 4 – Sternenschloss (Nachthimmel mit Sternen): Level 4-1 bis 4-5, danach Bonus 4-B und der Abspann.",
+    "Das erste Level jeder Welt ist von Hand gebaut, die übrigen vier werden nach festen Regeln erzeugt – sie sehen bei jedem Spiel gleich aus.",
+    "Die Zeit pro Level sinkt langsam: 1-1 hat 300 Sekunden, 2-1 und 3-1 je 280, 4-1 und 4-5 nur 260."
+   ]
+  },
+  {
+   "t": "Blöcke, Gegenstände und Gefahren",
+   "list": [
+    "Gelber ?-Block: von unten anstoßen = 1 Münze (200 Punkte), danach ist er leer (braun).",
+    "Blauer +-Block: gibt einen Schutzpilz, der losläuft. Einsammeln macht Lumo groß (1000 Punkte).",
+    "Lila ★-Block: gibt einen Stern (1000 Punkte) – etwa 8 Sekunden unbesiegbar, jeder berührte Gegner fliegt weg (200 Punkte).",
+    "Ziegel: Als großer Lumo zerschlägst du sie von unten (50 Punkte), klein prallst du nur ab.",
+    "Grüne Säulen sind feste Hindernisse, auf die du springen kannst.",
+    "Bewegliche Plattformen pendeln hin und her und nehmen dich mit.",
+    "Herz: ein Extraleben (1UP). Auch je 100 Münzen gibt es ein Extraleben.",
+    "Stachelspitzen am Boden: Berührung ist ein Treffer.",
+    "Gruben: hineinfallen kostet sofort ein Leben, auch wenn du groß bist."
+   ]
+  },
+  {
+   "t": "Gegner",
+   "list": [
+    "Krabbler: läuft hin und her und dreht an Kanten und Wänden um. Draufspringen besiegt ihn (100 Punkte).",
+    "Hüpfer: oranger Pilz mit Beinen, springt von allein in die Luft. Ebenfalls durch Draufspringen besiegbar.",
+    "Fledermaus: fliegt in Wellen hin und her in der Luft. Von oben treffen besiegt sie.",
+    "Stachelkäfer: rot mit grauen Stacheln – kann nicht getreten werden. Nur ausweichen oder mit einem Stern umrennen.",
+    "Seitliche Berührung mit einem Gegner ist ein Treffer: Bist du groß, wirst du klein und bist 2 Sekunden lang unverwundbar (Lumo blinkt), bist du klein, verlierst du ein Leben."
+   ]
+  },
+  {
+   "t": "Bedienung",
+   "list": [
+    "Touch: unten links ◀ und ▶ laufen, unten rechts der rote A-Knopf springt. Die Knöpfe erscheinen nur während des Spiels.",
+    "Tastatur: Pfeil links/rechts oder A/D laufen; Leertaste, Z, Pfeil hoch oder W springen; P oder Esc Pause, P, Esc oder Enter weiter. Im Titel Pfeil runter/S zum Wählen, Enter zum Starten.",
+    "Gamecontroller: Steuerkreuz oder linker Stick laufen (hoch springt ebenfalls), A springen, X oder Start bestätigen, B oder Select Pause.",
+    "Je länger du Springen gedrückt hältst, desto höher springst du. Lässt du früh los, bleibt der Sprung kurz.",
+    "Wechselst du das Fenster oder die App, pausiert das Spiel von selbst."
+   ]
+  },
+  {
+   "t": "Punkte, Leben und Speichern",
+   "list": [
+    "Münze 200, Gegner treten 100, Gegner mit Stern 200, Ziegel 50, Schutzpilz 1000, Stern 1000, Zeitbonus 50 je Sekunde.",
+    "Start mit 3 Leben; Extraleben durch Herzen und alle 100 Münzen.",
+    "Gespeichert werden automatisch auf dem Gerät: Hi-Score, das zuletzt erreichte Level (für WEITER) und deine Bestzeit je Level.",
+    "Mit „☁ Google-Speicher & Spielstand“ meldest du dich bei Google an und behältst Fortschritt und Bestwerte auf allen Geräten.",
+    "Die Einstellung Ton an/aus merkt sich das Spiel ebenfalls."
+   ]
   }
+ ],
+ "ratgeber": [
+  {
+   "t": "Tipps für Einsteiger",
+   "list": [
+    "Nimm dir Zeit: 260 bis 300 Sekunden reichen locker. Lieber einmal stehen bleiben und die Gegnerbewegung beobachten.",
+    "Stoße jeden +-Block an. Als großer Lumo hast du einen Treffer frei.",
+    "Springe Gegnern von oben auf den Kopf – seitlich berühren kostet immer.",
+    "Bei Gruben früh abspringen: Das Spiel verzeiht einen kurzen Moment nach der Kante, und ein knapp vor der Landung gedrückter Sprung wird gemerkt.",
+    "Stachelkäfer erkennst du an den grauen Stacheln. Einfach drüberspringen."
+   ]
+  },
+  {
+   "t": "Strategien für Fortgeschrittene",
+   "list": [
+    "Halte beim Treten die Sprungtaste gedrückt: Dann federst du deutlich höher vom Gegner ab und erreichst damit hohe Plattformen oder Münzreihen.",
+    "Kurze Sprünge (Taste nur antippen) sind unter niedrigen Decken und zwischen Stacheln sicherer als volle Sprünge.",
+    "Fledermäuse fliegen in Wellen – warte, bis sie oben sind, und laufe dann darunter durch, oder triff sie von oben, wenn sie unten sind.",
+    "Hüpfer lieber angehen, wenn sie gerade gelandet sind; in der Luft treffen sie dich leicht von unten.",
+    "Auf beweglichen Plattformen nicht hektisch laufen – sie tragen dich mit.",
+    "Ab etwa der Mitte des Spiels werden Gruben bis zu drei Felder breit und es gibt mehr Stachelkäfer und Hüpfer. Volle Sprünge mit Anlauf einplanen."
+   ]
+  },
+  {
+   "t": "Profi-Tricks für den Hi-Score",
+   "list": [
+    "Der Zeitbonus ist der größte Punkteblock: 200 übrige Sekunden bringen 10.000 Punkte. Schnelle Durchläufe lohnen sich mehr als jede Münze.",
+    "Münzen sind trotzdem doppelt wertvoll: 200 Punkte und alle 100 Stück ein Leben.",
+    "Mit einem Stern einfach durchrennen – jeder Gegner bringt 200 statt 100 Punkte und die Stacheln stören nicht.",
+    "Als großer Lumo Ziegel zerschlagen bringt kleine Extrapunkte und öffnet manchmal einen Weg nach oben.",
+    "Im Münzgarten zählt jede Sekunde – laufe ohne Pause und sammle zuerst die langen Münzreihen."
+   ]
+  },
+  {
+   "t": "Häufige Fehler",
+   "list": [
+    "Groß sein schützt nicht vor Gruben – ein Absturz kostet immer ein Leben.",
+    "Stachelkäfer treten wollen: Das ist immer ein Treffer.",
+    "Nach einem Treffer sofort weiterrennen: Die 2 Sekunden Unverwundbarkeit sind kurz, danach trifft dich derselbe Gegner erneut.",
+    "WEITER startet mit 0 Punkten. Für einen hohen Hi-Score lohnt sich ein kompletter Lauf mit NEUES SPIEL."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "Komplettlösung Welt 1 – Wolkenwiese",
+   "list": [
+    "1-1 (300 Sekunden, handgebaut): Gleich am Anfang hängen ?-Blöcke mit Münzen in der Luft. Etwa in der Mitte des Levels wartet eine Reihe mit Ziegeln und einem +-Block (Schutzpilz) sowie dahinter ein lila ★-Block. Im ersten Drittel schwebt ein Herz (Extraleben) in der Luft, in der Levelmitte fliegt eine Fledermaus. Am Boden laufen Krabbler und ein Hüpfer, im hinteren Teil wartet ein Stachelkäfer vor der grünen Säule. Eine doppelte Stachelspitze liegt in der Mitte, eine einzelne kurz vor dem Ziel – drüberspringen. Die Gruben sind 2 bis 3 Felder breit. Die Fahne steht am Ende.",
+    "1-2 bis 1-5 (298 bis 292 Sekunden): erzeugte Level mit Gruben von 1 bis 2 Feldern, Plattformen mit Münzen darüber, ?-Reihen (manchmal mit +-Block), Münzreihen knapp über dem Boden, einzelnen Stacheln oder Säulen und einem Stern am Boden etwa in der Levelmitte. Überwiegend Krabbler.",
+    "1-B Münzgarten: 20 Sekunden, keine Gegner, keine Gruben. Sechs Stufen mit je vier Münzen und eine lange Münzreihe oben. Das Level endet mit der Zeit, nicht an einer Fahne."
+   ]
+  },
+  {
+   "t": "Komplettlösung Welt 2 und 3",
+   "list": [
+    "2-1 Bernsteinhöhlen (280 Sekunden, handgebaut): Am Start ?-Blöcke, darüber in der Mitte ein +-Block zwischen zwei ?-Blöcken. Links davon liegen bewegliche Plattformen. Rechts davon hängt ein ★-Block, gleich dahinter schwebt ein Stern frei in der Luft. Eine Fledermaus kreist früh im Level. Am Boden: Krabbler, ein Hüpfer und ein Stachelkäfer; eine Stachelspitze sitzt neben einer Plattform. Die Gruben sind hier bis zu 4 Felder breit – mit Anlauf springen.",
+    "2-2 bis 2-5 (289 bis 281 Sekunden): mehr Hüpfer und Fledermäuse, ab 2-4 werden Gruben bis zu 3 Felder breit und in ?-Reihen kann ein ★-Block stecken.",
+    "3-1 Frostgipfel (280 Sekunden, handgebaut): Ein +-Block und kurz dahinter ein ★-Block hängen im Mittelteil, rechts davon schwebt ein Herz, weiter hinten fliegt eine Fledermaus. Bewegliche Plattformen kommen erst kurz vor dem Ziel. Am Boden viele Krabbler, ein Hüpfer, ein Stachelkäfer und zwei Stachelspitzen. Die Gruben sind 3 bis 5 Felder breit – die größten des Spiels, also vollen Anlauf nehmen.",
+    "3-2 bis 3-5 (277 bis 271 Sekunden): Stachelkäfer und Hüpfer häufen sich, Stacheln ersetzen immer öfter die Säulen.",
+    "2-B und 3-B: Münzgärten wie 1-B, nur in den Farben der Welt."
+   ]
+  },
+  {
+   "t": "Komplettlösung Welt 4 – Sternenschloss",
+   "list": [
+    "4-1 (260 Sekunden, handgebaut): Ein Herz hängt weit hinten in der Luft, ein ?-Ziegel-+-Block-Paket liegt im hinteren Drittel. Bewegliche Plattformen und viele kleine Plattformen bilden einen Weg in der Höhe; ein frei schwebender Stern wartet im hinteren Teil. Säulen, ein Stachelkäfer, Krabbler, ein Hüpfer und zwei Stachelspitzen bewachen den Boden; eine Fledermaus fliegt im hinteren Teil.",
+    "4-2 bis 4-5 (266 bis 260 Sekunden): die schwersten Level. Viele Stachelkäfer, Hüpfer und Fledermäuse, Gruben bis 3 Felder. Nimm jeden Schutzpilz mit und nutze den Stern in der Levelmitte zum Durchrennen.",
+    "4-B: letzter Münzgarten. Danach erscheint ENDE mit deinen Punkten; Enter bringt dich zurück zum Titel."
+   ]
+  },
+  {
+   "t": "Freischaltungen und Geheimnisse",
+   "list": [
+    "Es gibt keine Figuren oder Gegenstände zum Freischalten. Freigeschaltet wird nur der Menüpunkt WEITER mit dem zuletzt erreichten Level.",
+    "Jedes Level hat genau einen Stern am Boden in der Levelmitte; in späteren Leveln kann zusätzlich ein ★-Block in einer ?-Reihe stecken.",
+    "Die erzeugten Level sind fest: Wer sich eine schwere Stelle merkt, findet sie beim nächsten Versuch genau so wieder.",
+    "Der Stern hält ungefähr 8 Sekunden; die Restzeit siehst du oben links neben dem ★."
+   ]
+  },
+  {
+   "t": "Wertungstabelle",
+   "list": [
+    "Münze (auch aus ?-Blöcken): 200 Punkte",
+    "Gegner treten: 100 Punkte",
+    "Gegner mit Stern umrennen: 200 Punkte",
+    "Ziegel zerschlagen (nur groß): 50 Punkte",
+    "Schutzpilz oder Stern einsammeln: je 1000 Punkte",
+    "Zeitbonus im Ziel: 50 Punkte pro übriger Sekunde",
+    "Herz und je 100 Münzen: 1 Extraleben"
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Wo ist mein Spielstand?",
+   "a": "Hi-Score und das erreichte Level werden automatisch auf diesem Gerät im Browser gespeichert. Löschst du die Website-Daten, ist er weg. Mit „☁ Google-Speicher & Spielstand“ auf dem Titelbildschirm bleibt er auf allen Geräten erhalten."
+  },
+  {
+   "q": "Warum fange ich bei WEITER mit 3 Leben und 0 Punkten an?",
+   "a": "WEITER merkt sich nur das Level, nicht Leben, Münzen und Punkte. Du startest dort wie bei einem neuen Spiel."
+  },
+  {
+   "q": "Ich höre keine Musik.",
+   "a": "Browser spielen Ton erst nach der ersten Berührung oder Taste ab. Prüfe außerdem oben rechts den Knopf ♫ – steht dort „♫ Aus“, tippe ihn an."
+  },
+  {
+   "q": "Kann ich mit dem Controller spielen?",
+   "a": "Ja. Steuerkreuz oder Stick laufen, A springt, X oder Start bestätigt im Menü, B oder Select pausiert."
+  },
+  {
+   "q": "Warum kann ich den roten Käfer nicht treten?",
+   "a": "Das ist der Stachelkäfer. Er ist nur mit einem Stern zu besiegen – sonst drüberspringen oder ausweichen."
+  },
+  {
+   "q": "Gibt es einen Mehrspieler-Modus?",
+   "a": "Nein, Lumo ist ein Einzelspieler-Spiel."
+  }
+ ]
 }

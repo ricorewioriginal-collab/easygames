@@ -1,0 +1,285 @@
+{
+  "id": "anmacha-klotzfunk",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Klotzfunk 3D ist eine Voxel-Sandbox: Du baust Blöcke ab und setzt sie wieder, stellst Werkzeuge her, erkundest eine riesige Welt mit 15 Biomen, Höhlen, Dörfern und Funkstationen und baust ein eigenes Funknetz. Ein festes Ende gibt es nur im Story-Modus „Das große Rauschen“.",
+        "Die Welt besteht aus Landschaften wie Ebenen, Wäldern, Nadelwald, Bergen, Schnee, Wüste, Strand, Sumpf, Dschungel, Blumenwiesen, Vulkanen, Pilzwäldern, Kristallfeldern, Küsten und Meeren. Unter der Erde liegen Höhlen, Seen, Kohle, Kupfer, Eisen und leuchtende Funkkristalle."
+      ]
+    },
+    {
+      "t": "Hauptmenü und Welten",
+      "list": [
+        "▶ Weiterspielen: lädt die zuletzt gespielte Welt.",
+        "🌍 Welten: 3 Speicherplätze. Auf einem freien Platz gibst du einen Startwert ein (leer = Zufall, 🎲 würfelt) und wählst den Modus. Gespeicherte Welten zeigen Modus, Startwert und Datum; ⤓ sichert eine Welt als Datei, ↺ lädt eine ältere Sicherung, 🗑 löscht.",
+        "👥 Mitspielen: in der Welt eines Freundes spielen.",
+        "⚙ Einstellungen, ❔ Anleitung und ☁ Speicherdaten (Welt als .json-Datei importieren, optionale Google-Sicherung).",
+        "Neue Welten beginnen in einem Dorf."
+      ]
+    },
+    {
+      "t": "Die Spielmodi",
+      "list": [
+        "⛏ Überleben: Rohstoffe, Hunger und Herzen. Abbauen dauert je nach Härte, Werkzeuge machen es schneller und nutzen sich ab. Stürze aus großer Höhe, Ertrinken, Magma und Hunger kosten Herzen, Gegner greifen an (abschaltbar).",
+        "🕊 Kreativ: alle Blöcke unbegrenzt, Fliegen mit F oder doppelt Leertaste (Umschalt sinkt), Rückgängig mit Strg+Z oder ↶, Wiederholen mit Strg+Y, dazu Kopieren und Einfügen als Bauform. Dorfbewohner handeln hier nicht („Im Kreativmodus hast du doch schon alles!“).",
+        "📜 Story „Das große Rauschen“: 6 Kapitel mit 25 Aufträgen auf einer festen Story-Welt, mit den Überlebensregeln."
+      ]
+    },
+    {
+      "t": "Überleben im Detail",
+      "list": [
+        "Du hast 20 Lebenspunkte und 20 Sättigung. Bei hoher Sättigung (ab 16) heilst du alle 3 Sekunden einen Punkt. Laufen und vor allem Rennen machen hungrig. Bei leerem Magen verlierst du alle 4 Sekunden einen Punkt (bis auf den letzten).",
+        "Essen: Essen in der Hotbar wählen und Setzen drücken. Apfel 4, Rohes Fleisch 2, Brot 6, Braten 7.",
+        "Stürze schaden erst ab etwa 16 Blöcken Fallhöhe. Unter Wasser hast du begrenzt Luft.",
+        "Erze brauchen eine Spitzhacke; Eisen und Funkkristall mindestens eine aus Stein.",
+        "Felder: Mit der Hacke Gras oder Erde zu Ackerboden machen, Samen (manchmal aus Gras) daraufsetzen. Weizen wächst in etwa 4½ Minuten Spielzeit, 3 Weizen ergeben Brot.",
+        "Rüstung: Helm oder Harnisch wählen und Setzen drücken = anlegen.",
+        "Kippst du um, steht dort, warum. Je nach Einstellung behältst du den Vorrat oder er bleibt am Unglücksort liegen – der Wegpunkt 📍 zeigt dorthin. „Wieder aufstehen“ bringt dich zurück, „🏠 Zurück zum Startpunkt“ im Pausemenü ebenso."
+      ]
+    },
+    {
+      "t": "Besondere Blöcke, Bauformen und Fahrzeuge",
+      "list": [
+        "Seilhaken (Q oder Taste Haken): zieht dich bis zu 40 Blöcke weit zum Ziel. Sprungtaste im Fall halten: Gleiten.",
+        "Federblock: hohe Sprünge · Turbo-Block: doppeltes Tempo · Aufwind-Block: schwebt nach oben · Radio-Block: spielt Musik.",
+        "Bauformen (G oder ▦): Linie, Fläche, Wand, Säule – zwei Ecken setzen; im Kreativmodus auch Kopieren und Einfügen.",
+        "Boot (Bretter und Stock) aufs Wasser setzen, Lore (Eisen und Kupfer) auf eine Schiene. Setzen = einsteigen, Springen = aussteigen, Abbauen = einpacken. Im Boot paddelst du vor/zurück und lenkst links/rechts, in der Lore schiebt vor in Blickrichtung an, zurück bremst; sie folgt Kurven und Stufen.",
+        "B setzt einen Wegpunkt, M oder 🗺 öffnet die Weltkarte der entdeckten Gebiete mit Dörfern (🏘), Funkstationen (📻), Unglücksort (✝), Mitspielern und eigenen Markierungen (★ Hier markieren, 📍 Wegpunkt hierher)."
+      ]
+    },
+    {
+      "t": "Das Funknetz",
+      "list": [
+        "Ein Schalter (Setzen = umlegen) speist Signalleitungen und einen Funksender daneben.",
+        "Der Sender erreicht Relais und Empfänger bis 24 Blöcke weit, Relais tragen das Signal jeweils weiter.",
+        "Empfänger und Leitungen schalten Signallampen und Funktore daneben ein.",
+        "Alle Bauteile entstehen an der Werkbank."
+      ]
+    },
+    {
+      "t": "Steuerung",
+      "list": [
+        "PC: W A S D oder Pfeile laufen, Maus umschauen (Klick ins Bild fängt die Maus), Leertaste springen, Strg oder Umschalt rennen, Linksklick abbauen, Rechtsklick setzen (halten wiederholt), 1–9 oder Mausrad Block wählen, E Inventar, Q Seilhaken, M Weltkarte, B Wegpunkt, G Bauform, J Aufträge (Story), Esc Pause. Alle Tasten sind in den Einstellungen frei belegbar.",
+        "Inventar: Block auf einen Hotbar-Platz ziehen, Umschalt-Klick legt ihn in einen freien Platz, Hotbar-Platz ins Raster ziehen leert ihn. Sortierung nach Art, Name oder Menge, „nur Vorrat“. Beim Herstellen stellt Umschalt-Klick 5-mal her.",
+        "Touch: linke Hälfte wischen = laufen (weit ziehen = rennen), rechte Hälfte wischen = umschauen; Tasten Sprung, Runter, Abbauen, Setzen, Fliegen, Haken, dazu Hotbar, 🎒 Inventar, 🗺 Karte, 📍 Wegpunkt, ▦ Bauform, ↶ Rückgängig und ⏸ Pause. Tastengröße, Empfindlichkeit, Linkshänder und die Position der Tasten stellst du in den Einstellungen ein.",
+        "Gamepad: linker Stick laufen, rechter Stick umsehen, A springen, B runter und zurück, X Seilhaken, Y Inventar, LB/RB Hotbar, RT abbauen, LT setzen, L3 rennen, Select Karte, Start Pause."
+      ]
+    },
+    {
+      "t": "Mehrspieler",
+      "steps": [
+        "Gastgeber: Pause → 👥 Mehrspieler → „Einladung erstellen“ und den Code an den Freund schicken (zum Beispiel per Messenger).",
+        "Freund: Hauptmenü → „👥 Mitspielen“, Einladung einfügen, Namen eingeben, „Antwort erstellen“ und den Antwort-Code zurückschicken.",
+        "Gastgeber: Antwort-Code einfügen und „Verbinden“ drücken. Für jeden Freund eine eigene Einladung – bis zu 4 Gäste.",
+        "Mit „Über das Internet verbinden“ hilft ein öffentlicher STUN-Server durch den Router; ausgeschaltet geht es nur im selben WLAN. Gespielt wird direkt von Browser zu Browser, ohne Konto und Server; gespeichert wird beim Gastgeber."
+      ]
+    },
+    {
+      "t": "Speichern und Einstellungen",
+      "list": [
+        "Welten liegen nur in diesem Browser. Im Pausemenü gibt es 💾 Speichern; mit ⤓ sicherst du eine Welt als Datei, unter ☁ Speicherdaten lädst du sie wieder in einen freien Platz. Optional sichert die Google-Anmeldung deine Welten.",
+        "Pausemenü: Sichtweite, Tageszeit, ⏱ Zeit läuft, 👥 Mehrspieler, 📜 Aufträge, Ton, Vollbild, Hauptmenü.",
+        "Einstellungen: Grafik (Automatisch, Eco, Mobil, Standard, Hoch), Empfindlichkeiten, Tastengröße, drei Lautstärken (Effekte, Radio-Musik, Umgebung), Verhalten beim Umkippen, Linkshänder, Blick umkehren, Setzen-Wiederholung, Bildrate, Gegner im Überleben an/aus, Vorschau des nächsten Blocks, Tastenbelegung und Touch-Tasten verschieben."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Erst Holz sammeln, dann Bretter, Stöcke und eine Werkbank herstellen – daraus entstehen alle Werkzeuge.",
+        "Baue vor der ersten Nacht einen kleinen Unterschlupf mit einem Leuchtblock. Rauschlinge verfolgen dich nur, wenn sie dich sehen.",
+        "Mach so früh wie möglich eine Steinspitzhacke – erst dann geben Eisen und Funkkristall etwas her.",
+        "Im Dorf gibt es Felder und Händler. Ernte reifen Weizen und tausche ihn.",
+        "Iss, bevor die Sättigung ganz leer ist: Nur mit hoher Sättigung heilst du dich."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Lege früh ein eigenes Weizenfeld an: Weizen ist die Hauptwährung im Dorf (Kupferbarren, Werkzeug, Wolle, Braten).",
+        "Mit Kohle im Schmelzofen sparst du Holz: 4 Fleisch + 1 Kohle = 4 Braten, 3 Sand + 1 Kohle = 3 Glas.",
+        "Ein Funkkristall + 1 Glas ergibt 4 Leuchtblöcke – die günstigste Lichtquelle in der Tiefe.",
+        "Setze einen Wegpunkt (B), bevor du in Höhlen absteigst – so findest du zurück.",
+        "Seilhaken und Gleiten machen Erkundung viel schneller: vom Berg springen, Sprungtaste halten und gleiten.",
+        "Mit der Bauform Säule oder Wand baust du Türme und Mauern in Sekunden – ideal für den Funkturm."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Turbo-Blöcke als Wege verdoppeln dein Tempo, Federblöcke und Aufwind-Blöcke ersetzen Treppen.",
+        "Die Eisenspitzhacke gibt es beim Schmied auch für 2 Funkkristalle und 8 Weizen.",
+        "Für die Verbindung über 40 Blöcke: Sender, dann alle höchstens 24 Blöcke ein Relais, am Ende der Empfänger.",
+        "Stelle „Vorrat behalten“ ein, wenn du ohne Risiko spielen willst; mit „Vorrat bleibt liegen“ musst du ihn am Unglücksort abholen.",
+        "Bei ruckelndem Bild die Grafik auf Eco oder Mobil stellen; Automatisch senkt zuerst die Auflösung, dann die Sichtweite."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Eisenerz mit der Holzspitzhacke abbauen: Das bringt nichts – erst die Steinspitzhacke herstellen.",
+        "Ohne Licht tief graben: In tiefen Höhlen warten Höhlenwesen.",
+        "Aus großer Höhe springen: Ab etwa 16 Blöcken Fallhöhe kostet der Aufprall Herzen – lieber gleiten.",
+        "Welt nicht sichern: Welten liegen nur im Browser. Exportiere wichtige Welten mit ⤓ als Datei."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Story „Das große Rauschen“: Überblick",
+      "p": [
+        "Die Story hat 6 Kapitel mit 25 Aufträgen. Es gelten die Überlebensregeln. Der aktuelle Auftrag steht links (J blendet ihn aus), die ganze Liste steht im Pausemenü unter 📜 Aufträge. Jeder erledigte Auftrag bringt eine Belohnung in den Vorrat."
+      ]
+    },
+    {
+      "t": "Kapitel 1: Das erste Signal",
+      "steps": [
+        "Holz sammeln: 6 Holzblöcke (Holz oder Fichtenholz) abschlagen. Belohnung: 4 Bretter.",
+        "Werkbank: Im Inventar (E oder 🎒) Bretter und daraus eine Werkbank herstellen. Belohnung: 4 Stöcke.",
+        "Erstes Werkzeug: Werkbank setzen, Setzen auf sie drücken, Holzspitzhacke herstellen. Belohnung: 3 Äpfel.",
+        "Unterschlupf: 20 Blöcke (Bretter, Stein, Bruchstein, Erde, Holz, Fichtenholz, Ziegel, Sandstein, Glas oder Marmor) setzen. Belohnung: 2 Leuchtblöcke.",
+        "Licht für die Nacht: Einen Leuchtblock setzen. Belohnung: 2 Brot.",
+        "Das erste Signal: Ein Radio herstellen (4 Bretter und 1 Leuchtblock) und setzen. Belohnung: 2 Braten."
+      ]
+    },
+    {
+      "t": "Kapitel 2: Der vergessene Sender",
+      "steps": [
+        "Das Dorf: Dem Wegpunkt 📍 bis ins Dorf folgen. Belohnung: 2 Brot.",
+        "Erste Kontakte: Setzen-Taste auf einen Dorfbewohner. Belohnung: 4 Weizensamen.",
+        "Erntezeit: 6 Weizen sammeln (Dorffeld oder eigenes Feld). Belohnung: 1 Brot.",
+        "Tauschhandel: Einmal mit einem Dorfbewohner tauschen. Belohnung: 1 Kupferbarren."
+      ]
+    },
+    {
+      "t": "Kapitel 3: Stimmen aus der Tiefe",
+      "steps": [
+        "Steinwerkzeug: Steinspitzhacke an der Werkbank herstellen. Belohnung: 4 Leuchtblöcke.",
+        "Abstieg: In einer Höhle unter Höhe 18 steigen (Y-Wert oben links). Belohnung: 2 Braten.",
+        "Kupfer schmelzen: Schmelzofen bauen (8 Stein) und 3 Kupferbarren aus Kupfererz und Kohle schmelzen. Belohnung: 4 Kohleerz.",
+        "Funkkristalle: 3 Funkkristalle sammeln. Belohnung: 2 Eisenbarren."
+      ]
+    },
+    {
+      "t": "Kapitel 4: Die zerbrochene Verbindung",
+      "steps": [
+        "Der Funksender: Funksender bauen (2 Kupferbarren, 1 Funkkristall, 1 Radio) und setzen. Belohnung: 8 Signalleitungen.",
+        "Strom drauf: Einen Schalter direkt neben den Sender setzen (oder mit Leitungen verbinden) und einschalten. Belohnung: 2 Kupferbarren.",
+        "Relais: Funkrelais bauen (1 Kupferbarren, 1 Funkkristall, 2 Stein) und höchstens 24 Blöcke vom Sender setzen. Belohnung: 1 Funkkristall und 1 Kupferbarren.",
+        "Die Verbindung: Einen Empfänger mindestens 40 Blöcke vom eingeschalteten Sender zum Leuchten bringen (über das Relais). Belohnung: 3 Eisenbarren."
+      ]
+    },
+    {
+      "t": "Kapitel 5: Das Herz des Rauschens",
+      "steps": [
+        "Gerüstet: Kupfer- oder Eisenhelm bzw. -harnisch herstellen und anlegen. Belohnung: 3 Brot.",
+        "Störsender: Eine Störsender-Drohne (nachts) vom Himmel holen. Belohnung: 1 Funkkristall.",
+        "Wesen der Tiefe: 2 Höhlenwesen besiegen. Belohnung: 2 Eisenbarren.",
+        "Maschinen: 3 Maschinen gleichzeitig einschalten (Signallampen oder Funktore neben Leitungen oder Empfängern). Belohnung: 1 Regenbogen-Block."
+      ]
+    },
+    {
+      "t": "Kapitel 6: Die letzte Frequenz",
+      "steps": [
+        "Der Funkturm: 20 Blöcke über den Startpunkt bauen. Belohnung: 1 Funkrelais.",
+        "Großes Netz: 3 Empfänger gleichzeitig leuchten lassen. Belohnung: 1 Regenbogen-Block.",
+        "Die letzte Frequenz: Einen Regenbogen-Block auf den Funkturm setzen. Belohnung: 2 Regenbogen-Blöcke."
+      ]
+    },
+    {
+      "t": "Alte Story-Welten: Aufträge der Funkzentrale",
+      "p": [
+        "Story-Welten aus einer älteren Version spielen ihre 15 Aufträge weiter:"
+      ],
+      "steps": [
+        "Holz sammeln: 5 Holzblöcke abschlagen.",
+        "Bretter herstellen: 8 Bretter herstellen.",
+        "Fundament legen: 12 Bretter setzen.",
+        "Steinbruch: 12 Stein im Vorrat.",
+        "Strand und Glas: 4 Glas herstellen (2 Sand = 1 Glas).",
+        "Leuchtfeuer: 2 Leuchtblöcke herstellen.",
+        "Licht an: 2 Leuchtblöcke setzen.",
+        "Hoch hinaus: 14 Blöcke über den Startpunkt.",
+        "Der Funkmast: Radio-Block herstellen und setzen.",
+        "Federn für die Landung: 2 Federblöcke herstellen.",
+        "Sprungtraining: 3-mal auf einem Federblock springen.",
+        "Seilhaken: Seilhaken 2-mal benutzen.",
+        "Gleitflug: Insgesamt 5 Sekunden gleiten.",
+        "Neon-Show: 4 Neonblöcke setzen.",
+        "Regenbogen-Finale: Regenbogen-Block auf den Sendeturm setzen."
+      ]
+    },
+    {
+      "t": "Wichtige Rezepte (Inventar)",
+      "list": [
+        "1 Holz oder Fichtenholz → 4 Bretter; 2 Bretter → 4 Stöcke; 4 Bretter → Werkbank.",
+        "2 Sand → 1 Glas; 4 Sand → 2 Sandstein; 2 Stein → 2 Bruchstein; 2 Stein + 1 Sand → 2 Marmor.",
+        "2 Glas + 1 Holz → 2 Leuchtblöcke; 1 Kohleerz + 1 Brett → 2 Leuchtblöcke; 1 Funkkristall + 1 Glas → 4 Leuchtblöcke.",
+        "2 Erde + 1 Sand oder 2 Ton + 1 Kohleerz → 4 Ziegel; 1 Kies + 1 Erde → 2 Dorfweg.",
+        "4 Blätter + 1 Brett → 2 Federblöcke; 2 Stein + 1 Leuchtblock → 2 Turbo-Blöcke (oder 1 Eisenerz + 2 Stein → 3); 2 Glas + 2 Blätter → 2 Aufwind-Blöcke.",
+        "4 Bretter + 1 Leuchtblock → 1 Radio (oder 2 Bretter + 1 Kupfererz + 1 Leuchtblock → 2 Radios); 2 Glas + 1 Leuchtblock → 2 Regenbogen-Blöcke.",
+        "Neon (je 3 Stück): Leuchtblock + Sand = Neonrot, + Glas = Neonblau, + Blätter = Neongrün, + Erde = Neonlila.",
+        "3 Weizen → 1 Brot. 1 Brett → 2 Logo-Blöcke eines der 16 Sender (RicoReWi, YourTime-FM, RapRadio 24, SenderWelt und weitere)."
+      ]
+    },
+    {
+      "t": "Rezepte an Werkbank und Schmelzofen",
+      "list": [
+        "Werkbank – Werkzeuge aus Brettern, Stein, Kupferbarren oder Eisenbarren: Spitzhacke und Axt je 3 Material + 2 Stöcke, Schaufel 1 Material + 2 Stöcke, Schwert 2 Material + 1 Stock, Hacke (Holz oder Stein) 2 Material + 2 Stöcke.",
+        "Werkbank – Rüstung: Kupferhelm 5 Kupferbarren, Kupferharnisch 8 Kupferbarren, Eisenhelm 5 Eisenbarren, Eisenharnisch 8 Eisenbarren.",
+        "Werkbank – Schmelzofen: 8 Stein.",
+        "Werkbank – Funknetz: Schalter (2) aus 1 Stein + 1 Stock; Signalleitung (8) aus 1 Kupferbarren + 1 Stein; Funksender aus 2 Kupferbarren + 1 Funkkristall + 1 Radio; Funkrelais aus 1 Kupferbarren + 1 Funkkristall + 2 Stein; Empfänger aus 1 Kupferbarren + 1 Glas + 2 Brettern; Signallampe (2) aus 1 Leuchtblock + 1 Signalleitung; Funktor (2) aus 1 Eisenbarren + 4 Brettern.",
+        "Werkbank – Fahrzeuge: Boot aus 5 Brettern + 1 Stock, Lore aus 3 Eisenbarren + 2 Kupferbarren, Schiene (16) aus 3 Kupferbarren + 2 Stöcken.",
+        "Schmelzofen: Kupfererz + Kohleerz → Kupferbarren; Eisenerz + Kohleerz → Eisenbarren; Rohes Fleisch + Brett → Braten (oder 4 Fleisch + 1 Kohle → 4 Braten); 3 Sand + 1 Kohle → 3 Glas."
+      ]
+    },
+    {
+      "t": "Handel im Dorf",
+      "list": [
+        "Bauer („Weizen tausche ich gern!“): 4 Äpfel für 4 Weizen · 6 Weizensamen für 1 Brot · 2 Brot für 3 Holz · 1 Kupferbarren für 10 Weizen.",
+        "Schmied: 1 Eisenbarren für 6 Kohleerz · Steinspitzhacke für 4 Weizen · Kupferhelm für 3 Kupferbarren + 2 Brot · Eisenspitzhacke für 2 Funkkristalle + 8 Weizen.",
+        "Funker: 1 Radio für 2 Kupferbarren · 4 Leuchtblöcke für 6 Weizen · 2 Schalter für 1 Brot · 1 Funkkristall für 3 Eisenbarren.",
+        "Hirte: 4 Wolle für 4 Weizen · 3 Braten für 5 Weizen · 4 Rohes Fleisch für 3 Äpfel.",
+        "Tipp: Ein eigenes Weizenfeld macht dich im Handel reich – Weizen ist fast überall die Währung."
+      ]
+    },
+    {
+      "t": "Tiere und Gegner",
+      "list": [
+        "Huhn (1 Rohes Fleisch), Schaf (1–2 Rohes Fleisch und 1–2 Wolle), Kuh (2–3 Rohes Fleisch).",
+        "Rauschling: kommt nachts, verfolgt dich nur, wenn er dich sieht; 2 Schaden pro Treffer, lässt manchmal einen Funkkristall fallen.",
+        "Höhlenwesen: in tiefen Höhlen, 3 Schaden pro Treffer, lässt 1–2 Kohleerz und manchmal Eisenerz fallen.",
+        "Störsender-Drohne: fliegt nachts und stört aus einigen Blöcken Entfernung.",
+        "Schwerter treffen härter (Holz bis Eisen steigender Schaden), Rüstung verringert den Schaden."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Meine Welt ist weg.",
+      "a": "Welten liegen nur in diesem Browser. Nach dem Löschen der Browserdaten oder in einem privaten Fenster sind sie verloren. Sichere Welten mit ⤓ als Datei oder melde dich unter ☁ Speicherdaten mit Google an. Über ↺ lässt sich manchmal eine ältere Sicherung laden."
+    },
+    {
+      "q": "Der Mehrspieler verbindet sich nicht.",
+      "a": "Jeder Freund braucht eine eigene Einladung, und der Antwort-Code muss vollständig zurückgeschickt werden. Für Verbindungen über das Internet „Über das Internet verbinden“ einschalten. Kommt „Andere Spielversion“, laden beide die Seite neu."
+    },
+    {
+      "q": "Die Maus dreht die Kamera nicht.",
+      "a": "Klicke einmal ins Bild – dann fängt das Spiel die Maus. Mit Esc gibst du sie wieder frei."
+    },
+    {
+      "q": "Kann ich ohne Gegner spielen?",
+      "a": "Ja. Schalte in den Einstellungen „Gegner im Überlebensmodus“ aus oder spiele im Kreativmodus."
+    },
+    {
+      "q": "Das Spiel ruckelt.",
+      "a": "Stelle die Grafik auf Eco oder Mobil und verringere im Pausemenü die Sichtweite."
+    },
+    {
+      "q": "Das Gamepad reagiert nicht.",
+      "a": "Drücke einmal eine Taste am Gamepad, damit der Browser es erkennt. Die Belegung steht in den Einstellungen."
+    }
+  ]
+}
