@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "433bc2fd778e",
- "generated": "2026-10-25T02:42:22+01:00",
- "commit": "6f8f0e514f3d8a7b56080abe97e3cc3cb9e054a2",
+ "version": "f63f2b6860ea",
+ "generated": "2026-10-25T02:44:35+01:00",
+ "commit": "b268deee3ce009961b906c4a0a649f341dc18c9c",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6448,13 +6448,13 @@
   },
   {
    "p": "groove-arena/index.html",
-   "s": 19666,
-   "h": "c20f1f593ddf6005322ac6a6597641dafa21bf7da5396fd3bcc30c513a8b9477"
+   "s": 19738,
+   "h": "e3a2b950e74a264fb249e6e2fd16a360b27ac9e7a3cc7a3e386181a5796a635c"
   },
   {
    "p": "groove-arena/js/app.js",
-   "s": 67316,
-   "h": "672f1d857d79db7ab3ebccbfafe3f6af9b4f10bdb4085326248784b976eee193"
+   "s": 68319,
+   "h": "6c9b61adc2155a0f4dab1f8dc8f0da35584ae3a94d09c0f58b8161078fcdf5bd"
   },
   {
    "p": "groove-arena/js/core.js",
@@ -8654,7 +8654,7 @@
   {
    "p": "sync/catalog.json",
    "s": 217662,
-   "h": "711be38e020f716458ef1065348b2bd8c7ab93fe6171dc276a90bf529cdd2b2d"
+   "h": "f631697da6ec64741ff2b18425243a8b4a7056b27b2e372f90b43ffa33b0abf3"
   },
   {
    "p": "taschi/card.svg",
