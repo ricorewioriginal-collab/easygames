@@ -69,7 +69,7 @@
     quiz: ['quiz', 'stadt-land-plus', 'gesucht', 'hoererwahl', 'preisradar', 'machmichaus', 'zeitsprung-wissen', 'zeitsprung-movie', 'zeitsprung-radio', 'zeitsprung-castingshow', 'zeitsprung-kinderserien', 'zeitsprung-eurovision', 'koffer-dealer', 'funkmaler', 'funkgalgen'],
     sim: ['ricoville', 'ricolife', 'ricorail', 'mimori', 'markthalle', 'funkhaus', 'klotzfunk', 'bunte-insel', 'anmacha-podcast-tycoon', 'pestwacht'],
     tisch: ['konfetti-party', 'werwolf-nacht', 'funk-billard', 'ricopoly', 'partyverse', 'spielesammlung', 'stapelrausch', 'gold-reels', 'anmacha-undercover', 'spinwelten', 'anmacha-solitaire'],
-    musik: ['groove-arena', 'beat-surfer', 'prismrush', 'show-me-your-voice']
+    musik: ['groove-arena', 'beat-surfer', 'prismrush', 'show-me-your-voice', 'beat-studio']
   };
   var GENRE_OF = {};
   Object.keys(GENRES).forEach(function (k) { GENRES[k].forEach(function (id) { GENRE_OF[id] = k; }); });
