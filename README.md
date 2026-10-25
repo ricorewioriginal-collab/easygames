@@ -31,7 +31,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | SHOW ME YOUR VOICE – Castingshow-Spiel zur TikTok-Show von RicoReWi: Avatar, Casting mit Jury-Gespräch, Zugabe und Goldenem Ticket, Gruppen-Recall, Mottoshow, Battle, Halbfinale und Finale; eigene Jury mit offenen Kriterien, Community-Voting mit Zitterbank, Backstage-Ereignisse, Training, Winterglanz-Gala, Show-Archiv (YouTube). Noten live aus den laut.fm-Sendern der RicoReWi-Familie (Quelle wird angezeigt), sonst eigene Beats | [`show-me-your-voice/`](show-me-your-voice/) |
 | PRISMRUSH – hypnotisches 3D-Rhythmusspiel: 32 Level in 4 Welten, 13 Modi (Kampagne, Endlos, Tagesrhythmus, Sprint 90, Remix, Zen, Präzision, Spiegelwelt, Turbo, Blindflug, Gleitflug, Wandlauf, Tutorial), Combos, Overdrive, 19 freischaltbare Effekte, installierbar als PWA (TypeScript, Three.js + Vite, Musik und Sounds im Browser erzeugt; Quelltext in [`prismrush-src/`](prismrush-src/), gebautes Ergebnis eingecheckt) | [`prismrush/`](prismrush/) |
 | AnMaCha Memory – modernes Memory mit den Sender-Logos (reines HTML/CSS, ohne Bibliothek) | [`anmacha-memory/`](anmacha-memory/) |
-| AnMaCha Quest RPG – 3D-Rollenspiel in Godot 4 (Web-Export) | [`anmacha-quest-rpg/`](anmacha-quest-rpg/) |
+| AnMaCha Quest RPG – modernes 3D-Rollenspiel (Three.js + Vite; Quelltext in [`anmacha-quest-rpg-src/`](anmacha-quest-rpg-src/), gebautes Ergebnis eingecheckt) | [`anmacha-quest-rpg/`](anmacha-quest-rpg/) |
 | AnMaCha Snake 3D – Snake mit Sender-Logos als Futter (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-snake/`](anmacha-snake/) |
 | AnMaCha Tower Defense – Cinematic-3D-Tower-Defense mit Sender-Logo-Türmen: Nachtstadt, Bloom, Schatten, Kamerafahrt, 8 modellierte Turm-Arten, 25 Wellen, 3 Karten (Three.js + Vite; Quelltext in [`anmacha-tower-defense-src/`](anmacha-tower-defense-src/), gebautes Ergebnis eingecheckt; Sounds & Musik im Browser erzeugt) | [`anmacha-tower-defense/`](anmacha-tower-defense/) |
 | Machst du mich an? – Das Quiz! – TV-Quizshow im 3D-Studio (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-quiz/`](anmacha-quiz/) |
@@ -357,19 +357,19 @@ Gesucht werden Logo-Paare – die 13 Sender-Logos plus AnMaChaCast, SenderWelt u
 - **Studio:** 3D-TV-Studio mit LED-Wand, Scheinwerfern, Publikum, Werbeträgern mit allen Sender-Logos (`anmacha-quiz/logos/01..13`) und Avataren mit Sender-Logo auf dem Shirt; Sounds, Musik und Applaus werden im Browser erzeugt, optional Moderator-Stimme (Sprachausgabe des Browsers).
 - **Fragen:** `anmacha-quiz/questions.js` – ca. 600 Fragen in 10 Kategorien (Musik, TV & Film, Social Media, Wissen & Technik, Sport, Politik, Geschichte, Geografie, Natur & Tiere, Essen & Genuss), je Kategorie 5 Schwierigkeitsstufen; neue Fragen einfach eintragen. Eigenes Titel-Logo: `anmacha-quiz/logo.png`.
 
-## AnMaCha Quest RPG: Das Große Rauschen (Godot 4, Web-Export)
+## AnMaCha Quest RPG: Das Große Rauschen (Three.js + Vite)
 
-Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster, alle Grafiken werden beim Start per Code erzeugt (keine Bilddateien).
+Eigenständiges Rollenspiel mit eigenen Helden, Welten und Monstern – modernes Echtzeit-3D im Browser (PBR-Licht, weiche Schatten, Bloom, Wasser-/Lava-Shader, Wind in Gras und Bäumen). Spielablauf, Werte und Texte entsprechen 1:1 der früheren Godot-Fassung; alte Spielstände werden beim ersten Start übernommen.
 
 - **Helden:** Andrew (Held), Marco (Magier), Teresa (Heilerin, ab Bass-Keller-Sieg), Rico (Schütze, ab Glitzerwiese-Sieg), Andy (Wächter, ab Frosthöhlen-Sieg).
 - **Spielablauf:** Funkhafen (Stadt mit Händlerin, Heilbrunnen) → Oberwelt „Frequenzia“ → 4 Reiche (Bass-Keller/Rap, Glitzerwiese/Schlager, Frosthöhle/Weihnachten, Vulkanbühne/Rock) → Rauschen-Turm. Jedes Reich hat Zufallskämpfe, Truhen, einen Schlüssel für das Tor zum Bossraum und einen Boss.
 - **Kampf:** rundenbasiert in Ich-Ansicht; Angriff, Fertigkeit (SP), **Spezial (IP-Leiste füllt sich, wenn Helden Schaden nehmen)**, Item, Wache, Flucht. Ausrüstung beim Händler, Stufenaufstieg, Speichern (Brunnen/Menü).
 - **Anleitung & Wegweiser:** [`ANLEITUNG.md`](anmacha-quest-rpg/ANLEITUNG.md) bzw. im Browser `anmacha-quest-rpg/anleitung.html` (Steuerung, Kampf, Helden, Ablauf, Wegweiser pro Reich, Boss-Tipps, Handlungen).
-- **Ansicht:** komplett in 3D mit echten Low-Poly-Modellen (CC0): animierte Helden/Monster, Häuser, Bäume, Berge; Kampf als 3D-Szene mit Kreuzmenü. Touch-Steuerkreuz als gleitender Stick.
+- **Ansicht:** komplett in 3D mit animierten Helden/Monstern, Häusern, Bäumen und Bergen (CC0-Modelle); Kampf als 3D-Szene mit Kreuzmenü. Grafikstufe passt sich dem Gerät an (`?q=0|1|2` erzwingt eine Stufe). Touch-Steuerkreuz als gleitender Stick, Controller über `gamepad.js`.
 - **Steuerung:** Pfeiltasten/WASD, `Leertaste`/`Enter` bestätigen, `Esc`/`M` Menü, am Handy Touch-Steuerkreuz und Tippen.
-- **Quellcode:** `anmacha-quest-rpg/godot/` ist ein normales Godot-4.3-Projekt (`main.gd` Spiel, `gfx.gd` Pixel-Grafik, `data.gd` Karten/Gegner/Werte). Neu exportieren: `godot --headless --path anmacha-quest-rpg/godot --export-release Web ../index.html` (Vorlage „Web“, ohne Threads, Renderer Compatibility). Selbsttest (Karten + Balance): `godot --headless --path anmacha-quest-rpg/godot -- --autotest`.
+- **Quellcode:** [`anmacha-quest-rpg-src/`](anmacha-quest-rpg-src/) (`src/logic.js` Regeln, `src/data.js` Karten/Gegner/Werte, `src/game.js` Spielablauf, `src/view.js` + `src/battle.js` 3D-Grafik, `src/ui.js` Oberfläche). Bauen: `cd anmacha-quest-rpg-src && npm install && npm run build` (schreibt nach `anmacha-quest-rpg/`), danach `python3 tools/make-pwa.py anmacha-quest-rpg`. Selbsttest (Karten, Balance, komplettes Durchspielen): `npm test`.
 - **Monster:** 30 animierte 3D-Gegner (je 6 pro Reich, passend zu Rap, Schlager, Weihnachten, Rock und Rausch-Turm) plus 5 große Bosse. Gegner laufen **sichtbar auf der Karte** herum, jagen dich bei Nähe und lösen bei Berührung den Kampf aus (zusätzlich seltene Zufallskämpfe). Flüchten ist möglich, besiegte Gegner verschwinden bis zum nächsten Betreten.
-- Credits (alle CC0): 3D-Modelle von Quaternius (RPG Characters, Cute Animated Monsters, Animated Monster Pack, Ultimate Textured Building Pack) und Kenney (Fantasy Town Kit, Mini Dungeon, Mini Forest, Graveyard Kit, Tiny Dungeon); Schrift Pixelify Sans (SIL OFL). Details: `anmacha-quest-rpg/godot/assets/LIZENZEN.md`.
+- Credits (alle CC0): 3D-Modelle von Quaternius (RPG Characters, Cute Animated Monsters, Animated Monster Pack, Ultimate Textured Building Pack) und Kenney (Fantasy Town Kit, Mini Dungeon, Mini Forest, Graveyard Kit, Tiny Dungeon); Details: `anmacha-quest-rpg/models/LIZENZEN.md`.
 
 ## AnMaCha Gesucht & Gefunden
 

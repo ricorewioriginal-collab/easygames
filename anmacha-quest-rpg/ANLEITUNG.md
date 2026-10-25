@@ -1,6 +1,6 @@
 # AnMaCha Quest RPG – Anleitung & Wegweiser
 
-Ein 16-Bit-Rollenspiel für PC und Handy. Spielzeit: ca. 1,5–2,5 Stunden. Der Spielstand wird lokal im Browser gespeichert.
+Ein Rollenspiel in modernem 3D für PC und Handy. Spielzeit: ca. 1,5–2,5 Stunden. Der Spielstand wird lokal im Browser gespeichert.
 
 ## 1. Steuerung
 
@@ -16,14 +16,14 @@ Ein 16-Bit-Rollenspiel für PC und Handy. Spielzeit: ca. 1,5–2,5 Stunden. Der 
 
 ## 2. Der Bildschirm
 
-- **Ansicht:** Die Welt und die Kämpfe werden in 3D mit echten Low-Poly-Modellen gezeigt (animierte Helden und Monster, Häuser, Bäume, Berge). Die Kamera folgt dir von schräg oben. Die Bedienung bleibt wie bei klassischen Rollenspielen Feld für Feld.
+- **Ansicht:** Die Welt und die Kämpfe sind moderne Echtzeit-3D-Grafik mit Licht und Schatten, Wasser, Gras im Wind, Partikeln und Leuchteffekten (animierte Helden und Monster, Häuser, Bäume, Berge). Die Kamera folgt dir von schräg oben. Die Bedienung bleibt wie bei klassischen Rollenspielen Feld für Feld.
 - **Oben links:** Name des Ortes und deine Münzen (M).
 - **Weltkarte:** Städte, Höhlen und der Turm sind beschriftet. Rot gefärbte Eingänge sind noch versiegelt.
 - **Sichtbare Monster:** Auf Weltkarte und in Dungeons laufen Gegner herum. Kommen sie nahe, jagen sie dich. Bei Berührung beginnt ein Kampf.
 - **Kampfbildschirm:** Oben die 3D-Gegner mit rotem Lebensbalken, davor deine Helden von hinten. Unten ein Fenster pro Held:
-  - **Hp** Lebenspunkte (blau/rot, wenn kritisch)
-  - **Mp** Spielpunkte für Fertigkeiten (grün, im Spiel „SP“)
-  - **Ip** Spezial-Leiste (gelb; blinkt orange, sobald der Spezialangriff bereit ist; der weiße Strich zeigt die nötige Menge)
+  - **LP** Lebenspunkte (blau/rot, wenn kritisch)
+  - **SP** Spielpunkte für Fertigkeiten (grün)
+  - **IP** Spezial-Leiste (gelb; blinkt orange, sobald der Spezialangriff bereit ist; der weiße Strich zeigt die nötige Menge)
 
 ## 3. Kampf im Detail
 
@@ -135,4 +135,4 @@ Faustregel: Die empfohlene Stufe sollte erreicht sein. Wer unterwegs viele Gegne
 
 ---
 
-*Credits (alle CC0): 3D-Modelle von Quaternius (Helden „RPG Characters“, „Cute Animated Monsters“, „Animated Monster Pack“, „Ultimate Textured Building Pack“) und Kenney (Fantasy Town Kit, Mini Dungeon, Mini Forest, Graveyard Kit). Schrift Pixelify Sans (SIL OFL). Engine Godot 4.*
+*Credits (alle CC0): 3D-Modelle von Quaternius (Helden „RPG Characters“, „Cute Animated Monsters“, „Animated Monster Pack“, „Ultimate Textured Building Pack“) und Kenney (Fantasy Town Kit, Mini Dungeon, Mini Forest, Graveyard Kit). Technik: Three.js (WebGL).*

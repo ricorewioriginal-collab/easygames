@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#080b12">
+<title>AnMaCha Quest RPG</title>
+<style>
+  :root{--y:#ffd24a;--c:#46e6ff;--m:#ff5ad0;--tx:#f1f5ff;--mut:#9fb0cc;--glass:rgba(10,14,30,.72);--line:rgba(255,255,255,.14);--hp:#5ec8ff;--sp:#5cf09a;--ip:#ffd24a}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none!important}
+  html,body{margin:0;height:100%;overflow:hidden;background:#05060f;color:var(--tx);font-family:Inter,"SF Pro Display","Segoe UI",system-ui,Roboto,Arial,sans-serif;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+  #cv{position:fixed;inset:0;display:block}
+  #vig{position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at 50% 46%,transparent 58%,rgba(0,0,8,.5) 100%)}
+  .glass{background:var(--glass);border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  #ui{position:fixed;inset:0;z-index:3;pointer-events:none}
+  #ui>*{pointer-events:auto}
+  /* Kopfzeile */
+  #hud{position:absolute;left:calc(10px + env(safe-area-inset-left));top:calc(10px + env(safe-area-inset-top));padding:7px 14px;display:flex;gap:12px;align-items:center;font-weight:700;font-size:14px;pointer-events:none}
+  #hud .g{color:var(--y);font-variant-numeric:tabular-nums}
+  #hud .g::before{content:'';display:inline-block;width:.8em;height:.8em;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff2a8,#ffb820 60%,#b8720a);margin-right:5px;vertical-align:-.05em;box-shadow:0 0 8px rgba(255,200,60,.6)}
+  #menuBtn{position:absolute;right:calc(10px + env(safe-area-inset-right));top:calc(10px + env(safe-area-inset-top));font:800 13px inherit;font-family:inherit;letter-spacing:.12em;color:var(--tx);padding:10px 16px;cursor:pointer}
+  #menuBtn:active{transform:scale(.95)}
+  /* Steuerkreuz (Touch) */
+  #joy{position:absolute;left:calc(18px + env(safe-area-inset-left));bottom:calc(18px + env(safe-area-inset-bottom));width:132px;height:132px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.06),rgba(255,255,255,.14));border:1px solid var(--line);touch-action:none}
+  #joy::before{content:'';position:absolute;inset:16px;border-radius:50%;border:1px dashed rgba(255,255,255,.12)}
+  #knob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.55),rgba(160,200,255,.22));border:1px solid rgba(255,255,255,.4);box-shadow:0 4px 16px rgba(0,0,0,.4);pointer-events:none}
+  /* Dialog */
+  #dlg{position:absolute;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(760px,calc(100vw - 24px));min-height:96px;padding:16px 20px 18px;font-size:clamp(14px,2.2vw,18px);line-height:1.5;cursor:pointer;z-index:5}
+  #dlg::after{content:'▼';position:absolute;right:16px;bottom:8px;font-size:12px;color:var(--y);opacity:0}
+  #dlg.more::after{opacity:1;animation:bob .8s infinite}
+  @keyframes bob{50%{transform:translateY(3px)}}
+  #dlgText{white-space:pre-wrap;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+  /* Listenmenü */
+  .menu{position:absolute;display:flex;flex-direction:column;padding:6px;min-width:190px;max-height:calc(100vh - 40px);overflow:auto;z-index:6}
+  .menu.mw{right:calc(12px + env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom))}
+  .menu.mt{left:50%;transform:translateX(-50%);bottom:calc(9vh + env(safe-area-inset-bottom));min-width:240px}
+  .menu.mb{left:calc(12px + env(safe-area-inset-left));bottom:calc(132px + env(safe-area-inset-bottom))}
+  .mi{all:unset;cursor:pointer;padding:9px 16px;border-radius:11px;font-weight:650;font-size:15px;color:var(--tx);position:relative;white-space:nowrap}
+  .mi.on{background:linear-gradient(90deg,rgba(255,210,74,.28),rgba(255,210,74,.06));color:#fff4c2}
+  .mi.on::before{content:'';position:absolute;left:4px;top:50%;width:4px;height:60%;transform:translateY(-50%);border-radius:4px;background:var(--y);box-shadow:0 0 8px var(--y)}
+  .mi:disabled{color:#6c7892;cursor:default}
+  .menu.mt .mi{text-align:center;font-size:17px;padding:12px 18px}
+  /* Kreuzmenü */
+  #cross{position:absolute;right:calc(16px + env(safe-area-inset-right));bottom:calc(126px + env(safe-area-inset-bottom));width:184px;height:184px;z-index:6}
+  .cb{position:absolute;width:56px;height:56px;border-radius:16px;border:1px solid var(--line);background:var(--glass);color:var(--tx);font-size:26px;display:grid;place-items:center;cursor:pointer;padding:0;backdrop-filter:blur(8px);transition:transform .12s,box-shadow .12s}
+  .cb.on{border-color:var(--y);color:#fff4c2;box-shadow:0 0 0 2px rgba(255,210,74,.5),0 0 20px rgba(255,210,74,.45);transform:scale(1.08)}
+  .cb:disabled{opacity:.35;cursor:default}
+  .c0{left:64px;top:64px}.c1{left:64px;top:0}.c2{left:64px;top:128px}.c3{left:0;top:64px}.c4{left:128px;top:64px}.c5{left:128px;top:128px;width:48px;height:48px;font-size:20px;margin:4px}
+  .c2{color:#ffb070}
+  #crossLbl{position:absolute;left:-40px;right:-40px;top:-30px;text-align:center;font-weight:800;letter-spacing:.08em;font-size:14px;text-shadow:0 2px 8px #000}
+  /* Heldenkarten */
+  #party{position:absolute;left:0;right:0;bottom:calc(8px + env(safe-area-inset-bottom));display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:0 8px;pointer-events:none}
+  .card{width:min(196px,calc((100vw - 56px)/5));min-width:132px;padding:8px 10px 9px;border-radius:14px;transition:transform .2s,border-color .2s}
+  .card.hot{border-color:var(--y);transform:translateY(-6px);box-shadow:0 0 0 1px rgba(255,210,74,.5),0 8px 26px rgba(255,210,74,.25)}
+  .card.down{filter:grayscale(1) brightness(.7)}
+  .ch{display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:13px}
+  .ch b{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ch em{font-style:normal;color:var(--y);font-size:11px;font-weight:700}
+  .av{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:12px;background:var(--hc);box-shadow:0 0 10px var(--hc)}
+  .br{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:800;margin-top:3px}
+  .br span{width:16px;color:var(--mut)}
+  .br u{flex:1;height:7px;border-radius:5px;background:rgba(0,0,0,.5);position:relative;overflow:hidden;text-decoration:none}
+  .br s{position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:var(--hp);transition:width .35s;text-decoration:none}
+  .br.hp s.low{background:#ff5a6a}
+  .br.sp s{background:var(--sp)}
+  .br.ip s{background:var(--ip)}
+  .card.ready .br.ip s{background:linear-gradient(90deg,#ffd24a,#ff8a2a,#ffd24a);background-size:200% 100%;animation:ipr 1s linear infinite;box-shadow:0 0 8px #ffa030}
+  @keyframes ipr{to{background-position:-200% 0}}
+  .mk{position:absolute;top:0;bottom:0;width:2px;background:#fff;opacity:.85}
+  .br em{width:30px;text-align:right;font-style:normal;font-variant-numeric:tabular-nums;color:#fff;font-size:11px}
+  /* Gegnerbalken, Ortsnamen, Zahlen */
+  #bars,#labels,#floats{position:absolute;inset:0;pointer-events:none}
+  .eb{position:absolute;left:0;top:0;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:800;text-shadow:0 1px 4px #000;white-space:nowrap}
+  .eb u{width:74px;height:7px;border-radius:5px;background:rgba(0,0,0,.6);overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.2);text-decoration:none}
+  .eb.boss u{width:130px;height:9px}
+  .eb s{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#ff3a5a,#ff7a5a);transition:width .3s}
+  .eb.tgt b{color:var(--y)}
+  .eb.tgt::after{content:'▼';color:var(--y);font-size:14px;animation:bob .7s infinite;position:absolute;top:-20px}
+  .lab{position:absolute;left:0;top:0;padding:4px 10px;border-radius:999px;background:rgba(8,12,28,.7);border:1px solid rgba(255,255,255,.22);font-size:12px;font-weight:800;white-space:nowrap}
+  .lab.closed{color:#ffb0b0;border-color:rgba(255,120,120,.4)}
+  .lab.closed::before{content:'🔒 '}
+  .fl{position:absolute;transform:translate(-50%,-50%);font-weight:900;font-size:22px;text-shadow:0 2px 0 rgba(0,0,0,.6),0 0 12px rgba(0,0,0,.6);animation:fl .9s ease-out forwards;white-space:nowrap}
+  .fl.big{font-size:30px}
+  @keyframes fl{0%{opacity:0;margin-top:6px;scale:.6}15%{opacity:1;scale:1.15}30%{scale:1}100%{opacity:0;margin-top:-40px}}
+  /* Meldungen */
+  #msg{position:absolute;left:50%;top:calc(12px + env(safe-area-inset-top));transform:translateX(-50%);padding:9px 18px;font-weight:700;font-size:15px;max-width:calc(100vw - 24px);text-align:center;pointer-events:none}
+  #banner{position:absolute;left:50%;top:16%;transform:translateX(-50%);padding:12px 30px;font-size:clamp(22px,4.5vw,36px);font-weight:900;letter-spacing:.06em;text-align:center;white-space:nowrap;pointer-events:none;color:#fff;
+    background:linear-gradient(90deg,transparent,rgba(10,14,30,.8) 20%,rgba(10,14,30,.8) 80%,transparent);text-shadow:0 0 18px rgba(70,230,255,.5),0 2px 10px #000;border-top:1px solid rgba(255,210,74,.6);border-bottom:1px solid rgba(255,210,74,.6);min-width:min(520px,90vw)}
+  #banner.show{animation:ban 1.3s ease both}
+  @keyframes ban{0%{opacity:0;letter-spacing:.3em}20%{opacity:1;letter-spacing:.06em}80%{opacity:1}100%{opacity:0}}
+  #fade{position:fixed;inset:0;background:#02030a;opacity:0;pointer-events:none;z-index:8}
+  /* Status */
+  #status{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(2,3,10,.45);z-index:7}
+  .sbox{width:min(900px,100%);max-height:100%;overflow:auto;padding:16px 18px}
+  .sbox h3{margin:0 0 10px;letter-spacing:.12em;font-size:15px;color:var(--y)}
+  .sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+  .sh{border:1px solid var(--line);border-radius:12px;padding:9px 10px;background:rgba(255,255,255,.04);border-top:3px solid var(--hc)}
+  .sh b{display:block}.sh i{font-style:normal;color:var(--mut);font-size:12px}
+  .sb{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:800;margin-top:5px}
+  .sb span{width:24px;color:var(--mut)}.sb u{flex:1;height:6px;background:rgba(0,0,0,.5);border-radius:4px;position:relative;overflow:hidden;text-decoration:none}
+  .sb s{position:absolute;inset:0 auto 0 0;background:var(--hp);text-decoration:none}.sb.sp s{background:var(--sp)}.sb.xp s{background:#c890ff}
+  .sb em{font-style:normal;font-size:10px;min-width:48px;text-align:right}
+  .st{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;margin-top:7px;font-size:11px;color:var(--mut)}.st b{color:#fff}
+  .sf{margin:12px 0 0;font-size:13px;color:var(--mut)}.sf b{color:#fff}
+  .sk{margin:8px 0 0;font-size:11px;color:var(--mut);text-align:right}
+  /* Titel */
+  #title{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding-top:calc(5vh + env(safe-area-inset-top));pointer-events:none;background:linear-gradient(180deg,rgba(5,6,20,.55),transparent 45%,transparent 70%,rgba(5,6,20,.6))}
+  #title img{width:min(76vw,560px);height:auto;filter:drop-shadow(0 0 22px rgba(255,170,40,.35)) drop-shadow(0 6px 18px rgba(0,0,0,.5));animation:float 5s ease-in-out infinite}
+  @keyframes float{50%{transform:translateY(-6px)}}
+  #title p{margin:6px 0 0;color:#ffd6f0;font-weight:700;letter-spacing:.24em;font-size:clamp(11px,2vw,14px);text-shadow:0 2px 8px #000}
+  /* Laden */
+  #load{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(ellipse at 50% 35%,#2a1450,#05082a 70%);transition:opacity .5s;padding:16px;text-align:center}
+  #load.out{opacity:0;pointer-events:none}
+  #load img{width:min(80vw,520px);filter:drop-shadow(0 0 16px rgba(255,170,40,.3))}
+  #lbar{width:min(70vw,420px);height:8px;border-radius:6px;background:rgba(255,255,255,.1);overflow:hidden}
+  #lfill{height:100%;width:0;background:linear-gradient(90deg,var(--c),var(--m),var(--y));transition:width .2s}
+  #ltxt{color:#cfe0ff;font-size:14px}
+  #lerr{display:none;background:#5b2030;border:1px solid #ff6a80;border-radius:10px;padding:12px;max-width:90vw;font-size:13px;white-space:pre-wrap}
+  #rot{display:none;position:fixed;left:10px;right:10px;top:calc(10px + env(safe-area-inset-top));z-index:9;padding:10px 14px;text-align:center;font-size:14px}
+  @media (orientation:portrait) and (max-width:760px){#rot.show{display:block}.card{min-width:0;width:calc((100vw - 40px)/3);padding:6px 7px}#cross{bottom:calc(150px + env(safe-area-inset-bottom));transform:scale(.85);transform-origin:right bottom}.menu.mb{bottom:calc(160px + env(safe-area-inset-bottom))}}
+  @media (max-height:430px){#cross{transform:scale(.78);transform-origin:right bottom;bottom:calc(100px + env(safe-area-inset-bottom))}.card{padding:5px 8px 6px}.ch{margin-bottom:2px}.menu.mb{bottom:calc(96px + env(safe-area-inset-bottom))}#dlg{min-height:78px;padding:10px 16px 12px}}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="vig"></div>
+<div id="ui">
+  <div id="labels"></div>
+  <div id="bars"></div>
+  <div id="title" hidden><img src="logo.png" alt="AnMaCha Quest RPG"></div>
+  <div id="hud" class="glass" hidden><span id="hudName"></span><span class="g" id="hudGold">0</span></div>
+  <button id="menuBtn" class="glass" hidden>MENÜ</button>
+  <div id="joy" hidden><div id="knob"></div></div>
+  <div id="party" hidden></div>
+  <div id="cross" hidden><div id="crossLbl"></div></div>
+  <div id="menu" class="glass menu" hidden></div>
+  <div id="msg" class="glass" hidden></div>
+  <div id="banner" hidden></div>
+  <div id="dlg" class="glass" hidden><div id="dlgText"></div></div>
+  <div id="status" hidden></div>
+  <div id="floats"></div>
+</div>
+<div id="fade"></div>
+<div id="rot" class="glass show" onclick="this.remove()">📱 Für das beste Bild das Handy quer halten (Tippen zum Schließen)</div>
+<div id="load">
+  <img src="logo.png" alt="AnMaCha Quest RPG">
+  <div id="lbar"><div id="lfill"></div></div>
+  <div id="ltxt">Lade Spielwelt …</div>
+  <div id="lerr"></div>
+</div>
+<noscript>Bitte JavaScript aktivieren.</noscript>
+<script type="module" src="/src/main.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="quest-rpg" data-prefix="anmachaQuest" data-idb="/userfs" data-idb-files="anmacha_quest2" defer></script>
+<script src="../gamepad.js" data-pad="a=Enter b=KeyX x=Enter y=KeyM start=KeyM select=KeyM rs=none nonav" defer></script>
+</body>
+</html>

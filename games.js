@@ -44,7 +44,7 @@ const GAMES = [
   { id: 'anmacha-memory', title: 'AnMaCha Memory', icon: '🃏', img: 'anmacha-memory/card.jpg', bg: 'linear-gradient(145deg,#FF9A1F,#FF2D95 55%,#8B5CF6)', glow: 'rgba(255,45,149,.5)',
     path: 'anmacha-memory/', desc: 'Memory mit unseren Sender-Logos: 10 Level mit Mischer & Zeitlimit, freies Spiel und Duell.' },
   { id: 'anmacha-quest-rpg', title: 'AnMaCha Quest RPG', icon: '⚔️', img: 'anmacha-quest-rpg/card.jpg', bg: 'linear-gradient(145deg,#2a3cff,#8B5CF6 55%,#FF9A1F)', glow: 'rgba(80,100,255,.55)',
-    path: 'anmacha-quest-rpg/', desc: '3D-Rollenspiel (Godot): 5 Helden, animierte Monster, Oberwelt, Dungeons mit Schlüsseln, Bosse.' },
+    path: 'anmacha-quest-rpg/', desc: 'Modernes 3D-Rollenspiel: 5 Helden, animierte Monster, Oberwelt, Dungeons mit Schlüsseln, Bosse.' },
   { id: 'anmacha-snake', title: 'AnMaCha Snake 3D', icon: '🐍', img: 'anmacha-snake/card.jpg', bg: 'linear-gradient(145deg,#00e5ff,#2a6cff 55%,#FF2D95)', glow: 'rgba(0,229,255,.5)',
     path: 'anmacha-snake/', desc: '3D-Snake: friss Sender-Logos, 13 Welten, Power-ups, Portal-Modus, zwei Kameras.' },
   { id: 'anmacha-tower-defense', title: 'AnMaCha Tower Defense', icon: '🗼', img: 'anmacha-tower-defense/card.jpg', bg: 'linear-gradient(145deg,#8B5CF6,#2a6cff 50%,#00FFC8)', glow: 'rgba(139,92,246,.55)',
