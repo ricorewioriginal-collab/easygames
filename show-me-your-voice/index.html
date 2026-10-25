@@ -73,8 +73,10 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <div class="stageTop">
     <span id="stTitle"></span>
     <div class="juryStrip" id="juryStrip"></div>
+    <span class="stSync" id="stSync" hidden><button class="btn sm" type="button" data-d="-0.03" title="Noten früher" aria-label="Noten früher">◀</button><button class="btn sm" type="button" data-d="0.03" title="Noten später" aria-label="Noten später">▶</button></span>
     <button class="btn sm" id="bPause" type="button" aria-label="Pause">❚❚</button>
   </div>
+  <div id="stVid" hidden></div>
   <canvas id="cv"></canvas>
   <div class="rivalBox" id="rivalBox" hidden></div>
   <div class="pads" id="pads">
@@ -196,8 +198,9 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
       <p>Logo, Jury-Bilder, Hintergründe und Abzeichen: Original-Grafiken von SHOW ME YOUR VOICE.<br>Rico erscheint als fiktionale Spielfigur (Showmaster). Alle KI-Kandidaten, Songs und Dialoge sind frei erfunden.</p>
       <h3>Musik-Quellen</h3>
       <p>📻 <b>Radio (Standard):</b> Live-Programm der Sender der RicoReWi-Familie auf <a href="https://laut.fm" target="_blank" rel="noopener">laut.fm</a> (u. a. RicoReWi, ChartRadio 24, RockRadio 24, ChristmasRadio 24). Das Spiel spielt den Stream nur ab und erzeugt daraus Noten (erlaubt der Stream keine Analyse, folgen die Noten dem Takt des gewählten Stils); nichts wird gespeichert oder weitergegeben. Sender, Interpret und Titel stehen während des Auftritts oben und im Ergebnis. Alle Rechte an der Musik liegen bei den jeweiligen Urhebern und Rechteinhabern.</p>
-      <p>🎹 <b>Eigene Beats:</b> Musik und Effekte werden live im Browser erzeugt – keine Lizenzsongs. Sie laufen auch ohne Internet.</p>
-      <p>🎙️ <b>Karaoke-Videos:</b> Beim Freien Vorsingen werden Karaoke-Videos von YouTube eingebettet (youtube-nocookie.com). Kanal und Song stehen beim Auftritt dabei, alle Rechte liegen bei den jeweiligen Urhebern. Album-Cover kommen aus der iTunes-Suche von Apple und werden nur auf deinem Gerät zwischengespeichert.</p>
+      <p>🎵 <b>Songs von YouTube:</b> Jeden Song spielen – gesucht wird über die iTunes-Suche von Apple (Titel, Cover, 30-Sekunden-Hörprobe), das Video kommt von YouTube (youtube-nocookie.com, offizieller Player), Liedzeilen-Zeitstempel von <a href="https://lrclib.net" target="_blank" rel="noopener">LRCLIB</a>. Aus der Hörprobe erkennt das Spiel auf deinem Gerät das Tempo, aus den Zeitstempeln die Taktlage – nichts wird gespeichert oder weitergegeben. Kanal und Song stehen beim Auftritt oben, alle Rechte liegen bei den jeweiligen Urhebern.</p>
+      <p>🥁 <b>Ohne Internet:</b> Die Noten laufen zu einem leisen Takt-Klick (keine Musik).</p>
+      <p>🎙️ <b>Karaoke-Videos:</b> Beim Vorsingen werden Karaoke-Videos von YouTube eingebettet (youtube-nocookie.com) – aus der Liste oder über die Suche im Spiel (freie Piped/Invidious-Server, kein Schlüssel). Darf ein Video nicht eingebettet werden, sucht das Spiel selbst eine andere Karaoke-Version. Kanal und Song stehen beim Auftritt dabei, alle Rechte liegen bei den jeweiligen Urhebern. Album-Cover kommen aus der iTunes-Suche von Apple und werden nur auf deinem Gerät zwischengespeichert.</p>
       <p>📺 <b>Show-Archiv:</b> Die Folgen werden direkt von YouTube eingebettet (youtube-nocookie.com), die Rechte liegen bei RicoReWi.</p>
       <p><a href="https://smyv.ricorewi.de" target="_blank" rel="noopener">smyv.ricorewi.de</a> · <a href="https://www.tiktok.com/@ricorewi" target="_blank" rel="noopener">TikTok @ricorewi</a></p>
     </div>
@@ -215,6 +218,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="js/core.js"></script>
 <script src="js/avatar.js"></script>
 <script src="js/audio.js"></script>
+<script src="js/media.js"></script>
 <script src="js/stage.js"></script>
 <script src="js/app.js"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="show-me-your-voice" data-prefix="smyv-" defer></script>

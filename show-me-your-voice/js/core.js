@@ -473,6 +473,7 @@
     out.singBest = Math.max(0, Math.min(10000, Math.round(+s.singBest) || 0));
     if (s.daily && typeof s.daily === 'object') { const k = Object.keys(s.daily).filter(x => /^d\d{8}$/.test(x)).sort().pop(); if (k) out.daily[k] = Math.max(0, Math.min(10000, Math.round(+s.daily[k]) || 0)); }
     out.dailyBoard = Math.max(0, Math.min(1e11, Math.round(+s.dailyBoard) || 0));
+    if (s.ytSync && typeof s.ytSync === 'object') { out.ytSync = {}; Object.keys(s.ytSync).filter(k => /^[\w-]{11}$/.test(k) && isFinite(s.ytSync[k])).slice(-60).forEach(k => { out.ytSync[k] = Math.max(-2, Math.min(2, +s.ytSync[k])); }); }   // Song-Sync-Feinabgleich je Video
     if (s.rew && typeof s.rew === 'object') ['mic', 'stage'].forEach(t => { if (D.REWARDS.some(r => r.type === t && r.id === s.rew[t])) out.rew[t] = s.rew[t]; });
     out.settings = Object.assign({}, DEF_SETTINGS, s.settings && typeof s.settings === 'object' ? s.settings : {});
     const p = s.profile;
