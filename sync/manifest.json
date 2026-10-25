@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "d17828ec8bdc",
- "generated": "2026-10-25T02:24:21+00:00",
- "commit": "a62d9dc9d5d85a25b8977244d6a1406998f6ff23",
+ "version": "247138a54361",
+ "generated": "2026-10-25T02:33:46+00:00",
+ "commit": "71c02eecd1fc90ec8df102297393b265530e271e",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8243,13 +8243,13 @@
   },
   {
    "p": "show-me-your-voice/index.html",
-   "s": 18976,
-   "h": "bc085ef29e8e7ef9facc0eeb37cd982d9e179306dcc337d549893a2cc5d4f8ae"
+   "s": 19640,
+   "h": "8bba09a2de0d79e6e0cd9cd9fc7fe1d29230ebc325e512cd49bc73dfc031a4dd"
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 167914,
-   "h": "04d274eb20b3cf29b5d92b5b4b6cbbd322271b687a269250b8314f189cf29712"
+   "s": 173261,
+   "h": "b0ff5fc9305069e2b4b63918069acb5e5b9ebc38c1a8eee88aa2c49b3bda3ec8"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
@@ -8288,8 +8288,8 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 28842,
-   "h": "6077677e35789ad0808ee83321441cefde3d40e00c2033af366708c3b492edac"
+   "s": 35045,
+   "h": "c6ba42b456479c059040c9247a432b48a822d1c49c67f72ad340042b5bae04f2"
   },
   {
    "p": "show-me-your-voice/sw.js",
@@ -8654,7 +8654,7 @@
   {
    "p": "sync/catalog.json",
    "s": 217662,
-   "h": "6b89915b3dff40496dfe00ee88ec65c9b87ce49b1e027a28b036b774dfbd8f20"
+   "h": "6b7913b86e2028503b6210dea22019782509603996b43f3e549f6cb28f2c5735"
   },
   {
    "p": "taschi/card.svg",
