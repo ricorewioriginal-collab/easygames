@@ -42,10 +42,10 @@
     spark = new T.Points(sg, new T.PointsMaterial({ size: .05, color: 0xffffff, transparent: true, opacity: .8, blending: T.AdditiveBlending, depthWrite: false })); scene.add(spark);
     setLook('pop');
   }
-  function resize(w, h) { W = Math.max(1, w); H = Math.max(1, h); R.setSize(W, H, false); cam.aspect = W / H; cam.fov = W < H * .8 ? 44 : 32; cam.position.z = W < H * .8 ? 5.6 : 6.2; cam.updateProjectionMatrix(); }
+  function resize(w, h) { W = Math.max(1, w); H = Math.max(1, h); if (!R) return; R.setSize(W, H, false); cam.aspect = W / H; cam.fov = W < H * .8 ? 44 : 32; cam.position.z = W < H * .8 ? 5.6 : 6.2; cam.updateProjectionMatrix(); }
   /* ---------- Figur ---------- */
   function setLook(style) {
-    look = LOOKS[style] || LOOKS.pop; if (fig) { scene.remove(fig.g); fig.g.traverse(o => { if (o.geometry && !o.userData.shared) o.geometry.dispose(); }); }
+    look = Object.assign({}, LOOKS[style] || LOOKS.pop); if (fig) { scene.remove(fig.g); fig.g.traverse(o => { if (o.geometry && !o.userData.shared) o.geometry.dispose(); }); }
     const g = new T.Group(), parts = {}, L = look, skin = mat(L.skin, { clearcoat: .3, roughness: .45 }), top = mat(L.top), pants = mat(L.pants), shoe = mat(L.shoe, { clearcoat: 1, roughness: .2 }), hair = mat(L.hair, { roughness: .5 }), gm = glowMat(L.glow);
     const limb = (n, r1, r2, m) => { const geo = capsule(r1, r2), me = new T.Mesh(geo, m); me.castShadow = true; const gl = new T.Mesh(geo, gm); gl.scale.set(1.18, 1, 1.18); me.add(gl); gl.userData.glow = 1; g.add(me); parts[n] = me; return me; };
     limb('uaL', .075, .065, top); limb('uaR', .075, .065, top); limb('faL', .06, .05, skin); limb('faR', .06, .05, skin);
@@ -74,14 +74,14 @@
     if (ex === 'feather') { const h = new T.Mesh(new T.CylinderGeometry(.12, .15, .1, 18), mat('#3a5a2a')); h.position.y = .15; head.add(h); const f = new T.Mesh(new T.ConeGeometry(.02, .18, 6), mat('#ffffff')); f.position.set(.1, .24, -.02); f.rotation.z = -.4; head.add(f); }
     ['haL', 'haR'].forEach(n => { const h = new T.Mesh(new T.SphereGeometry(.058, 14, 10), skin); h.castShadow = true; g.add(h); parts[n] = h; });
     ['toL', 'toR'].forEach(n => { const s = new T.Mesh(capsule(.065, .06), shoe); s.castShadow = true; g.add(s); parts[n] = s; });
-    scene.add(g); fig = { g, parts }; setBg(look.bg); return look;
+    scene.add(g); fig = { g, parts }; if (real) g.visible = false; setBg(look.bg); return look;
   }
   const _a = new T.Vector3(), _b = new T.Vector3(), _d = new T.Vector3(), UP = new T.Vector3(0, 1, 0);
   function place(m, A, B, extra) { _a.set(A[0], A[1], A[2]); _b.set(B[0], B[1], B[2]); _d.subVectors(_b, _a); const l = _d.length(); m.position.copy(_a).addScaledVector(_d, .5); m.quaternion.setFromUnitVectors(UP, _d.normalize()); m.scale.set(1, Math.max(.01, l + (extra || 0)), 1); }
   let smooth = null;
   function pose(p, dt) {
     if (!fig) return; if (!smooth) smooth = Object.assign({}, p); const k = Math.min(1, (dt || .016) * 30); for (const key in p) smooth[key] = smooth[key] === undefined ? p[key] : smooth[key] + (p[key] - smooth[key]) * k;
-    const J = C.joints(smooth), P = fig.parts;
+    const J = C.joints(smooth); if (real) { poseReal(J, smooth, dt); return; } const P = fig.parts;
     place(P.uaL, J.shL, J.elL); place(P.uaR, J.shR, J.elR); place(P.faL, J.elL, J.wrL); place(P.faR, J.elR, J.wrR);
     place(P.thL, J.hpL, J.knL); place(P.thR, J.hpR, J.knR); place(P.snL, J.knL, J.anL); place(P.snR, J.knR, J.anR);
     place(P.torso, J.pelvis, J.neck, -.06); P.torso.scale.x = 1; P.torso.scale.z = .74; P.torso.rotation.y += 0;
@@ -89,6 +89,46 @@
     P.pelvis.position.set(J.pelvis[0], J.pelvis[1] - .02, J.pelvis[2]); P.pelvis.rotation.y = (smooth.ry || 0) * PI / 180;
     P.head.position.set(J.head[0], J.head[1] + .02, J.head[2]); P.head.rotation.set(0, ((smooth.ry || 0) + (smooth.hy || 0)) * PI / 180, -(smooth.ht || 0) * PI / 180 - (smooth.tilt || 0) * PI / 360);
     P.haL.position.set(J.haL[0], J.haL[1], J.haL[2]); P.haR.position.set(J.haR[0], J.haR[1], J.haR[2]); place(P.toL, J.anL, J.toL, -.08); place(P.toR, J.anR, J.toR, -.08);
+  }
+  /* ---------- Realistische Figur (EasyFiguren: echter 3D-Mensch mit Skelett) ---------- */
+  let kit = null, real = null, realTok = 0;
+  const kitOf = () => { if (kit) return kit; if (!window.EasyFiguren || !T.GLTFLoader) return null; return kit = EasyFiguren.create({ THREE: T, base: '../figuren/', srgb: true }); };
+  // d = { look, glow, bg, name, extra } → Promise (true = echte Figur da). Bis dahin (und ohne Netz) tanzt die Kapsel-Figur.
+  async function setDancer(d, style) {
+    const tok = ++realTok; look = Object.assign({}, LOOKS[style] || look || LOOKS.pop, { glow: d.glow || (look && look.glow) || '#ff3aa8', name: d.name }); if (d.bg) look.bg = d.bg; setBg(look.bg);
+    const K = kitOf(); if (!K) return false;
+    let f; try { f = await K.make(Object.assign({}, d.look)); } catch (e) { return false; }
+    if (tok !== realTok) { f.dispose(); return false; }
+    if (real) real.f.dispose(); f.mixer.stopAllAction(); const B = f.bones, rest = {}; for (const k in B) rest[k] = B[k].quaternion.clone();
+    f.root.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    const mats = []; f.root.traverse(o => { if (o.isMesh && o.material && o.material.emissive) { o.material.emissive = new T.Color(0); mats.push(o.material); } });
+    real = { f, B, rest, mats, fox: null }; if (d.look.extra === 'fox') addFox(real, d.look);
+    scene.add(f.root); if (fig) fig.g.visible = false; return true;
+  }
+  function addFox(r, L) { // Zotik: Fuchsohren, Schnauze, buschiger Schwanz, Halstuch
+    const fur = new T.MeshPhysicalMaterial({ color: lin(L.skin), roughness: .75, sheen: lin('#ffd0a0') }), white = new T.MeshStandardMaterial({ color: lin('#fff2e0'), roughness: .8 }), dark = new T.MeshStandardMaterial({ color: lin('#2a1a10'), roughness: .5 });
+    const hd = r.B.Head, pel = r.B.pelvis, nk = r.B.neck_01; r.f.scene.updateMatrixWorld(true);
+    const attach = (bone, mesh, wx, wy, wz, rx, ry, rz) => { const wp = new T.Vector3(); bone.getWorldPosition(wp); const inv = new T.Matrix4().copy(bone.matrixWorld).invert(); mesh.position.set(wx, wy, wz).applyMatrix4(inv); mesh.rotation.set(rx || 0, ry || 0, rz || 0); const q = new T.Quaternion(); bone.getWorldQuaternion(q); mesh.quaternion.premultiply(q.invert()); mesh.castShadow = true; bone.add(mesh); return mesh; };
+    const hp = new T.Vector3(); hd.getWorldPosition(hp);
+    [-1, 1].forEach(s => { const e = new T.Mesh(new T.ConeGeometry(.05, .14, 12), fur); attach(hd, e, hp.x + s * .07, hp.y + .2, hp.z - .01, 0, 0, -s * .25); const inn = new T.Mesh(new T.ConeGeometry(.028, .09, 10), white); attach(hd, inn, hp.x + s * .07, hp.y + .19, hp.z + .012, 0, 0, -s * .25); });
+    const sn = new T.Mesh(new T.ConeGeometry(.045, .12, 14), white); attach(hd, sn, hp.x, hp.y + .03, hp.z + .14, Math.PI / 2, 0, 0); const nose = new T.Mesh(new T.SphereGeometry(.016, 10, 8), dark); attach(hd, nose, hp.x, hp.y + .03, hp.z + .2);
+    const pp = new T.Vector3(); pel.getWorldPosition(pp); const tail = new T.Group(); const t1 = new T.Mesh(new T.SphereGeometry(.09, 16, 12), fur); t1.scale.set(1, 1, 2.4); t1.position.z = -.18; const tip = new T.Mesh(new T.SphereGeometry(.06, 12, 10), white); tip.position.z = -.4; tail.add(t1, tip); attach(pel, tail, pp.x, pp.y - .02, pp.z - .1, .5, 0, 0); r.fox = tail;
+    if (L.scarf) { const np = new T.Vector3(); nk.getWorldPosition(np); const sc = new T.Mesh(new T.TorusGeometry(.085, .028, 10, 24), new T.MeshStandardMaterial({ color: lin(L.scarf), roughness: .7 })); attach(nk, sc, np.x, np.y - .02, np.z + .01, Math.PI / 2, 0, 0); }
+  }
+  // Knochen (zum Kind hin) in Weltrichtung dir drehen
+  const _p = new T.Vector3(), _c = new T.Vector3(), _q = new T.Quaternion(), _q2 = new T.Quaternion(), _w = new T.Quaternion(), _dv = new T.Vector3();
+  function aimB(bone, child, d) { if (!bone || !child) return; bone.getWorldPosition(_p); child.getWorldPosition(_c); _c.sub(_p).normalize(); _dv.set(d[0], d[1], d[2]).normalize(); _q.setFromUnitVectors(_c, _dv); bone.getWorldQuaternion(_w); _w.premultiply(_q); bone.parent.getWorldQuaternion(_q2); bone.quaternion.copy(_q2.invert()).multiply(_w); bone.updateMatrixWorld(true); }
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+  function poseReal(J, P, dt) {
+    const r = real, B = r.B; for (const k in r.rest) B[k].quaternion.copy(r.rest[k]);
+    const w = r.f.root; w.position.set(J.pelvis[0], 0, J.pelvis[2]); w.rotation.set(0, (P.ry || 0) * PI / 180, 0); w.updateMatrixWorld(true);
+    aimB(B.spine_01, B.neck_01, sub(J.neck, J.pelvis)); aimB(B.neck_01, B.Head, sub(J.head, J.neck));
+    for (const s of ['l', 'r']) { const S = s === 'l' ? 'L' : 'R'; aimB(B['upperarm_' + s], B['lowerarm_' + s], sub(J['el' + S], J['sh' + S])); aimB(B['lowerarm_' + s], B['hand_' + s], sub(J['wr' + S], J['el' + S]));
+      aimB(B['thigh_' + s], B['calf_' + s], sub(J['kn' + S], J['hp' + S])); aimB(B['calf_' + s], B['foot_' + s], sub(J['an' + S], J['kn' + S])); }
+    // auf den Boden stellen (tiefster Fuß) + Sprung
+    const fl = new T.Vector3(), fr = new T.Vector3(); B.ball_l.getWorldPosition(fl); B.ball_r.getWorldPosition(fr); const fl2 = new T.Vector3(), fr2 = new T.Vector3(); B.foot_l.getWorldPosition(fl2); B.foot_r.getWorldPosition(fr2);
+    const low = Math.min(fl.y, fr.y, fl2.y - .07, fr2.y - .07); w.position.y = -low + .015 + Math.max(0, P.jump || 0); w.updateMatrixWorld(true);
+    if (r.fox) r.fox.rotation.y = Math.sin(time * 6) * .35;
   }
   function setBg(c) { const cv = R.domElement; cv.style.background = `radial-gradient(ellipse at 50% 30%, ${c[1]}88, ${c[0]} 65%)`; }
   function beat(ph) { beatPh = ph; }
@@ -99,6 +139,7 @@
   let fl = 0;
   function render(dt) { time += dt; fl += dt; if (fl > .05) { fl = 0; drawFloor(); }
     glowK = Math.max(0, glowK - dt * .8); const gc = glowK > 0 ? lin('#ffd23a') : lin(look.glow);
+    if (real) { const e = glowK * .35; for (const m of real.mats) m.emissive.setRGB(e, e * .75, 0); }
     if (fig) fig.g.traverse(o => { if (o.userData.glow || (o.material && o.material.blending === T.AdditiveBlending && o.material.side === T.BackSide)) { o.material.color.copy(gc); o.material.opacity = .4 + Math.pow(1 - beatPh, 2) * .25 + glowK * .5; } });
     beams.forEach(b => { b.rotation.z = Math.sin(time * .8 + b.userData.i) * .5; b.material.opacity = .05 + Math.pow(1 - beatPh, 2) * .07 + glowK * .15; b.material.color.copy(lin([look.glow, '#ffffff', look.top][b.userData.i % 3])); });
     spark.rotation.y = Math.sin(time * .2) * .2; floor.userData.ring.material.color.copy(lin(glowK > 0 ? '#ffd23a' : look.glow));
@@ -118,5 +159,5 @@
     if (dl > sz * .08) { x.strokeStyle = '#ffffff'; x.lineWidth = sz * .035; x.beginPath(); x.moveTo(X(J.haL), Y(J.haL)); x.lineTo(X(J.haL) + d[0] * .8, Y(J.haL) + d[1] * .8); x.stroke(); }
     return PC[k] = c;
   }
-  window.GAView = { init, resize, setLook, pose, beat, gold, render, quality, picto, LOOKS, get look() { return look; } };
+  window.GAView = { init, resize, setLook, setDancer, get real() { return !!real; }, pose, beat, gold, render, quality, picto, LOOKS, get look() { return look; } };
 })();

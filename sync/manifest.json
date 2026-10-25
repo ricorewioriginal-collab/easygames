@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "49c86831a99b",
- "generated": "2026-10-24T22:57:56+00:00",
- "commit": "2f621a45de6e0e74134e62141dbdf22ba6b19e89",
+ "version": "05204e017fed",
+ "generated": "2026-10-25T02:37:05+02:00",
+ "commit": "06b28924a00c257dd12a59c16b2f59afa128412e",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6283,8 +6283,8 @@
   },
   {
    "p": "games.js",
-   "s": 50056,
-   "h": "1976afb09751e1ddbc5c86bcafac7762bbba5ce18ba048033397c66d9a283e4f"
+   "s": 50236,
+   "h": "5a664ff4db9833abdb3c9a64e4019d1a44c7268e4fd5d2c19f1b3e0ed8208777"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6448,18 +6448,23 @@
   },
   {
    "p": "groove-arena/index.html",
-   "s": 15761,
-   "h": "738b3c147f7650cc23874da53c681f8db3c48e0d93d2fff6b98080516a73f08d"
+   "s": 19677,
+   "h": "85ced094e96cbc85c60d918ca179f0854654dee344950f19f90b8a848be1bbb9"
   },
   {
    "p": "groove-arena/js/app.js",
-   "s": 46862,
-   "h": "3d39a680f7b5f067c13a7f2ae39529dd8ad317440cd544f64598033dbc2258e9"
+   "s": 65883,
+   "h": "c39ebddf8693597a33e454a993f043309b2b7d142e86a45e62953d3c6dfa4e99"
   },
   {
    "p": "groove-arena/js/core.js",
-   "s": 38402,
-   "h": "ae975f1d8d7b385a5f7036a31ec76eadecc0fc707633536df6d3afb6f76fbd14"
+   "s": 41176,
+   "h": "9a9c2f14af37cfa0a4c877c84613a08ec33e9d52fd0c8f21eb910121a9c48676"
+  },
+  {
+   "p": "groove-arena/js/dancers.js",
+   "s": 5872,
+   "h": "2b67c6b2e0b556f63da76fff9da19050909452d5aee00a6e57c56097f351e098"
   },
   {
    "p": "groove-arena/js/env.js",
@@ -6468,13 +6473,13 @@
   },
   {
    "p": "groove-arena/js/media.js",
-   "s": 8994,
-   "h": "6d29235778b37ba860d5268c234df1de86dd563b5a7814dbce5a1c75fe08aabb"
+   "s": 12707,
+   "h": "fc07435794c3eb8a8e91b24b265acea90e8ae28ffab6f3a091ffad9bcd9407ff"
   },
   {
    "p": "groove-arena/js/sense.js",
-   "s": 6324,
-   "h": "4697acdb77a9785858062265c5573f1846bbb14bba10d128165c0d9c5dcd08e8"
+   "s": 6960,
+   "h": "70ed25600621b8075e69e9c3f4292e70c7caea8cfac064b355a65252a74ac213"
   },
   {
    "p": "groove-arena/js/sound.js",
@@ -6483,8 +6488,8 @@
   },
   {
    "p": "groove-arena/js/view.js",
-   "s": 17136,
-   "h": "d6d377f1b1bc61ee1d52f92e87dfc6c533eeebc4c30d151d3f34e435c51787c8"
+   "s": 22840,
+   "h": "1a45abb80729d8ae5873d8f892c92dff6f0d16a7ef1fe911054cb5a9195b228f"
   },
   {
    "p": "groove-arena/manifest.webmanifest",
@@ -6493,8 +6498,8 @@
   },
   {
    "p": "groove-arena/style.css",
-   "s": 19703,
-   "h": "ddfbbb76604e845301ddd3d8bc7b4aa614226d0ad94ef4a511720d5e344f3727"
+   "s": 24254,
+   "h": "3b24239654ed1a1988f6226cac55a0662443051db2bf0ca0cff94a6b13db8b50"
   },
   {
    "p": "groove-arena/sw.js",
@@ -6503,8 +6508,8 @@
   },
   {
    "p": "guides.js",
-   "s": 142889,
-   "h": "54f612ff84554e9025dd0efd1cd20b12cb3b89af6976f86487e973c6e66d469c"
+   "s": 143227,
+   "h": "eee92317180ae0641e583b94d6a462463bfdd47b27178b8741356734c1de81d4"
   },
   {
    "p": "heute.html",
@@ -8643,8 +8648,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 217138,
-   "h": "e61d4f5f4864898dbc6f4320f6044849872bd9d21a3b127856307b71038a3d0a"
+   "s": 217662,
+   "h": "2c1f93b2ae71df09142aeec9af8dc1cb256eb862b8343af4f41ce8d24f523c96"
   },
   {
    "p": "taschi/card.svg",

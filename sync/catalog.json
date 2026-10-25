@@ -1812,7 +1812,7 @@
   {
    "id": "groove-arena",
    "title": "Groove Arena – Tanz mit!",
-   "desc": "Tanzspiel zum Mitmachen mit YouTube: Such jeden Song (iTunes-Suche) oder füge einen Link ein – eine 3D-Vortänzerin tanzt dazu eine eigene Choreografie über den ganzen Song, jeder Song anders: Strophen, Refrain mit Wiederholungs-Moves, ✨ Gold-Moves und Finale, Piktogramme zeigen die nächsten Moves. Die Kamera (Körper-Erkennung direkt auf dem Gerät) oder das Handy in der Hand bewertet jede Pose: Perfekt, Super, Gut. Takt automatisch per Mikrofon oder Mitklopfen. Kategorien Pop, Hip-Hop, Latin, K-Pop, Disco, Kids, Fitness, Line Dance, Party, Schlager und 🎬 Tanz-Videos zum Nachtanzen. 🌐 Online & Handys: Freunde tanzen im selben Raum mit dem Handy oder von überall mit.",
+   "desc": "Tanzspiel zum Mitmachen mit YouTube: Such jeden Song (iTunes-Suche) oder füge einen Link ein – eine 3D-Vortänzerin tanzt dazu eine eigene Choreografie über den ganzen Song, jeder Song anders: Strophen, Refrain mit Wiederholungs-Moves, ✨ Gold-Moves und Finale, Piktogramme zeigen die nächsten Moves. Die Kamera (Körper-Erkennung direkt auf dem Gerät) oder das Handy in der Hand bewertet jede Pose: Perfekt, Super, Gut. Takt automatisch per Mikrofon oder Mitklopfen. Kategorien Pop, Hip-Hop, Latin, K-Pop, Disco, Kids, Fitness, Line Dance, Party, Schlager und 🎬 Tanz-Videos zum Nachtanzen. 📻 Radio: live zu den RicoReWi-Sendern tanzen – jeder neue Titel bekommt eigene Moves. Echte 3D-Tänzer wie Rico und Zotik plus Charakter-Editor, 👀 Nur-tanzen ohne Wertung. 🌐 Online & Handys: Freunde tanzen im selben Raum mit dem Handy oder von überall mit.",
    "icon": "💃",
    "img": "groove-arena/card.jpg",
    "bg": "linear-gradient(145deg,#1a0838,#ff3aa8 55%,#3ad8ff)",
@@ -1835,11 +1835,14 @@
     "tipps": [
      "Große, deutliche Bewegungen werden besser erkannt als kleine.",
      "Der Refrain kommt immer mit denselben Moves wieder – beim zweiten Mal sitzt er!",
-     "Gold-Moves am Ende des Refrains geben Extrapunkte."
+     "Gold-Moves am Ende des Refrains geben Extrapunkte.",
+     "📻 Radio: Tanz live zu den RicoReWi-Sendern – Senderlogo und aktueller Titel stehen oben, bei jedem neuen Song gibt es neue Moves.",
+     "👀 Nur tanzen: ohne Punkte und Bewertung einfach mitmachen – am Ende siehst du Dauer und Moves.",
+     "Bei jedem Video steht der YouTube-Kanal mit Link, beim Radio der Sender auf laut.fm."
     ]
    },
-   "size": 190106,
-   "files": 12,
+   "size": 236293,
+   "files": 13,
    "offline": true,
    "cloud": {
     "game": "groove-arena",

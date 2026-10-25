@@ -27,6 +27,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <body>
 <div id="stage"><canvas id="cv"></canvas></div>
 <div id="ytWrap"></div>
+<div id="radioBox"><img id="rbLogo" alt="" referrerpolicy="no-referrer"><div><b id="rbName"></b><span id="rbNow"></span><small class="rbAdv" id="rbAdv" hidden>🅴 Explicit-Hinweis: Rap-Texte enthalten oft derbe, vulgäre Sprache.</small><small class="src" id="rbSrc"></small></div></div>
 <div id="camBox"><video id="camv" playsinline muted></video><canvas id="camSk"></canvas></div>
 
 <section class="scr on" id="sLoad"><div class="load"><div class="lSpin">💃</div><h1 class="logo">GROOVE<span>ARENA</span></h1><div class="bar"><i id="loadBar"></i></div><p class="tip">Die Tanzfläche wird poliert …</p></div></section>
@@ -43,7 +44,9 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
       <div class="mList" id="mList">
         <button class="mi nav hero" data-go="songs" data-i="Such dir einen Song aus – die Vortänzerin tanzt eine eigene Choreografie über den ganzen Song, du machst nach. Kategorien von Pop bis Schlager."><i>💃</i><b>Tanzen</b></button>
         <button class="mi nav" data-go="videos" data-i="Tanz-Videos und Choreos von YouTube zum Nachtanzen (Kids, Zumba, Trend-Tänze, K-Pop, Line Dance …). Bewertet werden Takt und Bewegung."><i>🎬</i><b>Tanz-Videos</b></button>
+        <button class="mi nav" data-go="radio" data-i="Tanz live zu den RicoReWi-Sendern (laut.fm): Senderlogo und aktueller Titel werden angezeigt, jeder neue Song bekommt automatisch eigene Moves."><i>📻</i><b>Radio</b></button>
         <button class="mi nav online" data-go="online" data-i="Online & Handys: Freunde tanzen mit – im selben Raum mit dem Handy in der Hand oder von überall mit Video und Kamera. Beitritt per Code, Link oder QR-Code."><i>🌐</i><b>Online &amp; Handys</b></button>
+        <button class="mi nav" data-go="dancers" data-i="Wähle, wer dir vortanzt – Rico, Zotik und viele mehr als echte 3D-Figuren – oder bau dir im Charakter-Editor deine eigene Figur."><i>🧑‍🎤</i><b>Tänzer &amp; Editor</b></button>
         <button class="mi nav" data-go="mine" data-i="Deine zuletzt getanzten Songs mit Sternen und Bestwerten."><i>⭐</i><b>Meine Songs</b></button>
         <button class="mi nav" data-go="opts" data-i="Schwierigkeit, Takt-Verzögerung, Kamera-Spiegel, Klänge."><i>⚙️</i><b>Einstellungen</b></button>
         <button class="mi nav" data-go="help" data-i="So funktioniert das Tanzen mit Kamera, Handy und Takt."><i>❓</i><b>Anleitung</b></button>
@@ -60,8 +63,15 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <div class="cats" id="cats"></div><div class="cats" id="vcats" hidden></div>
     <p class="hint" id="sMsg" hidden></p>
     <div class="grid" id="grid"></div>
-    <p class="hint small">Songs: iTunes-Suche · Videos: YouTube · Du kannst auch einen YouTube-Link ins Suchfeld einfügen.</p>
+    <p class="hint small src">Quellen: Songinfos &amp; Cover von Apple iTunes · Videos von YouTube (Kanal steht an jedem Video) · Songaufbau von LRCLIB · Rechte bei den Urhebern. Du kannst auch einen YouTube-Link ins Suchfeld einfügen.</p>
   </div>
+</section>
+
+<section class="scr" id="sRadio">
+  <div class="panel wide songs"><h2>📻 Zum Radio tanzen</h2><p class="hint">Live von den RicoReWi-Sendern – die Vortänzerin erkennt den Takt aus dem Stream, jeder neue Titel bekommt eigene Moves.</p>
+    <div class="grid" id="rGrid"></div>
+    <p class="hint small src">Quelle: Livestreams, Senderlogos und Titelinfos von laut.fm · Rechte bei den Urhebern.</p>
+    <div class="row"><button class="btn nav" id="rBack">← Zurück</button></div></div>
 </section>
 
 <section class="scr" id="sPrep">
@@ -69,10 +79,12 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <div class="pHead"><img id="pCover" alt=""><div><h2 id="pTitle"></h2><p class="hint" id="pArtist"></p></div></div>
     <p class="hint" id="pInfo"></p>
     <div class="vids" id="pVids"></div>
+    <p class="src" id="pSrc"></p>
     <p class="lbl">Wie tanzt du?</p><div class="seg" id="pInput"></div>
     <div id="pCamBox" class="note"><p id="camMsg">📷 Kamera …</p><p class="hint small">Die Körper-Erkennung läuft nur auf diesem Gerät – es wird kein Bild hochgeladen.</p></div>
     <div id="pPhoneTip" class="note" hidden><p>📱 Halte das Handy fest in der <b>rechten Hand</b> und mach die Arm-Bewegungen der Vortänzerin nach.</p></div>
     <p class="lbl">Schwierigkeit</p><div class="seg" id="pDiff"></div>
+    <p class="lbl">Vortänzer</p><div class="seg small dzRow" id="pDancer"></div>
     <div id="pStyleRow"><p class="lbl">Tanzstil</p><div class="seg small" id="pStyle"></div></div>
     <p class="hint" id="pLook"></p><p class="hint" id="pSync"></p>
     <div class="row"><button class="btn nav" id="pBack">← Zurück</button><button class="btn pri big nav" id="pGo" disabled>💃 Tanzen!</button></div>
@@ -88,10 +100,26 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <div class="dTools"><button class="btn small" id="dNudgeL" title="Choreo früher">◀</button><button class="btn small" id="dTap">👆 Takt</button><button class="btn small" id="dNudgeR" title="Choreo später">▶</button></div>
     <div class="fl" id="dFlash"></div>
     <canvas id="pics"></canvas>
+    <span class="dSrc" id="dSrc"></span>
   </div>
 </section>
 
 <section class="scr" id="sResult"><div class="panel"><h2 id="rsT"></h2><div id="rsBody"></div><div class="row" id="rsBtns"></div></div></section>
+
+<section class="scr" id="sDancers"><div class="panel side"><h2>🧑‍🎤 Wer tanzt dir vor?</h2><p class="hint">Echte 3D-Figuren – tippe eine an, um sie zu sehen. Mit „Neue Figur“ baust du deine eigene.</p><div class="dzGrid" id="dzGrid"></div><div class="row"><button class="btn nav" id="dzBack">← Zurück</button><button class="btn nav" id="dzEdit">✏️ Bearbeiten</button></div></div></section>
+
+<section class="scr" id="sCreator"><div class="panel side creator"><h2>✏️ Charakter-Editor</h2>
+  <input class="field nav" id="crName" maxlength="14" placeholder="Name der Figur">
+  <p class="lbl">Körper</p><div class="seg small" id="crBody"></div><div class="seg small" id="crSize"></div><div class="seg small" id="crBuild"></div>
+  <p class="lbl">Hautton</p><div class="sws" id="crSkin"></div>
+  <p class="lbl">Frisur</p><div class="seg small" id="crHair"></div><div class="sws" id="crHairC"></div>
+  <p class="lbl">Bart</p><div class="seg small" id="crBeard"></div>
+  <p class="lbl">Oberteil</p><div class="seg small" id="crTopS"></div><div class="sws" id="crTop"></div>
+  <p class="lbl">Hose</p><div class="seg small" id="crBotS"></div><div class="sws" id="crBot"></div>
+  <p class="lbl">Schuhe</p><div class="sws" id="crShoe"></div>
+  <p class="lbl">Kopfbedeckung</p><div class="seg small" id="crHat"></div><div class="sws" id="crHatC"></div>
+  <div class="row"><button class="btn nav" id="crBack">← Zurück</button><button class="btn nav" id="crRand">🎲 Zufall</button><button class="btn nav" id="crDel">🗑 Löschen</button><button class="btn pri big nav" id="crSave">⭐ Speichern</button></div>
+</div></section>
 
 <section class="scr" id="sMine"><div class="panel wide"><h2>⭐ Meine Songs</h2><div class="grid" id="mineGrid"></div><div class="row"><button class="btn pri nav" id="mineBack">← Zurück</button></div></div></section>
 
@@ -101,6 +129,9 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <p><b>Nachmachen wie vor einem Spiegel:</b> Hebt die Vortänzerin den Arm auf der rechten Bildseite, hebst du deinen rechten Arm. Unten laufen die Piktogramme der nächsten Moves – wenn ein Bild die Linie erreicht, zählt die Pose.</p>
     <p><b>📷 Kamera:</b> Stell das Gerät so, dass du von Kopf bis Knie zu sehen bist (2–3 Meter Abstand, gutes Licht). Die Körper-Erkennung läuft nur auf deinem Gerät. <b>📱 Handy in der Hand:</b> Handy fest in die rechte Hand – bewertet wird die Bewegung deines Arms.</p>
     <p><b>Takt:</b> Beim ersten Mal hört das Spiel über das Mikrofon auf den Beat und merkt ihn sich für das Video. Ohne Mikrofon klopfst du 8× im Takt (Leertaste oder 👆). Passt es nicht ganz, schiebst du die Choreo mit ◀ ▶ früher oder später.</p>
+    <p><b>📻 Radio:</b> Tanz live zu den RicoReWi-Sendern. Angezeigt werden Senderlogo und aktueller Titel, der Takt kommt direkt aus dem Stream – bei jedem neuen Song gibt es neue, eigene Moves. Über Pause → „Beenden“ siehst du dein Ergebnis.</p>
+    <p><b>👀 Nur tanzen:</b> Ganz ohne Punkte und Bewertung – einfach mitmachen. Am Ende siehst du, wie lange und wie viele Moves du getanzt hast.</p>
+    <p><b>Quellen:</b> Bei jedem Video steht der YouTube-Kanal mit Link, beim Radio der Sender auf laut.fm. Songinfos kommen von Apple iTunes, der Songaufbau von LRCLIB.</p>
     <p><b>🎬 Tanz-Videos:</b> Choreo- und Tanz-Videos laufen groß – du tanzt dem Video nach, bewertet werden Takt und Bewegung.</p>
     <p><b>🌐 Online & Handys:</b> Der Bildschirm zeigt Code und QR-Code. Im selben Raum tanzen alle mit dem Handy in der Hand mit, Freunde von woanders sehen das Video auf ihrem Gerät und tanzen mit Kamera oder Handy – die Punkte erscheinen live.</p>
     <p><b>Steuerung:</b> Menüs mit Maus/Touch, Pfeiltasten + Enter oder Gamepad (A wählen, B zurück). Beim Tanzen: Leertaste/A = Takt klopfen, Esc/Start = Pause, [ ] = Choreo früher/später.</p>
@@ -143,7 +174,10 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="../device.js"></script>
 <script src="../gamekit.js"></script>
 <script src="../cloud/fire-peer.js"></script>
+<script src="../vendor/three-r128-gltfloader.js"></script>
+<script src="../figuren/figuren.js"></script>
 <script src="js/env.js"></script>
+<script src="js/dancers.js"></script>
 <script src="js/core.js"></script>
 <script src="js/media.js"></script>
 <script src="js/sense.js"></script>
