@@ -113,7 +113,7 @@ function tn(u, v, s, f, g) { let a = .5, r = 0, P = f | 0, Q = (g || f) | 0; for
 export function groundTextures(TW, TD) {
   const n = 256, rnd = mul(71042), c = cv(n), x = c.getContext('2d');
   x.fillStyle = '#f4f4ee'; x.fillRect(0, 0, n, n);
-  const m = noiseTile(n, 3, (u, v, s) => .75 + tn(u, v, s, 7) * .5);
+  const m = noiseTile(n, 3, (u, v, s) => .9 + tn(u, v, s, 7) * .2);
   x.globalCompositeOperation = 'multiply'; x.drawImage(m, 0, 0); x.globalCompositeOperation = 'source-over';
   for (let i = 0; i < 2600; i++) { // Halme und Erdkörner
     const px = rnd() * n, py = rnd() * n, a = -1.57 + (rnd() - .5) * 1.1, l = 2 + rnd() * 5, g = rnd();
@@ -195,8 +195,9 @@ export function furShells(T_, geo, mat, n) {
   g.setAttribute('aShell', new T_.InstancedBufferAttribute(a, 1));
   const im = new T_.InstancedMesh(g, mat, n), I = new T_.Matrix4();
   for (let i = 0; i < n; i++) im.setMatrixAt(i, I);
-  im.frustumCulled = false; im.userData.fur = n; FURS.push(im);
+  im.frustumCulled = false; im.userData.fur = n; FURS.push(im); im.count = Math.round(n * furK); im.visible = im.count > 0;
   return im;
 }
 /** Fell-Stufe setzen: 1 = alle Schalen, kleiner = kürzeres Fell, 0 = aus. */
-export function setFurLevel(k) { for (const im of FURS) { im.count = Math.round(im.userData.fur * k); im.visible = im.count > 0 } }
+let furK = 1;
+export function setFurLevel(k) { furK = k; for (const im of FURS) { im.count = Math.round(im.userData.fur * k); im.visible = im.count > 0 } }

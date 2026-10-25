@@ -79,7 +79,7 @@ export function buildFox(C) {
     solid(arm, [el(.095, .1, .105, 0, -.43, .01), el(.035, .04, .045, -.05, -.5, .07), el(.035, .04, .045, 0, -.51, .08), el(.035, .04, .045, .05, -.5, .07)], DK);
     body.add(arm); P.arms.push(arm);
   }
-  const sw = makeSword(); sw.position.set(.04, .35, 0); sw.rotation.x = Math.PI / 2; sw.visible = false; P.arms[1].add(sw); P.handSword = sw;
+  const sw = makeSword(); sw.position.set(0, -.46, .07); sw.rotation.x = Math.PI - .35; sw.visible = false; P.arms[1].add(sw); P.handSword = sw;
   const back = makeSword(); back.position.set(-.06, .5, -.27); back.rotation.set(.12, 0, -.95); body.add(back); P.backSword = back;
 
   /* --- Kopf --- */

@@ -48,19 +48,19 @@ function pushOut1(o,r){
 
 /* ================= Renderer ================= */
 const cv=$('cv');
-const renderer=new T.WebGLRenderer({canvas:cv,antialias:!TOUCH,powerPreference:'high-performance'});
-const PR0=Math.min(devicePixelRatio||1,TOUCH?1.6:2);renderer.setPixelRatio(PR0);
+const renderer=new T.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'});
+const PR0=Math.min(devicePixelRatio||1,2);renderer.setPixelRatio(PR0);
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
 renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
 const scene=new T.Scene();scene.environment=makeEnv(renderer);
 const FOG=new T.Color(0x2a3a86);
 scene.fog=new T.FogExp2(FOG,.0037);
 const camera=new T.PerspectiveCamera(58,1,.2,1800);
-const post=createPost(renderer,scene,camera,{touch:TOUCH});
+const post=createPost(renderer,scene,camera,{touch:TOUCH});if(TOUCH){post.setLevel(2);setFurLevel(0)}
 /* Automatische Qualität: bricht die Bildrate ein, sinken Auflösung und Schatten-Takt schrittweise; läuft es wieder rund, geht es zurück. */
-const QPR=[1,.8,.65,.5],QSH=[1,2,3,3];let qLv=0,qEma=16.7,qBad=0,qGood=0,qUp=8,qLastUp=-99,shN=0;
+const QPR=TOUCH?[1,.9,.8,.7]:[1,.8,.65,.5],QSH=[1,2,3,3];let qLv=0,qEma=16.7,qBad=0,qGood=0,qUp=8,qLastUp=-99,shN=0;
 renderer.shadowMap.autoUpdate=false;
-function setQ(l){qLv=l;renderer.setPixelRatio(PR0*QPR[l]);renderer.setSize(innerWidth,innerHeight,false);post.setLevel(Math.min(l,2));post.resize();setFurLevel([1,.6,.34,0][l]);const sh=l<3;if(moonL.castShadow!==sh)moonL.castShadow=sh}
+function setQ(l){qLv=l;renderer.setPixelRatio(PR0*QPR[l]);renderer.setSize(innerWidth,innerHeight,false);post.setLevel(TOUCH?2:Math.min(l,2));post.resize();setFurLevel(TOUCH?0:[1,.6,.34,0][l]);const sh=l<3;if(moonL.castShadow!==sh)moonL.castShadow=sh}
 function qualityTick(rdt){
   if(mode!=='play'||menuOpen||rdt>.25||rdt<=0)return;
   qEma+=(rdt*1000-qEma)*.08;
@@ -139,7 +139,7 @@ const terrain=(()=>{
     col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;
   }
   g.setAttribute('color',new T.BufferAttribute(col,3));g.computeVertexNormals();
-  const m=new T.Mesh(g,new T.MeshStandardMaterial({vertexColors:true,map:groundTexture(),bumpMap:GBUMP,bumpScale:1,roughness:.95}));m.receiveShadow=true;scene.add(m);return m;
+  const m=new T.Mesh(g,new T.MeshStandardMaterial({vertexColors:true,map:groundTexture(),roughness:.95}));m.receiveShadow=true;scene.add(m);return m;
 })();
 
 /* ================= Props (instanziert) ================= */
@@ -1538,7 +1538,7 @@ function buildWorld(n){
       const pd=Math.abs(x-pathx(z));if(z<42&&z>-158){c.lerp(cp,(1-sm(1.6,4.2,pd))*.9)}
       c.lerp(ca,(1-sm(26,36,da))*.9);if(hh>5)c.lerp(cr,sm(5,12,hh));col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b}
     g.setAttribute('color',new T.BufferAttribute(col,3));g.computeVertexNormals()}
-  const terr=new T.Mesh(g,new T.MeshStandardMaterial({vertexColors:true,map:tex,bumpMap:GBUMP,bumpScale:1,roughness:.95}));terr.receiveShadow=true;scene.add(terr);WLD.terr=terr;
+  const terr=new T.Mesh(g,new T.MeshStandardMaterial({vertexColors:true,map:tex,roughness:.95}));terr.receiveShadow=true;scene.add(terr);WLD.terr=terr;
   /* Instanzen */
   const mkI=(geo,mat,cap,cast)=>{const im=inst(geo,mat,cap,cast);im.userData.cap=cap;ims.push(im);return im};
   const put2=(im,...a)=>{if(im.userData.n<im.userData.cap)put(im,...a)};
