@@ -98,5 +98,25 @@
   function station(slug) { return stInfo[slug] || (stInfo[slug] = getJSON('https://api.laut.fm/station/' + encodeURIComponent(slug), 6000).then(j => ({ name: j.display_name || j.name || slug, logo: (j.images || {}).station_120x120 || (j.images || {}).station || '', page: j.page_url || 'https://laut.fm/' + slug, genres: j.genres || [], format: j.format || '' })).catch(() => { delete stInfo[slug]; return null; })); }
   const pd = v => Date.parse(String(v || '').replace(/^(\S+) (\S+) ([+-]\d\d)(\d\d)$/, '$1T$2$3:$4')) || 0;   // „2026-10-25 02:14:09 +0200“ → ISO
   function nowPlaying(slug) { return getJSON('https://api.laut.fm/station/' + encodeURIComponent(slug) + '/current_song', 6000).then(j => j && j.title ? { title: String(j.title), artist: j.artist && j.artist.name ? String(j.artist.name) : '', type: String(j.type || 'song'), start: pd(j.started_at), end: pd(j.ends_at), length: +j.length || 0 } : null).catch(() => null); }
-  window.GAMedia = { songs, videos, videoFor, lyrics, idFromUrl, parseTitle, player, radio, station, nowPlaying, loadApi, hosts: () => ({ piped: PIPED, inv: INV }) };
+  /* ---------- Tempo aus öffentlicher Quelle: 30-Sekunden-Hörprobe von Apple iTunes (frei abrufbar), im Gerät ausgewertet ----------
+   * laut.fm liefert in Stream-Tags und Titelinfos kein Tempo (BPM) – daher zählt das Spiel den Takt in der Hörprobe desselben Titels. Ergebnis je Song gespeichert. */
+  const BK = 'groove-arena-bpm', bpmP = {}; let bpmC = {}; try { bpmC = JSON.parse(localStorage.getItem(BK) || '{}') || {}; } catch (e) { }
+  function onsets(buf) {   // Einsatz-Hüllkurve mit 100 Hz (Bass betont) – dieselbe Form wie bei der Live-Erkennung
+    const d = buf.getChannelData(0), hop = Math.round(buf.sampleRate / 100), out = []; let lp = 0, pl = 0, pa = 0;
+    for (let i = 0, k = 0; i + hop <= d.length; i += hop, k++) { let lo = 0, al = 0; for (let j = i; j < i + hop; j++) { const x = d[j]; lp += (x - lp) * .02; lo += lp * lp; al += x * x; } lo = Math.sqrt(lo / hop); al = Math.sqrt(al / hop); out.push({ t: k / 100 + .01, v: Math.max(0, lo - pl) * 2.2 + Math.max(0, al - pa) }); pl = lo; pa = al; }
+    return out; }
+  const nmz = s => String(s || '').toLowerCase().replace(/\(.*?\)|\[.*?\]|feat\..*$/g, '').replace(/[^a-z0-9äöüß]/g, '');
+  function bpmOf(n) {
+    if (!n || !n.title) return Promise.resolve(null); const key = nmz(n.artist) + '|' + nmz(n.title); if (bpmC[key]) return Promise.resolve(bpmC[key]); if (bpmP[key]) return bpmP[key];
+    return bpmP[key] = (async () => {
+      const j = await getJSON('https://itunes.apple.com/search?media=music&entity=song&country=DE&limit=8&term=' + encodeURIComponent(((n.artist || '') + ' ' + n.title).trim()));
+      const t = nmz(n.title).slice(0, 12), a = nmz(n.artist).slice(0, 6), r = (j.results || []).filter(x => x.previewUrl && nmz(x.trackName).startsWith(t));
+      const hit = r.find(x => !a || nmz(x.artistName).includes(a)) || (a ? null : r[0]); if (!hit) return null;
+      const ab = await (await fetch(hit.previewUrl, { referrerPolicy: 'no-referrer' })).arrayBuffer(), OC = window.OfflineAudioContext || window.webkitOfflineAudioContext; if (!OC) return null;
+      const buf = await new Promise((res, rej) => { const p = new OC(1, 44100, 44100).decodeAudioData(ab, res, rej); if (p && p.catch) p.catch(rej); });
+      const tm = GACore.tempo(onsets(buf)); if (!tm) return null; const v = { bpm: tm.bpm, conf: tm.conf };
+      bpmC[key] = v; const ks = Object.keys(bpmC); if (ks.length > 400) ks.slice(0, 100).forEach(k => delete bpmC[k]); try { localStorage.setItem(BK, JSON.stringify(bpmC)); } catch (e) { } return v;
+    })().catch(() => null).finally(() => { delete bpmP[key]; });
+  }
+  window.GAMedia = { songs, videos, videoFor, lyrics, idFromUrl, parseTitle, player, radio, station, nowPlaying, bpmOf, onsets, loadApi, hosts: () => ({ piped: PIPED, inv: INV }) };
 })();

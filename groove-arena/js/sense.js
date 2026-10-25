@@ -49,6 +49,6 @@
   // Radio: der Stream läuft durch den Analysator und weiter in die Lautsprecher (Quelle je Element nur einmal anlegbar)
   Mic.startEl = async function (el, timeFn) { Mic.stop(); await actx(); if (!el.__gaSrc) { el.__gaSrc = ac.createMediaElementSource(el); el.__gaSrc.connect(ac.destination); } run(el.__gaSrc, timeFn, 'radio'); };
   Mic.stop = function () { Mic.on = false; cancelAnimationFrame(raf); try { src && an && src.disconnect(an); } catch (e) { } src = null; if (stream) stream.getTracks().forEach(t => t.stop()); stream = null; };
-  Mic.estimate = () => GACore.tempo(Mic.samples.filter(s => s.t > (Mic.samples.length ? Mic.samples[Mic.samples.length - 1].t - 14 : 0)));
+  Mic.estimate = hint => GACore.tempo(Mic.samples.filter(s => s.t > (Mic.samples.length ? Mic.samples[Mic.samples.length - 1].t - 14 : 0)), hint ? hint * .97 : 0, hint ? hint * 1.03 : 0);   // hint: Tempo aus der Hörprobe → nur noch die Phase suchen
   window.GASense = { Cam, Motion, Mic };
 })();

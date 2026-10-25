@@ -329,6 +329,10 @@ const GACore = (() => {
     const idx = [0]; for (let i = 1; i < taps.length; i++) idx.push(idx[i - 1] + Math.max(1, Math.round((taps[i] - taps[i - 1]) / med)));
     const n = taps.length, mx = idx.reduce((s, x) => s + x, 0) / n, my = taps.reduce((s, x) => s + x, 0) / n; let sxy = 0, sxx = 0; for (let i = 0; i < n; i++) { sxy += (idx[i] - mx) * (taps[i] - my); sxx += (idx[i] - mx) ** 2; } const P = sxy / sxx; let beat0 = my - P * mx; while (beat0 - P > 0) beat0 -= P; return { bpm: 60 / P, beat0, conf: 1 }; }
 
-  return { genMoves, NEUTRAL, KEYS, L, SEGS, SH, ARMS, STEPS, SIG, STYLES, joints, mirrorPose, choreograph, at, hits, poseAt, idle, styleOf, sectionsFromLyrics, parseLRC, coachVec, userVec, compare, change, rate, RATE, handAccel, motionScore, rhythmScore, tempo, tapTempo, rng, hash, clamp };
+  // Tempo bekannt (z. B. aus der Hörprobe): wenige Klopfer reichen für die Phase (Kreismittel der Klopfzeitpunkte im Schlagraster)
+  function tapPhase(taps, bpm) { if (!taps.length || !(bpm > 0)) return null; const P = 60 / bpm; let x = 0, y = 0; for (const t of taps) { const a = 2 * Math.PI * (((t % P) + P) % P) / P; x += Math.cos(a); y += Math.sin(a); }
+    let beat0 = (Math.atan2(y, x) / (2 * Math.PI) + 1) % 1 * P; return { bpm, beat0, conf: Math.hypot(x, y) / taps.length }; }
+
+  return { genMoves, NEUTRAL, KEYS, L, SEGS, SH, ARMS, STEPS, SIG, STYLES, joints, mirrorPose, choreograph, at, hits, poseAt, idle, styleOf, sectionsFromLyrics, parseLRC, coachVec, userVec, compare, change, rate, RATE, handAccel, motionScore, rhythmScore, tempo, tapTempo, tapPhase, rng, hash, clamp };
 })();
 if (typeof module !== 'undefined') module.exports = GACore;
