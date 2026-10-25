@@ -130,7 +130,7 @@ window.EASYGAMES_GUIDES = {
   ]
  },
  "anmacha-quest-rpg": {
-  "anleitung": "Ein 16-Bit-Rollenspiel in 3D-Optik mit Rundenkämpfen (ca. 1,5 bis 2,5 Stunden). Du durchquerst vier Reiche (Rap, Schlager, Weihnachten, Rock), besiegst deren Bosse und am Ende im Rauschen-Turm Das Große Rauschen. Dabei gewinnst du neue Mitstreiter (Andrew, Marco, Teresa, Rico, Andy). In der Stadt Funkhafen heilst du am Brunnen und kaufst bei Tonia Items und Ausrüstung. Der Spielstand wird lokal im Browser gespeichert.",
+  "anleitung": "Ein Rollenspiel in modernem 3D mit Rundenkämpfen (ca. 1,5 bis 2,5 Stunden). Du durchquerst vier Reiche (Rap, Schlager, Weihnachten, Rock), besiegst deren Bosse und am Ende im Rauschen-Turm Das Große Rauschen. Dabei gewinnst du neue Mitstreiter (Andrew, Marco, Teresa, Rico, Andy). In der Stadt Funkhafen heilst du am Brunnen und kaufst bei Tonia Items und Ausrüstung. Der Spielstand wird lokal im Browser gespeichert.",
   "steuerung": [
    "PC: Pfeiltasten oder WASD = Laufen, Leertaste/Enter/Z = Bestätigen und Weiterlesen, Esc/X/Backspace = Zurück, Esc/M/Tab = Menü; gegen Personen, Truhen, Tore oder Bosse laufen löst die Aktion aus",
    "Touch: Steuerkreuz unten links (Finger aufsetzen und in die Richtung schieben), Textfeld antippen = Weiterlesen, Taste MENÜ oben rechts, Menüpunkte antippen",

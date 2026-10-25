@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "55a2b191639a",
- "generated": "2026-10-25T02:52:20+00:00",
- "commit": "3777916e3c0d0eb8bb3f4c481cb07b99a54edddd",
+ "version": "a6f90d83e4da",
+ "generated": "2026-10-25T03:54:58+01:00",
+ "commit": "643f3d6e5b3742e206fe31ec381a452fd94f1f2d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2343,8 +2343,13 @@
   },
   {
    "p": "anmacha-quest-rpg/anleitung.html",
-   "s": 14217,
-   "h": "ba09efc290b2a3f49dff4940b132bc7c88319b6180de3e2be441feeb50dcf444"
+   "s": 14241,
+   "h": "634e337f2b71f2cc7d99e3a32f2a2998de3064f7ef4860013d6439deacd9514c"
+  },
+  {
+   "p": "anmacha-quest-rpg/assets/index-DuGsklMZ.js",
+   "s": 715030,
+   "h": "ffc521a355ac12f4c13d673f55378594a09ab1699327cb5fff594441a273e24d"
   },
   {
    "p": "anmacha-quest-rpg/card.jpg",
@@ -2352,1184 +2357,9 @@
    "h": "7e74019a0495d58c002e2c57c86646c6fd3ff4acee2ba3c2c82e813d7d2cee51"
   },
   {
-   "p": "anmacha-quest-rpg/godot/assets/buildings/1Story_GableRoof_Mat.fbx",
-   "s": 71692,
-   "h": "b8a8cf3ab6ffbeb0068b43cfaa7a61eb5c582b7f5a1a07ccdbacedcb487e4a4d"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/buildings/1Story_GableRoof_Mat.fbx.import",
-   "s": 953,
-   "h": "5f27f630b3e3f28176e5b06be0d7dba95e2f242081e29198136e262e93581f4e"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/buildings/1Story_Mat.fbx",
-   "s": 99836,
-   "h": "9044523f0ec5b8c5037a372c64d7fd83949a77506fe27139d4e4d4c932785b48"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/buildings/1Story_Mat.fbx.import",
-   "s": 923,
-   "h": "7a73aa235f84d583727d6b80307e8cbee7de7e6b426dde3429e3c2c41e8147db"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/buildings/1Story_Sign_Mat.fbx",
-   "s": 97900,
-   "h": "45bbe813aadc67f66a5419978c721e8da219da1c55bc9482385c00d1ecb6a263"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/buildings/1Story_Sign_Mat.fbx.import",
-   "s": 937,
-   "h": "eaf2a2bbabed271e5013672cca26c6108187ffdbef9ff48263812037fb202464"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/buildings/2Story_GableRoof_Mat.fbx",
-   "s": 108252,
-   "h": "490dab6a2a9841dd157ff8fa3ad00ccbf9cf8e1e11e71718707c909e711d3630"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/buildings/2Story_GableRoof_Mat.fbx.import",
-   "s": 953,
-   "h": "5a730ad4ec71bae013681f5c93c5e0a8d92b3137322f32bb6b892d557f0576e5"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/buildings/2Story_Mat.fbx",
-   "s": 123340,
-   "h": "ab2cc5bd12c7560ff1fa0fb966aa756c16bffe79657a033a96f8b99f27bf213c"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/buildings/2Story_Mat.fbx.import",
-   "s": 923,
-   "h": "57a869a5ac2e53a3803a00454781474620542420e19f49caace9e1c204c34fd6"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/buildings/2Story_Sign_Mat.fbx",
-   "s": 120252,
-   "h": "d9fe40170035c0ea11082308aabf269fe60d053177e49ab797f9022f4f7470f3"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/buildings/2Story_Sign_Mat.fbx.import",
-   "s": 937,
-   "h": "223f21c3642ba62a3467398c83f8260a3ef34a22111bad9feebe8ff34ba2889d"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/buildings/2Story_Slim_Mat.fbx",
-   "s": 103580,
-   "h": "b4a9610e223aa286b0651ebbc4e9ab6e56ddbc775e184e0d1dcfcdacd85efd83"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/buildings/2Story_Slim_Mat.fbx.import",
-   "s": 938,
-   "h": "0290ec418e547f244785e7862d27f8b938e9a2fcef78f0f55c0782493533dcf3"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Alien.fbx",
-   "s": 501308,
-   "h": "981a38778e09aa0963d388dd20da414e934403576aec1b3424cea54e490c1930"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Alien.fbx.import",
-   "s": 907,
-   "h": "20c7276d99adf02b2f32a0fdf576d1fb8749e18386da68952aad688e629c68b4"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Alien_Tall.fbx",
-   "s": 379788,
-   "h": "8588d3596e3ee8f6cf8ff762feaae422cf92c773144397532cd3c4970a6213a9"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Alien_Tall.fbx.import",
-   "s": 922,
-   "h": "c6b0f116fc599f73e4665c149f2b258929ddc2f27340ba75bd23fde07e7922b8"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Bat.fbx",
-   "s": 343084,
-   "h": "b43fd37140419b2554ccff744704a798cd83258673d4cbe9e5e23f59d37769ab"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Bat.fbx.import",
-   "s": 900,
-   "h": "d9859ace8857a3942d72cf68d4539d931f763a05ccda0e46228db101f074535b"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Bee.fbx",
-   "s": 235724,
-   "h": "2c67d359a861ff3508dd61d014d6826c39f800d576a6757b6fba90656a361a54"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Bee.fbx.import",
-   "s": 901,
-   "h": "cf568a309a6e376580775229e7f1ad08f4a6f62d85fbdfe3007e2f0ea08adf43"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Cactus.fbx",
-   "s": 484380,
-   "h": "58bd6f4bfdd99f619602a2d7d05401836b1f478f6a983d2694645f21c40b804c"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Cactus.fbx.import",
-   "s": 909,
-   "h": "98f40983f1146a7812c8cdf83900e8c7916d7cd64213cbd063f74318267a04d2"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Chicken.fbx",
-   "s": 103740,
-   "h": "e5d51fa328f466fc74290c3fa51d769c9b254d771a4b066dd7947bae899a7794"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Chicken.fbx.import",
-   "s": 913,
-   "h": "296c88b5806622bc47faa30696f3097c67035d1cc0118beeda0a4962020a50e4"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Crab.fbx",
-   "s": 494172,
-   "h": "4cff0a21c1de2b1690c068e14ca6bbdc2f099090ca8cbc8c2814e4c3a2984548"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Crab.fbx.import",
-   "s": 904,
-   "h": "720c98f71e3ce3f0001f71008f26a958ab0d75ac4eb65b34bf50354e64491dc9"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Cthulhu.fbx",
-   "s": 280332,
-   "h": "506fb21a40042dbf5d3dc4f6603100f6400dc85fadb41d531d3b8b309d3513be"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Cthulhu.fbx.import",
-   "s": 913,
-   "h": "0e2c54a80156d5ac789d82aea3020392dda82e37c8bdb87c258a27e09c150ae5"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Cyclops.fbx",
-   "s": 470764,
-   "h": "cd1512ea6f92f3f8ec596a38512ddee471dbaf7805a57975e64c398979dc11d3"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Cyclops.fbx.import",
-   "s": 913,
-   "h": "4c9dd6b1bd781a664f0ca080fb170219def9e94b033292738f90eaf754d26a99"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Deer.fbx",
-   "s": 370028,
-   "h": "6b037dbf9e1a198d31841ef9e67f2db10eabd90f842fedd0611a862c62980f27"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Deer.fbx.import",
-   "s": 904,
-   "h": "62a5cdfc59450028f350c19e29a5ca1c5f5def55509232eb24944ad0354a9f05"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Demon.fbx",
-   "s": 493356,
-   "h": "cf05fecbb2ac92ea462adc5045acda24c9207c60dc76a7dac828e317dab8077c"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Demon.fbx.import",
-   "s": 906,
-   "h": "9dfc9852386ae7d6789e087ab49e3ddd417e8cfb070dff333f6dba733fb64ccd"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Ghost.fbx",
-   "s": 473260,
-   "h": "e6ebaab9c7fd60d1587b74eca10b18e0fc18765781da6d3ad2012b719f0dc179"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Ghost.fbx.import",
-   "s": 906,
-   "h": "d4e5a1221b468b0f4753c18a8297cdd4611871812e6feecdad65842620e54420"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/GreenDemon.fbx",
-   "s": 479756,
-   "h": "bb3bf5b97173f7d4c033b40ec9ff8ee0892f7e09d0010a5c60c3e48b8c737b98"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/GreenDemon.fbx.import",
-   "s": 922,
-   "h": "88e6dc71fc8481aaeda2245501020eecbeab75edabbdc9bd628c249f7b38d9b6"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Mushroom.fbx",
-   "s": 86924,
-   "h": "d329b5cdc503c500aa9d915969e228fed103597f3885a7b0b9ee1aa0f1406158"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Mushroom.fbx.import",
-   "s": 915,
-   "h": "4eea8159a54b309723af9d7ad01f244117afa758303281ca3aa8e1161039349b"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Panda.fbx",
-   "s": 485980,
-   "h": "246284950c43b55cc3339f5ac6bb141c2214d858e3d2cddf6652bfe4e9660ea1"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Panda.fbx.import",
-   "s": 907,
-   "h": "7e0a7a4d363bb7ae2a7fdf28a016cf740d32eb0b4341a740176759b3387617a0"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Penguin.fbx",
-   "s": 103740,
-   "h": "b1bbb87f3d0d614d8ee2e9758839b9e96317578e4788c83be1bc2b587813e08f"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Penguin.fbx.import",
-   "s": 913,
-   "h": "85d8dfff26aa7ee5f9a20ebaa4618c17ac87868460a6d1233e101685a4613e1c"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Pig.fbx",
-   "s": 105420,
-   "h": "1356b10d1136dc2e7b8fe659e91309156468b44ad291b3191534f7d1cce5df80"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Pig.fbx.import",
-   "s": 901,
-   "h": "5af135a4f5f3af11065feecdd45f9a81cef71f037800a90582ca3beaba0f02cd"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Skull.fbx",
-   "s": 350700,
-   "h": "5c2746c85009c993243c98e199303861a8142f01896bee44a2cfc2604b5e091c"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Skull.fbx.import",
-   "s": 907,
-   "h": "6395eab4ef5dd7ee4bad4d275dd356759c94b59d409bb77308cfaf052b62c60d"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Tree.fbx",
-   "s": 502892,
-   "h": "03330f2622b48c465447e8314aabdd2c7533a4af9f41d2bd765c52a23f237cc6"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Tree.fbx.import",
-   "s": 903,
-   "h": "851fa5f2dad41f4cbd5776424a85ed40d243565c168f0bf2069bb6a9fc97c980"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/YellowDragon.fbx",
-   "s": 862316,
-   "h": "23fa0c012c4d87e4d41c058162da61a223368e754550086037ca968c1164f4ef"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/YellowDragon.fbx.import",
-   "s": 928,
-   "h": "73bee8a382c9011cf3ab9fda1c2b75d7eaee814e822ecb3c475e10f9cbac5b0e"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Yeti.fbx",
-   "s": 483436,
-   "h": "40a8c9a9ff34c8ed65e863b700d1fc9d4c71bb2b2090ca2b877078f4d14c3d5e"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/FBX/Yeti.fbx.import",
-   "s": 904,
-   "h": "dd83f2c11c94b79d92b2195cf99faa8f9a4f0d9e90eb95fc2b0b7a65786e98fd"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Alien_Tall_Texture.png",
-   "s": 72882,
-   "h": "b892e65ae9d383290f69cb56857603e9a18a83e4768bffdae20b5594590d48b5"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Alien_Tall_Texture.png.import",
-   "s": 809,
-   "h": "1b72ce66128fbdc9c1d654f1eb26eb5d2c6d89ed2194bff137a0ebbe265a1cde"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Alien_Texture.png",
-   "s": 70371,
-   "h": "0e7eaf2448269dc2a46753bca5df927a0e4e3d0bd8bef3ce9a07b4d287aad969"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Alien_Texture.png.import",
-   "s": 793,
-   "h": "e2110828ef487c9f5175c3610387d004f95b70d95782b1c716caf31db0bd79d1"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Bat_Texture.png",
-   "s": 58852,
-   "h": "a9e06c5de0764f2f4698991d822623b97a12dc61b25af0aaaa7035510cc3838b"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Bat_Texture.png.import",
-   "s": 788,
-   "h": "40763322ce9b9748c53dec493295b82d6cd76cc562a6ec174a16c2fb7bb5c48c"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Bee_Texture.png",
-   "s": 64816,
-   "h": "5ac589a5374ac4b2291914a0fc0bc88cf6b5431ba1ecaa88812c6c5486396404"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Bee_Texture.png.import",
-   "s": 788,
-   "h": "7992f7a011936167e304a481c1f5d47921fdad82e548d5644d347bcdef90a1af"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Cactus_Texture.png",
-   "s": 76174,
-   "h": "85efe0f8be47a171c764a93a2101f5ee75ce681aed43540ba17aa86dac14602a"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Cactus_Texture.png.import",
-   "s": 797,
-   "h": "ca4e597693ab83adaa71035e8d92a649aeab4a8658f7440d179fa34de1edfbab"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Chicken_Texture.png",
-   "s": 66175,
-   "h": "da1da192bf5594dc387c54ae07c42b5bb47fc27569d1ec8a96ae6ab354b79859"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Chicken_Texture.png.import",
-   "s": 800,
-   "h": "e82ddf842594bd889a78ef1fd3dec4a1f0a83e4748916bf0069270326db168fd"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Crab_Texture.png",
-   "s": 66133,
-   "h": "79772fdb09b22162580fc102a019caa592be404f86a4e84f26b849c654cb88e0"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Crab_Texture.png.import",
-   "s": 791,
-   "h": "fa02db43cb3218808228147aaa57f0820f766408f2e4a037412ac13a25a30b37"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Cthulhu_Texture.png",
-   "s": 63808,
-   "h": "b2b82ac0a12bf1f6126d2918eabbdc307c182a09d781c185da852494106407ca"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Cthulhu_Texture.png.import",
-   "s": 800,
-   "h": "0caef01d370e90c1c49efdd0afce86d49655427849f87d1919b473f2a4a74d1c"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Cyclops_Texture.png",
-   "s": 70795,
-   "h": "4cf535a5888a4b0fbcd4c8319d2a0e86c76abc10eac9afb498aadbea4c4be582"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Cyclops_Texture.png.import",
-   "s": 800,
-   "h": "b129aab51ac5e9cb19170bf84435764ef0aacdabb7156217f28dfd250b6dce7e"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Deer_Texture.png",
-   "s": 78221,
-   "h": "db5d0f61dc7220b924a579857609dc0552aaf42b721456f28c37611d95ae8ad2"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Deer_Texture.png.import",
-   "s": 791,
-   "h": "55ff3ef90929a5b5b390ccf2072ef901c4513303698b6da8af0b21f61fa9f617"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Demon_Texture.png",
-   "s": 67109,
-   "h": "3da0c54ecd75bbd343ba28cd9697b2462bfe6f894d5c57fc7664a79720e07dee"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Demon_Texture.png.import",
-   "s": 793,
-   "h": "45d2a9f977f99c03871d89427dcc881041e53674764890b6c48ac43aff193a34"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Ghost_Texture.png",
-   "s": 46955,
-   "h": "ba4701ba493873c3add30d160b067839f7bd315956e335816d2568d36e532e4e"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Ghost_Texture.png.import",
-   "s": 794,
-   "h": "0f5c7e5fa0440c41600ef593576c79bb344df06df4869f311f264e48d7bde1aa"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/GreenDemon_Texture.png",
-   "s": 70233,
-   "h": "72537d84fd4f7742445c294e9d653dd416dad36133ad29b6e0239d369d191e1b"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/GreenDemon_Texture.png.import",
-   "s": 809,
-   "h": "56cc3be90315e8823e3ea5b130b6f2a9bea65578c4bf4133193c77e3e56aa470"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Mushroom_Texture.png",
-   "s": 63809,
-   "h": "c82c9a475d02e832ea0c015d5964ae4fd0fb487fd2b09042e453a278448a172c"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Mushroom_Texture.png.import",
-   "s": 803,
-   "h": "8175fd82cd61444b47391bf77866d44698f9f915eee3498c601bb3e5c34dc17b"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Panda_Texture.png",
-   "s": 53780,
-   "h": "fd0374f8964f09aae5010ceb40a5bd0b8800ba8b720aec6784a64c1fdc5decb1"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Panda_Texture.png.import",
-   "s": 794,
-   "h": "f96f33c826776d046c79fa0338cfbb1bbfe693600aaf0e1771b6af4fbce705b3"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Penguin_Texture.png",
-   "s": 44007,
-   "h": "f11e1e3c12a1784a199dd0a582ca5cadc5a4d1c3175357bad242147eeae1b4ca"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Penguin_Texture.png.import",
-   "s": 800,
-   "h": "efdfcc819d074b5fdfa1168415643a6f6e0b802a0f9a323eed50ceef5f08570e"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Pig_Texture.png",
-   "s": 63391,
-   "h": "11a972b972827a8928d74df7f2afcef594873a33354412df9799298c7d970ead"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Pig_Texture.png.import",
-   "s": 788,
-   "h": "985b6c01cf8580e6cf41210cfe8e452c6ab1a704006304067d4dec2b8b18aca9"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Skull_Texture.png",
-   "s": 87907,
-   "h": "237165c7b828ab18c1e10817b4bf8cf3e027940af96aa1f962163270dea7f7ea"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Skull_Texture.png.import",
-   "s": 794,
-   "h": "620f0fab77485416d5d1d9c3e2b3d9459d8b3db9443672b262af5a610d91281b"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Tree_Texture.png",
-   "s": 72275,
-   "h": "4051a20195ac71d37d68234d84ee4f503fdb6560e92a7fbcfe70f860eb244707"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Tree_Texture.png.import",
-   "s": 791,
-   "h": "bc98d0f48043e830e5a6bd6cb97be6a2430bcebc71a0387c4f1d7cc0409da7d6"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/YellowDragon_Texture.png",
-   "s": 80560,
-   "h": "a363e6efc592c401de7459bf161a96bcd2073587c9028849dabefa02077738cc"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/YellowDragon_Texture.png.import",
-   "s": 815,
-   "h": "060eeae184a1624c7389fea2489ef911b2a1aef2c82f1caf31f6d255c5a44d4e"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Yeti_Texture.png",
-   "s": 63581,
-   "h": "62a26f480583e4de4dfb42a5f0002369fd6f20929f22109ff5e2334a9ebb818b"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/cute/Textures/Yeti_Texture.png.import",
-   "s": 791,
-   "h": "643935e364699e75599d954d9a800c2a31c9be95b11f0a5bd4d6d602e18c7bcb"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/dungeon/Textures/colormap.png",
-   "s": 10838,
-   "h": "bc492d755caf9e64924447f065681be0d5438a33cd0acddc72f3d00fd75893be"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/dungeon/Textures/colormap.png.import",
-   "s": 782,
-   "h": "3dd94a800f30f0502511a37588b1096003cd43870431a10ace3421018f3d4919"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/dungeon/barrel.glb",
-   "s": 14096,
-   "h": "ca735e8eb8f9170b3d9413ee9e30a51cb275e9597b87e0b70dd5c02f404cea4d"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/dungeon/barrel.glb.import",
-   "s": 879,
-   "h": "e84f45995cb16d4c7f5a8531b6ec815f4cd651a1a322fe3eae67e884690068a9"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/dungeon/chest.glb",
-   "s": 34048,
-   "h": "64cc6c44786a0833bbe53c694cbad9f10d4fdd9e99d4b5ec03fcb3b8b5dd71e0"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/dungeon/chest.glb.import",
-   "s": 876,
-   "h": "5b04636c072c9edb4ceac495eb95090458955cc837143b01bba196fcc447d735"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/dungeon/column.glb",
-   "s": 11268,
-   "h": "6155d05cde0e7268b3c3db6d27a54bc2b06ff2cc09ee09e280414577b1e20717"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/dungeon/column.glb.import",
-   "s": 880,
-   "h": "10d941dee5af3520950ad7d9f776e14f6b2c9ac9df00d9f343713809108bdbde"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/dungeon/gate.glb",
-   "s": 14152,
-   "h": "0e05755294d56ce1298f6b950e99d520f292efdc8c94de1ea40e2f7d5e4f88ba"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/dungeon/gate.glb.import",
-   "s": 874,
-   "h": "e985f4b70cab8f059abf1e555858ce824778aa4b47c4c2203720c8f0ab8b43ad"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/dungeon/key.glb",
-   "s": 16812,
-   "h": "b13f87b22e157761f48016f0c905adc17f54f9bbc445e536b4857e3bc118894f"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/dungeon/key.glb.import",
-   "s": 870,
-   "h": "371879cbd345149de0d2b10cc056cca3700baedaf621be0b65e7152cd4f8fbb0"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/dungeon/rocks.glb",
-   "s": 18452,
-   "h": "ee14136f047ef55fd0a2fc2a71739fd8ff1a8487a6c30cb249de5845a01d01ca"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/dungeon/rocks.glb.import",
-   "s": 876,
-   "h": "799205b5df2e3f09a63cee1f01d4cd2858ad3a2efd354aca16884269faecec03"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/dungeon/wall.glb",
-   "s": 18148,
-   "h": "ed9fc37375fc85fa21dba37c688a140114ec3cb93ed4071c2abd145d375652e1"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/dungeon/wall.glb.import",
-   "s": 873,
-   "h": "f44a5d0e31e838240be74b8c571ac3ee44c816c3d38fd023af74ffc7f492a1a0"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/forest/Textures/colormap.png",
-   "s": 10659,
-   "h": "319f1087d8ed50a8794f9a8179f64671d5595f2365fdf3e47ec2d4eb74dba20f"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/forest/Textures/colormap.png.import",
-   "s": 781,
-   "h": "bb448d7f5435a55e42f1f6351dadecd089d5798d069282abb735f4dc97dbc533"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/forest/rocks-high.glb",
-   "s": 31952,
-   "h": "226728a03989a1ce52ea64b55e3d9e2ff89004f7eaca9f74c2fafda7c84bbe49"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/forest/rocks-high.glb.import",
-   "s": 891,
-   "h": "c4bccd09ec5235f02dc19b96fdf3e9b87e32523346a4fa56dd335748c3a4bc6b"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/forest/tree.glb",
-   "s": 23476,
-   "h": "0075d5059c1ea855fecc1dba3c6262c3a01924c50b971ddde2eb8b0b5a62851a"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/forest/tree.glb.import",
-   "s": 873,
-   "h": "8fcd87bb35be9bb0935898f3e13553d0b0978835b1c650b5579542a262058b3b"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/grave/Textures/colormap.png",
-   "s": 10965,
-   "h": "a94b4dc4f77a4b8aec96bde94f63912a1ce12aa98eec2c1e9a37c89e20a5f091"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/grave/Textures/colormap.png.import",
-   "s": 780,
-   "h": "64f6fcf1595566e8b93820a5b070687e74c13e9b57498564e0b0b63ab51323c8"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/grave/crypt.glb",
-   "s": 25048,
-   "h": "61ff55e95648a28872cedba61c9c48fac723852adad49a3a2d92e26e0c0d2909"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/grave/crypt.glb.import",
-   "s": 875,
-   "h": "9ecebca1b141eb3fa531f345c191d24b02ad621c0bce51c8980e67866cfc193c"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/grave/pine-fall-crooked.glb",
-   "s": 35960,
-   "h": "299d2ceb57f8ca20048b955e4e2aa509ea16b1403dd2f178db9396dec5221760"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/grave/pine-fall-crooked.glb.import",
-   "s": 911,
-   "h": "dd2c62dc43fd9c65b1c6c68fc9f77696b19dc8630082b06bc8f055caddbc029e"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/grave/pine-fall.glb",
-   "s": 35936,
-   "h": "1370654dc1da3615f51e31880e71d78990d5dbe7a4a0480abdbfc840fb89a6ad"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/grave/pine-fall.glb.import",
-   "s": 887,
-   "h": "5e3c9e2e3bce9f313a44680cba51f7abd55595748648bd9d0eab096daed64088"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/grave/pine.glb",
-   "s": 35920,
-   "h": "0bd5e72e2aa430e74625b3a11bd809c669c7cc58a300b028ff06814d45c2d213"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/grave/pine.glb.import",
-   "s": 872,
-   "h": "871adcdcdf7ce45eea137d8caf9b23056f4922e447949908d4e3f5640ade19f7"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/FBX/Cleric.fbx",
-   "s": 2780796,
-   "h": "ddbd70823da811625a512ef4ceacce2faa9de8c71aa2c6fee7e23e0fb52b6daa"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/FBX/Cleric.fbx.import",
-   "s": 912,
-   "h": "66c89659ad613618ef26edbe3e5040a627d140205ae14bd80ba90c76ba2158a0"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/FBX/Monk.fbx",
-   "s": 2136076,
-   "h": "f22863a80c2032c731cb683b9322e20ffca2534748e7b3961a200aa8d1a72ab8"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/FBX/Monk.fbx.import",
-   "s": 906,
-   "h": "4ada10fd4edefd0f60fd54c60c3e9ec4f9e369f0f036dba3ebd320728307eb5a"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/FBX/Ranger.fbx",
-   "s": 2570556,
-   "h": "f1547ebf853bd2f7849642d7a5d98b7dfa0619bba7a2aa37d43dcaedc49eb6d2"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/FBX/Ranger.fbx.import",
-   "s": 912,
-   "h": "f8c34a985d407ca77838e08557b712ee47807cef025a6df2afce9f6207945e07"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/FBX/Rogue.fbx",
-   "s": 2195004,
-   "h": "5b9bc7a1ec778d0c83f44609971e6c538480b6ef2a3f9cdde5853dee5e24586e"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/FBX/Rogue.fbx.import",
-   "s": 909,
-   "h": "5b03307ed84ead66af74d6f68ee1bc7713298f45420c6232b879eefcf4f17f29"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/FBX/Warrior.fbx",
-   "s": 2622956,
-   "h": "5840e821aba0f4cfbc7316db456dd28042d35fcd1173f8809e22d25d040b265f"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/FBX/Warrior.fbx.import",
-   "s": 914,
-   "h": "ac35ee33b2d93113e9b2ba7d1e25ad576345cb6ee4594929c99a0f2bd65f14df"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/FBX/Wizard.fbx",
-   "s": 2831164,
-   "h": "ddd72512ff771380df9223cef02731ebf68e31309be759bf79d7063936f4636d"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/FBX/Wizard.fbx.import",
-   "s": 912,
-   "h": "1e2ae721d5e2335f4744fb721c2e27919b5d01cf2296ea3136af0fb6ce4881b3"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/Textures/Cleric_Texture.png",
-   "s": 280463,
-   "h": "2ae218bcbb1b284f6df0d1c230758a66b25e11b890484eaeeaf72743c0532a9c"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/Textures/Cleric_Texture.png.import",
-   "s": 799,
-   "h": "b45d4600ba7d8579c4b8ccdf369dcc87d31d183db2e37f72b057e64f568eda78"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/Textures/Monk_Texture.png",
-   "s": 282379,
-   "h": "49e0ddb5dd33ad944eb4f21e035f76c2a07acf91a02935a82fe6c706283352a7"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/Textures/Monk_Texture.png.import",
-   "s": 793,
-   "h": "2e7a330e8bac68b6396b7ef30fafa0bc49a46269628d5916487d95e3a98c7d50"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/Textures/Ranger_Texture.png",
-   "s": 281725,
-   "h": "27058538bbd8b07a0a543a8baaedd5415c5cc03b26272994fe408b12975af247"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/Textures/Ranger_Texture.png.import",
-   "s": 799,
-   "h": "248a4ea41199943db6bf23bf2c64f3ef25cd291acad8503510c1dee0ffff5624"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/Textures/Rogue_Texture.png",
-   "s": 234453,
-   "h": "c247406370e188e4d5042287f9aaf761fb0c8f4c047ddd1b652a2c84cb2f1fd9"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/Textures/Rogue_Texture.png.import",
-   "s": 796,
-   "h": "9fd26c4e23a3b3792e03af7cddb7d6ef1966686a85c7ce3afa8d39f5bd86289c"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/Textures/Warrior_Texture.png",
-   "s": 251438,
-   "h": "73b531892e864c85496d8cd5f7f11cb1c14111f402cc6746b8e899f321b8234a"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/Textures/Warrior_Texture.png.import",
-   "s": 802,
-   "h": "8511e18188c387d5c5f4dd4730a33191d26c9b320a465a5610e5fb1b24e13e4d"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/Textures/Wizard_Texture.png",
-   "s": 278973,
-   "h": "5dac4b3c32b2ffcc59ce673429add748b690381f4bf3a4bafa5e00b04490bc62"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/heroes/Textures/Wizard_Texture.png.import",
-   "s": 799,
-   "h": "99e9ac88aba1d44197be0186a15eea6748091eeeccc2f9dbdb4902a1de24bfe2"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/monsters4/Dragon.fbx",
-   "s": 879004,
-   "h": "31a334a1c5918b4f4480cd5f6c542b3aea9b8f00a70aeb7feefd7f70528780cc"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/monsters4/Dragon.fbx.import",
-   "s": 911,
-   "h": "5e9e638bd530b670b17989470ac7c05915f2028f14a018e4545bace9c98ff8ee"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/monsters4/Skeleton.fbx",
-   "s": 433820,
-   "h": "be0a5992b677e563c6c9601e76fdcb9d50e91c195aebb1eb70604fbfe8fb26d5"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/monsters4/Skeleton.fbx.import",
-   "s": 917,
-   "h": "ea1ac4ae83abd9fed866d1944f028bcde004b14ae82c642e152d24d477b367e8"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/monsters4/Slime.fbx",
-   "s": 338940,
-   "h": "7f5e9dd33fd800344984ada5a0db855f2eabd6f2ee1e501bdb35d81aa3791df8"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/monsters4/Slime.fbx.import",
-   "s": 908,
-   "h": "81faa7fa7cfc4b881def83dd8966814d53b378c5be32b44e977033db7d4fd5bc"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/Textures/colormap.png",
-   "s": 11143,
-   "h": "4aac939dc33195e35caf8c382ee3cb170054da763577f22d3c22692ec6afccdf"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/Textures/colormap.png.import",
-   "s": 779,
-   "h": "ef3c80b16795a51ef9b3802de52a7e24ac99d1dd2ae83ac9e233ec683136e910"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/fountain-round.glb",
-   "s": 84848,
-   "h": "8d19741e2cca6cbdce114b950b4aa12af625979bbc17b2910ef2366834af5565"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/fountain-round.glb.import",
-   "s": 901,
-   "h": "0ff2d0aa44ac47296bd5327124fb630ce28da64ce75e679fc15ce79c8714518d"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/road.glb",
-   "s": 2788,
-   "h": "85630c89588bdc19285a7b5e894c1ddac69d7ce2b069966453800519e446f900"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/road.glb.import",
-   "s": 871,
-   "h": "c30cb4822f58a46e547045b919433dc299bbfceccd4363abee9ca02b8e13fc33"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/rock-large.glb",
-   "s": 18876,
-   "h": "425bea0dd3c8d9198a067a2faad1df8860c5b9eb53560ce5c67347a79852b9d1"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/rock-large.glb.import",
-   "s": 889,
-   "h": "9bd86ef5a88a1b026a244addad3474e865a214ee71760626e2ac2c3608f610b0"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/tree-crooked.glb",
-   "s": 19252,
-   "h": "da4349701dd3fc474f7bb03cfe8b230bec0919025d8d1ecac0d1061a23c5e910"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/tree-crooked.glb.import",
-   "s": 895,
-   "h": "48137c5c3126bc4d5d8260483e2c4e8e3b3bfe7252e7a87c76ff4ccb956dcf6a"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/tree-high-round.glb",
-   "s": 13176,
-   "h": "7f372e338cbf5514a41e8d2afda81acd67277a4c5ad4e6e35a9acfa4a6e3bc4b"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/tree-high-round.glb.import",
-   "s": 903,
-   "h": "2b687deec5a90e12d533e9dc9b13d77256dc9f7bd6dc0ab6314b7d2eb780cc1f"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/tree-high.glb",
-   "s": 20700,
-   "h": "2dbb718a81d9c3697c069495f58840f6c2002c8cdd13388be560c2199f6d03e7"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/tree-high.glb.import",
-   "s": 886,
-   "h": "c6ee15209dd5d28d94f0cbcdf5135dc47a4e91d1f09d55c4ec27bf2fbf02e34c"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/tree.glb",
-   "s": 18188,
-   "h": "e8d81b97297de62699b92559cee7b247da84b1815df2515e42fd5a318a30b8d7"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/tree.glb.import",
-   "s": 871,
-   "h": "3f36fbd6d269918efb6b2abd961df98cb7dd60cac9d47389ac97206ab7d1943b"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/wall-block.glb",
-   "s": 8532,
-   "h": "daa35e5b32d7941f3dc61f64f6f9630b70441478d652989cd6c02a908b84af86"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/assets/town/wall-block.glb.import",
-   "s": 889,
-   "h": "298e07280aa5c68ac5fcd92050a00bd1ccf57c283746ce26a972e802e84bb9cc"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/data.gd",
-   "s": 19085,
-   "h": "fef102b6961b5df5a93df24cbdcbc4cc71fb90fa21d1f893313ad82f8ee6e76e"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/export_presets.cfg",
-   "s": 843,
-   "h": "d6e32d78aab6caccc4c1a27d0418f91c65002b2bf5edfe58f6ebbcb403132faf"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/font.ttf",
-   "s": 79160,
-   "h": "9ba86cd010a4de309d263ceff8e8044092c9db7efda869620cb9ff1c4389e8a5"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/font.ttf.import",
-   "s": 679,
-   "h": "b61a58e71c7676959a4b4aad9c32858f361783f18f410c1984414cb3ce992ac2"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/gfx.gd",
-   "s": 20825,
-   "h": "415b05f8beeb45ddd8836bfc0facdf19c0de47ec059a25fb1e2d490be972e880"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/icon.png",
-   "s": 10169,
-   "h": "4aa8039a482b5365931216d582f53a501f362bb5876f8cffa70f6667f61e96a6"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/icon.png.import",
-   "s": 745,
-   "h": "16fa63cfae52f3ce5b210bd8e90f549d87ba673cf1f58be75eb89a02d2911c17"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/inspect.gd",
-   "s": 1633,
-   "h": "319f5ebf9e25f95142f30354f8b0fb10d4a07e778a2e6ab7e41ab998d62257d5"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/inspect_list.txt",
-   "s": 238,
-   "h": "1deeed76723c0648f345d1a8cac872d3a3370343b571b3dcbf509b40b702bcdf"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/logo.png",
-   "s": 211550,
-   "h": "30cb03305840f2fa66db8eb71ec9f3403d9b552019467c1a3718f6cc17748373"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/logo.png.import",
-   "s": 746,
-   "h": "7cc44ee5eca73791a8db007df448545d91d0b90f730a4effabdffc013564009e"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/main.gd",
-   "s": 75289,
-   "h": "443619a4dcc549bab5260a24e611f6ee8e1a97fef2314d8d62c70886be9892a8"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/main.tscn",
-   "s": 151,
-   "h": "691f186c8088e1e3cdade677468dac5350ca987431a0b28a02b3c38949636f40"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m108.png",
-   "s": 189,
-   "h": "f15c964db469039861f70bdc75cc5b02ba9351eaa5d7421a85d028131eb12f4d"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m108.png.import",
-   "s": 755,
-   "h": "c259a8dfb9fc7a62db56ac08cd356aee958061fc7274e7541d69a9b6ec783830"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m109.png",
-   "s": 219,
-   "h": "f344d22151345f81fe1b95fdb03cf007747042670bda1540192c14853f35b94a"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m109.png.import",
-   "s": 754,
-   "h": "cfa333b4dc917145039f8e1a19b8ba4ea5aab8a8d6ee45f9e9475167788d531f"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m110.png",
-   "s": 217,
-   "h": "ca2d26579be3738be5abfb74cea388634e212fb991b84701deeda65da4780f1c"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m110.png.import",
-   "s": 755,
-   "h": "6a48fe09591848b1ab582cfa1632c60d6c3953d9e14fc9f72c8dd6e2d93de378"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m111.png",
-   "s": 228,
-   "h": "8ecfc9b753e676a3cd1fcf2f8f98cc70c8e814f706f41a7e172508fe15156618"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m111.png.import",
-   "s": 755,
-   "h": "3f86458c841621c2b97cdb066f6a5db778e57a7287843cd58e289703160279cf"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m112.png",
-   "s": 237,
-   "h": "1e82481db9d95d0cec64ba0ea95b8fadf1e3675936e93731d0ff0e3bc72470b0"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m112.png.import",
-   "s": 754,
-   "h": "a42bc06a9b1dd6cbbc8ace47ca7a91fda8aaf1b10148a283c2ea5898f1f846e6"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m120.png",
-   "s": 195,
-   "h": "2ca96264cc5506bb52a5f7b5d278d0fa8e66e26c4b8242e40db6b46acb9df95e"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m120.png.import",
-   "s": 755,
-   "h": "3a747d004a8768956b374eef0a546c1f36f9c08c3691da3b2d0cf733b6f67cb5"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m121.png",
-   "s": 189,
-   "h": "28466ec899a6e0720f40e4f622aee5925d2e5c50b2409856f36ef65c7eedc532"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m121.png.import",
-   "s": 755,
-   "h": "2a41954542c9b4f62c00ce85e28d66ca6847f8f393ae9763ce544b72e86a2b60"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m122.png",
-   "s": 232,
-   "h": "2cb76164d899e3a5eb42d7cd23ffe8defae130f6ce702a35926cbf61d2d1b569"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m122.png.import",
-   "s": 755,
-   "h": "1416d74a4af1d051fbbf8487fd321592fb4508ae3fd9dcdfc1177a46932eaf8e"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m123.png",
-   "s": 201,
-   "h": "16d8f777b329a6516f32d790b389fd5072622195152680c298d2caf8d723ef8b"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m123.png.import",
-   "s": 755,
-   "h": "5ffba73ddee9cd444dfc67f981fa69ea3b2d1d48ca2b02a2b07f01a888053d4a"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m124.png",
-   "s": 203,
-   "h": "cda39a2ba32af6935e106b5c243ba5ca813a8b2566855b94524485463883196a"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m124.png.import",
-   "s": 755,
-   "h": "41927a27faf312c5d69d3a8819776f2daa6604c7d4e83a86841c33454e10d05b"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m85.png",
-   "s": 230,
-   "h": "377b35acbce5129e8167df1f5d1d0420805990962a37a30f5784b88b81a40ec2"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m85.png.import",
-   "s": 752,
-   "h": "e3d52590923446667fa829d733fa5f47b629e4250c9f25757b15bbf607a50b96"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m86.png",
-   "s": 224,
-   "h": "0606653ad07e177c06c9782c9fff4b1388c7b67865b6ab0e202f76e8e6f6bec8"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m86.png.import",
-   "s": 752,
-   "h": "9ded2d69eabba6652d50bf1ecd66ce554150555707cc1043dcaf38f64df1f946"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m88.png",
-   "s": 222,
-   "h": "ad6715e9bcab60faed303260a21adfca2de09a7950b98384065bcc5df05634b2"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m88.png.import",
-   "s": 752,
-   "h": "1842db9d81d2acd4004d8c72cde5b6bf102828453989d3a40ac90ead4346c4eb"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m92.png",
-   "s": 244,
-   "h": "357e08bc52b8dc318ce003681196dce6d2de41298b6253bbcc9bd10283785b37"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m92.png.import",
-   "s": 751,
-   "h": "4dc72248f702f4b6b552866ef241d5955248722ff2c2f19ae857102262d6c692"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m96.png",
-   "s": 206,
-   "h": "b8a0a9376c1c3398a059a1e3226e8f8d6839c1d73ac53ea37425340d762055fd"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m96.png.import",
-   "s": 751,
-   "h": "9059dea006686c0d282a2737148be6cec129f2686199fb9faf892092142542ef"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m97.png",
-   "s": 225,
-   "h": "20915fde756b990f5b0c86fda557a93a6c306373d7c4fc07a1991f4ace3271b4"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m97.png.import",
-   "s": 752,
-   "h": "53b58a569833f082e5089933e633001d607d0d50a2ba240be5a9f09de3f21f6c"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m98.png",
-   "s": 238,
-   "h": "39b7c35f414e086b9c7e0cd2b34693ae370e5382a05b4dbb9964cef20f9769c8"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/monsters/m98.png.import",
-   "s": 752,
-   "h": "fe26c3649a8aab515a2ecc0447012c22549935e61fc3a5a2c9f6ca815c7d8d3e"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/project.godot",
-   "s": 756,
-   "h": "a11b353a674a0cca8ed1c5699b7502ada20e44d8496fbaf7ccdfed2066a68d9e"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/shell.html",
-   "s": 6005,
-   "h": "d1a836f2c421709e17aa63261e60a95848abec55b18717c007a7ab9dc783f3a4"
-  },
-  {
-   "p": "anmacha-quest-rpg/godot/view3d.gd",
-   "s": 28668,
-   "h": "8df9095aba07372be52501d9aa1d8e09320a20bff5e163bae3be3f636c68a5ee"
-  },
-  {
-   "p": "anmacha-quest-rpg/index.apple-touch-icon.png",
-   "s": 9616,
-   "h": "e212d891f9dc7ff107ac10bbf15352734b3a8d27dc1295098c8d1b5a620fca75"
-  },
-  {
-   "p": "anmacha-quest-rpg/index.audio.worklet.js",
-   "s": 7298,
-   "h": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3"
-  },
-  {
    "p": "anmacha-quest-rpg/index.html",
-   "s": 10318,
-   "h": "e4d8894d7c28402cfb5454c95933376ebe870388f98e3200bc5cc6ad657fcc6c"
-  },
-  {
-   "p": "anmacha-quest-rpg/index.icon.png",
-   "s": 10547,
-   "h": "89db118677ad0906f1b56581f64b50f17de32a98c90c2669bacdd9cc5aa66b5a"
-  },
-  {
-   "p": "anmacha-quest-rpg/index.js",
-   "s": 331495,
-   "h": "8b649683883a8be172e229a0479503d50cd5245ebf87aa71fda70bf720824075"
-  },
-  {
-   "p": "anmacha-quest-rpg/index.pck",
-   "s": 6276912,
-   "h": "20db4e6e7c8defc72c9125dab4dba5bccd5e8ba7bf82308d09b8d608106b2a87"
-  },
-  {
-   "p": "anmacha-quest-rpg/index.wasm",
-   "s": 35376909,
-   "h": "fe5cebc590758c10bc4469be5a591e28edbde5ec8f458f21baeb83db50d028b9"
-  },
-  {
-   "p": "anmacha-quest-rpg/loader.png",
-   "s": 966,
-   "h": "95460a5787c575cca9b320f659ab5ea7a869e32491d94f50846dda3a9a099e09"
+   "s": 18601,
+   "h": "8b0720833496984fd9aae339609df49461b38ce176fff5e1984572ef3a122770"
   },
   {
    "p": "anmacha-quest-rpg/logo.png",
@@ -3547,14 +2377,319 @@
    "h": "3c4462259d3c2e5f925769d3e88fcfdfb44fcff1f8db61c9cfd0617a246705df"
   },
   {
-   "p": "anmacha-quest-rpg/pixelify.ttf",
-   "s": 79160,
-   "h": "9ba86cd010a4de309d263ceff8e8044092c9db7efda869620cb9ff1c4389e8a5"
+   "p": "anmacha-quest-rpg/models/bld_1Story_GableRoof_Mat.glb",
+   "s": 182636,
+   "h": "72efb0f6c8b03dca779757bc0bd0ebcf388680af53a55a7dac1dbe1ff65c2432"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/bld_1Story_Mat.glb",
+   "s": 297680,
+   "h": "5eb8e1a47cfe9344b82ef6d3762e09bb15e7c6f1ef4b488f4a0b45de4e224982"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/bld_1Story_Sign_Mat.glb",
+   "s": 257292,
+   "h": "2a0d1f5264761f694a3bac2a733f35f7f5851ad2ee3f027ed6cdedcb5c479117"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/bld_2Story_GableRoof_Mat.glb",
+   "s": 339688,
+   "h": "2e8f81e1e91aa24f6c2c0099575ab3aa384dcbaa17f8d85fe0795b3bfa6e5fa0"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/bld_2Story_Mat.glb",
+   "s": 387092,
+   "h": "0f86fcdd43a7fe6bbc9d1a511e27ac652b949d35d5f236143c8307515c6a6f91"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/bld_2Story_Sign_Mat.glb",
+   "s": 343244,
+   "h": "e27e5ac585fcf5129efdec2fb75b9cf5baae4a1490f01374d19b3139c61aefa3"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/bld_2Story_Slim_Mat.glb",
+   "s": 301592,
+   "h": "a719cf22437577809b3020e807abbe0ab90af693bd9a5e475c731dd6943a30c8"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/dungeon/Textures/colormap.png",
+   "s": 10838,
+   "h": "bc492d755caf9e64924447f065681be0d5438a33cd0acddc72f3d00fd75893be"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/dungeon/barrel.glb",
+   "s": 14096,
+   "h": "ca735e8eb8f9170b3d9413ee9e30a51cb275e9597b87e0b70dd5c02f404cea4d"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/dungeon/chest.glb",
+   "s": 34048,
+   "h": "64cc6c44786a0833bbe53c694cbad9f10d4fdd9e99d4b5ec03fcb3b8b5dd71e0"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/dungeon/column.glb",
+   "s": 11268,
+   "h": "6155d05cde0e7268b3c3db6d27a54bc2b06ff2cc09ee09e280414577b1e20717"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/dungeon/gate.glb",
+   "s": 14152,
+   "h": "0e05755294d56ce1298f6b950e99d520f292efdc8c94de1ea40e2f7d5e4f88ba"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/dungeon/key.glb",
+   "s": 16812,
+   "h": "b13f87b22e157761f48016f0c905adc17f54f9bbc445e536b4857e3bc118894f"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/dungeon/rocks.glb",
+   "s": 18452,
+   "h": "ee14136f047ef55fd0a2fc2a71739fd8ff1a8487a6c30cb249de5845a01d01ca"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/dungeon/wall.glb",
+   "s": 18148,
+   "h": "ed9fc37375fc85fa21dba37c688a140114ec3cb93ed4071c2abd145d375652e1"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/forest/Textures/colormap.png",
+   "s": 10659,
+   "h": "319f1087d8ed50a8794f9a8179f64671d5595f2365fdf3e47ec2d4eb74dba20f"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/forest/rocks-high.glb",
+   "s": 31952,
+   "h": "226728a03989a1ce52ea64b55e3d9e2ff89004f7eaca9f74c2fafda7c84bbe49"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/forest/tree.glb",
+   "s": 23476,
+   "h": "0075d5059c1ea855fecc1dba3c6262c3a01924c50b971ddde2eb8b0b5a62851a"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/grave/Textures/colormap.png",
+   "s": 10965,
+   "h": "a94b4dc4f77a4b8aec96bde94f63912a1ce12aa98eec2c1e9a37c89e20a5f091"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/grave/crypt.glb",
+   "s": 25048,
+   "h": "61ff55e95648a28872cedba61c9c48fac723852adad49a3a2d92e26e0c0d2909"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/grave/pine-fall-crooked.glb",
+   "s": 35960,
+   "h": "299d2ceb57f8ca20048b955e4e2aa509ea16b1403dd2f178db9396dec5221760"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/grave/pine-fall.glb",
+   "s": 35936,
+   "h": "1370654dc1da3615f51e31880e71d78990d5dbe7a4a0480abdbfc840fb89a6ad"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/grave/pine.glb",
+   "s": 35920,
+   "h": "0bd5e72e2aa430e74625b3a11bd809c669c7cc58a300b028ff06814d45c2d213"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/hero_Cleric.glb",
+   "s": 1586504,
+   "h": "8ec8f6b8afe004a9dfdb3f11a91d1e0c64b6a50d4c33db2b703d261afa3f6deb"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/hero_Monk.glb",
+   "s": 1537732,
+   "h": "c8c7cdcc1c2a573d47a96b3f85dea6817df0d3024d4c7869079c8a6506ed10b8"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/hero_Ranger.glb",
+   "s": 1386372,
+   "h": "36ac0872f5643e22558e336fa853e7ac855c1c55f88d51de4f40f70d9b7c4bd4"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/hero_Rogue.glb",
+   "s": 1151872,
+   "h": "b6e65bb945b1abd47aa8b071b0ff086630e99973a68dd0887f81bb159af29135"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/hero_Warrior.glb",
+   "s": 1484048,
+   "h": "a278e9da7dfa487b551d635a4d2f93c639a1f7ceeea6cd6226725415968ba2c5"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/hero_Wizard.glb",
+   "s": 1558004,
+   "h": "8a3a045a9b8fbd13777147a8326283a655771383e89feca485f2ac73013cf210"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Alien.glb",
+   "s": 469420,
+   "h": "3c7b65e0c761d519dd04b3758ff5356e10fc9251ad3fac108f0cc61f34168143"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Alien_Tall.glb",
+   "s": 421948,
+   "h": "eb900c19bcefcb0b369f5c08462c06d50c3cf294beb7b5884c8a5b4dce13817b"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Bat.glb",
+   "s": 393280,
+   "h": "c6e6c575df5d3a14b5388daa02fa89599924f0efd0c95e715c4c8e9821882bb6"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Bee.glb",
+   "s": 404704,
+   "h": "0df2401461d79809ed3f3d1ef2c1c0e3da8933229a18df7fff3c1a99eff94cd6"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Cactus.glb",
+   "s": 429204,
+   "h": "801634dc1b555ab40cd190a034567fd7f5886b43980e7201645066861424d12a"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Chicken.glb",
+   "s": 293720,
+   "h": "eda90222133fea45b17c11dd48b657a336616314d8db2e45563c624b1aa7e0c0"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Crab.glb",
+   "s": 475492,
+   "h": "7204d7842b1d766c0c58a02a124b87b6950102d121f54747e40e4851a6703ede"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Cthulhu.glb",
+   "s": 435744,
+   "h": "0a6511b7f1ec5ebcea627b6b198b502c03eaccb5bd6b1791453472eed5aea8e9"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Cyclops.glb",
+   "s": 337084,
+   "h": "1e7a333fdd6c9e63ee2314c3a1307325827e7d3fd4e605297c91d02dafe1984f"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Deer.glb",
+   "s": 359800,
+   "h": "26cb0a69c9355f9b6391d5f161981ea0af14ee87d5930ef74787867081a4267d"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Demon.glb",
+   "s": 448004,
+   "h": "ccf2e87e3ed4e893008f687fe2baceb8c0012fce9078380aebe63ca70b97ee0e"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Dragon.glb",
+   "s": 521400,
+   "h": "bdfb9e027fc179cf3de282329029c868054f2ddd2f6e59bef1f9dc3c259ce199"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Ghost.glb",
+   "s": 311900,
+   "h": "2c877aa8b542394df5c71dd5246e32253baafb7daa4ca8cc9b4f9e2a2f3295d8"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_GreenDemon.glb",
+   "s": 388344,
+   "h": "a37dd902250c77795cee3fed655a8dce2edbbd6a4d0d5d241ff5e9d10dbfd365"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Mushroom.glb",
+   "s": 249752,
+   "h": "e6ce4cf7f55dc63df4302267c985b4074c94a85ec80c43e9395b70e95fc77430"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Panda.glb",
+   "s": 393504,
+   "h": "490fd46c7d48ceb1ae2d0d1437648f5eb251c50bba779d7cc43277f85b0fc831"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Penguin.glb",
+   "s": 266572,
+   "h": "264bf184316df0c9febb824167573588c9d8eabdfe9dd3b99bfc2c0692b22e03"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Pig.glb",
+   "s": 325256,
+   "h": "35c9fd0b792d740ac699dfc73517d72d556aa5dcdd426a5b820e2c06fe06fd65"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Skeleton.glb",
+   "s": 376192,
+   "h": "ce49bd4b8fbb02c151396e6ed7d98fcaa2f2fd2bcc586711988d764a47bd18b6"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Skull.glb",
+   "s": 245520,
+   "h": "f6c47767c6cf66c2b4107dd48758d0f114ae993672dd9ecdd2e7eb7aefc3eaca"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Slime.glb",
+   "s": 320028,
+   "h": "b556a2ede42fd1680b2aff51f798f6c25a757e06528a7f2fa424112b2a84694d"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Tree.glb",
+   "s": 409476,
+   "h": "7773ee693db4affb099ab3d94ccc5619e0f42ad15cb1f8d5bf98b7ec5a2b5864"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_YellowDragon.glb",
+   "s": 524280,
+   "h": "7c08f16b60d79a6537541b551b4af84b227e384662335491982c0a569990027c"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/mon_Yeti.glb",
+   "s": 381604,
+   "h": "f8b0d9f609bb572ab6cdd79eddbd40e1f489d809e7cbc4f0c94cb487e5b92987"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/town/Textures/colormap.png",
+   "s": 11143,
+   "h": "4aac939dc33195e35caf8c382ee3cb170054da763577f22d3c22692ec6afccdf"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/town/fountain-round.glb",
+   "s": 84848,
+   "h": "8d19741e2cca6cbdce114b950b4aa12af625979bbc17b2910ef2366834af5565"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/town/road.glb",
+   "s": 2788,
+   "h": "85630c89588bdc19285a7b5e894c1ddac69d7ce2b069966453800519e446f900"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/town/rock-large.glb",
+   "s": 18876,
+   "h": "425bea0dd3c8d9198a067a2faad1df8860c5b9eb53560ce5c67347a79852b9d1"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/town/tree-crooked.glb",
+   "s": 19252,
+   "h": "da4349701dd3fc474f7bb03cfe8b230bec0919025d8d1ecac0d1061a23c5e910"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/town/tree-high-round.glb",
+   "s": 13176,
+   "h": "7f372e338cbf5514a41e8d2afda81acd67277a4c5ad4e6e35a9acfa4a6e3bc4b"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/town/tree-high.glb",
+   "s": 20700,
+   "h": "2dbb718a81d9c3697c069495f58840f6c2002c8cdd13388be560c2199f6d03e7"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/town/tree.glb",
+   "s": 18188,
+   "h": "e8d81b97297de62699b92559cee7b247da84b1815df2515e42fd5a318a30b8d7"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/town/wall-block.glb",
+   "s": 8532,
+   "h": "daa35e5b32d7941f3dc61f64f6f9630b70441478d652989cd6c02a908b84af86"
   },
   {
    "p": "anmacha-quest-rpg/sw.js",
-   "s": 1997,
-   "h": "af2a1430fe7969f0e419285451d114519d813a11baeda4616bffb1d90c13afac"
+   "s": 2001,
+   "h": "52fce660d1d496d618690c441b1a108e3dc5cf054937d3e5d0b75fb54bfd2a1f"
   },
   {
    "p": "anmacha-quiz/audio.js",
@@ -6288,8 +5423,8 @@
   },
   {
    "p": "games.js",
-   "s": 50236,
-   "h": "5a664ff4db9833abdb3c9a64e4019d1a44c7268e4fd5d2c19f1b3e0ed8208777"
+   "s": 50237,
+   "h": "bb7fbd50e29b8f41a33e2fe9dc7172fa64fae3ff0bcb7f9807ee8f4f99a102fd"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6518,8 +5653,8 @@
   },
   {
    "p": "guides.js",
-   "s": 158209,
-   "h": "19a01bfe80113bf8b319bcb6782b742b568f4338978cc0caee7e3c009a42a14d"
+   "s": 158205,
+   "h": "f6c4f1947057461e5b34b0eb1090a027328cbd8086c6ee89b576df2965626bc4"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6613,8 +5748,8 @@
   },
   {
    "p": "guides/anmacha-quest-rpg.json",
-   "s": 14624,
-   "h": "32a111a4da219f338f415a2e2c9672a8a023e4c4af062b7cbde808d846e6c66f"
+   "s": 14643,
+   "h": "c869bb5107a6fb8d2c94c25a9107264d166e9e5df4aeb14b71405c292822fcd5"
   },
   {
    "p": "guides/anmacha-quiz.json",
@@ -9108,8 +8243,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 233016,
-   "h": "08e09a6e5cb92bd66329a55bf02fbc469f5778fa7ae0b5af4a8d9813787a7347"
+   "s": 233024,
+   "h": "05618da1668a5850a65eecfe7926ce85e9fb3d278cb6905eef0f9b29b7228dc6"
   },
   {
    "p": "taschi/card.svg",

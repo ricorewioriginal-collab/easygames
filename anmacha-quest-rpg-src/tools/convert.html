@@ -1,0 +1,36 @@
+<!doctype html><meta charset="utf-8">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+const fbx = new FBXLoader(), tl = new THREE.TextureLoader();
+window.inspect = async (url) => {
+  const o = await fbx.loadAsync(url);
+  const box = new THREE.Box3().setFromObject(o);
+  const mats = []; o.traverse(m => { if (m.isMesh) mats.push([m.name, (Array.isArray(m.material) ? m.material : [m.material]).map(x => x.name + ':' + x.type + ':' + (x.map ? 'map' : '')).join(',')]); });
+  return { anims: o.animations.map(a => a.name + ':' + a.duration.toFixed(2)), size: box.getSize(new THREE.Vector3()).toArray(), min: box.min.toArray(), mats };
+};
+// keep: Liste von Animations-Teilnamen (klein geschrieben); tex: Textur-URL oder ''
+window.convert = async (url, tex, keep) => {
+  const o = await fbx.loadAsync(url);
+  let map = null;
+  if (tex) { map = await tl.loadAsync(tex); map.colorSpace = THREE.SRGBColorSpace; map.flipY = true; }
+  o.traverse(m => {
+    if (!m.isMesh) return;
+    const list = Array.isArray(m.material) ? m.material : [m.material];
+    const out = list.map(x => {
+      const s = new THREE.MeshStandardMaterial({ name: x.name, color: map ? 0xffffff : (x.color ? x.color.clone() : 0xffffff), map, roughness: 0.75, metalness: 0, side: THREE.FrontSide });
+      return s;
+    });
+    m.material = Array.isArray(m.material) ? out : out[0];
+  });
+  let anims = o.animations;
+  if (keep) anims = anims.filter(a => keep.some(k => a.name.toLowerCase().split('|').pop() === k || a.name.toLowerCase().endsWith(k)));
+  const glb = await new GLTFExporter().parseAsync(o, { binary: true, animations: anims, onlyVisible: true });
+  const bytes = new Uint8Array(glb);
+  let s = ''; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return { b64: btoa(s), anims: anims.map(a => a.name) };
+};
+window.ready = true;
+</script>
