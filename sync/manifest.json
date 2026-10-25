@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9bf14849992f",
- "generated": "2026-10-25T02:27:11+00:00",
- "commit": "cbdc3446a8dbb996e4faf37c7a7c6894fcdfcbbe",
+ "version": "705fd6769804",
+ "generated": "2026-10-25T02:27:44+00:00",
+ "commit": "8bc6d34c8dd7bd8049845489caa7b4966062b155",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6688,8 +6688,8 @@
   },
   {
    "p": "guides/kiko-sterneninseln.json",
-   "s": 15398,
-   "h": "944302abe0d94aa61cc9e404708e21496015e91091a41d8ca6ac365a409a6668"
+   "s": 15392,
+   "h": "39a7b782060b37a4f093ebb88d0b5a9f087d0046cb307b6ea9e46604eea11b31"
   },
   {
    "p": "guides/konfetti-party.json",
@@ -6727,6 +6727,11 @@
    "h": "3259f5ebc269c877ec09e37423d9291219767cf79a9740db871e4a69ce436b0c"
   },
   {
+   "p": "guides/pufi-farbwind.json",
+   "s": 13666,
+   "h": "3195b32d2a430aed9b282a318c65023d26933d9a989c5ebd78e366f8fa7a4785"
+  },
+  {
    "p": "guides/radio-maze.json",
    "s": 14401,
    "h": "a5f24ee66fb3acbb40a123789defea4cf78cb9326e8fe407d1b2cf9095b33cae"
@@ -6755,6 +6760,11 @@
    "p": "guides/werwolf-nacht.json",
    "s": 15208,
    "h": "6658b49f60bad5cdfb417a13b7e801b2a39e1d7c18626cc9ac1494455e82d34c"
+  },
+  {
+   "p": "guides/winzflitzer.json",
+   "s": 17184,
+   "h": "b7f6ae65b9e15236661874120060a32c46bc3fe9b73cdf749bb1f93246a2b284"
   },
   {
    "p": "guides/wolkenhopser.json",

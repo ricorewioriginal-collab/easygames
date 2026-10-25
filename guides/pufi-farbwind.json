@@ -1,0 +1,202 @@
+{
+  "id": "pufi-farbwind",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "In „Pufi & der Farbwind“ trägt Pufi den kleinen Wolkentapir Tamo auf dem Rücken über sechs Inseln: Blütenbucht, Honigklippen, Pilzlichtwald, Federwolken, Kreidegrotten und die Farbwind-Festung. Jede Insel hat vier Level, das vierte ist immer eine Burg mit Boss. Insgesamt sind es 24 Level.",
+        "Bring Tamo sicher ins Ziel und sammle unterwegs Sterne, rote Münzen und Farbblüten für einen Bestwert bis 100 Punkte. Nach dem Endboss in Level 6-4 heißt es: „DER FARBWIND IST FREI!“"
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "p": [
+        "Nach dem Ladebildschirm tippst du zum Starten (am PC Start oder Enter). Im Hauptmenü siehst du ein eventuelles Bonus-Guthaben (♥ Leben, ● Münzen) für die nächste Runde."
+      ],
+      "list": [
+        "SPIEL STARTEN bzw. WEITERSPIELEN: startet das höchste freigeschaltete Level.",
+        "INSELKARTE: alle 24 Level (Burgen mit ♜). Freigeschaltete Level kannst du jederzeit spielen; darunter steht dein Bestwert, 100 Punkte werden besonders markiert.",
+        "BONUSSPIELE: Ballonjagd, Glückskarten und Farbrad direkt spielen.",
+        "OPTIONEN: Touch links Stick oder Steuerkreuz, Touch-Tasten automatisch/immer/aus, Musik, Effekte, Vollbild.",
+        "STEUERUNG: Tastenübersicht für PC, Gamepad und Touch.",
+        "GOOGLE-SPEICHER: Inseln, Bestwerte und Einstellungen geräteübergreifend sichern."
+      ]
+    },
+    {
+      "t": "Tamo, Sterne und Leben",
+      "list": [
+        "Solange Tamo auf deinem Rücken sitzt, füllt sich der Sternezähler langsam auf 10 auf. Mit gesammelten Sternen kannst du bis zu 30 haben.",
+        "Wird Pufi getroffen, schwebt Tamo in einer Blase davon und der Zähler läuft herunter – etwa alle 0,75 Sekunden ein Stern. Berühre die Blase, bevor der Zähler 0 erreicht.",
+        "Bei 0 holen die Nebelgreifer Tamo: ein Leben ist weg.",
+        "Ein Leben kostet auch der Farbsumpf und der Sturz in die Tiefe. Dornen verletzen dich nur und werfen dich hoch.",
+        "Wirst du getroffen, während Tamo schon in der Blase ist, wirst du nur zurückgestoßen.",
+        "Du startest mit 5 Leben (plus Bonus-Guthaben). Alle 100 Münzen gibt es +1 Leben. Nach einem verlorenen Leben geht es am letzten Farbring weiter; Gesammeltes bleibt erhalten.",
+        "Sind alle Leben weg, heißt es „SPIEL VORBEI“ – mit NOCHMAL startest du das Level mit fünf Leben neu."
+      ]
+    },
+    {
+      "t": "Zunge, Eier, Stampfen",
+      "list": [
+        "Zunge: Fang Gegner (Wuschel, Hüpfer, Flatterlinge) mit der Zunge. Mit ↑ schießt sie schräg nach oben. Stachelkugeln und Schnappblüten kann man nicht fressen.",
+        "Im Mund: Drückst du ↓, legst du ein Ei. Drückst du Zunge oder Werfen, spuckst du den Gegner als Geschoss aus.",
+        "Eier: Bis zu sechs Eier folgen dir. Sind es schon sechs, gibt ein weiteres gelegtes Ei einen Stern.",
+        "Eierblöcke (Q) von unten anstoßen gibt ein Ei, bei vollem Vorrat eine Münze.",
+        "Werfen: einmal drücken startet den Zielpfeil, nochmal drücken wirft. Halten und loslassen geht auch, mit dem rechten Stick zielst du direkt. Eier prallen von Wänden ab und treffen Gegner, Flügelwolken, Münzen und Bosse.",
+        "Flattern: Sprungtaste in der Luft halten. Loslassen und erneut halten startet das Flattern neu, jedes Mal etwas schwächer.",
+        "Stampfen: In der Luft ↓ drücken. Pufi stürzt herab und erledigt Gegner direkt beim Aufprall. Auf Gegner springen geht auch – außer auf Stachelkugeln und Schnappblüten."
+      ]
+    },
+    {
+      "t": "Sammelobjekte und Level-Elemente",
+      "list": [
+        "★ Sterne: +1 Stern, bis 30.",
+        "Münzen: zählen für Extraleben.",
+        "Rote Münzen: sehen fast wie normale aus (roter Kern). In fast jedem Level 20, in einigen Burgen weniger.",
+        "✿ Farbblüten: genau 5 pro Level, teils offen, teils in Flügelwolken.",
+        "Flügelwolken: mit einem Ei oder durch Anspringen von unten öffnen – sie geben 5 Sterne oder eine Farbblüte.",
+        "Farbring in der Levelmitte: Rücksetzpunkt und +10 Sterne („FARBRING! +10 ★“).",
+        "Sprungpilze, Bröckelstege, Schwebeplattformen, Stege, Dornen und Farbsumpf prägen die Inseln."
+      ]
+    },
+    {
+      "t": "Wertung am Ziel",
+      "list": [
+        "Sterne beim Erreichen des Ziels: bis 30 Punkte.",
+        "Rote Münzen: bis 20 Punkte (Anteil der gefundenen roten Münzen).",
+        "Farbblüten: bis 50 Punkte (10 pro Blüte).",
+        "Zusammen höchstens 100 Punkte („✦ PERFEKT“). Gespeichert wird der beste Wert jedes Levels."
+      ]
+    },
+    {
+      "t": "Blüten-Roulette und Bonusspiele",
+      "list": [
+        "Am Ziel dreht sich das Blüten-Roulette mit 10 Feldern. Jede gefundene Farbblüte färbt zwei Felder. Landet der Zeiger auf einer Blüte, startet ein zufälliges Bonusspiel.",
+        "Mit allen fünf Farbblüten ist das Bonusspiel sicher, ohne Blüte gibt es keins.",
+        "Ballonjagd: links und rechts laufen und mit A oder B Farbeier nach oben werfen. Geplatzte Ballons geben 1 oder 5 Münzen oder ein Leben. 25 Sekunden.",
+        "Glückskarten: 12 verdeckte Karten – 2 × Leben, 4 × 10 Münzen, 2 × 20 Münzen, 2 × „x2“ (verdoppelt alle folgenden Preise) und 2 Nebelgreifer. Der zweite Nebelgreifer beendet die Runde.",
+        "Farbrad: drei Walzen (Blüte, Stern, Herz, Münze, Ei) nacheinander anhalten. Drei Herzen: +3 Leben (Hauptgewinn), drei gleiche: +2 Leben und 20 Münzen, zwei gleiche: +1 Leben, sonst 5 Münzen Trostpreis.",
+        "Im Level gewonnene Preise gibt es sofort. Im Hauptmenü unter BONUSSPIELE gespielt, landen sie als Guthaben für die nächste Runde (höchstens 9 Leben und 99 Münzen). Ballonjagd ist sofort offen, Glückskarten nach Insel 1, Farbrad nach Insel 2."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "PC: ← → oder A D laufen, Leertaste oder Z springen (halten = flattern), X oder J Zunge (mit ↑ schräg nach oben), C oder K Ei zielen und werfen, ↓ oder S Ei legen bzw. in der Luft stampfen, Esc oder P Pause, F Vollbild, M Musik an/aus.",
+        "Gamepad: Stick oder Steuerkreuz laufen, A springen/flattern, X (oder LB/LT) Zunge, B (oder RB/RT) zielen/werfen, rechter Stick zielt direkt, Y oder Stick ↓ Ei legen/stampfen, Start Pause. Menüs lassen sich mit dem Gamepad bedienen.",
+        "Touch: links Daumen-Stick (oder Steuerkreuz in den Optionen), rechts A Sprung, B Werfen, X Zunge, Y Ei/Stampfen. Ⅱ pausiert, ⛶ schaltet Vollbild. Im Querformat siehst du am meisten.",
+        "Pause: WEITER, LEVEL NEU STARTEN, OPTIONEN, INSELKARTE."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Halte immer zwei, drei Eier im Vorrat – sie lösen fast jedes Problem: Gegner, Flügelwolken, Bosse.",
+        "Wird Tamo weggestoßen, sofort umdrehen und die Blase einsammeln. Die Blase treibt langsam durchs Bild und bleibt sichtbar.",
+        "Gehen dir die Eier aus, stoß Eierblöcke von unten an.",
+        "Nutze das Flattern bei jedem weiten Sprung: Sprung drücken, in der Luft halten."
+      ]
+    },
+    {
+      "t": "Insel für Insel",
+      "list": [
+        "Blütenbucht: Wiesen, Hügel und kleine Gruben – ideal zum Üben. Die Burg 1-4 bewacht das Riesenwuschel.",
+        "Honigklippen: bröckelnde Honigstufen – nicht stehen bleiben. Erste Stachelkugeln. In der Burg 2-4 wartet der Nebelfürst.",
+        "Pilzlichtwald: Sprungpilze schleudern dich hoch, Schnappblüten lauern am Weg und viele Hüpfer. Burg 3-4: Riesenwuschel.",
+        "Federwolken: Wolkenpfade, Bröckelstege und viele Flatterlinge. Hier hilft das Flattern am meisten. Burg 4-4: Nebelfürst.",
+        "Kreidegrotten: niedrige Höhlen mit Tropfsteindecke, Lavabecken (Farbsumpf) mit Schwebeplatten und viele Stachelkugeln. Burg 5-4: Riesenwuschel.",
+        "Farbwind-Festung: Burg-Lava, Kletterpassagen und Türme mit gemischten Gegnern. Der Endboss in 6-4 ist der Nebelfürst mit 7 Treffern."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Stampfen erledigt Gegner direkt beim Aufprall – auch mehrere, die nah beieinander stehen.",
+        "Wirfst du Eier schräg gegen Wände oder die Decke, prallen sie ab. So triffst du Flügelwolken und Münzen hinter Ecken.",
+        "Ein gefangener Gegner im Mund ist ein Geschoss: Spuck ihn mit Werfen aus, wenn du gerade kein Ei hast.",
+        "Erreiche das Ziel mit vollen 30 Sternen: Sammle Sterne, öffne Sterne-Wolken und lass Tamo nie lange in der Blase. Der Farbring gibt +10.",
+        "Hast du schon sechs Eier, gibt jedes weitere gelegte Ei einen Stern."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Auf Stachelkugeln oder Schnappblüten springen – das verletzt dich. Ein Ei hilft.",
+        "Auf Bröckelstegen stehen bleiben.",
+        "Den Farbring überspringen: Er ist dein Rücksetzpunkt und bringt +10 Sterne.",
+        "Mit 0 Eiern in die Burg laufen. Im Bosskampf fallen zwar Wuschel als Nachschub herein, aber nur, wenn du weniger als zwei Eier hast."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Die 24 Level im Überblick",
+      "list": [
+        "Insel 1 Blütenbucht: 1-1 bis 1-3 Wiesen, Hügel, Gruben, Eierblöcke; ab 1-3 Hüpfer und Sprungpilz-Stege. 1-4 Burg mit Riesenwuschel (3 Treffer).",
+        "Insel 2 Honigklippen: Honigstufen, Säulen, Bröckelstege, Wolken und Dornen. 2-4 Burg mit Nebelfürst (3 Treffer).",
+        "Insel 3 Pilzlichtwald: Schnappblüten, Pilz-Sprungfedern, Hüpfer und Flatterling-Lücken; 3-3 mit Dornenhöhle. 3-4 Burg mit Riesenwuschel (4 Treffer).",
+        "Insel 4 Federwolken: Wolkenhüpfer, Bröckelstege, Sprungpilze und ein Turm in 4-3. 4-4 Burg mit Nebelfürst (4 Treffer).",
+        "Insel 5 Kreidegrotten: Schnappblüten, niedrige Höhlen, Lavabecken, Türme und Dornen. 5-4 Burg mit Riesenwuschel (5 Treffer).",
+        "Insel 6 Farbwind-Festung: Burg-Lava mit Schwebeplatten, Lavabecken, Klettern und Säulen. 6-4 Endburg mit Nebelfürst (7 Treffer)."
+      ],
+      "p": [
+        "Jedes Level hat einen Farbring in der Mitte und genau 5 Farbblüten. Die Level sind fest gebaut – wer eine Blüte einmal gefunden hat, findet sie beim nächsten Mal an derselben Stelle. Jedes geschaffte Level schaltet das nächste frei."
+      ]
+    },
+    {
+      "t": "Bosse besiegen",
+      "steps": [
+        "Beim Betreten der Arena schließt sie sich. Am Rand stehen Eierblöcke – stoß sie an und füll deinen Vorrat auf.",
+        "Riesenwuschel (Blütenbucht, Pilzlichtwald, Kreidegrotten): hüpft auf dich zu, beim Aufprall bebt der Boden. Halte Abstand und triff ihn mit Eiern oder ausgespuckten Gegnern. Draufspringen schadet ihm nicht, du prallst nur ab.",
+        "Nebelfürst (Honigklippen, Federwolken, Farbwind-Festung): schwebt hin und her und wirft Stachelkugeln ab. Ziel schräg nach oben und wirf, wenn er über dir ist. Weiche den Kugeln aus.",
+        "Ab der Hälfte seiner Treffer wird jeder Boss wütend und schneller.",
+        "Treffer pro Boss: 1-4 und 2-4 je 3, 3-4 und 4-4 je 4, 5-4 5 Treffer, Endboss 6-4 7 Treffer. Ein besiegter Boss bringt +10 Sterne, dann ist das Ziel offen."
+      ]
+    },
+    {
+      "t": "100 Punkte in jedem Level",
+      "steps": [
+        "Alle 5 Farbblüten finden (50 Punkte). Schau in jede Flügelwolke – manche enthalten eine Blüte statt Sternen.",
+        "Alle roten Münzen einsammeln (20 Punkte). Achte auf den roten Kern; sie liegen über das ganze Level verteilt zwischen normalen Münzen.",
+        "Mit 30 Sternen ins Ziel kommen (30 Punkte). Lass dich kurz vor dem Ziel nicht mehr treffen.",
+        "Hast du etwas verpasst, spiel das Level über die Inselkarte erneut – nur der beste Wert zählt."
+      ]
+    },
+    {
+      "t": "Bonusspiele optimal spielen",
+      "list": [
+        "Ballonjagd: Bleib in der Mitte und wirf ständig. Ballons mit Leben sind am wertvollsten.",
+        "Glückskarten: Erst nach einem „x2“ werden Preise doppelt. Mit einem Nebelgreifer schon aufgedeckt ist jede weitere Karte ein Risiko – trotzdem lohnt es sich meist, da 10 von 12 Karten Preise oder x2 sind.",
+        "Farbrad: Die Walzen halten nacheinander an, die dritte dreht am schnellsten. Drei Herzen bringen den Hauptgewinn +3 Leben.",
+        "Vor einem schweren Level im Hauptmenü Bonusspiele spielen: Das Guthaben (bis 9 Leben) kommt in die nächste Runde."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Wo finde ich meine Fortschritte?",
+      "a": "Auf der INSELKARTE stehen alle freigeschalteten Level mit Bestwert. Gespeichert wird auf dem Gerät; mit GOOGLE-SPEICHER auch geräteübergreifend."
+    },
+    {
+      "q": "Warum gab es kein Bonusspiel am Ziel?",
+      "a": "Das Roulette trifft nur mit einer Chance, die von deinen Farbblüten abhängt (je Blüte 20 %). Ohne Blüte gibt es keins, mit allen fünf ist es sicher."
+    },
+    {
+      "q": "Die Touch-Tasten fehlen oder stören.",
+      "a": "In OPTIONEN stellst du TOUCH-TASTEN auf automatisch, immer oder aus und wählst links Stick oder Steuerkreuz."
+    },
+    {
+      "q": "Kein Ton?",
+      "a": "Tippe einmal ins Spiel, damit der Browser den Ton freigibt. Musik schaltest du mit M oder in OPTIONEN, Effekte ebenfalls in OPTIONEN."
+    },
+    {
+      "q": "Läuft das Spiel offline?",
+      "a": "Ja, das Spiel läuft offline. Nur der Google-Speicher braucht Internet."
+    },
+    {
+      "q": "Kann man zu zweit spielen?",
+      "a": "Nein, Pufi & der Farbwind ist ein Einzelspieler-Abenteuer."
+    }
+  ]
+}

@@ -24,7 +24,7 @@
     {
       "t": "Start und Hauptmenü",
       "list": [
-        "Spielen: startet das nächste offene Level, das du noch nicht geschafft hast. Vorher fragt das Spiel „Bereit für deine Reise?“ – „Los geht’s“ oder „Direkt starten“.",
+        "Spielen: startet das nächste offene Level, das du noch nicht geschafft hast. Beim allerersten Start erklärt dir das Spiel vorher kurz alles („Bereit für deine Reise?“).",
         "Figur wählen: Kiko, Mira, Boro oder Lumi. Alle vier können jede Insel schaffen; du kannst auch in der Pause wechseln.",
         "Levelauswahl: alle freigeschalteten Abenteuer, ☆ zeigt deine besten Bonussterne.",
         "Einstellungen: Musiklautstärke, Effektlautstärke, Kameraempfindlichkeit, Grafikqualität (Automatisch, Niedrig, Hoch), Sprache (Deutsch/English), Tastenbelegung, Vollbild und „Spielstand zurücksetzen“.",
