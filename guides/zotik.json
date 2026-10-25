@@ -1,274 +1,287 @@
 {
-  "id": "zotik",
-  "handbuch": [
-    {
-      "t": "Ziel des Spiels",
-      "p": [
-        "ZOTIK – Die Splitter der Welten ist ein 3D-Action-Rollenspiel. Du spielst Zotik, einen Weltenhörer, der das Summen der Risse hört. Mit dem Kapselmonster Felli und später mit Lyra, Nia und Rovan reist du durch zehn Welten – von Lunaris bis Elyndra – und schließt den Riss, der die Welten bedroht. Danach wartet das Endspiel im Weltenriss mit sieben Siegeln und drei möglichen Enden.",
-        "Unterwegs sprichst du mit Figuren, erfüllst Haupt- und Nebenaufgaben, löst Rätsel, kämpfst gegen Gegner und Bosse und sammelst Rissplitter (die Währung), Heiltränke, Ausrüstung und Erfahrung (bis Stufe 20)."
-      ]
-    },
-    {
-      "t": "Start und Titelmenü",
-      "list": [
-        "Neues Spiel: startet in Lunaris. Unter „Mein Zotik“ gestaltest du vorher dein Aussehen (Zotik ziehen zum Drehen) und beginnst mit „Abenteuer beginnen“.",
-        "Spiel laden: einen gespeicherten Spielstand fortsetzen.",
-        "🌐 Online mitspielen: als zweiter Spieler beim Gastgeber einsteigen (4-stelliger Code oder QR-Code).",
-        "Steuerung: Übersicht aller Tasten.",
-        "🎮 Mini-Spiele: die ZOTIK-Arcade mit eigenen Rekorden.",
-        "🏝️ Bunte Insel: ein Abstecher auf die Bunte Insel."
-      ]
-    },
-    {
-      "t": "Das Spielmenü",
-      "list": [
-        "📜 Aufgaben: Hauptgeschichte des aktuellen Kapitels Schritt für Schritt, Nebenaufgaben.",
-        "🌍 Weltreise: nach Kapitel 1 – reise durch das Weltentor zu allen Welten, die du schon geöffnet hast.",
-        "🎒 Inventar: Stufe, Erfahrung, Waffe, Heiltränke, Rissplitter, Werkzeuge, Äther, Kristallfrüchte, Andenken, Nautilux, Halle der 100 und Rekord der Uralten Höhle.",
-        "🛡️ Ausrüstung: Waffe, Rüstung und Schmuck anlegen oder ablegen.",
-        "🌿 Felli: Stufe, Entwicklung, Angriff, Füttern und „Kämpft mit“ an/aus.",
-        "✨ Fähigkeiten: alle Kampftechniken.",
-        "🎮 Steuerung: Tasten und Optionen (hier lässt sich auch das Casino abschalten).",
-        "👥 Koop: Raum öffnen für einen zweiten Spieler.",
-        "Dazu 💾 Speichern, 🔊 Ton an/aus und 🗣️ Sprachausgabe."
-      ]
-    },
-    {
-      "t": "Kampf",
-      "list": [
-        "⚔ Klingenkombo: drei Hiebe hintereinander. Treffer laden Mana auf.",
-        "💨 Ausweichen: kurzer Sprung, währenddessen bist du unverwundbar. Rote Kreise am Boden zeigen Angriffe an – rechtzeitig ausweichen!",
-        "🌀 Funkenwirbel (18 Mana) und ✨ Lichtstoß (22 Mana). 💚 Mondheilung (30 Mana) heilt dich.",
-        "🧪 Heiltrank: +60 % Leben. 🔷 Äther füllt 60 % Mana auf.",
-        "🎯 Zielerfassung: Gegner anvisieren, wechseln oder lösen.",
-        "▲ Reaktion: Erscheint ▲ über dem Kampf, löst du mit der Reaktionstaste einen Konter, Mondsprung, Reflektor oder Finisher aus.",
-        "🤝 Team-Angriff: Ist die Teamleiste voll, ruft ein Gefährte seine Spezialattacke – Lyra 🌠 Sternenregen, Nia 🏹 Pfeilhagel, Rovan 🛡️ Schildsturm.",
-        "⟡ Rissform: nach dem Sieg über Orun. Rissleiste füllen und verwandeln – mehr Angriff und Tempo. Ab Kapitel 6 kommt die Sternform dazu (Fähigkeiten kosten darin kein Mana).",
-        "✴ IP-Techniken: Jede Ausrüstung bringt eine eigene Technik, die die IP-Leiste (bis 200) verbraucht.",
-        "Fällst du, erwachst du im Dorf bzw. am Brunnen und verlierst 10 % deiner Rissplitter. Ein Boss erholt sich dann wieder."
-      ]
-    },
-    {
-      "t": "Bedienung",
-      "list": [
-        "PC: WASD bewegen, Maus ziehen = Kamera (← → drehen sie auch), J/K oder Klick = Angriff, Shift oder Leertaste = Ausweichen, 1 / 2 = Funkenwirbel / Lichtstoß, 3 oder R = Heiltrank, E = Sprechen/Öffnen, Q = Ziel erfassen/wechseln, F = Reaktion, T = Spezial/Team-Angriff, G = Rissform, 4 5 6 = IP-Techniken, C = Werkzeug benutzen, X = Werkzeug wechseln, ↑ ↓ Enter = Befehlsleiste (Rücktaste zurück), V = Nautilux ein/aus, B = Nautilux-Form, Esc oder Tab = Menü, I = Inventar. In Gesprächen wählst du Antworten mit den Pfeiltasten und E/Leertaste/Enter.",
-        "Touch: Stick links = bewegen, rechts wischen = Kamera. Tasten für Angriff (Kombo), Ausweichen (in der Nautilux: Turbo halten), Fähigkeit (tippen = einsetzen, halten = wechseln zwischen Wirbel, Lichtstoß, Trank), Aktion (Sprechen, Öffnen, Einsteigen; halten = Nautilux-Form), Ziel (tippen = erfassen/wechseln, halten = aus), Spezial (tippen = Werkzeug, halten = Team, Form, IP, Werkzeug) und ▲ Reaktion über die Aktion-Taste. ☰ oben links = Menü.",
-        "Controller: linker Stick bewegen, X Angriff, A Ausweichen, Y Sprechen/Öffnen, LB Funkenwirbel, RB Lichtstoß, LT Ziel, RT Heiltrank, B oder Start Menü, Select Befehl ausführen (Enter). Der rechte Stick steuert einen Mauszeiger für Menüs."
-      ]
-    },
-    {
-      "t": "Felli, das Kapselmonster",
-      "list": [
-        "Felli kämpft an deiner Seite, lernt durch Siege und Futter und entwickelt sich (bis Stufe 20).",
-        "Entwicklungen: Moosling (ab Stufe 1), Blütling (ab 5, heilt dich), Dornling (ab 10, trifft alle Gegner um sich), Waldgeist (ab 15, schlägt besonders hart zu).",
-        "Füttern im Menü: 🧪 Heiltrank +15 EP, 🔷 Äther +30 EP, 🍐 Kristallfrucht +90 EP, 💎 50 Splitter +25 EP. Kristallfrüchte lassen Gegner manchmal fallen oder du kaufst sie im Laden."
-      ]
-    },
-    {
-      "t": "Ausrüstung und Laden",
-      "list": [
-        "Im Laden (z. B. Finns Laden) gibt es 🧪 Heiltrank für 20 Splitter, 3 Heiltränke für 55, dazu Äther, 🍐 Kristallfrucht für 90 und Ausrüstung passend zum Kapitel.",
-        "Waffen: Mondsichel (+6 Angriff, IP Mondsichel, 120), Dornenschwert (+12, Dornenwirbel, 500), Glutklinge (+20, Flammenschnitt, 1100), Sternenklinge (+30, Sternenfall, 2000).",
-        "Rüstungen: Wanderweste (100), Rindenpanzer (260), Korallenmantel (800), Frostharnisch (1300), Sternenrobe (2600) – mit Schutz, Leben und Techniken wie Schutzschild, Wurzelgriff, Gezeitenheilung, Eiswall und Astralfeld.",
-        "Schmuck: Mondring (+30 Mana, Manastrom, 150), Fuchsamulett (Kritisch, Zweiter Atem = volle Heilung, 300). Kapselglocke (stärkt Felli, Felli-Ruf) und Glücksring (Splitterregen) gibt es nicht im Laden, sondern als Fund.",
-        "Kapitelbelohnungen: Kapitel 2 Fuchsamulett, 3 Rindenpanzer, 4 Dornenschwert, 5 Korallenmantel, 6 Glutklinge, 7 Frostharnisch, 8 Glücksring, 9 Sternenklinge, 10 Sternenrobe, Weltenriss Uralter Ring. Uralte Klinge, Uralter Harnisch und Uralter Ring liegen mit etwas Glück in blauen Truhen der Uralten Höhle. Weitere Ausrüstung steckt in Truhen: in Lunaris Wanderweste, Mondsichel und Fuchsamulett, in den Werkzeug-Ruinen je ein Stück (Lunaris Mondring, Elaris Rindenpanzer, Valdoria Dornenschwert, Solmera Kapselglocke, Aqualis Korallenmantel, Frosthain Frostharnisch, Ignara Glutklinge, Noctaris Glücksring, Astralis Sternenklinge, Elyndra Sternenrobe)."
-      ]
-    },
-    {
-      "t": "Werkzeuge und Werkzeug-Ruinen",
-      "list": [
-        "🪝 Enterhaken (Belohnung Kapitel 2): zieht dich zu Pfosten.",
-        "💣 Bombe (Kapitel 3): sprengt Rissmauern.",
-        "🔥 Feuerstab (Kapitel 4): brennt Dornenranken weg und zündet Fackeln.",
-        "❄️ Eisstab (Kapitel 5): friert Wasser zu Eis.",
-        "In jeder Welt gibt es eine Werkzeug-Ruine mit Hindernissen (Schiebeblöcke, Druckplatten, Tore, Rissmauern, Ranken, Fackeln, Wasser, Pfosten). Mit C nimmt Zotik automatisch das passende Werkzeug für das Hindernis vor ihm."
-      ]
-    },
-    {
-      "t": "Die Nautilux",
-      "list": [
-        "Nach Kapitel 1 baut Professorium dir die Nautilux. Mit V steigst du ein und aus, mit B wechselst du die Form.",
-        "🚤 Gleiter: schwebt und ist schnell.",
-        "🛥️ U-Boot (nach Kapitel 4): taucht in Tiefsee-Becken (blaue Wasserflächen) zu Schatztruhen. Ab dann gibt es auch den Turbo (Shift) und weniger Schaden in der Nautilux.",
-        "🎈 Luftschiff (nach Kapitel 7): fliegt über Klippen zu Himmelstruhen auf hohen Felsen.",
-        "🔮 Riss-Form (nach Kapitel 10): rammt mit voller Kraft und ist am schnellsten."
-      ]
-    },
-    {
-      "t": "Koop zu zweit",
-      "steps": [
-        "Im Menü unter 👥 Koop „🏠 Raum öffnen“ wählen. Es erscheinen ein Code und ein QR-Code (🔗 Link kopieren).",
-        "Am zweiten Gerät im Titelmenü „🌐 Online mitspielen“ wählen, Code und Namen eingeben und verbinden – oder den QR-Code scannen.",
-        "Der zweite Zotik ist in der Welt des Gastgebers und spielt die Geschichte mit. Mit „📍 Zu … springen“ teleportiert ihr euch zueinander.",
-        "Geschichte, Welt und Gegner gehören dem Gastgeber. Der Spielstand des Gastes wird nicht gespeichert; der Fortschritt landet im Spielstand des Gastgebers. Die Uralte Höhle ist nur allein betretbar."
-      ]
-    },
-    {
-      "t": "Speichern",
-      "p": [
-        "Das Spiel speichert automatisch, z. B. beim Zonenwechsel, nach Rätseln und Kämpfen. Zusätzlich speicherst du mit 💾 im Menü. Optional kannst du dich mit Google anmelden und die Spielstände auf anderen Geräten weiterspielen – ohne Anmeldung bleibt alles nur auf diesem Gerät."
-      ]
-    }
-  ],
-  "ratgeber": [
-    {
-      "t": "Tipps für Einsteiger",
-      "list": [
-        "Folge der Aufgabenanzeige oben – sie nennt immer den nächsten Schritt.",
-        "Rote Kreise am Boden: sofort ausweichen. Beim Ausweichen bist du unverwundbar.",
-        "Nutze Fähigkeiten im Kampf großzügig – Treffer laden Mana schnell wieder auf.",
-        "Kauf früh ein paar Heiltränke. Mondkräuter werden nach dem ersten Auftrag automatisch zu Heiltränken.",
-        "Lass Felli mitkämpfen und füttere es – ein Blütling heilt dich im Kampf."
-      ]
-    },
-    {
-      "t": "Strategien für Fortgeschrittene",
-      "list": [
-        "Zielerfassung (Q) hält Bosse im Blick, während du ausweichst.",
-        "Spar die Teamleiste für Bosse auf: Sternenregen, Pfeilhagel und Schildsturm richten großen Schaden an.",
-        "Rissform vor der zweiten Bossphase zünden – mehr Angriff und Tempo genau dann, wenn der Boss wütend wird.",
-        "Kombiniere Ausrüstung nach Bedarf: Zweiter Atem (Fuchsamulett) als Notfall-Heilung, Schutzschild oder Eiswall für harte Bosse.",
-        "Erledige Nebenaufgaben im Weltenriss – jede bringt viele Splitter und ein Andenken (+1,5 Angriff)."
-      ]
-    },
-    {
-      "t": "Profi-Tricks",
-      "list": [
-        "Achte auf das ▲: Konter und Finisher über die Reaktionstaste sind die stärksten Treffer.",
-        "Mit der Nautilux als U-Boot und Luftschiff erreichst du Schatztruhen, die zu Fuß unerreichbar sind.",
-        "In der Uralten Höhle zählt nur, was du dort findest – nimm sie als Herausforderung, nicht zum Leveln.",
-        "Halle der 100: Jede zehnte Prüfung ist ein Boss und bringt 500 × Rang Splitter und 3 Tränke extra.",
-        "Das Casino nutzt nur Spiel-Splitter. Die beste Chance auf Gewinn ist gering – setz nur, was du übrig hast (oder schalte es in den Optionen ab)."
-      ]
-    },
-    {
-      "t": "Häufige Fehler",
-      "list": [
-        "Ohne Tränke in einen Bosskampf gehen.",
-        "Rätsel-Hinweise ignorieren: Jedes Rätsel hat drei Hinweise, der letzte verrät die Lösung fast vollständig.",
-        "Splitter horten und beim Fallen 10 % verlieren – gib sie lieber für Ausrüstung aus.",
-        "Werkzeug-Ruinen zu früh betreten, bevor du das nötige Werkzeug hast."
-      ]
-    }
-  ],
-  "loesung": [
-    {
-      "t": "Kapitel 1: Lunaris – Der erste Riss",
-      "steps": [
-        "Sprich mit Mira beim Brunnen.",
-        "Sammle 3 Mondkräuter im Mondwald (im Norden) und bring sie zu Mira.",
-        "Besiege 5 Riftlinge im Mondwald.",
-        "Sprich mit Professorium in seiner Werkstatt (Westen). Er setzt einen Mondkristall in deine Reiseklinge ein (+10 Angriff).",
-        "Rätsel Mondtor (Scheiben am Weg im Norden): linke Scheibe auf Vollmond (zweimal drehen), mittlere auf Neumond (nicht drehen), rechte auf abnehmenden Mond (dreimal drehen).",
-                "Betritt die Risshöhle am Ende des Weges und besiege den Mondwolf-Alpha. Danach erscheint Orun, der Hüter des Risses – sein Sieg bringt die Weltenklinge (+8 Angriff) und schaltet die Rissform frei.",
-        "Kehre zu Mira ins Dorf zurück. Kapitel 1 geschafft! Professorium übergibt dir die Nautilux, und das Weltentor öffnet die nächste Welt.",
-        "Rätsel Resonanzbrücke in Lunaris: die Resonanzkristalle vom tiefsten zum höchsten Ton wecken (🔊 zum Anhören) – Kristalle 3, 1, 4, 2 (von links gezählt).",
-        "Nebenaufgabe Wolfsplage: Sprich mit Boro im Dorf, besiege 4 Dornenwölfe und kehre zu ihm zurück."
-      ]
-    },
-    {
-      "t": "Ablauf der Kapitel 2 bis 10",
-      "steps": [
-        "Sprich mit dem Ältesten der Welt.",
-        "Erkunde das Gebiet im Norden.",
-        "Vertreibe 5 Gegner im Norden.",
-        "Löse das Rätsel der Welt.",
-        "Besiege den Wächter (Mini-Boss).",
-        "Stelle dich dem Weltboss.",
-        "Berichte dem Ältesten – Kapitel geschafft, die nächste Welt öffnet sich im Weltentor."
-      ]
-    },
-    {
-      "t": "Welten, Bosse und Rätsellösungen",
-      "list": [
-        "Kapitel 2 Elaris (Mara, Forschungsviertel): Gegner Pilzling, Dornenwolf. Rätsel Turm der Erinnerung: Mond, Blatt, Kristall, Flamme. Wächter Wurzelkriecher, Boss Wurzelkönigin. Hier schließen sich Lyra (bei Ankunft), Nia und Rovan an. Belohnung 🪝 Enterhaken.",
-        "Kapitel 3 Valdoria (Harlan, Gildenhalle): Kanalschleim, Schleusenkrabbe. Schleusenventile: mittleres Ventil einmal, dann rechtes einmal (das linke ist eine Falle). Wächter Rostgolem, Boss Kanalwächter. Belohnung 💣 Bombe.",
-        "Kapitel 4 Solmera (Nuri, Oase): Sandgeist, Sandskorpion. Sonnenspiegel: erster einmal (Ost), zweiter dreimal (West), dritter gar nicht (Nord), vierter zweimal (Süd), dann das Licht bündeln. Wächter Sandwächter, Boss Kharos, der Sandkoloss. Belohnung 🔥 Feuerstab, U-Boot-Form.",
-        "Kapitel 5 Aqualis (Nerea, Korallentor): Leuchtqualle, Riffkrabbe. Strömungsventile: erstes und drittes Ventil je einmal. Wächter Archivwächter, Boss Neryx. Belohnung ❄️ Eisstab.",
-        "Kapitel 6 Frosthain (Falk, Dorf Hjalm): Eisgeist, Frostwolf. Erinnerungseis: Kristalle 4, 2, 5, 1, 3. Wächter Eiswächter, Boss Avarn, der Eiskern. Danach Sternform.",
-        "Kapitel 7 Ignara (Brenna, Kaldera): Funkengeist, Aschekäfer. Druckventile: erstes und zweites Ventil je einmal. Wächter Schmiedegolem, Boss Magmarion. Danach Luftschiff-Form.",
-        "Kapitel 8 Noctaris (Eryn, Nocturna): Schattenfalter, Vergessener. Erinnerungsfolge: Säulen 4, 1, 5, 2, 3. Wächter Nullwächter, Boss Erinnerungshüter.",
-        "Kapitel 9 Astralis (Aera, Wolkenhafen): Sternenwächter, Wolkenschwinge. Sternenscheiben: erste zweimal (Herbst), zweite gar nicht (Frühling), dritte dreimal (Winter), vierte einmal (Sommer). Wächter Tempelwächter, Boss Solyra.",
-        "Kapitel 10 Elyndra (Veyra): Spiegelspinne, Echokrieger. Echofolge: Spiegel 5, 2, 6, 1, 4, 3. Wächter Weltenwächter, Boss Elyon im Weltenkern. Danach Riss-Form der Nautilux."
-      ]
-    },
-    {
-      "t": "Endspiel: Der Weltenriss und die sieben Siegel",
-      "p": [
-        "Im Weltenriss (Riss-Halle, Veyra) stehen sieben Siegel. An jedem wartet ein Weltenbrecher: Erst besiegst du den Wächter, dann den großen Weltenbrecher, dann löst du das Siegel-Rätsel (drei Scheiben) und öffnest die Schatzkammer."
-      ],
-      "list": [
-        "Siegel 1 Der verlorene Wald: Der Waldhüter, dann Der erste Wächter. Drehungen 1, 3, 2.",
-        "Siegel 2 Die Stadt ohne Bewohner: Der leere Torwächter, dann Die Wurzel ohne Ende. Drehungen 2, 0, 1.",
-        "Siegel 3 Das Meer über dem Himmel: Die Himmelsmuräne, dann Der Goldene Koloss. Drehungen 3, 1, 0.",
-        "Siegel 4 Der ewige Vulkan: Der Aschenkönig, dann Der Sandkönig. Drehungen 0, 2, 3.",
-        "Siegel 5 Noctaris Null: Der Nullschatten, dann Der Abyss. Drehungen 2, 2, 1.",
-        "Siegel 6 Elyndra Vorher: Das Echo der Quelle, dann Das Frostherz. Drehungen 1, 0, 3.",
-        "Siegel 7 Der Ort, den es nie gab: Der Namenlose, dann Der Feuerkern. Drehungen 3, 3, 2.",
-        "Die Drehungen gelten für die Scheiben von links nach rechts."
-      ]
-    },
-    {
-      "t": "Die drei Enden und Neues Spiel+",
-      "list": [
-        "Sind alle sieben Siegel gebrochen, sprich mit Veyra und wähle das Schicksal der Welten.",
-        "Getrennt bewahren: Die Welten bleiben getrennt, aber nicht mehr blind füreinander.",
-        "Vereinen: Die Splitter fügen sich in den Kern, die Grenzen werden dünn.",
-        "Verweben (Zuhören): Zotiks Klang öffnet sich, Fäden aus Licht spannen sich zwischen den Welten.",
-        "Das erste Ende bringt +500 EP und +1000 Splitter. Danach kannst du jederzeit ein anderes Ende ansehen.",
-        "Neues Spiel+: Du behältst Stufe, Splitter, Waffen, Andenken, Nautilux und Gefährten; die Geschichte beginnt von vorn. Pro Stufe haben Gegner +50 % Leben und +35 % Angriff, Bosse bekommen eine Raserei-Phase. Der Weltenriss bleibt offen."
-      ]
-    },
-    {
-      "t": "Nebenaufträge im Weltenriss",
-      "list": [
-        "Kaels Schwester (Kael): 6 Echokrieger in Elyndra besiegen – 1500 Splitter, Kaels Kompass.",
-        "Eryns Archiv (Eryn): 10 Erinnerungssplitter sammeln (Gegner in Noctaris, Astralis, Elyndra) – 1500 Splitter, Eryns Tagebuch.",
-        "Torens Prüfung (Toren): 8 Dornenwölfe in Lunaris – 1200 Splitter, Torens Trainingsband.",
-        "Selas Wald (Sela): 8 Dornenwölfe in Elaris – 1300 Splitter, Selas Blatt.",
-        "Nerea und die Becken (Nerea): 8 Riffkrabben in Aqualis – 1400 Splitter, Nereas Perle.",
-        "Das letzte Experiment (Professorium): 6 Rissessenz von den Weltenbrechern – 2500 Splitter, Professoriums Notizen.",
-        "Jedes Andenken gibt dauerhaft +1,5 Angriff."
-      ]
-    },
-    {
-      "t": "Halle der 100, Uralte Höhle und Casino",
-      "list": [
-        "🏛️ Halle der 100: 100 Prüfungen in 10 Rängen, jede zehnte ist ein Bosskampf. Jede Prüfung bringt 30 + 8 × Nummer Splitter und Erfahrung, jeder Rang zusätzlich 500 × Rang Splitter und 3 Tränke. Nach Prüfung 100: „Der letzte Splitter gehört dir“ (+5000).",
-        "🏔️ Uralte Höhle in Lunaris (nach Kapitel 1, nur allein): 50 Ebenen. Du startest immer bei Stufe 1, ohne Ausrüstung und mit 2 Tränken. Ein Wächter versperrt die Treppe. Beim Verlassen oder Fallen kehrt alles zurück – behalten darfst du nur die blauen Schätze. Dein Rekord steht im Inventar.",
-        "🎰 Golden Star Casino – Kristallslots: nur virtuelle Splitter, Einsatz 10, 50 oder 100. Drei gleiche: ⭐ ×25, 💎 ×12, 🔥 ×8, 🌙/🍃 ×5; zwei gleiche: Einsatz zurück. Familienoption: Casino ausschalten.",
-        "🎮 Mini-Spiele (Titelmenü): ZOTIK Run, Felli-Fang, Kristallrausch, ZOTIK Quiz und Sternenpuzzle – unabhängig vom Abenteuer, mit eigenen Rekorden."
-      ]
-    }
-  ],
-  "faq": [
-    {
-      "q": "Mein Spielstand ist weg.",
-      "a": "Spielstände liegen im Browser. Gelöschte Website-Daten oder private Fenster löschen sie. Melde dich optional mit Google an, um sie zu sichern und auf anderen Geräten weiterzuspielen."
-    },
-    {
-      "q": "Wie komme ich in andere Welten?",
-      "a": "Über das Weltentor bzw. „🌍 Weltreise“ im Menü – erst nach Kapitel 1, und nur zu Welten, die du schon geöffnet hast."
-    },
-    {
-      "q": "Koop verbindet nicht.",
-      "a": "Beide Geräte brauchen Internet. Prüfe den 4-stelligen Code, lass den Raum des Gastgebers offen und versuche es mit dem QR-Code. Es spielen höchstens zwei zusammen."
-    },
-    {
-      "q": "Ich komme an einem Rätsel nicht weiter.",
-      "a": "Jedes Rätsel bietet drei Hinweise, der letzte nennt die Lösung. Alle Lösungen stehen auch hier im Lösungsbuch."
-    },
-    {
-      "q": "Warum kann ich die Nautilux nicht umwandeln?",
-      "a": "Die Formen kommen nach und nach: U-Boot nach Kapitel 4, Luftschiff nach Kapitel 7, Riss-Form nach Kapitel 10."
-    },
-    {
-      "q": "Kann ich das Casino abschalten?",
-      "a": "Ja, im Menü unter „Steuerung“ → Optionen oder direkt im Casino mit „Casino ausschalten (Familienoption)“."
-    },
-    {
-      "q": "Läuft das Spiel ruckelig?",
-      "a": "Schließe andere Tabs und Apps. Das Spiel passt die Qualität bei Rucklern selbst an."
-    }
-  ]
+ "id": "zotik",
+ "handbuch": [
+  {
+   "t": "Ziel des Spiels",
+   "p": [
+    "ZOTIK – Die Splitter der Welten ist ein 3D-Action-Rollenspiel. Du spielst Zotik, einen Weltenhörer, der das Summen der Risse hört. Mit dem Kapselmonster Felli und später mit Lyra, Nia und Rovan reist du durch zehn Welten – von Lunaris bis Elyndra – und schließt den Riss, der die Welten bedroht. Danach wartet das Endspiel im Weltenriss mit sieben Siegeln und drei möglichen Enden.",
+    "Unterwegs sprichst du mit Figuren, erfüllst Haupt- und Nebenaufgaben, löst Rätsel, kämpfst gegen Gegner und Bosse und sammelst Rissplitter (die Währung), Heiltränke, Ausrüstung und Erfahrung (bis Stufe 100)."
+   ]
+  },
+  {
+   "t": "Start und Titelmenü",
+   "list": [
+    "Neues Spiel: startet in Lunaris. Unter „Mein Zotik“ gestaltest du vorher dein Aussehen (Zotik ziehen zum Drehen) und beginnst mit „Abenteuer beginnen“.",
+    "Spiel laden: einen gespeicherten Spielstand fortsetzen.",
+    "🌐 Online mitspielen: als zweiter Spieler beim Gastgeber einsteigen (4-stelliger Code oder QR-Code).",
+    "Steuerung: Übersicht aller Tasten.",
+    "🎮 Mini-Spiele: die ZOTIK-Arcade mit eigenen Rekorden.",
+    "🏝️ Bunte Insel: ein Abstecher auf die Bunte Insel."
+   ]
+  },
+  {
+   "t": "Das Spielmenü",
+   "list": [
+    "📜 Aufgaben: Hauptgeschichte des aktuellen Kapitels Schritt für Schritt, Nebenaufgaben.",
+    "🌍 Weltreise: nach Kapitel 1 – reise durch das Weltentor zu allen Welten, die du schon geöffnet hast.",
+    "🎒 Inventar: Stufe, Erfahrung, Waffe, Heiltränke, Rissplitter, Werkzeuge, Äther, Kristallfrüchte, Andenken, Nautilux, Halle der 100 und Rekord der Uralten Höhle.",
+    "🛡️ Ausrüstung: Waffe, Rüstung und Schmuck anlegen oder ablegen.",
+    "🌿 Felli: Stufe, Entwicklung, Angriff, Füttern und „Kämpft mit“ an/aus.",
+    "✨ Fähigkeiten: alle Kampftechniken.",
+    "🎮 Steuerung: Tasten und Optionen (hier lässt sich auch das Casino abschalten).",
+    "👥 Koop: Raum öffnen für einen zweiten Spieler.",
+    "Dazu 💾 Speichern, 🔊 Ton an/aus und 🗣️ Sprachausgabe."
+   ]
+  },
+  {
+   "t": "Camp, Chronik und Erfolge",
+   "list": [
+    "⛺ Camp: Wenn kein Gegner in der Nähe ist, kannst du hier rasten, Kräutersuppe kochen, die Klinge schärfen (Rissstaub, Splitter), Heiltränke und Äther herstellen und das Weltenradio umschalten (Mondfunk, Rissbeat, Sternenglanz, Stille).",
+    "🧶 Materialien: Gegner lassen Fell, Rissstaub und Kernsplitter fallen, Bosse sicher.",
+    "📖 Chronik: Enthüllungen zum Großen Bruch, die du pro Kapitel freischaltest, deine Weggefährten, das Bestiarium aller besiegten Gegnerarten und 16 Erfolge.",
+    "🎚️ Schwierigkeit: Abenteurer, Held, Veteran, Albtraum, Legende – jederzeit im Camp wählbar.",
+    "🧪 Cheats: Nur zum Ausprobieren. Danach werden keine neuen Erfolge mehr vergeben."
+   ]
+  },
+  {
+   "t": "Kampf",
+   "list": [
+    "⚔ Klingenkombo: drei Hiebe hintereinander. Treffer laden Mana auf.",
+    "💨 Ausweichen: kurzer Sprung, währenddessen bist du unverwundbar. Rote Kreise am Boden zeigen Angriffe an – rechtzeitig ausweichen!",
+    "🌀 Funkenwirbel (18 Mana) und ✨ Lichtstoß (22 Mana). 💚 Mondheilung (30 Mana) heilt dich.",
+    "🧪 Heiltrank: +60 % Leben. 🔷 Äther füllt 60 % Mana auf.",
+    "🎯 Zielerfassung: Gegner anvisieren, wechseln oder lösen.",
+    "▲ Reaktion: Erscheint ▲ über dem Kampf, löst du mit der Reaktionstaste einen Konter, Mondsprung, Reflektor oder Finisher aus.",
+    "🤝 Team-Angriff: Ist die Teamleiste voll, ruft ein Gefährte seine Spezialattacke – Lyra 🌠 Sternenregen, Nia 🏹 Pfeilhagel, Rovan 🛡️ Schildsturm.",
+    "⟡ Rissform: nach dem Sieg über Orun. Rissleiste füllen und verwandeln – mehr Angriff und Tempo. Ab Kapitel 6 kommt die Sternform dazu (Fähigkeiten kosten darin kein Mana).",
+    "✴ IP-Techniken: Jede Ausrüstung bringt eine eigene Technik, die die IP-Leiste (bis 200) verbraucht.",
+    "Fällst du, erwachst du im Dorf bzw. am Brunnen und verlierst 10 % deiner Rissplitter. Ein Boss erholt sich dann wieder.",
+    "🛡️ Block: B halten (Handy: Ausweichen-Taste halten) senkt den Schaden um 70 %, kostet aber 2 Mana pro Treffer.",
+    "🌪️ Elementreaktionen: Zwei verschiedene Elemente kurz nacheinander auf denselben Gegner lösen eine Reaktion aus (Feuer + Natur = Aschebrand, Licht + Natur = Sonnenblüte, Feuer + Licht = Sternenglut). In der Rissform löst jedes Element eine Rissreaktion aus.",
+    "⏱️ Timeline: Die Leiste oben zeigt, welcher Gegner als Nächstes angreift (in Sekunden, „!“ = jetzt)."
+   ]
+  },
+  {
+   "t": "Bedienung",
+   "list": [
+    "PC: WASD bewegen, Maus ziehen = Kamera (← → drehen sie auch), J/K oder Klick = Angriff, Shift oder Leertaste = Ausweichen, 1 / 2 = Funkenwirbel / Lichtstoß, 3 oder R = Heiltrank, E = Sprechen/Öffnen, Q = Ziel erfassen/wechseln, F = Reaktion, T = Spezial/Team-Angriff, G = Rissform, 4 5 6 = IP-Techniken, C = Werkzeug benutzen, X = Werkzeug wechseln, ↑ ↓ Enter = Befehlsleiste (Rücktaste zurück), V = Nautilux ein/aus, B = Nautilux-Form, Esc oder Tab = Menü, I = Inventar. In Gesprächen wählst du Antworten mit den Pfeiltasten und E/Leertaste/Enter.",
+    "Touch: Stick links = bewegen, rechts wischen = Kamera. Tasten für Angriff (Kombo), Ausweichen (in der Nautilux: Turbo halten), Fähigkeit (tippen = einsetzen, halten = wechseln zwischen Wirbel, Lichtstoß, Trank), Aktion (Sprechen, Öffnen, Einsteigen; halten = Nautilux-Form), Ziel (tippen = erfassen/wechseln, halten = aus), Spezial (tippen = Werkzeug, halten = Team, Form, IP, Werkzeug) und ▲ Reaktion über die Aktion-Taste. ☰ oben links = Menü.",
+    "Controller: linker Stick bewegen, X Angriff, A Ausweichen, Y Sprechen/Öffnen, LB Funkenwirbel, RB Lichtstoß, LT Ziel, RT Heiltrank, B oder Start Menü, Select Befehl ausführen (Enter). Der rechte Stick steuert einen Mauszeiger für Menüs."
+   ]
+  },
+  {
+   "t": "Felli, das Kapselmonster",
+   "list": [
+    "Felli kämpft an deiner Seite, lernt durch Siege und Futter und entwickelt sich (bis Stufe 20).",
+    "Entwicklungen: Moosling (ab Stufe 1), Blütling (ab 5, heilt dich), Dornling (ab 10, trifft alle Gegner um sich), Waldgeist (ab 15, schlägt besonders hart zu).",
+    "Füttern im Menü: 🧪 Heiltrank +15 EP, 🔷 Äther +30 EP, 🍐 Kristallfrucht +90 EP, 💎 50 Splitter +25 EP. Kristallfrüchte lassen Gegner manchmal fallen oder du kaufst sie im Laden."
+   ]
+  },
+  {
+   "t": "Ausrüstung und Laden",
+   "list": [
+    "Im Laden (z. B. Finns Laden) gibt es 🧪 Heiltrank für 20 Splitter, 3 Heiltränke für 55, dazu Äther, 🍐 Kristallfrucht für 90 und Ausrüstung passend zum Kapitel.",
+    "Waffen: Mondsichel (+6 Angriff, IP Mondsichel, 120), Dornenschwert (+12, Dornenwirbel, 500), Glutklinge (+20, Flammenschnitt, 1100), Sternenklinge (+30, Sternenfall, 2000).",
+    "Rüstungen: Wanderweste (100), Rindenpanzer (260), Korallenmantel (800), Frostharnisch (1300), Sternenrobe (2600) – mit Schutz, Leben und Techniken wie Schutzschild, Wurzelgriff, Gezeitenheilung, Eiswall und Astralfeld.",
+    "Schmuck: Mondring (+30 Mana, Manastrom, 150), Fuchsamulett (Kritisch, Zweiter Atem = volle Heilung, 300). Kapselglocke (stärkt Felli, Felli-Ruf) und Glücksring (Splitterregen) gibt es nicht im Laden, sondern als Fund.",
+    "Kapitelbelohnungen: Kapitel 2 Fuchsamulett, 3 Rindenpanzer, 4 Dornenschwert, 5 Korallenmantel, 6 Glutklinge, 7 Frostharnisch, 8 Glücksring, 9 Sternenklinge, 10 Sternenrobe, Weltenriss Uralter Ring. Uralte Klinge, Uralter Harnisch und Uralter Ring liegen mit etwas Glück in blauen Truhen der Uralten Höhle. Weitere Ausrüstung steckt in Truhen: in Lunaris Wanderweste, Mondsichel und Fuchsamulett, in den Werkzeug-Ruinen je ein Stück (Lunaris Mondring, Elaris Rindenpanzer, Valdoria Dornenschwert, Solmera Kapselglocke, Aqualis Korallenmantel, Frosthain Frostharnisch, Ignara Glutklinge, Noctaris Glücksring, Astralis Sternenklinge, Elyndra Sternenrobe)."
+   ]
+  },
+  {
+   "t": "Werkzeuge und Werkzeug-Ruinen",
+   "list": [
+    "🪝 Enterhaken (Belohnung Kapitel 2): zieht dich zu Pfosten.",
+    "💣 Bombe (Kapitel 3): sprengt Rissmauern.",
+    "🔥 Feuerstab (Kapitel 4): brennt Dornenranken weg und zündet Fackeln.",
+    "❄️ Eisstab (Kapitel 5): friert Wasser zu Eis.",
+    "In jeder Welt gibt es eine Werkzeug-Ruine mit Hindernissen (Schiebeblöcke, Druckplatten, Tore, Rissmauern, Ranken, Fackeln, Wasser, Pfosten). Mit C nimmt Zotik automatisch das passende Werkzeug für das Hindernis vor ihm."
+   ]
+  },
+  {
+   "t": "Die Nautilux",
+   "list": [
+    "Nach Kapitel 1 baut Professorium dir die Nautilux. Mit V steigst du ein und aus, mit B wechselst du die Form.",
+    "🚤 Gleiter: schwebt und ist schnell.",
+    "🛥️ U-Boot (nach Kapitel 4): taucht in Tiefsee-Becken (blaue Wasserflächen) zu Schatztruhen. Ab dann gibt es auch den Turbo (Shift) und weniger Schaden in der Nautilux.",
+    "🎈 Luftschiff (nach Kapitel 7): fliegt über Klippen zu Himmelstruhen auf hohen Felsen.",
+    "🔮 Riss-Form (nach Kapitel 10): rammt mit voller Kraft und ist am schnellsten."
+   ]
+  },
+  {
+   "t": "Koop zu zweit",
+   "steps": [
+    "Im Menü unter 👥 Koop „🏠 Raum öffnen“ wählen. Es erscheinen ein Code und ein QR-Code (🔗 Link kopieren).",
+    "Am zweiten Gerät im Titelmenü „🌐 Online mitspielen“ wählen, Code und Namen eingeben und verbinden – oder den QR-Code scannen.",
+    "Der zweite Zotik ist in der Welt des Gastgebers und spielt die Geschichte mit. Mit „📍 Zu … springen“ teleportiert ihr euch zueinander.",
+    "Geschichte, Welt und Gegner gehören dem Gastgeber. Der Spielstand des Gastes wird nicht gespeichert; der Fortschritt landet im Spielstand des Gastgebers. Die Uralte Höhle ist nur allein betretbar."
+   ]
+  },
+  {
+   "t": "Speichern",
+   "p": [
+    "Das Spiel speichert automatisch, z. B. beim Zonenwechsel, nach Rätseln und Kämpfen. Zusätzlich speicherst du mit 💾 im Menü. Optional kannst du dich mit Google anmelden und die Spielstände auf anderen Geräten weiterspielen – ohne Anmeldung bleibt alles nur auf diesem Gerät."
+   ]
+  }
+ ],
+ "ratgeber": [
+  {
+   "t": "Tipps für Einsteiger",
+   "list": [
+    "Folge der Aufgabenanzeige oben – sie nennt immer den nächsten Schritt.",
+    "Rote Kreise am Boden: sofort ausweichen. Beim Ausweichen bist du unverwundbar.",
+    "Nutze Fähigkeiten im Kampf großzügig – Treffer laden Mana schnell wieder auf.",
+    "Kauf früh ein paar Heiltränke. Mondkräuter werden nach dem ersten Auftrag automatisch zu Heiltränken.",
+    "Lass Felli mitkämpfen und füttere es – ein Blütling heilt dich im Kampf."
+   ]
+  },
+  {
+   "t": "Strategien für Fortgeschrittene",
+   "list": [
+    "Zielerfassung (Q) hält Bosse im Blick, während du ausweichst.",
+    "Spar die Teamleiste für Bosse auf: Sternenregen, Pfeilhagel und Schildsturm richten großen Schaden an.",
+    "Rissform vor der zweiten Bossphase zünden – mehr Angriff und Tempo genau dann, wenn der Boss wütend wird.",
+    "Kombiniere Ausrüstung nach Bedarf: Zweiter Atem (Fuchsamulett) als Notfall-Heilung, Schutzschild oder Eiswall für harte Bosse.",
+    "Erledige Nebenaufgaben im Weltenriss – jede bringt viele Splitter und ein Andenken (+1,5 Angriff)."
+   ]
+  },
+  {
+   "t": "Profi-Tricks",
+   "list": [
+    "Achte auf das ▲: Konter und Finisher über die Reaktionstaste sind die stärksten Treffer.",
+    "Mit der Nautilux als U-Boot und Luftschiff erreichst du Schatztruhen, die zu Fuß unerreichbar sind.",
+    "In der Uralten Höhle zählt nur, was du dort findest – nimm sie als Herausforderung, nicht zum Leveln.",
+    "Halle der 100: Jede zehnte Prüfung ist ein Boss und bringt 500 × Rang Splitter und 3 Tränke extra.",
+    "Das Casino nutzt nur Spiel-Splitter. Die beste Chance auf Gewinn ist gering – setz nur, was du übrig hast (oder schalte es in den Optionen ab)."
+   ]
+  },
+  {
+   "t": "Häufige Fehler",
+   "list": [
+    "Ohne Tränke in einen Bosskampf gehen.",
+    "Rätsel-Hinweise ignorieren: Jedes Rätsel hat drei Hinweise, der letzte verrät die Lösung fast vollständig.",
+    "Splitter horten und beim Fallen 10 % verlieren – gib sie lieber für Ausrüstung aus.",
+    "Werkzeug-Ruinen zu früh betreten, bevor du das nötige Werkzeug hast."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "Kapitel 1: Lunaris – Der erste Riss",
+   "steps": [
+    "Sprich mit Mira beim Brunnen.",
+    "Sammle 3 Mondkräuter im Mondwald (im Norden) und bring sie zu Mira.",
+    "Besiege 5 Riftlinge im Mondwald.",
+    "Sprich mit Professorium in seiner Werkstatt (Westen). Er setzt einen Mondkristall in deine Reiseklinge ein (+10 Angriff).",
+    "Rätsel Mondtor (Scheiben am Weg im Norden): linke Scheibe auf Vollmond (zweimal drehen), mittlere auf Neumond (nicht drehen), rechte auf abnehmenden Mond (dreimal drehen).",
+    "Betritt die Risshöhle am Ende des Weges und besiege den Mondwolf-Alpha. Danach erscheint Orun, der Hüter des Risses – sein Sieg bringt die Weltenklinge (+8 Angriff) und schaltet die Rissform frei.",
+    "Kehre zu Mira ins Dorf zurück. Kapitel 1 geschafft! Professorium übergibt dir die Nautilux, und das Weltentor öffnet die nächste Welt.",
+    "Rätsel Resonanzbrücke in Lunaris: die Resonanzkristalle vom tiefsten zum höchsten Ton wecken (🔊 zum Anhören) – Kristalle 3, 1, 4, 2 (von links gezählt).",
+    "Nebenaufgabe Wolfsplage: Sprich mit Boro im Dorf, besiege 4 Dornenwölfe und kehre zu ihm zurück."
+   ]
+  },
+  {
+   "t": "Ablauf der Kapitel 2 bis 10",
+   "steps": [
+    "Sprich mit dem Ältesten der Welt.",
+    "Erkunde das Gebiet im Norden.",
+    "Vertreibe 5 Gegner im Norden.",
+    "Löse das Rätsel der Welt.",
+    "Besiege den Wächter (Mini-Boss).",
+    "Stelle dich dem Weltboss.",
+    "Berichte dem Ältesten – Kapitel geschafft, die nächste Welt öffnet sich im Weltentor."
+   ]
+  },
+  {
+   "t": "Welten, Bosse und Rätsellösungen",
+   "list": [
+    "Kapitel 2 Elaris (Mara, Forschungsviertel): Gegner Pilzling, Dornenwolf. Rätsel Turm der Erinnerung: Mond, Blatt, Kristall, Flamme. Wächter Wurzelkriecher, Boss Wurzelkönigin. Hier schließen sich Lyra (bei Ankunft), Nia und Rovan an. Belohnung 🪝 Enterhaken.",
+    "Kapitel 3 Valdoria (Harlan, Gildenhalle): Kanalschleim, Schleusenkrabbe. Schleusenventile: mittleres Ventil einmal, dann rechtes einmal (das linke ist eine Falle). Wächter Rostgolem, Boss Kanalwächter. Belohnung 💣 Bombe.",
+    "Kapitel 4 Solmera (Nuri, Oase): Sandgeist, Sandskorpion. Sonnenspiegel: erster einmal (Ost), zweiter dreimal (West), dritter gar nicht (Nord), vierter zweimal (Süd), dann das Licht bündeln. Wächter Sandwächter, Boss Kharos, der Sandkoloss. Belohnung 🔥 Feuerstab, U-Boot-Form.",
+    "Kapitel 5 Aqualis (Nerea, Korallentor): Leuchtqualle, Riffkrabbe. Strömungsventile: erstes und drittes Ventil je einmal. Wächter Archivwächter, Boss Neryx. Belohnung ❄️ Eisstab.",
+    "Kapitel 6 Frosthain (Falk, Dorf Hjalm): Eisgeist, Frostwolf. Erinnerungseis: Kristalle 4, 2, 5, 1, 3. Wächter Eiswächter, Boss Avarn, der Eiskern. Danach Sternform.",
+    "Kapitel 7 Ignara (Brenna, Kaldera): Funkengeist, Aschekäfer. Druckventile: erstes und zweites Ventil je einmal. Wächter Schmiedegolem, Boss Magmarion. Danach Luftschiff-Form.",
+    "Kapitel 8 Noctaris (Eryn, Nocturna): Schattenfalter, Vergessener. Erinnerungsfolge: Säulen 4, 1, 5, 2, 3. Wächter Nullwächter, Boss Erinnerungshüter.",
+    "Kapitel 9 Astralis (Aera, Wolkenhafen): Sternenwächter, Wolkenschwinge. Sternenscheiben: erste zweimal (Herbst), zweite gar nicht (Frühling), dritte dreimal (Winter), vierte einmal (Sommer). Wächter Tempelwächter, Boss Solyra.",
+    "Kapitel 10 Elyndra (Veyra): Spiegelspinne, Echokrieger. Echofolge: Spiegel 5, 2, 6, 1, 4, 3. Wächter Weltenwächter, Boss Elyon im Weltenkern. Danach Riss-Form der Nautilux."
+   ]
+  },
+  {
+   "t": "Endspiel: Der Weltenriss und die sieben Siegel",
+   "p": [
+    "Im Weltenriss (Riss-Halle, Veyra) stehen sieben Siegel. An jedem wartet ein Weltenbrecher: Erst besiegst du den Wächter, dann den großen Weltenbrecher, dann löst du das Siegel-Rätsel (drei Scheiben) und öffnest die Schatzkammer."
+   ],
+   "list": [
+    "Siegel 1 Der verlorene Wald: Der Waldhüter, dann Der erste Wächter. Drehungen 1, 3, 2.",
+    "Siegel 2 Die Stadt ohne Bewohner: Der leere Torwächter, dann Die Wurzel ohne Ende. Drehungen 2, 0, 1.",
+    "Siegel 3 Das Meer über dem Himmel: Die Himmelsmuräne, dann Der Goldene Koloss. Drehungen 3, 1, 0.",
+    "Siegel 4 Der ewige Vulkan: Der Aschenkönig, dann Der Sandkönig. Drehungen 0, 2, 3.",
+    "Siegel 5 Noctaris Null: Der Nullschatten, dann Der Abyss. Drehungen 2, 2, 1.",
+    "Siegel 6 Elyndra Vorher: Das Echo der Quelle, dann Das Frostherz. Drehungen 1, 0, 3.",
+    "Siegel 7 Der Ort, den es nie gab: Der Namenlose, dann Der Feuerkern. Drehungen 3, 3, 2.",
+    "Die Drehungen gelten für die Scheiben von links nach rechts."
+   ]
+  },
+  {
+   "t": "Die drei Enden und Neues Spiel+",
+   "list": [
+    "Sind alle sieben Siegel gebrochen, sprich mit Veyra und wähle das Schicksal der Welten.",
+    "Getrennt bewahren: Die Welten bleiben getrennt, aber nicht mehr blind füreinander.",
+    "Vereinen: Die Splitter fügen sich in den Kern, die Grenzen werden dünn.",
+    "Verweben (Zuhören): Zotiks Klang öffnet sich, Fäden aus Licht spannen sich zwischen den Welten.",
+    "Das erste Ende bringt +500 EP und +1000 Splitter. Danach kannst du jederzeit ein anderes Ende ansehen.",
+    "Neues Spiel+: Du behältst Stufe, Splitter, Waffen, Andenken, Nautilux und Gefährten; die Geschichte beginnt von vorn. Pro Stufe haben Gegner +50 % Leben und +35 % Angriff, Bosse bekommen eine Raserei-Phase. Der Weltenriss bleibt offen."
+   ]
+  },
+  {
+   "t": "Nebenaufträge im Weltenriss",
+   "list": [
+    "Kaels Schwester (Kael): 6 Echokrieger in Elyndra besiegen – 1500 Splitter, Kaels Kompass.",
+    "Eryns Archiv (Eryn): 10 Erinnerungssplitter sammeln (Gegner in Noctaris, Astralis, Elyndra) – 1500 Splitter, Eryns Tagebuch.",
+    "Torens Prüfung (Toren): 8 Dornenwölfe in Lunaris – 1200 Splitter, Torens Trainingsband.",
+    "Selas Wald (Sela): 8 Dornenwölfe in Elaris – 1300 Splitter, Selas Blatt.",
+    "Nerea und die Becken (Nerea): 8 Riffkrabben in Aqualis – 1400 Splitter, Nereas Perle.",
+    "Das letzte Experiment (Professorium): 6 Rissessenz von den Weltenbrechern – 2500 Splitter, Professoriums Notizen.",
+    "Jedes Andenken gibt dauerhaft +1,5 Angriff."
+   ]
+  },
+  {
+   "t": "Halle der 100, Uralte Höhle und Casino",
+   "list": [
+    "🏛️ Halle der 100: 100 Prüfungen in 10 Rängen, jede zehnte ist ein Bosskampf. Jede Prüfung bringt 30 + 8 × Nummer Splitter und Erfahrung, jeder Rang zusätzlich 500 × Rang Splitter und 3 Tränke. Nach Prüfung 100: „Der letzte Splitter gehört dir“ (+5000).",
+    "🏔️ Uralte Höhle in Lunaris (nach Kapitel 1, nur allein): 50 Ebenen. Du startest immer bei Stufe 1, ohne Ausrüstung und mit 2 Tränken. Ein Wächter versperrt die Treppe. Beim Verlassen oder Fallen kehrt alles zurück – behalten darfst du nur die blauen Schätze. Dein Rekord steht im Inventar.",
+    "🎰 Golden Star Casino – Kristallslots: nur virtuelle Splitter, Einsatz 10, 50 oder 100. Drei gleiche: ⭐ ×25, 💎 ×12, 🔥 ×8, 🌙/🍃 ×5; zwei gleiche: Einsatz zurück. Familienoption: Casino ausschalten.",
+    "🎮 Mini-Spiele (Titelmenü): ZOTIK Run, Felli-Fang, Kristallrausch, ZOTIK Quiz und Sternenpuzzle – unabhängig vom Abenteuer, mit eigenen Rekorden."
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Mein Spielstand ist weg.",
+   "a": "Spielstände liegen im Browser. Gelöschte Website-Daten oder private Fenster löschen sie. Melde dich optional mit Google an, um sie zu sichern und auf anderen Geräten weiterzuspielen."
+  },
+  {
+   "q": "Wie komme ich in andere Welten?",
+   "a": "Über das Weltentor bzw. „🌍 Weltreise“ im Menü – erst nach Kapitel 1, und nur zu Welten, die du schon geöffnet hast."
+  },
+  {
+   "q": "Koop verbindet nicht.",
+   "a": "Beide Geräte brauchen Internet. Prüfe den 4-stelligen Code, lass den Raum des Gastgebers offen und versuche es mit dem QR-Code. Es spielen höchstens zwei zusammen."
+  },
+  {
+   "q": "Ich komme an einem Rätsel nicht weiter.",
+   "a": "Jedes Rätsel bietet drei Hinweise, der letzte nennt die Lösung. Alle Lösungen stehen auch hier im Lösungsbuch."
+  },
+  {
+   "q": "Warum kann ich die Nautilux nicht umwandeln?",
+   "a": "Die Formen kommen nach und nach: U-Boot nach Kapitel 4, Luftschiff nach Kapitel 7, Riss-Form nach Kapitel 10."
+  },
+  {
+   "q": "Kann ich das Casino abschalten?",
+   "a": "Ja, im Menü unter „Steuerung“ → Optionen oder direkt im Casino mit „Casino ausschalten (Familienoption)“."
+  },
+  {
+   "q": "Läuft das Spiel ruckelig?",
+   "a": "Schließe andere Tabs und Apps. Das Spiel passt die Qualität bei Rucklern selbst an."
+  }
+ ]
 }
