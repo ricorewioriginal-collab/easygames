@@ -67,6 +67,8 @@
     '.egh-empty{padding:30px;text-align:center;color:var(--m)}.egh-toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:2147483000;padding:10px 18px;border-radius:999px;background:#161d30;color:#fff;border:1px solid var(--l,#333);box-shadow:0 10px 30px rgba(0,0,0,.4);font:600 14px system-ui}' +
     '.egh-pl{position:fixed;inset:0;z-index:2147482500;background:#000;display:flex;flex-direction:column}.egh-pl[hidden]{display:none}' +
     '.egh-pl-h{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#0b0e1a;color:#fff;font:600 15px system-ui}.egh-pl-h span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+    '.egh-pl-h{position:absolute;left:0;right:0;top:0;z-index:2;padding-top:max(8px,env(safe-area-inset-top));transition:transform .25s ease}.egh-pl.egh-nb .egh-pl-h{transform:translateY(calc(-100% - 4px))}' +
+    '.egh-pl-t{position:absolute;top:0;left:50%;z-index:3;display:none;transform:translateX(-50%);min-width:60px;height:calc(26px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 16px 0;border:1px solid rgba(255,255,255,.3);border-top:0;border-radius:0 0 14px 14px;background:rgba(11,14,26,.72);color:#fff;font:700 15px/1 system-ui,sans-serif;cursor:pointer;opacity:.8}.egh-pl.egh-nb .egh-pl-t{display:block}.egh-pl-t:hover,.egh-pl-t:focus-visible{opacity:1}' +
     '.egh-pl-h button{border:0;border-radius:10px;padding:8px 14px;background:rgba(255,255,255,.12);color:#fff;font:600 14px system-ui;cursor:pointer}.egh-pl iframe{flex:1;border:0;width:100%;background:#000}@media (max-width:620px){.egh-pl-h{gap:6px;padding:6px 8px;overflow-x:auto}.egh-pl-h span{min-width:60px}.egh-pl-h button{flex:none;padding:7px 9px;font-size:12.5px}}' +
     '@media(max-width:700px){.egh-hero{grid-template-columns:1fr;max-height:none}.egh-hero-i{min-height:140px;max-height:190px}.egh-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}}';
 
@@ -217,17 +219,23 @@
   function player() {
     if (S.pl) return S.pl;
     var d = doc.createElement('div'); d.className = 'egh-pl'; d.hidden = true; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true');
-    d.innerHTML = '<div class="egh-pl-h"><span></span><button type="button" data-st title="Als Stream-Overlay einbinden (OBS, TikTok LIVE)">🎥 Stream</button><button type="button" data-gd title="Spielanleitung, Ratgeber und Lösungsbuch">📖 Anleitung</button><button type="button" data-sh>📤 Teilen</button><button type="button" data-fs>⛶ Vollbild</button><button type="button" data-x>✕ Schließen</button></div><iframe allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock" allowfullscreen title="Spiel"></iframe>';
+    d.innerHTML = '<div class="egh-pl-h"><span></span><button type="button" data-hd title="Navigation ausblenden" aria-label="Navigation ausblenden">▴</button><button type="button" data-st title="Als Stream-Overlay einbinden (OBS, TikTok LIVE)">🎥 Stream</button><button type="button" data-gd title="Spielanleitung, Ratgeber und Lösungsbuch">📖 Anleitung</button><button type="button" data-sh>📤 Teilen</button><button type="button" data-fs>⛶ Vollbild</button><button type="button" data-x>✕ Schließen</button></div><button type="button" class="egh-pl-t" title="Navigation einblenden" aria-label="Navigation einblenden">▾</button><iframe allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock" allowfullscreen title="Spiel"></iframe>';
     doc.body.appendChild(d);
     d.querySelector('[data-x]').onclick = close;
     d.querySelector('[data-sh]').onclick = function () { shareCur(this); };
     d.querySelector('[data-st]').onclick = function () { var g = S.cur; if (!g) return; var u = new URL('einbinden.html', EG), l = shareUrl(g); u.searchParams.set('stream', g.id); if (l.indexOf(EG) !== 0 && /^https:/.test(l)) u.searchParams.set('share', l); u.hash = 'stream'; root.open(u.href, '_blank', 'noopener'); };
     d.querySelector('[data-gd]').onclick = function () { var g = S.cur; if (!g) return; var u = new URL('anleitung.html', EG); u.searchParams.set('game', g.id); root.open(u.href, '_blank', 'noopener'); };
-    d.querySelector('[data-fs]').onclick = function () { try { (d.requestFullscreen || d.webkitRequestFullscreen).call(d); } catch (e) { } };
+    d.querySelector('[data-fs]').onclick = function () { fs(d); };
+    // Navigation oben: beim Start ausgeblendet, Griff „▾“ holt sie, nach 4 s ohne Bedienung wieder weg
+    d.querySelector('.egh-pl-t').onclick = function () { d.classList.remove('egh-nb'); armHide(); };
+    d.querySelector('[data-hd]').onclick = function () { clearTimeout(S.hideT); d.classList.add('egh-nb'); d.querySelector('.egh-pl-t').focus(); };
+    d.querySelector('.egh-pl-h').addEventListener('pointerdown', armHide);
     doc.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !d.hidden && !doc.fullscreenElement) close(); });
     root.addEventListener('message', function (e) { if (e.source === d.querySelector('iframe').contentWindow && e.data && (e.data.type === 'easygames:close' || e.data === 'easygames:close')) close(); });
     S.pl = d; return d;
   }
+  function fs(d) { try { var p = (d.requestFullscreen || d.webkitRequestFullscreen).call(d); if (p && p.catch) p.catch(function () { }); } catch (e) { } }
+  function armHide() { clearTimeout(S.hideT); S.hideT = setTimeout(function () { if (S.pl && !S.pl.hidden) S.pl.classList.add('egh-nb'); }, 4000); }
   function open(id) {
     var g = S.games.filter(function (x) { return x.id === id; })[0]; if (!g) return;
     var d = player(), u = new URL(g.path, EG), link = shareUrl(g), h = ownHash(g); if (root.EASYGAMES_BUILD) u.searchParams.set('eg_build', root.EASYGAMES_BUILD);
@@ -236,9 +244,9 @@
     if (h && root.location.hash !== h) { if (S.prev == null) S.prev = root.location.hash; setHash(h); } else if (h && S.prev == null) S.prev = h.replace(/\/[^\/]*$/, '');
     d.querySelector('span').textContent = short(g.title);
     d.querySelector('iframe').setAttribute('src', u.href);   // easygames-iframe: die Seite reicht das Konto weiter (angemeldet im Spiel)
-    d.hidden = false; doc.documentElement.style.overflow = 'hidden'; remember(id); renderAll();
+    d.hidden = false; d.classList.add('egh-nb'); fs(d); doc.documentElement.style.overflow = 'hidden'; remember(id); renderAll();   // gleich Vollbild (nach einem Klick; sonst füllt die Ansicht das Fenster)
   }
-  function close() { if (!S.pl) return; S.pl.hidden = true; S.cur = null; if (S.prev != null) { setHash(S.prev); S.prev = null; } S.pl.querySelector('iframe').setAttribute('src', 'about:blank'); doc.documentElement.style.overflow = ''; if (doc.fullscreenElement) try { doc.exitFullscreen(); } catch (e) { } }
+  function close() { if (!S.pl) return; clearTimeout(S.hideT); S.pl.hidden = true; S.cur = null; if (S.prev != null) { setHash(S.prev); S.prev = null; } S.pl.querySelector('iframe').setAttribute('src', 'about:blank'); doc.documentElement.style.overflow = ''; if (doc.fullscreenElement) try { doc.exitFullscreen(); } catch (e) { } }
 
   function mount(target, o) {
     css(); o = o || {};
