@@ -1,0 +1,225 @@
+{
+  "id": "FunkhausReality",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Funkhaus ist eine Live-WG im Radiostudio: Du ziehst mit 5 bis 7 Mitbewohnern – Menschen und KI-Figuren mit eigenem Charakter – ins Funkhaus ein, und die Hörer schauen rund um die Uhr zu. Jede Woche muss jemand ausziehen, bis nur noch drei übrig sind. Im Finale wählen die Hörer den Liebling der Staffel.",
+        "Dein Ziel: so lange wie möglich im Haus bleiben und am Ende gewinnen. Dafür brauchst du zwei Dinge: Sympathie bei den Mitbewohnern (damit sie dich nicht nominieren) und Beliebtheit bei den Hörern (damit sie dich im Hörervotum nicht rauswählen)."
+      ]
+    },
+    {
+      "t": "Start und neue Staffel",
+      "list": [
+        "▶ Neue Staffel öffnet die Einstellungen, 🌐 Online & Handys das Koppelfenster, ❓ Regeln die Spielregeln, 🔊 Ton schaltet Musik und Geräusche.",
+        "Menschen im Haus: 1 bis 4.",
+        "Bewohner insgesamt: 6 (kurze Staffel) oder 8 (lange Staffel). Alle freien Plätze besetzen KI-Mitbewohner.",
+        "Für jeden Menschen: Name (bis 9 Zeichen), Figur ♀, ♂ oder ⚧ und genau zwei Eigenschaften aus ehrgeizig, herzlich, intrigant, lustig, ruhig, chaot, ehrlich und eitel. Die Auswahl merkt sich das Spiel für die nächste Staffel.",
+        "Mit „📱 Koppeln“ bekommt jeder Mensch ein privates Handy-Pad, mit „Einzug!“ beginnt die Staffel."
+      ]
+    },
+    {
+      "t": "Der Wochenablauf",
+      "steps": [
+        "Drei Tage: Jeden Tag planst du 3 Aktionen. Danach läuft der Tag im 3D-Haus ab, die spannendsten Szenen werden gezeigt und im 📜 Live-Ticker notiert. Zufällige Ereignisse wie Party, Streit, Geburtstag, Stromausfall, Regen, Hörerpaket, Klatsch, Angebranntes, Karaoke oder Schlaflosigkeit mischen mit.",
+        "Wochenaufgabe: ein Mini-Spiel. Der Sieger ist in dieser Woche immun (🛡️), gewinnt Hörer und gute Laune.",
+        "Nominierung im Beichtstuhl: Jeder nominiert geheim zwei Mitbewohner – 1. Wahl = 2 Punkte, 2. Wahl = 1 Punkt. Immune sind nicht wählbar. Die zwei mit den meisten Punkten sind nominiert; bei Punktgleichheit auf Platz 2 sind es drei. Danach wird offengelegt, wer wen gewählt hat.",
+        "Hörervotum: Die Hörer stimmen ab, wer von den Nominierten gehen muss. Wer die meisten Raus-Stimmen bekommt, zieht aus.",
+        "Sind nur noch drei übrig, folgt die Finalwoche (wieder drei Tage, ohne Aufgabe und Nominierung) und dann das Finale, in dem die Hörer den Sieger wählen."
+      ]
+    },
+    {
+      "t": "Die acht Aktionen",
+      "list": [
+        "💬 Plaudern: baut Sympathie auf (gelingt oft, Herzliche und Lustige haben es leichter).",
+        "🍳 Kochen: stärkt die Bindung zu beiden, hebt die Stimmung und bringt etwas Hörer-Beliebtheit. Chaoten brennt gern etwas an.",
+        "🤝 Allianz: Bündnis mit einem Mitbewohner – klappt nur, wenn er dich schon mag. Bündnisse haben bis zu 4 Mitglieder und stärken die Sympathie untereinander.",
+        "😜 Sticheln: schwächt Sympathie und Laune des Ziels. Riskant bei den Hörern – nur Lustige und Chaoten kommen damit gut an.",
+        "🤫 Geheimnis: sehr starke Bindung (beide Seiten), klappt nur bei Sympathie. Vertraust du es einem Intriganten oder Chaoten an, kann es durchsickern – dann sinken Sympathie und Beliebtheit.",
+        "🗣️ Gerücht: Das Ziel verliert Hörer und Sympathie bei anderen. Fliegt es auf, verlierst du viel Beliebtheit und alle mögen dich weniger. Intrigante sind darin geschickter, Ehrliche schlechter.",
+        "🎤 Auftritt im Studio: gewinnt Hörer (Lustige und Eitle besonders), ein Patzer kostet etwas.",
+        "🧘 Entspannen: hebt die Stimmung (Chaoten finden manchmal keine Ruhe)."
+      ]
+    },
+    {
+      "t": "Anzeigen verstehen",
+      "list": [
+        "Gesicht bei jedem Mitbewohner: wie sehr er dich mag – 😡, 🙁, 😐, 🙂 oder 😍.",
+        "🤝 zeigt Verbündete, 🛡️ Immune.",
+        "Sterne (★ bis ★★★★★): Beliebtheit bei den Hörern.",
+        "Stimmung in Prozent: Gute Laune verbessert die Erfolgschancen deiner Aktionen.",
+        "Oben: Woche, Tag (1/3) und die Zuschauerzahl 👁. Knöpfe: 📜 Live-Ticker, 🗣️ Sprachausgabe an/aus, 🔊 Ton, ☰ Menü (Staffel beenden)."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "PC: alles mit der Maus anklicken. Bei der Wochenaufgabe Schätz-Radar die Zahl eintippen und mit Enter bestätigen.",
+        "Touch: Aktionen, Mitbewohner und Knöpfe antippen.",
+        "Gamecontroller: Das Steuerkreuz springt zwischen den Knöpfen, A drückt den markierten Knopf.",
+        "Tagesplan: Aktion wählen, bei Aktionen mit Partner den Mitbewohner antippen, nach 3 Aktionen mit „Los! ▶“ abschicken oder mit „↶ Ändern“ korrigieren.",
+        "Ohne Handys wird das Gerät herumgereicht: Ein „Bereit?“-Schirm sagt, wer dran ist – alle anderen schauen weg."
+      ]
+    },
+    {
+      "t": "Handys koppeln und online spielen",
+      "steps": [
+        "Im Menü „🌐 Online & Handys“ oder in der Staffel-Einstellung „📱 Koppeln“ wählen.",
+        "Es erscheinen Raumcode, QR-Code und Link. Mitspieler scannen den Code oder öffnen den Link – das klappt von überall, im Browser, in der App oder auf einem anderen Gerät.",
+        "Am Handy Namen eingeben und „Beitreten“ tippen. Jedes Handy wird das private Pad eines Menschen (bis zu 4): Tagesplan, Nominierung und Wochenaufgabe bleiben dort geheim.",
+        "Der große Bildschirm zeigt das Haus, die Szenen und die Auswertungen."
+      ]
+    },
+    {
+      "t": "Speichern",
+      "p": [
+        "Gespeichert werden nur Einstellungen: die Menschen mit Namen, Figur und Eigenschaften, Ton und Sprachausgabe sowie der Name am Handy – mit Anmeldung auch im Konto. Eine laufende Staffel wird nicht gespeichert; wer die Seite schließt oder über ☰ die Staffel beendet, fängt neu an."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Wer beliebt ist, bleibt im Haus: Im Hörervotum zählt fast nur die Beliebtheit (Sterne), dazu ein wenig die Stimmung.",
+        "Plaudern und Kochen sind sichere Aktionen für den Anfang – sie bauen Sympathie auf, Kochen bringt sogar Hörer.",
+        "Ein Studio-Auftritt pro Tag hält deine Sterne oben.",
+        "Vergiss das Entspannen nicht: Schlechte Laune senkt die Erfolgschancen aller Aktionen.",
+        "Gewinne die Wochenaufgabe – dann kannst du in dieser Woche nicht nominiert werden."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Zwei Fronten: Sympathie schützt vor der Nominierung, Beliebtheit vor dem Rauswurf. Wer nicht nominiert wird, muss das Hörervotum gar nicht fürchten.",
+        "Allianzen schützen: KI-Verbündete nominieren dich praktisch nie. Schmiede früh eine Allianz mit jemandem, der dich mit 🙂 oder 😍 anschaut – bei 😐 oder schlechter klappt es meist nicht.",
+        "Geheimnisse nur Herzlichen, Ehrlichen oder Ruhigen anvertrauen – bei Intriganten und Chaoten kann es durchsickern.",
+        "Sticheln und Gerüchte gezielt gegen gefährliche Konkurrenten mit vielen Sternen einsetzen – aber nicht gegen Verbündete und nicht zu oft.",
+        "Beliebtheit wächst langsamer, je höher sie schon ist. Mit wenigen Sternen bringen Auftritte deshalb am meisten.",
+        "Im Beichtstuhl: Nominiere Mitbewohner, die selbst viele Sterne haben und dich nicht mögen – so räumst du starke Gegner aus dem Weg."
+      ]
+    },
+    {
+      "t": "Die Eigenschaften klug wählen",
+      "list": [
+        "herzlich: Plaudern gelingt besser, wird jeden Tag ein wenig beliebter, versteht sich mit fast allen.",
+        "lustig: Auftritte und Sticheln kommen gut an, steigt täglich etwas in der Beliebtheit, passt besonders zu Chaoten und Herzlichen.",
+        "ehrlich: Allianzen und Geheimnisse gelingen leichter, Gerüchte fliegen eher auf; Intrigante mögen Ehrliche gar nicht.",
+        "ehrgeizig: wird täglich etwas beliebter und ist stärker in den Wochenaufgaben.",
+        "ruhig: gut in Reflex- und Melodie-Aufgaben, aber schwächer bei Auftritten; verträgt sich schlecht mit Chaoten.",
+        "intrigant: Gerüchte gelingen öfter, verliert aber täglich etwas Beliebtheit und eckt bei vielen an.",
+        "eitel: Auftritte kommen gut an, kostet aber täglich etwas Beliebtheit; zwei Eitle mögen sich nicht.",
+        "chaot: Sticheln kommt an, aber Kochen und Entspannen gehen öfter schief.",
+        "Die stärkste Kombination für Beliebtheit ist lustig und herzlich: beide steigern die Beliebtheit täglich und sind bei fast allen gern gesehen."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Gerüchte am laufenden Band: Fliegt eins auf, verlieren alle Sympathie für dich und du verlierst viele Hörer.",
+        "Verbündete sticheln: Das zerstört die Sympathie, auf die du bei der Nominierung angewiesen bist.",
+        "Nur Sympathie, keine Hörer: Wirst du doch einmal nominiert, entscheiden allein die Sterne.",
+        "Bei der Funk-Reflex-Aufgabe zu früh tippen: Ein Fehlstart zählt wie die langsamste Zeit."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Beste Strategie je Phase",
+      "list": [
+        "Woche 1: Plaudern und Kochen mit zwei, drei Mitbewohnern, die dich mögen. Einen Auftritt einbauen. Noch keine Gerüchte.",
+        "Woche 2: Allianz mit dem Mitbewohner schmieden, der dich am meisten mag (🙂 oder 😍), danach weitere Verbündete ins Bündnis holen (bis 4).",
+        "Mittlere Wochen: Pro Tag eine Hörer-Aktion (Auftritt oder Kochen), eine Beziehungsaktion, eine Stimmungsaktion, wenn die Laune sinkt.",
+        "Finalwoche: Nur noch die Hörer zählen. Auftritte, Kochen und Entspannen (für die Stimmung) – keine riskanten Gerüchte oder Sticheleien.",
+        "Finale: Gewinner ist, wer bei den Hörern am beliebtesten ist und gute Laune hat."
+      ]
+    },
+    {
+      "t": "Die Wochenaufgaben mit Wertung",
+      "list": [
+        "Die Aufgaben wechseln sich ab: Woche 1, 4, 7 Funk-Reflex, Woche 2 und 5 Merk-Melodie, Woche 3 und 6 Schätz-Radar.",
+        "⚡ Funk-Reflex: Fünfmal tippen, sobald das Signal GRÜN wird. Punkte = (700 − durchschnittliche Reaktionszeit in ms) ÷ 5. Ein Schnitt von 200 ms gibt 100 Punkte, 300 ms gibt 80. Zu früh tippen zählt als 700 ms.",
+        "🎵 Merk-Melodie: Die Tonfolge auf vier farbigen Feldern nachspielen; sie beginnt mit 3 Tönen und wird jedes Mal länger. Wer 9 Töne schafft, bekommt 100 Punkte. Ein Fehler beendet die Aufgabe: Fehler bei Länge 3 = 8 Punkte, jede weitere Länge +16.",
+        "📡 Schätz-Radar: 3 Sekunden lang sind 40 bis 109 Funkpunkte zu sehen. Punkte = 100 − (Abweichung ÷ richtige Zahl × 250). Liegst du 10 % daneben, sind es 75 Punkte, ab 40 % daneben 0.",
+        "Tipp Schätz-Radar: Teile das Feld gedanklich in vier Viertel, zähle eins grob und nimm mal vier."
+      ]
+    },
+    {
+      "t": "So entscheiden die KI-Mitbewohner",
+      "list": [
+        "Ihre Aktionen richten sich nach ihren Eigenschaften: Ehrgeizige treten auf und schmieden Allianzen, Herzliche plaudern und kochen, Intrigante streuen Gerüchte, Lustige treten auf und sticheln, Ruhige entspannen.",
+        "Sie nominieren vor allem Mitbewohner, die sie nicht mögen, und fast nie Verbündete. Intrigante und Ehrgeizige nominieren gern die Beliebtesten.",
+        "Mit schlechter Laune entspannen oder sticheln sie öfter, mit wenig Sternen treten sie häufiger auf, ohne Bündnis suchen sie eine Allianz.",
+        "Verlässt ein guter Freund das Haus, sinkt die Laune seiner Freunde; geht ein Feind, freuen sie sich."
+      ]
+    },
+    {
+      "t": "Verträglichkeit der Eigenschaften",
+      "list": [
+        "Sehr gut: herzlich mit herzlich, lustig, ruhig oder ehrlich; lustig mit chaot.",
+        "Gut: ehrgeizig mit herzlich oder ehrlich; lustig mit lustig; ruhig mit ruhig oder ehrlich; ehrlich mit ehrlich.",
+        "Schlecht: ehrgeizig mit ehrgeizig oder chaot; intrigant mit eitel; ruhig mit chaot; chaot mit eitel.",
+        "Sehr schlecht: intrigant mit ehrlich, intrigant mit intrigant, eitel mit eitel.",
+        "Neue Bewohner mögen sich am Anfang je nach Eigenschaften mehr oder weniger – dazu kommt etwas Zufall."
+      ]
+    },
+    {
+      "t": "Alle KI-Mitbewohner",
+      "p": [
+        "Aus diesen 24 Figuren werden die freien Plätze zufällig besetzt:"
+      ],
+      "list": [
+        "Mira (24, Podcast-Produzentin): ehrgeizig und eitel",
+        "Jonas (31, Altenpfleger): herzlich und ruhig",
+        "Leyla (27, Stand-up-Comedienne): intrigant und lustig",
+        "Tobi (22, Student der Medienkunde): chaot und lustig",
+        "Hanna (35, Hebamme): ehrlich und herzlich",
+        "Kemal (29, Fitnesstrainer): ehrgeizig und ruhig",
+        "Svenja (26, Influencerin): eitel und intrigant",
+        "Ole (44, Fischer von der Nordsee): ruhig und ehrlich",
+        "Pia (20, Azubi im Blumenladen): lustig und herzlich",
+        "Dario (33, Friseur): eitel und chaot",
+        "Fenja (28, Rechtsreferendarin): ehrgeizig und ehrlich",
+        "Bruno (52, Busfahrer im Ruhestand): herzlich und chaot",
+        "Yara (25, Start-up-Gründerin): intrigant und ehrgeizig",
+        "Lukas (38, Bibliothekar): ruhig und lustig",
+        "Nele (23, Skaterin und Kellnerin): chaot und ehrlich",
+        "Emre (30, Taxifahrer): lustig und eitel",
+        "Gitta (55, Kneipenwirtin): intrigant und herzlich",
+        "Ravi (27, Software-Entwickler): ehrgeizig und ruhig",
+        "Tilda (34, Modedesignerin): eitel und ehrlich",
+        "Marek (41, Hobby-Zauberer): intrigant und chaot",
+        "Soraya (36, Yogalehrerin): herzlich und eitel",
+        "Finn (19, Schüler und Gamer): lustig und chaot",
+        "Odette (47, Antiquitätenhändlerin): intrigant und ruhig",
+        "Karlo (32, Marathonläufer): ehrlich und ehrgeizig"
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Kann ich eine Staffel unterbrechen und später weiterspielen?",
+      "a": "Nein. Eine Staffel läuft am Stück; gespeichert werden nur deine Einstellungen. Eine kurze Staffel mit 6 Bewohnern dauert 4 Wochen, eine lange mit 8 Bewohnern 6 Wochen."
+    },
+    {
+      "q": "Ich bin rausgeflogen – was nun?",
+      "a": "Du schaust weiter zu. Sind keine Menschen mehr im Haus, kannst du mit „⏩ Bis zum Finale überspringen“ direkt zum Ergebnis springen."
+    },
+    {
+      "q": "Das Handy verbindet sich nicht.",
+      "a": "Der große Bildschirm muss das Koppelfenster mit dem Code geöffnet haben. Code oder Link prüfen; beide Geräte brauchen Internet. „… nicht gefunden. Läuft das Spiel noch?“ heißt, dass der Raum am großen Bildschirm geschlossen wurde."
+    },
+    {
+      "q": "Die 3D-Ansicht lädt nicht.",
+      "a": "Kommt „Die 3D-Bibliothek konnte nicht geladen werden (Internet?)“, prüfe die Internetverbindung und lade die Seite neu."
+    },
+    {
+      "q": "Wie schalte ich die Stimme aus?",
+      "a": "Mit 🗣️ oben im Spiel schaltest du die Sprachausgabe aus und an, mit 🔊 Musik und Geräusche."
+    },
+    {
+      "q": "Warum kann ich keine Allianz schmieden?",
+      "a": "Eine Allianz klappt nur, wenn der Mitbewohner dich schon mag. Plaudere oder koche erst mit ihm, bis er dich mit 🙂 oder 😍 anschaut. Außerdem darf ein Bündnis höchstens 4 Mitglieder haben."
+    }
+  ]
+}
