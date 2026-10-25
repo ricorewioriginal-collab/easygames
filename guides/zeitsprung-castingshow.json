@@ -1,0 +1,186 @@
+{
+  "id": "zeitsprung-castingshow",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "ZEITSPRUNG CASTINGSHOW ist eine moderierte 3D-Quizshow rund um Castingshows – nach dem Zeitstrahl-Prinzip wie bei Hitster. Moderator Vito führt durch die Show. Es geht um DSDS, Das Supertalent, The Voice, Popstars, X Factor, Germany’s Next Topmodel, Star Search, Got Talent, Pop Idol und American Idol – auch um abgesetzte Shows.",
+        "Jede richtige Antwort bringt 1 Punkt. Wer zuerst 8 Punkte hat, gewinnt die Show."
+      ]
+    },
+    {
+      "t": "Hauptmenü und Show vorbereiten",
+      "list": [
+        "▶ Neue Show starten beginnt mit den gewählten Einstellungen.",
+        "↺ Show fortsetzen erscheint, wenn eine laufende Show gespeichert ist.",
+        "🌐 Online, TV & Handys schaltet den TV-Modus ein und zeigt die Kopplung für Handys.",
+        "SHOW: die Themenwelt – Große Mischung (alle Shows), Deutschland sucht den Superstar, Supertalent & Got Talent, The Voice, Popstars & weitere deutsche Shows oder Idol, X Factor & international.",
+        "ZEITSTRAHLRUNDEN SPIELEN ALS: „Jahr aus A–D wählen · einfach“ oder „Moment in den Zeitstrahl einordnen · Profi“.",
+        "SPIELER: bis zu 4 Namen; mit ＋ Spieler hinzufügen ergänzt du Plätze.",
+        "📱 Dieses Gerät als Handy-Controller verwenden: macht das Gerät zum Controller für einen TV.",
+        "Oben rechts: ⌂ Hauptmenü, ▣ TV-Modus an/aus, ♧ Handys koppeln, ♫ Vito (Moderationsstimme) an/aus."
+      ]
+    },
+    {
+      "t": "Spielablauf",
+      "p": [
+        "Zu Beginn bekommen alle Spieler denselben Startmoment mit Jahr auf ihren Zeitstrahl. Dann ist reihum jeder einmal dran. Die erste Runde ist immer eine Zeitstrahlrunde, danach mischt das Spiel die Rundenarten zufällig – am häufigsten Zeitstrahl- und Quizrunden, seltener Song- und Bildrunden.",
+        "Nach jeder Antwort löst Vito auf („✓ Punkt für dich!“ oder „✕ Aufgelöst“) und erklärt den Moment. Mit „Weiter: … →“ (bzw. „Nächste Runde →“ allein) ist der Nächste dran. Wer 8 Punkte erreicht, gewinnt sofort; danach startet „Neue Show starten ↻“ eine neue Runde."
+      ]
+    },
+    {
+      "t": "Die Rundenarten",
+      "list": [
+        "ZEITSTRAHLRUNDE (einfach): Ein Show-Moment wird gezeigt, z. B. ein Staffelsieg. Du wählst das Jahr aus vier Möglichkeiten A–D. Richtig = 1 Punkt, und der Moment kommt auf deinen Zeitstrahl.",
+        "ZEITSTRAHLRUNDE (Profi): Du legst den Moment an die richtige Stelle deines eigenen Zeitstrahls (Lücken mit +). Richtig ist jede Lücke, in der das Jahr zwischen den Nachbarn liegt – gleiche Jahre zählen als passend. Richtig = 1 Punkt und der Moment bleibt liegen.",
+        "QUIZRUNDE: Vito stellt eine Frage mit vier Antworten – zu Siegern, Platz 2, Top 10 bzw. Finalisten, Siegersongs, Jury, Moderation, Coaches und Darbietungen.",
+        "WAS WAR ZUERST?: Vier Momente aus verschiedenen Jahren – tippe den ältesten an.",
+        "SONGRUNDE: Ein Siegersong läuft über den Deezer-Player. Aus welcher Castingshow stammt er?",
+        "BILDRUNDE: Drei Symbole stehen für einen Castingshow-Moment. Welcher ist gemeint?"
+      ]
+    },
+    {
+      "t": "Videos und Songs",
+      "list": [
+        "Zu vielen Momenten gibt es ein YouTube-Video (Casting, Auftritt, Siegersong, Trailer) oder den Siegersong über Deezer. ▶ Video abspielen bzw. ♫ Song abspielen lädt den Player im Studio, danach tippst du im Player auf Play.",
+        "Gibt es beides, schaltet „↔ Song dazu“ bzw. „↔ Video zeigen“ um.",
+        "↻ Anderer Moment (in der Songrunde ↻ Anderer Song) tauscht den Moment aus, solange du noch nicht geantwortet hast – praktisch, wenn ein Video gesperrt ist.",
+        "Videos, Songs und Handys brauchen Internet. Quiz-, Bild- und Zeitstrahlrunden laufen auch offline."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Maus/Touch: Antwort A–D oder die Lücke im Zeitstrahl antippen.",
+        "Tastatur: A–D oder 1–4 für Antworten, 1–9 für die Lücken im Zeitstrahl (von links nach rechts).",
+        "Controller: Steuerkreuz springt zwischen den Knöpfen, A klickt; der rechte Stick steuert einen Mauszeiger.",
+        "Handy-Controller: Am Handy tippst du Antworten, Zeitstrahl-Lücken, Medien starten und Weiter – aber nur, wenn dein Spielerplatz dran ist."
+      ]
+    },
+    {
+      "t": "TV-Modus und Handys",
+      "steps": [
+        "Am Fernseher oder PC ▣ TV-Modus bzw. 🌐 Online, TV & Handys wählen. Es erscheinen ein WR-Code (z. B. WRABCD), eine 4-stellige PIN und ein QR-Code.",
+        "Mit dem Handy den QR-Code scannen oder den Link öffnen – oder im Spiel „📱 Dieses Gerät als Handy-Controller verwenden“ wählen und den WR-Code eintippen.",
+        "Namen und die PIN vom Fernseher eingeben. Die PIN ist nur auf dem TV sichtbar, so kann niemand von außen mitspielen.",
+        "Jedes verbundene Handy übernimmt automatisch einen Spielerplatz (bis zu 4). Der Link funktioniert von überall."
+      ]
+    },
+    {
+      "t": "Speichern",
+      "p": [
+        "Eine laufende Show wird automatisch auf dem Gerät gespeichert und lässt sich mit ↺ Show fortsetzen weiterspielen. Nach einem Sieg wird der Stand gelöscht. Über das Google-Feld im Menü kannst du dich anmelden und den Spielstand geräteübergreifend sichern."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Starte mit „Jahr aus A–D wählen“. Die falschen Jahre liegen nur 1 bis 6 Jahre neben dem richtigen – Ausschlussverfahren hilft.",
+        "Wähle eine Themenwelt, die du kennst, z. B. nur Deutschland sucht den Superstar.",
+        "Lies den Infotext unter dem Moment: Er nennt oft Sender, Staffel oder Besonderheit, die beim Datieren helfen.",
+        "Kein Jahr liegt in der Zukunft – das grenzt bei neuen Staffeln die Auswahl ein."
+      ]
+    },
+    {
+      "t": "Strategien für Profis",
+      "list": [
+        "Im Profi-Modus wächst dein Zeitstrahl mit jedem Treffer. Je mehr Momente darauf liegen, desto schmaler werden die Lücken – genaues Wissen zählt dann mehr.",
+        "Merke dir Ankerjahre: Pop Idol startete 2001, American Idol und DSDS 2002 (erstes DSDS-Finale 2003), The X Factor (UK) 2004, America’s Got Talent 2006, Britain’s Got Talent und Das Supertalent 2007. Erste Sieger: Popstars 2000 (No Angels), Germany’s Next Topmodel 2006, X Factor Deutschland 2010, The Voice of Germany 2012.",
+        "Gleiche Jahre sind erlaubt: Liegt auf deinem Zeitstrahl schon ein Moment aus demselben Jahr, passt die Lücke direkt davor oder danach.",
+        "Bei „Was war zuerst?“ zuerst die Formatstarts herauspicken – ein Start liegt meist vor allen Staffelsiegen derselben Show."
+      ]
+    },
+    {
+      "t": "Quiz-, Song- und Bildrunden",
+      "list": [
+        "Bei Top-10-Fragen sind die falschen Antworten oft echte Kandidaten anderer Staffeln – denk an das Jahr der Staffel.",
+        "Songrunde: Deutschsprachige Schlager-Siegertitel sprechen oft für DSDS, englische Popballaden für Idol, X Factor oder The Voice.",
+        "Bildrunde: Lies die drei Symbole als kleine Geschichte (Person, Ort, Ereignis).",
+        "Gesperrtes Video? Nimm ↻ Anderer Moment, bevor du antwortest."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Staffeljahr und Finaljahr verwechseln: Das Spiel nennt das Jahr des Finales.",
+        "Im Profi-Modus aus Versehen die falsche Lücke tippen – mit der Tastatur zählen die Lücken von links ab 1.",
+        "Auf dem Handy antippen, obwohl ein anderer Spieler dran ist – das zählt nicht."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Wertung und Sieg",
+      "list": [
+        "Jede richtige Antwort, egal welche Rundenart: 1 Punkt.",
+        "Falsch: kein Punkt, aber auch kein Abzug.",
+        "8 Punkte gewinnen. Die Show endet sofort beim 8. Punkt.",
+        "Zeitstrahlkarten bringen keinen Extrapunkt – sie sind nur deine Hilfe für spätere Profi-Runden."
+      ]
+    },
+    {
+      "t": "Lösungshilfe: Alle DSDS-Sieger",
+      "list": [
+        "2003 Alexander Klaws, 2004 Elli Erl, 2006 Tobias Regner, 2007 Mark Medlock, 2008 Thomas Godoj",
+        "2009 Daniel Schuhmacher, 2010 Mehrzad Marashi, 2011 Pietro Lombardi, 2012 Luca Hänni, 2013 Beatrice Egli",
+        "2014 Aneta Sablik, 2015 Severino Seeger, 2016 Prince Damien, 2017 Alphonso Williams, 2018 Marie Wegener",
+        "2019 Davin Herbrüggen, 2020 Ramon Roselly, 2021 Jan-Marten Block, 2022 Harry Laffontien, 2023 Sem Eisinger",
+        "2024 Christian Jährig, 2026 Menowin Fröhlich"
+      ]
+    },
+    {
+      "t": "Lösungshilfe: Das Supertalent und The Voice of Germany",
+      "list": [
+        "Das Supertalent: 2007 Ricardo Marinello, 2008 Michael Hirte, 2009 Yvo Antoni & PrimaDonna, 2010 Freddy Sahin-Scholl, 2011 Leo Rojas, 2012 Jean-Michel Aweh, 2013 Lukas Pratschker & Falco, 2014 Marcel Kaupp, 2015 Jay Oh, 2016 Angel Flukes, 2017 Alexa Lauenburger, 2018 Stevie Starr, 2019 Christian Stoinev & Percy, 2020 Nick Ferretti, 2021 Elena Turcan, 2024 Alexander Doghmani, 2025 Jayden Swingewood.",
+        "The Voice of Germany: 2012 Ivy Quainoo und Nick Howard (zwei Finale im selben Jahr), 2013 Andreas Kümmert, 2014 Charley Ann Schmutzler, 2015 Jamie-Lee Kriewitz, 2016 Tay Schmedtmann, 2017 Natia Todua, 2018 Samuel Rösch, 2019 Claudia Emmanuela Santoso, 2020 Paula Dalla Corte, 2021 Sebastian Krenz, 2022 Anny Ogrezeanu, 2023 Malou Lovis Kreyelkamp, 2024 Jennifer Lynn, 2025 Anne Mosters."
+      ]
+    },
+    {
+      "t": "Lösungshilfe: Popstars und Germany’s Next Topmodel",
+      "list": [
+        "Popstars: 2000 No Angels, 2001 Bro’Sis, 2003 Overground, 2004 Nu Pagadi, 2006 Monrose, 2007 Room2012, 2008 Queensberry, 2009 Some & Any, 2010 LaVive, 2012 Melouria, 2015 Leandah.",
+        "Germany’s Next Topmodel: 2006 Lena Gercke, 2007 Barbara Meier, 2008 Jennifer Hof, 2009 Sara Nuru, 2010 Alisar Ailabouni, 2011 Jana Beller, 2012 Luisa Hartema, 2013 Lovelyn Enebechi, 2014 Stefanie Giesinger, 2015 Vanessa Fuchs, 2016 Kim Hnizdo, 2017 Céline Bethmann, 2018 Toni Dreher-Adenuga, 2019 Simone Kowalski, 2020 Jacqueline „Jacky“ Wruck, 2021 Alex Mariah Peter, 2022 Lou-Anne Gleissenebner, 2023 Vivien Blotzki; seit 2024 gewinnen je eine Frau und ein Mann."
+      ]
+    },
+    {
+      "t": "Beispiele aus dem Fragenkatalog",
+      "list": [
+        "Wer gewann die erste Staffel von DSDS? – Alexander Klaws.",
+        "Wie heißt die Hymne der ersten DSDS-Staffel, gesungen von allen Top-10-Kandidaten? – We Have a Dream.",
+        "Welcher Sender zeigt DSDS? – RTL.",
+        "Kultmomente auf dem Zeitstrahl: Start von DSDS bei RTL (2002), Start von America’s Got Talent (2006), Start von Britain’s Got Talent und Das Supertalent (2007), Susan Boyle singt „I Dreamed a Dream“ (2009), erster Goldener Buzzer beim Supertalent (2012)."
+      ],
+      "p": [
+        "Insgesamt gibt es 265 Show-Momente und 1247 Fragen – die meisten werden aus den Staffeldaten erzeugt. Wer die Siegerlisten oben kennt, beantwortet einen großen Teil der Zeitstrahl- und Siegerfragen sicher."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Das Video startet nicht.",
+      "a": "Videos laufen über YouTube und brauchen Internet. Manche Videos sind in bestimmten Ländern gesperrt – dann wähle ↻ Anderer Moment."
+    },
+    {
+      "q": "Der Song spielt nicht.",
+      "a": "Songs kommen über den Deezer-Player. Tippe im Player auf Play. Ist ein Song gerade nicht verfügbar, meldet das Spiel das; in der Songrunde hilft ↻ Anderer Song."
+    },
+    {
+      "q": "Das Handy findet den Raum nicht.",
+      "a": "Prüfe den WR-Code und lass den TV-Modus geöffnet. Meldet das Handy „PIN falsch“, sieh am Fernseher nach der 4-stelligen PIN."
+    },
+    {
+      "q": "Vito spricht nicht oder zu viel.",
+      "a": "♫ oben rechts schaltet die Moderation an und aus. Die Stimme kommt aus der Sprachausgabe deines Geräts; ohne deutsche Stimme bleibt Vito stumm."
+    },
+    {
+      "q": "Kann ich eine Show später weiterspielen?",
+      "a": "Ja, die laufende Show wird gespeichert. Im Hauptmenü erscheint dann ↺ Show fortsetzen."
+    },
+    {
+      "q": "Kann ich allein spielen?",
+      "a": "Ja. Allein spielst du, bis du 8 Punkte gesammelt hast."
+    }
+  ]
+}

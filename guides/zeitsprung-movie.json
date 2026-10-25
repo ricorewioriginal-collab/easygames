@@ -1,0 +1,440 @@
+{
+  "id": "zeitsprung-movie",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "ZEITSPRUNG MOVIE ist eine moderierte 3D-Filmshow. Moderator Vito stellt dir Fragen zu Filmen, Serien, Filmmusik und Trailern und löst jede Antwort auf. Jede richtige Antwort bringt einen Punkt. Wer zuerst 8 Punkte hat, gewinnt die Show.",
+        "Im Spiel stecken 318 Quizfragen (218 davon aus einem Katalog mit 109 Filmen und ihren Studios, dazu 100 Fragen zu Themen wie Disney, Marvel, Serien und deutschem Kino), 38 Hörfragen mit Filmmusik und Serienintros, 42 Bildrätsel und 12 Filmtrailer.",
+        "Du spielst allein oder mit bis zu vier Spielern – am selben Gerät oder am Fernseher mit Handys als Controller."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "list": [
+        "▶ Neue Show starten: beginnt eine neue Show mit den gewählten Einstellungen.",
+        "↺ Show fortsetzen: erscheint, wenn eine unfertige Show gespeichert ist.",
+        "🌐 Online, TV & Handys: schaltet den TV-Modus ein und öffnet das Koppelfenster.",
+        "Kategorie: Große Mischung · alle Themen oder eine der Filmwelten (Disney-Klassiker, Pixar, Marvel, DC & Superhelden, Kinderkino, Fantasy & Abenteuer, Science-Fiction & Action, Filmklassiker, Moderne Kinohits) beziehungsweise eines der Themen (Disney & Pixar, Marvel & Superhelden, Kinderfilme, Kinderserien, Serien & Figuren, Streaming & Plattformen, Fantasy-Welten, Kino & Filmwissen, Deutsche Filme & Fernsehen, Trailer & Filmfiguren). Neben jeder Kategorie steht die Zahl ihrer Fragen.",
+        "Trailerrunden spielen als: „Kinostartjahr aus A–D wählen · einfach“ (Grundeinstellung) oder „Film in Zeitleiste einordnen“.",
+        "Spieler: bis zu 4 Namen eintragen, ＋ Spieler hinzufügen fügt weitere hinzu.",
+        "Im Spielstudio gibt es außerdem die Cloud-Anmeldung und „📱 Dieses Gerät als Handy-Controller verwenden“.",
+        "Oben rechts: ⌂ Hauptmenü, ▣ TV-Modus, ♧ Handys koppeln, ♫ Vito (Moderation und Töne) an oder aus."
+      ]
+    },
+    {
+      "t": "Die Rundenarten",
+      "p": [
+        "Die Spieler sind reihum dran; nur der Spieler, dessen Name oben steht, antwortet. Die erste Runde ist eine Trailerrunde, sofern die Kategorie Trailer hat. Danach wählt das Spiel zufällig mit gleicher Chance zwischen Quiz-, Trailer-, Hör- und Bildrunde – Rundenarten, die es in der gewählten Kategorie nicht gibt, fallen weg."
+      ],
+      "list": [
+        "TRAILERRUNDE: Starte mit ▶ Trailer abspielen den Trailer direkt im Studio und erkenne den Film. Einfach: Wähle das Kinostartjahr aus A–D (die falschen Jahre liegen 1 bis 6 Jahre daneben). Zeitleiste: Lege den Film in die passende Lücke deiner Zeitleiste; alle starten mit demselben Startfilm, richtig eingeordnete Filme kommen dazu.",
+        "QUIZRUNDE: eine Frage mit vier Antworten, zum Beispiel „Welches Studio steht hinter …?“, „Welcher dieser Filme stammt von …?“ oder Fragen zu Figuren, Serien und Filmwissen.",
+        "HÖRRUNDE: Starte mit ▶ Musik abspielen den Song (über Deezer, bei manchen Titeln zusätzlich Spotify) und wähle den passenden Film oder die Serie aus A–D.",
+        "BILDRUNDE: Drei Symbole stehen für einen Film oder eine Serie – wähle aus A–D.",
+        "↻ Anderer Film beziehungsweise ↻ Anderer Song tauscht Trailer oder Song ohne Nachteil aus, wenn er nicht abspielt. ↻ Trailer neu laden lädt das Video neu, ↔ Spotify/Deezer wechselt den Musikdienst."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Maus und Touch: Antwort A–D oder eine Lücke (+) in der Zeitleiste antippen, danach „Nächste Runde →“ beziehungsweise „Weiter: Name →“.",
+        "Tastatur: A, B, C, D oder 1 bis 4 wählen die Antworten, 1 bis 9 die Lücken der Zeitleiste von links nach rechts.",
+        "Gamecontroller: Das Steuerkreuz springt zwischen den sichtbaren Knöpfen, A drückt den markierten Knopf, der rechte Stick bewegt einen Mauszeiger.",
+        "Trailer und Musik laufen in eingebetteten Playern: Tippe im Player selbst auf Play, falls er nicht von allein startet."
+      ]
+    },
+    {
+      "t": "Wertung, Sieg und Speichern",
+      "list": [
+        "Richtige Antwort: +1 Punkt. Falsche Antwort: kein Punkt, keine Strafe. Die Punktetafel zeigt „Punkte/8“.",
+        "Wer 8 Punkte erreicht, gewinnt sofort, auch wenn noch nicht alle gleich oft dran waren.",
+        "Die Show wird nach jeder Runde und beim Verlassen der Seite im Browser gespeichert und lässt sich mit ↺ Show fortsetzen fortführen. Nach dem Sieg wird der Stand gelöscht.",
+        "Mit der Cloud-Anmeldung im Spielstudio wird der Stand über dein Google-Konto gesichert und auf anderen Geräten fortgesetzt."
+      ]
+    },
+    {
+      "t": "TV-Modus und Handys",
+      "steps": [
+        "Am Fernseher oder PC „🌐 Online, TV & Handys“, ▣ oder ♧ wählen. Es erscheinen WR-Code, vierstellige PIN, QR-Code und Link.",
+        "Mitspieler scannen den QR-Code oder öffnen den Link – das geht von überall, nicht nur im selben WLAN.",
+        "Am Handy Namen, WR-Code und PIN eingeben und „Mit TV verbinden“ tippen. Jedes Handy übernimmt einen Spielerplatz (bis zu 4).",
+        "Das Handy zeigt dieselben A–D-Antworten oder Zeitleisten-Plätze wie der Fernseher, dazu die Bildsymbole, und kann Trailer oder Musik starten und zur nächsten Runde schalten.",
+        "Mit „Zurück zur Show“ das Koppelfenster schließen."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Wähle eine Kategorie, die du gut kennst – etwa Disney-Klassiker, Pixar oder Kinderserien.",
+        "Spiel Trailerrunden zuerst mit „Kinostartjahr aus A–D“; die Zeitleiste ist schwerer.",
+        "Läuft ein Trailer oder Song nicht, tausche ihn mit ↻ aus. Das kostet nichts.",
+        "Bei Bildrätseln die Symbole wörtlich nehmen: 🦁👑🌅 ist ein Löwe, eine Krone und ein Sonnenaufgang – Der König der Löwen."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Studiofragen kommen in der Großen Mischung besonders oft. Merke dir die großen Studios: Walt Disney Animation Studios, Pixar Animation Studios, Marvel Studios, DreamWorks Animation, Illumination, Warner Bros., Universal Pictures, Paramount Pictures, Lucasfilm und andere.",
+        "Bei „Welcher dieser Filme stammt von …?“ sind die falschen Antworten immer Filme anderer Studios. Kennst du zu drei Filmen das Studio, bleibt nur eine Antwort übrig.",
+        "Beachte: Gefragt ist immer der ursprüngliche Kinostart, nicht der deutsche Start.",
+        "In der Zeitleiste sind gleiche Jahre an der Grenze immer richtig. Ist dein Film aus demselben Jahr wie eine Karte, ist jede angrenzende Lücke richtig.",
+        "Bei Hörrunden helfen Interpreten: Smash Mouth gehört zweimal zu Shrek, John Williams zu Harry Potter, Das Imperium schlägt zurück und Jurassic Park."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Es gibt nur 12 Trailer. Wer die Kinostartjahre dieser Filme kennt (siehe Lösungsbuch), holt Trailerrunden sicher.",
+        "Die falschen Jahre bei der A–D-Wahl liegen nie in der Zukunft.",
+        "Schalte Vito mit ♫ aus, wenn ihr schnell spielen wollt – alle Fragen stehen trotzdem im Bild.",
+        "Spielt ihr zu mehreren, ist der erste Spieler leicht im Vorteil, weil die Show beim ersten Spieler mit 8 Punkten sofort endet."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Den Trailer nicht starten: Der Filmtitel steht in Trailerrunden nicht im Bild – nur der Trailer verrät, welcher Film gemeint ist.",
+        "Kinostart mit deutschem Start oder Fortsetzung verwechseln: Die Eiskönigin 2 (2019) und Alles steht Kopf 2 (2024) sind eigene Filme mit eigenem Jahr.",
+        "Im TV-Modus mit dem falschen Handy antworten: Nur der Spieler, der dran ist, kann antworten.",
+        "Ohne Internet spielen wollen: Trailer, Musik und Handy-Kopplung brauchen eine Verbindung; Quizfragen und Bildrätsel funktionieren unabhängig davon."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Die 12 Trailer mit Lösung",
+      "p": [
+        "Diese Filme laufen in den Trailerrunden. Gefragt ist das Kinostartjahr."
+      ],
+      "list": [
+        "Die Eiskönigin 2 – 2019 (Walt Disney Animation Studios, Kategorie Disney-Klassiker)",
+        "Encanto – 2021 (Walt Disney Animation Studios, Kategorie Disney-Klassiker)",
+        "Alles steht Kopf 2 – 2024 (Pixar Animation Studios, Kategorie Pixar)",
+        "Avengers: Endgame – 2019 (Marvel Studios, Kategorie Marvel)",
+        "Black Panther: Wakanda Forever – 2022 (Marvel Studios, Kategorie Marvel)",
+        "Shrek – 2001 (DreamWorks Animation, Kategorie Kinderkino)",
+        "Der Super Mario Bros. Film – 2023 (Illumination, Kategorie Kinderkino)",
+        "Dune – 2021 (Warner Bros., Kategorie Science-Fiction & Action)",
+        "Barbie – 2023 (Warner Bros., Kategorie Moderne Kinohits)",
+        "Oppenheimer – 2023 (Universal Pictures, Kategorie Moderne Kinohits)",
+        "Top Gun: Maverick – 2022 (Paramount Pictures, Kategorie Moderne Kinohits)",
+        "Wicked – 2024 (Universal Pictures, Kategorie Moderne Kinohits)"
+      ]
+    },
+    {
+      "t": "Filmkatalog Disney-Klassiker: Kinostart und Studio",
+      "list": [
+        "Schneewittchen und die sieben Zwerge – 1937 – Walt Disney Animation Studios",
+        "Cinderella – 1950 – Walt Disney Animation Studios",
+        "Dornröschen – 1959 – Walt Disney Animation Studios",
+        "Arielle, die Meerjungfrau – 1989 – Walt Disney Animation Studios",
+        "Die Schöne und das Biest – 1991 – Walt Disney Animation Studios",
+        "Aladdin – 1992 – Walt Disney Animation Studios",
+        "Der König der Löwen – 1994 – Walt Disney Animation Studios",
+        "Mulan – 1998 – Walt Disney Animation Studios",
+        "Rapunzel – Neu verföhnt – 2010 – Walt Disney Animation Studios",
+        "Die Eiskönigin – Völlig unverfroren – 2013 – Walt Disney Animation Studios",
+        "Die Eiskönigin 2 – 2019 – Walt Disney Animation Studios",
+        "Vaiana – 2016 – Walt Disney Animation Studios",
+        "Encanto – 2021 – Walt Disney Animation Studios"
+      ]
+    },
+    {
+      "t": "Filmkatalog Pixar: Kinostart und Studio",
+      "list": [
+        "Toy Story – 1995 – Pixar Animation Studios",
+        "Das große Krabbeln – 1998 – Pixar Animation Studios",
+        "Die Monster AG – 2001 – Pixar Animation Studios",
+        "Findet Nemo – 2003 – Pixar Animation Studios",
+        "Die Unglaublichen – 2004 – Pixar Animation Studios",
+        "Cars – 2006 – Pixar Animation Studios",
+        "Ratatouille – 2007 – Pixar Animation Studios",
+        "WALL·E – 2008 – Pixar Animation Studios",
+        "Oben – 2009 – Pixar Animation Studios",
+        "Alles steht Kopf – 2015 – Pixar Animation Studios",
+        "Coco – Lebendiger als das Leben! – 2017 – Pixar Animation Studios",
+        "Alles steht Kopf 2 – 2024 – Pixar Animation Studios"
+      ]
+    },
+    {
+      "t": "Filmkatalog Marvel: Kinostart und Studio",
+      "list": [
+        "Iron Man – 2008 – Marvel Studios",
+        "Marvel's The Avengers – 2012 – Marvel Studios",
+        "Guardians of the Galaxy – 2014 – Marvel Studios",
+        "Avengers: Age of Ultron – 2015 – Marvel Studios",
+        "The First Avenger: Civil War – 2016 – Marvel Studios",
+        "Doctor Strange – 2016 – Marvel Studios",
+        "Black Panther – 2018 – Marvel Studios",
+        "Avengers: Infinity War – 2018 – Marvel Studios",
+        "Captain Marvel – 2019 – Marvel Studios",
+        "Avengers: Endgame – 2019 – Marvel Studios",
+        "Shang-Chi and the Legend of the Ten Rings – 2021 – Marvel Studios",
+        "Black Panther: Wakanda Forever – 2022 – Marvel Studios"
+      ]
+    },
+    {
+      "t": "Filmkatalog DC & Superhelden: Kinostart und Studio",
+      "list": [
+        "Superman – 1978 – Warner Bros.",
+        "Batman – 1989 – Warner Bros.",
+        "The Dark Knight – 2008 – Warner Bros.",
+        "The Dark Knight Rises – 2012 – Warner Bros.",
+        "Man of Steel – 2013 – Warner Bros.",
+        "Wonder Woman – 2017 – Warner Bros.",
+        "Aquaman – 2018 – Warner Bros.",
+        "Shazam! – 2019 – Warner Bros.",
+        "Joker – 2019 – Warner Bros.",
+        "The Batman – 2022 – Warner Bros.",
+        "Blue Beetle – 2023 – Warner Bros.",
+        "The Flash – 2023 – Warner Bros."
+      ]
+    },
+    {
+      "t": "Filmkatalog Kinderkino: Kinostart und Studio",
+      "list": [
+        "Shrek – 2001 – DreamWorks Animation",
+        "Madagascar – 2005 – DreamWorks Animation",
+        "Kung Fu Panda – 2008 – DreamWorks Animation",
+        "Drachenzähmen leicht gemacht – 2010 – DreamWorks Animation",
+        "Der gestiefelte Kater – 2011 – DreamWorks Animation",
+        "Ich – Einfach unverbesserlich – 2010 – Illumination",
+        "Minions – 2015 – Illumination",
+        "Sing – 2016 – Illumination",
+        "Pets – 2016 – Illumination",
+        "Trolls – 2016 – DreamWorks Animation",
+        "The Boss Baby – 2017 – DreamWorks Animation",
+        "Der Super Mario Bros. Film – 2023 – Illumination"
+      ]
+    },
+    {
+      "t": "Filmkatalog Fantasy & Abenteuer: Kinostart und Studio",
+      "list": [
+        "Harry Potter und der Stein der Weisen – 2001 – Warner Bros.",
+        "Harry Potter und die Kammer des Schreckens – 2002 – Warner Bros.",
+        "Harry Potter und der Gefangene von Askaban – 2004 – Warner Bros.",
+        "Harry Potter und die Heiligtümer des Todes – Teil 2 – 2011 – Warner Bros.",
+        "Der Herr der Ringe: Die Gefährten – 2001 – New Line Cinema",
+        "Der Herr der Ringe: Die zwei Türme – 2002 – New Line Cinema",
+        "Der Herr der Ringe: Die Rückkehr des Königs – 2003 – New Line Cinema",
+        "Der Hobbit: Eine unerwartete Reise – 2012 – New Line Cinema",
+        "Die Chroniken von Narnia: Der König von Narnia – 2005 – Walt Disney Pictures",
+        "Alice im Wunderland – 2010 – Walt Disney Pictures",
+        "Fluch der Karibik – 2003 – Walt Disney Pictures",
+        "Maleficent – Die dunkle Fee – 2014 – Walt Disney Pictures"
+      ]
+    },
+    {
+      "t": "Filmkatalog Science-Fiction & Action: Kinostart und Studio",
+      "list": [
+        "Krieg der Sterne – 1977 – Lucasfilm",
+        "Das Imperium schlägt zurück – 1980 – Lucasfilm",
+        "Die Rückkehr der Jedi-Ritter – 1983 – Lucasfilm",
+        "Star Wars: Das Erwachen der Macht – 2015 – Lucasfilm",
+        "E.T. – Der Außerirdische – 1982 – Universal Pictures",
+        "Jurassic Park – 1993 – Universal Pictures",
+        "Zurück in die Zukunft – 1985 – Universal Pictures",
+        "Matrix – 1999 – Warner Bros.",
+        "Avatar – Aufbruch nach Pandora – 2009 – 20th Century Fox",
+        "Dune – 2021 – Warner Bros.",
+        "Inception – 2010 – Warner Bros.",
+        "Alien – Das unheimliche Wesen aus einer fremden Welt – 1979 – 20th Century Fox"
+      ]
+    },
+    {
+      "t": "Filmkatalog Filmklassiker: Kinostart und Studio",
+      "list": [
+        "Casablanca – 1942 – Warner Bros.",
+        "Der Zauberer von Oz – 1939 – Metro-Goldwyn-Mayer",
+        "Singin’ in the Rain – 1952 – Metro-Goldwyn-Mayer",
+        "Der weiße Hai – 1975 – Universal Pictures",
+        "Rocky – 1976 – United Artists",
+        "Der Pate – 1972 – Paramount Pictures",
+        "Forrest Gump – 1994 – Paramount Pictures",
+        "Pulp Fiction – 1994 – Miramax",
+        "Kevin – Allein zu Haus – 1990 – 20th Century Fox",
+        "Mrs. Doubtfire – 1993 – 20th Century Fox",
+        "Ghostbusters – Die Geisterjäger – 1984 – Columbia Pictures",
+        "Schindlers Liste – 1993 – Universal Pictures"
+      ]
+    },
+    {
+      "t": "Filmkatalog Moderne Kinohits: Kinostart und Studio",
+      "list": [
+        "Barbie – 2023 – Warner Bros.",
+        "Oppenheimer – 2023 – Universal Pictures",
+        "Top Gun – 1986 – Paramount Pictures",
+        "Top Gun: Maverick – 2022 – Paramount Pictures",
+        "Mission: Impossible – 1996 – Paramount Pictures",
+        "The Fast and the Furious – 2001 – Universal Pictures",
+        "Der Teufel trägt Prada – 2006 – 20th Century Fox",
+        "La La Land – 2016 – Lionsgate",
+        "Die Tribute von Panem – The Hunger Games – 2012 – Lionsgate",
+        "Twilight – Biss zum Morgengrauen – 2008 – Summit Entertainment",
+        "Wicked – 2024 – Universal Pictures",
+        "Greatest Showman – 2017 – 20th Century Fox"
+      ]
+    },
+    {
+      "t": "Alle Hörfragen mit Lösung",
+      "list": [
+        "„Let It Go“ (Idina Menzel) – Die Eiskönigin – Völlig unverfroren",
+        "„Into the Unknown“ (Idina Menzel) – Die Eiskönigin 2",
+        "„We Don't Talk About Bruno“ (Carolina Gaitán) – Encanto",
+        "„How Far I'll Go“ (Auli'i Cravalho) – Vaiana",
+        "„Reflection“ (Christina Aguilera) – Mulan",
+        "„Beauty and the Beast“ (Céline Dion) – Die Schöne und das Biest",
+        "„You've Got a Friend in Me“ (Randy Newman) – Toy Story",
+        "„Remember Me“ (Miguel) – Coco – Lebendiger als das Leben!",
+        "„Life Is a Highway“ (Rascal Flatts) – Cars",
+        "„Le Festin“ (Camille) – Ratatouille",
+        "„All Star“ (Smash Mouth) – Shrek",
+        "„Happy“ (Pharrell Williams) – Ich – Einfach unverbesserlich 2",
+        "„Can't Stop the Feeling!“ (Justin Timberlake) – Trolls",
+        "„I'm a Believer“ (Smash Mouth) – Shrek",
+        "„Try Everything“ (Shakira) – Zoomania",
+        "„Hedwig's Theme“ (John Williams) – Harry Potter und der Stein der Weisen",
+        "„He's a Pirate“ (Klaus Badelt) – Fluch der Karibik",
+        "„Concerning Hobbits“ (Howard Shore) – Der Herr der Ringe: Die Gefährten",
+        "„The Imperial March“ (John Williams) – Das Imperium schlägt zurück",
+        "„Back to the Future“ (Alan Silvestri) – Zurück in die Zukunft",
+        "„Jurassic Park Theme“ (John Williams) – Jurassic Park",
+        "„Eye of the Tiger“ (Survivor) – Rocky III",
+        "„Ghostbusters“ (Ray Parker Jr.) – Ghostbusters – Die Geisterjäger",
+        "„My Heart Will Go On“ (Céline Dion) – Titanic",
+        "„Bohemian Rhapsody“ (Queen) – Wayne's World",
+        "„Shallow“ (Lady Gaga) – A Star Is Born",
+        "„Skyfall“ (Adele) – Skyfall",
+        "„Lose Yourself“ (Eminem) – 8 Mile",
+        "„What Was I Made For?“ (Billie Eilish) – Barbie",
+        "„City of Stars“ (Ryan Gosling) – La La Land",
+        "„I'll Be There for You“ (The Rembrandts) – Friends",
+        "„Running Up That Hill“ (Kate Bush) – Stranger Things",
+        "„Red Right Hand“ (Nick Cave & The Bad Seeds) – Peaky Blinders",
+        "„California“ (Phantom Planet) – O.C., California",
+        "„Woke Up This Morning“ (Alabama 3) – Die Sopranos",
+        "„Bad Things“ (Jace Everett) – True Blood",
+        "„The Skye Boat Song“ (Bear McCreary) – Outlander",
+        "„The Best Day Ever“ (SpongeBob SquarePants) – SpongeBob Schwammkopf"
+      ]
+    },
+    {
+      "t": "Alle Bildrätsel mit Lösung",
+      "list": [
+        "❄️ 👑 ⛄ = Die Eiskönigin – Völlig unverfroren",
+        "🦁 👑 🌅 = Der König der Löwen",
+        "🪔 🧞 🕌 = Aladdin",
+        "🧜‍♀️ 🐚 🌊 = Arielle, die Meerjungfrau",
+        "⚔️ 🐉 🏯 = Mulan",
+        "👸 💇‍♀️ 🏰 = Rapunzel – Neu verföhnt",
+        "🏠 ✨ 🦋 = Encanto",
+        "🤠 🚀 🧸 = Toy Story",
+        "🐠 🌊 🔎 = Findet Nemo",
+        "🏎️ 🏁 🚗 = Cars",
+        "🐀 👨‍🍳 🍲 = Ratatouille",
+        "🎈 🏠 ☁️ = Oben",
+        "🤖 🌱 🚀 = WALL·E",
+        "🦾 ❤️ 🛡️ = Iron Man",
+        "🐈‍⬛ 👑 💜 = Black Panther",
+        "🌀 🧙 ⏱️ = Doctor Strange",
+        "🚀 🎧 🌌 = Guardians of the Galaxy",
+        "🦇 🌃 🦸 = Batman",
+        "👑 🛡️ ⚔️ = Wonder Woman",
+        "🟢 👹 🏰 = Shrek",
+        "🐼 🥋 🍜 = Kung Fu Panda",
+        "🐉 🪓 🛫 = Drachenzähmen leicht gemacht",
+        "🍌 💛 🦹 = Ich – Einfach unverbesserlich",
+        "🍄 👨 ⭐ = Der Super Mario Bros. Film",
+        "🪄 🦉 ⚡ = Harry Potter und der Stein der Weisen",
+        "💍 🧙 ⛰️ = Der Herr der Ringe: Die Gefährten",
+        "🏴‍☠️ 🛳️ 🧭 = Fluch der Karibik",
+        "⭐ 🚀 ⚔️ = Krieg der Sterne",
+        "🦖 🌴 🚙 = Jurassic Park",
+        "🚗 ⚡ 🕰️ = Zurück in die Zukunft",
+        "👽 🚲 🌕 = E.T. – Der Außerirdische",
+        "🦈 🌊 🚤 = Der weiße Hai",
+        "👻 🚫 🚨 = Ghostbusters – Die Geisterjäger",
+        "🏠 👦 🎄 = Kevin – Allein zu Haus",
+        "💖 👠 🚘 = Barbie",
+        "⚛️ 💥 🎩 = Oppenheimer",
+        "🛩️ 🕶️ 🏍️ = Top Gun: Maverick",
+        "🧽 🍍 🌊 = SpongeBob Schwammkopf",
+        "🐾 🐶 🚓 = PAW Patrol",
+        "🚲 🔦 🕳️ = Stranger Things",
+        "🐉 👑 🗡️ = Game of Thrones",
+        "👶 🚀 🪖 = The Mandalorian"
+      ]
+    },
+    {
+      "t": "Beispiele aus den Themenfragen",
+      "p": [
+        "Die 100 Themenfragen verteilen sich zu je 10 Fragen auf 10 Themen. Hier zwei Beispiele je Thema mit Lösung:"
+      ],
+      "list": [
+        "Disney & Pixar: Wie heißt Simbas Vater in „Der König der Löwen“? – Mufasa",
+        "Disney & Pixar: Wie heißt Arielles Fischfreund? – Fabius",
+        "Marvel & Superhelden: Wie lautet Iron Mans bürgerlicher Name? – Tony Stark",
+        "Marvel & Superhelden: In welchem fiktiven Land ist Black Panther König? – Wakanda",
+        "Kinderfilme: Wie heißt der Esel an Shreks Seite? – Esel",
+        "Kinderfilme: Welcher Film erzählt von einem Clownfisch auf der Suche nach seinem Sohn? – Findet Nemo",
+        "Kinderserien: Wer leitet das Hundeteam in „PAW Patrol“? – Ryder",
+        "Kinderserien: Welcher „PAW Patrol“-Hund ist Polizist? – Chase",
+        "Serien & Figuren: In welcher Stadt spielt „Stranger Things“? – Hawkins",
+        "Serien & Figuren: Wie heißt die Bar beziehungsweise das Café in „Friends“? – Central Perk",
+        "Streaming & Plattformen: Welche Serie mit Elf und dem Upside Down wurde als Netflix-Original bekannt? – Stranger Things",
+        "Streaming & Plattformen: Welche Star-Wars-Serie startete als Original auf Disney+? – The Mandalorian",
+        "Fantasy-Welten: In welcher Schule lernt Harry Potter Zaubern? – Hogwarts",
+        "Fantasy-Welten: Zu welchem Haus gehört Harry Potter in Hogwarts? – Gryffindor",
+        "Kino & Filmwissen: Wer verantwortet die kreative Leitung eines Filmdrehs? – Regie",
+        "Kino & Filmwissen: Wie heißt die schriftliche Vorlage mit Szenen und Dialogen? – Drehbuch",
+        "Deutsche Filme & Fernsehen: Wie heißt Bully Herbigs Figur in „Der Schuh des Manitu“? – Abahachi",
+        "Deutsche Filme & Fernsehen: Wie heißt Elyas M’Bareks Lehrerfigur in „Fack ju Göhte“? – Zeki Müller",
+        "Trailer & Filmfiguren: Welche Filmreihe zeigt einen gelben Camaro namens Bumblebee? – Transformers",
+        "Trailer & Filmfiguren: Wer offenbart Luke Skywalker im Film, sein Vater zu sein? – Darth Vader"
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Der Trailer zeigt nur eine Fehlermeldung.",
+      "a": "Trailer laufen als YouTube-Einbettung und können vom Anbieter oder regional gesperrt sein. Tippe auf ↻ Anderer Film. Kommt „Dieser Trailer ist nicht verfügbar“, wähle ebenfalls einen anderen Film."
+    },
+    {
+      "q": "Die Musik startet nicht.",
+      "a": "Tippe im eingebetteten Player auf Play. Erscheint „Musik gerade nicht verfügbar“, wähle mit ↻ Anderer Song einen anderen Titel oder wechsle mit ↔ den Dienst, wenn Spotify angeboten wird."
+    },
+    {
+      "q": "Das Handy findet den Fernseher nicht.",
+      "a": "Am Fernseher muss der TV-Modus laufen (Koppelfenster mit WR-Code und PIN). Code und PIN genau abtippen. Beide Geräte brauchen Internet; manche Netze blockieren direkte Verbindungen."
+    },
+    {
+      "q": "Meine Show ist weg.",
+      "a": "Der Stand liegt im Browser und wird nach einem Sieg gelöscht. Im privaten Fenster oder nach dem Löschen der Browserdaten ist er ebenfalls weg. Mit der Cloud-Anmeldung im Spielstudio wird er gesichert."
+    },
+    {
+      "q": "Vito spricht nicht.",
+      "a": "Vito nutzt die Sprachausgabe deines Geräts. Prüfe den Knopf ♫ oben rechts und die Lautstärke. Ohne deutsche Stimme auf dem Gerät kann die Stimme anders klingen."
+    },
+    {
+      "q": "Warum gibt es in meiner Kategorie keine Trailer?",
+      "a": "Nur 12 Filme haben einen Trailer. In den Themen-Kategorien (zum Beispiel Kinderserien oder Kino & Filmwissen) und in Filmwelten ohne Trailer gibt es nur Quiz-, Hör- und Bildrunden."
+    }
+  ],
+  "kurz": {
+    "anleitung": "ZEITSPRUNG MOVIE ist eine moderierte 3D-Filmshow: Moderator Vito stellt 318 Quizfragen zu Filmen, Studios, Serien und Filmwissen, 38 Hörfragen mit Filmmusik und Serienintros (Deezer/Spotify) und 42 Bildrätsel. In Trailerrunden siehst du einen von 12 Filmtrailern und wählst das Kinostartjahr aus A–D oder ordnest den Film auf deiner Zeitleiste ein. Jede richtige Antwort bringt einen Punkt, wer zuerst 8 Punkte hat, gewinnt. Solo oder mit bis zu vier Spielern – am selben Gerät oder im TV-Modus mit Handys als Controller (WR-Code und PIN).",
+    "steuerung": [
+      "Touch: Antwort A–D oder Lücke in der Zeitleiste antippen, dann „Nächste Runde →“.",
+      "PC: Maus wie Touch; Tastatur A–D oder 1–4 für Antworten, 1–9 für Zeitleisten-Lücken.",
+      "Controller: Steuerkreuz springt zwischen den Knöpfen, A drückt, rechter Stick ist ein Mauszeiger.",
+      "TV-Modus: Handys scannen den QR-Code und geben WR-Code und PIN ein; jedes Handy ist ein Spielerplatz."
+    ],
+    "tipps": [
+      "Läuft ein Trailer oder Song nicht, tausche ihn mit ↻ ohne Nachteil aus.",
+      "Gefragt ist immer der ursprüngliche Kinostart, nicht der deutsche Start.",
+      "Studiofragen kommen oft – merk dir, welches Studio hinter welchem Film steht."
+    ]
+  }
+}

@@ -1,0 +1,460 @@
+{
+  "id": "krawallvoegel",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Krawallvögel 3D ist ein Schleuder-Physikspiel. Die Schweine haben sich in Bauwerken aus Glas, Holz und Stein verschanzt. Du schießt die Vögel mit der Schleuder auf die Burgen, bis alle Schweine erledigt sind („Alle Schweine erledigt!“).",
+        "Ein Level ist geschafft, sobald kein Schwein mehr übrig ist. Sind alle Vögel verschossen und es lebt noch ein Schwein, ist der Versuch verloren („Die Schweine lachen …“). Je nach Punktzahl gibt es 1 bis 3 Sterne. 150 Level in 10 Welten warten, jede Welt endet mit einer Boss-Burg von König Grunz."
+      ]
+    },
+    {
+      "t": "Hauptmenü",
+      "list": [
+        "▶ Spielen: setzt beim zuletzt gespielten Level an bzw. beim nächsten, wenn du es geschafft hast.",
+        "🌍 Welten: Welt wählen (★ x/45 und 📻✓, wenn die goldene Kiste gefunden ist), dann ein Level aus 15. Level mit goldener Kiste tragen ❔ bzw. 📻.",
+        "📻 Senderwand: die 16 Senderlogos, die du freischaltest.",
+        "🐦 Vogelkunde: alle Vögel, Schweine und Power-ups mit Beschreibung und deinem Vorrat.",
+        "⚙ Optionen: Soundeffekte, Musik, Zielhilfe (Kurz, Lang, Aus), Grafik (Automatisch, Sparsam, Ausgewogen, Hoch mit Schatten), Vollbild beim Start, Vibration/Rumble und Spielstand löschen.",
+        "☁ Cloud: mit Google anmelden und den Spielstand auf allen Geräten synchronisieren.",
+        "⌂ Sammlung: zurück zur easygames-Übersicht.",
+        "Oben stehen deine Sterne, die gefundenen goldenen Kisten (📻 x/10) und die Uhrzeit."
+      ]
+    },
+    {
+      "t": "Spielablauf",
+      "steps": [
+        "Vor einem neuen Vogel oder einer neuen Welt erscheint eine kurze Vorstellung („NEUER VOGEL“ bzw. die Welt mit ihrem Sender).",
+        "Zieh den Vogel in der Schleuder nach hinten. Die gepunktete Linie zeigt den Anfang der Flugbahn (je nach Zielhilfe).",
+        "Lass los – je weiter gezogen, desto stärker der Schuss.",
+        "Im Flug löst ein Tipp (bzw. Leertaste, Ⓐ) die Fähigkeit des Vogels aus.",
+        "Sobald alles zur Ruhe kommt, liegt der nächste Vogel auf der Schleuder.",
+        "Sind alle Schweine erledigt, zählt jeder übrige Vogel 10.000 Bonuspunkte. Danach siehst du Sterne, Punkte und Belohnungen."
+      ]
+    },
+    {
+      "t": "Die Vögel",
+      "list": [
+        "Rudi (rot): Der Anführer, Fähigkeit Kampfschrei (ohne Wirkung). Solide gegen Glas und Holz, schwach gegen Stein.",
+        "Blitz-Trio (blau): Teilt sich auf Tippen in drei Vögel. Zerschmettert Glas mühelos, schwach gegen Holz und Stein.",
+        "Zisch (gelb): Turbo in Flugrichtung. Durchschlägt Holz.",
+        "Bumm (schwarz): Explodiert auf Tippen – oder von selbst gut 1,5 Sekunden nach dem Aufprall. Sprengt Stein.",
+        "Mathilde (weiß): Wirft ein explosives Ei senkrecht nach unten und schießt selbst nach oben davon.",
+        "Kurvi (grün): Fliegt auf Tippen wie ein Bumerang zurück und trifft Schweine von hinten.",
+        "Brocken (groß, dunkelrot): Riesig und schwer, ohne Fähigkeit, stark gegen alles.",
+        "Pustebacke (orange): Bläst sich auf Tippen riesig auf und drückt alles in der Nähe weg.",
+        "Blitz-Trio, Zisch, Mathilde und Kurvi kannst du nur vor dem ersten Aufprall auslösen; Bumm und Pustebacke auch danach."
+      ]
+    },
+    {
+      "t": "Neue Vögel",
+      "list": [
+        "Rudi ab 1-1, Blitz-Trio ab 1-6, Zisch ab 1-11.",
+        "Bumm ab 2-1, Mathilde ab 3-1, Kurvi ab 4-1, Brocken ab 5-1, Pustebacke ab 6-1.",
+        "Im Level, in dem ein Vogel neu ist, liegen die ersten beiden Schüsse immer mit ihm bereit. Danach mischt das Spiel die Vögel passend zum Material: viel Glas bringt eher Blitz-Trio, viel Holz eher Zisch, viel Stein eher Bumm und Brocken."
+      ]
+    },
+    {
+      "t": "Schweine und Material",
+      "list": [
+        "Ferkel: klein und zerbrechlich. Grunzer: das Standardschwein. Dicker Grunzer: viel Speck. Helmschwein: der Helm schützt, erst ein harter Treffer zählt. Bart-Vorarbeiter: der Boss der Baustelle. König Grunz: der Herrscher in der Boss-Burg, mit Krone und viel Ausdauer.",
+        "Glas splittert leicht, Holz hält mehr aus, Stein ist schwer und sehr fest.",
+        "TNT-Kisten explodieren und lösen Kettenreaktionen aus.",
+        "Sender-Kisten mit Logo bringen 3.000 Bonuspunkte."
+      ]
+    },
+    {
+      "t": "Power-ups",
+      "p": [
+        "Unten im Level stehen die Power-ups mit deinem Vorrat. Zum Start hast du 3× Zielfernrohr, 3× Superschleuder, 3× Krawallsamen, 2× Erdbeben und 1× Mega-Adler."
+      ],
+      "list": [
+        "🎯 Zielfernrohr (Taste 1): zeigt in diesem Level die komplette Flugbahn.",
+        "🏹 Superschleuder (Taste 2): 30 % mehr Wurfkraft für dieses Level.",
+        "🌱 Krawallsamen (Taste 3): der nächste Vogel wird riesig und schwer.",
+        "🌋 Erdbeben (Taste 4): lässt alle Bauwerke etwa 2,6 Sekunden kräftig wackeln.",
+        "🦅 Mega-Adler (Taste 5): fegt einmal quer durchs Level.",
+        "Ein Power-up kann nicht doppelt laufen (z. B. nur ein Zielfernrohr je Level)."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Smartphone/Tablet: Vogel antippen, nach hinten ziehen, loslassen. Im Flug irgendwo tippen = Fähigkeit. Mit einem Finger auf freier Fläche schwenken, mit zwei Fingern zoomen. Querformat empfohlen („Quer spielen!“).",
+        "PC mit Maus: Vogel ziehen und loslassen, Mausrad zoomt.",
+        "PC mit Tastatur: ←/→ Winkel, ↑/↓ Kraft, Leertaste oder Enter schießt (erster Druck spannt, zweiter schießt) und löst im Flug die Fähigkeit aus. 1–5 Power-ups, A/D schwenken, Q zoomt heraus, E zoomt hinein, V Übersicht, R Neustart, Esc oder P Pause, F Vollbild, M Musik.",
+        "Controller: linker Stick zielt (Richtung und Kraft), Ⓐ schießt und löst die Fähigkeit aus, Ⓑ bricht das Zielen ab, Ⓨ wählt ein Power-up, Ⓧ setzt es ein, rechter Stick schwenkt, LB/LT zoomen heraus, RB/RT hinein, Start Pause, Select Neustart.",
+        "Menüs: Pfeiltasten/WASD bzw. Steuerkreuz wählen, Enter/Leertaste bzw. Ⓐ bestätigen, Esc/Backspace bzw. Ⓑ zurück. In den Optionen ändert links/rechts den Wert.",
+        "Pause: ▶ Weiter, ↻ Neustart, ▦ Levelauswahl, ♪ Ton, ♫ Musik, ⛶ Vollbild, ⌂ Hauptmenü."
+      ]
+    },
+    {
+      "t": "Punkte und Sterne",
+      "list": [
+        "Schwein: 5.000 Punkte, König Grunz 10.000.",
+        "Zerstörter Block: Glas und Holz 500, Stein 750, TNT 1.000, Sender-Kiste 3.000, goldene Sender-Kiste 10.000.",
+        "Jeder übrige Vogel am Ende: 10.000.",
+        "1 Stern bekommst du immer, wenn das Level geschafft ist. Für 2 und 3 Sterne gibt es je Level feste Punktgrenzen (siehe Lösungsbuch). Die Anzeige oben zeigt live, wie viele Sterne du gerade hättest, dazu deinen Rekord.",
+        "Gespeichert werden je Level die besten Sterne und der Rekord."
+      ]
+    },
+    {
+      "t": "Fortschritt, Freischaltungen und Speichern",
+      "list": [
+        "Jedes Level öffnet sich, wenn das vorige geschafft ist. Eine neue Welt öffnet sich mit dem Sieg über die Boss-Burg der vorigen Welt.",
+        "Erstes Mal 3 Sterne in einem Level: 1 zufälliges Power-up.",
+        "Boss-Burg zum ersten Mal geschafft: 1 Mega-Adler.",
+        "Goldene Sender-Kiste zum ersten Mal zerstört: 1 Mega-Adler und 1 weiteres zufälliges Power-up, außerdem hängt das Senderlogo der Welt an der Senderwand.",
+        "Alles wird automatisch auf dem Gerät gespeichert, mit Google-Anmeldung zusätzlich in der Cloud. „Spielstand löschen“ in den Optionen setzt Sterne, Rekorde, Senderlogos und Power-ups zurück, die Einstellungen bleiben."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Triff die Stützen eines Bauwerks, nicht das Dach – dann stürzt alles von selbst ein.",
+        "Nimm den richtigen Vogel fürs Material: Blitz-Trio gegen Glas, Zisch gegen Holz, Bumm und Brocken gegen Stein.",
+        "Schalte in den Optionen die Zielhilfe auf „Lang“, wenn du die Flugbahn besser sehen willst.",
+        "Warte nach jedem Schuss, bis alles zur Ruhe kommt – oft fällt noch etwas nach."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Spare Vögel: Jeder übrige Vogel bringt 10.000 Punkte. Für den dritten Stern sind übrige Vögel meist entscheidend.",
+        "TNT ist dein bester Freund. Ein Treffer in die Nähe einer TNT-Kiste räumt oft eine ganze Burg ab.",
+        "Zisch mit Turbo flach ins Holz, damit er mehrere Stützen durchschlägt.",
+        "Bumm muss nicht sofort zünden: Lass ihn ins Bauwerk fallen, er explodiert kurz nach dem Aufprall von selbst – oder zünde ihn genau zwischen zwei Steinsäulen.",
+        "Kurvi eignet sich für Schweine, die hinter einer Mauer sitzen: drüber fliegen, dann zurückholen.",
+        "Mathildes Ei fällt senkrecht. Löse es direkt über dem Schwein aus."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Die Übersicht (V) zeigt das ganze Level – plane den ersten Schuss, bevor du ziehst.",
+        "Das Zielfernrohr zeigt die komplette Bahn. Spare es für Goldkisten-Level und Boss-Burgen.",
+        "Krawallsamen + Brocken oder Bumm ergibt einen Riesenvogel, der fast jede Steinburg niederwalzt.",
+        "Die Superschleuder hilft bei weit entfernten Zielen wie der goldenen Kiste auf einem hohen Sims.",
+        "Erdbeben zuerst, dann schießen: Wackelnde Burgen fallen leichter."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Alle Vögel auf eine bereits halb zerstörte Burg schießen, statt auf die übrigen Schweine.",
+        "Die Fähigkeit zu spät auslösen: Blitz-Trio, Zisch, Mathilde und Kurvi funktionieren nach dem ersten Aufprall nicht mehr.",
+        "Den Mega-Adler zu früh verbrauchen. Er kommt nur durch Boss-Siege und goldene Kisten nach.",
+        "Hochkant spielen: Im Querformat siehst du Schleuder und Schweine gleichzeitig."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "So liest du die Level-Liste",
+      "p": [
+        "Alle 150 Level sind fest gebaut und auf jedem Gerät gleich. Je Level stehen hier: die Vögel in der Reihenfolge, in der sie auf die Schleuder kommen, die Schweine, das Hauptmaterial (gegen das du den passenden Vogel brauchst), TNT, Sender-Kisten, die goldene Kiste und die Punkte für 1, 2 und 3 Sterne.",
+        "Faustregel für 3 Sterne: Alle Schweine mit möglichst wenigen Vögeln erledigen. Jeder Vogel, der übrig bleibt, bringt 10.000 Punkte."
+      ]
+    },
+    {
+      "t": "Goldene Sender-Kisten",
+      "p": [
+        "In jeder Welt gibt es genau eine goldene Sender-Kiste. Sie liegt auf einem eigenen Sims, meist weit hinter oder hoch über dem letzten Bauwerk. Beim Start des Levels erscheint der Hinweis „Hier versteckt sich die goldene Sender-Kiste! 📻“. Sie geht schon bei einem leichten Treffer kaputt."
+      ],
+      "list": [
+        "Welt 1 Sonnenstrand: Level 1-6",
+        "Welt 2 Beton-Block: Level 2-13",
+        "Welt 3 Festzelt-Alm: Level 3-8",
+        "Welt 4 Wolken-Hitparade: Level 4-3",
+        "Welt 5 Neon-Keller: Level 5-10",
+        "Welt 6 Vulkan-Bühne: Level 6-5",
+        "Welt 7 Retro-Wüste: Level 7-12",
+        "Welt 8 Pixel-Arena: Level 8-7",
+        "Welt 9 Winterfunk: Level 9-14",
+        "Welt 10 Königsburg: Level 10-9",
+        "Tipp: Superschleuder oder Zielfernrohr helfen, die weit entfernten Kisten zu treffen. Du musst das Level dafür nicht gewinnen, die Kiste zählt sofort."
+      ]
+    },
+    {
+      "t": "Die Senderwand – alle 16 Logos",
+      "list": [
+        "Über goldene Kisten: YourTime-FM (Welt 1), RapRadio 24 (Welt 2), SchlagerPop 24 (Welt 3), ChartRadio 24 (Welt 4), ClubRadio 24 (Welt 5), RockRadio 24 (Welt 6), KultRadio 24 (Welt 7), Zocker-FM (Welt 8), ChristmasRadio 24 (Welt 9), AnMaCha 24 (Welt 10).",
+        "Über Sterne: RadioFloh! ab 40 ★, Special-Radio ab 100 ★, AnMaChaCast ab 170 ★, SenderWelt ab 250 ★, RicoReWi Music & Media ab 340 ★, RicoReWi Radioportal ab 450 ★ (alle 150 Level mit 3 Sternen).",
+        "Für freigeschaltete Logos zählt die Senderwand, wie oft du sie als Sender-Kiste getroffen hast."
+      ]
+    },
+    {
+      "t": "Boss-Burgen",
+      "p": [
+        "Level 15 jeder Welt ist die Boss-Burg: links und rechts je ein dreistöckiger Turm mit Schweinen (oben ein Ferkel bzw. ein Bart-Vorarbeiter), in der Mitte eine Halle mit zwei TNT-Kisten und darüber der Glaspalast mit König Grunz. Ab Welt 2 tragen die Turm-Schweine oft Helme, ab Welt 5 sind Pfosten und Halle aus Stein. König Grunz hält in jeder Welt etwas mehr aus."
+      ],
+      "list": [
+        "Erster Schuss in die Halle: Die beiden TNT-Kisten bringen den Glaspalast zum Einsturz.",
+        "Danach die Türme von unten aufbrechen – Bumm oder Brocken gegen Stein, Zisch gegen Holz.",
+        "Der erste Sieg über eine Boss-Burg bringt einen Mega-Adler und öffnet die nächste Welt."
+      ]
+    },
+    {
+      "t": "Welt 1: Sonnenstrand (YourTime-FM)",
+      "p": [
+        "YourTime-FM lädt an den Strand – doch die Schweine haben die Strandbar besetzt! Neuer Vogel: Rudi ab 1-1, Blitz-Trio ab 1-6, Zisch ab 1-11. Goldene Sender-Kiste in Level 1-6."
+      ],
+      "list": [
+        "1-1: Rudi ×3 | 1 Ferkel | Holz | ★ 5.000/10.000/18.000",
+        "1-2: Rudi ×3 | 1 Grunzer | Holz | ★ 5.000/10.000/18.000",
+        "1-3: Rudi ×3 | 1 Ferkel | Stein | ★ 5.000/10.000/18.000",
+        "1-4: Rudi ×3 | 2 Ferkel | Holz | ★ 10.000/15.000/23.000",
+        "1-5: Rudi ×3 | 1 Ferkel | Holz | ★ 5.000/10.000/18.000",
+        "1-6: Blitz-Trio ×3 | 2 Ferkel | Holz, GOLDKISTE | ★ 10.000/15.000/23.000",
+        "1-7: Rudi, Blitz-Trio, Rudi | 3 Ferkel | Glas, 1 Sender-Kiste | ★ 15.000/20.000/28.000",
+        "1-8: Rudi, Blitz-Trio, Rudi | 2 Ferkel | Holz | ★ 10.000/15.000/23.000",
+        "1-9: Rudi, Blitz-Trio, Rudi | 2 Ferkel, 1 Grunzer | Holz, 1 Sender-Kiste | ★ 15.000/20.000/28.000",
+        "1-10: Rudi, Blitz-Trio, Rudi | 2 Grunzer, 1 Ferkel | Glas | ★ 15.000/20.000/28.000",
+        "1-11: Zisch ×2, Rudi, Zisch | 4 Ferkel, 2 Grunzer | Holz, 1 TNT, 2 Sender-Kisten | ★ 30.000/35.000/43.000",
+        "1-12: Zisch, Blitz-Trio ×2, Rudi | 4 Ferkel, 1 Dicker Grunzer | Holz, 1 TNT, 2 Sender-Kisten | ★ 25.000/30.000/38.000",
+        "1-13: Zisch ×2, Rudi ×2 | 1 Grunzer, 2 Ferkel | Holz | ★ 15.000/20.000/28.000",
+        "1-14: Blitz-Trio ×2, Rudi, Blitz-Trio | 2 Ferkel, 3 Grunzer | Glas, 1 Sender-Kiste | ★ 25.000/30.000/38.000",
+        "1-15 Boss: Zisch, Rudi, Zisch ×2, Blitz-Trio ×2 | 4 Grunzer, 1 Ferkel, 1 König Grunz, 1 Bart-Vorarbeiter | Holz, 2 TNT | ★ 40.000/54.000/67.000"
+      ]
+    },
+    {
+      "t": "Welt 2: Beton-Block (RapRadio 24)",
+      "p": [
+        "RapRadio 24 bei Nacht: Die Schweine bauen Betonburgen zwischen den Hochhäusern. Neuer Vogel: Bumm ab 2-1. Goldene Sender-Kiste in Level 2-13."
+      ],
+      "list": [
+        "2-1: Bumm ×2, Rudi | 1 Ferkel | Holz | ★ 5.000/10.000/18.000",
+        "2-2: Zisch, Rudi, Bumm | 1 Helmschwein | Holz | ★ 5.000/10.000/18.000",
+        "2-3: Zisch, Rudi ×2 | 2 Grunzer, 1 Ferkel | Glas | ★ 15.000/20.000/28.000",
+        "2-4: Blitz-Trio, Rudi, Zisch | 2 Ferkel | Glas | ★ 10.000/15.000/23.000",
+        "2-5: Rudi, Zisch, Blitz-Trio | 2 Ferkel, 2 Grunzer | Holz | ★ 20.000/25.000/33.000",
+        "2-6: Rudi, Bumm, Zisch, Blitz-Trio | 1 Ferkel, 1 Helmschwein | Stein, 1 Sender-Kiste | ★ 10.000/15.000/23.000",
+        "2-7: Blitz-Trio, Rudi, Zisch | 2 Grunzer, 1 Helmschwein | Holz, 1 Sender-Kiste | ★ 15.000/20.000/28.000",
+        "2-8: Rudi, Blitz-Trio, Zisch | 2 Ferkel, 2 Grunzer | Glas, 1 Sender-Kiste | ★ 20.000/25.000/33.000",
+        "2-9: Zisch, Bumm, Blitz-Trio | 1 Grunzer, 2 Ferkel | Glas, 1 Sender-Kiste | ★ 15.000/20.000/28.000",
+        "2-10: Bumm, Rudi, Zisch, Rudi, Blitz-Trio | 3 Ferkel | Glas, 1 TNT | ★ 15.000/20.000/32.000",
+        "2-11: Bumm, Zisch, Rudi ×2 | 1 Ferkel, 1 Grunzer, 1 Helmschwein | Holz, 1 Sender-Kiste | ★ 15.000/20.000/28.000",
+        "2-12: Bumm, Zisch, Rudi ×2 | 2 Grunzer, 1 Helmschwein, 2 Ferkel | Holz, 1 Sender-Kiste | ★ 25.000/30.000/38.000",
+        "2-13: Blitz-Trio, Zisch, Bumm, Rudi | 1 Helmschwein, 4 Ferkel | Holz, GOLDKISTE | ★ 25.000/30.000/38.000",
+        "2-14: Zisch ×2, Rudi, Zisch | 1 Ferkel, 2 Grunzer | Holz, 1 TNT, 1 Sender-Kiste | ★ 15.000/20.000/28.000",
+        "2-15 Boss: Bumm, Zisch, Rudi, Zisch, Blitz-Trio, Rudi ×2 | 3 Helmschwein, 1 Ferkel, 1 König Grunz, 1 Grunzer, 1 Bart-Vorarbeiter | Holz, 2 TNT | ★ 40.000/64.000/77.000"
+      ]
+    },
+    {
+      "t": "Welt 3: Festzelt-Alm (SchlagerPop 24)",
+      "p": [
+        "SchlagerPop 24 feiert auf der Alm – und die Schweine haben das Festzelt geklaut. Neuer Vogel: Mathilde ab 3-1. Goldene Sender-Kiste in Level 3-8."
+      ],
+      "list": [
+        "3-1: Mathilde ×3 | 1 Ferkel | Holz | ★ 5.000/10.000/18.000",
+        "3-2: Zisch, Bumm, Rudi | 1 Grunzer | Holz | ★ 5.000/10.000/18.000",
+        "3-3: Bumm, Rudi, Blitz-Trio, Rudi | 2 Ferkel, 1 Grunzer | Glas, 1 TNT | ★ 15.000/20.000/28.000",
+        "3-4: Blitz-Trio, Mathilde, Blitz-Trio | 1 Dicker Grunzer, 1 Grunzer | Glas | ★ 10.000/15.000/23.000",
+        "3-5: Mathilde, Zisch ×2 | 1 Grunzer, 1 Bart-Vorarbeiter, 1 Ferkel | Glas | ★ 15.000/20.000/28.000",
+        "3-6: Bumm, Zisch, Blitz-Trio | 3 Ferkel, 1 Helmschwein | Holz, 1 TNT | ★ 20.000/25.000/33.000",
+        "3-7: Bumm, Blitz-Trio, Mathilde | 1 Helmschwein, 2 Grunzer, 1 Ferkel | Glas | ★ 20.000/25.000/33.000",
+        "3-8: Mathilde, Zisch, Rudi ×2, Bumm | 6 Ferkel | Stein, GOLDKISTE | ★ 30.000/35.000/44.000",
+        "3-9: Mathilde, Blitz-Trio, Zisch, Rudi, Blitz-Trio, Bumm | 2 Helmschwein, 2 Grunzer, 3 Ferkel | Glas | ★ 35.000/47.000/58.000",
+        "3-10: Rudi ×2, Blitz-Trio, Mathilde | 2 Grunzer, 1 Ferkel | Holz | ★ 15.000/20.000/28.000",
+        "3-11: Bumm, Rudi ×2, Mathilde, Blitz-Trio | 1 Ferkel, 2 Grunzer, 1 Helmschwein | Stein, 1 TNT | ★ 20.000/25.000/37.000",
+        "3-12: Zisch ×2, Bumm, Zisch ×2, Blitz-Trio | 2 Helmschwein, 3 Ferkel, 2 Grunzer | Holz | ★ 35.000/49.000/62.000",
+        "3-13: Mathilde, Zisch ×2, Rudi, Blitz-Trio ×2 | 2 Ferkel, 1 Bart-Vorarbeiter, 1 Helmschwein | Holz | ★ 20.000/25.000/34.000",
+        "3-14: Rudi, Blitz-Trio, Zisch, Blitz-Trio ×2 | 3 Grunzer, 3 Ferkel | Holz | ★ 30.000/35.000/43.000",
+        "3-15 Boss: Blitz-Trio, Zisch, Bumm, Zisch, Rudi, Zisch ×2 | 2 Grunzer, 2 Helmschwein, 1 Ferkel, 1 König Grunz, 1 Bart-Vorarbeiter | Holz, 2 TNT | ★ 40.000/64.000/77.000"
+      ]
+    },
+    {
+      "t": "Welt 4: Wolken-Hitparade (ChartRadio 24)",
+      "p": [
+        "ChartRadio 24 hoch über den Wolken: Die Schweine stehen auf Platz 1 – noch! Neuer Vogel: Kurvi ab 4-1. Goldene Sender-Kiste in Level 4-3."
+      ],
+      "list": [
+        "4-1: Kurvi ×2, Zisch, Rudi | 1 Ferkel, 2 Helmschwein | Holz, 1 Sender-Kiste | ★ 15.000/26.000/37.000",
+        "4-2: Bumm, Zisch ×2 | 1 Grunzer, 1 Ferkel | Holz | ★ 10.000/15.000/23.000",
+        "4-3: Bumm, Kurvi, Zisch | 3 Ferkel | Holz, 1 TNT, GOLDKISTE | ★ 15.000/20.000/28.000",
+        "4-4: Bumm, Zisch, Bumm, Mathilde | 2 Grunzer, 2 Ferkel | Stein | ★ 20.000/25.000/33.000",
+        "4-5: Zisch, Kurvi, Rudi | 2 Ferkel, 1 Helmschwein, 1 Grunzer | Holz, 1 Sender-Kiste | ★ 20.000/25.000/33.000",
+        "4-6: Mathilde, Zisch, Kurvi | 2 Grunzer, 1 Ferkel | Holz | ★ 15.000/20.000/28.000",
+        "4-7: Bumm, Zisch, Rudi, Kurvi, Rudi | 1 Grunzer, 2 Helmschwein | Holz | ★ 15.000/20.000/30.000",
+        "4-8: Bumm, Blitz-Trio, Mathilde, Rudi, Zisch | 2 Ferkel, 1 Grunzer | Stein, 1 TNT, 1 Sender-Kiste | ★ 15.000/20.000/28.000",
+        "4-9: Zisch, Bumm ×2, Zisch | 1 Helmschwein, 2 Ferkel, 1 Grunzer | Glas, 1 TNT | ★ 20.000/25.000/33.000",
+        "4-10: Kurvi ×2, Zisch ×2 | 3 Ferkel, 1 Bart-Vorarbeiter, 1 Grunzer | Holz | ★ 25.000/30.000/38.000",
+        "4-11: Kurvi, Blitz-Trio, Rudi, Zisch | 1 Ferkel, 1 Bart-Vorarbeiter, 1 Grunzer | Holz | ★ 15.000/20.000/28.000",
+        "4-12: Blitz-Trio, Rudi, Zisch, Blitz-Trio, Kurvi, Bumm | 4 Grunzer, 5 Ferkel | Glas, 1 Sender-Kiste | ★ 45.000/50.000/59.000",
+        "4-13: Bumm ×2, Zisch | 3 Grunzer, 1 Ferkel | Holz, 1 TNT, 2 Sender-Kisten | ★ 20.000/25.000/33.000",
+        "4-14: Zisch, Blitz-Trio, Mathilde ×2 | 3 Ferkel, 1 Grunzer | Holz, 1 TNT | ★ 20.000/25.000/33.000",
+        "4-15 Boss: Bumm, Zisch, Mathilde, Rudi, Zisch, Bumm, Mathilde | 3 Helmschwein, 1 Ferkel, 1 König Grunz, 1 Grunzer, 1 Bart-Vorarbeiter | Holz, 2 TNT | ★ 40.000/64.000/77.000"
+      ]
+    },
+    {
+      "t": "Welt 5: Neon-Keller (ClubRadio 24)",
+      "p": [
+        "ClubRadio 24 im Neon-Keller: Bass an, Schweine raus! Neuer Vogel: Brocken ab 5-1. Goldene Sender-Kiste in Level 5-10."
+      ],
+      "list": [
+        "5-1: Brocken ×2, Zisch, Bumm | 1 Helmschwein, 1 Ferkel | Holz | ★ 10.000/15.000/23.000",
+        "5-2: Brocken ×2, Mathilde, Blitz-Trio | 1 Grunzer, 1 Dicker Grunzer | Stein | ★ 10.000/15.000/23.000",
+        "5-3: Zisch, Brocken, Mathilde, Zisch | 1 Ferkel, 2 Helmschwein | Holz, 1 Sender-Kiste | ★ 15.000/20.000/28.000",
+        "5-4: Mathilde, Brocken, Rudi, Kurvi | 3 Ferkel, 2 Grunzer | Glas, 1 Sender-Kiste | ★ 25.000/30.000/38.000",
+        "5-5: Zisch, Brocken ×2, Kurvi, Zisch | 1 Dicker Grunzer, 2 Ferkel, 1 Helmschwein | Stein | ★ 20.000/25.000/34.000",
+        "5-6: Brocken, Blitz-Trio, Brocken, Rudi | 3 Ferkel, 1 Helmschwein | Glas, 1 TNT, 1 Sender-Kiste | ★ 20.000/25.000/33.000",
+        "5-7: Blitz-Trio, Mathilde, Bumm, Brocken | 3 Ferkel, 1 Helmschwein | Glas | ★ 20.000/25.000/33.000",
+        "5-8: Blitz-Trio, Kurvi, Mathilde ×2 | 1 Helmschwein, 3 Ferkel, 1 Grunzer | Holz | ★ 25.000/30.000/38.000",
+        "5-9: Rudi, Kurvi, Brocken, Bumm | 1 Grunzer, 2 Ferkel, 1 Helmschwein | Holz, 1 Sender-Kiste | ★ 20.000/25.000/33.000",
+        "5-10: Brocken ×2, Zisch, Kurvi, Zisch, Rudi, Bumm | 1 Bart-Vorarbeiter, 4 Ferkel, 1 Dicker Grunzer, 3 Helmschwein | Holz, GOLDKISTE | ★ 45.000/57.000/70.000",
+        "5-11: Bumm, Blitz-Trio, Kurvi, Rudi, Brocken, Kurvi | 1 Helmschwein, 2 Ferkel, 1 Dicker Grunzer, 1 Grunzer | Glas | ★ 25.000/30.000/40.000",
+        "5-12: Bumm, Brocken, Kurvi, Mathilde, Zisch | 1 Bart-Vorarbeiter, 2 Ferkel, 1 Helmschwein | Holz, 1 Sender-Kiste | ★ 20.000/25.000/34.000",
+        "5-13: Zisch, Mathilde, Kurvi, Bumm, Zisch | 3 Grunzer, 1 Bart-Vorarbeiter, 2 Ferkel | Holz, 1 Sender-Kiste | ★ 30.000/35.000/43.000",
+        "5-14: Rudi, Kurvi, Zisch ×2, Bumm | 1 Helmschwein, 2 Grunzer, 3 Ferkel | Holz, 1 Sender-Kiste | ★ 30.000/35.000/43.000",
+        "5-15 Boss: Brocken, Bumm, Kurvi, Brocken, Mathilde, Blitz-Trio, Rudi, Kurvi | 2 Grunzer, 2 Helmschwein, 1 Ferkel, 1 König Grunz, 1 Bart-Vorarbeiter | Stein, 2 TNT | ★ 40.000/74.000/89.000"
+      ]
+    },
+    {
+      "t": "Welt 6: Vulkan-Bühne (RockRadio 24)",
+      "p": [
+        "RockRadio 24 rockt am Vulkan – die Schweine haben die Bühne aus Stein gebaut. Neuer Vogel: Pustebacke ab 6-1. Goldene Sender-Kiste in Level 6-5."
+      ],
+      "list": [
+        "6-1: Pustebacke ×2, Kurvi | 1 Grunzer, 3 Ferkel | Glas, 1 TNT | ★ 20.000/25.000/33.000",
+        "6-2: Brocken, Bumm, Rudi, Mathilde | 1 Dicker Grunzer, 3 Ferkel | Stein | ★ 20.000/25.000/35.000",
+        "6-3: Brocken, Pustebacke, Blitz-Trio, Rudi, Bumm, Zisch | 3 Helmschwein, 1 Grunzer, 1 Bart-Vorarbeiter, 1 Ferkel | Stein | ★ 30.000/43.000/56.000",
+        "6-4: Blitz-Trio, Pustebacke, Rudi, Blitz-Trio, Rudi | 4 Ferkel, 1 Dicker Grunzer, 1 Bart-Vorarbeiter | Glas | ★ 30.000/35.000/43.000",
+        "6-5: Bumm ×2, Blitz-Trio, Pustebacke | 3 Grunzer | Stein, GOLDKISTE | ★ 15.000/20.000/29.000",
+        "6-6: Bumm, Zisch, Rudi, Kurvi, Rudi, Blitz-Trio | 3 Grunzer, 1 Helmschwein, 4 Ferkel, 1 Bart-Vorarbeiter | Holz | ★ 45.000/57.000/70.000",
+        "6-7: Zisch, Pustebacke, Brocken, Bumm, Mathilde | 1 Ferkel, 1 Grunzer, 1 Helmschwein | Stein | ★ 15.000/20.000/30.000",
+        "6-8: Pustebacke, Kurvi, Pustebacke, Bumm, Rudi | 1 Grunzer, 2 Helmschwein, 3 Ferkel | Glas | ★ 30.000/35.000/44.000",
+        "6-9: Bumm, Kurvi, Brocken, Mathilde ×2 | 2 Ferkel, 2 Grunzer, 1 Dicker Grunzer | Stein | ★ 25.000/30.000/41.000",
+        "6-10: Bumm, Zisch, Mathilde, Rudi, Blitz-Trio | 1 Grunzer, 5 Ferkel, 1 Bart-Vorarbeiter | Holz, 1 TNT | ★ 35.000/40.000/48.000",
+        "6-11: Kurvi, Zisch, Brocken, Pustebacke, Zisch ×2, Rudi | 2 Helmschwein, 3 Ferkel | Stein | ★ 25.000/38.000/52.000",
+        "6-12: Rudi, Zisch, Pustebacke, Blitz-Trio, Brocken | 5 Ferkel, 1 Grunzer, 1 Dicker Grunzer | Glas | ★ 35.000/40.000/48.000",
+        "6-13: Brocken ×2, Mathilde, Bumm, Pustebacke, Bumm, Zisch | 3 Ferkel, 3 Grunzer, 2 Helmschwein | Stein | ★ 40.000/53.000/67.000",
+        "6-14: Mathilde, Blitz-Trio, Zisch, Pustebacke | 1 Helmschwein, 3 Grunzer, 2 Ferkel | Glas | ★ 30.000/35.000/43.000",
+        "6-15 Boss: Kurvi, Rudi, Blitz-Trio, Pustebacke, Zisch ×2, Mathilde, Brocken | 1 Helmschwein, 3 Grunzer, 1 Ferkel, 1 König Grunz, 1 Bart-Vorarbeiter | Stein, 2 TNT | ★ 40.000/74.000/89.000"
+      ]
+    },
+    {
+      "t": "Welt 7: Retro-Wüste (KultRadio 24)",
+      "p": [
+        "KultRadio 24 spielt die alten Hits – in der Wüste lauern Kult-Schweine. Goldene Sender-Kiste in Level 7-12."
+      ],
+      "list": [
+        "7-1: Bumm, Rudi, Brocken ×2, Pustebacke | 1 Bart-Vorarbeiter, 2 Ferkel, 1 Helmschwein | Stein | ★ 20.000/33.000/45.000",
+        "7-2: Brocken, Blitz-Trio, Zisch, Bumm, Rudi | 2 Helmschwein, 1 Dicker Grunzer, 2 Grunzer, 1 Ferkel | Glas | ★ 30.000/35.000/45.000",
+        "7-3: Bumm, Brocken, Bumm, Rudi | 2 Grunzer, 1 Ferkel | Glas, 1 TNT | ★ 15.000/20.000/28.000",
+        "7-4: Rudi, Blitz-Trio, Pustebacke, Blitz-Trio | 4 Ferkel, 2 Grunzer | Glas, 1 TNT, 1 Sender-Kiste | ★ 30.000/35.000/43.000",
+        "7-5: Rudi ×2, Kurvi, Rudi | 4 Ferkel, 1 Grunzer | Holz, 2 TNT, 1 Sender-Kiste | ★ 25.000/30.000/38.000",
+        "7-6: Kurvi, Pustebacke, Rudi, Brocken | 3 Grunzer, 1 Ferkel | Holz, 1 Sender-Kiste | ★ 20.000/25.000/33.000",
+        "7-7: Rudi, Mathilde ×2, Rudi, Zisch | 1 Helmschwein, 2 Grunzer, 1 Ferkel | Holz, 1 TNT, 1 Sender-Kiste | ★ 20.000/25.000/33.000",
+        "7-8: Pustebacke, Mathilde, Pustebacke, Bumm | 2 Bart-Vorarbeiter, 2 Ferkel | Holz, 1 Sender-Kiste | ★ 20.000/25.000/33.000",
+        "7-9: Zisch, Pustebacke, Brocken, Blitz-Trio, Zisch, Rudi | 4 Ferkel, 1 Bart-Vorarbeiter, 2 Grunzer, 1 Helmschwein | Holz | ★ 40.000/45.000/56.000",
+        "7-10: Zisch, Bumm, Brocken, Bumm, Kurvi, Mathilde | 4 Grunzer, 3 Ferkel | Glas | ★ 35.000/48.000/61.000",
+        "7-11: Mathilde, Rudi, Brocken, Pustebacke | 3 Ferkel, 1 Dicker Grunzer, 1 Grunzer | Holz | ★ 25.000/30.000/38.000",
+        "7-12: Zisch, Kurvi, Brocken, Mathilde, Blitz-Trio | 2 Helmschwein, 1 Grunzer, 3 Ferkel | Glas, 1 Sender-Kiste, GOLDKISTE | ★ 30.000/35.000/43.000",
+        "7-13: Blitz-Trio, Pustebacke, Brocken, Zisch, Rudi, Zisch | 2 Helmschwein, 3 Grunzer, 1 Dicker Grunzer, 2 Ferkel | Holz | ★ 40.000/52.000/65.000",
+        "7-14: Zisch ×2, Pustebacke, Blitz-Trio, Mathilde, Bumm | 2 Helmschwein, 1 Grunzer, 3 Dicker Grunzer, 1 Ferkel | Holz | ★ 35.000/40.000/50.000",
+        "7-15 Boss: Rudi, Bumm, Zisch ×2, Blitz-Trio, Rudi, Brocken, Pustebacke | 3 Grunzer, 1 Ferkel, 1 König Grunz, 1 Helmschwein, 1 Bart-Vorarbeiter | Stein, 2 TNT | ★ 40.000/74.000/89.000"
+      ]
+    },
+    {
+      "t": "Welt 8: Pixel-Arena (Zocker-FM)",
+      "p": [
+        "Zocker-FM schaltet auf Highscore: Die Schweine zocken um die Arena. Goldene Sender-Kiste in Level 8-7."
+      ],
+      "list": [
+        "8-1: Rudi, Brocken ×2, Bumm, Mathilde | 1 Bart-Vorarbeiter, 1 Grunzer, 1 Ferkel | Stein, 1 TNT | ★ 15.000/20.000/29.000",
+        "8-2: Zisch, Brocken, Zisch, Pustebacke, Blitz-Trio | 2 Grunzer, 5 Ferkel | Glas | ★ 35.000/40.000/48.000",
+        "8-3: Zisch, Mathilde, Brocken, Kurvi, Blitz-Trio | 1 Grunzer, 1 Dicker Grunzer, 2 Ferkel | Holz | ★ 20.000/25.000/34.000",
+        "8-4: Kurvi, Blitz-Trio, Zisch, Pustebacke | 2 Grunzer, 1 Helmschwein, 3 Ferkel | Holz | ★ 30.000/35.000/43.000",
+        "8-5: Blitz-Trio, Mathilde, Rudi | 2 Grunzer, 1 Helmschwein, 1 Ferkel | Glas | ★ 20.000/25.000/33.000",
+        "8-6: Blitz-Trio, Pustebacke, Zisch, Pustebacke, Rudi | 1 Helmschwein, 1 Bart-Vorarbeiter, 1 Grunzer, 1 Dicker Grunzer, 1 Ferkel | Holz | ★ 25.000/30.000/40.000",
+        "8-7: Brocken, Zisch, Rudi, Bumm | 2 Grunzer, 1 Bart-Vorarbeiter, 2 Ferkel | Glas, 1 Sender-Kiste, GOLDKISTE | ★ 25.000/30.000/38.000",
+        "8-8: Mathilde, Bumm, Brocken, Mathilde, Zisch, Pustebacke | 2 Ferkel, 2 Bart-Vorarbeiter, 1 Grunzer | Stein | ★ 25.000/37.000/50.000",
+        "8-9: Blitz-Trio, Kurvi, Zisch, Blitz-Trio | 1 Bart-Vorarbeiter, 1 Grunzer, 1 Helmschwein | Glas | ★ 15.000/20.000/28.000",
+        "8-10: Pustebacke, Mathilde, Bumm, Pustebacke, Kurvi | 3 Ferkel, 1 Helmschwein, 1 Grunzer | Stein | ★ 25.000/30.000/39.000",
+        "8-11: Zisch, Rudi, Mathilde, Pustebacke, Blitz-Trio, Bumm | 2 Helmschwein, 2 Grunzer, 2 Bart-Vorarbeiter | Holz | ★ 30.000/35.000/48.000",
+        "8-12: Bumm, Rudi, Zisch, Mathilde, Kurvi | 1 Helmschwein, 1 Grunzer, 4 Ferkel | Stein, 1 TNT | ★ 30.000/35.000/45.000",
+        "8-13: Bumm, Blitz-Trio, Bumm, Pustebacke, Brocken, Kurvi | 1 Ferkel, 1 Bart-Vorarbeiter, 1 Helmschwein | Stein | ★ 15.000/27.000/40.000",
+        "8-14: Bumm, Zisch, Rudi, Kurvi | 3 Ferkel, 1 Grunzer | Stein, 1 TNT | ★ 20.000/25.000/33.000",
+        "8-15 Boss: Bumm ×3, Zisch, Rudi, Brocken, Zisch, Blitz-Trio | 1 Helmschwein, 3 Grunzer, 1 Ferkel, 1 König Grunz, 1 Bart-Vorarbeiter | Stein, 2 TNT | ★ 40.000/74.000/89.000"
+      ]
+    },
+    {
+      "t": "Welt 9: Winterfunk (ChristmasRadio 24)",
+      "p": [
+        "ChristmasRadio 24: Die Schweine haben die Geschenke im Schnee versteckt. Goldene Sender-Kiste in Level 9-14."
+      ],
+      "list": [
+        "9-1: Blitz-Trio, Rudi, Bumm | 1 Grunzer, 2 Ferkel, 1 Helmschwein | Glas | ★ 20.000/25.000/33.000",
+        "9-2: Blitz-Trio ×2, Pustebacke, Kurvi | 3 Grunzer, 3 Ferkel | Holz, 1 TNT, 1 Sender-Kiste | ★ 30.000/35.000/43.000",
+        "9-3: Pustebacke, Bumm, Rudi, Brocken | 1 Bart-Vorarbeiter, 1 Ferkel, 1 Grunzer | Stein | ★ 15.000/20.000/28.000",
+        "9-4: Mathilde ×3, Zisch ×2, Blitz-Trio | 1 Helmschwein, 2 Grunzer, 1 Dicker Grunzer | Holz | ★ 20.000/25.000/34.000",
+        "9-5: Zisch, Pustebacke, Rudi, Blitz-Trio, Kurvi | 2 Helmschwein, 1 Grunzer, 3 Ferkel | Glas | ★ 30.000/35.000/44.000",
+        "9-6: Pustebacke, Blitz-Trio, Brocken, Bumm, Brocken | 3 Ferkel, 1 Grunzer, 1 Dicker Grunzer | Glas, 1 TNT, 1 Sender-Kiste | ★ 25.000/30.000/38.000",
+        "9-7: Mathilde, Zisch, Kurvi, Bumm, Mathilde | 1 Dicker Grunzer, 2 Bart-Vorarbeiter | Holz | ★ 15.000/20.000/30.000",
+        "9-8: Pustebacke, Bumm, Pustebacke, Mathilde ×2, Brocken, Zisch | 3 Helmschwein, 1 Grunzer, 1 Bart-Vorarbeiter, 2 Ferkel | Stein | ★ 35.000/48.000/61.000",
+        "9-9: Kurvi ×3, Bumm, Zisch, Rudi, Brocken | 2 Helmschwein, 1 Bart-Vorarbeiter, 1 Grunzer, 3 Ferkel | Stein | ★ 35.000/49.000/62.000",
+        "9-10: Pustebacke, Bumm, Brocken, Mathilde | 1 Dicker Grunzer, 2 Ferkel, 1 Grunzer | Glas, 1 Sender-Kiste | ★ 20.000/25.000/33.000",
+        "9-11: Rudi, Mathilde, Zisch, Brocken, Bumm, Pustebacke | 5 Ferkel, 2 Helmschwein, 1 Grunzer | Holz, 1 Sender-Kiste | ★ 40.000/45.000/55.000",
+        "9-12: Mathilde, Rudi, Zisch, Bumm, Blitz-Trio | 3 Ferkel, 1 Grunzer, 1 Bart-Vorarbeiter | Glas | ★ 25.000/30.000/38.000",
+        "9-13: Bumm, Brocken, Pustebacke, Bumm, Mathilde, Kurvi | 3 Grunzer, 1 Helmschwein | Holz | ★ 20.000/25.000/39.000",
+        "9-14: Brocken, Bumm, Blitz-Trio, Bumm | 2 Ferkel, 1 Grunzer | Stein, GOLDKISTE | ★ 15.000/20.000/28.000",
+        "9-15 Boss: Brocken, Rudi, Zisch, Mathilde, Bumm, Brocken, Bumm, Zisch | 3 Grunzer, 1 Ferkel, 1 König Grunz, 1 Helmschwein, 1 Bart-Vorarbeiter | Stein, 2 TNT | ★ 40.000/74.000/89.000"
+      ]
+    },
+    {
+      "t": "Welt 10: Königsburg (AnMaCha 24)",
+      "p": [
+        "AnMaCha 24 präsentiert das große Finale: Stürmt die Burg von König Grunz! Goldene Sender-Kiste in Level 10-9."
+      ],
+      "list": [
+        "10-1: Rudi, Brocken, Bumm | 1 Helmschwein | Stein, 1 Sender-Kiste | ★ 5.000/10.000/18.000",
+        "10-2: Zisch, Bumm, Mathilde, Pustebacke, Mathilde, Blitz-Trio | 2 Helmschwein, 1 Grunzer, 2 Ferkel | Stein, 1 Sender-Kiste | ★ 25.000/47.000/60.000",
+        "10-3: Brocken, Mathilde, Kurvi, Pustebacke, Bumm | 2 Grunzer, 2 Ferkel | Stein | ★ 20.000/25.000/36.000",
+        "10-4: Blitz-Trio, Kurvi, Pustebacke | 1 Ferkel, 1 Helmschwein | Stein | ★ 10.000/15.000/23.000",
+        "10-5: Kurvi, Mathilde, Blitz-Trio, Rudi, Brocken | 1 Bart-Vorarbeiter, 2 Helmschwein, 1 Grunzer, 1 Ferkel | Glas, 1 Sender-Kiste | ★ 25.000/36.000/47.000",
+        "10-6: Brocken, Kurvi, Bumm, Mathilde, Bumm, Brocken | 2 Helmschwein, 4 Ferkel | Stein | ★ 30.000/52.000/65.000",
+        "10-7: Brocken, Zisch, Rudi, Brocken, Kurvi | 2 Grunzer, 1 Bart-Vorarbeiter, 1 Helmschwein, 1 Ferkel | Glas | ★ 25.000/37.000/49.000",
+        "10-8: Blitz-Trio, Rudi, Pustebacke, Bumm, Pustebacke, Bumm | 1 Helmschwein, 2 Grunzer, 1 Bart-Vorarbeiter, 2 Ferkel | Stein | ★ 30.000/43.000/56.000",
+        "10-9: Pustebacke, Blitz-Trio, Zisch, Brocken, Bumm, Kurvi | 3 Grunzer, 1 Ferkel, 1 Helmschwein | Stein, 1 TNT, GOLDKISTE | ★ 25.000/30.000/43.000",
+        "10-10: Bumm ×2, Blitz-Trio, Brocken | 1 Dicker Grunzer, 1 Grunzer, 1 Ferkel | Stein, 1 Sender-Kiste | ★ 15.000/20.000/30.000",
+        "10-11: Brocken, Blitz-Trio, Bumm, Pustebacke, Bumm | 1 Bart-Vorarbeiter, 1 Helmschwein | Stein | ★ 10.000/22.000/33.000",
+        "10-12: Pustebacke, Kurvi, Bumm, Blitz-Trio, Brocken, Bumm | 2 Helmschwein, 2 Grunzer, 1 Ferkel | Stein | ★ 25.000/47.000/60.000",
+        "10-13: Zisch, Kurvi, Bumm, Pustebacke, Kurvi, Rudi | 3 Helmschwein, 1 Bart-Vorarbeiter, 1 Grunzer, 2 Ferkel | Holz | ★ 35.000/40.000/49.000",
+        "10-14: Bumm, Pustebacke, Brocken, Blitz-Trio, Bumm, Rudi ×2 | 1 Bart-Vorarbeiter, 1 Helmschwein, 4 Ferkel | Stein | ★ 30.000/43.000/56.000",
+        "10-15 Boss: Blitz-Trio, Pustebacke, Mathilde, Bumm, Mathilde, Bumm, Zisch, Blitz-Trio | 3 Helmschwein, 1 Ferkel, 1 König Grunz, 1 Grunzer, 1 Bart-Vorarbeiter | Stein, 2 TNT | ★ 40.000/74.000/89.000"
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Mein Spielstand ist weg.",
+      "a": "Der Fortschritt liegt im Speicher dieses Browsers. Nach dem Löschen der Browserdaten oder auf einem anderen Gerät ist er weg – außer du hast dich unter ☁ Cloud mit Google angemeldet, dann wird er synchronisiert."
+    },
+    {
+      "q": "Das Spiel ruckelt auf meinem Handy.",
+      "a": "Stell unter ⚙ Optionen die Grafik auf „Sparsam“. „Automatisch“ wählt auf Handys bereits „Ausgewogen“, „Hoch“ mit Schatten ist für starke PCs gedacht."
+    },
+    {
+      "q": "Warum ist die nächste Welt gesperrt?",
+      "a": "Eine Welt öffnet sich erst, wenn du die Boss-Burg (Level 15) der Welt davor geschafft hast."
+    },
+    {
+      "q": "Es erscheint „Dieses Gerät unterstützt kein WebGL“.",
+      "a": "Das Spiel braucht 3D-Grafik (WebGL). Probiere einen aktuellen Browser oder schalte die Hardwarebeschleunigung ein."
+    },
+    {
+      "q": "Woher bekomme ich neue Power-ups?",
+      "a": "Durch das erste Mal 3 Sterne in einem Level (1 zufälliges Power-up), den ersten Sieg über eine Boss-Burg (Mega-Adler) und das erste Zerstören einer goldenen Sender-Kiste (Mega-Adler plus ein weiteres)."
+    },
+    {
+      "q": "Kann ich hochkant spielen?",
+      "a": "Ja, mit „Hochkant weiterspielen“. Empfohlen ist aber das Querformat, damit du Schleuder und Schweine gleichzeitig siehst."
+    },
+    {
+      "q": "Ton oder Musik stören.",
+      "a": "M schaltet die Musik, in der Pause gibt es ♪ Ton und ♫ Musik, in den Optionen Soundeffekte und Musik getrennt."
+    }
+  ]
+}

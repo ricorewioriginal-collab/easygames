@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "6f899696f3f6",
- "generated": "2026-10-25T03:04:22+01:00",
- "commit": "f453802e4ca3fb0e144c14befb4ac410ec937280",
+ "version": "be995619f087",
+ "generated": "2026-10-25T02:23:51+00:00",
+ "commit": "0db8f37c3a4247ebdc3ff5426cb5367aa23091c5",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -393,8 +393,8 @@
   },
   {
    "p": "anleitung.html",
-   "s": 10274,
-   "h": "ea0ba3a65ed8047e3e047d8ea078df888610cbb022638e3b68fd278e61f1f5ed"
+   "s": 10306,
+   "h": "cf8d042181924bc87032f690d713585218fb3023367d47ebc93a054aceb18ea1"
   },
   {
    "p": "anmacha-beat-surfer/card.jpg",
@@ -6522,6 +6522,16 @@
    "h": "eee92317180ae0641e583b94d6a462463bfdd47b27178b8741356734c1de81d4"
   },
   {
+   "p": "guides/MachMichAus.json",
+   "s": 12723,
+   "h": "ca490170bdf2d97a1d3c97af637475adac9a7e29ca53d8def979fc854fb83411"
+  },
+  {
+   "p": "guides/anmacha-beat-surfer.json",
+   "s": 10152,
+   "h": "c2039be164a86e33d5bbb7eda0745a805f8a7bd6f4e7e5f0b929029c2160b016"
+  },
+  {
    "p": "guides/anmacha-frequenzrad.json",
    "s": 11438,
    "h": "6fcd6625d57150e01472ea25ba869eddb7c54cc53db4e27a917634f8de606cdd"
@@ -6542,6 +6552,16 @@
    "h": "88fae07a026e237b72a2757611de6f72fcf8e2ef307d4cdb69f4dfdf01e508ab"
   },
   {
+   "p": "guides/anmacha-kart.json",
+   "s": 14740,
+   "h": "b3643865df86441360af4d319f50607a4f13f073c02697789e22e3bd1ef076f3"
+  },
+  {
+   "p": "guides/anmacha-kartenrausch.json",
+   "s": 16227,
+   "h": "3cdc567b38f23fbe46dee708ef7f79ad9d8ce9ec4574cc167080c21f95f03d39"
+  },
+  {
    "p": "guides/anmacha-koffer-dealer.json",
    "s": 13691,
    "h": "24314f3d150e03fcb7f76d12d42807b041d9eb76de3855d6aa5a6c5c092f2ed0"
@@ -6555,6 +6575,16 @@
    "p": "guides/anmacha-preisradar.json",
    "s": 12315,
    "h": "20410e1933aab5d13018472b2e93ba03e84cc78820f4443332559042e3b4ca10"
+  },
+  {
+   "p": "guides/anmacha-quiz.json",
+   "s": 16998,
+   "h": "7dfdf25ab5e86be612f2b3f9597b8f49e7c25e956e4f70c8f6acfb1815ae6a2b"
+  },
+  {
+   "p": "guides/anmacha-radio-match.json",
+   "s": 34849,
+   "h": "4aa137e9b7aa8ef6e5f9892d5d67604ff83f874f6f69d0e3240104a4f15f4c9d"
   },
   {
    "p": "guides/anmacha-radio-surfer.json",
@@ -6577,9 +6607,24 @@
    "h": "7f79fd8fb81f82e89b520b571f1c8323829d7fbfa8bab36a48b92160dbeda6d0"
   },
   {
+   "p": "guides/anmacha-tower-defense.json",
+   "s": 13138,
+   "h": "aed0f1a60a2f95f0571320d09ebcc3dac746c181633fa4fe7ad05e02b7a099a1"
+  },
+  {
    "p": "guides/bowling-bahn.json",
    "s": 11819,
    "h": "d07f6a3efa9e1d8d41439b50c8ce4ec7f62f7f9d438a6bcb737ef233be555ef3"
+  },
+  {
+   "p": "guides/brainrot-parkour.json",
+   "s": 13366,
+   "h": "3fbfbb38a3c077116dc1f9578c058676f6ce68c18f029850c4e83c83e6a76f1a"
+  },
+  {
+   "p": "guides/challenge-show.json",
+   "s": 13651,
+   "h": "7f04b793be1bc067b2beaa02539bc40d9fa9fe4f5b21e501b8d3e68f1b98bc58"
   },
   {
    "p": "guides/darts-arena.json",
@@ -6592,6 +6637,21 @@
    "h": "4b06081ab0d0e8534d6035539c019572056b16066e1a9f402ae5cb5e2a516372"
   },
   {
+   "p": "guides/easyclash.json",
+   "s": 17808,
+   "h": "73a5af950d54c9536db5e7aa27a25b416fb3aa4d43d1e0a17b573860fab93784"
+  },
+  {
+   "p": "guides/fabelkick.json",
+   "s": 15309,
+   "h": "b7480b767f682c742780e25c949c1da8e1ffad3d305ff170fcaf2fadfb4bd730"
+  },
+  {
+   "p": "guides/fall-akte.json",
+   "s": 24212,
+   "h": "478794f50929238cdebde55c91c2fe0e0e778cdf68637fb334464a5f24f5e060"
+  },
+  {
    "p": "guides/frequenzminen.json",
    "s": 13804,
    "h": "f93bc2788474f314a11cc28a0e01705cce7a29c916de9d2fad04cab6d6c57a54"
@@ -6600,6 +6660,11 @@
    "p": "guides/funk-billard.json",
    "s": 12861,
    "h": "e32db2e3d21e4e765d5baee029723d666c6e1d25ce6074a4247879d1e5d58c29"
+  },
+  {
+   "p": "guides/funkblasen.json",
+   "s": 35608,
+   "h": "9bb5af455248b5c854ffde45533ac2ea1a740683412173367410d1fe4f3e434b"
   },
   {
    "p": "guides/funkgalgen.json",
@@ -6632,9 +6697,24 @@
    "h": "027a70a3f912f421250acfeb68f20dc7f67317b662d41834c8fdabb2bf18c43d"
   },
   {
+   "p": "guides/krawallvoegel.json",
+   "s": 36341,
+   "h": "428548a00d39fab8a97f209b90c993adb8756f56cc8bebfa58dd2246d4258347"
+  },
+  {
+   "p": "guides/kuechen-chaos.json",
+   "s": 13560,
+   "h": "3f8c1c2e0e8f85121e4c8b6bf5f780511f42fef9eea7fce23f95e475c5b73120"
+  },
+  {
    "p": "guides/lumo.json",
    "s": 15776,
    "h": "b7952c46547d2d15719c8da517f729f8143049e7d20314ec1cbef33ad55f9760"
+  },
+  {
+   "p": "guides/mahjong.json",
+   "s": 14071,
+   "h": "71713fbf60da34dd99b5e6aad3827169f933330df5df9ae171e26679471256a1"
   },
   {
    "p": "guides/oma-rennen.json",
@@ -6657,6 +6737,11 @@
    "h": "589701d611c31c13555ecdc5be8ac03f82bad44aae1035ae616e9502456e79d3"
   },
   {
+   "p": "guides/sendemast-sumo.json",
+   "s": 14657,
+   "h": "e6ab1b6f61c46c79e96a20e6969d8c243c35390f6eef198d9347f4f3020740e6"
+  },
+  {
    "p": "guides/tortenschlacht.json",
    "s": 13452,
    "h": "613ff85e5e821503caab7479e4860c26744f33a0d370db4afaaa89b7ce41e7c0"
@@ -6672,9 +6757,19 @@
    "h": "15a7d6cc026cfe1f4e8cb746a4b7f93dbf609ed3e9607902c4de4793d77cd26c"
   },
   {
+   "p": "guides/wortfunk.json",
+   "s": 14526,
+   "h": "37f4f79e113532eef1e58c4285954096c9d4a387fcc46187678752f9737f74e6"
+  },
+  {
    "p": "guides/wortgitter.json",
    "s": 12542,
    "h": "19b9f7288cda024058141193469175352899b4b4734a8f84d828e18a439636f7"
+  },
+  {
+   "p": "guides/zeitsprung-castingshow.json",
+   "s": 12412,
+   "h": "20b7ede9f1f1c8095deff0d008af0ecba557b56f3ba297460560112122cd7520"
   },
   {
    "p": "guides/zeitsprung-eurovision.json",
@@ -6685,6 +6780,11 @@
    "p": "guides/zeitsprung-kinderserien.json",
    "s": 14270,
    "h": "91f2fd0519ed549c55e114ec36d510534f7bb67fd0158aaaea137ce66006f020"
+  },
+  {
+   "p": "guides/zeitsprung-movie.json",
+   "s": 26884,
+   "h": "bffcd1be17dd4afe5789a966444d15b3de7c58a61837d9c816909efa9aa29d43"
   },
   {
    "p": "guides/zeitsprung-radio.json",

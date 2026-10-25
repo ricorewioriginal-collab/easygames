@@ -1,0 +1,229 @@
+{
+  "id": "anmacha-kart",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AnMaCha Kart Rush ist ein Arcade-Rennspiel in 3D mit Sender-Logos auf den Karts. Acht Fahrer starten in jedem Rennen. Wer nach der eingestellten Rundenzahl zuerst über die Ziellinie fährt, gewinnt.",
+        "Unterwegs helfen dir Drift-Turbos, Boost-Felder, Windschatten und Radio-Items. Mit Items bremst du Gegner aus – und die Gegner dich."
+      ]
+    },
+    {
+      "t": "Start und Menü",
+      "p": [
+        "Nach dem Ladebalken erscheint der Titel. Von hier startest du ein Solo-Rennen, öffnest 👥 Mehrspieler oder 🌐 Online spielen, siehst die 🏆 Bestzeiten, schaltest 🔊 Ton um oder öffnest den 📺 TV-Modus. Auf Handys gibt es zusätzlich „📱 Kippen zum Lenken“ und „⇄ Richtung tauschen“."
+      ],
+      "steps": [
+        "1 · Modus: Einzelrennen, Cup (3 Strecken), Zeitfahren (allein, ohne Items) oder Freies Fahren (ohne Zeitlimit, Gegner und Rundenzwang). Dazu die Renneinstellungen: Runden (2, 3 oder 5), Gegner (Anfänger, Normal, Profi) und Lenkhilfe (Aus, Leicht, Stark).",
+        "2 · Strecke: eine der 18 Strecken oder im Cup-Modus einer der 7 Cups.",
+        "3 · Fahrer: einer von 19 Fahrern auf der 3D-Rennbühne (mit dem Finger drehbar).",
+        "4 · Kart: eines von 6 Fahrzeugen mit Werten für Tempo, Beschleunigung, Handling und Gewicht.",
+        "Mit WEITER → geht es Schritt für Schritt weiter, mit ← ZURÜCK zurück. Deine Auswahl merkt sich das Spiel."
+      ]
+    },
+    {
+      "t": "Spielmodi",
+      "list": [
+        "Einzelrennen: ein Rennen auf einer Strecke gegen 7 Computer-Fahrer mit Items.",
+        "Cup: drei Rennen hintereinander. Nach jedem Rennen gibt es Punkte für die Platzierung: 15, 12, 10, 8, 6, 4, 2 und 1. Wer am Ende die meisten Punkte hat, gewinnt den Cup.",
+        "Zeitfahren: allein auf der Strecke, ohne Items und ohne feste Hindernisse – für Bestzeiten.",
+        "Freies Fahren: allein, ohne Zeit- und Rundendruck. Ideal zum Üben von Drifts und Kurven.",
+        "Zeitfahren und Freies Fahren gibt es nur, wenn du allein fährst. Mit mehreren Spielern wird daraus ein normales Rennen."
+      ]
+    },
+    {
+      "t": "Fahren, Driften und Turbos",
+      "list": [
+        "Gas geben, lenken, bremsen – bremst du im Stand weiter, fährst du rückwärts.",
+        "Driften: Halte in einer Kurve die Drift-Taste, während du lenkst. Das geht ab etwa halber Höchstgeschwindigkeit. Je länger du driftest, desto stärker wird der Mini-Turbo: blau, dann orange, dann pink. Beim Loslassen zündet er.",
+        "Gelbe Boost-Felder geben sofort einen kurzen Turbo. Auf jeder Strecke liegen acht davon auf verschiedenen Spuren.",
+        "Windschatten: Fährst du dicht hinter einem schnellen Gegner, lädt sich ein Windschatten-Turbo auf und zündet von selbst.",
+        "Neben der Strecke (Gras, Sand) wirst du langsamer – außer mit dem Buggy. An den Banden prallst du ab.",
+        "Lenkhilfe (Aus, Leicht, Stark) zieht dein Kart sanft Richtung Ideallinie. Spieler am Handy fahren im Mehrspieler mindestens mit „Leicht“."
+      ]
+    },
+    {
+      "t": "Items",
+      "p": [
+        "Auf jeder Strecke stehen sechs Reihen mit je drei Item-Boxen. Fährst du durch eine, rollt dein Item aus. Wer hinten liegt, bekommt eher starke Items wie Raketen und Turbo-Trios; vorne gibt es mehr Bananen."
+      ],
+      "list": [
+        "🚀 Bass-Boost: 2 Sekunden Turbo. 🚀 Turbo-Trio: drei Boosts, einer pro Tastendruck.",
+        "🍌 Bananenschale (oder 🍌 Bananen-Trio): wird hinter dir abgelegt. Wer drüberfährt, rutscht kurz weg.",
+        "🪨 Felsbrocken (oder 🪨 Stein-Trio): fliegt geradeaus nach vorn und prallt von den Banden ab.",
+        "📢 Störsignal: eine Mine hinter dir. Wer sie trifft, dreht sich länger und verliert fast sein ganzes Tempo.",
+        "🎯 Jingle-Rakete: sucht sich den nächsten Gegner vor dir.",
+        "🛡️ Frequenz-Schild: schützt 7 Sekunden lang vor einem Treffer.",
+        "⚡ Funk-Blitz: gibt es nur auf den letzten beiden Plätzen. Trifft alle Fahrer vor dir auf einmal.",
+        "🌫️ Nebelbombe: nimmt allen Fahrern vor dir für 4 Sekunden die Sicht.",
+        "Nach einem Treffer bist du kurz unverwundbar. In Rennen mit Items liegen außerdem feste Bananen und Störsignale am Streckenrand."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "PC: Pfeil hoch oder W Gas, Pfeil links/rechts oder A/D lenken, Pfeil runter oder S bremsen, Shift oder Z driften, Leertaste, Enter oder X Item, Esc Pause, M Ton an/aus. Im Menü startet Enter.",
+        "Handy: links der Joystick zum Lenken, rechts vier Tasten wie am Controller – unten GAS, links Bremse, rechts Drift, oben Item. Legst du den Daumen zwischen GAS und DRIFT, drückst du beide. Optional „📱 Kippen zum Lenken“ und „⇄ Richtung tauschen“.",
+        "Gamepad: Stick oder Steuerkreuz lenken, A, RT oder Steuerkreuz hoch Gas, B, LT oder Steuerkreuz runter bremsen, RB oder X driften, Y oder LB Item.",
+        "Im Pausenmenü: WEITER oder Rennen beenden."
+      ]
+    },
+    {
+      "t": "Mehrspieler, Online und TV",
+      "list": [
+        "👥 Mehrspieler – Rennen eröffnen: Ein Handy, Tablet oder PC eröffnet den Raum. Freunde scannen den QR-Code oder geben den Raumcode ein und fahren auf ihrem eigenen Bildschirm.",
+        "Bei Freunden mitfahren: 📷 QR-Code scannen oder 🔑 Code eingeben, dann VERBINDEN.",
+        "Gemeinsam an einem Bildschirm: lokaler Splitscreen mit Tastatur und/oder Gamepads, ohne QR-Kopplung. In der Lobby fügst du „⌨️ Tastatur-Spieler an diesem Gerät“ und „🎮 Gamepad-Spieler hinzufügen“ hinzu.",
+        "Bis zu 4 menschliche Fahrer pro Rennen; die übrigen Plätze bis 8 füllen Computer-Fahrer.",
+        "📺 TV-Modus: Der Fernseher zeigt die Rennen im Splitscreen, die Handys sind die Lenkräder. OK auf der Fernbedienung schaltet Vollbild ein; Strecke und Start wählt ihr am Handy.",
+        "Mitspieler können von überall per Link oder Code beitreten – ein TV ist nicht nötig."
+      ]
+    },
+    {
+      "t": "Wertung und Bestzeiten",
+      "list": [
+        "Oben im Rennen siehst du Platz, Runde (z. B. 🏁 2/3), Tempo in km/h und dein Item. „LETZTE RUNDE!“ kündigt die Schlussrunde an.",
+        "Im Ergebnis stehen alle Fahrer mit Zeiten; im Cup die Gesamtpunkte.",
+        "🏆 Bestzeiten: Für jede Strecke speichert das Spiel deine beste Runde, außerdem deine beste Gesamtzeit je Rundenzahl. Gespeichert wird lokal im Browser und nur bei Solo-Rennen.",
+        "Fährst du eine neue Bestrunde, steht im Ergebnis „🏆 Neue Bestrunde“."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Beginne mit Gegnern auf „Anfänger“ und Lenkhilfe „Leicht“ oder „Stark“.",
+        "Der Allrounder ist für den Einstieg das beste Kart.",
+        "Fahr durch die gelben Boost-Felder – sie liegen meist an Kurvenausgängen und auf Geraden.",
+        "Nimm jede Item-Box mit. Selbst eine Banane hinter dir schützt vor Verfolgern.",
+        "Im Freien Fahren lernst du jede Strecke in Ruhe kennen."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Drifte in jeder längeren Kurve. Ein voller pinker Mini-Turbo hält fast 3 Sekunden.",
+        "Lass den Drift erst am Kurvenausgang los, damit der Turbo dich auf die Gerade schiebt.",
+        "Halte Bananen oder das Störsignal, bis jemand direkt hinter dir ist – die Computer-Fahrer legen sie genauso.",
+        "Felsbrocken prallen von den Banden ab. In engen Passagen triffst du so auch um die Ecke.",
+        "Spare den Frequenz-Schild, wenn du vorne liegst: Er fängt eine Jingle-Rakete oder einen Funk-Blitz ab.",
+        "Nutze den Windschatten auf langen Geraden, um ohne Item zu überholen."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Das Wolkenflitzer-Kart lädt Drift-Turbos am schnellsten auf und lenkt am besten – ideal für kurvige Strecken.",
+        "Der Dragster beschleunigt brutal: perfekt nach Treffern und auf Strecken mit vielen Hindernissen.",
+        "Der Cruiser ist schwer und rammt leichte Gegner einfach weg.",
+        "Mit dem Buggy kannst du Kurven über das Gras abkürzen, weil er dort kaum langsamer wird.",
+        "Ein Boost-Feld wirkt nur, wenn dein aktueller Turbo fast vorbei ist. Fahr bewusst ins nächste Feld, wenn der letzte Schub endet.",
+        "Bremsen nur kurz antippen – ein Drift ist fast immer schneller als eine Vollbremsung."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu früh driften: Unter halber Höchstgeschwindigkeit oder ohne Lenkeinschlag startet kein Drift.",
+        "Den Drift zu kurz halten: Unter knapp einer Sekunde gibt es gar keinen Mini-Turbo.",
+        "Durch feste Bananen und Störsignale am Rand fahren – sie bleiben das ganze Rennen liegen.",
+        "Raketen blind abfeuern, wenn kein Gegner vor dir in Reichweite ist."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Alle Strecken",
+      "list": [
+        "Funkturm-Wiese – grüner Einsteigerkurs.",
+        "Sonnen-Strand – Sand und Meer.",
+        "Geistergruft – dunkel und neblig, die Sichtweite ist kurz.",
+        "Fantasia-Land – bunte Märchenwelt.",
+        "Neon-City – nächtliche Stadt mit engem Kurs.",
+        "Lavasturm-Ring, Eiskristall-Piste, Dschungel-Express, Sternen-Highway, Wüsten-Rallye, Regenbogen-Boulevard – eigene Farbwelten mit neuen Kurvenprofilen.",
+        "Herzportal-Boulevard – mit Portalen und Portal-Boost-Feldern.",
+        "Kristallsturm-Pass – Kristall-Boost-Felder geben zusätzlich 2 Sekunden Schild.",
+        "Monsterfreunde-Safari – Fantasiewesen kreuzen die Fahrbahn.",
+        "Ahnenruinen-Ring – besonders viele Hindernisse; die Boost-Felder machen kurz unverwundbar.",
+        "Drachenflug-Tal – die längsten Boosts im Spiel (über 2 Sekunden) und Fantasiewesen auf der Strecke.",
+        "Splitterwelten-Kurs – fünf zusätzliche Boost-Felder, Portale und drei zusätzliche Hindernisse.",
+        "Farbeninsel-Rundkurs – Boost-Felder heben Nebel und Bremsen sofort auf; Fantasiewesen unterwegs."
+      ]
+    },
+    {
+      "t": "Sondermechaniken der Themen-Strecken",
+      "list": [
+        "Portale (Herzportal-Boulevard, Splitterwelten-Kurs): Zwei Portale liegen in der Streckenmitte. Fährst du hinein, wirst du ein großes Stück nach vorn versetzt – mit kurzem Turbo und kurzer Unverwundbarkeit. Das ist die beste Abkürzung im Spiel; fahr deshalb immer mittig auf die Portale zu. Danach braucht ein Portal 4 Sekunden, bis es dich wieder mitnimmt.",
+        "Fantasiewesen (Monsterfreunde-Safari, Drachenflug-Tal, Farbeninsel-Rundkurs): Vier Wesen drehen an festen Stellen kleine Kreise am Fahrbahnrand. Ein Zusammenstoß dreht dich nur kurz weg, kostet aber Tempo – weit außen vorbeifahren.",
+        "Safari-Boost-Felder laden zusätzlich deinen Windschatten-Turbo auf.",
+        "Portal-Boost-Felder bringen dich sofort fast auf Höchstgeschwindigkeit."
+      ]
+    },
+    {
+      "t": "Alle Cups",
+      "list": [
+        "Sonnen-Cup: Funkturm-Wiese · Sonnen-Strand · Fantasia-Land",
+        "Spuk-Cup: Geistergruft · Neon-City · Fantasia-Land",
+        "Elemente-Cup: Lavasturm-Ring · Eiskristall-Piste · Wüsten-Rallye",
+        "Abenteuer-Cup: Dschungel-Express · Regenbogen-Boulevard · Sternen-Highway",
+        "Portal-Cup: Herzportal-Boulevard · Kristallsturm-Pass · Ahnenruinen-Ring",
+        "Fantasy-Cup: Monsterfreunde-Safari · Drachenflug-Tal · Splitterwelten-Kurs",
+        "RicoReWi-Cup: Farbeninsel-Rundkurs · Splitterwelten-Kurs · Herzportal-Boulevard",
+        "Cup-Strategie: Drei zweite Plätze (36 Punkte) schlagen einen Sieg mit zwei schlechten Rennen. Fahr sicher, statt alles zu riskieren."
+      ]
+    },
+    {
+      "t": "Fahrer und Karts",
+      "p": [
+        "Alle Fahrer und Karts sind von Anfang an verfügbar – es muss nichts freigeschaltet werden. Die Fahrer unterscheiden sich nur im Aussehen; die Fahrwerte kommen vom Kart."
+      ],
+      "list": [
+        "Fahrer: Mia, Rufus, Brumm, Luna, Quak, Funke, Stella, Pico, Bolt, Zorp, Bao, Hoppel sowie die Themen-Fahrer Lumina, Kryon und Granit (Portal-Cup), Mozi und Flämmchen (Fantasy-Cup), Ziri und Kiki (RicoReWi-Cup).",
+        "🏎️ Allrounder: ausgewogen – gut für den Einstieg.",
+        "⚡ Flitzer: höchstes Tempo, träge in Kurven.",
+        "🚙 Buggy: fährt auch neben der Strecke fast voll, gutes Handling.",
+        "🚛 Cruiser: schwer – rammt Gegner einfach weg, beschleunigt langsamer.",
+        "🚀 Dragster: brutale Beschleunigung, lenkt schwerer.",
+        "☁️ Wolkenflitzer: wendig, lädt Drift-Turbos schnell auf, etwas weniger Spitzentempo."
+      ]
+    },
+    {
+      "t": "Turbo-Tabelle",
+      "list": [
+        "Mini-Turbo blau (Drift ab knapp 1 Sekunde): gut 1 Sekunde Turbo.",
+        "Mini-Turbo orange (Drift ab knapp 2 Sekunden): fast 2 Sekunden Turbo.",
+        "Mini-Turbo pink (Drift ab gut 3 Sekunden): fast 3 Sekunden Turbo.",
+        "Bass-Boost aus der Item-Box: 2 Sekunden.",
+        "Boost-Feld: gut 1 Sekunde, auf den Themen-Strecken länger.",
+        "Windschatten-Turbo: knapp 2 Sekunden, zündet automatisch."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Mein Handy findet das Rennen nicht.",
+      "a": "Alle Geräte brauchen Internet. Prüfe den Raumcode oder scanne den QR-Code erneut. Ein Rennen hat höchstens 4 menschliche Fahrer – sind alle Plätze belegt, kommt „Alle 4 Plätze sind belegt“."
+    },
+    {
+      "q": "Der QR-Scanner öffnet die Kamera nicht.",
+      "a": "Erlaube dem Browser den Kamerazugriff. Klappt es trotzdem nicht, tippe auf „🔑 Code eingeben“ und gib den Code von Hand ein."
+    },
+    {
+      "q": "Meine Bestzeiten sind weg.",
+      "a": "Bestzeiten werden lokal im Browser gespeichert und nur bei Solo-Rennen. Nach dem Löschen der Website-Daten oder auf einem anderen Gerät sind sie nicht vorhanden."
+    },
+    {
+      "q": "Kippen zum Lenken funktioniert nicht.",
+      "a": "Tippe im Titel auf „📱 Kippen zum Lenken“ und erlaube den Bewegungssensor. Lenkt das Kart verkehrt herum, tippe auf „⇄ Richtung tauschen“."
+    },
+    {
+      "q": "Kein Ton?",
+      "a": "Tippe einmal auf den Bildschirm – Browser geben Ton erst danach frei. Prüfe außerdem den 🔊-Knopf oder drücke M am PC."
+    },
+    {
+      "q": "Warum kann ich im Zeitfahren keine Items nutzen?",
+      "a": "Das Zeitfahren ist absichtlich ohne Items, Gegner und feste Hindernisse – damit die Bestzeiten vergleichbar bleiben."
+    }
+  ]
+}

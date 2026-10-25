@@ -1,0 +1,157 @@
+{
+  "id": "anmacha-beat-surfer",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "AnMaCha Beat Surfer ist ein Rhythmusspiel in 3D. Auf 4 Spuren rollen Noten auf die Trefferlinie zu. Drückst du die passende Spur genau dann, wenn eine Note die Linie erreicht, triffst du sie. Die Musik wird im Spiel selbst erzeugt – jeder der 13 Sender hat sein eigenes Genre und Tempo.",
+        "Oben in der Mitte zeigt die Anzeige WELLE deine Lebensleiste. Verpasste Noten senken sie, Treffer füllen sie wieder auf. Fällt die Welle auf null, ist der Song verloren („DIE WELLE IST WEG …“). Hältst du bis zum Ende durch, ist der Song geschafft."
+      ]
+    },
+    {
+      "t": "Start und Menü",
+      "list": [
+        "🏁 Kampagne: alle 13 Sender der Reihe nach von entspannt bis schwer. Der Pfad mit den Nummern 1 bis 13 zeigt geschaffte Songs und den nächsten. Mit PLAY bzw. WEITER spielst du den nächsten offenen Song. „↺ Kampagne von vorn“ setzt den Fortschritt zurück.",
+        "🎯 Freies Spiel: Mit ◀ und ▶ wählst du einen beliebigen Sender. Die Vorschau zeigt Name, Genre und die Schwierigkeit in Sternen (1 bis 5).",
+        "Oben siehst du SCORE und BEST (Bestwert für diesen Song). Daneben die Knöpfe ⏸ Pause, 🔊 Ton und ↻ Neustart.",
+        "Jeder Song dauert gut eine Minute, davor zählt das Spiel vier Schläge ein."
+      ]
+    },
+    {
+      "t": "Treffer und Wertung",
+      "list": [
+        "PERFEKT: höchstens 55 Millisekunden neben dem Schlag – 300 Punkte × Multiplikator, Welle +1,6.",
+        "GUT: höchstens 115 Millisekunden daneben – 100 Punkte × Multiplikator, Welle +0,6.",
+        "VERPASST: Die Note ist durchgerauscht – die Combo fällt auf 0 und die Welle sinkt (je nach Song um 7 bis gut 14 Prozentpunkte).",
+        "Daneben drücken, wenn keine Note in der Nähe ist, kostet nichts.",
+        "Combo-Multiplikator: Alle 10 Treffer in Folge steigt er um 1, bis höchstens ×4 (ab 30er-Combo).",
+        "Die Welle startet bei 70 % und kann höchstens 100 % erreichen. Darunter steht deine aktuelle Genauigkeit."
+      ]
+    },
+    {
+      "t": "Sterne und Ergebnis",
+      "list": [
+        "Genauigkeit = (Perfekt + 0,6 × Gut) geteilt durch alle Noten.",
+        "★★★ ab 90 % Genauigkeit („PERFEKT! 🏆“), ★★ ab 75 %, ★ darunter – solange du den Song schaffst.",
+        "Sternbonus: 1000 Punkte pro Stern kommen zum Score dazu.",
+        "Im Ergebnis siehst du Score, Genauigkeit, Max. Combo und die Zahl der Perfekt-Treffer. Danach: NÄCHSTER SONG (bzw. NOCHMAL nach einer Niederlage), Nochmal oder Songwahl."
+      ]
+    },
+    {
+      "t": "Steuerung",
+      "list": [
+        "PC: D, F, J, K oder Pfeil links, runter, hoch, rechts treffen die vier Spuren (von links nach rechts).",
+        "P oder Esc = Pause bzw. weiter, R = Neustart des Songs, M = Ton an/aus, Enter oder Leertaste = Start, Weiter im Ergebnis bzw. Fortsetzen aus der Pause.",
+        "Touch: die vier großen Tasten unten antippen (◀ ▼ ▲ ▶). Pause, Ton und Neustart oben rechts.",
+        "Gamecontroller: Steuerkreuz links, runter, hoch, rechts oder LB, LT, RT, RB treffen die vier Spuren. A startet bzw. bestätigt, B oder Start pausiert, Select schaltet den Ton.",
+        "Wechselst du den Tab oder die App, pausiert das Spiel automatisch."
+      ]
+    },
+    {
+      "t": "Pause und Audio-Versatz",
+      "p": [
+        "Im Pausenmenü gibt es WEITER, ↻ Neustart und Songwahl. Darunter stellst du den Audio-Versatz in Schritten von 20 Millisekunden ein (−300 bis +300 ms). Das hilft, wenn Treffer zu früh oder zu spät wirken, zum Beispiel mit Bluetooth-Kopfhörern. Der Wert wird gespeichert."
+      ]
+    },
+    {
+      "t": "Fortschritt und Speichern",
+      "p": [
+        "Kampagnen-Fortschritt, Bestwerte je Song, zuletzt gewählter Song, Modus, Ton und Audio-Versatz werden im Browser gespeichert. Ein Bestwert wird nur gespeichert, wenn du den Song geschafft hast. Mit einem Google-Konto über die easygames-Cloud kann der Spielstand auf weitere Geräte übertragen werden."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Hör auf den Beat: Die meisten Noten auf den linken Spuren liegen auf Bassdrum und Snare, die rechten folgen der Melodie.",
+        "Lieber spät und sicher als zu früh: Ein GUT hält die Combo genauso wie ein PERFEKT.",
+        "Fang mit Special-Radio (Entspannung, 74 BPM) an – der langsamste Song der Kampagne.",
+        "Am PC liegen D F J K bequem unter den Zeigefingern und Mittelfingern beider Hände.",
+        "Hast du das Gefühl, immer zu spät zu sein, stell in der Pause den Audio-Versatz ein."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Combo schützen: Ab 30 Treffern in Folge zählt jeder Treffer vierfach. Eine verpasste Note kostet also nicht nur Welle, sondern auch den Multiplikator.",
+        "Welle auffüllen: Perfekt-Treffer geben fast dreimal so viel Welle zurück wie Gut-Treffer. In schweren Songs entscheidet das über Sieg und Niederlage.",
+        "Zwei Noten gleichzeitig: Es kommen höchstens zwei Noten auf einmal. Übe, beide Tasten wirklich zeitgleich zu drücken.",
+        "Wilde Tipps kosten nichts – aber nur wenn keine Note in der Nähe ist. Ist eine Note da, zählt dein Druck als Treffer oder sie rauscht später als verpasst durch."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Für 3 Sterne brauchst du 90 % Genauigkeit – zum Beispiel 85 % Perfekt und 15 % Gut reichen gerade so (0,85 + 0,09 = 0,94).",
+        "In den letzten Songs (Rap, Club) kommen die Noten schneller angerollt und es gibt mehr pro Takt. Schau auf die Trefferlinie, nicht auf die Noten weiter hinten.",
+        "Rap hat nur 92 BPM, aber die meisten Noten pro Takt und viele versetzte Rhythmen – das macht ihn so schwer.",
+        "R startet einen Song sofort neu – praktisch, wenn der Anfang schiefgeht."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Tasten gedrückt halten: Jede Note braucht einen eigenen Druck, gehaltene Tasten wiederholen nicht.",
+        "Mit Bluetooth-Kopfhörern spielen, ohne den Versatz anzupassen – die Verzögerung macht viele Perfekt-Treffer zu Gut-Treffern.",
+        "Nach einem Fehler hektisch werden: Lass die verpasste Note los und konzentrier dich auf die nächste."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Die Kampagne – alle 13 Songs",
+      "p": [
+        "Die Reihenfolge geht von leicht nach schwer. Mit jedem Song kommen die Noten etwas schneller, es gibt mehr Noten pro Takt und eine verpasste Note kostet mehr Welle."
+      ],
+      "list": [
+        "1. Special-Radio – Entspannung, 74 BPM, ★ – Fehler kosten 7 % Welle.",
+        "2. RadioFloh! – Kindermusik, 100 BPM, ★.",
+        "3. YourTime-FM – Chill & Tropical, 104 BPM, ★★.",
+        "4. SchlagerPop 24 – Schlager, 124 BPM, ★★.",
+        "5. ChristmasRadio 24 – Weihnachten, 112 BPM, ★★.",
+        "6. KultRadio 24 – Disco & Kult-Hits, 116 BPM, ★★★ – Fehler kosten 10 % Welle.",
+        "7. ChartRadio 24 – Pop & Charts, 120 BPM, ★★★.",
+        "8. AnMaCha 24 – Pop-Rock Mix, 126 BPM, ★★★.",
+        "9. RicoReWi Music & Media – Synthwave, 118 BPM, ★★★★.",
+        "10. Zocker-FM – Gaming / Chiptune, 140 BPM, ★★★★.",
+        "11. RockRadio 24 – Rock, 132 BPM, ★★★★.",
+        "12. RapRadio 24 – Rap, 92 BPM, ★★★★★.",
+        "13. ClubRadio 24 – Club / EDM, 148 BPM, ★★★★★ – das Finale, Fehler kosten 14,2 % Welle. Danach heißt es „KAMPAGNE KOMPLETT!“."
+      ]
+    },
+    {
+      "t": "So überlebst du jeden Song",
+      "list": [
+        "Du startest mit 70 % Welle. Im ersten Song darfst du dir am Stück 9 Fehler leisten, im letzten nur 4 – danach ist die Welle weg.",
+        "Jeder Perfekt-Treffer bringt 1,6 % zurück. Im Finale gleichen also etwa 9 Perfekt-Treffer einen Fehler aus.",
+        "Die Noten-Reihenfolge eines Songs ist immer gleich. Wer einen Song mehrmals spielt, lernt ihn auswendig – das ist der sicherste Weg durch Rap und Club."
+      ]
+    },
+    {
+      "t": "Höchstpunkte holen",
+      "list": [
+        "Punkte pro Note: Perfekt 300, Gut 100 – mal Multiplikator ×1 (Combo 0–9), ×2 (10–19), ×3 (20–29), ×4 (ab 30).",
+        "Eine durchgehende Combo ab Note 31 bringt pro Perfekt 1200 Punkte.",
+        "Am Ende kommen 1000 Punkte je Stern dazu, mit 3 Sternen also 3000.",
+        "Schnelle Songs mit vielen Noten (Club, Zocker, Rock) bringen die höchsten Scores, weil es mehr Noten zum Multiplizieren gibt."
+      ]
+    },
+    {
+      "t": "Freischaltungen und Geheimnisse",
+      "list": [
+        "Im Freien Spiel sind alle 13 Sender von Anfang an spielbar.",
+        "In der Kampagne wird der nächste Song frei, sobald du den aktuellen schaffst – egal mit wie vielen Sternen.",
+        "Jeder Sender hat eigene Farben im 3D-Studio und sein Logo auf der Bühne."
+      ]
+    }
+  ],
+  "faq": [
+    { "q": "Meine Treffer werden als zu früh oder zu spät gewertet.", "a": "Öffne die Pause und stelle den Audio-Versatz mit − und + ein. Das ist vor allem bei Bluetooth-Kopfhörern nötig." },
+    { "q": "Ich höre keine Musik.", "a": "Prüfe den Ton-Knopf 🔊 oder drücke M. Im Browser startet der Ton erst nach dem ersten Antippen oder Tastendruck." },
+    { "q": "Es steht „three.js konnte nicht geladen werden“.", "a": "Das Spiel lädt die 3D-Grafik beim Start aus dem Internet. Prüfe die Internetverbindung und lade die Seite neu." },
+    { "q": "Wie fange ich die Kampagne neu an?", "a": "Im Menü unter Kampagne auf „↺ Kampagne von vorn“ tippen. Deine Bestwerte bleiben dabei erhalten." },
+    { "q": "Wird mein Fortschritt gespeichert?", "a": "Ja, Kampagne, Bestwerte und Einstellungen liegen im Browser. Werden Browserdaten gelöscht, geht der Stand verloren." },
+    { "q": "Kann ich mit Controller spielen?", "a": "Ja: Steuerkreuz oder LB, LT, RT, RB treffen die vier Spuren, A bestätigt, Start pausiert." }
+  ]
+}

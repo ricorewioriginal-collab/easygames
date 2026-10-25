@@ -1,0 +1,247 @@
+{
+  "id": "easyclash",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "EASYCLASH ist ein 3D-Prügelspiel mit den Helden aus den easygames. Zwei Kämpfer stehen sich in einer runden Arena mit Wand gegenüber. Jeder hat eine Lebensleiste mit 200 Punkten. Wer die Leiste des anderen zuerst leert, gewinnt die Runde (K.O.). Wer zuerst die nötige Zahl an Runden gewinnt, gewinnt den Kampf.",
+        "Eine Runde dauert 60 Sekunden. Läuft die Zeit ab, gewinnt, wer mehr Leben hat; bei Gleichstand bekommen beide den Rundensieg. Ein Sieg ohne einen einzigen Treffer zählt als „Perfekt!“.",
+        "Es gibt 69 Kämpfer aus 18 Spielen und 6 Arenen."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "list": [
+        "Auf dem Titelbild „Drücke Start“: tippen, Enter/Leertaste oder A am Controller.",
+        "🏆 Arcade: 8 Gegner nacheinander bis zum Titel, mit Punkten für die Rangliste.",
+        "⚔️ Versus: zu zweit an einem Gerät (Tastatur geteilt oder zwei Controller).",
+        "🤖 Gegen CPU: freier Kampf gegen den Computer in drei Stärken.",
+        "🌐 Online & Handys: Der große Bildschirm zeigt den Kampf, zwei Handys sind die Controller.",
+        "🥊 Training: Kombos üben gegen einen Gegner, der sich nicht wehrt.",
+        "🧑‍🤝‍🧑 Kämpfer: alle Helden mit Herkunft und Kurzinfo. 🏅 Rekorde: deine Statistiken. ⚙️ Optionen: Soundeffekte, Musik, Vibration, Touch-Knöpfe immer zeigen, Sparmodus (weniger Details, gilt nach Neustart). 📖 Anleitung: Steuerung und Kombos."
+      ]
+    },
+    {
+      "t": "Kämpferwahl, Arena und Einstellungen",
+      "list": [
+        "Wähle deinen Kämpfer im Raster (Pfeile/WASD oder Steuerkreuz, bestätigen mit Enter, Leertaste, U oder A). 🎲 Zufall (Taste R) wählt zufällig.",
+        "In Versus und Gegen CPU wählt danach Spieler 2 beziehungsweise du den Gegner.",
+        "Arena wählen: Radiostudio „On Air“, Sendemast über den Wolken, Hüpfstraße, Wolkenmeer, Jadepalast, Urwaldlichtung oder 🎲 Zufall.",
+        "Stärke (nur gegen den Computer): Leicht, Mittel, Schwer. Runden: 1 Sieg, 2 Siege (Grundeinstellung) oder 3 Siege.",
+        "Mit ⚔ Kampf! geht es los. Im Arcade-Modus werden Arena und Gegner automatisch gewählt."
+      ]
+    },
+    {
+      "t": "Grundregeln des Kampfes",
+      "list": [
+        "Angriffe treffen hoch, mittel oder tief. Würfe sind eine eigene Art.",
+        "Blocken: zurück halten oder Block-Knopf. Stehend blockst du hohe und mittlere Angriffe, geduckt tiefe. Geblockte Angriffe machen keinen Schaden – nur das Finale macht auch im Block etwas Schaden.",
+        "Ducken: unten-zurück oder unten-vor halten (oder unten + Block). Hohe Angriffe gehen über Duckende hinweg, mittlere treffen sie.",
+        "Laufen: Mit dem Stick bewegst du dich frei – vor/zurück zum Gegner, hoch/runter seitwärts im Kreis um ihn herum. Hoch oder runter kurz antippen ist ein schneller Seitschritt, gegen den gerade Angriffe danebengehen.",
+        "Doppelt vor = Sprint, doppelt zurück = Rückzug, oben-vor oder oben-zurück halten = Sprung. Ein Knopf im Sprung ist ein Sprungangriff. Tiefe Angriffe gehen unter Sprüngen durch.",
+        "Konter: Triffst du einen Gegner, während sein Angriff gerade startet, macht dein Treffer 25 % mehr Schaden („Konter“).",
+        "Kombos: Jeder weitere Treffer in einer Kombo macht etwas weniger Schaden (12 % pro Treffer, mindestens 35 %). Treffer in der Luft machen 75 %.",
+        "Aushebler (df+2, df+4 und die Himmelsfaust) schleudern den Gegner hoch – dann kannst du ihn in der Luft weiter treffen (Luft-Kombo, bis zu 6 Treffer).",
+        "Wand: 2,2 und f+2 lassen den Gegner an der Wand kleben, wenn er nah am Rand steht – er ist dann lange wehrlos.",
+        "Wurf (1+3, 2+4 oder Wurf-Knopf) geht durch jeden Block und macht 32 Schaden. Befreien: direkt nach dem Greifen Wurf oder 1+3 drücken („Wurf befreit!“). Liegende, springende und Gegner in der Luft kannst du nicht werfen.",
+        "Spezial (1+2 oder Spezial-Knopf): Jede Figur hat einen eigenen Spezialangriff.",
+        "Wut: Unter 25 % Leben (50 Punkte) glüht dein Kämpfer („🔥 WUT“). Dann hast du einmal pro Runde das Finale (Finale-Knopf oder df+1+2) mit 58 Schaden; es ist kurz unverwundbar."
+      ]
+    },
+    {
+      "t": "Steuerung",
+      "list": [
+        "Tastatur Spieler 1: W A S D bewegen, U = 1 (linke Faust), I = 2 (rechte Faust), J = 3 (linkes Bein), K = 4 (rechtes Bein), O Wurf, L Spezial, Leertaste Finale, H Block, Esc oder P Pause. Spielst du allein, gehen auch die Pfeiltasten und die Tasten von Spieler 2.",
+        "Tastatur Spieler 2 (Versus): Pfeile bewegen, Ziffernblock 7 = 1, 8 = 2, 4 = 3, 5 = 4, 9 Wurf, 6 Spezial, 0 Finale, Ziffernblock-Komma Block. Ohne Ziffernblock: Komma = 1, Punkt = 2, M = 3, N = 4, Bindestrich-Taste (/) Spezial, Enter Finale, rechte Umschalttaste Block.",
+        "Gamecontroller: Stick oder Steuerkreuz bewegen, X = 1, Y = 2, A = 3, B = 4, LB Wurf, RB Spezial, RT Finale, LT Block, Start Pause. Zwei Controller = zwei Spieler. In Menüs: Steuerkreuz wählt, A bestätigt, B zurück.",
+        "Touch: linker Daumen auf den Stick, rechts die Knöpfe ✨ Spezial, 1 Faust L, 2 Faust R, 🤝 Wurf, 3 Fuß L, 4 Fuß R, 🛡 Block und 🔥 Finale.",
+        "Im Pausenmenü: ▶ Weiter, ↻ Neu starten, 🧑‍🤝‍🧑 Kämpferwahl, 📜 Befehlsliste, 📖 Steuerung, ⚙️ Optionen, ⏹ Zum Menü."
+      ]
+    },
+    {
+      "t": "Arcade, Punkte und Rekorde",
+      "list": [
+        "Im Arcade kämpfst du gegen 8 zufällige Gegner, jeweils auf 2 Rundensiege. Der 8. Gegner ist der Champion und schlägt 15 % härter zu.",
+        "Die Computer-Stärke steigt: Kampf 1–3 Leicht, 4–6 Mittel, 7–8 Schwer. Mit der Einstellung Schwer beginnt es bei Mittel und ist ab Kampf 4 Schwer.",
+        "Punkte pro gewonnenem Kampf: 1.000 + 10 je übrigem Lebenspunkt + 20 je übriger Sekunde + 1.500, wenn der Gegner keine Runde gewonnen hat.",
+        "Verlierst du, kannst du mit ↻ Revanche gegen denselben Gegner weitermachen – deine Punkte werden dabei halbiert.",
+        "Der Arcade-Highscore wird gespeichert, wenn du verlierst oder den Titel holst, und landet mit deinem Konto in der Rangliste.",
+        "🏅 Rekorde zeigt: Arcade-Highscore, Titel, gewonnene Kämpfe, beste Kombo (Schaden), Perfekt-Siege und deinen Lieblingskämpfer. Alles wird im Browser gespeichert."
+      ]
+    },
+    {
+      "t": "Online & Handys",
+      "steps": [
+        "Am großen Bildschirm 🌐 Online & Handys wählen. Es erscheinen ein 4-stelliger Code, ein QR-Code und ein Link.",
+        "Zwei Mitspieler scannen den QR-Code oder öffnen den Link – von überall, nicht nur im selben WLAN.",
+        "Am Handy Namen eingeben, mit ◀ ▶ den Kämpfer wählen und Mitmachen tippen. Das Handy zeigt Stick und Knöpfe und meldet Runde, Leben und „🔥 Finale bereit!“.",
+        "Mit „🎮 Hier spielen: an“ übernimmt die Tastatur oder ein Controller am großen Bildschirm einen der beiden Plätze.",
+        "Sind beide Plätze belegt, ▶ Weiter tippen, Arena wählen und kämpfen."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Fang im Training an: Der Gegner wehrt sich nicht und heilt sich, wenn er nicht getroffen wird. Unten steht die letzte Kombo mit Treffern und Schaden.",
+        "Lerne zuerst die Ketten 1,2 und 1,2,4 – sie sind schnell und leicht.",
+        "Zurück halten blockt fast alles. Gegen den Feger (d+4) und andere tiefe Angriffe musst du geduckt blocken (unten-zurück).",
+        "Spiel gegen die CPU auf Leicht, bis du Block und Ducken sicher kannst.",
+        "Ein Treffer nach einem Fehler des Gegners ist mehr wert als blindes Drücken: Nach einem geblockten großen Angriff ist der Gegner offen."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Mischen: Wechsle zwischen mittleren Angriffen (treffen Duckende) und tiefen Angriffen (unterlaufen stehende Blocker). Wer immer steht, wird gefegt; wer immer duckt, frisst Mittelkicks.",
+        "Würfe gegen Dauerblocker: 1+3 geht durch jeden Block.",
+        "Seitschritt gegen gerade Angriffe: Kurz hoch oder runter antippen lässt Jab, Gerade und Energiestoß ins Leere gehen. Vorsicht vor Angriffen, die Seitschritte erwischen: Rundkick (f+4), Wirbelkick (b+4), Rückhand (b+1), Feger sowie die Spezialangriffe Wirbel und Bodenbeben.",
+        "Luft-Kombo: df+2 (Aufwärtshaken) oder df+4 hebt aus, danach sofort 1,2 oder 1,2,1 hinterher.",
+        "Wandkombo: Drängst du den Gegner an die Wand, lässt ihn f+2 oder 2,2 kleben – dann hast du Zeit für eine volle Kette.",
+        "Konter: Schnelle Angriffe wie der Jab (1) unterbrechen langsame Angriffe des Gegners und machen dabei 25 % mehr Schaden."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Spar dir das Finale (58 Schaden) für einen sicheren Moment auf, zum Beispiel nach einem geblockten Feger oder als Abschluss, wenn der Gegner zu Boden geht. Es ist kurz unverwundbar und kann deshalb auch einen Angriff durchbrechen.",
+        "Würfe sofort befreien: Das Zeitfenster ist nur etwa eine Viertelsekunde nach dem Greifen.",
+        "Liegt der Gegner, kann er beim Aufstehen kurz nicht getroffen werden – stell dich lieber zum Blocken bereit, statt hineinzuschlagen.",
+        "Arcade-Punkte: Schnelle Siege ohne verlorene Runde bringen am meisten. Gewinne mit viel Restleben und Restzeit.",
+        "Die Kämpfer unterscheiden sich in Tempo, Schlagkraft, Angriffstempo und Gewicht: Schwere Figuren wie Brutus, Rocco Rüstig oder Kalle Koloss halten Rückstoß besser aus und schlagen härter, sind aber langsamer; leichte wie Jannis, Klopapier-Ninja oder Kleiner Flitzer sind flink, fliegen aber weiter."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Nur stehend blocken: Tiefe Angriffe gehen durch. Duck dich, wenn der Gegner zum Feger ansetzt.",
+        "Blind den Energiestoß aus der Ferne werfen: Ein Seitschritt weicht aus und der Gegner kommt näher.",
+        "Das Finale zu früh verschwenden: Es gibt nur eins pro Runde.",
+        "Im Versus beide Spieler an derselben Tastenhälfte: Spieler 1 nutzt W A S D und U I J K, Spieler 2 Pfeile und Ziffernblock."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Befehlsliste mit Schadenswerten",
+      "p": [
+        "Grundschaden vor Figurenstärke, Konter- und Kombo-Abzügen. Richtungen: f = vor, b = zurück, d = unten, df = unten-vor. Ketten (1,2 …) schnell hintereinander drücken."
+      ],
+      "list": [
+        "1 · Jab: hoch, 6 Schaden",
+        "1,2 · Doppel: hoch, 10 Schaden",
+        "1,2,4 · Kickfinish: hoch, 18 Schaden, wirft um",
+        "1,2,1 · Haken: mittel, 14 Schaden",
+        "2 · Gerade: hoch, 12 Schaden",
+        "2,1 · Konter-Haken: mittel, 13 Schaden",
+        "2,2 · Doppelgerade: mittel, 15 Schaden, Wandtreffer",
+        "3 · Mittelkick: mittel, 12 Schaden",
+        "3,4 · Drehkick: hoch, 17 Schaden, wirft um",
+        "4 · Hoher Kick: hoch, 15 Schaden",
+        "f+1 · Ellbogen: mittel, 13 Schaden",
+        "f+2 · Wuchtschlag: mittel, 20 Schaden, Wandtreffer",
+        "f+3 · Knie: mittel, 16 Schaden",
+        "f+4 · Rundkick: hoch, 22 Schaden, wirft um, erwischt Seitschritte",
+        "df+1 · Magenhaken: mittel, 11 Schaden",
+        "df+2 · Aufwärtshaken: mittel, 15 Schaden, hebt aus",
+        "df+3 · Frontkick: mittel, 13 Schaden",
+        "df+4 · Aushebel-Kick: mittel, 14 Schaden, hebt aus",
+        "d+1 · Tiefer Stoß: tief, 5 Schaden",
+        "d+2 · Tiefer Schlag: tief, 8 Schaden",
+        "d+3 · Schienbein-Kick: tief, 9 Schaden",
+        "d+4 · Feger: tief, 16 Schaden, wirft um, erwischt Seitschritte",
+        "b+1 · Rückhand: hoch, 11 Schaden, erwischt Seitschritte",
+        "b+2 · Körperhaken: mittel, 14 Schaden",
+        "b+4 · Wirbelkick: mittel, 20 Schaden, wirft um, erwischt Seitschritte",
+        "1+3 · Wurf: Wurf, 32 Schaden",
+        "Wut + Finale: mittel, 58 Schaden, wirft um",
+        "Sprung + Knopf: mittel, 13 Schaden"
+      ]
+    },
+    {
+      "t": "Die Spezialangriffe",
+      "list": [
+        "Energiestoß: Geschoss auf Distanz, mittel, 14 Schaden.",
+        "Sturmangriff: Ansturm nach vorn, mittel, 18 Schaden, wirft um.",
+        "Wirbel: hoch, 16 Schaden, erwischt auch Seitschritte (aber Ducken hilft).",
+        "Sturzflug: Sprung von oben, mittel, 21 Schaden, wirft um.",
+        "Himmelsfaust: mittel, 16 Schaden, hebt hoch aus und ist am Anfang kurz unverwundbar – ideal für Luft-Kombos.",
+        "Bodenbeben: tief, 14 Schaden, große Reichweite, erwischt Seitschritte, wirft um – geduckt blocken!"
+      ]
+    },
+    {
+      "t": "Beste Strategie je Modus",
+      "list": [
+        "Arcade: Wähle einen Kämpfer, den du sicher beherrschst. Die ersten drei Gegner sind leicht – hier Punkte holen (Rundensiege ohne Rundenverlust bringen +1.500). Gegen den Champion (Kampf 8) vorsichtig blocken und kontern.",
+        "Gegen CPU Schwer: Die CPU blockt viel und bestraft lange Angriffe. Nutze kurze Ketten (1,2), Würfe und Tiefangriffe.",
+        "Versus und Online: Wechsle Hoch, Mittel, Tief und Wurf ab, damit der Gegner nicht einfach blocken kann.",
+        "Training: Übe df+2 → 1,2,1 als Luft-Kombo und die Wandkombo f+2 → 1,2,4."
+      ]
+    },
+    {
+      "t": "Höchstpunktzahl im Arcade",
+      "p": [
+        "Pro Kampf sind höchstens 1.000 + 2.000 (volle 200 Leben) + 1.200 (volle 60 Sekunden) + 1.500 = 5.700 Punkte möglich; praktisch verlierst du immer etwas Zeit. Über 8 Kämpfe ergibt das theoretisch bis zu 45.600 Punkte. Jede Revanche halbiert die Punkte – ein Arcade-Lauf ohne Niederlage bringt deshalb am meisten."
+      ]
+    },
+    {
+      "t": "Erfolge und Statistiken",
+      "list": [
+        "👑 Titel: Arcade mit allen 8 Siegen beenden („… ist Champion!“).",
+        "✨ Perfekt: eine Runde ohne verlorenen Lebenspunkt gewinnen (zählt für Spieler 1).",
+        "💥 Beste Kombo: der höchste Kombo-Schaden von Spieler 1, auch im Training.",
+        "❤️ Lieblingskämpfer: die Figur, die du am häufigsten gewählt hast."
+      ]
+    },
+    {
+      "t": "Alle Kämpfer und ihr Spezialangriff",
+      "list": [
+        "2048 Deluxe: Rico (Energiestoß)",
+        "Sendemast-Sumo: Toni Tornado (Wirbel), Bella Bass (Energiestoß), Kalle Koloss (Bodenbeben), Mimi Mikro (Sturmangriff), Ole Orkan (Sturmangriff), Frieda Frost (Energiestoß), Bruno Brummer (Bodenbeben), Nova Neon (Himmelsfaust)",
+        "Wolkenhopser: Hopsi (Sturzflug), Ninja-Hopsi (Wirbel), Astro-Hopsi (Energiestoß), Mini-Drache (Energiestoß), Gold-Hopsi (Himmelsfaust)",
+        "Hüpfstraße: Glamour-Star (Wirbel), Kleiner Flitzer (Sturmangriff), Waldläuferin (Sturmangriff), Hallen-Fan (Bodenbeben), Pingu (Sturzflug), Robo (Energiestoß), Einhorn (Himmelsfaust), Flinker Fuchs (Sturmangriff), Panda (Bodenbeben)",
+        "KIKO: Kiko (Energiestoß), Mira (Wirbel), Boro (Bodenbeben), Lumi (Sturzflug)",
+        "Krawallvögel: Rudi (Sturmangriff), Zisch (Sturmangriff), Bumm (Bodenbeben), Mathilde (Sturzflug)",
+        "TASCHI: Auraflamme (Energiestoß), Tiefenlied (Energiestoß), Sturmkron (Sturzflug), Mondhüter (Himmelsfaust)",
+        "AnMaCha Kart Rush: Mia (Sturmangriff), Brumm (Bodenbeben), Luna (Wirbel), Quak (Sturzflug), Funke (Energiestoß), Zorp (Energiestoß), Hoppel (Sturzflug)",
+        "Winzflitzer 3D: Rosa (Sturmangriff), Jaro (Sturmangriff), Lotte (Energiestoß)",
+        "Urwaldlager: Tina Tornado (Wirbel), Dr. Bernd Brummel (Energiestoß), Kalle Kranich (Sturmangriff), Gisela Glanz (Energiestoß), Rocco Rüstig (Bodenbeben), Prinz Egon (Himmelsfaust)",
+        "Pestwacht: Mira Falkenaug (Energiestoß), Meister Brand (Bodenbeben), Jorin Nebelpfad (Wirbel), Ottokar der Graue (Energiestoß)",
+        "Spinwelten 3D: Zoe Zahnrad (Wirbel), Suki Sternenstaub (Himmelsfaust), Rasmus Rätsel (Energiestoß)",
+        "FABELKICK 3D: Bobo (Sturmangriff), Brutus (Bodenbeben)",
+        "Radio Maze 3D: Rauschi (Energiestoß)",
+        "ZOTIK: Zotik (Wirbel), Felli (Sturzflug)",
+        "Bunte Insel: Jannis (Sturmangriff)",
+        "AnMaCha Podcast Tycoon: Marco (Energiestoß), Andrew (Sturmangriff)",
+        "EASYCLASH-Ulk: Kampf-Würstchen (Energiestoß), Box-Gurke (Himmelsfaust), Klopapier-Ninja (Wirbel)"
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Das Spiel lädt nicht oder bleibt schwarz.",
+      "a": "EASYCLASH braucht 3D-Grafik (WebGL). Ohne sie erscheint „Dieses Spiel braucht 3D-Grafik (WebGL).“ Probiere einen anderen Browser oder schalte in den Optionen den Sparmodus ein."
+    },
+    {
+      "q": "Das Handy verbindet sich nicht.",
+      "a": "Den 4-stelligen Code vom großen Bildschirm genau eingeben. „Diesen Raum gibt es nicht (mehr)“ bedeutet: Der Raum wurde geschlossen – am großen Bildschirm neu eröffnen. Beide Geräte brauchen Internet."
+    },
+    {
+      "q": "Wie spielen zwei Personen an einem PC?",
+      "a": "Versus wählen: Spieler 1 nutzt W A S D mit U I J K, Spieler 2 die Pfeile mit dem Ziffernblock (oder Komma, Punkt, M, N). Mit zwei Controllern hat jeder seinen eigenen."
+    },
+    {
+      "q": "Wo finde ich alle Angriffe?",
+      "a": "Im Pausenmenü unter 📜 Befehlsliste – dort stehen alle Angriffe der aktuellen Figur."
+    },
+    {
+      "q": "Mein Highscore ist weg.",
+      "a": "Rekorde liegen im Browser. Bist du angemeldet, wird der Arcade-Highscore zusätzlich mit deinem Konto gespeichert. Nach dem Löschen der Browserdaten sind die lokalen Werte weg."
+    },
+    {
+      "q": "Ich sehe keine Touch-Knöpfe am PC mit Touchscreen.",
+      "a": "Schalte in den Optionen „Touch-Knöpfe immer zeigen“ ein."
+    }
+  ]
+}

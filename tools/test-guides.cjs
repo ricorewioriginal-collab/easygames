@@ -29,7 +29,7 @@ const server = http.createServer((req, res) => {
     assert.equal(await p.$eval('#loesung .sol', e => e.hidden), false); console.log('PASS Spoiler-Schutz im Lösungsbuch');
     assert.ok(await p.$$eval('.egb-sec', a => a.length) >= 10, 'Abschnitte'); assert.match(await p.title(), /Lösungsbuch/);
     await p.goto(base + 'anleitung.html?game=' + id + '#loesung'); await p.waitForSelector('#loesung .sol'); assert.equal(await p.$eval('#loesung .sol', e => e.hidden), false, '#loesung öffnet direkt'); console.log('PASS Direktlink #loesung');
-    await p.goto(base + 'anleitung.html'); await p.waitForSelector('.list a'); assert.ok(await p.$$eval('.list a', a => a.length) > 50); console.log('PASS Übersicht aller Anleitungen');
+    await p.goto(base + 'anleitung.html'); await p.waitForSelector('.list a'); assert.ok(await p.$$eval('.list a', a => a.length) > 50); await p.fill('.list input', 'snake'); assert.ok(await p.$$eval('.list a', a => a.filter(x => x.offsetParent).length) < 5, 'Suche filtert'); console.log('PASS Übersicht aller Anleitungen mit Suche');
     // Startseite: Reiter Ratgeber und Lösungsbuch laden das Buch nach
     await p.goto(base + 'index.html'); await p.waitForFunction(() => typeof openDetail === 'function' && typeof GAMES !== 'undefined' && GAMES.length);
     const i = await p.evaluate(id => GAMES.findIndex(g => g.id === id), id);

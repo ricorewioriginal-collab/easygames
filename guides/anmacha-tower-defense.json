@@ -1,0 +1,198 @@
+{
+  "id": "anmacha-tower-defense",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Das Große Rauschen greift an! Über einen festen Weg ziehen Rauschen-Blöcke auf deinen Senderturm zu. Du stellst Sender-Logo-Türme auf die freien Felder neben dem Weg, die die Gegner automatisch beschießen.",
+        "Überstehe alle 25 Wellen, dann heißt es „GESCHAFFT!“. Jeder Gegner, der den Senderturm erreicht, kostet Basis-Leben. Sinken sie auf 0, ist der Senderturm gefallen („RAUSCHEN GEWINNT“)."
+      ]
+    },
+    {
+      "t": "Start, Karten und Schwierigkeit",
+      "p": [
+        "Im Hauptmenü wählst du eine Karte und die Schwierigkeit. Unten steht die lokale Top 10 deiner besten Punktzahlen. Nach dem Start erscheint „BEREIT?“ – du hast Zeit, deine Verteidigung zu bauen, bevor die erste Welle kommt."
+      ],
+      "list": [
+        "Karten: Funkhafen (S-förmiger Weg mit drei langen Geraden), Frequenz-Spirale (der Weg windet sich nach innen) und Zickzack-Studio (viele enge Kurven). Das Spielfeld ist 14 × 10 Felder groß.",
+        "Leicht: 230 Startgeld, 25 Basis-Leben, Gegner mit 85 % Lebenspunkten, Punkte ×0,8.",
+        "Normal: 180 Startgeld, 20 Basis-Leben, normale Gegner, Punkte ×1.",
+        "Schwer: 160 Startgeld, 14 Basis-Leben, Gegner mit 135 % Lebenspunkten, Punkte ×1,3."
+      ]
+    },
+    {
+      "t": "Die 8 Türme",
+      "p": [
+        "Jeder Turm trägt das Logo eines Senders. Unten in der Leiste stehen alle Türme mit Preis und Tastennummer."
+      ],
+      "list": [
+        "1 Allrounder ($50): Schaden 9, Reichweite 3,2, 2,2 Schuss/s. Schnell und günstig – gut für den Anfang.",
+        "2 Bass-Bombe ($90): Schaden 22, Reichweite 3,3, 0,8 Schuss/s. Flächenschaden gegen Gruppen (Radius 1,2 / 1,5 / 1,8 je Stufe).",
+        "3 Frost-Pop ($70): Schaden 4, Reichweite 2,9, 1,4 Schuss/s. Verlangsamt Rauschen auf 55 % / 42 % / 30 % Tempo für 2,2 Sekunden.",
+        "4 Hit-Blitz ($110): Schaden 15, Reichweite 3, 1,1 Schuss/s. Kettenblitz springt auf 2 / 3 / 4 weitere Gegner, jeder Sprung mit 80 % des vorigen Schadens.",
+        "5 Club-Laser ($150): Schaden 18, Reichweite 3,6, 1,4 Schuss/s. Durchschlägt 2 / 3 / 5 Gegner in einer Linie.",
+        "6 Rock-Sniper ($130): Schaden 70, Reichweite 6,5, 0,42 Schuss/s. Riesige Reichweite, harter Treffer. Zielt von Anfang an auf den Stärksten.",
+        "7 Werbe-Einnahmen ($100): schießt nicht, bringt zu Beginn jeder Welle +20 / +38 / +65 Geld.",
+        "8 Verstärker ($120): schießt nicht, gibt Türmen in der Nähe +25 % / +40 % / +60 % Schaden (mehrere Verstärker addieren sich nicht, es zählt der stärkste)."
+      ]
+    },
+    {
+      "t": "Ausbauen, Verkaufen und Zielwahl",
+      "list": [
+        "Jeder Turm hat 3 Stufen. Ausbau auf Stufe 2 kostet 90 % des Grundpreises, auf Stufe 3 weitere 140 %.",
+        "Pro Stufe steigt der Schaden um 70 % des Grundwerts, die Reichweite um 0,3 Felder und die Feuerrate um 15 %.",
+        "Verkaufen bringt 70 % von allem zurück, was du in den Turm gesteckt hast (Kauf plus Ausbauten).",
+        "Ziel: Bei schießenden Türmen wählst du, wen sie angreifen – Erster (am weitesten auf dem Weg), Stärkster (meiste Lebenspunkte) oder Nächster (am nächsten zum Turm). Frost-Pop mit Ziel „Erster“ lässt bereits verlangsamte Gegner aus und friert so immer neue ein.",
+        "Beim Antippen eines Turms siehst du Schaden, Reichweite und Feuerrate, bei Frost auch die Verlangsamung."
+      ]
+    },
+    {
+      "t": "Wellen und Geld",
+      "list": [
+        "Vor der ersten Welle hast du 25 Sekunden, danach läuft nach jeder Welle (sobald alle Gegner unterwegs sind) ein Countdown von 16 Sekunden bis zur nächsten. Der Knopf „▶ WELLE …“ zeigt die Restzeit und welche Gegner kommen.",
+        "Startest du eine Welle früher (Leertaste, Enter oder Knopf), bekommst du einen Frühstart-Bonus: die Hälfte der verbleibenden Sekunden als Geld, wenn noch mehr als 4 Sekunden übrig sind.",
+        "Zu Beginn jeder Welle gibt es 10 + 3 × Wellennummer Geld, plus das Geld aller Werbe-Einnahmen-Türme.",
+        "Jeder abgeschossene Gegner bringt Geld: Rauschen 4, Zipper 4, Brummer 10, Knister 2, Boss-Rauschen 120.",
+        "Gegner werden mit jeder Welle zäher: Welle 10 hat rund das Vierfache, Welle 25 fast das 16-Fache der Lebenspunkte von Welle 1."
+      ]
+    },
+    {
+      "t": "Die Gegner",
+      "list": [
+        "Rauschen: 30 Lebenspunkte, normales Tempo, kostet 1 Basis-Leben.",
+        "Zipper: 20 Lebenspunkte, sehr schnell (fast doppeltes Tempo), 1 Basis-Leben.",
+        "Brummer: 130 Lebenspunkte, langsam, kostet 2 Basis-Leben.",
+        "Knister: 9 Lebenspunkte, kommt in dichten Schwärmen, 1 Basis-Leben.",
+        "Boss-Rauschen: 900 Lebenspunkte, sehr langsam, kostet 6 Basis-Leben. Kommt in Welle 10 (1×), 20 (2×) und 25 (3×)."
+      ]
+    },
+    {
+      "t": "Steuerung",
+      "list": [
+        "PC: Turm unten wählen (oder Tasten 1 bis 8, dieselbe Taste noch einmal hebt die Wahl auf), dann auf ein freies Feld klicken. Einen gebauten Turm anklicken für Ausbau, Verkauf und Zielwahl.",
+        "Tasten: Leertaste oder Enter startet die nächste Welle, U baut aus, S oder Entf verkauft, F schaltet das Tempo ×1/×2, P pausiert, M schaltet den Ton, Esc hebt die Auswahl auf.",
+        "Touch: Turm unten antippen, Feld antippen zeigt die Vorschau, zweites Tippen auf dasselbe Feld baut den Turm. Gebauten Turm antippen für Ausbau, Zielwahl und Verkauf.",
+        "Auf den Weg und auf belegte Felder kann nicht gebaut werden („Nicht auf dem Weg!“, „Feld belegt“). Fehlt Geld, erscheint „Zu wenig Geld“.",
+        "Pause: WEITER, ↻ Neu starten, Hauptmenü. Wechselst du den Tab oder die App, pausiert das Spiel automatisch."
+      ]
+    },
+    {
+      "t": "Punkte und Bestenliste",
+      "list": [
+        "Jeder Abschuss bringt das Zehnfache seines Geldwerts als Punkte, mal Schwierigkeitsfaktor (Leicht ×0,8, Normal ×1, Schwer ×1,3).",
+        "Sieg-Bonus: 200 Punkte pro übrigem Basis-Leben, ebenfalls mal Schwierigkeitsfaktor.",
+        "Am Ende siehst du Punkte, erreichte Welle und abgeschossene Gegner. Schaffst du es in die Top 10, gibst du einen Namen ein und speicherst. Die Liste liegt lokal im Browser."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Baue zu Beginn zwei oder drei Allrounder an eine Kurve – dort sind Gegner lange in Reichweite.",
+        "Starte frühe Wellen sofort: Der Frühstart-Bonus bringt fast gratis Geld, solange deine Türme die Welle schaffen.",
+        "Ein Frost-Pop vor deinen Schadenstürmen verlängert die Zeit, in der Gegner beschossen werden.",
+        "Ab Welle 3 kommen Knister-Schwärme mit vielen schwachen Gegnern – hier hilft eine Bass-Bombe.",
+        "Schalte mit F auf ×2, wenn deine Verteidigung steht."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Werbe-Einnahmen früh kaufen: Auf Stufe 3 bringt ein Turm 65 Geld pro Welle. Zwei frühe Werbetürme zahlen sich über 25 Wellen mehrfach aus.",
+        "Verstärker in die Mitte einer Gruppe von Schadenstürmen setzen – er wirkt auf alle Türme in seinem Umkreis.",
+        "Club-Laser an lange Geraden stellen, damit er viele Gegner in einer Linie trifft.",
+        "Hit-Blitz gegen Zipper und Knister: Die Kette erwischt schnelle, dicht laufende Gegner zuverlässig.",
+        "Rock-Sniper auf „Stärkster“ lassen – er räumt Brummer und Bosse ab.",
+        "Ausbauen statt nur neu bauen: Stufe 3 hat 240 % Schaden des Grundturms, mehr Reichweite und schnellere Schüsse."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Doppelt nutzen: Türme an Kurven decken oft zwei Wegabschnitte gleichzeitig ab – besonders auf Frequenz-Spirale und Zickzack-Studio.",
+        "Frost-Pop auf Ziel „Erster“ verteilt die Verlangsamung, weil er bereits verlangsamte Gegner auslässt.",
+        "Vor Bosswellen (10, 20, 25) Geld für Sniper und Verstärker zurücklegen. Ein Boss, der durchkommt, kostet 6 Leben.",
+        "Verkaufen lohnt sich nur bei Umbau: Du bekommst 70 % zurück, verlierst also 30 % der Investition."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Türme ans Wegende vor den Senderturm stellen: Dort bleibt zu wenig Zeit, um Gegner zu stoppen.",
+        "Nur Allrounder bauen: Ab Welle 10 fehlt ihnen der Schaden gegen Brummer und Bosse.",
+        "Zipper unterschätzen: Sie sind fast doppelt so schnell und rennen an langsamen Türmen vorbei.",
+        "Geld horten: Ungebautes Geld schießt nicht."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Alle 25 Wellen",
+      "list": [
+        "Welle 1: Rauschen ×6",
+        "Welle 2: Rauschen ×7 · Zipper ×3",
+        "Welle 3: Rauschen ×9 · Knister ×11",
+        "Welle 4: Rauschen ×10 · Zipper ×4 · Brummer ×2",
+        "Welle 5: Rauschen ×11 · Brummer ×3",
+        "Welle 6: Rauschen ×12 · Zipper ×5 · Knister ×14",
+        "Welle 7: Rauschen ×13",
+        "Welle 8: Rauschen ×15 · Zipper ×6 · Brummer ×3",
+        "Welle 9: Rauschen ×16 · Knister ×17",
+        "Welle 10: Rauschen ×17 · Zipper ×7 · Brummer ×4 · Boss-Rauschen ×1",
+        "Welle 11: Rauschen ×18",
+        "Welle 12: Rauschen ×19 · Zipper ×8 · Knister ×20 · Brummer ×4",
+        "Welle 13: Rauschen ×21",
+        "Welle 14: Rauschen ×22 · Zipper ×9",
+        "Welle 15: Rauschen ×23 · Knister ×23 · Brummer ×5",
+        "Welle 16: Rauschen ×24 · Zipper ×10 · Brummer ×5",
+        "Welle 17: Rauschen ×25",
+        "Welle 18: Rauschen ×27 · Zipper ×11 · Knister ×26",
+        "Welle 19: Rauschen ×28",
+        "Welle 20: Rauschen ×29 · Zipper ×12 · Brummer ×6 · Boss-Rauschen ×2",
+        "Welle 21: Rauschen ×30 · Knister ×29",
+        "Welle 22: Rauschen ×31 · Zipper ×13",
+        "Welle 23: Rauschen ×33",
+        "Welle 24: Rauschen ×34 · Zipper ×14 · Knister ×32 · Brummer ×7",
+        "Welle 25 (Finale): Rauschen ×35 · Brummer ×8 · Boss-Rauschen ×3"
+      ]
+    },
+    {
+      "t": "Bauplan für einen sicheren Sieg (Normal)",
+      "steps": [
+        "Vor Welle 1: drei Allrounder (150) an die erste Kurve. Welle sofort starten für den Frühstart-Bonus.",
+        "Wellen 2 bis 4: einen Frost-Pop vor die Allrounder und die erste Bass-Bombe für die Knister in Welle 3. Danach einen Werbe-Einnahmen-Turm.",
+        "Wellen 5 bis 9: Allrounder auf Stufe 2 und 3 ausbauen, einen Hit-Blitz gegen Zipper und Knister ergänzen, einen zweiten Werbeturm.",
+        "Vor Welle 10: einen Rock-Sniper (Ziel Stärkster) für Boss und Brummer, dazu einen Verstärker zwischen deine Schadenstürme.",
+        "Wellen 11 bis 19: Club-Laser an die längste Gerade, Werbetürme auf Stufe 3, alle Schadenstürme Schritt für Schritt auf Stufe 3.",
+        "Vor Welle 20: zweiten Sniper und zweiten Verstärker. Zwei Bosse kommen gleichzeitig mit Brummern.",
+        "Wellen 21 bis 25: Lücken mit Bass-Bomben und Hit-Blitzen gegen die großen Schwärme füllen. Für das Finale möglichst viele Sniper und Laser auf Stufe 3 im Verstärker-Umkreis."
+      ]
+    },
+    {
+      "t": "Höchstpunkte holen",
+      "list": [
+        "Spiele auf Schwer: Alle Punkte zählen ×1,3.",
+        "Lass keinen Gegner durch – jedes übrige Basis-Leben bringt am Ende 200 Punkte (Schwer: 260).",
+        "Bosse sind die wertvollsten Abschüsse: 120 Geld und 1200 Punkte (Normal) pro Boss.",
+        "Ein makelloser Sieg auf Schwer mit allen 14 Leben bringt allein 3640 Bonuspunkte."
+      ]
+    },
+    {
+      "t": "Tipps je Karte",
+      "list": [
+        "Funkhafen: Drei lange Geraden – ideal für Club-Laser. Die beiden Kehren sind die besten Plätze für Bass-Bomben.",
+        "Frequenz-Spirale: Der Weg windet sich nach innen. Türme in der Mitte der Spirale erreichen mehrere Abschnitte gleichzeitig.",
+        "Zickzack-Studio: Viele enge Kurven. Türme zwischen zwei Zacken treffen den Weg auf beiden Seiten."
+      ]
+    }
+  ],
+  "faq": [
+    { "q": "Die Türme zeigen nur Buchstaben statt Logos.", "a": "Die Sender-Logos werden beim Start geladen. Klappt das nicht, zeigt das Spiel den Anfangsbuchstaben des Turms – spielen kannst du trotzdem ganz normal." },
+    { "q": "Wo ist meine Bestenliste?", "a": "Die Top 10 liegt lokal im Browser dieses Geräts. Werden die Browserdaten gelöscht, ist sie weg." },
+    { "q": "Ich kann am Handy keinen Turm bauen.", "a": "Am Handy zeigt das erste Tippen nur die Vorschau. Tippe ein zweites Mal auf dasselbe Feld, um zu bauen." },
+    { "q": "Kann ich die Welle schneller starten?", "a": "Ja, mit dem Knopf „▶ WELLE“, der Leertaste oder Enter. Du bekommst dafür sogar einen Frühstart-Bonus." },
+    { "q": "Wie schalte ich den Ton aus?", "a": "Mit der Taste M oder dem Ton-Knopf im Spiel. Die Einstellung wird gespeichert." },
+    { "q": "Es erscheint „WebGL konnte nicht gestartet werden“.", "a": "Das Spiel braucht 3D-Grafik (WebGL). Verwende einen aktuellen Browser oder aktiviere die Hardwarebeschleunigung." }
+  ]
+}

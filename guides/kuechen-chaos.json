@@ -1,0 +1,193 @@
+{
+  "id": "kuechen-chaos",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Küchen-Chaos ist ein hektisches Koch-Teamspiel. Oben stehen die Bestellzettel mit Zeitbalken. Ihr kocht die bestellten Gerichte, richtet sie auf Tellern an und bringt sie zur gelben Ausgabe, bevor der Zettel abläuft.",
+        "Jede Lieferung bringt Münzen 🪙. Am Ende der Schicht („Feierabend!“) entscheidet deine Münzzahl über bis zu drei Sterne. Ein Stern in einer Küche schaltet die nächste frei."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "list": [
+        "🍳 Solo kochen: Küche wählen und mit einem Computer-Koch (Kochomat) kochen – oder ohne Helfer beide Köche selbst steuern.",
+        "🌐 Online & Handys: Der Fernseher zeigt die Küche, bis zu 4 Köche kochen mit Handys, Controllern oder Tastatur.",
+        "📱 Mitkochen: mit dem Handy einer Online-Küche beitreten.",
+        "⚙️ Einstellungen: Geräusche, Musik, „Solo: Computer-Koch hilft mit“ (aus = du steuerst beide Köche und wechselst), Vibration und dein Name.",
+        "❓ Anleitung: die Regeln im Spiel.",
+        "Unten im Menü: deine Sterne (von 18), wie viele Gerichte du insgesamt serviert hast, und die Summe deiner Bestwerte."
+      ]
+    },
+    {
+      "t": "Die Übungsküche",
+      "p": [
+        "Beim allerersten Start der Imbiss-Ecke (oder über „🎓 Übungsküche“ in der Küchenauswahl) führt dich das Spiel Schritt für Schritt durch einen Salat. Ein gelber Pfeil zeigt, wohin du musst; die Uhr läuft nicht."
+      ],
+      "steps": [
+        "Zur 🥬 Salat-Kiste laufen und NEHMEN drücken.",
+        "Den Salat aufs Schneidebrett legen (helle Holzflächen): hinlaufen und NEHMEN.",
+        "BENUTZEN gedrückt halten, bis der grüne Balken voll ist.",
+        "Den geschnittenen Salat mit NEHMEN aufnehmen.",
+        "Zum 🍽️ Tellerstapel gehen und NEHMEN – der Salat landet auf einem Teller.",
+        "Den Teller zur gelben Ausgabe bringen und NEHMEN. Danach beginnt die echte Schicht mit Computer-Koch."
+      ]
+    },
+    {
+      "t": "So wird gekocht",
+      "list": [
+        "Kisten: Tomate, Salat, Zwiebel, Fleisch, Brötchen, Käse und Fisch. Eine Kiste ist nie leer.",
+        "Schneidebrett: Zutat ablegen und BENUTZEN halten. Gemüse und Käse brauchen 1,4 Sekunden, Fleisch und Fisch 1,8 Sekunden. Brötchen werden nicht geschnitten.",
+        "Topf (Suppe): drei gleiche geschnittene Tomaten oder Zwiebeln hinein. Kochzeit 10 Sekunden.",
+        "Pfanne: ein geschnittenes Fleisch oder ein geschnittener Fisch. Bratzeit 6 Sekunden.",
+        "Anrichten: Mit einem Teller in der Hand am Herd NEHMEN drücken – der Inhalt kommt auf den Teller. Brötchen, Käse oder Salat legst du einfach dazu. Auf den Teller passt nur, was zu einem Gericht der Karte gehört.",
+        "Servieren: Teller an der gelben Ausgabe abgeben. Passt er zu keiner Bestellung, heißt es „Das hat niemand bestellt!“.",
+        "Mülleimer: wirft Zutaten weg, leert Teller, Töpfe und Pfannen.",
+        "Theken: Hier kannst du alles abstellen und Dinge zusammenlegen."
+      ]
+    },
+    {
+      "t": "Anbrennen, Feuer und Abwasch",
+      "list": [
+        "Ist ein Gericht fertig, bleibt es noch eine Weile warm. Nach der Hälfte dieser Zeit wird der Balken rot (Warnung), danach brennt es an: Topf nach weiteren 10 Sekunden, Pfanne nach 8 Sekunden.",
+        "Verbranntes fängt Feuer. Etwa alle 7 Sekunden springt das Feuer auf eine benachbarte Station über. Brennende Stationen kannst du nicht benutzen.",
+        "Löschen: Den 🧯 Feuerlöscher (rote Flasche auf einer Theke) nehmen, zum Feuer zeigen und BENUTZEN halten. Danach den verbrannten Inhalt in den Müll werfen.",
+        "In der Suppenküche, der Fließband-Kantine und der Geteilten Küche kommen benutzte Teller nach 6 Sekunden dreckig an der Rückgabe an. Teller nehmen, in die Spüle legen und mit BENUTZEN abwaschen (1,6 Sekunden pro Teller) – sie landen dann wieder auf dem Stapel. Es gibt nur 4 Teller.",
+        "Förderband: Alles, was darauf liegt, wandert jede Sekunde ein Feld weiter.",
+        "Eis-Boden: Die Köche rutschen und bremsen langsam."
+      ]
+    },
+    {
+      "t": "Bedienung",
+      "list": [
+        "Touch: links der Joystick zum Laufen, rechts die Tasten-Raute – unten NEHMEN, links BENUTZEN (halten), rechts SPRINT, oben WECHSELN. Am Handy als Controller ist oben RUFEN: Dein Koch ruft z. B. „Teller!“ oder „Es brennt!“.",
+        "Tastatur: WASD oder Pfeile laufen, Leertaste, E oder Enter Nehmen/Ablegen, F, Strg oder J Benutzen (schneiden, spülen, löschen), Shift Sprint, Tab oder Q Koch wechseln, Esc oder P Pause.",
+        "Gamecontroller: Stick oder Steuerkreuz laufen, A Nehmen/Ablegen, X oder RT Benutzen, B oder LT Sprint, Y Koch wechseln, Start Pause. In der Online-Lobby meldet A einen Controller an.",
+        "Sprint ist ein kurzer Schub nach vorne mit kleiner Abklingzeit.",
+        "Solo zeigt unten eine Tipp-Zeile, was du an der Station vor dir tun kannst – mit den Tasten deines Eingabegeräts."
+      ]
+    },
+    {
+      "t": "Punkte und Sterne",
+      "list": [
+        "Jedes Gericht hat einen Grundwert: Grüner Salat 20, Gemischter Salat 30, Tomatensuppe 30, Zwiebelsuppe 30, Burger 30, Cheeseburger 40, Fischfilet 30, Fisch mit Salat 40.",
+        "Trinkgeld: bis zu 8 Münzen, je mehr Zeit auf dem Zettel übrig ist.",
+        "Serien-Bonus: Lieferst du die vorderste (älteste) Bestellung, wächst deine Serie. Bonus = 2 × Serie, höchstens 8 Münzen. Eine andere Bestellung zuerst zu liefern oder ein abgelaufener Zettel setzt die Serie zurück.",
+        "Abgelaufene Bestellung: −10 Münzen (nie unter 0).",
+        "Es stehen höchstens 4 Bestellungen gleichzeitig an. Jeder Zettel hat die Grundzeit der Küche plus 6 Sekunden pro Zutat des Gerichts.",
+        "Am Ende zeigt die Abrechnung Serviert, Trinkgeld & Serien, Verpasst und die Sternegrenzen. Bei 3 oder 4 Köchen gelten höhere Grenzen (× 1,2 bzw. × 1,4), dafür kommen die Bestellungen schneller."
+      ]
+    },
+    {
+      "t": "Online & Handys",
+      "steps": [
+        "Am Fernseher „🌐 Online & Handys“ wählen. Raum-Code, QR-Code und „🔗 Link kopieren“ erscheinen. Mitspieler können per Link, Code oder QR-Code von überall beitreten.",
+        "Handys scannen den QR-Code oder öffnen „📱 Mitkochen“ und geben Namen und Code ein. Controller melden sich mit A an, die Tastatur über den Haken „Tastatur kocht mit“.",
+        "Zahl der Computer-Köche und Küche wählen, dann „🍳 Schicht starten“. Bis zu 4 Köche passen in die Küche.",
+        "Während einer laufenden Schicht kann niemand neu einsteigen („nach Feierabend kannst du einsteigen“). Fällt ein Handy weg, springt ein Computer-Koch ein."
+      ]
+    },
+    {
+      "t": "Fortschritt und Speichern",
+      "p": [
+        "Bestwert und Sterne jeder Küche, die Gesamtzahl der servierten Gerichte und die Einstellungen werden automatisch im Browser gespeichert. Online gespielte Küchen zählen genauso."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Tipps für Einsteiger",
+      "list": [
+        "Teilt euch auf: einer schneidet, einer kocht und serviert.",
+        "Leg schon einen Teller bereit, bevor die Pfanne fertig ist – der Balken wird rot, kurz bevor es brennt.",
+        "Den Feuerlöscher nach dem Löschen nah am Herd ablegen.",
+        "Achte auf die Tipp-Zeile unten: Sie sagt dir immer, was an der Station vor dir geht."
+      ]
+    },
+    {
+      "t": "Strategien für Fortgeschrittene",
+      "list": [
+        "Liefere möglichst in der Reihenfolge der Zettel. Die Serie bringt bis zu 8 Bonusmünzen pro Gericht.",
+        "Vorbereiten: Zutaten schon schneiden und auf Theken ablegen, wenn gerade nichts zu tun ist.",
+        "Suppen dauern 10 Sekunden – starte sie früh und kümmere dich währenddessen um andere Gerichte.",
+        "In Küchen mit Spüle: Spült sofort, sobald dreckige Teller zurück sind. Mit nur 4 Tellern steht ihr sonst schnell ohne da.",
+        "Abgelaufene Zettel kosten 10 Münzen. Ist ein Zettel kaum noch zu schaffen, lieber den nächsten sicher liefern."
+      ]
+    },
+    {
+      "t": "Profi-Tricks",
+      "list": [
+        "Zutat direkt auf den Tellerstapel: Mit einer geschnittenen Zutat in der Hand am Stapel NEHMEN legt sie gleich auf einen neuen Teller.",
+        "Teller zum Herd tragen statt die Pfanne zum Teller – der Herd bleibt frei für die nächste Runde.",
+        "Mit Sprint überbrückst du lange Wege, aber auf dem Eis-Boden rutschst du danach weit.",
+        "Solo ohne Helfer: Lass einen Koch an der Schneidestation stehen und wechsle mit Tab/Y hin und her."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Den Herd vergessen: Fertiges brennt nach 8 bis 10 Sekunden an und setzt Nachbarstationen in Brand.",
+        "Ungeschnittene Zutaten in Topf oder Pfanne legen – das geht nicht, erst schneiden.",
+        "Falsches auf den Teller legen: Dann den Teller im Mülleimer leeren.",
+        "Feuer zu spät löschen, bis die halbe Küche brennt."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Rezepte",
+      "list": [
+        "🥗 Grüner Salat (20): geschnittener Salat.",
+        "🥗 Gemischter Salat (30): geschnittener Salat + geschnittene Tomate.",
+        "🍅 Tomatensuppe (30): 3 geschnittene Tomaten im Topf.",
+        "🧅 Zwiebelsuppe (30): 3 geschnittene Zwiebeln im Topf.",
+        "🍔 Burger (30): Brötchen + gebratenes Fleisch (Fleisch erst schneiden).",
+        "🍔 Cheeseburger (40): Brötchen + gebratenes Fleisch + geschnittener Käse.",
+        "🐟 Fischfilet (30): gebratener Fisch (Fisch erst schneiden).",
+        "🐟 Fisch mit Salat (40): gebratener Fisch + geschnittener Salat."
+      ]
+    },
+    {
+      "t": "Die sechs Küchen mit Sternegrenzen",
+      "p": [
+        "Die Sternegrenzen gelten für 1 oder 2 Köche (Solo spielt immer mit 2 Köchen)."
+      ],
+      "list": [
+        "1. Imbiss-Ecke – Salate schnippeln zum Warmwerden. Karte: Grüner und Gemischter Salat. 2:30 Minuten. Sterne ab 140 / 280 / 420.",
+        "2. Burger-Bude – Fleisch braten, bevor es brennt! Karte: Burger, Cheeseburger. 2:40 Minuten. Sterne ab 140 / 250 / 360.",
+        "3. Suppenküche – drei Zutaten pro Topf und Teller spülen. Karte: Tomatensuppe, Zwiebelsuppe, Grüner Salat. 2:50 Minuten. Sterne ab 100 / 180 / 260.",
+        "4. Fließband-Kantine – das Band rollt, alles darauf wandert mit. Karte: Burger, Cheeseburger, Gemischter Salat; mit Spüle. 2:50 Minuten. Sterne ab 130 / 250 / 350.",
+        "5. Eis-Bistro – spiegelglatter Boden. Karte: Fischfilet, Fisch mit Salat, Tomatensuppe, Zwiebelsuppe. 2:50 Minuten. Sterne ab 100 / 180 / 260.",
+        "6. Geteilte Küche – zwei Hälften, reicht euch alles über die Theke. Karte: Burger, Cheeseburger, Gemischter Salat, Tomatensuppe; mit Spüle. 3:00 Minuten. Sterne ab 120 / 220 / 310."
+      ]
+    },
+    {
+      "t": "Lösungsweg je Küche",
+      "list": [
+        "Imbiss-Ecke: Ein Koch schneidet Salat und Tomaten, der andere richtet an und serviert. Für 3 Sterne brauchst du rund 10 bis 14 Salate mit Trinkgeld und Serie.",
+        "Burger-Bude: Drei Pfannen – immer zwei braten lassen. Brötchen und Käse vorher auf Theken bereitlegen.",
+        "Suppenküche: Alle drei Töpfe nutzen. Einer schneidet, einer füllt Töpfe, spült und serviert. Salat als schnelles Füllgericht.",
+        "Fließband-Kantine: Das Band läuft von links nach rechts durch die Mitte. Lege nichts darauf, was liegen bleiben soll – oder nutze es bewusst als Transport zur anderen Seite.",
+        "Eis-Bistro: Früh loslaufen und früh bremsen. Lieber kurze Wege und wenig Sprint. Fisch braucht 1,8 Sekunden zum Schneiden.",
+        "Geteilte Küche: Die Mitte ist durch eine Theke getrennt. Die linke Hälfte hat Tomate, Salat, Fleisch, Brötchen, Käse und Zwiebel, die rechte Hälfte Topf, Pfanne, Ausgabe und Teller. Zutaten über die Mitteltheke reichen."
+      ]
+    },
+    {
+      "t": "Freischaltungen und Statistik",
+      "list": [
+        "Küche 2 bis 6: je mindestens ein Stern in der vorherigen Küche.",
+        "Maximal 18 Sterne (6 Küchen × 3).",
+        "„👨‍🍳 Sterneküche!“ erscheint bei 3 Sternen, „Küche geschlossen …“ bei 0 Sternen.",
+        "Die Übungsküche ist jederzeit wiederholbar und zählt nicht für Sterne."
+      ]
+    }
+  ],
+  "faq": [
+    { "q": "Wie viele Köche können mitspielen?", "a": "Bis zu 4 – Handys, Controller und Tastatur gemischt. Freie Plätze übernehmen auf Wunsch Computer-Köche." },
+    { "q": "Ich kann online nicht mehr einsteigen.", "a": "Während einer laufenden Schicht nimmt die Küche keine neuen Köche auf. Warte bis zum Feierabend und tritt dann bei." },
+    { "q": "Kann ich solo ohne Computer-Koch spielen?", "a": "Ja. Schalte in den Einstellungen „Solo: Computer-Koch hilft mit“ aus. Dann steuerst du beide Köche und wechselst mit Tab/Q, Y oder WECHSELN." },
+    { "q": "Wo sind meine Sterne gespeichert?", "a": "Im Browser dieses Geräts. Werden Website-Daten gelöscht, beginnst du wieder bei der Imbiss-Ecke." },
+    { "q": "Warum kann ich nichts auf den Teller legen?", "a": "Auf einen Teller passt nur, was zu einem Gericht der aktuellen Karte gehört – und die Zutat muss geschnitten bzw. gebraten sein." },
+    { "q": "Wie stelle ich Musik oder Vibration aus?", "a": "Unter ⚙️ Einstellungen gibt es Schalter für Geräusche, Musik und Vibration." }
+  ]
+}
