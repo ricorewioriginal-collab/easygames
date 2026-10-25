@@ -43,6 +43,8 @@ const sG = C.motionScore(coach, phoneGood), sS = C.motionScore(coach, phoneStill
 // Takt-Erkennung aus Onsets (mit Schwankung und Störgeräuschen)
 for (const bpm of [96, 123, 140]) { const P = 60 / bpm, b0 = .31, s = []; for (let t = 0; t < 14; t += 1 / 60) { const ph = ((t - b0) / P) % 1, near = Math.min(ph, 1 - ph) * P; s.push({ t, v: (near < .02 ? 1 : 0) * (Math.floor((t - b0) / P) % 2 ? .7 : 1) + Math.random() * .15 }); }
   const r = C.tempo(s); const pe = r ? Math.abs(((r.beat0 - b0) / P % 1 + 1.5) % 1 - .5) * P : 9; ok(r && Math.abs(r.bpm - bpm) < 1.6 && pe < .04, `Mikro-Takt ${bpm} BPM → ${r && r.bpm.toFixed(1)} BPM, Phase ±${(pe * 1000).toFixed(0)} ms`); }
+{ const P = 60 / 128, b0 = .4, taps = [0, 1, 2, 3].map(k => 107 * P + b0 + k * P + (k % 2 ? .02 : -.015)), r = C.tapPhase(taps, 128), pe = Math.abs(((r.beat0 - b0) / P % 1 + 1.5) % 1 - .5) * P; ok(r.bpm === 128 && pe < .02, `Tempo bekannt: 4 Klopfer → Phase ±${(pe * 1000).toFixed(0)} ms`); }
+{ const P = 60 / 128, s = []; for (let t = 0; t < 10; t += 1 / 60) { const ph = ((t - .2) / P) % 1; s.push({ t, v: (Math.min(ph, 1 - ph) * P < .02 ? 1 : 0) + Math.random() * .3 }); } const r = C.tempo(s, 128 * .97, 128 * 1.03); ok(r && Math.abs(r.bpm - 128) < 1.5, 'Live-Erkennung mit Tempo-Hinweis → ' + (r && r.bpm.toFixed(1))); }
 const tp = C.tapTempo([1.02, 1.5, 1.99, 2.48, 2.97, 3.47, 3.95, 4.45]); ok(tp && Math.abs(tp.bpm - 122.4) < 2, 'Mitklopfen → ' + (tp && tp.bpm.toFixed(1)) + ' BPM');
 // Rhythmus
 const en = []; for (let t = 0; t < 2; t += 1 / 30) en.push({ t, e: Math.abs(((t % .5) - .0)) < .04 ? .4 : .05 }); ok(C.rhythmScore(en, 1.0) > .6 && C.rhythmScore(en.map(x => ({ t: x.t, e: .05 })), 1.0) < .4, 'Rhythmus-Bewertung');

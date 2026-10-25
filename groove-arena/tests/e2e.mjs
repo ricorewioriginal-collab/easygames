@@ -67,6 +67,16 @@ await p.evaluate(() => GAApp.lock(98, GAApp.S.player.time())); const cid2 = awai
 await p.evaluate(() => GAApp.sim(8)); ok(await p.evaluate(() => GAApp.D.max > 0 && /Neuer Hit/.test(document.getElementById('dTitle').textContent)), 'Radio: Wertung + Titel oben');
 await p.keyboard.press('Escape'); await p.waitForSelector('#ovPause:not([hidden])'); ok(/Beenden/.test(await p.textContent('#paQuit')), 'Pause: Radio beenden'); await p.click('#paQuit'); await p.waitForSelector('#sResult.on'); await p.waitForTimeout(300); await shot('radio-result');
 ok(await p.evaluate(() => /Neuer Hit/.test(document.getElementById('rsBody').textContent) && /laut\.fm/.test(document.getElementById('rsBody').textContent)), 'Ergebnis mit getanzten Titeln und Quelle');
+// Stream ohne Analyse-Freigabe: Tempo aus der iTunes-Hörprobe (Attrappe: 128 BPM), sofort tanzbar; 4× tippen setzt die Phase
+RADIO.nocors = true; RADIO.now = { title: 'Holding Out For A Hero', artist: 'Bonnie Tyler', len: 260 };
+await p.evaluate(() => { GAApp.toMenu(); GAApp.openRadio(GAApp.STATIONS[0]); }); await p.waitForSelector('#sPrep.on'); await p.waitForFunction(() => /Bonnie/.test(document.getElementById('rbNow').textContent), null, { timeout: 8000 }).catch(() => {});
+await p.click('#pGo'); await p.waitForSelector('#sDance.on');
+await p.waitForFunction(() => GAApp.D && GAApp.D.locked, null, { timeout: 20000 }).then(() => ok(true, 'Radio ohne Analyse: sofort im Takt'), () => ok(false, 'Radio ohne Analyse: sofort im Takt'));
+ok(await p.evaluate(() => GAApp.S.player.plain && Math.abs(GAApp.D.bpm - 128) < 2 && /Hörprobe/.test(document.getElementById('dSync').textContent) && /Apple iTunes/.test(document.getElementById('rbSrc').textContent)), 'Tempo aus der Hörprobe: ' + await p.evaluate(() => GAApp.D && GAApp.D.bpm) + ' BPM · ' + await p.textContent('#dSync'));
+ok(await p.evaluate(() => JSON.parse(localStorage.getItem('groove-arena-bpm') || '{}')['bonnietyler|holdingoutforahero']), 'Tempo je Song gespeichert'); await shot('radio-hoerprobe');
+for (let i = 0; i < 4; i++) { await p.click('#dTap'); await p.waitForTimeout(469); }
+ok(await p.evaluate(() => Math.abs(GAApp.D.bpm - 128) < 2 && GAApp.D.taps.length === 0 && /Takt gefunden/.test(document.getElementById('dSync').textContent)), '4× tippen: Phase gesetzt, Tempo bleibt ' + await p.evaluate(() => GAApp.D.bpm.toFixed(1)));
+RADIO.nocors = false; await p.evaluate(() => GAApp.toMenu());
 // Handy
 await p.close(); const m = await ctx.newPage(); await m.setViewportSize({ width: 390, height: 800 }); m.on('pageerror', e => errs.push('HANDY ' + e.message));
 await m.goto(BASE + 'groove-arena/index.html?lowfx'); await m.waitForSelector('#sTitle.on', { timeout: 20000 }); await m.evaluate(() => document.getElementById('bPress').click()); await m.waitForSelector('#sMenu.on'); await m.waitForTimeout(600); await shot('handy-menu', m);

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "be3c01649620",
- "generated": "2026-10-25T02:18:37+01:00",
- "commit": "1bba435e34b13e6e1b537b014ae8d4e3a9c2a452",
+ "version": "2c43749a9fea",
+ "generated": "2026-10-25T01:41:18+00:00",
+ "commit": "b22d3fbd5a52330d9a0bc1480ad0ff5f1213bc61",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6453,13 +6453,13 @@
   },
   {
    "p": "groove-arena/js/app.js",
-   "s": 65883,
-   "h": "c39ebddf8693597a33e454a993f043309b2b7d142e86a45e62953d3c6dfa4e99"
+   "s": 67316,
+   "h": "672f1d857d79db7ab3ebccbfafe3f6af9b4f10bdb4085326248784b976eee193"
   },
   {
    "p": "groove-arena/js/core.js",
-   "s": 41176,
-   "h": "9a9c2f14af37cfa0a4c877c84613a08ec33e9d52fd0c8f21eb910121a9c48676"
+   "s": 41675,
+   "h": "70306f62d2eb0d83146cd6e3e0524869e533cec1a37c36c1d75368c7e4be0613"
   },
   {
    "p": "groove-arena/js/dancers.js",
@@ -6473,13 +6473,13 @@
   },
   {
    "p": "groove-arena/js/media.js",
-   "s": 12707,
-   "h": "fc07435794c3eb8a8e91b24b265acea90e8ae28ffab6f3a091ffad9bcd9407ff"
+   "s": 15312,
+   "h": "b677f0928c6eadcdeb4359357b691340cb9703e59dd3834a5f3d8b96659d8a08"
   },
   {
    "p": "groove-arena/js/sense.js",
-   "s": 6960,
-   "h": "70ed25600621b8075e69e9c3f4292e70c7caea8cfac064b355a65252a74ac213"
+   "s": 7074,
+   "h": "e0d41ae3098bd9c2052a45a1a97ec10741e2f8a4c45eba7ef3119bf3ba32cc7f"
   },
   {
    "p": "groove-arena/js/sound.js",
@@ -8654,7 +8654,7 @@
   {
    "p": "sync/catalog.json",
    "s": 217662,
-   "h": "ea91d3fb87095991b1ed059bd7212019a9d4faa1e04e90f0b26e32dad15fd70d"
+   "h": "29c869df7b95538b8dfcfea64b3cb9c1b76c1c6a7ec86ac58af2bcdf7dfe2170"
   },
   {
    "p": "taschi/card.svg",
