@@ -1992,6 +1992,42 @@
    }
   },
   {
+   "id": "sonnenhof",
+   "title": "Sonnenhof – Garten & Bauernhof",
+   "desc": "Dein eigener Garten und Bauernhof: Felder umgraben, säen, gießen und ernten – 13 Pflanzen von der Frühlingszwiebel bis zur Melone, jede mit Lieblingsjahreszeit. Hühner, Kühe, Schafe, Schweine und Bienen versorgen, in Mühle, Einkochküche, Molkerei, Bäckerei, Spinnrad und Ölpresse Mehl, Marmelade, Käse, Kuchen und Pullover herstellen, Bestellungen liefern und am Markt verkaufen. Jahreszeiten mit Regen, Gewitter und Schnee, Tag und Nacht, Level, Erfolge und Hofwert. Pflanzen wachsen in echter Zeit weiter – entspannt, jeden Tag ein bisschen, auch offline.",
+   "icon": "🌻",
+   "img": "sonnenhof/card.jpg",
+   "bg": "linear-gradient(145deg,#8fd3ff,#6bcf4a 55%,#ffc21a)",
+   "glow": "rgba(255,194,26,.5)",
+   "path": "sonnenhof/",
+   "modes": {
+    "pad": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Auf deinem Sonnenhof gräbst du Felder um, säst, gießt und erntest. Jede Pflanze wächst in vier Stufen und braucht für jede Stufe Wasser – Regen gießt alles. Mit der Ernte lieferst du Bestellungen am Auftragsbrett, verkaufst am Markt, fütterst deine Tiere und stellst in Werkstätten wertvolle Waren her. Level schalten neue Pflanzen, Tiere, Werkstätten und Felder frei. Pflanzen, Tiere und Werkstätten arbeiten auch weiter, wenn du nicht spielst.",
+    "steuerung": [
+     "Maus/Touch: Feld oder Gebäude antippen – die Hand gräbt um, sät, gießt und erntet automatisch. Mit Hacke, Saat, Gießkanne oder Dünger über viele Felder wischen. Mit der Hand ziehen verschiebt die Karte, Mausrad oder zwei Finger zoomen.",
+     "Tastatur: Pfeile/WASD = Auswahlrahmen, Enter = benutzen, 1–5 oder Q/E = Werkzeug, Leertaste = Saat wechseln, M = Markt, B = Bauen, O = Aufträge, I = Lager, Esc = Pause.",
+     "Gamecontroller: Steuerkreuz bewegen, A benutzen, LB/RB Werkzeug, X Saat wechseln, Y Bauen, Select Markt, Start/B Menü."
+    ],
+    "tipps": [
+     "Erst gießen, dann warten: Ein Tropfen 💧 über der Pflanze heißt, sie braucht Wasser für die nächste Stufe.",
+     "Bestellungen bringen mehr als der Markt – verkaufe nur, was keiner bestellt hat.",
+     "Behalte Weizen und Mais als Tierfutter.",
+     "Pflanzen in ihrer Saison wachsen schneller, außerhalb bringen sie am Markt 25 % mehr.",
+     "Vor einer Pause alles gießen und Werkstätten füllen – dann wartet beim Zurückkommen eine volle Ernte."
+    ]
+   },
+   "size": 181464,
+   "files": 8,
+   "offline": true,
+   "cloud": {
+    "game": "sonnenhof",
+    "prefix": "sonnenhof-"
+   }
+  },
+  {
    "id": "challenge-show",
    "title": "Die große Challenge-Show",
    "desc": "3D-Spielshow mit bis zu 24 Kandidaten im TV-Studio samt jubelndem Publikum und Moderator-Stimme: 🚦 Ampel-Lauf mit dem Ampel-Roboter, 🌉 Wackelbrücke über der Schaumstoffgrube, 🪢 Seilziehen im Takt, 🍪 Keks-Kunst (Form nachfahren), 🪑 Reise nach Jerusalem und das 👑 Schubs-Finale auf der schrumpfenden Plattform. Computer füllen auf, drei Stärken, kinderfreundlich – Ausscheiden heißt Konfetti-Puff. 🌐 Online & Handys: Freunde spielen von überall mit, oder der Fernseher zeigt die Show und Handys sind die Controller.",

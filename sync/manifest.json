@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "099cfcfece28",
- "generated": "2026-10-25T09:57:30+01:00",
- "commit": "df8bebff31ace61d08d0efb9c935ddde809192ca",
+ "version": "fdb137205fd6",
+ "generated": "2026-10-25T10:10:54+01:00",
+ "commit": "104d529d80ac5bf27ad94f6a3b8904787390d5f8",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4623,8 +4623,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3284,
-   "h": "14d856ea5360a022e24eb50c3c058cc57975297ebb74fcea565837a1a297dde9"
+   "s": 3304,
+   "h": "9559f440307b6275315de03c7fcea41376939d76f802c5fc95a019fcda2b230b"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -5463,8 +5463,8 @@
   },
   {
    "p": "games.js",
-   "s": 51139,
-   "h": "83047882843c80736f83f8d9e36a8ee248ea47e37043e35ffaacf5c282825899"
+   "s": 51939,
+   "h": "ce6bed53aef2bd692ba20cf28f5ad0333f29df22dee4f4736e58ddd8a6ecdebf"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5693,8 +5693,8 @@
   },
   {
    "p": "guides.js",
-   "s": 159762,
-   "h": "95dee96b278ea2592f95013d6598410f2b365fad60478fab5b06549da090159f"
+   "s": 161312,
+   "h": "fe4991a14c0bf60692db77387194fd48bd7ac8d93f5839cc91e66c8d7896bccb"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6055,6 +6055,11 @@
    "p": "guides/show-me-your-voice.json",
    "s": 20038,
    "h": "a5e5f4fe1999643622d7d42e5ab3df3b18371ca925721e838352413b3696a570"
+  },
+  {
+   "p": "guides/sonnenhof.json",
+   "s": 9857,
+   "h": "c9e3421bd4e14878cd15a1db070678c31d9c0a230e9d97100f0b672f16d8ebf8"
   },
   {
    "p": "guides/spinwelten.json",
@@ -6738,8 +6743,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3788,
-   "h": "943003aa38fd46ccaa36741259bf79f3c0a4720db39f9d8d13c01e103919c410"
+   "s": 3818,
+   "h": "d0a8c9378cfe9e776a58e230c15dc304e5cfe26d300a860d8cbcc6ee91f06f66"
   },
   {
    "p": "oma-rennen/card.jpg",
@@ -7937,6 +7942,46 @@
    "h": "2affd4b5a1fbdad10a44fc25f668003ecc73add98d08e27aeab6674412b29ead"
   },
   {
+   "p": "sonnenhof/card.jpg",
+   "s": 67705,
+   "h": "e4d4d4431f480d6a293d11cb75c7eb9d16576aa8da81b901f03dac5c216b87f0"
+  },
+  {
+   "p": "sonnenhof/index.html",
+   "s": 7717,
+   "h": "a423aa4c6e9e256dc41aca2d43221a0af1840706df4418f1db6e9ddb22695c8f"
+  },
+  {
+   "p": "sonnenhof/js/app.js",
+   "s": 43645,
+   "h": "cd67183f524a4f025f7bc7c7509a13715bb1e4e0262e7ea77aa3f7a6e2fbe775"
+  },
+  {
+   "p": "sonnenhof/js/core.js",
+   "s": 25264,
+   "h": "a2a31ad233b189c804355b582c06693164a2bed204fb2c067f1dd89aa635dd4e"
+  },
+  {
+   "p": "sonnenhof/js/render.js",
+   "s": 18738,
+   "h": "9ad7223e6fbd5e5ae66c38cd1e30aa85e1f36049f9171755981fcc9634cca64e"
+  },
+  {
+   "p": "sonnenhof/manifest.webmanifest",
+   "s": 772,
+   "h": "6b39d96fa8a69c2743f61b343c4a0760137c0998b9a5bb9f98dbe2222ee77b11"
+  },
+  {
+   "p": "sonnenhof/style.css",
+   "s": 15623,
+   "h": "d4d12b46bf837ba581010a5477b7a07bd072889bfec721e22ac774af16ed10b8"
+  },
+  {
+   "p": "sonnenhof/sw.js",
+   "s": 2000,
+   "h": "35aa73fdf931a1a9e45ced472ad3870a625f0b8d4ab98d4053f26d8e386e0812"
+  },
+  {
    "p": "spinwelten/card.svg",
    "s": 3970,
    "h": "b14feadf1fbda03dd3a9f961078d5fdfb44cac0204b431d7b3c25ea97d2c3f5d"
@@ -8288,8 +8333,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 235732,
-   "h": "cbf553aec6652931c34177394d7696615d64496efc29489d75d6f2d4d771b125"
+   "s": 238332,
+   "h": "fe9ccde11b9dc62364522776f339f724342b3ab484f2d6b4f79616e71a3ebe1d"
   },
   {
    "p": "taschi/card.svg",
@@ -8827,14 +8872,19 @@
    "h": "bc8ec4e305601876bd2e7204b6b71792be8f35d938db189ee54c0daac6852480"
   },
   {
+   "p": "thumbs/sonnenhof.webp",
+   "s": 35552,
+   "h": "892c6979cd97c4d1c837eb2b059ccf126a791e14771f624b9c30dddbaa1beebb"
+  },
+  {
    "p": "thumbs/stadt-land-plus.webp",
    "s": 15564,
    "h": "b10120871d5acf7ca3c4c3ab4aaa1f9100a4d14a2107f70c581c6f1d67e67fb0"
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2202,
-   "h": "8bc7cc04775a4846c50d85579233725ea556d05e29b738dee4051095725167d4"
+   "s": 2227,
+   "h": "f3e3554ab3dbc50fb356d31dd1556b7e7d12c38c984da2c49df2fe8946835936"
   },
   {
    "p": "thumbs/tortenschlacht.webp",

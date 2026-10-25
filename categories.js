@@ -19,7 +19,7 @@ window.EASYGAMES_CATS = {
     // Quiz
     'funkmaler': 'quiz', 'funkgalgen': 'quiz', 'zeitsprung-wissen': 'quiz', 'zeitsprung-movie': 'quiz', 'zeitsprung-radio': 'quiz', 'zeitsprung-castingshow': 'quiz', 'zeitsprung-kinderserien': 'quiz', 'zeitsprung-eurovision': 'quiz', 'anmacha-quiz': 'quiz', 'stadt-land-plus': 'quiz', 'anmacha-koffer-dealer': 'quiz', 'anmacha-gesucht': 'quiz', 'anmacha-hoererwahl': 'quiz', 'anmacha-preisradar': 'quiz', 'MachMichAus': 'quiz',
     // Simulation
-    'ricolife': 'sim', 'ricorail': 'sim', 'ricoville': 'sim', 'mimori': 'sim', 'FunkhausReality': 'sim', 'anmacha-markthalle': 'sim', 'anmacha-klotzfunk': 'sim', 'anmacha-podcast-tycoon': 'sim', 'bunte-insel': 'sim', 'pestwacht': 'sim',
+    'ricolife': 'sim', 'ricorail': 'sim', 'ricoville': 'sim', 'mimori': 'sim', 'FunkhausReality': 'sim', 'anmacha-markthalle': 'sim', 'anmacha-klotzfunk': 'sim', 'anmacha-podcast-tycoon': 'sim', 'bunte-insel': 'sim', 'sonnenhof': 'sim', 'pestwacht': 'sim',
     // Tisch
     'ricopoly': 'tisch', 'partyverse': 'tisch', 'anmacha-gold-reels': 'tisch', 'anmacha-spielesammlung': 'tisch', 'anmacha-kartenrausch': 'tisch', 'anmacha-solitaire': 'tisch', 'anmacha-undercover': 'tisch', 'werwolf-nacht': 'tisch', 'spinwelten': 'tisch', 'funk-billard': 'tisch',
     // Musik

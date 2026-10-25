@@ -643,6 +643,21 @@ window.EASYGAMES_GUIDES = {
    "Die Jury mag Songs zwischen 2:30 und 3:30, eine eingängige Refrain-Melodie, Gesang und deine eigene Handschrift."
   ]
  },
+ "sonnenhof": {
+  "anleitung": "Auf deinem Sonnenhof gräbst du Felder um, säst, gießt und erntest. Jede Pflanze wächst in vier Stufen und braucht für jede Stufe Wasser – Regen gießt alles. Mit der Ernte lieferst du Bestellungen am Auftragsbrett, verkaufst am Markt, fütterst deine Tiere und stellst in Werkstätten wertvolle Waren her. Level schalten neue Pflanzen, Tiere, Werkstätten und Felder frei. Pflanzen, Tiere und Werkstätten arbeiten auch weiter, wenn du nicht spielst.",
+  "steuerung": [
+   "Maus/Touch: Feld oder Gebäude antippen – die Hand gräbt um, sät, gießt und erntet automatisch. Mit Hacke, Saat, Gießkanne oder Dünger über viele Felder wischen. Mit der Hand ziehen verschiebt die Karte, Mausrad oder zwei Finger zoomen.",
+   "Tastatur: Pfeile/WASD = Auswahlrahmen, Enter = benutzen, 1–5 oder Q/E = Werkzeug, Leertaste = Saat wechseln, M = Markt, B = Bauen, O = Aufträge, I = Lager, Esc = Pause.",
+   "Gamecontroller: Steuerkreuz bewegen, A benutzen, LB/RB Werkzeug, X Saat wechseln, Y Bauen, Select Markt, Start/B Menü."
+  ],
+  "tipps": [
+   "Erst gießen, dann warten: Ein Tropfen 💧 über der Pflanze heißt, sie braucht Wasser für die nächste Stufe.",
+   "Bestellungen bringen mehr als der Markt – verkaufe nur, was keiner bestellt hat.",
+   "Behalte Weizen und Mais als Tierfutter.",
+   "Pflanzen in ihrer Saison wachsen schneller, außerhalb bringen sie am Markt 25 % mehr.",
+   "Vor einer Pause alles gießen und Werkstätten füllen – dann wartet beim Zurückkommen eine volle Ernte."
+  ]
+ },
  "challenge-show": {
   "anleitung": "Die große Challenge-Show ist eine 3D-Spielshow im TV-Studio: Bis zu 24 Kandidaten (12, 16 oder 24 – Computer füllen auf) treten in sechs Runden an, ein Moderator kommentiert mit Sprachausgabe und Untertiteln, das Publikum jubelt. In jeder Runde scheiden einige aus – kinderfreundlich mit Konfetti-Puff in die weiche Schaumstoffgrube – und füllen den 💰 Topf. 🚦 Ampel-Lauf: bei Grün laufen, bei Rot einfrieren, denn der Ampel-Roboter dreht sich um und sieht jede Bewegung; ins Ziel, bevor die Zeit abläuft. 🌉 Wackelbrücke: nacheinander Reihe für Reihe links oder rechts springen, nur eine Pudding-Platte hält, bekannte Platten leuchten grün. 🪢 Seilziehen: zwei Teams, wer im grünen Takt-Feld tippt, zieht doppelt so stark. 🍪 Keks-Kunst: Kreis, Dreieck, Stern oder Herz vom ⭐ aus nachfahren, ohne dass der Keks bricht. 🪑 Reise nach Jerusalem: Musik stoppt, Stühle tauchen auf, es gibt immer zu wenige. 👑 Schubs-Finale: mit dem Sprint-Stoß die anderen von der schrumpfenden Plattform ins Bällebad schubsen – der Letzte holt Krone und Topf. Wähle Name, Farbe und Hut für deinen Kandidaten, die Stärke der Computer (Leicht, Normal, Schwer) und die Länge (alle 6 Runden oder kurze Show mit 4). Bist du raus, schaust du zu, schickst Jubel-Emojis oder spulst vor. 🌐 Online & Handys: Der Gastgeber zeigt Code und QR-Code, bis zu 12 Mitspieler treten von überall bei und sehen die Show auf dem eigenen Gerät; im Modus „📺 Nur Fernseher“ zeigt der Fernseher die Show und die Handys sind die Controller.",
   "steuerung": [
