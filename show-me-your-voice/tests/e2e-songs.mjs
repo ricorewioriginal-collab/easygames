@@ -67,5 +67,10 @@ const as = await p.evaluate(() => { const A = window.SMYVApp, sv = A.state().sav
 ok(as.hit > 5 && as.hit < 35 && !as.cast, `Jury verteilt manchmal Songs (${as.hit} von ${as.n} Mottoshows, nie im Casting)`);
 await p.evaluate(() => { window.SMYVApp.go('sMenu'); window.SMYVApp.go('sBack'); }); await p.waitForSelector('#sBack.on'); await p.click('[data-b="stage"]'); await p.waitForSelector('#sPrep.on');
 ok(/hat dir einen Song zugeteilt/.test(await p.textContent('#prepBox')) && (await p.locator('#prepBox [data-g="music"]').count()) === 1, 'Zugeteilter Song: ' + as.a.name + ' → ' + as.a.t); await shot(p, 'jury-song');
+// Reiter „Song“ ohne Auswahl → Zufalls-Song (nicht Radio)
+await p.evaluate(() => { const st = window.SMYVApp.state(); st.prep.song = null; st.prep.music = 'radio:ricorewi'; st.prep.tab = 'song'; st.save.season.round = 0; window.SMYVApp.go('sMenu'); window.SMYVApp.go('sBack'); });
+await p.click('[data-b="stage"]'); await p.waitForSelector('#sPrep.on'); await p.click('#bGo'); await p.waitForSelector('#sTalk.on');
+const rs = await p.evaluate(() => { const pr = window.SMYVApp.state().prep; return { music: pr.music, song: pr.song && pr.song.title }; });
+ok(rs.music === 'yt' && rs.song, 'Song-Reiter ohne Auswahl spielt einen Zufalls-Song: ' + rs.song);
 ok(!errs.length, 'Keine Laufzeitfehler' + (errs.length ? ': ' + errs.join(' | ') : ''));
 await b.close();

@@ -6,7 +6,9 @@ const CANDS = [{ r: 1 }, { r: 1, j: 1, hold: 0.4 }, { r: 1, j: 1, hold: 0.14 }, 
 const policy = s => {
   if (s.hang) return { r: 1 };
   if (s.rope) return { r: 1, j: s.rope.a > 0.2 && s.rope.da > 0 ? 1 : 0 };   // am Seil: loslassen, wenn es nach vorn schwingt
-  if (s.onGround && s.ground) return { r: 1, j: s.ground.x1 - s.x < 0.45 && !s.ground.wall ? 1 : 0 };
+  if (s.onGround && s.ground) { const g = s.ground; if (g.x1 - s.x >= 0.45 || g.wall) return { r: 1, j: 0 };
+    // schließt die nächste Fläche fast nahtlos an (z. B. Drehwalzen), einfach weiterlaufen
+    return { r: 1, j: s.solids.some(q => q !== g && !q.wall && Math.abs(q.top - g.top) < 0.05 && q.x0 > g.x1 - 0.05 && q.x0 - g.x1 < 0.45) ? 0 : 1 }; }
   // in der Luft: Sprung halten, außer der volle Sprung flöge über die nächste Fläche hinaus (dann kurz = kleiner Sprung)
   if (s.vy <= 0.5) return { r: 1, j: 0 };
   let nx = null; for (const q of s.solids) if (q.x1 > s.x + 0.6 && q.top <= s.y + 1.6 && !q.wall && (!nx || q.x0 < nx.x0)) nx = q;

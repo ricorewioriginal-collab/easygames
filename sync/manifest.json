@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "133320b15bed",
- "generated": "2026-10-25T02:40:52+00:00",
- "commit": "db18607c73dd6aa0293e9177228e02fa1425cdc3",
+ "version": "55a2b191639a",
+ "generated": "2026-10-25T02:52:20+00:00",
+ "commit": "3777916e3c0d0eb8bb3f4c481cb07b99a54edddd",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -743,8 +743,8 @@
   },
   {
    "p": "anmacha-funkparcours/bot.js",
-   "s": 3332,
-   "h": "53768af2999a1ce39beb35d4937c3006ca5953c4161d4689b87199eafc6b8b0e"
+   "s": 3586,
+   "h": "20f0e307f523cecfcd37777169e2e64201fdf3cebe0a2bf5f82dde8a44c7b17e"
   },
   {
    "p": "anmacha-funkparcours/card.png",
@@ -768,13 +768,13 @@
   },
   {
    "p": "anmacha-funkparcours/engine.js",
-   "s": 17513,
-   "h": "153701e66059261d6f5c44cef47d266fb70272a18e243fbf9fdd72aa54d6f194"
+   "s": 17675,
+   "h": "dfeed9d15c6bb00c3576b574211b4747897971365d31735d99da6374a603608d"
   },
   {
    "p": "anmacha-funkparcours/index.html",
-   "s": 11563,
-   "h": "9e0e7df6022b6bc3800352288c55b51052d56743989a4726be8173f8982a7023"
+   "s": 11593,
+   "h": "454a093374fdf123f919f005e39269698a5f200046abcc979a0dea896658031e"
   },
   {
    "p": "anmacha-funkparcours/logo.png",
@@ -863,8 +863,8 @@
   },
   {
    "p": "anmacha-funkparcours/main.js",
-   "s": 26717,
-   "h": "06ae8ce283a2d72881a3a3947f59278e551eac1c57b928a44224c22637645f6f"
+   "s": 26742,
+   "h": "4b165ca6314cfabdf411f8c3091742e691858319cf061b8443fc833942209878"
   },
   {
    "p": "anmacha-funkparcours/manifest.webmanifest",
@@ -873,8 +873,8 @@
   },
   {
    "p": "anmacha-funkparcours/menu.js",
-   "s": 7732,
-   "h": "a258f0d01ef491fe0c019ab61ad0b6938a786e026b4f884580185d0816e5cf9a"
+   "s": 7765,
+   "h": "0e4f9971dd3be78daa7b1be94cb93b5ae2cf0036368439067d62ec95ff9dd1fa"
   },
   {
    "p": "anmacha-funkparcours/pair.js",
@@ -5529,7 +5529,7 @@
   {
    "p": "cloud/anmacha-board.js",
    "s": 36400,
-   "h": "bb3bc541fa64d8a9a9d4b09cfeeff29c9d1c03130a381f5f86b61961c7e75fae"
+   "h": "dfee0813b994401f8816f8779c83150740d00db2279eb34729e832018fe99635"
   },
   {
    "p": "cloud/anmacha-bug.js",
@@ -8698,13 +8698,13 @@
   },
   {
    "p": "show-me-your-voice/index.html",
-   "s": 18976,
-   "h": "bc085ef29e8e7ef9facc0eeb37cd982d9e179306dcc337d549893a2cc5d4f8ae"
+   "s": 19640,
+   "h": "8bba09a2de0d79e6e0cd9cd9fc7fe1d29230ebc325e512cd49bc73dfc031a4dd"
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 167914,
-   "h": "04d274eb20b3cf29b5d92b5b4b6cbbd322271b687a269250b8314f189cf29712"
+   "s": 173261,
+   "h": "b0ff5fc9305069e2b4b63918069acb5e5b9ebc38c1a8eee88aa2c49b3bda3ec8"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
@@ -8743,8 +8743,8 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 28842,
-   "h": "6077677e35789ad0808ee83321441cefde3d40e00c2033af366708c3b492edac"
+   "s": 35045,
+   "h": "c6ba42b456479c059040c9247a432b48a822d1c49c67f72ad340042b5bae04f2"
   },
   {
    "p": "show-me-your-voice/sw.js",
@@ -9109,7 +9109,7 @@
   {
    "p": "sync/catalog.json",
    "s": 233016,
-   "h": "95e5ab76b7d322a8d2df6ec1edf4b3b360cad73ecfd59cba547680a63e0f1b7e"
+   "h": "08e09a6e5cb92bd66329a55bf02fbc469f5778fa7ae0b5af4a8d9813787a7347"
   },
   {
    "p": "taschi/card.svg",
