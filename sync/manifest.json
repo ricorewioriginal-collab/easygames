@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "247d5fb85769",
- "generated": "2026-10-25T03:04:22+01:00",
- "commit": "f453802e4ca3fb0e144c14befb4ac410ec937280",
+ "version": "d17828ec8bdc",
+ "generated": "2026-10-25T02:24:21+00:00",
+ "commit": "a62d9dc9d5d85a25b8977244d6a1406998f6ff23",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -769,7 +769,7 @@
   {
    "p": "anmacha-funkparcours/index.html",
    "s": 11593,
-   "h": "3d70cd304a7cfacaaa9f32801def0dec4211c8af68d8dbdd61a17b755993a470"
+   "h": "454a093374fdf123f919f005e39269698a5f200046abcc979a0dea896658031e"
   },
   {
    "p": "anmacha-funkparcours/logo.png",
@@ -859,7 +859,7 @@
   {
    "p": "anmacha-funkparcours/main.js",
    "s": 26742,
-   "h": "ce0684103e289308ef64435023d223d2399379c680f4c90289e5017adedc8289"
+   "h": "4b165ca6314cfabdf411f8c3091742e691858319cf061b8443fc833942209878"
   },
   {
    "p": "anmacha-funkparcours/manifest.webmanifest",
@@ -5524,7 +5524,7 @@
   {
    "p": "cloud/anmacha-board.js",
    "s": 36400,
-   "h": "bb3bc541fa64d8a9a9d4b09cfeeff29c9d1c03130a381f5f86b61961c7e75fae"
+   "h": "dfee0813b994401f8816f8779c83150740d00db2279eb34729e832018fe99635"
   },
   {
    "p": "cloud/anmacha-bug.js",
@@ -8654,7 +8654,7 @@
   {
    "p": "sync/catalog.json",
    "s": 217662,
-   "h": "6806b28b25c9ce86d2d1da12db577bd089b8c5b48204dfdca272e3329df012be"
+   "h": "6b89915b3dff40496dfe00ee88ec65c9b87ce49b1e027a28b036b774dfbd8f20"
   },
   {
    "p": "taschi/card.svg",

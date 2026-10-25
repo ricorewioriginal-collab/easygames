@@ -115,7 +115,7 @@
       { id: 'main', title: 'Sterne gesamt', key: 'wobbelSave1', path: 'levels.*.stars', agg: 'sum', order: 'desc', unit: '★' }
     ],
     'funkparcours': [
-      { id: 'finale2', title: 'Finale – Bestzeit', key: 'fpBest2', path: '2.t', order: 'asc', fmt: 'sec' }
+      { id: 'finale3', title: 'Finale – Bestzeit', key: 'fpBest3', path: '2.t', order: 'asc', fmt: 'sec' }
     ],
     'turbokick': [
       { id: 'main', title: 'Siege gesamt', key: 'turbokick.save', path: 'stats.wins', order: 'desc', unit: 'Siege' }

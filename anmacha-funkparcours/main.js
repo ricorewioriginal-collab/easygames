@@ -36,7 +36,7 @@ if (JOIN) {
   let G = null, token = 0, pending = null, curCourse = -1, snd = store.get('fpSnd', true), keys = 0, touchM = 0; const phoneM = [0, 0, 0, 0];
   Audio_.setOn(snd);
   const FAST = () => window.__fpFast || 1, sleep = ms => new Promise(r => setTimeout(r, ms / FAST()));
-  const bests = () => store.get('fpBest2', {});
+  const bests = () => store.get('fpBest3', {});
   const show = id => { for (const s of ['menu', 'setup', 'game']) $(s).hidden = s !== id; if (id === 'menu') ui.menu.refresh(); };
   const setSnd = () => { const b = $('bSound'); b.querySelector('.ic').textContent = snd ? '🔊' : '🔇'; b.querySelector('.lb').textContent = snd ? 'Ton: an' : 'Ton: aus'; $('bSnd').textContent = snd ? '🔊' : '🔇'; $('aSnd').querySelector('.ai').textContent = snd ? '🔊' : '🔇'; };
   const toggleSnd = () => { snd = !snd; Audio_.setOn(snd); store.set('fpSnd', snd); setSnd(); SFX.click(); };
@@ -157,7 +157,7 @@ if (JOIN) {
     await A(sleep(1700)); return res;
   }
 
-  const bestUpdate = (ci, res, name) => { if (!res.finished) return false; const b = bests(); if (!b[ci] || res.time < b[ci].t) { b[ci] = { t: Math.round(res.time * 100) / 100, n: name, g: res.g }; store.set('fpBest2', b); return true; } return false; };
+  const bestUpdate = (ci, res, name) => { if (!res.finished) return false; const b = bests(); if (!b[ci] || res.time < b[ci].t) { b[ci] = { t: Math.round(res.time * 100) / 100, n: name, g: res.g }; store.set('fpBest3', b); return true; } return false; };
 
   async function coroutine(tok, mode) {
     const A = async p => { const v = await p; if (tok !== token) throw ABORT; return v; };

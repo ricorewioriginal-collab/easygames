@@ -2208,7 +2208,7 @@
    "offline": true,
    "cloud": {
     "game": "funkparcours",
-    "prefix": "fpPhoneName,fpBest2,fpNames,fpChars,fpSnd"
+    "prefix": "fpPhoneName,fpBest3,fpNames,fpChars,fpSnd"
    }
   },
   {

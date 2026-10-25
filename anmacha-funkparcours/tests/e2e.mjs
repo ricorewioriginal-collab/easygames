@@ -40,7 +40,7 @@ const phase = (p, ph, ms = 60000) => p.waitForFunction(x => window.__fp.G && win
     await p.click('#bNext');
   }
   await p.waitForSelector('#bAgain', { timeout: 10000 }); const end = await p.textContent('#cardBox'); log(end.includes('Anna') && end.includes('gewinnt'), 'Endstand nennt den Sieger'); log(await p.isVisible('#cardBox .prize img'), 'Radioportal-Logo am Ende'); await p.screenshot({ path: `${SHOT}/fp-end.png` });
-  const b = await p.evaluate(() => JSON.parse(localStorage.getItem('fpBest2') || '{}')); log(!!b[0] && !!b[1] && !!b[2] && b[0].g.length > 20, 'Bestzeiten + Geist gespeichert');
+  const b = await p.evaluate(() => JSON.parse(localStorage.getItem('fpBest3') || '{}')); log(!!b[0] && !!b[1] && !!b[2] && b[0].g.length > 20, 'Bestzeiten + Geist gespeichert');
   await p.click('#bToMenu'); await p.waitForSelector('#menu:not([hidden])'); log(true, 'Zurück im Menü');
   await p.close();
 }
