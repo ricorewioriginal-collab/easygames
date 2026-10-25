@@ -1,0 +1,22 @@
+# Phase 7 – Endgame (owner request 2026-10-10: "ja mache das")
+
+Source: `07_ENDGAME/ENDGAME.md`. The main story is complete (Phase 6); the world stays freely playable.
+
+## Scope and honest limits
+- Done with data and the existing systems (arena, bosses, unique rewards); everything is placeholder art.
+- The seven endgame dungeons of the master list exist twice: as wave-based rift runs (arena machinery with difficulty modifiers) and, since E07, as walkable dungeon areas behind the superboss arenas.
+
+## Milestones
+| ID | Content |
+|---|---|
+| E01 (PASSED) | World "Weltenriss" (unlocked by `FLAG_GAME_COMPLETE`): hub, seven Weltenbrecher superbosses with unique EX rewards, Halle der 100 (ten ranks) with the last shard |
+| E02 (PASSED) | Character end quests (Kael, Eryn, Toren, Sela, Mirael, Professorium) |
+| E03 (PASSED) | Endgame dungeons (Der verlorene Wald … Der Ort, den es nie gab) as rift runs with five rift kinds |
+| E04 (PASSED) | NG+: restart with kept belongings, enemy scaling per level, extra rage phase for bosses |
+| E05 (PASSED) | NG+ extras: four NG+-only enemy types, extra chests, Chronik items and shop, NG+ dialogue lines |
+| E06 (PASSED) | NG+ secrets: seven hidden lore books |
+| E07 (PASSED) | Walkable endgame dungeons behind the seven superboss arenas |
+| E08 (PASSED) | Dungeon vaults: a dials puzzle opens a vault chest in each endgame dungeon |
+| E09 (PASSED) | A boss per endgame dungeon guards the way to the puzzle and the vault |
+
+Rules: one milestone at a time, full regression before every merge, placeholder art is never reported as final (CLAUDE.md rule 6).
