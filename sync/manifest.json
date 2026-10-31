@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "2749484cd145",
- "generated": "2026-10-25T10:56:12+00:00",
- "commit": "46dc58374f144cc4d89ec58130e093cf05a4b570",
+ "version": "2fd6e436cf5f",
+ "generated": "2026-10-25T23:39:36+01:00",
+ "commit": "3b778fcb2e333003dfc4341790275c9303c5a3de",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4758,8 +4758,8 @@
   },
   {
    "p": "cloud/radio-profil.js",
-   "s": 24888,
-   "h": "85d6098c6f47bbfcfbf7658592ab13f52df1f7983fd62feb7baa658f8475cd3b"
+   "s": 25964,
+   "h": "f83aa3ad7580919e95d3bf03a3f042ea251112fd24680ed65cb8bbce8e0cdb8f"
   },
   {
    "p": "colorpop-universe/card.png",
