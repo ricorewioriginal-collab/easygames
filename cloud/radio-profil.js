@@ -74,7 +74,7 @@
   /* ───────── Anzeige ───────── */
   function gameLink(g, cm) { var c = cm && cm[g.id]; return HOME + (c && c.path ? c.path : ''); }
   function viewHtml(p, cm) {
-    var h = '<div class="rrp-hero"><div class="rrp-av" aria-hidden="true">' + esc(p.avatar || '🙂') + '</div><div style="flex:1;min-width:200px"><b>' + esc(p.nick) + '</b>' + (p.bio ? '<span>' + esc(p.bio) + '</span>' : '');
+    var h = '<div class="rrp-hero"><div class="rrp-av" aria-hidden="true">' + esc(p.avatar || '🙂') + '</div><div style="flex:1;min-width:200px"><b>' + esc(p.nick) + '</b>' + (p.support ? '<span style="display:table;margin:4px 0 6px;padding:3px 10px;border-radius:99px;font-size:.78rem;font-weight:800;color:#d4fd78;border:1px solid rgba(212,253,120,.5);background:rgba(255,75,155,.18)" title="Hat RicoReWi Radio ' + (+p.support) + ' mit einer Spende unterstützt">♥ Unterstützer ' + (+p.support) + '</span>' : '') + (p.bio ? '<span>' + esc(p.bio) + '</span>' : '');
     var soc = p.social || {}, ks = Object.keys(soc).filter(function (n) { return NICE[n] && safeUrl(soc[n]); });
     if (ks.length) h += '<div class="rrp-soc">' + ks.map(function (n) { return '<a href="' + esc(safeUrl(soc[n])) + '" target="_blank" rel="noopener nofollow ugc">' + NICE[n] + ' ↗</a>'; }).join('') + '</div>';
     h += '</div></div><div class="rrp-grid">';
@@ -136,7 +136,8 @@
       var f = '<form id="rrp-f" autocomplete="off"><div class="rrp-card"><div class="chk"><input type="checkbox" id="rrp-pub"' + (cur.public ? ' checked' : '') + '><label for="rrp-pub" style="margin:0"><b>Profil öffentlich anzeigen</b> (sichtbar für alle, auch ohne Anmeldung, und in der Nutzerliste)</label></div>' +
         '<div class="rrp-two"><div><label for="rrp-nick">Spitzname</label><input type="text" id="rrp-nick" maxlength="24" value="' + esc(cur.nick) + '" placeholder="3–24 Zeichen"></div><div><label for="rrp-av">Symbol</label><select id="rrp-av">' + AVATARS.map(function (e) { return '<option' + (e === (cur.avatar || AVATARS[0]) ? ' selected' : '') + '>' + e + '</option>'; }).join('') + '</select></div></div>' +
         '<label for="rrp-bio">Über mich (max. 140 Zeichen)</label><textarea id="rrp-bio" rows="2" maxlength="140">' + esc(cur.bio) + '</textarea></div>' +
-        '<div class="rrp-card"><h2>Das zeige ich öffentlich</h2><div class="rrp-two">' + SECTIONS.map(function (s) { return '<div class="chk"><input type="checkbox" id="rrp-s-' + s[0] + '"' + (sec[s[0]] === false ? '' : ' checked') + '><label for="rrp-s-' + s[0] + '" style="margin:0">' + s[1] + '</label></div>'; }).join('') + '</div>' +
+        '<div class="rrp-card"><h2>Das zeige ich öffentlich</h2><div class="rrp-two">' + SECTIONS.map(function (s) { return '<div class="chk"><input type="checkbox" id="rrp-s-' + s[0] + '"' + (sec[s[0]] === false ? '' : ' checked') + '><label for="rrp-s-' + s[0] + '" style="margin:0">' + s[1] + '</label></div>'; }).join('') + '<div class="chk"><input type="checkbox" id="rrp-s-support"' + (sec.support === true ? ' checked' : '') + '><label for="rrp-s-support" style="margin:0">♥ Unterstützer-Abzeichen' + (cur.support ? ' (' + (+cur.support) + ')' : '') + '</label></div></div>' +
+        '<p class="mut" style="font-size:.8rem">♥ Unterstützer-Abzeichen: erscheint nur, wenn du dieses Jahr mit der E-Mail-Adresse deines Kontos über Buy Me a Coffee oder PayPal gespendet hast – das prüft der Server beim Speichern.</p>' +
         '<p class="mut" style="font-size:.8rem">Top-3-Spiele: deine ersten 3 Favoriten ♥ in der Spieleliste · Top-3-Sender: deine ersten 3 Favoriten im Radio · Zahlen werden beim Speichern aus deinem Konto übernommen.</p>' +
         (snap ? '<p class="mut" style="font-size:.8rem">Aktuell: ' + snap.games.length + ' Spiele, ' + snap.stations.length + ' Sender, ' + snap.songs.length + ' Songs, ' + esc(dur(snap.sec)) + ' Hörzeit, Rang ' + esc(snap.rach.rank) + '.</p>' : '<p class="mut" style="font-size:.8rem">Deine Zahlen konnten gerade nicht geladen werden – gespeichert werden dann nur die Angaben unten.</p>') + '</div>' +
         '<div class="rrp-card"><h2>Social Media (optional, anklickbar)</h2><div class="rrp-two">' + SOCIAL.map(function (s) { return '<div><label for="rrp-so-' + s[0] + '">' + s[1] + '</label><input type="text" id="rrp-so-' + s[0] + '" maxlength="200" placeholder="' + s[2] + '" value="' + esc(soc[s[0]] || '') + '"></div>'; }).join('') + '</div></div>' +
@@ -147,11 +148,11 @@
       $('rrp-f').onsubmit = function (e) {
         e.preventDefault(); msg('Speichere …', true);
         var body = { nick: $('rrp-nick').value, public: $('rrp-pub').checked, avatar: $('rrp-av').value, bio: $('rrp-bio').value, sections: {}, social: {} };
-        SECTIONS.forEach(function (s) { body.sections[s[0]] = $('rrp-s-' + s[0]).checked; }); SOCIAL.forEach(function (s) { body.social[s[0]] = $('rrp-so-' + s[0]).value; });
+        SECTIONS.forEach(function (s) { body.sections[s[0]] = $('rrp-s-' + s[0]).checked; }); body.sections.support = $('rrp-s-support').checked; SOCIAL.forEach(function (s) { body.social[s[0]] = $('rrp-so-' + s[0]).value; });
         collect(tok, o).catch(function () { return snap; }).then(function (fresh) {
           var d = fresh || {}; ['games', 'gach', 'stations', 'songs', 'top', 'sec', 'rach'].forEach(function (k) { if (d[k] !== undefined) body[k] = d[k]; });
           return call('pubprofile_save', { token: tok, body: body });
-        }).then(function (r) { if (r.status === 'ok') { msg(body.public ? 'Gespeichert – dein Profil ist öffentlich.' : 'Gespeichert (noch nicht öffentlich).', true); cur.slug = r.profile.slug; renderMe(host, o, tok); } else msg(r.message || 'Das hat nicht geklappt.', false); })
+        }).then(function (r) { if (r.status === 'ok') { msg((body.public ? 'Gespeichert – dein Profil ist öffentlich.' : 'Gespeichert (noch nicht öffentlich).') + (body.sections.support && !r.profile.support ? ' Das Unterstützer-Abzeichen erscheint, sobald dieses Jahr eine Spende mit der E-Mail-Adresse deines Kontos eingegangen ist.' : ''), true); cur.slug = r.profile.slug; renderMe(host, o, tok); } else msg(r.message || 'Das hat nicht geklappt.', false); })
           .catch(function () { msg('Keine Verbindung – bitte später erneut versuchen.', false); });
       };
       var box = $('rrp-delbox'), word = $('rrp-delword'), go = $('rrp-delgo');
