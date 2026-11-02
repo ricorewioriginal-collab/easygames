@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/funk-survivor-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Funkflut"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#070b18">
+<title>Funkflut Survivor – Überlebe die Störwelle!</title>
+<meta name="description" content="Funkflut Survivor: Action-Überlebensspiel in realistischer 3D-Grafik. Halte 10 Minuten gegen die Störwelle durch, sammle Kristalle, steige auf und baue aus sechs Waffen und neun Verstärkungen deine eigene Kombination. Fünf Helden, drei Bühnen, drei Bosse.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage"></div>
+<div id="dmgLayer"></div>
+
+<!-- Ladebildschirm -->
+<section class="scr on" id="sLoad">
+  <div class="load">
+    <div class="eq"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <h1 class="logo">FUNKFLUT<span>SURVIVOR</span></h1>
+    <div class="bar"><i id="loadBar"></i></div>
+    <p class="tip" id="loadTip">Bühne wird aufgebaut …</p>
+  </div>
+</section>
+
+<!-- Titel -->
+<section class="scr" id="sTitle">
+  <div class="titleBox">
+    <p class="kick">RicoReWi × AnMaCha präsentieren</p>
+    <h1 class="logo big">FUNKFLUT<span>SURVIVOR</span></h1>
+    <p class="claim">Überlebe die Störwelle.</p>
+    <button class="btn pri big nav pulse" id="bPress">▶ <span id="pressTxt">Start drücken</span></button>
+  </div>
+  <p class="corner"><a href="../" id="backLink">← Alle Spiele</a></p>
+</section>
+
+<!-- Hauptmenü -->
+<section class="scr" id="sMenu">
+  <div class="menuWrap">
+    <header class="mHead"><h1 class="logo small">FUNKFLUT<span>SURVIVOR</span></h1><div class="chips"><span class="chip" id="menuBest">🏆 0</span><span class="chip" id="menuCoins">🪙 0</span></div></header>
+    <div class="tiles" id="tiles">
+      <button class="tile nav hero" data-go="play"><i>⚡</i><b>Spielen</b><small id="playInfo">Held, Bühne und Modus wählen</small></button>
+      <button class="tile nav" data-go="shop"><i>🛠️</i><b>Studio-Ausbau</b><small id="shopInfo">Dauerhafte Verbesserungen</small></button>
+      <button class="tile nav" data-go="rec"><i>🏅</i><b>Rekorde</b><small>Bestwerte &amp; Statistik</small></button>
+      <button class="tile nav" data-go="opts"><i>⚙️</i><b>Optionen</b><small>Ton, Grafik, Steuerung</small></button>
+      <button class="tile nav" data-go="help"><i>📖</i><b>Anleitung</b><small>Ziel &amp; Steuerung</small></button>
+    </div>
+    <footer class="mFoot"><span class="hintKeys" id="menuKeys"></span><a href="../" class="nav" id="backLink2">← Alle Spiele</a></footer>
+  </div>
+</section>
+
+<!-- Spiel vorbereiten -->
+<section class="scr" id="sSetup">
+  <div class="setup">
+    <div class="sTop"><button class="btn nav" id="suBack">← Zurück</button><span class="chip" id="suCoins">🪙 0</span></div>
+    <div class="sBottom panel">
+      <div class="heroRow"><button class="btn arrow nav" id="hPrev" aria-label="Voriger Held">◀</button>
+        <div class="hInfo"><h2 id="hName">Rico</h2><p id="hDesc"></p><div class="hStats" id="hStats"></div><p class="hIdx" id="hIdx"></p></div>
+        <button class="btn arrow nav" id="hNext" aria-label="Nächster Held">▶</button></div>
+      <button class="btn nav act" id="hAct">Auswählen</button>
+      <div class="opts">
+        <div class="optRow" id="rowMap"><span class="lab">Bühne</span><div class="seg" id="segMap"></div></div>
+        <div class="optRow"><span class="lab">Modus</span><div class="seg" id="segMode"></div></div>
+        <div class="optRow"><span class="lab">Schwierigkeit</span><div class="seg" id="segDiff"></div></div>
+      </div>
+      <p class="modeInfo" id="modeInfo"></p>
+      <button class="btn pri big nav" id="suGo">▶ Los geht's</button>
+    </div>
+  </div>
+</section>
+
+<!-- Studio-Ausbau -->
+<section class="scr" id="sShop">
+  <div class="shop">
+    <div class="sTop"><button class="btn nav" id="shBack">← Zurück</button><h2>🛠️ Studio-Ausbau</h2><span class="chip" id="shCoins">🪙 0</span></div>
+    <p class="hint">Mit Münzen aus deinen Runden verbesserst du dein Studio – die Boni gelten in jeder Runde.</p>
+    <div class="grid" id="shGrid"></div>
+  </div>
+</section>
+
+<!-- Spiel -->
+<section class="scr game" id="sGame">
+  <div class="xpBar"><i id="hXp"></i></div>
+  <div class="hud">
+    <div class="hl"><div class="hpBar"><i id="hHp"></i><span id="hHpT">100</span></div><div class="lvl" id="hLv">Lv 1</div><div class="wlist" id="hW"></div></div>
+    <div class="hc"><div class="timer" id="hTime">0:00</div><div class="goal" id="hGoal"></div></div>
+    <div class="hr"><span class="chip" id="hKills">💀 0</span><span class="chip" id="hCoins">🪙 0</span><button class="icon nav" id="bPause" aria-label="Pause"><i class="pz"></i></button></div>
+  </div>
+  <div class="bossBar" id="bossBar" hidden><b id="bossName"></b><div class="bb"><i id="bossHp"></i></div></div>
+  <div class="banner" id="banner" hidden></div>
+  <div class="bossArrow" id="bossArrow" hidden>➤</div>
+  <div class="tctl" id="touch">
+    <div class="stickBase" id="stickBase"><i id="stickKnob"></i></div>
+    <button class="dashBtn" id="dashBtn" aria-label="Ausweichen"><span>💨</span><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" id="dashRing"/></svg></button>
+  </div>
+  <div class="hintBox" id="hintBox" hidden></div>
+</section>
+
+<!-- Level-Aufstieg -->
+<div class="ov dim" id="ovLevel" hidden><div class="lvCard">
+  <p class="kick" id="lvKick">Level 2</p><h2>Wähle eine Verbesserung</h2>
+  <div class="picks" id="picks"></div>
+  <div class="rowBtns"><button class="btn nav" id="lvReroll">🎲 Neu würfeln (<span id="lvRr">1</span>)</button></div>
+  <p class="hint" id="lvHint">Tasten 1–3 · Pfeile + Enter · Controller: Steuerkreuz + A</p>
+</div></div>
+
+<!-- Ende -->
+<div class="ov end" id="ovEnd" hidden><div class="card big">
+  <p class="kick" id="eKick">Endlos</p>
+  <h2 class="endTitle" id="eTitle">Überrannt!</h2>
+  <div class="newRec" id="eRec" hidden>⭐ Neuer Rekord!</div>
+  <div class="bigScore" id="eScore">0</div>
+  <div class="stats" id="eStats"></div>
+  <p class="unlock" id="eUnlock" hidden></p>
+  <div class="rowBtns wrap"><button class="btn pri big nav" id="eAgain">↻ Nochmal</button><button class="btn nav" id="eShop">🛠️ Ausbau</button><button class="btn nav" id="eShare">📤 Teilen</button><button class="btn nav" id="eMenu">☰ Menü</button></div>
+</div></div>
+
+<div class="ov" id="ovWin" hidden><div class="card big">
+  <p class="kick">Sendeschluss</p><h2 class="endTitle win">Du hast die Störwelle besiegt!</h2>
+  <p>Der Große Störsender ist verstummt – dein Funk läuft wieder. Weiter spielen oder die Runde beenden und die Belohnung kassieren?</p>
+  <div class="rowBtns wrap"><button class="btn pri big nav" id="wContinue">🎤 Zugabe (weiterspielen)</button><button class="btn nav" id="wEnd">🏁 Runde beenden</button></div>
+</div></div>
+
+<div class="ov" id="ovPause" hidden><div class="card">
+  <h2>Pause</h2>
+  <div class="pInfo" id="pInfo"></div>
+  <div class="menuBtns"><button class="btn big pri nav" id="pGo">▶ Weiter</button><button class="btn nav" id="pOpts">⚙️ Optionen</button><button class="btn nav" id="pHelp">📖 Steuerung</button><button class="btn nav" id="pQuit">⏹ Runde aufgeben</button></div>
+</div></div>
+
+<div class="ov" id="ovOpts" hidden><div class="card">
+  <h2>⚙️ Optionen</h2>
+  <label class="check"><input type="checkbox" id="sSound"> Soundeffekte</label>
+  <label class="check"><input type="checkbox" id="sMusic"> Musik</label>
+  <label class="check"><input type="checkbox" id="sVib"> Vibration</label>
+  <label class="check"><input type="checkbox" id="sNum"> Schadenszahlen</label>
+  <label class="check"><input type="checkbox" id="sAim"> Touch-Knöpfe auch am Computer zeigen</label>
+  <label class="check"><input type="checkbox" id="sLow"> Sparmodus (einfachere Grafik, nach Neustart)</label>
+  <button class="btn pri nav" id="optX" data-close>Fertig</button>
+</div></div>
+
+<div class="ov" id="ovRec" hidden><div class="card">
+  <h2>🏅 Rekorde</h2>
+  <div class="stats" id="recList"></div>
+  <p class="hint">Der Bestwert landet in der Rangliste und wird mit deinem Konto gespeichert.</p>
+  <button class="btn pri nav" id="recX" data-close>Fertig</button>
+</div></div>
+
+<div class="ov" id="ovHelp" hidden><div class="card scroll">
+  <h2>📖 So geht's</h2>
+  <p>Die Störwelle rollt an: Hunderte Rauschwesen jagen dich durch die Sendehalle. <b>Du schießt automatisch</b> – du läufst, sammelst und baust dein Arsenal aus.</p>
+  <ul>
+    <li><b>💎 Kristalle</b> der besiegten Gegner geben Erfahrung. Bei jedem Level wählst du eine von drei Verbesserungen: neue Waffen, Waffen-Stufen oder Verstärkungen.</li>
+    <li><b>🔫 Waffen</b> (max. 6, je 6 Stufen): Funkstrahl, Schallwelle, Kreisende Platten, Blitzantenne, Bassbombe, Richtfunk-Rakete.</li>
+    <li><b>🛡️ Verstärkungen</b> (max. 6, je 5 Stufen): Gesundheit, Tempo, Magnet, Schaden, Taktgeber, Panzer, Regeneration, Erfahrung, Glück.</li>
+    <li><b>💨 Ausweichen</b> macht dich kurz unverwundbar – ideal gegen Sturmangriffe und Geschosse.</li>
+    <li><b>Seltene Funde:</b> ❤️ Herz heilt, 🧲 Magnet zieht alles heran, 💣 Bombe räumt den Bildschirm, 📦 Truhe (von Elite-Gegnern und Bossen) schenkt Verbesserungen.</li>
+    <li><b>👹 Bosse</b> erscheinen nach 3 und 6 Minuten, der Große Störsender bei 10 Minuten. Besiegst du ihn, hast du gewonnen – dann geht's mit der Zugabe weiter.</li>
+    <li><b>🪙 Münzen</b> kaufst du im Studio-Ausbau dauerhafte Boni, neue Helden und Bühnen.</li>
+    <li><b>Modi:</b> Sendeschluss (10 Minuten), Endlos (ohne Ende, Bosse kehren stärker zurück), Tagesrunde (für alle gleich).</li>
+  </ul>
+  <h3>Steuerung</h3>
+  <ul>
+    <li><b>Touch:</b> Daumen links irgendwo auf den Bildschirm legen und ziehen = laufen · 💨-Knopf rechts = Ausweichen.</li>
+    <li><b>Tastatur:</b> WASD oder Pfeile laufen · Leertaste/Shift ausweichen · 1–4 Verbesserung wählen · Esc/P Pause.</li>
+    <li><b>Controller:</b> linker Stick/Steuerkreuz laufen · A, B oder Trigger ausweichen · Start Pause.</li>
+  </ul>
+  <button class="btn pri nav" id="helpX" data-close>Los geht's</button>
+</div></div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../vendor/three-r128-gltfloader.js"></script>
+<script src="../device.js"></script>
+<script src="../figuren/figuren.js"></script>
+<script src="js/core.js"></script>
+<script src="js/models.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="funk-survivor" data-prefix="funksurvivor-" defer></script>
+</body>
+</html>

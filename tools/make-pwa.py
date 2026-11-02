@@ -50,7 +50,8 @@ def dark(c, f):
     return tuple(v * f for v in c)
 
 
-SHORT_NAMES = {'Royal Radio Match 3D': 'Radio Match 3D'}   # eigene Kurznamen, wo das Kürzen unschön wäre
+SHORT_NAMES = {
+    'Funkflut Survivor – Überlebe die Störwelle!': 'Funkflut','Royal Radio Match 3D': 'Radio Match 3D'}   # eigene Kurznamen, wo das Kürzen unschön wäre
 
 
 def short(title):
