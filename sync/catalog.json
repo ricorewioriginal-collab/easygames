@@ -3140,6 +3140,38 @@
     "game": "zeitsprung-eurovision",
     "prefix": "ze-save-v1"
    }
+  },
+  {
+   "id": "funk-survivor",
+   "title": "Funkflut Survivor – Überlebe die Störwelle!",
+   "desc": "Action-Überlebensspiel in realistischer 3D-Grafik: Hunderte glänzende Störwesen jagen dich durch die Sendehalle – du läufst, die Waffen schießen von selbst. Sammle Kristalle, steige auf und baue aus sechs Waffen (Funkstrahl, Schallwelle, kreisende Platten, Blitzantenne, Bassbombe, Richtfunk-Rakete) und neun Verstärkungen deine eigene Kombination. Fünf Helden, drei Bühnen, Elite-Gegner, drei Bosse und der Große Störsender nach 10 Minuten. Ausweichen mit Unverwundbarkeit, Studio-Ausbau mit Münzen, Endlos und Tagesrunde. Touch-Stick, Tastatur oder Controller.",
+   "icon": "⚡",
+   "img": "funk-survivor/card.jpg",
+   "bg": "linear-gradient(145deg,#060a16,#2a1a6e 52%,#19c3ff)",
+   "glow": "rgba(43,217,255,.55)",
+   "path": "funk-survivor/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Funkflut Survivor ist ein Überlebensspiel in realistischer 3D-Grafik. Hunderte Störwesen jagen dich durch die Sendehalle – du läufst, die Waffen schießen automatisch. Besiegte Gegner lassen Kristalle fallen; bei jedem Level wählst du eine neue Waffe, eine höhere Stufe oder eine Verstärkung. Du trägst bis zu sechs Waffen (Funkstrahl, Schallwelle, kreisende Platten, Blitzantenne, Bassbombe, Richtfunk-Rakete) und sechs Verstärkungen. Mit dem Ausweichen bist du kurz unverwundbar. Elite-Gegner lassen Truhen fallen, nach 3 und 6 Minuten warten Bosse, bei 10 Minuten der Große Störsender. Mit Münzen schaltest du Helden und Bühnen frei und kaufst im Studio-Ausbau dauerhafte Boni. Modi: Sendeschluss, Endlos und Tagesrunde.",
+    "steuerung": [
+     "Touch: Finger links auflegen und ziehen = laufen, Knopf rechts unten = ausweichen.",
+     "Tastatur: WASD oder Pfeile laufen, Leertaste oder Shift ausweichen, 1–4 Verbesserung wählen, Esc/P Pause.",
+     "Gamecontroller: Stick oder Steuerkreuz laufen, A/B/X/Y/RB/RT ausweichen, Start Pause; in Menüs Steuerkreuz und A."
+    ],
+    "tipps": [
+     "Bleib in Bewegung und lauf in großen Kreisen – wer steht, wird umzingelt.",
+     "Hol dir früh mehrere Waffen, bevor du Verstärkungen wählst.",
+     "Heb das Ausweichen für Sturmangriffe und Geschossringe der Bosse auf."
+    ]
+   },
+   "size": 242746,
+   "files": 10,
+   "offline": true,
+   "cloud": {
+    "game": "funk-survivor",
+    "prefix": "funksurvivor-"
+   }
   }
  ]
 }

@@ -1,0 +1,233 @@
+{
+ "id": "funk-survivor",
+ "handbuch": [
+  {
+   "t": "Ziel des Spiels",
+   "p": [
+    "Die Störwelle rollt an: Hunderte Rauschwesen jagen dich durch die Sendehalle. Du läufst, deine Waffen schießen automatisch. Überlebe 10 Minuten und besiege den Großen Störsender, dann hast du Sendeschluss geschafft. Im Modus Endlos gibt es kein Ziel – hier zählt, wie lange du durchhältst.",
+    "Erfahrung bekommst du von Kristallen, die besiegte Gegner fallen lassen. Mit jedem Level wählst du eine Verbesserung. So wächst dein Arsenal von einer einzigen Startwaffe zu einer eigenen Kombination aus bis zu sechs Waffen und sechs Verstärkungen."
+   ]
+  },
+  {
+   "t": "Start und Hauptmenü",
+   "p": [
+    "Nach dem Titelbild erreichst du das Hauptmenü. Dort stehen Spielen, Studio-Ausbau, Rekorde, Optionen und Anleitung zur Auswahl. Oben siehst du deinen Bestwert und deine Münzen."
+   ],
+   "list": [
+    "Spielen: Held, Bühne, Modus und Schwierigkeit wählen und die Runde starten.",
+    "Studio-Ausbau: dauerhafte Verbesserungen für Münzen kaufen.",
+    "Rekorde: Bestwerte je Modus und deine Statistik.",
+    "Optionen: Ton, Musik, Vibration, Schadenszahlen, Touch-Knöpfe und Sparmodus."
+   ]
+  },
+  {
+   "t": "Held, Bühne, Modus und Schwierigkeit",
+   "p": [
+    "Im Setup blätterst du mit den Pfeilen durch die fünf Helden. Jeder startet mit einer eigenen Waffe und eigenen Werten. Gesperrte Helden und Bühnen schaltest du mit Münzen frei. Die Bühne verändert nur Licht und Farben, nicht den Schwierigkeitsgrad."
+   ],
+   "list": [
+    "Sendeschluss: 10 Minuten überleben und den Großen Störsender besiegen. Danach kannst du mit der Zugabe weiterspielen.",
+    "Endlos: kein Ziel. Die Bosse kehren immer stärker zurück.",
+    "Tagesrunde: Heute für alle gleich – gleiche Gegner, gleiche Angebote. Es zählt die beste Punktzahl des Tages.",
+    "Entspannt: Gegner haben weniger Leben und richten weniger Schaden an, Münzen und Punkte sind etwas geringer.",
+    "Normal: die Grundeinstellung.",
+    "Hart: mehr Gegner, mehr Leben, mehr Schaden – dafür 50 Prozent mehr Münzen und 35 Prozent mehr Punkte."
+   ]
+  },
+  {
+   "t": "Die Runde",
+   "p": [
+    "Du steuerst deinen Helden durch die kreisrunde Arena. Am oberen Rand siehst du die Erfahrungsleiste, links deine Gesundheit, das Level und deine Ausrüstung, in der Mitte die Zeit und rechts die Zahl der besiegten Gegner, deine Münzen und die Pause. Gegner, die dich berühren oder treffen, ziehen Gesundheit ab. Nach einem Treffer bist du kurz geschützt.",
+    "Alle 60 Sekunden rollt eine Horde Knackser im Ring heran, alle 70 Sekunden erscheint ein Elite-Gegner mit viel Leben, der eine Truhe fallen lässt. Nach drei und nach sechs Minuten kommen die ersten beiden Bosse, bei zehn Minuten der Große Störsender."
+   ]
+  },
+  {
+   "t": "Gegner",
+   "list": [
+    "Rauschling: der Standardgegner, läuft direkt auf dich zu.",
+    "Knackser: klein und sehr schnell, kommt oft in Gruppen.",
+    "Brummer: groß, zäh und langsam, richtet viel Schaden an.",
+    "Schreihals: hält Abstand und schießt langsame Geschosse auf dich.",
+    "Splitter: teilt sich beim Tod in zwei Knackser.",
+    "Blitzer: zeigt sich rot, bleibt kurz stehen und stürmt dann geradeaus los.",
+    "Elite: eine größere, deutlich stärkere Version, die eine Truhe hinterlässt.",
+    "Bosse: Der Dröhner, die Feedback-Queen und der Große Störsender mit eigenen Angriffsmustern."
+   ]
+  },
+  {
+   "t": "Level-Aufstieg und Verbesserungen",
+   "p": [
+    "Bei jedem Level hält das Spiel an und du wählst eine von drei Karten (manchmal vier). Eine Karte kann eine neue Waffe, eine höhere Waffenstufe oder eine Verstärkung sein. Du kannst bis zu sechs Waffen mit je sechs Stufen und bis zu sechs Verstärkungen mit je fünf Stufen tragen. Mit Neu würfeln mischst du die Karten neu – pro Runde hast du einen Versuch, mehr mit dem Studio-Ausbau."
+   ],
+   "list": [
+    "Funkstrahl: automatischer Schuss auf den nächsten Gegner.",
+    "Schallwelle: Druckwelle um dich, die Gegner zurückstößt.",
+    "Kreisende Platten: Schallplatten, die dauerhaft um dich kreisen.",
+    "Blitzantenne: Blitze, die von Gegner zu Gegner springen.",
+    "Bassbombe: wirft Bomben in Gegnerhaufen.",
+    "Richtfunk-Rakete: zielsuchende Raketen mit Explosion.",
+    "Kraftherz, Turnschuhe, Magnet-Mikro, Verstärker, Taktgeber, Studiopanzer, Pflaster, Studio-Mikro und Glücksbringer sind die neun Verstärkungen."
+   ]
+  },
+  {
+   "t": "Bedienung",
+   "list": [
+    "Touch: Finger links irgendwo auflegen und ziehen, dann läufst du in diese Richtung. Der Knopf mit dem Wind-Symbol rechts unten ist das Ausweichen.",
+    "Tastatur: WASD oder Pfeiltasten laufen, Leertaste oder Shift weichen aus, die Tasten 1 bis 4 wählen eine Verbesserung, Esc oder P öffnen die Pause.",
+    "Controller: linker Stick oder Steuerkreuz laufen, A, B, X, Y, RB oder RT weichen aus, Start pausiert. In den Menüs wählst du mit dem Steuerkreuz, A bestätigt und B geht zurück."
+   ]
+  },
+  {
+   "t": "Ausweichen",
+   "p": [
+    "Das Ausweichen schiebt dich in Laufrichtung (oder in Blickrichtung, wenn du stehst) kurz nach vorn, du bist dabei unverwundbar. Danach dauert es 2,4 Sekunden, bis du wieder ausweichen kannst – der Ring am Knopf zeigt die Wartezeit."
+   ]
+  },
+  {
+   "t": "Fundstücke",
+   "list": [
+    "Kristalle geben Erfahrung. Blau ist wenig, grün mehr, violett viel, rot sehr viel.",
+    "Münzen sind die Währung für Studio-Ausbau, Helden und Bühnen.",
+    "Herz: stellt 30 Prozent deiner Gesundheit wieder her.",
+    "Magnet: zieht alle Kristalle auf dem Spielfeld zu dir.",
+    "Bombe: verletzt alle Gegner in der Nähe schwer und löscht gegnerische Geschosse.",
+    "Truhe: schenkt dir eine Verbesserung, von Bossen gleich drei."
+   ]
+  },
+  {
+   "t": "Punkte, Belohnung und Ende",
+   "p": [
+    "Deine Punktzahl besteht aus besiegten Gegnern, überlebten Sekunden, besiegten Bossen und deinem Level, ein Sieg gibt einen großen Bonus. Der Schwierigkeitsgrad verändert sie.",
+    "Wenn deine Gesundheit auf null sinkt, ist die Runde vorbei. Du bekommst Münzen für die gesammelten Münzen, besiegte Gegner, überlebte Zeit und besiegte Bosse. Mit dem Studio-Ausbau Notstrom kannst du einmal pro Runde wiederbelebt werden."
+   ]
+  },
+  {
+   "t": "Fortschritt und Speichern",
+   "p": [
+    "Münzen, freigeschaltete Helden und Bühnen, Studio-Ausbau, Rekorde und Einstellungen werden auf deinem Gerät gespeichert. Wenn du mit Google angemeldet bist, folgt dir dein Fortschritt auf andere Geräte, und dein Bestwert kann in der Rangliste erscheinen."
+   ]
+  }
+ ],
+ "ratgeber": [
+  {
+   "t": "Tipps für Einsteiger",
+   "list": [
+    "Bleib in Bewegung. Wer steht, wird umzingelt. Lauf in großen Kreisen und lass die Gegner hinter dir herlaufen.",
+    "Sammle Kristalle, aber nicht um jeden Preis: Lieber später zurückkommen, als mitten in die Horde zu laufen.",
+    "Nimm am Anfang Waffen, bevor du Verstärkungen wählst. Mehr Waffen bedeuten mehr Schaden und mehr Abdeckung.",
+    "Hebe das Ausweichen für Notfälle auf, nicht für den normalen Weg.",
+    "Spiele am Anfang auf Entspannt, um die Bosse kennenzulernen."
+   ]
+  },
+  {
+   "t": "Strategien für Fortgeschrittene",
+   "list": [
+    "Baue früh eine Waffe aus, die dich schützt (Schallwelle oder kreisende Platten), und eine, die Fernziele trifft (Funkstrahl, Rakete oder Blitz).",
+    "Taktgeber und Verstärker wirken auf alle Waffen und sind deshalb die besten Verstärkungen für Mischbauten.",
+    "Das Magnet-Mikro lohnt sich vor allem, wenn du viele Kristalle liegen lässt, und es macht Hordenkämpfe sicherer.",
+    "Wähle Pflaster und Studiopanzer, wenn du viel getroffen wirst. Panzer hilft besonders gegen viele kleine Treffer.",
+    "Elite-Gegner sind eine Chance: Locke sie von der Horde weg, besiege sie und hol dir die Truhe."
+   ]
+  },
+  {
+   "t": "Profi-Tricks",
+   "list": [
+    "Führe Horden im Kreis, bis sich die Gegner zu einem Strang auseinandergezogen haben. Dann treffen Strahl und Blitz am besten.",
+    "Spare dir das Ausweichen für die Warnzeichen der Bosse: Roter Streifen am Boden heißt, gleich kommt der Sturmangriff.",
+    "Bleib bei der Feedback-Queen immer in Bewegung quer zu den Spiralen der Geschosse.",
+    "Ziehe Bomben-Fundstücke nicht blind ein, hebe sie für einen großen Haufen Gegner auf."
+   ]
+  },
+  {
+   "t": "Häufige Fehler",
+   "list": [
+    "In der Ecke der Arena kämpfen: Dort kommst du nicht mehr weg. Bleib in der Mitte.",
+    "Nur Verstärkungen wählen und keine neuen Waffen.",
+    "Dem Boss hinterherlaufen, statt zu kreisen.",
+    "Schreihälse ignorieren: Sie schießen aus der Distanz und lassen dich in die Zange laufen."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "Bester Weg je Phase",
+   "list": [
+    "Minute 0 bis 3: Zwei bis drei Waffen holen, Kristalle in Ruhe einsammeln, den ersten Elite-Gegner und die Truhe mitnehmen.",
+    "Minute 3: Der Dröhner erscheint. Er stürmt nach einer roten Warnung geradeaus los. Weiche seitlich aus, nicht nach hinten. Bei halbem Leben ruft er mehr Knackser und schickt Ringe aus Geschossen.",
+    "Minute 3 bis 6: Haupt-Waffen auf Stufe vier bis fünf bringen, Taktgeber und Verstärker mitnehmen.",
+    "Minute 6: Die Feedback-Queen schwebt in Abstand und schießt Spiralen. Lauf quer zu den Geschossen und halte Abstand. Bei halbem Leben kommen gezielte Dreierschüsse und Schreihälse dazu.",
+    "Minute 6 bis 10: Alle Waffen möglichst hochstufen, Panzer und Pflaster für Sicherheit.",
+    "Minute 10: Der Große Störsender wechselt Geschossringe, Fächer und Beschwörungen von Blitzern. Unter 40 Prozent Leben wird er wütend und schießt zusätzlich eine Spirale. Besiegst du ihn, ist Sendeschluss geschafft."
+   ]
+  },
+  {
+   "t": "Helden und Preise",
+   "list": [
+    "Rico (kostenlos): Funkstrahl, ausgewogen.",
+    "Mia Mikro (450 Münzen): Schallwelle, schnell, etwas weniger Leben.",
+    "Bassti (1.000 Münzen): Bassbombe, sehr viel Leben, langsam.",
+    "Luna Blitz (1.700 Münzen): Blitzantenne, schneller Schaden, wenig Leben.",
+    "Kiko (2.600 Münzen): Richtfunk-Rakete, mehr Schaden."
+   ]
+  },
+  {
+   "t": "Bühnen",
+   "list": [
+    "Sendehalle (kostenlos): kühles Studio mit blauem Neon.",
+    "Wüsten-Festival (600 Münzen): warmes Licht und orangefarbene Scheinwerfer.",
+    "Neon-Nacht (1.200 Münzen): Pink und Violett."
+   ]
+  },
+  {
+   "t": "Studio-Ausbau komplett",
+   "p": [
+    "Insgesamt kostet der vollständige Studio-Ausbau 18.988 Münzen. Sinnvolle Reihenfolge: zuerst Magnet, Tempo und Gesundheit, dann Schaden und Erfahrung, am Ende Notstrom."
+   ],
+   "list": [
+    "Stabile Nerven: +10 % Gesundheit je Stufe. Kosten je Stufe: 120, 252, 384, 516, 648 Münzen.",
+    "Lautstärke: +6 % Schaden je Stufe. Kosten je Stufe: 160, 336, 512, 688, 864 Münzen.",
+    "Trainingslager: +4 % Tempo je Stufe. Kosten je Stufe: 120, 252, 384, 516, 648 Münzen.",
+    "Talentscout: +8 % Erfahrung je Stufe. Kosten je Stufe: 140, 294, 448, 602, 756 Münzen.",
+    "Starker Magnet: +12 % Einsammelradius je Stufe. Kosten je Stufe: 90, 189, 288, 387, 486 Münzen.",
+    "Dämmwolle: −1 Schaden pro Treffer je Stufe. Kosten je Stufe: 300, 630, 960 Münzen.",
+    "Kaffeeküche: +0,3 Leben pro Sekunde je Stufe. Kosten je Stufe: 150, 315, 480, 645, 810 Münzen.",
+    "Sponsoren: +10 % Münzen je Stufe. Kosten je Stufe: 130, 273, 416, 559, 702 Münzen.",
+    "Zweite Meinung: +1 Neu würfeln pro Runde je Stufe. Kosten je Stufe: 260, 546, 832 Münzen.",
+    "Notstrom: einmal pro Runde wiederbeleben. Kosten je Stufe: 900 Münzen."
+   ]
+  },
+  {
+   "t": "Waffenstufen",
+   "list": [
+    "Funkstrahl: Stufe 2 mehr Schaden, Stufe 3 zweiter Strahl, Stufe 4 durchschlägt mehr Gegner, Stufe 5 dritter Strahl, Stufe 6 mehr Schaden und schneller.",
+    "Schallwelle: Stufen 2 bis 6 mehr Radius, schneller, mehr Schaden, Riesenwelle und auf Stufe 6 eine doppelte Welle.",
+    "Kreisende Platten: Stufe 1 hat zwei Platten, danach drei, drei, vier, vier und auf Stufe 6 sechs Platten.",
+    "Blitzantenne: mehr Schaden, ein zweiter Blitz auf Stufe 3, eine längere Kette ab Stufe 4, ein dritter Blitz auf Stufe 6.",
+    "Bassbombe: größere Explosion, schneller, eine zweite Bombe auf Stufe 4, eine dritte auf Stufe 6.",
+    "Richtfunk-Rakete: mehr Schaden, eine zweite Rakete auf Stufe 3, eine dritte auf Stufe 5, große Sprengkraft auf Stufe 6."
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Wie schieße ich?",
+   "a": "Du musst nicht schießen: Die Waffen feuern automatisch. Du steuerst nur, wohin du läufst."
+  },
+  {
+   "q": "Wie bekomme ich mehr Münzen?",
+   "a": "Sammle Münzen in der Runde ein, besiege Bosse und überlebe länger. Auf Hart und mit den Sponsoren im Studio-Ausbau gibt es mehr."
+  },
+  {
+   "q": "Was ist die Tagesrunde?",
+   "a": "Jeden Tag eine Runde mit denselben Gegnern und Angeboten für alle Spieler. So kannst du dich mit Freunden vergleichen."
+  },
+  {
+   "q": "Ruckelt das Spiel auf meinem Handy?",
+   "a": "Schalte in den Optionen den Sparmodus ein und lade das Spiel neu. Dann entfallen Schatten und der Leuchteffekt."
+  },
+  {
+   "q": "Kann ich zu zweit spielen?",
+   "a": "Aktuell spielst du allein. Weitere Modi können später folgen."
+  }
+ ]
+}

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "2fd6e436cf5f",
- "generated": "2026-10-25T23:39:36+01:00",
- "commit": "3b778fcb2e333003dfc4341790275c9303c5a3de",
+ "version": "23521cebe06f",
+ "generated": "2026-10-31T13:49:48+01:00",
+ "commit": "efed905e98a4e221e80c034c8d0e0e30958b9ba7",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4633,8 +4633,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3304,
-   "h": "9559f440307b6275315de03c7fcea41376939d76f802c5fc95a019fcda2b230b"
+   "s": 3331,
+   "h": "3d5a6f524980c6a4fc8e49bf71344a94b30674c84b2028fcbf15af4bda8f3629"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -4708,8 +4708,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22562,
-   "h": "aca74a3645a4cb4fbae70177503db3bbd913fce5737794e82020d672c1fae256"
+   "s": 22579,
+   "h": "7f00219901df5f787470d85c90538c8c72ab5a878a3816f7582f8b3c2367aedd"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -5277,6 +5277,56 @@
    "h": "b40831c42d3fb23e5819076d910becc3700fab1e5f0b7794fb784535b0efd548"
   },
   {
+   "p": "funk-survivor/card.jpg",
+   "s": 50862,
+   "h": "07bbd3e428f77cdf6b2dd5bc977dc4f7aaf098ed4ed105dac6b1ef22eb20c74f"
+  },
+  {
+   "p": "funk-survivor/index.html",
+   "s": 14549,
+   "h": "ad69e90c5385194b1efea219ded527b5e3ede72874c35481a7459cc140e73119"
+  },
+  {
+   "p": "funk-survivor/js/app.js",
+   "s": 32902,
+   "h": "11f4d5781702bdd6527f5a07687de4dba9729f4918f79d87ffa0761f67966fc5"
+  },
+  {
+   "p": "funk-survivor/js/core.js",
+   "s": 41112,
+   "h": "a210d59299e54565a2ceb3779e3fea5e5f95e056c62eb8d8ed698bb7098c2aff"
+  },
+  {
+   "p": "funk-survivor/js/models.js",
+   "s": 22504,
+   "h": "cf8dcf1a6f51f69a794271d8319d8dffd8cc57801977009945c674c82e73bf90"
+  },
+  {
+   "p": "funk-survivor/js/scene.js",
+   "s": 47096,
+   "h": "8fb9ee9eb54115da61cea5941f664a064b240ba4f4996d27b9de47f62df4d131"
+  },
+  {
+   "p": "funk-survivor/js/sound.js",
+   "s": 10967,
+   "h": "2a087c50032b099df207f23bc2d81c9e7691700c91a2db6867c43b64d11da481"
+  },
+  {
+   "p": "funk-survivor/manifest.webmanifest",
+   "s": 798,
+   "h": "88871a7de40db77f4be1e7b4a6b934d49790fe6e814af541da76e875aaf17529"
+  },
+  {
+   "p": "funk-survivor/style.css",
+   "s": 19933,
+   "h": "7b611f306cd2d8c8294bd9b9fbad9f9d5975bc6a1241f1c0d2ce5026a53ee0c5"
+  },
+  {
+   "p": "funk-survivor/sw.js",
+   "s": 2023,
+   "h": "588173df4e594d6055c011bc1e359792472aa530e62ed763582cbdc5502316e2"
+  },
+  {
    "p": "funkblasen/audio.js",
    "s": 8498,
    "h": "2e3593367aaaa3e782c9b32596831584e900891cb85e26e98f0802213b3ed7cd"
@@ -5473,8 +5523,8 @@
   },
   {
    "p": "games.js",
-   "s": 51939,
-   "h": "ce6bed53aef2bd692ba20cf28f5ad0333f29df22dee4f4736e58ddd8a6ecdebf"
+   "s": 52770,
+   "h": "7a301f2e77247a00ba39502beeea169c7fb5d03aa8df40ac2c1b8b2983091ae0"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5703,8 +5753,8 @@
   },
   {
    "p": "guides.js",
-   "s": 161312,
-   "h": "fe4991a14c0bf60692db77387194fd48bd7ac8d93f5839cc91e66c8d7896bccb"
+   "s": 162683,
+   "h": "b7bd851c79202d1aece6bc55b32a8beeec0788d7dcb83d96c0c17f06857586dd"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -5915,6 +5965,11 @@
    "p": "guides/funk-billard.json",
    "s": 12861,
    "h": "e32db2e3d21e4e765d5baee029723d666c6e1d25ce6074a4247879d1e5d58c29"
+  },
+  {
+   "p": "guides/funk-survivor.json",
+   "s": 13242,
+   "h": "219bb75908775a38a1981bd09272976a4cd1aaac73558f992d5abe585fa82765"
   },
   {
    "p": "guides/funkblasen.json",
@@ -8343,8 +8398,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 238332,
-   "h": "6689eeae9e5fe4084668c110af2f40347de207f61c1de34c3686b4f7e837fc0c"
+   "s": 240765,
+   "h": "bd36e137584595199dba6c2966ba56e379d36794f622f5034d5e7e541ff7d2fd"
   },
   {
    "p": "taschi/card.svg",
@@ -8787,6 +8842,11 @@
    "h": "cc3dfc4ea7b1a8bf4d868084410499d26a1cc4b6aceef4046cdc35ada05e5c47"
   },
   {
+   "p": "thumbs/funk-survivor.webp",
+   "s": 22196,
+   "h": "6e9bfdfc558ed307b83186c51efd1d8fb81bb70c032bd7c944ca432f8efa6be0"
+  },
+  {
    "p": "thumbs/funkgalgen.webp",
    "s": 17280,
    "h": "0e366cb5530837fe05a2b4b656d2e162c05737cdaa42c9f03bae33c05c4d7c59"
@@ -8893,8 +8953,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2227,
-   "h": "f3e3554ab3dbc50fb356d31dd1556b7e7d12c38c984da2c49df2fe8946835936"
+   "s": 2256,
+   "h": "62cbc4a8731deefcdc5483dcdd3c61634dd8ba55447cd24d8987267abcad4a66"
   },
   {
    "p": "thumbs/tortenschlacht.webp",

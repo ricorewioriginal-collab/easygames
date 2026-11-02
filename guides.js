@@ -574,6 +574,19 @@ window.EASYGAMES_GUIDES = {
    "Hörst du das Bimmeln am Gleis, bleib davor stehen, bis der Zug durch ist."
   ]
  },
+ "funk-survivor": {
+  "anleitung": "Funkflut Survivor ist ein Überlebensspiel in realistischer 3D-Grafik. Hunderte Störwesen jagen dich durch die Sendehalle – du läufst, die Waffen schießen automatisch. Besiegte Gegner lassen Kristalle fallen; bei jedem Level wählst du eine neue Waffe, eine höhere Stufe oder eine Verstärkung. Du trägst bis zu sechs Waffen (Funkstrahl, Schallwelle, kreisende Platten, Blitzantenne, Bassbombe, Richtfunk-Rakete) und sechs Verstärkungen. Mit dem Ausweichen bist du kurz unverwundbar. Elite-Gegner lassen Truhen fallen, nach 3 und 6 Minuten warten Bosse, bei 10 Minuten der Große Störsender. Mit Münzen schaltest du Helden und Bühnen frei und kaufst im Studio-Ausbau dauerhafte Boni. Modi: Sendeschluss, Endlos und Tagesrunde.",
+  "steuerung": [
+   "Touch: Finger links auflegen und ziehen = laufen, Knopf rechts unten = ausweichen.",
+   "Tastatur: WASD oder Pfeile laufen, Leertaste oder Shift ausweichen, 1–4 Verbesserung wählen, Esc/P Pause.",
+   "Gamecontroller: Stick oder Steuerkreuz laufen, A/B/X/Y/RB/RT ausweichen, Start Pause; in Menüs Steuerkreuz und A."
+  ],
+  "tipps": [
+   "Bleib in Bewegung und lauf in großen Kreisen – wer steht, wird umzingelt.",
+   "Hol dir früh mehrere Waffen, bevor du Verstärkungen wählst.",
+   "Heb das Ausweichen für Sturmangriffe und Geschossringe der Bosse auf."
+  ]
+ },
  "easyclash": {
   "anleitung": "EASYCLASH ist ein 3D-Prügelspiel mit den Helden aus den easygames. Zwei Kämpfer stehen in einer runden Arena mit Wand; wer zuerst die Lebensleiste des anderen leert, gewinnt die Runde, wer zuerst 2 Runden holt, den Kampf. Vier Knöpfe wie bei den großen 3D-Prüglern: 1 linke Faust, 2 rechte Faust, 3 linkes Bein, 4 rechtes Bein – mit einer Richtung wird daraus ein anderer Angriff (alle in der Befehlsliste im Pausenmenü). Ketten: 1,2 · 1,2,4 · 1,2,1 · 2,2 · 3,4. Unten-vor + 2 ist der Aufwärtshaken für Luft-Kombos, vor + 2 an der Wand lässt den Gegner kleben, unten + 4 ist ein Feger. Ducken lässt hohe Angriffe drübergehen. Blocken mit zurück oder dem Block-Knopf: stehend hoch und mittel, geduckt tief. Mit dem Stick läufst du frei in alle Richtungen: vor/zurück zum Gegner, hoch/runter seitwärts im Kreis um ihn herum; kurz antippen ist ein schneller Seitschritt, gegen den gerade Angriffe danebengehen. Ducken mit unten-zurück oder unten-vor. Würfe gehen durch jeden Block und lassen sich mit Wurf befreien. Jede Figur hat einen eigenen Spezialangriff (Energiestoß, Sturmangriff, Wirbel, Sturzflug, Himmelsfaust oder Bodenbeben). Unter 25 % Leben glühst du vor Wut und hast einmal pro Runde das Finale. Modi: 🏆 Arcade (8 Gegner, Punkte für die Rangliste), ⚔️ Versus zu zweit, 🤖 Gegen CPU (3 Stärken), 🥊 Training und 🌐 Online & Handys (der große Bildschirm zeigt den Kampf, zwei Handys sind die Controller).",
   "steuerung": [
