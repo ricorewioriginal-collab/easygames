@@ -39,7 +39,7 @@ const SPK = id => (C.PEOPLE[id] && C.PEOPLE[id].name) || '';
 const chap = () => C.CHAPTERS[story.i];
 const flow = () => C.FLOW[story.i].flow;
 async function chapter(i) {
-  story.i = i; story.step = 0; story.active = true; const c = chap(); setGlow(story.glow);
+  story.i = i; story.step = 0; story.active = true; const c = chap(); setGlow(story.glow); document.querySelector('#sStory .meter').hidden = false;
   $('chapLbl').textContent = (/^\d/.test(c.n) ? 'Kapitel ' + c.n : c.n) + ' · ' + c.title;
   $('choices').innerHTML = ''; $('line').textContent = '…'; $('who').hidden = true; $('xhud').hidden = true; $('bSolve').hidden = true;
   go('sStory'); $('talk').hidden = false; story.phase = 'busy';
@@ -159,6 +159,7 @@ function caseLabel(h) { const cl = C.CLUES.find(c => c.at === h.id); return case
 async function startCase(fromStory) {
   caseRun = C.newCase(); caseRun.story = fromStory; story.active = fromStory;
   if (!fromStory) { $('chapLbl').textContent = 'Fall 14 · Pia ermittelt'; }
+  document.querySelector('#sStory .meter').hidden = !fromStory;
   go('sStory'); $('talk').hidden = true; story.phase = 'busy';
   await fade(() => scene('kueche', ['pia']));
   A.ambient('innen'); A.music('spiel');

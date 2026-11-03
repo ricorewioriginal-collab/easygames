@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c1c60c8d8ca2",
- "generated": "2026-11-03T13:00:31+01:00",
- "commit": "8fb8630d1749d9046d1ce192ef97e08eeb5d5a63",
+ "version": "fb9a2e60f9aa",
+ "generated": "2026-11-03T16:42:07+01:00",
+ "commit": "d13750558ac3925399d1f5c9db5a4e5a2b1a7e59",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6672,14 +6672,14 @@
    "h": "99d6c78e043710d4f83ed90716779798b7b04eb690f73e0ad0e8f32d1f0e98c2"
   },
   {
+   "p": "leuchtfeuer/assets/index-BdisQ57A.js",
+   "s": 207923,
+   "h": "b5edc5f4465240c8db7fde97fcf6f4098b44b76bed466ca233cdcfbb9fce9f17"
+  },
+  {
    "p": "leuchtfeuer/assets/index-Bt7m9mvP.css",
    "s": 14867,
    "h": "b904630bd0e5794cf7e065fe6a0d54240c6d4c28f669fe27c7b355cc12212b72"
-  },
-  {
-   "p": "leuchtfeuer/assets/index-DyDxlEMg.js",
-   "s": 207714,
-   "h": "5d84974552589ab03068651b9f548678b6af6451b6bba1c27eed866d63f7a5af"
   },
   {
    "p": "leuchtfeuer/assets/three-BoK-gHdf.js",
@@ -6839,7 +6839,7 @@
   {
    "p": "leuchtfeuer/index.html",
    "s": 16486,
-   "h": "65fa1009805d858f393af98a8a766449b5a2d97529ab24d6483525068f50b391"
+   "h": "a503a41fd0b2b1b794c85a9d0f595be343027cf6d4af9a0d97500b251f8016d9"
   },
   {
    "p": "leuchtfeuer/manifest.webmanifest",
@@ -8649,7 +8649,7 @@
   {
    "p": "sync/catalog.json",
    "s": 245752,
-   "h": "45ab6dead7cf177c01a86acc82f68a3577942462e6d911e31c7655cd7a819bfe"
+   "h": "bd25023a1cc441363d7857eafe8703f53bf019730572e0f0c90e17f7e102a221"
   },
   {
    "p": "taschi/card.svg",

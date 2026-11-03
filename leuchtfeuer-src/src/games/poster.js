@@ -10,7 +10,7 @@ export async function start(ctx) {
   const s = C.newPoster(ctx.lvl, ctx.seed || 7), L = s.L;
   const bd = data.board, size = Math.min(2.5 / L.cols, 2.2 / L.rows), W = size * L.cols, H = size * L.rows;
   const img = posterTex(256 * L.cols, 256 * L.rows);
-  camSnap(new T.Vector3(0, bd.y, bd.z + (L.cols > 4 ? 3.0 : 2.7)), new T.Vector3(0, bd.y, bd.z));
+  camSnap(new T.Vector3(0, bd.y, bd.z + (L.cols > 4 ? 3.6 : 3.3)), new T.Vector3(0, bd.y, bd.z));
   const G = new T.Group(); G.position.set(0, bd.y, bd.z + 0.06); E.root.add(G);
   const tiles = [];
   for (let i = 0; i < s.n; i++) {

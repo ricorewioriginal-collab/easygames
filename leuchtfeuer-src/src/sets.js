@@ -345,7 +345,7 @@ SETS.strand = (G, o) => {
 };
 
 SETS.kueche = (G, o) => {
-  const w = 12, d = 8, h = 2.7; room(G, w, d, h, mat('wallWarm', { rep: [2, 1] }), mat('checker', { rep: [3, 2], roughness: 0.45, bump: false }), { ceil: mat('#f2ece2') });
+  const w = 12, d = 8, h = 2.7; room(G, w, d, h, mat('wallWarm', { rep: [2, 1] }), mat('tiles', { rep: [3, 2], roughness: 0.4, bumpScale: 0.3 }), { ceil: mat('#f2ece2') });
   // Trennwand zum Flur (rechts)
   box(0.15, h, 4.6, mat('plaster', { rep: [1, 1] }), 2.5, h / 2, -1.7, G);
   windowAt(G, 'n', w, d, -3.2, 1.6, 1.6, 1.2, view('golden'));

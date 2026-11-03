@@ -10,11 +10,11 @@ export async function start(ctx) {
   const helpers = ctx.story ? (market ? ['finn'] : ['finn', 'ben']) : ['finn', 'ben'];
   const ids = ['kunde1', 'kunde2', 'kunde3', 'kunde4', 'kunde5'];
   await Promise.all(ids.map(id => figure(id, { winter: market })));
-  const data = await scene(market ? 'markt' : 'raeucherei', helpers, market ? { spots: { finn: [0.2, -1.2, 0], ben: [-1.1, -1.4, 0.3] }, winter: true } : { spots: { finn: [0.2, 1.4, 0], ben: [-1.3, 1.3, 0.2] } });
-  const cz = data.counter.z, top = 1.08;
-  camSnap(new T.Vector3(0.3, 1.85, cz - (market ? 1.1 : 1.55)), new T.Vector3(0, 1.35, cz + 2.4));
-  const Q = market ? [[0, cz + 1.3], [1.3, cz + 2.1], [-1.2, cz + 2.4], [0.3, cz + 3.3]] : [[0, cz + 1.0], [1.4, cz + 1.5], [-1.3, cz + 1.6], [2.6, cz + 2.0]];
-  const ENTRY = [6, cz + 3];
+  const data = await scene(market ? 'markt' : 'raeucherei', helpers, market ? { spots: { finn: [1.0, -1.0, 0], ben: [-1.0, -1.1, 0.3] }, winter: true } : { spots: { finn: [1.2, 3.0, PI], ben: [-1.3, 3.0, PI] } });
+  const cz = data.counter.z, top = 1.08, dir = market ? 1 : -1, FACE = market ? PI : 0;   // dir: Seite der Kundschaft
+  camSnap(new T.Vector3(0.1, 1.85, cz - dir * (market ? 1.1 : 1.6)), new T.Vector3(0, 1.3, cz + dir * 2.4));
+  const Q = [[0, 1.2], [1.3, 2.0], [-1.2, 2.2], [0.3, 3.0]].map(([x, z]) => [x, cz + dir * z]);
+  const ENTRY = market ? [6, cz + 3] : [-5.5, -2.5], EXIT = market ? [-6, cz + 3.4] : [5.5, -3.2];
   const s = C.newBooth(ctx.lvl, { diff: ctx.diff });
   // Brötchen auf der Theke
   const plate = new T.Group(); plate.position.set(0, top + (market ? 0.0 : 0), cz); E.root.add(plate);
@@ -38,7 +38,7 @@ export async function start(ctx) {
     const id = freeFig(); if (!id) return; const f = E.figs[id + (market ? '_w' : '')]; if (!f) return;
     f.root.position.set(ENTRY[0], 0, ENTRY[1]); E.root.add(f.root); f.play('walk'); busy.set(o.id, f); f.userData = { o };
   }
-  function leave(id, happy) { const f = busy.get(id); if (!f) return; busy.delete(id); f.userData.leaving = true; f.userData.target = [-6, cz + 3.4]; if (happy) f.play('yes', { once: true }); setTimeout(() => { f.userData.go = true; }, happy ? 700 : 0); }
+  function leave(id, happy) { const f = busy.get(id); if (!f) return; busy.delete(id); f.userData.leaving = true; f.userData.target = EXIT; if (happy) f.play('yes', { once: true }); setTimeout(() => { f.userData.go = true; }, happy ? 700 : 0); }
   const leaving = new Set();
   let end = false;
   const tick = (dt, t) => {
@@ -62,7 +62,7 @@ export async function start(ctx) {
   };
   function walkStep(f, x, z, dt, sp, faceCounter) {
     const p = f.root.position, dx = x - p.x, dz = z - p.z, d = Math.hypot(dx, dz);
-    if (d < 0.06) { if (faceCounter) { f.root.rotation.y += (PI - f.root.rotation.y) * Math.min(1, dt * 6); f.play('idle'); } return true; }
+    if (d < 0.06) { if (faceCounter) { let d = FACE - f.root.rotation.y; while (d > PI) d -= 2 * PI; while (d < -PI) d += 2 * PI; f.root.rotation.y += d * Math.min(1, dt * 6); f.play('idle'); } return true; }
     const st = Math.min(d, sp * dt); p.x += dx / d * st; p.z += dz / d * st; f.root.rotation.y = Math.atan2(dx, dz); f.play('walk'); return false;
   }
   E.hooks.add(tick);

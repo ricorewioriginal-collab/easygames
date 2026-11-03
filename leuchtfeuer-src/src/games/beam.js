@@ -35,8 +35,8 @@ export async function start(ctx) {
   const rig = data.rig, top = data.lh.userData.top;
   rig.add(data.cone); data.cone.visible = true; data.beamL.intensity = 900;
   data.cone.material.opacity = L.fog ? 0.32 : 0.2;
-  const camPos = new T.Vector3(0, top + 1.6, 3.2);
-  camSnap(camPos, new T.Vector3(0, 1, -30));
+  const camPos = new T.Vector3(0, top + 1.5, -2.5);   // auf der Galerie vor dem Laternenhaus, Blick aufs Meer
+  camSnap(camPos, new T.Vector3(0, 5, -60));
   const G = new T.Group(); E.root.add(G);
   const B = new Map(), S = new Map();
   const toW = (a, d) => [Math.sin(a) * (d + 8), -Math.cos(a) * (d + 8)];
@@ -49,7 +49,7 @@ export async function start(ctx) {
     C.beamTick(s, dt);
     rig.rotation.y = -s.angle; sc();
     // Kamera schaut ein wenig mit
-    camTo(camPos, new T.Vector3(Math.sin(s.angle) * 30, 1, -Math.cos(s.angle) * 30), 2.5);
+    camTo(camPos, new T.Vector3(Math.sin(s.angle) * 0.6 * 60, 5, -Math.cos(s.angle * 0.6) * 60), 2.5);
     // Flaschen
     for (const b of s.bottles) {
       let m = B.get(b.id); if (!m) { m = bottleMesh(); G.add(m); B.set(b.id, m); }
