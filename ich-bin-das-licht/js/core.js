@@ -46,7 +46,7 @@
   // ------------------------------------------------------------ Geschichte (12 Kapitel des Romans, verdichtet)
   // set: 3D-Kulisse, cast: wer steht dort, lines: Gesprächszeilen, choices: Entscheidungen (light = Licht dazu)
   const CHAPTERS = [
-    { n: 1, title: 'Licht und Schatten', set: 'dining', cast: ['leon', 'vater', 'mutter'],
+    { n: 1, goal: 'chair', obj: 'Setz dich an deinen Platz am Esstisch (rechts vorne).', sit: true, title: 'Licht und Schatten', set: 'dining', cast: ['leon', 'vater', 'mutter'],
       lines: [['', 'Bei Familie Sommer wird um Punkt halb sieben gegessen. Das ist das Gesetz des Vaters.'],
         ['', 'Im Fernsehen läuft eine Show. Zwei Männer halten sich an den Händen.'],
         ['vater', 'Muss das sein.'],
@@ -54,61 +54,61 @@
       choices: [
         { t: 'Auf den Teller schauen, bis das Gewitter vorbeizieht', light: 3, r: 'Du kennst die Technik. Aber jedes Schweigen kostet ein bisschen Licht.' },
         { t: 'Leise sagen: „Ich find die eigentlich schön.“', light: 10, r: 'Dein Vater hebt das Handgelenk und schaut auf die Uhr. Der Satz ist trotzdem gesagt. Er gehört dir.' }] },
-    { n: 1, title: 'Sturmfreie Zeit', set: 'bedroom', cast: ['leon'],
+    { n: 1, goal: 'bed', obj: 'Sturmfreie Bude! Setz dich mit dem Laptop aufs Bett.', sit: true, title: 'Sturmfreie Zeit', set: 'bedroom', cast: ['leon'],
       lines: [['', 'Ein Samstag, die Eltern sind auf einer Geburtstagsfeier. Leon landet bei Drag Race.'],
         ['leon', 'Sie stehen da, als gehörte ihnen der Raum. Und wenn eine verliert, nehmen die anderen sie in den Arm.'],
         ['', 'Unten dreht sich ein Schlüssel im Schloss.']],
       choices: [
         { t: 'Laptop zuklappen und so tun, als würdest du schlafen', light: 3, r: 'Du wärst ein guter Geheimagent geworden. Aber Verstecken macht müde.' },
         { t: 'Die Folge zu Ende schauen, mit Kopfhörern', light: 8, r: 'Dein Herz klopft, als hättest du etwas gestohlen. Dabei hast du nur etwas angeschaut, das dich glücklich macht.' }] },
-    { n: 2, title: 'Die Menschen, die bleiben', set: 'samira', cast: ['leon', 'samira'],
+    { n: 2, goal: 'samira', obj: 'Setz dich zu Samira aufs Bett.', sit: true, title: 'Die Menschen, die bleiben', set: 'samira', cast: ['leon', 'samira'],
       lines: [['', 'Samira, seit der fünften Klasse. Eine Freundschaft, die leise funktioniert.'],
         ['samira', 'Du musst mir nichts erzählen. Aber du darfst.'],
         ['', 'Sie dreht an ihrem rechten Ohrring. Das macht sie immer, wenn sie nachdenkt.']],
       choices: [
         { t: 'Samira die ganze Wahrheit sagen', light: 12, r: 'Samira: „Ich weiß. Und ich bin noch da.“ Mehr braucht es nicht.' },
         { t: 'Noch nicht. Einfach nebeneinander sitzen.', light: 6, r: 'Samira wartet, bis du bereit bist. Das ist ihre ganze Strategie, und sie hält.' }] },
-    { n: 3, title: 'Eine Nacht, die anders begann', set: 'street', cast: ['leon', 'mert', 'tobi'],
+    { n: 3, goal: 'mert', obj: 'Es regnet. Folge Mert zur Tür mit dem bunten Licht.', title: 'Eine Nacht, die anders begann', set: 'street', cast: ['leon', 'mert', 'tobi'],
       lines: [['', 'Die Clique zieht los, Tobi hat eine Route mit vier Kneipen. Dann kommt der Regen.'],
         ['', 'Aus einer Tür fällt Musik, Wärme und ein Streifen farbiges Licht auf das nasse Pflaster.'],
         ['mert', 'Da rein!']],
       choices: [
         { t: 'Mit Mert reingehen', light: 12, r: 'Zwei Männer halten sich an der Bar an den Händen, und niemand schaut hin. Zum ersten Mal atmest du ganz aus.' },
         { t: 'Draußen im Regen stehen bleiben', light: 4, r: 'Mert kommt zurück, nass bis auf die Haut: „Kommst du jetzt, oder was?“ Du gehst doch rein.' }] },
-    { n: 4, title: 'Der Spiegel mit den Glühbirnen', set: 'mirror', cast: ['leon'],
+    { n: 4, goal: 'mirror', obj: 'Geh zum Spiegel mit den Glühbirnen.', title: 'Der Spiegel mit den Glühbirnen', set: 'mirror', cast: ['leon'],
       lines: [['', 'Hinter der kleinen Bühne hängt ein Spiegel mit Glühbirnen.'],
         ['leon', 'Zum ersten Mal schaue ich hinein und sehe jemanden, der noch keinen Namen hat.'],
         ['', 'Stelle Lady Lumas ersten Look zusammen. Ihr Name kommt von lumen, das Licht.']],
       studio: true },
-    { n: 5, title: 'Die One Love Bar', set: 'door', cast: ['leon', 'velvet'],
+    { n: 5, goal: 'velvet', obj: 'Finde die One Love Bar und sprich Velvet an.', title: 'Die One Love Bar', set: 'door', cast: ['leon', 'velvet'],
       lines: [['', 'Holger schickt dich zur One Love Bar: „Da gibt es eine richtige Bühne. Und Velvet.“'],
         ['', 'Du stehst vor ihrer Tür und kannst dich nicht entscheiden, ob du reingehst.'],
         ['velvet', 'Entweder rennst du jetzt weg, oder du bleibst für immer.']],
       choices: [
         { t: 'Bleiben', light: 12, r: 'Velvet nickt: „Dann binde deine Schnürsenkel. Ich mag keine offenen Schnürsenkel.“' },
         { t: 'Einmal um den Block gehen und wiederkommen', light: 6, r: 'Als du zurückkommst, lehnt Velvet noch in der Tür. „Wusste ich doch.“' }] },
-    { n: 6, title: 'Alte Wege, neue Gesichter', set: 'cafe', cast: ['leon', 'julian', 'mia'],
+    { n: 6, goal: 'julian', obj: 'Die Türglocke bimmelt. Geh zu Julian.', title: 'Alte Wege, neue Gesichter', set: 'cafe', cast: ['leon', 'julian', 'mia'],
       lines: [['', 'Ein grauer Dienstag im April. Die Glocke über der Café-Tür bimmelt.'],
         ['julian', 'Hallo, Leon.'],
         ['leon', '(Ich habe den Lappen noch in der Hand und weiß nicht, wohin damit.)']],
       choices: [
         { t: 'Ihm einen Kaffee machen und zuhören', light: 10, r: 'Julian bleibt bis Ladenschluss. Manche Kapitel sind weniger abgeschlossen, als man dachte.' },
         { t: 'Weiter die Vitrine putzen', light: 5, r: 'Mia stellt zwei Tassen auf den Tresen und schaut dich an. Du setzt dich doch zu ihm.' }] },
-    { n: 7, title: 'Die zweite Bühne', set: 'stage', cast: ['luma', 'velvet'],
+    { n: 7, goal: 'velvet', obj: 'Velvet wartet auf der Bühne. Geh zu ihr.', title: 'Die zweite Bühne', set: 'stage', cast: ['luma', 'velvet'],
       lines: [['velvet', 'Heute kein Playback. Heute deine Stimme.'],
         ['leon', '(Wer sich versteckt, tut das nicht ohne Grund.)'],
         ['velvet', 'Man darf nur nicht vergessen, sich irgendwann wieder herauszuholen.']],
       choices: [
         { t: 'Mit der eigenen Stimme singen', light: 14, r: 'Die ersten Töne zittern. Dann wird es still im Saal, und dann laut.' },
         { t: 'Noch einmal Playback', light: 5, r: 'Applaus. Velvet schiebt dir danach einen Zettel hin: „Nächstes Mal deine Stimme.“' }] },
-    { n: 9, title: 'Rückkehr ins Leben', set: 'bar', cast: ['leon', 'velvet', 'nadine'],
+    { n: 9, goal: 'nadine', obj: 'Sieh dich in der alten Bar um und sprich mit Nadine.', title: 'Rückkehr ins Leben', set: 'bar', cast: ['leon', 'velvet', 'nadine'],
       lines: [['', 'Die One Love Bar war geschlossen. Jetzt will Nadine Brandt sie kaufen und neu aufbauen.'],
         ['nadine', 'Ich habe selbst einmal Menschen gebraucht, die mich nicht gefragt haben, wer ich bin.'],
         ['velvet', 'Man kann nicht einfach neu streichen. Die Risse bleiben. Das sind die Narben.']],
       choices: [
         { t: 'Mit Nadine und Velvet neu planen', light: 10, r: 'Faire Löhne, ein guter Umbau und ein Herz über der Tür, das nicht ausgeht.' },
         { t: 'Erst einmal vorsichtig bleiben', light: 6, r: 'Nadine versteht das. „Darum bauen wir es diesmal gemeinsam.“' }] },
-    { n: 10, title: 'Die Nacht der Wiedereröffnung', set: 'stage', cast: ['luma'],
+    { n: 10, goal: 'mic', obj: 'Der Saal ist voll. Geh ans Mikrofon.', title: 'Die Nacht der Wiedereröffnung', set: 'stage', cast: ['luma'],
       lines: [['', 'Der Saal ist voll. Samira, Mert, Mia und Julian stehen ganz vorne.'],
         ['leon', 'Zwei verschüttete Kaffee, kein Frühstück. Die Angst gehört dazu.'],
         ['', 'Spiele den Buchsong. Jeder Treffer bringt Licht in den Saal.']],
@@ -143,8 +143,11 @@
 
 
   // ------------------------------------------------------------ Licht (0 … 100)
-  const LIGHT_START = 6;
+  const LIGHT_START = 6, SPARK_LIGHT = 1, SPARKS_PER = 3;
   function clampLight(v) { return Math.max(0, Math.min(100, Math.round(v))); }
+  // Lichtfunken: je Kapitel mit Erkunden 3 Verstecke, aus allen möglichen fest gewählt (gleich für alle)
+  function sparkPlan(chapter, spots) { const r = rng(101 + chapter * 7), idx = [...Array(spots).keys()]; for (let i = idx.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; } return idx.slice(0, SPARKS_PER).map((i, k) => ({ i, id: chapter * 10 + k })); }
+  function maxSparks() { return CHAPTERS.filter(c => c.goal).length * SPARKS_PER; }
   function maxStoryLight() { return LIGHT_START + CHAPTERS.reduce((s, c) => s + (c.choices ? Math.max(...c.choices.map(x => x.light)) : 0), 0) + 10 + 20; }
   function ending(light) {
     if (light >= 85) return { id: 'licht', title: 'Ich bin das Licht', text: 'Du hast dich nicht länger versteckt. Der ganze Saal leuchtet, und du mit ihm.' };
@@ -218,16 +221,16 @@
   function showLight(S) { return Math.round(accuracy(S) * 20); }
 
   // ------------------------------------------------------------ Spielstand
-  function newSave() { return { v: 1, best: { leicht: 0, normal: 0, schwer: 0 }, stars: { leicht: 0, normal: 0, schwer: 0 }, look: Object.assign({}, DEFAULT_LOOK), story: { done: 0, bestLight: 0, endings: [] }, opt: { diff: 'normal', offset: 0, bpm: SONG.bpm, yt: false, sfx: true, quality: 'auto' } }; }
+  function newSave() { return { v: 1, best: { leicht: 0, normal: 0, schwer: 0 }, stars: { leicht: 0, normal: 0, schwer: 0 }, look: Object.assign({}, DEFAULT_LOOK), story: { done: 0, bestLight: 0, endings: [] }, sparks: [], opt: { diff: 'normal', offset: 0, bpm: SONG.bpm, yt: false, sfx: true, quality: 'auto' } }; }
   function fixSave(s) {
     const d = newSave(); if (!s || typeof s !== 'object') return d;
     const o = Object.assign(d, s);
     o.best = Object.assign(newSave().best, s.best); o.stars = Object.assign(newSave().stars, s.stars);
-    o.story = Object.assign(newSave().story, s.story); o.opt = Object.assign(newSave().opt, s.opt); o.look = normLook(s.look);
+    o.story = Object.assign(newSave().story, s.story); o.sparks = Array.isArray(s.sparks) ? s.sparks.filter(n => Number.isInteger(n)) : []; o.opt = Object.assign(newSave().opt, s.opt); o.look = normLook(s.look);
     return o;
   }
 
-  const API = { SONG, WARDROBE, DEFAULT_LOOK, LOOK_KEYS, normLook, pick, cycle, lookName, CHAPTERS, PEOPLE, LIGHT_START, clampLight, maxStoryLight, ending,
+  const API = { SPARK_LIGHT, SPARKS_PER, sparkPlan, maxSparks, SONG, WARDROBE, DEFAULT_LOOK, LOOK_KEYS, normLook, pick, cycle, lookName, CHAPTERS, PEOPLE, LIGHT_START, clampLight, maxStoryLight, ending,
     DIFF, WIN, PTS, chart, newShow, press, tick, judge, mult, accuracy, stars, showLight, newSave, fixSave };
   if (typeof module !== 'undefined' && module.exports) module.exports = API; else root.IBDL = API;
 })(typeof window !== 'undefined' ? window : globalThis);

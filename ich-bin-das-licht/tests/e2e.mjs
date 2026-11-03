@@ -13,7 +13,12 @@ await p.click('[data-go=story]');
 for (let guard = 0; guard < 400; guard++) {
   const scr = await p.evaluate(() => document.querySelector('.scr.on').id);
   if (scr === 'sEnd') break;
-  if (scr === 'sStory') { const ch = await p.$('#choices .chip'); if (ch) await ch.click(); else await p.click('#talk'); }
+  if (scr === 'sStory') {
+    const ph = await p.evaluate(() => IBDLApp.story.phase);
+    if (ph === 'explore') { await p.keyboard.down('KeyW'); await p.waitForTimeout(400); await p.keyboard.up('KeyW'); await p.evaluate(() => IBDLApp.reachGoal()); await p.waitForTimeout(600); }
+    else if (ph === 'busy') await p.waitForTimeout(300);
+    else { const ch = await p.$('#choices .chip'); if (ch) await ch.click(); else await p.click('#talk'); }
+  }
   else if (scr === 'sStudio') { await p.click('[aria-label="Perücke weiter"]'); await p.click('#bStudioDone'); }
   else if (scr === 'sSong') await p.click('#bBeat');
   else if (scr === 'sShow') { await p.waitForTimeout(1500); await p.evaluate(() => { const A = IBDLApp; const r = A.run; if (r) { for (const n of r.show.notes.slice(0, 20)) IBDL.press(r.show, n.lane, n.t); A.finishShow(); } }); }

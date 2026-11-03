@@ -522,11 +522,11 @@ window.EASYGAMES_GUIDES = {
   ]
  },
  "ich-bin-das-licht": {
-  "anleitung": "Das offizielle Spiel zum Roman „Ich bin das Licht“: Du erlebst Leons Weg in 12 Kapiteln in 3D. Lies die Szenen weiter und triff Entscheidungen – mutige Schritte bringen mehr Licht. In der Garderobe stellst du Lady Lumas Look zusammen (Perücke, Haarfarbe, Outfit, Farbe, Schmuck). Auf der Bühne der One Love Bar spielst du den Buchsong: Lichtkugeln laufen in vier Spuren auf dich zu, triff sie am Ring (Perfekt, Gut, Mutig). Verpasste Kugeln kosten nur die Combo. Je nach Licht erreichst du eines von drei Enden. Unter „Buch lesen“ steht außerdem der komplette Roman.",
+  "anleitung": "Das offizielle Spiel zum Roman „Ich bin das Licht“: Du erlebst Leons Weg in 12 Kapiteln in 3D und läufst selbst durch die Räume: Gegenstände ansehen, Figuren ansprechen, je 3 versteckte Lichtfunken sammeln und das Ziel finden. Lies die Szenen weiter und triff Entscheidungen – mutige Schritte bringen mehr Licht. In der Garderobe stellst du Lady Lumas Look zusammen (Perücke, Haarfarbe, Outfit, Farbe, Schmuck). Auf der Bühne der One Love Bar spielst du den Buchsong: Lichtkugeln laufen in vier Spuren auf dich zu, triff sie am Ring (Perfekt, Gut, Mutig). Verpasste Kugeln kosten nur die Combo. Je nach Licht erreichst du eines von drei Enden. Unter „Buch lesen“ steht außerdem der komplette Roman.",
   "steuerung": [
-   "Tastatur: Enter/Leertaste weiter, Pfeiltasten wählen, auf der Bühne D F J K oder ← ↓ ↑ →, Esc/P Pause.",
-   "Touch: Textfeld antippen, Entscheidungen antippen, auf der Bühne die vier Tasten unten.",
-   "Gamecontroller: A weiter/bestätigen, Steuerkreuz wählen, auf der Bühne Steuerkreuz ← ↓ ↑ → oder LB X Y RB, Start Pause."
+   "Tastatur: W A S D/Pfeile laufen, Shift rennen, Q/E Kamera, Enter/F ansehen und sprechen; auf der Bühne D F J K oder ← ↓ ↑ →, Esc/P Pause.",
+   "Touch: Joystick links laufen, Knopf rechts ansehen/sprechen, wischen dreht die Kamera; auf der Bühne die vier Tasten unten.",
+   "Gamecontroller: linker Stick laufen, rechter Stick Kamera, A ansehen/sprechen/weiter; auf der Bühne Steuerkreuz ← ↓ ↑ → oder LB X Y RB, Start Pause."
   ],
   "tipps": [
    "Mutige Antworten bringen mehr Licht – für das Ende „Ich bin das Licht“ brauchst du mindestens 85 %.",
