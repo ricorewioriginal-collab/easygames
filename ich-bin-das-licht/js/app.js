@@ -90,8 +90,65 @@
     const cast = c.cast.map(id => id === 'luma' && !story.wig ? 'luma' : id);
     await W.scene(c.set, cast, { wig: story.wig });
     if (c.end) W.pose('luma', 'yes', { once: true });
-    showLine();
+    if (c.goal) startExplore(c); else { $('talk').hidden = false; showLine(); }
   }
+
+  // ------------------------------------------------------------ Erkunden
+  const keys = {};
+  const playerOf = c => c.cast.includes('luma') ? 'luma' : 'leon';
+  function startExplore(c) {
+    story.phase = 'explore'; $('talk').hidden = true; $('xhud').hidden = false; $('obj').textContent = c.obj;
+    const plan = D.sparkPlan(story.i, W.sparkSpots(c.set)).filter(sp => !S.sparks.includes(sp.id));
+    W.explore({ set: c.set, player: playerOf(c), goal: c.goal, sparks: plan, onSpark: gotSpark });
+    updSparks(); $('joy').hidden = !touch; $('act').hidden = !touch;
+  }
+  function updSparks() { const c = D.CHAPTERS[story.i], mine = D.sparkPlan(story.i, W.sparkSpots(c.set)).filter(sp => S.sparks.includes(sp.id)).length; $('spk').textContent = '✨ ' + mine + '/' + D.SPARKS_PER; }
+  function gotSpark(id) {
+    if (!S.sparks.includes(id)) S.sparks.push(id); save(); setLight(story.light + D.SPARK_LIGHT);
+    blip(1046, 0.08, 'sine', 0.1); blip(1568, 0.16, 'sine', 0.08, ac() ? AC.currentTime + 0.07 : 0);
+    toast('✨ Lichtfunke gefunden! ' + S.sparks.length + ' von ' + D.maxSparks()); updSparks();
+  }
+  function endExplore() { W.exploreOff(); W.move(0, 0, false); $('xhud').hidden = true; $('prompt').hidden = true; $('joy').hidden = true; $('act').hidden = true; }
+  function interact() {
+    if (screen !== 'sStory' || story.phase !== 'explore') return false;
+    const h = W.near; if (!h) return false; const c = D.CHAPTERS[story.i];
+    if (h.id === c.goal) { reachGoal(c); return true; }
+    if (h.t) { story.phase = 'examine'; W.move(0, 0, false); $('prompt').hidden = true; $('talk').hidden = false; $('choices').innerHTML = ''; const who = h.npc ? null : '';
+      $('who').hidden = true; $('line').textContent = h.t; $('line').classList.toggle('narr', !h.npc); $('nextHint').hidden = false; blip(700, 0.05, 'sine', 0.05); return true; }
+    return false;
+  }
+  async function reachGoal(c) {
+    const pl = playerOf(c); endExplore(); story.phase = 'busy';
+    $('fade').classList.add('on'); await new Promise(r => setTimeout(r, 360));
+    W.toSpot(pl); if (!c.sit && c.goal !== 'mic' && c.goal !== 'mirror') W.faceTo(pl, c.goal);
+    W.camView('cam'); $('fade').classList.remove('on');
+    story.phase = 'lines'; story.li = 0; $('talk').hidden = false; showLine();
+  }
+  function moveFromKeys() {
+    if (screen !== 'sStory' || story.phase !== 'explore') return;
+    if (joy.id != null) return;
+    const x = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0), z = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
+    const n = Math.hypot(x, z) || 1; W.move(x / n, z / n, !!(keys.ShiftLeft || keys.ShiftRight), false);
+    W.turnCam((keys.KeyE ? 1 : 0) - (keys.KeyQ ? 1 : 0));
+  }
+  function promptTick() {
+    if (screen !== 'sStory' || story.phase !== 'explore') { $('prompt').hidden = true; return; }
+    const h = W.near, c = D.CHAPTERS[story.i];
+    if (touch) { $('act').disabled = !h; $('act').textContent = h ? h.l : '●'; return; }
+    $('prompt').hidden = !h; if (h) $('prompt').innerHTML = '<b>Enter</b>' + h.l + (h.id === c.goal ? ' ★' : '');
+  }
+  // Touch-Joystick und Kamera wischen
+  const joy = { id: null, cx: 0, cy: 0 };
+  $('joy').addEventListener('pointerdown', e => { e.preventDefault(); const r = $('joy').getBoundingClientRect(); joy.id = e.pointerId; joy.cx = r.left + r.width / 2; joy.cy = r.top + r.height / 2; $('joy').setPointerCapture(e.pointerId); joyMove(e); });
+  $('joy').addEventListener('pointermove', e => { if (e.pointerId === joy.id) joyMove(e); });
+  const joyEnd = e => { if (e.pointerId !== joy.id) return; joy.id = null; $('joyKnob').style.transform = ''; W.move(0, 0, false); };
+  $('joy').addEventListener('pointerup', joyEnd); $('joy').addEventListener('pointercancel', joyEnd);
+  function joyMove(e) { let dx = e.clientX - joy.cx, dy = e.clientY - joy.cy; const d = Math.hypot(dx, dy), max = 52; if (d > max) { dx *= max / d; dy *= max / d; } $('joyKnob').style.transform = `translate(${dx}px,${dy}px)`; W.move(dx / max, dy / max, d > max * 0.95, true); }
+  $('act').addEventListener('pointerdown', e => { e.preventDefault(); interact(); });
+  const drag = { id: null, x: 0 };
+  $('cv').addEventListener('pointerdown', e => { if (story.phase === 'explore' && screen === 'sStory') { drag.id = e.pointerId; drag.x = e.clientX; } });
+  addEventListener('pointermove', e => { if (e.pointerId === drag.id) { W.turnBy(-(e.clientX - drag.x) * 0.008); drag.x = e.clientX; } });
+  addEventListener('pointerup', e => { if (e.pointerId === drag.id) drag.id = null; });
   function showLine() {
     const c = D.CHAPTERS[story.i], L = c.lines[story.li], who = L[0];
     $('who').hidden = !who; $('who').textContent = who ? (D.PEOPLE[who] && D.PEOPLE[who].name) || SPEAK[who] : '';
@@ -102,6 +159,8 @@
   function advance() {
     if (screen !== 'sStory') return;
     const c = D.CHAPTERS[story.i];
+    if (story.phase === 'examine') { story.phase = 'explore'; $('talk').hidden = true; return; }
+    if (story.phase === 'explore' || story.phase === 'busy') return;
     if (story.phase === 'lines') {
       if (story.li < c.lines.length - 1) { story.li++; showLine(); blip(660, 0.04, 'sine', 0.05); return; }
       if (c.choices) { story.phase = 'choice'; renderChoices(c); return; }
@@ -162,7 +221,7 @@
   }
   function studioDone() {
     S.look = look; save(); W.setLook(look); blip(1046, 0.25, 'triangle', 0.1);
-    if (inStory) { setLight(story.light + 10); story.phase = 'reply'; go('sStory'); W.scene('mirror', ['luma']).then(() => { W.pose('luma', 'yes', { once: true }); }); $('who').hidden = false; $('who').textContent = 'Lady Luma'; $('line').textContent = 'Lady Luma ist geboren. Ihr Name kommt von lumen, das Licht.'; $('line').classList.remove('narr'); $('choices').innerHTML = ''; }
+    if (inStory) { setLight(story.light + 10); story.phase = 'reply'; go('sStory'); $('talk').hidden = false; W.scene('mirror', ['luma']).then(() => { W.pose('luma', 'yes', { once: true }); }); $('who').hidden = false; $('who').textContent = 'Lady Luma'; $('line').textContent = 'Lady Luma ist geboren. Ihr Name kommt von lumen, das Licht.'; $('line').classList.remove('narr'); $('choices').innerHTML = ''; }
     else { go('sMenu'); menuScene(); }
   }
 
@@ -253,7 +312,7 @@
   function openRec() {
     const E = { licht: 'Ich bin das Licht', glanz: 'Glamour in den Adern', funke: 'Ein erster Funke' };
     $('recGrid').innerHTML = Object.keys(D.DIFF).map(k => `<span>Bühne ${D.DIFF[k].name}</span><b>${S.best[k].toLocaleString('de-DE')} ${'★'.repeat(S.stars[k])}</b>`).join('')
-      + `<span>Geschichte erlebt</span><b>${S.story.done}×</b><span>Bestes Licht</span><b>${S.story.bestLight} %</b>`
+      + `<span>Lichtfunken</span><b>${S.sparks.length} / ${D.maxSparks()}</b><span>Geschichte erlebt</span><b>${S.story.done}×</b><span>Bestes Licht</span><b>${S.story.bestLight} %</b>`
       + Object.keys(E).map(k => `<span>Ende „${E[k]}“</span><b>${S.story.endings.includes(k) ? '✓' : '–'}</b>`).join('');
     go('sRec');
   }
@@ -310,9 +369,10 @@
   document.querySelectorAll('.back2').forEach(b => b.onclick = () => go('sMenu'));
   $('bPress').onclick = () => { ac(); go('sMenu'); menuInfo(); };
   $('talk').onclick = () => advance();
-  $('bStoryMenu').onclick = e => { e.stopPropagation(); storySave(); go('sMenu'); menuInfo(); menuScene(); };
+  $('bStoryMenu').onclick = e => { e.stopPropagation(); endExplore(); storySave(); go('sMenu'); menuInfo(); menuScene(); };
   $('bStudioBack').onclick = () => { if (inStory) studioDone(); else { go('sMenu'); menuScene(); } };
   $('bStudioDone').onclick = () => studioDone();
+  let zoom = false; $('bZoom').onclick = () => { zoom = !zoom; W.camView(zoom ? 'faceCam' : 'studioCam'); $('bZoom').textContent = zoom ? '👗' : '🔍'; };
   $('bYT').onclick = () => { S.opt.yt = true; save(); startShow('yt'); };
   $('bBeat').onclick = () => startShow('beat');
   $('bSongBack').onclick = () => { if (inStory) { go('sStory'); } else go('sMenu'); };
@@ -320,7 +380,7 @@
   $('bResume').onclick = () => pause(false);
   $('bRestart').onclick = () => { stopSong(); run = null; go('sShow'); startShow(songMode); };
   $('bQuit').onclick = () => { stopSong(); run = null; W.showOn(false); if (inStory) storySave(); go('sMenu'); menuInfo(); menuScene(); };
-  $('bResNext').onclick = () => { if (inStory) { story.phase = 'reply'; nextChapter(); } else { go('sMenu'); menuScene(); } };
+  $('bResNext').onclick = () => { if (inStory) { story.phase = 'reply'; $('talk').hidden = false; nextChapter(); } else { go('sMenu'); menuScene(); } };
   $('bResAgain').onclick = () => startShow(songMode);
   $('bEndMenu').onclick = () => { go('sMenu'); menuScene(); };
   $('bEndAgain').onclick = () => startStory(true);
@@ -329,8 +389,17 @@
 
   // ------------------------------------------------------------ Tastatur (Controller kommt über gamepad.js als Tasten)
   const LANE = { KeyD: 0, KeyF: 1, KeyJ: 2, KeyK: 3, ArrowLeft: 0, ArrowDown: 1, ArrowUp: 2, ArrowRight: 3 };
+  addEventListener('keyup', e => { keys[e.code] = false; moveFromKeys(); });
+  addEventListener('blur', () => { for (const k in keys) keys[k] = false; moveFromKeys(); });
   addEventListener('keydown', e => {
-    if (e.repeat) return; const k = e.code;
+    const k = e.code;
+    if (screen === 'sStory' && story.phase === 'explore') {
+      if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight', 'KeyQ', 'KeyE'].includes(k)) { e.preventDefault(); keys[k] = true; moveFromKeys(); return; }
+      if (k === 'Enter' || k === 'Space' || k === 'KeyF') { e.preventDefault(); if (!e.repeat) interact(); return; }
+      if (k === 'Escape' || k === 'KeyP') { e.preventDefault(); $('bStoryMenu').click(); return; }
+      return;
+    }
+    if (e.repeat) return;
     if (screen === 'sShow' && run) {
       if (k in LANE) { e.preventDefault(); hit(LANE[k]); return; }
       if (k === 'Escape' || k === 'KeyP') { e.preventDefault(); pause(true); return; }
@@ -373,6 +442,7 @@
       if (songMode === 'beat' && t > run.len + 1) finishShow();
       if (songMode === 'yt' && run && t > run.lastDur + 2) finishShow();
     }
+    if (screen === 'sStory') promptTick();
     W.frame();
   }
 
@@ -396,5 +466,5 @@
     menuInfo();
     if (window.EasyGamesKit && EasyGamesKit.keepAwake) try { EasyGamesKit.keepAwake(); } catch (e) { }
   })();
-  window.IBDLApp = { go, chapter, startShow, story, get run() { return run; }, hit, finishShow, startStory, openStudio };
+  window.IBDLApp = { go, chapter, interact, reachGoal: () => reachGoal(D.CHAPTERS[story.i]), startShow, story, get run() { return run; }, hit, finishShow, startStory, openStudio };
 })();

@@ -72,6 +72,13 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <div class="lightMeter" aria-label="Licht"><i id="lightFill"></i><span id="lightTxt">Licht 0 %</span></div>
     <button class="icon nav" id="bStoryMenu" aria-label="Menü">☰</button>
   </div>
+  <div class="xhud" id="xhud" hidden>
+    <div class="obj" id="obj"></div>
+    <div class="pill spk" id="spk">✨ 0/3</div>
+  </div>
+  <div class="prompt" id="prompt" hidden></div>
+  <div class="joy" id="joy" hidden><i id="joyKnob"></i></div>
+  <button class="act" id="act" hidden>●</button>
   <div class="talk" id="talk">
     <div class="who" id="who" hidden></div>
     <p class="line" id="line"></p>
@@ -82,7 +89,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 
 <!-- Garderobe -->
 <section class="scr game" id="sStudio">
-  <div class="hud"><div class="pill">💄 Lady Lumas Garderobe</div><button class="icon nav" id="bStudioBack" aria-label="Zurück">✕</button></div>
+  <div class="hud"><div class="pill">💄 Lady Lumas Garderobe</div><button class="icon nav" id="bZoom" aria-label="Gesicht nah ansehen">🔍</button><button class="icon nav" id="bStudioBack" aria-label="Zurück">✕</button></div>
   <div class="studio">
     <h2 class="glam small">Lady <span>Luma</span></h2>
     <div class="rows" id="rows"></div>
@@ -197,6 +204,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <div class="panel center"><h2 class="sTitle">⏸ Pause</h2><div class="btns"><button class="press nav" id="bResume">▶ Weiter</button><button class="ghost nav" id="bRestart">↻ Neu starten</button><button class="ghost nav" id="bQuit">☰ Menü</button></div></div>
 </section>
 
+<div class="fade" id="fade"></div>
 <div class="toast" id="toast" hidden></div>
 
 <script src="../vendor/three-r128.min.js"></script>
@@ -207,7 +215,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="js/core.js"></script>
 <script src="js/world.js"></script>
 <script src="js/app.js"></script>
-<script src="../gamepad.js" data-pad="lb=KeyD x=KeyF y=KeyJ rb=KeyK lt=KeyD rt=KeyK" defer></script>
+<script src="../gamepad.js" data-pad="lb=KeyD x=KeyF y=KeyJ rb=KeyK lt=KeyD rt=KeyK rs=qe" defer></script>
 <script src="../cloud/anmacha-cloud.js" data-game="ich-bin-das-licht" data-prefix="ibdl-" defer></script>
 </body>
 </html>

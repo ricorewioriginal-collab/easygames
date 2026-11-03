@@ -26,8 +26,9 @@
   {
    "t": "Die Geschichte",
    "p": [
-    "Jedes Kapitel spielt in einer eigenen 3D-Kulisse: Esszimmer, Jugendzimmer, Samiras Zimmer, die Regennacht vor der Bar, die Garderobe mit dem Glühbirnenspiegel, die Tür der One Love Bar, das Café, die Bar im Umbau und die Bühne.",
-    "Tippe auf das Textfeld oder drücke Enter, um weiterzulesen. Bei Entscheidungen wählst du eine von zwei Antworten. Jede Antwort bringt Licht, mutige Antworten mehr. Der Lichtbalken oben zeigt deinen Stand; die Szene wird mit mehr Licht heller."
+    "Jedes Kapitel spielt in einer eigenen begehbaren 3D-Kulisse: Esszimmer, Jugendzimmer, Samiras Zimmer, die Regennacht vor der Bar, die Garderobe mit dem Glühbirnenspiegel, die Tür der One Love Bar, das Café, die Bar im Umbau und die Bühne.",
+    "Du läufst selbst mit Leon oder Lady Luma herum. Oben links steht dein Ziel (★), am Boden zeigt ein leuchtender Ring mit Pfeil, wohin du musst. Gegenstände und Figuren kannst du ansehen bzw. ansprechen, wenn du nah genug bist.",
+    "In jedem Raum sind 3 Lichtfunken versteckt. Jeder Funke bringt Licht. Erreichst du das Ziel, beginnt die Szene: Lies mit Tippen oder Enter weiter und wähle bei Entscheidungen eine von zwei Antworten. Mutige Antworten bringen mehr Licht."
    ]
   },
   {
@@ -59,9 +60,10 @@
   {
    "t": "Bedienung",
    "list": [
-    "PC: D F J K oder ← ↓ ↑ → auf der Bühne, Enter weiter, Esc/P Pause.",
-    "Handy: Textfeld und Antworten antippen, auf der Bühne die vier Tasten unten.",
-    "Controller: A weiter, Steuerkreuz wählen, auf der Bühne Steuerkreuz oder LB X Y RB, Start Pause.",
+    "Laufen: W A S D oder Pfeiltasten, Shift rennt, Q/E dreht die Kamera, Enter/Leertaste/F ansehen oder sprechen.",
+    "Handy: Joystick links laufen (ganz ausgelenkt = rennen), runder Knopf rechts ansehen/sprechen, auf dem Bildschirm wischen dreht die Kamera.",
+    "Controller: linker Stick laufen, rechter Stick Kamera, A ansehen/sprechen/weiter, B Menü.",
+    "Bühne: PC D F J K oder ← ↓ ↑ →, Handy die vier Tasten unten, Controller Steuerkreuz oder LB X Y RB, Start Pause.",
     "Buch lesen: ↑ ↓ blättern, ← → Kapitel wechseln, M oder Select öffnet das Inhaltsverzeichnis, Esc zurück."
    ]
   },
@@ -76,6 +78,7 @@
   {
    "t": "Für Einsteiger",
    "list": [
+    "Lauf in jedem Raum einmal an den Wänden entlang: Lichtfunken liegen oft in Ecken und hinter Möbeln.",
     "Spiele die Bühne zuerst auf Leicht: Dort kommt nur jeder zweite Schlag.",
     "Achte auf den Ring, nicht auf die Kugel selbst.",
     "Auf dem Handy mit zwei Daumen spielen: links D/F, rechts J/K."
@@ -98,6 +101,12 @@
   }
  ],
  "loesung": [
+  {
+   "t": "Lichtfunken",
+   "p": [
+    "In jedem der 10 begehbaren Kapitel liegen 3 Lichtfunken, insgesamt 30. Die Verstecke sind für alle Spieler gleich. Gesammelte Funken bleiben gespeichert und erscheinen beim nächsten Durchgang nicht noch einmal. Den Stand siehst du unter 🏅 Rekorde."
+   ]
+  },
   {
    "t": "Die Kapitel",
    "steps": [

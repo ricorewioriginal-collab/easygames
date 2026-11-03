@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "0f4f9809ae00",
- "generated": "2026-11-03T12:22:41+01:00",
- "commit": "fff868d83cbcb66da8a5c4bbc940fc0f8534da60",
+ "version": "71b217eab812",
+ "generated": "2026-11-03T12:24:33+01:00",
+ "commit": "19eb31a50745dcef872e74df6cabafbe61e56fa0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5753,8 +5753,8 @@
   },
   {
    "p": "guides.js",
-   "s": 164031,
-   "h": "6e0f8b4a7f59adcbb4ca8b50864d035dd208c35014657c68534fa16a9f633747"
+   "s": 164263,
+   "h": "4c98c103485a88a13878025c63a0d7629bf0e28ff2cc259da4ff38696ca727c9"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6008,8 +6008,8 @@
   },
   {
    "p": "guides/ich-bin-das-licht.json",
-   "s": 6598,
-   "h": "d8345d169c0a83fd8039087a2aade2f13e38113bc2bf916c36c5d5df1014cc6f"
+   "s": 7471,
+   "h": "9131e8704bfbba89ad5764daaba1d850db86243b4fa05bd566d7a0645dc84083"
   },
   {
    "p": "guides/kiko-sterneninseln.json",
@@ -6293,23 +6293,23 @@
   },
   {
    "p": "ich-bin-das-licht/index.html",
-   "s": 14474,
-   "h": "1383be0e6aec8a296d2ac5999290220b244e12cedb100e53ad95202cc5aa9355"
+   "s": 14891,
+   "h": "28d075c19993b386b55e05435777e598da3075c71ae4bef5c34cdad66d7d33dd"
   },
   {
    "p": "ich-bin-das-licht/js/app.js",
-   "s": 29403,
-   "h": "970931bd1b725cca76eb2e3b5e8968fc284e7d18ea9f222c22266de0bc53734d"
+   "s": 35295,
+   "h": "4c58a0bcf019d5d9c92df5c6abf03160b6bdb0d0b4dcbb506ba63e12052e09f9"
   },
   {
    "p": "ich-bin-das-licht/js/core.js",
-   "s": 18332,
-   "h": "e98a78501f246c6d82241587e56e3ef0e2ee2cfad962fd7e01a6357ff40e8f39"
+   "s": 19714,
+   "h": "59b497ad910491cc021e172cc1a4917f9a9494dd1bbf11b414d0d994849e4576"
   },
   {
    "p": "ich-bin-das-licht/js/world.js",
-   "s": 67490,
-   "h": "a4c772406c39419a1e0ad6c9f76511ba125c6909e39128238434788a2f0e96fe"
+   "s": 91360,
+   "h": "75cd15621d6c50a0d51f8d0080a1214c0fe5ed7d7d44c86d134aff9e888f3811"
   },
   {
    "p": "ich-bin-das-licht/manifest.webmanifest",
@@ -6318,8 +6318,8 @@
   },
   {
    "p": "ich-bin-das-licht/style.css",
-   "s": 16317,
-   "h": "f1035f58ff774ff9a1f3cd0967d58f56a22506bbd60d89202a3bfe852feeaf50"
+   "s": 18376,
+   "h": "c274ba320e2f1c3421d502a6d67eca76ccccbd15df054277ccfcf362c6ad09f0"
   },
   {
    "p": "ich-bin-das-licht/sw.js",
@@ -8458,8 +8458,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 243057,
-   "h": "572d05cfedb493fd91785cb2dcfd9f2e6fce6981892bac1de86739dca9a03fc4"
+   "s": 243289,
+   "h": "4c5ab837af587ec0827f571c36d9b9451f141ee037ccdefee3cd12448639ad4c"
   },
   {
    "p": "taschi/card.svg",

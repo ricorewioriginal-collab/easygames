@@ -172,3 +172,18 @@ button { font: inherit; color: inherit; }
 .toc button small { display: block; font-size: 11px; opacity: .65; text-transform: uppercase; letter-spacing: .14em; }
 .toc button.on, .toc button:hover, .toc button:focus-visible { background: rgba(255, 63, 176, .2); outline: none; }
 .rFoot span { font-size: 13px; opacity: .75; }
+
+/* Erkunden */
+.chap { min-width: 0; overflow: hidden; text-overflow: ellipsis; max-width: 44vw; }
+.xhud { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between; margin-top: 10px; }
+.obj { background: linear-gradient(90deg, rgba(160, 92, 255, .85), rgba(255, 63, 176, .8)); padding: 9px 14px; border-radius: 14px; font-weight: 600; font-size: 15px; max-width: min(520px, 70vw); box-shadow: 0 6px 20px rgba(255, 63, 176, .35); }
+.obj::before { content: '★ '; }
+.spk { flex: none; }
+.prompt { position: fixed; left: 50%; bottom: calc(110px + var(--safeB)); transform: translateX(-50%); background: var(--glass); border: 1px solid rgba(255, 179, 214, .6); padding: 10px 18px; border-radius: 99px; font-weight: 700; white-space: nowrap; pointer-events: none; box-shadow: 0 0 24px rgba(255, 63, 176, .4); }
+.prompt b { display: inline-block; min-width: 26px; padding: 2px 8px; margin-right: 8px; border-radius: 8px; background: #fff; color: #2a1238; text-align: center; }
+.joy { position: fixed; left: max(22px, var(--safeL)); bottom: calc(26px + var(--safeB)); width: 136px; height: 136px; border-radius: 50%; background: rgba(255, 255, 255, .08); border: 2px solid rgba(255, 255, 255, .28); touch-action: none; }
+.joy i { position: absolute; left: 50%; top: 50%; width: 58px; height: 58px; margin: -29px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff, #ffb3d6 60%, #ff3fb0); box-shadow: 0 0 20px rgba(255, 63, 176, .6); }
+.act { position: fixed; right: max(26px, var(--safeR)); bottom: calc(40px + var(--safeB)); width: 92px; height: 92px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .6); background: radial-gradient(circle at 35% 35%, #a05cff, #ff3fb0); font-size: 15px; font-weight: 700; color: #fff; box-shadow: 0 0 26px rgba(255, 63, 176, .55); touch-action: none; padding: 6px; line-height: 1.1; }
+.act:disabled { opacity: .35; }
+.fade { position: fixed; inset: 0; background: #07051a; opacity: 0; pointer-events: none; transition: opacity .35s; z-index: 40; }
+.fade.on { opacity: 1; }

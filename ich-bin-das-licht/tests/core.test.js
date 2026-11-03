@@ -61,3 +61,12 @@ test('Spielstand: kaputte Daten werden repariert', () => {
   assert.strictEqual(s.best.normal, 5); assert.strictEqual(s.best.leicht, 0); assert.strictEqual(s.look.wig, 'cover'); assert.strictEqual(s.opt.diff, 'schwer'); assert.strictEqual(s.opt.bpm, L.SONG.bpm);
   assert.deepStrictEqual(L.fixSave(null), L.newSave());
 });
+
+test('Erkunden: Ziele und Lichtfunken', () => {
+  const ex = L.CHAPTERS.filter(c => c.goal); assert.ok(ex.length >= 8);
+  for (const c of ex) assert.ok(c.obj, c.title);
+  const a = L.sparkPlan(3, 5), b = L.sparkPlan(3, 5);
+  assert.deepStrictEqual(a, b); assert.strictEqual(new Set(a.map(x => x.i)).size, 3); assert.ok(a.every(x => x.i < 5));
+  assert.strictEqual(L.maxSparks(), ex.length * 3);
+  assert.deepStrictEqual(L.fixSave({ sparks: [1, 'x', 2] }).sparks, [1, 2]);
+});
