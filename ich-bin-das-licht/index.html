@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/ich-bin-das-licht-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Ich bin das L…"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#14103a">
+<title>Ich bin das Licht – Das Spiel zum Roman</title>
+<meta name="description" content="Ich bin das Licht – das offizielle Spiel zum Roman von RicoReWi: Erlebe Leons Weg in 3D, stelle Lady Lumas Look zusammen und spiele den Buchsong auf der Bühne der One Love Bar. Für PC, Handy und Gamecontroller.">
+<link rel="stylesheet" href="../vendor/fonts/fredoka.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div class="vignette" id="vig"></div>
+
+<section class="scr on" id="sLoad">
+  <div class="load">
+    <img src="img/cover.jpg" alt="Buchcover: Ich bin das Licht" class="loadCover">
+    <div class="bar"><i id="loadBar"></i></div>
+    <p class="tip" id="loadTip">Die Glühbirnen am Spiegel gehen an …</p>
+  </div>
+</section>
+
+<section class="scr" id="sTitle">
+  <div class="titleWrap">
+    <img src="img/cover.jpg" alt="Buchcover: Ich bin das Licht, Roman von Ricardo Ramon Reimer Wiebe" class="cover">
+    <div class="titleSide">
+      <p class="eyebrow">Das offizielle Spiel zum Roman</p>
+      <h1 class="glam">Ich bin das <span>Licht</span></h1>
+      <p class="claim">Glamour. Liebe. Echt sein.</p>
+      <button class="press nav" id="bPress">▶ <span id="pressTxt">Drücke Start</span></button>
+    </div>
+  </div>
+  <p class="corner"><a href="../" class="back">← Alle Spiele</a></p>
+</section>
+
+<section class="scr" id="sMenu">
+  <div class="menuWrap">
+    <header class="mHead"><h1 class="glam small">Ich bin das <span>Licht</span></h1><div class="pill" id="menuLight">✨ Licht 0 %</div></header>
+    <div class="tiles">
+      <button class="tile nav hero" data-go="story"><i>📖</i><b>Geschichte</b><small id="mStory">Leons Weg in 12 Kapiteln</small></button>
+      <button class="tile nav" data-go="show"><i>🎤</i><b>Bühne</b><small id="mShow">Buchsong spielen</small></button>
+      <button class="tile nav" data-go="studio"><i>💄</i><b>Garderobe</b><small>Lady Lumas Look</small></button>
+      <button class="tile nav" data-go="read"><i>📚</i><b>Buch lesen</b><small id="mRead">Der ganze Roman</small></button>
+      <button class="tile nav" data-go="rec"><i>🏅</i><b>Rekorde</b><small>Punkte &amp; Enden</small></button>
+      <button class="tile nav" data-go="opts"><i>⚙️</i><b>Optionen</b><small>Song, Ton, Grafik</small></button>
+      <button class="tile nav" data-go="help"><i>❓</i><b>Anleitung</b><small>Steuerung &amp; Tipps</small></button>
+    </div>
+    <footer class="mFoot"><span class="keys" id="menuKeys"></span><a href="../" class="nav back">← Alle Spiele</a></footer>
+  </div>
+</section>
+
+<!-- Geschichte -->
+<section class="scr game" id="sStory">
+  <div class="hud">
+    <div class="pill chap" id="chapLbl">Kapitel 1</div>
+    <div class="lightMeter" aria-label="Licht"><i id="lightFill"></i><span id="lightTxt">Licht 0 %</span></div>
+    <button class="icon nav" id="bStoryMenu" aria-label="Menü">☰</button>
+  </div>
+  <div class="talk" id="talk">
+    <div class="who" id="who" hidden></div>
+    <p class="line" id="line"></p>
+    <div class="choices" id="choices"></div>
+    <div class="next" id="nextHint">▼</div>
+  </div>
+</section>
+
+<!-- Garderobe -->
+<section class="scr game" id="sStudio">
+  <div class="hud"><div class="pill">💄 Lady Lumas Garderobe</div><button class="icon nav" id="bStudioBack" aria-label="Zurück">✕</button></div>
+  <div class="studio">
+    <h2 class="glam small">Lady <span>Luma</span></h2>
+    <div class="rows" id="rows"></div>
+    <p class="lookName" id="lookName"></p>
+    <button class="press nav" id="bStudioDone">✨ Fertig</button>
+  </div>
+</section>
+
+<!-- Bühne -->
+<section class="scr game" id="sShow">
+  <div class="hud">
+    <div class="pill score"><b id="hScore">0</b><small id="hCombo">Combo 0</small></div>
+    <div class="lightMeter"><i id="showFill"></i><span id="showTxt">Applaus</span></div>
+    <button class="icon nav" id="bPause" aria-label="Pause">⏸</button>
+  </div>
+  <div class="judge" id="judge"></div>
+  <div class="yt" id="ytBox" hidden><div id="ytPlayer"></div><a class="ytLink" id="ytLink" href="https://www.youtube.com/watch?v=5ZFsCy3vqLI" target="_blank" rel="noopener">Auf YouTube ansehen ↗</a></div>
+  <div class="count" id="count" hidden></div>
+  <div class="pads" id="pads">
+    <button class="pad p0" data-l="0"><span>D</span><small>←</small></button>
+    <button class="pad p1" data-l="1"><span>F</span><small>↓</small></button>
+    <button class="pad p2" data-l="2"><span>J</span><small>↑</small></button>
+    <button class="pad p3" data-l="3"><span>K</span><small>→</small></button>
+  </div>
+</section>
+
+<!-- Song wählen / YouTube-Freigabe -->
+<section class="scr" id="sSong">
+  <div class="panel">
+    <h2 class="sTitle">🎤 Die Bunte Luma Show</h2>
+    <p class="songName"><b>„Ich bin das Licht“</b> – Buchsong feat. Leon Sommer &amp; Lady Luma</p>
+    <div class="seg" id="diffSeg"></div>
+    <div class="consent" id="consent">
+      <p>Der Buchsong läuft als offizielles YouTube-Video im Spiel. Erst wenn du auf „Mit YouTube spielen“ tippst, wird das Video geladen; dabei werden Daten an YouTube (Google) übertragen.</p>
+    </div>
+    <div class="btns">
+      <button class="press nav" id="bYT">▶ Mit YouTube spielen</button>
+      <button class="ghost nav" id="bBeat">🥁 Ohne Video (Beat im Browser)</button>
+      <button class="ghost nav" id="bSongBack">← Zurück</button>
+    </div>
+  </div>
+</section>
+
+<section class="scr" id="sResult">
+  <div class="panel center">
+    <h2 class="sTitle" id="resTitle">Applaus!</h2>
+    <div class="stars" id="resStars">☆☆☆</div>
+    <div class="resGrid" id="resGrid"></div>
+    <div class="btns"><button class="press nav" id="bResNext">Weiter</button><button class="ghost nav" id="bResAgain">↻ Nochmal</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sEnd">
+  <div class="endWrap">
+    <img src="img/cover.jpg" alt="Buchcover" class="cover sm">
+    <div class="panel">
+      <p class="eyebrow">Ende</p>
+      <h2 class="glam small" id="endTitle">Ich bin das Licht</h2>
+      <p id="endText"></p>
+      <p class="quote">„Du musst nicht auf einer Bühne stehen, um sichtbar zu sein. Manchmal beginnt der wichtigste Auftritt dort, wo du dich selbst nicht länger versteckst.“</p>
+      <p class="endLight" id="endLight"></p>
+      <div class="btns"><button class="press nav" id="bEndMenu">Zum Menü</button><button class="ghost nav" id="bEndAgain">↻ Neu erleben</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="scr" id="sRead">
+  <div class="reader">
+    <header class="rHead">
+      <button class="icon nav" id="bReadBack" aria-label="Zurück">←</button>
+      <button class="ghost nav rToc" id="bToc">☰ <span id="rLbl">Inhalt</span></button>
+      <div class="rTools"><button class="icon nav" id="bFontM" aria-label="Schrift kleiner">A−</button><button class="icon nav" id="bFontP" aria-label="Schrift größer">A+</button></div>
+    </header>
+    <nav class="toc" id="toc" hidden></nav>
+    <article class="page" id="page" tabindex="0"></article>
+    <footer class="rFoot"><button class="ghost nav" id="bPrevCh">◀ Voriges</button><span id="rProg"></span><button class="ghost nav" id="bNextCh">Nächstes ▶</button></footer>
+  </div>
+</section>
+
+<section class="scr" id="sRec"><div class="panel"><h2 class="sTitle">🏅 Rekorde</h2><div class="resGrid" id="recGrid"></div><div class="btns"><button class="press nav back2">← Zurück</button></div></div></section>
+
+<section class="scr" id="sOpts">
+  <div class="panel">
+    <h2 class="sTitle">⚙️ Optionen</h2>
+    <label class="opt"><span>YouTube-Video für den Buchsong</span><input type="checkbox" id="oYT"></label>
+    <label class="opt"><span>Soundeffekte</span><input type="checkbox" id="oSfx"></label>
+    <label class="opt"><span>Takt (BPM) <b id="oBpmV"></b></span><input type="range" id="oBpm" min="60" max="180" step="1"></label>
+    <label class="opt"><span>Audio-Versatz <b id="oOffV"></b></span><input type="range" id="oOff" min="-0.4" max="0.4" step="0.01"></label>
+    <label class="opt"><span>Grafik</span><select id="oQ"><option value="auto">Automatisch</option><option value="hoch">Hoch (scharf, Schatten)</option><option value="spar">Sparmodus</option></select></label>
+    <p class="note">Grafik-Änderungen gelten nach dem nächsten Start.</p>
+    <div class="btns"><button class="press nav back2">← Zurück</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sHelp">
+  <div class="panel scroll">
+    <h2 class="sTitle">❓ Anleitung</h2>
+    <p><b>Geschichte:</b> Erlebe Leons Weg aus dem Roman. Lies weiter mit Tippen, Enter oder A. Bei Entscheidungen wählst du, wie mutig Leon ist. Mutige Schritte bringen mehr Licht. Es gibt kein falsches Leben, nur verschiedene Enden.</p>
+    <p><b>Garderobe:</b> Perücke, Haarfarbe, Kleid, Farbe und Schmuck für Lady Luma. Der Look gilt in der Geschichte und auf der Bühne.</p>
+    <p><b>Bühne:</b> Lichtkugeln laufen in vier Spuren auf dich zu. Triff sie, wenn sie den Ring erreichen: Perfekt, Gut oder Mutig. Verpasste Kugeln kosten nur die Combo, niemand wird ausgelacht.</p>
+    <ul>
+      <li>PC: D F J K oder ← ↓ ↑ →, Esc/P Pause.</li>
+      <li>Handy: die vier Tasten unten antippen.</li>
+      <li>Controller: Steuerkreuz ← ↓ ↑ → oder LB, X, Y, RB. A bestätigt, Start pausiert.</li>
+    </ul>
+    <p>Passt der Takt nicht ganz? In den Optionen BPM und Audio-Versatz einstellen.</p>
+    <div class="btns"><button class="press nav back2">← Zurück</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sPause">
+  <div class="panel center"><h2 class="sTitle">⏸ Pause</h2><div class="btns"><button class="press nav" id="bResume">▶ Weiter</button><button class="ghost nav" id="bRestart">↻ Neu starten</button><button class="ghost nav" id="bQuit">☰ Menü</button></div></div>
+</section>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../vendor/three-r128-gltfloader.js"></script>
+<script src="../device.js"></script>
+<script src="../gamekit.js"></script>
+<script src="../figuren/figuren.js"></script>
+<script src="js/core.js"></script>
+<script src="js/world.js"></script>
+<script src="js/app.js"></script>
+<script src="../gamepad.js" data-pad="lb=KeyD x=KeyF y=KeyJ rb=KeyK lt=KeyD rt=KeyK" defer></script>
+<script src="../cloud/anmacha-cloud.js" data-game="ich-bin-das-licht" data-prefix="ibdl-" defer></script>
+</body>
+</html>

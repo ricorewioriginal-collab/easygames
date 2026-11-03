@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "23521cebe06f",
- "generated": "2026-10-31T13:49:48+01:00",
- "commit": "efed905e98a4e221e80c034c8d0e0e30958b9ba7",
+ "version": "430e5b914daf",
+ "generated": "2026-11-02T09:51:32+01:00",
+ "commit": "2f0ec5d3abcbab861fcf5211623b637134dc0466",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4633,8 +4633,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3331,
-   "h": "3d5a6f524980c6a4fc8e49bf71344a94b30674c84b2028fcbf15af4bda8f3629"
+   "s": 3361,
+   "h": "7f87aca2fca18f508b717384e5eb2fa7212832ead9b2cf68e27e3b4184211642"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -5523,8 +5523,8 @@
   },
   {
    "p": "games.js",
-   "s": 52770,
-   "h": "7a301f2e77247a00ba39502beeea169c7fb5d03aa8df40ac2c1b8b2983091ae0"
+   "s": 53490,
+   "h": "00baa570fe394324766821a1cba5642bad3e4dfa66aa768a5893853a650beffc"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5753,8 +5753,8 @@
   },
   {
    "p": "guides.js",
-   "s": 162683,
-   "h": "b7bd851c79202d1aece6bc55b32a8beeec0788d7dcb83d96c0c17f06857586dd"
+   "s": 164031,
+   "h": "6e0f8b4a7f59adcbb4ca8b50864d035dd208c35014657c68534fa16a9f633747"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6005,6 +6005,11 @@
    "p": "guides/huepfstrasse.json",
    "s": 11439,
    "h": "d8671109ce7c587c8b6c2c629196d945980e2044435474190b2302cd206bc55f"
+  },
+  {
+   "p": "guides/ich-bin-das-licht.json",
+   "s": 6598,
+   "h": "d8345d169c0a83fd8039087a2aade2f13e38113bc2bf916c36c5d5df1014cc6f"
   },
   {
    "p": "guides/kiko-sterneninseln.json",
@@ -6265,6 +6270,61 @@
    "p": "huepfstrasse/sw.js",
    "s": 2015,
    "h": "95db3d0a9895b13baaeb5fd390c8e29f8451cb7b16be206295aefe9959865115"
+  },
+  {
+   "p": "ich-bin-das-licht/book.json",
+   "s": 260026,
+   "h": "3aec94f4d68aa6d713b5997dc3fb36251b10707463fc6c9d6ea9007a37b43e37"
+  },
+  {
+   "p": "ich-bin-das-licht/card.jpg",
+   "s": 108945,
+   "h": "72a8dcb1059043e088a52378885b351989e167d7231664bcba065ab910d53a84"
+  },
+  {
+   "p": "ich-bin-das-licht/img/cover.jpg",
+   "s": 296655,
+   "h": "655ebe3741a05b46275322c534d1fb98f0d837e820146f5bb92049d4e8e06c7c"
+  },
+  {
+   "p": "ich-bin-das-licht/img/poster.jpg",
+   "s": 428508,
+   "h": "1de5fa00cc6b4ba634e9731ea3c6ee3c0db6429462e917c2d4aa54cace3cd2f9"
+  },
+  {
+   "p": "ich-bin-das-licht/index.html",
+   "s": 14474,
+   "h": "1383be0e6aec8a296d2ac5999290220b244e12cedb100e53ad95202cc5aa9355"
+  },
+  {
+   "p": "ich-bin-das-licht/js/app.js",
+   "s": 29403,
+   "h": "970931bd1b725cca76eb2e3b5e8968fc284e7d18ea9f222c22266de0bc53734d"
+  },
+  {
+   "p": "ich-bin-das-licht/js/core.js",
+   "s": 18332,
+   "h": "e98a78501f246c6d82241587e56e3ef0e2ee2cfad962fd7e01a6357ff40e8f39"
+  },
+  {
+   "p": "ich-bin-das-licht/js/world.js",
+   "s": 67490,
+   "h": "a4c772406c39419a1e0ad6c9f76511ba125c6909e39128238434788a2f0e96fe"
+  },
+  {
+   "p": "ich-bin-das-licht/manifest.webmanifest",
+   "s": 812,
+   "h": "91ae10cd97f0182f145a1c580ef619cdf2c0bb5edd81a988d59e6fb9b017f606"
+  },
+  {
+   "p": "ich-bin-das-licht/style.css",
+   "s": 16317,
+   "h": "f1035f58ff774ff9a1f3cd0967d58f56a22506bbd60d89202a3bfe852feeaf50"
+  },
+  {
+   "p": "ich-bin-das-licht/sw.js",
+   "s": 2025,
+   "h": "35bac83864c89c5d0263c8d2e95c0cc9ddc0637c024a72012568cc0a018f00d4"
   },
   {
    "p": "impressum.html",
@@ -8398,8 +8458,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 240765,
-   "h": "bd36e137584595199dba6c2966ba56e379d36794f622f5034d5e7e541ff7d2fd"
+   "s": 243057,
+   "h": "572d05cfedb493fd91785cb2dcfd9f2e6fce6981892bac1de86739dca9a03fc4"
   },
   {
    "p": "taschi/card.svg",
@@ -8877,6 +8937,11 @@
    "h": "72c4990a6e09e1051d54c05aa1d1b08f346bfafc432941b6427537d3599ef391"
   },
   {
+   "p": "thumbs/ich-bin-das-licht.webp",
+   "s": 73692,
+   "h": "d5938791af45f95e7b5967c0d96f75ed9e4bc13b3f6268ad0e80c43a35887d4f"
+  },
+  {
    "p": "thumbs/konfetti-party.webp",
    "s": 29880,
    "h": "d20408309d598d1e76ef1929f0647e518eb580562353e4c2cd6089d393b94fde"
@@ -8953,8 +9018,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2256,
-   "h": "62cbc4a8731deefcdc5483dcdd3c61634dd8ba55447cd24d8987267abcad4a66"
+   "s": 2289,
+   "h": "7d553f6c0627d755826356a68a73f9b7800ccd0601a34b5f2b615b7a67cae755"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
