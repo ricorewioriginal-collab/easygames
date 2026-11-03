@@ -1,0 +1,147 @@
+{
+ "id": "ich-bin-das-licht",
+ "handbuch": [
+  {
+   "t": "Worum es geht",
+   "p": [
+    "Ich bin das Licht ist das offizielle Spiel zum gleichnamigen Roman von RicoReWi (Ricardo Ramon Reimer Wiebe). Du begleitest Leon Sommer von der Kindheit am strengen Esstisch seines Vaters bis zur Nacht, in der er als Lady Luma auf der Bühne der wiedereröffneten One Love Bar steht.",
+    "Das Spiel verbindet drei Teile: eine Geschichte mit Entscheidungen, die Garderobe für Lady Luma und eine Rhythmus-Bühne mit dem Buchsong „Ich bin das Licht“."
+   ]
+  },
+  {
+   "t": "Start und Hauptmenü",
+   "p": [
+    "Nach dem Ladebildschirm erscheint das Buchcover. Tippe, drücke Enter oder A am Controller."
+   ],
+   "list": [
+    "📖 Geschichte: startet die 12 Kapitel oder macht dort weiter, wo du aufgehört hast.",
+    "🎤 Bühne: den Buchsong frei spielen, mit Schwierigkeit Leicht, Normal oder Schwer.",
+    "💄 Garderobe: Lady Lumas Look zusammenstellen.",
+    "📚 Buch lesen: der komplette Roman im Spiel – mit Inhaltsverzeichnis, einstellbarer Schriftgröße und Lesezeichen (das Spiel merkt sich Kapitel und Stelle).",
+    "🏅 Rekorde: Punkte je Schwierigkeit, Sterne, erlebte Geschichten, bestes Licht und gefundene Enden.",
+    "⚙️ Optionen: YouTube-Video an/aus, Soundeffekte, Takt (BPM), Audio-Versatz und Grafik.",
+    "❓ Anleitung: Kurzfassung der Regeln und der Steuerung."
+   ]
+  },
+  {
+   "t": "Die Geschichte",
+   "p": [
+    "Jedes Kapitel spielt in einer eigenen 3D-Kulisse: Esszimmer, Jugendzimmer, Samiras Zimmer, die Regennacht vor der Bar, die Garderobe mit dem Glühbirnenspiegel, die Tür der One Love Bar, das Café, die Bar im Umbau und die Bühne.",
+    "Tippe auf das Textfeld oder drücke Enter, um weiterzulesen. Bei Entscheidungen wählst du eine von zwei Antworten. Jede Antwort bringt Licht, mutige Antworten mehr. Der Lichtbalken oben zeigt deinen Stand; die Szene wird mit mehr Licht heller."
+   ]
+  },
+  {
+   "t": "Garderobe",
+   "list": [
+    "Perücke: Cover-Locken, Wallende Mähne, Hochsteckfrisur, Glamour-Bob.",
+    "Haarfarbe: Rosé-Blond, Platin, Magenta, Nachtblau, Kupfer.",
+    "Outfit: Glitzer-Abendkleid, Pailletten-Minikleid, Disco-Jumpsuit, Lichtumhang.",
+    "Farbe: Pink, Silber, Violett, Elektroblau, Gold, Samtschwarz.",
+    "Schmuck: Kronleuchter-Ohrringe, Krone, beides oder nichts."
+   ],
+   "p": [
+    "Mit ◀ ▶ (oder Pfeiltasten links/rechts) wechselst du, mit ↑ ↓ die Zeile. „Fertig“ speichert den Look; er gilt in Geschichte und Bühne."
+   ]
+  },
+  {
+   "t": "Die Bühne",
+   "p": [
+    "Der Buchsong läuft als offizielles YouTube-Video. Es wird erst geladen, wenn du „Mit YouTube spielen“ wählst. Ohne Video (oder ohne Internet) spielst du zu einem Beat, der im Browser erzeugt wird.",
+    "Lichtkugeln laufen in vier farbigen Spuren auf dich zu. Drücke die passende Taste, wenn die Kugel den Ring erreicht."
+   ],
+   "list": [
+    "Perfekt: 300 Punkte, Gut: 150, Mutig: 60 – jeweils mal Combo-Multiplikator.",
+    "Multiplikator x2 ab 10er-Combo, x3 ab 20, x4 ab 30.",
+    "Eine verpasste Kugel setzt nur die Combo zurück. Es gibt kein Verlieren.",
+    "Sterne nach Genauigkeit: 1 Stern ab 45 %, 2 ab 72 %, 3 ab 90 %."
+   ]
+  },
+  {
+   "t": "Bedienung",
+   "list": [
+    "PC: D F J K oder ← ↓ ↑ → auf der Bühne, Enter weiter, Esc/P Pause.",
+    "Handy: Textfeld und Antworten antippen, auf der Bühne die vier Tasten unten.",
+    "Controller: A weiter, Steuerkreuz wählen, auf der Bühne Steuerkreuz oder LB X Y RB, Start Pause.",
+    "Buch lesen: ↑ ↓ blättern, ← → Kapitel wechseln, M oder Select öffnet das Inhaltsverzeichnis, Esc zurück."
+   ]
+  },
+  {
+   "t": "Speichern",
+   "p": [
+    "Spielstand, Look, Rekorde und Optionen werden im Browser gespeichert. Mit Google-Anmeldung sichert easygames den Spielstand zusätzlich in der Cloud. Wenn du die Geschichte über ☰ verlässt, geht es später im selben Kapitel weiter."
+   ]
+  }
+ ],
+ "ratgeber": [
+  {
+   "t": "Für Einsteiger",
+   "list": [
+    "Spiele die Bühne zuerst auf Leicht: Dort kommt nur jeder zweite Schlag.",
+    "Achte auf den Ring, nicht auf die Kugel selbst.",
+    "Auf dem Handy mit zwei Daumen spielen: links D/F, rechts J/K."
+   ]
+  },
+  {
+   "t": "Für Fortgeschrittene",
+   "list": [
+    "Combo halten bringt mehr als einzelne perfekte Treffer.",
+    "Im Refrain kommen Doppelnoten in zwei Spuren gleichzeitig.",
+    "Wenn alle Treffer zu früh oder zu spät sind, den Audio-Versatz in den Optionen anpassen."
+   ]
+  },
+  {
+   "t": "Häufige Fehler",
+   "list": [
+    "Zu viel drücken: Treffer in leere Spuren zählen nicht, kosten aber nichts.",
+    "YouTube startet nicht: Werbeblocker oder fehlendes Internet. Dann „Ohne Video“ wählen."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "Die Kapitel",
+   "steps": [
+    "Licht und Schatten: „Ich find die eigentlich schön.“ (+10)",
+    "Sturmfreie Zeit: Folge zu Ende schauen (+8)",
+    "Die Menschen, die bleiben: Samira die Wahrheit sagen (+12)",
+    "Eine Nacht, die anders begann: Mit Mert reingehen (+12)",
+    "Der Spiegel mit den Glühbirnen: Look wählen und „Fertig“ (+10)",
+    "Die One Love Bar: Bleiben (+12)",
+    "Alte Wege, neue Gesichter: Kaffee machen und zuhören (+10)",
+    "Die zweite Bühne: Mit der eigenen Stimme singen (+14)",
+    "Rückkehr ins Leben: Mit Nadine und Velvet neu planen (+10)",
+    "Die Nacht der Wiedereröffnung: Buchsong spielen (bis +20 nach Genauigkeit)",
+    "Nach dem Lied: Die Perücke abnehmen (+15)",
+    "Mein Sohn: Abschluss"
+   ]
+  },
+  {
+   "t": "Die drei Enden",
+   "list": [
+    "Ich bin das Licht: 85 % Licht oder mehr – mit allen mutigen Antworten und einem guten Auftritt sicher erreichbar.",
+    "Glamour in den Adern: 55 bis 84 %.",
+    "Ein erster Funke: unter 55 %."
+   ]
+  },
+  {
+   "t": "Bühne: drei Sterne",
+   "p": [
+    "Für drei Sterne brauchst du 90 % Genauigkeit. Perfekte Treffer zählen voll, gute zu 70 %, mutige zu 40 %. Am leichtesten gelingt das auf Leicht."
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Warum muss ich YouTube erst freigeben?",
+   "a": "Das Video wird erst nach deinem Klick geladen, weil dabei Daten an YouTube übertragen werden. Ohne Freigabe spielst du zu einem Beat aus dem Browser."
+  },
+  {
+   "q": "Kann ich verlieren?",
+   "a": "Nein. Verpasste Kugeln kosten nur die Combo, und jede Entscheidung führt weiter."
+  },
+  {
+   "q": "Kann ich den Roman im Spiel lesen?",
+   "a": "Ja. Unter 📚 Buch lesen steht der komplette Roman mit allen 12 Kapiteln, der Vorbemerkung und den Bonusteilen. Das Spiel merkt sich, wo du aufgehört hast."
+  }
+ ]
+}

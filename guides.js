@@ -521,6 +521,19 @@ window.EASYGAMES_GUIDES = {
    "Im Radio-Rhythmus ist der höchste Punkt einer Frucht genau auf dem Schlag – dort schneiden!"
   ]
  },
+ "ich-bin-das-licht": {
+  "anleitung": "Das offizielle Spiel zum Roman „Ich bin das Licht“: Du erlebst Leons Weg in 12 Kapiteln in 3D. Lies die Szenen weiter und triff Entscheidungen – mutige Schritte bringen mehr Licht. In der Garderobe stellst du Lady Lumas Look zusammen (Perücke, Haarfarbe, Outfit, Farbe, Schmuck). Auf der Bühne der One Love Bar spielst du den Buchsong: Lichtkugeln laufen in vier Spuren auf dich zu, triff sie am Ring (Perfekt, Gut, Mutig). Verpasste Kugeln kosten nur die Combo. Je nach Licht erreichst du eines von drei Enden. Unter „Buch lesen“ steht außerdem der komplette Roman.",
+  "steuerung": [
+   "Tastatur: Enter/Leertaste weiter, Pfeiltasten wählen, auf der Bühne D F J K oder ← ↓ ↑ →, Esc/P Pause.",
+   "Touch: Textfeld antippen, Entscheidungen antippen, auf der Bühne die vier Tasten unten.",
+   "Gamecontroller: A weiter/bestätigen, Steuerkreuz wählen, auf der Bühne Steuerkreuz ← ↓ ↑ → oder LB X Y RB, Start Pause."
+  ],
+  "tipps": [
+   "Mutige Antworten bringen mehr Licht – für das Ende „Ich bin das Licht“ brauchst du mindestens 85 %.",
+   "Auf der Bühne zählt der Rhythmus: lieber im Takt bleiben als hektisch drücken, ab 10er-Combo steigt der Multiplikator.",
+   "Passt der Takt nicht ganz zum Video, stelle in den Optionen BPM und Audio-Versatz ein."
+  ]
+ },
  "wolkenhopser": {
   "anleitung": "Wolkenhopser ist ein Endlos-Springspiel: Hopsi springt von allein, sobald er von oben auf einer Plattform landet – du steuerst nur links und rechts. Wer am Rand rausläuft, kommt auf der anderen Seite wieder rein; wer unten aus dem Bild fällt, verliert. Plattformen: grün normal, blau beweglich, gestrichelt verschwindet nach einem Sprung, braun mit Riss bricht weg. Federn und Trampoline schießen dich hoch, 🧢 Propellermütze und 🚀 Raketenrucksack lassen dich fliegen, 🫧 Schutzblase rettet einmal. Monster besiegst du durch Draufspringen oder Abschießen; schwarze Löcher ziehen dich an. Mit Münzen schaltest du 8 Hopsis frei. Gebiete: Blumenwiese, Wolkenmeer, Abendhimmel, Sternennacht, Weltall. Modi: Spielen, 📅 Tagesrekord (eine Welt pro Tag für alle) und 🌐 Online-Rennen (alle springen gleichzeitig durch dieselbe Welt, jeder auf seinem Gerät; per QR-Code oder Link von überall).",
   "steuerung": [
