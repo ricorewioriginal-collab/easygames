@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "71b217eab812",
- "generated": "2026-11-03T12:24:33+01:00",
- "commit": "19eb31a50745dcef872e74df6cabafbe61e56fa0",
+ "version": "c1c60c8d8ca2",
+ "generated": "2026-11-03T13:00:31+01:00",
+ "commit": "8fb8630d1749d9046d1ce192ef97e08eeb5d5a63",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4633,8 +4633,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3361,
-   "h": "7f87aca2fca18f508b717384e5eb2fa7212832ead9b2cf68e27e3b4184211642"
+   "s": 3389,
+   "h": "b9b8f2a0cc2997c56d9badbb3c91dbf2c5cf765f9f47eda60c5466fca8b3419a"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -5178,8 +5178,8 @@
   },
   {
    "p": "figuren/figuren.js",
-   "s": 23349,
-   "h": "617b8550baf1ce03e87740bfd73d4980eb5d908f2f16590410197f388d7bcd99"
+   "s": 23797,
+   "h": "c908f3c4b867e630d4135f5a8df5d466907f18f5d280db3aa515b4425d25082e"
   },
   {
    "p": "figuren/frau.glb",
@@ -5523,8 +5523,8 @@
   },
   {
    "p": "games.js",
-   "s": 53490,
-   "h": "00baa570fe394324766821a1cba5642bad3e4dfa66aa768a5893853a650beffc"
+   "s": 54239,
+   "h": "6c146d0cb998029142edb87445b7a6511dade3b147df1e46a15871b109aba58b"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5753,8 +5753,8 @@
   },
   {
    "p": "guides.js",
-   "s": 164263,
-   "h": "4c98c103485a88a13878025c63a0d7629bf0e28ff2cc259da4ff38696ca727c9"
+   "s": 165755,
+   "h": "369d85f417a4cc36e90bcd8f0694e901c26869b51b7d3b92f7c3c9966c08a31d"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6035,6 +6035,11 @@
    "p": "guides/kuechen-chaos.json",
    "s": 14187,
    "h": "56d265b2a668fef17b7ee37d0f5250c10d8b29ac77880534e31460990366351e"
+  },
+  {
+   "p": "guides/leuchtfeuer.json",
+   "s": 13415,
+   "h": "fea6b2285ea77f1b788e3897bfc6c07f5a8ded7250d836de19591df30e9b8ed6"
   },
   {
    "p": "guides/lumo.json",
@@ -6660,6 +6665,191 @@
    "p": "kuechen-chaos/sw.js",
    "s": 2008,
    "h": "f990397d517c26753bb47d474ccb57e4dd160e342d5e516013b32f4b0c6b3390"
+  },
+  {
+   "p": "leuchtfeuer/assets/fredoka-latin-wght-normal-DM6njrJ3.woff2",
+   "s": 29732,
+   "h": "99d6c78e043710d4f83ed90716779798b7b04eb690f73e0ad0e8f32d1f0e98c2"
+  },
+  {
+   "p": "leuchtfeuer/assets/index-Bt7m9mvP.css",
+   "s": 14867,
+   "h": "b904630bd0e5794cf7e065fe6a0d54240c6d4c28f669fe27c7b355cc12212b72"
+  },
+  {
+   "p": "leuchtfeuer/assets/index-DyDxlEMg.js",
+   "s": 207714,
+   "h": "5d84974552589ab03068651b9f548678b6af6451b6bba1c27eed866d63f7a5af"
+  },
+  {
+   "p": "leuchtfeuer/assets/three-BoK-gHdf.js",
+   "s": 704246,
+   "h": "b08c9f2e417b2b71a1d8fc2c71794e0fcdde8e440fcd6581787920b6685dbf71"
+  },
+  {
+   "p": "leuchtfeuer/book.json",
+   "s": 307353,
+   "h": "8043d7ebddc8cf84192faed852abdbf6d319d082dfb8dbed7aa5056ace7abb41"
+  },
+  {
+   "p": "leuchtfeuer/card.jpg",
+   "s": 34113,
+   "h": "c4155a549de82548357eba3a51c7501bea924df7e7ecd5fa8b7a78f44521c57a"
+  },
+  {
+   "p": "leuchtfeuer/img/b005.jpg",
+   "s": 26688,
+   "h": "f269fd27e7d1289c8b120201d9d4c2deae9f097bbb956cf825d3b76c7259a869"
+  },
+  {
+   "p": "leuchtfeuer/img/b021.jpg",
+   "s": 22864,
+   "h": "f0325ae12200b95407975eb696dfc22707bfac38c865e19bc4bc2155f17409ce"
+  },
+  {
+   "p": "leuchtfeuer/img/b036.jpg",
+   "s": 53454,
+   "h": "a1352a228444bab5ccb5b387be3566fbd5343701fe40612483f3c11db49ae588"
+  },
+  {
+   "p": "leuchtfeuer/img/b037.jpg",
+   "s": 25738,
+   "h": "ba7ed118e508fe7ca885ef1c7591387c369cd1ed654175c1a1ce7c50a5edb16a"
+  },
+  {
+   "p": "leuchtfeuer/img/b050.jpg",
+   "s": 30317,
+   "h": "7cceb87996fb38fcb8edb72d0258c058ec4ffad45bcad51c66ed64dfab4288e8"
+  },
+  {
+   "p": "leuchtfeuer/img/b063.jpg",
+   "s": 35551,
+   "h": "fa1eba42a0f8c0c6e32c28ae8dcdb1c045007e46b5f011c9f91329a71986a37e"
+  },
+  {
+   "p": "leuchtfeuer/img/b078.jpg",
+   "s": 52474,
+   "h": "d517b1a42ee7ddb3c9a240d0a1a84380f20fccf85a7f49018fb995f6e7931ebd"
+  },
+  {
+   "p": "leuchtfeuer/img/b079.jpg",
+   "s": 18832,
+   "h": "99976ad5abcad55f7169cb5deee17740de3194add130b8ae83a329c4922173fc"
+  },
+  {
+   "p": "leuchtfeuer/img/b091.jpg",
+   "s": 14519,
+   "h": "0184be081ddf9383b2a214d288134f3f59cdadcc867779ac6c22a87457c9d80a"
+  },
+  {
+   "p": "leuchtfeuer/img/b098.jpg",
+   "s": 19862,
+   "h": "7c81c63f5dbd4f02068ff3a034868074cb0d76747c628590a420eda4e3d701d3"
+  },
+  {
+   "p": "leuchtfeuer/img/b110.jpg",
+   "s": 6975,
+   "h": "4f9324cb96c04911e3549a019d581986662ee1d5bb1abd62b02d63e21980265b"
+  },
+  {
+   "p": "leuchtfeuer/img/b117.jpg",
+   "s": 31727,
+   "h": "b5254fb69fae074058569536cf35709854e26e11d8994b4e3cfc51f7e95d79e2"
+  },
+  {
+   "p": "leuchtfeuer/img/b131.jpg",
+   "s": 23811,
+   "h": "f6dafb397204d195611a8c1e7a84fe0090b3b2e85803aa47f1ade4b052a5c55c"
+  },
+  {
+   "p": "leuchtfeuer/img/b143.jpg",
+   "s": 54748,
+   "h": "9644d4796c630bf14ef5eec6aa65c2c6d26effb270e125fd57567b2ce2f2e09f"
+  },
+  {
+   "p": "leuchtfeuer/img/b144.jpg",
+   "s": 13431,
+   "h": "56f2b630363e7ab6a034ca757532e623904ddf537fba0cc06864b9cc6fd028f9"
+  },
+  {
+   "p": "leuchtfeuer/img/b152.jpg",
+   "s": 31391,
+   "h": "9d6b05f0a3cb9ee91e1b4eeb2e7275eb494648e877316415c183ae32037c9a4e"
+  },
+  {
+   "p": "leuchtfeuer/img/b165.jpg",
+   "s": 12180,
+   "h": "36558ac537bdba6242377761bcf71384faec3f876395e0d528909c5567a20edb"
+  },
+  {
+   "p": "leuchtfeuer/img/b173.jpg",
+   "s": 12838,
+   "h": "efd862880984beeba0d0ebcba435c0d51b4e071e9c1adfa028a4f680fc6388b2"
+  },
+  {
+   "p": "leuchtfeuer/img/b180.jpg",
+   "s": 33369,
+   "h": "f164cacadf9c1878e5542e66d23da9716b7523a6bc75b7fff2bac60a58fd98a4"
+  },
+  {
+   "p": "leuchtfeuer/img/b192.jpg",
+   "s": 25657,
+   "h": "cdc18fe2dc456f987b63fe1d9f4eb90ca29cb068589ed4eb94bc0a6b1d0b5db9"
+  },
+  {
+   "p": "leuchtfeuer/img/b205.jpg",
+   "s": 12963,
+   "h": "e291a5b968b4a669ef1f0ec8e69ae97ef304cec2205fe7707e89f55c4796c0d2"
+  },
+  {
+   "p": "leuchtfeuer/img/b212.jpg",
+   "s": 17856,
+   "h": "c4b99a21000e3c74a3257768d2e8705b57066132448f9d3e2b42e10d7f0208b3"
+  },
+  {
+   "p": "leuchtfeuer/img/b226.jpg",
+   "s": 7741,
+   "h": "c77ff88908a0215e75fb780b6e7e742b6f91d054dbc3e2ce8421b903e0b4f372"
+  },
+  {
+   "p": "leuchtfeuer/img/b233.jpg",
+   "s": 36221,
+   "h": "51feeba2ca1b879d51f2b6cc70b9090b0b2b4bd5973d0a2690c86bdf048d95e4"
+  },
+  {
+   "p": "leuchtfeuer/img/b250.jpg",
+   "s": 7953,
+   "h": "c98d3f0140fe66ad984f4a6c04e8bba11715fb2958d4743fbc2bf3dede7d678c"
+  },
+  {
+   "p": "leuchtfeuer/img/b258.jpg",
+   "s": 32168,
+   "h": "de602562219f99e70ef0a2971503859bf7b79a7ffb4c1727655b6d3d1d1150dc"
+  },
+  {
+   "p": "leuchtfeuer/img/b271.jpg",
+   "s": 42213,
+   "h": "5377925af8e2ae036abbff77d3095b1d08f81e86ede6f3b61de010a791f23377"
+  },
+  {
+   "p": "leuchtfeuer/img/cover.jpg",
+   "s": 63682,
+   "h": "7135d4d3d92bf3bda9b906ab9d10325b5770ffd280a50a5fde30ef81b8fd43c9"
+  },
+  {
+   "p": "leuchtfeuer/index.html",
+   "s": 16486,
+   "h": "65fa1009805d858f393af98a8a766449b5a2d97529ab24d6483525068f50b391"
+  },
+  {
+   "p": "leuchtfeuer/manifest.webmanifest",
+   "s": 783,
+   "h": "3736ee3afbe6718e4cbdcdfc704e6acc969bbcb2c84e0f2b54328f27a82ade59"
+  },
+  {
+   "p": "leuchtfeuer/sw.js",
+   "s": 2007,
+   "h": "65b3b9f25bbdb02eadac5cf2e858f4e60a37dd2421373cc83f50013f60cbefee"
   },
   {
    "p": "logo.png",
@@ -8458,8 +8648,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 243289,
-   "h": "4c5ab837af587ec0827f571c36d9b9451f141ee037ccdefee3cd12448639ad4c"
+   "s": 245752,
+   "h": "45ab6dead7cf177c01a86acc82f68a3577942462e6d911e31c7655cd7a819bfe"
   },
   {
    "p": "taschi/card.svg",
@@ -8952,6 +9142,11 @@
    "h": "751b2431fef9333a5220c9420f8be8e1a5d932d827e35353d900864d2a4f6974"
   },
   {
+   "p": "thumbs/leuchtfeuer.webp",
+   "s": 12654,
+   "h": "ba6db84f9e716a53405a672bb2723807a4a104b5c515c173ac33a9b3def5802b"
+  },
+  {
    "p": "thumbs/mahjong.webp",
    "s": 15732,
    "h": "f6b8f76dbc8b02c81b64cdc55a88edd9b8a989e6885fe024541a3940a62e8b47"
@@ -9018,8 +9213,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2289,
-   "h": "7d553f6c0627d755826356a68a73f9b7800ccd0601a34b5f2b615b7a67cae755"
+   "s": 2316,
+   "h": "d8c855c3619e2bf331085b20960eeb0fbf5bbf35f4d4f16a71989644113da5e0"
   },
   {
    "p": "thumbs/tortenschlacht.webp",

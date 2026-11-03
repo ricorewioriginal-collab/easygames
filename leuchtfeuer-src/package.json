@@ -1,0 +1,25 @@
+{
+  "name": "leuchtfeuer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Leuchtfeuer – Das Spiel zum Roman von RicoReWi. 3D-Geschichte mit fünf Spielen (Three.js + Vite).",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "build:easygames": "vite build && cd .. && python3 tools/make-pwa.py leuchtfeuer && node tools/build-sync.js"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "dependencies": {
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "vite": "^7.1.12",
+    "vitest": "^3.2.4"
+  }
+}

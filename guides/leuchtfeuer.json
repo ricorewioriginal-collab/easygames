@@ -1,0 +1,212 @@
+{
+ "id": "leuchtfeuer",
+ "handbuch": [
+  {
+   "t": "Worum es geht",
+   "p": [
+    "Leuchtfeuer ist das offizielle Spiel zum gleichnamigen Roman von RicoReWi (Ricardo Ramon Reimer Wiebe). Du erlebst ein Schuljahr in der Hafenstadt Warnholm: Finn Albrecht zeichnet heimlich den Webcomic über Anselm, den Leuchtturmwärter, und muss für das Herbstfest „Sturmnacht“ ausgerechnet mit Ben Kowalski, dem Kapitän der Handballmannschaft, ein Plakat gestalten.",
+    "Das Spiel verbindet eine Geschichte in 16 Kapiteln mit fünf Spielen, die alle aus dem Buch kommen: Leuchtturm (Briefe in Flaschen), Sturmnacht-Plakat, Zwei mit Zwiebeln, Gegenwind und Pia ermittelt. Dazu kommt der komplette Roman mit allen Illustrationen zum Lesen.",
+    "Alles ist echte 3D-Grafik mit realistischen Menschen in Stoffkleidung. Du spielst am PC, am Handy oder mit dem Gamecontroller."
+   ]
+  },
+  {
+   "t": "Start und Hauptmenü",
+   "p": ["Nach dem Ladebildschirm erscheint das Buchcover. Tippe, drücke Enter oder A am Controller. Im Hauptmenü siehst du Finn und Ben nachts am Strand."],
+   "list": [
+    "📖 Geschichte: startet die 16 Kapitel oder macht dort weiter, wo du aufgehört hast.",
+    "🗼 Leuchtturm: fünf Nächte frei spielen – Herbstnacht, Novembernebel, Winterseite, Seite 37 und Sturmflut.",
+    "🎨 Sturmnacht-Plakat: drei Stufen – Entwurf 3×3, Plakat A1 4×3 mit gedrehten Teilen, Meisterwerk 5×4.",
+    "🐟 Zwei mit Zwiebeln: Räucherei am Hafen oder Weihnachtsmarkt.",
+    "💨 Gegenwind: Der Heimweg, Sturmnacht, Gegenwind und Endlos am Deich.",
+    "🔍 Pia ermittelt: Fall 14 als eigenes Spiel.",
+    "📚 Buch lesen: der ganze Roman mit Illustrationen, Inhaltsverzeichnis, Schriftgröße und Lesezeichen.",
+    "✉️ Briefe: alle Flaschenpost-Briefe, die du im Leuchtturm gefangen hast (zwölf gibt es).",
+    "🏅 Rekorde: Punkte je Spiel und Stufe, gefundene Enden, beste Leuchtkraft.",
+    "⚙️ Optionen: Soundeffekte, Musik, Schwierigkeit der Spiele (Leicht, Normal, Schwer) und Grafik.",
+    "❓ Anleitung: Kurzfassung der Regeln und der Steuerung."
+   ]
+  },
+  {
+   "t": "Die Geschichte",
+   "p": [
+    "Jedes Kapitel spielt an einem eigenen Ort in Warnholm: Schulhof, Kunstraum, Räucherei, Sporthalle, Finns Zimmer, Aula, Weihnachtsmarkt, Kap Rotenhorn, Küche der Albrechts, Garage der Kowalskis, Kabine und Nordstrand.",
+    "Lies die Szenen mit Tippen, Enter oder A weiter. Manchmal läufst du selbst: Ein leuchtender Ring zeigt das Ziel. Unterwegs kannst du Dinge ansehen. In vielen Kapiteln startet eines der fünf Spiele – vorher erklärt eine Karte kurz, worum es geht.",
+    "Bei Entscheidungen wählst du, wie mutig Finn (und in zwei Kapiteln Ben) ist. Mutige Antworten bringen mehr Leuchtkraft. Auch die Spiele bringen Leuchtkraft: 1 Stern = +2, 2 Sterne = +4, 3 Sterne = +6."
+   ],
+   "list": [
+    "Leuchtkraft ab 78 %: Ende „Leuchtfeuer“.",
+    "Leuchtkraft ab 50 %: Ende „Ein Licht im Fenster“.",
+    "Darunter: Ende „Ein erster Strahl“. Es gibt kein falsches Ende – nur verschiedene."
+   ]
+  },
+  {
+   "t": "Leuchtturm – Briefe in Flaschen",
+   "p": [
+    "Du stehst oben im Laternenhaus des Leuchtturms Rotenhorn und drehst den Lichtstrahl über das Meer. Flaschenpost treibt im Wasser. Bleibt eine Flasche etwa eine dreiviertel Sekunde im Licht, fliegt sie zu dir und du liest ihren Brief. Kutter fahren quer vorbei und brauchen gut eine Sekunde Licht, dann sind sie sicher geleitet (+250).",
+    "Der Lichtblitz macht den Strahl kurz weiter und heller und füllt die Flaschen schneller. Danach muss er sechs Sekunden aufladen. Im Nebel reicht der Strahl nur halb so weit."
+   ],
+   "list": [
+    "Flasche gefangen: 100 Punkte plus Kombi-Bonus (bis +200) für Fänge ohne verlorene Flasche.",
+    "Eine Flasche, die zu lange treibt, geht unter und bricht die Kombi.",
+    "Sterne: nach Anteil gefangener Flaschen (zählt dreifach) und geleiteter Kutter."
+   ]
+  },
+  {
+   "t": "Sturmnacht-Plakat",
+   "p": [
+    "Das Plakat für das Herbstfest ist in Teile zerschnitten. Wähle ein Teil und dann ein zweites: Die beiden tauschen den Platz. Ab „Plakat A1“ sind manche Teile gedreht – drehe sie mit dem Knopf ⟳, der Leertaste oder X, oder tippe ein gewähltes Teil noch einmal an.",
+    "Oben siehst du, wie viele Teile schon richtig liegen. Wenige Züge und wenig Zeit bringen mehr Punkte und Sterne."
+   ]
+  },
+  {
+   "t": "Zwei mit Zwiebeln",
+   "p": [
+    "Du stehst hinter der Theke der Räucherei oder an Jörgs Bude auf dem Weihnachtsmarkt. Über jedem Gast steht die Bestellung, darunter ein Geduldsbalken. Der Gast mit dem goldenen Rahmen ist dran.",
+    "Wähle den Fisch (Lachs, Matjes oder Makrele). Denselben Fisch zweimal wählen macht zwei Brötchen. Dann Zwiebeln an oder aus und ausgeben. Richtig: Münzen und Trinkgeld, je schneller, desto mehr. Falsch: Der Gast wird ungeduldiger."
+   ]
+  },
+  {
+   "t": "Gegenwind",
+   "p": [
+    "Du läufst in drei Spuren über den Deich. Treibgut und Pfützen überspringst du, unter Möwen duckst du dich. Wellen (sie liegen über zwei Spuren) und Bänke kannst du nur umlaufen. Böen schieben dich kurz zur Seite.",
+    "Du hast drei Herzen. Nach einem Treffer blinkst du kurz und bist geschützt. In den Story-Stufen erreichst du ein Ziel, im Endlos-Modus zählt die Strecke."
+   ]
+  },
+  {
+   "t": "Pia ermittelt – Fall 14",
+   "p": [
+    "Du läufst als Pia durch die Küche und den Flur der Albrechts. Sechs Stellen verraten etwas: Esstisch, Herd, Badezimmertür, Spiegel, Regal und Schreibtisch mit Skizzenbuch. Jeder Beweis kommt in dein Detektiv-Tagebuch.",
+    "Ab vier Beweisen erscheint „Fall lösen“. Wähle den richtigen Tatbestand. Ein Irrtum kostet Punkte, du darfst es aber erneut versuchen."
+   ]
+  },
+  {
+   "t": "Steuerung",
+   "list": [
+    "PC: W A S D oder Pfeile laufen, Shift rennen, Q/E Kamera, Enter/Leertaste ansehen und weiter, Esc oder P Pause.",
+    "PC Leuchtturm: ← → oder Maus bewegen, Leertaste Lichtblitz. Plakat: Pfeile, Enter tauschen, Leertaste drehen. Bude: Q Lachs, F Matjes, E Makrele, Leertaste Zwiebeln, Enter ausgeben, Rücktaste neu. Deich: ← → Spur, ↑/Leertaste springen, ↓ ducken.",
+    "Handy: Joystick links und Aktionsknopf rechts beim Laufen, wischen dreht die Kamera. Leuchtturm: übers Bild wischen. Plakat: antippen. Bude: Knöpfe unten. Deich: wischen (hoch springen, runter ducken, seitlich Spur).",
+    "Gamecontroller: linker Stick laufen, rechter Stick Kamera, A bestätigen und springen, X Aktion (Lichtblitz, Drehen, Zwiebeln), Y Matjes, LB Lachs, RB Makrele, Select neues Brötchen, Start Pause. In Menüs: Steuerkreuz und A."
+   ]
+  },
+  {
+   "t": "Speichern",
+   "p": [
+    "Das Spiel speichert automatisch auf deinem Gerät: Kapitel und Leuchtkraft, Rekorde, gefundene Briefe und Beweise sowie die Lesestelle im Buch. Mit Google angemeldet wird der Spielstand zusätzlich in der easygames-Cloud gesichert.",
+    "Über ☰ im Kapitel geht es zurück ins Menü. „Geschichte“ macht dann genau dort weiter."
+   ]
+  }
+ ],
+ "ratgeber": [
+  {
+   "t": "Für Einsteiger",
+   "list": [
+    "Wenn ein Spiel zu schwer ist: In den Optionen die Schwierigkeit auf Leicht stellen. Das gilt auch für die Spiele in der Geschichte.",
+    "In der Geschichte gibt es kein Scheitern: Auch ohne Sterne geht es weiter, nur mit weniger Leuchtkraft.",
+    "Beim Laufen zeigt ein goldener Ring das Ziel. Wer etwas ansieht, bekommt kleine Szenen aus dem Buch."
+   ]
+  },
+  {
+   "t": "Leuchtturm-Tipps",
+   "list": [
+    "Führe den Strahl ruhig von Flasche zu Flasche, statt hektisch zu wischen. Mit der Maus reicht es, den Zeiger zu bewegen.",
+    "Spar den Lichtblitz für Nebel und für weit entfernte Flaschen auf – er verdoppelt fast die Füllgeschwindigkeit.",
+    "Kutter kommen von den Seiten. Leuchte sie früh an, solange sie langsam vor der Küste kreuzen."
+   ]
+  },
+  {
+   "t": "Plakat-Tipps",
+   "list": [
+    "Fang mit den Ecken und dem Schriftzug STURMNACHT an – er ist leicht zu erkennen.",
+    "Erst die Lage, dann die Drehung: Ein Teil am richtigen Platz dreht man mit wenigen Zügen richtig.",
+    "Jede Drehung zählt als Zug. Drei Sterne gibt es nur, wenn du kaum Umwege machst."
+   ]
+  },
+  {
+   "t": "Theken-Tipps",
+   "list": [
+    "Lies nur die Bestellung im goldenen Rahmen – die anderen warten.",
+    "„Zwei …“ heißt: denselben Fisch zweimal antippen.",
+    "Vertippt? Mit ↺ Neu (Rücktaste, Select) fängst du das Brötchen von vorn an, ohne dass der Gast es merkt."
+   ]
+  },
+  {
+   "t": "Deich-Tipps",
+   "list": [
+    "Schau weit nach vorn: Wellen und Bänke kündigen sich früh an, wechsle rechtzeitig die Spur.",
+    "Möwen fliegen in Kopfhöhe – kurz ducken reicht.",
+    "Bei einer Böe nicht gegenlenken, sie hört nach gut einer Sekunde von selbst auf."
+   ]
+  },
+  {
+   "t": "Häufige Fehler",
+   "list": [
+    "Zu früh ausgeben: Ohne Fisch passiert nichts – erst Fisch, dann Zwiebeln, dann ausgeben.",
+    "Beim Plakat das gewählte Teil vergessen: Ein goldenes Leuchten zeigt, welches Teil gerade gewählt ist.",
+    "Im Fall 14 zu früh lösen: Mit allen sechs Beweisen gibt es mehr Punkte und drei Sterne."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "Komplettlösung der Geschichte",
+   "steps": [
+    "Kapitel 1 – Der erste Tag: Mit Lotte zum Schwarzen Brett laufen. Mutig: „Nein. Ist nur ein Plakat.“ (+10)",
+    "Kapitel 2 – Briefe in Flaschen: Leuchtturm, Herbstnacht.",
+    "Kapitel 3 – Dreißig Zentimeter: Plakat-Entwurf 3×3. Mutig: „Das hat wehgetan, Ben.“ (+9)",
+    "Kapitel 4 – Der Heimweg: Mutig: „Es heißt, dass ich dir zuhöre.“ (+10). Danach Gegenwind: Der Heimweg.",
+    "Kapitel 5 – Hallenluft: Mit Lotte und Pia die dritte Reihe auf der Tribüne finden.",
+    "Kapitel 6 – Was Samira weiß: Mutig: „Wie fühlt es sich an?“ (+8)",
+    "Kapitel 7 – Fischbrötchen: Zwei mit Zwiebeln in der Räucherei.",
+    "Kapitel 8 – Der Sturm: Mutig: „Ich gehe, aber ich komme wieder.“ (+7). Danach Gegenwind: Sturmnacht.",
+    "Kapitel 9 – Funkstille: Mutig: Anselm lässt das Licht an (+9). Danach Leuchtturm im Novembernebel.",
+    "Kapitel 10 – Briefe, die ankommen: Mutig: „Ich bin der Junge. Und der Zeichner.“ (+10)",
+    "Kapitel 11 – Das Geheimnis: Zwei mit Zwiebeln auf dem Weihnachtsmarkt. Mutig: Marlon zuhören (+8).",
+    "Kapitel 12 – Der Leuchtturm: Mit Ben zum Turm laufen. Mutig: „Ich bin der Zeichner …“ (+10). Danach Leuchtturm, Winterseite.",
+    "Fall 14 – Pia ermittelt: Beweise sammeln, Lösung „Verliebtheit. Beide.“",
+    "Kapitel 13 – Wie man es sagt: Als Ben zur Werkbank gehen. Mutig: „Papa, ich habe einen Freund. Er heißt Finn.“ (+10)",
+    "Kapitel 14 – Gegenwind: Gegenwind-Lauf als Ben. Mutig: Ben bedankt sich bei Tobi (+8).",
+    "Kapitel 15 – Leuchtfeuer: Mutig: „Doch, du weißt es. Du hattest Angst.“ (+9). Mit Ben ans Wasser. Zum Schluss Leuchtturm, Seite 37 – Für beide."
+   ]
+  },
+  {
+   "t": "So erreichst du das Ende „Leuchtfeuer“",
+   "p": [
+    "Wähle überall die mutige Antwort und hol in den Spielen mindestens zwei Sterne. Dann landest du sicher über 78 % Leuchtkraft. Mit lauter mutigen Antworten reichen sogar ein bis zwei Sterne pro Spiel.",
+    "Für „Ein Licht im Fenster“ mischst du mutige und vorsichtige Antworten. „Ein erster Strahl“ bekommst du mit vorsichtigen Antworten und wenigen Sternen."
+   ]
+  },
+  {
+   "t": "Fall 14 – alle Beweise",
+   "list": [
+    "Esstisch: Finn lächelt auf sein Handy.",
+    "Herd: Der Kartoffelsalat wurde dreimal gesalzen.",
+    "Badezimmertür (Flur): neues Duschgel mit Zitrone.",
+    "Spiegel (Flur): „Hallo, Ben“ – zweimal geübt.",
+    "Regal: Bens Krimi als Bestechungsversuch.",
+    "Schreibtisch mit Skizzenbuch: elfmal der Junge mit der Narbe.",
+    "Richtige Lösung: „Tatbestand: Verliebtheit. Beide. Fall gelöst.“ Drei Sterne mit allen sechs Beweisen und ohne Irrtum."
+   ]
+  },
+  {
+   "t": "Alle zwölf Briefe",
+   "p": [
+    "Jede gefangene Flasche bringt einen Brief. Jede Leuchtturm-Nacht beginnt an einer anderen Stelle der Briefreihe (Nacht 1 mit Brief 1, Nacht 2 mit Brief 4, Nacht 3 mit Brief 7, Nacht 4 mit Brief 10, die Sturmflut mit Brief 1). Fängst du in den ersten vier Nächten je mindestens drei Flaschen, hast du alle zwölf Briefe."
+   ]
+  },
+  {
+   "t": "Drei Sterne in jedem Spiel",
+   "list": [
+    "Leuchtturm: rund 85 % – fast alle Flaschen und alle Kutter.",
+    "Plakat: kaum mehr Züge als Teile (mit Drehung etwa das 1,6-Fache).",
+    "Zwei mit Zwiebeln: 90 % der Gäste richtig bedient, niemand geht.",
+    "Gegenwind (Story-Stufen): ohne ein verlorenes Herz ins Ziel. Endlos: ab 1600 m.",
+    "Pia ermittelt: alle sechs Beweise, kein Irrtum."
+   ]
+  }
+ ],
+ "faq": [
+  { "q": "Kann ich im Spiel etwas falsch machen?", "a": "Nein. Jede Antwort führt weiter, verlorene Spiele auch. Nur die Leuchtkraft und damit das Ende ändern sich." },
+  { "q": "Warum kommen im Spiel Homophobie und Mobbing vor?", "a": "Das Buch erzählt davon, und das Spiel folgt der Geschichte – behutsam und ohne Beleidigungen auszuschreiben. Hilfe gibt es beim Jugendnetzwerk Lambda (lambda-online.de) und bei der Nummer gegen Kummer (116 111)." },
+  { "q": "Das Spiel ruckelt auf meinem Handy.", "a": "Stell in den Optionen Grafik auf Sparmodus und starte neu. Dann gibt es weniger Schatten und eine geringere Auflösung." }
+ ]
+}

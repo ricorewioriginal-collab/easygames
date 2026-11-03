@@ -521,6 +521,19 @@ window.EASYGAMES_GUIDES = {
    "Im Radio-Rhythmus ist der höchste Punkt einer Frucht genau auf dem Schlag – dort schneiden!"
   ]
  },
+ "leuchtfeuer": {
+  "anleitung": "Das offizielle Spiel zum Roman „Leuchtfeuer“: Du erlebst Finns Schuljahr in Warnholm in 16 Kapiteln in 3D. Lies die Szenen weiter, lauf selbst zu den Zielen (goldener Ring) und triff Entscheidungen – mutige Antworten bringen Leuchtkraft und entscheiden über eines von drei Enden. Dazu fünf Spiele aus dem Buch, auch einzeln im Menü: Leuchtturm (Strahl drehen, Flaschenpost fangen, Kutter leiten), Sturmnacht-Plakat (Teile tauschen und drehen), Zwei mit Zwiebeln (Fischbrötchen nach Bestellung), Gegenwind (drei Spuren über den Deich) und Pia ermittelt (Beweise sammeln, Fall lösen). Außerdem: der ganze Roman mit Illustrationen zum Lesen.",
+  "steuerung": [
+   "Tastatur: W A S D/Pfeile laufen, Shift rennen, Q/E Kamera, Enter weiter/ansehen, Esc/P Pause; Leuchtturm ← → und Leertaste, Plakat Pfeile/Enter/Leertaste, Bude Q F E, Leertaste, Enter, Deich ← → ↑ ↓.",
+   "Touch: Joystick und Aktionsknopf beim Laufen; Leuchtturm übers Bild wischen, Plakat antippen, Bude Knöpfe unten, Deich wischen.",
+   "Gamecontroller: linker Stick laufen, rechter Stick Kamera, A bestätigen/springen, X Aktion, Y/LB/RB Fischsorten, Start Pause."
+  ],
+  "tipps": [
+   "Für das Ende „Leuchtfeuer“ brauchst du 78 % Leuchtkraft – mutige Antworten und Sterne in den Spielen helfen.",
+   "Im Leuchtturm den Lichtblitz für Nebel und weit entfernte Flaschen aufheben.",
+   "Bei Fall 14 alle sechs Beweise suchen, bevor du den Fall löst."
+  ]
+ },
  "ich-bin-das-licht": {
   "anleitung": "Das offizielle Spiel zum Roman „Ich bin das Licht“: Du erlebst Leons Weg in 12 Kapiteln in 3D und läufst selbst durch die Räume: Gegenstände ansehen, Figuren ansprechen, je 3 versteckte Lichtfunken sammeln und das Ziel finden. Lies die Szenen weiter und triff Entscheidungen – mutige Schritte bringen mehr Licht. In der Garderobe stellst du Lady Lumas Look zusammen (Perücke, Haarfarbe, Outfit, Farbe, Schmuck). Auf der Bühne der One Love Bar spielst du den Buchsong: Lichtkugeln laufen in vier Spuren auf dich zu, triff sie am Ring (Perfekt, Gut, Mutig). Verpasste Kugeln kosten nur die Combo. Je nach Licht erreichst du eines von drei Enden. Unter „Buch lesen“ steht außerdem der komplette Roman.",
   "steuerung": [

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b1630">
+<title>Leuchtfeuer – Das Spiel zum Roman</title>
+<meta name="description" content="Leuchtfeuer – das offizielle Spiel zum Roman von RicoReWi: Erlebe Finns und Bens Jahr in Warnholm in 3D, fang Flaschenpost mit dem Leuchtturm, setz das Sturmnacht-Plakat zusammen, mach Fischbrötchen, lauf gegen den Wind über den Deich und ermittle mit Pia. Für PC, Handy und Gamecontroller.">
+<link rel="stylesheet" href="../vendor/fonts/fredoka.css">
+<script src="../device.js"></script>
+<script src="../gamekit.js"></script>
+<script src="../figuren/figuren.js"></script>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div class="vignette"></div>
+
+<section class="scr on" id="sLoad">
+  <div class="load">
+    <img src="img/cover.jpg" alt="Buchcover: Leuchtfeuer" class="loadCover">
+    <div class="bar"><i id="loadBar"></i></div>
+    <p class="tip" id="loadTip">Der Wecker klingelt um sechs Uhr dreißig …</p>
+  </div>
+</section>
+
+<section class="scr" id="sTitle">
+  <div class="titleWrap">
+    <img src="img/cover.jpg" alt="Buchcover: Leuchtfeuer, Roman von Ricardo Ramon Reimer Wiebe (RicoReWi)" class="cover">
+    <div class="titleSide">
+      <p class="eyebrow">Das offizielle Spiel zum Roman</p>
+      <h1 class="logo">Leucht<span>feuer</span></h1>
+      <p class="claim">Ein Roman über Briefe, Mut und das erste Licht.</p>
+      <button class="press nav" id="bPress">▶ <span id="pressTxt">Drücke Start</span></button>
+    </div>
+  </div>
+  <p class="corner"><a href="../" class="back">← Alle Spiele</a></p>
+</section>
+
+<section class="scr" id="sMenu">
+  <div class="menuWrap">
+    <header class="mHead"><h1 class="logo small">Leucht<span>feuer</span></h1><div class="pill" id="menuGlow">🔆 Leuchtkraft –</div></header>
+    <div class="tiles">
+      <button class="tile nav hero" data-go="story"><i>📖</i><b>Geschichte</b><small id="mStory">Finns Jahr in 16 Kapiteln</small></button>
+      <button class="tile nav" data-go="beam"><i>🗼</i><b>Leuchtturm</b><small id="mBeam">Briefe in Flaschen</small></button>
+      <button class="tile nav" data-go="poster"><i>🎨</i><b>Sturmnacht-Plakat</b><small id="mPoster">Dreißig Zentimeter</small></button>
+      <button class="tile nav" data-go="booth"><i>🐟</i><b>Zwei mit Zwiebeln</b><small id="mBooth">Fischbrötchen-Theke</small></button>
+      <button class="tile nav" data-go="run"><i>💨</i><b>Gegenwind</b><small id="mRun">Lauf über den Deich</small></button>
+      <button class="tile nav" data-go="case"><i>🔍</i><b>Pia ermittelt</b><small id="mCase">Fall 14</small></button>
+      <button class="tile nav" data-go="read"><i>📚</i><b>Buch lesen</b><small id="mRead">Der ganze Roman</small></button>
+      <button class="tile nav" data-go="letters"><i>✉️</i><b>Briefe</b><small id="mLetters">Gesammelte Flaschenpost</small></button>
+      <button class="tile nav" data-go="rec"><i>🏅</i><b>Rekorde</b><small>Sterne &amp; Enden</small></button>
+      <button class="tile nav" data-go="opts"><i>⚙️</i><b>Optionen</b><small>Ton, Grafik, Stufe</small></button>
+      <button class="tile nav" data-go="help"><i>❓</i><b>Anleitung</b><small>Steuerung &amp; Tipps</small></button>
+    </div>
+    <footer class="mFoot"><span class="keys" id="menuKeys"></span><a href="../" class="nav back">← Alle Spiele</a></footer>
+  </div>
+</section>
+
+<!-- Geschichte: Gespräche und Erkunden -->
+<section class="scr game" id="sStory">
+  <div class="hud">
+    <div class="pill chap" id="chapLbl">Kapitel 1</div>
+    <div class="meter" aria-label="Leuchtkraft"><i id="glowFill"></i><span id="glowTxt">Leuchtkraft</span></div>
+    <button class="icon nav" id="bStoryMenu" aria-label="Pause">☰</button>
+  </div>
+  <div class="xhud" id="xhud" hidden><div class="obj" id="obj"></div><div class="pill" id="xinfo" hidden></div></div>
+  <div class="prompt" id="prompt" hidden></div>
+  <div class="joy" id="joy" hidden><i id="joyKnob"></i></div>
+  <button class="act" id="act" hidden>●</button>
+  <button class="press solve" id="bSolve" hidden>🔍 Fall lösen</button>
+  <div class="talk" id="talk">
+    <div class="who" id="who" hidden></div>
+    <p class="line" id="line"></p>
+    <div class="choices" id="choices"></div>
+    <div class="next" id="nextHint">▼</div>
+  </div>
+</section>
+
+<!-- Spiele -->
+<section class="scr game" id="sGame">
+  <div class="hud">
+    <div class="pill" id="gName">Spiel</div>
+    <div class="stats"><b id="gTime">0</b><span id="gA"></span><span id="gB"></span><b id="gScore" class="score">0</b></div>
+    <button class="icon nav" id="bPause" aria-label="Pause">⏸</button>
+  </div>
+  <div class="prog" id="gProg" hidden><i id="gProgI"></i></div>
+  <div class="letter" id="letter" hidden></div>
+  <div class="say" id="say" hidden></div>
+  <div id="bubbles"></div>
+  <div class="gCtl" id="ctlBeam" hidden><button class="gBtn big" id="bFlash"><span>🔆</span><small>Lichtblitz</small></button></div>
+  <div class="gCtl" id="ctlPoster" hidden><button class="gBtn big" id="bRot"><span>⟳</span><small>Drehen</small></button></div>
+  <div class="gCtl booth" id="ctlBooth" hidden>
+    <div class="made" id="made">Leeres Brötchen</div>
+    <div class="row">
+      <button class="gBtn f-lachs" data-a="lachs"><span>🐟</span><small>Lachs</small><kbd>Q · LB</kbd></button>
+      <button class="gBtn f-matjes" data-a="matjes"><span>🐟</span><small>Matjes</small><kbd>F · Y</kbd></button>
+      <button class="gBtn f-makrele" data-a="makrele"><span>🐟</span><small>Makrele</small><kbd>E · RB</kbd></button>
+      <button class="gBtn" data-a="onion"><span>🧅</span><small>Zwiebeln</small><kbd>Leer · X</kbd></button>
+      <button class="gBtn" data-a="clear"><span>↺</span><small>Neu</small><kbd>⌫ · Select</kbd></button>
+      <button class="gBtn ok" data-a="serve"><span>✔</span><small>Ausgeben</small><kbd>Enter · A</kbd></button>
+    </div>
+  </div>
+  <div class="hint" id="gHint"></div>
+  <div class="count" id="count" hidden></div>
+</section>
+
+<section class="scr" id="sIntro">
+  <div class="panel center">
+    <p class="eyebrow" id="inEye">Spiel</p>
+    <h2 class="sTitle" id="inTitle">Leuchtturm</h2>
+    <p id="inText"></p>
+    <ul class="keysList" id="inKeys"></ul>
+    <div class="seg" id="inLevels"></div>
+    <div class="btns"><button class="press nav" id="bGo">▶ Los</button><button class="ghost nav" id="bInBack">← Zurück</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sResult">
+  <div class="panel center">
+    <h2 class="sTitle" id="resTitle">Geschafft!</h2>
+    <div class="stars" id="resStars">☆☆☆</div>
+    <div class="resGrid" id="resGrid"></div>
+    <div class="btns"><button class="press nav" id="bResNext">Weiter</button><button class="ghost nav" id="bResAgain">↻ Nochmal</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sEnd">
+  <div class="endWrap">
+    <img src="img/cover.jpg" alt="Buchcover" class="cover sm">
+    <div class="panel">
+      <p class="eyebrow">Ende</p>
+      <h2 class="logo small" id="endTitle">Leuchtfeuer</h2>
+      <p id="endText"></p>
+      <p class="quote">„Es gibt Briefe, die ankommen, auch wenn man den Absender nie gesehen hat. Und es gibt Lichter, die leuchten, weil jemand da ist, der sie sieht. Ich bin hier. Du bist hier. Das reicht.“</p>
+      <p class="endGlow" id="endGlow"></p>
+      <div class="btns"><button class="press nav" id="bEndMenu">Zum Menü</button><button class="ghost nav" id="bEndAgain">↻ Neu erleben</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="scr" id="sRead">
+  <div class="reader">
+    <header class="rHead">
+      <button class="icon nav" id="bReadBack" aria-label="Zurück">←</button>
+      <button class="ghost nav rToc" id="bToc">☰ <span id="rLbl">Inhalt</span></button>
+      <div class="rTools"><button class="icon nav" id="bFontM" aria-label="Schrift kleiner">A−</button><button class="icon nav" id="bFontP" aria-label="Schrift größer">A+</button></div>
+    </header>
+    <nav class="toc" id="toc" hidden></nav>
+    <article class="page" id="page" tabindex="0"></article>
+    <footer class="rFoot"><button class="ghost nav" id="bPrevCh">◀ Voriges</button><span id="rProg"></span><button class="ghost nav" id="bNextCh">Nächstes ▶</button></footer>
+  </div>
+</section>
+
+<section class="scr" id="sLetters"><div class="panel scroll"><h2 class="sTitle">✉️ Flaschenpost</h2><p class="note">Jede Flasche, die du im Leuchtturm fängst, bringt einen Brief. Zwölf gibt es.</p><div class="letters" id="lettersBox"></div><div class="btns"><button class="press nav back2">← Zurück</button></div></div></section>
+<section class="scr" id="sRec"><div class="panel scroll"><h2 class="sTitle">🏅 Rekorde</h2><div class="resGrid" id="recGrid"></div><div class="btns"><button class="press nav back2">← Zurück</button></div></div></section>
+
+<section class="scr" id="sOpts">
+  <div class="panel">
+    <h2 class="sTitle">⚙️ Optionen</h2>
+    <label class="opt"><span>Soundeffekte &amp; Meeresrauschen</span><input type="checkbox" id="oSfx"></label>
+    <label class="opt"><span>Musik</span><input type="checkbox" id="oMus"></label>
+    <label class="opt"><span>Schwierigkeit der Spiele</span><select id="oDiff"><option value="leicht">Leicht</option><option value="normal">Normal</option><option value="schwer">Schwer</option></select></label>
+    <label class="opt"><span>Grafik</span><select id="oQ"><option value="auto">Automatisch</option><option value="hoch">Hoch (scharf, Schatten)</option><option value="spar">Sparmodus</option></select></label>
+    <p class="note">Grafik-Änderungen gelten nach dem nächsten Start.</p>
+    <div class="btns"><button class="press nav back2">← Zurück</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sHelp">
+  <div class="panel scroll">
+    <h2 class="sTitle">❓ Anleitung</h2>
+    <p><b>Geschichte:</b> Erlebe Finns Jahr in Warnholm in 16 Kapiteln. Lies weiter mit Tippen, Enter oder A. Bei Entscheidungen wählst du, wie mutig Finn (und später Ben) ist. Mut bringt Leuchtkraft – sie entscheidet über eines von drei Enden. In vielen Kapiteln steckt eines der fünf Spiele.</p>
+    <p><b>🗼 Leuchtturm:</b> Dreh den Lichtstrahl über das Meer. Bleibt eine Flasche kurz im Licht, gehört ihr Brief dir. Kutter brauchen einmal etwas länger Licht. Der Lichtblitz macht den Strahl kurz weiter und heller.</p>
+    <p><b>🎨 Plakat:</b> Tausche zwei Teile, bis das Sturmnacht-Plakat stimmt. Ab „Plakat A1“ sind Teile auch gedreht.</p>
+    <p><b>🐟 Zwei mit Zwiebeln:</b> Leg den richtigen Fisch aufs Brötchen (zweimal antippen = zwei Brötchen), Zwiebeln ja oder nein, dann ausgeben. Schnell sein bringt Trinkgeld.</p>
+    <p><b>💨 Gegenwind:</b> Wechsle die Spur, spring über Treibgut und Pfützen, duck dich unter Möwen. Wellen und Bänke kannst du nur umlaufen. Böen schieben dich zur Seite.</p>
+    <p><b>🔍 Pia ermittelt:</b> Lauf als Pia durch Küche und Flur, sammle mindestens vier Beweise und löse dann den Fall.</p>
+    <ul>
+      <li>PC: W A S D oder Pfeile, Enter bestätigen, Leertaste Aktion, Q/E Kamera bzw. links/rechts, Shift rennen, Esc/P Pause.</li>
+      <li>Handy: Joystick links und Knopf rechts beim Erkunden, im Leuchtturm übers Bild wischen, beim Laufen wischen (hoch springen, runter ducken).</li>
+      <li>Controller: linker Stick laufen, rechter Stick Kamera, A bestätigen/springen, X Aktion, Y/LB/RB Fischsorten, Start Pause.</li>
+    </ul>
+    <p class="note">Dieses Buch und Spiel erzählen auch von Homophobie, Mobbing und einem ungewollten Outing. Hilfe und Beratung: Jugendnetzwerk Lambda (lambda-online.de) und Nummer gegen Kummer (116 111).</p>
+    <div class="btns"><button class="press nav back2">← Zurück</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sPause">
+  <div class="panel center"><h2 class="sTitle">⏸ Pause</h2><div class="btns"><button class="press nav" id="bResume">▶ Weiter</button><button class="ghost nav" id="bRestart">↻ Neu starten</button><button class="ghost nav" id="bQuit">☰ Menü</button></div></div>
+</section>
+
+<div class="fade" id="fade"></div>
+<div class="toast" id="toast" hidden></div>
+
+<script type="module" src="/src/main.js"></script>
+<script src="../gamepad.js" data-pad="y=KeyF lt=ShiftLeft select=Backspace rs=qe" defer></script>
+<script src="../cloud/anmacha-cloud.js" data-game="leuchtfeuer" data-prefix="lf-" defer></script>
+</body>
+</html>

@@ -41,7 +41,10 @@
       scene.updateMatrixWorld(true);
       let skin = null; scene.traverse(o => { if (o.isSkinnedMesh && /Superhero/i.test(o.material.name)) skin = o; });
       const sk = skin.skeleton, D = new T.Matrix4().multiplyMatrices(sk.bones[0].matrixWorld, sk.boneInverses[0]).multiply(skin.bindMatrix);
-      const pa = skin.geometry.attributes.position, n = pa.normalized ? 1 / 32767 : 1, v = new T.Vector3();
+      const pa = skin.geometry.attributes.position, v = new T.Vector3();
+      // Three.js ab r144 liefert normalisierte (quantisierte) Werte schon umgerechnet, r128 noch roh – nur dann selbst umrechnen
+      const raw = (() => { const il = pa.isInterleavedBufferAttribute, arr = il ? pa.data.array : pa.array, st = il ? pa.data.stride : pa.itemSize, of = il ? pa.offset : 0; for (let i = 0; i < pa.count; i++) { const a = arr[i * st + of]; if (a !== 0) return pa.getX(i) === a; } return true; })();
+      const n = pa.normalized && raw ? 1 / 32767 : 1;
       let top = 0; const hb = new T.Box3(), neck = new T.Vector3(); (scene.getObjectByName('neck_01') || sk.bones[0]).getWorldPosition(neck);
       const P = new Float32Array(pa.count * 3);
       for (let i = 0; i < pa.count; i++) {
