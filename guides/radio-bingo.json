@@ -1,0 +1,176 @@
+{
+  "id": "radio-bingo",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "RADIO-BINGO ist eine moderierte Bingo-Show im 3D-Fernsehstudio. Moderator Rico zieht Kugeln aus der gläsernen Trommel, sagt jede Zahl mit Stimme an und die große Zahlentafel leuchtet auf.",
+        "Du markierst die gezogenen Zahlen auf deinen Karten. Sobald das gesuchte Muster komplett ist, rufst du BINGO. Wer zuerst richtig ruft, gewinnt die Runde – je früher, desto mehr Punkte."
+      ]
+    },
+    {
+      "t": "Start und Menü",
+      "p": [
+        "Nach dem Titel kommst du ins Hauptmenü. Dort wählst du mit Maus, Touch, Pfeiltasten oder Controller."
+      ],
+      "list": [
+        "Die große Show: vier Runden, Studio-Spiel und Jackpot-Finale.",
+        "Schnelles Bingo: eine Runde mit einem Muster deiner Wahl.",
+        "Blitz-Bingo: 60 Sekunden Kugelregen, Punkte fürs schnelle Markieren.",
+        "Klassik 90: Bingo mit 90 Kugeln und drei Stufen.",
+        "Tages-Show: jeden Tag dieselben Kugeln und Karten für alle, mit Rangliste.",
+        "Online & Handys: Bingo-Abend mit Freunden per Link, Code oder QR-Code.",
+        "Einstellungen: Moderator-Stimme, Sprechtempo, Effekte, Musik, Auto-Markieren, Hilfe, Grafik.",
+        "So geht’s: die Regeln im Spiel."
+      ]
+    },
+    {
+      "t": "Die Bingo-Karte",
+      "p": [
+        "Eine 75er-Karte hat fünf Spalten B, I, N, G und O mit den Zahlen 1–15, 16–30, 31–45, 46–60 und 61–75. Das Feld in der Mitte ist frei und zählt immer.",
+        "Bei Klassik 90 hat jede Karte drei Reihen mit je fünf Zahlen, die Spalten stehen für 1–9, 10–19 bis 80–90."
+      ],
+      "list": [
+        "Antippen markiert eine gezogene Zahl (pink). Noch nicht gezogene Zahlen lassen sich nicht markieren.",
+        "Gelb leuchtende Felder wurden schon gezogen, sind aber noch nicht markiert (Hilfe an).",
+        "Oben auf jeder Karte steht, wie viele Zahlen noch fehlen – „🔥 noch 1“ heißt: gleich ist es so weit."
+      ]
+    },
+    {
+      "t": "Muster",
+      "list": [
+        "Eine Linie: waagerecht, senkrecht oder diagonal.",
+        "Zwei Linien: zwei volle Reihen in beliebiger Richtung.",
+        "Vier Ecken, großes X, Pluszeichen, Bilderrahmen.",
+        "Funkmast: oberste Reihe und die Mitte nach unten.",
+        "Herz und kleines Quadrat um die Mitte.",
+        "Volle Karte: alle Zahlen.",
+        "Klassik 90: eine Reihe, zwei Reihen, volles Haus."
+      ]
+    },
+    {
+      "t": "Die große Show",
+      "steps": [
+        "Runde 1: eine Linie.",
+        "Runde 2: vier Ecken.",
+        "Runde 3: ein Überraschungsmuster (X, Plus, Funkmast, Herz oder Rahmen).",
+        "Zwischen den Runden: „Höher oder Tiefer“ – dreimal tippen, ob die nächste Kugel höher oder tiefer ist.",
+        "Das Finale: volle Karte. Wer sie innerhalb der Jackpot-Grenze (Kugel 66) schafft, knackt den Jackpot mit 10.000 Extrapunkten."
+      ]
+    },
+    {
+      "t": "Das Studio-Publikum",
+      "p": [
+        "Im Studio sitzen zehn Kandidaten mit eigenen Karten (online sechs). Hat einer von ihnen Bingo, ruft er nach ein paar Sekunden – manche merken es auch erst später – bist du schneller, gewinnst du. Rico kündigt an, wenn im Studio jemandem nur noch eine Zahl fehlt."
+      ]
+    },
+    {
+      "t": "Punkte",
+      "list": [
+        "Jede Runde hat einen Grundpreis (500, 800, 1.500, im Finale 3.000).",
+        "Frühes Bingo bringt bis zu 100 % Bonus.",
+        "Jackpot im Finale: 10.000 Punkte (Klassik 90: 5.000).",
+        "Höher oder Tiefer: 100 Punkte je richtigem Tipp.",
+        "Falscher Bingo-Ruf: 50 Punkte Abzug.",
+        "Blitz-Bingo: Linie 100, Ecken 150, X 300, volle Karte 1.000 und 10 Punkte fürs Markieren innerhalb von 1,5 Sekunden."
+      ]
+    },
+    {
+      "t": "Online & Handys",
+      "p": [
+        "Im Menü „🌐 Online & Handys“ eröffnest du einen Bingo-Abend. Mitspieler treten per Link, Code oder QR-Code von überall bei – mit Handy, Tablet oder Computer. Jeder spielt seine Karten auf dem eigenen Gerät, Rico prüft jeden Bingo-Ruf beim Gastgeber.",
+        "Mit „📺 Fernseher-Link“ läuft die Show auf dem Fernseher: Dort erscheint der QR-Code, die Handys sind die Karten. Der Gastgeber wählt Große Show, Schnell oder Klassik 90, die Zahl der Karten und ob das Studio-Publikum mitspielt."
+      ]
+    },
+    {
+      "t": "Steuerung",
+      "list": [
+        "Touch/Maus: Zahl antippen, BINGO-Knopf, 🍀 Glückskugel, ☰ Pause.",
+        "Tastatur: Pfeile, Enter markieren, B oder Leertaste = Bingo, Q/E = Karte wechseln, J = Glückskugel, Esc = Pause.",
+        "Gamecontroller: Steuerkreuz, Ⓐ markieren, Ⓧ Bingo, LB/RB Karte, Ⓨ Glückskugel, Ⓑ Pause."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Für Einsteiger",
+      "list": [
+        "Starte mit Schnelles Bingo und dem Muster „Linie“ – das geht am schnellsten.",
+        "Lass „💡 Gezogene Zahlen leuchten“ an, dann übersiehst du nichts.",
+        "Zwei Karten sind der beste Start: mehr Chancen, aber noch gut zu überblicken.",
+        "Schalte „🤖 Auto-Markieren“ ein, wenn du nur zuschauen und rufen willst."
+      ]
+    },
+    {
+      "t": "Schneller rufen als das Studio",
+      "list": [
+        "Achte auf „🔥 noch 1“ oben auf der Karte – dann den Finger schon über BINGO halten.",
+        "Mit Tastatur oder Controller ist die Leertaste bzw. Ⓧ der schnellste Bingo-Ruf.",
+        "Ein falscher Ruf kostet 50 Punkte und sperrt dich kurz – lieber einmal genau hinschauen."
+      ]
+    },
+    {
+      "t": "Höher oder Tiefer",
+      "list": [
+        "Ist die Zahl klein (unter 30), ist „Höher“ meist richtig, bei großen Zahlen (über 45) eher „Tiefer“.",
+        "Bei Zahlen um 38 ist es ein Münzwurf – dann aus dem Bauch heraus tippen.",
+        "Die 🍀 Glückskugel gehört in eine Reihe, in der dir schon die meisten Zahlen fehlen."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zahl gezogen, aber nicht markiert: Ohne Markierung zählt sie beim Bingo-Ruf nicht.",
+        "Falsches Muster: Oben im Bild steht, was gerade gesucht wird – in Runde 2 zählen nur die vier Ecken.",
+        "Moderation zu schnell oder zu langsam: In den Einstellungen das Sprechtempo und das Ziehungstempo anpassen."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Möglichst viele Punkte in der großen Show",
+      "steps": [
+        "Vier Karten spielen – das erhöht die Chance auf ein frühes Bingo in jeder Runde.",
+        "Sofort rufen: Der Bonus für frühes Bingo kann den Grundpreis verdoppeln.",
+        "Bei „Höher oder Tiefer“ nach der Faustregel tippen (klein → höher, groß → tiefer) und die Glückskugel holen.",
+        "Im Finale die Glückskugel in die Karte mit den meisten Treffern setzen – so steigt die Chance auf den Jackpot (volle Karte bis Kugel 66)."
+      ]
+    },
+    {
+      "t": "Blitz-Bingo-Rekord",
+      "steps": [
+        "Vier Karten nehmen.",
+        "Jede neue Kugel sofort auf allen Karten suchen – innerhalb von 1,5 Sekunden gibt es 10 Bonuspunkte je Markierung.",
+        "Linien, Ecken und das X zählen automatisch, sobald sie komplett markiert sind; die volle Karte bringt 1.000 Punkte."
+      ]
+    },
+    {
+      "t": "Tages-Show",
+      "p": [
+        "Die Tages-Show hat für alle dieselben Kugeln und Karten. Spiel sie in Ruhe mit Hilfe an – jeder Fehler beim Rufen kostet Punkte, und das Studio-Publikum zieht mit derselben Ziehung mit. Dein bester Wert des Tages kommt in die Rangliste (nur mit Google-Anmeldung)."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Warum spricht Rico nicht?",
+      "a": "Schau in den Einstellungen, ob die Moderation an ist, und tippe „▶ Probe hören“. In der App spricht Rico mit der Android-Sprachausgabe, im Browser mit den Stimmen des Systems. Fehlt eine deutsche Stimme, kannst du sie in den Systemeinstellungen nachinstallieren – die Ansagen erscheinen immer auch als Untertitel."
+    },
+    {
+      "q": "Kann ich die Stimme wechseln?",
+      "a": "Ja: Einstellungen → Moderator-Stimme. Es stehen alle deutschen Stimmen deines Geräts zur Wahl, dazu das Sprechtempo."
+    },
+    {
+      "q": "Brauche ich Internet?",
+      "a": "Nein, nur für Online & Handys. Alles andere läuft offline, auch in der App."
+    },
+    {
+      "q": "Wie viele können online mitspielen?",
+      "a": "So viele, wie wollen: Jeder Mitspieler bekommt eigene Karten auf seinem Gerät. Zusätzlich kann das Studio-Publikum mitspielen."
+    },
+    {
+      "q": "Ist das Glücksspiel?",
+      "a": "Nein. Es gibt nur Punkte, kein Geld und keine Einsätze."
+    }
+  ]
+}

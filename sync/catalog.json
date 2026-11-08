@@ -2066,6 +2066,45 @@
    }
   },
   {
+   "id": "radio-bingo",
+   "title": "RADIO-BINGO – Die große Kugelshow",
+   "desc": "Moderiertes 3D-Bingo wie im Fernsehen: Moderator Rico steht im Studio, sagt jede Kugel mit Stimme an (Android- und Browser-Stimmen wählbar), die gläserne Trommel wirbelt, die Zahlentafel leuchtet und das Publikum jubelt. 🎬 Die große Show mit vier Runden und immer neuen Mustern (Linie, Ecken, X, Plus, Funkmast, Herz, Rahmen), Studio-Spiel „Höher oder Tiefer“ mit Glückskugel und das Finale um den Jackpot – gegen das ganze Studio-Publikum. Dazu 🎯 Schnelles Bingo mit 10 Mustern, ⚡ Blitz-Bingo (60 Sekunden Kugelregen), 🎡 Klassik 90 (Reihe, zwei Reihen, volles Haus) und 📅 Tages-Show mit Rangliste. 🌐 Online & Handys: Freunde spielen per Link, Code oder QR-Code von überall mit, der Fernseher zeigt die Show, die Karten liegen auf den Handys. Touch, Tastatur und Gamecontroller.",
+   "icon": "🎱",
+   "img": "radio-bingo/card.jpg",
+   "bg": "linear-gradient(145deg,#120738,#ff2e88 55%,#ffc61a)",
+   "glow": "rgba(255,46,136,.55)",
+   "path": "radio-bingo/",
+   "modes": {
+    "pad": true,
+    "online": true,
+    "tvParam": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "RADIO-BINGO ist eine moderierte Bingo-Show im 3D-Studio: Moderator Rico zieht die Kugeln aus der gläsernen Trommel und sagt jede Zahl mit Stimme und Untertitel an. Hast du die Zahl auf deiner Karte, tippe sie an. Ist das gesuchte Muster (oben angezeigt) komplett, rufe schnell BINGO – ein falscher Ruf kostet 50 Punkte. In der großen Show spielen vier Runden mit wechselnden Mustern gegen das Studio-Publikum, dazwischen das Studio-Spiel „Höher oder Tiefer“, im Finale zählt die volle Karte mit Jackpot. Dazu Schnelles Bingo (Muster wählen), Blitz-Bingo (60 Sekunden), Klassik 90, die Tages-Show und 🌐 Online & Handys für einen Bingo-Abend mit Freunden von überall.",
+    "steuerung": [
+     "Touch/Maus: gezogene Zahl auf der Karte antippen, BINGO-Knopf rufen, 🍀 setzt eine Glückskugel; ☰ = Pause.",
+     "Tastatur: Pfeile wählen ein Feld, Enter markiert, B oder Leertaste = Bingo, Q/E = Karte wechseln, J = Glückskugel, Esc = Pause.",
+     "Gamecontroller: Steuerkreuz wählt ein Feld, Ⓐ markiert, Ⓧ = Bingo, LB/RB = Karte wechseln, Ⓨ = Glückskugel, Ⓑ/Start = Pause.",
+     "Online & Handys: Gastgeber öffnet „🌐 Online & Handys“, Mitspieler scannen den QR-Code oder geben den Code ein; mit „📺 Fernseher-Link“ zeigt der TV die Show."
+    ],
+    "tipps": [
+     "Je früher dein Bingo, desto mehr Punkte – rufe sofort, sobald das Muster komplett ist, sonst ist das Studio-Publikum schneller.",
+     "Mit „💡 Gezogene Zahlen leuchten“ siehst du sofort, was du noch markieren musst; „🤖 Auto-Markieren“ nimmt dir das Antippen ab.",
+     "Dreimal richtig bei „Höher oder Tiefer“ bringt die 🍀 Glückskugel: ein Feld deiner Wahl in der nächsten Runde.",
+     "Mehr Karten = mehr Gewinnchancen, aber mehr zu tun. Für den Jackpot im Finale helfen vier Karten.",
+     "In den Einstellungen wählst du Ricos Stimme aus allen Stimmen deines Geräts – in der App ist das die Android-Sprachausgabe."
+    ]
+   },
+   "size": 726920,
+   "files": 9,
+   "offline": true,
+   "cloud": {
+    "game": "radio-bingo",
+    "prefix": "radio-bingo-"
+   }
+  },
+  {
    "id": "challenge-show",
    "title": "Die große Challenge-Show",
    "desc": "3D-Spielshow mit bis zu 24 Kandidaten im TV-Studio samt jubelndem Publikum und Moderator-Stimme: 🚦 Ampel-Lauf mit dem Ampel-Roboter, 🌉 Wackelbrücke über der Schaumstoffgrube, 🪢 Seilziehen im Takt, 🍪 Keks-Kunst (Form nachfahren), 🪑 Reise nach Jerusalem und das 👑 Schubs-Finale auf der schrumpfenden Plattform. Computer füllen auf, drei Stärken, kinderfreundlich – Ausscheiden heißt Konfetti-Puff. 🌐 Online & Handys: Freunde spielen von überall mit, oder der Fernseher zeigt die Show und Handys sind die Controller.",

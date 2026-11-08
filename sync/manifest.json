@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "8251119ef830",
- "generated": "2026-11-08T18:36:28+01:00",
- "commit": "f02ae7f96a73d6de00ca503de8974cec479f87ed",
+ "version": "1856f9949df3",
+ "generated": "2026-11-08T19:22:31+01:00",
+ "commit": "e538825b1e0906925668401f18c2153f277fcb44",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4648,8 +4648,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3414,
-   "h": "b000df20ea2b741b9d80980269ad9b3eeaa7bdbef95b7cc9f4e9f27b5a287832"
+   "s": 3437,
+   "h": "97854a4acc0dfc7dc20a9d3c6161231ba4c9bbf1c89211e6aaaca4da391c5f42"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -4728,8 +4728,8 @@
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 37525,
-   "h": "2335fac7784648b9f1c856a85fa2648ca64931d0da33b0bbf8d45fc64fd22e32"
+   "s": 38146,
+   "h": "64bc09b90954d35686fa88d2e0a6ed7cf3cbdcc46cd82c56a84802c799fcbfc5"
   },
   {
    "p": "cloud/anmacha-bug.js",
@@ -5538,8 +5538,8 @@
   },
   {
    "p": "games.js",
-   "s": 55966,
-   "h": "ba4e450ed15854e4245c19c61b71cda454902c8d6feb299db18b46760e51ab64"
+   "s": 57013,
+   "h": "43f841108bd11c1f69dc47cd1e056e30dbbbe2810f31caf63770dda7574e5b38"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5768,8 +5768,8 @@
   },
   {
    "p": "guides.js",
-   "s": 168506,
-   "h": "c72346a23bf57461fa8e5f30ffe42a2e186833d3eddb531146f56cf901e7df8a"
+   "s": 170442,
+   "h": "2ccc56c34ca085e443c9e28bb2be1068c58a0fda49f6b557aa3804b5b86730c0"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6100,6 +6100,11 @@
    "p": "guides/pufi-farbwind.json",
    "s": 13725,
    "h": "92698d911a1b6f7033290beb538ffe8f0bfbf7bbfaad458d404504bac5724b86"
+  },
+  {
+   "p": "guides/radio-bingo.json",
+   "s": 8683,
+   "h": "ecfab938073a10b290a2b7dd34ab12cd7276cc4fcd9d1d5172658db900f81511"
   },
   {
    "p": "guides/radio-maze.json",
@@ -7148,8 +7153,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3865,
-   "h": "49cfe528ab65b99b1545e16479b062d7c12d8174a17d65911aa82ed91c96b2f6"
+   "s": 3926,
+   "h": "4cebfc25f5cc3fcf625cdec827ba8925c6979d14604623a95669bc956a9d834d"
   },
   {
    "p": "oma-rennen/card.jpg",
@@ -7665,6 +7670,51 @@
    "p": "pufi-farbwind/sw.js",
    "s": 766,
    "h": "c66824c4c2a4715f2283b20ba6a1deae2161bb6bfc697b9e3cc90b181f3a3163"
+  },
+  {
+   "p": "radio-bingo/assets/fredoka-latin-wght-normal-DM6njrJ3.woff2",
+   "s": 29732,
+   "h": "99d6c78e043710d4f83ed90716779798b7b04eb690f73e0ad0e8f32d1f0e98c2"
+  },
+  {
+   "p": "radio-bingo/assets/index-C2dJzf91.js",
+   "s": 83092,
+   "h": "f86c64634fb2eb923deee8115f9fcbeaded0d27cc5628ca888c3c9f4cbd454af"
+  },
+  {
+   "p": "radio-bingo/assets/index-CIQ28pTH.css",
+   "s": 13714,
+   "h": "385ba8bac1a666e31c932a32a7f0c6b1d8495ed3af3d56fa3e8e719ff47f7775"
+  },
+  {
+   "p": "radio-bingo/assets/three-Cdv5eKcl.js",
+   "s": 495306,
+   "h": "b202abe21061a295ab831ac0e751aca315986ff18c6eaabd281ab33f457a6eb2"
+  },
+  {
+   "p": "radio-bingo/card.jpg",
+   "s": 54089,
+   "h": "2af6e3a337537f96ee8b39f585a0a1a697d6eca04dae1450c6ed5bf4c2598a33"
+  },
+  {
+   "p": "radio-bingo/host-cut.webp",
+   "s": 40874,
+   "h": "240f6ef5383fc474ee37f69a8e0f6955deb815e631c282aa8197d79d8d4d11c0"
+  },
+  {
+   "p": "radio-bingo/index.html",
+   "s": 7321,
+   "h": "bbec6b4392a489b5e25cbb9e685ea46ffcc1be4511472c7ef9fd00a647d26d3f"
+  },
+  {
+   "p": "radio-bingo/manifest.webmanifest",
+   "s": 784,
+   "h": "bc2357d9a2b0e9d6abda746541213fd7490f39892ac96ae15ac7379f648ca9e0"
+  },
+  {
+   "p": "radio-bingo/sw.js",
+   "s": 2008,
+   "h": "ee0dbf98d2e35c7d72a34e3834ffd853ed47ff7223e6369d2cd50d4ab9fadab2"
   },
   {
    "p": "radio-erfolge.html",
@@ -8738,8 +8788,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 250507,
-   "h": "c07145cbd0f62a47dc3c7ae5186da7761a93e9b1d783e08b676df83f832db9c9"
+   "s": 253829,
+   "h": "0742b6a8e0e81d88d69371cbd8f0fd30f89f0b406e0c8c689ed8bf734b81f379"
   },
   {
    "p": "taschi/card.svg",
@@ -9272,6 +9322,11 @@
    "h": "97e92c480bb6c6ec59806af033b01e42473b8fccb734256110beb0940bd6026a"
   },
   {
+   "p": "thumbs/radio-bingo.webp",
+   "s": 24142,
+   "h": "f0a623c25f451d87ddc3542bf18f6266edeceed9c9a124b5385af3eedea9aa9d"
+  },
+  {
    "p": "thumbs/ricopoly.webp",
    "s": 60732,
    "h": "4e86b86e9a756bd391e9c7cbf8f556741bb1901f920025bc5b2a9235e4e4e4be"
@@ -9308,8 +9363,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2344,
-   "h": "d072f108ba47eaee699951dd1bd08ccd249419bc34879adb238b50ff4c36fc4b"
+   "s": 2371,
+   "h": "dc16faf1de7cc36bc566aa55a507f2a331d30271840a00f0a0c7bc9c60708292"
   },
   {
    "p": "thumbs/tortenschlacht.webp",

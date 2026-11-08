@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#07041a" />
+  <title>RADIO-BINGO – Die große Kugelshow</title>
+  <meta name="description" content="RADIO-BINGO – Die große Kugelshow: moderiertes 3D-Bingo mit Moderator Rico und Sprachausgabe. Große Show mit vier Runden, Studio-Spiel Höher oder Tiefer und Jackpot-Finale, Schnelles Bingo mit 10 Mustern, Blitz-Bingo, Klassik 90 und Tages-Show. 🌐 Online & Handys: Freunde spielen per Link, Code oder QR-Code von überall mit, der Fernseher zeigt die Show. Handy, Browser, TV und Gamecontroller." />
+  <link rel="stylesheet" href="../vendor/fonts/fredoka.css" />
+  <script src="../cloud/fire-peer.js"></script>
+</head>
+<body>
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div id="ui">
+    <section class="scr on" id="sLoad"><div class="center"><h1 class="logo">RADIO<span>BINGO</span></h1><div class="bar"><i id="loadBar"></i></div><p class="tip" id="loadTip">Die Kugeln werden poliert …</p></div></section>
+    <section class="scr" id="sTitle"><div class="center"><h1 class="logo big">RADIO<span>BINGO</span></h1><p class="claim">Die große Kugelshow mit Moderator Rico 🎙️</p><button class="btn gold xl nav" id="bPress">▶ Showbeginn</button><p class="hint">Tippen, Enter oder Ⓐ am Controller</p><p class="corner"><a href="../">← Alle Spiele</a></p></div></section>
+    <section class="scr" id="sMenu"><div class="menuWrap"><header class="mHead"><h1 class="logo small">RADIO<span>BINGO</span></h1><span class="live">● LIVE</span></header><div class="mBody"><nav class="mList" id="mList" aria-label="Hauptmenü"></nav><aside class="mInfo" id="mInfo" aria-live="polite"></aside></div><footer class="mFoot"><span>Pfeile + Enter · Esc zurück · 🎮 Ⓐ wählen, Ⓑ zurück</span><a class="nav" href="../">← Alle Spiele</a></footer></div></section>
+    <section class="scr" id="sSetup"><div class="panel" id="setupBox"></div></section>
+    <section class="scr" id="sOnline"><div class="panel wide" id="onlineBox"></div></section>
+    <section class="scr" id="sGame">
+      <header class="hud"><button class="btn sm nav" id="hudMenu" aria-label="Pause">☰</button><b id="hudRound"></b><span class="hp" id="hudPat"></span><span id="hudBalls"></span><span id="hudJack" class="jack"></span><b id="hudPts" class="pts"></b></header>
+      <div class="last" id="last" aria-label="Letzte Kugeln"></div>
+      <div class="sub" id="sub" aria-live="polite"></div>
+      <div class="banner" id="banner"></div>
+      <div class="dock"><div class="cards" id="cards"></div><div class="acts"><button class="btn joker" id="joker" hidden aria-label="Glückskugel setzen">🍀</button><button class="btn bingo" id="bingo">BINGO!</button></div></div>
+    </section>
+    <section class="scr" id="sResult"><div class="panel" id="resBox"></div></section>
+  </div>
+  <div class="ov" id="ov" hidden><div class="panel" id="ovBox" role="dialog" aria-modal="true"></div></div>
+  <div class="toast" id="toast" hidden></div>
+  <script src="../gamepad.js" data-pad="a=Enter b=Escape x=KeyB y=KeyJ lb=KeyQ rb=KeyE start=Escape select=-" defer></script>
+  <script type="module" src="./src/main.ts"></script>
+  <script src="../cloud/anmacha-cloud.js" data-game="radio-bingo" data-prefix="radio-bingo-" defer></script>
+</body>
+</html>

@@ -27,6 +27,13 @@
       { id: 'kronen', title: 'Kronen', key: 'klavierlicht-meta', path: 'crowns', order: 'desc', unit: '👑' },
       { id: 'endlos', title: 'Endlos: höchste Runde', key: 'klavierlicht-meta', path: 'endlessBest', order: 'desc', unit: 'Runde' }
     ],
+    // RADIO-BINGO: Gesamtpunkte, beste Show, Tages-Show (fmt 'daily': Tag * 100000 + Punkte, nur heute), Jackpots
+    'radio-bingo': [
+      { id: 'main', title: 'Gesamtpunkte', key: 'radio-bingo-save', path: 'total', order: 'desc', unit: 'Punkte' },
+      { id: 'tag', title: 'Tages-Show (heute)', key: 'radio-bingo-save', path: 'dailyBoard', order: 'desc', fmt: 'daily' },
+      { id: 'best', title: 'Beste Show', key: 'radio-bingo-save', path: 'best', order: 'desc', unit: 'Punkte' },
+      { id: 'jackpot', title: 'Geknackte Jackpots', key: 'radio-bingo-save', path: 'jackpots', order: 'desc', unit: '💰' }
+    ],
     // Song des Tages: Wert = Tagesnummer * 100000 + Punkte (steigt jeden Tag), fmt 'daily' zeigt nur Einträge von heute (deutsche Zeit)
     'show-me-your-voice': [
       { id: 'tag', title: 'Song des Tages (heute)', key: 'smyv-save', path: 'dailyBoard', order: 'desc', fmt: 'daily' },

@@ -45,6 +45,7 @@ window.EASYGAMES_MODES = {
   'stadt-land-plus': { pad: true, online: true, multi: true, tvParam: true },
   'brainrot-parkour': { pad: true, online: true, multi: true },
   'challenge-show': { pad: true, online: true, multi: true, tvParam: true },
+  'radio-bingo': { pad: true, online: true, tvParam: true },
   'beat-studio': { pad: true },
   'sonnenhof': { pad: true },
   'klavierlicht': { pad: true, online: true },
