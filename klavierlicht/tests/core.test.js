@@ -1,0 +1,28 @@
+// Klavierlicht – Kern-Test (Node): Notation, Längen, Lichter je Schwierigkeit, Spuren, Begleitung, Wertung, Archiv
+const C = require('../js/core.js'); require('../js/songs.js'); const SRC = require('../tools/archiv-quelle.js');
+const fs = require('fs'), path = require('path'); let fail = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHLER ') + m); if (!c) fail++; };
+const len = s => s.trim().split(/\s+/).reduce((a, t) => { const m = /(?:\*([\d.]+)|\/([\d.]+))$/.exec(t); return a + (m ? (m[1] ? +m[1] : 1 / +m[2]) : 1); }, 0);
+ok(C.midi('C4') === 60 && C.midi('A4') === 69 && C.midi('F#5') === 78 && C.midi('Bb3') === 58, 'Notennamen → MIDI');
+const all = KLSongs.list.concat(SRC);
+ok(all.every(s => Math.abs(len(s.mel) - len(s.chords)) < 1e-6), 'Melodie und Akkorde gleich lang (alle ' + all.length + ' Lieder)');
+ok(new Set(all.map(s => s.id)).size === all.length, 'eindeutige Lied-IDs');
+ok(all.every(s => s.mel.trim().split(/\s+/).every(t => t.replace(/[*/][\d.]+$/, '') === '-' || C.midi(t.replace(/[*/][\d.]+$/, '')) != null)), 'alle Töne lesbar');
+ok(all.every(s => KLSongs.CATS[s.cat]), 'jede Kategorie bekannt');
+const c = C.fromNotation(KLSongs.list[0]);
+ok(C.check(c) && c.mel[0][1] === 60 && c.mel[0][2] === 4 && C.duration(c) >= 35, 'Chart aus Notation, kurze Lieder wiederholt (' + C.fmt(C.duration(c)) + ')');
+for (const lvl of Object.keys(C.LEVELS)) {
+  const n = C.playable(C.fromNotation(KLSongs.list.find(s => s.id === 'elise')), lvl), L = C.LEVELS[lvl];
+  ok(n.every(x => x.lane >= 0 && x.lane < L.lanes) && n.every((x, i) => !i || x.t - n[i - 1].t >= L.gap - 1e-9), `${L.n}: ${n.length} Lichter, Spuren 0–${L.lanes - 1}, Mindestabstand`);
+}
+const e = C.playable(C.fromNotation(KLSongs.list.find(s => s.id === 'ode')), 'normal');
+ok(e.every((x, i) => !i || (x.p > e[i - 1].p ? x.lane >= e[i - 1].lane : x.p < e[i - 1].p ? x.lane <= e[i - 1].lane : x.lane === e[i - 1].lane)), 'Spur folgt der Melodie (höher = rechts)');
+const acc = C.accompaniment(c);
+ok(acc.length > 20 && acc.every(a => a[1] >= 36 && a[1] <= 72 && a[3] > 0) && acc.every((a, i) => !i || a[0] >= acc[i - 1][0]), 'Begleitung: Bass + Akkorde, sortiert, sinnvolle Lage');
+ok(C.judge(0.03) === 'perfect' && C.judge(-0.12) === 'good' && C.judge(0.3) === null, 'Trefferfenster');
+const st = C.newState(); for (let i = 0; i < 10; i++) C.scoreHit(st, 'perfect'); C.scoreHit(st, null); C.scoreHit(st, 'good');
+ok(st.perfect === 10 && st.miss === 1 && st.good === 1 && st.combo === 1 && st.max === 10 && st.score > 1000, 'Wertung und Combo');
+ok(C.stars({ perfect: 10, good: 0, miss: 0 }) === 3 && C.stars({ perfect: 5, good: 0, miss: 5 }) === 1 && C.stars({ perfect: 0, good: 0, miss: 5 }) === 0, 'Sterne');
+// gebautes Archiv passt zur Quelle
+const dir = path.join(__dirname, '..', 'archiv'), idx = JSON.parse(fs.readFileSync(path.join(dir, 'index.json'), 'utf8'));
+ok(idx.songs.length === SRC.length && idx.songs.every(s => C.check(JSON.parse(fs.readFileSync(path.join(dir, s.id + '.json'), 'utf8')))), 'Archiv gebaut: ' + idx.songs.length + ' Lieder, alle gültig');
+console.log(fail ? fail + ' Fehler' : 'Alle Kern-Tests bestanden'); process.exit(fail ? 1 : 0);

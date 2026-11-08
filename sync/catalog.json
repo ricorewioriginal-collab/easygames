@@ -2028,6 +2028,42 @@
    }
   },
   {
+   "id": "klavierlicht",
+   "title": "Klavierlicht – Klavier spielen mit Lichtern",
+   "desc": "Lichter fallen im Takt der Melodie – tippe sie, wenn sie die Tasten erreichen, und spiel bekannte Lieder auf dem Klavier. Bass und Begleitung spielen von selbst. Kinderlieder, Weihnachtslieder, Volkslieder und Klassik (Für Elise, Ode an die Freude, Menuett in G, Türkischer Marsch, Kanon in D …), dazu ein Online-Archiv, das erst beim Spielen lädt. Drei Schwierigkeiten (Leicht: überall tippen, nur der Takt zählt), Zuhören-Modus, Sterne und Rekorde. Touch, Tastatur und Controller.",
+   "icon": "🎹",
+   "img": "klavierlicht/card.jpg",
+   "bg": "linear-gradient(145deg,#0b0730,#3a1670 55%,#ff5fa2)",
+   "glow": "rgba(255,95,162,.5)",
+   "path": "klavierlicht/",
+   "modes": {
+    "pad": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Lichter fallen im Takt der Melodie von oben auf die Tasten zu. Tippe ein Licht genau dann, wenn es den Kreis erreicht – dann erklingt die Note. Bass und Begleitung spielen von selbst, du spielst die Melodie. Höhere Töne fallen weiter rechts, tiefere weiter links. Im Liederbuch stecken 10 Lieder, im Online-Archiv 18 weitere, die erst beim Spielen geladen werden.",
+    "steuerung": [
+     "Touch/Maus: auf die Bahn tippen, auf der das Licht ankommt.",
+     "Tastatur: D F J K (Leicht), D F Leertaste J K (Normal), S D F J K L (Profi), Esc = Pause.",
+     "Gamecontroller: LB, X, A, Y, RB für die Bahnen (Profi zusätzlich LT/RT), B = Pause."
+    ],
+    "tipps": [
+     "Auf Leicht zählt nur der Takt – tippe irgendwo, wenn ein Licht unten ankommt.",
+     "Mit „Zuhören“ spielt das Klavier ein Lied vor – so lernst du die Melodie.",
+     "Lange Lichter haben einen Schweif: einmal tippen genügt.",
+     "Eine lange Combo verdoppelt die Punkte.",
+     "Ab 92 % Genauigkeit gibt es drei Sterne."
+    ]
+   },
+   "size": 89379,
+   "files": 9,
+   "offline": true,
+   "cloud": {
+    "game": "klavierlicht",
+    "prefix": "klavierlicht-"
+   }
+  },
+  {
    "id": "challenge-show",
    "title": "Die große Challenge-Show",
    "desc": "3D-Spielshow mit bis zu 24 Kandidaten im TV-Studio samt jubelndem Publikum und Moderator-Stimme: 🚦 Ampel-Lauf mit dem Ampel-Roboter, 🌉 Wackelbrücke über der Schaumstoffgrube, 🪢 Seilziehen im Takt, 🍪 Keks-Kunst (Form nachfahren), 🪑 Reise nach Jerusalem und das 👑 Schubs-Finale auf der schrumpfenden Plattform. Computer füllen auf, drei Stärken, kinderfreundlich – Ausscheiden heißt Konfetti-Puff. 🌐 Online & Handys: Freunde spielen von überall mit, oder der Fernseher zeigt die Show und Handys sind die Controller.",

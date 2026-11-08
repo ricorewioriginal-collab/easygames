@@ -1,0 +1,31 @@
+{
+  "id": "klavierlicht",
+  "handbuch": [
+    { "t": "Ziel des Spiels", "p": ["In Klavierlicht spielst du bekannte Lieder auf dem Klavier, ohne Noten lesen zu können. Lichter fallen im Takt der Melodie von oben auf die Tasten zu. Tippst du ein Licht genau im richtigen Moment, erklingt die Note. Bass und Begleitung spielen von selbst – du bist für die Melodie zuständig.", "Für jedes Lied gibt es Punkte, Sterne und einen Rekord. Dein Gesamtpunktestand ist die Summe deiner besten Ergebnisse."] },
+    { "t": "Start und Menü", "p": ["Nach dem Ladebildschirm und dem Titel kommst du ins Hauptmenü. Dort wählst du mit Maus, Touch, Pfeiltasten oder Controller."], "list": ["Spielen: das Liederbuch mit den Liedern, die im Spiel stecken (gehen auch ohne Internet).", "Online-Archiv: weitere Lieder, die erst beim Spielen geladen werden (nur Noten, wenige Kilobyte).", "Zuhören: das Klavier spielt ein Lied allein vor.", "So geht's: die Anleitung im Spiel.", "Einstellungen: Schwierigkeit, Lautstärke der Begleitung, Hilfe bei verpassten Noten, Tastenbeschriftung."] },
+    { "t": "Das Liederbuch", "p": ["Oben wählst du zwischen „Im Spiel“ und „Archiv“, darunter die Kategorie: Kinderlieder, Weihnachten, Volkslieder oder Klassik. Mit der Suche findest du ein Lied oder einen Komponisten. Rechts daneben stellst du die Schwierigkeit ein.", "Jedes Lied zeigt Länge, Schwierigkeit (♪ bis ♪♪♪♪) und deine Sterne. Ein Tipp auf das Lied startet es."] },
+    { "t": "So wird gespielt", "steps": ["Nach dem Start zählt das Klavier vier Schläge ein.", "Lichter fallen auf ihren Bahnen nach unten. Höhere Töne kommen weiter rechts, tiefere weiter links – so siehst du die Melodie.", "Tippe die Bahn (oder drücke die passende Taste), wenn ein Licht den Kreis unten erreicht.", "Lange Töne haben einen Schweif. Ein Tipp genügt, der Ton klingt von selbst weiter.", "Am Ende siehst du Punkte, Genauigkeit, beste Combo und Sterne."] },
+    { "t": "Schwierigkeiten", "list": ["Leicht (🟢): 4 Bahnen, weniger Noten, langsame Lichter. Du kannst überall tippen – nur der Takt zählt.", "Normal (🟡): 5 Bahnen, die richtige Bahn muss getroffen werden.", "Profi (🔴): 6 Bahnen, fast alle Noten der Melodie, schnellere Lichter."] },
+    { "t": "Wertung", "list": ["Perfekt (bis 75 ms daneben): 100 Punkte.", "Gut (bis 150 ms daneben): 60 Punkte.", "Combo: jeder Treffer in Folge erhöht den Bonus, bis zur doppelten Punktzahl ab 50 Treffern. Ein Fehler setzt die Combo zurück.", "Sterne: ab 50 % Genauigkeit einer, ab 75 % zwei, ab 92 % drei."] },
+    { "t": "Steuerung", "list": ["Touch und Maus: auf die Bahn tippen.", "Tastatur: Leicht D F J K, Normal D F Leertaste J K, Profi S D F J K L. Esc = Pause.", "Controller: LB, X, A, Y, RB für die Bahnen, bei Profi zusätzlich LT und RT außen. B = Pause."] },
+    { "t": "Die Lieder", "p": ["Alle Melodien sind gemeinfrei: Volks-, Kinder- und Weihnachtslieder sowie Werke von Komponisten, die vor über 70 Jahren gestorben sind (Beethoven, Mozart, Grieg, Pachelbel, Petzold, Gruber …). Sie wurden für das Spiel als Klaviersatz neu gesetzt. Kurze Lieder werden zwei- bis dreimal hintereinander gespielt."] }
+  ],
+  "ratgeber": [
+    { "t": "Für Einsteiger", "list": ["Starte auf Leicht mit „Alle meine Entchen“ oder „Bruder Jakob“ – langsames Tempo, wenige Noten.", "Hör dir ein neues Lied zuerst mit „Zuhören“ an. Wer die Melodie kennt, trifft den Takt viel leichter.", "Schau auf die Kreise unten, nicht auf die Lichter oben."] },
+    { "t": "Besser werden", "list": ["Tippe lieber einen Hauch zu spät als zu früh – die meisten tippen anfangs zu hastig.", "Auf Normal hilft der Melodieverlauf: Geht die Melodie hoch, wandert das nächste Licht nach rechts.", "Lass die Hilfe „Verpasste Noten leise mitspielen“ an, dann bleibt das Lied auch bei Fehlern erkennbar.", "Kopfhörer und eine ruhige Umgebung helfen beim Timing."] },
+    { "t": "Für Profis", "list": ["Für Elise, Türkischer Marsch und Morgenstimmung haben schnelle Notenfolgen – perfekt zum Üben auf Profi.", "Lange Combos bringen doppelte Punkte. Lieber sicher treffen als riskant.", "Mit der Tastatur auf Profi zwei Hände benutzen: S D F links, J K L rechts."] },
+    { "t": "Häufige Fehler", "list": ["Auf Normal und Profi die falsche Bahn getroffen: Das zählt nicht, das Licht fällt weiter.", "Zu früh getippt, bevor das Licht unten ist: kein Treffer, aber auch kein Abzug.", "Online-Archiv lädt nicht: Internetverbindung prüfen. Die Lieder im Spiel gehen immer."] }
+  ],
+  "loesung": [
+    { "t": "Drei Sterne bei jedem Lied", "steps": ["Lied zuerst mit „Zuhören“ anhören.", "Auf Leicht durchspielen, bis du den Rhythmus im Gefühl hast.", "Auf der gewünschten Schwierigkeit spielen und die Kreise unten fixieren.", "Mindestens 92 % Genauigkeit erreichen: Perfekt zählt voll, Gut zu 60 %."] },
+    { "t": "Höchste Punktzahl", "list": ["Perfekte Treffer bringen 100 statt 60 Punkte.", "Ab 50 Treffern in Folge zählt jeder Treffer doppelt – Fehler am Anfang kosten am wenigsten.", "Profi hat die meisten Noten und damit die meisten möglichen Punkte.", "Lange Lieder wie „Hänschen klein“, „Stille Nacht“ oder „Deck the Halls“ bringen viele Punkte."] },
+    { "t": "Leichteste und schwerste Lieder", "list": ["Leicht: Alle meine Entchen, Bruder Jakob, Mary Had a Little Lamb, Kanon in D.", "Mittel: Ode an die Freude, Stille Nacht, Jingle Bells, Greensleeves.", "Schwer: Für Elise, Türkischer Marsch, Morgenstimmung, In der Halle des Bergkönigs."] }
+  ],
+  "faq": [
+    { "q": "Brauche ich Internet?", "a": "Nein, die zehn Lieder im Liederbuch gehen offline. Nur das Online-Archiv lädt seine Lieder aus dem Internet – nur Noten, wenige Kilobyte." },
+    { "q": "Muss ich Noten lesen können?", "a": "Nein. Du tippst nur die Lichter im Takt, die richtigen Töne spielt das Spiel." },
+    { "q": "Warum höre ich manchmal leise Noten, obwohl ich nicht getippt habe?", "a": "Das ist die Hilfe „Verpasste Noten leise mitspielen“, damit das Lied erkennbar bleibt. Du kannst sie in den Einstellungen ausschalten." },
+    { "q": "Sind die Lieder erlaubt?", "a": "Ja. Alle Melodien sind gemeinfrei und wurden für das Spiel neu als Klaviersatz geschrieben." },
+    { "q": "Kommen weitere Lieder dazu?", "a": "Ja, das Online-Archiv wird erweitert, ohne dass das Spiel größer wird." }
+  ]
+}

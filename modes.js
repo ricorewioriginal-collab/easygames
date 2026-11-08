@@ -47,6 +47,7 @@ window.EASYGAMES_MODES = {
   'challenge-show': { pad: true, online: true, multi: true, tvParam: true },
   'beat-studio': { pad: true },
   'sonnenhof': { pad: true },
+  'klavierlicht': { pad: true },
   'groove-arena': { pad: true, online: true, multi: true, tvParam: true },
   'darts-arena': { pad: true, multi: true },
   'winzflitzer': { multi: true },

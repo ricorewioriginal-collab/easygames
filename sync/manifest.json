@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "fb9a2e60f9aa",
- "generated": "2026-11-03T16:42:07+01:00",
- "commit": "d13750558ac3925399d1f5c9db5a4e5a2b1a7e59",
+ "version": "f604ea6592fb",
+ "generated": "2026-11-03T16:49:27+01:00",
+ "commit": "02bfa22fea730dcd28790742afde9adec8d698a4",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4633,8 +4633,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3389,
-   "h": "b9b8f2a0cc2997c56d9badbb3c91dbf2c5cf765f9f47eda60c5466fca8b3419a"
+   "s": 3414,
+   "h": "b000df20ea2b741b9d80980269ad9b3eeaa7bdbef95b7cc9f4e9f27b5a287832"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -5523,8 +5523,8 @@
   },
   {
    "p": "games.js",
-   "s": 54239,
-   "h": "6c146d0cb998029142edb87445b7a6511dade3b147df1e46a15871b109aba58b"
+   "s": 54982,
+   "h": "508d542c418257a9d854c7744e32d79c1aaa516bd7851e7447bf83b5f455d09a"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5753,8 +5753,8 @@
   },
   {
    "p": "guides.js",
-   "s": 165755,
-   "h": "369d85f417a4cc36e90bcd8f0694e901c26869b51b7d3b92f7c3c9966c08a31d"
+   "s": 166786,
+   "h": "3434138b9272c95fd16213dc90cb082c94b52b45a8c24243e0bcf2562ad9d27b"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6015,6 +6015,11 @@
    "p": "guides/kiko-sterneninseln.json",
    "s": 13055,
    "h": "3908a24d5979a200d39e371817f768343aa2c5dcb408b00bf5e4bb7112316f64"
+  },
+  {
+   "p": "guides/klavierlicht.json",
+   "s": 6398,
+   "h": "7627c8e3769b477f25493f6ca4a693a9020de1f408d347f0e1ac522fb69084e7"
   },
   {
    "p": "guides/konfetti-party.json",
@@ -6455,6 +6460,51 @@
    "p": "kiko-sterneninseln/vite.config.js",
    "s": 214,
    "h": "455543146b29d9a6f7943ac05350b9e95f9dfdf2f100babff20a2f6a4802f316"
+  },
+  {
+   "p": "klavierlicht/card.jpg",
+   "s": 26952,
+   "h": "94b5d3de8f36e0b7999789372d938df85050558a8ec40ffc859bd5aeba0028c4"
+  },
+  {
+   "p": "klavierlicht/index.html",
+   "s": 7391,
+   "h": "ee9a2cf6cda966c0967d3de0f2edd5b5a01d4a0e4d3a05c881954938784c18ff"
+  },
+  {
+   "p": "klavierlicht/js/app.js",
+   "s": 25459,
+   "h": "5242f391cb32518cf66aaf033cee3b6c2a2cbf55945666093ae1e111a76ca528"
+  },
+  {
+   "p": "klavierlicht/js/core.js",
+   "s": 6272,
+   "h": "fcbe1b25730ce2e51493abc5fb45344459e248dbbb21098289ddfbfa95d3c4a2"
+  },
+  {
+   "p": "klavierlicht/js/piano.js",
+   "s": 3610,
+   "h": "a88f06ff6fca3adbaaefa22b08b588259314e064f24880857f15d37794fc5871"
+  },
+  {
+   "p": "klavierlicht/js/songs.js",
+   "s": 4717,
+   "h": "a8508d27b110a1a56603251b66c4805fb69ff15d6d9b0aa7aef3d770b35854b9"
+  },
+  {
+   "p": "klavierlicht/manifest.webmanifest",
+   "s": 797,
+   "h": "f78fde1d47de3aee8b692116cfcd40a8552d636b23c087b939726953f9f2ce97"
+  },
+  {
+   "p": "klavierlicht/style.css",
+   "s": 12162,
+   "h": "5c1a719e393cbe82dd6dc5b2a87039832693e6b64e6f7c9cc1b4aaa45854b5b1"
+  },
+  {
+   "p": "klavierlicht/sw.js",
+   "s": 2019,
+   "h": "587be4ce0d5369fb68b6889270ae4dac25e4993a443d7cc690208ac0f37bb2e0"
   },
   {
    "p": "konfetti-party/card.jpg",
@@ -7058,8 +7108,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3818,
-   "h": "d0a8c9378cfe9e776a58e230c15dc304e5cfe26d300a860d8cbcc6ee91f06f66"
+   "s": 3851,
+   "h": "78d652635e41e170363dc04efa6d5c5613c08cd165a70144b4503d59f88cd9a8"
   },
   {
    "p": "oma-rennen/card.jpg",
@@ -8648,8 +8698,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 245752,
-   "h": "bd25023a1cc441363d7857eafe8703f53bf019730572e0f0c90e17f7e102a221"
+   "s": 247778,
+   "h": "5fd8f7be6939e2be337eef8695cc564817f8fd3e9ace19e78cd837343c6cb3ab"
   },
   {
    "p": "taschi/card.svg",
@@ -9132,6 +9182,11 @@
    "h": "d5938791af45f95e7b5967c0d96f75ed9e4bc13b3f6268ad0e80c43a35887d4f"
   },
   {
+   "p": "thumbs/klavierlicht.webp",
+   "s": 11388,
+   "h": "5ace58ec44f262a40e5e226ba339e26989ee9431f9d056136281ab727eb07fcc"
+  },
+  {
    "p": "thumbs/konfetti-party.webp",
    "s": 29880,
    "h": "d20408309d598d1e76ef1929f0647e518eb580562353e4c2cd6089d393b94fde"
@@ -9213,8 +9268,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2316,
-   "h": "d8c855c3619e2bf331085b20960eeb0fbf5bbf35f4d4f16a71989644113da5e0"
+   "s": 2344,
+   "h": "592293a69365d2973e904c8e02ff2962459d36b0778442f2e4fc2436b6a8bded"
   },
   {
    "p": "thumbs/tortenschlacht.webp",

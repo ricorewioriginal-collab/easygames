@@ -682,6 +682,21 @@ window.EASYGAMES_GUIDES = {
    "Die Jury mag Songs zwischen 2:30 und 3:30, eine eingängige Refrain-Melodie, Gesang und deine eigene Handschrift."
   ]
  },
+ "klavierlicht": {
+  "anleitung": "Lichter fallen im Takt der Melodie von oben auf die Tasten zu. Tippe ein Licht genau dann, wenn es den Kreis erreicht – dann erklingt die Note. Bass und Begleitung spielen von selbst, du spielst die Melodie. Höhere Töne fallen weiter rechts, tiefere weiter links. Im Liederbuch stecken 10 Lieder, im Online-Archiv 18 weitere, die erst beim Spielen geladen werden.",
+  "steuerung": [
+   "Touch/Maus: auf die Bahn tippen, auf der das Licht ankommt.",
+   "Tastatur: D F J K (Leicht), D F Leertaste J K (Normal), S D F J K L (Profi), Esc = Pause.",
+   "Gamecontroller: LB, X, A, Y, RB für die Bahnen (Profi zusätzlich LT/RT), B = Pause."
+  ],
+  "tipps": [
+   "Auf Leicht zählt nur der Takt – tippe irgendwo, wenn ein Licht unten ankommt.",
+   "Mit „Zuhören“ spielt das Klavier ein Lied vor – so lernst du die Melodie.",
+   "Lange Lichter haben einen Schweif: einmal tippen genügt.",
+   "Eine lange Combo verdoppelt die Punkte.",
+   "Ab 92 % Genauigkeit gibt es drei Sterne."
+  ]
+ },
  "sonnenhof": {
   "anleitung": "Auf deinem Sonnenhof gräbst du Felder um, säst, gießt und erntest. Jede Pflanze wächst in vier Stufen und braucht für jede Stufe Wasser – Regen gießt alles. Mit der Ernte lieferst du Bestellungen am Auftragsbrett, verkaufst am Markt, fütterst deine Tiere und stellst in Werkstätten wertvolle Waren her. Level schalten neue Pflanzen, Tiere, Werkstätten und Felder frei. Pflanzen, Tiere und Werkstätten arbeiten auch weiter, wenn du nicht spielst.",
   "steuerung": [
