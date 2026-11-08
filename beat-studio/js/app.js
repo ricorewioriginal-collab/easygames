@@ -42,7 +42,7 @@
       if ((e.ctrlKey || e.metaKey) && e.code === 'KeyZ') { e.preventDefault(); e.shiftKey ? doRedo() : doUndo(); return; }
       if ((e.ctrlKey || e.metaKey) && e.code === 'KeyY') { e.preventDefault(); doRedo(); return; }
       if (e.code === 'BracketLeft' || e.code === 'BracketRight') { const i = TABS.findIndex(x => x[0] === tab), n = TABS[(i + (e.code === 'BracketRight' ? 1 : TABS.length - 1)) % TABS.length][0]; setTab(n); return; }
-      if (/^Digit[1-7]$/.test(e.code)) { setTab(TABS[+e.code.slice(5) - 1][0]); return; }
+      if (/^Digit[1-8]$/.test(e.code)) { setTab(TABS[+e.code.slice(5) - 1][0]); return; }
     }
     const d = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[e.code];
     if (d) { e.preventDefault(); navMove(d[0], d[1]); }
@@ -56,10 +56,11 @@
   function doRedo() { if (!redo.length) return; undo.push(snap()); S = C.repair(JSON.parse(redo.pop())); persist(); P.update(S); renderStudio(); toast('↷ Wiederholt', 900); }
 
   /* ---------- Menü ---------- */
-  function menu() { stopAll(); scr('sMenu'); const last = SONGS.find(x => x.id === LS.get('last')) || SONGS[0], best = LS.get('highscore', 0) || 0;
+  function menu() { stopAll(); scr('sMenu'); setTimeout(gc, 1500); const last = SONGS.find(x => x.id === LS.get('last')) || SONGS[0], best = LS.get('highscore', 0) || 0;
     const items = [last && ['cont', '▶', 'Weiter bearbeiten', '„' + esc(last.name) + '“ – ' + C.G[last.genre].n + ', ' + fmt(C.songSec(last)) + '. Mach weiter, wo du aufgehört hast.', esc(last.name)],
       ['new', '✨', 'Neuer Song', 'Der Song-Assistent baut dir in Sekunden einen kompletten Song – Genre, Tonart und Tempo wählst du. Danach machst du ihn zu deinem.'],
       ['songs', '📂', 'Meine Songs', SONGS.length + ' gespeicherte Songs – öffnen, kopieren, löschen, als Projektdatei sichern oder laden.'],
+      ['rec', '🎙️', 'Recording-Studio', 'Mehrspur-Aufnahme über deinen Song: Gesang mit Takes, Punch-In und Schleife, Instrumente per Klavier, Tastatur oder MIDI-Keyboard, Effekte, Autotune, Teleprompter, Stimmgerät und Mastering.'],
       ['demo', '🎧', 'Demo anhören', 'Ein Zufalls-Song aus dem Assistenten zum Reinhören und Ausprobieren.'],
       ['help', '❓', 'So geht\'s', 'Vom ersten Beat zum fertigen Song: alle Werkzeuge erklärt.'],
       ['opts', '⚙️', 'Einstellungen', 'Raster-Ansicht, Kopfhörer und Aufnahme-Verzögerung.']].filter(Boolean);
@@ -67,7 +68,8 @@
     const info = b => { $('mInfo').innerHTML = `<i>${b.dataset.ic}</i><b>${b.querySelector('b').textContent}</b><p>${b.dataset.i}</p>${best ? `<p class="best">🏆 Bester Jury-Wert: <b>${best}</b></p>` : ''}`; };
     $('mList').querySelectorAll('.mi').forEach(b => { b.onfocus = b.onmouseenter = () => info(b); b.onclick = () => menuGo(b.dataset.go); }); info($('mList').firstElementChild);
   }
-  function menuGo(g) { if (g === 'cont') { const l = SONGS.find(x => x.id === LS.get('last')) || SONGS[0]; if (l) openStudio(l); } else if (g === 'new') wizard(); else if (g === 'songs') songsScreen(); else if (g === 'demo') { const s = C.generate({ genre: Object.keys(C.G)[Math.floor(Math.random() * 6)], name: 'Demo-Song', len: 'kurz' }); s.demo = true; openStudio(s); setTimeout(() => toggleSong(), 300); } else if (g === 'help') help(); else if (g === 'opts') opts(); }
+  function menuGo(g) { if (g === 'cont') { const l = SONGS.find(x => x.id === LS.get('last')) || SONGS[0]; if (l) openStudio(l); }
+    else if (g === 'rec') { const l = SONGS.find(x => x.id === LS.get('last')) || SONGS[0]; if (!l) { toast('🎙️ Erst einen Song bauen – dann nimmst du darüber auf.', 3000); wizard(); return; } tab = 'rec'; openStudio(l); } else if (g === 'new') wizard(); else if (g === 'songs') songsScreen(); else if (g === 'demo') { const s = C.generate({ genre: Object.keys(C.G)[Math.floor(Math.random() * 6)], name: 'Demo-Song', len: 'kurz' }); s.demo = true; openStudio(s); setTimeout(() => toggleSong(), 300); } else if (g === 'help') help(); else if (g === 'opts') opts(); }
 
   /* ---------- Song-Assistent ---------- */
   const W = { genre: 'pop', key: 0, scale: 'dur', bpm: 0, len: 'normal', name: '', artist: '' };
@@ -101,22 +103,23 @@
       <div class="row end"><button class="btn gold nav" id="sNew" data-focus>✨ Neuer Song</button></div>`;
     const box = $('songsBox'); box.querySelector('[data-back]').onclick = () => menu(); $('sNew').onclick = () => wizard();
     box.querySelectorAll('[data-i]').forEach(b => b.onclick = () => openStudio(SONGS[+b.dataset.i]));
-    box.querySelectorAll('[data-dup]').forEach(b => b.onclick = () => { const c = C.repair(JSON.parse(JSON.stringify(SONGS[+b.dataset.dup]))); c.id = 's' + Date.now().toString(36); c.name += ' (Kopie)'; c.vox = {}; SONGS.unshift(c); LS.set('songs', SONGS); songsScreen(); toast('⧉ Kopie angelegt (ohne Gesang)'); });
-    box.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { const s = SONGS[+b.dataset.del]; overlay(`<h3>🗑 „${esc(s.name)}“ löschen?</h3><p class="hint">Das kann man nicht rückgängig machen. Sichere ihn vorher als Projektdatei, wenn du ihn behalten willst.</p><div class="row"><button class="btn nav" data-act="n">Abbrechen</button><button class="btn red nav" data-act="y">Löschen</button></div>`, { n: closeOv, y: () => { Object.values(s.vox || {}).forEach(id => E.DB.del(s.id + ':' + id)); SONGS = SONGS.filter(x => x !== s); LS.set('songs', SONGS); closeOv(); songsScreen(); } }); });
+    box.querySelectorAll('[data-dup]').forEach(b => b.onclick = () => { const c = C.repair(JSON.parse(JSON.stringify(SONGS[+b.dataset.dup]))); c.id = 's' + Date.now().toString(36); c.name += ' (Kopie)'; c.vox = {}; if (c.rec) c.rec.tracks.forEach(t => { t.takes = []; }); SONGS.unshift(c); LS.set('songs', SONGS); songsScreen(); toast('⧉ Kopie angelegt (ohne Gesang)'); });
+    box.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { const s = SONGS[+b.dataset.del]; overlay(`<h3>🗑 „${esc(s.name)}“ löschen?</h3><p class="hint">Das kann man nicht rückgängig machen. Sichere ihn vorher als Projektdatei, wenn du ihn behalten willst.</p><div class="row"><button class="btn nav" data-act="n">Abbrechen</button><button class="btn red nav" data-act="y">Löschen</button></div>`, { n: closeOv, y: () => { Object.values(s.vox || {}).forEach(id => E.DB.del(s.id + ':' + id)); if (s.rec && window.BSRec) BSRec.takeIds(s.rec).forEach(id => E.DB.del(s.id + ':' + id)); SONGS = SONGS.filter(x => x !== s); LS.set('songs', SONGS); closeOv(); songsScreen(); } }); });
     $('sImp').onchange = async () => { const f = $('sImp').files[0]; if (!f) return; try { const j = JSON.parse(await f.text()), s = C.repair(j.song || j); if (!s) throw new Error('x'); s.id = 's' + Date.now().toString(36); const vox = j.voxData || {}; const map = {};
-      for (const k of Object.keys(s.vox)) { const d = vox[s.vox[k]]; if (d) { const bytes = Uint8Array.from(atob(d), c => c.charCodeAt(0)); await E.DB.put(s.id + ':' + s.vox[k], bytes.buffer); map[k] = s.vox[k]; } } s.vox = map; SONGS.unshift(s); LS.set('songs', SONGS); toast('📥 „' + s.name + '“ geladen'); songsScreen(); } catch (e) { toast('Das ist keine Beat-Studio-Projektdatei.'); } };
+      for (const k of Object.keys(s.vox)) { const d = vox[s.vox[k]]; if (d) { const bytes = Uint8Array.from(atob(d), c => c.charCodeAt(0)); await E.DB.put(s.id + ':' + s.vox[k], bytes.buffer); map[k] = s.vox[k]; } } s.vox = map;
+      if (s.rec && window.BSRec) { const have = new Set(); for (const src of BSRec.takeIds(s.rec)) { const d = vox[src]; if (d) { await E.DB.put(s.id + ':' + src, Uint8Array.from(atob(d), c => c.charCodeAt(0)).buffer); have.add(src); } } s.rec.tracks.forEach(t => { t.takes = t.takes.filter(k => have.has(k.src)); }); } SONGS.unshift(s); LS.set('songs', SONGS); toast('📥 „' + s.name + '“ geladen'); songsScreen(); } catch (e) { toast('Das ist keine Beat-Studio-Projektdatei.'); } };
   }
 
   /* ---------- Studio ---------- */
-  const TABS = [['arr', '🧩', 'Aufbau'], ['drums', '🥁', 'Drums'], ['bass', '🎸', 'Bass'], ['chords', '🎹', 'Akkorde'], ['lead', '🎺', 'Melodie'], ['vox', '🎤', 'Gesang'], ['mix', '🎚️', 'Mixer']];
-  function openStudio(s) { stopAll(); S = s; if (!s.demo) LS.set('last', s.id); if (!undo.length || undo.songId !== s.id) { undo = []; redo = []; undo.songId = s.id; } sec = s.arr[0] ? (s.arr.find(b => b.sec === 'verse') || s.arr[0]).sec : 'verse'; bar = 0; scr('sStudio'); renderStudio(); }
+  const TABS = [['arr', '🧩', 'Aufbau'], ['drums', '🥁', 'Drums'], ['bass', '🎸', 'Bass'], ['chords', '🎹', 'Akkorde'], ['lead', '🎺', 'Melodie'], ['vox', '🎤', 'Gesang'], ['rec', '🎙️', 'Recording'], ['mix', '🎚️', 'Mixer']];
+  function openStudio(s) { stopAll(); S = s; if (window.BSRecUI && s.rec) BSRecUI.preload(s); if (!s.demo) LS.set('last', s.id); if (!undo.length || undo.songId !== s.id) { undo = []; redo = []; undo.songId = s.id; } sec = s.arr[0] ? (s.arr.find(b => b.sec === 'verse') || s.arr[0]).sec : 'verse'; bar = 0; scr('sStudio'); renderStudio(); }
   function setTab(t) { tab = t; renderStudio(); const b = $('stTabs').querySelector(`[data-t="${t}"]`); if (b && !coarse()) b.focus(); }
   function renderStudio(keepFocus) {
     if (!S) return; const fk = keepFocus && document.activeElement && document.activeElement.dataset ? Object.assign({}, document.activeElement.dataset) : null;
     $('stName').value = S.name; $('stBpm').textContent = S.bpm + ' BPM'; $('stKey').textContent = keyName(S);
     $('stTabs').innerHTML = TABS.map(([k, ic, n], i) => `<button class="tab nav${k === tab ? ' on' : ''}" data-t="${k}" title="${n} (${i + 1})"><i>${ic}</i><span>${n}</span></button>`).join('');
     $('stTabs').querySelectorAll('.tab').forEach(b => b.onclick = () => setTab(b.dataset.t));
-    timeline(); secBar(); ({ arr: edArr, drums: edDrums, bass: edRoll, lead: edRoll, chords: edChords, vox: edVox, mix: edMix }[tab])();
+    timeline(); secBar(); ({ arr: edArr, drums: edDrums, bass: edRoll, lead: edRoll, chords: edChords, vox: edVox, mix: edMix, rec: () => window.BSRecUI ? BSRecUI.render($('stEd')) : edArr() }[tab])();
     if (fk) { const sel = Object.keys(fk).map(k => `[data-${k.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}="${fk[k]}"]`).join(''); const el = sel && $('sStudio').querySelector(sel); if (el) el.focus({ preventScroll: true }); }
   }
   function timeline() {
@@ -257,6 +260,7 @@
   /* ---------- Wiedergabe ---------- */
   function stopAll() { P.stop(); setPlayUi(); }
   async function startSong(from) { const vox = await voxBufs(from || 0); P.start(S, { mode: 'song', from: from || 0, vox }); P.onEnd = () => setPlayUi(); setPlayUi(); loop(); }
+  async function startAt(at) { const vox = await voxBufs(0); P.start(S, { mode: 'song', at: at || 0, vox }); P.onEnd = () => setPlayUi(); setPlayUi(); loop(); }
   function startLoop() { P.start(S, { mode: 'pat', sec }); P.onEnd = null; setPlayUi(); loop(); }
   function toggleSong() { if (P.on && P.mode === 'song') stopAll(); else startSong(0); }
   function toggleLoop() { if (P.on && P.mode === 'pat') stopAll(); else startLoop(); }
@@ -278,24 +282,27 @@
   $('stJury').onclick = () => jury(); $('stExport').onclick = () => exportOv();
 
   /* ---------- Export ---------- */
-  const fileName = (s, ext) => (s.name || 'song').replace(/[^\wäöüÄÖÜß -]+/g, '').trim().replace(/\s+/g, '_').slice(0, 50) + ext;
+  const fileName = (s, ext) => (s.name || 'song').replace(/[^\wäöüÄÖÜß -]+/g, '').trim().replace(/\s+/g, '_').slice(0, 50) + ext.replace(/[^\wäöüÄÖÜß.-]+/g, '_');
   function download(name, bytes, type) { const blob = new Blob([bytes], { type }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000); return blob; }
   async function voxBytes() { const m = {}; for (const k of Object.keys(S.vox)) { const ab = await E.DB.get(S.id + ':' + S.vox[k]); if (ab) m[k] = ab; } return m; }
   function exportOv() {
     stopAll();
     overlay(`<h3>📤 Song exportieren</h3><p class="hint">„${esc(S.name)}“ · ${fmt(C.songSec(S))} · ${S.bpm} BPM · ${keyName(S)}</p>
       <div class="exp"><button class="btn gold nav" data-act="wav" data-focus>🎵 Song als WAV<small>fertig gemischt, 44,1 kHz Stereo – für Handy, PC, Streaming</small></button>
-      <button class="btn nav" data-act="stems">🎚️ Einzelspuren (WAV)<small>Drums, Bass, Akkorde, Melodie, Gesang – zum Weiterbearbeiten</small></button>
+      <button class="btn nav" data-act="stems">🎚️ Einzelspuren (WAV)<small>Drums, Bass, Akkorde, Melodie, Gesang und jede Recording-Spur – zum Weiterbearbeiten</small></button>
       <button class="btn nav" data-act="midi">🎹 MIDI-Datei<small>alle Noten für GarageBand, FL Studio, Ableton …</small></button>
       <button class="btn nav" data-act="proj">💾 Projektdatei<small>zum Sichern oder auf einem anderen Gerät weiterbauen (mit Gesang)</small></button></div>
       <p class="hint" id="expMsg"></p><button class="btn nav" data-act="x">Schließen</button>`,
     { x: closeOv, wav: () => doWav(), stems: () => doStems(), midi: () => { download(fileName(S, '.mid'), C.midiFile(S), 'audio/midi'); msg('🎹 MIDI-Datei gespeichert'); },
-      proj: async () => { const vb = await voxBytes(), vd = {}; Object.keys(vb).forEach(k => { const u = new Uint8Array(vb[k]); let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); vd[S.vox[k]] = btoa(s); });
+      proj: async () => { const vb = await voxBytes(), vd = {}, b64 = ab => { const u = new Uint8Array(ab); let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); };
+        Object.keys(vb).forEach(k => { vd[S.vox[k]] = b64(vb[k]); }); if (S.rec && window.BSRec) for (const src of BSRec.takeIds(S.rec)) { const ab = await E.DB.get(S.id + ':' + src); if (ab) vd[src] = b64(ab); }
         download(fileName(S, '.beatstudio.json'), JSON.stringify({ app: 'beat-studio', v: 1, song: S, voxData: vd }), 'application/json'); msg('💾 Projektdatei gespeichert'); } });
     const msg = t => { const m = $('expMsg'); if (m) m.textContent = t; };
     const busy = on => $('ovBox').querySelectorAll('.exp .btn').forEach(b => { b.disabled = on; });
-    async function doWav() { busy(true); msg('⏳ Song wird gerechnet … (' + fmt(C.songSec(S)) + ')'); try { const r = await E.render(S, { vox: await voxBytes(), onProgress: f => msg('⏳ Song wird gerechnet … ' + Math.round(f * 100) + ' %') }); const bytes = r.wav(); download(fileName(S, '.wav'), bytes, 'audio/wav'); msg('✅ ' + fileName(S, '.wav') + ' gespeichert (' + (bytes.length / 1048576).toFixed(1) + ' MB)'); LS.set('exported', (LS.get('exported', 0) || 0) + 1); } catch (e) { msg('⚠️ Export nicht möglich: ' + (e.message || e)); } busy(false); }
-    async function doStems() { busy(true); try { const vb = await voxBytes(); for (const k of C.TRACKS) { if (k === 'vox' && !Object.keys(vb).length) continue; msg('⏳ Spur ' + k + ' …'); const r = await E.render(S, { only: k, vox: vb }); download(fileName(S, '_' + k + '.wav'), r.wav(), 'audio/wav'); await new Promise(res => setTimeout(res, 400)); } msg('✅ Einzelspuren gespeichert'); } catch (e) { msg('⚠️ Export nicht möglich: ' + (e.message || e)); } busy(false); }
+    const rend = (s, o) => window.BSRecUI ? BSRecUI.renderMix(s, o) : E.render(s, o);
+    async function doWav() { busy(true); msg('⏳ Song wird gerechnet … (' + fmt(C.songSec(S)) + ')'); try { const r = await rend(S, { vox: await voxBytes(), onProgress: f => msg('⏳ Song wird gerechnet … ' + Math.round(f * 100) + ' %') }); const bytes = r.wav(); download(fileName(S, '.wav'), bytes, 'audio/wav'); msg('✅ ' + fileName(S, '.wav') + ' gespeichert (' + (bytes.length / 1048576).toFixed(1) + ' MB)' + (r.master && Number.isFinite(r.master.after) ? ' · ' + r.master.after.toFixed(1) + ' LUFS' : '')); LS.set('exported', (LS.get('exported', 0) || 0) + 1); } catch (e) { msg('⚠️ Export nicht möglich: ' + (e.message || e)); } busy(false); }
+    async function doStems() { busy(true); try { const vb = await voxBytes(); for (const k of C.TRACKS) { if (k === 'vox' && !Object.keys(vb).length) continue; msg('⏳ Spur ' + k + ' …'); const r = await rend(S, { only: k, vox: vb }); download(fileName(S, '_' + k + '.wav'), r.wav(), 'audio/wav'); await new Promise(res => setTimeout(res, 400)); }
+      for (const t of (S.rec ? S.rec.tracks : [])) { msg('⏳ Spur ' + t.name + ' …'); const r = await rend(S, { only: 'rec:' + t.id, vox: vb }); download(fileName(S, '_' + t.name + '.wav'), r.wav(), 'audio/wav'); await new Promise(res => setTimeout(res, 400)); } msg('✅ Einzelspuren gespeichert'); } catch (e) { msg('⚠️ Export nicht möglich: ' + (e.message || e)); } busy(false); }
   }
 
   /* ---------- Radio-Jury ---------- */
@@ -312,6 +319,10 @@
     $('rMenu').onclick = () => menu(); $('rEdit').onclick = () => openStudio(S); $('rExp').onclick = () => { openStudio(S); exportOv(); };
   }
 
+  // Aufnahmen ohne Song (gelöschte Takes, alte Kopien) aus dem Gerätespeicher räumen – Rückgängig-Schritte bleiben erhalten
+  async function gc() { if (!window.BSRec) return; const keep = new Set(), add = s => { if (!s || !s.id) return; Object.values(s.vox || {}).forEach(v => keep.add(s.id + ':' + v)); if (s.rec && Array.isArray(s.rec.tracks)) BSRec.takeIds(s.rec).forEach(v => keep.add(s.id + ':' + v)); };
+    SONGS.forEach(add); add(S); undo.concat(redo).forEach(j => { try { add(JSON.parse(j)); } catch (e) { /* kaputt */ } }); if (window.BSRecUI && BSRecUI.st.recing) return;
+    const keys = await E.DB.keys(); for (const k of keys) if (typeof k === 'string' && /^s[\w]+:/.test(k) && !keep.has(k)) E.DB.del(k); }
   /* ---------- Anleitung & Einstellungen ---------- */
   function help() { scr('sHelp'); $('helpBox').innerHTML = `<header class="hd"><button class="btn sm nav" data-back>←</button><h2>❓ So geht's</h2><span></span></header><div class="help">
     <p><b>1. Song-Assistent:</b> Genre, Tonart, Tempo und Länge wählen – du bekommst sofort einen kompletten Song mit Intro, Strophe, Pre-Chorus, Refrain, Bridge und Outro.</p>
@@ -319,8 +330,9 @@
     <p><b>Drums:</b> Raster mit 16tel-Schritten – antippen setzt einen Schlag. <b>Bass & Melodie:</b> Das Raster zeigt nur Töne der Tonart, helle Felder passen zum Akkord. Notenlänge unten wählen. <b>Akkorde:</b> Je Takt ein Akkord, oder eine bekannte Folge übernehmen.</p>
     <p><b>🎲 Neu</b> würfelt eine Spur neu, <b>📋 Kopieren</b> übernimmt sie aus einem anderen Abschnitt, <b>↶ ↷</b> macht rückgängig.</p>
     <p><b>🧩 Aufbau:</b> Abschnitte anhängen, verschieben, doppelt (×2 = 8 Takte) spielen. <b>🎤 Gesang:</b> Abschnitt wählen, aufnehmen – mit Hall, Echo, Radio- oder Roboter-Stimme.</p>
+    <p><b>🎙️ Recording:</b> das ganze Aufnahmestudio – Spuren anlegen (🎤 Gesang/Audio, 🎹 Instrument), mit ● scharf schalten und aufnehmen. Lineal antippen setzt den Cursor, ziehen markiert einen Bereich für <b>Punch-In</b> oder <b>Schleife</b> (jeder Durchlauf ein Take, der oberste klingt). Takes verschieben, am Rand kürzen, teilen; Effekte je Spur (EQ, De-Esser, Kompressor, Autotune …), Songtext als Teleprompter, Gesangs-Coach, Stimmgerät, Latenz-Messung und Mastering in „Summe“. R = Aufnahme, Leertaste = ab Cursor.</p>
     <p><b>📤 Export:</b> fertiger Song als WAV, Einzelspuren, MIDI-Datei für andere Musikprogramme und Projektdatei. <b>🏆 Jury:</b> Rico, DJ Mia und Kalle bewerten Länge, Aufbau, Melodie, Groove, Abwechslung, Mix, Gesang und deine eigene Handschrift.</p>
-    <p><b>Steuerung:</b> Maus/Touch · Leertaste = Song abspielen, L = Abschnitt in Schleife, 1–7 oder [ ] = Bereich wechseln, Pfeile + Enter im Raster, Strg+Z rückgängig, Esc zurück · Controller: Steuerkreuz + Ⓐ, Ⓧ = Abspielen, Ⓨ = Schleife, LB/RB = Bereich.</p></div>
+    <p><b>Steuerung:</b> Maus/Touch · Leertaste = Song abspielen, L = Abschnitt in Schleife, 1–8 oder [ ] = Bereich wechseln, Pfeile + Enter im Raster, Strg+Z rückgängig, Esc zurück · Controller: Steuerkreuz + Ⓐ, Ⓧ = Abspielen, Ⓨ = Schleife, LB/RB = Bereich.</p></div>
     <div class="row end"><button class="btn gold nav" data-focus id="hOk">Los geht's</button></div>`; $('helpBox').querySelector('[data-back]').onclick = () => menu(); $('hOk').onclick = () => menu(); }
   function opts() { overlay(`<h3>⚙️ Einstellungen</h3>
       <p class="lbl">Raster-Ansicht</p><div class="chips">${[['auto', 'Automatisch'], ['all', 'Alle 4 Takte'], ['bar', 'Taktweise']].map(([k, n]) => `<button class="chip nav${SET.wide === k ? ' on' : ''}" data-act="w${k}">${n}</button>`).join('')}</div>
@@ -335,5 +347,6 @@
   addEventListener('resize', () => { if (cur === 'sStudio' && SET.wide === 'auto') renderStudio(true); });
   (function boot() { const tips = ['Die Lautsprecher werden warm …', 'Kabel werden gesteckt …', 'Der Drum-Computer zählt ein …']; let p = 0;
     const t = setInterval(() => { p += 25; $('loadBar').style.width = Math.min(100, p) + '%'; $('loadTip').textContent = tips[Math.min(tips.length - 1, Math.floor(p / 35))]; if (p >= 100) { clearInterval(t); if (cur === 'sLoad') scr('sTitle'); } }, 120); })();
-  window.BSApp = { get S() { return S; }, set S(v) { S = v; }, open: openStudio, wizard, menu, jury, setTab, edit, startSong, startLoop, stopAll, songs: () => SONGS, sec: v => { if (v) sec = v; return sec; } };
+  window.BSApp = { get S() { return S; }, set S(v) { S = v; }, open: openStudio, wizard, menu, jury, setTab, edit, startSong, startLoop, stopAll, songs: () => SONGS, sec: v => { if (v) sec = v; return sec; }, gc,
+    rec: { overlay, closeOv, ovOpen, toast, SET, saveSet, voxBufs, voxBytes, startAt, stopAll, exportOv, fileName, download, tab: () => tab, scr: () => cur } };
 })();

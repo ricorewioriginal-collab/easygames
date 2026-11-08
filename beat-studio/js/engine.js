@@ -16,10 +16,11 @@
     g.master = ctx.createGain(); g.master.gain.value = m.master.vol;
     g.comp = ctx.createDynamicsCompressor(); g.comp.threshold.value = -12; g.comp.ratio.value = 4; g.comp.attack.value = .005; g.comp.release.value = .2;
     g.master.connect(g.comp); g.comp.connect(dest || ctx.destination);
-    g.rev = ctx.createConvolver(); g.rev.buffer = ir(ctx); g.revGain = ctx.createGain(); g.revGain.gain.value = m.master.reverb; g.rev.connect(g.revGain); g.revGain.connect(g.master);
+    g.beat = ctx.createGain(); g.beat.gain.value = beatVol(song); g.beat.connect(g.master);   // Song-Spuren gemeinsam (Recording-Suite: „Beat“-Regler), Aufnahmespuren gehen direkt in g.master
+    g.rev = ctx.createConvolver(); g.rev.buffer = ir(ctx); g.revGain = ctx.createGain(); g.revGain.gain.value = m.master.reverb; g.rev.connect(g.revGain); g.revGain.connect(g.beat);
     C.TRACKS.forEach(k => { const t = { in: ctx.createGain(), gain: ctx.createGain(), send: ctx.createGain() };
       t.pan = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
-      t.in.connect(t.gain); if (t.pan) { t.gain.connect(t.pan); t.pan.connect(g.master); } else t.gain.connect(g.master);
+      t.in.connect(t.gain); if (t.pan) { t.gain.connect(t.pan); t.pan.connect(g.beat); } else t.gain.connect(g.beat);
       t.in.connect(t.send); t.send.connect(g.rev); g.tr[k] = t; });
     // Gesangs-Kette: Effekt vor dem Spur-Eingang
     const v = g.tr.vox; g.voxIn = ctx.createGain(); voxFx(ctx, g, m.vox.fx); void v;
@@ -33,11 +34,12 @@
     else g.voxIn.connect(out);
     g.voxFxName = fx;
   }
+  const beatVol = song => song.rec ? (song.rec.beatMute ? 0 : song.rec.beat) : 1;
   function apply(g, song) {   // Lautstärke/Panorama/Mute/Solo/Hall – auch während der Wiedergabe
     const m = song.mix, now = g.ctx.currentTime;
     C.TRACKS.forEach(k => { const t = g.tr[k]; t.gain.gain.setTargetAtTime(C.audible(song, k) ? m[k].vol : 0, now, .02); if (t.pan) t.pan.pan.setTargetAtTime(m[k].pan, now, .02);
       t.send.gain.setTargetAtTime(C.audible(song, k) ? (k === 'vox' ? (m.vox.fx === 'hall' ? .6 : m.vox.fx === 'clean' ? .05 : .2) : SEND[k]) : 0, now, .02); });
-    g.master.gain.setTargetAtTime(m.master.vol, now, .02); g.revGain.gain.setTargetAtTime(m.master.reverb, now, .02);
+    g.master.gain.setTargetAtTime(m.master.vol, now, .02); g.revGain.gain.setTargetAtTime(m.master.reverb, now, .02); g.beat.gain.setTargetAtTime(beatVol(song), now, .02);
     if (g.voxFxName !== m.vox.fx) voxFx(g.ctx, g, m.vox.fx);
   }
 
@@ -112,6 +114,17 @@
     src.start(t); src.stop(end + rel * 6 + .3);
   }
 
+  // Einzelne Note eines Instruments auf einen beliebigen Ausgang (Recording-Suite: Instrumentspuren). Liefert stop(t) zum Loslassen.
+  function note(ctx, out, kind, preset, m, t, d, v) {
+    const set = BAKED.get(kind + ':' + preset); if (!set || !set.length) { bake(kind, preset); tone(ctx, out, kind, preset, m, t, d || .5, v); return { stop() { } }; }
+    let z = set[0]; for (const x of set) if (Math.abs(x.m - m) < Math.abs(z.m - m)) z = x;
+    const src = ctx.createBufferSource(), gn = ctx.createGain(); src.buffer = z.buf; src.playbackRate.value = Math.pow(2, (m - z.m) / 12); src.connect(gn); gn.connect(out);
+    const rel = kind === 'chords' && preset === 'pad' ? .3 : .07, fade = DECAY[preset] && kind !== 'bass';
+    gn.gain.setValueAtTime(v == null ? .85 : v, t); src.start(t); let done = false;
+    const stop = te => { if (done) return; done = true; te = Math.max(te, t + .02); if (fade) gn.gain.setTargetAtTime(0, Math.max(te, t + .25), .25); else gn.gain.setTargetAtTime(0, te, rel); try { src.stop(te + (fade ? 1.6 : rel * 6 + .3)); } catch (e) { /* schon gestoppt */ } };
+    if (d) stop(t + d); return { stop };
+  }
+
   // ---------- Echtzeit-Wiedergabe ----------
   // mode: 'song' (Arrangement ab Block from) oder 'pat' (Abschnitt sec in Schleife). Wird taktweise mit Vorlauf geplant, Änderungen sind ab dem nächsten Takt hörbar.
   const P = { ctx: null, g: null, on: false, onTick: null, onEnd: null };
@@ -119,7 +132,15 @@
   P.start = function (song, opt) {
     P.stop(); ready(song); const ctx = ctxGet(); if (!ctx) return false; opt = opt || {};
     P.song = song; P.mode = opt.mode || 'song'; P.sec = opt.sec; P.from = opt.from || 0; P.voxBufs = opt.vox || {};
-    P.g = build(ctx, song); P.t0 = ctx.currentTime + .08; P.on = true; P.cursor = { block: P.from, rep: 0, bar: 0, t: P.t0 }; P.click = !!opt.click;
+    P.g = build(ctx, song); P.t0 = ctx.currentTime + .08 + Math.max(0, opt.delay || 0); P.on = true; P.cursor = { block: P.from, rep: 0, bar: 0, t: P.t0 }; P.click = !!opt.click; P.skipVox = -1;
+    P.base = P.mode === 'song' ? C.blockStart(song, P.from) : 0;
+    if (P.mode === 'song' && opt.at > 0) {   // mitten im Song starten (Recording-Suite): Block, Wiederholung und Takt suchen, Takt anteilig vorziehen
+      const at = Math.min(opt.at, C.songSec(song)), bs = C.barSec(song); let t = 0, i = 0; for (; i < song.arr.length; i++) { const d = C.blockSec(song, song.arr[i]); if (at < t + d - 1e-9) break; t += d; }
+      const within = at - t, bi = Math.floor(within / bs + 1e-9); P.from = i; P.base = at;
+      P.cursor = { block: i, rep: Math.floor(bi / C.BARS), bar: bi % C.BARS, t: P.t0 - (within - bi * bs) };
+      const buf = P.voxBufs[i]; if (buf && within > 1e-3 && C.audible(song, 'vox')) { if (within < buf.duration) { const s = ctx.createBufferSource(); s.buffer = buf; s.connect(P.g.voxIn); s.start(P.t0, within); } P.skipVox = i; }
+    }
+    if (P.hook && P.mode === 'song') try { P.hook(P); } catch (e) { /* Aufnahmespuren nicht abspielbar */ }
     P.timer = setInterval(sched, 25); sched(); return true;
   };
   function sched() {
@@ -127,16 +148,16 @@
     while (P.cursor.t < ahead) {
       const c = P.cursor; let sec, blockIdx = c.block;
       if (P.mode === 'pat') sec = P.sec; else { const b = song.arr[c.block]; if (!b) { const endAt = c.t; setTimeout(() => { if (P.on && P.ctx.currentTime >= endAt - .05) { P.stop(); if (P.onEnd) P.onEnd(); } }, Math.max(0, (endAt - ctx.currentTime) * 1000 + 60)); P.cursor.t = 1e12; return; } sec = b.sec; }
-      if (c.bar === 0 && c.rep === 0 && P.mode === 'song') { const buf = P.voxBufs[blockIdx]; if (buf && C.audible(song, 'vox')) { const s = ctx.createBufferSource(); s.buffer = buf; s.connect(P.g.voxIn); s.start(Math.max(c.t, ctx.currentTime)); } }
-      if (P.click) { for (let i = 0; i < 4; i++) { const o = osc(ctx, 'square', i ? 1000 : 1500, c.t + i * bar / 4, .03), gg = ctx.createGain(); env(gg.gain, c.t + i * bar / 4, .001, .12, .03); o.connect(gg); gg.connect(P.g.master); } }
-      C.patEvents(song, sec).forEach(e => { const st = e.t - c.bar * bar; if (st >= -1e-6 && st < bar - 1e-6 && C.audible(song, e.tr)) play(P.g, song, e, c.t + st); });
-      c.t += bar; c.bar++;
+      if (c.bar === 0 && c.rep === 0 && P.mode === 'song' && blockIdx !== P.skipVox) { const buf = P.voxBufs[blockIdx]; if (buf && C.audible(song, 'vox')) { const s = ctx.createBufferSource(); s.buffer = buf; s.connect(P.g.voxIn); s.start(Math.max(c.t, ctx.currentTime)); } }
+      if (P.click) { for (let i = 0; i < 4; i++) { if (c.t + i * bar / 4 < P.t0 - 1e-4) continue; const o = osc(ctx, 'square', i ? 1000 : 1500, c.t + i * bar / 4, .03), gg = ctx.createGain(); env(gg.gain, c.t + i * bar / 4, .001, .12, .03); o.connect(gg); gg.connect(P.g.master); } }
+      C.patEvents(song, sec).forEach(e => { const st = e.t - c.bar * bar; if (st >= -1e-6 && st < bar - 1e-6 && c.t + st >= P.t0 - 1e-4 && C.audible(song, e.tr)) play(P.g, song, e, c.t + st); });
+      c.t += bar; c.bar++; if (P.skipVox === blockIdx && c.bar >= C.BARS) P.skipVox = -1;
       if (c.bar >= C.BARS) { c.bar = 0; c.rep++; const reps = P.mode === 'pat' ? 1 : ((song.arr[c.block] || {}).rep || 1); if (c.rep >= reps) { c.rep = 0; if (P.mode !== 'pat') c.block++; } }
     }
   }
   P.stop = function () { if (!P.on && !P.g) return; P.on = false; clearInterval(P.timer); const g = P.g; P.g = null; if (g) { const now = g.ctx.currentTime; g.master.gain.cancelScheduledValues(now); g.master.gain.setTargetAtTime(0, now, .015); setTimeout(() => { try { g.comp.disconnect(); } catch (e) { /* weg */ } }, 120); } };
   // Spielposition: Sekunden seit Start (Song-Zeit ab Block from) bzw. Position im Abschnitt
-  P.pos = function () { if (!P.on) return 0; const t = P.ctx.currentTime - P.t0; return P.mode === 'pat' ? ((t % C.patSec(P.song)) + C.patSec(P.song)) % C.patSec(P.song) : C.blockStart(P.song, P.from) + t; };
+  P.pos = function () { if (!P.on) return 0; const t = P.ctx.currentTime - P.t0; return P.mode === 'pat' ? ((t % C.patSec(P.song)) + C.patSec(P.song)) % C.patSec(P.song) : P.base + t; };
   P.update = function (song) { if (P.g) apply(P.g, song); };
   // einzelner Klang zum Vorhören (Klick ins Raster)
   P.preview = function (song, e) { const ctx = ctxGet(); if (!ctx) return; if (!P.pg || P.pg.song !== song) { P.pg = build(ctx, song); P.pg.song = song; } apply(P.pg, song); play(P.pg, song, Object.assign({ v: .9, d: .3 }, e), ctx.currentTime + .01); };
@@ -144,14 +165,15 @@
   // ---------- Export: ganzer Song oder einzelne Spur, offline gerechnet ----------
   async function render(song, opt) {
     opt = opt || {}; if (!OAC) throw new Error('Kein Offline-Audio');
-    await ready(song); const sr = 44100, dur = C.songSec(song) + 2.5, ctx = new OAC(2, Math.ceil(sr * dur), sr);
-    let s = song; if (opt.only) { s = JSON.parse(JSON.stringify(song)); C.TRACKS.forEach(k => { s.mix[k].solo = k === opt.only ? 1 : 0; s.mix[k].mute = 0; }); }
+    await ready(song); const sr = 44100, dur = Math.max(C.songSec(song), opt.dur || 0) + 2.5, ctx = new OAC(2, Math.ceil(sr * dur), sr);
+    let s = song; if (opt.only) { s = JSON.parse(JSON.stringify(song)); const rec = /^rec:/.test(opt.only); C.TRACKS.forEach(k => { s.mix[k].solo = !rec && k === opt.only ? 1 : 0; s.mix[k].mute = rec ? 1 : 0; }); if (s.rec) { s.rec.beat = 1; s.rec.beatMute = 0; } }
     const g = build(ctx, s); const t0 = .05;
     // Noten abschnittsweise anlegen (suspend/resume): sonst existieren alle Tausende Knoten über die ganze Rechenzeit und bremsen
     const evs = C.events(s).filter(e => C.audible(s, e.tr)); let idx = 0; const CH = 1.5, q = 128 / sr;
     const upTo = tEnd => { while (idx < evs.length && t0 + evs[idx].t < tEnd) { play(g, s, evs[idx], t0 + evs[idx].t); idx++; } };
     upTo(CH + .2); if (ctx.suspend) for (let k = 1; k * CH < dur - .2; k++) { const at = Math.round(k * CH / q) * q; ctx.suspend(at).then(() => { upTo(at + CH + .2); if (opt.onProgress) opt.onProgress(at / dur); ctx.resume(); }); } else upTo(1e9);
     if (C.audible(s, 'vox') && opt.vox) for (const k of Object.keys(opt.vox)) { const ab = opt.vox[k]; if (!ab || +k >= s.arr.length) continue; try { const buf = await ctx.decodeAudioData(ab.slice(0)); const src = ctx.createBufferSource(); src.buffer = buf; src.connect(g.voxIn); src.start(t0 + C.blockStart(s, +k)); } catch (e) { /* defekte Aufnahme überspringen */ } }
+    if (opt.extra) await opt.extra(ctx, g, t0, s, opt);   // Aufnahmespuren der Recording-Suite
     const out = await ctx.startRendering(); const ch = [out.getChannelData(0), out.getChannelData(1)];
     let peak = 0; for (const c of ch) for (let i = 0; i < c.length; i += 3) { const a = Math.abs(c[i]); if (a > peak) peak = a; }
     if (peak > .97) { const k = .97 / peak; ch.forEach(c => { for (let i = 0; i < c.length; i++) c[i] *= k; }); }
@@ -177,5 +199,6 @@
   DB.get = k => DB.open().then(db => new Promise(res => { const r = db.transaction('vox').objectStore('vox').get(k); r.onsuccess = () => res(r.result || null); r.onerror = () => res(null); })).catch(() => null);
   DB.del = k => DB.open().then(db => new Promise(res => { const t = db.transaction('vox', 'readwrite'); t.objectStore('vox').delete(k); t.oncomplete = () => res(); t.onerror = () => res(); })).catch(() => { });
 
-  window.BSEngine = { P, render, ready, Rec, toBuffer, decode, DB, VOXFX, ctx: ctxGet, ok: !!AC };
+  DB.keys = () => DB.open().then(db => new Promise(res => { const r = db.transaction('vox').objectStore('vox').getAllKeys(); r.onsuccess = () => res(r.result || []); r.onerror = () => res([]); })).catch(() => []);
+  window.BSEngine = { P, render, ready, bake, note, ir, Rec, toBuffer, decode, DB, VOXFX, ctx: ctxGet, ok: !!AC };
 })();

@@ -205,7 +205,8 @@
     const used = [...uniq].map(k => s.pat[k]), leadN = used.reduce((n, p) => n + p.lead.length, 0), drumN = used.reduce((n, p) => n + Object.values(p.drums).reduce((a, x) => a + x.filter(Boolean).length, 0), 0);
     const leadRange = (() => { const ns = used.flatMap(p => p.lead.map(x => x.n)); return ns.length ? Math.max(...ns) - Math.min(...ns) : 0; })();
     const sig = k => JSON.stringify(s.pat[k]), variety = new Set([...uniq].map(sig)).size / Math.max(1, uniq.size);
-    const voxN = Object.keys(s.vox || {}).filter(k => s.vox[k] && +k < s.arr.length).length;
+    const voxN = Object.keys(s.vox || {}).filter(k => s.vox[k] && +k < s.arr.length).length
+      + (s.rec && Array.isArray(s.rec.tracks) ? s.rec.tracks.filter(t => t.kind === 'audio' && !t.mute).reduce((n, t) => n + Math.min(3, t.takes.filter(k => k.enabled).length), 0) : 0);   // Aufnahmen der Recording-Suite zählen mit
     const C = {
       laenge: dur >= 120 && dur <= 260 ? 100 : dur >= 75 && dur <= 330 ? 70 : dur >= 40 ? 40 : 15,
       aufbau: clamp((uniq.has('verse') ? 30 : 0) + (uniq.has('chorus') ? 30 : 0) + (chorusN >= 2 ? 20 : 0) + (uniq.has('intro') || uniq.has('outro') ? 10 : 0) + (uniq.has('bridge') || uniq.has('pre') ? 10 : 0), 0, 100),
@@ -245,6 +246,7 @@
     s.edits = clamp(Math.round(+x.edits) || 0, 0, 1e6);
     if (x.mix) TRACKS.concat('master').forEach(k => { if (x.mix[k]) Object.keys(s.mix[k]).forEach(f => { const v = x.mix[k][f]; if (typeof v === typeof s.mix[k][f]) s.mix[k][f] = typeof v === 'number' ? clamp(v, -1, 1.5) : String(v).slice(0, 20); }); });
     if (x.vox && typeof x.vox === 'object') Object.keys(x.vox).forEach(k => { if (/^\d+$/.test(k) && typeof x.vox[k] === 'string') s.vox[k] = x.vox[k].slice(0, 80); });
+    if (x.rec && typeof API.cleanRec === 'function') s.rec = API.cleanRec(x.rec);   // Recording-Suite (rec-core.js)
     return s;
   }
 

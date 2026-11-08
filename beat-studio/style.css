@@ -107,3 +107,45 @@ select { background: #241c62; border: 2px solid var(--bd); border-radius: 10px; 
   .tab span { display: none; } .tab { padding: 8px; font-size: 18px; } .grid { grid-template-columns: 70px repeat(var(--cols), minmax(14px, 1fr)); } .crit div { grid-template-columns: 110px 1fr 30px; }
   .chordBars .cbar b { font-size: 20px; }
 }
+/* Recording-Suite */
+.rc { display: flex; flex-direction: column; gap: 8px; min-height: 100%; }
+.rcBar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; } .rcBar .chips { margin: 0; } .rcBar .chip.on { border-color: var(--gold); }
+.rcBar .play { width: 44px; height: 36px; min-height: 36px; font-size: 16px; }
+.rcMain { display: grid; grid-template-columns: 150px 1fr; border: 1px solid var(--bd); border-radius: 12px; overflow: hidden; background: rgba(0, 0, 0, .25); }
+.rcHeads { display: flex; flex-direction: column; border-right: 1px solid var(--bd); background: rgba(8, 6, 26, .6); }
+.rcHead { height: 64px; padding: 4px 6px; display: flex; flex-direction: column; gap: 3px; border-bottom: 1px solid rgba(255, 255, 255, .07); }
+.rcHead.ruler { height: 26px; font-size: 11px; color: var(--dim); justify-content: center; } .rcHead.song { height: 56px; flex-direction: row; flex-wrap: wrap; align-items: center; } .rcHead.song b { font-size: 13px; flex: 1; }
+.rcHead.on { background: rgba(255, 204, 58, .14); box-shadow: inset 3px 0 0 var(--gold); }
+.rcHead .hn { border: 0; background: none; color: #fff; text-align: left; font-weight: 600; font-size: 13px; padding: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rcHead .ms { display: flex; gap: 3px; } .rcHead .ms .btn { flex: 0 0 auto; min-height: 26px; padding: 2px 8px; font-size: 12px; border-radius: 8px; } .rcHead input[type=range] { height: 16px; }
+.rcHead:not(.song):not(.ruler) { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; } .rcHead:not(.song) .hn { grid-column: 1 / 3; } .rcHead.song input { flex: 1 0 100%; }
+.rcScroll { overflow-x: auto; overflow-y: hidden; } .rcCan { position: relative; min-width: 100%; }
+.rcRuler { position: relative; height: 26px; cursor: pointer; touch-action: none; background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .35) 0 1px, transparent 1px var(--bar)), rgba(8, 6, 26, .7); border-bottom: 1px solid var(--bd); }
+.rcRuler span { position: absolute; top: 4px; padding-left: 3px; font-size: 11px; color: var(--dim); pointer-events: none; } .rcRuler .rng { position: absolute; top: 0; bottom: 0; background: rgba(58, 216, 255, .35); border-left: 2px solid var(--cy); border-right: 2px solid var(--cy); pointer-events: none; }
+.rcLane { position: relative; height: 64px; border-bottom: 1px solid rgba(255, 255, 255, .07); background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .12) 0 1px, transparent 1px var(--bar)), repeating-linear-gradient(90deg, rgba(255, 255, 255, .04) 0 1px, transparent 1px var(--beat)); touch-action: pan-x; }
+.rcLane.on { background-color: rgba(255, 204, 58, .05); } .rcLane.song { height: 56px; } .rcLane.empty span { position: absolute; left: 12px; top: 20px; color: var(--dim); font-size: 13px; white-space: nowrap; }
+.rcLane.song i { position: absolute; top: 8px; bottom: 8px; border-radius: 6px; background: var(--c); opacity: .55; font-style: normal; font-size: 11px; font-weight: 700; padding: 4px; overflow: hidden; white-space: nowrap; }
+.rcLane canvas.nl { position: absolute; left: 0; top: 6px; height: 52px; pointer-events: none; }
+.tk { position: absolute; top: 5px; height: 54px; padding: 0; border: 2px solid rgba(255, 255, 255, .3); border-radius: 8px; background: linear-gradient(180deg, rgba(255, 77, 141, .75), rgba(160, 30, 90, .75)); overflow: hidden; cursor: grab; touch-action: none; color: #fff; }
+.tk canvas { position: absolute; left: 0; top: 4px; width: 100%; height: 44px; pointer-events: none; } .tk span { position: absolute; left: 4px; top: 1px; font-size: 10px; font-weight: 700; text-shadow: 0 1px 2px #000; pointer-events: none; white-space: nowrap; }
+.tk.sel { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold); } .tk.off { background: rgba(120, 110, 150, .45); filter: grayscale(1); }
+.tk .hl, .tk .hr { position: absolute; top: 0; bottom: 0; width: 8px; cursor: ew-resize; background: rgba(255, 255, 255, .18); } .tk .hl { left: 0; } .tk .hr { right: 0; }
+.rcCur { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--gold); pointer-events: none; z-index: 90; } .rcPh { position: absolute; top: 0; bottom: 0; width: 2px; background: #fff; box-shadow: 0 0 8px #fff; pointer-events: none; z-index: 91; }
+.rcTabs { margin: 0; } .rcPanel { background: var(--p2); border-radius: 12px; padding: 10px; }
+.fxg { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; margin-top: 8px; } .fxg label { font-size: 13px; color: var(--dim); } .fxg b { color: #fff; float: right; font-weight: 600; }
+.tkList { display: flex; flex-direction: column; gap: 4px; } .tkRow { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; padding: 4px; border-radius: 10px; background: rgba(0, 0, 0, .2); } .tkRow.sel { box-shadow: inset 0 0 0 2px var(--gold); }
+.tkRow .hn { flex: 1 1 160px; border: 0; background: none; color: #fff; text-align: left; font-weight: 600; } .tkRow .hn small { display: block; color: var(--dim); font-weight: 400; } .tkRow .kg { font-size: 12px; color: var(--dim); display: flex; align-items: center; gap: 4px; } .tkRow .kg input { width: 90px; }
+.piano { position: relative; display: grid; grid-template-columns: repeat(var(--w), 1fr); height: 120px; margin: 8px 0; max-width: 760px; user-select: none; touch-action: none; }
+.pk { border: 1px solid #333; border-radius: 0 0 6px 6px; background: linear-gradient(180deg, #fff, #ddd); color: #555; font-size: 10px; display: flex; align-items: flex-end; justify-content: center; padding: 0 0 4px; }
+.pk.bk { position: absolute; top: 0; height: 62%; width: calc(100% / var(--w) * .62); left: calc(100% / var(--w) * var(--i) - 100% / var(--w) * .31); background: linear-gradient(180deg, #333, #000); z-index: 2; border-radius: 0 0 4px 4px; }
+.pk.on { background: linear-gradient(180deg, var(--gold), #f29f05); } .pk.bk.on { background: linear-gradient(180deg, var(--gold), #a86b00); }
+.rcHud { position: fixed; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 55; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; max-width: calc(100vw - 20px); padding: 10px 14px; border-radius: 18px; background: rgba(8, 6, 26, .95); border: 2px solid var(--red); box-shadow: 0 10px 40px rgba(0, 0, 0, .6); }
+.rcHud .dot { color: var(--red); animation: blink 1s infinite; } #hudT { font-variant-numeric: tabular-nums; min-width: 70px; }
+.rcHud .lvl { width: 90px; height: 10px; border-radius: 5px; background: rgba(255, 255, 255, .12); overflow: hidden; } .rcHud .lvl b { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--gr), var(--gold)); } .rcHud .lvl b.clip { background: var(--red); }
+#hudP { min-width: 74px; font-weight: 700; } #hudP.in { color: var(--gr); } #hudP.out { color: var(--gold); }
+.tele { flex: 1 1 220px; min-width: 0; text-align: center; } .tele:empty { display: none; } .tele b { display: block; font-size: 20px; } .tele small { display: block; color: var(--dim); }
+.tuner { text-align: center; } .tuner b { font-size: 56px; display: block; } .needle { position: relative; height: 22px; margin: 8px 0; border-radius: 11px; background: linear-gradient(90deg, var(--red), var(--gold) 40%, var(--gr) 50%, var(--gold) 60%, var(--red)); }
+.needle i { position: absolute; left: 50%; top: -4px; bottom: -4px; width: 4px; margin-left: -2px; background: #fff; border-radius: 2px; box-shadow: 0 0 6px #000; transition: left .08s; } .needle i.ok { background: var(--gr); box-shadow: 0 0 10px var(--gr); }
+.coach { margin-top: 8px; } .coach .big { font-size: 44px; color: var(--gold); margin-right: 10px; } .coach canvas { width: 100%; height: 160px; background: rgba(0, 0, 0, .3); border-radius: 10px; margin-top: 6px; }
+.lyr { width: 100%; resize: vertical; font: inherit; color: inherit; } .lyrL { columns: 2 260px; font-size: 14px; color: var(--dim); } .lyrL b { color: var(--gold); font-variant-numeric: tabular-nums; margin-right: 6px; }
+@media (max-width: 700px) { .rcBar { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; } .rcBar > * { flex: none; } .rcMain { grid-template-columns: 104px 1fr; } .rcHead:not(.song) input[type=range] { display: none; } .rcHead .hn { font-size: 12px; } .rcHead .ms .btn { padding: 2px 6px; } .tele b { font-size: 16px; } .rcHud { gap: 6px; padding: 8px 10px; } }

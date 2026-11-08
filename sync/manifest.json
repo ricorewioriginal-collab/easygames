@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "eb3c200aad85",
- "generated": "2026-11-08T17:34:13+01:00",
- "commit": "53f5f0523d28fa7093414ad3ffe3bd145a1a8339",
+ "version": "8251119ef830",
+ "generated": "2026-11-08T18:36:28+01:00",
+ "commit": "f02ae7f96a73d6de00ca503de8974cec479f87ed",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3798,23 +3798,38 @@
   },
   {
    "p": "beat-studio/index.html",
-   "s": 8075,
-   "h": "0bfc5d7b937df395c4ef0875b4ffbf3e219744551d2610dd1bdb26631ba4c1be"
+   "s": 8349,
+   "h": "b11e50ad756f25c4a82fb1a424e0e1d17c44942a70f0bdc7daf1b10a9b471b62"
   },
   {
    "p": "beat-studio/js/app.js",
-   "s": 49099,
-   "h": "82414091732c0e790a84ea10c31e78c620c0cb2f2b24d9fa4c3e468f5abf064c"
+   "s": 52503,
+   "h": "48fa6663828be9609083ac176193c44e681dbf4f7af291aee9af484e832146a3"
   },
   {
    "p": "beat-studio/js/core.js",
-   "s": 25529,
-   "h": "fedde1e979c72524a07b9cb52da91eb293ee663e8ff5ddb589ea809a441cdebc"
+   "s": 25878,
+   "h": "48998c46eb1ecc6b0fd7f0a2106ef8ca9c8580eccca6f8f0be990dc84b74f2e3"
   },
   {
    "p": "beat-studio/js/engine.js",
-   "s": 22690,
-   "h": "3251364ed25c6cceffc7478c6a9ad12fc5bfdf2ed3cfceab8ceec3f6c43d7f91"
+   "s": 25766,
+   "h": "f3315959d8beb7089df7053fdfd7f6eaf5a1264c479ff81ce9304bb014dfe3eb"
+  },
+  {
+   "p": "beat-studio/js/rec-core.js",
+   "s": 21353,
+   "h": "cff9f1a840c972c9e21e7f8a8866719e76aeb3f1759f2c9f0bc92e5f37d5953e"
+  },
+  {
+   "p": "beat-studio/js/rec-worklet.js",
+   "s": 1210,
+   "h": "f4ab69bad34dc6a189375f2a25c329e6c78e9b30d8c8b40b25a3caac91547fb2"
+  },
+  {
+   "p": "beat-studio/js/recorder.js",
+   "s": 70702,
+   "h": "377d35f1940ea0849c9414d85862e36aea0df85c4b405eaa6a95a61045ce6dec"
   },
   {
    "p": "beat-studio/manifest.webmanifest",
@@ -3823,8 +3838,8 @@
   },
   {
    "p": "beat-studio/style.css",
-   "s": 15629,
-   "h": "7267cc8a8807adc0394b214ab92a78f7a2045283096e87629c319c91253ba804"
+   "s": 24049,
+   "h": "3c1524d222ea8b7b742b5f6e574cf82811361a791e661ab89e4ebaebae59ce5f"
   },
   {
    "p": "beat-studio/sw.js",
@@ -5523,8 +5538,8 @@
   },
   {
    "p": "games.js",
-   "s": 55715,
-   "h": "db4cef93ddfcbde1ac76b2947fcebb7efa20f22c5945697017e9c934cc877be7"
+   "s": 55966,
+   "h": "ba4e450ed15854e4245c19c61b71cda454902c8d6feb299db18b46760e51ab64"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5903,8 +5918,8 @@
   },
   {
    "p": "guides/beat-studio.json",
-   "s": 8853,
-   "h": "2a9dcb5d6d9382d1e819dc170f4d965ce6218b1d9c706fd2ccfa38951df05acb"
+   "s": 14132,
+   "h": "25455f824f0499f44f4480e63be14f027580b9912bd20415adc8e836fa6dd80a"
   },
   {
    "p": "guides/bowling-bahn.json",
@@ -8723,8 +8738,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 250255,
-   "h": "7a10c4779f93ed290855552b2fbe35ad31b5c95e987fa27e78e69b231f97afaf"
+   "s": 250507,
+   "h": "c07145cbd0f62a47dc3c7ae5186da7761a93e9b1d783e08b676df83f832db9c9"
   },
   {
    "p": "taschi/card.svg",
