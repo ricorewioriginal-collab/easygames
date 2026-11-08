@@ -51,4 +51,5 @@ const rev = [[0, 60, 0.4, 0.8], [0.25, 64, 0.2, 0.6], [0.31, 67, 1.5, 1]], dec =
 ok(dec.length === 3 && dec.every((e, i) => e[1] === rev[i][1] && Math.abs(e[0] - rev[i][0]) < 0.011), 'Aufnahme: Link-Codierung verlustarm');
 ok(KMid.toChartRec(rev, 'x', 100).mel.length === 3, 'Aufnahme: schnelle Töne bleiben als Lied erhalten');
 ok(C.slice(C.fromNotation(KLSongs.list.find(s => s.id === 'ode')), 0, 32, 3).mel.length === 3 * C.fromNotation(KLSongs.list.find(s => s.id === 'ode')).mel.filter(n => n[0] < 32).length, 'Fehlerstellen: Ausschnitt dreimal');
+ok(idx.songs.filter(s => s.gems > 0).length === 20 && idx.songs.filter(s => s.gems).every(s => /^neu-/.test(s.id) && s.lic), 'Shop: 20 neue Lieder zum Freischalten, jedes mit Rechte-Angabe');
 console.log(fail ? fail + ' Fehler' : 'Alle Kern-Tests bestanden'); process.exit(fail ? 1 : 0);

@@ -77,7 +77,9 @@
       "t": "Diamanten, Shop, Aufgaben und Erfolge",
       "list": [
         "💎 Diamanten gibt es für Sterne (2 je Stern), Kronen (5), goldene Kacheln, fehlerfreie Lieder, Lektionen, Aufgaben und Erfolge.",
-        "💎 Shop: Kachel-Designs (Klassik, Schwarz, Neon, Eis, Glitzer, Gold), Hintergründe (Bonbon, Sternennacht, Sonnenuntergang, Ozean, Zauberwald) und Klänge fürs Freie Klavier.",
+        "💎 Shop mit sechs Bereichen: 🟦 Kachel-Designs (u. a. Neon, Eis, Glitzer, Gold, Regenbogen, Holz, Kristall, Nacht-Neon, Weihnachten), 🌅 Hintergründe (u. a. Sternennacht, Ozean, Winterzauber, Regenbogen), ✨ Treffer-Effekte (Funken, Sterne, Herzen, Noten, Schnee, Feuerwerk), 🎹 Klänge (auf Wunsch auch in allen Spielmodi), 🧰 Hilfsmittel und 🆕 Neue Lieder.",
+        "🧰 Hilfsmittel (nicht im Turnier und Battle): ❤️ Extra-Herz (ein viertes Herz) und 🛡️ Schutzschild (fängt einen Fehler ab) wählst du vor dem Lied, die 🐢 Zeitlupe (8 Sekunden 40 % langsamer) tippst du im Spiel oben an.",
+        "🆕 Neue Lieder: 20 gemeinfreie Lieder, die es sonst nicht gibt – u. a. Battle Hymn of the Republic, The Star-Spangled Banner, La Marseillaise, Grandfather's Clock, Drunken Sailor, Mozarts Jagdquartett, eine Chopin-Mazurka und Amy Beachs „Prayer of a Tired Child“. Vor dem Freischalten kannst du 20 Sekunden reinhören.",
         "📋 Aufgaben: jeden Tag drei neue, z. B. „Spiele 3 Lieder“ oder „Combo von 50“ – mit Diamanten als Belohnung.",
         "🏅 Erfolge: 20 Erfolge vom ersten Lied bis zum Battle-Sieg. Sie erscheinen auch auf der easygames-Erfolge-Seite."
       ]
@@ -174,8 +176,8 @@
     {
       "t": "Lieder und Rechte",
       "p": [
-        "Alle 103 Melodien sind gemeinfrei: Kinder-, Volks- und Weihnachtslieder sowie Werke von Komponisten, die vor über 70 Jahren gestorben sind – unter anderem Bach, Beethoven, Mozart, Händel, Schubert, Schumann, Verdi, Grieg, Brahms, Strauss, Offenbach, Pachelbel und Scott Joplin. Jedes Lied nennt Komponist mit Lebensdaten oder Herkunft und die Notenvorlage.",
-        "Die Lieder im Spiel und ein Teil des Archivs wurden für easygames als Klaviersatz neu gesetzt. Bach-Choräle, Klassik und viele Volksweisen stammen aus dem freien music21-Notenkorpus (Bach-Choräle nach jsbchorales.net, Volksweisen aus Ryan's Mammoth Collection 1883, O'Neill's Music of Ireland 1903, Aird's Selection of Airs 1782–1803)."
+        "Alle 123 Melodien sind gemeinfrei: Kinder-, Volks- und Weihnachtslieder sowie Werke von Komponisten, die vor über 70 Jahren gestorben sind – unter anderem Bach, Beethoven, Mozart, Händel, Schubert, Schumann, Verdi, Grieg, Brahms, Strauss, Offenbach, Pachelbel und Scott Joplin, Chopin und Amy Beach. Jedes Lied nennt Komponist mit Lebensdaten oder Herkunft und die Notenvorlage.",
+        "Die Lieder im Spiel und ein Teil des Archivs wurden für easygames als Klaviersatz neu gesetzt. Bach-Choräle, Klassik und viele Volksweisen stammen aus dem freien music21-Notenkorpus (Bach-Choräle nach jsbchorales.net, Volksweisen aus Ryan's Mammoth Collection 1883, O'Neill's Music of Ireland 1903, Aird's Selection of Airs 1782–1803). Die 20 neuen Lieder im Shop stammen aus The American Veteran Fifer (1905), Northumbrian Minstrelsy (1882), Ryan's Mammoth Collection, Aird's Selection und Originalsätzen (Mozart, Chopin, Amy Beach) im music21-Korpus."
       ]
     }
   ],
@@ -274,6 +276,14 @@
         "Nur auf die grüne Taste mit der 1 achten.",
         "Bei Akkorden alle drei markierten Tasten gleichzeitig drücken."
       ]
+    },
+    {
+      "t": "Hilfsmittel klug einsetzen",
+      "list": [
+        "Für eine Krone in Runde 3 oder 4: Extra-Herz und Schild vor dem Lied wählen.",
+        "Die Zeitlupe für schnelle Stellen aufheben – sie hält 8 Sekunden.",
+        "Im Turnier und im Battle gibt es keine Hilfsmittel – dort zählt nur das Können."
+      ]
     }
   ],
   "faq": [
@@ -320,6 +330,10 @@
     {
       "q": "Werden meine MIDI-Dateien hochgeladen?",
       "a": "Nein. Eigene MIDI-Lieder und Aufnahmen bleiben nur auf deinem Gerät. Nur ein geteilter Aufnahme-Link enthält die Töne im Link selbst."
+    },
+    {
+      "q": "Kann ich Diamanten kaufen?",
+      "a": "Nein. Diamanten gibt es nur im Spiel – für Sterne, Kronen, goldene Kacheln, Aufgaben und Erfolge. Es gibt keine Käufe mit echtem Geld."
     }
   ]
 }

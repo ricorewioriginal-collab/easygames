@@ -14,14 +14,36 @@
       neon: { n: 'Neon', ic: '💜', price: 30, base: '#1a0033', head: '#ff2fd0', mid: '#5a00a0', mark: '#00f7ff' },
       eis: { n: 'Eis', ic: '🧊', price: 60, base: '#06283d', head: '#7fe7ff', mid: '#1b6a8c', mark: '#ffffff' },
       glitzer: { n: 'Glitzer', ic: '✨', price: 90, base: '#2b0a3d', head: '#c86bff', mid: '#6a2a99', mark: '#ffd6ff', sparkle: true },
-      gold: { n: 'Gold', ic: '🥇', price: 150, base: '#3b2600', head: '#ffcc33', mid: '#8a5a00', mark: '#fff3b0', sparkle: true }
+      gold: { n: 'Gold', ic: '🥇', price: 150, base: '#3b2600', head: '#ffcc33', mid: '#8a5a00', mark: '#fff3b0', sparkle: true },
+      regenbogen: { n: 'Regenbogen', ic: '🌈', price: 80, base: '#1a1030', head: '#ff5f7e', mid: '#3a2a60', mark: '#ffffff', rainbow: true },
+      holz: { n: 'Holz', ic: '🪵', price: 50, base: '#4a2e14', head: '#c58b4c', mid: '#7d5228', mark: '#ffe2b0' },
+      kristall: { n: 'Kristall', ic: '💠', price: 110, base: '#0b2a4a', head: '#bfefff', mid: '#4f9fd6', mark: '#ffffff', sparkle: true },
+      nachtneon: { n: 'Nacht-Neon', ic: '🟩', price: 70, base: '#000000', head: '#00ffa6', mid: '#00563a', mark: '#ff3df5' },
+      weihnacht: { n: 'Weihnachten', ic: '🎄', price: 90, base: '#0b4a1e', head: '#d81e2c', mid: '#7a0f18', mark: '#ffffff', sparkle: true }
     },
     bg: {
       bonbon: { n: 'Bonbon', ic: '🍬', price: 0, c: ['#ff7ad9', '#a77bff', '#4fc8ff'] },
       nacht: { n: 'Sternennacht', ic: '🌌', price: 40, c: ['#0b0630', '#2a1470', '#0d3b7a'] },
       sonne: { n: 'Sonnenuntergang', ic: '🌅', price: 40, c: ['#ff9a3c', '#ff4f8b', '#7a3cff'] },
       ozean: { n: 'Ozean', ic: '🌊', price: 70, c: ['#00c9a7', '#0089ba', '#2c3e9e'] },
-      wald: { n: 'Zauberwald', ic: '🌲', price: 70, c: ['#1f7a4d', '#2fb38a', '#a8e063'] }
+      wald: { n: 'Zauberwald', ic: '🌲', price: 70, c: ['#1f7a4d', '#2fb38a', '#a8e063'] },
+      winter: { n: 'Winterzauber', ic: '❄️', price: 60, c: ['#0b3d5c', '#3f87c4', '#d6f0ff'] },
+      regenbogen: { n: 'Regenbogen', ic: '🌈', price: 90, c: ['#ff6b6b', '#ffd93d', '#6bcBff'] }
+    },
+    // Treffer-Effekte: g = Zeichen statt Funken (null = farbige Funken)
+    fx: {
+      funken: { n: 'Funken', ic: '💥', price: 0, g: null },
+      sterne: { n: 'Sterne', ic: '⭐', price: 30, g: '★' },
+      herzen: { n: 'Herzen', ic: '💖', price: 30, g: '♥' },
+      noten: { n: 'Noten', ic: '🎵', price: 40, g: '♪' },
+      schnee: { n: 'Schnee', ic: '❄️', price: 40, g: '❄' },
+      feuerwerk: { n: 'Feuerwerk', ic: '🎆', price: 60, g: null, big: true }
+    },
+    // Hilfsmittel: werden pro Runde verbraucht
+    item: {
+      heart: { n: 'Extra-Herz', ic: '❤️', price: 15, d: 'Ein viertes Herz für eine Runde.' },
+      shield: { n: 'Schutzschild', ic: '🛡️', price: 15, d: 'Fängt einen Fehler ab.' },
+      slow: { n: 'Zeitlupe', ic: '🐢', price: 20, d: '8 Sekunden lang 40 % langsamer – im Spiel antippen.' }
     },
     sound: {
       klavier: { n: 'Flügel', ic: '🎹', price: 0 },
@@ -75,13 +97,18 @@
   function rng(seed) { let x = (seed * 2654435761) >>> 0; return () => { x ^= x << 13; x >>>= 0; x ^= x >>> 17; x ^= x << 5; x >>>= 0; return x / 4294967296; }; }
   function pickN(n, k, seed) { const r = rng(seed), a = Array.from({ length: n }, (_, i) => i); for (let i = n - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a.slice(0, Math.min(k, n)); }
   let M = null;
-  function fresh() { return { v: 1, gems: 0, gemsTotal: 0, own: { design: ['klassik', 'schwarz'], bg: ['bonbon'], sound: ['klavier', 'epiano'] }, use: { design: 'klassik', bg: 'bonbon', sound: 'klavier' }, plays: {}, fav: [], modes: [], stars: 0, crowns: 0, endlessBest: 0, songs: 0, quests: null, ach: {}, lessons: {}, week: { id: 0, best: 0 }, weekBoard: 0 }; }
-  function load() { if (M) return M; let d = null; try { d = JSON.parse(store.getItem(KEY)); } catch (e) { /* kaputt */ } M = Object.assign(fresh(), d || {}); const f = fresh(); for (const k of ['design', 'bg', 'sound']) { M.own[k] = Array.from(new Set((M.own[k] || []).concat(f.own[k]))); if (!M.use[k] || !SHOP[k][M.use[k]]) M.use[k] = f.use[k]; } return M; }
+  function fresh() { return { v: 1, gems: 0, gemsTotal: 0, own: { design: ['klassik', 'schwarz'], bg: ['bonbon'], sound: ['klavier', 'epiano'], fx: ['funken'], song: [] }, use: { design: 'klassik', bg: 'bonbon', sound: 'klavier', fx: 'funken' }, items: { heart: 0, shield: 0, slow: 0 }, plays: {}, fav: [], modes: [], stars: 0, crowns: 0, endlessBest: 0, songs: 0, quests: null, ach: {}, lessons: {}, week: { id: 0, best: 0 }, weekBoard: 0 }; }
+  function load() { if (M) return M; let d = null; try { d = JSON.parse(store.getItem(KEY)); } catch (e) { /* kaputt */ } M = Object.assign(fresh(), d || {}); const f = fresh(); M.items = Object.assign(f.items, M.items || {}); M.own.song = M.own.song || []; for (const k of ['design', 'bg', 'sound', 'fx']) { M.own[k] = Array.from(new Set((M.own[k] || []).concat(f.own[k]))); if (!M.use[k] || !SHOP[k][M.use[k]]) M.use[k] = f.use[k]; } return M; }
   function save() { try { store.setItem(KEY, JSON.stringify(M)); } catch (e) { /* voll */ } writeAch(); }
   function writeAch() { try { store.setItem(ACH_KEY, JSON.stringify({ t: 'Klavierlicht', d: ACH.map(a => ({ id: a.id, icon: a.icon, title: a.title, desc: a.desc })), u: M.ach })); } catch (e) { /* voll */ } }
   function addGems(n) { load(); n = Math.max(0, Math.round(n)); M.gems += n; M.gemsTotal += n; return n; }
   function spend(n) { load(); if (M.gems < n) return false; M.gems -= n; save(); return true; }
   function buy(kind, id) { load(); const it = SHOP[kind] && SHOP[kind][id]; if (!it) return false; if (M.own[kind].includes(id)) { M.use[kind] = id; save(); return true; } if (!spend(it.price)) return false; M.own[kind].push(id); M.use[kind] = id; save(); return true; }
+  // neue Lieder (Online-Archiv mit Preis) freischalten
+  const ownsSong = id => load().own.song.includes(id);
+  function buySong(id, price) { load(); if (M.own.song.includes(id)) return true; if (!(price > 0) || !spend(price)) return false; M.own.song.push(id); save(); return true; }
+  function buyItem(k) { load(); const it = SHOP.item[k]; if (!it || !spend(it.price)) return false; M.items[k]++; save(); return true; }
+  function useItem(k) { load(); if (!(M.items[k] > 0)) return false; M.items[k]--; save(); return true; }
   function quests() {
     load(); const dk = dayKey();
     if (!M.quests || M.quests.day !== dk) M.quests = { day: dk, list: pickN(QUESTS.length, 3, dk).map(i => ({ id: QUESTS[i].id, p: 0, done: false })) };
@@ -122,6 +149,6 @@
   function fav(id, on) { load(); const i = M.fav.indexOf(id); if (on == null) on = i < 0; if (on && i < 0) M.fav.push(id); if (!on && i >= 0) M.fav.splice(i, 1); save(); return on; }
   // Turnier der Woche: 5 Lieder, für alle gleich (aus der Gesamtliste, Sortierung muss überall gleich sein)
   function weekSongs(n, w) { return pickN(n, 5, (w || weekNo()) * 7919 + 13); }
-  const API = { SHOP, ACH, QUESTS, load, save, addGems, spend, buy, quests, report, fav, weekNo, weekSongs, dayKey, get data() { return load(); }, _reset() { M = null; } };
+  const API = { SHOP, ACH, QUESTS, load, save, addGems, spend, buy, buySong, ownsSong, buyItem, useItem, quests, report, fav, weekNo, weekSongs, dayKey, get data() { return load(); }, _reset() { M = null; } };
   if (typeof module !== 'undefined' && module.exports) module.exports = API; else root.KLMeta = API;
 })(typeof window !== 'undefined' ? window : globalThis);

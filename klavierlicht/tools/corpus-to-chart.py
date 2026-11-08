@@ -79,6 +79,11 @@ def chart_from(entry):
     chart = {'v': 1, 'id': entry['id'], 'title': entry['title'], 'artist': entry['artist'], 'cat': entry['cat'], 'bpm': bpm,
              'step': round(60000 / bpm * step_q, 3), 'off': 0, 'mel': m_out, 'acc': acc2, 'chords': [], 'bass': [],
              'lic': entry['lic'], 'src': entry['src']}
+    if entry.get('gems'): chart['gems'] = entry['gems']
+    # kurze Stücke (eine Strophe) wiederholen, damit eine Runde mindestens ~35 Sekunden dauert (wie js/core.js fromNotation)
+    L = max(x[0] + x[2] for x in m_out); sec = L * chart['step'] / 1000; reps = max(1, min(3, math.ceil(35 / sec))) if sec > 0 else 1
+    for key in ('mel', 'acc', 'chords', 'bass'):
+        base = list(chart[key]); chart[key] = [[x[0] + r * L] + list(x[1:]) for r in range(reps) for x in base]   # neues Lied, im Shop mit Diamanten freizuschalten
     if not acc2:   # einstimmig: Akkorde aus der Tonart
         k = p.analyze('key'); tonic = k.tonic.pitchClass if k.mode == 'major' else (k.tonic.pitchClass + 3) % 12
         chart['chords'] = harmonize(m_out, tonic, int(round(p.recurse().getElementsByClass('TimeSignature')[0].barDuration.quarterLength / step_q)) if p.recurse().getElementsByClass('TimeSignature') else 16)

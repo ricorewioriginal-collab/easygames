@@ -95,6 +95,28 @@ ok(await p.evaluate(() => KLApp.game.rhy.style === 'pop' && KLApp.game.rhy.step 
 if (OUT) await p.screenshot({ path: OUT + '/x-frei.png' });
 const [, q] = await page(ctx); await q.goto(BASE + '#rec=' + code); await q.waitForSelector('#sTitle.on'); await q.click('#bPress'); await q.waitForSelector('.panel h2:has-text("Melodie für dich")');
 ok(true, 'Geteilter Link #rec öffnet „Eine Melodie für dich“'); await q.click('[data-act="play"]'); await q.waitForTimeout(500); ok(await q.evaluate(() => !!KLApp.game.pb || KLApp.game.lights.length > 0), 'Geteilte Melodie wird abgespielt'); await q.close();
+// Shop: neue Lieder freischalten, Reinhören, Hilfsmittel, Effekte, Klänge in allen Modi
+await p.evaluate(() => { KLApp.game.run = false; KLMeta.data.gems = 400; KLMeta.save(); KLApp.setMode('klassisch'); KLApp.lib(); }); await p.waitForFunction(() => KLApp.archive);
+await p.click('[data-cat="neu"]'); ok(await p.locator('.card[data-k] .play.lock').count() === 20, 'Neue Lieder: 20 Lieder, gesperrt mit Diamanten-Preis');
+await p.click('.card[data-k="a:neu-chester"]'); await p.waitForSelector('[data-act="buy"]'); await p.click('[data-act="hear"]'); await p.waitForSelector('#sGame.on', { timeout: 6000 });
+ok(await p.evaluate(() => KLApp.game.auto && KLApp.game.len <= 20), 'Neues Lied: 20 Sekunden reinhören'); await p.evaluate(() => { KLApp.game.len = -5; }); await p.waitForSelector('[data-act="buy"]', { timeout: 4000 });
+await p.click('[data-act="buy"]'); await p.waitForSelector('#sSong.on'); ok(await p.evaluate(() => KLMeta.ownsSong('neu-chester') && KLMeta.data.gems === 370), 'Neues Lied für 30 💎 freigeschaltet → Schwierigkeitswahl');
+await p.evaluate(() => { KLApp.menu(); }); await p.click('.mi[data-go="shop"]'); await p.click('[data-t="item"]');
+for (const id of ['heart', 'shield', 'slow']) await p.click(`.shopIt[data-id="${id}"]`);
+ok(await p.evaluate(() => { const i = KLMeta.data.items; return i.heart === 1 && i.shield === 1 && i.slow === 1; }), 'Hilfsmittel gekauft: Extra-Herz, Schild, Zeitlupe');
+await p.click('[data-t="fx"]'); await p.click('.shopIt[data-id="sterne"]'); await p.click('[data-t="design"]'); await p.click('.shopIt[data-id="regenbogen"]');
+await p.click('[data-t="sound"]'); await p.click('.shopIt[data-id="orgel"]'); await p.check('#sAll');
+ok(await p.evaluate(() => KLMeta.data.use.fx === 'sterne' && KLMeta.data.use.design === 'regenbogen' && KLMeta.data.use.sound === 'orgel'), 'Effekt Sterne, Design Regenbogen, Klang Orgel gekauft');
+await p.click('[data-act="esc"]'); await p.click('.mi[data-go="klassisch"]'); await p.click('[data-cat="alle"]'); await p.click('.card[data-k="b:jakob"]'); await p.click('[data-it="useHeart"]'); await p.click('[data-it="useShield"]');
+await p.click('.medal[data-l="normal"]'); await p.waitForSelector('#sGame.on');
+ok(await p.evaluate(() => KLApp.game.lives === 4 && KLApp.game.shield === 1 && KLPiano.timbre === 'orgel' && KLMeta.data.items.heart === 0), 'Start mit Extra-Herz, Schild und Orgel-Klang');
+await p.waitForTimeout(2600); await p.click('#bSlow'); const sp = await p.evaluate(async () => { const G = KLApp.game, a = KLPiano.ctx.currentTime - G.t0; await new Promise(r => setTimeout(r, 1000)); return [G.speed, KLPiano.ctx.currentTime - G.t0 - a]; });
+ok(sp[0] === 0.6 && sp[1] > 0.45 && sp[1] < 0.75, 'Zeitlupe: Lied läuft langsamer (' + sp[1].toFixed(2) + ' s Liedzeit in 1 s)');
+await p.evaluate(() => { const G = KLApp.game, n = G.notes.find(x => x.hit === null); KLApp.laneHit(n.lane); });
+ok(await p.evaluate(() => KLApp.game.fx.some(f => f.g === '★')), 'Treffer-Effekt Sterne');
+await p.evaluate(() => { const G = KLApp.game; G.notes.forEach(n => { if (n.hit === null) n.hit = 'perfect'; }); G.lives = 4; G.shield = 1; KLApp.laneHit(0); KLApp.laneHit(1); });
+ok(await p.evaluate(() => KLApp.game.shield === 0 && KLApp.game.lives === 3), 'Schild fängt den ersten Fehler ab');
+await p.evaluate(() => { KLApp.game.run = false; document.getElementById('ov').hidden = true; localStorage.setItem('klavierlicht-settings', JSON.stringify(Object.assign(JSON.parse(localStorage.getItem('klavierlicht-settings')), { soundAll: false }))); KLApp.menu(); });
 // Kalibrierung
 await p.evaluate(() => { KLApp.game.run = false; KLApp.menu(); }); await p.click('.mi[data-go="opts"]'); await p.click('[data-act="cal"]');
 await p.evaluate(async () => { const pad = document.getElementById('calPad'), t0 = KLPiano.ctx.currentTime; for (let i = 0; i < 9; i++) { const target = t0 + 1 + (i + 2) * 0.6 + 0.08; while (KLPiano.ctx.currentTime < target) await new Promise(r => setTimeout(r, 4)); pad.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); } });

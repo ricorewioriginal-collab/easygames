@@ -17,7 +17,9 @@ const index = [];
 for (const f of fs.readdirSync(OUT).filter(f => f.endsWith('.json') && f !== 'index.json')) {
   const c = JSON.parse(fs.readFileSync(path.join(OUT, f), 'utf8'));
   if (!C.check(c) || !c.lic) { console.error(`${f}: ungültig oder ohne Rechte-Angabe`); bad++; continue; }
-  index.push({ id: c.id, title: c.title, artist: c.artist, cat: c.cat, diff: C.difficulty(c), dur: Math.round(C.duration(c)), lic: c.lic, src: c.src || '' });
+  const e = { id: c.id, title: c.title, artist: c.artist, cat: c.cat, diff: C.difficulty(c), dur: Math.round(C.duration(c)), lic: c.lic, src: c.src || '' };
+  if (c.gems) e.gems = c.gems;   // neues Lied: im Shop mit Diamanten freischalten
+  index.push(e);
 }
 index.sort((x, y) => x.title.localeCompare(y.title, 'de'));
 fs.writeFileSync(path.join(OUT, 'index.json'), JSON.stringify({ v: 1, songs: index }));
