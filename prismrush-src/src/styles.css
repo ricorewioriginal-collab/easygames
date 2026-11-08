@@ -1062,3 +1062,54 @@ input[type='range'] {
     animation: none;
   }
 }
+
+/* 🎹 Lieder */
+.lied-search {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 8px 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font: inherit;
+}
+.lied-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 8px;
+  max-height: 46vh;
+  overflow-y: auto;
+  margin-top: 8px;
+}
+.lied-card {
+  display: grid;
+  gap: 3px;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+.lied-card:hover,
+.lied-card:focus-visible {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+.lied-card span {
+  font-size: 12px;
+  opacity: 0.8;
+}
+.lied-card em {
+  font-size: 11px;
+  opacity: 0.6;
+  font-style: normal;
+}
+.lied-msg {
+  margin: 6px 0;
+  font-weight: 700;
+}

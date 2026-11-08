@@ -1,5 +1,5 @@
 /* PRISMRUSH Service Worker: Offline-Spielen nach dem ersten Laden. */
-const CACHE = 'prismrush-v1';
+const CACHE = 'prismrush-v3';
 const SHELL = [
   './',
   './index.html',
@@ -14,9 +14,11 @@ self.addEventListener('install', (event) => {
     caches
       .open(CACHE)
       .then((c) => c.addAll(SHELL))
-      .then(() => self.skipWaiting()),
+      .then(() => {}),
   );
 });
+
+self.addEventListener('message', (event) => { if (event.data && event.data.type === 'EG_SKIP_WAITING') self.skipWaiting(); });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(

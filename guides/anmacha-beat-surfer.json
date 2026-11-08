@@ -18,6 +18,19 @@
       ]
     },
     {
+      "t": "🎹 Lieder",
+      "p": [
+        "Im Bereich 🎹 Lieder spielst du über 100 bekannte Lieder aus Klavierlicht – Kinderlieder, Weihnachtslieder, Volksweisen, Choräle und Klassik wie Für Elise oder die Ode an die Freude. Alle sind gemeinfrei; jedes Lied zeigt seine Rechte-Angabe (©) in der Liste, oben im Spiel und im Ergebnis.",
+        "Die Noten folgen der echten Melodie: höhere Töne weiter rechts, tiefere weiter links. Die Begleitung spielt das Klavier mit, dazu ein leichter Beat. Die Bühne zeigt je nach Liedart einen passenden Sender."
+      ],
+      "list": [
+        "Lied suchen oder nach Art filtern, antippen zum Auswählen, nochmal antippen oder PLAY zum Starten.",
+        "Leicht, Mittel oder Schwer bestimmen, wie viele Töne der Melodie zu Noten werden.",
+        "Bestwerte gelten je Lied und Stufe. Nach einem geschafften Lied geht es mit dem nächsten weiter.",
+        "Neue Lieder, die du in Klavierlicht im Shop freischaltest, erscheinen hier automatisch."
+      ]
+    },
+    {
       "t": "Treffer und Wertung",
       "list": [
         "PERFEKT: höchstens 55 Millisekunden neben dem Schlag – 300 Punkte × Multiplikator, Welle +1,6.",
@@ -147,11 +160,33 @@
     }
   ],
   "faq": [
-    { "q": "Meine Treffer werden als zu früh oder zu spät gewertet.", "a": "Öffne die Pause und stelle den Audio-Versatz mit − und + ein. Das ist vor allem bei Bluetooth-Kopfhörern nötig." },
-    { "q": "Ich höre keine Musik.", "a": "Prüfe den Ton-Knopf 🔊 oder drücke M. Im Browser startet der Ton erst nach dem ersten Antippen oder Tastendruck." },
-    { "q": "Es steht „three.js konnte nicht geladen werden“.", "a": "Das Spiel lädt die 3D-Grafik beim Start aus dem Internet. Prüfe die Internetverbindung und lade die Seite neu." },
-    { "q": "Wie fange ich die Kampagne neu an?", "a": "Im Menü unter Kampagne auf „↺ Kampagne von vorn“ tippen. Deine Bestwerte bleiben dabei erhalten." },
-    { "q": "Wird mein Fortschritt gespeichert?", "a": "Ja, Kampagne, Bestwerte und Einstellungen liegen im Browser. Ohne Google-Anmeldung geht der Stand verloren, wenn Browserdaten gelöscht werden. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät." },
-    { "q": "Kann ich mit Controller spielen?", "a": "Ja: Steuerkreuz oder LB, LT, RT, RB treffen die vier Spuren, A bestätigt, Start pausiert." }
+    {
+      "q": "Meine Treffer werden als zu früh oder zu spät gewertet.",
+      "a": "Öffne die Pause und stelle den Audio-Versatz mit − und + ein. Das ist vor allem bei Bluetooth-Kopfhörern nötig."
+    },
+    {
+      "q": "Ich höre keine Musik.",
+      "a": "Prüfe den Ton-Knopf 🔊 oder drücke M. Im Browser startet der Ton erst nach dem ersten Antippen oder Tastendruck."
+    },
+    {
+      "q": "Es steht „three.js konnte nicht geladen werden“.",
+      "a": "Das Spiel lädt die 3D-Grafik beim Start aus dem Internet. Prüfe die Internetverbindung und lade die Seite neu."
+    },
+    {
+      "q": "Wie fange ich die Kampagne neu an?",
+      "a": "Im Menü unter Kampagne auf „↺ Kampagne von vorn“ tippen. Deine Bestwerte bleiben dabei erhalten."
+    },
+    {
+      "q": "Wird mein Fortschritt gespeichert?",
+      "a": "Ja, Kampagne, Bestwerte und Einstellungen liegen im Browser. Ohne Google-Anmeldung geht der Stand verloren, wenn Browserdaten gelöscht werden. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+    },
+    {
+      "q": "Kann ich mit Controller spielen?",
+      "a": "Ja: Steuerkreuz oder LB, LT, RT, RB treffen die vier Spuren, A bestätigt, Start pausiert."
+    },
+    {
+      "q": "Woher kommen die Lieder?",
+      "a": "Aus dem Spiel Klavierlicht von easygames. Alle Melodien sind gemeinfrei (Volkslieder, Komponisten, die vor über 70 Jahren gestorben sind); jedes Lied nennt seine Rechte-Angabe."
+    }
   ]
 }

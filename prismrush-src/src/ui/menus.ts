@@ -22,6 +22,7 @@ import {
 } from '../game/modes';
 import type { Grade, Judgement } from '../game/scoring';
 import { TUTORIAL_LEVEL } from '../game/tutorial';
+import { lib, liedLevel, type Lied } from '../game/lieder';
 import {
   EFFECTS,
   SLOT_LABELS,
@@ -75,6 +76,10 @@ const starText = (n: number): string => '★'.repeat(n) + '☆'.repeat(3 - n);
 export class Menus {
   private stack: Screen[] = [];
   private levelMode: ModeId = 'campaign';
+  private lieder: Lied[] | null = null;
+  private liedCat = 'alle';
+  private liedQ = '';
+  private liedMsg = '';
   private world = 0;
   private effectSlot: EffectSlot = 'ship';
   private settingsFromPause = false;
@@ -238,6 +243,7 @@ export class Menus {
             variant: 'primary',
             testId: 'menu-campaign',
           }),
+          button('🎹 Lieder', () => this.openLieder(), { testId: 'menu-lieder' }),
           button('Spielmodi', () => this.push(() => this.modesScreen()), { testId: 'menu-modes' }),
           button('Tutorial', () => this.push(() => this.tutorialScreen()), {
             testId: 'menu-tutorial',
@@ -258,6 +264,137 @@ export class Menus {
         ]),
         h('p', { class: 'version', text: `v${__APP_VERSION__}` }),
       ]),
+    );
+  }
+
+  // ------------------------------------------------------------- 🎹 Lieder
+
+  openLieder(): void {
+    this.push(() => this.liederScreen());
+    const l = lib();
+    if (!this.lieder && l) {
+      l.list()
+        .then((x) => {
+          this.lieder = x;
+          this.refresh();
+        })
+        .catch(() => {
+          this.liedMsg = 'Lieder konnten nicht geladen werden.';
+          this.refresh();
+        });
+    }
+  }
+
+  private async playLied(s: Lied): Promise<void> {
+    const l = lib();
+    if (!l) return;
+    this.click();
+    this.liedMsg = `🎹 ${s.title} wird geladen …`;
+    this.refresh();
+    try {
+      const c = await l.chart(s);
+      this.liedMsg = '';
+      this.host.startRun('lieder', liedLevel(s, c), this.store.settings.difficulty);
+    } catch {
+      this.liedMsg = '📡 Lied konnte nicht geladen werden – bitte später nochmal.';
+      this.refresh();
+    }
+  }
+
+  private liederScreen(): HTMLElement {
+    const l = lib();
+    const all = this.lieder;
+    const cats: Record<string, string> = { alle: 'Alle', ...(l ? l.CATS : {}) };
+    const q = this.liedQ.trim().toLowerCase();
+    const list = (all ?? []).filter(
+      (s) =>
+        (this.liedCat === 'alle' || s.cat === this.liedCat) &&
+        (!q || `${s.title} ${s.artist}`.toLowerCase().includes(q)),
+    );
+    const diff = this.store.settings.difficulty;
+    const search = h('input', {
+      class: 'lied-search',
+      attrs: {
+        type: 'search',
+        placeholder: '🔎 Lied oder Komponist suchen',
+        'aria-label': 'Lied suchen',
+        value: this.liedQ,
+        'data-testid': 'lied-search',
+      },
+      on: {
+        input: (e) => {
+          this.liedQ = (e.target as HTMLInputElement).value;
+          const pos = (e.target as HTMLInputElement).selectionStart ?? this.liedQ.length;
+          this.refresh();
+          const el = this.root.querySelector<HTMLInputElement>('.lied-search');
+          if (el) {
+            el.focus();
+            el.setSelectionRange(pos, pos);
+          }
+        },
+      },
+    });
+    const tabs = h(
+      'div',
+      { class: 'tabs' },
+      Object.keys(cats)
+        .filter((k) => k === 'alle' || (all ?? []).some((s) => s.cat === k))
+        .map((k) =>
+          h('button', {
+            class: `tab ${this.liedCat === k ? 'active' : ''}`,
+            text: cats[k],
+            attrs: { type: 'button' },
+            on: {
+              click: () => {
+                this.click();
+                this.liedCat = k;
+                this.refresh();
+              },
+            },
+          }),
+        ),
+    );
+    const notes = (d?: number) => '♪'.repeat(Math.max(1, Math.min(4, d ?? 2)));
+    const grid = h(
+      'div',
+      { class: 'lied-list' },
+      !all
+        ? [
+            h('p', {
+              class: 'muted',
+              text: l ? 'Lieder werden geladen …' : 'Lieder sind gerade nicht verfügbar.',
+            }),
+          ]
+        : list.map((s, i) => {
+            const rec = this.store.record(recordKey('lieder', 'lied-' + s.id, diff));
+            return h(
+              'button',
+              {
+                class: 'lied-card',
+                attrs: { type: 'button', 'data-testid': `lied-${i}` },
+                on: { click: () => void this.playLied(s) },
+              },
+              [
+                h('strong', { text: s.title }),
+                h('span', {
+                  text: `${s.artist} · ${Math.floor((s.dur ?? 0) / 60)}:${String((s.dur ?? 0) % 60).padStart(2, '0')} · ${notes(s.diff)}${rec && rec.bestScore > 0 ? ' · ' + formatScore(rec.bestScore) : ''}`,
+                }),
+                h('em', { text: `© ${s.lic}` }),
+              ],
+            );
+          }),
+    );
+    return this.panel(
+      MODES.lieder.label,
+      [
+        h('p', { class: 'muted', text: MODES.lieder.description }),
+        this.difficultyPicker(),
+        search,
+        tabs,
+        this.liedMsg ? h('p', { class: 'lied-msg', text: this.liedMsg }) : null,
+        grid,
+      ],
+      { testId: 'lieder', wide: true },
     );
   }
 
@@ -396,6 +533,7 @@ export class Menus {
     };
     const action = (mode: ModeId) => {
       if (MODES[mode].needsLevel) return this.openLevels(mode);
+      if (mode === 'lieder') return this.openLieder();
       if (mode === 'daily') return start(mode, today);
       if (mode === 'sprint') return start(mode, SPRINT_LEVEL);
       if (mode === 'remix') return start(mode, remixLevel((Math.random() * 2 ** 32) >>> 0));
@@ -915,7 +1053,7 @@ export class Menus {
           h('h2', { text: title, attrs: { 'data-testid': 'result-title' } }),
           h('p', {
             class: 'muted',
-            text: `${MODES[r.mode].label} · ${r.level.name} · ${DIFFICULTIES[r.difficulty].label}`,
+            text: `${MODES[r.mode].label} · ${r.level.name} · ${DIFFICULTIES[r.difficulty].label}${r.level.credit ? ' · © ' + r.level.credit : ''}`,
           }),
           h('div', { class: 'result-head' }, [
             h('div', {

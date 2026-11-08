@@ -6,6 +6,7 @@ import { LEVELS, type LevelDef, type TunnelShape } from './levels';
 import { LANES, type ChartEvent } from './chart';
 import { Track, singleSongTrack } from './track';
 import { tutorialTrack } from './tutorial';
+import { liedTrack } from './lieder';
 
 export type ModeId =
   | 'campaign'
@@ -20,6 +21,7 @@ export type ModeId =
   | 'hidden'
   | 'glide'
   | 'gauntlet'
+  | 'lieder'
   | 'tutorial';
 
 export interface ModeRules {
@@ -57,6 +59,14 @@ const base = {
 };
 
 export const MODES: Record<ModeId, ModeRules> = {
+  lieder: {
+    ...base,
+    id: 'lieder',
+    label: '🎹 Lieder',
+    description:
+      'Über 100 bekannte, gemeinfreie Lieder aus Klavierlicht – die Kristalle folgen der echten Melodie.',
+    needsLevel: false,
+  },
   campaign: {
     ...base,
     id: 'campaign',
@@ -166,6 +176,7 @@ export const MODES: Record<ModeId, ModeRules> = {
 /** Reihenfolge im Modusmenü. */
 export const SELECTABLE_MODES: ModeId[] = [
   'campaign',
+  'lieder',
   'endless',
   'daily',
   'sprint',
@@ -350,6 +361,7 @@ export function buildTrack(
   seed: number,
 ): Track {
   if (mode === 'tutorial') return tutorialTrack();
+  if (mode === 'lieder') return liedTrack(level, difficulty);
   if (mode === 'endless' || mode === 'sprint') return endlessTrack(seed, difficulty);
   return levelTrack(level, difficulty, MODES[mode]);
 }

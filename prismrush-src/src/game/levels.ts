@@ -22,6 +22,8 @@ export interface LevelDef {
   /** Krümmung der Strecke (surreale Raumverzerrung). */
   bend: number;
   twist: number;
+  /** Rechte-Angabe (🎹 Lieder aus Klavierlicht). */
+  credit?: string;
 }
 
 export interface WorldDef {

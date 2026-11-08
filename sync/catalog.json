@@ -926,7 +926,7 @@
   {
    "id": "anmacha-beat-surfer",
    "title": "AnMaCha Beat Surfer",
-   "desc": "3D-Rhythmusspiel: Triff die Noten im Takt – 13 Songs, steigende Schwierigkeit.",
+   "desc": "3D-Rhythmusspiel: Triff die Noten im Takt – 13 Sender-Songs, steigende Schwierigkeit, dazu 🎹 über 100 bekannte Lieder aus Klavierlicht (gemeinfrei, Noten folgen der Melodie).",
    "icon": "🎧",
    "img": "anmacha-beat-surfer/card.jpg",
    "bg": "linear-gradient(145deg,#FF2D95,#8B5CF6 55%,#00E5FF)",
@@ -935,7 +935,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Ein Rhythmusspiel auf 4 Spuren: Triff die Noten im Takt der Musik. Verpasste Noten senken die Welle (Lebensleiste); fällt sie auf null, ist der Song verloren. In der Kampagne spielst du 13 Sender (Genres) von entspannt bis schwer, im Freien Spiel wählst du einen beliebigen Sender. Am Ende gibt es Sterne, Genauigkeit, maximale Combo und Perfekt-Treffer.",
+    "anleitung": "Ein Rhythmusspiel auf 4 Spuren: Triff die Noten im Takt der Musik. Verpasste Noten senken die Welle (Lebensleiste); fällt sie auf null, ist der Song verloren. In der Kampagne spielst du 13 Sender (Genres) von entspannt bis schwer, im Freien Spiel wählst du einen beliebigen Sender. Am Ende gibt es Sterne, Genauigkeit, maximale Combo und Perfekt-Treffer. Im Bereich 🎹 Lieder spielst du über 100 bekannte, gemeinfreie Lieder aus Klavierlicht – die Noten folgen der echten Melodie, das Klavier spielt die Begleitung, jedes Lied zeigt seine Rechte-Angabe.",
     "steuerung": [
      "PC: D, F, J, K oder Pfeil links, runter, hoch, rechts = die vier Spuren treffen, P/Esc = Pause, R = Neustart, M = Ton, Enter/Leertaste = Start bzw. Weiter",
      "Touch: Die vier großen Tasten unten antippen (links, runter, hoch, rechts); Pause, Ton, Neustart oben rechts",
@@ -945,7 +945,7 @@
      "Treffer wirken zu früh oder zu spät (z. B. Bluetooth-Kopfhörer)? In der Pause lässt sich der Audio-Versatz anpassen."
     ]
    },
-   "size": 2592509,
+   "size": 2601197,
    "files": 19,
    "offline": true,
    "cloud": {
@@ -993,7 +993,7 @@
   {
    "id": "prismrush",
    "title": "PRISMRUSH",
-   "desc": "Hypnotisches 3D-Rhythmusspiel aus Licht und synthetischem Klang: 32 Level in 4 Welten, 12 Spielmodi von Endlos über Turbo bis Blindflug, Combos, Overdrive und 19 freischaltbare Effekte. Tastatur, Maus oder Touch.",
+   "desc": "Hypnotisches 3D-Rhythmusspiel aus Licht und synthetischem Klang: 32 Level in 4 Welten, 13 Spielmodi von Endlos über Turbo bis Blindflug, dazu 🎹 Lieder: über 100 bekannte, gemeinfreie Lieder aus Klavierlicht als Strecke, Combos, Overdrive und 19 freischaltbare Effekte. Tastatur, Maus oder Touch.",
    "icon": "🔺",
    "img": "prismrush/card.png",
    "bg": "linear-gradient(145deg,#ff3df2,#8a3dff 55%,#3df2ff)",
@@ -1002,7 +1002,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Ein 3D-Rhythmusspiel auf 3 Spuren: Kristalle fliegen im Takt der im Browser erzeugten Musik heran. Triff sie genau, wenn sie den Ring unter deinem Gleiter erreichen (Perfekt, Super, Gut). Orbs sammelst du, indem du in ihrer Spur bist, Prismenwänden weichst du aus. Combos erhöhen den Multiplikator bis ×4, volle Energie zündet den Overdrive für doppelte Punkte. Kampagne mit 32 Leveln in 4 Welten und 4 Schwierigkeitsgraden, dazu Endlos (Bestzeiten), Tagesrhythmus, Sprint 90, Remix, Zen, Präzision, Spiegelwelt, Turbo, Blindflug, Gleitflug, Wandlauf und ein Tutorial.",
+    "anleitung": "Ein 3D-Rhythmusspiel auf 3 Spuren: Kristalle fliegen im Takt der im Browser erzeugten Musik heran. Triff sie genau, wenn sie den Ring unter deinem Gleiter erreichen (Perfekt, Super, Gut). Orbs sammelst du, indem du in ihrer Spur bist, Prismenwänden weichst du aus. Combos erhöhen den Multiplikator bis ×4, volle Energie zündet den Overdrive für doppelte Punkte. Kampagne mit 32 Leveln in 4 Welten und 4 Schwierigkeitsgraden, dazu Endlos (Bestzeiten), Tagesrhythmus, Sprint 90, Remix, Zen, Präzision, Spiegelwelt, Turbo, Blindflug, Gleitflug, Wandlauf und ein Tutorial. Im Modus 🎹 Lieder fliegst du durch über 100 bekannte, gemeinfreie Lieder aus Klavierlicht – die Kristalle liegen auf den Melodietönen, jedes Lied zeigt seine Rechte-Angabe.",
     "steuerung": [
      "PC: Pfeil links/rechts = eine Spur wechseln (trifft dort gleich mit), A, S, D oder J, K, L = Spur direkt wählen und treffen, Leertaste/Pfeil hoch/runter/W = in aktueller Spur treffen, E/Umschalt = Overdrive, Mausklick = Spur unter dem Zeiger treffen, Esc/P = Pause",
      "Touch: Die drei großen Spurtasten unten antippen oder mit dem Finger darüber gleiten, Tippen = treffen, links/rechts wischen = Spur wechseln, nach oben wischen oder ⚡ = Overdrive, II = Pause",
@@ -1012,7 +1012,7 @@
      "Treffer wirken zu früh oder zu spät (z. B. Bluetooth-Kopfhörer)? In den Einstellungen gibt es eine Latenz-Kalibrierung."
     ]
    },
-   "size": 787120,
+   "size": 792807,
    "files": 12,
    "offline": true,
    "cloud": {
@@ -2057,8 +2057,8 @@
      "Jedes Lied zeigt Komponist und Rechte-Angabe – alle Melodien sind gemeinfrei."
     ]
    },
-   "size": 232860,
-   "files": 13,
+   "size": 235921,
+   "files": 14,
    "offline": true,
    "cloud": {
     "game": "klavierlicht",

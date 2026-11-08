@@ -13,7 +13,23 @@ import {
 } from '../src/game/modes';
 import { GameSession } from '../src/game/session';
 import { singleSongTrack, type Track } from '../src/game/track';
-import { generateSong } from '../src/audio/music';
+import { generateSong, stepToSeconds } from '../src/audio/music';
+import { liedLevel } from '../src/game/lieder';
+
+// kleines Beispiel-Lied im Klavierlicht-Format (Achtel-Tonleiter auf und ab)
+const DEMO = {
+  id: 'demo',
+  title: 'Demo',
+  bpm: 100,
+  step: 150,
+  mel: [60, 62, 64, 65, 67, 69, 71, 72, 71, 69, 67, 65, 64, 62, 60, 62, 64, 65, 67, 69].map(
+    (p, i) => [i * 2, p, 2] as [number, number, number],
+  ),
+};
+const DEMO_LEVEL = liedLevel(
+  { id: 'demo', title: 'Demo', artist: 'Test', cat: 'volk', lic: 'gemeinfrei' },
+  DEMO,
+);
 
 const FRAME = 1 / 60;
 
@@ -28,7 +44,14 @@ describe('Spielmodi', () => {
   it('bietet mindestens zwölf wählbare Modi mit gültiger Strecke', () => {
     expect(SELECTABLE_MODES.length).toBeGreaterThanOrEqual(12);
     for (const id of SELECTABLE_MODES) {
-      const level = id === 'sprint' ? SPRINT_LEVEL : id === 'remix' ? remixLevel(7) : LEVELS[2];
+      const level =
+        id === 'sprint'
+          ? SPRINT_LEVEL
+          : id === 'remix'
+            ? remixLevel(7)
+            : id === 'lieder'
+              ? DEMO_LEVEL
+              : LEVELS[2];
       const track = buildTrack(id, level, 'normal', 42);
       expect(track.events.length, id).toBeGreaterThan(0);
       const ids = new Set(track.events.map((e) => e.id));
@@ -38,6 +61,17 @@ describe('Spielmodi', () => {
         expect(e.lane).toBeLessThan(3);
       }
     }
+  });
+
+  it('🎹 Lieder: Kristalle liegen auf Melodietönen, Spur folgt der Tonhöhe', () => {
+    const track = buildTrack('lieder', DEMO_LEVEL, 'normal', 1);
+    const notes = track.events.filter((e) => e.kind === 'note');
+    expect(notes.length).toBeGreaterThan(8);
+    const melSteps = new Set(DEMO.mel.map(([s]) => s + 16));
+    for (const n of notes) expect(melSteps.has(n.step), String(n.step)).toBe(true);
+    expect(track.duration).toBeGreaterThan(stepToSeconds(16 + 40, 100));
+    const leads = track.notesInRange(0, 1e6).filter((n) => n.inst === 'lead');
+    expect(leads.length).toBe(DEMO.mel.length);
   });
 
   it('Spiegelwelt vertauscht links und rechts', () => {

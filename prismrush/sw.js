@@ -1,5 +1,5 @@
 /* PRISMRUSH Service Worker: Offline-Spielen nach dem ersten Laden. */
-const CACHE = 'prismrush-v2';
+const CACHE = 'prismrush-v3';
 const SHELL = [
   './',
   './index.html',

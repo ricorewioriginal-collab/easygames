@@ -124,6 +124,11 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   #stats b{display:block;font-size:20px;color:#fff}
   .off{display:flex;align-items:center;gap:8px;font-size:13px;color:#9fb4c8}
   .off button{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);padding:0;font-size:18px}
+#liedBox { width: 100%; } .lsearch { width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,.25); background: rgba(0,0,0,.35); color: #fff; font: 15px sans-serif; }
+.lcats { display: flex; gap: 6px; overflow-x: auto; margin: 8px 0; } .lcats button, .lvl button { flex: none; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.08); color: #fff; font: 600 13px sans-serif; cursor: pointer; }
+.lcats button.on, .lvl button.on { background: var(--c); color: #021018; border-color: var(--c); }
+.llist { max-height: min(24vh, 210px); overflow-y: auto; display: grid; gap: 6px; text-align: left; } .llist button { display: grid; gap: 2px; padding: 8px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); color: #fff; text-align: left; cursor: pointer; font: 600 15px sans-serif; }
+.llist button small { font: 12px sans-serif; opacity: .75; } .llist button.on { border-color: var(--c); box-shadow: 0 0 0 2px var(--c) inset; } .lvl { margin-top: 8px; } .llic { font-size: 12px; min-height: 1em; }
 </style>
 </head>
 <body class="menu">
@@ -151,7 +156,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <div id="menu" class="ov">
   <div class="card">
     <h1><span id="brandText">AnMaCha</span><img id="brandImg" class="brand" alt="AnMaCha" hidden><small id="brandSub">BEAT SURFER</small></h1>
-    <div class="seg"><button id="mCamp" class="on">🏁 Kampagne</button><button id="mFree">🎯 Freies Spiel</button></div>
+    <div class="seg"><button id="mCamp" class="on">🏁 Kampagne</button><button id="mFree">🎯 Freies Spiel</button><button id="mLied">🎹 Lieder</button></div>
     <p class="sub" id="modeInfo"></p>
     <div id="campBox"><div id="path"></div></div>
     <div class="picker hidden" id="pickBox">
@@ -159,6 +164,12 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
       <div class="tcard" id="tcard"><canvas id="tprev" width="512" height="280"></canvas>
         <div class="tmeta"><b id="tTitle"></b><span id="tSub"></span></div><div id="dots"></div></div>
       <button class="arrow" id="tNext" aria-label="Nächster Song">▶</button>
+    </div>
+    <div class="hidden" id="liedBox">
+      <input id="lSearch" class="lsearch" type="search" placeholder="🔎 Lied oder Komponist suchen" aria-label="Lied suchen">
+      <div class="lcats" id="lCats"></div><div class="llist" id="lList"><p class="sub">Lieder werden geladen …</p></div>
+      <div class="seg lvl" id="lLvl"><button data-l="leicht">Leicht</button><button data-l="normal">Mittel</button><button data-l="profi">Schwer</button></div>
+      <p class="sub llic" id="lLic"></p>
     </div>
     <button class="big" id="bPlay" disabled>LADE …</button>
     <button class="ghost hidden" id="bReset">↺ Kampagne von vorn</button>
@@ -191,6 +202,9 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   </div>
 </div>
 
+<script src="../klavierlicht/js/core.js"></script>
+<script src="../klavierlicht/js/songs.js"></script>
+<script src="../klavierlicht/js/songlib.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 'use strict';
@@ -387,6 +401,7 @@ function playEvent(e, at) {
       default: voice('square', f0, at, sd * 2.2, 0.07);
     }
   }
+  if (e.piano) for (const [p, d, v] of e.piano) { const f = mtof(p); voice('triangle', f, at, Math.min(1.6, d + 0.25), 0.11 * v); voice('sine', f * 2, at, Math.min(0.7, d + 0.1), 0.03 * v); }   // Klavierlicht-Lied
 }
 const SFX = {
   tick: () => { if (ac && !muted) osc('sine', 1320, ac.currentTime, 0.05, 0.08); },
@@ -406,7 +421,7 @@ let state = 'menu';        // menu | play | paused | result
 let mode = 'campaign', progress = 0, trackIdx = 0, song = null, A0 = 0, perf0 = 0, testClock = null, nextEv = 0, countShown = -1, pausedAt = 0;
 let score = 0, combo = 0, maxCombo = 0, health = 70, perfect = 0, good = 0, miss = 0, ended = false;
 let bests = [];
-try { progress = +localStorage.getItem('anmachaBeatProgress') || 0; mode = localStorage.getItem('anmachaBeatMode') === 'free' ? 'free' : 'campaign';
+try { progress = +localStorage.getItem('anmachaBeatProgress') || 0; mode = ['free', 'lieder'].includes(localStorage.getItem('anmachaBeatMode')) ? localStorage.getItem('anmachaBeatMode') : 'campaign';
   bests = JSON.parse(localStorage.getItem('anmachaBeatBest') || '[]'); trackIdx = +localStorage.getItem('anmachaBeatTrack') || 0; } catch (e) {}
 const audioLat = () => (ac ? (ac.outputLatency || ac.baseLatency || 0) : 0) + userOff / 1000;
 function songTime() {
@@ -419,10 +434,13 @@ const accuracy = () => { const n = perfect + good + miss; return n ? (perfect + 
 
 function startSong(i) {
   trackIdx = i; try { localStorage.setItem('anmachaBeatTrack', i); } catch (e) {}
-  song = buildSong(i); ended = false; $('count').dataset.k = '';
+  beginSong(buildSong(i), i);
+}
+function beginSong(sg, i) {
+  song = sg; ended = false; $('count').dataset.k = '';
   score = 0; combo = 0; maxCombo = 0; health = 70; perfect = good = miss = 0; nextEv = 0; countShown = -1;
   notePool.forEach(m => { m.visible = false; m.userData.used = false; });
-  applyTheme(i);
+  applyTheme(i); if (song.lied) $('tname').textContent = `🎹 ${song.lied.title} · © ${song.lied.lic}`;
   if (ac && testClock === null) { A0 = ac.currentTime + 0.25; master.gain.cancelScheduledValues(ac.currentTime); master.gain.value = muted ? 0 : 0.8; if (ac.state === 'suspended') ac.resume(); }
   else perf0 = performance.now() + 250;
   state = 'play';
@@ -435,6 +453,7 @@ function finish(cleared) {
   if (ac) { master.gain.cancelScheduledValues(ac.currentTime); master.gain.setTargetAtTime(0, ac.currentTime, 0.12); }
   const acc = accuracy(), stars = cleared ? (acc >= 0.9 ? 3 : acc >= 0.75 ? 2 : 1) : 0;
   const bonus = cleared ? stars * 1000 : 0; score += bonus;
+  if (song.lied) return liedResult(cleared, stars, bonus, acc);
   const stepNow = rankOf(trackIdx);
   if (cleared) { SFX.win(); if (mode === 'campaign') { progress = Math.max(progress, stepNow + 1); try { localStorage.setItem('anmachaBeatProgress', progress); } catch (e) {} } }
   else SFX.fail();
@@ -508,7 +527,7 @@ addEventListener('keydown', e => {
   if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(k)) e.preventDefault();
   if (k === 'KeyM') { setMuted(!muted); return; }
   if (k === 'Escape' || k === 'KeyP') { if (state === 'play') pauseGame(); else if (state === 'paused') resumeGame(); return; }
-  if (k === 'KeyR') { if (state === 'play' || state === 'paused' || state === 'result') startSong(trackIdx); return; }
+  if (k === 'KeyR') { if (state === 'play' || state === 'paused' || state === 'result') replay(); return; }
   if (state === 'menu') { if ((k === 'Enter' || k === 'Space') && !$('bPlay').disabled) playPressed(); return; }
   if (state === 'result') { if (k === 'Enter' || k === 'Space') $('rNext').click(); return; }
   if (state === 'paused') { if (k === 'Enter' || k === 'Space') resumeGame(); return; }
@@ -526,19 +545,70 @@ document.addEventListener('gesturestart', e => e.preventDefault());
 addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('visibilitychange', () => { if (document.hidden) pauseGame(); });
 
-function playPressed() { audioInit(); startSong(mode === 'campaign' ? nextTrackForCampaign() : trackIdx); }
+function playPressed() { audioInit(); if (mode === 'lieder') { if (liedSel) startLied(liedSel); return; } startSong(mode === 'campaign' ? nextTrackForCampaign() : trackIdx); }
+function replay() { if (song && song.lied) startLied(song.lied); else startSong(trackIdx); }
+
+/* ================= 🎹 Lieder aus Klavierlicht (gemeinfrei, echte Melodie und Begleitung, ../klavierlicht/js/songlib.js) ================= */
+let LIEDER = null, liedSel = null, liedCat = 'alle', liedQ = '', liedLvl = 'normal', liedBest = {};
+try { liedBest = JSON.parse(localStorage.getItem('anmachaBeatLiedBest') || '{}'); liedLvl = localStorage.getItem('anmachaBeatLiedLvl') || 'normal'; } catch (e) {}
+const LIED_STATION = { kinder: 7, weihnacht: 9, volk: 3, klassik: 12, choral: 12 };   // Bühne/Logo je Liedart (RadioFloh!, ChristmasRadio, SchlagerPop, Special-Radio)
+const liedKey = s => s.id + ':' + liedLvl;
+function liedSong(c, s) {
+  const P = KLSongLib.parts(c, liedLvl, 4), bpm = P.bpm, beat = 60 / bpm, countIn = beat * 4, si = LIED_STATION[s.cat] != null ? LIED_STATION[s.cat] : 1, rank = { leicht: 2, normal: 6, profi: 10 }[liedLvl] || 6;
+  const st = Object.assign({}, STATIONS[si], { kick: 'soft', snare: 'brush', hat: 'shaker' });
+  const tr = { idx: si, st, rank, bpm, ntb: 1, approach: 1.7 - 0.04 * rank, loss: 7 + 0.6 * rank, stars: 1 + Math.round(rank / 3), root: 48 }, ev = [];
+  for (const [t, p, d] of P.mel) ev.push({ t: countIn + t, piano: [[p, d, 0.85]] });
+  for (const [t, p, d, v] of P.acc) ev.push({ t: countIn + t, piano: [[p, d, v * 0.9]] });
+  for (let i = 0, n = Math.ceil(P.dur / beat * 2); i < n; i++) ev.push({ t: countIn + i * beat / 2, kick: i % 4 === 0, snare: i % 4 === 2, hat: i % 2 === 1 });   // leichter Beat
+  ev.sort((a, b) => a.t - b.t);
+  const notes = P.notes.map(n => ({ t: countIn + n.t, lane: n.lane, judged: false, hit: false, mesh: null })), duration = countIn + P.dur;
+  return { tr, beat, step: beat / 4, countIn, bars: 0, events: ev, notes, duration, end: (notes.length ? notes[notes.length - 1].t : duration) + 1.6, lied: s };
+}
+async function startLied(s) {
+  if (!s) return; liedSel = s; $('status').textContent = '🎹 ' + s.title + ' wird geladen …';
+  try { const c = await KLSongLib.chart(s); $('status').textContent = ''; beginSong(liedSong(c, s), LIED_STATION[s.cat] != null ? LIED_STATION[s.cat] : 1); }
+  catch (e) { $('status').textContent = '📡 Lied konnte nicht geladen werden – bitte später nochmal.'; if (state !== 'menu') toMenu(); }
+}
+function liedFiltered() { const q = liedQ.trim().toLowerCase(); return (LIEDER || []).filter(s => (liedCat === 'alle' || s.cat === liedCat) && (!q || (s.title + ' ' + s.artist).toLowerCase().includes(q))); }
+function nextLied() { const l = liedFiltered(), i = l.findIndex(s => s === liedSel); return l[(i + 1) % l.length] || liedSel; }
+function liedResult(cleared, stars, bonus, acc) {
+  const s = song.lied, k = liedKey(s), nb = cleared && Math.floor(score) > (liedBest[k] || 0);
+  if (cleared) { SFX.win(); if (nb) { liedBest[k] = Math.floor(score); try { localStorage.setItem('anmachaBeatLiedBest', JSON.stringify(liedBest)); } catch (e) {} } } else SFX.fail();
+  $('rTitle').textContent = cleared ? (stars === 3 ? 'PERFEKT! 🏆' : 'GESCHAFFT!') : 'DIE WELLE IST WEG …';
+  $('stars').textContent = cleared ? '★'.repeat(stars) + '☆'.repeat(3 - stars) : '✕';
+  $('rScore').textContent = Math.floor(score); $('rAcc').textContent = Math.round(acc * 100) + ' %'; $('rCombo').textContent = maxCombo; $('rPerf').textContent = perfect;
+  $('rText').textContent = `🎹 ${s.title} · ${s.artist}${nb ? ' · 🏆 Neuer Bestwert!' : ''}${bonus ? ' · +' + bonus + ' Sternbonus' : ''} · © ${s.lic}`;
+  $('rNext').textContent = cleared ? 'NÄCHSTES LIED' : 'NOCHMAL'; $('rNext').dataset.act = cleared ? 'liednext' : 'lied';
+  $('resOv').classList.remove('hidden');
+}
+function renderLieder() {
+  if (!LIEDER) { $('lList').innerHTML = '<p class="sub">Lieder werden geladen …</p>'; return; }
+  const cats = Object.assign({ alle: 'Alle' }, KLSongLib.CATS);
+  $('lCats').innerHTML = Object.keys(cats).filter(k => k === 'alle' || LIEDER.some(s => s.cat === k)).map(k => `<button data-c="${k}" class="${liedCat === k ? 'on' : ''}">${cats[k]}</button>`).join('');
+  const l = liedFiltered(), stars = d => '♪'.repeat(Math.max(1, Math.min(4, d || 2)));
+  $('lList').innerHTML = l.length ? l.map((s, i) => `<button data-i="${i}" class="${s === liedSel ? 'on' : ''}"><b>${s.title.replace(/[<&]/g, '')}</b><small>${s.artist.replace(/[<&]/g, '')} · ${Math.floor((s.dur || 0) / 60)}:${String((s.dur || 0) % 60).padStart(2, '0')} · ${stars(s.diff)}${liedBest[liedKey(s)] ? ' · Best ' + liedBest[liedKey(s)] : ''}</small></button>`).join('') : '<p class="sub">Nichts gefunden.</p>';
+  $('lCats').querySelectorAll('[data-c]').forEach(b => b.onclick = () => { liedCat = b.dataset.c; renderLieder(); });
+  $('lList').querySelectorAll('[data-i]').forEach(b => b.onclick = () => { const s = l[+b.dataset.i]; if (s === liedSel) { audioInit(); startLied(s); return; } liedSel = s; renderLieder(); });
+  $('lLvl').querySelectorAll('[data-l]').forEach(b => b.classList.toggle('on', b.dataset.l === liedLvl));
+  $('lLic').textContent = liedSel ? `© ${liedSel.lic}` : 'Lied antippen zum Auswählen, nochmal antippen oder PLAY zum Starten.';
+  $('bPlay').disabled = !liedSel;
+}
+$('lSearch').addEventListener('input', e => { liedQ = e.target.value; renderLieder(); });
+$('lLvl').querySelectorAll('[data-l]').forEach(b => b.onclick = () => { liedLvl = b.dataset.l; try { localStorage.setItem('anmachaBeatLiedLvl', liedLvl); } catch (e) {} renderLieder(); });
+$('mLied').addEventListener('click', () => setMode('lieder'));
+function loadLieder() { if (LIEDER || !window.KLSongLib) return; KLSongLib.list().then(l => { LIEDER = l; if (!liedSel) liedSel = l[0]; if (mode === 'lieder') renderLieder(); }).catch(() => { $('lList').innerHTML = '<p class="sub">Lieder konnten nicht geladen werden.</p>'; }); }
 $('bPlay').addEventListener('click', playPressed);
 $('bPause').addEventListener('click', () => { audioInit(); if (state === 'paused') resumeGame(); else pauseGame(); });
 $('bSound').addEventListener('click', () => { audioInit(); setMuted(!muted); });
-$('bRestart').addEventListener('click', () => { audioInit(); if (state === 'play' || state === 'paused') startSong(trackIdx); });
+$('bRestart').addEventListener('click', () => { audioInit(); if (state === 'play' || state === 'paused') replay(); });
 $('pResume').addEventListener('click', resumeGame);
-$('pRestart').addEventListener('click', () => { audioInit(); startSong(trackIdx); });
+$('pRestart').addEventListener('click', () => { audioInit(); replay(); });
 $('pMenu').addEventListener('click', toMenu);
-$('rAgain').addEventListener('click', () => { audioInit(); startSong(trackIdx); });
+$('rAgain').addEventListener('click', () => { audioInit(); replay(); });
 $('rMenu').addEventListener('click', toMenu);
 $('rNext').addEventListener('click', () => {
   audioInit(); const a = $('rNext').dataset.act;
-  if (a === 'next') startSong(mode === 'campaign' ? ORDER[Math.min(TRACKS - 1, rankOf(trackIdx) + 1)] : (trackIdx + 1) % TRACKS); else if (a === 'again') startSong(trackIdx); else toMenu();
+  if (a === 'liednext') startLied(nextLied()); else if (a === 'lied') replay(); else if (a === 'next') startSong(mode === 'campaign' ? ORDER[Math.min(TRACKS - 1, rankOf(trackIdx) + 1)] : (trackIdx + 1) % TRACKS); else if (a === 'again') startSong(trackIdx); else toMenu();
 });
 const setOff = v => { userOff = Math.max(-300, Math.min(300, v)); $('offV').textContent = (userOff > 0 ? '+' : '') + userOff + ' ms'; try { localStorage.setItem('anmachaBeatOffset', userOff); } catch (e) {} };
 $('offM').addEventListener('click', () => setOff(userOff - 20)); $('offP').addEventListener('click', () => setOff(userOff + 20));
@@ -723,8 +793,9 @@ function drawPreview() {
 function selectTrack(i) { trackIdx = (i + TRACKS) % TRACKS; try { localStorage.setItem('anmachaBeatTrack', trackIdx); } catch (e) {} applyTheme(trackIdx); drawPreview(); }
 function setMode(m) {
   mode = m; try { localStorage.setItem('anmachaBeatMode', m); } catch (e) {}
-  $('mCamp').classList.toggle('on', m === 'campaign'); $('mFree').classList.toggle('on', m === 'free');
-  $('campBox').classList.toggle('hidden', m !== 'campaign'); $('pickBox').classList.toggle('hidden', m !== 'free');
+  $('mCamp').classList.toggle('on', m === 'campaign'); $('mFree').classList.toggle('on', m === 'free'); $('mLied').classList.toggle('on', m === 'lieder');
+  $('campBox').classList.toggle('hidden', m !== 'campaign'); $('pickBox').classList.toggle('hidden', m !== 'free'); $('liedBox').classList.toggle('hidden', m !== 'lieder');
+  if (m === 'lieder') { $('modeInfo').innerHTML = 'Über 100 bekannte Lieder aus <b>Klavierlicht</b> – gemeinfrei, mit echter Melodie und Begleitung. Die Noten folgen der Melodie.'; $('bPlay').textContent = 'PLAY'; $('bReset').classList.add('hidden'); loadLieder(); renderLieder(); return; }
   const nx = nextTrackForCampaign();
   $('modeInfo').innerHTML = m === 'campaign'
     ? `13 Sender, 13 Genres: Triff die Noten im Takt und halte die Welle am Leben. Es geht von entspannt bis richtig schwer – ${progress >= TRACKS ? 'du hast alle geschafft! Starte neu mit PLAY.' : progress > 0 ? `weiter bei <b>${STATIONS[nx].n}</b> (${STATIONS[nx].g}).` : `los geht’s mit <b>${STATIONS[nx].n}</b> (${STATIONS[nx].g}).`}`
@@ -787,7 +858,7 @@ function update(dt) {
   updateParticles(dt);
   // HUD
   const sc = String(Math.floor(score)); if ($('score').textContent !== sc) $('score').textContent = sc;
-  const bs = 'BEST ' + Math.max(bests[trackIdx] || 0, Math.floor(score)); if ($('best').textContent !== bs) $('best').textContent = bs;
+  const bs = 'BEST ' + Math.max((song && song.lied ? liedBest[liedKey(song.lied)] : bests[trackIdx]) || 0, Math.floor(score)); if ($('best').textContent !== bs) $('best').textContent = bs;
   $('hpB').style.width = Math.max(0, Math.min(100, health)) + '%';
   const as = Math.round(accuracy() * 100) + ' %'; if ($('acc').textContent !== as) $('acc').textContent = as;
   if (song && state !== 'menu') { $('prog').style.width = Math.max(0, Math.min(100, t / song.end * 100)) + '%'; }

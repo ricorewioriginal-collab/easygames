@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "93434b9b92c7",
- "generated": "2026-11-08T17:10:41+01:00",
- "commit": "4c1170559b5338012fb420cc137c2b025a535003",
+ "version": "eb3c200aad85",
+ "generated": "2026-11-08T17:34:13+01:00",
+ "commit": "53f5f0523d28fa7093414ad3ffe3bd145a1a8339",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -403,8 +403,8 @@
   },
   {
    "p": "anmacha-beat-surfer/index.html",
-   "s": 63183,
-   "h": "319789719ede9906a1555f328712225b1cc5ef19fcd817870a1a21af65106a92"
+   "s": 71867,
+   "h": "b0d814b64146a57711ea2e2ea9ef125cf87b78ca13f9a74c62adb79df76f13a4"
   },
   {
    "p": "anmacha-beat-surfer/logo.png",
@@ -488,8 +488,8 @@
   },
   {
    "p": "anmacha-beat-surfer/sw.js",
-   "s": 2003,
-   "h": "a66b2b70779f14ea9aea5147703cb2d4bf2921a8f109f874d3695b3362893f69"
+   "s": 2007,
+   "h": "7278e220a22ed63b609ba85e4ce9e365aaf00042718ea7d1683fbd69e58d190f"
   },
   {
    "p": "anmacha-flipper/card.jpg",
@@ -5523,8 +5523,8 @@
   },
   {
    "p": "games.js",
-   "s": 55528,
-   "h": "f7e564e2df7ac6c274962fd156184cffba78c015c48408a0f92d60bd81ae0213"
+   "s": 55715,
+   "h": "db4cef93ddfcbde1ac76b2947fcebb7efa20f22c5945697017e9c934cc877be7"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5753,8 +5753,8 @@
   },
   {
    "p": "guides.js",
-   "s": 168122,
-   "h": "4b4125872b10bc6cc51c6912659a7456eb0ab54b37b2db83c8424c632216df70"
+   "s": 168506,
+   "h": "c72346a23bf57461fa8e5f30ffe42a2e186833d3eddb531146f56cf901e7df8a"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -5773,8 +5773,8 @@
   },
   {
    "p": "guides/anmacha-beat-surfer.json",
-   "s": 10466,
-   "h": "90f46b9af0491983c8441a870bd4dfebc7d92f0b3440c7db2133699d73dce7d9"
+   "s": 11830,
+   "h": "ab60fd764196ef61daaccb91d46c84f26647479facee66f1116dd113488df2a8"
   },
   {
    "p": "guides/anmacha-flipper.json",
@@ -6078,8 +6078,8 @@
   },
   {
    "p": "guides/prismrush.json",
-   "s": 16357,
-   "h": "12c675113e7cebb8d5c59cb216d8b4330419e0c7ccd0f1198e6780ee156f353d"
+   "s": 17388,
+   "h": "078702766127488148c85f1608884afdd7520fae67d44d0fbfd4dfaf49fed2a0"
   },
   {
    "p": "guides/pufi-farbwind.json",
@@ -6500,6 +6500,11 @@
    "p": "klavierlicht/js/piano.js",
    "s": 6462,
    "h": "ca326f7d9bf3da535f0dcb782ec746802cce3f7b00161fd8fc55920ea2d910ec"
+  },
+  {
+   "p": "klavierlicht/js/songlib.js",
+   "s": 3061,
+   "h": "84611545427a21c4bcc8d08fb1c84fed062352ab01c3af00f0c528becc53bfaf"
   },
   {
    "p": "klavierlicht/js/songs.js",
@@ -7552,14 +7557,14 @@
    "h": "62759995b42672bed9d17515b2145b873d408dddcedeb55dbe93b6918e99047b"
   },
   {
-   "p": "prismrush/assets/index-Br18tWvY.js",
-   "s": 114772,
-   "h": "9c2e1c4218ed6493e5a7e4ec965d09b0ae57b9eb6d0c642067765f4bdbbb4768"
+   "p": "prismrush/assets/index-B_1msRiD.css",
+   "s": 14629,
+   "h": "8683bc9470a67dae25388b21f06e73d58ce631bf554e5e3a9a943e9f14345528"
   },
   {
-   "p": "prismrush/assets/index-CFsflWko.css",
-   "s": 13908,
-   "h": "b2bda7a6943c7c9445608e634e53da6ff4a6ea07890304047c2f77552e5e0d60"
+   "p": "prismrush/assets/index-CjSPjueP.js",
+   "s": 119354,
+   "h": "a4c6958baa1c36fa01cff6ecd4352d2d15d8efff4e39ff72bfdc6f332a58b7e7"
   },
   {
    "p": "prismrush/assets/three-BFNq9m3B.js",
@@ -7598,8 +7603,8 @@
   },
   {
    "p": "prismrush/index.html",
-   "s": 2978,
-   "h": "60f15a457b2c00527fbfe901f030e4ef2e6d50274e6b6690a49337fab99b9c02"
+   "s": 3362,
+   "h": "b7666fa0047860401d5fb60e56b1f2b1b6f25ad7ccc1261f268b573333183814"
   },
   {
    "p": "prismrush/manifest.webmanifest",
@@ -7609,7 +7614,7 @@
   {
    "p": "prismrush/sw.js",
    "s": 1685,
-   "h": "5b3482ead922a750fb1e1a105c70c6db0c50164d9448803a0a828294cbe1d9fd"
+   "h": "a3bef3d9e61b1cce1e5efecf9b65a7aed83484b70d095b1bccc5d9df96e144aa"
   },
   {
    "p": "profil.html",
@@ -8718,8 +8723,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 249684,
-   "h": "97e3bde451ac2a6838dffb4949f28a98048fca27dd5043d10e74038529d33d96"
+   "s": 250255,
+   "h": "7a10c4779f93ed290855552b2fbe35ad31b5c95e987fa27e78e69b231f97afaf"
   },
   {
    "p": "taschi/card.svg",

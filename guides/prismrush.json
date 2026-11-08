@@ -80,6 +80,18 @@
       ]
     },
     {
+      "t": "🎹 Lieder",
+      "p": [
+        "Im Modus 🎹 Lieder (Hauptmenü oder Spielmodi) fliegst du durch über 100 bekannte, gemeinfreie Lieder aus Klavierlicht – von Kinderliedern über Weihnachtslieder bis Bach, Mozart und Beethoven. Die Kristalle liegen genau auf den Melodietönen; steigt die Melodie, wandert die Spur nach rechts, fällt sie, nach links.",
+        "Die Musik ist die PRISMRUSH-Fassung des Liedes: Melodie als Lead, Originalbegleitung als Bass und Flächen, dazu ein Beat. Jedes Lied zeigt seine Rechte-Angabe (©) in der Liste und im Ergebnis."
+      ],
+      "list": [
+        "Schwierigkeit oben wählen: Leicht lässt mehr Zeit zwischen den Kristallen.",
+        "Suchen oder nach Liedart filtern, dann antippen – das Lied startet sofort.",
+        "Rekorde gelten je Lied und Schwierigkeit."
+      ]
+    },
+    {
       "t": "Ergebnis, Sterne und Speichern",
       "list": [
         "Nach jedem Lauf zeigt der Ergebnisbildschirm Punkte, Note, Sterne, Genauigkeit, Treffer je Wertung, maximale Combo, Orbs und Wandtreffer sowie „Neuer Highscore!“, „Neue Bestzeit!“ und neu freigeschaltete Effekte. Danach „Nochmal“, „Nächstes Level“ oder „Hauptmenü“.",
@@ -201,6 +213,10 @@
     {
       "q": "Warum ist ein Level gesperrt?",
       "a": "Level werden nacheinander freigeschaltet. Schließe das vorherige Level ab, dann geht das nächste auf."
+    },
+    {
+      "q": "Was ist der Modus Lieder?",
+      "a": "Über 100 gemeinfreie Lieder aus Klavierlicht als PRISMRUSH-Strecke – die Kristalle folgen der echten Melodie."
     }
   ]
 }

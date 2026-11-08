@@ -97,7 +97,7 @@ window.EASYGAMES_GUIDES = {
   ]
  },
  "anmacha-beat-surfer": {
-  "anleitung": "Ein Rhythmusspiel auf 4 Spuren: Triff die Noten im Takt der Musik. Verpasste Noten senken die Welle (Lebensleiste); fällt sie auf null, ist der Song verloren. In der Kampagne spielst du 13 Sender (Genres) von entspannt bis schwer, im Freien Spiel wählst du einen beliebigen Sender. Am Ende gibt es Sterne, Genauigkeit, maximale Combo und Perfekt-Treffer.",
+  "anleitung": "Ein Rhythmusspiel auf 4 Spuren: Triff die Noten im Takt der Musik. Verpasste Noten senken die Welle (Lebensleiste); fällt sie auf null, ist der Song verloren. In der Kampagne spielst du 13 Sender (Genres) von entspannt bis schwer, im Freien Spiel wählst du einen beliebigen Sender. Am Ende gibt es Sterne, Genauigkeit, maximale Combo und Perfekt-Treffer. Im Bereich 🎹 Lieder spielst du über 100 bekannte, gemeinfreie Lieder aus Klavierlicht – die Noten folgen der echten Melodie, das Klavier spielt die Begleitung, jedes Lied zeigt seine Rechte-Angabe.",
   "steuerung": [
    "PC: D, F, J, K oder Pfeil links, runter, hoch, rechts = die vier Spuren treffen, P/Esc = Pause, R = Neustart, M = Ton, Enter/Leertaste = Start bzw. Weiter",
    "Touch: Die vier großen Tasten unten antippen (links, runter, hoch, rechts); Pause, Ton, Neustart oben rechts",
@@ -108,7 +108,7 @@ window.EASYGAMES_GUIDES = {
   ]
  },
  "prismrush": {
-  "anleitung": "Ein 3D-Rhythmusspiel auf 3 Spuren: Kristalle fliegen im Takt der im Browser erzeugten Musik heran. Triff sie genau, wenn sie den Ring unter deinem Gleiter erreichen (Perfekt, Super, Gut). Orbs sammelst du, indem du in ihrer Spur bist, Prismenwänden weichst du aus. Combos erhöhen den Multiplikator bis ×4, volle Energie zündet den Overdrive für doppelte Punkte. Kampagne mit 32 Leveln in 4 Welten und 4 Schwierigkeitsgraden, dazu Endlos (Bestzeiten), Tagesrhythmus, Sprint 90, Remix, Zen, Präzision, Spiegelwelt, Turbo, Blindflug, Gleitflug, Wandlauf und ein Tutorial.",
+  "anleitung": "Ein 3D-Rhythmusspiel auf 3 Spuren: Kristalle fliegen im Takt der im Browser erzeugten Musik heran. Triff sie genau, wenn sie den Ring unter deinem Gleiter erreichen (Perfekt, Super, Gut). Orbs sammelst du, indem du in ihrer Spur bist, Prismenwänden weichst du aus. Combos erhöhen den Multiplikator bis ×4, volle Energie zündet den Overdrive für doppelte Punkte. Kampagne mit 32 Leveln in 4 Welten und 4 Schwierigkeitsgraden, dazu Endlos (Bestzeiten), Tagesrhythmus, Sprint 90, Remix, Zen, Präzision, Spiegelwelt, Turbo, Blindflug, Gleitflug, Wandlauf und ein Tutorial. Im Modus 🎹 Lieder fliegst du durch über 100 bekannte, gemeinfreie Lieder aus Klavierlicht – die Kristalle liegen auf den Melodietönen, jedes Lied zeigt seine Rechte-Angabe.",
   "steuerung": [
    "PC: Pfeil links/rechts = eine Spur wechseln (trifft dort gleich mit), A, S, D oder J, K, L = Spur direkt wählen und treffen, Leertaste/Pfeil hoch/runter/W = in aktueller Spur treffen, E/Umschalt = Overdrive, Mausklick = Spur unter dem Zeiger treffen, Esc/P = Pause",
    "Touch: Die drei großen Spurtasten unten antippen oder mit dem Finger darüber gleiten, Tippen = treffen, links/rechts wischen = Spur wechseln, nach oben wischen oder ⚡ = Overdrive, II = Pause",
