@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "52695d525f41",
- "generated": "2026-11-08T15:21:45+01:00",
- "commit": "a4d9874e5162484563c062e105d4aaea9a31316f",
+ "version": "3a951395e607",
+ "generated": "2026-11-08T15:40:33+01:00",
+ "commit": "29a8232a99e60a5af1e486722ff342b80e5adf76",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6493,8 +6493,8 @@
   },
   {
    "p": "klavierlicht/manifest.webmanifest",
-   "s": 797,
-   "h": "f78fde1d47de3aee8b692116cfcd40a8552d636b23c087b939726953f9f2ce97"
+   "s": 809,
+   "h": "5501f6317ee8ff7db04b6bdcf9fd83354c2b7aa1bbf72263c874391f3ddb918e"
   },
   {
    "p": "klavierlicht/style.css",
@@ -6503,8 +6503,8 @@
   },
   {
    "p": "klavierlicht/sw.js",
-   "s": 2019,
-   "h": "587be4ce0d5369fb68b6889270ae4dac25e4993a443d7cc690208ac0f37bb2e0"
+   "s": 2031,
+   "h": "25562e6cb94eee1059c4b514342bb9669303b4c45fae9d7d39470c266026124c"
   },
   {
    "p": "konfetti-party/card.jpg",
@@ -8699,7 +8699,7 @@
   {
    "p": "sync/catalog.json",
    "s": 248777,
-   "h": "3fddf70a1aa0a8481bbd2db61d435ac8f31a3a68c9e4c596405d10526656b927"
+   "h": "e7d258c7ace931334e6400193a3fd777e229421150a015a04a53c13460659124"
   },
   {
    "p": "taschi/card.svg",
