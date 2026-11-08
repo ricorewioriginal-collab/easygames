@@ -8,12 +8,15 @@
   const LEVELS = { leicht: { lanes: 4, fall: 2.1, gap: 0.34, any: true, n: 'Leicht', medal: 'bronze' }, normal: { lanes: 5, fall: 1.7, gap: 0.2, any: false, n: 'Mittel', medal: 'silber' }, profi: { lanes: 6, fall: 1.35, gap: 0.1, any: false, n: 'Schwer', medal: 'gold' } };
   // Spielmodi: tiles = Kacheln mit Leben (Piano-Tiles-Art), lights = Lichter (Magic-Piano-Art, ohne Verlieren)
   const MODES = {
-    klassisch: { n: 'Klassisch', ic: '🎹', view: 'tiles', lives: 3, d: 'Schwarze Kacheln im Takt tippen – drei Fehler und das Lied ist vorbei.' },
+    klassisch: { n: 'Klassisch', ic: '🎹', view: 'tiles', lives: 3, crowns: true, d: 'Kacheln im Takt tippen – danach schneller für bis zu drei Kronen 👑. Drei Fehler und es ist vorbei.' },
     magie: { n: 'Magie', ic: '✨', view: 'lights', lives: 0, d: 'Leuchtende Lichter fallen auf die Tasten – entspannt spielen, ohne Verlieren.' },
     endlos: { n: 'Endlos', ic: '♾️', view: 'tiles', lives: 3, loop: true, d: 'Das Lied läuft immer weiter und wird jede Runde schneller – wie lange hältst du durch?' },
     ueben: { n: 'Üben', ic: '🧘', view: 'tiles', lives: 0, practice: true, d: 'Ohne Fehler-Strafe und mit wählbarem Tempo – zum Lernen neuer Lieder.' },
-    tag: { n: 'Tages-Challenge', ic: '🏆', view: 'tiles', lives: 3, daily: true, d: 'Jeden Tag ein anderes Lied auf Mittel – schaffst du drei Sterne?' },
+    tag: { n: 'Tages-Challenge', ic: '📅', view: 'tiles', lives: 3, daily: true, crowns: true, d: 'Jeden Tag ein anderes Lied auf Mittel – schaffst du drei Sterne?' },
+    battle: { n: 'Battle', ic: '⚔️', view: 'tiles', lives: 0, net: true, d: 'Zwei Geräte, ein Lied – wer holt mehr Punkte?' },
+    duett: { n: 'Duett', ic: '🤝', view: 'tiles', lives: 0, net: true, d: 'Zwei Geräte spielen zusammen: einer die Melodie, einer den Bass.' },
     hoeren: { n: 'Zuhören', ic: '🎧', view: 'lights', lives: 0, auto: true, d: 'Das Klavier spielt das Lied ganz allein vor.' },
+    turnier: { n: 'Turnier der Woche', ic: '🏆', view: 'tiles', lives: 3, tour: true, d: 'Fünf Lieder hintereinander, für alle gleich – mit Wochen-Rangliste für angemeldete Spieler.' },
     lernen: { n: 'Klavier lernen', ic: '🎓', view: 'keys', lives: 0, practice: true, learn: true, d: 'Das Lied läuft, die nächsten Tasten leuchten farbig in der richtigen Reihenfolge – spiel live mit.' },
     frei: { n: 'Freies Klavier', ic: '🎼', view: 'keys', lives: 0, free: true, d: 'Ein echtes Klavier mit allen Tönen – frei spielen, mit Oktaven und Haltepedal.' }
   };
@@ -40,9 +43,11 @@
   function playable(c, level, lanes) {
     const L = LEVELS[level] || LEVELS.normal, st = c.step / 1000, off = (c.off || 0) / 1000, notes = [];
     for (const [s, p, d] of c.mel) { const t = off + s * st; if (notes.length && t - notes[notes.length - 1].t < L.gap) continue; notes.push({ t, p, d: Math.max(st, d * st), lane: 0, hit: null }); }
+    return lanesFor(notes, lanes || L.lanes);
+  }
+  // gleitendes Fenster: Tonhöhe relativ zu den Nachbarn → Spur (sieht aus wie die Melodie, springt nicht wild)
+  function lanesFor(notes, N) {
     if (!notes.length) return notes;
-    // gleitendes Fenster: Tonhöhe relativ zu den Nachbarn → Spur (sieht aus wie die Melodie, springt nicht wild)
-    const N = lanes || L.lanes;
     let prevLane = Math.floor(N / 2);
     for (let i = 0; i < notes.length; i++) {
       const w = notes.slice(Math.max(0, i - 6), i + 7).map(n => n.p), lo = Math.min(...w), hi = Math.max(...w);
@@ -82,6 +87,29 @@
   function withRate(c, rate) { return Object.assign({}, c, { step: c.step / rate, off: (c.off || 0) / rate, bpm: (c.bpm || 100) * rate }); }
   // Tages-Lied: fest je Datum (alle Spieler bekommen dasselbe)
   function dailyIndex(n, date) { const d = date || new Date(), s = d.getFullYear() * 372 + d.getMonth() * 31 + d.getDate(); let x = (s * 2654435761) >>> 0; x ^= x >>> 13; return x % n; }
+  /* Doppelkacheln (Magic-Tiles-Art): auf betonten Zählzeiten eine zweite Kachel mit dem Begleitton, der gleichzeitig erklingt.
+   * every = Abstand in Sechzehnteln (16 = jeder Takt, 8 = jeder halbe Takt). Der Begleitton wird aus der Begleitung genommen (v = 0). */
+  function doubles(c, notes, acc, every, lanes) {
+    if (!every || !acc.length) return 0; const st = c.step / 1000, off = (c.off || 0) / 1000; let n = 0, ai = 0;
+    const out = [];
+    for (const m of notes) {
+      const slot = Math.round((m.t - off) / st); if (slot % every) continue;
+      while (ai < acc.length && acc[ai][0] < m.t - 0.03) ai++;
+      let best = -1; for (let j = ai; j < acc.length && acc[j][0] <= m.t + 0.03; j++) if (acc[j][3] > 0 && acc[j][1] < m.p - 2 && (best < 0 || acc[j][1] < acc[best][1])) best = j;
+      if (best < 0) continue;
+      const lane = m.lane < lanes / 2 ? m.lane + Math.floor(lanes / 2) : m.lane - Math.floor(lanes / 2);
+      if (notes.some(o => o.lane === lane && Math.abs(o.t - m.t) < 0.5) || out.some(o => o.lane === lane && Math.abs(o.t - m.t) < 0.5)) continue;
+      out.push({ t: m.t, p: acc[best][1], d: Math.min(m.d, acc[best][2]), lane, hit: null, twin: true }); acc[best][3] = 0; n++;
+    }
+    for (const o of out) notes.push(o); notes.sort((a, b) => a.t - b.t || a.lane - b.lane); return n;
+  }
+  // Ausschnitt eines Liedes (Sechzehntel from..to), reps-mal hintereinander – zum Üben von Fehlerstellen
+  function slice(c, from, to, reps) {
+    const L = to - from, pick = a => (a || []).filter(x => x[0] >= from && x[0] < to).map(x => { const y = x.slice(); y[0] -= from; return y; });
+    const base = { mel: pick(c.mel), acc: pick(c.acc), chords: pick(c.chords), bass: pick(c.bass) }, out = Object.assign({}, c, { mel: [], acc: [], chords: [], bass: [], off: 0 });
+    for (let r = 0; r < (reps || 1); r++) for (const k of ['mel', 'acc', 'chords', 'bass']) for (const x of base[k]) { const y = x.slice(); y[0] += r * L; out[k].push(y); }
+    return out;
+  }
   /* Klaviertastatur: schwarze Tasten, Tonbereich für ein Lied, Lage der Tasten (für Lernen und freies Spiel) */
   const isBlack = p => [1, 3, 6, 8, 10].includes(((p % 12) + 12) % 12);
   const DE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'B', 'H'];
@@ -112,6 +140,6 @@
     return null;
   }
   const fmt = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
-  const API = { NAMES, LEVELS, MODES, withRate, dailyIndex, WIN, midi, fromNotation, check, playable, accompaniment, judge, scoreHit, newState, accuracy, stars, difficulty, duration, fmt, isBlack, keyName, keyRange, keyLayout, keyAt };
+  const API = { NAMES, LEVELS, MODES, withRate, dailyIndex, WIN, midi, fromNotation, check, playable, accompaniment, judge, scoreHit, newState, accuracy, stars, difficulty, duration, fmt, isBlack, keyName, keyRange, keyLayout, keyAt, doubles, slice, lanesFor };
   if (typeof module !== 'undefined' && module.exports) module.exports = API; else root.KLCore = API;
 })(typeof window !== 'undefined' ? window : globalThis);

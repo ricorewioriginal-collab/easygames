@@ -11,25 +11,27 @@
     {
       "t": "Start und Menü",
       "p": [
-        "Nach dem Ladebildschirm und dem Titel kommst du ins Hauptmenü mit den Spielmodi. Oben siehst du deine Sterne, Kronen und Punkte. Du wählst mit Maus, Touch, Pfeiltasten oder Controller."
+        "Nach dem Ladebildschirm und dem Titel kommst du ins Hauptmenü mit den Spielmodi. Oben siehst du Sterne, Kronen, Diamanten 💎 und Punkte. Darunter: 📋 Aufgaben, 💎 Shop, 🏅 Erfolge, 🏆 Ranglisten, ❓ So geht's und ⚙️ Einstellungen. Du wählst mit Maus, Touch, Pfeiltasten oder Controller."
       ],
       "list": [
-        "🎹 Klassisch: schwarze Kacheln im Takt tippen, drei Herzen.",
+        "🎹 Klassisch: Kacheln im Takt tippen, drei Herzen. Nach dem Lied geht es schneller weiter – jede geschaffte Tempo-Runde bringt eine Krone 👑 (bis zu drei).",
         "✨ Magie: leuchtende Lichter wie bei Magic Piano, ohne Verlieren.",
-        "🎓 Klavier lernen: echte Klaviertastatur – das Lied läuft und die nächsten Tasten leuchten farbig in der richtigen Reihenfolge.",
-        "🎼 Freies Klavier: frei spielen mit allen Tönen, Oktaven, Haltepedal und MIDI-Keyboard.",
+        "🎓 Klavier lernen: echte Klaviertastatur mit Lernpfad, Notenzeile und beiden Händen.",
+        "🎼 Freies Klavier: frei spielen mit Klangfarben, Aufnahme, Rhythmus und Begleitautomatik.",
+        "🌐 Online & Duett: Battle oder Duett mit einem zweiten Gerät – per Link, Code oder QR von überall.",
+        "🏆 Turnier der Woche: fünf Lieder hintereinander, für alle gleich.",
         "♾️ Endlos: das Lied läuft weiter und wird jede Runde 10 % schneller.",
-        "🧘 Üben: ohne Herzen, Tempo von 50 bis 100 % einstellbar.",
-        "🏆 Tages-Challenge: jeden Tag ein anderes Lied auf Mittel – für alle Spieler dasselbe.",
-        "🎧 Zuhören: das Klavier spielt ein Lied allein vor.",
-        "So geht's und Einstellungen (Lautstärke der Begleitung, Hilfe bei verpassten Noten, Tastenbeschriftung)."
+        "🧘 Üben: ohne Herzen, Tempo von 50 bis 100 %.",
+        "📅 Tages-Challenge: jeden Tag ein anderes Lied auf Mittel, mit Kronen-Runden.",
+        "🎧 Zuhören: das Klavier spielt ein Lied allein vor."
       ]
     },
     {
       "t": "Das Liederbuch",
       "p": [
         "Jedes Lied ist eine bunte Karte mit Titel, Komponist oder Herkunft, Länge, Schwierigkeit (LEICHT, MITTEL, SCHWER), deinen Sternen und der Rechte-Angabe (©). Oben filterst du nach Kategorie: Kinderlieder, Weihnachten, Volkslieder, Klassik oder Choräle. Die Suche findet Titel, Komponisten und Herkunft.",
-        "Zehn Lieder stecken im Spiel und gehen immer, auch offline. Alle anderen (mit 🌐) liegen im Online-Archiv und werden erst beim Spielen geladen – nur Noten, wenige Kilobyte."
+        "Zehn Lieder stecken im Spiel und gehen immer, auch offline. Alle anderen (mit 🌐) liegen im Online-Archiv und werden erst beim Spielen geladen – nur Noten, wenige Kilobyte.",
+        "Oben gibt es außerdem ❤️ Meine (deine Lieblingslieder – beim Lied auf 🤍 tippen) und 📂 Eigene (eigene MIDI-Dateien und Aufnahmen). Die Sortierung neben der Suche zeigt Lieder nach Standard, Meistgespielt, A–Z, Leicht oder Schwer zuerst."
       ]
     },
     {
@@ -55,6 +57,39 @@
       ]
     },
     {
+      "t": "Besondere Kacheln",
+      "list": [
+        "Doppelkacheln (Mittel und Schwer): zwei Kacheln gleichzeitig – mit zwei Fingern tippen. Die zweite spielt den Begleitton.",
+        "Wischkacheln: lange Kacheln mit Knick und Pfeil. Gedrückt halten und mit dem Finger in die Nachbarbahn wischen.",
+        "Goldene Kacheln mit 💎: +150 Punkte und ein Diamant.",
+        "Lange Kacheln gedrückt halten bis zum Ende – bis zu 60 Bonuspunkte."
+      ]
+    },
+    {
+      "t": "Kronen, Herausforderungen und Weiterspielen",
+      "list": [
+        "Kronen 👑: In Klassisch und der Tages-Challenge geht das Lied nach der ersten Runde 15 % schneller weiter. Jede weitere geschaffte Runde ist eine Krone, nach drei Kronen ist Schluss.",
+        "Herausforderungen (beim Lied wählbar): 🙈 Blind – Kacheln verschwinden kurz vor der Linie, 🪞 Spiegel – Bahnen vertauscht, 🌀 Chaos – Kacheln mal schneller, mal langsamer. Jede bringt +15 % Punkte.",
+        "Weiterspielen: Sind die Herzen weg, kannst du mit Diamanten weitermachen (10 💎, beim zweiten Mal 20 💎) – mit vollen Herzen, 1,5 Sekunden zurück."
+      ]
+    },
+    {
+      "t": "Diamanten, Shop, Aufgaben und Erfolge",
+      "list": [
+        "💎 Diamanten gibt es für Sterne (2 je Stern), Kronen (5), goldene Kacheln, fehlerfreie Lieder, Lektionen, Aufgaben und Erfolge.",
+        "💎 Shop: Kachel-Designs (Klassik, Schwarz, Neon, Eis, Glitzer, Gold), Hintergründe (Bonbon, Sternennacht, Sonnenuntergang, Ozean, Zauberwald) und Klänge fürs Freie Klavier.",
+        "📋 Aufgaben: jeden Tag drei neue, z. B. „Spiele 3 Lieder“ oder „Combo von 50“ – mit Diamanten als Belohnung.",
+        "🏅 Erfolge: 20 Erfolge vom ersten Lied bis zum Battle-Sieg. Sie erscheinen auch auf der easygames-Erfolge-Seite."
+      ]
+    },
+    {
+      "t": "Ranglisten und Turnier der Woche",
+      "p": [
+        "Ranglisten gibt es nur für angemeldete Spieler (Google-Anmeldung), die ihre Bestwerte freigeben. Öffentlich sind nur Spitzname und Wert. Listen: Gesamtpunkte, Sterne, Kronen, Endlos (höchste Runde) und Turnier der Woche.",
+        "Das Turnier der Woche hat fünf feste Lieder auf Mittel, für alle gleich. Gezählt wird die Summe; jede Woche (ab Montag) beginnt eine neue Rangliste."
+      ]
+    },
+    {
       "t": "Klavier lernen",
       "p": [
         "Unten liegt eine echte Klaviertastatur mit Notennamen (C, D, E … H; C4 ist das mittlere C). Das Lied läuft, und farbige Balken fallen genau auf die Tasten, die du spielen sollst. Erreicht ein Balken die Linie, spielst du die Taste – Begleitung und Bass laufen von selbst."
@@ -65,7 +100,11 @@
         "Live: das Lied läuft weiter, verpasste Töne spielt das Klavier leise mit.",
         "⏳ Warten (bei der Schwierigkeitswahl oder in den Einstellungen): das Lied hält an, bis du die richtige Taste triffst – ideal zum Lernen.",
         "Tempo von 50 bis 100 % einstellbar; Leicht, Mittel und Schwer bestimmen, wie viele Töne der Melodie du spielst.",
-        "Auf dem Handy mit den Fingern, am PC mit Maus, Tastatur oder einem MIDI-Keyboard (🔌 MIDI)."
+        "Auf dem Handy mit den Fingern, am PC mit Maus, Tastatur oder einem MIDI-Keyboard (🔌 MIDI).",
+        "🎓 Lernpfad: 10 Lektionen – das mittlere C, C-D-E, fünf Finger, das erste Lied, die linke Hand, schwarze Tasten, Akkorde, beide Hände, Ode an die Freude und der Anfang von Für Elise. Ab ★★ ist eine Lektion bestanden, dann öffnet sich die nächste.",
+        "Beide Hände: beim Lied ✋ Rechte Hand, 🤚 Linke Hand oder 🙌 Beide wählen. Balken der linken Hand sind gestrichelt und mit „L“ markiert.",
+        "🎼 Noten: eine Notenzeile mit Violin- und Bassschlüssel zeigt die nächsten Noten (Knopf „Noten“ zum Ein- und Ausschalten).",
+        "🔁 Fehlerstellen üben: nach dem Lied spielt das Spiel die zwei Takte mit den meisten Fehlern dreimal hintereinander, langsamer."
       ]
     },
     {
@@ -79,7 +118,21 @@
         "◀ ▶ (am PC Pfeiltasten) verschieben die Tastatur um eine Oktave.",
         "🦶 Pedal (am PC Leertaste halten) lässt die Töne weiterklingen.",
         "Am PC: untere Buchstabenreihe Y X C V B N M ab C, obere Reihe Q W E R T Z U eine Oktave höher, schwarze Tasten in der Reihe darüber.",
-        "🔌 MIDI verbindet ein echtes Keyboard per USB (Chrome oder Edge) – mit Anschlagstärke und Haltepedal."
+        "🔌 MIDI verbindet ein echtes Keyboard per USB (Chrome oder Edge) – mit Anschlagstärke und Haltepedal.",
+        "⏺ Aufnahme: spielen, ⏹ Stopp – danach anhören, als Lied speichern (dann in allen Modi spielbar unter 📂 Eigene) oder als Link teilen. Wer den Link öffnet, hört deine Melodie.",
+        "🎨 Klang: Flügel, E-Piano, Spieluhr, Orgel, Harfe, Synthesizer – alle im Gerät erzeugt.",
+        "🥁 Rhythmus: Metronom, Pop, Rock, Walzer, Bossa Nova, Ballade mit Tempo 50–180. Die 🎸 Begleitautomatik spielt Bass und Akkord passend zu den Tönen, die du spielst."
+      ]
+    },
+    {
+      "t": "Online & Duett (zwei Geräte)",
+      "p": [
+        "Unter 🌐 Online & Duett eröffnest du einen Raum. Dein Mitspieler tritt per Link, 4-stelligem Code oder QR-Code von überall bei – mit Handy, Tablet oder PC. Der Gastgeber wählt das Lied, beide Geräte starten gleichzeitig."
+      ],
+      "list": [
+        "⚔️ Battle: beide spielen dasselbe Lied, oben siehst du die Punkte des anderen – wer mehr hat, gewinnt.",
+        "🤝 Duett: der Gastgeber spielt die Melodie, der Mitspieler den Bass. Die Töne des anderen erklingen auf beiden Geräten – nur zusammen klingt das Lied ganz.",
+        "Nach dem Lied wählt der Gastgeber das nächste."
       ]
     },
     {
@@ -103,12 +156,19 @@
       ]
     },
     {
+      "t": "Eigene Lieder (MIDI)",
+      "p": [
+        "Unter 📂 Eigene kannst du eine eigene MIDI-Datei (.mid) laden. Das Spiel macht daraus Kacheln: Melodie aus der höchsten Stimme, der Rest wird Begleitung. Die Datei bleibt nur auf deinem Gerät und wird nicht hochgeladen – bitte nur Dateien verwenden, die du nutzen darfst."
+      ]
+    },
+    {
       "t": "Steuerung",
       "list": [
         "Touch und Maus: auf die Bahn tippen, lange Kacheln gedrückt halten, über die Bahnen wischen.",
         "Tastatur: D F J K (4 Bahnen), D F Leertaste J K (5), S D F J K L (6). Esc = Pause.",
         "Controller: LB, X, Y, RB für die vier Bahnen, A = Mitte, LT/RT außen. B = Pause.",
-        "Klavier lernen / Freies Klavier: Tasten antippen, Computertastatur (Y…M und Q…U), Leertaste = Pedal, MIDI-Keyboard."
+        "Klavier lernen / Freies Klavier: Tasten antippen, Computertastatur (Y…M und Q…U), Leertaste = Pedal, MIDI-Keyboard.",
+        "Verzögerung messen (⚙️ Einstellungen → 🎯): im Takt der Klicks tippen – hilft bei Bluetooth-Kopfhörern oder wenn Treffer zu spät gewertet werden."
       ]
     },
     {
@@ -127,7 +187,8 @@
         "Hör ein neues Lied zuerst mit „Zuhören“ an.",
         "Schau auf die weiße Linie unten, nicht auf die Kacheln oben.",
         "Im Modus Üben kannst du ohne Herzen und mit halbem Tempo lernen.",
-        "Zum echten Klavierspielen: „Klavier lernen“ mit ⏳ Warten und 50 % Tempo – die grüne Taste mit der 1 ist immer die nächste."
+        "Zum echten Klavierspielen: „Klavier lernen“ mit ⏳ Warten und 50 % Tempo – die grüne Taste mit der 1 ist immer die nächste.",
+        "Neu am Klavier? Starte mit dem 🎓 Lernpfad – Lektion für Lektion bis zu beiden Händen."
       ]
     },
     {
@@ -137,7 +198,9 @@
         "Wenn eine Kachel gleich kommt, ist zu frühes Tippen kein Fehler – nur wildes Tippen auf leere Bahnen kostet Herzen.",
         "Kopfhörer helfen beim Timing.",
         "Lass „Verpasste Noten leise mitspielen“ an, dann bleibt das Lied bei Fehlern erkennbar.",
-        "Lange Kacheln bis zum Ende halten: das bringt bis zu 60 Bonuspunkte je Kachel."
+        "Lange Kacheln bis zum Ende halten: das bringt bis zu 60 Bonuspunkte je Kachel.",
+        "Doppelkacheln mit zwei Fingern gleichzeitig tippen, nicht nacheinander.",
+        "Wischkacheln: Finger auf der Kachel lassen und mitziehen – loslassen beendet sie."
       ]
     },
     {
@@ -145,7 +208,9 @@
       "list": [
         "Maple Leaf Rag, Präludium C-Dur, Für Elise und schnelle Reels (Devil's Dream, Drowsy Maggie) sind die härtesten Lieder.",
         "Auf Schwer mit der Tastatur beide Hände benutzen: D F links, J K rechts.",
-        "Im Endlos-Modus zählt Ruhe: ab Runde 4 ist das Tempo über 130 %."
+        "Im Endlos-Modus zählt Ruhe: ab Runde 4 ist das Tempo über 130 %.",
+        "Für Kronen: in Runde 1 ruhig spielen, ab Runde 2 nur noch auf die unterste Kachel schauen.",
+        "Mit allen drei Herausforderungen gibt es +45 % Punkte – ideal für die Rangliste."
       ]
     },
     {
@@ -192,6 +257,23 @@
         "Auf Leicht spielen: weniger Kacheln, mehr Zeit pro Kachel.",
         "Nicht auf Verdacht tippen – jede leere Bahn kostet ein Herz."
       ]
+    },
+    {
+      "t": "Kronen und Diamanten sammeln",
+      "list": [
+        "Ein leichtes, ruhiges Lied in Klassisch: nach Runde 1 kommen drei schnellere Runden – jede bringt eine Krone und 5 💎.",
+        "Tagesaufgaben täglich erledigen: 30–50 💎 pro Tag.",
+        "Goldene Kacheln nicht verpassen: je 1 💎.",
+        "Erfolge wie „Alleskönner“ (jeden Modus einmal) bringen bis zu 50 💎."
+      ]
+    },
+    {
+      "t": "Lernpfad schnell bestehen",
+      "list": [
+        "„Warten“ einschalten – das Lied hält an, bis du die richtige Taste triffst.",
+        "Nur auf die grüne Taste mit der 1 achten.",
+        "Bei Akkorden alle drei markierten Tasten gleichzeitig drücken."
+      ]
     }
   ],
   "faq": [
@@ -226,6 +308,18 @@
     {
       "q": "Lerne ich damit wirklich Klavier?",
       "a": "Ja, im Modus „Klavier lernen“ spielst du die echten Töne auf einer echten Tastatur mit Notennamen. Mit „Warten“ und langsamem Tempo übst du jedes Lied Schritt für Schritt."
+    },
+    {
+      "q": "Wie spiele ich mit einem Freund?",
+      "a": "Im Menü 🌐 Online & Duett → Battle oder Duett eröffnen und Link, Code oder QR-Code teilen. Der Freund tritt von überall bei, auch mit einem anderen Gerätetyp."
+    },
+    {
+      "q": "Wer kommt in die Ranglisten?",
+      "a": "Nur angemeldete Spieler (Google), die ihre Bestwerte auf der Ranglisten-Seite freigeben – mit Spitznamen."
+    },
+    {
+      "q": "Werden meine MIDI-Dateien hochgeladen?",
+      "a": "Nein. Eigene MIDI-Lieder und Aufnahmen bleiben nur auf deinem Gerät. Nur ein geteilter Aufnahme-Link enthält die Töne im Link selbst."
     }
   ]
 }

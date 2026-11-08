@@ -37,4 +37,18 @@ ok(C.MODES.lernen.view === 'keys' && C.MODES.frei.free && C.isBlack(61) && !C.is
 const kn = [{ p: 60 }, { p: 64 }, { p: 67 }, { p: 100 }], kr = C.keyRange(kn, 24);
 ok(kn[3].p === 76 && !C.isBlack(kr.lo) && !C.isBlack(kr.hi) && kr.lo < 60 && kr.hi > 76 && kr.hi - kr.lo <= 28, 'Tonbereich: Ausreißer oktaviert, Ränder auf weißen Tasten');
 const lay = C.keyLayout(48, 83, 700); ok(lay.whites === 21 && lay.keys.length === 36 && C.keyAt(lay, lay.ww, 0.3) === 49 && C.keyAt(lay, lay.ww, 0.9) === 50 && C.keyAt(lay, lay.ww * 0.5, 0.3) === 48, 'Tastatur: 3 Oktaven, schwarze Tasten oben getroffen, weiße unten');
+// Fortschritt, Lernpfad, MIDI
+const KMeta = require('../js/meta.js'), KLes = require('../js/lessons.js'), KMid = require('../js/midi.js');
+KMeta._reset(); const md = KMeta.load(); ok(KMeta.quests().length === 3 && md.gems === 0 && md.own.design.includes('klassik'), 'Fortschritt: 3 Tagesaufgaben, Start ohne Diamanten');
+const nw = KMeta.report('song', { mode: 'klassisch', level: 'normal', stars: 3, crowns: 1, perfect: 20, combo: 30, key: 'b:jakob' });
+ok(md.songs === 1 && md.ach.first && md.ach.crown && md.gems >= 15 && nw.some(x => x.type === 'ach'), 'Fortschritt: Lied zählt, Erfolge „Erstes Lied“ und „Erste Krone“ mit Diamanten');
+KMeta.addGems(40); ok(!KMeta.buy('design', 'gold') && KMeta.buy('design', 'neon') && md.use.design === 'neon', 'Shop: zu teuer abgelehnt, bezahlbares Design gekauft');
+const ws = KMeta.weekSongs(103, 2964); ok(ws.length === 5 && new Set(ws).size === 5 && JSON.stringify(ws) === JSON.stringify(KMeta.weekSongs(103, 2964)), 'Turnier: 5 verschiedene Lieder, für alle gleich');
+KMeta.report('week', { week: 2964, score: 12345 }); ok(md.weekBoard === 2964 * 1e7 + 12345, 'Turnier: Wochenwert für die Rangliste');
+const lc = KLes.chart(KLes.LESSONS.find(l => l.id === 'akkorde')); ok(KLes.LESSONS.length === 10 && lc.mel.filter(n => n[0] === 0).length === 3, 'Lernpfad: 10 Lektionen, Akkorde mit drei Tönen gleichzeitig');
+ok(KLes.chart(KLes.LESSONS.find(l => l.id === 'beide')).lh.length === 4, 'Lernpfad: linke Hand als eigene Stimme');
+const rev = [[0, 60, 0.4, 0.8], [0.25, 64, 0.2, 0.6], [0.31, 67, 1.5, 1]], dec = KMid.decode(KMid.encode(rev));
+ok(dec.length === 3 && dec.every((e, i) => e[1] === rev[i][1] && Math.abs(e[0] - rev[i][0]) < 0.011), 'Aufnahme: Link-Codierung verlustarm');
+ok(KMid.toChartRec(rev, 'x', 100).mel.length === 3, 'Aufnahme: schnelle Töne bleiben als Lied erhalten');
+ok(C.slice(C.fromNotation(KLSongs.list.find(s => s.id === 'ode')), 0, 32, 3).mel.length === 3 * C.fromNotation(KLSongs.list.find(s => s.id === 'ode')).mel.filter(n => n[0] < 32).length, 'Fehlerstellen: Ausschnitt dreimal');
 console.log(fail ? fail + ' Fehler' : 'Alle Kern-Tests bestanden'); process.exit(fail ? 1 : 0);

@@ -2030,18 +2030,19 @@
   {
    "id": "klavierlicht",
    "title": "Klavierlicht – Klavier spielen mit Kacheln und Lichtern",
-   "desc": "Über 100 bekannte Lieder auf dem Klavier spielen – schwarze Kacheln im Takt tippen wie bei Piano Tiles oder leuchtende Lichter wie bei Magic Piano. Spielmodi Klassisch (3 Herzen, lange Kacheln halten, wischen), Magie, Klavier lernen (echte Tastatur, Tasten leuchten farbig in der Reihenfolge), Freies Klavier (alle Töne, Pedal, MIDI-Keyboard), Endlos (jede Runde schneller), Üben (Tempo wählbar), Tages-Challenge und Zuhören; Leicht, Mittel und Schwer mit Sternen und Kronen. Kinder- und Weihnachtslieder, Volksweisen, Bach-Choräle mit Originalsatz und Klassik (Für Elise, Maple Leaf Rag, Präludium C-Dur, La donna è mobile, Kanon in D …), alle gemeinfrei mit Rechte-Angabe. 10 Lieder offline, der Rest lädt aus dem Online-Archiv. Touch, Tastatur und Controller.",
+   "desc": "Über 100 bekannte Lieder auf dem Klavier spielen – schwarze Kacheln im Takt tippen wie bei Piano Tiles oder leuchtende Lichter wie bei Magic Piano. Spielmodi Klassisch (3 Herzen, lange Kacheln halten, wischen), Magie, Kronen-Runden, Doppel- und Wischkacheln, 🌐 Online-Battle und Duett mit zwei Geräten, Turnier der Woche, Klavier lernen (Lernpfad, Notenzeile, beide Hände; Tasten leuchten in der Reihenfolge), Freies Klavier (Aufnahme, Klangfarben, Rhythmus, Begleitautomatik), eigene MIDI-Dateien, Shop, Aufgaben, Erfolge, Endlos (jede Runde schneller), Üben (Tempo wählbar), Tages-Challenge und Zuhören; Leicht, Mittel und Schwer mit Sternen und Kronen. Kinder- und Weihnachtslieder, Volksweisen, Bach-Choräle mit Originalsatz und Klassik (Für Elise, Maple Leaf Rag, Präludium C-Dur, La donna è mobile, Kanon in D …), alle gemeinfrei mit Rechte-Angabe. 10 Lieder offline, der Rest lädt aus dem Online-Archiv. Touch, Tastatur und Controller.",
    "icon": "🎹",
    "img": "klavierlicht/card.jpg",
    "bg": "linear-gradient(145deg,#ff6fd0,#9b5cff 55%,#3db7ff)",
    "glow": "rgba(155,92,255,.55)",
    "path": "klavierlicht/",
    "modes": {
-    "pad": true
+    "pad": true,
+    "online": true
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "Spiele über 100 Lieder auf dem Klavier. Im Modus Klassisch fallen schwarze Kacheln auf vier Bahnen – tippe jede Kachel, wenn sie die weiße Linie erreicht; Bass und Begleitung spielen von selbst. Ins Leere tippen oder eine Kachel verpassen kostet ein Herz, nach drei Fehlern ist das Lied vorbei. Lange Kacheln gedrückt halten, Wischen über die Bahnen trifft mehrere Kacheln. Weitere Modi: Klavier lernen (echte Klaviertastatur, die nächsten Tasten leuchten farbig in der richtigen Reihenfolge, live oder mit Warten), Freies Klavier (alle Töne, Oktaven, Pedal, MIDI-Keyboard), Magie (Lichter ohne Verlieren), Endlos (jede Runde schneller), Üben (Tempo wählbar), Tages-Challenge und Zuhören. Vor jedem Lied wählst du Leicht, Mittel oder Schwer.",
+    "anleitung": "Spiele über 100 Lieder auf dem Klavier. Im Modus Klassisch fallen schwarze Kacheln auf vier Bahnen – tippe jede Kachel, wenn sie die weiße Linie erreicht; Bass und Begleitung spielen von selbst. Ins Leere tippen oder eine Kachel verpassen kostet ein Herz, nach drei Fehlern ist das Lied vorbei. Lange Kacheln gedrückt halten, Wischen über die Bahnen trifft mehrere Kacheln. Nach dem Lied geht es für Kronen 👑 schneller weiter; Doppel-, Wisch- und Goldkacheln, Herausforderungen (Blind, Spiegel, Chaos), Weiterspielen mit Diamanten, Shop, Tagesaufgaben, Erfolge, Ranglisten für angemeldete Spieler und das Turnier der Woche. Weitere Modi: 🌐 Online & Duett (Battle oder Duett mit einem zweiten Gerät per Link, Code oder QR), Klavier lernen (Lernpfad mit 10 Lektionen, Notenzeile, beide Hände, Fehlerstellen üben; echte Klaviertastatur, die nächsten Tasten leuchten farbig in der richtigen Reihenfolge, live oder mit Warten), Freies Klavier (alle Töne, Oktaven, Pedal, MIDI-Keyboard, Aufnahme und Teilen, Klangfarben, Rhythmus und Begleitautomatik), eigene MIDI-Dateien, Magie (Lichter ohne Verlieren), Endlos (jede Runde schneller), Üben (Tempo wählbar), Tages-Challenge und Zuhören. Vor jedem Lied wählst du Leicht, Mittel oder Schwer.",
     "steuerung": [
      "Touch/Maus: auf die Bahn tippen, auf der die Kachel bzw. das Licht ankommt; lange Kacheln halten, über die Bahnen wischen.",
      "Klavier lernen / Freies Klavier: Tasten antippen (mehrere Finger), am PC Y…M und Q…U, Leertaste = Pedal, MIDI-Keyboard über 🔌 MIDI.",
@@ -2056,8 +2057,8 @@
      "Jedes Lied zeigt Komponist und Rechte-Angabe – alle Melodien sind gemeinfrei."
     ]
    },
-   "size": 129880,
-   "files": 9,
+   "size": 220838,
+   "files": 13,
    "offline": true,
    "cloud": {
     "game": "klavierlicht",

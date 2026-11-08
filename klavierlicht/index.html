@@ -20,7 +20,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#8a4dff">
 <title>Klavierlicht – Klavier spielen mit Kacheln und Lichtern</title>
-<meta name="description" content="Klavierlicht: über 100 bekannte Lieder auf dem Klavier spielen – Kacheln im Takt tippen wie bei Piano Tiles oder leuchtende Lichter wie bei Magic Piano. Spielmodi Klassisch, Magie, Klavier lernen (Tasten leuchten in der richtigen Reihenfolge), Freies Klavier, Endlos, Üben, Tages-Challenge und Zuhören; Leicht, Mittel, Schwer mit Sternen und Kronen. Kinderlieder, Weihnachtslieder, Volksweisen, Bach-Choräle und Klassik (Für Elise, Maple Leaf Rag, Kanon in D, La donna è mobile …), alle gemeinfrei mit Rechte-Angabe. Touch, Tastatur und Controller.">
+<meta name="description" content="Klavierlicht: über 100 bekannte Lieder auf dem Klavier spielen – Kacheln im Takt tippen wie bei Piano Tiles oder leuchtende Lichter wie bei Magic Piano. Spielmodi Klassisch mit Kronen-Runden, Magie, Klavier lernen mit Lernpfad und Notenzeile, Freies Klavier mit Aufnahme und Begleitautomatik, Online-Battle und Duett mit zwei Geräten, Turnier der Woche, Endlos, Üben, Tages-Challenge und Zuhören; Leicht, Mittel, Schwer mit Sternen und Kronen. Kinderlieder, Weihnachtslieder, Volksweisen, Bach-Choräle und Klassik (Für Elise, Maple Leaf Rag, Kanon in D, La donna è mobile …), alle gemeinfrei mit Rechte-Angabe. Touch, Tastatur und Controller.">
 <link rel="stylesheet" href="../vendor/fonts/fredoka.css">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -42,7 +42,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <section class="scr" id="sLib"><div class="libWrap">
   <header class="bar"><button class="back nav" id="libBack">‹ Menü</button><h2 id="libTitle">🎹 Liederbuch</h2><span class="dim" id="libCount"></span></header>
   <div class="tabs" id="libTabs"></div>
-  <input type="search" class="field nav" id="libSearch" placeholder="🔎 Lied, Komponist oder Künstler suchen" aria-label="Suchen">
+  <div class="libTools"><input type="search" class="field nav" id="libSearch" placeholder="🔎 Lied, Komponist oder Künstler suchen" aria-label="Suchen"><select class="field nav" id="libSort" aria-label="Sortierung"><option value="std">Sortierung: Standard</option><option value="beliebt">Meistgespielt</option><option value="az">A–Z</option><option value="leicht">Leicht zuerst</option><option value="schwer">Schwer zuerst</option></select><input type="file" id="midiFile" accept=".mid,.midi,.kar,audio/midi,audio/x-midi" hidden></div>
   <div class="cards" id="libList"></div>
 </div></section>
 
@@ -57,7 +57,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <canvas id="cv" aria-label="Spielfeld – Kacheln, Lichter oder Klaviertasten"></canvas>
   <header class="hud">
     <div class="prog"><i id="gProg"></i><span class="pst" id="gStars"></span></div>
-    <div class="hrow"><button class="hbtn" id="bPause" title="Pause (Esc)">⏸</button><span class="kctl" id="kCtl"><span class="koct"><button class="hbtn" id="kDn" title="Oktave tiefer (←)">◀</button><b id="kOct"></b><button class="hbtn" id="kUp" title="Oktave höher (→)">▶</button></span><button class="kb" id="kPed" title="Haltepedal (Leertaste)">🦶 Pedal</button><button class="kb" id="kMidi" title="MIDI-Keyboard anschließen">🔌 MIDI</button></span><span class="lives" id="gLives"></span><span class="round" id="gRound"></span></div>
+    <div class="hrow"><button class="hbtn" id="bPause" title="Pause (Esc)">⏸</button><span class="kctl" id="kCtl"><span class="koct"><button class="hbtn" id="kDn" title="Oktave tiefer (←)">◀</button><b id="kOct"></b><button class="hbtn" id="kUp" title="Oktave höher (→)">▶</button></span><button class="kb kLearn" id="kStaff" title="Notenzeile ein/aus">🎼 Noten</button><button class="kb" id="kPed" title="Haltepedal (Leertaste)">🦶 Pedal</button><button class="kb" id="kMidi" title="MIDI-Keyboard anschließen">🔌 MIDI</button><button class="kb kFree" id="kRec" title="Aufnehmen">⏺ Aufnahme</button><button class="kb kFree" id="kSnd" title="Klang wählen">🎨 Klang</button><button class="kb kFree" id="kRhy" title="Rhythmus und Begleitautomatik">🥁 Rhythmus</button></span><span class="lives" id="gLives"></span><span class="opp" id="gOpp"></span><span class="round" id="gRound"></span></div>
     <div class="score"><b id="gScore">0</b><small id="gCombo"></small></div>
     <div class="ttl"><b id="gTitle"></b><small id="gMode"></small><small class="lic" id="gLic"></small></div>
   </header>
@@ -67,9 +67,14 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <div class="toast" id="toast" hidden></div>
 
 <script src="../gamepad.js" data-pad="lb=KeyD x=KeyF y=KeyJ rb=KeyK lt=KeyS rt=KeyL start=Escape" defer></script>
+<script src="../cloud/fire-peer.js"></script>
 <script src="js/core.js"></script>
 <script src="js/songs.js"></script>
 <script src="js/piano.js"></script>
+<script src="js/meta.js"></script>
+<script src="js/midi.js"></script>
+<script src="js/lessons.js"></script>
+<script src="js/staff.js"></script>
 <script src="js/app.js"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="klavierlicht" data-prefix="klavierlicht-" defer></script>
 </body>

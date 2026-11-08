@@ -17,7 +17,16 @@
 
   // ---- Registry: je Spiel die Ranglisten. key = localStorage-Schlüssel, path = Pfad im JSON-Wert ('' = Zahl direkt),
   // order 'desc' = höher ist besser, 'asc' = niedriger ist besser (Zeiten), fmt: 'int' | 'sec' (Sekunden) | 'ms' (Millisekunden) | 'daily' (Tag * 100000 + Punkte, nur heute)
+  // | 'weekly' (Woche * 1e7 + Punkte, nur diese Woche; Woche = Tage seit 1970 + 3, durch 7 – beginnt montags)
   var REG = {
+    // Klavierlicht: Gesamtpunkte, Sterne/Kronen (beste je Lied), Endlos-Runde, Turnier der Woche (fmt 'weekly': Woche * 1e7 + Punkte, nur diese Woche)
+    'klavierlicht': [
+      { id: 'main', title: 'Gesamtpunkte (alle Lieder)', key: 'klavierlicht-highscore', order: 'desc', unit: 'Punkte' },
+      { id: 'woche', title: 'Turnier der Woche', key: 'klavierlicht-meta', path: 'weekBoard', order: 'desc', fmt: 'weekly' },
+      { id: 'sterne', title: 'Sterne', key: 'klavierlicht-meta', path: 'stars', order: 'desc', unit: '★' },
+      { id: 'kronen', title: 'Kronen', key: 'klavierlicht-meta', path: 'crowns', order: 'desc', unit: '👑' },
+      { id: 'endlos', title: 'Endlos: höchste Runde', key: 'klavierlicht-meta', path: 'endlessBest', order: 'desc', unit: 'Runde' }
+    ],
     // Song des Tages: Wert = Tagesnummer * 100000 + Punkte (steigt jeden Tag), fmt 'daily' zeigt nur Einträge von heute (deutsche Zeit)
     'show-me-your-voice': [
       { id: 'tag', title: 'Song des Tages (heute)', key: 'smyv-save', path: 'dailyBoard', order: 'desc', fmt: 'daily' },
@@ -179,8 +188,10 @@
     var p = t.split('-');
     return Math.floor(Date.UTC(+p[0], +p[1] - 1, +p[2]) / 864e5);
   }
+  function berlinWeek() { return Math.floor((berlinDay() + 3) / 7); }
   function fmt(kind, v) {
     if (kind === 'daily') return Math.round(v % 1e5).toLocaleString('de-DE') + ' Punkte';
+    if (kind === 'weekly') return Math.round(v % 1e7).toLocaleString('de-DE') + ' Punkte';
     if (kind === 'sec' || kind === 'ms') {
       var s = kind === 'ms' ? v / 1000 : v, m = Math.floor(s / 60), r = s - m * 60;
       return (m ? m + ':' + (r < 10 ? '0' : '') : '') + r.toFixed(m ? 1 : 2).replace('.', ',') + (m ? '' : ' s');
@@ -304,7 +315,7 @@
       return (j || []).filter(function (x) { return x.document; }).map(function (x) {
         var f = x.document.fields || {}, nm = x.document.name || '';
         return { uid: nm.slice(nm.lastIndexOf('/') + 1), n: cleanName(f.n && f.n.stringValue) || '–', s: Number(f.s && (f.s.doubleValue != null ? f.s.doubleValue : f.s.integerValue)) };
-      }).filter(function (r) { return b.fmt !== 'daily' || Math.floor(r.s / 1e5) === berlinDay(); });
+      }).filter(function (r) { return b.fmt === 'daily' ? Math.floor(r.s / 1e5) === berlinDay() : b.fmt === 'weekly' ? Math.floor(r.s / 1e7) === berlinWeek() : true; });
     });
   }
   // Welche Ranglisten eines Spiels gibt es? Kuratierte: alle; automatische: nur mit Einträgen oder eigenem Wert (pairs = lokale Spielstand-Schlüssel).

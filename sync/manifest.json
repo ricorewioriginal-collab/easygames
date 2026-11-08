@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "52695d525f41",
- "generated": "2026-11-08T15:21:45+01:00",
- "commit": "a4d9874e5162484563c062e105d4aaea9a31316f",
+ "version": "1f0f0ba063a5",
+ "generated": "2026-11-08T15:40:33+01:00",
+ "commit": "29a8232a99e60a5af1e486722ff342b80e5adf76",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4713,8 +4713,8 @@
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 36400,
-   "h": "dfee0813b994401f8816f8779c83150740d00db2279eb34729e832018fe99635"
+   "s": 37525,
+   "h": "2335fac7784648b9f1c856a85fa2648ca64931d0da33b0bbf8d45fc64fd22e32"
   },
   {
    "p": "cloud/anmacha-bug.js",
@@ -5523,8 +5523,8 @@
   },
   {
    "p": "games.js",
-   "s": 55279,
-   "h": "714d2e91449052684980d122a6af1332aea0c0a5eab88f6e2fb60b89ffe83853"
+   "s": 55463,
+   "h": "765978a53a931c31aac96b291e6c142aa6ad41fe1b3644c344403017f5095636"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5753,8 +5753,8 @@
   },
   {
    "p": "guides.js",
-   "s": 167485,
-   "h": "504c3681ab796f0d571d27aa8944ddca233656cf908a68bcb496e18ab1176beb"
+   "s": 167989,
+   "h": "b1283de7352e10c0f2c9134b05ec52fbd46b647ed0d2d0e0826eda3ed550a906"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6018,8 +6018,8 @@
   },
   {
    "p": "guides/klavierlicht.json",
-   "s": 12796,
-   "h": "1cf59303f99774bcf25d4aa0215fb894b70f1dacb8209945561bd42721810902"
+   "s": 19848,
+   "h": "9150ccfcac293f490ca8f88e0e61328172f71b7c5e0ed09a2956655a38e6a038"
   },
   {
    "p": "guides/konfetti-party.json",
@@ -6468,23 +6468,38 @@
   },
   {
    "p": "klavierlicht/index.html",
-   "s": 8484,
-   "h": "c126690befb831c045a88d908753dbf47e49c0b67efc1b87eba18f3fc092a68d"
+   "s": 9540,
+   "h": "3a86f3cd446a5b334e67f76dddde2164c30d458af005ed7da9cdc7a1a6acb5c2"
   },
   {
    "p": "klavierlicht/js/app.js",
-   "s": 54462,
-   "h": "717ea0c316dff7ca490db82a11736b52ae546d54df47ad06a0ebcf5e2dae54e9"
+   "s": 109794,
+   "h": "f90ca0fe3f4032db8fbe34d2b4c8413be94af3d31784190d014becc73c62b8b0"
   },
   {
    "p": "klavierlicht/js/core.js",
-   "s": 10761,
-   "h": "d77d93d0fd1bdde82bf48854604342c8064f728b3dd2922eb6eaa7d2df5a2d9b"
+   "s": 13357,
+   "h": "ae58fe7009eba76327fcc1f22dad766a3f3b82b8ad2c735c1a96f225257be551"
+  },
+  {
+   "p": "klavierlicht/js/lessons.js",
+   "s": 4210,
+   "h": "5023371ae8c54f2431bfa9f2b55e6d9fb22a4f5c1de243d714822f12a8c9c6bb"
+  },
+  {
+   "p": "klavierlicht/js/meta.js",
+   "s": 11894,
+   "h": "caba64a43c26942cdf6ce5b5efb955113272d3c30596b238f8d42873412586a8"
+  },
+  {
+   "p": "klavierlicht/js/midi.js",
+   "s": 6309,
+   "h": "77011e3daa4bd004eef07c469dde56ad31a697d98e56a2c23829ac96da3dc27d"
   },
   {
    "p": "klavierlicht/js/piano.js",
-   "s": 4292,
-   "h": "f39d2f410a98967235a0076117054e202b7e9d0811fa95aa11b5095aa8647577"
+   "s": 6462,
+   "h": "ca326f7d9bf3da535f0dcb782ec746802cce3f7b00161fd8fc55920ea2d910ec"
   },
   {
    "p": "klavierlicht/js/songs.js",
@@ -6492,19 +6507,24 @@
    "h": "03f3231cd9c816015273ac61737f097ba48e83960b2accb6033d1dd4189143ed"
   },
   {
+   "p": "klavierlicht/js/staff.js",
+   "s": 3307,
+   "h": "37094728aaa673cf116ea10675e2a1b89325045350f39d4bb89cbdcfe294d0cf"
+  },
+  {
    "p": "klavierlicht/manifest.webmanifest",
-   "s": 797,
-   "h": "f78fde1d47de3aee8b692116cfcd40a8552d636b23c087b939726953f9f2ce97"
+   "s": 809,
+   "h": "5501f6317ee8ff7db04b6bdcf9fd83354c2b7aa1bbf72263c874391f3ddb918e"
   },
   {
    "p": "klavierlicht/style.css",
-   "s": 18351,
-   "h": "ea8c290dfcbb1a003e918937073383af1931d126a713ab86fc8d0b3c152538db"
+   "s": 22411,
+   "h": "fddbf15d70c75403bce853657c6b564adce26fd810719a37012a8f98a1b0c478"
   },
   {
    "p": "klavierlicht/sw.js",
-   "s": 2019,
-   "h": "587be4ce0d5369fb68b6889270ae4dac25e4993a443d7cc690208ac0f37bb2e0"
+   "s": 2031,
+   "h": "25562e6cb94eee1059c4b514342bb9669303b4c45fae9d7d39470c266026124c"
   },
   {
    "p": "konfetti-party/card.jpg",
@@ -7108,8 +7128,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3851,
-   "h": "78d652635e41e170363dc04efa6d5c5613c08cd165a70144b4503d59f88cd9a8"
+   "s": 3865,
+   "h": "49cfe528ab65b99b1545e16479b062d7c12d8174a17d65911aa82ed91c96b2f6"
   },
   {
    "p": "oma-rennen/card.jpg",
@@ -8698,8 +8718,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 248777,
-   "h": "3fddf70a1aa0a8481bbd2db61d435ac8f31a3a68c9e4c596405d10526656b927"
+   "s": 249486,
+   "h": "b2992c6850da0d10f918dfccd294335118484640e64a91b2b4bbdc3c872fd4b7"
   },
   {
    "p": "taschi/card.svg",
