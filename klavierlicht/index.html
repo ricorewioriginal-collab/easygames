@@ -18,39 +18,49 @@ b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remo
 d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#1a0b3d">
-<title>Klavierlicht – Klavier spielen mit Lichtern</title>
-<meta name="description" content="Klavierlicht: Lichter fallen im Takt der Melodie – tippe sie und spiel bekannte Lieder auf dem Klavier. Kinderlieder, Weihnachtslieder, Klassik (Für Elise, Ode an die Freude, Greensleeves) Volkslieder und ein Online-Archiv mit weiteren Liedern. Drei Schwierigkeiten, Zuhören-Modus, Sterne und Rekorde. Touch, Tastatur und Controller.">
+<meta name="theme-color" content="#8a4dff">
+<title>Klavierlicht – Klavier spielen mit Kacheln und Lichtern</title>
+<meta name="description" content="Klavierlicht: über 100 bekannte Lieder auf dem Klavier spielen – Kacheln im Takt tippen wie bei Piano Tiles oder leuchtende Lichter wie bei Magic Piano. Spielmodi Klassisch, Magie, Endlos, Üben, Tages-Challenge und Zuhören; Leicht, Mittel, Schwer mit Sternen und Kronen. Kinderlieder, Weihnachtslieder, Volksweisen, Bach-Choräle und Klassik (Für Elise, Maple Leaf Rag, Kanon in D, La donna è mobile …), alle gemeinfrei mit Rechte-Angabe. Touch, Tastatur und Controller.">
 <link rel="stylesheet" href="../vendor/fonts/fredoka.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<section class="scr on" id="sLoad"><div class="center"><div class="keys" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><h1 class="logo">KLAVIER<span>LICHT</span></h1><div class="lbar"><i id="loadBar"></i></div><p class="tip" id="loadTip">Die Tasten werden gestimmt …</p></div></section>
+<div class="bokeh" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<section class="scr on" id="sLoad"><div class="center"><div class="tilesLogo" aria-hidden="true"><i></i><i></i><i></i><i></i></div><h1 class="logo">KLAVIER<span>LICHT</span></h1><div class="lbar"><i id="loadBar"></i></div><p class="tip" id="loadTip">Die Tasten werden gestimmt …</p></div></section>
 
 <section class="scr" id="sTitle"><div class="center">
-  <div class="rain" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  <h1 class="logo big">KLAVIER<span>LICHT</span></h1><p class="claim">Tippe die Lichter – und spiel Lieder wie ein Profi 🎹✨</p>
-  <button class="btn gold xl nav" id="bPress">▶ Spielen</button><p class="hint">Tippen, Enter oder Ⓐ am Controller</p>
+  <div class="tilesLogo big" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <h1 class="logo big">KLAVIER<span>LICHT</span></h1><p class="claim">Über 100 Lieder – tippe die Kacheln im Takt 🎹✨</p>
+  <button class="btn gold xl nav" id="bPress">▶ SPIELEN</button><p class="hint">Tippen, Enter oder Ⓐ am Controller</p>
   <p class="corner"><a href="../">← Alle Spiele</a></p></div></section>
 
 <section class="scr" id="sMenu"><div class="menuWrap">
-  <header class="mHead"><h1 class="logo small">KLAVIER<span>LICHT</span></h1></header>
-  <div class="mBody"><nav class="mList" id="mList" aria-label="Hauptmenü"></nav><aside class="mInfo" id="mInfo" aria-live="polite"></aside></div>
+  <header class="mHead"><h1 class="logo small">KLAVIER<span>LICHT</span></h1><div class="mStats" id="mStats"></div></header>
+  <nav class="mList" id="mList" aria-label="Spielmodi"></nav>
   <footer class="mFoot"><span>Pfeile + Enter · Esc zurück · 🎮 Ⓐ wählen, Ⓑ zurück</span><a class="nav" href="../">← Alle Spiele</a></footer></div></section>
 
-<section class="scr" id="sLib"><div class="panel wide">
-  <header class="hd"><button class="btn sm nav" id="libBack">←</button><h2 id="libTitle">🎹 Liederbuch</h2><span class="dim" id="libCount"></span></header>
+<section class="scr" id="sLib"><div class="libWrap">
+  <header class="bar"><button class="back nav" id="libBack">‹ Menü</button><h2 id="libTitle">🎹 Liederbuch</h2><span class="dim" id="libCount"></span></header>
   <div class="tabs" id="libTabs"></div>
-  <div class="row between"><input type="search" class="field nav" id="libSearch" placeholder="🔎 Lied oder Künstler suchen" aria-label="Suchen"><div class="tabs" id="libLvl"></div></div>
-  <div class="songs" id="libList"></div>
+  <input type="search" class="field nav" id="libSearch" placeholder="🔎 Lied, Komponist oder Künstler suchen" aria-label="Suchen">
+  <div class="cards" id="libList"></div>
+</div></section>
+
+<section class="scr" id="sSong"><div class="songWrap">
+  <header class="bar"><button class="back nav" id="sgBack">‹ Liederbuch</button><h2><span id="sgTitle"></span><small id="sgArtist"></small></h2><span></span></header>
+  <div class="songBody"><div class="medals" id="sgMedals"></div><aside class="sgInfo" id="sgInfo"></aside></div>
 </div></section>
 
 <section class="scr" id="sHelp"><div class="panel wide" id="helpBox"></div></section>
 
 <section class="scr game" id="sGame">
-  <canvas id="cv" aria-label="Spielfeld – Lichter im Takt tippen"></canvas>
-  <header class="hud"><button class="hbtn" id="bPause" title="Pause (Esc)">⏸</button><div class="ttl"><b id="gTitle"></b><small id="gArtist"></small></div><div class="sc"><b id="gScore">0</b><small id="gCombo"></small></div>
-    <div class="prog"><i id="gProg"></i></div><span class="auto" id="gAuto" hidden>🎧 Zuhören</span></header>
+  <canvas id="cv" aria-label="Spielfeld – Kacheln oder Lichter im Takt tippen"></canvas>
+  <header class="hud">
+    <div class="prog"><i id="gProg"></i><span class="pst" id="gStars"></span></div>
+    <div class="hrow"><button class="hbtn" id="bPause" title="Pause (Esc)">⏸</button><span class="lives" id="gLives"></span><span class="round" id="gRound"></span></div>
+    <div class="score"><b id="gScore">0</b><small id="gCombo"></small></div>
+    <div class="ttl"><b id="gTitle"></b><small id="gMode"></small><small class="lic" id="gLic"></small></div>
+  </header>
 </section>
 
 <div class="ov" id="ov" hidden><div class="panel" id="ovBox" role="dialog" aria-modal="true"></div></div>

@@ -683,18 +683,18 @@ window.EASYGAMES_GUIDES = {
   ]
  },
  "klavierlicht": {
-  "anleitung": "Lichter fallen im Takt der Melodie von oben auf die Tasten zu. Tippe ein Licht genau dann, wenn es den Kreis erreicht – dann erklingt die Note. Bass und Begleitung spielen von selbst, du spielst die Melodie. Höhere Töne fallen weiter rechts, tiefere weiter links. Im Liederbuch stecken 10 Lieder, im Online-Archiv 18 weitere, die erst beim Spielen geladen werden.",
+  "anleitung": "Spiele über 100 Lieder auf dem Klavier. Im Modus Klassisch fallen schwarze Kacheln auf vier Bahnen – tippe jede Kachel, wenn sie die weiße Linie erreicht; Bass und Begleitung spielen von selbst. Ins Leere tippen oder eine Kachel verpassen kostet ein Herz, nach drei Fehlern ist das Lied vorbei. Weitere Modi: Magie (Lichter ohne Verlieren), Endlos (jede Runde schneller), Üben (Tempo wählbar), Tages-Challenge und Zuhören. Vor jedem Lied wählst du Leicht, Mittel oder Schwer.",
   "steuerung": [
-   "Touch/Maus: auf die Bahn tippen, auf der das Licht ankommt.",
-   "Tastatur: D F J K (Leicht), D F Leertaste J K (Normal), S D F J K L (Profi), Esc = Pause.",
-   "Gamecontroller: LB, X, A, Y, RB für die Bahnen (Profi zusätzlich LT/RT), B = Pause."
+   "Touch/Maus: auf die Bahn tippen, auf der die Kachel bzw. das Licht ankommt.",
+   "Tastatur: D F J K (4 Bahnen), D F Leertaste J K (5), S D F J K L (6), Esc = Pause.",
+   "Gamecontroller: LB, X, Y, RB für die vier Bahnen, A = Mitte, LT/RT außen, B = Pause."
   ],
   "tipps": [
-   "Auf Leicht zählt nur der Takt – tippe irgendwo, wenn ein Licht unten ankommt.",
-   "Mit „Zuhören“ spielt das Klavier ein Lied vor – so lernst du die Melodie.",
-   "Lange Lichter haben einen Schweif: einmal tippen genügt.",
-   "Eine lange Combo verdoppelt die Punkte.",
-   "Ab 92 % Genauigkeit gibt es drei Sterne."
+   "Hör ein neues Lied zuerst mit „Zuhören“ an – wer die Melodie kennt, trifft den Takt leichter.",
+   "Im Modus Üben gibt es keine Herzen, und das Tempo lässt sich bis 50 % senken.",
+   "Kommt eine Kachel gleich, ist zu frühes Tippen kein Fehler – nur ganz ins Leere tippen kostet ein Herz.",
+   "Ganz ohne Fehler gibt es die Krone 👑.",
+   "Jedes Lied zeigt Komponist und Rechte-Angabe – alle Melodien sind gemeinfrei."
   ]
  },
  "sonnenhof": {

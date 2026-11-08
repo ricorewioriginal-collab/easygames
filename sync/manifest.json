@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f604ea6592fb",
- "generated": "2026-11-03T16:49:27+01:00",
- "commit": "02bfa22fea730dcd28790742afde9adec8d698a4",
+ "version": "9ecc738a2f70",
+ "generated": "2026-11-08T14:56:04+01:00",
+ "commit": "d398d7d5dfca75636c61caf85c249818363b29dc",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5523,8 +5523,8 @@
   },
   {
    "p": "games.js",
-   "s": 54982,
-   "h": "508d542c418257a9d854c7744e32d79c1aaa516bd7851e7447bf83b5f455d09a"
+   "s": 55121,
+   "h": "72f9f816850d4f4e681236169736662bd4f832cb27319051a65977edbf334c98"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5753,8 +5753,8 @@
   },
   {
    "p": "guides.js",
-   "s": 166786,
-   "h": "3434138b9272c95fd16213dc90cb082c94b52b45a8c24243e0bcf2562ad9d27b"
+   "s": 167021,
+   "h": "659452e72ad43391620e3dc7161bf520426cee5a1c533c9873bc763653f3f2f9"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6018,8 +6018,8 @@
   },
   {
    "p": "guides/klavierlicht.json",
-   "s": 6398,
-   "h": "7627c8e3769b477f25493f6ca4a693a9020de1f408d347f0e1ac522fb69084e7"
+   "s": 8408,
+   "h": "3e33fef05ab2957249897671e9a0a9c9fdf5776b77eb8c19fefd56519367a992"
   },
   {
    "p": "guides/konfetti-party.json",
@@ -6463,33 +6463,33 @@
   },
   {
    "p": "klavierlicht/card.jpg",
-   "s": 26952,
-   "h": "94b5d3de8f36e0b7999789372d938df85050558a8ec40ffc859bd5aeba0028c4"
+   "s": 25292,
+   "h": "d8e6c779fd1d9b853afcc8340fed01c4fb6f5bc8bbf4b7e5a373e782315953b5"
   },
   {
    "p": "klavierlicht/index.html",
-   "s": 7391,
-   "h": "ee9a2cf6cda966c0967d3de0f2edd5b5a01d4a0e4d3a05c881954938784c18ff"
+   "s": 8024,
+   "h": "6ad7db9d2c4205fccb77feae7ab5c4c5c0199efbab6afd872887501aac43b797"
   },
   {
    "p": "klavierlicht/js/app.js",
-   "s": 25459,
-   "h": "5242f391cb32518cf66aaf033cee3b6c2a2cbf55945666093ae1e111a76ca528"
+   "s": 32628,
+   "h": "6c1fd993813cee2a1459e3e6b9de44d47fe08c59daae19567d51654fedd88673"
   },
   {
    "p": "klavierlicht/js/core.js",
-   "s": 6272,
-   "h": "fcbe1b25730ce2e51493abc5fb45344459e248dbbb21098289ddfbfa95d3c4a2"
+   "s": 8238,
+   "h": "2c9ce4359921e0f2051585245794e0450282c738e2862be1e61c98cf579c3bce"
   },
   {
    "p": "klavierlicht/js/piano.js",
-   "s": 3610,
-   "h": "a88f06ff6fca3adbaaefa22b08b588259314e064f24880857f15d37794fc5871"
+   "s": 3550,
+   "h": "9adfa44960013aaae1aa16b99fdcea5d6cc626517d3df16f54b386ebee842b5b"
   },
   {
    "p": "klavierlicht/js/songs.js",
-   "s": 4717,
-   "h": "a8508d27b110a1a56603251b66c4805fb69ff15d6d9b0aa7aef3d770b35854b9"
+   "s": 5422,
+   "h": "03f3231cd9c816015273ac61737f097ba48e83960b2accb6033d1dd4189143ed"
   },
   {
    "p": "klavierlicht/manifest.webmanifest",
@@ -6498,8 +6498,8 @@
   },
   {
    "p": "klavierlicht/style.css",
-   "s": 12162,
-   "h": "5c1a719e393cbe82dd6dc5b2a87039832693e6b64e6f7c9cc1b4aaa45854b5b1"
+   "s": 17022,
+   "h": "c8abe4f015d356afc50ffb3093d79320ae8c550505772161bd930b3cd08b5b8e"
   },
   {
    "p": "klavierlicht/sw.js",
@@ -8698,8 +8698,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 247778,
-   "h": "5fd8f7be6939e2be337eef8695cc564817f8fd3e9ace19e78cd837343c6cb3ab"
+   "s": 248153,
+   "h": "19aecf5a36e2d953e8c41eac6fe0b2be9c6ae674fb1f0539f4d1ac7ef3b6d9ce"
   },
   {
    "p": "taschi/card.svg",
@@ -9183,8 +9183,8 @@
   },
   {
    "p": "thumbs/klavierlicht.webp",
-   "s": 11388,
-   "h": "5ace58ec44f262a40e5e226ba339e26989ee9431f9d056136281ab727eb07fcc"
+   "s": 9212,
+   "h": "c7c79cf8894fb239b4f05b8914a61b4479d4fda6ec8de28bcefca65ffd8689e1"
   },
   {
    "p": "thumbs/konfetti-party.webp",
@@ -9269,7 +9269,7 @@
   {
    "p": "thumbs/thumbs.js",
    "s": 2344,
-   "h": "592293a69365d2973e904c8e02ff2962459d36b0778442f2e4fc2436b6a8bded"
+   "h": "d072f108ba47eaee699951dd1bd08ccd249419bc34879adb238b50ff4c36fc4b"
   },
   {
    "p": "thumbs/tortenschlacht.webp",

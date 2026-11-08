@@ -22,7 +22,14 @@ ok(C.judge(0.03) === 'perfect' && C.judge(-0.12) === 'good' && C.judge(0.3) === 
 const st = C.newState(); for (let i = 0; i < 10; i++) C.scoreHit(st, 'perfect'); C.scoreHit(st, null); C.scoreHit(st, 'good');
 ok(st.perfect === 10 && st.miss === 1 && st.good === 1 && st.combo === 1 && st.max === 10 && st.score > 1000, 'Wertung und Combo');
 ok(C.stars({ perfect: 10, good: 0, miss: 0 }) === 3 && C.stars({ perfect: 5, good: 0, miss: 5 }) === 1 && C.stars({ perfect: 0, good: 0, miss: 5 }) === 0, 'Sterne');
-// gebautes Archiv passt zur Quelle
+// gebautes Archiv: jede Datei gültig und mit Rechte-Angabe, zusammen mindestens 100 Lieder
 const dir = path.join(__dirname, '..', 'archiv'), idx = JSON.parse(fs.readFileSync(path.join(dir, 'index.json'), 'utf8'));
-ok(idx.songs.length === SRC.length && idx.songs.every(s => C.check(JSON.parse(fs.readFileSync(path.join(dir, s.id + '.json'), 'utf8')))), 'Archiv gebaut: ' + idx.songs.length + ' Lieder, alle gültig');
+const files = fs.readdirSync(dir).filter(f => f.endsWith('.json') && f !== 'index.json');
+ok(idx.songs.length === files.length && files.every(f => { const c = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')); return C.check(c) && c.lic && /gemeinfrei/.test(c.lic); }), 'Archiv: ' + idx.songs.length + ' Lieder, alle gültig und mit Rechte-Angabe');
+ok(KLSongs.list.every(s => s.lic && /gemeinfrei/.test(s.lic)) && idx.songs.every(s => s.lic), 'jedes Lied zeigt Komponist/Herkunft und „gemeinfrei“');
+ok(KLSongs.list.length + idx.songs.length >= 100, 'mindestens 100 Lieder (' + (KLSongs.list.length + idx.songs.length) + ')');
+const ch = JSON.parse(fs.readFileSync(path.join(dir, 'choral-bwv140-7.json'), 'utf8')), ev = C.accompaniment(ch);
+ok(ev.length === ch.acc.length && ev.every((a, i) => !i || a[0] >= ev[i - 1][0]), 'Original-Satz (Bach-Choral) als Begleitung');
+ok(Object.keys(C.MODES).length >= 5 && C.dailyIndex(100, new Date(2026, 10, 8)) === C.dailyIndex(100, new Date(2026, 10, 8)) && C.dailyIndex(100, new Date(2026, 10, 8)) < 100, 'Spielmodi und Tages-Lied (fest je Datum)');
+const r = C.withRate(ch, 0.5); ok(Math.abs(C.duration(r) - 2 * C.duration(ch)) < 0.01, 'Tempo halbieren verdoppelt die Dauer');
 console.log(fail ? fail + ' Fehler' : 'Alle Kern-Tests bestanden'); process.exit(fail ? 1 : 0);

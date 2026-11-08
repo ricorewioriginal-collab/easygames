@@ -5,7 +5,16 @@
   const NOTE = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11, H: 11 };
   const ROOT = { C: 0, 'C#': 1, Db: 1, D: 2, 'D#': 3, Eb: 3, E: 4, F: 5, 'F#': 6, Gb: 6, G: 7, 'G#': 8, Ab: 8, A: 9, 'A#': 10, Bb: 10, B: 11, H: 11 };
   const NAMES = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
-  const LEVELS = { leicht: { lanes: 4, fall: 2.1, gap: 0.32, any: true, n: 'Leicht' }, normal: { lanes: 5, fall: 1.7, gap: 0.2, any: false, n: 'Normal' }, profi: { lanes: 6, fall: 1.35, gap: 0.09, any: false, n: 'Profi' } };
+  const LEVELS = { leicht: { lanes: 4, fall: 2.1, gap: 0.34, any: true, n: 'Leicht', medal: 'bronze' }, normal: { lanes: 5, fall: 1.7, gap: 0.2, any: false, n: 'Mittel', medal: 'silber' }, profi: { lanes: 6, fall: 1.35, gap: 0.1, any: false, n: 'Schwer', medal: 'gold' } };
+  // Spielmodi: tiles = Kacheln mit Leben (Piano-Tiles-Art), lights = Lichter (Magic-Piano-Art, ohne Verlieren)
+  const MODES = {
+    klassisch: { n: 'Klassisch', ic: '🎹', view: 'tiles', lives: 3, d: 'Schwarze Kacheln im Takt tippen – drei Fehler und das Lied ist vorbei.' },
+    magie: { n: 'Magie', ic: '✨', view: 'lights', lives: 0, d: 'Leuchtende Lichter fallen auf die Tasten – entspannt spielen, ohne Verlieren.' },
+    endlos: { n: 'Endlos', ic: '♾️', view: 'tiles', lives: 3, loop: true, d: 'Das Lied läuft immer weiter und wird jede Runde schneller – wie lange hältst du durch?' },
+    ueben: { n: 'Üben', ic: '🧘', view: 'tiles', lives: 0, practice: true, d: 'Ohne Fehler-Strafe und mit wählbarem Tempo – zum Lernen neuer Lieder.' },
+    tag: { n: 'Tages-Challenge', ic: '🏆', view: 'tiles', lives: 3, daily: true, d: 'Jeden Tag ein anderes Lied auf Mittel – schaffst du drei Sterne?' },
+    hoeren: { n: 'Zuhören', ic: '🎧', view: 'lights', lives: 0, auto: true, d: 'Das Klavier spielt das Lied ganz allein vor.' }
+  };
   const WIN = { perfect: 0.075, good: 0.15 };
 
   function len(tok) { const m = /(?:\*([\d.]+)|\/([\d.]+))$/.exec(tok); return m ? (m[1] ? +m[1] : 1 / +m[2]) : 1; }
@@ -22,16 +31,16 @@
     // kurze Lieder (eine Strophe) mehrfach spielen, damit eine Runde mindestens ~35 Sekunden dauert
     const L = t, reps = Math.max(1, Math.min(3, Math.ceil(35 / (L * step || 1))));
     for (let r = 1; r < reps; r++) { const o = r * L; [mel, chords, bass].forEach(a => { const n = a.length / r; for (let i = 0; i < n; i++) { const x = a[i].slice(); x[0] += o; a.push(x); } }); }
-    return { v: 1, id: s.id, title: s.title, artist: s.artist, cat: s.cat, bpm: s.bpm, step: step * 1000, off: 0, mel, chords, bass, builtin: true };
+    return { v: 1, id: s.id, title: s.title, artist: s.artist, cat: s.cat, bpm: s.bpm, step: step * 1000, off: 0, mel, chords, bass, builtin: true, lic: s.lic || '', src: 'Klaviersatz: easygames (eigene Notensetzung)' };
   }
   function check(c) { return c && c.v === 1 && Array.isArray(c.mel) && c.mel.length > 0 && c.step > 0; }
   // Spielbare Lichter: Melodienoten mit Mindestabstand je Schwierigkeit; Spur folgt dem Melodieverlauf (höher = weiter rechts)
-  function playable(c, level) {
+  function playable(c, level, lanes) {
     const L = LEVELS[level] || LEVELS.normal, st = c.step / 1000, off = (c.off || 0) / 1000, notes = [];
     for (const [s, p, d] of c.mel) { const t = off + s * st; if (notes.length && t - notes[notes.length - 1].t < L.gap) continue; notes.push({ t, p, d: Math.max(st, d * st), lane: 0, hit: null }); }
     if (!notes.length) return notes;
     // gleitendes Fenster: Tonhöhe relativ zu den Nachbarn → Spur (sieht aus wie die Melodie, springt nicht wild)
-    const N = L.lanes;
+    const N = lanes || L.lanes;
     let prevLane = Math.floor(N / 2);
     for (let i = 0; i < notes.length; i++) {
       const w = notes.slice(Math.max(0, i - 6), i + 7).map(n => n.p), lo = Math.min(...w), hi = Math.max(...w);
@@ -46,6 +55,10 @@
   // Begleitung: Bass auf jedem Schlag, Akkord als gebrochene Achtel in mittlerer Lage (Ereignisse: t, Tonhöhe, Dauer, Lautstärke)
   function accompaniment(c) {
     const st = c.step / 1000, off = (c.off || 0) / 1000, ev = [];
+    if (Array.isArray(c.acc) && c.acc.length) {   // Original-Satz (z. B. Bach-Choral, Klavierstück): echte Begleitstimmen
+      for (const [s, p, d] of c.acc) ev.push([off + s * st, p, Math.max(st, d * st), p < 50 ? 0.34 : 0.24]);
+      return ev.sort((a, b) => a[0] - b[0]);
+    }
     for (const [s, p, d] of c.bass || []) { let q = p; while (q < 36) q += 12; while (q > 52) q -= 12; ev.push([off + s * st, q, Math.max(st * 3, d * st), 0.42]); }
     for (const [s, r, q, d] of c.chords || []) {
       const tri = [0, q === 'm' ? 3 : 4, 7].map(i => 55 + ((r + i - 7 + 12) % 12));   // Akkordtöne zwischen G3 und F#4
@@ -63,7 +76,11 @@
   function stars(s) { const a = accuracy(s); return a >= 0.92 ? 3 : a >= 0.75 ? 2 : a >= 0.5 ? 1 : 0; }
   function difficulty(c) { const st = c.step / 1000, dur = (c.mel[c.mel.length - 1][0] - c.mel[0][0]) * st || 1; const nps = c.mel.length / dur; return nps < 1.3 ? 1 : nps < 2 ? 2 : nps < 2.8 ? 3 : 4; }
   function duration(c) { const st = c.step / 1000, l = c.mel[c.mel.length - 1]; return (c.off || 0) / 1000 + (l[0] + l[2]) * st; }
+  // Tempo ändern (Üben, Endlos): gleiche Noten, anderer Takt
+  function withRate(c, rate) { return Object.assign({}, c, { step: c.step / rate, off: (c.off || 0) / rate, bpm: (c.bpm || 100) * rate }); }
+  // Tages-Lied: fest je Datum (alle Spieler bekommen dasselbe)
+  function dailyIndex(n, date) { const d = date || new Date(), s = d.getFullYear() * 372 + d.getMonth() * 31 + d.getDate(); let x = (s * 2654435761) >>> 0; x ^= x >>> 13; return x % n; }
   const fmt = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
-  const API = { NAMES, LEVELS, WIN, midi, fromNotation, check, playable, accompaniment, judge, scoreHit, newState, accuracy, stars, difficulty, duration, fmt };
+  const API = { NAMES, LEVELS, MODES, withRate, dailyIndex, WIN, midi, fromNotation, check, playable, accompaniment, judge, scoreHit, newState, accuracy, stars, difficulty, duration, fmt };
   if (typeof module !== 'undefined' && module.exports) module.exports = API; else root.KLCore = API;
 })(typeof window !== 'undefined' ? window : globalThis);
