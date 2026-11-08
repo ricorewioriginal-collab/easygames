@@ -111,7 +111,7 @@ const hold = await m.evaluate(async () => { KLApp.game.run = false; KLApp.setMod
   return holding && n.held >= 0.97 && G.st.score - s0 > 100 ? 'ok' : 'holding=' + holding + ' held=' + n.held; });
 ok(hold === 'ok', 'Handy: lange Kachel gedrückt halten (' + hold + ')');
 const sl = await m.evaluate(async () => { const G = KLApp.game, cv = document.getElementById('cv'), r = cv.getBoundingClientRect(); G.run = true; G.lives = 3;
-  const t = KLPiano.ctx.currentTime - G.t0; G.notes = [{ t: t + 0.25, p: 60, d: 0.1, lane: 0, hit: null }, { t: t + 0.3, p: 62, d: 0.1, lane: 1, hit: null }, { t: t + 0.35, p: 64, d: 0.1, lane: 2, hit: null }]; G.hold = {};
+  const t = KLPiano.ctx.currentTime - G.t0; G.notes = [{ t: t + 0.1, p: 60, d: 0.1, lane: 0, hit: null }, { t: t + 0.15, p: 62, d: 0.1, lane: 1, hit: null }, { t: t + 0.2, p: 64, d: 0.1, lane: 2, hit: null }]; G.hold = {};
   const y = r.top + r.height * 0.78, X = l => r.left + (l + 0.5) * r.width / 4;
   cv.dispatchEvent(new PointerEvent('pointerdown', { pointerId: 9, clientX: X(0), clientY: y, bubbles: true, pointerType: 'touch' }));
   for (let l = 1; l <= 2; l++) { await new Promise(q => setTimeout(q, 40)); cv.dispatchEvent(new PointerEvent('pointermove', { pointerId: 9, clientX: X(l), clientY: y, bubbles: true, pointerType: 'touch' })); }

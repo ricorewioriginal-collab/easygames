@@ -37,6 +37,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <section class="scr" id="sMenu"><div class="menuWrap">
   <header class="mHead"><h1 class="logo small">KLAVIER<span>LICHT</span></h1><div class="mStats" id="mStats"></div></header>
   <nav class="mList" id="mList" aria-label="Spielmodi"></nav>
+  <section class="cloudbox" id="cloudbox" aria-label="Anmeldung"></section>
   <footer class="mFoot"><span>Pfeile + Enter · Esc zurück · 🎮 Ⓐ wählen, Ⓑ zurück</span><a class="nav" href="../">← Alle Spiele</a></footer></div></section>
 
 <section class="scr" id="sLib"><div class="libWrap">
@@ -76,6 +77,6 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="js/lessons.js"></script>
 <script src="js/staff.js"></script>
 <script src="js/app.js"></script>
-<script src="../cloud/anmacha-cloud.js" data-game="klavierlicht" data-prefix="klavierlicht-" defer></script>
+<script src="../cloud/anmacha-cloud.js" data-mount="#cloudbox" data-hint="Optional: Mit Google anmelden – dann wird dein Spielstand gesichert und du kannst in die Ranglisten. Ohne Anmeldung bleibt alles nur auf diesem Gerät." data-game="klavierlicht" data-prefix="klavierlicht-" defer></script>
 </body>
 </html>

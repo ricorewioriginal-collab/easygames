@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "7b779884b8c0",
- "generated": "2026-11-08T16:42:33+01:00",
- "commit": "2676fe2b331bf22a19816b9512ddaaf8a8c3bf40",
+ "version": "93434b9b92c7",
+ "generated": "2026-11-08T17:10:41+01:00",
+ "commit": "4c1170559b5338012fb420cc137c2b025a535003",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6468,18 +6468,18 @@
   },
   {
    "p": "klavierlicht/index.html",
-   "s": 9629,
-   "h": "deb8c4ee5b07efb8a233c4b26fc04d0d5f14d5f87fb953b75092a44124e55941"
+   "s": 9894,
+   "h": "07792bc7d04223d8eb6b124476a284e4dcf421ac43da816d7eab38deeddf7ad4"
   },
   {
    "p": "klavierlicht/js/app.js",
-   "s": 116647,
-   "h": "0e0f44d9b12c755735f9c1017a6938e9203ff34450f24d247d89d67f1e8f6d2d"
+   "s": 116867,
+   "h": "bb920c323f9cb3c208bfaabade9d8fb39ff87a16d0acbfe06ace50ede232e8d8"
   },
   {
    "p": "klavierlicht/js/core.js",
-   "s": 13357,
-   "h": "ae58fe7009eba76327fcc1f22dad766a3f3b82b8ad2c735c1a96f225257be551"
+   "s": 13971,
+   "h": "6241aadd45dda18b1ed2ffdd5ca46ccf5e42226b4570656cac66c32c345f3ccf"
   },
   {
    "p": "klavierlicht/js/lessons.js",
@@ -6503,8 +6503,8 @@
   },
   {
    "p": "klavierlicht/js/songs.js",
-   "s": 5422,
-   "h": "03f3231cd9c816015273ac61737f097ba48e83960b2accb6033d1dd4189143ed"
+   "s": 5824,
+   "h": "2c1041f9c30a190cfed6906268acf5d4ba6639d88389b6d7f541d7fbe2f80e31"
   },
   {
    "p": "klavierlicht/js/staff.js",
@@ -6518,8 +6518,8 @@
   },
   {
    "p": "klavierlicht/style.css",
-   "s": 23135,
-   "h": "ff7bb4e5b0f64854f3706a7319a1b9214cc47fcf7220a987091874fcdb95c950"
+   "s": 23525,
+   "h": "a64a224bdc83989f15cbdd7162aa100ce6e3b06f333a17482ec971367dfa7683"
   },
   {
    "p": "klavierlicht/sw.js",
@@ -8719,7 +8719,7 @@
   {
    "p": "sync/catalog.json",
    "s": 249684,
-   "h": "7d2dcaf33db2a569fccd224c22f5c14bef5d0b25dbeb37b6507ff94a5d62071f"
+   "h": "97e3bde451ac2a6838dffb4949f28a98048fca27dd5043d10e74038529d33d96"
   },
   {
    "p": "taschi/card.svg",

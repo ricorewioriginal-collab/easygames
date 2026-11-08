@@ -91,7 +91,8 @@ h2 { margin: 4px 0 10px; } h3 { margin: 12px 0 6px; color: #fff3b0; font-size: 1
 /* Spiel */
 .scr.game { padding: 0; overflow: hidden; } #cv { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; display: block; }
 .hud { position: absolute; left: 0; right: 0; top: 0; padding: max(6px, env(safe-area-inset-top)) 10px 0; pointer-events: none; text-shadow: 0 2px 6px rgba(60, 0, 120, .5); }
-.hud > * { pointer-events: auto; }
+.hud > *, .hud button { pointer-events: auto; } .hud .hrow, .hud .prog, .hud .lives, .hud .round, .hud .opp { pointer-events: none; } .hud .hrow button, .hud .kctl { pointer-events: auto; }
+.scr.game, #cv { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
 .prog { position: relative; height: 6px; border-radius: 6px; background: rgba(255, 255, 255, .35); margin: 4px 30px 0; } .prog i { display: block; height: 100%; width: 0; border-radius: 6px; background: #fff; }
 .pst { position: absolute; inset: -9px 0 auto; display: flex; justify-content: space-around; padding-left: 30%; pointer-events: none; } .pst i { font-style: normal; font-size: 18px; color: rgba(255, 255, 255, .45); } .pst i.on { color: var(--gold); text-shadow: 0 0 10px rgba(255, 220, 80, .9); }
 .hrow { display: flex; align-items: center; gap: 10px; margin-top: 8px; } .hbtn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .6); background: rgba(255, 255, 255, .2); font-size: 16px; }
@@ -146,3 +147,5 @@ body:not([data-kmode="free"]) .kFree { display: none; } #kRec.on { background: #
 .shopSong small { grid-column: 1; opacity: .8; font-size: 12px; } .shopSong em { grid-row: 1 / 3; grid-column: 2; align-self: center; font-style: normal; font-weight: 800; } .shopSong:disabled { opacity: .6; }
 #bSlow[hidden] { display: none; }
 .hrow #bSlow { margin-left: auto; } .hrow #bSlow ~ .round { margin-left: 8px; }
+.cloudbox:empty { display: none; } .cloudbox { margin-top: 4px; }
+.toast { pointer-events: none; }

@@ -26,17 +26,18 @@
   function midi(name) { const m = /^([A-H])(#|b)?(-?\d)$/.exec(name); if (!m) return null; return (+m[3] + 1) * 12 + NOTE[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0); }
   // Notation (songs.js) → Chart im gleichen Format wie die Archiv-Dateien (Raster = Sechzehntel)
   function fromNotation(s) {
-    const step = 60 / s.bpm / 4, mel = [], chords = [], bass = [];
+    const step = 60 / s.bpm / 4, mel = [], chords = [], bass = [], acc = [];
     let t = 0;
-    s.mel.trim().split(/\s+/).forEach(tok => { const d = Math.round(len(tok) * 4), n = tok.replace(/[*/][\d.]+$/, ''); if (n !== '-') { const p = midi(n); if (p != null) mel.push([t, p, d]); } t += d; });
+    const notes = (str, out) => { t = 0; str.trim().split(/\s+/).forEach(tok => { const d = Math.round(len(tok) * 4), n = tok.replace(/[*/][\d.]+$/, ''); if (n !== '-') { const p = midi(n); if (p != null) out.push([t, p, d]); } t += d; }); };
+    notes(s.mel, mel); const melLen = t; if (s.lh) notes(s.lh, acc);
     t = 0;
     (s.chords || '').trim().split(/\s+/).filter(Boolean).forEach(tok => { const d = Math.round(len(tok) * 4), n = tok.replace(/[*/][\d.]+$/, ''); const m = /^([A-H](?:#|b)?)(m?)$/.exec(n);
       if (n !== '-' && m) { chords.push([t, ROOT[m[1]], m[2], d]); for (let b = 0; b < d; b += 4) bass.push([t + b, 36 + ((ROOT[m[1]] + 4) % 12) - 4 + (b % 8 ? 7 : 0), Math.min(4, d - b)]); }
       t += d; });
     // kurze Lieder (eine Strophe) mehrfach spielen, damit eine Runde mindestens ~35 Sekunden dauert
-    const L = t, reps = Math.max(1, Math.min(3, Math.ceil(35 / (L * step || 1))));
-    for (let r = 1; r < reps; r++) { const o = r * L; [mel, chords, bass].forEach(a => { const n = a.length / r; for (let i = 0; i < n; i++) { const x = a[i].slice(); x[0] += o; a.push(x); } }); }
-    return { v: 1, id: s.id, title: s.title, artist: s.artist, cat: s.cat, bpm: s.bpm, step: step * 1000, off: 0, mel, chords, bass, builtin: true, lic: s.lic || '', src: 'Klaviersatz: easygames (eigene Notensetzung)' };
+    const L = Math.max(t, melLen), reps = Math.max(1, Math.min(3, Math.ceil(35 / (L * step || 1))));
+    for (let r = 1; r < reps; r++) { const o = r * L; [mel, chords, bass, acc].forEach(a => { const n = a.length / r; for (let i = 0; i < n; i++) { const x = a[i].slice(); x[0] += o; a.push(x); } }); }
+    return { v: 1, id: s.id, title: s.title, artist: s.artist, cat: s.cat, bpm: s.bpm, step: step * 1000, off: 0, mel, chords, bass, acc, builtin: true, lic: s.lic || '', src: 'Klaviersatz: easygames (eigene Notensetzung)' };
   }
   function check(c) { return c && c.v === 1 && Array.isArray(c.mel) && c.mel.length > 0 && c.step > 0; }
   // Spielbare Lichter: Melodienoten mit Mindestabstand je Schwierigkeit; Spur folgt dem Melodieverlauf (höher = weiter rechts)
@@ -58,6 +59,12 @@
       notes[i].lane = lane; prevLane = lane;
     }
     return notes;
+  }
+  // Melodietöne, die eine Schwierigkeitsstufe weglässt, spielt das Klavier selbst mit – die Melodie bleibt vollständig
+  function melodyRest(c, notes, vel) {
+    const st = c.step / 1000, off = (c.off || 0) / 1000, have = new Set(notes.map(n => Math.round(n.t * 1000))), ev = [];
+    for (const [s, p, d] of c.mel) { const t = off + s * st; if (!have.has(Math.round(t * 1000))) ev.push([t, p, Math.max(st, d * st), vel || 0.42]); }
+    return ev;
   }
   // Begleitung: Bass auf jedem Schlag, Akkord als gebrochene Achtel in mittlerer Lage (Ereignisse: t, Tonhöhe, Dauer, Lautstärke)
   function accompaniment(c) {
@@ -140,6 +147,6 @@
     return null;
   }
   const fmt = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
-  const API = { NAMES, LEVELS, MODES, withRate, dailyIndex, WIN, midi, fromNotation, check, playable, accompaniment, judge, scoreHit, newState, accuracy, stars, difficulty, duration, fmt, isBlack, keyName, keyRange, keyLayout, keyAt, doubles, slice, lanesFor };
+  const API = { NAMES, LEVELS, MODES, withRate, dailyIndex, WIN, midi, fromNotation, check, playable, accompaniment, judge, scoreHit, newState, accuracy, stars, difficulty, duration, fmt, isBlack, keyName, keyRange, keyLayout, keyAt, doubles, slice, lanesFor, melodyRest };
   if (typeof module !== 'undefined' && module.exports) module.exports = API; else root.KLCore = API;
 })(typeof window !== 'undefined' ? window : globalThis);

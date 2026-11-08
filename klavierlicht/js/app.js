@@ -202,7 +202,8 @@
   function stopGame() { G.run = false; cancelAnimationFrame(raf); P.stopAll(); }
   // Noten einer Runde: Melodie, Begleitung, Doppelkacheln (Mittel/Schwer), Wischkacheln, goldene Bonus-Kacheln, Spiegel
   function buildNotes() {
-    const lv = G.auto ? 'normal' : G.level, N = G.L.lanes; G.notes = C.playable(G.ch, lv, N); G.acc = C.accompaniment(G.ch); G.ai = 0; G.hold = {};
+    const lv = G.auto ? 'normal' : G.level, N = G.L.lanes; G.notes = C.playable(G.ch, lv, N); G.ai = 0; G.hold = {};
+    G.acc = C.accompaniment(G.ch).concat(C.melodyRest(G.ch, G.notes)).sort((a, b) => a[0] - b[0]);   // weggelassene Melodietöne klingen mit
     if (G.duet) {   // Duett: Gastgeber spielt die Melodie, Gast den Bass – die Stimme des anderen kommt als Ton über die Verbindung
       const ln = learnNotes(G.ch, lv === 'leicht' ? 'normal' : lv, 'b'); G.acc = ln.acc.filter(a => a[3] > 0);
       const mine = ln.notes.filter(n => n.hand === (NET.role === 'host' ? 'R' : 'L')); C.lanesFor(mine, N); G.notes = mine;
@@ -281,7 +282,7 @@
   }
   // Zeitpunkt der Eingabe: Verzögerung bis zur Verarbeitung (Touch auf dem Handy oft 30–80 ms) wieder abziehen
   const evLag = e => { const d = e && e.timeStamp ? (performance.now() - e.timeStamp) / 1000 : 0; return d > 0 && d < 0.15 ? d : 0; };
-  const TILE_EARLY = 0.42;   // Kacheln: so früh darf man die unterste Kachel antippen (wie bei Piano Tiles: Kachel tippen statt Linie treffen)
+  const TILE_EARLY = 0.5;   // Kacheln: so früh darf man die unterste Kachel antippen (wie bei Piano Tiles: Kachel tippen statt Linie treffen)
   // Kachel/Licht im Spielfeld (Kacheln: Unterkante und Höhe wie in drawTiles)
   const tileSpeed = () => H * 0.8 / G.L.fall;
   const isLong = n => G.tiles ? n.d * tileSpeed() > H * 0.2 : n.d > 0.35;
@@ -302,7 +303,7 @@
     let best = null, bd = 9;
     if (G.tiles) {   // unterste offene Kachel der Bahn: zählt, wenn sie bald die Linie erreicht oder direkt angetippt wird
       const y = e && e.clientY != null ? e.clientY - cv.getBoundingClientRect().top : null;
-      for (const n of G.notes) { if (n.hit !== null || n.lane !== lane || n.t <= t - LATE()) continue; const [tp, bt] = tileRect(n, t); if (n.t - t < TILE_EARLY || y != null && y >= tp - 24 && y <= bt + 40 && tp < H * 0.8) best = n; break; } }
+      for (const n of G.notes) { if (n.hit !== null || n.lane !== lane || n.t <= t - LATE()) continue; const [tp, bt] = tileRect(n, t); if (slide ? n.t - t < 0.18 : n.t - t < TILE_EARLY || y != null && y >= tp - 24 && y <= bt + 40 && tp < H * 0.8) best = n; break; } }
     else for (const n of G.notes) { if (n.hit !== null) continue; if (n.t > t + C.WIN.good) break; const d = Math.abs(n.t - t); if ((G.L.any || n.lane === lane) && d < bd && n.t > t - LATE()) { bd = d; best = n; } }
     if (!best) {
       // Kachel-Modi: ins Leere getippt = Fehler (kommt in der Bahn bald eine Kachel, zählt es nicht)
@@ -732,6 +733,7 @@
     const acc = C.accompaniment(ch); let rh, lh = [];
     if (ch.lesson) { rh = ch.mel.map(mk('R')); lh = (ch.lh || []).map(mk('L')); return { notes: rh.concat(lh).sort((a, b) => a.t - b.t || a.p - b.p), acc }; }
     rh = C.playable(ch, level, 4).map(n => Object.assign(n, { hand: 'R' }));
+    C.melodyRest(ch, rh).forEach(e => acc.push(e)); acc.sort((a, b) => a[0] - b[0]);
     if (hand !== 'r') {
       const gap = { leicht: 0.95, normal: 0.45, profi: 0.2 }[level] || 0.45; let last = -9;   // Leicht: etwa ein Basston je Takt
       for (let i = 0; i < acc.length;) { const t0 = acc[i][0]; let lo = -1, j = i; for (; j < acc.length && acc[j][0] - t0 < 0.02; j++) if (acc[j][1] < 55 && (lo < 0 || acc[j][1] < acc[lo][1])) lo = j;   // nur Basslage, keine Akkordtöne

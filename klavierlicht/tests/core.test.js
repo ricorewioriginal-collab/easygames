@@ -4,7 +4,9 @@ const fs = require('fs'), path = require('path'); let fail = 0; const ok = (c, m
 const len = s => s.trim().split(/\s+/).reduce((a, t) => { const m = /(?:\*([\d.]+)|\/([\d.]+))$/.exec(t); return a + (m ? (m[1] ? +m[1] : 1 / +m[2]) : 1); }, 0);
 ok(C.midi('C4') === 60 && C.midi('A4') === 69 && C.midi('F#5') === 78 && C.midi('Bb3') === 58, 'Notennamen → MIDI');
 const all = KLSongs.list.concat(SRC);
-ok(all.every(s => Math.abs(len(s.mel) - len(s.chords)) < 1e-6), 'Melodie und Akkorde gleich lang (alle ' + all.length + ' Lieder)');
+ok(all.every(s => Math.abs(len(s.mel) - len(s.lh || s.chords)) < 1e-6), 'Melodie und Akkorde bzw. linke Hand gleich lang (alle ' + all.length + ' Lieder)');
+const el = C.fromNotation(KLSongs.list.find(s => s.id === 'elise')); ok(el.acc.length > 60 && el.chords.length === 0 && C.accompaniment(el).every((a, i, x) => !i || a[0] > x[i - 1][0] - 1e-9 && !(a[0] === x[i - 1][0] && a[1] === x[i - 1][1])), 'Für Elise: linke Hand im Originalsatz, keine doppelten Töne');
+const eln = C.playable(el, 'leicht', 4); ok(eln.length + C.melodyRest(el, eln).length === el.mel.length, 'Leicht: weggelassene Melodietöne spielt das Klavier mit');
 ok(new Set(all.map(s => s.id)).size === all.length, 'eindeutige Lied-IDs');
 ok(all.every(s => s.mel.trim().split(/\s+/).every(t => t.replace(/[*/][\d.]+$/, '') === '-' || C.midi(t.replace(/[*/][\d.]+$/, '')) != null)), 'alle Töne lesbar');
 ok(all.every(s => KLSongs.CATS[s.cat]), 'jede Kategorie bekannt');
