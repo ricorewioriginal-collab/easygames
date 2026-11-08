@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1856f9949df3",
- "generated": "2026-11-08T19:22:31+01:00",
- "commit": "e538825b1e0906925668401f18c2153f277fcb44",
+ "version": "ae395e5ad2fe",
+ "generated": "2026-11-08T22:38:43+01:00",
+ "commit": "19bdca7b8ce3f80d9e6a7c97928bbcbb060a2a18",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4648,8 +4648,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3437,
-   "h": "97854a4acc0dfc7dc20a9d3c6161231ba4c9bbf1c89211e6aaaca4da391c5f42"
+   "s": 3625,
+   "h": "699d8018cc33e0f1f0b0056dfbda46f0412a342e4366eadacc817cbdb30a0597"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -5538,8 +5538,8 @@
   },
   {
    "p": "games.js",
-   "s": 57013,
-   "h": "43f841108bd11c1f69dc47cd1e056e30dbbbe2810f31caf63770dda7574e5b38"
+   "s": 58040,
+   "h": "4ad1aea98eb9fe29393301f27af6949f31ed08c3dd33d98e5b42f44679d47f70"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5768,8 +5768,8 @@
   },
   {
    "p": "guides.js",
-   "s": 170442,
-   "h": "2ccc56c34ca085e443c9e28bb2be1068c58a0fda49f6b557aa3804b5b86730c0"
+   "s": 172109,
+   "h": "22f939406af42f7bd5132d6e294cdeaad7c85e14ea2ee869512c6079be40dd42"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6145,6 +6145,11 @@
    "p": "guides/saftblitz.json",
    "s": 15012,
    "h": "589701d611c31c13555ecdc5be8ac03f82bad44aae1035ae616e9502456e79d3"
+  },
+  {
+   "p": "guides/schatzfieber.json",
+   "s": 16968,
+   "h": "64a4d0633fe5b6504ac8061eab736aa2c2e1d46b1794c1c93b7e3877d09875ad"
   },
   {
    "p": "guides/sendemast-sumo.json",
@@ -8227,6 +8232,46 @@
    "h": "ff53e86987c0e9b090d3c353cc4d5d25c0874a907e3b6e2648531cc7c01f6a23"
   },
   {
+   "p": "schatzfieber/assets/fredoka-latin-wght-normal-DM6njrJ3.woff2",
+   "s": 29732,
+   "h": "99d6c78e043710d4f83ed90716779798b7b04eb690f73e0ad0e8f32d1f0e98c2"
+  },
+  {
+   "p": "schatzfieber/assets/index-7yGLMeW3.js",
+   "s": 218453,
+   "h": "276910eaa25912e29ae06ad804fe32d3a47f295c31847f8620b327d8734b4df5"
+  },
+  {
+   "p": "schatzfieber/assets/index-BwH67gpR.css",
+   "s": 10367,
+   "h": "c34d4bd1edb4cae05fe3cfb007282d2462033e2d19cec7cfd4f5ee8215206263"
+  },
+  {
+   "p": "schatzfieber/assets/three-dmnauz0s.js",
+   "s": 511446,
+   "h": "70b610306136dcb50ef6a6bcc4fcde98dc74a8ae70444fdf4aac585970fd90bf"
+  },
+  {
+   "p": "schatzfieber/card.jpg",
+   "s": 52905,
+   "h": "6d45e2bcf43e837f1d7374322335163425dc3496b6df2f9d7f455b90c0b96a2c"
+  },
+  {
+   "p": "schatzfieber/index.html",
+   "s": 7971,
+   "h": "8a3b8717491c82334261a9556b6287fb22442b13c141078dc6ec433b166c168d"
+  },
+  {
+   "p": "schatzfieber/manifest.webmanifest",
+   "s": 797,
+   "h": "089bfb5c6f22c850abd2d643d7bba79f683113f5a2ba4bb61ca0d30b6f012804"
+  },
+  {
+   "p": "schatzfieber/sw.js",
+   "s": 2019,
+   "h": "da0239b0d04cbef01ee5f114aa84909bd4d4aedb62b12c681e786fedeb1c9b89"
+  },
+  {
    "p": "sendemast-sumo/card.jpg",
    "s": 51208,
    "h": "da07e02867107323362837584344b782e94664634f9bb72fd93170de3940717f"
@@ -8788,8 +8833,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 253829,
-   "h": "0742b6a8e0e81d88d69371cbd8f0fd30f89f0b406e0c8c689ed8bf734b81f379"
+   "s": 256798,
+   "h": "98a619ced481c672c678daf8e753155e4daeeaacee31581dec9cc7753dacdc3d"
   },
   {
    "p": "taschi/card.svg",
@@ -9342,6 +9387,11 @@
    "h": "6d34fea3182644bd23549827883fa9b4ae820b96c8dab3e1939c9d88c2c79b1a"
   },
   {
+   "p": "thumbs/schatzfieber.webp",
+   "s": 25230,
+   "h": "1ddc5d831252061bf2b1ccbd51cabe3e1dd3bcfdcee3240127016dc8a3009c54"
+  },
+  {
    "p": "thumbs/sendemast-sumo.webp",
    "s": 24788,
    "h": "297f93ad9b6399f6caa1d1fe9c50772aabef39476c67061faa0ec93302064160"
@@ -9363,8 +9413,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2371,
-   "h": "dc16faf1de7cc36bc566aa55a507f2a331d30271840a00f0a0c7bc9c60708292"
+   "s": 2399,
+   "h": "043c160011b046894bf25b2de72056b12addddbd71f2cad95d2da20bf2b9a421"
   },
   {
    "p": "thumbs/tortenschlacht.webp",

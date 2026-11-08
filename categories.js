@@ -1,4 +1,4 @@
-// Kategorien der Spieleübersicht (dieselben 7 Gruppen wie im RicoReWi-Portal). Neues Spiel? Unter "of" mit der Spiel-ID eintragen.
+// Kategorien der Spieleübersicht (die 7 Gruppen wie im RicoReWi-Portal, dazu „Ab 18“ nur auf der easygames-Seite). Neues Spiel? Unter "of" mit der Spiel-ID eintragen.
 window.EASYGAMES_CATS = {
   list: [
     { id: 'abenteuer', label: 'Abenteuer & Rollenspiel', short: 'Abenteuer', icon: '🧭' },
@@ -7,7 +7,8 @@ window.EASYGAMES_CATS = {
     { id: 'quiz', label: 'Quiz & Shows', short: 'Quiz', icon: '❓' },
     { id: 'sim', label: 'Simulation & Kreativ', short: 'Simulation', icon: '🏗️' },
     { id: 'tisch', label: 'Tisch, Karten & Glück', short: 'Tisch', icon: '🎲' },
-    { id: 'musik', label: 'Musik & Rhythmus', short: 'Musik', icon: '🎵' }
+    { id: 'musik', label: 'Musik & Rhythmus', short: 'Musik', icon: '🎵' },
+    { id: 'ab18', label: 'Ab 18', short: '18+', icon: '🔞' }
   ],
   of: {
     // Abenteuer
@@ -23,6 +24,8 @@ window.EASYGAMES_CATS = {
     // Tisch
     'ricopoly': 'tisch', 'partyverse': 'tisch', 'anmacha-gold-reels': 'tisch', 'anmacha-spielesammlung': 'tisch', 'anmacha-kartenrausch': 'tisch', 'anmacha-solitaire': 'tisch', 'anmacha-undercover': 'tisch', 'werwolf-nacht': 'tisch', 'spinwelten': 'tisch', 'funk-billard': 'tisch',
     // Musik
-    'anmacha-beat-surfer': 'musik', 'prismrush': 'musik', 'show-me-your-voice': 'musik', 'beat-studio': 'musik', 'klavierlicht': 'musik'
+    'anmacha-beat-surfer': 'musik', 'prismrush': 'musik', 'show-me-your-voice': 'musik', 'beat-studio': 'musik', 'klavierlicht': 'musik',
+    // Ab 18 (eigene Gruppe, nicht neben Kinderspielen)
+    'schatzfieber': 'ab18'
   }
 };

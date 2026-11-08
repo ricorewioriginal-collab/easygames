@@ -2105,6 +2105,40 @@
    }
   },
   {
+   "id": "schatzfieber",
+   "title": "Schatzfieber – Die Insel der Herzen (ab 18)",
+   "desc": "🔞 Ab 18: 3D-Open-World-Abenteuer auf einer Karibikinsel – frei herumlaufen, rennen, springen, schwimmen. Du erbst ein Strandhaus und das Geheimnis der Piratin Ysolde: Grabe an glitzernden Stellen, tauche nach Perlen, klettere Lianenwände hoch und löse Kisten-, Hebel- und Symbolrätsel in Höhle, Dschungelruine, Leuchtturm-Gewölbe und Vulkantempel. Zehn erwachsene Bewohner:innen mit eigenen Geschichten: Geschenke, Herzenswünsche, Dates, erste Küsse und Nächte, die ins Schwarze überblenden (ohne Nacktheit). Eigene Figur (Mann, Frau, divers) – Romanzen hetero, schwul, lesbisch, bi oder pan, sonst Freundschaften. Tag und Nacht, Museum, Strandhaus-Ausbau, Galerie, mehrere Enden. Tastatur, Maus, Touch und Gamecontroller, Speicherstand lokal und per Google.",
+   "icon": "💘",
+   "img": "schatzfieber/card.jpg",
+   "bg": "linear-gradient(145deg,#0b4a5a,#ff6f6f 55%,#ffc85a)",
+   "glow": "rgba(255,111,111,.55)",
+   "path": "schatzfieber/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Schatzfieber ist ein 3D-Open-World-Abenteuer ab 18: Du erbst ein Strandhaus auf Isla Corazón und suchst das Herz-Amulett der Piratin Ysolde. Lauf frei über die Insel, grabe an glitzernden Stellen, tauche an sprudelnden Stellen, klettere Lianenwände hoch und löse Kisten-, Hebel- und Symbolrätsel in Höhle, Ruine, Leuchtturm-Gewölbe und Vulkantempel. Zehn erwachsene Bewohner:innen haben je fünf Herzenswünsche – Gespräche, Geschenke, Dates. Passt ihr zueinander, wird daraus eine Romanze (hetero, schwul, lesbisch, bi oder pan) mit Date, erstem Kuss und einer Nacht, die ins Schwarze überblendet; sonst eine Freundschaft. Museum, Strandhaus-Ausbau, Galerie und mehrere Enden.",
+    "steuerung": [
+     "Tastatur/Maus: WASD laufen, Shift rennen, Leertaste springen, E sprechen/benutzen, Tab Handy, M Karte, Esc Pause; Klick ins Bild steuert die Kamera mit der Maus.",
+     "Gamecontroller: linker Stick laufen, rechter Stick Kamera, Ⓐ Aktion, Ⓧ springen, RT/L3 rennen, Ⓨ Handy, Start Pause, Ⓑ zurück.",
+     "Touch: links Stick, rechts wischen für die Kamera, ✋ Aktion, ⤒ springen, 🏃 Dauerlauf, 📱 Handy."
+    ],
+    "tipps": [
+     "Erst Jonas am Hafen (Schlüssel), dann Heddas Tagebuch im Strandhaus, dann Lea im Museum – das schaltet die Schatzsuche frei.",
+     "Sofias erster Wunsch ist nur ein Gespräch – sie schenkt dir die Taucherbrille.",
+     "Jeden Morgen alle glitzernden Grabstellen abklappern: Artefakte spenden (Finderlohn) oder verkaufen.",
+     "Im Handy unter Kontakte siehst du, was jemand mag und wo die Person gerade ist; im Tagebuch stehen alle Herzenswünsche.",
+     "Kiste falsch geschoben? Pause → Rätsel zurücksetzen."
+    ]
+   },
+   "size": 833690,
+   "files": 8,
+   "offline": true,
+   "cloud": {
+    "game": "schatzfieber",
+    "prefix": "schatzfieber-"
+   }
+  },
+  {
    "id": "challenge-show",
    "title": "Die große Challenge-Show",
    "desc": "3D-Spielshow mit bis zu 24 Kandidaten im TV-Studio samt jubelndem Publikum und Moderator-Stimme: 🚦 Ampel-Lauf mit dem Ampel-Roboter, 🌉 Wackelbrücke über der Schaumstoffgrube, 🪢 Seilziehen im Takt, 🍪 Keks-Kunst (Form nachfahren), 🪑 Reise nach Jerusalem und das 👑 Schubs-Finale auf der schrumpfenden Plattform. Computer füllen auf, drei Stärken, kinderfreundlich – Ausscheiden heißt Konfetti-Puff. 🌐 Online & Handys: Freunde spielen von überall mit, oder der Fernseher zeigt die Show und Handys sind die Controller.",
