@@ -1,34 +1,231 @@
 {
   "id": "klavierlicht",
   "handbuch": [
-    { "t": "Ziel des Spiels", "p": ["In Klavierlicht spielst du über 100 bekannte Lieder auf dem Klavier, ohne Noten lesen zu können. Kacheln oder Lichter fallen im Takt der Melodie nach unten. Tippst du sie im richtigen Moment, erklingt die Note – Bass und Begleitung spielen von selbst.", "Für jedes Lied und jede Schwierigkeit gibt es Punkte, bis zu drei Sterne und für ein fehlerfreies Spiel eine Krone. Dein Gesamtpunktestand ist die Summe deiner besten Ergebnisse."] },
-    { "t": "Start und Menü", "p": ["Nach dem Ladebildschirm und dem Titel kommst du ins Hauptmenü mit den Spielmodi. Oben siehst du deine Sterne, Kronen und Punkte. Du wählst mit Maus, Touch, Pfeiltasten oder Controller."], "list": ["🎹 Klassisch: schwarze Kacheln im Takt tippen, drei Herzen.", "✨ Magie: leuchtende Lichter wie bei Magic Piano, ohne Verlieren.", "♾️ Endlos: das Lied läuft weiter und wird jede Runde 10 % schneller.", "🧘 Üben: ohne Herzen, Tempo von 50 bis 100 % einstellbar.", "🏆 Tages-Challenge: jeden Tag ein anderes Lied auf Mittel – für alle Spieler dasselbe.", "🎧 Zuhören: das Klavier spielt ein Lied allein vor.", "So geht's und Einstellungen (Lautstärke der Begleitung, Hilfe bei verpassten Noten, Tastenbeschriftung)."] },
-    { "t": "Das Liederbuch", "p": ["Jedes Lied ist eine bunte Karte mit Titel, Komponist oder Herkunft, Länge, Schwierigkeit (LEICHT, MITTEL, SCHWER), deinen Sternen und der Rechte-Angabe (©). Oben filterst du nach Kategorie: Kinderlieder, Weihnachten, Volkslieder, Klassik oder Choräle. Die Suche findet Titel, Komponisten und Herkunft.", "Zehn Lieder stecken im Spiel und gehen immer, auch offline. Alle anderen (mit 🌐) liegen im Online-Archiv und werden erst beim Spielen geladen – nur Noten, wenige Kilobyte."] },
-    { "t": "Schwierigkeit wählen", "p": ["Nach dem Antippen eines Liedes erscheinen drei Medaillen: Bronze für Leicht, Silber für Mittel und Gold für Schwer. Jede zeigt deine Sterne und Punkte für diese Stufe. Rechts stehen Spielmodus und Rechte-Angabe; im Modus Üben stellst du dort das Tempo ein."], "list": ["Leicht: weniger Noten, langsamere Kacheln. Bei Magie kannst du überall tippen – nur der Takt zählt.", "Mittel: mehr Noten, bei Magie fünf Bahnen.", "Schwer: fast alle Noten der Melodie, schneller, bei Magie sechs Bahnen."] },
-    { "t": "So wird gespielt", "steps": ["Das Klavier zählt vier Schläge ein.", "Kacheln (Klassisch, Endlos, Üben, Tages-Challenge) oder Lichter (Magie) fallen nach unten. Höhere Töne kommen weiter rechts, tiefere weiter links.", "Tippe die Bahn, wenn die Kachel die weiße Linie bzw. das Licht den Kreis erreicht.", "Lange Töne sind lange Kacheln mit Linie und Kreis. Ein Tipp genügt, der Ton klingt weiter.", "Oben siehst du Punkte, Fortschritt mit den drei Sternmarken, deine Herzen und darunter Titel, Modus und Rechte-Angabe."] },
-    { "t": "Herzen und Fehler", "list": ["In Klassisch, Endlos und der Tages-Challenge hast du drei Herzen.", "Eine Kachel, die unten durchrutscht, kostet ein Herz.", "Tippen auf eine leere Bahn kostet ein Herz – außer eine Kachel kommt dort gleich an (dann warst du nur zu früh).", "Nach drei Fehlern ist das Lied vorbei („Leider daneben“). Im Endlos-Modus zählt die erreichte Runde.", "Magie, Üben und Zuhören haben keine Herzen."] },
-    { "t": "Wertung", "list": ["Perfekt (bis 75 ms daneben): 100 Punkte.", "Gut (bis 150 ms daneben): 60 Punkte.", "Combo: jeder Treffer in Folge erhöht den Bonus, ab 50 Treffern doppelte Punkte.", "Sterne: ab 50 % Genauigkeit einer, ab 75 % zwei, ab 92 % drei.", "Krone 👑: das ganze Lied nur mit perfekten Treffern."] },
-    { "t": "Steuerung", "list": ["Touch und Maus: auf die Bahn tippen.", "Tastatur: D F J K (4 Bahnen), D F Leertaste J K (5), S D F J K L (6). Esc = Pause.", "Controller: LB, X, Y, RB für die vier Bahnen, A = Mitte, LT/RT außen. B = Pause."] },
-    { "t": "Lieder und Rechte", "p": ["Alle 103 Melodien sind gemeinfrei: Kinder-, Volks- und Weihnachtslieder sowie Werke von Komponisten, die vor über 70 Jahren gestorben sind – unter anderem Bach, Beethoven, Mozart, Händel, Schubert, Schumann, Verdi, Grieg, Brahms, Strauss, Offenbach, Pachelbel und Scott Joplin. Jedes Lied nennt Komponist mit Lebensdaten oder Herkunft und die Notenvorlage.", "Die Lieder im Spiel und ein Teil des Archivs wurden für easygames als Klaviersatz neu gesetzt. Bach-Choräle, Klassik und viele Volksweisen stammen aus dem freien music21-Notenkorpus (Bach-Choräle nach jsbchorales.net, Volksweisen aus Ryan's Mammoth Collection 1883, O'Neill's Music of Ireland 1903, Aird's Selection of Airs 1782–1803)."] }
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "In Klavierlicht spielst du über 100 bekannte Lieder auf dem Klavier, ohne Noten lesen zu können. Kacheln oder Lichter fallen im Takt der Melodie nach unten. Tippst du sie im richtigen Moment, erklingt die Note – Bass und Begleitung spielen von selbst.",
+        "Für jedes Lied und jede Schwierigkeit gibt es Punkte, bis zu drei Sterne und für ein fehlerfreies Spiel eine Krone. Dein Gesamtpunktestand ist die Summe deiner besten Ergebnisse."
+      ]
+    },
+    {
+      "t": "Start und Menü",
+      "p": [
+        "Nach dem Ladebildschirm und dem Titel kommst du ins Hauptmenü mit den Spielmodi. Oben siehst du deine Sterne, Kronen und Punkte. Du wählst mit Maus, Touch, Pfeiltasten oder Controller."
+      ],
+      "list": [
+        "🎹 Klassisch: schwarze Kacheln im Takt tippen, drei Herzen.",
+        "✨ Magie: leuchtende Lichter wie bei Magic Piano, ohne Verlieren.",
+        "🎓 Klavier lernen: echte Klaviertastatur – das Lied läuft und die nächsten Tasten leuchten farbig in der richtigen Reihenfolge.",
+        "🎼 Freies Klavier: frei spielen mit allen Tönen, Oktaven, Haltepedal und MIDI-Keyboard.",
+        "♾️ Endlos: das Lied läuft weiter und wird jede Runde 10 % schneller.",
+        "🧘 Üben: ohne Herzen, Tempo von 50 bis 100 % einstellbar.",
+        "🏆 Tages-Challenge: jeden Tag ein anderes Lied auf Mittel – für alle Spieler dasselbe.",
+        "🎧 Zuhören: das Klavier spielt ein Lied allein vor.",
+        "So geht's und Einstellungen (Lautstärke der Begleitung, Hilfe bei verpassten Noten, Tastenbeschriftung)."
+      ]
+    },
+    {
+      "t": "Das Liederbuch",
+      "p": [
+        "Jedes Lied ist eine bunte Karte mit Titel, Komponist oder Herkunft, Länge, Schwierigkeit (LEICHT, MITTEL, SCHWER), deinen Sternen und der Rechte-Angabe (©). Oben filterst du nach Kategorie: Kinderlieder, Weihnachten, Volkslieder, Klassik oder Choräle. Die Suche findet Titel, Komponisten und Herkunft.",
+        "Zehn Lieder stecken im Spiel und gehen immer, auch offline. Alle anderen (mit 🌐) liegen im Online-Archiv und werden erst beim Spielen geladen – nur Noten, wenige Kilobyte."
+      ]
+    },
+    {
+      "t": "Schwierigkeit wählen",
+      "p": [
+        "Nach dem Antippen eines Liedes erscheinen drei Medaillen: Bronze für Leicht, Silber für Mittel und Gold für Schwer. Jede zeigt deine Sterne und Punkte für diese Stufe. Rechts stehen Spielmodus und Rechte-Angabe; im Modus Üben stellst du dort das Tempo ein."
+      ],
+      "list": [
+        "Leicht: weniger Noten, langsamere Kacheln. Bei Magie kannst du überall tippen – nur der Takt zählt.",
+        "Mittel: mehr Noten, bei Magie fünf Bahnen.",
+        "Schwer: fast alle Noten der Melodie, schneller, bei Magie sechs Bahnen."
+      ]
+    },
+    {
+      "t": "So wird gespielt",
+      "steps": [
+        "Das Klavier zählt vier Schläge ein.",
+        "Kacheln (Klassisch, Endlos, Üben, Tages-Challenge) oder Lichter (Magie) fallen nach unten. Höhere Töne kommen weiter rechts, tiefere weiter links.",
+        "Tippe die Bahn, wenn die Kachel die weiße Linie bzw. das Licht den Kreis erreicht.",
+        "Kacheln darfst du auch schon antippen, kurz bevor sie die Linie erreichen – oder direkt auf die Kachel tippen. Wischen über die Bahnen trifft die Kacheln, über die der Finger fährt.",
+        "Lange Kacheln (mit Linie und Kreis) gedrückt halten, bis sie durch sind – das gibt Bonuspunkte. Loslassen beendet den Ton.",
+        "Oben siehst du Punkte, Fortschritt mit den drei Sternmarken, deine Herzen und darunter Titel, Modus und Rechte-Angabe."
+      ]
+    },
+    {
+      "t": "Klavier lernen",
+      "p": [
+        "Unten liegt eine echte Klaviertastatur mit Notennamen (C, D, E … H; C4 ist das mittlere C). Das Lied läuft, und farbige Balken fallen genau auf die Tasten, die du spielen sollst. Erreicht ein Balken die Linie, spielst du die Taste – Begleitung und Bass laufen von selbst."
+      ],
+      "list": [
+        "Grün mit Nummer 1 = diese Taste jetzt spielen.",
+        "Gelb mit Nummer 2 = danach, Pink mit Nummer 3 = als Drittes.",
+        "Live: das Lied läuft weiter, verpasste Töne spielt das Klavier leise mit.",
+        "⏳ Warten (bei der Schwierigkeitswahl oder in den Einstellungen): das Lied hält an, bis du die richtige Taste triffst – ideal zum Lernen.",
+        "Tempo von 50 bis 100 % einstellbar; Leicht, Mittel und Schwer bestimmen, wie viele Töne der Melodie du spielst.",
+        "Auf dem Handy mit den Fingern, am PC mit Maus, Tastatur oder einem MIDI-Keyboard (🔌 MIDI)."
+      ]
+    },
+    {
+      "t": "Freies Klavier",
+      "p": [
+        "Ein Klavier zum freien Spielen mit echten Tönen über mehrere Oktaven. Aus jeder gespielten Taste steigt ein farbiges Licht auf."
+      ],
+      "list": [
+        "Mehrere Finger gleichzeitig für Akkorde, über die Tasten wischen für ein Glissando.",
+        "Weiter unten auf der Taste angeschlagen klingt lauter.",
+        "◀ ▶ (am PC Pfeiltasten) verschieben die Tastatur um eine Oktave.",
+        "🦶 Pedal (am PC Leertaste halten) lässt die Töne weiterklingen.",
+        "Am PC: untere Buchstabenreihe Y X C V B N M ab C, obere Reihe Q W E R T Z U eine Oktave höher, schwarze Tasten in der Reihe darüber.",
+        "🔌 MIDI verbindet ein echtes Keyboard per USB (Chrome oder Edge) – mit Anschlagstärke und Haltepedal."
+      ]
+    },
+    {
+      "t": "Herzen und Fehler",
+      "list": [
+        "In Klassisch, Endlos und der Tages-Challenge hast du drei Herzen.",
+        "Eine Kachel, die unten durchrutscht, kostet ein Herz.",
+        "Tippen auf eine leere Bahn kostet ein Herz – außer eine Kachel kommt dort gleich an (dann warst du nur zu früh).",
+        "Nach drei Fehlern ist das Lied vorbei („Leider daneben“). Im Endlos-Modus zählt die erreichte Runde.",
+        "Magie, Üben und Zuhören haben keine Herzen."
+      ]
+    },
+    {
+      "t": "Wertung",
+      "list": [
+        "Perfekt (bis 75 ms daneben): 100 Punkte.",
+        "Gut (bis 150 ms daneben): 60 Punkte.",
+        "Combo: jeder Treffer in Folge erhöht den Bonus, ab 50 Treffern doppelte Punkte.",
+        "Sterne: ab 50 % Genauigkeit einer, ab 75 % zwei, ab 92 % drei.",
+        "Krone 👑: das ganze Lied nur mit perfekten Treffern."
+      ]
+    },
+    {
+      "t": "Steuerung",
+      "list": [
+        "Touch und Maus: auf die Bahn tippen, lange Kacheln gedrückt halten, über die Bahnen wischen.",
+        "Tastatur: D F J K (4 Bahnen), D F Leertaste J K (5), S D F J K L (6). Esc = Pause.",
+        "Controller: LB, X, Y, RB für die vier Bahnen, A = Mitte, LT/RT außen. B = Pause.",
+        "Klavier lernen / Freies Klavier: Tasten antippen, Computertastatur (Y…M und Q…U), Leertaste = Pedal, MIDI-Keyboard."
+      ]
+    },
+    {
+      "t": "Lieder und Rechte",
+      "p": [
+        "Alle 103 Melodien sind gemeinfrei: Kinder-, Volks- und Weihnachtslieder sowie Werke von Komponisten, die vor über 70 Jahren gestorben sind – unter anderem Bach, Beethoven, Mozart, Händel, Schubert, Schumann, Verdi, Grieg, Brahms, Strauss, Offenbach, Pachelbel und Scott Joplin. Jedes Lied nennt Komponist mit Lebensdaten oder Herkunft und die Notenvorlage.",
+        "Die Lieder im Spiel und ein Teil des Archivs wurden für easygames als Klaviersatz neu gesetzt. Bach-Choräle, Klassik und viele Volksweisen stammen aus dem freien music21-Notenkorpus (Bach-Choräle nach jsbchorales.net, Volksweisen aus Ryan's Mammoth Collection 1883, O'Neill's Music of Ireland 1903, Aird's Selection of Airs 1782–1803)."
+      ]
+    }
   ],
   "ratgeber": [
-    { "t": "Für Einsteiger", "list": ["Beginne mit Klassisch auf Leicht und einem ruhigen Lied wie „Kanon in D“, „Nun danket alle Gott“ oder „Alle meine Entchen“.", "Hör ein neues Lied zuerst mit „Zuhören“ an.", "Schau auf die weiße Linie unten, nicht auf die Kacheln oben.", "Im Modus Üben kannst du ohne Herzen und mit halbem Tempo lernen."] },
-    { "t": "Besser werden", "list": ["Tippe lieber einen Hauch zu spät als zu früh – die meisten tippen anfangs zu hastig.", "Wenn eine Kachel gleich kommt, ist zu frühes Tippen kein Fehler – nur wildes Tippen auf leere Bahnen kostet Herzen.", "Kopfhörer helfen beim Timing.", "Lass „Verpasste Noten leise mitspielen“ an, dann bleibt das Lied bei Fehlern erkennbar."] },
-    { "t": "Für Profis", "list": ["Maple Leaf Rag, Präludium C-Dur, Für Elise und schnelle Reels (Devil's Dream, Drowsy Maggie) sind die härtesten Lieder.", "Auf Schwer mit der Tastatur beide Hände benutzen: D F links, J K rechts.", "Im Endlos-Modus zählt Ruhe: ab Runde 4 ist das Tempo über 130 %."] },
-    { "t": "Häufige Fehler", "list": ["Ins Leere getippt: kostet in Klassisch ein Herz.", "Zu spät reagiert: die Kachel rutscht durch – dann lieber erst mit Üben lernen.", "Online-Archiv lädt nicht: Internetverbindung prüfen. Die zehn Lieder im Spiel gehen immer."] }
+    {
+      "t": "Für Einsteiger",
+      "list": [
+        "Beginne mit Klassisch auf Leicht und einem ruhigen Lied wie „Kanon in D“, „Nun danket alle Gott“ oder „Alle meine Entchen“.",
+        "Hör ein neues Lied zuerst mit „Zuhören“ an.",
+        "Schau auf die weiße Linie unten, nicht auf die Kacheln oben.",
+        "Im Modus Üben kannst du ohne Herzen und mit halbem Tempo lernen.",
+        "Zum echten Klavierspielen: „Klavier lernen“ mit ⏳ Warten und 50 % Tempo – die grüne Taste mit der 1 ist immer die nächste."
+      ]
+    },
+    {
+      "t": "Besser werden",
+      "list": [
+        "Tippe lieber einen Hauch zu spät als zu früh – die meisten tippen anfangs zu hastig.",
+        "Wenn eine Kachel gleich kommt, ist zu frühes Tippen kein Fehler – nur wildes Tippen auf leere Bahnen kostet Herzen.",
+        "Kopfhörer helfen beim Timing.",
+        "Lass „Verpasste Noten leise mitspielen“ an, dann bleibt das Lied bei Fehlern erkennbar.",
+        "Lange Kacheln bis zum Ende halten: das bringt bis zu 60 Bonuspunkte je Kachel."
+      ]
+    },
+    {
+      "t": "Für Profis",
+      "list": [
+        "Maple Leaf Rag, Präludium C-Dur, Für Elise und schnelle Reels (Devil's Dream, Drowsy Maggie) sind die härtesten Lieder.",
+        "Auf Schwer mit der Tastatur beide Hände benutzen: D F links, J K rechts.",
+        "Im Endlos-Modus zählt Ruhe: ab Runde 4 ist das Tempo über 130 %."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Ins Leere getippt: kostet in Klassisch ein Herz.",
+        "Zu spät reagiert: die Kachel rutscht durch – dann lieber erst mit Üben lernen.",
+        "Online-Archiv lädt nicht: Internetverbindung prüfen. Die zehn Lieder im Spiel gehen immer.",
+        "Ton klingt auf dem Handy nicht: Stummschalter/Lautstärke prüfen und einmal auf „Spielen“ tippen – der Browser erlaubt Ton erst nach einer Berührung."
+      ]
+    }
   ],
   "loesung": [
-    { "t": "Drei Sterne und Krone", "steps": ["Lied mit „Zuhören“ kennenlernen.", "Im Modus Üben mit 75 % Tempo spielen, bis der Rhythmus sitzt.", "Dann Klassisch auf der gewünschten Stufe: mindestens 92 % Genauigkeit für drei Sterne.", "Für die Krone jede Kachel perfekt treffen (höchstens 75 ms daneben)."] },
-    { "t": "Höchste Punktzahl", "list": ["Perfekte Treffer bringen 100 statt 60 Punkte.", "Ab 50 Treffern in Folge zählt jeder Treffer doppelt.", "Schwer hat die meisten Noten und damit die meisten Punkte.", "Lange Lieder wie Bach-Choräle, „Hänschen klein“ oder „Deck the Halls“ bringen viele Punkte."] },
-    { "t": "Leichte und schwere Lieder", "list": ["Am leichtesten (♪): Kanon in D, Nun danket alle Gott, Wachet auf, When the Saints Go Marching In, Jeanie with the Light Brown Hair.", "Mittel (♪♪): Alle meine Entchen, Bruder Jakob, Ode an die Freude, Stille Nacht, Jingle Bells, Wiegenlied.", "Am schwersten (♪♪♪♪): Maple Leaf Rag, Präludium C-Dur, Für Elise, Türkischer Marsch, Devil's Dream, Molly Malone."] },
-    { "t": "Endlos lange durchhalten", "list": ["Ein ruhiges, langsames Lied wählen (z. B. ein Choral) – die Steigerung um 10 % je Runde fällt dann weniger ins Gewicht.", "Auf Leicht spielen: weniger Kacheln, mehr Zeit pro Kachel.", "Nicht auf Verdacht tippen – jede leere Bahn kostet ein Herz."] }
+    {
+      "t": "Drei Sterne und Krone",
+      "steps": [
+        "Lied mit „Zuhören“ kennenlernen.",
+        "Im Modus Üben mit 75 % Tempo spielen, bis der Rhythmus sitzt.",
+        "Dann Klassisch auf der gewünschten Stufe: mindestens 92 % Genauigkeit für drei Sterne.",
+        "Für die Krone jede Kachel perfekt treffen (höchstens 75 ms daneben)."
+      ]
+    },
+    {
+      "t": "Höchste Punktzahl",
+      "list": [
+        "Perfekte Treffer bringen 100 statt 60 Punkte.",
+        "Ab 50 Treffern in Folge zählt jeder Treffer doppelt.",
+        "Schwer hat die meisten Noten und damit die meisten Punkte.",
+        "Lange Lieder wie Bach-Choräle, „Hänschen klein“ oder „Deck the Halls“ bringen viele Punkte."
+      ]
+    },
+    {
+      "t": "Leichte und schwere Lieder",
+      "list": [
+        "Am leichtesten (♪): Kanon in D, Nun danket alle Gott, Wachet auf, When the Saints Go Marching In, Jeanie with the Light Brown Hair.",
+        "Mittel (♪♪): Alle meine Entchen, Bruder Jakob, Ode an die Freude, Stille Nacht, Jingle Bells, Wiegenlied.",
+        "Am schwersten (♪♪♪♪): Maple Leaf Rag, Präludium C-Dur, Für Elise, Türkischer Marsch, Devil's Dream, Molly Malone."
+      ]
+    },
+    {
+      "t": "Endlos lange durchhalten",
+      "list": [
+        "Ein ruhiges, langsames Lied wählen (z. B. ein Choral) – die Steigerung um 10 % je Runde fällt dann weniger ins Gewicht.",
+        "Auf Leicht spielen: weniger Kacheln, mehr Zeit pro Kachel.",
+        "Nicht auf Verdacht tippen – jede leere Bahn kostet ein Herz."
+      ]
+    }
   ],
   "faq": [
-    { "q": "Brauche ich Internet?", "a": "Nein, zehn Lieder gehen offline. Das Online-Archiv mit über 90 weiteren Liedern lädt beim Spielen nur Noten (wenige Kilobyte je Lied)." },
-    { "q": "Muss ich Noten lesen können?", "a": "Nein. Du tippst nur die Kacheln oder Lichter im Takt, die richtigen Töne spielt das Spiel." },
-    { "q": "Sind die Lieder erlaubt?", "a": "Ja. Alle Melodien sind gemeinfrei. Jedes Lied zeigt Komponist mit Lebensdaten oder Herkunft und die Notenvorlage." },
-    { "q": "Warum klingen manche Lieder voller?", "a": "Bach-Choräle und Klassikstücke nutzen den Originalsatz als Begleitung, Volksweisen bekommen passende Akkorde." },
-    { "q": "Was ist die Tages-Challenge?", "a": "Jeden Tag wird ein anderes Lied ausgewählt – für alle Spieler dasselbe – und auf Mittel gespielt." },
-    { "q": "Kommen weitere Lieder dazu?", "a": "Ja, das Online-Archiv kann wachsen, ohne dass das Spiel größer wird." }
+    {
+      "q": "Brauche ich Internet?",
+      "a": "Nein, zehn Lieder gehen offline. Das Online-Archiv mit über 90 weiteren Liedern lädt beim Spielen nur Noten (wenige Kilobyte je Lied)."
+    },
+    {
+      "q": "Muss ich Noten lesen können?",
+      "a": "Nein. Du tippst nur die Kacheln oder Lichter im Takt, die richtigen Töne spielt das Spiel."
+    },
+    {
+      "q": "Sind die Lieder erlaubt?",
+      "a": "Ja. Alle Melodien sind gemeinfrei. Jedes Lied zeigt Komponist mit Lebensdaten oder Herkunft und die Notenvorlage."
+    },
+    {
+      "q": "Warum klingen manche Lieder voller?",
+      "a": "Bach-Choräle und Klassikstücke nutzen den Originalsatz als Begleitung, Volksweisen bekommen passende Akkorde."
+    },
+    {
+      "q": "Was ist die Tages-Challenge?",
+      "a": "Jeden Tag wird ein anderes Lied ausgewählt – für alle Spieler dasselbe – und auf Mittel gespielt."
+    },
+    {
+      "q": "Kommen weitere Lieder dazu?",
+      "a": "Ja, das Online-Archiv kann wachsen, ohne dass das Spiel größer wird."
+    },
+    {
+      "q": "Kann ich ein echtes Keyboard anschließen?",
+      "a": "Ja. In „Klavier lernen“ und „Freies Klavier“ verbindet 🔌 MIDI ein USB-Keyboard (Chrome oder Edge), mit Anschlagstärke und Haltepedal."
+    },
+    {
+      "q": "Lerne ich damit wirklich Klavier?",
+      "a": "Ja, im Modus „Klavier lernen“ spielst du die echten Töne auf einer echten Tastatur mit Notennamen. Mit „Warten“ und langsamem Tempo übst du jedes Lied Schritt für Schritt."
+    }
   ]
 }

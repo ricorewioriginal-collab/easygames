@@ -1,6 +1,6 @@
 {
   "id": "./",
-  "name": "Klavierlicht – Klavier spielen mit Lichtern",
+  "name": "Klavierlicht – Klavier spielen mit Kacheln und Lichtern",
   "short_name": "Klavierlicht",
   "lang": "de",
   "start_url": "./",
@@ -10,8 +10,8 @@
     "fullscreen",
     "standalone"
   ],
-  "background_color": "#02010a",
-  "theme_color": "#03020f",
+  "background_color": "#38182d",
+  "theme_color": "#512342",
   "categories": [
     "games"
   ],

@@ -32,4 +32,9 @@ const ch = JSON.parse(fs.readFileSync(path.join(dir, 'choral-bwv140-7.json'), 'u
 ok(ev.length === ch.acc.length && ev.every((a, i) => !i || a[0] >= ev[i - 1][0]), 'Original-Satz (Bach-Choral) als Begleitung');
 ok(Object.keys(C.MODES).length >= 5 && C.dailyIndex(100, new Date(2026, 10, 8)) === C.dailyIndex(100, new Date(2026, 10, 8)) && C.dailyIndex(100, new Date(2026, 10, 8)) < 100, 'Spielmodi und Tages-Lied (fest je Datum)');
 const r = C.withRate(ch, 0.5); ok(Math.abs(C.duration(r) - 2 * C.duration(ch)) < 0.01, 'Tempo halbieren verdoppelt die Dauer');
+// Klaviertastatur
+ok(C.MODES.lernen.view === 'keys' && C.MODES.frei.free && C.isBlack(61) && !C.isBlack(60) && C.keyName(60) === 'C4' && C.keyName(71) === 'H4', 'Klavier lernen + freies Klavier, Notennamen (C4, H4)');
+const kn = [{ p: 60 }, { p: 64 }, { p: 67 }, { p: 100 }], kr = C.keyRange(kn, 24);
+ok(kn[3].p === 76 && !C.isBlack(kr.lo) && !C.isBlack(kr.hi) && kr.lo < 60 && kr.hi > 76 && kr.hi - kr.lo <= 28, 'Tonbereich: Ausreißer oktaviert, Ränder auf weißen Tasten');
+const lay = C.keyLayout(48, 83, 700); ok(lay.whites === 21 && lay.keys.length === 36 && C.keyAt(lay, lay.ww, 0.3) === 49 && C.keyAt(lay, lay.ww, 0.9) === 50 && C.keyAt(lay, lay.ww * 0.5, 0.3) === 48, 'Tastatur: 3 Oktaven, schwarze Tasten oben getroffen, weiße unten');
 console.log(fail ? fail + ' Fehler' : 'Alle Kern-Tests bestanden'); process.exit(fail ? 1 : 0);

@@ -20,7 +20,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#8a4dff">
 <title>Klavierlicht – Klavier spielen mit Kacheln und Lichtern</title>
-<meta name="description" content="Klavierlicht: über 100 bekannte Lieder auf dem Klavier spielen – Kacheln im Takt tippen wie bei Piano Tiles oder leuchtende Lichter wie bei Magic Piano. Spielmodi Klassisch, Magie, Endlos, Üben, Tages-Challenge und Zuhören; Leicht, Mittel, Schwer mit Sternen und Kronen. Kinderlieder, Weihnachtslieder, Volksweisen, Bach-Choräle und Klassik (Für Elise, Maple Leaf Rag, Kanon in D, La donna è mobile …), alle gemeinfrei mit Rechte-Angabe. Touch, Tastatur und Controller.">
+<meta name="description" content="Klavierlicht: über 100 bekannte Lieder auf dem Klavier spielen – Kacheln im Takt tippen wie bei Piano Tiles oder leuchtende Lichter wie bei Magic Piano. Spielmodi Klassisch, Magie, Klavier lernen (Tasten leuchten in der richtigen Reihenfolge), Freies Klavier, Endlos, Üben, Tages-Challenge und Zuhören; Leicht, Mittel, Schwer mit Sternen und Kronen. Kinderlieder, Weihnachtslieder, Volksweisen, Bach-Choräle und Klassik (Für Elise, Maple Leaf Rag, Kanon in D, La donna è mobile …), alle gemeinfrei mit Rechte-Angabe. Touch, Tastatur und Controller.">
 <link rel="stylesheet" href="../vendor/fonts/fredoka.css">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -54,10 +54,10 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <section class="scr" id="sHelp"><div class="panel wide" id="helpBox"></div></section>
 
 <section class="scr game" id="sGame">
-  <canvas id="cv" aria-label="Spielfeld – Kacheln oder Lichter im Takt tippen"></canvas>
+  <canvas id="cv" aria-label="Spielfeld – Kacheln, Lichter oder Klaviertasten"></canvas>
   <header class="hud">
     <div class="prog"><i id="gProg"></i><span class="pst" id="gStars"></span></div>
-    <div class="hrow"><button class="hbtn" id="bPause" title="Pause (Esc)">⏸</button><span class="lives" id="gLives"></span><span class="round" id="gRound"></span></div>
+    <div class="hrow"><button class="hbtn" id="bPause" title="Pause (Esc)">⏸</button><span class="kctl" id="kCtl"><span class="koct"><button class="hbtn" id="kDn" title="Oktave tiefer (←)">◀</button><b id="kOct"></b><button class="hbtn" id="kUp" title="Oktave höher (→)">▶</button></span><button class="kb" id="kPed" title="Haltepedal (Leertaste)">🦶 Pedal</button><button class="kb" id="kMidi" title="MIDI-Keyboard anschließen">🔌 MIDI</button></span><span class="lives" id="gLives"></span><span class="round" id="gRound"></span></div>
     <div class="score"><b id="gScore">0</b><small id="gCombo"></small></div>
     <div class="ttl"><b id="gTitle"></b><small id="gMode"></small><small class="lic" id="gLic"></small></div>
   </header>

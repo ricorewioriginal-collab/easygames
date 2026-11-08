@@ -683,9 +683,10 @@ window.EASYGAMES_GUIDES = {
   ]
  },
  "klavierlicht": {
-  "anleitung": "Spiele über 100 Lieder auf dem Klavier. Im Modus Klassisch fallen schwarze Kacheln auf vier Bahnen – tippe jede Kachel, wenn sie die weiße Linie erreicht; Bass und Begleitung spielen von selbst. Ins Leere tippen oder eine Kachel verpassen kostet ein Herz, nach drei Fehlern ist das Lied vorbei. Weitere Modi: Magie (Lichter ohne Verlieren), Endlos (jede Runde schneller), Üben (Tempo wählbar), Tages-Challenge und Zuhören. Vor jedem Lied wählst du Leicht, Mittel oder Schwer.",
+  "anleitung": "Spiele über 100 Lieder auf dem Klavier. Im Modus Klassisch fallen schwarze Kacheln auf vier Bahnen – tippe jede Kachel, wenn sie die weiße Linie erreicht; Bass und Begleitung spielen von selbst. Ins Leere tippen oder eine Kachel verpassen kostet ein Herz, nach drei Fehlern ist das Lied vorbei. Lange Kacheln gedrückt halten, Wischen über die Bahnen trifft mehrere Kacheln. Weitere Modi: Klavier lernen (echte Klaviertastatur, die nächsten Tasten leuchten farbig in der richtigen Reihenfolge, live oder mit Warten), Freies Klavier (alle Töne, Oktaven, Pedal, MIDI-Keyboard), Magie (Lichter ohne Verlieren), Endlos (jede Runde schneller), Üben (Tempo wählbar), Tages-Challenge und Zuhören. Vor jedem Lied wählst du Leicht, Mittel oder Schwer.",
   "steuerung": [
-   "Touch/Maus: auf die Bahn tippen, auf der die Kachel bzw. das Licht ankommt.",
+   "Touch/Maus: auf die Bahn tippen, auf der die Kachel bzw. das Licht ankommt; lange Kacheln halten, über die Bahnen wischen.",
+   "Klavier lernen / Freies Klavier: Tasten antippen (mehrere Finger), am PC Y…M und Q…U, Leertaste = Pedal, MIDI-Keyboard über 🔌 MIDI.",
    "Tastatur: D F J K (4 Bahnen), D F Leertaste J K (5), S D F J K L (6), Esc = Pause.",
    "Gamecontroller: LB, X, Y, RB für die vier Bahnen, A = Mitte, LT/RT außen, B = Pause."
   ],

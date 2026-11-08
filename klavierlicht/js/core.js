@@ -13,7 +13,9 @@
     endlos: { n: 'Endlos', ic: '♾️', view: 'tiles', lives: 3, loop: true, d: 'Das Lied läuft immer weiter und wird jede Runde schneller – wie lange hältst du durch?' },
     ueben: { n: 'Üben', ic: '🧘', view: 'tiles', lives: 0, practice: true, d: 'Ohne Fehler-Strafe und mit wählbarem Tempo – zum Lernen neuer Lieder.' },
     tag: { n: 'Tages-Challenge', ic: '🏆', view: 'tiles', lives: 3, daily: true, d: 'Jeden Tag ein anderes Lied auf Mittel – schaffst du drei Sterne?' },
-    hoeren: { n: 'Zuhören', ic: '🎧', view: 'lights', lives: 0, auto: true, d: 'Das Klavier spielt das Lied ganz allein vor.' }
+    hoeren: { n: 'Zuhören', ic: '🎧', view: 'lights', lives: 0, auto: true, d: 'Das Klavier spielt das Lied ganz allein vor.' },
+    lernen: { n: 'Klavier lernen', ic: '🎓', view: 'keys', lives: 0, practice: true, learn: true, d: 'Das Lied läuft, die nächsten Tasten leuchten farbig in der richtigen Reihenfolge – spiel live mit.' },
+    frei: { n: 'Freies Klavier', ic: '🎼', view: 'keys', lives: 0, free: true, d: 'Ein echtes Klavier mit allen Tönen – frei spielen, mit Oktaven und Haltepedal.' }
   };
   const WIN = { perfect: 0.075, good: 0.15 };
 
@@ -80,7 +82,36 @@
   function withRate(c, rate) { return Object.assign({}, c, { step: c.step / rate, off: (c.off || 0) / rate, bpm: (c.bpm || 100) * rate }); }
   // Tages-Lied: fest je Datum (alle Spieler bekommen dasselbe)
   function dailyIndex(n, date) { const d = date || new Date(), s = d.getFullYear() * 372 + d.getMonth() * 31 + d.getDate(); let x = (s * 2654435761) >>> 0; x ^= x >>> 13; return x % n; }
+  /* Klaviertastatur: schwarze Tasten, Tonbereich für ein Lied, Lage der Tasten (für Lernen und freies Spiel) */
+  const isBlack = p => [1, 3, 6, 8, 10].includes(((p % 12) + 12) % 12);
+  const DE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'B', 'H'];
+  const keyName = p => DE[((p % 12) + 12) % 12] + (Math.floor(p / 12) - 1);
+  // Tonbereich: höchstens maxSemis Halbtöne; Töne außerhalb werden oktaviert. Ränder auf weiße Tasten. Ändert notes[].p.
+  function keyRange(notes, maxSemis) {
+    if (!notes.length) return { lo: 60, hi: 83 };
+    const ps = notes.map(n => n.p), lo0 = Math.min(...ps), hi0 = Math.max(...ps); let a = lo0;
+    if (hi0 - lo0 > maxSemis) { let best = -1; for (let x = lo0; x <= hi0 - maxSemis; x++) { const c = ps.filter(p => p >= x && p <= x + maxSemis).length; if (c > best) { best = c; a = x; } } }
+    const b = Math.min(hi0, a + maxSemis);
+    for (const n of notes) { while (n.p < a) n.p += 12; while (n.p > b) n.p -= 12; }
+    let lo = Math.min(...notes.map(n => n.p)), hi = Math.max(...notes.map(n => n.p));
+    lo--; while (isBlack(lo)) lo--; hi++; while (isBlack(hi)) hi++;
+    return { lo, hi };
+  }
+  // Tasten zwischen lo und hi (beide weiß) auf Breite W: weiße gleich breit, schwarze schmaler darüber
+  function keyLayout(lo, hi, W) {
+    const whites = []; for (let p = lo; p <= hi; p++) if (!isBlack(p)) whites.push(p);
+    const ww = W / whites.length, bw = ww * 0.62, keys = [], pos = {};
+    whites.forEach((p, i) => { pos[p] = i; keys.push({ p, black: false, x: i * ww, w: ww }); });
+    for (let p = lo; p <= hi; p++) if (isBlack(p) && pos[p - 1] != null) keys.push({ p, black: true, x: (pos[p - 1] + 1) * ww - bw / 2, w: bw });
+    return { keys, ww, bw, whites: whites.length };
+  }
+  // Taste unter dem Punkt (rx 0..W, ry 0..1 von oben über die Tastatur): schwarze Tasten zuerst
+  function keyAt(lay, rx, ry) {
+    if (ry < 0.62) for (const k of lay.keys) if (k.black && rx >= k.x && rx < k.x + k.w) return k.p;
+    for (const k of lay.keys) if (!k.black && rx >= k.x && rx < k.x + k.w) return k.p;
+    return null;
+  }
   const fmt = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
-  const API = { NAMES, LEVELS, MODES, withRate, dailyIndex, WIN, midi, fromNotation, check, playable, accompaniment, judge, scoreHit, newState, accuracy, stars, difficulty, duration, fmt };
+  const API = { NAMES, LEVELS, MODES, withRate, dailyIndex, WIN, midi, fromNotation, check, playable, accompaniment, judge, scoreHit, newState, accuracy, stars, difficulty, duration, fmt, isBlack, keyName, keyRange, keyLayout, keyAt };
   if (typeof module !== 'undefined' && module.exports) module.exports = API; else root.KLCore = API;
 })(typeof window !== 'undefined' ? window : globalThis);

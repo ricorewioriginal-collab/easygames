@@ -105,3 +105,13 @@ h2 { margin: 4px 0 10px; } h3 { margin: 12px 0 6px; color: #fff3b0; font-size: 1
 .res { text-align: center; } .res .stars { font-size: 52px; letter-spacing: 6px; color: var(--gold); text-shadow: 0 0 18px rgba(255, 220, 80, .7); } .res .stars em { font-style: normal; color: rgba(255, 255, 255, .25); text-shadow: none; } .rec { color: #fff3b0; font-weight: 700; font-size: 18px; }
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; } .stats span { padding: 10px; border-radius: 14px; background: rgba(255, 255, 255, .14); display: flex; flex-direction: column; color: var(--dim); font-size: 13px; } .stats b { font-size: 22px; color: #fff; }
 .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 60; background: rgba(40, 0, 90, .9); border: 2px solid rgba(255, 255, 255, .4); border-radius: 14px; padding: 10px 16px; max-width: 90vw; text-align: center; font-weight: 600; }
+/* Klaviertastatur (Klavier lernen, Freies Klavier) */
+.m-lernen { background: linear-gradient(120deg, #18c47a, #3bd1ff); } .m-frei { background: linear-gradient(120deg, #2d2a6e, #8a4dff); }
+.kctl { display: none; align-items: center; gap: 6px; flex-wrap: wrap; } body[data-view="keys"] .kctl { display: flex; }
+.koct { display: none; align-items: center; gap: 6px; } body[data-kmode="free"] .koct { display: flex; } .koct b { min-width: 74px; text-align: center; font-size: 14px; }
+.kb { height: 36px; padding: 0 12px; border-radius: 18px; border: 2px solid rgba(255, 255, 255, .6); background: rgba(255, 255, 255, .18); color: #fff; font: 700 14px Fredoka, system-ui; }
+.kb.on { background: #3dff8f; color: #102; border-color: #fff; }
+body[data-kmode="free"] .score, body[data-kmode="free"] .prog { display: none; }
+body[data-view="keys"] .score { left: auto; right: 12px; transform: none; top: calc(max(6px, env(safe-area-inset-top)) + 18px); text-align: right; } body[data-view="keys"] .score b { font-size: 32px; }
+body[data-view="keys"] .ttl { top: calc(max(6px, env(safe-area-inset-top)) + 64px); }
+@media (max-width: 560px) { body[data-view="keys"] .hrow { padding-right: 84px; } body[data-view="keys"] .ttl { top: calc(max(6px, env(safe-area-inset-top)) + 108px); } body[data-kmode="free"] .hrow { padding-right: 0; } }

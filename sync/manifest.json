@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9ecc738a2f70",
- "generated": "2026-11-08T14:56:04+01:00",
- "commit": "d398d7d5dfca75636c61caf85c249818363b29dc",
+ "version": "52695d525f41",
+ "generated": "2026-11-08T15:21:45+01:00",
+ "commit": "a4d9874e5162484563c062e105d4aaea9a31316f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5523,8 +5523,8 @@
   },
   {
    "p": "games.js",
-   "s": 55121,
-   "h": "72f9f816850d4f4e681236169736662bd4f832cb27319051a65977edbf334c98"
+   "s": 55279,
+   "h": "714d2e91449052684980d122a6af1332aea0c0a5eab88f6e2fb60b89ffe83853"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5753,8 +5753,8 @@
   },
   {
    "p": "guides.js",
-   "s": 167021,
-   "h": "659452e72ad43391620e3dc7161bf520426cee5a1c533c9873bc763653f3f2f9"
+   "s": 167485,
+   "h": "504c3681ab796f0d571d27aa8944ddca233656cf908a68bcb496e18ab1176beb"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6018,8 +6018,8 @@
   },
   {
    "p": "guides/klavierlicht.json",
-   "s": 8408,
-   "h": "3e33fef05ab2957249897671e9a0a9c9fdf5776b77eb8c19fefd56519367a992"
+   "s": 12796,
+   "h": "1cf59303f99774bcf25d4aa0215fb894b70f1dacb8209945561bd42721810902"
   },
   {
    "p": "guides/konfetti-party.json",
@@ -6468,23 +6468,23 @@
   },
   {
    "p": "klavierlicht/index.html",
-   "s": 8024,
-   "h": "6ad7db9d2c4205fccb77feae7ab5c4c5c0199efbab6afd872887501aac43b797"
+   "s": 8484,
+   "h": "c126690befb831c045a88d908753dbf47e49c0b67efc1b87eba18f3fc092a68d"
   },
   {
    "p": "klavierlicht/js/app.js",
-   "s": 32628,
-   "h": "6c1fd993813cee2a1459e3e6b9de44d47fe08c59daae19567d51654fedd88673"
+   "s": 54462,
+   "h": "717ea0c316dff7ca490db82a11736b52ae546d54df47ad06a0ebcf5e2dae54e9"
   },
   {
    "p": "klavierlicht/js/core.js",
-   "s": 8238,
-   "h": "2c9ce4359921e0f2051585245794e0450282c738e2862be1e61c98cf579c3bce"
+   "s": 10761,
+   "h": "d77d93d0fd1bdde82bf48854604342c8064f728b3dd2922eb6eaa7d2df5a2d9b"
   },
   {
    "p": "klavierlicht/js/piano.js",
-   "s": 3550,
-   "h": "9adfa44960013aaae1aa16b99fdcea5d6cc626517d3df16f54b386ebee842b5b"
+   "s": 4292,
+   "h": "f39d2f410a98967235a0076117054e202b7e9d0811fa95aa11b5095aa8647577"
   },
   {
    "p": "klavierlicht/js/songs.js",
@@ -6498,8 +6498,8 @@
   },
   {
    "p": "klavierlicht/style.css",
-   "s": 17022,
-   "h": "c8abe4f015d356afc50ffb3093d79320ae8c550505772161bd930b3cd08b5b8e"
+   "s": 18351,
+   "h": "ea8c290dfcbb1a003e918937073383af1931d126a713ab86fc8d0b3c152538db"
   },
   {
    "p": "klavierlicht/sw.js",
@@ -8698,8 +8698,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 248153,
-   "h": "19aecf5a36e2d953e8c41eac6fe0b2be9c6ae674fb1f0539f4d1ac7ef3b6d9ce"
+   "s": 248777,
+   "h": "3fddf70a1aa0a8481bbd2db61d435ac8f31a3a68c9e4c596405d10526656b927"
   },
   {
    "p": "taschi/card.svg",
