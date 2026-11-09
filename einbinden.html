@@ -147,7 +147,7 @@
     <h3>Weg 1: Windows-App (am einfachsten)</h3>
     <ol>
       <li><a href="https://www.ricorewi-radio.de/cms/api.php?action=app_download&amp;file=easygames-Setup-x64.exe">easygames für Windows</a> installieren und links unten auf <b>„🎁 TikTok LIVE“</b> klicken.</li>
-      <li>Beim ersten Mal ggf. <b>„Node.js installieren“</b> (einmalig, danach easygames neu starten).</li>
+      <li>Beim ersten Mal ggf. <b>„Node.js installieren“</b> (einmalig, danach easygames neu starten). Steuerung und Brücke bringt die App selbst mit und aktualisiert sie online.</li>
       <li>TikTok-Namen eintragen und <b>„▶ Verbinden“</b>. Die App verbindet sich, sobald du live bist.</li>
       <li>Spiel starten – die Steuerung ist im Spielfenster aktiv. In TikTok LIVE Studio oder OBS das <b>Spielfenster aufnehmen</b>.</li>
       <li><b>„⚙ Belegung bearbeiten“</b> öffnet das gewählte Spiel mit den Einstellungen.</li>
@@ -559,6 +559,7 @@ python3 tools/make-pwa.py --check    # nur prüfen</pre>
       <li>In Menüs ohne Pfeiltasten-Steuerung springt das Steuerkreuz von Knopf zu Knopf (gelber Rahmen), <b>A</b> drückt ihn. Der <b>rechte Stick</b> bewegt einen Mauszeiger, <b>A</b> klickt (halten = ziehen).</li>
       <li>Spiele mit eigener Controller-Steuerung binden die Datei <b>nicht</b> ein, damit nichts doppelt reagiert. Texteingaben gehen weiterhin über Tastatur oder Handy-Pads.</li>
       <li><b>Touch-Spiele:</b> Zeiger und <b>A</b> lösen neben Maus- auch echte Touch-Ereignisse aus (<code>touchstart</code>/<code>touchmove</code>/<code>touchend</code>, wie am Handy). Verhindert das Spiel <code>touchstart</code>, entfallen Maus-Ereignisse und Klick.</li>
+      <li><b>Windows-App:</b> Auch die Bibliothek geht komplett mit dem Controller – Steuerkreuz wählt (Seitenleiste, Spiele, Details), <b>A</b> startet, <b>B</b> zurück, <b>Y</b> Optionen, <b>X</b> Installieren, <b>LB/RB</b> Ansicht, <b>Start</b> TikTok LIVE, <b>Select</b> Controller einrichten (eigene Belegung je Controller).</li>
       <li><b>Alle Controller-Arten:</b> <code>gamepad.js</code> liefert jedes Pad im Standard-Layout – auch Billig- und Retro-Pads ohne Standard-Zuordnung (Steuerkreuz als Hat oder Achsen, Trigger als Achsen) und mit Ruhelage-Abgleich gegen Stick-Drift. Eigene Belegungen (Windows-App: „🎮 Controller einrichten“) gelten über <code>window.EASYGAMES_PADMAPS</code> bzw. <code>localStorage["easygames-padmaps"]</code>. Die Windows-App und Batocera spielen diesen Teil (<code>window.EASYGAMES_PAD_NORMAL_ONLY = 1</code> vor der Datei) in jede Seite ein, damit auch Spiele mit eigener Controller-Steuerung profitieren. Test: <code>node tools/test-gamepad.cjs</code>.</li>
     </ul>
     <h3 id="xbox">Xbox (Microsoft Edge)</h3>

@@ -198,7 +198,12 @@ Eigener Client mit Bibliothek: jedes Spiel einzeln installieren, Updates und neu
 
 ## TikTok LIVE steuert das Spiel
 
-Kommentare, Geschenke, Likes und Follows steuern jedes Spiel über einen virtuellen Controller (`gamepad.js`), frei belegbar je Spiel, mit Geschenke-Legende im Bild. Windows-App: „🎁 TikTok LIVE“. Sonst: `tools/TikTok-Start.bat` (Node.js + Brücke `tools/tiktok-bridge.mjs` mit [TikTok-Live-Connector](https://github.com/zerodytrash/TikTok-Live-Connector)) und `stream.html?game=<id>&tiktok=1` (Einstellungen mit `&setup=1`). Anleitung `einbinden.html#tiktok`, Test `node tools/test-stream-tiktok.cjs`.
+Kommentare, Geschenke, Likes, Follows, Teilen und Abos steuern jedes Spiel über einen virtuellen Controller (`gamepad.js`), frei belegbar für alle Spiele oder je Spiel. Dazu Streiche und Effekte für alle Spiele (Steuerung vertauscht/weg, Bombe, die der Chat entschärft, Zeitlupe, Nebel, Fake-Absturz …), Highlights einzelner Spiele (`window.EasyGamesStream`), alle TikTok-Geschenke zum Antippen, Top-Fans und ein eigener Stream-Spielstand (echte und Cloud-Spielstände bleiben unberührt).
+
+- **Windows-App:** „🎁 TikTok LIVE“ – Steuerung und Brücke sind in der App enthalten und werden online aktualisiert; Spielfenster in OBS/TikTok LIVE Studio aufnehmen.
+- **Browser-Overlay:** `tools/TikTok-Start.bat` (Node.js + Brücke `tools/tiktok-bridge.mjs` mit [TikTok-Live-Connector](https://github.com/zerodytrash/TikTok-Live-Connector)) und `stream.html?game=<id>&tiktok=1` – `format=9x16|16x9`, `view=all|game|info|legend|feed|top` (eine oder mehrere Quellen), Einstellungen mit `&setup=1` (Reiter „📺 Overlay & Ansichten“ baut die Adresse).
+
+Anleitung `einbinden.html#tiktok`, Test `node tools/test-stream-tiktok.cjs`.
 
 ## Xbox
 
