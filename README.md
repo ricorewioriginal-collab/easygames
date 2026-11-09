@@ -192,6 +192,10 @@ Native Android-Hülle (Kotlin) um die Oberfläche, Quellen in `android/`. Alle S
 - Bibliotheken für Offline: `vendor/` (`node tools/fetch-vendor.js`), Zuordnung `vendor/map.json`; Prüfung aller Spiele: `node tools/offline-audit.js`
 - Server (Timer, Manifest-Push, APK-Bau): `android/server/` und `android/README.md`
 
+## Windows-App (Spiele-Client wie Steam)
+
+Eigener Client mit Bibliothek: jedes Spiel einzeln installieren, Updates und neue Spiele kommen automatisch, installierte Spiele laufen offline, Online/Mehrspieler über `cloud/fire-peer.js` wie überall. Quellen im RicoReWi-Radio-Repo (`windows-easygames/`), gebaut auf dem Server; Download: [Installer](https://www.ricorewi-radio.de/cms/api.php?action=app_download&file=easygames-Setup-x64.exe) · [Portable](https://www.ricorewi-radio.de/cms/api.php?action=app_download&file=easygames-Portable-x64.exe). Neue Spiele erreichen die App über den Spiele-Sync von RicoReWi Radio (`php scripts/sync-easygames.php`).
+
 ## EmulationStation (ES-DE, RetroPie, Batocera)
 
 `tools/emulationstation.py` richtet alle Spiele in EmulationStation ein: Startskript je Spiel, Kategorie „RicoReWi easygames“, Spieleliste mit Titelbild und Beschreibung. Nur Python 3.8+ und ein Browser nötig.
