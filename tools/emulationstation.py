@@ -266,6 +266,8 @@ CHROMIUM_NAMES = ['chromium', 'chromium-browser', 'google-chrome', 'google-chrom
 
 def find_browser(pref=None):
     if pref:
+        if pref.startswith('flatpak:'):
+            return pref
         return shutil.which(pref) or (pref if os.path.isfile(pref) else None)
     for n in CHROMIUM_NAMES:
         p = shutil.which(n)
@@ -280,15 +282,23 @@ def find_browser(pref=None):
     elif platform.system() == 'Darwin':
         cands = ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Chromium.app/Contents/MacOS/Chromium',
                  '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge']
-    return next((c for c in cands if os.path.isfile(c)), None)
+    return next((c for c in cands if os.path.isfile(c)), None) or flatpak_browser()   # Batocera: Chromium als Flatpak
 
 
 def browser_command(browser, url, profile, kiosk=True):
     name = os.path.basename(browser).lower()
     if 'firefox' in name:
         return [browser, '--no-remote', '--profile', profile] + (['--kiosk'] if kiosk else []) + [url]
-    cmd = [browser, '--user-data-dir=' + profile, '--no-first-run', '--no-default-browser-check', '--noerrdialogs', '--disable-infobars',
+    if browser.startswith('flatpak:'):   # Flatpak darf das Profil (Speicherstände) und die Controller sehen
+        prefix = ['flatpak', 'run', '--filesystem=' + profile, '--device=all', browser.split(':', 1)[1]]
+    else:
+        prefix = [browser]
+    cmd = prefix + ['--user-data-dir=' + profile, '--no-first-run', '--no-default-browser-check', '--noerrdialogs', '--disable-infobars',
            '--disable-session-crashed-bubble', '--autoplay-policy=no-user-gesture-required']
+    if hasattr(os, 'geteuid') and os.geteuid() == 0:   # Batocera läuft als root: Chromium startet dort nur ohne Sandbox
+        cmd += ['--no-sandbox', '--test-type']
+    if not IS_WIN and platform.system() != 'Darwin':
+        cmd.append('--ozone-platform-hint=auto')   # X11 und Wayland
     if kiosk:
         cmd.append('--kiosk')
     return cmd + ['--app=' + url]
@@ -310,6 +320,23 @@ def start_server(root, port=0):
     return srv
 
 
+def start_update_in_background(base, cfg):
+    """Sucht beim Spielstart nebenbei nach neuen Spielen (höchstens einmal pro Stunde, blockiert den Start nicht)."""
+    st = _read_json(os.path.join(base, 'last-update.json'), {}) or {}
+    import time
+    if time.time() - float(st.get('t', 0)) < 3600:
+        return
+    try:
+        kw = {'stdout': subprocess.DEVNULL, 'stderr': subprocess.DEVNULL, 'stdin': subprocess.DEVNULL}
+        if IS_WIN:
+            kw['creationflags'] = 0x00000008  # DETACHED_PROCESS
+        else:
+            kw['start_new_session'] = True
+        subprocess.Popen([sys.executable, os.path.join(base, 'emulationstation.py'), 'update'], **kw)
+    except OSError:
+        pass
+
+
 def cmd_launch(a):
     base = os.path.dirname(os.path.abspath(__file__))
     with open(os.path.join(base, 'config.json'), encoding='utf-8') as f:
@@ -324,36 +351,439 @@ def cmd_launch(a):
     browser = find_browser(a.browser or cfg.get('browser'))
     if not browser:
         print('Kein Browser gefunden. Chromium, Chrome, Edge oder Firefox installieren oder beim Einrichten --browser PFAD angeben.', file=sys.stderr)
+        es_api('/notify', 'easygames: Kein Browser gefunden – bitte easygames neu einrichten.')
         return 3
     srv = None
+    sync_thread = None
     try:
-        if mode == 'offline':
-            repo = cfg.get('repo')
-            if not repo or not os.path.isfile(os.path.join(repo, game['path'], 'index.html')):
-                print('Offline-Dateien nicht gefunden (%s). Repository-Ordner prüfen oder mit --mode online einrichten.' % repo, file=sys.stderr)
-                return 4
+        if mode in ('offline', 'sync'):
+            root = cfg.get('content') if mode == 'sync' else cfg.get('repo')
             port = int(cfg.get('port') or DEFAULT_PORT)
+            status_file = os.path.join(base, STATUS_NAME)
+            ready = bool(root) and os.path.isfile(os.path.join(root, game['path'], 'index.html'))
+            if mode == 'offline' and not ready:
+                print('Offline-Dateien nicht gefunden (%s). Repository-Ordner prüfen oder mit --mode online einrichten.' % root, file=sys.stderr)
+                return 4
+            vendor = (_read_json(os.path.join(os.path.dirname(root), 'sync-state.json'), {}) or {}).get('vendor') if mode == 'sync' else {}
+            starter = (lambda r, p: start_sync_server(r, vendor, status_file, p)) if mode == 'sync' else start_server
             try:
-                srv = start_server(repo, port)
+                srv = starter(root, port)
             except OSError:
-                srv = start_server(repo, 0)
+                srv = starter(root, 0)
                 print('Port %d ist belegt – Speicherstände dieses Starts liegen unter einer anderen Adresse. Anderen Port mit --port wählen.' % port, file=sys.stderr)
             # „localhost“ (nicht 127.0.0.1): Firebase/Google-Anmeldung erlaubt localhost standardmäßig
             url = 'http://localhost:%d/%s' % (srv.server_address[1], game['path'])
+            if mode == 'sync':
+                if ready:
+                    start_update_in_background(base, cfg)
+                else:   # Spiel noch nicht auf dem Gerät: jetzt laden, die Ladeseite zeigt den Fortschritt
+                    _write_json(status_file, {'phase': 'check', 'done': 0, 'total': 0})
+
+                    def load():
+                        try:
+                            sync_content(root, cfg.get('base_url', BASE_URL), status_file)
+                        except Exception as e:
+                            _write_json(status_file, {'phase': 'error', 'error': str(e)})
+                    sync_thread = threading.Thread(target=load, daemon=True)
+                    sync_thread.start()
+                    url = 'http://localhost:%d/__easygames/laden.html?ziel=/%s' % (srv.server_address[1], urllib.request.quote(game['path']))
         else:
             url = cfg.get('base_url', BASE_URL) + game['path']
         if (a.tv or cfg.get('tv')) and 'tvParam' in game.get('modes', []):
             url += ('&' if '?' in url else '?') + 'tv'
-        profile = os.path.join(base, 'browser-profile')
+        profile = cfg.get('profile') or os.path.join(base, 'browser-profile')
         os.makedirs(profile, exist_ok=True)
         cmd = browser_command(browser, url, profile, kiosk=not (a.window or cfg.get('window')))
         if a.print:
             print(' '.join('"%s"' % c if ' ' in c else c for c in cmd))
             return 0
-        return subprocess.call(cmd)
+        proc = subprocess.Popen(cmd)
+        stop = threading.Event()
+        if platform.system() == 'Linux':
+            def quit_game():
+                if browser.startswith('flatpak:'):
+                    subprocess.call(['flatpak', 'kill', browser.split(':', 1)[1]], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                proc.terminate()
+            threading.Thread(target=watch_exit_combo, args=(stop, quit_game), daemon=True).start()
+        try:
+            return proc.wait()
+        finally:
+            stop.set()
     finally:
         if srv:
             srv.shutdown()
+
+
+# ----------------------------------------------------------------------------------------------- Selbst aktualisierende Offline-Kopie (Modus „sync“)
+# Holt die Spiele wie die easygames-Apps über sync/manifest.json (Dateiliste mit SHA-256) und lädt nur Geändertes nach.
+# Neue Spiele erscheinen dadurch automatisch, sobald das Gerät online ist; ohne Internet läuft alles aus der lokalen Kopie.
+HASH_RE = re.compile(r'^[0-9a-f]{64}$')
+STATUS_NAME = 'sync-status.json'
+
+
+def safe_rel(p):
+    """Relativer Pfad ohne '..', führendes '/' oder Sonderzeichen (wie Manifest.isSafePath der Apps)."""
+    if not isinstance(p, str) or not p or len(p) > 1024 or p.startswith('/') or p.endswith('/'):
+        return False
+    if any(ord(c) < 0x20 or ord(c) == 0x7f or c in '\\?#' for c in p):
+        return False
+    return all(s not in ('', '.', '..') for s in p.split('/'))
+
+
+def parse_manifest(text):
+    m = json.loads(text)
+    if m.get('schema') != 1 or not m.get('version') or not isinstance(m.get('files'), list):
+        raise ValueError('Spieleliste vom Server ist ungültig')
+    files = {}
+    for f in m['files']:
+        p, h, s = f.get('p'), str(f.get('h', '')).lower(), f.get('s')
+        if not safe_rel(p) or not HASH_RE.match(h) or not isinstance(s, int) or s < 0 or p in files:
+            raise ValueError('Ungültiger Eintrag in der Spieleliste: %r' % (p,))
+        files[p] = {'h': h, 's': s}
+    vendor = {k: v for k, v in (m.get('vendor') or {}).items() if isinstance(k, str) and v in files}
+    return {'version': m['version'], 'files': files, 'vendor': vendor}
+
+
+def online(base_url, timeout=5):
+    try:
+        req = urllib.request.Request(base_url + 'sync/version.json', headers={'User-Agent': 'easygames-emulationstation/1'})
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            r.read(1)
+        return True
+    except Exception:
+        return False
+
+
+def _write_json(path, data):
+    tmp = path + '.tmp'
+    with open(tmp, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False)
+    os.replace(tmp, path)
+
+
+def _read_json(path, default=None):
+    try:
+        with open(path, encoding='utf-8') as f:
+            return json.load(f)
+    except Exception:
+        return default
+
+
+def _download(url, dst, want_hash, want_size):
+    import hashlib
+    tmp = dst + '.part'
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    h, n = hashlib.sha256(), 0
+    req = urllib.request.Request(url, headers={'User-Agent': 'easygames-emulationstation/1'})
+    with urllib.request.urlopen(req, timeout=60) as r, open(tmp, 'wb') as f:
+        while True:
+            b = r.read(65536)
+            if not b:
+                break
+            h.update(b)
+            n += len(b)
+            f.write(b)
+    if n != want_size or h.hexdigest() != want_hash:
+        os.remove(tmp)
+        raise IOError('Prüfsumme stimmt nicht: %s' % url)
+    os.replace(tmp, dst)
+
+
+def game_ids(catalog):
+    return [g.get('id') for g in (catalog or {}).get('games', []) if g.get('id')]
+
+
+def sync_content(content, base_url, status_file=None, log=None):
+    """Bringt die Offline-Kopie in `content` auf den Stand des Servers. Rückgabe: {'online', 'changed', 'new', 'version'}.
+    Abgebrochene oder fehlerhafte Downloads ändern nichts (Prüfsumme, erst danach ersetzen)."""
+    state_dir = os.path.dirname(os.path.abspath(content))
+    state_file = os.path.join(state_dir, 'sync-state.json')
+    state = _read_json(state_file, {}) or {}
+    have = state.get('files') or {}
+    old_ids = game_ids(_read_json(os.path.join(content, 'sync', 'catalog.json')))
+
+    def status(**kw):
+        if status_file:
+            try:
+                _write_json(status_file, kw)
+            except OSError:
+                pass
+
+    status(phase='check', done=0, total=0)
+    try:
+        req = urllib.request.Request(base_url + 'sync/manifest.json', headers={'User-Agent': 'easygames-emulationstation/1', 'Cache-Control': 'no-cache'})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            text = r.read().decode('utf-8')
+    except Exception as e:
+        status(phase='offline', done=0, total=0, error=str(e))
+        return {'online': False, 'changed': 0, 'new': [], 'version': state.get('version')}
+    man = parse_manifest(text)
+    todo = [p for p, f in man['files'].items() if have.get(p) != f['h'] or not os.path.isfile(os.path.join(content, p))]
+    total = sum(man['files'][p]['s'] for p in todo)
+    done = [0]
+    lock = threading.Lock()
+    errors = []
+
+    def one(p):
+        f = man['files'][p]
+        try:
+            _download(base_url + p, os.path.join(content, *p.split('/')), f['h'], f['s'])
+            with lock:
+                have[p] = f['h']
+                done[0] += f['s']
+                status(phase='load', done=done[0], total=total)
+        except Exception as e:
+            with lock:
+                errors.append('%s: %s' % (p, e))
+
+    if todo:
+        if log:
+            log('Lade %d Dateien (%.1f MB) …' % (len(todo), total / 1e6))
+        status(phase='load', done=0, total=total)
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(4) as ex:
+            list(ex.map(one, todo))
+    # Dateien, die es nicht mehr gibt, entfernen (nur was die Synchronisation selbst angelegt hat)
+    for p in [p for p in have if p not in man['files']]:
+        try:
+            os.remove(os.path.join(content, *p.split('/')))
+        except OSError:
+            pass
+        have.pop(p, None)
+    state.update(files=have, version=man['version'] if not errors else state.get('version'), vendor=man['vendor'])
+    _write_json(state_file, state)
+    if errors:
+        status(phase='error', done=done[0], total=total, error=errors[0])
+        raise IOError('%d Dateien konnten nicht geladen werden, z. B. %s' % (len(errors), errors[0]))
+    new_ids = game_ids(_read_json(os.path.join(content, 'sync', 'catalog.json')))
+    status(phase='done', done=total, total=total)
+    return {'online': True, 'changed': len(todo), 'new': [i for i in new_ids if old_ids and i not in old_ids], 'version': man['version']}
+
+
+def load_sync_catalog(content):
+    """Spiele aus der Offline-Kopie (sync/catalog.json) im Format von load_catalog()."""
+    cat = _read_json(os.path.join(content, 'sync', 'catalog.json'))
+    if not cat:
+        raise ValueError('Keine Spieleliste in %s – bitte einmal mit dem Internet verbinden.' % content)
+    out = []
+    for g in cat.get('games', []):
+        if not g.get('id') or not g.get('path'):
+            continue
+        modes = g.get('modes') or {}
+        out.append({'id': g['id'], 'title': g.get('title') or g['id'], 'desc': g.get('desc', ''), 'path': g['path'],
+                    'img': g.get('img', ''), 'bg': g.get('bg', ''), 'modes': sorted(k for k, v in modes.items() if v)})
+    return out
+
+
+HOME_ENTRY = {'id': 'easygames-start', 'title': 'easygames – Startseite & Online', 'path': '', 'img': 'branding/easygames-icon-512.png',
+              'bg': '#1a1f4a #6b3fd6', 'modes': [],
+              'desc': 'Die easygames-Startseite mit allen Spielen, Konto, Ranglisten und Online-Modus. Mitspieler treten per Link oder Code von überall bei.'}
+
+# Seite, die beim Start eines noch nicht geladenen Spiels den Fortschritt zeigt und danach ins Spiel wechselt
+LOADING_PAGE = '''<!doctype html><html lang="de"><meta charset="utf-8"><title>easygames</title>
+<style>body{margin:0;height:100vh;display:grid;place-items:center;background:#0b0f2a;color:#fff;font:20px system-ui,sans-serif;text-align:center}
+.bar{width:60vw;height:14px;border-radius:7px;background:#ffffff22;overflow:hidden;margin:24px auto}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#6b3fd6,#ff3d7f);transition:width .3s}
+small{color:#9aa0c8}</style>
+<div><h1>easygames</h1><p id="t">Spiel wird geladen …</p><div class="bar"><i id="b"></i></div><small id="s"></small></div>
+<script>
+var ziel = new URLSearchParams(location.search).get('ziel') || '/';
+function tick() {
+  fetch('/__easygames/status', {cache: 'no-store'}).then(function (r) { return r.json(); }).then(function (s) {
+    var t = document.getElementById('t'), b = document.getElementById('b'), x = document.getElementById('s');
+    if (s.ready) { location.replace(ziel); return; }
+    if (s.phase === 'offline') { t.textContent = 'Dieses Spiel ist noch nicht auf dem Gerät.'; x.textContent = 'Bitte einmal mit dem Internet verbinden – danach läuft es auch offline. Zurück: Select + Start.'; return; }
+    if (s.phase === 'error') { t.textContent = 'Laden fehlgeschlagen.'; x.textContent = s.error || ''; return; }
+    var p = s.total ? Math.round(s.done / s.total * 100) : 0;
+    b.style.width = p + '%'; t.textContent = s.total ? 'Neue Spiele werden geladen … ' + p + ' %' : 'Suche nach neuen Spielen …';
+    x.textContent = s.total ? (s.done / 1e6).toFixed(1) + ' von ' + (s.total / 1e6).toFixed(1) + ' MB' : '';
+    setTimeout(tick, 500);
+  }).catch(function () { setTimeout(tick, 1000); });
+}
+tick();
+</script></html>'''
+
+SW_GUARD = (b'<script>if(navigator.serviceWorker){navigator.serviceWorker.register=function(){return Promise.reject(new Error('
+            b'"Offline-Dateien verwaltet easygames"))};navigator.serviceWorker.getRegistrations&&navigator.serviceWorker.getRegistrations()'
+            b'.then(function(r){r.forEach(function(x){x.unregister()})})}</script>')
+
+
+def vendor_rules(vendor):
+    """CDN-Adressen -> lokale Pfade (längste zuerst); ganze Ordner, wenn alle Dateien eines CDN-Ordners im selben lokalen Ordner liegen."""
+    rules = {}
+    dirs = {}
+    for url, path in vendor.items():
+        bare = url.split('?')[0].split('#')[0]
+        rules[url] = '/' + path
+        if bare != url:
+            rules[bare] = '/' + path
+        import posixpath
+        d, ld = posixpath.dirname(bare) + '/', posixpath.dirname('/' + path).rstrip('/') + '/'
+        dirs.setdefault(d, set()).add(ld if posixpath.basename(bare) == posixpath.basename(path) else None)
+    for d, targets in dirs.items():
+        if len(targets) == 1 and None not in targets:
+            rules[d] = next(iter(targets))
+    return sorted(((k.encode(), v.encode()) for k, v in rules.items()), key=lambda kv: -len(kv[0]))
+
+
+class SyncHandler(QuietHandler):
+    """Liefert die Offline-Kopie aus: CDN-Adressen zeigen auf die lokale Kopie, Service-Worker der Webversion bleiben aus."""
+    rules = []
+    status_file = None
+
+    def end_headers(self):
+        self.send_header('Cache-Control', 'no-cache')
+        super().end_headers()
+
+    def _send(self, body, ctype, code=200):
+        self.send_response(code)
+        self.send_header('Content-Type', ctype)
+        self.send_header('Content-Length', str(len(body)))
+        self.end_headers()
+        if self.command != 'HEAD':
+            self.wfile.write(body)
+
+    def do_GET(self):
+        path = self.path.split('?')[0].split('#')[0]
+        if path == '/__easygames/laden.html':
+            return self._send(LOADING_PAGE.encode(), 'text/html; charset=utf-8')
+        if path == '/__easygames/status':
+            s = _read_json(self.status_file, {}) if self.status_file else {}
+            s['ready'] = s.get('phase') == 'done'
+            return self._send(json.dumps(s).encode(), 'application/json')
+        local = self.translate_path(self.path)
+        if os.path.isdir(local):
+            if not path.endswith('/'):
+                return super().do_GET()
+            local = os.path.join(local, 'index.html')
+        if local.endswith(('.html', '.js', '.mjs')) and os.path.isfile(local):
+            with open(local, 'rb') as f:
+                body = f.read()
+            for k, v in self.rules:
+                if k in body:
+                    body = body.replace(k, v)
+            if local.endswith('.html'):
+                i = body.lower().find(b'<head>')
+                body = body[:i + 6] + SW_GUARD + body[i + 6:] if i >= 0 else SW_GUARD + body
+            return self._send(body, 'text/html; charset=utf-8' if local.endswith('.html') else 'text/javascript; charset=utf-8')
+        return super().do_GET()
+
+    do_HEAD = do_GET
+
+
+def start_sync_server(content, vendor, status_file, port):
+    handler_cls = type('H', (SyncHandler,), {'rules': vendor_rules(vendor or {}), 'status_file': status_file})
+    srv = http.server.ThreadingHTTPServer(('127.0.0.1', port), functools.partial(handler_cls, directory=content))
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    return srv
+
+
+# ----------------------------------------------------------------------------------------------- Controller: Select + Start beendet das Spiel
+BTN_SELECT, BTN_START, BTN_MODE = 314, 315, 316
+
+
+def watch_exit_combo(stop, on_combo, devdir='/dev/input'):
+    """Liest Gamepads direkt aus /dev/input (nur Linux, ohne Zusatzpakete). Select+Start oder Hotkey(Mode)+Start ruft on_combo()."""
+    import select
+    fmt = 'llHHi'
+    size = struct.calcsize(fmt)
+    fds = []
+    try:
+        names = sorted(n for n in os.listdir(devdir) if n.startswith('event'))
+    except OSError:
+        return
+    for n in names:
+        try:
+            fds.append(os.open(os.path.join(devdir, n), os.O_RDONLY | os.O_NONBLOCK))
+        except OSError:
+            pass
+    down = {fd: set() for fd in fds}
+    try:
+        while fds and not stop.is_set():
+            r, _, _ = select.select(fds, [], [], 0.5)
+            for fd in r:
+                try:
+                    data = os.read(fd, size * 32)
+                except OSError:
+                    fds.remove(fd)
+                    continue
+                for i in range(0, len(data) - size + 1, size):
+                    _, _, typ, code, val = struct.unpack(fmt, data[i:i + size])
+                    if typ != 1 or code not in (BTN_SELECT, BTN_START, BTN_MODE):
+                        continue
+                    (down[fd].add if val else down[fd].discard)(code)
+                    if BTN_START in down[fd] and (BTN_SELECT in down[fd] or BTN_MODE in down[fd]):
+                        down[fd].clear()
+                        on_combo()
+    finally:
+        for fd in list(down):
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+
+
+# ----------------------------------------------------------------------------------------------- Batocera
+def userdata():
+    return os.environ.get('EASYGAMES_USERDATA', '/userdata')
+
+
+def batocera_paths():
+    u = userdata()
+    return {'roms': os.path.join(u, 'roms'), 'system_cfg': os.path.join(u, 'system', 'configs', 'emulationstation', 'es_systems_easygames.cfg'),
+            'content': os.path.join(u, 'system', 'easygames', 'content'), 'custom_sh': os.path.join(u, 'system', 'custom.sh')}
+
+
+HOOK_BEGIN, HOOK_END = '# easygames-begin (nicht von Hand ändern)', '# easygames-end'
+
+
+def set_boot_hook(custom_sh, script):
+    """Trägt in Batoceras custom.sh ein: beim Start im Hintergrund nach neuen Spielen suchen (wartet aufs Netz)."""
+    block = '%s\nif [ "$1" = start ]; then (python3 "%s" update --wait-net 600 >/dev/null 2>&1 &); fi\n%s\n' % (HOOK_BEGIN, script, HOOK_END)
+    remove_boot_hook(custom_sh)
+    old = ''
+    if os.path.isfile(custom_sh):
+        with open(custom_sh, encoding='utf-8') as f:
+            old = f.read()
+    if not old.startswith('#!'):
+        old = '#!/bin/bash\n' + old
+    with open(custom_sh, 'w', encoding='utf-8', newline='\n') as f:
+        f.write(old.rstrip('\n') + '\n' + block)
+    os.chmod(custom_sh, 0o755)
+
+
+def remove_boot_hook(custom_sh):
+    if not os.path.isfile(custom_sh):
+        return
+    with open(custom_sh, encoding='utf-8') as f:
+        text = f.read()
+    new = re.sub(r'\n?%s\n.*?%s\n?' % (re.escape(HOOK_BEGIN), re.escape(HOOK_END)), '\n', text, flags=re.S)
+    if new != text:
+        with open(custom_sh, 'w', encoding='utf-8', newline='\n') as f:
+            f.write(new.rstrip('\n') + '\n')
+
+
+def es_api(path, body=None):
+    """EmulationStation-Webschnittstelle von Batocera (Port 1234): Spieleliste neu laden, Hinweis anzeigen."""
+    try:
+        req = urllib.request.Request('http://127.0.0.1:1234' + path, data=body.encode() if body is not None else None)
+        with urllib.request.urlopen(req, timeout=5) as r:
+            r.read()
+        return True
+    except Exception:
+        return False
+
+
+FLATPAK_CHROMIUM = 'org.chromium.Chromium'
+
+
+def flatpak_browser():
+    if shutil.which('flatpak'):
+        try:
+            if subprocess.call(['flatpak', 'info', FLATPAK_CHROMIUM], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0:
+                return 'flatpak:' + FLATPAK_CHROMIUM
+        except OSError:
+            pass
+    return None
 
 
 # ----------------------------------------------------------------------------------------------- Einrichten
@@ -388,8 +818,9 @@ def detect_frontend():
         return 'es-de', None
     if os.path.isdir(os.path.join(home, 'RetroPie', 'roms')):
         return 'retropie', os.path.join(home, 'RetroPie', 'roms')
-    if os.path.isdir('/userdata/roms'):
-        return 'ports', '/userdata/roms'
+    u = userdata()
+    if os.path.isdir(os.path.join(u, 'roms')):   # Batocera: eigenes System „easygames“ (älteres Batocera ohne /userdata/system: Ports)
+        return ('batocera' if os.path.isdir(os.path.join(u, 'system')) else 'ports'), os.path.join(u, 'roms')
     return None, None
 
 
@@ -435,13 +866,33 @@ def unregister_system(path):
         os.remove(path)
 
 
-def system_element(rom_dir):
+def system_element(rom_dir, batocera=False):
     s = ET.Element('system')
     ext = '.bat .BAT' if IS_WIN else '.sh .SH'
-    for tag, val in (('name', SYSTEM), ('fullname', 'RicoReWi easygames'), ('path', rom_dir), ('extension', ext),
-                     ('command', '%ROM%' if IS_WIN else 'bash %ROM%'), ('platform', 'pc'), ('theme', 'pc')):
+    tags = (('name', SYSTEM), ('fullname', 'RicoReWi easygames'), ('path', rom_dir), ('extension', ext),
+            ('command', '%ROM%' if IS_WIN else 'bash %ROM%'), ('platform', 'pc'), ('theme', SYSTEM if batocera else 'pc'))
+    if batocera:
+        tags = tags[:2] + (('manufacturer', 'RicoReWi'), ('release', '2024'), ('hardware', 'game engine')) + tags[2:]
+    for tag, val in tags:
         ET.SubElement(s, tag).text = val
     return s
+
+
+OUR_TAGS = {'path', 'name', 'desc', 'image', 'marquee', 'developer', 'publisher', 'genre'}
+
+
+def keep_es_fields(old_gamelist, gl):
+    """Was EmulationStation selbst einträgt (Favorit, Spielzeit, zuletzt gespielt, Bewertung …), bleibt beim Neuschreiben erhalten."""
+    try:
+        old = {e.findtext('path'): e for e in ET.parse(old_gamelist).getroot().findall('game')}
+    except Exception:
+        return
+    for e in gl.findall('game'):
+        o = old.get(e.findtext('path'))
+        if o is not None:
+            for c in o:
+                if c.tag not in OUR_TAGS:
+                    e.append(c)
 
 
 def cmd_install(a):
@@ -449,9 +900,10 @@ def cmd_install(a):
     if not fe:
         print('Frontend nicht erkannt. Mit --frontend es-de|retropie|ports und --roms ORDNER angeben.', file=sys.stderr)
         return 2
-    roms = a.roms or roms_guess or (esde_roms(a) if fe == 'es-de' else os.path.join(os.path.expanduser('~'), 'RetroPie', 'roms'))
+    roms = a.roms or roms_guess or (batocera_paths()['roms'] if fe == 'batocera' else esde_roms(a) if fe == 'es-de' else os.path.join(os.path.expanduser('~'), 'RetroPie', 'roms'))
     repo = os.path.abspath(a.repo) if a.repo else (os.path.dirname(HERE) if os.path.isfile(os.path.join(os.path.dirname(HERE), 'games.js')) else None)
-    if a.mode == 'offline' and not (repo and os.path.isfile(os.path.join(repo, 'games.js'))):
+    mode = a.mode or ('sync' if fe == 'batocera' else 'online')
+    if mode == 'offline' and not (repo and os.path.isfile(os.path.join(repo, 'games.js'))):
         print('Offline-Modus braucht eine Kopie des Repositories:\n  git clone --depth 1 https://github.com/ricorewioriginal-collab/easygames\n'
               'dann mit --repo ORDNER (oder das Skript aus dessen tools-Ordner) starten.', file=sys.stderr)
         return 2
@@ -460,9 +912,28 @@ def cmd_install(a):
     if a.browser and not browser:
         print('Browser nicht gefunden: %s' % a.browser, file=sys.stderr)
         return 2
+    if not browser and fe == 'batocera' and not a.dry_run and not a.no_browser_install and shutil.which('flatpak'):
+        print('Installiere den Browser Chromium (Flatpak, einmalig, braucht Internet) …')
+        subprocess.call(['flatpak', 'install', '-y', '--noninteractive', 'flathub', FLATPAK_CHROMIUM])
+        browser = flatpak_browser()
     if not browser:
         print('Hinweis: Es wurde noch kein Browser gefunden (Chromium, Chrome, Edge, Firefox). Bitte installieren oder --browser PFAD angeben.')
-    games = load_catalog(repo, base_url)
+    sysname = 'ports' if fe == 'ports' else SYSTEM
+    rom_dir = os.path.join(roms, sysname, SYSTEM) if fe == 'ports' else os.path.join(roms, SYSTEM)
+    content = None
+    if mode == 'sync':
+        content = os.path.abspath(a.content) if a.content else (batocera_paths()['content'] if fe == 'batocera' else os.path.join(rom_dir, CFG_DIR, 'content'))
+        if not a.dry_run and not a.skip_sync:
+            print('Lade die Spiele für den Offline-Betrieb (nur Geändertes) …')
+            os.makedirs(content, exist_ok=True)
+            r = sync_content(content, base_url, log=print)
+            if not r['online'] and not os.path.isfile(os.path.join(content, 'sync', 'catalog.json')):
+                print('Keine Verbindung zu %s – für die erste Einrichtung wird Internet gebraucht.' % base_url, file=sys.stderr)
+                return 2
+        games = [dict(HOME_ENTRY)] + load_sync_catalog(content) if not a.dry_run or os.path.isfile(os.path.join(content, 'sync', 'catalog.json')) else load_catalog(repo, base_url)
+        repo = content   # Titelbilder aus der Offline-Kopie
+    else:
+        games = load_catalog(repo, base_url)
     if a.only:
         wanted = set(a.only.split(','))
         games = [g for g in games if g['id'] in wanted]
@@ -473,21 +944,29 @@ def cmd_install(a):
         print('Keine Spiele ausgewählt.', file=sys.stderr)
         return 2
 
-    sysname = 'ports' if fe == 'ports' else SYSTEM
-    rom_dir = os.path.join(roms, sysname, SYSTEM) if fe == 'ports' else os.path.join(roms, SYSTEM)
     cfg_dir = os.path.join(rom_dir, CFG_DIR)
     img_dir = os.path.join(rom_dir, 'images')
-    plan = '%d Spiele -> %s (%s, %s)' % (len(games), rom_dir, fe, a.mode)
+    plan = '%d Spiele -> %s (%s, %s)' % (len(games), rom_dir, fe, mode)
     if a.dry_run:
         print('Testlauf: ' + plan)
         return 0
     for d in (rom_dir, cfg_dir, img_dir):
         os.makedirs(d, exist_ok=True)
-    shutil.copyfile(os.path.abspath(__file__), os.path.join(cfg_dir, 'emulationstation.py'))
+    if os.path.abspath(__file__) != os.path.abspath(os.path.join(cfg_dir, 'emulationstation.py')):
+        shutil.copyfile(os.path.abspath(__file__), os.path.join(cfg_dir, 'emulationstation.py'))
+    old_created = (_read_json(os.path.join(cfg_dir, 'manifest.json'), {}) or {}).get('files', [])
     with open(os.path.join(cfg_dir, 'catalog.json'), 'w', encoding='utf-8') as f:
         json.dump({'games': games}, f, ensure_ascii=False, indent=1)
     with open(os.path.join(cfg_dir, 'config.json'), 'w', encoding='utf-8') as f:
-        json.dump({'mode': a.mode, 'repo': repo, 'base_url': base_url, 'browser': browser if a.browser else None, 'tv': a.tv, 'window': a.window, 'port': a.port}, f, indent=1)
+        args = ['--frontend', fe, '--roms', roms, '--mode', mode, '--base-url', base_url, '--port', str(a.port)]
+        for flag, val in (('--only', a.only), ('--exclude', a.exclude), ('--content', content), ('--browser', a.browser), ('--esde-dir', a.esde_dir)):
+            if val:
+                args += [flag, val]
+        args += [f for f, on in (('--tv', a.tv), ('--window', a.window), ('--no-images', a.no_images), ('--no-system', a.no_system)) if on]
+        profile = os.path.join(userdata(), 'saves', SYSTEM, 'browser') if fe == 'batocera' else None
+        json.dump({'mode': mode, 'repo': None if mode == 'sync' else repo, 'content': content, 'base_url': base_url,
+                   'browser': browser if (a.browser or (browser or '').startswith('flatpak:')) else None, 'tv': a.tv, 'window': a.window,
+                   'port': a.port, 'profile': profile, 'install_args': args}, f, indent=1)
 
     created = []
     gl = ET.Element('gameList')
@@ -544,6 +1023,7 @@ def cmd_install(a):
         ET.SubElement(e, 'genre').text = 'Browser-Spiel'
     shutil.rmtree(tmp, ignore_errors=True)
     glist = os.path.join(rom_dir, 'gamelist.xml')
+    keep_es_fields(glist, gl)
     write_xml(gl, glist)
     created.append(glist)
     if fe == 'es-de':
@@ -554,24 +1034,105 @@ def cmd_install(a):
         sysfile = os.path.join(esde_dir(a), 'custom_systems', 'es_systems.xml')
     elif fe == 'retropie':
         sysfile = os.path.join(os.path.expanduser('~'), '.emulationstation', 'es_systems.cfg')
+    elif fe == 'batocera':
+        sysfile = batocera_paths()['system_cfg']
     else:
         sysfile = None
     if sysfile and not a.no_system:
-        register_system(sysfile, system_element(rom_dir))
-    manifest = {'files': created, 'system_file': sysfile if sysfile and not a.no_system else None, 'rom_dir': rom_dir, 'cfg_dir': cfg_dir}
+        register_system(sysfile, system_element(rom_dir, batocera=fe == 'batocera'))
+    # Spiele, die es nicht mehr gibt: alte Startskripte und Bilder wegräumen
+    keep = set(created)
+    for p in old_created:
+        if p not in keep and os.path.isfile(p) and os.path.abspath(p).startswith(os.path.abspath(rom_dir) + os.sep):
+            os.remove(p)
+    hook = None
+    if fe == 'batocera' and mode == 'sync':
+        hook = batocera_paths()['custom_sh']
+        set_boot_hook(hook, os.path.join(cfg_dir, 'emulationstation.py'))
+    manifest = {'files': created, 'system_file': sysfile if sysfile and not a.no_system else None, 'rom_dir': rom_dir, 'cfg_dir': cfg_dir,
+                'boot_hook': hook, 'content': content}
     with open(os.path.join(cfg_dir, 'manifest.json'), 'w', encoding='utf-8') as f:
         json.dump(manifest, f, indent=1)
     print('Fertig: ' + plan)
-    if fe == 'ports':
+    if fe == 'batocera':
+        es_api('/reloadgames')
+        print('Das System „RicoReWi easygames“ erscheint in EmulationStation (sonst Spieleliste neu laden). Beenden im Spiel: Select + Start.')
+        if mode == 'sync':
+            print('Neue Spiele und Updates werden bei jeder Internetverbindung automatisch geladen.')
+    elif fe == 'ports':
         print('Die Spiele erscheinen im System „Ports“ (Spieleliste neu laden).')
     else:
         print('EmulationStation neu starten – die Kategorie „RicoReWi easygames“ erscheint in der Systemliste.')
     return 0
 
 
+def cmd_update(a):
+    """Holt neue Spiele und Updates (Modus sync) und schreibt Startskripte und Spieleliste neu, wenn sich der Katalog geändert hat.
+    Läuft beim Systemstart (Batocera custom.sh) und nebenbei beim Spielstart; ohne Internet passiert nichts."""
+    import time
+    base = os.path.dirname(os.path.abspath(__file__))
+    cfg = _read_json(os.path.join(base, 'config.json'))
+    if not cfg:
+        print('Keine Einrichtung gefunden – zuerst „install“ ausführen.', file=sys.stderr)
+        return 2
+    base_url = cfg.get('base_url', BASE_URL)
+    if cfg.get('mode') != 'sync':
+        print('Automatische Updates gibt es im Modus „sync“. Für neue Spiele „install“ erneut ausführen.')
+        return 0
+    lock = os.path.join(base, 'update.lock')
+    try:
+        if os.path.isfile(lock) and time.time() - os.path.getmtime(lock) > 3600:
+            os.remove(lock)   # liegengebliebene Sperre (Absturz, Stromausfall)
+        fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        os.close(fd)
+    except FileExistsError:
+        print('Es läuft schon eine Aktualisierung.')
+        return 0
+    try:
+        end = time.time() + max(0, a.wait_net)
+        while not online(base_url) and time.time() < end:
+            time.sleep(15)
+        if not online(base_url):
+            print('Offline – die vorhandenen Spiele bleiben spielbar.')
+            return 0
+        # Das Skript selbst aktuell halten (nur wenn die neue Fassung fehlerfrei übersetzt)
+        me = os.path.join(base, 'emulationstation.py')
+        try:
+            fresh = fetch(base_url + 'tools/emulationstation.py', binary=True)
+            compile(fresh, 'emulationstation.py', 'exec')
+            with open(me, 'rb') as f:
+                same = f.read() == fresh
+            if not same:
+                with open(me + '.tmp', 'wb') as f:
+                    f.write(fresh)
+                os.replace(me + '.tmp', me)
+        except Exception:
+            pass
+        before = [g['id'] for g in (_read_json(os.path.join(base, 'catalog.json'), {}) or {}).get('games', [])]
+        r = sync_content(cfg['content'], base_url, os.path.join(base, STATUS_NAME), log=print)
+        _write_json(os.path.join(base, 'last-update.json'), {'t': time.time(), 'version': r.get('version')})
+        after = ['easygames-start'] + [g['id'] for g in load_sync_catalog(cfg['content'])]
+        if r['changed'] or before != after:
+            subprocess.call([sys.executable, me, 'install', '--skip-sync', '--no-browser-install'] + list(cfg.get('install_args') or []),
+                            stdout=subprocess.DEVNULL)
+            es_api('/reloadgames')
+        if r['new']:
+            titles = {g['id']: g['title'] for g in load_sync_catalog(cfg['content'])}
+            msg = 'Neu bei easygames: ' + ', '.join(titles.get(i, i) for i in r['new'][:3]) + (' und weitere' if len(r['new']) > 3 else '')
+            es_api('/notify', msg)
+            print(msg)
+        print('Aktuell (%d Dateien geladen).' % r['changed'])
+        return 0
+    finally:
+        try:
+            os.remove(lock)
+        except OSError:
+            pass
+
+
 def cmd_uninstall(a):
     fe, roms_guess = (a.frontend, None) if a.frontend else detect_frontend()
-    roms = a.roms or roms_guess or (esde_roms(a) if fe == 'es-de' else os.path.join(os.path.expanduser('~'), 'RetroPie', 'roms'))
+    roms = a.roms or roms_guess or (batocera_paths()['roms'] if fe == 'batocera' else esde_roms(a) if fe == 'es-de' else os.path.join(os.path.expanduser('~'), 'RetroPie', 'roms'))
     rom_dir = os.path.join(roms, 'ports', SYSTEM) if fe == 'ports' else os.path.join(roms, SYSTEM)
     mf = os.path.join(rom_dir, CFG_DIR, 'manifest.json')
     if not os.path.isfile(mf):
@@ -584,6 +1145,10 @@ def cmd_uninstall(a):
             os.remove(p)
     if m.get('system_file'):
         unregister_system(m['system_file'])
+    if m.get('boot_hook'):
+        remove_boot_hook(m['boot_hook'])
+    if m.get('content') and os.path.isdir(m['content']) and os.path.isfile(os.path.join(os.path.dirname(m['content']), 'sync-state.json')):
+        shutil.rmtree(os.path.dirname(m['content']) if os.path.basename(os.path.dirname(m['content'])) == SYSTEM else m['content'], ignore_errors=True)
     shutil.rmtree(os.path.join(rom_dir, CFG_DIR), ignore_errors=True)
     for d in (os.path.join(rom_dir, 'images'), rom_dir):
         try:
@@ -606,7 +1171,7 @@ def main(argv=None):
     sub = p.add_subparsers(dest='cmd', required=True)
 
     def common(sp):
-        sp.add_argument('--frontend', choices=['es-de', 'retropie', 'ports'], help='es-de, retropie oder ports (Batocera/RetroPie-Ports); Standard: automatisch')
+        sp.add_argument('--frontend', choices=['es-de', 'retropie', 'ports', 'batocera'], help='es-de, retropie, batocera (eigenes System) oder ports (RetroPie-/Batocera-Ports); Standard: automatisch')
         sp.add_argument('--roms', help='ROM-Ordner des Frontends (Standard: automatisch)')
         sp.add_argument('--esde-dir', help='ES-DE-Datenordner (Standard: ~/ES-DE)')
         sp.add_argument('--repo', help='Ordner mit einer Kopie des easygames-Repositories (für den Offline-Modus)')
@@ -614,7 +1179,11 @@ def main(argv=None):
 
     i = sub.add_parser('install', help='Spiele einrichten')
     common(i)
-    i.add_argument('--mode', choices=['online', 'offline'], default='online', help='online = von der Homepage (Standard), offline = aus lokaler Kopie')
+    i.add_argument('--mode', choices=['online', 'offline', 'sync'], help='online = von der Homepage, offline = aus Kopie des Repositories, '
+                   'sync = eigene Offline-Kopie, lädt neue Spiele und Updates bei Internet automatisch (Standard auf Batocera, sonst online)')
+    i.add_argument('--content', help='Ordner der Offline-Kopie im Modus sync (Standard: Batocera /userdata/system/easygames/content)')
+    i.add_argument('--skip-sync', action='store_true', help='(intern) Offline-Kopie nicht neu abgleichen')
+    i.add_argument('--no-browser-install', action='store_true', help='Batocera: Chromium nicht automatisch installieren')
     i.add_argument('--browser', help='Browser (Name oder Pfad), Standard: automatisch')
     i.add_argument('--only', help='nur diese Spiele (IDs, mit Komma)')
     i.add_argument('--exclude', help='diese Spiele auslassen (IDs, mit Komma)')
@@ -631,9 +1200,12 @@ def main(argv=None):
     l = sub.add_parser('list', help='Spiele anzeigen')
     common(l)
     l.set_defaults(fn=cmd_list)
+    up = sub.add_parser('update', help='neue Spiele und Updates holen (Modus sync), Spieleliste aktualisieren')
+    up.add_argument('--wait-net', type=int, default=0, help='so viele Sekunden auf eine Internetverbindung warten (z. B. beim Systemstart)')
+    up.set_defaults(fn=cmd_update)
     r = sub.add_parser('launch', help='(intern) ein Spiel starten')
     r.add_argument('game')
-    r.add_argument('--mode', choices=['online', 'offline'])
+    r.add_argument('--mode', choices=['online', 'offline', 'sync'])
     r.add_argument('--browser')
     r.add_argument('--tv', action='store_true')
     r.add_argument('--window', action='store_true')
