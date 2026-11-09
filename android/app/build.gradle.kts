@@ -1,20 +1,20 @@
-// :app – Android-Hülle (WebView + Sync). Wird nur eingebunden, wenn ein Android-SDK vorhanden ist.
+// :app – native easygames-App (Jetpack Compose: Bibliothek, Spiele einzeln laden, Updates; Spiele laufen in einer WebView).
+// Wird nur eingebunden, wenn ein Android-SDK vorhanden ist.
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 // ---- Build-Parameter (per -P überschreibbar) ----
 fun prop(name: String, default: String): String = (findProperty(name) as String?)?.takeIf { it.isNotBlank() } ?: default
 
 val appIdValue = prop("appId", "de.ricorewi.easygames")
-val versionNameValue = prop("versionName", "1.0.0")
+val versionNameValue = prop("versionName", "2.0.0")
 val versionCodeValue = prop("versionCode", "1").toInt()
 // Muss mit "/" enden.
 val syncBaseValue = prop("syncBase", "https://raw.githubusercontent.com/ricorewioriginal-collab/easygames/main/")
     .let { if (it.endsWith("/")) it else "$it/" }
-// false = Start-Inhalt (assets/easygames) nicht ins APK packen; die App lädt dann beim ersten Start.
-val bundleContent = prop("bundleContent", "true") != "false"
 // App-Update-Hinweis: Versionsangabe (JSON mit version, version_code) und Download der neuesten App. Leer = kein Hinweis.
 val updateInfoUrl = prop("updateInfoUrl", "https://ricorewi-radio.de/downloads/easygames-latest.json")
 val updateApkUrl = prop("updateApkUrl", "https://ricorewi-radio.de/downloads/easygames-Developer.apk")
@@ -70,6 +70,7 @@ android {
 
     buildFeatures {
         buildConfig = true
+        compose = true
     }
 
     compileOptions {
@@ -83,8 +84,21 @@ android {
 
     sourceSets {
         getByName("main") {
-            // Ohne bundleContent keine Assets: die App lädt dann den Inhalt beim ersten Start.
-            if (!bundleContent) assets.setSrcDirs(emptyList<String>())
+            // Keine Spiele im APK: die App lädt beim ersten Start die Basis und jedes Spiel einzeln (Bibliothek).
+            // (tools/build-sync.js --stage legt im Prüf-Lauf Dateien unter assets/ ab – die gehören nicht in die App.)
+            assets.setSrcDirs(emptyList<String>())
+        }
+    }
+
+    testOptions {
+        unitTests {
+            // Screenshots der Oberfläche (Robolectric + Roborazzi): ./gradlew :app:testDebugUnitTest -Proborazzi.test.record=true
+            isIncludeAndroidResources = true
+            all { t ->
+                t.systemProperty("roborazzi.test.record", "true")
+                t.systemProperty("easygames.repo", rootProject.projectDir.parentFile.absolutePath)
+                t.systemProperty("easygames.shots", layout.buildDirectory.dir("screenshots").get().asFile.absolutePath)
+            }
         }
     }
 
@@ -103,14 +117,23 @@ dependencies {
     implementation(project(":core"))
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.work:work-runtime-ktx:2.9.1")
-}
+    implementation("androidx.activity:activity-compose:1.9.2")
+    implementation(platform("androidx.compose:compose-bom:2024.09.03"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-core")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    // Kartenbilder im SVG-Format (einige Spiele haben nur card.svg)
+    implementation("com.caverock:androidsvg-aar:1.4")
 
-// Auch Android Studio / direkte Gradle-Builds müssen vollständige Offline-Inhalte
-// enthalten. build.sh darf nicht der einzige Weg zur Asset-Erzeugung sein.
-if (bundleContent) {
-    val stageOfflineContent = tasks.register<Exec>("stageOfflineContent") {
-        workingDir(rootProject.projectDir.parentFile)
-        commandLine("node", "tools/build-sync.js", "--strict", "--stage", "android/app/src/main/assets/easygames")
-    }
-    tasks.named("preBuild").configure { dependsOn(stageOfflineContent) }
+    // Screenshot-Tests der Oberfläche ohne Gerät
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20240303")
+    testImplementation("org.robolectric:robolectric:4.13")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi:1.26.0")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.26.0")
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

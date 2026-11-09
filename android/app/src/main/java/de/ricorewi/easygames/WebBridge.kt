@@ -1,31 +1,24 @@
 package de.ricorewi.easygames
 
 import android.webkit.JavascriptInterface
+import org.json.JSONObject
 
 /**
- * JS-Brücke `EasyGamesApp`. Bewusst nur harmlose Methoden, denn sie ist in jedem Frame sichtbar
- * (auch in eingebetteten externen iframes). Insbesondere gibt es KEINEN Setter für "Nur WLAN".
- * Alle Methoden laufen auf einem WebView-Hintergrundthread.
+ * JS-Brücke `EasyGamesApp` für Spiele und Seiten (Sprachausgabe, Benachrichtigungen, App-Infos).
+ * Bewusst nur harmlose Methoden, denn sie ist in jedem Frame sichtbar. Alle Methoden laufen auf einem WebView-Hintergrundthread.
  */
 class WebBridge(
     private val host: Host,
-    private val coordinator: SyncCoordinator,
-    private val tts: AppTts
+    private val repo: Repo,
+    /** Sprachausgabe erst beim ersten Gebrauch starten. */
+    private val tts: () -> AppTts
 ) {
     interface Host {
-        /** Aktiviert einen fertig geladenen Stand und lädt die Seite neu. */
         fun reloadContent()
-
-        /** Öffnet den nativen Einstellungsdialog. */
         fun showSettings()
-
         /** "granted" | "denied" | "default" für die Notification-API der Spiele. */
         fun notificationState(): String
-
-        /** Fragt die Benachrichtigungs-Berechtigung (ggf. per Dialog) und meldet das Ergebnis an die Seite. */
         fun requestNotifications()
-
-        /** Zeigt eine lokale Benachrichtigung (nur wenn erlaubt). */
         fun showNotification(title: String, body: String, tag: String)
     }
 
@@ -33,35 +26,29 @@ class WebBridge(
 
     @JavascriptInterface
     fun getInfo(): String = try {
-        coordinator.infoJson()
+        val s = repo.state.value
+        JSONObject().put("app", true).put("native", true).put("version", BuildConfig.VERSION_NAME)
+            .put("online", s.online).put("games", s.games.size).put("installed", s.games.count { it.status.installed }).toString()
     } catch (e: Exception) {
         "{\"app\":true}"
     }
 
     @JavascriptInterface
-    fun syncNow() {
-        coordinator.requestSync(SyncCoordinator.Trigger.MANUAL)
-    }
+    fun syncNow() = repo.refresh(manual = true)
 
     @JavascriptInterface
-    fun reload() {
-        host.reloadContent()
-    }
+    fun reload() = host.reloadContent()
 
     @JavascriptInterface
-    fun openSettings() {
-        host.showSettings()
-    }
+    fun openSettings() = host.showSettings()
 
     @JavascriptInterface
     fun notifyState(): String = try { host.notificationState() } catch (e: Exception) { "denied" }
 
     @JavascriptInterface
-    fun notifyRequest() {
-        host.requestNotifications()
-    }
+    fun notifyRequest() = host.requestNotifications()
 
-    /** Die Brücke ist in jedem Frame sichtbar: Länge und Takt begrenzen, damit fremde Frames nicht fluten. */
+    /** Länge und Takt begrenzt, damit fremde Frames nicht fluten. */
     @JavascriptInterface
     fun notify(title: String?, body: String?, tag: String?) {
         val now = System.currentTimeMillis()
@@ -73,17 +60,15 @@ class WebBridge(
     // ---------------------------------------------------------------- Sprachausgabe (speechSynthesis der Spiele, siehe NativeHtml)
 
     @JavascriptInterface
-    fun ttsVoices(): String = try { tts.voicesJson() } catch (e: Exception) { "[]" }
+    fun ttsVoices(): String = try { tts().voicesJson() } catch (e: Exception) { "[]" }
 
     /** Länge begrenzt; id nur Buchstaben/Ziffern/_ (wird an die Seite zurückgemeldet). */
     @JavascriptInterface
     fun ttsSpeak(id: String?, text: String?, lang: String?, voice: String?, rate: Float, pitch: Float, volume: Float) {
         val safe = (id ?: "").filter { it.isLetterOrDigit() || it == '_' }.take(40)
-        tts.speak(safe, (text ?: "").take(3500), (lang ?: "").take(20), (voice ?: "").take(120), rate, pitch, volume)
+        tts().speak(safe, (text ?: "").take(3500), (lang ?: "").take(20), (voice ?: "").take(120), rate, pitch, volume)
     }
 
     @JavascriptInterface
-    fun ttsStop() {
-        tts.stop()
-    }
+    fun ttsStop() = tts().stop()
 }

@@ -1,38 +1,40 @@
 # easygames – Android-App
 
-Native Kotlin-Hülle um eine WebView. Die Spiele-Oberfläche (`index.html` und alle Spiele) ist statisches HTML/JS und
-wird **aus einem lokalen Inhaltsspeicher** ausgeliefert. Die mitgelieferten Spieldateien und Bibliotheken sind offline verfügbar; Online-Modi, Radio und Cloud brauchen Internet.
-Spieländerungen kommen per **Sync von GitHub** auf das Gerät, ohne neues APK.
+Native App (Kotlin, Jetpack Compose) wie ein kleiner Spiele-Client: **Entdecken** (Weiterspielen, Neu, Updates, Tages-Challenge,
+Kategorien), **Bibliothek** (Suche, Filter, alle Spiele), **Community** (Konto, Profil & Freunde, Erfolge, Ranglisten, Chat,
+Fehler melden) und **Mehr** (Einstellungen, App-Update, Unterstützen, Impressum und Datenschutz auf ricorewi.de).
+Jedes Spiel wird **einzeln** installiert, geprüft (SHA-256) und aktualisiert; installierte Spiele laufen **offline**.
+Das APK bringt keine Spiele mit (rund 2 MB), die App lädt beim ersten Start einmal die Basis (ca. 12 MB).
 
 ```
 android/
-  core/   reine JVM-Bibliothek: Manifest, Inhaltsspeicher, Sync-Engine, HTTP (mit JUnit-Tests)
-  app/    Android-Anwendung: MainActivity (WebView), Sync-Koordinator, WorkManager, JS-Brücke
+  core/   reine JVM-Bibliothek: Manifest, Katalog, Bibliothek (Library.kt), HTTP (mit JUnit-Tests)
+  app/    Android-App: Compose-Oberfläche (ui/), Spielfenster (GameActivity, WebView), Hintergrund-Abgleich (SyncWorker)
   build.sh   Build-Skript für den Server
 ```
 
-## So fließen Updates
+## So kommen Spiele und Updates auf das Gerät
 
-1. Du pushst Änderungen nach GitHub. Der Workflow `Android offline build` prüft und baut die App und aktualisiert anschließend auf `main` automatisch den Sync-Katalog. `node tools/build-sync.js` erzeugt `sync/manifest.json`
-   (Dateiliste mit Größe + SHA-256, Vendor-Map für CDN-Bibliotheken) und wird mit eingecheckt.
-2. Die App holt `${syncBase}sync/manifest.json` (mit ETag – ohne Änderung kostet das fast keine Daten).
-3. Sie lädt **nur Dateien, die sie noch nicht hat** (Hash weder im Speicher noch im mitgelieferten Start-Inhalt),
-   je Datei geprüft (Größe + SHA-256), 4 parallel, mit Wiederholungen und Wiederaufnahme.
-4. Erst wenn **alles** vollständig und korrekt da ist, gilt der Stand als „bereit“ (`pending`). Ein Fehler oder
-   Abbruch lässt den aktiven Stand unverändert.
-5. Aktiviert wird der neue Stand **nie mitten im Spiel**: beim App-Start oder automatisch in der Spieleübersicht/nach dem Schließen des Spiels, oder wenn die
-   Web-Oberfläche „Neu laden“ anbietet (`EasyGamesApp.reload()`).
-6. Danach werden nicht mehr benötigte Dateien gelöscht.
+1. Du pushst nach GitHub. Der Workflow `Android offline build` prüft alles und aktualisiert auf `main` den Sync-Stand
+   (`sync/manifest.json` = Dateiliste mit Größe + SHA-256, `sync/catalog.json` = Spiele mit Kurzanleitung; `node tools/build-sync.js`).
+2. Die App holt beide Dateien (mit ETag) beim Start, beim Zurückkehren in die App (höchstens alle 10 Minuten), über ⟳ und
+   alle 6 Stunden im Hintergrund (WorkManager; mit „Updates nur im WLAN“ nur im WLAN, nicht bei schwachem Akku).
+3. **Neue Spiele** erscheinen sofort in der Bibliothek, 14 Tage mit „NEU“, und als Benachrichtigung.
+4. **Updates**: Weicht eine Datei eines installierten Spiels ab, zeigt die App „UPDATE“ (Karte, Reiter-Zähler, Benachrichtigung).
+   Mit „Updates automatisch laden“ (Standard) lädt sie es gleich – nie während das Spiel läuft, dann nach dem Beenden.
+5. **App-Updates**: `easygames-latest.json` auf ricorewi-radio.de; eine neuere Version zeigt die App als Hinweis und Benachrichtigung.
+6. Geladen wird je Spiel in einen Zwischenordner (4 parallel, Wiederholungen, Prüfung auf Größe + SHA-256); erst wenn alles stimmt,
+   wird übernommen. Ein Fehler oder Abbruch lässt den bisherigen Stand unverändert.
 
-Wann wird synchronisiert?
+Aufteilung (`core/…/Library.kt`): **Basis** = alles außerhalb der Spielordner (Konto-/Profil-/Ranglisten-Seiten, `cloud/fire-peer.js`,
+Bibliotheken, Anleitungen, Vorschaubilder) plus das Kartenbild jedes Spiels; **Spielordner** einzeln; große Bibliotheken
+(`vendor/<name>` ab 2 MB, z. B. MediaPipe für Groove Arena) nur für Spiele, die sie nutzen. Lädt ein Spiel Dateien eines anderen
+(`../easyclash/js/…`), wird das andere automatisch mitinstalliert und bleibt, solange es gebraucht wird.
 
-- beim App-Start (mit jeder Verbindung, auch Mobilfunk; nur im WLAN, wenn der Nutzer „Nur im WLAN aktualisieren“ einschaltet – Standard aus),
-- sobald eine erlaubte Internetverbindung verfügbar wird, solange die App läuft,
-- alle 6 Stunden im Hintergrund (WorkManager, jede Verbindung – mit „Nur im WLAN“ nur WLAN –, nicht bei schwachem Akku),
-- ein Einmal-Job holt Verpasstes nach, sobald wieder eine (erlaubte) Verbindung da ist,
-- manuell über „Jetzt aktualisieren“ (Einstellungsdialog, `EasyGamesApp.syncNow()`).
-
-Es läuft nie mehr als ein Sync gleichzeitig.
+Online und Mehrspieler laufen wie überall über easygames: Die Spiele nutzen `cloud/fire-peer.js`, Einladungs-, TV- und Teilen-Links
+zeigen auf `https://ricorewioriginal-collab.github.io/easygames/…`. Solche Links öffnen sich – wenn gewünscht – direkt in der App
+(noch nicht installierte Spiele werden geladen und dann gestartet). Alle Spiele laufen unter derselben lokalen Adresse wie in der
+ersten App-Version (`https://appassets.androidplatform.net/easygames/`), Spielstände und Anmeldung bleiben beim Update erhalten.
 
 ## Voraussetzungen auf dem Server
 
@@ -96,21 +98,16 @@ Aus dem Repo-Wurzelverzeichnis (oder irgendwo – das Skript findet den Pfad sel
 ```bash
 ./android/build.sh                      # APK (Standard)
 FORMAT=aab ./android/build.sh           # Android App Bundle (z. B. für den Play Store)
-BUNDLE_CONTENT=0 ./android/build.sh     # ohne mitgelieferten Start-Inhalt (kleines APK, lädt beim ersten Start)
-VERSION_NAME=1.2.0 VERSION_CODE=42 ./android/build.sh
+VERSION_NAME=2.1.0 VERSION_CODE=42 ./android/build.sh
 ```
 
 Mit `PUBLISH_DIR=<Webroot>/downloads` legt `build.sh` das APK zusätzlich als `easygames-Developer.apk` (plus `easygames-latest.json`) auf der Downloads-Seite von ricorewi-radio.de ab; der Download-Knopf unter `/#apps` erscheint, sobald die Datei dort liegt.
 
-Das Skript prüft Java 17+, Node und `ANDROID_HOME`, erzeugt den Start-Inhalt
-(`node tools/build-sync.js --stage android/app/src/main/assets/easygames`), baut mit Gradle und gibt
-**Pfad und SHA-256** des Ergebnisses aus. Ohne Angabe wird der Versionscode aus `git rev-list --count HEAD` abgeleitet.
+Das Skript prüft Java 17+ und `ANDROID_HOME`, baut mit Gradle und gibt **Pfad und SHA-256** des Ergebnisses aus. Ohne Angabe wird der Versionscode aus `git rev-list --count HEAD` abgeleitet.
 
 Ergebnis: `android/app/build/outputs/apk/release/app-release.apk` bzw. `…/bundle/release/app-release.aab`.
 
-Der Start-Inhalt unter `app/src/main/assets/easygames/` wird erzeugt und **nicht eingecheckt**. Ohne ihn baut und
-startet die App trotzdem – dann zeigt sie beim allerersten Start einen Fortschrittsbildschirm und lädt alles per
-Sync (dafür ist einmalig Internet nötig).
+Spiele kommen nicht ins APK; zum ersten Start braucht die App einmal Internet.
 
 ### Konfiguration (Gradle-Properties, per `-P` oder in `~/.gradle/gradle.properties`)
 
@@ -118,9 +115,8 @@ Sync (dafür ist einmalig Internet nötig).
 |-----------------|--------------------------------------------------------------------------|-----------|
 | `syncBase`      | `https://raw.githubusercontent.com/ricorewioriginal-collab/easygames/main/` | Basis-URL; muss auf `/` enden. Manifest: `${syncBase}sync/manifest.json` |
 | `appId`         | `de.ricorewi.easygames`                                                  | applicationId (Paketname auf dem Gerät) |
-| `versionName`   | `1.0.0`                                                                  | angezeigte Version |
+| `versionName`   | `2.0.0`                                                                  | angezeigte Version (`build.sh`: `2.0.<Versionscode>`) |
 | `versionCode`   | `1`                                                                      | muss bei jedem Release steigen |
-| `bundleContent` | `true`                                                                   | `false` = kein Start-Inhalt im APK |
 
 Beispiel für einen Fork: `./android/build.sh` mit `SYNC_BASE=https://raw.githubusercontent.com/dein-name/easygames/main/ APP_ID=de.dein.easygames`.
 
@@ -130,19 +126,21 @@ Die Kernlogik (`:core`) läuft ohne Android-SDK:
 
 ```bash
 cd android
-gradle :core:test
+./gradlew :core:test                                   # Bibliothek, Manifest, Downloads (ohne Android-SDK)
+EASYGAMES_LIVE=1 ./gradlew :core:test --tests '*LiveLibraryTest*'   # gegen den echten Stand auf GitHub
+./gradlew :app:testDebugUnitTest                       # Bildschirmfotos der Oberfläche (Robolectric) → app/build/screenshots
 ```
 
 Ohne `ANDROID_HOME` (oder mit `-PcoreOnly=true`) bindet Gradle nur `:core` ein und fasst das Google-Repository nicht an.
 
 ## Automatische Builds
 
-Ein neues APK ist nur bei Änderungen an der **Hülle** nötig (Kotlin-Code, Icons, Berechtigungen) – Spiele laufen per Sync.
+Ein neues APK ist nur bei Änderungen an der **App** nötig (Kotlin-Code, Icons, Berechtigungen) – Spiele kommen per Sync.
 Pakettests: `node tools/test-sync-build.js`. Offline-App-Starttest (Playwright + Chromium): `node tools/android-runtime-audit.js`.
 
 Der Workflow `.github/workflows/android.yml` baut bei Pull Requests und Pushes ein Test-APK (Actions → Android offline build → Artefakt). Für das Installationsupdate der vorhandenen Release-App muss weiterhin der bisherige Signierschlüssel über `build.sh` verwendet werden.
 
-Auch direkte Android-Studio-/Gradle-Builds erzeugen jetzt den vollständigen Start-Inhalt mit Node.js. Dieser liegt unter `assets/easygames/content/<sha256>`; so bleiben auch Vite-Module mit Unterstrich im Dateinamen erhalten. Die PWA-Caches werden beim Start/Übernehmen eines Updates bereinigt, Speicherstände in localStorage/IndexedDB bleiben bestehen. Neue Spiele werden nach einem Eintrag in `games.js` automatisch mit synchronisiert.
+Neue Spiele werden nach einem Eintrag in `games.js` automatisch mit synchronisiert und erscheinen ohne neues APK in der App.
 
 Alternative Server-Auslöser:
 
@@ -157,8 +155,8 @@ Alternative Server-Auslöser:
 - Inhalte werden nur über **https** geladen (`usesCleartextTraffic=false`, Netzwerk-Konfiguration ohne Nutzerzertifikate)
   und vor dem Speichern per **SHA-256** gegen das Manifest geprüft; Pfade mit `..` oder absolute Pfade werden abgelehnt.
   Wer das Manifest im GitHub-Repo ändern kann, kann damit die Inhalte der App ändern – Schreibrechte am Repo entsprechend schützen.
-- Die JS-Brücke `EasyGamesApp` bietet bewusst nur harmlose Methoden (`getInfo`, `syncNow`, `reload`, `openSettings`).
-  „Nur im WLAN aktualisieren“ lässt sich ausschließlich im nativen Dialog ändern, nicht aus JavaScript.
+- Die JS-Brücke `EasyGamesApp` bietet bewusst nur harmlose Methoden (`getInfo`, `syncNow`, `reload`, `openSettings`, Sprachausgabe,
+  Benachrichtigungen). Einstellungen lassen sich nur in der App ändern, nicht aus JavaScript.
 - Die WebView hat keinen Datei-/Content-Zugriff, keinen Mixed-Content und Safe Browsing ist an. Fremde Links öffnen im System-Browser.
 - Mikrofon/Kamera werden nur für den eigenen Ursprung und erst nach Android-Berechtigungsabfrage freigegeben.
 
@@ -168,7 +166,7 @@ Alternative Server-Auslöser:
   und Cloud-Speicherstände. Nur die Programmdateien und die in der Vendor-Map eingetragenen Bibliotheken sind offline.
 - Fremde Bibliotheken (CDN-URLs) müssen in der Vendor-Map des Manifests stehen; unbekannte externe URLs gehen ins Netz.
 - Medien-Dateien werden ohne HTTP-Range-Unterstützung ausgeliefert (Abspielen geht, Springen in langen Audio-/Videodateien evtl. nicht).
-- Der Hintergrund-Sync läuft laut Android-Vorgabe frühestens alle 15 Minuten und nur nach Systemlaune (Doze, Energiesparmodus).
+- Der Hintergrund-Abgleich läuft laut Android-Vorgabe nach Systemlaune (Doze, Energiesparmodus); in der App wird sofort abgeglichen.
 
 ## APK automatisch auf der RicoReWi-Radio-Seite bereitstellen
 

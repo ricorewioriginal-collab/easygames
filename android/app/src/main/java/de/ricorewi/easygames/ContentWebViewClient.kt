@@ -8,37 +8,61 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import de.ricorewi.easygames.core.ContentStore
+import de.ricorewi.easygames.core.Library
 import de.ricorewi.easygames.core.Mime
 import de.ricorewi.easygames.core.NativeHtml
 import java.io.ByteArrayInputStream
+import java.io.FileInputStream
 
-/** Der (künstliche) Ursprung, unter dem die lokalen Inhalte ausgeliefert werden. */
+/**
+ * Der (künstliche) Ursprung der lokalen Inhalte. Unverändert seit der ersten App-Version, damit Spielstände
+ * (localStorage/IndexedDB) und Anmeldungen nach dem Update erhalten bleiben.
+ */
 object Origin {
     const val HOST = "appassets.androidplatform.net"
     const val PATH_PREFIX = "/easygames/"
-    const val START_URL = "https://$HOST${PATH_PREFIX}index.html"
-    const val PREPARE_URL = "https://$HOST${PATH_PREFIX}__prepare__.html"
+    const val ROOT = "https://$HOST$PATH_PREFIX"
+
+    /** Öffentliche easygames-Adresse (Einladungen, Teilen, Links von außen). */
+    const val PUBLIC = "https://ricorewioriginal-collab.github.io/easygames/"
+    const val LEGAL_IMPRINT = "https://ricorewi.de/impressum.html"
+    const val LEGAL_PRIVACY = "https://ricorewi.de/datenschutz.html"
 
     fun isOwn(uri: Uri): Boolean = uri.scheme == "https" && HOST.equals(uri.host, ignoreCase = true)
+
+    /** Pfad relativ zur easygames-Wurzel (ohne Query/Hash) einer eigenen oder öffentlichen Adresse, sonst null. */
+    fun relPath(uri: Uri): String? {
+        val path = uri.path ?: return null
+        val own = isOwn(uri)
+        val pub = uri.scheme == "https" && "ricorewioriginal-collab.github.io".equals(uri.host, true)
+        if (!own && !pub) return null
+        if (!path.startsWith(PATH_PREFIX) && path != PATH_PREFIX.trimEnd('/')) return null
+        return path.removePrefix(PATH_PREFIX.trimEnd('/')).trimStart('/')
+    }
+
+    /** Lokale Adresse zu einem relativen Pfad samt Query/Hash. */
+    fun local(rel: String, query: String? = null, fragment: String? = null): String =
+        ROOT + rel + (if (query.isNullOrEmpty()) "" else "?$query") + (if (fragment.isNullOrEmpty()) "" else "#$fragment")
 }
 
 /**
- * Liefert die Inhalte aus dem lokalen Speicher aus, ersetzt CDN-Aufrufe durch lokale Dateien (Vendor-Map)
- * und leitet fremde Links in den System-Browser.
+ * Liefert die installierten Inhalte aus der Bibliothek aus, ersetzt CDN-Aufrufe durch lokale Dateien (Vendor-Map)
+ * und entscheidet über Navigation: zurück zur App, Impressum/Datenschutz auf ricorewi.de, fremde Links im Browser.
  */
 class ContentWebViewClient(
-    private val store: ContentStore,
+    private val library: Library,
     private val callbacks: Callbacks
 ) : WebViewClient() {
 
     interface Callbacks {
-        fun onPageStarted()
         fun onPageFinished(url: String?)
-
         /** Der Renderer-Prozess ist abgestürzt/beendet; die WebView muss neu aufgebaut werden. */
         fun onRendererGone(view: WebView)
         fun openExternal(uri: Uri)
+        /** Die Seite will zur Spieleübersicht („← Alle Spiele“). */
+        fun backToApp()
+        /** Link auf ein Spiel, das noch nicht installiert ist: in der App öffnen (Installieren). */
+        fun openGame(folder: String, uri: Uri)
     }
 
     // ---------------------------------------------------------------- Auslieferung
@@ -53,44 +77,40 @@ class ContentWebViewClient(
         }
     }
 
-    // Also used by ServiceWorkerClient: its fetches bypass WebViewClient.
+    // Auch für den ServiceWorkerClient: dessen Abrufe laufen am WebViewClient vorbei.
     fun intercept(req: WebResourceRequest): WebResourceResponse? {
         val uri = req.url
         val scheme = uri.scheme
         if (scheme != "https" && scheme != "http") return null
         val method = (req.method ?: "GET").uppercase()
 
-        // (1) Unser Ursprung -> Inhaltsspeicher
         if (Origin.isOwn(uri)) {
             if (method == "OPTIONS") return status(204, "No Content")
             if (method != "GET" && method != "HEAD") return status(405, "Method Not Allowed")
             if (req.requestHeaders.any { (key, value) -> key.equals("Service-Worker", true) && value == "script" }) return notFound()
             val path = uri.path ?: ""
             if (!path.startsWith(Origin.PATH_PREFIX)) return notFound()
-            var rel = path.substring(Origin.PATH_PREFIX.length)      // Query und Hash sind nicht Teil von path
+            var rel = path.substring(Origin.PATH_PREFIX.length)
             if (rel.isEmpty() || rel.endsWith("/")) rel += "index.html"
             return serveFile(rel, method) ?: notFound()
         }
 
-        // (2) Bekannte CDN-URL -> lokale Datei; sonst (3) normal ins Netz
+        // Bekannte CDN-Adresse -> lokale Datei; sonst normal ins Netz
         if (method != "GET" && method != "HEAD") return null
-        val local = store.resolveVendor(uri.toString()) ?: return null
+        val local = library.resolveVendor(uri.toString()) ?: return null
         return serveFile(local, method)
     }
 
     private fun serveFile(path: String, method: String): WebResourceResponse? {
-        val content = store.open(path) ?: return null
-        val data = if (method == "HEAD") {
-            content.stream.close()
-            ByteArrayInputStream(ByteArray(0))
-        } else if (content.mime == "text/html") {
-            val html = content.stream.bufferedReader(Charsets.UTF_8).use { it.readText() }
-            ByteArrayInputStream(NativeHtml.prepare(html).toByteArray(Charsets.UTF_8))
-        } else {
-            content.stream
+        val file = library.open(path) ?: return null
+        val mime = Mime.forPath(path)
+        val data = when {
+            method == "HEAD" -> ByteArrayInputStream(ByteArray(0))
+            mime == "text/html" -> ByteArrayInputStream(NativeHtml.prepare(file.readText()).toByteArray(Charsets.UTF_8))
+            else -> FileInputStream(file)
         }
-        val encoding = if (Mime.isText(content.mime)) "utf-8" else null
-        return WebResourceResponse(content.mime, encoding, 200, "OK", HEADERS, data)
+        val encoding = if (Mime.isText(mime)) "utf-8" else null
+        return WebResourceResponse(mime, encoding, 200, "OK", HEADERS, data)
     }
 
     private fun notFound() = status(404, "Not Found")
@@ -104,15 +124,30 @@ class ContentWebViewClient(
         val req = request ?: return false
         if (!req.isForMainFrame) return false
         val uri = req.url
-        if (Origin.isOwn(uri)) return false                       // bleibt in der WebView
+        val rel = Origin.relPath(uri)
+        if (rel != null) {
+            val file = rel.substringBefore('?')
+            // Spieleübersicht (Start der Webseite) = zurück in die App
+            if (file.isEmpty() || file == "index.html") { callbacks.backToApp(); return true }
+            // Impressum und Datenschutz gelten für easygames auf ricorewi.de
+            if (file == "impressum.html") { callbacks.openExternal(Uri.parse(Origin.LEGAL_IMPRINT)); return true }
+            if (file == "datenschutz.html") { callbacks.openExternal(Uri.parse(Origin.LEGAL_PRIVACY)); return true }
+            val top = file.substringBefore('/')
+            val game = library.catalog?.byFolder(top)
+            if (game != null && file.contains('/') && !library.status(game).installed) { callbacks.openGame(top, uri); return true }
+            if (Origin.isOwn(uri)) return false
+            // Öffentliche easygames-Adresse (z. B. Einladung im Spiel): lokal öffnen, wenn vorhanden
+            if (game == null || library.status(game).installed) {
+                view?.loadUrl(Origin.local(file, uri.encodedQuery, uri.encodedFragment))
+                return true
+            }
+        }
         val scheme = uri.scheme?.lowercase()
         if (scheme == "http" || scheme == "https") callbacks.openExternal(uri)
         return true                                               // fremde Ziele nie in dieser WebView laden
     }
 
-    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-        callbacks.onPageStarted()
-    }
+    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {}
 
     override fun onPageFinished(view: WebView?, url: String?) {
         callbacks.onPageFinished(url)

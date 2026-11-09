@@ -1,44 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">easygames</string>
-
-    <!-- Erststart-Bildschirm -->
-    <string name="boot_starting">Starte …</string>
-    <string name="boot_checking">Verbindung wird geprüft …</string>
-    <string name="boot_downloading">Spiele werden geladen …</string>
-    <string name="boot_progress">%1$s von %2$s</string>
-    <string name="boot_offline">Keine Internetverbindung. Zum ersten Start werden die Spiele einmalig geladen – bitte WLAN einschalten und erneut versuchen.</string>
-    <string name="boot_wait_wifi">Kein WLAN gefunden. Die Spiele werden im WLAN geladen. Mobilfunk kannst du in den Einstellungen erlauben.</string>
-    <string name="boot_error">Laden fehlgeschlagen: %1$s</string>
-    <string name="boot_no_webview">Die Komponente „Android System WebView“ fehlt oder ist deaktiviert. Bitte im Play Store installieren bzw. aktivieren.</string>
-    <string name="boot_retry">Erneut versuchen</string>
-    <string name="boot_settings">Einstellungen</string>
-
-    <!-- Einstellungsdialog -->
-    <string name="settings_title">Einstellungen</string>
-    <string name="settings_wifi_only">Nur im WLAN aktualisieren</string>
-    <string name="settings_update_now">Jetzt aktualisieren</string>
-    <string name="settings_close">Schließen</string>
-    <string name="settings_info">App-Version: %1$s\nInhalts-Version: %2$s\nInhalts-Stand: %3$s\nLetzte Prüfung: %4$s\nStatus: %5$s%6$s</string>
-    <string name="settings_none">–</string>
-    <string name="settings_pending">\nNeue Spiele-Inhalte bereit – werden beim nächsten Start aktiv (oder in der Oberfläche mit „Jetzt übernehmen“).</string>
-
-    <!-- Status -->
-    <string name="state_idle">aktuell</string>
-    <string name="state_checking">prüfe …</string>
-    <string name="state_downloading">lade …</string>
-    <string name="state_ready">Neue Inhalte bereit</string>
-    <string name="state_error">Fehler</string>
-    <string name="state_offline">offline</string>
-
-    <!-- App-Update (neue APK) -->
-    <string name="settings_check_app_update">App-Update suchen</string>
-    <string name="update_title">Neue App-Version</string>
-    <string name="update_message">Version %1$s ist verfügbar (installiert: %2$s).\n\nNeue Symbole, Anmeldung und Funktionen der App kommen nur mit dem Update. Die Spiele aktualisieren sich weiterhin von selbst.</string>
-    <string name="update_download">Herunterladen</string>
-    <string name="update_later">Später</string>
-    <string name="update_current">Die App ist auf dem neuesten Stand.</string>
-    <string name="update_check_failed">Update-Prüfung nicht möglich (keine Verbindung?).</string>
-
+    <string name="no_webview">Die Komponente „Android System WebView“ fehlt oder ist deaktiviert. Bitte im Play Store installieren bzw. aktivieren.</string>
     <string name="toast_no_browser">Kein Browser gefunden</string>
 </resources>

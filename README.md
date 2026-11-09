@@ -184,9 +184,9 @@ und **⤴ Teilen**. Dort stehen für jedes Spiel der **direkte Link** und der **
 
 - Aus einem eingebetteten Spiel führt „← Alle Spiele“ automatisch zurück zur Seite des Gastgebers (schließt das Overlay, `easygames:close`).
 
-## Android-App (offline, mit Sync über GitHub)
+## Android-App (nativ, Spiele einzeln laden, Sync über GitHub)
 
-Native Android-Hülle (Kotlin) um die Oberfläche, Quellen in `android/`. Alle Spiele und ihre Bibliotheken (three.js, PeerJS, QR-Code, Schrift) liegen auf dem Gerät; im WLAN lädt die App geänderte Dateien selbst von GitHub – ohne neues APK.
+Native App (Kotlin, Jetpack Compose) wie ein kleiner Spiele-Client, Quellen in `android/`: Bibliothek mit Kategorien, Suche, Weiterspielen und Spielzeit, Community (Konto, Freunde, Erfolge, Ranglisten, Chat), Anleitungen nativ. Jedes Spiel wird einzeln geladen und läuft danach offline; neue Spiele und Updates holt die App selbst von GitHub (Hinweis und Benachrichtigung, Updates automatisch) – ohne neues APK. Online und Mehrspieler über `cloud/fire-peer.js` und easygames-Links; Impressum und Datenschutz auf ricorewi.de.
 
 - Dateiliste mit Prüfsummen: `sync/manifest.json`, Spielekatalog mit Handbuch: `sync/catalog.json` (erzeugt von `node tools/build-sync.js`)
 - Bibliotheken für Offline: `vendor/` (`node tools/fetch-vendor.js`), Zuordnung `vendor/map.json`; Prüfung aller Spiele: `node tools/offline-audit.js`
