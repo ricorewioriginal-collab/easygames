@@ -812,6 +812,7 @@ addEventListener('keydown',e=>{if(mode!=='play')return;keys[e.code]=true;if(e.co
       const mv={ArrowLeft:-1,ArrowUp:-1,KeyA:-1,KeyW:-1,ArrowRight:1,ArrowDown:1,KeyD:1,KeyS:1}[e.code];if(mv){e.preventDefault();optSel((dlg.sel||0)+mv);return}
       if(['KeyE','Space','Enter','NumpadEnter'].includes(e.code)){e.preventDefault();if(ready&&bs[dlg.sel||0])bs[dlg.sel||0].click()}return}
     if(['KeyE','Space','Enter'].includes(e.code)){e.preventDefault();dlgAdvance()}return}
+  if(/^(Key[JKEQFTGCXRVBIL]|Digit[1-6]|Space|Arrow(Up|Down|Left|Right)|Enter|NumpadEnter|Backspace)$/.test(e.code))e.preventDefault();/* verarbeitet: Controller (gamepad.js) springt dann nicht zu Bildschirm-Knöpfen */
   switch(e.code){case'KeyJ':case'KeyK':startAttack();break;case'ShiftLeft':case'ShiftRight':case'Space':e.preventDefault();dodge();break;case'Digit1':skill1();break;case'Digit2':skill2();break;case'Digit3':case'KeyR':skill3();break;case'KeyE':interact();break;case'KeyQ':lockCycle();break;case'KeyF':doReaction();break;case'KeyT':deckOpen('spec');break;case'KeyG':formStart();break;case'KeyC':useTool();break;case'KeyX':if(X.deck.sub)deckBack();else toolNext();break;case'Digit4':ipUse(0);break;case'Digit5':ipUse(1);break;case'Digit6':ipUse(2);break;case'ArrowUp':e.preventDefault();deckMove(-1);break;case'ArrowDown':e.preventDefault();deckMove(1);break;case'Enter':case'NumpadEnter':deckExec();break;case'Backspace':deckBack();break;case'KeyV':toggleNaut();break;case'KeyB':cycleNaut();break;case'Escape':case'Tab':e.preventDefault();toggleMenu(true);break;case'KeyI':toggleMenu(true,'inv');break;case'KeyL':toggleMenu(true,'quest');break}});
 addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='KeyB')XT.setBlock(false)});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false;XT.setBlock(false)});
@@ -900,7 +901,11 @@ function interact(){if(!nearI||dlg.on||pl.dead)return;const o=nearI;sfx('ui');
 /* ================= Menü ================= */
 function toggleMenu(on,tab){menuOpen=on;$('menu').hidden=!on;if(on){mState.shop=false;renderMenu(tab||'quest');sfx('ui')}else{saveGame(true)}if(!on)for(const k in keys)keys[k]=false}
 const TABS=[['quest','📜','Aufgaben'],['travel','🌍','Weltreise'],['inv','🎒','Inventar'],['equip','🛡️','Ausrüstung'],['felli','🌿','Felli'],['skills','✨','Fähigkeiten'],['help','🎮','Steuerung'],['coop','👥','Koop'],['chron','📖','Chronik'],['camp','⛺','Camp'],['events','🎉','Events'],['home','🏡','Zuhause']];
+/* Kamera mit dem rechten Stick (gamepad.js liefert jedes Pad im Standard-Layout) */
+function padCam(dt){if(mode!=='play'||menuOpen||!navigator.getGamepads)return;let rx=0,ry=0;try{for(const g of navigator.getGamepads()){if(!g)continue;const x=g.axes[2]||0,y=g.axes[3]||0;if(Math.abs(x)>Math.abs(rx))rx=x;if(Math.abs(y)>Math.abs(ry))ry=y}}catch(e){return}
+  const dz=v=>Math.abs(v)<.18?0:(v-Math.sign(v)*.18)/.82;rx=dz(rx);ry=dz(ry);if(rx)camYaw-=rx*2.6*dt;if(ry)camPitch=clamp(camPitch+ry*1.5*dt,.08,1.1)}
 function controlsHTML(){const K=(a,b)=>`<div><b>${a}</b><span>${b}</span></div>`;
+  if(document.documentElement.classList.contains('eg-pad')&&window.EasyGamesPad&&EasyGamesPad.legend)return '<div class="ctl">'+EasyGamesPad.legend().map(l=>K('🎮 '+l[0],l[1])).join('')+K('🎮 Select + Start','Belegung einblenden')+'</div>';
   return '<div class="ctl">'+(TOUCH?K('🕹','Stick links: Bewegen')+K('👆','Rechts wischen: Kamera')+K('⚔️','Angriff (Kombo)')+K('💨','Ausweichen antippen, halten = Block (Nautilux: Turbo halten)')+K('🌀','Fähigkeit: tippen = einsetzen, halten = wechseln (Wirbel, Lichtstoß, Trank)')+K('✋','Aktion: Sprechen, Öffnen, Einsteigen; halten = Nautilux-Form')+K('🎯','Ziel: tippen = erfassen/wechseln, halten = aus')+K('⟡','Spezial: tippen = Werkzeug, halten = Team, Form, IP, Werkzeug')+K('▲','Reaktion: Aktion-Taste, wenn ▲ erscheint')+K('☰','Menü (oben links)'):K('WASD','Bewegen')+K('Maus','Kamera (ziehen)')+K('J','Angriff / Klick')+K('Shift','Ausweichen')+K('B','Block halten (kostet Mana)')+K('1 2 3','Fähigkeiten')+K('R','Heiltrank')+K('E','Sprechen / Öffnen')+K('Q','Ziel erfassen / wechseln')+K('F','Reaktion (wenn ▲ erscheint)')+K('↑ ↓ ⏎','Befehlsleiste (⌫ zurück)')+K('T','Team-Angriff')+K('G','Rissform')+K('4 5 6','IP-Techniken')+K('C / X','Werkzeug benutzen / wechseln')+K('Esc','Menü'))+'</div>'}
 function renderMenu(tab){mState.tab=tab;const t=$('tabs'),c=$('mcont');
   if(mState.shop){t.innerHTML='<b style="color:var(--gold)">🎒 '+(mState.shopName||'Finns Laden')+'</b>';c.innerHTML=`<div class="row"><span>Deine Splitter</span><span>💎 ${S.shards}</span></div><div class="row"><span>Heiltränke</span><span>🧪 ${S.potions}</span></div><div id="shopl"><button data-n="1" data-c="20"><span>🧪 Heiltrank</span><span>20 💎</span></button><button data-n="3" data-c="55"><span>🧪🧪🧪 3 Heiltränke</span><span>55 💎</span></button></div>`;
@@ -2481,6 +2486,7 @@ function extHud(dt){const ip=gearSet().w||gearSet().a||gearSet().c,rg=formOk(0),
   if(tg){gEl.querySelector('.tgb i').style.width=S.tg+'%';gEl.querySelector('#gTG').classList.toggle('full',S.tg>=100)}
   if(X.rx){const t=`▲ ${X.rx.n} <b>${TOUCH?'✋':'F'}</b>`;if(rxEl.innerHTML!==t)rxEl.innerHTML=t;rxEl.hidden=false}else rxEl.hidden=true;
   if(!TOUCH){hudT+=dt;if(X.deck.dirty||hudT>.3){hudT=0;deckRender()}}
+  padCam(dt);
   const sp=$('bSpI');if(sp){const ready=S.tg>=100||(S.rg>=100&&formOk(0)&&X.form.on<=0);const t=S.tools.length?TOOLS[S.tools[S.tool]].em:'⟡';if(sp.textContent!==t)sp.textContent=t;$('bSpec').classList.toggle('ready',ready)}}
 /* ---------------- Takt ---------------- */
 function extUpdate(dt,frozen){

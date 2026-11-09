@@ -14,6 +14,13 @@
  *   - Rechter Stick = Mauszeiger; solange er sichtbar ist, klickt A (gedrückt halten = ziehen). rs=stay: Zeiger bleibt sichtbar
  *     (für Spiele, die man fast nur per Klick spielt), rs=qe: rechter Stick = Q/E statt Zeiger, rs=none: aus.
  *   - Rechter Stick / A tippen auch für Touch-Spiele: neben Zeiger- und Maus-Ereignissen kommen echte Touch-Ereignisse (wie am Handy).
+ *   - Einheitlich für alle Spiele: Beschriftung und Bildschirm-Knöpfe je Eintrag – name=Taste[/Ersatz][:Text][@Selektor],
+ *     z. B. data-pad="a=KeyJ/Enter:Angriff@#bAtk b=Space:Ausweichen x=:Springen@#jump up=ArrowUp:Befehl right=Enter:Ausführen".
+ *     :Text erscheint in der Controller-Belegung (beim ersten Controller-Einsatz und mit Select + Start), @Selektor zeigt das
+ *     Knopf-Symbol (A/B/X/Y …) auf dem Bildschirm-Knopf; ohne Taste drückt der Controller-Knopf ihn (für Touch-Knöpfe).
+ *     up=/down=/left=/right= belegen das Steuerkreuz einzeln (Standard: Pfeiltasten).
+ *   - Controller-Modus: <html class="eg-pad"> und Ereignis „easygames:pad“ ({detail:{on}}) – Spiele können ihre Touch-Oberfläche
+ *     dann gegen Controller-Hinweise tauschen. EasyGamesPad.active(), .legend() ([[Symbol, Text, Name]]), .showLegend(ms).
  * Alle Controller-Arten: navigator.getGamepads() liefert immer das Standard-Layout (Xbox-Anordnung), auch bei Pads ohne
  *   „standard“-Zuordnung (Steuerkreuz als Achse/Hat, Trigger als Achse, Ruhelage-Abgleich gegen Stick-Drift) und mit eigener
  *   Belegung aus der Windows-App (window.EASYGAMES_PADMAPS) oder localStorage „easygames-padmaps“ ({ "<Pad-ID>": Belegung }).
@@ -140,12 +147,21 @@
   var opt = { ls: 'arrows', rs: 'cursor', nav: true };
   var DIRS = { arrows: ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'], wasd: ['KeyW', 'KeyS', 'KeyA', 'KeyD'], qe: ['', '', 'KeyQ', 'KeyE'] };
 
+  // Steuerkreuz (Standard: Pfeiltasten; up=/down=/left=/right= ändern einzelne Richtungen), Beschriftungen und Bildschirm-Knöpfe
+  var DPAD = DIRS.arrows.slice(), DN = { up: 0, down: 1, left: 2, right: 3 }, LABEL = {}, BIND = {};
   var me = doc.currentScript;
+  // Eintrag: name=Taste[/Ersatz][:Beschriftung][@Knopf-Selektor] – z. B. a=KeyJ/Enter:Angriff@#bAtk (Unterstrich = Leerzeichen).
+  // Ohne Taste (a=:Springen@#jump) drückt der Controller-Knopf den Bildschirm-Knopf (Touch-Spiele).
   (((me && me.getAttribute('data-pad')) || '') + ' ' + (root.EASYGAMES_PAD || '')).split(/\s+/).forEach(function (t) {
     if (!t) return;
     if (t === 'nonav') { opt.nav = false; return; }
-    var kv = t.split('='), k = kv[0], v = kv[1] === '-' ? '' : (kv[1] || '');
-    if (k in MAP) MAP[k] = v; else if (k === 'ls' || k === 'rs') opt[k] = v || 'none';
+    var i = t.indexOf('='); if (i < 0) return;
+    var k = t.slice(0, i), v = t.slice(i + 1), at = v.indexOf('@'), sel = '';
+    if (at >= 0) { sel = v.slice(at + 1); v = v.slice(0, at); }
+    var c = v.indexOf(':'); if (c >= 0) { if (v.slice(c + 1)) LABEL[k] = v.slice(c + 1).replace(/_/g, ' '); v = v.slice(0, c); }
+    if (v === '-') v = '';
+    if (sel) BIND[k] = sel;
+    if (k in MAP) MAP[k] = v; else if (k in DN) DPAD[DN[k]] = v; else if (k === 'ls' || k === 'rs') opt[k] = v || 'none';
   });
 
   // ---------- Tastatur-Ereignisse ----------
@@ -322,13 +338,16 @@
     var s = state(list), p = prev, i;
     prev = s;
     if (!p.b) return;   // erster Durchlauf: nur Zustand merken, damit ein schon gedrückter Knopf nichts auslöst
+    if (!padOn && (s.b.length || s.d.join('') !== '0000' || s.ls.join('') !== '0000' || Math.abs(s.rs[0]) > 0.4 || Math.abs(s.rs[1]) > 0.4)) setPad(true);
+    if (padOn && now > badgeT) { badgeT = now + 400; drawBadges(); }
+    if (s.b[8] && s.b[9] && !(p.b[8] && p.b[9])) { legend(legendEl && legendEl.style.display === 'block' ? 0 : 8000); releaseAll(); return; }   // Select + Start: Belegung zeigen
 
     // Steuerkreuz: Pfeiltasten; wenn das Spiel sie nicht verarbeitet -> Knopf-Navigation (mit Wiederholung beim Halten)
     for (i = 0; i < 4; i++) {
       if (s.d[i] && !p.d[i]) {
-        var used = send(DIRS.arrows[i], true);
+        var used = send(DPAD[i], true);
         if (opt.nav && !used) { navigate(i); navRep[i] = now + 400; } else if (used) clearRing();
-      } else if (!s.d[i] && p.d[i]) { send(DIRS.arrows[i], false); delete navRep[i]; }
+      } else if (!s.d[i] && p.d[i]) { send(DPAD[i], false); delete navRep[i]; }
       else if (s.d[i] && navRep[i] && now >= navRep[i] && focusEl) { navigate(i); navRep[i] = now + 140; }
     }
     // linker Stick
@@ -353,6 +372,7 @@
         if (i === 0 && cursor && cursorOn(now)) { aMode = 'mouse'; mouseDown = true; downEl = pointer('down', cx, cy); continue; }
         if (i === 0 && focusEl && activate()) { aMode = 'nav'; continue; }
         if (i === 0) aMode = 'key';
+        if (!code && BIND[name]) { pressEl(i, BIND[name], true); continue; }
         var alt = (code || '').split('/');
         alt2[i] = !send(alt[0], true) && alt[1] ? alt[1] : '';
         if (alt2[i]) send(alt2[i], true);
@@ -360,6 +380,7 @@
         if (i === 0 && aMode === 'mouse') { var up = pointer('up', cx, cy); mouseDown = false; if (up && downEl && !pointer.ate && (up === downEl || up.contains(downEl) || downEl.contains(up))) click(up, cx, cy); downEl = null; if (!STAY) cursorUntil = now + 4000; aMode = ''; continue; }
         if (i === 0 && aMode === 'nav') { aMode = ''; continue; }
         if (i === 0) aMode = '';
+        if (bound[i]) { pressEl(i, '', false); continue; }
         send((code || '').split('/')[0], false);
         if (alt2[i]) { send(alt2[i], false); alt2[i] = ''; }
       }
@@ -367,24 +388,79 @@
     if (focusEl) drawRing();
   }
   var BTN = [], alt2 = []; for (var n in NAMES) BTN[NAMES[n]] = n;
+
+  // ---------- Controller-Modus: Klasse eg-pad am <html>, Ereignis easygames:pad, Knopf-Symbole und Belegung ----------
+  // Spiele können damit ihre Touch-Oberfläche gegen Controller-Hinweise tauschen (html.eg-pad … bzw. addEventListener('easygames:pad')).
+  var padOn = false, badgeT = 0, badges = {}, legendEl = null, legendShown = false, legendTimer = 0, bound = {};
+  var GLYPH = { a: 'A', b: 'B', x: 'X', y: 'Y', lb: 'LB', rb: 'RB', lt: 'LT', rt: 'RT', select: '⧉', start: '☰', l3: 'L3', r3: 'R3', up: '↑', down: '↓', left: '←', right: '→', ls: 'L-Stick', rs: 'R-Stick' };
+  var GCOL = { a: '#16a34a', b: '#dc2626', x: '#2563eb', y: '#d97706' };
+  function setPad(on) {
+    if (on === padOn) return;
+    padOn = on;
+    try { doc.documentElement.classList.toggle('eg-pad', on); } catch (e) {}
+    try { root.dispatchEvent(new CustomEvent('easygames:pad', { detail: { on: on } })); } catch (e) {}
+    drawBadges();
+    if (on && !legendShown && Object.keys(LABEL).length) { legendShown = true; legend(7000); }
+    if (!on) legend(0);
+  }
+  function legendList() {
+    var out = [], k;
+    ['ls', 'rs', 'up', 'down', 'left', 'right'].concat(BTN).forEach(function (k) { if (LABEL[k]) out.push([GLYPH[k] || k, LABEL[k], k]); });
+    return out;
+  }
+  function legend(ms) {
+    clearTimeout(legendTimer);
+    if (!ms) { show(legendEl, false); return; }
+    var l = legendList(); if (!l.length) return;
+    if (!legendEl) legendEl = el('left:50%;top:auto;bottom:16px;transform:translateX(-50%);max-width:92vw;padding:10px 14px;border-radius:14px;background:rgba(8,10,20,.9);color:#fff;font:600 13px/1.55 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.5);text-align:left;columns:2 220px;column-gap:20px');
+    legendEl.innerHTML = '<div style="column-span:all;font-size:11px;letter-spacing:.06em;color:#7ff3ff;margin-bottom:4px">🎮 CONTROLLER · Select + Start blendet ein/aus</div>' +
+      l.map(function (x) { return '<div style="break-inside:avoid;white-space:nowrap"><b style="display:inline-block;min-width:26px;padding:0 5px;margin-right:6px;border-radius:7px;text-align:center;background:' + (GCOL[x[2]] || '#334155') + '">' + x[0] + '</b>' + x[1].replace(/</g, '&lt;') + '</div>'; }).join('');
+    show(legendEl, true);
+    legendTimer = root.setTimeout(function () { show(legendEl, false); }, ms);
+  }
+  function drawBadges() {
+    for (var k in BIND) {
+      var e = null; try { e = doc.querySelector(BIND[k]); } catch (x) {}
+      var b = badges[k], c = padOn && e && usable(e);
+      if (!c) { show(b, false); continue; }
+      if (!b) { b = badges[k] = el('min-width:20px;height:20px;padding:0 4px;margin:-6px 0 0 -14px;border-radius:10px;border:2px solid #fff;color:#fff;font:800 11px/16px system-ui,sans-serif;text-align:center;box-sizing:border-box;box-shadow:0 2px 6px rgba(0,0,0,.5);background:' + (GCOL[k] || '#334155')); b.textContent = GLYPH[k] || k; }
+      b.style.transform = 'translate(' + Math.round(c.r.right) + 'px,' + Math.round(c.r.top) + 'px)'; show(b, true);
+    }
+  }
+  // Controller-Knopf drückt einen Bildschirm-Knopf (Halten = gedrückt halten, wie mit dem Finger)
+  function pressEl(i, sel, down) {
+    if (down) {
+      var e = null; try { e = doc.querySelector(sel); } catch (x) {}
+      var c = e && usable(e); if (!c) return;
+      bound[i] = c; mouseDown = true; pointer('down', c.x, c.y);
+    } else if (bound[i]) {
+      var c2 = bound[i]; delete bound[i];
+      var up = pointer('up', c2.x, c2.y); mouseDown = false;
+      if (up && !pointer.ate) click(up, c2.x, c2.y);
+    }
+  }
   function start() {
     if (running || !pads().length) return;
     running = true; last = 0; prev = {}; root.requestAnimationFrame(frame);
   }
-  function stop() { running = false; releaseAll(); clearRing(); show(cursor, false); mouseDown = false; prev = {}; }
+  function stop() { running = false; releaseAll(); clearRing(); show(cursor, false); mouseDown = false; prev = {}; setPad(false); }
 
   root.addEventListener('gamepadconnected', start);
   root.addEventListener('gamepaddisconnected', function () { if (!pads().length) stop(); });
   root.addEventListener('blur', releaseAll);
   doc.addEventListener('visibilitychange', function () { if (doc.hidden) releaseAll(); });
   // echte Maus/Touch-Eingabe: Leuchtrahmen und Zeiger ausblenden
-  root.addEventListener('pointerdown', function (e) { if (e.isTrusted) { clearRing(); cursorUntil = 0; show(cursor, false); } }, true);
+  root.addEventListener('pointerdown', function (e) { if (e.isTrusted) { clearRing(); cursorUntil = 0; show(cursor, false); setPad(false); } }, true);
   start();   // Controller, der schon vor dem Laden verbunden war
 
   root.EasyGamesPad = {
-    version: 2, map: MAP, options: opt,
+    version: 3, map: MAP, dpad: DPAD, labels: LABEL, binds: BIND, options: opt,
     enabled: function (on) { if (on === undefined) return enabled; enabled = !!on; if (!enabled) { releaseAll(); clearRing(); show(cursor, false); } return enabled; },
     // Leuchtrahmen auf einen bestimmten Knopf setzen (z. B. die erste Taste einer Bildschirmtastatur)
-    focus: function (el) { if (!el) return; focusEl = el; if (running) drawRing(); }
+    focus: function (el) { if (!el) return; focusEl = el; if (running) drawRing(); },
+    // Controller-Modus (wird gerade mit dem Controller gespielt?) und Belegung mit Beschriftungen: [[Symbol, Text, Name], …]
+    active: function () { return padOn; },
+    legend: legendList,
+    showLegend: function (ms) { legend(ms === undefined ? 8000 : ms); }
   };
 })(window);

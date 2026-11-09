@@ -20,6 +20,17 @@ t.addEventListener('click', () => log.push('click'));
 </script>
 <script src="/gamepad.js"></script></body></html>`;
 
+// Spiel mit eigener Belegung, Beschriftungen und Bildschirm-Knöpfen (wie Zotik)
+const CFG = `<!doctype html><html><body style="margin:0;height:100vh">
+<button id="atk" style="position:fixed;right:20px;bottom:20px;width:60px;height:60px">⚔️</button>
+<button id="jump" style="position:fixed;right:100px;bottom:20px;width:60px;height:60px">⤴</button>
+<script>
+window.log = []; addEventListener('keydown', e => { log.push('key:' + e.code); if (e.code === 'KeyJ') e.preventDefault(); });
+addEventListener('easygames:pad', e => log.push('pad:' + e.detail.on));
+const j = document.getElementById('jump'); j.addEventListener('pointerdown', () => log.push('jumpdown')); j.addEventListener('click', () => log.push('jumpclick'));
+</script>
+<script src="/gamepad.js" data-pad="a=KeyJ/Enter:Angriff@#atk x=:Springen@#jump right=Enter:Ausführen ls=wasd:Bewegen"></script></body></html>`;
+
 // Nachgebauter Controller: window.fake = { id, mapping, buttons: [Zahl], axes: [Zahl] }
 const FAKE = `(() => {
   window.fake = null;
@@ -35,7 +46,8 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
 
 (async () => {
   const srv = http.createServer((q, r) => {
-    if (q.url.startsWith('/gamepad.js')) { r.setHeader('Content-Type', 'text/javascript'); return r.end(fs.readFileSync(path.join(ROOT, 'gamepad.js'))); }
+    if (q.url.startsWith('/gamepad.js')) { r.setHeader('Content-Type', 'text/javascript; charset=utf-8'); return r.end(fs.readFileSync(path.join(ROOT, 'gamepad.js'))); }
+    if (q.url.startsWith('/cfg')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(CFG); }
     r.setHeader('Content-Type', 'text/html'); r.end(q.url.startsWith('/only') ? '<script>window.EASYGAMES_PAD_NORMAL_ONLY=1</script><script src="/gamepad.js"></script>' : PAGE);
   }).listen(0);
   const url = 'http://127.0.0.1:' + srv.address().port + '/';
@@ -105,6 +117,26 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
   await q.goto(url + 'only');
   const s6 = await q.evaluate(() => ({ n: !!window.EasyGamesPadNormal, pad: !!window.EasyGamesPad, flag: !!window.EASYGAMES_PAD_NORMAL_ONLY }));
   ok(s6.n && !s6.pad && !s6.flag, 'Nur-Normalisierung: EasyGamesPadNormal ja, EasyGamesPad nein, Schalter wieder weg');
+
+  // 7) Einheitliche Belegung: Controller-Modus, Belegung mit Texten, Symbol auf dem Bildschirm-Knopf, Knopf ohne Taste drückt ihn, Steuerkreuz einzeln
+  p = await (await b.newContext({ viewport: { width: 800, height: 600 } })).newPage(); await p.addInitScript(FAKE); await p.goto(url + 'cfg');
+  await p.evaluate(() => plug({ id: 'Std', mapping: 'standard', buttons: Array(17).fill(0), axes: [0, 0, 0, 0] })); await frames(p);
+  const btn = async i => { const a = Array(17).fill(0); a[i] = 1; await set(p, { buttons: a }); await frames(p); await set(p, { buttons: Array(17).fill(0) }); await frames(p); };
+  await btn(0);
+  const s7 = await p.evaluate(() => ({ cls: document.documentElement.classList.contains('eg-pad'), log: log.slice(), leg: [...document.querySelectorAll('div[aria-hidden]')].map(d => d.style.display === 'block' ? d.textContent : '').join('|'), api: EasyGamesPad.legend().map(x => x[0] + '=' + x[1]).join(',') }));
+  ok(s7.cls && s7.log.includes('pad:true'), 'Controller-Modus: html.eg-pad und Ereignis easygames:pad');
+  ok(s7.log.includes('key:KeyJ') && !s7.log.includes('key:Enter'), 'A = KeyJ (verarbeitet, daher kein Enter)');
+  ok(/Angriff/.test(s7.leg) && /Springen/.test(s7.leg) && /Bewegen/.test(s7.leg), 'Belegung mit Texten eingeblendet');
+  ok(s7.api === 'L-Stick=Bewegen,→=Ausführen,A=Angriff,X=Springen', 'EasyGamesPad.legend(): ' + s7.api);
+  await frames(p, 30);
+  ok(await p.evaluate(() => [...document.querySelectorAll('div[aria-hidden]')].some(d => d.style.display === 'block' && d.textContent === 'A')), 'Symbol A auf dem Bildschirm-Knopf');
+  await btn(2);
+  ok(await p.evaluate(() => log.includes('jumpdown') && log.includes('jumpclick')), 'X ohne Taste drückt den Bildschirm-Knopf');
+  await btn(15);
+  ok(await p.evaluate(() => log.includes('key:Enter')), 'Steuerkreuz rechts = Enter (einzeln belegt)');
+  await p.mouse.click(10, 10); await frames(p);
+  ok(await p.evaluate(() => !document.documentElement.classList.contains('eg-pad') && log.includes('pad:false')), 'Maus/Touch beendet den Controller-Modus');
+  await p.close();
 
   await b.close(); srv.close();
   console.log(fails ? fails + ' Fehler' : 'alles ok');

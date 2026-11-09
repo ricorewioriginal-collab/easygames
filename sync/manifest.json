@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "b786efe16744",
- "generated": "2026-11-09T22:35:43+01:00",
- "commit": "452b53db754b800c24b210bf875eb747bfcfc2e1",
+ "version": "e6f72a57dc0c",
+ "generated": "2026-11-09T22:53:36+01:00",
+ "commit": "adf73b925621a6969777da432b6e2b1bbd8fc156",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5533,8 +5533,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 26978,
-   "h": "e6785b44fd5136e0fcb98d28c08b07bec8074a7ba176fbbba0b028f814141847"
+   "s": 33051,
+   "h": "45dbcb5cb40c032c753b1ee5565e0c0102cd0c562e1dadb40934aaaed95dacac"
   },
   {
    "p": "games.js",
@@ -8834,7 +8834,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256786,
-   "h": "fe5de81401feb55f91571d863f7b2e7460aa293288ee24b9aeefe131933e8172"
+   "h": "3d34053bd650f1bc11b111eccf521d44df0af23ca9c45a3576b39567de4d1695"
   },
   {
    "p": "taschi/card.svg",
@@ -10752,9 +10752,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-DSFCs2sJ.js",
-   "s": 1025150,
-   "h": "1581aa9c8f5afa18a0c23a2a0f1673ec66a596a6d1109c0eb67ce83be3958d56"
+   "p": "zotik/assets/index-0EEAYU0p.js",
+   "s": 1025883,
+   "h": "2a301a5d3f9c9fb18ae2ce10f987a2ded91571266774344ebfeffd527dde4665"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -10773,8 +10773,8 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 39301,
-   "h": "54fcfb311313678ca847bffbdfe034007cbfe3ad09816e2766bfe4ab4e5c765b"
+   "s": 39650,
+   "h": "ba0fb427a923e387d289f08a2646aed298871a4edc7f686d1e7e34034de200bb"
   },
   {
    "p": "zotik/manifest.webmanifest",
