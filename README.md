@@ -206,10 +206,13 @@ sh tools/install-emulationstation.sh                 # Linux, Steam Deck, RetroP
 powershell -ExecutionPolicy Bypass -File tools\install-emulationstation.ps1   # Windows
 # oder direkt (Python vorhanden):
 python3 tools/emulationstation.py install            # online; --mode offline mit lokaler Kopie des Repos
+python3 tools/emulationstation.py install --mode sync   # eigene Offline-Kopie, neue Spiele/Updates automatisch (Standard auf Batocera)
 python3 tools/emulationstation.py uninstall          # alles wieder entfernen
 ```
 
 Optionen (`--only`, `--exclude`, `--tv`, `--window`, `--browser`, `--frontend`, `--roms`, `--dry-run`) und Hinweise stehen auf der Homepage unter „Einbinden & Hilfe“ → EmulationStation. Test: `python3 tools/test-emulationstation.py`. Neue Spiele aus `games.js` werden beim erneuten `install` automatisch übernommen.
+
+**Batocera:** eigenes System „RicoReWi easygames“ (`/userdata/system/configs/emulationstation/es_systems_easygames.cfg`), alle Spiele offline aus `/userdata/system/easygames/` (über `sync/manifest.json`, nur Geändertes, mit Prüfsumme), Chromium als Flatpak, Beenden mit Select + Start. Neue Spiele und Updates holt `update` beim Hochfahren (`custom.sh`) und nebenbei beim Spielstart; die Spieleliste behält Favoriten und Spielzeiten. Anleitung: `einbinden.html#batocera`.
 
 ## Neues Spiel hinzufügen
 

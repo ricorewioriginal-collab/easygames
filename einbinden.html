@@ -558,8 +558,22 @@ powershell -ExecutionPolicy Bypass -File .\install-emulationstation.ps1</pre>
     <p><b>Linux, Steam Deck, RetroPie, macOS</b> (Terminal; Python wird bei Bedarf über den Paketmanager installiert):</p>
 <pre>curl -fsSLO https://ricorewioriginal-collab.github.io/easygames/tools/install-emulationstation.sh
 sh install-emulationstation.sh</pre>
-    <p>Danach EmulationStation neu starten. Das Skript erkennt das Frontend selbst. Alle Optionen (siehe unten) hängst du einfach an, zum Beispiel <code>sh install-emulationstation.sh --mode offline</code>. Mit <code>--frontend es-de|retropie|ports</code> und <code>--roms ORDNER</code> lässt sich das Frontend festlegen. Neue Spiele holst du, indem du das Startprogramm einfach erneut ausführst.</p>
+    <p>Danach EmulationStation neu starten. Das Skript erkennt das Frontend selbst (Batocera: siehe <a href="#batocera">unten</a>). Alle Optionen (siehe unten) hängst du einfach an, zum Beispiel <code>sh install-emulationstation.sh --mode offline</code>. Mit <code>--frontend es-de|retropie|ports</code> und <code>--roms ORDNER</code> lässt sich das Frontend festlegen. Neue Spiele holst du, indem du das Startprogramm einfach erneut ausführst.</p>
     <p>Hast du Python schon, geht es auch direkt: <a href="tools/emulationstation.py" download="emulationstation.py">emulationstation.py</a> laden und <code>python3 emulationstation.py install</code> ausführen.</p>
+    <h3 id="batocera">Batocera: eigenes System, offline, neue Spiele automatisch</h3>
+    <p>Auf <b>Batocera</b> (bootbarer USB-Stick) wird easygames ein <b>eigenes System</b> neben SNES, PlayStation &amp; Co. – keine Unterordner in „Ports“. Alle Spiele liegen auf dem Stick und laufen <b>ohne Internet</b>. Sobald eine Verbindung da ist (beim Hochfahren und nebenbei beim Spielstart), sucht der Stick nach <b>neuen Spielen und Updates</b>, lädt nur Geändertes (mit Prüfsumme) und frischt die Spieleliste auf; neue Spiele meldet EmulationStation mit einem Hinweis. Deine Emulatoren und ROMs bleiben wie gewohnt in den Batocera-Ordnern.</p>
+    <p>Einmalig einrichten (mit Internet), per SSH (<code>ssh root@batocera</code>) oder im Terminal (F1 → Anwendungen → Terminal):</p>
+<pre>curl -fsSLO https://ricorewioriginal-collab.github.io/easygames/tools/install-emulationstation.sh
+sh install-emulationstation.sh</pre>
+    <ul>
+      <li>Lädt alle Spiele (ca. 130 MB) nach <code>/userdata/system/easygames/</code>, legt das System „RicoReWi easygames“ an (<code>/userdata/system/configs/emulationstation/es_systems_easygames.cfg</code>, Spiele unter <code>/userdata/roms/easygames/</code>) und trägt die automatische Suche in <code>/userdata/system/custom.sh</code> ein (eigene Zeilen dort bleiben erhalten).</li>
+      <li>Der Browser <b>Chromium</b> wird einmalig als Flatpak installiert (nur PC-Version, x86_64). Speicherstände liegen in <code>/userdata/saves/easygames/</code>.</li>
+      <li>Erster Eintrag ist <b>„easygames – Startseite &amp; Online“</b>: Konto, Ranglisten und Online-Modus; Mitspieler treten per Link oder Code von überall bei.</li>
+      <li><b>Beenden</b> mit dem Controller: <b>Select + Start</b> (oder Hotkey + Start) gleichzeitig.</li>
+      <li>Von Hand prüfen: <code>python3 /userdata/roms/easygames/.easygames/emulationstation.py update</code>; entfernen: <code>python3 emulationstation.py uninstall</code>.</li>
+      <li>Den gleichen selbst aktualisierenden Offline-Modus gibt es auch für andere Frontends: <code>--mode sync</code>.</li>
+      <li>Nicht auf einem echten Batocera-Stick geprüft: getestet sind Einrichtung, Updates, neue und entfernte Spiele, Offline-Start im Browser und die Tastenkombination auf Linux.</li>
+    </ul>
     <h3>Offline-Variante</h3>
 <pre>git clone --depth 1 https://github.com/ricorewioriginal-collab/easygames
 python3 easygames/tools/emulationstation.py install --mode offline</pre>
@@ -567,7 +581,8 @@ python3 easygames/tools/emulationstation.py install --mode offline</pre>
     <h3>Optionen</h3>
     <div class="tw"><table>
       <tr><th>Option</th><th>Wirkung</th></tr>
-      <tr><td><code>--mode online|offline</code></td><td>Von der Homepage (Standard) oder aus lokaler Kopie spielen.</td></tr>
+      <tr><td><code>--mode online|offline|sync</code></td><td>Von der Homepage (Standard), aus einer Kopie des Repositories oder aus einer eigenen Offline-Kopie, die neue Spiele und Updates bei Internet automatisch lädt (Standard auf Batocera).</td></tr>
+      <tr><td><code>update</code></td><td>Im Modus <code>sync</code>: jetzt nach neuen Spielen und Updates suchen.</td></tr>
       <tr><td><code>--only id1,id2</code> / <code>--exclude id1,id2</code></td><td>Nur bestimmte Spiele einrichten bzw. auslassen. Die IDs zeigt <code>python3 emulationstation.py list</code>.</td></tr>
       <tr><td><code>--tv</code></td><td>Spiele mit Mehrspieler-Lobby öffnen direkt den QR-Code, damit sich Handys als Controller koppeln.</td></tr>
       <tr><td><code>--window</code></td><td>Im Fenster statt im Vollbild starten.</td></tr>
@@ -580,7 +595,7 @@ python3 easygames/tools/emulationstation.py install --mode offline</pre>
     <ul>
       <li>Browser unterstützen Controller (Gamepad-Schnittstelle). Viele Spiele erkennen ein Gamepad selbst; wo nicht, hilft ein Mapping auf Tasten, zum Beispiel mit <b>AntiMicroX</b> (Windows/Linux), <b>joy2key</b> (RetroPie) oder <b>Steam Input</b>.</li>
       <li><b>Handy als Controller:</b> Viele Mehrspieler-Spiele (Quiz, Rennen, Show-Spiele) koppeln Handys per QR-Code. Mit <code>--tv</code> erscheint der Code gleich beim Start – ideal am Fernseher.</li>
-      <li><b>Beenden:</b> Der Vollbild-Browser schließt mit <code>Alt+F4</code>. Auf Handhelds legst du das im Mapping auf eine Tastenkombination (zum Beispiel Select+Start).</li>
+      <li><b>Beenden:</b> Unter Linux (auch Batocera) mit <b>Select + Start</b> am Controller, sonst schließt der Vollbild-Browser mit <code>Alt+F4</code>.</li>
     </ul>
     <h3>Gut zu wissen</h3>
     <ul>
