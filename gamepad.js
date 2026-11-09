@@ -19,6 +19,8 @@
  *     :Text erscheint in der Controller-Belegung (beim ersten Controller-Einsatz und mit Select + Start), @Selektor zeigt das
  *     Knopf-Symbol (A/B/X/Y …) auf dem Bildschirm-Knopf; ohne Taste drückt der Controller-Knopf ihn (für Touch-Knöpfe).
  *     up=/down=/left=/right= belegen das Steuerkreuz einzeln (Standard: Pfeiltasten).
+ *     Nur Texte: data-pad-labels="a=Springen; b=Zurück; dpad=Auswählen; ls=Laufen" (gleiche Namen, dazu dpad, ls, rs).
+ *     data-pad="info": für Spiele mit eigener Controller-Steuerung – nichts wird nachgeahmt, nur Belegung, Symbole und Controller-Modus.
  *   - Controller-Modus: <html class="eg-pad"> und Ereignis „easygames:pad“ ({detail:{on}}) – Spiele können ihre Touch-Oberfläche
  *     dann gegen Controller-Hinweise tauschen. EasyGamesPad.active(), .legend() ([[Symbol, Text, Name]]), .showLegend(ms).
  * Alle Controller-Arten: navigator.getGamepads() liefert immer das Standard-Layout (Xbox-Anordnung), auch bei Pads ohne
@@ -155,6 +157,7 @@
   (((me && me.getAttribute('data-pad')) || '') + ' ' + (root.EASYGAMES_PAD || '')).split(/\s+/).forEach(function (t) {
     if (!t) return;
     if (t === 'nonav') { opt.nav = false; return; }
+    if (t === 'info') return;
     var i = t.indexOf('='); if (i < 0) return;
     var k = t.slice(0, i), v = t.slice(i + 1), at = v.indexOf('@'), sel = '';
     if (at >= 0) { sel = v.slice(at + 1); v = v.slice(0, at); }
@@ -163,6 +166,13 @@
     if (sel) BIND[k] = sel;
     if (k in MAP) MAP[k] = v; else if (k in DN) DPAD[DN[k]] = v; else if (k === 'ls' || k === 'rs') opt[k] = v || 'none';
   });
+  // Nur Beschriftungen (auch für Spiele mit eigener Controller-Steuerung): data-pad-labels="a=Springen; b=Zurück; dpad=Auswählen"
+  (((me && me.getAttribute('data-pad-labels')) || '')).split(';').forEach(function (t) {
+    var i = t.indexOf('='); if (i < 0) return;
+    var k = t.slice(0, i).trim().toLowerCase(), v = t.slice(i + 1).trim(); if (k && v) LABEL[k] = v;
+  });
+  // data-pad="info": keine Tasten-/Knopf-Nachahmung (das Spiel steuert selbst), nur Controller-Modus, Belegung und Knopf-Symbole
+  if (/(^|\s)info(\s|$)/.test((me && me.getAttribute('data-pad')) || '')) opt.info = true;
 
   // ---------- Tastatur-Ereignisse ----------
   var KEYS = { Enter: ['Enter', 13], Escape: ['Escape', 27], Space: [' ', 32], Tab: ['Tab', 9], Backspace: ['Backspace', 8], Delete: ['Delete', 46],
@@ -341,6 +351,7 @@
     if (!padOn && (s.b.length || s.d.join('') !== '0000' || s.ls.join('') !== '0000' || Math.abs(s.rs[0]) > 0.4 || Math.abs(s.rs[1]) > 0.4)) setPad(true);
     if (padOn && now > badgeT) { badgeT = now + 400; drawBadges(); }
     if (s.b[8] && s.b[9] && !(p.b[8] && p.b[9])) { legend(legendEl && legendEl.style.display === 'block' ? 0 : 8000); releaseAll(); return; }   // Select + Start: Belegung zeigen
+    if (opt.info) return;   // Spiel mit eigener Controller-Steuerung: nichts nachahmen
 
     // Steuerkreuz: Pfeiltasten; wenn das Spiel sie nicht verarbeitet -> Knopf-Navigation (mit Wiederholung beim Halten)
     for (i = 0; i < 4; i++) {
@@ -392,7 +403,7 @@
   // ---------- Controller-Modus: Klasse eg-pad am <html>, Ereignis easygames:pad, Knopf-Symbole und Belegung ----------
   // Spiele können damit ihre Touch-Oberfläche gegen Controller-Hinweise tauschen (html.eg-pad … bzw. addEventListener('easygames:pad')).
   var padOn = false, badgeT = 0, badges = {}, legendEl = null, legendShown = false, legendTimer = 0, bound = {};
-  var GLYPH = { a: 'A', b: 'B', x: 'X', y: 'Y', lb: 'LB', rb: 'RB', lt: 'LT', rt: 'RT', select: '⧉', start: '☰', l3: 'L3', r3: 'R3', up: '↑', down: '↓', left: '←', right: '→', ls: 'L-Stick', rs: 'R-Stick' };
+  var GLYPH = { a: 'A', b: 'B', x: 'X', y: 'Y', lb: 'LB', rb: 'RB', lt: 'LT', rt: 'RT', select: '⧉', start: '☰', l3: 'L3', r3: 'R3', up: '↑', down: '↓', left: '←', right: '→', dpad: '✚', ls: 'L-Stick', rs: 'R-Stick' };
   var GCOL = { a: '#16a34a', b: '#dc2626', x: '#2563eb', y: '#d97706' };
   function setPad(on) {
     if (on === padOn) return;
@@ -405,7 +416,7 @@
   }
   function legendList() {
     var out = [], k;
-    ['ls', 'rs', 'up', 'down', 'left', 'right'].concat(BTN).forEach(function (k) { if (LABEL[k]) out.push([GLYPH[k] || k, LABEL[k], k]); });
+    ['ls', 'rs', 'dpad', 'up', 'down', 'left', 'right'].concat(BTN).forEach(function (k) { if (LABEL[k]) out.push([GLYPH[k] || k, LABEL[k], k]); });
     return out;
   }
   function legend(ms) {
