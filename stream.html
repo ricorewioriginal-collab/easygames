@@ -82,11 +82,12 @@
   var f = el('iframe'); f.id = 'game'; f.title = g.title;
   f.allow = 'fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera; clipboard-write; web-share; screen-wake-lock';
   var src = new URL(g.path, location.href); if (okTpl) src.searchParams.set('eg_share', link);
-  f.src = src.href;
+  if (!P.get('tiktok')) f.src = src.href;   // mit TikTok-Steuerung startet stream-tiktok.js das Spiel (erst Stream-Spielstand einrichten)
   // Das Spiel möchte zur Übersicht zurück (easygames:close): im Stream einfach neu starten
   addEventListener('message', function (e) { if (e.source === f.contentWindow && e.data && e.data.type === 'easygames:close') f.src = src.href; });
   // für die TikTok-Steuerung (stream-tiktok.js, nur mit ?tiktok=…): Spiel, Bühne, Neustart
-  window.EG_STREAM = { game: g, frame: f, stage: st, restart: function () { f.src = src.href; } };
+  window.EG_STREAM = { game: g, frame: f, stage: st, restart: function () { f.src = src.href; }, start: function () { if (!f.getAttribute('src')) f.src = src.href; } };
+  if (P.get('tiktok')) setTimeout(function () { window.EG_STREAM.start(); }, 4000);   // Rückfall, falls stream-tiktok.js nicht lädt
   function qrBox(cls) {
     var b = el('div', 'qr' + (cls ? ' ' + cls : ''));
     var s = document.createElement('script'); s.src = 'vendor/qrcode-generator-1.4.4.js';

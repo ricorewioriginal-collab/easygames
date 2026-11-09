@@ -34,7 +34,7 @@ function send(sock, obj) { try { sock.write(frame(JSON.stringify(obj))); } catch
 function broadcast(obj) { for (const c of clients) send(c, obj); }
 function onMessage(sock, text) {
   let m; try { m = JSON.parse(text); } catch (e) { return; }
-  if (m.type === 'getConfig') { const c = readConfig(); if (c) send(sock, { type: 'config', config: c }); send(sock, { type: 'status', msg: status }); }
+  if (m.type === 'getConfig') { const c = readConfig(); if (c) send(sock, { type: 'config', config: c }); send(sock, { type: 'status', msg: status }); if (gifts.length) send(sock, { type: 'gifts', list: gifts }); }
   else if (m.type === 'setConfig' && m.config && typeof m.config === 'object' && JSON.stringify(m.config).length < 200000) {
     fs.writeFileSync(CONFIG, JSON.stringify(m.config, null, 1)); broadcast({ type: 'config', config: m.config }); log('Belegung gespeichert: ' + CONFIG);
   }
@@ -68,6 +68,7 @@ server.on('upgrade', (req, sock) => {
 });
 
 // ---------- Ereignisse ----------
+let gifts = [];   // aktuelle Geschenke-Liste von TikTok (Name, Diamanten, Bild) für die Einstellungen
 let status = DEMO ? 'Demo-Modus' : TEST ? 'Testmodus' : 'Warte auf LIVE von @' + USER;
 const log = s => console.log(new Date().toLocaleTimeString('de-DE') + '  ' + s);
 function readConfig() { try { return JSON.parse(fs.readFileSync(CONFIG, 'utf8')); } catch (e) { return null; } }
@@ -93,7 +94,12 @@ async function live(name) {
   c.on('like', d => emit({ type: 'like', user: who(d), count: d.likeCount || 1 }));
   c.on('follow', d => emit({ type: 'follow', user: who(d) }));
   c.on('share', d => emit({ type: 'share', user: who(d) }));
-  const go = () => c.connect().then(() => setStatus('Verbunden mit dem LIVE von @' + name)).catch(e => { setStatus('Noch nicht live oder nicht erreichbar (' + (e && e.message || e) + ') – neuer Versuch in 30 s'); setTimeout(go, 30000); });
+  const loadGifts = () => Promise.resolve((c.fetchAvailableGifts || c.getAvailableGifts || (() => []))).then(f => f.call(c)).then(list => {
+    gifts = (Array.isArray(list) ? list : []).map(g => ({ name: g.name || g.giftName, diamonds: g.diamond_count || g.diamondCount || 0, img: ((g.image && (g.image.url_list || g.image.urlList)) || [])[0] || '' }))
+      .filter(g => g.name).sort((a, b) => a.diamonds - b.diamonds);
+    if (gifts.length) { broadcast({ type: 'gifts', list: gifts }); log(gifts.length + ' Geschenke von TikTok geladen'); }
+  }).catch(() => {});
+  const go = () => c.connect().then(() => { setStatus('Verbunden mit dem LIVE von @' + name); loadGifts(); }).catch(e => { setStatus('Noch nicht live oder nicht erreichbar (' + (e && e.message || e) + ') – neuer Versuch in 30 s'); setTimeout(go, 30000); });
   c.on('disconnected', () => { setStatus('LIVE getrennt – neuer Versuch in 30 s'); setTimeout(go, 30000); });
   c.on('streamEnd', () => setStatus('LIVE beendet'));
   go();

@@ -93,12 +93,15 @@
         vibrationActuator: gp.vibrationActuator, hapticActuators: gp.hapticActuators, raw: gp };
     }
     // Virtueller Controller (z. B. TikTok-Steuerung im Stream-Overlay): erscheint wie ein echtes Standard-Pad
-    var virt = null;
+    var virt = null, troll = {};
+    function flip(g) { var b = g.buttons.slice(), t; t = b[12]; b[12] = b[13]; b[13] = t; t = b[14]; b[14] = b[15]; b[15] = t;
+      return { id: g.id, index: g.index, connected: g.connected, timestamp: g.timestamp, mapping: 'standard', buttons: b, axes: g.axes.map(function (v) { return -v; }), vibrationActuator: g.vibrationActuator }; }
     function fire(type) { try { var ev = new Event(type); Object.defineProperty(ev, 'gamepad', { value: virt }); root.dispatchEvent(ev); } catch (e) { } }
     function list() {
       var l, o = []; try { l = rawGet() || []; } catch (e) { l = []; }
       for (var i = 0; i < l.length; i++) o[i] = l[i] ? std(l[i]) : null;
       if (virt) { if (o[virt.index]) virt.index = Math.max(4, o.length); while (o.length < virt.index) o.push(null); o[virt.index] = virt; }
+      if (troll.invert) for (i = 0; i < o.length; i++) if (o[i] && o[i] !== virt) o[i] = flip(o[i]);   // TikTok-Streich: Steuerung des Spielers vertauscht
       return o;
     }
     try { Object.defineProperty(nav, 'getGamepads', { value: list, configurable: true, writable: true }); } catch (e) { return; }
@@ -115,6 +118,7 @@
         else if (!on && virt) { virt.connected = false; fire('gamepaddisconnected'); virt = null; }
         return virt;
       },
+      troll: troll,   // { invert: true } vertauscht die Steuerung echter Controller (TikTok-Streich)
       press: function (i, v) { this.virtual(true); virt.buttons[i] = btn(v); virt.timestamp = root.performance ? root.performance.now() : Date.now(); },
       axis: function (i, v) { this.virtual(true); virt.axes[i] = Math.max(-1, Math.min(1, v)); virt.timestamp = root.performance ? root.performance.now() : Date.now(); },
       setMap: function (id, map) {
