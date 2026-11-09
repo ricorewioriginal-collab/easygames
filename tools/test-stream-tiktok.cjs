@@ -30,7 +30,9 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     await s.click('[data-add="g"]');
     const last = s.locator('#ttGifts tr').last();
     await last.locator('[data-k="icon"]').fill('🌹'); await last.locator('[data-k="gift"]').fill('Perfume'); await last.locator('[data-k="action"]').fill('pad:RIGHT'); await last.locator('[data-k="label"]').fill('nach rechts');
-    if (SHOTS) await s.screenshot({ path: path.join(SHOTS, 'tiktok-einstellungen.png') });
+    await s.click('[data-gift="Money Gun"]'); await s.click('[data-troll="invert:10"]');
+    ok(await s.evaluate(() => { const r = [...document.querySelectorAll('#ttGifts tr')]; return r.some(x => x.querySelector('[data-k="gift"]').value === 'Money Gun' && x.querySelector('[data-k="action"]').value === 'invert:10'); }), 'Geschenk aus der Liste antippen, Streich zuweisen');
+    if (SHOTS) { await s.evaluate(() => document.querySelector('#ttTrolls').scrollIntoView()); await s.screenshot({ path: path.join(SHOTS, 'tiktok-einstellungen.png') }); }
     await s.click('#ttSave'); await sleep(300);
     const saved = JSON.parse(fs.readFileSync(cfgFile, 'utf8'));
     ok(saved.games && saved.games['deluxe-2048'] && saved.games['deluxe-2048'].gifts.some(g => g.gift === 'Perfume' && g.action === 'pad:RIGHT'), 'Einstellung je Spiel in der Brücke gespeichert');
@@ -62,6 +64,26 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     ok(await p.evaluate(k => EG_STREAM.frame.contentWindow.localStorage.getItem(k + 'testsave'), pre) === null, 'reset löscht den Spielstand (' + pre + '…)');
     await p.evaluate(() => EG_TIKTOK.restore()); await sleep(1500);
     ok(await p.evaluate(k => EG_STREAM.frame.contentWindow.localStorage.getItem(k + 'testsave'), pre) === '42', 'Wiederherstellen bringt ihn zurück');
+    // Streiche: echte Pfeiltaste vertauscht, Zeitlupe
+    await p.evaluate(() => { const w = EG_STREAM.frame.contentWindow; w.__keys = []; w.addEventListener('keydown', e => w.__keys.push(e.code)); EG_TIKTOK.run('invert:5'); });
+    await p.evaluate(() => { const w = EG_STREAM.frame.contentWindow; w.dispatchEvent(new w.KeyboardEvent('keydown', { code: 'ArrowLeft', key: 'ArrowLeft', bubbles: true })); });
+    await p.locator('#game').focus(); await p.keyboard.press('ArrowLeft'); await sleep(200);
+    ok(await p.evaluate(() => EG_STREAM.frame.contentWindow.__keys.includes('ArrowRight')), 'invert: echte Taste ← kommt als → im Spiel an');
+    const t1 = await p.evaluate(async () => { EG_TIKTOK.run('slow:3'); const w = EG_STREAM.frame.contentWindow, a = w.performance.now(); await new Promise(r => setTimeout(r, 1000)); return w.performance.now() - a; });
+    ok(t1 > 250 && t1 < 600, 'Zeitlupe: Spielzeit läuft langsamer (' + Math.round(t1) + ' ms in 1 s)');
+    // Eigener Stream-Spielstand: echte Stände bleiben unberührt, Cloud-Abgleich pausiert
+    await p.evaluate(k => { const w = EG_STREAM.frame.contentWindow; w.localStorage.setItem(k + 'echt', 'ECHT'); }, pre);
+    const cfg = JSON.parse(fs.readFileSync(cfgFile, 'utf8')); cfg.streamSave = true; cfg.games['deluxe-2048'].streamSave = true;
+    await new Promise(res => { const w = new WebSocket('ws://127.0.0.1:' + port); w.onopen = () => { w.send(JSON.stringify({ type: 'setConfig', config: cfg })); setTimeout(() => { w.close(); res(); }, 200); }; });
+    await sleep(2500);
+    const sv = await p.evaluate(k => ({ cur: localStorage.getItem(k + 'echt'), real: localStorage.getItem('eg-real:' + k + 'echt'), flag: !!localStorage.getItem('eg-stream-save:deluxe-2048') }), pre);
+    ok(sv.cur === null && sv.real === 'ECHT' && sv.flag, 'Stream-Spielstand: echter Stand beiseitegelegt, Cloud pausiert');
+    await p.evaluate(k => localStorage.setItem(k + 'echt', 'STREAM'), pre);
+    cfg.streamSave = false; cfg.games['deluxe-2048'].streamSave = false;
+    await new Promise(res => { const w = new WebSocket('ws://127.0.0.1:' + port); w.onopen = () => { w.send(JSON.stringify({ type: 'setConfig', config: cfg })); setTimeout(() => { w.close(); res(); }, 200); }; });
+    await sleep(2500);
+    const sv2 = await p.evaluate(k => ({ cur: localStorage.getItem(k + 'echt'), stream: localStorage.getItem('eg-stream:' + k + 'echt'), flag: !!localStorage.getItem('eg-stream-save:deluxe-2048') }), pre);
+    ok(sv2.cur === 'ECHT' && sv2.stream === 'STREAM' && !sv2.flag, 'aus: echter Stand zurück, Stream-Stand aufgehoben');
     for (let i = 0; i < 7; i++) await inject({ type: 'like', user: 'Ben', count: 15 }); await sleep(800);
     ok(/100 Likes/.test(await p.textContent('.tt-feed')), 'Like-Leiste löst bei 100 Likes aus');
     // Eingebettet (Windows-App): Skript direkt im Spielfenster, Geschenk wirkt dort

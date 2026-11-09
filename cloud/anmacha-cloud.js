@@ -117,6 +117,19 @@
   var prefixes = (s.dataset.prefix || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean);
   var idbPath = s.dataset.idb || '', idbFiles = (s.dataset.idbFiles || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean);
   if (!prefixes.length && !(idbPath && idbFiles.length)) return;
+  // Eigener Stream-Spielstand (TikTok-Steuerung, stream-tiktok.js): solange er aktiv ist, nie mit der Cloud abgleichen.
+  // Ist der Stream nicht mehr aktiv (kein Lebenszeichen seit 60 s, z. B. Absturz), den echten Spielstand zurücklegen.
+  try {
+    var egs = JSON.parse(window.localStorage.getItem('eg-stream-save:' + game) || 'null');
+    if (egs && Date.now() - egs.t < 60000) return;
+    if (egs) {
+      var L0 = window.localStorage, ks = [], i0;
+      for (i0 = 0; i0 < L0.length; i0++) ks.push(L0.key(i0));
+      ks.forEach(function (k) { if (prefixes.some(function (p) { return k.indexOf(p) === 0; })) { L0.setItem('eg-stream:' + k, L0.getItem(k)); L0.removeItem(k); } });
+      ks.forEach(function (k) { if (k.indexOf('eg-real:') === 0) { var r = k.slice(8); if (prefixes.some(function (p) { return r.indexOf(p) === 0; })) { L0.setItem(r, L0.getItem(k)); L0.removeItem(k); } } });
+      L0.removeItem('eg-stream-save:' + game);
+    }
+  } catch (e) { }
 
   var LS = window.localStorage, P = Storage.prototype;
   var rawSet = P.setItem, rawRemove = P.removeItem;
