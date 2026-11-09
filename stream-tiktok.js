@@ -26,12 +26,15 @@
   var URLWS = /^wss?:\/\//.test(P.get('tiktok')) ? P.get('tiktok') : 'ws://127.0.0.1:21213', SETUP = P.get('setup') === '1', GID = S.game.id;
   var BTN = { A: 0, B: 1, X: 2, Y: 3, LB: 4, RB: 5, LT: 6, RT: 7, SELECT: 8, START: 9, L3: 10, R3: 11, UP: 12, DOWN: 13, LEFT: 14, RIGHT: 15 };
   var ACTIONS = ['pad:A', 'pad:B', 'pad:X', 'pad:Y', 'pad:LB', 'pad:RB', 'pad:LT', 'pad:RT', 'pad:START', 'pad:SELECT', 'pad:UP', 'pad:DOWN', 'pad:LEFT', 'pad:RIGHT',
-    'key:Space', 'key:Enter', 'key:Escape', 'restart', 'say:Danke {user}! ❤️'];
+    'pad:A*5', 'key:Space', 'key:Enter', 'key:Escape', 'restart', 'reset', 'say:Danke {user}! ❤️', 'banner:{user} rettet das Spiel!',
+    'fx:shake', 'fx:spin', 'fx:flip:10', 'fx:mirror:15', 'fx:invert:10', 'fx:gray:10', 'fx:party:10', 'fx:zoom:8', 'fx:black:3', 'fx:rain:🌹',
+    'swap:15', 'freeze:5', 'chaos:8', 'restart+fx:shake'];
   var DEFAULT = {
     mode: 'chaos', voteSec: 3, legend: 'tr',
     commands: [['links', 'pad:LEFT'], ['rechts', 'pad:RIGHT'], ['hoch', 'pad:UP'], ['runter', 'pad:DOWN'], ['a', 'pad:A'], ['b', 'pad:B'], ['spring', 'pad:A'], ['start', 'pad:START']],
-    gifts: [{ gift: 'Rose', icon: '🌹', action: 'pad:A', label: 'A drücken' }, { gift: 'Finger Heart', icon: '🫰', action: 'pad:B', label: 'B drücken' },
-      { gift: 'Galaxy', icon: '🌌', action: 'restart', label: 'Neustart!' }],
+    gifts: [{ gift: 'Rose', icon: '🌹', action: 'pad:A+fx:rain:🌹', label: 'A drücken' }, { gift: 'Finger Heart', icon: '🫰', action: 'pad:B', label: 'B drücken' },
+      { gift: 'Doughnut', icon: '🍩', action: 'fx:shake+fx:rain:🍩', label: 'Erdbeben' }, { gift: 'Lion', icon: '🦁', action: 'swap:15', label: 'Steuerung vertauscht' },
+      { gift: 'Galaxy', icon: '🌌', action: 'banner:{user} startet neu!+restart', label: 'Neustart!' }, { gift: 'Universe', icon: '🪐', action: 'chaos:10+fx:party:10', label: 'Chaos-Modus' }],
     likes: { every: 100, action: 'pad:A', label: 'A drücken' },
     follow: 'say:Danke für den Follow, {user}! ❤️',
     games: {}
@@ -93,25 +96,98 @@
     var k = code === 'Space' ? ' ' : code.replace(/^Key/, '').replace(/^Digit/, ''), t = w.document.activeElement || w.document.body;
     try { t.dispatchEvent(new w.KeyboardEvent(down ? 'keydown' : 'keyup', { key: k.length === 1 ? k.toLowerCase() : k, code: code, bubbles: true, cancelable: true })); } catch (e) { }
   }
-  var queue = Promise.resolve();
+  var queue = Promise.resolve(), swapUntil = 0, freezeUntil = 0;
+  var SWAP = { LEFT: 'RIGHT', RIGHT: 'LEFT', UP: 'DOWN', DOWN: 'UP' };
+  function press(i, done) {
+    padApi(function (N) { N.press(i, 1); setTimeout(function () { N.press(i, 0); setTimeout(done, 90); }, 160); });
+    setTimeout(done, 900);   // falls das Spiel noch lädt: nicht hängen bleiben
+  }
+  // Effekte auf das Spiel (Stream: iframe, Windows-App: ganze Seite) und Einblendungen
+  function fxTarget() { return EMB ? document.documentElement : S.frame; }
+  var fxCss = document.createElement('style');
+  fxCss.textContent = '@keyframes ttShake{0%,100%{translate:0 0}20%{translate:-14px 6px}40%{translate:12px -8px}60%{translate:-10px -6px}80%{translate:10px 8px}}' +
+    '@keyframes ttSpin{to{rotate:360deg}}@keyframes ttRain{from{transform:translateY(-60px) rotate(0)}to{transform:translateY(110vh) rotate(540deg)}}' +
+    '@keyframes ttBan{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}15%{transform:translate(-50%,-50%) scale(1.08);opacity:1}85%{opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}' +
+    '.tt-rain{position:absolute;top:0;font-size:34px;animation:ttRain linear forwards}.tt-ban{position:absolute;left:50%;top:45%;width:88%;padding:16px 18px;border-radius:18px;text-align:center;' +
+    'background:linear-gradient(110deg,rgba(236,72,153,.95),rgba(139,92,246,.95));font-size:24px;font-weight:900;box-shadow:0 10px 40px rgba(0,0,0,.5);animation:ttBan 3.5s ease-out forwards}' +
+    '.tt-black{position:absolute;inset:0;background:#000;display:flex;align-items:center;justify-content:center;font-size:40px}';
+  document.head.appendChild(fxCss);
+  function fx(name, arg) {
+    var t = fxTarget(), sec = Math.max(1, Math.min(30, +arg || 0));
+    if (name === 'shake') { t.style.animation = 'none'; void t.offsetWidth; t.style.animation = 'ttShake .12s linear ' + Math.round((sec || 1.5) / .12); return; }
+    if (name === 'spin') { t.style.animation = 'ttSpin 1.2s ease-in-out'; setTimeout(function () { t.style.animation = ''; }, 1300); return; }
+    if (name === 'rain') { for (var k = 0; k < 26; k++) { var d = document.createElement('div'); d.className = 'tt-rain'; d.textContent = arg || '🌹'; d.style.left = Math.random() * 94 + '%'; d.style.animationDuration = (1.6 + Math.random() * 1.8) + 's'; d.style.animationDelay = Math.random() * 1.2 + 's'; S.stage.appendChild(d); setTimeout(d.remove.bind(d), 5000); } return; }
+    if (name === 'black') { var b = document.createElement('div'); b.className = 'tt-black'; b.textContent = '🙈'; S.stage.appendChild(b); setTimeout(b.remove.bind(b), (sec || 3) * 1000); return; }
+    var css = { flip: 'rotate(180deg)', mirror: 'scaleX(-1)', zoom: 'scale(1.6)', small: 'scale(.6)' }[name], filt = { invert: 'invert(1) hue-rotate(180deg)', gray: 'grayscale(1)', blur: 'blur(4px)', party: 'hue-rotate(160deg) saturate(2.5)' }[name];
+    if (css || filt) {
+      if (css) { t.style.transition = 'transform .5s'; t.style.transform = css; } else t.style.filter = filt;
+      setTimeout(function () { if (css) t.style.transform = ''; else t.style.filter = ''; }, (sec || 10) * 1000);
+    }
+  }
+  function banner(text) { var d = document.createElement('div'); d.className = 'tt-ban'; d.textContent = text; S.stage.appendChild(d); setTimeout(d.remove.bind(d), 3600); }
+  // Spielstand löschen: Schlüssel des Spiels (Speicher-Präfixe aus sync/catalog.json); Sicherung zum Wiederherstellen in den Einstellungen
+  var catalog = null;
+  function prefixes(cb) {
+    if (catalog) return cb(catalog);
+    fetch(EMB ? '/sync/catalog.json' : new URL('sync/catalog.json', location.href).href).then(function (r) { return r.json(); }).then(function (c) {
+      var g = (c.games || []).find(function (x) { return x.id === GID || (x.path || '').replace(/\/$/, '') === GID; });
+      catalog = g && g.cloud && g.cloud.prefix ? String(g.cloud.prefix).split(',').map(function (x) { return x.trim(); }).filter(Boolean) : [];
+      cb(catalog);
+    }).catch(function () { cb([]); });
+  }
+  function resetSave(user) {
+    prefixes(function (pre) {
+      var w = gameWin(); if (!w || !pre.length) { toast('Spielstand löschen geht bei diesem Spiel nicht'); return; }
+      var ls = w.localStorage, bak = {}, n = 0;
+      for (var k = ls.length - 1; k >= 0; k--) { var key = ls.key(k); if (pre.some(function (p) { return key.indexOf(p) === 0; })) { bak[key] = ls.getItem(key); n++; } }
+      try { localStorage.setItem('eg-tiktok-backup:' + GID, JSON.stringify({ t: Date.now(), keys: bak })); } catch (e) { }
+      Object.keys(bak).forEach(function (key) { ls.removeItem(key); });
+      banner('💥 ' + (user || 'Jemand') + ' hat den Spielstand gelöscht!');
+      setTimeout(function () { try { w.location.reload(); } catch (e) { S.restart(); } }, 1500);
+    });
+  }
+  function restoreSave() {
+    var b = null; try { b = JSON.parse(localStorage.getItem('eg-tiktok-backup:' + GID) || 'null'); } catch (e) { }
+    var w = gameWin(); if (!b || !w) return false;
+    Object.keys(b.keys).forEach(function (k) { w.localStorage.setItem(k, b.keys[k]); });
+    try { w.location.reload(); } catch (e) { S.restart(); }
+    return true;
+  }
+  function gameActions() { var w = gameWin(); try { return (w && w.EasyGamesStream && w.EasyGamesStream.actions) || []; } catch (e) { return []; } }
+  // Aktionen: mehrere mit „+“ verbinden, Wiederholung mit „*n“ (z. B. pad:A*5)
   function run(action, user, times) {
-    action = String(action || ''); times = Math.max(1, Math.min(20, times || 1));
+    String(action || '').split('+').forEach(function (one) { run1(one.trim(), user, times); });
+  }
+  function run1(action, user, times) {
+    times = Math.max(1, Math.min(20, times || 1));
+    var rep = /\*(\d+)$/.exec(action); if (rep) { action = action.slice(0, rep.index); times = Math.min(30, times * +rep[1]); }
     var m = /^(\w+):?(.*)$/.exec(action); if (!m) return;
-    var kind = m[1], arg = m[2];
+    var kind = m[1], arg = m[2], txt = arg.replace(/\{user\}/g, user || '');
+    if (Date.now() < freezeUntil && (kind === 'pad' || kind === 'key')) return;
     if (kind === 'restart') { try { S.frame.contentWindow.location.reload(); } catch (e) { S.restart(); } return; }
-    if (kind === 'say') { toast(arg.replace(/\{user\}/g, user || '')); return; }
+    if (kind === 'say') { toast(txt); return; }
+    if (kind === 'banner') { banner(txt); return; }
+    if (kind === 'fx') { var a = arg.split(':'); fx(a[0], a[1]); return; }
+    if (kind === 'reset') { resetSave(user); return; }
+    if (kind === 'swap') { swapUntil = Date.now() + Math.min(60, +arg || 15) * 1000; banner('🔀 Steuerung vertauscht!'); return; }
+    if (kind === 'freeze') { freezeUntil = Date.now() + Math.min(30, +arg || 5) * 1000; banner('❄️ Steuerung eingefroren!'); return; }
+    if (kind === 'chaos') { var end = Date.now() + Math.min(30, +arg || 8) * 1000, keys = Object.keys(BTN).slice(0, 4).concat(['UP', 'DOWN', 'LEFT', 'RIGHT']); banner('🌀 Chaos!'); (function tick() { if (Date.now() > end) return; run1('pad:' + keys[Math.floor(Math.random() * keys.length)], user); setTimeout(tick, 350); })(); return; }
+    if (kind === 'game') {
+      var ga = gameActions().find(function (x) { return x.id === arg; });
+      if (!ga) { toast('Dieses Spiel kennt „' + arg + '“ nicht'); return; }
+      for (var g = 0; g < Math.min(times, 5); g++) { try { ga.run(user); } catch (e) { } }
+      return;
+    }
     for (var n = 0; n < times; n++) queue = queue.then(function () {
       return new Promise(function (done) {
-        if (kind === 'pad' && BTN[arg.toUpperCase()] !== undefined) {
-          var i = BTN[arg.toUpperCase()];
-          padApi(function (N) { N.press(i, 1); setTimeout(function () { N.press(i, 0); setTimeout(done, 90); }, 160); });
-          setTimeout(done, 900);   // falls das Spiel noch lädt: nicht hängen bleiben
-        } else if (kind === 'key' && arg) { key(arg, true); setTimeout(function () { key(arg, false); setTimeout(done, 90); }, 160); }
+        var b = arg.toUpperCase(); if (Date.now() < swapUntil && SWAP[b]) b = SWAP[b];
+        if (kind === 'pad' && BTN[b] !== undefined) press(BTN[b], done);
+        else if (kind === 'key' && arg) { key(arg, true); setTimeout(function () { key(arg, false); setTimeout(done, 90); }, 160); }
         else done();
       });
     });
   }
-  window.EG_TIKTOK = { run: run, config: function () { return cfg; } };
+  window.EG_TIKTOK = { run: run, config: function () { return cfg; }, restore: restoreSave, gameActions: gameActions };
 
   // ---------- Ereignisse ----------
   function onEvent(ev) {
@@ -180,16 +256,20 @@
     '<label>Modus <select id="ttMode"><option value="chaos">Chaos – jeder Befehl sofort</option><option value="vote">Abstimmung</option></select></label>' +
     '<label>alle <input id="ttVote" type="number" min="1" max="30" style="width:60px"> s</label>' +
     '<label>Legende <select id="ttLeg"><option value="tr">oben rechts</option><option value="tl">oben links</option><option value="br">unten rechts</option><option value="bl">unten links</option><option value="off">aus</option></select></label></div>' +
-    '<h3>🎁 Geschenke</h3><div class="s">Name wie bei TikTok (z. B. Rose, Galaxy, Lion, Universe). Aktion: pad:A … pad:RIGHT (Controller), key:Space (Taste), restart (Neustart), say:Text.</div><table id="ttGifts"></table><button data-add="g">+ Geschenk</button>' +
+    '<h3>🎁 Geschenke</h3><div class="s">Name wie bei TikTok (z. B. Rose, Galaxy, Lion, Universe). Aktionen (mit + kombinierbar, *5 = fünfmal): pad:A … pad:RIGHT (Controller), key:Space (Taste), restart (Neustart), reset (Spielstand löschen!), fx:shake / spin / flip / mirror / invert / gray / party / zoom / black / rain:🌹 (Effekte, :Sekunden), swap:15 (Steuerung vertauscht), freeze:5, chaos:8, banner:Text, say:Text, game:… (Highlights des Spiels, siehe unten).</div><table id="ttGifts"></table><button data-add="g">+ Geschenk</button>' +
     '<h3>💬 Chat-Befehle</h3><table id="ttCmds"></table><button data-add="c">+ Befehl</button>' +
     '<h3>❤️ Likes und Follows</h3><div class="row"><label>alle <input id="ttLikeN" type="number" min="0" style="width:90px"> Likes</label><label>Aktion <input id="ttLikeA" list="ttAct"></label><label>Text <input id="ttLikeL"></label></div>' +
     '<div class="row"><label>Follow <input id="ttFollow" list="ttAct" style="width:340px"></label></div>' +
+    '<h3>⭐ Highlights dieses Spiels</h3><div class="s" id="ttGame">wird geladen …</div>' +
+    '<div class="row"><button id="ttRestore">↩ Gelöschten Spielstand wiederherstellen</button></div>' +
     '<div class="row" style="margin-top:16px"><button class="p" id="ttSave">Speichern</button><button id="ttReset">Standard</button><button id="ttClose">Vorschau ansehen</button><span id="ttMsg" class="s"></span></div>' + dl;
   var $ = function (s) { return P2.querySelector(s); };
   function giftRow(g) { return '<tr><td style="width:60px"><input data-k="icon" value="' + esc(g.icon || '🎁') + '"></td><td><input data-k="gift" placeholder="Geschenk" value="' + esc(g.gift) + '"></td><td><input data-k="action" list="ttAct" value="' + esc(g.action) + '"></td><td><input data-k="label" placeholder="Text in der Legende" value="' + esc(g.label || '') + '"></td><td style="width:120px"><button data-test>Test</button> <button data-del>✕</button></td></tr>'; }
   function cmdRow(c) { return '<tr><td><input data-k="0" placeholder="Wort im Chat" value="' + esc(c[0]) + '"></td><td><input data-k="1" list="ttAct" value="' + esc(c[1]) + '"></td><td style="width:120px"><button data-test>Test</button> <button data-del>✕</button></td></tr>'; }
   function panelFill() {
-    var e = scope === 'game' ? eff() : cfg;
+    var e = scope === 'game' ? eff() : cfg, ga = gameActions();
+    var dlE = P2.querySelector('#ttAct'); if (dlE) dlE.innerHTML = ACTIONS.concat(ga.map(function (a) { return 'game:' + a.id; })).map(function (a) { return '<option value="' + esc(a) + '">'; }).join('');
+    var gi = P2.querySelector('#ttGame'); if (gi) gi.innerHTML = ga.length ? ga.map(function (a) { return esc(a.icon || '⭐') + ' <code>game:' + esc(a.id) + '</code> – ' + esc(a.label); }).join('<br>') : 'Dieses Spiel hat keine eigenen Highlights – Effekte, Neustart und „reset“ (Spielstand löschen) gehen trotzdem.';
     $('#ttScope').value = scope; $('#ttMode').value = e.mode || 'chaos'; $('#ttVote').value = e.voteSec || 3; $('#ttLeg').value = e.legend || 'tr';
     $('#ttGifts').innerHTML = (e.gifts || []).map(giftRow).join(''); $('#ttCmds').innerHTML = (e.commands || []).map(cmdRow).join('');
     $('#ttLikeN').value = (e.likes && e.likes.every) || 0; $('#ttLikeA').value = (e.likes && e.likes.action) || ''; $('#ttLikeL').value = (e.likes && e.likes.label) || '';
@@ -218,8 +298,11 @@
       send({ type: 'setConfig', config: cfg }); drawLegend(); $('#ttMsg').textContent = online ? 'Gespeichert – gilt sofort auch im Stream.' : 'Gespeichert (nur in diesem Browser, Brücke fehlt).';
     }
     else if (t.id === 'ttReset') { editing = true; if (scope === 'game') { if (cfg.games) delete cfg.games[GID]; } else { var gs = cfg.games; cfg = clone(DEFAULT); cfg.games = gs || {}; } panelFill(); }
+    else if (t.id === 'ttRestore') { $('#ttMsg').textContent = restoreSave() ? 'Spielstand wiederhergestellt.' : 'Kein gelöschter Spielstand vorhanden.'; }
     else if (t.id === 'ttClose') { P2.style.display = 'none'; toast('Einstellungen: Seite ohne „&setup=1“ in OBS verwenden'); setTimeout(function () { P2.style.display = ''; }, 6000); }
   });
   $('#ttScope').addEventListener('change', function () { scope = this.value; panelFill(); });
   panelFill(); panelState();
+  S.frame.addEventListener && S.frame.addEventListener('load', function () { setTimeout(function () { if (!editing) panelFill(); }, 800); });
+  setTimeout(function () { if (!editing) panelFill(); }, 2500);
 })();

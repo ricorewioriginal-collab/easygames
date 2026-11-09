@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "465236d7e138",
- "generated": "2026-11-09T21:20:49+01:00",
- "commit": "bf285bf8a3052af489566faea19f6b6df000f118",
+ "version": "7aaa021a8f88",
+ "generated": "2026-11-09T21:31:35+01:00",
+ "commit": "264a3be33d135fa8f3ee043e42619fa69aa625e5",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1933,8 +1933,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/main.js",
-   "s": 29705,
-   "h": "c2b75536dcc8bfc49113563f40457220238df2deaea87ce1a613210c3ac2bd09"
+   "s": 30413,
+   "h": "018c2cf71e8890e5ad779d46f777ef6720709ffea8dcc64a67f7e14970d74674"
   },
   {
    "p": "anmacha-podcast-tycoon/src/minigames/f01-hoererpost.js",
@@ -5063,8 +5063,8 @@
   },
   {
    "p": "einbinden.html",
-   "s": 100143,
-   "h": "acadb22704a9edf8b703f18d11cbcc3eaddca8d3399a7a0286aa4e1f510b640f"
+   "s": 101819,
+   "h": "8df9340218083670c928c7f2609a57c05eb309a4444dde8ffc2a15cc1912b4e5"
   },
   {
    "p": "erfolge.html",
@@ -7918,8 +7918,8 @@
   },
   {
    "p": "ricopoly/js/game.js",
-   "s": 85315,
-   "h": "6d1f39c24b05c77ab3708d9b527a51e310027292bb0ec27fbedc0e03ce8817f0"
+   "s": 86186,
+   "h": "4dbcee19d92741952500c9966cd10a913162934a84276c159d6e8b9bc5c4aa72"
   },
   {
    "p": "ricopoly/js/i18n.js",
@@ -8834,7 +8834,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256786,
-   "h": "7f7c0a2162621f0b6507e0c982a53dc596eb84e4a1b159bd74da2a9ef2fa6151"
+   "h": "801ceeb00d26747c39f1088e74837274b3ece72ba6067f9c45b3d5b5ac0410fc"
   },
   {
    "p": "taschi/card.svg",

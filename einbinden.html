@@ -164,8 +164,14 @@
       <tr><td><code>pad:A</code> … <code>pad:Y</code>, <code>pad:LB</code>, <code>pad:RB</code>, <code>pad:LT</code>, <code>pad:RT</code>, <code>pad:START</code>, <code>pad:SELECT</code>, <code>pad:UP/DOWN/LEFT/RIGHT</code></td><td>Taste am virtuellen Controller – wirkt in allen Spielen mit Controller-Steuerung (<code>gamepad.js</code> oder eigene).</td></tr>
       <tr><td><code>key:Space</code>, <code>key:Enter</code>, <code>key:ArrowLeft</code> …</td><td>Tastendruck im Spiel (für Spiele ohne Controller).</td></tr>
       <tr><td><code>restart</code></td><td>Spiel neu starten (z. B. für Galaxy).</td></tr>
-      <tr><td><code>say:Danke {user}!</code></td><td>Einblendung, <code>{user}</code> = Name.</td></tr>
+      <tr><td><code>say:Danke {user}!</code>, <code>banner:{user} rettet das Spiel!</code></td><td>Kleine Einblendung bzw. großes Banner, <code>{user}</code> = Name.</td></tr>
+      <tr><td><code>reset</code></td><td><b>Spielstand löschen</b> und neu starten – mit Sicherung: „↩ Gelöschten Spielstand wiederherstellen“ in den Einstellungen.</td></tr>
+      <tr><td><code>fx:shake</code>, <code>fx:spin</code>, <code>fx:flip:10</code>, <code>fx:mirror:15</code>, <code>fx:invert:10</code>, <code>fx:gray:10</code>, <code>fx:party:10</code>, <code>fx:zoom:8</code>, <code>fx:black:3</code>, <code>fx:rain:🌹</code></td><td>Effekte: Erdbeben, Drehung, Bild auf dem Kopf/gespiegelt, Farben, Zoom, Schwarzbild, Emoji-Regen (Zahl = Sekunden).</td></tr>
+      <tr><td><code>swap:15</code>, <code>freeze:5</code>, <code>chaos:8</code></td><td>Steuerung vertauscht (links ↔ rechts), eingefroren, Chaos (zufällige Tasten).</td></tr>
+      <tr><td><code>game:pleite</code>, <code>game:geldregen</code> …</td><td><b>Highlights des Spiels</b> – z. B. Ricopoly und Podcast Tycoon: Pleite (Geld auf 0), Geldregen, Steuer, Fans. Welche ein Spiel hat, zeigen die Einstellungen.</td></tr>
     </table></div>
+    <p>Aktionen lassen sich mit <code>+</code> kombinieren (<code>banner:{user} startet neu!+restart</code>) und mit <code>*5</code> wiederholen (<code>pad:A*5</code>). Die Standard-Belegung bringt schon Effekte mit: 🍩 Doughnut = Erdbeben, 🦁 Lion = Steuerung vertauscht, 🌌 Galaxy = Neustart, 🪐 Universe = Chaos-Modus.</p>
+    <p><b>Eigene Highlights für ein Spiel</b>: Das Spiel legt <code>window.EasyGamesStream = { actions: [{ id, icon, label, run(user) }] }</code> an (Beispiele in <code>ricopoly/js/game.js</code> und <code>anmacha-podcast-tycoon/src/main.js</code>).</p>
     <ul>
       <li><b>Modus:</b> „Chaos“ – jeder Befehl sofort; „Abstimmung“ – alle paar Sekunden gewinnt der häufigste Befehl (besser bei vielen Zuschauern). Mehrere Geschenke (×5) lösen die Aktion mehrfach aus.</li>
       <li><b>Geschenk-Namen</b> wie bei TikTok (Rose, Finger Heart, Galaxy, Lion, Universe …). Reagiert eines nicht, steht der genaue Name im Fenster der Brücke bzw. im Protokoll der App.</li>

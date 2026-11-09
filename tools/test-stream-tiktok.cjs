@@ -29,17 +29,17 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     await s.selectOption('#ttScope', 'game');
     await s.click('[data-add="g"]');
     const last = s.locator('#ttGifts tr').last();
-    await last.locator('[data-k="icon"]').fill('🌹'); await last.locator('[data-k="gift"]').fill('Lion'); await last.locator('[data-k="action"]').fill('pad:RIGHT'); await last.locator('[data-k="label"]').fill('nach rechts');
+    await last.locator('[data-k="icon"]').fill('🌹'); await last.locator('[data-k="gift"]').fill('Perfume'); await last.locator('[data-k="action"]').fill('pad:RIGHT'); await last.locator('[data-k="label"]').fill('nach rechts');
     if (SHOTS) await s.screenshot({ path: path.join(SHOTS, 'tiktok-einstellungen.png') });
     await s.click('#ttSave'); await sleep(300);
     const saved = JSON.parse(fs.readFileSync(cfgFile, 'utf8'));
-    ok(saved.games && saved.games['deluxe-2048'] && saved.games['deluxe-2048'].gifts.some(g => g.gift === 'Lion' && g.action === 'pad:RIGHT'), 'Einstellung je Spiel in der Brücke gespeichert');
+    ok(saved.games && saved.games['deluxe-2048'] && saved.games['deluxe-2048'].gifts.some(g => g.gift === 'Perfume' && g.action === 'pad:RIGHT'), 'Einstellung je Spiel in der Brücke gespeichert');
 
     // Overlay (wie OBS): Legende, Chat-Befehl bewegt das Spiel, Geschenk mit Anzahl, Galaxy startet neu
     const p = await (await b.newContext({ viewport: { width: 432, height: 768 } })).newPage();
     const errs = []; p.on('pageerror', e => errs.push(e.message));
     await p.goto(base); await p.waitForSelector('.tt-leg'); await sleep(2500);
-    ok(/Galaxy/.test(await p.textContent('.tt-leg')) && /Lion/.test(await p.textContent('.tt-leg')), 'Geschenke-Legende im Overlay (mit Spiel-Belegung)');
+    ok(/Galaxy/.test(await p.textContent('.tt-leg')) && /Perfume/.test(await p.textContent('.tt-leg')), 'Geschenke-Legende im Overlay (mit Spiel-Belegung)');
     const board = () => p.evaluate(() => { const d = EG_STREAM.frame.contentWindow.document; return d.body.innerText + '|' + JSON.stringify(EG_STREAM.frame.contentWindow.localStorage); });
     await p.evaluate(() => { EG_STREAM.frame.contentWindow.__mark = 1; });
     const b0 = await board();
@@ -47,11 +47,21 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     const pad = await p.evaluate(() => { const w = EG_STREAM.frame.contentWindow, g = w.navigator.getGamepads()[3]; return !!(w.EasyGamesPadNormal && g && /virtuell/.test(g.id)); });
     ok(pad, 'virtueller Controller im Spiel angemeldet');
     ok((await board()) !== b0, 'Chat-Befehle bewegen das Spiel');
-    await inject({ type: 'gift', user: 'Leon', gift: 'Lion', count: 2 }); await sleep(1500);
-    ok(/Leon: 🌹 Lion ×2 → nach rechts/.test(await p.textContent('.tt-feed')), 'Geschenk mit Anzahl in der Ereignis-Liste');
+    await inject({ type: 'gift', user: 'Leon', gift: 'Perfume', count: 2 }); await sleep(1500);
+    ok(/Leon: 🌹 Perfume ×2 → nach rechts/.test(await p.textContent('.tt-feed')), 'Geschenk mit Anzahl in der Ereignis-Liste');
     if (SHOTS) await p.screenshot({ path: path.join(SHOTS, 'tiktok-overlay.png') });
     await inject({ type: 'gift', user: 'Emma', gift: 'Galaxy', count: 1 }); await sleep(2000);
     ok(await p.evaluate(() => EG_STREAM.frame.contentWindow.__mark === undefined), 'Galaxy startet das Spiel neu');
+    // Effekte, Spielstand löschen (mit Sicherung) und Wiederherstellen
+    await p.evaluate(() => EG_TIKTOK.run('fx:flip:5+fx:shake', 'Test')); await sleep(300);
+    ok(await p.evaluate(() => /rotate/.test(EG_STREAM.frame.style.transform) && /ttShake/.test(EG_STREAM.frame.style.animation)), 'Effekte: Bild gedreht und wackelt');
+    await p.evaluate(() => EG_TIKTOK.run('fx:flip:0'));
+    const pre = (JSON.parse(fs.readFileSync(path.join(ROOT, 'sync', 'catalog.json'), 'utf8')).games.find(g => g.id === 'deluxe-2048').cloud.prefix || '').split(',')[0];
+    await p.evaluate(k => EG_STREAM.frame.contentWindow.localStorage.setItem(k + 'testsave', '42'), pre);
+    await p.evaluate(() => EG_TIKTOK.run('reset', 'Mia')); await sleep(2500);
+    ok(await p.evaluate(k => EG_STREAM.frame.contentWindow.localStorage.getItem(k + 'testsave'), pre) === null, 'reset löscht den Spielstand (' + pre + '…)');
+    await p.evaluate(() => EG_TIKTOK.restore()); await sleep(1500);
+    ok(await p.evaluate(k => EG_STREAM.frame.contentWindow.localStorage.getItem(k + 'testsave'), pre) === '42', 'Wiederherstellen bringt ihn zurück');
     for (let i = 0; i < 7; i++) await inject({ type: 'like', user: 'Ben', count: 15 }); await sleep(800);
     ok(/100 Likes/.test(await p.textContent('.tt-feed')), 'Like-Leiste löst bei 100 Likes aus');
     // Eingebettet (Windows-App): Skript direkt im Spielfenster, Geschenk wirkt dort
@@ -59,8 +69,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     e.on('pageerror', x => errs.push('eingebettet: ' + x.message));
     await e.addInitScript('window.EG_TIKTOK_EMBED = ' + JSON.stringify({ ws: 'ws://127.0.0.1:' + port, id: 'deluxe-2048', title: '2048' }) + ';\n' + fs.readFileSync(path.join(ROOT, 'stream-tiktok.js'), 'utf8'));
     await e.goto('http://127.0.0.1:' + srv.address().port + '/deluxe-2048/'); await e.waitForSelector('.tt-leg'); await sleep(1500);
-    await inject({ type: 'gift', user: 'Noah', gift: 'Lion', count: 1 }); await sleep(1500);
-    ok(/Noah: 🌹 Lion/.test(await e.textContent('.tt-feed')) && await e.evaluate(() => !!(navigator.getGamepads()[3])), 'Windows-App (eingebettet): Legende, Ereignis und virtueller Controller im Spielfenster');
+    await inject({ type: 'gift', user: 'Noah', gift: 'Perfume', count: 1 }); await sleep(1500);
+    ok(/Noah: 🌹 Perfume/.test(await e.textContent('.tt-feed')) && await e.evaluate(() => !!(navigator.getGamepads()[3])), 'Windows-App (eingebettet): Legende, Ereignis und virtueller Controller im Spielfenster');
     ok(!errs.length, 'keine Fehler ' + errs.join(' | '));
   } finally { await b.close(); bridge.kill(); srv.close(); try { fs.unlinkSync(cfgFile); } catch (e) { } }
   console.log(fails ? fails + ' Fehler' : 'alles ok'); process.exit(fails ? 1 : 0);

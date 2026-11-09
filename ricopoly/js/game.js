@@ -1119,6 +1119,13 @@
   }
 
   // Für automatisierte Browser-Tests: lesender Zugriff auf den Spielstand
+  // Highlights für die TikTok-Steuerung im Stream (stream-tiktok.js): Aktion game:<id> – gilt für den Spieler am Zug
+  function streamMoney(f, text) { if (!M || !M.s || M.client) return false; var i = M.s.cur, p = M.s.players[i]; if (!p || p.out) return false; f(p); floatText(i, text); toast(text + ' – ' + (p.name || ''), ''); renderHUD(); autosave(true); }
+  window.EasyGamesStream = { actions: [
+    { id: 'pleite', icon: '💸', label: 'Pleite! Geld auf 0', run: function () { return streamMoney(function (p) { p.money = 0; }, '💸 Pleite!'); } },
+    { id: 'geldregen', icon: '💶', label: 'Geldregen +500', run: function () { return streamMoney(function (p) { p.money += 500; }, '💶 +500'); } },
+    { id: 'steuer', icon: '🧾', label: 'Steuer −200', run: function () { return streamMoney(function (p) { p.money -= 200; }, '🧾 −200'); } }
+  ] };
   window.RicoPolyDebug = { state: function () { return M && M.s; }, busy: function () { return !!(M && M.busy); }, act: function (a) { act(a); }, skip: skipAnims, profile: function () { return prof; }, stage: function () { return stage; },
     net: function () { return M && (M.host ? { role: 'host', fire: M.host.fire, conns: Object.keys(M.host.conns) } : M.client ? { role: 'guest', via: M.client.via, seat: M.seat } : null); } };
 
