@@ -8,7 +8,7 @@
 //
 // Stellt ws://127.0.0.1:<port> bereit (nur dieser Rechner). Nachrichten an das Overlay: {type:'event', ev}, {type:'config', config},
 // {type:'status', msg}. Vom Overlay: {type:'getConfig'}, {type:'setConfig', config}, {type:'inject', ev} (Test).
-// Ereignis-Format: {type:'chat'|'gift'|'like'|'follow'|'share', user, text, gift, giftId, count}
+// Ereignis-Format: {type:'chat'|'gift'|'like'|'follow'|'share'|'sub'|'join', user, text, gift, giftId, count, diamonds}
 // Ohne Zusatzpakete (eigener kleiner WebSocket-Server); nur der Live-Modus braucht tiktok-live-connector.
 import crypto from 'crypto';
 import fs from 'fs';
@@ -89,11 +89,13 @@ async function live(name) {
   c.on('gift', d => {
     const g = d.giftDetails || d.gift || {};
     if ((d.giftType || g.giftType) === 1 && !d.repeatEnd) return;   // Serien-Geschenk: erst am Ende zählen
-    emit({ type: 'gift', user: who(d), gift: d.giftName || g.giftName || g.name || '', giftId: d.giftId || g.id, count: d.repeatCount || 1 });
+    emit({ type: 'gift', user: who(d), gift: d.giftName || g.giftName || g.name || '', giftId: d.giftId || g.id, count: d.repeatCount || 1, diamonds: d.diamondCount || g.diamondCount || g.diamond_count || 0 });
   });
   c.on('like', d => emit({ type: 'like', user: who(d), count: d.likeCount || 1 }));
   c.on('follow', d => emit({ type: 'follow', user: who(d) }));
   c.on('share', d => emit({ type: 'share', user: who(d) }));
+  c.on('subscribe', d => emit({ type: 'sub', user: who(d) }));
+  c.on('member', d => emit({ type: 'join', user: who(d) }));
   const loadGifts = () => Promise.resolve((c.fetchAvailableGifts || c.getAvailableGifts || (() => []))).then(f => f.call(c)).then(list => {
     gifts = (Array.isArray(list) ? list : []).map(g => ({ name: g.name || g.giftName, diamonds: g.diamond_count || g.diamondCount || 0, img: ((g.image && (g.image.url_list || g.image.urlList)) || [])[0] || '' }))
       .filter(g => g.name).sort((a, b) => a.diamonds - b.diamonds);
@@ -111,7 +113,8 @@ function demo() {
   setInterval(() => {
     const r = Math.random(), u = pick(names);
     if (r < 0.6) emit({ type: 'chat', user: u, text: pick(words) });
-    else if (r < 0.8) emit({ type: 'like', user: u, count: 15 });
+    else if (r < 0.75) emit({ type: 'like', user: u, count: 15 });
+    else if (r < 0.8) emit({ type: pick(['follow', 'share', 'join']), user: u });
     else { const g = pick(gifts); if (g[0] !== 'Galaxy' || Math.random() < 0.2) emit({ type: 'gift', user: u, gift: g[0], count: g[1] }); }
   }, 1500);
 }

@@ -102,6 +102,8 @@
       for (var i = 0; i < l.length; i++) o[i] = l[i] ? std(l[i]) : null;
       if (virt) { if (o[virt.index]) virt.index = Math.max(4, o.length); while (o.length < virt.index) o.push(null); o[virt.index] = virt; }
       if (troll.invert) for (i = 0; i < o.length; i++) if (o[i] && o[i] !== virt) o[i] = flip(o[i]);   // TikTok-Streich: Steuerung des Spielers vertauscht
+      if (troll.block) for (i = 0; i < o.length; i++) if (o[i] && o[i] !== virt) o[i] = { id: o[i].id, index: o[i].index, connected: true, timestamp: o[i].timestamp, mapping: 'standard',   // Steuerung weg
+        buttons: o[i].buttons.map(function () { return { pressed: false, touched: false, value: 0 }; }), axes: o[i].axes.map(function () { return 0; }) };
       return o;
     }
     try { Object.defineProperty(nav, 'getGamepads', { value: list, configurable: true, writable: true }); } catch (e) { return; }
@@ -118,7 +120,7 @@
         else if (!on && virt) { virt.connected = false; fire('gamepaddisconnected'); virt = null; }
         return virt;
       },
-      troll: troll,   // { invert: true } vertauscht die Steuerung echter Controller (TikTok-Streich)
+      troll: troll,   // { invert: true } vertauscht, { block: true } sperrt die Steuerung echter Controller (TikTok-Streiche)
       press: function (i, v) { this.virtual(true); virt.buttons[i] = btn(v); virt.timestamp = root.performance ? root.performance.now() : Date.now(); },
       axis: function (i, v) { this.virtual(true); virt.axes[i] = Math.max(-1, Math.min(1, v)); virt.timestamp = root.performance ? root.performance.now() : Date.now(); },
       setMap: function (id, map) {
