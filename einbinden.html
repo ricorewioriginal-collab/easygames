@@ -143,7 +143,7 @@
 
   <section id="tiktok">
     <h2>🎁 TikTok LIVE steuert das Spiel</h2>
-    <p>Deine Zuschauer steuern jedes easygames-Spiel mit <b>Kommentaren</b>, <b>Geschenken</b>, <b>Likes</b> und <b>Follows</b> – kein Spiel muss dafür umgebaut werden. Beispiel: „links“, „rechts“, „spring“ im Chat, 🌹 Rose = A drücken, 🌌 Galaxy = Spiel startet neu, alle 100 Likes ein Sprung. Alles ist frei einstellbar, für alle Spiele oder je Spiel. Im Bild erscheinen die <b>Geschenke-Legende</b> (welches Geschenk was macht), die letzten Ereignisse („Leon: 🌹 Rose ×2 → A drücken“) und eine Like-Leiste.</p>
+    <p>Deine Zuschauer steuern jedes easygames-Spiel mit <b>Kommentaren</b>, <b>Geschenken</b>, <b>Likes</b>, <b>Follows</b>, <b>Teilen</b> und <b>Abos</b> – kein Spiel muss dafür umgebaut werden. Beispiel: „links“, „rechts“, „spring“ im Chat, 🌹 Rose = A drücken, 🌌 Galaxy = Spiel startet neu, alle 100 Likes ein Sprung. Alles ist frei einstellbar, für alle Spiele oder je Spiel. Im Bild erscheinen die <b>Geschenke-Legende</b> (welches Geschenk was macht), die letzten Ereignisse („Leon: 🌹 Rose ×2 → A drücken“) und eine Like-Leiste.</p>
     <h3>Weg 1: Windows-App (am einfachsten)</h3>
     <ol>
       <li><a href="https://www.ricorewi-radio.de/cms/api.php?action=app_download&amp;file=easygames-Setup-x64.exe">easygames für Windows</a> installieren und links unten auf <b>„🎁 TikTok LIVE“</b> klicken.</li>
@@ -158,6 +158,17 @@
       <li>In OBS / TikTok LIVE Studio als Browserquelle: <code>https://ricorewioriginal-collab.github.io/easygames/stream.html?game=SPIEL&amp;tiktok=1</code> (SPIEL = Ordnername, z. B. <code>anmacha-quiz</code>). Zum Spielen in OBS „Interagieren“ nutzen.</li>
       <li>Belegung: dieselbe Adresse mit <code>&amp;setup=1</code> im normalen Browser öffnen, einstellen, <b>Speichern</b> – OBS übernimmt es sofort. Fragt der Browser nach Zugriff auf lokale Geräte: erlauben.</li>
     </ol>
+    <h3>Formate und Ansichten (OBS, TikTok LIVE Studio)</h3>
+    <p>In den Einstellungen baut <b>„📺 Overlay &amp; Ansichten“</b> die passende Adresse zum Kopieren (mit Vorlagen für TikTok LIVE Studio und OBS, hochkant und quer).</p>
+    <div class="tw"><table>
+      <tr><th>Parameter</th><th>Wirkung</th></tr>
+      <tr><td><code>format=9x16</code> (Standard), <code>format=16x9</code></td><td>Hochkant (Handy-LIVE) oder quer (PC-LIVE). Die Einblendungen passen sich an (quer neben der Seitenleiste).</td></tr>
+      <tr><td><code>layout=frame</code> (Standard), <code>badge</code>, <code>full</code></td><td>Rahmen mit Titel und QR-Code, Spiel mit kleinem QR oder nur das Spiel randlos.</td></tr>
+      <tr><td><code>view=all</code> (Standard)</td><td>Alles in einer Quelle: Spiel, Streiche und Einblendungen.</td></tr>
+      <tr><td><code>view=game</code> + <code>view=info</code></td><td><b>Zwei Quellen</b>: „Nur Spiel“ (führt die Aktionen aus, zum Spielen „Interagieren“) und darüber durchsichtig „Nur Einblendungen“ – Legende und Ereignisse lassen sich so frei verschieben und skalieren. Beide mit gleichem Format und Rahmen.</td></tr>
+      <tr><td><code>view=legend</code>, <code>view=feed</code>, <code>view=top</code></td><td>Nur Geschenke-Legende, nur Ereignisse oder nur Top-Fans als eigene Quelle (durchsichtig).</td></tr>
+    </table></div>
+    <p>In der Windows-App nimmst du einfach das Spielfenster auf; Einstellungen, Streiche und Effekte sind dieselben.</p>
     <h3>Aktionen</h3>
     <div class="tw"><table>
       <tr><th>Aktion</th><th>Wirkung</th></tr>
@@ -169,6 +180,8 @@
       <tr><td><code>fx:shake</code>, <code>fx:spin</code>, <code>fx:flip:10</code>, <code>fx:mirror:15</code>, <code>fx:invert:10</code>, <code>fx:gray:10</code>, <code>fx:party:10</code>, <code>fx:zoom:8</code>, <code>fx:black:3</code>, <code>fx:rain:🌹</code></td><td>Effekte: Erdbeben, Drehung, Bild auf dem Kopf/gespiegelt, Farben, Zoom, Schwarzbild, Emoji-Regen (Zahl = Sekunden).</td></tr>
       <tr><td><code>swap:15</code>, <code>freeze:5</code>, <code>chaos:8</code></td><td>Steuerung vertauscht (links ↔ rechts), eingefroren, Chaos (zufällige Tasten).</td></tr>
       <tr><td><code>invert:10</code>, <code>lag:10</code>, <code>slow:10</code>, <code>fast:10</code>, <code>blind:8</code>, <code>popup</code></td><td><b>Streiche gegen den Spieler – in allen Spielen</b>: seine eigene Steuerung (Tastatur und Controller) vertauscht, Eingaben verzögert, Zeitlupe, Turbo, Licht aus (nur ein kleiner Lichtkegel), Werbe-Popup zum Wegklicken.</td></tr>
+      <tr><td><code>nokeys:5</code>, <code>drift:8</code>, <code>bomb:20</code>, <code>fog:10</code>, <code>drunk:10</code>, <code>crash</code>, <code>scare</code></td><td>Steuerung weg (Tastatur, Maus, Touch und Controller), Sturm schiebt die Figur, <b>Bombe</b> (der Chat muss „retten“ schreiben – sonst Neustart; Wort und Anzahl einstellbar), Nebel, Betrunken, Fake-Absturz, Jumpscare.</td></tr>
+      <tr><td><code>tilt:10</code>, <code>dance:10</code>, <code>ghost:8</code>, <code>blur:8</code>, <code>fx:small:8</code>, <code>fx:rain:💩</code></td><td>Bild schief, tanzend, unsichtbar, verschwommen, winzig, Emoji-Regen.</td></tr>
       <tr><td><code>game:pleite</code>, <code>game:geldregen</code> …</td><td><b>Highlights des Spiels</b> – z. B. Ricopoly und Podcast Tycoon: Pleite (Geld auf 0), Geldregen, Steuer, Fans. Welche ein Spiel hat, zeigen die Einstellungen.</td></tr>
     </table></div>
     <p>Aktionen lassen sich mit <code>+</code> kombinieren (<code>banner:{user} startet neu!+restart</code>) und mit <code>*5</code> wiederholen (<code>pad:A*5</code>). Die Standard-Belegung bringt schon Effekte mit: 🍩 Doughnut = Erdbeben, 🦁 Lion = Steuerung vertauscht, 🌌 Galaxy = Neustart, 🪐 Universe = Chaos-Modus.</p>
@@ -176,6 +189,8 @@
     <p><b>Eigener Stream-Spielstand:</b> In den Einstellungen „💾 Eigener Stream-Spielstand“ einschalten (für alle oder ein Spiel). Dann spielt der Stream auf einem eigenen Spielstand – Streiche wie „Spielstand löschen“ treffen deine echten und deine Google-Cloud-Spielstände nicht, und solange er aktiv ist, wird nichts mit der Cloud abgeglichen. Nach dem Stream liegt wieder dein echter Spielstand da (spätestens beim nächsten Spielstart). Spiele, die zusätzlich IndexedDB nutzen, behalten dort ihren Stand.</p>
     <p><b>Eigene Highlights für ein Spiel</b>: Das Spiel legt <code>window.EasyGamesStream = { actions: [{ id, icon, label, run(user) }] }</code> an (Beispiele in <code>ricopoly/js/game.js</code> und <code>anmacha-podcast-tycoon/src/main.js</code>).</p>
     <ul>
+      <li><b>Zuschauer:</b> Follow, Teilen, Abo und Beitritt lösen eigene Aktionen aus; <b>🏆 Top-Fans</b> zeigt die drei größten Spender (Diamanten); Chat-Befehle gehen auch mit „!“ (z. B. <code>!links</code>), eine <b>Pause je Zuschauer</b> verhindert Spam.</li>
+      <li><b>Je Spiel frei einstellbar:</b> oben „Belegung für: nur dieses Spiel“ wählen – alles (Geschenke, Chat, Likes, Streiche, Spielstand) gilt dann nur dort; „Standard“ entfernt die eigene Belegung wieder.</li>
       <li><b>Modus:</b> „Chaos“ – jeder Befehl sofort; „Abstimmung“ – alle paar Sekunden gewinnt der häufigste Befehl (besser bei vielen Zuschauern). Mehrere Geschenke (×5) lösen die Aktion mehrfach aus.</li>
       <li><b>Geschenk-Namen</b> wie bei TikTok (Rose, Finger Heart, Galaxy, Lion, Universe …). Reagiert eines nicht, steht der genaue Name im Fenster der Brücke bzw. im Protokoll der App.</li>
       <li>TikTok LIVE hat 2–5 Sekunden Verzögerung: Am besten passen ruhige Spiele (Quiz, Ricopoly, Mahjong, Memory, Werwolf, Puzzle).</li>

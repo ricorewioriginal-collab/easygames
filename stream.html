@@ -50,12 +50,13 @@
 (function () {
   'use strict';
   // Parameter: game=<id> | format=9x16 (Standard) oder 16x9 | layout=frame (Titel + QR, Standard), full (nur Spiel), badge (Spiel + kleiner QR)
+  //            view=all | game (nur Spiel) | info, legend, feed, top (nur TikTok-Einblendungen, durchsichtig – zweite Quelle in OBS)
   //            qr=0 (ohne QR) | bg=clear (durchsichtig für OBS) | w=<Breite der Bühne in CSS-Pixeln> | share=<Adresse für den QR, {id} = Spiel>
   var P = new URLSearchParams(location.search), $ = function (s) { return document.querySelector(s); };
   var GAMES = window.EASYGAMES_GAMES || (typeof EASYGAMES_GAMES !== 'undefined' ? EASYGAMES_GAMES : []);
   var land = /^(16x9|16:9|landscape|quer)$/i.test(P.get('format') || ''), layout = /^(full|badge)$/.test(P.get('layout')) ? P.get('layout') : 'frame';
-  var showQr = P.get('qr') !== '0', st = $('#stage');
-  if (P.get('bg') === 'clear') document.documentElement.classList.add('clear');
+  var showQr = P.get('qr') !== '0', st = $('#stage'), noGame = !!P.get('tiktok') && /^(info|legend|feed|top)$/.test(P.get('view') || '');
+  if (P.get('bg') === 'clear' || noGame) document.documentElement.classList.add('clear');
   // Bühne in CSS-Pixeln: 9:16 wie ein Handy (432 × 768), 16:9 wie ein PC (1280 × 720); per w anpassbar
   var W = Math.max(320, Math.min(2560, parseInt(P.get('w'), 10) || (land ? 1280 : 432))), H = Math.round(land ? W * 9 / 16 : W * 16 / 9);
   st.style.width = W + 'px'; st.style.height = H + 'px';
@@ -75,6 +76,11 @@
     st.style.display = 'block'; st.appendChild(pk); return;
   }
   document.title = g.title + ' – Stream-Overlay';
+  if (noGame) {   // nur Einblendungen: gleiche Bühne/Positionen wie die Spiel-Quelle, aber ohne Spiel (spart Leistung)
+    st.className = layout !== 'frame' ? 'full' : land ? 'l' : 'p'; st.style.display = 'block';
+    window.EG_STREAM = { game: g, frame: { contentWindow: null }, stage: st, noGame: true, restart: function () { }, start: function () { } };
+    return;
+  }
   // Link für den QR-Code: Spiel auf der easygames-Homepage oder auf der einbindenden Seite (share)
   var tpl = P.get('share') || '', okTpl = /^https:\/\/[^\s"'<>]+$/i.test(tpl), link = '';
   if (okTpl) link = tpl.replace(/\{id\}/g, encodeURIComponent(g.id));
