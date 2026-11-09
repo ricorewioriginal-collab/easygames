@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "11437b28cb8e",
- "generated": "2026-11-09T23:37:17+01:00",
- "commit": "56bb95643ae27623f38f833230a25020e6130de2",
+ "version": "0f9ed55f4662",
+ "generated": "2026-11-09T23:58:42+01:00",
+ "commit": "fd9a5324ff4ed006a0ce06484f402725e25a5fc9",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -48,8 +48,8 @@
   },
   {
    "p": "FunkhausReality/index.html",
-   "s": 9499,
-   "h": "7a7b07b448a8cae854fd994183838ad85ca04c10b29c355402e975aff2e5c032"
+   "s": 9559,
+   "h": "4eedbea207b09399d7db5e3a4aa4a05d25739c0d72cfdc7325bde1beb47ff70f"
   },
   {
    "p": "FunkhausReality/logo.png",
@@ -208,8 +208,8 @@
   },
   {
    "p": "MachMichAus/index.html",
-   "s": 9359,
-   "h": "f3e1f612329a3645859cd1343309b70486bbff714e47e23c1198a06ff9c2565d"
+   "s": 9429,
+   "h": "2e4bf9c2d84af2636f041ae555a524bd18a969e1b902152a638f23bb637adcd5"
   },
   {
    "p": "MachMichAus/logo.png",
@@ -3998,8 +3998,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 109655,
-   "h": "6c38dea6b5bb6046188029eb9a501d83758c154b6b20c719b5b6d700b605a1c6"
+   "s": 109802,
+   "h": "d172760b9787db4f3db336708ad67c8944cccfcd61c482ab8f4cb6f009b75782"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -5703,8 +5703,8 @@
   },
   {
    "p": "groove-arena/index.html",
-   "s": 19738,
-   "h": "e3a2b950e74a264fb249e6e2fd16a360b27ac9e7a3cc7a3e386181a5796a635c"
+   "s": 19874,
+   "h": "60588e9689d85ca5f977e9d229098b45aef0b10113d7f10d485175e8f70a37d5"
   },
   {
    "p": "groove-arena/js/app.js",
@@ -6563,8 +6563,8 @@
   },
   {
    "p": "konfetti-party/index.html",
-   "s": 13037,
-   "h": "1dcaa41347d53bbcc8cc507099ded13e8afdf8b878a758691f34ba9d156d5c49"
+   "s": 13149,
+   "h": "9a0bb975c396e0aa766beddcbd422eb2739c25aaf8a77ae1fa2827967025ab5c"
   },
   {
    "p": "konfetti-party/js/app.js",
@@ -7393,8 +7393,8 @@
   },
   {
    "p": "partyverse/app/index.html",
-   "s": 804,
-   "h": "f015814790f8544174045bacf1d8610dd86f06ee985178f13a9ecde6cc0d5064"
+   "s": 940,
+   "h": "8a3356353072cbf61f1d711b4e454d9113a796580fa863baf7581f33f9a2902e"
   },
   {
    "p": "partyverse/card.jpg",
@@ -7743,8 +7743,8 @@
   },
   {
    "p": "radio-maze/index.html",
-   "s": 5922,
-   "h": "5e1a56ef298c1e315d8cbb89f3638f12123f5694e3d12431dc94dc6d70bbbcca"
+   "s": 6036,
+   "h": "b2aa9ba9d8983997db7730a1938706a0f43e42edb609c4190bea4ec507054592"
   },
   {
    "p": "radio-maze/logic.js",
@@ -8068,8 +8068,8 @@
   },
   {
    "p": "ricoville/index.html",
-   "s": 1940,
-   "h": "dabfa2025273f4dff8bf74feec605454e6f66fb1eb67ad1c9516c99eeab0020b"
+   "s": 2146,
+   "h": "97b9eec2dc3578fccebb75a3bd1146a204bd096e899b282b6a33d982554eefca"
   },
   {
    "p": "ricoville/manifest.webmanifest",
@@ -8108,8 +8108,8 @@
   },
   {
    "p": "riftzone/app/index.html",
-   "s": 1131,
-   "h": "242713218dbb10810e41e883479dddf2dc925ea6ead787b2c52b1cbb498c4507"
+   "s": 1454,
+   "h": "f8ce68653e32bff240758767761581031d57a6fd0f897ab3ba7dc6142ad5968e"
   },
   {
    "p": "riftzone/card.png",
@@ -8118,8 +8118,8 @@
   },
   {
    "p": "riftzone/client/index.html",
-   "s": 1023,
-   "h": "68ec5304779076c63f334c21a87665ae18512b0cc739bff72ff8c5210e90b4a3"
+   "s": 1346,
+   "h": "a17bb1f68535b733c239d210d5eced350f75f223e0d486873378f0ac53eef783"
   },
   {
    "p": "riftzone/client/public/favicon.svg",
@@ -8168,8 +8168,8 @@
   },
   {
    "p": "riftzone/index.html",
-   "s": 4771,
-   "h": "4a9855cd13739cd806d421d656885e955f223669fc5aca9d178db520104eb5d6"
+   "s": 4451,
+   "h": "75cb80bd24105933505f019645708edecd3559f1f6db9c882af75605385d669a"
   },
   {
    "p": "riftzone/manifest.webmanifest",
@@ -8834,7 +8834,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256786,
-   "h": "52946746b9b27bdb5e95ee230e0b70f076017040f31556b56f12df218c5fc879"
+   "h": "1c97c355225292516824166192e59348a26eacb9b31f4c7fb1ddcd255f9048e8"
   },
   {
    "p": "taschi/card.svg",
@@ -9653,8 +9653,8 @@
   },
   {
    "p": "turbokick/app/index.html",
-   "s": 672,
-   "h": "796f5f0ae62d68f37c5c35cce13ed53b0ae4cba77b40db8a35b945afd1e99ca2"
+   "s": 797,
+   "h": "f4575f44bb6772400e0cb1e976b2fcf37bcd97cbb901e22a669144668326b773"
   },
   {
    "p": "turbokick/card.png",
