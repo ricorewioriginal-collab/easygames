@@ -45,6 +45,7 @@
 <div id="stage"></div>
 <script src="games.js"></script>
 <script src="device.js"></script>
+<script src="stream-tiktok.js" defer></script>
 <script>
 (function () {
   'use strict';
@@ -84,6 +85,8 @@
   f.src = src.href;
   // Das Spiel möchte zur Übersicht zurück (easygames:close): im Stream einfach neu starten
   addEventListener('message', function (e) { if (e.source === f.contentWindow && e.data && e.data.type === 'easygames:close') f.src = src.href; });
+  // für die TikTok-Steuerung (stream-tiktok.js, nur mit ?tiktok=…): Spiel, Bühne, Neustart
+  window.EG_STREAM = { game: g, frame: f, stage: st, restart: function () { f.src = src.href; } };
   function qrBox(cls) {
     var b = el('div', 'qr' + (cls ? ' ' + cls : ''));
     var s = document.createElement('script'); s.src = 'vendor/qrcode-generator-1.4.4.js';

@@ -92,7 +92,15 @@
       return { id: gp.id, index: gp.index, connected: gp.connected, timestamp: gp.timestamp, mapping: 'standard', buttons: out.b, axes: out.a,
         vibrationActuator: gp.vibrationActuator, hapticActuators: gp.hapticActuators, raw: gp };
     }
-    function list() { var l, o = []; try { l = rawGet() || []; } catch (e) { l = []; } for (var i = 0; i < l.length; i++) o[i] = l[i] ? std(l[i]) : null; return o; }
+    // Virtueller Controller (z. B. TikTok-Steuerung im Stream-Overlay): erscheint wie ein echtes Standard-Pad
+    var virt = null;
+    function fire(type) { try { var ev = new Event(type); Object.defineProperty(ev, 'gamepad', { value: virt }); root.dispatchEvent(ev); } catch (e) { } }
+    function list() {
+      var l, o = []; try { l = rawGet() || []; } catch (e) { l = []; }
+      for (var i = 0; i < l.length; i++) o[i] = l[i] ? std(l[i]) : null;
+      if (virt) { if (o[virt.index]) virt.index = Math.max(4, o.length); while (o.length < virt.index) o.push(null); o[virt.index] = virt; }
+      return o;
+    }
     try { Object.defineProperty(nav, 'getGamepads', { value: list, configurable: true, writable: true }); } catch (e) { return; }
     // gamepadconnected liefert ebenfalls das Standard-Layout (für Spiele, die e.gamepad.mapping prüfen)
     ['gamepadconnected', 'gamepaddisconnected'].forEach(function (t) {
@@ -101,6 +109,14 @@
     root.EasyGamesPadNormal = {
       version: 1, raw: function () { try { return rawGet() || []; } catch (e) { return []; } }, std: std, auto: auto,
       maps: function () { return maps(); },
+      /** Virtueller Controller an/aus; press(i, wert) drückt Knopf i (0–16), axis(i, wert) setzt Achse i (0–3). */
+      virtual: function (on) {
+        if (on && !virt) { virt = { id: 'easygames virtueller Controller (STANDARD GAMEPAD)', index: 3, connected: true, mapping: 'standard', timestamp: 0, buttons: [], axes: [0, 0, 0, 0] }; for (var i = 0; i < 17; i++) virt.buttons[i] = btn(0); fire('gamepadconnected'); }
+        else if (!on && virt) { virt.connected = false; fire('gamepaddisconnected'); virt = null; }
+        return virt;
+      },
+      press: function (i, v) { this.virtual(true); virt.buttons[i] = btn(v); virt.timestamp = root.performance ? root.performance.now() : Date.now(); },
+      axis: function (i, v) { this.virtual(true); virt.axes[i] = Math.max(-1, Math.min(1, v)); virt.timestamp = root.performance ? root.performance.now() : Date.now(); },
       setMap: function (id, map) {
         var m = {}; try { m = JSON.parse(root.localStorage.getItem(KEY) || '{}') || {}; } catch (e) { }
         if (map) m[id] = map; else delete m[id];

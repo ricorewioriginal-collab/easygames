@@ -1,1 +1,4 @@
 __pycache__/
+tools/tiktok-config.json
+tools/node_modules/
+tools/package*.json
