@@ -1,6 +1,6 @@
 # Schatzfieber – Die Insel der Herzen (Quelle)
 
-3D-Open-World-Abenteuer ab 18 mit Schatzsuche, Rätseln und Romanzen. Vite + TypeScript + Three.js, keine externen Bilder oder Modelle – Insel, Pflanzen, Häuser, Menschen, Texturen und Klang entstehen im Code.
+3D-Open-World-Abenteuer mit Schatzsuche, Rätseln und Romanzen. Vite + TypeScript + Three.js, keine externen Bilder oder Modelle – Insel, Pflanzen, Häuser, Menschen, Texturen und Klang entstehen im Code.
 
 ```
 npm install            # einmalig
@@ -23,4 +23,4 @@ node tests/e2e.mjs [Screenshot-Ordner] [Basis-URL]   # Browser-Test gegen den ge
 
 ## Regeln für Inhalte
 
-Alle Figuren sind erwachsen (21+). Romanzen nur bei passender Orientierung (Figur fühlt sich zum Geschlecht der Spielfigur hingezogen und die Spielfigur datet das Geschlecht der Figur), sonst Freundschaft. Keine Nacktheit, keine expliziten Szenen: Küsse werden gezeigt, Nächte blenden ins Schwarze über. Altersabfrage beim ersten Start (`schatzfieber-age`).
+Alle Figuren sind erwachsen (21+). Romanzen nur bei passender Orientierung (Figur fühlt sich zum Geschlecht der Spielfigur hingezogen und die Spielfigur datet das Geschlecht der Figur), sonst Freundschaft. Keine Nacktheit, keine expliziten Szenen: Küsse werden gezeigt, Nächte blenden ins Schwarze über.

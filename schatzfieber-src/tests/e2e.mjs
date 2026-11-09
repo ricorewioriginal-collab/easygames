@@ -1,4 +1,4 @@
-// Schatzfieber – Browser-Test (Playwright): Altersabfrage, Titel, Figurenerstellung, Ankunft, Gespräch mit Jonas (Schlüssel),
+// Schatzfieber – Browser-Test (Playwright): Titel, Figurenerstellung, Ankunft, Gespräch mit Jonas (Schlüssel),
 // Strandhaus (Tagebuch), Lea (Karte), Laden (Laterne), Höhle der Gezeiten komplett (Kiste, Schloss, Truhen, Ausgang),
 // Sofia (Taucherbrille), Handy-Reiter, Szenen (Kuss, Nacht), Nacht-Beleuchtung, Pause/Zurücksetzen, Handy-Ansicht.
 // Start: Server im easygames-Ordner (Port 8766), dann: node schatzfieber-src/tests/e2e.mjs [Screenshot-Ordner] [Basis-URL]
@@ -33,14 +33,9 @@ async function goTo(x, z, yaw = 0) {
 const pressE = async () => { await p.keyboard.press('KeyE'); await frames(3); };
 const prompt = () => ev(() => (document.getElementById('prompt').hidden ? '' : document.getElementById('prompt').textContent));
 
-// ---------- Altersabfrage, Titel, Figur ----------
+// ---------- Titel, Figur ----------
 await p.goto(BASE + 'schatzfieber/');
-await p.waitForSelector('#sAge.on', { timeout: 240000 });
-ok((await p.textContent('#sAge')).includes('18'), 'Altersabfrage 18+ erscheint');
-await shot('alter');
-await p.click('#ageYes');
-await p.waitForSelector('#sTitle.on');
-ok(await ev(() => localStorage.getItem('schatzfieber-age') === '1'), 'Altersbestätigung gespeichert');
+await p.waitForSelector('#sTitle.on', { timeout: 240000 });
 await shot('titel');
 await p.click('[data-a="new"]');
 await p.waitForSelector('#sCreate.on');
@@ -208,7 +203,7 @@ await p.close();
 const m = await ctx.newPage();
 await m.setViewportSize({ width: 390, height: 780 });
 m.on('pageerror', (e) => errs.push('PAGE(mobil) ' + e.message));
-await m.goto(BASE + 'schatzfieber/?age=1');
+await m.goto(BASE + 'schatzfieber/');
 await m.waitForSelector('#sTitle.on', { timeout: 240000 });
 ok(await m.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Handy: kein seitliches Scrollen');
 if (OUT) await m.screenshot({ path: `${OUT}/sf-mobil.jpg`, quality: 82, timeout: 120000 });

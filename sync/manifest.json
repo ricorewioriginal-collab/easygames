@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "ae395e5ad2fe",
- "generated": "2026-11-08T22:38:43+01:00",
- "commit": "19bdca7b8ce3f80d9e6a7c97928bbcbb060a2a18",
+ "version": "3fbca3bf506d",
+ "generated": "2026-11-09T00:56:59+01:00",
+ "commit": "1b767dd2d6721d0a0db492d33450ef0e2f33a0d2",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4648,8 +4648,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3625,
-   "h": "699d8018cc33e0f1f0b0056dfbda46f0412a342e4366eadacc817cbdb30a0597"
+   "s": 3466,
+   "h": "b01e63c8cdb5d7b069d1f61b19c55e4317a9abe2e4f834da6d22ea3bf12d93e9"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -5538,8 +5538,8 @@
   },
   {
    "p": "games.js",
-   "s": 58040,
-   "h": "4ad1aea98eb9fe29393301f27af6949f31ed08c3dd33d98e5b42f44679d47f70"
+   "s": 58034,
+   "h": "84fc86250c75bb09d640e88ff9b9bd0251becbe9637efafbe55f43da118ada6d"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5768,8 +5768,8 @@
   },
   {
    "p": "guides.js",
-   "s": 172109,
-   "h": "22f939406af42f7bd5132d6e294cdeaad7c85e14ea2ee869512c6079be40dd42"
+   "s": 172103,
+   "h": "1bd9e87696e3008d81655b85d463d26c141455509a6a3aa11d46460768a1979e"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6148,8 +6148,8 @@
   },
   {
    "p": "guides/schatzfieber.json",
-   "s": 16968,
-   "h": "64a4d0633fe5b6504ac8061eab736aa2c2e1d46b1794c1c93b7e3877d09875ad"
+   "s": 16865,
+   "h": "bc9849cb52ae3eef352d99ea5ecb741357f6bef53095b15a2bf3b6d403333686"
   },
   {
    "p": "guides/sendemast-sumo.json",
@@ -8237,9 +8237,9 @@
    "h": "99d6c78e043710d4f83ed90716779798b7b04eb690f73e0ad0e8f32d1f0e98c2"
   },
   {
-   "p": "schatzfieber/assets/index-7yGLMeW3.js",
-   "s": 218453,
-   "h": "276910eaa25912e29ae06ad804fe32d3a47f295c31847f8620b327d8734b4df5"
+   "p": "schatzfieber/assets/index-BvFyHb8Z.js",
+   "s": 218212,
+   "h": "0ae8a12330dd6f6803fbb7675c8e790d230fe538b2f08dad8e1f86b292e47ff0"
   },
   {
    "p": "schatzfieber/assets/index-BwH67gpR.css",
@@ -8253,23 +8253,23 @@
   },
   {
    "p": "schatzfieber/card.jpg",
-   "s": 52905,
-   "h": "6d45e2bcf43e837f1d7374322335163425dc3496b6df2f9d7f455b90c0b96a2c"
+   "s": 52088,
+   "h": "e9869e3d9a500eabd65ee8f9d0f296a7589a4a27e0ea2672828efd245eb16be3"
   },
   {
    "p": "schatzfieber/index.html",
-   "s": 7971,
-   "h": "8a3b8717491c82334261a9556b6287fb22442b13c141078dc6ec433b166c168d"
+   "s": 7274,
+   "h": "c5eb7a72e590e71857e1c36fcb112dafde30c0614067ff4678a5c0777617c18a"
   },
   {
    "p": "schatzfieber/manifest.webmanifest",
-   "s": 797,
-   "h": "089bfb5c6f22c850abd2d643d7bba79f683113f5a2ba4bb61ca0d30b6f012804"
+   "s": 803,
+   "h": "2806790d511a9923201dcff7d357ecb36862a4651a52f307853536ca76240432"
   },
   {
    "p": "schatzfieber/sw.js",
-   "s": 2019,
-   "h": "da0239b0d04cbef01ee5f114aa84909bd4d4aedb62b12c681e786fedeb1c9b89"
+   "s": 2025,
+   "h": "b605842a801c2ad0188dfb0058f825ab65212f9662533fbb785e274d7b64e7b8"
   },
   {
    "p": "sendemast-sumo/card.jpg",
@@ -8833,8 +8833,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 256798,
-   "h": "98a619ced481c672c678daf8e753155e4daeeaacee31581dec9cc7753dacdc3d"
+   "s": 256786,
+   "h": "900781df6be1f961ebac3cde08a869588c806848861b1c773e6154c3f990b9f8"
   },
   {
    "p": "taschi/card.svg",
@@ -9388,8 +9388,8 @@
   },
   {
    "p": "thumbs/schatzfieber.webp",
-   "s": 25230,
-   "h": "1ddc5d831252061bf2b1ccbd51cabe3e1dd3bcfdcee3240127016dc8a3009c54"
+   "s": 24888,
+   "h": "eede9636d6cbee5a2825ce9fafff453db77468e6fcab29d0ba06e4ffd9b2df58"
   },
   {
    "p": "thumbs/sendemast-sumo.webp",
@@ -9414,7 +9414,7 @@
   {
    "p": "thumbs/thumbs.js",
    "s": 2399,
-   "h": "043c160011b046894bf25b2de72056b12addddbd71f2cad95d2da20bf2b9a421"
+   "h": "77bb9e70ae7e731e774ed8dbd623f4025346ccfd5b614be4327e4c1afe7ee4ee"
   },
   {
    "p": "thumbs/tortenschlacht.webp",

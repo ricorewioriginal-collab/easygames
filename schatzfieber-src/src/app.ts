@@ -20,7 +20,6 @@ import { talk, playScene, runEnding } from './game/talk';
 import * as P from './ui/panels';
 
 const SAVE_KEY = 'schatzfieber-save';
-const AGE_KEY = 'schatzfieber-age';
 const SET_KEY = 'schatzfieber-settings';
 const nextFrame = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
 
@@ -132,19 +131,12 @@ export class App {
     this.mode = 'menu';
     this.clock.start();
     this.renderer.setAnimationLoop(() => this.frame());
-    if (localStorage.getItem(AGE_KEY) === '1' || new URLSearchParams(location.search).has('age')) this.showTitle();
-    else this.ui.show('sAge');
+    this.showTitle();
     (window as unknown as { SFReady: boolean }).SFReady = true;
   }
 
   private bindStatic() {
     const on = (id: string, f: () => void) => document.getElementById(id)!.addEventListener('click', f);
-    on('ageYes', () => {
-      localStorage.setItem(AGE_KEY, '1');
-      this.sound.start();
-      this.showTitle();
-    });
-    on('ageNo', () => (location.href = '../'));
     on('bPhone', () => this.mode === 'play' && !this.ui.busy && P.phone(this));
     on('bMenu', () => this.mode === 'play' && !this.ui.busy && P.pause(this));
     on('crBack', () => (this.crEdit ? this.finishCreator(true) : this.showTitle()));

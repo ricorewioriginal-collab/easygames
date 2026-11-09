@@ -1,4 +1,4 @@
-// Kategorien der Spieleübersicht (die 7 Gruppen wie im RicoReWi-Portal, dazu „Ab 18“ nur auf der easygames-Seite). Neues Spiel? Unter "of" mit der Spiel-ID eintragen.
+// Kategorien der Spieleübersicht (dieselben 7 Gruppen wie im RicoReWi-Portal). Neues Spiel? Unter "of" mit der Spiel-ID eintragen.
 window.EASYGAMES_CATS = {
   list: [
     { id: 'abenteuer', label: 'Abenteuer & Rollenspiel', short: 'Abenteuer', icon: '🧭' },
@@ -7,12 +7,11 @@ window.EASYGAMES_CATS = {
     { id: 'quiz', label: 'Quiz & Shows', short: 'Quiz', icon: '❓' },
     { id: 'sim', label: 'Simulation & Kreativ', short: 'Simulation', icon: '🏗️' },
     { id: 'tisch', label: 'Tisch, Karten & Glück', short: 'Tisch', icon: '🎲' },
-    { id: 'musik', label: 'Musik & Rhythmus', short: 'Musik', icon: '🎵' },
-    { id: 'ab18', label: 'Ab 18', short: '18+', icon: '🔞' }
+    { id: 'musik', label: 'Musik & Rhythmus', short: 'Musik', icon: '🎵' }
   ],
   of: {
     // Abenteuer
-    'kiko-sterneninseln': 'abenteuer', 'taschi': 'abenteuer', 'zotik': 'abenteuer', 'aeru': 'abenteuer', 'anmacha-quest-rpg': 'abenteuer', 'anmacha-urwaldlager': 'abenteuer', 'gay-life': 'abenteuer', 'leuchtfeuer': 'abenteuer',
+    'kiko-sterneninseln': 'abenteuer', 'taschi': 'abenteuer', 'zotik': 'abenteuer', 'aeru': 'abenteuer', 'anmacha-quest-rpg': 'abenteuer', 'anmacha-urwaldlager': 'abenteuer', 'gay-life': 'abenteuer', 'leuchtfeuer': 'abenteuer', 'schatzfieber': 'abenteuer',
     // Action
     'saftblitz': 'action', 'funkgolf': 'action', 'tortenschlacht': 'action', 'sendemast-sumo': 'action', 'wolkenhopser': 'action', 'huepfstrasse': 'action', 'funk-survivor': 'action', 'easyclash': 'action', 'bowling-bahn': 'action', 'oma-rennen': 'action', 'kuechen-chaos': 'action', 'konfetti-party': 'action', 'brainrot-parkour': 'action', 'challenge-show': 'action', 'groove-arena': 'musik', 'ich-bin-das-licht': 'musik', 'darts-arena': 'action', 'winzflitzer': 'action', 'krawallvoegel': 'action', 'rico-flap': 'action', 'radio-maze': 'action', 'pufi-farbwind': 'action', 'lumo': 'action', 'riftzone': 'action', 'anmacha-radio-surfer': 'action', 'anmacha-flipper': 'action', 'anmacha-snake': 'action', 'anmacha-showdown': 'action', 'anmacha-kart': 'action', 'anmacha-funkparcours': 'action', 'turbokick': 'action', 'fabelkick': 'action',
     // Puzzle
@@ -24,8 +23,6 @@ window.EASYGAMES_CATS = {
     // Tisch
     'ricopoly': 'tisch', 'partyverse': 'tisch', 'anmacha-gold-reels': 'tisch', 'anmacha-spielesammlung': 'tisch', 'anmacha-kartenrausch': 'tisch', 'anmacha-solitaire': 'tisch', 'anmacha-undercover': 'tisch', 'werwolf-nacht': 'tisch', 'spinwelten': 'tisch', 'funk-billard': 'tisch',
     // Musik
-    'anmacha-beat-surfer': 'musik', 'prismrush': 'musik', 'show-me-your-voice': 'musik', 'beat-studio': 'musik', 'klavierlicht': 'musik',
-    // Ab 18 (eigene Gruppe, nicht neben Kinderspielen)
-    'schatzfieber': 'ab18'
+    'anmacha-beat-surfer': 'musik', 'prismrush': 'musik', 'show-me-your-voice': 'musik', 'beat-studio': 'musik', 'klavierlicht': 'musik'
   }
 };

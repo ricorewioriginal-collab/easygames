@@ -1,4 +1,4 @@
-/* Schatzfieber – Die Insel der Herzen (ab 18) – Service Worker (erzeugt von tools/make-pwa.py, nicht von Hand ändern).
+/* Schatzfieber – Abenteuer auf der Insel der Herzen – Service Worker (erzeugt von tools/make-pwa.py, nicht von Hand ändern).
    Netz zuerst: jeder Start holt den aktuellen Stand (der Browser prüft per ETag, große Dateien kommen bei „unverändert“ nicht neu).
    Fällt das Netz aus oder antwortet es länger als 4 s, kommt die zuletzt geladene Fassung aus dem Cache – so läuft das Spiel auch offline,
    sobald es einmal gespielt wurde (auch Bibliotheken von CDNs). Ein neues Spiel wird erst nach Klick aktiviert; alte Zwischenspeicher werden dann gelöscht. */
