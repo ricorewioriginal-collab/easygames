@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "8f1057156f43",
- "generated": "2026-11-09T20:00:56+01:00",
- "commit": "8f1d83742936d7fbd1361aaed034151afe8118f1",
+ "version": "465236d7e138",
+ "generated": "2026-11-09T21:20:49+01:00",
+ "commit": "bf285bf8a3052af489566faea19f6b6df000f118",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5063,8 +5063,8 @@
   },
   {
    "p": "einbinden.html",
-   "s": 95786,
-   "h": "d0f598c4099a1b98490f7f49280402e4d259a3eb739c76e18193e204816f2589"
+   "s": 100143,
+   "h": "acadb22704a9edf8b703f18d11cbcc3eaddca8d3399a7a0286aa4e1f510b640f"
   },
   {
    "p": "erfolge.html",
@@ -5533,8 +5533,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 24652,
-   "h": "bc0e54279f090ec73ad2047e221a424365420e4e525161b502f5005c988ce4d2"
+   "s": 25982,
+   "h": "a874387284f157ddf16488ff11040759b5c0cd25482e067a684d1a87f8bfcb5e"
   },
   {
    "p": "games.js",
@@ -6368,8 +6368,8 @@
   },
   {
    "p": "index.html",
-   "s": 98081,
-   "h": "0b20b5b5d9f40136d43cbaab8a8829f2b65615e86d214873c7b29ea0a5a57955"
+   "s": 99290,
+   "h": "f837af4e3859634456f74e42463ca8729d710740dcb00d912530acda170aa793"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -8828,8 +8828,8 @@
   },
   {
    "p": "stream.html",
-   "s": 8575,
-   "h": "a7cd9ea21aa7153668fc5342713a0fca0dff44325e67697402c20eb786e0be1c"
+   "s": 8817,
+   "h": "5b9c56e7e7363755a41d7a2a91dc497fb64efc97403ab65e2f6fd7cb66b8efbf"
   },
   {
    "p": "sync/catalog.json",
