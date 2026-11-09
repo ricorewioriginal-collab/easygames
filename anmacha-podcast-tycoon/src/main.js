@@ -57,6 +57,12 @@
       enqueue: f => (queue = queue.then(f).catch(e => console.error(e))) // Spaß-Popups (ui-fun.js) reihen sich in die Hinweise ein
     };
     G.start = startGame;
+    // Highlights für die TikTok-Steuerung im Stream (stream-tiktok.js): Aktion game:<id>
+    window.EasyGamesStream = { actions: [
+      { id: 'pleite', icon: '💸', label: 'Pleite! Kasse auf 0', run: () => { if (!G.st) return false; G.st.money = 0; hud(); UI.toast('💸 Pleite! Die Zuschauer haben die Kasse geleert.'); } },
+      { id: 'geldregen', icon: '💶', label: 'Geldregen +5.000', run: () => { if (!G.st) return false; G.st.money += 5000; hud(); UI.toast('💶 Geldregen von den Zuschauern: +5.000', 'good'); } },
+      { id: 'fans', icon: '💛', label: '+100 Fans', run: () => { if (!G.st) return false; G.st.fans += 100; hud(); UI.toast('💛 +100 Fans aus dem LIVE', 'good'); } }
+    ] };
     UI.applySettings(settings);
     // 3D-Welt
     const cv = document.getElementById('view');
