@@ -17,7 +17,8 @@
  *   - Einheitlich für alle Spiele: Beschriftung und Bildschirm-Knöpfe je Eintrag – name=Taste[/Ersatz][:Text][@Selektor],
  *     z. B. data-pad="a=KeyJ/Enter:Angriff@#bAtk b=Space:Ausweichen x=:Springen@#jump up=ArrowUp:Befehl right=Enter:Ausführen".
  *     :Text erscheint in der Controller-Belegung (beim ersten Controller-Einsatz und mit Select + Start), @Selektor zeigt das
- *     Knopf-Symbol (A/B/X/Y …) auf dem Bildschirm-Knopf; ohne Taste drückt der Controller-Knopf ihn (für Touch-Knöpfe).
+ *     Knopf-Symbol (A/B/X/Y …) auf dem Bildschirm-Knopf; Select + Start öffnet „Controller-Belegung“ (je Spiel umbelegbar, wirkt auch
+ *     in Spielen mit eigener Steuerung, gespeichert unter easygames-remap:<Ordner>); ohne Taste drückt der Controller-Knopf ihn (für Touch-Knöpfe).
  *     up=/down=/left=/right= belegen das Steuerkreuz einzeln (Standard: Pfeiltasten).
  *     Nur Texte: data-pad-labels="a=Springen; b=Zurück; dpad=Auswählen; ls=Laufen" (gleiche Namen, dazu dpad, ls, rs).
  *     data-pad="info": für Spiele mit eigener Controller-Steuerung – nichts wird nachgeahmt, nur Belegung, Symbole und Controller-Modus.
@@ -103,15 +104,25 @@
     }
     // Virtueller Controller (z. B. TikTok-Steuerung im Stream-Overlay): erscheint wie ein echtes Standard-Pad
     var virt = null, troll = {};
+    // Umbelegung je Spiel (Fenster „Controller-Belegung“, Select + Start): { logischer Knopf: echter Knopf }, gespeichert pro Spiel-Ordner.
+    // Wirkt hier in der Normalisierung, also in allen Spielen – auch in solchen mit eigener Controller-Steuerung.
+    var RKEY = 'easygames-remap:' + String(root.location && root.location.pathname || '').replace(/[^\/]*$/, ''), remap = {}, hold = false;
+    try { remap = JSON.parse(root.localStorage.getItem(RKEY) || '{}') || {}; } catch (e) { remap = {}; }
+    function remapped(g) {
+      var b = g.buttons.slice(), k, any = false;
+      for (k in remap) { var p = g.buttons[remap[k]]; if (p) { b[+k] = p; any = true; } }
+      return any ? { id: g.id, index: g.index, connected: g.connected, timestamp: g.timestamp, mapping: 'standard', buttons: b, axes: g.axes, vibrationActuator: g.vibrationActuator, hapticActuators: g.hapticActuators, raw: g.raw } : g;
+    }
+    function stdList() { var l, o = []; try { l = rawGet() || []; } catch (e) { l = []; } for (var i = 0; i < l.length; i++) o[i] = l[i] ? std(l[i]) : null; return o; }
     function flip(g) { var b = g.buttons.slice(), t; t = b[12]; b[12] = b[13]; b[13] = t; t = b[14]; b[14] = b[15]; b[15] = t;
       return { id: g.id, index: g.index, connected: g.connected, timestamp: g.timestamp, mapping: 'standard', buttons: b, axes: g.axes.map(function (v) { return -v; }), vibrationActuator: g.vibrationActuator }; }
     function fire(type) { try { var ev = new Event(type); Object.defineProperty(ev, 'gamepad', { value: virt }); root.dispatchEvent(ev); } catch (e) { } }
     function list() {
-      var l, o = []; try { l = rawGet() || []; } catch (e) { l = []; }
-      for (var i = 0; i < l.length; i++) o[i] = l[i] ? std(l[i]) : null;
+      var o = stdList(), i;
+      for (i = 0; i < o.length; i++) if (o[i]) o[i] = remapped(o[i]);
       if (virt) { if (o[virt.index]) virt.index = Math.max(4, o.length); while (o.length < virt.index) o.push(null); o[virt.index] = virt; }
       if (troll.invert) for (i = 0; i < o.length; i++) if (o[i] && o[i] !== virt) o[i] = flip(o[i]);   // TikTok-Streich: Steuerung des Spielers vertauscht
-      if (troll.block) for (i = 0; i < o.length; i++) if (o[i] && o[i] !== virt) o[i] = { id: o[i].id, index: o[i].index, connected: true, timestamp: o[i].timestamp, mapping: 'standard',   // Steuerung weg
+      if (troll.block || hold) for (i = 0; i < o.length; i++) if (o[i] && o[i] !== virt) o[i] = { id: o[i].id, index: o[i].index, connected: true, timestamp: o[i].timestamp, mapping: 'standard',   // Steuerung weg
         buttons: o[i].buttons.map(function () { return { pressed: false, touched: false, value: 0 }; }), axes: o[i].axes.map(function () { return 0; }) };
       return o;
     }
@@ -130,6 +141,10 @@
         return virt;
       },
       troll: troll,   // { invert: true } vertauscht, { block: true } sperrt die Steuerung echter Controller (TikTok-Streiche)
+      /** Umbelegung dieses Spiels: remap() liest, remap(obj) speichert ({} = Standard); physical() = Pads ohne Umbelegung/Sperre; hold(on) sperrt das Spiel. */
+      remap: function (m) { if (m === undefined) return remap; remap = m || {}; try { if (Object.keys(remap).length) root.localStorage.setItem(RKEY, JSON.stringify(remap)); else root.localStorage.removeItem(RKEY); } catch (e) { } return remap; },
+      physical: stdList,
+      hold: function (on) { hold = !!on; },
       press: function (i, v) { this.virtual(true); virt.buttons[i] = btn(v); virt.timestamp = root.performance ? root.performance.now() : Date.now(); },
       axis: function (i, v) { this.virtual(true); virt.axes[i] = Math.max(-1, Math.min(1, v)); virt.timestamp = root.performance ? root.performance.now() : Date.now(); },
       setMap: function (id, map) {
@@ -345,12 +360,13 @@
     root.requestAnimationFrame(frame);
     var dt = Math.min(0.05, last ? (now - last) / 1000 : 0.016); last = now;
     if (!enabled || doc.hidden) return;
+    if (menu) { menuTick(now); return; }
     var s = state(list), p = prev, i;
     prev = s;
     if (!p.b) return;   // erster Durchlauf: nur Zustand merken, damit ein schon gedrückter Knopf nichts auslöst
     if (!padOn && (s.b.length || s.d.join('') !== '0000' || s.ls.join('') !== '0000' || Math.abs(s.rs[0]) > 0.4 || Math.abs(s.rs[1]) > 0.4)) setPad(true);
     if (padOn && now > badgeT) { badgeT = now + 400; drawBadges(); }
-    if (s.b[8] && s.b[9] && !(p.b[8] && p.b[9])) { legend(legendEl && legendEl.style.display === 'block' ? 0 : 8000); releaseAll(); return; }   // Select + Start: Belegung zeigen
+    if (s.b[8] && s.b[9] && !(p.b[8] && p.b[9])) { releaseAll(); menuOpen(); return; }   // Select + Start: Belegung ansehen und ändern
     if (opt.info) return;   // Spiel mit eigener Controller-Steuerung: nichts nachahmen
 
     // Steuerkreuz: Pfeiltasten; wenn das Spiel sie nicht verarbeitet -> Knopf-Navigation (mit Wiederholung beim Halten)
@@ -414,17 +430,78 @@
     if (on && !legendShown && Object.keys(LABEL).length) { legendShown = true; legend(7000); }
     if (!on) legend(0);
   }
+  var NORM = root.EasyGamesPadNormal, REMAPPABLE = [0, 1, 2, 3, 4, 5, 6, 7, 10, 11];
+  function physOf(i) { var m = NORM && NORM.remap ? NORM.remap() : {}; return m[i] !== undefined ? +m[i] : i; }
   function legendList() {
-    var out = [], k;
-    ['ls', 'rs', 'dpad', 'up', 'down', 'left', 'right'].concat(BTN).forEach(function (k) { if (LABEL[k]) out.push([GLYPH[k] || k, LABEL[k], k]); });
+    var out = [];
+    ['ls', 'rs', 'dpad', 'up', 'down', 'left', 'right'].concat(BTN).forEach(function (k) {
+      if (!LABEL[k]) return;
+      var g = k in NAMES ? BTN[physOf(NAMES[k])] : k;   // nach Umbelegung: Symbol des echten Knopfs
+      out.push([GLYPH[g] || g, LABEL[k], g]);
+    });
     return out;
   }
+  // ---------- Fenster „Controller-Belegung“: ansehen und je Spiel umbelegen ----------
+  var menu = null;
+  function physState() { var b = [], l = NORM && NORM.physical ? NORM.physical() : pads(); l.forEach(function (g) { if (!g) return; for (var i = 0; i < 17; i++) if (g.buttons[i] && g.buttons[i].pressed) b[i] = 1; var ay = g.axes[1] || 0; if (ay < -0.6) b[12] = 1; if (ay > 0.6) b[13] = 1; }); return b; }
+  function menuRows() {
+    var rows = [];
+    REMAPPABLE.forEach(function (i) { var k = BTN[i]; if (LABEL[k]) rows.push({ i: i, k: k }); });
+    rows.push({ act: 'reset' }, { act: 'close' });
+    return rows;
+  }
+  function menuOpen() {
+    legendBox(); clearTimeout(legendTimer);
+    if (NORM && NORM.hold) NORM.hold(true);
+    menu = { sel: 0, wait: -1, prev: physState(), rep: 0 }; drawMenu();
+  }
+  function menuClose() { menu = null; if (NORM && NORM.hold) NORM.hold(false); show(legendEl, false); prev = {}; drawBadges(); }
+  function assign(L, P) {
+    var m = {}, k, cur = NORM.remap(); for (k in cur) m[k] = +cur[k];
+    var oldP = physOf(L), L2 = -1;
+    REMAPPABLE.forEach(function (i) { if (physOf(i) === P) L2 = i; });
+    m[L] = P; if (L2 >= 0 && L2 !== L) m[L2] = oldP;
+    for (k in m) if (+k === m[k]) delete m[k];
+    NORM.remap(m);
+  }
+  function drawMenu() {
+    var rows = menuRows(), h = '<div style="column-span:all;font-size:11px;letter-spacing:.06em;color:#7ff3ff;margin-bottom:6px">🎮 CONTROLLER-BELEGUNG · dieses Spiel</div>';
+    h += rows.map(function (r, n) {
+      var on = n === menu.sel, st = 'display:flex;gap:10px;align-items:center;justify-content:space-between;padding:4px 8px;border-radius:9px;' + (on ? 'background:#ffd400;color:#111' : '');
+      if (r.act) return '<div style="' + st + '">' + (r.act === 'reset' ? '↺ Standard-Belegung' : '✕ Schließen') + '</div>';
+      var g = BTN[physOf(r.i)], txt = menu.wait === r.i ? '<i>Neuen Knopf drücken …</i>' : '<b style="display:inline-block;min-width:26px;padding:0 5px;border-radius:7px;text-align:center;color:#fff;background:' + (GCOL[g] || '#334155') + '">' + (GLYPH[g] || g) + '</b>';
+      return '<div style="' + st + '"><span>' + LABEL[r.k].replace(/</g, '&lt;') + '</span>' + txt + '</div>';
+    }).join('');
+    h += '<div style="margin-top:6px;font-size:11px;opacity:.7">✚ wählen · A ändern · B schließen</div>';
+    legendEl.style.columns = 'auto'; legendEl.style.minWidth = '260px'; legendEl.innerHTML = h; show(legendEl, true);
+  }
+  function menuTick(now) {
+    var b = physState(), pv = menu.prev, hit = function (i) { return b[i] && !pv[i]; }, rows = menuRows();
+    menu.prev = b;
+    if (menu.wait >= 0) {
+      for (var i = 0; i < REMAPPABLE.length; i++) if (hit(REMAPPABLE[i])) { assign(menu.wait, REMAPPABLE[i]); menu.wait = -1; drawMenu(); return; }
+      if (hit(8) || hit(9)) { menu.wait = -1; drawMenu(); }
+      return;
+    }
+    if ((b[8] && b[9]) && !(pv[8] && pv[9])) { menuClose(); return; }
+    var d = hit(12) ? -1 : hit(13) ? 1 : 0;
+    if (d) { menu.sel = (menu.sel + d + rows.length) % rows.length; drawMenu(); return; }
+    if (hit(1)) { menuClose(); return; }
+    if (hit(0)) {
+      var r = rows[menu.sel];
+      if (r.act === 'close') menuClose();
+      else if (r.act === 'reset') { NORM.remap({}); drawMenu(); }
+      else { menu.wait = r.i; drawMenu(); }
+    }
+  }
+  function legendBox() { if (!legendEl) legendEl = el('left:50%;top:auto;bottom:16px;transform:translateX(-50%);max-width:92vw;padding:10px 14px;border-radius:14px;background:rgba(8,10,20,.9);color:#fff;font:600 13px/1.55 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.5);text-align:left;columns:2 220px;column-gap:20px'); return legendEl; }
   function legend(ms) {
     clearTimeout(legendTimer);
     if (!ms) { show(legendEl, false); return; }
     var l = legendList(); if (!l.length) return;
-    if (!legendEl) legendEl = el('left:50%;top:auto;bottom:16px;transform:translateX(-50%);max-width:92vw;padding:10px 14px;border-radius:14px;background:rgba(8,10,20,.9);color:#fff;font:600 13px/1.55 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.5);text-align:left;columns:2 220px;column-gap:20px');
-    legendEl.innerHTML = '<div style="column-span:all;font-size:11px;letter-spacing:.06em;color:#7ff3ff;margin-bottom:4px">🎮 CONTROLLER · Select + Start blendet ein/aus</div>' +
+    legendBox();
+    legendEl.style.columns = '2 220px'; legendEl.style.minWidth = '';
+    legendEl.innerHTML = '<div style="column-span:all;font-size:11px;letter-spacing:.06em;color:#7ff3ff;margin-bottom:4px">🎮 CONTROLLER · Select + Start: Belegung ändern</div>' +
       l.map(function (x) { return '<div style="break-inside:avoid;white-space:nowrap"><b style="display:inline-block;min-width:26px;padding:0 5px;margin-right:6px;border-radius:7px;text-align:center;background:' + (GCOL[x[2]] || '#334155') + '">' + x[0] + '</b>' + x[1].replace(/</g, '&lt;') + '</div>'; }).join('');
     show(legendEl, true);
     legendTimer = root.setTimeout(function () { show(legendEl, false); }, ms);
@@ -435,6 +512,7 @@
       var b = badges[k], c = padOn && e && usable(e);
       if (!c) { show(b, false); continue; }
       if (!b) { b = badges[k] = el('min-width:20px;height:20px;padding:0 4px;margin:-6px 0 0 -14px;border-radius:10px;border:2px solid #fff;color:#fff;font:800 11px/16px system-ui,sans-serif;text-align:center;box-sizing:border-box;box-shadow:0 2px 6px rgba(0,0,0,.5);background:' + (GCOL[k] || '#334155')); b.textContent = GLYPH[k] || k; }
+      var gk = k in NAMES ? BTN[physOf(NAMES[k])] : k; b.textContent = GLYPH[gk] || gk; b.style.background = GCOL[gk] || '#334155';
       b.style.transform = 'translate(' + Math.round(c.r.right) + 'px,' + Math.round(c.r.top) + 'px)'; show(b, true);
     }
   }
@@ -472,6 +550,7 @@
     // Controller-Modus (wird gerade mit dem Controller gespielt?) und Belegung mit Beschriftungen: [[Symbol, Text, Name], …]
     active: function () { return padOn; },
     legend: legendList,
-    showLegend: function (ms) { legend(ms === undefined ? 8000 : ms); }
+    showLegend: function (ms) { legend(ms === undefined ? 8000 : ms); },
+    openMenu: function () { menuOpen(); }
   };
 })(window);

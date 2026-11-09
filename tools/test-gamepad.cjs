@@ -139,6 +139,23 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
   ok(await p.evaluate(() => !document.documentElement.classList.contains('eg-pad') && log.includes('pad:false')), 'Maus/Touch beendet den Controller-Modus');
   await p.close();
 
+  // 9) Fenster „Controller-Belegung“ (Select + Start): A für dieses Spiel auf den Knopf B legen, Spiel ist währenddessen gesperrt
+  p = await (await b.newContext({ viewport: { width: 800, height: 600 } })).newPage(); await p.addInitScript(FAKE); await p.goto(url + 'cfg');
+  await p.evaluate(() => plug({ id: 'Std', mapping: 'standard', buttons: Array(17).fill(0), axes: [0, 0, 0, 0] })); await frames(p);
+  const press = async (...ix) => { const a = Array(17).fill(0); ix.forEach(i => { a[i] = 1; }); await set(p, { buttons: a }); await frames(p); await set(p, { buttons: Array(17).fill(0) }); await frames(p); };
+  await press(8, 9);
+  const m1 = await p.evaluate(() => ({ open: [...document.querySelectorAll('div[aria-hidden]')].some(d => d.style.display === 'block' && /CONTROLLER-BELEGUNG/.test(d.textContent)) }));
+  await set(p, { buttons: [1].concat(Array(16).fill(0)) }); await frames(p, 2);
+  const held = await p.evaluate(() => navigator.getGamepads()[0].buttons[0].pressed); await set(p, { buttons: Array(17).fill(0) }); await frames(p);
+  ok(m1.open && !held, 'Select + Start öffnet die Belegung, das Spiel bekommt solange keine Knöpfe');
+  await press(1);   // A (eben gehalten) hat „Angriff“ gewählt – jetzt den neuen Knopf B drücken
+  await press(1);                    // B schließt
+  await p.evaluate(() => { log.length = 0; }); await press(1);
+  const m2 = await p.evaluate(() => ({ log: log.slice(), map: localStorage.getItem('easygames-remap:/'), leg: EasyGamesPad.legend().map(x => x[0] + '=' + x[1]).join(','), gp: navigator.getGamepads()[0].buttons[0].pressed }));
+  ok(m2.log.includes('key:KeyJ') && /"0":1/.test(m2.map || ''), 'umbelegt: Knopf B löst jetzt „Angriff“ aus, je Spiel gespeichert ' + (m2.map || ''));
+  ok(/B=Angriff/.test(m2.leg), 'Belegung zeigt das neue Symbol: ' + m2.leg);
+  await p.close();
+
   // 8) Spiel mit eigener Controller-Steuerung (data-pad="info"): keine Tasten, aber Belegung und Controller-Modus
   p = await (await b.newContext({ viewport: { width: 800, height: 600 } })).newPage(); await p.addInitScript(FAKE); await p.goto(url + 'info');
   await p.evaluate(() => plug({ id: 'Std', mapping: 'standard', buttons: Array(17).fill(0), axes: [0, 0, 0, 0] })); await frames(p);
