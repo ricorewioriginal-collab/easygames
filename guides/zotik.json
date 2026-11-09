@@ -76,7 +76,7 @@
    "list": [
     "PC: WASD bewegen, Maus ziehen = Kamera (← → drehen sie auch), J/K oder Klick = Angriff, Shift oder Leertaste = Ausweichen, 1 / 2 = Funkenwirbel / Lichtstoß, 3 oder R = Heiltrank, E = Sprechen/Öffnen, Q = Ziel erfassen/wechseln, F = Reaktion, T = Spezial/Team-Angriff, G = Rissform, 4 5 6 = IP-Techniken, C = Werkzeug benutzen, X = Werkzeug wechseln, ↑ ↓ Enter = Befehlsleiste (Rücktaste zurück), V = Nautilux ein/aus, B = Nautilux-Form, Esc oder Tab = Menü, I = Inventar. In Gesprächen wählst du Antworten mit den Pfeiltasten und E/Leertaste/Enter.",
     "Touch: Stick links = bewegen, rechts wischen = Kamera. Tasten für Angriff (Kombo), Ausweichen (in der Nautilux: Turbo halten), Fähigkeit (tippen = einsetzen, halten = wechseln zwischen Wirbel, Lichtstoß, Trank), Aktion (Sprechen, Öffnen, Einsteigen; halten = Nautilux-Form), Ziel (tippen = erfassen/wechseln, halten = aus), Spezial (tippen = Werkzeug, halten = Team, Form, IP, Werkzeug) und ▲ Reaktion über die Aktion-Taste. ☰ oben links = Menü.",
-    "Controller: linker Stick bewegen, X Angriff, A Ausweichen, Y Sprechen/Öffnen, LB Funkenwirbel, RB Lichtstoß, LT Ziel, RT Heiltrank, B oder Start Menü, Select Befehl ausführen (Enter). Der rechte Stick steuert einen Mauszeiger für Menüs."
+    "Controller: linker Stick bewegen, rechter Stick Kamera, A Angriff (in Dialogen und Menüs bestätigen), B Ausweichen (im Menü zurück), X Funkenwirbel, RB Lichtstoß, LT Heiltrank, Y Aktion/Sprechen, LB Block halten, RT Reaktion, Steuerkreuz ↑↓ Befehl wählen, → ausführen, ← zurück, Select Spezial, Start Menü, L3 Rissform, R3 Ziel erfassen. Select + Start blendet die Belegung ein."
    ]
   },
   {

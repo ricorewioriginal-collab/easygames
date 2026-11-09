@@ -47,6 +47,7 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
 (async () => {
   const srv = http.createServer((q, r) => {
     if (q.url.startsWith('/gamepad.js')) { r.setHeader('Content-Type', 'text/javascript; charset=utf-8'); return r.end(fs.readFileSync(path.join(ROOT, 'gamepad.js'))); }
+    if (q.url.startsWith('/info')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end('<!doctype html><body><script>window.log=[];addEventListener("keydown",e=>log.push("key:"+e.code))</script><script src="/gamepad.js" data-pad="info" data-pad-labels="a=Springen; dpad=Auswählen; ls=Laufen"></script></body>'); }
     if (q.url.startsWith('/cfg')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(CFG); }
     r.setHeader('Content-Type', 'text/html'); r.end(q.url.startsWith('/only') ? '<script>window.EASYGAMES_PAD_NORMAL_ONLY=1</script><script src="/gamepad.js"></script>' : PAGE);
   }).listen(0);
@@ -136,6 +137,16 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
   ok(await p.evaluate(() => log.includes('key:Enter')), 'Steuerkreuz rechts = Enter (einzeln belegt)');
   await p.mouse.click(10, 10); await frames(p);
   ok(await p.evaluate(() => !document.documentElement.classList.contains('eg-pad') && log.includes('pad:false')), 'Maus/Touch beendet den Controller-Modus');
+  await p.close();
+
+  // 8) Spiel mit eigener Controller-Steuerung (data-pad="info"): keine Tasten, aber Belegung und Controller-Modus
+  p = await (await b.newContext({ viewport: { width: 800, height: 600 } })).newPage(); await p.addInitScript(FAKE); await p.goto(url + 'info');
+  await p.evaluate(() => plug({ id: 'Std', mapping: 'standard', buttons: Array(17).fill(0), axes: [0, 0, 0, 0] })); await frames(p);
+  await set(p, { buttons: [1].concat(Array(16).fill(0)) }); await frames(p); await set(p, { buttons: Array(17).fill(0) }); await frames(p);
+  await set(p, { buttons: Array(12).fill(0).concat([0, 1, 0, 0, 0]) }); await frames(p);
+  const s8 = await p.evaluate(() => ({ keys: log.length, cls: document.documentElement.classList.contains('eg-pad'), leg: EasyGamesPad.legend().map(x => x[0] + '=' + x[1]).join(',') }));
+  ok(s8.keys === 0 && s8.cls, 'info-Modus: keine Tasten-Nachahmung, Controller-Modus an');
+  ok(s8.leg === 'L-Stick=Laufen,✚=Auswählen,A=Springen', 'info-Modus: Belegung aus data-pad-labels: ' + s8.leg);
   await p.close();
 
   await b.close(); srv.close();

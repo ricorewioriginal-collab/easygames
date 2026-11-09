@@ -28,5 +28,6 @@ addEventListener('load',function(){var reload=false,shown=false;navigator.servic
 function offer(w){if(shown||!w)return;shown=true;var d=document.createElement('div'),b=document.createElement('button');d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:10px;align-items:center;padding:8px 10px 8px 14px;background:#102747;color:#fff;border:1px solid #fff5;border-radius:16px;font:600 14px system-ui,sans-serif';d.textContent='Ein Update ist bereit ';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:10px;padding:8px 10px;background:#f2a900;color:#1a1300;font:700 14px system-ui,sans-serif';b.onclick=function(){reload=true;b.disabled=true;w.postMessage({type:'EG_SKIP_WAITING'})};d.appendChild(b);document.body.appendChild(d)}
 if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting);r.addEventListener('updatefound',function(){var w=r.installing;if(w)w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});
 navigator.serviceWorker.addEventListener('controllerchange',function(){if(reload)location.reload()})}).catch(function(){})})})();</script>
-  </body>
+  <script src="../gamepad.js" data-pad="info" data-pad-labels="a=Türen; b=Schnellbremsung; x=Horn; y=Kamera; lb=Wachsam; rb=Richtungswender; select=Karte; start=Pause; rs=Umsehen; dpad=Leistung, links Bremse lösen,…" defer></script>
+</body>
 </html>
