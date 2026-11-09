@@ -28,6 +28,15 @@ ok(await p.evaluate(() => !!__bi.innen.inside), 'A-Knopf: Haus betreten (Aktion)
 /* 5. Start = Pause, B = zurück */
 await press(9); await sl(300); ok(await p.evaluate(() => !document.getElementById('pause').hidden), 'Start: Pause-Menü'); await press(1); await sl(400); ok(await p.evaluate(() => document.getElementById('pause').hidden), 'B: zurück ins Spiel');
 await press(9); await sl(300); await press(9); await sl(400); ok(await p.evaluate(() => document.getElementById('pause').hidden), 'Start im Pause-Menü: weiter spielen');
+/* 5b. Tipp-Mini-Spiel (Ballon-Pop): Finger-Zeiger mit Stick bewegen, A tippt an der Zeigerstelle */
+await p.evaluate(() => __bi.startGame('pop', true)); await sl(600);
+const mg = await p.evaluate(() => { const g = __bi.mini.cur(); window.__taps = []; const t = g.tap; g.tap = function (x, y, id) { window.__taps.push([Math.round(x), Math.round(y)]); return t.apply(this, arguments); }; return { active: __bi.mini.active, keys: !!g.keydown }; });
+ok(mg.active && !mg.keys, 'Ballon-Pop läuft (Tipp-Spiel)');
+await axes([1, 0, 0, 0]); await sl(350); await axes([0, 0, 0, 0]); await sl(100); await press(0, 200);
+const taps = await p.evaluate(() => window.__taps); ok(taps.length === 1 && taps[0][0] > 520, 'A tippt an der Zeigerstelle (rechts der Mitte): ' + JSON.stringify(taps));
+ok(await p.evaluate(() => [...document.body.children].some(e => e.style.zIndex === '99999' && e.style.display === 'block')), 'Finger-Zeiger sichtbar');
+if (process.env.SHOT) await p.screenshot({ path: process.env.SHOT });
+await p.evaluate(() => { __bi.mini.stop(); }); await sl(300);
 /* 6. Trennen */
 await p.evaluate(() => { window.__gp.connected = false; const e = new Event('gamepaddisconnected'); e.gamepad = window.__gp; window.dispatchEvent(e); }); await sl(300);
 ok(await p.evaluate(() => !document.body.classList.contains('gamepad')), 'Controller getrennt: Hinweis, Touch/Tastatur bleibt');

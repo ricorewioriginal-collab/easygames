@@ -604,7 +604,9 @@ tick();
 
 SW_GUARD = (b'<script>if(navigator.serviceWorker){navigator.serviceWorker.register=function(){return Promise.reject(new Error('
             b'"Offline-Dateien verwaltet easygames"))};navigator.serviceWorker.getRegistrations&&navigator.serviceWorker.getRegistrations()'
-            b'.then(function(r){r.forEach(function(x){x.unregister()})})}</script>')
+            b'.then(function(r){r.forEach(function(x){x.unregister()})})}</script>'
+            # jeder Controller im Standard-Layout (auch Spiele mit eigener Controller-Steuerung), siehe gamepad.js
+            b'<script>window.EASYGAMES_PAD_NORMAL_ONLY=1</script><script src="/gamepad.js"></script>')
 
 
 def vendor_rules(vendor):

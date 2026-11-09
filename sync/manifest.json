@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "0b638973d239",
- "generated": "2026-11-09T19:40:01+01:00",
- "commit": "793c1f54d3397d43b432fc9404003bf7e9d85c24",
+ "version": "728f899e49f6",
+ "generated": "2026-11-09T19:50:36+01:00",
+ "commit": "80e83a91c80008c942b539b59d93916b927ee208",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3999,7 +3999,7 @@
   {
    "p": "bunte-insel/index.html",
    "s": 109655,
-   "h": "87646ede83d88cb9dea64699dcf1d0f375d5814b9c2041e8849695ca14bdc982"
+   "h": "6c38dea6b5bb6046188029eb9a501d83758c154b6b20c719b5b6d700b605a1c6"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -4058,8 +4058,8 @@
   },
   {
    "p": "bunte-insel/js/bunte-insel.min.js",
-   "s": 2155861,
-   "h": "1a7ecf19ba0efd42df90275b2f2e697ec2f9f9c72a56c8a3ce9725e8ae22eba0"
+   "s": 2157435,
+   "h": "8c21cf605cc873c366f5e52da47dbf16825f0456c4bab48cf53d614455b29e79"
   },
   {
    "p": "bunte-insel/js/camp.js",
@@ -4143,8 +4143,8 @@
   },
   {
    "p": "bunte-insel/js/gamepad.js",
-   "s": 11483,
-   "h": "6e229045b901a1cd0c0147352b99bca24899edbe67bf274963671870bef458ed"
+   "s": 14055,
+   "h": "a37edd852d0daec9a35918a581c78a6989502188af5d43e1c249d6df6b5cb61e"
   },
   {
    "p": "bunte-insel/js/garden.js",
@@ -4218,8 +4218,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 322414,
-   "h": "b320dfe973c9c21a501d0d7333a477e24bc71f4875be56892e9b36569d7bfe72"
+   "s": 322442,
+   "h": "6fe48a782baf022e09553a541468eb6f8b10de7453502885019bf2d17db435b9"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -5063,8 +5063,8 @@
   },
   {
    "p": "einbinden.html",
-   "s": 93727,
-   "h": "b11f89050fec61da4001fd5569ced4d7fb0b558317b1879fc32e185a20844fab"
+   "s": 94680,
+   "h": "c17e47725b94e0f0197514aa6cb917913ce222e13c4201a70511a0ac54668ad2"
   },
   {
    "p": "erfolge.html",
@@ -5533,8 +5533,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 16986,
-   "h": "9331d8d7da54124a1976b864027c79b279d42963e108ca4d15ecbbbb925daa2a"
+   "s": 24652,
+   "h": "bc0e54279f090ec73ad2047e221a424365420e4e525161b502f5005c988ce4d2"
   },
   {
    "p": "games.js",
@@ -8834,7 +8834,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256786,
-   "h": "900781df6be1f961ebac3cde08a869588c806848861b1c773e6154c3f990b9f8"
+   "h": "7f7c0a2162621f0b6507e0c982a53dc596eb84e4a1b159bd74da2a9ef2fa6151"
   },
   {
    "p": "taschi/card.svg",

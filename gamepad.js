@@ -13,6 +13,12 @@
  *     an der Seite); data-pad="nonav" schaltet es ab.
  *   - Rechter Stick = Mauszeiger; solange er sichtbar ist, klickt A (gedrückt halten = ziehen). rs=stay: Zeiger bleibt sichtbar
  *     (für Spiele, die man fast nur per Klick spielt), rs=qe: rechter Stick = Q/E statt Zeiger, rs=none: aus.
+ *   - Rechter Stick / A tippen auch für Touch-Spiele: neben Zeiger- und Maus-Ereignissen kommen echte Touch-Ereignisse (wie am Handy).
+ * Alle Controller-Arten: navigator.getGamepads() liefert immer das Standard-Layout (Xbox-Anordnung), auch bei Pads ohne
+ *   „standard“-Zuordnung (Steuerkreuz als Achse/Hat, Trigger als Achse, Ruhelage-Abgleich gegen Stick-Drift) und mit eigener
+ *   Belegung aus der Windows-App (window.EASYGAMES_PADMAPS) oder localStorage „easygames-padmaps“ ({ "<Pad-ID>": Belegung }).
+ *   Davon profitieren auch Spiele mit eigener Controller-Steuerung: Die Apps spielen nur diesen Teil in jede Seite ein
+ *   (window.EASYGAMES_PAD_NORMAL_ONLY = 1 vor der Datei). API: EasyGamesPadNormal.raw(), .std(pad), .maps(), .setMap(id, map|null).
  * Ohne angeschlossenen Controller läuft nichts mit (keine Schleife, kein Overlay).
  * Spiele mit eigener Controller-Steuerung binden die Datei nicht ein, damit nichts doppelt reagiert.
  * API: EasyGamesPad.enabled(false) hält alles an, EasyGamesPad.focus(el) setzt den Leuchtrahmen, EasyGamesPad.map zeigt die Belegung.
@@ -20,7 +26,91 @@
 (function (root) {
   'use strict';
   var doc = root.document, nav = root.navigator;
-  if (!doc || !nav || !nav.getGamepads || root.EasyGamesPad) return;
+  if (!nav || !nav.getGamepads) return;
+
+  // ---------- Jeder Controller im Standard-Layout ----------
+  // Belegung je Pad: { b: [17 Quellen], a: [4 Quellen] }; Quelle Knopf: {b:i} | {a:i,s:±1} (Achse über die Hälfte) | {h:i,d:0–3} (Hat hoch/runter/links/rechts);
+  // Quelle Achse: {a:i,inv:true?} | {n:Quelle, p:Quelle} (zwei Knöpfe als Achse). Fehlende Einträge (oder null) = wie das Pad sie liefert.
+  if (!root.EasyGamesPadNormal) (function () {
+    var rawGet = nav.getGamepads.bind(nav), rest = {}, KEY = 'easygames-padmaps', cache = {};
+    function maps() {
+      var m = {}, k, ls = null;
+      try { ls = JSON.parse(root.localStorage.getItem(KEY) || 'null'); } catch (e) { }
+      if (ls && typeof ls === 'object') for (k in ls) m[k] = ls[k];
+      var host = root.EASYGAMES_PADMAPS;
+      if (host && typeof host === 'object') for (k in host) m[k] = host[k];   // Windows-App: Einstellungen der App gelten überall
+      return m;
+    }
+    var M = maps();
+    root.addEventListener('storage', function (e) { if (e.key === KEY) M = maps(); });
+    // Hat-Schalter (Chrome bei Pads ohne Standard-Zuordnung): -1 hoch … 1 hoch-links, Ruhe ≈ 1.29
+    function hat(v) {
+      if (v === undefined || Math.abs(v) > 1.05) return [0, 0, 0, 0];
+      var k = Math.round((v + 1) * 3.5);   // 0 hoch, 1 hoch-rechts, 2 rechts, … 7 hoch-links
+      return [k === 7 || k <= 1 ? 1 : 0, k >= 3 && k <= 5 ? 1 : 0, k >= 5 && k <= 7 ? 1 : 0, k >= 1 && k <= 3 ? 1 : 0];
+    }
+    function btn(v) { return { pressed: v > 0.5, touched: v > 0.05, value: v }; }
+    function srcBtn(gp, q, R) {
+      if (!q) return 0;
+      if (q.b !== undefined) { var b = gp.buttons[q.b]; return b ? (b.pressed ? Math.max(b.value || 0, 1) : b.value || 0) : 0; }
+      if (q.a !== undefined) { var v = (gp.axes[q.a] || 0) - (R[q.a] || 0); return Math.max(0, Math.min(1, v * q.s)); }
+      if (q.h !== undefined) return hat(gp.axes[q.h])[q.d] ? 1 : 0;
+      return 0;
+    }
+    function srcAxis(gp, q, R) {
+      if (!q) return 0;
+      if (q.a !== undefined) { var v = (gp.axes[q.a] || 0) - (Math.abs(R[q.a] || 0) < 0.3 ? R[q.a] || 0 : 0); v = Math.max(-1, Math.min(1, v)); return q.inv ? -v : v; }
+      if (q.n || q.p) return srcBtn(gp, q.p, R) - srcBtn(gp, q.n, R);
+      return 0;
+    }
+    // Ohne Standard-Zuordnung: übliche Abweichungen erkennen (Steuerkreuz als Hat oder Achsen 6/7, Trigger als Achsen mit Ruhelage -1)
+    function auto(gp, R) {
+      var n = gp.axes.length, b = [], a, i, hatAx = -1, trigAx = n >= 6 && R[2] < -0.9 && R[5] < -0.9;
+      for (i = 0; i < n; i++) if (Math.abs(R[i]) > 1.05) { hatAx = i; break; }
+      for (i = 0; i < 17; i++) b[i] = i < gp.buttons.length ? { b: i } : null;
+      if (trigAx) { b[6] = { a: 2, s: 0.5 }; b[7] = { a: 5, s: 0.5 }; }
+      if (hatAx >= 0) for (i = 0; i < 4; i++) b[12 + i] = { h: hatAx, d: i };
+      else if (gp.buttons.length < 13 && n >= 8) { b[12] = { a: 7, s: -1 }; b[13] = { a: 7, s: 1 }; b[14] = { a: 6, s: -1 }; b[15] = { a: 6, s: 1 }; }
+      a = [{ a: 0 }, { a: 1 }, trigAx ? { a: 3 } : n > 2 && hatAx !== 2 ? { a: 2 } : null, trigAx ? { a: 4 } : n > 3 && hatAx !== 3 ? { a: 3 } : null];
+      return { b: b, a: a };
+    }
+    function std(gp) {
+      if (!gp) return gp;
+      var user = M[gp.id];
+      if (!user && gp.mapping === 'standard') return gp;
+      var key = gp.index + '|' + gp.id, R = rest[key], i;
+      if (!R) { R = rest[key] = []; for (i = 0; i < gp.axes.length; i++) R[i] = gp.axes[i] || 0; }   // Ruhelage beim ersten Blick
+      var base = gp.mapping === 'standard' ? null : (cache[key] || (cache[key] = auto(gp, R))), map = user || base, out = { b: [], a: [] };
+      for (i = 0; i < 17; i++) {
+        var q = map.b && map.b[i] != null ? map.b[i] : base ? base.b[i] : { b: i };
+        out.b[i] = btn(srcBtn(gp, q, R));
+      }
+      for (i = 0; i < 4; i++) {
+        var qa = map.a && map.a[i] != null ? map.a[i] : base ? base.a[i] : { a: i };
+        out.a[i] = srcAxis(gp, qa, R);
+      }
+      return { id: gp.id, index: gp.index, connected: gp.connected, timestamp: gp.timestamp, mapping: 'standard', buttons: out.b, axes: out.a,
+        vibrationActuator: gp.vibrationActuator, hapticActuators: gp.hapticActuators, raw: gp };
+    }
+    function list() { var l, o = []; try { l = rawGet() || []; } catch (e) { l = []; } for (var i = 0; i < l.length; i++) o[i] = l[i] ? std(l[i]) : null; return o; }
+    try { Object.defineProperty(nav, 'getGamepads', { value: list, configurable: true, writable: true }); } catch (e) { return; }
+    // gamepadconnected liefert ebenfalls das Standard-Layout (für Spiele, die e.gamepad.mapping prüfen)
+    ['gamepadconnected', 'gamepaddisconnected'].forEach(function (t) {
+      root.addEventListener(t, function (e) { try { if (e.gamepad && !e.gamepad.raw) Object.defineProperty(e, 'gamepad', { value: std(e.gamepad) }); } catch (x) { } }, true);
+    });
+    root.EasyGamesPadNormal = {
+      version: 1, raw: function () { try { return rawGet() || []; } catch (e) { return []; } }, std: std, auto: auto,
+      maps: function () { return maps(); },
+      setMap: function (id, map) {
+        var m = {}; try { m = JSON.parse(root.localStorage.getItem(KEY) || '{}') || {}; } catch (e) { }
+        if (map) m[id] = map; else delete m[id];
+        try { root.localStorage.setItem(KEY, JSON.stringify(m)); } catch (e) { }
+        M = maps(); cache = {}; rest = {};
+      }
+    };
+  })();
+  if (root.EASYGAMES_PAD_NORMAL_ONLY) { try { delete root.EASYGAMES_PAD_NORMAL_ONLY; } catch (e) { root.EASYGAMES_PAD_NORMAL_ONLY = 0; } return; }
+  if (!doc || root.EasyGamesPad) return;
 
   // Standard-Belegung (W3C "standard"-Layout: 0 A, 1 B, 2 X, 3 Y, 4 LB, 5 RB, 6 LT, 7 RT, 8 Select, 9 Start, 10 L3, 11 R3, 12–15 Steuerkreuz)
   var NAMES = { a: 0, b: 1, x: 2, y: 3, lb: 4, rb: 5, lt: 6, rt: 7, select: 8, start: 9, l3: 10, r3: 11 };
@@ -81,11 +171,29 @@
   var cx = -1, cy = -1, cursorUntil = 0, mouseDown = false, downEl = null;
   var STAY = opt.rs === 'stay';
   function cursorOn(now) { return now < cursorUntil || mouseDown; }
+  // Touch wie am Handy: touchstart/-move/-end gehen immer an das Element, auf dem der Finger aufgesetzt hat. Verhindert das Spiel
+  // touchstart/touchend (preventDefault), entfallen wie im Browser die nachgeahmten Maus-Ereignisse und der Klick.
+  var HAS_TOUCH = typeof root.Touch === 'function' && typeof root.TouchEvent === 'function', touchEl = null, touchEat = false;
+  function touch(type, t, x, y) {
+    if (!HAS_TOUCH || !t) return false;
+    try {
+      var tp = new root.Touch({ identifier: 1, target: t, clientX: x, clientY: y, screenX: x, screenY: y, pageX: x + (root.pageXOffset || 0), pageY: y + (root.pageYOffset || 0), radiusX: 8, radiusY: 8, force: 1 });
+      var on = type === 'end' ? [] : [tp];
+      var ev = new root.TouchEvent('touch' + type, { bubbles: true, cancelable: true, composed: true, touches: on, targetTouches: on, changedTouches: [tp], view: root });
+      t.dispatchEvent(ev);
+      return ev.defaultPrevented;
+    } catch (e) { return false; }
+  }
   function pointer(type, x, y) {
     var t = doc.elementFromPoint(x, y); if (!t) return null;
     var down = type === 'down', up = type === 'up', base = { bubbles: true, cancelable: true, composed: true, clientX: x, clientY: y, screenX: x, screenY: y, button: 0, buttons: down || (mouseDown && !up) ? 1 : 0, view: root };
     try { if (root.PointerEvent) t.dispatchEvent(new PointerEvent('pointer' + type, mix(base, { pointerId: 1, pointerType: 'mouse', isPrimary: true }))); } catch (e) {}
-    try { t.dispatchEvent(new MouseEvent('mouse' + type, base)); } catch (e) {}
+    var eat = false;
+    if (down) { touchEl = t; touchEat = touch('start', t, x, y); eat = touchEat; }
+    else if (up) { if (touchEl) { eat = touch('end', touchEl, x, y) || touchEat; touchEl = null; } }
+    else if (touchEl && mouseDown) touch('move', touchEl, x, y);
+    if (!eat) try { t.dispatchEvent(new MouseEvent('mouse' + type, base)); } catch (e) {}
+    pointer.ate = eat;
     return t;
   }
   function mix(a, b) { var o = {}, k; for (k in a) o[k] = a[k]; for (k in b) o[k] = b[k]; return o; }
@@ -163,7 +271,7 @@
       c.e.dispatchEvent(new Event('input', { bubbles: true })); c.e.dispatchEvent(new Event('change', { bubbles: true }));
       return true;
     }
-    pointer('down', c.x, c.y); pointer('up', c.x, c.y); click(c.e, c.x, c.y);
+    mouseDown = true; pointer('down', c.x, c.y); pointer('up', c.x, c.y); mouseDown = false; if (!pointer.ate) click(c.e, c.x, c.y);
     root.setTimeout(drawRing, 50);
     return true;
   }
@@ -227,7 +335,7 @@
         alt2[i] = !send(alt[0], true) && alt[1] ? alt[1] : '';
         if (alt2[i]) send(alt2[i], true);
       } else if (!s.b[i] && p.b[i]) {
-        if (i === 0 && aMode === 'mouse') { mouseDown = false; var up = pointer('up', cx, cy); if (up && downEl && (up === downEl || up.contains(downEl) || downEl.contains(up))) click(up, cx, cy); downEl = null; if (!STAY) cursorUntil = now + 4000; aMode = ''; continue; }
+        if (i === 0 && aMode === 'mouse') { var up = pointer('up', cx, cy); mouseDown = false; if (up && downEl && !pointer.ate && (up === downEl || up.contains(downEl) || downEl.contains(up))) click(up, cx, cy); downEl = null; if (!STAY) cursorUntil = now + 4000; aMode = ''; continue; }
         if (i === 0 && aMode === 'nav') { aMode = ''; continue; }
         if (i === 0) aMode = '';
         send((code || '').split('/')[0], false);
@@ -252,7 +360,7 @@
   start();   // Controller, der schon vor dem Laden verbunden war
 
   root.EasyGamesPad = {
-    version: 1, map: MAP, options: opt,
+    version: 2, map: MAP, options: opt,
     enabled: function (on) { if (on === undefined) return enabled; enabled = !!on; if (!enabled) { releaseAll(); clearRing(); show(cursor, false); } return enabled; },
     // Leuchtrahmen auf einen bestimmten Knopf setzen (z. B. die erste Taste einer Bildschirmtastatur)
     focus: function (el) { if (!el) return; focusEl = el; if (running) drawRing(); }
