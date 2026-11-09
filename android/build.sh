@@ -4,7 +4,6 @@
 # Umgebungsvariablen (alle optional, außer ANDROID_HOME):
 #   ANDROID_HOME / ANDROID_SDK_ROOT   Pfad zum Android-SDK (Pflicht)
 #   FORMAT=apk|aab                    Ausgabeformat (Standard: apk)
-#   BUNDLE_CONTENT=0                  Start-Inhalt NICHT ins APK packen (App lädt dann beim ersten Start)
 #   VERSION_NAME, VERSION_CODE        Version; Standard: aus "git rev-list --count HEAD"
 #   APP_ID                            applicationId (Standard: de.ricorewi.easygames)
 #   SYNC_BASE                         Basis-URL des Inhalts (muss auf "/" enden)
@@ -16,7 +15,6 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 FORMAT="${FORMAT:-apk}"
-BUNDLE_CONTENT="${BUNDLE_CONTENT:-1}"
 
 die() { echo "FEHLER: $*" >&2; exit 1; }
 
@@ -34,9 +32,6 @@ export ANDROID_SDK_ROOT="$ANDROID_HOME"
 
 case "$FORMAT" in apk|aab) ;; *) die "FORMAT muss apk oder aab sein (ist: $FORMAT)." ;; esac
 
-if [ "$BUNDLE_CONTENT" != "0" ]; then
-  command -v node >/dev/null 2>&1 || die "Node.js nicht gefunden (für tools/build-sync.js). Alternativ BUNDLE_CONTENT=0."
-fi
 
 if [ -x "$SCRIPT_DIR/gradlew" ]; then
   GRADLE=("$SCRIPT_DIR/gradlew")
@@ -55,20 +50,12 @@ if [ -z "${VERSION_CODE:-}" ] && command -v git >/dev/null 2>&1 && git -C "$REPO
   VERSION_CODE="$(git -C "$REPO_ROOT" rev-list --count HEAD 2>/dev/null || echo 1)"
 fi
 VERSION_CODE="${VERSION_CODE:-1}"
-VERSION_NAME="${VERSION_NAME:-1.0.$VERSION_CODE}"
+VERSION_NAME="${VERSION_NAME:-2.0.$VERSION_CODE}"
 
-# ---- Start-Inhalt (Baseline) erzeugen ----
+# ---- Parameter (Spiele kommen nicht ins APK: die App lädt sie einzeln aus der Bibliothek) ----
 GRADLE_ARGS=("-PversionName=$VERSION_NAME" "-PversionCode=$VERSION_CODE")
 [ -n "${APP_ID:-}" ] && GRADLE_ARGS+=("-PappId=$APP_ID")
 [ -n "${SYNC_BASE:-}" ] && GRADLE_ARGS+=("-PsyncBase=$SYNC_BASE")
-
-if [ "$BUNDLE_CONTENT" != "0" ]; then
-  echo "==> Start-Inhalt erzeugen (tools/build-sync.js)"
-  (cd "$REPO_ROOT" && node tools/build-sync.js --stage android/app/src/main/assets/easygames)
-else
-  echo "==> Start-Inhalt übersprungen (BUNDLE_CONTENT=0): die App lädt beim ersten Start"
-  GRADLE_ARGS+=("-PbundleContent=false")
-fi
 
 # ---- Bauen ----
 if [ "$FORMAT" = "aab" ]; then TASK=":app:bundleRelease"; else TASK=":app:assembleRelease"; fi

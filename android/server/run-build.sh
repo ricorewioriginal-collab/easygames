@@ -86,8 +86,8 @@ main() {
   if [ ! -x "$BUILD_CMD" ]; then
     log "Build-Skript $BUILD_CMD fehlt (App-Code noch nicht auf Branch $BRANCH) – nur Manifest aktualisiert"
   elif [ "$FORCE" = 1 ] || [ "$APP_TREE" != "$LAST_TREE" ] || [ "$APK_OLD" = 1 ]; then
-    VERSION_CODE=${VERSION_CODE:-$(git rev-list --count HEAD)}; VERSION_NAME=${VERSION_NAME:-1.0.$VERSION_CODE}
-    export VERSION_CODE VERSION_NAME FORMAT BUNDLE_CONTENT="${BUNDLE_CONTENT:-1}"
+    VERSION_CODE=${VERSION_CODE:-$(git rev-list --count HEAD)}; VERSION_NAME=${VERSION_NAME:-2.0.$VERSION_CODE}
+    export VERSION_CODE VERSION_NAME FORMAT
     log "Baue App $VERSION_NAME (Code $VERSION_CODE, $FORMAT) …"
     touch "$STATE_DIR/build-start"
     env -u PUBLISH_DIR "$BUILD_CMD"   # Bereitstellung übernimmt publish_download() unten (nicht abbrechend); build.sh würde bei fehlenden Rechten den ganzen Lauf abbrechen
