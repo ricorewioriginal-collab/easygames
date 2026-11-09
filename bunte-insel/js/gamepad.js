@@ -2,7 +2,7 @@
 /* Bunte Insel – Controller (Gamepad) 🎮: für Fernseher, Konsole, Computer und Tablet mit Xbox-/PlayStation-/Switch-Pad oder Handy-Pad per Bluetooth/Kabel.
    Wird automatisch erkannt (Gamepad-API) und eingerichtet: Standard-Belegung sofort, bei unbekannten Pads führt eine kurze Einrichtung („Drücke A …“) durch; gespeichert pro Pad.
    Spiel: linker Stick laufen/fahren, rechter Stick Kamera, A Aktion, B Springen/Turbo, X Hauen/zweite Aktion/Sirene, Y Hallo/Hupe, Trigger Gas/Bremse, Start Pause, Select Aufgaben,
-   Steuerkreuz Menüs (Wohin, Spaß, Tasche, Aufgaben), LB Kamera. Menüs: Steuerkreuz/Stick bewegt die Markierung, A drückt, B zurück. Mini-Spiele: Stick/Steuerkreuz = Pfeiltasten, A = Leertaste. */
+   Steuerkreuz Menüs (Wohin, Spaß, Tasche, Aufgaben), LB Kamera. Menüs: Steuerkreuz/Stick bewegt die Markierung, A drückt, B zurück. Mini-Spiele: Tasten-Spiele Stick/Steuerkreuz = Pfeiltasten, A = Leertaste; Tipp-Spiele Finger-Zeiger (Stick bewegt, A tippt, halten = ziehen). */
 BI.createGamepad = function (G) {
   const { inp, cam, P, say } = G, $ = id => document.getElementById(id), K = { pad: null, mapping: null, wiz: null }, clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const STD = { a: 0, b: 1, x: 2, y: 3, lb: 4, rb: 5, lt: 6, rt: 7, sel: 8, start: 9, du: 12, dd: 13, dl: 14, dr: 15, lx: 0, ly: 1, rx: 2, ry: 3 };
@@ -54,6 +54,21 @@ BI.createGamepad = function (G) {
   }
   K.rewire = function () { const g = K.pad == null ? null : pads()[K.pad]; if (!g || !g.connected) { say('🎮 Kein Controller verbunden – schließe einen an und drücke eine Taste.', 3600); return; } try { localStorage.removeItem(key(g.id)); } catch (e) { } K.mapping = Object.assign({}, STD); startWizard(g, (g.id || 'Controller').replace(/\(.*?\)|Vendor:.*|Product:.*/g, '').trim().slice(0, 28) || 'Controller'); };
   K.dbg = { get mapping() { return K.mapping; }, nav, cands, get cur() { return cur; } };
+  /* ---------- Finger-Zeiger für Tipp-Mini-Spiele: Zeiger-Ereignisse direkt auf die Mini-Spiel-Fläche (wie ein Finger) ---------- */
+  const F = { x: -1, y: -1, down: false, el: null, idle: 0 };
+  function fingerEv(type) {
+    const cv = $('mgCanvas'); if (!cv) return;
+    try { cv.dispatchEvent(new PointerEvent(type, { pointerId: 77, pointerType: 'mouse', isPrimary: true, clientX: F.x, clientY: F.y, button: 0, buttons: F.down ? 1 : 0, bubbles: true, cancelable: true })); } catch (e) { }
+  }
+  function finger(mx, my, press, dt, off) {
+    if (off) { if (F.down) { F.down = false; fingerEv('pointerup'); } if (F.el) F.el.style.display = 'none'; F.x = -1; return; }
+    if (F.x < 0) { F.x = innerWidth / 2; F.y = innerHeight / 2; }
+    if (!F.el) { F.el = document.createElement('div'); F.el.setAttribute('aria-hidden', 'true'); F.el.style.cssText = 'position:fixed;left:0;top:0;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:4px solid #fff;background:rgba(255,122,26,.45);box-shadow:0 0 0 2px #000,0 0 16px rgba(255,200,60,.9);pointer-events:none;z-index:99999'; document.body.appendChild(F.el); }
+    const sp = Math.min(innerWidth, innerHeight) * 1.35, moved = Math.abs(mx) > .02 || Math.abs(my) > .02;
+    if (moved) { F.x = clamp(F.x + mx * Math.abs(mx) * sp * dt * .85 + mx * sp * dt * .25, 0, innerWidth - 1); F.y = clamp(F.y + my * Math.abs(my) * sp * dt * .85 + my * sp * dt * .25, 0, innerHeight - 1); fingerEv('pointermove'); }
+    if (press && !F.down) { F.down = true; fingerEv('pointerdown'); } else if (!press && F.down) { F.down = false; fingerEv('pointerup'); }
+    F.el.style.display = 'block'; F.el.style.transform = 'translate(' + F.x + 'px,' + F.y + 'px) scale(' + (F.down ? .8 : 1) + ')';
+  }
   /* ---------- Jedes Bild ---------- */
   K.update = function (dt) {
     const g = K.pad == null ? null : pads()[K.pad]; if (!g || !g.connected) { if (K.pad == null) { const l = live(); if (l && (l.buttons.some(b => b.pressed) || l.axes.some(a => Math.abs(a) > .5))) setup(l); } return; }
@@ -61,10 +76,20 @@ BI.createGamepad = function (G) {
     const M = K.mapping || STD, btn = n => { const b = g.buttons[M[n]]; return b ? (b.pressed || b.value > .5) : false; }, tv = n => { const b = g.buttons[M[n]]; return b ? b.value : 0; }, ax = i => g.axes[i] || 0;
     const [lx, ly] = dz(ax(M.lx), ax(M.ly), .2), [rx, ry] = dz(ax(M.rx), ax(M.ry), .2);
     const dl = btn('dl'), dr = btn('dr'), du = btn('du'), dd = btn('dd'), st = G.state(), busy = G.busy(), mini = G.mini && G.mini();
-    /* Mini-Spiele: Pfeiltasten + Leertaste */
+    /* Mini-Spiele: Tasten-Spiele bekommen Pfeiltasten + Leertaste; Tipp-Spiele (Ballons, Wichtel, Memory, Werfen …) einen Finger-Zeiger:
+       Stick/Steuerkreuz bewegen ihn, A tippt (halten = ziehen). Tasten-Spiele, die auch Tippen kennen: rechter Stick + X. */
     if (mini && st === 'play') {
-      keyHold('ArrowLeft', lx < -.5 || dl); keyHold('ArrowRight', lx > .5 || dr); keyHold('ArrowUp', ly < -.5 || du); keyHold('ArrowDown', ly > .5 || dd); keyHold('Space', btn('a')); if (edge('b', btn('b'))) { fire('Escape', 'keydown'); fire('Escape', 'keyup'); } return;
+      const gm = (G.miniGame && G.miniGame()) || {}, keys = !!gm.keydown, taps = !!(gm.tap || gm.move);
+      if (keys) { keyHold('ArrowLeft', lx < -.5 || dl); keyHold('ArrowRight', lx > .5 || dr); keyHold('ArrowUp', ly < -.5 || du); keyHold('ArrowDown', ly > .5 || dd); keyHold('Space', btn('a')); }
+      if (taps) {
+        let mx = keys ? rx : (Math.abs(rx) > Math.abs(lx) ? rx : lx), my = keys ? ry : (Math.abs(ry) > Math.abs(ly) ? ry : ly);
+        if (!keys) { if (dl) mx = -1; if (dr) mx = 1; if (du) my = -1; if (dd) my = 1; }
+        const tapBtn = keys ? btn('x') : btn('a');
+        finger(mx, my, tapBtn, dt);
+      } else finger(0, 0, false, dt, true);
+      if (edge('b', btn('b'))) { fire('Escape', 'keydown'); fire('Escape', 'keyup'); } return;
     }
+    finger(0, 0, false, dt, true);
     for (const c of ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space']) if (kheld[c]) keyHold(c, false);
     /* Menüs / Fenster: Markierung bewegen */
     if (st !== 'play' || busy) {
