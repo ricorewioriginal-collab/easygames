@@ -503,6 +503,14 @@ python3 tools/make-pwa.py --check    # nur prüfen</pre>
       <li><b>Touch-Spiele:</b> Zeiger und <b>A</b> lösen neben Maus- auch echte Touch-Ereignisse aus (<code>touchstart</code>/<code>touchmove</code>/<code>touchend</code>, wie am Handy). Verhindert das Spiel <code>touchstart</code>, entfallen Maus-Ereignisse und Klick.</li>
       <li><b>Alle Controller-Arten:</b> <code>gamepad.js</code> liefert jedes Pad im Standard-Layout – auch Billig- und Retro-Pads ohne Standard-Zuordnung (Steuerkreuz als Hat oder Achsen, Trigger als Achsen) und mit Ruhelage-Abgleich gegen Stick-Drift. Eigene Belegungen (Windows-App: „🎮 Controller einrichten“) gelten über <code>window.EASYGAMES_PADMAPS</code> bzw. <code>localStorage["easygames-padmaps"]</code>. Die Windows-App und Batocera spielen diesen Teil (<code>window.EASYGAMES_PAD_NORMAL_ONLY = 1</code> vor der Datei) in jede Seite ein, damit auch Spiele mit eigener Controller-Steuerung profitieren. Test: <code>node tools/test-gamepad.cjs</code>.</li>
     </ul>
+    <h3 id="xbox">Xbox (Microsoft Edge)</h3>
+    <p>Auf Xbox Series X|S und Xbox One laufen alle Spiele im vorinstallierten Microsoft Edge – ohne Store, ohne Download. Edge startet im Zeiger-Modus: Der linke Stick bewegt einen Mauszeiger, <b>A</b> klickt, <b>B</b> geht eine Seite zurück. Zum Spielen die <b>Menü-Taste (☰) gedrückt halten</b>; dann bekommt die Seite den Controller über die Gamepad-Schnittstelle und <code>gamepad.js</code> bzw. die eigene Steuerung des Spiels greift (Standard-Layout, Select = Taste 8, Start = Taste 9).</p>
+    <ul>
+      <li>Große 3D-Spiele (z. B. Bunte Insel, RicoLife 3D) mit sparsamer Grafik spielen; WebGL ist auf der Konsole begrenzt, vor allem auf der Xbox One.</li>
+      <li>Texteingaben (Namen, Codes) gehen über die Bildschirmtastatur der Xbox.</li>
+      <li>PlayStation 5 und Nintendo Switch haben keinen Browser: dort nur über den TV-Modus mit Handy-Controllern (Link für TV-Gaming) oder per Streaming vom PC.</li>
+      <li>Nicht auf einer echten Xbox geprüft; Bedienung nach den Angaben von Microsoft und Erfahrungsberichten.</li>
+    </ul>
   </section>
 
   <section id="cloud">
