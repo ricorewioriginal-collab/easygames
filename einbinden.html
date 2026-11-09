@@ -67,7 +67,7 @@
   <p class="lead">Alle Möglichkeiten, easygames auf einer Webseite, in einer App oder auf dem TV zu zeigen – mit Beispielen zum Kopieren.</p>
 
   <nav class="toc" aria-label="Inhalt">
-    <a href="#wahl">Welche Variante?</a><a href="#gen">Code-Generator</a><a href="#stream">🎥 Stream-Overlay</a><a href="#link">Direktlink</a><a href="#iframe">iframe</a>
+    <a href="#wahl">Welche Variante?</a><a href="#gen">Code-Generator</a><a href="#stream">🎥 Stream-Overlay</a><a href="#tiktok">🎁 TikTok-Steuerung</a><a href="#link">Direktlink</a><a href="#iframe">iframe</a>
     <a href="#js">JavaScript</a><a href="#lib">Bibliothek</a><a href="#hub">Spiele-Hub</a><a href="#login">Login</a><a href="#vollbild">Vollbild</a><a href="#vollbild-einbinden">Vollbild einbinden</a><a href="#boards">Ranglisten &amp; Erfolge</a><a href="#nav">Zurück &amp; TV</a>
     <a href="#geraet">Geräteerkennung</a><a href="#pwa">PWA</a><a href="#pad">Gamecontroller</a><a href="#cloud">Cloud-Speicher</a><a href="#android">Android-App</a><a href="#retro">EmulationStation</a><a href="#tvlink">TV-Link</a><a href="#neu">Neues Spiel</a><a href="#msg">postMessage</a><a href="#app">App &amp; Offline</a><a href="#host">Eigener Server</a><a href="#hilfe">Fehlerhilfe</a>
   </nav>
@@ -138,6 +138,40 @@
       <li><b>TikTok LIVE Studio:</b> Quelle hinzufügen → <i>Link</i> bzw. <i>Browser</i> → Adresse einfügen, Hochformat wählen. Zum Spielen das Overlay zusätzlich im Browser öffnen und per <i>Fenster</i>-Quelle aufnehmen, falls die Link-Quelle keine Eingaben annimmt.</li>
       <li><b>Mit dem Handy spielen, am PC streamen:</b> Bei Mehrspieler-Spielen läuft das Overlay als Bildschirm (TV), Handys und Zuschauer steuern per QR-Code.</li>
       <li>Das Spiel bekommt Handy- bzw. PC-Größe und wird scharf hochskaliert. Die Adresse funktioniert auch per JavaScript: <code>EasyGames.streamUrl('&lt;spiel-id&gt;', { format: '16x9' })</code>.</li>
+    </ul>
+  </section>
+
+  <section id="tiktok">
+    <h2>🎁 TikTok LIVE steuert das Spiel</h2>
+    <p>Deine Zuschauer steuern jedes easygames-Spiel mit <b>Kommentaren</b>, <b>Geschenken</b>, <b>Likes</b> und <b>Follows</b> – kein Spiel muss dafür umgebaut werden. Beispiel: „links“, „rechts“, „spring“ im Chat, 🌹 Rose = A drücken, 🌌 Galaxy = Spiel startet neu, alle 100 Likes ein Sprung. Alles ist frei einstellbar, für alle Spiele oder je Spiel. Im Bild erscheinen die <b>Geschenke-Legende</b> (welches Geschenk was macht), die letzten Ereignisse („Leon: 🌹 Rose ×2 → A drücken“) und eine Like-Leiste.</p>
+    <h3>Weg 1: Windows-App (am einfachsten)</h3>
+    <ol>
+      <li><a href="https://www.ricorewi-radio.de/cms/api.php?action=app_download&amp;file=easygames-Setup-x64.exe">easygames für Windows</a> installieren und links unten auf <b>„🎁 TikTok LIVE“</b> klicken.</li>
+      <li>Beim ersten Mal ggf. <b>„Node.js installieren“</b> (einmalig, danach easygames neu starten).</li>
+      <li>TikTok-Namen eintragen und <b>„▶ Verbinden“</b>. Die App verbindet sich, sobald du live bist.</li>
+      <li>Spiel starten – die Steuerung ist im Spielfenster aktiv. In TikTok LIVE Studio oder OBS das <b>Spielfenster aufnehmen</b>.</li>
+      <li><b>„⚙ Belegung bearbeiten“</b> öffnet das gewählte Spiel mit den Einstellungen.</li>
+    </ol>
+    <h3>Weg 2: Browser-Overlay mit TikTok-Start.bat</h3>
+    <ol>
+      <li><a href="tools/TikTok-Start.bat" download>TikTok-Start.bat herunterladen</a>, in einen eigenen Ordner legen (z. B. <code>C:\easygames-tiktok</code>) und doppelklicken. Beim ersten Start holt sie Node.js (über winget), die Brücke und <a href="https://github.com/zerodytrash/TikTok-Live-Connector" target="_blank" rel="noopener">TikTok-Live-Connector</a> und fragt nach deinem TikTok-Namen. Fenster während des Streams offen lassen.</li>
+      <li>In OBS / TikTok LIVE Studio als Browserquelle: <code>https://ricorewioriginal-collab.github.io/easygames/stream.html?game=SPIEL&amp;tiktok=1</code> (SPIEL = Ordnername, z. B. <code>anmacha-quiz</code>). Zum Spielen in OBS „Interagieren“ nutzen.</li>
+      <li>Belegung: dieselbe Adresse mit <code>&amp;setup=1</code> im normalen Browser öffnen, einstellen, <b>Speichern</b> – OBS übernimmt es sofort. Fragt der Browser nach Zugriff auf lokale Geräte: erlauben.</li>
+    </ol>
+    <h3>Aktionen</h3>
+    <div class="tw"><table>
+      <tr><th>Aktion</th><th>Wirkung</th></tr>
+      <tr><td><code>pad:A</code> … <code>pad:Y</code>, <code>pad:LB</code>, <code>pad:RB</code>, <code>pad:LT</code>, <code>pad:RT</code>, <code>pad:START</code>, <code>pad:SELECT</code>, <code>pad:UP/DOWN/LEFT/RIGHT</code></td><td>Taste am virtuellen Controller – wirkt in allen Spielen mit Controller-Steuerung (<code>gamepad.js</code> oder eigene).</td></tr>
+      <tr><td><code>key:Space</code>, <code>key:Enter</code>, <code>key:ArrowLeft</code> …</td><td>Tastendruck im Spiel (für Spiele ohne Controller).</td></tr>
+      <tr><td><code>restart</code></td><td>Spiel neu starten (z. B. für Galaxy).</td></tr>
+      <tr><td><code>say:Danke {user}!</code></td><td>Einblendung, <code>{user}</code> = Name.</td></tr>
+    </table></div>
+    <ul>
+      <li><b>Modus:</b> „Chaos“ – jeder Befehl sofort; „Abstimmung“ – alle paar Sekunden gewinnt der häufigste Befehl (besser bei vielen Zuschauern). Mehrere Geschenke (×5) lösen die Aktion mehrfach aus.</li>
+      <li><b>Geschenk-Namen</b> wie bei TikTok (Rose, Finger Heart, Galaxy, Lion, Universe …). Reagiert eines nicht, steht der genaue Name im Fenster der Brücke bzw. im Protokoll der App.</li>
+      <li>TikTok LIVE hat 2–5 Sekunden Verzögerung: Am besten passen ruhige Spiele (Quiz, Ricopoly, Mahjong, Memory, Werwolf, Puzzle).</li>
+      <li>TikTok-Live-Connector ist inoffiziell und braucht keine Anmeldung; die Verbindung läuft über den kostenlosen Signatur-Dienst Euler Stream (mit Nutzungsgrenze). Ändert TikTok etwas, kann die Verbindung zeitweise ausfallen.</li>
+      <li>Technik: <code>stream-tiktok.js</code> (Overlay, Einstellungen, eingebettet in der Windows-App), <code>tools/tiktok-bridge.mjs</code> (Brücke, <code>--demo</code> = Test ohne TikTok), Test <code>node tools/test-stream-tiktok.cjs</code>.</li>
     </ul>
   </section>
 

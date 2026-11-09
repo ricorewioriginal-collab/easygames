@@ -40,23 +40,27 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     const errs = []; p.on('pageerror', e => errs.push(e.message));
     await p.goto(base); await p.waitForSelector('.tt-leg'); await sleep(2500);
     ok(/Galaxy/.test(await p.textContent('.tt-leg')) && /Lion/.test(await p.textContent('.tt-leg')), 'Geschenke-Legende im Overlay (mit Spiel-Belegung)');
-    const frame = () => p.frames().find(f => /deluxe-2048/.test(f.url()));
-    const board = () => frame().evaluate(() => (document.querySelector('#board,.board,#grid,.grid,canvas') || document.body).innerText + '|' + JSON.stringify(localStorage));
-    await frame().evaluate(() => { window.__mark = 1; });
+    const board = () => p.evaluate(() => { const d = EG_STREAM.frame.contentWindow.document; return d.body.innerText + '|' + JSON.stringify(EG_STREAM.frame.contentWindow.localStorage); });
+    await p.evaluate(() => { EG_STREAM.frame.contentWindow.__mark = 1; });
     const b0 = await board();
     for (const w of ['rechts', 'runter', 'links', 'hoch']) { await inject({ type: 'chat', user: 'Mia', text: w + ' bitte' }); await sleep(700); }
-    const pad = await frame().evaluate(() => { const g = navigator.getGamepads()[3]; return !!(g && /virtuell/.test(g.id)); }).catch(e => false);
-    if (process.env.DBG) console.log(await frame().evaluate(() => [typeof EasyGamesPadNormal, navigator.getGamepads().length, JSON.stringify([...navigator.getGamepads()].map(g => g && g.id))]), await p.textContent('.tt-feed'));
+    const pad = await p.evaluate(() => { const w = EG_STREAM.frame.contentWindow, g = w.navigator.getGamepads()[3]; return !!(w.EasyGamesPadNormal && g && /virtuell/.test(g.id)); });
     ok(pad, 'virtueller Controller im Spiel angemeldet');
     ok((await board()) !== b0, 'Chat-Befehle bewegen das Spiel');
     await inject({ type: 'gift', user: 'Leon', gift: 'Lion', count: 2 }); await sleep(1500);
     ok(/Leon: 🌹 Lion ×2 → nach rechts/.test(await p.textContent('.tt-feed')), 'Geschenk mit Anzahl in der Ereignis-Liste');
     if (SHOTS) await p.screenshot({ path: path.join(SHOTS, 'tiktok-overlay.png') });
     await inject({ type: 'gift', user: 'Emma', gift: 'Galaxy', count: 1 }); await sleep(2000);
-    if (process.env.DBG) console.log('feed', await p.textContent('.tt-feed'), p.frames().map(f => f.url()));
-    ok(await frame().evaluate(() => window.__mark === undefined), 'Galaxy startet das Spiel neu');
+    ok(await p.evaluate(() => EG_STREAM.frame.contentWindow.__mark === undefined), 'Galaxy startet das Spiel neu');
     for (let i = 0; i < 7; i++) await inject({ type: 'like', user: 'Ben', count: 15 }); await sleep(800);
     ok(/100 Likes/.test(await p.textContent('.tt-feed')), 'Like-Leiste löst bei 100 Likes aus');
+    // Eingebettet (Windows-App): Skript direkt im Spielfenster, Geschenk wirkt dort
+    const e = await (await b.newContext({ viewport: { width: 800, height: 600 } })).newPage();
+    e.on('pageerror', x => errs.push('eingebettet: ' + x.message));
+    await e.addInitScript('window.EG_TIKTOK_EMBED = ' + JSON.stringify({ ws: 'ws://127.0.0.1:' + port, id: 'deluxe-2048', title: '2048' }) + ';\n' + fs.readFileSync(path.join(ROOT, 'stream-tiktok.js'), 'utf8'));
+    await e.goto('http://127.0.0.1:' + srv.address().port + '/deluxe-2048/'); await e.waitForSelector('.tt-leg'); await sleep(1500);
+    await inject({ type: 'gift', user: 'Noah', gift: 'Lion', count: 1 }); await sleep(1500);
+    ok(/Noah: 🌹 Lion/.test(await e.textContent('.tt-feed')) && await e.evaluate(() => !!(navigator.getGamepads()[3])), 'Windows-App (eingebettet): Legende, Ereignis und virtueller Controller im Spielfenster');
     ok(!errs.length, 'keine Fehler ' + errs.join(' | '));
   } finally { await b.close(); bridge.kill(); srv.close(); try { fs.unlinkSync(cfgFile); } catch (e) { } }
   console.log(fails ? fails + ' Fehler' : 'alles ok'); process.exit(fails ? 1 : 0);

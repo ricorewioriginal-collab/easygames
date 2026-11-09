@@ -196,6 +196,10 @@ Native App (Kotlin, Jetpack Compose) wie ein kleiner Spiele-Client, Quellen in `
 
 Eigener Client mit Bibliothek: jedes Spiel einzeln installieren, Updates und neue Spiele kommen automatisch, installierte Spiele laufen offline, Online/Mehrspieler über `cloud/fire-peer.js` wie überall. Quellen im RicoReWi-Radio-Repo (`windows-easygames/`), gebaut auf dem Server; Download: [Installer](https://www.ricorewi-radio.de/cms/api.php?action=app_download&file=easygames-Setup-x64.exe) · [Portable](https://www.ricorewi-radio.de/cms/api.php?action=app_download&file=easygames-Portable-x64.exe). Neue Spiele erreichen die App über den Spiele-Sync von RicoReWi Radio (`php scripts/sync-easygames.php`).
 
+## TikTok LIVE steuert das Spiel
+
+Kommentare, Geschenke, Likes und Follows steuern jedes Spiel über einen virtuellen Controller (`gamepad.js`), frei belegbar je Spiel, mit Geschenke-Legende im Bild. Windows-App: „🎁 TikTok LIVE“. Sonst: `tools/TikTok-Start.bat` (Node.js + Brücke `tools/tiktok-bridge.mjs` mit [TikTok-Live-Connector](https://github.com/zerodytrash/TikTok-Live-Connector)) und `stream.html?game=<id>&tiktok=1` (Einstellungen mit `&setup=1`). Anleitung `einbinden.html#tiktok`, Test `node tools/test-stream-tiktok.cjs`.
+
 ## Xbox
 
 Alle Spiele laufen im Microsoft Edge der Xbox (Series X|S, One): Seite öffnen, im Spiel die Menü-Taste gedrückt halten, dann steuert der Controller das Spiel (Gamepad-API, `gamepad.js`). Hinweise auf der Startseite (`index.html#xbox`) und in `einbinden.html#xbox`.

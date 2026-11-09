@@ -5,15 +5,23 @@
  *   stream.html?game=<id>&tiktok=1&setup=1    Einstellungen (im normalen Browser öffnen, gilt sofort auch in OBS)
  *   tiktok=ws://rechner:port                   andere Adresse der Brücke
  *
+ * Windows-App: setzt window.EG_TIKTOK_EMBED = { ws, id, title, setup } vor dieser Datei – dann wirkt alles direkt im Spielfenster.
  * Ereignisse kommen von der kleinen Brücke auf dem Stream-PC (tools/tiktok-bridge.mjs): Kommentare, Geschenke, Likes, Follows.
  * Aktionen: pad:<Knopf> (virtueller Controller – wirkt in allen Spielen mit Controller-Steuerung, siehe gamepad.js),
  * key:<Taste> (z. B. key:Space), restart (Spiel neu starten), say:<Text> (Einblendung, {user} = Name).
  * Belegung frei einstellbar, für alle Spiele oder je Spiel; sie liegt in der Brücke (tiktok-config.json), damit
  * Einstellungs-Fenster und OBS dieselbe sehen. Ohne Brücke: Browserspeicher.
  */
-(function () {
+(function boot() {
   'use strict';
-  var P = new URLSearchParams(location.search), S = window.EG_STREAM;
+  var P = new URLSearchParams(location.search), S = window.EG_STREAM, EMB = window.EG_TIKTOK_EMBED;
+  if (window.EG_TIKTOK) return;
+  if (EMB) {   // im Spielfenster der Windows-App: Einblendungen über dem Spiel, Controller im selben Fenster
+    if (!document.body) { document.addEventListener('DOMContentLoaded', boot); return; }
+    var st0 = document.createElement('div'); st0.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:2147483000'; document.body.appendChild(st0);
+    S = { game: { id: EMB.id, title: EMB.title || EMB.id }, frame: { contentWindow: window }, stage: st0, restart: function () { location.reload(); } };
+    P = new URLSearchParams({ tiktok: EMB.ws || '1', setup: EMB.setup ? '1' : '' });
+  }
   if (!P.get('tiktok') || !S) return;
   var URLWS = /^wss?:\/\//.test(P.get('tiktok')) ? P.get('tiktok') : 'ws://127.0.0.1:21213', SETUP = P.get('setup') === '1', GID = S.game.id;
   var BTN = { A: 0, B: 1, X: 2, Y: 3, LB: 4, RB: 5, LT: 6, RT: 7, SELECT: 8, START: 9, L3: 10, R3: 11, UP: 12, DOWN: 13, LEFT: 14, RIGHT: 15 };
@@ -76,7 +84,7 @@
     if (w.EasyGamesPadNormal && w.EasyGamesPadNormal.press) return cb(w.EasyGamesPadNormal);
     if (!w.__egPadLoading) {
       w.__egPadLoading = true; w.EASYGAMES_PAD_NORMAL_ONLY = 1;
-      var s = w.document.createElement('script'); s.src = new URL('gamepad.js', location.href).href; (w.document.head || w.document.documentElement).appendChild(s);
+      var s = w.document.createElement('script'); s.src = EMB ? '/gamepad.js' : new URL('gamepad.js', location.href).href; (w.document.head || w.document.documentElement).appendChild(s);
     }
     setTimeout(function () { var w2 = gameWin(); if (w2 && w2.EasyGamesPadNormal && w2.EasyGamesPadNormal.press) cb(w2.EasyGamesPadNormal); }, 300);
   }
@@ -90,7 +98,7 @@
     action = String(action || ''); times = Math.max(1, Math.min(20, times || 1));
     var m = /^(\w+):?(.*)$/.exec(action); if (!m) return;
     var kind = m[1], arg = m[2];
-    if (kind === 'restart') { S.restart(); return; }
+    if (kind === 'restart') { try { S.frame.contentWindow.location.reload(); } catch (e) { S.restart(); } return; }
     if (kind === 'say') { toast(arg.replace(/\{user\}/g, user || '')); return; }
     for (var n = 0; n < times; n++) queue = queue.then(function () {
       return new Promise(function (done) {

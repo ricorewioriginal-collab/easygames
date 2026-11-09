@@ -68,7 +68,7 @@ server.on('upgrade', (req, sock) => {
 });
 
 // ---------- Ereignisse ----------
-let status = DEMO ? 'Demo-Modus' : 'Warte auf LIVE von @' + USER;
+let status = DEMO ? 'Demo-Modus' : TEST ? 'Testmodus' : 'Warte auf LIVE von @' + USER;
 const log = s => console.log(new Date().toLocaleTimeString('de-DE') + '  ' + s);
 function readConfig() { try { return JSON.parse(fs.readFileSync(CONFIG, 'utf8')); } catch (e) { return null; } }
 function emit(ev) { broadcast({ type: 'event', ev }); log(ev.type + '  ' + (ev.user || '') + '  ' + (ev.text || ev.gift || ev.count || '')); }
