@@ -1568,7 +1568,10 @@ function openCasino(){if(S.cas.off)return say([['Zotik','Das Casino ist geschlos
     const o=document.createElement('div');o.className='pzr';o.appendChild(pBtn('Casino ausschalten (Familienoption)',()=>{S.cas.off=true;closePuzzle();saveGame(true);toast('Casino geschlossen')},!!casRoll));W.appendChild(o)})}
 /* ---- Nautilux: Gleiter, U-Boot, Luftschiff, Riss-Form ---- */
 const naut={on:false,g:null,spin:null,f:0,ex:[],lift:0};
-const NF=[{n:'Gleiter',em:'🚤',ok:()=>!!S.fl.naut,sp:1.9,dm:.6},{n:'U-Boot',em:'🛥️',ok:()=>!!S.fl.naut&&chDone(4),sp:2,dm:.6},{n:'Luftschiff',em:'🎈',ok:()=>!!S.fl.naut&&chDone(7),sp:2.2,dm:.4},{n:'Riss-Form',em:'🔮',ok:()=>!!S.fl.naut&&chDone(10),sp:2.8,dm:.45}];
+/* Hauptstory: in einer Welt nur die Formen, die dort gebraucht werden; nach Abschluss der Welt alle (freies Erkunden) */
+const NSTORY={1:[0],2:[0],3:[0,1],4:[0],5:[1,0],6:[0,1],7:[0],8:[0,1],9:[2,0],10:[0,1,2],11:[0,1,2,3],12:[]};
+const nStory=k=>{try{const c=curCh;if(c===1?S.stage>=8:chDone(c))return true;return (NSTORY[c]||[0]).includes(k)}catch(e){return true}};
+const NF=[{n:'Gleiter',em:'🚤',ok:()=>!!S.fl.naut&&nStory(0),sp:1.9,dm:.6},{n:'U-Boot',em:'🛥️',ok:()=>!!S.fl.naut&&chDone(4)&&nStory(1),sp:2,dm:.6},{n:'Luftschiff',em:'🎈',ok:()=>!!S.fl.naut&&chDone(7)&&nStory(2),sp:2.2,dm:.4},{n:'Riss-Form',em:'🔮',ok:()=>!!S.fl.naut&&chDone(10)&&nStory(3),sp:2.8,dm:.45}];
 const NHINT=['','Taucht in Tiefsee-Becken (blaue Wasserflächen) zu Schatztruhen.','Fliegt über Klippen zu Himmelstruhen auf hohen Felsen.','Rammt mit voller Kraft und ist am schnellsten.'];
 const navM=()=>naut.on?NF[naut.f].sp*(keys.ShiftLeft&&S.fl.naut2&&!nAir()&&!nSub()?1.37:1):1;
 let nMed=null;function nMedHint(){const m=NZ().medium();if(m===nMed)return;nMed=m;if(!m)return;const k='nm_'+m;if(S.fl[k])return;S.fl[k]=1;toast({sky:'🎈 Himmel: A halten = steigen, B halten = sinken. Die Nautilux feuert selbst auf Wolkenrochen – Himmelsinseln tragen Schätze.',sea:'⛵ Die Nautilux fährt als Schiff über den See. Seeschlangen greifen an, Treibgut lässt sich bergen.',deep:'🛥️ Abtauchen: A halten = steigen, B halten = sinken. Am Grund liegt ein Tiefseeschatz – Vorsicht vor Tiefseefischen.'}[m])}
