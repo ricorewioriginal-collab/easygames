@@ -2577,7 +2577,7 @@ function buildRuin(n,col,outside){const P=n+'r',spec=RUIN[n]||RUIN[1],wc=col||0x
     if(kind==='crack'||kind==='thorn')obBuild(g,kind,0,z,2,.5);
     else if(kind==='block'){obBuild(g,'gate',0,z,2,.5,g);const rz=room;obBuild(g+'b','block',-4,rz,.9,.9);obBuild(g+'p','plate',4,rz,.9,.9,g)}
     else if(kind==='torch'){obBuild(g,'gate',0,z,2,.5,g);obBuild(g+'t1','torch',-10.5,z+1.8,.4,.4,g);obBuild(g+'t2','torch',10.5,z+1.8,.4,.4,g)}};
-  const strip=(kind)=>{const g=P+'s';if(kind==='water')obBuild(g,'water',0,350,12.5,1.5);else{obBuild(g,'deep',0,350,12.5,2.5);obBuild(g+'n','post',0,346,.3,.3);obBuild(g+'s','post',0,354,.3,.3)}};
+  const strip=(kind)=>{const g=P+'s';if(kind==='water')obBuild(g,'water',0,350,12.5,1.5);else{obBuild(g,'deep',0,350,12.5,2.5);obBuild(g+'n','post',6,346,.3,.3);obBuild(g+'s','post',6,354,.3,.3)   /* Pfosten seitlich, damit sie Tor/Ranken im Durchgang nicht verdecken */}};
   const sp=spec.slice();const k1=sp.shift();gap(k1,355,361);
   for(const k of sp){if(k==='water'||k==='hook')strip(k);else gap(k.replace(/\d$/,''),345,351.5)}
   /* Schatz im Norden */
