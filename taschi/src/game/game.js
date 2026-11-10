@@ -600,7 +600,8 @@ export class Game {
     if (f.starterChosen) return this.ui.say([{ text: 'Die übrigen Bälle bleiben für die nächsten Trainer hier.' }]);
     const ok = await starterPreview(this, e.species);
     if (!ok) return;
-    const m = makeMonster(e.species, 5, this.rng);
+    // starter partners hatch with strong potential (like gift partners in modern games)
+    const iv = () => this.rng.int(12, 15), m = makeMonster(e.species, 5, this.rng, { iv: { hp: iv(), atk: iv(), def: iv(), speed: iv() }, friendship: 120 });
     s.team.push(m); s.dex[e.species] = 2; f.starterChosen = true; f.starter = e.species;
     this.audio.sfx('catch');
     this.world.player.play('cheer', 1.4);

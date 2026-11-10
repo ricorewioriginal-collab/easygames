@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "16327f7ab023",
- "generated": "2026-11-10T15:29:31+00:00",
- "commit": "7c5ec11589dd7f1a2a09d60d83179541fdb900fa",
+ "version": "5bca02430d84",
+ "generated": "2026-11-10T16:44:00+01:00",
+ "commit": "94fe3982a18857adad986f9c6614e7cfe50af526",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8844,7 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256786,
-   "h": "f4c0efeb5094db3fb6c8665f06fb0d13b0d566aeae8b2ca58625b78789729a9a"
+   "h": "83e0ecae856580fc730c1297c5f3cfba8d77a2ba388fe3f682ccee04ecc0721e"
   },
   {
    "p": "taschi/card.svg",
@@ -8923,8 +8923,8 @@
   },
   {
    "p": "taschi/src/data/trainers.js",
-   "s": 12790,
-   "h": "0e8c48a6007b1b5786bfaa593fcd148367f759264f7a7644a5617430797e2ab9"
+   "s": 13025,
+   "h": "a7ff6fec963fb12d2fa03f31c6e4c1c4702b434bbcfeb4232368d81193af4e19"
   },
   {
    "p": "taschi/src/data/types.js",
@@ -8943,8 +8943,8 @@
   },
   {
    "p": "taschi/src/engine/creatures.js",
-   "s": 27996,
-   "h": "37521c0d210ef72653b98abebe197469bff384d1a4d1c8d75fd5734ad3b8c6b0"
+   "s": 29373,
+   "h": "14097e0f1f5f9432d3316d41c4d107aba6f031f2bcb203c479f23d298ae5b2e1"
   },
   {
    "p": "taschi/src/engine/geometry.js",
@@ -8998,8 +8998,8 @@
   },
   {
    "p": "taschi/src/game/game.js",
-   "s": 63031,
-   "h": "aa4ac256a5ebb86da58be90cee1dcd9f000e0712c65119c7f2de41d2e54056f8"
+   "s": 63227,
+   "h": "ac96ef23fd79913b629b38cf0bec18950b1a3e974551444563dd776a10f7c730"
   },
   {
    "p": "taschi/src/game/world.js",
@@ -9018,8 +9018,8 @@
   },
   {
    "p": "taschi/src/logic/encounters.js",
-   "s": 3464,
-   "h": "b0dae6e28a51c0da136e6fc7a46a1f2b6c4c592201401aa0d5027069bca99050"
+   "s": 3697,
+   "h": "4e761784d4b9e7dcba77ace3a584e58679978b5523ab74cf16d3da130ca936f5"
   },
   {
    "p": "taschi/src/logic/items.js",

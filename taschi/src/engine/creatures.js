@@ -8,6 +8,7 @@ import { Builder, matrix, capsule, lathe, lumpy } from './geometry.js';
 import { outlineMaterial, glowMaterial } from './materials.js';
 import { toonGradient } from './textures.js';
 import { SPECIES } from '../data/species.js';
+import { TYPES } from '../data/types.js';
 import { createRng } from '../core/rng.js';
 
 const C = (c) => new THREE.Color(c);
@@ -15,6 +16,13 @@ const shade = (c, f) => C(c).multiplyScalar(f).getHex();
 const mix = (a, b, t) => C(a).lerp(C(b), t).getHex();
 
 const FLYERS = new Set(['bird', 'wisp', 'fish']);
+// evolution stage (1 = basic) – later stages get modern energy effects
+let STAGE = null;
+export function stageOf(id) {
+  if (!STAGE) { const from = {}; for (const [k, v] of Object.entries(SPECIES)) if (v.evo && v.evo.to) from[v.evo.to] = k;
+    STAGE = {}; for (const k in SPECIES) { let n = 1, c = k; while (from[c] && n < 4) { c = from[c]; n++; } STAGE[k] = n; } }
+  return STAGE[id] || 1;
+}
 
 function creatureMaterial() {
   return new THREE.MeshToonMaterial({ vertexColors: true, gradientMap: toonGradient(), emissive: 0x000000 });
@@ -169,6 +177,13 @@ export function createCreature(id, { outline = true, shiny = false } = {}) {
   if (F.spikes) for (let i = 0; i < F.spikes; i++) { const t = i / Math.max(1, F.spikes - 1); B.add(new THREE.ConeGeometry(0.08, 0.3, 5), acc, matrix(0, bodyTop - 0.02 - t * 0.15, 0.2 - t * 0.7, -0.6 - t * 0.6, 0, 0)); }
   if (F.mane) for (let i = 0; i < 9; i++) { const a = i / 9 * Math.PI * 2; B.add(new THREE.ConeGeometry(0.11, 0.38, 5), F.crest === 'flame' ? mix(acc, 0xffc060, 0.6) : acc, matrix(Math.cos(a) * 0.3, headY - 0.12 + Math.sin(a) * 0.3, headZ - 0.18, Math.sin(a) * 1.2, 0, -Math.cos(a) * 1.2)); }
   if (F.aura) { const aura = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), glowMaterial(mix(main, 0xffffff, 0.4), 0.12)); aura.scale.set(0.9, bodyTop * 0.8, 0.9); aura.position.y = bodyTop * 0.55; body.add(aura); parts.aura = aura; }
+  // modern energy look: evolved and legendary forms get orbiting sparks in their type colour
+  const stage = stageOf(id), legend = (sp.catch || 1) < 0.08, typeCol = parseInt(((TYPES[sp.type] || {}).color || '#ffffff').slice(1), 16);
+  if (stage >= 2 || legend) {
+    const orbit = new THREE.Group(); orbit.position.y = bodyTop * 0.55; body.add(orbit); parts.orbit = orbit;
+    const n = stage >= 3 || legend ? 4 : 2, gm = glowMaterial(mix(typeCol, 0xffffff, 0.35), 0.85);
+    for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2, s = new THREE.Mesh(new THREE.OctahedronGeometry(stage >= 3 || legend ? 0.1 : 0.08, 0), gm); s.position.set(Math.cos(a) * 0.75, Math.sin(a * 2) * 0.12, Math.sin(a) * 0.75); orbit.add(s); }
+  }
   emit(B, body);
 
   // --------------------------------------------------------------- head
@@ -229,6 +244,7 @@ export function createCreature(id, { outline = true, shiny = false } = {}) {
     E.add(new THREE.SphereGeometry(er, 12, 10), 0xffffff, matrix(sx * eyeX, 0, 0, 0, 0, 0, 0.9, eyeStyle === 'sleepy' ? 0.55 : 1.15, 0.5));
     E.add(new THREE.SphereGeometry(er * 0.72, 10, 8), F.glow ? mix(acc, 0x101828, 0.4) : 0x1e2638, matrix(sx * eyeX, -er * 0.05, er * 0.25, 0, 0, eyeStyle === 'sharp' ? sx * 0.5 : 0, eyeStyle === 'sharp' ? 0.7 : 0.9, eyeStyle === 'sleepy' ? 0.5 : 1.05, 0.5));
     E.add(new THREE.SphereGeometry(er * 0.28, 6, 4), 0xffffff, matrix(sx * eyeX + er * 0.25, er * 0.3, er * 0.5));
+    E.add(new THREE.SphereGeometry(er * 0.12, 5, 3), 0xffffff, matrix(sx * eyeX - er * 0.22, -er * 0.28, er * 0.5));
     if (eyeStyle === 'sharp') E.add(new THREE.BoxGeometry(er * 2, er * 0.25, er * 0.3), shade(main, 0.6), matrix(sx * eyeX, er * 0.95, er * 0.2, 0, 0, sx * -0.4));
   }
   const eyes = new THREE.Mesh(E.build(), mat);
@@ -307,7 +323,8 @@ export class Creature {
     if (p.earL) { const tw = Math.max(0, Math.sin(t * 0.9) - 0.92) * 8; p.earL.rotation.z = tw * 0.3; p.earR.rotation.z = -Math.max(0, Math.sin(t * 0.9 + 2) - 0.92) * 2.4; }
     if (p.head) { p.head.rotation.y = Math.sin(t * 0.6) * 0.18; p.head.rotation.x = Math.sin(t * 1.1) * 0.04; }
     if (p.halo) p.halo.rotation.z = t;
-    if (p.aura) p.aura.material.opacity = 0.1 + Math.sin(t * 3) * 0.04;
+    if (p.aura) { const b = p.aura.userData.base || 0.1; p.aura.material.opacity = b + Math.sin(t * 3) * b * 0.4; }
+    if (p.orbit) p.orbit.rotation.y = t * 1.6;
     if (this.plan === 'serpent' || this.plan === 'fish') roll = Math.sin(t * 2) * 0.06;
     // actions
     if (this.action) {
