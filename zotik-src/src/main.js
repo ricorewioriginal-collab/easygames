@@ -1574,11 +1574,27 @@ function partyHTML(){if(!S.party.length)return '';let h='<h3>Gefährten</h3>';fo
 function buildWorld(n){
   const C=CHP[n],R=mul32(7000+n*131),rr=(a,b)=>a+R()*(b-a),rp=a=>a[R()*a.length|0],ph=n*1.7,amp=C.amp||1,P=C.pal,cs=()=>chCs(n);
   const mir=n%2===0?1:-1;
-  const pathx=z=>(Math.sin(z*.045+ph)*12+Math.sin(z*.013+ph*.6)*8)*sm(-150,-110,z)*(1-sm(0,30,z));
+  // Eigener Weg je Welt: Kehren in der Schlucht, Zickzack durch Gassen, weiter Damm, Karawanenweg …
+  const tri=v=>Math.abs((((v%2)+2)%2)-1)*2-1;
+  const pbase=z=>{switch(n){case 4:return Math.sin(z*.035+ph)*20;case 5:return Math.sin(z*.025+ph)*26;case 6:return Math.sin(z*.07+ph)*16;case 8:return tri(z/34+ph)*22;case 9:return Math.sin(z*.03+ph)*10+Math.sin(z*.09)*4;
+    default:return Math.sin(z*.045+ph)*12+Math.sin(z*.013+ph*.6)*8}};
+  const pathx=z=>pbase(z)*sm(-150,-110,z)*([5,6,8].includes(n)?sm(-134,-96,z):1)*(1-sm(0,30,z));   // vor dem Ring zur Arena zurück zur Mitte
   const np=(x,z,d)=>z<44&&z>-160&&Math.abs(x-pathx(z))<d;
   // Eigene Landschaft je Welt (vorher überall dieselben Hügel, nur andere Farben); Stadt, Pfad und Arena bleiben eben
   const CRT=[[-70,-60],[60,-100],[-55,-130],[75,-30]];
-  const tStyle=(q,x,z)=>{switch(n){
+  const MESA=[[-48,-80],[52,-112],[-40,-130],[60,-66]];
+  // Eigene Karte je Welt im Norden: Kanäle, Inselkette, Schlucht, Lavaflüsse, Häuserblöcke, Abgründe, Tafelberge
+  const wildMap=(c,x,z)=>{const iw=sm(-146,-140,z)*(1-sm(-52,-46,z));if(iw<=0)return c;const pd=Math.abs(x-pathx(z)),off=pd<3.4?0:1;switch(n){
+    case 3:for(const zc of [-64,-94,-126])c-=5*Math.exp(-((z-zc)**2)/22)*off*iw;return c;   // Kanäle mit Brücken
+    case 4:for(const [mx,mz] of MESA){const d=Math.hypot(x-mx*mir,z-mz);c+=13*(1-sm(7,11,d))*iw}return c;   // Tafelberge
+    case 5:return c-1.4*iw+(1-sm(2,5,pd))*2.6*iw;   // Inselkette mit Damm
+    case 6:return c+sm(9,15,pd)*13*iw;   // Gletscherschlucht
+    case 7:for(const zc of [-72,-114])c-=8*Math.exp(-((z-zc)**2)/30)*off*iw;return c;   // Lavaflüsse mit Steinbrücken
+    case 8:{const bx=Math.floor((x+400)/15),bz=Math.floor((z+400)/15),hh=((bx*73856093)^(bz*19349663))>>>0;return c+((hh%5<3&&pd>8)?11*iw*sm(8,11,pd):0)}   // Häuserblöcke
+    case 9:{const isl=Math.sin(x*.06+ph)*Math.sin(z*.06+1);return c-(pd>6&&isl<.15?14*sm(.15,-.15,isl)*sm(6,9,pd)*iw:0)}   // Abgründe zwischen Schwebeinseln
+    default:return c}};
+  const tStyle=(q,x,z)=>wildMap(tStyle0(q,x,z),x,z);
+  const tStyle0=(q,x,z)=>{switch(n){
     case 3:return Math.round(q/1.8)*1.8*.9;   // Valdoria: Terrassen der Stadt am Kanal
     case 4:return (Math.abs(Math.sin(x*.032+z*.016+ph))*7-3)*amp+Math.sin(z*.05+x*.02)*.8;   // Solmera: Dünen
     case 5:return q*1.1-1.4;   // Aqualis: Inseln im Wasser
@@ -1596,7 +1612,7 @@ function buildWorld(n){
     const ex=Math.max(0,Math.abs(x)-125)+Math.max(0,z-72);return q-ex*ex*.02};
   if(n===11){const s0=cs();if(s0.st<7){s0.st=7;s0.bd=1;s0.k=5}}
   const sealed=()=>cs().st<5;
-  const blk=(x,z)=>h(x,z)>8.5||x<-128||x>128||z>76||z<-232||(z<-148&&sealed());
+  const blk=(x,z)=>{const hh=h(x,z);return hh>8.5||hh<-4.2||x<-128||x>128||z>76||z<-232||(z<-148&&sealed())};
   const zone=(x,z)=>z<-146?'cave':(z<-44?'forest':'village');
   const ims=[],edKeys=[],obs={};
   WLD={n,C,h,blocked:blk,zone,ims,edKeys,terr:null,zn:{village:[C.hubN,C.sub],forest:[C.wildN,'Gegner lauern hier'],cave:[C.depthN,C.X[4]],ruin:['Werkzeug-Ruine','Ein Rätsel aus alter Zeit']},path:pathx,mbg:null,spawn:[0,9]};
@@ -1687,6 +1703,7 @@ function buildWorld(n){
         default:{}
       }}
     if(n===5)plane(0x2a8ac8,-2.2,.7);   // Meer um die Inseln
+    if(n===3)plane(0x3a7ab0,-1.6,.75);   // Kanäle
     if(n===7)plane(0xff4a10,-4.6,.95,0xff3000);   // Lava in den Kratern
     if(n===9)plane(0xffffff,-6,.55);   // Wolkendecke unter dem Plateau
   }
