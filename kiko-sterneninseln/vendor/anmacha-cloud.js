@@ -705,6 +705,26 @@
     panel = el('div', 'position:fixed;left:8px;bottom:56px;z-index:2147483000;width:min(290px,calc(100vw - 16px));padding:14px;border-radius:12px;background:rgba(20,20,30,.96);color:#fff;font:14px/1.4 system-ui,sans-serif;display:none;box-sizing:border-box');
     btn.onclick = function () { panel.style.display = panel.style.display === 'none' ? 'block' : 'none'; };
     document.body.appendChild(panel); document.body.appendChild(btn); render();
+    // Nicht über Knöpfen des Spiels liegen (z. B. „← Alle Spiele“ unten links am Handy): freie Ecke suchen
+    function place() {
+      if (panel.style.display === 'block') return;
+      var W = innerWidth, H = innerHeight, C = [[1, 1], [0, 1], [1, 0], [0, 0]];   // [links?, unten?]
+      btn.style.visibility = 'hidden';
+      var all = document.querySelectorAll('button,a[href],[role=button],input,select');
+      for (var k = 0; k < C.length; k++) {
+        var x = C[k][0] ? 8 : W - 48, y = C[k][1] ? H - 48 : 8, hit = false;
+        for (var i = 0; i < all.length && !hit; i++) { var e = all[i]; if (e === btn || panel.contains(e)) continue; var q = e.getBoundingClientRect(); if (q.width < 2 || q.height < 2) continue;
+          if (q.left < x + 44 && q.right > x - 4 && q.top < y + 44 && q.bottom > y - 4) { var cs = getComputedStyle(e); if (cs.visibility !== 'hidden' && cs.display !== 'none' && +cs.opacity > 0.05) hit = true; } }
+        if (!hit || k === C.length - 1) {
+          if (hit) k = 0;
+          btn.style.left = C[k][0] ? '8px' : 'auto'; btn.style.right = C[k][0] ? 'auto' : '8px'; btn.style.bottom = C[k][1] ? '8px' : 'auto'; btn.style.top = C[k][1] ? 'auto' : '8px';
+          panel.style.left = C[k][0] ? '8px' : 'auto'; panel.style.right = C[k][0] ? 'auto' : '8px'; panel.style.bottom = C[k][1] ? '56px' : 'auto'; panel.style.top = C[k][1] ? 'auto' : '56px';
+          break;
+        }
+      }
+      btn.style.visibility = '';
+    }
+    place(); setTimeout(place, 1500); setTimeout(place, 5000); addEventListener('resize', function () { setTimeout(place, 200); });
   }
   function boot() {
     ui(); enhance();
