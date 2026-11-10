@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5bca02430d84",
- "generated": "2026-11-10T16:44:00+01:00",
- "commit": "94fe3982a18857adad986f9c6614e7cfe50af526",
+ "version": "1d4490b550d5",
+ "generated": "2026-11-10T16:48:50+01:00",
+ "commit": "d7f73e44e75c529a27307aabfedfbea0021a1805",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8944,7 +8944,7 @@
   {
    "p": "taschi/src/engine/creatures.js",
    "s": 29373,
-   "h": "14097e0f1f5f9432d3316d41c4d107aba6f031f2bcb203c479f23d298ae5b2e1"
+   "h": "6a526fc6bd25386a33f65f8661696c68fae6a51ab48d5b68d5b86319991427ed"
   },
   {
    "p": "taschi/src/engine/geometry.js",
