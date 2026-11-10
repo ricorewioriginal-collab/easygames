@@ -14,8 +14,10 @@ export function createNautZone(c) {
     const side = n % 2 ? 1 : -1, z = -98, x = Math.max(-96, Math.min(96, pathx(z) + side * 60));
     return { x, z, r: 21, wl: wl ?? -1, dep: 7 };
   }
-  const carve = (L, q, x, z) => { if (!L) return q; const d = Math.hypot(x - L.x, z - L.z); if (d > L.r * 1.25) return q;
-    const bowl = L.wl - L.dep * Math.pow(Math.max(0, 1 - (d / L.r) ** 2), .7), k = 1 - sm(L.r * .7, L.r * 1.25, d); return q * (1 - k) + Math.min(q, bowl + (d > L.r ? (d - L.r) * .6 : 0)) * k; };
+  // innerhalb des Radius liegt alles unter Wasser (Mulde bis dep tief), dahinter steigt ein Ufer an und geht ins Gelände über
+  const carve = (L, q, x, z) => { if (!L) return q; const d = Math.hypot(x - L.x, z - L.z); if (d > L.r * 1.35) return q;
+    if (d < L.r) return Math.min(q, L.wl - .5 - (L.dep - .5) * Math.pow(Math.max(0, 1 - (d / L.r) ** 2), .7));
+    return q + (Math.min(q, L.wl - .5 + (d - L.r) * .8) - q) * (1 - sm(L.r, L.r * 1.35, d)); };
   const lakeAt = (x, z) => { const L = Z && Z.lake; return L && Math.hypot(x - L.x, z - L.z) < L.r * 1.05 && c.hgt(x, z) < L.wl - .1 ? L : null; };
 
   function foeMesh(kind, col) {

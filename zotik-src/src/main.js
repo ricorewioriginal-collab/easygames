@@ -1722,7 +1722,7 @@ function buildWorld(n){
     iRo=mkI(PG.rock,new T.MeshStandardMaterial({color:0xffffff,roughness:.9}),260,true),iSh=mkI(PG.cap,new T.MeshBasicMaterial({color:0xffffff}),300,false),
     iSt=mkI(PG.stem,new T.MeshStandardMaterial({color:0xcfd8ee,roughness:.9}),300,false),iCr=mkI(PG.crystal,new T.MeshStandardMaterial({color:0xffffff,emissive:C.glowc[0],emissiveIntensity:1.5,roughness:.25}),420,false),
     iFl=mkI(PG.flower,new T.MeshBasicMaterial({color:0xffffff}),700,false),iPa=mkI(PG.pave,new T.MeshStandardMaterial({color:0xffffff,roughness:1}),220,false);
-  const free=(x,z,d)=>Math.hypot(x,z)>=(z>-10?30:36)&&Math.hypot(x,z+182)>=d&&!np(x,z,6.5)&&h(x,z)<6.5&&Math.abs(x)<122&&z>-228&&z<66;
+  const free=(x,z,d)=>!(LAKE&&Math.hypot(x-LAKE.x,z-LAKE.z)<LAKE.r*1.35+6)&&Math.hypot(x,z)>=(z>-10?30:36)&&Math.hypot(x,z+182)>=d&&!np(x,z,6.5)&&h(x,z)<6.5&&Math.abs(x)<122&&z>-228&&z<66;
   const tree=(k,x,z)=>{const y=h(x,z),s=rr(.9,1.7),lc=()=>rp(C.leaf);
     switch(k){
       case'broad':put2(iTr,x,y+s*1.1,z,.55*s,s*2.4,.55*s,0,C.trunk);put2(iCa,x,y+s*3.6,z,s*2.4,s*1.9,s*2.4,R()*6,lc());put2(iCa,x+s*.9,y+s*2.8,z+s*.4,s*1.5,s*1.2,s*1.5,R()*6,lc());put2(iCa,x-s*.7,y+s*3,z-s*.6,s*1.4,s*1.1,s*1.4,R()*6,lc());addCol(x,z,.75*s);break;
