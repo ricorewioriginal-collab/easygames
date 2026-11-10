@@ -61,7 +61,9 @@ export function rollEncounter(r, rng, { habitat = 'grass', night = false, levelB
   for (const [sid, w] of pool) { roll -= w; if (roll <= 0) { id = sid; break; } }
   const [lo, hi] = levelRange(r);
   const lv = Math.min(70, rng.int(lo, hi) + levelBoost);
-  return makeMonster(fitSpecies(id, lv) === id ? id : id, lv, rng);
+  const m = makeMonster(fitSpecies(id, lv) === id ? id : id, lv, rng);
+  if (rng.next() < 1 / 400) m.shiny = true; // schillernde Taschis: selten und besonders
+  return m;
 }
 
 // Every catchable species must be obtainable in at least one table (or as

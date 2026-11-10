@@ -51,16 +51,18 @@ export class World {
     this.refreshFollower();
   }
   refreshFollower() {
-    const lead = this.save.team.find(m => m.hp > 0) || this.save.team[0];
-    if (this.follower?.id === lead?.id) return;
+    // the chosen companion walks with you (falls back to the first fit Taschi)
+    const s = this.save, pick = s.team.find(m => m.uid === s.companion && m.hp > 0);
+    const lead = pick || s.team.find(m => m.hp > 0) || s.team[0];
+    if (this.follower?.id === lead?.id && this.follower?.shiny === !!lead?.shiny) return;
     if (this.follower) { this.scene.remove(this.follower.c.root); this.follower.c.dispose(); this.follower = null; }
     if (!lead) return;
-    const c = createCreature(lead.id, { outline: this.game.quality.outlines });
+    const c = createCreature(lead.id, { outline: this.game.quality.outlines, shiny: !!lead.shiny });
     c.root.scale.setScalar(displayScale(lead.id, 'world'));
     const p = this.player.root.position;
     c.root.position.set(p.x - 1.2, p.y, p.z + 1.2);
     this.scene.add(c.root);
-    this.follower = { id: lead.id, c };
+    this.follower = { id: lead.id, shiny: !!lead.shiny, c };
   }
 
   // ------------------------------------------------------------------ loading

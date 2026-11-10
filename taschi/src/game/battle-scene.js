@@ -10,6 +10,7 @@ import { REGIONS } from '../data/regions.js';
 import { createBattle, runTurn, replace, playerOptions, activeMon, targetsFor, catchChance } from '../logic/battle.js';
 import { maxHp, xpToNext, evolve, replaceMove } from '../logic/monster.js';
 import { createCreature, displayScale } from '../engine/creatures.js';
+import { WEATHER, weatherText } from '../logic/traits.js';
 import { createCharacter, lookForRole } from '../engine/characters.js';
 import { vegetationGeometry, rockGeometry, MATERIALS } from '../engine/vegetation.js';
 import { ballModel } from '../engine/buildings.js';
@@ -100,7 +101,7 @@ export class BattleScene {
   slotPos(side, slot) { return (this.b.format === 2 ? SLOT_POS2 : SLOT_POS)[side][slot] || SLOT_POS[side][0]; }
   spawnModel(m, side, slot, appear = true) {
     const old = this.models.get(m.uid); if (old) { this.root.remove(old.c.root); old.c.dispose(); }
-    const c = createCreature(m.id, { outline: this.game.quality.outlines });
+    const c = createCreature(m.id, { outline: this.game.quality.outlines, shiny: !!m.shiny });
     const s = displayScale(m.id, 'battle');
     c.root.scale.setScalar(appear ? 0.01 : s);
     const [x, y, z] = this.slotPos(side, slot);
@@ -257,9 +258,11 @@ export class BattleScene {
     this.menuEl = null; this.logEl = null;
     const indoor = !!opts.indoor;
     this.buildStage(opts.region, indoor);
-    const b = createBattle({ rng: g.rng, kind: opts.kind, format: opts.format, canRun: opts.canRun, canCatch: opts.canCatch, night: g.isNight(), dark: indoor,
+    const b = createBattle({ rng: g.rng, kind: opts.kind, format: opts.format, canRun: opts.canRun, canCatch: opts.canCatch, night: g.isNight(), dark: indoor, weather: indoor ? null : g.world.weather,
       player: { team: save.team, bag: save.bag, name: save.player.name }, foe: { team: opts.foeTeam, ai: opts.ai ?? 0, trainer: opts.kind !== 'wild', name: opts.trainerName || '', items: { ...(opts.items || {}) } } });
     this.b = b; this.opts = opts;
+    if (b.weather && WEATHER[b.weather]) g.ui.toast(weatherText(b.weather), WEATHER[b.weather].icon);
+    if (opts.kind === 'wild' && opts.foeTeam.some(m => m.shiny)) { g.ui.toast('Ein schillerndes Taschi! Fang es, solange du kannst!', '✨'); g.audio.sfx('item'); }
     for (const m of opts.foeTeam) save.dex[m.id] ||= 1;
     // trainers on stage
     this.playerCh = this.spawnTrainer(save.player.look, 0, save.player.name);
