@@ -17,7 +17,9 @@
  *     Das passiert nur, wenn das Spiel die Pfeiltaste selbst nicht verarbeitet (kein preventDefault, keine sofortige Änderung
  *     an der Seite); data-pad="nonav" schaltet es ab.
  *   - Rechter Stick = Mauszeiger; solange er sichtbar ist, klickt A (gedrückt halten = ziehen). rs=stay: Zeiger bleibt sichtbar
- *     (für Spiele, die man fast nur per Klick spielt), rs=qe: rechter Stick = Q/E statt Zeiger, rs=none: aus.
+ *     (für Spiele, die man fast nur per Klick spielt), rs=qe: rechter Stick = Q/E statt Zeiger, rs=scroll: scrollen, rs=none: aus.
+ *     Auf Seiten mit längerem Inhalt und in scrollbaren Menüs/Listen (Leuchtrahmen aktiv) scrollt der rechte Stick von selbst;
+ *     in Fenstern von Spielen mit eigener Steuerung (info) ebenso.
  *   - Rechter Stick / A tippen auch für Touch-Spiele: neben Zeiger- und Maus-Ereignissen kommen echte Touch-Ereignisse (wie am Handy).
  *   - Einheitlich für alle Spiele: Beschriftung und Bildschirm-Knöpfe je Eintrag – name=Taste[/Ersatz][:Text][@Selektor],
  *     z. B. data-pad="a=KeyJ/Enter:Angriff@#bAtk b=Space:Ausweichen x=:Springen@#jump up=ArrowUp:Befehl right=Enter:Ausführen".
@@ -343,6 +345,26 @@
     sc.scrollTop += (dir === 0 ? -1 : 1) * Math.max(80, h * 0.6);
     return sc.scrollTop !== before;
   }
+  // Rechter Stick scrollt: nächster scrollbare Bereich am Leuchtrahmen bzw. in der Bildmitte, sonst die Seite
+  function scrollBox(from) {
+    for (var e = from; e && e !== doc.body && e !== doc.documentElement; e = e.parentElement) {
+      var cs = root.getComputedStyle(e); if (/(auto|scroll)/.test(cs.overflowY + cs.overflowX) && (e.scrollHeight > e.clientHeight + 4 || e.scrollWidth > e.clientWidth + 4)) return e;
+    }
+    return doc.scrollingElement || doc.documentElement;
+  }
+  function pageScrolls() { var se = doc.scrollingElement || doc.documentElement; return se.scrollHeight > root.innerHeight + 40; }
+  function stickScroll(rx, ry, dt) {
+    var m = Math.sqrt(rx * rx + ry * ry); if (m < 0.2) return false;
+    var f = 1500 * Math.pow(Math.min(1, (m - 0.2) / 0.8), 1.6) * dt / m;
+    var at = focusEl || (scopeEl && scopeEl.isConnected ? scopeEl : doc.elementFromPoint(root.innerWidth / 2, root.innerHeight / 2)), el = scrollBox(at), t0 = el.scrollTop, l0 = el.scrollLeft;
+    el.scrollTop += ry * f; el.scrollLeft += rx * f;
+    if (el.scrollTop === t0 && el.scrollLeft === l0 && at) {   // nichts zu scrollen: Mausrad nachahmen (Spiele mit eigenem Scrollen, z. B. Listen im Canvas)
+      var r = at.getBoundingClientRect ? at.getBoundingClientRect() : { left: 0, top: 0, width: root.innerWidth, height: root.innerHeight };
+      try { at.dispatchEvent(new WheelEvent('wheel', { deltaX: rx * f, deltaY: ry * f, deltaMode: 0, clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, bubbles: true, cancelable: true })); } catch (x) { }
+    }
+    if (focusEl) root.setTimeout(drawRing, 0);
+    return true;
+  }
   function navigate(dir) {
     var c = pick(dir); if (!c && focusEl && scrollOn(dir)) c = pick(dir);
     if (!c) return;
@@ -416,7 +438,9 @@
     }
     // rechter Stick: Mauszeiger oder Tasten
     var rx = s.rs[0], ry = s.rs[1], mag = Math.sqrt(rx * rx + ry * ry);
-    if (opt.rs === 'cursor' || STAY) {
+    // Seiten mit längerem Inhalt und Menüs/Listen im Spiel (Leuchtrahmen aktiv): rechter Stick scrollt, sonst ist er der Mauszeiger
+    if (opt.rs === 'scroll' || (opt.rs === 'cursor' && !STAY && !cursorOn(now) && (pageScrolls() || (focusEl && scrollBox(focusEl) !== (doc.scrollingElement || doc.documentElement))))) stickScroll(rx, ry, dt);
+    else if (opt.rs === 'cursor' || STAY) {
       if (mag > 0.18) { var sp = 1100 * Math.pow(Math.min(1, (mag - 0.18) / 0.82), 2) / mag; moveCursor(rx * sp * dt, ry * sp * dt, now); }
       else if (cursor && !cursorOn(now)) show(cursor, false);
     } else if (rsDirs) {
@@ -689,6 +713,8 @@
     hudTip.textContent = '🎮 Knöpfe auf dem Bildschirm: ✚/Stick wählen · A drücken · B oder Select zurück ins Spiel'; show(hudTip, true);
   }
   function dlgTick(now) {
+    var dt0 = Math.min(0.05, dlg.t ? (now - dlg.t) / 1000 : 0.016); dlg.t = now;
+    try { var pl = NORM && NORM.physical ? NORM.physical() : pads(), sx = 0, sy = 0; pl.forEach(function (g) { if (!g) return; if (Math.abs(g.axes[2] || 0) > Math.abs(sx)) sx = g.axes[2] || 0; if (Math.abs(g.axes[3] || 0) > Math.abs(sy)) sy = g.axes[3] || 0; }); stickScroll(sx, sy, dt0); } catch (x) { }   // rechter Stick scrollt im Fenster
     if (dlg.manual) {
       var mb = oskState(), mp = dlg.prev, mh = function (i) { return mb[i] && !mp[i]; }; dlg.prev = mb;
       var MD = { u: 0, d: 1, l: 2, r: 3 };

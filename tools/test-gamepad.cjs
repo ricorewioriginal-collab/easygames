@@ -81,7 +81,7 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
   const set = (p, f) => p.evaluate(f => { Object.assign(window.fake, f); }, f);
 
   // 1) Billig-Pad ohne Standard-Zuordnung, Steuerkreuz als Hat-Achse (Ruhe 1.29): „runter“ wird zu Knopf 13 und Pfeil runter
-  let p = await page();
+  let p = await page(), p2;
   await p.evaluate(() => plug({ id: 'Generic USB Joystick (Vendor: 0079 Product: 0006)', mapping: '', buttons: Array(12).fill(0), axes: [0, 0, 0, 0, 0, 0, 0, 0, 0, 3.2857 / 7 * 2.8] }));
   await frames(p);
   const restHat = await p.evaluate(() => navigator.getGamepads()[0].buttons[13].pressed);
@@ -245,6 +245,22 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
     const free = await p.evaluate(async () => { window.fake.buttons[2] = 1; await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const v = gameSees(2); window.fake.buttons[2] = 0; return v; });
     ok(held === false && r11.join() === 'click:bag' && free === true, 'Select halten: Bildschirm-Knöpfe wählen (oben rechts → runter → „bag“), A drückt, danach Spielsteuerung: ' + r11.join() + ' / ' + held + ' / ' + free);
     await p.close();
+  }
+
+  // 12) Rechter Stick scrollt: lange Seite und Fenster mit Liste (info-Modus)
+  {
+    p = await (await b.newContext({ viewport: { width: 900, height: 600 } })).newPage(); await p.addInitScript(FAKE); await p.goto(url + 'cfg');
+    await p.evaluate(() => { const d = document.createElement('div'); d.style.height = '3000px'; document.body.style.height = 'auto'; document.body.appendChild(d); });
+    await p.evaluate(() => plug({ id: 'Std', mapping: 'standard', buttons: Array(17).fill(0), axes: [0, 0, 0, 0] })); await frames(p);
+    await set(p, { axes: [0, 0, 0, 1] }); await p.waitForTimeout(500); await set(p, { axes: [0, 0, 0, 0] }); await frames(p);
+    const y = await p.evaluate(() => scrollY);
+    p2 = await (await b.newContext({ viewport: { width: 900, height: 600 } })).newPage(); await p2.addInitScript(FAKE); await p2.goto(url + 'infodlg');
+    await p2.evaluate(() => { const d = document.getElementById('dead'), box = d.firstElementChild; box.style.maxHeight = '300px'; box.style.overflow = 'auto'; for (let i = 0; i < 20; i++) { const b = document.createElement('button'); b.textContent = 'Eintrag ' + i; b.style.cssText = 'display:block;width:100%;padding:12px'; box.appendChild(b); } d.style.display = 'grid'; });
+    await p2.evaluate(() => plug({ id: 'Std', mapping: 'standard', buttons: Array(17).fill(0), axes: [0, 0, 0, 0] })); await p2.waitForTimeout(400);
+    await p2.evaluate(() => Object.assign(window.fake, { axes: [0, 0, 0, 1] })); await p2.waitForTimeout(500); await p2.evaluate(() => Object.assign(window.fake, { axes: [0, 0, 0, 0] }));
+    const y2 = await p2.evaluate(() => document.getElementById('dead').firstElementChild.scrollTop);
+    ok(y > 100 && y2 > 50, 'rechter Stick scrollt lange Seite (' + Math.round(y) + ' px) und Fenster-Liste im Spiel (' + Math.round(y2) + ' px)');
+    await p.close(); await p2.close();
   }
 
   await b.close(); srv.close();

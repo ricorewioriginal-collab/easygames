@@ -99,6 +99,7 @@ const host = mk((q, r) => { r.writeHead(200, { 'content-type': 'text/html' }); i
   await p6.goto(gbase + 'konto.html'); await p6.waitForFunction(() => window.AnMaChaCloud);
   const a6 = await p6.evaluate(() => AnMaChaCloud.account());
   assert.ok(a6 && a6.uid === 'fbuid-2' && a6.token === 'idtok2', 'Firebase-Anmeldung aus account_fbrt'); assert.strictEqual(rtCalls, 1);
+  await p6.waitForFunction(() => localStorage.getItem('anmacha-cloud-rt') === 'rt-frisch', null, { timeout: 3000 }).catch(() => {});   // das neue Token wird kurz nach der Anmeldung gespeichert
   assert.strictEqual(await p6.evaluate(() => localStorage.getItem('anmacha-cloud-rt')), 'rt-frisch');
   console.log('PASS Ohne Dienstkonto-Schlüssel: Firebase-Anmeldung kommt vom Konto (account_fbrt), keine zweite Anmeldung');
   // Langes Konto-Menü auf kleinem Bildschirm: lässt sich scrollen, der letzte Punkt (Abmelden) ist erreichbar und bleibt im Bild
