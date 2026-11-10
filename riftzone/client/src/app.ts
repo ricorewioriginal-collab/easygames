@@ -76,7 +76,7 @@ export class App {
   ) {
     this.ui = document.getElementById('ui')!;
     this.stage = new LobbyStage(R);
-    this.mode = { ...DEFAULT_MODE, ...load<Partial<ModeChoice>>('mode', {}) };
+    this.mode = { ...DEFAULT_MODE, ...load<Partial<ModeChoice>>('mode', {}), kind: 'offline' };   // Start immer offline mit Bots; online wählt man im Menü
     this.friends = load<Friend[]>('friends', []);
     this.online.onStatus = (s, reason) => {
       this.onlineState = s;

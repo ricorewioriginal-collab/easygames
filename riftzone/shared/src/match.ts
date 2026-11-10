@@ -1757,7 +1757,7 @@ export function rayCapsule(
   h: number,
   extra = 0,
 ): { t: number; head: boolean } | null {
-  const R = 0.42 + extra;
+  const R = 0.58 + extra;   // großzügigere Trefferzone wie in Battle-Royale-Spielen üblich (vorher genau der Körper: Treffer gingen oft knapp vorbei)
   let best: { t: number; head: boolean } | null = null;
   // Kopf
   const hr = 0.27 + extra,

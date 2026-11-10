@@ -64,14 +64,15 @@ interface Brain {
 
 const brainsOf = (m: Match): Map<number, Brain> => m.botBrains as Map<number, Brain>;
 
+// Schlauer als vorher: sehen weiter, reagieren und zielen schneller, bauen öfter in Deckung (Rückmeldung „Bots sind dumm“)
 const SKILL = {
-  view: [95, 130, 165],
-  err0: [0.22, 0.13, 0.075],
-  errDecay: [1.1, 1.9, 2.9],
-  errFloor: [0.04, 0.022, 0.012],
-  react: [0.7, 0.42, 0.24],
-  turn: [4.5, 7, 10],
-  buildChance: [0.0, 0.45, 0.85],
+  view: [120, 165, 210],
+  err0: [0.18, 0.1, 0.06],
+  errDecay: [1.6, 2.6, 3.8],
+  errFloor: [0.032, 0.017, 0.009],
+  react: [0.5, 0.3, 0.17],
+  turn: [6, 9, 13],
+  buildChance: [0.25, 0.65, 0.95],
 };
 
 function brainFor(m: Match, p: Player): Brain {
