@@ -6,6 +6,7 @@ import { MOVES, STATUS } from '../data/moves.js';
 import { effectiveness } from '../data/types.js';
 import { ITEMS } from '../data/items.js';
 import { statOf, maxHp, maxPP, xpReward, gainXp } from './monster.js';
+import { abilityOf, WEATHER } from './traits.js';
 import { applyItem, count, remove, ballRate } from './items.js';
 import { chooseAction, chooseReplacement } from './ai.js';
 
@@ -29,7 +30,7 @@ export function createBattle(o) {
     canRun: o.canRun ?? (o.kind === 'wild'), canCatch: o.canCatch ?? (o.kind === 'wild'),
     sides: [mkSide(o.player, true), mkSide(o.foe, false)],
     bag: o.player.bag || {}, vol: {}, participants: {}, runAttempts: 0,
-    pendingEvolutions: [], learnRequests: [], night: !!o.night, expShare: o.expShare ?? true,
+    pendingEvolutions: [], learnRequests: [], night: !!o.night, weather: o.weather || null, expShare: o.expShare ?? true,
     needReplace: [], fainted: new Set(), dark: !!o.dark
   };
   for (const side of b.sides) for (const i of side.active) initVol(b, side.team[i]);
@@ -262,7 +263,13 @@ export function calcDamage(b, user, target, move, crit, roll = 1) {
   if (move.type === st.type || move.type === st.type2) dmg *= 1.5;
   const eff = effectiveness(move.type, SPECIES[target.id]);
   dmg *= eff;
-  if (crit) dmg *= 1.5;
+  const au = abilityOf(user.id), at = abilityOf(target.id);
+  if (crit && at.kind !== 'thick') dmg *= 1.5;
+  if (au.kind === 'core' && move.type === st.type && user.hp * 3 <= maxHp(user)) dmg *= 1.3;
+  if (au.kind === 'tail' && statOf(user, 'speed') > statOf(target, 'speed')) dmg *= 1.1;
+  if (at.kind === 'rock') dmg *= 0.9;
+  if (at.kind === 'veil' && eff > 1) dmg *= 0.85;
+  const wb = b.weather && WEATHER[b.weather]; if (wb && wb.boost[move.type]) dmg *= wb.boost[move.type];
   if (user.status === 'brand') dmg *= 0.5;
   dmg *= roll;
   return { dmg: eff === 0 ? 0 : Math.max(1, Math.floor(dmg)), eff };

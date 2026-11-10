@@ -8,6 +8,7 @@ import { ITEMS, ITEM_ORDER, CATEGORY_NAMES, sellPrice, shopStock } from '../data
 import { REGIONS } from '../data/regions.js';
 import { CHAPTERS } from '../data/story.js';
 import { maxHp, statOf, xpToNext, evolutionChain, describeEvolution, forgetMove, relearnableMoves } from '../logic/monster.js';
+import { natureOf, abilityOf } from '../logic/traits.js';
 import * as Items from '../logic/items.js';
 import * as P from '../logic/progress.js';
 import { habitatsOf } from '../logic/encounters.js';
@@ -31,7 +32,7 @@ function monCard(game, m, i, onclick, extra = {}) {
   const sp = SPECIES[m.id], max = maxHp(m);
   return h('button.card.focusable' + (i === 0 ? '.lead' : '') + (m.hp <= 0 ? '.fainted' : ''), { onclick, ...extra },
     portrait(game, m.id),
-    h('div.meta', {}, h('div.name', {}, nameOf(m) + '  ', h('span.muted', {}, 'Lv ' + m.lv)), h('div', {}, typeBadge(sp.type), sp.type2 ? typeBadge(sp.type2) : null, m.status ? h('span.status', { style: { background: STATUS[m.status].color } }, STATUS[m.status].short) : null),
+    h('div.meta', {}, h('div.name', {}, nameOf(m) + (m.shiny ? ' ✨' : '') + (game.save.companion === m.uid ? ' 🐾' : '') + '  ', h('span.muted', {}, 'Lv ' + m.lv)), h('div', {}, typeBadge(sp.type), sp.type2 ? typeBadge(sp.type2) : null, m.status ? h('span.status', { style: { background: STATUS[m.status].color } }, STATUS[m.status].short) : null),
       hpBar(m.hp, max), h('div.sub', {}, m.hp + ' / ' + max + ' KP')));
 }
 
@@ -67,7 +68,7 @@ export function openPauseMenu(game, tab = 'team', { only = false } = {}) {
 const TAB_RENDER = {
   team(game, rerender) {
     const s = game.save;
-    return h('div', {}, h('p.muted', {}, 'Wähle ein Taschi für Details. Das erste Taschi kämpft zuerst und begleitet dich.'),
+    return h('div', {}, h('p.muted', {}, 'Wähle ein Taschi für Details. Das erste Taschi kämpft zuerst; deinen Begleiter wählst du frei (🐾).'),
       h('div.grid', {}, s.team.map((m, i) => monCard(game, m, i, () => openStatus(game, m, rerender)))),
       h('p.muted', {}, 'Im Lager: ' + s.box.length + ' Taschis · Lager im Heilzentrum verwalten.'));
   },
@@ -197,6 +198,9 @@ export function openStatus(game, m, after) {
     h('div', {},
       h('div.statgrid', {}, 'KP', hpBar(m.hp, maxHp(m)), h('b', {}, m.hp + '/' + maxHp(m)), ...stat('atk', 'Angriff'), ...stat('def', 'Verteidigung'), ...stat('speed', 'Initiative'),
         'EP', h('div.bar.xp', {}, h('i', { style: { width: m.xp / xpToNext(m.lv) * 100 + '%' } })), h('b', {}, m.xp + '/' + xpToNext(m.lv))),
+      (() => { const n = natureOf(m), ab = abilityOf(m.id), L = { atk: 'Angriff', def: 'Verteidigung', speed: 'Initiative' };
+        return h('div.list', {}, h('div.row', {}, h('div.grow', {}, h('b', {}, 'Wesen: ' + n.name + (m.shiny ? '  ✨ schillernd' : '')), h('div.muted', {}, n.up ? L[n.up] + ' +10 %, ' + L[n.down] + ' −10 %' : 'Keine Wertänderung'))),
+          h('div.row', {}, h('div.grow', {}, h('b', {}, 'Fähigkeit: ' + ab.name), h('div.muted', {}, ab.text)))); })(),
       h('h3', {}, 'Attacken'),
       h('div.list', {}, m.moves.map(x => { const mv = MOVES[x.id]; return h('div.row', {}, h('div.grow', {}, typeBadge(mv.type), ' ', h('b', {}, mv.name), h('div.muted', {}, (mv.power ? 'Stärke ' + mv.power + ' · ' : 'Status · ') + 'Genauigkeit ' + Math.round(mv.acc * 100) + '% ' + (mv.desc ? '· ' + mv.desc : ''))), h('span.right', {}, x.pp + '/' + mv.pp + ' AP')); })),
       h('h3', {}, 'Entwicklung'),
@@ -204,13 +208,14 @@ export function openStatus(game, m, after) {
       h('p.muted', {}, describeEvolution(m.id) ? 'Nächste Stufe ' + describeEvolution(m.id) : 'Letzte Entwicklungsstufe.'),
       h('div.optrow', {},
         h('button.chip.focusable', { onclick: () => { const i = s.team.indexOf(m); if (i > 0) { s.team.splice(i, 1); s.team.unshift(m); game.world.refreshFollower(); game.ui.toast(nameOf(m) + ' führt jetzt das Team an.'); } } }, 'An die Spitze'),
+        h('button.chip.focusable', { onclick: () => { s.companion = s.companion === m.uid ? undefined : m.uid; game.world.refreshFollower(); game.ui.toast(s.companion ? nameOf(m) + ' ist jetzt dein Begleiter.' : 'Begleiter: erstes Taschi im Team.', '🐾'); game.ui.pop(screen); openStatus(game, m, after); } }, s.companion === m.uid ? '🐾 Begleiter (aktiv)' : '🐾 Als Begleiter'),
         h('button.chip.focusable', { onclick: () => openMoveManager(game, m, () => { game.ui.pop(screen); openStatus(game, m, after); }) }, 'Attacken verwalten'),
         h('button.chip.focusable', { onclick: async () => { const n = prompt('Spitzname für ' + sp.name + ' (leer = keiner):', m.nick || ''); if (n !== null) { m.nick = n.trim().slice(0, 14) || undefined; game.ui.toast('Gespeichert'); } } }, 'Spitzname'))));
   const screen = { el: panel(game, nameOf(m) + ' · Lv ' + m.lv, body) };
   screen.onBack = () => game.ui.pop(screen);
   screen.onClose = () => { game.preview.detach(); after && after(); };
   game.ui.push(screen);
-  requestAnimationFrame(() => { const v = screen.el.querySelector('#statusview'); if (v) { game.preview.attach(v); game.preview.showCreature(m.id); } });
+  requestAnimationFrame(() => { const v = screen.el.querySelector('#statusview'); if (v) { game.preview.attach(v); game.preview.showCreature(m.id, { shiny: !!m.shiny }); } });
 }
 
 // Move manager: forget moves and let the move reminder teach moves this

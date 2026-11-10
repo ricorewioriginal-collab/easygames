@@ -921,7 +921,7 @@ export class Game {
     if (res.outcome === 'caught') {
       const c = res.caught;
       c.caughtIn = region; c.ball = res.ball;
-      s.dex[c.id] = 2;
+      s.dex[c.id] = 2; this.dexRewards();
       s.stats.caught = (s.stats.caught || 0) + 1;
       s.stats['caughtIn:' + Math.min(15, region)] = (s.stats['caughtIn:' + Math.min(15, region)] || 0) + 1;
       if (s.team.length < 6) s.team.push(c); else s.box.push(c);
@@ -982,9 +982,18 @@ export class Game {
       for (const id of offers) await this.offerMove(m, id);
     }
   }
+  // Taschidex milestones: rewards for every new chapter of the collection
+  dexRewards() {
+    const s = this.save, n = Object.values(s.dex).filter(v => v === 2).length;
+    const STEPS = [[10, { superball: 5 }], [25, { supertrank: 5, sternball: 2 }], [50, { levelbonbon: 3, sternball: 3 }], [100, { levelbonbon: 5, vitaltrank: 5 }], [150, { sternball: 10 }], [200, { levelbonbon: 10 }], [260, { sternball: 20, levelbonbon: 20 }]];
+    for (const [need, items] of STEPS) if (n >= need && !(s.flags.dexReward >= need)) {
+      s.flags.dexReward = need; P.grantReward(s, { items });
+      this.ui.toast('Taschidex: ' + need + ' Arten gefangen! Belohnung: ' + Object.entries(items).map(([k, v]) => v + '× ' + (ITEMS[k]?.name || k)).join(', '), '📕');
+    }
+  }
   evolveInWorld(m, ev) {
     this.audio.sfx('evolve');
-    this.save.dex[ev.to] = 2;
+    this.save.dex[ev.to] = 2; this.dexRewards();
     this.world.refreshFollower();
     return this.ui.say([{ text: 'Was? ' + SPECIES[ev.from].name + ' entwickelt sich … zu ' + SPECIES[ev.to].name + '!' }]);
   }

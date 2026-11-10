@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "ddc9c3da03b9",
- "generated": "2026-11-10T17:18:51+01:00",
- "commit": "16029d99764f1185e2c301819557e4c319a8d8ff",
+ "version": "12d3a76b028c",
+ "generated": "2026-11-10T17:24:03+01:00",
+ "commit": "8e73b4407610b9196175f840eab3a20c2feb4c74",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8132,6 +8132,11 @@
    "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
   },
   {
+   "p": "riftzone/client/public/heightmap.bin",
+   "s": 1182722,
+   "h": "121bcf27e4e7d5dda62e7ed7e061d76a1f8e4dec907c9978a3a32900d5ef6d97"
+  },
+  {
    "p": "riftzone/client/src/ui/styles.css",
    "s": 30181,
    "h": "28c5e1ddb893c40dd6896ecc6a3d7d5ee09244423276d839b5aecb7a32579129"
@@ -8839,7 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256786,
-   "h": "ea8670536c463da6ff372da6749363ae635a70fd69a58119b8a1a6bab60506f5"
+   "h": "ac8a88215bf6e26e30585129710601047112f834cb8b11363dcb7ed0d1ce5a68"
   },
   {
    "p": "taschi/card.svg",
@@ -8988,18 +8993,18 @@
   },
   {
    "p": "taschi/src/game/battle-scene.js",
-   "s": 39264,
-   "h": "2ae05bb63ba154b96aa60ef25ca591ad8e22bbd4e04c1c3851ffd95d305c3734"
+   "s": 39650,
+   "h": "0ec1668e933caf274e00f7a8dd15331dce358135b2686ccfe869c8ea7119b2d6"
   },
   {
    "p": "taschi/src/game/game.js",
-   "s": 63227,
-   "h": "ac96ef23fd79913b629b38cf0bec18950b1a3e974551444563dd776a10f7c730"
+   "s": 64027,
+   "h": "60f29156f69062d93983d04f12f559f96337cd70efb92e71e16bd63799fc6fcc"
   },
   {
    "p": "taschi/src/game/world.js",
-   "s": 30900,
-   "h": "43bb388b3dc5ffd1a0bbc27a4ebac0adb4650ab82e031c7da732e21540548433"
+   "s": 31141,
+   "h": "ab09c351e36236b532c4f326dcdb9db9a80f10ef9747622986afb221ddaf3afb"
   },
   {
    "p": "taschi/src/logic/ai.js",
@@ -9008,13 +9013,13 @@
   },
   {
    "p": "taschi/src/logic/battle.js",
-   "s": 21600,
-   "h": "ac0ef540646a5fcb4436d24ea5b68e173a8a945822dd22cd26b9a79bb7892dc5"
+   "s": 22136,
+   "h": "ad2e80b643dc334e90e720ec0a0c3272b92ee0a624a44303e8d1e060c32d8aea"
   },
   {
    "p": "taschi/src/logic/encounters.js",
-   "s": 3697,
-   "h": "4e761784d4b9e7dcba77ace3a584e58679978b5523ab74cf16d3da130ca936f5"
+   "s": 3801,
+   "h": "63e090d24b308c45607562a87085ee9a9bc8c5104e6292d31fbaad89dcc93aee"
   },
   {
    "p": "taschi/src/logic/items.js",
@@ -9028,8 +9033,8 @@
   },
   {
    "p": "taschi/src/logic/monster.js",
-   "s": 7485,
-   "h": "bd77b5fdfb40ee623332f0da6019f0900608fed33b2139727a24638cc3499529"
+   "s": 7667,
+   "h": "9ecc871d96fb936c5e3c0ec3766de5b49614bd26ccf68a7712206768ce649cec"
   },
   {
    "p": "taschi/src/logic/progress.js",
@@ -9043,8 +9048,13 @@
   },
   {
    "p": "taschi/src/logic/save.js",
-   "s": 14244,
-   "h": "1ea6367a27d7bd974b72a46ce7f80458d5c567a0125574f8af6f2c9d510f08d4"
+   "s": 14377,
+   "h": "0b5e6c552c91ba4370f8d1fa8a8a2b03ae4f7230f4602c6f5c96acdb9b29ede1"
+  },
+  {
+   "p": "taschi/src/logic/traits.js",
+   "s": 3257,
+   "h": "6240f332a09d5f07d6af4de1ca19fe365f8adf293d19814d2b2b13d65eab9625"
   },
   {
    "p": "taschi/src/logic/walkgrid.js",
@@ -9063,8 +9073,8 @@
   },
   {
    "p": "taschi/src/ui/menus.js",
-   "s": 27772,
-   "h": "e627994bec0d332e6133a2e868d93cb26066e53a0120aaedf764c23211025c70"
+   "s": 28820,
+   "h": "a64f100e2432714973aee82594b14967f5d8449701b8153dc93abb0076a373a7"
   },
   {
    "p": "taschi/src/ui/screens.js",

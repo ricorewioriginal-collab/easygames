@@ -2,6 +2,7 @@
 // Pure logic – no DOM, no Three.js – so it runs in Node tests and the browser.
 import { SPECIES, learnset, movesAtLevel } from '../data/species.js';
 import { MOVES } from '../data/moves.js';
+import { natureFactor, NATURES } from './traits.js';
 
 export const MAX_LEVEL = 70;
 export const TEAM_SIZE = 6;
@@ -21,7 +22,7 @@ export function statOf(m, stat) {
   const base = s[stat === 'hp' ? 'hp' : stat];
   const iv = (m.iv && m.iv[stat]) || 0;
   if (stat === 'hp') return Math.floor((2 * base + iv) * m.lv / 100) + m.lv + 10;
-  return Math.floor((2 * base + iv) * m.lv / 100) + 5;
+  return Math.floor((Math.floor((2 * base + iv) * m.lv / 100) + 5) * natureFactor(m, stat));
 }
 export const maxHp = (m) => statOf(m, 'hp');
 
@@ -55,7 +56,7 @@ export function makeMonster(id, lv, rng, extra = {}) {
     uid: newUid(rng), id, lv, xp: 0, hp: 1,
     iv: { hp: roll(), atk: roll(), def: roll(), speed: roll() },
     moves: movesAtLevel(id, lv).map(mid => ({ id: mid, pp: maxPP(mid) })),
-    status: null, friendship: 70, ...extra
+    status: null, friendship: 70, nature: rng ? rng.int(0, NATURES.length - 1) : Math.floor(Math.random() * NATURES.length), ...extra
   };
   m.hp = maxHp(m);
   return m;

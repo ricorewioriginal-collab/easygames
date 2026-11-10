@@ -55,6 +55,8 @@ function cleanMonster(m) {
     friendship: clampInt(m.friendship, 0, 255, 70)
   };
   if (typeof m.nick === 'string' && m.nick.trim()) out.nick = m.nick.trim().slice(0, 14);
+  if (Number.isInteger(m.nature) && m.nature >= 0 && m.nature < 10) out.nature = m.nature;
+  if (m.shiny === true) out.shiny = true;
   if (m.caughtIn !== undefined) out.caughtIn = m.caughtIn;
   if (m.ball && ITEMS[m.ball]) out.ball = m.ball;
   out.xp = clampInt(m.xp, 0, xpToNext(out.lv) - 1, 0);
