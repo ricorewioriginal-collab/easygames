@@ -416,6 +416,8 @@
     if (!padOn && (s.b.length || s.d.join('') !== '0000' || s.ls.join('') !== '0000' || Math.abs(s.rs[0]) > 0.4 || Math.abs(s.rs[1]) > 0.4)) setPad(true);
     if (padOn && now > badgeT) { badgeT = now + 400; drawBadges(); }
     if (s.b[8] && s.b[9] && !(p.b[8] && p.b[9])) { releaseAll(); menuOpen(); return; }   // Select + Start: Belegung ansehen und ändern
+    for (i = 0; i < 4; i++) if ((s.d[i] && !p.d[i]) || (s.ls[i] && !p.ls[i])) dirT = root.performance.now();
+    if (!osk && s.b[0] && !p.b[0]) { var fa = doc.activeElement; if (fa && oskField(fa) && usable(fa)) { releaseAll(); oskOpen(fa); return; } }   // A auf einem Textfeld: Tastatur
     if (now > oskScanT) { oskScanT = now + 300; if (oskScan()) return; }   // neu erschienenes Textfeld (Name, Code …) → Tastatur
     var HN = hudBtn();
     if (HN && !dlg) {   // Select (bzw. hud=l3/r3) gedrückt halten: Knöpfe auf dem Bildschirm (Tasche, Menü, Karte …) mit dem Controller wählen
@@ -675,12 +677,16 @@
   function oskScan() {   // Textfelder, die gerade sichtbar geworden sind (Spiel öffnet ein Eingabefenster)
     var now = [], all = doc.querySelectorAll('input,textarea,[contenteditable=""],[contenteditable=true]'), fresh = null, a = doc.activeElement, i;
     for (i = 0; i < all.length; i++) if (oskField(all[i]) && usable(all[i])) now.push(all[i]);
-    if (oskVis) for (i = 0; i < now.length && !fresh; i++) if (oskVis.indexOf(now[i]) < 0) fresh = now[i];
+    var nf = 0; if (oskVis) for (i = 0; i < now.length; i++) if (oskVis.indexOf(now[i]) < 0) { nf++; if (!fresh) fresh = now[i]; }
     oskVis = now;
+    if (nf > 1) return false;   // mehrere Felder auf einmal (Formular, z. B. drei Welten mit Startwert): nicht ungefragt hineinspringen – A auf dem Feld öffnet die Tastatur
     if (!fresh || menu || (a && a !== doc.body && oskField(a))) return false;
     try { fresh.focus({ preventScroll: true }); } catch (x) { } oskOpen(fresh); return true;
   }
-  doc.addEventListener('focusin', function (ev) { if (padOn && enabled && running && !menu && oskField(ev.target)) oskOpen(ev.target); });
+  // Fokus kommt aufs Textfeld: Tastatur auf – außer man wandert gerade mit dem Steuerkreuz durchs Menü (dann erst mit A)
+  var dirT = -1e9;
+  doc.addEventListener('focusin', function (ev) { if (padOn && enabled && running && !menu && oskField(ev.target) && root.performance.now() - dirT > 400 && !dirHeld()) oskOpen(ev.target); });
+  function dirHeld() { var l = pads(); for (var i = 0; i < l.length; i++) { var g = l[i], b = g.buttons || [], x = g.axes || []; for (var k = 12; k < 16; k++) if (b[k] && b[k].pressed) return true; if (Math.abs(x[0] || 0) > 0.5 || Math.abs(x[1] || 0) > 0.5) return true; } return false; }   // Spiel liest den Controller oft vor uns im selben Bild
   root.addEventListener('pointerdown', function (ev) { if (osk && ev.isTrusted && oskEl && !oskEl.contains(ev.target)) oskClose(); }, true);   // Maus/Finger daneben: echte Tastatur übernimmt
   // ---------- Dialog-Hilfe (Spiele mit eigener Controller-Steuerung, data-pad="info") ----------
   // Liegt in der Bildmitte ein Fenster mit Knöpfen (kein Spielbild) und hat das Spiel den Fokus nicht selbst hineingesetzt, übernimmt
