@@ -658,8 +658,8 @@ function talkMira(){const st=S.stage;
   if(st===7)return say([['Mira','Du hast es geschafft ... Das Summen ist leiser geworden.'],['Zotik','Der Wolf wollte nur beschützen, was hinter dem Tor liegt.'],['Mira','Du hörst mehr als alle anderen, Zotik. Es gibt Dinge, die ich dir noch nicht gesagt habe. Aber bald.'],['Professorium','Und ich habe Koordinaten: Das nächste Weltentor führt nach Elaris!']],()=>{gainXp(120);setStage(8,true);sfx('level');banner('Kapitel 1 geschafft','Das Weltentor führt nach Elaris');toast('🏆 Kapitel 1: Lunaris abgeschlossen');refreshQuest();saveGame(true);setTimeout(()=>lyraBridge(),1800)});
   say([[ 'Mira',pick(['Das Dorf ist wieder ruhig. Danke, Zotik.','Hörst du das? Nichts. Zum ersten Mal seit Wochen.','Elaris liegt hinter dem nächsten Tor. Aber erst ruhst du dich aus.'])]])}
 function talkProf(){const st=S.stage;
-  if(st>=8&&!S.fl.naut)return say([['Professorium','Zotik! Die Nautilux ist fertig. Messing, Kristall und ein bisschen Wahnsinn.'],['Zotik','Sie schwebt?'],['Professorium','Sie schwebt, rammt und ist erstaunlich schnell. Mit V steigst du ein und aus.'],['Professorium','Wenn du Solmera geschafft hast, baue ich ihr ein Tauchmodul ein.']],()=>{S.fl.naut=1;sfx('level');toast('🚤 Nautilux erhalten (V = ein-/aussteigen)');saveGame(true)});
-  if(st<4)return say([['Professorium','Aha! Der Weltenhörer! Meine Instrumente schlagen aus, sobald du näher kommst. Faszinierend!'],['Professorium','Komm wieder, wenn Mira dich zum Riss schickt. Ich bereite derweil die Klinge vor.']]);
+  if((st>=5)&&!S.fl.naut)return say([['Professorium','Zotik! Die Nautilux ist fertig. Messing, Kristall und ein bisschen Wahnsinn.'],['Zotik','Sie schwebt?'],['Professorium','Sie schwebt, rammt und ist erstaunlich schnell. Mit V steigst du ein und aus.'],['Professorium','Wenn du Solmera geschafft hast, baue ich ihr ein Tauchmodul ein.']],()=>{S.fl.naut=1;sfx('level');toast('🚤 Nautilux erhalten (V = ein-/aussteigen)');saveGame(true)});
+  if(st<4)return say([['Professorium','Aha! Der Weltenhörer! Meine Instrumente schlagen aus, sobald du näher kommst. Faszinierend!'],...(S.fl.naut?[]:[['Professorium','Und das hier ist meine Nautilux! Messing, Kristall und ein bisschen Wahnsinn. Sie schwebt, rammt und ist erstaunlich schnell – nimm sie mit.'],['Zotik','Wirklich? Danke!'],['Professorium','Einsteigen über das Kommando-Menü (Rufen) oder die Aktionstaste. Später baue ich ihr ein Tauchmodul und Flügel ein.']]),['Professorium','Komm wieder, wenn Mira dich zum Riss schickt. Ich bereite derweil die Klinge vor.']],()=>{if(!S.fl.naut){S.fl.naut=1;sfx('level');toast('🚤 Nautilux erhalten!');saveGame(true)}});
   if(st===4)return say([['Professorium','Da bist du! Mein Resonator hat die Quelle geortet: die Risshöhle, am Ende des Weges im Norden.'],['Zotik','Und was ist da drin?'],['Professorium','Ein Mondwolf, der den Riss bewacht. Hier, ich habe deiner Reiseklinge einen Mondkristall eingesetzt. Sie schneidet jetzt deutlich schärfer!'],['Zotik','Sie leuchtet. Danke, Professorium!'],['Professorium','Der Wolf heult, bevor er zuschlägt, und springt dich an. Weich dem Ring aus!']],()=>{S.blade=true;toast('⚔ Reiseklinge verbessert (+10 Angriff)');setStage(5)});
   if(st===5||st===6)return say([['Professorium','Denk dran: Lichtstoß für die Ferne, Funkenwirbel, wenn er dich umzingelt. Und trinke rechtzeitig!']]);
   say([['Professorium',pick(['Die Nautilux ist startklar. Naja, fast. Sie hat noch keinen Namen ... ach doch, den hat sie ja.','Weltenreisen sind eine Frage der Resonanz, mein Freund!','Ich habe den Mondkristall noch einmal vermessen. Er singt!'])]])}
@@ -1619,7 +1619,7 @@ function buildWorld(n){
     case 9:{const isl=Math.sin(x*.06+ph)*Math.sin(z*.06+1);return c-(pd>6&&isl<.15?14*sm(.15,-.15,isl)*sm(6,9,pd)*iw:0)}   // Abgründe zwischen Schwebeinseln
     default:return c}};
   const PADS=[[pathx(-118)+7*mir,-118,4],[pathx(-80)+11,-80,3],[pathx(-116)-12,-116,3],[pathx(-140)+9,-140,3]];
-  const pads=(q,x,z)=>{for(const [px,pz,r] of PADS){const d=Math.hypot(x-px,z-pz),k=1-sm(r,r+6,d);if(k>0)q+=(Math.max(-1,Math.min(2,q))-q)*k}return q};
+  const pads=(q,x,z)=>{for(const [px,pz,r] of PADS){const d=Math.hypot(x-px,z-pz),k=1-sm(r,r+6,d);if(k>0)q+=(Math.max(0,Math.min(2,q))-q)*k}return q};
   const tStyle=(q,x,z)=>wildMap(tStyle0(q,x,z),x,z);
   const tStyle0=(q,x,z)=>{switch(n){
     case 3:return Math.round(q/1.8)*1.8*.9;   // Valdoria: Terrassen der Stadt am Kanal
@@ -1639,7 +1639,8 @@ function buildWorld(n){
     const ex=Math.max(0,Math.abs(x)-125)+Math.max(0,z-72);return q-ex*ex*.02};
   if(n===11){const s0=cs();if(s0.st<7){s0.st=7;s0.bd=1;s0.k=5}}
   const sealed=()=>cs().st<5;
-  const blk=(x,z)=>{const hh=h(x,z);return hh>8.5||hh<-4.2||x<-128||x>128||z>76||z<-232||(z<-148&&sealed())};
+  const WATER={3:-1.6,5:-2.2,7:-4.6,9:-6}[n];
+  const blk=(x,z)=>{const hh=h(x,z);return hh>8.5||hh<-4.2||(WATER!==undefined&&hh<WATER+.25&&!(nSub()&&n!==7))||x<-128||x>128||z>76||z<-232||(z<-148&&sealed())};
   const zone=(x,z)=>z<-146?'cave':(z<-44?'forest':'village');
   const ims=[],edKeys=[],obs={};
   WLD={n,C,h,blocked:blk,zone,ims,edKeys,terr:null,zn:{village:[C.hubN,C.sub],forest:[C.wildN,'Gegner lauern hier'],cave:[C.depthN,C.X[4]],ruin:['Werkzeug-Ruine','Ein Rätsel aus alter Zeit']},path:pathx,mbg:null,spawn:[0,9]};
