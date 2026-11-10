@@ -10,9 +10,9 @@ export function createNautZone(c) {
 
   // See: Lage je Welt (vor dem Gelände festgelegt, damit die Mulde ins Gelände kommt)
   function lakeFor(n, pathx, wl) {
-    if ([5, 7, 9, 12].includes(n)) return null;   // Aqualis liegt unter dem Meer, Ignara hat Lava, Astralis ist Himmel
+    if ([5, 12].includes(n)) return null;   // Aqualis liegt unter dem Meer (dort taucht das U-Boot frei durch die Stadt)
     const side = n % 2 ? 1 : -1, z = -98, x = Math.max(-96, Math.min(96, pathx(z) + side * 60));
-    return { x, z, r: 21, wl: wl ?? -1, dep: 7 };
+    return { x, z, r: 21, wl: wl ?? -1, dep: 7, kind: n === 7 ? 'lava' : n === 9 ? 'cloud' : 'water' };   // Ignara: Lavasee (Hitzeschild), Astralis: Wolkenmeer
   }
   // innerhalb des Radius liegt alles unter Wasser (Mulde bis dep tief), dahinter steigt ein Ufer an und geht ins Gelände über
   const carve = (L, q, x, z) => { if (!L) return q; const d = Math.hypot(x - L.x, z - L.z); if (d > L.r * 1.35) return q;
@@ -47,8 +47,9 @@ export function createNautZone(c) {
   function medium() {
     if (!c.naut.on) return null; const p = c.pl;
     if (c.nAir() && p.y > c.hgt(p.x, p.z) + 5) return 'sky';
+    if (c.nSub() && c.aqua && c.aqua()) return p.y > c.hgt(p.x, p.z) + 2.5 ? 'deep' : null;
     const L = lakeAt(p.x, p.z); if (!L) return null;
-    return c.nSub() && p.y < L.wl - .6 ? 'deep' : 'sea';
+    return c.nSub() && L.kind === 'water' && p.y < L.wl - .6 ? 'deep' : 'sea';
   }
 
   function treasure(id, x, z, y, rw, vis, name) {
@@ -74,13 +75,20 @@ export function createNautZone(c) {
       for (let k = 0; k < 2; k++) addFoe('sky', x + R2(R, -12, 12), y + R2(R, 2, 7), z + R2(R, -12, 12), tint.clone().offsetHSL(.05 * k, 0, -.1).getHex(), { x, y: y + 4, z, r: 14 });
     }
     if (lake) {
-      const wm = new T.MeshStandardMaterial({ color: 0x2a8ad0, transparent: true, opacity: .78, emissive: 0x0a3a6a, emissiveIntensity: .45, roughness: .12, metalness: .25, depthWrite: false, side: T.DoubleSide });
+      const K = { water: [0x2a8ad0, 0x0a3a6a], lava: [0xff5a10, 0xff3000], cloud: [0xf4f6ff, 0x8a9ac0] }[lake.kind] || [0x2a8ad0, 0x0a3a6a];
+      const wm = new T.MeshStandardMaterial({ color: K[0], transparent: true, opacity: .78, emissive: K[1], emissiveIntensity: .45, roughness: .12, metalness: .25, depthWrite: false, side: T.DoubleSide });
       const w = new T.Mesh(new T.CircleGeometry(lake.r * 1.3, 48), wm); w.rotation.x = -Math.PI / 2; w.position.set(lake.x, lake.wl, lake.z); w.renderOrder = 2; scene.add(w); Z.water = wm;
-      treasure(n + 'deep0', lake.x + 3, lake.z - 2, c.hgt(lake.x + 3, lake.z - 2), { shards: 90 + n * 25, potions: 2 }, () => c.nSub() && c.pl.y < lake.wl - 1, 'Tiefseeschatz');
+      if (lake.kind === 'water') treasure(n + 'deep0', lake.x + 3, lake.z - 2, c.hgt(lake.x + 3, lake.z - 2), { shards: 90 + n * 25, potions: 2 }, () => c.nSub() && c.pl.y < lake.wl - 1, 'Tiefseeschatz');
       const fx = lake.x - lake.r * .55, fz = lake.z + lake.r * .3, crate = mk(G.box, M(0x7a5a30), fx, lake.wl + .2, fz, 1.2, .8, 1.2); scene.add(crate);
       treasure(n + 'sea0', fx, fz, lake.wl + .6, { shards: 50 + n * 15 }, () => c.naut.on && !c.nAir() && !!lakeAt(c.pl.x, c.pl.z), 'Treibgut');
-      for (let k = 0; k < 3; k++) { const a = k * 2.1; addFoe('sea', lake.x + Math.cos(a) * lake.r * .5, lake.wl, lake.z + Math.sin(a) * lake.r * .5, 0x3a8a6a, { x: lake.x, y: lake.wl, z: lake.z, r: lake.r * .6 }); }
-      for (let k = 0; k < 3; k++) { const a = k * 2.1 + 1; addFoe('deep', lake.x + Math.cos(a) * lake.r * .4, lake.wl - 4, lake.z + Math.sin(a) * lake.r * .4, 0x5a4a8a, { x: lake.x, y: lake.wl - 4, z: lake.z, r: lake.r * .45 }); }
+      for (let k = 0; k < 3; k++) { const a = k * 2.1; addFoe('sea', lake.x + Math.cos(a) * lake.r * .5, lake.wl, lake.z + Math.sin(a) * lake.r * .5, lake.kind === 'lava' ? 0xc8401a : lake.kind === 'cloud' ? 0xc8d8ff : 0x3a8a6a, { x: lake.x, y: lake.wl, z: lake.z, r: lake.r * .6 }); }
+      if (lake.kind === 'water') for (let k = 0; k < 3; k++) { const a = k * 2.1 + 1; addFoe('deep', lake.x + Math.cos(a) * lake.r * .4, lake.wl - 4, lake.z + Math.sin(a) * lake.r * .4, 0x5a4a8a, { x: lake.x, y: lake.wl - 4, z: lake.z, r: lake.r * .45 }); }
+    }
+    if (n === 5) for (let i = 0; i < 4; i++) {   // Aqualis: versunkene Ruinen hoch in der Stadt, nur mit dem U-Boot erreichbar
+      const x = R2(R, -90, 90), z = R2(R, -170, 20), y = Math.max(0, c.hgt(x, z)) + R2(R, 9, 15), g = new T.Group(); g.position.set(x, 0, z);
+      for (const s2 of [-1, 1]) g.add(mk(G.cyl, M(0x6a8a9a, { r: .8 }), s2 * 2.2, y / 2, 0, .6, y, .6)); g.add(mk(G.box, M(0x7a9aaa, { r: .8 }), 0, y + .3, 0, 6, .6, 3)); scene.add(g);
+      treasure(n + 'ruin' + i, x, z, y + .6, { shards: 120 + n * 20, potions: 1 }, () => c.nSub() && Math.abs(c.pl.y - y) < 6, 'Versunkener Schatz');
+      for (let k = 0; k < 2; k++) addFoe('deep', x + R2(R, -8, 8), y + R2(R, -2, 3), z + R2(R, -8, 8), 0x3a6aa0, { x, y: y + 1, z, r: 9 });
     }
     c.anim(t => { if (Z && Z.water && Z.n === n) Z.water.opacity = .74 + .06 * Math.sin(t * 1.7); });
   }
@@ -106,7 +114,7 @@ export function createNautZone(c) {
       let tx = f.hx + Math.cos(f.a) * f.hr, ty = f.hy + (f.kind === 'sky' ? Math.sin(f.a * 2) * 2 : 0), tz = f.hz + Math.sin(f.a) * f.hr;
       if (on) { const k = d > 11 ? .55 : -.2; tx = f.x + dx * k; tz = f.z + dz * k; if (f.kind !== 'sea') ty = f.y + dy * .5; }
       if (f.kind === 'sea') { ty = Z.lake.wl - .3; const L = Z.lake, dl = Math.hypot(tx - L.x, tz - L.z); if (dl > L.r * .85) { tx = L.x + (tx - L.x) / dl * L.r * .85; tz = L.z + (tz - L.z) / dl * L.r * .85; } }
-      if (f.kind === 'deep') { const L = Z.lake; ty = Math.min(L.wl - 1.5, Math.max(c.hgt(f.x, f.z) + 1.2, ty)); const dl = Math.hypot(tx - L.x, tz - L.z); if (dl > L.r * .8) { tx = L.x + (tx - L.x) / dl * L.r * .8; tz = L.z + (tz - L.z) / dl * L.r * .8; } }
+      if (f.kind === 'deep' && Z.lake) { const L = Z.lake; ty = Math.min(L.wl - 1.5, Math.max(c.hgt(f.x, f.z) + 1.2, ty)); const dl = Math.hypot(tx - L.x, tz - L.z); if (dl > L.r * .8) { tx = L.x + (tx - L.x) / dl * L.r * .8; tz = L.z + (tz - L.z) / dl * L.r * .8; } }
       const k = Math.min(1, dt * (on ? 1.6 : .8)); f.x += (tx - f.x) * k; f.y += (ty - f.y) * k; f.z += (tz - f.z) * k;
       f.m.g.position.set(f.x, f.y + (f.kind === 'sea' ? Math.max(0, Math.sin(time * 2 + f.a)) * .4 : 0), f.z); f.m.g.rotation.y = Math.atan2(on ? dx : tx - f.x, on ? dz : tz - f.z);
       f.m.b.rotation.z = f.kind === 'sky' ? Math.sin(time * 3 + f.a) * .25 : 0; f.m.b.position.y = f.kind === 'deep' ? Math.sin(time * 2 + f.a) * .2 : 0;

@@ -994,8 +994,8 @@ function updatePlayer(dt){
   const mvx=(pl.vx+pl.kx)*dt,mvz=(pl.vz+pl.kz)*dt,ns=Math.min(10,Math.max(1,Math.ceil(Math.hypot(mvx,mvz)/.3)));pl.kx*=Math.exp(-9*dt);pl.kz*=Math.exp(-9*dt);
   for(let q=0;q<ns;q++){const nx=pl.x+mvx/ns,nz=pl.z+mvz/ns;if(!pBlocked(nx,nz)){pl.x=nx;pl.z=nz}else if(!pBlocked(nx,pl.z))pl.x=nx;else if(!pBlocked(pl.x,nz))pl.z=nz;pushOut(pl,.5)}
   let ty=hgt(pl.x,pl.z)+naut.lift;{const gh=hgt(pl.x,pl.z),LK=naut.on&&!nAir()?NZ().lakeAt(pl.x,pl.z):null;
-    if(nAir()){naut.alt=Math.max(gh+3,Math.min(80,(naut.alt??gh+6)+(nUp()?11:nDn()?-11:0)*dt));ty=naut.alt}
-    else if(LK){if(nSub()){naut.dep=Math.max(gh+1,Math.min(LK.wl+.1,(naut.dep??LK.wl-2.5)+(nUp()?5:nDn()?-5:0)*dt));ty=naut.dep}else ty=LK.wl+.1}
+    if(nAir()||(nSub()&&curCh===5)){naut.alt=Math.max(gh+(nAir()?3:.6),Math.min(80,(naut.alt??gh+6)+(nUp()?11:nDn()?-11:0)*dt));ty=naut.alt}
+    else if(LK){if(nSub()&&LK.kind==='water'){naut.dep=Math.max(gh+1,Math.min(LK.wl+.1,(naut.dep??LK.wl-2.5)+(nUp()?5:nDn()?-5:0)*dt));ty=naut.dep}else ty=LK.wl+.1}
     else naut.dep=null;nMedHint()}
   pl.y+=(ty-pl.y)*Math.min(1,dt*18);if(Math.abs(pl.y-ty)>1.5)pl.y=ty;
   if(pl.atk>=0){pl.atkT+=dt*formSpd();const du=ATD[pl.combo];if(!pl.hit&&pl.atkT>du*.42){pl.hit=true;doHit()}if(pl.atkT>=du){pl.atk=-1;pl.comboT=.55;if(pl.buf>0){pl.buf=0;startAttack()}}}
@@ -1568,13 +1568,16 @@ function openCasino(){if(S.cas.off)return say([['Zotik','Das Casino ist geschlos
     const o=document.createElement('div');o.className='pzr';o.appendChild(pBtn('Casino ausschalten (Familienoption)',()=>{S.cas.off=true;closePuzzle();saveGame(true);toast('Casino geschlossen')},!!casRoll));W.appendChild(o)})}
 /* ---- Nautilux: Gleiter, U-Boot, Luftschiff, Riss-Form ---- */
 const naut={on:false,g:null,spin:null,f:0,ex:[],lift:0};
-const NF=[{n:'Gleiter',em:'🚤',ok:()=>!!S.fl.naut,sp:1.9,dm:.6},{n:'U-Boot',em:'🛥️',ok:()=>!!S.fl.naut&&chDone(4),sp:2,dm:.6},{n:'Luftschiff',em:'🎈',ok:()=>!!S.fl.naut&&chDone(7),sp:2.2,dm:.4},{n:'Riss-Form',em:'🔮',ok:()=>!!S.fl.naut&&chDone(10),sp:2.8,dm:.45}];
+/* Hauptstory: in einer Welt nur die Formen, die dort gebraucht werden; nach Abschluss der Welt alle (freies Erkunden) */
+const NSTORY={1:[0],2:[0],3:[0,1],4:[0],5:[1,0],6:[0,1],7:[0],8:[0,1],9:[2,0],10:[0,1,2],11:[0,1,2,3],12:[]};
+const nStory=k=>{try{const c=curCh;if(c===1?S.stage>=8:chDone(c))return true;return (NSTORY[c]||[0]).includes(k)}catch(e){return true}};
+const NF=[{n:'Gleiter',em:'🚤',ok:()=>!!S.fl.naut&&nStory(0),sp:1.9,dm:.6},{n:'U-Boot',em:'🛥️',ok:()=>!!S.fl.naut&&chDone(4)&&nStory(1),sp:2,dm:.6},{n:'Luftschiff',em:'🎈',ok:()=>!!S.fl.naut&&chDone(7)&&nStory(2),sp:2.2,dm:.4},{n:'Riss-Form',em:'🔮',ok:()=>!!S.fl.naut&&chDone(10)&&nStory(3),sp:2.8,dm:.45}];
 const NHINT=['','Taucht in Tiefsee-Becken (blaue Wasserflächen) zu Schatztruhen.','Fliegt über Klippen zu Himmelstruhen auf hohen Felsen.','Rammt mit voller Kraft und ist am schnellsten.'];
 const navM=()=>naut.on?NF[naut.f].sp*(keys.ShiftLeft&&S.fl.naut2&&!nAir()&&!nSub()?1.37:1):1;
 let nMed=null;function nMedHint(){const m=NZ().medium();if(m===nMed)return;nMed=m;if(!m)return;const k='nm_'+m;if(S.fl[k])return;S.fl[k]=1;toast({sky:'🎈 Himmel: A halten = steigen, B halten = sinken. Die Nautilux feuert selbst auf Wolkenrochen – Himmelsinseln tragen Schätze.',sea:'⛵ Die Nautilux fährt als Schiff über den See. Seeschlangen greifen an, Treibgut lässt sich bergen.',deep:'🛥️ Abtauchen: A halten = steigen, B halten = sinken. Am Grund liegt ein Tiefseeschatz – Vorsicht vor Tiefseefischen.'}[m])}
 const nAir=()=>naut.on&&naut.f===2,nSub=()=>naut.on&&naut.f===1;
 const poolB=(x,z)=>{const q=WLD&&WLD.pool;return !!q&&Math.hypot(x-q.x,z-q.z)<q.r};
-const pBlocked=(x,z)=>{if(naut.on&&!nAir()&&NZ().lakeAt(x,z))return false;if(nAir())return x<-128||x>128||z>76||z<-232||(z<-148&&(WLD?WLD.sealedNow():!lunOpen()));if(poolB(x,z))return !nSub();return blocked(x,z)};
+const pBlocked=(x,z)=>{if(naut.on&&!nAir()&&NZ().lakeAt(x,z))return false;if(nAir()||(nSub()&&curCh===5&&pl.y>hgt(x,z)+1))return x<-128||x>128||z>76||z<-232||(z<-148&&(WLD?WLD.sealedNow():!lunOpen()));if(poolB(x,z))return !nSub();return blocked(x,z)};
 function makeNaut(){const g=new T.Group(),br=M(0xc89a4a,{m:.6,r:.35}),dk=M(0x5a4a3a,{r:.6}),gl=M(0x9ae8ff,{e:0x4ac8ff,ei:.8});
   g.add(mk(G.sph,br,0,.9,0,1.5,.9,2.2));g.add(mk(G.sph,gl,0,1.55,.55,.85,.62,.95,false));g.add(mk(G.box,dk,0,1.5,-1.9,.12,.95,.9));
   for(const s of [-1,1])g.add(mk(G.box,dk,s*1.3,.7,-.2,.8,.1,.7));
@@ -2563,7 +2566,7 @@ function obBuild(id,t,x,z,hw,hd,grp){const y=hgt(x,z);let m;const o={id,t,x,z,hw
 const RUIN={1:['block'],2:['block','hook'],3:['crack','block2'],4:['thorn','torch2'],5:['crack','water'],6:['thorn','hook'],7:['block','water','crack2'],8:['torch','hook','thorn2'],9:['crack','water','torch2'],10:['block','hook','thorn2']};
 const RUIN_PZ={1:'tones',2:'statues',3:'lights',4:'pairs',5:'orbs',6:'tones',7:'lights',8:'statues',9:'pairs',10:'orbs'};
 const RUIN_AREA={tones:{x0:-11,x1:11,z0:341.4,z1:344.4},lights:{x0:-12.2,x1:-3.4,z0:334,z1:343},statues:{x0:-12.5,x1:-3.5,z0:334,z1:343},pairs:{x0:-12.5,x1:-3.5,z0:334.5,z1:343.5},orbs:{x0:-12,x1:12,z0:334,z1:344}};
-let _nz=null;const NZ=()=>_nz||(_nz=createNautZone({T,mk,G,M,glow,scene,hgt:(x,z)=>hgt(x,z),pl,naut,nAir:()=>nAir(),nSub:()=>nSub(),S:()=>S,eLevel:b=>eLevel({base:'rift'},b),eHp,eDm,INT,anim:fn=>animObjs.push({fn}),makeChest,sfx,toast,emit:(...a)=>emit(...a),save:()=>saveGame(true),hurtP:(...a)=>hurtP(...a),gainXp:n=>gainXp(n),atkV:()=>atkV(),dnum:(...a)=>dnum(...a)}));
+let _nz=null;const NZ=()=>_nz||(_nz=createNautZone({T,mk,G,M,glow,scene,hgt:(x,z)=>hgt(x,z),pl,naut,nAir:()=>nAir(),nSub:()=>nSub(),S:()=>S,eLevel:b=>eLevel({base:'rift'},b),eHp,eDm,INT,anim:fn=>animObjs.push({fn}),makeChest,sfx,toast,emit:(...a)=>emit(...a),save:()=>saveGame(true),hurtP:(...a)=>hurtP(...a),gainXp:n=>gainXp(n),aqua:()=>curCh===5&&!!WLD,atkV:()=>atkV(),dnum:(...a)=>dnum(...a)}));
 const nUp=()=>!!(keys.KeyJ||keys.KeyK||keys.Enter||X.upHold),nDn=()=>!!(keys.Space||keys.ShiftLeft||keys.ShiftRight);
 let _rms=null;const RMS=()=>_rms||(_rms=createRooms({T,mk,G,M,glow,scene,hgt:(x,z)=>hgt(x,z),INT,anim:fn=>animObjs.push({fn}),pl,toast,sfx,tone,emit:(...a)=>emit(...a)}));
 const RUIN_GEAR={1:'c_mond',2:'a_rinde',3:'w_dorn',4:'c_glocke',5:'a_koralle',6:'a_frost',7:'w_glut',8:'c_glueck',9:'w_stern',10:'a_stern'};
@@ -2572,12 +2575,14 @@ function buildRuin(n,col,outside){const P=n+'r',spec=RUIN[n]||RUIN[1],wc=col||0x
   /* Außenmauern mit Eingang im Süden */
   obWall(0,333,13,.5,wc);obWall(-13,350,.5,17,wc);obWall(13,350,.5,17,wc);obWall(-7.5,367,5.5,.5,wc);obWall(7.5,367,5.5,.5,wc);
   /* Zwischenwände mit Durchgang (x -2..2) */
-  for(const z of [355,345]){obWall(-7.5,z,5.5,.5,wc);obWall(7.5,z,5.5,.5,wc)}
+  /* Durchgänge je Welt an anderer Stelle (links, Mitte, rechts) – jede Ruine ist anders aufgebaut */
+  const DX={355:[0,-6,6,-6,6,0,6,-6,0,6,-6][n-1]??0,345:[6,6,-6,0,-6,-6,0,6,6,-6,0][n-1]??0};
+  for(const z of [355,345]){const gx=DX[z],l=gx-2,r=gx+2;obWall((-13+l)/2,z,(l+13)/2,.5,wc);obWall((r+13)/2,z,(13-r)/2,.5,wc)}
   let gi=0;const gap=(kind,z,room)=>{const g=P+'g'+(gi++);
-    if(kind==='crack'||kind==='thorn')obBuild(g,kind,0,z,2,.5);
-    else if(kind==='block'){obBuild(g,'gate',0,z,2,.5,g);const rz=room;obBuild(g+'b','block',-4,rz,.9,.9);obBuild(g+'p','plate',4,rz,.9,.9,g)}
-    else if(kind==='torch'){obBuild(g,'gate',0,z,2,.5,g);obBuild(g+'t1','torch',-10.5,z+1.8,.4,.4,g);obBuild(g+'t2','torch',10.5,z+1.8,.4,.4,g)}};
-  const strip=(kind)=>{const g=P+'s';if(kind==='water')obBuild(g,'water',0,350,12.5,1.5);else{obBuild(g,'deep',0,350,12.5,2.5);obBuild(g+'n','post',0,346,.3,.3);obBuild(g+'s','post',0,354,.3,.3)}};
+    const gx=DX[z];if(kind==='crack'||kind==='thorn')obBuild(g,kind,gx,z,2,.5);
+    else if(kind==='block'){obBuild(g,'gate',gx,z,2,.5,g);const rz=room;obBuild(g+'b','block',gx>0?gx-5:gx-4,rz,.9,.9);obBuild(g+'p','plate',gx>0?gx+4:gx+5,rz,.9,.9,g)}
+    else if(kind==='torch'){obBuild(g,'gate',gx,z,2,.5,g);obBuild(g+'t1','torch',-10.5,z+1.8,.4,.4,g);obBuild(g+'t2','torch',10.5,z+1.8,.4,.4,g)}};
+  const strip=(kind)=>{const g=P+'s';if(kind==='water')obBuild(g,'water',0,350,12.5,1.5);else{obBuild(g,'deep',0,350,12.5,2.5);const px=DX[345]>0?-6:6;obBuild(g+'n','post',px,346,.3,.3);obBuild(g+'s','post',px,354,.3,.3)   /* Pfosten seitlich, damit sie Tor/Ranken im Durchgang nicht verdecken */}};
   const sp=spec.slice();const k1=sp.shift();gap(k1,355,361);
   for(const k of sp){if(k==='water'||k==='hook')strip(k);else gap(k.replace(/\d$/,''),345,351.5)}
   /* Schatz im Norden */
