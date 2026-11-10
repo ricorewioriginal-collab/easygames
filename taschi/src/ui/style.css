@@ -211,3 +211,10 @@ input.name { pointer-events: auto; font: inherit; padding: 9px 12px; border-radi
 .evo { position: absolute; inset: 0; display: grid; place-items: end center; padding-bottom: 12vh; pointer-events: auto; }
 #cloudSlot:not(:empty) { background: rgba(255,253,246,.94); border-radius: 16px; padding: 8px 10px; color: var(--ink); box-shadow: var(--shadow); }
 #cloudSlot * { color: inherit; }
+/* Handy quer/klein: Kopf, Reiter und Fußzeile nie zusammendrücken (Reiter wurden abgeschnitten und vom Inhalt überdeckt), nur der Inhalt scrollt */
+.panel-head, .tabs, .panel-foot { flex-shrink: 0; }
+.panel-body { min-height: 0; }
+/* Startbildschirm: scrollt, wenn er nicht passt; die Versionszeile steht unter dem Menü statt darüber */
+#title { overflow-y: auto; justify-content: safe center; touch-action: pan-y; }
+#title .version { position: static; margin: 6px 0 4px; align-self: flex-end; }
+@media (max-height: 500px) { .panel-head { padding: 6px 12px; } .tab { padding: 6px 12px; } .panel-foot { padding: 4px 12px; } }
