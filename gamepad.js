@@ -683,13 +683,20 @@
     for (i = 0; i < all.length; i++) if (oskField(all[i]) && usable(all[i])) now.push(all[i]);
     var nf = 0; if (oskVis) for (i = 0; i < now.length; i++) if (oskVis.indexOf(now[i]) < 0) { nf++; if (!fresh) fresh = now[i]; }
     oskVis = now;
-    if (nf > 1) return false;   // mehrere Felder auf einmal (Formular, z. B. drei Welten mit Startwert): nicht ungefragt hineinspringen – A auf dem Feld öffnet die Tastatur
+    if (nf > 1 || (fresh && busyForm(fresh))) return false;   // mehrere Felder auf einmal (Formular, z. B. drei Welten mit Startwert): nicht ungefragt hineinspringen – A auf dem Feld öffnet die Tastatur
     if (!fresh || menu || (a && a !== doc.body && oskField(a))) return false;
     try { fresh.focus({ preventScroll: true }); } catch (x) { } oskOpen(fresh); return true;
   }
   // Fokus kommt aufs Textfeld: Tastatur auf – außer man wandert gerade mit dem Steuerkreuz durchs Menü (dann erst mit A)
   var dirT = -1e9;
-  doc.addEventListener('focusin', function (ev) { if (padOn && enabled && running && !menu && oskField(ev.target) && root.performance.now() - dirT > 400 && !dirHeld()) oskOpen(ev.target); });
+  doc.addEventListener('focusin', function (ev) { if (padOn && enabled && running && !menu && oskField(ev.target) && root.performance.now() - dirT > 400 && !dirHeld() && !busyForm(ev.target)) oskOpen(ev.target); });
+  // Feld mitten in einem Formular (Figuren-Editor mit vielen Knöpfen) oder schon ausgefüllt: Tastatur erst mit A – sonst verdeckt sie alles
+  function busyForm(f) {
+    if (f.value) return true;
+    var box = f.closest && f.closest('dialog,form,[role=dialog],section,aside,.panel,.modal'); if (!box) { box = f; for (var k = 0; k < 3 && box.parentElement; k++) box = box.parentElement; }
+    var n = 0, all = box.querySelectorAll(SEL); for (var i = 0; i < all.length && n <= 5; i++) if (all[i] !== f && usable(all[i])) n++;
+    return n > 5;
+  }
   function dirHeld() { var l = pads(); for (var i = 0; i < l.length; i++) { var g = l[i], b = g.buttons || [], x = g.axes || []; for (var k = 12; k < 16; k++) if (b[k] && b[k].pressed) return true; if (Math.abs(x[0] || 0) > 0.5 || Math.abs(x[1] || 0) > 0.5) return true; } return false; }   // Spiel liest den Controller oft vor uns im selben Bild
   root.addEventListener('pointerdown', function (ev) { if (osk && ev.isTrusted && oskEl && !oskEl.contains(ev.target)) oskClose(); }, true);   // Maus/Finger daneben: echte Tastatur übernimmt
   // ---------- Dialog-Hilfe (Spiele mit eigener Controller-Steuerung, data-pad="info") ----------
