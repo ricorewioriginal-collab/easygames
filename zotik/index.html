@@ -153,8 +153,39 @@ body.touch #deck{left:calc(max(10px,env(safe-area-inset-left)) + 112px);top:calc
 #combo{position:absolute;right:max(14px,env(safe-area-inset-right));top:36%;text-align:right;pointer-events:none;text-shadow:0 2px 8px #000;transform-origin:right center}#combo b{display:block;font-size:44px;line-height:1;font-weight:700;background:linear-gradient(#fff,#ffc861);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 4px rgba(0,0,0,.7))}#combo small{font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}#combo.pop{animation:cbp .18s ease-out}@keyframes cbp{from{transform:scale(1.35)}}
 @media (max-height:480px){#combo{top:46%}#combo b{font-size:32px}}
 #tl{position:absolute;left:50%;top:84px;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}#tl i{display:grid;justify-items:center;min-width:34px;padding:3px 6px;border-radius:10px;background:rgba(20,16,44,.62);border:1px solid var(--c);font-style:normal;color:#fff;font-size:11px}#tl i b{font-size:14px;color:var(--c)}#tl i.now{background:rgba(120,20,40,.75);animation:tlp .5s infinite alternate}@keyframes tlp{to{transform:scale(1.12)}}
+
+/* ===== Konsolen-Look (wie Kingdom Hearts): kantige Rahmen, Leiste links, Cursor, Tastenhinweise ===== */
+:root{--kh1:#0c1d48;--kh2:#061030;--khb:#3f78e8;--khg:#ffd45a}
+.glass{background:linear-gradient(160deg,rgba(14,32,84,.94),rgba(5,12,40,.96))!important;border:2px solid var(--khb)!important;border-radius:4px!important;box-shadow:0 0 0 1px #0a1640,0 0 24px rgba(63,120,232,.45),inset 0 0 30px rgba(63,120,232,.18)!important;clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px))}
+#menu{background:radial-gradient(ellipse at 30% 20%,rgba(20,50,130,.55),rgba(2,4,18,.88) 70%)!important}
+#mbox{width:min(980px,calc(100% - 20px))!important;height:min(640px,calc(100% - 20px))!important;max-height:none!important;display:grid!important;grid-template-columns:minmax(150px,230px) minmax(0,1fr)!important;grid-template-rows:auto minmax(0,1fr) auto auto!important;gap:8px 14px!important;padding:12px 18px!important}
+#mbox::before{content:'MENÜ';grid-column:1/-1;grid-row:1;font-size:26px;font-weight:800;font-style:italic;letter-spacing:.14em;color:var(--khg);text-shadow:0 2px 0 #3a2a00,0 0 14px rgba(255,212,90,.5);border-bottom:2px solid var(--khb);padding:0 0 4px 6px}
+#mbox::after{content:'Ⓐ Auswählen   Ⓑ Zurück   ☰ Schließen';grid-column:1/-1;grid-row:4;font-size:12px;letter-spacing:.06em;color:#9fb8ff;text-align:right;opacity:.85}
+#tabs{grid-column:1!important;grid-row:2!important;display:flex!important;flex-direction:column!important;gap:4px!important;overflow-y:auto;max-width:none!important}
+#tabs button{display:flex!important;align-items:center;gap:8px!important;justify-content:flex-start!important;padding:7px 12px 7px 18px!important;border:0!important;border-left:4px solid transparent!important;border-radius:0!important;background:linear-gradient(90deg,rgba(40,80,170,.55),rgba(20,40,100,.15))!important;color:#e8eeff!important;font-size:14px!important;font-weight:700!important;transform:skewX(-10deg);position:relative;text-align:left}
+#tabs button>*{transform:skewX(10deg)}
+#tabs button em{font-size:17px!important}
+#tabs button.on,#tabs button:hover,#tabs button:focus-visible{background:linear-gradient(90deg,#ffe48a,#f0b030)!important;color:#2a1700!important;border-left-color:#fff!important;box-shadow:0 0 14px rgba(255,212,90,.55)}
+#tabs button.on::before{content:'▶';position:absolute;left:-14px;color:var(--khg);transform:skewX(10deg);text-shadow:0 0 8px rgba(255,212,90,.8)}
+#mcont{grid-column:2!important;grid-row:2!important;background:rgba(4,10,34,.55);border:1px solid rgba(63,120,232,.45);padding:10px 14px!important;font-size:15px}
+#mcont h3{background:linear-gradient(90deg,rgba(63,120,232,.55),transparent);color:var(--khg)!important;padding:3px 10px;margin:10px -6px 6px!important;font-style:italic;letter-spacing:.04em;transform:skewX(-8deg)}
+#mcont .row{border-bottom:1px solid rgba(63,120,232,.25)!important}
+#mbox .mb{grid-column:1/-1!important;grid-row:3!important;display:flex;flex-wrap:wrap;gap:6px}
+#mbox .mb button,#mcont .trv,#mcont .cpb,.pzb,.pzd,.pzn{border-radius:0!important;border:1px solid var(--khb)!important;background:linear-gradient(180deg,#1e3a86,#0f2058)!important;color:#fff!important;font-weight:700;transform:skewX(-8deg)}
+#mbox .mb button.p,#mbox .mb button:hover,#mbox .mb button:focus-visible,.pzb:hover,.pzb:focus-visible,.pzd:hover,.pzd:focus-visible,.pzn:hover,.pzn:focus-visible{background:linear-gradient(180deg,#ffe48a,#f0b030)!important;color:#2a1700!important;border-color:#fff!important}
+@media (max-width:640px){#mbox{grid-template-columns:1fr!important;grid-template-rows:auto auto minmax(0,1fr) auto auto!important}#tabs{grid-column:1!important;grid-row:2!important;flex-direction:row!important;overflow-x:auto;overflow-y:hidden}#tabs button{flex:none}#mcont{grid-column:1!important;grid-row:3!important}#mbox .mb{grid-row:4!important}#mbox::after{grid-row:5}}
+#mbox .mb>*{flex:0 0 auto!important;width:auto!important;grid-column:auto!important}#mbox .mb button{padding:5px 12px!important;font-size:13px!important}#mbox .mb small,#mbox .mb>span{font-size:11px;max-width:220px}
+/* Rätsel als Konsolen-Fenster */
+#puz{background:radial-gradient(ellipse at 50% 30%,rgba(30,70,160,.5),rgba(2,4,18,.9) 70%)!important}
+#puz .glass{width:min(680px,calc(100% - 20px))!important;padding:18px 22px!important}
+#puz h3{font-size:24px!important;font-style:italic;letter-spacing:.08em;border-bottom:2px solid var(--khb);padding-bottom:6px;margin-bottom:10px!important;text-shadow:0 0 12px rgba(255,212,90,.45)}
+#pD{color:#c8d6ff;font-size:15px}
+#pW{display:flex;flex-wrap:wrap;justify-content:center;gap:14px!important;margin:16px 0!important;padding:14px;background:rgba(4,10,34,.6);border:1px solid rgba(63,120,232,.45)}
+#pW .pzd,#pW .pzn,#pW .pzb{transform:none!important;min-width:92px!important;min-height:92px;border-radius:50%!important;border:3px solid var(--khb)!important;background:radial-gradient(circle at 50% 35%,#2a4fa8,#0a1640 70%)!important;box-shadow:0 0 16px rgba(63,120,232,.6),inset 0 0 14px rgba(140,190,255,.35)}
+#pW .pzd:hover,#pW .pzn:hover,#pW .pzd:focus-visible,#pW .pzn:focus-visible{border-color:var(--khg)!important;box-shadow:0 0 22px rgba(255,212,90,.75),inset 0 0 14px rgba(255,212,90,.35)}
+#pH{background:rgba(255,212,90,.08);border-left:3px solid var(--khg);padding:6px 10px;text-align:left;color:#ffe9a8;font-size:14px}
 </style>
-  <script type="module" crossorigin src="./assets/index-B_P1hSaC.js"></script>
+  <script type="module" crossorigin src="./assets/index-C7W4KzeJ.js"></script>
 </head>
 <body>
 <canvas id="cv"></canvas><div id="vig"></div><div id="hurt"></div><div id="fx"></div>

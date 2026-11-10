@@ -97,6 +97,13 @@ function mergeStatic(root,skip){root.updateMatrixWorld(true);const inv=new T.Mat
     const me=new T.Mesh(mg,mat);me.castShadow=L.some(o=>o.castShadow);root.add(me);for(const o of L)o.parent.remove(o)}
   return root}
 function mergeChar(P,bodySkip,headSkip){if(P.head)mergeStatic(P.head,new Set((headSkip||[]).filter(Boolean)));mergeStatic(P.body,new Set([...(P.legs||[]),...(P.arms||[]),P.head,...(bodySkip||[])].filter(Boolean)));return P}
+/* Anime-Look für Figuren: Cel-Shading in drei Stufen und eine dunkle Konturlinie (wie bei Kingdom Hearts), statt matter Klötzchen-Optik */
+const TOONG=(()=>{const t=new T.DataTexture(new Uint8Array([110,110,110,255,185,185,185,255,255,255,255,255]),3,1,T.RGBAFormat);t.minFilter=t.magFilter=T.NearestFilter;t.needsUpdate=true;return t})();
+const TOONC=new Map();
+function toonOf(m){if(!m||!m.isMeshStandardMaterial)return m;let t=TOONC.get(m);if(!t){t=new T.MeshToonMaterial({color:m.color,vertexColors:m.vertexColors,map:m.map,gradientMap:TOONG,emissive:m.emissive,emissiveIntensity:m.emissiveIntensity,transparent:m.transparent,opacity:m.opacity});TOONC.set(m,t)}return t}
+const OUTM=(()=>{const m=new T.MeshBasicMaterial({color:0x1c1622,side:T.BackSide});m.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\n  transformed += normal * 0.016;')};return m})();
+function anime(root){const add=[];root.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||o.material===OUTM)return;if(o.material&&o.material.isMeshStandardMaterial){o.material=toonOf(o.material);if(!o.material.transparent&&o.geometry.attributes.normal&&o.geometry.attributes.position.count>40)add.push(o)}});
+  for(const o of add){const l=new T.Mesh(o.geometry,OUTM);l.raycast=()=>{};o.add(l)}return root}
 /* Glow-Sprites */
 function glowTex(){const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d'),g=x.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.25,'rgba(255,255,255,.55)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,64,64);return new T.CanvasTexture(c)}
 const GT=glowTex();
@@ -437,7 +444,7 @@ function makeMira(){
   const back=mk(G.cone,HD,0,-.35,-.1,.27,.95,.2);head.add(back);P.hairBack=back;
   const hp=mk(G.tor,GD,.17,.17,.13,.07,.07,.07,false);head.add(hp);head.add(mk(G.oct,M(0xb06cff,{e:0x9a4cff,ei:1.8}),.2,.17,.15,.04,.055,.03,false));head.add(glow(0xb08cff,.6,.2,.17,.15,.8));
   const staff=new T.Group();staff.position.set(.0,-.3,.06);staff.add(mk(G.cyl0,BR,0,.3,0,.022,1.5,.022));staff.add(mk(G.sph,M(0x58b8ff,{e:0x2a8cff,ei:2.2}),0,1.08,0,.1,.1,.1,false));staff.add(glow(0x58b8ff,1.4,0,1.08,0,.9));staff.add(mk(G.tor,GD,0,.98,0,.11,.11,.11,false));P.arms[1].add(staff);
-  root.scale.setScalar(1.08);mergeChar(P);coat(T,root,[[HR,furMat(T,0x3f86f0,{len:.03,dens:100,root:.8,tip:1.06})],[HD,furMat(T,0x1f4fb8,{len:.03,dens:100,root:.8,tip:1.06})]],TOUCH?3:5);return P}
+  root.scale.setScalar(1.08);mergeChar(P);anime(root);return P}
 function DK2(){return M(0x2a1c16)}
 
 function makeProf(){
@@ -458,7 +465,7 @@ function makeProf(){
   head.add(mk(G.sph,WH,0,.2,0,.17,.1,.15));
   const gg=new T.Group();gg.position.set(0,.16,.13);gg.rotation.x=-.2;for(const s of [-1,1]){gg.add(mk(G.tor,BZ,s*.085,0,0,.075,.075,.075));gg.add(mk(new T.CircleGeometry(1,16),CY,s*.085,0,.01,.062,.062,1,false))}head.add(gg);
   head.addm(mk(G.tor,BR,0,.12,-.02,.2,.2,.2)).rotation.x=Math.PI/2;
-  root.scale.setScalar(1.12);mergeChar(P);coat(T,root,[[WH,furMat(T,0xf2efe6,{len:.04,dens:90,root:.85,tip:1.04})]],TOUCH?3:5);return P}
+  root.scale.setScalar(1.12);mergeChar(P);anime(root);return P}
 
 function makeVillager(o){
   // Stilisierte Figuren passend zu Zotik: großer Kopf mit Augen, Brauen, Mund und Wangen, Frisuren, Gürtel, Stiefel
@@ -496,7 +503,7 @@ function makeVillager(o){
     if(hs===4)for(let i=0;i<5;i++){const c=mk(G.cone,HR,(i-2)*.09,.25,-.02,.06,.16,.06);c.rotation.z=(i-2)*-.3;head.add(c)}}  // Stachelhaare
   if(o.hat){head.add(mk(G.cyl,CL2,0,.2,0,.32,.03,.32));head.add(mk(G.cone,CL2,0,.36,0,.2,.3,.2))}
   if(o.pack){const pk=mk(G.box,M(0x7a5a30),0,.95,-.28,.4,.5,.22);body.add(pk)}
-  root.scale.setScalar(o.sc||1);mergeChar(P);coat(T,root,[[HR,furMat(T,HR.color.getHex(),{len:.03,dens:90,root:.8,tip:1.05})]],TOUCH?3:5);return P}
+  root.scale.setScalar(o.sc||1);mergeChar(P);anime(root);return P}
 
 function makeFelli(){
   const root=new T.Group(),b=new T.Group();root.add(b);
@@ -1428,9 +1435,9 @@ function openPuzzle(key,onSolve){
 const PARTY={lyra:{n:'Lyra',col:0x6a8ad9,css:'#6a8ad9',em:'📘',atk:7,rng:9,cd:1.6,heal:25,hcd:10,thr:.45},nia:{n:'Nia',col:0xd9a03a,css:'#d9a03a',em:'🏹',atk:6,rng:10,cd:1},rovan:{n:'Rovan',col:0x7a6a5a,css:'#8a7a6a',em:'🛡️',atk:11,rng:2.2,cd:1.8,melee:1}};
 const CMP=[],KEEPX=new Set();
 function makeCmp(id){let P;
-  if(id==='lyra'){P=makeVillager({cloth:0x6a8ad9,cloth2:0x2a3a7a,hair:0xe8f0ff,sc:.95});const st=mk(G.cyl0,M(0x6a4a2a),0,-.3,.06,.04,1.2,.04);P.arms[1].add(st);P.arms[1].add(mk(G.sph0,M(0x8ad0ff,{e:0x4aa0ff,ei:2}),0,.34,.06,.1,.1,.1,false));P.arms[1].add(glow(0x6ab8ff,1.6,0,.34,.06,.8))}
-  else if(id==='nia'){P=makeVillager({cloth:0xd9a03a,cloth2:0x6a4a1a,hair:0x7a4a2a,hood:1,sc:.92});const bw=mk(G.tor,M(0x6a4a2a),0,-.2,.12,.34,.5,.1,false);bw.rotation.y=Math.PI/2;P.arms[0].add(bw);const qv=mk(G.cyl0,M(0x5a3a22),.12,.95,-.28,.1,.45,.1);qv.rotation.z=.4;P.body.add(qv)}
-  else{P=makeVillager({cloth:0x7a7a8a,cloth2:0x3a3a4a,hair:0x4a3a2a,beard:1,wide:1.3,sc:1.12});P.arms[0].add(mk(G.box,M(0x8a8a9a,{m:.5,r:.4}),-.1,-.2,.12,.08,.5,.4));P.arms[1].add(mk(G.cyl0,M(0xc8d0e0,{m:.8,r:.3}),0,-.55,.1,.04,.7,.04))}
+  if(id==='lyra'){P=makeVillager({cloth:0x8a5ac8,cloth2:0xf0e8f4,hair:0xf29ac8,eye:0x8a4ac8,hs:2,cape:0xf4eef8,sc:.95});const st=mk(G.cyl0,M(0x6a4a2a),0,-.3,.06,.04,1.2,.04);P.arms[1].add(st);P.arms[1].add(mk(G.sph0,M(0x8ad0ff,{e:0x4aa0ff,ei:2}),0,.34,.06,.1,.1,.1,false));P.arms[1].add(glow(0x6ab8ff,1.6,0,.34,.06,.8))}
+  else if(id==='nia'){P=makeVillager({cloth:0x4a7a3a,cloth2:0x6a4a2a,hair:0x6ab05a,eye:0x3a8a3a,hs:1,sc:.92});const bw=mk(G.tor,M(0x6a4a2a),0,-.2,.12,.34,.5,.1,false);bw.rotation.y=Math.PI/2;P.arms[0].add(bw);const qv=mk(G.cyl0,M(0x5a3a22),.12,.95,-.28,.1,.45,.1);qv.rotation.z=.4;P.body.add(qv)}
+  else{P=makeVillager({cloth:0x3a5a8a,cloth2:0x5a3a26,hair:0x5a3a22,eye:0x6a4a2a,hs:4,stern:1,wide:1.3,cape:0x2a3a5a,sc:1.12});P.arms[0].add(mk(G.box,M(0x8a8a9a,{m:.5,r:.4}),-.1,-.2,.12,.08,.5,.4));P.arms[1].add(mk(G.cyl0,M(0xc8d0e0,{m:.8,r:.3}),0,-.55,.1,.04,.7,.04))}
   P.root.visible=true;scene.add(P.root);KEEPX.add(P.root);return P}
 function addCmp(id){if(CMP.some(a=>a.id===id))return;CMP.push({id,P:makeCmp(id),x:pl.x+(CMP.length%2?2:-2),z:pl.z+2.5,face:pl.face,t:Math.random()*9,cd:1,hc:3,mv:0,hp:cmax(id),ko:false,kot:0,skc:0,taunt:0,calm:0})}
 /* Gefährten als echte Gruppe (wie Lufia/Final Fantasy): eigene KP, K.O., eigene Fähigkeit per Befehl, Taktik */
@@ -1825,7 +1832,8 @@ function buildWorld(n){
       const core=mk(G.ico,M(C.rift,{e:C.rift,ei:1.4,r:.3}),0,2.6,0,.8,.8,.8,false);g.add(core);g.add(glow(C.rift,6,0,2.6,0,.5));scene.add(g);addCol(x,z,1.2);let on=0,gap=0;
       const wave=()=>{const s=cs(),w=s.mc||0,cnt=3+w+Math.floor(n/4);for(let i=0;i<cnt;i++){const a=i/cnt*6.28,e=spawnEnemy((i%2?'b':'a')+n,x+Math.cos(a)*15,z+Math.sin(a)*15);e.wave=1;e.summoned=true;e.st='chase'}banner(`Welle ${w+1} von ${MN}`,'Halte durch!')};
       INT.push({x,z,name:DEFN[0].toUpperCase()+DEFN.slice(1),pr:'Verteidigung starten',rad:3.6,vis:()=>!on&&cs().st===2&&!hunting(),talk(){on=1;wave()}});
-      animObjs.push({fn(t,dt){core.rotation.y=t;if(!on||mode!=='play')return;if(E.some(e=>e.wave&&!e.dead)){gap=2;return}gap-=dt;if(gap>0)return;
+      animObjs.push({fn(t,dt){core.rotation.y=t;if(!on&&mode==='play'&&!dlg.on&&cs().st===2&&!hunting()&&Math.hypot(pl.x-x,pl.z-z)<8){on=1;wave()}   // startet von selbst, sobald Zotik am Ventil steht
+        if(!on||mode!=='play')return;if(E.some(e=>e.wave&&!e.dead)){gap=2;return}gap-=dt;if(gap>0)return;
         misStep();if(hunting()||cs().st!==2){on=0;return}gap=99;wave()}})}
     else if(MIS==='elite')misSpots(left).forEach(([x,z])=>{const e=spawnEnemy('b'+n,x,z);e.elite=1;e.summoned=true;e.hp=e.max=Math.round(e.max*3.2);e.m.root.scale.setScalar(e.d.sc*1.45);e.rad*=1.4;tintModel(e.m,0xffd060,.35)})}
   /* Endspiel: sieben Siegel */
@@ -2637,7 +2645,8 @@ const deckEl=document.createElement('div');deckEl.id='deck';deckEl.className='pi
 const rxEl=document.createElement('div');rxEl.id='rxp';rxEl.hidden=true;$('hud').appendChild(rxEl);
 const gEl=document.createElement('div');gEl.id='gauges';gEl.className='glass';gEl.innerHTML='<div id="gIP"><b>IP</b><div class="bar ipb"><i></i></div><span></span></div><div id="gRG"><b>⟡ Riss</b><div class="bar rgb"><i></i></div></div><div id="gTG"><b>🤝 Team</b><div class="bar tgb"><i></i></div></div>';$('lcol').insertBefore(gEl,$('menuBtn'));
 function deckItems(){const sub=X.deck.sub,it=[];
-  if(!sub){it.push({t:'Angriff',f:()=>startAttack()},{t:'Magie',s:'magic'},{t:'Item',s:'items'},{t:'Rufen',s:'spec'});if(S.tools.length)it.push({t:'Werkzeug',s:'tool'});return it}
+  if(!sub){it.push({t:'Angriff',f:()=>startAttack()});if(nearI&&!dlg.on&&!pl.dead)it.push({t:'▸ '+useShort(nearI),f:()=>interact()});   // Kontextbefehl wie bei Kingdom Hearts (Truhe öffnen, Sprechen …)
+    it.push({t:'Magie',s:'magic'},{t:'Item',s:'items'},{t:'Rufen',s:'spec'});if(S.tools.length)it.push({t:'Werkzeug',s:'tool'});return it}
   if(sub==='magic'){it.push({t:'Funkenwirbel',r:formMp(18)+' MP',k:'1',f:skill1,off:S.mp<formMp(18)},{t:'Lichtstoß',r:formMp(22)+' MP',k:'2',f:skill2,off:S.mp<formMp(22)},{t:'Mondheilung',r:formMp(30)+' MP',f:spellHeal,off:S.mp<formMp(30)})}
   else if(sub==='items'){it.push({t:'Heiltrank',r:'×'+S.potions,k:'3',f:skill3,off:!S.potions},{t:'Äther',r:'×'+(S.items.ether||0),f:useEther,off:!S.items.ether})}
   else if(sub==='spec'){for(const id of S.party){const a=CMP.find(c=>c.id===id);if(a&&CSK[id])it.push({t:CSK[id].em+' '+PARTY[id].n+': '+CSK[id].n,r:a.ko?'K.O.':a.skc>0?Math.ceil(a.skc)+' s':Math.round(a.hp)+' KP',f:()=>cmpSkill(id),off:a.ko||a.skc>0})}
