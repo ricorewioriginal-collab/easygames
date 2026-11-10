@@ -1700,7 +1700,9 @@ function buildWorld(n){
   if(n===11){const s0=cs();if(s0.st<7){s0.st=7;s0.bd=1;s0.k=5}}
   const sealed=()=>cs().st<5;
   const WATER={3:-1.6,7:-4.6,9:-6}[n];   // Aqualis liegt unter dem Meer: dort läuft man auf dem Meeresgrund
-  const blk=(x,z)=>{const hh=h(x,z);return hh>8.5||hh<-4.2||(LAKE&&hh<LAKE.wl-.4&&Math.hypot(x-LAKE.x,z-LAKE.z)<LAKE.r*1.3)||(WATER!==undefined&&hh<WATER+.25&&!(nSub()&&n!==7))||x<-128||x>128||z>76||z<-232||(z<-148&&sealed())};
+  /* Nur echte Hindernisse sperren: hohe Hänge nur wenn steil (flache Hochebenen bleiben begehbar), tiefe Senken nur wo Wasser/Lava/Abgrund sichtbar ist – keine unsichtbaren Wände */
+  const steep=(x,z,hh)=>Math.abs(h(x+1.2,z)-hh)+Math.abs(h(x,z+1.2)-hh)>1.4;
+  const blk=(x,z)=>{const hh=h(x,z);return (hh>8.5&&steep(x,z,hh))||(hh<-4.2&&(WATER!==undefined||hh<-9))||(LAKE&&hh<LAKE.wl-.4&&Math.hypot(x-LAKE.x,z-LAKE.z)<LAKE.r*1.3)||(WATER!==undefined&&hh<WATER+.25&&!(nSub()&&n!==7))||x<-128||x>128||z>76||z<-232||(z<-148&&sealed())};
   const zone=(x,z)=>z<-146?'cave':(z<-44?'forest':'village');
   const ims=[],edKeys=[],obs={};
   WLD={n,C,h,blocked:blk,zone,ims,edKeys,terr:null,zn:{village:[C.hubN,C.sub],forest:[C.wildN,'Gegner lauern hier'],cave:[C.depthN,C.X[4]],ruin:['Werkzeug-Ruine','Ein Rätsel aus alter Zeit']},path:pathx,mbg:null,spawn:[0,9]};
