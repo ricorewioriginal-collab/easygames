@@ -232,6 +232,21 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
     await p.close();
   }
 
+  // 11) info-Modus: Select halten → Knöpfe auf dem Bildschirm (HUD) wählen und drücken, danach wieder Spielsteuerung
+  {
+    p = await (await b.newContext({ viewport: { width: 900, height: 600 } })).newPage(); await p.addInitScript(FAKE); await p.goto(url + 'infodlg');
+    await p.evaluate(() => { for (const [id, css] of [['bag', 'left:10px;top:200px'], ['fun', 'left:10px;top:280px'], ['set', 'right:10px;top:10px']]) { const b = document.createElement('button'); b.id = id; b.textContent = id; b.style.cssText = 'position:fixed;width:60px;height:50px;' + css; b.onclick = () => log.push('click:' + id); document.body.appendChild(b); } });
+    const Z = Array(17).fill(0), tap = async i => { const bt = Z.slice(); bt[i] = 1; await set(p, { buttons: bt }); await frames(p, 3); await set(p, { buttons: Z.slice() }); await frames(p, 3); };
+    await p.evaluate(() => plug({ id: 'Std', mapping: 'standard', buttons: Array(17).fill(0), axes: [0, 0, 0, 0] })); await frames(p);
+    const sel = Z.slice(); sel[8] = 1; await set(p, { buttons: sel }); await p.waitForTimeout(700); await frames(p, 3); await set(p, { buttons: Z.slice() }); await frames(p, 3);
+    const held = await p.evaluate(async () => { window.fake.buttons[2] = 1; await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const v = gameSees(2); window.fake.buttons[2] = 0; return v; });
+    await frames(p, 3); await tap(13); await tap(0); await p.waitForTimeout(100);
+    const r11 = await p.evaluate(() => log.slice());
+    const free = await p.evaluate(async () => { window.fake.buttons[2] = 1; await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const v = gameSees(2); window.fake.buttons[2] = 0; return v; });
+    ok(held === false && r11.join() === 'click:bag' && free === true, 'Select halten: Bildschirm-Knöpfe wählen (oben rechts → runter → „bag“), A drückt, danach Spielsteuerung: ' + r11.join() + ' / ' + held + ' / ' + free);
+    await p.close();
+  }
+
   await b.close(); srv.close();
   console.log(fails ? fails + ' Fehler' : 'alles ok');
   process.exit(fails ? 1 : 0);

@@ -134,6 +134,24 @@
   var LS = window.localStorage, P = Storage.prototype;
   var rawSet = P.setItem, rawRemove = P.removeItem;
   var ON_KEY = 'anmacha-cloud-on', META_KEY = 'anmacha-cloud-meta:' + game, RL = 'anmacha-cloud-rl';
+  // Neuer Spielstand aus der Cloud beim Start: nur sofort neu laden, solange noch niemand spielt (keine Taste, kein Klick, kein Controller)
+  // und höchstens alle 10 Minuten je Spiel – sonst Hinweis mit „Jetzt laden“ (vorher lud jedes Spiel mitten im Spiel neu, z. B. nach dem ersten Controller-Druck)
+  var played = false;
+  ['keydown', 'pointerdown', 'touchstart', 'gamepadconnected', 'easygames:pad'].forEach(function (t) { window.addEventListener(t, function () { played = true; }, { capture: true, passive: true }); });
+  function reloadNow() {
+    var k = RL + ':' + game, last = 0;
+    try { last = Number(LS.getItem(k)) || 0; } catch (e) { }
+    if (Date.now() - last < 600000) return;
+    try { rawSet.call(LS, k, String(Date.now())); } catch (e) { }
+    if (!played) { location.reload(); return; }
+    var n = document.createElement('div');
+    n.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:2147483646;display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:14px;background:rgba(10,14,28,.94);color:#fff;font:600 14px/1.3 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.5)';
+    n.innerHTML = '☁️ Neuerer Spielstand aus Google geladen <button style="all:unset;cursor:pointer;padding:7px 12px;border-radius:10px;background:#22d3ee;color:#062030">Jetzt übernehmen</button><button style="all:unset;cursor:pointer;opacity:.7;padding:4px 6px">✕</button>';
+    n.children[0].onclick = function () { location.reload(); };
+    n.children[1].onclick = function () { n.remove(); };
+    (document.body || document.documentElement).appendChild(n);
+    setTimeout(function () { if (n.isConnected) n.remove(); }, 20000);
+  }
   var meta = {}, timer = 0, busy = false, again = false, first = true, lastErr = '';
   try { meta = JSON.parse(LS.getItem(META_KEY)) || {}; } catch (e) {}
 
@@ -504,7 +522,7 @@
             return push(tok, merged, keep, undefined, baseVer).then(function (ver) { baseRemote = merged; baseVer = ver; });
           });
         }).then(function () {
-          if (changed && first && !sessionStorage.getItem(RL)) { sessionStorage.setItem(RL, '1'); location.reload(); }
+          if (changed && first && !sessionStorage.getItem(RL)) { sessionStorage.setItem(RL, '1'); reloadNow(); }
         });
       });
     }).catch(function (e) {

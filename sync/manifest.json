@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9927c4023f6f",
- "generated": "2026-11-10T03:02:54+01:00",
- "commit": "64d824fea305171e829d05f6c6bd9e46221d5421",
+ "version": "ba1b11987bef",
+ "generated": "2026-11-10T03:13:57+01:00",
+ "commit": "c24db2282eab244b9ebd2151a00a8922b8469abf",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4748,8 +4748,8 @@
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 52934,
-   "h": "60d124141b4cd28efdd9b562dea16d429d203f35bb6aacd4f25036e6e1929035"
+   "s": 54633,
+   "h": "27c23e86bda444b1dd6c80fdecdf396a07c1e278bfe9d5cf48fce711ecf11758"
   },
   {
    "p": "cloud/anmacha-engage.js",
@@ -5533,8 +5533,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 55224,
-   "h": "dbce84a169c60a7abfd6a918994fc2ff2c53451532e0aabdad2ef853bd1112f7"
+   "s": 57061,
+   "h": "e9e17d259ef07f774b78d5b8123bf8ee4042fe2978fce3f67f3473148dd33222"
   },
   {
    "p": "games.js",
@@ -6478,8 +6478,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 52934,
-   "h": "60d124141b4cd28efdd9b562dea16d429d203f35bb6aacd4f25036e6e1929035"
+   "s": 54633,
+   "h": "27c23e86bda444b1dd6c80fdecdf396a07c1e278bfe9d5cf48fce711ecf11758"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -8839,7 +8839,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256786,
-   "h": "e7873ac1da8bb2474b963c8457eba1cfadaf0c7147cb6dec61f4fb878f6aba5c"
+   "h": "043de1b403f680226c03840f10c25fae5fc39ee17e881d0a9e0f7342e112b305"
   },
   {
    "p": "taschi/card.svg",
