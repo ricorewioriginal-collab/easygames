@@ -1587,7 +1587,7 @@ function buildWorld(n){
       case'mush':{const col=lc();put2(iSt,x,y+s*1.2,z,s*2,s*2.4,s*2,0,0xcfd8ee);put2(iSh,x,y+s*2.4,z,s*3,s*2.2,s*3,0,col);addCol(x,z,.6*s);break}
       case'spire':{put2(iPi,x,y+s*2.5,z,s*1.4,s*5.5,s*1.4,R()*6,rp(C.leaf));addCol(x,z,.8*s);break}
     }};
-  let cnt=0,tries=0;const tn=C.tn||400,kinds=C.trees.filter(k=>k!=='tower');
+  let cnt=0,tries=0;const tn=C.tn||({3:150,4:110,5:120,6:260,7:80,8:110,9:70,10:170}[n]||400),kinds=C.trees.filter(k=>k!=='tower');
   while(cnt<tn&&tries++<9000){const x=rr(-122,122),z=rr(-228,66);if(!free(x,z,38))continue;if(z>-40&&R()>.35)continue;tree(rp(kinds),x,z);cnt++}
   for(let i=0;i<3200;i++){const x=rr(-125,125),z=rr(-230,70),da=Math.hypot(x,z+182),hh=h(x,z);if(hh>7||np(x,z,2.2)||(da<30&&R()>.15))continue;const s=rr(.7,1.6);
     put2(iGr,x,hh+.14*s,z,s*.6,s*.55*(.7+R()*.7),s*.6,R()*6,rp(C.grass),(R()-.5)*.3,(R()-.5)*.3)}
@@ -1627,7 +1627,7 @@ function buildWorld(n){
     const add=(g,x,z,r)=>{g.position.set(x,h(x,z),z);g.rotation.y=rr(0,6.28);mergeStatic(g);scene.add(g);if(r)addCol(x,z,r)};
     const plane=(col,y,op,em)=>{const m=mk(new T.PlaneGeometry(260,240),new T.MeshStandardMaterial({color:col,emissive:em||0,emissiveIntensity:em?1.4:0,transparent:true,opacity:op,roughness:.15,metalness:.1}),0,y,-60,1,1,1,false);m.rotation.x=-Math.PI/2;m.receiveShadow=true;scene.add(m);
       animObjs.push({fn(t){m.position.y=y+Math.sin(t*.8)*.06;if(em)m.material.emissiveIntensity=1.2+Math.sin(t*1.7)*.3}})};
-    const pick=n===2?14:18;
+    const pick=n===2?14:({4:34,5:30,7:34,8:30,9:30}[n]||22);
     for(const [x,z] of spots(pick)){const g=new T.Group();
       switch(n){
         case 2:{const a=mk(G.tor,M(0x5a3a22,{r:.95}),0,0,0,3.5,3.5,2);a.rotation.x=0;g.add(a);g.add(mk(G.sph,M(0xff7ac8,{e:0xff4aa8,ei:1.2}),2.6,.6,0,.6,.35,.6));g.add(mk(G.cyl0,M(0xf0e6d0),2.6,.2,0,.15,.6,.15));g.add(glow(0x7affc8,4,0,3,0,.35));add(g,x,z,1.2);break}
@@ -1671,6 +1671,33 @@ function buildWorld(n){
   const place=(k,cnt,zr)=>{let c=0,t=0;while(c<cnt&&t++<500){const z=rr(zr[0],zr[1]),x=pathx(z)+rr(-32,32);if(blk(x,z)||Math.hypot(x,z+182)<36||Math.hypot(x,z)<36)continue;spawnEnemy(k,x,z);c++}};
   place('a'+n,12,[-58,-142]);place('b'+n,9,[-52,-146]);
   function spawnMini(){if(cs().st!==4||E.some(e=>e.mini&&!e.dead))return;const z=-136,x=pathx(z),e=spawnEnemy('m'+n,x,z);e.mini=true;e.summoned=true;e.st='chase'}
+  /* Weltauftrag: jede Welt hat vor der Jagd eine eigene Aufgabe (sammeln, Vermisste finden, verteidigen, Champions) – Kapitel länger und abwechslungsreicher */
+  const MIS={2:'collect',3:'collect',4:'rescue',5:'collect',6:'rescue',7:'defend',8:'collect',9:'defend',10:'elite'}[n],MN={collect:5,rescue:3,defend:3,elite:3}[MIS]||0,HUNT=5+Math.ceil(n/2);
+  const DEFN={7:'das Druckventil',9:'die Sternwarte'}[n]||'den Altar';
+  const hunting=()=>{const s=cs();return !MIS||s.m===1||(s.m===undefined&&s.k>0)};
+  function misText(){const c=Math.min(cs().mc||0,MN);switch(MIS){
+    case'collect':return `${C.bkp}: Finde ${MN} ${C.bk} in „${C.wildN}“ (${c}/${MN}).`;
+    case'rescue':return `Finde ${MN} Vermisste in „${C.wildN}“ und schick sie heim (${c}/${MN}).`;
+    case'defend':return `Verteidige ${DEFN} im Norden gegen ${MN} Angriffswellen (${c}/${MN}).`;
+    case'elite':return `Besiege ${MN} Champions in „${C.wildN}“ (${c}/${MN}).`}return''}
+  function misStep(){const s=cs();s.mc=(s.mc||0)+1;sfx('quest');if(s.mc>=MN){s.m=1;s.k=0;banner('Auftrag erfüllt','Jetzt: Vertreibe die Gegner im Norden');}else toast('📜 '+misText());refresh();saveGame(true)}
+  const misSpots=k=>{const o=[];let t=0;while(o.length<k&&t++<900){const z=rr(-60,-140),x=pathx(z)+rr(-34,34)*(t%2?1:-1);if(blk(x,z)||np(x,z,4)||Math.hypot(x,z+182)<38||o.some(q=>Math.hypot(q[0]-x,q[1]-z)<14))continue;o.push([x,z])}return o};
+  const LOST=['Pio','Smilla','Lenn','Juno','Taro','Mika','Ronja'],LOSTL=['Endlich! Ich hab mich völlig verlaufen.','Danke, Zotik! Ich finde jetzt allein zurück.','Puh … die Gegner hier sind unheimlich. Ich lauf schnell heim!'];
+  function setupMission(){const s=cs();if(WLD.misOn||!MIS||s.st!==2||hunting())return;WLD.misOn=1;const left=MN-(s.mc||0);if(left<=0)return;
+    if(MIS==='collect')for(const [x,z] of misSpots(left)){const g=new T.Group(),y=h(x,z);g.position.set(x,y,z);const col=C.glowc[0];
+      const o=mk(G.oct,M(col,{e:col,ei:1.6,r:.2}),0,1.4,0,.45,.75,.45,false);g.add(o);g.add(mk(G.cyl,M(0x5a5a6a,{r:.8}),0,.25,0,.8,.5,.8,false));g.add(glow(col,4,0,1.4,0,.6));scene.add(g);
+      const it={x,z,name:C.bk,pr:C.bkp,rad:3,vis:()=>!it.done&&cs().st===2&&!hunting(),talk(){if(it.done)return;it.done=1;scene.remove(g);emit(x,y+1.4,z,col,30,4,1,.8,-2,2);misStep()}};
+      animObjs.push({fn(t){o.rotation.y=t*1.5;o.position.y=1.4+Math.sin(t*2+x)*.15}});INT.push(it)}
+    else if(MIS==='rescue')misSpots(left).forEach(([x,z],i)=>{const nm=LOST[(n+i)%LOST.length];
+      const no=addNpc('lost'+i,nm,x,z,makeVillager(V([0xc0603a,0x3a8ac0,0x8ac03a,0xc03a8a][i%4],0x3a3a4a,[0x2a1c16,0xe0c070,0x8a4a2a][i%3],{sc:.9,hood:i%2})),()=>{if(no.done)return;no.done=1;
+        say([[nm,LOSTL[i%LOSTL.length]]],()=>{const k=NPC.indexOf(no);if(k>=0)NPC.splice(k,1);scene.remove(no.P.root);no.spr.visible=false;misStep()})},0,()=>!no.done)});
+    else if(MIS==='defend'){const z=-96,x=pathx(z)+7*mir,y=h(x,z),g=new T.Group();g.position.set(x,y,z);g.add(mk(G.cyl,M(0x6a6c8c,{r:.7}),0,.6,0,1.4,1.2,1.4));
+      const core=mk(G.ico,M(C.rift,{e:C.rift,ei:1.4,r:.3}),0,2.6,0,.8,.8,.8,false);g.add(core);g.add(glow(C.rift,6,0,2.6,0,.5));scene.add(g);addCol(x,z,1.2);let on=0,gap=0;
+      const wave=()=>{const s=cs(),w=s.mc||0,cnt=3+w+Math.floor(n/4);for(let i=0;i<cnt;i++){const a=i/cnt*6.28,e=spawnEnemy((i%2?'b':'a')+n,x+Math.cos(a)*15,z+Math.sin(a)*15);e.wave=1;e.summoned=true;e.st='chase'}banner(`Welle ${w+1} von ${MN}`,'Halte durch!')};
+      INT.push({x,z,name:DEFN[0].toUpperCase()+DEFN.slice(1),pr:'Verteidigung starten',rad:3.6,vis:()=>!on&&cs().st===2&&!hunting(),talk(){on=1;wave()}});
+      animObjs.push({fn(t,dt){core.rotation.y=t;if(!on||mode!=='play')return;if(E.some(e=>e.wave&&!e.dead)){gap=2;return}gap-=dt;if(gap>0)return;
+        misStep();if(hunting()||cs().st!==2){on=0;return}gap=99;wave()}})}
+    else if(MIS==='elite')misSpots(left).forEach(([x,z])=>{const e=spawnEnemy('b'+n,x,z);e.elite=1;e.summoned=true;e.hp=e.max=Math.round(e.max*3.2);e.m.root.scale.setScalar(e.d.sc*1.45);e.rad*=1.4;tintModel(e.m,0xffd060,.35)})}
   /* Endspiel: sieben Siegel */
   const ES=S.end.s,endAll=()=>ES.every(v=>v===5),endDone=()=>ES.filter(v=>v===5).length;
   const endObj=()=>S.ending?'Ende gewählt: '+ENDN[S.ending]+'. Erkunde den Weltenriss frei.':endAll()?'Sprich mit Veyra: Wähle das Schicksal der Welten.':`Besiege die Weltenbrecher an den sieben Siegeln (${endDone()}/7).`;
@@ -1749,10 +1776,11 @@ function buildWorld(n){
   /* Zustand */
   WLD.refresh=refresh;WLD.spawnMini=spawnMini;WLD.sealedNow=sealed;
   if(cs().st===4)spawnMini();
+  setupMission();
   /* Siegel-Hinweis */
   let warnT=0;animObjs.push({fn(t,dt){warnT-=dt;if(mode==='play'&&sealed()&&pl.z<-138&&warnT<=0){warnT=4;toast('🔒 Ein Siegel versperrt den Weg. '+objText())}}});
   function objText(st){const s=cs();if(n===11)return endObj();if(st===undefined)st=s.st;
-    return[`Sprich mit ${E1[0]} ${C.at}.`,`Erkunde „${C.wildN}“ im Norden.`,`Vertreibe die Gegner im Norden (${Math.min(s.k,5)}/5).`,`Löse das Rätsel: ${pzd.name}.`,`Besiege ${C.M[0]}.`,`Stelle dich ${C.X[0]} („${C.depthN}“).`,`Berichte ${E1[0]} ${C.at}.`,`Kapitel ${n} geschafft! Erkunde ${C.name} frei.`][st]}
+    return[`Sprich mit ${E1[0]} ${C.at}.`,`Erkunde „${C.wildN}“ im Norden.`,(MIS&&!hunting()?misText():`Vertreibe die Gegner im Norden (${Math.min(s.k,HUNT)}/${HUNT}).`),`Löse das Rätsel: ${pzd.name}.`,`Besiege ${C.M[0]}.`,`Stelle dich ${C.X[0]} („${C.depthN}“).`,`Berichte ${E1[0]} ${C.at}.`,`Kapitel ${n} geschafft! Erkunde ${C.name} frei.`][st]}
   function refresh(){const mm=document.querySelector('#mates .m'),mp=document.querySelector('#mates .p');if(mm)mm.hidden=true;if(mp)mp.hidden=true;
     $('qt').textContent=cs().fin?`Kapitel ${n} – ${C.name}`:C.sub;$('qo').textContent=objText();$('qo').style.whiteSpace='pre-line'}
   function stage(i){cs().st=i;sfx('quest');toast('📜 '+objText().replace(/ \(.*$/,''));refresh();saveGame(true)}
@@ -1762,8 +1790,8 @@ function buildWorld(n){
     if(e.hall)return hallKill(e);
     if(e.boss){s.bd=1;$('boss').hidden=true;banner(C.X[0]+' besiegt',C.name+' atmet auf');if(s.st<=5)stage(6);if(cut.def)setTimeout(()=>cutscene(cut.def),1500);for(const o of E)if(o.summoned&&!o.boss&&!o.mini&&!o.dead){o.hp=0;killE(o)}saveGame(true)}
     else if(e.mini){if(s.st<=4){banner(C.M[0]+' besiegt','Das Siegel bricht');sfx('level');stage(5)}}
-    else if(s.st===2){s.k++;if(s.k>=5)stage(3);else refresh()}};
-  WLD.zoneEnter=function(z){const s=cs();if(z==='forest'&&s.st===1)stage(2);if(z==='cave'&&!s.bd&&s.st>=5)WLD.ensureBoss()};
+    else if(s.st===2){if(hunting()){s.k++;if(s.k>=HUNT)stage(3);else refresh()}else if(MIS==='elite'&&e.elite)misStep()}};
+  WLD.zoneEnter=function(z){const s=cs();if(z==='forest'&&s.st===1){s.m=MIS?0:1;s.mc=0;s.k=0;stage(2);setupMission()}if(z==='cave'&&!s.bd&&s.st>=5)WLD.ensureBoss()};
   WLD.ensureBoss=function(){if(boss||cs().bd)return;boss=spawnEnemy('x'+n,ARENA.x,ARENA.z-6);boss.face=0};
   function finish(){const s=cs();s.fin=1;extChapterDone(n);stage(7);if(n===4&&S.fl.naut&&!S.fl.naut2)S.fl.naut2=1;gainXp(100+n*60);S.shards+=40+n*15;S.potions+=2;sfx('level');
     if(n<MAXCH){banner(`Kapitel ${n} geschafft`,`${CHP[n+1].name} ist jetzt im Weltentor offen`);toast(`🌍 ${CHP[n+1].name} freigeschaltet`)}else{banner('Hauptgeschichte geschafft','Alle Welten sind verbunden');toast('🏆 Elyndra: Die Reise ist vollendet')}
