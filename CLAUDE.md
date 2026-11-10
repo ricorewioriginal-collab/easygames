@@ -1,6 +1,7 @@
 # easygames – Hinweise für Claude
 
 Minispiele für Browser, Handy und die Android-App, jedes Spiel in einem eigenen Ordner. Übersicht und Technik: [README.md](README.md).
+**Neue Spiele:** Pflicht-Liste [NEUE-SPIELE.md](NEUE-SPIELE.md) (Gamecontroller, PC/Browser, TV, Handy, Windows-App, RicoReWi Radio App).
 Ressourcensparend und fehlerfrei bauen: kleine, gezielte Änderungen, bestehende Logik wiederverwenden, am Gameplay nichts ändern, was nicht verlangt ist.
 
 ## Mehrspieler-Regeln (fest, gelten für alle Spiele)
