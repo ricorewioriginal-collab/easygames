@@ -30,7 +30,7 @@ export function createBattle(o) {
     canRun: o.canRun ?? (o.kind === 'wild'), canCatch: o.canCatch ?? (o.kind === 'wild'),
     sides: [mkSide(o.player, true), mkSide(o.foe, false)],
     bag: o.player.bag || {}, vol: {}, participants: {}, runAttempts: 0,
-    pendingEvolutions: [], learnRequests: [], night: !!o.night, weather: o.weather || null, expShare: o.expShare ?? true,
+    pendingEvolutions: [], learnRequests: [], night: !!o.night, weather: o.weather || null, star: [null, null], starUnlocked: !!o.starUnlocked, foeStar: !!o.foe.star, expShare: o.expShare ?? true,
     needReplace: [], fainted: new Set(), dark: !!o.dark
   };
   for (const side of b.sides) for (const i of side.active) initVol(b, side.team[i]);
@@ -70,7 +70,7 @@ export function playerOptions(b, slot) {
   const switchTargets = side.team.map((t, i) => ({ i, m: t })).filter(x => x.m.hp > 0 && !side.active.includes(x.i));
   return {
     moves, struggle: moves.every(x => x.disabled), switchTargets,
-    canRun: b.canRun, canCatch: b.canCatch && b.format === 1,
+    canRun: b.canRun, canCatch: b.canCatch && b.format === 1, canStar: b.starUnlocked && b.star[0] === null,
     items: Object.keys(b.bag).filter(id => count(b.bag, id) > 0 && ['heal', 'status', 'battle', 'ball'].includes(ITEMS[id]?.category))
   };
 }
@@ -97,6 +97,9 @@ export function runTurn(b, playerChoices) {
     const c = chooseAction(b, 1, slot, b.rng);
     actions.push({ side: 1, slot, uid: m.uid, ...c });
   }
+  // Sternstufe: once per battle a Taschi shines up – +1 Angriff/Verteidigung/Initiative and 20 % stronger attacks
+  for (const a of actions) if (a.side === 0 && a.star && a.type === 'move' && b.starUnlocked && b.star[0] === null) applyStar(b, 0, findByUid(b, a.uid), ev);
+  if (b.foeStar && b.star[1] === null) for (const { m } of activeList(b, 1)) if (b.sides[1].team.filter(x => x.hp > 0).length === 1) { applyStar(b, 1, m, ev); break; }
   const prio = (a) => a.type === 'run' ? 7 : a.type === 'switch' ? 6 : a.type === 'item' ? 5 : (MOVES[a.move]?.priority || 0);
   for (const a of actions) {
     a.p = prio(a);
@@ -121,6 +124,14 @@ export function runTurn(b, playerChoices) {
   if (!b.result) afterTurnReplacements(b, ev);
   for (const side of b.sides) for (const i of side.active) if (i !== null && side.team[i]) { const v = b.vol[side.team[i].uid]; if (v) v.turnsIn++; }
   return ev;
+}
+
+function applyStar(b, side, m, ev) {
+  if (!m) return;
+  b.star[side] = m.uid;
+  const v = b.vol[m.uid] ||= {};
+  for (const k of ['atk', 'def', 'speed']) v[k] = Math.min(6, (v[k] || 0) + 1);
+  ev.push({ t: 'star', uid: m.uid, side, text: (side ? 'Das gegnerische ' : '') + nameOf(m) + ' erreicht die Sternstufe! Alle Werte steigen!' });
 }
 
 function findByUid(b, uid) {
@@ -269,6 +280,7 @@ export function calcDamage(b, user, target, move, crit, roll = 1) {
   if (au.kind === 'tail' && statOf(user, 'speed') > statOf(target, 'speed')) dmg *= 1.1;
   if (at.kind === 'rock') dmg *= 0.9;
   if (at.kind === 'veil' && eff > 1) dmg *= 0.85;
+  if (b.star && b.star.includes(user.uid)) dmg *= 1.2;
   const wb = b.weather && WEATHER[b.weather]; if (wb && wb.boost[move.type]) dmg *= wb.boost[move.type];
   if (user.status === 'brand') dmg *= 0.5;
   dmg *= roll;

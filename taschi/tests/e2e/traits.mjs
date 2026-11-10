@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { startSeeded, G, advance, waitIdle } from './helpers.mjs';
 
 const dir = process.argv[2] || null;
-const t = await startSeeded({ width: 1280, height: 720 }, (s) => { s.team[1].shiny = true; });
+const t = await startSeeded({ width: 1280, height: 720 }, (s) => { s.team[1].shiny = true; s.badges = 1; });
 const { page, errors, close } = t;
 const shot = async (name) => { if (dir) await page.screenshot({ path: dir + '/' + name + '.png' }); };
 try {
@@ -25,6 +25,15 @@ try {
   await advance(page, { max: 60, until: () => window.__taschi.state === 'battle' && !!document.querySelector('.bact.fight') });
   assert.equal(await G(page, () => window.__taschi.battleScene.b.weather), 'rain');
   await shot('traits-weather');
+  // Sternstufe: open the attack menu, switch it on and attack
+  await page.locator('.bact.fight').first().click(); await page.waitForTimeout(300);
+  await page.locator('.bact.star').click(); await page.waitForTimeout(300);
+  assert.ok(await page.locator('.bact.star.on').count(), 'Sternstufe-Knopf fehlt');
+  await shot('traits-star-menu');
+  await page.locator('.bact.move').first().click();
+  await page.waitForFunction(() => window.__taschi.battleScene.b.star[0] !== null, null, { timeout: 15000 });
+  await page.waitForTimeout(900);
+  await shot('traits-star');
   assert.deepEqual(errors, []);
   console.log('traits ok');
 } finally { await close(); }

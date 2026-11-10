@@ -258,8 +258,8 @@ export class BattleScene {
     this.menuEl = null; this.logEl = null;
     const indoor = !!opts.indoor;
     this.buildStage(opts.region, indoor);
-    const b = createBattle({ rng: g.rng, kind: opts.kind, format: opts.format, canRun: opts.canRun, canCatch: opts.canCatch, night: g.isNight(), dark: indoor, weather: indoor ? null : g.world.weather,
-      player: { team: save.team, bag: save.bag, name: save.player.name }, foe: { team: opts.foeTeam, ai: opts.ai ?? 0, trainer: opts.kind !== 'wild', name: opts.trainerName || '', items: { ...(opts.items || {}) } } });
+    const b = createBattle({ rng: g.rng, kind: opts.kind, format: opts.format, canRun: opts.canRun, canCatch: opts.canCatch, night: g.isNight(), dark: indoor, weather: indoor ? null : g.world.weather, starUnlocked: (save.badges || 0) >= 1,
+      player: { team: save.team, bag: save.bag, name: save.player.name }, foe: { team: opts.foeTeam, ai: opts.ai ?? 0, trainer: opts.kind !== 'wild', name: opts.trainerName || '', items: { ...(opts.items || {}) }, star: !!opts.foeStar } });
     this.b = b; this.opts = opts;
     if (b.weather && WEATHER[b.weather]) g.ui.toast(weatherText(b.weather), WEATHER[b.weather].icon);
     if (opts.kind === 'wild' && opts.foeTeam.some(m => m.shiny)) { g.ui.toast('Ein schillerndes Taschi! Fang es, solange du kannst!', '✨'); g.audio.sfx('item'); }
@@ -350,6 +350,7 @@ export class BattleScene {
         screen.nav.current = null; screen.nav.ensure();
         screen.onBack = canBack ? () => done('back') : null;
       };
+      let starOn = false;
       const moves = () => {
         if (opt.struggle) { done({ slot, type: 'move', move: 'verzweiflung', target: targetsFor(b, 0)[0] }); return; }
         const foe = targetsFor(b, 0).map(s => activeMon(b, 1, s))[0];
@@ -359,13 +360,14 @@ export class BattleScene {
           const effTxt = mv.move.power === 0 ? 'Status' : eff > 1 ? 'Sehr effektiv' : eff === 0 ? 'Wirkungslos' : eff < 1 ? 'Kaum effektiv' : 'Stärke ' + mv.move.power;
           return h('button.bact.move.focusable' + (mv.disabled ? '.disabled' : ''), { style: { background: `linear-gradient(160deg, ${t.color}, ${shadeCss(t.color)})` }, onclick: () => { if (mv.disabled) { this.audio.sfx('error'); return; } pickTarget(mv.id); } },
             t.icon + ' ' + mv.move.name, h('small', {}, effTxt + ' · AP ' + mv.pp + '/' + mv.max));
-        }), h('button.bact.backbtn.focusable', { onclick: main }, '↩ Zurück')]);
+        }), ...(opt.canStar ? [h('button.bact.star.focusable' + (starOn ? '.on' : ''), { onclick: () => { starOn = !starOn; this.audio.sfx('confirm'); moves(); } }, '★ Sternstufe ' + (starOn ? 'AN' : 'aus'), h('small', {}, 'Einmal pro Kampf: alle Werte steigen'))] : []),
+          h('button.bact.backbtn.focusable', { onclick: main }, '↩ Zurück')]);
         screen.nav.current = null; screen.nav.ensure(); screen.onBack = main;
       };
       const pickTarget = (moveId) => {
         const mv = MOVES[moveId], targets = targetsFor(b, 0);
-        if (b.format === 1 || mv.target === 'self' || targets.length < 2) { done({ slot, type: 'move', move: moveId, target: targets[0] }); return; }
-        this.menuArea([...targets.map(t => { const fm = activeMon(b, 1, t); return h('button.bact.fight.focusable', { onclick: () => done({ slot, type: 'move', move: moveId, target: t }) }, 'Ziel: ' + SPECIES[fm.id].name, h('small', {}, (t === 0 ? 'links' : 'rechts'))); }), h('button.bact.backbtn.focusable', { onclick: moves }, '↩ Zurück')]);
+        if (b.format === 1 || mv.target === 'self' || targets.length < 2) { done({ slot, type: 'move', move: moveId, target: targets[0], star: starOn }); return; }
+        this.menuArea([...targets.map(t => { const fm = activeMon(b, 1, t); return h('button.bact.fight.focusable', { onclick: () => done({ slot, type: 'move', move: moveId, target: t, star: starOn }) }, 'Ziel: ' + SPECIES[fm.id].name, h('small', {}, (t === 0 ? 'links' : 'rechts'))); }), h('button.bact.backbtn.focusable', { onclick: moves }, '↩ Zurück')]);
         screen.nav.current = null; screen.nav.ensure(); screen.onBack = moves;
       };
       const bag = () => {
@@ -456,6 +458,15 @@ export class BattleScene {
           if (m && this.huds.get(m.uid)) this.fillHud(this.huds.get(m.uid), m, 0);
           await this.log(e.text, { hold: 600 });
           break;
+        }
+        case 'star': {
+          this.audio.sfx('levelup');
+          if (ent) {
+            const p = ent.c.root.position;
+            this.burst(p.clone().setY(0.6), 0xfff0a0, 50, 1.1, 'star', 1.1, 2.8); this.burst(p.clone().setY(1.2), 0xffffff, 30, 0.8, 'soft', 0.9, 1.5);
+            if (!ent.c.root.getObjectByName('sternstufe')) { const aura = new THREE.Mesh(new THREE.SphereGeometry(1.1, 18, 12), glowMaterial(0xffe27a, 0.18)); aura.name = 'sternstufe'; aura.position.y = 0.9; aura.scale.set(1, 1.15, 1); ent.c.root.add(aura); }
+          }
+          await this.log(e.text, { hold: 1200 }); break;
         }
         case 'levelup': { this.audio.sfx('levelup'); if (ent) this.burst(ent.c.root.position.clone().setY(0.5), 0xffe080, 40, 0.8, 'star', 1, 2.5); this.renderHUD(); await this.log(e.text, { hold: 1000 }); break; }
         case 'learn': case 'learnFull': await this.log(e.text, { hold: 900 }); break;

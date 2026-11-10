@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "12d3a76b028c",
- "generated": "2026-11-10T17:24:03+01:00",
- "commit": "8e73b4407610b9196175f840eab3a20c2feb4c74",
+ "version": "6ad93bc277f9",
+ "generated": "2026-11-10T17:44:41+01:00",
+ "commit": "dabdac69eeebb7b5947ff0414ca3342829c15711",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8844,7 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256786,
-   "h": "ac8a88215bf6e26e30585129710601047112f834cb8b11363dcb7ed0d1ce5a68"
+   "h": "e84eeab5babf7900b18a367f1c84847fab39199f019275d7b06c600dd2712c91"
   },
   {
    "p": "taschi/card.svg",
@@ -8993,13 +8993,13 @@
   },
   {
    "p": "taschi/src/game/battle-scene.js",
-   "s": 39650,
-   "h": "0ec1668e933caf274e00f7a8dd15331dce358135b2686ccfe869c8ea7119b2d6"
+   "s": 40652,
+   "h": "96841c27d5f9b4eab693849dc9892ada5a8d9fcd2a0b76dce200447996bebc10"
   },
   {
    "p": "taschi/src/game/game.js",
-   "s": 64027,
-   "h": "60f29156f69062d93983d04f12f559f96337cd70efb92e71e16bd63799fc6fcc"
+   "s": 64258,
+   "h": "746674cd5b00d796ce52efb0e53ac62e3608cc23e93d055549ed61892b1e8c6f"
   },
   {
    "p": "taschi/src/game/world.js",
@@ -9013,8 +9013,8 @@
   },
   {
    "p": "taschi/src/logic/battle.js",
-   "s": 22136,
-   "h": "ad2e80b643dc334e90e720ec0a0c3272b92ee0a624a44303e8d1e060c32d8aea"
+   "s": 23097,
+   "h": "e9f1dea54069a2367370fae3cc23ce8f83770e4379796fc28e80b3b19e0f3207"
   },
   {
    "p": "taschi/src/logic/encounters.js",
@@ -9083,8 +9083,8 @@
   },
   {
    "p": "taschi/src/ui/style.css",
-   "s": 23550,
-   "h": "66a13b09c80b9aaa8c95e07d648cf2dba7e65d725f17a7a3d548c43b6b3d37ee"
+   "s": 23751,
+   "h": "c18df5671f3e9921c18947545e87d290003ad4faa1e6a81097d41b453bf3b23b"
   },
   {
    "p": "taschi/src/ui/ui.js",
