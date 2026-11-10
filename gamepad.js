@@ -388,7 +388,7 @@
   }
 
   // ---------- Abfrage-Schleife (läuft nur, solange ein Controller da ist) ----------
-  var enabled = true, running = false, last = 0, prev = {}, aMode = '', navRep = {}, lsDirs = DIRS[opt.ls] || null, rsDirs = DIRS[opt.rs] || null;
+  var gameNavT = -1e9, enabled = true, running = false, last = 0, prev = {}, aMode = '', navRep = {}, lsDirs = DIRS[opt.ls] || null, rsDirs = DIRS[opt.rs] || null;
   function pads() { var a = [], l; try { l = nav.getGamepads() || []; } catch (e) { l = []; } for (var i = 0; i < l.length; i++) if (l[i] && l[i].connected !== false) a.push(l[i]); return a; }
   function state(list) {
     var s = { b: [], ls: [0, 0, 0, 0], rs: [0, 0], d: [0, 0, 0, 0] };
@@ -432,7 +432,9 @@
     for (i = 0; i < 4; i++) {
       if (s.d[i] && !p.d[i]) {
         var used = send(DPAD[i], true);
-        if (opt.nav && !used) { navigate(i); navRep[i] = now + 400; } else if (used) clearRing();
+        if (used) gameNavT = now;
+        // Spiel mit eigener Menü-Auswahl (hat eben selbst eine Pfeiltaste genommen): ungenutzte Richtung startet keinen zweiten Rahmen
+        if (opt.nav && !used && (focusEl || now - gameNavT > 4000)) { navigate(i); navRep[i] = now + 400; } else if (used) clearRing();
       } else if (!s.d[i] && p.d[i]) { send(DPAD[i], false); delete navRep[i]; }
       else if (s.d[i] && navRep[i] && now >= navRep[i] && focusEl) { navigate(i); navRep[i] = now + 140; }
     }
