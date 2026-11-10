@@ -253,6 +253,7 @@
       "q": "Das Mikrofon funktioniert nicht.",
       "a": "Schalte das Mikrofon in den Einstellungen ein und erlaube den Zugriff im Browser. Das Spiel erkennt nur die Tonhöhe und nimmt in der Karriere nichts auf. Mit Kopfhörern zählt die Musik nicht mit."
     },
+    {"q": "Kann ich ein USB- oder SingStar-Mikrofon benutzen?", "a": "Ja. In den Einstellungen (Mikrofon-Modus an) unter „🎤 Welches Mikrofon“ das Gerät wählen – USB-Mikrofon, Headset, Kamera-Mikro oder den SingStar-Empfänger. Beim SingStar-Empfänger wählt das Spiel automatisch den Kanal „Links (blau)“; für das rote Mikro „Rechts (rot)“ wählen. Mit „Mikrofon testen“ siehst du Pegel und erkannten Ton."},
     {
       "q": "Die Noten passen nicht zur Musik.",
       "a": "Stell in den Einstellungen den Audio-Versatz ein (Noten früher oder später). Erlaubt ein Radiostream keine Analyse, folgen die Noten dem Takt des gewählten Stils."

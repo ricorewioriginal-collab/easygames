@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "76310668dd49",
- "generated": "2026-11-10T00:37:52+01:00",
- "commit": "1735f2c8c97c62b17aff99455e5510aa41feca14",
+ "version": "70525877ffba",
+ "generated": "2026-11-10T00:55:41+01:00",
+ "commit": "4fc9f003bb71dae3bccc63f4f893ad62a4cd1194",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5703,13 +5703,13 @@
   },
   {
    "p": "groove-arena/index.html",
-   "s": 19917,
-   "h": "5de9c771cb788950070449eeeb50e4df6ff08e79a74c5e36073737e638fecb09"
+   "s": 20462,
+   "h": "6584a503da438fd30cc4b3c76a44a1a5323728cabd5e3645cc2d56f236c621d4"
   },
   {
    "p": "groove-arena/js/app.js",
-   "s": 68319,
-   "h": "6c9b61adc2155a0f4dab1f8dc8f0da35584ae3a94d09c0f58b8161078fcdf5bd"
+   "s": 69561,
+   "h": "575e712cb8d30650f09ac49634f9041df07f9b502d52bc3152840c7cbc6b4298"
   },
   {
    "p": "groove-arena/js/core.js",
@@ -5730,6 +5730,11 @@
    "p": "groove-arena/js/media.js",
    "s": 15312,
    "h": "b677f0928c6eadcdeb4359357b691340cb9703e59dd3834a5f3d8b96659d8a08"
+  },
+  {
+   "p": "groove-arena/js/remote.js",
+   "s": 4883,
+   "h": "ae22214840b95c26a873b1136b053b2358ea0945264697885af8de77c46ab9e8"
   },
   {
    "p": "groove-arena/js/sense.js",
@@ -6013,8 +6018,8 @@
   },
   {
    "p": "guides/groove-arena.json",
-   "s": 12971,
-   "h": "ae3ee1bf8aae22eca2f28879a0ad5bd36ed92350cf76f343715588e317bf45e5"
+   "s": 13568,
+   "h": "36840a79c730abc87d328d613e0396a2545bde6e80ccf21c6b626c7135a5ef05"
   },
   {
    "p": "guides/huepfstrasse.json",
@@ -6158,8 +6163,8 @@
   },
   {
    "p": "guides/show-me-your-voice.json",
-   "s": 20038,
-   "h": "a5e5f4fe1999643622d7d42e5ab3df3b18371ca925721e838352413b3696a570"
+   "s": 20472,
+   "h": "720a8fe286b47bc1b1c78ca803a51273e1c6115618ad9139c52e363a37c78fa6"
   },
   {
    "p": "guides/sonnenhof.json",
@@ -8388,13 +8393,13 @@
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 173261,
-   "h": "b0ff5fc9305069e2b4b63918069acb5e5b9ebc38c1a8eee88aa2c49b3bda3ec8"
+   "s": 176388,
+   "h": "98f103f83df71f0eba0c8ee6e97f7f88f1010a4146351e38a1005286990aebe0"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
-   "s": 16327,
-   "h": "e7900bfd21b9f6e1489f484b663126fc960707565ff5892e7e217bdc7ce087e0"
+   "s": 18351,
+   "h": "2172b91aa541baaa97c674116948f8d8dacd6b69fe1c0e862d2aee457e3b7157"
   },
   {
    "p": "show-me-your-voice/js/avatar.js",
@@ -8428,8 +8433,8 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 35045,
-   "h": "c6ba42b456479c059040c9247a432b48a822d1c49c67f72ad340042b5bae04f2"
+   "s": 35606,
+   "h": "00c8d1b47d133b765e67e0a2de38a9096bfaa70b230e1c71ff1702711aa41902"
   },
   {
    "p": "show-me-your-voice/sw.js",
@@ -8834,7 +8839,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256786,
-   "h": "57696104425b2cdce82ad17470732672e1e2720b699a3aecc92e1ab550a22a41"
+   "h": "7ded16d6b8a9cbc315a01bc0cfd9070be0c3266e0e65bc63b680ec672105176c"
   },
   {
    "p": "taschi/card.svg",
