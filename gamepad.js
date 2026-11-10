@@ -250,12 +250,13 @@
       return ev.defaultPrevented;
     } catch (e) { return false; }
   }
-  function pointer(type, x, y) {
+  function pointer(type, x, y, noTouch) {
     var t = doc.elementFromPoint(x, y); if (!t) return null;
     var down = type === 'down', up = type === 'up', base = { bubbles: true, cancelable: true, composed: true, clientX: x, clientY: y, screenX: x, screenY: y, button: 0, buttons: down || (mouseDown && !up) ? 1 : 0, view: root };
     try { if (root.PointerEvent) t.dispatchEvent(new PointerEvent('pointer' + type, mix(base, { pointerId: 1, pointerType: 'mouse', isPrimary: true }))); } catch (e) {}
     var eat = false;
-    if (down) { touchEl = t; touchEat = touch('start', t, x, y); eat = touchEat; }
+    if (noTouch) { touchEl = null; }   // Knopf mit dem Leuchtrahmen: wie ein Mausklick, kein Finger (sonst schalten Spiele auf Touch-Bedienung um)
+    else if (down) { touchEl = t; touchEat = touch('start', t, x, y); eat = touchEat; }
     else if (up) { if (touchEl) { eat = touch('end', touchEl, x, y) || touchEat; touchEl = null; } }
     else if (touchEl && mouseDown) touch('move', touchEl, x, y);
     if (!eat) try { t.dispatchEvent(new MouseEvent('mouse' + type, base)); } catch (e) {}
@@ -338,7 +339,7 @@
       c.e.dispatchEvent(new Event('input', { bubbles: true })); c.e.dispatchEvent(new Event('change', { bubbles: true }));
       return true;
     }
-    mouseDown = true; pointer('down', c.x, c.y); pointer('up', c.x, c.y); mouseDown = false; if (!pointer.ate) click(c.e, c.x, c.y);
+    mouseDown = true; pointer('down', c.x, c.y, true); pointer('up', c.x, c.y, true); mouseDown = false; if (!pointer.ate) click(c.e, c.x, c.y);
     root.setTimeout(drawRing, 50);
     return true;
   }
