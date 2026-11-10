@@ -24,12 +24,14 @@ export class Input extends Emitter {
     this.down = new Set(); this.edges = new Set(); this.released = new Set();
     this.move = { x: 0, y: 0 }; this.cam = { x: 0, y: 0, zoom: 0 };
     this.keysHeld = new Set();
-    this.pad = null; this.padPrev = []; this.padType = null; this.lastDevice = 'keyboard';
+    this.pad = null; this.padPrev = []; this.padType = null;
+    this.lastDevice = (typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches) ? 'touch' : 'keyboard';   // Handy: Touch-Hinweise von Anfang an
     this.touch = { joyId: null, joyOrigin: null, joyVec: { x: 0, y: 0 }, camId: null, camLast: null };
     this.remap = null;
     this.enabled = true;
     this.bindKeyboard(); this.bindMouse();
-    addEventListener('gamepadconnected', (e) => { this.emit('pad', e.gamepad); this.lastDevice = 'gamepad'; });
+    addEventListener('gamepadconnected', (e) => { this.emit('pad', e.gamepad); });   // Controller-Hinweise erst bei echter Eingabe (Handys melden Sensoren als Gamepad)
+    addEventListener('pointerdown', (e) => { if (e.isTrusted && e.pointerType === 'touch') this.lastDevice = 'touch'; }, true);
     addEventListener('gamepaddisconnected', () => { this.pad = null; this.emit('pad', null); });
   }
   get keys() { return this.settings.get('keys'); }

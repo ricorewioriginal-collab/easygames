@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "acb63e13636c",
- "generated": "2026-11-10T05:20:32+01:00",
- "commit": "a500b057c079ae583c7ee13e71e85693a19617b2",
+ "version": "b047c5bfcb78",
+ "generated": "2026-11-10T14:28:38+01:00",
+ "commit": "e582c549ccbc7b4a925bfe8bd62ae3eafcbe88c0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4748,8 +4748,8 @@
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 54633,
-   "h": "27c23e86bda444b1dd6c80fdecdf396a07c1e278bfe9d5cf48fce711ecf11758"
+   "s": 56235,
+   "h": "d96083690c20bae2ee6f728b83cbe066bd4797d24448d90f2848a2722fcc0c02"
   },
   {
    "p": "cloud/anmacha-engage.js",
@@ -6478,8 +6478,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 54633,
-   "h": "27c23e86bda444b1dd6c80fdecdf396a07c1e278bfe9d5cf48fce711ecf11758"
+   "s": 56235,
+   "h": "d96083690c20bae2ee6f728b83cbe066bd4797d24448d90f2848a2722fcc0c02"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -8839,7 +8839,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256786,
-   "h": "475cf1adc7c02eeea3030e20b72bef23e587091f4b4c4b39ad96d8ea024d0eed"
+   "h": "f21fd96f144c7efb55284288bb417b74cacc282fe9de4baf8e0799b69c8edeba"
   },
   {
    "p": "taschi/card.svg",
@@ -8873,8 +8873,8 @@
   },
   {
    "p": "taschi/src/core/input.js",
-   "s": 14483,
-   "h": "2c0d3cbe187f8eca5d5c81642a44c99b13e19b5ff6f07926db1a03dc39b9cbf7"
+   "s": 14803,
+   "h": "4e2025b9f276550fc5ce565cc351586b9f0fed870e2b171d4be4ea31cd632804"
   },
   {
    "p": "taschi/src/core/noise.js",
@@ -9073,8 +9073,8 @@
   },
   {
    "p": "taschi/src/ui/style.css",
-   "s": 22656,
-   "h": "6fbbe2a9a2572340be8ec1c0cfdc89b102be4ffcdb39280318ed75390bb4b2e0"
+   "s": 22866,
+   "h": "3076b56ef726e76c75206b80ab4e26aa8fffac093a626c3109c3631a74958419"
   },
   {
    "p": "taschi/src/ui/ui.js",
