@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "4e9a73269bf9",
- "generated": "2026-11-11T00:28:04+01:00",
- "commit": "f5778544eeaeaf50ee3d8dd3561d1c57314597b7",
+ "version": "fea13bbcb74e",
+ "generated": "2026-11-11T00:37:57+01:00",
+ "commit": "ad031d164dee4cd31ef2ee7b4314d66a85d15dc2",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8132,6 +8132,11 @@
    "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
   },
   {
+   "p": "riftzone/client/public/heightmap.bin",
+   "s": 1182722,
+   "h": "121bcf27e4e7d5dda62e7ed7e061d76a1f8e4dec907c9978a3a32900d5ef6d97"
+  },
+  {
    "p": "riftzone/client/src/ui/styles.css",
    "s": 30181,
    "h": "28c5e1ddb893c40dd6896ecc6a3d7d5ee09244423276d839b5aecb7a32579129"
@@ -8839,7 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256787,
-   "h": "2af9f0c55ac137845112d8743d055a02064b16f7b173a473195b48773b1aa888"
+   "h": "b32111302252dcf20adae8b24b0f2bd4049d62c095412928cbc2f9397624f378"
   },
   {
    "p": "taschi/card.svg",
@@ -10783,8 +10788,8 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 47425,
-   "h": "29be45a0033d1ffcea3d61c94813c5941a9518666b26e2842c25d5a419cb58fd"
+   "s": 48146,
+   "h": "ecaff7afa8d784ad35b4f07ceea435d20cd8bacb841ab067db3ff95c5dec5fd3"
   },
   {
    "p": "zotik/manifest.webmanifest",
