@@ -41,6 +41,17 @@ window.openDlg = () => { document.getElementById('dlg').hidden = false; n.focus(
 </script>
 <script src="/gamepad.js"DATAPAD></script></body></html>`;
 
+// Spiel mit eigener Controller-Steuerung (info) und einem „Game Over“-Fenster, das es selbst nicht bedient
+const INFODLG = `<!doctype html><html><body style="margin:0;height:100vh;background:#123">
+<canvas width="800" height="600" style="position:fixed;inset:0;width:100vw;height:100vh"></canvas>
+<section id="dead" style="position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.5)"><div style="width:360px;padding:20px;background:#234;border-radius:14px">
+<h2>Du bist umgekippt</h2><button id="rev" style="display:block;width:100%;padding:12px">Wieder aufstehen</button><button id="men" style="display:block;width:100%;padding:12px;margin-top:8px">Hauptmenü</button><button id="back" style="display:block;width:100%;padding:12px;margin-top:8px">Zurück</button></div></section>
+<script>
+window.log = []; ['rev', 'men', 'back'].forEach(id => document.getElementById(id).onclick = () => { log.push('click:' + id); if (id === 'rev') document.getElementById('dead').style.display = 'none'; });
+window.gameSees = i => { const g = navigator.getGamepads()[0]; return g ? g.buttons[i || 0].pressed : null; };
+</script>
+<script src="/gamepad.js" data-pad="info"></script></body></html>`;
+
 // Nachgebauter Controller: window.fake = { id, mapping, buttons: [Zahl], axes: [Zahl] }
 const FAKE = `(() => {
   window.fake = null;
@@ -57,6 +68,7 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
 (async () => {
   const srv = http.createServer((q, r) => {
     if (q.url.startsWith('/gamepad.js')) { r.setHeader('Content-Type', 'text/javascript; charset=utf-8'); return r.end(fs.readFileSync(path.join(ROOT, 'gamepad.js'))); }
+    if (q.url.startsWith('/infodlg')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(INFODLG); }
     if (q.url.startsWith('/info')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end('<!doctype html><body><script>window.log=[];addEventListener("keydown",e=>log.push("key:"+e.code))</script><script src="/gamepad.js" data-pad="info" data-pad-labels="a=Springen; dpad=Auswählen; ls=Laufen"></script></body>'); }
     if (q.url.startsWith('/text')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(TEXT.replace('DATAPAD', q.url.includes('info') ? ' data-pad="info"' : '')); }
     if (q.url.startsWith('/cfg')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(CFG); }
@@ -195,6 +207,28 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
     ok(!held, 'Spiel sieht den Controller nicht, solange getippt wird' + (mode ? ' (info-Modus)' : ''));
     ok(r9.v === 'q s' && r9.log.includes('enter:q s') && r9.log.filter(x => x === 'input').length >= 4, 'getippt „q s“, Start = Enter ans Spiel: ' + JSON.stringify(r9.v) + ' ' + r9.log.filter(x => x !== 'input').join(','));
     ok(!r9.open && r9.act !== 'name' && !r9.log.some(x => /Arrow/.test(x)), 'Tastatur zu, Fokus weg, keine Pfeiltasten ans Spiel während des Tippens');
+    await p.close();
+  }
+
+  // 10) Dialog-Hilfe im info-Modus: „Game Over“-Fenster mit dem Controller bedienen, Spiel sieht den Controller solange nicht
+  {
+    p = await (await b.newContext({ viewport: { width: 900, height: 600 } })).newPage(); await p.addInitScript(FAKE); await p.goto(url + 'infodlg');
+    const Z = Array(17).fill(0), tap = async i => { const bt = Z.slice(); bt[i] = 1; await set(p, { buttons: bt }); await frames(p, 3); await set(p, { buttons: Z.slice() }); await frames(p, 3); };
+    await p.evaluate(() => plug({ id: 'Std', mapping: 'standard', buttons: Array(17).fill(0), axes: [0, 0, 0, 0] })); await frames(p);
+    await tap(3);
+    const free = await p.evaluate(async () => { window.fake.buttons[0] = 1; await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const v = gameSees(); window.fake.buttons[0] = 0; return v; });
+    await frames(p, 3);
+    await p.evaluate(() => { document.getElementById('dead').style.display = 'grid'; }); await p.waitForTimeout(400); await frames(p, 3);
+    const held = await p.evaluate(async () => { window.fake.buttons[2] = 1; await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const v = gameSees(2); return v; });   // X: macht im Fenster nichts
+    await set(p, { buttons: Z.slice() }); await frames(p, 3);
+    await tap(13); await tap(0); await tap(1);
+    const l1 = await p.evaluate(() => log.slice());
+    await p.evaluate(() => { log.length = 0; }); await tap(12); await tap(12); await tap(0);
+    const l2 = await p.evaluate(() => log.slice()); await p.waitForTimeout(400); await frames(p, 3);
+    const after = await p.evaluate(async () => { window.fake.buttons[0] = 1; await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const v = gameSees(); window.fake.buttons[0] = 0; return v; });
+    ok(free === true && held === false, 'info-Modus: Spiel sieht den Controller, im „Game Over“-Fenster nicht (frei ' + free + ', Fenster ' + held + ')');
+    ok(l1.join() === 'click:men,click:back' && l2.join() === 'click:rev', 'Fenster: Steuerkreuz wählt, A klickt, B „Zurück“: ' + l1.join() + ' / ' + l2.join());
+    ok(after === true, 'Fenster zu: Spiel bekommt den Controller zurück');
     await p.close();
   }
 

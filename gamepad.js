@@ -11,6 +11,8 @@
  *   - Textfelder: Bildschirm-Tastatur öffnet sich von selbst, sobald ein Textfeld mit dem Controller gewählt wird (oder das Spiel
  *     eins öffnet): Steuerkreuz/Stick wählt, A tippt, B löscht (bei leerem Feld: zu), X Leerzeichen, Y groß, LB/RB Cursor,
  *     Select 123, Start fertig (Enter).
+ *   - Spiele mit eigener Controller-Steuerung (info): Fenster in der Bildmitte, die das Spiel nicht selbst bedient (z. B. „Game Over“),
+ *     steuert gamepad.js – Steuerkreuz/Stick wählt, A klickt, B „Zurück/Schließen“.
  *   - Menüs ohne Pfeiltasten-Steuerung: Das Steuerkreuz springt zwischen sichtbaren Knöpfen (Leuchtrahmen), A klickt.
  *     Das passiert nur, wenn das Spiel die Pfeiltaste selbst nicht verarbeitet (kein preventDefault, keine sofortige Änderung
  *     an der Seite); data-pad="nonav" schaltet es ab.
@@ -290,11 +292,13 @@
     if (!hit || (hit !== e && !e.contains(hit) && !hit.contains(e))) return null;   // verdeckt (z. B. von einem Fenster darüber)
     return { e: e, r: r, x: x, y: y };
   }
+  var scopeEl = null;   // Fenster, auf das die Knopf-Navigation gerade beschränkt ist (Dialog-Hilfe)
   function candidates() {
-    var out = [], seen = [], all = doc.querySelectorAll(SEL), i, c;
+    var base = scopeEl && scopeEl.isConnected ? scopeEl : doc;
+    var out = [], seen = [], all = base.querySelectorAll(SEL), i, c;
     for (i = 0; i < all.length; i++) if ((c = usable(all[i]))) { out.push(c); seen.push(all[i]); }
     // Elemente, die nur per Klick-Handler reagieren, erkennt man am Hand-Zeiger (nur das äußerste zählt)
-    var any = doc.body ? doc.body.getElementsByTagName('*') : [];
+    var any = base === doc ? (doc.body ? doc.body.getElementsByTagName('*') : []) : base.getElementsByTagName('*');
     for (i = 0; i < any.length && i < 4000; i++) {
       var e = any[i]; if (seen.indexOf(e) >= 0 || e.tagName === 'CANVAS') continue;
       var cs = root.getComputedStyle(e); if (cs.cursor !== 'pointer' || cs.visibility === 'hidden') continue;
@@ -326,8 +330,22 @@
     ring.style.transform = 'translate(' + (c.r.left - 5) + 'px,' + (c.r.top - 5) + 'px)'; ring.style.width = (c.r.width + 10) + 'px'; ring.style.height = (c.r.height + 10) + 'px'; show(ring, true);
   }
   function clearRing() { focusEl = null; show(ring, false); }
+  // Nichts mehr in dieser Richtung sichtbar: Fenster/Seite ein Stück weiterscrollen (Knöpfe unterhalb des sichtbaren Bereichs, z. B. Spielstand-Bereich)
+  function scrollOn(dir) {
+    if (dir > 1) return false;
+    var e = focusEl, sc = null;
+    for (; e && e !== doc.body && e !== doc.documentElement; e = e.parentElement) {
+      var cs = root.getComputedStyle(e); if (/(auto|scroll)/.test(cs.overflowY) && e.scrollHeight > e.clientHeight + 4) { sc = e; break; }
+    }
+    if (!sc && scopeEl) { for (e = scopeEl; e && e !== doc.body; e = e.parentElement) { var c2 = root.getComputedStyle(e); if (/(auto|scroll)/.test(c2.overflowY) && e.scrollHeight > e.clientHeight + 4) { sc = e; break; } } }
+    sc = sc || doc.scrollingElement || doc.documentElement;
+    var before = sc.scrollTop, h = sc === doc.scrollingElement || sc === doc.documentElement ? root.innerHeight : sc.clientHeight;
+    sc.scrollTop += (dir === 0 ? -1 : 1) * Math.max(80, h * 0.6);
+    return sc.scrollTop !== before;
+  }
   function navigate(dir) {
-    var c = pick(dir); if (!c) return;
+    var c = pick(dir); if (!c && focusEl && scrollOn(dir)) c = pick(dir);
+    if (!c) return;
     focusEl = c.e; drawRing(); cursorUntil = 0; show(cursor, false);
     try { if (c.e.scrollIntoView) c.e.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (e) {}
   }
@@ -374,6 +392,8 @@
     if (padOn && now > badgeT) { badgeT = now + 400; drawBadges(); }
     if (s.b[8] && s.b[9] && !(p.b[8] && p.b[9])) { releaseAll(); menuOpen(); return; }   // Select + Start: Belegung ansehen und ändern
     if (now > oskScanT) { oskScanT = now + 300; if (oskScan()) return; }   // neu erschienenes Textfeld (Name, Code …) → Tastatur
+    if (opt.info && now > dlgT) { dlgT = now + 250; dlgCheck(); }   // Fenster des Spiels (z. B. „Game Over“), das die eigene Controller-Steuerung nicht kennt
+    if (dlg) { dlgTick(now); return; }
     if (opt.info) return;   // Spiel mit eigener Controller-Steuerung: nichts nachahmen
 
     // Steuerkreuz: Pfeiltasten; wenn das Spiel sie nicht verarbeitet -> Knopf-Navigation (mit Wiederholung beim Halten)
@@ -462,7 +482,7 @@
     if (NORM && NORM.hold) NORM.hold(true);
     menu = { sel: 0, wait: -1, prev: physState(), rep: 0 }; drawMenu();
   }
-  function menuClose() { menu = null; if (NORM && NORM.hold) NORM.hold(false); show(legendEl, false); prev = {}; drawBadges(); }
+  function menuClose() { menu = null; if (NORM && NORM.hold && !dlg) NORM.hold(false); show(legendEl, false); prev = {}; drawBadges(); }
   function assign(L, P) {
     var m = {}, k, cur = NORM.remap(); for (k in cur) m[k] = +cur[k];
     var oldP = physOf(L), L2 = -1;
@@ -565,7 +585,7 @@
     if (!e.isContentEditable) { try { var L = e.value.length; e.setSelectionRange(L, L); } catch (x) { } }   // Cursor ans Ende (vorgegebener Text)
     oskDraw(); show(oskEl, true);
   }
-  function oskClose() { if (!osk) return; osk = null; oskVis = null; show(oskEl, false); if (NORM && NORM.hold && !menu) NORM.hold(false); prev = {}; }
+  function oskClose() { if (!osk) return; osk = null; oskVis = null; show(oskEl, false); if (NORM && NORM.hold && !menu && !dlg) NORM.hold(false); prev = {}; }
   function oskState() {
     var b = [], ax = 0, ay = 0, l = NORM && NORM.physical ? NORM.physical().concat(pads()) : pads();   // echte Pads (auch während das Spiel gesperrt ist) und der virtuelle
     l.forEach(function (g) {
@@ -624,6 +644,46 @@
   }
   doc.addEventListener('focusin', function (ev) { if (padOn && enabled && running && !menu && oskField(ev.target)) oskOpen(ev.target); });
   root.addEventListener('pointerdown', function (ev) { if (osk && ev.isTrusted && oskEl && !oskEl.contains(ev.target)) oskClose(); }, true);   // Maus/Finger daneben: echte Tastatur übernimmt
+  // ---------- Dialog-Hilfe (Spiele mit eigener Controller-Steuerung, data-pad="info") ----------
+  // Liegt in der Bildmitte ein Fenster mit Knöpfen (kein Spielbild) und hat das Spiel den Fokus nicht selbst hineingesetzt, übernimmt
+  // gamepad.js: Steuerkreuz/Stick wählt (Leuchtrahmen), A klickt, B nimmt „Zurück/Schließen/Menü“. Das Spiel sieht den Controller solange nicht.
+  var dlg = null, dlgT = 0, BACK_RX = /zur(ü|ue)ck|schlie(ß|ss)en|abbrechen|weiter spielen|fortsetzen|nein|^\s*[✕×x]\s*$/i;
+  function overlayAt() {
+    var el = doc.elementFromPoint(root.innerWidth / 2, root.innerHeight / 2);
+    if (!el || el === doc.body || el === doc.documentElement || el.tagName === 'CANVAS' || el.tagName === 'IFRAME' || el.tagName === 'VIDEO') return null;
+    var box = null;
+    for (var e = el; e && e !== doc.body && e !== doc.documentElement; e = e.parentElement) {
+      var any = e.querySelectorAll(SEL), ok = 0;
+      for (var i = 0; i < any.length && !ok; i++) if (usable(any[i])) ok = 1;
+      if (ok) { box = e; break; }
+    }
+    if (!box) return null;
+    var r = box.getBoundingClientRect(); if (r.width * r.height > 0.92 * root.innerWidth * root.innerHeight) return null;   // ganzer Bildschirm = Spiel-Oberfläche (HUD), kein Fenster
+    var a = doc.activeElement; if (a && a !== doc.body && box.contains(a)) return null;   // das Spiel führt selbst durch sein Fenster
+    return box;
+  }
+  function dlgCheck() {
+    var b = overlayAt();
+    if (b === (dlg && dlg.el)) return;
+    if (dlg && !b) { dlg = null; scopeEl = null; clearRing(); if (NORM && NORM.hold && !menu && !osk) NORM.hold(false); prev = {}; return; }
+    releaseAll(); scopeEl = b;
+    dlg = { el: b, prev: oskState(), next: 0 };
+    if (NORM && NORM.hold) NORM.hold(true);
+    var c = pick(0); if (c) { focusEl = c.e; drawRing(); }   // gleich den ersten Knopf wählen: A klickt sofort
+  }
+  function dlgTick(now) {
+    if (!dlg.el.isConnected || !dlg.el.getClientRects().length) { dlgCheck(); return; }
+    var b = oskState(), pv = dlg.prev, hit = function (i) { return b[i] && !pv[i]; }; dlg.prev = b;
+    var D = { u: 0, d: 1, l: 2, r: 3 };
+    if (b.dir !== pv.dir) { dlg.next = now + 320; if (b.dir) navigate(D[b.dir]); }
+    else if (b.dir && now > dlg.next) { dlg.next = now + 150; navigate(D[b.dir]); }
+    if (hit(0) || hit(9)) { if (!(focusEl && activate())) { var c = pick(0); if (c) { focusEl = c.e; drawRing(); } } dlgT = 0; return; }
+    if (hit(1)) {
+      var list = candidates(), back = null;
+      for (var i = 0; i < list.length && !back; i++) if (BACK_RX.test(list[i].e.textContent || list[i].e.getAttribute('aria-label') || '')) back = list[i];
+      if (back) { focusEl = back.e; activate(); dlgT = 0; }
+    }
+  }
   function legendBox() { if (!legendEl) legendEl = el('left:50%;top:auto;bottom:16px;transform:translateX(-50%);max-width:92vw;padding:10px 14px;border-radius:14px;background:rgba(8,10,20,.9);color:#fff;font:600 13px/1.55 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.5);text-align:left;columns:2 220px;column-gap:20px'); return legendEl; }
   function legend(ms) {
     clearTimeout(legendTimer);
@@ -662,7 +722,7 @@
     if (running || !pads().length) return;
     running = true; last = 0; prev = {}; root.requestAnimationFrame(frame);
   }
-  function stop() { if (osk) oskClose(); running = false; releaseAll(); clearRing(); show(cursor, false); mouseDown = false; prev = {}; setPad(false); }
+  function stop() { if (osk) oskClose(); if (dlg) { dlg = null; scopeEl = null; if (NORM && NORM.hold && !menu) NORM.hold(false); } running = false; releaseAll(); clearRing(); show(cursor, false); mouseDown = false; prev = {}; setPad(false); }
 
   root.addEventListener('gamepadconnected', start);
   root.addEventListener('gamepaddisconnected', function () { if (!pads().length) stop(); });

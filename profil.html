@@ -207,5 +207,6 @@ window.addEventListener('DOMContentLoaded', function () {
   setInterval(function () { var now = !!(Cloud.user && Cloud.user()); if (now && !me && !logging) { logging = true; login().then(function () { logging = false; }, function () { logging = false; }); } else if (!now && me) { me = null; $('app').hidden = true; $('gate').hidden = false; } }, 1000);
 });
 </script>
+<script src="gamepad.js" defer></script>
 </body>
 </html>
