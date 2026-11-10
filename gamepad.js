@@ -8,6 +8,9 @@
  *   - Steuerkreuz und linker Stick = Pfeiltasten (ls=wasd: Stick = W A S D), A = Enter, B = Escape, X = Leertaste,
  *     Y = E, LB = Q, RB = E, Start = P, Select = M (jede Taste per data-pad änderbar, "-" = nichts;
  *     a=Space/Enter: erst Leertaste, und nur wenn das Spiel sie nicht verarbeitet, zusätzlich Enter – z. B. Springen im Spiel, Bestätigen im Menü)
+ *   - Textfelder: Bildschirm-Tastatur öffnet sich von selbst, sobald ein Textfeld mit dem Controller gewählt wird (oder das Spiel
+ *     eins öffnet): Steuerkreuz/Stick wählt, A tippt, B löscht (bei leerem Feld: zu), X Leerzeichen, Y groß, LB/RB Cursor,
+ *     Select 123, Start fertig (Enter).
  *   - Menüs ohne Pfeiltasten-Steuerung: Das Steuerkreuz springt zwischen sichtbaren Knöpfen (Leuchtrahmen), A klickt.
  *     Das passiert nur, wenn das Spiel die Pfeiltaste selbst nicht verarbeitet (kein preventDefault, keine sofortige Änderung
  *     an der Seite); data-pad="nonav" schaltet es ab.
@@ -329,6 +332,7 @@
   }
   function activate() {
     var c = focusEl && usable(focusEl); if (!c) { clearRing(); return false; }
+    if (oskField(c.e)) { try { c.e.focus(); } catch (x) {} oskOpen(c.e); return true; }
     if (c.e.tagName === 'SELECT' && c.e.options.length) {   // Auswahlliste lässt sich nicht per Skript aufklappen: A nimmt den nächsten Eintrag
       c.e.selectedIndex = (c.e.selectedIndex + 1) % c.e.options.length;
       c.e.dispatchEvent(new Event('input', { bubbles: true })); c.e.dispatchEvent(new Event('change', { bubbles: true }));
@@ -360,6 +364,7 @@
     root.requestAnimationFrame(frame);
     var dt = Math.min(0.05, last ? (now - last) / 1000 : 0.016); last = now;
     if (!enabled || doc.hidden) return;
+    if (osk) { oskTick(now); return; }
     if (menu) { menuTick(now); return; }
     var s = state(list), p = prev, i;
     prev = s;
@@ -367,6 +372,7 @@
     if (!padOn && (s.b.length || s.d.join('') !== '0000' || s.ls.join('') !== '0000' || Math.abs(s.rs[0]) > 0.4 || Math.abs(s.rs[1]) > 0.4)) setPad(true);
     if (padOn && now > badgeT) { badgeT = now + 400; drawBadges(); }
     if (s.b[8] && s.b[9] && !(p.b[8] && p.b[9])) { releaseAll(); menuOpen(); return; }   // Select + Start: Belegung ansehen und ändern
+    if (now > oskScanT) { oskScanT = now + 300; if (oskScan()) return; }   // neu erschienenes Textfeld (Name, Code …) → Tastatur
     if (opt.info) return;   // Spiel mit eigener Controller-Steuerung: nichts nachahmen
 
     // Steuerkreuz: Pfeiltasten; wenn das Spiel sie nicht verarbeitet -> Knopf-Navigation (mit Wiederholung beim Halten)
@@ -494,6 +500,129 @@
       else { menu.wait = r.i; drawMenu(); }
     }
   }
+  // ---------- Bildschirm-Tastatur für Textfelder (erst bei Bedarf angelegt) ----------
+  var osk = null, oskEl = null, oskScanT = 0, oskVis = null;
+  var OSK_ROWS = { abc: ['1234567890ß', 'qwertzuiopü', 'asdfghjklöä', '⇧yxcvbnm-.⌫'], sym: ['1234567890ß', '!?@#&()":;\'', '+-*/=%€$_,.', '⇧<>[]{}~^|⌫'] };
+  function oskField(e) {
+    if (!e || e.disabled || e.readOnly) return false;
+    if (e.isContentEditable) return true;
+    return e.tagName === 'TEXTAREA' || (e.tagName === 'INPUT' && /^(text|search|email|url|tel|password|number|)$/.test(e.type || ''));
+  }
+  function oskKeys() {
+    var rows = OSK_ROWS[osk.mode].map(function (r) { var x = 0; return r.split('').map(function (ch) { var k = { x: x++, w: 1, k: ch === '⇧' ? 'shift' : ch === '⌫' ? 'bs' : 'ch', t: ch }; return k; }); });
+    rows.push([{ x: 0, w: 2, k: 'mode', t: osk.mode === 'abc' ? '&123' : 'abc' }, { x: 2, w: 5, k: 'space', t: 'Leerzeichen' }, { x: 7, w: 1, k: 'left', t: '◀' }, { x: 8, w: 1, k: 'right', t: '▶' }, { x: 9, w: 2, k: 'ok', t: '✓ Fertig' }]);
+    return rows;
+  }
+  function oskEsc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function oskSel(e) { var s = null, t = null; try { s = e.selectionStart; t = e.selectionEnd; } catch (x) { } if (s == null) s = t = e.value.length; return [s, t]; }
+  function oskSet(e, v, pos, type, data) {
+    var proto = e.tagName === 'TEXTAREA' ? root.HTMLTextAreaElement.prototype : root.HTMLInputElement.prototype, d = Object.getOwnPropertyDescriptor(proto, 'value');
+    if (d && d.set) d.set.call(e, v); else e.value = v;   // auch für Seiten, die den Wert selbst verwalten
+    try { e.setSelectionRange(pos, pos); } catch (x) { }
+    var ev; try { ev = new root.InputEvent('input', { bubbles: true, inputType: type, data: data }); } catch (x) { ev = new Event('input', { bubbles: true }); }
+    e.dispatchEvent(ev);
+  }
+  function oskInput(type, ch) {
+    var e = osk.el;
+    if (e.isContentEditable) { try { doc.execCommand(type === 'bs' ? 'delete' : 'insertText', false, ch); } catch (x) { } return; }
+    var v = e.value, st = oskSel(e), a = st[0], b = st[1];
+    if (type === 'bs') { if (a === b) { if (!a) return; a--; } oskSet(e, v.slice(0, a) + v.slice(b), a, 'deleteContentBackward', null); return; }
+    if (type === 'move') { var n = Math.max(0, Math.min(v.length, (ch < 0 ? a : b) + ch)); try { e.setSelectionRange(n, n); } catch (x) { } return; }
+    if (e.type === 'number' && !/[0-9.,\-]/.test(ch)) return;
+    if (e.maxLength > 0 && v.length - (b - a) + ch.length > e.maxLength) return;
+    oskSet(e, v.slice(0, a) + ch + v.slice(b), a + ch.length, 'insertText', ch);
+  }
+  function oskPress(k) {
+    if (k.k === 'ch') { oskInput('ch', osk.shift ? k.t.toUpperCase() : k.t); if (osk.shift === 1) osk.shift = 0; }
+    else if (k.k === 'bs') oskInput('bs');
+    else if (k.k === 'space') oskInput('ch', ' ');
+    else if (k.k === 'left' || k.k === 'right') oskInput('move', k.k === 'left' ? -1 : 1);
+    else if (k.k === 'shift') osk.shift = osk.shift ? 0 : 1;
+    else if (k.k === 'mode') { osk.mode = osk.mode === 'abc' ? 'sym' : 'abc'; }
+    else if (k.k === 'ok') { oskDone(); return; }
+    oskDraw();
+  }
+  function oskDone() {   // wie Enter auf einer echten Tastatur: Spiel bekommt Enter, dann change; danach Fokus weg, damit das Steuerkreuz wieder das Spiel steuert
+    var e = osk.el; oskClose();
+    var handled = send('Enter', true); send('Enter', false);
+    try { e.dispatchEvent(new Event('change', { bubbles: true })); } catch (x) { }
+    if (!handled && e.form && e.form.requestSubmit && e.isConnected) { try { e.form.requestSubmit(); } catch (x) { } }
+    if (doc.activeElement === e) { try { e.blur(); } catch (x) { } }
+  }
+  function oskOpen(e) {
+    if (osk && osk.el === e) return;
+    if (!oskEl) {
+      oskEl = el('left:50%;top:auto;bottom:10px;transform:translateX(-50%);width:min(780px,96vw);box-sizing:border-box;padding:10px;border-radius:16px;background:rgba(8,10,20,.96);color:#fff;font:600 16px/1 system-ui,sans-serif;box-shadow:0 10px 40px rgba(0,0,0,.6);pointer-events:auto');
+      oskEl.addEventListener('pointerdown', function (ev) {   // auch mit Maus/Finger bedienbar, ohne dass das Textfeld den Fokus verliert
+        ev.preventDefault(); ev.stopPropagation(); var t = ev.target.closest && ev.target.closest('[data-r]'); if (!t || !osk) return;
+        osk.r = +t.getAttribute('data-r'); osk.i = +t.getAttribute('data-i'); oskPress(oskKeys()[osk.r][osk.i]);
+      });
+    }
+    releaseAll(); clearRing();
+    osk = { el: e, r: 1, i: 0, mode: e.type === 'number' || e.type === 'tel' ? 'sym' : 'abc', shift: 0, prev: oskState(), dir: '', next: 0 };
+    if (NORM && NORM.hold) NORM.hold(true);
+    if (!e.isContentEditable) { try { var L = e.value.length; e.setSelectionRange(L, L); } catch (x) { } }   // Cursor ans Ende (vorgegebener Text)
+    oskDraw(); show(oskEl, true);
+  }
+  function oskClose() { if (!osk) return; osk = null; oskVis = null; show(oskEl, false); if (NORM && NORM.hold && !menu) NORM.hold(false); prev = {}; }
+  function oskState() {
+    var b = [], ax = 0, ay = 0, l = NORM && NORM.physical ? NORM.physical().concat(pads()) : pads();   // echte Pads (auch während das Spiel gesperrt ist) und der virtuelle
+    l.forEach(function (g) {
+      if (!g) return; for (var i = 0; i < 16; i++) if (g.buttons[i] && g.buttons[i].pressed) b[i] = 1;
+      if (Math.abs(g.axes[0] || 0) > Math.abs(ax)) ax = g.axes[0] || 0; if (Math.abs(g.axes[1] || 0) > Math.abs(ay)) ay = g.axes[1] || 0;
+    });
+    b.dir = b[12] || ay < -0.5 ? 'u' : b[13] || ay > 0.5 ? 'd' : b[14] || ax < -0.5 ? 'l' : b[15] || ax > 0.5 ? 'r' : '';
+    return b;
+  }
+  function oskMove(d) {
+    var rows = oskKeys(), k = rows[osk.r][osk.i];
+    if (d === 'l' || d === 'r') { osk.i = (osk.i + (d === 'l' ? -1 : 1) + rows[osk.r].length) % rows[osk.r].length; return; }
+    var c = k.x + k.w / 2; osk.r = (osk.r + (d === 'u' ? -1 : 1) + rows.length) % rows.length;
+    var best = 0, bd = 99; rows[osk.r].forEach(function (q, n) { var dd = Math.abs(q.x + q.w / 2 - c); if (dd < bd) { bd = dd; best = n; } }); osk.i = best;
+  }
+  function oskTick(now) {
+    var e = osk.el;
+    if (!e.isConnected || !e.getClientRects().length || e.disabled) { oskClose(); return; }   // Feld weg (Fenster geschlossen)
+    var b = oskState(), pv = osk.prev, hit = function (i) { return b[i] && !pv[i]; }, rows = oskKeys(); osk.prev = b;
+    if (b.dir !== pv.dir) { osk.next = now + 260; if (b.dir) { oskMove(b.dir); oskDraw(); } }
+    else if (b.dir && now > osk.next) { osk.next = now + 90; oskMove(b.dir); oskDraw(); }
+    if (hit(0)) oskPress(rows[osk.r][Math.min(osk.i, rows[osk.r].length - 1)]);
+    else if (hit(1)) { if (!(e.isContentEditable ? e.textContent : e.value)) { oskClose(); try { e.blur(); } catch (x) { } return; } oskInput('bs'); oskDraw(); osk.bs = now + 450; }   // B bei leerem Feld: abbrechen
+    else if (b[1] && pv[1] && now > osk.bs) { osk.bs = now + 60; oskInput('bs'); oskDraw(); }   // B halten: schnell löschen
+    else if (hit(2)) { oskInput('ch', ' '); oskDraw(); }
+    else if (hit(3)) { osk.shift = osk.shift ? 0 : 1; oskDraw(); }
+    else if (hit(4) || hit(5)) { oskInput('move', hit(4) ? -1 : 1); oskDraw(); }
+    else if (hit(8)) { osk.mode = osk.mode === 'abc' ? 'sym' : 'abc'; oskDraw(); }
+    else if (hit(9)) oskDone();
+  }
+  function oskDraw() {
+    if (!osk) return;
+    var e = osk.el, rows = oskKeys(), v = e.isContentEditable ? e.textContent : e.value, st = e.isContentEditable ? [v.length] : oskSel(e);
+    if (e.type === 'password') v = v.replace(/./g, '•');
+    osk.i = Math.min(osk.i, rows[osk.r].length - 1);
+    var ph = !v && e.placeholder ? '<span style="opacity:.45">' + oskEsc(e.placeholder) + '</span>' : '';
+    var h = '<div style="padding:9px 11px;margin-bottom:8px;border-radius:10px;background:#1b2033;font:500 17px/1.35 system-ui,sans-serif;white-space:pre-wrap;word-break:break-all;min-height:23px">'
+      + oskEsc(v.slice(0, st[0])) + '<span style="display:inline-block;width:2px;height:1.1em;vertical-align:-2px;background:#ffd400"></span>' + oskEsc(v.slice(st[0])) + ph + '</div>'
+      + '<div style="display:grid;grid-template-columns:repeat(11,1fr);gap:5px">';
+    rows.forEach(function (r, ri) {
+      r.forEach(function (k, ki) {
+        var on = ri === osk.r && ki === osk.i, t = k.k === 'ch' && osk.shift ? k.t.toUpperCase() : k.t;
+        if (k.k === 'shift' && osk.shift) t = '⬆';
+        h += '<div data-r="' + ri + '" data-i="' + ki + '" style="grid-column:span ' + k.w + ';padding:11px 0;text-align:center;border-radius:8px;cursor:pointer;' + (on ? 'background:#ffd400;color:#111' : k.k === 'ch' ? 'background:#2a3048' : 'background:#3a4160') + '">' + oskEsc(t) + '</div>';
+      });
+    });
+    oskEl.innerHTML = h + '</div><div style="margin-top:8px;font:600 11px/1.4 system-ui,sans-serif;color:#9aa3bd;text-align:center">A Taste · B löschen · X Leerzeichen · Y groß · LB/RB Cursor · Select &amp;123 · Start fertig</div>';
+  }
+  function oskScan() {   // Textfelder, die gerade sichtbar geworden sind (Spiel öffnet ein Eingabefenster)
+    var now = [], all = doc.querySelectorAll('input,textarea,[contenteditable=""],[contenteditable=true]'), fresh = null, a = doc.activeElement, i;
+    for (i = 0; i < all.length; i++) if (oskField(all[i]) && usable(all[i])) now.push(all[i]);
+    if (oskVis) for (i = 0; i < now.length && !fresh; i++) if (oskVis.indexOf(now[i]) < 0) fresh = now[i];
+    oskVis = now;
+    if (!fresh || menu || (a && a !== doc.body && oskField(a))) return false;
+    try { fresh.focus({ preventScroll: true }); } catch (x) { } oskOpen(fresh); return true;
+  }
+  doc.addEventListener('focusin', function (ev) { if (padOn && enabled && running && !menu && oskField(ev.target)) oskOpen(ev.target); });
+  root.addEventListener('pointerdown', function (ev) { if (osk && ev.isTrusted && oskEl && !oskEl.contains(ev.target)) oskClose(); }, true);   // Maus/Finger daneben: echte Tastatur übernimmt
   function legendBox() { if (!legendEl) legendEl = el('left:50%;top:auto;bottom:16px;transform:translateX(-50%);max-width:92vw;padding:10px 14px;border-radius:14px;background:rgba(8,10,20,.9);color:#fff;font:600 13px/1.55 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.5);text-align:left;columns:2 220px;column-gap:20px'); return legendEl; }
   function legend(ms) {
     clearTimeout(legendTimer);
@@ -532,7 +661,7 @@
     if (running || !pads().length) return;
     running = true; last = 0; prev = {}; root.requestAnimationFrame(frame);
   }
-  function stop() { running = false; releaseAll(); clearRing(); show(cursor, false); mouseDown = false; prev = {}; setPad(false); }
+  function stop() { if (osk) oskClose(); running = false; releaseAll(); clearRing(); show(cursor, false); mouseDown = false; prev = {}; setPad(false); }
 
   root.addEventListener('gamepadconnected', start);
   root.addEventListener('gamepaddisconnected', function () { if (!pads().length) stop(); });
@@ -541,6 +670,7 @@
   // echte Maus/Touch-Eingabe: Leuchtrahmen und Zeiger ausblenden
   root.addEventListener('pointerdown', function (e) { if (e.isTrusted) { clearRing(); cursorUntil = 0; show(cursor, false); setPad(false); } }, true);
   start();   // Controller, der schon vor dem Laden verbunden war
+  root.setInterval(start, 1000);   // falls das Verbindungs-Ereignis fehlt (z. B. Fenster hatte beim Verbinden keinen Fokus, Bluetooth-Controller wacht auf)
 
   root.EasyGamesPad = {
     version: 3, map: MAP, dpad: DPAD, labels: LABEL, binds: BIND, options: opt,

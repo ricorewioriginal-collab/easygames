@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "70525877ffba",
- "generated": "2026-11-10T00:55:41+01:00",
- "commit": "4fc9f003bb71dae3bccc63f4f893ad62a4cd1194",
+ "version": "7ae0dc4c9cc5",
+ "generated": "2026-11-10T01:46:23+01:00",
+ "commit": "319f84dfcd54b889e4cd1b1a3c41f8ef815838d1",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1708,8 +1708,8 @@
   },
   {
    "p": "anmacha-markthalle/game.js",
-   "s": 91810,
-   "h": "e55f56b542902db4d65f85b45fd0cf09202a7a6a5fb39c5635538c629fc489f5"
+   "s": 91834,
+   "h": "e0a0432eb71ac747b64ad024c881e169c3483086275c8c293aad3816b77a346c"
   },
   {
    "p": "anmacha-markthalle/index.html",
@@ -5533,8 +5533,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 39697,
-   "h": "f631cd2ace48e935b4a4234d1161cfd5dc4003ba37823c43985a4e3d5301bfb9"
+   "s": 50496,
+   "h": "d9f9a2817d6787564118c0a2dc57154cb8f28249ba7de683e4d35c3d8d33faf6"
   },
   {
    "p": "games.js",
@@ -8839,7 +8839,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256786,
-   "h": "7ded16d6b8a9cbc315a01bc0cfd9070be0c3266e0e65bc63b680ec672105176c"
+   "h": "06751763d973a193478c82f1044ab5d46d01a67e98fb0738a046622ccf440635"
   },
   {
    "p": "taschi/card.svg",

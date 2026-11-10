@@ -31,6 +31,16 @@ const j = document.getElementById('jump'); j.addEventListener('pointerdown', () 
 </script>
 <script src="/gamepad.js" data-pad="a=KeyJ/Enter:Angriff@#atk x=:Springen@#jump right=Enter:Ausführen ls=wasd:Bewegen"></script></body></html>`;
 
+// Spiel mit Namensfeld (öffnet es selbst mit Fokus), Enter = übernehmen
+const TEXT = `<!doctype html><html><body style="margin:0;height:100vh;background:#123">
+<div id="dlg" hidden style="padding:30px"><input id="name" placeholder="Dein Name" maxlength="12"> <button id="ok">OK</button></div>
+<script>
+window.log = []; addEventListener('keydown', e => log.push('key:' + e.code));
+const n = document.getElementById('name'); n.addEventListener('input', () => log.push('input')); n.addEventListener('keydown', e => { if (e.key === 'Enter') { log.push('enter:' + n.value); e.preventDefault(); } });
+window.openDlg = () => { document.getElementById('dlg').hidden = false; n.focus(); };
+</script>
+<script src="/gamepad.js"DATAPAD></script></body></html>`;
+
 // Nachgebauter Controller: window.fake = { id, mapping, buttons: [Zahl], axes: [Zahl] }
 const FAKE = `(() => {
   window.fake = null;
@@ -48,6 +58,7 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
   const srv = http.createServer((q, r) => {
     if (q.url.startsWith('/gamepad.js')) { r.setHeader('Content-Type', 'text/javascript; charset=utf-8'); return r.end(fs.readFileSync(path.join(ROOT, 'gamepad.js'))); }
     if (q.url.startsWith('/info')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end('<!doctype html><body><script>window.log=[];addEventListener("keydown",e=>log.push("key:"+e.code))</script><script src="/gamepad.js" data-pad="info" data-pad-labels="a=Springen; dpad=Auswählen; ls=Laufen"></script></body>'); }
+    if (q.url.startsWith('/text')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(TEXT.replace('DATAPAD', q.url.includes('info') ? ' data-pad="info"' : '')); }
     if (q.url.startsWith('/cfg')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(CFG); }
     r.setHeader('Content-Type', 'text/html'); r.end(q.url.startsWith('/only') ? '<script>window.EASYGAMES_PAD_NORMAL_ONLY=1</script><script src="/gamepad.js"></script>' : PAGE);
   }).listen(0);
@@ -165,6 +176,27 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
   ok(s8.keys === 0 && s8.cls, 'info-Modus: keine Tasten-Nachahmung, Controller-Modus an');
   ok(s8.leg === 'L-Stick=Laufen,✚=Auswählen,A=Springen', 'info-Modus: Belegung aus data-pad-labels: ' + s8.leg);
   await p.close();
+
+  // 9) Bildschirm-Tastatur: öffnet sich, sobald das Spiel ein Textfeld öffnet; Controller tippt, Start = Enter
+  for (const mode of ['', 'info']) {
+    p = await (await b.newContext({ viewport: { width: 900, height: 600 } })).newPage(); await p.addInitScript(FAKE); await p.goto(url + 'text' + mode);
+    const Z = Array(17).fill(0), tap = async i => { const bt = Z.slice(); bt[i] = 1; await set(p, { buttons: bt }); await frames(p, 3); await set(p, { buttons: Z.slice() }); await frames(p, 3); };
+    await p.evaluate(() => plug({ id: 'Std', mapping: 'standard', buttons: Array(17).fill(0), axes: [0, 0, 0, 0] })); await frames(p);
+    await tap(3);   // Controller benutzt → Controller-Modus
+    await p.evaluate(() => { log.length = 0; openDlg(); }); await frames(p);
+    const vis = await p.evaluate(() => [...document.querySelectorAll('body > div[aria-hidden]')].some(d => d.style.display !== 'none' && /Leerzeichen/.test(d.textContent)));
+    ok(vis, 'Tastatur öffnet sich von selbst beim Textfeld' + (mode ? ' (info-Modus)' : ''));
+    const held = await p.evaluate(async () => { window.fake.buttons[0] = 1; await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const g = navigator.getGamepads()[0]; window.fake.buttons[0] = 0; return g.buttons[0].pressed; });
+    await frames(p, 3);
+    await tap(3); await tap(15); await tap(0); await tap(1); await tap(2); await tap(13); await tap(0);   // q (eben getippt), Y groß, rechts, W, B löscht, X Leerzeichen, runter, A → s? (Reihe 3)
+    if (!mode && process.env.SHOTS) await p.screenshot({ path: path.join(process.env.SHOTS, 'tastatur-test.png') });
+    await tap(9); await frames(p);
+    const r9 = await p.evaluate(() => ({ v: document.getElementById('name').value, log: log.slice(), open: [...document.querySelectorAll('body > div[aria-hidden]')].some(d => d.style.display !== 'none' && /Leerzeichen/.test(d.textContent)), act: document.activeElement.id }));
+    ok(!held, 'Spiel sieht den Controller nicht, solange getippt wird' + (mode ? ' (info-Modus)' : ''));
+    ok(r9.v === 'q s' && r9.log.includes('enter:q s') && r9.log.filter(x => x === 'input').length >= 4, 'getippt „q s“, Start = Enter ans Spiel: ' + JSON.stringify(r9.v) + ' ' + r9.log.filter(x => x !== 'input').join(','));
+    ok(!r9.open && r9.act !== 'name' && !r9.log.some(x => /Arrow/.test(x)), 'Tastatur zu, Fokus weg, keine Pfeiltasten ans Spiel während des Tippens');
+    await p.close();
+  }
 
   await b.close(); srv.close();
   console.log(fails ? fails + ' Fehler' : 'alles ok');
