@@ -135,8 +135,9 @@ Alle Spiele lassen sich mit einem Gamecontroller (Xbox, PlayStation, 8BitDo …,
   - Steuerkreuz und linker Stick = Pfeiltasten, **A** = Enter, **B** = Esc, **X** = Leertaste, **Y** = E, **LB/RB** = Q/E, **Start** = P, **Select** = M – pro Spiel angepasst im Attribut `data-pad` (z. B. `a=Space/Enter` = Leertaste, und nur wenn das Spiel sie nicht nutzt, Enter; `ls=wasd`; `y=-` = nichts).
   - In Menüs, die nicht auf Pfeiltasten reagieren, springt das Steuerkreuz von Knopf zu Knopf (gelber Rahmen), **A** drückt ihn.
   - **Rechter Stick** = Mauszeiger, **A** klickt (halten = ziehen), z. B. für Koffer, Spielbretter und Türme.
-  - Ohne Controller läuft nichts mit. Spiele mit eigener Controller-Steuerung binden die Datei nicht ein, damit nichts doppelt reagiert.
-- **Texteingaben** (z. B. Antworten in der Hörerwahl) gehen weiterhin nur über Tastatur oder die Handy-Pads.
+  - Ohne Controller läuft nichts mit. Spiele mit eigener Controller-Steuerung binden die Datei mit `data-pad="info"` ein: keine Tasten-Nachahmung, aber Standard-Layout für jeden Controller, Belegungs-Übersicht, Hilfe in Fenstern und **Select halten** = Bildschirm-Knöpfe.
+- **Texteingaben:** Bildschirm-Tastatur öffnet sich von selbst, sobald ein Textfeld erscheint oder gewählt wird.
+- **Was jedes neue Spiel braucht** (Controller, PC/Browser, TV, Handy, Windows-App, RicoReWi Radio App): [NEUE-SPIELE.md](NEUE-SPIELE.md).
 
 Für EmulationStation siehe [unten](#emulationstation-es-de-retropie-batocera): das Startskript öffnet den Browser so, dass auch der Ton ohne Klick startet (Browser zählen Controller-Tasten nicht als „Nutzer-Klick“).
 
@@ -228,6 +229,8 @@ Optionen (`--only`, `--exclude`, `--tv`, `--window`, `--browser`, `--frontend`, 
 **Batocera:** eigenes System „RicoReWi easygames“ (`/userdata/system/configs/emulationstation/es_systems_easygames.cfg`), alle Spiele offline aus `/userdata/system/easygames/` (über `sync/manifest.json`, nur Geändertes, mit Prüfsumme), Chromium als Flatpak, Beenden mit Select + Start. Neue Spiele und Updates holt `update` beim Hochfahren (`custom.sh`) und nebenbei beim Spielstart; die Spieleliste behält Favoriten und Spielzeiten. Anleitung: `einbinden.html#batocera`.
 
 ## Neues Spiel hinzufügen
+
+**Pflicht-Liste zuerst lesen:** [NEUE-SPIELE.md](NEUE-SPIELE.md) – Controller, alle Geräte, Apps.
 
 
 **Spielkarte (`card.png`/`card.jpg`, quadratisch 512 px):** Ohne eigenes Titelbild zeigt die App-Kachel nur ein Emoji. `node tools/make-cards.cjs <spiel-id>` erzeugt eine einheitliche Karte (Farben aus `games.js`, Titel in `CARDS`, **gezeichnetes Emblem** in `tools/card-art.cjs` – keine Screenshots, kein Emoji) als `<spiel>/card.jpg` plus ein eigenständiges Logo `<spiel>/logo.svg`; die App-Symbole danach mit `python3 tools/make-pwa.py --icons <spiel>` erneuern; dann `img: '<spiel>/card.jpg'` in `games.js` setzen und `node tools/build-sync.js` ausführen.
