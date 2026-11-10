@@ -392,6 +392,11 @@
     if (padOn && now > badgeT) { badgeT = now + 400; drawBadges(); }
     if (s.b[8] && s.b[9] && !(p.b[8] && p.b[9])) { releaseAll(); menuOpen(); return; }   // Select + Start: Belegung ansehen und ändern
     if (now > oskScanT) { oskScanT = now + 300; if (oskScan()) return; }   // neu erschienenes Textfeld (Name, Code …) → Tastatur
+    if (opt.info && !dlg) {   // Select gedrückt halten: Knöpfe auf dem Bildschirm (Tasche, Menü, Karte …) mit dem Controller wählen
+      if (s.b[8] && !p.b[8]) selT = now;
+      if (!s.b[8] || s.b[9]) selT = 0;
+      else if (selT && now - selT > 500) { selT = 0; hudMode(); return; }
+    }
     if (opt.info && now > dlgT) { dlgT = now + 250; dlgCheck(); }   // Fenster des Spiels (z. B. „Game Over“), das die eigene Controller-Steuerung nicht kennt
     if (dlg) { dlgTick(now); return; }
     if (opt.info) return;   // Spiel mit eigener Controller-Steuerung: nichts nachahmen
@@ -663,6 +668,7 @@
     return box;
   }
   function dlgCheck() {
+    if (dlg && dlg.manual) return;
     var b = overlayAt();
     if (b === (dlg && dlg.el)) return;
     if (dlg && !b) { dlg = null; scopeEl = null; clearRing(); if (NORM && NORM.hold && !menu && !osk) NORM.hold(false); prev = {}; return; }
@@ -671,7 +677,27 @@
     if (NORM && NORM.hold) NORM.hold(true);
     var c = pick(0); if (c) { focusEl = c.e; drawRing(); }   // gleich den ersten Knopf wählen: A klickt sofort
   }
+  var selT = 0, hudTip = null;
+  function hudEnd() { dlg = null; scopeEl = null; clearRing(); show(hudTip, false); if (NORM && NORM.hold && !menu && !osk) NORM.hold(false); prev = {}; dlgT = 0; }
+  function hudMode() {
+    releaseAll(); scopeEl = null;
+    var c = pick(0); if (!c) return;
+    dlg = { el: doc.body, manual: true, prev: oskState(), next: 0 };
+    if (NORM && NORM.hold) NORM.hold(true);
+    focusEl = c.e; drawRing();
+    if (!hudTip) hudTip = el('left:50%;top:12px;transform:translateX(-50%);padding:7px 14px;border-radius:12px;background:rgba(8,10,20,.9);color:#fff;font:600 13px/1.4 system-ui,sans-serif');
+    hudTip.textContent = '🎮 Knöpfe auf dem Bildschirm: ✚/Stick wählen · A drücken · B oder Select zurück ins Spiel'; show(hudTip, true);
+  }
   function dlgTick(now) {
+    if (dlg.manual) {
+      var mb = oskState(), mp = dlg.prev, mh = function (i) { return mb[i] && !mp[i]; }; dlg.prev = mb;
+      var MD = { u: 0, d: 1, l: 2, r: 3 };
+      if (mb.dir !== mp.dir) { dlg.next = now + 320; if (mb.dir) navigate(MD[mb.dir]); }
+      else if (mb.dir && now > dlg.next) { dlg.next = now + 150; navigate(MD[mb.dir]); }
+      if (mh(0)) { var f = focusEl; hudEnd(); if (f) { focusEl = f; activate(); clearRing(); } return; }   // Knopf drücken, dann übernimmt wieder das Spiel (oder die Fenster-Hilfe, falls sich ein Fenster öffnet)
+      if (mh(1) || mh(8)) hudEnd();
+      return;
+    }
     if (!dlg.el.isConnected || !dlg.el.getClientRects().length) { dlgCheck(); return; }
     var b = oskState(), pv = dlg.prev, hit = function (i) { return b[i] && !pv[i]; }; dlg.prev = b;
     var D = { u: 0, d: 1, l: 2, r: 3 };
@@ -691,7 +717,7 @@
     var l = legendList(); if (!l.length) return;
     legendBox();
     legendEl.style.columns = '2 220px'; legendEl.style.minWidth = '';
-    legendEl.innerHTML = '<div style="column-span:all;font-size:11px;letter-spacing:.06em;color:#7ff3ff;margin-bottom:4px">🎮 CONTROLLER · Select + Start: Belegung ändern</div>' +
+    legendEl.innerHTML = '<div style="column-span:all;font-size:11px;letter-spacing:.06em;color:#7ff3ff;margin-bottom:4px">🎮 CONTROLLER · Select + Start: Belegung ändern' + (opt.info ? ' · Select halten: Knöpfe auf dem Bildschirm' : '') + '</div>' +
       l.map(function (x) { return '<div style="break-inside:avoid;white-space:nowrap"><b style="display:inline-block;min-width:26px;padding:0 5px;margin-right:6px;border-radius:7px;text-align:center;background:' + (GCOL[x[2]] || '#334155') + '">' + x[0] + '</b>' + x[1].replace(/</g, '&lt;') + '</div>'; }).join('');
     show(legendEl, true);
     legendTimer = root.setTimeout(function () { show(legendEl, false); }, ms);
@@ -722,7 +748,7 @@
     if (running || !pads().length) return;
     running = true; last = 0; prev = {}; root.requestAnimationFrame(frame);
   }
-  function stop() { if (osk) oskClose(); if (dlg) { dlg = null; scopeEl = null; if (NORM && NORM.hold && !menu) NORM.hold(false); } running = false; releaseAll(); clearRing(); show(cursor, false); mouseDown = false; prev = {}; setPad(false); }
+  function stop() { if (osk) oskClose(); if (hudTip) show(hudTip, false); if (dlg) { dlg = null; scopeEl = null; if (NORM && NORM.hold && !menu) NORM.hold(false); } running = false; releaseAll(); clearRing(); show(cursor, false); mouseDown = false; prev = {}; setPad(false); }
 
   root.addEventListener('gamepadconnected', start);
   root.addEventListener('gamepaddisconnected', function () { if (!pads().length) stop(); });
