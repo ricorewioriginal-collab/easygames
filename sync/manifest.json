@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1d4490b550d5",
- "generated": "2026-11-10T16:48:50+01:00",
- "commit": "d7f73e44e75c529a27307aabfedfbea0021a1805",
+ "version": "3814211cc7e4",
+ "generated": "2026-11-10T17:04:48+01:00",
+ "commit": "e9d3dbb57bbd3143262129db8f73d60fdf633f47",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8844,7 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256786,
-   "h": "83e0ecae856580fc730c1297c5f3cfba8d77a2ba388fe3f682ccee04ecc0721e"
+   "h": "3ac4eb977f38244c6eeb35beb8fccc54fa6fb9a88340156133720011d8f479a3"
   },
   {
    "p": "taschi/card.svg",
@@ -8943,8 +8943,8 @@
   },
   {
    "p": "taschi/src/engine/creatures.js",
-   "s": 29373,
-   "h": "6a526fc6bd25386a33f65f8661696c68fae6a51ab48d5b68d5b86319991427ed"
+   "s": 34129,
+   "h": "e4403c3e091d70b5cb0fb4ce04f897670619eb68111821f86140c604b062b526"
   },
   {
    "p": "taschi/src/engine/geometry.js",

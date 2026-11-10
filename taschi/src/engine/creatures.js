@@ -17,11 +17,38 @@ const mix = (a, b, t) => C(a).lerp(C(b), t).getHex();
 
 const FLYERS = new Set(['bird', 'wisp', 'fish']);
 // evolution stage (1 = basic) – later stages get modern energy effects
-let STAGE = null;
-export function stageOf(id) {
-  if (!STAGE) { const from = {}; for (const [k, v] of Object.entries(SPECIES)) if (v.evo && v.evo.to) from[v.evo.to] = k;
-    STAGE = {}; for (const k in SPECIES) { let n = 1, c = k; while (from[c] && n < 4) { c = from[c]; n++; } STAGE[k] = n; } }
-  return STAGE[id] || 1;
+let STAGE = null, ROOT = null;
+function evoIndex() {
+  if (STAGE) return;
+  const from = {}; for (const [k, v] of Object.entries(SPECIES)) if (v.evo && v.evo.to) from[v.evo.to] = k;
+  STAGE = {}; ROOT = {}; for (const k in SPECIES) { let n = 1, c = k; while (from[c] && n < 4) { c = from[c]; n++; } STAGE[k] = n; ROOT[k] = c; }
+}
+export function stageOf(id) { evoIndex(); return STAGE[id] || 1; }
+// base form of an evolution line – the whole line shares one design
+function rootOf(id) { evoIndex(); return ROOT[id] || id; }
+const pick = (r, a) => a[r.int(0, a.length - 1)];
+const TYPE_CREST = { feuer: 'flame', pflanze: 'leaf', elektro: 'spark', wasser: 'fin', eis: 'crystal', gestein: 'crystal', flug: 'feather', geist: 'halo', erde: 'horn', normal: 'tuft' };
+const TYPE_TAIL = { feuer: 'flame', pflanze: 'leaf', elektro: 'spike', wasser: 'fin', eis: 'spike', gestein: 'spike', flug: 'feather', geist: 'wisp', erde: 'bushy', normal: 'bushy' };
+// Generated lines (form_*) used to share 16 designs across 12 lineages. Each line now
+// gets its own signature (colours from its type, ears, tail, crest, markings), so
+// every Taschi family is recognisable – original designs, no copied creatures.
+function signature(id, sp, look) {
+  const root = rootOf(id), r = createRng('sig:' + root), st = stageOf(id);
+  const th = {}; C(parseInt(((TYPES[sp.type] || {}).color || '#c7b98f').slice(1), 16)).getHSL(th);
+  const hue = th.h + (r.next() - 0.5) * 0.16, split = pick(r, [0.5, 0.42, 0.58, 0.12, -0.12]);
+  const main = new THREE.Color().setHSL((hue + 1) % 1, 0.46 + r.next() * 0.2 + st * 0.04, 0.6 - st * 0.06 + (r.next() - 0.5) * 0.12).getHex();
+  const acc = new THREE.Color().setHSL((hue + split + 1) % 1, 0.55 + r.next() * 0.2, 0.42 + r.next() * 0.12).getHex();
+  const belly = new THREE.Color().setHSL((hue + 0.05 + 1) % 1, 0.35, 0.86).getHex();
+  const F = { ...(look.features || {}) }, plan = look.plan;
+  if (!['fish', 'serpent', 'wisp', 'golem'].includes(plan)) F.ears = pick(r, sp.type === 'elektro' ? ['pointy', 'round', 'tuft', null] : ['pointy', 'round', 'long', 'tuft', 'pointy', null]) || undefined;
+  const yellow = ((hue % 1) + 1) % 1 > 0.07 && ((hue % 1) + 1) % 1 < 0.21;
+  if (yellow && F.ears === 'long') F.ears = 'round';
+  if (!['fish', 'bird'].includes(plan)) F.tail = pick(r, [TYPE_TAIL[sp.type] || 'bushy', 'bushy', 'thin', 'ringed', 'spike', 'fin']);
+  if (!F.crest || r.next() < 0.5) F.crest = r.next() < 0.6 ? TYPE_CREST[sp.type] || 'tuft' : pick(r, ['tuft', 'horn', 'star', 'feather', 'spark']);
+  F.pattern = pick(r, ['stripes', 'spots', undefined, undefined]);
+  if (st >= 2 && r.next() < 0.5) F.mane = true;
+  if (st >= 3 && !F.horns && r.next() < 0.5) F.horns = 2;
+  return { colors: [main, acc, belly], F };
 }
 
 function creatureMaterial() {
@@ -31,10 +58,16 @@ function creatureMaterial() {
 export function createCreature(id, { outline = true, shiny = false } = {}) {
   const sp = SPECIES[id];
   const look = sp.look || { plan: 'quad', colors: [sp.color, shade(sp.color, 0.7), 0xf6eee0], features: {}, size: 1 };
-  const F = look.features || {};
+  const sig = sp.lineage !== undefined ? signature(id, sp, look) : null;
+  const F = sig ? sig.F : look.features || {};
   const rng = createRng('creature:' + id);
-  const [main0, acc0, belly0] = look.colors;
-  const main = shiny ? mix(main0, 0xffe080, 0.45) : main0, acc = acc0, belly = belly0;
+  const [main0, acc0, belly0] = sig ? sig.colors : look.colors;
+  // natural, two-tone palette: no neon overload, a clearly lighter belly and coloured feet on some species
+  const D = createRng('design:' + rootOf(id));
+  const tame = (c, smax, lmin, lmax) => { const h = {}; C(c).getHSL(h); return new THREE.Color().setHSL(h.h, Math.min(h.s, smax), Math.min(lmax, Math.max(lmin, h.l))).getHex(); };
+  const main1 = tame(main0, 0.72, 0.32, 0.66);
+  const main = shiny ? mix(main1, 0xffe080, 0.45) : main1, acc = tame(acc0, 0.8, 0.22, 0.7), belly = mix(belly0, 0xfff4e4, 0.55);
+  const footCol = D.next() < 0.4 ? acc : shade(main, 0.82);
   const mat = creatureMaterial();
   const root = new THREE.Group(); root.name = 'creature:' + id;
   const body = new THREE.Group(); root.add(body);
@@ -49,7 +82,14 @@ export function createCreature(id, { outline = true, shiny = false } = {}) {
     return m;
   };
   // seeded proportions
-  const P = { head: 0.9 + rng.next() * 0.25, body: 0.92 + rng.next() * 0.2, leg: 0.85 + rng.next() * 0.3, tail: 0.8 + rng.next() * 0.5, ear: 0.85 + rng.next() * 0.35, chunky: 0.9 + rng.next() * 0.2 };
+  const P = { head: 0.85 + rng.next() * 0.4, body: 0.85 + rng.next() * 0.4, leg: 0.75 + rng.next() * 0.55, tail: 0.8 + rng.next() * 0.7, ear: 0.75 + rng.next() * 0.8, chunky: 0.8 + rng.next() * 0.5 };
+  // per-species design kit: head shape, face and markings give each Taschi its own silhouette
+  const HEADS = [[1.05, 0.97, 1], [1.22, 0.9, 1.02], [0.92, 1.14, 1], [1.12, 1.06, 1.08], [1.3, 0.84, 1]];
+  const hs = HEADS[D.int(0, HEADS.length - 1)];
+  const face = D.int(0, 3); // 0 muzzle, 1 small mouth, 2 open smile, 3 snout
+  const mh = {}; C(main).getHSL(mh);
+  // no rosy cheeks on yellow/electric Taschis – keeps every design clearly original
+  const yellowish = mh.h > 0.07 && mh.h < 0.21, cheeks = D.next() < 0.45 && !yellowish && sp.type !== 'elektro', cheekCol = D.next() < 0.5 ? acc : mix(main, 0xff6a7a, 0.55), irisCol = [0x1e2638, 0x1e2638, 0x3a2414, 0x14304a, 0x2a1a40][D.int(0, 4)];
   const plan = look.plan;
   let headY = 1.2, headZ = 0.15, headR = 0.42 * P.head, bodyTop = 1;
   const B = new Builder();
@@ -67,7 +107,7 @@ export function createCreature(id, { outline = true, shiny = false } = {}) {
       const leg = pivot(sx > 0 ? 'legL' : 'legR', body, sx * r * 0.45, legH + 0.02, 0);
       const lb = new Builder();
       lb.add(capsule(0.1 * P.chunky, legH * 0.8, 8, 3), main, matrix(0, -legH * 0.45, 0));
-      lb.add(new THREE.SphereGeometry(0.14 * P.chunky, 10, 6), shade(main, 0.85), matrix(0, -legH, 0.08, 0, 0, 0, 1, 0.55, 1.4));
+      lb.add(new THREE.SphereGeometry(0.14 * P.chunky, 10, 6), footCol, matrix(0, -legH, 0.08, 0, 0, 0, 1, 0.55, 1.4));
       emit(lb, leg); legs.push(leg);
       const arm = pivot(sx > 0 ? 'armL' : 'armR', body, sx * r * 0.92, legH + h * 0.62, 0.05);
       const ab = new Builder();
@@ -176,7 +216,7 @@ export function createCreature(id, { outline = true, shiny = false } = {}) {
   if (F.crystal) for (let i = 0; i < 4; i++) B.add(new THREE.OctahedronGeometry(0.12 + (i % 2) * 0.06, 0), mix(acc, 0xbff4ff, 0.5), matrix(Math.cos(i * 1.7) * 0.25, bodyTop + 0.02 - (i % 2) * 0.08, -0.15 + Math.sin(i * 1.7) * 0.15, 0, i, 0.3, 0.7, 1.8, 0.7));
   if (F.spikes) for (let i = 0; i < F.spikes; i++) { const t = i / Math.max(1, F.spikes - 1); B.add(new THREE.ConeGeometry(0.08, 0.3, 5), acc, matrix(0, bodyTop - 0.02 - t * 0.15, 0.2 - t * 0.7, -0.6 - t * 0.6, 0, 0)); }
   if (F.mane) for (let i = 0; i < 9; i++) { const a = i / 9 * Math.PI * 2; B.add(new THREE.ConeGeometry(0.11, 0.38, 5), F.crest === 'flame' ? mix(acc, 0xffc060, 0.6) : acc, matrix(Math.cos(a) * 0.3, headY - 0.12 + Math.sin(a) * 0.3, headZ - 0.18, Math.sin(a) * 1.2, 0, -Math.cos(a) * 1.2)); }
-  if (F.aura) { const aura = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), glowMaterial(mix(main, 0xffffff, 0.4), 0.12)); aura.scale.set(0.9, bodyTop * 0.8, 0.9); aura.position.y = bodyTop * 0.55; body.add(aura); parts.aura = aura; }
+  if (F.aura) { const aura = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), glowMaterial(mix(main, 0xffffff, 0.4), 0.06)); aura.userData.base = 0.05; aura.scale.set(0.9, bodyTop * 0.8, 0.9); aura.position.y = bodyTop * 0.55; body.add(aura); parts.aura = aura; }
   // modern energy look: evolved and legendary forms get orbiting sparks in their type colour
   const stage = stageOf(id), legend = (sp.catch || 1) < 0.08, typeCol = parseInt(((TYPES[sp.type] || {}).color || '#ffffff').slice(1), 16);
   if (stage >= 2 || legend) {
@@ -191,12 +231,15 @@ export function createCreature(id, { outline = true, shiny = false } = {}) {
   const H = new Builder();
   const hr = headR;
   if (plan === 'golem') H.add(lumpy(new THREE.DodecahedronGeometry(hr, 1), 0.1, 11), shade(main, 1.05), matrix(0, 0, 0, 0, 0, 0, 1.1, 0.9, 1));
-  else H.add(new THREE.SphereGeometry(hr, 18, 14), main, matrix(0, 0, 0, 0, 0, 0, 1.05, 0.97, 1), { shade: 0.2 });
+  else H.add(new THREE.SphereGeometry(hr, 18, 14), main, matrix(0, 0, 0, 0, 0, 0, hs[0], hs[1], hs[2]), { shade: 0.2 });
   // muzzle / beak
   if (plan === 'bird') H.add(new THREE.ConeGeometry(hr * 0.32, hr * 0.8, 6), 0xf0a83a, matrix(0, -hr * 0.12, hr * 1.15, Math.PI / 2, 0, 0));
-  else if (plan === 'quad' || plan === 'serpent') H.add(new THREE.SphereGeometry(hr * 0.55, 12, 8), belly, matrix(0, -hr * 0.28, hr * 0.72, 0, 0, 0, 1.1, 0.75, 0.9));
-  else H.add(new THREE.SphereGeometry(hr * 0.42, 10, 8), belly, matrix(0, -hr * 0.42, hr * 0.62, 0, 0, 0, 1.2, 0.6, 0.7));
-  H.add(new THREE.SphereGeometry(hr * 0.1, 6, 4), 0x2a2232, matrix(0, plan === 'bird' ? -hr * 0.05 : -hr * 0.15, hr * (plan === 'quad' ? 1.22 : 0.98)));
+  else if (face === 3 || ((plan === 'quad' || plan === 'serpent') && face === 0)) H.add(new THREE.SphereGeometry(hr * 0.55, 12, 8), face === 3 ? shade(main, 1.12) : belly, matrix(0, -hr * 0.28, hr * 0.72 * hs[2], 0, 0, 0, face === 3 ? 0.85 : 1.1, 0.7, face === 3 ? 1.25 : 0.9));
+  else if (face === 0) H.add(new THREE.SphereGeometry(hr * 0.42, 10, 8), belly, matrix(0, -hr * 0.42, hr * 0.62 * hs[2], 0, 0, 0, 1.2, 0.6, 0.7));
+  if (plan === 'bird' || face === 0 || face === 3) H.add(new THREE.SphereGeometry(hr * 0.1, 6, 4), 0x2a2232, matrix(0, plan === 'bird' ? -hr * 0.05 : -hr * 0.15, hr * (plan === 'bird' ? 0.98 : face === 3 ? 1.38 : plan === 'quad' || plan === 'serpent' ? 1.22 : 0.98) * hs[2]));
+  if (plan !== 'bird' && face === 1) H.add(new THREE.TorusGeometry(hr * 0.13, hr * 0.03, 4, 10, Math.PI), 0x2a2232, matrix(0, -hr * 0.3, hr * 0.97 * hs[2], 0, 0, Math.PI));
+  if (plan !== 'bird' && face === 2) { H.add(new THREE.SphereGeometry(hr * 0.2, 10, 6, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), 0x5a1e2a, matrix(0, -hr * 0.26, hr * 0.9 * hs[2], 0.25, 0, 0, 1.2, 0.9, 0.5)); H.add(new THREE.SphereGeometry(hr * 0.1, 6, 4), 0xff8a9a, matrix(0, -hr * 0.4, hr * 0.95 * hs[2], 0, 0, 0, 1.2, 0.6, 0.6)); }
+  if (cheeks && plan !== 'golem') for (const sx of [-1, 1]) H.add(new THREE.SphereGeometry(hr * 0.15, 8, 6), cheekCol, matrix(sx * hr * 0.62 * hs[0], -hr * 0.18, hr * 0.72 * hs[2], 0, sx * 0.85, 0, 1, 0.8, 0.3));
   if (F.fangs) for (const sx of [-1, 1]) H.add(new THREE.ConeGeometry(hr * 0.06, hr * 0.2, 4), 0xffffff, matrix(sx * hr * 0.15, -hr * 0.55, hr * 0.85, Math.PI, 0, 0));
   if (F.mask) H.add(new THREE.SphereGeometry(hr * 1.01, 14, 6, -Math.PI * 0.2, Math.PI * 1.4, Math.PI * 0.32, Math.PI * 0.22), 0x2a2232, matrix(0, 0, 0, 0, Math.PI * 0.5 - Math.PI * 0.2 + 0.63, 0));
   if (F.gills) for (const sx of [-1, 1]) for (let k = 0; k < 3; k++) H.add(new THREE.ConeGeometry(hr * 0.1, hr * 0.55, 4), acc, matrix(sx * hr * (0.95 + k * 0.05), hr * (0.35 - k * 0.3), -hr * 0.1, 0, 0, sx * (-1.1 + k * 0.5)));
@@ -241,11 +284,11 @@ export function createCreature(id, { outline = true, shiny = false } = {}) {
   const er = hr * (eyeStyle === 'big' ? 0.24 : eyeStyle === 'sleepy' ? 0.18 : 0.2);
   const eyeX = plan === 'bird' ? hr * 0.42 : hr * 0.38, eyeZ = plan === 'quad' ? hr * 0.82 : hr * 0.84;
   for (const sx of [-1, 1]) {
-    E.add(new THREE.SphereGeometry(er, 12, 10), 0xffffff, matrix(sx * eyeX, 0, 0, 0, 0, 0, 0.9, eyeStyle === 'sleepy' ? 0.55 : 1.15, 0.5));
-    E.add(new THREE.SphereGeometry(er * 0.72, 10, 8), F.glow ? mix(acc, 0x101828, 0.4) : 0x1e2638, matrix(sx * eyeX, -er * 0.05, er * 0.25, 0, 0, eyeStyle === 'sharp' ? sx * 0.5 : 0, eyeStyle === 'sharp' ? 0.7 : 0.9, eyeStyle === 'sleepy' ? 0.5 : 1.05, 0.5));
-    E.add(new THREE.SphereGeometry(er * 0.28, 6, 4), 0xffffff, matrix(sx * eyeX + er * 0.25, er * 0.3, er * 0.5));
-    E.add(new THREE.SphereGeometry(er * 0.12, 5, 3), 0xffffff, matrix(sx * eyeX - er * 0.22, -er * 0.28, er * 0.5));
-    if (eyeStyle === 'sharp') E.add(new THREE.BoxGeometry(er * 2, er * 0.25, er * 0.3), shade(main, 0.6), matrix(sx * eyeX, er * 0.95, er * 0.2, 0, 0, sx * -0.4));
+    E.add(new THREE.SphereGeometry(er, 12, 10), 0xffffff, matrix(sx * eyeX * hs[0], 0, 0, 0, 0, 0, 0.9, eyeStyle === 'sleepy' ? 0.55 : 1.15, 0.5));
+    E.add(new THREE.SphereGeometry(er * 0.72, 10, 8), F.glow ? mix(acc, 0x101828, 0.4) : irisCol, matrix(sx * eyeX * hs[0], -er * 0.05, er * 0.25, 0, 0, eyeStyle === 'sharp' ? sx * 0.5 : 0, eyeStyle === 'sharp' ? 0.7 : 0.9, eyeStyle === 'sleepy' ? 0.5 : 1.05, 0.5));
+    E.add(new THREE.SphereGeometry(er * 0.28, 6, 4), 0xffffff, matrix(sx * eyeX * hs[0] + er * 0.25, er * 0.3, er * 0.5));
+    E.add(new THREE.SphereGeometry(er * 0.12, 5, 3), 0xffffff, matrix(sx * eyeX * hs[0] - er * 0.22, -er * 0.28, er * 0.5));
+    if (eyeStyle === 'sharp') E.add(new THREE.BoxGeometry(er * 2, er * 0.25, er * 0.3), shade(main, 0.6), matrix(sx * eyeX * hs[0], er * 0.95, er * 0.2, 0, 0, sx * -0.4));
   }
   const eyes = new THREE.Mesh(E.build(), mat);
   eyes.position.set(0, hr * 0.12, eyeZ);
