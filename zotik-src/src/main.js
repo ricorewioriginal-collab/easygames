@@ -1355,7 +1355,7 @@ function arcSoon(n,tries=0){if(MP.on)return;setTimeout(()=>{if(mode!=='play'||cu
 const HOME_STYLES=['Gemütlich','Seefahrer','Sternenzimmer','Rissforscher'];
 function homeTalk(){S.home=S.home||{st:0};const done=[];for(let n=2;n<=10;n++)if(chDone(n))done.push(CHP[n].name);const kk=Object.keys(S.arc||{}).length;
   say([['Zotik',`Meine Wohnung (${HOME_STYLES[S.home.st]}). ${done.length?'An der Wand hängen Andenken aus '+done.join(', ')+'.':'Noch ziemlich leer hier.'}${kk?' Im Regal liegen '+kk+' Erinnerungen an Gespräche mit meinen Freunden.':''}`]],null,
-    [{t:'😴 Ausruhen & speichern',fn:()=>{S.hp=maxHp();S.mp=maxMp();for(const a of CMP){a.ko=false;a.hp=cmax(a.id)}saveGame(true);sfx('heal');toast('😴 Ausgeruht – alle geheilt, gespeichert')}},
+    [{t:'😴 Ausruhen & speichern',fn:()=>{S.hp=maxHp();S.mp=maxMp();for(const a of CMP){cmpRevive(a,1);a.hp=cmax(a.id)}saveGame(true);sfx('heal');toast('😴 Ausgeruht – alle geheilt, gespeichert')}},
      {t:'🛋️ Einrichtung ändern',fn:()=>{S.home.st=(S.home.st+1)%HOME_STYLES.length;saveGame(true);toast('🛋️ Neue Einrichtung: '+HOME_STYLES[S.home.st])}},
      {t:'Gehen',fn:()=>{}}])}
 /* Professoriums gelöschte Erinnerungen: bei jedem Besuch ein Stück mehr, je weiter die Reise */
@@ -1501,7 +1501,7 @@ function updCmp(dt){
       if(d.melee){hurtE(en,dmg,Math.sin(ea)*.5,Math.cos(ea)*.5,false);emit(en.x,hgt(en.x,en.z)+1,en.z,0xffffff,8,3,.3,.5);sfx('hit')}
       else{proj(a.x+Math.sin(ea)*.5,hgt(a.x,a.z)+1.2,a.z+Math.cos(ea)*.5,Math.sin(ea)*22,Math.cos(ea)*22,dmg,false,d.col,1.1)}}
     if(d.heal&&a.hc<=0&&!pl.dead&&S.hp<maxHp()*(S.ptac==='def'?d.thr+.2:d.thr)){a.hc=d.hcd;const h=d.heal+S.lvl*2;S.hp=Math.min(maxHp(),S.hp+h);sfx('heal');dnum(pl.x,pl.y+2.3,pl.z,'+'+h,'h');emit(pl.x,pl.y+.8,pl.z,0x7dffb2,26,3,1,.7,-3,2);toast('✨ Lyra heilt dich')}
-    a.P.root.position.set(a.x,hgt(a.x,a.z),a.z);a.P.root.rotation.y=a.face;a.mv+=(mv-a.mv)*Math.min(1,dt*8);animHuman(a.P,a.t,a.mv)})}
+    a.P.root.position.set(a.x,hgt(a.x,a.z),a.z);a.P.root.rotation.y=a.face;a.P.root.rotation.z=0;a.mv+=(mv-a.mv)*Math.min(1,dt*8);animHuman(a.P,a.t,a.mv)})}
 /* ================= Orun (Lunaris) & Rätsel in Lunaris ================= */
 ED.orun=Object.assign({},ED.boss,{name:'Orun',hp:760,dmg:21,xp:340,sc:2.1,sub:'Hüter des Weltenrisses',p2t:'Orun entfesselt den Riss!',make:()=>tintModel(makeWolf(true),0xffb040,.55),col:0xffb040,intro:()=>cutscene('LUN_ORUN')});
 function spawnOrun(){if(boss&&!boss.dead)return;boss=spawnEnemy('orun',ARENA.x,ARENA.z-6);boss.face=0}
