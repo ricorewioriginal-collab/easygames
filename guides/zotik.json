@@ -56,6 +56,8 @@
   {
    "t": "Kampf",
    "list": [
+    "📈 Gegnerstufen: Jede Welt hat einen eigenen Stufenbereich (Lunaris beginnt bei Stufe 1, jede Welt wird stärker). Die Stufe steht an der Lebensleiste. Bist du deutlich höher, legen die Gegner etwas zu, bringen aber weniger Erfahrung – Leveln lohnt sich, bleibt aber machbar.",
+    "👾 Jede Welt hat vier eigene Gegnerarten (zwei Fernkämpfer, zwei Nahkämpfer), dazu Wächter und Weltenboss.",
     "⚔ Klingenkombo: drei Hiebe hintereinander. Treffer laden Mana auf.",
     "💨 Ausweichen: kurzer Sprung, währenddessen bist du unverwundbar. Rote Kreise am Boden zeigen Angriffe an – rechtzeitig ausweichen!",
     "🌀 Funkenwirbel (18 Mana) und ✨ Lichtstoß (22 Mana). 💚 Mondheilung (30 Mana) heilt dich.",
@@ -104,16 +106,18 @@
     "💣 Bombe (Kapitel 3): sprengt Rissmauern.",
     "🔥 Feuerstab (Kapitel 4): brennt Dornenranken weg und zündet Fackeln.",
     "❄️ Eisstab (Kapitel 5): friert Wasser zu Eis.",
-    "In jeder Welt gibt es eine Werkzeug-Ruine mit Hindernissen (Schiebeblöcke, Druckplatten, Tore, Rissmauern, Ranken, Fackeln, Wasser, Pfosten). Mit C nimmt Zotik automatisch das passende Werkzeug für das Hindernis vor ihm."
+    "In jeder Welt gibt es eine Werkzeug-Ruine mit Hindernissen (Schiebeblöcke, Druckplatten, Tore, Rissmauern, Ranken, Fackeln, Wasser, Pfosten). Mit C nimmt Zotik automatisch das passende Werkzeug für das Hindernis vor ihm.",
+    "Den Ruinenschatz bewacht in jeder Welt ein eigenes Rätsel: 🎵 Klangplatten (Melodie am Lauschstein anhören, dann die Platten in derselben Reihenfolge betreten), 🗿 Wächterstatuen (jede Drehung dreht auch die Statue rechts daneben – alle sollen zum Schatz blicken), 💡 Lichtplatten (jeder Schritt schaltet die Platte und ihre Nachbarn um – alle müssen leuchten), 🔣 Symbolsteine (Paare aufdecken) und 🔥 Glutkristalle (alle entzünden, bevor der erste erlischt)."
    ]
   },
   {
    "t": "Die Nautilux",
    "list": [
-    "Nach Kapitel 1 baut Professorium dir die Nautilux. Mit V steigst du ein und aus, mit B wechselst du die Form.",
-    "🚤 Gleiter: schwebt und ist schnell.",
-    "🛥️ U-Boot (nach Kapitel 4): taucht in Tiefsee-Becken (blaue Wasserflächen) zu Schatztruhen. Ab dann gibt es auch den Turbo (Shift) und weniger Schaden in der Nautilux.",
-    "🎈 Luftschiff (nach Kapitel 7): fliegt über Klippen zu Himmelstruhen auf hohen Felsen.",
+    "Professorium übergibt dir die Nautilux schon in Kapitel 1. Mit V steigst du ein und aus, mit B (Handy: Fahrzeug-Taste halten) wechselst du die Form.",
+    "🚤 Gleiter: schwebt über Land und fährt auf jedem See als Schiff. Auf dem Wasser greifen Seeschlangen an, Treibgut lässt sich bergen.",
+    "🛥️ U-Boot (nach Kapitel 4): taucht in den See ab. A halten = steigen, B halten = sinken. Am Grund liegt ein Tiefseeschatz, Tiefseefische verteidigen ihn. Ab dann gibt es auch den Turbo und weniger Schaden in der Nautilux.",
+    "🎈 Luftschiff (nach Kapitel 7): fliegt frei bis hoch zu den Himmelsinseln – A halten = steigen, B halten = sinken. Jede Insel trägt einen Himmelsschatz, Wolkenrochen greifen an.",
+    "Die Nautilux feuert selbst auf den nächsten Gegner im selben Bereich (Himmel, Seeoberfläche, unter Wasser). Besiegte Gegner bringen Erfahrung und Splitter und kehren nach einer Weile zurück.",
     "🔮 Riss-Form (nach Kapitel 10): rammt mit voller Kraft und ist am schnellsten."
    ]
   },
@@ -141,7 +145,8 @@
     "Rote Kreise am Boden: sofort ausweichen. Beim Ausweichen bist du unverwundbar.",
     "Nutze Fähigkeiten im Kampf großzügig – Treffer laden Mana schnell wieder auf.",
     "Kauf früh ein paar Heiltränke. Mondkräuter werden nach dem ersten Auftrag automatisch zu Heiltränken.",
-    "Lass Felli mitkämpfen und füttere es – ein Blütling heilt dich im Kampf."
+    "Lass Felli mitkämpfen und füttere es – ein Blütling heilt dich im Kampf.",
+    "Liegt eine Welt über deiner Stufe, sammle in der Welt davor noch etwas Erfahrung – oder hol dir mit der Nautilux die Schätze von Himmelsinseln und aus dem See."
    ]
   },
   {
@@ -260,7 +265,8 @@
     "🏛️ Halle der 100: 100 Prüfungen in 10 Rängen, jede zehnte ist ein Bosskampf. Jede Prüfung bringt 30 + 8 × Nummer Splitter und Erfahrung, jeder Rang zusätzlich 500 × Rang Splitter und 3 Tränke. Nach Prüfung 100: „Der letzte Splitter gehört dir“ (+5000).",
     "🏔️ Uralte Höhle in Lunaris (nach Kapitel 1, nur allein): 50 Ebenen. Du startest immer bei Stufe 1, ohne Ausrüstung und mit 2 Tränken. Ein Wächter versperrt die Treppe. Beim Verlassen oder Fallen kehrt alles zurück – behalten darfst du nur die blauen Schätze. Dein Rekord steht im Inventar.",
     "🎰 Golden Star Casino – Kristallslots: nur virtuelle Splitter, Einsatz 10, 50 oder 100. Drei gleiche: ⭐ ×25, 💎 ×12, 🔥 ×8, 🌙/🍃 ×5; zwei gleiche: Einsatz zurück. Familienoption: Casino ausschalten.",
-    "🎮 Mini-Spiele (Titelmenü): ZOTIK Run, Felli-Fang, Kristallrausch, ZOTIK Quiz und Sternenpuzzle – unabhängig vom Abenteuer, mit eigenen Rekorden."
+    "🎮 Mini-Spiele (Titelmenü): ZOTIK Run, Felli-Fang, Kristallrausch, ZOTIK Quiz und Sternenpuzzle – unabhängig vom Abenteuer, mit eigenen Rekorden.",
+    "Uralte Höhle: Auf jeder zweiten Ebene ist die Treppe versiegelt – entweder drei Glutkristalle in den Gängen entzünden, bevor der erste erlischt, oder alle Gegner der Ebene vertreiben. Jede zehnte Ebene bewacht ein Wächter die Treppe."
    ]
   }
  ],

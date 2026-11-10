@@ -70,7 +70,7 @@ export function createExtra(C) {
   return {
     LVCAP,
     kill(e) {
-      const b = S().bst || (S().bst = {}), n = e.d.name || e.k, r = b[n] || (b[n] = { n: 0, hp: e.max, dmg: e.d.dmg, w: C.weakOf(e), boss: !!e.boss });
+      const b = S().bst || (S().bst = {}), n = e.d.name || e.k, r = b[n] || (b[n] = { n: 0, hp: e.max, dmg: e.dmg || e.d.dmg, w: C.weakOf(e), boss: !!e.boss });
       r.n++; if (r.n === 1) toast('📖 Bestiarium: ' + n);
       const m = S().mat || (S().mat = {}), g = (k, c) => { if (Math.random() < c) m[k] = (m[k] || 0) + 1 };
       const mm = Math.max(1, Math.round(C.matMul ? C.matMul() : 1)); for (let i = 0; i < mm; i++) { g('fell', e.boss ? 1 : .35); g('staub', e.boss ? 1 : .22); g('kern', e.boss ? 1 : .05); } if (e.boss) m.kern = (m.kern || 0) + 1;

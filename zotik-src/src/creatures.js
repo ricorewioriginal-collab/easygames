@@ -172,10 +172,25 @@ export function createCreatures({ T, mk, G, M, glow, mergeStatic }) {
     9: ['stern', 'vogel', 'tempel', 'sonne'],
     10: ['spiegel', 'echo', 'kristall', 'kristalldrache']
   };
+  // Weitere Arten je Welt (Fernkämpfer C, Nahkämpfer D) – eigene Namen und Farben, damit jede Welt mehr Vielfalt hat
+  const PLAN2 = {
+    1: [['falter', 'Mondfalter', 0x9ab0ff], ['golem', 'Moosgolem', 0x5a9a5a]],
+    2: [['falter', 'Blütenfalter', 0xff8ad0], ['kaefer', 'Borkenkäfer', 0x7a5a3a]],
+    3: [['funke', 'Laternengeist', 0xffd060], ['golem', 'Pflastergolem', 0x8a8a96]],
+    4: [['stern', 'Sonnenfunke', 0xffa040], ['kaefer', 'Skarabäus', 0x3aa08a]],
+    5: [['schleim', 'Perlschleim', 0xd8f0ff], ['kriecher', 'Muräne', 0x6a4ac8]],
+    6: [['stern', 'Schneekristall', 0xc8f0ff], ['sphinx', 'Schneeluchs', 0xe8f0ff]],
+    7: [['geist', 'Rauchgeist', 0x8a8a8a], ['skorpion', 'Lavaskorpion', 0xff4a2a]],
+    8: [['spiegel', 'Traumspinne', 0xc08aff], ['thornwolf', 'Schattenwolf', 0x4a3a6a]],
+    9: [['falter', 'Nebelfalter', 0xaad8ff], ['echo', 'Sternenritter', 0xffd870]],
+    10: [['qualle', 'Prismenqualle', 0xffe0ff], ['vergessen', 'Splitterwandler', 0xf0f0ff]],
+    11: [['spiegel', 'Risswirbel', 0xff9af0], ['echo', 'Rissritter', 0xc8a0ff]]
+  };
+  function makeExtra(n, i) { const q = PLAN2[n]; if (!q) return null; const [kind, name, col] = q[i]; return { name, col, make: () => i === 0 ? hover(kind, col) : walker(kind, col, false) }; }
   function makeCreature(n, slot, col) {
     const p = PLAN[n]; if (!p) return null;
     const i = 'ABMX'.indexOf(slot), kind = p[i];
     return i === 0 ? hover(kind, col) : walker(kind, col, i === 3);
   }
-  return { makeCreature, PLAN };
+  return { makeCreature, makeExtra, PLAN };
 }
