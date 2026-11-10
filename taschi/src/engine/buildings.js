@@ -366,13 +366,18 @@ export function chestModel(open = false) {
   g.userData.lid = pivot;
   return g;
 }
+// Taschi-Kapsel: a lying pill with a coloured half, a dark half and a glowing
+// energy ring in the middle (own design – no sphere, no front button).
 export function ballModel(top = 0xe9523f, size = 0.35) {
   const g = new THREE.Group(), b = new Builder();
-  b.add(new THREE.SphereGeometry(size, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), top, null);
-  b.add(new THREE.SphereGeometry(size, 16, 8, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), 0xf6f4ee, null);
-  b.add(new THREE.CylinderGeometry(size * 1.01, size * 1.01, size * 0.16, 16), 0x2a2f3a, null);
-  b.add(new THREE.CylinderGeometry(size * 0.3, size * 0.3, size * 0.2, 12), 0xf6f4ee, matrix(0, 0, size * 0.95, Math.PI / 2, 0, 0));
-  const m = new THREE.Mesh(b.build(), new THREE.MeshPhongMaterial({ vertexColors: true, shininess: 80 })); m.castShadow = true; g.add(m);
+  const r = size * 0.8, half = size * 0.55;
+  for (const [sx, col] of [[1, top], [-1, 0x2e3446]]) {
+    b.add(new THREE.CylinderGeometry(r, r, half, 16, 1, true), col, matrix(sx * half * 0.5, 0, 0, 0, 0, Math.PI / 2));
+    b.add(new THREE.SphereGeometry(r, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), col, matrix(sx * half, 0, 0, 0, 0, -sx * Math.PI / 2));
+  }
+  for (const sx of [-1, 1]) b.add(new THREE.TorusGeometry(r * 0.78, r * 0.07, 6, 18), 0xdfe6ee, matrix(sx * (half + r * 0.62), 0, 0, 0, Math.PI / 2, 0));
+  const m = new THREE.Mesh(b.build(), new THREE.MeshPhongMaterial({ vertexColors: true, shininess: 90 })); m.castShadow = true; g.add(m);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(r * 1.03, r * 0.11, 8, 24), glowMaterial(0x8ff0ff, 0.95)); ring.rotation.y = Math.PI / 2; g.add(ring);
   return g;
 }
 export function sparkle(color = 0xfff2a0) {

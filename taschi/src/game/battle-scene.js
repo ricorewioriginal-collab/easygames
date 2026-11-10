@@ -343,7 +343,7 @@ export class BattleScene {
       const main = () => {
         this.menuArea([
           h('button.bact.fight.focusable', { onclick: () => moves(), 'data-autofocus': '' }, 'Kampf', h('small', {}, opt.struggle ? 'Keine AP mehr' : 'Attacke wählen')),
-          h('button.bact.bag.focusable', { onclick: () => bag() }, 'Tasche', h('small', {}, 'Items & Bälle')),
+          h('button.bact.bag.focusable', { onclick: () => bag() }, 'Tasche', h('small', {}, 'Items & Kapseln')),
           h('button.bact.team.focusable', { onclick: () => team() }, 'Taschis', h('small', {}, 'Wechseln')),
           h('button.bact.run.focusable' + (opt.canRun ? '' : '.disabled'), { onclick: () => opt.canRun ? done({ slot, type: 'run' }) : this.ui.toast('Aus diesem Kampf kannst du nicht fliehen!') }, 'Flucht', h('small', {}, opt.canRun ? 'Entkommen' : 'Nicht möglich'))
         ]);

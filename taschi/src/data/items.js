@@ -1,17 +1,17 @@
 // Items. Every item has a working, testable effect in logic/items.js.
 // category: ball | heal | status | battle | evo | growth | key
 export const ITEMS = {
-  taschiball:   { name: 'Taschiball', category: 'ball', price: 40, rate: 1, color: 0xe9523f, desc: 'Standardball zum Fangen wilder Taschis.' },
-  heilball:     { name: 'Heilball', category: 'ball', price: 60, rate: 1, color: 0xf48fb8, healOnCatch: true, desc: 'Gefangene Taschis sind sofort vollständig geheilt.' },
-  superball:    { name: 'Superball', category: 'ball', price: 120, rate: 1.5, color: 0x3a7fd0, desc: 'Fängt besser als ein Taschiball.', unlock: 1 },
-  netzball:     { name: 'Netzball', category: 'ball', price: 150, rate: 1, color: 0x2fb7a8, bonusTypes: ['wasser', 'pflanze'], bonus: 3, desc: 'Dreifache Fangchance bei Wasser- und Pflanzen-Taschis.', unlock: 2 },
-  flinkball:    { name: 'Flinkball', category: 'ball', price: 180, rate: 1, color: 0xffc83a, firstTurn: 4, desc: 'In der ersten Kampfrunde vierfache Fangchance, danach schwach.', unlock: 2 },
-  daemmerball:  { name: 'Dämmerball', category: 'ball', price: 160, rate: 1, color: 0x3d4a3a, dark: 3, desc: 'Dreifache Fangchance nachts und in Höhlen.', unlock: 3 },
-  freundball:   { name: 'Freundball', category: 'ball', price: 150, rate: 1, color: 0x7ccf5a, friendship: 160, desc: 'Gefangene Taschis vertrauen dir sofort. Freundschaft beschleunigt das Lernen.', unlock: 4 },
-  levelball:    { name: 'Levelball', category: 'ball', price: 200, rate: 1, color: 0xf07a2a, levelBased: true, desc: 'Je höher dein Taschi im Vergleich zum Gegner, desto besser (bis vierfach).', unlock: 5 },
-  timerball:    { name: 'Timerball', category: 'ball', price: 200, rate: 1, color: 0xf2f2f2, timer: true, desc: 'Wird mit jeder Kampfrunde besser (bis vierfach).', unlock: 6 },
-  sternball:    { name: 'Sternball', category: 'ball', price: 300, rate: 2.2, color: 0x3a3048, desc: 'Hochwertiger Ball für erfahrene Trainer.', unlock: 7 },
-  meisterball:  { name: 'Meisterball', category: 'ball', price: 0, rate: 255, color: 0x8a4ad0, master: true, noSell: true, desc: 'Fängt jedes wilde Taschi ohne Fehlschlag. Ein einmaliges Geschenk.' },
+  taschiball:   { name: 'Taschi-Kapsel', category: 'ball', price: 40, rate: 1, color: 0xe9523f, desc: 'Standardkapsel zum Fangen wilder Taschis.' },
+  heilball:     { name: 'Heilkapsel', category: 'ball', price: 60, rate: 1, color: 0xf48fb8, healOnCatch: true, desc: 'Gefangene Taschis sind sofort vollständig geheilt.' },
+  superball:    { name: 'Superkapsel', category: 'ball', price: 120, rate: 1.5, color: 0x3a7fd0, desc: 'Fängt besser als ein Taschi-Kapsel.', unlock: 1 },
+  netzball:     { name: 'Netzkapsel', category: 'ball', price: 150, rate: 1, color: 0x2fb7a8, bonusTypes: ['wasser', 'pflanze'], bonus: 3, desc: 'Dreifache Fangchance bei Wasser- und Pflanzen-Taschis.', unlock: 2 },
+  flinkball:    { name: 'Flinkkapsel', category: 'ball', price: 180, rate: 1, color: 0xffc83a, firstTurn: 4, desc: 'In der ersten Kampfrunde vierfache Fangchance, danach schwach.', unlock: 2 },
+  daemmerball:  { name: 'Dämmerkapsel', category: 'ball', price: 160, rate: 1, color: 0x3d4a3a, dark: 3, desc: 'Dreifache Fangchance nachts und in Höhlen.', unlock: 3 },
+  freundball:   { name: 'Freundkapsel', category: 'ball', price: 150, rate: 1, color: 0x7ccf5a, friendship: 160, desc: 'Gefangene Taschis vertrauen dir sofort. Freundschaft beschleunigt das Lernen.', unlock: 4 },
+  levelball:    { name: 'Levelkapsel', category: 'ball', price: 200, rate: 1, color: 0xf07a2a, levelBased: true, desc: 'Je höher dein Taschi im Vergleich zum Gegner, desto besser (bis vierfach).', unlock: 5 },
+  timerball:    { name: 'Timerkapsel', category: 'ball', price: 200, rate: 1, color: 0xf2f2f2, timer: true, desc: 'Wird mit jeder Kampfrunde besser (bis vierfach).', unlock: 6 },
+  sternball:    { name: 'Sternkapsel', category: 'ball', price: 300, rate: 2.2, color: 0x3a3048, desc: 'Hochwertige Kapsel für erfahrene Trainer.', unlock: 7 },
+  meisterball:  { name: 'Meisterkapsel', category: 'ball', price: 0, rate: 255, color: 0x8a4ad0, master: true, noSell: true, desc: 'Fängt jedes wilde Taschi ohne Fehlschlag. Ein einmaliges Geschenk.' },
   trank:        { name: 'Trank', category: 'heal', price: 30, heal: 35, desc: 'Stellt 35 KP wieder her.' },
   supertrank:   { name: 'Supertrank', category: 'heal', price: 90, heal: 90, desc: 'Stellt 90 KP wieder her.', unlock: 5 },
   vitaltrank:   { name: 'Vitaltrank', category: 'heal', price: 220, heal: 9999, desc: 'Stellt alle KP wieder her.', unlock: 10 },
@@ -35,7 +35,7 @@ export const ITEMS = {
 
 export const ITEM_ORDER = Object.keys(ITEMS);
 export const BALL_IDS = ITEM_ORDER.filter(id => ITEMS[id].category === 'ball');
-export const CATEGORY_NAMES = { ball: 'Bälle', heal: 'Heilung', status: 'Status', battle: 'Kampf', evo: 'Entwicklung', growth: 'Wachstum', key: 'Basis-Items' };
+export const CATEGORY_NAMES = { ball: 'Kapseln', heal: 'Heilung', status: 'Status', battle: 'Kampf', evo: 'Entwicklung', growth: 'Wachstum', key: 'Basis-Items' };
 
 export function sellPrice(id) {
   const it = ITEMS[id];

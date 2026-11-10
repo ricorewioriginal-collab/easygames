@@ -154,11 +154,11 @@ export function starterPreview(game, id) {
   return new Promise(resolve => {
     const sp = SPECIES[id];
     const el = h('div.screen', {}, h('div.panel.small', {},
-      h('div.panel-head', {}, h('h2', {}, 'Taschiball')),
+      h('div.panel-head', {}, h('h2', {}, 'Taschi-Kapsel')),
       h('div.panel-body', {}, h('div.viewport3d', { id: 'starterview' }),
         h('h2', { style: { margin: '10px 0 4px' } }, sp.name, ' ', h('span.type', { style: { background: { feuer: '#f07a3e', wasser: '#4d9ef0', pflanze: '#4fb86a' }[sp.type] } }, { feuer: '🔥 Feuer', wasser: '💧 Wasser', pflanze: '🌱 Pflanze' }[sp.type])),
         h('p', {}, sp.bio),
-        h('div.optrow', {}, h('button.bigbtn.primary.focusable', { onclick: () => done(true), 'data-autofocus': '' }, 'Ich wähle ' + sp.name + '!'), h('button.bigbtn.focusable', { onclick: () => done(false) }, 'Anderen Ball ansehen'))),
+        h('div.optrow', {}, h('button.bigbtn.primary.focusable', { onclick: () => done(true), 'data-autofocus': '' }, 'Ich wähle ' + sp.name + '!'), h('button.bigbtn.focusable', { onclick: () => done(false) }, 'Andere Kapsel ansehen'))),
       game.ui.hintsBar([['confirm', 'Wählen'], ['back', 'Zurück']])));
     const screen = { el };
     const done = (v) => { game.ui.pop(screen); game.preview.detach(); resolve(v); };

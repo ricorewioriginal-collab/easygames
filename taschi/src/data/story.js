@@ -21,19 +21,19 @@ export const INTRO_SLIDES = [
 export const ULME = {
   greet: [
     { who: 'Professor Ulme', text: 'Da bist du ja! Willkommen in Sonnenhain. Ich bin Professor Ulme – ich erforsche die Bindung zwischen Menschen und Taschis.', mood: 'happy' },
-    { who: 'Professor Ulme', text: 'Taschis sind Wesen, die in Wiesen, Meeren, Wäldern und sogar in den Wolken leben. Mit einem Taschiball kannst du ein Taschi einladen, dich zu begleiten.', mood: 'talk' },
+    { who: 'Professor Ulme', text: 'Taschis sind Wesen, die in Wiesen, Meeren, Wäldern und sogar in den Wolken leben. Mit einem Taschi-Kapsel kannst du ein Taschi einladen, dich zu begleiten.', mood: 'talk' },
     { who: 'Professor Ulme', text: 'Aber hör gut zu: Die sechzehn Lichter am Himmel werden schwächer. Und seit Wochen fängt eine Bande namens Schattengilde wilde Taschis ein.', mood: 'worried' },
     { who: 'Professor Ulme', text: 'Ich brauche jemanden, der durch alle Regionen reist, die Licht-Siegel sammelt und herausfindet, was die Gilde vorhat.', mood: 'talk' },
-    { who: 'Professor Ulme', text: 'Unter meiner Glaskuppel liegen drei Taschibälle auf dem Podest. Geh hinein und sieh sie dir einzeln an. Wähle mit dem Herzen!', mood: 'happy' }
+    { who: 'Professor Ulme', text: 'Unter meiner Glaskuppel liegen drei Taschi-Kapseln auf dem Podest. Geh hinein und sieh sie dir einzeln an. Wähle mit dem Herzen!', mood: 'happy' }
   ],
-  reminder: [{ who: 'Professor Ulme', text: 'Das Podest steht unter der Glaskuppel. Untersuche die drei Taschibälle!', mood: 'talk' }],
+  reminder: [{ who: 'Professor Ulme', text: 'Das Podest steht unter der Glaskuppel. Untersuche die drei Taschi-Kapseln!', mood: 'talk' }],
   afterStarter: [
     { who: 'Professor Ulme', text: 'Wunderbar! Ihr beide passt hervorragend zusammen.', mood: 'happy' },
     { who: 'Professor Ulme', text: 'Oh! Hörst du das? Im Beet vor der Kuppel raschelt es. Ein wildes Taschi! Zeig mir, wie ihr zusammen kämpft!', mood: 'surprised' }
   ],
   afterBattle: [
     { who: 'Professor Ulme', text: 'Großartig gemacht! Du hast ein echtes Gespür für Taschis.', mood: 'happy' },
-    { who: 'Professor Ulme', text: 'Hier sind fünf Taschibälle, zwei Heilbälle, drei Tränke und die Pfadkarte. Im Laden gibt es mit jedem Siegel neue Ballsorten – jede hat ihre Stärke.', mood: 'talk' },
+    { who: 'Professor Ulme', text: 'Hier sind fünf Taschi-Kapseln, zwei Heilkapseln, drei Tränke und die Pfadkarte. Im Laden gibt es mit jedem Siegel neue Kapselsorten – jede hat ihre Stärke.', mood: 'talk' },
     { who: 'Professor Ulme', text: 'Dein erster Auftrag: Löse das Mühlstein-Rätsel an der alten Wassermühle, dann öffnet Fels-Fiete seine Arena. Und fang unterwegs ein paar Taschis für deinen Taschidex!', mood: 'talk' },
     { who: 'Professor Ulme', text: 'Wenn du Hilfe brauchst: Im Heilzentrum werden deine Taschis versorgt, im Laden gibt es Ausrüstung. Viel Glück!', mood: 'happy' }
   ]

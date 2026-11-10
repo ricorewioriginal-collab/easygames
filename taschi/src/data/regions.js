@@ -24,7 +24,7 @@ export const REGIONS = [
       { role: 'familie', name: 'Familie Linde', lines: { pre: ['Wir picknicken jeden Sonntag am Mühlteich. Die Quappis springen dann aus dem Wasser.'], post: ['Unser Sohn erzählt nur noch von deinem Arenakampf.'], done: ['Pass auf dich auf, da draußen. Und komm uns besuchen!'] } },
       { role: 'reisender', name: 'Wanderin Oda', lines: { pre: ['Ich komme von der Korallküste. Das Nordtor öffnet sich erst für Trainer, die Champion Lin besiegt haben.'], post: ['Lin wartet im Pavillon am Hügel östlich der Stadt.'], done: ['Vielleicht sehen wir uns an der Küste wieder.'] } },
       { role: 'trainer', name: 'Trainer Kolja', lines: { pre: ['Hast du schon einmal einen Typenvorteil genutzt? Pflanze schlägt Wasser, Feuer schlägt Pflanze.'], post: ['Felsling ist hart, aber Wasser und Pflanze wirken gut gegen Gestein.'], done: ['Ich trainiere hier weiter, bis ich dich einhole!'] } },
-      { role: 'haendler', name: 'Händlerin Grete', lines: { pre: ['Im Laden gibt es Taschibälle und Tränke. Je mehr Siegel du hast, desto mehr führen wir.'], post: ['Mit zwei Siegeln bekommst du Kraftpulver.'], done: ['Sternsplitter kaufe ich dir gern teuer ab.'] } },
+      { role: 'haendler', name: 'Händlerin Grete', lines: { pre: ['Im Laden gibt es Taschi-Kapseln und Tränke. Je mehr Siegel du hast, desto mehr führen wir.'], post: ['Mit zwei Siegeln bekommst du Kraftpulver.'], done: ['Sternsplitter kaufe ich dir gern teuer ab.'] } },
       { role: 'forscher', name: 'Assistent Jo', lines: { pre: ['Ich helfe Professor Ulme bei der Bindungsforschung. Taschis, die man gut behandelt, kämpfen mutiger.'], post: ['Der Professor will dir bald neue Aufträge geben.'], done: ['Der Taschidex wächst! Der Professor ist begeistert.'] } }
     ],
     quests: [
