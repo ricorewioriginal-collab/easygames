@@ -330,8 +330,22 @@
     ring.style.transform = 'translate(' + (c.r.left - 5) + 'px,' + (c.r.top - 5) + 'px)'; ring.style.width = (c.r.width + 10) + 'px'; ring.style.height = (c.r.height + 10) + 'px'; show(ring, true);
   }
   function clearRing() { focusEl = null; show(ring, false); }
+  // Nichts mehr in dieser Richtung sichtbar: Fenster/Seite ein Stück weiterscrollen (Knöpfe unterhalb des sichtbaren Bereichs, z. B. Spielstand-Bereich)
+  function scrollOn(dir) {
+    if (dir > 1) return false;
+    var e = focusEl, sc = null;
+    for (; e && e !== doc.body && e !== doc.documentElement; e = e.parentElement) {
+      var cs = root.getComputedStyle(e); if (/(auto|scroll)/.test(cs.overflowY) && e.scrollHeight > e.clientHeight + 4) { sc = e; break; }
+    }
+    if (!sc && scopeEl) { for (e = scopeEl; e && e !== doc.body; e = e.parentElement) { var c2 = root.getComputedStyle(e); if (/(auto|scroll)/.test(c2.overflowY) && e.scrollHeight > e.clientHeight + 4) { sc = e; break; } } }
+    sc = sc || doc.scrollingElement || doc.documentElement;
+    var before = sc.scrollTop, h = sc === doc.scrollingElement || sc === doc.documentElement ? root.innerHeight : sc.clientHeight;
+    sc.scrollTop += (dir === 0 ? -1 : 1) * Math.max(80, h * 0.6);
+    return sc.scrollTop !== before;
+  }
   function navigate(dir) {
-    var c = pick(dir); if (!c) return;
+    var c = pick(dir); if (!c && focusEl && scrollOn(dir)) c = pick(dir);
+    if (!c) return;
     focusEl = c.e; drawRing(); cursorUntil = 0; show(cursor, false);
     try { if (c.e.scrollIntoView) c.e.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (e) {}
   }

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3d3a1e55fa01",
- "generated": "2026-11-10T03:00:04+01:00",
- "commit": "09109067a935ba5466bed3c7901038ac5e0c9ec0",
+ "version": "9927c4023f6f",
+ "generated": "2026-11-10T03:02:54+01:00",
+ "commit": "64d824fea305171e829d05f6c6bd9e46221d5421",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -393,8 +393,8 @@
   },
   {
    "p": "anleitung.html",
-   "s": 10330,
-   "h": "ea63fc18cd015e900b6f177cbce29b5d63861b5ca72fb019b470e8ed62e62dd4"
+   "s": 10371,
+   "h": "78d4b57553c3c3cf13cfd4a6e5de1fd9345d6950279e12034ad09bfc109e8aa5"
   },
   {
    "p": "anmacha-beat-surfer/card.jpg",
@@ -3978,8 +3978,8 @@
   },
   {
    "p": "bug.html",
-   "s": 12630,
-   "h": "7fb79a9e5d790afa15b1bdae57d5fd6410501e9b29de88504592c51cf16ff9cf"
+   "s": 12671,
+   "h": "ba9d69f2f950158c2384a4a7d7f1463a100db55fad20dd3689ca434669d63bdd"
   },
   {
    "p": "bunte-insel/card.png",
@@ -4713,8 +4713,8 @@
   },
   {
    "p": "chat.html",
-   "s": 22289,
-   "h": "15ee7b7bcb781912bcdba9c67190c4e51d8d629795d6efd5f14136eaf713264d"
+   "s": 22330,
+   "h": "cd8be0ca98304bd2abd5d49c0e291a1a29e00ba6019633cfedacaec2cbf5e4ee"
   },
   {
    "p": "cloud/anmacha-account.js",
@@ -5068,8 +5068,8 @@
   },
   {
    "p": "erfolge.html",
-   "s": 17011,
-   "h": "8f5df6edf3b825692548866401e67cf9f9942d0f15032ce5265525cf7d60f974"
+   "s": 17052,
+   "h": "5373145ea2ef9cfe38f0733ad6dd1a69f5ebc6df84f783c983762e20fcc7f9ed"
   },
   {
    "p": "fabelkick/card.jpg",
@@ -5533,8 +5533,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 54172,
-   "h": "7920bad231b41252f72214a4c8698cc8c5d45a706884a3bca5f8c7a1dd0c867c"
+   "s": 55224,
+   "h": "dbce84a169c60a7abfd6a918994fc2ff2c53451532e0aabdad2ef853bd1112f7"
   },
   {
    "p": "games.js",
@@ -6263,8 +6263,8 @@
   },
   {
    "p": "heute.html",
-   "s": 10577,
-   "h": "b69f43a57c3441bd3133dca3f563f304b3a2b28346b6afcdccf6fd5ed256dd3d"
+   "s": 10618,
+   "h": "a3cbb7e603521fe6c534e4b67015a94929e1b2a76d56deff1741adf26aed1566"
   },
   {
    "p": "huepfstrasse/card.jpg",
@@ -6618,13 +6618,13 @@
   },
   {
    "p": "konto-loeschen.html",
-   "s": 10303,
-   "h": "6abd805c249160c1c1b6dbe28ed8f59edb7b9ffaa83a06e39f7a7e6a1c700e5e"
+   "s": 10344,
+   "h": "91d03c8d51fc1f3192c8c65e8c87cede7efee1ab2f1fca08636ea8cb86a0e13c"
   },
   {
    "p": "konto.html",
-   "s": 10015,
-   "h": "9bfb1fe1c616f882449e950cb7d4fe67dbd8392e62918cb05192c8b368f4f9bc"
+   "s": 10056,
+   "h": "ba82b1e7e6bdedf1e5a791a1f7b649960c3fa2f7354dbccd6aacc5229265d257"
   },
   {
    "p": "kraterkommando/card.svg",
@@ -7648,8 +7648,8 @@
   },
   {
    "p": "profil.html",
-   "s": 18843,
-   "h": "a7fcf691984ef486e423071bb41d73297cfcc38ec3c4f8889a14d57a7760a147"
+   "s": 18884,
+   "h": "43171da5b421d853149f55533f85dcd51b7fa7cd8ea880dd75bfbb2b8b322bc0"
   },
   {
    "p": "pufi-farbwind/card.svg",
@@ -7728,8 +7728,8 @@
   },
   {
    "p": "radio-erfolge.html",
-   "s": 2954,
-   "h": "c2bde6e48a5b629555057c4234b5b8f116ffdf17312c3dff5a6056c24a275971"
+   "s": 2995,
+   "h": "2f11788dbf1906c33e5175d5cfc1645bd58128a878547a5cf3fe8e66919ea9d8"
   },
   {
    "p": "radio-maze/card.svg",
@@ -7773,13 +7773,13 @@
   },
   {
    "p": "radio-profil.html",
-   "s": 2596,
-   "h": "922f75db73a02b6c6536966b0b395f136de6c7462a7d3b605bec34ec52a4e8ca"
+   "s": 2637,
+   "h": "f4e0e95f802d775f74b9b91ea768615fce2ea053b3381002a4da3588b89b8b0b"
   },
   {
    "p": "ranglisten.html",
-   "s": 11518,
-   "h": "1ab9d8b422865c6f03b1cf8e15b64a6c5c68c980c530c9fd7a0986256950dfad"
+   "s": 11559,
+   "h": "0d3ef791a984091dd00ce7c54689a298ee450f0e67976001e427aee1b3743f89"
   },
   {
    "p": "rico-flap/card.png",
