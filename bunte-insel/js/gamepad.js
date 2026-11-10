@@ -106,6 +106,8 @@ BI.createGamepad = function (G) {
     const veh = P.veh, trig = tv('rt') - tv('lt'); let sx = lx, sy = -ly; if (veh && Math.abs(trig) > .06 && Math.abs(sy) < .15) sy = trig;
     G.setStick(sx, sy);
     if (rx || ry) { cam.yaw -= rx * dt * 2.7; cam.pitch = clamp(cam.pitch + ry * dt * 1.5, .12, 1.3); cam.idle = 0; if (cam.ego && veh) cam.egoOff = clamp((cam.egoOff || 0) - rx * dt * 2.7, -1.7, 1.7); }
+    /* Auftrag im Fahrzeug (✔ Ja / ✖ Nein): A nimmt an, B lehnt ab */
+    { const of = $('mOffer'); if (of && !of.hidden && of.offsetParent) { if (edge('a', btn('a'))) { click('mYes'); return; } if (edge('b', btn('b'))) { click('mNo'); prev.bb = true; return; } } }
     if (edge('a', btn('a'))) inp.act = true;
     { const b = btn('b'); if (edge('b', b)) { if (veh) inp.turbo = true; inp.up = true; if (!veh) inp.jump = true; } else if (!b && prev.bb) { inp.turbo = false; inp.up = false; } prev.bb = b; }
     { const x = btn('x'); if (edge('x', x)) { inp.aux = true; inp.down = true; } else if (!x && prev.xx) inp.down = false; prev.xx = x; }
