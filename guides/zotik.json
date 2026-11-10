@@ -44,6 +44,14 @@
    ]
   },
   {
+   "t": "Story-Etappen und Echos",
+   "list": [
+    "Jede Welt (Elaris bis Elyndra) hat zwei eigene Story-Etappen mit eigener Spielweise: Verfolgungen (Dieb, Sandläufer, Schattenkind), Begleitungen mit Angriffswellen (Sela, Nerea, Falk, Aera), Gefahrenzonen (Sandsturm, Kälte, Hitze – nur an entzündeten Steinen/Feuern/Kristallen schwindet dein Leben nicht), Gefährten-Aufgaben (Rovan reißt Mauern ein, Lyra heilt und lichtet), Erinnerungen in der richtigen Reihenfolge und Himmelssiegel fürs Luftschiff.",
+    "Die erste Etappe kommt nach der Jagd im Norden, die zweite nach dem Wächter – erst dann öffnet sich der Weg zum Weltenboss.",
+    "🪞 Rissspiegel: Nach jedem Kapitel steht neben der Arena ein Spiegel. Dort forderst du ein Echo des Weltenbosses heraus (8 Stufen stärker). Der erste Sieg bringt seltene Ausrüstung, jeder Sieg viele Splitter."
+   ]
+  },
+  {
    "t": "Zuhause, Events, Codes und Emotes",
    "list": [
     "🏡 Zuhause: Dein Grundstück liegt in Lunaris westlich vom Dorfplatz (Schild „Bauplan“). Baue es mit Rissplittern und Materialien in fünf Stufen aus: Haus, Garten & Werkstatt, kleiner Ort, Stadt, Metropole. Ab dem Haus gibt es tägliche Einnahmen. Im Koop sehen Mitspieler dein Grundstück, außer du stellst es auf privat.",
@@ -203,7 +211,8 @@
     "Löse das Rätsel der Welt.",
     "Besiege den Wächter (Mini-Boss).",
     "Stelle dich dem Weltboss.",
-    "Berichte dem Ältesten – Kapitel geschafft, die nächste Welt öffnet sich im Weltentor."
+    "Berichte dem Ältesten – Kapitel geschafft, die nächste Welt öffnet sich im Weltentor.",
+    "Etappen-Lösungen: Elaris – Erinnerungen Same, Regen, Blüte, Laub. Noctaris – Begegnung, Streit, Versöhnung, Abschied. Elyndra – Spiegel Elaris, Valdoria, Solmera, Aqualis. Gefahrenzonen: immer von Stein zu Stein laufen und jeden sofort entzünden. Verfolgungen: dranbleiben, der Flüchtende wartet an jeder Station."
    ]
   },
   {
