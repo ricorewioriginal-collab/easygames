@@ -644,7 +644,7 @@
       if (ok) { box = e; break; }
     }
     if (!box) return null;
-    var r = box.getBoundingClientRect(); if (r.width * r.height > 0.8 * root.innerWidth * root.innerHeight) return null;   // ganzer Bildschirm = Spiel-Oberfläche (HUD), kein Fenster
+    var r = box.getBoundingClientRect(); if (r.width * r.height > 0.92 * root.innerWidth * root.innerHeight) return null;   // ganzer Bildschirm = Spiel-Oberfläche (HUD), kein Fenster
     var a = doc.activeElement; if (a && a !== doc.body && box.contains(a)) return null;   // das Spiel führt selbst durch sein Fenster
     return box;
   }
