@@ -131,6 +131,15 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     const pe = await e.waitForFunction(() => !!navigator.getGamepads()[3], null, { timeout: 4000 }).then(() => true, () => false);
     ok(fe && pe, 'Windows-App (eingebettet): Legende, Ereignis' + (fe ? '' : ' [fehlt]') + ' und virtueller Controller' + (pe ? '' : ' [fehlt]') + ' im Spielfenster');
     ok(!errs.length, 'keine Fehler ' + errs.join(' | '));
+    // Was „A drücken“ im jeweiligen Spiel bedeutet: Kart Rush (A = Gas · Bestätigen) – in der Legende und in den Einstellungen
+    const kb = base.replace('game=deluxe-2048', 'game=anmacha-kart');
+    const kl = await (await b.newContext({ viewport: { width: 1000, height: 900 } })).newPage(); await kl.goto(kb); await kl.waitForSelector('.tt-leg'); await sleep(4500);
+    const legT = await kl.textContent('.tt-leg'); ok(/A drücken \(Gas/.test(legT), 'Legende zeigt, was A in Kart Rush macht: ' + (legT.match(/A drücken[^→]*/) || [''])[0]);
+    const ks = await (await b.newContext({ viewport: { width: 1000, height: 900 } })).newPage(); await ks.goto(kb + '&setup=1'); await ks.waitForSelector('#ttSet'); await sleep(4500);
+    await ks.evaluate(() => { const i = document.querySelector('#ttGifts input[list="ttAct"]'); i.dispatchEvent(new Event('input', { bubbles: true })); });
+    const mean = await ks.evaluate(() => [...document.querySelectorAll('#ttSet .mean')].map(x => x.textContent).filter(Boolean));
+    ok(mean.some(t => /Kart Rush.*Gas/.test(t)), 'Einstellungen: Hinweis unter der Aktion: ' + mean[0]);
+    if (SHOTS) await ks.screenshot({ path: path.join(SHOTS, 'tiktok-tastenhinweis.png') });
   } finally { await b.close(); bridge.kill(); srv.close(); try { fs.unlinkSync(cfgFile); } catch (e) { } }
   console.log(fails ? fails + ' Fehler' : 'alles ok'); process.exit(fails ? 1 : 0);
 })();
