@@ -28,7 +28,7 @@
   const overlays = () => Array.from(document.querySelectorAll('.ov')).filter(o => !o.hidden);
   const root = () => overlays().pop() || $(cur);
   const navEls = () => Array.from(root().querySelectorAll('.nav')).filter(e => !e.disabled && e.offsetParent !== null);
-  function focusFirst() { if (coarse()) return; const els = navEls(), el = els.find(e => e.classList.contains('pri') || e.classList.contains('hero') || e.classList.contains('on')) || els[0]; if (el) try { el.focus({ preventScroll: true }); } catch (e) { } }
+  function focusFirst() { if (coarse() && !document.body.classList.contains('kbd')) return; const els = navEls(), el = els.find(e => e.classList.contains('pri') || e.classList.contains('hero') || e.classList.contains('on')) || els[0]; if (el) try { el.focus({ preventScroll: true }); } catch (e) { } }
   function openOv(id) { $(id).hidden = false; setTimeout(focusFirst, 0); }
   function closeOv(id) { $(id).hidden = true; setTimeout(focusFirst, 0); }
   function moveFocus(dx, dy) {

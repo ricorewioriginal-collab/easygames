@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "afe5eae9b5b9",
- "generated": "2026-11-10T03:56:29+01:00",
- "commit": "04032082043cc325553708e99f3b5ea81fc91183",
+ "version": "2256c79e3b40",
+ "generated": "2026-11-10T04:16:28+01:00",
+ "commit": "084363e3c3baa1059e3f55dfac51deca8bddcc5f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1708,13 +1708,13 @@
   },
   {
    "p": "anmacha-markthalle/game.js",
-   "s": 92581,
-   "h": "52ba6629d58e49a41ba1e6c46d96bea50531b95493a9cfca08a34f53897fece4"
+   "s": 92843,
+   "h": "f7fd0c08ec1cfa0756892d7dc30afc21d85e6c36b39794fa69983478e3acdd4a"
   },
   {
    "p": "anmacha-markthalle/index.html",
-   "s": 33608,
-   "h": "d36c25a8f89abb34ce6d8414e18320285b07dbe34c9f88a81671e02145aa5ef4"
+   "s": 33814,
+   "h": "1a280e9bc3bb87ed20e4600960943894b11774b17895c4836735882d52d28714"
   },
   {
    "p": "anmacha-markthalle/logo.svg",
@@ -3898,13 +3898,13 @@
   },
   {
    "p": "brainrot-parkour/index.html",
-   "s": 15061,
-   "h": "3ce8be827b5de5c8e67cca6b0f473dd4a3fd9af7c2d1f8499eb8a35b80d87766"
+   "s": 15110,
+   "h": "4ffaa90416862c00a01d508a012a83b536fb24ff89036998e27ea3bca89d014f"
   },
   {
    "p": "brainrot-parkour/js/app.js",
-   "s": 45879,
-   "h": "dbdb8eb00d4bcc3900743735397a0fae9baa897c026ae56de68632a3ccdd7d59"
+   "s": 45923,
+   "h": "a0fbe0dad2ab7d6192d50df6f3f9bdf73335374594d06122e4bfe9c0ac12328c"
   },
   {
    "p": "brainrot-parkour/js/chars.js",
@@ -5533,8 +5533,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 60527,
-   "h": "d2805ca68cfdef67bd013ca478701f2f5da49694cd2b0120d122d1b4fde6f2d4"
+   "s": 62799,
+   "h": "b5c0f2c4b20d80d9694b9432f3c72e606a631f2a11f57969abe38169b6bf5ae9"
   },
   {
    "p": "games.js",
@@ -5848,8 +5848,8 @@
   },
   {
    "p": "guides/anmacha-markthalle.json",
-   "s": 24592,
-   "h": "9f086ec5d0443a56d0599b6c0d95baa8ee54b83433e85c6d064e534f7bd99dc3"
+   "s": 25125,
+   "h": "4a140f92d846fa0db0c813c992581416c33238ab81d772145bb8afc6f8f38af5"
   },
   {
    "p": "guides/anmacha-memory.json",
@@ -8839,7 +8839,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256786,
-   "h": "ddd58e2f192018ff204533b074d74015c506fc6265dbe2e3ad302d9578c45d88"
+   "h": "475cf1adc7c02eeea3030e20b72bef23e587091f4b4c4b39ad96d8ea024d0eed"
   },
   {
    "p": "taschi/card.svg",

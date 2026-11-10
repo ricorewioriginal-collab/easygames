@@ -38,7 +38,8 @@
  *   (window.EASYGAMES_PAD_NORMAL_ONLY = 1 vor der Datei). API: EasyGamesPadNormal.raw(), .std(pad), .maps(), .setMap(id, map|null).
  * Ohne angeschlossenen Controller läuft nichts mit (keine Schleife, kein Overlay).
  * Spiele mit eigener Controller-Steuerung binden die Datei nicht ein, damit nichts doppelt reagiert.
- * API: EasyGamesPad.enabled(false) hält alles an, EasyGamesPad.focus(el) setzt den Leuchtrahmen, EasyGamesPad.map zeigt die Belegung.
+ * API: EasyGamesPad.enabled(false) hält alles an, EasyGamesPad.focus(el) setzt den Leuchtrahmen, EasyGamesPad.hud(el) wählt Knöpfe in el
+ *      (z. B. Info-Karte am Rand; B zurück ins Spiel), EasyGamesPad.map zeigt die Belegung.
  */
 (function (root) {
   'use strict';
@@ -387,7 +388,7 @@
   }
 
   // ---------- Abfrage-Schleife (läuft nur, solange ein Controller da ist) ----------
-  var enabled = true, running = false, last = 0, prev = {}, aMode = '', navRep = {}, lsDirs = DIRS[opt.ls] || null, rsDirs = DIRS[opt.rs] || null;
+  var gameNavT = -1e9, enabled = true, running = false, last = 0, prev = {}, aMode = '', navRep = {}, lsDirs = DIRS[opt.ls] || null, rsDirs = DIRS[opt.rs] || null;
   function pads() { var a = [], l; try { l = nav.getGamepads() || []; } catch (e) { l = []; } for (var i = 0; i < l.length; i++) if (l[i] && l[i].connected !== false) a.push(l[i]); return a; }
   function state(list) {
     var s = { b: [], ls: [0, 0, 0, 0], rs: [0, 0], d: [0, 0, 0, 0] };
@@ -416,8 +417,9 @@
     if (padOn && now > badgeT) { badgeT = now + 400; drawBadges(); }
     if (s.b[8] && s.b[9] && !(p.b[8] && p.b[9])) { releaseAll(); menuOpen(); return; }   // Select + Start: Belegung ansehen und ändern
     if (now > oskScanT) { oskScanT = now + 300; if (oskScan()) return; }   // neu erschienenes Textfeld (Name, Code …) → Tastatur
-    if (opt.info && !dlg && opt.hud !== 'off') {   // Select (bzw. hud=l3/r3) gedrückt halten: Knöpfe auf dem Bildschirm (Tasche, Menü, Karte …) mit dem Controller wählen
-      var HB = { select: 8, l3: 10, r3: 11 }[opt.hud || 'select'];
+    var HN = hudBtn();
+    if (HN && !dlg) {   // Select (bzw. hud=l3/r3) gedrückt halten: Knöpfe auf dem Bildschirm (Tasche, Menü, Karte …) mit dem Controller wählen
+      var HB = NAMES[HN];
       if (s.b[HB] && !p.b[HB]) selT = now;
       if (!s.b[HB] || s.b[9]) selT = 0;
       else if (selT && now - selT > 500) { selT = 0; hudMode(); return; }
@@ -430,7 +432,9 @@
     for (i = 0; i < 4; i++) {
       if (s.d[i] && !p.d[i]) {
         var used = send(DPAD[i], true);
-        if (opt.nav && !used) { navigate(i); navRep[i] = now + 400; } else if (used) clearRing();
+        if (used) gameNavT = now;
+        // Spiel mit eigener Menü-Auswahl (hat eben selbst eine Pfeiltaste genommen): ungenutzte Richtung startet keinen zweiten Rahmen
+        if (opt.nav && !used && (focusEl || now - gameNavT > 4000)) { navigate(i); navRep[i] = now + 400; } else if (used) clearRing();
       } else if (!s.d[i] && p.d[i]) { send(DPAD[i], false); delete navRep[i]; }
       else if (s.d[i] && navRep[i] && now >= navRep[i] && focusEl) { navigate(i); navRep[i] = now + 140; }
     }
@@ -690,7 +694,10 @@
       if (ok) { box = e; break; }
     }
     if (!box) return null;
-    var r = box.getBoundingClientRect(); if (r.width * r.height > 0.92 * root.innerWidth * root.innerHeight) return null;   // ganzer Bildschirm = Spiel-Oberfläche (HUD), kein Fenster
+    var full = 0.92 * root.innerWidth * root.innerHeight, r = box.getBoundingClientRect(); if (r.width * r.height > full) return null;   // ganzer Bildschirm = Spiel-Oberfläche (HUD), kein Fenster
+    for (var up = box.parentElement; up && up !== doc.body && up !== doc.documentElement; up = up.parentElement) {   // ganzes Fenster statt nur der Liste in der Mitte (z. B. Figuren-Raster + „Zurück/Auswählen“ darunter)
+      var ur = up.getBoundingClientRect(); if (ur.width * ur.height > full) break; box = up;
+    }
     var a = doc.activeElement; if (a && a !== doc.body && box.contains(a)) return null;   // das Spiel führt selbst durch sein Fenster
     if (box.querySelector('[class*="focus" i]:not(button:focus)') && !box.querySelector(':focus')) { var fx = box.querySelector('[class*="focus" i]'); if (fx && fx.getClientRects().length) return null; }   // eigene Markierung des Spiels (z. B. .gp-focus) – nicht doppelt steuern
     return box;
@@ -707,14 +714,25 @@
   }
   var selT = 0, hudTip = null;
   function hudEnd() { dlg = null; scopeEl = null; clearRing(); show(hudTip, false); if (NORM && NORM.hold && !menu && !osk) NORM.hold(false); prev = {}; dlgT = 0; }
-  function hudMode() {
-    releaseAll(); scopeEl = null;
-    var c = pick(0); if (!c) return;
-    dlg = { el: doc.body, manual: true, prev: oskState(), next: 0 };
+  // Halte-Taste für „Knöpfe auf dem Bildschirm“: Spiele mit eigener Steuerung Select (oder hud=…); Spiele mit Tasten-Nachahmung die erste freie
+  // von Select/L3/R3 (bzw. hud=…, wenn frei) – eine belegte Taste bleibt, wie sie ist
+  function hudBtn() {
+    if (opt.hud === 'off') return '';
+    if (opt.info) return opt.hud || 'select';
+    var l = opt.hud ? [opt.hud] : ['select', 'l3', 'r3'];
+    for (var i = 0; i < l.length; i++) if (!MAP[l[i]] && !BIND[l[i]]) return l[i];
+    return '';
+  }
+  function hudMode(scope) {
+    releaseAll(); scopeEl = scope || null;
+    var c = pick(0); if (!c) { scopeEl = null; return false; }
+    if (!scope) { var l = candidates(), bd = Infinity, mx = root.innerWidth / 2, my = root.innerHeight / 2; l.forEach(function (k) { var d = Math.abs(k.x - mx) + Math.abs(k.y - my); if (d < bd) { bd = d; c = k; } }); }   // in der Mitte anfangen, nicht beim „← Alle Spiele“ in der Ecke
+    dlg = { el: scope || doc.body, manual: true, scope: scope || null, prev: oskState(), next: 0 };
     if (NORM && NORM.hold) NORM.hold(true);
     focusEl = c.e; drawRing();
     if (!hudTip) hudTip = el('left:50%;top:12px;transform:translateX(-50%);padding:7px 14px;border-radius:12px;background:rgba(8,10,20,.9);color:#fff;font:600 13px/1.4 system-ui,sans-serif');
     hudTip.textContent = '🎮 Knöpfe auf dem Bildschirm: ✚/Stick wählen · A drücken · B zurück ins Spiel'; show(hudTip, true);
+    return true;
   }
   function dlgTick(now) {
     var dt0 = Math.min(0.05, dlg.t ? (now - dlg.t) / 1000 : 0.016); dlg.t = now;
@@ -724,7 +742,16 @@
       var MD = { u: 0, d: 1, l: 2, r: 3 };
       if (mb.dir !== mp.dir) { dlg.next = now + 320; if (mb.dir) navigate(MD[mb.dir]); }
       else if (mb.dir && now > dlg.next) { dlg.next = now + 150; navigate(MD[mb.dir]); }
-      if (mh(0)) { if (focusEl && activate()) root.setTimeout(function () { if (dlg && dlg.manual && !(focusEl && usable(focusEl))) { var c = pick(0); if (c) { focusEl = c.e; drawRing(); } } }, 120); return; }   // drücken und weiter wählen (z. B. „Mehr“ öffnet weitere Knöpfe); B zurück ins Spiel
+      if (dlg.scope && !usable(dlg.scope) && !candidates().length) { hudEnd(); return; }   // Fenster des Spiels geschlossen (z. B. Regal-Karte mit ✕)
+      if (mh(0)) {   // drücken und weiter wählen (z. B. „Mehr“ öffnet weitere Knöpfe, „+5 ct“ zeichnet die Karte neu); B zurück ins Spiel
+        var was = focusEl && usable(focusEl);
+        if (was && activate()) root.setTimeout(function () {
+          if (!dlg || !dlg.manual || (focusEl && usable(focusEl))) return;
+          var l = candidates(), best = null, bd = Infinity; l.forEach(function (c) { var d = Math.abs(c.x - was.x) + Math.abs(c.y - was.y); if (d < bd) { bd = d; best = c; } });   // derselbe Platz nach dem Neuzeichnen
+          if (best) { focusEl = best.e; drawRing(); } else if (dlg.scope) hudEnd();
+        }, 120);
+        return;
+      }
       if (mh(1)) hudEnd();
       return;
     }
@@ -747,7 +774,7 @@
     var l = legendList(); if (!l.length) return;
     legendBox();
     legendEl.style.columns = '2 220px'; legendEl.style.minWidth = '';
-    legendEl.innerHTML = '<div style="column-span:all;font-size:11px;letter-spacing:.06em;color:#7ff3ff;margin-bottom:4px">🎮 CONTROLLER · Select + Start: Belegung ändern' + (opt.info && opt.hud !== 'off' ? ' · ' + ({ l3: 'L3', r3: 'R3' }[opt.hud] || 'Select') + ' halten: Knöpfe auf dem Bildschirm' : '') + '</div>' +
+    legendEl.innerHTML = '<div style="column-span:all;font-size:11px;letter-spacing:.06em;color:#7ff3ff;margin-bottom:4px">🎮 CONTROLLER · Select + Start: Belegung ändern' + (hudBtn() ? ' · ' + ({ l3: 'L3', r3: 'R3' }[hudBtn()] || 'Select') + ' halten: Knöpfe auf dem Bildschirm' : '') + '</div>' +
       l.map(function (x) { return '<div style="break-inside:avoid;white-space:nowrap"><b style="display:inline-block;min-width:26px;padding:0 5px;margin-right:6px;border-radius:7px;text-align:center;background:' + (GCOL[x[2]] || '#334155') + '">' + x[0] + '</b>' + x[1].replace(/</g, '&lt;') + '</div>'; }).join('');
     show(legendEl, true);
     legendTimer = root.setTimeout(function () { show(legendEl, false); }, ms);
@@ -794,6 +821,8 @@
     enabled: function (on) { if (on === undefined) return enabled; enabled = !!on; if (!enabled) { releaseAll(); clearRing(); show(cursor, false); } return enabled; },
     // Leuchtrahmen auf einen bestimmten Knopf setzen (z. B. die erste Taste einer Bildschirmtastatur)
     focus: function (el) { if (!el) return; focusEl = el; if (running) drawRing(); },
+    // Knöpfe eines Bereichs (z. B. Info-Karte am Bildschirmrand) mit dem Controller wählen, B zurück ins Spiel; ohne el: alle Bildschirm-Knöpfe
+    hud: function (el) { if (!running || menu || osk) return false; if (dlg) hudEnd(); return hudMode(el); },
     // Controller-Modus (wird gerade mit dem Controller gespielt?) und Belegung mit Beschriftungen: [[Symbol, Text, Name], …]
     active: function () { return padOn; },
     legend: legendList,

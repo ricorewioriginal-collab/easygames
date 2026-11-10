@@ -240,10 +240,10 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
     await p.evaluate(() => plug({ id: 'Std', mapping: 'standard', buttons: Array(17).fill(0), axes: [0, 0, 0, 0] })); await frames(p);
     const sel = Z.slice(); sel[8] = 1; await set(p, { buttons: sel }); await p.waitForTimeout(700); await frames(p, 3); await set(p, { buttons: Z.slice() }); await frames(p, 3);
     const held = await p.evaluate(async () => { window.fake.buttons[2] = 1; await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const v = gameSees(2); window.fake.buttons[2] = 0; return v; });
-    await frames(p, 3); await tap(13); await tap(0); await p.waitForTimeout(100);
+    await frames(p, 3); await tap(12); await tap(0); await p.waitForTimeout(100);
     const r11 = await p.evaluate(() => log.slice()); await tap(1);   // B: zurück ins Spiel
     const free = await p.evaluate(async () => { window.fake.buttons[2] = 1; await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const v = gameSees(2); window.fake.buttons[2] = 0; return v; });
-    ok(held === false && r11.join() === 'click:bag' && free === true, 'Select halten: Bildschirm-Knöpfe wählen (oben rechts → runter → „bag“), A drückt, danach Spielsteuerung: ' + r11.join() + ' / ' + held + ' / ' + free);
+    ok(held === false && r11.join() === 'click:bag' && free === true, 'Select halten: Bildschirm-Knöpfe wählen (Mitte „fun“ → hoch → „bag“), A drückt, danach Spielsteuerung: ' + r11.join() + ' / ' + held + ' / ' + free);
     await p.close();
   }
 
