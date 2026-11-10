@@ -434,6 +434,8 @@ function initHost() {
   $('bMenu').onclick = toMenu;
   function toMenu() { if (R && R.introTimer) clearTimeout(R.introTimer); $('raceLoad').hidden = true; R = null; $('res').hidden = true; $('pause').hidden = true; $('hud').hidden = true; $('tbar').hidden = true; $('banner').hidden = true; document.body.classList.remove('racing'); AUD.engine(false); AUD.bed('menu'); showView('title'); nVp = 1; View.resize(innerWidth, innerHeight, 1); players.forEach(p => { if (p.conn) send(p.conn, { t: 'st', ph: 'lobby' }); }); players = players.filter(p => p.conn && !p.gone); if (TV) openLobby(); }
   $('bPause').onclick = () => { if (R && !R.ended) { paused = true; R.dirty = true; $('pause').hidden = false; } }; $('bResume').onclick = () => { paused = false; $('pause').hidden = true; }; $('bQuit').onclick = toMenu;
+  // Controller: im Rennen liest das Spiel den Pad selbst (Gas, Lenken …) – die Menü-Steuerung von gamepad.js ruht dann; Start = Pause
+  let padStart = false; setInterval(() => { const racing = !!(R && !R.ended && !paused); if (window.EasyGamesPad && EasyGamesPad.enabled() === racing) EasyGamesPad.enabled(!racing); const st = Pads.list().some(p => p.buttons && p.buttons[9] && p.buttons[9].pressed); if (st && !padStart && racing) $('bPause').click(); padStart = st; }, 80);
 
   // ------------------------------------------------------------------ Hauptschleife
   // Feste 60-Hz-Simulation; gezeichnet wird zwischen den letzten beiden Schritten interpoliert (flüssig auch bei 90/120/144 Hz).
