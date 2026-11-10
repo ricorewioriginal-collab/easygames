@@ -922,7 +922,7 @@ function renderMenu(tab){mState.tab=tab;const t=$('tabs'),c=$('mcont');
   if(tab==='help')h+=controlsHTML()+`<h3>Optionen</h3><div class="row"><span>🎰 Casino (Kristallslots, nur Spiel-Splitter)</span><span><button class="cpb" id="optCas">${S.cas&&S.cas.off?'aus – einschalten':'an – ausschalten'}</button></span></div>`;
   if(tab==='travel')h+=travelHTML();
   if(tab==='events')h+=XO.eventsHTML();if(tab==='home')h+=XO.homeHTML();if(tab==='chron')h+=XT.chronHTML();if(tab==='camp')h+=XT.campHTML();if(tab==='coop')h+=coopHTML();if(tab==='equip')h+=equipHTML();if(tab==='felli')h+=felliHTML();if(tab==='skills')h+=extSkillsHTML();
-  c.innerHTML=h;c.querySelectorAll('.trv').forEach(b=>b.onclick=()=>travel(+b.dataset.n));if(tab==='coop')coopBind();extBind(c,tab);if(tab==='camp')XT.bind(c,()=>renderMenu('camp'));XO.bind(c,tab,()=>renderMenu(tab));const oc=$('optCas');if(oc)oc.onclick=()=>{S.cas.off=!S.cas.off;sfx('ui');toast(S.cas.off?'🎰 Casino ausgeschaltet':'🎰 Casino eingeschaltet');saveGame(true);renderMenu('help')}}
+  c.innerHTML=h;c.querySelectorAll('.trv').forEach(b=>b.onclick=()=>travel(+b.dataset.n));{const gc=c.querySelector('#goCas');if(gc)gc.onclick=()=>{toggleMenu(false);openCasino()}}if(tab==='coop')coopBind();extBind(c,tab);if(tab==='camp')XT.bind(c,()=>renderMenu('camp'));XO.bind(c,tab,()=>renderMenu(tab));const oc=$('optCas');if(oc)oc.onclick=()=>{S.cas.off=!S.cas.off;sfx('ui');toast(S.cas.off?'🎰 Casino ausgeschaltet':'🎰 Casino eingeschaltet');saveGame(true);renderMenu('help')}}
 $('mResume').onclick=()=>toggleMenu(false);$('saveBtn').onclick=()=>saveGame();
 $('mSound').onclick=()=>{sndOn=!sndOn;if(master)master.gain.value=sndOn?.85:0;$('mSound').textContent=sndOn?'🔊 Ton an':'🔇 Ton aus';initAudio()};
 
@@ -1274,6 +1274,8 @@ function travel(n){
 function travelHTML(){let h='<h3>Weltentor</h3><p style="color:var(--dim);font-size:13px">Reise zu den Welten, die du schon geöffnet hast. Du kannst jederzeit zurückkehren.</p>';
   for(let n=1;n<=MAXCH;n++){const C=n===1?{name:'Lunaris',sub:'Der erste Riss'}:CHP[n],open=chOpen(n),dn=chDone(n),here=n===curCh;
     h+=`<div class="row"><span>${dn?'✅':open?'🔓':'🔒'} ${n>10?'Endspiel':'Kapitel '+n}: ${C.name}<br><small style="color:var(--dim)">${open?C.sub:'Noch verschlossen'}</small></span><span>${here?'<small>hier</small>':open?`<button class="trv" data-n="${n}">Reisen</button>`:''}</span></div>`}
+  // Casino direkt aus dem Menü (vorher nur als Gebäude in Kapitel 3 – viele fanden es nicht)
+  h+=`<h3>🎰 Golden Star Casino</h3><div class="row"><span>Kristallslots mit Spiel-Splittern (kein Echtgeld)<br><small style="color:var(--dim)">${S.cas&&S.cas.off?'Ausgeschaltet – einschalten unter Steuerung → Optionen':'Das Gebäude steht in Kapitel 3 – oder gleich hier spielen'}</small></span><span>${S.cas&&S.cas.off?'':'<button class="cpb" id="goCas">Spielen</button>'}</span></div>`;
   return h}
 /* ---- Tor zu den Welten (Lunaris & Kapitel) ---- */
 function portalAt(x,z,col){const y=hgt(x,z),g=new T.Group();g.position.set(x,y,z);
