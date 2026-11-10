@@ -105,7 +105,7 @@ export function keysToInput(pressed: ReadonlySet<string>, scheme: KeySchemeId, a
 }
 
 /** Rampenzeit der Tastatur-Achsen (Sekunden von 0 auf ±1) */
-export const KEY_RAMP_SECONDS = 0.08;
+export const KEY_RAMP_SECONDS = 0.05;
 
 /** Bewegt `current` höchstens um dt/rampTime in Richtung `target` (linear, springt nie darüber hinaus). */
 export function rampToward(

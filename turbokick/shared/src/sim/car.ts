@@ -28,7 +28,7 @@ export const CAR_TUNING = {
   /** Kurvenradius = turnRadiusMin + turnRadiusSpread * (v/maxSpeed)² */
   turnRadiusMin: 2.2,
   turnRadiusSpread: 9,
-  maxYawRate: 3.6,
+  maxYawRate: 2.9,
   steerSmooth: 14,
   alignGain: 10,
   alignSmooth: 12,

@@ -116,7 +116,7 @@ describe('Rampe', () => {
 
   it('läuft auch zurück bis 0 und durch die Mitte nach −1', () => {
     expect(rampToward(1, 0, 1)).toBe(0);
-    expect(rampToward(1, -1, 0.04)).toBeCloseTo(0.5, 6);
+    expect(rampToward(1, -1, 0.025)).toBeCloseTo(0.5, 6);
     expect(rampToward(0.3, 0.3, 0.01)).toBe(0.3);
     expect(rampToward(0.2, 1, 0)).toBe(0.2);
   });
