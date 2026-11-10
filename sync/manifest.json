@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "acb63e13636c",
- "generated": "2026-11-10T05:20:32+01:00",
- "commit": "a500b057c079ae583c7ee13e71e85693a19617b2",
+ "version": "fb2f21b80d54",
+ "generated": "2026-11-10T14:21:04+01:00",
+ "commit": "6dd38efef0877120ad9ba21fe86c47bc53c024c4",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8839,7 +8839,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256786,
-   "h": "475cf1adc7c02eeea3030e20b72bef23e587091f4b4c4b39ad96d8ea024d0eed"
+   "h": "f7dcb76461cb85064f468a256fb8f1db89cf45515c45858308a6a8b0731358ca"
   },
   {
    "p": "taschi/card.svg",
@@ -8873,8 +8873,8 @@
   },
   {
    "p": "taschi/src/core/input.js",
-   "s": 14483,
-   "h": "2c0d3cbe187f8eca5d5c81642a44c99b13e19b5ff6f07926db1a03dc39b9cbf7"
+   "s": 14803,
+   "h": "4e2025b9f276550fc5ce565cc351586b9f0fed870e2b171d4be4ea31cd632804"
   },
   {
    "p": "taschi/src/core/noise.js",
@@ -9073,8 +9073,8 @@
   },
   {
    "p": "taschi/src/ui/style.css",
-   "s": 22656,
-   "h": "6fbbe2a9a2572340be8ec1c0cfdc89b102be4ffcdb39280318ed75390bb4b2e0"
+   "s": 22866,
+   "h": "3076b56ef726e76c75206b80ab4e26aa8fffac093a626c3109c3631a74958419"
   },
   {
    "p": "taschi/src/ui/ui.js",
