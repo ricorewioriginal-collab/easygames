@@ -2678,20 +2678,22 @@ const rxEl=document.createElement('div');rxEl.id='rxp';rxEl.hidden=true;$('hud')
 const gEl=document.createElement('div');gEl.id='gauges';gEl.className='glass';gEl.innerHTML='<div id="gIP"><b>IP</b><div class="bar ipb"><i></i></div><span></span></div><div id="gRG"><b>⟡ Riss</b><div class="bar rgb"><i></i></div></div><div id="gTG"><b>🤝 Team</b><div class="bar tgb"><i></i></div></div>';$('lcol').insertBefore(gEl,$('menuBtn'));
 function deckItems(){const sub=X.deck.sub,it=[];
   if(!sub){it.push({t:'Angriff',f:()=>startAttack()});if(nearI&&!dlg.on&&!pl.dead)it.push({t:'▸ '+useShort(nearI),f:()=>interact()});   // Kontextbefehl wie bei Kingdom Hearts (Truhe öffnen, Sprechen …)
-    it.push({t:'Magie',s:'magic'},{t:'Item',s:'items'},{t:'Rufen',s:'spec'});if(S.tools.length)it.push({t:'Werkzeug',s:'tool'});return it}
+    it.push({t:'Spezialangriff',s:'atk'},{t:'Magie',s:'magic'},{t:'Item',s:'items'},{t:'Rufen',s:'spec'});/* Spezialangriff direkt unter Angriff: Gefährten-Techniken, Team-Angriffe, Formen, IP */if(S.tools.length)it.push({t:'Werkzeug',s:'tool'});return it}
   if(sub==='magic'){it.push({t:'Funkenwirbel',r:formMp(18)+' MP',k:'1',f:skill1,off:S.mp<formMp(18)},{t:'Lichtstoß',r:formMp(22)+' MP',k:'2',f:skill2,off:S.mp<formMp(22)},{t:'Mondheilung',r:formMp(30)+' MP',f:spellHeal,off:S.mp<formMp(30)})}
   else if(sub==='items'){it.push({t:'Heiltrank',r:'×'+S.potions,k:'3',f:skill3,off:!S.potions},{t:'Äther',r:'×'+(S.items.ether||0),f:useEther,off:!S.items.ether})}
-  else if(sub==='spec'){for(const id of S.party){const a=CMP.find(c=>c.id===id);if(a&&CSK[id])it.push({t:CSK[id].em+' '+PARTY[id].n+': '+CSK[id].n,r:a.ko?'K.O.':a.skc>0?Math.ceil(a.skc)+' s':Math.round(a.hp)+' KP',f:()=>cmpSkill(id),off:a.ko||a.skc>0})}
-    if(CMP.some(c=>c.ko))it.push({t:'💚 Wiederbeleben (25 MP)',r:'',f:()=>reviveAll()});
-    if(S.party.length)it.push({t:'⚙️ Taktik: '+(S.ptac==='def'?'Schützen':'Angreifen'),r:'',f:()=>{S.ptac=S.ptac==='def'?'atk':'def';toast(S.ptac==='def'?'🛡️ Gefährten bleiben bei dir und heilen früher':'⚔️ Gefährten greifen frei an')}});
-    if(S.fl.naut)it.push({t:'🚤 '+(naut.on?'Aussteigen':'Nautilux'),f:()=>toggleNaut()});
+  else if(sub==='atk'){for(const id of S.party){const a=CMP.find(c=>c.id===id);if(a&&CSK[id])it.push({t:CSK[id].em+' '+PARTY[id].n+': '+CSK[id].n,r:a.ko?'K.O.':a.skc>0?Math.ceil(a.skc)+' s':Math.round(a.hp)+' KP',f:()=>cmpSkill(id),off:a.ko||a.skc>0})}
     for(const id of S.party)if(TEAM[id])it.push({t:TEAM[id].em+' '+TEAM[id].n,r:Math.floor(S.tg)+'%',k:'T',f:()=>teamAttack(id),off:S.tg<100});
     if(formOk(0))it.push({t:'⟡ Rissform',r:Math.floor(S.rg)+'%',k:'G',f:()=>formStart(0),off:S.rg<100||X.form.on>0});if(formOk(1))it.push({t:'✦ Sternform',r:Math.floor(S.rg)+'%',f:()=>formStart(1),off:S.rg<100||X.form.on>0});
     ['w','a','c'].forEach((s,i)=>{const d=GEAR[gearSet()[s]];if(d)it.push({t:'IP · '+d.ip.n,r:d.ip.c+' IP',k:String(4+i),f:()=>ipUse(i),off:S.ip<d.ip.c})});
     if(!it.length)it.push({t:'(noch nichts freigeschaltet)',off:true})}
+  else if(sub==='spec'){   // Rufen: Gefährten verwalten und Nautilux
+    if(CMP.some(c=>c.ko))it.push({t:'💚 Wiederbeleben (25 MP)',r:'',f:()=>reviveAll()});
+    if(S.party.length)it.push({t:'⚙️ Taktik: '+(S.ptac==='def'?'Schützen':'Angreifen'),r:'',f:()=>{S.ptac=S.ptac==='def'?'atk':'def';toast(S.ptac==='def'?'🛡️ Gefährten bleiben bei dir und heilen früher':'⚔️ Gefährten greifen frei an')}});
+    if(S.fl.naut)it.push({t:'🚤 '+(naut.on?'Aussteigen':'Nautilux'),f:()=>toggleNaut()});
+    if(!it.length)it.push({t:'(noch nichts freigeschaltet)',off:true})}
   else if(sub==='tool'){it.push({t:'Benutzen',r:S.tools.length?TOOLS[S.tools[S.tool]].em:'',k:'C',f:()=>useTool()});S.tools.forEach((t,i)=>it.push({t:TOOLS[t].em+' '+TOOLS[t].n,r:i===S.tool?'✓':'',f:()=>{S.tool=i;X.deck.dirty=true}}))}
   return it}
-const SUBN={magic:'Magie',items:'Item',spec:'Rufen',tool:'Werkzeug'};
+const SUBN={atk:'Spezialangriff',magic:'Magie',items:'Item',spec:'Rufen',tool:'Werkzeug'};
 function deckRender(){const it=deckItems();X.deck.sel=clamp(X.deck.sel,0,it.length-1);
   let h=`<div class="dh">${X.deck.sub?'◂ '+SUBN[X.deck.sub]:'Kommando'}${X.lock?' <em>🎯</em>':''}</div>`;
   it.forEach((o,i)=>{h+=`<button data-i="${i}" class="${i===X.deck.sel?'sel':''}${o.off?' off':''}"><span>${o.t}${o.s?' ▸':''}</span><small>${o.r||''}${o.k?' <b>'+o.k+'</b>':''}</small></button>`});
