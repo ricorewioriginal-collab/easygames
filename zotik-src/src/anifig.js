@@ -46,6 +46,7 @@ export function createAniFig({ T, G, TOUCH }) {
     const basic = /EyeHighlight|EyeWhite/.test(n);
     const m = basic ? new T.MeshBasicMaterial({ map: src.map, color: C(col), skinning: true, transparent: src.transparent, alphaTest: src.alphaTest, depthWrite: !src.transparent })
       : new T.MeshToonMaterial({ map: src.map, color: C(col), gradientMap: G, skinning: true, transparent: src.transparent, alphaTest: src.alphaTest, side: src.side, depthWrite: !src.transparent });
+    if (/HAIR/.test(n)) { m.color.multiplyScalar(1.3); m.emissive = C(col).multiplyScalar(.14); }   // Anime-Haar leuchtet kräftig, auch nachts
     m.name = n; mcache.set(k, m); return m;
   }
 
