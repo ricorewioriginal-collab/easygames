@@ -369,8 +369,12 @@
     return true;
   }
   function navigate(dir) {
+    // Spiel arbeitet mit echtem Fokus (z. B. „Los geht's“ blau umrandet): dort weitermachen und den Fokus mitnehmen – sonst zwei Markierungen
+    var a = doc.activeElement, real = a && a !== doc.body && /^(BUTTON|A|INPUT|SELECT|TEXTAREA)$/.test(a.tagName) && (!scopeEl || scopeEl.contains(a)) && usable(a);
+    if (real && (!focusEl || !usable(focusEl))) focusEl = a;
     var c = pick(dir); if (!c && focusEl && scrollOn(dir)) c = pick(dir);
     if (!c) return;
+    if (real && c.e !== a && c.e.focus) try { c.e.focus({ preventScroll: true }); } catch (x) { }
     focusEl = c.e; drawRing(); cursorUntil = 0; show(cursor, false);
     try { if (c.e.scrollIntoView) c.e.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (e) {}
   }
