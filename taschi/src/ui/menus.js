@@ -299,7 +299,7 @@ export function openShop(game, clerkName) {
     const body = h('div', {}, h('p', {}, h('span.pill', {}, '★ ' + s.coins), ' ', h('button.chip.focusable' + (mode === 'buy' ? '.sel' : ''), { onclick: () => { mode = 'buy'; rerender(); } }, 'Kaufen'), ' ', h('button.chip.focusable' + (mode === 'sell' ? '.sel' : ''), { onclick: () => { mode = 'sell'; rerender(); } }, 'Verkaufen')),
       mode === 'buy' ? h('div.list', {}, stock.map(id => h('div.row', {}, h('div.grow', {}, h('b', {}, ITEMS[id].name), ' ', h('span.muted', {}, '(im Besitz: ' + (s.bag[id] || 0) + ')'), h('div.muted', {}, ITEMS[id].desc)), h('span.right', {}, '★' + ITEMS[id].price),
         ...[1, 5, 10].map(n => h('button.chip.focusable', { onclick: () => { const r = Items.buy(s, id, n); game.audio.sfx(r.ok ? 'item' : 'error'); game.ui.toast(r.text); rerender(); } }, '×' + n)))),
-        h('p.muted', {}, 'Bonus: Für je 10 Taschibälle gibt es einen gratis dazu. Mit mehr Siegeln wächst das Sortiment.'))
+        h('p.muted', {}, 'Bonus: Für je 10 Taschi-Kapseln gibt es einen gratis dazu. Mit mehr Siegeln wächst das Sortiment.'))
         : h('div.list', {}, sellable.length ? sellable.map(id => h('div.row', {}, h('div.grow', {}, h('b', {}, ITEMS[id].name), h('div.muted', {}, '×' + s.bag[id])), h('span.right', {}, '★' + sellPrice(id)), h('button.chip.focusable', { onclick: () => { const r = Items.sell(s, id, 1); game.audio.sfx(r.ok ? 'item' : 'error'); game.ui.toast(r.text); rerender(); } }, 'Verkaufen'))) : h('p', {}, 'Nichts zu verkaufen.')));
     return panel(game, 'Laden · ' + clerkName, body);
   };

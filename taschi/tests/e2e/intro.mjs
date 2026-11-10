@@ -45,12 +45,12 @@ export async function run({ shots = null, width = 1280, height = 720, touch = fa
     await page.waitForSelector('#starterview canvas');
     await page.waitForTimeout(700);
     await shot('05-starter-preview');
-    await page.getByText('Anderen Ball ansehen').click();
+    await page.getByText('Andere Kapsel ansehen').click();
     await page.waitForTimeout(300);
     await interactWith(page, (e) => e.kind === 'starter' && e.idx === 1);
     await page.waitForSelector('#starterview canvas');
     await page.getByText('Ich wähle').click();
-    step('Taschibälle einzeln untersucht, Starter bestätigt');
+    step('Taschi-Kapseln einzeln untersucht, Starter bestätigt');
     // dialogs → first battle
     await advance(page, { until: () => window.__taschi.state === 'battle' });
     await page.waitForTimeout(2500);
@@ -105,7 +105,7 @@ export async function run({ shots = null, width = 1280, height = 720, touch = fa
       if (!(await G(page, () => window.__taschi.state === 'battle'))) break;
       // click in-page: a slow frame can swap the menu between locate and click
       const opened = await G(page, () => { document.querySelector('.bact.backbtn')?.click(); const b = document.querySelector('.bact.bag'); b?.click(); return !!b; });
-      if (opened) { await page.waitForTimeout(200); await G(page, () => [...document.querySelectorAll('.bact.bag')].find(x => x.textContent.includes('Taschiball'))?.click()); }
+      if (opened) { await page.waitForTimeout(200); await G(page, () => [...document.querySelectorAll('.bact.bag')].find(x => x.textContent.includes('Taschi-Kapsel'))?.click()); }
       await advance(page, { max: 80, until: () => window.__taschi.state !== 'battle' || !!document.querySelector('.bact.fight') });
       caught = await G(page, () => window.__taschi.save.team.length + window.__taschi.save.box.length > 1);
     }

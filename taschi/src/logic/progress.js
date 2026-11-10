@@ -120,7 +120,7 @@ export function activeQuests(s) {
 export function mainObjective(s) {
   const f = s.flags;
   if (!f.metUlme) return { text: 'Sprich mit Professor Ulme vor der Glaskuppel.', region: 0, target: 'professor' };
-  if (!f.starterChosen) return { text: 'Untersuche die Taschibälle auf dem Podest unter der Kuppel.', region: 0, target: 'podium' };
+  if (!f.starterChosen) return { text: 'Untersuche die Taschi-Kapseln auf dem Podest unter der Kuppel.', region: 0, target: 'podium' };
   if (!f.firstBattle) return { text: 'Besiege das wilde Taschi im Beet vor der Kuppel.', region: 0, target: 'professor' };
   if (!f.firstQuest) return { text: 'Sprich noch einmal mit Professor Ulme.', region: 0, target: 'professor' };
   if (s.badges < 16) {

@@ -247,7 +247,7 @@ export class Game {
       const res = await this.trainerBattle(t, n, { music: stage === 4 ? 'champion' : 'trainer' });
       if (res.outcome === 'win') {
         await say(lines.win);
-        if (stage === 4) { P.grantReward(s, { items: { vitaltrank: 3, sternball: 3, levelbonbon: 2 } }); this.ui.toast('Von Rian erhalten: 3× Vitaltrank, 3× Sternball, 2× EP-Bonbon', '🎒'); }
+        if (stage === 4) { P.grantReward(s, { items: { vitaltrank: 3, sternball: 3, levelbonbon: 2 } }); this.ui.toast('Von Rian erhalten: 3× Vitaltrank, 3× Sternkapsel, 2× EP-Bonbon', '🎒'); }
       } else if (res.outcome === 'lose') await say(lines.lose);
     } finally {
       this.busy--;
@@ -587,7 +587,7 @@ export class Game {
     if (!f.metUlme) {
       await say(ULME.greet);
       f.metUlme = true; this.saveNow();
-      this.ui.toast('Neues Ziel: Untersuche die Taschibälle unter der Glaskuppel.', '➜');
+      this.ui.toast('Neues Ziel: Untersuche die Taschi-Kapseln unter der Glaskuppel.', '➜');
       return;
     }
     if (!f.starterChosen) return say(ULME.reminder);
@@ -596,8 +596,8 @@ export class Game {
   }
   async starterBall(e) {
     const s = this.save, f = s.flags;
-    if (!f.metUlme) return this.ui.say([{ text: 'Drei Taschibälle liegen versiegelt auf dem Podest. Professor Ulme wartet draußen vor der Kuppel.' }]);
-    if (f.starterChosen) return this.ui.say([{ text: 'Die übrigen Bälle bleiben für die nächsten Trainer hier.' }]);
+    if (!f.metUlme) return this.ui.say([{ text: 'Drei Taschi-Kapseln liegen versiegelt auf dem Podest. Professor Ulme wartet draußen vor der Kuppel.' }]);
+    if (f.starterChosen) return this.ui.say([{ text: 'Die übrigen Kapseln bleiben für die nächsten Trainer hier.' }]);
     const ok = await starterPreview(this, e.species);
     if (!ok) return;
     // starter partners hatch with strong potential (like gift partners in modern games)
@@ -607,7 +607,7 @@ export class Game {
     this.world.player.play('cheer', 1.4);
     this.world.refreshFollower();
     await wait(600);
-    await this.ui.say([{ text: SPECIES[e.species].name + ' springt aus dem Ball und schaut dich neugierig an. Ihr seid jetzt ein Team!' }]);
+    await this.ui.say([{ text: SPECIES[e.species].name + ' springt aus der Kapsel und schaut dich neugierig an. Ihr seid jetzt ein Team!' }]);
     const ulme = this.world.npcs.find(x => x.id === 'ulme');
     if (ulme) await this.firstBattle(ulme);
   }
@@ -630,7 +630,7 @@ export class Game {
     this.audio.sfx('item');
     s.flags.firstQuest = true; s.flags.travelStarted = true;
     for (const q of P.regionQuests(0)) if (q.id === 'q0_lost') P.acceptQuest(s, q);
-    this.ui.toast('Erhalten: 5× Taschiball, 2× Heilball, 3× Trank, Pfadkarte', '🎒');
+    this.ui.toast('Erhalten: 5× Taschi-Kapsel, 2× Heilkapsel, 3× Trank, Pfadkarte', '🎒');
     // Ulme walks back to his lab
     const lab = this.world.current.layout.buildings.find(b => b.kind === 'lab');
     ulme.facePlayer = false;
@@ -772,7 +772,7 @@ export class Game {
     s.guild[site] = 'done';
     await this.ui.say(scene.win, { guild: true });
     P.grantReward(s, { coins: 300 + site * 150, items: { superball: 3 + site, trank: 2 } });
-    if (site === 6) { Items.add(s.bag, 'brixcode', 1); this.ui.toast('Erhalten: Brix’ Zugangskarte', '🗝'); if (!s.flags.meisterball) { s.flags.meisterball = true; Items.add(s.bag, 'meisterball', 1); await this.ui.say([{ who: 'Brix', text: 'Und nimm das hier. Mein Prototyp: ein Meisterball. Er fängt jedes Taschi – ich will nie wieder, dass jemand ihn für Varga baut.' }]); this.ui.toast('Erhalten: Meisterball', '◉'); } }
+    if (site === 6) { Items.add(s.bag, 'brixcode', 1); this.ui.toast('Erhalten: Brix’ Zugangskarte', '🗝'); if (!s.flags.meisterball) { s.flags.meisterball = true; Items.add(s.bag, 'meisterball', 1); await this.ui.say([{ who: 'Brix', text: 'Und nimm das hier. Mein Prototyp: ein Meisterkapsel. Er fängt jedes Taschi – ich will nie wieder, dass jemand ihn für Varga baut.' }]); this.ui.toast('Erhalten: Meisterkapsel', '◉'); } }
     if (site === 7) return this.summitFinale();
     this.ui.toast('Die Schattengilde ist aus der Region vertrieben! Gefangene Taschis befreit.', '✦');
     for (const npc of this.world.npcs.filter(x => x.guild)) { npc.walkTo = { x: npc.ch.root.position.x + 30, z: npc.ch.root.position.z + 30, speed: 5, done: () => { this.world.scene.remove(npc.ch.root); this.world.npcs = this.world.npcs.filter(x => x !== npc); } }; }
