@@ -2,6 +2,7 @@
 
 Minispiele für Browser, Handy und die Android-App, jedes Spiel in einem eigenen Ordner. Übersicht und Technik: [README.md](README.md).
 **Neue Spiele:** Pflicht-Liste [NEUE-SPIELE.md](NEUE-SPIELE.md) (Gamecontroller, PC/Browser, TV, Handy, Windows-App, RicoReWi Radio App).
+Neue Spiele von Anfang an multiplattformfähig bauen – ein Bedienkonzept für Handy, PC, TV und Controller (z. B. Kommandomenü wie bei Kingdom Hearts), keine getrennten Knopf-Sätze je Gerät.
 Ressourcensparend und fehlerfrei bauen: kleine, gezielte Änderungen, bestehende Logik wiederverwenden, am Gameplay nichts ändern, was nicht verlangt ist.
 
 ## Mehrspieler-Regeln (fest, gelten für alle Spiele)
