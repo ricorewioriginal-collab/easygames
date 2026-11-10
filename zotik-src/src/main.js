@@ -5,6 +5,7 @@ import { createOnline } from './online.js';
 import { geoSet, propSet, makeEnv, makeT, groundTextures, addDetail, setFurLevel } from './gfx.js';
 import { buildFox, coat } from './fox.js';
 import { createCreatures } from './creatures.js';
+import { createFlight } from './flight.js';
 import { furMat } from './gfx.js';
 const T=makeT(THREE,.5),$=id=>document.getElementById(id);
 const TOUCH=matchMedia('(pointer:coarse)').matches||'ontouchstart' in window;
@@ -21,7 +22,12 @@ const ARENA={x:0,z:-182};
 const PATHX=z=>(Math.sin(z*.045)*12+Math.sin(z*.013)*8)*sm(-150,-110,z)*(1-sm(0,30,z));
 let WLD=null;
 let EID=1;const MP={role:'',on:false,rp:null,net:null,quiet:false,applying:false,ghost:false,wait:false,trav:false,tgt:false,aoe:[],newE:[],sq:[],pendEl:null,hb:null,hbOld:null,base:{},name:'Zotik',hname:'',code:'',qr:'',t:0,pa:0,sa:0,ea:0,ha:0,lastNeed:-9,rf:null,tag:null,rn:null,rnSpin:null,rnEx:null,busy:false,auto:0,joinT:0};
-function hgt(x,z){if(z>300)return 0;return WLD?WLD.h(x,z):hgtL(x,z)}
+function hgt(x,z){if(z>300)return 0;return WLD?(WLD.hm?WLD.hm(x,z):WLD.h(x,z)):hgtLG(x,z)}
+/* Lunaris: Höhe genau wie das sichtbare Gelände-Gitter (sonst sinkt man an Hängen ein) */
+let HGL=null;function hgtLG(x,z){const NX=135,NZ=160,gx=TW/NX,gz=TD/NZ,x0=TCX-TW/2,z0=TCZ-TD/2;
+  if(!HGL){HGL=new Float32Array((NX+1)*(NZ+1));for(let j=0;j<=NZ;j++)for(let i=0;i<=NX;i++)HGL[j*(NX+1)+i]=hgtL(x0+i*gx,z0+j*gz)}
+  const fx=(x-x0)/gx,fz=(z-z0)/gz;if(fx<0||fz<0||fx>=NX||fz>=NZ)return hgtL(x,z);const i=fx|0,j=fz|0,u=fx-i,v=fz-j,a=HGL[j*(NX+1)+i],b=HGL[j*(NX+1)+i+1],c=HGL[(j+1)*(NX+1)+i],d=HGL[(j+1)*(NX+1)+i+1];
+  return u+v<=1?a+(b-a)*u+(c-a)*v:d+(c-d)*(1-u)+(b-d)*(1-v)}
 function hgtL(x,z){
   let n=Math.sin(x*.045+1.3)*Math.cos(z*.04)*3.2+Math.sin(x*.12+z*.09)*.9+Math.sin(z*.02+x*.015)*4;
   const dv=Math.hypot(x,z),da=Math.hypot(x-ARENA.x,z-ARENA.z);
@@ -61,15 +67,15 @@ scene.fog=new T.FogExp2(FOG,.0037);
 const camera=new T.PerspectiveCamera(58,1,.2,1800);
 const post=createPost(renderer,scene,camera,{touch:TOUCH});if(TOUCH){post.setLevel(2);setFurLevel(0)}
 /* Automatische Qualität: bricht die Bildrate ein, sinken Auflösung und Schatten-Takt schrittweise; läuft es wieder rund, geht es zurück. */
-const QPR=TOUCH?[1,.9,.8,.7]:[1,.8,.65,.5],QSH=[1,2,3,3];let qLv=0,qEma=16.7,qBad=0,qGood=0,qUp=8,qLastUp=-99,shN=0;
+const QPR=TOUCH?[1,.9,.8,.7]:[1,.8,.65,.5],QSH=[1,2,3,3];let qLv=0,qEma=16.7,qBad=0,qGood=0,qUp=20,qLastUp=-99,shN=0,qDowns=0;
 renderer.shadowMap.autoUpdate=false;
 function setQ(l){qLv=l;renderer.setPixelRatio(PR0*QPR[l]);renderer.setSize(innerWidth,innerHeight,false);post.setLevel(TOUCH?2:Math.min(l,2));post.resize();setFurLevel(TOUCH?0:[1,.6,.34,0][l]);const sh=l<3;if(moonL.castShadow!==sh)moonL.castShadow=sh}
 function qualityTick(rdt){
   if(mode!=='play'||menuOpen||rdt>.25||rdt<=0)return;
   qEma+=(rdt*1000-qEma)*.08;
   if(qEma>27){qBad+=rdt;qGood=0}else if(qEma<19){qGood+=rdt;qBad=0}else{qBad=qGood=0}
-  if(qBad>1.5&&qLv<3){if(time-qLastUp<25)qUp=Math.min(qUp*2,120);setQ(qLv+1);qBad=0;qEma=20}
-  else if(qGood>qUp&&qLv>0){setQ(qLv-1);qGood=0;qEma=20;qLastUp=time}}
+  if(qBad>2.5&&qLv<3){if(time-qLastUp<60)qUp=Math.min(qUp*3,600);setQ(qLv+1);qBad=0;qEma=20;qDowns++}
+  else if(qGood>qUp&&qLv>0&&qDowns<3){setQ(qLv-1);qGood=0;qEma=20;qLastUp=time}}
 function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=w/h<.8?70:58;camera.updateProjectionMatrix();post.resize()}
 addEventListener('resize',resize);resize();
 
@@ -523,14 +529,15 @@ function makeHerb(){const g=new T.Group();for(let i=0;i<5;i++){const l=mk(G.cone
 function makeChest(){const g=new T.Group();g.add(mk(G.box,M(0x6a4428),0,.3,0,.9,.6,.6));const lid=mk(G.cyl,M(0x7a5030),0,.62,0,.3,.9,.3);lid.rotation.z=Math.PI/2;lid.scale.set(.3,.9,.3);g.add(lid);g.add(mk(G.box,M(0xe8c060,{m:.8,r:.3}),0,.4,.31,.9,.1,.02,false));g.add(mk(G.box,M(0xe8c060,{e:0xe8c060,ei:1}),0,.45,.32,.1,.14,.03,false));g.add(glow(0xffe08a,2.2,0,.5,0,.5));return g}
 
 /* Animation */
-function animFox(f,t,mv,atk){const s=Math.sin(t*(7+mv*5))*mv;
+const stepPh=(f,t,mv,a,b)=>{const d=Math.min(.1,Math.max(0,t-(f._lt??t)));f._lt=t;return f._ph=(f._ph||0)+d*(a+mv*b)};
+function animFox(f,t,mv,atk){const s=Math.sin(stepPh(f,t,mv,6,12))*Math.min(mv,1);
   f.arms[0].rotation.z=0;f.head.rotation.y=0;f.body.rotation.z=0;
   f.legs[0].rotation.x=s*.9;f.legs[1].rotation.x=-s*.9;f.arms[0].rotation.x=-s*.8;if(atk<0)f.arms[1].rotation.x=s*.8;f.body.position.y=Math.abs(s)*.07;
   for(let i=0;i<f.tail.length;i++){f.tail[i].rotation.y=Math.sin(t*2.2-i*.75)*(.14+mv*.1);}
   f.scarf.rotation.x=.25+Math.sin(t*3)*.12+mv*.5;f.scarf.rotation.z=Math.sin(t*2.3)*.12;
   if(f.ears){f.ears[0].rotation.x=-.05+Math.sin(t*1.3)*.04;f.ears[1].rotation.x=-.05+Math.sin(t*1.3+1)*.04}
   f.head.rotation.z=Math.sin(t*1.1)*.03}
-function animHuman(f,t,mv){const s=Math.sin(t*(7+mv*5))*mv;f.legs[0].rotation.x=s*.8;f.legs[1].rotation.x=-s*.8;f.arms[0].rotation.x=-s*.7;f.body.position.y=Math.abs(s)*.05+Math.sin(t*1.6)*.01;f.head.rotation.z=Math.sin(t*.9)*.03}
+function animHuman(f,t,mv){const s=Math.sin(stepPh(f,t,mv,6,10))*Math.min(mv,1);f.legs[0].rotation.x=s*.8;f.legs[1].rotation.x=-s*.8;f.arms[0].rotation.x=-s*.7;f.body.position.y=Math.abs(s)*.05+Math.sin(t*1.6)*.01;f.head.rotation.z=Math.sin(t*.9)*.03}
 
 /* ================= Audio ================= */
 let AC=null,master=null,musGain=null,sndOn=true;
@@ -821,13 +828,13 @@ function animE(e,spd){const d=e.d,root=e.m.root;
   if(!e.dead){const k=Math.max(0,1-(time-(e.hitT||-9))/.2),sc=d.sc;root.scale.set(sc*(1+.1*k),sc*(1-.14*k),sc*(1+.1*k))}
   const m=e.m;
   if(e.d.base==='rift'){for(let i=0;i<m.sh.length;i++){const a=e.t*1.8+i*1.57;m.sh[i].position.set(Math.cos(a)*.8,Math.sin(a*1.3)*.3,Math.sin(a)*.8);m.sh[i].rotation.y=a}m.body.rotation.y=e.t}
-  else{const s=Math.sin(e.t*(8+spd*4))*spd*.7;m.legs[0].rotation.x=s;m.legs[3].rotation.x=s;m.legs[1].rotation.x=-s;m.legs[2].rotation.x=-s;m.body.position.y=Math.abs(s)*.06;m.tail.rotation.z=Math.sin(e.t*3)*.3;m.head.rotation.x=e.st==='wind'?.3:Math.sin(e.t*1.5)*.04;if(e.st==='wind'&&e.atk&&e.atk.type==='howl'){m.head.rotation.x=-.5}}
+  else{const s=Math.sin(stepPh(e,e.t,spd,7,6))*spd*.7;m.legs[0].rotation.x=s;m.legs[3].rotation.x=s;m.legs[1].rotation.x=-s;m.legs[2].rotation.x=-s;m.body.position.y=Math.abs(s)*.06;m.tail.rotation.z=Math.sin(e.t*3)*.3;m.head.rotation.x=e.st==='wind'?.3:Math.sin(e.t*1.5)*.04;if(e.st==='wind'&&e.atk&&e.atk.type==='howl'){m.head.rotation.x=-.5}}
 }
 
 /* ================= Eingabe ================= */
 const keys={};let camYaw=0,camPitch=.42,camDist=7.6,camShake=0;const joy={x:0,y:0,id:-1};
 let mode='title',menuOpen=false,mState={tab:'quest',shop:false};
-addEventListener('keydown',e=>{if(mode!=='play')return;keys[e.code]=true;if(e.code==='KeyB'&&!menuOpen&&!dlg.on)XT.setBlock(true);
+addEventListener('keydown',e=>{if(mode==='flight'){keys[e.code]=true;return}if(mode!=='play')return;keys[e.code]=true;if(e.code==='KeyB'&&!menuOpen&&!dlg.on)XT.setBlock(true);
   if(puzOpen){if(e.code==='Escape'){e.preventDefault();closePuzzle()}return}
   if(menuOpen){if(e.code==='Escape'||e.code==='Tab'){e.preventDefault();toggleMenu(false)}return}
   if(dlg.on){if(!$('dOpts').hidden){const bs=[...$('dOpts').children],dg=/^(?:Digit|Numpad)([1-9])$/.exec(e.code),ready=!e.repeat&&performance.now()-(dlg.optT||0)>350;
@@ -1013,12 +1020,14 @@ function updateProjs(dt){
     if(dead){dropProj(p);projs.splice(i,1)}}
   for(let i=rings.length-1;i>=0;i--){const r=rings[i];r.t+=dt;const k=r.t/r.T;r.m.scale.setScalar(.2+(r.R)*Math.min(1,k));r.m.material.opacity=.9*(1-k);if(k>=1){scene.remove(r.m);r.m.material.dispose();rings.splice(i,1)}}
 }
-let camTarget=new T.Vector3();
+let camTarget=new T.Vector3(),camK=1;
 function updateCamera(dt){
   const ty=pl.y+1.55;camTarget.lerp(_ct.set(pl.x,ty,pl.z),1-Math.exp(-14*dt));
   const cp=Math.cos(camPitch),dist=camDist+pl.mv*.5+(boss&&boss.awake&&!boss.dead?2.5:0);
   _cp.set(camTarget.x+Math.sin(camYaw)*cp*dist,camTarget.y+Math.sin(camPitch)*dist,camTarget.z+Math.cos(camYaw)*cp*dist);
-  for(let k=1;k>=.22;k-=.13){const px=lerp(camTarget.x,_cp.x,k),pz=lerp(camTarget.z,_cp.z,k),py=lerp(camTarget.y,_cp.y,k);let hit=false;if(py<hgt(px,pz)+6.5){for(let i=0;i<COL.length;i++){const c=COL[i],dx=px-c.x,dz=pz-c.z,m=c.r+.7;if(dx*dx+dz*dz<m*m){hit=true;break}}if(!hit&&!inH)for(let i=0;i<CAMCOL.length;i++){const c=CAMCOL[i],dx=px-c.x,dz=pz-c.z,m=c.r+.7;if(dx*dx+dz*dz<m*m){hit=true;break}}}if(!hit){_cp.set(px,py,pz);if(k<1)_cp.y+=(1-k)*1.2;break}}
+  let kFree=1;for(let k=1;k>=.22;k-=.13){const px=lerp(camTarget.x,_cp.x,k),pz=lerp(camTarget.z,_cp.z,k),py=lerp(camTarget.y,_cp.y,k);let hit=false;if(py<hgt(px,pz)+6.5){for(let i=0;i<COL.length;i++){const c=COL[i],dx=px-c.x,dz=pz-c.z,m=c.r+.7;if(dx*dx+dz*dz<m*m){hit=true;break}}if(!hit&&!inH)for(let i=0;i<CAMCOL.length;i++){const c=CAMCOL[i],dx=px-c.x,dz=pz-c.z,m=c.r+.7;if(dx*dx+dz*dz<m*m){hit=true;break}}}if(!hit){kFree=k;break}}
+  camK+=(kFree-camK)*(kFree<camK?1-Math.exp(-18*dt):1-Math.exp(-2.5*dt));
+  {const k=camK;_cp.set(lerp(camTarget.x,_cp.x,k),lerp(camTarget.y,_cp.y,k)+(1-k)*1.2,lerp(camTarget.z,_cp.z,k))}
   const gh=hgt(_cp.x,_cp.z)+1.1;if(_cp.y<gh)_cp.y=gh;
   camPos.lerp(_cp,1-Math.exp(-16*dt));camera.position.copy(camPos);
   if(camShake>0){camShake=Math.max(0,camShake-dt*1.8);camera.position.x+=(Math.random()-.5)*camShake*.5;camera.position.y+=(Math.random()-.5)*camShake*.5}
@@ -1093,6 +1102,7 @@ function frame(now){
   if(!MP.on){if(hitStop>0){hitStop-=rdt;dt*=.04}else if(slowT>0){slowT-=rdt;dt*=.4}}
   time+=dt;qualityTick(rdt);
   for(const o of animObjs)o.fn(time,dt);
+  if(mode==='flight'){FL.update(dt);FL.render();if(first){first=false;$('load').remove()}return}
   if(mode==='title')titleCam(dt);else if(mode==='creator')creatorCam(dt);else if(!menuOpen||MP.on)update(dt);
   if(MP.net)mpTick(dt);
   ffMat.uniforms.t.value=time;ffMat.uniforms.cen.value.set(camTarget.x||0,(camTarget.y||2)-1.5,camTarget.z||12);ffMat.uniforms.k.value=innerHeight*.6;
@@ -1286,14 +1296,28 @@ function travel(n){
   if(WLD&&WLD.cave&&!X.caveLeaving){toast('Verlasse die Höhle über einen Ausgangskristall.');toggleMenu(false);return}
   if(!chOpen(n)||n===curCh||dlg.on||pl.dead){toggleMenu(false);return}
   dismount();
-  toggleMenu(false);sfx('quest');$('fade').style.opacity=1;
-  setTimeout(()=>{
+  toggleMenu(false);
+  if(!MP.on&&n!==12&&S.fl.naut&&!X.noFlight){const from=curCh,C=n===1?{name:'Lunaris'}:CHP[n],F0=from===1?{name:'Lunaris'}:CHP[from]||{name:'?'};$('fade').style.opacity=1;
+    setTimeout(()=>{mode='flight';$('hud').hidden=true;$('fade').style.opacity=0;
+      FL.start({fromName:F0.name,toName:C.name,color:n===1?0x9ab8ff:(C.rift||0x8ad0ff),dist:Math.abs(n-from),onDone:r=>{mode='play';$('hud').hidden=false;if(r.reward){S.shards+=r.reward;toast(`🚀 Flug: +${r.reward} Splitter · ${r.kills} Drohnen`)}arrive()}})},450);return}
+  sfx('quest');$('fade').style.opacity=1;
+  setTimeout(arrive,650);
+  function arrive(){
     saveGame(true);switchWorld(n);
     S.ch=n;pl.x=0;pl.z=9;pl.y=hgt(0,9);pl.face=Math.PI;pl.vx=pl.vz=0;pl.kx=pl.kz=0;camYaw=pl.face+Math.PI;camTarget.set(pl.x,pl.y+1.5,pl.z);camPos.set(pl.x,pl.y+4,pl.z+8);fel.x=pl.x+2;fel.z=pl.z+2;
     refreshQuest();updateHud();saveGame(true);
     placeParty();extArrive(n);
     setTimeout(()=>{$('fade').style.opacity=0;const C=CHP[n];banner(n===1?'Lunaris':C.name,n===1?'Dorf am Mondblick':C.sub);
-      if(n>=2&&n<12){const s=chCs(n);if(!s.arr){s.arr=1;if(n===2)joinParty('lyra');setTimeout(()=>cutscene(cutOf(n).arr),1600)}}},120)},650)}
+      if(n>=2&&n<12){const s=chCs(n);if(!s.arr){s.arr=1;if(n===2)joinParty('lyra');setTimeout(()=>cutscene(cutOf(n).arr),1600)}}},120)}}
+/* ---- Nautilux-Flug zwischen den Welten ---- */
+const FLH=(()=>{const d=document.createElement('div');d.id='flt';d.hidden=true;d.innerHTML='<div class="ft"><b id="flTo"></b><small id="flFrom"></small></div><div class="fb"><i id="flP"></i></div><div class="fs">🛡️ <b id="flHp">100</b> · 💎 <b id="flGot">0</b></div><button id="flSkip">Überspringen ▸</button><div class="fh">Ausweichen: Stick / WASD / Joystick · Feuer automatisch</div>';document.body.appendChild(d);
+  d.querySelector('#flSkip').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();FL.skip()});
+  // Touch: irgendwo aufs Bild tippen und ziehen = steuern
+  let o=null;const vec=[0,0];d.addEventListener('pointerdown',e=>{o=[e.clientX,e.clientY];d.setPointerCapture(e.pointerId)});d.addEventListener('pointermove',e=>{if(!o)return;vec[0]=Math.max(-1,Math.min(1,(e.clientX-o[0])/60));vec[1]=Math.max(-1,Math.min(1,-(e.clientY-o[1])/60))});
+  const up=()=>{o=null;vec[0]=vec[1]=0};d.addEventListener('pointerup',up);d.addEventListener('pointercancel',up);
+  return{vec,show(a,b){$('flFrom').textContent='von '+a;$('flTo').textContent='Kurs: '+b;d.hidden=false},update(o){$('flP').style.width=Math.round(o.prog*100)+'%';$('flHp').textContent=Math.round(o.hp);$('flGot').textContent=o.got},hide(){d.hidden=true}}})();
+const FL=createFlight({renderer,makeShip:()=>makeNaut(),inputVec:()=>{const v=inputVec();return(v[0]||v[1])?v:FLH.vec},sfx,hud:FLH});
+addEventListener('keydown',e=>{if(mode==='flight'&&(e.code==='Escape'||e.code==='Backspace')){e.preventDefault();FL.skip()}});
 function travelHTML(){let h='<h3>Weltentor</h3><p style="color:var(--dim);font-size:13px">Reise zu den Welten, die du schon geöffnet hast. Du kannst jederzeit zurückkehren.</p>';
   for(let n=1;n<=MAXCH;n++){const C=n===1?{name:'Lunaris',sub:'Der erste Riss'}:CHP[n],open=chOpen(n),dn=chDone(n),here=n===curCh;
     h+=`<div class="row"><span>${dn?'✅':open?'🔓':'🔒'} ${n>10?'Endspiel':'Kapitel '+n}: ${C.name}<br><small style="color:var(--dim)">${open?C.sub:'Noch verschlossen'}</small></span><span>${here?'<small>hier</small>':open?`<button class="trv" data-n="${n}">Reisen</button>`:''}</span></div>`}
@@ -1410,14 +1434,14 @@ function updCmp(dt){
     if(a.ko){a.kot+=dt;if(a.calm>6)cmpRevive(a,.3);a.P.root.position.set(a.x,hgt(a.x,a.z)+.2,a.z);a.P.root.rotation.z=1.45;return}
     if(a.calm>3)a.hp=Math.min(mx,a.hp+mx*.05*dt);
     let [tx,tz]=cmpSlot(i);
-    let en=null,bd=1e9;const reach=S.ptac==='def'?7:(d.melee?13:16);if(!dlg.on&&!pl.dead)for(const e of E){if(e.dead||(e.boss&&!e.awake))continue;const dd=Math.hypot(e.x-pl.x,e.z-pl.z);if(dd<reach&&dd<bd){bd=dd;en=e}}
+    let en=null,bd=1e9;const reach=S.ptac==='def'?6:(d.melee?9:11);if(!dlg.on&&!pl.dead)for(const e of E){if(e.dead||(e.boss&&!e.awake))continue;if(e.tc!==a&&!(e.st==='chase'||e.st==='wind'||e.st==='atk'||e.st==='rec'))continue;const dd=Math.hypot(e.x-pl.x,e.z-pl.z);if(dd<reach&&dd<bd){bd=dd;en=e}}
     let ed=en?Math.hypot(en.x-a.x,en.z-a.z):0;
     if(en&&d.melee){const ea=Math.atan2(en.x-a.x,en.z-a.z);tx=en.x-Math.sin(ea)*1.6;tz=en.z-Math.cos(ea)*1.6}
     const dx=tx-a.x,dz=tz-a.z,dist=Math.hypot(dx,dz);let mv=0;
     if(dist>24){a.x=tx;a.z=tz}else if(dist>.5){const sp=Math.min(dist*3.4,d.melee?6.4:6.8);a.x+=dx/dist*sp*dt;a.z+=dz/dist*sp*dt;mv=Math.min(1,sp/6)}
     pushOut(a,.4);
     const fa=en?Math.atan2(en.x-a.x,en.z-a.z):(dist>.8?Math.atan2(dx,dz):pl.face);a.face+=ang(a.face,fa)*Math.min(1,dt*9);
-    if(en&&a.cd<=0&&ed<=d.rng+(d.melee?.7:0)){a.cd=d.cd*(.9+Math.random()*.25);tgAdd(1.2);const dmg=d.atk*1.5+S.lvl*1.2,ea=Math.atan2(en.x-a.x,en.z-a.z);
+    if(en&&a.cd<=0&&ed<=d.rng+(d.melee?.7:0)){a.cd=d.cd*1.6*(.9+Math.random()*.25);tgAdd(1.2);const dmg=(d.atk*1.5+S.lvl*1.2)*.55,ea=Math.atan2(en.x-a.x,en.z-a.z);
       if(d.melee){hurtE(en,dmg,Math.sin(ea)*.5,Math.cos(ea)*.5,false);emit(en.x,hgt(en.x,en.z)+1,en.z,0xffffff,8,3,.3,.5);sfx('hit')}
       else{proj(a.x+Math.sin(ea)*.5,hgt(a.x,a.z)+1.2,a.z+Math.cos(ea)*.5,Math.sin(ea)*22,Math.cos(ea)*22,dmg,false,d.col,1.1)}}
     if(d.heal&&a.hc<=0&&!pl.dead&&S.hp<maxHp()*(S.ptac==='def'?d.thr+.2:d.thr)){a.hc=d.hcd;const h=d.heal+S.lvl*2;S.hp=Math.min(maxHp(),S.hp+h);sfx('heal');dnum(pl.x,pl.y+2.3,pl.z,'+'+h,'h');emit(pl.x,pl.y+.8,pl.z,0x7dffb2,26,3,1,.7,-3,2);toast('✨ Lyra heilt dich')}
@@ -1593,6 +1617,8 @@ function buildWorld(n){
     case 8:{const bx=Math.floor((x+400)/15),bz=Math.floor((z+400)/15),hh=((bx*73856093)^(bz*19349663))>>>0;return c+((hh%5<3&&pd>8)?11*iw*sm(8,11,pd):0)}   // Häuserblöcke
     case 9:{const isl=Math.sin(x*.06+ph)*Math.sin(z*.06+1);return c-(pd>6&&isl<.15?14*sm(.15,-.15,isl)*sm(6,9,pd)*iw:0)}   // Abgründe zwischen Schwebeinseln
     default:return c}};
+  const PADS=[[pathx(-118)+7*mir,-118,4],[pathx(-80)+11,-80,3],[pathx(-116)-12,-116,3],[pathx(-140)+9,-140,3]];
+  const pads=(q,x,z)=>{for(const [px,pz,r] of PADS){const d=Math.hypot(x-px,z-pz),k=1-sm(r,r+6,d);if(k>0)q+=(Math.max(-1,Math.min(2,q))-q)*k}return q};
   const tStyle=(q,x,z)=>wildMap(tStyle0(q,x,z),x,z);
   const tStyle0=(q,x,z)=>{switch(n){
     case 3:return Math.round(q/1.8)*1.8*.9;   // Valdoria: Terrassen der Stadt am Kanal
@@ -1608,7 +1634,7 @@ function buildWorld(n){
     let q=(Math.sin(x*.045+1.3+ph)*Math.cos(z*.04+ph*.5)*3.2+Math.sin(x*.12+z*.09)*.9+Math.sin(z*.02+x*.015)*4)*amp;
     q=tStyle(q,x,z);
     const dv=Math.hypot(x,z),da=Math.hypot(x,z+182),flat=Math.max(1-sm(26,46,dv),1-sm(26,36,da)),pf=(1-sm(2,7,Math.abs(x-pathx(z))))*(z<40&&z>-160?1:0);
-    q=q*(1-flat*.93)*(1-pf*.72);let ring=sm(30,38,da)*(1-sm(64,92,da))*17;if(z>-182)ring*=sm(8,15,Math.abs(x));q+=ring;
+    q=q*(1-flat*.93)*(1-pf*.72);let ring=sm(30,38,da)*(1-sm(64,92,da))*17;if(z>-182)ring*=sm(8,15,Math.abs(x));q+=ring;q=pads(q,x,z);   // Truhen und Altar immer erreichbar (auch am Ringwall vor der Arena)
     const ex=Math.max(0,Math.abs(x)-125)+Math.max(0,z-72);return q-ex*ex*.02};
   if(n===11){const s0=cs();if(s0.st<7){s0.st=7;s0.bd=1;s0.k=5}}
   const sealed=()=>cs().st<5;
@@ -1627,6 +1653,9 @@ function buildWorld(n){
       c.lerp(ca,(1-sm(26,36,da))*.9);if(hh>5)c.lerp(cr,sm(5,12,hh));col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b}
     g.setAttribute('color',new T.BufferAttribute(col,3));g.computeVertexNormals()}
   const terr=new T.Mesh(g,new T.MeshStandardMaterial({vertexColors:true,map:tex,roughness:.95}));terr.receiveShadow=true;scene.add(terr);WLD.terr=terr;
+  {const NX=135,NZ=160,gx=TW/NX,gz=TD/NZ,x0=TCX-TW/2,z0=TCZ-TD/2,HG=new Float32Array((NX+1)*(NZ+1));for(let j=0;j<=NZ;j++)for(let i=0;i<=NX;i++)HG[j*(NX+1)+i]=h(x0+i*gx,z0+j*gz);
+    WLD.hm=(x,z)=>{const fx=(x-x0)/gx,fz=(z-z0)/gz;if(fx<0||fz<0||fx>=NX||fz>=NZ)return h(x,z);const i=fx|0,j=fz|0,u=fx-i,v=fz-j,a=HG[j*(NX+1)+i],b=HG[j*(NX+1)+i+1],c=HG[(j+1)*(NX+1)+i],d=HG[(j+1)*(NX+1)+i+1];
+      return u+v<=1?a+(b-a)*u+(c-a)*v:d+(c-d)*(1-u)+(b-d)*(1-v)}}
   /* Instanzen */
   const mkI=(geo,mat,cap,cast)=>{const im=inst(geo,mat,cap,cast);im.userData.cap=cap;ims.push(im);return im};
   const put2=(im,...a)=>{if(im.userData.n<im.userData.cap)put(im,...a)};
@@ -1685,7 +1714,7 @@ function buildWorld(n){
   worldDeco();
   function worldDeco(){   // Kulissen je Welt
     const spots=k=>{const o=[];let t=0;while(o.length<k&&t++<900){const x=rr(-112,112),z=rr(-150,40);if(np(x,z,12)||Math.hypot(x,z)<44||Math.hypot(x,z+182)<44||blk(x,z))continue;o.push([x,z])}return o};
-    const add=(g,x,z,r)=>{g.position.set(x,h(x,z),z);g.rotation.y=rr(0,6.28);mergeStatic(g);scene.add(g);if(r)addCol(x,z,r)};
+    const add=(g,x,z,r)=>{const q=Math.max(1.2,r||1.5);g.position.set(x,Math.min(h(x,z),h(x+q,z),h(x-q,z),h(x,z+q),h(x,z-q))-.15,z);g.rotation.y=rr(0,6.28);mergeStatic(g);scene.add(g);if(r)addCol(x,z,r)};
     const plane=(col,y,op,em)=>{const m=mk(new T.PlaneGeometry(260,240),new T.MeshStandardMaterial({color:col,emissive:em||0,emissiveIntensity:em?1.4:0,transparent:true,opacity:op,roughness:.15,metalness:.1}),0,y,-60,1,1,1,false);m.rotation.x=-Math.PI/2;m.receiveShadow=true;scene.add(m);
       animObjs.push({fn(t){m.position.y=y+Math.sin(t*.8)*.06;if(em)m.material.emissiveIntensity=1.2+Math.sin(t*1.7)*.3}})};
     const pick=n===2?14:({4:34,5:30,7:34,8:30,9:30}[n]||22);
@@ -2558,7 +2587,7 @@ const deckEl=document.createElement('div');deckEl.id='deck';deckEl.className='pi
 const rxEl=document.createElement('div');rxEl.id='rxp';rxEl.hidden=true;$('hud').appendChild(rxEl);
 const gEl=document.createElement('div');gEl.id='gauges';gEl.className='glass';gEl.innerHTML='<div id="gIP"><b>IP</b><div class="bar ipb"><i></i></div><span></span></div><div id="gRG"><b>⟡ Riss</b><div class="bar rgb"><i></i></div></div><div id="gTG"><b>🤝 Team</b><div class="bar tgb"><i></i></div></div>';$('lcol').insertBefore(gEl,$('menuBtn'));
 function deckItems(){const sub=X.deck.sub,it=[];
-  if(!sub){it.push({t:'Angriff',k:'J',f:()=>startAttack()},{t:'Magie',s:'magic'},{t:'Items',s:'items'},{t:'Spezial',s:'spec'});if(S.tools.length)it.push({t:'Werkzeug',s:'tool'});return it}
+  if(!sub){it.push({t:'Angriff',k:'J',f:()=>startAttack()},{t:'Magie',s:'magic'},{t:'Items',s:'items'},{t:'Spezial',s:'spec'});if(S.tools.length)it.push({t:'Werkzeug',s:'tool'});if(S.fl.naut)it.push({t:naut.on?'Aussteigen':'Nautilux',k:'V',f:()=>toggleNaut()});return it}
   if(sub==='magic'){it.push({t:'Funkenwirbel',r:formMp(18)+' MP',k:'1',f:skill1,off:S.mp<formMp(18)},{t:'Lichtstoß',r:formMp(22)+' MP',k:'2',f:skill2,off:S.mp<formMp(22)},{t:'Mondheilung',r:formMp(30)+' MP',f:spellHeal,off:S.mp<formMp(30)})}
   else if(sub==='items'){it.push({t:'Heiltrank',r:'×'+S.potions,k:'3',f:skill3,off:!S.potions},{t:'Äther',r:'×'+(S.items.ether||0),f:useEther,off:!S.items.ether})}
   else if(sub==='spec'){for(const id of S.party){const a=CMP.find(c=>c.id===id);if(a&&CSK[id])it.push({t:CSK[id].em+' '+PARTY[id].n+': '+CSK[id].n,r:a.ko?'K.O.':a.skc>0?Math.ceil(a.skc)+' s':Math.round(a.hp)+' KP',f:()=>cmpSkill(id),off:a.ko||a.skc>0})}
@@ -2570,7 +2599,7 @@ function deckItems(){const sub=X.deck.sub,it=[];
   else if(sub==='tool'){it.push({t:'Benutzen',r:S.tools.length?TOOLS[S.tools[S.tool]].em:'',k:'C',f:()=>useTool()});S.tools.forEach((t,i)=>it.push({t:TOOLS[t].em+' '+TOOLS[t].n,r:i===S.tool?'✓':'',f:()=>{S.tool=i;X.deck.dirty=true}}))}
   return it}
 const SUBN={magic:'Magie',items:'Items',spec:'Spezial',tool:'Werkzeug'};
-function deckRender(){if(TOUCH)return;const it=deckItems();X.deck.sel=clamp(X.deck.sel,0,it.length-1);
+function deckRender(){const it=deckItems();X.deck.sel=clamp(X.deck.sel,0,it.length-1);
   let h=`<div class="dh">${X.deck.sub?'◂ '+SUBN[X.deck.sub]:'Befehle'}${X.lock?' <em>🎯</em>':''}</div>`;
   it.forEach((o,i)=>{h+=`<button data-i="${i}" class="${i===X.deck.sel?'sel':''}${o.off?' off':''}"><span>${o.t}${o.s?' ▸':''}</span><small>${o.r||''}${o.k?' <b>'+o.k+'</b>':''}</small></button>`});
   deckEl.innerHTML=h;deckEl.querySelectorAll('button').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(mode!=='play'||menuOpen||dlg.on)return;X.deck.sel=+b.dataset.i;deckExec()}));
@@ -2621,7 +2650,7 @@ function extHud(dt){const ip=gearSet().w||gearSet().a||gearSet().c,rg=formOk(0),
   if(rg){gEl.querySelector('.rgb i').style.width=(X.form.on>0?X.form.on/18*100:S.rg)+'%';gEl.querySelector('#gRG').classList.toggle('full',S.rg>=100||X.form.on>0)}
   if(tg){gEl.querySelector('.tgb i').style.width=S.tg+'%';gEl.querySelector('#gTG').classList.toggle('full',S.tg>=100)}
   if(X.rx){const t=`▲ ${X.rx.n} <b>${TOUCH?'✋':'F'}</b>`;if(rxEl.innerHTML!==t)rxEl.innerHTML=t;rxEl.hidden=false}else rxEl.hidden=true;
-  if(!TOUCH){hudT+=dt;if(X.deck.dirty||hudT>.3){hudT=0;deckRender()}}
+  hudT+=dt;if(X.deck.dirty||hudT>.3){hudT=0;deckRender()}
   padCam(dt);
   const sp=$('bSpI');if(sp){const ready=S.tg>=100||(S.rg>=100&&formOk(0)&&X.form.on<=0);const t=S.tools.length?TOOLS[S.tools[S.tool]].em:'⟡';if(sp.textContent!==t)sp.textContent=t;$('bSpec').classList.toggle('ready',ready)}}
 /* ---------------- Takt ---------------- */
