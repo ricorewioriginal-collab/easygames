@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "6238ef790b9f",
- "generated": "2026-11-10T01:57:41+01:00",
- "commit": "dd16fc34bba2f416427e943589b59c5f8d216e33",
+ "version": "3a40e30f8a6b",
+ "generated": "2026-11-10T02:05:29+01:00",
+ "commit": "1dd84efaa6427c31a3edb7e2cc95bc8a46e6551d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4723,8 +4723,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 22662,
-   "h": "19cc32d15282f77858840a39ffe3bc8508c045ce12e82dcc3ad425453c40ff12"
+   "s": 25279,
+   "h": "8fad6d7f746709a4acda04ca6048e22731ed1fc4b1e8d0f74f793dbcc77fa926"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -5068,8 +5068,8 @@
   },
   {
    "p": "erfolge.html",
-   "s": 16441,
-   "h": "cfbf7ee10b79e265e3df026b5ca9bb267c5e90258c1e8d2b528732171b3090b5"
+   "s": 17011,
+   "h": "8f5df6edf3b825692548866401e67cf9f9942d0f15032ce5265525cf7d60f974"
   },
   {
    "p": "fabelkick/card.jpg",

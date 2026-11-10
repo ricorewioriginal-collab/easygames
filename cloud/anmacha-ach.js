@@ -42,6 +42,18 @@
     { id: 'wingames', icon: '🏅', stat: 'wingames', thr: [1, 3, 6, 12], names: ['Siegerspiel', 'Sieger-Trio', 'Siegesserie', 'Allround-Sieger'], desc: 'Gewinne in {n} verschiedenen Spielen mindestens eine Partie.' },
     { id: 'stargames', icon: '🌟', stat: 'stargames', thr: [1, 3, 6, 12], names: ['Sternenspiel', 'Sternen-Trio', 'Sternenregen', 'Sternenmeer'], desc: 'Sammle in {n} verschiedenen Spielen Sterne.' }
   ];
+  // Exklusiv mit TikTok LIVE (stream-tiktok.js zählt echte LIVE-Ereignisse in anmacha-tiktok); zählen nicht in die Rang-Schwellen (Bonus)
+  [
+    ['tt-live', '📡', 'ttdays', [1, 5, 20, 50], ['Live-Debüt', 'Streamer', 'Dauer-Streamer', 'TikTok-Legende'], 'Streame easygames an {n} Tagen mit TikTok-Steuerung.'],
+    ['tt-games', '🕹️', 'ttgames', [1, 5, 15], ['Stream-Spiel', 'Stream-Vielfalt', 'Stream-Sortiment'], 'Streame {n} verschiedene Spiele mit TikTok-Steuerung.'],
+    ['tt-gifts', '🎁', 'ttgifts', [1, 50, 500, 5000], ['Erstes Geschenk', 'Geschenkeregen', 'Geschenkeflut', 'Schatzkammer'], 'Deine Zuschauer lösen {n} Geschenk-Aktionen aus.'],
+    ['tt-diam', '💎', 'ttdiam', [100, 1000, 10000, 100000], ['Diamantenfund', 'Diamantenmine', 'Diamantenkönig', 'Diamanten-Imperium'], 'Erhalte {n} Diamanten im Stream.'],
+    ['tt-likes', '❤️', 'ttlikes', [100, 1000, 10000, 100000], ['Gefällt mir', 'Herzchenregen', 'Like-Lawine', 'Herz-Tsunami'], 'Sammle {n} Likes im Stream.'],
+    ['tt-fans', '🙋', 'ttfollows', [1, 10, 100, 1000], ['Neuer Fan', 'Fanclub', 'Fangemeinde', 'Fan-Armee'], 'Gewinne {n} neue Follower im Stream.'],
+    ['tt-chat', '💬', 'ttcmds', [10, 100, 1000], ['Chat am Steuer', 'Schwarmsteuerung', 'Zuschauer-Armee'], 'Dein Chat steuert das Spiel {n}-mal per Befehl.'],
+    ['tt-trolls', '😈', 'tttrolls', [1, 25, 250], ['Erster Streich', 'Chaos-Stifter', 'Oberchaot'], 'Deine Zuschauer spielen dir {n} Streiche.'],
+    ['tt-bomb', '💣', 'ttbomb', [1, 10], ['Bombenentschärfer', 'Sprengmeister'], 'Dein Chat entschärft {n}-mal die Bombe.']
+  ].forEach(function (t) { DEFS.push({ id: t[0], icon: t[1], stat: t[2], thr: t[3], names: t[4], desc: t[5], tiktok: true }); });
   // Eine Erfolgsreihe je Kategorie: spiele {n} verschiedene Spiele daraus (Schwellen passen zur Größe der Kategorie)
   var GENRE_DEFS = [
     ['abenteuer', '🗺️', [1, 3, 5], ['Abenteurer', 'Weltentdecker', 'Heldenreise'], 'Abenteuer'],
@@ -76,7 +88,7 @@
 
   // Ränge: Schwellen als Anteil der Maximalpunkte (wächst mit neuen Erfolgen mit)
   var RANK_NAMES = ['Neuling', 'Spielkind', 'Zocker', 'Profi', 'Meister', 'Champion', 'Legende'], RANK_FRAC = [0, .03, .1, .22, .4, .62, .85];
-  function maxPts() { return DEFS.reduce(function (t, d) { return t + d.thr.reduce(function (x, _, i) { return x + PTS[i]; }, 0); }, 0); }
+  function maxPts() { return DEFS.reduce(function (t, d) { return d.tiktok ? t : t + d.thr.reduce(function (x, _, i) { return x + PTS[i]; }, 0); }, 0); }
   var RANKS = RANK_NAMES.map(function (n, i) { return [Math.round(maxPts() * RANK_FRAC[i]), n]; });
 
   function isObj(o) { return o && typeof o === 'object' && !Array.isArray(o); }
@@ -129,7 +141,17 @@
     [a.d, b.d].forEach(function (l) { (Array.isArray(l) ? l : []).forEach(function (d) { d = num(d); if (d > 19000101 && d < 99991231) days[d] = 1; }); });
     for (var d in days) list.push(Number(d));
     list.sort(function (x, y) { return x - y; });
-    return { u: minMap(a.u, b.u), gu: minMap(a.gu, b.gu), g: minMap(a.g, b.g), d: list.slice(-400), h: hl.slice(-400), f: minMap(a.f, b.f), m: Math.min(99, Math.max(num(a.m), num(b.m))), v: mergeV(a.v, b.v), n: maxMap(a.n, b.n) };
+    var tdd = {}, tdl = [];
+    [a.td, b.td].forEach(function (l) { (Array.isArray(l) ? l : []).forEach(function (d) { d = num(d); if (d > 19000101 && d < 99991231) tdd[d] = 1; }); });
+    for (var tk in tdd) tdl.push(Number(tk));
+    tdl.sort(function (x, y) { return x - y; });
+    return { u: minMap(a.u, b.u), gu: minMap(a.gu, b.gu), g: minMap(a.g, b.g), d: list.slice(-400), h: hl.slice(-400), f: minMap(a.f, b.f), m: Math.min(99, Math.max(num(a.m), num(b.m))), v: mergeV(a.v, b.v), n: maxMap(a.n, b.n),
+      t: maxNum(a.t, b.t), tg: minMap(a.tg, b.tg), td: tdl.slice(-400) };
+  }
+  function maxNum(a, b) {
+    var out = {};
+    [a, b].forEach(function (m) { if (!isObj(m)) return; for (var k in m) { var t = Math.min(1e9, Math.floor(num(m[k]))); if (t > 0 && t > (out[k] || 0)) out[k] = t; } });
+    return out;
   }
   function sameState(a, b) { return JSON.stringify(merge(a, {})) === JSON.stringify(merge(b, {})); }
 
@@ -160,6 +182,9 @@
     s.pct = s.total ? Math.floor(100 * s.played / s.total) : 0;
     ['owl', 'early', 'weekend', 'app', 'tv', 'pad'].forEach(function (k) { s[k] = st.f[k] ? 1 : 0; });
     s.cloud = input.cloud ? 1 : 0; s.board = input.board ? 1 : 0;
+    // TikTok LIVE (exklusiv)
+    s.ttdays = st.td.length; s.ttgames = Object.keys(st.tg).length;
+    ['gifts', 'diam', 'likes', 'follows', 'cmds', 'trolls', 'bomb'].forEach(function (k) { s['tt' + k] = num(st.t[k]); });
     // Spiel-Erfolge: aus den Spielständen (own) und dem Profil (gu: "spiel:id"); je Spiel zählt die größere Zahl
     var perGame = {};
     Object.keys(st.gu).forEach(function (k) { var g = k.split(':')[0]; perGame[g] = (perGame[g] || 0) + 1; });
@@ -186,7 +211,7 @@
       var prevT = level > 0 ? d.thr[level - 1] : 0;
       for (i = 1; i <= d.thr.length; i++) { all++; if (st.u[d.id + ':' + i] && i <= level) { pts += PTS[i - 1] || PTS[PTS.length - 1]; done++; } }
       return {
-        id: d.id, icon: d.icon, name: d.names[Math.max(level, 1) - 1], levels: d.thr.length, level: level, value: v, next: next, unit: d.unit || '',
+        id: d.id, icon: d.icon, tiktok: !!d.tiktok, name: d.names[Math.max(level, 1) - 1], levels: d.thr.length, level: level, value: v, next: next, unit: d.unit || '',
         pct: next == null ? 100 : Math.max(0, Math.min(100, Math.round(100 * (v - prevT) / (next - prevT)))),
         desc: d.desc.replace('{n}', String(next == null ? d.thr[d.thr.length - 1] : next)), at: level > 0 ? st.u[d.id + ':' + level] || 0 : 0
       };
@@ -201,9 +226,9 @@
   // ---- Browser: lokal lesen/schreiben, Spiele einsammeln, mit dem Profil abgleichen ----
   var LS = null;
   try { LS = root.localStorage; } catch (e) {}
-  var KEY = 'anmacha-ach', KEY_SEEN = 'anmacha-seen';
+  var KEY = 'anmacha-ach', KEY_SEEN = 'anmacha-seen', KEY_TT = 'anmacha-tiktok';
   function read(k) { try { var o = JSON.parse(LS.getItem(k) || 'null'); return isObj(o) ? o : {}; } catch (e) { return {}; } }
-  function loadState() { return merge(read(KEY), read(KEY_SEEN)); }
+  function loadState() { return merge(merge(read(KEY), read(KEY_SEEN)), read(KEY_TT)); }
   function saveState(st) { try { LS.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
   function todayNum() { var d = new Date(); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); }
 
