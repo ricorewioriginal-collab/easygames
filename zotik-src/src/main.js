@@ -658,10 +658,11 @@ function talkMira(){const st=S.stage;
   if(st===7)return say([['Mira','Du hast es geschafft ... Das Summen ist leiser geworden.'],['Zotik','Der Wolf wollte nur beschützen, was hinter dem Tor liegt.'],['Mira','Du hörst mehr als alle anderen, Zotik. Es gibt Dinge, die ich dir noch nicht gesagt habe. Aber bald.'],['Professorium','Und ich habe Koordinaten: Das nächste Weltentor führt nach Elaris!']],()=>{gainXp(120);setStage(8,true);sfx('level');banner('Kapitel 1 geschafft','Das Weltentor führt nach Elaris');toast('🏆 Kapitel 1: Lunaris abgeschlossen');refreshQuest();saveGame(true);setTimeout(()=>lyraBridge(),1800)});
   say([[ 'Mira',pick(['Das Dorf ist wieder ruhig. Danke, Zotik.','Hörst du das? Nichts. Zum ersten Mal seit Wochen.','Elaris liegt hinter dem nächsten Tor. Aber erst ruhst du dich aus.'])]])}
 function talkProf(){const st=S.stage;
-  if(st>=8&&!S.fl.naut)return say([['Professorium','Zotik! Die Nautilux ist fertig. Messing, Kristall und ein bisschen Wahnsinn.'],['Zotik','Sie schwebt?'],['Professorium','Sie schwebt, rammt und ist erstaunlich schnell. Mit V steigst du ein und aus.'],['Professorium','Wenn du Solmera geschafft hast, baue ich ihr ein Tauchmodul ein.']],()=>{S.fl.naut=1;sfx('level');toast('🚤 Nautilux erhalten (V = ein-/aussteigen)');saveGame(true)});
-  if(st<4)return say([['Professorium','Aha! Der Weltenhörer! Meine Instrumente schlagen aus, sobald du näher kommst. Faszinierend!'],['Professorium','Komm wieder, wenn Mira dich zum Riss schickt. Ich bereite derweil die Klinge vor.']]);
+  if((st>=5)&&!S.fl.naut)return say([['Professorium','Zotik! Die Nautilux ist fertig. Messing, Kristall und ein bisschen Wahnsinn.'],['Zotik','Sie schwebt?'],['Professorium','Sie schwebt, rammt und ist erstaunlich schnell. Mit V steigst du ein und aus.'],['Professorium','Wenn du Solmera geschafft hast, baue ich ihr ein Tauchmodul ein.']],()=>{S.fl.naut=1;sfx('level');toast('🚤 Nautilux erhalten (V = ein-/aussteigen)');saveGame(true)});
+  if(st<4)return say([['Professorium','Aha! Der Weltenhörer! Meine Instrumente schlagen aus, sobald du näher kommst. Faszinierend!'],...(S.fl.naut?[]:[['Professorium','Und das hier ist meine Nautilux! Messing, Kristall und ein bisschen Wahnsinn. Sie schwebt, rammt und ist erstaunlich schnell – nimm sie mit.'],['Zotik','Wirklich? Danke!'],['Professorium','Einsteigen über das Kommando-Menü (Rufen) oder die Aktionstaste. Später baue ich ihr ein Tauchmodul und Flügel ein.']]),['Professorium','Komm wieder, wenn Mira dich zum Riss schickt. Ich bereite derweil die Klinge vor.']],()=>{if(!S.fl.naut){S.fl.naut=1;sfx('level');toast('🚤 Nautilux erhalten!');saveGame(true)}});
   if(st===4)return say([['Professorium','Da bist du! Mein Resonator hat die Quelle geortet: die Risshöhle, am Ende des Weges im Norden.'],['Zotik','Und was ist da drin?'],['Professorium','Ein Mondwolf, der den Riss bewacht. Hier, ich habe deiner Reiseklinge einen Mondkristall eingesetzt. Sie schneidet jetzt deutlich schärfer!'],['Zotik','Sie leuchtet. Danke, Professorium!'],['Professorium','Der Wolf heult, bevor er zuschlägt, und springt dich an. Weich dem Ring aus!']],()=>{S.blade=true;toast('⚔ Reiseklinge verbessert (+10 Angriff)');setStage(5)});
   if(st===5||st===6)return say([['Professorium','Denk dran: Lichtstoß für die Ferne, Funkenwirbel, wenn er dich umzingelt. Und trinke rechtzeitig!']]);
+  if(profArc())return;
   say([['Professorium',pick(['Die Nautilux ist startklar. Naja, fast. Sie hat noch keinen Namen ... ach doch, den hat sie ja.','Weltenreisen sind eine Frage der Resonanz, mein Freund!','Ich habe den Mondkristall noch einmal vermessen. Er singt!'])]])}
 function talkBoro(){
   if(S.side===0)return say([['Boro','Zotik! Gut, dass du da bist. Die Dornenwölfe aus dem Wald reißen mir die Zäune ein.'],['Boro','Erledige vier von ihnen, dann schmiede ich dir etwas Ordentliches.']],()=>{S.side=1;S.sideK=0;sfx('quest');toast('📜 Nebenaufgabe: Wolfsplage');refreshQuest();saveGame(true)});
@@ -1309,7 +1310,38 @@ function travel(n){
     refreshQuest();updateHud();saveGame(true);
     placeParty();extArrive(n);
     setTimeout(()=>{$('fade').style.opacity=0;const C=CHP[n];banner(n===1?'Lunaris':C.name,n===1?'Dorf am Mondblick':C.sub);
-      if(n>=2&&n<12){const s=chCs(n);if(!s.arr){s.arr=1;if(n===2)joinParty('lyra');setTimeout(()=>cutscene(cutOf(n).arr),1600)}}},120)}}
+      if(n>=2&&n<12){const s=chCs(n);if(!s.arr){s.arr=1;if(n===2)joinParty('lyra');setTimeout(()=>cutscene(cutOf(n).arr),1600)}}arcSoon(n)},120)}}
+/* ---- Geschichten der Gefährten (laut Skript: Rovans Schuld, Lyras Familie, Nias Unsicherheit) ---- */
+const ARCS=[
+  {id:'L1',w:2,who:'lyra',l:[['Lyra','Das Forschungsviertel … hier hat meine Mutter gearbeitet, bevor ich geboren wurde.'],['Zotik','Woran hat sie geforscht?'],['Lyra','Am Weltenkern. Mehr weiß ich nicht. Ihre Notizen enden mitten im Satz.']]},
+  {id:'R1',w:3,who:'rovan',l:[['Rovan','Kanäle. Mauern. Wachen. Erinnert mich an früher.'],['Zotik','Du warst Wächter?'],['Rovan','Am Tor zum Weltenkern. In der Nacht des Großen Bruchs hatte ich Dienst.'],['Rovan','Frag nicht weiter. Noch nicht.']]},
+  {id:'N1',w:3,who:'nia',l:[['Nia','Ehrlich, Zotik … bin ich euch eigentlich eine Hilfe? Rovan haut alles um, Lyra heilt, und ich …'],['Zotik','Du triffst Dinge, die ich nicht mal sehe.'],['Nia','Hm. Stimmt. Ich bin ziemlich gut. Sag das bloß nicht Rovan.']]},
+  {id:'L2',w:4,who:'lyra',l:[['Lyra','Zotik, sieh mal – die Tafel an der Ruine. „Forschungsgruppe Weltenkern“ … und da steht der Name meiner Familie.'],['Zotik','Ich höre hier einen Riss. Ganz nah.'],['Lyra','Du hörst immer nur! Ich will es messen, verstehen – nicht nur fühlen!'],['Zotik','…'],['Lyra','Entschuldige. Das war nicht fair.']]},
+  {id:'R2',w:5,who:'rovan',l:[['Rovan','Das Meer war damals ruhig. Bis der Kern brach.'],['Rovan','Ich habe meinen Posten verlassen, um eine einzige Person zu retten. Meine Schülerin Brann.'],['Rovan','Sie lebt. Aber die anderen am Tor … ich war nicht da.'],['Zotik','Du hast jemanden gerettet, Rovan.'],['Rovan','Und viele andere nicht.']]},
+  {id:'N2',w:5,who:'nia',l:[['Nia','Ich hab vorhin danebengeschossen. Wegen mir hätte es Lyra fast erwischt.'],['Rovan','Ich habe in meinem Leben öfter danebengehauen als du je schießen wirst, Kleine.'],['Nia','… Das war fast nett, Rovan.'],['Rovan','Gewöhn dich nicht dran.']]},
+  {id:'L3',w:6,who:'lyra',l:[['Lyra','Das Erinnerungseis zeigt Bilder … Das sind meine Eltern. Mit Veyra. Und Elyon. Am Weltenkern.'],['Zotik','Lyra …'],['Lyra','Sie haben ihn geteilt. Meine Familie hat die Welten zerbrochen.'],['Lyra','Ich brauche einen Moment allein. Bitte folg mir nicht.']]},
+  {id:'R3',w:7,who:'rovan',l:[['Rovan','Hier wurde mein Hammer geschmiedet. Für einen Wächter, der nicht gewankt hat.'],['Rovan','Ich will ihn wieder so tragen. Für euch.'],['Zotik','Dann pass auf uns auf – wir passen auf dich auf.'],['Rovan','… Abgemacht, Fuchs.']]},
+  {id:'N3',w:7,who:'nia',l:[['Nia','Habt ihr das gesehen?! Der Mechanismus ist nur angesprungen, weil MEIN Kristallpfeil ihn getroffen hat!'],['Lyra','Wir haben es gesehen, Nia.'],['Nia','Ich will es nur festhalten. Für das Protokoll. Ich bin unverzichtbar.']]},
+  {id:'L4',w:8,who:'lyra',l:[['Lyra','In Noctaris erinnern sich die Leute an Dinge, die nie passiert sind. Vielleicht ist nicht alles so geschehen, wie das Eis es zeigte.'],['Lyra','Du bist geblieben, Zotik. Obwohl ich weggelaufen bin.'],['Zotik','Natürlich. Wir finden die Wahrheit zusammen.'],['Lyra','Zusammen. Ja.']]},
+  {id:'R4',w:9,who:'rovan',l:[['Rovan','So hoch oben sieht man, wie klein der Riss eigentlich ist. Und wie groß alles drumherum.'],['Rovan','Ich werde mir nie verzeihen. Aber ich kann weitergehen. Das habt ihr mir gezeigt.']]},
+  {id:'N4',w:9,who:'nia',l:[['Nia','Weißt du was, Zotik? Ich muss niemandem mehr was beweisen.'],['Nia','… Außer Aera. Die hat behauptet, sie trifft weiter als ich. Das klären wir noch.']]},
+  {id:'L5',w:10,who:'lyra',l:[['Lyra','Egal, was am Weltenkern passiert – ich bin froh, dass ich diese Reise mit dir gemacht habe.'],['Zotik','Ich auch, Lyra. Ich auch.']]}];
+function arcSoon(n,tries=0){if(MP.on)return;setTimeout(()=>{if(mode!=='play'||curCh!==n)return;if(dlg.on||menuOpen){if(tries<20)arcSoon(n,tries+1);return}
+  S.arc=S.arc||{};const a=ARCS.find(q=>q.w===n&&!S.arc[q.id]&&S.party.includes(q.who));if(!a)return;S.arc[a.id]=1;saveGame(true);
+  document.body.classList.add('cut');say(a.l.map(x=>x.slice()),()=>{document.body.classList.remove('cut');arcSoon(n)})},tries?2500:7000)}
+/* Eigene Wohnung in Valdoria: ausruhen, speichern, Andenken ansehen, Einrichtung wählen */
+const HOME_STYLES=['Gemütlich','Seefahrer','Sternenzimmer','Rissforscher'];
+function homeTalk(){S.home=S.home||{st:0};const done=[];for(let n=2;n<=10;n++)if(chDone(n))done.push(CHP[n].name);const kk=Object.keys(S.arc||{}).length;
+  say([['Zotik',`Meine Wohnung (${HOME_STYLES[S.home.st]}). ${done.length?'An der Wand hängen Andenken aus '+done.join(', ')+'.':'Noch ziemlich leer hier.'}${kk?' Im Regal liegen '+kk+' Erinnerungen an Gespräche mit meinen Freunden.':''}`]],null,
+    [{t:'😴 Ausruhen & speichern',fn:()=>{S.hp=maxHp();S.mp=maxMp();for(const a of CMP){a.ko=false;a.hp=cmax(a.id)}saveGame(true);sfx('heal');toast('😴 Ausgeruht – alle geheilt, gespeichert')}},
+     {t:'🛋️ Einrichtung ändern',fn:()=>{S.home.st=(S.home.st+1)%HOME_STYLES.length;saveGame(true);toast('🛋️ Neue Einrichtung: '+HOME_STYLES[S.home.st])}},
+     {t:'Gehen',fn:()=>{}}])}
+/* Professoriums gelöschte Erinnerungen: bei jedem Besuch ein Stück mehr, je weiter die Reise */
+const PROF_ARC=[{need:2,l:[['Professorium','Ich summe seit Tagen dieselbe Melodie. Ich weiß nicht, woher ich sie kenne. Seltsam, oder?']]},
+  {need:4,l:[['Professorium','Ich habe in meinen Notizen eine Handschrift gefunden. Meine eigene. Über den Weltenkern. Ich erinnere mich an kein Wort davon.']]},
+  {need:6,l:[['Professorium','Zotik … ich muss dir etwas sagen. Ich war beim Großen Bruch dabei. Im Team, das den Kern stabilisieren sollte.'],['Professorium','Danach habe ich meine Erinnerungen gelöscht. Absichtlich. Ich wollte nicht mehr wissen, was wir getan haben.'],['Zotik','Und jetzt?'],['Professorium','Jetzt baue ich Luftschiffe. Das ist leichter.']]},
+  {need:8,l:[['Professorium','Hier, nimm diesen Kristall. Darin liegt, was ich vergessen habe.'],['Professorium','Bewahre ihn auf. Falls ich es eines Tages doch wissen will … oder du es wissen musst.'],['Zotik','Ich passe darauf auf, versprochen.']]}];
+function profArc(){S.arc=S.arc||{};const k=PROF_ARC.findIndex((a,i)=>!S.arc['P'+i]&&chDone(a.need));if(k<0)return false;S.arc['P'+k]=1;saveGame(true);say(PROF_ARC[k].l.map(x=>x.slice()));return true}
 /* ---- Nautilux-Flug zwischen den Welten ---- */
 const FLH=(()=>{const d=document.createElement('div');d.id='flt';d.hidden=true;d.innerHTML='<div class="ft"><b id="flTo"></b><small id="flFrom"></small></div><div class="fb"><i id="flP"></i></div><div class="fs">🛡️ <b id="flHp">100</b> · 💎 <b id="flGot">0</b></div><button id="flSkip">Überspringen ▸</button><div class="fh">Ausweichen: Stick / WASD / Joystick · Feuer automatisch</div>';document.body.appendChild(d);
   d.querySelector('#flSkip').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();FL.skip()});
@@ -1619,7 +1651,7 @@ function buildWorld(n){
     case 9:{const isl=Math.sin(x*.06+ph)*Math.sin(z*.06+1);return c-(pd>6&&isl<.15?14*sm(.15,-.15,isl)*sm(6,9,pd)*iw:0)}   // Abgründe zwischen Schwebeinseln
     default:return c}};
   const PADS=[[pathx(-118)+7*mir,-118,4],[pathx(-80)+11,-80,3],[pathx(-116)-12,-116,3],[pathx(-140)+9,-140,3]];
-  const pads=(q,x,z)=>{for(const [px,pz,r] of PADS){const d=Math.hypot(x-px,z-pz),k=1-sm(r,r+6,d);if(k>0)q+=(Math.max(-1,Math.min(2,q))-q)*k}return q};
+  const pads=(q,x,z)=>{for(const [px,pz,r] of PADS){const d=Math.hypot(x-px,z-pz),k=1-sm(r,r+6,d);if(k>0)q+=(Math.max(0,Math.min(2,q))-q)*k}return q};
   const tStyle=(q,x,z)=>wildMap(tStyle0(q,x,z),x,z);
   const tStyle0=(q,x,z)=>{switch(n){
     case 3:return Math.round(q/1.8)*1.8*.9;   // Valdoria: Terrassen der Stadt am Kanal
@@ -1639,7 +1671,8 @@ function buildWorld(n){
     const ex=Math.max(0,Math.abs(x)-125)+Math.max(0,z-72);return q-ex*ex*.02};
   if(n===11){const s0=cs();if(s0.st<7){s0.st=7;s0.bd=1;s0.k=5}}
   const sealed=()=>cs().st<5;
-  const blk=(x,z)=>{const hh=h(x,z);return hh>8.5||hh<-4.2||x<-128||x>128||z>76||z<-232||(z<-148&&sealed())};
+  const WATER={3:-1.6,7:-4.6,9:-6}[n];   // Aqualis liegt unter dem Meer: dort läuft man auf dem Meeresgrund
+  const blk=(x,z)=>{const hh=h(x,z);return hh>8.5||hh<-4.2||(WATER!==undefined&&hh<WATER+.25&&!(nSub()&&n!==7))||x<-128||x>128||z>76||z<-232||(z<-148&&sealed())};
   const zone=(x,z)=>z<-146?'cave':(z<-44?'forest':'village');
   const ims=[],edKeys=[],obs={};
   WLD={n,C,h,blocked:blk,zone,ims,edKeys,terr:null,zn:{village:[C.hubN,C.sub],forest:[C.wildN,'Gegner lauern hier'],cave:[C.depthN,C.X[4]],ruin:['Werkzeug-Ruine','Ein Rätsel aus alter Zeit']},path:pathx,mbg:null,spawn:[0,9]};
@@ -1732,7 +1765,12 @@ function buildWorld(n){
         case 10:{for(let i=0;i<3;i++){const c=mk(G.oct,M(0xfff0ff,{r:.05,m:.6,e:0xc890ff,ei:.8}),i*1.3-1.3,3+i,0,.5,5+i*1.5,.5);c.rotation.z=(i-1)*.2;g.add(c)}g.add(mk(G.box,M(0xe8f0ff,{m:1,r:.05}),0,1.5,1.4,2.2,3,.08));g.add(glow(0xffc8ff,6,0,4,0,.4));add(g,x,z,1.4);break}
         default:{}
       }}
-    if(n===5)plane(0x2a8ac8,-2.2,.7);   // Meer um die Inseln
+    if(n===5){   // Stadt unter dem Meer: Wasseroberfläche weit oben, Lichtsäulen, Blasen, Schiffswracks
+      const sf=mk(new T.PlaneGeometry(320,320),new T.MeshBasicMaterial({color:0x6ad8ff,transparent:true,opacity:.28,side:T.DoubleSide,depthWrite:false,fog:false}),0,26,-60,1,1,1,false);sf.rotation.x=-Math.PI/2;scene.add(sf);
+      animObjs.push({fn(t){sf.material.opacity=.24+Math.sin(t*.7)*.05}});
+      for(let i=0;i<10;i++){const x=rr(-90,90),z=rr(-170,40),ray=mk(G.cone0,new T.MeshBasicMaterial({color:0xbff4ff,transparent:true,opacity:.06,blending:T.AdditiveBlending,depthWrite:false,fog:false}),x,13,z,rr(3,6),26,rr(3,6),false);scene.add(ray);animObjs.push({fn(t){ray.material.opacity=.045+Math.sin(t*.5+i)*.025}})}
+      let bt=0;animObjs.push({fn(t,dt){bt-=dt;if(bt>0||mode!=='play')return;bt=.18;emit(pl.x+(Math.random()-.5)*14,hgt(pl.x,pl.z)+.2,pl.z+(Math.random()-.5)*14,0xc8f4ff,1,.4,3,.22,-1.2,1)}});
+      for(const [x,z] of spots(4)){const g=new T.Group(),wd=M(0x5a4030,{r:.9});g.add(mk(G.box,wd,0,1,0,2.6,1.6,7.5));g.add(mk(G.box,wd,0,2,2.8,2,1,1.6));const ms=mk(G.cyl0,wd,0,4,-.5,.18,6,.18);ms.rotation.z=.5;g.add(ms);g.rotation.z=.25;add(g,x,z,3)}}
     if(n===3)plane(0x3a7ab0,-1.6,.75);   // Kanäle
     if(n===7)plane(0xff4a10,-4.6,.95,0xff3000);   // Lava in den Kratern
     if(n===9)plane(0xffffff,-6,.55);   // Wolkendecke unter dem Plateau
@@ -1826,6 +1864,17 @@ function buildWorld(n){
     g.add(mk(G.box,M(0x4a2a6a,{r:.7}),0,2,0,8,4,6));g.add(mk(G.box,M(0xffd040,{e:0xffb020,ei:1}),0,4.3,3.05,6,1,.2,false));g.add(mk(G.oct,M(0xffe070,{e:0xffc030,ei:2}),0,5.8,3,.9,1.1,.9,false));g.add(glow(0xffc040,9,0,5.2,3.4,.7));
     g.add(mk(G.box,M(0x1a1030),0,1.2,3.02,1.8,2.4,.1));scene.add(g);addCol(cx,cz,4.2);
     INT.push({x:cx+Math.sin(g.rotation.y)*4.5,z:cz+Math.cos(g.rotation.y)*4.5,name:'Golden Star Casino',get pr(){return S.cas&&S.cas.off?'Casino geschlossen':'Kristallslots spielen'},rad:4.2,vis:()=>true,talk(){openCasino()}})}
+  /* Valdoria laut Skript: Hafen (Schiffe zu allen offenen Welten) und eine eigene Wohnung */
+  if(n===3){
+    {const hx=30*mir,hz=30,hy=h(hx,hz),g=new T.Group();g.position.set(hx,hy,hz);
+      g.add(mk(G.cyl,new T.MeshStandardMaterial({color:0x2a8ac8,transparent:true,opacity:.75,roughness:.15}),0,.06,4,14,.1,10,false));
+      const wd=M(0x8a6440,{r:.9});g.add(mk(G.box,wd,0,.35,-.5,2.4,.3,9));for(let i=0;i<4;i++)g.add(mk(G.cyl0,wd,(i%2?1:-1)*1.1,.2,-4+i*2.6,.15,1.2,.15));
+      const boat=new T.Group();boat.add(mk(G.box,M(0xc8a060,{r:.8}),0,.5,0,2.2,.8,5));boat.add(mk(G.cyl0,wd,0,2.6,0,.12,4,.12));boat.add(mk(G.box,M(0xf0e8d8,{r:.9}),.1,3,0,.05,2.4,1.8));boat.position.set(3,0,5);g.add(boat);
+      animObjs.push({fn(t){boat.position.y=Math.sin(t*1.3)*.08;boat.rotation.z=Math.sin(t*.9)*.04}});scene.add(g);addCol(hx+3,hz+5,1.4);
+      INT.push({x:hx,z:hz-4,name:'Hafen von Valdoria',pr:'Schiff nehmen',rad:3.5,vis:()=>true,talk(){say([['Hafenmeisterin','Willkommen im Hafen! Unsere Schiffe – und deine Nautilux – bringen dich zu jeder Welt, die du schon kennst.']],()=>toggleMenu(true,'travel'))}})}
+    {const ax=-30*mir,az=28;house(ax,az,7,6,3.4,0xd8c8a8,0x7a4a3a,mir>0?.3:-.3);
+      INT.push({x:ax+Math.sin(mir>0?.3:-.3)*4.4,z:az+Math.cos(mir>0?.3:-.3)*4.4,name:'Deine Wohnung',pr:'Wohnung betreten',rad:3.4,vis:()=>true,talk(){homeTalk()}})}
+  }
   if(n===11){
     const hx=pathx(-30)+(pathx(-30)>0?-17:17),hz=-30,hy=h(hx,hz),g=new T.Group();g.position.set(hx,hy,hz);HALL.x=hx;HALL.z=hz;
     g.add(mk(G.cyl,M(0x5a3a7a,{r:.6}),0,.35,0,6.5,.7,6.5));const rg=mk(G.tor,M(0xffe890,{e:0xffd060,ei:1.4}),0,.8,0,6.4,6.4,.18,false);rg.rotation.x=Math.PI/2;g.add(rg);
