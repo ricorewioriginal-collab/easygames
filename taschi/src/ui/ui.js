@@ -37,7 +37,12 @@ export class FocusNav {
     if (!el) return;
     if (this.current) this.current.classList.remove('focus');
     this.current = el; el.classList.add('focus');
-    el.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+    // Nur den eigenen Scrollbereich bewegen: scrollIntoView verschob auch das Fenster selbst (overflow:hidden) – Kopf und Reiter rutschten weg
+    const sc = el.closest('.panel-body, .tabs, .scroll'), r = el.getBoundingClientRect();
+    if (sc) { const q = sc.getBoundingClientRect();
+      if (r.top < q.top) sc.scrollTop -= q.top - r.top + 6; else if (r.bottom > q.bottom) sc.scrollTop += r.bottom - q.bottom + 6;
+      if (r.left < q.left) sc.scrollLeft -= q.left - r.left + 6; else if (r.right > q.right) sc.scrollLeft += r.right - q.right + 6; }
+    for (let p = el.parentElement; p; p = p.parentElement) if (p.classList && (p.classList.contains('panel') || p.classList.contains('screen'))) { p.scrollTop = 0; p.scrollLeft = 0; }
   }
   ensure() { const items = this.items(); if (!this.current || !items.includes(this.current)) this.focus(items.find(e => e.dataset.autofocus !== undefined) || items[0]); }
   move(dir) {
