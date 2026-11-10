@@ -85,7 +85,7 @@
   function openVideo(v, mode) { const pt = M.parseTitle(v.title); S = { song: { title: v.title, artist: v.by || pt.artist, dur: v.dur, style: mode === 'video' ? 'pop' : C.styleOf('') }, mode, vids: [v], vi: 0 }; prep(); loadVid(0); }
   function askLink() { const u = prompt('YouTube-Link oder Video-ID:'); const id = M.idFromUrl(u); if (!id) return toast('Das ist kein YouTube-Link'); S.vids.unshift({ id, title: S.song.title, by: '' }); loadVid(0); }
   function prep() { scr('sPrep'); const rad = S.mode === 'radio'; document.body.classList.toggle('hasVideo', !rad); document.body.classList.toggle('hasRadio', rad); $('pTitle').textContent = S.song.title; $('pArtist').textContent = (S.song.artist || '') + (S.song.dur ? ' · ' + fmt(S.song.dur) : ''); $('pCover').src = S.song.cover || ''; $('pCover').hidden = !S.song.cover;
-    seg($('pInput'), [{ v: 'cam', n: '📷 Kamera' }, { v: 'phone', n: '📱 Handy in der Hand' }, { v: 'none', n: '👀 Nur tanzen (ohne Wertung)' }], SET.input, v => { SET.input = v; saveSet(); inputReady(); });
+    seg($('pInput'), [{ v: 'cam', n: '📷 Kamera' }, { v: 'phone', n: '📱 Handy in der Hand' }].concat(window.GARemote && GARemote.supported() ? [{ v: 'remote', n: '🎮 Wii-Remote / Joy-Con' }] : []).concat([{ v: 'none', n: '👀 Nur tanzen (ohne Wertung)' }]), SET.input, v => { SET.input = v; saveSet(); inputReady(); });
     seg($('pDiff'), Object.keys(DIFF).map(v => ({ v, n: DIFF[v].n })), SET.diff, v => { SET.diff = v; saveSet(); });
     const styles = Object.keys(C.STYLES); seg($('pStyle'), styles.map(v => ({ v, n: C.STYLES[v] })), S.song.style || 'pop', v => { S.song.style = v; showDancer(v); prepInfo(); }); showDancer(S.song.style || 'pop'); dancerChips($('pDancer'), S.song.style || 'pop', () => prepInfo()); $('pStyleRow').hidden = S.mode === 'video';
     $('pVids').innerHTML = ''; $('pGo').disabled = !rad; nextBtn(); inputReady(); prepInfo(); if (rad) radioUi(); }
@@ -142,7 +142,13 @@
     return `${nm} ist für diese Seite gesperrt – tippe im Browser auf das Schloss/Kamera-Symbol neben der Adresse und erlaube ${kind === 'camera' ? 'die' : 'das'} ${nm}.` + (framed ? ' <button class="btn small nav" data-open-direct>↗ Spiel direkt öffnen</button>' : '');
   }
   document.addEventListener('click', e => { if (e.target.closest('[data-open-direct]')) { const u = location.href.split('#')[0]; try { window.open(u, '_blank', 'noopener'); } catch (x) { location.href = u; } } });
-  async function inputReady() { const i = SET.input; $('pCamBox').hidden = i !== 'cam'; $('pPhoneTip').hidden = i !== 'phone';
+  // Wii-Remote / Joy-Con (remote.js): Liste und Verbinden-Knopf im Hinweis-Kasten
+  function remoteDraw() { const el = $('remList'); if (!el || !window.GARemote) return; const l = GARemote.list();
+    el.innerHTML = l.length ? l.map(r => `<li>${r.kind === 'wii' ? '🎮' : '🕹️'} <b>${r.name}</b> – ${r.live ? 'Bewegung kommt an' : 'verbunden, noch keine Daten'}${r.active ? ' · zählt' : ''}</li>`).join('') : '<li>Noch kein Controller verbunden.</li>'; }
+  if (window.GARemote) { GARemote.onChange = remoteDraw; setInterval(() => { if (SET.input === 'remote' && !$('pRemoteTip').hidden) remoteDraw(); }, 1000); }
+  document.addEventListener('click', async e => { if (!e.target.closest('#remConnect')) return; try { await GARemote.connect(); remoteDraw(); toast('🎮 Controller verbunden – beweg ihn mal!'); } catch (x) { if (x && x.name !== 'NotFoundError') toast('Verbinden nicht möglich: ' + (x.message || x)); } });
+  async function inputReady() { const i = SET.input; $('pCamBox').hidden = i !== 'cam'; $('pPhoneTip').hidden = i !== 'phone'; $('pRemoteTip').hidden = i !== 'remote';
+    if (i === 'remote' && window.GARemote) { await GARemote.restore().catch(() => { }); remoteDraw(); }
     if (i === 'cam' && !SE.Cam.on) { $('camMsg').textContent = '📷 Kamera wird gestartet …'; try { await SE.Cam.start($('camv')); document.body.classList.add('camOn'); $('camMsg').textContent = 'Stell dich so hin, dass du von Kopf bis Knie zu sehen bist.'; } catch (e) { $('camMsg').innerHTML = '🚫 ' + permHelp('camera', SE.Cam.lastErr) + '<br><small>Oder wähle „Handy in der Hand“ bzw. „Nur tanzen“.</small>'; } }
     if (i !== 'cam' && SE.Cam.on) { SE.Cam.stop(); document.body.classList.remove('camOn'); }
     if (i === 'phone' && !SE.Motion.on) { try { await SE.Motion.start(); } catch (e) { toast('Bewegungssensor nicht erlaubt'); } } }
@@ -182,7 +188,7 @@
     if (D.input === 'cam' && SE.Cam.lm && t > h.t - .25) { const cv = C.coachVec(C.at(D.ch, h.t).pose), uv = C.userVec(SE.Cam.lm, SE.Cam.aspect), s = C.compare(cv, uv, D.diff.armsOnly); if (s >= (D.win || 0)) { D.win = s; D.winUv = uv; D.winCv = cv; } }
     if (t > h.t + .35) { let s = 0;
       if (D.input === 'cam') { s = D.win || 0; if (D.winUv && D.lastUv && C.change(D.winCv, D.lastCv) > .55 && C.change(D.winUv, D.lastUv) < .15) s *= .45; if (D.winUv) { D.lastUv = D.winUv; D.lastCv = D.winCv; } D.winUv = null; }
-      else if (D.input === 'phone') { const nowP = performance.now() / 1000, off = nowP - t, coach = C.handAccel(D.ch, h.t - .4, h.t + .3, 30), ph = SE.Motion.series(h.t - .4 + off, h.t + .3 + off, 30); s = SE.Motion.alive() ? C.motionScore(coach, ph) : 0; }
+      else if (D.input === 'phone' || D.input === 'remote') { const nowP = performance.now() / 1000, off = nowP - t, coach = C.handAccel(D.ch, h.t - .4, h.t + .3, 30), ph = SE.Motion.series(h.t - .4 + off, h.t + .3 + off, 30); s = SE.Motion.alive() ? C.motionScore(coach, ph) : 0; }
       s = Math.min(1, s * (D.diff.k > 1 ? 1 / D.diff.k + .1 : 1 / D.diff.k)); if (SET.diff === 'profi') s = Math.max(0, s - .06);
       award(s, h); D.win = null; D.hi++; }
   }
@@ -205,7 +211,7 @@
     if (t > (S.song.dur || 1e9) - .5 && !D.over && !D.remote) finish();
   }
   // Tanz-Video: Rhythmus (Bewegungs-Akzente auf den Schlägen)
-  function videoScore(t, a) { const e = D.input === 'cam' ? SE.Cam.energy() * 3 : D.input === 'phone' ? ((SE.Motion.buf[SE.Motion.buf.length - 1] || {}).m || 0) / 12 : 0; D.energy.push({ t, e }); if (D.energy.length > 120) D.energy.shift();
+  function videoScore(t, a) { const e = D.input === 'cam' ? SE.Cam.energy() * 3 : (D.input === 'phone' || D.input === 'remote') ? ((SE.Motion.buf[SE.Motion.buf.length - 1] || {}).m || 0) / 12 : 0; D.energy.push({ t, e }); if (D.energy.length > 120) D.energy.shift();
     const b = Math.floor(a.bt) - 1; if (D.input === 'none') return; if (b > D.beatScored && b >= 0) { D.beatScored = b; if (b % 2) return; const bt = D.ch.beat0 + b * D.ch.spb, s = C.rhythmScore(D.energy, bt); D.max += 100; award(s, { t: bt, gold: b % 32 === 30 }); } }
   // Piktogramm-Leiste: kommende Moves wandern zur Markierung
   function drawPictos(t) {

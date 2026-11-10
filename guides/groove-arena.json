@@ -172,6 +172,7 @@
       "q": "Die Kamera erkennt mich nicht.",
       "a": "Erlaube den Kamerazugriff, stell dich 2–3 Meter entfernt hin, sodass Kopf bis Knie im Bild sind, und sorge für gutes Licht. Mit „Erkanntes Skelett anzeigen“ siehst du, was das Spiel erkennt. Es wird kein Bild hochgeladen."
     },
+    {"q": "Kann ich mit Wii-Remote oder Joy-Con tanzen?", "a": "Ja, am PC in Chrome oder Edge und in easygames für Windows: In der Vorbereitung „🎮 Wii-Remote / Joy-Con“ wählen und „Controller verbinden“. Die Wii-Remote verbindest du am einfachsten über die Mayflash DolphinBar im Modus 4 (an der Remote 1 + 2 drücken) oder per Bluetooth; Joy-Con und Pro Controller per Bluetooth. Den Controller in die rechte Hand nehmen und die Arm-Bewegungen nachmachen – gewertet wird wie mit dem Handy in der Hand. Auf Handys und in der Android-App geht das nicht (dort Kamera oder Handy)."},
     {
       "q": "Die Moves sind nicht im Takt.",
       "a": "Schieb die Choreo mit [ und ] (oder ◀ ▶) früher oder später, oder wähle in der Pause „🎤 Takt neu erkennen“. Ohne Mikrofon klopfst du 8× im Takt mit der Leertaste oder 👆."

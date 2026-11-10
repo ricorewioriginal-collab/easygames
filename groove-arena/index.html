@@ -82,6 +82,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <p class="src" id="pSrc"></p>
     <p class="lbl">Wie tanzt du?</p><div class="seg" id="pInput"></div>
     <div id="pCamBox" class="note"><p id="camMsg">📷 Kamera …</p><p class="hint small">Die Körper-Erkennung läuft nur auf diesem Gerät – es wird kein Bild hochgeladen.</p></div>
+    <div id="pRemoteTip" class="note" hidden><p>🎮 <b>Wii-Remote</b> oder <b>Joy-Con</b> in die rechte Hand nehmen und die Arm-Bewegungen nachmachen. Verbinden: <b>DolphinBar</b> auf <b>Modus 4</b> stellen und an der Remote 1 + 2 drücken – oder den Controller per Bluetooth mit dem PC koppeln. Dann hier verbinden (Chrome, Edge oder easygames für Windows).</p><p><button class="btn small" id="remConnect" type="button">🔗 Controller verbinden</button></p><ul id="remList" class="remList"></ul></div>
     <div id="pPhoneTip" class="note" hidden><p>📱 Halte das Handy fest in der <b>rechten Hand</b> und mach die Arm-Bewegungen der Vortänzerin nach.</p></div>
     <p class="lbl">Schwierigkeit</p><div class="seg" id="pDiff"></div>
     <p class="lbl">Vortänzer</p><div class="seg small dzRow" id="pDancer"></div>
@@ -181,6 +182,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="js/core.js"></script>
 <script src="js/media.js"></script>
 <script src="js/sense.js"></script>
+<script src="js/remote.js"></script>
 <script src="js/view.js"></script>
 <script src="js/sound.js"></script>
 <script src="js/app.js"></script>

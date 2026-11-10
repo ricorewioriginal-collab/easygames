@@ -35,6 +35,7 @@
   function applySettings() {
     const s = save.settings;
     A.setVolume({ music: +s.music, sfx: +s.sfx, mute: !!s.mute });
+    if (A.micSetPrefs) A.micSetPrefs({ device: s.micDev || '', ch: s.micCh || 'mix' });
     document.body.classList.toggle('big', !!s.big);
     document.body.classList.toggle('cb', !!s.cb);
     document.body.classList.toggle('reduced', reduced());
@@ -1467,6 +1468,9 @@
       row('🔇 Stumm', 'Alles aus – das Spiel läuft trotzdem', tog('mute')) +
       row('💬 Untertitel', 'Wichtige Töne als Text einblenden', tog('captions')) +
       row('🎙️ Mikrofon-Modus', 'Mit der Stimme spielen: Noten ansingen und Tonhöhe treffen. Nur auf deinem Gerät, keine Aufnahme.', tog('mic')) +
+      (s.mic ? row('🎤 Welches Mikrofon', 'USB-Mikrofon, Headset, Kamera-Mikro oder SingStar-Empfänger', '<select data-sel="micDev" aria-label="Mikrofon"><option value="">Standard des Geräts</option></select>') +
+        row('🎛️ Kanal', 'SingStar: blaues Mikro = links, rotes = rechts. Sonst „Beide“.', seg('micCh', [['mix', 'Beide'], ['left', 'Links (blau)'], ['right', 'Rechts (rot)']])) +
+        row('🧪 Mikrofon testen', '<span id="micTestV">Sing oder sprich etwas – Pegel und Ton erscheinen hier.</span><span class="micMeter"><i id="micTestBar"></i></span>', '<button class="btn" type="button" id="bMicTest">Testen</button>') : '') +
       row('🎚️ Stimmlage', 'Für den Mikrofon-Modus', seg('range', [['tief', 'Tief'], ['mittel', 'Mittel'], ['hoch', 'Hoch']])) +
       row('⏩ Notentempo', 'Wie schnell die Noten fallen', seg('speed', [['langsam', 'Langsam'], ['normal', 'Normal'], ['schnell', 'Schnell']])) +
       row('⏱️ Audio-Versatz', `Gleicht Verzögerung von Bluetooth-Kopfhörern aus: <b id="offV">${s.offset} ms</b>`, `<input type="range" min="-150" max="250" step="10" value="${s.offset}" data-r="offset" aria-label="Audio-Versatz">`) +
@@ -1475,7 +1479,40 @@
       row('🔠 Große Schrift', 'Alle Texte größer', tog('big')) +
       row('🎨 Farbenblind-Modus', 'Farbpalette für Rot-Grün-Schwäche (Symbole sind immer dabei)', tog('cb')) +
       `<div class="srow"><div><b>🗑️ Spielstand zurücksetzen</b><small>Profil, Staffel, Erfolge und Rekord löschen</small></div><button class="btn red" type="button" id="bReset">Zurücksetzen</button></div>`;
+    micFill();
   };
+  // Mikrofon-Auswahl: Geräteliste (Namen gibt es erst nach der Freigabe), Test mit Pegel und erkanntem Ton
+  let micTest = 0;
+  function micTestStop() { if (!micTest) return; cancelAnimationFrame(micTest); micTest = 0; A.micStop(); const b = $('#bMicTest'); if (b) b.textContent = 'Testen'; }
+  async function micTestStart() {
+    A.init(); A.micStop();
+    try { await A.micStart(true, !!save.settings.hp); } catch (e) { toast(e && e.name === 'NotFoundError' ? 'Kein Mikrofon gefunden.' : 'Mikrofon nicht freigegeben.', 3500); return; }
+    const b = $('#bMicTest'); if (b) b.textContent = 'Stopp';
+    const inf = A.micInfo ? A.micInfo() : null;
+    const tick = () => {
+      if (cur !== 'sSettings' || !$('#micTestBar')) { micTestStop(); return; }
+      const l = A.micLevel() || 0, m = A.micPitch();
+      $('#micTestBar').style.width = Math.min(100, Math.round(l * 600)) + '%';
+      $('#micTestV').textContent = (inf ? (inf.label || 'Mikrofon') + (inf.ch !== 'mix' ? (inf.ch === 'left' ? ' · links' : ' · rechts') : '') + ' – ' : '') + (m == null ? 'still' : 'Ton ' + NOTE[((Math.round(m) % 12) + 12) % 12] + (Math.floor(Math.round(m) / 12) - 1));
+      micTest = requestAnimationFrame(tick);
+    };
+    micTest = requestAnimationFrame(tick);
+  }
+  function micFill() {
+    const sel = $('#setBox [data-sel="micDev"]'); if (!sel || !A.micDevices) return;
+    A.micDevices().then(list => {
+      const cur0 = save.settings.micDev || '';
+      sel.innerHTML = '<option value="">Standard des Geräts</option>' + list.map(d => `<option value="${esc(d.id)}">${d.singstar ? '🎤 ' : ''}${esc(d.label)}</option>`).join('');
+      sel.value = list.some(d => d.id === cur0) ? cur0 : '';
+    }).catch(() => {});
+  }
+  $('#setBox').addEventListener('change', e => {
+    const k = e.target.dataset.sel; if (k !== 'micDev') return;
+    micTestStop(); save.settings.micDev = e.target.value;
+    const o = e.target.selectedOptions[0];
+    if (o && /^🎤/.test(o.textContent) && (save.settings.micCh || 'mix') === 'mix') { save.settings.micCh = 'left'; toast('SingStar-Empfänger erkannt: Kanal „Links (blau)“ gewählt – für das rote Mikro „Rechts“.', 4500); }
+    applySettings(); persist(); RENDER.sSettings();
+  });
   $('#setBox').addEventListener('input', e => {
     const r = e.target.dataset.r; if (!r) return;
     save.settings[r] = +e.target.value; if (r === 'offset') $('#offV').textContent = e.target.value + ' ms';
@@ -1483,6 +1520,7 @@
   });
   $('#setBox').addEventListener('change', e => { if (e.target.dataset.r === 'sfx') A.sfx('hit', 72); });
   $('#setBox').addEventListener('click', e => {
+    if (e.target.closest('#bMicTest')) { if (micTest) micTestStop(); else micTestStart(); return; }
     if (e.target.closest('#bReset')) {
       confirmBox('Spielstand löschen?', 'Profil, Staffel, Erfolge und Rekorde werden gelöscht. Das lässt sich nicht rückgängig machen.', 'Ja, alles löschen', () => {
         try { localStorage.removeItem(KEY); } catch (x) { /* egal */ }
@@ -1493,6 +1531,7 @@
     const b = e.target.closest('[data-s]'); if (!b) return;
     const k = b.dataset.s, raw = b.dataset.v, v = raw === 'true' ? true : raw === 'false' ? false : raw;
     if (k === 'mic' && v === true && !save.settings.mic) { micConsent(); return; }
+    if (k === 'micCh') micTestStop();
     save.settings[k] = v; if (k === 'mic' && !v) A.micStop();
     applySettings(); persist(); RENDER.sSettings();
     const nb = $(`#setBox [data-s="${k}"][data-v="${raw}"]`); if (nb) nb.focus();
