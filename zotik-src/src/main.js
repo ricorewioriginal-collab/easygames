@@ -2645,7 +2645,8 @@ const deckEl=document.createElement('div');deckEl.id='deck';deckEl.className='pi
 const rxEl=document.createElement('div');rxEl.id='rxp';rxEl.hidden=true;$('hud').appendChild(rxEl);
 const gEl=document.createElement('div');gEl.id='gauges';gEl.className='glass';gEl.innerHTML='<div id="gIP"><b>IP</b><div class="bar ipb"><i></i></div><span></span></div><div id="gRG"><b>⟡ Riss</b><div class="bar rgb"><i></i></div></div><div id="gTG"><b>🤝 Team</b><div class="bar tgb"><i></i></div></div>';$('lcol').insertBefore(gEl,$('menuBtn'));
 function deckItems(){const sub=X.deck.sub,it=[];
-  if(!sub){it.push({t:'Angriff',f:()=>startAttack()},{t:'Magie',s:'magic'},{t:'Item',s:'items'},{t:'Rufen',s:'spec'});if(S.tools.length)it.push({t:'Werkzeug',s:'tool'});return it}
+  if(!sub){it.push({t:'Angriff',f:()=>startAttack()});if(nearI&&!dlg.on&&!pl.dead)it.push({t:'▸ '+useShort(nearI),f:()=>interact()});   // Kontextbefehl wie bei Kingdom Hearts (Truhe öffnen, Sprechen …)
+    it.push({t:'Magie',s:'magic'},{t:'Item',s:'items'},{t:'Rufen',s:'spec'});if(S.tools.length)it.push({t:'Werkzeug',s:'tool'});return it}
   if(sub==='magic'){it.push({t:'Funkenwirbel',r:formMp(18)+' MP',k:'1',f:skill1,off:S.mp<formMp(18)},{t:'Lichtstoß',r:formMp(22)+' MP',k:'2',f:skill2,off:S.mp<formMp(22)},{t:'Mondheilung',r:formMp(30)+' MP',f:spellHeal,off:S.mp<formMp(30)})}
   else if(sub==='items'){it.push({t:'Heiltrank',r:'×'+S.potions,k:'3',f:skill3,off:!S.potions},{t:'Äther',r:'×'+(S.items.ether||0),f:useEther,off:!S.items.ether})}
   else if(sub==='spec'){for(const id of S.party){const a=CMP.find(c=>c.id===id);if(a&&CSK[id])it.push({t:CSK[id].em+' '+PARTY[id].n+': '+CSK[id].n,r:a.ko?'K.O.':a.skc>0?Math.ceil(a.skc)+' s':Math.round(a.hp)+' KP',f:()=>cmpSkill(id),off:a.ko||a.skc>0})}
