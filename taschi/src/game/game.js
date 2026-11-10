@@ -683,7 +683,7 @@ export class Game {
     const s = this.save;
     const team = t.team.map(x => makeMonster(x.id, x.lv, this.rng));
     const music = t.kind === 'leader' ? 'gym' : t.kind === 'champion' || t.kind === 'rematch' ? 'champion' : t.kind === 'league' ? (t.id === 'league_4' ? 'finale' : 'champion') : t.kind === 'guild' ? (t.member === 'varga' && t.site === 7 ? 'finale' : 'guildBattle') : 'trainer';
-    const res = await this.battle({ kind: 'trainer', foeTeam: team, format: t.format, ai: t.ai, items: t.items, trainerName: t.name, trainerTitle: t.cls, trainerLookDef: lookOfTrainer(t), pair: t.format === 'double', reward: t.reward, defeatText: t.defeat, music, ...extra });
+    const res = await this.battle({ kind: 'trainer', foeTeam: team, format: t.format, foeStar: ['leader', 'champion', 'league', 'rival'].includes(t.kind) && (this.save.badges || 0) >= 1, ai: t.ai, items: t.items, trainerName: t.name, trainerTitle: t.cls, trainerLookDef: lookOfTrainer(t), pair: t.format === 'double', reward: t.reward, defeatText: t.defeat, music, ...extra });
     if (res.outcome === 'win') { s.trainers[t.id] = true; s.coins += t.reward; s.stats.wins = (s.stats.wins || 0) + 1; this.saveNow(); }
     return res;
   }
@@ -706,6 +706,7 @@ export class Game {
     const res = await this.trainerBattle(t, n, { indoor: true });
     if (res.outcome !== 'win') return;
     s.badges = r + 1;
+    if (r === 0) this.ui.toast('Neu: die Sternstufe! Im Attacken-Menü einmal pro Kampf zünden – alle Werte steigen.', '★');
     P.grantReward(s, { items: { levelbonbon: 1, ...(r < 5 ? { superball: 3 } : r < 10 ? { supertrank: 3 } : { vitaltrank: 2 }) } });
     this.audio.sfx('levelup'); this.world.player.play('cheer', 1.6);
     await this.ui.say([{ text: 'Du erhältst das Licht-Siegel von ' + region.name + '! (' + s.badges + '/16)' }, { who, text: 'Jetzt wartet ' + region.champion.name + ' im Champion-Pavillon. Erst wer den Champion besiegt, darf weiterreisen.' }]);

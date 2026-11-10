@@ -170,6 +170,8 @@ body[data-hand="right"] .tbtns { right: auto; left: calc(22px + var(--safe-l)); 
 .bact.run { background: linear-gradient(160deg, #6aa8e8, #3a7ac8); }
 .bact.move { color: #fff; }
 .bact.backbtn { background: linear-gradient(160deg, #8a98a8, #66768a); }
+.bact.star { background: linear-gradient(160deg, #9a86c8, #6a58a0); }
+.bact.star.on { background: linear-gradient(160deg, #ffd85a, #f0a020); color: #3a2400; box-shadow: 0 0 18px rgba(255,214,90,.8); }
 @media (max-width: 720px), (orientation: portrait) {
   .bmenu { grid-template-columns: 1fr; gap: 8px; }
   .blog { min-height: 78px; padding: 10px 14px; font-size: .95em; }
