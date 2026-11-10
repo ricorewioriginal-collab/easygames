@@ -213,6 +213,7 @@ input.name { pointer-events: auto; font: inherit; padding: 9px 12px; border-radi
 #cloudSlot * { color: inherit; }
 /* Handy quer/klein: Kopf, Reiter und Fußzeile nie zusammendrücken (Reiter wurden abgeschnitten und vom Inhalt überdeckt), nur der Inhalt scrollt */
 .panel-head, .tabs, .panel-foot { flex-shrink: 0; }
+.tabs { overflow-y: hidden; align-items: flex-end; }
 .panel-body { min-height: 0; }
 /* Startbildschirm: scrollt, wenn er nicht passt; die Versionszeile steht unter dem Menü statt darüber */
 #title { overflow-y: auto; justify-content: safe center; touch-action: pan-y; }
