@@ -45,8 +45,12 @@ export function regionPool(r, habitat = 'grass') {
   return weighted;
 }
 
+// Wild levels stay below the region's arena: the first routes are gentle (Lv 2–4),
+// later regions ramp up with the arena level like the classic games.
 export function levelRange(r) {
-  const lo = Math.max(2, prevLevel(r) - 1), hi = Math.max(lo + 2, REGIONS[r].gym.level - 2);
+  if (r === 0) return [2, 4];
+  const early = r < 3 ? 1 : 0;
+  const lo = Math.max(2, prevLevel(r) - 2 - early), hi = Math.max(lo + 2, REGIONS[r].gym.level - 3 - early);
   return [lo, hi];
 }
 

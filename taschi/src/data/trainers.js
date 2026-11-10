@@ -72,11 +72,12 @@ for (const region of REGIONS) {
   // three route trainers, levels between previous and current arena
   for (let i = 0; i < 3; i++) {
     const legacy = LEGACY_TRAINERS.filter(t => t.region === r)[i];
-    const lv = Math.round(pl + (gl - pl) * (0.3 + i * 0.25)) - 1;
+    // early routes are a gentle start, difficulty grows with every arena
+    const lv = Math.round(pl + (gl - pl) * (0.3 + i * 0.25)) - (r < 2 ? 2 : 1);
     const name = legacy ? legacy.name : FIRST_NAMES[(r * 3 + i * 7) % FIRST_NAMES.length];
-    const size = 1 + Math.min(2, Math.floor((r + i) / 5));
-    const team = legacy && size === 1 ? [{ id: legacy.species, lv: Math.max(legacy.level, lv) }] : buildTeam('route:' + r + ':' + i, region.types, size, Math.max(3, lv), legacy?.species);
-    reg({ id: 'route_' + r + '_' + i, region: r, kind: 'route', cls: classes[i % 3], name, team, ai: r < 4 ? 1 : 2,
+    const size = 1 + Math.min(3, Math.floor((r + i) / 4));
+    const team = legacy && size === 1 ? [{ id: legacy.species, lv: r < 2 ? Math.min(legacy.level, Math.max(3, lv)) : Math.max(legacy.level, lv) }] : buildTeam('route:' + r + ':' + i, region.types, size, Math.max(3, lv), legacy?.species);
+    reg({ id: 'route_' + r + '_' + i, region: r, kind: 'route', cls: classes[i % 3], name, team, ai: r === 0 ? 0 : r < 5 ? 1 : r < 11 ? 2 : 3,
       reward: 40 + lv * 12, legacyId: legacy ? legacy.id : undefined, sight: 7,
       intro: rng.pick(['Unsere Blicke haben sich getroffen – das heißt Kampf!', 'Ich trainiere hier jeden Tag. Zeig mal, was du kannst!', 'Hey! Lust auf ein ehrliches Duell?', 'Mein Team ist bereit. Und deins?', 'Endlich ein Gegner! Los geht’s!']),
       defeat: rng.pick(['Wow, du bist richtig gut!', 'Na gut, du hast gewonnen. Fair ist fair.', 'Ich muss wohl noch mehr trainieren …', 'Was für ein Kampf!']) });
@@ -85,19 +86,19 @@ for (const region of REGIONS) {
   if (r % 2 === 1) {
     const lv = Math.round((pl + gl) / 2);
     reg({ id: 'double_' + r, region: r, kind: 'route', format: 'double', cls: 'Geschwister', name: ['Lina & Leo', 'Mats & Merle', 'Pit & Paula', 'Tom & Tilda', 'Jan & Juna', 'Rik & Ronja', 'Ben & Bea', 'Kai & Kiki'][(r - 1) / 2],
-      team: buildTeam('double:' + r, region.types, 2, lv), ai: 2, reward: 80 + lv * 14, sight: 7,
+      team: buildTeam('double:' + r, region.types, 2 + (r >= 9 ? 1 : 0), lv), ai: r < 5 ? 1 : 2, reward: 80 + lv * 14, sight: 7,
       intro: 'Zu zweit sind wir unschlagbar! Ein Doppelkampf!', defeat: 'Zu zweit verloren … aber zusammen!' });
   }
   // arena trainers
   for (let i = 0; i < 2; i++) {
     const lv = gl - 4 + i * 2;
     reg({ id: 'gymtr_' + r + '_' + i, region: r, kind: 'gymTrainer', cls: 'Arena-Schüler' + (i ? 'in' : ''), name: FIRST_NAMES[(r * 5 + i * 11 + 3) % FIRST_NAMES.length],
-      team: buildTeam('gymtr:' + r + ':' + i, region.types, 1 + (r >= 6 ? 1 : 0) + (r >= 12 ? 1 : 0), lv), ai: 2, reward: 60 + lv * 15,
+      team: buildTeam('gymtr:' + r + ':' + i, region.types, 1 + (r >= 6 ? 1 : 0) + (r >= 12 ? 1 : 0), lv), ai: r < 3 ? 1 : r < 12 ? 2 : 3, reward: 60 + lv * 15,
       intro: 'Bevor du zur Leitung kommst, musst du an mir vorbei!', defeat: 'Unsere Leitung wird dich trotzdem schlagen!' });
   }
   const leaderSize = r < 3 ? 2 : r < 6 ? 3 : r < 10 ? 4 : r < 14 ? 5 : 6;
   reg({ id: 'leader_' + r, region: r, kind: 'leader', cls: 'Arenaleitung', name: region.gym.leader, team: buildTeam('leader:' + r, region.types, leaderSize, gl, region.gym.ace),
-    ai: r < 2 ? 1 : r < 8 ? 2 : 3, reward: 300 + gl * 30, items: { trank: r < 6 ? 1 : 0, supertrank: r >= 6 ? 2 : 0 }, intro: region.gym.intro, defeat: region.gym.defeat });
+    ai: r < 2 ? 1 : r < 8 ? 2 : 3, reward: 300 + gl * 30, items: { trank: r === 0 ? 0 : r < 6 ? 1 : 0, supertrank: r >= 6 ? 2 : 0 }, intro: region.gym.intro, defeat: region.gym.defeat });
   reg({ id: 'champ_' + r, region: r, kind: 'champion', cls: 'Regionaler Champion', name: region.champion.name, team: buildTeam('champ:' + r, region.types, Math.min(6, leaderSize + 1), gl + 3, region.champion.ace),
     ai: r < 4 ? 2 : 3, reward: 500 + gl * 35, items: { supertrank: 1 + (r >= 8 ? 1 : 0) }, intro: region.champion.intro, defeat: region.champion.defeat });
 }
