@@ -101,8 +101,8 @@
   var OPP = { tr: 'tl', tl: 'tr', br: 'bl', bl: 'br' };
   function drawLegend() {
     var e = eff(), rows = [];
-    (e.gifts || []).forEach(function (g) { if (g.gift) { var gi = giftInfo(g.gift); rows.push('<div class="r">' + (gi.img ? '<img src="' + esc(gi.img) + '" alt="">' : esc(g.icon || gi.icon || '🎁')) + ' <span class="c">' + esc(g.gift) + '</span> → ' + esc(g.label || g.action) + '</div>'); } });
-    if (e.likes && e.likes.every > 0) rows.push('<div class="r">❤️ <span class="c">' + e.likes.every + ' Likes</span> → ' + esc(e.likes.label || e.likes.action) + '</div>');
+    (e.gifts || []).forEach(function (g) { if (g.gift) { var gi = giftInfo(g.gift); rows.push('<div class="r">' + (gi.img ? '<img src="' + esc(gi.img) + '" alt="">' : esc(g.icon || gi.icon || '🎁')) + ' <span class="c">' + esc(g.gift) + '</span> → ' + esc(withMean(g.label || g.action, g.action)) + '</div>'); } });
+    if (e.likes && e.likes.every > 0) rows.push('<div class="r">❤️ <span class="c">' + e.likes.every + ' Likes</span> → ' + esc(withMean(e.likes.label || e.likes.action, e.likes.action)) + '</div>');
     var cmds = (e.commands || []).map(function (c) { return c[0]; }).filter(Boolean);
     if (cmds.length) rows.push('<div class="r">💬 Schreib: <span class="c">' + esc(cmds.slice(0, 6).join(' · ')) + '</span></div>');
     legend.innerHTML = '<b>' + (e.mode === 'vote' ? 'TIKTOK STEUERT · ABSTIMMUNG' : 'TIKTOK STEUERT DAS SPIEL') + '</b>' + rows.join('');
@@ -133,6 +133,20 @@
     }
     var n = 0; (function wait() { var w2 = gameWin(); if (w2 && w2.EasyGamesPadNormal && w2.EasyGamesPadNormal.press) cb(w2.EasyGamesPadNormal); else if (++n < 30) setTimeout(wait, 100); })();   // bis gamepad.js geladen ist (max. 3 s)
   }
+  // Was ein Controller-Knopf in diesem Spiel bewirkt (Beschriftungen aus data-pad / data-pad-labels des Spiels, gamepad.js)
+  var PADKEY = { A: 'a', B: 'b', X: 'x', Y: 'y', LB: 'lb', RB: 'rb', LT: 'lt', RT: 'rt', START: 'start', SELECT: 'select', L3: 'l3', R3: 'r3', UP: 'up', DOWN: 'down', LEFT: 'left', RIGHT: 'right' };
+  function padMean(action) {
+    var w = gameWin(), L = null; try { L = w && w.EasyGamesPad && w.EasyGamesPad.labels; } catch (e) { }
+    if (!L) return '';
+    var out = [];
+    String(action || '').split('+').forEach(function (p) {
+      var m = /^pad:([A-Z0-9]+)/.exec(p.trim()), k = m && PADKEY[m[1]]; if (!k) return;
+      var t = L[k] || (/^(up|down|left|right)$/.test(k) ? L.dpad || L.ls : '');
+      if (t && out.indexOf(t) < 0) out.push(t);
+    });
+    return out.join(' · ');
+  }
+  function withMean(label, action) { var m = padMean(action); return m && String(label).indexOf(m) < 0 ? label + ' (' + m + ')' : label; }
   function key(code, down) {
     var w = gameWin(); if (!w || !w.document) return;
     var k = code === 'Space' ? ' ' : code.replace(/^Key/, '').replace(/^Digit/, ''), t = w.document.activeElement || w.document.body;
@@ -402,6 +416,7 @@
   // Stream: Spiel erst nach dem Umstellen starten. Windows-App (eingebettet): Spiel lief schon – nach dem ersten Umstellen einmal neu laden.
   streamSave(!!eff().streamSave, function (moved) { started = true; if (S.start) S.start(); else if (EMB && moved) location.reload(); });
   drawLegend(); setState(); connect();
+  [1500, 4000].forEach(function (t) { setTimeout(drawLegend, t); });   // Knopf-Bedeutungen kommen erst mit dem Spiel (gamepad.js)
   if (!SETUP) return;
 
   // ---------- Einstellungen (setup=1; auch in der Windows-App) ----------
@@ -419,7 +434,7 @@
     '#ttSet .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:6px 0}#ttSet .row label{display:flex;gap:6px;align-items:center}#ttSet .row input,#ttSet .row select{width:auto}' +
     '#ttSet table{display:block;width:100%}#ttSet tbody{display:block}#ttSet tr{display:grid;grid-template-columns:58px minmax(0,1fr) minmax(0,1.7fr) minmax(0,1.2fr) auto;gap:6px;align-items:center;padding:7px;margin-bottom:7px;border-radius:12px;background:#111a2e;border:1px solid #233150}' +
     '#ttSet #ttCmds tr{grid-template-columns:minmax(0,1fr) minmax(0,2fr) auto}#ttSet td{display:block;padding:0;min-width:0}#ttSet td.gi{position:relative}#ttSet td.gi img{position:absolute;right:3px;top:3px;width:22px;height:22px;pointer-events:none}' +
-    '#ttSet td.ga{display:flex;gap:4px}#ttSet td.ga select{width:42px;flex:none;padding:7px 2px}#ttSet td.gb{display:flex;gap:4px}#ttSet td.gb button{padding:6px 9px}' +
+    '#ttSet td.ga{display:flex;flex-wrap:wrap;gap:4px}#ttSet td.ga input{flex:1;min-width:0}#ttSet .mean{color:#7ff3ff;font-size:12px}#ttSet td.ga .mean{flex-basis:100%}#ttSet td.ga .mean:empty{display:none}#ttSet td.ga select{width:42px;flex:none;padding:7px 2px}#ttSet td.gb{display:flex;gap:4px}#ttSet td.gb button{padding:6px 9px}' +
     '@media(max-width:640px){#ttSet tr{grid-template-columns:52px 1fr auto}#ttSet td.ga,#ttSet td.gl{grid-column:1/-1}}' +
     '#ttSet .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;max-height:430px;overflow:auto;padding:2px}' +
     '#ttSet .grid button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:12px;font-size:12px;line-height:1.2;text-align:center;position:relative}#ttSet .grid button .e{font-size:26px;height:32px;display:flex;align-items:center}#ttSet .grid button img{width:32px;height:32px}' +
@@ -462,7 +477,7 @@
   var $ = function (s) { return P2.querySelector(s); };
   function buildPick(ga) {
     var all = ACTS.concat(ga.map(function (a) { return ['game:' + a.id, a.icon || '⭐', a.label, 'game']; }));
-    return '<option value="">▾</option>' + Object.keys(GROUPS).map(function (gr) { var o = all.filter(function (a) { return a[3] === gr; }); return o.length ? '<optgroup label="' + GROUPS[gr] + '">' + o.map(function (a) { return '<option value="' + esc(a[0]) + '" data-l="' + esc(a[2]) + '">' + esc(a[1] + ' ' + a[2]) + '</option>'; }).join('') + '</optgroup>' : ''; }).join('');
+    return '<option value="">▾</option>' + Object.keys(GROUPS).map(function (gr) { var o = all.filter(function (a) { return a[3] === gr; }); return o.length ? '<optgroup label="' + GROUPS[gr] + '">' + o.map(function (a) { var m = padMean(a[0]); return '<option value="' + esc(a[0]) + '" data-l="' + esc(a[2]) + '">' + esc(a[1] + ' ' + a[2] + (m ? ' – hier: ' + m : '')) + '</option>'; }).join('') + '</optgroup>' : ''; }).join('');
   }
   function giftRow(g) {
     var gi = giftInfo(g.gift);
@@ -483,10 +498,18 @@
     $('#ttTrolls').innerHTML = strip.map(function (t) { return '<button data-troll="' + esc(t[0]) + '" data-label="' + esc(t[2]) + '">' + esc(t[1] + ' ' + t[2]) + '</button>'; }).join('');
     $('#ttActs').innerHTML = ['troll', 'fx', 'game', 'pad', 'text'].map(function (gr) {
       var o = ACTS.concat(ga.map(function (a) { return ['game:' + a.id, a.icon || '⭐', a.label, 'game']; })).filter(function (a) { return a[3] === gr; });
-      return o.length ? '<div class="card"><h3 style="margin-top:0">' + GROUPS[gr] + '</h3><div class="acts">' + o.map(function (a) { return '<div class="act"><span class="e">' + esc(a[1]) + '</span><div>' + esc(a[2]) + '<br><code>' + esc(a[0]) + '</code></div><button data-run="' + esc(a[0]) + '" title="Testen">▶</button><button data-assign="' + esc(a[0]) + '" data-label="' + esc(a[2]) + '" title="Einem Geschenk zuweisen">🎁+</button></div>'; }).join('') + '</div></div>' : '';
+      return o.length ? '<div class="card"><h3 style="margin-top:0">' + GROUPS[gr] + '</h3><div class="acts">' + o.map(function (a) { return '<div class="act"><span class="e">' + esc(a[1]) + '</span><div>' + esc(a[2]) + (padMean(a[0]) ? ' <span class="mean">🎮 ' + esc(padMean(a[0])) + '</span>' : '') + '<br><code>' + esc(a[0]) + '</code></div><button data-run="' + esc(a[0]) + '" title="Testen">▶</button><button data-assign="' + esc(a[0]) + '" data-label="' + esc(a[2]) + '" title="Einem Geschenk zuweisen">🎁+</button></div>'; }).join('') + '</div></div>' : '';
     }).join('') + (ga.length ? '' : '<div class="s">Dieses Spiel hat keine eigenen Highlights – alle Streiche oben gehen trotzdem.</div>');
     var own = cfg.games && cfg.games[GID]; $('#ttOwn').innerHTML = scope === 'game' ? (own ? '✅ ' + esc(S.game.title) + ' hat eine eigene Belegung · „Standard“ entfernt sie' : 'Noch keine eigene Belegung – zeigt die allgemeine; Speichern legt eine eigene an.') : (own ? 'ℹ️ ' + esc(S.game.title) + ' nutzt eine eigene Belegung' : 'Gilt für alle Spiele ohne eigene Belegung.');
-    drawGifts(); urlDraw();
+    drawGifts(); urlDraw(); fillMeans();
+  }
+  // Unter jeder Aktion: was sie in diesem Spiel bewirkt (z. B. A drücken → Springen)
+  function fillMeans() {
+    [].forEach.call(P2.querySelectorAll('input[list="ttAct"]'), function (inp) {
+      var box = inp.parentNode, m = box.querySelector(':scope > .mean');
+      if (!m) { m = document.createElement('span'); m.className = 'mean'; box.appendChild(m); }
+      var t = padMean(inp.value); m.textContent = t ? '🎮 in ' + S.game.title + ': ' + t : '';
+    });
   }
   function read() {
     return {
@@ -526,12 +549,13 @@
     u.value = new URL('stream.html?' + q.toString(), base).href;
   }
   P2.addEventListener('input', function (e) { editing = true; if (e.target.id === 'ttGiftQ' || e.target.dataset.k === 'gift') drawGifts(); if (/^tt(Fmt|View|Lay|Clear)$/.test(e.target.id)) urlDraw(); });
+  P2.addEventListener('input', function (e) { if (e.target.matches('input[list="ttAct"]')) fillMeans(); });
   P2.addEventListener('change', function (e) {
     var s = e.target; if (/^tt(Fmt|View|Lay|Clear)$/.test(s.id)) urlDraw();
     if (!s.matches('[data-pick]') || !s.value) return;
     var r = s.closest('tr'), inp = r.querySelector('[data-k="action"],[data-k="1"]'), lab = r.querySelector('[data-k="label"]'), o = s.options[s.selectedIndex];
     inp.value = s.value; if (lab && (!lab.value || lab.dataset.auto)) { lab.value = o.dataset.l || ''; lab.dataset.auto = 1; }
-    s.selectedIndex = 0; editing = true;
+    s.selectedIndex = 0; editing = true; fillMeans();
   });
   P2.addEventListener('click', function (e) {
     var t = e.target.closest ? e.target.closest('button') : null; if (!t) return;
