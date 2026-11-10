@@ -6,6 +6,13 @@ feste Regeln für Mehrspieler-Links und Einbindung: [CLAUDE.md](CLAUDE.md).
 
 ## 1. Läuft auf jedem Gerät
 
+**Von Anfang an multiplattformfähig bauen:** Ein neues Spiel wird gleich für alle Geräte gebaut, nicht erst für den PC und später angepasst.
+Es gibt **ein einziges Bedienkonzept**, das auf Handy, PC, TV und Controller gleich aussieht und gleich funktioniert – keine
+getrennten Knopf-Sätze je Gerät, die sich widersprechen. Bewährt hat sich ein Kommandomenü wie bei Kingdom Hearts (Beispiel: Zotik):
+Befehle wählen mit Steuerkreuz/Pfeiltasten/Antippen, eine Aktionstaste führt den markierten Befehl aus, Zurück öffnet die vorige Ebene.
+Wenige feste Knöpfe (Bewegen, Aktion, Ausweichen, Kontext) – alles Weitere im Menü.
+
+
 | Gerät | Was das Spiel können muss |
 | --- | --- |
 | **PC (Browser, Windows-App)** | Maus und Tastatur, füllt das Fenster (`100vw`/`100dvh`, kein Scrollen der Seite), läuft im iframe |

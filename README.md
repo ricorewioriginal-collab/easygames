@@ -138,6 +138,7 @@ Alle Spiele lassen sich mit einem Gamecontroller (Xbox, PlayStation, 8BitDo …,
   - Ohne Controller läuft nichts mit. Spiele mit eigener Controller-Steuerung binden die Datei mit `data-pad="info"` ein: keine Tasten-Nachahmung, aber Standard-Layout für jeden Controller, Belegungs-Übersicht, Hilfe in Fenstern und **Select halten** = Bildschirm-Knöpfe.
 - **Texteingaben:** Bildschirm-Tastatur öffnet sich von selbst, sobald ein Textfeld erscheint oder gewählt wird.
 - **Was jedes neue Spiel braucht** (Controller, PC/Browser, TV, Handy, Windows-App, RicoReWi Radio App): [NEUE-SPIELE.md](NEUE-SPIELE.md).
+- **Neue Spiele direkt multiplattformfähig bauen:** von Anfang an für Handy (Touch), PC (Maus/Tastatur), TV (Fernbedienung) und Gamecontroller, mit **einem** Bedienkonzept für alle Geräte (z. B. Kommandomenü wie bei Kingdom Hearts statt getrennter Knöpfe je Gerät) – Details in [NEUE-SPIELE.md](NEUE-SPIELE.md).
 
 Für EmulationStation siehe [unten](#emulationstation-es-de-retropie-batocera): das Startskript öffnet den Browser so, dass auch der Ton ohne Klick startet (Browser zählen Controller-Tasten nicht als „Nutzer-Klick“).
 

@@ -843,7 +843,7 @@ addEventListener('keydown',e=>{if(mode==='flight'){keys[e.code]=true;return}if(m
       if(['KeyE','Space','Enter','NumpadEnter'].includes(e.code)){e.preventDefault();if(ready&&bs[dlg.sel||0])bs[dlg.sel||0].click()}return}
     if(['KeyE','Space','Enter'].includes(e.code)){e.preventDefault();dlgAdvance()}return}
   if(/^(Key[JKEQFTGCXRVBIL]|Digit[1-6]|Space|Arrow(Up|Down|Left|Right)|Enter|NumpadEnter|Backspace)$/.test(e.code))e.preventDefault();/* verarbeitet: Controller (gamepad.js) springt dann nicht zu Bildschirm-Knöpfen */
-  switch(e.code){case'KeyJ':case'KeyK':startAttack();break;case'ShiftLeft':case'ShiftRight':case'Space':e.preventDefault();dodge();break;case'Digit1':skill1();break;case'Digit2':skill2();break;case'Digit3':case'KeyR':skill3();break;case'KeyE':interact();break;case'KeyQ':lockCycle();break;case'KeyF':doReaction();break;case'KeyT':deckOpen('spec');break;case'KeyG':formStart();break;case'KeyC':useTool();break;case'KeyX':if(X.deck.sub)deckBack();else toolNext();break;case'Digit4':ipUse(0);break;case'Digit5':ipUse(1);break;case'Digit6':ipUse(2);break;case'ArrowUp':e.preventDefault();deckMove(-1);break;case'ArrowDown':e.preventDefault();deckMove(1);break;case'Enter':case'NumpadEnter':deckExec();break;case'Backspace':deckBack();break;case'KeyV':toggleNaut();break;case'KeyB':cycleNaut();break;case'Escape':case'Tab':e.preventDefault();toggleMenu(true);break;case'KeyI':toggleMenu(true,'inv');break;case'KeyL':toggleMenu(true,'quest');break}});
+  switch(e.code){case'KeyJ':case'KeyK':actPrimary();break;case'ShiftLeft':case'ShiftRight':case'Space':e.preventDefault();dodge();break;case'Digit1':skill1();break;case'Digit2':skill2();break;case'Digit3':case'KeyR':skill3();break;case'KeyE':interact();break;case'KeyQ':lockCycle();break;case'KeyF':doReaction();break;case'KeyT':deckOpen('spec');break;case'KeyG':formStart();break;case'KeyC':useTool();break;case'KeyX':if(X.deck.sub)deckBack();else toolNext();break;case'Digit4':ipUse(0);break;case'Digit5':ipUse(1);break;case'Digit6':ipUse(2);break;case'ArrowUp':e.preventDefault();deckMove(-1);break;case'ArrowDown':e.preventDefault();deckMove(1);break;case'Enter':case'NumpadEnter':actPrimary();break;case'Backspace':deckBack();break;case'KeyV':toggleNaut();break;case'KeyB':cycleNaut();break;case'Escape':case'Tab':e.preventDefault();toggleMenu(true);break;case'KeyI':toggleMenu(true,'inv');break;case'KeyL':toggleMenu(true,'quest');break}});
 addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='KeyB')XT.setBlock(false)});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false;XT.setBlock(false)});
 cv.addEventListener('contextmenu',e=>e.preventDefault());
@@ -888,7 +888,7 @@ function vehiclePop(){if(!S.fl.naut)return;const it=NF.map((f,i)=>({em:f.em,t:f.
 holdBtn('bSkill',()=>SKS[selSk()].f(),skillPop);
 holdBtn('bUse',()=>{if(X.rx)doReaction();else if(nearI)interact();else if(S.fl.naut)toggleNaut()},vehiclePop);
 {const b=$('bDodge');let bt=0;const end=()=>{keys.ShiftLeft=false;clearTimeout(bt);XT.setBlock(false)};b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();initAudio();if(mode!=='play'||menuOpen||dlg.on)return;closePop();if(naut.on)keys.ShiftLeft=true;else{dodge();clearTimeout(bt);bt=setTimeout(()=>XT.setBlock(true),420)}});b.addEventListener('pointerup',end);b.addEventListener('pointercancel',end)}
-btn('bAtk',()=>startAttack());btn('sk1',()=>skill1());btn('sk2',()=>skill2());btn('sk3',()=>skill3());
+btn('bAtk',()=>actPrimary());btn('sk1',()=>skill1());btn('sk2',()=>skill2());btn('sk3',()=>skill3());
 /* Beschriftung der Aktionstaste und der Fähigkeit */
 let luI='',luL='',lsI='';
 function useShort(o){const t=(o.pr||'Sprechen');return /Truhe/.test(t)?'Öffnen':/Rätsel/.test(t)?'Rätsel':/Weltentor|Bunte Insel/.test(t)?'Reisen':/Siegel/.test(t)?'Siegel':/Prüfung/.test(t)?'Antreten':/Kristallslots|Casino/.test(t)?'Spielen':t.split(' ')[0].slice(0,9)}
@@ -897,6 +897,7 @@ function updTouchBtns(){if(!TOUCH)return;let i='✋',l='Aktion',idle=false;
   else if(S.fl.naut){if(naut.on){i=NF[naut.f].em;l='Aussteigen'}else{i='🚤';l='Einsteigen'}}else idle=true;
   if(i!==luI){luI=i;$('bUseI').textContent=i}if(l!==luL){luL=l;$('bUseL').textContent=l;$('bUse').classList.toggle('idle',idle)}
   const k=SKS[selSk()],t=k.em+'|'+(k.cd?S.potions:'');if(t!==lsI){lsI=t;$('bSkI').textContent=k.em;$('bSkL').textContent=k.s;const n=$('bSkN');n.hidden=selSk()!==2;n.textContent=S.potions}
+  {const it=deckItems()[X.deck.sel],al=X.deck.sub?(it?it.t.replace(/^\S+\s/,'').slice(0,12):'OK'):(it?it.t:'Angriff'),ab=$('bAtk').querySelector('.bl');if(ab&&ab.textContent!==al)ab.textContent=al}   // Aktionstaste zeigt den markierten Befehl (wie bei Kingdom Hearts)
   const dl=naut.on?'Turbo':'Ausweichen';if($('bDodge').lastChild.textContent!==dl)$('bDodge').lastChild.textContent=dl;
   const c=SKS[selSk()],v=pl.cd[c.cd]>0?Math.round(pl.cd[c.cd]/c.cdt*50)/50:0;if(v!==lsCd){lsCd=v;$('bSkill').querySelector('.cd').style.transform=`scaleY(${v})`}const op=(c.mp&&S.mp<c.mp)?.55:1;if(op!==lsOp){lsOp=op;$('bSkill').style.opacity=op}}
 let lsCd=-1,lsOp=-1;
@@ -2587,24 +2588,26 @@ const deckEl=document.createElement('div');deckEl.id='deck';deckEl.className='pi
 const rxEl=document.createElement('div');rxEl.id='rxp';rxEl.hidden=true;$('hud').appendChild(rxEl);
 const gEl=document.createElement('div');gEl.id='gauges';gEl.className='glass';gEl.innerHTML='<div id="gIP"><b>IP</b><div class="bar ipb"><i></i></div><span></span></div><div id="gRG"><b>⟡ Riss</b><div class="bar rgb"><i></i></div></div><div id="gTG"><b>🤝 Team</b><div class="bar tgb"><i></i></div></div>';$('lcol').insertBefore(gEl,$('menuBtn'));
 function deckItems(){const sub=X.deck.sub,it=[];
-  if(!sub){it.push({t:'Angriff',k:'J',f:()=>startAttack()},{t:'Magie',s:'magic'},{t:'Items',s:'items'},{t:'Spezial',s:'spec'});if(S.tools.length)it.push({t:'Werkzeug',s:'tool'});if(S.fl.naut)it.push({t:naut.on?'Aussteigen':'Nautilux',k:'V',f:()=>toggleNaut()});return it}
+  if(!sub){it.push({t:'Angriff',f:()=>startAttack()},{t:'Magie',s:'magic'},{t:'Item',s:'items'},{t:'Rufen',s:'spec'});if(S.tools.length)it.push({t:'Werkzeug',s:'tool'});return it}
   if(sub==='magic'){it.push({t:'Funkenwirbel',r:formMp(18)+' MP',k:'1',f:skill1,off:S.mp<formMp(18)},{t:'Lichtstoß',r:formMp(22)+' MP',k:'2',f:skill2,off:S.mp<formMp(22)},{t:'Mondheilung',r:formMp(30)+' MP',f:spellHeal,off:S.mp<formMp(30)})}
   else if(sub==='items'){it.push({t:'Heiltrank',r:'×'+S.potions,k:'3',f:skill3,off:!S.potions},{t:'Äther',r:'×'+(S.items.ether||0),f:useEther,off:!S.items.ether})}
   else if(sub==='spec'){for(const id of S.party){const a=CMP.find(c=>c.id===id);if(a&&CSK[id])it.push({t:CSK[id].em+' '+PARTY[id].n+': '+CSK[id].n,r:a.ko?'K.O.':a.skc>0?Math.ceil(a.skc)+' s':Math.round(a.hp)+' KP',f:()=>cmpSkill(id),off:a.ko||a.skc>0})}
     if(S.party.length)it.push({t:'⚙️ Taktik: '+(S.ptac==='def'?'Schützen':'Angreifen'),r:'',f:()=>{S.ptac=S.ptac==='def'?'atk':'def';toast(S.ptac==='def'?'🛡️ Gefährten bleiben bei dir und heilen früher':'⚔️ Gefährten greifen frei an')}});
+    if(S.fl.naut)it.push({t:'🚤 '+(naut.on?'Aussteigen':'Nautilux'),f:()=>toggleNaut()});
     for(const id of S.party)if(TEAM[id])it.push({t:TEAM[id].em+' '+TEAM[id].n,r:Math.floor(S.tg)+'%',k:'T',f:()=>teamAttack(id),off:S.tg<100});
     if(formOk(0))it.push({t:'⟡ Rissform',r:Math.floor(S.rg)+'%',k:'G',f:()=>formStart(0),off:S.rg<100||X.form.on>0});if(formOk(1))it.push({t:'✦ Sternform',r:Math.floor(S.rg)+'%',f:()=>formStart(1),off:S.rg<100||X.form.on>0});
     ['w','a','c'].forEach((s,i)=>{const d=GEAR[gearSet()[s]];if(d)it.push({t:'IP · '+d.ip.n,r:d.ip.c+' IP',k:String(4+i),f:()=>ipUse(i),off:S.ip<d.ip.c})});
     if(!it.length)it.push({t:'(noch nichts freigeschaltet)',off:true})}
   else if(sub==='tool'){it.push({t:'Benutzen',r:S.tools.length?TOOLS[S.tools[S.tool]].em:'',k:'C',f:()=>useTool()});S.tools.forEach((t,i)=>it.push({t:TOOLS[t].em+' '+TOOLS[t].n,r:i===S.tool?'✓':'',f:()=>{S.tool=i;X.deck.dirty=true}}))}
   return it}
-const SUBN={magic:'Magie',items:'Items',spec:'Spezial',tool:'Werkzeug'};
+const SUBN={magic:'Magie',items:'Item',spec:'Rufen',tool:'Werkzeug'};
 function deckRender(){const it=deckItems();X.deck.sel=clamp(X.deck.sel,0,it.length-1);
-  let h=`<div class="dh">${X.deck.sub?'◂ '+SUBN[X.deck.sub]:'Befehle'}${X.lock?' <em>🎯</em>':''}</div>`;
+  let h=`<div class="dh">${X.deck.sub?'◂ '+SUBN[X.deck.sub]:'Kommando'}${X.lock?' <em>🎯</em>':''}</div>`;
   it.forEach((o,i)=>{h+=`<button data-i="${i}" class="${i===X.deck.sel?'sel':''}${o.off?' off':''}"><span>${o.t}${o.s?' ▸':''}</span><small>${o.r||''}${o.k?' <b>'+o.k+'</b>':''}</small></button>`});
   deckEl.innerHTML=h;deckEl.querySelectorAll('button').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(mode!=='play'||menuOpen||dlg.on)return;X.deck.sel=+b.dataset.i;deckExec()}));
   deckEl.querySelector('.dh').addEventListener('pointerdown',e=>{e.stopPropagation();deckBack()});X.deck.dirty=false}
 function deckMove(d){const n=deckItems().length;X.deck.sel=(X.deck.sel+d+n)%n;sfx('ui');X.deck.dirty=true}
+function actPrimary(){if(mode!=='play'||menuOpen||dlg.on)return;const it=deckItems()[X.deck.sel];if(!X.deck.sub&&(!it||it.t==='Angriff'))startAttack();else deckExec()}
 function deckExec(){const o=deckItems()[X.deck.sel];if(!o)return;if(o.s){X.deck.sub=o.s;X.deck.sel=0;sfx('ui')}else if(o.f){if(o.off){sfx('hit');return}o.f();if(X.deck.sub&&X.deck.sub!=='tool'){X.deck.sub=null;X.deck.sel=0}}X.deck.dirty=true}
 function deckBack(){if(X.deck.sub){X.deck.sub=null;X.deck.sel=0;sfx('ui');X.deck.dirty=true}}
 function deckOpen(s){X.deck.sub=s;X.deck.sel=0;X.deck.dirty=true;if(TOUCH)specPop()}
