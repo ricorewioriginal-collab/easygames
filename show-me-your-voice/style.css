@@ -365,3 +365,7 @@ details.rew summary { cursor: pointer; padding: 4px 0; }
 .goBtn { width: 100%; margin-top: 6px; position: sticky; bottom: 4px; z-index: 2; }
 .banner.assign .jimg { width: 46px; height: 64px; }
 .joinCard { display: flex; gap: 14px; align-items: center; } .joinCard .qr { margin: 0; flex: none; width: 128px; height: 128px; } .joinCard p { margin: .2em 0; text-align: left; } .joinCard .hint { text-align: left; }
+/* Mikrofon-Auswahl und -Test (Einstellungen) */
+.settings select[data-sel] { max-width: 260px; padding: 8px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.35); color: inherit; font: inherit; }
+.settings .micMeter { display: block; height: 8px; margin-top: 6px; border-radius: 99px; background: rgba(255,255,255,.12); overflow: hidden; max-width: 260px; }
+.settings .micMeter i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #34d399, #facc15, #f43f5e); transition: width .08s linear; }

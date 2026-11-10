@@ -105,22 +105,42 @@
 
   // ---------- Mikrofon (optional) ----------
   let micWant = false;
+  // Mikrofon-Auswahl (Einstellungen): Gerät (deviceId, '' = Standard) und Kanal – 'mix' (mono/beide), 'left' bzw. 'right'
+  // (SingStar-Empfänger ist ein Stereo-Gerät: blaues Mikro links, rotes rechts).
+  let micPref = { device: '', ch: 'mix' };
+  function micSetPrefs(p) { micPref = { device: (p && p.device) || '', ch: p && (p.ch === 'left' || p.ch === 'right') ? p.ch : 'mix' }; }
+  async function micDevices() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return [];
+    const l = await navigator.mediaDevices.enumerateDevices();
+    return l.filter(d => d.kind === 'audioinput' && d.deviceId !== 'default' && d.deviceId !== 'communications')
+      .map(d => ({ id: d.deviceId, label: d.label || 'Mikrofon', singstar: /singstar|usbmic|usb mic|ps2|namtai|logitech usb microphone/i.test(d.label || '') }));
+  }
   // voice = true (Vorsingen): ohne Rauschunterdrückung, die lange gehaltene Töne abschneidet und die Aufnahme dumpf macht.
   // hp = true (Kopfhörer): auch ohne Echo-Unterdrückung und automatische Lautstärke – die verzerren Gesang; ohne Lautsprecher-Musik braucht es sie nicht.
   async function micStart(voice, hp) {
     if (!init() || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('nosupport');
     micWant = true; if (mic) return true;
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: !(voice && hp), noiseSuppression: !voice, autoGainControl: !(voice && hp), channelCount: 1 } });
+    // Ein Kanal (SingStar): Stereo anfordern und ohne Bearbeitung – die würde beide Mikros zu einem zusammenmischen
+    const split = micPref.ch !== 'mix';
+    const a = { echoCancellation: !split && !(voice && hp), noiseSuppression: !split && !voice, autoGainControl: !split && !(voice && hp), channelCount: split ? 2 : 1 };
+    if (micPref.device) a.deviceId = { exact: micPref.device };
+    let stream;
+    try { stream = await navigator.mediaDevices.getUserMedia({ audio: a }); }
+    catch (e) { if (!micPref.device || (e.name !== 'OverconstrainedError' && e.name !== 'NotFoundError')) throw e; delete a.deviceId; stream = await navigator.mediaDevices.getUserMedia({ audio: a }); }   // gewähltes Gerät fehlt: Standard
     if (!micWant || mic) { if (!mic || mic.stream !== stream) stream.getTracks().forEach(t => t.stop()); return !!mic; }   // inzwischen wieder gestoppt
     const src = ctx.createMediaStreamSource(stream), an = ctx.createAnalyser();
-    an.fftSize = 2048; src.connect(an);           // nicht mit den Lautsprechern verbunden: kein Echo, keine Aufnahme
-    mic = { stream, src, an, buf: new Float32Array(1024) };
+    let node = src, tr = stream.getAudioTracks()[0], set = tr && tr.getSettings ? tr.getSettings() : {};
+    if (split && (set.channelCount || 2) >= 2) {   // nur den gewählten Kanal auswerten und aufnehmen
+      const sp = ctx.createChannelSplitter(2), g = ctx.createGain(); src.connect(sp); sp.connect(g, micPref.ch === 'right' ? 1 : 0); node = g;
+    }
+    an.fftSize = 2048; node.connect(an);          // nicht mit den Lautsprechern verbunden: kein Echo, keine Aufnahme
+    mic = { stream, src, node, an, buf: new Float32Array(1024), label: (tr && tr.label) || '', channels: set.channelCount || 1, ch: node === src ? 'mix' : micPref.ch };
     return true;
   }
   function micStop() {
     micWant = false; if (!mic) return;
     const rn = mic.rec ? mic.rec.nodes : null;
-    try { mic.stream.getTracks().forEach(t => t.stop()); mic.src.disconnect(); } catch (e) {}
+    try { mic.stream.getTracks().forEach(t => t.stop()); mic.src.disconnect(); if (mic.node !== mic.src) mic.node.disconnect(); } catch (e) {}
     if (rn) setTimeout(() => rn.forEach(n => { try { n.disconnect(); } catch (e) {} }), 900);   // erst nach dem Vorlauf: das Ende des letzten Tons kommt noch in die Aufnahme
     mic = null;
   }
@@ -141,7 +161,7 @@
       const sr = ctx.sampleRate, n = Math.floor(sr * 1.6), ir = ctx.createBuffer(2, n, sr);
       for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3); }
       rev.buffer = ir; dry.gain.value = 1; wet.gain.value = 0.3;
-      mic.src.connect(pre); pre.connect(hp); hp.connect(eq); eq.connect(comp); comp.connect(dry); comp.connect(rev); rev.connect(wet); dry.connect(bus); wet.connect(bus); bus.connect(lim); lim.connect(dest);
+      mic.node.connect(pre); pre.connect(hp); hp.connect(eq); eq.connect(comp); comp.connect(dry); comp.connect(rev); rev.connect(wet); dry.connect(bus); wet.connect(bus); bus.connect(lim); lim.connect(dest);
       mic.rec = { dest, nodes: [pre, hp, eq, comp, dry, wet, rev, bus, lim, dest] };
       return dest.stream;
     } catch (e) { return mic.stream; }
@@ -232,5 +252,5 @@
   }
 
   root.SMYVAudio = { radioOnLost: cb => { onLost = cb; }, radioStart, radioStop, radioMute, radioOnsets, radioSong, radioActive: () => !!radio, radioPlain: () => !!(radio && radio.plain), init, setVolume, ok, chordTones, sfx, guide, voiceOn, voiceSet, voiceOff,
-    micStart, micStop, micPitch, micLevel, micActive: () => !!mic, micStream: () => (mic ? mic.stream : null), micRecStream, micRecPre: () => (mic && mic.rec ? REC_PRE : 0), mtof, ctxTime: () => (ctx ? ctx.currentTime : 0) };
+    micStart, micStop, micPitch, micLevel, micActive: () => !!mic, micDevices, micSetPrefs, micInfo: () => (mic ? { label: mic.label, channels: mic.channels, ch: mic.ch } : null), micStream: () => (mic ? mic.stream : null), micRecStream, micRecPre: () => (mic && mic.rec ? REC_PRE : 0), mtof, ctxTime: () => (ctx ? ctx.currentTime : 0) };
 })(window);
