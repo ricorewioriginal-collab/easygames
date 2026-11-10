@@ -692,7 +692,10 @@
       if (ok) { box = e; break; }
     }
     if (!box) return null;
-    var r = box.getBoundingClientRect(); if (r.width * r.height > 0.92 * root.innerWidth * root.innerHeight) return null;   // ganzer Bildschirm = Spiel-Oberfläche (HUD), kein Fenster
+    var full = 0.92 * root.innerWidth * root.innerHeight, r = box.getBoundingClientRect(); if (r.width * r.height > full) return null;   // ganzer Bildschirm = Spiel-Oberfläche (HUD), kein Fenster
+    for (var up = box.parentElement; up && up !== doc.body && up !== doc.documentElement; up = up.parentElement) {   // ganzes Fenster statt nur der Liste in der Mitte (z. B. Figuren-Raster + „Zurück/Auswählen“ darunter)
+      var ur = up.getBoundingClientRect(); if (ur.width * ur.height > full) break; box = up;
+    }
     var a = doc.activeElement; if (a && a !== doc.body && box.contains(a)) return null;   // das Spiel führt selbst durch sein Fenster
     if (box.querySelector('[class*="focus" i]:not(button:focus)') && !box.querySelector(':focus')) { var fx = box.querySelector('[class*="focus" i]'); if (fx && fx.getClientRects().length) return null; }   // eigene Markierung des Spiels (z. B. .gp-focus) – nicht doppelt steuern
     return box;
