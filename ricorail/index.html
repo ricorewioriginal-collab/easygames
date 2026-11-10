@@ -29,5 +29,6 @@ function offer(w){if(shown||!w)return;shown=true;var d=document.createElement('d
 if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting);r.addEventListener('updatefound',function(){var w=r.installing;if(w)w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});
 navigator.serviceWorker.addEventListener('controllerchange',function(){if(reload)location.reload()})}).catch(function(){})})})();</script>
   <script src="../gamepad.js" data-pad="info" data-pad-labels="a=Türen; b=Schnellbremsung; x=Horn; y=Kamera; lb=Wachsam; rb=Richtungswender; select=Karte; start=Pause; rs=Umsehen; dpad=Leistung, links Bremse lösen,…" defer></script>
+<script src="../egstat.js" defer></script>
 </body>
 </html>
