@@ -219,6 +219,7 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
     const free = await p.evaluate(async () => { window.fake.buttons[0] = 1; await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const v = gameSees(); window.fake.buttons[0] = 0; return v; });
     await frames(p, 3);
     await p.evaluate(() => { document.getElementById('dead').style.display = 'grid'; }); await p.waitForTimeout(400); await frames(p, 3);
+    await tap(0); await p.waitForTimeout(300); await tap(0); await p.waitForTimeout(300); await frames(p, 3);   // zweimal ohne Wirkung im Fenster → Leuchtrahmen übernimmt
     const held = await p.evaluate(async () => { window.fake.buttons[2] = 1; await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const v = gameSees(2); return v; });   // X: macht im Fenster nichts
     await set(p, { buttons: Z.slice() }); await frames(p, 3);
     await tap(13); await tap(0); await tap(1);
@@ -229,6 +230,19 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
     ok(free === true && held === false, 'info-Modus: Spiel sieht den Controller, im „Game Over“-Fenster nicht (frei ' + free + ', Fenster ' + held + ')');
     ok(l1.join() === 'click:men,click:back' && l2.join() === 'click:rev', 'Fenster: Steuerkreuz wählt, A klickt, B „Zurück“: ' + l1.join() + ' / ' + l2.join());
     ok(after === true, 'Fenster zu: Spiel bekommt den Controller zurück');
+    await p.close();
+  }
+
+  // 13) info-Modus: Spiel bedient sein Fenster selbst (Markierung wandert mit dem Steuerkreuz) → kein zweiter Rahmen, Spiel behält den Controller
+  {
+    p = await (await b.newContext({ viewport: { width: 900, height: 600 } })).newPage(); await p.addInitScript(FAKE); await p.goto(url + 'infodlg');
+    const Z = Array(17).fill(0), tap = async i => { const bt = Z.slice(); bt[i] = 1; await set(p, { buttons: bt }); await frames(p, 3); await set(p, { buttons: Z.slice() }); await frames(p, 3); };
+    await p.evaluate(() => { const ids = ['rev', 'men', 'back']; let k = 0, pd = 0; const loop = () => { const g = navigator.getGamepads()[0]; const d = g && g.buttons[13].pressed; if (d && !pd && document.getElementById('dead').style.display === 'grid') { k = (k + 1) % 3; ids.forEach((id, i) => document.getElementById(id).classList.toggle('on', i === k)); } pd = d; requestAnimationFrame(loop); }; loop(); });
+    await p.evaluate(() => plug({ id: 'Std', mapping: 'standard', buttons: Array(17).fill(0), axes: [0, 0, 0, 0] })); await frames(p);
+    await tap(3); await p.evaluate(() => { document.getElementById('dead').style.display = 'grid'; }); await p.waitForTimeout(400); await frames(p, 3);
+    await tap(13); await p.waitForTimeout(300); await tap(13); await p.waitForTimeout(300); await tap(13); await p.waitForTimeout(300);
+    const r13 = await p.evaluate(() => ({ sel: document.querySelector('#dead .on') && document.querySelector('#dead .on').id, ring: [...document.querySelectorAll('div[aria-hidden=true]')].some(d => (d.style.boxShadow || '').includes('212') && d.style.display === 'block') }));
+    ok(r13.sel === 'rev' && !r13.ring, 'info-Modus: Spiel führt selbst durch sein Fenster → kein zweiter Rahmen (Auswahl ' + r13.sel + ', Rahmen ' + r13.ring + ')');
     await p.close();
   }
 

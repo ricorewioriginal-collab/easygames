@@ -425,7 +425,9 @@
       else if (selT && now - selT > 500) { selT = 0; hudMode(); return; }
     }
     if (opt.info && opt.dlg !== false && now > dlgT) { dlgT = now + 250; dlgCheck(); }   // Fenster des Spiels (z. B. „Game Over“), das die eigene Controller-Steuerung nicht kennt
+    if (opt.info && opt.dlg !== false) candTick(s, p, now);
     if (dlg) { dlgTick(now); return; }
+    if (opt.info && cand && !cand.ok) stickScroll(s.rs[0], s.rs[1], dt);   // Fenster mit langer Liste: rechter Stick scrollt
     if (opt.info) return;   // Spiel mit eigener Controller-Steuerung: nichts nachahmen
 
     // Steuerkreuz: Pfeiltasten; wenn das Spiel sie nicht verarbeitet -> Knopf-Navigation (mit Wiederholung beim Halten)
@@ -698,15 +700,44 @@
     for (var up = box.parentElement; up && up !== doc.body && up !== doc.documentElement; up = up.parentElement) {   // ganzes Fenster statt nur der Liste in der Mitte (z. B. Figuren-Raster + „Zurück/Auswählen“ darunter)
       var ur = up.getBoundingClientRect(); if (ur.width * ur.height > full) break; box = up;
     }
-    var a = doc.activeElement; if (a && a !== doc.body && box.contains(a)) return null;   // das Spiel führt selbst durch sein Fenster
+    var a = doc.activeElement; if (a && a !== doc.body && (box.contains(a) || (/^(BUTTON|A|INPUT|SELECT)$/.test(a.tagName) && usable(a)))) return null;   // das Spiel führt selbst durch sein Fenster (Fokus auf einem sichtbaren Knopf)
     if (box.querySelector('[class*="focus" i]:not(button:focus)') && !box.querySelector(':focus')) { var fx = box.querySelector('[class*="focus" i]'); if (fx && fx.getClientRects().length) return null; }   // eigene Markierung des Spiels (z. B. .gp-focus) – nicht doppelt steuern
     return box;
+  }
+  // Fenster erkannt → erst schauen, ob das Spiel es selbst bedient: Reagiert die Seite auf Steuerkreuz/A (Fokus oder Markierung ändert sich),
+  // bleibt alles beim Spiel. Erst wenn A (oder zweimal eine Richtung) ohne Wirkung bleibt, übernimmt der Leuchtrahmen – sonst gäbe es
+  // zwei Auswahlen gleichzeitig (eigene des Spiels + gelber Rahmen).
+  var cand = null;
+  function candSet(b) {
+    if (cand && cand.el === b) return;
+    if (cand && cand.mo) cand.mo.disconnect();
+    cand = null; if (!b) return;
+    cand = { el: b, muts: [], miss: 0, t: 0, ok: false, mo: null };
+    try { var c0 = cand; c0.mo = new root.MutationObserver(function () { c0.muts.push(root.performance.now()); if (c0.muts.length > 30) c0.muts.shift(); }); c0.mo.observe(b, { subtree: true, childList: true, characterData: true }); c0.mo.observe(doc.body, { subtree: true, attributes: true, attributeFilter: ['class', 'aria-selected', 'aria-current', 'data-sel'] }); } catch (e) {}   // Markierung kann auch neben dem Fenster wandern (Menüliste links, Beschreibung in der Mitte)
+  }
+  function candTick(s, p, now) {
+    if (!cand || cand.ok || dlg) return;
+    var dir = false, a = s.b[0] && !p.b[0], i; for (i = 0; i < 4; i++) if (s.d[i] && !p.d[i]) dir = true;
+    if ((dir || a) && !cand.t) { cand.t = root.performance.now(); cand.a = doc.activeElement; cand.byA = a; return; }
+    if (!cand.t || root.performance.now() - cand.t < 220) return;
+    // Reaktion: Fokuswechsel oder Änderung im Fenster kurz vor/nach dem Druck (das Spiel liest den Controller oft im selben Bild schon vor uns),
+    // aber nicht, wenn sich dort sowieso ständig etwas ändert (Zähler, Animation)
+    var T = cand.t, react = doc.activeElement !== cand.a || !cand.el.isConnected ||
+      (cand.muts.some(function (x) { return x > T - 60; }) && !cand.muts.some(function (x) { return x <= T - 60 && x > T - 560; }));
+    cand.t = 0;
+    if (react) { cand.ok = true; return; }
+    cand.miss++;   // zweimal ohne Wirkung (der erste Druck weckt in manchen Spielen nur die Controller-Steuerung)
+    if (cand.miss >= 2) dlgTake(cand.el);
   }
   function dlgCheck() {
     if (dlg && dlg.manual) return;
     var b = overlayAt();
-    if (b === (dlg && dlg.el)) return;
-    if (dlg && !b) { dlg = null; scopeEl = null; clearRing(); if (NORM && NORM.hold && !menu && !osk) NORM.hold(false); prev = {}; return; }
+    if (dlg && b === dlg.el) return;
+    if (dlg && !b) { dlg = null; scopeEl = null; clearRing(); if (NORM && NORM.hold && !menu && !osk) NORM.hold(false); prev = {}; candSet(null); return; }
+    if (!dlg) { candSet(b); return; }
+    dlgTake(b);
+  }
+  function dlgTake(b) {
     releaseAll(); scopeEl = b;
     dlg = { el: b, prev: oskState(), next: 0 };
     if (NORM && NORM.hold) NORM.hold(true);
