@@ -21,7 +21,9 @@ Jedes Spiel bindet **`gamepad.js`** ein – genau eine von zwei Arten:
   `<script src="../gamepad.js" data-pad="…" data-pad-labels="…" defer></script>`
   Der Controller wird zu Tasten: Steuerkreuz/linker Stick = Pfeile, A = Enter, B = Esc, X = Leertaste … – je Spiel anpassbar in `data-pad`
   (z. B. `a=Space/Enter`, `ls=wasd`, `y=KeyF:Inventar@#bInv` = Taste, Beschriftung und Bildschirm-Knopf). Menüs ohne Pfeiltasten bedient er
-  automatisch über den gelben Leuchtrahmen.
+  automatisch über den gelben Leuchtrahmen. Knöpfe am Bildschirmrand (Leisten, „Laden öffnen“ …) erreicht man mit **L3 halten**
+  (bzw. der ersten freien Taste von Select/L3/R3, festlegbar mit `hud=…`). Info-Karten neben dem Spielfeld (z. B. Preise eines Regals)
+  gibt das Spiel mit `EasyGamesPad.hud(element)` an den Controller – B führt zurück ins Spiel.
 - **Spiel mit eigener Controller-Steuerung** (liest `navigator.getGamepads()` selbst):
   `<script src="../gamepad.js" data-pad="info" data-pad-labels="ls=Laufen; a=Springen; …" defer></script>`
   Dann ahmt gamepad.js keine Tasten nach, liefert aber jeden Controller im Standard-Layout, die Belegungs-Übersicht und hilft dort, wo das
