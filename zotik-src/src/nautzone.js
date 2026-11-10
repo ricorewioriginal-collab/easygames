@@ -5,7 +5,7 @@ export function createNautZone(c) {
   const { T, mk, G, M, glow, scene } = c;
   const R2 = (R, a, b) => a + R() * (b - a), sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   const sets = {};   // je Welt (Lunaris bleibt beim Weltwechsel erhalten)
-  let Z = null, fire = 0, wake = 0, uw = null;
+  let Z = null, fire = 0, wake = 0, uw = null, gcd = 0;   // gcd: höchstens ein gegnerischer Schuss pro 0,9 s (machbar)
   const shotG = new T.SphereGeometry(.22, 8, 6), shotP = new T.MeshBasicMaterial({ color: 0x9af0ff }), shotE = new T.MeshBasicMaterial({ color: 0xff6a9a });
 
   // See: Lage je Welt (vor dem Gelände festgelegt, damit die Mulde ins Gelände kommt)
@@ -37,7 +37,7 @@ export function createNautZone(c) {
   }
   function addFoe(kind, x, y, z, col, home) {
     const lv = c.eLevel(kind === 'sky' ? 2 : 1), m = foeMesh(kind, col), hp = Math.round(c.eHp(lv) * (kind === 'sea' ? 1.6 : 1.15));
-    const f = { kind, x, y, z, hx: home.x, hy: home.y, hz: home.z, hr: home.r, a: Math.random() * 6, lv, hp, max: hp, dmg: Math.round(c.eDm(lv) * (kind === 'sea' ? 1.2 : .9)), cd: 1 + Math.random() * 2, m, dead: 0, flash: 0 };
+    const f = { kind, x, y, z, hx: home.x, hy: home.y, hz: home.z, hr: home.r, a: Math.random() * 6, lv, hp, max: hp, dmg: Math.round(c.eDm(lv) * (kind === 'sea' ? 1 : .8)), cd: 1 + Math.random() * 2, m, dead: 0, flash: 0 };
     m.g.position.set(x, y, z); Z.foes.push(f); return f;
   }
 
@@ -96,10 +96,10 @@ export function createNautZone(c) {
     uw.style.opacity = med === 'deep' ? 1 : 0;
     if (med === 'sea' && Math.hypot(p.vx, p.vz) > 3 && (wake -= dt) <= 0) { wake = .05; c.emit(p.x - Math.sin(p.face) * 1.6, Z.lake.wl + .15, p.z - Math.cos(p.face) * 1.6, 0xeaf6ff, 2, 1.5, .5, .4, 0); }
     // Gegner
-    let best = null, bd = 26;
+    gcd -= dt; let best = null, bd = 26;
     for (const f of Z.foes) {
       if (f.dead) { f.dead -= dt; if (f.dead <= 0) { f.dead = 0; f.hp = f.max; f.x = f.hx; f.z = f.hz; f.y = f.hy; f.m.g.visible = true; } continue; }
-      const dx = p.x - f.x, dy = p.y + 1 - f.y, dz = p.z - f.z, d = Math.hypot(dx, dy, dz), on = med === f.kind && d < 36;
+      const dx = p.x - f.x, dy = p.y + 1 - f.y, dz = p.z - f.z, d = Math.hypot(dx, dy, dz), on = med === f.kind && d < 32;
       f.a += dt * (on ? .3 : .5);
       let tx = f.hx + Math.cos(f.a) * f.hr, ty = f.hy + (f.kind === 'sky' ? Math.sin(f.a * 2) * 2 : 0), tz = f.hz + Math.sin(f.a) * f.hr;
       if (on) { const k = d > 11 ? .55 : -.2; tx = f.x + dx * k; tz = f.z + dz * k; if (f.kind !== 'sea') ty = f.y + dy * .5; }
@@ -109,7 +109,7 @@ export function createNautZone(c) {
       f.m.g.position.set(f.x, f.y + (f.kind === 'sea' ? Math.max(0, Math.sin(time * 2 + f.a)) * .4 : 0), f.z); f.m.g.rotation.y = Math.atan2(on ? dx : tx - f.x, on ? dz : tz - f.z);
       f.m.b.rotation.z = f.kind === 'sky' ? Math.sin(time * 3 + f.a) * .25 : 0; f.m.b.position.y = f.kind === 'deep' ? Math.sin(time * 2 + f.a) * .2 : 0;
       if (f.flash > 0) { f.flash -= dt; f.m.g.scale.setScalar(1 + f.flash); }
-      if (on) { f.cd -= dt; if (f.cd <= 0) { f.cd = 2.2 + Math.random(); shoot({ x: f.x, y: f.y + (f.kind === 'sea' ? 1.1 : 0), z: f.z }, { x: p.x, y: p.y + 1, z: p.z }, f.kind === 'deep' ? 11 : 15, shotE, false, f.dmg); } }
+      if (on) { f.cd -= dt; if (f.cd <= 0 && gcd <= 0) { gcd = .9; f.cd = 3 + Math.random() * 1.5; shoot({ x: f.x, y: f.y + (f.kind === 'sea' ? 1.1 : 0), z: f.z }, { x: p.x, y: p.y + 1, z: p.z }, f.kind === 'deep' ? 11 : 15, shotE, false, f.dmg); } }
       if (on && d < bd) { bd = d; best = f; }
     }
     // Nautilux feuert selbst (auf den nächsten Gegner im selben Bereich)
