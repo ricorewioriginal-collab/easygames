@@ -9,6 +9,7 @@ import { createFlight } from './flight.js';
 import { createAniFig } from './anifig.js';
 import { createRooms } from './rooms.js';
 import { createNautZone } from './nautzone.js';
+import { createEtappen, ETAP } from './etappen.js';
 import { furMat } from './gfx.js';
 const T=makeT(THREE,.5),$=id=>document.getElementById(id);
 const TOUCH=matchMedia('(pointer:coarse)').matches||'ontouchstart' in window;
@@ -1102,7 +1103,7 @@ function updateFelli(dt){fel.t+=dt;const tx=pl.x-Math.sin(pl.face)*2.2+Math.cos(
   const hop=d>.6?Math.abs(Math.sin(fel.t*9))*.35:Math.sin(fel.t*2)*.03;felli.root.position.set(fel.x,hgt(fel.x,fel.z)+hop,fel.z);felli.root.rotation.y=Math.atan2(pl.x-fel.x,pl.z-fel.z);felli.body.scale.set(1+hop*.2,1-hop*.15,1+hop*.2)}
 
 function update(dt){
-  updNaut(dt);if(mode==='play'&&!dlg.on)NZ().update(dt,time);const frozen=dlg.on;S.t=(S.t||0)+dt;
+  updNaut(dt);if(mode==='play'&&!dlg.on){NZ().update(dt,time);EPX().update(dt,time)}const frozen=dlg.on;S.t=(S.t||0)+dt;
   updatePlayer(dt);updHouses(dt);
   if(MP.on){
     if(MP.role==='host'){const r=MP.rp,rOn=!!(r&&r.on);for(const e of E){const dd=Math.abs(e.x-pl.x)+Math.abs(e.z-pl.z);if(dd<160||e.boss||(rOn&&Math.abs(e.x-r.x)+Math.abs(e.z-r.z)<160))updEnemyMP(e,dt)}updateProjs(dt);if(!frozen)updCmp(dt);mpAoe()}
@@ -1302,7 +1303,7 @@ function destroyWorld(){
   for(const c of scene.children.slice()){if(isKeep(c)||(LS&&LS.vis.has(c)))continue;scene.remove(c);disposeTree(c)}
   for(const im of WLD.ims){const i=INST.indexOf(im);if(i>=0)INST.splice(i,1);im.dispose();im.material.dispose()}
   WLD.terr.geometry.dispose();WLD.terr.material.dispose();
-  for(const k of WLD.edKeys)delete ED[k];NZ().clear(WLD.n);
+  for(const k of WLD.edKeys)delete ED[k];NZ().clear(WLD.n);EPX().stop();
   const a=ARR();for(const k in a)a[k].length=0;boss=null;inH=null;WLD=null;$('boss').hidden=true}
 function restoreLunaris(){
   for(const [c,v] of LS.vis){c.visible=v}
@@ -1953,7 +1954,7 @@ function buildWorld(n){
   setupMission();
   /* Siegel-Hinweis */
   let warnT=0;animObjs.push({fn(t,dt){warnT-=dt;if(mode==='play'&&sealed()&&pl.z<-138&&warnT<=0){warnT=4;toast('🔒 Ein Siegel versperrt den Weg. '+objText())}}});
-  function objText(st){const s=cs();if(n===11)return endObj();if(st===undefined)st=s.st;
+  function objText(st){const s=cs();if(n===11)return endObj();if(st===undefined)st=s.st;if(st===s.st&&EPX().on)return EPX().text();
     return[`Sprich mit ${E1[0]} ${C.at}.`,`Erkunde „${C.wildN}“ im Norden.`,(MIS&&!hunting()?misText():`Vertreibe die Gegner im Norden (${Math.min(s.k,HUNT)}/${HUNT}).`),`Löse das Rätsel: ${pzd.name}.`,`Besiege ${C.M[0]}.`,`Stelle dich ${C.X[0]} („${C.depthN}“).`,`Berichte ${E1[0]} ${C.at}.`,`Kapitel ${n} geschafft! Erkunde ${C.name} frei.`][st]}
   function refresh(){const mm=document.querySelector('#mates .m'),mp=document.querySelector('#mates .p');if(mm)mm.hidden=true;if(mp)mp.hidden=true;
     $('qt').textContent=cs().fin?`Kapitel ${n} – ${C.name}`:C.sub;$('qo').textContent=objText();$('qo').style.whiteSpace='pre-line'}
@@ -1962,11 +1963,12 @@ function buildWorld(n){
   WLD.kill=function(e){const s=cs();
     if(e.stn!==undefined)return endKill(e);
     if(e.hall)return hallKill(e);
+    if(e.echo){S.fl['echo'+n]=(S.fl['echo'+n]||0)+1;$('boss').hidden=true;boss=null;const g=S.fl['echo'+n]===1?pick(['w_ur','a_ur','c_ur']):'';if(g)giveGear(g);const sh=300+n*80;S.shards+=sh;banner('Echo besiegt','Ein Splitter der Erinnerung');toast('💎 +'+sh+(g?' · 🎁 '+GEAR[g].n:''));saveGame(true)}else
     if(e.boss){s.bd=1;$('boss').hidden=true;banner(C.X[0]+' besiegt',C.name+' atmet auf');if(s.st<=5)stage(6);if(cut.def)setTimeout(()=>cutscene(cut.def),1500);for(const o of E)if(o.summoned&&!o.boss&&!o.mini&&!o.dead){o.hp=0;killE(o)}saveGame(true)}
-    else if(e.mini){if(s.st<=4){banner(C.M[0]+' besiegt','Das Siegel bricht');sfx('level');stage(5)}}
-    else if(s.st===2){if(hunting()){s.k++;if(s.k>=HUNT)stage(3);else refresh()}else if(MIS==='elite'&&e.elite)misStep()}};
+    else if(e.mini){if(s.st<=4){banner(C.M[0]+' besiegt','Das Siegel bricht');sfx('level');stage(5);etapIn(1,()=>{refresh();toast('📜 '+objText())})}}
+    else if(s.st===2){if(hunting()){s.k++;if(s.k>=HUNT)etapIn(0,()=>stage(3));else refresh()}else if(MIS==='elite'&&e.elite)misStep()}};
   WLD.zoneEnter=function(z){const s=cs();if(z==='forest'&&s.st===1){s.m=MIS?0:1;s.mc=0;s.k=0;stage(2);setupMission()}if(z==='cave'&&!s.bd&&s.st>=5)WLD.ensureBoss()};
-  WLD.ensureBoss=function(){if(boss||cs().bd)return;boss=spawnEnemy('x'+n,ARENA.x,ARENA.z-6);boss.face=0};
+  WLD.ensureBoss=function(){if(boss||cs().bd)return;if(ETAP[n]&&!cs().e2&&cs().st===5){if(EPX().on)toast('📜 Erst: '+EPX().text());return}boss=spawnEnemy('x'+n,ARENA.x,ARENA.z-6);boss.face=0};
   function finish(){const s=cs();s.fin=1;extChapterDone(n);stage(7);if(n===4&&S.fl.naut&&!S.fl.naut2)S.fl.naut2=1;gainXp(100+n*60);S.shards+=40+n*15;S.potions+=2;sfx('level');
     if(n<MAXCH){banner(`Kapitel ${n} geschafft`,`${CHP[n+1].name} ist jetzt im Weltentor offen`);toast(`🌍 ${CHP[n+1].name} freigeschaltet`)}else{banner('Hauptgeschichte geschafft','Alle Welten sind verbunden');toast('🏆 Elyndra: Die Reise ist vollendet')}
     refresh();saveGame(true)}
@@ -1979,6 +1981,13 @@ function buildWorld(n){
   /* Spieler setzen & Atmosphäre */
   ARENA.x=0;ARENA.z=-182;
   if(n<=10)extWorldBuilt(n,C,h,blk,pathx,R);
+  /* Story-Etappen: zwei eigene Abschnitte je Welt (Verfolgung, Begleitung, Gefahrenzone, Gefährten, Erinnerungen, Himmelssiegel) */
+  function etapIn(i,done){const s=cs(),d=ETAP[n]&&ETAP[n][i],key='e'+(i+1);if(!d||s[key])return done();EPX().start(d,n,()=>{s[key]=1;saveGame(true);done()});refresh()}
+  {const s=cs();if(s.st===2&&hunting()&&s.k>=HUNT&&!s.e1)etapIn(0,()=>stage(3));else if(s.st===5&&!s.bd&&!s.e2)etapIn(1,()=>refresh())}
+  /* Rissspiegel: nach dem Kapitel ein Echo des Weltenbosses (deutlich stärker) für seltene Ausrüstung */
+  if(n<=10){const mx=ARENA.x+9,mz=ARENA.z+12,mg=new T.Group();mg.position.set(mx,h(mx,mz),mz);mg.add(mk(G.box,M(0x3a3a5a,{r:.6}),0,2,0,.4,4,2.4));mg.add(mk(G.box,M(0xc8a0ff,{e:0x8a4aff,ei:1.4,r:.1,m:.6}),.22,2,0,.05,3.4,1.9,false));mg.add(glow(0xb08aff,5,.4,2,0,.5));scene.add(mg);addCol(mx,mz,1);
+    INT.push({x:mx,z:mz,name:'Rissspiegel',get pr(){return 'Echo von '+C.X[0]+' herausfordern'},rad:3,vis:()=>!!cs().fin,talk(){if(E.some(e=>e.echo&&!e.dead))return toast('Das Echo ist schon erwacht!');
+      say([['Zotik','Im Spiegel bewegt sich '+C.X[0]+' – stärker als zuvor. '+(S.fl['echo'+n]?'Noch einmal?':'Ein seltener Schatz wartet, wenn ich es besiege.')]],null,[{t:'Herausfordern',fn(){const e=spawnEnemy('x'+n,ARENA.x,ARENA.z-6,8);e.echo=1;e.face=0;e.awake=true;e.st='chase';boss=e;$('boss').hidden=false;$('bossn').textContent='Echo: '+C.X[0]+' · Lv. '+e.lv;banner('Echo: '+C.X[0],'Lv. '+e.lv);sfx('roar')}},{t:'Später',fn(){}}])}})}
   refresh();
 }
 /* ---- Wahrzeichen am Horizont ---- */
@@ -2570,6 +2579,8 @@ const RUIN_PZ={1:'tones',2:'statues',3:'lights',4:'pairs',5:'orbs',6:'tones',7:'
 const RUIN_AREA={tones:{x0:-11,x1:11,z0:341.4,z1:344.4},lights:{x0:-12.2,x1:-3.4,z0:334,z1:343},statues:{x0:-12.5,x1:-3.5,z0:334,z1:343},pairs:{x0:-12.5,x1:-3.5,z0:334.5,z1:343.5},orbs:{x0:-12,x1:12,z0:334,z1:344}};
 let _nz=null;const NZ=()=>_nz||(_nz=createNautZone({T,mk,G,M,glow,scene,hgt:(x,z)=>hgt(x,z),pl,naut,nAir:()=>nAir(),nSub:()=>nSub(),S:()=>S,eLevel:b=>eLevel({base:'rift'},b),eHp,eDm,INT,anim:fn=>animObjs.push({fn}),makeChest,sfx,toast,emit:(...a)=>emit(...a),save:()=>saveGame(true),hurtP:(...a)=>hurtP(...a),gainXp:n=>gainXp(n),aqua:()=>curCh===5&&!!WLD,atkV:()=>atkV(),dnum:(...a)=>dnum(...a)}));
 const nUp=()=>!!(keys.KeyJ||keys.KeyK||keys.Enter||X.upHold),nDn=()=>!!(keys.Space||keys.ShiftLeft||keys.ShiftRight);
+let _ep=null,_vg=null;const vignette=c=>{if(!_vg){_vg=document.createElement('div');_vg.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:3;transition:opacity .5s;opacity:0';document.body.appendChild(_vg)}_vg.style.opacity=c?1:0;if(c)_vg.style.background=`radial-gradient(ellipse at center,transparent 35%,${c})`};
+const EPX=()=>_ep||(_ep=createEtappen({T,mk,G,M,glow,scene,hgt:(x,z)=>hgt(x,z),pl,INT,pathx:z=>WLD?WLD.path(z):0,blk:(x,z)=>WLD?WLD.blocked(x,z):false,makeVillager:o=>makeVillager(o),animHuman:(P,t,mv)=>animHuman(P,t,mv),say:(...a)=>say(...a),toast,sfx,banner:(...a)=>banner(...a),emit:(...a)=>emit(...a),S:()=>S,cmpKo:id=>{const a=CMP.find(q=>q.id===id);return !a||a.ko},nAir:()=>nAir(),spawnEnemy:(...a)=>spawnEnemy(...a),E,killE:(...a)=>killE(...a),maxHp:()=>maxHp(),vignette}));
 let _rms=null;const RMS=()=>_rms||(_rms=createRooms({T,mk,G,M,glow,scene,hgt:(x,z)=>hgt(x,z),INT,anim:fn=>animObjs.push({fn}),pl,toast,sfx,tone,emit:(...a)=>emit(...a)}));
 const RUIN_GEAR={1:'c_mond',2:'a_rinde',3:'w_dorn',4:'c_glocke',5:'a_koralle',6:'a_frost',7:'w_glut',8:'c_glueck',9:'w_stern',10:'a_stern'};
 function buildRuin(n,col,outside){const P=n+'r',spec=RUIN[n]||RUIN[1],wc=col||0x6a6c8c;
