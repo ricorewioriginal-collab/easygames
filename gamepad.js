@@ -121,7 +121,11 @@
       for (k in remap) { var p = g.buttons[remap[k]]; if (p) { b[+k] = p; any = true; } }
       return any ? { id: g.id, index: g.index, connected: g.connected, timestamp: g.timestamp, mapping: 'standard', buttons: b, axes: g.axes, vibrationActuator: g.vibrationActuator, hapticActuators: g.hapticActuators, raw: g.raw } : g;
     }
-    function stdList() { var l, o = []; try { l = rawGet() || []; } catch (e) { l = []; } for (var i = 0; i < l.length; i++) o[i] = l[i] ? std(l[i]) : null; return o; }
+    // Kein Controller: Fingerabdruck-Sensoren, Tasten und Sensoren am Handy, die Android/Chrome als „Gamepad“ meldet – sonst schalten
+    // Spiele am Handy auf Controller-Hinweise um und blenden die Touch-Steuerung aus
+    var NOPAD = /uinput|fpc|goodix|fingerprint|fortsense|silead|egistec|synaptics_?fp|chipone|gf\d{3}|sec_touch|touchscreen|gpio|qpnp|pmic|pon\b|hall|accel|gyro|sensor|keypad|power|volume|headset|stylus|pen\b/i;
+    function notPad(g) { return !g || NOPAD.test(g.id || '') || ((g.buttons || []).length < 4 && (g.axes || []).length < 2); }
+    function stdList() { var l, o = []; try { l = rawGet() || []; } catch (e) { l = []; } for (var i = 0; i < l.length; i++) o[i] = l[i] && !notPad(l[i]) ? std(l[i]) : null; return o; }
     function flip(g) { var b = g.buttons.slice(), t; t = b[12]; b[12] = b[13]; b[13] = t; t = b[14]; b[14] = b[15]; b[15] = t;
       return { id: g.id, index: g.index, connected: g.connected, timestamp: g.timestamp, mapping: 'standard', buttons: b, axes: g.axes.map(function (v) { return -v; }), vibrationActuator: g.vibrationActuator }; }
     function fire(type) { try { var ev = new Event(type); Object.defineProperty(ev, 'gamepad', { value: virt }); root.dispatchEvent(ev); } catch (e) { } }
@@ -137,7 +141,7 @@
     try { Object.defineProperty(nav, 'getGamepads', { value: list, configurable: true, writable: true }); } catch (e) { return; }
     // gamepadconnected liefert ebenfalls das Standard-Layout (für Spiele, die e.gamepad.mapping prüfen)
     ['gamepadconnected', 'gamepaddisconnected'].forEach(function (t) {
-      root.addEventListener(t, function (e) { try { if (e.gamepad && !e.gamepad.raw) Object.defineProperty(e, 'gamepad', { value: std(e.gamepad) }); } catch (x) { } }, true);
+      root.addEventListener(t, function (e) { try { if (e.gamepad && e.gamepad !== virt && notPad(e.gamepad)) { e.stopImmediatePropagation(); return; } if (e.gamepad && !e.gamepad.raw) Object.defineProperty(e, 'gamepad', { value: std(e.gamepad) }); } catch (x) { } }, true);
     });
     root.EasyGamesPadNormal = {
       version: 1, raw: function () { try { return rawGet() || []; } catch (e) { return []; } }, std: std, auto: auto,
@@ -417,7 +421,11 @@
     var s = state(list), p = prev, i;
     prev = s;
     if (!p.b) return;   // erster Durchlauf: nur Zustand merken, damit ein schon gedrückter Knopf nichts auslöst
-    if (!padOn && (s.b.length || s.d.join('') !== '0000' || s.ls.join('') !== '0000' || Math.abs(s.rs[0]) > 0.4 || Math.abs(s.rs[1]) > 0.4)) setPad(true);
+    // Controller-Modus nur bei einer echten Eingabe (Knopf gedrückt, Stick bewegt) – nicht bei einem Gerät, das dauerhaft „gedrückt“ meldet
+    if (!padOn) { var go = Math.abs(s.rs[0]) > 0.6 && Math.abs(p.rs[0] || 0) < 0.3 || Math.abs(s.rs[1]) > 0.6 && Math.abs(p.rs[1] || 0) < 0.3;
+      for (i = 0; i < 12 && !go; i++) if (s.b[i] && !p.b[i]) go = true;
+      for (i = 0; i < 4 && !go; i++) if ((s.d[i] && !p.d[i]) || (s.ls[i] && !p.ls[i])) go = true;
+      if (go) setPad(true); }
     if (padOn && now > badgeT) { badgeT = now + 400; drawBadges(); }
     if (s.b[8] && s.b[9] && !(p.b[8] && p.b[9])) { releaseAll(); menuOpen(); return; }   // Select + Start: Belegung ansehen und ändern
     for (i = 0; i < 4; i++) if ((s.d[i] && !p.d[i]) || (s.ls[i] && !p.ls[i])) dirT = root.performance.now();
