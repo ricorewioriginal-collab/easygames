@@ -994,8 +994,8 @@ function updatePlayer(dt){
   const mvx=(pl.vx+pl.kx)*dt,mvz=(pl.vz+pl.kz)*dt,ns=Math.min(10,Math.max(1,Math.ceil(Math.hypot(mvx,mvz)/.3)));pl.kx*=Math.exp(-9*dt);pl.kz*=Math.exp(-9*dt);
   for(let q=0;q<ns;q++){const nx=pl.x+mvx/ns,nz=pl.z+mvz/ns;if(!pBlocked(nx,nz)){pl.x=nx;pl.z=nz}else if(!pBlocked(nx,pl.z))pl.x=nx;else if(!pBlocked(pl.x,nz))pl.z=nz;pushOut(pl,.5)}
   let ty=hgt(pl.x,pl.z)+naut.lift;{const gh=hgt(pl.x,pl.z),LK=naut.on&&!nAir()?NZ().lakeAt(pl.x,pl.z):null;
-    if(nAir()){naut.alt=Math.max(gh+3,Math.min(80,(naut.alt??gh+6)+(nUp()?11:nDn()?-11:0)*dt));ty=naut.alt}
-    else if(LK){if(nSub()){naut.dep=Math.max(gh+1,Math.min(LK.wl+.1,(naut.dep??LK.wl-2.5)+(nUp()?5:nDn()?-5:0)*dt));ty=naut.dep}else ty=LK.wl+.1}
+    if(nAir()||(nSub()&&curCh===5)){naut.alt=Math.max(gh+(nAir()?3:.6),Math.min(80,(naut.alt??gh+6)+(nUp()?11:nDn()?-11:0)*dt));ty=naut.alt}
+    else if(LK){if(nSub()&&LK.kind==='water'){naut.dep=Math.max(gh+1,Math.min(LK.wl+.1,(naut.dep??LK.wl-2.5)+(nUp()?5:nDn()?-5:0)*dt));ty=naut.dep}else ty=LK.wl+.1}
     else naut.dep=null;nMedHint()}
   pl.y+=(ty-pl.y)*Math.min(1,dt*18);if(Math.abs(pl.y-ty)>1.5)pl.y=ty;
   if(pl.atk>=0){pl.atkT+=dt*formSpd();const du=ATD[pl.combo];if(!pl.hit&&pl.atkT>du*.42){pl.hit=true;doHit()}if(pl.atkT>=du){pl.atk=-1;pl.comboT=.55;if(pl.buf>0){pl.buf=0;startAttack()}}}
@@ -1577,7 +1577,7 @@ const navM=()=>naut.on?NF[naut.f].sp*(keys.ShiftLeft&&S.fl.naut2&&!nAir()&&!nSub
 let nMed=null;function nMedHint(){const m=NZ().medium();if(m===nMed)return;nMed=m;if(!m)return;const k='nm_'+m;if(S.fl[k])return;S.fl[k]=1;toast({sky:'🎈 Himmel: A halten = steigen, B halten = sinken. Die Nautilux feuert selbst auf Wolkenrochen – Himmelsinseln tragen Schätze.',sea:'⛵ Die Nautilux fährt als Schiff über den See. Seeschlangen greifen an, Treibgut lässt sich bergen.',deep:'🛥️ Abtauchen: A halten = steigen, B halten = sinken. Am Grund liegt ein Tiefseeschatz – Vorsicht vor Tiefseefischen.'}[m])}
 const nAir=()=>naut.on&&naut.f===2,nSub=()=>naut.on&&naut.f===1;
 const poolB=(x,z)=>{const q=WLD&&WLD.pool;return !!q&&Math.hypot(x-q.x,z-q.z)<q.r};
-const pBlocked=(x,z)=>{if(naut.on&&!nAir()&&NZ().lakeAt(x,z))return false;if(nAir())return x<-128||x>128||z>76||z<-232||(z<-148&&(WLD?WLD.sealedNow():!lunOpen()));if(poolB(x,z))return !nSub();return blocked(x,z)};
+const pBlocked=(x,z)=>{if(naut.on&&!nAir()&&NZ().lakeAt(x,z))return false;if(nAir()||(nSub()&&curCh===5&&pl.y>hgt(x,z)+1))return x<-128||x>128||z>76||z<-232||(z<-148&&(WLD?WLD.sealedNow():!lunOpen()));if(poolB(x,z))return !nSub();return blocked(x,z)};
 function makeNaut(){const g=new T.Group(),br=M(0xc89a4a,{m:.6,r:.35}),dk=M(0x5a4a3a,{r:.6}),gl=M(0x9ae8ff,{e:0x4ac8ff,ei:.8});
   g.add(mk(G.sph,br,0,.9,0,1.5,.9,2.2));g.add(mk(G.sph,gl,0,1.55,.55,.85,.62,.95,false));g.add(mk(G.box,dk,0,1.5,-1.9,.12,.95,.9));
   for(const s of [-1,1])g.add(mk(G.box,dk,s*1.3,.7,-.2,.8,.1,.7));
@@ -2566,7 +2566,7 @@ function obBuild(id,t,x,z,hw,hd,grp){const y=hgt(x,z);let m;const o={id,t,x,z,hw
 const RUIN={1:['block'],2:['block','hook'],3:['crack','block2'],4:['thorn','torch2'],5:['crack','water'],6:['thorn','hook'],7:['block','water','crack2'],8:['torch','hook','thorn2'],9:['crack','water','torch2'],10:['block','hook','thorn2']};
 const RUIN_PZ={1:'tones',2:'statues',3:'lights',4:'pairs',5:'orbs',6:'tones',7:'lights',8:'statues',9:'pairs',10:'orbs'};
 const RUIN_AREA={tones:{x0:-11,x1:11,z0:341.4,z1:344.4},lights:{x0:-12.2,x1:-3.4,z0:334,z1:343},statues:{x0:-12.5,x1:-3.5,z0:334,z1:343},pairs:{x0:-12.5,x1:-3.5,z0:334.5,z1:343.5},orbs:{x0:-12,x1:12,z0:334,z1:344}};
-let _nz=null;const NZ=()=>_nz||(_nz=createNautZone({T,mk,G,M,glow,scene,hgt:(x,z)=>hgt(x,z),pl,naut,nAir:()=>nAir(),nSub:()=>nSub(),S:()=>S,eLevel:b=>eLevel({base:'rift'},b),eHp,eDm,INT,anim:fn=>animObjs.push({fn}),makeChest,sfx,toast,emit:(...a)=>emit(...a),save:()=>saveGame(true),hurtP:(...a)=>hurtP(...a),gainXp:n=>gainXp(n),atkV:()=>atkV(),dnum:(...a)=>dnum(...a)}));
+let _nz=null;const NZ=()=>_nz||(_nz=createNautZone({T,mk,G,M,glow,scene,hgt:(x,z)=>hgt(x,z),pl,naut,nAir:()=>nAir(),nSub:()=>nSub(),S:()=>S,eLevel:b=>eLevel({base:'rift'},b),eHp,eDm,INT,anim:fn=>animObjs.push({fn}),makeChest,sfx,toast,emit:(...a)=>emit(...a),save:()=>saveGame(true),hurtP:(...a)=>hurtP(...a),gainXp:n=>gainXp(n),aqua:()=>curCh===5&&!!WLD,atkV:()=>atkV(),dnum:(...a)=>dnum(...a)}));
 const nUp=()=>!!(keys.KeyJ||keys.KeyK||keys.Enter||X.upHold),nDn=()=>!!(keys.Space||keys.ShiftLeft||keys.ShiftRight);
 let _rms=null;const RMS=()=>_rms||(_rms=createRooms({T,mk,G,M,glow,scene,hgt:(x,z)=>hgt(x,z),INT,anim:fn=>animObjs.push({fn}),pl,toast,sfx,tone,emit:(...a)=>emit(...a)}));
 const RUIN_GEAR={1:'c_mond',2:'a_rinde',3:'w_dorn',4:'c_glocke',5:'a_koralle',6:'a_frost',7:'w_glut',8:'c_glueck',9:'w_stern',10:'a_stern'};
