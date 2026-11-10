@@ -244,7 +244,7 @@
     banner('💣 ' + (user || 'Jemand') + ' hat eine Bombe gelegt!');
     (function tick() {
       if (!bomb) return; var left = Math.ceil((bomb.end - Date.now()) / 1000), n = Object.keys(bomb.got).length;
-      if (n >= bomb.need) { bomb.el.remove(); bomb = null; banner('✅ Bombe entschärft! Danke Chat!'); return; }
+      if (n >= bomb.need) { bomb.el.remove(); bomb = null; banner('✅ Bombe entschärft! Danke Chat!'); ttCount('bomb'); return; }
       if (left <= 0) { bomb.el.remove(); bomb = null; banner('💥 BUMM!'); fx('shake', 2); setTimeout(function () { run1('restart'); }, 1200); return; }
       bomb.el.innerHTML = '💣 ' + left + ' s · schreibt <span style="color:#ffd84a">„' + esc(bomb.word) + '“</span> ' + n + '/' + bomb.need;
       setTimeout(tick, 250);
@@ -309,10 +309,12 @@
   }
   var BAN = { slow: '🐢 Zeitlupe!', fast: '⚡ Turbo!', lag: '🐌 Verzögerung!', invert: '🙃 Deine Steuerung ist vertauscht!', nokeys: '🚫 Steuerung weg!', blind: '🔦 Licht aus!', fog: '🌫️ Nebel!',
     drunk: '🥴 Betrunken!', dance: '🕺 Tanzen!', tilt: '📐 Schief!', ghost: '👻 Unsichtbar!', blur: '👓 Brille weg!', swap: '🔀 Steuerung vertauscht!', freeze: '❄️ Steuerung eingefroren!', chaos: '🌀 Chaos!' };
+  var TROLLS = ACTS.filter(function (x) { return x[3] === 'troll' || x[3] === 'fx'; }).map(function (x) { return /^(\w+)/.exec(x[0])[1]; });
   function run1(action, user, times) {
     times = Math.max(1, Math.min(20, times || 1));
     var rep = /\*(\d+)$/.exec(action); if (rep) { action = action.slice(0, rep.index); times = Math.min(30, times * +rep[1]); }
     var m = /^(\w+):?(.*)$/.exec(action); if (!m) return;
+    if (user !== 'Test' && TROLLS.indexOf(m[1]) >= 0) ttCount('trolls');
     var kind = m[1], arg = m[2], txt = arg.replace(/\{user\}/g, user || ''), sec = function (d, max) { return Math.min(max || 30, +arg || d); };
     if (Date.now() < freezeUntil && (kind === 'pad' || kind === 'key')) return;
     if (BAN[kind]) banner(BAN[kind]);
@@ -357,6 +359,20 @@
   window.EG_TIKTOK = { run: run, config: function () { return cfg; }, restore: restoreSave, gameActions: gameActions, actions: ACTS };
 
   // ---------- Ereignisse ----------
+  // Exklusive TikTok-Erfolge (cloud/anmacha-ach.js, Seite erfolge.html): Zähler je Gerät in anmacha-tiktok – nur echte LIVE-Ereignisse
+  // (nicht Demo/Test, nicht in den Einstellungen) und nur in der Quelle, die das Spiel steuert (sonst zählt OBS mit zwei Quellen doppelt)
+  var TTK = 'anmacha-tiktok', ttSt = null, ttT = 0;
+  function ttCount(k, n) {
+    if (SETUP || NOGAME || (VIEW !== 'all' && VIEW !== 'game') || /Demo|Test/i.test(state.title || '')) return;
+    try {
+      if (!ttSt) { ttSt = JSON.parse(localStorage.getItem(TTK) || '{}') || {}; ttSt.t = ttSt.t || {}; ttSt.tg = ttSt.tg || {}; ttSt.td = ttSt.td || []; }
+      ttSt.t[k] = (ttSt.t[k] || 0) + (n || 1);
+      var d = new Date(), day = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+      if (ttSt.td.indexOf(day) < 0) ttSt.td.push(day);
+      if (!ttSt.tg[GID]) ttSt.tg[GID] = Date.now();
+      clearTimeout(ttT); ttT = setTimeout(function () { try { localStorage.setItem(TTK, JSON.stringify(ttSt)); } catch (x) { } }, 1500);   // gebündelt schreiben
+    } catch (x) { }
+  }
   function onEvent(ev) {
     var e = eff(), who = ev.user || 'Jemand';
     if (ev.type === 'chat') {
@@ -366,18 +382,19 @@
       if (!hit) return;
       var cd = (+e.cooldown || 0) * 1000, now = Date.now(); if (cd && now - (lastCmd[who] || 0) < cd) return; lastCmd[who] = now;
       if (e.mode === 'vote') { votes[hit[0]] = (votes[hit[0]] || 0) + 1; drawVote(); return; }
-      toast(who + ': ' + hit[0]); run(hit[1], who);
+      toast(who + ': ' + hit[0]); run(hit[1], who); ttCount('cmds');
     } else if (ev.type === 'gift') {
       var name = String(ev.gift || '').toLowerCase(), g = (e.gifts || []).find(function (x) { return x.gift && (x.gift.toLowerCase() === name || String(x.gift) === String(ev.giftId)); });
-      var dia = (+ev.diamonds || giftInfo(ev.gift).diamonds || 1) * (ev.count || 1); fans[who] = (fans[who] || 0) + dia; drawTop();
+      var dia = (+ev.diamonds || giftInfo(ev.gift).diamonds || 1) * (ev.count || 1); fans[who] = (fans[who] || 0) + dia; drawTop(); ttCount('diam', dia);
       if (!g) return;
-      toast(who + ': ' + (g.icon || '🎁') + ' ' + g.gift + (ev.count > 1 ? ' ×' + ev.count : '') + ' → ' + (g.label || g.action)); run(g.action, who, ev.count);
+      toast(who + ': ' + (g.icon || '🎁') + ' ' + g.gift + (ev.count > 1 ? ' ×' + ev.count : '') + ' → ' + (g.label || g.action)); run(g.action, who, ev.count); ttCount('gifts', ev.count || 1);
     } else if (ev.type === 'like' && e.likes && e.likes.every > 0) {
-      likeSum += ev.count || 1;
+      likeSum += ev.count || 1; ttCount('likes', ev.count || 1);
       while (likeSum >= e.likes.every) { likeSum -= e.likes.every; toast('❤️ ' + e.likes.every + ' Likes → ' + (e.likes.label || e.likes.action)); run(e.likes.action, who); }
       likeBar.firstChild.style.width = Math.round(likeSum / e.likes.every * 100) + '%';
     } else if (ev.type === 'join') { if (e.join && Date.now() - joinT > 3000) { joinT = Date.now(); runText(e.join, who); } }
     else if ((ev.type === 'follow' || ev.type === 'share' || ev.type === 'sub') && e[ev.type]) runText(e[ev.type], who);
+    if (ev.type === 'follow') ttCount('follows');
   }
   // say: erscheint in der Ereignis-Liste (auch in der Einblendungs-Quelle), alles andere führt die Spiel-Quelle aus
   function runText(a, who) { String(a).split('+').forEach(function (one) { one = one.trim(); if (/^say:/.test(one)) toast(one.slice(4).replace(/\{user\}/g, who)); else run(one, who); }); }

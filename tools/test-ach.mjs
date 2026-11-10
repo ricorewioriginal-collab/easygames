@@ -16,7 +16,7 @@ ok('Serien: Lücken, Jahres-/Monatswechsel, Doppelte');
 // Zusammenführen: früheste Zeit gewinnt, Tage vereinigt, Müll wird ignoriert
 const m = A.merge({ u: { 'explore:1': 500, 'daily:1': 9 }, g: { a: 5 }, d: [20260102, 20260101], f: { owl: 7 } }, { u: { 'explore:1': 300, 'x:1': 'kaputt' }, g: { b: 6 }, d: [20260103, 5, 'x'], f: {} });
 assert.deepEqual(m.u, { 'explore:1': 300, 'daily:1': 9 }); assert.deepEqual(m.g, { a: 5, b: 6 }); assert.deepEqual(m.d, [20260101, 20260102, 20260103]); assert.deepEqual(m.f, { owl: 7 });
-assert.deepEqual(A.merge(null, undefined), { u: {}, gu: {}, g: {}, d: [], h: [], f: {}, m: 0, v: {}, n: {} });
+assert.deepEqual(A.merge(null, undefined), { u: {}, gu: {}, g: {}, d: [], h: [], f: {}, m: 0, v: {}, n: {}, t: {}, tg: {}, td: [] });
 assert(A.sameState(m, A.merge(m, {})) && !A.sameState(m, {}));
 assert.deepEqual(A.merge({ h: [20260102, 5] }, { h: [20260101, 20260102] }).h, [20260101, 20260102], 'Tagesherausforderung: Tage vereinigt, ungültige fallen weg');
 const m2 = A.merge({ gu: { 'a:x': 50 }, m: 4, v: { a: { stars: 5, time: 90 } } }, { gu: { 'a:x': 20, 'a:y': 9 }, m: 7, v: { a: { stars: 3, time: 60 }, b: { wins: -2 } } });
@@ -57,6 +57,7 @@ ok('Bewertung: Stufen, Fortschritt, einmalige Freischaltung, Punkte/Rang');
 const ids = [].concat(...Object.values(A.GENRES)), own = {}; ids.slice(0, 6).forEach(i => { own[i] = { total: 4, done: 4 }; }); own[ids[6]] = { total: 100, done: 100 };
 const allStats = { games: ids.map(i => g(i, { played: true, multi: true, vals: [{ id: 'stars', v: 10000 }, { id: 'wins', v: 300 }, { id: 'time', v: 5 }] })), own, today: 20270101, state: { d: Array.from({ length: 120 }, (_, i) => { const t = new Date(Date.UTC(2026, 0, 1 + i)); return t.getUTCFullYear() * 10000 + (t.getUTCMonth() + 1) * 100 + t.getUTCDate(); }), m: 12, h: Array.from({ length: 120 }, (_, i) => 20260101 + i), f: { owl: 1, early: 1, weekend: 1, app: 1, tv: 1, pad: 1 } }, cloud: true, board: true };
 allStats.state.n = Object.fromEntries(ids.map(i => [i, 40]));
+allStats.state.t = { gifts: 9999, diam: 999999, likes: 999999, follows: 9999, cmds: 9999, trolls: 999, bomb: 99 }; allStats.state.tg = Object.fromEntries(ids.slice(0, 20).map(i => [i, 1])); allStats.state.td = allStats.state.d.slice(0, 60);   // TikTok LIVE
 const full = A.evaluate(allStats, 1);
 assert.equal(full.done, full.total, 'alle Stufen erreichbar (' + full.done + '/' + full.total + ')');
 const max = A.DEFS.reduce((t, d) => t + d.thr.reduce((x, _, i) => x + A.PTS[i], 0), 0);
@@ -98,4 +99,16 @@ ok('Definitionen: eindeutige IDs, steigende Schwellen, Namen und Punkte je Stufe
   const failing = await A.sync({ getUserDoc: async () => ({ u: { 'a:1': 1 } }), putUserDoc: async () => { throw new Error('save'); } });
   assert.deepEqual(failing.u, { 'a:1': 1 }, 'Schreibfehler verliert nichts');
   ok('Abgleich: vereinigt, schreibt nur bei Änderung, überlebt Schreibfehler');
+}
+
+// TikTok LIVE (exklusiv): Zähler aus anmacha-tiktok, Zusammenführen über Geräte, eigene Stufen, kein Einfluss auf die Rang-Schwellen
+{
+  const st = A.merge({ t: { gifts: 60, likes: 900 }, tg: { kart: 5, zotik: 9 }, td: [20261108, 20261109] }, { t: { gifts: 12, follows: 3 }, tg: { kart: 2 }, td: [20261109, 20261110] });
+  assert.deepEqual(st.t, { gifts: 60, likes: 900, follows: 3 }); assert.deepEqual(st.tg, { kart: 2, zotik: 9 }); assert.deepEqual(st.td, [20261108, 20261109, 20261110]);
+  const r = A.evaluate({ games: [], state: st, own: {}, today: 20261110 }, 1000), it = id => r.items.find(i => i.id === id);
+  assert.equal(it('tt-live').level, 1); assert.equal(it('tt-games').level, 1); assert.equal(it('tt-gifts').level, 2); assert.equal(it('tt-likes').level, 1); assert.equal(it('tt-fans').level, 1);
+  assert.ok(it('tt-gifts').tiktok && !it('explore').tiktok);
+  const plain = A.DEFS.filter(d => !d.tiktok).reduce((t, d) => t + d.thr.reduce((x, _, i) => x + A.PTS[i], 0), 0);
+  assert.equal(A.RANKS[A.RANKS.length - 1][0], Math.round(plain * 0.85));
+  console.log('PASS TikTok-Erfolge: Zähler, Abgleich, Stufen, Ränge unverändert');
 }
