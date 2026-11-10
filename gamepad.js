@@ -180,6 +180,8 @@
     if (!t) return;
     if (t === 'nonav') { opt.nav = false; return; }
     if (t === 'info') return;
+    var hm = /^hud=(select|l3|r3|off)$/.exec(t); if (hm) { opt.hud = hm[1]; return; }
+    if (t === 'dlg=off') { opt.dlg = false; return; }   // Spiel führt selbst durch alle seine Fenster: keine Fenster-Hilfe   // Taste zum Halten für die Bildschirm-Knöpfe (info-Spiele), Standard Select
     var i = t.indexOf('='); if (i < 0) return;
     var k = t.slice(0, i), v = t.slice(i + 1), at = v.indexOf('@'), sel = '';
     if (at >= 0) { sel = v.slice(at + 1); v = v.slice(0, at); }
@@ -414,12 +416,13 @@
     if (padOn && now > badgeT) { badgeT = now + 400; drawBadges(); }
     if (s.b[8] && s.b[9] && !(p.b[8] && p.b[9])) { releaseAll(); menuOpen(); return; }   // Select + Start: Belegung ansehen und ändern
     if (now > oskScanT) { oskScanT = now + 300; if (oskScan()) return; }   // neu erschienenes Textfeld (Name, Code …) → Tastatur
-    if (opt.info && !dlg) {   // Select gedrückt halten: Knöpfe auf dem Bildschirm (Tasche, Menü, Karte …) mit dem Controller wählen
-      if (s.b[8] && !p.b[8]) selT = now;
-      if (!s.b[8] || s.b[9]) selT = 0;
+    if (opt.info && !dlg && opt.hud !== 'off') {   // Select (bzw. hud=l3/r3) gedrückt halten: Knöpfe auf dem Bildschirm (Tasche, Menü, Karte …) mit dem Controller wählen
+      var HB = { select: 8, l3: 10, r3: 11 }[opt.hud || 'select'];
+      if (s.b[HB] && !p.b[HB]) selT = now;
+      if (!s.b[HB] || s.b[9]) selT = 0;
       else if (selT && now - selT > 500) { selT = 0; hudMode(); return; }
     }
-    if (opt.info && now > dlgT) { dlgT = now + 250; dlgCheck(); }   // Fenster des Spiels (z. B. „Game Over“), das die eigene Controller-Steuerung nicht kennt
+    if (opt.info && opt.dlg !== false && now > dlgT) { dlgT = now + 250; dlgCheck(); }   // Fenster des Spiels (z. B. „Game Over“), das die eigene Controller-Steuerung nicht kennt
     if (dlg) { dlgTick(now); return; }
     if (opt.info) return;   // Spiel mit eigener Controller-Steuerung: nichts nachahmen
 
@@ -689,6 +692,7 @@
     if (!box) return null;
     var r = box.getBoundingClientRect(); if (r.width * r.height > 0.92 * root.innerWidth * root.innerHeight) return null;   // ganzer Bildschirm = Spiel-Oberfläche (HUD), kein Fenster
     var a = doc.activeElement; if (a && a !== doc.body && box.contains(a)) return null;   // das Spiel führt selbst durch sein Fenster
+    if (box.querySelector('[class*="focus" i]:not(button:focus)') && !box.querySelector(':focus')) { var fx = box.querySelector('[class*="focus" i]'); if (fx && fx.getClientRects().length) return null; }   // eigene Markierung des Spiels (z. B. .gp-focus) – nicht doppelt steuern
     return box;
   }
   function dlgCheck() {
@@ -710,7 +714,7 @@
     if (NORM && NORM.hold) NORM.hold(true);
     focusEl = c.e; drawRing();
     if (!hudTip) hudTip = el('left:50%;top:12px;transform:translateX(-50%);padding:7px 14px;border-radius:12px;background:rgba(8,10,20,.9);color:#fff;font:600 13px/1.4 system-ui,sans-serif');
-    hudTip.textContent = '🎮 Knöpfe auf dem Bildschirm: ✚/Stick wählen · A drücken · B oder Select zurück ins Spiel'; show(hudTip, true);
+    hudTip.textContent = '🎮 Knöpfe auf dem Bildschirm: ✚/Stick wählen · A drücken · B zurück ins Spiel'; show(hudTip, true);
   }
   function dlgTick(now) {
     var dt0 = Math.min(0.05, dlg.t ? (now - dlg.t) / 1000 : 0.016); dlg.t = now;
@@ -720,8 +724,8 @@
       var MD = { u: 0, d: 1, l: 2, r: 3 };
       if (mb.dir !== mp.dir) { dlg.next = now + 320; if (mb.dir) navigate(MD[mb.dir]); }
       else if (mb.dir && now > dlg.next) { dlg.next = now + 150; navigate(MD[mb.dir]); }
-      if (mh(0)) { var f = focusEl; hudEnd(); if (f) { focusEl = f; activate(); clearRing(); } return; }   // Knopf drücken, dann übernimmt wieder das Spiel (oder die Fenster-Hilfe, falls sich ein Fenster öffnet)
-      if (mh(1) || mh(8)) hudEnd();
+      if (mh(0)) { if (focusEl && activate()) root.setTimeout(function () { if (dlg && dlg.manual && !(focusEl && usable(focusEl))) { var c = pick(0); if (c) { focusEl = c.e; drawRing(); } } }, 120); return; }   // drücken und weiter wählen (z. B. „Mehr“ öffnet weitere Knöpfe); B zurück ins Spiel
+      if (mh(1)) hudEnd();
       return;
     }
     if (!dlg.el.isConnected || !dlg.el.getClientRects().length) { dlgCheck(); return; }
@@ -743,7 +747,7 @@
     var l = legendList(); if (!l.length) return;
     legendBox();
     legendEl.style.columns = '2 220px'; legendEl.style.minWidth = '';
-    legendEl.innerHTML = '<div style="column-span:all;font-size:11px;letter-spacing:.06em;color:#7ff3ff;margin-bottom:4px">🎮 CONTROLLER · Select + Start: Belegung ändern' + (opt.info ? ' · Select halten: Knöpfe auf dem Bildschirm' : '') + '</div>' +
+    legendEl.innerHTML = '<div style="column-span:all;font-size:11px;letter-spacing:.06em;color:#7ff3ff;margin-bottom:4px">🎮 CONTROLLER · Select + Start: Belegung ändern' + (opt.info && opt.hud !== 'off' ? ' · ' + ({ l3: 'L3', r3: 'R3' }[opt.hud] || 'Select') + ' halten: Knöpfe auf dem Bildschirm' : '') + '</div>' +
       l.map(function (x) { return '<div style="break-inside:avoid;white-space:nowrap"><b style="display:inline-block;min-width:26px;padding:0 5px;margin-right:6px;border-radius:7px;text-align:center;background:' + (GCOL[x[2]] || '#334155') + '">' + x[0] + '</b>' + x[1].replace(/</g, '&lt;') + '</div>'; }).join('');
     show(legendEl, true);
     legendTimer = root.setTimeout(function () { show(legendEl, false); }, ms);

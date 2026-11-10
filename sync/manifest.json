@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f55ddd83c1a0",
- "generated": "2026-11-10T03:25:52+01:00",
- "commit": "c4674d544ab6ff1e9fb9f5cae0d65a5bb30f7709",
+ "version": "afe5eae9b5b9",
+ "generated": "2026-11-10T03:56:29+01:00",
+ "commit": "04032082043cc325553708e99f3b5ea81fc91183",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3998,8 +3998,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 109845,
-   "h": "253d25e5eafbc5c6e23f5a9765a62750ebb89b2faf56d3c4806c9be9ed7cf790"
+   "s": 110044,
+   "h": "046b9d58cfdeedfa0bee1958c767e1e20763d45caab321cc360751f8130456da"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -4058,8 +4058,8 @@
   },
   {
    "p": "bunte-insel/js/bunte-insel.min.js",
-   "s": 2157435,
-   "h": "8c21cf605cc873c366f5e52da47dbf16825f0456c4bab48cf53d614455b29e79"
+   "s": 2157572,
+   "h": "dbe565c0f8f8e7fd21218d0fc549e49e9912d8b585cf102dd91392469f6bae24"
   },
   {
    "p": "bunte-insel/js/camp.js",
@@ -4143,8 +4143,8 @@
   },
   {
    "p": "bunte-insel/js/gamepad.js",
-   "s": 14055,
-   "h": "a37edd852d0daec9a35918a581c78a6989502188af5d43e1c249d6df6b5cb61e"
+   "s": 14325,
+   "h": "df4233faf7c820a523b19db497118e5f277b438bbe63896d0adb1c1dd082feb6"
   },
   {
    "p": "bunte-insel/js/garden.js",
@@ -5533,8 +5533,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 59686,
-   "h": "ad142484b0e766efc2e02fdb477f44959f8faf005a2c677a88ab86446f874769"
+   "s": 60527,
+   "h": "d2805ca68cfdef67bd013ca478701f2f5da49694cd2b0120d122d1b4fde6f2d4"
   },
   {
    "p": "games.js",
@@ -8839,7 +8839,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256786,
-   "h": "043de1b403f680226c03840f10c25fae5fc39ee17e881d0a9e0f7342e112b305"
+   "h": "ddd58e2f192018ff204533b074d74015c506fc6265dbe2e3ad302d9578c45d88"
   },
   {
    "p": "taschi/card.svg",

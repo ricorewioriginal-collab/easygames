@@ -26,6 +26,8 @@ Jedes Spiel bindet **`gamepad.js`** ein – genau eine von zwei Arten:
   `<script src="../gamepad.js" data-pad="info" data-pad-labels="ls=Laufen; a=Springen; …" defer></script>`
   Dann ahmt gamepad.js keine Tasten nach, liefert aber jeden Controller im Standard-Layout, die Belegungs-Übersicht und hilft dort, wo das
   Spiel den Controller nicht kennt (Fenster wie „Game Over“, Bildschirm-Knöpfe per **Select halten**).
+  Führt das Spiel selbst durch alle seine Fenster: `dlg=off`; braucht es Select selbst: `hud=l3` (oder `hud=r3`, `hud=off`).
+  Jede Funktion des Spiels gehört auf eine Controller-Taste – auch Knöpfe am Bildschirmrand und Ja/Nein-Fragen.
 
 **Immer eintragen:** `data-pad-labels` – was jede Taste im Spiel macht (`a=…; b=…; x=…; y=…; lb=…; rb=…; lt=…; rt=…; ls=…; rs=…; dpad=…; start=…`).
 Die Beschriftungen erscheinen in der Controller-Übersicht (erster Controller-Druck und **Select + Start**), in der TikTok-Steuerung („A drücken (Springen)“)
