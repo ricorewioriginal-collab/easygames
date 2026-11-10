@@ -1461,7 +1461,8 @@ const CSK={lyra:{n:'Heilwelle',em:'💚',cd:18,d:'heilt alle, belebt K.O.-Gefäh
 let CTGT=null;
 function cmpHurt(a,dmg){if(a.ko)return;dmg=Math.max(1,Math.round(dmg*(a.id==='rovan'?(a.taunt>0?.45:.75):1)));a.hp-=dmg;a.calm=0;dnum(a.x,hgt(a.x,a.z)+2.2,a.z,dmg,'p');
   if(a.hp<=0){a.hp=0;a.ko=true;a.kot=0;sfx('hurt');toast('💫 '+PARTY[a.id].n+' ist K.O. – Lyras Heilwelle oder eine Kampfpause hilft');X.deck.dirty=true}}
-function cmpRevive(a,f){if(!a.ko)return;a.ko=false;a.hp=Math.round(cmax(a.id)*f);a.P.root.rotation.z=0;emit(a.x,hgt(a.x,a.z)+1,a.z,0x7dffb2,24,3,1,.7,-3,2)}
+function reviveAll(){if(S.mp<25)return toast('Zu wenig Mana (25)');const k=CMP.filter(c=>c.ko);if(!k.length)return;S.mp-=25;for(const a of k)cmpRevive(a,.5);sfx('heal');toast('💚 Gefährten wiederbelebt')}
+function cmpRevive(a,f){if(!a.ko)return;a.ko=false;a.kx=undefined;a.kot=0;a.hp=Math.round(cmax(a.id)*f);a.P.root.rotation.z=0;emit(a.x,hgt(a.x,a.z)+1,a.z,0x7dffb2,24,3,1,.7,-3,2)}
 function cmpSkill(id){const a=CMP.find(c=>c.id===id),k=CSK[id];if(!a||!k||pl.dead||dlg.on)return;if(a.ko)return toast('💫 '+PARTY[id].n+' ist K.O.');if(a.skc>0)return toast(k.em+' '+k.n+' bereit in '+Math.ceil(a.skc)+' s');
   a.skc=k.cd;sfx('level');banner(k.em+' '+k.n,PARTY[id].n);X.deck.dirty=true;
   if(id==='lyra'){const h=Math.round(maxHp()*.3);S.hp=Math.min(maxHp(),S.hp+h);dnum(pl.x,pl.y+2.3,pl.z,'+'+h,'h');fxRing(a.x,a.z,0x7dffb2,9,.6);sfx('heal');
@@ -1486,7 +1487,7 @@ function updCmp(dt){
   const fight=E.some(e=>!e.dead&&(e.st==='chase'||e.st==='wind'||e.st==='atk')&&Math.hypot(e.x-pl.x,e.z-pl.z)<24);
   CMP.forEach((a,i)=>{const d=PARTY[a.id];a.t+=dt;a.cd-=dt;a.hc-=dt;a.skc=Math.max(0,a.skc-dt);a.taunt=Math.max(0,a.taunt-dt);a.calm=fight?0:a.calm+dt;const mx=cmax(a.id);
     const hb=document.querySelector(`#mates .pm[data-id="${a.id}"]`);if(hb){hb.classList.toggle('ko',a.ko);hb.classList.toggle('rdy',!a.ko&&a.skc<=0);const b=hb.firstElementChild;if(b)b.style.width=Math.round(a.hp/mx*100)+'%'}
-    if(a.ko){a.kot+=dt;if(a.calm>6)cmpRevive(a,.3);a.P.root.position.set(a.x,hgt(a.x,a.z)+.2,a.z);a.P.root.rotation.z=1.45;return}
+    if(a.ko){a.kot+=dt;if(a.calm>6)cmpRevive(a,.3);if(a.kx===undefined||a.kot<.05){a.kx=a.x;a.kz=a.z}a.x=a.kx;a.z=a.kz;a.P.root.position.set(a.x,hgt(a.x,a.z)+.2,a.z);a.P.root.rotation.z=1.45;return}
     if(a.calm>3)a.hp=Math.min(mx,a.hp+mx*.05*dt);
     let [tx,tz]=cmpSlot(i);
     let en=null,bd=1e9;const reach=S.ptac==='def'?6:(d.melee?9:11);if(!dlg.on&&!pl.dead)for(const e of E){if(e.dead||(e.boss&&!e.awake))continue;if(e.tc!==a&&!(e.st==='chase'||e.st==='wind'||e.st==='atk'||e.st==='rec'))continue;const dd=Math.hypot(e.x-pl.x,e.z-pl.z);if(dd<reach&&dd<bd){bd=dd;en=e}}
@@ -2681,6 +2682,7 @@ function deckItems(){const sub=X.deck.sub,it=[];
   if(sub==='magic'){it.push({t:'Funkenwirbel',r:formMp(18)+' MP',k:'1',f:skill1,off:S.mp<formMp(18)},{t:'Lichtstoß',r:formMp(22)+' MP',k:'2',f:skill2,off:S.mp<formMp(22)},{t:'Mondheilung',r:formMp(30)+' MP',f:spellHeal,off:S.mp<formMp(30)})}
   else if(sub==='items'){it.push({t:'Heiltrank',r:'×'+S.potions,k:'3',f:skill3,off:!S.potions},{t:'Äther',r:'×'+(S.items.ether||0),f:useEther,off:!S.items.ether})}
   else if(sub==='spec'){for(const id of S.party){const a=CMP.find(c=>c.id===id);if(a&&CSK[id])it.push({t:CSK[id].em+' '+PARTY[id].n+': '+CSK[id].n,r:a.ko?'K.O.':a.skc>0?Math.ceil(a.skc)+' s':Math.round(a.hp)+' KP',f:()=>cmpSkill(id),off:a.ko||a.skc>0})}
+    if(CMP.some(c=>c.ko))it.push({t:'💚 Wiederbeleben (25 MP)',r:'',f:()=>reviveAll()});
     if(S.party.length)it.push({t:'⚙️ Taktik: '+(S.ptac==='def'?'Schützen':'Angreifen'),r:'',f:()=>{S.ptac=S.ptac==='def'?'atk':'def';toast(S.ptac==='def'?'🛡️ Gefährten bleiben bei dir und heilen früher':'⚔️ Gefährten greifen frei an')}});
     if(S.fl.naut)it.push({t:'🚤 '+(naut.on?'Aussteigen':'Nautilux'),f:()=>toggleNaut()});
     for(const id of S.party)if(TEAM[id])it.push({t:TEAM[id].em+' '+TEAM[id].n,r:Math.floor(S.tg)+'%',k:'T',f:()=>teamAttack(id),off:S.tg<100});
@@ -2704,6 +2706,7 @@ function deckOpen(s){X.deck.sub=s;X.deck.sel=0;X.deck.dirty=true;if(TOUCH)specPo
 {const sk=$('skills');const b1=document.createElement('button');b1.id='bSpec';b1.className='sb';b1.setAttribute('aria-label','Spezial');b1.innerHTML='<span id="bSpI">⟡</span><span class="bl" id="bSpL">Spezial</span>';sk.appendChild(b1);
  const b2=document.createElement('button');b2.id='bLock';b2.className='sb';b2.setAttribute('aria-label','Zielerfassung');b2.innerHTML='🎯<span class="bl">Ziel</span>';sk.appendChild(b2)}
 function specPop(){const it=[];for(const id of S.party){const a=CMP.find(c=>c.id===id);if(a&&CSK[id])it.push({em:CSK[id].em,t:PARTY[id].n+': '+CSK[id].n+(a.ko?' · K.O.':a.skc>0?' · '+Math.ceil(a.skc)+' s':''),off:a.ko||a.skc>0,fn:()=>cmpSkill(id)})}
+  if(CMP.some(c=>c.ko))it.push({em:'💚',t:'Wiederbeleben',fn:()=>reviveAll()});
   if(S.party.length)it.push({em:'⚙️',t:'Taktik: '+(S.ptac==='def'?'Schützen':'Angreifen'),fn:()=>{S.ptac=S.ptac==='def'?'atk':'def';toast(S.ptac==='def'?'🛡️ Gefährten bleiben bei dir':'⚔️ Gefährten greifen frei an')}});
   for(const id of S.party)if(TEAM[id])it.push({em:TEAM[id].em,t:TEAM[id].n+' · '+Math.floor(S.tg)+'%',off:S.tg<100,fn:()=>teamAttack(id)});
   if(formOk(0))it.push({em:'⟡',t:'Rissform · '+Math.floor(S.rg)+'%',off:S.rg<100||X.form.on>0,fn:()=>formStart(0)});if(formOk(1))it.push({em:'✦',t:'Sternform · '+Math.floor(S.rg)+'%',off:S.rg<100||X.form.on>0,fn:()=>formStart(1)});
