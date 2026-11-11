@@ -1,0 +1,29 @@
+// Eigene Angriffe der Weltenbosse und Zwischengegner je Welt, neue Gegner-Eigenschaften (Schildträger, Springer, Dreifachschuss)
+//   node tools/test-zotik/bosse.cjs [von] [bis]      Welten 2–10
+const { chromium, ARGS, open, skip, intro } = require('./lib.cjs');
+(async () => { const b = await chromium.launch({ args: ARGS }); const p = await open(b); const from = +process.argv[2] || 2, to = +process.argv[3] || 10, res = [], w = ms => p.waitForTimeout(ms);
+  const ok = (name, pass, info) => { res.push(pass); console.log(`${pass ? 'ok  ' : 'FEHL'} ${name}${info ? ' · ' + info : ''}`); };
+  await p.evaluate(() => { const Z = __zotik; Z.startDbg(); const S = Z.S(); S.stage = 8; S.lvl = 30; for (const a of Z.ARTS) S.fl['art_' + a.id] = 1; }); await intro(p);
+  const world = n => p.evaluate(n => { const Z = __zotik, S = Z.S(); for (let k = 2; k < n; k++) S.cd[k] = { st: 7, fin: 1, bd: 1, arr: 1, e1: 1, e2: 1, k: 0, b: [0, 0, 0], ord: 0 }; if (Z.ch !== 1) Z.switchWorld(1); Z.switchWorld(n); for (const e of Z.E) { e.dead = true; e.m.root.visible = false; } Z.pl.x = 4; Z.pl.z = 18; S.chx = { god: true }; S.chk = 1; }, n);
+  const spawn = (k, dx, dz) => p.evaluate(([k, dx, dz]) => { const Z = __zotik; for (const e of Z.E) if (!e.dead) { e.dead = true; e.m.root.visible = false; } Z.ZON.length = 0; Z.pl.x = 4; Z.pl.z = 18; Z.S().hp = Z.maxHp(); const e = Z.spawnEnemy(k, 4 + dx, 18 + dz); e.max = e.hp = 1e7; e.st = 'chase'; e.cd = 99; e.kitCd = 99; e.howl = 99; e.face = Math.atan2(-dx, -dz); window.__B = e; return { kit: e.d.kit || null, name: e.d.name, shield: !!e.d.shield, leap: !!e.d.leap, burst: !!e.d.burst }; }, [k, dx, dz]);
+  for (let n = from; n <= to; n++) { await world(n); await w(400); await skip(p);
+    for (const [kind, tag] of [['x' + n, 'Boss'], ['m' + n, 'Zwischengegner']]) { const I = await spawn(kind, 0, -9); const out = []; let bad = '';
+      if (!I.kit || !I.kit.length) { ok(`Welt ${n} ${tag} ${I.name}`, false, 'kein eigener Angriff'); continue; }
+      for (const k of I.kit) { await spawn(kind, 0, -9);
+        const r = await p.evaluate(k => { const Z = __zotik, e = window.__B; window.__p0 = Z.projs.filter(q => q.hostile).length; window.__e0 = Z.E.filter(o => !o.dead).length; if (k === 'tri') { e.tri = 2; Z.startAtk(e, 'lunge', .1, 3); } else Z.startAtk(e, k, .1, 3); return true; }, k);
+        await w(k === 'tri' ? 2600 : 450);
+        const s = await p.evaluate(() => { const Z = __zotik, e = window.__B; return { proj: Z.projs.filter(q => q.hostile).length - window.__p0, zon: Z.ZON.length, dist: Math.hypot(e.x - Z.pl.x, e.z - Z.pl.z), en: Z.E.filter(o => !o.dead).length - window.__e0, tri: e.tri, st: e.st }; });
+        const good = k === 'nova' ? s.proj >= 8 : k === 'rain' ? s.zon >= 4 : k === 'wave' ? s.zon >= 5 : k === 'blink' ? s.dist < 5 : k === 'summon' ? s.en >= 1 : s.tri === 0;
+        out.push(k + (good ? '' : '!')); if (!good) bad += ` ${k}: ${JSON.stringify(s)}`; }
+      ok(`Welt ${n} ${tag} ${I.name}`, !bad, bad || out.join(', ')); }
+    if (n === from) { /* Einschlag trifft, wer stehen bleibt – und verfehlt, wer ausweicht; der Boss setzt seine Angriffe von selbst ein */
+      await spawn('x' + n, 0, -9); const hit = async move => { await p.evaluate(() => { const Z = __zotik; Z.S().chx = {}; Z.S().hp = Z.maxHp(); Z.pl.x = 4; Z.pl.z = 18; Z.zone(4, 18, 2.5, .6, 30); }); if (move) { await w(150); await p.evaluate(() => { __zotik.pl.x = 14; }); } await w(900); return p.evaluate(() => { const Z = __zotik, h = Z.maxHp() - Z.S().hp; Z.S().chx = { god: true }; return h; }); };
+      const h1 = await hit(false), h2 = await hit(true); ok('Einschlag: trifft im Kreis, nicht daneben', h1 > 5 && h2 === 0, `stehen ${h1}, ausweichen ${h2}`);
+      await spawn('x' + n, 0, -9); await p.evaluate(() => { const e = window.__B; e.cd = 0; e.kitCd = 0; e.howl = 99; }); await w(9000); const used = await p.evaluate(() => Object.keys(window.__B.kitT || {})); ok('Boss setzt eigene Angriffe von selbst ein', used.length >= 1, used.join(', ')); }
+    /* Gegner-Eigenschaften */
+    const D = await spawn('d' + n, 0, -2.4).catch(() => null);
+    if (D && D.shield) { const r = await p.evaluate(() => { const Z = __zotik, e = window.__B, h = () => e.hp; e.st = 'chase'; e.cd = 99; const a0 = h(); Z.hurtE(e, 100, 0, 0, false); const front = a0 - h(); const a1 = h(); Z.hurtE(e, 100, 0, 0, false, 'fire'); const mag = a1 - h(); e.face += Math.PI; const a2 = h(); Z.hurtE(e, 100, 0, 0, false); const back = a2 - h(); return { front, mag, back }; }); ok(`Welt ${n} Schildträger ${D.name}`, r.front < 25 && r.back >= 100 && r.mag >= 100, `vorn ${Math.round(r.front)}, Zauber ${Math.round(r.mag)}, hinten ${Math.round(r.back)}`); }
+    if (D && D.leap) { await spawn('d' + n, 0, -9); await p.evaluate(() => { const e = window.__B; e.cd = 0; }); let seen = false; for (let i = 0; i < 20 && !seen; i++) { await w(100); seen = await p.evaluate(() => { const e = window.__B; return !!(e.atk && e.atk.type === 'lunge') || !!e.dash; }); } ok(`Welt ${n} Springer ${D.name}`, seen); }
+    const Cc = await spawn('c' + n, 0, -7).catch(() => null);
+    if (Cc && Cc.burst) { const r = await p.evaluate(() => { const Z = __zotik, e = window.__B, p0 = Z.projs.filter(q => q.hostile).length; Z.startAtk(e, 'shot', .05, 1.2); return p0; }); await w(300); const n3 = await p.evaluate(p0 => __zotik.projs.filter(q => q.hostile).length - p0, r); ok(`Welt ${n} Dreifachschuss ${Cc.name}`, n3 === 3, n3 + ' Geschosse'); } }
+  ok('keine Fehler', !p.errs.length, [...new Set(p.errs)].join(' | ')); console.log(`${res.filter(Boolean).length}/${res.length} bestanden`); await b.close(); })().catch(e => { console.log('ABBRUCH', e.message.slice(0, 400)); process.exit(1); });
