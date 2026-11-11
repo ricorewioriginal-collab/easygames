@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "2a784259dd62",
- "generated": "2026-11-11T23:04:33+01:00",
- "commit": "1bddc6928d176ef8cb68bda9ccd59126f93193d0",
+ "version": "9e78b5ab9cf9",
+ "generated": "2026-11-11T23:10:35+01:00",
+ "commit": "103f912558523cf05e97edefc576949c21fdf9d0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3903,8 +3903,8 @@
   },
   {
    "p": "brainrot-parkour/js/app.js",
-   "s": 45923,
-   "h": "a0fbe0dad2ab7d6192d50df6f3f9bdf73335374594d06122e4bfe9c0ac12328c"
+   "s": 46153,
+   "h": "12381ac2ad0251cce5413848040716d938497b7b40c830822fd658550835dba0"
   },
   {
    "p": "brainrot-parkour/js/chars.js",
@@ -5533,8 +5533,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 73189,
-   "h": "dc82bed3e8f3119b5eefe9949c466156d0b5642ee6d0298a6801676c978ef819"
+   "s": 78330,
+   "h": "9d1b46653b4a4cc1ab5308cce2b36b2bbc8e1f06aabbdd08731c240287986a34"
   },
   {
    "p": "games.js",
@@ -6143,8 +6143,8 @@
   },
   {
    "p": "guides/riftzone.json",
-   "s": 19945,
-   "h": "c339ba993bc4f70b6df31ecd636e127448923309fe1884cbad7cb99d53d4ce94"
+   "s": 20123,
+   "h": "38a39da72bb1bd529fe3e847d5d414f24db8a5248b0d49f30a843e120f52ce07"
   },
   {
    "p": "guides/saftblitz.json",
@@ -6193,8 +6193,8 @@
   },
   {
    "p": "guides/turbokick.json",
-   "s": 13432,
-   "h": "983b4cc3d3cd4c5aba90024dbc984c07d24b382ad302721c05fc67eb7a5efae5"
+   "s": 13610,
+   "h": "b2427fd5c67516ea097ea79b73d77ea8f39b7ee83ac13553498150ddf59ea83f"
   },
   {
    "p": "guides/werwolf-nacht.json",
@@ -8113,8 +8113,8 @@
   },
   {
    "p": "riftzone/app/index.html",
-   "s": 1500,
-   "h": "9b1d434431e243a2a0e3bd89250802285180fbb72874e25142a48fe146483ba7"
+   "s": 1608,
+   "h": "fd8861a8723c1e6d400ae589a84cea22f3dbe1569db77d935692a083e66916d7"
   },
   {
    "p": "riftzone/card.png",
@@ -8123,8 +8123,8 @@
   },
   {
    "p": "riftzone/client/index.html",
-   "s": 1392,
-   "h": "5db11930dbd75e66bd142bbbc059a13b000d05028196b8f3bc4a457d914cfcef"
+   "s": 1500,
+   "h": "97728cf373452f451f3e5655d55d3046c806bd0728e95f7f27c4d2f60358b503"
   },
   {
    "p": "riftzone/client/public/favicon.svg",
@@ -8839,7 +8839,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256787,
-   "h": "9adb63fa0d5b131b3d868dc996d4f6ef0c32b3561e156ea2bb1955e18d57f0f9"
+   "h": "984616ad00b301328c408f1fb665dead00a83307ad0aa9fca8214469c1bf190d"
   },
   {
    "p": "taschi/card.svg",
@@ -9668,8 +9668,8 @@
   },
   {
    "p": "turbokick/app/index.html",
-   "s": 668,
-   "h": "9779433aa97b0b3ee057f5bb2e20ca6bac7c601533ba34d48610705e4e8e6cc6"
+   "s": 1008,
+   "h": "64557757a019afc1160672a5a88632f1b4d86d97db2e24e316eec5d56a18b172"
   },
   {
    "p": "turbokick/card.png",
@@ -9678,8 +9678,8 @@
   },
   {
    "p": "turbokick/client/index.html",
-   "s": 571,
-   "h": "f3bb1563b1ea6e206baa845ef52ea69c8e576d7b9f3badac1296eecec6d700ad"
+   "s": 911,
+   "h": "ad065e28dbf9acb81876550eee325a0b6dda32d38648fb7021c4bfc0a0b7c69b"
   },
   {
    "p": "turbokick/client/src/input/touch.css",

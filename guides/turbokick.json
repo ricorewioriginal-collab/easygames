@@ -67,6 +67,7 @@
       "t": "Steuerung (vollständig)",
       "list": [
         "Gas/Rückwärts: W/S · Pfeil hoch/runter · Gamepad RT/LT · Touch Stick hoch/runter.",
+        "Menüs mit dem Controller: Steuerkreuz oder linker Stick wählt (gelber Rahmen), A bestätigt, B geht zurück, ←/→ verstellt Schieberegler – wie an der Konsole.",
         "Lenken: A/D · Pfeil links/rechts · linker Stick · Touch Stick seitlich.",
         "Luft – Nase runter/hoch und Gieren: wie Gas/Lenken (W/S, A/D bzw. linker Stick).",
         "Air-Roll (mit Lenken = Rollen): Strg links oder E · Strg rechts oder Num 2 · RB.",

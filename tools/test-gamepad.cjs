@@ -76,6 +76,25 @@ window.log = []; ['logo', 'snd', 'start', 'opt', 'done'].forEach(id => document.
 </script>
 <script src="/gamepad.js"></script></body></html>`;
 
+// Spiel mit eigener Controller-Steuerung und Menü-Bildschirmen als Seite (wie RIFTZONE/TURBOKICK): data-pad="info menu=.screen"
+const MENUINFO = `<!doctype html><html><body style="margin:0;height:100vh;background:#123">
+<canvas style="position:fixed;inset:0;width:100vw;height:100vh"></canvas>
+<div class="screen" id="lobby" style="position:fixed;inset:0">
+<div style="position:absolute;top:10px;right:10px"><button id="spind">Spind</button> <button id="stats">Statistik</button></div>
+<input id="code" placeholder="Raumcode" style="position:absolute;left:20px;top:200px">
+<label style="position:absolute;left:20px;top:250px">Lautstärke <input id="vol" type="range" min="0" max="10" step="1" value="5"></label>
+<button id="play" class="btn primary" style="position:absolute;left:50%;bottom:20px;padding:14px 40px">Spielen</button></div>
+<script>
+window.log = []; ['spind', 'stats', 'play'].forEach(id => document.getElementById(id).onclick = () => { log.push('click:' + id);
+  if (id === 'spind') { const l = document.getElementById('lobby'); l.style.display = 'none'; const s = document.createElement('div'); s.className = 'screen'; s.id = 'locker';
+    s.style.cssText = 'position:fixed;inset:0'; s.innerHTML = '<button id="back">← Zurück</button><button id="hat" style="margin:80px">Hut</button>'; document.body.appendChild(s);
+    s.querySelector('#back').onclick = () => { log.push('click:back'); s.remove(); l.style.display = ''; }; s.querySelector('#hat').onclick = () => log.push('click:hat'); }
+  if (id === 'play') document.getElementById('lobby').remove(); });
+document.getElementById('vol').addEventListener('input', e => log.push('vol:' + e.target.value));
+window.gameSees = i => { const g = navigator.getGamepads()[0]; return g ? g.buttons[i || 0].pressed : null; };
+</script>
+<script src="/gamepad.js" data-pad="info menu=.screen"></script></body></html>`;
+
 // Nachgebauter Controller: window.fake = { id, mapping, buttons: [Zahl], axes: [Zahl] }
 const FAKE = `(() => {
   window.fake = null;
@@ -95,6 +114,7 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
     if (q.url.startsWith('/infodlg')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(INFODLG); }
     if (q.url.startsWith('/info')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end('<!doctype html><body><script>window.log=[];addEventListener("keydown",e=>log.push("key:"+e.code))</script><script src="/gamepad.js" data-pad="info" data-pad-labels="a=Springen; dpad=Auswählen; ls=Laufen"></script></body>'); }
     if (q.url.startsWith('/text')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(TEXT.replace('DATAPAD', q.url.includes('info') ? ' data-pad="info"' : '')); }
+    if (q.url.startsWith('/menuinfo')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(MENUINFO); }
     if (q.url.startsWith('/menu')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(MENU); }
     if (q.url.startsWith('/win')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(WIN); }
     if (q.url.startsWith('/cfg')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(CFG); }
@@ -338,6 +358,29 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
     await tap(1); await p.waitForTimeout(350);
     const r14c = await p.evaluate(() => log.slice());
     ok(r14c.join() === 'click:done', 'B schließt das Fenster, auch wenn „Fertig“ unter dem Bild liegt: ' + r14c.join());
+    await p.close();
+  }
+
+  // 15) Menü-Bildschirme in Spielen mit eigener Steuerung (menu=.screen): sofort Hauptknopf gewählt, Steuerkreuz/A/B wie an der Konsole,
+  //     Schieberegler mit ←/→, Textfeld öffnet die Tastatur erst mit A, Spiel bekommt den Controller erst nach dem Menü
+  {
+    p = await (await b.newContext({ viewport: { width: 900, height: 600 } })).newPage(); await p.addInitScript(FAKE); await p.goto(url + 'menuinfo');
+    const Z = Array(17).fill(0), tap = async i => { const bt = Z.slice(); bt[i] = 1; await set(p, { buttons: bt }); await frames(p, 3); await set(p, { buttons: Z.slice() }); await frames(p, 3); };
+    await p.evaluate(() => plug({ id: 'Std', mapping: 'standard', buttons: Array(17).fill(0), axes: [0, 0, 0, 0] })); await frames(p, 4);
+    await p.waitForTimeout(300);
+    const ring0 = await p.evaluate(() => { const r = [...document.querySelectorAll('div[aria-hidden]')].find(d => d.style.display === 'block' && /255, 212, 0/.test(d.style.borderColor)); if (!r) return ''; const q = r.getBoundingClientRect(); const e = document.elementFromPoint(q.left + q.width / 2, q.top + q.height / 2); return e ? e.id : ''; });
+    ok(ring0 === 'play', 'Menü: Hauptknopf „Spielen“ ist gleich gewählt (wie an der Konsole): ' + ring0);
+    await tap(12); await tap(12); await tap(12); await tap(0); await p.waitForTimeout(400);
+    const r15 = await p.evaluate(() => ({ l: log.slice(), sees: gameSees(0), osk: [...document.querySelectorAll('div[aria-hidden]')].some(d => d.style.display === 'block' && /Fertig/.test(d.textContent)) }));
+    ok(r15.l.join() === 'click:spind' && r15.sees === false && !r15.osk, 'Menü: Steuerkreuz hoch bis „Spind“, A öffnet, Spiel sieht den Controller nicht, keine Tastatur ungefragt: ' + r15.l.join());
+    await tap(1); await p.waitForTimeout(400);
+    ok((await p.evaluate(() => log.join())) === 'click:spind,click:back', 'Menü: B nimmt „← Zurück“: ' + (await p.evaluate(() => log.join())));
+    await p.evaluate(() => { log.length = 0; }); await p.waitForTimeout(300);
+    await tap(12); await tap(15); await tap(15); await p.waitForTimeout(100);
+    const vol = await p.evaluate(() => log.join());
+    ok(/vol:/.test(vol), 'Menü: Schieberegler mit links/rechts verstellt: ' + vol);
+    await p.evaluate(() => { log.length = 0; document.getElementById('play').click(); log.length = 0; }); await p.waitForTimeout(400); await set(p, { buttons: (() => { const x = Array(17).fill(0); x[0] = 1; return x; })() }); await frames(p, 3);
+    ok(await p.evaluate(() => gameSees(0)) === true, 'Menü zu: Spiel bekommt den Controller zurück');
     await p.close();
   }
 
