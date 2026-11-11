@@ -199,6 +199,23 @@
    ]
   },
   {
+   "t": "Weltregeln: jede Welt spielt sich anders",
+   "p": [
+    "Ab der zweiten Welt hat jede Welt in der Wildnis eine eigene Besonderheit, die es nur dort gibt. Beim ersten Betreten der Wildnis erklärt das Spiel sie kurz. In Städten, Häusern, Höhlen und Vorhallen gelten die Weltregeln nicht."
+   ],
+   "list": [
+    "🍄 Sporenwolken (Elaris): Die grünen Wolken machen dich langsam. Ein Funkenwirbel brennt sie weg.",
+    "♨️ Dampfschächte (Valdoria): Aus den Gittern schießt im Takt heißer Dampf. Warte den Stoß ab und lauf dann hinüber.",
+    "🌬️ Sandböen (Solmera): Alle paar Sekunden schiebt dich eine Böe zur Seite. Halte dagegen oder weich aus.",
+    "🫧 Luftblasen (Aqualis): Die Blasen am Boden schleudern dich hoch – zu Korallenplatten mit Truhen.",
+    "🧊 Glatteis (Frosthain): Auf den blanken Flächen rutschst du nach. Bremse früh.",
+    "🌋 Lavabecken (Ignara): Die glühenden Becken verbrennen dich, solange du darin stehst. Spring hinüber.",
+    "🕳️ Erinnerungsfallen (Noctaris): Verborgene Fallen zeigen sich erst aus der Nähe. Betrittst du eine, schlägt sie zu.",
+    "🌌 Leichte Welt (Astralis): Zwischen den Schwebeinseln ist die Schwerkraft schwach: Du springst fast doppelt so hoch und schwebst langsam hinab.",
+    "🔁 Echo (Elyndra): Im Weltenkern hallt jeder Zauber nach und trifft kurz darauf noch einmal."
+   ]
+  },
+  {
    "t": "Fähigkeitenbaum",
    "p": [
     "Im Menü unter ✨ Fähigkeiten verteilst du Punkte. Mit jeder Stufe bekommst du einen Punkt; Rang 1 einer Fähigkeit kostet einen Punkt, Rang 2 zwei und so weiter bis Rang 5."
@@ -285,7 +302,8 @@
     "Erledige Nebenaufgaben im Weltenriss – jede bringt viele Splitter und ein Andenken (+1,5 Angriff).",
     "Sammle Fell, Rissstaub und Kernsplitter und lass in der Schmiede deine beste Waffe und Rüstung verstärken – +3 bringt 45 % mehr auf alle Werte. Ein Phönix-Trank im Gepäck rettet Bosskämpfe.",
     "Fähigkeitenbaum: Die ersten Ränge sind billig. Verteile früh breit (je Rang 1 und 2) und spare erst später für Rang 4 und 5. Sprungkraft 3 mit dem Doppelsprung macht Sprungräume und Sprungpfade deutlich leichter.",
-    "Kombiniere die Riss-Künste: Wirbelwind zieht die Gegner zusammen, Dornenranke hält sie fest, dann Sturzschlag oder Sternenfall mitten hinein."
+    "Kombiniere die Riss-Künste: Wirbelwind zieht die Gegner zusammen, Dornenranke hält sie fest, dann Sturzschlag oder Sternenfall mitten hinein.",
+    "Nutze die Weltregeln für dich: In Aqualis bringen dich die Luftblasen zu Truhen auf den Korallenplatten, in Astralis erreichst du mit dem hohen Sprung Platten ohne Doppelsprung, und in Elyndra lohnt jeder Zauber doppelt, wenn die Gegner stehen bleiben."
    ]
   },
   {
