@@ -41,6 +41,7 @@ Ordner: Dieses Spiel liegt jetzt in `zotik/` und ist die Startseite der Pages-Se
 
 ## Casino, Nautilux, Nebenaufträge, Halle der 100, NG+
 - **Golden Star Casino** in Valdoria (Kapitel 3): begehbarer Saal mit drei Spielen als 3D-Geräte – Kristallslots (echte Walzen), Sternenrad und Höher oder Tiefer am Kartentisch. Einsätze 10/50/100, nur virtuelle Splitter, Auszahlung 92–97 %. Stella am Eingang schaltet die Geräte ein und aus (Familienoption). Test: `node tools/test-zotik/stadt.cjs`.
+- **Nebenquest-Ketten** (`zotik-src/src/quests.js`): 19 mehrstufige Aufträge mit eigener Geschichte (Lunaris 1, Welt 2–10 je 2), Auftraggeber sind die Leute in den Stadtgebäuden. Schritte: Fundstück, Gegner besiegen, benannter Zwischengegner, jemanden aufsuchen, Material abgeben. Stand in `S.nq`, Anzeige im Menü unter Aufgaben. Test: `node tools/test-zotik/nebenquests.cjs`.
 - **Nautilux** (Professorium schenkt sie nach Kapitel 1, `fl.naut`; Vorlage: Master-Sheet „Professoriums modulares Fahrzeug, U-Boot und spätere Transformationen“): V (am Handy 🚤) steigt ein und aus, B (🔄) wechselt die Form. Sie verwandelt sich im Spielverlauf:
   - **Gleiter** 🚤 (ab Kapitel 1): schnell, rammt Gegner.
   - **U-Boot** 🛥️ (nach Kapitel 4): taucht in die blauen **Tiefsee-Becken** jeder Welt (zwei Truhen darin); Shift = Turbo.

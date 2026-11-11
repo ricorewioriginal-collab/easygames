@@ -11,6 +11,7 @@ import { createRooms } from './rooms.js';
 import { createNautZone } from './nautzone.js';
 import { createEtappen, ETAP } from './etappen.js';
 import { createTown } from './town.js';
+import { createQuests } from './quests.js';
 import { furMat } from './gfx.js';
 const T=makeT(THREE,.5),$=id=>document.getElementById(id);
 const TOUCH=matchMedia('(pointer:coarse)').matches||'ontouchstart' in window;
@@ -263,7 +264,13 @@ const WARM=0xffc46a;
 const chests=[],herbs=[];
 const houseL=new T.PointLight(0xffb060,0,15,1.6);scene.add(houseL);
 /* Städte: Einrichtung, Personen und Läden der Gebäude (town.js); alles Spätere wird erst beim Aufruf nachgeschlagen */
-const TOWN=createTown({T,mk,G,M,glow,scene,S:()=>S,INT:()=>INT,CMP:()=>CMP,GEAR:()=>GEAR,XT:()=>XT,time:()=>time,tier:()=>Math.min(10,Math.max(1,curCh===11?10:curCh)),anim:fn=>animObjs.push({fn}),say:(...a)=>say(...a),toast:(...a)=>toast(...a),sfx:(...a)=>sfx(...a),emit:(...a)=>emit(...a),addNpc:(...a)=>addNpc(...a),makeVillager:o=>makeVillager(o),openShop:(n,k)=>openShop(n,k),maxHp:()=>maxHp(),maxMp:()=>maxMp(),cmax:id=>cmax(id),cmpRevive:(a,f)=>cmpRevive(a,f),saveGame:q=>saveGame(q),giveGear:id=>giveGear(id),statLine:d=>statLine(d)});
+const TOWN=createTown({T,mk,G,M,glow,scene,S:()=>S,INT:()=>INT,CMP:()=>CMP,GEAR:()=>GEAR,XT:()=>XT,time:()=>time,tier:()=>Math.min(10,Math.max(1,curCh===11?10:curCh)),anim:fn=>animObjs.push({fn}),say:(...a)=>say(...a),toast:(...a)=>toast(...a),sfx:(...a)=>sfx(...a),emit:(...a)=>emit(...a),addNpc:(...a)=>addNpc(...a),makeVillager:o=>makeVillager(o),openShop:(n,k)=>openShop(n,k),maxHp:()=>maxHp(),maxMp:()=>maxMp(),cmax:id=>cmax(id),cmpRevive:(a,f)=>cmpRevive(a,f),saveGame:q=>saveGame(q),giveGear:id=>giveGear(id),statLine:d=>statLine(d),Q:()=>NQ});
+/* Nebenquest-Ketten der Städte (quests.js) */
+const nqEmo={};
+function nqMarker(x,z,em){const g=new T.Group(),y=hgt(x,z);g.position.set(x,y,z);let tx=nqEmo[em];if(!tx){const cv=document.createElement('canvas');cv.width=cv.height=96;const c=cv.getContext('2d');c.font='70px serif';c.textAlign='center';c.textBaseline='middle';c.fillText(em,48,54);tx=nqEmo[em]=new T.CanvasTexture(cv)}
+  const sp=new T.Sprite(new T.SpriteMaterial({map:tx,transparent:true}));sp.position.y=1.3;sp.scale.set(1.1,1.1,1);g.add(sp);g.add(glow(0xffe08a,3.2,0,1.2,0,.7));g.add(mk(G.cyl0,M(0xffe08a,{e:0xffc040,ei:1.6,t:1}),0,.05,0,.7,.06,.7,false));scene.add(g);animObjs.push({fn(t){sp.position.y=1.3+Math.sin(t*2.4)*.15;g.visible=!g.userData.on||g.userData.on()}});return g}
+function nqSpot(k){const px=z=>WLD?WLD.path(z):PATHX(z);for(let t=0;t<80;t++){const z=-36-((k*23+t*7)%88),x=px(z)+((k+t)%2?1:-1)*(7+((k*5+t*3)%7));if(!pBlocked(x,z)&&colFree(x,z,1.6)&&(!WLD||!WLD.reach||WLD.reach(x,z))&&Math.abs(hgt(x+1,z)-hgt(x-1,z))<1.2)return[x,z]}return null}
+const NQ=createQuests({S:()=>S,CHP:()=>CHP,INT:()=>INT,world:()=>WLD?(WLD.cave?12:WLD.n):1,spot:k=>nqSpot(k),marker:(x,z,em)=>nqMarker(x,z,em),say:(...a)=>say(...a),toast:(...a)=>toast(...a),sfx:(...a)=>sfx(...a),banner:(...a)=>banner(...a),gainXp:n=>gainXp(n),saveGame:q=>saveGame(q),spawnEnemy:(k,x,z)=>spawnEnemy(k,x,z)});
 function house(x,z,w,d,h,wall,roof,ry,opt){
   opt=opt||{};const g=new T.Group(),y=hgt(x,z),c=Math.cos(ry),sn=Math.sin(ry);g.position.set(x,y-.2,z);g.rotation.y=ry;
   const wm=M(wall,{r:.85,e:0x3a2c1e,ei:1}).clone(),segs=[],t=.4,H=h+.4,dw=.75;
@@ -788,7 +795,7 @@ function killE(e,remote){e.dead=true;e.dt=0;e.tel.visible=false;e.atk=null;sfx('
   gainXp(Math.round((e.xp?e.xp*Math.max(.2,Math.min(1.3,1-(S.lvl-e.lv)*.12)):e.d.xp)*XT.rew()*XO.ev('xp',e)));extKill(e,remote);if(!remote){XT.kill(e);XO.kill(e)}drop(e.x,e.z,'shard',Math.round((e.d.sh[0]+(Math.random()*(e.d.sh[1]-e.d.sh[0]+1)|0))*XO.ev('sh')));if(Math.random()<(e.boss?1:.12))drop(e.x,e.z,'potion',e.boss?2:1);
   if(remote){if(e.boss)$('boss').hidden=true;return}
   if(MP.role==='host')mpSend({t:'k',i:e.id});
-  sqKill(e);
+  sqKill(e);NQ.kill(e);
   if(WLD){WLD.kill(e);return}
   if(e.k==='rift'&&S.stage===3){S.kr++;if(S.kr>=5)setStage(4);else refreshQuest()}
   if(e.k==='wolf'){S.kw++;if(S.side===1){S.sideK++;if(S.sideK>=4){S.side=2;sfx('quest');toast('✔ Wolfsplage: Kehre zu Boro zurück')}refreshQuest()}}
@@ -989,7 +996,7 @@ function renderMenu(tab){mState.tab=tab;const t=$('tabs'),c=$('mcont');
   if(tab==='quest'&&WLD)h+=WLD.menuQuest();
   else if(tab==='quest'){h+='<h3>Hauptgeschichte: Der erste Riss</h3>';STG.forEach((s,i)=>{const st=i<S.stage?'✅':i===S.stage?'👉':'▫️';if(i<=S.stage)h+=`<div class="row"><span>${st} ${i===S.stage?objective():s}</span></div>`});
     h+='<h3>Nebenaufgabe: Wolfsplage</h3><div class="row"><span>'+(S.side===0?'Sprich mit Boro im Dorf.':S.side===1?`Besiege 4 Dornenwölfe (${Math.min(S.sideK,4)}/4).`:S.side===2?'Kehre zu Boro zurück.':'✅ Erledigt')+'</span></div>'}
-  if(tab==='quest')h+=sqHTML();
+  if(tab==='quest')h+=NQ.html()+sqHTML();
   if(tab==='inv'){h+=`<h3>Zotik · Stufe ${S.lvl}</h3><div class="row"><span>Erfahrung</span><span>${S.xp} / ${xpNeed()}</span></div><div class="row"><span>Leben</span><span>${Math.ceil(S.hp)} / ${maxHp()}</span></div><div class="row"><span>Mana</span><span>${Math.floor(S.mp)} / ${maxMp()}</span></div><div class="row"><span>Angriff</span><span>${Math.round(atkV())}</span></div>
     ${partyHTML()}${extraHTML()}${extInvHTML()}<h3>Gegenstände</h3><div class="row"><span>⚔ ${S.blade2?'Weltenklinge (Echo des Kerns)':S.blade?'Reiseklinge (Mondkristall)':'Reiseklinge'}</span><span>Waffe</span></div><div class="row"><span>🧪 Heiltrank</span><span>× ${S.potions}</span></div><div class="row"><span>💎 Rissplitter</span><span>× ${S.shards}</span></div><div class="row"><span>🌿 Mondkraut</span><span>× ${S.herbs}</span></div>`}
   if(tab==='skills')h+=`<div class="row"><span>⚔ Klingenkombo (J / Klick)</span><span>3 Hiebe</span></div><div class="row"><span>💨 Ausweichen (Shift)</span><span>Unverwundbar</span></div><div class="row"><span>🌀 Funkenwirbel (1)</span><span>18 Mana</span></div><div class="row"><span>✨ Lichtstoß (2)</span><span>22 Mana</span></div><div class="row"><span>🧪 Heiltrank (3 / R)</span><span>+60 % Leben</span></div><p style="color:var(--dim);font-size:13px">Treffer laden Mana auf. Rote Kreise am Boden zeigen Angriffe an: rechtzeitig ausweichen!</p>`;
@@ -1163,7 +1170,7 @@ function frame(now){
 let lastT=performance.now(),first=true;
 
 /* ================= Start ================= */
-function begin(isNew){
+function begin(isNew){if(!WLD)NQ.enter(1);
   initAudio();mode='play';$('title').hidden=true;$('hud').hidden=false;
   $('creator').hidden=true;applyCos(S.cos);
   if(S.stage>=8&&!S.fl.naut)S.fl.naut=1;   /* ältere Spielstände: Nautilux nachreichen */
@@ -1340,7 +1347,7 @@ function switchWorld(n){
   MP.quiet=true;
   try{if(curCh===1&&!WLD){if(n!==1)leaveLunaris()}else destroyWorld();
   if(n===1)restoreLunaris();else if(n===12)buildCave();else buildWorld(n)}finally{MP.quiet=false}
-  NZ().activate(n);curCh=n;S.ch=n;curZone='';mpWorldChanged(n);
+  NZ().activate(n);curCh=n;S.ch=n;curZone='';mpWorldChanged(n);NQ.enter(n);
 }
 function travel(n){
   if(MP.role==='guest'){toast('Nur der Gastgeber kann die Welt wechseln.');toggleMenu(false);return}
@@ -2840,4 +2847,4 @@ function drawOb(mx){if(pl.z>300){mx.fillStyle='#2a2a3e';mx.fillRect(-13,333,26,3
 ensureBoss();
 camTarget.set(0,2,12);
 requestAnimationFrame(frame);
-if(/[?&]debug\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))window.__zotik={set noRender(v){frame.off=!!v},TOWN,NPC,setCam(y,pt,di){camYaw=y;if(pt!=null)camPitch=pt;if(di!=null)camDist=di},AF,NZ,EPX,nautTo,pl,joy,inputVec,CR:()=>CR(),get goTo(){return goTo},get steer(){return steer},set steer(v){steer=v},get mode(){return mode},startDbg(){S=DEF();S.cos={fur:cr.fur,scarf:cr.scarf,outfit:cr.outfit};mode='play';begin(true)},X,OB,GEAR,TOOLS,lockCycle,doReaction,teamAttack,formStart,ipUse,useTool,toolNext,caveEnter,caveNext,caveExit,giveGear,equip,feed,felliXp,deckExec,deckMove,deckOpen,ruinGo,get CAVE_DOOR(){return CAVE_DOOR},spellHeal,useEther,fStage,findRx,proj,maxHp:()=>maxHp(),atkV:()=>atkV(),toBunt,BUNT_URL,get qLv(){return qLv},setQ,get naut(){return naut},pushOut,INST,blocked,hgt,pBlocked,COL,HOUSES,PZD,CUT,openPuzzle,closePuzzle,cutscene,joinParty,CMP,lunOpen,spawnOrun,get puzOpen(){return puzOpen},get W(){return WLD},get ch(){return curCh},INT,CHP,switchWorld,travel,ARENA,herbs,chests,drops,projs,step:(dt,n)=>{for(let i=0;i<n;i++){time+=dt;for(const o of animObjs)o.fn(time,dt);update(dt);updParticles(dt)}},cam:(y,p,d)=>{camYaw=y;camPitch=p;camDist=d},S:()=>S,pl,E,NPC,begin,say,toast,setStage,hurtP,get boss(){return boss},camera,scene,renderer,skill1,skill2,startAttack,dodge,interact,keys,MP,mpMsg,mpSend,mpHost,mpJoin,mpTick,variantCos,sharedFlat,spawnEnemy,hurtE,killE,get boss2(){return boss},toggleMenu,renderMenu,XT,XO};
+if(/[?&]debug\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))window.__zotik={set noRender(v){frame.off=!!v},TOWN,NPC,NQ,killE,E,resetEnemy,setCam(y,pt,di){camYaw=y;if(pt!=null)camPitch=pt;if(di!=null)camDist=di},AF,NZ,EPX,nautTo,pl,joy,inputVec,CR:()=>CR(),get goTo(){return goTo},get steer(){return steer},set steer(v){steer=v},get mode(){return mode},startDbg(){S=DEF();S.cos={fur:cr.fur,scarf:cr.scarf,outfit:cr.outfit};mode='play';begin(true)},X,OB,GEAR,TOOLS,lockCycle,doReaction,teamAttack,formStart,ipUse,useTool,toolNext,caveEnter,caveNext,caveExit,giveGear,equip,feed,felliXp,deckExec,deckMove,deckOpen,ruinGo,get CAVE_DOOR(){return CAVE_DOOR},spellHeal,useEther,fStage,findRx,proj,maxHp:()=>maxHp(),atkV:()=>atkV(),toBunt,BUNT_URL,get qLv(){return qLv},setQ,get naut(){return naut},pushOut,INST,blocked,hgt,pBlocked,COL,HOUSES,PZD,CUT,openPuzzle,closePuzzle,cutscene,joinParty,CMP,lunOpen,spawnOrun,get puzOpen(){return puzOpen},get W(){return WLD},get ch(){return curCh},INT,CHP,switchWorld,travel,ARENA,herbs,chests,drops,projs,step:(dt,n)=>{for(let i=0;i<n;i++){time+=dt;for(const o of animObjs)o.fn(time,dt);update(dt);updParticles(dt)}},cam:(y,p,d)=>{camYaw=y;camPitch=p;camDist=d},S:()=>S,pl,E,NPC,begin,say,toast,setStage,hurtP,get boss(){return boss},camera,scene,renderer,skill1,skill2,startAttack,dodge,interact,keys,MP,mpMsg,mpSend,mpHost,mpJoin,mpTick,variantCos,sharedFlat,spawnEnemy,hurtE,killE,get boss2(){return boss},toggleMenu,renderMenu,XT,XO};

@@ -134,7 +134,7 @@ export function createTown(C) {
       const K = KIND[P.kind], i = seq++;
       if (P.keeper && K.role) {
         const q = P.W2(P.keeper[0], P.keeper[1]), nm = K.role + ' ' + NAMES[P.kind][(n - 1) % 11];
-        const o = C.addNpc('tw_' + P.kind, nm, q[0], q[1], C.makeVillager(K.look), () => TALK[P.kind](nm, n), P.ry + P.keeper[2]); o.noRoute = 1;
+        const o = C.addNpc('tw_' + P.kind, nm, q[0], q[1], C.makeVillager(K.look), () => C.Q().talk(P.kind, nm, n, () => TALK[P.kind](nm, n)), P.ry + P.keeper[2], () => C.Q().mark(P.kind, n)); o.noRoute = 1;
       }
       if (P.extra && P.extra.book) { const q = P.W2(...P.extra.book), txt = LORE[(n * 3 + i) % LORE.length]; C.INT().push({ x: q[0], z: q[1], name: 'Bücherregal', pr: 'Lesen', rad: 1.9, vis: () => true, talk() { C.say([['Buch', txt]]); } }); }
       if (P.extra && P.extra.casino) casino(P, n);

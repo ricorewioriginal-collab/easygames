@@ -124,6 +124,19 @@
    ]
   },
   {
+   "t": "Nebenaufträge in den Städten",
+   "p": [
+    "Die Leute in den Stadtgebäuden haben eigene kleine Geschichten: in Lunaris eine, in jeder weiteren Welt zwei, jeweils in mehreren Schritten. Über wem ein Ausrufezeichen schwebt, der hat einen Auftrag oder wartet auf dich. Im Gespräch wählst du „Auftrag annehmen“; mit „Etwas anderes“ kommst du wie gewohnt zum Laden oder Dienst."
+   ],
+   "list": [
+    "Finden: Der gesuchte Gegenstand leuchtet abseits des Weges nördlich der Stadt und trägt ein Zeichen. Hingehen und mit der Aktionstaste aufheben.",
+    "Besiegen: Eine bestimmte Gegnerart mehrmals besiegen – der Zähler erscheint nach jedem Treffer.",
+    "Zwischengegner: Ein besonders großer, benannter Gegner mit gut dreifachem Leben wartet abseits des Weges. Er bringt dreifache Erfahrung.",
+    "Aufsuchen und Abgeben: Jemanden in einem anderen Gebäude ansprechen oder Kräuter, Fell, Rissstaub oder Kernsplitter abliefern.",
+    "Belohnung: Splitter und Erfahrung, dazu entweder ein Andenken (dauerhaft +1,5 Angriff) oder ein Phönix-Trank mit Schmiedematerial. Den Stand aller Aufträge zeigt das Menü unter 📜 Aufgaben."
+   ]
+  },
+  {
    "t": "Werkzeuge und Werkzeug-Ruinen",
    "list": [
     "🪝 Enterhaken (Belohnung Kapitel 2): zieht dich zu Pfosten.",
@@ -294,6 +307,24 @@
     "🎰 Golden Star Casino (Valdoria, westlich vom Marktplatz): erst bei Stella am Eingang einschalten. Einsatz je Spiel 10, 50 oder 100 Splitter. Kristallslots: drei gleiche ⭐ ×25, 💎 ×12, 🔥 ×8, 🌙/🍃 ×5; zwei gleiche: Einsatz zurück. Sternenrad: 12 Felder, davon 2× ×1, 2× ×2, 1× ×5, sonst nichts. Höher oder Tiefer: Karten 1–13, Gleichstand verliert; je unwahrscheinlicher der Tipp, desto höher der Faktor, nach jedem Treffer kannst du auszahlen, nach 5 Treffern wird automatisch ausgezahlt. Auf Dauer gewinnt bei allen drei Spielen leicht das Haus (Auszahlung etwa 92–97 %).",
     "🎮 Mini-Spiele (Titelmenü): ZOTIK Run, Felli-Fang, Kristallrausch, ZOTIK Quiz und Sternenpuzzle – unabhängig vom Abenteuer, mit eigenen Rekorden.",
     "Uralte Höhle: Auf jeder zweiten Ebene ist die Treppe versiegelt – entweder drei Glutkristalle in den Gängen entzünden, bevor der erste erlischt, oder alle Gegner der Ebene vertreiben. Jede zehnte Ebene bewacht ein Wächter die Treppe."
+   ]
+  },
+  {
+   "t": "Nebenaufträge der Städte",
+   "p": [
+    "Auftraggeber und Schritte aller 19 Ketten. Fundstücke und Zwischengegner stehen immer nördlich der Stadt, wenige Schritte neben dem Hauptweg."
+   ],
+   "list": [
+    "Lunaris – Die verstummte Glocke (Kirche): Glockenklöppel finden → Schmiedin → Kirche. Andenken: Glockenband.",
+    "Elaris – Das Lied der Wurzeln (Kirche): Stimmgabel finden → 5 Pilzlinge → Magierin. Andenken. · Pilztee für alle (Wirtshaus): 6 Pilzlinge → 3 Kräuter abgeben.",
+    "Valdoria – Die verschwundene Lieferung (Tränke & Extras): Kiste finden → Zwischengegner Kistenknacker. · Nachtschicht (Kirche): Dienstbuch finden → Wirt → 6 Gegner der ersten Art. Andenken.",
+    "Solmera – Wasser für die Oase (Wirtshaus): Quellstein finden → Zwischengegner Dünenkönig. · Die Sonnenuhr (Kirche): 6 Gegner → 3 Rissstaub → Schmiedin. Andenken.",
+    "Aqualis – Die Perle der Taucherin (Magieladen): Perle finden → Priesterin. Andenken. · Dichte Fugen (Schmiede): 6 Riffkrabben → 3 Fell.",
+    "Frosthain – Das Feuer von Hjalm (Wirtshaus): Glutschale finden → Zwischengegner Raureif. · Was der Winter behält (Kirche): Brief finden → Wirt → 6 Gegner. Andenken.",
+    "Ignara – Der kalte Amboss (Schmiede): Zwischengegner Glutpanzer → Meisterhammer finden. Andenken. · Kühle Köpfe (Tränke & Extras): 7 Gegner → 4 Rissstaub.",
+    "Noctaris – Der Name auf der Tür (Kirche): Türschild finden → Zwischengegner Namenloser → Wirt. Andenken. · Tinte, die bleibt (Magieladen): 7 Gegner → 1 Kernsplitter.",
+    "Astralis – Der gefallene Stern (Kirche): Sternensplitter finden → Magierin. Andenken. · Flaute im Wolkenhafen (Wirtshaus): Zwischengegner Windfresser → 4 Fell.",
+    "Elyndra – Echo ohne Stimme (Kirche): Zwischengegner Stimmenräuber → Gefangenes Lachen finden → Wirt. Andenken. · Der letzte Schliff (Schmiede): 8 Gegner → 2 Kernsplitter."
    ]
   }
  ],
