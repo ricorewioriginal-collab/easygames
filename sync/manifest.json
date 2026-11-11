@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "234bb31604b1",
- "generated": "2026-11-11T16:25:02+01:00",
- "commit": "e231853d9e035fe7f89ca4dd9ac05bb46e262646",
+ "version": "b5b76fce5f9a",
+ "generated": "2026-11-11T22:05:26+01:00",
+ "commit": "12a49cc7d1902d8a4f85bb6cb0d4c2af5b5f2158",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4748,8 +4748,8 @@
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 56235,
-   "h": "d96083690c20bae2ee6f728b83cbe066bd4797d24448d90f2848a2722fcc0c02"
+   "s": 56381,
+   "h": "df34049f7539c7a6de613fbfe404c2a6467ba8a47f122a42cece24efc56fe648"
   },
   {
    "p": "cloud/anmacha-engage.js",
@@ -5468,8 +5468,8 @@
   },
   {
    "p": "funkgolf/js/game.js",
-   "s": 56393,
-   "h": "bf5f13c35a8b8ab9347b6a805f75c6aa9a97c5e72a95be3c826a2efe22e79f42"
+   "s": 56537,
+   "h": "ad9b12caa02dc9062f3233c5f43de9cfba0bbb596ff29e8fc6eaf925b4f52787"
   },
   {
    "p": "funkgolf/manifest.webmanifest",
@@ -5533,8 +5533,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 68416,
-   "h": "d5a1404dd671522c4c9433693e70c76f6575762b3258090401085fdb00a713b9"
+   "s": 73189,
+   "h": "dc82bed3e8f3119b5eefe9949c466156d0b5642ee6d0298a6801676c978ef819"
   },
   {
    "p": "games.js",
@@ -6478,8 +6478,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 56235,
-   "h": "d96083690c20bae2ee6f728b83cbe066bd4797d24448d90f2848a2722fcc0c02"
+   "s": 56381,
+   "h": "df34049f7539c7a6de613fbfe404c2a6467ba8a47f122a42cece24efc56fe648"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -8132,6 +8132,11 @@
    "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
   },
   {
+   "p": "riftzone/client/public/heightmap.bin",
+   "s": 1182722,
+   "h": "121bcf27e4e7d5dda62e7ed7e061d76a1f8e4dec907c9978a3a32900d5ef6d97"
+  },
+  {
    "p": "riftzone/client/src/ui/styles.css",
    "s": 30181,
    "h": "28c5e1ddb893c40dd6896ecc6a3d7d5ee09244423276d839b5aecb7a32579129"
@@ -8839,7 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256787,
-   "h": "8c02688b0c3254fa0e4077d85ddd8869ac78b3f9989875c788b3fba393c28329"
+   "h": "e3f634b05b3a58b3ca56fb91a0a04a600149eb81774c0832c27524d55b31b2f8"
   },
   {
    "p": "taschi/card.svg",

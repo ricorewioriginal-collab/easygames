@@ -291,6 +291,7 @@
     snapCam();
   }
   function hud() {
+    if (!G.scores[G.pi] || !G.players[G.pi]) return;   // im Menü (noch keine Runde): nichts anzuzeigen – sonst Skriptfehler bei jeder Taste
     const h = curHole(), p = G.players[G.pi], tot = G.scores[G.pi].reduce((s, v) => s + (v || 0), 0), parSoFar = G.holes.slice(0, G.hi).reduce((s, i) => s + FG.HOLES[i].par, 0), diff = tot - parSoFar;
     $('hNum').textContent = G.holes[G.hi] + 1; $('hName').textContent = h.n; $('hSub').textContent = h.sub + ' · Par ' + h.par;
     $('hWho').innerHTML = '<i style="background:' + p.col + '"></i>' + esc(p.name) + ' · Schlag ' + (G.strokes + (G.state === 'aim' ? 1 : 0)) + '<small>Gesamt ' + tot + (G.hi ? ' (' + (diff > 0 ? '+' : '') + diff + ')' : '') + '</small>';

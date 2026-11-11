@@ -52,6 +52,30 @@ window.gameSees = i => { const g = navigator.getGamepads()[0]; return g ? g.butt
 </script>
 <script src="/gamepad.js" data-pad="info"></script></body></html>`;
 
+// Spiel ohne eigene Controller-Steuerung: Fenster in der Bildmitte, schwebender Konto-Knopf in der Ecke (anmacha-cloud.js)
+const WIN = `<!doctype html><html><body style="margin:0;height:100vh;background:#123">
+<section id="win" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:320px;padding:20px;background:#234;border-radius:14px">
+<button id="go" style="display:block;width:100%;padding:12px">Los</button><button id="zur" style="display:block;width:100%;padding:12px;margin-top:8px">Zurück</button></section>
+<button id="acc" data-pad-skip aria-label="Mit Google speichern" style="position:fixed;left:8px;bottom:8px;width:40px;height:40px;z-index:2147483000">G</button>
+<script>
+window.log = []; ['go', 'zur', 'acc'].forEach(id => document.getElementById(id).onclick = () => { log.push('click:' + id); if (id === 'zur') document.getElementById('win').style.display = 'none'; });
+if (location.search.includes('esc')) addEventListener('keydown', e => { if (e.code === 'Escape') setTimeout(() => { log.push('esc'); document.getElementById('win').style.display = 'none'; }, 30); });
+</script>
+<script src="/gamepad.js"></script></body></html>`;
+
+// Menü als Seite: Kopfzeile mit Logo-Link, Auswahlfeld oben, Hauptknopf weiter unten; „Start“ öffnet ein Fenster, dessen „Fertig“ unter dem Bild liegt
+const MENU = `<!doctype html><html><body style="margin:0;height:100vh;background:#123">
+<header style="padding:8px"><a id="logo" href="../">LOGO</a> <button id="snd">♫</button></header>
+<select id="sel" style="position:absolute;right:20px;top:60px"><option>a</option><option>b</option></select>
+<main id="menu" style="padding:160px 0 0 40px"><button id="start" style="padding:12px 40px">Start</button><br><button id="opt" style="padding:12px 40px;margin-top:8px">Optionen</button></main>
+<section id="win" style="display:none;position:fixed;left:50%;top:40px;transform:translateX(-50%);width:320px;height:400px;overflow:auto;padding:20px;background:#234;border-radius:14px">
+<p style="height:700px">Lange Erklärung</p><button id="done" style="display:block;width:100%;padding:12px">Fertig</button></section>
+<script>
+window.log = []; ['logo', 'snd', 'start', 'opt', 'done'].forEach(id => document.getElementById(id).addEventListener('click', e => { e.preventDefault(); log.push('click:' + id);
+  if (id === 'start') { document.getElementById('menu').style.display = 'none'; document.getElementById('win').style.display = 'block'; } if (id === 'done') document.getElementById('win').style.display = 'none'; }));
+</script>
+<script src="/gamepad.js"></script></body></html>`;
+
 // Nachgebauter Controller: window.fake = { id, mapping, buttons: [Zahl], axes: [Zahl] }
 const FAKE = `(() => {
   window.fake = null;
@@ -71,6 +95,8 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
     if (q.url.startsWith('/infodlg')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(INFODLG); }
     if (q.url.startsWith('/info')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end('<!doctype html><body><script>window.log=[];addEventListener("keydown",e=>log.push("key:"+e.code))</script><script src="/gamepad.js" data-pad="info" data-pad-labels="a=Springen; dpad=Auswählen; ls=Laufen"></script></body>'); }
     if (q.url.startsWith('/text')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(TEXT.replace('DATAPAD', q.url.includes('info') ? ' data-pad="info"' : '')); }
+    if (q.url.startsWith('/menu')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(MENU); }
+    if (q.url.startsWith('/win')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(WIN); }
     if (q.url.startsWith('/cfg')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(CFG); }
     r.setHeader('Content-Type', 'text/html'); r.end(q.url.startsWith('/only') ? '<script>window.EASYGAMES_PAD_NORMAL_ONLY=1</script><script src="/gamepad.js"></script>' : PAGE);
   }).listen(0);
@@ -275,6 +301,44 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
     const y2 = await p2.evaluate(() => document.getElementById('dead').firstElementChild.scrollTop);
     ok(y > 100 && y2 > 50, 'rechter Stick scrollt lange Seite (' + Math.round(y) + ' px) und Fenster-Liste im Spiel (' + Math.round(y2) + ' px)');
     await p.close(); await p2.close();
+  }
+
+  // 13) Wie an der Konsole: der Konto-Knopf in der Ecke ist kein Ziel des Steuerkreuzes, B schließt das offene Fenster („Zurück“) –
+  //     aber nur, wenn das Spiel es nicht selbst schließt (nichts doppelt)
+  for (const esc of [false, true]) {
+    p = await (await b.newContext({ viewport: { width: 900, height: 600 } })).newPage(); await p.addInitScript(FAKE); await p.goto(url + 'win' + (esc ? '?esc' : ''));
+    const Z = Array(17).fill(0), tap = async i => { const bt = Z.slice(); bt[i] = 1; await set(p, { buttons: bt }); await frames(p, 3); await set(p, { buttons: Z.slice() }); await frames(p, 3); };
+    await p.evaluate(() => plug({ id: 'Std', mapping: 'standard', buttons: Array(17).fill(0), axes: [0, 0, 0, 0] })); await frames(p);
+    if (!esc) {
+      for (let i = 0; i < 5; i++) await tap(13);
+      await tap(14); await tap(13); await tap(0); await p.waitForTimeout(100);
+      const r13 = await p.evaluate(() => log.slice());
+      ok(!r13.includes('click:acc') && r13.join() === 'click:zur', 'Konto-Knopf in der Ecke ist kein Ziel des Steuerkreuzes (A drückt „Zurück“ im Fenster): ' + r13.join());
+      await p.evaluate(() => { log.length = 0; document.getElementById('win').style.display = ''; });
+    }
+    await tap(1); await p.waitForTimeout(350);
+    const rb = await p.evaluate(() => log.slice());
+    ok(rb.join() === (esc ? 'esc' : 'click:zur'), esc ? 'B: Spiel schließt sein Fenster selbst → kein zusätzlicher Klick: ' + rb.join() : 'B schließt das offene Fenster („Zurück“): ' + rb.join());
+    await p.close();
+  }
+
+  // 14) Erster Druck wählt den Hauptknopf des Spiels (nicht Logo/Kopfzeile/Auswahlfeld); Fenster höher als das Bild: Steuerkreuz scrollt zu
+  //     „Fertig“, B schließt es auch ohne Scrollen
+  {
+    p = await (await b.newContext({ viewport: { width: 900, height: 500 } })).newPage(); await p.addInitScript(FAKE); await p.goto(url + 'menu');
+    const Z = Array(17).fill(0), tap = async i => { const bt = Z.slice(); bt[i] = 1; await set(p, { buttons: bt }); await frames(p, 3); await set(p, { buttons: Z.slice() }); await frames(p, 3); };
+    await p.evaluate(() => plug({ id: 'Std', mapping: 'standard', buttons: Array(17).fill(0), axes: [0, 0, 0, 0] })); await frames(p);
+    await tap(13); await tap(0); await p.waitForTimeout(450);
+    const r14 = await p.evaluate(() => log.slice());
+    ok(r14.join() === 'click:start', 'erster Druck wählt den Hauptknopf, nicht Logo/Kopfzeile/Auswahlfeld: ' + r14.join());
+    await tap(13); await tap(13); await tap(0); await p.waitForTimeout(100);
+    const r14b = await p.evaluate(() => ({ l: log.slice(), open: document.getElementById('win').style.display }));
+    ok(r14b.l.join() === 'click:start,click:done' && r14b.open === 'none', 'Fenster höher als das Bild: Steuerkreuz scrollt zu „Fertig“, A schließt: ' + r14b.l.join());
+    await p.evaluate(() => { log.length = 0; const w = document.getElementById('win'); w.style.display = 'block'; w.scrollTop = 0; }); await frames(p, 3);
+    await tap(1); await p.waitForTimeout(350);
+    const r14c = await p.evaluate(() => log.slice());
+    ok(r14c.join() === 'click:done', 'B schließt das Fenster, auch wenn „Fertig“ unter dem Bild liegt: ' + r14c.join());
+    await p.close();
   }
 
   await b.close(); srv.close();

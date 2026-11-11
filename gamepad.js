@@ -291,9 +291,10 @@
 
   // ---------- Knopf-Navigation mit dem Steuerkreuz ----------
   var SEL = 'button,a[href],input:not([type=hidden]),select,textarea,summary,[role=button],[role=menuitem],[role=tab],[role=option],[role=link],[onclick],[tabindex]:not([tabindex="-1"])';
-  var focusEl = null;
+  var focusEl = null, SKIP = '[data-pad-skip],button[aria-label="Mit Google speichern"]';
   function usable(e) {
     if (e === cursor || e === ring || e.disabled) return null;
+    if (e.closest && e.closest(SKIP)) return null;   // schwebende Zusatz-Knöpfe (Konto-Knopf in der Ecke): kein Ziel für das Steuerkreuz, sonst öffnet sich mitten im Spiel ein zweites Fenster
     var r = e.getBoundingClientRect();
     if (r.width < 6 || r.height < 6 || r.bottom < 0 || r.right < 0 || r.top > root.innerHeight || r.left > root.innerWidth) return null;
     var x = Math.min(Math.max(r.left + r.width / 2, 0), root.innerWidth - 1), y = Math.min(Math.max(r.top + r.height / 2, 0), root.innerHeight - 1);
@@ -316,11 +317,18 @@
     }
     return out;
   }
+  var HERE = String(root.location && root.location.pathname || '').replace(/[^\/]*$/, '');
+  function side(e) {
+    if (e.closest && e.closest('header,nav,[role=banner],[role=navigation]')) return true;
+    var l = e.closest ? e.closest('a[href]') : null; if (!l) return false;
+    try { var u = new root.URL(l.getAttribute('href'), root.location.href); return u.origin !== root.location.origin || u.pathname.replace(/[^\/]*$/, '') !== HERE; } catch (x) { return false; }
+  }
   function pick(dir) {
     var list = candidates(); if (!list.length) return null;
     var cur = focusEl && usable(focusEl), best = null, bestScore = Infinity, i, c;
-    if (!cur) {   // erster Druck: oberster, dann linkester Knopf
-      for (i = 0; i < list.length; i++) { c = list[i]; var s = Math.round(c.r.top / 8) * 1e5 + c.r.left; if (s < bestScore) { bestScore = s; best = c; } }
+    if (!cur) {   // erster Druck: oberster, dann linkester Knopf – Kopfzeile (Logo, Symbolleiste) und Links aus dem Spiel hinaus erst, wenn es sonst nichts gibt
+      for (i = 0; i < list.length; i++) if ((list[i].e.tagName === 'BUTTON' || list[i].e.getAttribute('role') === 'button') && !side(list[i].e)) return list[i];   // erster Knopf des Spiels (Reihenfolge der Seite), nicht ein Auswahlfeld daneben
+      for (i = 0; i < list.length; i++) { c = list[i]; var s = Math.round(c.r.top / 8) * 1e5 + c.r.left + (side(c.e) ? 1e9 : 0); if (s < bestScore) { bestScore = s; best = c; } }
       return best;
     }
     var vx = [0, 0, -1, 1][dir], vy = [-1, 1, 0, 0][dir];
@@ -332,6 +340,27 @@
     }
     return best || cur;
   }
+  // Fenster in der Bildmitte (größter Kasten unter 92 % der Fläche) – für „B = zurück“
+  function winBox() {
+    var el0 = doc.elementFromPoint(root.innerWidth / 2, root.innerHeight / 2), box = null, full = 0.92 * root.innerWidth * root.innerHeight;
+    if (!el0 || el0 === doc.body || el0 === doc.documentElement || /^(CANVAS|IFRAME|VIDEO)$/.test(el0.tagName)) return null;
+    for (var e = el0; e && e !== doc.body && e !== doc.documentElement; e = e.parentElement) { var r = e.getBoundingClientRect(); if (r.width * r.height > full) break; box = e; }
+    return box;
+  }
+  function below(e) { var r = e.getBoundingClientRect(); return r.width > 5 && r.height > 5 && (r.top > root.innerHeight - 4 || r.bottom < 4); }   // Knopf des Fensters außerhalb des Bildes (Fenster höher als das Bild)
+  function backBtn(box) {
+    var all = box.querySelectorAll(SEL), i, pass, t;
+    for (pass = 0; pass < 2; pass++) for (i = 0; i < all.length; i++) {   // erst „Zurück/Schließen/Abbrechen“, sonst ein einzelnes „Fertig“
+      t = ((all[i].textContent || '') + ' ' + (all[i].getAttribute('aria-label') || '') + ' ' + (all[i].title || '')).trim();
+      if (t.length < 40 && (pass ? /^\W*fertig\W*$/i : BACK_RX).test(t) && !all[i].disabled && (usable(all[i]) || below(all[i]))) return all[i];
+    }
+    return null;
+  }
+  // Erst kurz warten: Schließt das Spiel sein Fenster selbst (Escape, nur ohne sofortige Änderung), passiert nichts doppelt
+  function backWin() {
+    var box = winBox(), b = box && backBtn(box); if (!b) return;
+    root.setTimeout(function () { if (!b.isConnected || dlg || osk || menu) return; var c = usable(b); if (!c && !below(b)) return; clearRing(); if (c) click(b, c.x, c.y); else b.click(); }, 160);
+  }
   function drawRing() {
     if (!focusEl) return;
     var c = usable(focusEl); if (!c) { clearRing(); return; }
@@ -342,7 +371,7 @@
   // Nichts mehr in dieser Richtung sichtbar: Fenster/Seite ein Stück weiterscrollen (Knöpfe unterhalb des sichtbaren Bereichs, z. B. Spielstand-Bereich)
   function scrollOn(dir) {
     if (dir > 1) return false;
-    var e = focusEl, sc = null;
+    var e = focusEl || doc.elementFromPoint(root.innerWidth / 2, root.innerHeight / 2), sc = null;   // noch kein Rahmen: Fenster in der Bildmitte scrollen (Knöpfe unterhalb des Bildes)
     for (; e && e !== doc.body && e !== doc.documentElement; e = e.parentElement) {
       var cs = root.getComputedStyle(e); if (/(auto|scroll)/.test(cs.overflowY) && e.scrollHeight > e.clientHeight + 4) { sc = e; break; }
     }
@@ -376,7 +405,16 @@
     // Spiel arbeitet mit echtem Fokus (z. B. „Los geht's“ blau umrandet): dort weitermachen und den Fokus mitnehmen – sonst zwei Markierungen
     var a = doc.activeElement, real = a && a !== doc.body && /^(BUTTON|A|INPUT|SELECT|TEXTAREA)$/.test(a.tagName) && (!scopeEl || scopeEl.contains(a)) && usable(a);
     if (real && (!focusEl || !usable(focusEl))) focusEl = a;
-    var c = pick(dir); if (!c && focusEl && scrollOn(dir)) c = pick(dir);
+    // Noch kein Rahmen und ein Fenster in der Bildmitte: dort anfangen (nicht bei Knöpfen daneben); liegen seine Knöpfe unter dem Bild, erst scrollen
+    if (!(focusEl && usable(focusEl)) && !scopeEl) {
+      var wb = winBox(), inW = function () { var l = wb.querySelectorAll(SEL), n = 0, k; for (k = 0; k < l.length; k++) { if (usable(l[k])) return 1; if (!l[k].disabled && below(l[k])) n = 2; } return n; }, st = wb ? inW() : 0;
+      for (var tries = 0; st === 2 && tries < 8 && scrollOn(dir < 2 ? dir : 1); tries++) st = inW();
+      if (st === 1) { scopeEl = wb; focusEl = null; var f0 = pick(dir); scopeEl = null; if (f0) { focusEl = f0.e; drawRing(); cursorUntil = 0; show(cursor, false); return; } }
+    }
+    var c = pick(dir), was = focusEl;
+    // kein Knopf mehr in dieser Richtung sichtbar – oder nur einer schräg daneben (andere Spalte): erst weiterscrollen (Knöpfe unterhalb des Bildes)
+    var wr = was && was.getBoundingClientRect ? was.getBoundingClientRect() : null, off = c && wr && c.e !== was && dir < 2 && (c.r.right <= wr.left || c.r.left >= wr.right);
+    if ((!c && (focusEl || winBox()) || c && was && c.e === was && dir < 2 || off) && scrollOn(dir)) c = pick(dir) || c;
     if (!c) return;
     if (real && c.e !== a && c.e.focus) try { c.e.focus({ preventScroll: true }); } catch (x) { }
     focusEl = c.e; drawRing(); cursorUntil = 0; show(cursor, false);
@@ -392,6 +430,13 @@
     }
     mouseDown = true; pointer('down', c.x, c.y, true); pointer('up', c.x, c.y, true); mouseDown = false; if (!pointer.ate) click(c.e, c.x, c.y);
     root.setTimeout(drawRing, 50);
+    // Der Knopf hat ein neues Fenster geöffnet (er selbst ist weg): Rahmen gleich auf dessen ersten Knopf – wie an der Konsole ist sofort etwas gewählt
+    root.setTimeout(function () {
+      if (dlg || osk || menu || !padOn || (focusEl && usable(focusEl))) return;
+      var wb = winBox(), keep = scopeEl; if (!wb) return;
+      scopeEl = wb; focusEl = null; var f = pick(0); scopeEl = keep;
+      if (f) { focusEl = f.e; drawRing(); }
+    }, 300);
     return true;
   }
 
@@ -480,8 +525,9 @@
         if (i === 0) aMode = 'key';
         if (!code && BIND[name]) { pressEl(i, BIND[name], true); continue; }
         var alt = (code || '').split('/');
-        alt2[i] = !send(alt[0], true) && alt[1] ? alt[1] : '';
-        if (alt2[i]) send(alt2[i], true);
+        var u1 = send(alt[0], true); alt2[i] = !u1 && alt[1] ? alt[1] : '';
+        var u2 = alt2[i] ? send(alt2[i], true) : false;
+        if (i === 1 && !u1 && !u2) backWin();   // B wie an der Konsole: schließt das offene Fenster, wenn das Spiel die Taste nicht selbst nimmt
       } else if (!s.b[i] && p.b[i]) {
         if (i === 0 && aMode === 'mouse') { var up = pointer('up', cx, cy); mouseDown = false; if (up && downEl && !pointer.ate && (up === downEl || up.contains(downEl) || downEl.contains(up))) click(up, cx, cy); downEl = null; if (!STAY) cursorUntil = now + 4000; aMode = ''; continue; }
         if (i === 0 && aMode === 'nav') { aMode = ''; continue; }

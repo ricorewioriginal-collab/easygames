@@ -702,6 +702,7 @@
     }
     btn = el('button', 'position:fixed;left:8px;bottom:8px;z-index:2147483000;width:40px;height:40px;padding:0;border:2px solid #dadce0;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;opacity:.85;box-shadow:0 1px 4px rgba(0,0,0,.4)');
     btn.setAttribute('aria-label', 'Mit Google speichern');
+    btn.setAttribute('data-pad-skip', '');   // gamepad.js: kein Ziel für das Steuerkreuz (das Konto gibt es im Launcher und auf der Startseite)
     panel = el('div', 'position:fixed;left:8px;bottom:56px;z-index:2147483000;width:min(290px,calc(100vw - 16px));padding:14px;border-radius:12px;background:rgba(20,20,30,.96);color:#fff;font:14px/1.4 system-ui,sans-serif;display:none;box-sizing:border-box');
     btn.onclick = function () { panel.style.display = panel.style.display === 'none' ? 'block' : 'none'; };
     document.body.appendChild(panel); document.body.appendChild(btn); render();
