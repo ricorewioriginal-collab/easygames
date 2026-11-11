@@ -1,7 +1,7 @@
 // Städte: jedes Gebäude hat eine Funktion und ist zu Fuß erreichbar (Kirche, Läden, Wirtshaus, Wohnhäuser, Casino)
 //   node tools/test-zotik/stadt.cjs [von] [bis]      Welten 1–10; Bilder mit SHOTS=1 nach <tmp>/zotik-test/
 const L = require('./lib.cjs'), { chromium, ARGS, open, shot } = L;
-(async () => { const b = await chromium.launch({ args: ARGS }); const p = await open(b, { ctx: { viewport: { width: 960, height: 540 } } }); const from = +process.argv[2] || 1, to = +process.argv[3] || 10, res = [];
+(async () => { const b = await chromium.launch({ args: ARGS }); const p = await open(b, { ctx: { viewport: { width: 960, height: 540 } } }); const from = +process.argv[2] || 1, to = +process.argv[3] || 10, res = [], plans = {};
   const ok = (name, pass, info) => { res.push(pass); console.log(`${pass ? 'ok  ' : 'FEHL'} ${name}${info ? ' · ' + info : ''}`); };
   const w = ms => p.waitForTimeout(ms);
   const skip = () => L.skip(p), opt = t => L.opt(p, t), talk = async id => { const r = await L.talk(p, id); if (!r && !(await L.opt(p, 'Etwas anderes'))) { await p.waitForTimeout(150); await L.skip(p); } return r; };   /* bietet jemand einen Nebenauftrag an, hier den Laden/Dienst wählen */
@@ -19,7 +19,11 @@ const L = require('./lib.cjs'), { chromium, ARGS, open, shot } = L;
       for (const id of need) { const np = Z.NPC.find(q => q.id === id); out.push(id.slice(3) + (!np ? ':FEHLT' : window.__near(np.x, np.z, 3) ? '' : ':NICHT ERREICHBAR')); }
       for (const it of Z.INT) if (/Bücherregal|Kristallslots|Sternenrad/.test(it.name) && !window.__near(it.x, it.z, it.rad - .2)) out.push(it.name + ':NICHT ERREICHBAR');
       const H = Z.HOUSES.map(h => [h.x, h.z, h.R]); let hit = ''; for (let i = 0; i < H.length; i++) for (let j = i + 1; j < H.length; j++) if (Math.hypot(H[i][0] - H[j][0], H[i][1] - H[j][1]) < (H[i][2] + H[j][2]) * .72) hit += ` Häuser ${i}/${j} zu dicht`;
-      return { bad: out.filter(s => s.includes(':')).join(', ') + hit, n: out.length, houses: H.length, books: Z.INT.filter(i => i.name === 'Bücherregal').length }; }, n);
+      /* kein Haus auf dem Weg, kein Bewohner in einer Hauswand */
+      if (n > 1) for (const q of H) for (let z = -44; z <= 30; z += 2) if (Math.hypot(q[0] - Z.WLD.path(z), q[1] - z) < q[2] * .6) { hit += ` Haus bei ${q[0]}/${q[1]} steht auf dem Weg`; break; }
+      for (const np of Z.NPC) if (!/^tw_/.test(np.id) && Math.hypot(np.x, np.z) < 45 && !window.__near(np.x, np.z, 2.5)) hit += ` ${np.id} nicht erreichbar`;
+      return { plan: need.slice(0, 5).map(id => { const np = Z.NPC.find(q => q.id === id); return np ? [np.x, np.z] : [0, 0]; }), bad: out.filter(s => s.includes(':')).join(', ') + hit, n: out.length, houses: H.length, books: Z.INT.filter(i => i.name === 'Bücherregal').length }; }, n);
+    plans[n] = r.plan;
     ok(`Welt ${n}: Gebäude erreichbar`, !r.bad, r.bad || `${r.houses} Häuser, ${r.n} Anlaufstellen, ${r.books} Bücherregal`);
     if (process.env.SHOTS && (n === 1 || n === 3)) for (const [id, nm] of [['tw_church', 'kirche'], ['tw_magic', 'magie'], ['tw_potions', 'traenke'], ['tw_smith', 'schmiede']].concat(n === 3 ? [['tw_dealer', 'casino']] : [])) { await talk(id); await p.evaluate(() => { const b = [...document.querySelectorAll('#dOpts button')].pop(); if (b) b.click(); }); await shot(p, `stadt-${n}-${nm}`); }
     if (n !== 1 && n !== 3) continue;
@@ -53,4 +57,7 @@ const L = require('./lib.cjs'), { chromium, ARGS, open, shot } = L;
     const ev = await p.evaluate(() => { const T = __zotik.TOWN, C = T.CAS; let a = 0; for (let i = 0; i < 5; i++) for (let j = 0; j < 5; j++) for (let k = 0; k < 5; k++) a += C.W[i] * C.W[j] * C.W[k] / 1e6 * T.slotPay([i, j, k], 1); const wh = C.SEG.reduce((x, y) => x + y, 0) / 12; let hl = 0; for (let c = 1; c <= 13; c++) { const ph = (13 - c) / 13, pl = (c - 1) / 13, b = Math.max(ph, pl); hl = Math.max(hl, b * T.hiloMul(b)); } return [a, wh, hl]; });
     ok('Casino: Quoten unter 100 %', ev.every(v => v < 1 && v > .8), ev.map(v => (v * 100).toFixed(1) + ' %').join(' · '));
   }
+  /* eigener Stadtplan je Welt: keine zwei Städte gleich aufgebaut, auch nicht gespiegelt */
+  { const ns = Object.keys(plans).map(Number), same = []; for (const a of ns) for (const b of ns) if (a < b) for (const m of [1, -1]) { const d = plans[a].filter((q, i) => Math.hypot(q[0] - m * plans[b][i][0], q[1] - plans[b][i][1]) < 5).length; if (d >= 3) same.push(`${a}=${b}${m < 0 ? ' gespiegelt' : ''}`); }
+    if (ns.length > 1) ok('Stadtplan je Welt verschieden', !same.length, same.join(', ') || `${ns.length} Städte verglichen`); }
   ok('keine Fehler', !p.errs.length, [...new Set(p.errs)].join(' | ')); console.log(`${res.filter(Boolean).length}/${res.length} bestanden`); await b.close(); })().catch(e => { console.log('ABBRUCH', e.message.slice(0, 400)); process.exit(1); });

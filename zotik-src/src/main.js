@@ -1776,6 +1776,18 @@ function doNG(){const keep=['lvl','xp','shards','potions','blade','blade2','trk'
 function partyHTML(){if(!S.party.length)return '';let h='<h3>Gefährten</h3>';for(const id of S.party){const d=PARTY[id];h+=`<div class="row"><span>${d.em} ${d.n}</span><span>${d.heal?'heilt dich':d.melee?'Nahkampf':'Fernkampf'}</span></div>`}return h}
 
 /* ================= Welt bauen ================= */
+/* Eigener Stadtplan je Welt (vorher überall derselbe, nur gespiegelt): [x,z,Drehung] für Wohnhaus, Tränke, Magie, Schmiede, Taverne, Kirche – abseits von Weg, Platz, Tor und Figuren */
+const TLAY={
+ 2:[[-22,12,0.39],[-8,31,0.39],[-23,-4,1.1],[-14,-17,0.69],[8,27,-0.39],[24,18,-0.39]],   // Halbmond im Westen und Süden
+ 3:[[14,-15,-0.75],[27,-17,-1.01],[-22,-15,0.97],[-25,2,1.1],[-18,20,0.39],[-12,34,0.39]],   // Kanalviertel zwischen Hafen, Kasino und Wohnung
+ 4:[[-20,-9,1.1],[-23,8,0.39],[24,-11,-1.1],[26,6,-0.39],[-15,29,0.39],[20,25,-0.39]],   // Karawanenhof, nach Norden offen
+ 5:[[-15,-19,0.67],[-21,-4,1.1],[-21,11,0.39],[-14,25,0.39],[8,32,-0.39],[23,29,-0.39]],   // Uferzeile im Westen und Süden
+ 6:[[18,-9,-1.1],[-23,-13,1.06],[21,6,-0.39],[16,21,-0.39],[-27,4,1.1],[-19,28,0.39]],   // Straßendorf mit zwei Zeilen
+ 7:[[-25,-3,1.1],[-22,12,0.39],[20,20,-0.39],[18,-15,-0.88],[-9,25,0.39],[13,33,-0.39]],   // Terrassenbogen, Schmiede allein im Norden
+ 8:[[10,-19,-0.48],[23,-9,-1.1],[27,8,-0.39],[-17,9,0.39],[-21,23,0.39],[10,35,-0.39]],   // schiefe Gassen am Zickzackweg
+ 9:[[-18,-13,0.95],[-24,4,1.1],[-15,20,0.39],[16,20,-0.39],[23,3,-1.1],[19,-14,-0.94]],   // Sternplatz im Kreis
+ 10:[[10,-15,-0.59],[25,-13,-1.09],[14,22,-0.39],[27,6,-0.39],[28,24,-0.39],[-10,34,0.39]],   // Kristallgasse im Osten
+};
 function buildWorld(n){
   const C=CHP[n],R=mul32(7000+n*131),rr=(a,b)=>a+R()*(b-a),rp=a=>a[R()*a.length|0],ph=n*1.7,amp=C.amp||1,P=C.pal,cs=()=>chCs(n);
   const mir=n%2===0?1:-1;
@@ -1799,7 +1811,7 @@ function buildWorld(n){
     case 9:{const isl=Math.sin(x*.06+ph)*Math.sin(z*.06+1);return c-(pd>6&&isl<.15?14*sm(.15,-.15,isl)*sm(6,9,pd)*iw:0)}   // Abgründe zwischen Schwebeinseln
     default:return c}};
   const PADS=[[pathx(-118)+7*mir,-118,4],[pathx(-80)+11,-80,3],[pathx(-116)-12,-116,3],[pathx(-140)+9,-140,3]];
-  const BPADS=[[17*mir,30,10],[-16*mir,28,7]].concat(n===3?[[-30*mir,0,11],[-30*mir,28,6]]:[]);
+  const tl=TLAY[n],BPADS=(tl?tl.map((q,i)=>[q[0],q[1],i===5?10:i===4?7:6]):[[17*mir,30,10],[-16*mir,28,7]]).concat(n===3?[[-30*mir,0,11],[-30*mir,28,6]]:[]);
   const pads=(q,x,z)=>{for(const [px,pz,r] of PADS){const d=Math.hypot(x-px,z-pz),k=1-sm(r,r+6,d);if(k>0)q+=(Math.max(0,Math.min(2,q))-q)*k}return q};
   const tStyle=(q,x,z)=>wildMap(tStyle0(q,x,z),x,z);
   const tStyle0=(q,x,z)=>{switch(n){
@@ -1887,8 +1899,8 @@ function buildWorld(n){
     const cr=mk(G.oct,M(gl0,{e:gl0,ei:1.8,r:.2}),0,2.5,0,.42,.8,.42);gc.add(cr);gc.add(glow(gl0,7,0,2.5,0,.8));const L=new T.PointLight(gl0,1.2,26,1.5);L.position.set(0,3,0);gc.add(L);scene.add(gc);addCol(0,0,2.8);
     animObjs.push({fn(t){cr.rotation.y=t*.8;cr.position.y=2.5+Math.sin(t*1.6)*.12}})}
   const hb=C.hub,hh2=[[-13,9,7,6,3.6,.35,{chest:{id:n+'h1',reward:{shards:15+n*5}}}],[15,10,8,6,3.8,-.3,{kind:'potions'}],[-17,-10,7,6,3.6,.5,{kind:'magic',chest:{id:n+'h2',reward:{potions:1,shards:10+n*4}}}],[18,-10,8,7,3.8,-.45,{chimney:1,kind:'smith'}],[-16,28,9,6,3.8,.35,{kind:'tavern',chest:{id:n+'h3',reward:{shards:25+n*6}}}]];
-  hh2.forEach((q,i)=>house(q[0]*mir,q[1],q[2],q[3],q[4],hb[i%2],hb[2+(i>>1)%2],q[5]*mir,q[6]));
-  house(17*mir,30,8,13,5.2,0xe8e2d8,hb[2],-.4*mir,{kind:'church'});if(n===3)house(-30*mir,0,14,11,4.4,0x4a2a6a,0x2a1a4a,.5*mir,{kind:'casino'});TOWN.flush(n);
+  hh2.forEach((q,i)=>{const t=tl?tl[i]:[q[0]*mir,q[1],q[5]*mir];house(t[0],t[1],q[2],q[3],q[4],hb[i%2],hb[2+(i>>1)%2],t[2],q[6])});
+  {const t=tl?tl[5]:[17*mir,30,-.4*mir];house(t[0],t[1],8,13,5.2,0xe8e2d8,hb[2],t[2],{kind:'church'})}if(n===3)house(-30*mir,0,14,11,4.4,0x4a2a6a,0x2a1a4a,.5*mir,{kind:'casino'});TOWN.flush(n);
   for(const [x,z] of [[-5,10],[5,10],[-6,-5],[6,-6],[-4,-30],[4,-33],[-6,-70]])lantern(x+pathx(z)*(z<-20?1:0),z);
   portalAt(0,-18,C.rift);
   /* Tore: Waldrand & Siegel */
