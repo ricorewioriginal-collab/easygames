@@ -64,7 +64,8 @@ const BOT = () => { const Z = __zotik, pl = Z.pl; const B = window.B = { log: []
     L('  Etappe 1 → ' + await etappe('E1')); await settle(900);
     L('  Rätsel: ' + await ev(() => { const it = __zotik.INT.find(i => i.pr === 'Rätsel lösen'); const u = B.use(it); return u + ' · ' + B.puzzle(); })); await w(2400); await settle(2000);
     L('  → ' + await ev(() => B.quest()));
-    L('  Mini: ' + await ev(() => { const e = __zotik.E.find(e => e.mini && !e.dead); if (!e) return 'KEIN MINIBOSS'; B.tp(...(B.free(e.x, e.z, 3) || [e.x, e.z])); __zotik.hurtE(e, 1e7, 0, 0); B.step(5); return e.d.name + ' besiegt · ' + B.quest(); })); await settle(1200);
+    /* Vorhallen: Eingang am Weg muss da und ansprechbar sein; die Ebenen selbst prüft dungeon.cjs, hier geht es mit dem Sieg über den Zwischengegner weiter */
+    L('  Vorhallen: ' + await ev(() => { const Z = __zotik, it = Z.INT.find(i => /^Vorhallen/.test(i.name || '') && i.vis()); if (!it) return 'KEIN EINGANG'; if (!B.free(it.x, it.z, 3)) return 'EINGANG NICHT ERREICHBAR'; Z.dunEnter(Z.WLD.n); return 'betreten'; })); await w(1400); L('  Mini: ' + await ev(() => { const Z = __zotik; if (!Z.dun) return 'NICHT IN DEN VORHALLEN'; Z.dunWin(); return 'besiegt'; })); await w(1500); L('  → ' + await ev(() => B.quest())); await settle(1200);
     L('  Etappe 2 → ' + await etappe('E2')); await settle(900);
     await ev(() => { B.tp(0, -160); B.step(20); B.tp(0, -172); B.step(30); }); await settle(1500);
     L('  Boss: ' + await ev(() => { const bo = __zotik.boss; if (!bo) return 'KEIN BOSS · ' + B.quest(); __zotik.hurtE(bo, 1e8, 0, 0); B.step(10); return bo.d.name + ' besiegt · ' + B.quest(); })); await w(2200); await settle(2400);

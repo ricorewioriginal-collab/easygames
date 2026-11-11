@@ -12,6 +12,7 @@ node tools/test-zotik/erreichbar.cjs 2 4 # alle Auftrags- und Etappen-Punkte zu 
 node tools/test-zotik/stadt.cjs 1 10     # Städte: Kirche, Läden, Wirtshaus, Casino – erreichbar, kaufen, heilen, alle Casino-Spiele, Quoten
 node tools/test-zotik/nebenquests.cjs 1 10 # alle Nebenquest-Ketten von der Annahme bis zur Belohnung
 node tools/test-zotik/springen.cjs 1 10  # Springen: mit echten Tasten von Platte zu Platte bis zur Truhe, in jeder Welt
+node tools/test-zotik/dungeon.cjs 2 10   # Vorhallen: alle Ebenen je Welt – Schlüssel, Runentor, Treppe, Zwischengegner, Tor nach draußen
 ```
 
 Die Tests nutzen `?debug` (`__zotik`) und schalten das Zeichnen ab (`__zotik.noRender`), damit sie auch ohne Grafikkarte schnell laufen.
