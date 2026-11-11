@@ -192,6 +192,11 @@ body.remote #joy,body.remote #skills,body.remote #steerBtn{display:none!importan
 #pW .pzd,#pW .pzn,#pW .pzb{transform:none!important;min-width:92px!important;min-height:92px;border-radius:50%!important;border:3px solid var(--khb)!important;background:radial-gradient(circle at 50% 35%,#2a4fa8,#0a1640 70%)!important;box-shadow:0 0 16px rgba(63,120,232,.6),inset 0 0 14px rgba(140,190,255,.35)}
 #pW .pzd:hover,#pW .pzn:hover,#pW .pzd:focus-visible,#pW .pzn:focus-visible{border-color:var(--khg)!important;box-shadow:0 0 22px rgba(255,212,90,.75),inset 0 0 14px rgba(255,212,90,.35)}
 #pH{background:rgba(255,212,90,.08);border-left:3px solid var(--khg);padding:6px 10px;text-align:left;color:#ffe9a8;font-size:14px}
+/* Fenster passen immer auf den Bildschirm (Handy quer, kleine Einbettung): Höhe am sichtbaren Bereich messen, nicht am Inhalt */
+#mbox{height:min(640px,calc(100vh - 20px))!important;height:min(640px,calc(100dvh - 20px))!important}
+@media (max-width:640px){#mbox{height:min(900px,calc(100vh - 20px))!important;height:min(900px,calc(100dvh - 20px))!important}}
+.ov .glass,#puz .glass{max-height:calc(100vh - 20px)!important;max-height:calc(100dvh - 20px)!important;overflow:auto}
+@media (max-height:480px){#mbox{padding:8px 12px!important;gap:6px 10px!important}#mbox::before{font-size:17px}#mbox::after{display:none}#mbox .mb button{padding:4px 10px!important}#puz .glass{padding:10px 14px!important}#puz h3{font-size:18px!important;margin-bottom:6px!important}#pW{margin:8px 0!important;padding:8px;gap:8px!important}#pW .pzd,#pW .pzn,#pW .pzb{min-width:70px!important;min-height:70px}}
 </style>
 </head>
 <body>

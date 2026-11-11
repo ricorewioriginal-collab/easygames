@@ -978,7 +978,7 @@ function controlsHTML(){const K=(a,b)=>`<div><b>${a}</b><span>${b}</span></div>`
 function renderMenu(tab){mState.tab=tab;const t=$('tabs'),c=$('mcont');
   if(mState.shop){t.innerHTML='<b style="color:var(--gold)">🎒 '+(mState.shopName||'Finns Laden')+'</b>';c.innerHTML=`<div class="row"><span>Deine Splitter</span><span>💎 ${S.shards}</span></div><div class="row"><span>Heiltränke</span><span>🧪 ${S.potions}</span></div><div id="shopl"><button data-n="1" data-c="20"><span>🧪 Heiltrank</span><span>20 💎</span></button><button data-n="3" data-c="55"><span>🧪🧪🧪 3 Heiltränke</span><span>55 💎</span></button></div>`;
     c.querySelectorAll('#shopl button').forEach(b=>{b.disabled=S.shards<+b.dataset.c;b.onclick=()=>buy(+b.dataset.n,+b.dataset.c)});extShop(c);return}
-  t.innerHTML='';for(const [k,ic,n] of TABS.filter(q=>q[0]!=='travel'||S.stage>=8)){const b=document.createElement('button');b.innerHTML='<em>'+ic+'</em><span>'+n+'</span>';if(k===tab)b.className='on';b.onclick=()=>{sfx('ui');renderMenu(k)};t.appendChild(b)}
+  t.innerHTML='';for(const [k,ic,n] of TABS.filter(q=>q[0]!=='travel'||S.stage>=8)){const b=document.createElement('button');b.innerHTML='<em>'+ic+'</em><span>'+n+'</span>';if(k===tab)b.className='on';b.onclick=()=>{sfx('ui');renderMenu(k)};t.appendChild(b)}{const on=t.querySelector('.on');if(on&&on.scrollIntoView)try{on.scrollIntoView({block:'nearest',inline:'nearest'})}catch(e){}}
   let h='';
   if(tab==='quest'&&WLD)h+=WLD.menuQuest();
   else if(tab==='quest'){h+='<h3>Hauptgeschichte: Der erste Riss</h3>';STG.forEach((s,i)=>{const st=i<S.stage?'✅':i===S.stage?'👉':'▫️';if(i<=S.stage)h+=`<div class="row"><span>${st} ${i===S.stage?objective():s}</span></div>`});
@@ -2104,7 +2104,8 @@ function uiNav(e){const sc=uiScope();if(!sc)return false;if(sc!==navSc){navSc=sc
   if(ok){navAfter();if(cur.tagName==='BUTTON'&&e.isTrusted)return false;cur.click();return true}
   const r0=cur.getBoundingClientRect(),cx=r0.left+r0.width/2,cy=r0.top+r0.height/2;let best=null,bs=1e9;
   for(const el of L){if(el===cur)continue;const r=el.getBoundingClientRect(),dx=r.left+r.width/2-cx,dy=r.top+r.height/2-cy,al=dx*dir[0]+dy*dir[1],ac=Math.abs(dx*dir[1])+Math.abs(dy*dir[0]);if(al<4)continue;const sco=al+ac*2.5;if(sco<bs){bs=sco;best=el}}
-  if(best)navFocus(best);else if(dir[1]){const m=sc.querySelector('#mcont')||sc.querySelector('.glass');if(m)m.scrollTop+=dir[1]*90}return true}
+  if(best){navFocus(best);if(best.parentElement&&best.parentElement.id==='tabs'&&!best.classList.contains('on')){best.click();navAfter()}}   /* Menü-Reiter wechseln gleich beim Markieren */
+  else if(dir[1]){const m=sc.querySelector('#mcont')||sc.querySelector('.glass');if(m)m.scrollTop+=dir[1]*90}return true}
 addEventListener('keydown',e=>{navKb=true;navAfter();   /* öffnet eine Taste ein Fenster, ist dort gleich ein Knopf markiert */
   if(e.defaultPrevented||e.ctrlKey||e.altKey||e.metaKey)return;if(uiNav(e))e.preventDefault()});
 addEventListener('pointerdown',e=>{if(e.isTrusted===false&&e.pointerType==='')return;navKb=false;document.body.classList.remove('kbd');navP=null},true);
