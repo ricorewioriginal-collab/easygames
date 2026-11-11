@@ -94,7 +94,7 @@ export function createQuests(C) {
   const have = w => w === 'herbs' ? S().herbs : w === 'potions' ? S().potions : (S().mat || {})[w] || 0;
   const take = (w, k) => { if (w === 'herbs') S().herbs -= k; else if (w === 'potions') S().potions -= k; else S().mat[w] -= k; };
   const LIVE = new Map();   // in der aktuellen Welt aufgestellte Fundstücke und Zwischengegner
-  function advance(c, n) { const s = st(c); s.s++; s.n = 0; C.sfx('quest'); C.toast('📜 ' + c.n + ': ' + obj(c, n)); arm(c, n); C.saveGame(true); }
+  function advance(c, n) { const s = st(c); s.s++; s.n = 0; C.sfx('quest'); C.toast('📜 ' + c.n + ': ' + obj(c, n)); arm(c, n); C.refresh(); C.saveGame(true); }
   /* Fundstück oder Zwischengegner des aktiven Schritts in die Welt stellen */
   function arm(c, n) { const p = step(c), key = c.id + ':' + st(c).s; if (!p || C.world() !== n || LIVE.has(key) || (p.t !== 'find' && p.t !== 'elite')) return;
     const i = CHAINS[n].indexOf(c), q = C.spot(i * 3 + st(c).s); if (!q) return; LIVE.set(key, 1);
@@ -107,7 +107,7 @@ export function createQuests(C) {
       else if (p.t === 'kill' && e.k === kind(p, n) && !e.nq) { s.n++; if (s.n >= p.need) advance(c, n); else C.toast(`⚔ ${c.n}: ${s.n}/${p.need}`); } } }
   function reward(c, n) { const s = S(), sh = 60 * n + 60, xp = 40 * n + 60, t = ['💎 +' + sh]; s.shards += sh; st(c).d = 1;
     if (c.trk) { s.trk.push(c.trk); t.push('🎁 ' + c.trk + ' (+1,5 Angriff)'); } else { s.items.phoenix = (s.items.phoenix || 0) + 1; s.mat = s.mat || {}; s.mat.kern = (s.mat.kern || 0) + 1; s.mat.staub = (s.mat.staub || 0) + 3; t.push('🔥 Phönix-Trank · 💠 1 · ✨ 3'); }
-    C.gainXp(xp); C.sfx('level'); C.banner('Auftrag erfüllt', c.n); C.toast(t.join(' · ')); C.saveGame(true); }
+    C.gainXp(xp); C.sfx('level'); C.banner('Auftrag erfüllt', c.n); C.toast(t.join(' · ')); C.refresh(); C.saveGame(true); }
   /* Gespräch mit einer Person in einem Stadtgebäude: erst die Quest, sonst (oder auf Wunsch) ihr Laden/Dienst */
   function talk(k, nm, n, base) { const L = CHAINS[n] || [], other = { t: 'Etwas anderes', fn: base };
     for (const c of L) { const s = st(c), p = step(c); if (s.d || !s.s) continue;
@@ -123,6 +123,6 @@ export function createQuests(C) {
   const mark = (k, n) => (CHAINS[n] || []).some(c => { const s = st(c), p = step(c); return !s.d && ((!s.s && c.giver === k) || (s.s && !p && c.giver === k) || (p && p.t === 'talk' && p.to === k) || (p && p.t === 'give' && c.giver === k && have(p.what) >= p.need)); });
   function html() { const A = all().filter(q => st(q.c).s); if (!A.length) return ''; let h = '<h3>Nebenaufträge in den Städten</h3>';
     for (const { c, n } of A) { const s = st(c); h += `<div class="row"><span>${s.d ? '✅' : step(c) ? '▫️' : '👉'} ${c.n} <small style="color:var(--dim)">· ${fill('{W}', n)}</small><br><small style="color:var(--dim)">${s.d ? 'Erledigt' : obj(c, n)}</small></span></div>`; } return h; }
-  const hud = n => (CHAINS[n] || []).filter(c => st(c).s && !st(c).d).map(c => '📜 ' + obj(c, n)).join('\n');
+  const hud = n => (CHAINS[n] || []).filter(c => st(c).s && !st(c).d).slice(0, 2).map(c => '📜 ' + obj(c, n)).join('\n');
   return { talk, mark, kill, enter, html, hud, st, step, obj, advance, all, CHAINS };
 }

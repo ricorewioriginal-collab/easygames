@@ -163,6 +163,31 @@
    ]
   },
   {
+   "t": "Fähigkeitenbaum",
+   "p": [
+    "Im Menü unter ✨ Fähigkeiten verteilst du Punkte. Mit jeder Stufe bekommst du einen Punkt; Rang 1 einer Fähigkeit kostet einen Punkt, Rang 2 zwei und so weiter bis Rang 5."
+   ],
+   "list": [
+    "💪 Stärke: +4 % Angriff je Rang. ❤️ Zähigkeit: +6 % Leben je Rang. 🔷 Geist: +8 % Mana je Rang.",
+    "🎯 Präzision: +2 % kritische Treffer je Rang. ✨ Zauberkraft: +6 % Schaden für Funkenwirbel und Lichtstoß je Rang.",
+    "⤴ Sprungkraft: +5 % Sprunghöhe je Rang. Ab Rang 3 kannst du in der Luft ein zweites Mal springen (Doppelsprung).",
+    "„Neu verteilen“ gibt jederzeit und kostenlos alle Punkte zurück – probier ruhig verschiedene Wege aus.",
+    "In der Uralten Höhle ruht der Baum, dort zählt nur, was du im Lauf findest."
+   ]
+  },
+  {
+   "t": "Bestiarium, Ruinen-Rätsel und Neues Spiel+",
+   "p": [
+    "Drei Dinge, die sich über das ganze Spiel ziehen."
+   ],
+   "list": [
+    "📖 Bestiarium (Menü → Chronik): Jede neue Gegnerart wird eingetragen. Bei 5, 10, 20, 30 und 40 Arten gibt es Belohnungen: Splitter, Phönix-Tränke, Kernsplitter und zwei Andenken (Forscherlupe, Großes Bestiarium).",
+    "🏛️ Werkzeug-Ruinen: Jede der zehn Ruinen hat ein eigenes Rätsel. Neu ab Frosthain: Farbschalter (jeder Wechsel dreht auch den rechten Nachbarn weiter), Zahlenplatten (von 1 an der Reihe nach betreten), Erinnerungspfad (der Lichtstein zeigt kurz die sicheren Platten), Gewichtsplatten (die leuchtenden Zahlen müssen die Zahl am Sockel ergeben) und Mustertafel (Platten wie das Kristallmuster an der Wand schalten). Einige davon begegnen dir auch in den Vorhallen.",
+    "♻️ Neues Spiel+: Es stehen mehr Gegner in den Welten, und ein Teil tritt verändert auf – Sturm-Gegner sind schneller, Fels-Gegner halten deutlich mehr aus, Wut-Gegner greifen schneller an. Sie bringen mehr Erfahrung und zählen als eigene Arten im Bestiarium.",
+    "📜 Aktive Nebenaufträge der Stadt stehen jetzt auch im Auftragsfeld am Bildschirmrand, unter der Hauptaufgabe."
+   ]
+  },
+  {
    "t": "Werkzeuge und Werkzeug-Ruinen",
    "list": [
     "🪝 Enterhaken (Belohnung Kapitel 2): zieht dich zu Pfosten.",
@@ -222,7 +247,8 @@
     "Rissform vor der zweiten Bossphase zünden – mehr Angriff und Tempo genau dann, wenn der Boss wütend wird.",
     "Kombiniere Ausrüstung nach Bedarf: Zweiter Atem (Fuchsamulett) als Notfall-Heilung, Schutzschild oder Eiswall für harte Bosse.",
     "Erledige Nebenaufgaben im Weltenriss – jede bringt viele Splitter und ein Andenken (+1,5 Angriff).",
-    "Sammle Fell, Rissstaub und Kernsplitter und lass in der Schmiede deine beste Waffe und Rüstung verstärken – +3 bringt 45 % mehr auf alle Werte. Ein Phönix-Trank im Gepäck rettet Bosskämpfe."
+    "Sammle Fell, Rissstaub und Kernsplitter und lass in der Schmiede deine beste Waffe und Rüstung verstärken – +3 bringt 45 % mehr auf alle Werte. Ein Phönix-Trank im Gepäck rettet Bosskämpfe.",
+    "Fähigkeitenbaum: Die ersten Ränge sind billig. Verteile früh breit (je Rang 1 und 2) und spare erst später für Rang 4 und 5. Sprungkraft 3 mit dem Doppelsprung macht Sprungräume und Sprungpfade deutlich leichter."
    ]
   },
   {

@@ -4,6 +4,7 @@
 //  statues – Wächterstatuen: Drehen (Aktion) dreht auch die Nachbarstatue; alle sollen zum Schatz blicken
 //  pairs   – Symbolsteine: zwei aufdecken, Paare bleiben offen
 //  orbs    – Glutkristalle: alle entzünden, bevor der erste wieder erlischt
+//  colors  – Farbschalter · order – Zahlenplatten · dark – Erinnerungspfad · sum – Gewichtsplatten · pattern – Mustertafel (je Ruine ein eigenes Rätsel)
 // Alle Rätsel werden mit der Aktionstaste oder durch Betreten gelöst – gleich auf Handy, PC, TV und Controller.
 export function createRooms({ T, mk, G, M, glow, scene, hgt, INT, anim, pl, toast, sfx, tone, emit }) {
   const NOTES = [392, 466, 523, 622, 698, 784];   // Tonleiter der Klangsteine
@@ -31,6 +32,7 @@ export function createRooms({ T, mk, G, M, glow, scene, hgt, INT, anim, pl, toas
   // area: {x0,x1,z0,z1} frei begehbare Fläche; opt.R Zufall; opt.lv Schwierigkeit (1…); done() wenn gelöst
   function build(kind, area, opt, done) {
     const R = opt.R || Math.random, lv = opt.lv || 1, W = area.x1 - area.x0, D = area.z1 - area.z0, cx = (area.x0 + area.x1) / 2, cz = (area.z0 + area.z1) / 2;
+    let sol = null;   // Lösungsweg für die Tests: ['step'|'use', x, z]
     let solved = !!opt.solved; const win = () => { if (solved) return; solved = true; sfx('level'); toast('✨ Rätsel gelöst!'); done(); };
     const say = t => toast(t);
     if (kind === 'tones') {
@@ -85,8 +87,59 @@ export function createRooms({ T, mk, G, M, glow, scene, hgt, INT, anim, pl, toas
       anim((t, dt) => { if (solved) return; const d = Math.min(.1, dt || (t - last)); last = t; for (let i = 0; i < n; i++) if (lit[i] > 0) { lit[i] -= d; if (lit[i] <= 0) cr[i].lit(false); } });
       if (solved) cr.forEach(c => c.lit(true));
       say(`🔥 Glutkristalle: Entzünde alle ${n}, bevor der erste nach ${hold} Sekunden erlischt.`);
+    } else if (kind === 'colors') {
+      /* Farbschalter: Wechseln (Aktion) dreht auch die Farbe des rechten Nachbarn weiter; alle sollen die Farbe des großen Kristalls zeigen */
+      const n = Math.min(5, 3 + (lv > 4) + (lv > 8)), K = [COLS[0], COLS[1], COLS[3]], m = rnd(R, 3), v = new Array(n).fill(m), pr = new Array(n).fill(0), cr = [];
+      const press = i => { v[i] = (v[i] + 1) % 3; if (i + 1 < n) v[i + 1] = (v[i + 1] + 1) % 3; }, show = () => cr.forEach((c, i) => { c.c.material = M(K[v[i]], { e: K[v[i]], ei: 1.3, r: .2 }); });
+      for (let k = 0; k < n + 2; k++) { const i = rnd(R, n); press(i); pr[i] = (pr[i] + 1) % 3; } if (v.every(x => x === m)) { press(0); pr[0] = (pr[0] + 1) % 3; }
+      const big = crystal(cx, area.z0 + .7, K[m], 1.25); big.c.material = M(K[m], { e: K[m], ei: 2, r: .2 }); big.lit(true); big.c.material = M(K[m], { e: K[m], ei: 2, r: .2 });
+      sol = [];
+      for (let i = 0; i < n; i++) { const x = area.x0 + (i + .5) * W / n, z = area.z1 - .9; cr.push(crystal(x, z, K[0], .7)); for (let k = 0; k < (3 - pr[i]) % 3; k++) sol.push(['use', x, z]);
+        INT.push({ x, z, name: 'Farbkristall', pr: 'Farbe wechseln', rad: 1.8, vis: () => !solved, talk() { press(i); tone(NOTES[v[i]], .2, 'triangle', .2); show(); if (v.every(c => c === m)) win(); } }); }
+      if (solved) v.fill(m); show();
+      say('🎨 Farbschalter: Jeder Wechsel dreht auch den rechten Nachbarn weiter. Alle sollen leuchten wie der große Kristall.');
+    } else if (kind === 'order') {
+      /* Zahlenplatten: in aufsteigender Reihenfolge betreten */
+      const n = Math.min(8, 5 + Math.floor(lv / 4)), cols = 4, rows = 2, cells = []; for (let k = 0; k < cols * rows; k++) cells.push(k);
+      for (let k = cells.length - 1; k > 0; k--) { const j = rnd(R, k + 1);[cells[k], cells[j]] = [cells[j], cells[k]]; }
+      const ps = []; let pos = 0; sol = [];
+      for (let i = 0; i < n; i++) { const c = cells[i], x = area.x0 + ((c % cols) + .5) * W / cols, z = area.z0 + (Math.floor(c / cols) + .5) * D / rows; sol.push(['step', x, z]); tag(String(i + 1), x, hgt(x, z) + 1.5, z);
+        ps.push(pad(x, z, Math.min(W / cols, D / rows) * .34, 0x5a5a7a, o => { if (solved || i < pos) return; if (i === pos) { pos++; o.set(true, 0x7dffb2); tone(NOTES[i % 6], .25, 'sine', .2); if (pos >= n) win(); } else { pos = 0; sfx('hurt'); ps.forEach(q => q.set(false, 0x5a5a7a)); say('Falsche Platte – wieder bei 1 beginnen.'); } })); }
+      if (solved) ps.forEach(q => q.set(true, 0x7dffb2));
+      say(`🔢 Zahlenplatten: Betritt die Platten von 1 bis ${n} der Reihe nach.`);
+    } else if (kind === 'dark') {
+      /* Erinnerungspfad: der Lichtstein zeigt kurz die sicheren Platten, dann Reihe für Reihe nach hinten gehen */
+      const cols = 3, rows = Math.min(5, 3 + Math.floor(lv / 4)), safe = [], ps = []; let c0 = rnd(R, cols), pos = 0;
+      for (let r = 0; r < rows; r++) { safe.push(c0); c0 = Math.max(0, Math.min(cols - 1, c0 + rnd(R, 3) - 1)); }
+      const px = c => area.x0 + (c + .5) * W / cols, pz = r => area.z1 - (r + .5) * D / rows, lx = area.x1 - .7, lz = area.z1 - .6, st = crystal(lx, lz, 0xe0e8ff, .7);
+      sol = [['use', lx, lz]];
+      for (let r = 0; r < rows; r++) { ps.push([]); for (let c = 0; c < cols; c++) ps[r].push(pad(px(c), pz(r), Math.min(W / cols, D / rows) * .34, 0x2a2a3a, o => { if (solved || r < pos) return;
+          if (r === pos && c === safe[r]) { pos++; o.set(true, 0x7dffb2); tone(NOTES[r % 6], .25, 'sine', .2); if (pos >= rows) win(); }
+          else { pos = 0; sfx('hurt'); ps.forEach(L => L.forEach(q => q.set(false, 0x2a2a3a))); say('Die Platte gibt nach – zurück an den Anfang. Der Lichtstein zeigt den Weg noch einmal.'); } })); sol.push(['step', px(safe[r]), pz(r)]); }
+      INT.push({ x: lx, z: lz, name: 'Lichtstein', pr: 'Weg zeigen', rad: 2.2, vis: () => !solved, talk() { st.lit(true); tone(880, .3, 'sine', .2); safe.forEach((c, r) => { if (r >= pos) ps[r][c].set(true, 0xffe27a); }); setTimeout(() => { st.lit(false); if (!solved) safe.forEach((c, r) => { if (r >= pos) ps[r][c].set(false, 0x2a2a3a); }); }, 2600); } });
+      if (solved) safe.forEach((c, r) => ps[r][c].set(true, 0x7dffb2));
+      say('🌑 Erinnerungspfad: Der Lichtstein zeigt kurz die sicheren Platten. Geh Reihe für Reihe nach hinten.');
+    } else if (kind === 'sum') {
+      /* Gewichtsplatten: betreten schaltet an/aus; die Summe der leuchtenden Platten muss der Zahl am Sockel entsprechen */
+      const n = 5, val = [], on = new Array(n).fill(false), ps = []; for (let i = 0; i < n; i++) { let q; do q = 1 + rnd(R, 9); while (val.includes(q)); val.push(q); }
+      const pick = []; while (pick.length < 2 + (lv > 5)) { const i = rnd(R, n); if (!pick.includes(i)) pick.push(i); } const T2 = pick.reduce((a, i) => a + val[i], 0);
+      crystal(cx, area.z0 + .7, 0xffe27a, 1.1).lit(true); tag('= ' + T2, cx, hgt(cx, area.z0 + .7) + 2.7, area.z0 + .7); sol = [];
+      for (let i = 0; i < n; i++) { const x = area.x0 + (i + .5) * W / n, z = cz + D * .15; tag(String(val[i]), x, hgt(x, z) + 1.5, z); if (pick.includes(i)) sol.push(['step', x, z]);
+        ps.push(pad(x, z, Math.min(1.1, W / n * .36), 0x5a5a7a, o => { if (solved) return; on[i] = !on[i]; o.set(on[i], on[i] ? 0xffe27a : 0x5a5a7a); tone(on[i] ? 660 : 440, .15, 'triangle', .15); if (on.reduce((a, b, k) => a + (b ? val[k] : 0), 0) === T2) win(); })); }
+      if (solved) pick.forEach(i => ps[i].set(true, 0xffe27a));
+      say(`⚖️ Gewichtsplatten: Betreten schaltet eine Platte an oder aus. Die leuchtenden Zahlen müssen zusammen ${T2} ergeben.`);
+    } else if (kind === 'pattern') {
+      /* Mustertafel: die 3×3 Platten so schalten, dass sie das Muster der Kristalle an der Rückwand zeigen */
+      const N = 3, s = Math.min(W, D * .8) / N, want = [], on = new Array(N * N).fill(false), ps = []; for (let k = 0; k < N * N; k++) want.push(false);
+      let cnt = 0; while (cnt < 3 + Math.min(3, Math.floor(lv / 3))) { const k = rnd(R, N * N); if (!want[k]) { want[k] = true; cnt++; } }
+      for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) { const k = i * N + j, c = crystal(cx + (i - 1) * .9, area.z0 + .3 + j * .55, want[k] ? 0x6af0ff : 0x3a3a4a, .32); c.lit(want[k]); }
+      sol = [];
+      for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) { const k = i * N + j, x = cx + (i - 1) * s, z = area.z1 - (N - j - .5) * s * .95; if (want[k]) sol.push(['step', x, z]);
+        ps.push(pad(x, z, s * .38, 0x3a3a5a, o => { if (solved) return; on[k] = !on[k]; o.set(on[k], on[k] ? 0x6af0ff : 0x3a3a5a); tone(on[k] ? 660 : 440, .15, 'triangle', .15); if (on.every((b, q) => b === want[q])) win(); })); }
+      if (solved) ps.forEach((q, k) => q.set(want[k], want[k] ? 0x6af0ff : 0x3a3a5a));
+      say('🔷 Mustertafel: Schalte die Platten so, dass sie dasselbe Muster zeigen wie die Kristalle an der Wand.');
     }
-    return { get solved() { return solved; }, solve: win };
+    return { get solved() { return solved; }, get sol() { return sol; }, solve: win };
   }
-  return { build, KINDS: ['tones', 'lights', 'statues', 'pairs', 'orbs'] };
+  return { build, KINDS: ['tones', 'lights', 'statues', 'pairs', 'orbs', 'colors', 'order', 'dark', 'sum', 'pattern'] };
 }

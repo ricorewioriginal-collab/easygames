@@ -13,6 +13,8 @@ node tools/test-zotik/stadt.cjs 1 10     # Städte: Kirche, Läden, Wirtshaus, C
 node tools/test-zotik/nebenquests.cjs 1 10 # alle Nebenquest-Ketten von der Annahme bis zur Belohnung
 node tools/test-zotik/springen.cjs 1 10  # Springen: mit echten Tasten von Platte zu Platte bis zur Truhe, in jeder Welt
 node tools/test-zotik/dungeon.cjs 2 10   # Vorhallen: alle Ebenen je Welt – Schlüssel, Runentor, Treppe, Zwischengegner, Tor nach draußen
+node tools/test-zotik/raetsel.cjs       # neue Rätselarten in drei Schwierigkeiten und in den Ruinen der Welten 6–10 mit echten Schritten lösen
+node tools/test-zotik/ausbau.cjs        # Fähigkeitenbaum, Doppelsprung, Bestiarium-Belohnung, veränderte Gegner in Neues Spiel+, Auftragsfeld
 ```
 
 Die Tests nutzen `?debug` (`__zotik`) und schalten das Zeichnen ab (`__zotik.noRender`), damit sie auch ohne Grafikkarte schnell laufen.
