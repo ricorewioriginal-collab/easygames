@@ -123,16 +123,26 @@ export function createExtra(C) {
       h += `<h3>🏆 Erfolge (${nA}/${ACH.length})${S().chk ? ' · Cheats benutzt' : ''}</h3>` + ACH.map(x => `<div class="row"><span>${a[x[0]] ? '✅' : '▫️'} ${x[1]}<br><small style="color:var(--dim)">${x[2]}</small></span></div>`).join('');
       return h;
     },
+    /* Schmiede- und Brauzeilen: im Camp und in den Läden der Städte (town.js) dieselben */
+    forgeRows(ok) {
+      const s = S(), m = s.mat || {}; let h = '';
+      h += '<h3>🔨 Schmiede</h3><div class="row"><span>Materialien</span><span>' + Object.keys(MATS).map(k => MATS[k][0] + ' ' + (m[k] || 0)).join(' · ') + '</span></div>';
+      const sh = s.sharp || 0, cost = 60 * (sh + 1);
+      h += `<div class="row"><span>⚔️ Klinge schärfen (${sh}/10, +4 % Angriff)<br><small style="color:var(--dim)">${cost} Splitter, ${2 + sh} Rissstaub</small></span><span><button class="cpb" data-x="sharp" ${ok && sh < 10 && s.shards >= cost && (m.staub || 0) >= 2 + sh ? '' : 'disabled'}>Schärfen</button></span></div>`;
+      return h;
+    },
+    brewRows(ok, only) {
+      const s = S(), m = s.mat || {}; let h = '';
+      if (only !== 'ether') h += `<div class="row"><span>🧪 Heiltrank<br><small style="color:var(--dim)">3 Kräuter, 1 Fell</small></span><span><button class="cpb" data-x="potion" ${ok && s.herbs >= 3 && (m.fell || 0) >= 1 ? '' : 'disabled'}>Brauen</button></span></div>`;
+      if (only !== 'potion') h += `<div class="row"><span>🔷 Äther<br><small style="color:var(--dim)">1 Kernsplitter, 2 Rissstaub</small></span><span><button class="cpb" data-x="ether" ${ok && (m.kern || 0) >= 1 && (m.staub || 0) >= 2 ? '' : 'disabled'}>Mischen</button></span></div>`;
+      return h;
+    },
     campHTML() {
       const s = S(), m = s.mat || {}, ok = this.safe();
       let h = '<h3>⛺ Weltenanker-Camp</h3><p style="color:var(--dim);font-size:13px">' + (ok ? 'Hier ist es ruhig. Du kannst rasten, kochen, schmieden und das Radio hören.' : 'Gegner in der Nähe. Entferne dich, bevor du das Camp nutzt.') + '</p>';
       h += `<div class="row"><span>🛏️ Rasten</span><span><button class="cpb" data-x="rest" ${ok ? '' : 'disabled'}>Leben und Mana füllen</button></span></div>`;
       h += `<div class="row"><span>🍲 Kräutersuppe (2 Kräuter)</span><span><button class="cpb" data-x="cook" ${ok && s.herbs >= 2 ? '' : 'disabled'}>Kochen +50 % Leben</button></span></div>`;
-      h += '<h3>🔨 Schmiede</h3><div class="row"><span>Materialien</span><span>' + Object.keys(MATS).map(k => MATS[k][0] + ' ' + (m[k] || 0)).join(' · ') + '</span></div>';
-      const sh = s.sharp || 0, cost = 60 * (sh + 1);
-      h += `<div class="row"><span>⚔️ Klinge schärfen (${sh}/10, +4 % Angriff)<br><small style="color:var(--dim)">${cost} Splitter, ${2 + sh} Rissstaub</small></span><span><button class="cpb" data-x="sharp" ${ok && sh < 10 && s.shards >= cost && (m.staub || 0) >= 2 + sh ? '' : 'disabled'}>Schärfen</button></span></div>`;
-      h += `<div class="row"><span>🧪 Heiltrank<br><small style="color:var(--dim)">3 Kräuter, 1 Fell</small></span><span><button class="cpb" data-x="potion" ${ok && s.herbs >= 3 && (m.fell || 0) >= 1 ? '' : 'disabled'}>Brauen</button></span></div>`;
-      h += `<div class="row"><span>🔷 Äther<br><small style="color:var(--dim)">1 Kernsplitter, 2 Rissstaub</small></span><span><button class="cpb" data-x="ether" ${ok && (m.kern || 0) >= 1 && (m.staub || 0) >= 2 ? '' : 'disabled'}>Mischen</button></span></div>`;
+      h += this.forgeRows(ok) + this.brewRows(ok);
       h += '<h3>📻 Weltenradio</h3>' + RADIO.map((r, i) => `<div class="row"><span>${(s.rad || 0) === i ? '▶️' : '▫️'} ${r[0]}<br><small style="color:var(--dim)">${r[1]}</small></span><span><button class="cpb" data-x="radio${i}">Hören</button></span></div>`).join('');
       const d = dif();
       h += `<h3>🎚️ Schwierigkeit: ${d[0]}</h3><p style="color:var(--dim);font-size:13px">${d[1]}</p><div class="row"><span>${DIFFS.map((x, i) => `<button class="cpb" data-x="dif${i}">${(s.dif ?? 1) === i ? '● ' : ''}${x[0]}</button>`).join(' ')}</span></div>`;

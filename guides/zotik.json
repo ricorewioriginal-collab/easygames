@@ -28,7 +28,7 @@
     "🛡️ Ausrüstung: Waffe, Rüstung und Schmuck anlegen oder ablegen.",
     "🌿 Felli: Stufe, Entwicklung, Angriff, Füttern und „Kämpft mit“ an/aus.",
     "✨ Fähigkeiten: alle Kampftechniken.",
-    "🎮 Steuerung: Tasten und Optionen (hier lässt sich auch das Casino abschalten).",
+    "🎮 Steuerung: Tasten und Optionen (hier lässt sich auch das Casino ein- und ausschalten).",
     "👥 Koop: Raum öffnen für einen zweiten Spieler.",
     "Dazu 💾 Speichern, 🔊 Ton an/aus und 🗣️ Sprachausgabe."
    ]
@@ -101,11 +101,26 @@
   {
    "t": "Ausrüstung und Laden",
    "list": [
-    "Im Laden (z. B. Finns Laden) gibt es 🧪 Heiltrank für 20 Splitter, 3 Heiltränke für 55, dazu Äther, 🍐 Kristallfrucht für 90 und Ausrüstung passend zum Kapitel.",
+    "Fahrende Händler (z. B. Finn) verkaufen 🧪 Heiltrank für 20 Splitter, 3 Heiltränke für 55, dazu Äther, 🍐 Kristallfrucht für 90 und Ausrüstung passend zum Kapitel. Mehr Auswahl haben die Läden in der Stadt.",
     "Waffen: Mondsichel (+6 Angriff, IP Mondsichel, 120), Dornenschwert (+12, Dornenwirbel, 500), Glutklinge (+20, Flammenschnitt, 1100), Sternenklinge (+30, Sternenfall, 2000).",
     "Rüstungen: Wanderweste (100), Rindenpanzer (260), Korallenmantel (800), Frostharnisch (1300), Sternenrobe (2600) – mit Schutz, Leben und Techniken wie Schutzschild, Wurzelgriff, Gezeitenheilung, Eiswall und Astralfeld.",
     "Schmuck: Mondring (+30 Mana, Manastrom, 150), Fuchsamulett (Kritisch, Zweiter Atem = volle Heilung, 300). Kapselglocke (stärkt Felli, Felli-Ruf) und Glücksring (Splitterregen) gibt es nicht im Laden, sondern als Fund.",
     "Kapitelbelohnungen: Kapitel 2 Fuchsamulett, 3 Rindenpanzer, 4 Dornenschwert, 5 Korallenmantel, 6 Glutklinge, 7 Frostharnisch, 8 Glücksring, 9 Sternenklinge, 10 Sternenrobe, Weltenriss Uralter Ring. Uralte Klinge, Uralter Harnisch und Uralter Ring liegen mit etwas Glück in blauen Truhen der Uralten Höhle. Weitere Ausrüstung steckt in Truhen: in Lunaris Wanderweste, Mondsichel und Fuchsamulett, in den Werkzeug-Ruinen je ein Stück (Lunaris Mondring, Elaris Rindenpanzer, Valdoria Dornenschwert, Solmera Kapselglocke, Aqualis Korallenmantel, Frosthain Frostharnisch, Ignara Glutklinge, Noctaris Glücksring, Astralis Sternenklinge, Elyndra Sternenrobe)."
+   ]
+  },
+  {
+   "t": "Die Stadt: Kirche, Läden, Wirtshaus und Casino",
+   "p": [
+    "In jeder Welt stehen rund um den Marktplatz begehbare Gebäude. Über der Tür hängt ein Schild mit einem Zeichen, drinnen steht jemand, den du mit der Aktionstaste ansprichst (E, OK, Y oder der Knopf auf dem Bildschirm). Die Auswahl im Gespräch und die Ware im Laden wählst du mit Pfeiltasten/Steuerkreuz und OK oder per Tippen."
+   ],
+   "list": [
+    "⛪ Kirche des Sternenlichts (das Haus mit dem Glockenturm): „Segen empfangen“ heilt dich kostenlos, füllt das Mana und weckt alle gefallenen Gefährten. „Spenden“ gibt den Sternensegen: 10 Minuten lang +25 % Erfahrung. „Speichern“ sichert den Spielstand.",
+    "⚔️ Waffenladen & Schmiede: Waffen und Rüstungen passend zum Kapitel. Unter „Schmieden“ schärfst du die Klinge und verstärkst jede Waffe und Rüstung bis +3 (je Stufe +15 % auf alle Werte). Das kostet Splitter und Material: 🧶 Fell, ✨ Rissstaub und 💠 Kernsplitter, die Gegner fallen lassen.",
+    "✨ Magieladen: Schmuck, Äther und Zauberkunde (5 Stufen, je +10 % Schaden für Funkenwirbel und Lichtstoß; kostet Splitter und Rissstaub, ab Stufe 3 auch Kernsplitter).",
+    "🧪 Tränke & Extras: Heiltränke, 🔥 Phönix-Trank (150 Splitter, weckt mitten im Kampf alle gefallenen Gefährten ohne Mana, höchstens 9), Kristallfrüchte und Kräuterbündel. Du findest den Phönix-Trank im Kommandomenü unter „Item“.",
+    "🍺 Wirtshaus: Rasten gegen ein paar Splitter (heilt alle) und Gerüchte mit Tipps.",
+    "🏠 Wohnhäuser: Truhen und Bücherregale mit kleinen Texten.",
+    "🎰 Golden Star Casino in Valdoria (Kapitel 3, das violette Haus mit dem goldenen Stern): ein begehbarer Saal mit drei Spielen. Kristallslots (drei Walzen), Sternenrad (×1, ×2, ×5 oder nichts) und Höher oder Tiefer am Kartentisch. Gespielt wird nur um Spiel-Splitter, nie um echtes Geld. Stella am Eingang schaltet die Geräte ein und aus (Familienoption, am Anfang aus)."
    ]
   },
   {
@@ -155,7 +170,8 @@
     "Nutze Fähigkeiten im Kampf großzügig – Treffer laden Mana schnell wieder auf.",
     "Kauf früh ein paar Heiltränke. Mondkräuter werden nach dem ersten Auftrag automatisch zu Heiltränken.",
     "Lass Felli mitkämpfen und füttere es – ein Blütling heilt dich im Kampf.",
-    "Liegt eine Welt über deiner Stufe, sammle in der Welt davor noch etwas Erfahrung – oder hol dir mit der Nautilux die Schätze von Himmelsinseln und aus dem See."
+    "Liegt eine Welt über deiner Stufe, sammle in der Welt davor noch etwas Erfahrung – oder hol dir mit der Nautilux die Schätze von Himmelsinseln und aus dem See.",
+    "Geh nach schweren Kämpfen in die Kirche: Der Segen heilt kostenlos und weckt gefallene Gefährten. Vor einem Boss lohnt sich die Spende für den Sternensegen."
    ]
   },
   {
@@ -165,7 +181,8 @@
     "Spar die Teamleiste für Bosse auf: Sternenregen, Pfeilhagel und Schildsturm richten großen Schaden an.",
     "Rissform vor der zweiten Bossphase zünden – mehr Angriff und Tempo genau dann, wenn der Boss wütend wird.",
     "Kombiniere Ausrüstung nach Bedarf: Zweiter Atem (Fuchsamulett) als Notfall-Heilung, Schutzschild oder Eiswall für harte Bosse.",
-    "Erledige Nebenaufgaben im Weltenriss – jede bringt viele Splitter und ein Andenken (+1,5 Angriff)."
+    "Erledige Nebenaufgaben im Weltenriss – jede bringt viele Splitter und ein Andenken (+1,5 Angriff).",
+    "Sammle Fell, Rissstaub und Kernsplitter und lass in der Schmiede deine beste Waffe und Rüstung verstärken – +3 bringt 45 % mehr auf alle Werte. Ein Phönix-Trank im Gepäck rettet Bosskämpfe."
    ]
   },
   {
@@ -274,7 +291,7 @@
    "list": [
     "🏛️ Halle der 100: 100 Prüfungen in 10 Rängen, jede zehnte ist ein Bosskampf. Jede Prüfung bringt 30 + 8 × Nummer Splitter und Erfahrung, jeder Rang zusätzlich 500 × Rang Splitter und 3 Tränke. Nach Prüfung 100: „Der letzte Splitter gehört dir“ (+5000).",
     "🏔️ Uralte Höhle in Lunaris (nach Kapitel 1, nur allein): 50 Ebenen. Du startest immer bei Stufe 1, ohne Ausrüstung und mit 2 Tränken. Ein Wächter versperrt die Treppe. Beim Verlassen oder Fallen kehrt alles zurück – behalten darfst du nur die blauen Schätze. Dein Rekord steht im Inventar.",
-    "🎰 Golden Star Casino – Kristallslots: nur virtuelle Splitter, Einsatz 10, 50 oder 100. Drei gleiche: ⭐ ×25, 💎 ×12, 🔥 ×8, 🌙/🍃 ×5; zwei gleiche: Einsatz zurück. Familienoption: Casino ausschalten.",
+    "🎰 Golden Star Casino (Valdoria, westlich vom Marktplatz): erst bei Stella am Eingang einschalten. Einsatz je Spiel 10, 50 oder 100 Splitter. Kristallslots: drei gleiche ⭐ ×25, 💎 ×12, 🔥 ×8, 🌙/🍃 ×5; zwei gleiche: Einsatz zurück. Sternenrad: 12 Felder, davon 2× ×1, 2× ×2, 1× ×5, sonst nichts. Höher oder Tiefer: Karten 1–13, Gleichstand verliert; je unwahrscheinlicher der Tipp, desto höher der Faktor, nach jedem Treffer kannst du auszahlen, nach 5 Treffern wird automatisch ausgezahlt. Auf Dauer gewinnt bei allen drei Spielen leicht das Haus (Auszahlung etwa 92–97 %).",
     "🎮 Mini-Spiele (Titelmenü): ZOTIK Run, Felli-Fang, Kristallrausch, ZOTIK Quiz und Sternenpuzzle – unabhängig vom Abenteuer, mit eigenen Rekorden.",
     "Uralte Höhle: Auf jeder zweiten Ebene ist die Treppe versiegelt – entweder drei Glutkristalle in den Gängen entzünden, bevor der erste erlischt, oder alle Gegner der Ebene vertreiben. Jede zehnte Ebene bewacht ein Wächter die Treppe."
    ]
@@ -303,7 +320,7 @@
   },
   {
    "q": "Kann ich das Casino abschalten?",
-   "a": "Ja, im Menü unter „Steuerung“ → Optionen oder direkt im Casino mit „Casino ausschalten (Familienoption)“."
+   "a": "Ja. Es ist am Anfang ausgeschaltet. Ein- und ausschalten kannst du es bei Stella am Eingang des Casinos oder im Menü unter „Steuerung“ → Optionen."
   },
   {
    "q": "Läuft das Spiel ruckelig?",
