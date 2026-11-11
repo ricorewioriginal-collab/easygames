@@ -2876,9 +2876,9 @@ function buildDungeon(){const D=X.dun,n=D.n,f=D.f,F=DUNF(n),last=f===F,C=CHP[n],
      Ab Ebene 2 ist die zweite Nische eine Kniffelkammer mit besserem Schatz. Am Block liegt ein Rücksetzstein, am Tor gibt es Hinweise in drei Stufen. */
   const nicheC=new Set();
   {const opts=['block'];if(S.tools.includes('bomb'))opts.push('crack');if(S.tools.includes('fire'))opts.push('thorn','torch');if(S.tools.includes('ice'))opts.push('water');
-    const dd=dead.filter(c=>Math.max(Math.abs(c[0]-hc[0]),Math.abs(c[1]-hc[1]))>2&&!(c[0]<=2&&c[1]<=2)),cnt=Math.min(dd.length,f>=2?2:1);D.got=D.got||{};
-    for(let k=0;k<cnt;k++){const [i,j]=dd.splice(R()*dd.length|0,1)[0];let di=0,dj=0;for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]])if(g[i+a]&&g[i+a][j+b]===0){di=a;dj=b}if(!di&&!dj)continue;
-      if(g[i+di*2]&&g[i+di*2][j+dj*2]===1&&g[i+di][j+dj+1]===1&&g[i+di][j+dj-1]===1&&g[i+di+1]&&g[i+di+1][j+dj]===1&&g[i+di-1]&&g[i+di-1][j+dj]===1)continue;   // Nachbarfeld muss Platz für Rätsel lassen
+    let dd=dead.filter(c=>Math.max(Math.abs(c[0]-hc[0]),Math.abs(c[1]-hc[1]))>1&&!(c[0]<=1&&c[1]<=2)&&!(c[0]<=2&&c[1]<=1));if(!dd.length)for(const c of MZ.dead)if(!(c[0]===far[0]&&c[1]===far[1])&&!(c[0]===1&&c[1]===1))dd.push(c);const cnt=Math.min(dd.length,f>=2?2:1);D.got=D.got||{};
+    for(let k=0;k<cnt&&dd.length;){const [i,j]=dd.splice(R()*dd.length|0,1)[0];let di=0,dj=0;for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]])if(g[i+a]&&g[i+a][j+b]===0){di=a;dj=b}if(!di&&!dj)continue;
+      if(nicheC.has((i+di)+','+(j+dj)))continue;   // zwei Nischen teilen sich kein Vorfeld
       nicheC.add(i+','+j);nicheC.add((i+di)+','+(j+dj));
       const hard=k===1,kind=hard?(opts.length>1?opts[1+(R()*(opts.length-1)|0)]:'block'):opts[R()*opts.length|0],id='v'+n+'_'+f+'_'+k,ux=di,uz=dj,c0x=cx(i),c0z=cz(j),c1x=cx(i+di),c1z=cz(j+dj),bx=c0x+ux*CS/2,bz=c0z+uz*CS/2,alongX=ux!==0;
       const ob=(t,x,z,sub)=>{const o=obBuild(id+(sub||''),t,x,z,2.5,.5,id);if(alongX){o.hw=.5;o.hd=2.5;if(o.m)o.m.rotation.y=Math.PI/2}return o};   /* quer gebaut, bei Gängen in x-Richtung gedreht */
@@ -2893,7 +2893,7 @@ function buildDungeon(){const D=X.dun,n=D.n,f=D.f,F=DUNF(n),last=f===F,C=CHP[n],
           say([['Zotik',H[Math.min(2,tries.n-1)]+(tries.n<3?' (Noch einmal untersuchen für einen deutlicheren Hinweis.)':'')]])}})}
       const chx=c0x-ux*.6,chz=c0z-uz*.6,ch=makeChest();if(hard)tintModel({root:ch},0x8ad8ff,.45);ch.position.set(chx,0,chz);ch.rotation.y=Math.atan2(ux,uz);scene.add(ch);
       INT.push({x:chx,z:chz,name:hard?'Kniffelschatz':'Nischenschatz',pr:'Öffnen',rad:1.9,vis:()=>!D.got[id],talk(){D.got[id]=1;ch.visible=false;S.lf=S.lf||{pz:0};S.lf.pz++;const sh=hard?60+n*15:25+n*8;S.shards+=sh;let it='';
-        if(hard&&R()<.6){S.potions++;it=' und 🧪 Heiltrank'}sfx('level');emit(chx,1,chz,hard?0x8ad8ff:0xffe08a,30,4,.8,.7,2);toast((hard?'🧩 Kniffel gelöst! ':'🧩 Rätsel gelöst! ')+'+'+sh+' 💎'+it+' · gelöste Rätsel: '+S.lf.pz);saveGame(true)}})}}
+        if(hard&&R()<.6){S.potions++;it=' und 🧪 Heiltrank'}sfx('level');emit(chx,1,chz,hard?0x8ad8ff:0xffe08a,30,4,.8,.7,2);toast((hard?'🧩 Kniffel gelöst! ':'🧩 Rätsel gelöst! ')+'+'+sh+' 💎'+it+' · gelöste Rätsel: '+S.lf.pz);saveGame(true)}});k++}}
   /* Gegner */
   const cells=[];for(let i=1;i<N-1;i++)for(let j=1;j<N-1;j++)if(!g[i][j]&&dist[i][j]>3&&Math.max(Math.abs(i-hc[0]),Math.abs(j-hc[1]))>1&&!nicheC.has(i+','+j))cells.push([i,j]);
   const ne=Math.min(9,3+f+(n>5?1:0)+(mode==='hunt'?1:0));for(let q=0;q<ne&&cells.length;q++){const [i,j]=cells.splice(R()*cells.length|0,1)[0],e=spawnEnemy(R()<.5?'a'+n:'b'+n,cx(i),cz(j));e.summoned=true}
