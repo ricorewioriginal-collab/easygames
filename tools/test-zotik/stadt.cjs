@@ -1,17 +1,13 @@
 // Städte: jedes Gebäude hat eine Funktion und ist zu Fuß erreichbar (Kirche, Läden, Wirtshaus, Wohnhäuser, Casino)
 //   node tools/test-zotik/stadt.cjs [von] [bis]      Welten 1–10; Bilder mit SHOTS=1 nach <tmp>/zotik-test/
-const { chromium, ARGS, open, shot } = require('./lib.cjs');
+const L = require('./lib.cjs'), { chromium, ARGS, open, shot } = L;
 (async () => { const b = await chromium.launch({ args: ARGS }); const p = await open(b, { ctx: { viewport: { width: 960, height: 540 } } }); const from = +process.argv[2] || 1, to = +process.argv[3] || 10, res = [];
   const ok = (name, pass, info) => { res.push(pass); console.log(`${pass ? 'ok  ' : 'FEHL'} ${name}${info ? ' · ' + info : ''}`); };
   const w = ms => p.waitForTimeout(ms);
-  const skip = async () => { for (let k = 0; k < 30; k++) { const go = await p.evaluate(() => { const Z = __zotik, d = document.getElementById('dlg'), o = document.getElementById('dOpts'); if (d.hidden || (!o.hidden && o.children.length)) return false; d.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); Z.step(1 / 30, 2); return true; }); if (!go) break; await w(70); } };
-  const opt = t => p.evaluate(t => { const bs = document.getElementById('dOpts').hidden || document.getElementById('dlg').hidden ? [] : [...document.querySelectorAll('#dOpts button')], x = bs.find(q => q.textContent.includes(t)); if (!x) return bs.map(q => q.textContent).join(' | ') || 'keine Auswahl'; x.click(); return ''; }, t);
-  const talk = async id => { const r = await p.evaluate(id => { const Z = __zotik, n = Z.NPC.find(q => q.id === id) || Z.INT.find(q => q.name === id); if (!n) return 'fehlt'; const c = window.__near(n.x, n.z, 3); if (!c) return 'kein freier Platz davor'; Z.pl.x = c[0]; Z.pl.z = c[1]; return ''; }, id); if (r) return r;
-    await p.waitForFunction(id => { const Z = __zotik, n = Z.NPC.find(q => q.id === id) || Z.INT.find(q => q.name === id), pr = document.getElementById('prompt'); return !pr.hidden && pr.textContent.includes(n.name); }, id, { timeout: 8000 }).catch(() => { });
-    const r2 = await p.evaluate(id => { const Z = __zotik, n = Z.NPC.find(q => q.id === id) || Z.INT.find(q => q.name === id), pr = document.getElementById('prompt'); if (pr.hidden || !pr.textContent.includes(n.name)) return 'nicht ansprechbar (' + (pr.hidden ? 'kein Hinweis' : pr.textContent) + ')'; Z.interact(); return ''; }, id); await w(120); await skip(); return r2; };
+  const skip = () => L.skip(p), opt = t => L.opt(p, t), talk = async id => { const r = await L.talk(p, id); if (!r && !(await L.opt(p, 'Etwas anderes'))) { await p.waitForTimeout(150); await L.skip(p); } return r; };   /* bietet jemand einen Nebenauftrag an, hier den Laden/Dienst wählen */
   await p.evaluate(() => { const Z = __zotik; Z.startDbg(); const S = Z.S(); S.stage = 8; S.fl.naut = 1; S.fl.bridge = 1; S.lvl = 20; S.shards = 5000; S.mat = { fell: 20, staub: 20, kern: 5 }; });
   /* Einleitung ganz ablaufen lassen (sie meldet sich sonst später mitten im Test) */
-  await w(4500); await skip(); await w(1800); await skip(); await w(600); await skip();
+  await L.intro(p);
   for (let n = from; n <= to; n++) {
     const r = await p.evaluate(n => { const Z = __zotik, S = Z.S(); for (let k = 2; k < n; k++) S.cd[k] = { st: 7, fin: 1, bd: 1, arr: 1, e1: 1, e2: 1, k: 0, b: [0, 0, 0], ord: 0 };
       if (n > 1) { if (Z.ch !== 1) Z.switchWorld(1); Z.switchWorld(n); } const d = document.getElementById('dlg'); for (let k = 0; k < 30 && !d.hidden; k++) { d.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); Z.step(1 / 30, 2); }
