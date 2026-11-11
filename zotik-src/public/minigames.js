@@ -122,7 +122,7 @@
   function text(t,x,y,size=30,col='#fff'){ctx.fillStyle=col;ctx.font='700 '+size+'px Fredoka,system-ui';ctx.textAlign='center';ctx.fillText(t,x,y)}
   function point(){score++;$('zmScore').textContent='⭐ '+score}
   function end(){if(!running)return;running=false;hold=0;if(active.id==='quiz'){$('zmQuiz').hidden=true;canvas.hidden=false;}if(score>(records[active.id]||0)){records[active.id]=score;try{localStorage.setItem(key,JSON.stringify(records))}catch(_){}}$('zmAction').textContent='↻ Noch einmal';$('zmHint').textContent='Runde beendet! ⭐ '+score+' Punkte · Bestwert '+(records[active.id]||0);drawBase();text('Runde geschafft!',360,177,42,'#ffc861');text(score+' Punkte',360,239,35);ui()}
-  function start(){if(!active)return;running=true;score=0;time=0;spawn=0;player=360;hold=0;items=[];seq=[];turn=0;phase='';phaseUntil=0;runLives=3;runLane=1;quizIndex=0;$('zmQuiz').hidden=active.id!=='quiz';canvas.hidden=active.id==='quiz';$('zmScore').textContent='⭐ 0';$('zmAction').textContent='↻ Neustart';$('zmHint').textContent=active.id==='sterne'?'Merke dir die Farben!':active.id==='riss'?'Mit ◀ ▶ oder A/D ausweichen':active.id==='quiz'?'Wähle die richtige Antwort.':'Tippe die Ziele auf dem Spielfeld';if(active.id==='sterne')nextSeq();if(active.id==='quiz'){quizOrder=questions.map((_,i)=>i).sort(()=>Math.random()-.5).slice(0,10);quizNext()}}
+  function start(){if(!active)return;running=true;score=0;time=0;spawn=0;player=360;hold=0;items=[];seq=[];turn=0;phase='';phaseUntil=0;runLives=3;runLane=1;quizIndex=0;$('zmQuiz').hidden=active.id!=='quiz';canvas.hidden=active.id==='quiz';$('zmScore').textContent='⭐ 0';$('zmAction').textContent='↻ Neustart';$('zmHint').textContent=active.id==='sterne'?'Merke dir die Farben!':active.id==='riss'?'Mit ◀ ▶ oder A/D ausweichen':active.id==='quiz'?'Wähle die richtige Antwort.':'Tippe die Ziele an – oder Pfeiltasten + Enter';if(active.id==='sterne')nextSeq();if(active.id==='quiz'){quizOrder=questions.map((_,i)=>i).sort(()=>Math.random()-.5).slice(0,10);quizNext()}}
   function nextSeq(){seq.push(Math.floor(Math.random()*4));turn=0;phase='show';phaseUntil=time+1.3+seq.length*.62;$('zmHint').textContent='Merke: '+seq.map(n=>['🔴','🟡','🟢','🔵'][n]).join(' ')}
   function choose(g){active=g;running=false;cancelAnimationFrame(raf);root.classList.add('zmPlaying');$('zmList').hidden=true;$('zmStage').hidden=false;$('zmTitle').textContent=g.icon+' '+g.name;$('zmScore').textContent='⭐ 0';$('zmHint').textContent=g.desc;$('zmAction').textContent='▶ Starten';const move=g.id==='riss';$('zmQuiz').hidden=true;canvas.hidden=false;$('zmLeft').hidden=!move;$('zmRight').hidden=!move;drawBase();text(g.icon,360,205,98);fitStage();last=performance.now();raf=requestAnimationFrame(frame)}
   function leave(){running=false;cancelAnimationFrame(raf);root.classList.remove('zmPlaying');active=null;$('zmQuiz').hidden=true;canvas.hidden=false;$('zmStage').hidden=true;$('zmList').hidden=false;ui()}
@@ -132,16 +132,28 @@
     else if(active.id==='quiz'){return}
     else if(active.id==='felli'||active.id==='kristall'){spawn+=dt;if(spawn>.65&&items.length<7){spawn=0;items.push({x:rnd(45,675),y:rnd(70,370),bad:Math.random()<.24,life:1.9})}for(let i=items.length-1;i>=0;i--){const o=items[i];o.life-=dt;text(active.id==='felli'?(o.bad?'🌀':'⭐'):(o.bad?'🌑':'💎'),o.x,o.y,40);if(o.life<=0)items.splice(i,1)}text('Zeit: '+Math.max(0,Math.ceil(30-time)),360,42,22);if(time>=30)end()}
     else{const colors=['#ff6484','#ffcf68','#6be7ab','#67adff'];for(let i=0;i<4;i++){ctx.fillStyle=colors[i];ctx.globalAlpha=phase==='show'&&time<phaseUntil&&i===seq[Math.min(seq.length-1,Math.floor((phaseUntil-time)/.62))]?1:.65;ctx.fillRect(90+i*142,145,115,115);ctx.globalAlpha=1}if(phase==='show'&&time>=phaseUntil){phase='input';$('zmHint').textContent='Jetzt die Farben in der richtigen Reihenfolge antippen!'}if(phase==='next'&&time>=phaseUntil)nextSeq();text('Runde '+seq.length,360,78,28);if(seq.length>=9){score=seq.length;end()}}
+    kcStep(dt);
   }
   function hit(ev){if(!running)return;const rect=canvas.getBoundingClientRect(),x=(ev.clientX-rect.left)*720/rect.width,y=(ev.clientY-rect.top)*420/rect.height;
     if(active.id==='riss'){runLane=x<240?0:x>480?2:1;return}
     if(active.id==='sterne'){if(phase!=='input'||y<145||y>260)return;const n=Math.floor((x-90)/142);if(n<0||n>3)return;if(n!==seq[turn]){end();return}turn++;if(turn===seq.length){score=seq.length;$('zmScore').textContent='⭐ '+score;phase='next';phaseUntil=time+.7;$('zmHint').textContent='Richtig! ⭐'}return}
     for(let i=items.length-1;i>=0;i--){let o=items[i];if(Math.hypot(o.x-x,o.y-y)<35){if(o.bad){score=Math.max(0,score-2);$('zmScore').textContent='⭐ '+score}else point();items.splice(i,1);return}}
   }
-  canvas.addEventListener('pointerdown',hit);
+  /* Ohne Maus/Touch spielbar: Pfeiltasten (oder WASD) bewegen einen Zeiger, Enter tippt (Sternenfolge: ◀ ▶ wählt das Feld) */
+  const kc={on:false,x:360,y:210,k:{}};
+  function kcStep(dt){if(!kc.on||!running||active.id==='riss'||active.id==='quiz')return;
+    if(active.id==='sterne'){kc.y=202;kc.x=147+Math.max(0,Math.min(3,Math.round((kc.x-147)/142)))*142}
+    else{const sp=430*dt;kc.x=Math.max(20,Math.min(700,kc.x+((kc.k.r?1:0)-(kc.k.l?1:0))*sp));kc.y=Math.max(60,Math.min(400,kc.y+((kc.k.d?1:0)-(kc.k.u?1:0))*sp))}
+    ctx.beginPath();ctx.arc(kc.x,kc.y,30,0,Math.PI*2);ctx.lineWidth=4;ctx.strokeStyle='#ffd45a';ctx.stroke();ctx.beginPath();ctx.arc(kc.x,kc.y,4,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill()}
+  function kcKey(e,down){const d={ArrowLeft:'l',ArrowRight:'r',ArrowUp:'u',ArrowDown:'d',KeyA:'l',KeyD:'r',KeyW:'u',KeyS:'d'}[e.code];
+    if(!active||!running||active.id==='riss'||active.id==='quiz')return false;
+    if(d){kc.on=true;if(active.id==='sterne'){if(down&&!e.repeat&&(d==='l'||d==='r'))kc.x=147+Math.max(0,Math.min(3,Math.round((kc.x-147)/142)+(d==='r'?1:-1)))*142}else kc.k[d]=down;return true}
+    if(e.code==='Enter'||e.code==='NumpadEnter'||e.code==='Space'){if(down&&!e.repeat){kc.on=true;const r=canvas.getBoundingClientRect();hit({clientX:r.left+kc.x*r.width/720,clientY:r.top+kc.y*r.height/420})}return true}
+    return false}
+  canvas.addEventListener('pointerdown',e=>{kc.on=false;hit(e)});
   $('zmAction').onclick=start;$('zmExit').onclick=leave;$('zmBack').onclick=close;
   const motion=(v)=>{if(active&&active.id==='riss'&&running)runLane=Math.max(0,Math.min(2,runLane+v))};$('zmLeft').addEventListener('pointerdown',()=>motion(-1));$('zmRight').addEventListener('pointerdown',()=>motion(1));for(let el of [$('zmLeft'),$('zmRight')])for(let ev of ['pointerup','pointercancel','pointerleave'])el.addEventListener(ev,()=>motion(0));
-  window.addEventListener('keydown',e=>{if(root.hidden)return;if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();active?leave():close()}else if(active&&active.id==='riss'){if(!e.repeat){if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')motion(-1);if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')motion(1)}e.stopImmediatePropagation()}},true);
-  window.addEventListener('keyup',e=>{if(!root.hidden){hold=0;e.stopImmediatePropagation()}},true);
+  window.addEventListener('keydown',e=>{if(root.hidden)return;if(kcKey(e,true)){e.preventDefault();e.stopImmediatePropagation();return}if(e.key==='Escape'||e.key==='GoBack'||e.code==='BrowserBack'||e.keyCode===461||e.keyCode===10009||(e.code==='Backspace'&&!/^(INPUT|TEXTAREA)$/.test((e.target&&e.target.tagName)||''))){e.preventDefault();e.stopImmediatePropagation();active?leave():close()}else if(active&&active.id==='riss'){if(!e.repeat){if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')motion(-1);if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')motion(1)}e.stopImmediatePropagation()}},true);
+  window.addEventListener('keyup',e=>{if(!root.hidden){hold=0;kcKey(e,false);e.stopImmediatePropagation()}},true);
   window.ZotikMinigames={open(){root.hidden=false;ui();$('zmBack').focus()},close};
 })();
