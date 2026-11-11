@@ -9,7 +9,7 @@ export function createEtappen(c) {
   const { T, mk, G, M, glow, scene } = c;
   let A = null;   // laufende Etappe
   const near = (x, z, r) => Math.hypot(c.pl.x - x, c.pl.z - z) < r;
-  function spot(z, off) { for (let t = 0; t < 30; t++) { const x = c.pathx(z) + off + (t ? (Math.random() - .5) * t : 0), zz = z + (t ? (Math.random() - .5) * t : 0); if (!c.blk(x, zz)) return [x, zz]; } return [c.pathx(z), z]; }
+  function spot(z, off) { for (let t = 0; t < 30; t++) { const x = c.pathx(z) + off + (t ? (Math.random() - .5) * t : 0), zz = z + (t ? (Math.random() - .5) * t : 0); if (c.ok(x, zz)) return [x, zz]; } return [c.pathx(z), z]; }
   function marker(x, z, col, s = 1) { const g = new T.Group(), y = c.hgt(x, z); g.position.set(x, y, z); g.add(mk(G.cyl, M(0x5a5a6a, { r: .8 }), 0, .3 * s, 0, .6 * s, .6 * s, .6 * s)); const o = mk(G.oct, M(col, { e: col, ei: .3 }), 0, 1.5 * s, 0, .45 * s, .8 * s, .45 * s, false); g.add(o); const gl = glow(col, 4 * s, 0, 1.5 * s, 0, 0); g.add(gl); scene.add(g);
     return { g, o, gl, lit(on) { o.material = M(col, { e: col, ei: on ? 2.2 : .3 }); gl.material.opacity = on ? .8 : 0; } }; }
 
@@ -25,8 +25,8 @@ export function createEtappen(c) {
         const P = c.makeVillager(d.look), wp = zs.map((z, i) => spot(z, i % 2 ? 13 : -13)); P.root.position.set(wp[0][0], c.hgt(wp[0][0], wp[0][1]), wp[0][1]); scene.add(P.root);
         st.run = { P, wp, i: 0, x: wp[0][0], z: wp[0][1], mv: 0 }; st.text = () => `${d.goal} (${st.run.i}/${wp.length - 1})`; break; }
       case 'escort': {
-        const P = c.makeVillager(d.look), [x, z] = spot(-56, 3), [gx, gz] = spot(-140, 3); P.root.position.set(x, c.hgt(x, z), z); scene.add(P.root);
-        st.esc = { P, x, z, sx: x, sz: z, gx, gz, hp: 100, w: 0, mv: 0 }; st.text = () => `${d.goal} (Leben ${Math.max(0, Math.round(st.esc.hp))} %)`; break; }
+        const P = c.makeVillager(d.look), z = -56, x = c.pathx(z) + 3; P.root.position.set(x, c.hgt(x, z), z); scene.add(P.root);   // geht den Weg entlang (nicht querfeldein), damit man immer folgen kann
+        st.esc = { P, x, z, sz: z, gz: -140, hp: 100, w: 0, mv: 0 }; st.text = () => `${d.goal} (Leben ${Math.max(0, Math.round(st.esc.hp))} %)`; break; }
       case 'survive': case 'sky': case 'companion': case 'memory': {
         const cnt = d.k === 'survive' ? 5 : d.k === 'memory' ? 4 : d.k === 'sky' ? 4 : 3, col = d.col || 0xffb060;
         for (let i = 0; i < cnt; i++) {
@@ -43,26 +43,26 @@ export function createEtappen(c) {
   function use(st, p) {
     const d = st.d;
     if (d.k === 'companion') { if (!c.S().party.includes(d.who) || c.cmpKo(d.who)) return c.toast(`Das kann nur ${d.whoN} – und ${d.whoN} muss bei dir und auf den Beinen sein.`); c.say([[d.whoN, d.lines[p.i % d.lines.length]]]); }
-    if (d.k === 'memory') { const want = d.order[st.parts.filter(q => q.on).length]; if (p.i !== want) { c.sfx('hurt'); c.toast('Die Erinnerungen verschwimmen – von vorn. ' + d.hint); for (const q of st.parts) { q.on = false; q.lit(false); } return; } }
+    if (d.k === 'memory') { const want = d.order[st.parts.filter(q => q.on).length]; if (p.i !== want) { c.sfx('hurt'); c.toast('Die Erinnerungen verschwimmen – von vorn. ' + d.hint); for (const q of st.parts) { q.on = false; q.lit(false); } c.refresh(); return; } }
     p.on = true; p.lit(true); c.sfx('pick'); c.emit(p.x, p.y + 1.5, p.z, d.col || 0xffb060, 24, 4, .7, .6);
-    if (st.parts.every(q => q.on)) st.finish(); else c.toast('📜 ' + st.text());
+    if (st.parts.every(q => q.on)) st.finish(); else { c.toast('📜 ' + st.text()); c.refresh(); }   // Anzeige oben rechts zählt mit
   }
   function update(dt, t) {
     const st = A; if (!st || st.done) return; st.t += dt; const d = st.d, S = c.S();
     if (st.run) {   // Verfolgung: läuft weiter, sobald man nahe kommt
       const r = st.run, [tx, tz] = r.wp[Math.min(r.i, r.wp.length - 1)], dx = tx - r.x, dz = tz - r.z, dd = Math.hypot(dx, dz);
       if (dd > .4) { const sp = Math.min(dd, 7.2 * dt); r.x += dx / dd * sp; r.z += dz / dd * sp; r.mv = 1; r.P.root.rotation.y = Math.atan2(dx, dz); } else { r.mv = 0;
-        if (near(r.x, r.z, 3)) { if (r.i >= r.wp.length - 1) return st.finish(); r.i++; c.sfx('ui'); c.toast(d.flee[(r.i - 1) % d.flee.length]); } else if (near(r.x, r.z, 10)) r.P.root.rotation.y = Math.atan2(c.pl.x - r.x, c.pl.z - r.z); }
+        if (near(r.x, r.z, 3)) { if (r.i >= r.wp.length - 1) return st.finish(); r.i++; c.sfx('ui'); c.toast(d.flee[(r.i - 1) % d.flee.length]); c.refresh(); } else if (near(r.x, r.z, 10)) r.P.root.rotation.y = Math.atan2(c.pl.x - r.x, c.pl.z - r.z); }
       r.P.root.position.set(r.x, c.hgt(r.x, r.z), r.z); c.animHuman(r.P, t, r.mv);
     }
     if (st.esc) {   // Begleitung: geht weiter, wenn man in der Nähe ist; Wellen an festen Punkten
-      const e = st.esc, dx = e.gx - e.x, dz = e.gz - e.z, dd = Math.hypot(dx, dz), prog = 1 - dd / Math.hypot(e.gx - e.sx, e.gz - e.sz);
+      const e = st.esc, dd = e.z - e.gz, prog = 1 - dd / (e.sz - e.gz);
       const go = near(e.x, e.z, 11) && !c.E.some(q => !q.dead && q.esc && Math.hypot(q.x - e.x, q.z - e.z) < 12);
       if (dd < 1.5) return st.finish();
-      if (go) { const sp = 2.6 * dt; e.x += dx / dd * sp; e.z += dz / dd * sp; e.mv = .45; e.P.root.rotation.y = Math.atan2(dx, dz); } else e.mv = 0;
-      if (e.w < 3 && prog > [.2, .5, .8][e.w]) { e.w++; c.toast(`⚔ ${d.waveT} (${e.w}/3)`); for (let i = 0; i < 3 + e.w; i++) { const a = Math.random() * 6.28, q = c.spawnEnemy((i % 2 ? 'a' : 'b') + st.n, e.x + Math.cos(a) * 9, e.z + Math.sin(a) * 9); if (q) { q.esc = 1; q.summoned = true; q.st = 'chase'; } } }
+      if (go) { e.z -= 2.6 * dt; const tx = c.pathx(e.z) + 3; e.P.root.rotation.y = Math.atan2(tx - e.x, -2.6 * dt); e.x = tx; e.mv = .45; } else e.mv = 0;
+      if (e.w < 3 && prog > [.2, .5, .8][e.w]) { e.w++; c.toast(`⚔ ${d.waveT} (${e.w}/3)`); for (let i = 0; i < 3 + e.w; i++) { const a = Math.random() * 6.28; let qx = e.x, qz = e.z; for (let k = 1; k > .15; k -= .17) { qx = e.x + Math.cos(a) * 9 * k; qz = e.z + Math.sin(a) * 9 * k; if (!c.blk(qx, qz)) break; } const q = c.spawnEnemy((i % 2 ? 'a' : 'b') + st.n, qx, qz); if (q) { q.esc = 1; q.summoned = true; q.st = 'chase'; } } }
       for (const q of c.E) if (!q.dead && q.esc && Math.hypot(q.x - e.x, q.z - e.z) < 2.6) e.hp -= 7 * dt;
-      if (e.hp <= 0) { c.toast(`💥 ${d.lose}`); e.hp = 100; e.x = e.sx; e.z = e.sz; e.w = 0; for (const q of c.E) if (q.esc && !q.dead) { q.hp = 0; c.killE(q); } }
+      if (e.hp <= 0) { c.toast(`💥 ${d.lose}`); e.hp = 100; e.z = e.sz; e.x = c.pathx(e.z) + 3; e.w = 0; for (const q of c.E) if (q.esc && !q.dead) { q.hp = 0; c.killE(q); } }
       e.P.root.position.set(e.x, c.hgt(e.x, e.z), e.z); c.animHuman(e.P, t, e.mv);
     }
     if (d.k === 'survive') {   // Gefahrenzone: in der Wildnis schwindet Leben, außer nahe an entzündeten Punkten
@@ -72,7 +72,7 @@ export function createEtappen(c) {
     }
     for (const p of st.parts) { p.o.rotation.y = t * (p.on ? 2 : .6); }
   }
-  return { start, update, get on() { return !!A; }, text: () => A && A.text ? A.text() : '', stop() { if (A) { for (const p of A.parts) if (p.g) p.g.visible = false; A = null; } c.vignette(null); } };
+  return { start, update, get on() { return !!A; }, get cur() { return A; }, text: () => A && A.text ? A.text() : '', stop() { if (A) { for (const p of A.parts) if (p.g) p.g.visible = false; A = null; } c.vignette(null); } };
 }
 
 // Daten: zwei Etappen je Welt (2 = Elaris … 10 = Elyndra); 'b' = vor dem Rätsel, 'a' = vor dem Weltenboss

@@ -150,6 +150,10 @@ body.touch #deck{left:calc(max(10px,env(safe-area-inset-left)) + 112px);top:calc
 /* Handy: Kommandomenü kompakt ohne Umbruch und frei von Leisten/Aufgaben; Leisten und Aufgabe überlappen nicht */
 body.touch #deck{width:max-content;min-width:118px;max-width:170px}body.touch #deck button span{white-space:nowrap}body.touch #gauges{max-width:min(300px,50vw);font-size:10px}body.touch #gauges .bar{height:5px}
 @media (orientation:landscape){body.touch #deck{left:calc(max(10px,env(safe-area-inset-left)) + 178px);top:auto;bottom:max(12px,env(safe-area-inset-bottom))}}
+/* Bedienung ohne Maus: sichtbarer Fokus; Fernbedienung (TV): keine Touch-Knöpfe, kurze Tastenhilfe unten */
+body.kbd :focus{outline:3px solid var(--khg);outline-offset:2px}body.kbd .slot:focus{box-shadow:0 0 18px rgba(255,212,90,.6)}
+body.remote #joy,body.remote #skills,body.remote #steerBtn{display:none!important}body.remote #keys{display:flex!important;left:50%;right:auto;transform:translateX(-50%);bottom:max(8px,env(safe-area-inset-bottom));gap:14px;white-space:nowrap;font-size:12px}
+#deck.nav{outline:2px solid var(--khg);outline-offset:5px;border-radius:8px}
 @media (orientation:portrait){body.touch #quest{width:min(220px,42vw);font-size:12px}body.touch #quest #qo{font-size:12px}body.touch #gauges{max-width:52vw}body.touch #deck{bottom:calc(max(14px,env(safe-area-inset-bottom)) + 200px)}}#flt{position:fixed;inset:0;z-index:60;touch-action:none;font-family:inherit;color:#fff}#flt .ft{position:absolute;left:50%;top:max(14px,env(safe-area-inset-top));transform:translateX(-50%);text-align:center;text-shadow:0 2px 6px #000}#flt .ft b{display:block;font-size:20px;color:var(--gold)}#flt .ft small{opacity:.8}#flt .fb{position:absolute;left:50%;top:calc(max(14px,env(safe-area-inset-top)) + 54px);transform:translateX(-50%);width:min(420px,70vw);height:8px;border-radius:6px;background:#ffffff26;overflow:hidden}#flt .fb i{display:block;height:100%;width:0;background:linear-gradient(90deg,#4fe8ff,#ffd860)}#flt .fs{position:absolute;left:max(16px,env(safe-area-inset-left));top:max(16px,env(safe-area-inset-top));background:#0a1230b0;border:1px solid #ffffff30;border-radius:12px;padding:6px 12px;font-size:15px}#flt #flSkip{position:absolute;right:max(16px,env(safe-area-inset-right));top:max(16px,env(safe-area-inset-top));background:#0a1230c8;color:#fff;border:1px solid #ffffff40;border-radius:12px;padding:8px 14px;font:inherit;font-size:14px}#flt .fh{position:absolute;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);font-size:12px;opacity:.75;text-shadow:0 1px 3px #000;white-space:nowrap}#mates i.pm{display:grid;place-items:center;font-size:18px;font-style:normal;background:#14203f}#mates i.pm{position:relative;cursor:pointer;overflow:hidden}#mates i.pm .hpb{position:absolute;left:0;bottom:0;height:4px;width:100%;background:#4fe87a;transition:width .2s}#mates i.pm.ko{filter:grayscale(1);opacity:.55}#mates i.pm.rdy{box-shadow:0 0 0 2px #ffd860,var(--sh)}
 .eb{overflow:visible}.eb i{border-radius:5px}.eb u{position:absolute;left:0;bottom:-5px;height:3px;border-radius:2px;background:linear-gradient(#ffe29a,#ffb13a);width:0;transition:width .12s}.eb.brk u{background:#fff;box-shadow:0 0 8px #ffd45a}.eb .ew{position:absolute;left:100%;top:-6px;margin-left:3px;font-size:12px;line-height:1}
 #boss .bar.bk{height:5px;margin-top:3px;border:1px solid rgba(255,255,255,.3)}#boss .bar.bk i{background:linear-gradient(#ffe29a,#ffb13a)}#boss.brk .bar.bk i{background:#fff;box-shadow:0 0 8px #ffd45a}#bossw{font-size:11px;font-weight:500;color:var(--dim);margin-top:2px}
@@ -188,8 +192,13 @@ body.touch #deck{width:max-content;min-width:118px;max-width:170px}body.touch #d
 #pW .pzd,#pW .pzn,#pW .pzb{transform:none!important;min-width:92px!important;min-height:92px;border-radius:50%!important;border:3px solid var(--khb)!important;background:radial-gradient(circle at 50% 35%,#2a4fa8,#0a1640 70%)!important;box-shadow:0 0 16px rgba(63,120,232,.6),inset 0 0 14px rgba(140,190,255,.35)}
 #pW .pzd:hover,#pW .pzn:hover,#pW .pzd:focus-visible,#pW .pzn:focus-visible{border-color:var(--khg)!important;box-shadow:0 0 22px rgba(255,212,90,.75),inset 0 0 14px rgba(255,212,90,.35)}
 #pH{background:rgba(255,212,90,.08);border-left:3px solid var(--khg);padding:6px 10px;text-align:left;color:#ffe9a8;font-size:14px}
+/* Fenster passen immer auf den Bildschirm (Handy quer, kleine Einbettung): Höhe am sichtbaren Bereich messen, nicht am Inhalt */
+#mbox{height:min(640px,calc(100vh - 20px))!important;height:min(640px,calc(100dvh - 20px))!important}
+@media (max-width:640px){#mbox{height:min(900px,calc(100vh - 20px))!important;height:min(900px,calc(100dvh - 20px))!important}}
+.ov .glass,#puz .glass{max-height:calc(100vh - 20px)!important;max-height:calc(100dvh - 20px)!important;overflow:auto}
+@media (max-height:480px){#mbox{padding:8px 12px!important;gap:6px 10px!important}#mbox::before{font-size:17px}#mbox::after{display:none}#mbox .mb button{padding:4px 10px!important}#puz .glass{padding:10px 14px!important}#puz h3{font-size:18px!important;margin-bottom:6px!important}#pW{margin:8px 0!important;padding:8px;gap:8px!important}#pW .pzd,#pW .pzn,#pW .pzb{min-width:70px!important;min-height:70px}}
 </style>
-  <script type="module" crossorigin src="./assets/index-BugJx-hQ.js"></script>
+  <script type="module" crossorigin src="./assets/index-ByBuql12.js"></script>
 </head>
 <body>
 <canvas id="cv"></canvas><div id="vig"></div><div id="hurt"></div><div id="fx"></div>
@@ -202,7 +211,7 @@ body.touch #deck{width:max-content;min-width:118px;max-width:170px}body.touch #d
   <div id="quest" class="glass"><b id="qt">Der erste Riss</b><span id="qo"></span></div>
   <div id="boss" hidden><div id="bossn">Mondwolf</div><div class="bar"><i id="bossb"></i></div><div class="bar bk"><i id="bossk"></i></div><div id="bossw"></div></div>
   <div id="prompt" class="glass" hidden></div>
-  <div id="keys"><div><b>WASD</b>Bewegen</div><div><b>Maus</b>Kamera (ziehen)</div><div><b>J / Klick</b>Angriff</div><div><b>Shift</b>Ausweichen</div><div><b>1 2 3</b>Fähigkeiten</div><div><b>E</b>Interagieren</div><div><b>Esc</b>Menü</div></div>
+  <div id="keys"><div><b>↑↓</b>Laufen</div><div><b>←→</b>Drehen</div><div><b>OK</b>Angriff / Aktion</div><div><b>Zurück</b>Befehle</div></div>
   <div id="joy" class="pi"><i></i></div>
   <div id="skills">
     <button id="bAtk" class="sb" aria-label="Angriff">⚔️<span class="bl">Angriff</span></button><button id="bDodge" class="sb" aria-label="Ausweichen">💨<small>⇧</small><span class="bl">Ausweichen</span></button>
@@ -225,7 +234,7 @@ body.touch #deck{width:max-content;min-width:118px;max-width:170px}body.touch #d
 <div id="fade"></div>
 <div id="load">LÄDT …</div>
 <script src="../cloud/anmacha-cloud.js" data-mount="#cloudbox" data-hint="Optional: Spielstände mit Google sichern und auf anderen Geräten weiterspielen. Ohne Anmeldung bleibt alles nur auf diesem Gerät." data-game="zotik2" data-prefix="zotik2_save_" data-save-btn="#saveBtn" defer></script>
-<script src="minigames.js?v=5"></script>
+<script src="minigames.js?v=6"></script>
 <script src="../gamepad.js" data-pad="ls=wasd:Bewegen rs=none:Kamera a=KeyJ/Enter:Befehl_ausführen@#bAtk b=Space/Escape:Ausweichen_·_Zurück@#bDodge x=Digit1:Kurzbefehl_Funkenwirbel@#sk1 y=KeyE:Aktion_·_Sprechen@#bUse lb=KeyB:Block_halten rb=Digit2:Kurzbefehl_Lichtstoß@#sk2 lt=KeyR:Kurzbefehl_Heiltrank@#sk3 rt=KeyF:Reaktion select=KeyT:Rufen@#bSpec start=Escape:Menü l3=KeyG:Rissform r3=KeyQ:Ziel_erfassen up=ArrowUp:Kommando_wählen down=ArrowDown right=Enter:Befehl_ausführen left=Backspace:Kommando_zurück" defer></script>
 <script src="../egstat.js" defer></script>
 </body>

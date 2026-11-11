@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "af9079ed346f",
- "generated": "2026-11-11T00:40:07+01:00",
- "commit": "b75647519a1ac472598875588a6d7980593d68c7",
+ "version": "da7d269a6b93",
+ "generated": "2026-11-11T03:06:53+01:00",
+ "commit": "8bf6b2e42d524c3733956edc35e3f9eacaae4417",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6258,8 +6258,8 @@
   },
   {
    "p": "guides/zotik.json",
-   "s": 25228,
-   "h": "e0f8ca5b1ed7738114a228b440f0e625dbccc188abae504680529869b5b02dc0"
+   "s": 25998,
+   "h": "45b9d8c8e93105622f064e1035a1b95dcd737df82d335184bdbc58fd61bdeab6"
   },
   {
    "p": "heute.html",
@@ -8132,6 +8132,11 @@
    "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
   },
   {
+   "p": "riftzone/client/public/heightmap.bin",
+   "s": 1182722,
+   "h": "121bcf27e4e7d5dda62e7ed7e061d76a1f8e4dec907c9978a3a32900d5ef6d97"
+  },
+  {
    "p": "riftzone/client/src/ui/styles.css",
    "s": 30181,
    "h": "28c5e1ddb893c40dd6896ecc6a3d7d5ee09244423276d839b5aecb7a32579129"
@@ -8839,7 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256787,
-   "h": "ab0c92a8643394f8ac3a39c0b9df5909d287299186c633e6bcb41c403b5a2984"
+   "h": "f397f0bc7eafe4d788bc704b2c74ffd20a5375719dc1497fba75da23a024b56d"
   },
   {
    "p": "taschi/card.svg",
@@ -10762,9 +10767,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-BugJx-hQ.js",
-   "s": 1157453,
-   "h": "44dfac456835eb41ab9d8b87913606a869bf2806e38708eab6293de475c29abf"
+   "p": "zotik/assets/index-ByBuql12.js",
+   "s": 1164752,
+   "h": "169aaf876502afb3f325a3699ab7619de8cdf5e504ed5737be338fc0e5c45800"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -10783,8 +10788,8 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 48146,
-   "h": "ecaff7afa8d784ad35b4f07ceea435d20cd8bacb841ab067db3ff95c5dec5fd3"
+   "s": 49509,
+   "h": "707ec315975644daae69070236b4b5c0da550f3fca3c4fa0ff8c8a2824c74fb7"
   },
   {
    "p": "zotik/manifest.webmanifest",
@@ -10793,8 +10798,8 @@
   },
   {
    "p": "zotik/minigames.js",
-   "s": 16830,
-   "h": "7d51b7d741029c44c3cb73d2f3ada3b6a497932a2a7d71ff7736332cb60f27b3"
+   "s": 18498,
+   "h": "3a14290588bf2f6d9e7f4286de9969037e9fe3a634f1a64332fcd8d7d0649a72"
   },
   {
    "p": "zotik/models/f1.glb",
