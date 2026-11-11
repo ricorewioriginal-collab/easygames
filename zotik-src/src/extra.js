@@ -2,6 +2,8 @@
    Schwierigkeitsgrade, Cheats, Block, Elementreaktionen und Timeline-Leiste. Zustand liegt in S (bst, ach, cnt, mat, sharp, dif, chx, rad). */
 
 export const LVCAP = 100;
+/* Bestiarium-Belohnungen: Zahl erforschter Arten → [Splitter, Phönix-Tränke, Kernsplitter, Andenken] */
+export const BST_R = { 5: [300, 0, 0, ''], 10: [500, 1, 2, ''], 20: [800, 0, 3, 'Forscherlupe'], 30: [1500, 1, 4, ''], 40: [2500, 1, 5, 'Großes Bestiarium'] };
 const MATS = { fell: ['🧶', 'Fell'], staub: ['✨', 'Rissstaub'], kern: ['💠', 'Kernsplitter'] };
 const DIFFS = [
   ['Abenteurer', 'Gegner treffen schwächer.', .6, 1],
@@ -71,7 +73,8 @@ export function createExtra(C) {
     LVCAP,
     kill(e) {
       const b = S().bst || (S().bst = {}), n = e.d.name || e.k, r = b[n] || (b[n] = { n: 0, hp: e.max, dmg: e.dmg || e.d.dmg, w: C.weakOf(e), boss: !!e.boss });
-      r.n++; if (r.n === 1) toast('📖 Bestiarium: ' + n);
+      r.n++; if (r.n === 1) { toast('📖 Bestiarium: ' + n); const cnt = Object.keys(b).length, T = BST_R[cnt], got = S().bstR || (S().bstR = {});
+        if (T && !got[cnt]) { got[cnt] = 1; const s = S(); s.shards += T[0]; s.items.phoenix = (s.items.phoenix || 0) + T[1]; s.mat = s.mat || {}; s.mat.kern = (s.mat.kern || 0) + T[2]; if (T[3]) s.trk.push(T[3]); sfx('level'); setTimeout(() => toast(`📖 ${cnt} Arten erforscht: 💎 +${T[0]}${T[1] ? ' · 🔥 Phönix-Trank' : ''}${T[2] ? ' · 💠 +' + T[2] : ''}${T[3] ? ' · 🎁 ' + T[3] + ' (+1,5 Angriff)' : ''}`), 1200); } }
       const m = S().mat || (S().mat = {}), g = (k, c) => { if (Math.random() < c) m[k] = (m[k] || 0) + 1 };
       const mm = Math.max(1, Math.round(C.matMul ? C.matMul() : 1)); for (let i = 0; i < mm; i++) { g('fell', e.boss ? 1 : .35); g('staub', e.boss ? 1 : .22); g('kern', e.boss ? 1 : .05); } if (e.boss) m.kern = (m.kern || 0) + 1;
     },
@@ -118,6 +121,7 @@ export function createExtra(C) {
       const pm = S().party || [];
       h += '<h3>🤝 Weggefährten</h3>' + (pm.length ? pm.map(n => `<div class="row"><span>${n}</span><span>reist mit dir</span></div>`).join('') : '<p style="color:var(--dim);font-size:13px">Noch reist niemand mit dir. Wichtige Begegnungen werden hier als Erinnerungen festgehalten.</p>');
       h += `<h3>🐾 Bestiarium (${names.length})</h3>`;
+      { const nx = Object.keys(BST_R).map(Number).find(k => k > names.length); h += `<div class="row"><span>Forschungsziel</span><span>${nx ? 'nächste Belohnung bei ' + nx + ' Arten' : 'alle Belohnungen erhalten'}</span></div>`; }
       h += names.length ? names.sort().map(n => { const r = B[n], w = r.w && C.EL[r.w] ? C.EL[r.w][0] + ' ' + C.EL[r.w][1] : '–'; return `<div class="row"><span>${r.boss ? '👑 ' : ''}${n}<br><small style="color:var(--dim)">Leben ${r.hp} · Schaden ${r.dmg} · Schwäche ${w}</small></span><span>×${r.n}</span></div>`; }).join('') : '<p style="color:var(--dim);font-size:13px">Besiege Gegner, um sie ins Bestiarium einzutragen.</p>';
       const a = ach(), nA = ACH.filter(x => a[x[0]]).length;
       h += `<h3>🏆 Erfolge (${nA}/${ACH.length})${S().chk ? ' · Cheats benutzt' : ''}</h3>` + ACH.map(x => `<div class="row"><span>${a[x[0]] ? '✅' : '▫️'} ${x[1]}<br><small style="color:var(--dim)">${x[2]}</small></span></div>`).join('');

@@ -60,6 +60,7 @@ export function createTown(C) {
     else if (kind === 'tavern') P.keeper = [.9, -d / 2 + t + 1.8, 0];
     else if (kind === 'home') P.extra = { book: [w / 2 - t - 1.4, -d / 2 + t + 1.0] };
     else if (kind === 'magic') {
+      dado(0x3a2a5a, 0x9a7aff, 1.1);
       cup(-w / 2 + t + 1.2, -d / 2 + t + .3, 1.6); cup(w / 2 - t - 1.2, -d / 2 + t + .3, 1.6);
       counter(0, -d / 2 + t + 1.5, 2.6, .7); for (let k = 0; k < 5; k++) bottle(-1 + k * .5, 1.2, -d / 2 + t + 1.5, COLS[k]);
       g.add(mk(G.cyl, wood2, -w / 2 + t + 1.2, Y + .4, -.3, .5, .8, .5)); solid(-w / 2 + t + 1.2, -.3, .5, .5);
@@ -67,6 +68,7 @@ export function createTown(C) {
       for (const [lx, lz] of [[w / 2 - t - .7, 1.2], [w / 2 - t - .7, .2]]) { g.add(mk(G.oct, M(0x6ae8ff, { e: 0x3ad0ff, ei: 1.6, r: .2 }), lx, Y + .5, lz, .25, .5, .25, false)); g.add(glow(0x4ad0ff, 1.8, lx, Y + .6, lz, .6)); }
       rug(.3, .9, 0x4a2a8a); lamp(0, h - .3, 0, 3); P.keeper = [0, -d / 2 + t + .75, 0];
     } else if (kind === 'potions') {
+      dado(0x5a4630, 0x8a6a44, 1.1);
       counter(-.4, -d / 2 + t + 1.5, w - 3.6, .7); for (let k = 0; k < 7; k++) bottle(-.4 - (w - 4.2) / 2 + k * (w - 4.2) / 6, 1.2, -d / 2 + t + 1.5, COLS[k % 5]);
       box(wood2, 0, 1.5, -d / 2 + t + .2, w - 1.6, .08, .35); box(wood2, 0, 2.1, -d / 2 + t + .2, w - 1.6, .08, .35);
       for (let k = 0; k < 9; k++) { bottle(-(w - 2.2) / 2 + k * (w - 2.2) / 8, 1.7, -d / 2 + t + .2, COLS[(k + 2) % 5]); bottle(-(w - 2.2) / 2 + k * (w - 2.2) / 8, 2.3, -d / 2 + t + .2, COLS[(k * 2) % 5]); }

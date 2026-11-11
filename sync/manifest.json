@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "4982f50a81e7",
- "generated": "2026-11-11T12:07:27+01:00",
- "commit": "5619d7612cfbc722ff988066a0bd7c1948bb0526",
+ "version": "2d38d5bd2b87",
+ "generated": "2026-11-11T12:34:58+01:00",
+ "commit": "c92b3d51584a52256a457b8914aa00f82a587f3c",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6258,8 +6258,8 @@
   },
   {
    "p": "guides/zotik.json",
-   "s": 35795,
-   "h": "8229e7a61475e9381b618302e939e9ac33d329435558c33b8542b42c8702cac6"
+   "s": 38093,
+   "h": "00f296bf3d153f06211c8daac2fe5f6b5555d20ae367ed545ea66a70ba6013f3"
   },
   {
    "p": "heute.html",
@@ -8132,6 +8132,11 @@
    "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
   },
   {
+   "p": "riftzone/client/public/heightmap.bin",
+   "s": 1182722,
+   "h": "121bcf27e4e7d5dda62e7ed7e061d76a1f8e4dec907c9978a3a32900d5ef6d97"
+  },
+  {
    "p": "riftzone/client/src/ui/styles.css",
    "s": 30181,
    "h": "28c5e1ddb893c40dd6896ecc6a3d7d5ee09244423276d839b5aecb7a32579129"
@@ -8839,7 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256787,
-   "h": "cfc838778c8485b454300bb4402d80a7ffd429a9e6d5680218200463bf25a305"
+   "h": "3535bfb9fa4d5215f4c90c49066d9c5114f2be4e56a699acca4dc0eb92edae95"
   },
   {
    "p": "taschi/card.svg",
@@ -10762,9 +10767,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-CzUNKZ6R.js",
-   "s": 1221413,
-   "h": "de8ce51b81d87a0fd143ef850743a632d96fb9301578c4eb0655ac4b0bc64b3b"
+   "p": "zotik/assets/index-Cxl-JeUW.js",
+   "s": 1229715,
+   "h": "413676e29166874280b9bb84df22bf4dd9e965458e898aac32f2137ca8a8aed6"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -10784,7 +10789,7 @@
   {
    "p": "zotik/index.html",
    "s": 50018,
-   "h": "28a30ffeedb1f0f5958a56da2f2ed0bc7de56b5f0d7f253eeeceffead7de982c"
+   "h": "c2396f090d2813b9ee77d9be7b724f0aee82a984076b6d375179ca8a26868c28"
   },
   {
    "p": "zotik/manifest.webmanifest",
