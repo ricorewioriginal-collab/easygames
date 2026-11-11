@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c7870df8b7b7",
- "generated": "2026-11-11T16:25:02+01:00",
- "commit": "e231853d9e035fe7f89ca4dd9ac05bb46e262646",
+ "version": "8d05bf6ee517",
+ "generated": "2026-11-11T18:58:37+01:00",
+ "commit": "23587875ef817385991fa9934f6b88fce19ec0ae",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5533,8 +5533,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 70298,
-   "h": "312f69f861ef11e5539104ab7609e73198d8185fdad55043c79429383f4fa2ff"
+   "s": 70774,
+   "h": "70e7a7202b05aede5165c4eb289b446e392fc7d074acb618d6d0a833298d0eba"
   },
   {
    "p": "games.js",

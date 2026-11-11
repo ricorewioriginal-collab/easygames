@@ -340,18 +340,19 @@
     for (var e = el0; e && e !== doc.body && e !== doc.documentElement; e = e.parentElement) { var r = e.getBoundingClientRect(); if (r.width * r.height > full) break; box = e; }
     return box;
   }
+  function below(e) { var r = e.getBoundingClientRect(); return r.width > 5 && r.height > 5 && (r.top > root.innerHeight - 4 || r.bottom < 4); }   // Knopf des Fensters außerhalb des Bildes (Fenster höher als das Bild)
   function backBtn(box) {
     var all = box.querySelectorAll(SEL), i, pass, t;
     for (pass = 0; pass < 2; pass++) for (i = 0; i < all.length; i++) {   // erst „Zurück/Schließen/Abbrechen“, sonst ein einzelnes „Fertig“
       t = ((all[i].textContent || '') + ' ' + (all[i].getAttribute('aria-label') || '') + ' ' + (all[i].title || '')).trim();
-      if (t.length < 40 && (pass ? /^\W*fertig\W*$/i : BACK_RX).test(t) && usable(all[i])) return all[i];
+      if (t.length < 40 && (pass ? /^\W*fertig\W*$/i : BACK_RX).test(t) && !all[i].disabled && (usable(all[i]) || below(all[i]))) return all[i];
     }
     return null;
   }
   // Erst kurz warten: Schließt das Spiel sein Fenster selbst (Escape, nur ohne sofortige Änderung), passiert nichts doppelt
   function backWin() {
     var box = winBox(), b = box && backBtn(box); if (!b) return;
-    root.setTimeout(function () { var c = b.isConnected && usable(b); if (!c || dlg || osk || menu) return; clearRing(); click(b, c.x, c.y); }, 160);
+    root.setTimeout(function () { if (!b.isConnected || dlg || osk || menu) return; var c = usable(b); if (!c && !below(b)) return; clearRing(); if (c) click(b, c.x, c.y); else b.click(); }, 160);
   }
   function drawRing() {
     if (!focusEl) return;
@@ -363,7 +364,7 @@
   // Nichts mehr in dieser Richtung sichtbar: Fenster/Seite ein Stück weiterscrollen (Knöpfe unterhalb des sichtbaren Bereichs, z. B. Spielstand-Bereich)
   function scrollOn(dir) {
     if (dir > 1) return false;
-    var e = focusEl, sc = null;
+    var e = focusEl || doc.elementFromPoint(root.innerWidth / 2, root.innerHeight / 2), sc = null;   // noch kein Rahmen: Fenster in der Bildmitte scrollen (Knöpfe unterhalb des Bildes)
     for (; e && e !== doc.body && e !== doc.documentElement; e = e.parentElement) {
       var cs = root.getComputedStyle(e); if (/(auto|scroll)/.test(cs.overflowY) && e.scrollHeight > e.clientHeight + 4) { sc = e; break; }
     }
@@ -397,7 +398,7 @@
     // Spiel arbeitet mit echtem Fokus (z. B. „Los geht's“ blau umrandet): dort weitermachen und den Fokus mitnehmen – sonst zwei Markierungen
     var a = doc.activeElement, real = a && a !== doc.body && /^(BUTTON|A|INPUT|SELECT|TEXTAREA)$/.test(a.tagName) && (!scopeEl || scopeEl.contains(a)) && usable(a);
     if (real && (!focusEl || !usable(focusEl))) focusEl = a;
-    var c = pick(dir); if (!c && focusEl && scrollOn(dir)) c = pick(dir);
+    var c = pick(dir); if (!c && (focusEl || winBox()) && scrollOn(dir)) c = pick(dir);
     if (!c) return;
     if (real && c.e !== a && c.e.focus) try { c.e.focus({ preventScroll: true }); } catch (x) { }
     focusEl = c.e; drawRing(); cursorUntil = 0; show(cursor, false);
