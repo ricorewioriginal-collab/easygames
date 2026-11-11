@@ -73,6 +73,14 @@ export function creatorScreen(game, { mode = 'new', player = null } = {}) {
       return h('button.swatch.focusable' + (same(look[key] ?? null, v) ? '.sel' : ''), { 'aria-label': label, style: c == null ? { background: 'repeating-linear-gradient(45deg,#fff 0 5px,#d8dee6 5px 10px)' } : { background: hex(c) }, onclick: () => { look[key] = v; rerender(); } });
     }));
     const chips = (label, key, values, labels) => row(label, values.map((v, i) => h('button.chip.focusable' + (same(look[key] ?? null, v) ? '.sel' : ''), { onclick: () => { look[key] = v; rerender(); } }, labels[i])));
+    // Figur: Mensch oder Zotik, der Fuchs-Abenteurer aus dem Spiel „Zotik“ (eigener Körper, kein Outfit)
+    const pickFigure = (z) => {
+      if (z === !!look.zotik) return;
+      const isPreset = !name.trim() || name === 'Zotik' || Object.values(PLAYER_PRESETS).some(p => p.name === name);
+      if (z) { look = { zotik: true }; if (isPreset) name = 'Zotik'; }
+      else { look = { ...PLAYER_PRESETS[gender] }; delete look.name; delete look.gender; if (isPreset) name = PLAYER_PRESETS[gender].name; }
+      rerender();
+    };
     const pickGender = (g) => {
       gender = g;
       if (mode === 'wardrobe') look.body = BODY_FOR_GENDER[g];
@@ -91,9 +99,11 @@ export function creatorScreen(game, { mode = 'new', player = null } = {}) {
       h('div.panel-body', {}, h('div.creator', {},
         h('div.creatorview', {}, h('div.viewport3d', { id: 'creatorview' })),
         h('div', {},
-          mode === 'wardrobe' ? h('p.muted', {}, 'Zieh dich um, wie du willst. Deine Taschis erkennen dich trotzdem!') : h('p.muted', {}, 'Wähle, wer du bist, und gib dir einen Namen. Danach kannst du dein Abenteuer-Outfit anpassen.'),
-          row('Ich bin', GENDERS.map(([g, label]) => h('button.chip.focusable' + (gender === g ? '.sel' : ''), { onclick: () => pickGender(g), 'data-autofocus': gender === g ? '' : undefined }, label))),
+          mode === 'wardrobe' ? h('p.muted', {}, 'Zieh dich um, wie du willst. Deine Taschis erkennen dich trotzdem!') : h('p.muted', {}, look.zotik ? 'Wähle, wer du bist, und gib dir einen Namen.' : 'Wähle, wer du bist, und gib dir einen Namen. Danach kannst du dein Abenteuer-Outfit anpassen.'),
+          row('Figur', [[false, 'Mensch'], [true, '🦊 Zotik']].map(([z, label]) => h('button.chip.focusable' + (!!look.zotik === z ? '.sel' : ''), { onclick: () => pickFigure(z) }, label))),
+          look.zotik ? null : row('Ich bin', GENDERS.map(([g, label]) => h('button.chip.focusable' + (gender === g ? '.sel' : ''), { onclick: () => pickGender(g), 'data-autofocus': gender === g ? '' : undefined }, label))),
           mode === 'wardrobe' ? null : row('Name', h('input.name', { value: name, maxlength: 12, placeholder: 'Dein Name', oninput: (e) => { name = e.target.value; } })),
+          ...(look.zotik ? [h('p.muted', {}, 'Zotik, der Fuchs-Abenteurer: grüner Schal, Lederweste, Schwert auf dem Rücken. Er reist als Taschi-Abenteurer durch die 16 Regionen – und in Sonnenhain wartet etwas, das genauso aussieht wie er …')] : [
           h('h3', {}, 'Aussehen'),
           sw('Haut', 'skin', SKIN_TONES, true),
           chips('Frisur', 'hair', HAIR_STYLES, ['Kurz', 'Stachelig', 'Zopf', 'Lang', 'Dutt', 'Bob', 'Locken', 'Zöpfe']),
@@ -112,7 +122,7 @@ export function creatorScreen(game, { mode = 'new', player = null } = {}) {
           sw('Handschuhe', 'gloves', GLOVE_COLORS),
           sw('Schuhe', 'shoes', [0x3a3330, 0xd8483a, 0x3a7fd0, 0xf2efe6, 0x2fa07a, 0xe86aa0]),
           chips('Gürtel', 'belt', [0x5a4030, 0x2a2d36, 0x3a3048, null], ['Braun', 'Schwarz', 'Lila', 'Keiner']),
-          sw('Rucksack', 'backpack', [...BAG_COLORS, null]),
+          sw('Rucksack', 'backpack', [...BAG_COLORS, null])]),
           h('div.optrow', { style: { marginTop: '14px' } },
             mode === 'wardrobe' ? h('button.bigbtn.focusable', { onclick: () => finish(false) }, 'Abbrechen') : null,
             h('button.bigbtn.primary.focusable', { onclick: () => finish(true) }, mode === 'wardrobe' ? '✓ Fertig' : '✓ So starte ich!'))))),

@@ -94,6 +94,14 @@
     "Quests: Hauptziel und aktive Aufträge mit Fortschritt (z. B. 1/2).",
     "Karte, Trainer (Trainerkarte, Umkleiden), Optionen und System."
    ]
+  },
+  {
+   "t": "Deine Figur und Zotik",
+   "p": [
+    "Im Editor wählst du unter „Figur“ einen Menschen oder Zotik. Menschen tragen den Abenteuer-Look: Abenteuerjacke, Abenteuerbrille am Stirnband, Armschienen, Werkzeuggürtel mit Laterne und Rolltop-Rucksack – Farben und Frisur stellst du selbst ein, später auch im Kleiderschrank.",
+    "Zotik ist der Fuchs-Abenteurer aus dem easygames-Spiel „Zotik“: grüner Schal, Lederweste, Schwert auf dem Rücken. Als Spielfigur reist er als Taschi-Abenteurer durch alle Regionen.",
+    "In Sonnenhain wohnst du mit deinen Eltern im Wohnhaus am Platz. Vor Professor Ulmes Glaskuppel streift ein Fuchs umher, der genauso aussieht wie Zotik: ein Klon, der bei einem missglückten Experiment mit der Lichtkammer aus einem Lichtspalt kam. Er ist ein legendäres Taschi (Normal/Feuer) mit der Attacke Lichtklinge."
+   ]
   }
  ],
  "ratgeber": [
@@ -104,7 +112,8 @@
     "Schwäche wilde Taschis vor dem Fangen, ohne sie zu besiegen. Schlaf oder Einfrieren erhöhen die Chance zusätzlich.",
     "Heile vor jeder Arena und jedem Champion an der Rezeption.",
     "Kaufe am Anfang Tränke und Taschi-Kapseln; der Heilkapsel heilt das gefangene Taschi gleich mit.",
-    "Sprich mit den Bewohnern: Sie verraten Hinweise zu Rätseln, Typvorteilen und dem nächsten Ziel."
+    "Sprich mit den Bewohnern: Sie verraten Hinweise zu Rätseln, Typvorteilen und dem nächsten Ziel.",
+    "Zotik vor der Glaskuppel kämpft erst, wenn du das Moos-Siegel von Fels-Fiete trägst. Er ist legendär und schwer zu fangen: erst schwächen, dann mit guten Kapseln werfen. Besiegst du ihn, steht er bald wieder vor der Kuppel."
    ]
   },
   {
@@ -269,6 +278,10 @@
   {
    "q": "Kann ich Trainer-Taschis fangen?",
    "a": "Nein. „Taschis von Trainern kann man nicht fangen!“ – gefangen werden nur wilde Taschis in Einzelkämpfen."
+  },
+  {
+   "q": "Wo finde ich Zotik?",
+   "a": "Der Klon steht in Sonnenhain vor Professor Ulmes Glaskuppel. Mit dem Moos-Siegel kannst du gegen ihn kämpfen und ihn fangen (Stufe 16). Die zerbrochene Lichtkammer im Labor erzählt, wie er entstanden ist. Als Spielfigur wählst du Zotik im Editor unter „Figur“ oder später im Kleiderschrank."
   }
  ]
 }

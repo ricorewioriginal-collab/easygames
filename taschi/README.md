@@ -32,6 +32,13 @@ Die 3D-Lichtintensität und Kameradistanz sind für mobiles Spielen reduziert, u
 
 Geprüft: `npm test` (31 Tests inklusive Durchlauf-Simulation bis zum Sternenmeister) sowie die Browsertests `tests/e2e/intro.mjs` und `tests/e2e/expansion.mjs` (Gras-Begegnung, Ballauswahl, Attacken vergessen/erinnern, EP-Bonbon mit Entwicklung, Rivalenkampf) ohne Browserfehler. Ein Test auf echten Handys steht weiterhin aus.
 
+## Spielfigur und Zotik (November 2026)
+
+- **Eigener Abenteuer-Look** statt klassischem Trainer: Abenteuerjacke (lange Ärmel, Stehkragen, schräger Reißverschluss, Umhängegurt), Abenteuerbrille am Stirnband, Armschienen, Werkzeuggürtel mit Kapsel-Taschen und leuchtender Laterne, Rolltop-Rucksack, Cargotaschen und Wanderstiefel. Interne Schlüssel (`trainer`, `trainercap`) bleiben, alte Spielstände bekommen den neuen Look automatisch.
+- **Zotik spielbar:** Im Editor unter „Figur“ den Fuchs-Abenteurer aus dem easygames-Spiel „Zotik“ wählen (`look.zotik`). Modell: `src/engine/zotik.js`, nachgebaut nach `zotik-src/src/fox.js`, gleiche Gelenke und Animationen wie die Menschen.
+- **Zotik als legendäres Taschi:** Klon aus Professor Ulmes missglücktem Experiment mit der Lichtkammer, steht in Sonnenhain vor der Glaskuppel; Kampf ab dem Moos-Siegel (Stufe 16, Normal/Feuer, Attacke Lichtklinge). Im Labor erzählt die zerbrochene Lichtkammer die Geschichte, zu Hause in Sonnenhain warten Mama und Papa.
+- Test: `node tests/e2e/zotik.mjs [Bildordner]`; Figurenansicht: `tools/viewer.html?mode=players` (mit `&zotik=1`).
+
 ## Steuerung und Menüs
 
 - PC: WASD/Pfeiltasten bewegen, E = Interaktion, Escape = Pause.

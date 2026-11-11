@@ -263,7 +263,7 @@ export function openDexEntry(game, id) {
       h('p', {}, sp.bio),
       caught ? h('div.statgrid', {}, 'KP', h('div.bar', {}, h('i', { style: { width: sp.hp / 1.4 + '%' } })), h('b', {}, sp.hp), 'Angriff', h('div.bar', {}, h('i', { style: { width: sp.atk / 1.4 + '%' } })), h('b', {}, sp.atk), 'Verteidigung', h('div.bar', {}, h('i', { style: { width: sp.def / 1.4 + '%' } })), h('b', {}, sp.def), 'Initiative', h('div.bar', {}, h('i', { style: { width: sp.speed / 1.4 + '%' } })), h('b', {}, sp.speed)) : h('p.muted', {}, 'Fange dieses Taschi, um seine Werte zu erfahren.'),
       h('p', {}, h('b', {}, 'Verhalten: '), { shy: 'scheu – flieht vor Reisenden', curious: 'neugierig – beobachtet Reisende', playful: 'verspielt', aggressive: 'angriffslustig – stürmt auf Reisende zu', sleepy: 'verschlafen' }[sp.behavior] || '–'),
-      h('p', {}, h('b', {}, 'Fundorte: '), sp.ancient ? 'Uralter Schrein (Legende)' : id === 'schnurrik' ? 'Begleiter der Schattengilde' : hab.join(', ') || 'durch Entwicklung'),
+      h('p', {}, h('b', {}, 'Fundorte: '), sp.origin ? sp.origin : sp.ancient ? 'Uralter Schrein (Legende)' : id === 'schnurrik' ? 'Begleiter der Schattengilde' : hab.join(', ') || 'durch Entwicklung'),
       h('p', {}, h('b', {}, 'Entwicklung: '), chain.map(c => s.dex[c] ? SPECIES[c].name : '???').join(' → ')),
       caught ? h('p.muted', {}, 'Lernt: ' + learnset(id).map(([lv, m]) => MOVES[m].name + ' (' + lv + ')').join(', ')) : null));
   const screen = { el: panel(game, sp.name, body) };

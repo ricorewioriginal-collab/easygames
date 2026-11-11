@@ -92,7 +92,9 @@ const LIST = [
   M('eisschild', 'Eisschild', 'eis', 0, 1, 20, 'buff', { stat: 'def', stages: 2, target: 'self' }),
   M('sandwirbel', 'Sandwirbel', 'erde', 55, 1, 25, 'quake'),
   M('erdkralle', 'Erdkralle', 'erde', 75, 0.95, 15, 'quake', { crit: 0.15 }),
-  M('tektonik', 'Tektonik', 'erde', 110, 0.85, 5, 'quake', { desc: 'Die Erdplatten selbst geraten in Bewegung.' })
+  M('tektonik', 'Tektonik', 'erde', 110, 0.85, 5, 'quake', { desc: 'Die Erdplatten selbst geraten in Bewegung.' }),
+  // Zotiks Klon (legendäres Taschi aus Professor Ulmes Experiment)
+  M('lichtklinge', 'Lichtklinge', 'normal', 100, 0.95, 8, 'slash', { crit: 0.2, desc: 'Ein Schwerthieb aus gebündeltem Licht. Trifft oft kritisch.' })
 ];
 
 export const MOVES = Object.fromEntries(LIST.map(m => [m.id, m]));

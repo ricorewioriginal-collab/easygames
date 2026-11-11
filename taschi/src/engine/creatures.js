@@ -10,6 +10,7 @@ import { toonGradient } from './textures.js';
 import { SPECIES } from '../data/species.js';
 import { TYPES } from '../data/types.js';
 import { createRng } from '../core/rng.js';
+import { buildZotikRig } from './zotik.js';
 
 const C = (c) => new THREE.Color(c);
 const shade = (c, f) => C(c).multiplyScalar(f).getHex();
@@ -57,6 +58,7 @@ function creatureMaterial() {
 
 export function createCreature(id, { outline = true, shiny = false } = {}) {
   const sp = SPECIES[id];
+  if (sp.look && sp.look.plan === 'zotik') return createZotikCreature(sp, outline);
   const look = sp.look || { plan: 'quad', colors: [sp.color, shade(sp.color, 0.7), 0xf6eee0], features: {}, size: 1 };
   const sig = sp.lineage !== undefined ? signature(id, sp, look) : null;
   const F = sig ? sig.F : look.features || {};
@@ -332,6 +334,26 @@ export function createCreature(id, { outline = true, shiny = false } = {}) {
   // normalise size so that battle scale is consistent
   const size = look.size || 1;
   const cr = new Creature(root, parts, { plan, legs, flyer: FLYERS.has(plan) || !!F.wings, bodyTop, behavior: sp.behavior, size, mat, meshes });
+  root.userData.creature = cr;
+  return cr;
+}
+
+// Zotiks Klon: gleiches Aussehen wie der Held, aber als Taschi (Creature-Animationen: Laufen, Angriff, Treffer, Ohnmacht …)
+function createZotikCreature(sp, outline) {
+  const mat = creatureMaterial(), meshes = [];
+  const root = new THREE.Group(); root.name = 'creature:zotik';
+  const body = new THREE.Group(); root.add(body);
+  const z = buildZotikRig((b, parent) => {
+    const geo = b.build(), m = new THREE.Mesh(geo, mat); m.castShadow = true; parent.add(m); meshes.push(m);
+    if (outline) { const o = new THREE.Mesh(geo, outlineMaterial(0x202638)); o.scale.setScalar(1.05); m.add(o); }
+  }, { scale: 0.62 });
+  root.remove(z.fig); body.add(z.fig);
+  const B = z.bones;
+  { const tw = new THREE.Group(); tw.position.copy(B.tail.position); tw.rotation.x = B.tail.rotation.x; B.hips.add(tw); tw.add(B.tail); B.tail.position.set(0, 0, 0); B.tail.rotation.set(0, 0, 0); }   // Grundneigung bleibt, die Animation wedelt nur
+  // Taschi-Haltung: Arme leicht vom Körper, kampfbereit
+  B.armL.rotation.z = -0.15; B.armR.rotation.z = 0.15; B.elbowL.rotation.x = -0.4; B.elbowR.rotation.x = -0.4;
+  const parts = { root, body, head: B.head, eyes: B.eyes, tail: B.tail, earL: B.earL, earR: B.earR, armL: B.elbowL, armR: B.elbowR };
+  const cr = new Creature(root, parts, { plan: 'biped', legs: [B.thighL, B.thighR], flyer: false, bodyTop: 1.2, behavior: sp.behavior, size: sp.look.size || 1, mat, meshes });
   root.userData.creature = cr;
   return cr;
 }

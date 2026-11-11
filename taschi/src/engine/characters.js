@@ -6,6 +6,7 @@ import { THREE } from './three.js';
 import { Builder, matrix, capsule, lathe } from './geometry.js';
 import { toonVertexMaterial, outlineMaterial, glowMaterial } from './materials.js';
 import { createRng, hashString } from '../core/rng.js';
+import { buildZotikRig } from './zotik.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const C = (c) => new THREE.Color(c);
@@ -92,6 +93,7 @@ function partMesh(builder, outline = false) {
 }
 
 export function createCharacter(lookIn, { outline = false } = {}) {
+  if (lookIn && lookIn.zotik) return createZotik(outline);
   const L = resolveLook(lookIn);
   const P = BODY[L.body] || BODY.adult;
   const s = P.h / 1.72, w = P.w;
@@ -274,6 +276,16 @@ export function createCharacter(lookIn, { outline = false } = {}) {
   return ch;
 }
 
+// Zotik als spielbare Figur (Taschi-Abenteurer): eigener Körper, gleiche Gelenke und Animationen wie die Menschen
+function createZotik(outline) {
+  const z = buildZotikRig((b, parent) => parent.add(partMesh(b, outline)), { scale: 0.8 });
+  const blob = new THREE.Mesh(new THREE.CircleGeometry(0.34, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.22, depthWrite: false }));
+  blob.rotation.x = -Math.PI / 2; blob.position.y = 0.03; blob.renderOrder = -1; z.root.add(blob);
+  const ch = new Character(z.root, z.bones, z.dims);
+  z.root.userData.character = ch;
+  return ch;
+}
+
 function hairFor(hd, L, r) {
   const c = L.hairColor, capped = ['cap', 'beanie'].includes(L.hat);
   const cap = (sx = 1, sy = 1, sz = 1, y = r * 1.1) => hd.add(new THREE.SphereGeometry(r * 1.05, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), c, matrix(0, y, -r * 0.05, -0.15, 0, 0, sx, sy, sz));
@@ -399,6 +411,7 @@ export class Character {
     // apply
     for (const b of BONES) this.bones[b].rotation.copy(P[b]);
     this.bones.hips.position.y = this.dims.legLen + hipY - hipBob + 0.015;
+    if (this.bones.tail) { this.bones.tail.rotation.y = Math.sin(t * (this.speed > 0.25 ? 7 : 2.4)) * (this.speed > 0.25 ? 0.4 : 0.22); this.bones.tail.rotation.x = 0.55 + Math.sin(t * 1.3) * 0.06; }
     // blinking & mouth
     this.blinkT -= dt;
     const blink = this.blinkT < 0.12 ? 0.1 : 1;

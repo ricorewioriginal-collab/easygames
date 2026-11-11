@@ -188,6 +188,13 @@ export class World {
       this.addNPC({ id: 'giver:' + q.id, role: 'reisender', name: q.giver, x: L.plaza.x + Math.cos(a) * (L.plaza.r + 3), z: L.plaza.z + Math.sin(a) * (L.plaza.r + 3), talk: 'giver', quest: q.id });
     }
     if (r === 0) {
+      // Zotik: Klon aus Professor Ulmes missglücktem Experiment, streift vor der Glaskuppel umher, bis man ihn fängt
+      const lab = L.buildings.find(b => b.kind === 'lab');
+      if (lab && this.save.legends?.zotik !== 'caught') {
+        let zx = lab.door.x + (L.plaza.x - lab.door.x) * 0.3, zz = lab.door.z + (L.plaza.z - lab.door.z) * 0.3;
+        for (let k = 0; k < 8 && this.blocked(zx, zz); k++) { zx += 1.2; zz += 0.6; }
+        this.addNPC({ id: 'zotikKlon', role: 'taschi', name: 'Zotik', x: zx, z: zz, ry: Math.atan2(L.plaza.x - zx, L.plaza.z - zz), talk: 'zotik', look: { zotik: true } });
+      }
       if (!this.save.flags.firstQuest) this.addNPC({ id: 'ulme', role: 'professor', name: 'Professor Ulme', x: L.ulme.x, z: L.ulme.z, ry: Math.PI / 2 * L.mirror * -1, talk: 'ulme', look: { body: 'elder', skin: 1, hair: 'short', hairColor: 7, top: 'labcoat', topColor: 0xf2f4f2, accent: 0x5d7f99, bottomColor: 0x5a4a3a, glasses: true, beard: 0xe8e4dc } });
     }
     // route trainers
