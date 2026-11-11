@@ -4,7 +4,7 @@
   {
    "t": "Ziel des Spiels",
    "p": [
-    "ZOTIK – Die Splitter der Welten ist ein 3D-Action-Rollenspiel. Du spielst Zotik, einen Weltenhörer, der das Summen der Risse hört. Mit dem Kapselmonster Felli und später mit Lyra, Nia und Rovan reist du durch zehn Welten – von Lunaris bis Elyndra – und schließt den Riss, der die Welten bedroht. Danach wartet das Endspiel im Weltenriss mit sieben Siegeln und drei möglichen Enden.",
+    "ZOTIK – Die Splitter der Welten ist ein 3D-Action-Rollenspiel. Du spielst Zotik, einen Weltenhörer, der das Summen der Risse hört. Mit dem Seelenbegleiter Felli und später mit Lyra, Nia und Rovan reist du durch zehn Welten – von Lunaris bis Elyndra – und schließt den Riss, der die Welten bedroht. Danach wartet das Endspiel im Weltenriss mit sieben Siegeln und drei möglichen Enden.",
     "Unterwegs sprichst du mit Figuren, erfüllst Haupt- und Nebenaufgaben, löst Rätsel, kämpfst gegen Gegner und Bosse und sammelst Rissplitter (die Währung), Heiltränke, Ausrüstung und Erfahrung (bis Stufe 100)."
    ]
   },
@@ -24,7 +24,7 @@
    "list": [
     "📜 Aufgaben: Hauptgeschichte des aktuellen Kapitels Schritt für Schritt, Nebenaufgaben.",
     "🌍 Weltreise: nach Kapitel 1 – reise durch das Weltentor zu allen Welten, die du schon geöffnet hast.",
-    "🎒 Inventar: Stufe, Erfahrung, Waffe, Heiltränke, Rissplitter, Werkzeuge, Äther, Kristallfrüchte, Andenken, Nautilux, Halle der 100 und Rekord der Uralten Höhle.",
+    "🎒 Inventar: Stufe, Erfahrung, Waffe, Heiltränke, Rissplitter, Werkzeuge, Äther, Kristallfrüchte, Andenken, Nautilux, Halle der 100 und Rekord der Echogrotte.",
     "🛡️ Ausrüstung: Waffe, Rüstung und Schmuck anlegen oder ablegen.",
     "🌿 Felli: Stufe, Entwicklung, Angriff, Füttern und „Kämpft mit“ an/aus.",
     "✨ Fähigkeiten: alle Kampftechniken.",
@@ -109,7 +109,7 @@
    ]
   },
   {
-   "t": "Felli, das Kapselmonster",
+   "t": "Felli, den Seelenbegleiter",
    "list": [
     "Felli kämpft an deiner Seite, lernt durch Siege und Futter und entwickelt sich (bis Stufe 20).",
     "Entwicklungen: Moosling (ab Stufe 1), Blütling (ab 5, heilt dich), Dornling (ab 10, trifft alle Gegner um sich), Waldgeist (ab 15, schlägt besonders hart zu).",
@@ -123,7 +123,7 @@
     "Waffen: Mondsichel (+6 Angriff, IP Mondsichel, 120), Dornenschwert (+12, Dornenwirbel, 500), Glutklinge (+20, Flammenschnitt, 1100), Sternenklinge (+30, Sternenfall, 2000).",
     "Rüstungen: Wanderweste (100), Rindenpanzer (260), Korallenmantel (800), Frostharnisch (1300), Sternenrobe (2600) – mit Schutz, Leben und Techniken wie Schutzschild, Wurzelgriff, Gezeitenheilung, Eiswall und Astralfeld.",
     "Schmuck: Mondring (+30 Mana, Manastrom, 150), Fuchsamulett (Kritisch, Zweiter Atem = volle Heilung, 300). Kapselglocke (stärkt Felli, Felli-Ruf) und Glücksring (Splitterregen) gibt es nicht im Laden, sondern als Fund.",
-    "Kapitelbelohnungen: Kapitel 2 Fuchsamulett, 3 Rindenpanzer, 4 Dornenschwert, 5 Korallenmantel, 6 Glutklinge, 7 Frostharnisch, 8 Glücksring, 9 Sternenklinge, 10 Sternenrobe, Weltenriss Uralter Ring. Uralte Klinge, Uralter Harnisch und Uralter Ring liegen mit etwas Glück in blauen Truhen der Uralten Höhle. Weitere Ausrüstung steckt in Truhen: in Lunaris Wanderweste, Mondsichel und Fuchsamulett, in den Werkzeug-Ruinen je ein Stück (Lunaris Mondring, Elaris Rindenpanzer, Valdoria Dornenschwert, Solmera Kapselglocke, Aqualis Korallenmantel, Frosthain Frostharnisch, Ignara Glutklinge, Noctaris Glücksring, Astralis Sternenklinge, Elyndra Sternenrobe)."
+    "Kapitelbelohnungen: Kapitel 2 Fuchsamulett, 3 Rindenpanzer, 4 Dornenschwert, 5 Korallenmantel, 6 Glutklinge, 7 Frostharnisch, 8 Glücksring, 9 Sternenklinge, 10 Sternenrobe, Weltenriss Uralter Ring. Uralte Klinge, Uralter Harnisch und Uralter Ring liegen mit etwas Glück in blauen Truhen der Echogrotte. Weitere Ausrüstung steckt in Truhen: in Lunaris Wanderweste, Mondsichel und Fuchsamulett, in den Werkzeug-Ruinen je ein Stück (Lunaris Mondring, Elaris Rindenpanzer, Valdoria Dornenschwert, Solmera Kapselglocke, Aqualis Korallenmantel, Frosthain Frostharnisch, Ignara Glutklinge, Noctaris Glücksring, Astralis Sternenklinge, Elyndra Sternenrobe)."
    ]
   },
   {
@@ -226,7 +226,7 @@
     "🎯 Präzision: +2 % kritische Treffer je Rang. ✨ Zauberkraft: +6 % Schaden für Funkenwirbel und Lichtstoß je Rang.",
     "⤴ Sprungkraft: +5 % Sprunghöhe je Rang. Ab Rang 3 kannst du in der Luft ein zweites Mal springen (Doppelsprung).",
     "„Neu verteilen“ gibt jederzeit und kostenlos alle Punkte zurück – probier ruhig verschiedene Wege aus.",
-    "In der Uralten Höhle ruht der Baum, dort zählt nur, was du im Lauf findest."
+    "In der Echogrotte ruht der Baum, dort zählt nur, was du im Lauf findest."
    ]
   },
   {
@@ -269,7 +269,7 @@
     "Im Menü unter 👥 Koop „🏠 Raum öffnen“ wählen. Es erscheinen ein Code und ein QR-Code (🔗 Link kopieren).",
     "Am zweiten Gerät im Titelmenü „🌐 Online mitspielen“ wählen, Code und Namen eingeben und verbinden – oder den QR-Code scannen.",
     "Der zweite Zotik ist in der Welt des Gastgebers und spielt die Geschichte mit. Mit „📍 Zu … springen“ teleportiert ihr euch zueinander.",
-    "Geschichte, Welt und Gegner gehören dem Gastgeber. Der Spielstand des Gastes wird nicht gespeichert; der Fortschritt landet im Spielstand des Gastgebers. Die Uralte Höhle ist nur allein betretbar."
+    "Geschichte, Welt und Gegner gehören dem Gastgeber. Der Spielstand des Gastes wird nicht gespeichert; der Fortschritt landet im Spielstand des Gastgebers. Die Echogrotte ist nur allein betretbar."
    ]
   },
   {
@@ -312,7 +312,7 @@
    "list": [
     "Achte auf das ▲: Konter und Finisher über die Reaktionstaste sind die stärksten Treffer.",
     "Mit der Nautilux als U-Boot und Luftschiff erreichst du Schatztruhen, die zu Fuß unerreichbar sind.",
-    "In der Uralten Höhle zählt nur, was du dort findest – nimm sie als Herausforderung, nicht zum Leveln.",
+    "In der Echogrotte zählt nur, was du dort findest – nimm sie als Herausforderung, nicht zum Leveln.",
     "Halle der 100: Jede zehnte Prüfung ist ein Boss und bringt 500 × Rang Splitter und 3 Tränke extra.",
     "Das Casino nutzt nur Spiel-Splitter. Die beste Chance auf Gewinn ist gering – setz nur, was du übrig hast (oder schalte es in den Optionen ab)."
    ]
@@ -409,13 +409,13 @@
    ]
   },
   {
-   "t": "Halle der 100, Uralte Höhle und Casino",
+   "t": "Halle der 100, Echogrotte und Casino",
    "list": [
     "🏛️ Halle der 100: 100 Prüfungen in 10 Rängen, jede zehnte ist ein Bosskampf. Jede Prüfung bringt 30 + 8 × Nummer Splitter und Erfahrung, jeder Rang zusätzlich 500 × Rang Splitter und 3 Tränke. Nach Prüfung 100: „Der letzte Splitter gehört dir“ (+5000).",
-    "🏔️ Uralte Höhle in Lunaris (nach Kapitel 1, nur allein): 50 Ebenen. Du startest immer bei Stufe 1, ohne Ausrüstung und mit 2 Tränken. Ein Wächter versperrt die Treppe. Beim Verlassen oder Fallen kehrt alles zurück – behalten darfst du nur die blauen Schätze. Dein Rekord steht im Inventar.",
+    "🏔️ Echogrotte in Lunaris (nach Kapitel 1, nur allein): 50 Ebenen. Du startest immer bei Stufe 1, ohne Ausrüstung und mit 2 Tränken. Ein Wächter versperrt die Treppe. Beim Verlassen oder Fallen kehrt alles zurück – behalten darfst du nur die blauen Schätze. Dein Rekord steht im Inventar.",
     "🎰 Golden Star Casino (Valdoria, westlich vom Marktplatz): erst bei Stella am Eingang einschalten. Einsatz je Spiel 10, 50 oder 100 Splitter. Kristallslots: drei gleiche ⭐ ×25, 💎 ×12, 🔥 ×8, 🌙/🍃 ×5; zwei gleiche: Einsatz zurück. Sternenrad: 12 Felder, davon 2× ×1, 2× ×2, 1× ×5, sonst nichts. Höher oder Tiefer: Karten 1–13, Gleichstand verliert; je unwahrscheinlicher der Tipp, desto höher der Faktor, nach jedem Treffer kannst du auszahlen, nach 5 Treffern wird automatisch ausgezahlt. Auf Dauer gewinnt bei allen drei Spielen leicht das Haus (Auszahlung etwa 92–97 %).",
     "🎮 Mini-Spiele (Titelmenü): ZOTIK Run, Felli-Fang, Kristallrausch, ZOTIK Quiz und Sternenpuzzle – unabhängig vom Abenteuer, mit eigenen Rekorden.",
-    "Uralte Höhle: Auf jeder zweiten Ebene ist die Treppe versiegelt – entweder drei Glutkristalle in den Gängen entzünden, bevor der erste erlischt, oder alle Gegner der Ebene vertreiben. Jede zehnte Ebene bewacht ein Wächter die Treppe."
+    "Echogrotte: Auf jeder zweiten Ebene ist die Treppe versiegelt – entweder drei Glutkristalle in den Gängen entzünden, bevor der erste erlischt, oder alle Gegner der Ebene vertreiben. Jede zehnte Ebene bewacht ein Wächter die Treppe."
    ]
   },
   {

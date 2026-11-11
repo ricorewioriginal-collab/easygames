@@ -830,7 +830,7 @@ function enterBreak(e){XT.count('brk');e.bg=0;e.brk=e.boss?2.4:3.4;e.st='rec';e.
   dnum(e.x,e.m.root.position.y+2.5*e.d.sc,e.z,'BRUCH!','b');sfx('crit');camShake=Math.max(camShake,.35);if(!MP.on)hitStop=Math.max(hitStop,.12);fxRing(e.x,e.z,0xffe08a,4,.5);emit(e.x,e.m.root.position.y+1.2,e.z,0xffe08a,26,6,.7,.7,2,2)}
 function perfectDodge(){if(pl.pdCd>0)return;XT.count('pd');pl.pdCd=1.2;pl.cd.dg=0;slowT=.55;S.mp=Math.min(maxMp(),S.mp+8);gAdd('ip',6);gAdd('tg',8);gAdd('rg',3);pl.iframes=Math.max(pl.iframes,.5);
   dnum(pl.x,pl.y+2.5,pl.z,'Perfekt!','b');sfx('crit');fxRing(pl.x,pl.z,0x9fe8ff,3.2,.5);emit(pl.x,pl.y+1,pl.z,0x9fe8ff,24,5,.6,.6,0,1)}
-function hurtE(e,dmg,kx,kz,crit,el){if(e.dead)return;if(el==='ice')e.slowU=time+4;
+function hurtE(e,dmg,kx,kz,crit,el){if(e.dead)return;if(el==='ice')e.slowU=time+4;if(e.first){e.first=false;dmg*=2;dnum(e.x,(e.m.root.position.y||0)+2.6,e.z,'Erstschlag!','c')}
   /* Schildträger: Klingenhiebe von vorn prallen ab – von hinten, mit Zaubern, im Bruch oder während er ausholt/taumelt trifft man voll */
   if(e.d.shield&&!el&&!(e.brk>0)&&e.st!=='wind'&&e.st!=='rec'&&!(e.rootU>time)&&Math.cos(ang(e.face,Math.atan2(pl.x-e.x,pl.z-e.z)))>.3){dmg*=.15;if(!e.shT||time-e.shT>1.2){e.shT=time;dnum(e.x,e.m.root.position.y+2.2*e.d.sc,e.z,'🛡️ Schild','b');sfx('hit')}}
   const wk=!!el&&el===weakOf(e);if(wk)dmg*=1.5;const lbl=Math.round(dmg)+(wk?' '+EL[el][0]:''),cls=wk?'w':crit?'c':'';
@@ -898,7 +898,8 @@ function updEnemy(e,dt){
   if(S.ng&&e.boss&&!e.p3&&e.hp<e.max*.25){e.p3=true;sfx('roar');toast('🔥 '+d.name+' rast vor Wut!');camShake=.7}
   if(e.dash){const q=e.dash;q.t-=dt;const nx=e.x+q.vx*q.sp*dt,nz=e.z+q.vz*q.sp*dt;if(!blocked(nx,nz)){e.x=nx;e.z=nz}if(q.sp>15)emit(e.x,.6,e.z,0x9ab0ff,1,1,.3,.6);if(!q.hit&&Math.hypot(pl.x-e.x,pl.z-e.z)<2.8*d.sc/1.5){q.hit=true;hurtP(q.dmg||(e.dmg||d.dmg),e.x,e.z)}if(q.t<=0)e.dash=null}
   switch(e.st){
-    case'idle':{e.wt-=dt;if(e.wt<=0){e.tx=e.hx+rnd(-6,6);e.tz=e.hz+rnd(-6,6);e.wt=rnd(2,5)}const dx=e.tx-e.x,dz=e.tz-e.z;if(Math.hypot(dx,dz)>.6){moveE(e,dx,dz,d.spd*.3,dt);e.face+=ang(e.face,Math.atan2(dx,dz))*Math.min(1,dt*5);spd=.4}
+    case'idle':{if(WLD&&(WLD.dun||e.z>300)&&!e.boss&&!X.pmove){if(!pl.dead&&dp<d.aggro*.55)e.st='chase';break}   /* Lufia-Takt: stehst du still, steht auch die Patrouille */
+      e.wt-=dt;if(e.wt<=0){e.tx=e.hx+rnd(-6,6);e.tz=e.hz+rnd(-6,6);e.wt=rnd(2,5)}const dx=e.tx-e.x,dz=e.tz-e.z;if(Math.hypot(dx,dz)>.6){moveE(e,dx,dz,d.spd*.3,dt);e.face+=ang(e.face,Math.atan2(dx,dz))*Math.min(1,dt*5);spd=.4}
       if(!pl.dead&&dp<d.aggro)e.st='chase';break}
     case'chase':{
       if(pl.dead||dp>d.aggro*2.1||Math.hypot(e.x-e.hx,e.z-e.hz)>70&&!e.boss){e.st='idle';e.hp=Math.min(e.max,e.hp+e.max*.3);break}
@@ -1140,6 +1141,7 @@ $('mSound').onclick=()=>{sndOn=!sndOn;if(master)master.gain.value=sndOn?.85:0;$(
 let time=0,curZone='',autoT=0;
 const _cp=new T.Vector3(),_ct=new T.Vector3();let camPos=new T.Vector3(0,6,30);
 function updatePlayer(dt){
+  {const mv=Math.hypot(pl.x-(X.ppx??pl.x),pl.z-(X.ppz??pl.z));X.pmove=mv>dt*.4||!!X.hook||pl.air;X.ppx=pl.x;X.ppz=pl.z}
   pl.hurtCd=Math.max(0,pl.hurtCd-dt);pl.pdCd=Math.max(0,(pl.pdCd||0)-dt);pl.iframes=Math.max(0,pl.iframes-dt);pl.comboT=Math.max(0,pl.comboT-dt);pl.sheath=Math.max(0,pl.sheath-dt);
   for(const k in pl.cd)pl.cd[k]=Math.max(0,pl.cd[k]-dt);
   if(pl.dead){return}
@@ -1691,7 +1693,7 @@ function lunOpen(){return S.stage>=6||!!(S.pz.LUN_MOONGATE&&S.pz.LUN_RESONANCE_B
 
 Object.assign(CUT,{"END_WAECHTER":[["Erzähler","Der Boden gibt nach, und aus dem Riss steigt Der erste Wächter."],["Lyra","Der Wächter stand hier schon, bevor der Kern zerbrach."],["Zotik","Dann zeigen wir ihm, was wir seitdem gelernt haben."]],"END_WURZEL":[["Erzähler","Der Boden gibt nach, und aus dem Riss steigt Die Wurzel ohne Ende."],["Lyra","Die Wurzel ohne Ende – ein Echo der Wurzelkönigin, nur größer."],["Zotik","Diesmal ohne zu vergessen."]],"END_KOLOSS":[["Erzähler","Der Boden gibt nach, und aus dem Riss steigt Der Goldene Koloss."],["Lyra","So viel Gold, und er kann nichts davon behalten."],["Zotik","Er kann es gern abgeben."]],"END_SANDKOENIG":[["Erzähler","Der Boden gibt nach, und aus dem Riss steigt Der Sandkönig."],["Lyra","Kharos' Erinnerung, ohne Ketten – der Sandkönig."],["Zotik","Dann sorgen wir dafür, dass sie diesmal ruht."]],"END_ABYSS":[["Erzähler","Der Boden gibt nach, und aus dem Riss steigt Der Abyss."],["Lyra","Die Tiefe selbst hat sich erhoben – Neryx' Strudel, geboren aus dem Abgrund."],["Zotik","Haltet euch fest."]],"END_FROSTHERZ":[["Erzähler","Der Boden gibt nach, und aus dem Riss steigt Das Frostherz."],["Lyra","Avarns Winter, der nie getaut ist."],["Zotik","Dann bringen wir den Frühling."]],"END_FEUERKERN":[["Erzähler","Der Boden gibt nach, und aus dem Riss steigt Der Feuerkern."],["Lyra","Magmarions Glut, ohne den Berg, der sie hält."],["Zotik","Sie hat lange genug gebrannt."]],"END_ARRIVAL":[["Erzähler","Der Weltenriss. Hier laufen die Linien aller Welten zusammen – und manches, das sie zurückgelassen haben, wartet noch."],["Lyra","Der Kern hat sich beruhigt, aber der Riss ist geblieben. Er hält die Erinnerung an alles, was die Welten zurückgelassen haben."],["Lyra","Sieben Wächter der Anfänge, größer als je zuvor. Und eine Halle, die uns prüft."],["Nia","Dann prüfen wir uns eben."]],"ENDING_SEPARATE":[["Veyra","Dann bleiben die Welten, wie sie sind: getrennt, aber nicht mehr blind füreinander. Ich bewache die Splitter weiter."],["Erzähler","Die sieben Splitter ruhen wieder an ihren Orten. Die Wächter der Anfänge schlafen, und der Weltenstein bleibt offen für alle, die reisen wollen."],["Zotik","Dann reisen wir weiter."]],"ENDING_UNITE":[["Elyon","Dann lassen wir sie wachsen – langsam, Welt für Welt."],["Erzähler","Die Splitter fügen sich in den Kern. Die Grenzen zwischen den Welten werden dünn, und an manchen Orten stehen plötzlich Türen, wo keine waren."],["Lyra","Es wird Jahre dauern. Aber niemand muss mehr verloren gehen."],["Veyra","Ich hoffe, ihr habt recht."]],"ENDING_WEAVE":[["Zotik","Wir verbinden sie nicht. Wir hören ihnen zu."],["Erzähler","Zotiks Klang, so lange versiegelt, öffnet sich. Die sieben Töne antworten einer nach dem anderen, und zwischen den Welten spannen sich dünne Fäden aus Licht."],["Lyra","Ein Weltenhörer, der die Fäden hält. Das hat der Kern all die Jahre gebraucht."],["Veyra","Und das gibt dem Wort Bewahren einen neuen Sinn."]]});Object.assign(PZD,{"END_D1":{"name":"Siegel: Der verlorene Wald","kind":"dials","hints":["Drei Scheiben mit vier Zeichen öffnen die Schatzkammer (Der verlorene Wald). Probiere, was die Scheiben nacheinander zeigen.","Die erste Scheibe muss 1-mal gedreht werden.","Drehungen von links nach rechts: 1, 3, 2."],"cur":0,"sol":[1,3,2],"init":[0,0,0],"dial_count":3,"dial_states":4},"END_D2":{"name":"Siegel: Die Stadt ohne Bewohner","kind":"dials","hints":["Drei Scheiben mit vier Zeichen öffnen die Schatzkammer (Die Stadt ohne Bewohner). Probiere, was die Scheiben nacheinander zeigen.","Die erste Scheibe muss 2-mal gedreht werden.","Drehungen von links nach rechts: 2, 0, 1."],"cur":0,"sol":[2,0,1],"init":[0,0,0],"dial_count":3,"dial_states":4},"END_D3":{"name":"Siegel: Das Meer über dem Himmel","kind":"dials","hints":["Drei Scheiben mit vier Zeichen öffnen die Schatzkammer (Das Meer über dem Himmel). Probiere, was die Scheiben nacheinander zeigen.","Die erste Scheibe muss 3-mal gedreht werden.","Drehungen von links nach rechts: 3, 1, 0."],"cur":0,"sol":[3,1,0],"init":[0,0,0],"dial_count":3,"dial_states":4},"END_D4":{"name":"Siegel: Der ewige Vulkan","kind":"dials","hints":["Drei Scheiben mit vier Zeichen öffnen die Schatzkammer (Der ewige Vulkan). Probiere, was die Scheiben nacheinander zeigen.","Die erste Scheibe muss 0-mal gedreht werden.","Drehungen von links nach rechts: 0, 2, 3."],"cur":0,"sol":[0,2,3],"init":[0,0,0],"dial_count":3,"dial_states":4},"END_D5":{"name":"Siegel: Noctaris Null","kind":"dials","hints":["Drei Scheiben mit vier Zeichen öffnen die Schatzkammer (Noctaris Null). Probiere, was die Scheiben nacheinander zeigen.","Die erste Scheibe muss 2-mal gedreht werden.","Drehungen von links nach rechts: 2, 2, 1."],"cur":0,"sol":[2,2,1],"init":[0,0,0],"dial_count":3,"dial_states":4},"END_D6":{"name":"Siegel: Elyndra Vorher","kind":"dials","hints":["Drei Scheiben mit vier Zeichen öffnen die Schatzkammer (Elyndra Vorher). Probiere, was die Scheiben nacheinander zeigen.","Die erste Scheibe muss 1-mal gedreht werden.","Drehungen von links nach rechts: 1, 0, 3."],"cur":0,"sol":[1,0,3],"init":[0,0,0],"dial_count":3,"dial_states":4},"END_D7":{"name":"Siegel: Der Ort, den es nie gab","kind":"dials","hints":["Drei Scheiben mit vier Zeichen öffnen die Schatzkammer (Der Ort, den es nie gab). Probiere, was die Scheiben nacheinander zeigen.","Die erste Scheibe muss 3-mal gedreht werden.","Drehungen von links nach rechts: 3, 3, 2."],"cur":0,"sol":[3,3,2],"init":[0,0,0],"dial_count":3,"dial_states":4}});const EQ=[{"n":"Der erste Wächter","hp":1700,"a":35,"g":"Der Waldhüter","ghp":935,"ga":28,"dn":"Der verlorene Wald","c":13160680,"cut":"END_WAECHTER","pz":"END_D1"},{"n":"Die Wurzel ohne Ende","hp":1800,"a":36,"g":"Der leere Torwächter","ghp":990,"ga":28,"dn":"Die Stadt ohne Bewohner","c":4906890,"cut":"END_WURZEL","pz":"END_D2"},{"n":"Der Goldene Koloss","hp":1950,"a":37,"g":"Die Himmelsmuräne","ghp":1072,"ga":29,"dn":"Das Meer über dem Himmel","c":16764992,"cut":"END_KOLOSS","pz":"END_D3"},{"n":"Der Sandkönig","hp":2000,"a":38,"g":"Der Aschenkönig","ghp":1100,"ga":30,"dn":"Der ewige Vulkan","c":14721104,"cut":"END_SANDKOENIG","pz":"END_D4"},{"n":"Der Abyss","hp":2100,"a":39,"g":"Der Nullschatten","ghp":1155,"ga":31,"dn":"Noctaris Null","c":3832575,"cut":"END_ABYSS","pz":"END_D5"},{"n":"Das Frostherz","hp":2200,"a":40,"g":"Das Echo der Quelle","ghp":1210,"ga":32,"dn":"Elyndra Vorher","c":9101567,"cut":"END_FROSTHERZ","pz":"END_D6"},{"n":"Der Feuerkern","hp":2400,"a":42,"g":"Der Namenlose","ghp":1320,"ga":33,"dn":"Der Ort, den es nie gab","c":16734746,"cut":"END_FEUERKERN","pz":"END_D7"}];
 Object.assign(PORT,{Nia:['🏹','#d9a03a'],Veyra:['🔮','#d8c8ff'],Kael:['🗡️','#8a8aa8'],Eryn:['📜','#c8a0ff'],Toren:['⚔️','#c06030']});
-CHP[12]={name:'Uralte Höhle',sub:'Stufe 1 – keine Ausrüstung'};
+CHP[12]={name:'Echogrotte',sub:'Stufe 1 – keine Ausrüstung'};
 const ENDN={SEPARATE:'Getrennt bewahren',UNITE:'Vereint',WEAVE:'Verwoben'};
 CHP[11]=Object.assign({},CHP[10],{name:'Weltenriss',sub:'Wo alle Welten zusammenlaufen',at:'in der Riss-Halle',hubN:'Riss-Halle',wildN:'Die sieben Siegel',depthN:'Der Rissgrund',
   sky:[[.04,.01,.08],[.22,.08,.36],[.8,.4,.7],[1,.7,.4],[1,.85,.95]],moon:0xffd8f0,fog:[0x2a1244,.0042],hemi:[0xe8b8ff,0x2a1840,.8],lite:[0xffe8f8,1.15],stars:1,expo:1.08,
@@ -2484,7 +2486,7 @@ function mpGuestStart(w){
   setTimeout(()=>banner('Koop','Du spielst bei '+w.hn),500);
   mpSend({t:'wr'})}
 async function mpHost(){
-  if(MP.net||MP.busy)return;if(WLD&&WLD.cave)return toast('In der Uralten Höhle kann kein Koop-Raum geöffnet werden.');MP.busy=true;MP.name=mpName('Zotik');try{localStorage.setItem('zotik2_mpname',MP.name)}catch(e){}
+  if(MP.net||MP.busy)return;if(WLD&&WLD.cave)return toast('In der Echogrotte kann kein Koop-Raum geöffnet werden.');MP.busy=true;MP.name=mpName('Zotik');try{localStorage.setItem('zotik2_mpname',MP.name)}catch(e){}
   const net=mkNet({onMsg:mpMsg,onLeave:mpLeft,onStatus:m=>toast(m)});
   try{const code=await net.host();MP.net=net;MP.role='host';MP.code=code;MP.on=false;MP.base=sharedFlat();
     net.loadQR().then(()=>{if(MP.net!==net)return;const q=qrcode(0,'M');q.addData(net.link());q.make();MP.qr=q.createDataURL(5,0);mpMenuRefresh()}).catch(()=>{})}
@@ -2538,7 +2540,7 @@ function mpSpawnReq(a){for(const r of a){if(!ED[r.k]||E.some(q=>!q.dead&&q.k===r
    Erweiterung nach den Vorbildern Kingdom Hearts und Lufia 2
    (Mechaniken, keine geschützten Namen):
    Befehlsleiste, Zielerfassung, Reaktionsbefehle, Team-Angriffe, Rissform,
-   Ausrüstung + IP-Leiste, Kapselmonster Felli, Werkzeug-Ruinen, Uralte Höhle.
+   Ausrüstung + IP-Leiste, Seelenbegleiter Felli, Werkzeug-Ruinen, Echogrotte.
    Plan und Annahmen: docs/WEB_KH_LUFIA_PLAN.md (Repo zotik)
    ===================================================================== */
 var X={lock:null,rx:null,rxCd:0,q:[],buff:{shield:0,mana:0},form:{on:0,k:0},fe:{cd:1,hcd:10,t:null},tcd:0,bombs:[],hook:null,push:{t:0,o:null},deck:{sub:null,sel:0,dirty:true,t:0},caveLeaving:false,fromCave:false,ruinT:0};
@@ -2571,7 +2573,7 @@ const invSet=()=>inCave()?S.cave.run.inv:(S.inv||{});
 function gsum(k){const g=gearSet();let v=0;for(const s of ['w','a','c']){const d=GEAR[g[s]];if(d&&d[k])v+=k==='atk'||k==='def'||k==='hp'?Math.round(d[k]*(1+.15*((!inCave()&&S.up&&S.up[g[s]])||0))):d[k]}return v}
 const upTag=id=>!inCave()&&S.up&&S.up[id]?' <b style="color:var(--gold)">+'+S.up[id]+'</b>':'';   /* Verstärkung aus der Schmiede */
 const magV=()=>(1+.1*(S.mag||0))*(1+.06*skR('arc'));   /* Zauberkunde aus dem Magieladen */
-/* ---- Fähigkeitenbaum: je Stufe ein Punkt, Rang r kostet r Punkte, jederzeit kostenlos neu verteilbar (in der Uralten Höhle ruht er) ---- */
+/* ---- Fähigkeitenbaum: je Stufe ein Punkt, Rang r kostet r Punkte, jederzeit kostenlos neu verteilbar (in der Echogrotte ruht er) ---- */
 const SKT={str:['💪','Stärke','+4 % Angriff je Rang'],vit:['❤️','Zähigkeit','+6 % Leben je Rang'],mind:['🔷','Geist','+8 % Mana je Rang'],prec:['🎯','Präzision','+2 % kritische Treffer je Rang'],arc:['✨','Zauberkraft','+6 % Zauberschaden je Rang'],leap:['⤴','Sprungkraft','+5 % Sprunghöhe je Rang · ab Rang 3 Doppelsprung']};
 function skR(k){return S.cave&&S.cave.run?0:((S.sk&&S.sk[k])||0)}
 function skSpent(){let a=0;for(const k in SKT){const r=(S.sk&&S.sk[k])||0;a+=r*(r+1)/2}return a}
@@ -2682,7 +2684,7 @@ function spellHeal(){if(pl.dead||dlg.on||naut.on||pl.cd.s4>0)return;const c=form
 function useEther(){if(pl.dead||dlg.on||pl.cd.s5>0)return;if(!(S.items.ether>0)){toast('Kein Äther');return}if(S.mp>=maxMp()){toast('Mana ist schon voll');return}S.items.ether--;pl.cd.s5=1.5;const m=Math.round(maxMp()*.6);S.mp=Math.min(maxMp(),S.mp+m);sfx('heal');dnum(pl.x,pl.y+2.3,pl.z,'+'+m+' MP','x')}
 SKS.push({em:'💚',n:'Mondheilung',s:'Heilung',f:()=>spellHeal(),cd:'s4',cdt:3,mp:30},{em:'🔷',n:'Äther',s:'Äther',f:()=>useEther(),cd:'s5',cdt:1.5,mp:0,cnt:()=>S.items.ether});
 for(const [id,fn,sh] of [['thorn',artThorn,'Ranke'],['gust',artGust,'Wirbel'],['frost',artFrost,'Frost'],['bolt',artBolt,'Blitz'],['star',artStar,'Sterne']]){const a=ARTS.find(x=>x.id===id);SKS.push({em:a.em,get n(){return (chDone(a.ch)?'':'🔒 ')+a.n},s:sh,f:()=>fn(),cd:id,cdt:a.cd,mp:a.mp})}   /* Riss-Zauber auch im Fähigkeiten-Knopf des Handys */
-/* ---------------- Kapselmonster Felli ---------------- */
+/* ---------------- Seelenbegleiter Felli ---------------- */
 const FST=[['Moosling',1],['Blütling',5],['Dornling',10],['Waldgeist',15]];
 const fStage=()=>{const lv=S.felli?S.felli.lv:1;let s=0;FST.forEach((f,i)=>{if(lv>=f[1])s=i});return s};
 const fNeed=()=>18+S.felli.lv*S.felli.lv*5;
@@ -2732,16 +2734,16 @@ function useTool(pick){if(pl.dead||dlg.on||naut.on||X.tcd>0||X.hook)return;if(!S
   else if(id==='fire'||id==='ice'){const col=id==='fire'?0xff7a2a:0x9ae8ff;sfx(id==='fire'?'skill1':'skill2');let hit=null;
     for(let s=.8;s<10;s+=.5){const x=pl.x+fx*s,z=pl.z+fz*s;emit(x,hgt(x,z)+1,z,col,1,.5,.35,.5);
       const o=OB.find(o=>!obPass(o)&&Math.abs(x-o.x)<o.hw+.3&&Math.abs(z-o.z)<o.hd+.3);if(o){hit=o;break}
-      const e=E.find(e=>!e.dead&&Math.hypot(e.x-x,e.z-z)<e.rad+.4);if(e){hurtE(e,atkV()*1.2,fx,fz,false);if(id==='ice')stunOne(e,3);break}
+      const e=E.find(e=>!e.dead&&Math.hypot(e.x-x,e.z-z)<e.rad+.4);if(e){if(!e.boss)stunOne(e,id==='ice'?3:1.6);hurtE(e,atkV()*1.2,fx,fz,false);break}
       if(blocked(x,z))break}
     if(hit){if(id==='fire'&&hit.t==='thorn'){obSave(hit);burnFx(hit);toast('🔥 Die Ranken verbrennen')}
       else if(id==='fire'&&hit.t==='torch'&&!hit.lit){hit.lit=1;S.obst[hit.id]=1;litFx(hit);torchCheck(hit.grp)}
       else if(id==='ice'&&hit.t==='water'){obSave(hit);freezeFx(hit);toast('❄️ Das Wasser gefriert – du kannst darüber gehen')}
       else if(hit.t!=='wall'&&hit.t!=='block')toast(id==='fire'?'🔥 Das brennt nicht':'❄️ Das gefriert nicht')}}
   else if(id==='hook'){const fxx=fx,fzz=fz;let best=null,bd=14;for(const o of OB){if(o.t!=='post')continue;const dx=o.x-pl.x,dz=o.z-pl.z,d=Math.hypot(dx,dz);if(d<2||d>bd)continue;if((dx*fxx+dz*fzz)/d<.75)continue;bd=d;best=o}
-    if(!best){toast('🪝 Kein Pfosten in Reichweite');return}const d=Math.hypot(best.x-pl.x,best.z-pl.z),ux=(best.x-pl.x)/d,uz=(best.z-pl.z)/d;
+    if(!best){const tg=E.find(e=>{if(e.dead||e.boss)return false;const dx=e.x-pl.x,dz=e.z-pl.z,d=Math.hypot(dx,dz);return d<9&&d>.5&&(dx*fxx+dz*fzz)/d>.8});if(tg){stunOne(tg,2.5);sfx('dodge');toast('🪝 Getroffen – betäubt!');return}toast('🪝 Kein Pfosten in Reichweite');return}const d=Math.hypot(best.x-pl.x,best.z-pl.z),ux=(best.x-pl.x)/d,uz=(best.z-pl.z)/d;
     X.hook={tx:best.x-ux*.95,tz:best.z-uz*.95,ux,uz,line:hookLine(best)};pl.face=Math.atan2(ux,uz);pl.iframes=Math.max(pl.iframes,.6);sfx('dodge')}}
-function stunOne(e,t){if(MP.role==='guest')return;e.st='rec';e.rt=t;e.atk=null;e.dash=null;e.tel.visible=false;emit(e.x,e.m.root.position.y+1,e.z,0xaee8ff,14,2,.6,.6)}
+function stunOne(e,t){if(MP.role==='guest')return;if(e.st==='idle'&&!e.boss)e.first=true;e.st='rec';e.rt=t;e.atk=null;e.dash=null;e.tel.visible=false;emit(e.x,e.m.root.position.y+1,e.z,0xaee8ff,14,2,.6,.6)}
 function hookLine(o){const g=new T.Mesh(G.cyl0,new T.MeshBasicMaterial({color:0xd0c0a0}));g.visible=false;scene.add(g);return g}
 function burnFx(o){emit(o.x,hgt(o.x,o.z)+1,o.z,0xff7a2a,50,5,1,.9,-2,2);o.m.visible=false}
 function litFx(o){if(o.fl)o.fl.visible=true;emit(o.x,hgt(o.x,o.z)+2,o.z,0xffb04a,20,3,.6,.6,-2,1);sfx('pick')}
@@ -2750,7 +2752,7 @@ function gateOpen(g){if(g.done)return;obSave(g);sfx('quest');toast('🚪 Ein Tor
 function torchCheck(grp){const ts=OB.filter(o=>o.t==='torch'&&o.grp===grp);if(ts.every(o=>o.lit)){const g=OB.find(o=>o.t==='gate'&&o.grp===grp);if(g)gateOpen(g)}}
 function plateCheck(){for(const p of OB){if(p.t!=='plate')continue;const on=OB.some(b=>b.t==='block'&&Math.hypot(b.x-p.x,b.z-p.z)<.8);if(on!==!!p.on){p.on=on;p.m.position.y=hgt(p.x,p.z)+(on?.02:.08);if(on){sfx('pick');const ps=OB.filter(o=>o.t==='plate'&&o.grp===p.grp);if(ps.every(o=>o.on)){const g=OB.find(o=>o.t==='gate'&&o.grp===p.grp);if(g)gateOpen(g)}}}}}
 function updTools(dt){X.tcd=Math.max(0,X.tcd-dt);
-  for(let i=X.bombs.length-1;i>=0;i--){const b=X.bombs[i];b.t-=dt;b.m.children[1].material.opacity=.5+Math.sin(b.t*30)*.4;if(b.t>0)continue;scene.remove(b.m);X.bombs.splice(i,1);sfx('roar');camShake=.4;aoe(b.x,b.z,3.5,2,0xffa040);
+  for(let i=X.bombs.length-1;i>=0;i--){const b=X.bombs[i];b.t-=dt;b.m.children[1].material.opacity=.5+Math.sin(b.t*30)*.4;if(b.t>0)continue;scene.remove(b.m);X.bombs.splice(i,1);sfx('roar');camShake=.4;for(const e of E)if(!e.dead&&!e.boss&&Math.hypot(e.x-b.x,e.z-b.z)<3.5+e.rad)stunOne(e,2.5);aoe(b.x,b.z,3.5,2,0xffa040);
     for(const o of OB){if(o.t==='crack'&&!o.done&&Math.abs(o.x-b.x)<o.hw+3&&Math.abs(o.z-b.z)<o.hd+3){obSave(o);o.m.visible=false;emit(o.x,hgt(o.x,o.z)+1.5,o.z,0x8a8a9a,50,6,1,1,6);toast('💥 Die Rissmauer zerbricht')}}}
   if(X.hook){const h=X.hook,dx=h.tx-pl.x,dz=h.tz-pl.z,d=Math.hypot(dx,dz),st=Math.min(d,24*dt);pl.vx=pl.vz=0;
     if(d<.12){X.hook=null;scene.remove(h.line);h.line.material.dispose();for(let k=0;k<12&&blocked(pl.x,pl.z);k++){pl.x+=h.ux*.15;pl.z+=h.uz*.15}pl.y=hgt(pl.x,pl.z)}else{pl.x+=dx/d*st;pl.z+=dz/d*st;pl.y=hgt(pl.x,pl.z)+.6;h.line.visible=true;h.line.position.set((pl.x+h.tx)/2,pl.y+1,(pl.z+h.tz)/2);h.line.scale.set(.04,d,.04);h.line.rotation.set(Math.PI/2,0,0);h.line.rotation.y=0;h.line.lookAt(h.tx,pl.y+1,h.tz);h.line.rotateX(Math.PI/2)}}
@@ -2819,8 +2821,8 @@ function buildRuin(n,col,outside){const P=n+'r',spec=RUIN[n]||RUIN[1],wc=col||0x
 function ruinGo(x,z,face,inside){$('fade').style.opacity=1;setTimeout(()=>{pl.x=x;pl.z=z;pl.y=hgt(x,z);pl.vx=pl.vz=0;pl.face=face;camYaw=face+Math.PI;camTarget.set(pl.x,pl.y+1.5,pl.z);camPos.set(pl.x,pl.y+4,pl.z+(inside?8:-8));fel.x=pl.x+1;fel.z=pl.z+1;placeParty();lockOff();$('fade').style.opacity=0;if(inside)banner('Werkzeug-Ruine','Schiebe, sprenge, brenne, friere');},400)}
 function ruinSpot(h,blk,path,R){for(let t=0;t<400;t++){const z=-70-R()*60,side=R()<.5?-1:1,x=path(z)+side*(9+R()*6);if(Math.abs(x)>110)continue;let ok=!blk(x,z)&&h(x,z)<5.5;for(let a=0;a<8&&ok;a++){const px=x+Math.cos(a*.785)*3,pz=z+Math.sin(a*.785)*3;if(blk(px,pz))ok=false}
     if(ok&&COL.some(c=>Math.hypot(c.x-x,c.z-z)<c.r+3.2))ok=false;if(ok)return[x,z]}return[path(-90)+8,-90]}
-/* ---------------- Uralte Höhle ---------------- */
-function caveEnter(){if(MP.on)return toast('Die Uralte Höhle ist nur allein betretbar.');if(S.stage<8)return;
+/* ---------------- Echogrotte ---------------- */
+function caveEnter(){if(MP.on)return toast('Die Echogrotte ist nur allein betretbar.');if(S.stage<8)return;
   S.cave.run={snap:{lvl:S.lvl,xp:S.xp,potions:S.potions,items:Object.assign({},S.items),ip:S.ip,rg:S.rg,tg:S.tg},inv:{},gear:{w:'',a:'',c:''},blue:[]};
   S.lvl=1;S.xp=0;S.potions=2;S.items={ether:0,fruit:S.items.fruit||0};S.ip=0;S.hp=maxHp();S.mp=maxMp();S.cave.f=1;S.cave.seed=(Math.random()*1e9)|0;X.form.on>0&&formEnd();
   saveGame(true);travel(12)}
@@ -2829,7 +2831,7 @@ function caveExit(win,died){const r=S.cave.run;if(!r)return;const s=r.snap;const
   S.cave.best=Math.max(S.cave.best||0,(S.cave.f||1)-(win?0:1),win?50:0);delete S.cave.run;for(const k of Object.keys(S.chests))if(k.startsWith('cv'))delete S.chests[k];
   for(const id of blue)giveGear(id,true);S.hp=maxHp();S.mp=maxMp();if(X.form.on>0)formEnd();
   X.caveLeaving=true;X.fromCave=true;
-  const msg=(win?'🏆 Alle 50 Ebenen bezwungen! ':died?'Du wurdest aus der Höhle geworfen. ':'Du verlässt die Uralte Höhle. ')+(blue.length?'Blaue Schätze behalten: '+blue.map(i=>GEAR[i].n).join(', '):'Keine blauen Schätze.');
+  const msg=(win?'🏆 Alle 50 Ebenen bezwungen! ':died?'Du wurdest aus der Höhle geworfen. ':'Du verlässt die Echogrotte. ')+(blue.length?'Blaue Schätze behalten: '+blue.map(i=>GEAR[i].n).join(', '):'Keine blauen Schätze.');
   if(curCh===12)travel(1);X.caveLeaving=false;setTimeout(()=>toast(msg),1500);saveGame(true)}
 function caveDeath(){if(!inCave())return false;pl.dead=false;pl.iframes=2;$('fade').style.opacity=0;caveExit(false,true);return true}
 function caveNext(){const f=S.cave.f||1;if(E.some(e=>e.cboss&&!e.dead))return toast('Der Wächter versperrt die Treppe');if(WLD&&WLD.seal&&WLD.seal())return toast('🔒 '+WLD.sealT());
@@ -2845,7 +2847,7 @@ function mazeGen(R,N,holes){const g=[];for(let i=0;i<N;i++){g.push([]);for(let j
    Welt 2–4 zwei, ab Welt 5 drei Ebenen. Je Ebene: Schlüssel am fernen Ende (abwechselnd hinter einem Rätsel, auf einer Sprungplattform oder versiegelt, bis alle Gegner vertrieben sind),
    daneben ein Runentor als Abkürzung zurück zum Start, dort die verschlossene Treppe. Letzte Ebene: Halle des Zwischengegners, danach das Tor nach draußen. */
 const DUNF=n=>n<=4?2:3;
-function dunEnter(n){if(MP.on||X.dun)return;const keep={};for(const k of ['a','b','m'])keep[k+n]=ED[k+n];X.dun={n,f:1,keep,ex:pl.x,ez:pl.z,seed:(Math.random()*1e9)|0,key:false};dunGo()}
+function dunEnter(n){if(MP.on||X.dun)return;for(const k in S.obst)if(k.startsWith('v'+n+'_'))delete S.obst[k];const keep={};for(const k of ['a','b','m'])keep[k+n]=ED[k+n];X.dun={n,f:1,keep,ex:pl.x,ez:pl.z,seed:(Math.random()*1e9)|0,key:false};dunGo()}
 function dunGo(){const D=X.dun;sfx('quest');$('fade').style.opacity=1;setTimeout(()=>{MP.quiet=true;try{destroyWorld();Object.assign(ED,D.keep);buildDungeon()}finally{MP.quiet=false}const sp=WLD.spawn;pl.x=sp[0];pl.z=sp[1];pl.y=0;pl.vx=pl.vz=0;pl.air=false;fel.x=pl.x+1;fel.z=pl.z+1;placeParty();lockOff();curZone='';refreshQuest();$('fade').style.opacity=0},500)}
 function dunLeave(won){const D=X.dun;if(!D)return;X.dun=null;$('fade').style.opacity=1;setTimeout(()=>{MP.quiet=true;try{destroyWorld();buildWorld(D.n)}finally{MP.quiet=false}NZ().activate(D.n);NQ.enter(D.n);WLD.jp=jumpPath(D.n);worldRule(D.n);pl.x=D.ex;pl.z=D.ez;pl.y=hgt(pl.x,pl.z);pl.vx=pl.vz=0;pl.air=false;fel.x=pl.x+1;fel.z=pl.z+1;placeParty();lockOff();curZone='';if(won)WLD.kill({mini:true});refreshQuest();$('fade').style.opacity=0;saveGame(true)},500)}
 function dunDeath(){if(!X.dun)return false;pl.dead=false;pl.iframes=2;S.hp=maxHp();S.mp=maxMp();$('fade').style.opacity=0;dunLeave(false);setTimeout(()=>toast('Du erwachst vor dem Eingang. Die Vorhallen haben sich neu geordnet.'),1500);return true}
@@ -2859,7 +2861,7 @@ function buildDungeon(){const D=X.dun,n=D.n,f=D.f,F=DUNF(n),last=f===F,C=CHP[n],
   const need=()=>last?(E.some(e=>e.mini&&!e.dead)?'Besiege '+C.M[0]+' in der Halle am Ende der Gänge.':'Der Weg ist frei: Nimm das Tor in der Halle.'):D.key?'Du hast den Schlüssel. Die Treppe liegt am Start – das Runentor bringt dich zurück.':mode==='puzzle'?'Finde die Halle am Ende der Gänge und löse das Rätsel. Dann gibt die Truhe den Schlüssel frei.':mode==='jump'?'Der Schlüssel liegt in der Halle auf der hohen Plattform. Spring von Platte zu Platte hinauf.':'Die Schlüsseltruhe ist versiegelt: Vertreibe alle Gegner dieser Ebene (noch '+E.filter(e=>!e.dead).length+').';
   WLD={n,C,h:()=>0,blocked:blk,zone:()=>'cave',ims:[],edKeys:Object.keys(D.keep),terr:null,zn:{cave:[name,'Ebene '+f+' von '+F],village:[name,''],forest:[name,''],ruin:[name,'']},path:()=>0,mbg:null,spawn:[cx(1),cz(1)],cave:true,dun:D,f,
     refresh(){$('qt').textContent=name+' · Ebene '+f+'/'+F;$('qo').textContent=need();$('qo').style.whiteSpace='pre-line'},
-    menuQuest(){return `<h3>${name}</h3><div class="row"><span>Ebene</span><span>${f} / ${F}</span></div><div class="row"><span>Schlüssel</span><span>${last?'–':D.key?'🗝️ gefunden':'fehlt'}</span></div><p style="color:var(--dim);font-size:13px">${need()} Am Start jeder Ebene steht ein Ausgangskristall; wer die Vorhallen verlässt, beginnt sie neu.</p>`},
+    menuQuest(){return `<h3>${name}</h3><div class="row"><span>Ebene</span><span>${f} / ${F}</span></div><div class="row"><span>Schlüssel</span><span>${last?'–':D.key?'🗝️ gefunden':'fehlt'}</span></div><div class="row"><span>🧩 Gelöste Rätsel (gesamt)</span><span>${(S.lf&&S.lf.pz)||0}</span></div><p style="color:var(--dim);font-size:13px">${need()} Am Start jeder Ebene steht ein Ausgangskristall; wer die Vorhallen verlässt, beginnt sie neu.</p>`},
     kill(e){if(e.mini){banner(C.M[0]+' besiegt','Das Tor nach draußen öffnet sich');sfx('level');$('boss').hidden=true;boss=null}this.refresh()},zoneEnter(){},ensureBoss(){},sealedNow:()=>false,spawnMini(){}};
   setAtmos({top:[.01,.01,.03],mid:[.03,.03,.07],hor:[.08,.07,.12],aur:[.2,.3,.5],ms:[.1,.1,.2],gr:[.02,.02,.04],moon:0x404050,mg:[0x202030,0x202030],fog:0x0a0a14,fd:.026,hemi:[0x9a9ac0,0x1a1a2a,.6],lite:[0xb0b0d0,.55],stars:0,expo:1});
   const fl=new T.Mesh(new T.PlaneGeometry(N*CS+20,N*CS+20),new T.MeshStandardMaterial({color:C.pal.arena,roughness:1}));fl.rotation.x=-Math.PI/2;fl.position.set(0,0,Z0+N*CS/2);fl.receiveShadow=true;scene.add(fl);WLD.terr=fl;
@@ -2869,8 +2871,31 @@ function buildDungeon(){const D=X.dun,n=D.n,f=D.f,F=DUNF(n),last=f===F,C=CHP[n],
   im.castShadow=true;scene.add(im);WLD.ims.push(im);
   /* Leuchtkristalle in der Farbe der Welt */
   const deco=new T.Group();scene.add(deco);for(let i=1;i<N-1;i++)for(let j=1;j<N-1;j++)if(!g[i][j]&&(i*7+j*3+f)%5===0){deco.add(mk(G.oct,M(gl,{e:gl,ei:1.6,r:.2}),cx(i)+1.9,1.1,cz(j)+1.9,.22,.5,.22,false));deco.add(glow(gl,3,cx(i)+1.9,1.2,cz(j)+1.9,.4))}
+  /* Rätselnischen (Lufia-Takt, eigene Umsetzung): Sackgassen der Gänge mit Schatz, verschlossen mit dem, was Zotik schon kann –
+     Rissmauer (Bombe), Dornen (Feuerstab), Wasser (Eisstab), zwei Fackeln vor einem Tor (Feuerstab) oder ein Schiebeblock auf eine Druckplatte (immer möglich).
+     Ab Ebene 2 ist die zweite Nische eine Kniffelkammer mit besserem Schatz. Am Block liegt ein Rücksetzstein, am Tor gibt es Hinweise in drei Stufen. */
+  const nicheC=new Set();
+  {const opts=['block'];if(S.tools.includes('bomb'))opts.push('crack');if(S.tools.includes('fire'))opts.push('thorn','torch');if(S.tools.includes('ice'))opts.push('water');
+    const dd=dead.filter(c=>Math.max(Math.abs(c[0]-hc[0]),Math.abs(c[1]-hc[1]))>2&&!(c[0]<=2&&c[1]<=2)),cnt=Math.min(dd.length,f>=2?2:1);D.got=D.got||{};
+    for(let k=0;k<cnt;k++){const [i,j]=dd.splice(R()*dd.length|0,1)[0];let di=0,dj=0;for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]])if(g[i+a]&&g[i+a][j+b]===0){di=a;dj=b}if(!di&&!dj)continue;
+      if(g[i+di*2]&&g[i+di*2][j+dj*2]===1&&g[i+di][j+dj+1]===1&&g[i+di][j+dj-1]===1&&g[i+di+1]&&g[i+di+1][j+dj]===1&&g[i+di-1]&&g[i+di-1][j+dj]===1)continue;   // Nachbarfeld muss Platz für Rätsel lassen
+      nicheC.add(i+','+j);nicheC.add((i+di)+','+(j+dj));
+      const hard=k===1,kind=hard?(opts.length>1?opts[1+(R()*(opts.length-1)|0)]:'block'):opts[R()*opts.length|0],id='v'+n+'_'+f+'_'+k,ux=di,uz=dj,c0x=cx(i),c0z=cz(j),c1x=cx(i+di),c1z=cz(j+dj),bx=c0x+ux*CS/2,bz=c0z+uz*CS/2,alongX=ux!==0;
+      const ob=(t,x,z,sub)=>{const o=obBuild(id+(sub||''),t,x,z,2.5,.5,id);if(alongX){o.hw=.5;o.hd=2.5;if(o.m)o.m.rotation.y=Math.PI/2}return o};   /* quer gebaut, bei Gängen in x-Richtung gedreht */
+      if(kind==='crack'||kind==='thorn'||kind==='water')ob(kind,bx,bz);
+      else{const gt=ob('gate',bx,bz);const tries={n:0};
+        if(kind==='torch'){const px=alongX?0:1.8,pz=alongX?1.8:0;for(const sg of [-1,1]){const t=obBuild(id+'t'+(sg>0?'a':'b'),'torch',c1x-ux*1.2+px*sg,c1z-uz*1.2+pz*sg,.3,.3,id)}}
+        else{const plx=c1x-ux*1,plz=c1z-uz*1,b0=[c1x+ux*1,c1z+uz*1];obBuild(id+'p','plate',plx,plz,.9,.9,id);const blk0=obBuild(id+'b','block',b0[0],b0[1],.9,.9,id);
+          const rx=c1x+(alongX?0:2),rz=c1z+(alongX?2:0),rs=mk(G.cyl,M(gl,{e:gl,ei:1.2,r:.3}),rx,.15,rz,.45,.3,.45,false);scene.add(rs);
+          INT.push({x:rx,z:rz,name:'Rücksetzstein',pr:'Rätsel zurücksetzen',rad:1.5,vis:()=>!gt.done,talk(){blk0.x=b0[0];blk0.z=b0[1];blk0.m.position.set(b0[0],blk0.hy,b0[1]);plateCheck();sfx('ui');toast('↺ Der Block steht wieder am Anfang')}})}
+        INT.push({x:bx-ux*.9,z:bz-uz*.9,name:'Verschlossenes Tor',pr:'Untersuchen',rad:1.9,vis:()=>!gt.done,talk(){tries.n++;const H=kind==='torch'?['Zwei Fackelhalter stehen vor dem Tor. Sie sind kalt.','Vielleicht öffnet Licht das Tor – beide Fackeln müssen brennen.','Schau zur Fackel und nutze den 🔥 Feuerstab, dann zur zweiten.']
+          :['Vor dem Tor ist eine Druckplatte in den Boden gelassen.','Ein Steinblock steht gleich daneben. Etwas Schweres muss auf die Platte.','Stell dich hinter den Block – auf die Seite weg vom Tor – und schieb ihn zum Tor hin. Verschoben? Der Rücksetzstein stellt alles zurück.'];
+          say([['Zotik',H[Math.min(2,tries.n-1)]+(tries.n<3?' (Noch einmal untersuchen für einen deutlicheren Hinweis.)':'')]])}})}
+      const chx=c0x-ux*.6,chz=c0z-uz*.6,ch=makeChest();if(hard)tintModel({root:ch},0x8ad8ff,.45);ch.position.set(chx,0,chz);ch.rotation.y=Math.atan2(ux,uz);scene.add(ch);
+      INT.push({x:chx,z:chz,name:hard?'Kniffelschatz':'Nischenschatz',pr:'Öffnen',rad:1.9,vis:()=>!D.got[id],talk(){D.got[id]=1;ch.visible=false;S.lf=S.lf||{pz:0};S.lf.pz++;const sh=hard?60+n*15:25+n*8;S.shards+=sh;let it='';
+        if(hard&&R()<.6){S.potions++;it=' und 🧪 Heiltrank'}sfx('level');emit(chx,1,chz,hard?0x8ad8ff:0xffe08a,30,4,.8,.7,2);toast((hard?'🧩 Kniffel gelöst! ':'🧩 Rätsel gelöst! ')+'+'+sh+' 💎'+it+' · gelöste Rätsel: '+S.lf.pz);saveGame(true)}})}}
   /* Gegner */
-  const cells=[];for(let i=1;i<N-1;i++)for(let j=1;j<N-1;j++)if(!g[i][j]&&dist[i][j]>3&&Math.max(Math.abs(i-hc[0]),Math.abs(j-hc[1]))>1)cells.push([i,j]);
+  const cells=[];for(let i=1;i<N-1;i++)for(let j=1;j<N-1;j++)if(!g[i][j]&&dist[i][j]>3&&Math.max(Math.abs(i-hc[0]),Math.abs(j-hc[1]))>1&&!nicheC.has(i+','+j))cells.push([i,j]);
   const ne=Math.min(9,3+f+(n>5?1:0)+(mode==='hunt'?1:0));for(let q=0;q<ne&&cells.length;q++){const [i,j]=cells.splice(R()*cells.length|0,1)[0],e=spawnEnemy(R()<.5?'a'+n:'b'+n,cx(i),cz(j));e.summoned=true}
   /* Start: Ausgangskristall und (außer auf der letzten Ebene) die verschlossene Treppe */
   const side=g[2][1]?[0,2.2]:[2.2,0],ex=cx(1)-side[0]*.8,ez=cz(1)-side[1]*.8,xc=new T.Group();xc.position.set(ex,0,ez);xc.add(mk(G.oct,M(0x6af0ff,{e:0x2ac0ff,ei:1.8}),0,1.4,0,.4,.75,.4,false));xc.add(glow(0x6af0ff,3.4,0,1.4,0,.7));scene.add(xc);
@@ -2882,7 +2907,7 @@ function buildDungeon(){const D=X.dun,n=D.n,f=D.f,F=DUNF(n),last=f===F,C=CHP[n],
     INT.push({x:sx2,z:sz2,name:'Treppe',get pr(){return D.key?'Treppe nach unten (Ebene '+(f+1)+')':'🔒 Verschlossen'},rad:2.4,talk(){if(!D.key)return say([['Zotik','Verschlossen. Der Schlüssel muss irgendwo am Ende dieser Gänge liegen.']]);D.f=f+1;dunGo()}});
     /* Halle: Schlüsseltruhe und ihr Schutz */
     let open=mode!=='puzzle',kx=hx,kz=hz-4.5,ky=0;
-    if(mode==='puzzle'){const kind=['tones','lights','statues','pairs','order','pattern','sum','dark'][(n*3+f)%8],pz=RMS().build(kind,{x0:hx-5,x1:hx+5,z0:hz-3,z1:hz+5.5},{lv:n,R,tx:kx,tz:kz},()=>{open=true;toast('🗝️ Die Schlüsseltruhe ist frei');WLD.refresh()});WLD.pz=pz}
+    if(mode==='puzzle'){const kind=['tones','lights','statues','pairs','order','pattern','sum','dark'][(n*3+f)%8],pz=RMS().build(kind,{x0:hx-5,x1:hx+5,z0:hz-3,z1:hz+5.5},{lv:n,R,tx:kx,tz:kz},()=>{open=true;S.lf=S.lf||{pz:0};S.lf.pz++;toast('🗝️ Die Schlüsseltruhe ist frei · gelöste Rätsel: '+S.lf.pz);WLD.refresh()});WLD.pz=pz}
     else if(mode==='jump'){const slab=(x,z,top,r)=>{const m=new T.Group();m.position.set(x,top,z);m.add(mk(G.cyl,M(0x8d93b0,{r:.5,m:.2}),0,-.15,0,r,.3,r));m.add(mk(G.cyl,M(gl,{e:gl,ei:1.4,r:.2}),0,-.31,0,r*.82,.05,r*.82,false));m.add(glow(gl,r*2.4,0,-.5,0,.3));scene.add(m);PLAT.push({x,z,hx:r*.86,hz:r*.86,top,th:.34})};
       slab(hx-5.2,hz+4.6,1.15,1.5);slab(hx-1.2,hz+4.6,2.3,1.5);slab(hx+2.8,hz+4.6,3.45,1.5);slab(hx+4.4,hz+.6,4.6,1.7);kx=hx+4.4;kz=hz+.2;ky=4.6;slab(kx,hz-3.6,5.6,2.3);kz=hz-3.6}
     const ch=makeChest();tintModel({root:ch},0xffd45a,.5);ch.position.set(kx,ky?5.6:0,kz);scene.add(ch);const sealG=glow(0xff5a5a,3.4,kx,(ky?5.6:0)+1,kz,.6);scene.add(sealG);
@@ -2906,9 +2931,9 @@ function buildCave(){const f=S.cave.f||1,R=mul32((S.cave.seed|0)*977+f*131),rr=(
   const blk=(x,z)=>{const [i,j]=cell(x,z);return i<0||j<0||i>=N||j>=N||g[i][j]===1};
   /* weitester Punkt = Treppe */
   const C=CHP[12];
-  WLD={n:12,C,h:()=>0,blocked:blk,zone:()=>'cave',ims:[],edKeys:[],terr:null,zn:{cave:['Uralte Höhle','Ebene '+f+' von 50'],village:['Uralte Höhle',''],forest:['Uralte Höhle',''],ruin:['Uralte Höhle','']},path:()=>0,mbg:null,spawn:[cx(1),cz(1)],cave:true,f,
-    refresh(){$('qt').textContent='Uralte Höhle · Ebene '+f;$('qo').textContent=(E.some(e=>e.cboss&&!e.dead)?'Besiege den Wächter an der Treppe.':WLD.seal&&WLD.seal()?WLD.sealT():'Finde die Treppe nach unten.')+'\nStufe '+S.lvl+' · Rekord: Ebene '+(S.cave.best||0)+(S.cave.run?' · Blaue Schätze: '+S.cave.run.blue.length:'');$('qo').style.whiteSpace='pre-line'},
-    menuQuest(){const r=S.cave.run;return `<h3>Uralte Höhle</h3><div class="row"><span>Ebene</span><span>${f} / 50</span></div><div class="row"><span>Rekord</span><span>${S.cave.best||0}</span></div><div class="row"><span>Blaue Schätze (bleiben)</span><span>${r?r.blue.map(i=>GEAR[i].n).join(', ')||'–':'–'}</span></div><p style="color:var(--dim);font-size:13px">Du beginnst mit Stufe 1 und ohne Ausrüstung. Was du in roten Truhen findest, gilt nur für diesen Lauf. Blaue Truhen behältst du. Ein Ausgangskristall steht am Start jeder Ebene.</p>`},
+  WLD={n:12,C,h:()=>0,blocked:blk,zone:()=>'cave',ims:[],edKeys:[],terr:null,zn:{cave:['Echogrotte','Ebene '+f+' von 50'],village:['Echogrotte',''],forest:['Echogrotte',''],ruin:['Echogrotte','']},path:()=>0,mbg:null,spawn:[cx(1),cz(1)],cave:true,f,
+    refresh(){$('qt').textContent='Echogrotte · Ebene '+f;$('qo').textContent=(E.some(e=>e.cboss&&!e.dead)?'Besiege den Wächter an der Treppe.':WLD.seal&&WLD.seal()?WLD.sealT():'Finde die Treppe nach unten.')+'\nStufe '+S.lvl+' · Rekord: Ebene '+(S.cave.best||0)+(S.cave.run?' · Blaue Schätze: '+S.cave.run.blue.length:'');$('qo').style.whiteSpace='pre-line'},
+    menuQuest(){const r=S.cave.run;return `<h3>Echogrotte</h3><div class="row"><span>Ebene</span><span>${f} / 50</span></div><div class="row"><span>Rekord</span><span>${S.cave.best||0}</span></div><div class="row"><span>Blaue Schätze (bleiben)</span><span>${r?r.blue.map(i=>GEAR[i].n).join(', ')||'–':'–'}</span></div><p style="color:var(--dim);font-size:13px">Du beginnst mit Stufe 1 und ohne Ausrüstung. Was du in roten Truhen findest, gilt nur für diesen Lauf. Blaue Truhen behältst du. Ein Ausgangskristall steht am Start jeder Ebene.</p>`},
     kill(e){if(e.cboss){toast('🗝️ Die Treppe ist frei');sfx('quest');$('boss').hidden=true}this.refresh()},zoneEnter(){},ensureBoss(){},sealedNow:()=>false,spawnMini(){}};
   setAtmos({top:[.01,.01,.03],mid:[.03,.03,.07],hor:[.08,.07,.12],aur:[.2,.3,.5],ms:[.1,.1,.2],gr:[.02,.02,.04],moon:0x404050,mg:[0x202030,0x202030],fog:0x0a0a14,fd:.03,hemi:[0x8a8ab0,0x1a1a2a,.55],lite:[0xb0b0d0,.5],stars:0,expo:1});
   const fl=new T.Mesh(new T.PlaneGeometry(N*CS+20,N*CS+20),new T.MeshStandardMaterial({color:pal[1],roughness:1}));fl.rotation.x=-Math.PI/2;fl.position.set(0,0,Z0+N*CS/2);fl.receiveShadow=true;scene.add(fl);WLD.terr=fl;
@@ -2954,7 +2979,7 @@ function extChest(o,r,t){
 const WCH_GEAR={2:'c_amul',3:'a_rinde',4:'w_dorn',5:'a_koralle',6:'w_glut',7:'a_frost',8:'c_glueck',9:'w_stern',10:'a_stern',11:'c_ur'};
 function extChapterDone(n){const t=CH_TOOL[n];if(t&&!S.tools.includes(t)){S.tools.push(t);setTimeout(()=>{banner('Neues Werkzeug: '+TOOLS[t].em+' '+TOOLS[t].n,'In den Werkzeug-Ruinen öffnet es neue Wege');sfx('level')},2600)}X.deck.dirty=true}
 function extArrive(n){X.lock=null;if(X.form.on>0)formEnd();X.q.length=0;
-  if(n===12&&WLD&&WLD.cave){const sp=WLD.spawn;pl.x=sp[0];pl.z=sp[1];pl.y=0;fel.x=pl.x+1;fel.z=pl.z+1;camYaw=Math.PI;placeParty();banner('Uralte Höhle','Ebene '+(S.cave.f||1)+' – Stufe 1, keine Ausrüstung')}
+  if(n===12&&WLD&&WLD.cave){const sp=WLD.spawn;pl.x=sp[0];pl.z=sp[1];pl.y=0;fel.x=pl.x+1;fel.z=pl.z+1;camYaw=Math.PI;placeParty();banner('Echogrotte','Ebene '+(S.cave.f||1)+' – Stufe 1, keine Ausrüstung')}
   else if(n===1&&X.fromCave){X.fromCave=false;pl.x=CAVE_DOOR[0];pl.z=CAVE_DOOR[1]+2.5;pl.y=hgt(pl.x,pl.z);fel.x=pl.x+1;fel.z=pl.z+1;placeParty()}}
 function extWorldBuilt(n,C,h,blk,path,R){const sp=ruinSpot(h,blk,path,R);buildRuin(n,C.pal?C.pal.rock:0x6a6c8c,sp)}
 /* ---------------- Befehlsleiste (PC) ---------------- */
@@ -3009,15 +3034,15 @@ function statLine(d){const a=[];if(d.atk)a.push('Angriff +'+d.atk);if(d.def)a.pu
 function equipHTML(){const g=gearSet(),I=invSet();let h=`<h3>Ausrüstung${inCave()?' (Höhlenlauf)':''}</h3><div class="row"><span>IP-Leiste</span><span>${Math.floor(S.ip)} / ${IPMAX}</span></div>`;
   for(const s of ['w','a','c']){const d=GEAR[g[s]];h+=`<div class="row"><span><b>${SLOTN[s]}:</b> ${d?d.n+upTag(g[s])+'<br><small style="color:var(--dim)">'+statLine(d)+' · IP '+d.ip.n+' ('+d.ip.c+')</small>':'–'}</span><span>${d?`<button class="cpb" data-uq="${s}">Ablegen</button>`:''}</span></div>`;
     for(const id of Object.keys(I).filter(k=>GEAR[k]&&GEAR[k].s===s&&k!==g[s]))h+=`<div class="row"><span>▫️ ${GEAR[id].n}${upTag(id)}${I[id]>1?' ×'+I[id]:''}<br><small style="color:var(--dim)">${statLine(GEAR[id])} · IP ${GEAR[id].ip.n}</small></span><span><button class="cpb" data-eq="${id}">Ausrüsten</button></span></div>`}
-  h+='<p style="color:var(--dim);font-size:13px">Die IP-Leiste füllt sich, wenn Zotik getroffen wird (und etwas bei eigenen Treffern). IP-Techniken: Tasten 4, 5, 6 bzw. Spezial-Taste ⟡. Ausrüstung findest du in Truhen, Läden, Werkzeug-Ruinen und blauen Truhen der Uralten Höhle.</p>';return h}
+  h+='<p style="color:var(--dim);font-size:13px">Die IP-Leiste füllt sich, wenn Zotik getroffen wird (und etwas bei eigenen Treffern). IP-Techniken: Tasten 4, 5, 6 bzw. Spezial-Taste ⟡. Ausrüstung findest du in Truhen, Läden, Werkzeug-Ruinen und blauen Truhen der Echogrotte.</p>';return h}
 function felliHTML(){const f=S.felli,st=fStage(),nx=FST[st+1];let h=`<h3>🌿 Felli · ${FST[st][0]}</h3><div class="row"><span>Stufe</span><span>${f.lv} / 20</span></div><div class="row"><span>Erfahrung</span><span>${Math.floor(f.xp)} / ${fNeed()}</span></div>
   <div class="row"><span>Angriff</span><span>${Math.round(felliDmg())}${st>=2?' (Fläche)':''}</span></div><div class="row"><span>Nächste Entwicklung</span><span>${nx?nx[0]+' ab Stufe '+nx[1]:'– voll entwickelt'}</span></div>
   <div class="row"><span>Kämpft mit</span><span><button class="cpb" id="fOn">${f.on?'an – ausschalten':'aus – einschalten'}</button></span></div><h3>Füttern</h3>
   <div class="row"><span>🧪 Heiltrank (×${S.potions})</span><span><button class="cpb" data-fd="potion">+15 EP</button></span></div><div class="row"><span>🔷 Äther (×${S.items.ether||0})</span><span><button class="cpb" data-fd="ether">+30 EP</button></span></div>
   <div class="row"><span>🍐 Kristallfrucht (×${S.items.fruit||0})</span><span><button class="cpb" data-fd="fruit">+90 EP</button></span></div><div class="row"><span>💎 50 Splitter (${S.shards})</span><span><button class="cpb" data-fd="shards">+25 EP</button></span></div>
-  <p style="color:var(--dim);font-size:13px">Felli ist dein Kapselmonster: Es kämpft an deiner Seite, lernt durch Siege und Futter und entwickelt sich: Blütling heilt dich, Dornling trifft alle Gegner um sich, Waldgeist schlägt besonders hart zu. Kristallfrüchte lassen Gegner manchmal fallen.</p>`;return h}
+  <p style="color:var(--dim);font-size:13px">Felli ist dein Seelenbegleiter: Es kämpft an deiner Seite, lernt durch Siege und Futter und entwickelt sich: Blütling heilt dich, Dornling trifft alle Gegner um sich, Waldgeist schlägt besonders hart zu. Kristallfrüchte lassen Gegner manchmal fallen.</p>`;return h}
 function extInvHTML(){let h='<h3>Werkzeuge</h3>';h+=S.tools.length?S.tools.map(t=>`<div class="row"><span>${TOOLS[t].em} ${TOOLS[t].n}</span><span>${{hook:'zieht dich zu Pfosten',bomb:'sprengt Rissmauern',fire:'brennt Ranken, zündet Fackeln',ice:'friert Wasser zu Eis'}[t]}</span></div>`).join(''):'<div class="row"><span>Noch keine (Belohnungen für Kapitel 2–5)</span></div>';
-  h+=`<div class="row"><span>🔷 Äther</span><span>× ${S.items.ether||0}</span></div><div class="row"><span>🍐 Kristallfrucht</span><span>× ${S.items.fruit||0}</span></div><div class="row"><span>🔥 Phönix-Trank</span><span>× ${S.items.phoenix||0}</span></div><div class="row"><span>🏔️ Uralte Höhle: Rekord</span><span>Ebene ${S.cave.best||0}</span></div>`;return h}
+  h+=`<div class="row"><span>🔷 Äther</span><span>× ${S.items.ether||0}</span></div><div class="row"><span>🍐 Kristallfrucht</span><span>× ${S.items.fruit||0}</span></div><div class="row"><span>🔥 Phönix-Trank</span><span>× ${S.items.phoenix||0}</span></div><div class="row"><span>🏔️ Echogrotte: Rekord</span><span>Ebene ${S.cave.best||0}</span></div>`;return h}
 function extSkillsHTML(){return `<h3>Kampf: Schwächen & Bruch</h3><div class="row"><span>🔥 ✨ 🌿 Schwäche</span><span>Das Zeichen neben der Lebensleiste zeigt die Schwäche: passende Magie +50 % Schaden</span></div><div class="row"><span>⚡ Bruch</span><span>Gelbe Leiste füllen: Gegner taumelt, +35 % Schaden</span></div><div class="row"><span>💨 Perfektes Ausweichen</span><span>Kurz vor dem Treffer ausweichen: Zeitlupe, Mana und Leisten</span></div><div class="row"><span>🔥 Kombo</span><span>Treffer in Folge erhöhen den Schaden (bis +20 %), jeder Treffer gegen dich beendet sie</span></div><h3>Neue Techniken</h3><div class="row"><span>🎯 Zielerfassung (Q)</span><span>Ziel wechseln / aus</span></div><div class="row"><span>▲ Reaktion (F)</span><span>Konter, Mondsprung, Reflektor, Finisher</span></div><div class="row"><span>🤝 Team-Angriff (T)</span><span>Teamleiste voll</span></div><div class="row"><span>⟡ Rissform (G)</span><span>${formOk(0)?'freigeschaltet':'nach Orun'}${formOk(1)?' · Sternform':''}</span></div><div class="row"><span>💚 Mondheilung</span><span>30 Mana</span></div><div class="row"><span>✴ IP-Techniken (4 5 6)</span><span>aus der Ausrüstung</span></div>`}
 function extShop(c){const tier=Math.min(10,Math.max(1,curCh===11?10:curCh)),div=document.createElement('div');div.id='shopx';div.style.cssText='display:grid;gap:8px;margin-top:8px';
   const row=(t,p,fn,dis)=>{const b=document.createElement('button');b.innerHTML=`<span>${t}</span><span>${p} 💎</span>`;b.style.cssText='display:flex;justify-content:space-between;padding:9px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(120,170,255,.14);font-weight:600';b.disabled=dis||S.shards<p;b.onclick=()=>{if(S.shards<p)return;S.shards-=p;fn();sfx('pick');saveGame(true);renderMenu('shop')};div.appendChild(b)};
@@ -3054,14 +3079,14 @@ function extUpdate(dt,frozen){
 /* ---------------- Start ---------------- */
 var CAVE_DOOR=[22,-30];
 (function lunarisExtras(){
-  /* Uralte Höhle: Eingang in Lunaris (nach Kapitel 1) */
+  /* Echogrotte: Eingang in Lunaris (nach Kapitel 1) */
   let best=[22,-30];for(let t=0;t<200;t++){const a=t*.37,r=24+t*.12,x=Math.cos(a)*r,z=-20+Math.sin(a)*r*.8;if(blocked(x,z)||hgtL(x,z)>4||COL.some(c=>Math.hypot(c.x-x,c.z-z)<c.r+3.5)||Math.hypot(x,z+18)<10||Math.hypot(x+27,z+16)<9||HOUSES.some(h=>Math.hypot(h.x-x,h.z-z)<h.R+3))continue;best=[x,z];break}
   CAVE_DOOR=best;const [x,z]=best,y=hgtL(x,z),g=new T.Group();g.position.set(x,y,z);
   g.add(mk(G.sph,M(0x55507a,{f:1}),0,1.2,-.6,3.2,2.6,2.4));g.add(mk(G.box,M(0x0a0a14),0,1.1,1.1,2.2,2.2,.3,false));g.add(glow(0x6af0ff,5,0,2.6,1.4,.5));scene.add(g);addCol(x,z-.6,2.4);
-  INT.push({x,z:z+2.2,name:'Uralte Höhle',pr:'Uralte Höhle',rad:3,talk(){
+  INT.push({x,z:z+2.2,name:'Echogrotte',pr:'Echogrotte',rad:3,talk(){
     if(S.stage<8)return say([['Zotik','Ein uralter Höhleneingang. Kalte Luft weht heraus … Erst kümmere ich mich um den Riss.']]);
-    if(MP.on)return say([['Zotik','Die Uralte Höhle betrete ich lieber allein.']]);
-    say([['Zotik',`Die Uralte Höhle: 50 Ebenen, jedes Mal anders. Drinnen fange ich bei Stufe 1 an, ohne Ausrüstung. Nur blaue Schätze darf ich behalten. Rekord: Ebene ${S.cave.best||0}.`]],null,[{t:'Betreten',fn:caveEnter},{t:'Später',fn(){}}])}});
+    if(MP.on)return say([['Zotik','Die Echogrotte betrete ich lieber allein.']]);
+    say([['Zotik',`Die Echogrotte: 50 Ebenen, jedes Mal anders. Drinnen fange ich bei Stufe 1 an, ohne Ausrüstung. Nur blaue Schätze darf ich behalten. Rekord: Ebene ${S.cave.best||0}.`]],null,[{t:'Betreten',fn:caveEnter},{t:'Später',fn(){}}])}});
   NZ().populate(1,null,mul32(7301),0x8ab0ff);
   buildRuin(1,0x6a6c8c,ruinSpot(hgtL,(x,z)=>hgtL(x,z)>8.5||x<-128||x>128||z>76||z<-232||z<-148,PATHX,mul32(4711)));
   felliLook();
