@@ -747,7 +747,7 @@ function talkBoro(){
   say([['Boro',pick(['Hammer, Amboss, Funken. Was für ein Leben!','Wenn du neue Bretter brauchst, sag Bescheid.'])]])}
 function talkFinn(){say([['Finn','Frisch aus dem Rucksack! Heiltränke, so gut wie der Mondschein.']],null,[{t:'Handeln',fn:openShop},{t:'Später',fn:()=>{}}])}
 function talkVill(n,lines){return()=>say([[n,pick(lines)]])}
-function openShop(nm,kind){menuOpen=true;for(const k in keys)keys[k]=false;$('menu').hidden=false;mState.shop=true;mState.shopKind=typeof kind==='string'?kind:'';mState.shopName=typeof nm==='string'?nm:'';renderMenu('shop')}
+function openShop(nm,kind){menuOpen=true;for(const k in keys)keys[k]=false;$('menu').hidden=false;mState.shop=true;mState.shopKind=typeof kind==='string'?kind:'';mState.shopName=typeof nm==='string'?nm:'';renderMenu('shop');MN.zone='content';MN.i=0;MN.on=document.documentElement.classList.contains('eg-pad')||REMOTE;mnMark()}
 function buy(n,c){if(S.shards<c){toast('Nicht genug Splitter');return}S.shards-=c;S.potions+=n;sfx('pick');toast('🧪 +'+n+' Heiltrank');renderMenu('shop');saveGame(true)}
 
 /* ================= XP ================= */
@@ -953,7 +953,7 @@ function remoteKey(e){const k=e.code,ok=k==='Enter'||k==='NumpadEnter',back=k===
   return true}
 addEventListener('keydown',e=>{if(mode==='flight'){keys[e.code]=true;if(REMOTE&&/^Arrow/.test(e.code))e.preventDefault();return}if(mode!=='play')return;keys[e.code]=true;if(e.code==='KeyB'&&!menuOpen&&!dlg.on&&!naut.on)XT.setBlock(true);
   if(puzOpen){if(e.code==='Escape'){e.preventDefault();closePuzzle()}return}
-  if(menuOpen){if(e.code==='Escape'||e.code==='Tab'){e.preventDefault();toggleMenu(false)}return}
+  if(menuOpen){if(e.code==='Tab'){e.preventDefault();toggleMenu(false);return}menuKey(e);return}
   if(dlg.on){if(!$('dOpts').hidden){const bs=[...$('dOpts').children],dg=/^(?:Digit|Numpad)([1-9])$/.exec(e.code),ready=!e.repeat&&performance.now()-(dlg.optT||0)>350;
       if(dg&&bs[+dg[1]-1]){e.preventDefault();if(ready)bs[+dg[1]-1].click();return}
       const mv={ArrowLeft:-1,ArrowUp:-1,KeyA:-1,KeyW:-1,ArrowRight:1,ArrowDown:1,KeyD:1,KeyS:1}[e.code];if(mv){e.preventDefault();optSel((dlg.sel||0)+mv);return}
@@ -1073,8 +1073,43 @@ function interact(){if(!nearI||dlg.on||pl.dead)return;const o=nearI;sfx('ui');
   else if(o.reward){if(S.chests[o.id])return;S.chests[o.id]=1;o.m.visible=false;const r=o.reward;let t=[];if(r.shards){S.shards+=r.shards;t.push('💎 +'+r.shards)}if(r.potions){S.potions+=r.potions;t.push('🧪 +'+r.potions)}extChest(o,r,t);sfx('pick');toast(t.join('  '));emit(o.x,hgt(o.x,o.z)+1,o.z,0xffe08a,30,5,.8,.7,2);saveGame(true)}}
 
 /* ================= Menü ================= */
-function toggleMenu(on,tab){menuOpen=on;$('menu').hidden=!on;if(on){mState.shop=false;renderMenu(tab||'quest');sfx('ui')}else{saveGame(true)}if(!on)for(const k in keys)keys[k]=false}
+function toggleMenu(on,tab){menuOpen=on;$('menu').hidden=!on;if(on){mState.shop=false;renderMenu(tab||'quest');sfx('ui');MN.zone='tabs';MN.on=document.documentElement.classList.contains('eg-pad')||REMOTE;MN.i=Math.max(0,mnItems().findIndex(b=>b.classList.contains('on')));mnMark()}else{saveGame(true)}if(!on)for(const k in keys)keys[k]=false}
 const TABS=[['quest','📜','Aufgaben'],['travel','🌍','Weltreise'],['inv','🎒','Inventar'],['equip','🛡️','Ausrüstung'],['felli','🌿','Felli'],['skills','✨','Fähigkeiten'],['help','🎮','Steuerung'],['coop','👥','Koop'],['chron','📖','Chronik'],['camp','⛺','Camp'],['events','🎉','Events'],['home','🏡','Zuhause']];
+/* Menü wie an der Konsole (Controller, Tastatur, Fernbedienung): links die Reiter, rechts der Inhalt.
+   ↑↓ Reiter wählen (Inhalt wechselt sofort) · → bzw. A in den Inhalt · im Inhalt Steuerkreuz wählt, A bestätigt/rüstet aus,
+   ← am linken Rand oder B zurück zu den Reitern · B auf den Reitern schließt · LB/RB (Q/E) Reiter vor/zurück. Maus und Touch bleiben, wie sie sind. */
+const MN={zone:'tabs',i:0,on:false};
+function mnVis(el){if(!el||el.disabled||el.hidden)return false;const r=el.getBoundingClientRect();if(r.width<4||r.height<4)return false;const cs=getComputedStyle(el);return cs.visibility!=='hidden'&&cs.display!=='none'}
+function mnItems(){if(MN.zone==='tabs')return[...$('tabs').querySelectorAll('button')].filter(mnVis);
+  return[...$('mcont').querySelectorAll('button,select,input,textarea,a[href],[data-nav]'),...document.querySelectorAll('#mbox .mb button')].filter(mnVis)}
+function mnMark(){document.querySelectorAll('#menu .pfoc').forEach(x=>x.classList.remove('pfoc'));if(!menuOpen||!MN.on)return;let l=mnItems();
+  if(MN.zone==='content'&&!l.length){MN.zone='tabs';l=mnItems()}if(MN.zone==='tabs'&&!l.length){MN.zone='content';MN.i=0;l=mnItems()}if(!l.length)return;MN.i=clamp(MN.i,0,l.length-1);const el=l[MN.i];el.classList.add('pfoc');try{el.scrollIntoView({block:'nearest',inline:'nearest'})}catch(e){}try{el.focus({preventScroll:true})}catch(e){}}
+function mnTabs(){return TABS.filter(q=>q[0]!=='travel'||S.stage>=8)}
+function mnTab(d){if(mState.shop)return;const l=mnTabs(),k=l.findIndex(q=>q[0]===mState.tab),n=l[(k+d+l.length)%l.length];sfx('ui');renderMenu(n[0]);if(MN.zone==='tabs')MN.i=mnItems().findIndex(b=>b.classList.contains('on'));else MN.i=0;mnMark()}
+function mnMove(dx,dy){const l=mnItems();if(!l.length)return;const cur=l[MN.i]||l[0];
+  if(MN.zone==='tabs'){if(dx>0){mnEnter();return}if(dy){const t=$('tabs').querySelectorAll('button').length?l:[];MN.i=clamp(MN.i+dy,0,t.length-1);const b=t[MN.i];if(b&&!b.classList.contains('on'))b.click();MN.i=mnItems().findIndex(x=>x.classList.contains('on'));if(MN.i<0)MN.i=0;mnMark()}return}
+  // Inhalt: nächstes Element in Blickrichtung (Raster, Zeilen mit mehreren Knöpfen); nichts links davon → zurück zu den Reitern
+  const c=cur.getBoundingClientRect(),cx=c.left+c.width/2,cy=c.top+c.height/2;let best=-1,bs=1e9;
+  l.forEach((el,i)=>{if(el===cur)return;const r=el.getBoundingClientRect(),x=r.left+r.width/2-cx,y=r.top+r.height/2-cy,along=dx?x*dx:y*dy;if(along<=4)return;
+    if(dx&&(r.bottom<=c.top+2||r.top>=c.bottom-2))return;const sc=along+(dx?Math.abs(y):Math.abs(x))*2.2;if(sc<bs){bs=sc;best=i}});
+  if(best<0&&dy)best=clamp(MN.i+dy,0,l.length-1);
+  if(best<0||best===MN.i){if(dx<0&&!mState.shop&&$('tabs').querySelector('button')){MN.zone='tabs';MN.i=mnItems().findIndex(b=>b.classList.contains('on'));sfx('ui')}mnMark();return}
+  MN.i=best;sfx('ui');mnMark()}
+function mnEnter(){const save=MN.i;MN.zone='content';MN.i=0;if(!mnItems().length){MN.zone='tabs';MN.i=save}else sfx('ui');mnMark()}
+function mnOk(){const el=mnItems()[MN.i];if(!el)return;if(MN.zone==='tabs'){mnEnter();return}
+  if(el.tagName==='SELECT'){el.selectedIndex=(el.selectedIndex+1)%el.options.length;el.dispatchEvent(new Event('change',{bubbles:true}));return}
+  if(el.tagName==='INPUT'&&/^(text|search|number)$/.test(el.type||'text')){el.focus();return}
+  const z=MN.zone,i=MN.i;el.click();setTimeout(()=>{if(!menuOpen)return;MN.zone=z;MN.i=i;mnMark()},40)}
+function mnBack(){if(MN.zone==='content'&&!mState.shop&&$('tabs').querySelector('button')){MN.zone='tabs';MN.i=mnItems().findIndex(b=>b.classList.contains('on'));sfx('ui');mnMark();return}toggleMenu(false)}
+function menuKey(e){const k=e.code;if(document.activeElement&&/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)&&!/^(Escape|Enter|NumpadEnter|ArrowUp|ArrowDown)$/.test(k))return false;
+  const mv={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[k];
+  if(mv){e.preventDefault();if(!MN.on){MN.on=true;mnMark();return true}mnMove(mv[0],mv[1]);return true}
+  if(k==='Enter'||k==='NumpadEnter'||k==='KeyJ'){e.preventDefault();if(e.repeat)return true;if(!MN.on){MN.on=true;mnMark();return true}mnOk();return true}
+  if(k==='Space'||k==='Backspace'||k==='Escape'||isBack(e)){e.preventDefault();if(e.repeat)return true;if(!MN.on&&k!=='Escape'){MN.on=true;mnMark();return true}mnBack();return true}
+  if(k==='KeyQ'||k==='KeyB'||k==='PageUp'){e.preventDefault();MN.on=true;mnTab(-1);return true}
+  if(k==='KeyE'||k==='Digit2'||k==='PageDown'){e.preventDefault();MN.on=true;mnTab(1);return true}
+  return false}
+addEventListener('pointerdown',e=>{if(menuOpen&&e.isTrusted&&MN.on){MN.on=false;mnMark()}},true);
 /* Kamera mit dem rechten Stick (gamepad.js liefert jedes Pad im Standard-Layout) */
 function padCam(dt){if(mode!=='play'||menuOpen||!navigator.getGamepads)return;let rx=0,ry=0;try{for(const g of navigator.getGamepads()){if(!g)continue;const x=g.axes[2]||0,y=g.axes[3]||0;if(Math.abs(x)>Math.abs(rx))rx=x;if(Math.abs(y)>Math.abs(ry))ry=y}}catch(e){return}
   const dz=v=>Math.abs(v)<.18?0:(v-Math.sign(v)*.18)/.82;rx=dz(rx);ry=dz(ry);if(rx)camYaw-=rx*2.6*dt;if(ry)camPitch=clamp(camPitch+ry*1.5*dt,.08,1.1)}
