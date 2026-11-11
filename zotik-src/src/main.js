@@ -1176,10 +1176,10 @@ function updateProjs(dt){
     if(dead){dropProj(p);projs.splice(i,1)}}
   for(let i=rings.length-1;i>=0;i--){const r=rings[i];r.t+=dt;const k=r.t/r.T;r.m.scale.setScalar(.2+(r.R)*Math.min(1,k));r.m.material.opacity=.9*(1-k);if(k>=1){scene.remove(r.m);r.m.material.dispose();rings.splice(i,1)}}
 }
-let camTarget=new T.Vector3(),camK=1;
+let camTarget=new T.Vector3(),camK=1,camAir=0;
 function updateCamera(dt){
   const ty=pl.y+1.55;camTarget.lerp(_ct.set(pl.x,ty,pl.z),1-Math.exp(-14*dt));
-  const cp=Math.cos(camPitch),dist=camDist+pl.mv*.5+(boss&&boss.awake&&!boss.dead?2.5:0);
+  const cp=Math.cos(camPitch),dist=camDist+pl.mv*.5+(boss&&boss.awake&&!boss.dead?2.5:0)+(naut.on&&nAir()?9:0);   /* Luftschiff: Kamera weiter weg, sonst verdeckt der Ballon die Sicht */
   _cp.set(camTarget.x+Math.sin(camYaw)*cp*dist,camTarget.y+Math.sin(camPitch)*dist,camTarget.z+Math.cos(camYaw)*cp*dist);
   let kFree=1;for(let k=1;k>=.22;k-=.13){const px=lerp(camTarget.x,_cp.x,k),pz=lerp(camTarget.z,_cp.z,k),py=lerp(camTarget.y,_cp.y,k);let hit=false;if(py<hgt(px,pz)+6.5){for(let i=0;i<COL.length;i++){const c=COL[i],dx=px-c.x,dz=pz-c.z,m=c.r+.7;if(dx*dx+dz*dz<m*m){hit=true;break}}if(!hit&&!inH)for(let i=0;i<CAMCOL.length;i++){const c=CAMCOL[i],dx=px-c.x,dz=pz-c.z,m=c.r+.7;if(dx*dx+dz*dz<m*m){hit=true;break}}}if(!hit){kFree=k;break}}
   camK+=(kFree-camK)*(kFree<camK?1-Math.exp(-18*dt):1-Math.exp(-2.5*dt));
@@ -1187,7 +1187,7 @@ function updateCamera(dt){
   const gh=hgt(_cp.x,_cp.z)+1.1;if(_cp.y<gh)_cp.y=gh;
   camPos.lerp(_cp,1-Math.exp(-16*dt));camera.position.copy(camPos);
   if(camShake>0){camShake=Math.max(0,camShake-dt*1.8);camera.position.x+=(Math.random()-.5)*camShake*.5;camera.position.y+=(Math.random()-.5)*camShake*.5}
-  camera.lookAt(camTarget);
+  camAir+=((naut.on&&nAir()?6:0)-camAir)*(1-Math.exp(-4*dt));camera.lookAt(camTarget.x,camTarget.y+camAir,camTarget.z);   /* Luftschiff sitzt im unteren Bilddrittel, der Blick nach vorn bleibt frei */
 }
 /* HUD */
 let lh=-1,lm=-1,lx=-1,ll=-1,lp=-1,lc=[];
@@ -2765,7 +2765,7 @@ function buildRuin(n,col,outside){const P=n+'r',spec=RUIN[n]||RUIN[1],wc=col||0x
   for(const z of [355,345]){const gx=DX[z],l=gx-2,r=gx+2;obWall((-13+l)/2,z,(l+13)/2,.5,wc);obWall((r+13)/2,z,(13-r)/2,.5,wc)}
   let gi=0;const gap=(kind,z,room)=>{const g=P+'g'+(gi++);
     const gx=DX[z];if(kind==='crack'||kind==='thorn')obBuild(g,kind,gx,z,2,.5);
-    else if(kind==='block'){obBuild(g,'gate',gx,z,2,.5,g);const rz=room;obBuild(g+'b','block',gx>0?gx-5:gx-4,rz,.9,.9);obBuild(g+'p','plate',gx>0?gx+4:gx+5,rz,.9,.9,g)}
+    else if(kind==='block'){obBuild(g,'gate',gx,z,2,.5,g);const rz=room;obBuild(g+'b','block',gx>0?gx-5:gx-4,rz,.9,.9);obBuild(g+'p','plate',gx>0?gx+3:gx+4,rz,.9,.9,g)   /* 8 m vom Block: Blöcke rutschen in 2-m-Schritten */}
     else if(kind==='torch'){obBuild(g,'gate',gx,z,2,.5,g);obBuild(g+'t1','torch',-10.5,z+1.8,.4,.4,g);obBuild(g+'t2','torch',10.5,z+1.8,.4,.4,g)}};
   const strip=(kind)=>{const g=P+'s';if(kind==='water')obBuild(g,'water',0,350,12.5,1.5);else{obBuild(g,'deep',0,350,12.5,2.5);const px=DX[345]>0?-6:6;obBuild(g+'n','post',px,346,.3,.3);obBuild(g+'s','post',px,354,.3,.3)   /* Pfosten seitlich, damit sie Tor/Ranken im Durchgang nicht verdecken */}};
   const sp=spec.slice();const k1=sp.shift();gap(k1,355,361);

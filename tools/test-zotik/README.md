@@ -14,6 +14,7 @@ node tools/test-zotik/nebenquests.cjs 1 10 # alle Nebenquest-Ketten von der Anna
 node tools/test-zotik/springen.cjs 1 10  # Springen: mit echten Tasten von Platte zu Platte bis zur Truhe, in jeder Welt
 node tools/test-zotik/dungeon.cjs 2 10   # Vorhallen: alle Ebenen je Welt – Schlüssel, Runentor, Treppe, Zwischengegner, Tor nach draußen
 node tools/test-zotik/raetsel.cjs       # neue Rätselarten in drei Schwierigkeiten und in den Ruinen der Welten 6–10 mit echten Schritten lösen
+node tools/test-zotik/ruine.cjs         # Schiebeblock erreicht in den Werkzeug-Ruinen das Siegel, das Tor öffnet sich
 node tools/test-zotik/ausbau.cjs        # Fähigkeitenbaum, Doppelsprung, Bestiarium-Belohnung, veränderte Gegner in Neues Spiel+, Auftragsfeld
 node tools/test-zotik/kuenste.cjs       # Riss-Künste: Sperre, Wirkung jedes Zaubers und jeder passiven Kunst, Ankündigung
 node tools/test-zotik/bosse.cjs 2 10     # eigene Angriffe jedes Bosses und Zwischengegners, Schildträger, Springer, Dreifachschuss
