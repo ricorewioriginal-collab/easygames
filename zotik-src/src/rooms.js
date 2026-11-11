@@ -86,7 +86,7 @@ export function createRooms({ T, mk, G, M, glow, scene, hgt, INT, anim, pl, toas
       if (solved) cr.forEach(c => c.lit(true));
       say(`🔥 Glutkristalle: Entzünde alle ${n}, bevor der erste nach ${hold} Sekunden erlischt.`);
     }
-    return { get solved() { return solved; } };
+    return { get solved() { return solved; }, solve: win };
   }
   return { build, KINDS: ['tones', 'lights', 'statues', 'pairs', 'orbs'] };
 }

@@ -149,6 +149,20 @@
    ]
   },
   {
+   "t": "Die Vorhallen (Dungeon vor dem Weltenboss)",
+   "p": [
+    "Ab Elaris liegt vor jedem Weltenboss ein Dungeon. Sobald das Rätsel der Welt gelöst ist, öffnet sich am Weg im Norden ein steinernes Tor: die Vorhallen. In Welt 2 bis 4 haben sie zwei, ab Welt 5 drei Ebenen; die Gänge ordnen sich bei jedem Besuch neu."
+   ],
+   "list": [
+    "Jede Ebene: Die Treppe nach unten liegt gleich am Start, ist aber verschlossen. Der Schlüssel liegt in einer Truhe in der großen Halle am Ende der Gänge (gelber Punkt auf der Karte).",
+    "Die Schlüsseltruhe ist je nach Ebene anders geschützt: durch ein Rätsel in der Halle (Klangplatten, Lichtplatten, Wächterstatuen oder Symbolsteine), durch einen Sprungraum (die Truhe steht auf einer hohen Plattform, vier Platten führen hinauf) oder durch ein Siegel, das erst bricht, wenn alle Gegner der Ebene vertrieben sind.",
+    "Abkürzung: Mit dem Schlüssel leuchtet in der Halle ein Runentor auf. Es bringt dich sofort zum Start zurück – und von dort auch wieder in die Halle.",
+    "Letzte Ebene: In der Halle wartet der Zwischengegner der Welt. Nach dem Sieg öffnet sich das Tor nach draußen, und der Weg zum Weltenboss ist frei.",
+    "In jeder Ebene liegt außerdem eine Truhe in einer Sackgasse. Am Start steht ein Ausgangskristall; wer die Vorhallen verlässt oder darin fällt, beginnt sie auf Ebene 1 neu und steht wieder vor dem Tor.",
+    "Im Koop-Spiel gibt es die Vorhallen nicht: Dort wartet der Zwischengegner wie bisher auf dem Weg."
+   ]
+  },
+  {
    "t": "Werkzeuge und Werkzeug-Ruinen",
    "list": [
     "🪝 Enterhaken (Belohnung Kapitel 2): zieht dich zu Pfosten.",
@@ -338,6 +352,19 @@
     "Noctaris – Der Name auf der Tür (Kirche): Türschild finden → Zwischengegner Namenloser → Wirt. Andenken. · Tinte, die bleibt (Magieladen): 7 Gegner → 1 Kernsplitter.",
     "Astralis – Der gefallene Stern (Kirche): Sternensplitter finden → Magierin. Andenken. · Flaute im Wolkenhafen (Wirtshaus): Zwischengegner Windfresser → 4 Fell.",
     "Elyndra – Echo ohne Stimme (Kirche): Zwischengegner Stimmenräuber → Gefangenes Lachen finden → Wirt. Andenken. · Der letzte Schliff (Schmiede): 8 Gegner → 2 Kernsplitter."
+   ]
+  },
+  {
+   "t": "Vorhallen: Reihenfolge der Ebenen",
+   "p": [
+    "Welche Aufgabe die Schlüsseltruhe schützt, steht je Welt fest; nur die Gänge ändern sich."
+   ],
+   "list": [
+    "Elaris: Rätsel → Halle (Wurzelkriecher). Valdoria: Sprungraum → Halle. Solmera: Jagd → Halle.",
+    "Aqualis: Rätsel → Sprungraum → Halle. Frosthain: Sprungraum → Jagd → Halle. Ignara: Jagd → Rätsel → Halle.",
+    "Noctaris: Rätsel → Sprungraum → Halle. Astralis: Sprungraum → Jagd → Halle. Elyndra: Jagd → Rätsel → Halle.",
+    "Sprungraum: Die niedrigste Platte steht an einer Wand der Halle. Drei Platten liegen in einer Reihe, dann geht es im Bogen auf die vierte und von dort auf die große Plattform mit der Truhe.",
+    "Rätsel: Klangplatten – am Lauschstein die Melodie anhören und die Platten in dieser Reihenfolge betreten. Lichtplatten – jede Platte schaltet sich und ihre Nachbarn um. Wächterstatuen – drehen, bis alle zur Truhe blicken. Symbolsteine – Paare aufdecken."
    ]
   }
  ],

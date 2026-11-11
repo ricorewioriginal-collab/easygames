@@ -628,7 +628,7 @@ function applyCos(c){applyCosF(fox,c)}
 function applyCosF(f,c){c=c||{};const m=f.mats,g=(k,d)=>{const o=COS[k].o,i=c[k];return o[i>=0&&i<o.length?i:d][1]};
   m.O.color.setHex(g('fur',0));m.OD.color.setHex(g('fur',0)).multiplyScalar(.82);m.GR.color.setHex(g('scarf',2));m.BR.color.setHex(g('outfit',0));m.PT.color.setHex(g('outfit',0)).multiplyScalar(.72);const fm=f.furMats;if(fm){for(const x of fm.O)x.color.copy(m.O.color);for(const x of fm.OD)x.color.copy(m.OD.color)}}
 let lastSave=0;
-function saveGame(quiet){if(MP.role==='guest'){if(!quiet)toast('Als Gast wird nicht gespeichert');return}try{S.x=pl.x;S.z=pl.z;S.ry=pl.face;S.snd=sndOn;S.ts=Date.now();localStorage.setItem(KEY,JSON.stringify(S));lastSave=performance.now();if(!quiet)toast('💾 Gespeichert')}catch(e){if(!quiet)toast('Speichern nicht möglich')}}
+function saveGame(quiet){if(MP.role==='guest'){if(!quiet)toast('Als Gast wird nicht gespeichert');return}try{if(X.dun){S.x=X.dun.ex;S.z=X.dun.ez}else{S.x=pl.x;S.z=pl.z}S.ry=pl.face;S.snd=sndOn;S.ts=Date.now();localStorage.setItem(KEY,JSON.stringify(S));lastSave=performance.now();if(!quiet)toast('💾 Gespeichert')}catch(e){if(!quiet)toast('Speichern nicht möglich')}}
 const maxHp=()=>100+22*(S.lvl-1)+gsum('hp'),maxMp=()=>40+8*(S.lvl-1)+gsum('mp'),atkV=()=>(12+3.2*(S.lvl-1)+(inCave()?0:(S.blade?10:0)+(S.blade2?8:0)+(S.trk?S.trk.length*1.5:0))+gsum('atk'))*formAtk()*XT.atk(),xpNeed=()=>Math.round(40+S.lvl*S.lvl*12);
 
 /* ================= UI-Helfer ================= */
@@ -821,7 +821,7 @@ function killE(e,remote){e.dead=true;e.dt=0;e.tel.visible=false;e.atk=null;sfx('
 function hurtP(dmg,fx,fz){if(CTGT){cmpHurt(CTGT,dmg);return}if(MP.tgt){mpHurt(dmg,fx,fz);return}if(pl.dash>0&&pl.iframes>0&&!pl.dead&&!MP.on)perfectDodge();if(pl.dead||pl.iframes>0||pl.hurtCd>0||XT.god())return;comboEnd();dmg=Math.max(1,Math.round(dmg*(1+.35*(S.ng||0))*(naut.on&&S.fl.naut2?NF[naut.f].dm:1)));dmg=extDmgIn(dmg);dmg=XT.dmgIn(dmg);S.hp-=dmg;extHurt(dmg);pl.hurtCd=.25;hurtFlash();sfx('hurt');dnum(pl.x,pl.y+2.3,pl.z,dmg,'p');camShake=.35;
   const d=Math.hypot(pl.x-fx,pl.z-fz)||1;pl.kx+=(pl.x-fx)/d*5;pl.kz+=(pl.z-fz)/d*5;emit(pl.x,pl.y+1,pl.z,0xff6a7a,10,3,.5,.5,5);
   if(S.hp<=0){S.hp=0;pl.dead=true;pl.atk=-1;sfx('die');$('fade').style.opacity=1;setTimeout(respawn,1600)}}
-function respawn(){if(caveDeath())return;const pal=MP.on&&MP.rp&&MP.rp.on&&!MP.rp.dead;if(MP.role!=='guest'&&!pal)hallAbort();S.hp=maxHp();S.mp=maxMp();const lost=Math.floor(S.shards*.1);S.shards-=lost;pl.x=0;pl.z=WLD?9:8;pl.dead=false;pl.vx=pl.vz=0;pl.iframes=1.5;if(boss&&!boss.dead&&!boss.dummy&&MP.role!=='guest'&&!pal){boss.hp=boss.max;boss.awake=false;boss.st='idle';boss.x=boss.wake?boss.wake[0]:ARENA.x;boss.z=boss.wake?boss.wake[1]-6:ARENA.z-6;$('boss').hidden=true}
+function respawn(){if(caveDeath()||dunDeath())return;const pal=MP.on&&MP.rp&&MP.rp.on&&!MP.rp.dead;if(MP.role!=='guest'&&!pal)hallAbort();S.hp=maxHp();S.mp=maxMp();const lost=Math.floor(S.shards*.1);S.shards-=lost;pl.x=0;pl.z=WLD?9:8;pl.dead=false;pl.vx=pl.vz=0;pl.iframes=1.5;if(boss&&!boss.dead&&!boss.dummy&&MP.role!=='guest'&&!pal){boss.hp=boss.max;boss.awake=false;boss.st='idle';boss.x=boss.wake?boss.wake[0]:ARENA.x;boss.z=boss.wake?boss.wake[1]-6:ARENA.z-6;$('boss').hidden=true}
   for(const e of E){if(!e.dead&&!e.boss&&Math.hypot(e.x-pl.x,e.z-pl.z)<30){e.st='idle'}}
   $('fade').style.opacity=0;toast(lost?`Du erwachst ${WLD?'im Dorf':'am Brunnen'} (−${lost} Splitter)`:'Du erwachst '+(WLD?'im Dorf':'am Brunnen'));saveGame(true)}
 function moveE(e,dx,dz,sp,dt){const d=Math.hypot(dx,dz)||1,nx=e.x+dx/d*sp*dt,nz=e.z+dz/d*sp*dt;if(!blocked(nx,nz)){e.x=nx;e.z=nz}else if(!blocked(nx,e.z))e.x=nx;else if(!blocked(e.x,nz))e.z=nz;pushOut(e,e.rad)}
@@ -1881,7 +1881,10 @@ function buildWorld(n){
   const place=(k,cnt,zr)=>{let c=0,t=0;while(c<cnt&&t++<500){const z=rr(zr[0],zr[1]),x=pathx(z)+rr(-32,32);if(blk(x,z)||Math.hypot(x,z+182)<36||Math.hypot(x,z)<36)continue;spawnEnemy(k,x,z);c++}};
   for(const [i,key] of [[0,'c'],[1,'d']]){const q=CR().makeExtra(n,i);if(q)mkE(key+n,[q.name,60,10,q.col],q.make,i?{base:'wolf',spd:5.4,aggro:15,rng:2.6,wind:.65,cool:1.4,sh:[n+1,n*2+3]}:{base:'rift',ranged:true,hov:1.3})}   // je Welt zwei weitere Arten
   place('a'+n,9,[-52,-112]);place('b'+n,7,[-62,-146]);if(ED['c'+n])place('c'+n,5,[-52,-104]);if(ED['d'+n])place('d'+n,5,[-96,-146]);
-  function spawnMini(){if(cs().st!==4||E.some(e=>e.mini&&!e.dead))return;const z=-136,x=pathx(z),e=spawnEnemy('m'+n,x,z);e.mini=true;e.summoned=true;e.st='chase'}
+  /* allein: der Zwischengegner wartet am Ende der Vorhallen (Eingang am Weg); im Koop wie bisher auf dem Weg */
+  let dunGate=false;
+  function spawnMini(){if(cs().st!==4||E.some(e=>e.mini&&!e.dead))return;if(!MP.on){if(dunGate)return;dunGate=true;const z=-136,x=pathx(z)+4.5,y=h(x,z),g=new T.Group(),gl=C.glowc[0];g.position.set(x,y,z);for(const sd of [-1,1])g.add(mk(G.box,M(C.pal.rock,{r:.9}),sd*1.7,1.8,0,.9,3.6,.9));g.add(mk(G.box,M(C.pal.rock,{r:.9}),0,3.9,0,4.4,.8,1));g.add(mk(G.box,M(0x05050a),0,1.7,-.1,2.5,3.4,.3,false));g.add(mk(G.oct,M(gl,{e:gl,ei:2}),0,4.9,0,.4,.6,.4,false));g.add(glow(gl,7,0,2,0.4,.6));scene.add(g);addCol(x-1.7,z,.6);addCol(x+1.7,z,.6);
+      INT.push({x,z:z+1.6,name:'Vorhallen · '+C.depthN,pr:'Betreten',rad:3,vis:()=>cs().st===4,talk(){say([['Zotik','Hinter diesem Tor liegen die Vorhallen. '+DUNF(n)+' Ebenen, und am Ende wartet '+C.M[0]+'.']],null,[{t:'Betreten',fn:()=>dunEnter(n)},{t:'Noch nicht',fn(){}}])}});return}const z=-136,x=pathx(z),e=spawnEnemy('m'+n,x,z);e.mini=true;e.summoned=true;e.st='chase'}
   /* Weltauftrag: jede Welt hat vor der Jagd eine eigene Aufgabe (sammeln, Vermisste finden, verteidigen, Champions) – Kapitel länger und abwechslungsreicher */
   const MIS={2:'collect',3:'collect',4:'rescue',5:'collect',6:'rescue',7:'defend',8:'collect',9:'defend',10:'elite'}[n],MN={collect:5,rescue:3,defend:3,elite:3}[MIS]||0,HUNT=5+Math.ceil(n/2);
   const DEFN={7:'das Druckventil',9:'die Sternwarte'}[n]||'den Altar';
@@ -2001,7 +2004,7 @@ function buildWorld(n){
   /* Siegel-Hinweis */
   let warnT=0;animObjs.push({fn(t,dt){warnT-=dt;if(mode==='play'&&sealed()&&pl.z<-138&&warnT<=0){warnT=4;toast('🔒 Ein Siegel versperrt den Weg. '+objText())}}});
   function objText(st){const s=cs();if(n===11)return endObj();if(st===undefined)st=s.st;if(st===s.st&&EPX().on)return EPX().text();
-    return[`Sprich mit ${E1[0]} ${C.at}.`,`Erkunde „${C.wildN}“ im Norden.`,(MIS&&!hunting()?misText():`Vertreibe die Gegner im Norden (${Math.min(s.k,HUNT)}/${HUNT}).`),`Löse das Rätsel: ${pzd.name}.`,`Besiege ${C.M[0]}.`,`Stelle dich ${C.X[0]} („${C.depthN}“).`,`Berichte ${E1[0]} ${C.at}.`,`Kapitel ${n} geschafft! Erkunde ${C.name} frei.`][st]}
+    return[`Sprich mit ${E1[0]} ${C.at}.`,`Erkunde „${C.wildN}“ im Norden.`,(MIS&&!hunting()?misText():`Vertreibe die Gegner im Norden (${Math.min(s.k,HUNT)}/${HUNT}).`),`Löse das Rätsel: ${pzd.name}.`,(MP.on?`Besiege ${C.M[0]}.`:`Durchquere die Vorhallen am Weg und besiege ${C.M[0]}.`),`Stelle dich ${C.X[0]} („${C.depthN}“).`,`Berichte ${E1[0]} ${C.at}.`,`Kapitel ${n} geschafft! Erkunde ${C.name} frei.`][st]}
   function refresh(){const mm=document.querySelector('#mates .m'),mp=document.querySelector('#mates .p');if(mm)mm.hidden=true;if(mp)mp.hidden=true;
     $('qt').textContent=cs().fin?`Kapitel ${n} – ${C.name}`:C.sub;$('qo').textContent=objText();$('qo').style.whiteSpace='pre-line'}
   function stage(i){cs().st=i;sfx('quest');toast('📜 '+objText().replace(/ \(.*$/,''));refresh();saveGame(true)}
@@ -2698,16 +2701,76 @@ function caveDeath(){if(!inCave())return false;pl.dead=false;pl.iframes=2;$('fad
 function caveNext(){const f=S.cave.f||1;if(E.some(e=>e.cboss&&!e.dead))return toast('Der Wächter versperrt die Treppe');if(WLD&&WLD.seal&&WLD.seal())return toast('🔒 '+WLD.sealT());
   if(f>=50){caveExit(true);return}S.cave.f=f+1;S.cave.best=Math.max(S.cave.best||0,f);sfx('quest');$('fade').style.opacity=1;
   setTimeout(()=>{MP.quiet=true;try{destroyWorld();buildCave()}finally{MP.quiet=false}const sp=WLD.spawn;pl.x=sp[0];pl.z=sp[1];pl.y=0;pl.vx=pl.vz=0;fel.x=pl.x+1;fel.z=pl.z+1;placeParty();lockOff();curZone='';refreshQuest();$('fade').style.opacity=0;saveGame(true)},500)}
+/* Labyrinth (Tiefensuche) mit ein paar Durchbrüchen; dist = Schritte ab Start (1,1), far = weitester Punkt, dead = Sackgassen */
+function mazeGen(R,N,holes){const g=[];for(let i=0;i<N;i++){g.push([]);for(let j=0;j<N;j++)g[i].push(1)}
+  const st=[[1,1]];g[1][1]=0;while(st.length){const [i,j]=st[st.length-1],nb=[[2,0],[-2,0],[0,2],[0,-2]].filter(([a,b])=>i+a>0&&i+a<N-1&&j+b>0&&j+b<N-1&&g[i+a][j+b]);if(!nb.length){st.pop();continue}const [a,b]=nb[R()*nb.length|0];g[i+a/2][j+b/2]=0;g[i+a][j+b]=0;st.push([i+a,j+b])}
+  for(let k=0;k<holes;k++){const i=1+(R()*(N-2)|0),j=1+(R()*(N-2)|0);if((i+j)%2===1&&g[i][j])g[i][j]=0}
+  const dist=g.map(r=>r.map(()=>-1)),q=[[1,1]];dist[1][1]=0;let far=[1,1],dead=[];while(q.length){const [i,j]=q.shift();let open=0;for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]]){const u=i+a,v=j+b;if(g[u]&&g[u][v]===0){open++;if(dist[u][v]<0){dist[u][v]=dist[i][j]+1;q.push([u,v]);if(dist[u][v]>dist[far[0]][far[1]])far=[u,v]}}}if(open===1&&!(i===1&&j===1))dead.push([i,j])}
+  return {g,dist,far,dead}}
+/* ---------------- Vorhallen: mehrstöckiger Dungeon vor jedem Weltenboss ----------------
+   Welt 2–4 zwei, ab Welt 5 drei Ebenen. Je Ebene: Schlüssel am fernen Ende (abwechselnd hinter einem Rätsel, auf einer Sprungplattform oder versiegelt, bis alle Gegner vertrieben sind),
+   daneben ein Runentor als Abkürzung zurück zum Start, dort die verschlossene Treppe. Letzte Ebene: Halle des Zwischengegners, danach das Tor nach draußen. */
+const DUNF=n=>n<=4?2:3;
+function dunEnter(n){if(MP.on||X.dun)return;const keep={};for(const k of ['a','b','m'])keep[k+n]=ED[k+n];X.dun={n,f:1,keep,ex:pl.x,ez:pl.z,seed:(Math.random()*1e9)|0,key:false};dunGo()}
+function dunGo(){const D=X.dun;sfx('quest');$('fade').style.opacity=1;setTimeout(()=>{MP.quiet=true;try{destroyWorld();Object.assign(ED,D.keep);buildDungeon()}finally{MP.quiet=false}const sp=WLD.spawn;pl.x=sp[0];pl.z=sp[1];pl.y=0;pl.vx=pl.vz=0;pl.air=false;fel.x=pl.x+1;fel.z=pl.z+1;placeParty();lockOff();curZone='';refreshQuest();$('fade').style.opacity=0},500)}
+function dunLeave(won){const D=X.dun;if(!D)return;X.dun=null;$('fade').style.opacity=1;setTimeout(()=>{MP.quiet=true;try{destroyWorld();buildWorld(D.n)}finally{MP.quiet=false}NZ().activate(D.n);NQ.enter(D.n);WLD.jp=jumpPath(D.n);pl.x=D.ex;pl.z=D.ez;pl.y=hgt(pl.x,pl.z);pl.vx=pl.vz=0;pl.air=false;fel.x=pl.x+1;fel.z=pl.z+1;placeParty();lockOff();curZone='';if(won)WLD.kill({mini:true});refreshQuest();$('fade').style.opacity=0;saveGame(true)},500)}
+function dunDeath(){if(!X.dun)return false;pl.dead=false;pl.iframes=2;S.hp=maxHp();S.mp=maxMp();$('fade').style.opacity=0;dunLeave(false);setTimeout(()=>toast('Du erwachst vor dem Eingang. Die Vorhallen haben sich neu geordnet.'),1500);return true}
+function buildDungeon(){const D=X.dun,n=D.n,f=D.f,F=DUNF(n),last=f===F,C=CHP[n],R=mul32((D.seed|0)*613+f*271+n*17),N=11,CS=5,X0=-N*CS/2,Z0=-100;D.key=false;
+  const MZ=mazeGen(R,N,8),g=MZ.g,dist=MZ.dist,far=MZ.far;let dead=MZ.dead.filter(c=>!(c[0]===far[0]&&c[1]===far[1])&&dist[c[0]][c[1]]>3);
+  /* am fernen Ende eine Halle (3×3 Felder) freiräumen: Rätselraum, Plattformraum oder Halle des Zwischengegners */
+  const hc=[Math.min(N-3,Math.max(2,far[0])),Math.min(N-3,Math.max(2,far[1]))];for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)g[hc[0]+a][hc[1]+b]=0;
+  const cx=i=>X0+(i+.5)*CS,cz=j=>Z0+(j+.5)*CS,cell=(x,z)=>[Math.floor((x-X0)/CS),Math.floor((z-Z0)/CS)];
+  const blk=(x,z)=>{const [i,j]=cell(x,z);return i<0||j<0||i>=N||j>=N||g[i][j]===1};
+  const hx=cx(hc[0]),hz=cz(hc[1]),gl=C.glowc[0],mode=last?'boss':['puzzle','jump','hunt'][(f+n)%3],name='Vorhallen · '+C.depthN;
+  const need=()=>last?(E.some(e=>e.mini&&!e.dead)?'Besiege '+C.M[0]+' in der Halle am Ende der Gänge.':'Der Weg ist frei: Nimm das Tor in der Halle.'):D.key?'Du hast den Schlüssel. Die Treppe liegt am Start – das Runentor bringt dich zurück.':mode==='puzzle'?'Finde die Halle am Ende der Gänge und löse das Rätsel. Dann gibt die Truhe den Schlüssel frei.':mode==='jump'?'Der Schlüssel liegt in der Halle auf der hohen Plattform. Spring von Platte zu Platte hinauf.':'Die Schlüsseltruhe ist versiegelt: Vertreibe alle Gegner dieser Ebene (noch '+E.filter(e=>!e.dead).length+').';
+  WLD={n,C,h:()=>0,blocked:blk,zone:()=>'cave',ims:[],edKeys:Object.keys(D.keep),terr:null,zn:{cave:[name,'Ebene '+f+' von '+F],village:[name,''],forest:[name,''],ruin:[name,'']},path:()=>0,mbg:null,spawn:[cx(1),cz(1)],cave:true,dun:D,f,
+    refresh(){$('qt').textContent=name+' · Ebene '+f+'/'+F;$('qo').textContent=need();$('qo').style.whiteSpace='pre-line'},
+    menuQuest(){return `<h3>${name}</h3><div class="row"><span>Ebene</span><span>${f} / ${F}</span></div><div class="row"><span>Schlüssel</span><span>${last?'–':D.key?'🗝️ gefunden':'fehlt'}</span></div><p style="color:var(--dim);font-size:13px">${need()} Am Start jeder Ebene steht ein Ausgangskristall; wer die Vorhallen verlässt, beginnt sie neu.</p>`},
+    kill(e){if(e.mini){banner(C.M[0]+' besiegt','Das Tor nach draußen öffnet sich');sfx('level');$('boss').hidden=true;boss=null}this.refresh()},zoneEnter(){},ensureBoss(){},sealedNow:()=>false,spawnMini(){}};
+  setAtmos({top:[.01,.01,.03],mid:[.03,.03,.07],hor:[.08,.07,.12],aur:[.2,.3,.5],ms:[.1,.1,.2],gr:[.02,.02,.04],moon:0x404050,mg:[0x202030,0x202030],fog:0x0a0a14,fd:.026,hemi:[0x9a9ac0,0x1a1a2a,.6],lite:[0xb0b0d0,.55],stars:0,expo:1});
+  const fl=new T.Mesh(new T.PlaneGeometry(N*CS+20,N*CS+20),new T.MeshStandardMaterial({color:C.pal.arena,roughness:1}));fl.rotation.x=-Math.PI/2;fl.position.set(0,0,Z0+N*CS/2);fl.receiveShadow=true;scene.add(fl);WLD.terr=fl;
+  let nw=0;for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(g[i][j])nw++;
+  const im=new T.InstancedMesh(new T.BoxGeometry(CS,3,CS),new T.MeshStandardMaterial({color:C.pal.rock,roughness:.95,flatShading:true}),nw);let k=0;
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(g[i][j]){_m.compose(_p.set(cx(i),1.5,cz(j)),_q.set(0,0,0,1),_s.set(1,1+R()*.25,1));im.setMatrixAt(k++,_m)}
+  im.castShadow=true;scene.add(im);WLD.ims.push(im);
+  /* Leuchtkristalle in der Farbe der Welt */
+  const deco=new T.Group();scene.add(deco);for(let i=1;i<N-1;i++)for(let j=1;j<N-1;j++)if(!g[i][j]&&(i*7+j*3+f)%5===0){deco.add(mk(G.oct,M(gl,{e:gl,ei:1.6,r:.2}),cx(i)+1.9,1.1,cz(j)+1.9,.22,.5,.22,false));deco.add(glow(gl,3,cx(i)+1.9,1.2,cz(j)+1.9,.4))}
+  /* Gegner */
+  const cells=[];for(let i=1;i<N-1;i++)for(let j=1;j<N-1;j++)if(!g[i][j]&&dist[i][j]>3&&Math.max(Math.abs(i-hc[0]),Math.abs(j-hc[1]))>1)cells.push([i,j]);
+  const ne=Math.min(9,3+f+(n>5?1:0)+(mode==='hunt'?1:0));for(let q=0;q<ne&&cells.length;q++){const [i,j]=cells.splice(R()*cells.length|0,1)[0],e=spawnEnemy(R()<.5?'a'+n:'b'+n,cx(i),cz(j));e.summoned=true}
+  /* Start: Ausgangskristall und (außer auf der letzten Ebene) die verschlossene Treppe */
+  const side=g[2][1]?[0,2.2]:[2.2,0],ex=cx(1)-side[0]*.8,ez=cz(1)-side[1]*.8,xc=new T.Group();xc.position.set(ex,0,ez);xc.add(mk(G.oct,M(0x6af0ff,{e:0x2ac0ff,ei:1.8}),0,1.4,0,.4,.75,.4,false));xc.add(glow(0x6af0ff,3.4,0,1.4,0,.7));scene.add(xc);
+  animObjs.push({fn(t){xc.children[0].rotation.y=t;xc.children[0].position.y=1.4+Math.sin(t*2)*.1}});
+  INT.push({x:ex,z:ez,name:'Ausgangskristall',pr:'Vorhallen verlassen',rad:1.8,talk(){say([['Zotik','Die Vorhallen verlassen? Beim nächsten Mal ordnen sich die Gänge neu, und ich beginne auf der ersten Ebene.']],null,[{t:'Verlassen',fn:()=>dunLeave(false)},{t:'Weiter erkunden',fn(){}}])}});
+  const rune=(x,z,to,on)=>{const m=new T.Group();m.position.set(x,0,z);m.add(mk(G.cyl,M(gl,{e:gl,ei:1.5,r:.2,t:1}),0,.04,0,1.1,.05,1.1,false));m.add(glow(gl,4,0,.8,0,.6));scene.add(m);animObjs.push({fn(){m.visible=on()}});
+    INT.push({x,z,name:'Runentor',pr:'Abkürzung nehmen',rad:1.9,vis:on,talk(){sfx('quest');emit(pl.x,1,pl.z,gl,30,5,.8,.7,2);pl.x=to[0];pl.z=to[1];pl.vx=pl.vz=0;fel.x=pl.x+1;fel.z=pl.z+1;placeParty();emit(pl.x,1,pl.z,gl,30,5,.8,.7,2)}})};
+  if(!last){const sx2=cx(1)+side[0],sz2=cz(1)+side[1],stg=new T.Group();stg.position.set(sx2,0,sz2);for(let q=0;q<4;q++)stg.add(mk(G.box,M(0x8a8aa0),0,.1,-q*.5+.8,3-q*.5,.2,.8));stg.add(mk(G.cyl,M(0x0a0a14),0,.02,0,1.4,.04,1.4,false));const lk=glow(0xff5a5a,3,0,1.2,0,.6);stg.add(lk);scene.add(stg);animObjs.push({fn(){lk.material.color.setHex(D.key?0xffe27a:0xff5a5a)}});
+    INT.push({x:sx2,z:sz2,name:'Treppe',get pr(){return D.key?'Treppe nach unten (Ebene '+(f+1)+')':'🔒 Verschlossen'},rad:2.4,talk(){if(!D.key)return say([['Zotik','Verschlossen. Der Schlüssel muss irgendwo am Ende dieser Gänge liegen.']]);D.f=f+1;dunGo()}});
+    /* Halle: Schlüsseltruhe und ihr Schutz */
+    let open=mode!=='puzzle',kx=hx,kz=hz-4.5,ky=0;
+    if(mode==='puzzle'){const kind=['tones','lights','statues','pairs'][(n+f*2)%4],pz=RMS().build(kind,{x0:hx-5,x1:hx+5,z0:hz-3,z1:hz+5.5},{lv:n,R,tx:kx,tz:kz},()=>{open=true;toast('🗝️ Die Schlüsseltruhe ist frei');WLD.refresh()});WLD.pz=pz}
+    else if(mode==='jump'){const slab=(x,z,top,r)=>{const m=new T.Group();m.position.set(x,top,z);m.add(mk(G.cyl,M(0x8d93b0,{r:.5,m:.2}),0,-.15,0,r,.3,r));m.add(mk(G.cyl,M(gl,{e:gl,ei:1.4,r:.2}),0,-.31,0,r*.82,.05,r*.82,false));m.add(glow(gl,r*2.4,0,-.5,0,.3));scene.add(m);PLAT.push({x,z,hx:r*.86,hz:r*.86,top,th:.34})};
+      slab(hx-5.2,hz+4.6,1.15,1.5);slab(hx-1.2,hz+4.6,2.3,1.5);slab(hx+2.8,hz+4.6,3.45,1.5);slab(hx+4.4,hz+.6,4.6,1.7);kx=hx+4.4;kz=hz+.2;ky=4.6;slab(kx,hz-3.6,5.6,2.3);kz=hz-3.6}
+    const ch=makeChest();tintModel({root:ch},0xffd45a,.5);ch.position.set(kx,ky?5.6:0,kz);scene.add(ch);const sealG=glow(0xff5a5a,3.4,kx,(ky?5.6:0)+1,kz,.6);scene.add(sealG);
+    const free=()=>open&&(mode!=='hunt'||!E.some(e=>!e.dead));animObjs.push({fn(){sealG.visible=!D.key&&!free();ch.visible=!D.key}});
+    INT.push({x:kx,z:kz,name:'Schlüsseltruhe',get pr(){return free()?'Schlüssel nehmen':'🔒 Versiegelt'},rad:2.4,vis:()=>!D.key&&(!ky||Math.abs(pl.y-5.6)<1),talk(){if(!free())return say([['Zotik',need()]]);D.key=true;sfx('level');toast('🗝️ Schlüssel der Ebene '+f+' gefunden');emit(kx,(ky?5.6:0)+1,kz,0xffe08a,30,5,.8,.7,2);WLD.refresh()}});
+    WLD.keyAt=[kx,kz,ky?5.6:0];
+    rune(hx-1.6,hz-1.2,[cx(1),cz(1)+.6],()=>D.key);rune(cx(1)+side[1]*.9+.2,cz(1)+side[0]*.9+.2,[hx-1.6,hz+.4],()=>D.key)}
+  else{const b=spawnEnemy('m'+n,hx,hz-2);b.mini=true;b.boss=true;b.summoned=true;b.wake=[hx,hz+2];boss=b;ARENA.x=hx;ARENA.z=hz;
+    const pt=new T.Group();pt.position.set(hx,0,hz-5.5);pt.add(mk(G.cyl,M(gl,{e:gl,ei:1.8,r:.2,t:1}),0,1.6,0,1.3,3.2,.12,false));pt.add(glow(gl,6,0,1.6,0,.6));scene.add(pt);animObjs.push({fn(){pt.visible=!E.some(e=>e.mini&&!e.dead)}});
+    INT.push({x:hx,z:hz-5.2,name:'Tor nach draußen',pr:'Hindurchgehen',rad:2.4,vis:()=>!E.some(e=>e.mini&&!e.dead),talk(){dunLeave(true)}})}
+  /* eine Truhe in einer Sackgasse */
+  if(dead.length){const [i,j]=dead[R()*dead.length|0],id=n+'dv'+f,o={id,x:cx(i),z:cz(j),m:makeChest(),reward:{shards:40+n*20+f*20,potions:f===1?1:0},pr:'Truhe öffnen'};if(S.chests[id])o.m.visible=false;o.m.position.set(o.x,0,o.z);scene.add(o.m);chests.push(o)}
+  WLD.mbg=(function(){const c=document.createElement('canvas');c.width=260;c.height=310;const x=c.getContext('2d');x.fillStyle='#0a0e24';x.fillRect(0,0,260,310);x.fillStyle='#3a3a5a';
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(!g[i][j])x.fillRect(X0+i*CS+130,Z0+j*CS+234,CS,CS);x.fillStyle='#ffe27a';x.fillRect(hx-3+130,hz-3+234,6,6);return c})();MBG=WLD.mbg;
+  WLD.refresh()}
 function buildCave(){const f=S.cave.f||1,R=mul32((S.cave.seed|0)*977+f*131),rr=(a,b)=>a+R()*(b-a),N=15,CS=5,X0=-N*CS/2,Z0=-100;
   const pal=[[0x4a4a6a,0x22223a],[0x5a3a2a,0x2a1a14],[0x2a4a5a,0x10222a],[0x4a2a5a,0x1a0a2a],[0x3a5a3a,0x142a14]][Math.floor((f-1)/10)%5];
   /* Labyrinth (Tiefensuche) + ein paar Durchbrüche */
-  const g=[];for(let i=0;i<N;i++){g.push([]);for(let j=0;j<N;j++)g[i].push(1)}
-  const st=[[1,1]];g[1][1]=0;while(st.length){const [i,j]=st[st.length-1],nb=[[2,0],[-2,0],[0,2],[0,-2]].filter(([a,b])=>i+a>0&&i+a<N-1&&j+b>0&&j+b<N-1&&g[i+a][j+b]);if(!nb.length){st.pop();continue}const [a,b]=nb[R()*nb.length|0];g[i+a/2][j+b/2]=0;g[i+a][j+b]=0;st.push([i+a,j+b])}
-  for(let k=0;k<18;k++){const i=1+(R()*(N-2)|0),j=1+(R()*(N-2)|0);if((i+j)%2===1&&g[i][j])g[i][j]=0}
+  const MZ=mazeGen(R,N,18),g=MZ.g,dist=MZ.dist,far=MZ.far;let dead=MZ.dead;
   const cx=i=>X0+(i+.5)*CS,cz=j=>Z0+(j+.5)*CS,cell=(x,z)=>[Math.floor((x-X0)/CS),Math.floor((z-Z0)/CS)];
   const blk=(x,z)=>{const [i,j]=cell(x,z);return i<0||j<0||i>=N||j>=N||g[i][j]===1};
   /* weitester Punkt = Treppe */
-  const dist=g.map(r=>r.map(()=>-1)),q=[[1,1]];dist[1][1]=0;let far=[1,1],dead=[];while(q.length){const [i,j]=q.shift();let open=0;for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]]){const u=i+a,v=j+b;if(g[u]&&g[u][v]===0){open++;if(dist[u][v]<0){dist[u][v]=dist[i][j]+1;q.push([u,v]);if(dist[u][v]>dist[far[0]][far[1]])far=[u,v]}}}if(open===1&&!(i===1&&j===1))dead.push([i,j])}
   const C=CHP[12];
   WLD={n:12,C,h:()=>0,blocked:blk,zone:()=>'cave',ims:[],edKeys:[],terr:null,zn:{cave:['Uralte Höhle','Ebene '+f+' von 50'],village:['Uralte Höhle',''],forest:['Uralte Höhle',''],ruin:['Uralte Höhle','']},path:()=>0,mbg:null,spawn:[cx(1),cz(1)],cave:true,f,
     refresh(){$('qt').textContent='Uralte Höhle · Ebene '+f;$('qo').textContent=(E.some(e=>e.cboss&&!e.dead)?'Besiege den Wächter an der Treppe.':WLD.seal&&WLD.seal()?WLD.sealT():'Finde die Treppe nach unten.')+'\nStufe '+S.lvl+' · Rekord: Ebene '+(S.cave.best||0)+(S.cave.run?' · Blaue Schätze: '+S.cave.run.blue.length:'');$('qo').style.whiteSpace='pre-line'},
@@ -2872,4 +2935,4 @@ function drawOb(mx){if(pl.z>300){mx.fillStyle='#2a2a3e';mx.fillRect(-13,333,26,3
 ensureBoss();
 camTarget.set(0,2,12);
 requestAnimationFrame(frame);
-if(/[?&]debug\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))window.__zotik={set noRender(v){frame.off=!!v},TOWN,NPC,NQ,killE,E,resetEnemy,PLAT,jump,get jp(){return WLD?WLD.jp:JP1},setCam(y,pt,di){camYaw=y;if(pt!=null)camPitch=pt;if(di!=null)camDist=di},AF,NZ,EPX,nautTo,pl,joy,inputVec,CR:()=>CR(),get goTo(){return goTo},get steer(){return steer},set steer(v){steer=v},get mode(){return mode},startDbg(){S=DEF();S.cos={fur:cr.fur,scarf:cr.scarf,outfit:cr.outfit};mode='play';begin(true)},X,OB,GEAR,TOOLS,lockCycle,doReaction,teamAttack,formStart,ipUse,useTool,toolNext,caveEnter,caveNext,caveExit,giveGear,equip,feed,felliXp,deckExec,deckMove,deckOpen,ruinGo,get CAVE_DOOR(){return CAVE_DOOR},spellHeal,useEther,fStage,findRx,proj,maxHp:()=>maxHp(),atkV:()=>atkV(),toBunt,BUNT_URL,get qLv(){return qLv},setQ,get naut(){return naut},pushOut,INST,blocked,hgt,pBlocked,COL,HOUSES,PZD,CUT,openPuzzle,closePuzzle,cutscene,joinParty,CMP,lunOpen,spawnOrun,get puzOpen(){return puzOpen},get W(){return WLD},get ch(){return curCh},INT,CHP,switchWorld,travel,ARENA,herbs,chests,drops,projs,step:(dt,n)=>{for(let i=0;i<n;i++){time+=dt;for(const o of animObjs)o.fn(time,dt);update(dt);updParticles(dt)}},cam:(y,p,d)=>{camYaw=y;camPitch=p;camDist=d},S:()=>S,pl,E,NPC,begin,say,toast,setStage,hurtP,get boss(){return boss},camera,scene,renderer,skill1,skill2,startAttack,dodge,interact,keys,MP,mpMsg,mpSend,mpHost,mpJoin,mpTick,variantCos,sharedFlat,spawnEnemy,hurtE,killE,get boss2(){return boss},toggleMenu,renderMenu,XT,XO};
+if(/[?&]debug\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))window.__zotik={set noRender(v){frame.off=!!v},TOWN,NPC,NQ,killE,E,resetEnemy,PLAT,jump,dunEnter,dunLeave,DUNF,dunWin(){if(X.dun)dunLeave(true)},get dun(){return X.dun},get WLD(){return WLD},get jp(){return WLD?WLD.jp:JP1},setCam(y,pt,di){camYaw=y;if(pt!=null)camPitch=pt;if(di!=null)camDist=di},AF,NZ,EPX,nautTo,pl,joy,inputVec,CR:()=>CR(),get goTo(){return goTo},get steer(){return steer},set steer(v){steer=v},get mode(){return mode},startDbg(){S=DEF();S.cos={fur:cr.fur,scarf:cr.scarf,outfit:cr.outfit};mode='play';begin(true)},X,OB,GEAR,TOOLS,lockCycle,doReaction,teamAttack,formStart,ipUse,useTool,toolNext,caveEnter,caveNext,caveExit,giveGear,equip,feed,felliXp,deckExec,deckMove,deckOpen,ruinGo,get CAVE_DOOR(){return CAVE_DOOR},spellHeal,useEther,fStage,findRx,proj,maxHp:()=>maxHp(),atkV:()=>atkV(),toBunt,BUNT_URL,get qLv(){return qLv},setQ,get naut(){return naut},pushOut,INST,blocked,hgt,pBlocked,COL,HOUSES,PZD,CUT,openPuzzle,closePuzzle,cutscene,joinParty,CMP,lunOpen,spawnOrun,get puzOpen(){return puzOpen},get W(){return WLD},get ch(){return curCh},INT,CHP,switchWorld,travel,ARENA,herbs,chests,drops,projs,step:(dt,n)=>{for(let i=0;i<n;i++){time+=dt;for(const o of animObjs)o.fn(time,dt);update(dt);updParticles(dt)}},cam:(y,p,d)=>{camYaw=y;camPitch=p;camDist=d},S:()=>S,pl,E,NPC,begin,say,toast,setStage,hurtP,get boss(){return boss},camera,scene,renderer,skill1,skill2,startAttack,dodge,interact,keys,MP,mpMsg,mpSend,mpHost,mpJoin,mpTick,variantCos,sharedFlat,spawnEnemy,hurtE,killE,get boss2(){return boss},toggleMenu,renderMenu,XT,XO};
