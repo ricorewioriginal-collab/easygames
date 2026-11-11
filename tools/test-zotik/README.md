@@ -15,6 +15,7 @@ node tools/test-zotik/springen.cjs 1 10  # Springen: mit echten Tasten von Platt
 node tools/test-zotik/dungeon.cjs 2 10   # Vorhallen: alle Ebenen je Welt – Schlüssel, Runentor, Treppe, Zwischengegner, Tor nach draußen
 node tools/test-zotik/raetsel.cjs       # neue Rätselarten in drei Schwierigkeiten und in den Ruinen der Welten 6–10 mit echten Schritten lösen
 node tools/test-zotik/ausbau.cjs        # Fähigkeitenbaum, Doppelsprung, Bestiarium-Belohnung, veränderte Gegner in Neues Spiel+, Auftragsfeld
+node tools/test-zotik/kuenste.cjs       # Riss-Künste: Sperre, Wirkung jedes Zaubers und jeder passiven Kunst, Ankündigung
 ```
 
 Die Tests nutzen `?debug` (`__zotik`) und schalten das Zeichnen ab (`__zotik.noRender`), damit sie auch ohne Grafikkarte schnell laufen.

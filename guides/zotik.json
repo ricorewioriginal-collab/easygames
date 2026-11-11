@@ -163,6 +163,24 @@
    ]
   },
   {
+   "t": "Riss-Künste: neue Fähigkeiten in jeder Welt",
+   "p": [
+    "Jede Welt, deren Riss du schließt, schenkt Zotik eine neue Fähigkeit – einen Zauber oder eine Kunst, die von selbst wirkt. Zauber stehen im Kommandomenü unter Magie (auf dem Handy auch im Fähigkeiten-Knopf); die Übersicht findest du im Menü unter ✨ Fähigkeiten."
+   ],
+   "list": [
+    "🌿 Dornenranke (nach Elaris, 20 Mana): Ranken treffen alle Gegner ringsum mit Natur-Schaden und halten sie 2,5 Sekunden fest.",
+    "💥 Sturzschlag (nach Valdoria): Angriff in der Luft – Zotik stürzt herab und trifft alle Gegner am Aufschlagpunkt.",
+    "🌪️ Wirbelwind (nach Solmera, 24 Mana): zieht Gegner im weiten Umkreis vor Zotik zusammen und trifft sie mit Sturm-Schaden. Ideal vor Funkenwirbel oder Sturzschlag.",
+    "❄️ Frostnadeln (nach Aqualis, 22 Mana): fünf Nadeln im Fächer; Getroffene sind 4 Sekunden lang verlangsamt.",
+    "🪶 Gleiten (nach Frosthain): Sprungtaste in der Luft halten – Zotik segelt langsam abwärts und kommt etwa doppelt so weit.",
+    "⚡ Kettenblitz (nach Ignara, 28 Mana): trifft den nächsten Gegner und springt auf bis zu drei weitere über.",
+    "🌑 Schattenschritt (nach Noctaris): Ausweichen führt durch Gegner hindurch und trifft jeden, den Zotik streift.",
+    "🌠 Sternenfall (nach Astralis, 45 Mana): Sterne schlagen auf alle Gegner im Umkreis ein.",
+    "🗡️ Weltenklinge (nach Elyndra): Die Klingenkombo bekommt einen vierten, weiten Hieb mit gut doppeltem Schaden.",
+    "Schwächen: Was du in einer Welt lernst, hilft in einer späteren. Die Wolfsartigen in Valdoria sind schwach gegen Natur, in Aqualis und Noctaris gegen Sturm, in Frosthain gegen Eis, in Elyndra gegen Licht. Das Zeichen neben der Lebensleiste zeigt die Schwäche."
+   ]
+  },
+  {
    "t": "Fähigkeitenbaum",
    "p": [
     "Im Menü unter ✨ Fähigkeiten verteilst du Punkte. Mit jeder Stufe bekommst du einen Punkt; Rang 1 einer Fähigkeit kostet einen Punkt, Rang 2 zwei und so weiter bis Rang 5."
@@ -248,7 +266,8 @@
     "Kombiniere Ausrüstung nach Bedarf: Zweiter Atem (Fuchsamulett) als Notfall-Heilung, Schutzschild oder Eiswall für harte Bosse.",
     "Erledige Nebenaufgaben im Weltenriss – jede bringt viele Splitter und ein Andenken (+1,5 Angriff).",
     "Sammle Fell, Rissstaub und Kernsplitter und lass in der Schmiede deine beste Waffe und Rüstung verstärken – +3 bringt 45 % mehr auf alle Werte. Ein Phönix-Trank im Gepäck rettet Bosskämpfe.",
-    "Fähigkeitenbaum: Die ersten Ränge sind billig. Verteile früh breit (je Rang 1 und 2) und spare erst später für Rang 4 und 5. Sprungkraft 3 mit dem Doppelsprung macht Sprungräume und Sprungpfade deutlich leichter."
+    "Fähigkeitenbaum: Die ersten Ränge sind billig. Verteile früh breit (je Rang 1 und 2) und spare erst später für Rang 4 und 5. Sprungkraft 3 mit dem Doppelsprung macht Sprungräume und Sprungpfade deutlich leichter.",
+    "Kombiniere die Riss-Künste: Wirbelwind zieht die Gegner zusammen, Dornenranke hält sie fest, dann Sturzschlag oder Sternenfall mitten hinein."
    ]
   },
   {
