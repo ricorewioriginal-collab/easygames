@@ -52,6 +52,19 @@ async function main() {
     }
     camera.position.set(0, 9, 12); camera.lookAt(0, 0.5, -5);
     info.textContent = 'Taschis ' + start + '–' + (start + count - 1);
+  } else if (mode === 'players') {
+    // Spielfiguren aus dem Charakter-Editor groß: je Preset vorn und hinten
+    sky.setPalette({ sky: [0x7fc4ec, 0xe7f6ff], fog: 0xcfeaf2, grass: 0x6fb35a }, false);
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshLambertMaterial({ color: 0x7fbf6a })); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+    Object.values(PLAYER_PRESETS).forEach((l, i) => {
+      for (const back of [0, 1]) {
+        const c = createCharacter(l, { outline: true });
+        c.root.position.set((i * 2 + back - 2.5) * 0.95, 0, 0); c.root.rotation.y = back ? Math.PI * 0.85 : -0.25;
+        scene.add(c.root); things.push(c);
+      }
+    });
+    camera.position.set(0, 1.15, 3.7); camera.lookAt(0, 0.8, 0);
+    info.textContent = 'Spielfiguren';
   } else if (mode === 'chars') {
     sky.setPalette({ sky: [0x7fc4ec, 0xe7f6ff], fog: 0xcfeaf2, grass: 0x6fb35a }, false);
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshLambertMaterial({ color: 0x7fbf6a })); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);

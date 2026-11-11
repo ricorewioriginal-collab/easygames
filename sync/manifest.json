@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "d382dcc76f14",
- "generated": "2026-11-11T22:06:23+01:00",
- "commit": "87bf138e4317e3b35614969b520795599f127edc",
+ "version": "ea23ce049f06",
+ "generated": "2026-11-11T22:10:17+01:00",
+ "commit": "4b837ac33a3ca7a35f0c9427b160ef271dc918ba",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8132,6 +8132,11 @@
    "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
   },
   {
+   "p": "riftzone/client/public/heightmap.bin",
+   "s": 1182722,
+   "h": "121bcf27e4e7d5dda62e7ed7e061d76a1f8e4dec907c9978a3a32900d5ef6d97"
+  },
+  {
    "p": "riftzone/client/src/ui/styles.css",
    "s": 30181,
    "h": "28c5e1ddb893c40dd6896ecc6a3d7d5ee09244423276d839b5aecb7a32579129"
@@ -8839,7 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256787,
-   "h": "a9bc1b90f688f263038d901b1e194ff34f2b094c5418a83adb9d4c2c6808ef9c"
+   "h": "949a1c1d402e8ef8ba6505a82cfb1a17e717db2a929f937ef32c10988c4b68ce"
   },
   {
    "p": "taschi/card.svg",
@@ -8933,8 +8938,8 @@
   },
   {
    "p": "taschi/src/engine/characters.js",
-   "s": 31935,
-   "h": "af54b0fd2ff982e4fbc5524ead3df0f045d3c2575f1aef42f42f2098003ffd22"
+   "s": 35245,
+   "h": "a34ebbc4bdedc1c9f793a08acfd723370144dde4f9f102029de0a17c110142bf"
   },
   {
    "p": "taschi/src/engine/creatures.js",
@@ -9073,8 +9078,8 @@
   },
   {
    "p": "taschi/src/ui/screens.js",
-   "s": 12803,
-   "h": "4e842b28461c138dd74151700516f52457390562b199dfb627bb2dd2800dfcd1"
+   "s": 12908,
+   "h": "4c7de4280694b7a00a4fd9bcb25a9c83b4ea2518238a8bc0da6d70f38102422a"
   },
   {
    "p": "taschi/src/ui/style.css",
