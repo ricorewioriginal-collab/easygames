@@ -52,6 +52,17 @@ window.gameSees = i => { const g = navigator.getGamepads()[0]; return g ? g.butt
 </script>
 <script src="/gamepad.js" data-pad="info"></script></body></html>`;
 
+// Spiel ohne eigene Controller-Steuerung: Fenster in der Bildmitte, schwebender Konto-Knopf in der Ecke (anmacha-cloud.js)
+const WIN = `<!doctype html><html><body style="margin:0;height:100vh;background:#123">
+<section id="win" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:320px;padding:20px;background:#234;border-radius:14px">
+<button id="go" style="display:block;width:100%;padding:12px">Los</button><button id="zur" style="display:block;width:100%;padding:12px;margin-top:8px">Zurück</button></section>
+<button id="acc" data-pad-skip aria-label="Mit Google speichern" style="position:fixed;left:8px;bottom:8px;width:40px;height:40px;z-index:2147483000">G</button>
+<script>
+window.log = []; ['go', 'zur', 'acc'].forEach(id => document.getElementById(id).onclick = () => { log.push('click:' + id); if (id === 'zur') document.getElementById('win').style.display = 'none'; });
+if (location.search.includes('esc')) addEventListener('keydown', e => { if (e.code === 'Escape') setTimeout(() => { log.push('esc'); document.getElementById('win').style.display = 'none'; }, 30); });
+</script>
+<script src="/gamepad.js"></script></body></html>`;
+
 // Nachgebauter Controller: window.fake = { id, mapping, buttons: [Zahl], axes: [Zahl] }
 const FAKE = `(() => {
   window.fake = null;
@@ -71,6 +82,7 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
     if (q.url.startsWith('/infodlg')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(INFODLG); }
     if (q.url.startsWith('/info')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end('<!doctype html><body><script>window.log=[];addEventListener("keydown",e=>log.push("key:"+e.code))</script><script src="/gamepad.js" data-pad="info" data-pad-labels="a=Springen; dpad=Auswählen; ls=Laufen"></script></body>'); }
     if (q.url.startsWith('/text')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(TEXT.replace('DATAPAD', q.url.includes('info') ? ' data-pad="info"' : '')); }
+    if (q.url.startsWith('/win')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(WIN); }
     if (q.url.startsWith('/cfg')) { r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(CFG); }
     r.setHeader('Content-Type', 'text/html'); r.end(q.url.startsWith('/only') ? '<script>window.EASYGAMES_PAD_NORMAL_ONLY=1</script><script src="/gamepad.js"></script>' : PAGE);
   }).listen(0);
@@ -275,6 +287,25 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); if (!c) fails++
     const y2 = await p2.evaluate(() => document.getElementById('dead').firstElementChild.scrollTop);
     ok(y > 100 && y2 > 50, 'rechter Stick scrollt lange Seite (' + Math.round(y) + ' px) und Fenster-Liste im Spiel (' + Math.round(y2) + ' px)');
     await p.close(); await p2.close();
+  }
+
+  // 13) Wie an der Konsole: der Konto-Knopf in der Ecke ist kein Ziel des Steuerkreuzes, B schließt das offene Fenster („Zurück“) –
+  //     aber nur, wenn das Spiel es nicht selbst schließt (nichts doppelt)
+  for (const esc of [false, true]) {
+    p = await (await b.newContext({ viewport: { width: 900, height: 600 } })).newPage(); await p.addInitScript(FAKE); await p.goto(url + 'win' + (esc ? '?esc' : ''));
+    const Z = Array(17).fill(0), tap = async i => { const bt = Z.slice(); bt[i] = 1; await set(p, { buttons: bt }); await frames(p, 3); await set(p, { buttons: Z.slice() }); await frames(p, 3); };
+    await p.evaluate(() => plug({ id: 'Std', mapping: 'standard', buttons: Array(17).fill(0), axes: [0, 0, 0, 0] })); await frames(p);
+    if (!esc) {
+      for (let i = 0; i < 5; i++) await tap(13);
+      await tap(14); await tap(13); await tap(0); await p.waitForTimeout(100);
+      const r13 = await p.evaluate(() => log.slice());
+      ok(!r13.includes('click:acc') && r13.join() === 'click:zur', 'Konto-Knopf in der Ecke ist kein Ziel des Steuerkreuzes (A drückt „Zurück“ im Fenster): ' + r13.join());
+      await p.evaluate(() => { log.length = 0; document.getElementById('win').style.display = ''; });
+    }
+    await tap(1); await p.waitForTimeout(350);
+    const rb = await p.evaluate(() => log.slice());
+    ok(rb.join() === (esc ? 'esc' : 'click:zur'), esc ? 'B: Spiel schließt sein Fenster selbst → kein zusätzlicher Klick: ' + rb.join() : 'B schließt das offene Fenster („Zurück“): ' + rb.join());
+    await p.close();
   }
 
   await b.close(); srv.close();

@@ -291,9 +291,10 @@
 
   // ---------- Knopf-Navigation mit dem Steuerkreuz ----------
   var SEL = 'button,a[href],input:not([type=hidden]),select,textarea,summary,[role=button],[role=menuitem],[role=tab],[role=option],[role=link],[onclick],[tabindex]:not([tabindex="-1"])';
-  var focusEl = null;
+  var focusEl = null, SKIP = '[data-pad-skip],button[aria-label="Mit Google speichern"]';
   function usable(e) {
     if (e === cursor || e === ring || e.disabled) return null;
+    if (e.closest && e.closest(SKIP)) return null;   // schwebende Zusatz-Knöpfe (Konto-Knopf in der Ecke): kein Ziel für das Steuerkreuz, sonst öffnet sich mitten im Spiel ein zweites Fenster
     var r = e.getBoundingClientRect();
     if (r.width < 6 || r.height < 6 || r.bottom < 0 || r.right < 0 || r.top > root.innerHeight || r.left > root.innerWidth) return null;
     var x = Math.min(Math.max(r.left + r.width / 2, 0), root.innerWidth - 1), y = Math.min(Math.max(r.top + r.height / 2, 0), root.innerHeight - 1);
@@ -331,6 +332,26 @@
       var score = along + across * 2.5; if (score < bestScore) { bestScore = score; best = c; }
     }
     return best || cur;
+  }
+  // Fenster in der Bildmitte (größter Kasten unter 92 % der Fläche) – für „B = zurück“
+  function winBox() {
+    var el0 = doc.elementFromPoint(root.innerWidth / 2, root.innerHeight / 2), box = null, full = 0.92 * root.innerWidth * root.innerHeight;
+    if (!el0 || el0 === doc.body || el0 === doc.documentElement || /^(CANVAS|IFRAME|VIDEO)$/.test(el0.tagName)) return null;
+    for (var e = el0; e && e !== doc.body && e !== doc.documentElement; e = e.parentElement) { var r = e.getBoundingClientRect(); if (r.width * r.height > full) break; box = e; }
+    return box;
+  }
+  function backBtn(box) {
+    var all = box.querySelectorAll(SEL), i, pass, t;
+    for (pass = 0; pass < 2; pass++) for (i = 0; i < all.length; i++) {   // erst „Zurück/Schließen/Abbrechen“, sonst ein einzelnes „Fertig“
+      t = ((all[i].textContent || '') + ' ' + (all[i].getAttribute('aria-label') || '') + ' ' + (all[i].title || '')).trim();
+      if (t.length < 40 && (pass ? /^\W*fertig\W*$/i : BACK_RX).test(t) && usable(all[i])) return all[i];
+    }
+    return null;
+  }
+  // Erst kurz warten: Schließt das Spiel sein Fenster selbst (Escape, nur ohne sofortige Änderung), passiert nichts doppelt
+  function backWin() {
+    var box = winBox(), b = box && backBtn(box); if (!b) return;
+    root.setTimeout(function () { var c = b.isConnected && usable(b); if (!c || dlg || osk || menu) return; clearRing(); click(b, c.x, c.y); }, 160);
   }
   function drawRing() {
     if (!focusEl) return;
@@ -480,8 +501,9 @@
         if (i === 0) aMode = 'key';
         if (!code && BIND[name]) { pressEl(i, BIND[name], true); continue; }
         var alt = (code || '').split('/');
-        alt2[i] = !send(alt[0], true) && alt[1] ? alt[1] : '';
-        if (alt2[i]) send(alt2[i], true);
+        var u1 = send(alt[0], true); alt2[i] = !u1 && alt[1] ? alt[1] : '';
+        var u2 = alt2[i] ? send(alt2[i], true) : false;
+        if (i === 1 && !u1 && !u2) backWin();   // B wie an der Konsole: schließt das offene Fenster, wenn das Spiel die Taste nicht selbst nimmt
       } else if (!s.b[i] && p.b[i]) {
         if (i === 0 && aMode === 'mouse') { var up = pointer('up', cx, cy); mouseDown = false; if (up && downEl && !pointer.ate && (up === downEl || up.contains(downEl) || downEl.contains(up))) click(up, cx, cy); downEl = null; if (!STAY) cursorUntil = now + 4000; aMode = ''; continue; }
         if (i === 0 && aMode === 'nav') { aMode = ''; continue; }
