@@ -377,7 +377,15 @@ const EXTENDED = {
 };
 
 // Final ordered catalogue (dex order identical to v1, expansion appended)
-export const SPECIES = { ...CORE, ...GENERATED, ...ANCIENTS, ...SCHNURRIK, ...EXTENDED };
+// Zotik: Klon des Fuchs-Helden aus dem Spiel „Zotik“. Bei einem missglückten Experiment unter Professor Ulmes Glaskuppel
+// riss ein Lichtspalt auf; heraus kam ein Taschi, das genauso aussieht wie Zotik. Legendär, angehängt (Dex-Nummern bleiben).
+const ZOTIK = {
+  zotik: { name: 'Zotik', type: 'normal', type2: 'feuer', color: 0xff8a22, hp: 108, atk: 122, def: 92, speed: 118, catch: .045, moves: ['hieb', 'glut', 'lichtklinge'],
+    look: { plan: 'zotik', colors: [0xff8a22, 0x2f9a45, 0xfff2dc], features: {}, size: 1.15 },
+    bio: 'Ein Fuchs mit grünem Schal und Schwert – das genaue Abbild des Abenteurers Zotik. Es entstand, als ein Experiment von Professor Ulme schiefging und ein Lichtspalt ein Spiegelbild aus einer anderen Welt nach Sonnenhain warf.',
+    behavior: 'curious', ancient: true, origin: 'Sonnenhain – Professor Ulmes Experiment' }
+};
+export const SPECIES = { ...CORE, ...GENERATED, ...ANCIENTS, ...SCHNURRIK, ...EXTENDED, ...ZOTIK };
 export const SPECIES_IDS = Object.keys(SPECIES);
 SPECIES_IDS.forEach((id, i) => {
   const s = SPECIES[id];

@@ -558,6 +558,8 @@ export class Game {
         if (q) await this.questTalk(n, P.questById(q.id));
         return;
       }
+      if (n.talk === 'zotik') return await this.zotikClone(n);
+      if (n.talk === 'parents') return await this.parentsTalk(n);
       if (n.talk === 'rival') { ch.setTalking(true, 'happy'); await this.ui.say([{ who: 'Rivale ' + RIVAL.name, text: 'Wir sehen uns weiter oben auf dem Weg!' }]); ch.setTalking(false); return; }
       if (n.talk === 'family') { ch.setTalking(true); await this.ui.say([{ who: n.name, text: 'Schön, dass du vorbeischaust! Setz dich, wir haben gerade Tee gekocht. Hast du schon ' + REGIONS[Math.min(15, r)].landmark.name + ' gesehen?' }]); ch.setTalking(false); return; }
       if (n.talk === 'assistant') { ch.setTalking(true); await this.ui.say([{ who: n.name, text: 'Der Professor ist so stolz auf dich! Wusstest du, dass Taschis schneller wachsen, wenn sie im Team mitkämpfen?' }]); ch.setTalking(false); return; }
@@ -830,6 +832,42 @@ export class Game {
       const scr = { el, onInput: (inp) => { if (inp.pressed('back')) { i = CREDITS.length; } inp.nav(); return true; } };
       this.ui.push(scr); next();
     });
+  }
+
+  // ------------------------------------------------------------------ Zotik, Eltern
+  // Zotik: Bei Professor Ulmes Experiment mit der Lichtkammer riss ein Lichtspalt auf – heraus kam ein Taschi, das genauso
+  // aussieht wie der Abenteurer Zotik aus einer anderen Welt. Legendär, kämpft erst mit Trägern des Moos-Siegels.
+  async zotikClone(n) {
+    const s = this.save, ch = n.ch, me = !!s.player?.look?.zotik;
+    if (!s.flags.zotikMet) {
+      s.flags.zotikMet = true;
+      ch.play('look', 1.4);
+      await this.ui.say([
+        { text: me ? 'Vor der Glaskuppel steht ein Fuchs mit grünem Schal und Schwert – er sieht genauso aus wie du! Er legt den Kopf schief und macht jede deiner Bewegungen nach.' : 'Vor der Glaskuppel steht ein Fuchs mit grünem Schal und einem Schwert auf dem Rücken. Er mustert dich mit leuchtend grünen Augen.' },
+        { who: 'Assistent Jo', text: 'Ah, du hast Zotik entdeckt! Das ist … unser Unfall. Professor Ulme wollte mit der Lichtkammer messen, wie stark die Bindung zwischen Mensch und Taschi ist. Dann gab es einen Knall, ein Lichtspalt ging auf – und heraus sprang er.' },
+        { who: 'Assistent Jo', text: me ? 'Er ist ein Klon von dir – ein Lichtabbild aus deiner Welt, aber ein echtes Taschi. Der Professor nennt ihn legendär. Ob er dir folgt, wenn du ihm zeigst, wer das Original ist?' : 'Er ist ein Klon: das genaue Abbild eines Abenteurers aus einer anderen Welt, aber ein echtes Taschi. Der Professor nennt ihn legendär. Gefangen hat ihn noch niemand.' }
+      ]);
+    }
+    if (!s.flags.starter || !s.team.some(m => m.hp > 0)) return this.ui.say([{ text: 'Zotik schaut auf deinen leeren Gürtel und dreht sich weg. Ohne eigenes Taschi beachtet er dich nicht.' }]);
+    if ((s.badges || 0) < 1) { ch.play('interact', 0.8); return this.ui.say([{ text: 'Zotik zieht sein Schwert ein Stück heraus – und schiebt es wieder zurück. Er kämpft nur gegen jemanden, der das Moos-Siegel von Fels-Fiete trägt.' }]); }
+    const c = await this.ui.ask([{ text: 'Zotik zieht sein Schwert. Die Klinge beginnt hell zu leuchten …' }, { text: 'Willst du gegen Zotik kämpfen?' }], ['Kämpfen', 'Später'], { cancelIndex: 1 });
+    if (c !== 0) return;
+    this.audio.sfx('encounter');
+    const res = await this.battle({ kind: 'wild', foeTeam: [makeMonster('zotik', 16, this.rng)], canRun: true, canCatch: true, ai: 2, music: 'champion' });
+    if (res.outcome === 'caught') {
+      s.legends.zotik = 'caught';
+      this.world.scene.remove(ch.root); this.world.npcs = this.world.npcs.filter(x => x !== n);
+      await this.ui.say([{ text: me ? 'Zotik reist jetzt mit dir – das Original und sein Lichtabbild, Seite an Seite.' : 'Zotik reist jetzt mit dir. Assistent Jo wird es kaum glauben!' }]);
+    } else if (res.outcome === 'win') await this.ui.say([{ text: 'Zotik springt zurück und verschwindet hinter der Glaskuppel. Bald steht er wieder davor.' }]);
+  }
+  async parentsTalk(n) {
+    const s = this.save, ch = n.ch, caught = s.legends?.zotik === 'caught' || s.dex.zotik === 2;
+    ch.setTalking(true, 'happy');
+    const lines = !s.flags.starter ? ['Guten Morgen, Schatz! Professor Ulme wartet schon vor der Glaskuppel. Heute bekommst du dein erstes Taschi!']
+      : caught ? ['Du hast den Fuchs aus dem Experiment gefangen? Dann pass gut auf ihn auf – er hat ja sonst niemanden auf dieser Welt.', 'Wir sind stolz auf dich. Komm uns besuchen, wann immer du magst!']
+      : ['Seit Professor Ulmes Experiment schaut abends ein Fuchs mit Schwert durch unser Fenster. Die Leute nennen ihn Zotik.', 'Iss ordentlich, bevor du losziehst! Und ruf an, wenn du ein Siegel gewonnen hast.'];
+    for (const t of lines) await this.ui.say([{ who: n.name, text: t }]);
+    ch.setTalking(false);
   }
 
   // ------------------------------------------------------------------ legends, caves

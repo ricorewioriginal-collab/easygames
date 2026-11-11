@@ -14,8 +14,8 @@ import { obtainableSpecies, rollEncounter } from '../src/logic/encounters.js';
 import * as P from '../src/logic/progress.js';
 
 test('catalogue keeps all 260 species with unique names and valid data', () => {
-  assert.equal(SPECIES_IDS.length, 260);
-  assert.equal(new Set(SPECIES_IDS.map(id => SPECIES[id].name)).size, 260);
+  assert.equal(SPECIES_IDS.length, 261);
+  assert.equal(new Set(SPECIES_IDS.map(id => SPECIES[id].name)).size, 261);
   for (const id of ['schnurrik', 'auraflamme', 'tiefenlied', 'sturmkron', 'mondhueter', 'glutzahn', 'plaetscher', 'samenling']) assert.ok(SPECIES[id], id);
   for (const id of SPECIES_IDS) {
     const s = SPECIES[id];

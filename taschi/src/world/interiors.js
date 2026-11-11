@@ -116,6 +116,13 @@ export function buildInterior(kind, regionId, save) {
       door(b, 0, d / 2 - 0.1, 0x6f8fa6);
       poster(group, 'Labor ' + region.professor.title, 0, 3.2, -d / 2 + 0.05, 0, '#4f6f8a');
       out.spawn = { x: 0, z: d / 2 - 1.6, ry: Math.PI }; out.exit = { x: 0, z: d / 2 - 0.5 };
+      if (regionId === 0) {   // Professor Ulmes Lichtkammer: seit dem Experiment gesprungen – daraus kam Zotik
+        b.cyl(0.95, 1.05, 0.3, 0x5d7f99, -4.6, 0.15, -1.6, 16); b.cyl(0.72, 0.72, 1.8, 0xbfe8f6, -4.6, 1.2, -1.6, 16); b.cyl(0.95, 0.95, 0.22, 0x5d7f99, -4.6, 2.2, -1.6, 16);
+        b.box(0.05, 1.1, 0.05, 0x2a2d36, -4.25, 1.3, -0.95); b.box(0.05, 0.6, 0.05, 0x2a2d36, -4.4, 1.0, -0.92); b.box(0.04, 0.45, 0.05, 0x2a2d36, -4.05, 1.55, -1.0);
+        b.box(0.3, 0.06, 0.2, 0xff8a22, -3.8, 0.03, -0.7); b.box(0.2, 0.05, 0.15, 0x2f9a45, -4.9, 0.03, -0.6);   // ein Büschel Fuchsfell und ein grüner Stofffetzen
+        out.grid.block(-4.6, -1.6, 1.1, 1.1);
+        out.interact.push({ id: 'lichtkammer', kind: 'look', x: -4.6, z: -0.2, r: 1.6, label: 'Zerbrochene Lichtkammer', text: 'Die Lichtkammer hat einen langen Sprung. Auf dem Zettel daneben steht in Professor Ulmes Schrift: „Versuch 16 – Bindungslicht verstärkt. Lichtspalt geöffnet! Ein Abbild trat heraus: Fuchs, grüner Schal, Schwert. Es ist ein Taschi – und doch ein Klon von jemandem aus einer anderen Welt. Ich nenne es Zotik.“ Auf dem Boden liegen ein Büschel orangefarbenes Fell und ein grüner Stofffetzen.' });
+      }
       if (regionId === 0) out.npcs.push({ id: 'assistant', role: 'forscher', name: 'Assistent Jo', x: 3, z: -2.4, ry: 0, talk: 'assistant' });
       out.npcs.push({ id: 'professor', role: 'professor', name: region.professor.title, x: regionId === 0 ? -1 : 0.5, z: -2.6, ry: 0, professor: true, hidden: regionId === 0 && !save?.flags?.firstQuest });
       out.interact.push({ id: 'pcLab', kind: 'dexinfo', x: 3.2, z: 0.4, r: 1.4, label: 'Forschungscomputer', prompt: 'Lesen' });
@@ -136,8 +143,13 @@ export function buildInterior(kind, regionId, save) {
       out.interact.push({ id: 'wardrobe', kind: 'wardrobe', x: -1.4, z: -3.3, r: 1.3, label: 'Kleiderschrank', prompt: 'Umkleiden' });
       door(b, 0, d / 2 - 0.1);
       out.spawn = { x: 0, z: d / 2 - 1.5, ry: Math.PI }; out.exit = { x: 0, z: d / 2 - 0.5 };
-      const fam = region.npcs.find(n => n.role === 'familie') || region.npcs[0];
-      out.npcs.push({ id: 'family', role: 'familie', name: fam.name + ' (zu Hause)', x: 1.5, z: -1.8, ry: 0, talk: 'family' });
+      if (regionId === 0) {   // dein Zuhause in Sonnenhain: deine Eltern
+        out.npcs.push({ id: 'mama', role: 'familie', name: 'Mama', x: 1.5, z: -1.8, ry: 0, talk: 'parents' });
+        out.npcs.push({ id: 'papa', role: 'familie', name: 'Papa', x: 3.6, z: -0.5, ry: -Math.PI / 2, talk: 'parents' });
+      } else {
+        const fam = region.npcs.find(n => n.role === 'familie') || region.npcs[0];
+        out.npcs.push({ id: 'family', role: 'familie', name: fam.name + ' (zu Hause)', x: 1.5, z: -1.8, ry: 0, talk: 'family' });
+      }
       out.interact.push({ id: 'tv', kind: 'look', x: 4.6, z: -3.2, r: 1.3, label: 'Fernseher', text: 'Im Fernsehen läuft eine Reportage: „Taschi-Arenen der sechzehn Regionen – wer holt sich dieses Jahr alle Siegel?“' });
       break;
     }

@@ -66,7 +66,7 @@ test('original lines and new families have three stages and are obtainable', () 
     'floeckchen', 'buddelmaus', 'wollini', 'glimmstein', 'troepfli', 'laternchen', 'summsel', 'pilzling']) {
     assert.equal(evolutionChain(id).length, 3, id);
   }
-  assert.equal(SPECIES_IDS.length, 260);
+  assert.equal(SPECIES_IDS.length, 261);
   const obtainable = obtainableSpecies();
   for (const id of ['magmadrach', 'floeckchen', 'gletscherloewe', 'pilzling', 'sporenfuerst', 'doesi', 'schlummkoloss']) assert.ok(obtainable.has(id), id + ' obtainable');
   // evolution levels rise along each line

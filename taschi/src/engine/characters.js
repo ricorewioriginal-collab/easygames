@@ -4,8 +4,9 @@
 // character costs ~13 draw calls with one shared toon material.
 import { THREE } from './three.js';
 import { Builder, matrix, capsule, lathe } from './geometry.js';
-import { toonVertexMaterial, outlineMaterial } from './materials.js';
+import { toonVertexMaterial, outlineMaterial, glowMaterial } from './materials.js';
 import { createRng, hashString } from '../core/rng.js';
+import { buildZotikRig } from './zotik.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const C = (c) => new THREE.Color(c);
@@ -16,15 +17,18 @@ export const HAIR_COLORS = [0x3b2a22, 0x6b4128, 0xa86a3a, 0xe0b35a, 0x1d1d26, 0x
 export const OUTFIT_COLORS = [0xd8483a, 0x3a7fd0, 0x2fa07a, 0xf0a030, 0x7d4fa3, 0xe86aa0, 0x3a4a5a, 0xf2efe6];
 export const HAIR_STYLES = ['short', 'spiky', 'ponytail', 'long', 'bun', 'bob', 'curly', 'twin'];
 
-// Player trainer looks, one per gender choice in the character creator.
-// Cap, short-sleeved jacket over a shirt, fingerless gloves, ball belt and
-// backpack: the classic travelling-trainer silhouette in TASCHI's own colours.
+// Player looks, one per gender choice in the character creator. TASCHI's own
+// modern explorer: long-sleeved softshell jacket with stand collar, diagonal
+// zip and shoulder panels, explorer goggles on a headband, leather bracers,
+// a cross-body strap, a utility belt with a small glowing "Licht" lantern and
+// capsule pouches, a roll-top backpack, cargo pockets and hiking boots.
+// (Internal keys stay 'trainer'/'trainercap' so existing saves keep working.)
 export const GENDERS = [['m', 'Männlich'], ['w', 'Weiblich'], ['d', 'Divers']];
 export const BODY_FOR_GENDER = { m: 'teenM', w: 'teenF', d: 'teen' };
 export const PLAYER_PRESETS = {
-  m: { name: 'Rio', gender: 'm', body: 'teenM', skin: 1, hair: 'spiky', hairColor: 4, top: 'trainer', topColor: 1, accent: 0xf2efe6, inner: 0x2a2d36, bottom: 'pants', bottomColor: 0x34465f, hat: 'trainercap', hatColor: 0xd8483a, capFront: 0xf2efe6, gloves: 0x2fa07a, belt: 0x5a4030, backpack: 0x2fa07a, shoes: 0x3a3330 },
-  w: { name: 'Mila', gender: 'w', body: 'teenF', skin: 0, hair: 'ponytail', hairColor: 2, top: 'trainer', topColor: 5, accent: 0xf2efe6, inner: 0x3a4a5a, bottom: 'skirt', bottomColor: 0x2f3e55, hat: 'trainercap', hatColor: 0xf2efe6, capFront: 0xe86aa0, gloves: 0xf2efe6, belt: 0x3a3048, backpack: 0xf2c94a, shoes: 0xe86aa0, lashes: true },
-  d: { name: 'Juna', gender: 'd', body: 'teen', skin: 3, hair: 'bob', hairColor: 8, top: 'trainer', topColor: 2, accent: 0xf0a030, inner: 0xf2efe6, bottom: 'shorts', bottomColor: 0x3a3048, hat: 'beanie', hatColor: 0xf0a030, gloves: 0x3a4a5a, belt: 0x4a3a2a, backpack: 0x3a7fd0, shoes: 0x3a3330 }
+  m: { name: 'Rio', gender: 'm', body: 'teenM', skin: 1, hair: 'spiky', hairColor: 4, top: 'trainer', topColor: 0x2e6e78, accent: 0xf0a030, inner: 0x2a2d36, bottom: 'pants', bottomColor: 0x4a4a3a, hat: 'trainercap', hatColor: 0x2a2d36, capFront: 0x8ff0ff, gloves: 0x8a5a3a, belt: 0x5a4030, backpack: 0xd8642a, shoes: 0x5a4030 },
+  w: { name: 'Mila', gender: 'w', body: 'teenF', skin: 0, hair: 'ponytail', hairColor: 2, top: 'trainer', topColor: 0xd9573f, accent: 0xf2e2c4, inner: 0x3a4a5a, bottom: 'pants', bottomColor: 0x3a3048, hat: 'trainercap', hatColor: 0xf2e2c4, capFront: 0xffc86a, gloves: 0x6a4a3a, belt: 0x3a3048, backpack: 0x2f8a7a, shoes: 0x6a4a3a, lashes: true },
+  d: { name: 'Juna', gender: 'd', body: 'teen', skin: 3, hair: 'bob', hairColor: 8, top: 'trainer', topColor: 0x6a7a3a, accent: 0xf0a030, inner: 0xf2efe6, bottom: 'shorts', bottomColor: 0x3a3048, hat: 'beanie', hatColor: 0xf0a030, gloves: 0x3a4a5a, belt: 0x4a3a2a, backpack: 0x3a7fd0, shoes: 0x3a3330 }
 };
 
 const BODY = {
@@ -72,6 +76,9 @@ export function lookForRole(role, name = '', regionPal = null) {
   }
 }
 
+let LANTERN = null;
+function lanternGlow() { return LANTERN || (LANTERN = glowMaterial(0xffd27a, 0.95)); }
+
 // ---------------------------------------------------------------------------
 function partMesh(builder, outline = false) {
   const g = builder.build();
@@ -86,6 +93,7 @@ function partMesh(builder, outline = false) {
 }
 
 export function createCharacter(lookIn, { outline = false } = {}) {
+  if (lookIn && lookIn.zotik) return createZotik(outline);
   const L = resolveLook(lookIn);
   const P = BODY[L.body] || BODY.adult;
   const s = P.h / 1.72, w = P.w;
@@ -115,17 +123,26 @@ export function createCharacter(lookIn, { outline = false } = {}) {
   hb.add(capsule(0.15 * s * w * hipW, 0.05 * s, 10, 3), L.bottom === 'skirt' || L.top === 'dress' ? top : L.bottomColor, matrix(0, -0.02 * s, 0, 0, 0, Math.PI / 2, 1, 1, 0.75));
   if (L.bottom === 'skirt' || L.top === 'dress') hb.add(new THREE.CylinderGeometry(0.16 * s * w, 0.27 * s * w, 0.34 * s, 12, 1, true), L.top === 'dress' ? top : L.bottomColor, matrix(0, -0.16 * s, 0));
   if (L.apron) hb.box(0.26 * s * w, 0.38 * s, 0.02, L.apron, 0, -0.12 * s, 0.13 * s * w);
+  let lantern = null;
   if (L.belt) {
-    // belt with three ball pouches on the front
-    hb.add(new THREE.TorusGeometry(0.15 * s * w * hipW, 0.022 * s, 4, 18), L.belt, matrix(0, 0.03 * s, 0, Math.PI / 2, 0, 0, 1, 0.76, 1));
-    hb.box(0.06 * s, 0.05 * s, 0.02 * s, 0xd8c070, 0, 0.03 * s, 0.12 * s * w * hipW);
-    for (const k of [-1, 0, 1]) {
-      const a = 0.9 + k * 0.32, bx = Math.sin(a) * 0.155 * s * w * hipW, bz = Math.cos(a) * 0.12 * s * w * hipW;
-      hb.add(new THREE.SphereGeometry(0.03 * s, 8, 4, 0, Math.PI * 2, 0, Math.PI / 2), 0xe9523f, matrix(bx, 0.03 * s, bz));
-      hb.add(new THREE.SphereGeometry(0.03 * s, 8, 4, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), 0xf2efe6, matrix(bx, 0.03 * s, bz));
+    // utility belt: flat buckle, two upright capsule pouches on the right hip, a small "Licht" lantern on the left
+    const R = 0.15 * s * w * hipW, onBelt = (a, d = 0) => [Math.sin(a) * (R + d), Math.cos(a) * (R * 0.8 + d)];
+    hb.add(new THREE.TorusGeometry(R, 0.026 * s, 4, 18), L.belt, matrix(0, 0.03 * s, 0, Math.PI / 2, 0, 0, 1, 0.76, 1));
+    hb.box(0.07 * s, 0.045 * s, 0.02 * s, 0x9aa3ad, 0, 0.03 * s, 0.12 * s * w * hipW);
+    for (const a of [-1.05, -1.5]) {
+      const [bx, bz] = onBelt(a, 0.012 * s);
+      hb.add(capsule(0.024 * s, 0.05 * s, 8, 2), shade(L.belt, 1.25), matrix(bx, 0.02 * s, bz));
+      hb.cyl(0.026 * s, 0.026 * s, 0.012 * s, 0x8ff0ff, bx, 0.02 * s, bz, 8);
     }
+    const [lx, lz] = onBelt(1.25, 0.03 * s);
+    hb.cyl(0.03 * s, 0.03 * s, 0.012 * s, 0x3a3d45, lx, 0.0, lz, 8);
+    hb.cyl(0.03 * s, 0.03 * s, 0.012 * s, 0x3a3d45, lx, -0.075 * s, lz, 8);
+    hb.add(new THREE.TorusGeometry(0.018 * s, 0.005 * s, 4, 8), 0x3a3d45, matrix(lx, 0.015 * s, lz));
+    lantern = new THREE.Mesh(new THREE.CylinderGeometry(0.024 * s, 0.024 * s, 0.065 * s, 8), lanternGlow());
+    lantern.position.set(lx, -0.037 * s, lz);
   }
   hips.add(partMesh(hb, outline));
+  if (lantern) hips.add(lantern);
 
   // --- torso
   const tb = new Builder();
@@ -136,12 +153,23 @@ export function createCharacter(lookIn, { outline = false } = {}) {
     tb.box(0.24 * s * w, 0.06 * s, 0.25 * s * w * 0.7, accent, 0, 0.52 * s, 0);
   }
   if (L.top === 'trainer') {
-    // open short-sleeved jacket: shirt visible in front, collar, hem band
-    tb.box(0.17 * s * w, 0.44 * s, 0.03, L.inner, 0, 0.3 * s, chestR * 0.71);
-    for (const sx of [-1, 1]) tb.box(0.022 * s, 0.46 * s, 0.03, accent, sx * 0.095 * s * w, 0.3 * s, chestR * 0.72);
-    tb.add(new THREE.TorusGeometry(0.11 * s, 0.035 * s, 5, 14, Math.PI * 1.4), accent, matrix(0, 0.57 * s, -0.01, Math.PI / 2 - 0.3, 0, Math.PI * 0.8));
-    tb.add(new THREE.CylinderGeometry(0.15 * s * w, 0.14 * s * w, 0.06 * s, 14, 1, true), shade(top, 0.78), matrix(0, 0.04 * s, 0, 0, 0, 0, 1, 1, 0.74));
-    for (const sx of [-1, 1]) tb.box(0.06 * s, 0.05 * s, 0.02, shade(top, 0.82), sx * 0.12 * s * w, 0.16 * s, chestR * 0.64);
+    // explorer softshell: shoulder yoke in the accent colour, high stand collar with a glimpse of the shirt,
+    // diagonal zip from the collar to the hip, chest pocket, longer hem band and a cross-body strap
+    tb.add(lathe([[0.155 * w, 0.4], [0.18 * w, 0.44], [0.172 * w, 0.5], [0.115 * w, 0.585]].map(([r, y]) => [r * s, y * s]), 14), accent, matrix(0, 0, 0, 0, 0, 0, 1.02, 1, 0.75));
+    tb.add(new THREE.CylinderGeometry(0.085 * s, 0.1 * s, 0.09 * s, 12, 1, true), accent, matrix(0, 0.61 * s, -0.005 * s, 0, 0, 0, 1, 1, 0.92));
+    tb.box(0.05 * s, 0.05 * s, 0.02, L.inner, 0, 0.6 * s, 0.088 * s);
+    tb.add(new THREE.BoxGeometry(0.018 * s, 0.5 * s, 0.025), shade(top, 0.62), matrix(0.03 * s, 0.31 * s, chestR * 0.73, 0, 0, -0.16));
+    tb.box(0.012 * s, 0.035 * s, 0.03, 0xd8dee6, 0.068 * s, 0.53 * s, chestR * 0.76);
+    tb.box(0.075 * s, 0.065 * s, 0.02, shade(top, 0.84), -0.085 * s * w, 0.36 * s, chestR * 0.7);
+    tb.box(0.075 * s, 0.012 * s, 0.025, accent, -0.085 * s * w, 0.395 * s, chestR * 0.71);
+    tb.add(new THREE.CylinderGeometry(0.152 * s * w, 0.16 * s * w, 0.09 * s, 14, 1, true), shade(top, 0.8), matrix(0, -0.0 * s, 0, 0, 0, 0, 1, 1, 0.76));
+    if (L.belt) {
+      // cross-body strap from the right shoulder to the left hip, round buckle on the chest
+      const st = shade(L.belt, 0.95);
+      tb.add(new THREE.BoxGeometry(0.035 * s, 0.62 * s, 0.025), st, matrix(0, 0.3 * s, chestR * 0.76, 0, 0, 0.62));
+      tb.add(new THREE.BoxGeometry(0.035 * s, 0.62 * s, 0.025), st, matrix(0, 0.3 * s, -chestR * 0.74, 0, 0, -0.62));
+      tb.cyl(0.026 * s, 0.026 * s, 0.015 * s, 0x9aa3ad, 0.0, 0.3 * s, chestR * 0.78, 10);
+    }
   }
   if (L.top === 'hoodie') { tb.add(new THREE.TorusGeometry(0.11 * s, 0.04 * s, 5, 14), shade(top, 0.9), matrix(0, 0.56 * s, -0.02, Math.PI / 2, 0, 0)); tb.box(0.18 * s, 0.1 * s, 0.03, shade(top, 0.85), 0, 0.18 * s, chestR * 0.7); }
   if (L.top === 'vest') { tb.box(0.08 * s, 0.5 * s, 0.02, accent, 0.05 * s, 0.28 * s, chestR * 0.72); tb.box(0.08 * s, 0.5 * s, 0.02, accent, -0.05 * s, 0.28 * s, chestR * 0.72); }
@@ -156,6 +184,13 @@ export function createCharacter(lookIn, { outline = false } = {}) {
     tb.box(0.2 * s, 0.1 * s, 0.05 * s, shade(L.backpack, 0.8), 0, 0.22 * s, -0.25 * s);
     tb.box(0.03 * s, 0.4 * s, 0.03 * s, shade(L.backpack, 0.7), 0.09 * s, 0.35 * s, 0.11 * s);
     tb.box(0.03 * s, 0.4 * s, 0.03 * s, shade(L.backpack, 0.7), -0.09 * s, 0.35 * s, 0.11 * s);
+    if (L.top === 'trainer') {
+      // roll-top with a buckle strap and a bedroll on top
+      tb.box(0.2 * s, 0.05 * s, 0.11 * s, shade(L.backpack, 0.85), 0, 0.48 * s, -0.17 * s);
+      tb.box(0.035 * s, 0.16 * s, 0.02 * s, shade(L.backpack, 0.6), 0, 0.4 * s, -0.255 * s);
+      tb.add(new THREE.CylinderGeometry(0.055 * s, 0.055 * s, 0.3 * s, 10), L.accent === L.backpack ? L.inner : shade(L.accent, 0.9), matrix(0, 0.55 * s, -0.17 * s, 0, 0, Math.PI / 2));
+      for (const bx of [-0.09, 0.09]) tb.add(new THREE.CylinderGeometry(0.058 * s, 0.058 * s, 0.02 * s, 10), shade(L.backpack, 0.6), matrix(bx * s, 0.55 * s, -0.17 * s, 0, 0, Math.PI / 2));
+    }
   }
   if (L.bag) { tb.box(0.18 * s, 0.16 * s, 0.07 * s, L.bag, -0.2 * s * w, 0.02 * s, 0.05 * s); tb.add(new THREE.TorusGeometry(0.24 * s, 0.012 * s, 4, 16), shade(L.bag, 0.7), matrix(0, 0.3 * s, 0, 0, Math.PI / 2, 0.6)); }
   // neck
@@ -198,18 +233,18 @@ export function createCharacter(lookIn, { outline = false } = {}) {
   // --- arms
   for (const [side, arm, elbow] of [[1, armL, elbowL], [-1, armR, elbowR]]) {
     const ub = new Builder();
-    ub.add(capsule(0.055 * s * w, upperArm * 0.75, 8, 3), L.top === 'vest' || L.top === 'overalls' || L.top === 'dress' ? L.skin : L.top === 'trainer' ? accent : top, matrix(0, -upperArm / 2, 0));
-    ub.add(new THREE.SphereGeometry(0.07 * s * w, 8, 6), L.top === 'trainer' ? accent : top, matrix(0, 0, 0));
-    if (L.top === 'trainer') ub.cyl(0.062 * s * w, 0.062 * s * w, 0.035 * s, top, 0, -upperArm * 0.62, 0, 8);
+    ub.add(capsule(0.058 * s * w, upperArm * 0.75, 8, 3), L.top === 'vest' || L.top === 'overalls' || L.top === 'dress' ? L.skin : top, matrix(0, -upperArm / 2, 0));
+    ub.add(new THREE.SphereGeometry(0.072 * s * w, 8, 6), L.top === 'trainer' ? accent : top, matrix(0, 0, 0));
+    if (L.top === 'trainer') ub.box(0.03 * s, 0.09 * s, 0.03 * s, accent, side * 0.05 * s * w, -upperArm * 0.45, 0);
     arm.add(partMesh(ub, outline));
     const fb = new Builder();
-    const sleeve = ['coat', 'labcoat', 'jacket', 'hoodie', 'uniform', 'robe'].includes(L.top);
+    const sleeve = ['coat', 'labcoat', 'jacket', 'hoodie', 'uniform', 'robe', 'trainer'].includes(L.top);
     fb.add(capsule(0.048 * s * w, foreArm * 0.75, 8, 3), sleeve ? top : L.skin, matrix(0, -foreArm / 2, 0));
     if (sleeve) fb.cyl(0.055 * s * w, 0.055 * s * w, 0.04 * s, accent, 0, -foreArm * 0.85, 0, 8);
-    fb.add(new THREE.SphereGeometry(0.058 * s, 8, 6), L.gloves || L.skin, matrix(0, -foreArm - 0.03 * s, 0.005, 0, 0, 0, 0.85, 1.1, 0.7));
-    // fingerless gloves: cuff in a darker shade, thumb and fingertips bare
-    fb.add(new THREE.SphereGeometry(0.025 * s, 5, 4), L.skin, matrix(side * -0.03 * s, -foreArm - 0.01 * s, 0.04 * s));
-    if (L.gloves) { fb.cyl(0.052 * s, 0.05 * s, 0.045 * s, shade(L.gloves, 0.72), 0, -foreArm + 0.01 * s, 0.005, 8); fb.add(new THREE.SphereGeometry(0.04 * s, 6, 4), L.skin, matrix(0, -foreArm - 0.085 * s, 0.012 * s, 0, 0, 0, 1, 0.6, 0.8)); }
+    fb.add(new THREE.SphereGeometry(0.058 * s, 8, 6), L.gloves ? shade(L.gloves, 0.82) : L.skin, matrix(0, -foreArm - 0.03 * s, 0.005, 0, 0, 0, 0.85, 1.1, 0.7));
+    fb.add(new THREE.SphereGeometry(0.025 * s, 5, 4), L.gloves ? shade(L.gloves, 0.82) : L.skin, matrix(side * -0.03 * s, -foreArm - 0.01 * s, 0.04 * s));
+    // gloves: full gloves with a leather bracer over the wrist and a strap
+    if (L.gloves) { fb.cyl(0.058 * s, 0.054 * s, 0.11 * s, L.gloves, 0, -foreArm * 0.78, 0.004, 8); fb.cyl(0.06 * s, 0.06 * s, 0.014 * s, shade(L.gloves, 0.6), 0, -foreArm * 0.74, 0.004, 8); }
     elbow.add(partMesh(fb, outline));
     bones['hand' + (side > 0 ? 'L' : 'R')] = (() => { const h = new THREE.Group(); h.position.set(0, -foreArm - 0.04 * s, 0.03 * s); elbow.add(h); return h; })();
   }
@@ -219,11 +254,18 @@ export function createCharacter(lookIn, { outline = false } = {}) {
     const shortsOrSkirt = L.bottom === 'shorts' || L.bottom === 'skirt' || L.top === 'dress';
     lb.add(capsule(0.072 * s * w, thigh * 0.7, 8, 3), shortsOrSkirt ? L.skin : L.bottomColor, matrix(0, -thigh / 2, 0));
     if (L.bottom === 'shorts') lb.add(new THREE.CylinderGeometry(0.085 * s * w, 0.08 * s * w, thigh * 0.55, 8), L.bottomColor, matrix(0, -thigh * 0.25, 0));
+    if (L.top === 'trainer' && !shortsOrSkirt || L.top === 'trainer' && L.bottom === 'shorts') {
+      // cargo pocket on the outer thigh
+      const ox = (thighG === thighL ? 1 : -1) * 0.07 * s * w;
+      lb.box(0.03 * s, 0.11 * s, 0.09 * s, shade(L.bottomColor, 0.82), ox, -thigh * 0.5, 0.005 * s);
+      lb.box(0.034 * s, 0.025 * s, 0.095 * s, shade(L.bottomColor, 0.7), ox, -thigh * 0.5 + 0.055 * s, 0.005 * s);
+    }
     thighG.add(partMesh(lb, outline));
     const sb = new Builder();
     sb.add(capsule(0.06 * s * w, shin * 0.75, 8, 3), shortsOrSkirt ? L.skin : L.bottomColor, matrix(0, -shin / 2, 0));
     sb.add(capsule(0.065 * s, 0.1 * s, 8, 3), L.shoes, matrix(0, -shin - 0.01 * s, 0.05 * s, Math.PI / 2, 0, 0, 1, 1, 0.75));
-    sb.box(0.12 * s, 0.03 * s, 0.24 * s, 0xf2efe6, 0, -shin - 0.06 * s, 0.05 * s);
+    sb.box(0.12 * s, 0.03 * s, 0.24 * s, L.top === 'trainer' ? 0x3a3330 : 0xf2efe6, 0, -shin - 0.06 * s, 0.05 * s);
+    if (L.top === 'trainer') { sb.cyl(0.07 * s, 0.075 * s, 0.1 * s, L.shoes, 0, -shin + 0.03 * s, 0, 8); sb.cyl(0.072 * s, 0.072 * s, 0.015 * s, shade(L.shoes, 1.35), 0, -shin + 0.08 * s, 0, 8); }
     knee.add(partMesh(sb, outline));
   }
   const shadowBlob = new THREE.Mesh(new THREE.CircleGeometry(0.32 * s, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.22, depthWrite: false }));
@@ -234,8 +276,18 @@ export function createCharacter(lookIn, { outline = false } = {}) {
   return ch;
 }
 
+// Zotik als spielbare Figur (Taschi-Abenteurer): eigener Körper, gleiche Gelenke und Animationen wie die Menschen
+function createZotik(outline) {
+  const z = buildZotikRig((b, parent) => parent.add(partMesh(b, outline)), { scale: 0.8 });
+  const blob = new THREE.Mesh(new THREE.CircleGeometry(0.34, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.22, depthWrite: false }));
+  blob.rotation.x = -Math.PI / 2; blob.position.y = 0.03; blob.renderOrder = -1; z.root.add(blob);
+  const ch = new Character(z.root, z.bones, z.dims);
+  z.root.userData.character = ch;
+  return ch;
+}
+
 function hairFor(hd, L, r) {
-  const c = L.hairColor, capped = ['cap', 'trainercap', 'beanie'].includes(L.hat);
+  const c = L.hairColor, capped = ['cap', 'beanie'].includes(L.hat);
   const cap = (sx = 1, sy = 1, sz = 1, y = r * 1.1) => hd.add(new THREE.SphereGeometry(r * 1.05, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), c, matrix(0, y, -r * 0.05, -0.15, 0, 0, sx, sy, sz));
   switch (L.hair) {
     case 'bald': break;
@@ -261,13 +313,16 @@ function hatFor(hd, L, r) {
   switch (L.hat) {
     case 'cap': hd.add(new THREE.SphereGeometry(r * 1.1, 14, 8, 0, Math.PI * 2, 0, Math.PI * 0.5), c, matrix(0, r * 1.18, -r * 0.03, -0.12, 0, 0)); hd.add(new THREE.CylinderGeometry(r * 0.75, r * 0.75, r * 0.06, 16, 1, false, -Math.PI * 0.5, Math.PI), shade(c, 0.85), matrix(0, r * 1.38, r * 0.62, -0.12, 0, 0, 1, 1, 0.9)); hd.add(new THREE.SphereGeometry(r * 0.1, 6, 4), 0xffffff, matrix(0, r * 2.25, -r * 0.1)); break;
     case 'trainercap': {
-      const m = matrix(0, r * 1.18, -r * 0.03, -0.12, 0, 0);
-      hd.add(new THREE.SphereGeometry(r * 1.1, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.5), c, m);
-      hd.add(new THREE.SphereGeometry(r * 1.115, 10, 8, Math.PI / 2 - 0.75, 1.5, 0.12, Math.PI * 0.38), L.capFront, m);
-      hd.add(new THREE.CylinderGeometry(r * 0.78, r * 0.78, r * 0.06, 16, 1, false, -Math.PI * 0.5, Math.PI), c, matrix(0, r * 1.38, r * 0.64, -0.14, 0, 0, 1, 1, 0.95));
-      // TASCHI's own emblem: a small upright leaf-diamond on the front panel
-      hd.add(new THREE.OctahedronGeometry(r * 0.2, 0), shade(c, 0.85), matrix(0, r * 1.76, r * 0.98, -0.75, 0, 0, 0.75, 1, 0.3));
-      hd.add(new THREE.SphereGeometry(r * 0.1, 6, 4), c, matrix(0, r * 2.25, -r * 0.1));
+      // explorer goggles pushed up onto a wide headband (key kept for old saves): round lenses with metal rims and a light-catching glint
+      hd.add(new THREE.CylinderGeometry(r * 1.07, r * 1.07, r * 0.26, 18, 1, true), c, matrix(0, r * 1.5, -r * 0.04, -0.22, 0, 0, 1, 1, 1.02));
+      hd.add(new THREE.BoxGeometry(r * 0.26, r * 0.3, r * 0.12), shade(c, 0.8), matrix(0, r * 1.38, -r * 1.06, -0.22, 0, 0));
+      for (const sx of [-1, 1]) {
+        const gm = matrix(sx * r * 0.36, r * 1.66, r * 0.86, Math.PI / 2 - 0.55, 0, 0);
+        hd.add(new THREE.CylinderGeometry(r * 0.27, r * 0.29, r * 0.2, 14), 0x9aa3ad, gm);
+        hd.add(new THREE.CylinderGeometry(r * 0.21, r * 0.21, r * 0.21, 14), L.capFront, gm);
+        hd.add(new THREE.SphereGeometry(r * 0.06, 5, 4), 0xffffff, matrix(sx * r * 0.36 + r * 0.08, r * 1.8, r * 0.93));
+      }
+      hd.box(r * 0.2, r * 0.07, r * 0.08, 0x9aa3ad, 0, r * 1.66, r * 0.95);
       break;
     }
     case 'beanie': hd.add(new THREE.SphereGeometry(r * 1.1, 14, 8, 0, Math.PI * 2, 0, Math.PI * 0.52), c, matrix(0, r * 1.18, -r * 0.03, -0.1, 0, 0, 1, 1.08, 1)); hd.add(new THREE.SphereGeometry(r * 0.2, 7, 5), shade(c, 1.2), matrix(0, r * 2.4, -r * 0.1)); break;
@@ -356,6 +411,7 @@ export class Character {
     // apply
     for (const b of BONES) this.bones[b].rotation.copy(P[b]);
     this.bones.hips.position.y = this.dims.legLen + hipY - hipBob + 0.015;
+    if (this.bones.tail) { this.bones.tail.rotation.y = Math.sin(t * (this.speed > 0.25 ? 7 : 2.4)) * (this.speed > 0.25 ? 0.4 : 0.22); this.bones.tail.rotation.x = 0.55 + Math.sin(t * 1.3) * 0.06; }
     // blinking & mouth
     this.blinkT -= dt;
     const blink = this.blinkT < 0.12 ? 0.1 : 1;
