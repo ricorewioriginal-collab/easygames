@@ -89,9 +89,10 @@ Plan, Annahmen und Testergebnisse: `docs/WEB_KH_LUFIA_PLAN.md`.
 - **Zielerfassung** Q / 🎯, **Reaktionsbefehle** F / Aktion-Taste (Konter, Mondsprung, Reflektor, Finisher).
 - **Team-Angriffe** (T) mit Lyra, Nia, Rovan; **Rissform/Sternform** (G) über die Rissleiste.
 - **Ausrüstung** (Waffe, Rüstung, Schmuck) mit **IP-Techniken** (4/5/6); IP füllt sich bei Treffern auf Zotik. Menüseite „Ausrüstung“.
-- **Felli als Kapselmonster**: kämpft mit, frisst Heiltrank/Äther/Kristallfrucht/Splitter, entwickelt sich (Blütling, Dornling, Waldgeist). Menüseite „Felli“.
+- **Felli als Seelenbegleiter**: kämpft mit, frisst Heiltrank/Äther/Kristallfrucht/Splitter, fünf Stufen; sieben Seelen (Seelenlicht in den Welten) mit eigenen Stufennamen, Farbe, Element und Lieblingsessen (`zotik-src/src/lufia.js`). Menüseite „Felli“.
 - **Werkzeuge** (Enterhaken, Bombe, Feuerstab, Eisstab) als Belohnung für Kapitel 2–5; in jeder Welt eine **Werkzeug-Ruine** mit Schatz (C benutzen, X wechseln).
-- **Uralte Höhle** (Eingang in Lunaris nach Kapitel 1): 50 Zufallsebenen, Start mit Stufe 1, blaue Truhen bleiben, Rekord im Inventar.
+- **Echogrotte** (Eingang in Lunaris nach Kapitel 1): 99 Zufallsebenen, Start mit Stufe 1, blaue Truhen bleiben, Wächter alle 10 Ebenen mit 9 Echo-Relikten, Tagesgrotte (gleiche Höhle für alle an einem Tag, eigene Bestenliste), Rekord im Inventar.
+- **Lufia-Gefühl (November 2026, `lufia.js`)**: Bindung, Lagerfeuer-Gespräche, persönliche Kapitel und Lebensentscheidung der Gefährten; die Vier Gesichter des Risses (Vexa, Korrod, Mirrel, Ashen; erster Kampf nicht zu gewinnen, endet mit Szene); Prolog in der Zukunft und Ende „Allein hinübergehen“; Leitmotive; Rätselnischen und Lufia-Takt in den Vorhallen; Menü wie an der Konsole. Test: `tools/test-zotik/gefaehrten.cjs`, `menue.cjs`, `vorhallen-raetsel.cjs`.
 
 ## Projektunterlagen (aus dem früheren Repo `zotik`)
 Das eigenständige Repo `ricorewioriginal-collab/zotik` ist aufgelöst; Zotik läuft nur noch hier über easygames.

@@ -112,8 +112,22 @@
    "t": "Felli, den Seelenbegleiter",
    "list": [
     "Felli kämpft an deiner Seite, lernt durch Siege und Futter und entwickelt sich (bis Stufe 20).",
-    "Entwicklungen: Moosling (ab Stufe 1), Blütling (ab 5, heilt dich), Dornling (ab 10, trifft alle Gegner um sich), Waldgeist (ab 15, schlägt besonders hart zu).",
-    "Füttern im Menü: 🧪 Heiltrank +15 EP, 🔷 Äther +30 EP, 🍐 Kristallfrucht +90 EP, 💎 50 Splitter +25 EP. Kristallfrüchte lassen Gegner manchmal fallen oder du kaufst sie im Laden."
+    "Entwicklungen (Seele „Hain“): Moosling (ab Stufe 1), Blütling (ab 5, heilt dich), Dornling (ab 10, trifft alle Gegner um sich), Waldgeist (ab 15, schlägt besonders hart zu), Hainwächter (ab 20, noch einmal +30 % Schaden).",
+    "Füttern im Menü: 🧪 Heiltrank +15 EP, 🔷 Äther +30 EP, 🍐 Kristallfrucht +90 EP, 💎 50 Splitter +25 EP. Kristallfrüchte lassen Gegner manchmal fallen oder du kaufst sie im Laden.",
+    "✦ Seelen: In sieben Welten schwebt je ein Seelenlicht (Elaris ausgenommen, Felli bringt „Hain“ mit): ✨ Licht (Solmera), 💧 Flut (Aqualis), ❄️ Frost (Frosthain), 🔥 Glut (Ignara), 🌑 Schatten (Noctaris), ⚡ Sturm (Astralis). Ansprechen = Seele gefunden.",
+    "Im Felli-Reiter unter „Seelenbegleiter“ nimmt Felli eine gefundene Seele an: neue Farbe, fünf eigene Stufennamen und eine Eigenschaft – Licht/Frost/Glut/Sturm treffen mit ihrem Element, Flut heilt dich alle 12 Sekunden um 8 %, Schatten macht 25 % mehr Schaden.",
+    "Lieblingsessen: Jede Seele mag ein Futter besonders (steht im Seelenbegleiter-Menü) und bekommt davon doppelte Erfahrung."
+   ]
+  },
+  {
+   "t": "Gefährten, Lagerfeuer und die Vier Gesichter",
+   "list": [
+    "💞 Bindung: Lyra, Nia und Rovan haben je eine Bindung von 0 bis 100 (Stufe alle 20). Sie wächst mit jedem gemeinsamen Sieg (Bosse viel mehr), mit Gesprächen und persönlichen Kapiteln. Höhere Bindung = stärkere Gefährten und stärkere Teamangriffe.",
+    "🔥 Lagerfeuer (Menü → Camp, ganz oben): Jeder Gefährte hat vier Gespräche, die nach bestimmten Kapiteln und Bindungsstufen frei werden. Jedes Gespräch gibt +8 Bindung.",
+    "📖 Persönliche Kapitel: Das zweite Gespräch schaltet eine eigene Geschichte frei – Nia: Keshs Bogen (Solmera), Rovan: sein alter Posten (Frosthain), Lyra: Ilvas Echo (Noctaris). Ein Zeichen in der Welt startet den Kampf; der Gefährte muss dabei sein. Danach kämpft er dauerhaft stärker.",
+    "🌌 Lebensentscheidung: Nach Kapitel 5, mit Lyra-Bindung ab 40 und drei Gesprächen möchte Lyra unter dem Sternenhimmel reden. Ein Versprechen macht ihren Teamangriff stärker, „beste Freunde“ lässt sie öfter heilen.",
+    "👁️ Die Vier Gesichter des Risses: Vexa (Furcht), Korrod (Zerfall), Mirrel (Täuschung) und Ashen (Leere) begegnen dir in Elaris, Solmera, Frosthain und Noctaris. Gegen Vexa kannst du beim ersten Mal nicht gewinnen – das Spiel geht danach mit einer Szene weiter, nicht mit Game Over. In Astralis und Elyndra stellst du dich ihnen am „Riss der Gesichter“ wirklich.",
+    "🎵 Leitmotive: Jeder Gefährte und jedes Gesicht des Risses hat eine eigene kurze Melodie (bei Gesprächen, Kapiteln, Teamangriffen und Auftritten)."
    ]
   },
   {
@@ -178,7 +192,8 @@
     "Abkürzung: Mit dem Schlüssel leuchtet in der Halle ein Runentor auf. Es bringt dich sofort zum Start zurück – und von dort auch wieder in die Halle.",
     "Letzte Ebene: In der Halle wartet der Zwischengegner der Welt. Nach dem Sieg öffnet sich das Tor nach draußen, und der Weg zum Weltenboss ist frei.",
     "In jeder Ebene liegt außerdem eine Truhe in einer Sackgasse. Am Start steht ein Ausgangskristall; wer die Vorhallen verlässt oder darin fällt, beginnt sie auf Ebene 1 neu und steht wieder vor dem Tor.",
-    "Im Koop-Spiel gibt es die Vorhallen nicht: Dort wartet der Zwischengegner wie bisher auf dem Weg."
+    "Im Koop-Spiel gibt es die Vorhallen nicht: Dort wartet der Zwischengegner wie bisher auf dem Weg.",
+    "🧩 Rätselnischen: In Sackgassen jeder Ebene liegen Nischen hinter einem Tor – Schiebeblock auf die Druckplatte (der Rücksetzstein stellt ihn zurück), Rissmauer (Bombe), Dornen oder Fackeln (Feuerstab), Wasser (Eisstab). Ab Ebene 2 gibt es zusätzlich eine schwere Kniffelkammer. Das Tor gibt bis zu drei Hinweise. Gegner bewegen sich hier nur, wenn du dich bewegst; betäubte Gegner (Bombe, Feuer, Eis, Haken) nehmen beim ersten Treffer doppelten Schaden (Erstschlag)."
    ]
   },
   {
@@ -386,12 +401,23 @@
    ]
   },
   {
-   "t": "Die drei Enden und Neues Spiel+",
+   "t": "Persönliche Kapitel und die Vier Gesichter",
+   "list": [
+    "Keshs Bogen (Nia, Solmera): Lagerfeuer-Gespräch „Meisterin Kesh“ (nach Kapitel 2), dann in Solmera das 🏹-Zeichen am Weg ansprechen und den Sandwächter besiegen. Lohn: 500 Splitter, Bindung +20.",
+    "Rovans alter Posten (Rovan, Frosthain): Gespräch „Der Schwur“ (nach Kapitel 4), dann das 🛡️-Zeichen in Frosthain. Gegner: die Frostgestalt der Flucht.",
+    "Ilvas Echo (Lyra, Noctaris): Gespräch „Ilva“ (nach Kapitel 3), dann das 💫-Zeichen in Noctaris. Gegner: Ilvas Schattenecho.",
+    "Vexa in Elaris: einfach durchhalten oder ausweichen – sobald dein Leben knapp wird oder 30 Sekunden um sind, endet der Kampf mit einer Szene.",
+    "Riss der Gesichter: 👁️-Zeichen in Astralis (Vexa und Korrod) und Elyndra (Mirrel und Ashen). Beide Gegner besiegen: +800 Splitter, +400 EP."
+   ]
+  },
+  {
+   "t": "Die vier Enden und Neues Spiel+",
    "list": [
     "Sind alle sieben Siegel gebrochen, sprich mit Veyra und wähle das Schicksal der Welten.",
     "Getrennt bewahren: Die Welten bleiben getrennt, aber nicht mehr blind füreinander.",
     "Vereinen: Die Splitter fügen sich in den Kern, die Grenzen werden dünn.",
     "Verweben (Zuhören): Zotiks Klang öffnet sich, Fäden aus Licht spannen sich zwischen den Welten.",
+    "Allein hinübergehen: Zotik hält den Kern allein – ein Abschied. Der Prolog am Anfang des Spiels zeigt, was viele Generationen später davon bleibt.",
     "Das erste Ende bringt +500 EP und +1000 Splitter. Danach kannst du jederzeit ein anderes Ende ansehen.",
     "Neues Spiel+: Du behältst Stufe, Splitter, Waffen, Andenken, Nautilux und Gefährten; die Geschichte beginnt von vorn. Pro Stufe haben Gegner +50 % Leben und +35 % Angriff, Bosse bekommen eine Raserei-Phase. Der Weltenriss bleibt offen."
    ]
@@ -412,10 +438,12 @@
    "t": "Halle der 100, Echogrotte und Casino",
    "list": [
     "🏛️ Halle der 100: 100 Prüfungen in 10 Rängen, jede zehnte ist ein Bosskampf. Jede Prüfung bringt 30 + 8 × Nummer Splitter und Erfahrung, jeder Rang zusätzlich 500 × Rang Splitter und 3 Tränke. Nach Prüfung 100: „Der letzte Splitter gehört dir“ (+5000).",
-    "🏔️ Echogrotte in Lunaris (nach Kapitel 1, nur allein): 50 Ebenen. Du startest immer bei Stufe 1, ohne Ausrüstung und mit 2 Tränken. Ein Wächter versperrt die Treppe. Beim Verlassen oder Fallen kehrt alles zurück – behalten darfst du nur die blauen Schätze. Dein Rekord steht im Inventar.",
+    "🏔️ Echogrotte in Lunaris (nach Kapitel 1, nur allein): 99 Ebenen. Du startest immer bei Stufe 1, ohne Ausrüstung und mit 2 Tränken. Beim Verlassen oder Fallen kehrt alles zurück – behalten darfst du nur die blauen Schätze. Dein Rekord steht im Inventar.",
     "🎰 Golden Star Casino (Valdoria, westlich vom Marktplatz): erst bei Stella am Eingang einschalten. Einsatz je Spiel 10, 50 oder 100 Splitter. Kristallslots: drei gleiche ⭐ ×25, 💎 ×12, 🔥 ×8, 🌙/🍃 ×5; zwei gleiche: Einsatz zurück. Sternenrad: 12 Felder, davon 2× ×1, 2× ×2, 1× ×5, sonst nichts. Höher oder Tiefer: Karten 1–13, Gleichstand verliert; je unwahrscheinlicher der Tipp, desto höher der Faktor, nach jedem Treffer kannst du auszahlen, nach 5 Treffern wird automatisch ausgezahlt. Auf Dauer gewinnt bei allen drei Spielen leicht das Haus (Auszahlung etwa 92–97 %).",
     "🎮 Mini-Spiele (Titelmenü): ZOTIK Run, Felli-Fang, Kristallrausch, ZOTIK Quiz und Sternenpuzzle – unabhängig vom Abenteuer, mit eigenen Rekorden.",
-    "Echogrotte: Auf jeder zweiten Ebene ist die Treppe versiegelt – entweder drei Glutkristalle in den Gängen entzünden, bevor der erste erlischt, oder alle Gegner der Ebene vertreiben. Jede zehnte Ebene bewacht ein Wächter die Treppe."
+    "Echogrotte: Auf jeder zweiten Ebene ist die Treppe versiegelt – entweder drei Glutkristalle in den Gängen entzünden, bevor der erste erlischt, oder alle Gegner der Ebene vertreiben. Jede zehnte Ebene bewacht ein Wächter die Treppe.",
+    "💠 Echo-Relikte: Jeder Wächter auf Ebene 10, 20 … 90 lässt eines von neun Relikten zurück – sie bleiben für immer. Alle neun: +5000 Splitter und der Titel „Echohüter“.",
+    "📅 Tagesgrotte: Am Eingang „Tagesgrotte“ wählen – heute für alle dieselbe Höhle. Dein bester Tageslauf und deine Bestenliste der letzten Tage stehen im Menü der Grotte."
    ]
   },
   {
