@@ -9,7 +9,7 @@ export function createEtappen(c) {
   const { T, mk, G, M, glow, scene } = c;
   let A = null;   // laufende Etappe
   const near = (x, z, r) => Math.hypot(c.pl.x - x, c.pl.z - z) < r;
-  function spot(z, off) { for (let t = 0; t < 30; t++) { const x = c.pathx(z) + off + (t ? (Math.random() - .5) * t : 0), zz = z + (t ? (Math.random() - .5) * t : 0); if (!c.blk(x, zz)) return [x, zz]; } return [c.pathx(z), z]; }
+  function spot(z, off) { for (let t = 0; t < 30; t++) { const x = c.pathx(z) + off + (t ? (Math.random() - .5) * t : 0), zz = z + (t ? (Math.random() - .5) * t : 0); if (c.ok(x, zz)) return [x, zz]; } return [c.pathx(z), z]; }
   function marker(x, z, col, s = 1) { const g = new T.Group(), y = c.hgt(x, z); g.position.set(x, y, z); g.add(mk(G.cyl, M(0x5a5a6a, { r: .8 }), 0, .3 * s, 0, .6 * s, .6 * s, .6 * s)); const o = mk(G.oct, M(col, { e: col, ei: .3 }), 0, 1.5 * s, 0, .45 * s, .8 * s, .45 * s, false); g.add(o); const gl = glow(col, 4 * s, 0, 1.5 * s, 0, 0); g.add(gl); scene.add(g);
     return { g, o, gl, lit(on) { o.material = M(col, { e: col, ei: on ? 2.2 : .3 }); gl.material.opacity = on ? .8 : 0; } }; }
 
@@ -43,16 +43,16 @@ export function createEtappen(c) {
   function use(st, p) {
     const d = st.d;
     if (d.k === 'companion') { if (!c.S().party.includes(d.who) || c.cmpKo(d.who)) return c.toast(`Das kann nur ${d.whoN} – und ${d.whoN} muss bei dir und auf den Beinen sein.`); c.say([[d.whoN, d.lines[p.i % d.lines.length]]]); }
-    if (d.k === 'memory') { const want = d.order[st.parts.filter(q => q.on).length]; if (p.i !== want) { c.sfx('hurt'); c.toast('Die Erinnerungen verschwimmen – von vorn. ' + d.hint); for (const q of st.parts) { q.on = false; q.lit(false); } return; } }
+    if (d.k === 'memory') { const want = d.order[st.parts.filter(q => q.on).length]; if (p.i !== want) { c.sfx('hurt'); c.toast('Die Erinnerungen verschwimmen – von vorn. ' + d.hint); for (const q of st.parts) { q.on = false; q.lit(false); } c.refresh(); return; } }
     p.on = true; p.lit(true); c.sfx('pick'); c.emit(p.x, p.y + 1.5, p.z, d.col || 0xffb060, 24, 4, .7, .6);
-    if (st.parts.every(q => q.on)) st.finish(); else c.toast('📜 ' + st.text());
+    if (st.parts.every(q => q.on)) st.finish(); else { c.toast('📜 ' + st.text()); c.refresh(); }   // Anzeige oben rechts zählt mit
   }
   function update(dt, t) {
     const st = A; if (!st || st.done) return; st.t += dt; const d = st.d, S = c.S();
     if (st.run) {   // Verfolgung: läuft weiter, sobald man nahe kommt
       const r = st.run, [tx, tz] = r.wp[Math.min(r.i, r.wp.length - 1)], dx = tx - r.x, dz = tz - r.z, dd = Math.hypot(dx, dz);
       if (dd > .4) { const sp = Math.min(dd, 7.2 * dt); r.x += dx / dd * sp; r.z += dz / dd * sp; r.mv = 1; r.P.root.rotation.y = Math.atan2(dx, dz); } else { r.mv = 0;
-        if (near(r.x, r.z, 3)) { if (r.i >= r.wp.length - 1) return st.finish(); r.i++; c.sfx('ui'); c.toast(d.flee[(r.i - 1) % d.flee.length]); } else if (near(r.x, r.z, 10)) r.P.root.rotation.y = Math.atan2(c.pl.x - r.x, c.pl.z - r.z); }
+        if (near(r.x, r.z, 3)) { if (r.i >= r.wp.length - 1) return st.finish(); r.i++; c.sfx('ui'); c.toast(d.flee[(r.i - 1) % d.flee.length]); c.refresh(); } else if (near(r.x, r.z, 10)) r.P.root.rotation.y = Math.atan2(c.pl.x - r.x, c.pl.z - r.z); }
       r.P.root.position.set(r.x, c.hgt(r.x, r.z), r.z); c.animHuman(r.P, t, r.mv);
     }
     if (st.esc) {   // Begleitung: geht weiter, wenn man in der Nähe ist; Wellen an festen Punkten

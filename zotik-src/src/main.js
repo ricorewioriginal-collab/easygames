@@ -49,6 +49,7 @@ const zoneAt=(x,z)=>z>300?'ruin':WLD?WLD.zone(x,z):z<-146?'cave':(z<-44?'forest'
 /* Kreis-Kollider */
 const COL=[];
 function addCol(x,z,r){COL.push({x,z,r})}
+const colFree=(x,z,r)=>!COL.some(c=>Math.hypot(c.x-x,c.z-z)<c.r+r)&&!HOUSES.some(H=>Math.hypot(H.x-x,H.z-z)<H.R+r);   /* kein Baum, Fels oder Haus im Weg */
 const CAMCOL=[],HOUSES=[];let inH=null;
 function pushOut(o,r){for(let ps=0;ps<2;ps++){const x0=o.x,z0=o.z;pushOut1(o,r);if(o.x===x0&&o.z===z0)break}}
 function pushOut1(o,r){
@@ -1725,6 +1726,9 @@ function buildWorld(n){
   const zone=(x,z)=>z<-146?'cave':(z<-44?'forest':'village');
   const ims=[],edKeys=[],obs={};
   WLD={n,C,h,blocked:blk,zone,ims,edKeys,terr:null,zn:{village:[C.hubN,C.sub],forest:[C.wildN,'Gegner lauern hier'],cave:[C.depthN,C.X[4]],ruin:['Werkzeug-Ruine','Ein Rätsel aus alter Zeit']},path:pathx,mbg:null,spawn:[0,9]};
+  /* Zu Fuß vom Dorf aus erreichbar? (Flutfüllung, einmal je Welt) – Auftrags- und Etappen-Punkte landen nie auf abgeschnittenen Inseln */
+  let RCH=null;WLD.reach=(x,z)=>{if(!RCH){RCH=new Set([6]);const q=[[0,6]];while(q.length){const [i,j]=q.pop();for(const [a,c] of [[i+1,j],[i-1,j],[i,j+1],[i,j-1]]){const k=a*4096+c;if(a<-86||a>86||c>50||c<-98||RCH.has(k)||blk(a*1.5,c*1.5))continue;RCH.add(k);q.push([a,c])}}}
+    const i=Math.round(x/1.5),j=Math.round(z/1.5);return RCH.has(i*4096+j)&&RCH.has((i+1)*4096+j)&&RCH.has((i-1)*4096+j)&&RCH.has(i*4096+j+1)&&RCH.has(i*4096+j-1)};
   const a0=atmOf(C);setAtmos(a0);
   /* Gelände */
   const tex=GTEX||(GTEX=groundTexture());
@@ -1861,7 +1865,8 @@ function buildWorld(n){
     case'defend':return `Verteidige ${DEFN} im Norden gegen ${MN} Angriffswellen (${c}/${MN}).`;
     case'elite':return `Besiege ${MN} Champions in „${C.wildN}“ (${c}/${MN}).`}return''}
   function misStep(){const s=cs();s.mc=(s.mc||0)+1;sfx('quest');if(s.mc>=MN){s.m=1;s.k=0;banner('Auftrag erfüllt','Jetzt: Vertreibe die Gegner im Norden');}else toast('📜 '+misText());refresh();saveGame(true)}
-  const misSpots=k=>{const o=[];let t=0;while(o.length<k&&t++<900){const z=rr(-60,-140),x=pathx(z)+rr(-34,34)*(t%2?1:-1);if(blk(x,z)||np(x,z,4)||Math.hypot(x,z+182)<38||o.some(q=>Math.hypot(q[0]-x,q[1]-z)<14))continue;o.push([x,z])}return o};
+  const misSpots=k=>{const o=[];let t=0;while(o.length<k&&t++<1500){const z=rr(-60,-140),x=pathx(z)+rr(-34,34)*(t%2?1:-1),gap=t<900?14:6;if(blk(x,z)||np(x,z,4)||Math.hypot(x,z+182)<38||o.some(q=>Math.hypot(q[0]-x,q[1]-z)<gap)||!WLD.reach(x,z)||!colFree(x,z,1.2))continue;o.push([x,z])}
+    for(let i=0;o.length<k&&i<40;i++){const z=-64-i*7%76,x=pathx(z)+(i%2?5:-5);if(!blk(x,z)&&colFree(x,z,.8)&&!o.some(q=>Math.hypot(q[0]-x,q[1]-z)<4))o.push([x,z])}return o};   /* findet sich zu wenig Platz, liegen die restlichen Ziele am Weg – der Auftrag bleibt immer lösbar */
   const LOST=['Pio','Smilla','Lenn','Juno','Taro','Mika','Ronja'],LOSTL=['Endlich! Ich hab mich völlig verlaufen.','Danke, Zotik! Ich finde jetzt allein zurück.','Puh … die Gegner hier sind unheimlich. Ich lauf schnell heim!'];
   function setupMission(){const s=cs();if(WLD.misOn||!MIS||s.st!==2||hunting())return;WLD.misOn=1;const left=MN-(s.mc||0);if(left<=0)return;
     if(MIS==='collect')for(const [x,z] of misSpots(left)){const g=new T.Group(),y=h(x,z);g.position.set(x,y,z);const col=C.glowc[0];
@@ -2618,7 +2623,7 @@ const RUIN_AREA={tones:{x0:-11,x1:11,z0:341.4,z1:344.4},lights:{x0:-12.2,x1:-3.4
 let _nz=null;const NZ=()=>_nz||(_nz=createNautZone({T,mk,G,M,glow,scene,hgt:(x,z)=>hgt(x,z),pl,naut,nAir:()=>nAir(),nSub:()=>nSub(),S:()=>S,eLevel:b=>eLevel({base:'rift'},b),eHp,eDm,INT,anim:fn=>animObjs.push({fn}),makeChest,sfx,toast,emit:(...a)=>emit(...a),save:()=>saveGame(true),hurtP:(...a)=>hurtP(...a),gainXp:n=>gainXp(n),aqua:()=>curCh===5&&!!WLD,atkV:()=>atkV(),dnum:(...a)=>dnum(...a)}));
 const nUp=()=>!!(keys.KeyJ||keys.KeyK||keys.Enter||X.upHold||(X.nvD>0&&time<X.nvE)),nDn=()=>!!(keys.Space||keys.ShiftLeft||keys.ShiftRight||(X.nvD<0&&time<X.nvE));
 let _ep=null,_vg=null;const vignette=c=>{if(!_vg){_vg=document.createElement('div');_vg.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:3;transition:opacity .5s;opacity:0';document.body.appendChild(_vg)}_vg.style.opacity=c?1:0;if(c)_vg.style.background=`radial-gradient(ellipse at center,transparent 35%,${c})`};
-const EPX=()=>_ep||(_ep=createEtappen({T,mk,G,M,glow,scene,hgt:(x,z)=>hgt(x,z),pl,INT,pathx:z=>WLD?WLD.path(z):0,blk:(x,z)=>WLD?WLD.blocked(x,z):false,makeVillager:o=>makeVillager(o),animHuman:(P,t,mv)=>animHuman(P,t,mv),say:(...a)=>say(...a),toast,sfx,banner:(...a)=>banner(...a),emit:(...a)=>emit(...a),S:()=>S,cmpKo:id=>{const a=CMP.find(q=>q.id===id);return !a||a.ko},nAir:()=>nAir(),spawnEnemy:(...a)=>spawnEnemy(...a),E,killE:(...a)=>killE(...a),maxHp:()=>maxHp(),vignette}));
+const EPX=()=>_ep||(_ep=createEtappen({T,mk,G,M,glow,scene,hgt:(x,z)=>hgt(x,z),pl,INT,pathx:z=>WLD?WLD.path(z):0,blk:(x,z)=>WLD?WLD.blocked(x,z):false,ok:(x,z)=>!WLD||(!WLD.blocked(x,z)&&(!WLD.reach||WLD.reach(x,z))&&colFree(x,z,1.2)),refresh:()=>refreshQuest(),makeVillager:o=>makeVillager(o),animHuman:(P,t,mv)=>animHuman(P,t,mv),say:(...a)=>say(...a),toast,sfx,banner:(...a)=>banner(...a),emit:(...a)=>emit(...a),S:()=>S,cmpKo:id=>{const a=CMP.find(q=>q.id===id);return !a||a.ko},nAir:()=>nAir(),spawnEnemy:(...a)=>spawnEnemy(...a),E,killE:(...a)=>killE(...a),maxHp:()=>maxHp(),vignette}));
 let _rms=null;const RMS=()=>_rms||(_rms=createRooms({T,mk,G,M,glow,scene,hgt:(x,z)=>hgt(x,z),INT,anim:fn=>animObjs.push({fn}),pl,toast,sfx,tone,emit:(...a)=>emit(...a)}));
 const RUIN_GEAR={1:'c_mond',2:'a_rinde',3:'w_dorn',4:'c_glocke',5:'a_koralle',6:'a_frost',7:'w_glut',8:'c_glueck',9:'w_stern',10:'a_stern'};
 function buildRuin(n,col,outside){const P=n+'r',spec=RUIN[n]||RUIN[1],wc=col||0x6a6c8c;
