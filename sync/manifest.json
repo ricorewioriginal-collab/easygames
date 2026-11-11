@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1e2a0c5359c9",
- "generated": "2026-11-11T11:23:31+01:00",
- "commit": "00f6e3b1652391ca2566cbaa07f6e971cd8eebba",
+ "version": "c305c44d5890",
+ "generated": "2026-11-11T11:44:32+01:00",
+ "commit": "750f6371e75285a659a7d6c223d2ba97ce190ac9",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6258,8 +6258,8 @@
   },
   {
    "p": "guides/zotik.json",
-   "s": 33248,
-   "h": "c6856b387a2a1b928347a76d6009662f926383e41336874d7036d0b97fb746a5"
+   "s": 35795,
+   "h": "8229e7a61475e9381b618302e939e9ac33d329435558c33b8542b42c8702cac6"
   },
   {
    "p": "heute.html",
@@ -8844,7 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256787,
-   "h": "499945666ad949d5e68878f3cfba9fcfca7d90143b7e9de9d2b2e5199c4421e1"
+   "h": "d5dd6a7cf30f66c419eee19bc97cafb9a6da6d8176132f80031a922927db7736"
   },
   {
    "p": "taschi/card.svg",
@@ -10767,9 +10767,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-2tsiqBGD.js",
-   "s": 1211760,
-   "h": "eda10b33661f59d0c469aa2a482f4575ed54362c1a357759b21331328853b232"
+   "p": "zotik/assets/index-CzUNKZ6R.js",
+   "s": 1221413,
+   "h": "de8ce51b81d87a0fd143ef850743a632d96fb9301578c4eb0655ac4b0bc64b3b"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -10789,7 +10789,7 @@
   {
    "p": "zotik/index.html",
    "s": 50018,
-   "h": "f5f200644b4acdb4d1a3857214b2fc25ea7a1b27418e6d708f30b33c2c40e4d8"
+   "h": "28a30ffeedb1f0f5958a56da2f2ed0bc7de56b5f0d7f253eeeceffead7de982c"
   },
   {
    "p": "zotik/manifest.webmanifest",

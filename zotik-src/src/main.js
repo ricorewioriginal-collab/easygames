@@ -2730,8 +2730,8 @@ function buildDungeon(){const D=X.dun,n=D.n,f=D.f,F=DUNF(n),last=f===F,C=CHP[n],
   setAtmos({top:[.01,.01,.03],mid:[.03,.03,.07],hor:[.08,.07,.12],aur:[.2,.3,.5],ms:[.1,.1,.2],gr:[.02,.02,.04],moon:0x404050,mg:[0x202030,0x202030],fog:0x0a0a14,fd:.026,hemi:[0x9a9ac0,0x1a1a2a,.6],lite:[0xb0b0d0,.55],stars:0,expo:1});
   const fl=new T.Mesh(new T.PlaneGeometry(N*CS+20,N*CS+20),new T.MeshStandardMaterial({color:C.pal.arena,roughness:1}));fl.rotation.x=-Math.PI/2;fl.position.set(0,0,Z0+N*CS/2);fl.receiveShadow=true;scene.add(fl);WLD.terr=fl;
   let nw=0;for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(g[i][j])nw++;
-  const im=new T.InstancedMesh(new T.BoxGeometry(CS,3,CS),new T.MeshStandardMaterial({color:C.pal.rock,roughness:.95,flatShading:true}),nw);let k=0;
-  for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(g[i][j]){_m.compose(_p.set(cx(i),1.5,cz(j)),_q.set(0,0,0,1),_s.set(1,1+R()*.25,1));im.setMatrixAt(k++,_m)}
+  const im=new T.InstancedMesh(new T.BoxGeometry(CS,2.6,CS),new T.MeshStandardMaterial({color:C.pal.rock,roughness:.95,flatShading:true}),nw);let k=0;
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(g[i][j]){_m.compose(_p.set(cx(i),1.3,cz(j)),_q.set(0,0,0,1),_s.set(1,1+R()*.25,1));im.setMatrixAt(k++,_m)}
   im.castShadow=true;scene.add(im);WLD.ims.push(im);
   /* Leuchtkristalle in der Farbe der Welt */
   const deco=new T.Group();scene.add(deco);for(let i=1;i<N-1;i++)for(let j=1;j<N-1;j++)if(!g[i][j]&&(i*7+j*3+f)%5===0){deco.add(mk(G.oct,M(gl,{e:gl,ei:1.6,r:.2}),cx(i)+1.9,1.1,cz(j)+1.9,.22,.5,.22,false));deco.add(glow(gl,3,cx(i)+1.9,1.2,cz(j)+1.9,.4))}
