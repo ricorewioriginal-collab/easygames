@@ -23,19 +23,17 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); 
   ok(await p.evaluate(() => __zotik.LF().bond('nia')) === b0 + 12, 'Bindung wächst im Kampf (Boss +3 je Gefährte)');
   // Lagerfeuer im Lager-Reiter
   await p.evaluate(() => __zotik.toggleMenu(true, 'camp')); await w(300);
-  const btn = await p.evaluate(() => [...document.querySelectorAll('[data-lft]')].map(b => b.dataset.lft + ':' + b.textContent));
-  ok(btn.length === 3 && btn.some(t => /Sternbilder/.test(t)), 'Lager zeigt Lagerfeuer-Gespräche: ' + btn.join(' | '));
-  await shot(p, 'lagerfeuer');
-  await p.evaluate(() => document.querySelector('[data-lft="lyra"]').click()); await w(2600);
-  ok(/Laterne/.test(await dlgText()) && await p.evaluate(() => document.getElementById('menu').hidden), 'Gespräch schließt das Menü und startet (Lyra: Sternbilder)');
+  const btn = await p.evaluate(() => document.getElementById('mcont').textContent);
+  ok(/Sternbilder/.test(btn) && await p.evaluate(() => !!document.querySelector('[data-lfc]')), 'Camp-Reiter zeigt wartende Gespräche und „Zum Camp“');
+  await p.evaluate(() => document.querySelector('[data-lfc]').click()); await w(2500); await calm();
+  ok(await p.evaluate(() => __zotik.WLD && __zotik.WLD.camp), 'Knopf reist ins Camp');
+  await flood(p); let r0 = await talk(p, 'Lyra'); await w(2400);
+  ok(!r0 && await p.evaluate(() => __zotik.LF().st().tk.lyra === 1), 'Gespräch direkt am Feuer bei Lyra (Sternbilder) ' + (r0 || ''));
   await calm();
   // zweites Gespräch schaltet das persönliche Kapitel frei (nach Kapitel 3)
-  await p.evaluate(() => { __zotik.toggleMenu(true, 'camp'); document.querySelector('[data-lft="lyra"]').click(); }); await w(500); await calm();
-  await p.evaluate(() => { __zotik.toggleMenu(true, 'camp'); document.querySelector('[data-lft="nia"]').click(); }); await w(500); await calm();
-  await p.evaluate(() => { __zotik.toggleMenu(true, 'camp'); document.querySelector('[data-lft="nia"]').click(); }); await w(500); await calm();
+  for (const id of ['lyra', 'nia', 'nia']) { await p.evaluate(id => __zotik.LF().fireTalk(id), id); await w(500); await calm(); }
   let L = await p.evaluate(() => { const l = __zotik.LF().st(); return { tk: l.tk, pq: l.pq, b: l.b }; });
   ok(L.tk.lyra === 2 && L.pq.lyra === 1 && L.pq.nia === 1, 'Gespräche zählen, persönliche Kapitel freigeschaltet: ' + JSON.stringify(L));
-  await p.evaluate(() => __zotik.toggleMenu(false));
 
   // Solmera: Korrod erscheint, Nias Kapitel (Keshs Bogen) und Seelenlicht „Licht“
   await p.evaluate(() => { const S = __zotik.S(); S.cd[4] = { st: 7, fin: 0, bd: 1, arr: 1, e1: 1, e2: 1, k: 0, b: [0, 0, 0], ord: 0 }; __zotik.switchWorld(4); }); await w(1500); await calm();
@@ -82,8 +80,8 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); 
 
   // Lebensentscheidung mit Lyra
   await p.evaluate(() => { const l = __zotik.LF().st(); l.b.lyra = 45; l.tk.lyra = 3; __zotik.toggleMenu(true, 'camp'); }); await w(300);
-  ok(await p.evaluate(() => !!document.querySelector('[data-lfv]')), 'Lager bietet die Lebensentscheidung an');
-  await p.evaluate(() => document.querySelector('[data-lfv]').click()); await w(400);
+  ok(await p.evaluate(() => /Sternenhimmel/.test(document.getElementById('mcont').textContent)), 'Camp-Reiter kündigt die Lebensentscheidung an');
+  await p.evaluate(() => { __zotik.toggleMenu(false); __zotik.LF().fireTalk('lyra'); }); await w(400);
   for (let k = 0; k < 10 && (await opt(p, 'Versprechen')); k++) { await skip(p); await w(300); }
   await calm();
   ok(await p.evaluate(() => __zotik.LF().st().vow === 'bund' && __zotik.LF().bondMul('lyra', 1) > 1.3), 'Versprechen gegeben: Lyras Teamangriff dauerhaft stärker');

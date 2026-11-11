@@ -16,7 +16,8 @@
     "🌐 Online mitspielen: als zweiter Spieler beim Gastgeber einsteigen (4-stelliger Code oder QR-Code).",
     "Steuerung: Übersicht aller Tasten.",
     "🎮 Mini-Spiele: die ZOTIK-Arcade mit eigenen Rekorden.",
-    "🏝️ Bunte Insel: ein Abstecher auf die Bunte Insel."
+    "🏝️ Bunte Insel: ein Abstecher auf die Bunte Insel.",
+    "Ein neues Abenteuer beginnt im Camp am Lagerfeuer: Prolog, Zotiks Traum – dann über den Pfad nach Süden ins Dorf Lunaris zu Mira."
    ]
   },
   {
@@ -123,9 +124,9 @@
    "t": "Gefährten, Lagerfeuer und die Vier Gesichter",
    "list": [
     "💞 Bindung: Lyra, Nia und Rovan haben je eine Bindung von 0 bis 100 (Stufe alle 20). Sie wächst mit jedem gemeinsamen Sieg (Bosse viel mehr), mit Gesprächen und persönlichen Kapiteln. Höhere Bindung = stärkere Gefährten und stärkere Teamangriffe.",
-    "🔥 Lagerfeuer (Menü → Camp, ganz oben): Jeder Gefährte hat vier Gespräche, die nach bestimmten Kapiteln und Bindungsstufen frei werden. Jedes Gespräch gibt +8 Bindung.",
+    "🔥 Camp und Lagerfeuer: Das Camp ist eine eigene kleine Vorwelt (Weltreise → „Vorwelt: Camp“, Weltenstein im Camp, Wegweiser „Pfad zum Camp“ südlich vom Dorf Lunaris). Ein neues Spiel beginnt dort. Am Feuer rastest du (Leben und Mana voll, speichern); deine Gefährten sitzen ums Feuer – sprich sie an. Jeder hat vier Gespräche, die nach bestimmten Kapiteln und Bindungsstufen frei werden (+8 Bindung). Der Camp-Reiter im Menü zeigt, wer etwas erzählen will.",
     "📖 Persönliche Kapitel: Das zweite Gespräch schaltet eine eigene Geschichte frei – Nia: Keshs Bogen (Solmera), Rovan: sein alter Posten (Frosthain), Lyra: Ilvas Echo (Noctaris). Ein Zeichen in der Welt startet den Kampf; der Gefährte muss dabei sein. Danach kämpft er dauerhaft stärker.",
-    "🌌 Lebensentscheidung: Nach Kapitel 5, mit Lyra-Bindung ab 40 und drei Gesprächen möchte Lyra unter dem Sternenhimmel reden. Ein Versprechen macht ihren Teamangriff stärker, „beste Freunde“ lässt sie öfter heilen.",
+    "🌌 Lebensentscheidung: Nach Kapitel 5, mit Lyra-Bindung ab 40 und drei Gesprächen möchte Lyra am Feuer unter dem Sternenhimmel reden (sprich sie im Camp an). Ein Versprechen macht ihren Teamangriff stärker, „beste Freunde“ lässt sie öfter heilen.",
     "👁️ Die Vier Gesichter des Risses: Vexa (Furcht), Korrod (Zerfall), Mirrel (Täuschung) und Ashen (Leere) begegnen dir in Elaris, Solmera, Frosthain und Noctaris. Gegen Vexa kannst du beim ersten Mal nicht gewinnen – das Spiel geht danach mit einer Szene weiter, nicht mit Game Over. In Astralis und Elyndra stellst du dich ihnen am „Riss der Gesichter“ wirklich.",
     "🎵 Leitmotive: Jeder Gefährte und jedes Gesicht des Risses hat eine eigene kurze Melodie (bei Gesprächen, Kapiteln, Teamangriffen und Auftritten)."
    ]

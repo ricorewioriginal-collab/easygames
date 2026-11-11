@@ -11,7 +11,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); 
   const tap = async (i, ms = 260) => { await p.evaluate(i => { __press(i, true); }, i); await p.waitForTimeout(140); await p.evaluate(i => { __press(i, false); }, i); await p.waitForTimeout(ms); };
   const st = () => p.evaluate(() => { const f = document.querySelector('#menu .pfoc'), on = document.querySelector('#tabs .on'), m = document.getElementById('menu');
     return { open: !m.hidden, tab: on ? on.textContent.trim() : '', foc: f ? f.textContent.trim().slice(0, 30) : '', zone: f ? (f.closest('#tabs') ? 'tabs' : 'content') : '', eq: JSON.stringify(__zotik.S().gear || {}) }; });
-  await p.evaluate(() => { window.__padOn = true; });
+  await p.evaluate(() => { window.__padOn = true; }); await p.waitForTimeout(1200);   // gamepad.js sucht jede Sekunde nach Pads (Testpad sendet kein gamepadconnected)
   await tap(0); await tap(0);   // Controller wecken (erster Druck schaltet nur den Controller-Modus ein)
   await p.evaluate(() => __zotik.toggleMenu(true)); await p.waitForTimeout(300);
   let s = await st();

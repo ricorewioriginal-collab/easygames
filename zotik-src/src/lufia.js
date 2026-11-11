@@ -100,6 +100,7 @@ export function createLufia(C) {
   /* ---- Ereignisse beim Betreten einer Welt (nach der Ankunftsszene, wenn Ruhe ist) ---- */
   function arrive(n) {
     fight = null; unwin = null; pend = []; const l = st(), W = C.WLD();
+    if (n === 13) { const w = party().filter(id => { const t = nextTalk(id); return t && !t.lock }); if (w.length || decOk()) pend.push(() => C.toast('🔥 Am Feuer wartet ein Gespräch: ' + (decOk() ? 'Lyra' : w.map(id => NAMES[id]).join(', ')))); return }
     if (!W || W.cave || (C.guest && C.guest())) return;
     l.fa = l.fa || {};
     if (n === 2 && !l.fa.v && !C.chDone(2)) pend.push(() => faceVexa());
@@ -180,13 +181,13 @@ export function createLufia(C) {
   function campHTML() {
     const ps = party(); if (!ps.length) return '';
     const l = st();
-    let h = '<h3>🔥 Lagerfeuer</h3>';
+    let h = `<h3>🔥 Lagerfeuer</h3><div class="row"><span>Gespräche führst du im Camp direkt am Feuer bei deinen Gefährten.</span><span>${C.inCamp() ? '<small>du bist im Camp</small>' : '<button class="cpb" data-lfc="1">⛺ Zum Camp</button>'}</span></div>`;
     for (const id of ps) {
       const t = nextTalk(id), b = l.b[id] || 0;
-      h += `<div class="row"><span>${NAMES[id]} · 💞 ${b}/100 (Stufe ${lv(id)})${l.pq[id] === 2 ? ' · 📖' : ''}</span><span>${t && !t.lock ? `<button class="cpb" data-lft="${id}">Gespräch: ${t.t}</button>` : t ? '🔒 ' + t.lock : 'alles erzählt'}</span></div>`;
+      h += `<div class="row"><span>${NAMES[id]} · 💞 ${b}/100 (Stufe ${lv(id)})${l.pq[id] === 2 ? ' · 📖' : ''}</span><span>${t && !t.lock ? '💬 „' + t.t + '“ wartet am Feuer' : t ? '🔒 ' + t.lock : 'alles erzählt'}</span></div>`;
       if (l.pq[id] === 1) h += `<div class="row"><span style="color:var(--dim)">📖 Persönliches Kapitel: ${PQ[id].name} (Welt ${PQ[id].w})</span><span></span></div>`;
     }
-    if (decOk()) h += `<div class="row"><span>🌌 Lyra möchte unter dem Sternenhimmel mit dir reden</span><span><button class="cpb" data-lfv="1">Zu ihr gehen</button></span></div>`;
+    if (decOk()) h += `<div class="row"><span>🌌 Lyra möchte am Feuer unter dem Sternenhimmel mit dir reden</span><span></span></div>`;
     else if (l.vow) h += `<div class="row"><span>🌌 ${l.vow === 'bund' ? 'Zotik & Lyra: ein Versprechen' : 'Zotik & Lyra: beste Freunde'}</span><span></span></div>`;
     return h;
   }
@@ -194,6 +195,13 @@ export function createLufia(C) {
   function talk(id) {
     const t = nextTalk(id); if (!t || t.lock) return; const l = st(); C.closeMenu(); motif(id);
     C.say(t.L.map(x => x.slice()), () => { l.tk[id] = (l.tk[id] || 0) + 1; addBond(id, 8); if (t.q && !l.pq[id]) { l.pq[id] = 1; C.toast(`📖 Neues persönliches Kapitel: ${PQ[id].name} (Welt ${PQ[id].w})`) } C.saveGame(true) });
+  }
+  const IDLE = { lyra: ['Die Laterne steht heute besonders hell.', 'Ruh dich aus, Zotik. Ich halte Wache.'], nia: ['Wenn du mir noch einen Marshmallow klaust, schieße ich auf dein Abendessen.', 'Ich zähle Sternschnuppen. Bin bei sieben.'], rovan: ['Das Feuer brennt gut. Gutes Holz.', 'Schlaf. Ich bin noch wach.'] };
+  /* Gespräch direkt am Feuer: erst die Lebensentscheidung, dann das nächste Lagerfeuer-Gespräch, sonst ein kurzer Satz */
+  function fireTalk(id) {
+    if (id === 'lyra' && decOk()) return decide();
+    const t = nextTalk(id); if (t && !t.lock) return talk(id);
+    const L = IDLE[id] || ['…']; C.say([[NAMES[id], L[Math.random() * L.length | 0] + (t && t.lock ? ` (Nächstes Gespräch: ${t.lock})` : '')]]);
   }
   function decide() {
     if (!decOk()) return; C.closeMenu(); motif('lyra');
@@ -205,8 +213,7 @@ export function createLufia(C) {
     C.say(v === 'bund' ? [['Zotik', 'Kein getrennter Weg. Ich verspreche es dir – unter der Laterne.'], ['Lyra', 'Dann halte ich dich daran fest. Für immer.'], ['Erzähler', 'Ein Band aus Sternenlicht legt sich um beide. (Lyras Teamangriff dauerhaft stärker)']] : [['Zotik', 'Was auch passiert – du bist meine beste Freundin. Daran ändert kein Riss etwas.'], ['Lyra', 'Beste Freunde. Das ist mehr, als die meisten je haben.'], ['Erzähler', 'Lyra lacht – und es klingt wie ein kleiner Bach. (Lyras Heilung kommt öfter)']], () => C.saveGame(true));
   }
   function bind(c, tab, re) {
-    c.querySelectorAll('[data-lft]').forEach(b => b.onclick = () => talk(b.dataset.lft));
-    c.querySelectorAll('[data-lfv]').forEach(b => b.onclick = () => decide());
+    c.querySelectorAll('[data-lfc]').forEach(b => b.onclick = () => C.travel(13));
     c.querySelectorAll('[data-lfs]').forEach(b => b.onclick = () => { soulSet(b.dataset.lfs); re() });
   }
 
@@ -238,7 +245,7 @@ export function createLufia(C) {
   function kill(e) { if (!e || e.unwin) return; const v = e.d && (e.d.boss || e.cboss) ? 3 : e.elite ? 1 : .15; for (const id of party()) addBond(id, v) }
 
   return {
-    motif, addBond, bondMul, arrive, update, kill, unwinEnd, campHTML, soulHTML, caveHTML, bind, relic, dayDone, daySeed, today,
+    motif, addBond, bondMul, arrive, fireTalk, update, kill, unwinEnd, campHTML, soulHTML, caveHTML, bind, relic, dayDone, daySeed, today,
     em: () => SOULS[soul()].em, soulEl: () => SOULS[soul()].el || undefined, soulMul: () => soul() === 'schatten' ? 1.25 : 1, fav: k => SOULS[soul()].fav === k, soul,
     bond: id => st().b[id] || 0, unwinOn: () => !!unwin, st
   };
