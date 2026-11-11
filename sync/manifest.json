@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "34a5aa570c3e",
- "generated": "2026-11-11T14:24:41+01:00",
- "commit": "a7f80ca4295d840ebb872c75e164f09839314c42",
+ "version": "9544d1f75e42",
+ "generated": "2026-11-11T14:46:35+01:00",
+ "commit": "1405c731c5c4fead6e4d2f795b1ef01ca277e4b5",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8132,11 +8132,6 @@
    "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
   },
   {
-   "p": "riftzone/client/public/heightmap.bin",
-   "s": 1182722,
-   "h": "121bcf27e4e7d5dda62e7ed7e061d76a1f8e4dec907c9978a3a32900d5ef6d97"
-  },
-  {
    "p": "riftzone/client/src/ui/styles.css",
    "s": 30181,
    "h": "28c5e1ddb893c40dd6896ecc6a3d7d5ee09244423276d839b5aecb7a32579129"
@@ -8844,7 +8839,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256787,
-   "h": "f83630aad85cf7481340be09b2b508f66e8298545c6c96ec695a740ca4b09da2"
+   "h": "f2a4e4ba16b702e1b758844f3c1483da043720d8ca8619b347f67ede32927f14"
   },
   {
    "p": "taschi/card.svg",
