@@ -107,14 +107,19 @@ export function createTown(C) {
       /* drei Kristallslots an der linken Wand, Blick in den Raum (+x) */
       const sx0 = -w / 2 + t + .55, SZ = [-2.9, -1.2, .5], body = M(0x3a1a6a, { r: .5, m: .3 }), dark = M(0x120a20, { r: .9 });
       for (const lz of SZ) { box(body, sx0, 0, lz, .9, 2.0, 1.1); box(dark, sx0 + .36, .95, lz, .22, .62, .92); box(M(0xffd040, { e: 0xffb020, ei: 1.6 }), sx0, 2.0, lz, .9, .25, 1.1); box(gold, sx0 + .5, .55, lz, .3, .08, .9);
-        g.add(mk(G.cyl0, gold, sx0 + .2, Y + 1.5, lz + .62, .04, .7, .04, false)); g.add(mk(G.sph0, M(0xff3a4a, { e: 0xff2030, ei: 1.2 }), sx0 + .2, Y + 1.9, lz + .62, .1, .1, .1, false)); g.add(glow(0xffc040, 2.4, sx0 + .3, Y + 2.3, lz, .5)); solid(sx0, lz, .5, .6); }
+        g.add(mk(G.cyl0, gold, sx0 + .2, Y + 1.5, lz + .62, .04, .7, .04, false)); g.add(mk(G.sph0, M(0xff3a4a, { e: 0xff2030, ei: 1.2 }), sx0 + .2, Y + 1.9, lz + .62, .1, .1, .1, false)); g.add(glow(0xffc040, 1.3, sx0 + .3, Y + 2.3, lz, .3)); solid(sx0, lz, .5, .6); }
       /* Sternenrad an der Rückwand */
       box(dark, 0, .5, -d / 2 + t + .08, 3.7, 3.7, .12); for (let a = 0; a < 12; a++) g.add(mk(G.sph0, M(0xffe070, { e: 0xffc030, ei: 2 }), Math.cos(a * .5236) * 1.78, Y + 2.35 + Math.sin(a * .5236) * 1.78, -d / 2 + t + .2, .07, .07, .07, false));
       const ptr = mk(G.cone0, M(0xff4a5a, { e: 0xff2a3a, ei: 1.4 }), 0, Y + 4.05, -d / 2 + t + .3, .16, .4, .1, false); ptr.rotation.z = Math.PI; g.add(ptr); solid(0, -d / 2 + t + .2, 1.9, .25);
       /* Kartentisch rechts */
       const tx = w / 2 - t - 2.4, tz2 = 1.0; box(wood2, tx, 0, tz2, 2.8, .8, 1.5); box(M(0x1a7a4a, { r: 1 }), tx, .8, tz2, 2.7, .06, 1.4); solid(tx, tz2, 1.4, .75);
-      lamp(0, h - .5, 0, 5); lamp(-3.4, h - .5, 2, 3); lamp(3.4, h - .5, -2, 3); lamp(tx, h - 1.2, tz2, 2.6);
+      lamp(0, h - .5, 0, 2.6); lamp(-3.4, h - .5, 2, 1.8); lamp(3.4, h - .5, -2, 1.8); lamp(tx, h - 1.2, tz2, 1.6);
       roofGroup.add(mk(G.box, M(0xffd040, { e: 0xffb020, ei: 1.2 }), 0, h + .7, d / 2 + .12, 6.4, 1.0, .2, false)); roofGroup.add(mk(G.oct, M(0xffe070, { e: 0xffc030, ei: 2 }), 0, h + 2.0, d / 2 + .1, .8, 1.0, .8, false)); roofGroup.add(glow(0xffc040, 9, 0, h + 1.6, d / 2 + .6, .7));
+      /* Vordach mit Lichterkette, goldene Säulen und roter Teppich vor dem Eingang */
+      { const gd = M(0xe8c060, { r: .3, m: .8, e: 0xe8c060, ei: .5 }), fz = d / 2 + 1.0; roofGroup.add(mk(G.box, M(0x3a1a6a, { r: .5 }), 0, 3.05, fz - .2, 5.2, .5, 1.9)); roofGroup.add(mk(G.box, gd, 0, 2.78, fz - .2, 5.4, .1, 2.1, false));
+        for (let k = 0; k < 9; k++) roofGroup.add(mk(G.sph0, M(k % 2 ? 0xff4ad0 : 0xffe070, { e: k % 2 ? 0xff4ad0 : 0xffc030, ei: 2 }), -2.4 + k * .6, 3.05, fz + .78, .09, .09, .09, false));
+        for (const sd of [-1, 1]) { roofGroup.add(mk(G.cyl, gd, sd * 2.3, 1.5, fz + .5, .16, 2.6, .16)); roofGroup.add(mk(G.cyl, gd, sd * 2.3, .22, fz + .5, .26, .16, .26, false)); }
+        roofGroup.add(mk(G.box, M(0x8a1a3a, { r: 1 }), 0, .21, fz + .2, 2.0, .05, 3.2, false)); }
       P.extra = { casino: { sx0, SZ, wheel: [0, 2.35, -d / 2 + t + .22], table: [tx, tz2], Y } };
     }
     /* Ladenschild über der Tür (wird wie die Fenster ausgeblendet, sobald man drinnen ist) */
