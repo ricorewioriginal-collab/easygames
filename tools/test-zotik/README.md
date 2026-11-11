@@ -17,6 +17,7 @@ node tools/test-zotik/raetsel.cjs       # neue Rätselarten in drei Schwierigkei
 node tools/test-zotik/ausbau.cjs        # Fähigkeitenbaum, Doppelsprung, Bestiarium-Belohnung, veränderte Gegner in Neues Spiel+, Auftragsfeld
 node tools/test-zotik/kuenste.cjs       # Riss-Künste: Sperre, Wirkung jedes Zaubers und jeder passiven Kunst, Ankündigung
 node tools/test-zotik/bosse.cjs 2 10     # eigene Angriffe jedes Bosses und Zwischengegners, Schildträger, Springer, Dreifachschuss
+node tools/test-zotik/weltregeln.cjs     # eigene Weltregel jeder Welt 2–10: Wirkung, erreichbare Stellen, Truhen auf den Platten
 ```
 
 Die Tests nutzen `?debug` (`__zotik`) und schalten das Zeichnen ab (`__zotik.noRender`), damit sie auch ohne Grafikkarte schnell laufen.
