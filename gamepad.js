@@ -317,11 +317,18 @@
     }
     return out;
   }
+  var HERE = String(root.location && root.location.pathname || '').replace(/[^\/]*$/, '');
+  function side(e) {
+    if (e.closest && e.closest('header,nav,[role=banner],[role=navigation]')) return true;
+    var l = e.closest ? e.closest('a[href]') : null; if (!l) return false;
+    try { var u = new root.URL(l.getAttribute('href'), root.location.href); return u.origin !== root.location.origin || u.pathname.replace(/[^\/]*$/, '') !== HERE; } catch (x) { return false; }
+  }
   function pick(dir) {
     var list = candidates(); if (!list.length) return null;
     var cur = focusEl && usable(focusEl), best = null, bestScore = Infinity, i, c;
-    if (!cur) {   // erster Druck: oberster, dann linkester Knopf
-      for (i = 0; i < list.length; i++) { c = list[i]; var s = Math.round(c.r.top / 8) * 1e5 + c.r.left; if (s < bestScore) { bestScore = s; best = c; } }
+    if (!cur) {   // erster Druck: oberster, dann linkester Knopf – Kopfzeile (Logo, Symbolleiste) und Links aus dem Spiel hinaus erst, wenn es sonst nichts gibt
+      for (i = 0; i < list.length; i++) if ((list[i].e.tagName === 'BUTTON' || list[i].e.getAttribute('role') === 'button') && !side(list[i].e)) return list[i];   // erster Knopf des Spiels (Reihenfolge der Seite), nicht ein Auswahlfeld daneben
+      for (i = 0; i < list.length; i++) { c = list[i]; var s = Math.round(c.r.top / 8) * 1e5 + c.r.left + (side(c.e) ? 1e9 : 0); if (s < bestScore) { bestScore = s; best = c; } }
       return best;
     }
     var vx = [0, 0, -1, 1][dir], vy = [-1, 1, 0, 0][dir];
@@ -398,7 +405,16 @@
     // Spiel arbeitet mit echtem Fokus (z. B. „Los geht's“ blau umrandet): dort weitermachen und den Fokus mitnehmen – sonst zwei Markierungen
     var a = doc.activeElement, real = a && a !== doc.body && /^(BUTTON|A|INPUT|SELECT|TEXTAREA)$/.test(a.tagName) && (!scopeEl || scopeEl.contains(a)) && usable(a);
     if (real && (!focusEl || !usable(focusEl))) focusEl = a;
-    var c = pick(dir); if (!c && (focusEl || winBox()) && scrollOn(dir)) c = pick(dir);
+    // Noch kein Rahmen und ein Fenster in der Bildmitte: dort anfangen (nicht bei Knöpfen daneben); liegen seine Knöpfe unter dem Bild, erst scrollen
+    if (!(focusEl && usable(focusEl)) && !scopeEl) {
+      var wb = winBox(), inW = function () { var l = wb.querySelectorAll(SEL), n = 0, k; for (k = 0; k < l.length; k++) { if (usable(l[k])) return 1; if (!l[k].disabled && below(l[k])) n = 2; } return n; }, st = wb ? inW() : 0;
+      for (var tries = 0; st === 2 && tries < 8 && scrollOn(dir < 2 ? dir : 1); tries++) st = inW();
+      if (st === 1) { scopeEl = wb; focusEl = null; var f0 = pick(dir); scopeEl = null; if (f0) { focusEl = f0.e; drawRing(); cursorUntil = 0; show(cursor, false); return; } }
+    }
+    var c = pick(dir), was = focusEl;
+    // kein Knopf mehr in dieser Richtung sichtbar – oder nur einer schräg daneben (andere Spalte): erst weiterscrollen (Knöpfe unterhalb des Bildes)
+    var wr = was && was.getBoundingClientRect ? was.getBoundingClientRect() : null, off = c && wr && c.e !== was && dir < 2 && (c.r.right <= wr.left || c.r.left >= wr.right);
+    if ((!c && (focusEl || winBox()) || c && was && c.e === was && dir < 2 || off) && scrollOn(dir)) c = pick(dir) || c;
     if (!c) return;
     if (real && c.e !== a && c.e.focus) try { c.e.focus({ preventScroll: true }); } catch (x) { }
     focusEl = c.e; drawRing(); cursorUntil = 0; show(cursor, false);
@@ -414,6 +430,13 @@
     }
     mouseDown = true; pointer('down', c.x, c.y, true); pointer('up', c.x, c.y, true); mouseDown = false; if (!pointer.ate) click(c.e, c.x, c.y);
     root.setTimeout(drawRing, 50);
+    // Der Knopf hat ein neues Fenster geöffnet (er selbst ist weg): Rahmen gleich auf dessen ersten Knopf – wie an der Konsole ist sofort etwas gewählt
+    root.setTimeout(function () {
+      if (dlg || osk || menu || !padOn || (focusEl && usable(focusEl))) return;
+      var wb = winBox(), keep = scopeEl; if (!wb) return;
+      scopeEl = wb; focusEl = null; var f = pick(0); scopeEl = keep;
+      if (f) { focusEl = f.e; drawRing(); }
+    }, 300);
     return true;
   }
 

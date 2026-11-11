@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "8d05bf6ee517",
- "generated": "2026-11-11T18:58:37+01:00",
- "commit": "23587875ef817385991fa9934f6b88fce19ec0ae",
+ "version": "b5b76fce5f9a",
+ "generated": "2026-11-11T20:11:08+01:00",
+ "commit": "5ee44c52290a2ee691819cd53facdd19496b45e1",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5468,8 +5468,8 @@
   },
   {
    "p": "funkgolf/js/game.js",
-   "s": 56393,
-   "h": "bf5f13c35a8b8ab9347b6a805f75c6aa9a97c5e72a95be3c826a2efe22e79f42"
+   "s": 56537,
+   "h": "ad9b12caa02dc9062f3233c5f43de9cfba0bbb596ff29e8fc6eaf925b4f52787"
   },
   {
    "p": "funkgolf/manifest.webmanifest",
@@ -5533,8 +5533,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 70774,
-   "h": "70e7a7202b05aede5165c4eb289b446e392fc7d074acb618d6d0a833298d0eba"
+   "s": 73189,
+   "h": "dc82bed3e8f3119b5eefe9949c466156d0b5642ee6d0298a6801676c978ef819"
   },
   {
    "p": "games.js",
@@ -8844,7 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256787,
-   "h": "bed803ec38b004eec885a8d101542348dd77971d488f9280c43574bdb49bfa1c"
+   "h": "e3f634b05b3a58b3ca56fb91a0a04a600149eb81774c0832c27524d55b31b2f8"
   },
   {
    "p": "taschi/card.svg",
