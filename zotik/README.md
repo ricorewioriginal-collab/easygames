@@ -18,7 +18,7 @@ Ordner: Dieses Spiel liegt jetzt in `zotik/` und ist die Startseite der Pages-Se
 - Menü, Aufgaben und Steuerung sind für Hoch- und Querformat kompakt (Tabs, scrollbar); Handy zeigt Touch-Steuerung statt Tastaturliste.
 - Ablauf: Startscreen („Tippen oder Taste drücken") → Ladebalken → Menü (Neues Spiel / Spiel laden / Steuerung) → Speicherplatz (3 Slots) → „Mein Zotik" (Fellton, Schal, Kleidung; nur bei neuem Spiel) → Spawn im Dorf.
 - Speicherstände: `zotik2_save_slot1` bis `zotik2_save_slot3`; die Auswahl wird im Spielstand (`cos`) gespeichert.
-- Häuser sind begehbar: Tür vorn, Innenraum mit Möbeln (Taverne, Schmiede, drei Wohnhäuser), Wandkollision, Dach und Wände blenden beim Betreten aus; in drei Häusern liegt eine Truhe.
+- Häuser sind begehbar: Tür vorn, Innenraum mit Möbeln (Taverne, Schmiede, drei Wohnhäuser), Wandkollision, Dach und Wände blenden beim Betreten aus; in drei Häusern liegt eine Truhe. Jedes Gebäude hat eine Funktion (`zotik-src/src/town.js`): ⛪ Kirche (Segen = Heilung und Wiederbelebung, Sternensegen +25 % Erfahrung, Speichern), ⚔️ Waffenladen & Schmiede (Ausrüstung, Schärfen, Verstärken bis +3 aus Fell/Rissstaub/Kernsplittern), ✨ Magieladen (Schmuck, Äther, Zauberkunde), 🧪 Tränke & Extras (Heiltränke, Phönix-Trank, Kristallfrucht, Kräuter), 🍺 Wirtshaus (Rasten, Gerüchte), Wohnhäuser (Truhen, Bücherregale). Die Bauplätze von Kirche, Wirtshaus und Casino sind eingeebnet (`bflat`).
 
 ## Kapitel 2 bis 10 (Welten-Baukasten)
 - Nach Kapitel 1 öffnet das **Weltentor** (Standbild mit Ring im Dorf, `E`) das Menü „Weltreise". Jede Welt öffnet erst, wenn die vorige geschafft ist; man kann jederzeit zurückreisen.
@@ -40,7 +40,7 @@ Ordner: Dieses Spiel liegt jetzt in `zotik/` und ist die Startseite der Pages-Se
 - Vereinfacht gegenüber dem alten Spiel: Die Dungeons sind Siegel-Stationen mit Wächterkampf statt begehbarer Räume.
 
 ## Casino, Nautilux, Nebenaufträge, Halle der 100, NG+
-- **Golden Star Casino** in Valdoria (Kapitel 3): Kristallslots mit Einsätzen 10/50/100, nur virtuelle Splitter, abschaltbar (Familienoption, `cas.off`).
+- **Golden Star Casino** in Valdoria (Kapitel 3): begehbarer Saal mit drei Spielen als 3D-Geräte – Kristallslots (echte Walzen), Sternenrad und Höher oder Tiefer am Kartentisch. Einsätze 10/50/100, nur virtuelle Splitter, Auszahlung 92–97 %. Stella am Eingang schaltet die Geräte ein und aus (Familienoption). Test: `node tools/test-zotik/stadt.cjs`.
 - **Nautilux** (Professorium schenkt sie nach Kapitel 1, `fl.naut`; Vorlage: Master-Sheet „Professoriums modulares Fahrzeug, U-Boot und spätere Transformationen“): V (am Handy 🚤) steigt ein und aus, B (🔄) wechselt die Form. Sie verwandelt sich im Spielverlauf:
   - **Gleiter** 🚤 (ab Kapitel 1): schnell, rammt Gegner.
   - **U-Boot** 🛥️ (nach Kapitel 4): taucht in die blauen **Tiefsee-Becken** jeder Welt (zwei Truhen darin); Shift = Turbo.
