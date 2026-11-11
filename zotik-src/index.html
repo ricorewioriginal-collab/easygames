@@ -198,6 +198,25 @@ body.remote #joy,body.remote #skills,body.remote #steerBtn{display:none!importan
 .ov .glass,#puz .glass{max-height:calc(100vh - 20px)!important;max-height:calc(100dvh - 20px)!important;overflow:auto}
 @media (max-height:480px){#mbox{padding:8px 12px!important;gap:6px 10px!important}#mbox::before{font-size:17px}#mbox::after{display:none}#mbox .mb button{padding:4px 10px!important}#puz .glass{padding:10px 14px!important}#puz h3{font-size:18px!important;margin-bottom:6px!important}#pW{margin:8px 0!important;padding:8px;gap:8px!important}#pW .pzd,#pW .pzn,#pW .pzb{min-width:70px!important;min-height:70px}}
 #bJump{right:180px;bottom:6px;border-color:#b0ffd8}body.touch #bJump{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;width:58px;height:58px;font-size:21px;line-height:1.05;background:rgba(30,24,62,.72);border:3px solid #b0ffd8;right:174px;bottom:128px}body.touch #bJump small{display:none}#bJump .bl{font-size:9.5px;letter-spacing:-.4px}body.remote #bJump{display:none}
+/* ---- Handy (Touch): schlanke Anzeige ohne Felder, die Sicht oder Spiel verdecken; am PC bleibt alles unverändert ---- */
+body.touch #deck{opacity:1;pointer-events:none}
+body.touch #deck .dh{pointer-events:auto;display:inline-block;align-self:flex-start;padding:6px 11px!important;font-size:11px!important;font-weight:700;letter-spacing:.3px;border-radius:11px;background:rgba(30,24,62,.72);border:1.5px solid rgba(255,255,255,.3);color:#fff;text-shadow:0 1px 2px #000}
+body.touch #deck button{pointer-events:auto}
+body.touch #deck:not(.open) button{display:none}
+body.touch #deck:not(.open){width:max-content!important;min-width:0!important}
+body.touch #deck.open{background:rgba(10,14,40,.55);border-radius:12px;padding:4px}
+body.touch #gauges{width:auto;max-width:150px;padding:3px 7px;gap:2px;font-size:9px;background:rgba(10,14,40,.5);border:0;box-shadow:none;border-radius:8px}
+body.touch #gauges>div{grid-template-columns:auto minmax(54px,1fr) auto;gap:5px}
+body.touch #gauges b{font-size:9px;white-space:nowrap}
+body.touch #gauges .bar{height:4px}
+body.touch #gauges span{min-width:0;font-size:9px}
+body.touch #quest{pointer-events:auto;width:auto;max-width:min(200px,40vw);padding:4px 9px;background:rgba(10,14,40,.55);box-shadow:none}
+body.touch #quest b{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.touch #quest span,body.touch #quest #qo{font-size:10.5px;line-height:1.25;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+body.touch #quest.open b{white-space:normal}
+body.touch #quest.open span,body.touch #quest.open #qo{-webkit-line-clamp:unset}
+body.touch .sb .bl{max-width:calc(100% - 6px);overflow:hidden;text-overflow:clip}
+body.touch #bDodge .bl,body.touch #bUse .bl,body.touch #bJump .bl,body.touch #bSkill .bl{font-size:8.5px;letter-spacing:-.5px}
 </style>
 </head>
 <body>
