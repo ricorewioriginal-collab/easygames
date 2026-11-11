@@ -55,6 +55,10 @@ const COL=[];
 function addCol(x,z,r){COL.push({x,z,r})}
 const colFree=(x,z,r)=>!COL.some(c=>Math.hypot(c.x-x,c.z-z)<c.r+r)&&!HOUSES.some(H=>Math.hypot(H.x-x,H.z-z)<H.R+r);   /* kein Baum, Fels oder Haus im Weg */
 const CAMCOL=[],HOUSES=[];let inH=null;
+/* Springen und Plattformen: PLAT = schwebende Platten {x,z,hx,hz,top,th}; man landet von oben darauf, von der Seite sind sie eine Wand, hohe Platten unterläuft man */
+const PLAT=[],GRAV=26,JUMPV=10;
+function platTop(x,z,y){let t=-1e9,P=null;for(const p of PLAT)if(Math.abs(x-p.x)<p.hx&&Math.abs(z-p.z)<p.hz&&y>=p.top-.4&&p.top>t){t=p.top;P=p}return P}
+function platWall(x,z,y){for(const p of PLAT)if(Math.abs(x-p.x)<p.hx+.3&&Math.abs(z-p.z)<p.hz+.3&&y<p.top-.4&&y+1.5>p.top-p.th)return true;return false}
 function pushOut(o,r){for(let ps=0;ps<2;ps++){const x0=o.x,z0=o.z;pushOut1(o,r);if(o.x===x0&&o.z===z0)break}}
 function pushOut1(o,r){
   for(let k=0;k<HOUSES.length;k++){const H=HOUSES[k],ex0=o.x-H.x,ez0=o.z-H.z,lim=H.R+r+1;if(ex0*ex0+ez0*ez0>lim*lim)continue;
@@ -270,6 +274,19 @@ const nqEmo={};
 function nqMarker(x,z,em){const g=new T.Group(),y=hgt(x,z);g.position.set(x,y,z);let tx=nqEmo[em];if(!tx){const cv=document.createElement('canvas');cv.width=cv.height=96;const c=cv.getContext('2d');c.font='70px serif';c.textAlign='center';c.textBaseline='middle';c.fillText(em,48,54);tx=nqEmo[em]=new T.CanvasTexture(cv)}
   const sp=new T.Sprite(new T.SpriteMaterial({map:tx,transparent:true}));sp.position.y=1.3;sp.scale.set(1.1,1.1,1);g.add(sp);g.add(glow(0xffe08a,3.2,0,1.2,0,.7));g.add(mk(G.cyl0,M(0xffe08a,{e:0xffc040,ei:1.6,t:1}),0,.05,0,.7,.06,.7,false));scene.add(g);animObjs.push({fn(t){sp.position.y=1.3+Math.sin(t*2.4)*.15;g.visible=!g.userData.on||g.userData.on()}});return g}
 function nqSpot(k){const px=z=>WLD?WLD.path(z):PATHX(z);for(let t=0;t<80;t++){const z=-36-((k*23+t*7)%88),x=px(z)+((k+t)%2?1:-1)*(7+((k*5+t*3)%7));if(!pBlocked(x,z)&&colFree(x,z,1.6)&&(!WLD||!WLD.reach||WLD.reach(x,z))&&Math.abs(hgt(x+1,z)-hgt(x-1,z))<1.2)return[x,z]}return null}
+/* Sprungpfad: schwebende Platten führen abseits des Weges hinauf zu einer Schatzplattform (ab Welt 4 bewegt sich eine Platte) */
+function jumpPath(n){const col=n===1?0x7ab0ff:CHP[n].glowc[0];let q=null,dir=0;
+  for(let pass=0;pass<2&&!q;pass++)for(let k=20;k<70&&!q;k++){const c=nqSpot(k);if(!c)continue;for(const d of [Math.PI,0,Math.PI/2,-Math.PI/2]){let ok=true;const y0=hgt(c[0],c[1]);for(let i=1;i<=8&&ok;i++){const x=c[0]+Math.sin(d)*3*i,z=c[1]+Math.cos(d)*3*i,dh=hgt(x,z)-y0;if(dh>(pass?.5:.25)*i+(pass?.2:.3)||dh<(pass?-4:-2)||pBlocked(x,z)||!colFree(x,z,2))ok=false}if(ok){q=c;dir=d;break}}}
+  if(!q)return null;const y0=hgt(q[0],q[1]),sx=Math.sin(dir),sz=Math.cos(dir),g=new T.Group();scene.add(g);
+  const slab=(x,z,top,r,mov)=>{const m=new T.Group();m.position.set(x,top,z);m.add(mk(G.cyl,M(0x8d93b0,{r:.5,m:.2}),0,-.15,0,r,.3,r));m.add(mk(G.cyl,M(col,{e:col,ei:1.4,r:.2}),0,-.31,0,r*.82,.05,r*.82,false));m.add(mk(G.cyl,M(col,{e:col,ei:1.2}),0,.01,0,r*.5,.02,r*.5,false));m.add(glow(col,r*2.6,0,-.5,0,.35));g.add(m);
+    const p={x,z,hx:r*.86,hz:r*.86,top,th:.34};PLAT.push(p);
+    if(mov){const bx=x,bz=z;animObjs.push({fn(t){const o=Math.sin(t*.9)*1.2,nx=bx-sz*o,nz=bz+sx*o;if(pl.on===p){pl.x+=nx-p.x;pl.z+=nz-p.z}p.x=nx;p.z=nz;m.position.x=nx;m.position.z=nz}})}return p};
+  for(let i=0;i<4;i++)slab(q[0]+sx*4*(i+1),q[1]+sz*4*(i+1),y0+1.15*(i+1),1.6,i===2&&n>=4);   /* Abstand 4 m: ein Sprung aus vollem Lauf trägt genau zur nächsten Platte */
+  const gx=q[0]+sx*20.4,gz=q[1]+sz*20.4,gt=y0+5.6;slab(gx,gz,gt,2.8);
+  const o={id:n===1?'jp1':n+'jp',x:gx+sx*.9,z:gz+sz*.9,m:makeChest(),reward:{shards:80+40*n,potions:1},pr:'Truhe öffnen',py:gt};o.m.position.set(o.x,gt,o.z);o.m.rotation.y=dir+Math.PI;if(S&&S.chests&&S.chests[o.id])o.m.visible=false;scene.add(o.m);chests.push(o);
+  g.add(mk(G.box,M(0x8d93b0,{r:.7}),q[0]-sz*1.6,y0+.6,q[1]+sx*1.6,.9,1.2,.25));g.add(glow(col,2.2,q[0]-sz*1.6,y0+1.3,q[1]+sx*1.6,.5));
+  INT.push({x:q[0]-sz*1.6,z:q[1]+sx*1.6,name:'Wegstein',pr:'Lesen',rad:2.2,vis:()=>true,talk(){say([['Wegstein','Wer hoch hinaus will, springt von Platte zu Platte. Springen: '+(TOUCH?'der Knopf ⤴ neben dem Angriff':REMOTE?'„Springen“ im Kommandomenü – der Sprung trägt dich nach vorn':'Leertaste, am Controller B')+'. Oben wartet eine Truhe.']])}});
+  return {q,dir,goal:[gx,gz,gt]}}
 const NQ=createQuests({S:()=>S,CHP:()=>CHP,INT:()=>INT,world:()=>WLD?(WLD.cave?12:WLD.n):1,spot:k=>nqSpot(k),marker:(x,z,em)=>nqMarker(x,z,em),say:(...a)=>say(...a),toast:(...a)=>toast(...a),sfx:(...a)=>sfx(...a),banner:(...a)=>banner(...a),gainXp:n=>gainXp(n),saveGame:q=>saveGame(q),spawnEnemy:(k,x,z)=>spawnEnemy(k,x,z)});
 function house(x,z,w,d,h,wall,roof,ry,opt){
   opt=opt||{};const g=new T.Group(),y=hgt(x,z),c=Math.cos(ry),sn=Math.sin(ry);g.position.set(x,y-.2,z);g.rotation.y=ry;
@@ -892,7 +909,7 @@ addEventListener('keydown',e=>{if(mode==='flight'){keys[e.code]=true;if(REMOTE&&
     if(['KeyE','Space','Enter'].includes(e.code)){e.preventDefault();dlgAdvance()}return}
   if(REMOTE&&remoteKey(e))return;
   if(/^(Key[JKEQFTGCXRVBIL]|Digit[1-6]|Space|Arrow(Up|Down|Left|Right)|Enter|NumpadEnter|Backspace)$/.test(e.code))e.preventDefault();/* verarbeitet: Controller (gamepad.js) springt dann nicht zu Bildschirm-Knöpfen */
-  switch(e.code){case'KeyJ':case'KeyK':actPrimary();break;case'ShiftLeft':case'ShiftRight':case'Space':e.preventDefault();dodge();break;case'Digit1':skill1();break;case'Digit2':skill2();break;case'Digit3':case'KeyR':skill3();break;case'KeyE':interact();break;case'KeyQ':lockCycle();break;case'KeyF':doReaction();break;case'KeyT':deckOpen('spec');break;case'KeyG':formStart();break;case'KeyC':useTool();break;case'KeyX':if(X.deck.sub)deckBack();else toolNext();break;case'Digit4':ipUse(0);break;case'Digit5':ipUse(1);break;case'Digit6':ipUse(2);break;case'ArrowUp':e.preventDefault();deckMove(-1);break;case'ArrowDown':e.preventDefault();deckMove(1);break;case'Enter':case'NumpadEnter':actPrimary();break;case'Backspace':deckBack();break;case'KeyV':toggleNaut();break;case'KeyB':if(naut.on)cycleNaut();break;case'Escape':case'Tab':e.preventDefault();toggleMenu(true);break;case'KeyI':toggleMenu(true,'inv');break;case'KeyL':toggleMenu(true,'quest');break}});
+  switch(e.code){case'KeyJ':case'KeyK':actPrimary();break;case'ShiftLeft':case'ShiftRight':e.preventDefault();dodge();break;case'Space':e.preventDefault();jump();break;case'Digit1':skill1();break;case'Digit2':skill2();break;case'Digit3':case'KeyR':skill3();break;case'KeyE':interact();break;case'KeyQ':lockCycle();break;case'KeyF':doReaction();break;case'KeyT':deckOpen('spec');break;case'KeyG':formStart();break;case'KeyC':useTool();break;case'KeyX':if(X.deck.sub)deckBack();else toolNext();break;case'Digit4':ipUse(0);break;case'Digit5':ipUse(1);break;case'Digit6':ipUse(2);break;case'ArrowUp':e.preventDefault();deckMove(-1);break;case'ArrowDown':e.preventDefault();deckMove(1);break;case'Enter':case'NumpadEnter':actPrimary();break;case'Backspace':deckBack();break;case'KeyV':toggleNaut();break;case'KeyB':if(naut.on)cycleNaut();break;case'Escape':case'Tab':e.preventDefault();toggleMenu(true);break;case'KeyI':toggleMenu(true,'inv');break;case'KeyL':toggleMenu(true,'quest');break}});
 addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='KeyB')XT.setBlock(false)});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false;XT.setBlock(false)});
 cv.addEventListener('contextmenu',e=>e.preventDefault());
@@ -936,6 +953,7 @@ function nautTo(k){if(!S.fl.naut||!NF[k]||!NF[k].ok())return;if(naut.f===1||naut
 function vehiclePop(){if(!S.fl.naut)return;const it=NF.map((f,i)=>({em:f.em,t:f.n,off:!f.ok(),fn:()=>nautTo(i)}));if(naut.on)it.push({em:'🚪',t:'Aussteigen',fn:()=>toggleNaut()});openPop($('bUse'),it)}
 holdBtn('bSkill',()=>SKS[selSk()].f(),skillPop);
 holdBtn('bUse',()=>{if(X.rx)doReaction();else if(nearI)interact();else if(S.fl.naut)toggleNaut()},vehiclePop);
+{const j=$('bJump');j.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();initAudio();if(mode!=='play'||menuOpen||dlg.on)return;closePop();jump()})}
 {const b=$('bDodge');let bt=0;const end=()=>{keys.ShiftLeft=false;clearTimeout(bt);XT.setBlock(false)};b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();initAudio();if(mode!=='play'||menuOpen||dlg.on)return;closePop();if(naut.on)keys.ShiftLeft=true;else{dodge();clearTimeout(bt);bt=setTimeout(()=>XT.setBlock(true),420)}});b.addEventListener('pointerup',end);b.addEventListener('pointercancel',end)}
 btn('bAtk',()=>actPrimary());{const b=$('bAtk'),off=()=>{X.upHold=false};b.addEventListener('pointerdown',()=>{X.upHold=true});for(const ev of ['pointerup','pointercancel','pointerleave'])b.addEventListener(ev,off)}btn('sk1',()=>skill1());btn('sk2',()=>skill2());btn('sk3',()=>skill3());
 /* Beschriftung der Aktionstaste und der Fähigkeit */
@@ -966,6 +984,7 @@ function doHit(){let any=false;const mult=[1,1,1.55][pl.combo]*(1+Math.min(.2,CB
     const crit=Math.random()<.14+gsum('crit');const dmg=atkV()*mult*(.9+Math.random()*.2)*(crit?1.8:1);hurtE(e,dmg,dx/d,dz/d,crit);extOnHit(e,dmg);any=true}
   slashG.position.set(pl.x,pl.y+.9,pl.z);slashG.rotation.y=pl.face+(pl.combo===1?0:0);slashM.scale.setScalar(1);slashM.material.opacity=.85;slashM.rotation.z=pl.combo===1?3.1416:0;pl.slashT=.18;
   if(any){S.mp=Math.min(maxMp(),S.mp+3);pl.vx+=ax*2;pl.vz+=az*2}}
+function jump(){if(naut.on||pl.dead||dlg.on||menuOpen||pl.air||mode!=='play')return;pl.air=true;pl.vy=JUMPV*(X.form&&X.form.on>0?1.12:1);pl.jfw=REMOTE?.75:0;sfx('ui');emit(pl.x,pl.y+.1,pl.z,0xcfe0ff,10,3,.4,.5,0)}
 function dodge(){if(naut.on||pl.dead||dlg.on||pl.cd.dg>0||pl.dash>0)return;const [ix,iy]=inputVec();let dx=Math.sin(pl.face),dz=Math.cos(pl.face);if(ix||iy){const w=worldDir(ix,iy);dx=w[0];dz=w[1]}
   pl.dx=dx;pl.dz=dz;pl.dash=.34;pl.iframes=.42;pl.cd.dg=.8;pl.atk=-1;pl.face=Math.atan2(dx,dz);sfx('dodge');emit(pl.x,pl.y+.3,pl.z,0xcfe8ff,8,2,.4,.5)}
 function skill1(){if(naut.on)return;if(pl.dead||dlg.on||pl.cd.s1>0)return;if(S.mp<formMp(18)){toast('Zu wenig Mana');return}S.mp-=formMp(18);pl.cd.s1=2.6;pl.spin=.55;pl.atk=-1;mpSend({t:'sk',k:1,x:r2(pl.x),z:r2(pl.z)});sfx('skill1');fxRing(pl.x,pl.z,0xffa040,5,.5);emit(pl.x,pl.y+1,pl.z,0xffb050,40,8,.6,.7,0);camShake=.2;
@@ -987,7 +1006,7 @@ function padCam(dt){if(mode!=='play'||menuOpen||!navigator.getGamepads)return;le
 function controlsHTML(){const K=(a,b)=>`<div><b>${a}</b><span>${b}</span></div>`;
   if(REMOTE)return '<div class="ctl">'+K('↑ ↓','Laufen (vor / zurück)')+K('← →','Drehen')+K('OK','Angriff · Sprechen / Öffnen, wenn etwas in der Nähe ist')+K('Zurück','Kommandomenü: ↑↓ wählen, OK ausführen, Zurück schließen')+K('☰','Menü: letzter Eintrag im Kommandomenü')+K('OK halten','Nautilux: steigen (Sinken im Kommandomenü)')+'</div>';
   if(document.documentElement.classList.contains('eg-pad')&&window.EasyGamesPad&&EasyGamesPad.legend)return '<div class="ctl">'+EasyGamesPad.legend().map(l=>K('🎮 '+l[0],l[1])).join('')+K('🎮 Select + Start','Belegung einblenden')+'</div>';
-  return '<div class="ctl">'+(TOUCH?K('🕹','Stick links: Bewegen (kurz tippen = dorthin gehen)')+K('👆','Rechts wischen: Kamera')+K('⚔️','Angriff: führt den markierten Befehl aus')+K('📋','Kommandomenü antippen: Spezialangriff, Magie, Item, Rufen')+K('💨','Ausweichen antippen, halten = Block (Nautilux: Turbo halten)')+K('✋','Aktion: Sprechen, Öffnen, Einsteigen; halten = Nautilux-Form')+K('🎯','Ziel: tippen = erfassen/wechseln, halten = aus')+K('▲','Reaktion: Aktion-Taste, wenn ▲ erscheint')+K('☰','Menü (oben links)'):K('WASD','Bewegen')+K('Maus','Kamera (ziehen)')+K('J','Angriff / Klick')+K('Shift','Ausweichen')+K('B','Block halten (kostet Mana)')+K('1 2 3','Fähigkeiten')+K('R','Heiltrank')+K('E','Sprechen / Öffnen')+K('Q','Ziel erfassen / wechseln')+K('F','Reaktion (wenn ▲ erscheint)')+K('↑ ↓ ⏎','Befehlsleiste (⌫ zurück)')+K('T','Rufen: Gefährten, Nautilux')+K('G','Rissform')+K('4 5 6','IP-Techniken')+K('C / X','Werkzeug benutzen / wechseln')+K('Esc','Menü'))+'</div>'}
+  return '<div class="ctl">'+(TOUCH?K('🕹','Stick links: Bewegen (kurz tippen = dorthin gehen)')+K('👆','Rechts wischen: Kamera')+K('⚔️','Angriff: führt den markierten Befehl aus')+K('📋','Kommandomenü antippen: Spezialangriff, Magie, Item, Rufen')+K('⤴','Springen antippen (auf schwebende Platten)')+K('💨','Ausweichen antippen, halten = Block (Nautilux: Turbo halten)')+K('✋','Aktion: Sprechen, Öffnen, Einsteigen; halten = Nautilux-Form')+K('🎯','Ziel: tippen = erfassen/wechseln, halten = aus')+K('▲','Reaktion: Aktion-Taste, wenn ▲ erscheint')+K('☰','Menü (oben links)'):K('WASD','Bewegen')+K('Maus','Kamera (ziehen)')+K('J','Angriff / Klick')+K('Leertaste','Springen')+K('Shift','Ausweichen')+K('B','Block halten (kostet Mana)')+K('1 2 3','Fähigkeiten')+K('R','Heiltrank')+K('E','Sprechen / Öffnen')+K('Q','Ziel erfassen / wechseln')+K('F','Reaktion (wenn ▲ erscheint)')+K('↑ ↓ ⏎','Befehlsleiste (⌫ zurück)')+K('T','Rufen: Gefährten, Nautilux')+K('G','Rissform')+K('4 5 6','IP-Techniken')+K('C / X','Werkzeug benutzen / wechseln')+K('Esc','Menü'))+'</div>'}
 function renderMenu(tab){mState.tab=tab;const t=$('tabs'),c=$('mcont');
   if(mState.shop){if(mState.shopKind){TOWN.shop(c,t,mState.shopKind,mState.shopName,()=>renderMenu('shop'));return}t.innerHTML='<b style="color:var(--gold)">🎒 '+(mState.shopName||'Finns Laden')+'</b>';c.innerHTML=`<div class="row"><span>Deine Splitter</span><span>💎 ${S.shards}</span></div><div class="row"><span>Heiltränke</span><span>🧪 ${S.potions}</span></div><div id="shopl"><button data-n="1" data-c="20"><span>🧪 Heiltrank</span><span>20 💎</span></button><button data-n="3" data-c="55"><span>🧪🧪🧪 3 Heiltränke</span><span>55 💎</span></button></div>`;
     c.querySelectorAll('#shopl button').forEach(b=>{b.disabled=S.shards<+b.dataset.c;b.onclick=()=>buy(+b.dataset.n,+b.dataset.c)});extShop(c);return}
@@ -999,7 +1018,7 @@ function renderMenu(tab){mState.tab=tab;const t=$('tabs'),c=$('mcont');
   if(tab==='quest')h+=NQ.html()+sqHTML();
   if(tab==='inv'){h+=`<h3>Zotik · Stufe ${S.lvl}</h3><div class="row"><span>Erfahrung</span><span>${S.xp} / ${xpNeed()}</span></div><div class="row"><span>Leben</span><span>${Math.ceil(S.hp)} / ${maxHp()}</span></div><div class="row"><span>Mana</span><span>${Math.floor(S.mp)} / ${maxMp()}</span></div><div class="row"><span>Angriff</span><span>${Math.round(atkV())}</span></div>
     ${partyHTML()}${extraHTML()}${extInvHTML()}<h3>Gegenstände</h3><div class="row"><span>⚔ ${S.blade2?'Weltenklinge (Echo des Kerns)':S.blade?'Reiseklinge (Mondkristall)':'Reiseklinge'}</span><span>Waffe</span></div><div class="row"><span>🧪 Heiltrank</span><span>× ${S.potions}</span></div><div class="row"><span>💎 Rissplitter</span><span>× ${S.shards}</span></div><div class="row"><span>🌿 Mondkraut</span><span>× ${S.herbs}</span></div>`}
-  if(tab==='skills')h+=`<div class="row"><span>⚔ Klingenkombo (J / Klick)</span><span>3 Hiebe</span></div><div class="row"><span>💨 Ausweichen (Shift)</span><span>Unverwundbar</span></div><div class="row"><span>🌀 Funkenwirbel (1)</span><span>18 Mana</span></div><div class="row"><span>✨ Lichtstoß (2)</span><span>22 Mana</span></div><div class="row"><span>🧪 Heiltrank (3 / R)</span><span>+60 % Leben</span></div><p style="color:var(--dim);font-size:13px">Treffer laden Mana auf. Rote Kreise am Boden zeigen Angriffe an: rechtzeitig ausweichen!</p>`;
+  if(tab==='skills')h+=`<div class="row"><span>⚔ Klingenkombo (J / Klick)</span><span>3 Hiebe</span></div><div class="row"><span>💨 Ausweichen (Shift)</span><span>Unverwundbar</span></div><div class="row"><span>⤴ Springen (Leertaste)</span><span>Auf Platten und über Hindernisse</span></div><div class="row"><span>🌀 Funkenwirbel (1)</span><span>18 Mana</span></div><div class="row"><span>✨ Lichtstoß (2)</span><span>22 Mana</span></div><div class="row"><span>🧪 Heiltrank (3 / R)</span><span>+60 % Leben</span></div><p style="color:var(--dim);font-size:13px">Treffer laden Mana auf. Rote Kreise am Boden zeigen Angriffe an: rechtzeitig ausweichen!</p>`;
   if(tab==='help')h+=controlsHTML()+`<h3>Optionen</h3><div class="row"><span>📺 Fernbedienung (nur Pfeile, OK und Zurück)</span><span><button class="cpb" id="optRem">${REMOTE?'an – ausschalten':'aus – einschalten'}</button></span></div><div class="row"><span>🎰 Casino (Kristallslots, nur Spiel-Splitter)</span><span><button class="cpb" id="optCas">${S.cas&&S.cas.off?'aus – einschalten':'an – ausschalten'}</button></span></div>`;
   if(tab==='travel')h+=travelHTML();
   if(tab==='events')h+=XO.eventsHTML();if(tab==='home')h+=XO.homeHTML();if(tab==='chron')h+=XT.chronHTML();if(tab==='camp')h+=XT.campHTML();if(tab==='coop')h+=coopHTML();if(tab==='equip')h+=equipHTML();if(tab==='felli')h+=felliHTML();if(tab==='skills')h+=extSkillsHTML();
@@ -1022,14 +1041,19 @@ function updatePlayer(dt){
   else{const k=1-Math.exp(-14*dt);pl.vx+=(tx-pl.vx)*k;pl.vz+=(tz-pl.vz)*k}
   pl.mv=clamp(Math.hypot(pl.vx,pl.vz)/6.4,0,1.3);
   if((ix||iy)&&pl.atk<0&&pl.dash<=0){const want=Math.atan2(pl.vx,pl.vz);pl.face+=ang(pl.face,want)*Math.min(1,dt*14)}
-  const mvx=(pl.vx+pl.kx)*dt,mvz=(pl.vz+pl.kz)*dt,ns=Math.min(10,Math.max(1,Math.ceil(Math.hypot(mvx,mvz)/.3)));pl.kx*=Math.exp(-9*dt);pl.kz*=Math.exp(-9*dt);
-  for(let q=0;q<ns;q++){const nx=pl.x+mvx/ns,nz=pl.z+mvz/ns;if(!pBlocked(nx,nz)){pl.x=nx;pl.z=nz}else if(!pBlocked(nx,pl.z))pl.x=nx;else if(!pBlocked(pl.x,nz))pl.z=nz;pushOut(pl,.5)}
+  let mvx=(pl.vx+pl.kx)*dt,mvz=(pl.vz+pl.kz)*dt,ns=Math.min(10,Math.max(1,Math.ceil(Math.hypot(mvx,mvz)/.3)));pl.kx*=Math.exp(-9*dt);pl.kz*=Math.exp(-9*dt);
+  {const pb=(x,z)=>pBlocked(x,z)||(PLAT.length&&platWall(x,z,pl.y));if(pl.air&&pl.jfw>0){pl.jfw-=dt;mvx+=Math.sin(pl.face)*6*dt;mvz+=Math.cos(pl.face)*6*dt}   /* Fernbedienung: der Sprung trägt nach vorn */
+  for(let q=0;q<ns;q++){const nx=pl.x+mvx/ns,nz=pl.z+mvz/ns;if(!pb(nx,nz)){pl.x=nx;pl.z=nz}else if(!pb(nx,pl.z))pl.x=nx;else if(!pb(pl.x,nz))pl.z=nz;pushOut(pl,.5)}}
   if(!naut.on&&(ix||iy)&&pBlocked(pl.x,pl.z)){pl.stk=(pl.stk||0)+dt;if(pl.stk>.6){pl.stk=0;landSafe()}}else pl.stk=0;   /* steckt Zotik in gesperrtem Gelände fest, kommt er an der nächsten freien Stelle heraus */
   let ty=hgt(pl.x,pl.z)+naut.lift;{const gh=hgt(pl.x,pl.z),LK=naut.on&&!nAir()?NZ().lakeAt(pl.x,pl.z):null;
     if(nAir()||(nSub()&&curCh===5)){naut.alt=Math.max(gh+(nAir()?3:.6),Math.min(80,(naut.alt??gh+6)+(nUp()?11:nDn()?-11:0)*dt));ty=naut.alt}
     else if(LK){if(nSub()&&LK.kind==='water'){naut.dep=Math.max(gh+1,Math.min(LK.wl+.1,(naut.dep??LK.wl-2.5)+(nUp()?5:nDn()?-5:0)*dt));ty=naut.dep}else ty=LK.wl+.1}
     else naut.dep=null;nMedHint()}
-  pl.y+=(ty-pl.y)*Math.min(1,dt*18);if(Math.abs(pl.y-ty)>1.5)pl.y=ty;
+  if(!naut.on){const P=PLAT.length?platTop(pl.x,pl.z,pl.y):null,sup=P?Math.max(ty,P.top):ty;pl.on=P&&P.top>=ty?P:null;
+    if(pl.air){pl.vy-=GRAV*dt;pl.y+=pl.vy*dt;if(pl.vy<=0&&pl.y<=sup){pl.y=ty=sup;pl.air=false;pl.vy=0;emit(pl.x,pl.y+.1,pl.z,0xcfe0ff,8,2,.4,.5,0)}}
+    else if(pl.y>sup+.7){pl.air=true;pl.vy=0}   /* über die Kante gelaufen: fallen */
+    else ty=sup}else pl.air=false;
+  if(!pl.air){pl.y+=(ty-pl.y)*Math.min(1,dt*18);if(Math.abs(pl.y-ty)>1.5)pl.y=ty}
   if(pl.atk>=0){pl.atkT+=dt*formSpd();const du=ATD[pl.combo];if(!pl.hit&&pl.atkT>du*.42){pl.hit=true;doHit()}if(pl.atkT>=du){pl.atk=-1;pl.comboT=.55;if(pl.buf>0){pl.buf=0;startAttack()}}}
   pl.buf=Math.max(0,pl.buf-dt);
   S.mp=Math.min(maxMp(),S.mp+dt*(1.6+(X.buff.mana>0?12:0)+(X.form.on>0&&X.form.k===1?6:0)));if(S.hp<maxHp()&&zoneAt(pl.x,pl.z)==='village')S.hp=Math.min(maxHp(),S.hp+dt*1.2);
@@ -1056,7 +1080,7 @@ function updateNpcs(dt){
     const vv=d<90;if(n.P.root.visible!==vv)n.P.root.visible=vv;if(!vv){n.spr.visible=false;continue}if(n.P.fig){const nr=d<(TOUCH?34:52);if(n.P.fig.root.visible!==nr){n.P.fig.root.visible=nr;n.P.body.visible=!nr}}n.P.root.rotation.y=n.face;animHuman(n.P,n.t,n.mv||0);
     n.spr.visible=n.mark();if(n.spr.visible)n.spr.position.y=hgt(n.x,n.z)+2.7+Math.sin(time*3)*.12;
     if(d<nd&&!dlg.on){nd=d;nearI=n}}
-  for(const c of chests){if(S.chests[c.id])continue;const d=Math.hypot(pl.x-c.x,pl.z-c.z);if(d<nd&&d<2.8){nd=d;nearI=c}}
+  for(const c of chests){if(S.chests[c.id]||(c.py!==undefined&&Math.abs(pl.y-c.py)>1))continue;const d=Math.hypot(pl.x-c.x,pl.z-c.z);if(d<nd&&d<2.8){nd=d;nearI=c}}
   for(const c of INT){if(c.vis&&!c.vis())continue;const d=Math.hypot(pl.x-c.x,pl.z-c.z);if(d<nd&&d<(c.rad||3)){nd=d;nearI=c}}
   const pr=$('prompt');
   if(nearI&&!dlg.on&&!pl.dead){const h=TOUCH?(nearI.pr||'Sprechen'):`<b>E</b> ${nearI.pr||'Sprechen'}${nearI.name?': '+nearI.name:''}`;if(h!==lastPr){lastPr=h;pr.innerHTML=h}if(pr.hidden)pr.hidden=false}else if(!pr.hidden){pr.hidden=true}updTouchBtns();
@@ -1170,7 +1194,7 @@ function frame(now){
 let lastT=performance.now(),first=true;
 
 /* ================= Start ================= */
-function begin(isNew){if(!WLD)NQ.enter(1);
+function begin(isNew){if(!WLD){if(!JP1)JP1=jumpPath(1);NQ.enter(1)}for(const c of chests)if(c.py!==undefined)c.m.visible=!S.chests[c.id];
   initAudio();mode='play';$('title').hidden=true;$('hud').hidden=false;
   $('creator').hidden=true;applyCos(S.cos);
   if(S.stage>=8&&!S.fl.naut)S.fl.naut=1;   /* ältere Spielstände: Nautilux nachreichen */
@@ -1317,7 +1341,8 @@ const chOpen=n=>n===12?(S.stage>=8&&!MP.on):n===1||(n===11&&S.ng>0)||chDone(n-1)
 const MAXCH=11;
 /* ---- Welt wechseln ---- */
 TOWN.flush(1);
-const ARR=()=>({E,NPC,chests,herbs,COL,CAMCOL,HOUSES,animObjs,INT,OB});
+let JP1=null;   /* Sprungpfad von Lunaris: entsteht beim ersten Spielstart (braucht die fertig geladene Welt) */
+const ARR=()=>({E,NPC,chests,herbs,COL,CAMCOL,HOUSES,animObjs,INT,OB,PLAT});
 /* Ressourcen, die das ganze Spiel über bestehen (Lunaris, geteilte Geometrien, Material-Cache): werden beim Weltwechsel nie freigegeben */
 let PERSIST=null;
 function persistSnap(){if(PERSIST)return;PERSIST=new Set([...Object.values(G),...Object.values(PG),SMILE,ringG,telGeo]);scene.traverse(o=>{if(o.geometry)PERSIST.add(o.geometry);const m=o.material;if(m)(Array.isArray(m)?m:[m]).forEach(x=>PERSIST.add(x))})}
@@ -1347,7 +1372,7 @@ function switchWorld(n){
   MP.quiet=true;
   try{if(curCh===1&&!WLD){if(n!==1)leaveLunaris()}else destroyWorld();
   if(n===1)restoreLunaris();else if(n===12)buildCave();else buildWorld(n)}finally{MP.quiet=false}
-  NZ().activate(n);curCh=n;S.ch=n;curZone='';mpWorldChanged(n);NQ.enter(n);
+  NZ().activate(n);curCh=n;S.ch=n;curZone='';mpWorldChanged(n);if(n===1&&!JP1)JP1=jumpPath(1);NQ.enter(n);if(WLD)WLD.jp=n>1&&n<12?jumpPath(n):null;
 }
 function travel(n){
   if(MP.role==='guest'){toast('Nur der Gastgeber kann die Welt wechseln.');toggleMenu(false);return}
@@ -2741,7 +2766,7 @@ const rxEl=document.createElement('div');rxEl.id='rxp';rxEl.hidden=true;$('hud')
 const gEl=document.createElement('div');gEl.id='gauges';gEl.className='glass';gEl.innerHTML='<div id="gIP"><b>IP</b><div class="bar ipb"><i></i></div><span></span></div><div id="gRG"><b>⟡ Riss</b><div class="bar rgb"><i></i></div></div><div id="gTG"><b>🤝 Team</b><div class="bar tgb"><i></i></div></div>';$('lcol').insertBefore(gEl,$('menuBtn'));
 function deckItems(){const sub=X.deck.sub,it=[];
   if(!sub){it.push({t:'Angriff',f:()=>startAttack()});if(nearI&&!dlg.on&&!pl.dead)it.push({t:'▸ '+useShort(nearI),f:()=>interact()});   // Kontextbefehl wie bei Kingdom Hearts (Truhe öffnen, Sprechen …)
-    it.push({t:'Spezialangriff',s:'atk'},{t:'Magie',s:'magic'},{t:'Item',s:'items'},{t:'Rufen',s:'spec'});/* Spezialangriff direkt unter Angriff: Gefährten-Techniken, Team-Angriffe, Formen, IP */if(S.tools.length)it.push({t:'Werkzeug',s:'tool'});if(REMOTE){if(naut.on&&(nAir()||nSub()))it.push({t:'⬆ Steigen',f:()=>{X.nvD=1;X.nvE=time+1.6}},{t:'⬇ Sinken',f:()=>{X.nvD=-1;X.nvE=time+1.6}});else it.push({t:'Ausweichen',f:()=>dodge()});it.push({t:'Ziel erfassen',f:()=>lockCycle()},{t:'☰ Menü',f:()=>toggleMenu(true)})}return it}
+    it.push({t:'Spezialangriff',s:'atk'},{t:'Magie',s:'magic'},{t:'Item',s:'items'},{t:'Rufen',s:'spec'});/* Spezialangriff direkt unter Angriff: Gefährten-Techniken, Team-Angriffe, Formen, IP */if(S.tools.length)it.push({t:'Werkzeug',s:'tool'});if(REMOTE){if(naut.on&&(nAir()||nSub()))it.push({t:'⬆ Steigen',f:()=>{X.nvD=1;X.nvE=time+1.6}},{t:'⬇ Sinken',f:()=>{X.nvD=-1;X.nvE=time+1.6}});else it.push({t:'Springen',f:()=>jump()},{t:'Ausweichen',f:()=>dodge()});it.push({t:'Ziel erfassen',f:()=>lockCycle()},{t:'☰ Menü',f:()=>toggleMenu(true)})}return it}
   if(sub==='magic'){it.push({t:'Funkenwirbel',r:formMp(18)+' MP',k:'1',f:skill1,off:S.mp<formMp(18)},{t:'Lichtstoß',r:formMp(22)+' MP',k:'2',f:skill2,off:S.mp<formMp(22)},{t:'Mondheilung',r:formMp(30)+' MP',f:spellHeal,off:S.mp<formMp(30)})}
   else if(sub==='items'){it.push({t:'Heiltrank',r:'×'+S.potions,k:'3',f:skill3,off:!S.potions},{t:'Äther',r:'×'+(S.items.ether||0),f:useEther,off:!S.items.ether});if(S.items.phoenix)it.push({t:'Phönix-Trank',r:'×'+S.items.phoenix,f:usePhoenix})}
   else if(sub==='atk'){for(const id of S.party){const a=CMP.find(c=>c.id===id);if(a&&CSK[id])it.push({t:CSK[id].em+' '+PARTY[id].n+': '+CSK[id].n,r:a.ko?'K.O.':a.skc>0?Math.ceil(a.skc)+' s':Math.round(a.hp)+' KP',f:()=>cmpSkill(id),off:a.ko||a.skc>0})}
@@ -2847,4 +2872,4 @@ function drawOb(mx){if(pl.z>300){mx.fillStyle='#2a2a3e';mx.fillRect(-13,333,26,3
 ensureBoss();
 camTarget.set(0,2,12);
 requestAnimationFrame(frame);
-if(/[?&]debug\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))window.__zotik={set noRender(v){frame.off=!!v},TOWN,NPC,NQ,killE,E,resetEnemy,setCam(y,pt,di){camYaw=y;if(pt!=null)camPitch=pt;if(di!=null)camDist=di},AF,NZ,EPX,nautTo,pl,joy,inputVec,CR:()=>CR(),get goTo(){return goTo},get steer(){return steer},set steer(v){steer=v},get mode(){return mode},startDbg(){S=DEF();S.cos={fur:cr.fur,scarf:cr.scarf,outfit:cr.outfit};mode='play';begin(true)},X,OB,GEAR,TOOLS,lockCycle,doReaction,teamAttack,formStart,ipUse,useTool,toolNext,caveEnter,caveNext,caveExit,giveGear,equip,feed,felliXp,deckExec,deckMove,deckOpen,ruinGo,get CAVE_DOOR(){return CAVE_DOOR},spellHeal,useEther,fStage,findRx,proj,maxHp:()=>maxHp(),atkV:()=>atkV(),toBunt,BUNT_URL,get qLv(){return qLv},setQ,get naut(){return naut},pushOut,INST,blocked,hgt,pBlocked,COL,HOUSES,PZD,CUT,openPuzzle,closePuzzle,cutscene,joinParty,CMP,lunOpen,spawnOrun,get puzOpen(){return puzOpen},get W(){return WLD},get ch(){return curCh},INT,CHP,switchWorld,travel,ARENA,herbs,chests,drops,projs,step:(dt,n)=>{for(let i=0;i<n;i++){time+=dt;for(const o of animObjs)o.fn(time,dt);update(dt);updParticles(dt)}},cam:(y,p,d)=>{camYaw=y;camPitch=p;camDist=d},S:()=>S,pl,E,NPC,begin,say,toast,setStage,hurtP,get boss(){return boss},camera,scene,renderer,skill1,skill2,startAttack,dodge,interact,keys,MP,mpMsg,mpSend,mpHost,mpJoin,mpTick,variantCos,sharedFlat,spawnEnemy,hurtE,killE,get boss2(){return boss},toggleMenu,renderMenu,XT,XO};
+if(/[?&]debug\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))window.__zotik={set noRender(v){frame.off=!!v},TOWN,NPC,NQ,killE,E,resetEnemy,PLAT,jump,get jp(){return WLD?WLD.jp:JP1},setCam(y,pt,di){camYaw=y;if(pt!=null)camPitch=pt;if(di!=null)camDist=di},AF,NZ,EPX,nautTo,pl,joy,inputVec,CR:()=>CR(),get goTo(){return goTo},get steer(){return steer},set steer(v){steer=v},get mode(){return mode},startDbg(){S=DEF();S.cos={fur:cr.fur,scarf:cr.scarf,outfit:cr.outfit};mode='play';begin(true)},X,OB,GEAR,TOOLS,lockCycle,doReaction,teamAttack,formStart,ipUse,useTool,toolNext,caveEnter,caveNext,caveExit,giveGear,equip,feed,felliXp,deckExec,deckMove,deckOpen,ruinGo,get CAVE_DOOR(){return CAVE_DOOR},spellHeal,useEther,fStage,findRx,proj,maxHp:()=>maxHp(),atkV:()=>atkV(),toBunt,BUNT_URL,get qLv(){return qLv},setQ,get naut(){return naut},pushOut,INST,blocked,hgt,pBlocked,COL,HOUSES,PZD,CUT,openPuzzle,closePuzzle,cutscene,joinParty,CMP,lunOpen,spawnOrun,get puzOpen(){return puzOpen},get W(){return WLD},get ch(){return curCh},INT,CHP,switchWorld,travel,ARENA,herbs,chests,drops,projs,step:(dt,n)=>{for(let i=0;i<n;i++){time+=dt;for(const o of animObjs)o.fn(time,dt);update(dt);updParticles(dt)}},cam:(y,p,d)=>{camYaw=y;camPitch=p;camDist=d},S:()=>S,pl,E,NPC,begin,say,toast,setStage,hurtP,get boss(){return boss},camera,scene,renderer,skill1,skill2,startAttack,dodge,interact,keys,MP,mpMsg,mpSend,mpHost,mpJoin,mpTick,variantCos,sharedFlat,spawnEnemy,hurtE,killE,get boss2(){return boss},toggleMenu,renderMenu,XT,XO};

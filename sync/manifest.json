@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "916471cae595",
- "generated": "2026-11-11T10:59:09+01:00",
- "commit": "6c7a36fa5e93fbec905872dc8b182c41328be1e7",
+ "version": "1e2a0c5359c9",
+ "generated": "2026-11-11T11:23:31+01:00",
+ "commit": "00f6e3b1652391ca2566cbaa07f6e971cd8eebba",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6258,8 +6258,8 @@
   },
   {
    "p": "guides/zotik.json",
-   "s": 32001,
-   "h": "46fa0a5a7ee3ab72854e1c903251f7bb837c05f576af66e0b6905f3d857009cd"
+   "s": 33248,
+   "h": "c6856b387a2a1b928347a76d6009662f926383e41336874d7036d0b97fb746a5"
   },
   {
    "p": "heute.html",
@@ -8132,6 +8132,11 @@
    "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
   },
   {
+   "p": "riftzone/client/public/heightmap.bin",
+   "s": 1182722,
+   "h": "121bcf27e4e7d5dda62e7ed7e061d76a1f8e4dec907c9978a3a32900d5ef6d97"
+  },
+  {
    "p": "riftzone/client/src/ui/styles.css",
    "s": 30181,
    "h": "28c5e1ddb893c40dd6896ecc6a3d7d5ee09244423276d839b5aecb7a32579129"
@@ -8839,7 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 256787,
-   "h": "0168a7e99a9451d93c26926ff0ca36d25d73a249fcba6fa32f66b4dc5b017bdd"
+   "h": "499945666ad949d5e68878f3cfba9fcfca7d90143b7e9de9d2b2e5199c4421e1"
   },
   {
    "p": "taschi/card.svg",
@@ -10762,9 +10767,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-BqbbHDQm.js",
-   "s": 1208414,
-   "h": "46035264125d484fd90c25d36bbf290c8db0151583773c1974bf8e409cb4ca2e"
+   "p": "zotik/assets/index-2tsiqBGD.js",
+   "s": 1211760,
+   "h": "eda10b33661f59d0c469aa2a482f4575ed54362c1a357759b21331328853b232"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -10783,8 +10788,8 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 49509,
-   "h": "2e499c6f1a6c79d1726b27a679ee80010ca4023a87781683332e9479dd37eff8"
+   "s": 50018,
+   "h": "f5f200644b4acdb4d1a3857214b2fc25ea7a1b27418e6d708f30b33c2c40e4d8"
   },
   {
    "p": "zotik/manifest.webmanifest",
