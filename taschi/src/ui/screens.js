@@ -3,7 +3,7 @@ import { h, FocusNav } from './ui.js';
 import { SPECIES } from '../data/species.js';
 import { REGIONS } from '../data/regions.js';
 import { INTRO_SLIDES } from '../data/story.js';
-import { PLAYER_PRESETS, GENDERS, BODY_FOR_GENDER, SKIN_TONES, HAIR_COLORS, OUTFIT_COLORS, HAIR_STYLES } from '../engine/characters.js';
+import { PLAYER_PRESETS, GENDERS, BODY_FOR_GENDER, SKIN_TONES, HAIR_COLORS, OUTFIT_COLORS, HAIR_STYLES, TRAINER_MODELS, TRAINER_COLORS, KK_DEFAULT, KK_SKIN_SWATCH, KK_ACCENTS, KK_BAGS, playerTrainerLook } from '../engine/characters.js';
 import { fmtTime } from './menus.js';
 import { logo, sparks } from './brand.js';
 
@@ -90,7 +90,7 @@ export function creatorScreen(game, { mode = 'new', player = null } = {}) {
   return new Promise(resolve => {
     const start = player?.look && Object.keys(player.look).length ? player.look : null;
     let gender = player?.gender || 'm';
-    let look = start ? { ...start } : { ...PLAYER_PRESETS[gender] };
+    let look = start ? { ...start } : { ...playerTrainerLook(gender) };
     // older saves have no gender yet: start from the new trainer look and keep skin and hair colour
     if (start && !player?.gender) look = { ...PLAYER_PRESETS.m, skin: start.skin ?? PLAYER_PRESETS.m.skin, hairColor: start.hairColor ?? PLAYER_PRESETS.m.hairColor };
     let name = player?.name || PLAYER_PRESETS[gender].name;
@@ -105,16 +105,25 @@ export function creatorScreen(game, { mode = 'new', player = null } = {}) {
     }));
     const chips = (label, key, values, labels) => row(label, values.map((v, i) => h('button.chip.focusable' + (same(look[key] ?? null, v) ? '.sel' : ''), { onclick: () => { look[key] = v; rerender(); } }, labels[i])));
     // Figur: Mensch oder Zotik, der Fuchs-Abenteurer aus dem Spiel „Zotik“ (eigener Körper, kein Outfit)
-    const pickFigure = (z) => {
-      if (z === !!look.zotik) return;
+    // Figur: Trainer (eigener Stil aus den KayKit-Abenteurern), Klassisch oder Zotik
+    const figOf = () => look.zotik ? 'zotik' : look.kk ? 'kk' : 'classic';
+    const kkModels = () => TRAINER_MODELS.filter(m => gender === 'd' || m[2] === gender);
+    const pickFigure = (f) => {
+      if (f === figOf()) return;
       const isPreset = !name.trim() || name === 'Zotik' || Object.values(PLAYER_PRESETS).some(p => p.name === name);
-      if (z) { look = { zotik: true }; if (isPreset) name = 'Zotik'; }
-      else { look = { ...PLAYER_PRESETS[gender] }; delete look.name; delete look.gender; if (isPreset) name = PLAYER_PRESETS[gender].name; }
+      if (f === 'zotik') { look = { zotik: true }; if (isPreset) name = 'Zotik'; }
+      else {
+        look = f === 'kk' ? { ...playerTrainerLook(gender) } : { ...PLAYER_PRESETS[gender] }; delete look.name; delete look.gender;
+        if (isPreset) name = PLAYER_PRESETS[gender].name;
+      }
       rerender();
     };
     const pickGender = (g) => {
       gender = g;
-      if (mode === 'wardrobe') look.body = BODY_FOR_GENDER[g];
+      if (look.kk) {
+        if (!kkModels().some(m => m[0] === look.kk)) look.kk = KK_DEFAULT[g];
+        if (mode !== 'wardrobe' && !player?.name && (!name.trim() || Object.values(PLAYER_PRESETS).some(p => p.name === name))) name = PLAYER_PRESETS[g].name;
+      } else if (mode === 'wardrobe') look.body = BODY_FOR_GENDER[g];
       else { look = { ...PLAYER_PRESETS[g] }; delete look.name; delete look.gender; if (!player?.name && (!name.trim() || Object.values(PLAYER_PRESETS).some(p => p.name === name))) name = PLAYER_PRESETS[g].name; }
       rerender();
     };
@@ -131,10 +140,18 @@ export function creatorScreen(game, { mode = 'new', player = null } = {}) {
         h('div.creatorview', {}, h('div.viewport3d', { id: 'creatorview' })),
         h('div', {},
           mode === 'wardrobe' ? h('p.muted', {}, 'Zieh dich um, wie du willst. Deine Taschis erkennen dich trotzdem!') : h('p.muted', {}, look.zotik ? 'Wähle, wer du bist, und gib dir einen Namen.' : 'Wähle, wer du bist, und gib dir einen Namen. Danach kannst du dein Abenteuer-Outfit anpassen.'),
-          row('Figur', [[false, 'Mensch'], [true, '🦊 Zotik']].map(([z, label]) => h('button.chip.focusable' + (!!look.zotik === z ? '.sel' : ''), { onclick: () => pickFigure(z) }, label))),
+          row('Figur', [['kk', '🎒 Trainer'], ['classic', 'Klassisch'], ['zotik', '🦊 Zotik']].map(([f, label]) => h('button.chip.focusable' + (figOf() === f ? '.sel' : ''), { onclick: () => pickFigure(f) }, label))),
           look.zotik ? null : row('Ich bin', GENDERS.map(([g, label]) => h('button.chip.focusable' + (gender === g ? '.sel' : ''), { onclick: () => pickGender(g), 'data-autofocus': gender === g ? '' : undefined }, label))),
           mode === 'wardrobe' ? null : row('Name', h('button.chip.focusable.namebtn', { onclick: async () => { const n = await game.ui.textEntry({ title: 'Dein Name', value: name, max: 12, placeholder: 'Dein Name' }); if (n !== null) { name = n || name; rerender(); } } }, '✎ ' + (name || 'Dein Name'))),
-          ...(look.zotik ? [h('p.muted', {}, 'Zotik, der Fuchs-Abenteurer: grüner Schal, Lederweste, Schwert auf dem Rücken. Er reist als Taschi-Abenteurer durch die 16 Regionen – und in Sonnenhain wartet etwas, das genauso aussieht wie er …')] : [
+          ...(look.kk ? [
+          h('h3', {}, 'Trainer-Typ'),
+          chips('Typ', 'kk', kkModels().map(m => m[0]), kkModels().map(m => m[1])),
+          sw('Haut', 'skin', KK_SKIN_SWATCH, true),
+          h('h3', {}, 'Outfit'),
+          sw('Kleidung', 'outfit', TRAINER_COLORS),
+          sw('Akzent', 'accent', KK_ACCENTS),
+          sw('Brille', 'cap', [...TRAINER_COLORS, null]),
+          sw('Rucksack', 'backpack', [...KK_BAGS, null])] : look.zotik ? [h('p.muted', {}, 'Zotik, der Fuchs-Abenteurer: grüner Schal, Lederweste, Schwert auf dem Rücken. Er reist als Taschi-Abenteurer durch die 16 Regionen – und in Sonnenhain wartet etwas, das genauso aussieht wie er …')] : [
           h('h3', {}, 'Aussehen'),
           sw('Haut', 'skin', SKIN_TONES, true),
           chips('Frisur', 'hair', HAIR_STYLES, ['Kurz', 'Stachelig', 'Zopf', 'Lang', 'Dutt', 'Bob', 'Locken', 'Zöpfe']),
