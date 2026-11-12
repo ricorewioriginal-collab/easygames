@@ -2,6 +2,29 @@
 
 Zentrale Fortschrittsdatei. Jede Sitzung trägt hier ein, was **tatsächlich** umgesetzt und geprüft ist, was offen ist und womit es weitergeht. Architektur und Meilensteine: [`PLAN.md`](PLAN.md).
 
+## Stand nach Durchgang 14 (12.11.2026): Gamecontroller, echte 3D-Menschen, Tagesziele, freie Assets
+
+### Neu umgesetzt
+
+- **Gamecontroller vollständig** (`js/pad.js`, `GL.pad`): In der Stadt steuert GayLife den Controller selbst – linker Stick analog (runde Totzone), Steuerkreuz digital, rechter Stick dreht und zoomt die Kamera (`W.zoom`), R2/ZR oder L3 sprintet (`W.run`, ×1,6), L1/R1 drehen, R3 Kamera hinter die Figur, Bestätigen = Aktion, Zurück = Orte, □/Y = Handy, △/X und Start = Pause. Kurzes Rütteln bei Aktionen (wo der Browser es kann).
+- **Menüs ohne Maus**: Startmenü, Pausenmenü, Orte, Handy (inkl. Apps), Look-Editor und Dialoge mit Auswahl führt `pad.js` selbst (gelber Rahmen `.gfocus`, räumliche Auswahl, Halten wiederholt, rechter Stick scrollt, Zurück eine Ebene zurück). Textfelder und die 14 alten Minispiele übernimmt `../gamepad.js` (Bildschirm-Tastatur, allgemeine Knopf-Navigation); die Übergabe passiert erst, wenn alle Knöpfe losgelassen sind (kein Doppelklick).
+- **Symbole je Controller**: PlayStation ✕○□△/L2/R2, Switch A/B/X/Y/ZR (Bestätigen rechts), Xbox A/B/X/Y – über die gemeinsame Erkennung in `../gamepad.js` (Einstellung `easygames-padstyle`). Hinweisleiste `#padh` unten, Aktionsknopf zeigt das Symbol; die Touch-Tasten verschwinden, solange ein Controller benutzt wird, und kommen bei Berührung zurück.
+- **Echte 3D-Menschen** (`js/figures.js`, `GL.fig`): Spielfigur, Kiez-Leute, Bewohner, Mitspieler und Club-Gäste sind animierte Körper aus `../figuren/` (Quaternius, CC0) mit Hautton, Frisur, Bart, Oberteil, Hose und Kappe aus dem bisherigen Look; Bewegungen Stehen, Gehen, Joggen, Sprinten, Tanzen. Detailstufe: ferne Figuren werden als einfache Figur gezeichnet (Abstand 14–46 je nach Grafik/Leistungswächter); Grafik „Niedrig“ behält die einfachen Figuren. Bis zum Laden bzw. ohne Modelle bleibt die einfache Figur.
+- **Spielfokus** (`js/goals.js`, `GL.goals`, Spielstand `S.goals`): drei Tagesziele pro Spieltag aus 11 Arten (laufen, sprechen, Minispiele, Geld, Sticker, kochen, duschen, Tram, tanzen, Schicht, Stimmung), Belohnung je 25 € + 15 Glitzer, alle drei = Bonus und Serie; 33 Regenbogen-Sticker (12 Pride District, je 3 pro Viertel, feste Plätze außerhalb von Gebäuden); 15 Erfolge; Leiste `#wgoal` unter dem Status und Handy-App „Ziele“. Neue Ereignisse: `earn (betrag, text)` aus `GL.eco.earn`, `shift (job)` aus `GL.jobs`.
+- **Freie Assets** (`js/assets.js`, `CREDITS.md`): Kenney-Bäume (Fantasy Town Kit, CC0) als InstancedMesh statt der Ikosaeder-Bäume im Pride District, Geräusche (Kenney, OpenGameArt, CC0) für Sticker, Belohnungen, Türen, Hund und Katze. Three.js kommt jetzt aus `../vendor/` statt vom CDN (läuft offline und in der App).
+
+### Geprüft
+
+- Neue Testabschnitte 15 (Controller: Stick analog, Sprinten, Kamera, Handy-Apps, Pausenmenü, Look-Editor, Wohnung betreten, Übergabe an Minispiele, Switch-Symbole, Startmenü nur mit Controller), 16 (echte Figuren, Bewegungen, Detailstufe, Größe) und 17 (Tagesziele, Sticker, Belohnung, Serie, Erfolge, neuer Tag, Speichern/Laden): grün. `ONLY=15,16` lässt einzelne Abschnitte laufen.
+- Die älteren Abschnitte laufen mit einfachen Figuren und ohne Tagesziele (`__GL_NOFIG`, `__GL_NOGOALS`), weil SwiftShader viele animierte Körper zu langsam zeichnet und Belohnungen die genauen Kontostände ändern würden.
+- Mehrspieler-Abschnitt 9 bricht beim Beitritt per QR-Link ab (`GL.MP.me === 'g2'` nach 10 s nicht erreicht) – **genauso auf dem unveränderten Stand von `main`** geprüft, also kein Fehler dieses Durchgangs, aber weiter offen.
+- Nicht geprüft: echte Controller an echten Geräten (getestet mit dem virtuellen Standard-Pad aus `gamepad.js`), Bildrate der echten Figuren auf schwachen Handys.
+
+### Offen
+
+- Mehrspieler-Test „Beitritt per QR-Link“ reparieren, echter Zwei-Geräte-Test, Gewitter/Schnee, Menschen-Playtest mit Controller und Handy.
+- Weitere Kenney/Quaternius-Modelle für Viertel (Bänke, Laternen, Autos) und Innenräume; Look-Editor zeigt die Vorschau bereits mit dem echten Körper.
+
 ## Stand nach Durchgang 13 (11.10.2026): Ladebildschirm, Startmenü, Konsolen-Steuerung
 
 ### Neu umgesetzt

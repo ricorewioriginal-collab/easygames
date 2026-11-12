@@ -34,6 +34,10 @@ Klassische Skripte ohne Build-Schritt, genau ein globaler Namensraum `window.GL`
 | `js/districts.js` | Sieben weitere Viertel, Tram, Orte mit Wirkung, Passanten |
 | `js/story.js` | Hauptgeschichte „Ein Leben in allen Farben“ mit Kapiteln und drei Enden |
 | `js/phone.js` | Handy mit Apps, Grafikqualität |
+| `js/goals.js` | Tagesziele, Regenbogen-Sticker, Erfolge, Handy-App „Ziele“ |
+| `js/pad.js` | Gamecontroller in Stadt und Menüs (PlayStation/Switch/Xbox), übergibt Minispiele an `../gamepad.js` |
+| `js/figures.js` | Echte animierte Menschen aus `../figuren/` mit Detailstufen |
+| `js/assets.js` | Freie Modelle und Geräusche (Kenney, OpenGameArt), siehe `CREDITS.md` |
 | `js/main.js` | Start |
 
 Neue Systeme ändern sich nicht gegenseitig direkt, sondern über Ereignisse. Der Kern sendet:

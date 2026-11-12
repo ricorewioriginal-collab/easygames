@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f621de84a522",
- "generated": "2026-11-12T23:18:03+00:00",
- "commit": "49480405d667088338bdb33debe861cabad7ac86",
+ "version": "4ad102bcbc74",
+ "generated": "2026-11-12T23:24:21+00:00",
+ "commit": "0e49814b7ce2ed5d2398f3b92027a27f3b4df547",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6258,8 +6258,13 @@
   },
   {
    "p": "gay-life/index.html",
-   "s": 29008,
-   "h": "a699b7863256741cef79f8ad4db0e7b59be944c5e805a61688fe5df69d8abac8"
+   "s": 30711,
+   "h": "4aa735a2c989f394c424ffec2f18c7e20f95352d13bdfb2a37c23334c84cd6c5"
+  },
+  {
+   "p": "gay-life/js/assets.js",
+   "s": 3391,
+   "h": "cd2c63c57530e3a14f013fd945fc0ab3e1430c9e2313129d4cc3e73bf0bfaa73"
   },
   {
    "p": "gay-life/js/audio.js",
@@ -6268,13 +6273,13 @@
   },
   {
    "p": "gay-life/js/club.js",
-   "s": 9648,
-   "h": "40039ee8a75811648471fbd8e8b65e5efc678e21882f2ee3f79d7b2dd1700dad"
+   "s": 9683,
+   "h": "aa153b834f3e840be47ac75690c39461be7d987482787713ce7b4a4ee57d1007"
   },
   {
    "p": "gay-life/js/core.js",
-   "s": 191348,
-   "h": "293a44c13063e38b69f4fd7db6fe94c2d7b4f7daafb8fb8fce5170a9c02c04b5"
+   "s": 191614,
+   "h": "21dc3b1cf8ee27f4083d1897dc76fd9874ba2ae30fb36961a9b344340a484cd6"
   },
   {
    "p": "gay-life/js/dating.js",
@@ -6293,8 +6298,8 @@
   },
   {
    "p": "gay-life/js/economy.js",
-   "s": 5815,
-   "h": "84e9c48664110c2239a35fcf110935bc61f42d3f88d28168c98b6762d3c39ea7"
+   "s": 5838,
+   "h": "98f94a341cfad977f6e356f7513be24644b753e9ec9a5ab3e00407da9d7ea424"
   },
   {
    "p": "gay-life/js/events.js",
@@ -6302,9 +6307,19 @@
    "h": "cf897dfe9ecf6d5e214ff04ff83b8e3bc1b2a5abd154b138dcb61440d318ca06"
   },
   {
+   "p": "gay-life/js/figures.js",
+   "s": 4264,
+   "h": "f275e830017584a3336e930d852532b94fd9bcd013d5b3d4804ecc8d45d77a4e"
+  },
+  {
    "p": "gay-life/js/furniture.js",
    "s": 13802,
    "h": "c5f87da7eb4bee2db8ff4b240746f71362f4e8dd6cff20c5e4306317f64f4aef"
+  },
+  {
+   "p": "gay-life/js/goals.js",
+   "s": 15720,
+   "h": "fac5f2c4a2fe09f3c017d2e08e70c00500b5b28188bc7e5e680f384f7519346e"
   },
   {
    "p": "gay-life/js/home.js",
@@ -6313,8 +6328,8 @@
   },
   {
    "p": "gay-life/js/jobs.js",
-   "s": 11302,
-   "h": "e802ae4521ddf7178d47b660f12eec3610ea22c2469cdf21c3494ccd8d52c31a"
+   "s": 11324,
+   "h": "c398482c05ab8e0df710e0f0d589ae66f3215ddb62fb3aa7083731d088b4f607"
   },
   {
    "p": "gay-life/js/life.js",
@@ -6342,6 +6357,11 @@
    "h": "88c81ff4a2c3cd2b657c7cf40299d28ba5d652181326dcf0d7524acf892afda9"
   },
   {
+   "p": "gay-life/js/pad.js",
+   "s": 13771,
+   "h": "cc14740d8b6341a15ed88977ebf66da81470e031653487ab8b8ee8c5f1d73f3b"
+  },
+  {
    "p": "gay-life/js/people.js",
    "s": 4743,
    "h": "92f3b51c4f878289fe8af65529171e88ef97c3f7c67a8b3596b2fd11c38c1c95"
@@ -6353,8 +6373,8 @@
   },
   {
    "p": "gay-life/js/phone.js",
-   "s": 15311,
-   "h": "d109a1e0988bf3a54f9400299bd74ac60805db7aaede8befa3dbd1150df4b2f5"
+   "s": 15351,
+   "h": "a32711e24f8b9bb2594e08706170d5c66775b85899def7aaeb947a1ee5b367a6"
   },
   {
    "p": "gay-life/js/residents.js",
@@ -6368,8 +6388,8 @@
   },
   {
    "p": "gay-life/js/start.js",
-   "s": 10239,
-   "h": "7e104628915e7ba40cd7acdc8ff590fb6ae9ceaca5fa34b5f8855d5bb0011015"
+   "s": 10454,
+   "h": "ff5f7647bc1825ea685ab73b1150d627c0f0ebcd85f49871ed276810b26859f9"
   },
   {
    "p": "gay-life/js/state.js",
@@ -6383,8 +6403,8 @@
   },
   {
    "p": "gay-life/js/ui.js",
-   "s": 3646,
-   "h": "2e6c007779a325e61b74a6c6345c75ff4e1ea80c9fa5a62a205f886c8e96dbbd"
+   "s": 4032,
+   "h": "d7ccfdd449a799d2195e2984bcacd23d1027e8e1d7c0bf27c2855c59acf20a82"
   },
   {
    "p": "gay-life/js/weather.js",
@@ -6400,6 +6420,56 @@
    "p": "gay-life/manifest.webmanifest",
    "s": 746,
    "h": "85dda0095cadaf29527bab7bdaffa2fbf7404737a846e171443036717b266bb1"
+  },
+  {
+   "p": "gay-life/models/Textures/colormap.png",
+   "s": 11143,
+   "h": "4aac939dc33195e35caf8c382ee3cb170054da763577f22d3c22692ec6afccdf"
+  },
+  {
+   "p": "gay-life/models/tree-high-round.glb",
+   "s": 13176,
+   "h": "7f372e338cbf5514a41e8d2afda81acd67277a4c5ad4e6e35a9acfa4a6e3bc4b"
+  },
+  {
+   "p": "gay-life/models/tree-high.glb",
+   "s": 20700,
+   "h": "2dbb718a81d9c3697c069495f58840f6c2002c8cdd13388be560c2199f6d03e7"
+  },
+  {
+   "p": "gay-life/models/tree.glb",
+   "s": 18188,
+   "h": "e8d81b97297de62699b92559cee7b247da84b1815df2515e42fd5a318a30b8d7"
+  },
+  {
+   "p": "gay-life/sounds/buy.mp3",
+   "s": 5277,
+   "h": "d80627936cf852364af1e0b6e1734591c46cd8b0d7a140bdb81a00cf8ad6caff"
+  },
+  {
+   "p": "gay-life/sounds/cat.mp3",
+   "s": 6861,
+   "h": "dcc2c89455aaaf312bd6e50cd7390806bbb888d6d2729809b45b32863ef68c84"
+  },
+  {
+   "p": "gay-life/sounds/coins.mp3",
+   "s": 2253,
+   "h": "9cac9f1ad4b4be66fb96e955effdd9ff4d0a67a9d5232e5fe99e3abeb7cbc107"
+  },
+  {
+   "p": "gay-life/sounds/dog.mp3",
+   "s": 7725,
+   "h": "a6e48ad48049e070df1f6384967331c2495d7df6e3968de385fc5f7b0b5db826"
+  },
+  {
+   "p": "gay-life/sounds/enter.mp3",
+   "s": 5277,
+   "h": "8186591f1fab555f5cd8dc857597f1d8ab2036cb212f230e499007c469cd2a6e"
+  },
+  {
+   "p": "gay-life/sounds/leave.mp3",
+   "s": 4557,
+   "h": "892226922e191bac77cd2cc7c198edd15f8ad37267384d38b050af1b29a4b189"
   },
   {
    "p": "gay-life/sw.js",
@@ -6723,8 +6793,8 @@
   },
   {
    "p": "guides/gay-life.json",
-   "s": 20874,
-   "h": "cf4a00abf4d0577a713fa9b0ae8701ef31ae55e7876316fb04f8a90ef8d788f3"
+   "s": 23074,
+   "h": "b8c86692259498b977593fed7b318cd45fa04861d70820f946d1ad0c88e528ce"
   },
   {
    "p": "guides/groove-arena.json",
@@ -9704,7 +9774,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258881,
-   "h": "9011379a66b1b1cdfce93e236771763234098c722541e1bdf2e75ea82743ecdd"
+   "h": "e0f19d4b4e948fc7268c4903a96e4f365dde2ca43b979aa455ae6659ae0b38e4"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

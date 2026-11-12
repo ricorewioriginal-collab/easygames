@@ -108,7 +108,7 @@
     var t = W.t, bpm = ({ Lounge: 84, Pop: 112, Salsa: 100, Disco: 118, House: 124, Techno: 132 })[GL.night.theme().st] || 110, beat = t * bpm / 60 * 6.283;
     R.tiles.forEach(function (m, i) { m.material.emissiveIntensity = .25 + .55 * Math.max(0, Math.sin(beat / 2 + i * .5)); });
     R.ball.rotation.y += dt * .8; R.beams.forEach(function (b, k) { b.rotation.z = Math.sin(t * .9 + k * 2) * .5; b.rotation.x = Math.cos(t * .7 + k) * .35; });
-    R.dancers.forEach(function (d) { d.g.visible = true; d.g.position.y = Math.abs(Math.sin(beat / 2 + d.ph)) * .18; d.g.position.x = d.bx + Math.sin(t * .8 + d.ph) * .5; d.g.rotation.y = Math.sin(t * .6 + d.ph) * 2; GL.core.animPerson(d.g, 1, t * (bpm / 90)); });
+    R.dancers.forEach(function (d) { d.g.visible = true; d.g.position.y = Math.abs(Math.sin(beat / 2 + d.ph)) * .18; d.g.position.x = d.bx + Math.sin(t * .8 + d.ph) * .5; d.g.rotation.y = Math.sin(t * .6 + d.ph) * 2; GL.core.animPerson(d.g, GL.fig && d.g.userData.fig ? 1.4 : 1, t * (bpm / 90)); });
     R.dj.position.y = Math.abs(Math.sin(beat / 2)) * .08;
     acc += dt; if (acc < 1) return; acc = 0;
     if (!GL.night.isOpen()) { GL.core.toast('Der Club schließt. Schönen Heimweg!'); K.leave(); return; }

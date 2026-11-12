@@ -76,7 +76,7 @@
       GL.ui.close(); var f = GL.life.moodFactor(), lv = J.level(id), wage = Math.round(4 * j.base * (1 + .08 * (lv - 1))), bonus = Math.round(pts * (3 + lv) * f), s = st(id), lv0 = lv;
       GL.ui.fade('Schicht: ' + j.n + ' …', function () {
         GL.life.advance(240); GL.life.change(j.cost, pts >= 5 ? 4 : pts >= 3 ? 1 : -3);
-        GL.eco.earn(wage + bonus, 'Schicht: ' + j.n); s.shifts++; s.earned += wage + bonus; s.xp += 10 + pts * 3; today().n++; GL.save();
+        GL.eco.earn(wage + bonus, 'Schicht: ' + j.n); s.shifts++; s.earned += wage + bonus; s.xp += 10 + pts * 3; today().n++; GL.save(); GL.emit('shift', id);
         var lv1 = J.level(id);
         GL.ui.menu('Schicht beendet', 'Lohn ' + wage + ' € + Leistungsbonus ' + bonus + ' € (' + pts + ' von 6 Punkten, Laune ×' + f.toFixed(2).replace('.', ',') + ') = <b>' + (wage + bonus) + ' €</b><br><small>4 Std. vergangen</small>' +
           (lv1 > lv0 ? '<br><b>Aufstieg! Stufe ' + lv1 + ': ' + J.title(id) + '</b>' : ''), [{ e: '👍', t: 'Weiter', fn: GL.ui.close }], 'job');
