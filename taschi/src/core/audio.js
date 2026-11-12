@@ -2,6 +2,7 @@
 // seeded motifs over hand-picked chord progressions; sound effects and
 // ambience are synthesised. No audio files, no licensed material.
 import { createRng } from './rng.js';
+import { playCry } from './cries.js';
 
 const SCALES = {
   major: [0, 2, 4, 5, 7, 9, 11], minor: [0, 2, 3, 5, 7, 8, 10], dorian: [0, 2, 3, 5, 7, 9, 10], mixolydian: [0, 2, 4, 5, 7, 9, 10],
@@ -201,7 +202,7 @@ export class Audio {
         if (eff > 1) v(mtof(88), 0.12, 0.06, 'square', 0.08);
         break;
       }
-      case 'cry': { const f0 = opts.pitch || 400; this.sweep(f0, f0 * 1.6, 0.18, 0.07, 'square'); this.sweep(f0 * 1.6, f0 * 0.9, 0.2, 0.06, 'square', 0.18); break; }
+      case 'cry': if (opts.id) { playCry(this, opts.id, opts.sp, opts); break; } { const f0 = opts.pitch || 400; this.sweep(f0, f0 * 1.6, 0.18, 0.07, 'square'); this.sweep(f0 * 1.6, f0 * 0.9, 0.2, 0.06, 'square', 0.18); break; }
     }
   }
   noise(dur, freq, vol, type = 'lowpass') {

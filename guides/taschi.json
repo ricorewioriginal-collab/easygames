@@ -149,7 +149,7 @@
         "🕊 Fliegen (Menü › Team oder Karte): Ab dem fünften Licht-Siegel trägt dich ein großes Flug-Taschi aus deinem Team zu jedem Heilzentrum, das du schon besucht hast.",
         "⭐ Sternennest-Raids: In jeder Region leuchtet ein Sternennest. Dort wartet jeden Tag ein riesiges Taschi (1 bis 5 Sterne). Es hat ein Vielfaches an KP und greift zweimal pro Runde an. Du kämpfst zu zweit, mit einem Ranger-Helfer oder online mit einem Freund. Nach dem Sieg bekommst du Belohnungen und darfst den Riesen mit einer Kapsel fangen.",
         "🌐 Online: Im Online-Menü gibt es Tauschen, Kämpfen, „🤝 Zusammen erkunden“ (ihr seht euch in derselben Region und kämpft gemeinsam in Raids) und „🎲 Zufallstausch“ mit einem zufälligen Spieler irgendwo auf der Welt.",
-        "🗣 Sprachausgabe: Dialoge werden vorgelesen, jede Figur mit eigener Stimme. Ein- und Ausschalten, Lautstärke und Tempo findest du unter Optionen › Audio. Wichtige Momente wie Rivalen-Auftritte, Wächter-Schreine und Raids zeigt das Spiel als Zwischensequenz mit Kinobalken."
+        "🗣 Stimmen: Jede Figur klingt anders – Professor, Rivale, Arenaleiter, Gilde und alle Leute in den Städten. Unter Optionen › Audio › Stimmen wählst du „Sprache“ (vorlesen), „Plappern“ (Silbenlaute) oder „Aus“, dazu Lautstärke, Tempo und eine Stimmprobe. 🐾 Jedes Taschi hat außerdem seinen eigenen Ruf: Du hörst ihn, wenn es im Kampf erscheint, und im Taschidex über „🔊 Ruf“. Wichtige Momente wie Rivalen-Auftritte, Wächter-Schreine und Raids zeigt das Spiel als Zwischensequenz mit Kinobalken."
       ]
     }
   ],
@@ -384,7 +384,7 @@
     },
     {
       "q": "Die Stimmen sind mir zu viel.",
-      "a": "Unter Optionen › Audio schaltest du die Sprachausgabe aus oder stellst Lautstärke und Tempo ein. Ist der Ton stumm geschaltet, schweigen auch die Stimmen."
+      "a": "Unter Optionen › Audio › Stimmen wählst du Sprache, Plappern oder Aus und stellst Lautstärke und Tempo ein. Ist der Ton stumm geschaltet, schweigen auch die Stimmen."
     },
     {
       "q": "Beim Zufallstausch findet sich niemand.",

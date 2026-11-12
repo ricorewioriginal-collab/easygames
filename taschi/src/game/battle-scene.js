@@ -114,6 +114,10 @@ export class BattleScene {
   // ------------------------------------------------------------------ models
   modelFor(m) { return this.models.get(m.uid); }
   slotPos(side, slot) { return (this.b.format === 2 ? SLOT_POS2 : SLOT_POS)[side][slot] || SLOT_POS[side][0]; }
+  // 🐾 Eigener Ruf je Art beim Erscheinen (mehrere nacheinander), beim Besiegtwerden tief und langsam
+  cry(mons, when = 0, faint = false) {
+    (mons || []).filter(Boolean).forEach((m, i) => this.audio.sfx('cry', { id: m.id, sp: SPECIES[m.id], when: when + i * 0.55, faint }));
+  }
   spawnModel(m, side, slot, appear = true) {
     const old = this.models.get(m.uid); if (old) { this.root.remove(old.c.root); old.c.dispose(); }
     const c = createCreature(m.id, { outline: this.game.quality.outlines, shiny: !!m.shiny });
@@ -299,12 +303,12 @@ export class BattleScene {
     this.hudEl.querySelectorAll('.bhud').forEach(e => e.style.visibility = 'hidden');
     const screen = { el: h('div'), onInput: (input) => { if (input.pressed('confirm') || input.pressed('back')) this.skip = true; input.nav(); return true; } };
     this.ui.push(screen); this.waitScreen = screen;
-    if (opts.kind === 'wild') { await this.log('Ein wildes ' + SPECIES[foeFirst[0].id].name + ' erscheint!' + (foeFirst[1] ? ' Und ' + SPECIES[foeFirst[1].id].name + '!' : ''), { hold: 1100 }); this.audio.sfx('cry', { pitch: 300 + (SPECIES[foeFirst[0].id].speed * 3) }); }
+    if (opts.kind === 'wild') { this.cry(foeFirst); await this.log('Ein wildes ' + SPECIES[foeFirst[0].id].name + ' erscheint!' + (foeFirst[1] ? ' Und ' + SPECIES[foeFirst[1].id].name + '!' : ''), { hold: 1100 }); }
     else {
       this.foeCh.play('wave', 1.2);
       await this.log((opts.trainerTitle ? opts.trainerTitle + ' ' : '') + opts.trainerName + ' fordert dich heraus!', { hold: 1200 });
       foeFirst.forEach((m, slot) => this.spawnModel(m, 1, slot, true));
-      this.audio.sfx('ballOpen');
+      this.audio.sfx('ballOpen'); this.cry(foeFirst, 0.25);
       await this.log(opts.trainerName + ' schickt ' + foeFirst.map(m => SPECIES[m.id].name).join(' und ') + ' in den Kampf!', { hold: 900 });
     }
     // player send-out
@@ -313,7 +317,7 @@ export class BattleScene {
     await wait(380); this.audio.sfx('throw');
     const mine = b.sides[0].active.map(i => b.sides[0].team[i]);
     mine.forEach((m, slot) => this.spawnModel(m, 0, slot, true));
-    this.audio.sfx('ballOpen');
+    this.audio.sfx('ballOpen'); this.cry(mine, 0.25);
     await this.log('Los, ' + mine.map(m => m.nick || SPECIES[m.id].name).join(' und ') + '!', { hold: 700 });
     this.hudEl.querySelectorAll('.bhud').forEach(e => e.style.visibility = '');
     this.defaultCam();
@@ -563,7 +567,7 @@ export class BattleScene {
         }
         case 'heal': { const m = this.findMon(e.uid); if (ent) this.burst(ent.c.root.position.clone().setY(1), 0x7aff9a, 26, 1, 'star', 0.9, 1.6); this.audio.sfx('heal'); if (m) await this.tweenHp(m, Math.max(0, e.hp - 40), e.hp); await this.log(e.text, { hold: 700 }); break; }
         case 'faint': {
-          if (ent) { ent.c.play('faint', 0.8); this.audio.sfx('faint'); await wait(700); this.tweenScale(ent, ent.scale, 0.01, 300); }
+          if (ent) { ent.c.play('faint', 0.8); this.audio.sfx('faint'); this.cry([this.findMon(e.uid)], 0, true); await wait(700); this.tweenScale(ent, ent.scale, 0.01, 300); }
           await this.log(e.text, { hold: 900 });
           if (ent) this.removeModel(e.uid);
           this.renderHUD();
@@ -573,7 +577,7 @@ export class BattleScene {
         case 'switchIn': {
           const m = this.findMon(e.uid);
           if (e.side === 0) { this.playerCh?.play('throw', 0.8); await wait(380); this.audio.sfx('throw'); }
-          this.spawnModel(m, e.side, e.slot, true); this.audio.sfx('ballOpen');
+          this.spawnModel(m, e.side, e.slot, true); this.audio.sfx('ballOpen'); this.cry([m], 0.25);
           this.renderHUD();
           await this.log(e.text, { hold: 700 });
           break;
