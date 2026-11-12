@@ -108,9 +108,9 @@ html.eg-pad #touch{display:none!important}
 /* Inselkarte */
 .map{display:grid;gap:12px;text-align:left}
 .world h3{margin:0 0 6px;font-size:14px;letter-spacing:1px}
-.lvls{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.lvls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .lvl{padding:10px 12px;text-align:left}
-.lvl b{display:block;font-size:15px}
+.lvl b{display:block;font-size:15px;overflow-wrap:anywhere}
 .lvl .st{display:block;font-size:11px;opacity:.85;margin-top:3px;font-weight:700}
 .lvl.done{border-color:#ffe27a}
 .lvl.perfect{background:linear-gradient(160deg,rgba(255,226,122,.35),rgba(255,156,199,.25))}
@@ -129,6 +129,6 @@ html.eg-pad #touch{display:none!important}
 .tally .sum{font-size:22px;color:var(--gold);border-top:1px solid rgba(255,255,255,.3);padding-top:8px}
 .tally .rec{grid-column:1/-1;text-align:center;color:#ffd6f0;font-size:13px}
 #cloudBox{position:fixed;z-index:8;left:50%;top:50%;transform:translate(-50%,-30%);width:min(520px,92vw);text-align:left}
-@media(max-width:560px){.lvls{grid-template-columns:1fr 1fr}.btns.two{grid-template-columns:1fr}.panel{padding:16px}.title .menu{margin:0 auto}.screen.title{place-items:end center;background:linear-gradient(0deg,rgba(18,12,52,.88),rgba(18,12,52,.4) 60%,transparent)}}
+@media(max-width:560px){.lvls{grid-template-columns:repeat(2,minmax(0,1fr))}.lvl{padding:8px 9px}.lvl b{font-size:13px}.btns.two{grid-template-columns:1fr}.panel{padding:16px}.title .menu{margin:0 auto}.screen.title{place-items:end center;background:linear-gradient(0deg,rgba(18,12,52,.88),rgba(18,12,52,.4) 60%,transparent)}}
 @media(max-height:480px){.title .btn{padding:7px 14px 7px 44px;font-size:14px}.title .mlogo b{font-size:36px}.title .mlogo{margin-bottom:6px}.btns{gap:6px}.title .info{display:none}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

@@ -119,7 +119,15 @@
     glut: { bpm: 140, style: 'drive', chords: ['Am', 'F', 'G', 'E', 'Am', 'F', 'G', 'E'],
       lead: 'A4 . A4 C5 . E5 . A5 | F5 . E5 . C5 . A4 . | G4 . B4 D5 . G5 . F5 | E5 - - . G#4 . B4 . | A5 . G5 . E5 . C5 . | F5 . A5 . C6 . A5 . | B5 . G5 . D5 . B4 . | G#5 - - - E5 - - .' },
     burg: { bpm: 150, style: 'drive', chords: ['Em', 'C', 'D', 'B', 'Em', 'C', 'Am', 'B'],
-      lead: 'E5 E5 . G5 . E5 B4 . | C5 C5 . E5 . G5 F#5 . | D5 D5 . F#5 . A5 G5 . | F#5 - - . D#5 . B4 . | E5 . G5 . B5 . A5 G5 | E6 - - . C6 . G5 . | A5 . C6 . E6 . D6 C6 | B5 - - - D#5 - F#5 .' }
+      lead: 'E5 E5 . G5 . E5 B4 . | C5 C5 . E5 . G5 F#5 . | D5 D5 . F#5 . A5 G5 . | F#5 - - . D#5 . B4 . | E5 . G5 . B5 . A5 G5 | E6 - - . C6 . G5 . | A5 . C6 . E6 . D6 C6 | B5 - - - D#5 - F#5 .' },
+    eis: { bpm: 108, style: 'pad', chords: ['Gmaj7', 'Em', 'Cmaj7', 'D', 'Gmaj7', 'Bm', 'Cmaj7', 'D'],
+      lead: 'B5 . D6 . F#6 . D6 . | E6 - - . B5 . G5 . | E5 . G5 . B5 . C6 . | A5 - - - F#5 . D5 . | B5 . A5 . G5 . B5 . | D6 - - . F#5 . B5 . | C6 . B5 . G5 . E5 . | D5 - - - A5 - - .' },
+    dschungel: { bpm: 132, style: 'swing', chords: ['Am7', 'D', 'Am7', 'D', 'F', 'G', 'Em', 'Am'],
+      lead: 'E5 . A5 . E5 G5 . A5 | F#5 . D5 . A4 . D5 . | E5 . A5 C6 . B5 A5 . | F#5 - - . A5 . D6 . | C6 . A5 . F5 . A5 C6 | B5 . G5 . D5 . G5 B5 | G5 . E5 . B4 . E5 G5 | A5 - - - E5 - A4 .' },
+    kristall: { bpm: 116, style: 'pad', chords: ['Bm', 'G', 'D', 'A', 'Bm', 'G', 'Em', 'F#'],
+      lead: 'F#5 . B5 . D6 . B5 . | G5 . B5 . D6 - - . | F#5 . A5 . D6 . F#6 . | E6 - - . C#6 . A5 . | B5 . D6 . F#6 . E6 D6 | B5 - - . G5 . D5 . | E5 . G5 . B5 . E6 . | C#6 - - - A#5 - - .' },
+    nacht: { bpm: 104, style: 'hop', chords: ['Dm', 'Bb', 'F', 'C', 'Dm', 'Bb', 'Gm', 'A'],
+      lead: 'D5 . F5 . A5 . D6 . | D6 - - . Bb5 . F5 . | A5 . C6 . F6 . C6 . | E6 - - . C6 . G5 . | F5 . A5 . D6 . A5 . | Bb5 - - . F5 . D5 . | G5 . Bb5 . D6 . G5 . | C#6 - - - E5 - A5 .' }
   };
   function parse(song) {
     const toks = song.lead.replace(/\|/g, ' ').trim().split(/\s+/); const ev = [];

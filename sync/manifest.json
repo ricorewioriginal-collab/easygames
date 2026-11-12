@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "fe115b19e13d",
- "generated": "2026-11-12T21:56:19+00:00",
- "commit": "52097334774dd1778725fb69df789d6a3f5168f5",
+ "version": "397535539302",
+ "generated": "2026-11-12T21:56:23+00:00",
+ "commit": "158992d0d92cd35d98f922fda7f4b52d5037866f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6053,8 +6053,8 @@
   },
   {
    "p": "games.js",
-   "s": 58035,
-   "h": "72592a424bc819994dfd4f8f80cc860a741448d9a2888c0376f6c40691eb6f6c"
+   "s": 58243,
+   "h": "7e3bf13db1f902c92c930fdf1b52910a3bff02efe6930b8bed849dcad02bfa7e"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6288,8 +6288,8 @@
   },
   {
    "p": "guides.js",
-   "s": 172998,
-   "h": "2283dd7fe9be73391a6e7c425f4eb8c17bf859939f63c92a947854126b98221f"
+   "s": 173255,
+   "h": "6b4350b6f11dcd2705ed9066fdeacc1c8c540558e14f70197bcbf6ac05041af9"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6618,8 +6618,8 @@
   },
   {
    "p": "guides/pufi-farbwind.json",
-   "s": 27922,
-   "h": "85a8c01c3ef8f0b6841c888b7cc7d510b09ed5be2140fd06cc945e9ce188bfd2"
+   "s": 43979,
+   "h": "60d260cff3438b895f52ec27e7a06daad04c11c97a04a7a7c0de443527a374b6"
   },
   {
    "p": "guides/radio-bingo.json",
@@ -8173,28 +8173,28 @@
   },
   {
    "p": "pufi-farbwind/3d/grafik.js",
-   "s": 46234,
-   "h": "95f11819d60b547f8e2e27e0670559ff4db4da7f0cf2b30515b6b5f5c4c8d145"
+   "s": 59410,
+   "h": "94fb36690c7124d13e4bc7121a2044d8df17174667c341ad1294e71358c87ecf"
   },
   {
    "p": "pufi-farbwind/3d/klang.js",
-   "s": 19749,
-   "h": "4cb8cb23143a9d8e6573055b7b1e77fffae0f6b9039f16ee2536fdcb26ab4721"
+   "s": 20907,
+   "h": "04906a5de99ae1e05e594425454bd00da5371aefe1b2f2085bbfc5473a114d56"
   },
   {
    "p": "pufi-farbwind/3d/spiel.js",
-   "s": 78047,
-   "h": "14d1a5b8009a35d07a08d42bc14350fc8cb157e2ef059c773e68db8d42d76197"
+   "s": 92779,
+   "h": "12183b303b25aacc7cf8a7f9d140e4e2a69d3311c88202e38480b9900d32fb84"
   },
   {
    "p": "pufi-farbwind/3d/stil.css",
-   "s": 15395,
-   "h": "5e1188332f36355b30a459feeebde7ff914bd53fdef87d364a259b317c8f1188"
+   "s": 15487,
+   "h": "80e86ebf75a8cdd2cde7b9b8c0a6d05ea74e53ec5835bb9e6986d34cd204a4ff"
   },
   {
    "p": "pufi-farbwind/3d/welten.js",
-   "s": 17191,
-   "h": "e8fa77659dc75815eb5fa4335ba5caed521f3ca839ba74227efd4e4a9c7a789d"
+   "s": 39863,
+   "h": "a2158e6dee8ef98ed890a8dbed3bc94d40b2111e7bc5b885b675aeb788aaef4b"
   },
   {
    "p": "pufi-farbwind/assets/retro-bloecke.png",
@@ -8278,8 +8278,8 @@
   },
   {
    "p": "pufi-farbwind/index.html",
-   "s": 4239,
-   "h": "2c39f01d2119610393be26a83907c175dc2928be8a584f3528b4929ceb4e35f6"
+   "s": 4292,
+   "h": "0ea05ba297006a34b07eaddc48519f451ae0ae67f857db13de541904fca19456"
   },
   {
    "p": "pufi-farbwind/klassik.html",
@@ -8293,13 +8293,13 @@
   },
   {
    "p": "pufi-farbwind/manifest.webmanifest",
-   "s": 442,
-   "h": "7a536524393223d4061f7afbc1aa4c902aa9b7aede35100e55c14700ba6992fe"
+   "s": 493,
+   "h": "1f3d3bd061a237e1414f112ae5b4f8af898a2d3ca5df674faecfbfcb4f613f6f"
   },
   {
    "p": "pufi-farbwind/sw.js",
    "s": 944,
-   "h": "90bfa02c357e6ec408e68b46c05cf8b53170bb256f575ba4e18763587d9d372a"
+   "h": "5b1bf38844f3e2b8afd5d41d80b64e5f2c9408c278096669b37b0f724c53f28d"
   },
   {
    "p": "radio-bingo/assets/fredoka-latin-wght-normal-DM6njrJ3.woff2",
@@ -9458,8 +9458,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 257720,
-   "h": "74f9f5d8751418cda92adaecd794caa3fade0c6260cde2559b62aa7472476125"
+   "s": 258195,
+   "h": "7c9bbbd4c18e6723ff842c4402df0be038ed5894ec3afdc7075e831f72e57311"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

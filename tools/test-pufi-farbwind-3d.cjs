@@ -7,7 +7,14 @@ const root = path.resolve(__dirname, '..');
 const W = require(path.join(root, 'pufi-farbwind/3d/welten.js'));
 
 // ---------- 1. Leveldaten ----------
-assert.equal(W.COUNT, 6);
+assert.equal(W.COUNT, 24);
+assert.equal(W.WELTEN.length, 6);
+const IDX = id => W.LEVELS.findIndex(L => L.id === id);
+const sig = L => L.items.filter(o => o.k !== 'muenze').map(o => o.k + Math.round(o.x) + '/' + Math.round(o.z)).join();
+assert.equal(new Set(W.LEVELS.map(sig)).size, W.COUNT, 'alle Level sind unterschiedlich');
+assert.equal(new Set(W.LEVELS.map(L => L.theme)).size, 10, 'zehn verschiedene Landschaften');
+const kinds = new Set(W.LEVELS.flatMap(L => L.items.map(o => o.k)));
+for (const k of ['hupfer', 'spucker', 'wirbel', 'nebli', 'rutscher', 'herz', 'feder', 'magnet', 'regen', 'tafel', 'deko']) assert(kinds.has(k), 'neue Art im Spiel: ' + k);
 W.LEVELS.forEach((L, i) => {
   const v = W.validate(L), t = W.totals(L);
   assert(v.ok, L.id + ': ' + v.reason);
@@ -15,10 +22,12 @@ W.LEVELS.forEach((L, i) => {
   assert.equal(t.red, 8, L.id + ' braucht acht rote Münzen');
   assert.equal(L.items.filter(o => o.k === 'ziel').length, 1, L.id + ' braucht genau ein Ziel');
   assert(L.items.some(o => o.k === 'ring'), L.id + ' braucht einen Farbring');
-  assert.equal(!!L.boss, i === W.COUNT - 1);
+  assert.equal(!!L.boss, L.id === '3-4' || L.id === '6-4', L.id + ': Boss nur in 3-4 und 6-4');
+  assert.equal(L.welt, Math.floor(i / 4), L.id + ': vier Level je Insel');
 });
+assert(W.LEVELS[W.COUNT - 1].boss, 'Endboss im letzten Level');
 assert(W.LEVELS.filter(L => L.items.some(o => o.k === 'retrozone')).length >= 2, 'mindestens zwei Retro-Zonen');
-console.log('OK  6 Level erreichbar, je 5 Blüten, 8 rote Münzen, Ziel, Farbring, Boss am Ende');
+console.log('OK  24 unterschiedliche Level auf 6 Inseln erreichbar, je 5 Blüten, 8 rote Münzen, Ziel, Farbring, zwei Bosse, neue Gegner und Hilfen');
 
 // ---------- 2. Browser ----------
 let playwright;
@@ -56,7 +65,7 @@ const server = http.createServer((req, res) => {
     await page.keyboard.press('ArrowDown');
     assert((await page.evaluate(() => document.activeElement.textContent)).includes('Inselkarte'), 'Pfeil ↓ wählt den nächsten Menüpunkt');
     await page.keyboard.press('Enter'); assert.equal((await S(page)).view, 'map', 'Enter öffnet die Inselkarte');
-    assert.equal(await page.locator('#screen .lvl').count(), 6);
+    assert.equal(await page.locator('#screen .lvl').count(), 24);
     await page.keyboard.press('Escape'); assert.equal((await S(page)).view, 'title', 'Esc geht zurück');
     await page.waitForTimeout(150); await page.keyboard.press('Enter');
     assert.equal((await S(page)).mode, 'play', 'Abenteuer startet');
@@ -78,11 +87,14 @@ const server = http.createServer((req, res) => {
     const caught = await page.evaluate(() => {
       const L = Pufi3D.level(), e = L.enemies.find(e => e.k === 'muffel' && e.alive); const P = Pufi3D.P; e.pos.set(0, 0, -4);
       Pufi3D.set(e.pos.x, e.pos.y, e.pos.z + 2); P.face = Math.PI; P.ground = null; Pufi3D.step(10);
-      e.pos.set(P.pos.x, P.pos.y, P.pos.z - 2); e.o.r = 0; e.base.copy(e.pos);
-      P.face = Math.PI; P.inv = 2; Pufi3D.press('tongue', true); Pufi3D.step(1); Pufi3D.press('tongue', false); Pufi3D.step(30);
+      e.pos.set(P.pos.x + 1.2, P.pos.y, P.pos.z - 3); e.o.r = 0; e.base.copy(e.pos);
+      P.face = Math.PI; P.inv = 2; Pufi3D.press('tongue', true); Pufi3D.step(1); Pufi3D.press('tongue', false); Pufi3D.step(6);
+      const tv = Pufi3D.tongue(); Pufi3D.step(24); window.__tv = tv;
       return Pufi3D.state().mouth;
     });
-    assert.equal(caught, 'muffel', 'Zunge (X) fängt einen Muffel');
+    const tv = await page.evaluate(() => window.__tv);
+    assert(tv.vis && tv.world && tv.near, 'Zunge ist sichtbar und kommt aus Pufis Mund');
+    assert.equal(caught, 'muffel', 'Zunge (X) fängt einen Muffel, auch schräg vor Pufi (Zielhilfe)');
     await page.keyboard.down('KeyV'); await page.evaluate(() => Pufi3D.step(2)); await page.keyboard.up('KeyV'); await page.evaluate(() => Pufi3D.step(2));
     assert.equal((await S(page)).eggs, 1, 'Stampfen am Boden legt ein Ei');
     await page.keyboard.down('KeyC'); await page.evaluate(() => Pufi3D.step(2));
@@ -90,6 +102,13 @@ const server = http.createServer((req, res) => {
     await page.evaluate(() => Pufi3D.step(25)); await page.keyboard.up('KeyC'); await page.evaluate(() => Pufi3D.step(2));
     assert.equal((await S(page)).eggs, 0, 'Loslassen wirft das Ei');
     assert.equal(await page.evaluate(() => Pufi3D.level().eggs.length), 1, 'Ei fliegt');
+    // Kleine Stufe (0,4 hoch) wird hochgelaufen statt als Wand zu wirken
+    const stepped = await page.evaluate(() => {
+      const L = Pufi3D.level(), P = Pufi3D.P; P.mouth = null; Pufi3D.set(0, 0, 2); Pufi3D.step(5);
+      L.solids.push({ t: 'box', x0: -2, x1: 2, y0: -0.6, y1: 0.4, z0: -3, z1: -1, kind: 'plat', ref: {}, on: true, dx: 0, dy: 0, dz: 0 });
+      Pufi3D.press('my', -1); Pufi3D.step(40); Pufi3D.press('my'); const y = Pufi3D.state().P.y; L.solids.pop(); Pufi3D.step(5); return y;
+    });
+    assert(Math.abs(stepped - 0.4) < 0.05, 'Stufe hochgelaufen (y=' + stepped + ')');
     // Eierblock von unten anstoßen
     const fromBlock = await page.evaluate(() => { const L = Pufi3D.level(), s = L.solids.find(s => s.kind === 'eiblock'); const o = s.ref.o; Pufi3D.set(o.x, 0, o.z); Pufi3D.step(5); Pufi3D.press('jump', true); Pufi3D.step(30); Pufi3D.press('jump', false); Pufi3D.step(40); return Pufi3D.state().eggs; });
     assert(fromBlock >= 1, 'Eierblock gibt ein Ei');
@@ -122,7 +141,7 @@ const server = http.createServer((req, res) => {
     await page.evaluate(() => { Pufi3D.start(1); Pufi3D.manual(true); const w = Pufi3D.level().winds[0]; Pufi3D.set(w.x, w.y + 2, w.z); Pufi3D.step(30); });
     assert((await S(page)).P.vy > 2, 'Farbwind trägt nach oben');
     // ---- Retro-Zone und Bröckelstufen (2-1) ----
-    await page.evaluate(() => { Pufi3D.start(2); Pufi3D.manual(true); Pufi3D.set(0, 2, -40); Pufi3D.step(20); });
+    await page.evaluate(i => { Pufi3D.start(i); Pufi3D.manual(true); Pufi3D.set(0, 2, -40); Pufi3D.step(20); }, IDX('2-1'));
     st = await S(page); assert(st.retro, 'Retro-Zone schaltet die Seitenansicht ein');
     if (shots) { await page.evaluate(() => Pufi3D.manual(false)); await page.waitForTimeout(900); await page.screenshot({ path: path.join(shots, 'pufi3d-retro.png') }); await page.evaluate(() => Pufi3D.manual(true)); }
     const zr = (await S(page)).P.z; await page.keyboard.down('KeyD'); await page.evaluate(() => Pufi3D.step(30)); await page.keyboard.up('KeyD');
@@ -130,11 +149,35 @@ const server = http.createServer((req, res) => {
     await page.evaluate(() => { Pufi3D.set(0, 8, -12); Pufi3D.step(150); });
     assert(await page.evaluate(() => Pufi3D.level().crumbles[0].s.on === false || Pufi3D.level().crumbles[0].t > -1), 'Honigstufe bröckelt');
     // ---- Farbschalter (2-2) ----
-    await page.evaluate(() => { Pufi3D.start(3); Pufi3D.manual(true); const s = Pufi3D.level().solids.find(s => s.kind === 'schalter'); Pufi3D.set(s.x, s.y1 + 2, s.z); Pufi3D.step(60); });
+    await page.evaluate(i => { Pufi3D.start(i); Pufi3D.manual(true); const s = Pufi3D.level().solids.find(s => s.kind === 'schalter'); Pufi3D.set(s.x, s.y1 + 2, s.z); Pufi3D.step(60); }, IDX('2-2'));
     assert((await S(page)).switchT > 5, 'Farbschalter aktiviert die Blöcke');
     assert(await page.evaluate(() => Pufi3D.level().fblocks.every(b => b.on)), 'Farbblöcke werden begehbar');
-    // ---- Boss (3-2) ----
-    await page.evaluate(() => { Pufi3D.start(5); Pufi3D.manual(true); Pufi3D.set(0, 3.5, -26); Pufi3D.P.inv = 99; Pufi3D.step(200); });
+    // ---- Neue Gegner und Hilfen (generierte Level) ----
+    const neu = await page.evaluate(ids => {
+      const out = {}, A = Pufi3D, P = A.P;
+      const find = k => { for (let i = 0; i < 24; i++) { A.start(i); const e = A.level().enemies.find(e => e.k === k); if (e) return e; } return null; };
+      // Kernspucker schießt
+      let e = find('spucker'); A.manual(true); A.set(e.pos.x, e.pos.y, e.pos.z + 5); P.inv = 99; e.cd = 0.01; A.step(3); out.shot = A.level().shots.length;
+      // Hupfer hüpft
+      e = find('hupfer'); A.manual(true); e.cd = 0.01; const hx = e.pos.x, hz = e.pos.z; A.set(e.pos.x + 3, e.pos.y, e.pos.z); P.inv = 99; A.step(20); out.hop = Math.hypot(e.pos.x - hx, e.pos.z - hz) > 0.3 || !!e.hop;
+      // Wirbelkreisel: von oben federt hoch, ohne Schaden
+      e = find('wirbel'); A.manual(true); e.o.per = 1e9; A.step(1); P.inv = 0; A.set(e.pos.x, e.pos.y + e.h * 0.7, e.pos.z); P.vel.y = -3; A.step(1); out.wirbel = P.vel.y > 10 && A.state().baby;
+      // Hilfen: Regenbogenstern macht unbesiegbar, Flatterfeder, Münzmagnet, Herzfrucht
+      for (const k of ['regen', 'feder', 'magnet', 'herz']) {
+        for (let i = 0; i < 24 && !out[k]; i++) { A.start(i); A.manual(true); const it = A.level().items.find(t => t.k === k); if (!it) continue; const lives = A.state().lives; A.set(it.pos.x, it.pos.y - 0.75, it.pos.z); A.step(1);
+          out[k] = k === 'regen' ? P.rainbow > 0 : k === 'feder' ? P.feder > 0 : k === 'magnet' ? P.magnet > 0 : A.state().lives === lives + 1; }
+      }
+      // Hinweistafel zeigt einen Tipp
+      A.start(ids.tafel); A.manual(true); const t = A.level().signs[0].o; A.set(t.x + 1, t.y, t.z); A.step(2); out.tafel = document.getElementById('toast').textContent;
+      return out;
+    }, { tafel: IDX('1-3') });
+    assert(neu.shot >= 1, 'Kernspucker schießt');
+    assert(neu.hop, 'Hupfer hüpft');
+    assert(neu.wirbel, 'Wirbelkreisel federt Pufi hoch');
+    for (const k of ['regen', 'feder', 'magnet', 'herz']) assert(neu[k], 'Hilfe wirkt: ' + k);
+    assert(neu.tafel.includes('💡'), 'Hinweistafel zeigt einen Tipp');
+    // ---- Boss (3-4) ----
+    await page.evaluate(i => { Pufi3D.start(i); Pufi3D.manual(true); Pufi3D.set(0, 3.5, -26); Pufi3D.P.inv = 99; Pufi3D.step(200); }, IDX('3-4'));
     assert.notEqual((await S(page)).boss.state, 'wait', 'Boss erwacht in der Arena');
     for (let k = 0; k < 3; k++) await page.evaluate(() => { Pufi3D.hurtBoss(); Pufi3D.P.inv = 99; Pufi3D.step(70); });
     await page.evaluate(() => { Pufi3D.P.inv = 99; Pufi3D.step(200); });
@@ -146,7 +189,7 @@ const server = http.createServer((req, res) => {
     assert(await page.locator('#oMusic').count() && await page.locator('#oSens').count(), 'Optionen: Lautstärke und Kamera');
     await page.evaluate(() => Pufi3D.help()); const help = await page.locator('#screen').textContent();
     for (const t of ['PC', 'Controller', 'Touch', 'Jestan', 'GreenRetroman']) assert(help.includes(t), 'Steuerung/Mitwirkende nennt ' + t);
-    console.log('OK  Tastatur: Menü, Laufen, Springen, Flattern, Zunge, Ei legen/werfen, Eierblock, Countdown, Farbring, Wasser, Pause, Ziel, Wind, Retro-Zone, Bröckeln, Schalter, Boss');
+    console.log('OK  Tastatur: Menü, Laufen, Springen, Flattern, Zunge mit Zielhilfe, Stufen, Ei legen/werfen, Eierblock, Countdown, Farbring, Wasser, Pause, Ziel, Wind, Retro-Zone, Bröckeln, Schalter, neue Gegner, Hilfen, Tafeln, Boss');
     await page.close();
 
     // ---- Controller ----
@@ -179,7 +222,8 @@ const server = http.createServer((req, res) => {
     await gp.evaluate(() => { window.__press(0, true); Pufi3D.step(20); window.__press(0, false); window.__press(3, true); Pufi3D.step(3); window.__press(3, false); Pufi3D.step(2); });
     assert((await S(gp)).P.pound > 0, 'Y stampft in der Luft');
     await gp.evaluate(() => { Pufi3D.step(60); Pufi3D.manual(false); });
-    await tap(9); assert.equal((await S(gp)).mode, 'pause', 'Start pausiert');
+    for (let k = 0; k < 3 && (await S(gp)).mode !== 'pause'; k++) await tap(9);   // SwiftShader: Tastendruck kann zwischen zwei Bildern verloren gehen
+    assert.equal((await S(gp)).mode, 'pause', 'Start pausiert');
     await tap(1); if (process.env.PUFI_DEBUG) await gp.screenshot({ path: '/tmp/claude-0/work/shots/padpause.png' });
     for (let k = 0; k < 3 && (await S(gp)).mode !== 'play'; k++) await tap(1);
     assert.equal((await S(gp)).mode, 'play', 'B schließt die Pause');

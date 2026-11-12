@@ -19,7 +19,15 @@
     glut: { skyTop: '#2a1440', skyMid: '#a8344a', skyBot: '#ff9a4a', sun: '#ffb070', sunI: 1.0, hemiS: '#ff9a7a', hemiG: '#3a1a1a', hemiI: 0.65, fog: '#7a2f3a', fogN: 35, fogF: 170,
       fluid: 'lava', fluidY: -1, deep: '#c92a00', shallow: '#ffb020', grass: '#5a4a52', grass2: '#7a5a5a', cliff: '#5a3e44', cliff2: '#3a2630', music: 'glut', sunDir: [0.3, 0.7, -0.4], grassOn: 0 },
     burg: { skyTop: '#120c30', skyMid: '#4a2a7a', skyBot: '#9a6ad0', sun: '#c9b0ff', sunI: 0.95, hemiS: '#9a8ad8', hemiG: '#2a1a3a', hemiI: 0.75, fog: '#3a2560', fogN: 35, fogF: 170,
-      fluid: 'nebel', fluidY: -6, deep: '#2a1a4a', shallow: '#7a5ab0', grass: '#6a7aa0', grass2: '#8a9ac0', cliff: '#6a6080', cliff2: '#40385a', music: 'burg', sunDir: [-0.4, 0.75, 0.3], grassOn: 0 }
+      fluid: 'nebel', fluidY: -6, deep: '#2a1a4a', shallow: '#7a5ab0', grass: '#6a7aa0', grass2: '#8a9ac0', cliff: '#6a6080', cliff2: '#40385a', music: 'burg', sunDir: [-0.4, 0.75, 0.3], grassOn: 0 },
+    eis: { skyTop: '#3a7ad8', skyMid: '#bfe4ff', skyBot: '#f2fbff', sun: '#f4fbff', sunI: 1.3, hemiS: '#e0f2ff', hemiG: '#7a9ab8', hemiI: 0.85, fog: '#d8ecff', fogN: 50, fogF: 210,
+      fluid: 'wasser', fluidY: -2, deep: '#1a5a9a', shallow: '#9fe6ff', grass: '#f4fbff', grass2: '#d8f0ff', cliff: '#9ab8d8', cliff2: '#5a7aa8', music: 'eis', sunDir: [0.45, 0.6, 0.45], grassOn: 0 },
+    dschungel: { skyTop: '#2f8fd0', skyMid: '#a8f0c0', skyBot: '#fff8c8', sun: '#fff4c0', sunI: 1.2, hemiS: '#d8ffd0', hemiG: '#3a6a3a', hemiI: 0.8, fog: '#b8e8c0', fogN: 40, fogF: 190,
+      fluid: 'wasser', fluidY: -2, deep: '#0f6a5a', shallow: '#4fd0a0', grass: '#4fb048', grass2: '#8ad85a', cliff: '#8a6a4a', cliff2: '#5a4430', music: 'dschungel', sunDir: [0.3, 0.85, 0.3], grassOn: 1 },
+    kristall: { skyTop: '#1a1650', skyMid: '#3a6ac0', skyBot: '#8ae0ff', sun: '#c8f4ff', sunI: 1.0, hemiS: '#a0d8ff', hemiG: '#3a2a6a', hemiI: 0.85, fog: '#3a4a9a', fogN: 35, fogF: 175,
+      fluid: 'nebel', fluidY: -6, deep: '#1a2a6a', shallow: '#5ac8ff', grass: '#8ab0e8', grass2: '#c0a8ff', cliff: '#6a6ab8', cliff2: '#3a3a80', music: 'kristall', sunDir: [-0.3, 0.8, 0.4], grassOn: 0 },
+    nacht: { skyTop: '#0a0a2a', skyMid: '#2a2a6a', skyBot: '#6a4a9a', sun: '#b8c8ff', sunI: 0.9, hemiS: '#8a9ae0', hemiG: '#2a2040', hemiI: 0.8, fog: '#2a2a5a', fogN: 40, fogF: 185,
+      fluid: 'wasser', fluidY: -2, deep: '#0a1a4a', shallow: '#4a6ad8', grass: '#4a8a7a', grass2: '#7ac0a0', cliff: '#5a5a8a', cliff2: '#2a2a50', music: 'nacht', sunDir: [0.5, 0.7, -0.3], grassOn: 1 }
   };
   // ---------- Renderer ----------
   G.init = function (canvas, quality) {
@@ -106,6 +114,10 @@
     M.broeckel = std({ map: stone, color: '#ffb84a', roughness: 0.5, emissive: '#4a2000', emissiveIntensity: 0.25 });
     M.wolke = std({ color: '#ffffff', roughness: 1, emissive: '#ffe6f6', emissiveIntensity: 0.25 });
     M.lift = std({ map: stone, color: '#9fd0ff', roughness: 0.4, metalness: 0.2, emissive: '#2050a0', emissiveIntensity: 0.15 });
+    M.eis = std({ map: stone, color: '#cfeeff', roughness: 0.12, metalness: 0.1, emissive: '#3a7ab0', emissiveIntensity: 0.15 });
+    M.kristall = std({ color: '#b89aff', roughness: 0.15, metalness: 0.2, emissive: '#5a3ab0', emissiveIntensity: 0.35 });
+    M.moos = std({ map: wood, color: '#7ac060', roughness: 0.9 });
+    M.pilzhut = std({ map: G.tex.spots || stone, color: '#ff8a6a', roughness: 0.6 });
     M.farb = new T.MeshStandardMaterial({ color: '#ff7ac0', roughness: 0.3, emissive: '#ff3aa0', emissiveIntensity: 0.35, transparent: true, opacity: 0.35 });
     M.blade = new T.MeshStandardMaterial({ color: '#a8e070', roughness: 0.9, side: T.DoubleSide, vertexColors: true });
     M.blade.onBeforeCompile = sh => {
@@ -363,8 +375,8 @@
     for (let i = 0; i < 5; i++) { const a = i / 5 * TAU; h.add(mesh(sph(0.12, 10, 8), toon('#fff3a0'), Math.cos(a) * 0.42, 0.18, Math.sin(a) * 0.42, 1, 0.6, 1)); }
     g.userData = { h, top, bot }; return g;
   };
-  G.makeBoss = function () {
-    const g = new T.Group(); const c = toon('#8a7ab8', { rimC: '#e0d0ff', rimS: 0.6 }), dark = toon('#5a4a88');
+  G.makeBoss = function (col = '#8a7ab8') {
+    const g = new T.Group(); const c = toon(col, { rimC: '#e0d0ff', rimS: 0.6 }), dark = toon(new T.Color(col).multiplyScalar(0.55).getStyle());
     const body = new T.Group(); g.add(body);
     for (let i = 0; i < 14; i++) { const a = i / 14 * TAU; body.add(mesh(sph(1.0, 16, 12), c, Math.cos(a) * 1.6, 2.4 + Math.sin(a * 3) * 0.3, Math.sin(a) * 1.4, 1, 0.85, 1)); }
     body.add(mesh(sph(2.0, 32, 24), c, 0, 2.6, 0, 1, 0.9, 0.95));
@@ -420,7 +432,7 @@
   G.makeTree = function (s = 1, theme) {
     const g = new T.Group(); const th = G.THEMES[theme] || G.THEMES.wiese;
     const trunk = mesh(new T.CylinderGeometry(0.22 * s, 0.35 * s, 2.2 * s, 10), toon('#9a6a4a', { rimS: 0.2 }), 0, 1.1 * s, 0); g.add(trunk);
-    const lc = theme === 'abend' ? '#ff9fc0' : theme === 'klippe' ? '#ffcf5a' : '#7fd06a';
+    const lc = theme === 'abend' ? '#ff9fc0' : theme === 'klippe' ? '#ffcf5a' : theme === 'dschungel' ? '#3fae4a' : theme === 'nacht' ? '#5ab0c0' : '#7fd06a';
     const leaf = toon(lc, { rimC: '#fffbe0', rimS: 0.55, roughness: 0.75 });
     [[0, 2.8, 0, 1.3], [0.8, 2.4, 0.2, 0.9], [-0.7, 2.5, -0.3, 0.95], [0.1, 3.5, -0.2, 0.9]].forEach(([x, y, z, r]) => g.add(mesh(new T.IcosahedronGeometry(r * s, 2), leaf, x * s, y * s, z * s)));
     void th; return g;
@@ -488,5 +500,108 @@
     const s = new T.Mesh(new T.PlaneGeometry(2.8, 3.9), new T.MeshBasicMaterial({ color: '#9fe8ff', transparent: true, opacity: 0.25, side: T.DoubleSide, depthWrite: false })); s.position.y = 2; g.add(s);
     return g;
   };
+
+  // ---------- Neue Gegner (eigene Figuren) ----------
+  G.makeHupfer = function () {   // Hupfer: Frosch-Blob, springt auf Pufi zu
+    const g = new T.Group(), body = new T.Group(); g.add(body); const c = toon('#5ad0b0', { rimC: '#e0fff4', rimS: 0.6 }), belly = toon('#fff4c8');
+    body.add(mesh(sph(0.5, 22, 16), c, 0, 0.5, 0, 1.1, 0.85, 1)); body.add(mesh(sph(0.34, 16, 12), belly, 0, 0.42, 0.24, 1, 0.8, 0.7));
+    const e1 = eye(0.17), e2 = eye(0.17); e1.position.set(-0.22, 0.95, 0.12); e2.position.set(0.22, 0.95, 0.12); body.add(e1, e2);
+    const legL = mesh(sph(0.2, 12, 8), c, -0.42, 0.18, -0.05, 1, 0.6, 1.5), legR = legL.clone(); legR.position.x = 0.42; body.add(legL, legR);
+    body.add(mesh(new T.TorusGeometry(0.12, 0.03, 6, 12, Math.PI), toon('#3a2a4a'), 0, 0.62, 0.48).rotateZ(Math.PI));
+    g.userData = { body, legL, legR }; return g;
+  };
+  G.makeSpucker = function () {   // Kernspucker: Topfpflanze, die Kerne schießt
+    const g = new T.Group(); g.add(mesh(new T.CylinderGeometry(0.55, 0.42, 0.6, 18), toon('#c96a3a'), 0, 0.3, 0)); g.add(mesh(new T.TorusGeometry(0.55, 0.08, 8, 20), toon('#e08a50'), 0, 0.6, 0).rotateX(Math.PI / 2));
+    const head = new T.Group(); head.position.y = 1.15; g.add(head); const c = toon('#8a5ad8', { rimC: '#f0e0ff', rimS: 0.6 });
+    head.add(mesh(sph(0.48, 22, 16), c)); const mouth = mesh(new T.CylinderGeometry(0.2, 0.26, 0.45, 16), c, 0, -0.05, 0.45); mouth.rotation.x = Math.PI / 2; head.add(mouth);
+    head.add(mesh(new T.CylinderGeometry(0.13, 0.13, 0.05, 14), toon('#2a1040'), 0, -0.05, 0.68).rotateX(Math.PI / 2));
+    const e1 = eye(0.13), e2 = eye(0.13); e1.position.set(-0.2, 0.25, 0.33); e2.position.set(0.2, 0.25, 0.33); head.add(e1, e2);
+    for (let i = 0; i < 3; i++) head.add(mesh(sph(0.22, 10, 8), toon('#6fd06a'), Math.cos(i * 2.1) * 0.3, 0.45, Math.sin(i * 2.1) * 0.3 - 0.1, 1.3, 0.35, 0.7));
+    g.userData = { head }; return g;
+  };
+  G.makeKern = function () { return mesh(sph(0.2, 12, 8), toon('#ffd36a', { emissive: '#a05a00', emissiveIntensity: 0.4 })); };
+  G.makeWirbel = function () {   // Wirbelkreisel: Kreisel, der umherflitzt
+    const g = new T.Group(), spin = new T.Group(); g.add(spin); const c = toon('#ff8a3a', { rimC: '#fff0c0', rimS: 0.6 }), st = toon('#ffe27a');
+    spin.add(mesh(new T.ConeGeometry(0.6, 0.8, 20), c, 0, 0.45, 0).rotateX(Math.PI)); spin.add(mesh(new T.CylinderGeometry(0.7, 0.7, 0.18, 24), st, 0, 0.9, 0)); spin.add(mesh(sph(0.42, 18, 12), c, 0, 1.1, 0, 1, 0.7, 1));
+    for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; spin.add(mesh(sph(0.1, 8, 6), toon('#ffffff'), Math.cos(a) * 0.68, 0.9, Math.sin(a) * 0.68)); }
+    const face = new T.Group(); face.position.y = 1.15; g.add(face); const e1 = eye(0.12), e2 = eye(0.12); e1.position.set(-0.15, 0.05, 0.33); e2.position.set(0.15, 0.05, 0.33); face.add(e1, e2);
+    g.userData = { spin, face }; return g;
+  };
+  G.makeNebli = function () {   // Nebli: kleiner Nebelgeist, schwebt hinterher
+    const g = new T.Group(), body = new T.Group(); g.add(body); const c = toon('#e8e0ff', { transparent: true, opacity: 0.88, rimC: '#a8c8ff', rimS: 0.9, emissive: '#6a6aa0', emissiveIntensity: 0.25 });
+    body.add(mesh(sph(0.5, 22, 16), c, 0, 0.6, 0)); for (let i = 0; i < 5; i++) { const a = i / 5 * TAU; body.add(mesh(sph(0.2, 10, 8), c, Math.cos(a) * 0.3, 0.12, Math.sin(a) * 0.3)); }
+    const e1 = eye(0.12, '#3a1a6a'), e2 = eye(0.12, '#3a1a6a'); e1.position.set(-0.17, 0.72, 0.4); e2.position.set(0.17, 0.72, 0.4); body.add(e1, e2);
+    body.add(mesh(sph(0.07, 8, 6), toon('#ff8ab0'), -0.32, 0.55, 0.38, 1.3, 0.7, 0.5, false)); body.add(mesh(sph(0.07, 8, 6), toon('#ff8ab0'), 0.32, 0.55, 0.38, 1.3, 0.7, 0.5, false));
+    g.userData = { body }; return g;
+  };
+  G.makeRutscher = function () {   // Rutscher: Schneeball-Wesen mit Brille, saust hin und her
+    const g = new T.Group(), body = new T.Group(); g.add(body); const c = toon('#ffffff', { rimC: '#bfe4ff', rimS: 0.7 }), sc = toon('#ff5a7a');
+    body.add(mesh(sph(0.55, 22, 16), c, 0, 0.55, 0)); body.add(mesh(new T.TorusGeometry(0.42, 0.09, 8, 20), sc, 0, 0.78, 0).rotateX(Math.PI / 2));
+    body.add(mesh(new T.BoxGeometry(0.62, 0.2, 0.12), toon('#3a7ad8', { roughness: 0.2, metalness: 0.4 }), 0, 0.82, 0.48));
+    const e1 = eye(0.08), e2 = eye(0.08); e1.position.set(-0.15, 0.83, 0.55); e2.position.set(0.15, 0.83, 0.55); body.add(e1, e2);
+    body.add(mesh(new T.ConeGeometry(0.06, 0.25, 8), toon('#ff9a3a'), 0, 0.62, 0.58).rotateX(Math.PI / 2));
+    g.userData = { body }; return g;
+  };
+  // ---------- Hilfen ----------
+  const heartShape = (() => { const s = new T.Shape(); s.moveTo(0, -0.35); s.bezierCurveTo(-0.5, 0, -0.42, 0.42, 0, 0.2); s.bezierCurveTo(0.42, 0.42, 0.5, 0, 0, -0.35); return s; })();
+  const heartGeo = new T.ExtrudeGeometry(heartShape, { depth: 0.14, bevelEnabled: true, bevelThickness: 0.06, bevelSize: 0.05, bevelSegments: 3 }); heartGeo.center();
+  const glow = (c, e, i = 0.7) => new T.MeshStandardMaterial({ color: c, emissive: e, emissiveIntensity: i, roughness: 0.25, metalness: 0.2 });
+  G.makeHerz = function () { const g = new T.Group(); g.add(mesh(heartGeo, glow('#ff4f7f', '#ff1a5a', 0.6), 0, 0, 0, 1.4, 1.4, 1.4)); return g; };
+  G.makeFeder = function () {
+    const g = new T.Group(), m = glow('#8fe8ff', '#20a0d0', 0.6); g.add(mesh(sph(0.3, 16, 10), m, 0, 0.1, 0, 0.55, 1.4, 0.12));
+    g.add(mesh(new T.CylinderGeometry(0.02, 0.03, 0.9, 6), toon('#ffffff'), 0, 0, 0.02)); g.rotation.z = 0.4; return g;
+  };
+  G.makeMagnet = function () {
+    const g = new T.Group(); g.add(mesh(new T.TorusGeometry(0.3, 0.1, 10, 20, Math.PI), glow('#ff4a4a', '#a01010', 0.4), 0, 0.05, 0).rotateZ(Math.PI));
+    g.add(mesh(new T.CylinderGeometry(0.1, 0.1, 0.22, 10), glow('#e8e8f0', '#6a6a8a', 0.3), -0.3, 0.12, 0)); g.add(mesh(new T.CylinderGeometry(0.1, 0.1, 0.22, 10), glow('#e8e8f0', '#6a6a8a', 0.3), 0.3, 0.12, 0)); return g;
+  };
+  G.makeRegenbogen = function () { const g = new T.Group(), m = glow('#ffffff', '#ff60c0', 1.0); g.add(mesh(G.starGeo, m, 0, 0, 0, 1.6, 1.6, 1.6)); g.userData = { m }; return g; };
+  const tafelTex = canvasTex(128, (x, s) => { x.fillStyle = '#f2d2a0'; x.fillRect(0, 0, s, s); x.fillStyle = '#c99a5a'; for (let i = 0; i < 4; i++) x.fillRect(0, i * 32 + 30, s, 2); x.font = '900 84px Trebuchet MS, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#5a3a8a'; x.fillText('!', s / 2, s / 2 + 4); });
+  G.makeTafel = function () {
+    const g = new T.Group(); g.add(mesh(new T.CylinderGeometry(0.08, 0.1, 1.2, 8), toon('#8a5a3a'), 0, 0.6, 0));
+    const b = mesh(new T.BoxGeometry(1.1, 0.8, 0.12), new T.MeshStandardMaterial({ map: tafelTex, roughness: 0.8 }), 0, 1.35, 0); g.add(b); g.userData = { b }; return g;
+  };
+  // ---------- Neue Deko je Welt ----------
+  G.makeTanne = function (s = 1) {
+    const g = new T.Group(), c = toon('#3a8a6a', { rimC: '#e0fff0', rimS: 0.4 }), snow = toon('#ffffff', { rimS: 0.3 });
+    g.add(mesh(new T.CylinderGeometry(0.18 * s, 0.26 * s, 1 * s, 8), toon('#7a5a3a'), 0, 0.5 * s, 0));
+    [[1.1, 1.5, 1.0], [0.85, 1.3, 1.8], [0.6, 1.1, 2.5]].forEach(([r, h, y]) => { g.add(mesh(new T.ConeGeometry(r * s, h * s, 12), c, 0, y * s, 0)); g.add(mesh(new T.ConeGeometry(r * 0.55 * s, h * 0.35 * s, 12), snow, 0, (y + h * 0.36) * s, 0)); });
+    return g;
+  };
+  G.makePalme = function (s = 1) {
+    const g = new T.Group(), tr = toon('#a07a4a'), lf = toon('#4fc05a', { rimC: '#eaffc8', rimS: 0.5, side: T.DoubleSide });
+    for (let i = 0; i < 6; i++) g.add(mesh(new T.CylinderGeometry(0.2 * s, 0.24 * s, 0.6 * s, 8), tr, i * 0.07 * s, (0.3 + i * 0.55) * s, 0).rotateZ(-0.05 * i));
+    for (let i = 0; i < 6; i++) { const a = i / 6 * TAU, l = mesh(sph(0.9 * s, 12, 8), lf, Math.cos(a) * 0.8 * s + 0.4 * s, 3.3 * s, Math.sin(a) * 0.8 * s, 1.2, 0.12, 0.45); l.rotation.y = -a; l.rotation.z = -0.35; g.add(l); }
+    g.add(mesh(sph(0.16 * s, 10, 8), toon('#7a4a2a'), 0.45 * s, 3.1 * s, 0.15 * s)); return g;
+  };
+  G.makeKristall = function (s = 1, col = '#9a8aff') {
+    const g = new T.Group(), m = new T.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: 0.45, roughness: 0.1, metalness: 0.3, transparent: true, opacity: 0.9 });
+    [[0, 1.0, 0, 0.5, 2.2, 0], [0.5, 0.6, 0.2, 0.32, 1.4, 0.4], [-0.45, 0.55, -0.1, 0.3, 1.2, -0.45], [0.1, 0.4, 0.5, 0.22, 0.9, 0.2]].forEach(([x, y, z, r, h, rz]) => { const o = mesh(new T.OctahedronGeometry(r * s, 0), m, x * s, y * s, z * s, 1, h, 1); o.rotation.z = rz; g.add(o); });
+    return g;
+  };
+  G.makeRiesenpilz = function (s = 1, col = '#ff7a5a') {
+    const g = new T.Group(); g.add(mesh(new T.CylinderGeometry(0.3 * s, 0.45 * s, 2.2 * s, 12), toon('#fff3e0'), 0, 1.1 * s, 0));
+    g.add(mesh(sph(1.5 * s, 28, 14), toon(col, { rimC: '#ffffff', rimS: 0.5 }), 0, 2.3 * s, 0, 1, 0.45, 1));
+    for (let i = 0; i < 8; i++) { const a = i / 8 * TAU, r = (i % 2 ? 0.6 : 1.05) * s; g.add(mesh(sph(0.2 * s, 10, 8), toon('#ffffff'), Math.cos(a) * r, 2.75 * s - (i % 2 ? 0 : 0.18 * s), Math.sin(a) * r, 1, 0.4, 1, false)); }
+    return g;
+  };
+  G.makeLaterne = function (s = 1) {
+    const g = new T.Group(); g.add(mesh(new T.CylinderGeometry(0.06 * s, 0.09 * s, 2.2 * s, 8), toon('#3a3050', { metalness: 0.5 }), 0, 1.1 * s, 0));
+    g.add(mesh(sph(0.3 * s, 16, 12), new T.MeshStandardMaterial({ color: '#fff0b0', emissive: '#ffc040', emissiveIntensity: 1.4 }), 0, 2.4 * s, 0)); g.add(mesh(new T.ConeGeometry(0.36 * s, 0.3 * s, 10), toon('#3a3050'), 0, 2.75 * s, 0)); return g;
+  };
+  G.makeBlumen = function (s = 1) {
+    const g = new T.Group();
+    for (let i = 0; i < 7; i++) { const a = i * 2.4, r = (0.2 + (i % 3) * 0.3) * s, c = new T.Color().setHSL((i * 0.17) % 1, 0.8, 0.7);
+      g.add(mesh(new T.CylinderGeometry(0.02, 0.02, 0.4 * s, 4), toon('#5ab05a'), Math.cos(a) * r, 0.2 * s, Math.sin(a) * r, 1, 1, 1, false));
+      g.add(mesh(sph(0.11 * s, 10, 8), toon('#' + c.getHexString(), { rimS: 0.4 }), Math.cos(a) * r, 0.42 * s, Math.sin(a) * r, 1, 0.6, 1, false)); }
+    return g;
+  };
+  G.makeSchneemann = function (s = 1) {
+    const g = new T.Group(), w = toon('#ffffff', { rimC: '#bfe4ff', rimS: 0.5 });
+    g.add(mesh(sph(0.6 * s, 20, 14), w, 0, 0.55 * s, 0)); g.add(mesh(sph(0.42 * s, 18, 12), w, 0, 1.35 * s, 0)); g.add(mesh(sph(0.3 * s, 16, 12), w, 0, 1.95 * s, 0));
+    g.add(mesh(new T.ConeGeometry(0.06 * s, 0.3 * s, 8), toon('#ff9a3a'), 0, 1.95 * s, 0.38 * s).rotateX(Math.PI / 2)); g.add(mesh(new T.CylinderGeometry(0.22 * s, 0.25 * s, 0.3 * s, 12), toon('#3a3050'), 0, 2.32 * s, 0));
+    const e1 = eye(0.06 * s, '#222'), e2 = eye(0.06 * s, '#222'); e1.position.set(-0.1 * s, 2.05 * s, 0.25 * s); e2.position.set(0.1 * s, 2.05 * s, 0.25 * s); g.add(e1, e2); return g;
+  };
+  G.makeSaeule = function (s = 1, theme) { const th = G.THEMES[theme] || G.THEMES.burg, m = toon(th.cliff, { roughness: 0.8 }); const g = new T.Group(); g.add(mesh(new T.CylinderGeometry(0.4 * s, 0.45 * s, 3 * s, 12), m, 0, 1.5 * s, 0)); g.add(mesh(new T.BoxGeometry(1.1 * s, 0.3 * s, 1.1 * s), m, 0, 3.1 * s, 0)); g.add(mesh(new T.BoxGeometry(1.1 * s, 0.3 * s, 1.1 * s), m, 0, 0.15 * s, 0)); return g; };
   root.PufiGrafik = G;
 })(window);
