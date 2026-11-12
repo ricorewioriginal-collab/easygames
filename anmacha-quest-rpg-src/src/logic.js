@@ -2,7 +2,11 @@
 // Läuft auch unter Node (Tests in tests/logic.test.js).
 import { MAPS, HEROES, ENEMIES, ITEMS, CAPSULES, REEL, DEEP_BOSS, DEEP_FLOORS } from './data.js';
 
-export const STEP_T = 0.13;          // Sekunden pro Feld (Spieler)
+export const STEP_T = 0.13;          // Sekunden pro Feld (alte Schritt-Logik)
+export const RUN_SPEED = 5.4;        // Felder pro Sekunde beim Rennen (freies Laufen)
+export const WALK_SPEED = 2.3;       // Felder pro Sekunde beim Gehen
+export const PLAYER_R = 0.3;         // Kollisionsradius des Helden in Feldern
+export const BUMP_T = 0.12;          // so lange gegen ein Objekt laufen, bis es benutzt wird
 export const ROAM_T = 0.38;          // Sekunden pro Feld (Monster)
 export const TOUCH_DIST = 11 / 16;   // Berührungsabstand Monster–Spieler in Feldern
 export const STAGE_LV = [3, 8, 13, 18, 23];
@@ -135,9 +139,9 @@ const DEEP_THEMES = ['rap', 'schlager', 'xmas', 'rock', 'static'];
 const DEEP_POOLS = [
   ['beatbandit', 'reimruepel', 'bassgolem', 'boombox', 'graffiti', 'mikspin'],
   ['gecko', 'schleim', 'aal', 'disco', 'herz', 'zuckerg'],
-  ['geist', 'lebkuchen', 'schneemann', 'eisratte', 'eisspin', 'zwerg'],
-  ['gargoyle', 'mole', 'verstaerker', 'rifffled', 'daemon', 'roadie'],
-  ['schemen', 'stoersignal', 'kreischer', 'antspin', 'rausritter', 'zyklop']];
+  ['geist', 'lebkuchen', 'schneemann', 'eisratte', 'eisspin', 'zwerg', 'knurrmops'],
+  ['gargoyle', 'mole', 'verstaerker', 'rifffled', 'daemon', 'roadie', 'knurrmops', 'glutwicht'],
+  ['schemen', 'stoersignal', 'kreischer', 'antspin', 'rausritter', 'zyklop', 'glutwicht']];
 const DEEP_LOOT = ['trank', 'trank', 'aether', 'grosstrank', 'aetherflask', 'weck', 'bombe'];
 export function genDeep(floor, seed) {
   const r = makeRng((seed * 7919 + floor * 104729) >>> 0);
@@ -359,7 +363,7 @@ export function reachable(S, start, blockFn = (n) => blocked(S, n)) {
 export function spawnRoamers(S, rng) {
   S.roamers = [];
   let pool = S.map.enc, count = 6;
-  if (isWorld(S)) { pool = STAGE_POOL[stage(S)]; count = 12; }
+  if (isWorld(S)) { pool = STAGE_POOL[stage(S)]; count = 30; }
   if (!pool.length) return;
   const cells = [];
   for (const c of reachable(S, S.gp).values()) {
@@ -381,7 +385,7 @@ export function roamerFree(S, n, me) {
   return true;
 }
 export function roamerStep(S, rng, r) {
-  const target = S.moving ? S.gtarget : S.gp;
+  const target = S.gp;
   const g = r.g;
   const dist = manhattan(target, g);
   const opts = [];
@@ -408,7 +412,7 @@ export function updateRoamers(S, rng, delta) {
       r.wait -= delta;
       if (r.wait <= 0 && r.stun <= 0) { r.wait = rng.range(0.2, 0.6); roamerStep(S, rng, r); }
     }
-    if (r.stun <= 0 && !S.moving && Math.hypot(r.pos.x - S.ppos.x, r.pos.y - S.ppos.y) < TOUCH_DIST) return r;
+    if (r.stun <= 0 && Math.hypot(r.pos.x - S.ppos.x, r.pos.y - S.ppos.y) < TOUCH_DIST) return r;
   }
   return null;
 }
@@ -435,4 +439,4 @@ export function gainExp(S, h, xp) {
 }
 
 // Startfeld je Karte (für Tests und Debug-Sprung)
-export const startOf = (id) => id === 'hub' ? { x: 12, y: 12 } : id === 'lind' ? { x: 12, y: 11 } : (id === 'welt' ? { x: 20, y: 22 } : { x: 2, y: 14 });
+export const startOf = (id) => id === 'hub' ? { x: 12, y: 12 } : id === 'lind' ? { x: 12, y: 11 } : (id === 'welt' ? { x: 40, y: 44 } : { x: 2, y: 14 });

@@ -178,17 +178,17 @@ for (let si = 0; si < 5; si++) {
   if (!S.flags['boss_' + mid] || !S.flags[mid + '_key'] || S.objs.some(o => o.t === 'chest' || o.t === 'gate')) fail('Ablauf', mid);
 }
 if (!S.flags.boss_rauschen) fail('Ende nicht erreicht');
-game.loadMap('welt', { x: 20, y: 22 });
+game.loadMap('welt', { x: 40, y: 44 });
 console.log('Monster Weltkarte:', S.roamers.length);
 await game.startRoamerFight(S.roamers[0]);
 for (const n of MAPS.hub.npcs) await game.talkNpc(n);
 // Portale: versiegelter Zugang schiebt zurück, offener lädt die Karte
 S.flags = {};
-game.loadMap('welt', { x: 33, y: 19 });
+game.loadMap('welt', { x: 66, y: 38 });
 S.face = { x: 0, y: -1 };
-S.gp = { x: 33, y: 18 };
+S.gp = { x: 66, y: 36 };
 await game.usePortal(MAPS.welt.portals[2]);
-if (S.mapId !== 'welt' || S.gp.y !== 19) fail('Siegel', S.mapId, S.gp);
+if (S.mapId !== 'welt' || S.gp.y !== 37) fail('Siegel', S.mapId, S.gp);
 await game.usePortal(MAPS.welt.portals[1]);
 if (S.mapId !== 'rap') fail('Portal');
 // Mitstreiter
@@ -212,6 +212,40 @@ for (let i = 0; i < 9; i++) game.update(0.016);
 game.pressDir({ x: 0, y: -1 }, false);
 for (let i = 0; i < 9; i++) game.update(0.016);
 if (S.gp.y !== 11 || S.moving) fail('Laufen', S.gp, S.moving);
+
+// Freies Laufen: schräg, stufenlos, an Wänden entlanggleiten, Spielstand v4 auf großer Weltkarte
+{
+  game.loadMap('hub', { x: 12, y: 12 });
+  S.roamers = [];
+  game.dpad = { x: 0.7, y: -0.7, m: 1 };
+
+  for (let i = 0; i < 30; i++) game.update(0.016);
+  if (!(S.ppos.x > 12.5 && S.ppos.y < 11.5) || !S.running) fail('Schräg laufen', S.ppos);
+  game.dpad = { x: 0, y: -1, m: 0.4 };
+  const y0 = S.ppos.y;
+  game.update(0.1);
+  if (S.running || Math.abs(y0 - S.ppos.y - L.WALK_SPEED * 0.1) > 0.01) fail('Gehen', y0, S.ppos.y);
+  // gegen den Rand (Wand) laufen: bleibt stehen, steckt nicht fest
+  game.dpad = { x: 0, y: 1, m: 1 };
+  for (let i = 0; i < 200; i++) game.update(0.05);
+  const yWall = S.ppos.y;
+  if (L.blocked(S, S.gp) || yWall > S.mh) fail('Wand', S.ppos);
+  game.dpad = { x: 0, y: -1, m: 1 };
+  game.update(0.05);
+  if (!(S.ppos.y < yWall)) fail('Frei von Wand', S.ppos);
+  for (let i = 0; i < 300; i++) { game.dpad = { x: Math.cos(i * 0.3), y: Math.sin(i * 0.7), m: 1 }; game.update(0.033); if (L.blocked(S, S.gp)) { fail('Durch Wand', S.gp); break; } }
+  game.dpad = null;
+  game.update(0.016);
+  if (S.moving) fail('Stehen');
+
+  // alter Spielstand (v4) auf der Weltkarte: Position wird verdoppelt
+
+  const old = JSON.parse(store.get(SAVE_KEY));
+  store.set(SAVE_KEY, JSON.stringify({ ...old, v: 4, map: 'welt', gp: { x: 20, y: 22 } }));
+  const g3 = new Game(ui, {}, { rng: L.makeRng(9), store });
+  if (!g3.loadGame() || g3.S.mapId !== 'welt' || g3.S.gp.x !== 40 || g3.S.gp.y !== 44) fail('Spielstand v4 Welt', g3.S.gp);
+  game.saveGame();
+}
 
 // ---- Stufe 2: Kapselgeister, Lindmark, neue Items
 {
@@ -254,7 +288,7 @@ if (S.gp.y !== 11 || S.moving) fail('Laufen', S.gp, S.moving);
   if (S.enemies[0].hp >= hp0 || S.inv.bombe !== 0) fail('Glutbombe');
   S.enemies = [];
   // Lindmark: erreichbar über die Weltkarte, Gasthaus heilt und kostet
-  game.loadMap('welt', { x: 36, y: 13 });
+  game.loadMap('welt', { x: 72, y: 26 });
   const lp = MAPS.welt.portals.find(p => p.to === 'lind');
   await game.usePortal(lp);
   if (S.mapId !== 'lind') fail('Lindmark');

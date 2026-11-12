@@ -1,6 +1,6 @@
 // Spielablauf: Titel, Karte, Gespräche, Shop, Menü, Kampf. Gleiche Abläufe und Texte wie main.gd der Godot-Fassung.
 // Anzeige und Bedienung kommen über `ui` (DOM) und `view` (Three.js); beide lassen sich für Tests durch Attrappen ersetzen.
-import { MAPS, HEROES, JOINS, SKILLS, IPSKILLS, ITEMS, KEYNAMES, ENEMIES, CAPSULES, SHOPS, FEED, TOOLS, FISH, REEL, CHIP_PRICE, PRIZES, RUSH, DEEP_FLOORS } from './data.js';
+import { MAPS, HEROES, JOINS, SKILLS, IPSKILLS, ITEMS, KEYNAMES, ENEMIES, CAPSULES, SHOPS, FEED, TOOLS, FISH, REEL, CHIP_PRICE, PRIZES, RUSH, DEEP_FLOORS, WORLD_SCALE } from './data.js';
 import * as L from './logic.js';
 
 export const M = { TITLE: 0, WORLD: 1, BATTLE: 2 };
@@ -129,7 +129,7 @@ export class Game {
     if (!this.store) return;
     const S = this.S;
     const party = S.party.map(h => ({ id: h.id, name: h.name, lv: h.lv, exp: h.exp, hp: h.hp, sp: h.sp, ip: h.ip }));
-    this.store.set(SAVE_KEY, JSON.stringify({ v: 4, party, inv: S.inv, gold: S.gold, gear: S.gear, flags: S.flags, caps: S.caps, chips: S.chips, deepBest: S.deepBest,
+    this.store.set(SAVE_KEY, JSON.stringify({ v: 5, party, inv: S.inv, gold: S.gold, gear: S.gear, flags: S.flags, caps: S.caps, chips: S.chips, deepBest: S.deepBest,
       map: S.mapId === 'tiefe' ? 'hub' : S.mapId, gp: S.mapId === 'tiefe' ? { x: 2, y: 2 } : S.gp, t: S.playTime }));
   }
   loadGame() {
@@ -137,6 +137,8 @@ export class Game {
     let d = null;
     try { d = JSON.parse(this.store.get(SAVE_KEY)); } catch (e) { return false; }
     if (d && d.map === 'tiefe') { d.map = 'hub'; d.gp = { x: 2, y: 2 }; }
+    // ab v5 ist die Weltkarte doppelt so groß
+    if (d && (d.v | 0) < 5 && d.map === 'welt' && d.gp) d.gp = { x: d.gp.x * WORLD_SCALE, y: d.gp.y * WORLD_SCALE };
     if (!d || !Array.isArray(d.party) || !d.party.length || !MAPS[d.map]) return false;
     const S = this.S;
     S.party = d.party.filter(h => HEROES[h.id]).map(h => ({ id: h.id, name: HEROES[h.id].name, lv: h.lv | 0 || 1, exp: h.exp | 0, hp: h.hp | 0, sp: h.sp | 0, ip: 0 }));
@@ -162,7 +164,7 @@ export class Game {
     S.deepBest = Math.max(0, d.deepBest | 0);
     S.playTime = +d.t || 0;
     this.mode = M.WORLD;
-    const gp = d.gp && L.tile({ ...S, map: MAPS[d.map], mw: MAPS[d.map].rows[0].length, mh: MAPS[d.map].rows.length }, d.gp.x, d.gp.y) !== '#' ? d.gp : L.startOf(d.map);
+    const gp = d.gp && L.tile({ ...S, map: MAPS[d.map], mw: MAPS[d.map].rows[0].length, mh: MAPS[d.map].rows.length }, d.gp.x, d.gp.y) !== '#' && !L.BLOCK.includes(MAPS[d.map].rows[d.gp.y]?.[d.gp.x] ?? '#') ? d.gp : L.startOf(d.map);
     this.loadMap(d.map, gp);
     return true;
   }
@@ -217,21 +219,32 @@ export class Game {
     await this.fade(0.0);
   }
 
-  // ---------------------------------------------------------------- Bewegung (pro Bild)
-  readDir() {
-    const d = this.dpad || (this.dirStack.length ? this.dirStack[this.dirStack.length - 1] : null);
-    if (!d) return null;
-    // Eingabe ist bildschirmbezogen: an der Kameradrehung ausrichten
-    let r = { x: d.x, y: d.y };
-    const q = this.view?.camQuad?.() || 0;
-    for (let i = 0; i < q; i++) r = { x: r.y, y: -r.x };
-    return r;
+  // ---------------------------------------------------------------- Bewegung (pro Bild): frei in jede Richtung
+  // Eingabe ist bildschirmbezogen (zur Kamera gedreht): Stick und Touch-Stick stufenlos, Tasten in 8 Richtungen.
+  // Leicht neigen oder Umschalt halten = gehen, voll = rennen.
+  readMove() {
+    let v = null;
+    if (this.stick) { if (!this.stickLock) v = this.stick; } else this.stickLock = false;
+    if (!v && this.dpad) v = this.dpad;
+    if (!v && this.dirStack.length) {
+      let x = 0, y = 0;
+      for (const d of this.dirStack) { x += d.x; y += d.y; }
+      const l = Math.hypot(x, y);
+      if (!l) { const d = this.dirStack[this.dirStack.length - 1]; x = d.x; y = d.y; }
+      v = { x, y, m: this.walkKey ? 0.5 : 1 };
+    }
+    if (!v) return null;
+    const l = Math.hypot(v.x, v.y);
+    if (!l) return null;
+    const m = v.m ?? Math.min(1, l), nx = v.x / l, ny = v.y / l;
+    const yaw = this.view?.camYaw || 0, c = Math.cos(yaw), s = Math.sin(yaw);
+    return { x: nx * c + ny * s, y: -nx * s + ny * c, m };
   }
   pressDir(d, down) {
     this.dirStack = this.dirStack.filter(v => !L.eq(v, d));
     if (down) this.dirStack.push(d);
   }
-  clearDirs() { this.dirStack = []; this.dpad = null; }
+  clearDirs() { this.dirStack = []; this.dpad = null; this.stickLock = true; }
   idle() { return !this.busy && !this.ui.isChoosing() && !this.ui.isTalking(); }
 
   update(delta) {
@@ -240,28 +253,99 @@ export class Game {
     if (this.mode !== M.WORLD) return;
     S.playTime += delta;
     if (!this.ui.touchVisible() && this.dpad) this.dpad = null;
-    if (S.moving) {
-      this.mt += delta / L.STEP_T;
-      while (S.moving && this.mt >= 1.0) {
-        const over = this.mt - 1.0;
-        S.moving = false;
-        S.ppos = { ...S.gtarget };
-        S.gp = { ...S.gtarget };
-        this.onStep();
-        if (!this.idle()) break;
-        const nd = this.readDir();
-        if (nd) { this.tryStep(nd); if (S.moving) this.mt = over; }
-      }
-      if (S.moving) S.ppos = { x: S.mfrom.x + (S.gtarget.x - S.mfrom.x) * this.mt, y: S.mfrom.y + (S.gtarget.y - S.mfrom.y) * this.mt };
-    } else if (this.idle()) {
-      const d = this.readDir();
-      if (d) this.tryStep(d);
-    }
+    if (this.idle()) this.walk(delta);
+    else S.moving = false;
     if (this.idle()) {
       const r = L.updateRoamers(S, this.rng, delta);
       if (r) this.startRoamerFight(r);
     }
   }
+  // Feld versperrt (Wand, Baum, Wasser, Haus, Objekt)?
+  solidAt(x, y) { return L.blocked(this.S, { x, y }) || !!L.objAt(this.S, { x, y }); }
+  // Kreis (Radius R) um die Spielermitte gegen Felder schieben; liefert das getroffene Feld
+  slide(dx, dy) {
+    const S = this.S, R = L.PLAYER_R;
+    const cx = S.ppos.x + 0.5 + dx, cy = S.ppos.y + 0.5 + dy;
+    const x0 = Math.floor(cx - R), x1 = Math.floor(cx + R - 1e-6), y0 = Math.floor(cy - R), y1 = Math.floor(cy + R - 1e-6);
+    for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
+      if (!this.solidAt(tx, ty)) continue;
+      // Felder, in denen man schon steckte, nicht zählen (so kommt man immer wieder frei)
+      const ox = S.ppos.x + 0.5, oy = S.ppos.y + 0.5;
+      if (tx + 1 > ox - R && tx < ox + R && ty + 1 > oy - R && ty < oy + R) continue;
+      if (dx > 0) S.ppos.x = tx - R - 0.5 - 1e-4; else if (dx < 0) S.ppos.x = tx + 1 + R - 0.5 + 1e-4;
+      if (dy > 0) S.ppos.y = ty - R - 0.5 - 1e-4; else if (dy < 0) S.ppos.y = ty + 1 + R - 0.5 + 1e-4;
+      return { x: tx, y: ty };
+    }
+    S.ppos.x += dx; S.ppos.y += dy;
+    return null;
+  }
+  walk(dt) {
+    const S = this.S, v = this.readMove();
+    if (!v || v.m < 0.15) { S.moving = false; S.running = false; this.bumpT = 0; return; }
+    S.running = v.m > 0.6;
+    S.moving = true;
+    S.fdir = { x: v.x, y: v.y };
+    S.face = Math.abs(v.x) >= Math.abs(v.y) ? { x: Math.sign(v.x), y: 0 } : { x: 0, y: Math.sign(v.y) };
+    const dist = (S.running ? L.RUN_SPEED : L.WALK_SPEED) * Math.min(dt, 0.1);
+    const n = Math.max(1, Math.ceil(dist / 0.15));
+    let hit = null;
+    for (let i = 0; i < n; i++) {
+      const hx = v.x ? this.slide(v.x * dist / n, 0) : null;
+      const hy = v.y ? this.slide(0, v.y * dist / n) : null;
+      // An Ecken entlanggleiten: gegen eine Kante gelaufen, dann sanft zur freien Spur in der Feldmitte
+      if (hx && Math.abs(v.x) >= Math.abs(v.y)) this.assist('y', Math.sign(v.x), dist / n);
+      if (hy && Math.abs(v.y) > Math.abs(v.x)) this.assist('x', Math.sign(v.y), dist / n);
+      hit = hit || (Math.abs(v.x) >= Math.abs(v.y) ? hx || hy : hy || hx);
+    }
+    const g = { x: Math.round(S.ppos.x), y: Math.round(S.ppos.y) };
+    if (!L.eq(g, S.gp)) {
+      this.prevGp = { ...S.gp };
+      S.gp = g;
+      this.stepflip = 1 - this.stepflip;
+      this.onStep();
+      if (!this.idle()) return;
+    }
+    // Gegen ein Objekt laufen = benutzen (Truhe, Block schieben, Werkzeug). Reden geht auch mit Bestätigen.
+    const o = hit && L.objAt(S, hit);
+    if (o && L.eq(hit, { x: S.gp.x + S.face.x, y: S.gp.y + S.face.y })) {
+      this.bumpT = (this.bumpT || 0) + dt;
+      if (this.bumpT >= L.BUMP_T) { this.bumpT = 0; S.moving = false; this.interact(o); }
+    } else this.bumpT = 0;
+  }
+  assist(axis, dir, step) {
+    const S = this.S, c = { x: S.ppos.x + 0.5, y: S.ppos.y + 0.5 };
+    const cur = Math.floor(c[axis]), frac = c[axis] - cur;
+    // Nachbarspur, in die der Spieler schon hineinragt
+    const lanes = [cur, frac < 0.5 ? cur - 1 : cur + 1];
+    for (const ln of lanes) {
+      const t = axis === 'y' ? { x: Math.floor(c.x) + dir, y: ln } : { x: ln, y: Math.floor(c.y) + dir };
+      const here = axis === 'y' ? { x: Math.floor(c.x), y: ln } : { x: ln, y: Math.floor(c.y) };
+      if (this.solidAt(t.x, t.y) || this.solidAt(here.x, here.y)) continue;
+      const want = ln + 0.5 - c[axis];
+      if (Math.abs(want) > 0.75) continue;
+      const mv = Math.sign(want) * Math.min(Math.abs(want), step);
+      if (axis === 'y') this.slide(0, mv); else this.slide(mv, 0);
+      return;
+    }
+  }
+  // Bestätigen auf der Karte: Objekt oder Person vor dem Helden benutzen
+  actionFront() {
+    const S = this.S;
+    if (this.mode !== M.WORLD || !this.idle()) return false;
+    const c = { x: S.ppos.x + 0.5, y: S.ppos.y + 0.5 }, f = S.fdir || S.face;
+    const cand = [{ x: Math.floor(c.x + f.x * 0.75), y: Math.floor(c.y + f.y * 0.75) }, { x: S.gp.x + S.face.x, y: S.gp.y + S.face.y }];
+    for (const t of cand) {
+      const o = L.objAt(S, t);
+      if (o) {
+        const d = { x: t.x - S.gp.x, y: t.y - S.gp.y };
+        if (Math.abs(d.x) + Math.abs(d.y) === 1) S.face = d;
+        this.interact(o);
+        return true;
+      }
+    }
+    return false;
+  }
+  // Alte Schritt-Logik (für Tests und Skripte): ein Feld in Richtung d
   tryStep(d) {
     const S = this.S;
     S.face = { ...d };
@@ -269,11 +353,10 @@ export class Game {
     if (L.blocked(S, t)) return;
     const o = L.objAt(S, t);
     if (o) { this.interact(o); return; }
-    S.moving = true;
-    S.gtarget = t;
-    S.mfrom = { ...S.gp };
-    this.mt = 0;
-    this.stepflip = 1 - this.stepflip;
+    this.prevGp = { ...S.gp };
+    S.gp = t;
+    S.ppos = { ...t };
+    this.onStep();
   }
   onStep() {
     const S = this.S;
@@ -290,7 +373,8 @@ export class Game {
     this.setTouch(false);
     if (p.req !== '' && !S.flags[p.req]) {
       await this.say([p.lock || (p.to === 'tiefe' ? 'Ein kalter Hauch steigt aus dem Schacht. Erst wenn der Rosenhain befreit ist, wagt ihr den Abstieg.' : `Der Zugang nach "${p.label}" ist versiegelt. Befreie zuerst das vorherige Reich.`)]);
-      S.gp = { x: S.gp.x - S.face.x, y: S.gp.y - S.face.y };
+      const back = { x: S.gp.x - S.face.x, y: S.gp.y - S.face.y };
+      S.gp = this.solidAt(back.x, back.y) && this.prevGp ? { ...this.prevGp } : back;
       S.ppos = { ...S.gp };
       this.busy = false;
       this.setTouch(true);

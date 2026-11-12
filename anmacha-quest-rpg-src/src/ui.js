@@ -48,15 +48,15 @@ export class UI {
     $('dlg').addEventListener('pointerdown', (e) => { if (this.talking) { e.preventDefault(); this.advance(); } });
     $('status').addEventListener('pointerdown', () => this.closeStatus());
     $('menuBtn').addEventListener('click', () => this.g.openMenu());
+    $('actBtn').addEventListener('pointerdown', (e) => { e.preventDefault(); if (!this.action('ok')) this.g.actionFront(); });
     // Steuerkreuz: Finger aufsetzen und schieben, Loslassen stoppt
     const joy = $('joy'), knob = $('knob');
     let pid = null, cx = 0, cy = 0;
     const upd = (e) => {
       const dx = e.clientX - cx, dy = e.clientY - cy, d = Math.hypot(dx, dy), m = Math.min(d, 42);
       knob.style.transform = `translate(${d ? dx / d * m : 0}px, ${d ? dy / d * m : 0}px)`;
-      let dir = null;
-      if (d >= 12) dir = Math.abs(dx) > Math.abs(dy) ? { x: Math.sign(dx), y: 0 } : { x: 0, y: Math.sign(dy) };
-      this.g.dpad = dir;
+      // stufenlos: wenig schieben = gehen, ganz = rennen
+      this.g.dpad = d >= 10 ? { x: dx / d, y: dy / d, m: Math.min(1, (d - 10) / 30) } : null;
     };
     joy.addEventListener('pointerdown', (e) => {
       if (pid !== null) return;
@@ -83,6 +83,7 @@ export class UI {
     this.touchOn = v;
     $('menuBtn').hidden = !v;
     $('joy').hidden = !(v && this.touchDevice);
+    $('actBtn').hidden = !(v && this.touchDevice);
     if (!v) this.joyRelease();
   }
 

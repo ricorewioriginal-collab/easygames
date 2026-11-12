@@ -11,21 +11,21 @@
     {
       "t": "Steuerung",
       "list": [
-        "Laufen – PC: Pfeiltasten oder W A S D. Handy: Steuerkreuz unten links; Finger aufsetzen und in die Richtung schieben, auch gleitend wechseln; Loslassen stoppt.",
+        "Laufen (frei in jede Richtung) – PC: Pfeiltasten oder W A S D, auch schräg; Umschalt halten = gehen statt rennen. Controller: linker Stick, leicht neigen = gehen. Handy: Stick unten links, wenig schieben = gehen, ganz = rennen; Loslassen stoppt.",
         "Kamera – PC: Q/E oder mit gedrückter Maus ziehen dreht den Blick, R/F oder Mausrad zoomt. Handy: auf freier Fläche wischen dreht, zwei Finger zoomen. Controller: rechter Stick oder LB/RB dreht, LT/RT zoomt. Die Laufrichtung richtet sich nach dem Blick.",
         "Musik an/aus – im Menü unter „Musik“.",
         "Bestätigen und Weiterlesen – PC: Leertaste, Enter oder Z (oder Mausklick auf das Textfeld). Handy: Textfeld antippen.",
         "Zurück und Abbrechen – PC: Esc, X oder Backspace. Handy: Menüpunkt „Zurück“.",
         "Menü öffnen – PC: Esc, M oder Tab. Handy: Taste MENÜ oben rechts.",
         "Menüpunkte wählen – PC: Pfeiltasten und Bestätigen. Handy: antippen.",
-        "Ansprechen und Öffnen: Läufst du gegen eine Person, eine Truhe, ein Tor oder einen Boss, wird die Aktion sofort ausgelöst. Eine extra Taste brauchst du nicht.",
+        "Ansprechen und Öffnen: vor eine Person, Truhe, ein Tor oder einen Boss stellen und die Aktionstaste drücken (PC: Enter, Controller: A, Handy: Taste A unten rechts). Dagegenlaufen geht auch.",
         "Auf dem Handy am besten quer halten."
       ]
     },
     {
       "t": "Der Bildschirm",
       "list": [
-        "Welt und Kämpfe werden in modernem Echtzeit-3D gezeigt (Licht, Schatten, Wasser, Wind im Gras); die Kamera folgt dir von schräg oben. Gelaufen wird wie in klassischen Rollenspielen Feld für Feld.",
+        "Welt und Kämpfe werden in modernem Echtzeit-3D gezeigt (Licht, Schatten, Wasser, Wind im Gras); die Kamera folgt dir von schräg oben. Du läufst frei in jede Richtung; Kerkermauern vor der Kamera werden ausgeblendet.",
         "Oben links: Name des Ortes und deine Münzen (M).",
         "Weltkarte: Städte, Höhlen und der Turm sind beschriftet. Rot gefärbte Eingänge sind noch versiegelt.",
         "Sichtbare Monster: Auf der Weltkarte und in den Dungeons laufen Gegner herum. Kommen sie nahe, jagen sie dich; bei Berührung beginnt ein Kampf. Selten gibt es auch Zufallskämpfe.",
@@ -123,7 +123,7 @@
       "list": [
         "Angeln bei Anglerin Wenke (Hafenau) oder Fischer Arno (Lindmark): bestätigen, wenn die Nadel im grünen Feld steht. Silberling heilt 120 LP, Goldforelle alle LP, Sternenkoi gibt Kapselgeistern viel EXP.",
         "Spielhalle in Lindmark: 10 Jetons für 100 Münzen. Sphärenrad: jedes Bestätigen hält eine Walze an. Drei gleiche gewinnen (Stern x20, Krone x10, Kristall x6, Mond x4, Note x3), zwei gleiche nebeneinander geben den Einsatz zurück.",
-        "Tiefe der Echos (Schacht oben links in Hafenau, ab dem Sieg im Rosenhain): 30 Zufallsebenen mit Truhen; alle fünf Ebenen bewacht ein Echo die Treppe.",
+        "Tiefe der Echos (Schacht oben links in Hafenau, ab dem Sieg im Rosenhain): 30 Zufallsebenen mit Truhen; alle fünf Ebenen bewacht ein Echo die Treppe, auf Ebene 30 der Aschenfürst Vargh. Ab Ebene 13 tauchen Elite-Gegner auf: Knurrmops und Glutwicht (viel Leben, harte Schläge).",
         "Arena der Erinnerung (Chronistin Vela in Lindmark, nach dem Ende): alle fünf Verfemten nacheinander."
       ]
     }
@@ -271,7 +271,7 @@
     },
     {
       "q": "Wie spreche ich jemanden an oder öffne eine Truhe?",
-      "a": "Einfach dagegenlaufen – Personen, Truhen, Tore und Bosse reagieren sofort, eine extra Taste ist nicht nötig."
+      "a": "Davorstellen und die Aktionstaste drücken (PC: Enter, Controller: A, Handy: A unten rechts) – oder einfach dagegenlaufen."
     },
     {
       "q": "Ein Eingang auf der Weltkarte ist rot.",

@@ -124,7 +124,9 @@
   .lb{position:fixed;left:0;right:0;height:0;background:#000;z-index:2;transition:height .7s cubic-bezier(.6,0,.2,1);pointer-events:none}
   #lbT{top:0}#lbB{bottom:0}
   body.cine .lb{height:11vh}
-  body.cine #hud,body.cine #menuBtn,body.cine #joy{opacity:0;pointer-events:none}
+  #actBtn{position:absolute;right:calc(22px + env(safe-area-inset-right));bottom:calc(30px + env(safe-area-inset-bottom));width:74px;height:74px;border-radius:50%;font:900 26px inherit;font-family:inherit;color:var(--tx);touch-action:none;cursor:pointer}
+  #actBtn:active{transform:scale(.92)}
+  body.cine #hud,body.cine #menuBtn,body.cine #joy,body.cine #actBtn{opacity:0;pointer-events:none}
   #banner{font-family:Cinzel,Georgia,serif}
   @keyframes float{50%{transform:translateY(-6px)}}
   #title p{margin:10px 0 0;font-family:Cinzel,Georgia,serif;color:#d8d0ff;font-weight:700;letter-spacing:.24em;font-size:clamp(11px,2vw,14px);text-shadow:0 2px 8px #000}
@@ -151,6 +153,7 @@
   <div id="hud" class="glass" hidden><span id="hudName"></span><span class="g" id="hudGold">0</span></div>
   <button id="menuBtn" class="glass" hidden>MENÜ</button>
   <div id="joy" hidden><div id="knob"></div></div>
+  <button id="actBtn" class="glass" hidden aria-label="Aktion">A</button>
   <div id="party" hidden></div>
   <div id="cross" hidden><div id="crossLbl"></div></div>
   <div id="menu" class="glass menu" hidden></div>
