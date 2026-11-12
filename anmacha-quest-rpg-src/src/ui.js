@@ -1,5 +1,5 @@
 // Oberfläche im DOM: Dialoge, Menüs, Kreuzmenü, Heldenkarten, Lebensbalken, Schadenszahlen, Banner, Steuerkreuz.
-import { HEROES, IPSKILLS } from './data.js';
+import { HEROES, IPSKILLS, CAPSULES } from './data.js';
 import * as L from './logic.js';
 
 const $ = (id) => document.getElementById(id);
@@ -78,6 +78,7 @@ export class UI {
   isChoosing() { return !!(this.choosingList || this.choosingCross); }
   isTalking() { return this.talking || !!this.statusOpen; }
   touchVisible() { return this.touchOn; }
+  letterbox(on) { document.body.classList.toggle('cine', !!on); }
   setTouch(v) {
     this.touchOn = v;
     $('menuBtn').hidden = !v;
@@ -137,6 +138,7 @@ export class UI {
       });
       panel.hidden = false;
       const finish = (r) => {
+        this.g.sfx?.(r < 0 ? 'cancel' : 'ok');
         this.choosingList = null;
         panel.hidden = true;
         panel.innerHTML = '';
@@ -162,6 +164,7 @@ export class UI {
     const n = c.btns.length;
     let i = c.focus;
     for (let k = 0; k < n; k++) { i = (i + d + n) % n; if (!c.btns[i].disabled) break; }
+    if (i !== c.focus) this.g.sfx?.('move');
     this.listFocus(i);
   }
   targetHint(idx) { this.targets = idx; }
@@ -190,13 +193,14 @@ export class UI {
     let n = NEIGH[c.focus][dir];
     // gesperrtes Feld (Spezial ohne IP) überspringen
     if (n >= 0 && this.crossBtns[n].disabled) { const nn = NEIGH[n][dir]; n = nn >= 0 ? nn : -1; }
-    if (n >= 0) this.crossFocus(n);
+    if (n >= 0) { this.crossFocus(n); this.g.sfx?.('move'); }
   }
   pickCross(i) {
     const c = this.choosingCross;
     if (!c || this.crossBtns[i].disabled) return;
     this.choosingCross = null;
     $('cross').hidden = true;
+    this.g.sfx?.('ok');
     c.done(i);
   }
 
@@ -210,7 +214,11 @@ export class UI {
         <div class="sb"><span>LP</span><u><s style="width:${h.hp / h.mhp * 100}%"></s></u><em>${h.hp}/${h.mhp}</em></div>
         <div class="sb sp"><span>SP</span><u><s style="width:${h.sp / Math.max(1, h.msp) * 100}%"></s></u><em>${h.sp}/${h.msp}</em></div>
         <div class="sb xp"><span>EXP</span><u><s style="width:${Math.min(100, h.exp / h.need * 100)}%"></s></u><em>${h.exp}/${h.need}</em></div>
-        <div class="st"><span>ANG <b>${h.atk}</b></span><span>ABW <b>${h.def}</b></span><span>MAG <b>${h.mag}</b></span><span>TEM <b>${h.spd}</b></span></div></div>`).join('')}</div>
+        <div class="st"><span>ANG <b>${h.atk}</b></span><span>ABW <b>${h.def}</b></span><span>MAG <b>${h.mag}</b></span><span>TEM <b>${h.spd}</b></span></div></div>`).join('')}</div>${(d.caps || []).length ? `<h3 style="margin-top:14px">Kapselgeister</h3><div class="sgrid">${d.caps.map(c => `
+        <div class="sh" style="--hc:${c.col}"><b>${c.active ? '★ ' : ''}${c.name}</b><i>${c.elem} · Stufe ${c.lv}${c.active ? ' · begleitet euch' : ''}</i>
+        <div class="sb"><span>LP</span><u><s style="width:${c.hp / c.mhp * 100}%"></s></u><em>${c.hp}/${c.mhp}</em></div>
+        <div class="sb xp"><span>EXP</span><u><s style="width:${Math.min(100, c.exp / c.need * 100)}%"></s></u><em>${c.exp}/${c.need}</em></div>
+        <div class="st"><span>ANG <b>${c.atk}</b></span><span>MAG <b>${c.mag}</b></span></div></div>`).join('')}</div>` : ''}
         <p class="sf">Münzen <b>${d.gold}</b> · Ausrüstung <b>Stufe ${d.gear}</b> · Kristalle <b>${d.crystals}/4</b> · Spielzeit <b>${min} Min.</b></p>
         <p class="sk">Weiter mit Bestätigen oder Antippen</p></div>`;
       box.hidden = false;
@@ -259,6 +267,9 @@ export class UI {
     const p = this.view.screenPos('enemy', i, a ? a.h * 0.85 : 1.5);
     if (p) this.float(p.x + (Math.random() - 0.5) * 30, p.y, text, color, true);
   }
+  floatCap(text, color) {
+    if (this.capCard) { const r = this.capCard.el.getBoundingClientRect(); this.float(r.left + r.width * 0.5, r.top - 4, text, color, false); }
+  }
   floatHero(i, text, color) {
     const c = this.cards[i];
     if (!c) return;
@@ -304,11 +315,13 @@ export class UI {
     party.hidden = !on;
     if (!on) {
       if (this.cards.length) { party.innerHTML = ''; this.cards = []; }
+      this.capCard = null;
       if (this.bars.length) { bars.innerHTML = ''; this.bars = []; }
       return;
     }
     if (this.cards.length !== S.party.length) {
       party.innerHTML = '';
+      this.capCard = null;
       this.cards = S.party.map(h => {
         const d = HEROES[h.id];
         const c = el('div', 'card glass');
@@ -340,6 +353,27 @@ export class UI {
       c.el.classList.toggle('hot', g.curHero === i);
       c.el.classList.toggle('down', h.hp <= 0);
     });
+    // Kapselgeist: kleine Karte neben den Helden
+    const bc = S.bcap;
+    if (bc && (!this.capCard || this.capCard.id !== bc.id + bc.form)) {
+      this.capCard?.el.remove();
+      const c = el('div', 'card glass cap');
+      c.style.setProperty('--hc', CAPSULES[bc.id].col);
+      c.innerHTML = `<div class="ch"><i class="av">◆</i><b>${L.cname(bc)}</b><em>Lv <span class="lv"></span></em></div><div class="br hp"><span>LP</span><u><s></s></u><em class="v"></em></div>`;
+      party.appendChild(c);
+      this.capCard = { id: bc.id + bc.form, el: c, lv: c.querySelector('.lv'), hp: c.querySelector('.hp s'), hpv: c.querySelector('.hp .v'), last: '' };
+    } else if (!bc && this.capCard) { this.capCard.el.remove(); this.capCard = null; }
+    if (bc) {
+      const c = this.capCard, m = L.cmhp(bc), key = bc.hp + ',' + m + ',' + bc.lv;
+      if (c.last !== key) {
+        c.last = key;
+        c.lv.textContent = bc.lv;
+        c.hp.style.width = (bc.hp / m * 100) + '%';
+        c.hp.classList.toggle('low', bc.hp / m <= 0.3);
+        c.hpv.textContent = bc.hp;
+        c.el.classList.toggle('down', bc.hp <= 0);
+      }
+    }
     // Gegner: Name und Lebensbalken über dem Modell
     if (!v) return;
     if (this.bars.length !== S.enemies.length) {

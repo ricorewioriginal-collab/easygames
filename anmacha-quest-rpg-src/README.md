@@ -1,4 +1,4 @@
-# AnMaCha Quest RPG – Quelltext (Three.js + Vite)
+# Aetherion – Chronik der Sphären – Quelltext (Three.js + Vite)
 
 Gleiches Spiel wie die frühere Godot-Fassung (Karten, Werte, Texte, Kampfregeln 1:1), neu als eigenständiges Web-Spiel in modernem 3D.
 

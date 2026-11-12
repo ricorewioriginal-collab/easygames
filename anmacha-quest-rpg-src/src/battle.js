@@ -37,7 +37,7 @@ export class Battle {
     this.rim = new THREE.DirectionalLight(0xffffff, 0);
   }
 
-  async begin(bg, enemies, party) {
+  async begin(bg, enemies, party, cap) {
     const token = ++this.token;
     const v = this.v, sc = this.scene, Q = v.Q;
     const key = baseTheme(bg);
@@ -48,9 +48,10 @@ export class Battle {
     const loads = [
       Promise.all(enemies.map(e => v.actorMonster(e.id, e.boss ? 1.15 : 2.0))),
       Promise.all(party.map(h => v.actorHero(h.id, true))),
+      cap ? v.actorCapsule(cap) : Promise.resolve(null),
       Promise.all([...set.map(s => A.load(s[0])), A.load(outdoor ? 'forest/rocks-high.glb' : 'town/rock-large.glb')])
     ];
-    const [ens, hes] = await Promise.all(loads);
+    const [ens, hes, capA] = await Promise.all(loads);
     const models = {};
     for (const s of set) models[s[0]] = await A.load(s[0]);
     const rockP = outdoor ? 'forest/rocks-high.glb' : 'town/rock-large.glb';
@@ -129,6 +130,14 @@ export class Battle {
       if (party[i].hp <= 0) { A.playOnce(a, 'death', ''); a.mixer?.update(5); }
       return a;
     });
+    // Kapselgeist rechts neben der Gruppe
+    this.cap = capA;
+    if (capA) {
+      capA.root.position.set(((hn - 1) / 2) * 1.9 + 1.7, 0, -0.5);
+      capA.base = capA.root.position.clone();
+      capA.pivot.rotation.y = Math.PI;
+      sc.add(capA.root);
+    }
     this.t = 0;
     this.camT = 0;
     this.shakeT = 0;
@@ -168,6 +177,7 @@ export class Battle {
     }
     this.enemies = [];
     this.heroes = [];
+    this.cap = null;
   }
   end() { this.token++; this.clear(); }
 
@@ -210,12 +220,26 @@ export class Battle {
       case 'guard': A.playOnce(a, ['idle_weapon', 'idle_attacking', 'idle']); break;
     }
   }
+  capsule(k, target) {
+    const a = this.cap;
+    if (!a) return;
+    const tgt = target >= 0 ? this.enemies[target] : null;
+    if (k === 'attack' || k === 'cast') {
+      A.playOnce(a, ['bite_front', 'attack', 'dragon_attack', 'skeleton_attack', 'slime_attack', 'punch']);
+      this.lunge(a, tgt ? tgt.base.clone().sub(a.base) : new THREE.Vector3(0, 0, -1), k === 'attack' ? 1.8 : 0.4, 0.55);
+      if (k === 'cast') this.v.fx.burst(a.root.position.clone().add(new THREE.Vector3(0, a.h * 0.6, 0)), '#ffd27a', 26, 1.5, 0.7, 1.5, 0.12, this.scene);
+      if (k === 'cast' && tgt) this.bolt(a, tgt, '#ffb070', 0.25);
+    } else if (k === 'hurt') {
+      A.playOnce(a, ['hitrecieve', 'hit']);
+      this.lunge(a, new THREE.Vector3(0, 0, 1), 0.3, 0.25);
+    } else if (k === 'death') { A.playOnce(a, 'death', ''); a.dead = true; }
+  }
   enemy(i, k, target) {
     const a = this.enemies[i];
     if (!a) return;
     if (k === 'attack') {
       A.playOnce(a, ['bite_front', 'attack', 'dragon_attack', 'skeleton_attack', 'slime_attack']);
-      const h = target >= 0 ? this.heroes[target] : null;
+      const h = target === -2 ? this.cap : (target >= 0 ? this.heroes[target] : null);
       this.lunge(a, h ? h.base.clone().sub(a.base) : new THREE.Vector3(0, 0, 1), 1.4, 0.55);
     } else if (k === 'hurt') {
       A.playOnce(a, ['hitrecieve', 'hit']);
@@ -244,7 +268,7 @@ export class Battle {
     });
   }
   pos(side, i, lift) {
-    const a = side === 'enemy' ? this.enemies[i] : this.heroes[i];
+    const a = side === 'enemy' ? this.enemies[i] : side === 'capsule' ? this.cap : this.heroes[i];
     if (!a) return null;
     return a.root.position.clone().add(new THREE.Vector3(0, lift ?? a.h, 0));
   }
@@ -254,7 +278,7 @@ export class Battle {
       for (const a of this.heroes) fx.burst(a.root.position.clone().add(new THREE.Vector3(0, 1.8, 0)), ['#ffd24a', '#ff5ad0', '#46e6ff', '#7cff9a'][Math.floor(Math.random() * 4)], 30, 2.6, 1.3, -3, 0.1, sc);
       return;
     }
-    const a = side === 'enemy' ? this.enemies[i] : this.heroes[i];
+    const a = side === 'enemy' ? this.enemies[i] : side === 'capsule' ? this.cap : this.heroes[i];
     if (!a) return;
     const mid = a.root.position.clone().add(new THREE.Vector3(0, a.h * 0.55, 0));
     const feet = a.root.position.clone().add(new THREE.Vector3(0, 0.05, 0));
@@ -299,7 +323,7 @@ export class Battle {
   }
   update(dt) {
     this.t += dt;
-    const all = [...this.enemies, ...this.heroes];
+    const all = [...this.enemies, ...this.heroes, ...(this.cap ? [this.cap] : [])];
     for (const a of all) {
       a.mixer?.update(dt);
       const off = new THREE.Vector3();

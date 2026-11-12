@@ -1,3 +1,5 @@
+import '@fontsource/cinzel/latin-700.css';
+import '@fontsource/cinzel/latin-900.css';
 // Start: Laden, Spielstand-Übernahme, Eingabe (Tastatur, Touch, Controller über ../gamepad.js) und Bildschleife.
 import { Game, M, SAVE_KEY } from './game.js';
 import { UI } from './ui.js';
@@ -5,6 +7,7 @@ import { View, STATIC_MODELS } from './view.js';
 import * as A from './assets.js';
 import * as L from './logic.js';
 import { readGodotSave } from './godotsave.js';
+import { Sound } from './audio.js';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -37,7 +40,13 @@ async function boot() {
   const test = document.createElement('canvas');
   if (!(test.getContext('webgl2') || test.getContext('webgl'))) throw new Error('Dein Browser unterstützt kein WebGL.');
   await importLegacySave();
-  const game = new Game(null, null, { store, debug: params.has('debug') });
+  const audio = new Sound();
+  audio.on = cfg.music !== false;
+  const unlock = () => audio.unlock();
+  addEventListener('pointerdown', unlock, true);
+  addEventListener('keydown', unlock, true);
+  const game = new Game(null, null, { store, debug: params.has('debug'), audio });
+  game.onAudio = (on) => { cfg.music = on; store.set(CFG, JSON.stringify(cfg)); };
   const ui = new UI(game);
   const view = new View(canvas, game, quality);
   game.ui = ui;
@@ -45,12 +54,14 @@ async function boot() {
   ui.view = view;
   view.onQuality = (q) => { cfg.q = q; store.set(CFG, JSON.stringify(cfg)); };
   window.__quest = game;   // für Tests
-  // Laden: feste Modelle + Figuren des Funkhafens
+  // Laden: feste Modelle + Figuren von Hafenau
   const files = [...STATIC_MODELS, 'hero_Warrior.glb', 'hero_Wizard.glb', 'hero_Rogue.glb'];
   let n = 0;
   A.setProgress(() => {});
+  const hdr = view.loadHdr();
   await Promise.all(files.map(f => A.load(f).then(() => { n++; const p = Math.round(n / files.length * 100); $('lfill').style.width = p + '%'; $('ltxt').textContent = `Lade Spielwelt … ${p} %`; })));
-  // Titel-Hintergrund: der Funkhafen
+  await hdr;
+  // Titel-Hintergrund: Hafenau
   L.loadMap(game.S, game.rng, 'hub', { x: 12, y: 12 });
   game.mode = M.TITLE;
   await view.ready();
@@ -116,7 +127,43 @@ function input(game, ui) {
   addEventListener('blur', () => game.clearDirs());
   document.addEventListener('visibilitychange', () => { if (document.hidden) game.clearDirs(); });
   document.addEventListener('contextmenu', e => e.preventDefault());
+  camInput(game);
   document.addEventListener('gesturestart', e => e.preventDefault());
+}
+
+// Kamera: Q/E (Controller: rechter Stick, LB/RB) drehen, R/F oder Mausrad zoomen, Ziehen mit Maus/Finger dreht, zwei Finger zoomen
+function camInput(game) {
+  const v = () => game.view;
+  const held = new Set();
+  const upd = () => { v().camKeys = (held.has('KeyE') ? 1 : 0) - (held.has('KeyQ') ? 1 : 0); };
+  addEventListener('keydown', (e) => {
+    if (e.code === 'KeyQ' || e.code === 'KeyE') { held.add(e.code); upd(); }
+    else if (!e.repeat && (e.code === 'KeyR' || e.code === 'PageUp')) v().zoomCam(-1);
+    else if (!e.repeat && (e.code === 'KeyF' || e.code === 'PageDown')) v().zoomCam(1);
+  });
+  addEventListener('keyup', (e) => { if (held.delete(e.code)) upd(); });
+  addEventListener('blur', () => { held.clear(); upd(); });
+  const cv = $('cv');
+  const pts = new Map();
+  let pinch = 0;
+  cv.addEventListener('pointerdown', (e) => { pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); try { cv.setPointerCapture(e.pointerId); } catch (_) { } if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = Math.hypot(a.x - b.x, a.y - b.y); } });
+  cv.addEventListener('pointermove', (e) => {
+    const p = pts.get(e.pointerId);
+    if (!p) return;
+    if (pts.size === 1) v().rotateCam(-(e.clientX - p.x) * 0.008);
+    else if (pts.size === 2) {
+      p.x = e.clientX; p.y = e.clientY;
+      const [a, b] = [...pts.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (pinch && Math.abs(d - pinch) > 60) { v().zoomCam(d > pinch ? -1 : 1); pinch = d; }
+      return;
+    }
+    p.x = e.clientX; p.y = e.clientY;
+  });
+  const up = (e) => { pts.delete(e.pointerId); if (pts.size < 2) pinch = 0; };
+  cv.addEventListener('pointerup', up);
+  cv.addEventListener('pointercancel', up);
+  let wheelT = 0;
+  cv.addEventListener('wheel', (e) => { e.preventDefault(); const now = performance.now(); if (now - wheelT < 180) return; wheelT = now; v().zoomCam(e.deltaY > 0 ? 1 : -1); }, { passive: false });
 }
 
 boot().catch(fail);

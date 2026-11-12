@@ -1,6 +1,6 @@
 // Spielregeln ohne Anzeige: Werte, Schaden, Karten, Monster-KI. 1:1 aus main.gd der Godot-Fassung übernommen.
 // Läuft auch unter Node (Tests in tests/logic.test.js).
-import { MAPS, HEROES, ENEMIES, ITEMS } from './data.js';
+import { MAPS, HEROES, ENEMIES, ITEMS, CAPSULES } from './data.js';
 
 export const STEP_T = 0.13;          // Sekunden pro Feld (Spieler)
 export const ROAM_T = 0.38;          // Sekunden pro Feld (Monster)
@@ -14,7 +14,7 @@ export const STAGE_POOL = [
   ['schemen', 'stoersignal', 'kreischer', 'antspin', 'rausritter', 'zyklop']];
 export const BLOCK = '#T~^hHDSM';
 export const DIRS = [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }];
-export const MAP_ORDER = ['hub', 'welt', 'rap', 'schlager', 'xmas', 'rock', 'tower'];
+export const MAP_ORDER = ['hub', 'welt', 'rap', 'schlager', 'xmas', 'rock', 'tower', 'lind'];
 
 // Zufall: Math.random oder (für Tests) ein fester Startwert
 export function makeRng(seed) {
@@ -41,7 +41,7 @@ export const manhattan = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 
 export function newState() {
   return {
-    party: [], inv: { trank: 3, aether: 1, weck: 0 }, gold: 50, gear: 0, flags: {},
+    party: [], inv: { trank: 3, aether: 1, weck: 0 }, gold: 50, gear: 0, flags: {}, caps: { own: {}, active: null },
     mapId: 'hub', map: MAPS.hub, mw: 26, mh: 16, objs: [], reg: [], gp: { x: 12, y: 11 }, face: { x: 0, y: 1 },
     steps: 0, grace: 8, playTime: 0, uidN: 0, roamers: [], enemies: []
   };
@@ -96,19 +96,58 @@ export function applyItem(S, k, h) {
     return true;
   }
   if (h.hp <= 0) return false;
-  if (k === 'trank') {
+  if (k === 'trank' || k === 'grosstrank') {
     if (h.hp >= mhp(S, h)) return false;
-    h.hp = Math.min(mhp(S, h), h.hp + 70);
+    h.hp = Math.min(mhp(S, h), h.hp + (k === 'trank' ? 70 : 250));
     return true;
   }
-  if (k === 'aether') {
+  if (k === 'aether' || k === 'aetherflask') {
     if (h.sp >= msp(h)) return false;
-    h.sp = Math.min(msp(h), h.sp + 20);
+    h.sp = Math.min(msp(h), h.sp + (k === 'aether' ? 20 : 60));
     return true;
   }
   return false;
 }
 export const itemKeys = () => Object.keys(ITEMS);
+export const itemUse = (k) => ITEMS[k]?.use || 'hero';
+
+// ---------------------------------------------------------------- Kapselgeister
+export const capd = (c) => CAPSULES[c.id];
+export const cform = (c) => capd(c).forms[c.form];
+export const cname = (c) => cform(c).name;
+export const cmhp = (c) => int(capd(c).hp + capd(c).hpg * (c.lv - 1)) * (1 + c.form * 0.25) | 0;
+export const cdef = (c) => int((2 + 1.6 * c.lv) * (1 + c.form * 0.15));
+export const cstat = (c, k) => int((capd(c)[k] + capd(c)[k + 'g'] * (c.lv - 1)) * (1 + c.form * 0.15));
+export function newCapsule(id, lv = 1) {
+  const c = { id, lv, exp: 0, form: 0, hp: 1 };
+  c.hp = cmhp(c);
+  return c;
+}
+export const activeCap = (S) => (S.caps && S.caps.active && S.caps.own[S.caps.active]) || null;
+export const canEvolve = (c) => c.form < 2 && c.lv >= (c.form === 0 ? 8 : 16);
+export function capGain(c, xp) {
+  const ups = [];
+  c.exp += xp;
+  while (c.exp >= need(c.lv) && c.lv < 40) {
+    c.exp -= need(c.lv);
+    const o = cmhp(c);
+    c.lv += 1;
+    if (c.hp > 0) c.hp += cmhp(c) - o;
+    ups.push(c.lv);
+  }
+  return ups;
+}
+export function evolve(c) {
+  if (!canEvolve(c)) return false;
+  c.form += 1;
+  c.hp = cmhp(c);
+  return true;
+}
+export function healAll(S) {
+  for (const h of S.party) { h.hp = mhp(S, h); h.sp = msp(h); }
+  for (const id in S.caps.own) { const c = S.caps.own[id]; c.hp = cmhp(c); }
+}
+export const innPrice = (S) => 6 + 4 * Math.round(avgLv(S));
 
 // ---------------------------------------------------------------- Karten
 export function tile(S, x, y) {
@@ -140,7 +179,7 @@ export function regionKey(map, x, y) {
     if (dd < best) {
       best = dd;
       const tm = p.to;
-      k = 'ow_' + (tm === 'hub' ? 'town' : (tm === 'tower' ? 'static' : tm));
+      k = 'ow_' + (MAPS[tm].town ? 'town' : (tm === 'tower' ? 'static' : tm));
     }
   }
   return k;
@@ -266,4 +305,4 @@ export function gainExp(S, h, xp) {
 }
 
 // Startfeld je Karte (für Tests und Debug-Sprung)
-export const startOf = (id) => id === 'hub' ? { x: 12, y: 12 } : (id === 'welt' ? { x: 20, y: 22 } : { x: 2, y: 14 });
+export const startOf = (id) => id === 'hub' ? { x: 12, y: 12 } : id === 'lind' ? { x: 12, y: 11 } : (id === 'welt' ? { x: 20, y: 22 } : { x: 2, y: 14 });
