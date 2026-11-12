@@ -53,27 +53,39 @@ function bossSpr() {   /* Grauwächter: Kapuzengestalt, aus Formeln gezeichnet *
 /* ---------- Kacheln ---------- */
 const hash = (a, b) => { let h = (a * 374761393 + b * 668265263) | 0; h = (h ^ (h >>> 13)) * 1274126177; return (h ^ (h >>> 16)) >>> 0; };
 function tileCanvas(fn) { const c = document.createElement('canvas'); c.width = c.height = TS; const x = c.getContext('2d'); fn(x, (col, a, b, w, h) => { x.fillStyle = col; x.fillRect(a, b, w, h); }); return c; }
-const grass = (x, R, v) => { R('#4c9a3c', 0, 0, 16, 16); for (let i = 0; i < 7; i++) { const h = hash(v, i); R(i < 5 ? '#3a7e2e' : '#6ab84a', h % 15, (h >> 5) % 15, 1, 2); } };
-const floor = (x, R, v) => { R('#2e2a3a', 0, 0, 16, 16); R('#26222f', 0, 15, 16, 1); R('#26222f', 15, 0, 1, 16); R('#38344a', 0, 0, 15, 1); if (v % 5 === 0) { R('#221e2a', 4, 6, 4, 1); R('#221e2a', 7, 7, 1, 3); } };
+const grass = (x, R, v) => { R('#5cbc4a', 0, 0, 16, 16); for (let y = 0; y < 16; y++) for (let i = (y + v) % 2; i < 16; i += 2) if (((i >> 2) + (y >> 2) + v) % 3 === 0) R('#52ae42', i, y, 1, 1);
+  for (let k = 0; k < 5; k++) { const h = hash(v + 3, k), a = h % 14, b = 2 + (h >>> 6) % 12; R('#3e9638', a, b + 1, 1, 2); R('#3e9638', a + 2, b + 1, 1, 2); R('#86dc62', a + 1, b, 1, 2); }
+  for (let k = 0; k < 3; k++) { const h = hash(v + 11, k); R('#9ae874', h % 15, (h >>> 5) % 15, 1, 1); } };
+const stone = (R, a, b, c, d) => { R(a, 0, 0, 16, 16); for (let r = 0; r < 4; r++) { const y = r * 4, o = (r % 2) * 4; for (let q = -1; q < 3; q++) { const X = o + q * 8; R(b, X + 1, y + 1, 7, 2); R(c, X + 1, y, 7, 1); R(d, X, y, 1, 4); R(d, X, y + 3, 8, 1); } } };
+const floor = (x, R, v) => { R('#3c3a5e', 0, 0, 16, 16); R('#4c4a74', 1, 1, 6, 6); R('#4c4a74', 9, 9, 6, 6); R('#46446a', 9, 1, 6, 6); R('#46446a', 1, 9, 6, 6); R('#5e5c8a', 1, 1, 6, 1); R('#5e5c8a', 9, 9, 6, 1); R('#2a283e', 0, 7, 16, 2); R('#2a283e', 7, 0, 2, 16); if (v % 4 === 0) { R('#34324e', 3, 4, 3, 1); R('#34324e', 5, 5, 1, 2); } };
 const TILES = {
   '.': v => tileCanvas((x, R) => grass(x, R, v % 4)),
-  ',': v => tileCanvas((x, R) => { grass(x, R, v % 4); for (let i = 0; i < 3; i++) { const h = hash(v, i + 9), a = 2 + h % 11, b = 2 + (h >> 4) % 11; R(['#ff6a8a', '#ffd04a', '#8ac0ff'][i], a, b, 2, 2); R('#fff8c0', a, b, 1, 1); } }),
-  '=': v => tileCanvas((x, R) => { R('#c8a870', 0, 0, 16, 16); for (let i = 0; i < 5; i++) { const h = hash(v, i); R(i % 2 ? '#a88850' : '#dcc08a', h % 15, (h >> 5) % 15, 2, 1); } }),
-  '#': v => tileCanvas((x, R) => { grass(x, R, v % 4); R('#1a3a1e', 1, 13, 14, 2); R('#6a4424', 6, 10, 4, 6); R('#1e5a2a', 2, 2, 12, 9); R('#1e5a2a', 1, 4, 14, 5); R('#1e5a2a', 4, 1, 8, 11); R('#3a8a3a', 3, 3, 8, 4); R('#5ab04a', 4, 3, 4, 2); R('#0e3418', 2, 9, 12, 2); }),
-  '~': v => [0, 1].map(f => tileCanvas((x, R) => { R('#3a7ad8', 0, 0, 16, 16); for (let r = 0; r < 4; r++) { const o = (r * 5 + f * 4 + v) % 16; R('#8ac0ff', o, r * 4 + 1, 4, 1); R('#2a5ab0', (o + 8) % 16, r * 4 + 3, 3, 1); } })),
-  'R': v => tileCanvas((x, R) => { R('#b04a3a', 0, 0, 16, 16); for (let r = 0; r < 4; r++) { R('#8a3428', 0, r * 4 + 3, 16, 1); R('#d06a4a', (r % 2) * 4, r * 4, 16, 1); } }),
-  'H': v => tileCanvas((x, R) => { R('#e8d8b0', 0, 0, 16, 16); R('#6a4424', 0, 0, 1, 16); R('#6a4424', 15, 0, 1, 16); R('#6a4424', 0, 0, 16, 2); if (v % 2) { R('#6a4424', 4, 4, 8, 8); R('#5a8ad0', 5, 5, 6, 6); R('#bfe0ff', 5, 5, 2, 2); R('#6a4424', 7, 5, 1, 6); } R('#a89870', 0, 14, 16, 2); }),
-  'D': v => tileCanvas((x, R) => { R('#e8d8b0', 0, 0, 16, 16); R('#6a4424', 0, 0, 16, 2); R('#4a2c14', 3, 3, 10, 13); R('#7a4a24', 4, 4, 8, 12); R('#5a3418', 7, 4, 1, 12); R('#ffd04a', 10, 10, 1, 2); }),
-  'F': v => tileCanvas((x, R) => { grass(x, R, v % 4); R('#7a5030', 2, 4, 2, 11); R('#7a5030', 12, 4, 2, 11); R('#9a6a40', 0, 6, 16, 2); R('#9a6a40', 0, 11, 16, 2); R('#4a2c14', 0, 8, 16, 1); }),
-  's': v => tileCanvas((x, R) => { R(v < 0 ? '#2e2a3a' : '#4c9a3c', 0, 0, 16, 16); R('#6a4424', 7, 9, 2, 7); R('#4a2c14', 2, 2, 12, 8); R('#c8a060', 3, 3, 10, 6); R('#6a4424', 5, 5, 6, 1); R('#6a4424', 5, 7, 4, 1); }),
-  'w': v => tileCanvas((x, R) => { grass(x, R, v % 4); R('#7a7a8a', 2, 4, 12, 11); R('#9a9aaa', 3, 4, 10, 2); R('#3a7ad8', 4, 6, 8, 6); R('#5a5a6a', 2, 13, 12, 2); R('#6a4424', 1, 1, 2, 6); R('#6a4424', 13, 1, 2, 6); R('#8a5a34', 1, 1, 14, 2); }),
-  'P': v => tileCanvas((x, R) => { R('#8a8aa0', 0, 0, 16, 16); for (let r = 0; r < 4; r++) { R('#5a5a70', 0, r * 4 + 3, 16, 1); R('#5a5a70', (r % 2) * 8 + 3, r * 4, 1, 3); R('#a8a8c0', (r % 2) * 8 + 4, r * 4, 3, 1); } }),
-  'E': v => tileCanvas((x, R) => { R('#8a8aa0', 0, 0, 16, 16); R('#5a5a70', 0, 3, 16, 1); R('#1a1020', 3, 4, 10, 12); R('#1a1020', 4, 3, 8, 1); R('#3a2a4a', 4, 5, 8, 11); R('#1a1020', 5, 6, 6, 10); }),
-  'W': v => tileCanvas((x, R) => { R('#4a4660', 0, 0, 16, 16); R('#6a6680', 0, 0, 16, 2); for (let r = 0; r < 3; r++) { R('#2e2a40', 0, r * 5 + 6, 16, 1); R('#2e2a40', (r % 2) * 8 + 2, r * 5 + 2, 1, 4); } }),
+  ',': v => tileCanvas((x, R) => { grass(x, R, v % 4); const C = [['#ff6a9a', '#ffd0e0'], ['#ffd84a', '#fff6b0'], ['#ffffff', '#ffe0f0'], ['#7ab4ff', '#d0e8ff']];
+    for (let k = 0; k < 4; k++) { const h = hash(v, k + 9), a = 2 + h % 11, b = 2 + (h >>> 4) % 11, [c1, c2] = C[(h >>> 9) % 4]; R('#3e9638', a, b + 2, 1, 2); R(c1, a - 1, b, 3, 1); R(c1, a, b - 1, 1, 3); R(c2, a, b, 1, 1); } }),
+  '=': v => tileCanvas((x, R) => { R('#e6c88e', 0, 0, 16, 16); for (let y = 0; y < 16; y++) for (let i = y % 2; i < 16; i += 2) if (hash(i + v * 17, y) % 5 === 0) R('#d6b47a', i, y, 1, 1);
+    for (let k = 0; k < 4; k++) { const h = hash(v, k), a = 1 + h % 13, b = 1 + (h >>> 5) % 13; R('#b48c58', a, b + 1, 2, 1); R('#f6e2b4', a, b, 2, 1); } }),
+  '#': v => tileCanvas((x, R) => { grass(x, R, v % 4); R('rgba(10,40,20,.45)', 2, 12, 13, 3); R('#5a3a1e', 6, 10, 4, 6); R('#7a5030', 7, 10, 2, 6);
+    const rows = [[5, 6], [3, 10], [2, 12], [1, 14], [1, 14], [1, 14], [1, 14], [2, 12], [2, 12], [4, 8]]; rows.forEach(([a, w], y) => R('#1e6a34', a, y + 1, w, 1));
+    const in2 = [[6, 4], [4, 8], [3, 10], [3, 10], [3, 9], [3, 9], [4, 7]]; in2.forEach(([a, w], y) => R('#2e8a40', a, y + 2, w, 1));
+    [[5, 3], [4, 6], [4, 6], [5, 4]].forEach(([a, w], y) => R('#4caa4c', a, y + 2, w, 1)); R('#82d25e', 5, 3, 2, 1); R('#82d25e', 4, 4, 1, 1); R('#9ae874', 6, 3, 1, 1);
+    for (let k = 0; k < 6; k++) { const h = hash(v, k + 30); R('#1a5a2c', 3 + h % 10, 6 + (h >>> 4) % 4, 1, 1); } }),
+  '~': v => [0, 1, 2].map(f => tileCanvas((x, R) => { R('#3a8ae8', 0, 0, 16, 16); for (let y = 0; y < 16; y++) for (let i = (y + f) % 2; i < 16; i += 2) if (((i + f * 2) >> 2 ^ y >> 2) % 3 === 0) R('#2e74d0', i, y, 1, 1);
+    for (let r = 0; r < 4; r++) { const o = (r * 5 + f * 3 + v) % 16; R('#7ac0ff', o, r * 4 + 1, 4, 1); R('#bfe4ff', o + 1, r * 4 + 1, 2, 1); R('#2a62b8', (o + 8) % 16, r * 4 + 3, 3, 1); } if ((v + f) % 3 === 0) R('#ffffff', (v * 5 + f * 3) % 14 + 1, (v * 3) % 12 + 2, 1, 1); })),
+  'R': v => tileCanvas((x, R) => { R('#c84a32', 0, 0, 16, 16); for (let r = 0; r < 4; r++) { const y = r * 4, o = (r % 2) * 2; for (let q = -1; q < 5; q++) { const X = o + q * 4; R('#e0603e', X, y, 3, 2); R('#f4885a', X, y, 2, 1); R('#9a3020', X + 3, y, 1, 3); } R('#8a2a1c', 0, y + 3, 16, 1); } }),
+  'H': v => tileCanvas((x, R) => { R('#f6e6c2', 0, 0, 16, 16); R('#e2ceA2', 0, 12, 16, 2); R('#7a4a28', 0, 0, 2, 16); R('#7a4a28', 14, 0, 2, 16); R('#9a6a3c', 0, 0, 16, 2); R('#5a3418', 0, 2, 16, 1);
+    if (v % 2) { R('#5a3418', 4, 4, 8, 7); R('#4a8ae0', 5, 5, 6, 5); R('#bfe4ff', 5, 5, 2, 2); R('#8ac0ff', 7, 7, 1, 1); R('#5a3418', 7, 5, 1, 5); R('#8a5a30', 3, 11, 10, 2); R('#ff6a9a', 4, 10, 1, 1); R('#ffd84a', 7, 10, 1, 1); R('#ff6a9a', 10, 10, 1, 1); R('#3e9638', 5, 10, 1, 1); R('#3e9638', 9, 10, 1, 1); }
+    R('#b4a078', 0, 14, 16, 2); R('#8a7a58', 0, 15, 16, 1); }),
+  'D': v => tileCanvas((x, R) => { R('#f6e6c2', 0, 0, 16, 16); R('#9a6a3c', 0, 0, 16, 2); R('#5a3418', 0, 2, 16, 1); R('#4a2a12', 3, 4, 10, 12); R('#4a2a12', 4, 3, 8, 1); R('#8a5428', 4, 5, 8, 11); R('#a86a34', 5, 5, 2, 11); R('#5a3418', 7, 4, 2, 12); R('#ffd84a', 10, 10, 2, 2); R('#fff6b0', 10, 10, 1, 1); R('#b4a078', 0, 14, 3, 2); R('#b4a078', 13, 14, 3, 2); }),
+  'F': v => tileCanvas((x, R) => { grass(x, R, v % 4); R('rgba(10,40,20,.35)', 0, 13, 16, 2); for (const a of [1, 6, 11]) { R('#f0e0c8', a, 4, 3, 10); R('#fff8ec', a, 4, 1, 10); R('#b8a080', a + 2, 4, 1, 10); R('#f0e0c8', a + 1, 3, 1, 1); } R('#d8c4a4', 0, 7, 16, 2); R('#d8c4a4', 0, 11, 16, 1); }),
+  's': v => tileCanvas((x, R) => { if (v < 0) floor(x, R, 1); else grass(x, R, 1); R('rgba(0,0,0,.3)', 4, 13, 9, 2); R('#6a4424', 7, 9, 2, 6); R('#4a2c14', 2, 2, 12, 8); R('#e0b870', 3, 3, 10, 6); R('#f6d898', 3, 3, 10, 1); R('#8a5a30', 5, 5, 6, 1); R('#8a5a30', 5, 7, 4, 1); }),
+  'w': v => tileCanvas((x, R) => { grass(x, R, v % 4); R('rgba(0,0,0,.3)', 2, 14, 13, 2); R('#8a8aa4', 2, 5, 12, 10); R('#b0b0c8', 2, 5, 12, 2); R('#6a6a84', 2, 12, 12, 3); R('#3a8ae8', 4, 7, 8, 4); R('#9ad4ff', 5, 7, 3, 1); R('#8a5a30', 1, 0, 2, 7); R('#8a5a30', 13, 0, 2, 7); R('#c8583a', 0, 0, 16, 2); R('#e0784a', 0, 0, 16, 1); }),
+  'P': v => tileCanvas((x, R) => stone(R, '#9aa0c8', '#aab0d8', '#c8ccf0', '#646a94')),
+  'E': v => tileCanvas((x, R) => { stone(R, '#9aa0c8', '#aab0d8', '#c8ccf0', '#646a94'); R('#2a1a40', 3, 4, 10, 12); R('#2a1a40', 4, 3, 8, 1); R('#5a3a8a', 4, 5, 8, 11); R('#160c24', 5, 6, 6, 10); R('#ffd84a', 7, 1, 2, 2); }),
+  'W': v => tileCanvas((x, R) => stone(R, '#5a5888', '#6a68a0', '#8a88c0', '#34325a')),
   '_': v => tileCanvas((x, R) => floor(x, R, v)),
-  'S': v => tileCanvas((x, R) => { R('#2e2a3a', 0, 0, 16, 16); for (let i = 0; i < 4; i++) { R(['#9a96b0', '#7a7690', '#5a566e', '#403c52'][i], 1, i * 4, 14, 3); R('#1a1622', 1, i * 4 + 3, 14, 1); } }),
-  'U': v => tileCanvas((x, R) => { R('#2e2a3a', 0, 0, 16, 16); for (let i = 0; i < 4; i++) { R(['#403c52', '#2e2a40', '#1e1a2a', '#0e0a14'][i], 1, i * 4, 14, 3); } R('#ffd04a', 7, 1, 2, 2); }),
-  'x': v => tileCanvas((x, R) => { floor(x, R, v); R('#1a1622', 3, 13, 10, 3); R('#7a7690', 4, 1, 8, 13); R('#9a96b0', 5, 1, 2, 13); R('#5a566e', 10, 1, 2, 13); R('#a8a4c0', 3, 0, 10, 2); }),
+  'S': v => tileCanvas((x, R) => { R('#3c3a5e', 0, 0, 16, 16); for (let i = 0; i < 4; i++) { R(['#c8c4ec', '#a8a4d0', '#8884b4', '#686498'][i], 1, i * 4, 14, 3); R('#e8e4ff', 1, i * 4, 14, 1); R('#2a283e', 1, i * 4 + 3, 14, 1); } }),
+  'U': v => tileCanvas((x, R) => { R('#3c3a5e', 0, 0, 16, 16); for (let i = 0; i < 4; i++) { R(['#585480', '#46426a', '#322e52', '#1e1a36'][i], 1, i * 4, 14, 3); R('#6a6694', 1, i * 4, 14, 1); } R('#ffd84a', 7, 1, 2, 2); }),
+  'x': v => tileCanvas((x, R) => { floor(x, R, v); R('rgba(0,0,0,.35)', 3, 13, 11, 3); R('#8a88c0', 4, 1, 8, 13); R('#b0aee0', 5, 1, 2, 13); R('#5a5888', 10, 1, 2, 13); R('#c8c6f0', 3, 0, 10, 2); R('#c8c6f0', 3, 13, 10, 2); R('#ffd84a', 7, 6, 2, 2); }),
   'W2': null
 };
 const ANIM = { '~': 1 };
@@ -215,7 +227,7 @@ export function createPixel(o) {
       hanno: SET(HUMF, HUMB, HUMS, { h: '#c0502a', H: '#8a3418', c: '#fafafa', C: '#c8c8c8', p: '#3a8a4a' }), pia: SET(HUMF, HUMB, HUMS, { h: '#7a4a24', H: '#4a2c14', c: '#ff9a3a', C: '#c06a1a', p: '#ffd04a' }),
       tomi: SET(HUMF, HUMB, HUMS, { h: '#ffd04a', H: '#c09a2a', c: '#3ab0c0', C: '#1a7a8a', p: '#3ab0c0' }), ilse: SET(HUMF, HUMB, HUMS, { h: '#3a2a1a', H: '#1a1008', c: '#6a8ac0', C: '#4a6aa0', p: '#c0a060' }),
       glibber: spr(GLIB), flatter: spr(FLAT), stein: spr(STEIN), boss: bossSpr() }; }
-  function tileImg(ch, tx, ty) { const v = ch === 's' && G && G.M.base === '_' ? -1 : hash(tx, ty) % 8, k = ch + v; let c = TC[k]; if (c === undefined) { const f = TILES[ch]; c = TC[k] = f ? f(v) : null; } return Array.isArray(c) ? c[Math.floor(t * 2.5) % 2] : c; }
+  function tileImg(ch, tx, ty) { const v = ch === 's' && G && G.M.base === '_' ? -1 : hash(tx, ty) % 8, k = ch + v; let c = TC[k]; if (c === undefined) { const f = TILES[ch]; c = TC[k] = f ? f(v) : null; } return Array.isArray(c) ? c[Math.floor(t * 3) % c.length] : c; }
 
   /* ---- Karte laden ---- */
   const flag = k => !!P().fl[k];
@@ -418,6 +430,13 @@ export function createPixel(o) {
     for (let y = y0; y <= Math.min(G.h - 1, y0 + 14); y++) for (let x = x0; x <= Math.min(G.w - 1, x0 + 16); x++) { const c = G.rows[y][x], X = x * TS, Y = y * TS;
       if ('oGCTKXQ'.includes(c)) { const b = tileImg(G.M.base, x, y); if (b) ctx.drawImage(b, X, Y); } else { const im = tileImg(c, x, y); if (im) ctx.drawImage(im, X, Y); }
       const R = (col, a, b, w, h) => { ctx.fillStyle = col; ctx.fillRect(X + a, Y + b, w, h); };
+      /* Übergänge: Grasrand am Weg, Schaum am Ufer, Schatten unter Häusern und Mauern */
+      const nb = (dx, dy) => (G.rows[y + dy] || [])[x + dx] || '#', GR = '.,#Fws';
+      if (c === '=') { const sides = [[0, -1], [0, 1], [-1, 0], [1, 0]]; sides.forEach(([dx, dy], k) => { if (!GR.includes(nb(dx, dy))) return; for (let i = 0; i < 16; i++) { const h = hash(x * 31 + i, y * 17 + k) % 3; const a2 = k < 2 ? i : (k === 2 ? 0 : 16 - h - 1), b2 = k < 2 ? (k === 0 ? 0 : 16 - h - 1) : i; const w = k < 2 ? 1 : h + 1, hh = k < 2 ? h + 1 : 1; R('#5cbc4a', a2, b2, w, hh); } R('#c8a46a', k === 3 ? 13 : k === 2 ? 2 : 0, k === 1 ? 13 : k === 0 ? 2 : 0, k < 2 ? 16 : 1, k < 2 ? 1 : 16); }); }
+      if (c === '~') { const fo = Math.floor(t * 3) % 2; if (nb(0, -1) !== '~') { R('#e8f6ff', 0, 0, 16, 2); R('#9ad4ff', 0, 2, 16, 1); for (let i = fo; i < 16; i += 3) R('#ffffff', i, 2, 1, 1); } if (nb(0, 1) !== '~') R('#2a62b8', 0, 14, 16, 2);
+        if (nb(-1, 0) !== '~') { R('#e8f6ff', 0, 0, 2, 16); R('#9ad4ff', 2, 0, 1, 16); } if (nb(1, 0) !== '~') { R('#e8f6ff', 14, 0, 2, 16); R('#9ad4ff', 13, 0, 1, 16); } }
+      if ('.,=_oCsQ'.includes(c) && 'HDPWE'.includes(nb(0, -1))) R('rgba(20,10,40,.22)', 0, 0, 16, 4);
+      if (c === 'R' && 'HD'.includes(nb(0, 1))) { R('#6a2014', 0, 14, 16, 2); R('rgba(0,0,0,.25)', 0, 13, 16, 1); }
       if (c === 'o') { const dn = G.blocks.some(q => q.x === x && q.y === y); R('#5a566e', 2, 2, 12, 12); R(dn ? '#5ad08a' : '#8a8a9a', 3, 3, 10, 10); R(dn ? '#bfffd0' : '#a8a8b8', 3, 3, 10, 1); }
       if (c === 'G' && !walk(x, y, 1)) { R('#1a1622', 0, 14, 16, 2); for (let i = 0; i < 4; i++) { R('#9a9ab0', 1 + i * 4, 0, 2, 15); R('#d0d0e0', 1 + i * 4, 0, 1, 15); } R('#7a7a90', 0, 3, 16, 2); }
       if (c === 'C') { const op = f['c_' + G.name + '_' + x + '_' + y]; R('#1a1008', 2, 5, 12, 10); R('#8a5a24', 3, 6, 10, 8); R('#ffd04a', 3, 9, 10, 1); if (op) { R('#2a1a08', 3, 4, 10, 3); R('#a86a2a', 3, 2, 10, 2); } else { R('#a86a2a', 3, 5, 10, 3); R('#ffd04a', 7, 8, 2, 3); } }
@@ -462,7 +481,7 @@ export function createPixel(o) {
     { t: 'Pforte verlassen', fn: () => say([['', 'Zurück in die Würfelwelt? Dein Fortschritt hier bleibt erhalten.']], null, [{ t: 'Zurückkehren', fn: exit }, { t: 'Weiterspielen', fn: () => {} }]) }], 150); }
   function render() { ctx.setTransform(2, 0, 0, 2, 0, 0); ctx.imageSmoothingEnabled = false; if (B) drawBattle(); else drawMap(); if (G.menu) drawMenu(); if (G.dlg) drawDlg();
     if (G.fade) { const F = G.fade, a = F.t < .35 ? F.t / .35 : 1 - (F.t - .35) / .35; ctx.fillStyle = `rgba(0,0,0,${Math.max(0, Math.min(1, a))})`; ctx.fillRect(0, 0, W, H); }
-    const want = G.name === 'dorf' && !P().fl.stone && !B ? .12 : 1; if (G.name === 'dorf' && P().fl.stone && G.restore !== undefined && G.restore < 1) { G.restore = Math.min(1, G.restore + 1 / 150); sat = .12 + G.restore * .88; } else sat += (want - sat) * .2; cv.style.filter = sat > .985 ? '' : `saturate(${sat.toFixed(2)})`; }
+    const want = G.name === 'dorf' && !P().fl.stone && !B ? .42 : 1; if (G.name === 'dorf' && P().fl.stone && G.restore !== undefined && G.restore < 1) { G.restore = Math.min(1, G.restore + 1 / 150); sat = .42 + G.restore * .58; } else sat += (want - sat) * .2; cv.style.filter = sat > .985 ? '' : `saturate(${sat.toFixed(2)})`; }
   function frame(rdt) { if (!on) return; const dt = Math.min(.05, Math.max(0, rdt)); t += dt; readInput(dt); try { update(dt); } catch (e) { console.error('[Pixelpforte]', e); } musTick(); render(); }
 
   /* ---- Aufbau, Start, Ende ---- */
