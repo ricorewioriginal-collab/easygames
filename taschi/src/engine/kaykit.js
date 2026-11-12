@@ -83,11 +83,13 @@ function recolored(tex, { outfit = 0x3a7fd0, accent = 0xf2efe6, skin = 0 } = {})
     else if (hsl.s > 0.3 && hsl.h > 0.2 && hsl.h < 0.5 && hsl.l > 0.2 && hsl.l < 0.75) kind = 'outfit';
     else if (hsl.s > 0.5 && (hsl.h < 0.03 || hsl.h > 0.5) && hsl.l < 0.75) kind = 'accent';
     if (kind === 'keep') continue;
+    // hellster Punkt des Felds trifft die Zielfarbe (helle Farben wie Weiß/Rosa bleiben hell)
+    const top = Math.max(0.08, 0.3 * c.r + 0.59 * c.g + 0.11 * c.b);
     for (let y = Math.floor(cyI * ch); y < Math.floor((cyI + 1) * ch); y++) for (let x = Math.floor(cxI * cw); x < Math.floor((cxI + 1) * cw); x++) {
       const i = (y * W + x) * 4, r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255;
       const lum = 0.3 * r + 0.59 * g + 0.11 * b;
       if (kind === 'skin') { d[i] = Math.min(255, d[i] * sk[0]); d[i + 1] = Math.min(255, d[i + 1] * sk[1]); d[i + 2] = Math.min(255, d[i + 2] * sk[2]); continue; }
-      const T = kind === 'outfit' ? O : A, f = kind === 'outfit' ? lum * 1.55 : lum * 1.9;
+      const T = kind === 'outfit' ? O : A, f = Math.min(1.15, lum / top);
       d[i] = Math.min(255, T.r * f * 255); d[i + 1] = Math.min(255, T.g * f * 255); d[i + 2] = Math.min(255, T.b * f * 255);
     }
   }
@@ -126,6 +128,24 @@ function trainerGear(inst, look, keep) {
       put(new THREE.CircleGeometry(r * 0.17, 16), look.lens ?? 0x8ff0ff, bones.head, gx, y + r * 0.08, gz + r * 0.085, -0.25);
     }
   }
+  // Rollen-Ausrüstung der Stadtbewohner: Brille, Schürze, Häubchen
+  if (hb && bones.head && look.glasses) {
+    const lo = toLocal(hb.min), hi = toLocal(hb.max), cxp = (lo.x + hi.x) / 2, r = (hi.x - lo.x) / 2, gy = lo.y + (hi.y - lo.y) * 0.44, gz = hi.z + r * 0.02;
+    for (const sx of [-1, 1]) put(new THREE.TorusGeometry(r * 0.17, r * 0.03, 6, 18), 0x2a2d36, bones.head, cxp + sx * r * 0.3, gy, gz);
+    put(new THREE.BoxGeometry(r * 0.24, r * 0.04, r * 0.04), 0x2a2d36, bones.head, cxp, gy + r * 0.03, gz);
+  }
+  if (hb && bones.head && look.nursecap != null) {
+    const lo = toLocal(hb.min), hi = toLocal(hb.max), cxp = (lo.x + hi.x) / 2, czp = (lo.z + hi.z) / 2, r = (hi.x - lo.x) / 2;
+    put(new THREE.BoxGeometry(r * 0.9, r * 0.32, r * 0.5), 0xffffff, bones.head, cxp, hi.y - r * 0.12, czp + r * 0.25);
+    put(new THREE.BoxGeometry(r * 0.92, r * 0.08, r * 0.52), look.nursecap, bones.head, cxp, hi.y - r * 0.2, czp + r * 0.25);
+  }
+  if (look.apron != null && bones.hips) {
+    let body = null; inst.traverse(o => { if (o.isMesh && /_Body$/.test(o.name)) body = o; });
+    if (body) {
+      const bb = new THREE.Box3().setFromObject(body), lo = toLocal(bb.min), hi = toLocal(bb.max), w = hi.x - lo.x, hgt = hi.y - lo.y;
+      put(new THREE.BoxGeometry(w * 0.5, hgt * 0.5, w * 0.02), look.apron, bones.hips, (lo.x + hi.x) / 2, lo.y + hgt * 0.12, hi.z - w * 0.02);
+    }
+  }
   const chest = bones.chest || bones.spine, hips = bones.hips;
   if (chest && look.backpack != null) {
     const p = new THREE.Vector3(); chest.getWorldPosition(p); const lp = toLocal(p), sc = (hb ? (toLocal(hb.max).x - toLocal(hb.min).x) : 1);
@@ -162,7 +182,7 @@ export class KKCharacter {
   get object() { return this.root; }
   build(g, clips) {
     const inst = cloneRig(g.scene);
-    if (this.look) inst.traverse(o => { if (o.isMesh && FANTASY.test(o.name) && !(this.look.cape && /_Cape$/.test(o.name))) o.visible = false; });
+    if (this.look) inst.traverse(o => { if (o.isMesh && FANTASY.test(o.name) && !(this.look.cape && /_Cape$/.test(o.name)) && !(this.look.hood && /(RogueHooded_Cape|_Mask)$/.test(o.name))) o.visible = false; });
     toonify(inst, this.outline, this.materials, this.look);
     if (this.look) { inst.traverse(o => { if (o.userData.outlineOf && !o.userData.outlineOf.visible) o.visible = false; }); trainerGear(inst, this.look, this.materials); }
     const b = g.box, k = this.height / Math.max(0.01, b.max.y - b.min.y);
