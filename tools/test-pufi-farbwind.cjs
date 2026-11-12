@@ -127,6 +127,19 @@ const server = http.createServer((req, res) => {
       r.locked = s.L.locked; r.bossHp = s.L.boss && s.L.boss.hp;
       let guard = 0; while (s.L.boss.hp > 0 && guard++ < 20) { s.L.boss.inv = 0; const b = s.L.boss; s.L.eggsFly.push({ x: b.x + 10, y: b.y + 10, w: 10, h: 12, vx: 1, vy: 0, bounces: 2, life: 1, spin: 0 }); s.P.inv = 9; step(2); }
       r.bossDone = s.L.bossDone; step(10); r.unlockedArena = !s.L.locked;
+      // Neue Mechaniken: Regenbogenstern, Stampfpfahl, Schalter + Punkteblöcke, Goldei
+      s = flat(); P = s.P; s.L.items.push({ type: 'super', x: P.x + 2, y: P.y + 4, w: 12, h: 12 }); step(2); r.super = S().P.super > 0;
+      s.L.enemies.push({ x: P.x, y: P.y + 6, w: 14, h: 14, vx: 0, vy: 0, alive: true, face: -1, t: 0, kind: 'spiky', edible: false, stomp: false, ch: 'k' });
+      const st0 = s.L.stars; step(2); r.superKills = !s.L.enemies[s.L.enemies.length - 1].alive && s.L.baby.on && s.L.stars >= st0;
+      s = flat(); P = s.P; let pc = Math.floor(P.x / 16) + 3; const gr = Math.floor((P.y + P.h) / 16);
+      s.L.grid[gr - 1][pc] = 'T'; s.L.grid[gr - 2][pc] = 'T';
+      const pound = () => { const q = S().P; q.x = pc * 16 + 1; q.y = (gr - 2) * 16 - 60; q.vy = 0; q.vx = 0; q.ground = false; A.press("down"); step(60); };
+      pound(); r.post1 = s.L.grid[gr - 2][pc] === ' ' && s.L.grid[gr - 1][pc] === 'T';
+      const coins0 = s.L.items.length; pound(); r.post2 = s.L.grid[gr - 1][pc] === ' ' && s.L.items.length >= coins0 + 3;
+      s = flat(); P = s.P; s.L.grid[gr - 4][Math.floor(P.x / 16) + 6] = 'D';
+      s.L.switches.push({ x: P.x, y: P.y + P.h - 7, w: 14, h: 7, down: false }); P.y -= 20; P.vy = 50; step(20);
+      r.switchOn = s.L.switchT > 0; r.dSolid = A.state().L.grid[gr - 4][Math.floor(P.x / 16) + 6] === 'D' && s.L.switchT > 0; step(60 * 11); r.switchOff = s.L.switchT === 0;
+      s = flat(); P = s.P; P.mouth = 'g'; P.mouthShiny = true; A.press('down'); r.gold = S().P.gold; P.aim = { t: 0.1 }; A.press('throw'); r.goldFly = S().L.eggsFly.some(e => e.gold);
       return r;
     });
     assert(mech.fullJump > 72 && mech.fullJump < 100, 'volle Sprunghöhe ' + mech.fullJump);
@@ -140,6 +153,10 @@ const server = http.createServer((req, res) => {
     assert.equal(mech.livesLost, 1); assert(mech.respawnAtRing, 'Neustart am Farbring'); assert.equal(mech.modeAfter, 'play');
     assert(mech.roulette, 'Blüten-Roulette am Ziel'); assert.equal(mech.clear, 'clear'); assert(mech.unlocked >= 2); assert(mech.best > 0);
     assert(mech.locked && mech.bossHp >= 3); assert(mech.bossDone && mech.unlockedArena);
+    assert(mech.super && mech.superKills, 'Regenbogenstern macht unverwundbar und besiegt Gegner ' + JSON.stringify(mech));
+    assert(mech.post1 && mech.post2, 'Stampfpfahl sinkt pro Stampfen und gibt Münzen frei');
+    assert(mech.switchOn && mech.dSolid && mech.switchOff, 'Schalter schaltet Punkteblöcke für 10 s');
+    assert.equal(mech.gold, 1, 'Glitzer-Wuschel gibt Goldei'); assert(mech.goldFly, 'Goldei wird zuerst geworfen');
     console.log('OK  Mechanik:', JSON.stringify(mech));
 
     // ---- Alle Level mit einem einfachen Spielroboter durchlaufen (nur Geometrie, Gegner ignoriert) ----
@@ -155,9 +172,9 @@ const server = http.createServer((req, res) => {
           const c = Math.floor((P.x + P.w / 2) / T), fr = Math.floor((P.y + P.h + 1) / T);
           const tile = (c, r) => (c < 0 || c >= L.cols) ? '#' : (r < 0 || r >= L.rows) ? ' ' : L.grid[r][c];
           const plats = A.activePlatforms();
-          const floor = (cc, r) => '#Q='.includes(tile(cc, r)) || plats.some(q => q.x < (cc + 1) * T && q.x + q.w > cc * T && Math.abs(q.y - r * T) < 10);
+          const floor = (cc, r) => '#QT='.includes(tile(cc, r)) || plats.some(q => q.x < (cc + 1) * T && q.x + q.w > cc * T && Math.abs(q.y - r * T) < 10);
           let want = false;
-          for (let d = 1; d <= 2; d++) { if (!floor(c + d, fr)) want = true; if ('#Q'.includes(tile(c + d, fr - 1)) || '#Q'.includes(tile(c + d, fr - 2)) || tile(c + d, fr - 1) === '^') want = true; }
+          for (let d = 1; d <= 2; d++) { if (!floor(c + d, fr)) want = true; if ('#QT'.includes(tile(c + d, fr - 1)) || '#QT'.includes(tile(c + d, fr - 2)) || tile(c + d, fr - 1) === '^') want = true; }
           A.action('right', true, 'bot');
           if (P.ground) { if (held) { A.action('jump', false, 'bot'); held = false; } else if (want) { A.action('jump', true, 'bot'); held = true; } }
           else if (held && P.vy > 0) { let land = false; for (let r = fr; r < fr + 8 && !land; r++) if (floor(c, r) && floor(c + 1, r) && !'~^'.includes(tile(c + 1, r - 1))) land = true; if (land || (P.flutterT <= 0 && P.flutterN > 0)) { A.action('jump', false, 'bot'); held = false; } }
@@ -229,6 +246,14 @@ const server = http.createServer((req, res) => {
     await page.evaluate(() => PufiTest.openOptions());
     await page.getByRole('button', { name: /MUSIK/ }).click();
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('easygames.pufi-farbwind.v2')).music), false);
+    await page.getByRole('button', { name: /TASTATUR/ }).click();
+    assert.equal(await page.evaluate(() => PufiTest.state().mode), 'keys');
+    await page.getByRole('button', { name: /^SPRINGEN/ }).click(); await page.keyboard.press('KeyH');
+    assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('easygames.pufi-farbwind.keys')).jump), 'KeyH', 'Taste neu belegt und gespeichert');
+    await page.evaluate(() => PufiTest.start(0)); await page.waitForTimeout(300);
+    await page.keyboard.down('KeyH'); await page.waitForTimeout(120);
+    assert(await page.evaluate(() => PufiTest.state().P.vy < 0), 'neue Taste springt'); await page.keyboard.up('KeyH');
+    await page.evaluate(() => localStorage.removeItem('easygames.pufi-farbwind.keys'));
     await page.evaluate(() => PufiTest.openMap());
     assert(await page.locator('.lvl:not([disabled])').count() >= 2, 'freigeschaltete Level auf der Karte');
     await page.close();
@@ -258,8 +283,23 @@ const server = http.createServer((req, res) => {
     await gp.evaluate(() => { window.__pad.axes[2] = 0.7; window.__pad.axes[3] = -0.7; }); await gp.waitForTimeout(400);
     await gp.evaluate(() => window.__press(1, false)); await gp.waitForTimeout(80);
     assert.equal(await gp.evaluate(() => PufiTest.state().P.eggs), 1, 'Loslassen nach Halten wirft');
-    await gp.evaluate(() => window.__press(9, true)); await gp.waitForTimeout(80); await gp.evaluate(() => window.__press(9, false));
+    await gp.evaluate(() => window.__press(9, true)); await gp.waitForTimeout(80); await gp.evaluate(() => window.__press(9, false)); await gp.waitForTimeout(120);
     assert.equal(await gp.evaluate(() => PufiTest.state().mode), 'pause', 'Start pausiert');
+    const tap = async i => { await gp.evaluate(i => window.__press(i, true), i); await gp.waitForTimeout(90); await gp.evaluate(i => window.__press(i, false), i); await gp.waitForTimeout(90); };
+    await tap(1); assert.equal(await gp.evaluate(() => PufiTest.state().mode), 'play', 'B schließt das Pausemenü');
+    await tap(9);   // Pause → mit dem Steuerkreuz zu OPTIONEN → A
+    const focusText = () => gp.evaluate(() => document.activeElement && document.activeElement.textContent);
+    for (const d of [13, 15, 13, 14, 13]) { if (await focusText() === 'OPTIONEN') break; if (process.env.PUFI_DEBUG) console.log('focus', await focusText(), await gp.evaluate(() => PufiTest.state().mode)); await tap(d); }
+    assert.equal(await focusText(), 'OPTIONEN', 'Steuerkreuz wählt im Pausemenü'); await tap(0);
+    assert.equal(await gp.evaluate(() => PufiTest.state().mode), 'options', 'Steuerkreuz + A öffnen die Optionen');
+    await tap(0); assert.equal(await gp.evaluate(() => PufiTest.state().mode), 'padopts', '🎮 Controller-Bereich');
+    const padBtns = await gp.locator('#buttons button').allTextContents();
+    for (const b of ['SYMBOLE', 'BESTÄTIGEN', 'KNÖPFE BELEGEN', 'BELEGUNG ZEIGEN']) assert(padBtns.some(x => x.includes(b)), 'Controller-Menü zeigt ' + b);
+    assert(await gp.evaluate(() => document.activeElement && document.activeElement.closest('#overlay') !== null), 'Fokus sichtbar im Menü');
+    await tap(0); assert(await gp.evaluate(() => window.EasyGamesPadNormal.style() !== 'auto'), 'A stellt die Symbole um');
+    await gp.evaluate(() => window.EasyGamesPadNormal.style('auto'));
+    await tap(1); assert.equal(await gp.evaluate(() => PufiTest.state().mode), 'options', 'B geht zurück');
+    await tap(1); assert.equal(await gp.evaluate(() => PufiTest.state().mode), 'pause', 'B zurück ins Pausemenü');
     await gp.close();
 
     // ---- Touch (Handy quer, mehrere Finger) ----

@@ -16,6 +16,7 @@ import { createLufia, LCUT, SOUL_LV } from './lufia.js';
 import { furMat } from './gfx.js';
 import { createFX } from './fx.js';
 import { createTex } from './tex.js';
+import { createDungeon } from './dungeon.js';
 import { createMaerchen, MW, MW_FIRST } from './maerchen.js';
 const T=makeT(THREE,.5),$=id=>document.getElementById(id);
 const TOUCH=matchMedia('(pointer:coarse)').matches||'ontouchstart' in window;
@@ -78,6 +79,7 @@ function pushOut1(o,r){
 const cv=$('cv');
 const renderer=new T.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'});
 const TX=createTex({T,renderer});
+let _dg=null;const DG=()=>_dg||(_dg=createDungeon({T,TX,M,mk,G,glow,scene}));
 /* Bodentextur je Kapitelwelt (CC0, public/tex) */
 const WGTEX={2:'forest',3:'cobble',4:'sand',5:'sand',6:'snow',7:'mud',8:'cobble',9:'grass',10:'marble',11:'rock'};
 const PR0=Math.min(devicePixelRatio||1,2);renderer.setPixelRatio(PR0);
@@ -820,8 +822,8 @@ function spawnEnemy(k,x,z,bonus){if(MP.role==='guest'&&!MP.applying)return dummy
 function resetEnemy(e){e.dead=false;e.dt=0;e.hp=e.max;e.x=e.hx;e.z=e.hz;e.st='idle';e.m.root.visible=true;e.m.root.scale.setScalar(e.d.sc);e.atk=null;e.dash=null;e.cd=1}
 (function(){ /* Verteilung */
   {const q0=CR().makeExtra(1,0),q1=CR().makeExtra(1,1);ED.c1=Object.assign({},ED.rift,{name:q0.name,make:q0.make,col:q0.col});ED.d1=Object.assign({},ED.wolf,{name:q1.name,make:q1.make,col:q1.col,sc:.95})}
-  let n=0,tries=0;while(n<12&&tries++<500){const z=wr(-58,-142),x=PATHX(z)+wr(-30,30);if(blocked(x,z)||Math.hypot(x-ARENA.x,z-ARENA.z)<36)continue;spawnEnemy(n<9?'rift':'c1',x,z);n++}
-  n=0;tries=0;while(n<11&&tries++<500){const z=wr(-52,-146),x=PATHX(z)+wr(-34,34);if(blocked(x,z)||Math.hypot(x-ARENA.x,z-ARENA.z)<36)continue;spawnEnemy(n<7||z>-95?'wolf':'d1',x,z);n++}
+  let n=0,tries=0;while(n<17&&tries++<500){const z=wr(-58,-142),x=PATHX(z)+wr(-30,30);if(blocked(x,z)||Math.hypot(x-ARENA.x,z-ARENA.z)<36)continue;spawnEnemy(n<12?'rift':'c1',x,z);n++}
+  n=0;tries=0;while(n<15&&tries++<500){const z=wr(-52,-146),x=PATHX(z)+wr(-34,34);if(blocked(x,z)||Math.hypot(x-ARENA.x,z-ARENA.z)<36)continue;spawnEnemy(n<10||z>-95?'wolf':'d1',x,z);n++}
 })();
 let boss=null;
 function ensureBoss(){if(S.boss||boss)return;boss=spawnEnemy('boss',ARENA.x,ARENA.z-6);boss.face=0}
@@ -2051,7 +2053,7 @@ function buildWorld(n){
   mkE('x'+n,C.X,own('X',C.X,()=>tintModel(makeWolf(true),C.X[3],.45)),{kit:BKIT[n],base:'wolf',spd:5.4,aggro:60,rng:4.6,wind:.7,cool:1.1,sc:2.0,xp:Math.round(C.X[1]*.5),sh:[34+n*6,44+n*8],boss:true,sub:C.X[4],p2t:C.X[0]+' bäumt sich auf!',minion:'a'+n,intro:()=>cutscene(cut.boss)});
   const place=(k,cnt,zr)=>{let c=0,t=0;while(c<cnt&&t++<500){const z=rr(zr[0],zr[1]),x=pathx(z)+rr(-32,32);if(blk(x,z)||Math.hypot(x,z+182)<36||Math.hypot(x,z)<36)continue;spawnEnemy(k,x,z);c++}};
   for(const [i,key] of [[0,'c'],[1,'d']]){const q=CR().makeExtra(n,i);if(q)mkE(key+n,[q.name,60,10,q.col],q.make,i?{base:'wolf',spd:5.4,aggro:15,rng:2.6,wind:.65,cool:1.4,sh:[n+1,n*2+3],shield:[3,6,9].includes(n),leap:[5,7,8,10].includes(n)}:{base:'rift',ranged:true,hov:1.3,burst:n>=4})}   // je Welt zwei weitere Arten
-  {const ex=Math.min(4,2*(S.ng||0));place('a'+n,9+ex,[-52,-112]);place('b'+n,7+ex,[-62,-146])}if(ED['c'+n])place('c'+n,5,[-52,-104]);if(ED['d'+n])place('d'+n,5,[-96,-146]);
+  {const ex=Math.min(4,2*(S.ng||0));place('a'+n,13+ex,[-52,-112]);place('b'+n,10+ex,[-62,-146])}if(ED['c'+n])place('c'+n,7,[-52,-104]);if(ED['d'+n])place('d'+n,7,[-96,-146]);
   /* allein: der Zwischengegner wartet am Ende der Vorhallen (Eingang am Weg); im Koop wie bisher auf dem Weg */
   let dunGate=false;
   function spawnMini(){if(cs().st!==4||E.some(e=>e.mini&&!e.dead))return;if(!MP.on){if(dunGate)return;dunGate=true;const z=-136,x=pathx(z)+4.5,y=h(x,z),g=new T.Group(),gl=C.glowc[0];g.position.set(x,y,z);for(const sd of [-1,1])g.add(mk(G.box,M(C.pal.rock,{r:.9}),sd*1.7,1.8,0,.9,3.6,.9));g.add(mk(G.box,M(C.pal.rock,{r:.9}),0,3.9,0,4.4,.8,1));g.add(mk(G.box,M(0x05050a),0,1.7,-.1,2.5,3.4,.3,false));g.add(mk(G.oct,M(gl,{e:gl,ei:2}),0,4.9,0,.4,.6,.4,false));g.add(glow(gl,7,0,2,0.4,.6));scene.add(g);addCol(x-1.7,z,.6);addCol(x+1.7,z,.6);
@@ -2812,7 +2814,7 @@ function updTools(dt){X.tcd=Math.max(0,X.tcd-dt);
   if(!ok){sfx('hit');return}b.mv=1;const ox=b.x,oz=b.z;sfx('dodge');later(0,()=>{});let k=0;const step=()=>{k+=.2;b.x=lerp(ox,nx,Math.min(1,k));b.z=lerp(oz,nz,Math.min(1,k));b.m.position.set(b.x,hgt(b.x,b.z)+b.hy,b.z);if(k<1)later(.04,step);else{b.mv=0;plateCheck()}};step()}
 /* Hindernis-Bausteine */
 function obAdd(o,mesh){o.m=mesh;if(S.obst[o.id]){if(o.t==='torch'){o.lit=1}else{o.done=true}}OB.push(o);scene.add(mesh);return o}
-function obWall(x,z,hw,hd,col,h){const y=hgt(x,z),m=mk(G.box,M(col||0x6a6c8c,{r:.9}),x,y+(h||3)/2,z,hw*2,h||3,hd*2);return obAdd({id:'w',t:'wall',x,z,hw,hd},m)}
+function obWall(x,z,hw,hd,col,h){const y=hgt(x,z),m=mk(G.box,TX.tri('stone',col||0x6a6c8c,{s:.5,gain:2.5,r:.9,e:0x241a12,ei:1}),x,y+(h||3)/2,z,hw*2,h||3,hd*2);return obAdd({id:'w',t:'wall',x,z,hw,hd},m)}
 function obBuild(id,t,x,z,hw,hd,grp){const y=hgt(x,z);let m;const o={id,t,x,z,hw,hd,grp};
   if(t==='crack'){m=new T.Group();m.add(mk(G.box,M(0x7a7a8a,{r:1,f:1}),0,1.5,0,hw*2,3,hd*2));for(let i=0;i<4;i++){const c=mk(G.box,M(0x2a2a34),(i-1.5)*hw*.45,.8+i*.5,hd+.02,.08,1.2,.02,false);c.rotation.z=(i%2?.6:-.5);m.add(c)}}
   else if(t==='thorn'){m=new T.Group();for(let i=0;i<14;i++){const c=mk(G.cone0,M(0x5a3a5a,{e:0x2a0a2a,ei:.5}),(Math.random()-.5)*hw*2,.6+Math.random()*1.4,(Math.random()-.5)*hd*2,.12,1+Math.random(),.12);c.rotation.set((Math.random()-.5)*1.4,0,(Math.random()-.5)*1.4);m.add(c)}m.add(mk(G.sph,M(0x3a2a3a),0,.6,0,hw,.8,hd))}
@@ -2839,7 +2841,7 @@ const EPX=()=>_ep||(_ep=createEtappen({T,mk,G,M,glow,scene,hgt:(x,z)=>hgt(x,z),p
 let _rms=null;const RMS=()=>_rms||(_rms=createRooms({T,mk,G,M,glow,scene,hgt:(x,z)=>hgt(x,z),INT,anim:fn=>animObjs.push({fn}),pl,toast,sfx,tone,emit:(...a)=>emit(...a)}));
 const RUIN_GEAR={1:'c_mond',2:'a_rinde',3:'w_dorn',4:'c_glocke',5:'a_koralle',6:'a_frost',7:'w_glut',8:'c_glueck',9:'w_stern',10:'a_stern'};
 function buildRuin(n,col,outside){const P=n+'r',spec=RUIN[n]||RUIN[1],wc=col||0x6a6c8c;
-  const fl=mk(G.box,M(0x4a4a5a,{r:1}),0,-.05,350,26,.1,34,false);fl.receiveShadow=true;scene.add(fl);
+  const fl=mk(G.box,TX.tri('cobble',0x9a9aa8,{s:.45,gain:2.3,r:1,e:0x1e1610,ei:1}),0,-.05,350,26,.1,34,false);fl.receiveShadow=true;scene.add(fl);ruinDress(n,wc);
   /* Außenmauern mit Eingang im Süden */
   obWall(0,333,13,.5,wc);obWall(-13,350,.5,17,wc);obWall(13,350,.5,17,wc);obWall(-7.5,367,5.5,.5,wc);obWall(7.5,367,5.5,.5,wc);
   /* Zwischenwände mit Durchgang (x -2..2) */
@@ -2864,6 +2866,16 @@ function buildRuin(n,col,outside){const P=n+'r',spec=RUIN[n]||RUIN[1],wc=col||0x
   INT.push({x:ox,z:oz+1.6,name:'Werkzeug-Ruine',pr:'Werkzeug-Ruine betreten',rad:3,talk(){say([['Zotik','Eine alte Ruine. '+(need.length?'Drinnen brauche ich wohl: '+need.map(t=>TOOLS[t].em+' '+TOOLS[t].n).join(', ')+'.':'Vielleicht kann ich hier etwas verschieben.')]],null,[{t:'Betreten',fn:()=>ruinGo(0,364,Math.PI,true)},{t:'Später',fn(){}}])}});
   INT.push({x:0,z:366,name:'Ausgang',pr:'Ruine verlassen',rad:2.4,talk(){ruinGo(ox,oz+2.6,0,false)}});
   if(spec[0]==='block')INT.push({x:-9,z:362,name:'Steintafel',pr:'Tafel lesen',rad:2.2,talk(){say([['Zotik','„Wer gegen den Stein drückt, bewegt ihn. Der Stein gehört auf das Siegel.“ – Also: gegen den Block laufen, bis er rutscht.']])}})}
+/* Ruinen-Ausstattung wie in Lufia-Dungeons: Säulen mit Ranken, Wandfackeln, Banner, Teppich, Kohlebecken, Wächterstatuen und Kleinkram an den Wänden.
+   Alles bleibt an den Rändern (|x| > 10,5 oder an den Querwänden neben den Durchgängen), Rätselflächen und Wege bleiben frei. */
+function ruinDress(n,wc){const D=DG(),R=mul32(5150+n*37),g=new T.Group();g.userData.ruin=1;scene.add(g);const fl=[0xffffff,0xbfe0ff,0xffd0f0][n%3];
+  for(const z of [337,341,349,353,359,363])for(const s of [-1,1])D.column(g,s*12.1,0,z,3.2,0xcfc6b4,R()<.3);
+  for(const z of [339,347,357,365])for(const s of [-1,1])D.torch(g,s*12.55,1.9,z,s>0?-Math.PI/2:Math.PI/2,fl);
+  const bc=[0x8a1a2a,0x1a3a8a,0x2a6a3a,0x6a2a7a][n%4];for(const s of [-1,1])D.banner(g,s*4.5,3.3,333.4,0,bc);
+  const cp=mk(G.box,TX.tri('plaster',bc,{s:2,gain:1.4,n:.3}),0,.02,350,2.2,.03,30,false);cp.receiveShadow=true;g.add(cp);
+  for(const s of [-1,1]){D.brazier(g,s*3.6,334.6,fl);D.statue(g,s*10.8,366,Math.PI,wc)}
+  const sp=[];for(const z of [336,343,351,358,362])for(const s of [-1,1])sp.push([s*11.3,z+R()*1.5,s>0?0:Math.PI]);D.clutter(g,sp,R,{rock:wc,h:3});
+  const fp=[];for(let z=337;z<366;z+=3.2)for(const s of [-1,1])fp.push([s*(9.4+R()*.8),z]);D.floor(g,fp,R,{slab:0xa8a090})}
 function ruinGo(x,z,face,inside){$('fade').style.opacity=1;setTimeout(()=>{pl.x=x;pl.z=z;pl.y=hgt(x,z);pl.vx=pl.vz=0;pl.face=face;camYaw=face+Math.PI;camTarget.set(pl.x,pl.y+1.5,pl.z);camPos.set(pl.x,pl.y+4,pl.z+(inside?8:-8));fel.x=pl.x+1;fel.z=pl.z+1;placeParty();lockOff();$('fade').style.opacity=0;if(inside)banner('Werkzeug-Ruine','Schiebe, sprenge, brenne, friere');},400)}
 function ruinSpot(h,blk,path,R){for(let t=0;t<400;t++){const z=-70-R()*60,side=R()<.5?-1:1,x=path(z)+side*(9+R()*6);if(Math.abs(x)>110)continue;let ok=!blk(x,z)&&h(x,z)<5.5;for(let a=0;a<8&&ok;a++){const px=x+Math.cos(a*.785)*3,pz=z+Math.sin(a*.785)*3;if(blk(px,pz))ok=false}
     if(ok&&COL.some(c=>Math.hypot(c.x-x,c.z-z)<c.r+3.2))ok=false;if(ok)return[x,z]}return[path(-90)+8,-90]}
@@ -2910,11 +2922,8 @@ function buildDungeon(){const D=X.dun,n=D.n,f=D.f,F=DUNF(n),last=f===F,C=CHP[n],
     menuQuest(){return `<h3>${name}</h3><div class="row"><span>Ebene</span><span>${f} / ${F}</span></div><div class="row"><span>Schlüssel</span><span>${last?'–':D.key?'🗝️ gefunden':'fehlt'}</span></div><div class="row"><span>🧩 Gelöste Rätsel (gesamt)</span><span>${(S.lf&&S.lf.pz)||0}</span></div><p style="color:var(--dim);font-size:13px">${need()} Am Start jeder Ebene steht ein Ausgangskristall; wer die Vorhallen verlässt, beginnt sie neu.</p>`},
     kill(e){if(e.mini){banner(C.M[0]+' besiegt','Das Tor nach draußen öffnet sich');sfx('level');$('boss').hidden=true;boss=null}this.refresh()},zoneEnter(){},ensureBoss(){},sealedNow:()=>false,spawnMini(){}};
   setAtmos({top:[.01,.01,.03],mid:[.03,.03,.07],hor:[.08,.07,.12],aur:[.2,.3,.5],ms:[.1,.1,.2],gr:[.02,.02,.04],moon:0x404050,mg:[0x202030,0x202030],fog:0x0a0a14,fd:.026,hemi:[0x9a9ac0,0x1a1a2a,.6],lite:[0xb0b0d0,.55],stars:0,expo:1});
-  const fl=new T.Mesh(new T.PlaneGeometry(N*CS+20,N*CS+20),new T.MeshStandardMaterial({color:C.pal.arena,roughness:1}));fl.rotation.x=-Math.PI/2;fl.position.set(0,0,Z0+N*CS/2);fl.receiveShadow=true;scene.add(fl);WLD.terr=fl;
-  let nw=0;for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(g[i][j])nw++;
-  const im=new T.InstancedMesh(new T.BoxGeometry(CS,2.6,CS),TX.tri('stone',C.pal.rock,{s:.35,gain:2.2,fresh:1}),nw);let k=0;
-  for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(g[i][j]){_m.compose(_p.set(cx(i),1.3,cz(j)),_q.set(0,0,0,1),_s.set(1,1+R()*.25,1));im.setMatrixAt(k++,_m)}
-  im.castShadow=true;scene.add(im);WLD.ims.push(im);
+  const fl=new T.Mesh(new T.PlaneGeometry(N*CS+20,N*CS+20),TX.tri('cobble',C.pal.arena,{s:.3,gain:2.3,r:1,e:0x1a120c,ei:1,fresh:1}));fl.rotation.x=-Math.PI/2;fl.position.set(0,0,Z0+N*CS/2);fl.receiveShadow=true;scene.add(fl);WLD.terr=fl;
+  const im=DG().walls(g,N,cx,cz,CS,2.8,C.pal.rock,R,'stone');scene.add(im);WLD.ims.push(im);
   /* Leuchtkristalle in der Farbe der Welt */
   const deco=new T.Group();scene.add(deco);for(let i=1;i<N-1;i++)for(let j=1;j<N-1;j++)if(!g[i][j]&&(i*7+j*3+f)%5===0){deco.add(mk(G.oct,M(gl,{e:gl,ei:1.6,r:.2}),cx(i)+1.9,1.1,cz(j)+1.9,.22,.5,.22,false));deco.add(glow(gl,3,cx(i)+1.9,1.2,cz(j)+1.9,.4))}
   /* Rätselnischen (Lufia-Takt, eigene Umsetzung): Sackgassen der Gänge mit Schatz, verschlossen mit dem, was Zotik schon kann –
@@ -2942,7 +2951,9 @@ function buildDungeon(){const D=X.dun,n=D.n,f=D.f,F=DUNF(n),last=f===F,C=CHP[n],
         if(hard&&R()<.6){S.potions++;it=' und 🧪 Heiltrank'}sfx('level');emit(chx,1,chz,hard?0x8ad8ff:0xffe08a,30,4,.8,.7,2);toast((hard?'🧩 Kniffel gelöst! ':'🧩 Rätsel gelöst! ')+'+'+sh+' 💎'+it+' · gelöste Rätsel: '+S.lf.pz);saveGame(true)}});k++}}
   /* Gegner */
   const cells=[];for(let i=1;i<N-1;i++)for(let j=1;j<N-1;j++)if(!g[i][j]&&dist[i][j]>3&&Math.max(Math.abs(i-hc[0]),Math.abs(j-hc[1]))>1&&!nicheC.has(i+','+j))cells.push([i,j]);
-  const ne=Math.min(9,3+f+(n>5?1:0)+(mode==='hunt'?1:0));for(let q=0;q<ne&&cells.length;q++){const [i,j]=cells.splice(R()*cells.length|0,1)[0],e=spawnEnemy(R()<.5?'a'+n:'b'+n,cx(i),cz(j));e.summoned=true}
+  /* Ausstattung wie in alten Dungeons (Fackeln, Krüge, Kisten, Statuen …), Start, Halle und Rätselnischen bleiben frei */
+  DG().dress(scene,g,N,cx,cz,CS,mul32(f*313+n*71),{glow:gl,rock:C.pal.rock,h:2.8,skip:(i,j)=>(i<=1&&j<=1)||(Math.abs(i-hc[0])<=1&&Math.abs(j-hc[1])<=1)||nicheC.has(i+','+j)});
+  const ne=Math.min(15,6+f*2+(n>5?1:0)+(mode==='hunt'?1:0));for(let q=0;q<ne&&cells.length;q++){const [i,j]=cells.splice(R()*cells.length|0,1)[0],e=spawnEnemy(R()<.5?'a'+n:'b'+n,cx(i),cz(j));e.summoned=true}
   /* Start: Ausgangskristall und (außer auf der letzten Ebene) die verschlossene Treppe */
   const side=g[2][1]?[0,2.2]:[2.2,0],ex=cx(1)-side[0]*.8,ez=cz(1)-side[1]*.8,xc=new T.Group();xc.position.set(ex,0,ez);xc.add(mk(G.oct,M(0x6af0ff,{e:0x2ac0ff,ei:1.8}),0,1.4,0,.4,.75,.4,false));xc.add(glow(0x6af0ff,3.4,0,1.4,0,.7));scene.add(xc);
   animObjs.push({fn(t){xc.children[0].rotation.y=t;xc.children[0].position.y=1.4+Math.sin(t*2)*.1}});
@@ -3013,12 +3024,10 @@ function buildCave(){const f=S.cave.f||1,R=mul32((S.cave.seed|0)*977+f*131),rr=(
     refresh(){$('qt').textContent='Echogrotte · Ebene '+f;$('qo').textContent=(E.some(e=>e.cboss&&!e.dead)?'Besiege den Wächter an der Treppe.':WLD.seal&&WLD.seal()?WLD.sealT():'Finde die Treppe nach unten.')+'\nStufe '+S.lvl+' · Rekord: Ebene '+(S.cave.best||0)+(S.cave.run?' · Blaue Schätze: '+S.cave.run.blue.length:'');$('qo').style.whiteSpace='pre-line'},
     menuQuest(){const r=S.cave.run;return `<h3>Echogrotte</h3><div class="row"><span>Ebene</span><span>${f} / 99</span></div><div class="row"><span>Rekord</span><span>${S.cave.best||0}</span></div>${LF().caveHTML()}<div class="row"><span>Blaue Schätze (bleiben)</span><span>${r?r.blue.map(i=>GEAR[i].n).join(', ')||'–':'–'}</span></div><p style="color:var(--dim);font-size:13px">Du beginnst mit Stufe 1 und ohne Ausrüstung. Was du in roten Truhen findest, gilt nur für diesen Lauf. Blaue Truhen behältst du. Ein Ausgangskristall steht am Start jeder Ebene.</p>`},
     kill(e){if(e.cboss){LF().relic(f);toast('🗝️ Die Treppe ist frei');sfx('quest');$('boss').hidden=true}this.refresh()},zoneEnter(){},ensureBoss(){},sealedNow:()=>false,spawnMini(){}};
-  setAtmos({top:[.01,.01,.03],mid:[.03,.03,.07],hor:[.08,.07,.12],aur:[.2,.3,.5],ms:[.1,.1,.2],gr:[.02,.02,.04],moon:0x404050,mg:[0x202030,0x202030],fog:0x0a0a14,fd:.03,hemi:[0x8a8ab0,0x1a1a2a,.55],lite:[0xb0b0d0,.5],stars:0,expo:1});
-  const fl=new T.Mesh(new T.PlaneGeometry(N*CS+20,N*CS+20),TX.tri('cobble',pal[1],{s:.3,gain:2,r:1,fresh:1}));fl.rotation.x=-Math.PI/2;fl.position.set(0,0,Z0+N*CS/2);fl.receiveShadow=true;scene.add(fl);WLD.terr=fl;
-  let nw=0;for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(g[i][j])nw++;
-  const im=new T.InstancedMesh(new T.BoxGeometry(CS,2.6,CS),TX.tri('brick',pal[0],{s:.35,gain:2.2,fresh:1}),nw);let k=0;
-  for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(g[i][j]){_m.compose(_p.set(cx(i),1.3,cz(j)),_q.set(0,0,0,1),_s.set(1,1+R()*.25,1));im.setMatrixAt(k++,_m)}
-  im.castShadow=true;scene.add(im);WLD.ims.push(im);
+  setAtmos({top:[.01,.01,.03],mid:[.03,.03,.07],hor:[.08,.07,.12],aur:[.2,.3,.5],ms:[.1,.1,.2],gr:[.02,.02,.04],moon:0x404050,mg:[0x202030,0x202030],fog:0x0a0a14,fd:.03,hemi:[0x9a9ac0,0x2a221a,.8],lite:[0xc0b8d0,.65],stars:0,expo:1.1});
+  const fl=new T.Mesh(new T.PlaneGeometry(N*CS+20,N*CS+20),TX.tri('rock',pal[1],{s:.3,gain:2.6,r:1,e:0x1a120c,ei:1,fresh:1}));fl.rotation.x=-Math.PI/2;fl.position.set(0,0,Z0+N*CS/2);fl.receiveShadow=true;scene.add(fl);WLD.terr=fl;
+  const im=DG().walls(g,N,cx,cz,CS,2.8,pal[0],R,'rock');scene.add(im);WLD.ims.push(im);
+  DG().dress(scene,g,N,cx,cz,CS,mul32(f*197+11),{glow:[0x8a6aff,0xff7a4a,0x4affc8,0xffd45a,0xff5ad8][f%5],rock:pal[0],h:2.8,skip:(i,j)=>(i<=1&&j<=1)||(i===far[0]&&j===far[1])});
   /* Gegner */
   const lvl=f,mk2=(key,base,hp,dm,col,extra)=>{ED[key]=Object.assign({name:base,hp,dmg:dm,xp:Math.round(8+lvl*5),spd:3.6,aggro:14,rng:9,wind:.8,cool:2.2,sc:1,sh:[1,2+lvl/5|0],col,make:extra.make},extra);WLD.edKeys.push(key)};
   const tint=[0x8a6aff,0xff7a4a,0x4affc8,0xffd45a,0xff5ad8][f%5];
@@ -3026,7 +3035,7 @@ function buildCave(){const f=S.cave.f||1,R=mul32((S.cave.seed|0)*977+f*131),rr=(
   mk2('kb','Höhlenwolf',40+lvl*18,6+lvl*1.3,tint,{make:()=>tintModel(makeWolf(false),tint,.5),base:'wolf',spd:5.4,rng:2.5,wind:.6,cool:1.3,aggro:12});
   mk2('kx','Wächter der Tiefe',220+lvl*70,10+lvl*1.6,0xffe27a,{make:()=>tintModel(makeWolf(true),0xffe27a,.5),base:'wolf',spd:5.2,rng:4.4,wind:.7,cool:1.1,sc:1.8,aggro:30,boss:true,sub:'Ebene '+f,p2t:'Der Wächter tobt!',minion:'ka',xp:Math.round(60+lvl*20)});
   const cells=[];for(let i=1;i<N-1;i++)for(let j=1;j<N-1;j++)if(!g[i][j]&&dist[i][j]>3&&!(i===far[0]&&j===far[1]))cells.push([i,j]);
-  const ne=Math.min(16,6+Math.floor(f/4));for(let n=0;n<ne&&cells.length;n++){const [i,j]=cells.splice(R()*cells.length|0,1)[0];spawnEnemy(R()<.5?'ka':'kb',cx(i),cz(j))}
+  const ne=Math.min(26,10+Math.floor(f/3));for(let n=0;n<ne&&cells.length;n++){const [i,j]=cells.splice(R()*cells.length|0,1)[0];spawnEnemy(R()<.5?'ka':'kb',cx(i),cz(j))}
   /* Siegel: auf jeder zweiten Ebene ist die Treppe versiegelt – mal Glutkristalle in den Gängen entzünden, mal alle Gegner vertreiben */
   if(f%10!==0&&f%2===0){if((f/2)%2){const pos=[];for(let k=0;k<3&&cells.length;k++){const [i,j]=cells.splice(R()*cells.length|0,1)[0];pos.push([cx(i),cz(j)])}
       const pz=RMS().build('orbs',{x0:0,x1:1,z0:0,z1:1},{pos,hold:55-Math.min(25,f/2),lv:f,R},()=>{toast('🗝️ Das Siegel der Treppe ist gebrochen');WLD.refresh()});WLD.seal=()=>!pz.solved;WLD.sealT=()=>'Die Treppe ist versiegelt: Entzünde die 3 Glutkristalle in den Gängen, bevor der erste erlischt.'}
