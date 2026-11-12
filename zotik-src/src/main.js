@@ -22,6 +22,8 @@ import { createDungeon } from './dungeon.js';
 import { createMaerchen, MW, MW_FIRST } from './maerchen.js';
 import { RISSBILD } from './storyx.js';
 import { createWorldPlus } from './worldplus.js';
+import { createWeapons } from './weapons.js';
+import { createMinis, ISLE } from './minis.js';
 import { createRide, RIDES } from './ride.js';
 const T=makeT(THREE,.5),$=id=>document.getElementById(id);
 const TOUCH=matchMedia('(pointer:coarse)').matches||'ontouchstart' in window;
@@ -561,6 +563,7 @@ function makeSword(len){len=len||1;const g=new T.Group();
   g.add(mk(G.cone0,M(0xaab6c8,{m:.85,r:.28}),0,.52*len+.35*len+.06,0,.058,.14,.02));
   g.add(mk(G.box,M(0x5ab0ff,{e:0x3a9cff,ei:1.4}),0,.52*len,.013,.022,.62*len,.01,false));
   return g}
+const WPNS=createWeapons({T,M,mk,G,glow});
 function makeFox(){return buildFox({T,M,glow,makeSword,mergeChar,mergeStatic,TOUCH})}
 
 function makeMira(){
@@ -1207,7 +1210,7 @@ function controlsHTML(){const K=(a,b)=>`<div><b>${a}</b><span>${b}</span></div>`
   if(REMOTE)return '<div class="ctl">'+K('↑ ↓','Laufen (vor / zurück)')+K('← →','Drehen')+K('OK','Angriff · Sprechen / Öffnen, wenn etwas in der Nähe ist')+K('Zurück','Kommandomenü: ↑↓ wählen, OK ausführen, Zurück schließen')+K('☰','Menü: letzter Eintrag im Kommandomenü')+K('OK halten','Nautilux: steigen (Sinken im Kommandomenü)')+'</div>';
   if(document.documentElement.classList.contains('eg-pad')&&window.EasyGamesPad&&EasyGamesPad.legend)return '<div class="ctl">'+EasyGamesPad.legend().map(l=>K('🎮 '+l[0],l[1])).join('')+K('🎮 Select + Start','Belegung einblenden')+'</div>';
   return '<div class="ctl">'+(TOUCH?K('🕹','Stick links: Bewegen (kurz tippen = dorthin gehen)')+K('👆','Rechts wischen: Kamera')+K('⚔️','Angriff: führt den markierten Befehl aus')+K('📋','„☰ Befehle“ antippen klappt das Kommandomenü auf: Spezialangriff, Magie, Item, Rufen')+K('⤴','Springen antippen (auf schwebende Platten)')+K('💨','Ausweichen antippen, halten = Block (Nautilux: Turbo halten)')+K('✋','Aktion: Sprechen, Öffnen, Einsteigen; halten = Nautilux-Form')+K('🎯','Ziel: tippen = erfassen/wechseln, halten = aus')+K('▲','Reaktion: Aktion-Taste, wenn ▲ erscheint')+K('☰','Menü (oben links)'):K(['up','left','down','right'].map(c=>INP.keyName(INP.code(c))).join(' '),'Bewegen')+K('Maus','Kamera (ziehen)')+K(KH('atk')+' / Klick','Angriff · Befehl ausführen · in der Nähe: Sprechen / Öffnen')+K(KH('jump'),'Springen')+K(KH('dodge'),'Ausweichen')+K(KH('block'),'Block halten (kostet Mana)')+K(KH('sk1')+' '+KH('sk2'),'Fähigkeiten')+K(KH('potion'),'Heiltrank')+K(KH('use'),'Sprechen / Öffnen')+K(KH('lock'),'Ziel erfassen / wechseln')+K(KH('react'),'Reaktion (wenn ▲ erscheint)')+K('↑ ↓ ⏎','Befehlsleiste (⌫ zurück)')+K(KH('call'),'Rufen: Gefährten, Nautilux')+K(KH('form'),'Rissform')+K('4 5 6','IP-Techniken')+K(KH('tool')+' / '+KH('toolnext'),'Werkzeug benutzen / wechseln')+K(KH('naut'),'Nautilux')+K(KH('menu'),'Menü')+K('⚙️','Tasten frei belegen: unten unter ⌨️ Tastatur'))+'</div>'}
-function renderMenu(tab){mState.tab=tab;const t=$('tabs'),c=$('mcont');
+function renderMenu(tab){mState.tab=tab;const t=$('tabs'),c=$('mcont');menuChrome();
   if(mState.shop){if(mState.shopKind){TOWN.shop(c,t,mState.shopKind,mState.shopName,()=>renderMenu('shop'));return}t.innerHTML='<b style="color:var(--gold)">🎒 '+(mState.shopName||'Finns Laden')+'</b>';c.innerHTML=`<div class="row"><span>Deine Splitter</span><span>💎 ${S.shards}</span></div><div class="row"><span>Heiltränke</span><span>🧪 ${S.potions}</span></div><div id="shopl"><button data-n="1" data-c="20"><span>🧪 Heiltrank</span><span>20 💎</span></button><button data-n="3" data-c="55"><span>🧪🧪🧪 3 Heiltränke</span><span>55 💎</span></button></div>`;
     c.querySelectorAll('#shopl button').forEach(b=>{b.disabled=S.shards<+b.dataset.c;b.onclick=()=>buy(+b.dataset.n,+b.dataset.c)});extShop(c);return}
   t.innerHTML='';for(const [k,ic,n] of TABS.filter(q=>q[0]!=='travel'||S.stage>=8)){const b=document.createElement('button');b.innerHTML='<em>'+ic+'</em><span>'+n+'</span>';if(k===tab)b.className='on';b.onclick=()=>{sfx('ui');renderMenu(k)};t.appendChild(b)}{const on=t.querySelector('.on');if(on&&on.scrollIntoView)try{on.scrollIntoView({block:'nearest',inline:'nearest'})}catch(e){}}
@@ -1222,7 +1225,9 @@ function renderMenu(tab){mState.tab=tab;const t=$('tabs'),c=$('mcont');
   if(tab==='help')h+=controlsHTML()+INP.optionsHTML()+`<h3>Optionen</h3><div class="row"><span>📺 Fernbedienung (nur Pfeile, OK und Zurück)</span><span><button class="cpb" id="optRem">${REMOTE?'an – ausschalten':'aus – einschalten'}</button></span></div><div class="row"><span>🎰 Casino (Kristallslots, nur Spiel-Splitter)</span><span><button class="cpb" id="optCas">${S.cas&&S.cas.off?'aus – einschalten':'an – ausschalten'}</button></span></div>`;
   if(tab==='travel')h+=travelHTML();
   if(tab==='events')h+=XO.eventsHTML();if(tab==='home')h+=XO.homeHTML();if(tab==='chron')h+=XT.chronHTML();if(tab==='camp')h+=LF().campHTML()+XT.campHTML();if(tab==='coop')h+=coopHTML();if(tab==='equip')h+=equipHTML();if(tab==='felli')h+=felliHTML()+LF().soulHTML();if(tab==='skills')h=skHTML()+artHTML()+h+extSkillsHTML();
-  c.innerHTML=h;c.querySelectorAll('.trv').forEach(b=>b.onclick=()=>travel(+b.dataset.n));{const gc=c.querySelector('#goCas');if(gc)gc.onclick=()=>travel(3)}if(tab==='coop')coopBind();extBind(c,tab);LF().bind(c,tab,()=>renderMenu(tab));if(tab==='camp')XT.bind(c,()=>renderMenu('camp'));XO.bind(c,tab,()=>renderMenu(tab));if(tab==='help')INP.bindOptions(c,()=>renderMenu('help'));{const or=$('optRem');if(or)or.onclick=()=>{setRemote(!REMOTE,true);sfx('ui');toast(REMOTE?'📺 Fernbedienung an: ↑↓ laufen · ←→ drehen · OK Angriff/Aktion · Zurück Befehle':'📺 Fernbedienung aus');renderMenu('help')}}const oc=$('optCas');if(oc)oc.onclick=()=>{S.cas.off=!S.cas.off;sfx('ui');toast(S.cas.off?'🎰 Casino ausgeschaltet':'🎰 Casino eingeschaltet');saveGame(true);renderMenu('help')}}
+  c.innerHTML=h;c.querySelectorAll('.trv').forEach(b=>b.onclick=()=>travel(+b.dataset.n));
+  c.querySelectorAll('[data-tw]').forEach(b=>b.onclick=()=>{sfx('ui');mState.tw=+b.dataset.tw;renderMenu('travel')});{const o=c.querySelector('.wn.on');if(o)try{o.scrollIntoView({block:'nearest',inline:'center'})}catch(e){}}
+  c.querySelectorAll('[data-es]').forEach(b=>b.onclick=()=>{sfx('ui');mState.es=b.dataset.es;mState.ep='';renderMenu('equip')});c.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{const id=b.dataset.pick;if(mState.ep===id&&gearSet()[GEAR[id].s]!==id){equip(id);renderMenu('equip');return}sfx('ui');mState.ep=id;renderMenu('equip')});{const gc=c.querySelector('#goCas');if(gc)gc.onclick=()=>travel(3)}if(tab==='coop')coopBind();extBind(c,tab);LF().bind(c,tab,()=>renderMenu(tab));if(tab==='camp')XT.bind(c,()=>renderMenu('camp'));XO.bind(c,tab,()=>renderMenu(tab));if(tab==='help')INP.bindOptions(c,()=>renderMenu('help'));{const or=$('optRem');if(or)or.onclick=()=>{setRemote(!REMOTE,true);sfx('ui');toast(REMOTE?'📺 Fernbedienung an: ↑↓ laufen · ←→ drehen · OK Angriff/Aktion · Zurück Befehle':'📺 Fernbedienung aus');renderMenu('help')}}const oc=$('optCas');if(oc)oc.onclick=()=>{S.cas.off=!S.cas.off;sfx('ui');toast(S.cas.off?'🎰 Casino ausgeschaltet':'🎰 Casino eingeschaltet');saveGame(true);renderMenu('help')}}
 $('mResume').onclick=()=>toggleMenu(false);$('saveBtn').onclick=()=>saveGame();
 $('mSound').onclick=()=>{sndOn=!sndOn;if(master)master.gain.value=sndOn?.85:0;$('mSound').textContent=sndOn?'🔊 Ton an':'🔇 Ton aus';initAudio()};
 
@@ -1230,6 +1235,7 @@ $('mSound').onclick=()=>{sndOn=!sndOn;if(master)master.gain.value=sndOn?.85:0;$(
 let time=0,curZone='',autoT=0;
 const _cp=new T.Vector3(),_ct=new T.Vector3();let camPos=new T.Vector3(0,6,30);
 function updatePlayer(dt){
+  S.pt=(S.pt||0)+dt;
   {const mv=Math.hypot(pl.x-(X.ppx??pl.x),pl.z-(X.ppz??pl.z));X.pmove=mv>dt*.4||!!X.hook||pl.air;X.ppx=pl.x;X.ppz=pl.z}
   pl.hurtCd=Math.max(0,pl.hurtCd-dt);pl.pdCd=Math.max(0,(pl.pdCd||0)-dt);pl.iframes=Math.max(0,pl.iframes-dt);pl.comboT=Math.max(0,pl.comboT-dt);pl.sheath=Math.max(0,pl.sheath-dt);
   for(const k in pl.cd)pl.cd[k]=Math.max(0,pl.cd[k]-dt);
@@ -1272,6 +1278,7 @@ function animPlayer(dt){
   if(pl.spin>0){pl.spin-=dt;f.body.rotation.y=(1-pl.spin/.55)*Math.PI*2;f.arms[1].rotation.x=-1.6;f.arms[0].rotation.x=-1.6}
   if(pl.dead){f.body.rotation.z=1.3;f.body.position.y=.2}
   if(!pl.air&&!naut.on&&!pl.dead&&pl.mv>.45&&pl.atk<0){pl.stT=(pl.stT||0)-dt*Math.min(1.4,pl.mv);if(pl.stT<=0){pl.stT=.34;sfx('step');if(pl.mv>.85&&!inH)emit(pl.x,pl.y+.06,pl.z,0xd8d0c0,2,1,.3,.22,0)}}   /* Schritte: leise Tritte und etwas Staub */
+  {const wid=gearSet().w||'';if(f.handSword.userData.wid!==wid){WPNS.swap(f.handSword,wid);WPNS.swap(f.backSword,wid)}}
   const draw=pl.atk>=0||pl.spin>0||pl.sheath>0;f.handSword.visible=draw;f.backSword.visible=!draw;XO.player(f,dt,pl);
   auraL.position.set(pl.x,pl.y+2.2,pl.z);
 }
@@ -1607,7 +1614,9 @@ function switchWorld(n){
 }
 /* ---- Ladebild je Welt: Name, Untertitel, Zeichen in der Weltfarbe, ein Tipp ---- */
 const WTIPS=['Blocken im richtigen Moment wirft Gegner aus dem Takt.','Jede Figur hat ein eigenes Element. Schwächen treffen doppelt.','Tippe oben links auf einen Gefährten, um ihn selbst zu spielen.','Im Camp rasten füllt Leben und Mana und speichert.','Hinweistafeln in Ruinen zeigen die nächste Platte mit einer grünen Lichtsäule.','Im Casino spielst du nur um Splitter, nie um echtes Geld.','Weltwaffen verstärken die Figur, die zu einer Welt gehört.','Ausweichen im letzten Moment verlangsamt kurz die Zeit.','Lies Bücherregale in den Städten: Dort stehen Hinweise zur Welt.'];
-let WL=null;function wloadShow(n){const el=$('wload');if(!el)return;const mw=n>=MW_FIRST?MWX().W(n):null,C=n===1?{name:'Lunaris',sub:'Dorf am Mondblick'}:CHP[n]||{name:'?',sub:''},col=mw?mw.col:n===14?0xff6ab8:n===13?0xffa050:n===12?0x8a9aff:(C.glowc?C.glowc[0]:C.rift||0x8ad0ff);
+function wInfo(n){const mw=n>=MW_FIRST?MWX().W(n):null,C=mw?{name:mw.name,sub:mw.sub}:n===1?{name:'Lunaris',sub:'Dorf am Mondblick'}:n===13?{name:'Camp',sub:'Lagerfeuer der Weltenreisenden'}:n===14?{name:'Die Pixelpforte',sub:'Ein Abenteuer in 16 Bit'}:CHP[n]||{name:'?',sub:''};
+  return{name:C.name,sub:C.sub||'',em:mw?mw.em:n===14?'🕹️':n===13?'⛺':n===12?'💎':n===1?'🌙':'✦',kind:mw?'Märchenwelt':n===14?'16-Bit-Abenteuer':n>=12?'Vorwelt':n===11?'Endspiel':'Kapitel '+n}}
+let WL=null;function wloadShow(n){const el=$('wload');if(!el)return;const mw=n>=MW_FIRST?MWX().W(n):null,C=mw?{name:mw.name,sub:mw.sub}:n===1?{name:'Lunaris',sub:'Dorf am Mondblick'}:CHP[n]||{name:'?',sub:''},col=mw?mw.col:n===14?0xff6ab8:n===13?0xffa050:n===12?0x8a9aff:(C.glowc?C.glowc[0]:C.rift||0x8ad0ff);
   el.style.setProperty('--wc','#'+col.toString(16).padStart(6,'0'));$('wlE').textContent=mw?mw.em:n===14?'🕹️':n===13?'⛺':n===12?'💎':n===1?'🌙':'✦';$('wlK').textContent=mw?'Märchenwelt':n===14?'16-Bit-Abenteuer':n>=12?'Vorwelt':n===11?'Endspiel':'Kapitel '+n;
   $('wlN').textContent=C.name;$('wlS').textContent=C.sub||'';$('wlT').textContent='Tipp: '+WTIPS[(Math.random()*WTIPS.length)|0];const bar=el.querySelector('.wl-bar i');bar.style.animation='none';void bar.offsetWidth;bar.style.animation='';el.hidden=false;void el.offsetWidth;el.classList.add('on');WL=performance.now()}
 function wloadHide(){const el=$('wload');if(!el||el.hidden)return;const wait=Math.max(0,1300-(performance.now()-(WL||0)));setTimeout(()=>{el.classList.remove('on');setTimeout(()=>{el.hidden=true},380)},wait)}
@@ -1674,12 +1683,30 @@ const FLH=(()=>{const d=document.createElement('div');d.id='flt';d.hidden=true;d
   return{vec,show(a,b,m){$('flFrom').textContent='von '+a;$('flTo').textContent=(m==='sea'?'⛵ ':m==='walk'?'🥾 ':'')+'Kurs: '+b;d.querySelector('.fh').textContent=m?'Lenken: Stick / WASD / Joystick · Kisten und Ringe sammeln, Hindernissen ausweichen':'Ausweichen: Stick / WASD / Joystick · Feuer automatisch';d.hidden=false},update(o){$('flP').style.width=Math.round(o.prog*100)+'%';$('flHp').textContent=Math.round(o.hp);$('flGot').textContent=o.got},hide(){d.hidden=true}}})();
 const FL=createFlight({renderer,makeShip:()=>makeNaut(),makeWalker:()=>{const f=makeFox();return{root:f.root,anim:(t,mv)=>animFox(f,t,mv,false)}},inputVec:()=>{const v=inputVec();return(v[0]||v[1])?v:FLH.vec},sfx,hud:FLH});
 addEventListener('keydown',e=>{if(mode==='flight'&&(e.code==='Escape'||e.code==='Backspace')){e.preventDefault();FL.skip()}});
-function travelHTML(){let h='<h3>Weltentor</h3><p style="color:var(--dim);font-size:13px">Reise zu den Welten, die du schon geöffnet hast. Du kannst jederzeit zurückkehren.</p>';
-  h+=`<div class="row"><span>⛺ Vorwelt: Camp<br><small style="color:var(--dim)">Lagerfeuer der Weltenreisenden</small></span><span>${curCh===13?'<small>hier</small>':chOpen(13)?'<button class="trv" data-n="13">Reisen</button>':''}</span></div>`;
-  for(let n=1;n<=MAXCH;n++){const C=n===1?{name:'Lunaris',sub:'Der erste Riss'}:CHP[n],open=chOpen(n),dn=chDone(n),here=n===curCh;
-    h+=`<div class="row"><span>${dn?'✅':open?'🔓':'🔒'} ${n>10?'Endspiel':'Kapitel '+n}: ${C.name}<br><small style="color:var(--dim)">${open?C.sub:'Noch verschlossen'}</small></span><span>${here?'<small>hier</small>':open?`<button class="trv" data-n="${n}">Reisen</button>`:''}</span></div>`}
-  h+=MWX().travelRows(curCh);
-  h+=`<h3>🕹 Die Pixelpforte</h3><div class="row"><span>${S.fl.pix_done?'✅':chOpen(14)?'🔓':'🔒'} Ein Abenteuer in 16 Bit<br><small style="color:var(--dim)">${chOpen(14)?'Ein bunter Raum, ein Knopf – und dahinter eine Welt aus Pixeln':'Öffnet sich nach Kapitel 2'}</small></span><span>${curCh===14?'<small>hier</small>':chOpen(14)?'<button class="trv" data-n="14">Reisen</button>':''}</span></div>`;
+const MINI=createMinis({T,M,mk,G,glow});
+const hx=c=>'#'+((c||0)>>>0).toString(16).padStart(6,'0');
+function fmtPT(){const m=Math.floor((S.pt||0)/60);return Math.floor(m/60)+':'+String(m%60).padStart(2,'0')}
+/* Kopfzeile (Welt) und Figurenkarte des Menüs */
+function menuChrome(){const w=wInfo(curCh),hd=$('mhead'),ch=$('mchar');
+  if(hd)hd.innerHTML=`<b class="mh-t">MENÜ</b><span class="mh-w"><em>${w.em}</em><span><small>${w.kind}</small><b>${w.name}</b></span></span>`;
+  if(ch){const hp=Math.max(0,S.hp/maxHp()),mp=Math.max(0,S.mp/maxMp());ch.innerHTML=`<div class="mc-f" style="background-image:url(${FACE.zotik})"></div><div class="mc-i"><b>Zotik <small>Stufe ${S.lvl}</small></b><div class="mc-b hp"><i style="width:${hp*100}%"></i><span>LP ${Math.ceil(S.hp)} / ${maxHp()}</span></div><div class="mc-b mp"><i style="width:${mp*100}%"></i><span>MP ${Math.floor(S.mp)} / ${maxMp()}</span></div><div class="mc-s"><span>💎 ${S.shards}</span><span>⏱ ${fmtPT()}</span></div></div>`}}
+/* Weltreise als Sternenkarte: jede Welt ist eine kleine Insel, leuchtende Pfade verbinden die geöffneten Welten */
+function travelNodes(){const L=[],add=(n,x,y,o)=>L.push(Object.assign({n,x,y},o));
+  add(13,5,14,{open:chOpen(13)});
+  for(let n=1;n<=MAXCH;n++)add(n,5+(n-1)*9,n%2?60:36,{open:chOpen(n),done:chDone(n)});
+  add(14,23,12,{open:chOpen(14),done:!!S.fl.pix_done});
+  for(const w of MW){const s=MWX().st(w.id);add(w.n,9.5+(w.link-1)*9,86,{open:MWX().unlocked(w),done:!!s.done,mw:w,prog:(s.m||0)+'/'+w.ms.length})}
+  return L}
+function travelHTML(){const L=travelNodes(),P=n=>L.find(q=>q.n===n),sel=P(mState.tw)||P(curCh)||L[1];
+  const seg=(a,b,lit,cl)=>a&&b?`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" class="${cl||''}${lit?' lit':''}"/>`:'';
+  let sv='';for(let n=1;n<MAXCH;n++)sv+=seg(P(n),P(n+1),P(n).open&&P(n+1).open);
+  sv+=seg(P(13),P(1),P(13).open,'sd')+seg(P(14),P(2),P(14).open,'sd');
+  for(const q of L)if(q.mw)sv+=seg(P(q.mw.link),q,q.open,'sd')+seg(q,P(q.mw.link+1),q.open&&P(q.mw.link+1).open,'sd');
+  let h=`<div class="smap"><div class="smi"><svg viewBox="0 0 100 100" preserveAspectRatio="none">${sv}</svg>`;
+  for(const q of L){const w=wInfo(q.n),col=(ISLE[q.n]||{}).c||0x8ab8ff;
+    h+=`<button class="wn${q.mw?' mw':''}${q.open?'':' lock'}${q.done?' done':''}${q.n===curCh?' here':''}${q===sel?' on':''}" data-tw="${q.n}" style="left:${q.x}%;top:${q.y}%;--wc:${hx(col)}"><img src="${MINI.thumb(renderer,q.n)}" alt=""><span>${q.open?(q.mw?(ISLE[q.n]||w).n||w.name:w.name):'???'}</span>${q.n===curCh?'<b class="wh">●</b>':q.done?'<b class="wd">✓</b>':q.open?'':'<b class="wl">🔒</b>'}</button>`}
+  h+='</div></div>';
+  {const w=wInfo(sel.n),mpBlock=sel.mw&&MP.on;h+=`<div class="wsel" style="--wc:${hx((ISLE[sel.n]||{}).c)}"><img src="${MINI.thumb(renderer,sel.n)}" alt=""><div><small>${w.kind}${sel.done?' · ✅ abgeschlossen':''}</small><b>${sel.open?w.name:'Unbekannte Welt'}</b><p>${sel.open?w.sub+(sel.mw?' · '+sel.prog+' Aufträge':''):sel.mw?'Öffnet sich nach '+wInfo(sel.mw.link).name:'Noch verschlossen'}</p></div><span>${sel.n===curCh?'<small>Du bist hier</small>':sel.open&&!mpBlock?`<button class="trv" data-n="${sel.n}">Reisen ▸</button>`:sel.open?'<small>nicht im Koop</small>':''}</span></div>`}
   // Casino direkt aus dem Menü (vorher nur als Gebäude in Kapitel 3 – viele fanden es nicht)
   h+=`<h3>🎰 Golden Star Casino</h3><div class="row"><span>Begehbares Casino in Valdoria: Kristallslots, Sternenrad, Höher oder Tiefer – nur Spiel-Splitter, kein Echtgeld<br><small style="color:var(--dim)">${S.cas&&S.cas.off?'Geräte ausgeschaltet – einschalten bei Stella am Eingang oder unter Steuerung → Optionen':'Westlich vom Marktplatz, das Haus mit dem goldenen Stern'}</small></span><span>${chOpen(3)&&curCh!==3?'<button class="cpb" id="goCas">Hinreisen</button>':curCh===3?'du bist in Valdoria':'ab Kapitel 3'}</span></div>`;
   return h}
@@ -2366,7 +2393,7 @@ function buildWorld(n){HST=HSTY[n]||HSTY[1];
     if(e.hall)return hallKill(e);
     if(e.wm)return wmKill(e);
     if(e.echo){S.fl['echo'+n]=(S.fl['echo'+n]||0)+1;$('boss').hidden=true;boss=null;const g=S.fl['echo'+n]===1?pick(['w_ur','a_ur','c_ur']):'';if(g)giveGear(g);const sh=300+n*80;S.shards+=sh;banner('Echo besiegt','Ein Splitter der Erinnerung');toast('💎 +'+sh+(g?' · 🎁 '+GEAR[g].n:''));saveGame(true)}else
-    if(e.boss){s.bd=1;guestBye(n);WPX().bossDone(n,WLD.path,hgt);$('boss').hidden=true;banner(C.X[0]+' besiegt',C.name+' atmet auf');if(s.st<=5)stage(6);setTimeout(()=>cutscene(cut.def||'-',()=>{if(CUT['RB'+n]&&!S.fl['rb'+n]){S.fl['rb'+n]=1;cutscene('RB'+n,()=>saveGame(true))}}),1500);for(const o of E)if(o.summoned&&!o.boss&&!o.mini&&!o.dead){o.hp=0;killE(o)}saveGame(true)}
+    if(e.boss){s.bd=1;guestBye(n);WPX().bossDone(n,WLD.path,hgt);$('boss').hidden=true;banner(C.X[0]+' besiegt',C.name+' atmet auf');if(s.st<=5)stage(6);setTimeout(()=>cutscene(cut.def||'-',()=>{if(CUT['RB'+n]&&!S.fl['rb'+n]){S.fl['rb'+n]=1;cutscene('RB'+n,()=>{if(!(S.inv&&S.inv.w_schl)){S.inv.w_schl=1;X.deck.dirty=true;sfx('level');banner('Splitterschlüssel','Eine Klinge aus Kernsplittern');toast('🗝️ Splitterschlüssel erhalten · wird mit jedem Kernsplitter stärker')}saveGame(true)})}}),1500);for(const o of E)if(o.summoned&&!o.boss&&!o.mini&&!o.dead){o.hp=0;killE(o)}saveGame(true)}
     else if(e.mini){if(s.st<=4){banner(C.M[0]+' besiegt','Das Siegel bricht');sfx('level');stage(5);etapIn(1,()=>{refresh();toast('📜 '+objText())})}}
     else if(s.st===2){if(hunting()){s.k++;if(s.k>=HUNT)etapIn(0,()=>stage(3));else refresh()}else if(MIS==='elite'&&e.elite)misStep()}};
   WLD.zoneEnter=function(z){const s=cs();if(z==='forest'&&s.st===1){s.m=MIS?0:1;s.mc=0;s.k=0;stage(2);setupMission()}if(z==='cave'&&!s.bd&&s.st>=5)WLD.ensureBoss()};
@@ -2773,7 +2800,7 @@ function mpSpawnReq(a){for(const r of a){if(!ED[r.k]||E.some(q=>!q.dead&&q.k===r
 var X={lock:null,rx:null,rxCd:0,q:[],buff:{shield:0,mana:0},form:{on:0,k:0},fe:{cd:1,hcd:10,t:null},tcd:0,bombs:[],hook:null,push:{t:0,o:null},deck:{sub:null,sel:0,dirty:true,t:0},caveLeaving:false,fromCave:false,ruinT:0};
 var OB=[];
 const inCave=()=>!!(S.cave&&S.cave.run);
-function sx(){if(!S.gear)S.gear={w:'',a:'',c:''};if(!S.inv)S.inv={};if(!S.felli)S.felli={lv:1,xp:0,on:1};if(!S.tools)S.tools=[];if(S.tool==null)S.tool=0;if(!S.cave)S.cave={best:0,f:1,seed:1};if(!S.items)S.items={ether:0,fruit:0};
+function sx(){if(!S.gear)S.gear={w:'',a:'',c:''};if(!S.inv)S.inv={};if(!S.inv.w_schl&&S.fl&&(S.fl.rb2||(S.cd&&S.cd[2]&&S.cd[2].fin)))S.inv.w_schl=1;if(!S.felli)S.felli={lv:1,xp:0,on:1};if(!S.tools)S.tools=[];if(S.tool==null)S.tool=0;if(!S.cave)S.cave={best:0,f:1,seed:1};if(!S.items)S.items={ether:0,fruit:0};
   for(const k of ['ip','rg','tg','fk'])if(S[k]==null)S[k]=0;if(!S.obst)S.obst={};
   for(const [n,t] of Object.entries(CH_TOOL))if(chDone(+n)&&!S.tools.includes(t))S.tools.push(t)}
 /* ---------------- Ausrüstung ---------------- */
@@ -2784,6 +2811,7 @@ const GEAR={
  w_stern:{n:'Sternenklinge',s:'w',atk:30,ip:{n:'Sternenfall',c:120,f:'starfall'},p:2000,tier:9},
  w_maer:{n:'Erzählerklinge',s:'w',atk:38,crit:.05,ip:{n:'Weltenschnitt',c:150,f:'worldcut'},rare:1},
  w_ur:{n:'Uralte Klinge',s:'w',atk:42,ip:{n:'Weltenschnitt',c:150,f:'worldcut'},rare:1},
+ w_schl:{n:'Splitterschlüssel',s:'w',get atk(){return 14+6*kernN()},crit:.04,mp:20,ip:{n:'Splitterstrahl',c:110,f:'starfall'},key:1},
  a_wander:{n:'Wanderweste',s:'a',def:6,hp:20,ip:{n:'Schutzschild',c:60,f:'shield'},p:100,tier:1},
  a_rinde:{n:'Rindenpanzer',s:'a',def:11,hp:50,ip:{n:'Wurzelgriff',c:70,f:'roots'},p:260,tier:2},
  a_koralle:{n:'Korallenmantel',s:'a',def:16,hp:90,ip:{n:'Gezeitenheilung',c:90,f:'tide'},p:800,tier:5},
@@ -2795,6 +2823,7 @@ const GEAR={
  c_glocke:{n:'Kapselglocke',s:'c',felli:1.5,ip:{n:'Felli-Ruf',c:60,f:'fellicall'},tier:4},
  c_glueck:{n:'Glücksring',s:'c',luck:1,ip:{n:'Splitterregen',c:100,f:'shardrain'},tier:8},
  c_ur:{n:'Uralter Ring',s:'c',crit:.1,mp:60,ip:{n:'Rissecho',c:120,f:'riftecho'},rare:1}};
+const kernN=()=>{let k=0;for(let i=2;i<=8;i++)if(S.fl&&S.fl['rb'+i])k++;return k};
 const SLOTN={w:'Waffe',a:'Rüstung',c:'Schmuck'},IPMAX=200;
 const gearSet=()=>inCave()?S.cave.run.gear:(S.gear||{});
 const invSet=()=>inCave()?S.cave.run.inv:(S.inv||{});
@@ -3359,10 +3388,25 @@ holdBtn('bSpec',()=>{if(S.tools.length)useTool();else specPop()},specPop);
 holdBtn('bLock',()=>lockCycle(),()=>{lockOff();toast('🎯 Zielerfassung aus')});
 /* ---------------- Menü-Seiten ---------------- */
 function statLine(d){const a=[];if(d.atk)a.push('Angriff +'+d.atk);if(d.def)a.push('Abwehr '+d.def+'%');if(d.hp)a.push('Leben +'+d.hp);if(d.mp)a.push('Mana +'+d.mp);if(d.crit)a.push('Krit +'+Math.round(d.crit*100)+'%');if(d.felli)a.push('Felli ×'+d.felli);if(d.luck)a.push('Glück');return a.join(' · ')}
-function equipHTML(){const g=gearSet(),I=invSet();let h=`<h3>Ausrüstung${inCave()?' (Höhlenlauf)':''}</h3><div class="row"><span>IP-Leiste</span><span>${Math.floor(S.ip)} / ${IPMAX}</span></div>`;
-  for(const s of ['w','a','c']){const d=GEAR[g[s]];h+=`<div class="row"><span><b>${SLOTN[s]}:</b> ${d?d.n+upTag(g[s])+'<br><small style="color:var(--dim)">'+statLine(d)+' · IP '+d.ip.n+' ('+d.ip.c+')</small>':'–'}</span><span>${d?`<button class="cpb" data-uq="${s}">Ablegen</button>`:''}</span></div>`;
-    for(const id of Object.keys(I).filter(k=>GEAR[k]&&GEAR[k].s===s&&k!==g[s]))h+=`<div class="row"><span>▫️ ${GEAR[id].n}${upTag(id)}${I[id]>1?' ×'+I[id]:''}<br><small style="color:var(--dim)">${statLine(GEAR[id])} · IP ${GEAR[id].ip.n}</small></span><span><button class="cpb" data-eq="${id}">Ausrüsten</button></span></div>`}
-  h+='<p style="color:var(--dim);font-size:13px">Die IP-Leiste füllt sich, wenn Zotik getroffen wird (und etwas bei eigenen Treffern). IP-Techniken: Tasten 4, 5, 6, Kommandomenü bzw. Spezial-Taste ⟡. Ausrüstung findest du in Truhen, Läden, Werkzeug-Ruinen und blauen Truhen der Echogrotte.</p>';return h}
+const GEMI={a_wander:'🧥',a_rinde:'🪵',a_koralle:'🐚',a_frost:'❄️',a_stern:'🌌',a_ur:'🗿',c_mond:'🌙',c_amul:'🦊',c_glocke:'🔔',c_glueck:'🍀',c_ur:'💠'},SLOTI={w:'⚔️',a:'🛡️',c:'💍'};
+function gearImg(id,s){if(s==='w'){const u=WPNS.thumb(renderer,id||'');if(u)return `<img src="${u}" alt="">`}return `<em>${GEMI[id]||SLOTI[s]}</em>`}
+function gv(id,k){const d=GEAR[id];if(!d||!d[k])return 0;return k==='atk'||k==='def'||k==='hp'?Math.round(d[k]*(1+.15*((!inCave()&&S.up&&S.up[id])||0))):d[k]}
+/* Ausrüstung wie im JRPG: oben die drei Plätze mit Bild, links die Auswahl, rechts großes Bild und Werte-Vergleich */
+function equipHTML(){const g=gearSet(),I=invSet(),s=mState.es||'w',own=Object.keys(I).filter(k=>GEAR[k]&&GEAR[k].s===s&&I[k]>0),pk=mState.ep&&GEAR[mState.ep]&&GEAR[mState.ep].s===s&&I[mState.ep]?mState.ep:g[s]||own[0]||'';
+  let h=`<div class="eqv"><div class="eqs">`;
+  for(const k of ['w','a','c']){const id=g[k],d=GEAR[id];h+=`<button class="eqslot${k===s?' on':''}" data-es="${k}"><i class="eqi">${gearImg(id,k)}</i><span><small>${SLOTN[k]}</small>${d?d.n+upTag(id):k==='w'?'Reiseklinge':'– frei –'}</span></button>`}
+  h+=`</div><div class="eqg"><div class="eql">`;
+  for(const id of own){const d=GEAR[id];h+=`<button class="eqit${id===pk?' on':''}" data-pick="${id}"><i class="eqi">${gearImg(id,s)}</i><span>${d.n}${upTag(id)}${I[id]>1?' ×'+I[id]:''}</span>${id===g[s]?'<b class="eqE">E</b>':''}</button>`}
+  if(!own.length)h+=`<p class="eqn">Noch nichts für diesen Platz. Truhen, Läden und Ruinen halten mehr bereit.</p>`;
+  h+=`</div><div class="eqc">`;
+  if(pk){const d=GEAR[pk];h+=`<div class="eqbig">${gearImg(pk,s)}</div><b class="eqname">${d.n}${upTag(pk)}</b><small class="eqip">✦ IP-Technik: ${d.ip.n} (${d.ip.c} IP)</small>`;
+    if(d.key)h+=`<small class="eqip">🗝️ Kernsplitter ${kernN()} / 7 · jeder macht ihn stärker</small>`;
+    h+='<div class="eqst">';
+    for(const [k,l,pc] of [['atk','Angriff'],['def','Abwehr','%'],['hp','Leben'],['mp','Mana'],['crit','Krit','%']]){const a=gsum(k),b=a-gv(g[s],k)+gv(pk,k),f=v=>k==='crit'?Math.round(v*100)+'%':v+(pc||'');if(!a&&!b)continue;
+      h+=`<div><span>${l}</span><b>${f(a)}</b><i>▸</i><b class="${b>a?'up':b<a?'dn':''}">${f(b)}${b>a?' ▲':b<a?' ▼':''}</b></div>`}
+    h+='</div>'+(pk===g[s]?`<button class="cpb" data-uq="${s}">Ablegen</button>`:`<button class="cpb eqgo" data-eq="${pk}">Ausrüsten</button>`)}
+  h+=`</div></div><div class="eqip2"><span>IP-Leiste</span><i><b style="width:${Math.min(100,S.ip/IPMAX*100)}%"></b></i><span>${Math.floor(S.ip)} / ${IPMAX}</span></div>
+  <p style="color:var(--dim);font-size:13px">Die IP-Leiste füllt sich, wenn Zotik getroffen wird (und etwas bei eigenen Treffern). IP-Techniken: Tasten 4, 5, 6, Kommandomenü bzw. Spezial-Taste ⟡. Die ausgerüstete Waffe trägt Zotik sichtbar auf dem Rücken und in der Hand.</p></div>`;return h}
 function felliHTML(){const f=S.felli,st=fStage(),nx=FST[st+1];let h=`<h3>${LF().em()} Felli · ${FST[st][0]}</h3><div class="row"><span>Stufe</span><span>${f.lv} / 20</span></div><div class="row"><span>Erfahrung</span><span>${Math.floor(f.xp)} / ${fNeed()}</span></div>
   <div class="row"><span>Angriff</span><span>${Math.round(felliDmg())}${st>=2?' (Fläche)':''}</span></div><div class="row"><span>Nächste Entwicklung</span><span>${nx?nx[0]+' ab Stufe '+nx[1]:'– voll entwickelt'}</span></div>
   <div class="row"><span>Kämpft mit</span><span><button class="cpb" id="fOn">${f.on?'an – ausschalten':'aus – einschalten'}</button></span></div><h3>Füttern</h3>
@@ -3426,4 +3470,4 @@ function drawOb(mx){if(pl.z>300){mx.fillStyle='#2a2a3e';mx.fillRect(-13,333,26,3
 ensureBoss();
 camTarget.set(0,2,12);
 requestAnimationFrame(frame);
-if(/[?&]debug\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))window.__zotik={set noRender(v){frame.off=!!v},PX:()=>PX(),WP:()=>WPX(),RIDE:()=>RIDEX(),doHit:()=>doHit(),pixEnter:()=>pixEnter(),get mode(){return mode},INP,T,platWall,MWX:()=>MWX(),FXH:()=>FXH,TOWN,NPC,NQ,killE,E,resetEnemy,RMS,refreshQuest,ARTS,artOn,get WR(){return WRU},WRN,WM,wmStart,guestBye,guestArrive,partyPick,setLead,ruinGuard,leadSkill2,CSK2,WWG,cwOf,fox,profJoin,miraJoin,recruit,skill1,skill2,ZON,BKIT,MKIT,startAtk,ED,zone,artThorn,artGust,artFrost,artBolt,artStar,startAttack,dodge,keys,skR,skFree,spawnEnemy,PLAT,jump,dunEnter,dunLeave,DUNF,dunWin(){if(X.dun)dunLeave(true)},get dun(){return X.dun},get WLD(){return WLD},get jp(){return WLD?WLD.jp:JP1},setCam(y,pt,di){camYaw=y;if(pt!=null)camPitch=pt;if(di!=null)camDist=di},AF,NZ,EPX,nautTo,pl,joy,inputVec,CR:()=>CR(),get goTo(){return goTo},get steer(){return steer},set steer(v){steer=v},get mode(){return mode},startNew(){S=DEF();S.ch=13;S.x=0;S.z=1;mode='play';begin(true)},startDbg(){S=DEF();for(let n=2;n<=10;n++)S.fl['wr'+n]=1;S.cos={fur:cr.fur,scarf:cr.scarf,outfit:cr.outfit};mode='play';begin(true)},X,OB,GEAR,TOOLS,lockCycle,doReaction,teamAttack,formStart,ipUse,useTool,toolNext,caveEnter,caveNext,caveExit,LF:()=>LF(),get CUT(){return CUT},giveGear,equip,feed,felliXp,deckExec,deckMove,deckOpen,ruinGo,get CAVE_DOOR(){return CAVE_DOOR},spellHeal,useEther,fStage,findRx,proj,maxHp:()=>maxHp(),atkV:()=>atkV(),toBunt,BUNT_URL,get qLv(){return qLv},setQ,get naut(){return naut},pushOut,INST,blocked,hgt,pBlocked,COL,HOUSES,PZD,CUT,openPuzzle,closePuzzle,cutscene,joinParty,CMP,lunOpen,spawnOrun,get puzOpen(){return puzOpen},get W(){return WLD},get ch(){return curCh},INT,CHP,switchWorld,travel,ARENA,herbs,chests,drops,projs,step:(dt,n)=>{for(let i=0;i<n;i++){time+=dt;for(const o of animObjs)o.fn(time,dt);update(dt);updParticles(dt)}},cam:(y,p,d)=>{camYaw=y;camPitch=p;camDist=d},S:()=>S,pl,E,NPC,begin,say,toast,setStage,hurtP,get boss(){return boss},camera,scene,renderer,skill1,skill2,startAttack,dodge,interact,keys,MP,mpMsg,mpSend,mpHost,mpJoin,mpTick,variantCos,sharedFlat,spawnEnemy,hurtE,killE,get boss2(){return boss},toggleMenu,renderMenu,XT,XO};
+if(/[?&]debug\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))window.__zotik={set noRender(v){frame.off=!!v},WPNS,MINI,get mState(){return mState},PX:()=>PX(),WP:()=>WPX(),RIDE:()=>RIDEX(),doHit:()=>doHit(),pixEnter:()=>pixEnter(),get mode(){return mode},INP,T,platWall,MWX:()=>MWX(),FXH:()=>FXH,TOWN,NPC,NQ,killE,E,resetEnemy,RMS,refreshQuest,ARTS,artOn,get WR(){return WRU},WRN,WM,wmStart,guestBye,guestArrive,partyPick,setLead,ruinGuard,leadSkill2,CSK2,WWG,cwOf,fox,profJoin,miraJoin,recruit,skill1,skill2,ZON,BKIT,MKIT,startAtk,ED,zone,artThorn,artGust,artFrost,artBolt,artStar,startAttack,dodge,keys,skR,skFree,spawnEnemy,PLAT,jump,dunEnter,dunLeave,DUNF,dunWin(){if(X.dun)dunLeave(true)},get dun(){return X.dun},get WLD(){return WLD},get jp(){return WLD?WLD.jp:JP1},setCam(y,pt,di){camYaw=y;if(pt!=null)camPitch=pt;if(di!=null)camDist=di},AF,NZ,EPX,nautTo,pl,joy,inputVec,CR:()=>CR(),get goTo(){return goTo},get steer(){return steer},set steer(v){steer=v},get mode(){return mode},startNew(){S=DEF();S.ch=13;S.x=0;S.z=1;mode='play';begin(true)},startDbg(){S=DEF();for(let n=2;n<=10;n++)S.fl['wr'+n]=1;S.cos={fur:cr.fur,scarf:cr.scarf,outfit:cr.outfit};mode='play';begin(true)},X,OB,GEAR,TOOLS,lockCycle,doReaction,teamAttack,formStart,ipUse,useTool,toolNext,caveEnter,caveNext,caveExit,LF:()=>LF(),get CUT(){return CUT},giveGear,equip,feed,felliXp,deckExec,deckMove,deckOpen,ruinGo,get CAVE_DOOR(){return CAVE_DOOR},spellHeal,useEther,fStage,findRx,proj,maxHp:()=>maxHp(),atkV:()=>atkV(),toBunt,BUNT_URL,get qLv(){return qLv},setQ,get naut(){return naut},pushOut,INST,blocked,hgt,pBlocked,COL,HOUSES,PZD,CUT,openPuzzle,closePuzzle,cutscene,joinParty,CMP,lunOpen,spawnOrun,get puzOpen(){return puzOpen},get W(){return WLD},get ch(){return curCh},INT,CHP,switchWorld,travel,ARENA,herbs,chests,drops,projs,step:(dt,n)=>{for(let i=0;i<n;i++){time+=dt;for(const o of animObjs)o.fn(time,dt);update(dt);updParticles(dt)}},cam:(y,p,d)=>{camYaw=y;camPitch=p;camDist=d},S:()=>S,pl,E,NPC,begin,say,toast,setStage,hurtP,get boss(){return boss},camera,scene,renderer,skill1,skill2,startAttack,dodge,interact,keys,MP,mpMsg,mpSend,mpHost,mpJoin,mpTick,variantCos,sharedFlat,spawnEnemy,hurtE,killE,get boss2(){return boss},toggleMenu,renderMenu,XT,XO};

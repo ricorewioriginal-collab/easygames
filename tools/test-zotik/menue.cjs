@@ -22,11 +22,11 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); 
   s = await st(); ok(/Ausrüstung/.test(s.tab), 'Reiter „Ausrüstung“ erreicht');
   await tap(15); s = await st();
   ok(s.zone === 'content', '→ springt in den Inhalt: ' + s.foc);
-  for (let k = 0; k < 8 && !/Ausrüsten/.test((await st()).foc); k++) await tap(13);
+  for (let k = 0; k < 8 && !/Dornenschwert/.test((await st()).foc); k++) await tap(13);
   s = await st(); const before = s.eq;
-  ok(/Ausrüsten/.test(s.foc), '↓ wählt „Ausrüsten“');
-  await tap(0, 400); s = await st();
-  ok(s.eq !== before && s.zone === 'content', 'A rüstet aus, Auswahl bleibt im Inhalt: ' + s.eq);
+  ok(/Dornenschwert/.test(s.foc), '↓ wählt das Dornenschwert in der Liste: ' + s.foc);
+  await tap(0, 400); await tap(0, 400); s = await st();   // A wählt (Vergleich rechts), zweites A rüstet aus
+  ok(s.eq !== before && s.zone === 'content', 'A, A rüstet aus, Auswahl bleibt im Inhalt: ' + s.eq);
   if (process.argv[2]) await shot(p, process.argv[2]);
   await tap(14); for (let k = 0; k < 3 && (await st()).zone !== 'tabs'; k++) await tap(14);
   s = await st(); ok(s.zone === 'tabs' && /Ausrüstung/.test(s.foc), '← am linken Rand führt zurück zu den Reitern');
