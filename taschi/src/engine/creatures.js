@@ -56,8 +56,11 @@ function creatureMaterial() {
   return new THREE.MeshToonMaterial({ vertexColors: true, gradientMap: toonGradient(), emissive: 0x000000 });
 }
 
+// Weitere Bauarten melden sich hier an (models.js: Taschis aus 3D-Modellen)
+export const creatureFactories = {};
 export function createCreature(id, { outline = true, shiny = false } = {}) {
   const sp = SPECIES[id];
+  if (sp.look?.plan && creatureFactories[sp.look.plan]) return creatureFactories[sp.look.plan](id, { outline, shiny });
   if (sp.look && sp.look.plan === 'zotik') return createZotikCreature(sp, outline);
   const look = sp.look || { plan: 'quad', colors: [sp.color, shade(sp.color, 0.7), 0xf6eee0], features: {}, size: 1 };
   const sig = sp.lineage !== undefined ? signature(id, sp, look) : null;

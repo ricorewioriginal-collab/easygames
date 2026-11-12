@@ -1,4 +1,4 @@
-// TASCHI species catalogue – 260 species.
+// TASCHI species catalogue – 260 species plus 57 model species (Quaternius).
 // IDs and names are identical to version 1 so existing saves remain valid.
 // Visual "look" descriptions drive the procedural creature builder; every
 // family shares a design language and gains features with each stage.
@@ -376,6 +376,62 @@ const EXTENDED = {
     'Sporenfürst verbindet die Wurzeln eines ganzen Waldes. Es hört, was jeder Baum flüstert.', 'curious')
 };
 
+// ---------------------------------------------------------------------------
+// Neue Arten mit 3D-Modellen (Ultimate Monsters Bundle von Quaternius, CC0,
+// assets/models). look.model = Dateiname; look.tint = Farbton (Grad) und
+// Glanz für Entwicklungen, die dasselbe Modell größer und umgefärbt nutzen.
+// Angehängt: Dex-Nummern der bisherigen Arten bleiben gleich.
+// ---------------------------------------------------------------------------
+const M = (id, name, type, type2, model, size, tint, behavior, bio, stage, stages, evo) => {
+  const total = stages === 2 && stage === 2 ? 470 : { 1: 300, 2: 440, 3: 520 }[stage], sh = STAT_SHAPE[behavior];
+  const [hp, atk, def, speed] = sh.map(x => Math.round(total * x));
+  return { [id]: { name, type, ...(type2 ? { type2 } : {}), color: MODEL_COLOR[model] || 0x9a8a7a, hp, atk, def, speed, catch: stage === 1 ? 0.42 : stage === 2 && stages === 3 ? 0.2 : 0.12,
+    moves: [TYPE_MOVESET[type][0], type2 ? TYPE_MOVESET[type2][0] : 'stoss'], look: { plan: 'model', model, size, ...(tint ? { tint } : {}), colors: [MODEL_COLOR[model] || 0x9a8a7a, 0x333333, 0xf4eee2], features: {} },
+    bio, behavior, ...(evo ? { evo } : {}) } };
+};
+const STAT_SHAPE = { shy: [.24, .22, .28, .26], curious: [.25, .25, .25, .25], playful: [.23, .25, .22, .30], aggressive: [.23, .31, .23, .23], sleepy: [.30, .22, .30, .18] };
+const MODEL_COLOR = { mushnub: 0xd9534f, mushnub2: 0xc94a4a, mushking: 0xb03a48, alpaking: 0xf2e6d0, alpaking2: 0xe8d8b8, armabee: 0xf5c242, armabee2: 0xe0a830, glub: 0x6ec6e8, glub2: 0x4aa0d8,
+  goleling: 0x9a9a9a, goleling2: 0x7a7a80, dragon: 0xd8542e, dragon2: 0xb83a24, ghost: 0xe8ecf4, ghostskull: 0xd8d8d0, greenblob: 0x78c850, spikyblob: 0x58a840, pinkblob: 0xf09ab8,
+  cactoro: 0x6aa84f, cactoro2: 0x4f8f3a, fish: 0x5aa8e0, fish2: 0x3a88c8, yeti: 0xf0f4f8, yeti2: 0xdde6f0, alien: 0x8ad058, alien2: 0x6ab848, demon: 0xd84a3a, demon2: 0xb83a2e, bluedemon: 0x4a7ad8,
+  ninja: 0x3a3a4a, ninja2: 0x2a2a3a, orc: 0x7aa858, orc2: 0x5a8840, pigeon: 0x9aa4b8, birb: 0x6ab0e8, chicken: 0xf4f0e8, cat: 0xe8a858, bunny: 0xf0e0d0, frog: 0x68b848, dino: 0x58a858,
+  hywirl: 0x9ad0f0, monkroose: 0xb08858, squidle: 0xc88ad8, tribal: 0xa8683a, wizard: 0x6a58c8 };
+const MODEL_LINES = [
+  [["hutzel", "Hutzel", "pflanze", null, "mushnub", 0.7, null, "shy", "Hutzel versteckt sich unter seinem Pilzhut, sobald es Schritte hört. Im Regen tanzt es heimlich."], ["hutzelhut", "Hutzelhut", "pflanze", null, "mushnub2", 1.0, null, "curious", "Hutzelhut verstreut nachts leuchtende Sporen, damit sich verirrte Wanderer zurechtfinden."], ["pilzkoenig", "Pilzkönig", "pflanze", "geist", "mushking", 1.45, null, "sleepy", "Der Pilzkönig herrscht über einen ganzen Waldboden. Wo er schläft, wachsen Ringe aus Pilzen."]],
+  [["alpuff", "Alpuff", "flug", "eis", "alpaking", 0.8, null, "playful", "Alpuff schwebt auf seiner dicken Wolle wie auf einer Wolke und kitzelt Bergwanderer an der Nase."], ["alpakron", "Alpakron", "flug", "eis", "alpaking2", 1.3, null, "curious", "Mit seiner Krone aus Wolle führt Alpakron ganze Herden über die Gipfel. Sein Ruf hallt durch jedes Tal."]],
+  [["brummsel", "Brummsel", "flug", "pflanze", "armabee", 0.65, null, "playful", "Brummsel trägt ein Panzerhemd aus Blütenblättern und bewacht Blumenwiesen gegen gierige Naschkatzen."], ["brummritter", "Brummritter", "flug", "gestein", "armabee2", 1.1, null, "aggressive", "Brummritter schmiedet seine Rüstung aus Bernstein. Kein Stachel ist schneller als seiner."]],
+  [["glubbi", "Glubbi", "wasser", null, "glub", 0.7, null, "curious", "Glubbi schwimmt durch die Luft, als wäre sie Wasser. Es blubbert fröhlich, wenn es Besuch bekommt."], ["glubbadon", "Glubbadon", "wasser", "geist", "glub2", 1.25, null, "sleepy", "Glubbadon gleitet durch Nebelbänke. Seefahrer folgen seinem Leuchten zurück in den Hafen."]],
+  [["kieselchen", "Kieselchen", "gestein", null, "goleling", 0.75, null, "shy", "Kieselchen rollt sich zu einem runden Stein zusammen. Kinder stapeln es manchmal versehentlich auf Mauern."], ["felsgoliath", "Felsgoliath", "gestein", "erde", "goleling2", 1.55, null, "sleepy", "Felsgoliath schläft jahrhundertelang. Wacht es auf, verschieben sich ganze Hügel."]],
+  [["drakelino", "Drakelino", "feuer", null, "dragon", 0.9, null, "playful", "Drakelino übt Feuerspeien, bekommt aber meist nur Rauchkringel heraus. Dafür sind sie besonders schön."], ["drakoflamm", "Drakoflamm", "feuer", "flug", "dragon2", 1.6, null, "aggressive", "Drakoflamm zieht flammende Bahnen über den Abendhimmel. Seine Schwingen tragen es über jeden Vulkan."]],
+  [["huschel", "Huschel", "geist", null, "ghost", 0.7, null, "shy", "Huschel versteckt sich in Schränken und erschrickt sich meistens selbst am meisten."], ["schaedelspuk", "Schädelspuk", "geist", null, "ghostskull", 1.1, null, "aggressive", "Schädelspuk trägt einen alten Knochenhelm. Wer ihn sieht, hört ein leises Klappern im Wind."]],
+  [["schleimi", "Schleimi", "pflanze", null, "greenblob", 0.6, null, "playful", "Schleimi hüpft über Moos und hinterlässt glitzernde Spuren. Es schmeckt nach Minze, sagen mutige Kinder."], ["stachelschleim", "Stachelschleim", "pflanze", "gestein", "spikyblob", 1.0, null, "aggressive", "Wird Stachelschleim gereizt, stellt es harte Kristallstacheln auf."]],
+  [["glibber", "Glibber", "wasser", null, "pinkblob", 0.6, null, "playful", "Glibber wackelt bei jedem Schritt und lacht dabei so ansteckend, dass alle mitlachen müssen."], ["glibberella", "Glibberella", "wasser", "geist", "pinkblob", 1.05, [330, "glow"], "curious", "Glibberella schimmert im Mondlicht in allen Rosatönen. Sie kann sich durch schmale Ritzen quetschen."]],
+  [["kaktino", "Kaktino", "pflanze", null, "cactoro", 0.7, null, "shy", "Kaktino steht stundenlang still in der Sonne. Seine Blüte öffnet sich nur für Freunde."], ["kaktoron", "Kaktoron", "pflanze", "erde", "cactoro2", 1.25, null, "aggressive", "Kaktoron verteidigt Oasen in der Wüste. Seine Stacheln schießt es zielgenau ab."]],
+  [["flossi", "Flossi", "wasser", null, "fish", 0.65, null, "playful", "Flossi springt aus dem Wasser, um Schmetterlinge zu fangen, und landet meist mit einem großen Platsch."], ["flossbert", "Flossbert", "wasser", null, "fish2", 1.2, null, "curious", "Flossbert hat gelernt, an Land zu laufen. Er besucht gern Fischerhütten und klopft höflich an."]],
+  [["zottelchen", "Zottelchen", "eis", null, "yeti", 0.8, null, "curious", "Zottelchen rollt sich in Schneewehen und kommt als dicker Schneeball wieder heraus."], ["frostzottel", "Frostzottel", "eis", "normal", "yeti2", 1.45, null, "sleepy", "Frostzottel brummt so tief, dass Eiszapfen von den Dächern fallen. Eigentlich ist es aber sehr sanft."]],
+  [["sternling", "Sternling", "elektro", null, "alien", 0.7, null, "curious", "Sternling fiel als Sternschnuppe vom Himmel. Seine Fühler empfangen Lieder aus dem All."], ["kosmolino", "Kosmolino", "elektro", "geist", "alien2", 1.2, null, "playful", "Kosmolino funkt mit fernen Sternen. In klaren Nächten antwortet manchmal einer."]],
+  [["funkobold", "Funkobold", "feuer", null, "demon", 0.75, null, "playful", "Funkobold fliegt um Lagerfeuer und klaut Marshmallows, bevor sie verbrennen."], ["feuerkobold", "Feuerkobold", "feuer", "geist", "demon2", 1.3, null, "aggressive", "Feuerkobold bewacht alte Schmieden. Sein Lachen klingt wie knisternde Glut."]],
+  [["eiskobold", "Eiskobold", "eis", "geist", "bluedemon", 0.95, null, "playful", "Eiskobold malt Eisblumen an Fenster und kichert, wenn jemand staunt."], ["frostkobold", "Frostkobold", "eis", "geist", "bluedemon", 1.35, [200, "glow"], "aggressive", "Frostkobold lässt Seen in Sekunden zufrieren, um darauf Schlittschuh zu laufen."]],
+  [["ninjo", "Ninjo", "normal", null, "ninja", 0.7, null, "shy", "Ninjo übt jeden Tag, unsichtbar zu sein. Meistens verrät es sein Kichern."], ["schattenninjo", "Schattenninjo", "normal", "flug", "ninja2", 1.2, null, "aggressive", "Schattenninjo bewegt sich lautlos von Dach zu Dach und taucht nur auf, wenn jemand Hilfe braucht."]],
+  [["grunzel", "Grunzel", "erde", null, "orc", 0.8, null, "aggressive", "Grunzel gräbt mit bloßen Händen Tunnel und sammelt glänzende Steine."], ["grunzbrocken", "Grunzbrocken", "erde", "gestein", "orc2", 1.45, null, "aggressive", "Grunzbrocken ist stark wie ein Bergrutsch, aber teilt seine Beute immer mit den Kleinen."]],
+  [["gurri", "Gurri", "flug", null, "pigeon", 0.6, null, "curious", "Gurri läuft Wanderern hinterher, in der Hoffnung auf ein paar Krümel."], ["piepgurr", "Piepgurr", "flug", "elektro", "birb", 1.0, null, "playful", "Piepgurr singt jeden Morgen das Dorf wach – pünktlich, ob man will oder nicht."]],
+  [["gackel", "Gackel", "normal", null, "chicken", 0.6, null, "playful", "Gackel legt keine Eier, behauptet aber steif und fest, es könne es jederzeit."], ["goldgackel", "Goldgackel", "normal", "flug", "chicken", 1.05, [45, "glow"], "aggressive", "Goldgackel glänzt in der Sonne wie ein Schatz. Es fliegt erstaunlich weit für ein Huhn."]],
+  [["miezo", "Miezo", "normal", null, "cat", 0.65, null, "sleepy", "Miezo schläft am liebsten auf warmen Dächern und schnurrt dabei wie ein kleiner Motor."], ["mieztiger", "Mieztiger", "normal", "feuer", "cat", 1.15, [28, "glow"], "aggressive", "Mieztiger schleicht durch hohes Gras und springt mit einem einzigen Satz über jeden Bach."]],
+  [["hoppla", "Hoppla", "normal", null, "bunny", 0.75, null, "playful", "Hoppla springt so hoch, dass es manchmal in Baumkronen landet und nicht mehr herunter will."], ["hopplord", "Hopplord", "normal", "erde", "bunny", 1.3, [290, "glow"], "aggressive", "Hopplord trommelt mit den Hinterläufen, bis die Erde bebt. Alle Hasen der Gegend hören auf ihn."]],
+  [["quakon", "Quakon", "wasser", "pflanze", "frog", 0.75, null, "sleepy", "Quakon sitzt auf Seerosen und quakt Gute-Nacht-Lieder für den ganzen Teich."], ["quakkoenig", "Quakkönig", "wasser", "pflanze", "frog", 1.3, [150, "glow"], "curious", "Der Quakkönig trägt einen Krönchenkamm. Wenn er quakt, verstummt jeder andere Frosch."]],
+  [["rexi", "Rexi", "erde", null, "dino", 0.8, null, "playful", "Rexi stampft stolz durch die Steppe, auch wenn seine Ärmchen kaum an die eigene Nase reichen."], ["rexodon", "Rexodon", "erde", "feuer", "dino", 1.5, [10, "glow"], "aggressive", "Rexodon lebt am Rand von Vulkanen. Sein Brüllen lässt Geröll von den Hängen rollen."]],
+  [["wirbelchen", "Wirbelchen", "flug", "elektro", "hywirl", 0.7, null, "playful", "Wirbelchen dreht sich so schnell, dass es kleine Windhosen erzeugt und Laub tanzen lässt."], ["sturmwirbel", "Orkanwirbel", "flug", "elektro", "hywirl", 1.25, [60, "glow"], "aggressive", "Sturmwirbel reitet auf Gewitterwolken. Blitze folgen ihm wie treue Begleiter."]],
+  [["mungolo", "Mungolo", "erde", null, "monkroose", 0.75, null, "curious", "Mungolo klettert flink auf Felsen und hält Ausschau nach allem, was glänzt."], ["mungoroo", "Mungoroo", "erde", "gestein", "monkroose", 1.3, [25, "glow"], "aggressive", "Mungoroo verteidigt sein Revier mit blitzschnellen Sprüngen und lautem Kreischen."]],
+  [["tintel", "Tintel", "wasser", "geist", "squidle", 0.7, null, "shy", "Tintel versteckt sich in einer Wolke aus Glitzertinte, wenn es sich erschreckt."], ["tintoktopus", "Tintoktopus", "wasser", "geist", "squidle", 1.3, [260, "glow"], "sleepy", "Tintoktopus malt mit seiner Tinte Bilder an Höhlenwände, die erst im Dunkeln leuchten."]],
+  [["maskerl", "Maskerl", "geist", "feuer", "tribal", 0.75, null, "curious", "Maskerl trägt eine geschnitzte Maske. Niemand hat je gesehen, was darunter ist."], ["maskerado", "Maskerado", "geist", "feuer", "tribal", 1.3, [0, "glow"], "aggressive", "Maskerado tanzt um Feuerstellen. Mit jedem Schritt wechselt seine Maske die Farbe."]],
+  [["zauberwicht", "Zauberwicht", "geist", "elektro", "wizard", 0.7, null, "curious", "Zauberwicht wedelt mit seinem Stab und hofft, dass etwas passiert. Manchmal regnet es dann Funken."], ["erzzauberer", "Erzzauberer", "geist", "elektro", "wizard", 1.25, [275, "glow"], "sleepy", "Der Erzzauberer liest in den Sternen. Seine Zauber knistern wie ein Gewitter in der Ferne."]],
+];
+const EVO_LEVEL = { 2: [26], 3: [18, 34] };
+const MODELS = {};
+for (const line of MODEL_LINES) line.forEach(([id, name, type, type2, model, size, tint, behavior, bio], i) => {
+  const next = line[i + 1], lv = EVO_LEVEL[line.length][i];
+  Object.assign(MODELS, M(id, name, type, type2, model, size, tint ? { hue: tint[0], glow: tint[1] === 'glow' } : null, behavior, bio, i + 1, line.length, next ? { to: next[0], level: lv } : null));
+});
+
 // Final ordered catalogue (dex order identical to v1, expansion appended)
 // Zotik: Klon des Fuchs-Helden aus dem Spiel „Zotik“. Bei einem missglückten Experiment unter Professor Ulmes Glaskuppel
 // riss ein Lichtspalt auf; heraus kam ein Taschi, das genauso aussieht wie Zotik. Legendär, angehängt (Dex-Nummern bleiben).
@@ -385,7 +441,7 @@ const ZOTIK = {
     bio: 'Ein Fuchs mit grünem Schal und Schwert – das genaue Abbild des Abenteurers Zotik. Es entstand, als ein Experiment von Professor Ulme schiefging und ein Lichtspalt ein Spiegelbild aus einer anderen Welt nach Sonnenhain warf.',
     behavior: 'curious', ancient: true, origin: 'Sonnenhain – Professor Ulmes Experiment' }
 };
-export const SPECIES = { ...CORE, ...GENERATED, ...ANCIENTS, ...SCHNURRIK, ...EXTENDED, ...ZOTIK };
+export const SPECIES = { ...CORE, ...GENERATED, ...ANCIENTS, ...SCHNURRIK, ...EXTENDED, ...ZOTIK, ...MODELS };
 export const SPECIES_IDS = Object.keys(SPECIES);
 SPECIES_IDS.forEach((id, i) => {
   const s = SPECIES[id];
