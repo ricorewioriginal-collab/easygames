@@ -19,6 +19,7 @@ import { PROFILES } from '../engine/renderer.js';
 import { ACTIONS, ACTION_LABELS } from '../core/input.js';
 import * as Cheats from '../logic/cheats.js';
 import { openCheats } from './cheats.js';
+import { openRadio } from './radio.js';
 
 const TABS = [['team', 'Team'], ['dex', 'Taschidex'], ['bag', 'Tasche'], ['quests', 'Quests'], ['map', 'Karte'], ['card', 'Trainer'], ['options', 'Optionen'], ['system', 'System']];
 export const fmtTime = (s) => Math.floor(s / 3600) + ' h ' + String(Math.floor(s / 60) % 60).padStart(2, '0') + ' min';
@@ -80,6 +81,7 @@ const TAB_RENDER = {
       h('div.row', {}, h('button.btn.focusable', { onclick: () => game.openCamp() }, '⛺ Taschi-Camp'), h('span.muted', {}, ' Streicheln, spielen, füttern: Zuneigung stärkt im Kampf.')),
       h('div.row', {}, h('button.btn.focusable', { onclick: () => game.openOnline() }, '🌐 Online: Tauschen & Kämpfen'), h('span.muted', {}, ' Mit Freunden per Link, QR-Code oder Code – von überall.')),
       game.coop?.open ? h('div.row', {}, h('span.pill', {}, '🤝 Koop mit ' + game.coop.peer.name), ' ', h('button.btn.focusable', { onclick: () => { game.ui.clear(); game.coop.wave(); } }, '👋 Winken'), h('button.btn.focusable', { onclick: () => game.coopLobby() }, '🔁 Tauschen/Kämpfen'), h('button.btn.focusable', { onclick: () => { game.coop.end(); rerender(); } }, '✕ Koop beenden')) : null,
+      h('div.row', {}, h('button.btn.focusable', { onclick: () => openRadio(game) }, '📻 Abenteurer-Radio'), h('span.muted', {}, game.radio?.station ? ' Läuft: ' + game.radio.station.title + ' (' + game.radio.station.name + ')' : ' 13 echte Sender live statt Spielmusik.')),
       h('div.row', {}, h('button.btn.focusable', { onclick: () => game.openPhoto() }, '📷 Fotomodus'), h('button.btn.focusable', { onclick: () => game.flyMenu() }, '🕊 Fliegen'), h('span.muted', {}, ' Fotos mit Filtern und Posen · Auf einem Flug-Taschi zu besuchten Orten fliegen.')),
       h('p.muted', {}, 'Im Lager: ' + s.box.length + ' Taschis · Lager im Heilzentrum verwalten.'));
   },
@@ -180,6 +182,7 @@ const TAB_RENDER = {
       h('h3', {}, 'Audio'),
       row('Musik', slider('musicVolume', 0, 1, 0.1, pct)), row('Effekte', slider('sfxVolume', 0, 1, 0.1, pct)), row('Umgebung', slider('ambienceVolume', 0, 1, 0.1, pct)),
       row('Ton', cycle('muted', [false, true], ['An', 'Stumm'])),
+      row('Radio', h('button.chip.focusable', { onclick: () => openRadio(game) }, game.radio?.station ? '📻 ' + game.radio.station.title : '📻 Abenteurer-Radio …')),
       row('Stimmen', cycle('voice', [true, 'babble', false], ['🗣 Sprache', '💬 Plappern', 'Aus'])), row('Stimmprobe', h('button.chip.focusable', { onclick: () => { ui.audio?.unlock?.(); const who = ui.voice.sample(ui._sample = (ui._sample ?? -1) + 1); ui.toast('🗣 ' + who); } }, '▶ Anhören')), row('Stimme', slider('voiceVolume', 0, 1, 0.1, pct)), row('Sprechtempo', cycle('voiceRate', [0.9, 1, 1.15], ['Ruhig', 'Normal', 'Flott'])),
       h('h3', {}, 'Steuerung'),
       row('Textgeschw.', cycle('textSpeed', [1, 2, 3], ['Langsam', 'Normal', 'Schnell'])),

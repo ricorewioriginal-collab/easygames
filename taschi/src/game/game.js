@@ -8,6 +8,8 @@ import { Preview } from '../engine/preview.js';
 import { Settings } from '../core/settings.js';
 import { Input } from '../core/input.js';
 import { Audio } from '../core/audio.js';
+import { Radio } from '../core/radio.js';
+import { radioTicker } from '../ui/radio.js';
 import { createRng } from '../core/rng.js';
 import { UI, h } from '../ui/ui.js';
 import { lookForRole } from '../engine/characters.js';
@@ -72,6 +74,8 @@ export class Game {
     this.sky.onThunder = () => this.audio.sfx('thunder');
     this.battleScene = new BattleScene(this);
     this.hud = new HUD(this);
+    this.radio = new Radio(this.settings, this.audio);
+    this.radioBar = radioTicker(this);
     this.hud.show(false);
     this.save = newSave();
     this.busy = 0;
@@ -83,7 +87,7 @@ export class Game {
     });
     this.clock = new THREE.Clock();
     this.autosaveT = 0; this.titleT = 0;
-    const unlock = () => this.audio.unlock();
+    const unlock = () => { this.audio.unlock(); this.radio.resume(); };
     addEventListener('pointerdown', unlock); addEventListener('keydown', unlock);
     document.addEventListener('visibilitychange', () => { if (document.hidden && this.state === STATES.WORLD) this.saveNow(); });
     addEventListener('pagehide', () => { if (this.state === STATES.WORLD) this.saveNow(); });
@@ -454,6 +458,7 @@ export class Game {
       if (worldActive) this.worldInput();
       if (this.state === STATES.WORLD) this.tickTime(dt);
       const disco = (this.state === STATES.WORLD || this.state === STATES.BATTLE) && Cheats.isOn(this.save, 'disco');
+      this.radio.update(dt); this.radioBar.update(this.state === STATES.WORLD || this.state === STATES.BATTLE);
       if (disco !== !!this.cheatDisco) { this.cheatDisco = disco; document.body.classList.toggle('cheat-disco', disco); }
       if (this.state === STATES.BATTLE) {
         const bs = this.battleScene;

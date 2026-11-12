@@ -161,6 +161,14 @@
         "Kampf: Unbesiegbar, Ein-Treffer-K.O., Unendlich AP, Fang-Garantie, EP ×10. Welt: Immer schillernd, Keine wilden Begegnungen, Turbo-Lauf, Geistmodus (draußen durch Hindernisse), Fliegen ohne Siegel, Gratis einkaufen, Zeit anhalten. Effekte: Riesenmodus, Winzling, Regenbogen-Welt, Sternen-Aura.",
         "Im Online-Kampf wirken keine Cheats."
       ]
+    },
+    {
+      "t": "📻 Abenteurer-Radio",
+      "p": [
+        "Menü › Team › „📻 Abenteurer-Radio“ (oder Optionen › Audio › Radio). Wähle einen der 13 echten Sender, er ersetzt die Spielmusik. Nochmal antippen oder „⏹ Aus“ bringt die Spielmusik zurück.",
+        "Jeder Sender hat einen Abenteuer-Namen, darunter steht der echte Sender: Lichterfunk (RicoReWi Radio), Wanderwind FM (YourTime FM), Arena-Beats (Rapradio 24), Moostal-Melodien (Schlagerpop 24), Siegel-Charts (Chartradio 24), Sternennest-Club (Clubradio 24), Taschi-Treff (AnMaCha 24), Kleine Taschis (Radiofloh), Glutland-Rock (Rockradio 24), Raureif-Weihnacht (Christmasradio 24), Zeitkapsel-Kult (Kultradio 24), Abenteuer-Zocker (Zocker FM), Himmelslicht Spezial (Special Radio). Quelle: laut.fm.",
+        "Oben im Bild steht immer der aktuelle Titel, er wechselt live mit jedem Song. Die Lautstärke stellst du mit − und + ein; „Bei Dialogen leiser“ senkt das Radio automatisch, solange jemand spricht. Das Radio braucht Internet."
+      ]
     }
   ],
   "ratgeber": [
@@ -403,6 +411,10 @@
     {
       "q": "Wie mache ich Cheats wieder rückgängig?",
       "a": "Im Cheat-Menü (Menü › System) den Schalter wieder auf AUS stellen oder „⟲ Alle Cheats aus“ wählen. Geschenkte Taschis, Level und Items werden dabei wieder entfernt; was du selbst gefangen oder gekauft hast, bleibt."
+    },
+    {
+      "q": "Das Radio spielt nicht.",
+      "a": "Das Radio braucht eine Internetverbindung. Tippe einmal ins Spiel, damit der Browser Ton erlaubt. Ist ein Sender gerade nicht erreichbar, wähle einen anderen."
     }
   ]
 }
