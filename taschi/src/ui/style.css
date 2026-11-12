@@ -139,6 +139,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 #joy.active { border-color: #ffe08a; }
 #nub { border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #d4e4ee); box-shadow: 0 4px 12px rgba(0,0,0,.35); }
 .tbtns { position: absolute; bottom: calc(26px + var(--safe-b)); right: calc(22px + var(--safe-r)); display: grid; grid-template-columns: auto auto; gap: 12px; align-items: end; pointer-events: none; }
+.tstack { display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
 body[data-hand="right"] .tbtns { right: auto; left: calc(22px + var(--safe-l)); }
 .tbtn { pointer-events: auto; width: 66px; height: 66px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 20px; color: #fff; background: rgba(20, 40, 70, .55); border: 3px solid rgba(255,255,255,.75); backdrop-filter: blur(6px); touch-action: none; box-shadow: 0 4px 12px rgba(0,0,0,.3); }
 .tbtn.a { width: 84px; height: 84px; background: linear-gradient(160deg, #ffd96a, #f2a83a); color: var(--ink); font-size: 15px; text-align: center; line-height: 1.1; padding: 6px; }

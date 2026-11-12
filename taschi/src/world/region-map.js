@@ -44,12 +44,13 @@ export async function buildRegionMap(L, { quality, onProgress = () => {}, save }
   await frame();
 
   // ---------------------------------------------------------------- water
+  const surfaces = [];   // Wasseroberflächen (Surfen: Höhe per Strahl)
   for (const w of L.water) {
     if (w.kind === 'lake' || w.kind === 'ice') {
       const geo = new THREE.CircleGeometry(1, 48);
       const mat = w.kind === 'ice' ? new THREE.MeshPhongMaterial({ color: 0xd8f0fa, shininess: 120, specular: 0xffffff, transparent: true, opacity: 0.92 }) : waterMaterial(w.swamp ? 0x4f7a5a : pal.water);
       const m = new THREE.Mesh(geo, mat); m.rotation.x = -Math.PI / 2; m.scale.set(w.rx + 0.6, w.rz + 0.6, 1);
-      m.position.set(w.cx, w.kind === 'ice' ? -0.25 : L.waterLevel, w.cz); m.receiveShadow = true; root.add(m);
+      m.position.set(w.cx, w.kind === 'ice' ? -0.25 : L.waterLevel, w.cz); m.receiveShadow = true; root.add(m); if (w.kind === 'lake') surfaces.push(m);
     } else if (w.kind === 'river' || w.kind === 'lava') {
       const pts = w.pts, pos = [], idx = [];
       for (let i = 0; i < pts.length; i++) {
@@ -58,15 +59,15 @@ export async function buildRegionMap(L, { quality, onProgress = () => {}, save }
         const bank = Math.min(H(x + ox * 1.3, z + oz * 1.3), H(x - ox * 1.3, z - oz * 1.3));
         const y = Math.max(bank - 0.45, H(x, z) + 0.6);
         pos.push(x + ox, y, z + oz, x - ox, y, z - oz);
-        if (i) { const a = (i - 1) * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+        if (i) { const a = (i - 1) * 2; idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); }   // gegen den Uhrzeigersinn von oben: Flussoberfläche zeigt nach oben
       }
       const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
       const mat = w.kind === 'lava' ? new THREE.MeshBasicMaterial({ color: 0xff6a2a }) : waterMaterial(pal.water);
       if (w.kind === 'lava') { mat.onBeforeCompile = (s) => { s.uniforms.uTime = { value: 0 }; }; animators.push((t) => mat.color.setHSL(0.04 + Math.sin(t * 2) * 0.01, 1, 0.5 + Math.sin(t * 3) * 0.05)); }
-      const m = new THREE.Mesh(g, mat); m.receiveShadow = true; root.add(m);
+      const m = new THREE.Mesh(g, mat); m.receiveShadow = true; root.add(m); if (w.kind === 'river') surfaces.push(m);
     } else if (w.kind === 'sea' || w.kind === 'bay') {
       const m = new THREE.Mesh(new THREE.PlaneGeometry(600, 600, 1, 1), waterMaterial(pal.water, { opacity: 0.9 }));
-      m.rotation.x = -Math.PI / 2; m.position.y = L.waterLevel - (w.cliff ? 6 : 0); root.add(m);
+      m.rotation.x = -Math.PI / 2; m.position.y = L.waterLevel - (w.cliff ? 6 : 0); root.add(m); surfaces.push(m);
     } else if (w.kind === 'clouds') {
       const cm = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), new THREE.MeshLambertMaterial({ color: 0xfaf4ff, emissive: 0x6a6080, emissiveIntensity: 0.25 }));
       cm.rotation.x = -Math.PI / 2; cm.position.y = -26; root.add(cm);
@@ -310,7 +311,7 @@ export async function buildRegionMap(L, { quality, onProgress = () => {}, save }
   const grid = buildWalkGrid(L);
   onProgress(0.95, 'Bereit');
   return {
-    root, layout: L, grid, interact, animators, dynamic, field, palette: pal, region: r,
+    root, layout: L, grid, surfaces, interact, animators, dynamic, field, palette: pal, region: r,
     height: (x, z) => H(x, z),
     update(t, dt, camera, focus) { for (const a of animators) a(t, this.night || 0); this.visibleChunks = field.update(camera, focus); }
   };

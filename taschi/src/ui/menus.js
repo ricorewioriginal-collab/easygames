@@ -201,8 +201,8 @@ const TAB_RENDER = {
 const PAD_LAYOUT_NAMES = { switch: 'Nintendo Switch (A bestätigt, B zurück)', xbox: 'Xbox / PlayStation (unten bestätigt)', custom: 'Eigene Belegung' };
 // Eine Bedienung für alle Geräte: dieselben Aktionen auf Tastatur, Controller und Touch
 function controlsTable(game) {
-  const inp = game.input, touch = { up: 'Joystick', confirm: 'Antippen / Aktion', back: '✕ oben rechts', menu: '☰', run: '🏃', team: '◉', map: '🗺', tabPrev: 'Reiter antippen', camLeft: 'Wischen' };
-  const rows = [['up', 'Bewegen / Auswahl'], ['confirm', 'Bestätigen / Sprechen'], ['back', 'Zurück / Abbrechen'], ['menu', 'Menü'], ['run', 'Rennen (halten)'], ['team', 'Team'], ['map', 'Karte'], ['tabPrev', 'Reiter wechseln'], ['camLeft', 'Kamera drehen']];
+  const inp = game.input, touch = { up: 'Joystick', confirm: 'Antippen / Aktion', back: '✕ oben rechts', menu: '☰', run: '🏃', ride: '🐾', team: '◉', map: '🗺', tabPrev: 'Reiter antippen', camLeft: 'Wischen' };
+  const rows = [['up', 'Bewegen / Auswahl'], ['confirm', 'Bestätigen / Sprechen'], ['back', 'Zurück / Abbrechen'], ['menu', 'Menü'], ['run', 'Rennen (halten)'], ['ride', 'Reiten / Absteigen'], ['team', 'Team'], ['map', 'Karte'], ['tabPrev', 'Reiter wechseln'], ['camLeft', 'Kamera drehen']];
   const key = (a) => a === 'up' ? 'WASD / Pfeile' : a === 'tabPrev' ? inp.keyLabel('tabPrev').split(' / ')[0] + ' / ' + inp.keyLabel('tabNext').split(' / ')[0] : a === 'camLeft' ? 'Maus ziehen, ' + inp.keyLabel('camLeft') + '/' + inp.keyLabel('camRight') : a === 'confirm' ? inp.keyLabel(a) + ', Linksklick' : a === 'back' ? inp.keyLabel(a) + ', Rechtsklick' : inp.keyLabel(a);
   const pad = (a) => a === 'up' ? 'L-Stick / Steuerkreuz' : a === 'tabPrev' ? inp.padLabel('tabPrev') + ' / ' + inp.padLabel('tabNext') : a === 'camLeft' ? 'R-Stick, ' + inp.padLabel('camLeft') + '/' + inp.padLabel('camRight') : inp.padLabel(a);
   return h('div.ctrltable', {}, h('b', {}, 'Aktion'), h('b', {}, 'Tastatur & Maus'), h('b', {}, 'Controller'), h('b', {}, 'Touch'),
