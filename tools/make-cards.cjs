@@ -18,7 +18,7 @@ const CARDS = {
   'anmacha-quest-rpg': ['CHRONIK DER SPHÄREN', ['AETHE-', 'RION'], '⚔️', ['🐉', '🏰']],
   'anmacha-snake': ['ANMACHA · 3D', ['SNAKE', '3D'], '🐍', ['🍎', '💎']],
   'anmacha-tower-defense': ['ANMACHA · 3D', ['TOWER', 'DEFENSE'], '🗼', ['🛡️', '👾']],
-  'anmacha-markthalle': ['ANMACHA · 3D', ['MARKTHALLE', '24'], '🛒', ['🥫', '🍎']],
+  'anmacha-markthalle': ['SUPERMARKT · 3D', ['MARKT', 'RAUSCH'], '🛒', ['🥫', '🍎']],
   'anmacha-urwaldlager': ['DIE WILDNIS-SHOW', ['URWALD-', 'LAGER'], '🌴', ['🔥', '🦜']],
   'anmacha-spielesammlung': ['ANMACHA · 3D', ['SPIELE-', 'SAMMLUNG'], '🎲', ['♟️', '🎯']],
   'anmacha-kartenrausch': ['ANMACHA · 3D', ['KARTEN-', 'RAUSCH'], '🃏', ['🌈', '🎯']],
