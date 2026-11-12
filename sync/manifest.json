@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "541510467be4",
- "generated": "2026-11-12T12:12:25+00:00",
- "commit": "a512d69c9343ed3c70a2c605eb9bfcc8d37be23d",
+ "version": "b49fc0eee53e",
+ "generated": "2026-11-12T12:41:07+00:00",
+ "commit": "807d231d6c79284f8a414cf76ce50e9a88ed11ae",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6258,8 +6258,8 @@
   },
   {
    "p": "guides/zotik.json",
-   "s": 57696,
-   "h": "7cc11130c7c3c031ab0facdd892b91cf1dd65deef7e76154b92a2724b4bf13d6"
+   "s": 58954,
+   "h": "a0ff08f0f4af2fb88b670a019f46e9572906fe6466f851372d625f7acbf2e92f"
   },
   {
    "p": "heute.html",
@@ -8844,7 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 257559,
-   "h": "53b1061f58df2c1c7934f4004be7f3d68de5346db184e3862b65d576e5b35468"
+   "h": "d5708169e11bf5b806969c600d0b064b65c507488efc7044289e410541b227ac"
   },
   {
    "p": "taschi/assets/models/alien.glb",
@@ -9198,13 +9198,13 @@
   },
   {
    "p": "taschi/src/engine/characters.js",
-   "s": 36741,
-   "h": "8fe84b2b2c6005c4a6d25372e38dfeed77f534720dd2a06da702c99db2665778"
+   "s": 37833,
+   "h": "c231c33dac4d1b1e45f2038485d354db3445c8b226a95387a39e00d520c85bd4"
   },
   {
    "p": "taschi/src/engine/creatures.js",
-   "s": 38899,
-   "h": "ac101a81ec3370f61e4857130bcfc9c14fd9ab4ba9950ad633066ea386f96791"
+   "s": 39597,
+   "h": "ecfa961b66a81b7faa3e1a28f551f0d76456a5300062eef1e8c4b114494848d9"
   },
   {
    "p": "taschi/src/engine/geometry.js",
@@ -9213,13 +9213,13 @@
   },
   {
    "p": "taschi/src/engine/materials.js",
-   "s": 10235,
-   "h": "1d432a88038a8bf29ce2b88cd943a6761ef4af60562e4ea2aa428e214276ba67"
+   "s": 12319,
+   "h": "42fe21ebfc1c4a16e2979980afdda5dc5bc547612551ba6fa279648f09e8a13c"
   },
   {
    "p": "taschi/src/engine/models.js",
-   "s": 8509,
-   "h": "db634e58082ca5620571a5e68a410050e7f83ca1c85c90c336a36af5d3230662"
+   "s": 8519,
+   "h": "328d9682a5ec6f7cf161f35c94b063c0afb75e238629f30e3a1bb3970af92e55"
   },
   {
    "p": "taschi/src/engine/post.js",
@@ -9268,8 +9268,8 @@
   },
   {
    "p": "taschi/src/game/battle-scene.js",
-   "s": 47557,
-   "h": "b16b64d5e385042b013606fbf4a89af51614dc0621bd59a847ac9cc79d1a4042"
+   "s": 47626,
+   "h": "40c79ffd6918f6e0781c70f45b6235e32ae9de92831973efc02f269c687d0b6f"
   },
   {
    "p": "taschi/src/game/game.js",
@@ -11082,9 +11082,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-CcPqaayl.js",
-   "s": 1453034,
-   "h": "b955f592df0d42ab2490327d56c1d8b6c91dbd5cf42a6b25277eb8f7eceedf1f"
+   "p": "zotik/assets/index-TN0IQRsN.js",
+   "s": 1470563,
+   "h": "52b5df48dd97002c4eeb39a2db199822fad73e15b72e63496832f2807994282c"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -11104,7 +11104,7 @@
   {
    "p": "zotik/index.html",
    "s": 52484,
-   "h": "385051beefca1b7068451f4f06742cc8ef5383b8cdb6ef315a6f6072c6030996"
+   "h": "6c182c12fc81d3e664fdfda56126b56480232168379918aba60025a817ff1330"
   },
   {
    "p": "zotik/manifest.webmanifest",

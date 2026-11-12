@@ -117,6 +117,22 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       for (const [x, z] of [[42, -4], [36, -17], [24, -4], [46, -12]]) { b.cyl(x, 0, z, 2.2, 2, 0xb08a5a, { solid: 1 }); b.cone(x, 2, z, 2.9, 2.2, 0xc8b070, {}); b.box(x, 0, z + 2.18, .9, 1.5, .06, 0x3a2a1a, { cast: false }); }
       for (const [x, z] of [[30, -1], [40, -11], [27, -12]]) { for (let i = 0; i < 6; i++) b.ico(x + Math.cos(i) * .8, .15, z + Math.sin(i) * .8, .22, .18, .22, 0x6a6458); A.fire(x, z, .7); }
       for (const [x, z, r] of [[48, -24, .4], [52, -18, 1.6], [44, -28, 2.8]]) { const g = A.creature('eber', 0x3a3a3e, 1.2); g.position.set(x, b.h(x, z), z); g.rotation.y = r; b.addCol(x, z, 1.1); }
+      // Friedensfelsen (Wasserfrieden): flacher Fels am Wasserloch, Hathis Ruheplatz
+      b.ico(-88, .3, -2, 4.6, 1.6, 3.6, 0x8a7a64, { solid: 1, mat: { r: 1 } }); for (let i = 0; i < 7; i++) b.ico(-80 + Math.cos(i) * 9, .3, -4 + Math.sin(i) * 8, .9, .6, .8, 0x6a6458, { solid: 1 });
+      // Bienenfelsen: zerklüftete Felsen voller Waben, summende Lichtpunkte
+      K.cliff([[-82, -96, 4, 7], [-70, -100, 4.6, 8], [-62, -92, 3.4, 6], [-84, -84, 3, 5]], 0x7a6a58);
+      for (let i = 0; i < 16; i++) { const x = -74 + Math.cos(i * .9) * (6 + i % 3), z = -94 + Math.sin(i * .9) * 4; b.sph(x, 2 + (i % 4) * .9, z, .5, .7, .4, 0xd8a030, { mat: { e: 0x8a5a10, ei: .8 }, cast: false }); }
+      for (let i = 0; i < 8; i++) b.glow(0xffd040, 1.2, -74 + Math.cos(i * 2.3) * 7, 3 + (i % 3), -92 + Math.sin(i * 2.3) * 5, .7);
+      // Schatzgewölbe unter den Kalten Höhlen: Torbogen, Goldhaufen, Kobra-Statue
+      K.arch(66, -86, 5, 4.6, 0x8a8a78, 0, .9); K.wall(60, -100, 72, -100, 4, 1.2, 0x8a8a78); K.wall(58, -88, 58, -100, 4, 1.2, 0x8a8a78); K.wall(74, -88, 74, -100, 4, 1.2, 0x8a8a78);
+      for (let i = 0; i < 9; i++) b.sph(62 + (i % 3) * 3, .2, -96 + Math.floor(i / 3) * 2.4, .9, .45, .9, 0xd8b040, { mat: { m: .9, r: .3, e: 0x6a4a10, ei: .5 }, cast: false });
+      b.cyl(66, 0, -98, .5, 3.2, 0xe8e4d8, { solid: 1 }); b.sph(66, 3.3, -97.6, .6, .5, .45, 0xe8e4d8); b.glow(0xffe08a, 6, 66, 1.5, -94, .4);
+      // Büffelschlucht (Tiger! Tiger!): zwei Felswände, Büffelherde am Hang
+      K.cliff([[64, 4, 3, 7], [64, -8, 3.4, 8], [64, -20, 3, 7], [86, 2, 3, 7], [86, -10, 3.6, 8], [86, -22, 3, 6]], 0x8a7a64);
+      for (const [x, z, r] of [[70, -2, .2], [76, 0, -.4], [80, -6, .8], [72, -14, 2.8], [78, -18, 3.1]]) { const g = A.creature('eber', 0x2a2a2e, 1.4); g.position.set(x, b.h(x, z), z); g.rotation.y = r; b.addCol(x, z, 1.2); }
+      // Bungalow (Rikki-tikki-tavi): weißes Haus mit Veranda und Garten
+      K.house(-50, 42, 9, 7, 3.2, 0xf0ece0, 0x8a3a2a, .3, {}); for (let i = 0; i < 4; i++) b.cyl(-54 + i * 2.6, 0, 46.5, .12, 3, 0xe8e0d0, { lo: 1, solid: 1 });
+      for (let i = 0; i < 10; i++) b.ico(-40 + Math.cos(i * .63) * 6, .3, 34 + Math.sin(i * .63) * 5, .7, .6, .7, [0x3a8a2a, 0xc84a6a, 0xe0a030][i % 3], { cast: false });
     },
     notredame(b, w, A) {
       const K = kit(b);
@@ -147,6 +163,18 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       b.cyl(30, 0, -54, 1.8, .8, 0x9a9488, { solid: 1 }); b.cyl(30, .8, -54, .3, 1.4, 0x9a9488); K.water(30, -54, 1.5, 0x6a9ab8, .78);
       K.stall(24, -48, 0xc83a2a, 1.5); K.stall(42, -54, 0x3a6ac8, -1.2, 0xc8a070);
       for (const [x, z] of [[-14, -40], [14, -40], [-16, -64], [16, -64], [-6, -30], [6, -30]]) K.lamp(x, z);
+      // Großer Saal des Justizpalastes (Narrenfest): Halle mit Spitzbögen, Bühne, Freudenfeuer-Plätze
+      b.box(-70, 0, 14, 16, 7, 8, 0x8a8274, { solid: 1, tex: 'stone' }); for (let i = 0; i < 4; i++) K.arch(-76 + i * 4, 9.6, 2.6, 4.4, 0x9a9284, 0, .5); b.box(-64, 0, 4, 6, .9, 3, 0x6a4a2a, { solid: 1, tex: 'wood' });
+      for (const [x, z, c] of [[-60, 6, 0xc8402a], [-66, 6, 0xd8b040], [-62, 2.6, 0x4a6ac8]]) b.box(x, .9, z, 1.4, 2.2, .1, c, { cast: false });
+      // Schenke „Zum Apfel Evas“: Fachwerkhaus, Fässer, Schild, Laternen
+      K.house(72, -8, 9, 7, 3.6, 0xe0d4b8, 0x5a3a2a, -.4, { beams: 0x4a2a1a, chimney: 1 }); b.box(66, 2.6, -3.2, .1, .1, 1.6, 0x2a2a2a, { cast: false }); b.box(66, 1.9, -2.6, .1, 1, 1, 0xc83a2a, { cast: false });
+      for (const [x, z] of [[62, 2], [64, 4], [70, 4], [60, -4]]) b.cyl(x, 0, z, .5, 1, 0x6a4a2a, { solid: 1, tex: 'wood' }); K.lamp(58, 0); K.lamp(74, 2);
+      // Frollos Alchemistenzelle im Nordturm-Rest: runder Turm, grünes Leuchten, Bücher, Destillierkolben
+      K.tower(-70, -94, 4.2, 12, 0x6a6468, 0x2a2232, 7, { win: 0x5aff8a, crown: 1 }); b.box(-70, 0, -89.6, 1.6, 2.6, .2, 0x0e0c0a, { cast: false });
+      for (let i = 0; i < 6; i++) b.sph(-64 + (i % 3) * 1.2, .5, -86 + Math.floor(i / 3) * 1.2, .35, .5, .35, 0x7affaa, { mat: { e: 0x2adf6a, ei: 1.6, t: .7 }, cast: false }); b.glow(0x5aff8a, 6, -63, 1, -85.4, .5);
+      // Montfaucon: kahler Hügel mit Steinpfeilern und Raben
+      for (let i = 0; i < 8; i++) { const a = i * .785; b.box(64 + Math.cos(a) * 7, 0, -96 + Math.sin(a) * 7, 1.2, 6, 1.2, 0x5a5652, { solid: 1, tex: 'stone' }); }
+      b.box(64, 6, -96, 15.4, .7, 1, 0x4a4642, { tex: 'stone' }); b.box(64, 6, -96, 1, .7, 15.4, 0x4a4642, { tex: 'stone' });
     },
     theben(b, w, A) {
       const K = kit(b), S = 0xece4d4;
@@ -175,6 +203,20 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       for (let i = 0; i < 7; i++) for (const dz of [-4.2, 4.2]) b.cyl(1.4 + i * 2.85, 1.5, TZ + dz, .5, 6, S);
       b.box(10, 7.5, TZ, 21, .9, 11, S); const pd = b.cone(10, 8.4, TZ, 1, 2.6, S, { lo: 1 }); pd.rotation.y = Math.PI / 4; pd.scale.set(10.8, 2.6, 6.2);
       b.box(10, 1.5, TZ - 2, 1.4, 4, 1.4, 0xe8dca0, { mat: { m: .6, r: .3 } }); b.sph(10, 6, TZ - 2, .7, .8, .7, 0xe8dca0, { mat: { m: .6, r: .3 } });
+      // Augiasstall: lange Stallgebäude, Mist, zwei Flussläufe mit Dämmen
+      for (const z of [-2, 8]) b.box(-80, 0, z, 18, 3.4, 5, 0x8a6a4a, { solid: 1, tex: 'wood' }); for (const z of [-2, 8]) b.box(-80, 3.4, z, 19, .4, 6, 0x6a4a2a, { tex: 'roof' });
+      for (let i = 0; i < 12; i++) b.ico(-90 + i * 1.8, .1, 3 + (i % 3) - 1, .9, .4, .7, 0x5a4a2a, { cast: false });
+      for (const [x, z] of [[-92, -12], [-64, -14]]) { b.box(x, 0, z, 6, 1.4, 1.4, 0x8a7a64, { tex: 'stone', solid: 1 }); }
+      // Stymphalischer See: dunkles Ufer, tote Bäume, eherne Klappern auf einem Felsen
+      for (let i = 0; i < 9; i++) { const a = i * .7; b.cyl(70 + Math.cos(a) * 12, 0, -90 + Math.sin(a) * 9, .25, 4 + (i % 3), 0x3a2a1a, { lo: 1, solid: 1, tex: 'bark' }); }
+      b.ico(74, .5, -82, 2.6, 1.6, 2.2, 0x7a6a58, { solid: 1 }); for (const s of [-1, 1]) b.cyl(74 + s * .5, 2.1, -82, .35, .12, 0xc8902a, { mat: { m: .9, r: .2 }, cast: false });
+      // Erymanthos: verschneiter Berghang mit Felsen und Kiefern
+      K.cliff([[-80, -104, 5, 9], [-66, -110, 5, 10], [-56, -100, 4, 7]], 0xd8dce4); for (let i = 0; i < 8; i++) b.ico(-74 + Math.cos(i) * 8, .1, -96 + Math.sin(i) * 6, 1.4, .3, 1.4, 0xf4f8ff, { cast: false });
+      // Heiliger Hain der Artemis: Rundtempel mit Säulen, goldener Altar
+      for (let i = 0; i < 8; i++) { const a = i * .785; b.cyl(78 + Math.cos(a) * 5, 0, -22 + Math.sin(a) * 5, .45, 5, 0xf0ece0, { solid: 1, tex: 'marble' }); }
+      b.cyl(78, 5, -22, 6, .6, 0xe8e4d8, { tex: 'marble' }); b.cone(78, 5.6, -22, 6.4, 2, 0xc8b070, { tex: 'roof' }); b.box(78, 0, -22, 1.6, 1, 1, 0xd8b040, { mat: { m: .9, r: .3 }, solid: 1 }); b.glow(0xffe8a0, 5, 78, 1.6, -22, .5);
+      // Tainaron: Felsentor zur Unterwelt mit rotem Glühen
+      K.cliff([[-8, -126, 4, 8], [8, -126, 4, 8]], 0x4a3a3a); K.arch(0, -124, 6, 5.4, 0x3a2a2a, 0, 1.2); b.box(0, 0, -125, 5.4, 5.2, .2, 0x0a0404, { cast: false }); b.glow(0xff3a1a, 9, 0, 2.4, -123.6, .5);
     },
     meer(b, w, A) {
       const K = kit(b);
