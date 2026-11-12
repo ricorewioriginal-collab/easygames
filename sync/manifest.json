@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c38a126461ca",
- "generated": "2026-11-12T20:21:54+00:00",
- "commit": "e00344d0a0de56c4205a712cfcd8c7a486c5682d",
+ "version": "aab96f1b0d71",
+ "generated": "2026-11-12T20:34:01+00:00",
+ "commit": "0af98d9ca0807f7c19b12443cde7a68600a2ce91",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9359,7 +9359,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258362,
-   "h": "69d0c2fe1632ab13fc8339e9f01ddab964728ebed5de63711235587f27048c7e"
+   "h": "7a1ef1eaa48bc0e0e9c9d45243aa18fc7105d4ea2d1e6738f998675a1410a8e2"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -9863,8 +9863,8 @@
   },
   {
    "p": "taschi/src/engine/characters.js",
-   "s": 40456,
-   "h": "629508628e84140e2998c65572fcf3b3a2e10b5c9c365d1ea3f694ebd171990f"
+   "s": 43897,
+   "h": "4135d40671aa64e6e5c83b060228cc38f1feff587b04c0ab5bfb66f1e6bdbf22"
   },
   {
    "p": "taschi/src/engine/creatures.js",
@@ -9878,8 +9878,8 @@
   },
   {
    "p": "taschi/src/engine/kaykit.js",
-   "s": 13674,
-   "h": "44bebedc6c136f70938ab27f30a0c6915c13254217b3e462b4e969ba8ab315df"
+   "s": 15276,
+   "h": "5f3c6ae69b1a452604d29ff279133096bc2cbf531128edcbedb537fe90094966"
   },
   {
    "p": "taschi/src/engine/materials.js",
@@ -11807,9 +11807,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-L_PWm7Na.js",
-   "s": 1694714,
-   "h": "750a80d82a494b25784fcf1538cdd27a63c7e268dda17570d38d490af046d40e"
+   "p": "zotik/assets/index-ufoCoGcN.js",
+   "s": 1695295,
+   "h": "9458514e6f84f9e72244b019c0cfed73b18545b75f9c584ff12f8e8181caca15"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -11829,7 +11829,7 @@
   {
    "p": "zotik/index.html",
    "s": 72193,
-   "h": "87823208dd7d399d700da28409a0bbf7b2d07935a6cb18a1979207cbc7a5e69f"
+   "h": "e1f84b3645f03e719a204ce804d6b2ff1b58c942a34f57dccb67f7f74bca363a"
   },
   {
    "p": "zotik/manifest.webmanifest",
