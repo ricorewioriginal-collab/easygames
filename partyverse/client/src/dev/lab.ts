@@ -3,6 +3,7 @@ import { QUALITY_PRESETS } from '../render/quality';
 import { MiniStage } from '../minigames/stage';
 import { MiniInput } from '../input/controls';
 import { getMiniGame, MINIGAME_IDS } from '@shared/minigames/registry';
+import { BotRunner } from '@shared/minigames/simulate';
 
 /** Minispiel-Labor: ?lab=<id>[&bot=0.8][&touch=1][&seed=5] – zum Entwickeln und für automatische Bildschirmfotos. */
 export function startLab(id: string, params: URLSearchParams): void {
@@ -27,6 +28,23 @@ export function startLab(id: string, params: URLSearchParams): void {
       input,
       botSkill: Number(botParam ?? 0.8),
       botSeed: seed,
+      me: { character: 'pip', color: 0xff4d6d, name: 'Du' },
+      // &rivals=0 schaltet die mitlaufenden KI-Gegner ab
+      rivals:
+        params.get('rivals') === '0'
+          ? []
+          : (['brumm', 'lumi', 'zapp'] as const).map((character, i) => ({
+              character,
+              color: [0x3fa9ff, 0xffd23f, 0x4cd07d][i] as number,
+              name: ['Brumm', 'Lumi', 'Zapp'][i] as string,
+              runner: new BotRunner(
+                game,
+                seed,
+                { playerIndex: i + 1, players: 4 },
+                [0.4, 0.6, 0.85][i] as number,
+                seed + i + 1,
+              ),
+            })),
     },
   );
   engine.setScreen(stage);

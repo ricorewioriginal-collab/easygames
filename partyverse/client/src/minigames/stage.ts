@@ -9,12 +9,17 @@ import {
   TICK_DT,
 } from '@shared/minigames/types';
 import { InputRecorder, quantize } from '@shared/minigames/input';
+import type { BotRunner } from '@shared/minigames/simulate';
+import { createCharacter, type CharacterRig } from '../render/characters';
 import type { Screen } from '../render/engine';
 import { ParticlePool } from '../render/particles';
 import { disposeTree } from '../render/materials';
 import type { QualitySettings } from '../render/quality';
 import { getViewFactory } from './viewRegistry';
-import type { MiniGameView } from './viewTypes';
+import type { Avatar, MiniGameView } from './viewTypes';
+
+/** Mitspieler im Minispiel; runner = KI, die Takt für Takt mitläuft (null = Mensch an einem anderen Gerät) */
+export type Rival = Avatar & { runner: BotRunner | null; id?: string };
 
 export interface StageResult {
   score: number;
@@ -29,6 +34,10 @@ export interface StageDeps {
   input: { read(): InputFrame } | null;
   botSkill?: number;
   botSeed?: number;
+  /** Eigene Figur; Standard: Pip in Rot */
+  me?: Avatar;
+  /** Mitspieler, die live mitlaufen */
+  rivals?: Rival[];
 }
 
 /**
@@ -51,6 +60,8 @@ export class MiniStage implements Screen {
   private botRng: Rng;
   private limit: number;
   lastInput: InputFrame = { ...NEUTRAL_INPUT };
+  readonly rivals: Rival[];
+  private rigs: CharacterRig[] = [];
 
   constructor(
     readonly game: MiniGame,
@@ -68,6 +79,7 @@ export class MiniStage implements Screen {
     this.botRng = new Rng(deps.botSeed ?? 1);
     this.state = game.init(seed, opts);
     this.limit = Math.ceil(game.duration * 60) + 2;
+    this.rivals = deps.rivals ?? [];
     this.view = getViewFactory(game.id)(
       {
         scene: this.scene,
@@ -76,6 +88,13 @@ export class MiniStage implements Screen {
         quality: deps.quality,
         sfx: deps.sfx,
         burst: (p, c, n) => this.particles.burst(p, c, n ?? 14),
+        me: deps.me ?? { character: 'pip', color: 0xff4d6d, name: 'Du' },
+        rivals: this.rivals.map(({ character, color, name }) => ({ character, color, name })),
+        character: (id, scale) => {
+          const rig = createCharacter(id, { scale: scale ?? 1, toon: true });
+          this.rigs.push(rig);
+          return rig;
+        },
       },
       this.state,
     );
@@ -104,6 +123,11 @@ export class MiniStage implements Screen {
     }
     this.particles.update(dt);
     this.view.update(this.state, dt);
+    if (this.view.ghosts && this.rivals.length)
+      this.view.ghosts(
+        this.rivals.map((r) => (r.runner ? r.runner.state : null)),
+        dt,
+      );
   }
 
   private stepOnce(): void {
@@ -113,6 +137,8 @@ export class MiniStage implements Screen {
     const input = this.rec.push(this.tick, quantize(raw));
     this.lastInput = input;
     this.game.step(this.state, input);
+    // Mitspieler-KI im Gleichschritt (gleiche Rechnung wie im Spielkern → gleiches Ergebnis)
+    for (const r of this.rivals) r.runner?.step();
     this.tick++;
     if (this.game.done(this.state) || this.tick >= this.limit) {
       this.finished = true;
@@ -124,6 +150,7 @@ export class MiniStage implements Screen {
 
   dispose(): void {
     this.view.dispose();
+    this.rigs.forEach((r) => r.dispose());
     this.particles.dispose();
     disposeTree(this.root);
     this.scene.clear();
