@@ -1001,6 +1001,8 @@
     active: function () { return padOn; },
     legend: legendList,
     showLegend: function (ms) { legend(ms === undefined ? 8000 : ms); },
+    // Symbol des Knopfs für einen logischen Namen (a, b, x, y, lb … – nach Umbelegung und je Controller-Art), z. B. für Hinweise im Spiel
+    glyph: function (k) { return glyph(k in NAMES ? BTN[posOf(NAMES[k])] : k); },
     openMenu: function () { menuOpen(); }
   };
 })(window);

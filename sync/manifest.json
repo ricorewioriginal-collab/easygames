@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e743070f12eb",
- "generated": "2026-11-12T11:37:30+01:00",
- "commit": "b7f643a74266dd292fe8b3e31d1a88f4e40ae8a2",
+ "version": "c5571f42acdf",
+ "generated": "2026-11-12T10:42:57+00:00",
+ "commit": "8c8b3355609a2b609478b358673047d2e6cf24f5",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5533,8 +5533,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 81694,
-   "h": "fd8c5ca6c66dd9469988c4052fbfb7be531e0736bfb4d358e995ac3dd02504a0"
+   "s": 81921,
+   "h": "382901e9ba2839c48ec9b394b5d8f833d2c8b965adc77b64cb372828a4b06e63"
   },
   {
    "p": "games.js",
@@ -5773,8 +5773,8 @@
   },
   {
    "p": "guides.js",
-   "s": 172520,
-   "h": "aa7c5a4376975cd09c84a357c0ef51cf81922e7ae3729e8347a541625f0d793e"
+   "s": 172456,
+   "h": "180e66cada6d22093e5680727a35610db3ca2df2d9b2ae78037c08b815dabaec"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6258,8 +6258,8 @@
   },
   {
    "p": "guides/zotik.json",
-   "s": 56303,
-   "h": "e5e9dbf24d3a28e3e1c2ac73e26d38fb8dda61706191ad86ab72227df7226c9d"
+   "s": 57322,
+   "h": "5b5f5dcac7db747c1a7ccb97a5e5875f180303077822d83d4dcae28340a00d58"
   },
   {
    "p": "heute.html",
@@ -8132,6 +8132,11 @@
    "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
   },
   {
+   "p": "riftzone/client/public/heightmap.bin",
+   "s": 1182722,
+   "h": "121bcf27e4e7d5dda62e7ed7e061d76a1f8e4dec907c9978a3a32900d5ef6d97"
+  },
+  {
    "p": "riftzone/client/src/ui/styles.css",
    "s": 30181,
    "h": "28c5e1ddb893c40dd6896ecc6a3d7d5ee09244423276d839b5aecb7a32579129"
@@ -8838,8 +8843,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 257209,
-   "h": "36c15df3a243b8e06e033f4523e52e2bd7cd0ea003ed06afdc648be0c73c83bf"
+   "s": 257145,
+   "h": "545b9fadbbd46910d8d251d9d121cd87fbb81dd3182c905e9f9aaec547022b46"
   },
   {
    "p": "taschi/assets/models/alien.glb",
@@ -11027,9 +11032,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-9xJcEeqI.js",
-   "s": 1437082,
-   "h": "2a661d93505546946b5eee2bf77db4a2ebd1d549e66e3e25218add788bdb2c11"
+   "p": "zotik/assets/index-DpyByWBw.js",
+   "s": 1443300,
+   "h": "93bb5d5401fd393cf45e1725c286130602a145695928375a5eb25a9a57b4c109"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -11048,8 +11053,8 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 52105,
-   "h": "dc73b1a8bc9631a54860d4011e612cd86cecb148b3034ff130cbd4828b1475ef"
+   "s": 52484,
+   "h": "4b8e97f681e4ff5a8334dd1c94d76e7c136a31e5debdbba1b4807d1637e2246c"
   },
   {
    "p": "zotik/manifest.webmanifest",

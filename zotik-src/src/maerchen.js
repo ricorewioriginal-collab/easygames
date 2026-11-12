@@ -363,7 +363,7 @@ export function createMaerchen(C) {
   // Reaktionsbefehl (wie bei Kingdom Hearts): Wenn der Boss taumelt, erscheint kurz eine gemeinsame Aktion mit dem Gast
   let rbtn = null;
   function showReact(t) { if (!rbtn) { rbtn = document.createElement('div'); rbtn.style.cssText = 'position:fixed;left:50%;bottom:22%;transform:translateX(-50%);padding:10px 22px;border-radius:14px;background:linear-gradient(180deg,#fff6d0,#e8b040);color:#3a2408;font:700 clamp(15px,2.6vw,22px) system-ui;box-shadow:0 0 24px #ffd06a;z-index:7;pointer-events:none'; document.body.appendChild(rbtn); }
-    rbtn.textContent = '△ ' + t + ' – jetzt Aktion drücken!'; rbtn.hidden = false; }
+    const k = C.keyHint ? C.keyHint(C.inMode && C.inMode() === 'pad' ? 'atk' : 'use') : ''; rbtn.textContent = '△ ' + t + ' – ' + (k ? k + ' ' : 'Aktion ') + (C.inMode && C.inMode() === 'touch' ? 'antippen!' : 'drücken!'); rbtn.hidden = false; }
   function hideReact() { if (rbtn) rbtn.hidden = true; }
   function tick(dt) {
     if (!cur) return; const s = st(cur.w.id), m = mis(), pl = C.pl;
