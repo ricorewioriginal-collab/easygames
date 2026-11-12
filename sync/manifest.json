@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "83e067ec1fd8",
- "generated": "2026-11-12T09:50:22+01:00",
- "commit": "d48da330a91f98d8aa8591dbad5221e3db173c19",
+ "version": "be926cc471e2",
+ "generated": "2026-11-12T09:34:41+00:00",
+ "commit": "db0c07a27ffd976ab175128304ff2303d44bccc8",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1708,13 +1708,13 @@
   },
   {
    "p": "anmacha-markthalle/game.js",
-   "s": 92843,
-   "h": "f7fd0c08ec1cfa0756892d7dc30afc21d85e6c36b39794fa69983478e3acdd4a"
+   "s": 97369,
+   "h": "0ad6a53630c40a3528f630b356f682e2c7a41925e7d44aad906bea8e5ae629dd"
   },
   {
    "p": "anmacha-markthalle/index.html",
-   "s": 33814,
-   "h": "1a280e9bc3bb87ed20e4600960943894b11774b17895c4836735882d52d28714"
+   "s": 33975,
+   "h": "8b91a2a3d5a0e91fe2ded902c275e8ff2732e70d714da89bdd49c50b7b5bb820"
   },
   {
    "p": "anmacha-markthalle/logo.svg",
@@ -5533,8 +5533,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 78330,
-   "h": "9d1b46653b4a4cc1ab5308cce2b36b2bbc8e1f06aabbdd08731c240287986a34"
+   "s": 81694,
+   "h": "fd8c5ca6c66dd9469988c4052fbfb7be531e0736bfb4d358e995ac3dd02504a0"
   },
   {
    "p": "games.js",
@@ -5773,8 +5773,8 @@
   },
   {
    "p": "guides.js",
-   "s": 172140,
-   "h": "e5dcf1784e6778d7667549687d7828f3ed0a86d21021f613066a150278637596"
+   "s": 172520,
+   "h": "aa7c5a4376975cd09c84a357c0ef51cf81922e7ae3729e8347a541625f0d793e"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -5848,8 +5848,8 @@
   },
   {
    "p": "guides/anmacha-markthalle.json",
-   "s": 25125,
-   "h": "4a140f92d846fa0db0c813c992581416c33238ab81d772145bb8afc6f8f38af5"
+   "s": 25587,
+   "h": "73e6b58cbe583f2585046ef7d5b9c4660839b4590d084f767ac8d03eeede0f67"
   },
   {
    "p": "guides/anmacha-memory.json",
@@ -8838,8 +8838,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 256824,
-   "h": "bae493b73ebd075efb89dfce21e8524ae724b57a6af5d6c0a784a0d410984b58"
+   "s": 257206,
+   "h": "d79d1b6c0f8cef6cde7e6fbff47c7a0401f9a16a40a479e7c3bda1209f821bc4"
   },
   {
    "p": "taschi/card.svg",
