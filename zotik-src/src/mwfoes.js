@@ -127,6 +127,12 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
         leg(-.24, .55, .1, .55, .13, st, true); leg(.24, .55, .1, .55, .13, st, true); arm(-1, 1.3, .7, .1, st, .45); arm(1, 1.3, .7, .1, st, .45);
         for (const s of [-1, 1]) { const w = mk(G.sph0, C(dim(col, .85), { r: 1 }), s * .75, 1.45, -.35, .85, .07, .5); w.rotation.set(.4, 0, s * .55); b.add(w); }
         tail.position.set(0, .7, -.4); tail.addm(mk(G.cone0, st, 0, -.35, 0, .08, .8, .08)).rotation.x = Math.PI; break; }
+      case 'elefant': {   // Hathi: großer grauer Elefant mit Rüssel, Stoßzähnen und weiten Ohren
+        const hide = C(col, { r: .9, e: dim(col, .18), ei: 1 }); b.add(mk(G.sph, hide, 0, 1.55, -.05, .85, .8, 1.15)); head.position.set(0, 1.85, 1.05); head.add(mk(G.sph, hide, 0, 0, 0, .5, .52, .5));
+        for (let i = 0; i < 5; i++) { const t = mk(G.cyl0, hide, 0, -.3 - i * .26, .42 + i * .04, .17 - i * .022, .3, .17 - i * .022); t.rotation.x = .25 - i * .08; head.add(t); }
+        for (const s of [-1, 1]) { const e = mk(G.sph, C(dim(col, .85), { r: .95 }), s * .52, .02, -.14, .08, .5, .42); e.rotation.y = s * .35; head.add(e); const t = mk(G.cone0, C(0xf4ecd8), s * .2, -.32, .36, .06, .55, .06); t.rotation.set(-1.9, 0, -s * .2); head.add(t); }
+        eyes(head, .2, .36, .12, 0x2a1a10);
+        for (const [x, z] of [[-.45, .6], [.45, .6], [-.45, -.6], [.45, -.6]]) leg(x, 1.05, z, 1.05, .22, hide, true); tail.position.set(0, 1.4, -1.15); tail.add(mk(G.cyl0, hide, 0, -.3, 0, .03, .6, .03)); break; }
       case 'eber': {   // Erymanthischer Eber: massig, Borsten, Hauer
         const fur = C(col, { r: .95 }); b.add(mk(G.sph, fur, 0, .85, -.05, .55, .55, .9)); head.position.set(0, .95, .85); head.add(mk(G.sph, fur, 0, 0, 0, .34, .32, .36)); head.addm(mk(G.cyl, C(0xc89090), 0, -.06, .36, .14, .1, .14)).rotation.x = Math.PI / 2;
         for (const s of [-1, 1]) { const t = mk(G.cone0, C(0xf4ecd8), s * .18, -.12, .3, .04, .3, .04); t.rotation.set(-1.2, 0, s * .5); head.add(t); } eyes(head, .1, .28, .14, 0xff6020);
@@ -170,5 +176,5 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
   }
 
   const make = (kind, col, boss) => HOVER.has(kind) ? hover(kind, col) : walker(kind, col, boss);
-  return { make, has: k => HOVER.has(k) || ['giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'wache', 'schattenritter', 'spartoi', 'riese', 'wasserspeier', 'eber', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf'].includes(k), HOVER };
+  return { make, has: k => HOVER.has(k) || ['giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'wache', 'schattenritter', 'spartoi', 'riese', 'wasserspeier', 'eber', 'elefant', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf'].includes(k), HOVER };
 }
