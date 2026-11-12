@@ -141,6 +141,7 @@ window.EASYGAMES_GUIDES = {
    "In jedem Reich liegt ein Kapselgeist in einer Truhe: Er kämpft von selbst mit. Füttern und mit Sphärenfrucht entwickeln im Menü unter Kapselgeist.",
    "Lindmark (ab Reich 2): Gasthaus heilt auch Kapselgeister, Schmied Torvald rüstet bis Stufe 10 auf.",
    "Lichtsiegel vor jeder Bosshalle: Blöcke auf die leuchtenden Platten schieben, Fackeln mit dem Glutstab anzünden. Kristallhammer zerschlägt Felsen.",
+   "Extras: Angeln in Hafenau und Lindmark, Spielhalle mit Sphärenrad in Lindmark, Tiefe der Echos (30 Zufallsebenen, Schacht in Hafenau) und Arena der Erinnerung nach dem Ende.",
    "Vor jedem Boss an der Heilquelle in Hafenau heilen und den Spielstand sichern.",
    "Nutze Wache in der Runde, in der ein Boss seinen Spezialangriff ausführt."
   ]

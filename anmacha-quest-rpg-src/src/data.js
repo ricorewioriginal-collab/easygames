@@ -100,3 +100,36 @@ Object.assign(MAPS.tower, {
   puzzle: { blocks: [[4, 13], [9, 14]], plates: [[6, 13], [11, 14]], torches: [[16, 13], [22, 13]] },
   loot: [{ id: 'tower_r1', x: 8, y: 11, kind: 'rock', v: 'frucht', n: 1 }, { id: 'tower_b1', x: 10, y: 9, kind: 'bramble', v: 'weck', n: 2 }, { id: 'tower_r2', x: 5, y: 5, kind: 'rock', gold: 500 }]
 });
+
+// ---------------------------------------------------------------- Stufe 4: Angeln, Spielhalle, Tiefe der Echos, Arena der Erinnerung
+Object.assign(ITEMS, {
+  fisch1: { name: 'Silberling', price: 0, sell: 15, desc: 'Fisch: heilt 120 LP' },
+  fisch2: { name: 'Goldforelle', price: 0, sell: 60, desc: 'Fisch: heilt alle LP' },
+  fisch3: { name: 'Sternenkoi', price: 0, sell: 300, desc: 'Leckerbissen für Kapselgeister', use: 'capsule' }
+});
+Object.assign(FEED, { fisch1: 40, fisch2: 110, fisch3: 450 });
+// Fische: Fangchance, Tempo der Nadel, Breite der Fangzone
+export const FISH = [
+  { id: 'fisch1', p: 0.62, speed: 0.9, zone: 0.26 },
+  { id: 'fisch2', p: 0.3, speed: 1.35, zone: 0.18 },
+  { id: 'fisch3', p: 0.08, speed: 1.9, zone: 0.11 }
+];
+// Sphärenrad (Spielhalle in Lindmark): Symbole und Gewinn (Vielfaches des Einsatzes bei drei gleichen)
+export const REEL = [
+  { s: '★', name: 'Stern', pay: 20, col: '#ffd84a' },
+  { s: '♛', name: 'Krone', pay: 10, col: '#ff9ad0' },
+  { s: '◆', name: 'Kristall', pay: 6, col: '#7ad8ff' },
+  { s: '☾', name: 'Mond', pay: 4, col: '#c8b8ff' },
+  { s: '♪', name: 'Note', pay: 3, col: '#8affb0' }
+];
+export const CHIP_PRICE = 10;
+export const PRIZES = [{ v: 'grosstrank', chips: 8 }, { v: 'aetherflask', chips: 12 }, { v: 'weck', chips: 15 }, { v: 'frucht', chips: 40 }];
+// Neue Bewohner
+MAPS.hub.npcs.push({ x: 5, y: 14, kind: 'angler', name: 'Anglerin Wenke' });
+MAPS.lind.npcs.push({ x: 4, y: 12, kind: 'angler', name: 'Fischer Arno' }, { x: 8, y: 10, kind: 'casino', name: 'Croupière Lys' }, { x: 20, y: 10, kind: 'arena', name: 'Chronistin Vela' });
+// Tiefe der Echos: Zugang in Hafenau (oben links), Ebenen werden bei jedem Abstieg neu geformt
+MAPS.hub.portals.push({ x: 2, y: 1, to: 'tiefe', req: 'boss_schlager', label: 'Tiefe der Echos', kind: 'cave', ax: 2, ay: 14, deep: 'start' });
+export const DEEP_FLOORS = 30;
+// Wächter der Tiefe (alle fünf Ebenen) und Arena der Erinnerung (alle Verfemten nacheinander)
+export const DEEP_BOSS = { 5: 'mcdroehn', 10: 'koenigin', 15: 'frostmod', 20: 'riff', 25: 'rauschen', 30: 'rauschen' };
+export const RUSH = ['mcdroehn', 'koenigin', 'frostmod', 'riff', 'rauschen'];

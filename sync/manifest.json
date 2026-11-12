@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "2b695ad3cae6",
- "generated": "2026-11-12T17:41:54+00:00",
- "commit": "149420e90ed4954e29a293cf3b1f69596d59cd54",
+ "version": "d3d4d32009be",
+ "generated": "2026-11-12T18:48:31+01:00",
+ "commit": "32d50e86fb1703aefbb89ad4dab325190ae8a044",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2343,8 +2343,8 @@
   },
   {
    "p": "anmacha-quest-rpg/anleitung.html",
-   "s": 16519,
-   "h": "94ee97ec7155f141ace005668dc7273dd173bcd9b10d73b74b24453633c499da"
+   "s": 17672,
+   "h": "2f7b257cb62d0f87cc266c214cfa12d0a7888ea788032a0536f1e0dcb618646a"
   },
   {
    "p": "anmacha-quest-rpg/assets/cinzel-latin-700-normal-C-gK7hA8.woff",
@@ -2367,14 +2367,14 @@
    "h": "d5d566551cd1e60b0572567c2ed5fd4c24a28d2ee9863cbb58d47bd03afe9d5f"
   },
   {
+   "p": "anmacha-quest-rpg/assets/index-B0Py75E9.js",
+   "s": 826298,
+   "h": "40ab602bd03b1d19ece91d484f00ddd0a74863c13361c4e6a50023925882683e"
+  },
+  {
    "p": "anmacha-quest-rpg/assets/index-CitjQBdG.css",
    "s": 417,
    "h": "950fb90df6cb3745e31e3f7b566090d8e47ffd84f24f3e6b9a0a3d89ab1ea926"
-  },
-  {
-   "p": "anmacha-quest-rpg/assets/index-Drl4TMrB.js",
-   "s": 814038,
-   "h": "2780304851e3b1bcc54ec82c8ff9954bb09fc976bd522276670eaf244b3f4c53"
   },
   {
    "p": "anmacha-quest-rpg/card.jpg",
@@ -2388,8 +2388,8 @@
   },
   {
    "p": "anmacha-quest-rpg/index.html",
-   "s": 20232,
-   "h": "b31847b5da628510da52bd91bdc947b6c4d4de84807c903594417556f23cc9c4"
+   "s": 21699,
+   "h": "4c147b13a0577fcbea7cde9628d9851e5f3fc27667eb69dfa805ff6eeb07cf94"
   },
   {
    "p": "anmacha-quest-rpg/logo.png",
@@ -5803,8 +5803,8 @@
   },
   {
    "p": "guides.js",
-   "s": 173403,
-   "h": "88d73659b1c3b04a591769c1de94d575cb3380b2514649f195f34fd4e961375b"
+   "s": 173584,
+   "h": "0d729ba6d3378d68d6c143f668379438d0e30ce9c146d20cabbeda7890145123"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -5898,8 +5898,8 @@
   },
   {
    "p": "guides/anmacha-quest-rpg.json",
-   "s": 18668,
-   "h": "9873fb44cd60a4b7f47c8876040aaf67431afa100ff5c052fbc84f4c27b5ad32"
+   "s": 20733,
+   "h": "3b3b43dc78410eea05ae33eaf50201a904cce30a9be8d5014af7b4b43f8bcadc"
   },
   {
    "p": "guides/anmacha-quiz.json",
@@ -8873,8 +8873,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 258177,
-   "h": "0bd0335dbe8d36f84b261976fe3c0cd95f0c00e2bd52f1ae662d0b2a67fa73c5"
+   "s": 258360,
+   "h": "41c6be77058fe5fa39b9974000a0cb4fedf0347ceab0714e182ea4a41842b27c"
   },
   {
    "p": "taschi/assets/models/alien.glb",

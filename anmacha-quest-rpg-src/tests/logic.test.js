@@ -1,6 +1,6 @@
 // Selbsttest wie `--autotest` der Godot-Fassung: Karten, Erreichbarkeit, Kampfbalance, kompletter Spielablauf ohne Anzeige.
 // Start: npm test (oder node tests/logic.test.js)
-import { MAPS, ENEMIES, HEROES, SKILLS, IPSKILLS } from '../src/data.js';
+import { MAPS, ENEMIES, HEROES, SKILLS, IPSKILLS, DEEP_BOSS, DEEP_FLOORS, FISH, REEL } from '../src/data.js';
 import * as L from '../src/logic.js';
 import { Game, M, SAVE_KEY } from '../src/game.js';
 import { parseGodotSave } from '../src/godotsave.js';
@@ -338,6 +338,81 @@ if (S.gp.y !== 11 || S.moving) fail('Laufen', S.gp, S.moving);
   store.set(SAVE_KEY, JSON.stringify(old));
   const g6 = new Game(ui, {}, { rng: L.makeRng(9), store });
   if (!g6.loadGame() || !g6.S.flags.tool_hammer || !g6.S.flags.tool_fire) fail('Werkzeuge im alten Spielstand');
+  game.autoplay = false;
+}
+
+// ---- Stufe 4: Tiefe der Echos, Angeln, Spielhalle, Arena der Erinnerung
+{
+  const S0 = L.newState();
+  let deepMaps = 0;
+  for (let seed = 1; seed <= 6; seed++) for (let f = 1; f <= DEEP_FLOORS; f++) {
+    const m = L.genDeep(f, seed * 977);
+    S0.map = m; S0.mw = m.rows[0].length; S0.mh = m.rows.length; S0.flags = {};
+    if (m.rows.some(r => r.length !== S0.mw)) fail('Tiefe Breite', f, seed);
+    const seen = L.reachable(S0, { x: 2, y: 14 });
+    const near = (t) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => seen.has(L.key({ x: t.x + dx, y: t.y + dy })));
+    for (const t of [...m.portals, ...m.chests]) if (!near(t)) fail('Tiefe nicht erreichbar', f, seed, t.x, t.y);
+    if (!!DEEP_BOSS[f] !== !!m.boss.id) fail('Tiefe Wächter', f);
+    if (m.boss.id && !near(m.boss)) fail('Tiefe Wächter unerreichbar', f, seed);
+    for (const id of m.enc) if (!ENEMIES[id]) fail('Tiefe Gegner', id);
+    deepMaps++;
+  }
+  console.log(`Tiefe der Echos: ${deepMaps} Ebenen geprüft`);
+  game.autoplay = true;
+  const S = game.S;
+  S.party = ['andrew', 'marco', 'teresa', 'rico', 'andy'].map(id => L.newHero(S, id, 60));
+  S.gear = 10; S.flags = { boss_schlager: true }; S.gold = 0; S.inv = { trank: 9 };
+  game.loadMap('hub', { x: 2, y: 2 });
+  await game.usePortal(MAPS.hub.portals.find(p => p.to === 'tiefe'));
+  if (S.mapId !== 'tiefe' || S.deep !== 1) fail('Tiefe betreten');
+  let bosses = 0;
+  for (let guard = 0; guard < 40 && S.mapId === 'tiefe'; guard++) {
+    for (const o of S.objs.filter(x => x.t === 'chest')) await game.interact(o);
+    const b = S.objs.find(x => x.t === 'boss');
+    if (b) { for (const h of S.party) { h.hp = L.mhp(S, h); h.sp = L.msp(h); } await game.interact(b); if (S.mapId !== 'tiefe') { fail('Wächter der Tiefe', S.deep); break; } bosses++; }
+    const st = S.map.portals.find(p => p.deep);
+    await game.usePortal(st);
+  }
+  if (S.mapId !== 'hub' || !S.flags.deep_done || S.deepBest !== DEEP_FLOORS || bosses !== Object.keys(DEEP_BOSS).length || S.gold < 5000) fail('Tiefe durchquert', S.mapId, S.deepBest, bosses, S.gold);
+  console.log(`Tiefe der Echos: ${S.deepBest} Ebenen, ${bosses} Wächter, Münzen ${S.gold}`);
+  // Speichern in der Tiefe: Laden beginnt sicher in Hafenau
+  await game.usePortal(MAPS.hub.portals.find(p => p.to === 'tiefe'));
+  S.chips = 7;
+  game.saveGame();
+  const g7 = new Game(ui, {}, { rng: L.makeRng(11), store });
+  if (!g7.loadGame() || g7.S.mapId !== 'hub' || g7.S.chips !== 7 || g7.S.deepBest !== DEEP_FLOORS) fail('Laden nach der Tiefe', g7.S.mapId, g7.S.chips);
+  // Angeln: alle drei Fischarten bringen den Preis
+  game.loadMap('hub', { x: 6, y: 14 });
+  const wenke = MAPS.hub.npcs.find(n => n.kind === 'angler');
+  for (let i = 0; i < 600 && !S.flags.fish_prize; i++) await game.fishing(wenke);
+  if (!FISH.every(f => S.flags['fish_' + f.id]) || !S.flags.fish_prize) fail('Angeln', JSON.stringify(S.inv));
+  const fishN = FISH.reduce((a, f) => a + (S.inv[f.id] || 0), 0), g0 = S.gold;
+  await game.sellFish(wenke);
+  if (fishN && S.gold <= g0) fail('Fische verkaufen');
+  S.inv.fisch1 = 1; S.party[0].hp = 1;
+  if (!L.applyItem(S, 'fisch1', S.party[0]) || S.party[0].hp !== 121) fail('Fisch essen');
+  // Sphärenrad
+  if (L.reelPay([0, 0, 0], 1) !== REEL[0].pay || L.reelPay([2, 2, 4], 5) !== 5 || L.reelPay([0, 1, 2], 1) !== 0) fail('Sphärenrad Gewinne');
+  const lys = MAPS.lind.npcs.find(n => n.kind === 'casino');
+  game.loadMap('lind', L.startOf('lind'));
+  S.gold = 100; S.chips = 0;
+  await game.casino(lys);
+  if (S.chips !== 10 || S.gold !== 0) fail('Jetons kaufen', S.chips, S.gold);
+  let spins = 0;
+  while (S.chips > 0 && spins < 400) { await game.casino(lys); spins++; }
+  console.log(`Sphärenrad: ${spins} Drehungen mit 10 Jetons`);
+  // Arena der Erinnerung
+  const vela = MAPS.lind.npcs.find(n => n.kind === 'arena');
+  S.flags = {};
+  await game.arena(vela);
+  if (S.flags.rush_done) fail('Arena vor dem Ende');
+  S.flags = { boss_rauschen: true };
+  for (const h of S.party) h.lv = 70;
+  const goldA = S.gold;
+  await game.arena(vela);
+  if (!S.flags.rush_done || S.gold < goldA + 3000) fail('Arena der Erinnerung', S.gold - goldA);
+  for (const n of MAPS.lind.npcs) await game.talkNpc(n);
+  for (const n of MAPS.hub.npcs) await game.talkNpc(n);
   game.autoplay = false;
 }
 

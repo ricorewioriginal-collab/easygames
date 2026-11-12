@@ -158,6 +158,16 @@ Hinter **Felsen** und **Dornenranken** (sie glitzern) liegen Münzen, Tränke un
 | Glutschlund | 2 Blöcke je 2 Felder nach rechts, 2 Fackeln |
 | Turm der Stille | 2 Blöcke je 2 Felder nach rechts, 2 Fackeln |
 
+## Angeln, Spielhalle, Tiefe der Echos, Arena
+
+**Angeln:** Anglerin Wenke (Hafenau, unten links am Wasser) und Fischer Arno (Lindmark, unten links). Nach dem Auswerfen beißt ein Fisch: Bestätigen (Enter/A/Tippen), wenn die Nadel im grünen Feld steht. Silberling heilt 120 LP, Goldforelle alle LP, Sternenkoi ist ein Festmahl für Kapselgeister. Wer alle drei Arten fängt, bekommt eine Sphärenfrucht und 500 Münzen. Fische lassen sich auch verkaufen.
+
+**Spielhalle (Lindmark, Croupière Lys):** 10 Jetons kosten 100 Münzen. Beim Sphärenrad hält jedes Bestätigen eine Walze an. Drei gleiche Zeichen: ★ x20, ♛ x10, ◆ x6, ☾ x4, ♪ x3; zwei gleiche nebeneinander geben den Einsatz zurück. Jetons gegen Großtrank (8), Ätherflasche (12), Lebensfeder (15) oder Sphärenfrucht (40) eintauschen.
+
+**Tiefe der Echos (Hafenau, Schacht oben links, ab Rosenhain):** 30 Ebenen, die sich bei jedem Abstieg neu formen. Auf jeder Ebene liegen Truhen, die Treppe ist das Leuchten am weitesten Punkt. Alle fünf Ebenen bewacht ein Echo eines Verfemten die Treppe. Ganz unten wartet ein Echo von Nihl; danach geht es mit 5000 Münzen, 2 Sphärenfrüchten und 3 Lebensfedern zurück ans Licht. Der Ausgang links unten führt jederzeit zurück nach Hafenau.
+
+**Arena der Erinnerung (Lindmark, Chronistin Vela, nach dem Sieg über Nihl):** alle fünf Verfemten nacheinander, dazwischen nur ein Viertel LP und SP. Belohnung beim ersten Sieg: 3000 Münzen, Sphärenfrucht, 3 Ätherflaschen.
+
 ## Lindmark und Kapselgeister
 
 **Lindmark** (Weltkarte, Osten) öffnet sich nach dem Sieg in der Echogruft: Gasthaus (heilt alles und speichert, Preis nach Stufe), Händler Quinn (Großtrank, Ätherflasche, Glutbombe, Sphärenfrucht), Schmied Torvald (Ausrüstung bis Stufe 10).

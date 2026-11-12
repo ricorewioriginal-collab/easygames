@@ -250,7 +250,7 @@ export class View {
   mapChanged() { this.built = ''; }
   partyChanged() { this.playerLead = ''; }
   ready() {
-    if (this.built !== this.g.S.mapId + '|' + this.qi) this.build();
+    if (this.built !== this.mapKey()) this.build();
     return this.building || Promise.resolve();
   }
 
@@ -258,7 +258,7 @@ export class View {
   build() {
     const token = ++this.buildToken;
     const S = this.g.S;
-    this.built = S.mapId + '|' + this.qi;
+    this.built = this.mapKey();
     this.building = this.buildWorld(token).catch(e => console.error(e)).finally(() => { if (token === this.buildToken) this.building = null; });
     return this.building;
   }
@@ -407,6 +407,7 @@ export class View {
     this.syncDyn(0);
   }
 
+  mapKey() { const S = this.g.S; return S.mapId + '|' + this.qi + (S.map && S.map.deep ? '|' + S.map.deep + ':' + S.map.seed : ''); }
   heightAt(x, z) {
     const T = this.terrain;
     if (!T) return 0;
@@ -1022,7 +1023,7 @@ export class View {
       return;
     }
     const S = g.S;
-    if (this.built !== S.mapId + '|' + this.qi) this.build();
+    if (this.built !== this.mapKey()) this.build();
     if (this.terrain && !this.building) {
       this.syncDyn(dt);
       for (const ent of this.dyn.values()) {
