@@ -203,6 +203,20 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       for (let i = 0; i < 7; i++) for (const dz of [-4.2, 4.2]) b.cyl(1.4 + i * 2.85, 1.5, TZ + dz, .5, 6, S);
       b.box(10, 7.5, TZ, 21, .9, 11, S); const pd = b.cone(10, 8.4, TZ, 1, 2.6, S, { lo: 1 }); pd.rotation.y = Math.PI / 4; pd.scale.set(10.8, 2.6, 6.2);
       b.box(10, 1.5, TZ - 2, 1.4, 4, 1.4, 0xe8dca0, { mat: { m: .6, r: .3 } }); b.sph(10, 6, TZ - 2, .7, .8, .7, 0xe8dca0, { mat: { m: .6, r: .3 } });
+      // Augiasstall: lange Stallgebäude, Mist, zwei Flussläufe mit Dämmen
+      for (const z of [-2, 8]) b.box(-80, 0, z, 18, 3.4, 5, 0x8a6a4a, { solid: 1, tex: 'wood' }); for (const z of [-2, 8]) b.box(-80, 3.4, z, 19, .4, 6, 0x6a4a2a, { tex: 'roof' });
+      for (let i = 0; i < 12; i++) b.ico(-90 + i * 1.8, .1, 3 + (i % 3) - 1, .9, .4, .7, 0x5a4a2a, { cast: false });
+      for (const [x, z] of [[-92, -12], [-64, -14]]) { b.box(x, 0, z, 6, 1.4, 1.4, 0x8a7a64, { tex: 'stone', solid: 1 }); }
+      // Stymphalischer See: dunkles Ufer, tote Bäume, eherne Klappern auf einem Felsen
+      for (let i = 0; i < 9; i++) { const a = i * .7; b.cyl(70 + Math.cos(a) * 12, 0, -90 + Math.sin(a) * 9, .25, 4 + (i % 3), 0x3a2a1a, { lo: 1, solid: 1, tex: 'bark' }); }
+      b.ico(74, .5, -82, 2.6, 1.6, 2.2, 0x7a6a58, { solid: 1 }); for (const s of [-1, 1]) b.cyl(74 + s * .5, 2.1, -82, .35, .12, 0xc8902a, { mat: { m: .9, r: .2 }, cast: false });
+      // Erymanthos: verschneiter Berghang mit Felsen und Kiefern
+      K.cliff([[-80, -104, 5, 9], [-66, -110, 5, 10], [-56, -100, 4, 7]], 0xd8dce4); for (let i = 0; i < 8; i++) b.ico(-74 + Math.cos(i) * 8, .1, -96 + Math.sin(i) * 6, 1.4, .3, 1.4, 0xf4f8ff, { cast: false });
+      // Heiliger Hain der Artemis: Rundtempel mit Säulen, goldener Altar
+      for (let i = 0; i < 8; i++) { const a = i * .785; b.cyl(78 + Math.cos(a) * 5, 0, -22 + Math.sin(a) * 5, .45, 5, 0xf0ece0, { solid: 1, tex: 'marble' }); }
+      b.cyl(78, 5, -22, 6, .6, 0xe8e4d8, { tex: 'marble' }); b.cone(78, 5.6, -22, 6.4, 2, 0xc8b070, { tex: 'roof' }); b.box(78, 0, -22, 1.6, 1, 1, 0xd8b040, { mat: { m: .9, r: .3 }, solid: 1 }); b.glow(0xffe8a0, 5, 78, 1.6, -22, .5);
+      // Tainaron: Felsentor zur Unterwelt mit rotem Glühen
+      K.cliff([[-8, -126, 4, 8], [8, -126, 4, 8]], 0x4a3a3a); K.arch(0, -124, 6, 5.4, 0x3a2a2a, 0, 1.2); b.box(0, 0, -125, 5.4, 5.2, .2, 0x0a0404, { cast: false }); b.glow(0xff3a1a, 9, 0, 2.4, -123.6, .5);
     },
     meer(b, w, A) {
       const K = kit(b);
