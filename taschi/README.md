@@ -61,6 +61,13 @@ Geprüft: `npm test` (31 Tests inklusive Durchlauf-Simulation bis zum Sternenmei
 - Technik: `src/engine/models.js` lädt die GLB-Dateien (GLTFLoader aus `../vendor`), klont Skelett und Haut, wandelt die Materialien in den Toon-Look mit Umriss um und spielt die Animationen (Stehen, Laufen, Angriff, Treffer, Freude, K.o.). Die Modelle laden im Hintergrund; Kämpfe warten kurz, bis beide Teams geladen sind.
 - Die Arten erscheinen nach ihrem Typ automatisch in der Wildnis, bei Trainern und in der Zucht. Tests: `tests/models.test.mjs`, Browsertest `tests/e2e/models.mjs`.
 
+## 🌐 Online: Tauschen & Kämpfen (November 2026)
+- Menü › Team, Titelbild („🌐 Online & Freunde“) oder Einladungslink `…/taschi/#join=CODE`. Ein Gerät eröffnet einen Raum (5-stelliger Code, Link, QR-Code), das andere tritt bei. Einladungslinks zeigen über `EasyGamesLink.share` immer auf die easygames-Homepage.
+- Verbindung: `../cloud/fire-peer.js` (Firebase vermittelt, gespielt wird per WebRTC direkt; Rückfall PeerJS). `src/core/net.js` kapselt Raum, Beitritt und Nachrichten.
+- **Tausch:** beide bieten an, beide bestätigen (Prüfsumme über beide Angebote). Empfangene Taschis laufen durch dieselbe Prüfung wie geladene Spielstände (`cleanMonster`), bekommen eine neue Kennung und merken sich den Erst-Trainer (`ot`).
+- **Kampf:** 3 gegen 3, Level-50-Kopien (wie im Kampfturm), keine EP. Der Gastgeber rechnet den Kampf mit der normalen Engine (`createBattle({ pvp: true })`, `runTurn(b, eigene, gegnerische Wahl)`, `replaceFoe`), der Gast schickt seine Wahl und spielt gespiegelte Ereignisse samt Zwischenstand ab (`src/logic/link.js`). Aufgeben und Verbindungsabbruch beenden den Kampf sauber.
+- Tests: `tests/link.test.mjs` (Tausch, Prüfung, kompletter gespiegelter Kampf), Browsertest `tests/e2e/online.mjs` (zwei Spielinstanzen, Tausch und Kampf).
+
 ## Reiten & Surfen (November 2026)
 
 - **Reiten** (Taste R, Controller R3 / rechter Stick drücken, Touch 🐾): Ab dem ersten Licht-Siegel trägt dich ein großes Vierbeiner-, Golem- oder Drachen-Taschi aus dem Team (Begleiter zuerst) – schneller als Rennen. Nochmal drücken zum Absteigen; drinnen wird nicht geritten.

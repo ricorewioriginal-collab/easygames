@@ -704,8 +704,10 @@
    "bg": "linear-gradient(145deg,#18345b,#8b5cf6 58%,#f7ba55)",
    "glow": "rgba(167,139,250,.48)",
    "path": "taschi/",
-   "modes": {},
-   "multiplayer": false,
+   "modes": {
+    "online": true
+   },
+   "multiplayer": true,
    "guide": {
     "anleitung": "TASCHI – Die 16 Lichter ist ein 3D-Sammelrollenspiel: Wähle bei Professor Ulme in Sonnenhain deinen Starter (Glutzahn, Plätscherchen oder Samenling), fang wilde Taschis im hohen Gras und bau ein Team aus bis zu sechs Begleitern auf. In jeder der 16 Regionen löst du ein Rätsel, besiegst die Arenaleitung für ein Licht-Siegel und danach den regionalen Champion, der das Tor zur nächsten Region öffnet. Unterwegs stellst du dich deinem Rivalen Rian und der Schattengilde, die wilde Taschis einfängt. Mit allen 16 Siegeln geht es zum Sternengipfel und in die Sternenliga mit fünf Meisterprüfungen. Kämpfe laufen rundenbasiert mit zehn Typen (Feuer schlägt Pflanze, Wasser schlägt Feuer …), Statusveränderungen, Einzel- und Doppelkämpfen. Drei Speicherplätze, mit Google auch geräteübergreifend.",
     "steuerung": [
@@ -719,8 +721,8 @@
      "Rian nimmt immer den Starter, der deinen schlägt – nimm ein Taschi mit, das dagegen stark ist."
     ]
    },
-   "size": 12784094,
-   "files": 106,
+   "size": 12825662,
+   "files": 109,
    "offline": true,
    "cloud": {
     "game": "taschi",

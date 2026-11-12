@@ -43,7 +43,7 @@ export function newSave(player = {}) {
 // --------------------------------------------------------------------------
 // Validation – repairs what can be repaired, rejects what is unusable.
 // --------------------------------------------------------------------------
-function cleanMonster(m) {
+export function cleanMonster(m) {
   if (!m || !SPECIES[m.id]) return null;
   const out = {
     uid: typeof m.uid === 'string' && m.uid ? m.uid : newUid(),
@@ -57,6 +57,7 @@ function cleanMonster(m) {
   if (typeof m.nick === 'string' && m.nick.trim()) out.nick = m.nick.trim().slice(0, 14);
   if (Number.isInteger(m.nature) && m.nature >= 0 && m.nature < 10) out.nature = m.nature;
   if (m.shiny === true) out.shiny = true;
+  if (typeof m.ot === 'string' && m.ot.trim()) out.ot = m.ot.replace(/[<>]/g, '').trim().slice(0, 20);   // Erst-Trainer (Online-Tausch)
   if (m.caughtIn !== undefined) out.caughtIn = m.caughtIn;
   if (m.ball && ITEMS[m.ball]) out.ball = m.ball;
   if (m.held && ITEMS[m.held]?.category === 'held') out.held = m.held;
