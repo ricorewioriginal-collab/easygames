@@ -20,6 +20,9 @@ const only = process.argv[2] || '';
     await w(4200); for (let i = 0; i < 30 && (await state(p)).dlg; i++) await key('Enter', 160);
     await w(1500); for (let i = 0; i < 30 && (await state(p)).dlg; i++) await key('Enter', 160);
     ok(kind, 'Dialoge weiterschalten', !(await state(p)).dlg);
+    if (s.mode === 'play') ok(kind, 'Neues Spiel beginnt im Camp', await p.evaluate(() => !!(__zotik.WLD && __zotik.WLD.camp)));
+    await p.evaluate(() => { const Z = __zotik; if (Z.WLD && Z.WLD.camp) { Z.X.fromCamp = true; Z.travel(1); } }); await w(2500);   // über den Pfad ins Dorf
+    for (let i = 0; i < 30 && (await state(p)).dlg; i++) await key('Enter', 160);
     // Laufen
     const pos0 = await p.evaluate(() => [__zotik.pl.x, __zotik.pl.z]);
     if (kind === 'tastatur') { await p.keyboard.down('KeyW'); await w(1200); await p.keyboard.up('KeyW'); } else if (kind === 'fernbedienung') { await p.keyboard.down('ArrowUp'); await w(1200); await p.keyboard.up('ArrowUp'); } else { await p.evaluate(() => { __pad.axes[1] = -1; }); await w(1200); await p.evaluate(() => { __pad.axes[1] = 0; }); }

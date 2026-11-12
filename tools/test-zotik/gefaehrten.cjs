@@ -36,7 +36,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); 
   ok(L.tk.lyra === 2 && L.pq.lyra === 1 && L.pq.nia === 1, 'Gespräche zählen, persönliche Kapitel freigeschaltet: ' + JSON.stringify(L));
 
   // Solmera: Korrod erscheint, Nias Kapitel (Keshs Bogen) und Seelenlicht „Licht“
-  await p.evaluate(() => { const S = __zotik.S(); S.cd[4] = { st: 7, fin: 0, bd: 1, arr: 1, e1: 1, e2: 1, k: 0, b: [0, 0, 0], ord: 0 }; __zotik.switchWorld(4); }); await w(1500); await calm();
+  await p.evaluate(() => { const S = __zotik.S(); S.cd[4] = { st: 7, fin: 0, bd: 1, arr: 1, e1: 1, e2: 1, k: 0, b: [0, 0, 0], ord: 0 }; __zotik.switchWorld(4); __zotik.LF().firstArrive(4); }); await w(1500); await calm();
   for (let k = 0; k < 10 && !/Korrod/.test(log); k++) { await w(600); log += await dlgText(); await calm(); }
   ok(/Korrod/.test(log), 'Solmera: Korrod, das Gesicht des Zerfalls, tritt auf'); await calm();
   await flood(p);
@@ -61,7 +61,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); 
   ok(await p.evaluate(() => __zotik.X.tmul > 1.2 && __zotik.X.tmulT > 0), 'Teamangriff wird durch Bindung stärker (×' + (await p.evaluate(() => __zotik.X.tmul.toFixed(2))) + ')');
 
   // Elaris: Vexa – nicht zu gewinnen, endet mit Szene statt Game Over
-  await p.evaluate(() => { const Z = __zotik; Z.S().hp = Z.maxHp(); Z.S().cd[2].fin = 0; Z.switchWorld(2); }); await w(1500); await calm();
+  await p.evaluate(() => { const Z = __zotik; Z.S().hp = Z.maxHp(); Z.S().cd[2].fin = 0; Z.switchWorld(2); Z.LF().firstArrive(2); }); await w(1500); await calm();
   log = ''; for (let k = 0; k < 10 && !/Vexa/.test(log); k++) { await w(600); log += await dlgText(); if (/Vexa|\?\?\?/.test(log)) { await calm(); break; } await calm(); }
   if (process.env.DBG) console.log('LOG', log.slice(-300)); ok(await p.evaluate(() => __zotik.LF().st().fa.v === 1), 'Elaris: Vexa stellt sich vor'); await w(300);
   const vx = await p.evaluate(() => { const e = __zotik.E.find(e => !e.dead && e.unwin); return e ? e.hp : 0; });

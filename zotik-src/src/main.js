@@ -1506,7 +1506,7 @@ function travel(n){
     refreshQuest();updateHud();saveGame(true);
     placeParty();extArrive(n);
     setTimeout(()=>{$('fade').style.opacity=0;const C=CHP[n];banner(n===1?'Lunaris':C.name,n===1?'Dorf am Mondblick':C.sub);
-      if(n>=2&&n<12){const s=chCs(n);if(!s.arr){s.arr=1;if(n===2)joinParty('lyra');setTimeout(()=>cutscene(cutOf(n).arr),1600)}}arcSoon(n)},120)}}
+      if(n>=2&&n<12){const s=chCs(n);if(!s.arr){s.arr=1;if(n===2)joinParty('lyra');setTimeout(()=>cutscene(cutOf(n).arr),1600);LF().firstArrive(n)}}arcSoon(n)},120)}}
 /* ---- Geschichten der Gefährten (laut Skript: Rovans Schuld, Lyras Familie, Nias Unsicherheit) ---- */
 const ARCS=[
   {id:'L1',w:2,who:'lyra',l:[['Lyra','Das Forschungsviertel … hier hat meine Mutter gearbeitet, bevor ich geboren wurde.'],['Zotik','Woran hat sie geforscht?'],['Lyra','Am Weltenkern. Mehr weiß ich nicht. Ihre Notizen enden mitten im Satz.']]},

@@ -103,14 +103,18 @@ export function createLufia(C) {
     if (n === 13) { const w = party().filter(id => { const t = nextTalk(id); return t && !t.lock }); if (w.length || decOk()) pend.push(() => C.toast('🔥 Am Feuer wartet ein Gespräch: ' + (decOk() ? 'Lyra' : w.map(id => NAMES[id]).join(', ')))); return }
     if (!W || W.cave || (C.guest && C.guest())) return;
     l.fa = l.fa || {};
-    if (n === 2 && !l.fa.v && !C.chDone(2)) pend.push(() => faceVexa());
-    if (n === 4 && !l.fa.k) pend.push(() => { l.fa.k = 1; motif('korrod'); C.cutscene('FACE_KORROD', () => C.saveGame(true)) });
-    if (n === 6 && !l.fa.m) pend.push(() => { l.fa.m = 1; motif('mirrel'); C.cutscene('FACE_MIRREL', () => C.saveGame(true)) });
-    if (n === 8 && !l.fa.a) pend.push(() => { l.fa.a = 1; motif('ashen'); C.cutscene('FACE_ASHEN', () => C.saveGame(true)) });
     if (n === 9 && !l.fa.f9) spot(n, 300, '👁️', 'Riss der Gesichter', 'Den Gesichtern entgegentreten', () => faceFight(n, ['vexa', 'korrod'], 'FACE_AST', 'f9'), () => !l.fa.f9 && !fight);
     if (n === 10 && !l.fa.f10) spot(n, 301, '👁️', 'Riss der Gesichter', 'Den Gesichtern entgegentreten', () => faceFight(n, ['mirrel', 'ashen'], 'FACE_ELY', 'f10'), () => !l.fa.f10 && !fight);
     for (const id in PQ) { const q = PQ[id]; if (q.w === n && l.pq[id] === 1) spot(n, 200 + n, q.em, q.name, 'Untersuchen', () => pqStart(id), () => st().pq[id] === 1 && !fight) }
     for (const k in SOULS) { const so = SOULS[k]; if (so.w === n && !l.so.includes(k)) spot(n, 100 + n, so.em, 'Seelenlicht', 'Seele rufen', () => soulFind(k), () => !st().so.includes(k)) }
+  }
+  /* Auftritte der Gesichter des Risses: gleich nach der Ankunftsszene beim ersten Besuch einer Welt */
+  function firstArrive(n) {
+    const l = st(); if (C.guest && C.guest()) return; idle = -3;
+    if (n === 2 && !l.fa.v) pend.push(() => faceVexa());
+    if (n === 4 && !l.fa.k) pend.push(() => { l.fa.k = 1; motif('korrod'); C.cutscene('FACE_KORROD', () => C.saveGame(true)) });
+    if (n === 6 && !l.fa.m) pend.push(() => { l.fa.m = 1; motif('mirrel'); C.cutscene('FACE_MIRREL', () => C.saveGame(true)) });
+    if (n === 8 && !l.fa.a) pend.push(() => { l.fa.a = 1; motif('ashen'); C.cutscene('FACE_ASHEN', () => C.saveGame(true)) });
   }
   function spot(n, key, em, name, pr, fn, vis) {
     const p = C.nqSpot(key); if (!p) return; const g = C.nqMarker(p[0], p[1], em); g.userData.on = vis;
@@ -245,7 +249,7 @@ export function createLufia(C) {
   function kill(e) { if (!e || e.unwin) return; const v = e.d && (e.d.boss || e.cboss) ? 3 : e.elite ? 1 : .15; for (const id of party()) addBond(id, v) }
 
   return {
-    motif, addBond, bondMul, arrive, fireTalk, update, kill, unwinEnd, campHTML, soulHTML, caveHTML, bind, relic, dayDone, daySeed, today,
+    motif, addBond, bondMul, arrive, firstArrive, fireTalk, update, kill, unwinEnd, campHTML, soulHTML, caveHTML, bind, relic, dayDone, daySeed, today,
     em: () => SOULS[soul()].em, soulEl: () => SOULS[soul()].el || undefined, soulMul: () => soul() === 'schatten' ? 1.25 : 1, fav: k => SOULS[soul()].fav === k, soul,
     bond: id => st().b[id] || 0, unwinOn: () => !!unwin, st
   };
