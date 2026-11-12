@@ -73,3 +73,30 @@ export const CAPSULES = {
     forms: [{ name: 'Drakling', model: 'YellowDragon', tint: '#f0e0ff', h: 0.9 }, { name: 'Sternendrache', model: 'Dragon', tint: '#d0c0ff', h: 1.6 }, { name: 'Äonenwyrm', model: 'Dragon', tint: '#fff0c0', h: 2.2 }],
     skills: [{ name: 'Lichtatem', kind: 'mag', mult: 1.8, all: false }, { name: 'Segenslicht', kind: 'heal', mult: 2.6, all: true }, { name: 'Sternenfall', kind: 'mag', mult: 2.0, all: true }] }
 };
+
+// ---------------------------------------------------------------- Stufe 3: Rätsel und Werkzeuge
+// Vor jedem Tor zur Halle liegt ein Lichtsiegel: Es bricht, wenn alle Druckplatten mit Steinblöcken beschwert und alle Fackeln entzündet sind.
+// Werkzeuge: Kristallhammer (zerschlägt rissige Felsen), Glutstab (entzündet Fackeln, verbrennt Dornenranken).
+export const TOOLS = { tool_hammer: { name: 'Kristallhammer', desc: 'zerschlägt rissige Felsen' }, tool_fire: { name: 'Glutstab', desc: 'entzündet Fackeln und verbrennt Dornenranken' } };
+Object.assign(MAPS.rap, {
+  puzzle: { blocks: [[8, 13], [13, 14]], plates: [[10, 13], [15, 14]], torches: [] },
+  loot: [{ id: 'rap_r1', x: 17, y: 5, kind: 'rock', gold: 120 }, { id: 'rap_r2', x: 21, y: 8, kind: 'rock', v: 'grosstrank', n: 2 }]
+});
+MAPS.rap.chests.push({ id: 'rap_tool', x: 14, y: 11, kind: 'tool', v: 'tool_hammer' });
+Object.assign(MAPS.schlager, {
+  puzzle: { blocks: [[8, 14]], plates: [[10, 14]], torches: [[7, 12], [13, 12]] },
+  loot: [{ id: 'schlager_b1', x: 18, y: 9, kind: 'bramble', gold: 200 }, { id: 'schlager_b2', x: 13, y: 9, kind: 'bramble', v: 'aetherflask', n: 1 }]
+});
+MAPS.schlager.chests.push({ id: 'schlager_tool', x: 5, y: 11, kind: 'tool', v: 'tool_fire' });
+Object.assign(MAPS.xmas, {
+  puzzle: { blocks: [[8, 13], [11, 14]], plates: [[10, 13], [13, 14]], torches: [[16, 13]] },
+  loot: [{ id: 'xmas_r1', x: 4, y: 10, kind: 'rock', v: 'frucht', n: 1 }, { id: 'xmas_b1', x: 13, y: 8, kind: 'bramble', gold: 300 }]
+});
+Object.assign(MAPS.rock, {
+  puzzle: { blocks: [[8, 13], [11, 14]], plates: [[10, 13], [13, 14]], torches: [[16, 13], [22, 13]] },
+  loot: [{ id: 'rock_r1', x: 11, y: 8, kind: 'rock', v: 'grosstrank', n: 3 }, { id: 'rock_b1', x: 4, y: 7, kind: 'bramble', v: 'frucht', n: 1 }]
+});
+Object.assign(MAPS.tower, {
+  puzzle: { blocks: [[4, 13], [9, 14]], plates: [[6, 13], [11, 14]], torches: [[16, 13], [22, 13]] },
+  loot: [{ id: 'tower_r1', x: 8, y: 11, kind: 'rock', v: 'frucht', n: 1 }, { id: 'tower_b1', x: 10, y: 9, kind: 'bramble', v: 'weck', n: 2 }, { id: 'tower_r2', x: 5, y: 5, kind: 'rock', gold: 500 }]
+});

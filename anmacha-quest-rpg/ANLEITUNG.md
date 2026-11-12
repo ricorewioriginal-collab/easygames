@@ -139,6 +139,25 @@ Faustregel: Die empfohlene Stufe sollte erreicht sein. Wer unterwegs viele Gegne
 
 *Credits (alle CC0): 3D-Modelle von Quaternius (Helden „RPG Characters“, „Cute Animated Monsters“, „Animated Monster Pack“, „Ultimate Textured Building Pack“) und Kenney (Fantasy Town Kit, Mini Dungeon, Mini Forest, Graveyard Kit). Technik: Three.js (WebGL).*
 
+## Dungeon-Rätsel und Werkzeuge
+
+Vor jeder Bosshalle liegt ein **Lichtsiegel**. Es bricht, wenn jede leuchtende **Bodenplatte** einen **Steinblock** trägt und jede **Fackel** brennt. Blöcke schiebst du, indem du dagegenläufst (oder ihn mit A/Enter anstößt). Steckt ein Block fest, verlasse das Reich und komm zurück. Die Inschrift am Siegel verrät, was noch fehlt.
+
+| Werkzeug | Fundort | Wirkung |
+|---|---|---|
+| Kristallhammer | Echogruft, Truhe im Osten | zerschlägt rissige Felsen |
+| Glutstab | Rosenhain, Truhe im Westen | entzündet Fackeln, verbrennt Dornenranken |
+
+Hinter **Felsen** und **Dornenranken** (sie glitzern) liegen Münzen, Tränke und Sphärenfrüchte.
+
+| Reich | Rätsel |
+|---|---|
+| Echogruft | 2 Blöcke je 2 Felder nach rechts auf die Platten |
+| Rosenhain | 1 Block 2 Felder nach rechts, 2 Fackeln |
+| Frostgrotte | 2 Blöcke je 2 Felder nach rechts, 1 Fackel |
+| Glutschlund | 2 Blöcke je 2 Felder nach rechts, 2 Fackeln |
+| Turm der Stille | 2 Blöcke je 2 Felder nach rechts, 2 Fackeln |
+
 ## Lindmark und Kapselgeister
 
 **Lindmark** (Weltkarte, Osten) öffnet sich nach dem Sieg in der Echogruft: Gasthaus (heilt alles und speichert, Preis nach Stufe), Händler Quinn (Großtrank, Ätherflasche, Glutbombe, Sphärenfrucht), Schmied Torvald (Ausrüstung bis Stufe 10).

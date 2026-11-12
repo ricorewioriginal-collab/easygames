@@ -300,6 +300,7 @@ export class Sound {
       case 'chest': arp([67, 72, 76, 79, 84], 0.07, 'triangle', 0.12); break;
       case 'door': blip('sawtooth', 90, 60, 0.5, 0.12); noise(300, 0.5, 0.15); break;
       case 'step': noise(500, 0.04, 0.03, 'lowpass'); break;
+      case 'push': noise(220, 0.25, 0.25, 'lowpass'); blip('sine', 90, 60, 0.2, 0.15); break;
       case 'encounter': arp([62, 65, 69, 74, 77, 81], 0.035, 'sawtooth', 0.06); break;
       case 'victory': arp([67, 67, 67, 72, 79, 76, 79, 84], 0.11, 'square', 0.07); break;
       case 'levelup': arp([72, 76, 79, 84, 79, 84, 88], 0.07, 'triangle', 0.12); break;
