@@ -156,6 +156,8 @@ export function createMaerchen(C) {
       case 'mask': g.add(mk(G.sph, M([0xf0e8d8, 0xd8b040, 0xc8402a, 0x4a6ac8, 0xe8e8f0][i % 5], { r: .4 }), 0, .55, 0, .3, .36, .1)); g.add(mk(G.box, M(0x1a1410), 0, .62, .06, .25, .06, .04, false)); g.add(glow(0xffe08a, 2, 0, .55, 0, .7)); break;
       case 'market': { if (i % 4 === 0) { const P = FOE.make('reiter', 0x8a5a3a, false); P.root.scale.setScalar(.75); P.body.children.forEach((c, k) => { if (k > 10) c.visible = false; }); g.add(P.root); }
         else g.add(mk(i % 4 === 1 ? G.box : G.tor, M([0, 0x6a3a1a, 0x4a3a2a, 0x3a2a1a][i % 4], { r: .6 }), 0, .5, 0, .5, .3, .4)); g.add(glow(0xffe08a, 2.2, 0, .9, 0, .6)); break; }
+      case 'shield': { const c = [0x2a6a3a, 0xe8e8f0, 0xc83a2a, 0xd8b040, 0x3a5aa8, 0x6a3a8a][i % 6], sh = mk(G.cyl, M(c, { r: .45, m: .3 }), 0, .7, 0, .42, .07, .42); sh.rotation.x = 1.5708; g.add(sh);
+        g.add(mk(G.box, M(0xf0e0b0, { m: .6, r: .3 }), 0, .7, .05, .08, .56, .03, false)); g.add(mk(G.box, M(0xf0e0b0, { m: .6, r: .3 }), 0, .78, .05, .44, .08, .03, false)); g.add(glow(0xffe8a0, 2.2, 0, .8, 0, .7)); break; }
       default: g.add(mk(G.oct, M(0xffe08a, { e: 0xffc040, ei: 2 }), 0, .5, 0, .25, .35, .25)); g.add(glow(0xffd860, 2, 0, .5, 0, .8));
     }
     return g;
