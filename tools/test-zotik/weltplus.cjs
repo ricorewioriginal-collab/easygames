@@ -22,6 +22,8 @@ const { chromium, ARGS, open, intro } = require('./lib.cjs');
   ok('Zurückbringen gibt Belohnung', rw.q === 2 && rw.gain > 0, JSON.stringify(rw));
   const fe = await p.evaluate(() => { const Z = __zotik; Z.WP().bossDone(3, Z.WLD.path, Z.hgt); return { fest: !!Z.WP().W.fest, menu: /Truhen/.test(Z.WP().menu(3)) }; });
   ok('Fest nach dem Boss und Truhen im Auftragsmenü', fe.fest && fe.menu, JSON.stringify(fe));
+  const rd = await p.evaluate(async () => { const Z = __zotik, n = Z.NPC.find(o => o.id === 'wpr3'); if (!n) return 'kein Gastgeber'; Z.RIDE().open(3); const o = { mode: Z.mode }; document.getElementById('rdGo').click(); const R = Z.RIDE().R; R.t = 1.2; for (let i = 0; i < 40; i++) Z.RIDE().frame(1 / 30); o.end = !R.run; o.sc = R.best; o.box = !document.getElementById('rdBox').hidden; const a = Z.S().shards; document.getElementById('rdQ').click(); o.back = Z.mode; o.rec = (Z.S().ride || {})[3] !== undefined; return o; });
+  ok('Weltrennen in Valdoria (Kanalrennen) starten, fahren, beenden', rd.mode === 'ride' && rd.end && rd.box && rd.back === 'play' && rd.rec, JSON.stringify(rd));
   let all = true; for (const n of [2, 4, 5, 6, 7, 8, 9, 10]) { await p.evaluate(n => __zotik.switchWorld(n), n); const w = await p.evaluate(n => { const W = __zotik.WP().W; return W && W.n === n && W.br.length >= 8; }, n); if (!w) { all = false; console.log('  Welt', n, 'fehlt'); } }
   ok('Alle Kapitelwelten 2–10 haben die Bausteine', all);
   ok('keine Fehler', !p.errs.length, p.errs.join(' | '));
