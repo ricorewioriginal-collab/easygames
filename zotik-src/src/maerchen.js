@@ -222,7 +222,7 @@ export function createMaerchen(C) {
     // Figuren
     for (const d of w.npcs) { const P = npcModel(d); const o = C.addNpc('mw_' + d.id, d.name, d.x, d.z, P, () => talk(d), d.face, () => mark(d.id)); o.mwId = d.id; o.noRoute = 1; }
     // Gegner-Arten dieser Welt
-    for (const k of ['a', 'b', 'c', 'x', 'y']) { const f = w.foes[k]; if (!f) continue; const key = 'mw' + n + k, hov = FOE.HOVER.has(f[0]) || C.CR().HOV.has(f[0]), boss = k === 'x' || k === 'y', base = boss ? C.ED.boss : hov ? C.ED.rift : C.ED.wolf;
+    for (const k of ['a', 'b', 'c', 'd', 'x', 'y']) { const f = w.foes[k]; if (!f) continue; const key = 'mw' + n + k, hov = FOE.HOVER.has(f[0]) || C.CR().HOV.has(f[0]), boss = k === 'x' || k === 'y', base = boss ? C.ED.boss : hov ? C.ED.rift : C.ED.wolf;
       C.ED[key] = Object.assign({}, base, { name: f[1], col: f[2], make: () => FOE.has(f[0]) ? FOE.make(f[0], f[2], boss) : C.CR().makeKind(f[0], f[2], boss), sc: boss ? (f[0] === 'hydra' || f[0] === 'loewe' || f[0] === 'tiger' ? 1.55 : 1.45) : f[0] === 'riese' ? 1.15 : 1, base: hov ? 'rift' : 'wolf' },
         boss ? { boss: true, sub: f[3], p2t: f[4], minion: 'mw' + n + 'a', aggro: 30 } : {}); WD.edKeys.push(key); }
     // Gegner in der Wildnis (nicht am Ankunftsplatz, nicht in Dörfern)

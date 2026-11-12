@@ -117,6 +117,22 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       for (const [x, z] of [[42, -4], [36, -17], [24, -4], [46, -12]]) { b.cyl(x, 0, z, 2.2, 2, 0xb08a5a, { solid: 1 }); b.cone(x, 2, z, 2.9, 2.2, 0xc8b070, {}); b.box(x, 0, z + 2.18, .9, 1.5, .06, 0x3a2a1a, { cast: false }); }
       for (const [x, z] of [[30, -1], [40, -11], [27, -12]]) { for (let i = 0; i < 6; i++) b.ico(x + Math.cos(i) * .8, .15, z + Math.sin(i) * .8, .22, .18, .22, 0x6a6458); A.fire(x, z, .7); }
       for (const [x, z, r] of [[48, -24, .4], [52, -18, 1.6], [44, -28, 2.8]]) { const g = A.creature('eber', 0x3a3a3e, 1.2); g.position.set(x, b.h(x, z), z); g.rotation.y = r; b.addCol(x, z, 1.1); }
+      // Friedensfelsen (Wasserfrieden): flacher Fels am Wasserloch, Hathis Ruheplatz
+      b.ico(-88, .3, -2, 4.6, 1.6, 3.6, 0x8a7a64, { solid: 1, mat: { r: 1 } }); for (let i = 0; i < 7; i++) b.ico(-80 + Math.cos(i) * 9, .3, -4 + Math.sin(i) * 8, .9, .6, .8, 0x6a6458, { solid: 1 });
+      // Bienenfelsen: zerklüftete Felsen voller Waben, summende Lichtpunkte
+      K.cliff([[-82, -96, 4, 7], [-70, -100, 4.6, 8], [-62, -92, 3.4, 6], [-84, -84, 3, 5]], 0x7a6a58);
+      for (let i = 0; i < 16; i++) { const x = -74 + Math.cos(i * .9) * (6 + i % 3), z = -94 + Math.sin(i * .9) * 4; b.sph(x, 2 + (i % 4) * .9, z, .5, .7, .4, 0xd8a030, { mat: { e: 0x8a5a10, ei: .8 }, cast: false }); }
+      for (let i = 0; i < 8; i++) b.glow(0xffd040, 1.2, -74 + Math.cos(i * 2.3) * 7, 3 + (i % 3), -92 + Math.sin(i * 2.3) * 5, .7);
+      // Schatzgewölbe unter den Kalten Höhlen: Torbogen, Goldhaufen, Kobra-Statue
+      K.arch(66, -86, 5, 4.6, 0x8a8a78, 0, .9); K.wall(60, -100, 72, -100, 4, 1.2, 0x8a8a78); K.wall(58, -88, 58, -100, 4, 1.2, 0x8a8a78); K.wall(74, -88, 74, -100, 4, 1.2, 0x8a8a78);
+      for (let i = 0; i < 9; i++) b.sph(62 + (i % 3) * 3, .2, -96 + Math.floor(i / 3) * 2.4, .9, .45, .9, 0xd8b040, { mat: { m: .9, r: .3, e: 0x6a4a10, ei: .5 }, cast: false });
+      b.cyl(66, 0, -98, .5, 3.2, 0xe8e4d8, { solid: 1 }); b.sph(66, 3.3, -97.6, .6, .5, .45, 0xe8e4d8); b.glow(0xffe08a, 6, 66, 1.5, -94, .4);
+      // Büffelschlucht (Tiger! Tiger!): zwei Felswände, Büffelherde am Hang
+      K.cliff([[64, 4, 3, 7], [64, -8, 3.4, 8], [64, -20, 3, 7], [86, 2, 3, 7], [86, -10, 3.6, 8], [86, -22, 3, 6]], 0x8a7a64);
+      for (const [x, z, r] of [[70, -2, .2], [76, 0, -.4], [80, -6, .8], [72, -14, 2.8], [78, -18, 3.1]]) { const g = A.creature('eber', 0x2a2a2e, 1.4); g.position.set(x, b.h(x, z), z); g.rotation.y = r; b.addCol(x, z, 1.2); }
+      // Bungalow (Rikki-tikki-tavi): weißes Haus mit Veranda und Garten
+      K.house(-50, 42, 9, 7, 3.2, 0xf0ece0, 0x8a3a2a, .3, {}); for (let i = 0; i < 4; i++) b.cyl(-54 + i * 2.6, 0, 46.5, .12, 3, 0xe8e0d0, { lo: 1, solid: 1 });
+      for (let i = 0; i < 10; i++) b.ico(-40 + Math.cos(i * .63) * 6, .3, 34 + Math.sin(i * .63) * 5, .7, .6, .7, [0x3a8a2a, 0xc84a6a, 0xe0a030][i % 3], { cast: false });
     },
     notredame(b, w, A) {
       const K = kit(b);
