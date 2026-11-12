@@ -19,6 +19,8 @@ const { chromium, ARGS, open, state, shot } = require('./lib.cjs');
   const r2 = await p.evaluate(() => { const b = [...document.querySelectorAll('#deck button')].find(x => /Funkenwirbel/.test(x.textContent)); if (!b) return null; const q = b.getBoundingClientRect(); return [q.left + q.width / 2, q.top + q.height / 2]; }); if (r2) { await p.touchscreen.tap(r2[0], r2[1]); await w(300); }
   ok('Kommandomenü antippen: Magie', await p.evaluate(m => __zotik.S().mp < m - 5, mp0));
   ok('Kommandomenü klappt nach dem Befehl wieder zu', await p.evaluate(() => !document.getElementById('deck').classList.contains('open')));
+  ok('Neues Spiel beginnt im Camp', await p.evaluate(() => !!(__zotik.WLD && __zotik.WLD.camp)));
+  await p.evaluate(() => { const Z = __zotik; Z.X.fromCamp = true; Z.travel(1); }); await w(2500); for (let i = 0; i < 30 && (await state(p)).dlg; i++) await tap('#dlg');
   await p.evaluate(() => { const Z = __zotik, m = Z.NPC.find(n => n.id === 'mira'); Z.pl.x = m.x + 1.6; Z.pl.z = m.z + .4; }); await w(600); await tap('#bUse'); ok('Aktion: sprechen', (await state(p)).dlg); for (let i = 0; i < 30 && (await state(p)).dlg; i++) await tap('#dlg');
   await tap('#menuBtn'); ok('Menü', (await state(p)).menu); await p.evaluate(() => { [...document.querySelectorAll('#tabs button')].find(b => /Steuerung/.test(b.textContent)).click(); }); await w(200); await shot(p, 'handy-hilfe'); await tap('#saveBtn'); await tap('#mResume'); ok('Menü zu', !(await state(p)).menu);
   // Speichern → neu laden → identischer Stand

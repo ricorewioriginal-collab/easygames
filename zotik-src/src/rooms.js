@@ -1,4 +1,4 @@
-// Raumrätsel für Werkzeug-Ruinen und die Uralte Höhle (angelehnt an klassische Dungeon-Rätsel, eigene Umsetzung):
+// Raumrätsel für Werkzeug-Ruinen und die Echogrotte (angelehnt an klassische Dungeon-Rätsel, eigene Umsetzung):
 //  tones   – Klangplatten: Melodie am Lauschstein anhören, dann die Platten in dieser Reihenfolge betreten
 //  lights  – Lichtplatten: jedes Betreten schaltet die Platte und ihre Nachbarn um; alle müssen leuchten
 //  statues – Wächterstatuen: Drehen (Aktion) dreht auch die Nachbarstatue; alle sollen zum Schatz blicken
