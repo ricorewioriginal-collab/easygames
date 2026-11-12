@@ -3,7 +3,7 @@
 // dessen Nachrichten der Test zwischen den beiden Seiten weiterreicht.
 // Run: node tests/e2e/online.mjs [screenshot-dir]
 import assert from 'node:assert/strict';
-import { launch, seededStorage, waitState, waitIdle, G } from './helpers.mjs';
+import { launch, seededStorage, waitState, waitIdle, G, pressStart } from './helpers.mjs';
 
 const dir = process.argv[2] || null;
 const seed = (name, extra) => seededStorage((s, { makeMonster, rng }) => { s.player.name = name; s.badges = 2; s.team.push(makeMonster(extra, 14, rng)); s.dex[extra] = 2; });
@@ -37,7 +37,7 @@ const choose = async (t, text) => { const l = t.page.locator('.choice', { hasTex
 try {
   for (const t of [A, B]) { await t.page.goto(t.base); await waitState(t.page, 'title'); }
   await shot(A, 'online-title');
-  for (const t of [A, B]) { await t.page.getByText('Fortsetzen').click(); await waitState(t.page, 'world'); await waitIdle(t.page); }
+  for (const t of [A, B]) { await pressStart(t.page); await t.page.getByText('Fortsetzen').click(); await waitState(t.page, 'world'); await waitIdle(t.page); }
   // A eröffnet über Menü › Team, B tritt mit dem Code bei
   await A.page.evaluate(() => import('./src/ui/menus.js').then(m => m.openPauseMenu(window.__taschi, 'team')));
   await click(A, '🌐 Online');

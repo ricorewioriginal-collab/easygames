@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e678531b64f2",
- "generated": "2026-11-12T15:17:00+00:00",
- "commit": "577a8427cf42a6a62b82fbf87f158ebf37552a43",
+ "version": "f6b00c14379c",
+ "generated": "2026-11-12T16:23:13+01:00",
+ "commit": "aa25a4430bc9b2141b03e4515045c5a5f03495c3",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8844,7 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 257559,
-   "h": "6b31c2994820b1f0087f397596b7030762f43cc745b7635c481df5c9c8f96520"
+   "h": "0c87f0cee835450b08c96efabc917f81e88c421e3f190a771f9e894aa8ad8ea3"
   },
   {
    "p": "taschi/assets/models/alien.glb",
@@ -9103,8 +9103,8 @@
   },
   {
    "p": "taschi/card.svg",
-   "s": 2177,
-   "h": "2fa2d6b39a4bb40615de46a0571efdd63b7cfed26f0673a719827d6cb297350f"
+   "s": 4743,
+   "h": "d935c63d967268d8a692ac71328821b7538c8d1bfe11c2df656746e56ea5f51e"
   },
   {
    "p": "taschi/classic.html",
@@ -9118,8 +9118,8 @@
   },
   {
    "p": "taschi/index.html",
-   "s": 2739,
-   "h": "3a1acf4f8263b778a77ec5eabd6155891aa6488cb5fef34b2028876721d2bd3a"
+   "s": 5019,
+   "h": "f4489fcaabaf67c96adee7542ad96e18e1830e2073000e3b3a19ace1c13dfa03"
   },
   {
    "p": "taschi/src/core/audio.js",
@@ -9288,8 +9288,8 @@
   },
   {
    "p": "taschi/src/game/game.js",
-   "s": 86804,
-   "h": "2466aaae8d241da9270b642229620e31c31c798f43e510cfa35bbb76c9a34294"
+   "s": 87230,
+   "h": "c67693d124c7051ad3f473393074adab9ec2628f1ab4bfe4faed6cd6de623e44"
   },
   {
    "p": "taschi/src/game/world.js",
@@ -9388,8 +9388,13 @@
   },
   {
    "p": "taschi/src/main.js",
-   "s": 1554,
-   "h": "19518f3e08b40c8ff6a90eaa2d6697835a66730bc5f812ed049f4bc873d07c04"
+   "s": 1185,
+   "h": "5669f5d7d51f343fd348233210fea10424ba3d55f3ebdab0101b68725c744608"
+  },
+  {
+   "p": "taschi/src/ui/brand.js",
+   "s": 13150,
+   "h": "513211797dbae1c91d02891494e5f78350acda08c59f596f81e4a493187e853d"
   },
   {
    "p": "taschi/src/ui/extras.js",
@@ -9418,13 +9423,13 @@
   },
   {
    "p": "taschi/src/ui/screens.js",
-   "s": 14674,
-   "h": "278c8cc8d3daaa5a6604afaf3ca194f1c70908c23668c3e58d4203d0ee137ce1"
+   "s": 16580,
+   "h": "6be85b39145227926427914f4b1adab7c7ec888e8008886d3eb7f9bdaa042858"
   },
   {
    "p": "taschi/src/ui/style.css",
-   "s": 29642,
-   "h": "e221aa4b12768d682d3c86abe2fa7338044b26096dc70030af50d064969cbcbe"
+   "s": 42542,
+   "h": "41de5f8c7424ff5904f88a29e7f99f4cc85231e98e06aca806ed52fca9dd396c"
   },
   {
    "p": "taschi/src/ui/ui.js",
