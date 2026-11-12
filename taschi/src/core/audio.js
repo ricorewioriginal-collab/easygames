@@ -73,7 +73,7 @@ export class Audio {
     if (!this.ctx) return;
     const s = this.settings, m = s.get('muted') ? 0 : 1, t = this.ctx.currentTime;
     this.master.gain.setTargetAtTime(m, t, 0.05);
-    this.musicBus.gain.setTargetAtTime(s.get('musicVolume') * 0.55, t, 0.1);
+    this.musicBus.gain.setTargetAtTime(this.radioActive ? 0 : s.get('musicVolume') * 0.55, t, 0.3);   // Abenteurer-Radio ersetzt die Musik
     this.sfxBus.gain.setTargetAtTime(s.get('sfxVolume') * 0.9, t, 0.05);
     this.ambBus.gain.setTargetAtTime(s.get('ambienceVolume') * 0.6, t, 0.2);
   }
