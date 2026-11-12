@@ -1,21 +1,29 @@
 import { Rng } from '../../rng';
 import type { InputFrame, MiniGame } from '../types';
 import { NEUTRAL_INPUT } from '../types';
-import { lerp } from '../util';
+import { clamp, lerp } from '../util';
 import { hash } from './echomuster';
 
 /**
- * Pendel-Punkt: Ein Pendel schwingt über eine Zielzone. Mit A stoppst du es – je näher an der Mitte, desto mehr Punkte.
- * Acht Runden: Die Zone schrumpft, das Pendel wird schneller. Es zählt Präzision, nicht Reaktionsgeschwindigkeit.
+ * Pendel-Punkt: Deine Figur schwingt am Pendel über einer Zielzone. Mit A lässt du los – je näher an der Mitte, desto mehr Punkte.
+ * Acht Runden mit steigender Schwierigkeit: Die Zone schrumpft, das Pendel wird schneller, ab Runde 3 wandert die Zone,
+ * ab Runde 6 schwingt das Pendel ungleichmäßig. Treffer ab 800 in Serie geben Bonus, die letzte Runde zählt doppelt.
  */
 export interface PendelRound {
-  /** Mitte der Zielzone in [-1, 1] (Pendelweg) */
+  /** Grundmitte der Zielzone in [-1, 1] (Pendelweg) */
   c: number;
   /** Halbe Breite der Zielzone */
   h: number;
   /** Kreisfrequenz des Pendels (rad/s) */
   omega: number;
   phase0: number;
+  /** Wandernde Zone: Amplitude, Kreisfrequenz (rad/s), Phase */
+  zm: number;
+  zw: number;
+  zph: number;
+  /** Ungleichmäßiges Schwingen: Phasenmodulation (Amplitude, Kreisfrequenz rad/s) */
+  wa: number;
+  ww: number;
 }
 
 export interface PendelState {
@@ -28,9 +36,15 @@ export interface PendelState {
   timer: number;
   /** Gestoppte Position (nur in 'result') */
   stopPos: number;
-  /** Punkte je abgeschlossener Runde */
+  /** Zonenmitte beim Stopp */
+  stopC: number;
+  /** Punkte je abgeschlossener Runde (mit Bonus) */
   pts: number[];
   total: number;
+  /** Treffer ab GOOD in Folge */
+  streak: number;
+  /** Serienbonus der letzten Runde */
+  lastBonus: number;
   /** true, wenn die letzte Runde ohne Stopp ablief */
   timedOut: boolean;
   prevA: boolean;
@@ -42,28 +56,41 @@ export const ROUNDS = 8;
 export const ARM = 30;
 /** Längste Schwingzeit nach dem Scharfstellen */
 export const MAX_SWING = 120;
+/** Ab so vielen Punkten zählt ein Stopp für die Serie */
+export const GOOD = 800;
 const RESULT_TICKS = 42;
 
 /** Pendelposition in [-1, 1] nach k Ticks */
-export const pendulumPos = (r: PendelRound, k: number): number => Math.sin(r.phase0 + (r.omega * k) / 60);
+export const pendulumPos = (r: PendelRound, k: number): number => {
+  const t = k / 60;
+  return Math.sin(r.phase0 + r.omega * t + r.wa * Math.sin(r.ww * t));
+};
+/** Mitte der Zielzone nach k Ticks */
+export const zoneCenter = (r: PendelRound, k: number): number =>
+  r.zm ? clamp(r.c + r.zm * Math.sin(r.zw * (k / 60) + r.zph), -0.88 + r.h, 0.88 - r.h) : r.c;
 
-/** Punkte für einen Stopp bei Position p */
-export function roundPoints(r: PendelRound, p: number): number {
-  const e = Math.abs(p - r.c) / r.h;
+/** Grundpunkte für einen Stopp bei Position p, wenn die Zonenmitte bei c liegt */
+export function roundPoints(r: PendelRound, p: number, c = r.c): number {
+  const e = Math.abs(p - c) / r.h;
   return Math.round(1000 * Math.exp(-(e * e) / 1.5));
 }
+/** Serienbonus für die n-te gute Runde in Folge */
+export const streakBonus = (n: number): number => 100 * clamp(n - 1, 0, 4);
+
+/** Art der Runde für Anzeige und Anleitung */
+export const roundKind = (r: PendelRound): string =>
+  r.wa ? 'Wackelpendel' : r.zm ? 'Wandernde Zone' : 'Ruhige Zone';
 
 export const game: MiniGame<PendelState> = {
   id: 'pendelpunkt',
   name: 'Pendel-Punkt',
-  tagline: 'Stopp das Pendel mitten im Ziel',
+  tagline: 'Lass im richtigen Moment los – mitten ins Ziel!',
   instructions: [
-    'Ein Pendel schwingt hin und her über einer leuchtenden Zielzone.',
-    'Drücke A, um es genau über der Mitte der Zone zu stoppen.',
-    'Je näher an der Mitte, desto mehr Punkte (bis 1000 pro Runde).',
-    'Acht Runden – die Zone wird immer kleiner und das Pendel schneller.',
+    'Deine Figur schwingt am Pendel. Drücke A, um loszulassen – sie fällt senkrecht nach unten.',
+    'Je näher an der Mitte der Zielzone, desto mehr Punkte (bis 1000). Ab 800 Punkten in Folge gibt es Serienbonus.',
+    'Die Zone schrumpft, wandert ab Runde 3, ab Runde 6 schwingt das Pendel ungleichmäßig. Die letzte Runde zählt doppelt!',
   ],
-  controls: { desktop: 'Leertaste, Enter oder Mausklick', touch: 'Großen Knopf antippen' },
+  controls: { desktop: 'Leertaste, Enter oder Mausklick', touch: 'Knopf A antippen' },
   category: 'reaction',
   duration: 30,
   touch: { stick: false, a: true, b: false },
@@ -73,15 +100,23 @@ export const game: MiniGame<PendelState> = {
     let lastC = 0;
     for (let i = 0; i < ROUNDS; i++) {
       const f = i / (ROUNDS - 1);
-      const period = lerp(2.5, 1.5, f);
+      const period = lerp(2.4, 1.35, f);
+      const h = lerp(0.3, 0.11, f);
       let c = rnd.float(-0.55, 0.55);
       if (Math.abs(c - lastC) < 0.2) c = c > 0 ? c - 0.3 : c + 0.3;
       lastC = c;
+      const moving = i >= 2;
+      const wobbly = i >= 5;
       rounds.push({
         c,
-        h: lerp(0.3, 0.12, f),
+        h,
         omega: (Math.PI * 2) / period,
         phase0: rnd.float(0, Math.PI * 2),
+        zm: moving ? lerp(0.18, 0.42, f) * rnd.float(0.85, 1.1) : 0,
+        zw: moving ? rnd.float(1.0, 1.7) : 0,
+        zph: rnd.float(0, Math.PI * 2),
+        wa: wobbly ? rnd.float(0.45, 0.75) : 0,
+        ww: wobbly ? rnd.float(1.4, 2.2) : 0,
       });
     }
     return {
@@ -91,8 +126,11 @@ export const game: MiniGame<PendelState> = {
       k: 0,
       timer: 0,
       stopPos: 0,
+      stopC: 0,
       pts: [],
       total: 0,
+      streak: 0,
+      lastBonus: 0,
       timedOut: false,
       prevA: false,
       seed,
@@ -109,14 +147,22 @@ export const game: MiniGame<PendelState> = {
       let stopped = false;
       if (press && s.k > ARM) {
         s.stopPos = pendulumPos(r, s.k);
-        const p = roundPoints(r, s.stopPos);
+        s.stopC = zoneCenter(r, s.k);
+        const base = roundPoints(r, s.stopPos, s.stopC);
+        if (base >= GOOD) s.streak++;
+        else s.streak = 0;
+        s.lastBonus = base >= GOOD ? streakBonus(s.streak) : 0;
+        const p = (base + s.lastBonus) * (s.round === ROUNDS - 1 ? 2 : 1);
         s.pts.push(p);
         s.total += p;
         s.timedOut = false;
         stopped = true;
       } else if (s.k >= ARM + MAX_SWING) {
         s.stopPos = pendulumPos(r, s.k);
+        s.stopC = zoneCenter(r, s.k);
         s.pts.push(0);
+        s.streak = 0;
+        s.lastBonus = 0;
         s.timedOut = true;
         stopped = true;
       }
@@ -143,12 +189,12 @@ export const game: MiniGame<PendelState> = {
     if (s.phase !== 'swing') return { ...NEUTRAL_INPUT };
     const r = s.rounds[s.round] as PendelRound;
     const h = hash(s.seed, s.round * 5 + 1);
-    // Menschlich: erst nach einer Weile "zielen", dann den nächsten Durchgang durch die Mitte anpeilen
+    // Menschlich: erst nach einer Weile "zielen", dann den nächsten Durchgang durch die Zonenmitte anpeilen
     const kmin = ARM + Math.round(lerp(34, 6, skill)) + (h % 14);
     let kStar = kmin;
-    let prev = pendulumPos(r, kmin - 1) - r.c;
+    let prev = pendulumPos(r, kmin - 1) - zoneCenter(r, kmin - 1);
     for (let k = kmin; k < ARM + MAX_SWING; k++) {
-      const d = pendulumPos(r, k) - r.c;
+      const d = pendulumPos(r, k) - zoneCenter(r, k);
       if (d * prev <= 0) {
         kStar = Math.abs(d) < Math.abs(prev) ? k : k - 1;
         break;
@@ -158,25 +204,31 @@ export const game: MiniGame<PendelState> = {
     const u1 = ((hash(s.seed + 5, s.round * 5 + 2) % 10000) + 0.5) / 10000;
     const u2 = ((hash(s.seed + 9, s.round * 5 + 3) % 10000) + 0.5) / 10000;
     const gauss = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-    let off = Math.round(gauss * lerp(9, 0.9, skill));
+    // schwierige Runden (wandernde Zone, Wackelpendel) streuen bei schwächeren Bots stärker
+    const hard = 1 + (r.zm ? 0.35 : 0) + (r.wa ? 0.5 : 0);
+    let off = Math.round(gauss * lerp(9, 0.9, skill) * lerp(hard, 1, skill));
     if ((hash(s.seed + 11, s.round * 5 + 4) % 1000) / 1000 < 0.12 * (1 - skill)) off += (h & 1 ? 1 : -1) * 14;
     return { ...NEUTRAL_INPUT, a: s.k === Math.max(ARM + 1, kStar + off) };
   },
   hud: (s) => {
     const last = s.pts[s.pts.length - 1];
+    const r = s.rounds[Math.min(s.round, ROUNDS - 1)] as PendelRound;
+    const fin = s.round === ROUNDS - 1;
     return {
       left: `Runde ${Math.min(s.round + 1, ROUNDS)}/${ROUNDS}`,
       right: `${s.total} Pkt`,
       hint:
         s.phase === 'result' && last !== undefined
           ? s.timedOut
-            ? 'Zu spät – kein Stopp!'
-            : last >= 950
-              ? `Mitten ins Schwarze! +${last}`
+            ? 'Zu spät – nicht losgelassen!'
+            : s.lastBonus
+              ? `+${last} (Serie ${s.streak}!)`
               : `+${last}`
           : s.phase === 'swing' && s.k <= ARM
-            ? 'Gleich geht es los …'
-            : 'Stopp mit A',
+            ? fin
+              ? 'FINALE: doppelte Punkte!'
+              : roundKind(r)
+            : 'Loslassen mit A',
     };
   },
 };

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { MAG, game, type Target, type ZielState } from './zielschuss';
+import { FINALE_TICK, MAG, game, multOf, type Target, type ZielState } from './zielschuss';
+import { runBot } from '../simulate';
 import { NEUTRAL_INPUT } from '../types';
 
 const opts = { playerIndex: 0, players: 2 };
@@ -64,5 +65,56 @@ describe('Zielschuss', () => {
     expect(s.shots).toBe(MAG);
     for (let i = 0; i < 80; i++) game.step(s, NEUTRAL_INPUT);
     expect(s.ammo).toBe(MAG);
+  });
+
+  it('Serie steigert den Multiplikator, Fehlschuss setzt zurück, Finale zählt doppelt', () => {
+    expect(multOf(0)).toBe(1);
+    expect(multOf(4)).toBe(2);
+    expect(multOf(50)).toBe(3);
+    const s: ZielState = game.init(1, opts);
+    s.nextSpawn = 1e9;
+    const shoot = (hit: boolean) => {
+      if (hit) s.targets.push(mk('big', 0, 0, 10));
+      game.step(s, { ...NEUTRAL_INPUT, px: 0, py: 0, pd: true });
+      for (let i = 0; i < 10; i++) game.step(s, { ...NEUTRAL_INPUT, px: 0, py: 0 });
+      if (s.ammo === 0) for (let i = 0; i < 70; i++) game.step(s, { ...NEUTRAL_INPUT, px: 0, py: 0 });
+    };
+    for (let k = 0; k < 5; k++) shoot(true);
+    expect(s.combo).toBe(5);
+    expect(s.lastShot.mult).toBe(2);
+    shoot(false);
+    expect(s.combo).toBe(0);
+    s.tick = FINALE_TICK;
+    shoot(true);
+    expect(s.lastShot.mult).toBe(2);
+    expect(s.lastShot.pts).toBeGreaterThanOrEqual(20);
+  });
+
+  it('wird schwerer: spätere Ziele schneller und kleiner', () => {
+    const s = game.init(4, opts);
+    const early: Target[] = [];
+    const late: Target[] = [];
+    for (let i = 0; i < 25 * 60; i++) {
+      game.step(s, NEUTRAL_INPUT);
+      for (const t of s.targets)
+        if (t.age === 1 && t.kind === 'duck') (i < 8 * 60 ? early : i > 17 * 60 ? late : []).push(t);
+    }
+    const avg = (a: Target[], f: (t: Target) => number) => a.reduce((x, t) => x + f(t), 0) / a.length;
+    expect(early.length).toBeGreaterThan(0);
+    expect(late.length).toBeGreaterThan(0);
+    expect(avg(late, (t) => Math.abs(t.vx))).toBeGreaterThan(avg(early, (t) => Math.abs(t.vx)));
+    expect(avg(late, (t) => t.r)).toBeLessThan(avg(early, (t) => t.r));
+  });
+
+  it('Bot-Stufen: stark > mittel > schwach', () => {
+    const avg = (sk: number) => {
+      let sum = 0;
+      for (let i = 0; i < 6; i++) sum += runBot(game, 20 + i, opts, sk, i).score;
+      return sum / 6;
+    };
+    const [lo, mid, hi] = [avg(0.3), avg(0.6), avg(0.88)];
+    expect(hi).toBeGreaterThan(mid);
+    expect(mid).toBeGreaterThan(lo);
+    expect(lo).toBeGreaterThan(0);
   });
 });

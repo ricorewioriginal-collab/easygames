@@ -9,7 +9,15 @@ import { clamp, lerp } from '../util';
  * (aufspannender Baum), über die Zeit ergibt sich also immer ein Weg.
  *
  * Wandcodes: 0 = offen, 1 = immer Wand, 2 = Wand nur in Phase A, 3 = Wand nur in Phase B.
+ *
+ * Steigerung: Der Faltakt wird über die Spielzeit immer schneller. Wer beim Falten in einer aufklappenden Wand
+ * steht, wird eingeklemmt (kurz betäubt). Kristalle in den Seitengängen geben Extrapunkte (Risiko gegen Zeit).
  */
+export interface Gem {
+  x: number;
+  y: number;
+  taken: boolean;
+}
 export interface Maze {
   n: number;
   /** Senkrechte Linien x=i (i = 0..n) in Zeile j: vw[j*(n+1)+i] */
@@ -41,6 +49,14 @@ export interface FaltState {
   checkCount: number;
   lastBonus: number;
   bumps: number;
+  /** Länge der laufenden Phase in Ticks (wird mit der Zeit kürzer) */
+  phaseLen: number;
+  gems: Gem[];
+  gemCount: number;
+  /** > 0: eingeklemmt, keine Bewegung möglich */
+  stun: number;
+  /** Zähler für die Ansicht: wie oft eingeklemmt */
+  squish: number;
 }
 
 export const DURATION_TICKS = 1800;
@@ -51,7 +67,12 @@ export const RADIUS = 0.23;
 export const HALF_WALL = 0.07;
 export const MAZE_POINTS = 100;
 export const CHECK_POINTS = 15;
+export const GEM_POINTS = 10;
+export const STUN_TICKS = 50;
 const PAR_SECONDS = 16;
+/** Faltakt: anfangs 3,5 s, am Ende knapp 2 s */
+export const phaseLenAt = (tick: number): number =>
+  Math.round(lerp(PHASE_TICKS, 115, clamp(tick / DURATION_TICKS, 0, 1)));
 
 export const mazeSize = (index: number): number => 7 + Math.min(2, index);
 export const deriveSeed = (seed: number, index: number): number =>
@@ -236,8 +257,8 @@ export function pathCells(m: Maze, phase: number, from: number, to: number): num
 }
 
 export const STEP_TICKS = Math.round(60 / SPEED);
-const phaseAfter = (phase: number, phaseTick: number, t: number): number =>
-  (phase + Math.floor((phaseTick + t) / PHASE_TICKS)) & 1;
+const phaseAfter = (phase: number, phaseTick: number, t: number, len: number): number =>
+  (phase + Math.floor((phaseTick + t) / len)) & 1;
 
 /**
  * Zeit-erweiterte Suche: kürzeste Anzahl Zellschritte (inkl. Warten) bis zum Ziel, wenn sich das Labyrinth
@@ -249,14 +270,15 @@ export function timePlan(
   phaseTick: number,
   from: number,
   maxSteps = 70,
+  len = PHASE_TICKS,
 ): { steps: number; next: number } | null {
   const goal = m.goal.y * m.n + m.goal.x;
   if (from === goal) return { steps: 0, next: from };
   let cur = new Array<number>(m.n * m.n).fill(-1);
   for (let k = 0; k < maxSteps; k++) {
     const t0 = k * STEP_TICKS;
-    const p0 = phaseAfter(phase, phaseTick, t0);
-    const p1 = phaseAfter(phase, phaseTick, t0 + STEP_TICKS + 8);
+    const p0 = phaseAfter(phase, phaseTick, t0, len);
+    const p1 = phaseAfter(phase, phaseTick, t0 + STEP_TICKS + 8, len);
     const nxt = new Array<number>(m.n * m.n).fill(-1);
     const sources: number[] = [];
     if (k === 0) sources.push(from);
@@ -280,26 +302,62 @@ function newMaze(seed: number, index: number): Maze {
   return makeMaze(deriveSeed(seed, index), mazeSize(index));
 }
 
+/** Kristalle: abseits von Start, Ziel und Checkpunkt, nicht nebeneinander (für alle Spieler gleich) */
+export function makeGems(m: Maze, seed: number, index: number): Gem[] {
+  const r = new Rng(deriveSeed(seed, index) ^ 0x2f6b1d);
+  const count = Math.min(5, 3 + Math.floor(index / 2));
+  const out: Gem[] = [];
+  const n = m.n;
+  const far = (x: number, y: number, p: { x: number; y: number }): boolean =>
+    Math.abs(x - p.x) + Math.abs(y - p.y) >= 2;
+  for (let guard = 0; out.length < count && guard < 400; guard++) {
+    const x = r.int(n);
+    const y = r.int(n);
+    if (!far(x, y, m.start) || !far(x, y, m.goal) || !far(x, y, m.check)) continue;
+    if (out.some((g) => !far(x, y, g))) continue;
+    out.push({ x, y, taken: false });
+  }
+  return out;
+}
+
+/** Wandrechtecke (x0, y0, x1, y1 …) rund um die Position in einer Phase */
+function wallRects(m: Maze, phase: number, x: number, y: number): number[] {
+  const n = m.n;
+  const ci = Math.floor(x);
+  const cj = Math.floor(y);
+  const rects: number[] = [];
+  for (let j = cj - 1; j <= cj + 1; j++) {
+    for (let i = ci - 1; i <= ci + 2; i++) {
+      if (i >= 0 && i <= n && j >= 0 && j < n && isWall(m.vw[j * (n + 1) + i]!, phase))
+        rects.push(i - HALF_WALL, j - HALF_WALL, i + HALF_WALL, j + 1 + HALF_WALL);
+    }
+  }
+  for (let j = cj - 1; j <= cj + 2; j++) {
+    for (let i = ci - 1; i <= ci + 1; i++) {
+      if (j >= 0 && j <= n && i >= 0 && i < n && isWall(m.hw[j * n + i]!, phase))
+        rects.push(i - HALF_WALL, j - HALF_WALL, i + 1 + HALF_WALL, j + HALF_WALL);
+    }
+  }
+  return rects;
+}
+
+/** Steckt der Spieler in einer Wand (Kreis überlappt deutlich)? */
+export function insideWall(m: Maze, phase: number, x: number, y: number): boolean {
+  const rects = wallRects(m, phase, x, y);
+  for (let k = 0; k < rects.length; k += 4) {
+    const qx = clamp(x, rects[k]!, rects[k + 2]!);
+    const qy = clamp(y, rects[k + 1]!, rects[k + 3]!);
+    if (Math.hypot(x - qx, y - qy) < RADIUS - 0.04) return true;
+  }
+  return false;
+}
+
 /** Schiebt den Kreis aus Wänden heraus (Wand = Rechteck mit halber Dicke HALF_WALL) */
 function resolve(s: FaltState): void {
   const m = s.maze;
   const n = m.n;
   for (let iter = 0; iter < 3; iter++) {
-    const ci = Math.floor(s.x);
-    const cj = Math.floor(s.y);
-    const rects: number[] = [];
-    for (let j = cj - 1; j <= cj + 1; j++) {
-      for (let i = ci - 1; i <= ci + 2; i++) {
-        if (i >= 0 && i <= n && j >= 0 && j < n && isWall(m.vw[j * (n + 1) + i]!, s.phase))
-          rects.push(i - HALF_WALL, j - HALF_WALL, i + HALF_WALL, j + 1 + HALF_WALL);
-      }
-    }
-    for (let j = cj - 1; j <= cj + 2; j++) {
-      for (let i = ci - 1; i <= ci + 1; i++) {
-        if (j >= 0 && j <= n && i >= 0 && i < n && isWall(m.hw[j * n + i]!, s.phase))
-          rects.push(i - HALF_WALL, j - HALF_WALL, i + 1 + HALF_WALL, j + HALF_WALL);
-      }
-    }
+    const rects = wallRects(m, s.phase, s.x, s.y);
     let moved = false;
     for (let k = 0; k < rects.length; k += 4) {
       const x0 = rects[k]!;
@@ -341,12 +399,12 @@ const memo = new WeakMap<Maze, Map<number, number>>();
 export const game: MiniGame<FaltState> = {
   id: 'faltlabyrinth',
   name: 'Falt-Labyrinth',
-  tagline: 'Das Labyrinth faltet sich – Wände kommen und gehen!',
+  tagline: 'Wände klappen im Takt – und der Takt wird immer schneller!',
   instructions: [
-    'Laufe vom grünen Start zum goldenen Ziel. Jedes geschaffte Labyrinth bringt 100 Punkte.',
-    'Alle paar Sekunden faltet sich das Labyrinth: Manche Wände gibt es nur in Phase A (blau), andere nur in Phase B (orange).',
-    'Wenn die Falte naht, leuchten die betroffenen Wände auf. Warte im sicheren Gang oder nutze den Wechsel zu deinem Vorteil.',
-    'Der Checkpunkt in der Mitte und schnelle Zeiten geben Bonuspunkte. Danach folgt gleich das nächste Labyrinth.',
+    'Lauf zum goldenen Ziel: 100 Punkte pro Labyrinth, schnelle Zeiten geben Bonus.',
+    'Blaue Wände gibt es nur in Phase A, orange nur in Phase B. Blinken = gleich wird gefaltet.',
+    'Wer beim Falten in einer Wand steht, wird eingeklemmt und steckt kurz fest!',
+    'Kristalle (+10) und der Checkpunkt (+15) lohnen den Umweg – wenn die Zeit reicht.',
   ],
   controls: { desktop: 'WASD oder Pfeile = laufen', touch: 'Stick = laufen' },
   category: 'puzzle',
@@ -372,6 +430,11 @@ export const game: MiniGame<FaltState> = {
       checkCount: 0,
       lastBonus: 0,
       bumps: 0,
+      phaseLen: PHASE_TICKS,
+      gems: makeGems(maze, seed, 0),
+      gemCount: 0,
+      stun: 0,
+      squish: 0,
     };
   },
   step(s, input) {
@@ -379,10 +442,22 @@ export const game: MiniGame<FaltState> = {
     s.tick++;
     s.mazeTick++;
     s.phaseTick++;
-    if (s.phaseTick >= PHASE_TICKS) {
+    if (s.phaseTick >= s.phaseLen) {
       s.phaseTick = 0;
       s.phase = s.phase === 0 ? 1 : 0;
       s.folds++;
+      s.phaseLen = phaseLenAt(s.tick);
+      // Eingeklemmt: Eine Wand klappt genau dort hoch, wo man steht
+      if (s.stun === 0 && insideWall(s.maze, s.phase, s.x, s.y)) {
+        s.stun = STUN_TICKS;
+        s.bumps++;
+        s.squish++;
+      }
+    }
+    if (s.stun > 0) {
+      s.stun--;
+      resolve(s);
+      return;
     }
     let ix = clamp(Number.isFinite(input.x) ? input.x : 0, -1, 1);
     let iy = clamp(Number.isFinite(input.y) ? input.y : 0, -1, 1);
@@ -400,6 +475,12 @@ export const game: MiniGame<FaltState> = {
       s.checkPts += CHECK_POINTS;
       s.checkCount++;
     }
+    for (const g of s.gems) {
+      if (!g.taken && Math.hypot(s.x - (g.x + 0.5), s.y - (g.y + 0.5)) < 0.42) {
+        g.taken = true;
+        s.gemCount++;
+      }
+    }
     if (Math.hypot(s.x - (m.goal.x + 0.5), s.y - (m.goal.y + 0.5)) < 0.32) {
       const sec = s.mazeTick / 60;
       s.lastBonus = clamp(Math.round((PAR_SECONDS - sec) * 3), 0, 45);
@@ -407,8 +488,10 @@ export const game: MiniGame<FaltState> = {
       s.mazes++;
       s.mazeIndex++;
       s.maze = newMaze(s.seed, s.mazeIndex);
+      s.gems = makeGems(s.maze, s.seed, s.mazeIndex);
       s.phase = 0;
       s.phaseTick = 0;
+      s.phaseLen = phaseLenAt(s.tick);
       s.mazeTick = 0;
       s.checkHit = false;
       s.x = s.maze.start.x + 0.5;
@@ -416,33 +499,54 @@ export const game: MiniGame<FaltState> = {
     }
   },
   done: (s) => s.tick >= DURATION_TICKS,
-  score: (s) => s.mazes * MAZE_POINTS + s.timeBonus + s.checkPts,
+  score: (s) => s.mazes * MAZE_POINTS + s.timeBonus + s.checkPts + s.gemCount * GEM_POINTS,
   bot(s, skill, rng): InputFrame {
     // Kurze Unentschlossenheit der schwächeren Spieler
-    if (rng.next() < (1 - skill) * 0.3) return { ...NEUTRAL_INPUT };
+    if (s.stun > 0 || rng.next() < (1 - skill) * 0.3) return { ...NEUTRAL_INPUT };
     const m = s.maze;
     const n = m.n;
     const ci = clamp(Math.floor(s.x), 0, n - 1);
     const cj = clamp(Math.floor(s.y), 0, n - 1);
     const c = cj * n + ci;
     let next = c;
-    if (skill > 0.35) {
+    // Geübte Spieler holen nahe Kristalle (wenige Felder Umweg in der aktuellen Phase)
+    let gemGoal = -1;
+    if (skill > 0.5) {
+      const reach = skill > 0.8 ? 2 : 1;
+      for (const g of s.gems) {
+        if (g.taken) continue;
+        const gc = g.y * n + g.x;
+        const d = distances(m, s.phase, gc)[c]!;
+        if (d >= 0 && d <= reach) {
+          gemGoal = gc;
+          break;
+        }
+      }
+    }
+    if (gemGoal >= 0) {
+      const d = distances(m, s.phase, gemGoal);
+      for (let dir = 0; dir < 4; dir++) {
+        if (!canMove(m, s.phase, c, dir)) continue;
+        const nx = neighbour(m, c, dir);
+        if (d[nx]! >= 0 && d[nx]! < d[c]!) next = nx;
+      }
+    } else if (skill > 0.35) {
       // Plan über die Zeit (mit Zwischenspeicher je Labyrinth, Phase, Zelle und Zeitfenster)
       let cache = memo.get(m);
       if (!cache) {
         cache = new Map();
         memo.set(m, cache);
       }
-      const key = (c * 2 + s.phase) * 64 + Math.floor(s.phaseTick / 4);
+      const key = ((c * 2 + s.phase) * 64 + Math.floor(s.phaseTick / 4)) * 256 + s.phaseLen;
       let v = cache.get(key);
       if (v === undefined) {
-        const p = timePlan(m, s.phase, s.phaseTick, c);
+        const p = timePlan(m, s.phase, s.phaseTick, c, 70, s.phaseLen);
         v = p ? p.next : -1;
         cache.set(key, v);
       }
       next = v;
     }
-    if (next < 0 || skill <= 0.35) {
+    if (next < 0 || (skill <= 0.35 && gemGoal < 0)) {
       // Einfache Wegsuche nur für die aktuelle Phase
       const d = distances(m, s.phase, m.goal.y * n + m.goal.x);
       let bestD = d[c]!;
@@ -478,14 +582,16 @@ export const game: MiniGame<FaltState> = {
     return { ...NEUTRAL_INPUT, x: ox * gain, y: oy * gain };
   },
   hud: (s) => {
-    const left = PHASE_TICKS - s.phaseTick;
+    const left = s.phaseLen - s.phaseTick;
     return {
-      left: `${s.mazes} Labyrinthe`,
+      left: `${s.mazes} Labyrinthe · ${s.gemCount} Kristalle`,
       right: `${Math.max(0, Math.ceil((DURATION_TICKS - s.tick) / 60))} s`,
       hint:
-        left <= WARN_TICKS
-          ? 'Faltung!'
-          : `Phase ${s.phase === 0 ? 'A' : 'B'} · Faltung in ${Math.ceil(left / 60)} s`,
+        s.stun > 0
+          ? 'Eingeklemmt!'
+          : left <= WARN_TICKS
+            ? 'Faltung!'
+            : `Phase ${s.phase === 0 ? 'A' : 'B'} · Faltung in ${Math.ceil(left / 60)} s`,
     };
   },
 };

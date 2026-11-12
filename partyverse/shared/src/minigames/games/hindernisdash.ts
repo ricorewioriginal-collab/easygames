@@ -22,9 +22,19 @@ export interface DashCoin {
   y: number;
   got: boolean;
 }
+/** Turbo-Feld: kurz viel schneller (mehr Strecke, aber Hindernisse kommen schneller) */
+export interface DashBoost {
+  z: number;
+  lane: number;
+  got: boolean;
+}
 export interface DashState {
   rows: DashRow[];
   coins: DashCoin[];
+  boosts: DashBoost[];
+  /** Restliche Turbo-Ticks */
+  boost: number;
+  boostCount: number;
   t: number;
   z: number;
   lane: number;
@@ -60,14 +70,18 @@ const STUN_TICKS = 70;
 const ROW_DEPTH = 1.2;
 const HURDLE_H = 0.95;
 const COIN_SCORE = 3;
-const ROW_END = 560;
+const ROW_END = 600;
+export const BOOST_TICKS = 100;
+const BOOST_MULT = 1.4;
 
 export const speedOf = (pace: number): number => 9 + 5 * pace;
 
-function genRows(seed: number): { rows: DashRow[]; coins: DashCoin[] } {
+function genRows(seed: number): { rows: DashRow[]; coins: DashCoin[]; boosts: DashBoost[] } {
   const r = new Rng((seed ^ 0x2545f491) >>> 0);
+  const r2 = new Rng((seed ^ 0x6a09e667) >>> 0);
   const rows: DashRow[] = [];
   const coins: DashCoin[] = [];
+  const boosts: DashBoost[] = [];
   let z = 42;
   let safe = 0;
   let prevZ = 0;
@@ -80,14 +94,22 @@ function genRows(seed: number): { rows: DashRow[]; coins: DashCoin[] } {
     for (let l = -1; l <= 1; l++) {
       const q = r.next();
       let v: number;
-      if (l === next) v = q < 0.38 ? -1 : q < 0.69 ? LOW : HIGH;
+      // Mit der Zeit weniger freie Felder: mehr Springen und Rutschen nötig
+      const freeSafe = lerp(0.38, 0.12, prog);
+      const free = lerp(0.18, 0.04, prog);
+      if (l === next) v = q < freeSafe ? -1 : q < freeSafe + (1 - freeSafe) / 2 ? LOW : HIGH;
       else {
         const wallP = 0.2 + 0.2 * prog;
-        v = q < 0.18 ? -1 : q < 0.18 + (1 - wallP - 0.18) / 2 ? LOW : q < 1 - wallP ? HIGH : WALL;
+        v = q < free ? -1 : q < free + (1 - wallP - free) / 2 ? LOW : q < 1 - wallP ? HIGH : WALL;
       }
       c[l + 1] = v;
     }
+    // Sperrreihe: alle drei Spuren blockiert – nur Springen oder Rutschen hilft
+    if (prog > 0.2 && r2.chance(0.1 + 0.25 * prog))
+      for (let l = 0; l < 3; l++) c[l] = r2.chance(0.5) ? LOW : HIGH;
     rows.push({ z, c });
+    // Turbo-Feld in der sicheren Spur vor der Reihe
+    if (prevZ > 0 && z - prevZ > 11 && r2.chance(0.22)) boosts.push({ z: z - 5.5, lane: next, got: false });
     // Münzlinie zwischen der letzten Reihe und dieser
     if (prevZ > 0) {
       const a = prevZ + ROW_DEPTH + 3.2;
@@ -105,10 +127,10 @@ function genRows(seed: number): { rows: DashRow[]; coins: DashCoin[] } {
     prevZ = z;
     prevSafe = next;
     safe = next;
-    z += lerp(16, 12, prog) + r.float(0, 3);
+    z += lerp(16, 9.5, prog) + r.float(0, 3);
   }
   coins.sort((a, b) => a.z - b.z);
-  return { rows, coins };
+  return { rows, coins, boosts };
 }
 
 const hash01 = (i: number): number =>
@@ -119,10 +141,9 @@ export const game: MiniGame<DashState> = {
   name: 'Hindernis-Dash',
   tagline: 'Spur wechseln, springen, rutschen – und nie bremsen!',
   instructions: [
-    'Du rennst auf einer Bahn mit drei Spuren immer schneller nach vorn.',
-    'Links/rechts wechselt die Spur, hoch springt über Hürden, runter rutscht unter Balken durch.',
-    'Mauern musst du umlaufen. Wer anstößt, wird kurz betäubt und verliert Tempo.',
-    'Sammle Münzen – Strecke und Münzen zählen.',
+    'Du rennst immer schneller über drei Spuren. Links/rechts = Spur, A/hoch = Sprung über Hürden, B/runter = unter Balken rutschen.',
+    'Mauern umlaufen! Später sperren Reihen alle drei Spuren – dann nur Springen oder Rutschen.',
+    'Pfeilfelder geben Turbo. Anstoßen betäubt und kostet Tempo. Strecke und Münzen zählen.',
   ],
   controls: {
     desktop: 'Pfeile/WASD: Spur, springen, rutschen (Leertaste = Sprung, Shift = Rutschen)',
@@ -132,10 +153,13 @@ export const game: MiniGame<DashState> = {
   duration: 30,
   touch: { stick: true, a: true, b: true },
   init(seed) {
-    const { rows, coins } = genRows(seed);
+    const { rows, coins, boosts } = genRows(seed);
     return {
       rows,
       coins,
+      boosts,
+      boost: 0,
+      boostCount: 0,
       t: 0,
       z: 0,
       lane: 0,
@@ -220,8 +244,18 @@ export const game: MiniGame<DashState> = {
     // Vorwärts
     if (s.stun > 0) s.stun--;
     if (s.invuln > 0) s.invuln--;
-    const v = speedOf(s.pace) * (s.stun > 0 ? 0.2 : 1);
+    if (s.boost > 0) s.boost--;
+    const v = speedOf(s.pace) * (s.stun > 0 ? 0.2 : s.boost > 0 ? BOOST_MULT : 1);
     s.z += v * DT;
+    for (const b of s.boosts) {
+      if (b.z > s.z + 0.5) break;
+      if (b.got || b.z < s.z - 1) continue;
+      if (Math.abs(s.px - b.lane * LANE_W) < 0.9 && s.py < 0.6 && s.stun <= 0) {
+        b.got = true;
+        s.boost = BOOST_TICKS;
+        s.boostCount++;
+      }
+    }
     if (s.stun <= 0) s.pace = Math.min(1, s.pace + 1 / 1500);
     while (s.curRow < s.rows.length && (s.rows[s.curRow] as DashRow).z + ROW_DEPTH < s.z - 0.6) s.curRow++;
     // Kollision
@@ -243,6 +277,7 @@ export const game: MiniGame<DashState> = {
           s.crashes++;
           s.slideT = 0;
           s.jumpBuf = 0;
+          s.boost = 0;
           break;
         }
       }
@@ -266,7 +301,7 @@ export const game: MiniGame<DashState> = {
   bot(s, skill): InputFrame {
     if (s.over || s.stun > 0) return { ...NEUTRAL_INPUT };
     const err = 1 - skill;
-    const v = speedOf(s.pace);
+    const v = speedOf(s.pace) * (s.boost > 0 ? BOOST_MULT : 1);
     const look = lerp(9, 34, skill);
     const ahead: { r: DashRow; i: number }[] = [];
     for (let i = s.curRow; i < s.rows.length && ahead.length < 3; i++) {
@@ -304,7 +339,22 @@ export const game: MiniGame<DashState> = {
       });
       let bl = 1;
       for (let l = 0; l < 3; l++) if ((cost[l] as number) < (cost[bl] as number) - 1e-9) bl = l;
-      const want = fs[bl] as number;
+      let want = fs[bl] as number;
+      // Münzen mitnehmen, wenn die Spur ebenso sicher ist (gute Bots öfter)
+      for (let i = s.curCoin; i < s.coins.length; i++) {
+        const c = s.coins[i] as DashCoin;
+        if (c.got || c.z < s.z + 1.5) continue;
+        if (c.z > s.z + look) break;
+        const cl = c.lane + 1;
+        if (
+          c.y < 1.5 &&
+          hash01(i * 3 + 1) < skill &&
+          (cost[cl] as number) <= (cost[bl] as number) + 0.75 &&
+          (cost[cl] as number) < 40
+        )
+          want = fs[cl] as number;
+        break;
+      }
       const dz0 = first.r.z - s.z;
       if (want !== s.lane && dz0 > 1.2) {
         if (want > s.lane && s.prevX <= 0.5) out.x = 1;
@@ -329,6 +379,6 @@ export const game: MiniGame<DashState> = {
   hud: (s) => ({
     left: `${Math.floor(s.z)} m`,
     right: `${s.coinCount} Münzen`,
-    hint: s.stun > 0 ? 'Autsch!' : undefined,
+    hint: s.stun > 0 ? 'Autsch!' : s.boost > 0 ? 'Turbo!' : undefined,
   }),
 };

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { game, type DashState } from './hindernisdash';
+import { game, BOOST_TICKS, type DashState } from './hindernisdash';
+import { runBot } from '../simulate';
 import { NEUTRAL_INPUT, type InputFrame } from '../types';
 
 const opts = { playerIndex: 0, players: 3 };
@@ -7,6 +8,7 @@ const opts = { playerIndex: 0, players: 3 };
 function withRow(cell: number, lane = 0): DashState {
   const s = game.init(7, opts);
   s.coins = [];
+  s.boosts = [];
   const c: [number, number, number] = [-1, -1, -1];
   c[lane + 1] = cell;
   s.rows = [{ z: 8, c }];
@@ -87,5 +89,53 @@ describe('hindernisdash – Regeln', () => {
     run(s, 60);
     expect(s.coinCount).toBe(1);
     expect(game.score(s)).toBe(Math.floor(s.z) + 3);
+  });
+
+  it('Turbo-Feld macht schneller, Anstoßen beendet den Turbo', () => {
+    const a = game.init(7, opts);
+    const b = game.init(7, opts);
+    for (const s of [a, b]) {
+      s.rows = [];
+      s.coins = [];
+    }
+    a.boosts = [];
+    b.boosts = [{ z: 3, lane: 0, got: false }];
+    run(a, 60);
+    run(b, 60);
+    expect(b.boostCount).toBe(1);
+    expect(b.boost).toBeGreaterThan(0);
+    expect(b.boost).toBeLessThan(BOOST_TICKS);
+    expect(b.z).toBeGreaterThan(a.z + 1);
+    const c = withRow(2);
+    c.boost = 50;
+    run(c, 60);
+    expect(c.crashes).toBe(1);
+    expect(c.boost).toBe(0);
+  });
+
+  it('wird dichter: späte Reihen liegen enger und es gibt Sperrreihen ohne freie Spur', () => {
+    const s = game.init(21, opts);
+    const gaps = s.rows.slice(1).map((r, i) => r.z - s.rows[i]!.z);
+    const early = gaps.slice(0, 6).reduce((x, y) => x + y, 0) / 6;
+    const late = gaps.slice(-6).reduce((x, y) => x + y, 0) / 6;
+    expect(late).toBeLessThan(early - 3);
+    let blocked = 0;
+    for (const seed of [1, 2, 3, 4, 5])
+      blocked += game.init(seed, opts).rows.filter((r) => r.c.every((v) => v === 0 || v === 1)).length;
+    expect(blocked).toBeGreaterThan(5);
+    expect(s.boosts.length).toBeGreaterThan(0);
+  });
+
+  it('Bots: stark > mittel > schwach', () => {
+    const avg = (skill: number) => {
+      let sum = 0;
+      for (let i = 0; i < 10; i++) sum += runBot(game, 70 + i, opts, skill, 1 + i).score;
+      return sum / 10;
+    };
+    const lo = avg(0.3);
+    const mid = avg(0.6);
+    const hi = avg(0.88);
+    expect(hi).toBeGreaterThan(mid);
+    expect(mid).toBeGreaterThan(lo);
   });
 });

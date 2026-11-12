@@ -5,12 +5,22 @@ import { lerp } from '../util';
 
 /**
  * Echo-Muster: Kristallsäulen leuchten in einer Folge auf. Danach wird die Folge nachgespielt.
- * Die Folge wächst mit jeder Runde, ab Länge 6 kommen zwei Säulen dazu. Ein Fehler beendet das Spiel.
+ * Die Folge wächst mit jeder Runde, ab Länge 6 kommen zwei Säulen dazu, das Vorspielen wird schneller.
+ * Manche Runden sind RÜCKWÄRTS nachzuspielen (mehr Punkte). Ein Fehler kostet ein Herz und die Runde
+ * wird wiederholt; nach drei Fehlern ist Schluss.
  */
 export interface EchoState {
   /** Gesamte Folge (vorab aus dem Seed erzeugt, Werte 0..5) */
   seq: number[];
-  phase: 'intro' | 'show' | 'input' | 'ok' | 'over';
+  phase: 'intro' | 'show' | 'input' | 'ok' | 'fail' | 'over';
+  /** Diese Runde rückwärts nachspielen */
+  reverse: boolean;
+  /** Verbleibende Herzen */
+  hearts: number;
+  /** Gesammelte Punkte aus geschafften Runden */
+  points: number;
+  /** Punkte der zuletzt geschafften Runde (für die Ansicht) */
+  lastGain: number;
   /** Aktuelle Länge der Folge */
   len: number;
   /** Anzahl sichtbarer Säulen (4 oder 6) */
@@ -50,25 +60,42 @@ const SEQ_LEN = 48;
 const START_LEN = 2;
 const SIX_FROM = 6;
 const INTRO = 50;
-const INPUT_TIMEOUT = 300;
+const INPUT_TIMEOUT = 240;
+const FAIL_TICKS = 50;
+export const HEARTS = 3;
+/** Ab dieser Länge gibt es Rückwärts-Runden */
+export const REVERSE_FROM = 4;
 
 /** Winkel der Säulen im Kreis (Grad, 90 = oben/hinten). Reihenfolge: oben, links, rechts, unten, B, A. */
 export const PILLAR_ANGLES = [90, 180, 0, 270, 45, 135];
 
-export const noteOn = (len: number): number => Math.max(11, 20 - Math.floor(len / 2));
-export const noteGap = (len: number): number => Math.max(5, 9 - Math.floor(len / 3));
+export const noteOn = (len: number): number => Math.max(9, 21 - len);
+export const noteGap = (len: number): number => Math.max(4, 10 - Math.floor(len / 2));
+/** Ist die Runde mit dieser Länge eine Rückwärts-Runde? (fest aus Seed und Länge, auch bei Wiederholung gleich) */
+export const isReverse = (seed: number, len: number): boolean =>
+  len >= REVERSE_FROM && (len === REVERSE_FROM + 1 || hash(seed + 11, len) % 3 === 0);
+/** Welche Säule wird als Nächstes erwartet? */
+export const expected = (s: EchoState): number => s.seq[s.reverse ? s.len - 1 - s.pos : s.pos] as number;
+
+/**
+ * Bildschirmpositionen der Säulen in Zeigerkoordinaten (px, py in [-1, 1]). Die Ansicht stellt die Kristalle genau
+ * dorthin (bei jedem Seitenverhältnis), so trifft ein Tipp auf den Kristall immer die richtige Säule.
+ */
+export const PILLAR_SCREEN: ReadonlyArray<readonly [number, number]> = PILLAR_ANGLES.map((a) => [
+  Math.round(Math.cos((a * Math.PI) / 180) * 60) / 100,
+  Math.round(Math.sin((a * Math.PI) / 180) * 42) / 100,
+]);
 
 /** Welche Säule (0..n-1) wird durch diese Eingabe gewählt? -1 = keine. */
 export function pickPillar(input: Readonly<InputFrame>, n: number): number {
   if (input.pd) {
-    const r = Math.hypot(input.px, input.py);
-    if (r < 0.1) return -1;
-    const ang = (Math.atan2(input.py, input.px) * 180) / Math.PI;
+    // Mitte (eigene Figur) wählt nichts, sonst die nächstgelegene Säule
+    if (Math.hypot(input.px / 0.6, input.py / 0.42) < 0.3) return -1;
     let best = -1;
     let bd = 999;
     for (let i = 0; i < n; i++) {
-      let d = Math.abs(ang - (PILLAR_ANGLES[i] as number));
-      d = Math.min(d, 360 - d);
+      const [x, y] = PILLAR_SCREEN[i] as readonly [number, number];
+      const d = (input.px - x) ** 2 + (input.py - y) ** 2;
       if (d < bd) {
         bd = d;
         best = i;
@@ -94,17 +121,26 @@ const startShow = (s: EchoState): void => {
   s.pos = 0;
   s.partial = 0;
   s.pillars = s.len >= SIX_FROM ? 6 : 4;
+  s.reverse = isReverse(s.seed, s.len);
+};
+
+/** Fehler: ein Herz weg, nach kurzer Pause wird dieselbe Länge erneut vorgespielt */
+const fail = (s: EchoState): void => {
+  s.hearts--;
+  s.failed = true;
+  s.phase = s.hearts <= 0 ? 'over' : 'fail';
+  s.timer = 0;
 };
 
 export const game: MiniGame<EchoState> = {
   id: 'echomuster',
   name: 'Echo-Muster',
-  tagline: 'Merk dir die Klänge der Kristalle',
+  tagline: 'Merk dir die Folge – manchmal rückwärts!',
   instructions: [
-    'Die Kristallsäulen leuchten nacheinander auf und klingen.',
-    'Spiele die Folge danach in derselben Reihenfolge nach.',
-    'Jede Runde kommt eine Note dazu, später gibt es sechs Säulen.',
-    'Ein Fehler beendet das Spiel. Wer schneller nachspielt, bekommt Bonuspunkte.',
+    'Die Kristalle leuchten nacheinander auf. Spiele die Folge danach nach.',
+    'Jede Runde kommt ein Ton dazu, es wird schneller, später gibt es sechs Kristalle.',
+    'Steht RÜCKWÄRTS da: Folge von hinten nach vorn spielen (×1,5 Punkte).',
+    'Fehler kosten ein Herz, die Runde kommt dann nochmal. Schnelles Nachspielen gibt Bonus.',
   ],
   controls: {
     desktop:
@@ -112,7 +148,7 @@ export const game: MiniGame<EchoState> = {
     touch: 'Säulen direkt antippen',
   },
   category: 'memory',
-  duration: 35,
+  duration: 40,
   usesPointer: true,
   touch: { stick: false, a: false, b: false },
   init(seed) {
@@ -129,6 +165,10 @@ export const game: MiniGame<EchoState> = {
     return {
       seq,
       phase: 'intro',
+      reverse: false,
+      hearts: HEARTS,
+      points: 0,
+      lastGain: 0,
       len: START_LEN,
       pillars: 4,
       timer: 0,
@@ -193,14 +233,18 @@ export const game: MiniGame<EchoState> = {
         s.presses++;
         s.lastPress = pick;
         s.idle = 0;
-        if (pick === s.seq[s.pos]) {
+        if (pick === expected(s)) {
           s.lastOk = true;
+          s.wrong = -1;
           s.lit[pick] = 14;
           s.pos++;
           s.partial = s.pos;
           if (s.pos >= s.len) {
             s.cleared = s.len;
-            s.bonus += Math.max(0, Math.round(s.len * 25 - s.inputTicks * 0.25));
+            const speed = Math.max(0, Math.round(s.len * 12 - s.inputTicks * 0.2));
+            s.lastGain = Math.round(s.len * 30 * (s.reverse ? 1.5 : 1)) + speed;
+            s.points += s.lastGain;
+            s.bonus += speed;
             s.partial = 0;
             s.phase = 'ok';
             s.timer = 0;
@@ -208,12 +252,19 @@ export const game: MiniGame<EchoState> = {
         } else {
           s.lastOk = false;
           s.wrong = pick;
-          s.failed = true;
-          s.phase = 'over';
+          s.lit[pick] = 14;
+          s.partial = 0;
+          fail(s);
         }
       } else if (s.idle >= INPUT_TIMEOUT) {
-        s.failed = true;
-        s.phase = 'over';
+        s.wrong = -1;
+        s.partial = 0;
+        fail(s);
+      }
+    } else if (s.phase === 'fail') {
+      if (s.timer >= FAIL_TICKS) {
+        s.failed = false;
+        startShow(s);
       }
     } else if (s.phase === 'ok') {
       if (s.timer >= 34) {
@@ -223,34 +274,42 @@ export const game: MiniGame<EchoState> = {
     }
   },
   done: (s) => s.phase === 'over',
-  score: (s) => s.cleared * 100 + s.bonus + s.partial * 10,
+  score: (s) => s.points + s.partial * 8,
   bot(s, skill, rng): InputFrame {
     if (s.phase !== 'input') return { ...NEUTRAL_INPUT };
     // Stateless: Zeitpunkt und Fehler hängen nur vom Zustand ab (Hash), damit der Bot über Ticks hinweg konsistent bleibt.
-    const h = hash(s.seed, s.len * 64 + s.pos);
-    const delay = Math.round(lerp(44, 17, skill) + (h % 9) + (s.pos === 0 ? lerp(24, 8, skill) : 0));
+    const h = hash(hash(s.seed, s.len * 64 + s.pos), s.hearts + 17);
+    const delay = Math.round(
+      lerp(44, 15, skill) + (h % 9) + (s.pos === 0 ? lerp(24, 8, skill) + (s.reverse ? 14 : 0) : 0),
+    );
     if (s.idle !== delay) return { ...NEUTRAL_INPUT };
-    const pErr = 0.012 + 0.22 * (1 - skill) * (1 - skill);
-    const want = s.seq[s.pos] as number;
-    const wrongRoll = (hash(s.seed + 7, s.len * 64 + s.pos) % 10000) / 10000;
+    const pErr = (0.005 + 0.25 * (1 - skill) * (1 - skill)) * (s.reverse ? 1.8 : 1) * (1 + s.len / 10);
+    const want = expected(s);
+    const wrongRoll = (hash(hash(s.seed + 7, s.len * 64 + s.pos), s.hearts + 31) % 10000) / 10000;
     // rng wird nur für die (gleichbleibende) Wahl genutzt, sobald wirklich gedrückt wird
     const target =
       wrongRoll < pErr ? (want + 1 + Math.floor(rng.next() * (s.pillars - 1))) % s.pillars : want;
     return pillarInput(target);
   },
   hud: (s) => ({
-    left: `Länge ${s.phase === 'over' ? s.cleared : s.len}`,
+    left: `${game.score(s)} Pkt · ${'♥'.repeat(Math.max(0, s.hearts))}${'♡'.repeat(HEARTS - Math.max(0, s.hearts))}`,
     right: `${Math.max(0, Math.ceil(game.duration - s.t / 60))} s`,
     hint:
       s.phase === 'show' || s.phase === 'intro'
-        ? 'Merken …'
+        ? s.reverse
+          ? `Merken – RÜCKWÄRTS! (${s.len})`
+          : `Merken … (${s.len})`
         : s.phase === 'input'
-          ? `Du bist dran (${s.pos}/${s.len})`
+          ? `${s.reverse ? 'Rückwärts! ' : 'Du bist dran '}${s.pos}/${s.len}`
           : s.phase === 'ok'
-            ? 'Richtig!'
-            : s.failed
-              ? 'Falsche Säule!'
-              : 'Zeit um',
+            ? `Richtig! +${s.lastGain}`
+            : s.phase === 'fail'
+              ? s.wrong >= 0
+                ? 'Falsch! Nochmal …'
+                : 'Zu langsam! Nochmal …'
+              : s.hearts <= 0
+                ? 'Keine Herzen mehr'
+                : 'Zeit um',
   }),
 };
 

@@ -1140,3 +1140,15 @@ body:has(.mg-on) > button[aria-label='Mit Google speichern'] {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* Optionen → Tastatur: Aktion links, Taste rechts */
+.keygrid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 12px;
+  align-items: center;
+  margin: 6px 0 10px;
+}
+.keygrid .btn {
+  min-width: 120px;
+}

@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 import type { FaltState, Maze } from '@shared/minigames/games/faltlabyrinth';
-import { HALF_WALL, PHASE_TICKS, WARN_TICKS } from '@shared/minigames/games/faltlabyrinth';
+import { DURATION_TICKS, GEM_POINTS, HALF_WALL, WARN_TICKS } from '@shared/minigames/games/faltlabyrinth';
 import { glow, textSprite, toon } from '../../render/materials';
 import type { MiniGameViewFactory } from '../viewTypes';
+import { makeMe, makeRivals, updateRivals, type Racer } from './rivals';
 
-const WALL_H = 0.8;
+const WALL_H = 0.62;
 const COL_STATIC = 0xc9b8ff;
 const COL_A = 0x3fa0ff; // Wand nur in Phase A
 const COL_B = 0xff9a3d; // Wand nur in Phase B
@@ -33,8 +34,12 @@ interface Built {
   goal: THREE.Group;
   flag: THREE.Group;
   flagCloth: THREE.Mesh;
+  gems: THREE.Group[];
   grow: number;
 }
+
+/** Spielfigur-Größe im Labyrinth (Zelle = 1 Einheit) */
+const FIG = 0.56;
 
 /** Papierfalt-Welt: Wände klappen um, Phase A (blau) und Phase B (orange) wechseln sich ab. */
 export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
@@ -46,6 +51,8 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
   const boxGeo = new THREE.BoxGeometry(1, 1, 1);
   const postGeo = new THREE.CylinderGeometry(0.11, 0.11, 1, 10);
   const tileGeo = new THREE.BoxGeometry(0.96, 0.2, 0.96);
+  const gemGeo = new THREE.OctahedronGeometry(0.16, 0);
+  const gemMat = toon(0x6ff0ff, { emissive: 0x18b8ff, emissiveIntensity: 0.7 });
   const m4 = new THREE.Matrix4();
   const q = new THREE.Quaternion();
   const sc = new THREE.Vector3();
@@ -136,6 +143,19 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
     cloth.position.set(0.2, 0.62, 0);
     flag.add(pole, cloth);
     group.add(flag);
+    // Kristalle
+    const gems = s0Gems.map((g) => {
+      const gg = new THREE.Group();
+      gg.position.set(g.x + 0.5, 0.45, -(g.y + 0.5));
+      const gm = new THREE.Mesh(gemGeo, gemMat);
+      gm.scale.set(1, 1.5, 1);
+      const halo = new THREE.Mesh(new THREE.CircleGeometry(0.26, 18), glow(0x6ff0ff, 0.35));
+      halo.rotation.x = -Math.PI / 2;
+      halo.position.y = -0.42;
+      gg.add(gm, halo);
+      group.add(gg);
+      return gg;
+    });
 
     // Wände: statische (instanziert) und faltbare (einzeln)
     const T = HALF_WALL * 2;
@@ -207,9 +227,11 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
       goal,
       flag,
       flagCloth: cloth,
+      gems,
       grow: 0,
     };
   }
+  let s0Gems: FaltState['gems'] = initial.gems;
 
   function applyStatics(b: Built, grow: number): void {
     const h = Math.max(0.001, WALL_H * grow);
@@ -222,36 +244,39 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
     b.statics.instanceMatrix.needsUpdate = true;
   }
 
-  // Spielfigur: kleiner Gummi-Wicht
-  const hero = new THREE.Group();
-  const body = new THREE.Group();
-  hero.add(body);
-  const blob = new THREE.Mesh(new THREE.SphereGeometry(0.2, 18, 14), toon(0xff6fa5));
-  blob.scale.set(1, 1.1, 1);
-  blob.position.y = 0.23;
-  body.add(blob);
-  for (const sx of [-1, 1]) {
-    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.06, 10, 8), toon(0xffffff));
-    eye.position.set(sx * 0.08, 0.3, 0.16);
-    body.add(eye);
-    const pu = new THREE.Mesh(new THREE.SphereGeometry(0.03, 8, 6), toon(0x1a1030));
-    pu.position.set(sx * 0.08, 0.3, 0.205);
-    body.add(pu);
-    const foot = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 6), toon(0xd04a82));
-    foot.scale.set(1, 0.6, 1.3);
-    foot.position.set(sx * 0.09, 0.03, 0.05);
-    body.add(foot);
+  // Spielfigur: der gewählte Charakter, Mitspieler halbdurchsichtig im selben Labyrinth
+  const me = makeMe(ctx, FIG);
+  mazeRoot.add(me.group);
+  const rivals = makeRivals(ctx, FIG * 0.92);
+  rivals.forEach((r) => mazeRoot.add(r.group));
+  const rivalPrev = rivals.map(() => ({ x: 0, y: 0, idx: -1 }));
+  // Benommen-Sterne über dem Kopf
+  const dizzy = new THREE.Group();
+  for (let i = 0; i < 3; i++) {
+    const st = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.07, 0),
+      toon(0xffe14d, { emissive: 0xffb000, emissiveIntensity: 0.6 }),
+    );
+    const a = (i / 3) * Math.PI * 2;
+    st.position.set(Math.cos(a) * 0.22, 0, Math.sin(a) * 0.22);
+    dizzy.add(st);
   }
-  const hat = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.24, 4), toon(0xffffff));
-  hat.position.y = 0.52;
-  hat.rotation.y = Math.PI / 4;
-  body.add(hat);
-  hero.scale.setScalar(1.4);
-  const heroShadow = new THREE.Mesh(new THREE.CircleGeometry(0.22, 14), glow(0x1a1030, 0.35));
-  heroShadow.rotation.x = -Math.PI / 2;
-  heroShadow.position.y = 0.03;
-  mazeRoot.add(heroShadow);
-  mazeRoot.add(hero);
+  dizzy.visible = false;
+  mazeRoot.add(dizzy);
+  let shake = 0;
+  let lastGems = initial.gemCount;
+  let lastSquish = initial.squish;
+  let finished = false;
+  /** Läuft-/Steh-Animation und Blickrichtung aus der Bewegung */
+  const animate = (r: Racer, mvx: number, mvy: number, dt: number, stunned: boolean): void => {
+    const speed = Math.hypot(mvx, mvy);
+    if (stunned) {
+      if (r.rig.current !== 'shock') r.rig.play('shock');
+    } else if (speed > 0.6) r.rig.play('run', { loop: true, speed: 1.3 });
+    else if (r.rig.current === 'run' || r.rig.current === 'walk') r.rig.play('idle', { loop: true });
+    if (speed > 0.6) r.rig.faceTowards(Math.atan2(mvx, -mvy));
+    void dt;
+  };
 
   const popups: Array<{ sp: THREE.Sprite; t: number }> = [];
   function popup(text: string, wx: number, wz: number, color: string): void {
@@ -268,7 +293,7 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
   let lastTickSfx = -1;
   let px = initial.x;
   let py = initial.y;
-  let hop = 0;
+  let curMaze = initial.mazeIndex;
   let camR = 14;
   let trail = 0;
   const v3 = new THREE.Vector3();
@@ -286,6 +311,7 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
               mm.geometry.dispose();
           });
         }
+        s0Gems = s.gems;
         built = build(s.maze, s.mazeIndex);
         applyStatics(built, 0);
         lastFolds = s.folds;
@@ -306,7 +332,7 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
         b.grow = Math.min(1, b.grow + dt * 2.2);
         applyStatics(b, 1 - Math.pow(1 - b.grow, 3));
       }
-      const warn = PHASE_TICKS - s.phaseTick <= WARN_TICKS;
+      const warn = s.phaseLen - s.phaseTick <= WARN_TICKS;
       const blinkOn = warn && Math.floor(t * 12) % 2 === 0;
       for (const w of b.folds) {
         const standing = (w.code === 2 && s.phase === 0) || (w.code === 3 && s.phase === 1);
@@ -340,29 +366,34 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
       b.flag.rotation.z = s.checkHit ? 0.25 : 0;
       b.flagCloth.scale.y = 1 + Math.sin(t * 6) * 0.08;
 
+      // Kristalle
+      b.gems.forEach((g, i) => {
+        const taken = s.gems[i]?.taken ?? true;
+        g.visible = !taken;
+        g.children[0]!.rotation.y = t * 2.4 + i;
+        g.children[0]!.position.y = Math.sin(t * 3 + i) * 0.06;
+      });
+
       // Spielfigur
       const wx = s.x - n / 2;
       const wz = n / 2 - s.y;
-      const mvx = (s.x - px) / Math.max(dt, 1e-3);
-      const mvy = (s.y - py) / Math.max(dt, 1e-3);
+      const mvx = dt > 0 ? (s.x - px) / dt : 0;
+      const mvy = dt > 0 ? (s.y - py) / dt : 0;
       px = s.x;
       py = s.y;
       const speed = Math.min(5, Math.hypot(mvx, mvy));
-      hop += dt * (5 + speed * 2.2);
-      const bob = Math.abs(Math.sin(hop)) * 0.09 * Math.min(1, speed / 2.5);
-      hero.position.set(wx, bob, wz);
-      heroShadow.position.set(wx, 0.03, wz);
-      heroShadow.scale.setScalar(1 - bob * 2);
-      if (speed > 0.8) {
-        const target = Math.atan2(mvx, -mvy);
-        let d2 = target - hero.rotation.y;
-        d2 = Math.atan2(Math.sin(d2), Math.cos(d2));
-        hero.rotation.y += d2 * Math.min(1, dt * 14);
-      }
-      const sq = 1 + Math.sin(hop * 2) * 0.06 * Math.min(1, speed / 2.5);
-      body.scale.set(1 / Math.sqrt(sq), sq, 1 / Math.sqrt(sq));
-      body.rotation.x = Math.min(0.25, speed * 0.05);
-      if (speed > 2.5) {
+      me.group.position.set(wx, 0, wz);
+      if (s.tick >= DURATION_TICKS) {
+        if (!finished) {
+          finished = true;
+          me.rig.play(s.mazes > 0 ? 'celebrate' : 'lose');
+        }
+      } else if (speed < 4) animate(me, mvx, mvy, dt, s.stun > 0);
+      me.rig.update(dt);
+      dizzy.visible = s.stun > 0;
+      dizzy.position.set(wx, FIG * 2.1, wz);
+      dizzy.rotation.y = t * 6;
+      if (speed > 2.5 && speed < 4) {
         trail -= dt;
         if (trail <= 0) {
           trail = 0.12;
@@ -383,13 +414,8 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
             8,
           );
       }
-      const secLeft = Math.ceil((PHASE_TICKS - s.phaseTick) / 60);
-      if (
-        warn &&
-        secLeft !== lastTickSfx &&
-        PHASE_TICKS - s.phaseTick <= WARN_TICKS &&
-        (PHASE_TICKS - s.phaseTick) % 15 === 0
-      ) {
+      const secLeft = Math.ceil((s.phaseLen - s.phaseTick) / 60);
+      if (warn && secLeft !== lastTickSfx && (s.phaseLen - s.phaseTick) % 15 === 0) {
         ctx.sfx('tick');
         lastTickSfx = secLeft;
       }
@@ -404,6 +430,21 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
         ctx.sfx('win');
         ctx.burst(v3.set(wx, 0.7, wz), 0xffd23f, 30);
         popup('+' + (100 + s.lastBonus), wx, wz, '#ffd23f');
+        me.rig.play('jump');
+        shake = Math.max(shake, 0.12);
+      }
+      if (s.gemCount !== lastGems) {
+        lastGems = s.gemCount;
+        ctx.sfx('coin');
+        ctx.burst(v3.set(wx, 0.5, wz), 0x6ff0ff, 12);
+        popup('+' + GEM_POINTS, wx, wz, '#8ff6ff');
+      }
+      if (s.squish !== lastSquish) {
+        lastSquish = s.squish;
+        ctx.sfx('hit');
+        ctx.burst(v3.set(wx, 0.4, wz), s.phase === 0 ? COL_A : COL_B, 18);
+        popup('Eingeklemmt!', wx, wz, '#ff8a8a');
+        shake = 0.35;
       }
       for (let i = popups.length - 1; i >= 0; i--) {
         const p = popups[i]!;
@@ -429,11 +470,34 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
       camT.set(0, 0, portrait ? 0.2 : 0.4);
       camera.position.set(0, camR * Math.sin(elev), camT.z + camR * Math.cos(elev));
       camera.lookAt(camT);
+      if (shake > 0) {
+        shake = Math.max(0, shake - dt);
+        camera.position.x += Math.sin(t * 67) * shake * 0.5;
+        camera.position.y += Math.cos(t * 53) * shake * 0.4;
+      }
+      curMaze = s.mazeIndex;
+    },
+    ghosts(states, dt) {
+      const n = built ? built.n : 7;
+      updateRivals(rivals, states, dt, (r, rs, i) => {
+        const p = rivalPrev[i]!;
+        // Nur im selben Labyrinth sichtbar – sonst steht die Figur woanders
+        r.group.visible = rs.mazeIndex === curMaze;
+        const mvx = p.idx === rs.mazeIndex && dt > 0 ? (rs.x - p.x) / dt : 0;
+        const mvy = p.idx === rs.mazeIndex && dt > 0 ? (rs.y - p.y) / dt : 0;
+        p.x = rs.x;
+        p.y = rs.y;
+        p.idx = rs.mazeIndex;
+        // Leicht versetzt, damit die eigene Figur nicht verdeckt wird
+        r.group.position.set(rs.x - n / 2 + 0.06 * (i - 1), -0.01, n / 2 - rs.y + 0.05);
+        if (Math.hypot(mvx, mvy) < 4) animate(r, mvx, mvy, dt, rs.stun > 0);
+      });
     },
     dispose() {
       boxGeo.dispose();
       postGeo.dispose();
       tileGeo.dispose();
+      gemGeo.dispose();
     },
   };
 };

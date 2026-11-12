@@ -11,6 +11,11 @@ import {
   PHASE_TICKS,
   timePlan,
   MAZE_POINTS,
+  GEM_POINTS,
+  insideWall,
+  makeGems,
+  phaseLenAt,
+  DURATION_TICKS,
 } from './faltlabyrinth';
 
 const opts = { playerIndex: 0, players: 4 };
@@ -100,5 +105,69 @@ describe('faltlabyrinth', () => {
     }
     expect(hi / 8).toBeGreaterThanOrEqual(MAZE_POINTS);
     expect(hi).toBeGreaterThan(lo * 1.3);
+  });
+  it('Steigerung: Der Faltakt wird schneller', () => {
+    expect(phaseLenAt(0)).toBe(PHASE_TICKS);
+    expect(phaseLenAt(DURATION_TICKS)).toBeLessThan(PHASE_TICKS * 0.6);
+    const s = game.init(5, opts);
+    const lens = new Set<number>();
+    for (let i = 0; i < DURATION_TICKS; i++) {
+      game.step(s, NEUTRAL_INPUT);
+      lens.add(s.phaseLen);
+    }
+    expect(Math.min(...lens)).toBeLessThan(140);
+    expect(s.folds).toBeGreaterThan(10);
+  });
+  it('Kristalle: deterministisch, abseits von Start/Ziel, einsammeln gibt Punkte', () => {
+    const s = game.init(9, opts);
+    expect(s.gems.length).toBeGreaterThanOrEqual(3);
+    expect(makeGems(s.maze, 9, 0)).toEqual(s.gems);
+    for (const g of s.gems) expect(g.x === s.maze.goal.x && g.y === s.maze.goal.y).toBe(false);
+    const g = s.gems[0]!;
+    s.x = g.x + 0.5;
+    s.y = g.y + 0.5;
+    game.step(s, NEUTRAL_INPUT);
+    expect(s.gemCount).toBe(1);
+    expect(game.score(s)).toBe(GEM_POINTS);
+  });
+  it('Eingeklemmt: Wer beim Falten in einer aufklappenden Wand steht, steckt kurz fest', () => {
+    const s = game.init(3, opts);
+    const m = s.maze;
+    const n = m.n;
+    // Senkrechte Wand, die nur in Phase B steht (Code 3): Spieler genau darauf stellen
+    let placed = false;
+    for (let j = 0; j < n && !placed; j++)
+      for (let i = 1; i < n && !placed; i++)
+        if (m.vw[j * (n + 1) + i] === 3) {
+          s.x = i;
+          s.y = j + 0.5;
+          placed = true;
+        }
+    expect(placed).toBe(true);
+    expect(insideWall(m, 1, s.x, s.y)).toBe(true);
+    s.phaseTick = s.phaseLen - 1;
+    game.step(s, NEUTRAL_INPUT);
+    expect(s.phase).toBe(1);
+    expect(s.stun).toBeGreaterThan(0);
+    const x = s.x;
+    for (let i = 0; i < 10; i++) game.step(s, { ...NEUTRAL_INPUT, x: 1 });
+    expect(s.x).toBeCloseTo(x, 1);
+    expect(insideWall(m, 1, s.x, s.y)).toBe(false);
+  });
+  it('Bot-Stufen: 0.88 > 0.6 > 0.3, alle ohne Absturz und mit endlichen Punkten', () => {
+    const avg = (skill: number) => {
+      let t = 0;
+      for (let i = 0; i < 6; i++) {
+        const r = runBot(game, 70 + i, opts, skill, i + 3);
+        expect(Number.isFinite(r.score)).toBe(true);
+        t += r.score;
+      }
+      return t / 6;
+    };
+    const a = avg(0.3);
+    const b = avg(0.6);
+    const c = avg(0.88);
+    expect(b).toBeGreaterThan(a);
+    expect(c).toBeGreaterThan(b);
   });
 });

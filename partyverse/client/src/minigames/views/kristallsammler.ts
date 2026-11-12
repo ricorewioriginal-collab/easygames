@@ -1,8 +1,15 @@
 import * as THREE from 'three';
 import type { KristallState } from '@shared/minigames/games/kristallsammler';
-import { ARENA_X, ARENA_Y, BOMB_ARM_TICKS } from '@shared/minigames/games/kristallsammler';
+import {
+  ARENA_X,
+  ARENA_Y,
+  BOMB_ARM_TICKS,
+  DURATION_TICKS,
+  RUSH_TICKS,
+} from '@shared/minigames/games/kristallsammler';
 import { glow, textSprite, toon } from '../../render/materials';
 import type { MiniGameViewFactory } from '../viewTypes';
+import { makeMe, makeRivals, updateRivals } from './rivals';
 
 const CRYSTAL_COLORS: Record<number, number> = { 1: 0x4cc9ff, 3: 0x3dff9a, 5: 0xffc933 };
 
@@ -14,7 +21,7 @@ interface ItemView {
   extra?: THREE.Object3D;
 }
 
-/** Schwebende Kristallinsel: Kobold-Sammler läuft über bunte Fliesen, Kristalle schweben und funkeln, Bomben pulsieren. */
+/** Schwebende Kristallinsel: die eigene Figur läuft über bunte Fliesen, Mitspieler halbdurchsichtig daneben, Kristalle schweben und funkeln, Bomben pulsieren. */
 export const createView: MiniGameViewFactory<KristallState> = (ctx, initial) => {
   const { root, camera, scene } = ctx;
   scene.background = new THREE.Color(0x2a2a74);
@@ -98,48 +105,11 @@ export const createView: MiniGameViewFactory<KristallState> = (ctx, initial) => 
   );
   root.add(starPts);
 
-  // --- Spielfigur --------------------------------------------------------
-  const hero = new THREE.Group();
-  const body = new THREE.Group();
-  hero.add(body);
-  const torso = new THREE.Mesh(new THREE.SphereGeometry(0.5, 20, 14), toon(0xff8a3d));
-  torso.scale.set(1, 1.1, 1);
-  torso.position.y = 0.6;
-  body.add(torso);
-  const belly = new THREE.Mesh(new THREE.SphereGeometry(0.34, 14, 10), toon(0xffd7a8));
-  belly.position.set(0, 0.5, 0.3);
-  belly.scale.set(1, 1.1, 0.7);
-  body.add(belly);
-  for (const sx of [-1, 1]) {
-    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 10), toon(0xffffff));
-    eye.position.set(sx * 0.18, 0.86, 0.38);
-    body.add(eye);
-    const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.075, 10, 8), toon(0x1b1030));
-    pupil.position.set(sx * 0.18, 0.86, 0.5);
-    body.add(pupil);
-    const foot = new THREE.Mesh(new THREE.SphereGeometry(0.17, 10, 8), toon(0x7a3b1c));
-    foot.scale.set(1, 0.6, 1.4);
-    foot.position.set(sx * 0.22, 0.1, 0.12);
-    body.add(foot);
-    const arm = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), toon(0xff8a3d));
-    arm.position.set(sx * 0.52, 0.55, 0.05);
-    body.add(arm);
-  }
-  const cap = new THREE.Mesh(new THREE.ConeGeometry(0.34, 0.55, 14), toon(0x2bd1c4));
-  cap.position.set(0, 1.4, 0);
-  cap.rotation.x = -0.15;
-  body.add(cap);
-  const pom = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), toon(0xfff6a8));
-  pom.position.set(0, 1.7, -0.05);
-  body.add(pom);
-  const sack = new THREE.Mesh(new THREE.SphereGeometry(0.3, 12, 10), toon(0xb07a3a));
-  sack.position.set(0, 0.55, -0.45);
-  body.add(sack);
-  const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.55, 20), glow(0x120a3a, 0.4));
-  shadow.rotation.x = -Math.PI / 2;
-  shadow.position.y = 0.02;
-  root.add(shadow);
-  root.add(hero);
+  // --- Spielfigur (gewählte Figur) und Mitspieler ---------------------------
+  const me = makeMe(ctx, 0.9);
+  const hero = me.group;
+  const rivals = makeRivals(ctx, 0.8);
+  const rivalStun = rivals.map(() => 0);
   // Betäubungssterne
   const dizzy: THREE.Mesh[] = [];
   for (let i = 0; i < 3; i++) {
@@ -217,12 +187,12 @@ export const createView: MiniGameViewFactory<KristallState> = (ctx, initial) => 
   }
 
   // --- Effekte -------------------------------------------------------------
-  const popups: Array<{ sp: THREE.Sprite; t: number }> = [];
-  function popup(text: string, x: number, y: number, color: string): void {
-    const sp = textSprite(text, { color, size: 72, width: 1.3 });
-    sp.position.set(x, 1.8, -y);
+  const popups: Array<{ sp: THREE.Sprite; t: number; y0: number }> = [];
+  function popup(text: string, x: number, y: number, color: string, w = 1.3, h = 1.8): void {
+    const sp = textSprite(text, { color, size: 72, width: w });
+    sp.position.set(x, h, -y);
     root.add(sp);
-    popups.push({ sp, t: 0 });
+    popups.push({ sp, t: 0, y0: h });
   }
 
   let t = 0;
@@ -230,7 +200,10 @@ export const createView: MiniGameViewFactory<KristallState> = (ctx, initial) => 
   let lastHit = initial.bombHits;
   let shake = 0;
   let trail = 0;
-  let hop = 0;
+  let pickPop = 0;
+  let rivalBest = 0;
+  let rush = false;
+  const rushTint = new THREE.Color(0xffd23f);
   const camTarget = new THREE.Vector3();
   const tmp = new THREE.Vector3();
 
@@ -248,20 +221,22 @@ export const createView: MiniGameViewFactory<KristallState> = (ctx, initial) => 
 
       // Spielfigur
       const speed = Math.hypot(s.vx, s.vy);
-      hop += dt * (4 + speed * 1.8);
       const stunned = s.stun > 0;
-      const bob = stunned ? 0 : Math.abs(Math.sin(hop)) * 0.16 * Math.min(1, speed / 3.5);
-      hero.position.set(s.x, bob, -s.y);
+      hero.position.set(s.x, 0, -s.y);
       const targetRot = Math.atan2(Math.cos(s.face), -Math.sin(s.face));
-      let dr = targetRot - hero.rotation.y;
-      dr = Math.atan2(Math.sin(dr), Math.cos(dr));
-      hero.rotation.y += dr * Math.min(1, dt * 14);
-      body.rotation.x = Math.min(0.3, speed * 0.04) * (s.sprinting ? 1.5 : 1);
-      body.rotation.z = stunned ? Math.sin(t * 28) * 0.25 : 0;
-      const sq = 1 + Math.sin(hop * 2) * 0.05 * Math.min(1, speed / 3);
-      body.scale.set(1 / Math.sqrt(sq), sq, 1 / Math.sqrt(sq));
-      shadow.position.set(s.x, 0.02, -s.y);
-      shadow.scale.setScalar(1 - bob * 0.8);
+      me.rig.faceTowards(targetRot);
+      if (s.tick >= DURATION_TICKS) me.rig.play(s.points >= rivalBest ? 'celebrate' : 'lose', { loop: true });
+      else if (stunned) {
+        if (me.rig.current !== 'shock') me.rig.play('shock');
+      } else if (speed > 0.6)
+        me.rig.play(s.sprinting || speed > 5.2 ? 'run' : 'walk', {
+          loop: true,
+          speed: s.sprinting ? 1.4 : 1,
+        });
+      else me.rig.play('idle', { loop: true });
+      me.rig.update(dt);
+      hero.scale.setScalar(1 + pickPop * 0.18);
+      pickPop = Math.max(0, pickPop - dt * 4);
       dizzy.forEach((d, i) => {
         d.visible = stunned;
         const a = t * 7 + (i * Math.PI * 2) / 3;
@@ -313,12 +288,20 @@ export const createView: MiniGameViewFactory<KristallState> = (ctx, initial) => 
           v.halo.scale.setScalar(1 + Math.sin(t * 5 + c.id) * 0.1);
           if (v.extra) v.extra.scale.setScalar(1 + Math.sin(t * 3 + c.id) * 0.15);
         } else {
+          v.group.position.x = c.x;
+          v.group.position.z = -c.y;
+          if (c.vx || c.vy) {
+            v.core.rotation.x = -c.y * 2.2;
+            v.core.rotation.z = c.x * 2.2;
+          }
           const armed = s.tick >= c.t0 + BOMB_ARM_TICKS;
           const pulse = armed ? 1 + Math.sin(t * 9 + c.id) * 0.1 : 0.75;
           v.group.position.y = 0.75 + Math.abs(Math.sin(t * 3 + c.id)) * 0.1;
           v.group.scale.setScalar(pop * overshoot * pulse * blink);
-          v.core.rotation.y = t * 0.9;
-          v.core.rotation.z = Math.sin(t * 4 + c.id) * 0.2;
+          if (!c.vx && !c.vy) {
+            v.core.rotation.y = t * 0.9;
+            v.core.rotation.z = Math.sin(t * 4 + c.id) * 0.2;
+          }
           (v.halo.material as THREE.MeshBasicMaterial).opacity = armed ? 0.14 + Math.sin(t * 9) * 0.07 : 0.05;
           if (v.extra) {
             v.extra.scale.setScalar(armed ? 1 + Math.sin(t * 9 + c.id) * 0.12 : 0.6);
@@ -334,12 +317,13 @@ export const createView: MiniGameViewFactory<KristallState> = (ctx, initial) => 
         ctx.burst(new THREE.Vector3(s.lastPick.x, 1, -s.lastPick.y), col, 8 + s.lastPick.value * 3);
         ctx.sfx(s.lastPick.value >= 5 ? 'win' : s.lastPick.value >= 3 ? 'good' : 'coin');
         popup(
-          '+' + s.lastPick.value,
+          `+${s.lastPick.value}${s.combo >= 2 ? ` ×${s.combo}` : ''}`,
           s.lastPick.x,
           s.lastPick.y,
-          s.lastPick.value >= 5 ? '#ffd23f' : s.lastPick.value >= 3 ? '#6dffb0' : '#8fe0ff',
+          s.lastPick.value >= 8 ? '#ffd23f' : s.lastPick.value >= 3 ? '#6dffb0' : '#8fe0ff',
+          s.combo >= 2 ? 1.8 : 1.3,
         );
-        body.scale.y = 1.25;
+        pickPop = 1;
       }
       if (s.bombHits !== lastHit) {
         lastHit = s.bombHits;
@@ -348,12 +332,13 @@ export const createView: MiniGameViewFactory<KristallState> = (ctx, initial) => 
         ctx.sfx('hit');
         ctx.sfx('bad');
         popup('-4', s.x, s.y, '#ff6a7a');
+        me.rig.play('shock');
         shake = 0.45;
       }
       for (let i = popups.length - 1; i >= 0; i--) {
         const p = popups[i]!;
         p.t += dt;
-        p.sp.position.y = 1.8 + p.t * 1.6;
+        p.sp.position.y = p.y0 + p.t * 1.6;
         p.sp.material.opacity = Math.max(0, 1 - p.t / 0.9);
         if (p.t > 0.9) {
           p.sp.removeFromParent();
@@ -363,21 +348,53 @@ export const createView: MiniGameViewFactory<KristallState> = (ctx, initial) => 
         }
       }
 
+      // Goldrausch: Fliesen golden, Banner
+      if (!rush && s.tick >= RUSH_TICKS) {
+        rush = true;
+        ctx.sfx('win');
+        popup('GOLDRAUSCH ×2', 0, -ARENA_Y * 0.1, '#ffd23f', 6, 2.6);
+        for (let i = 0; i < cols * rows; i++) {
+          tiles.getColorAt(i, c4);
+          tiles.setColorAt(i, c4.lerp(rushTint, 0.55));
+        }
+        if (tiles.instanceColor) tiles.instanceColor.needsUpdate = true;
+        shake = 0.3;
+      }
+
       // Kamera: schräg von vorn, folgt dem Spieler ein Stück
       const aspect = camera.aspect;
       const portrait = aspect < 1;
       const elev = portrait ? 1.15 : 0.98;
       const needW = (ARENA_X + 1.2) / (0.466 * aspect);
       const needH = (ARENA_Y * Math.sin(elev) + 1.0) / 0.466;
-      const R = Math.max(needW * 1.08, needH * 1.14, 13);
+      // Hochformat: näher heran und dem Spieler folgen, sonst wäre alles winzig
+      const R = portrait ? Math.max(needW * 0.6, 13) : Math.max(needW * 1.08, needH * 1.14, 13);
       shake = Math.max(0, shake - dt);
-      camTarget.set(s.x * 0.2, 0, -s.y * 0.2 + 0.9);
+      const follow = portrait ? 0.7 : 0.2;
+      camTarget.set(
+        THREE.MathUtils.clamp(s.x * follow, -ARENA_X + 3.2, ARENA_X - 3.2),
+        0,
+        -s.y * follow + 0.9,
+      );
       camera.position.set(
         camTarget.x + Math.sin(t * 90) * shake * 0.25,
         R * Math.sin(elev) + Math.cos(t * 83) * shake * 0.2,
         camTarget.z + R * Math.cos(elev),
       );
       camera.lookAt(camTarget);
+    },
+    ghosts(states, dt) {
+      updateRivals(rivals, states, dt, (r, st, i) => {
+        r.group.position.set(st.x, 0, -st.y);
+        r.rig.faceTowards(Math.atan2(Math.cos(st.face), -Math.sin(st.face)));
+        rivalBest = Math.max(rivalBest, st.points);
+        const sp = Math.hypot(st.vx, st.vy);
+        if (st.stun > 0) {
+          if (rivalStun[i] === 0) r.rig.play('shock');
+        } else if (sp > 0.6) r.rig.play(sp > 5.2 ? 'run' : 'walk', { loop: true });
+        else if (r.rig.current === 'walk' || r.rig.current === 'run') r.rig.play('idle', { loop: true });
+        rivalStun[i] = st.stun;
+      });
     },
     dispose() {
       scene.fog = null;

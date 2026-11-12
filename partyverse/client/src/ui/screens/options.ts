@@ -3,6 +3,7 @@ import type { App, RouteParams, ScreenView } from '../../app/app';
 import { type ColorMode, type QualityChoice, type Settings } from '../../app/save';
 import { locales } from '../../i18n';
 import { header, section } from './common';
+import { controllerSection, keyboardSection } from './controls';
 
 const LANG_NAMES: Record<string, string> = { de: 'Deutsch', en: 'English', fr: 'Français', es: 'Español' };
 
@@ -197,6 +198,7 @@ export function create(app: App, params?: RouteParams): ScreenView {
     resetBox,
   );
 
+  const keys = keyboardSection();
   const el = h(
     'div',
     { class: 'screen sc' },
@@ -208,9 +210,11 @@ export function create(app: App, params?: RouteParams): ScreenView {
       gfxSec,
       a11ySec,
       touchSec,
+      controllerSection(),
+      keys?.el ?? null,
       langSec,
       dataSec,
     ),
   );
-  return { el };
+  return { el, dispose: () => keys?.dispose() };
 }

@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { NEUTRAL_INPUT } from '../types';
-import { ARM, game, pendulumPos, roundPoints, ROUNDS, type PendelState } from './pendelpunkt';
+import { runBot } from '../simulate';
+import {
+  ARM,
+  game,
+  pendulumPos,
+  roundPoints,
+  ROUNDS,
+  streakBonus,
+  zoneCenter,
+  type PendelState,
+} from './pendelpunkt';
 
 const OPTS = { playerIndex: 0, players: 2 };
 
@@ -35,5 +45,45 @@ describe('Pendel-Punkt', () => {
     for (let i = 0; i < 3000 && !game.done(idle); i++) game.step(idle, NEUTRAL_INPUT);
     expect(game.done(idle)).toBe(true);
     expect(game.score(idle)).toBe(0);
+  });
+  it('ab Runde 3 wandert die Zone, ab Runde 6 schwingt das Pendel ungleichmäßig', () => {
+    const s = game.init(4, OPTS);
+    expect(s.rounds[0]!.zm).toBe(0);
+    expect(zoneCenter(s.rounds[0]!, 0)).toBe(zoneCenter(s.rounds[0]!, 90));
+    const r3 = s.rounds[2]!;
+    expect(r3.zm).toBeGreaterThan(0);
+    expect(zoneCenter(r3, 0)).not.toBeCloseTo(zoneCenter(r3, 45), 3);
+    expect(s.rounds[4]!.wa).toBe(0);
+    expect(s.rounds[5]!.wa).toBeGreaterThan(0);
+  });
+  it('Serienbonus für gute Stopps in Folge, letzte Runde doppelt', () => {
+    expect(streakBonus(1)).toBe(0);
+    expect(streakBonus(3)).toBe(200);
+    const s: PendelState = game.init(9, OPTS);
+    // perfekter Spieler: drückt genau im Moment, in dem Pendel und Zonenmitte am nächsten sind
+    let guard = 0;
+    while (!game.done(s) && guard++ < 5000) {
+      let a = false;
+      if (s.phase === 'swing' && s.k > ARM) {
+        const r = s.rounds[s.round]!;
+        const d0 = pendulumPos(r, s.k + 1) - zoneCenter(r, s.k + 1);
+        const d1 = pendulumPos(r, s.k + 2) - zoneCenter(r, s.k + 2);
+        a = Math.abs(d0) < r.h * 0.25 && Math.abs(d0) <= Math.abs(d1);
+      }
+      game.step(s, { ...NEUTRAL_INPUT, a: a && !s.prevA });
+    }
+    expect(s.pts.length).toBe(ROUNDS);
+    expect(s.streak).toBeGreaterThanOrEqual(3);
+    expect(s.pts[ROUNDS - 1]!).toBeGreaterThan(1600);
+  });
+  it('Bot-Stufen: stark > mittel > schwach', () => {
+    const avg = (sk: number) => {
+      let sum = 0;
+      for (let i = 0; i < 8; i++) sum += runBot(game, 60 + i, OPTS, sk, i).score;
+      return sum / 8;
+    };
+    const [lo, mid, hi] = [avg(0.3), avg(0.6), avg(0.88)];
+    expect(hi).toBeGreaterThan(mid);
+    expect(mid).toBeGreaterThan(lo);
   });
 });

@@ -1,7 +1,15 @@
 import * as THREE from 'three';
-import { CAVE_DX, RING_R, caveAt, type RocketState } from '@shared/minigames/games/raketenflug';
-import { glow, toon } from '../../render/materials';
+import {
+  CAVE_DX,
+  GOLD_R,
+  RING_R,
+  caveAt,
+  rockY,
+  type RocketState,
+} from '@shared/minigames/games/raketenflug';
+import { disposeTree, glow, textSprite, toon } from '../../render/materials';
 import type { MiniGameViewFactory } from '../viewTypes';
+import { makeMe, makeRivals } from './rivals';
 
 /** Raketenflug: Kristallhöhle in Violett und Neon. Seitenansicht, Ringtore leicht schräg, Rakete mit Flamme. */
 export const createView: MiniGameViewFactory<RocketState> = (ctx, initial) => {
@@ -150,8 +158,18 @@ export const createView: MiniGameViewFactory<RocketState> = (ctx, initial) => {
     eyeB.position.x = r.r * 0.25;
     g.add(body, bump, eyeA, eyeB);
     g.position.set(r.x, r.y, 0);
+    if (r.amp) {
+      // Schwebefels: leuchtende Kette nach oben und unten
+      const chain = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.05, 0.05, r.amp * 2 + 1.2, 6),
+        glow(0xff7ad9, 0.5),
+      );
+      chain.position.y = 0;
+      g.add(chain);
+      body.material = toon(0xc45fd6);
+    }
     root.add(g);
-    return { g, body };
+    return { g, body, r };
   });
 
   // ---------- Tore ----------
@@ -160,64 +178,108 @@ export const createView: MiniGameViewFactory<RocketState> = (ctx, initial) => {
   const discGeo = new THREE.CircleGeometry(RING_R, 28);
   const gates = initial.gates.map((g0) => {
     const grp = new THREE.Group();
-    const mat = glow(0x46eaff);
+    const mat = glow(g0.gold ? 0xffc933 : 0x46eaff);
     const ring = new THREE.Mesh(ringGeo, mat);
-    const outer = new THREE.Mesh(ringGeoOuter, glow(0xffffff, 0.6));
+    const outer = new THREE.Mesh(ringGeoOuter, glow(g0.gold ? 0xfff2a0 : 0xffffff, 0.6));
     const disc = new THREE.Mesh(discGeo, glow(0x46eaff, 0.14));
     grp.add(ring, outer, disc);
+    if (g0.gold) {
+      // kleiner Goldring
+      const k = GOLD_R / RING_R;
+      ring.scale.setScalar(k);
+      outer.scale.setScalar(k);
+      disc.scale.setScalar(k);
+      for (let i = 0; i < 6; i++) {
+        const sp = new THREE.Mesh(new THREE.OctahedronGeometry(0.14), glow(0xfff2a0));
+        const a = (i / 6) * Math.PI * 2;
+        sp.position.set(Math.cos(a) * (GOLD_R + 0.45), Math.sin(a) * (GOLD_R + 0.45), 0);
+        grp.add(sp);
+      }
+    }
     grp.rotation.y = 1.0;
     grp.position.set(g0.x, g0.y, 0);
     root.add(grp);
-    return { grp, mat, disc };
+    return { grp, mat, disc, gold: g0.gold };
   });
 
-  // ---------- Rakete ----------
-  const rocket = new THREE.Group();
-  const tilt = new THREE.Group();
-  rocket.add(tilt);
-  root.add(rocket);
+  // ---------- Raketen: eigene mit Figur obendrauf, Mitspieler halbdurchsichtig dahinter ----------
   const white = toon(0xf4f6ff);
-  const red = toon(0xff3d6e);
   const blue = toon(0x3d8bff);
-  const bodyM = new THREE.Mesh(new THREE.CapsuleGeometry(0.34, 0.8, 6, 14), white);
-  bodyM.rotation.z = -Math.PI / 2;
-  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.34, 0.6, 14), red);
-  nose.rotation.z = -Math.PI / 2;
-  nose.position.x = 0.95;
-  const stripe = new THREE.Mesh(new THREE.CylinderGeometry(0.355, 0.355, 0.16, 14), blue);
-  stripe.rotation.z = Math.PI / 2;
-  stripe.position.x = -0.1;
-  const win = new THREE.Mesh(
-    new THREE.SphereGeometry(0.17, 12, 10),
-    toon(0x9fe8ff, { emissive: 0x4ac8ff, emissiveIntensity: 0.7 }),
-  );
-  win.position.set(0.3, 0.12, 0.3);
-  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.04, 6, 14), red);
-  rim.position.copy(win.position);
-  const finGeo = new THREE.ConeGeometry(0.26, 0.6, 3);
-  const fin1 = new THREE.Mesh(finGeo, red);
-  fin1.position.set(-0.5, 0.36, 0);
-  fin1.rotation.z = Math.PI * 0.12;
-  const fin2 = fin1.clone();
-  fin2.position.y = -0.36;
-  fin2.rotation.z = Math.PI - Math.PI * 0.12;
-  const fin3 = new THREE.Mesh(finGeo, red);
-  fin3.position.set(-0.5, 0, 0.36);
-  fin3.scale.set(1, 1, 0.3);
-  const nozzle = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.28, 0.2, 12), toon(0x555a7a));
-  nozzle.rotation.z = Math.PI / 2;
-  nozzle.position.x = -0.75;
-  const flame = new THREE.Group();
-  const flameOut = new THREE.Mesh(new THREE.ConeGeometry(0.24, 1, 10), glow(0xff8a1f, 0.9));
-  flameOut.rotation.z = Math.PI / 2;
-  flameOut.position.x = -0.5;
-  const flameIn = new THREE.Mesh(new THREE.ConeGeometry(0.13, 0.7, 10), glow(0xfff2a0));
-  flameIn.rotation.z = Math.PI / 2;
-  flameIn.position.x = -0.35;
-  flame.add(flameOut, flameIn);
-  flame.position.x = -0.85;
-  tilt.add(bodyM, nose, stripe, win, rim, fin1, fin2, fin3, nozzle, flame);
-  tilt.scale.setScalar(0.85);
+  interface Ship {
+    rocket: THREE.Group;
+    tilt: THREE.Group;
+    flame: THREE.Group;
+  }
+  const makeShip = (accent: THREE.Material, ghost: boolean): Ship => {
+    const rocket = new THREE.Group();
+    const tilt = new THREE.Group();
+    rocket.add(tilt);
+    root.add(rocket);
+    const bodyM = new THREE.Mesh(new THREE.CapsuleGeometry(0.34, 0.8, 6, 14), white);
+    bodyM.rotation.z = -Math.PI / 2;
+    const nose = new THREE.Mesh(new THREE.ConeGeometry(0.34, 0.6, 14), accent);
+    nose.rotation.z = -Math.PI / 2;
+    nose.position.x = 0.95;
+    const stripe = new THREE.Mesh(new THREE.CylinderGeometry(0.355, 0.355, 0.16, 14), blue);
+    stripe.rotation.z = Math.PI / 2;
+    stripe.position.x = -0.1;
+    const finGeo = new THREE.ConeGeometry(0.26, 0.6, 3);
+    const fin1 = new THREE.Mesh(finGeo, accent);
+    fin1.position.set(-0.5, 0.36, 0);
+    fin1.rotation.z = Math.PI * 0.12;
+    const fin2 = fin1.clone();
+    fin2.position.y = -0.36;
+    fin2.rotation.z = Math.PI - Math.PI * 0.12;
+    const fin3 = new THREE.Mesh(finGeo, accent);
+    fin3.position.set(-0.5, 0, 0.36);
+    fin3.scale.set(1, 1, 0.3);
+    const nozzle = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.28, 0.2, 12), toon(0x555a7a));
+    nozzle.rotation.z = Math.PI / 2;
+    nozzle.position.x = -0.75;
+    const flame = new THREE.Group();
+    const flameOut = new THREE.Mesh(new THREE.ConeGeometry(0.24, 1, 10), glow(0xff8a1f, 0.9));
+    flameOut.rotation.z = Math.PI / 2;
+    flameOut.position.x = -0.5;
+    const flameIn = new THREE.Mesh(new THREE.ConeGeometry(0.13, 0.7, 10), glow(0xfff2a0));
+    flameIn.rotation.z = Math.PI / 2;
+    flameIn.position.x = -0.35;
+    flame.add(flameOut, flameIn);
+    flame.position.x = -0.85;
+    tilt.add(bodyM, nose, stripe, fin1, fin2, fin3, nozzle, flame);
+    tilt.scale.setScalar(0.85);
+    if (ghost)
+      tilt.traverse((o) => {
+        const m = o as THREE.Mesh;
+        if (!m.isMesh) return;
+        const c = (m.material as THREE.Material).clone();
+        c.transparent = true;
+        c.opacity = 0.45;
+        c.depthWrite = false;
+        m.material = c;
+      });
+    return { rocket, tilt, flame };
+  };
+  const ship = makeShip(toon(ctx.me.color), false);
+  const { rocket, tilt, flame } = ship;
+  // Figur reitet auf der Rakete
+  const me = makeMe(ctx, 0.6);
+  me.ring.visible = false;
+  me.group.removeFromParent();
+  me.group.position.set(-0.1, 0.18, 0);
+  me.group.rotation.y = Math.PI / 2;
+  tilt.add(me.group);
+  const rivals = makeRivals(ctx, 0.6);
+  const rivalShips = rivals.map((r, i) => {
+    const sh = makeShip(toon(r.avatar.color), true);
+    r.ring.visible = false;
+    r.group.removeFromParent();
+    r.group.position.set(-0.1, 0.18, 0);
+    r.group.rotation.y = Math.PI / 2;
+    sh.tilt.add(r.group);
+    sh.rocket.position.z = -1.4 - i * 1.1;
+    return { sh, crashes: 0, gates: 0 };
+  });
+  const popups: Array<{ sp: THREE.Sprite; t: number }> = [];
 
   let t = 0;
   let camX = 4;
@@ -227,6 +289,8 @@ export const createView: MiniGameViewFactory<RocketState> = (ctx, initial) => {
   let lastCrashes = 0;
   let smokeT = 0;
   let spin = 0;
+  let shake = 0;
+  let ended = false;
   const burstPos = new THREE.Vector3();
 
   return {
@@ -235,19 +299,32 @@ export const createView: MiniGameViewFactory<RocketState> = (ctx, initial) => {
       // Ereignisse
       if (s.gatesPassed !== lastGates) {
         lastGates = s.gatesPassed;
-        ctx.sfx('good');
         const g = s.gates[s.nextGate - 1];
-        if (g) ctx.burst(burstPos.set(g.x, g.y, 0.5), 0x46eaff, 22);
+        ctx.sfx(g?.gold || s.streak >= 5 ? 'win' : 'good');
+        if (g) {
+          ctx.burst(burstPos.set(g.x, g.y, 0.5), g.gold ? 0xffc933 : 0x46eaff, g.gold ? 34 : 22);
+          const sp = textSprite(`+${s.lastGatePts}${s.streak > 1 ? ` ×${s.streak}` : ''}`, {
+            color: g.gold ? '#ffd23f' : s.streak > 2 ? '#7dff9a' : '#bff6ff',
+            size: 64,
+            width: s.streak > 1 ? 2.1 : 1.4,
+          });
+          sp.position.set(g.x, g.y + 2.1, 0.5);
+          root.add(sp);
+          popups.push({ sp, t: 0 });
+        }
+        if (s.streak >= 3) me.rig.play('cheer');
       }
       if (s.gatesMissed !== lastMissed) {
         lastMissed = s.gatesMissed;
-        ctx.sfx('tick');
+        ctx.sfx('bad');
       }
       if (s.crashes !== lastCrashes) {
         lastCrashes = s.crashes;
         ctx.sfx('hit');
         ctx.burst(burstPos.set(s.x, s.y, 0.4), 0xff7a3d, 24);
         spin = 1;
+        shake = 0.5;
+        me.rig.play('shock');
       }
 
       // Tore
@@ -257,7 +334,16 @@ export const createView: MiniGameViewFactory<RocketState> = (ctx, initial) => {
         const near = Math.abs(g.x - camX) < 30;
         gv.grp.visible = near;
         if (!near) continue;
-        const col = g.st === 1 ? 0x62ff7a : g.st === 2 ? 0x7a4a6a : i === s.nextGate ? 0xffe34d : 0x46eaff;
+        const col =
+          g.st === 1
+            ? 0x62ff7a
+            : g.st === 2
+              ? 0x7a4a6a
+              : gv.gold
+                ? 0xffc933
+                : i === s.nextGate
+                  ? 0xffe34d
+                  : 0x46eaff;
         gv.mat.color.setHex(col);
         (gv.disc.material as THREE.MeshBasicMaterial).color.setHex(col);
         const pulse =
@@ -268,7 +354,10 @@ export const createView: MiniGameViewFactory<RocketState> = (ctx, initial) => {
               : 0.9;
         gv.grp.scale.setScalar(pulse);
       }
-      for (const r of rocks) r.g.visible = Math.abs(r.g.position.x - camX) < 30;
+      for (const r of rocks) {
+        r.g.visible = Math.abs(r.g.position.x - camX) < 30;
+        if (r.g.visible && r.r.amp) r.g.position.y = rockY(r.r, s.t);
+      }
       for (let i = 0; i < rocks.length; i++)
         (rocks[i] as (typeof rocks)[number]).body.rotation.z += dt * 0.3 * (i % 2 ? 1 : -1);
 
@@ -289,6 +378,22 @@ export const createView: MiniGameViewFactory<RocketState> = (ctx, initial) => {
         ctx.burst(burstPos.set(s.x - 1.0, s.y - Math.sin(pitch) * 0.3, 0), 0xffb347, 2);
       }
 
+      me.rig.update(dt);
+      if (s.over && !ended) {
+        ended = true;
+        me.rig.play(s.lives > 0 ? 'celebrate' : 'lose', { loop: true });
+      }
+      for (let i = popups.length - 1; i >= 0; i--) {
+        const p = popups[i] as { sp: THREE.Sprite; t: number };
+        p.t += dt;
+        p.sp.position.y += dt * 1.2;
+        p.sp.material.opacity = Math.max(0, 1 - p.t / 1.1);
+        if (p.t > 1.1) {
+          disposeTree(p.sp);
+          popups.splice(i, 1);
+        }
+      }
+
       // Kamera
       const aspect = camera.aspect;
       const d =
@@ -298,10 +403,31 @@ export const createView: MiniGameViewFactory<RocketState> = (ctx, initial) => {
       const k = dt <= 0 ? 1 : Math.min(1, dt * 6);
       camX += (tx - camX) * k;
       camY += (ty - camY) * k;
-      camera.position.set(camX, camY, d);
+      shake = Math.max(0, shake - dt * 1.8);
+      const sh = shake * shake * 0.8;
+      camera.position.set(camX + (Math.random() - 0.5) * sh, camY + (Math.random() - 0.5) * sh, d);
       camera.lookAt(camX, camY, 0);
       starPts.position.x = camX * 0.6;
       back.position.y = camY * 0.9;
+    },
+    ghosts(states, dt) {
+      rivalShips.forEach((rs, i) => {
+        const st = states[i];
+        const r = rivals[i] as (typeof rivals)[number];
+        rs.sh.rocket.visible = st != null && !(st.over && st.lives <= 0);
+        if (st) {
+          rs.sh.rocket.position.x = st.x;
+          rs.sh.rocket.position.y = st.y;
+          rs.sh.tilt.rotation.z = Math.atan2(st.vy, 7) * 0.9;
+          const fl = st.thrust ? 1 + Math.sin(t * 60 + i) * 0.18 : 0.15;
+          rs.sh.flame.scale.set(fl, st.thrust ? 1 : 0.3, st.thrust ? 1 : 0.3);
+          if (st.crashes !== rs.crashes) r.rig.play('shock');
+          if (st.gatesPassed !== rs.gates && st.streak >= 3) r.rig.play('cheer');
+          rs.crashes = st.crashes;
+          rs.gates = st.gatesPassed;
+        }
+        r.rig.update(dt);
+      });
     },
     dispose() {
       scene.fog = null;
