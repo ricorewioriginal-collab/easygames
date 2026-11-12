@@ -27,6 +27,7 @@ import { createKayKit } from './kaykit.js';
 import { createSpellFX } from './spellfx.js';
 import { createMinis, ISLE } from './minis.js';
 import { createOverworld, OWN, OW_WL } from './overworld.js';
+import { createSeaBattle } from './seabattle.js';
 import { createRide, RIDES } from './ride.js';
 import { createRadio } from './radio.js';
 const T=makeT(THREE,.5),$=id=>document.getElementById(id);
@@ -932,6 +933,7 @@ const weakOf=e=>e.d.weak||(e.d.base==='rift'?'light':'fire');
 let _mw=null;const MWX=()=>_mw||(_mw=createMaerchen({folk:(n,o,w)=>folkNpc(n,o,w),T,G,PG,M,mk,glow,mergeStatic,scene,keyHint:KH,inMode:()=>INP.mode(),S:()=>S,MP:()=>MP,CHP,setWLD:w=>{WLD=w},W:()=>WLD,setAtmos,tooSteep,addCol,colFree,rng:mul32,animObjs,emit,pl,addNpc,CR:()=>CR(),makeVillager,ED,spawnEnemy,INT,say:(...a)=>say(...a),travel:n=>travel(n),$,sfx:n=>sfx(n),banner:(...a)=>banner(...a),toast:(...a)=>toast(...a),saveGame:q=>saveGame(q),
   setBoss:e=>{boss=e},clearBoss:()=>{$('boss').hidden=true;boss=null},FX:()=>FXH,gainXp:x=>gainXp(x),giveGear:id=>giveGear(id),time:()=>time,setMBG:c=>{MBG=c},
   TX,PLAT,makeChest:()=>makeChest(),chests,CMP,PARTY,PORT,setCam:o=>setCam(o),snapCam:()=>snapCam(),hurtE:(...a)=>hurtE(...a),shake:v=>{camShake=Math.max(camShake,v)},makeNaut:()=>makeNaut(),chDone:n=>chDone(n),openTravel:()=>toggleMenu(true,'travel'),E:()=>E,dlgOn:()=>dlg.on}));
+let _sb=null;const SBX=()=>_sb||(_sb=createSeaBattle({T,scene,camera,say:(...a)=>say(...a),sfx:(...a)=>sfx(...a),toast:(...a)=>toast(...a),banner:(...a)=>banner(...a),dnum:(...a)=>dnum(...a),emit:(...a)=>emit(...a),S:()=>S,pl,wl:OW_WL,CMP:()=>CMP,PARTY,cmax:id=>cmax(id),maxHp:()=>maxHp(),atkV:()=>atkV(),gainXp:n=>gainXp(n),makeKind:(k,c)=>CR().makeKind(k,c,false),water:(x,z)=>!WLD||!WLD.water||WLD.water(x,z),setOn:v=>{X.sea=v},lose:()=>{const d=WLD&&WLD.docks&&WLD.docks.slice().sort((a,b)=>Math.hypot(a.x-pl.x,a.z-pl.z)-Math.hypot(b.x-pl.x,b.z-pl.z))[0];if(d){pl.x=d.x;pl.z=d.z}}}));
 let _rd=null;const RIDEX=()=>_rd||(_rd=createRide({S:()=>S,sfx:(...a)=>sfx(...a),saveGame:q=>saveGame(q),toast:(...a)=>toast(...a),time:()=>time,setMode:m=>{mode=m;$('hud').hidden=m==='ride'}}));
 let _wp=null;const WPX=()=>_wp||(_wp=createWorldPlus({folk:(n,o)=>folkNpc(n,o),T,mk,G,M,glow,scene,pl,S:()=>S,pBlocked:(x,z)=>pBlocked(x,z),colFree:(x,z,r)=>colFree(x,z,r),hgt:(x,z)=>hgt(x,z),time:()=>time,anim:fn=>animObjs.push({fn}),say:(...a)=>say(...a),toast:(...a)=>toast(...a),sfx:(...a)=>sfx(...a),emit:(...a)=>emit(...a),saveGame:q=>saveGame(q),gainXp:v=>gainXp(v),addNpc:(...a)=>addNpc(...a),makeVillager:o=>makeVillager(o),
   addChest:(id,x,y,z,reward)=>{const o={id,x,z,m:makeChest(),reward,pr:'Truhe öffnen'};o.m.position.set(x,y,z);o.m.rotation.y=Math.random()*6;if(S.chests[id])o.m.visible=false;scene.add(o.m);chests.push(o);addCol(x,z,.7)},
@@ -1419,7 +1421,7 @@ function updateFelli(dt){fel.t+=dt;const tx=pl.x-Math.sin(pl.face)*2.2+Math.cos(
   if(d>.4){const sp=Math.min(d*3,9);fel.x+=(tx-fel.x)/d*sp*dt;fel.z+=(tz-fel.z)/d*sp*dt}if(d>14){fel.x=tx;fel.z=tz}
   const hop=d>.6?Math.abs(Math.sin(fel.t*9))*.35:Math.sin(fel.t*2)*.03;felli.root.position.set(fel.x,hgt(fel.x,fel.z)+hop,fel.z);felli.root.rotation.y=Math.atan2(pl.x-fel.x,pl.z-fel.z);felli.body.scale.set(1+hop*.2,1-hop*.15,1+hop*.2)}
 
-function update(dt){KK.update(dt,camera.position);LF().update(dt);owEdge(dt);if(curCh===1&&!WLD&&!X.owSign1&&mode==='play'){X.owSign1=1;owSign(1,3.2,13)}if(WLD&&WLD.tick&&mode==='play')WLD.tick(dt);
+function update(dt){KK.update(dt,camera.position);if(X.sea){SBX().update(dt);dlgTick(dt);return}LF().update(dt);owEdge(dt);if(curCh===1&&!WLD&&!X.owSign1&&mode==='play'){X.owSign1=1;owSign(1,3.2,13)}if(WLD&&WLD.tick&&mode==='play')WLD.tick(dt);
   updNaut(dt);if(mode==='play'&&!dlg.on){NZ().update(dt,time);EPX().update(dt,time)}const frozen=dlg.on;S.t=(S.t||0)+dt;
   updatePlayer(dt);updHouses(dt);zonesUpd(dt);worldRuleUpd(dt);
   if(MP.on){
@@ -3340,6 +3342,18 @@ function buildOver(){const O=createOverworld({T,M,mk,G,glow,scene,MINI,TX}).buil
     refresh(){$('qt').textContent='🗺️ Weltkarte';$('qo').textContent='Folge den Wegpfaden zu den Welten (✋ Betreten). An Stegen rufst du die Nautilux und fährst übers Meer zu den Märchen-Inseln.'},
     menuQuest(){return `<h3>🗺️ Weltkarte</h3><p style="color:var(--dim);font-size:13px">Die Wegpfade verbinden alle Welten. Am Wahrzeichen einer Welt ✋ betreten. Geschlossene Welten liegen unter einer Kuppel aus Rissenergie. An den Stegen (blaues Licht) rufst du die Nautilux und fährst übers Meer zu den Märchen-Inseln. Aus jeder Welt kommst du zurück, wenn du an ihren Rand läufst oder den Wegweiser am Eingang nutzt.</p>`},
     kill(){},zoneEnter(){},ensureBoss(){},sealedNow:()=>false,spawnMini(){}};
+  /* Monster der Weltkarte: an den Wegpfaden streifen Gegner der nächsten Welt umher (Echtzeitkampf),
+     auf dem Meer ziehen Flossen – mit der Nautilux berührt, beginnt ein rundenbasierter Seekampf (seabattle.js) */
+  WLD.docks=O.docks;WLD.water=O.water;const OWF=['wolf','qimp','skw','qpug','skr','wolf','skm','qimp','skn'],lvOf=(x,z)=>{const k=O.nearest(x,z)[0];return k>11?1:k};
+  for(let k=2;k<=11;k++){if(!chOpen(k)||!OWN[k-1])continue;const [ax,az]=OWN[k-1],[bx,bz]=OWN[k],L=Math.hypot(bx-ax,bz-az),nx=-(bz-az)/L,nz=(bx-ax)/L;
+    for(const [t,o] of [[.36,5],[.64,-5]]){const x=ax+(bx-ax)*t+nx*o,z=az+(bz-az)*t+nz*o,K=OWF[(k*2+(t<.5?0:1))%OWF.length];if(!O.blocked(x,z)&&ED[K])spawnEnemy(K,x,z)}}
+  const fins=[],fm=M(0x1a2a3a,{r:.4}),wm=new T.MeshBasicMaterial({color:0xe8f8ff,transparent:true,opacity:.55,depthWrite:false});
+  const finAt=()=>{for(let t=0;t<200;t++){const x=(Math.random()-.5)*360,z=-70+(Math.random()-.5)*580;if(O.water(x,z)&&O.H(x,z)<OW_WL-1.2&&!O.docks.some(d=>Math.hypot(d.x-x,d.z-z)<30)&&Math.hypot(x-pl.x,z-pl.z)>40)return[x,z]}return null};
+  for(let i=0;i<9;i++){const p=finAt();if(!p)continue;const g=new T.Group();g.position.set(p[0],OW_WL,p[1]);const fn=mk(G.cone,fm,0,.55,0,.32,1.3,.08);fn.rotation.z=-.25;g.add(fn);const wk=mk(G.tor,wm,0,.05,0,1.1,1.1,.25,false);wk.rotation.x=Math.PI/2;g.add(wk);scene.add(g);fins.push({g,wk,x:p[0],z:p[1],a:Math.random()*6.28,gone:0,rt:0})}
+  WLD.fins=fins;WLD.tick=dt=>{if(X.sea||dlg.on)return;const sail=naut.on&&!nAir();for(const f of fins){if(f.gone){f.g.visible=false;f.rt+=dt;if(f.rt>60){const p=finAt();if(p){f.x=p[0];f.z=p[1];f.gone=0;f.rt=0;f.g.visible=true}}continue}
+    const dx=pl.x-f.x,dz=pl.z-f.z,d=Math.hypot(dx,dz),ch=sail&&d<28;if(ch)f.a=Math.atan2(dx,dz);else f.a+=(Math.random()-.5)*dt*1.6;const sp=(ch?4.6:2)*dt,nx=f.x+Math.sin(f.a)*sp,nz=f.z+Math.cos(f.a)*sp;
+    if(O.water(nx,nz)&&O.H(nx,nz)<OW_WL-.6){f.x=nx;f.z=nz}else f.a+=Math.PI*.7;f.g.position.set(f.x,OW_WL+Math.sin(time*2+f.a)*.06,f.z);f.g.rotation.y=f.a;f.wk.scale.setScalar(1+Math.sin(time*3+f.x)*.15);
+    if(sail&&d<3.4&&!pl.dead)SBX().start(lvOf(f.x,f.z),f)}};
   setAtmos({top:[.16,.36,.72],mid:[.36,.58,.86],hor:[.78,.84,.9],aur:[.3,.5,.8],ms:[.5,.62,.85],gr:[.18,.3,.18],moon:0xffffff,mg:[0x4a7a5a,0x2a5a4a],fog:0xa8cce8,fd:.0035,hemi:[0xe8f2ff,0x4a5a3a,1],lite:[0xfff2d8,1.2],stars:0,expo:1.05});
   animObjs.push({fn:t=>O.anim(t)});WLD.refresh()}
 /* Wegweiser am Eingang jeder Kapitelwelt (und in Lunaris): führt auf die Weltkarte */
