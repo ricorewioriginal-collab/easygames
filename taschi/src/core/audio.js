@@ -91,7 +91,9 @@ export class Audio {
   schedule() {
     if (!this.ctx || !this.track || document.hidden) return;
     const c = this.ctx;
-    while (this.nextBar < c.currentTime + 0.35) {
+    // hing der Hauptthread (Ladevorgang, langsames Bild), nicht nachholen – sonst knackt es
+    if (this.nextBar < c.currentTime) this.nextBar = c.currentTime + 0.06;
+    while (this.nextBar < c.currentTime + 0.6) {
       const t = this.track, def = t.def, beat = 60 / def.bpm, barLen = beat * 4;
       const bi = this.bar % def.prog.length;
       if (def.short && this.bar >= def.prog.length) { this.stopMusic(); return; }

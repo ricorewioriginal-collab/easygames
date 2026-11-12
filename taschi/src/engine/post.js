@@ -30,18 +30,18 @@ void main() {
 }`;
 
 export const GRADES = {
-  day: { bloom: 0.2, threshold: 0.9, sat: 1.12, contrast: 1.06, vignette: 0.55, lift: [0.010, 0.016, 0.034], gain: [1.03, 1.01, 0.98] },
-  battle: { bloom: 0.24, threshold: 0.88, sat: 1.15, contrast: 1.08, vignette: 0.7, lift: [0.012, 0.014, 0.036], gain: [1.04, 1.01, 0.97] },
-  indoor: { bloom: 0.3, threshold: 0.84, sat: 1.08, contrast: 1.05, vignette: 0.75, lift: [0.02, 0.014, 0.01], gain: [1.05, 1.0, 0.95] }
+  day: { bloom: 0.14, threshold: 0.96, sat: 1.1, contrast: 1.08, vignette: 0.5, lift: [0.0, 0.004, 0.016], gain: [1.0, 0.99, 0.96] },
+  battle: { bloom: 0.18, threshold: 0.94, sat: 1.12, contrast: 1.1, vignette: 0.65, lift: [0.0, 0.004, 0.018], gain: [1.01, 0.99, 0.95] },
+  indoor: { bloom: 0.08, threshold: 0.98, sat: 1.1, contrast: 1.12, vignette: 0.6, lift: [0.0, 0.0, 0.0], gain: [0.97, 0.94, 0.9] }
 };
 
 export class Post {
-  constructor(renderer) {
-    this.r = renderer;
+  constructor(renderer, { lite = false } = {}) {
+    this.r = renderer; this.lite = lite;
     const gl2 = renderer.capabilities.isWebGL2;
     const opts = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat, depthBuffer: true, stencilBuffer: false };
     this.scene = gl2 && THREE.WebGLMultisampleRenderTarget ? new THREE.WebGLMultisampleRenderTarget(1, 1, opts) : new THREE.WebGLRenderTarget(1, 1, opts);
-    if (this.scene.samples !== undefined) this.scene.samples = 4;
+    if (this.scene.samples !== undefined) this.scene.samples = lite ? 0 : 4;
     const small = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat, depthBuffer: false, stencilBuffer: false };
     this.rt = [0, 1, 2, 3].map(() => new THREE.WebGLRenderTarget(1, 1, small));
     this.cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -83,10 +83,12 @@ export class Post {
     // Bloom: helle Anteile, zweimal verkleinert und weichgezeichnet
     this.mBright.uniforms.tSrc.value = this.scene.texture; this.pass(this.mBright, this.rt[1]);
     this.blur(this.rt[1], this.rt[0], this.rt[1]);
-    this.mBlur.uniforms.tSrc.value = this.rt[1].texture; this.mBlur.uniforms.uDir.value.set(0, 0); this.pass(this.mBlur, this.rt[3]);
-    this.blur(this.rt[3], this.rt[2], this.rt[3]);
+    if (!this.lite) {
+      this.mBlur.uniforms.tSrc.value = this.rt[1].texture; this.mBlur.uniforms.uDir.value.set(0, 0); this.pass(this.mBlur, this.rt[3]);
+      this.blur(this.rt[3], this.rt[2], this.rt[3]);
+    }
     const u = this.mFinal.uniforms;
-    u.tScene.value = this.scene.texture; u.tBloom1.value = this.rt[1].texture; u.tBloom2.value = this.rt[3].texture;
+    u.tScene.value = this.scene.texture; u.tBloom1.value = this.rt[1].texture; u.tBloom2.value = this.lite ? this.rt[1].texture : this.rt[3].texture;
     this.pass(this.mFinal, null);
   }
   dispose() { this.scene.dispose(); for (const t of this.rt) t.dispose(); this.mBright.dispose(); this.mBlur.dispose(); this.mFinal.dispose(); this.quad.geometry.dispose(); }
