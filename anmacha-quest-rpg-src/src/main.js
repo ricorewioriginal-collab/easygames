@@ -55,7 +55,7 @@ async function boot() {
   view.onQuality = (q) => { cfg.q = q; store.set(CFG, JSON.stringify(cfg)); };
   window.__quest = game;   // für Tests
   // Laden: feste Modelle + Figuren von Hafenau
-  const files = [...STATIC_MODELS, 'hero_Warrior.glb', 'hero_Wizard.glb', 'hero_Rogue.glb'];
+  const files = [...STATIC_MODELS, 'kk/Knight.glb', 'kk/Mage.glb', 'kk/Rogue_Hooded.glb'];
   let n = 0;
   A.setProgress(() => {});
   const hdr = view.loadHdr();
