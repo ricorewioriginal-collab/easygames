@@ -85,6 +85,18 @@ export function buildInterior(kind, regionId, save) {
       out.interact.push({ id: 'savebook', kind: 'save', x: 7.4, z: -4.4, r: 1.6, label: 'Reisetagebuch', prompt: 'Speichern' });
       out.interact.push({ id: 'travel', kind: 'travel', x: -5.5, z: 2.0, r: 1.6, label: 'Flugtaxi-Schalter', prompt: 'Reisen' });
       b.box(1.4, 1, 0.6, 0x3e8fd8, -5.5, 0.5, 1.4); poster(group, '✈ Flugtaxi', -5.5, 2.2, -d / 2 + 0.06, 0, '#3e8fd8');
+      // Pension (rechts vorn): Tresen mit Blumentopf, Wirtin Ilse
+      b.box(1.6, 1, 0.7, 0xf2c94a, 5.5, 0.5, 1.2); b.box(1.7, 0.1, 0.8, 0xe08a3a, 5.5, 1.02, 1.2); plant(b, 6.1, 1.2, 0.45); out.grid.block(5.5, 1.2, 0.85, 0.45);
+      out.npcs.push({ id: 'daycare', role: 'kind', name: 'Wirtin Ilse', x: 5.5, z: 0.2, ry: 0 });
+      out.interact.push({ id: 'daycare', kind: 'daycare', x: 5.5, z: 2.0, r: 1.6, label: 'Pension', prompt: 'Pension' });
+      // Glücksrad (links an der Wand) und Kampfturm-Terminal (rechts an der Wand)
+      b.cyl(0.9, 0.9, 0.12, 0xffd35a, -8.75, 1.7, 0.2, 20); b.box(0.2, 1.2, 0.2, 0x8a6444, -8.8, 0.6, 0.2); out.grid.block(-8.5, 0.2, 0.5, 0.9);
+      const wheelDisc = new THREE.Mesh(new THREE.CircleGeometry(0.85, 10), new THREE.MeshBasicMaterial({ map: signTexture('🎡', { bg: '#ff8a5a', font: 90 }) })); wheelDisc.position.set(-8.68, 1.7, 0.2); wheelDisc.rotation.y = Math.PI / 2; group.add(wheelDisc);
+      out.animators.push((t) => { wheelDisc.rotation.x = t * 0.6; });
+      out.interact.push({ id: 'wheel', kind: 'wheel', x: -7.7, z: 0.2, r: 1.5, label: 'Glücksrad', prompt: 'Drehen' });
+      b.box(0.9, 2, 0.9, 0x3a3048, 8.4, 1, 0.2); b.box(0.75, 0.9, 0.05, 0x8ad0ff, 7.94, 1.4, 0.2, Math.PI / 2); out.grid.block(8.4, 0.2, 0.55, 0.55);
+      poster(group, '🗼 Kampfturm', 8.95, 2.7, 0.2, -Math.PI / 2, '#3a3048');
+      out.interact.push({ id: 'tower', kind: 'tower', x: 7.4, z: 0.2, r: 1.5, label: 'Kampfturm-Terminal', prompt: 'Turm' });
       group.add(out.healGlow);
       out.music = 'lab';
       break;

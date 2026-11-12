@@ -35,7 +35,7 @@ export function newSave(player = {}) {
     team: [], box: [], bag: { taschiball: 5, trank: 3 }, coins: 300, badges: 0, champions: {}, dex: {},
     location: { map: 'region:0', x: 0, z: 34, ry: Math.PI }, lastHeal: { map: 'region:0', x: 0, z: 34 },
     visited: { 0: true }, flags: {}, quests: {}, trainers: {}, puzzles: {}, chests: {}, found: {}, guild: {}, league: 0,
-    legends: {}, story: { chapter: 0 }, stats: { wins: 0, caught: 0, battles: 0, losses: 0, steps: 0 }, worldTime: 9 * 60,
+    legends: {}, daycare: { mons: [], steps: 0, egg: false }, eggs: [], tower: {}, daily: {}, rematch: {}, story: { chapter: 0 }, stats: { wins: 0, caught: 0, battles: 0, losses: 0, steps: 0 }, worldTime: 9 * 60,
     legacy: null
   };
 }
@@ -90,6 +90,12 @@ export function validate(s) {
   for (const [k, v] of Object.entries(obj(s.dex))) if (SPECIES[k] && (v === 1 || v === 2)) out.dex[k] = v;
   for (const m of [...out.team, ...out.box]) out.dex[m.id] = 2;
   for (const f of ['champions', 'visited', 'flags', 'quests', 'trainers', 'puzzles', 'chests', 'found', 'guild', 'legends', 'stats']) out[f] = obj(s[f]);
+  // Pension, Eier, Kampfturm, Tagesereignisse, Revanchen
+  const dc = obj(s.daycare);
+  out.daycare = { mons: (Array.isArray(dc.mons) ? dc.mons : []).map(e => { const m = cleanMonster(e?.m); return m ? { m, steps: clampInt(e.steps, 0, 1e9, 0), startLv: clampInt(e.startLv, 1, MAX_LEVEL, m.lv) } : null; }).filter(Boolean).slice(0, 2), steps: clampInt(dc.steps, 0, 1e6, 0), egg: dc.egg === true };
+  out.eggs = (Array.isArray(s.eggs) ? s.eggs : []).filter(e => e && SPECIES[e.id]).slice(0, 6).map(e => ({ id: e.id, iv: { hp: clampInt(e.iv?.hp, 0, 15, 8), atk: clampInt(e.iv?.atk, 0, 15, 8), def: clampInt(e.iv?.def, 0, 15, 8), speed: clampInt(e.iv?.speed, 0, 15, 8) },
+    nature: clampInt(e.nature, 0, 9, 6), eggMoves: (Array.isArray(e.eggMoves) ? e.eggMoves : []).filter(mv => MOVES[mv]).slice(0, 2), shiny: e.shiny === true, total: clampInt(e.total, 100, 5000, 1000), left: clampInt(e.left, 0, 5000, 1000) }));
+  for (const f of ['tower', 'daily', 'rematch']) out[f] = obj(s[f]);
   out.story = { chapter: clampInt(s.story?.chapter, 0, 9, 0) };
   const loc = obj(s.location);
   out.location = { map: typeof loc.map === 'string' ? loc.map : 'region:0', x: finite(loc.x, 0), z: finite(loc.z, 34), ry: finite(loc.ry, 0) };

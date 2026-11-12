@@ -1,5 +1,6 @@
+import { MOVES } from './moves.js';
 // Items. Every item has a working, testable effect in logic/items.js.
-// category: ball | heal | status | battle | evo | growth | held | key
+// category: ball | heal | status | battle | evo | growth | held | disk | key
 export const ITEMS = {
   taschiball:   { name: 'Taschi-Kapsel', category: 'ball', price: 40, rate: 1, color: 0xe9523f, desc: 'Standardkapsel zum Fangen wilder Taschis.' },
   heilball:     { name: 'Heilkapsel', category: 'ball', price: 60, rate: 1, color: 0xf48fb8, healOnCatch: true, desc: 'Gefangene Taschis sind sofort vollständig geheilt.' },
@@ -16,6 +17,7 @@ export const ITEMS = {
   supertrank:   { name: 'Supertrank', category: 'heal', price: 90, heal: 90, desc: 'Stellt 90 KP wieder her.', unlock: 5 },
   vitaltrank:   { name: 'Vitaltrank', category: 'heal', price: 220, heal: 9999, desc: 'Stellt alle KP wieder her.', unlock: 10 },
   belebungskraut: { name: 'Belebungskraut', category: 'heal', price: 280, revive: 0.5, desc: 'Belebt ein erschöpftes Taschi mit halben KP.', unlock: 3 },
+  taschikeks:   { name: 'Taschi-Keks', category: 'growth', price: 40, treat: true, desc: 'Leckerei fürs Camp: stärkt die Freundschaft deines Taschis deutlich.' },
   levelbonbon:  { name: 'EP-Bonbon', category: 'growth', price: 0, sell: 300, desc: 'Ein Taschi steigt sofort um ein Level auf.' },
   heilkraut:    { name: 'Heilkraut', category: 'status', price: 60, cure: 'all', desc: 'Heilt jede Statusveränderung.' },
   apfelsaft:    { name: 'Apfelsaft', category: 'heal', price: 0, heal: 20, sellOnly: true, desc: 'Süßer Saft, stellt 20 KP wieder her.' },
@@ -40,14 +42,27 @@ export const ITEMS = {
   angel:        { name: 'Angel', category: 'key', desc: 'Am Ufer auswerfen: Wasser-Taschis beißen an. Drück im richtigen Moment, wenn es zieht!' }
 };
 
+// Attacken-Disks: lehren eine Attacke, beliebig oft. Lernen können sie Taschis
+// vom selben Typ (oder bei Normal-Attacken alle). Freigeschaltet mit den Siegeln.
+export const DISKS = [
+  ['hieb', 0, 300], ['flammenrad', 1, 500], ['gischtwelle', 1, 500], ['blattwirbel', 1, 500], ['donnerkeil', 2, 600],
+  ['felssturz', 2, 600], ['sturzflug', 3, 600], ['schattenklaue', 3, 650], ['eissplitter', 3, 600], ['erdstoss', 4, 650],
+  ['kopfnuss', 4, 700], ['konzentration', 5, 800], ['heilgesang', 6, 900], ['feuersturm', 8, 1200], ['flutstrahl', 8, 1200],
+  ['bluetensturm', 8, 1200], ['gewitterzorn', 9, 1300], ['kristallspeer', 9, 1300], ['orkan', 10, 1300], ['albtraum', 10, 1400],
+  ['blizzard', 11, 1400], ['beben', 11, 1500], ['gigastoss', 13, 2000]
+];
+const TYPE_NAMES = { normal: 'Normal', feuer: 'Feuer', wasser: 'Wasser', pflanze: 'Pflanze', elektro: 'Elektro', gestein: 'Gestein', flug: 'Flug', geist: 'Geist', eis: 'Eis', erde: 'Erde' };
+for (const [move, unlock, price] of DISKS) { const mv = MOVES[move];
+  ITEMS['disk_' + move] = { name: 'Disk: ' + mv.name, category: 'disk', move, price, unlock, desc: TYPE_NAMES[mv.type] + (mv.power ? ', Stärke ' + mv.power : ', Status') + '. Lehrt die Attacke beliebig oft – ' + (mv.type === 'normal' ? 'jedem Taschi.' : 'allen ' + TYPE_NAMES[mv.type] + '-Taschis.') }; }
+
 export const ITEM_ORDER = Object.keys(ITEMS);
 export const HELD_IDS = ITEM_ORDER.filter(id => ITEMS[id].category === 'held');
 export const BALL_IDS = ITEM_ORDER.filter(id => ITEMS[id].category === 'ball');
-export const CATEGORY_NAMES = { ball: 'Kapseln', heal: 'Heilung', status: 'Status', battle: 'Kampf', evo: 'Entwicklung', growth: 'Wachstum', held: 'Zum Tragen', key: 'Basis-Items' };
+export const CATEGORY_NAMES = { ball: 'Kapseln', heal: 'Heilung', status: 'Status', battle: 'Kampf', evo: 'Entwicklung', growth: 'Wachstum', held: 'Zum Tragen', disk: 'Attacken-Disks', key: 'Basis-Items' };
 
 export function sellPrice(id) {
   const it = ITEMS[id];
-  if (!it || it.category === 'key' || it.noSell) return 0;
+  if (!it || it.category === 'key' || it.noSell || it.category === 'disk') return 0;
   if (it.sell) return it.sell;
   return Math.floor((it.price || 20) / 2);
 }

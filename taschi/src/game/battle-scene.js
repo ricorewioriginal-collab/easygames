@@ -259,7 +259,7 @@ export class BattleScene {
     const indoor = !!opts.indoor;
     this.buildStage(opts.region, indoor);
     const b = createBattle({ rng: g.rng, kind: opts.kind, format: opts.format, canRun: opts.canRun, canCatch: opts.canCatch, night: g.isNight(), dark: indoor, weather: indoor ? null : g.world.weather, starUnlocked: (save.badges || 0) >= 1,
-      player: { team: save.team, bag: save.bag, name: save.player.name }, foe: { team: opts.foeTeam, ai: opts.ai ?? 0, trainer: opts.kind !== 'wild', name: opts.trainerName || '', items: { ...(opts.items || {}) }, star: !!opts.foeStar } });
+      player: { team: opts.playerTeam || save.team, bag: opts.playerBag || save.bag, name: save.player.name }, foe: { team: opts.foeTeam, ai: opts.ai ?? 0, trainer: opts.kind !== 'wild', name: opts.trainerName || '', items: { ...(opts.items || {}) }, star: !!opts.foeStar } });
     this.b = b; this.opts = opts;
     if (b.weather && WEATHER[b.weather]) g.ui.toast(weatherText(b.weather), WEATHER[b.weather].icon);
     if (opts.kind === 'wild' && opts.foeTeam.some(m => m.shiny)) { g.ui.toast('Ein schillerndes Taschi! Fang es, solange du kannst!', '✨'); g.audio.sfx('item'); }
@@ -373,7 +373,7 @@ export class BattleScene {
       const bag = () => {
         const items = opt.items.filter(id => opt.canCatch || ITEMS[id].category !== 'ball');
         if (!items.length) { this.ui.toast('Keine einsetzbaren Gegenstände.'); return; }
-        this.menuArea([...items.map(id => h('button.bact.bag.focusable', { onclick: () => useItem(id) }, ITEMS[id].name + ' ×' + this.game.save.bag[id], h('small', {}, ITEMS[id].category === 'ball' ? 'Fangchance ' + catchHint(this, id) : ITEMS[id].desc))), h('button.bact.backbtn.focusable', { onclick: main }, '↩ Zurück')]);
+        this.menuArea([...items.map(id => h('button.bact.bag.focusable', { onclick: () => useItem(id) }, ITEMS[id].name + ' ×' + this.b.bag[id], h('small', {}, ITEMS[id].category === 'ball' ? 'Fangchance ' + catchHint(this, id) : ITEMS[id].desc))), h('button.bact.backbtn.focusable', { onclick: main }, '↩ Zurück')]);
         screen.nav.current = null; screen.nav.ensure(); screen.onBack = main;
       };
       const useItem = (id) => {
