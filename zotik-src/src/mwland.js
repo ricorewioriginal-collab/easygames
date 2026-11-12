@@ -77,6 +77,26 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       b.glow(0xc8a0ff, 8, 10, 4.2, -72, .4);
       // Apfelbaum der Königin mit giftig schimmernden Äpfeln
       K.tree(-6, -74, 1.1, 0x3a2a2a, 0x2a3a2a, { fruit: 0xc81a3a, glowF: 1 });
+      // Dornenwald (West): Jägerhütte, Köhlermeiler, Dornenhecken mit Spitzen, Wegweiser
+      K.house(-86, -38, 7, 5.4, 2.8, 0x8a7a64, 0x3a2a22, .6, { beams: 0x3a2a1a, chimney: 1 }); A.smoke(-83, 4.6, -39);
+      b.cone(-70, 0, -36, 2.6, 3.4, 0x1a1a1a, { solid: 1, mat: { r: 1 } }); A.fire(-70, -36, .6);
+      for (let i = 0; i < 26; i++) { const a = i * .24 + .3, r = 17 + (i % 3) * 1.2, x = -78 + Math.cos(a) * r, z = -34 + Math.sin(a) * r; if (a > 1.2 && a < 2.1) continue; b.cone(x, 0, z, .7, 2.6 + (i % 4) * .4, 0x1e2a18, { solid: 1, lo: 1 }).rotation.z = (i % 5 - 2) * .06; for (let k = 0; k < 3; k++) b.cone(x + Math.cos(k * 2.1) * .5, 1.4 + k * .4, z + Math.sin(k * 2.1) * .5, .1, .8, 0x3a2a2a, { lo: 1, cast: false }).rotation.z = 1.2; }
+      b.box(-66, 0, -22, .2, 2, .2, 0x5a3a22, { lo: 1 }); b.box(-65.4, 1.7, -22, 1.4, .4, .08, 0x7a5a3a, { cast: false });
+      // Giftküche (Ost): Hütte, brodelnder Kessel, Fässer, Kräuterbunde, grünes Glühen
+      K.house(80, -56, 9, 6.4, 3, 0x4a4252, 0x2a1a3a, -.5, { beams: 0x2a1a1a, chimney: 1, dark: 1 }); A.smoke(83, 5.4, -57);
+      b.cyl(68, 0, -50, 1.5, 1.1, 0x2a2a30, { solid: 1, mat: { m: .6, r: .4 } }); b.sph(68, 1.1, -50, 1.3, .25, 1.3, 0x5aff8a, { mat: { e: 0x2adf5a, ei: 2.2 }, cast: false }); b.glow(0x5aff8a, 6, 68, 1.6, -50, .7); A.fire(68, -50, .5);
+      for (const [x, z] of [[64, -58], [74, -42], [78, -46], [62, -46]]) b.cyl(x, 0, z, .55, 1, 0x5a3a22, { solid: 1, tex: 'wood' });
+      for (let i = 0; i < 6; i++) { b.box(60 + i * .6, 1.9, -52, .35, .05, .05, 0x8a8a40, { cast: false }); b.cone(60 + i * .6, 1.2, -52, .12, .7, [0x3a7a2a, 0x7a3a8a, 0x8a8a2a][i % 3], { lo: 1, cast: false }).rotation.x = Math.PI; }
+      for (let i = 0; i < 5; i++) b.sph(72 + Math.cos(i * 1.3) * 7, .3, -50 + Math.sin(i * 1.3) * 7, .3, .3, .3, 0xc81a3a, { mat: { e: 0x5a0a10, ei: .8 }, cast: false });
+      // Der gläserne Sarg (Nordwest): Sockel, Glassarg mit goldener Schrift, Zwergen-Stühlchen, Steinbögen, Trauerweide
+      b.box(-58, 0, -100, 4.4, .7, 2.6, 0x7a7a82, { solid: 1, tex: 'marble' }); b.box(-58, .7, -100, 3.8, 1, 2, 0xc8e8ff, { mat: { m: .9, r: .05, t: .42, e: 0x4a6a9a, ei: .3 }, cast: false }); b.box(-58, 1.72, -100, 3.9, .08, 2.1, 0xd8b040, { mat: { m: .9, r: .2 }, cast: false });
+      for (let i = 0; i < 7; i++) { const a = i / 7 * 6.283; b.box(-58 + Math.cos(a) * 6, 0, -100 + Math.sin(a) * 5.6, .45, .55, .45, [0xb02a2a, 0x2a4ab0, 0x2a8a3a, 0xc8a020, 0x8a2ab0, 0xc86a20, 0x2a9a9a][i], { solid: 1 }); }
+      K.arch(-58, -88, 5.4, 4.2, 0x7a7a82, 0, .7); K.arch(-58, -112, 5.4, 4.2, 0x7a7a82, 0, .7); b.glow(0xc8e8ff, 9, -58, 2.4, -100, .35);
+      K.tree(-72, -108, 1.4, 0x3a2a22, 0x2a5a3a, { n: 4 });
+      // Splitterkluft (Ost): Spiegelmonolithen, Kristallsplitter, geborstener Rahmen
+      for (const [x, z, h, ry] of [[52, -112, 7, .3], [70, -114, 9, -.4], [76, -98, 6, .8], [54, -96, 5, -.9], [62, -118, 8, 0]]) { const m = b.box(x, 0, z, 2.2, h, .5, 0xd8e8ff, { solid: 1, ry, mat: { m: 1, r: .04, e: 0x4a2a7a, ei: .6 } }); b.glow(0xc8a0ff, 5, x, h * .55, z, .35); }
+      for (let i = 0; i < 18; i++) { const a = i * .7, r = 4 + (i % 4) * 2.4; b.oct(62 + Math.cos(a) * r, .6 + (i % 3) * .4, -104 + Math.sin(a) * r, .22, .7 + (i % 3) * .3, .22, 0xc8a0ff, { mat: { e: 0x8a5ad8, ei: 1.6 }, cast: false }); }
+      b.tor(62, 3.4, -112, 2.4, 0xc8a24a, { mat: { m: .9, r: .25 }, rx: 0, d: 1 }).scale.y = 1.8;
     },
     dschungel(b, w, A) {
       const K = kit(b);
