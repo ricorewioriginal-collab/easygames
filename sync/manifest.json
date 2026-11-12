@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "8a361b0168db",
- "generated": "2026-11-12T12:41:42+01:00",
- "commit": "4d59f39aa7530bb18d610ba7e8ec7a0dd96aa88f",
+ "version": "b19066df27bf",
+ "generated": "2026-11-12T11:55:10+00:00",
+ "commit": "bb0284dd05d877284bb5287156e50920463cfc36",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6258,8 +6258,8 @@
   },
   {
    "p": "guides/zotik.json",
-   "s": 57322,
-   "h": "5b5f5dcac7db747c1a7ccb97a5e5875f180303077822d83d4dcae28340a00d58"
+   "s": 57696,
+   "h": "7cc11130c7c3c031ab0facdd892b91cf1dd65deef7e76154b92a2724b4bf13d6"
   },
   {
    "p": "heute.html",
@@ -8844,7 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 257559,
-   "h": "6209384c359611221019e327325ad2685cab204b63eb48192a3f8f2aba69b29b"
+   "h": "ab45b91e0c3e0d1ae5f2a054853a9dd72d0b82f63003691feb4ec9f935bf2e00"
   },
   {
    "p": "taschi/assets/Bark007_1K-JPG.zip",
@@ -11077,9 +11077,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-CNUCy-KS.js",
-   "s": 1443337,
-   "h": "723334942d19e80e2d3e5f182ec52033f5c324a4b0de6d9dcb6905f68baa216f"
+   "p": "zotik/assets/index-CcPqaayl.js",
+   "s": 1453034,
+   "h": "b955f592df0d42ab2490327d56c1d8b6c91dbd5cf42a6b25277eb8f7eceedf1f"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -11099,7 +11099,7 @@
   {
    "p": "zotik/index.html",
    "s": 52484,
-   "h": "66b1cf1b5dc882621556b4344af77a9df6bafe3efcb664bbc12090eb17b2df66"
+   "h": "385051beefca1b7068451f4f06742cc8ef5383b8cdb6ef315a6f6072c6030996"
   },
   {
    "p": "zotik/manifest.webmanifest",
