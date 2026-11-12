@@ -25,6 +25,8 @@ const BILD = process.argv[2] === 'bild';
   ok('Zurück im Spiegelwald, Schloss befreit', back.ch === 21 && back.mw && !back.dun && back.fl && back.castle, JSON.stringify(back));
   for (const n of [22, 23, 24, 25, 26, 27]) { await p.evaluate(n => __zotik.travel(n), n); for (let k = 0; k < 24; k++) { await skip(p); await p.waitForTimeout(400); if (await p.evaluate(n => __zotik.ch === n && document.getElementById('dlg').hidden, n)) break; }
     const has = await p.evaluate(() => !!(__zotik.WLD && __zotik.WLD.castle)); ok('Welt ' + n + ': Burg oder Turm vorhanden', has); }
+  const nf = await p.evaluate(() => { const Z = __zotik, S = Z.S(); for (let n = 2; n <= 11; n++) S.cd[n] = Object.assign(S.cd[n] || {}, { fin: 1 }); Z.mount(); const L = [Z.naut.f]; for (let i = 0; i < 3; i++) { Z.cycleNaut(); L.push(Z.naut.f); } return L; });
+  ok('Nautilux: nach allen Kapiteln alle vier Formen auch außerhalb der Kapitel', new Set(nf).size === 4, nf.join(' → '));
   await p.evaluate(() => __zotik.switchWorld(2)); await p.waitForTimeout(1200);
   if (BILD) { await p.evaluate(() => { const Z = __zotik; Z.pl.z = -60; Z.pl.x = Z.WLD.path(-60); Z.setCam(0, .45, 30); }); await pic('kapitelwelt'); }
   ok('keine Fehler', !p.errs.length, [...new Set(p.errs)].join(' | ')); console.log(`${res.filter(Boolean).length}/${res.length} bestanden`); await b.close(); process.exit(res.every(Boolean) ? 0 : 1); })().catch(e => { console.log('ABBRUCH', e.message.slice(0, 300)); process.exit(1); });
