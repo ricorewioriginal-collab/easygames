@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9c5bca7d35f7",
- "generated": "2026-11-12T20:03:41+00:00",
- "commit": "70c48c8dcdf72fd5e8ddc6f94dc14aafa511681f",
+ "version": "89f53483fb9e",
+ "generated": "2026-11-12T21:10:21+01:00",
+ "commit": "7cc7da573ce0668d2c1c92d65edf287d7e1e621f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2372,9 +2372,9 @@
    "h": "950fb90df6cb3745e31e3f7b566090d8e47ffd84f24f3e6b9a0a3d89ab1ea926"
   },
   {
-   "p": "anmacha-quest-rpg/assets/index-IB2R-Gdu.js",
-   "s": 838470,
-   "h": "049b814c59e5b2594bb055ca6373bdb66e2eb0ad69dcc9e708ad0ca770346cff"
+   "p": "anmacha-quest-rpg/assets/index-D_Z213PD.js",
+   "s": 856044,
+   "h": "096093ed7956f1a61a4717b62edb1676a04d5efd8dda2dcced4f1de0a4c39e25"
   },
   {
    "p": "anmacha-quest-rpg/card.jpg",
@@ -2388,8 +2388,8 @@
   },
   {
    "p": "anmacha-quest-rpg/index.html",
-   "s": 18297,
-   "h": "44f3103610daca6ef8fc31cc3d6d575b9dfaf94464551593aae7ff3946fc98eb"
+   "s": 26355,
+   "h": "734e0cd00e5d3f87450821f379a151e9ea13e0052b79248e0b6c6b15116b2889"
   },
   {
    "p": "anmacha-quest-rpg/logo.png",
@@ -9359,7 +9359,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258362,
-   "h": "5c1d86524fc796b29f30fd8aa1af483abcb19f76a71696f08ba0bc780bb29d85"
+   "h": "1dba3f7aa8e85faef43a59071954dd756a8839724a3e9455e9b1f7c5abbff064"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
