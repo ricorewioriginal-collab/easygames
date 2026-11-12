@@ -698,7 +698,26 @@ export class View {
     const a = A.makeActor(gl, 3.0 * A.HERO_SCALE[id]);
     this.addBlob(a.root, battle ? 1.1 : 0.9);
     A.playLoop(a, 'idle');
+    await this.attachWeapon(a, id).catch(() => {});
     return a;
+  }
+  // Waffe nach Ausrüstungsstufe (KayKit Fantasy Weapons, CC0) in die rechte Hand; ersetzt die Modellwaffe
+  weaponTier(id) { const l = A.WEAPONS[id]; return l ? Math.min(l.length - 1, Math.floor((this.g.S.gear || 0) * l.length / 11)) : 0; }
+  async attachWeapon(a, id) {
+    const list = A.WEAPONS[id];
+    if (!list) return;
+    const [gl, off] = await Promise.all([A.load(`weapons/${list[this.weaponTier(id)]}.gltf`), A.OFFHAND[id] ? A.load(A.OFFHAND[id]) : null]);
+    a.weapon = this.holdIn(a, A.WEAPON_HAND[id] || 'handslotr', gl);
+    if (off) this.holdIn(a, (A.WEAPON_HAND[id] || 'handslotr') === 'handslotr' ? 'handslotl' : 'handslotr', off);
+  }
+  // KayKit-Gegenstände sitzen mit ihrem Ursprung genau im Handslot
+  holdIn(a, slot, gl) {
+    const bone = a.root.getObjectByName(slot);
+    if (!bone) return null;
+    const w = gl.scene.clone();
+    w.traverse(m => { if (m.isMesh) { m.castShadow = true; m.material = m.material.clone(); m.material.metalness = 0.3; m.material.roughness = 0.5; m.userData.ownMat = true; } });
+    bone.add(w);
+    return w;
   }
   async actorNpc(kind) {
     const n = A.NPC_MODEL[kind];
@@ -713,6 +732,7 @@ export class View {
     const gl = await A.load(A.monsterPath(d));
     const a = A.makeActor(gl, d.h * mul, d.tint || '#ffffff');
     A.playLoop(a, 'idle');
+    if (A.MONSTER_WEAPON[d.model]) this.holdIn(a, 'handslotr', await A.load(A.MONSTER_WEAPON[d.model]));
     return a;
   }
   addBlob(parent, w) {
@@ -789,8 +809,9 @@ export class View {
     }
     // Spieler
     const lead = S.party[0] ? S.party[0].id : 'andrew';
-    if (this.playerLead !== lead) {
-      this.playerLead = lead;
+    const leadKey = lead + '|' + this.weaponTier(lead);
+    if (this.playerLead !== leadKey) {
+      this.playerLead = leadKey;
       if (this.player) this.world.remove(this.player.root);
       const holder = { root: new THREE.Group(), a: null };
       this.player = holder;
