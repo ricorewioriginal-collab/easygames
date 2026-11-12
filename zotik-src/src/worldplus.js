@@ -85,6 +85,8 @@ export function createWorldPlus(C) {
       C.addNpc('wp' + n + i, a[0], p[0], p[1], C.makeVillager(Object.assign({}, LOOK[i])), () => talk(n, i, a, it), R() * 6, () => st.q[i] === 0 || (st.q[i] === 1 && st['g' + i]));
       if (st.q[i] < 2) { const q = spot(R, path, h, -70 - i * 40, -110 - i * 40, [8, 22]); if (q) { const m = lostItem(th.fest[i]); m.position.set(q[0], h(q[0], q[1]), q[1]); m.visible = st.q[i] === 1 && !st['g' + i]; scene.add(m); w.items.push({ i, x: q[0], z: q[1], m, it }) } }
     });
+    /* 5) Weltrennen: Gastgeberin im Ort startet das Minispiel der Welt */
+    { const rd = C.RIDES[n], p = spot(R, path, h, -4, -18, [4, 9]); if (rd && p) C.addNpc('wpr' + n, rd.who, p[0], p[1], C.makeVillager({ cloth: th.fest[0], cloth2: th.fest[1], hair: 0x3a2a1a, sc: .95, hat: 1 }), () => C.say([[rd.who, rd.em + ' ' + rd.n + '! ' + rd.txt + (S().ride && S().ride[n] ? ' Dein Rekord: ' + S().ride[n] + '.' : ' Der erste Lauf bringt einen Bonus.')]], null, [{ t: 'Rennen starten', fn: () => C.ride(n) }, { t: 'Später', fn: () => { } }]), R() * 6, () => !(S().ride && S().ride[n])) }
     if (st.done) fest(n, path, h);
     C.anim((t, dt) => frame(dt, C.pl));
   }
