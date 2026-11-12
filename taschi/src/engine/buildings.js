@@ -508,7 +508,7 @@ export function landmark(kind, pal) {
       break;
     }
     case 'frozenlake': {
-      for (let i = 0; i < 4; i++) { const a = i * 1.6; b.add(lumpy(new THREE.IcosahedronGeometry(0.9, 1), 0.2, i), 0xdff4ff, matrix(Math.cos(a) * 4, 1, Math.sin(a) * 4, 0, 0, 0, 0.8, 1.4, 0.8)); }
+      for (let i = 0; i < 4; i++) { const a = i * 1.6; b.add(lumpy(new THREE.IcosahedronGeometry(0.9, 1), 0.2, i, false), 0xdff4ff, matrix(Math.cos(a) * 4, 1, Math.sin(a) * 4, 0, 0, 0, 0.8, 1.4, 0.8)); }
       b.add(new THREE.OctahedronGeometry(1.4, 0), 0xbfe9ff, matrix(0, 2, 0, 0.2, 0.5, 0, 0.8, 1.8, 0.8));
       break;
     }
@@ -553,7 +553,7 @@ export function landmark(kind, pal) {
       break;
     }
     case 'skybridge': {
-      for (let i = 0; i < 3; i++) { const x = (i - 1) * 7, y = 1 + i; b.add(lumpy(new THREE.ConeGeometry(2.4, 4, 7), 0.15, i), 0xbfb6c8, matrix(x, y - 1.6, i * 2, Math.PI, 0, 0)); b.cyl(2.4, 2.4, 0.5, 0x8fcf8a, x, y + 0.6, i * 2, 7); }
+      for (let i = 0; i < 3; i++) { const x = (i - 1) * 7, y = 1 + i; b.add(lumpy(new THREE.ConeGeometry(2.4, 4, 7), 0.15, i, false), 0xbfb6c8, matrix(x, y - 1.6, i * 2, Math.PI, 0, 0)); b.cyl(2.4, 2.4, 0.5, 0x8fcf8a, x, y + 0.6, i * 2, 7); }
       break;
     }
     case 'machine': {

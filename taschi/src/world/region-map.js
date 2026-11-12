@@ -7,7 +7,8 @@ import { TYPES } from '../data/types.js';
 import { buildTerrain } from '../engine/terrain.js';
 import { heightAt, HALF, CELL, CELLS, grassAt } from '../logic/layout.js';
 import { buildWalkGrid } from '../logic/walkgrid.js';
-import { InstanceField, vegetationGeometry, rockGeometry, tallGrassGeometry, tuftGeometry, flowerGeometry, MATERIALS } from '../engine/vegetation.js';
+import { InstanceField, vegetationGeometry, rockGeometry, tallGrassGeometry, tuftGeometry, flowerGeometry, carpetGeometry, MATERIALS } from '../engine/vegetation.js';
+import { SIZE } from '../logic/layout.js';
 import * as BLD from '../engine/buildings.js';
 import { Builder, matrix } from '../engine/geometry.js';
 import { envMaterial, waterMaterial, glowMaterial, foliageMaterial } from '../engine/materials.js';
@@ -306,6 +307,9 @@ export async function buildRegionMap(L, { quality, onProgress = () => {}, save }
     else { const g = vegetationGeometry(t, leafPal); geos[t] = { ...g, material: t === 'crystal' ? MATERIALS.rock() : MATERIALS.foliage(), castShadow: quality.shadows > 0, receiveShadow: false, extent: t === 'giant' ? 10 : 0 }; }
   }
   root.add(field.build(geos));
+  // dichter Grasteppich in der Nähe der Kamera (nur auf grünem Boden; Farbe vom bemalten Boden)
+  const carpet = quality.carpet ? buildCarpet(L, terrain, quality, rng, H) : null;
+  if (carpet) root.add(carpet.root);
   onProgress(0.85, 'Kollisionen berechnen …');
   await frame();
   const grid = buildWalkGrid(L);
@@ -313,8 +317,28 @@ export async function buildRegionMap(L, { quality, onProgress = () => {}, save }
   return {
     root, layout: L, grid, surfaces, interact, animators, dynamic, field, palette: pal, region: r,
     height: (x, z) => H(x, z),
-    update(t, dt, camera, focus) { for (const a of animators) a(t, this.night || 0); this.visibleChunks = field.update(camera, focus); }
+    update(t, dt, camera, focus) { for (const a of animators) a(t, this.night || 0); this.visibleChunks = field.update(camera, focus); if (carpet) carpet.update(camera, focus); }
   };
+}
+
+function buildCarpet(L, terrain, quality, rng, H) {
+  const img = terrain.material.map?.image;
+  if (!img || !img.getContext || ['snow', 'summit', 'ash'].includes(L.cfg.ground)) return null;
+  const res = img.width, data = img.getContext('2d').getImageData(0, 0, res, res).data;
+  const field = new InstanceField({ chunk: 12, lodDistance: 1e9, drawDistance: quality.carpetDistance || 30 });
+  const sp = quality.carpet, c = new THREE.Color();
+  for (let z = -HALF + 2; z < HALF - 2; z += sp) for (let x = -HALF + 2; x < HALF - 2; x += sp) {
+    const px = x + (rng.next() - 0.5) * sp * 0.9, pz = z + (rng.next() - 0.5) * sp * 0.9;
+    const ix = Math.min(res - 1, Math.max(0, Math.floor((px + HALF) / SIZE * res))), iy = Math.min(res - 1, Math.max(0, Math.floor((pz + HALF) / SIZE * res)));
+    const k = (iy * res + ix) * 4, r = data[k], g = data[k + 1], b = data[k + 2];
+    if (!(g > r * 1.06 && g > b * 1.12 && g > 60)) continue;          // nur auf Gras (Wege, Sand, Fels, Pflaster bleiben frei)
+    if (insideBuilding(L, px, pz) || waterNear(L, px, pz)) continue;
+    c.setRGB(r / 255, g / 255, b / 255).multiplyScalar(1.02);
+    field.add('carpet', px, H(px, pz) - 0.02, pz, 0.75 + rng.next() * 0.6, rng.next() * 6.28, c.getHex());
+  }
+  if (!field.items.size) return null;
+  field.build({ carpet: { high: carpetGeometry(), material: MATERIALS.carpet(), castShadow: false, receiveShadow: true } });
+  return field;
 }
 
 function landmarkReach(kind) { return { volcano: 22, bigtree: 8, windmills: 8, observatory: 7.5, suntemple: 9.5, crystalspires: 6, mill: 7, lighthouse: 6, machine: 8 }[kind] || 6; }

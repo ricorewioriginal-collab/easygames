@@ -25,7 +25,7 @@ export const ITEMS = {
   angriffsplus: { name: 'Kraftpulver', category: 'battle', price: 100, stat: 'atk', stages: 1, desc: 'Erhöht im Kampf den Angriff.', unlock: 2 },
   schutzplus:   { name: 'Schutzpulver', category: 'battle', price: 100, stat: 'def', stages: 1, desc: 'Erhöht im Kampf die Verteidigung.', unlock: 2 },
   kristallsplitter: { name: 'Kristallsplitter', category: 'evo', price: 0, desc: 'Lässt bestimmte Kristall-Taschis sich entwickeln.' },
-  eiskristall:  { name: 'Eiskristall', category: 'evo', price: 0, desc: 'Lässt bestimmte Polar-Taschis sich entwickeln.' },
+  eiskristall:  { name: 'Eiskristall', category: 'evo', price: 0, desc: 'Lässt bestimmte Raureif-Taschis sich entwickeln.' },
   sternsplitter:{ name: 'Sternsplitter', category: 'evo', price: 0, sell: 400, desc: 'Funkelt geheimnisvoll. Händler zahlen gut dafür.' },
   // getragene Gegenstände: ein Taschi trägt einen davon und er wirkt im Kampf von selbst (Beeren werden dabei verbraucht)
   heilbeere:    { name: 'Heilbeere', category: 'held', price: 80, held: { healAt: 0.5, heal: 0.25, once: true }, desc: 'Getragen: Fällt das Taschi auf die Hälfte seiner KP, isst es die Beere und erhält ein Viertel zurück.', unlock: 1 },

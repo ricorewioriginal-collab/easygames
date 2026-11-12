@@ -9,15 +9,30 @@ const NIGHT_TOP = new THREE.Color(0x0d1636), NIGHT_BOTTOM = new THREE.Color(0x2a
 const C_TOP = new THREE.Color(), C_BOTTOM = new THREE.Color(), C_GREY_TOP = new THREE.Color(0x8a96a6), C_GREY_BOTTOM = new THREE.Color(0xb6bec8), C_HEMI_NIGHT = new THREE.Color(0x8090c8), C_CLOUD_NIGHT = new THREE.Color(0x4a5580);
 const SUN_DIR = new THREE.Vector3(), UP = new THREE.Vector3(0, 1, 0), AX = new THREE.Vector3(), AY = new THREE.Vector3(), SNAP = new THREE.Vector3();
 
+// Wolken aus dem Himmelsfoto: nur helle, ungesättigte Stellen werden übernommen,
+// der Himmel selbst behält die Farben der Region. Auch im Kampf genutzt (battle-scene.js).
+export const PANO_GLSL = `vec3 panoClouds(vec3 c, vec3 bottom, vec3 d, float rot, float night, float amount) {
+  float el = asin(clamp(d.y, 0.0, 1.0)) / 1.5707963;
+  vec3 p = texture2D(tPano, vec2(fract(atan(d.z, d.x) / 6.2831853 + rot), mix(0.016, 1.0, el))).rgb;
+  float mx = max(p.r, max(p.g, p.b)), sat = (mx - min(p.r, min(p.g, p.b))) / max(mx, 0.001);
+  float a = (1.0 - smoothstep(0.08, 0.42, sat)) * smoothstep(0.35, 0.75, mx) * smoothstep(0.0, 0.08, el) * amount;
+  float lum = dot(p, vec3(0.3, 0.5, 0.2));
+  vec3 cloud = mix(bottom, vec3(1.0), 0.6) * (0.3 + 0.8 * lum) * (1.0 - night * 0.72);
+  return mix(c, cloud, a * 0.92);
+}`;
+
 export class Sky {
   constructor(scene, quality) {
     this.scene = scene; this.quality = quality;
-    this.uniforms = { top: { value: new THREE.Color(0x7fc4ec) }, bottom: { value: new THREE.Color(0xe7f6ff) }, sunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) }, sunColor: { value: new THREE.Color(0xfff2c0) }, night: { value: 0 } };
+    this.uniforms = { top: { value: new THREE.Color(0x7fc4ec) }, bottom: { value: new THREE.Color(0xe7f6ff) }, sunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) }, sunColor: { value: new THREE.Color(0xfff2c0) }, night: { value: 0 }, tPano: { value: null }, uPano: { value: 0 }, uPanoRot: { value: 0 } };
     const mat = new THREE.ShaderMaterial({
       uniforms: this.uniforms, side: THREE.BackSide, depthWrite: false, fog: false,
       vertexShader: 'varying vec3 vDir; void main(){ vDir = normalize(position); vec4 p = modelViewMatrix * vec4(position,1.0); gl_Position = projectionMatrix * p; }',
       fragmentShader: `uniform vec3 top; uniform vec3 bottom; uniform vec3 sunDir; uniform vec3 sunColor; uniform float night; varying vec3 vDir;
+        uniform sampler2D tPano; uniform float uPano; uniform float uPanoRot;
+        ${PANO_GLSL}
         void main(){ float h = clamp(vDir.y * 1.4 + 0.15, 0.0, 1.0); vec3 c = mix(bottom, top, pow(h, 0.8));
+          if (uPano > 0.0 && vDir.y > 0.0) c = panoClouds(c, bottom, normalize(vDir), uPanoRot, night, uPano);
           float s = max(dot(normalize(vDir), normalize(sunDir)), 0.0);
           c += sunColor * (pow(s, 600.0) * 1.6 + pow(s, 12.0) * 0.18) * (1.0 - night * 0.6);
           gl_FragColor = vec4(c, 1.0); }`
@@ -42,6 +57,11 @@ export class Sky {
       this.clouds.add(g);
     }
     this.cloudMat = cmat;
+    // Himmelsfoto (CC0, Poly Haven „Kloofendal 48d Partly Cloudy“), ersetzt nach dem Laden die einfachen Wolken
+    new THREE.TextureLoader().load(new URL('../../assets/textures/sky.jpg', import.meta.url).href, (t) => {
+      t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; t.wrapS = THREE.RepeatWrapping; t.userData = { shared: true };
+      this.uniforms.tPano.value = t; this.clouds.visible = false;
+    }, undefined, () => {});
     // lights
     this.hemi = new THREE.HemisphereLight(0xe9f6ff, 0x6a7a55, 0.85);
     this.sun = new THREE.DirectionalLight(0xfff0d0, 1.0);
@@ -79,6 +99,9 @@ export class Sky {
     const sunDir = SUN_DIR.set(Math.cos(ang) * 0.6, Math.max(0.12, Math.sin(ang)), 0.45).normalize();
     if (night > 0.7) sunDir.set(-0.4, 0.7, 0.3).normalize(); // moonlight
     this.uniforms.sunDir.value.copy(sunDir);
+    // Sonne im Foto (bei u ≈ 0,6) auf die Sonne des Spiels drehen; Wolken bei schlechtem Wetter dichter
+    this.uniforms.uPanoRot.value = 0.6 - Math.atan2(sunDir.z, sunDir.x) / (Math.PI * 2);
+    this.uniforms.uPano.value = this.uniforms.tPano.value ? (this.weather && ['rain', 'storm', 'fog', 'snow'].includes(this.weather.kind) ? 0.55 : 1) : 0;
     // snap the shadow camera to whole shadow-map texels (in light space), so
     // shadow edges do not crawl and flicker while the player walks
     let f = focus;
@@ -99,6 +122,8 @@ export class Sky {
     this.stars.material.opacity = Math.max(0, night - 0.35) * 1.2;
     this.cloudMat.color.set(0xffffff).lerp(C_CLOUD_NIGHT, night * 0.8);
     this.dome.position.copy(camera.position); this.stars.position.copy(camera.position);
+    // Kuppel immer innerhalb der Sichtweite halten, sonst fehlen bei kurzer Sichtweite die Bildecken
+    const fit = Math.min(1, camera.far * 0.8 / 400); this.dome.scale.setScalar(fit); this.stars.scale.setScalar(fit);
     this.clouds.position.set(camera.position.x, 0, camera.position.z);
     this.clouds.rotation.y += dt * 0.004;
     if (this.scene.fog) {

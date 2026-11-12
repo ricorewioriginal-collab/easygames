@@ -47,7 +47,7 @@ try {
   // Kampfturm
   await interactWith(page, (e) => e.kind === 'tower');
   await advance(page, { max: 10, until: () => !!document.querySelector('.panel h2') && /Kampfturm/.test(document.querySelector('.panel h2').textContent) });
-  for (const n of ['Plätscher', 'Fellino', 'Glutzahn']) { await page.locator('.panel .card', { hasText: n }).first().click(); await page.waitForTimeout(300); }
+  for (const n of ['Plätscher', 'Pelzlo', 'Glutzahn']) { await page.locator('.panel .card', { hasText: n }).first().click(); await page.waitForTimeout(300); }
   await shot('extras-tower');
   await page.getByText('▶ Herausforderung starten').click();
   await advance(page, { max: 10, choose: ['Weiterkämpfen'], until: () => window.__taschi.state === 'battle' });

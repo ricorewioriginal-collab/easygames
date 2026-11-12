@@ -19,6 +19,7 @@ import { ballModel } from '../engine/buildings.js';
 import { particleTexture } from '../engine/textures.js';
 import { glowMaterial } from '../engine/materials.js';
 import { disposeTree } from '../engine/renderer.js';
+import { PANO_GLSL } from '../engine/sky.js';
 import { paletteFor } from '../world/region-map.js';
 import { h, typeBadge, hpBar, FocusNav } from '../ui/ui.js';
 import { BIOMES } from '../logic/layout.js';
@@ -51,7 +52,19 @@ export class BattleScene {
     const night = this.game.sky?.night ?? 0;
     const skyTop = new THREE.Color(indoor ? 0x2a2f3a : pal.sky[0]).lerp(new THREE.Color(0x0d1636), indoor ? 0 : night * 0.85);
     const skyBot = new THREE.Color(indoor ? 0x4a4f5a : pal.sky[1]).lerp(new THREE.Color(0x2a3566), indoor ? 0 : night * 0.8);
-    const sky = new THREE.Mesh(new THREE.SphereGeometry(180, 24, 12), new THREE.ShaderMaterial({ side: THREE.BackSide, depthWrite: false, uniforms: { a: { value: skyTop }, b: { value: skyBot } }, vertexShader: 'varying float y; void main(){ y = normalize(position).y; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }', fragmentShader: 'uniform vec3 a; uniform vec3 b; varying float y; void main(){ gl_FragColor = vec4(mix(b, a, clamp(y*1.6+0.2,0.0,1.0)), 1.0); }' }));
+    const sky = new THREE.Mesh(new THREE.SphereGeometry(180, 24, 12), new THREE.ShaderMaterial({ side: THREE.BackSide, depthWrite: false, uniforms: { a: { value: skyTop }, b: { value: skyBot }, tPano: { value: indoor ? null : this.game.sky?.uniforms.tPano.value || null }, night: { value: night } },
+      defines: { PANO: !indoor && this.game.sky?.uniforms.tPano.value ? 1 : 0 },
+      vertexShader: 'varying vec3 d; void main(){ d = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+      // Wolken aus dem Himmelsfoto wie in der Welt (sky.js)
+      fragmentShader: `uniform vec3 a; uniform vec3 b; uniform sampler2D tPano; uniform float night; varying vec3 d;
+        #if PANO
+        ${PANO_GLSL}
+        #endif
+        void main(){ vec3 c = mix(b, a, clamp(d.y*1.6+0.2,0.0,1.0));
+          #if PANO
+          if (d.y > 0.0) c = panoClouds(c, b, normalize(d), 0.3, night, 1.0);
+          #endif
+          gl_FragColor = vec4(c, 1.0); }` }));
     root.add(sky);
     this.scene.fog = new THREE.Fog(skyBot, 30, 120);
     const day = 1 - night * (indoor ? 0 : 0.6);

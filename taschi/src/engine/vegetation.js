@@ -8,8 +8,11 @@ const C = (c) => new THREE.Color(c);
 function shade(c, f) { return C(c).multiplyScalar(f).getHex(); }
 function mix(a, b, t) { return C(a).lerp(C(b), t).getHex(); }
 
+// Ferne Stufe: runde, glatt schattierte Kugelform statt Facetten
+const soft = (r, d) => lumpy(new THREE.IcosahedronGeometry(r, d + 1), 0.08, 2);
+
 function canopy(b, r, color, x, y, z, sx = 1, sy = 1, sz = 1, detail = 1, seed = 1) {
-  const g = lumpy(new THREE.IcosahedronGeometry(r, detail), 0.16, seed);
+  const g = lumpy(new THREE.IcosahedronGeometry(r, detail + 1), 0.16, seed);   // eine Stufe feiner, weiche Normalen
   b.add(g, color, matrix(x, y, z, 0, seed, 0, sx, sy, sz), { shade: 0.35 });
 }
 
@@ -25,7 +28,7 @@ export function vegetationGeometry(type, pal) {
       canopy(hi, 1.1, leaf2, 0.9, 3.1, 0.4, 1, 0.9, 1, 1, 2);
       canopy(hi, 1.0, leaf, -0.8, 3.3, -0.5, 1, 0.9, 1, 1, 3);
       canopy(hi, 0.9, leaf2, 0.1, 4.5, -0.2, 1, 0.9, 1, 1, 4);
-      lo.cyl(0.25, 0.35, 2.6, bark, 0, 1.3, 0, 5); lo.add(new THREE.IcosahedronGeometry(1.9, 0), leaf, matrix(0, 3.7, 0, 0, 0, 0, 1.1, 0.9, 1.1), { shade: 0.3 });
+      lo.cyl(0.25, 0.35, 2.6, bark, 0, 1.3, 0, 5); lo.add(soft(1.9, 0), leaf, matrix(0, 3.7, 0, 0, 0, 0, 1.1, 0.9, 1.1), { shade: 0.3 });
       break;
     case 'blossom': {
       const pink = pal.blossom || 0xf5a9c6;
@@ -34,7 +37,7 @@ export function vegetationGeometry(type, pal) {
       canopy(hi, 1.3, pink, 0, 3.4, 0, 1.4, 0.85, 1.3, 1, 5);
       canopy(hi, 0.9, mix(pink, 0xffffff, 0.35), 1.0, 3.0, 0.3, 1, 0.8, 1, 1, 6);
       canopy(hi, 0.9, shade(pink, 0.9), -1.0, 3.2, -0.3, 1, 0.8, 1, 1, 7);
-      lo.cyl(0.2, 0.3, 2.4, 0x5a3c34, 0, 1.2, 0, 5); lo.add(new THREE.IcosahedronGeometry(1.8, 0), pink, matrix(0, 3.3, 0, 0, 0, 0, 1.2, 0.8, 1.2));
+      lo.cyl(0.2, 0.3, 2.4, 0x5a3c34, 0, 1.2, 0, 5); lo.add(soft(1.8, 0), pink, matrix(0, 3.3, 0, 0, 0, 0, 1.2, 0.8, 1.2));
       break;
     }
     case 'pine': case 'snowpine': {
@@ -90,7 +93,7 @@ export function vegetationGeometry(type, pal) {
       canopy(hi, 3.5, leaf2, 4, 13, 2, 1, 0.8, 1, 1, 10);
       canopy(hi, 3.5, leaf, -4, 13.5, -2, 1, 0.8, 1, 1, 11);
       canopy(hi, 3, leaf2, 0, 18, 1, 1, 0.8, 1, 1, 12);
-      lo.cyl(1.4, 2.4, 14, 0x6a4a32, 0, 7, 0, 6); lo.add(new THREE.IcosahedronGeometry(6.5, 0), leaf, matrix(0, 15, 0, 0, 0, 0, 1.2, 0.8, 1.2));
+      lo.cyl(1.4, 2.4, 14, 0x6a4a32, 0, 7, 0, 6); lo.add(soft(6.5, 0), leaf, matrix(0, 15, 0, 0, 0, 0, 1.2, 0.8, 1.2));
       break;
     }
     case 'acacia': {
@@ -119,7 +122,7 @@ export function vegetationGeometry(type, pal) {
       canopy(hi, 0.75, shade(leaf, 0.95), 0, 0.55, 0, 1.3, 0.8, 1.1, 1, 14);
       canopy(hi, 0.55, leaf2, 0.5, 0.45, 0.3, 1, 0.8, 1, 0, 15);
       if (pal.berries) for (let i = 0; i < 5; i++) hi.sphere(0.07, pal.berries, Math.cos(i * 1.3) * 0.7, 0.6 + (i % 2) * 0.2, Math.sin(i * 1.3) * 0.6, 1, 1, 1, 5);
-      lo.add(new THREE.IcosahedronGeometry(0.8, 0), leaf, matrix(0, 0.5, 0, 0, 0, 0, 1.2, 0.7, 1));
+      lo.add(soft(0.8, 0), leaf, matrix(0, 0.5, 0, 0, 0, 0, 1.2, 0.7, 1));
     }
   }
   return { high: hi.build(), low: lo.build() };
@@ -156,6 +159,30 @@ export function tallGrassGeometry(color) {
 export function tuftGeometry(color) {
   const b = new Builder();
   for (let i = 0; i < 4; i++) { const a = i * 1.6; b.add(new THREE.ConeGeometry(0.06, 0.45, 3, 1, true), color, matrix(Math.cos(a) * 0.1, 0.22, Math.sin(a) * 0.1, Math.sin(a) * 0.35, a, Math.cos(a) * 0.35), { shade: 0.5 }); }
+  return b.build();
+}
+// Grasteppich: Büschel aus schmalen, gebogenen Halmen. Farbe kommt pro Büschel
+// vom bemalten Boden (Instanzfarbe), die Halme werden zur Spitze heller.
+// Normalen zeigen nach oben, damit das Gras wie der Boden darunter beleuchtet wird.
+export function carpetGeometry() {
+  const parts = [];
+  for (let i = 0; i < 14; i++) {
+    const a = i * 2.39996, r = 0.04 + (i % 4) * 0.07, h = 0.2 + ((i * 7) % 5) * 0.045;
+    const g = new THREE.PlaneGeometry(0.09, h, 1, 2);
+    const pos = g.attributes.position;
+    for (let k = 0; k < pos.count; k++) {
+      const t = (pos.getY(k) + h / 2) / h;              // 0 unten, 1 oben
+      pos.setX(k, pos.getX(k) * (1 - t * 0.85));        // spitz zulaufen
+      pos.setZ(k, t * t * 0.12);                        // leicht nach außen gebogen
+      pos.setY(k, t * h);
+    }
+    g.applyMatrix4(matrix(Math.cos(a) * r, 0, Math.sin(a) * r, 0, -a + Math.PI / 2, 0));
+    const ng = g.toNonIndexed(), n = ng.attributes.position.count, col = new Float32Array(n * 3), nor = new Float32Array(n * 3);
+    for (let k = 0; k < n; k++) { const t = ng.attributes.position.getY(k) / h, f = 0.86 + t * 0.34; col[k * 3] = col[k * 3 + 1] = col[k * 3 + 2] = f; nor[k * 3 + 1] = 1; }
+    ng.setAttribute('color', new THREE.BufferAttribute(col, 3)); ng.setAttribute('normal', new THREE.BufferAttribute(nor, 3)); ng.deleteAttribute('uv');
+    parts.push(ng); g.dispose();
+  }
+  const b = new Builder(); for (const p of parts) b.add(p, null);
   return b.build();
 }
 export function flowerGeometry() {
@@ -246,6 +273,7 @@ export class InstanceField {
 export const MATERIALS = {
   foliage: () => foliageMaterial({ sway: 1 }),
   stiff: () => foliageMaterial({ sway: 0.25 }),
-  rock: () => envMaterial({ detail: true, scale: 0.8, strength: 0.4 }),
-  grass: () => grassMaterial()
+  rock: () => envMaterial({ detail: true, scale: 0.8, strength: 0.4, kind: 'rock' }),
+  grass: () => grassMaterial(),
+  carpet: () => grassMaterial({ carpet: true })
 };

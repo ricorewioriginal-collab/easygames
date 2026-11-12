@@ -1,13 +1,14 @@
 // Renderer setup, graphics profiles, adaptive resolution, profiling and
 // resource disposal for map changes.
 import { THREE } from './three.js';
+import { Post } from './post.js';
 
 // Performance budget (documented in docs/ARCHITEKTUR.md):
 // mobile target 30–60 fps, ≤ 150 draw calls, ≤ 350k triangles per frame.
 export const PROFILES = {
-  low: { label: 'Leistung', pixelRatio: 1.0, minScale: 0.6, shadows: 0, drawDistance: 85, lodDistance: 26, vegetation: 0.5, tufts: 0.35, particles: 0.4, outlines: false, terrainRes: 1024, targetFps: 30 },
-  medium: { label: 'Ausgewogen', pixelRatio: 1.5, minScale: 0.7, shadows: 1024, drawDistance: 120, lodDistance: 40, vegetation: 0.8, tufts: 0.7, particles: 0.7, outlines: true, terrainRes: 1024, targetFps: 45 },
-  high: { label: 'Qualität', pixelRatio: 2.0, minScale: 0.85, shadows: 2048, drawDistance: 170, lodDistance: 60, vegetation: 1, tufts: 1, particles: 1, outlines: true, terrainRes: 2048, targetFps: 55 }
+  low: { label: 'Leistung', pixelRatio: 1.0, minScale: 0.6, shadows: 0, drawDistance: 85, lodDistance: 26, vegetation: 0.5, tufts: 0.35, particles: 0.4, outlines: false, terrainRes: 1024, targetFps: 30, post: false, carpet: 0 },
+  medium: { label: 'Ausgewogen', pixelRatio: 1.5, minScale: 0.7, shadows: 1024, drawDistance: 120, lodDistance: 40, vegetation: 0.8, tufts: 0.7, particles: 0.7, outlines: true, terrainRes: 1024, targetFps: 45, post: true, carpet: 0.95, carpetDistance: 24 },
+  high: { label: 'Qualität', pixelRatio: 2.0, minScale: 0.85, shadows: 2048, drawDistance: 170, lodDistance: 60, vegetation: 1, tufts: 1, particles: 1, outlines: true, terrainRes: 2048, targetFps: 55, post: true, carpet: 0.7, carpetDistance: 34 }
 };
 
 export function detectProfile() {
@@ -29,6 +30,7 @@ export class Renderer {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.setClearColor(0x87b8d8);
+    this.renderer.info.autoReset = false;   // Nachbearbeitung rendert mehrfach pro Bild; gezählt wird das ganze Bild
     this.scale = 1; this.frameTimes = []; this.adaptT = 0; this.adaptive = true; this._bad = 0; this._good = 0;
     this.setProfile(profileName);
     this.stats = { fps: 0, ms: 0, calls: 0, tris: 0, geos: 0, tex: 0, scale: 1 };
@@ -81,8 +83,16 @@ export class Renderer {
     try { this.renderer.compile(scene, camera); } catch (e) { console.warn('TASCHI: precompile', e); }
     for (const o of hidden) o.visible = false;
   }
-  render(scene, camera) {
-    this.renderer.render(scene, camera);
+  // grade: Farbabstimmung der Nachbearbeitung ('day', 'battle', 'indoor')
+  render(scene, camera, grade = 'day') {
+    this.renderer.info.reset();
+    if (this.profile.post && this.postOn !== false) {
+      try {
+        this.post ||= new Post(this.renderer);
+        if (this.post.gradeName !== grade) this.post.grade(grade);
+        this.post.render(scene, camera);
+      } catch (e) { console.warn('TASCHI: Nachbearbeitung aus', e); this.postOn = false; this.renderer.setRenderTarget(null); this.renderer.render(scene, camera); }
+    } else this.renderer.render(scene, camera);
     const info = this.renderer.info;
     this.stats.calls = info.render.calls; this.stats.tris = info.render.triangles; this.stats.geos = info.memory.geometries; this.stats.tex = info.memory.textures;
   }
