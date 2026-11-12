@@ -455,3 +455,12 @@ body.cine #dialog { bottom: calc(11vh + 8px); }
 #title .tright.cloud #cloudSlot { display: block; }
 #title .tright.cloud .tprofile { display: none; }
 .loadscreen .towncard .loadbar { margin: 18px 0 6px; }
+
+/* Cheats */
+.cheatlist .row { gap: 12px; }
+.cheatlist .cic { font-size: 1.5em; width: 1.6em; text-align: center; }
+.cheatsw { min-width: 54px; justify-content: center; background: #e4e6ee; color: #59607a; }
+.row.on .cheatsw, .pill.cheaton { background: linear-gradient(135deg, #7c4dff, #ff4fa3); color: #fff; }
+.row.on { box-shadow: inset 0 0 0 2px #a46bff; }
+body.cheat-disco canvas#game { animation: cheatDisco 6s linear infinite; }
+@keyframes cheatDisco { from { filter: hue-rotate(0deg) saturate(1.4); } to { filter: hue-rotate(360deg) saturate(1.4); } }

@@ -17,6 +17,8 @@ import { eggHint } from '../logic/daycare.js';
 import * as Daily from '../logic/daily.js';
 import { PROFILES } from '../engine/renderer.js';
 import { ACTIONS, ACTION_LABELS } from '../core/input.js';
+import * as Cheats from '../logic/cheats.js';
+import { openCheats } from './cheats.js';
 
 const TABS = [['team', 'Team'], ['dex', 'Taschidex'], ['bag', 'Tasche'], ['quests', 'Quests'], ['map', 'Karte'], ['card', 'Trainer'], ['options', 'Optionen'], ['system', 'System']];
 export const fmtTime = (s) => Math.floor(s / 3600) + ' h ' + String(Math.floor(s / 60) % 60).padStart(2, '0') + ' min';
@@ -213,6 +215,7 @@ const TAB_RENDER = {
         h('button.row.focusable', { onclick: () => { game.saveNow(true); game.ui.toast('Gespeichert', '💾'); } }, '💾 Jetzt speichern'),
         h('button.row.focusable', { onclick: () => game.exportSave() }, '⇩ Spielstand exportieren (JSON)'),
         h('button.row.focusable', { onclick: () => game.importSave() }, '⇧ Spielstand importieren'),
+        h('button.row.focusable', { onclick: () => openCheats(game) }, h('div.grow', {}, '🎮 Cheats', h('div.muted', {}, 'Freischalten, Unbesiegbar, Effekte – alles einzeln wieder abschaltbar.')), Cheats.anyOn(s) ? h('span.pill.cheaton', {}, Object.keys(s.cheats.on).length + ' aktiv') : null),
         h('button.row.focusable', { onclick: () => game.toTitle() }, '⌂ Zum Titelbildschirm')));
   }
 };
@@ -352,10 +355,10 @@ export function openShop(game, clerkName) {
   let mode = 'buy';
   const screen = { el: null };
   const render = () => {
-    const stock = shopStock(s.badges);
+    const free = !!s.cheats?.on?.free, stock = shopStock(free ? 99 : s.badges);
     const sellable = ITEM_ORDER.filter(id => s.bag[id] > 0 && sellPrice(id) > 0);
     const body = h('div', {}, h('p', {}, h('span.pill', {}, '★ ' + s.coins), ' ', h('button.chip.focusable' + (mode === 'buy' ? '.sel' : ''), { onclick: () => { mode = 'buy'; rerender(); } }, 'Kaufen'), ' ', h('button.chip.focusable' + (mode === 'sell' ? '.sel' : ''), { onclick: () => { mode = 'sell'; rerender(); } }, 'Verkaufen')),
-      mode === 'buy' ? h('div.list', {}, stock.map(id => h('div.row', {}, h('div.grow', {}, h('b', {}, ITEMS[id].name), ' ', h('span.muted', {}, '(im Besitz: ' + (s.bag[id] || 0) + ')'), h('div.muted', {}, ITEMS[id].desc)), h('span.right', {}, '★' + ITEMS[id].price),
+      mode === 'buy' ? h('div.list', {}, stock.map(id => h('div.row', {}, h('div.grow', {}, h('b', {}, ITEMS[id].name), ' ', h('span.muted', {}, '(im Besitz: ' + (s.bag[id] || 0) + ')'), h('div.muted', {}, ITEMS[id].desc)), h('span.right', {}, '★' + (free ? 0 : ITEMS[id].price)),
         ...[1, 5, 10].map(n => h('button.chip.focusable', { onclick: () => { const r = Items.buy(s, id, n); game.audio.sfx(r.ok ? 'item' : 'error'); game.ui.toast(r.text); rerender(); } }, '×' + n)))),
         h('p.muted', {}, 'Bonus: Für je 10 Taschi-Kapseln gibt es einen gratis dazu. Mit mehr Siegeln wächst das Sortiment.'))
         : h('div.list', {}, sellable.length ? sellable.map(id => h('div.row', {}, h('div.grow', {}, h('b', {}, ITEMS[id].name), h('div.muted', {}, '×' + s.bag[id])), h('span.right', {}, '★' + sellPrice(id)), h('button.chip.focusable', { onclick: () => { const r = Items.sell(s, id, 1); game.audio.sfx(r.ok ? 'item' : 'error'); game.ui.toast(r.text); rerender(); } }, 'Verkaufen'))) : h('p', {}, 'Nichts zu verkaufen.')));
