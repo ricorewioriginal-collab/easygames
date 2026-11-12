@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "b201dab516a6",
- "generated": "2026-11-12T09:50:22+01:00",
- "commit": "d48da330a91f98d8aa8591dbad5221e3db173c19",
+ "version": "1a3c340e5090",
+ "generated": "2026-11-12T10:44:55+00:00",
+ "commit": "dc2b699b18499d8a9bb56dd29105e9ab8472817b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5773,8 +5773,8 @@
   },
   {
    "p": "guides.js",
-   "s": 172520,
-   "h": "aa7c5a4376975cd09c84a357c0ef51cf81922e7ae3729e8347a541625f0d793e"
+   "s": 172910,
+   "h": "4c1ba929b910b99f26fd871c51669809e2bd37212f1dcd92e7a932e120b40917"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6088,8 +6088,8 @@
   },
   {
    "p": "guides/partyverse.json",
-   "s": 31779,
-   "h": "635deb18c14ef1a0cdad8125c7e4cf331033bd9ac2b8475316de724469260104"
+   "s": 35151,
+   "h": "0e9f05bd0973dd35e197bdcaf16489c6cad7a4e7a33851323bd812295e73257d"
   },
   {
    "p": "guides/pestwacht.json",
@@ -7217,14 +7217,14 @@
    "h": "e55361625f5e2fadb4c24cdc2d86d465904e627a27e71bc63b8d913eadb79efa"
   },
   {
-   "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
+   "p": "partyverse/app/assets/BufferGeometryUtils-DMBVqCOs.js",
    "s": 3832,
-   "h": "f7664af7477abfe132ee3ec4d72823c1696ab876738e574a5887c4b350e9af3f"
+   "h": "a67afd3193b6024d53946ea1fdb1c8b1de99f5d9da2b2e64ba8c895657e3e2a9"
   },
   {
-   "p": "partyverse/app/assets/achievements-B6xrGwXP.js",
+   "p": "partyverse/app/assets/achievements-Bvz2Aoa4.js",
    "s": 2054,
-   "h": "c8a6a993768e043934d255deb186f9c98e15fa826bbe69a7a1bf487bbdc3f2bc"
+   "h": "74642ef743430c1d64246f83af456372eec6716dfcf7c42ebfc83f9440c85fc0"
   },
   {
    "p": "partyverse/app/assets/achievements-C1x9Muqj.js",
@@ -7232,14 +7232,14 @@
    "h": "bc101688e837d32c0b3cdb0ee1fd8871b98b63ccddcdb529fa8a7f3fcbfb9502"
   },
   {
-   "p": "partyverse/app/assets/app-oWd5MO4K.js",
-   "s": 37812,
-   "h": "2070ffda46eea77e04f8172633696cb050f81ef77d7575fdbcabfb934c381fa2"
+   "p": "partyverse/app/assets/app-UXOzyU4W.js",
+   "s": 38301,
+   "h": "3dfa39c00ea9087b7c5f1b594d7f177626e60633ec117993cadda946e3117875"
   },
   {
-   "p": "partyverse/app/assets/characters-BMTEIcKf.js",
-   "s": 37186,
-   "h": "5445ae07a7f14cf6bad4fb9fa3d95489006d9b49b6305dd910910092555a1c0f"
+   "p": "partyverse/app/assets/characters-BHwkMDbz.js",
+   "s": 37185,
+   "h": "39b5eebe860ee1cedc0b7827602593f71eccf92052e93cd762b8629cff0726d0"
   },
   {
    "p": "partyverse/app/assets/characters-H_6OcGOn.js",
@@ -7247,9 +7247,9 @@
    "h": "6c2d8d5036188266a134f4a1dfb56c98fa5d9f39db881e4c5b6c399219dac80b"
   },
   {
-   "p": "partyverse/app/assets/charlab-zVrMYM5c.js",
+   "p": "partyverse/app/assets/charlab-Cm3jYLl9.js",
    "s": 3644,
-   "h": "c184d9af3f80aa29396ad7a9d9fd8635963f2a3e3a0eab8726a6b8c2f8018b47"
+   "h": "dfc1f8e5515794bbe9f34381892f46668db731824544e1b288a9ae743de87a42"
   },
   {
    "p": "partyverse/app/assets/common-6-fqYyVn.css",
@@ -7257,39 +7257,39 @@
    "h": "77d4938900a25fd60eae2954ad68c8a7363ef3411a0f94071aa4951d75b3b01e"
   },
   {
-   "p": "partyverse/app/assets/common-BfBbnEkL.js",
+   "p": "partyverse/app/assets/common-Bg2hAuBq.js",
    "s": 492,
-   "h": "40af6a1e5bd6dcc9d27d049afc1ec6035dfa9964191623464d4137369776b43e"
+   "h": "8450d8c8d62c921095fa9dbb1d19d9d778bf71de0b8986434692725d050a1d05"
   },
   {
-   "p": "partyverse/app/assets/common-CBcA4fVF.js",
-   "s": 8539,
-   "h": "2411ac48f621ce021ea99306c0e587af6ef8a4d5458bf6ea2d8a9f3a669390e4"
+   "p": "partyverse/app/assets/common-DlQXFOaa.js",
+   "s": 8538,
+   "h": "04e9347bdec268ace9b27241d7549f94833b9e2e80dc4059b8fbc3b54705d0ce"
   },
   {
-   "p": "partyverse/app/assets/controls-9KO2Juep.js",
-   "s": 143719,
-   "h": "cafbd3ba3f63aedd6d00c5cf0c2030aaa662a403214c15673ebbecb71a7bbb87"
+   "p": "partyverse/app/assets/controls-BgUKctVP.js",
+   "s": 185729,
+   "h": "a3a47c9682bbaec292db75e0ee21f9f536eb70f86eef193c6c7ae19f1b289e3a"
   },
   {
-   "p": "partyverse/app/assets/cosmetics-BAsmLZmq.js",
+   "p": "partyverse/app/assets/cosmetics-DD48OgHx.js",
    "s": 3766,
-   "h": "2faa59736fc0b4edb1e5b5844f5b8ac53c0072755eec711a6bfb333ab352d6c7"
+   "h": "704dfc4e61bbfa9e6d4937191ce1d84b4a352c6cd1190fbc74e10659831fd5e2"
   },
   {
-   "p": "partyverse/app/assets/credits-BZEzNwHp.js",
+   "p": "partyverse/app/assets/credits-DY10Nhk1.js",
    "s": 1674,
-   "h": "dc5f8e97e8fb1f9b5d6486c2ce316c25562d4a76f4b7149384972f8a8ab9470f"
+   "h": "d8c4b2a5542d4898f6f6a5dda949adef0566486593f3486bb45df5d99092b173"
   },
   {
-   "p": "partyverse/app/assets/engine-CdQh-NN8.js",
+   "p": "partyverse/app/assets/engine-b7p47MrQ.js",
    "s": 536140,
-   "h": "aadf936f00639f1a3ece0d06a8e55ff708e8abb4c2ff031683a48fcf296721c9"
+   "h": "786aec5b61f710fcd7fba6a3eab0d2664b815d814a7c0057edaa6459c3259088"
   },
   {
-   "p": "partyverse/app/assets/gameScreen-CMAaE5xy.js",
-   "s": 40735,
-   "h": "b878d7e0a558fcc8833ddabfb5e07af06eb9802cb20f6c1833a48f9243dd5704"
+   "p": "partyverse/app/assets/gameScreen-BwnH-0G9.js",
+   "s": 41541,
+   "h": "955a7756b08a1d2218038d32c31606ccc00ff64625e229de011396b6af52d89d"
   },
   {
    "p": "partyverse/app/assets/index-8ng3Vig7.js",
@@ -7297,24 +7297,19 @@
    "h": "f34602cdd04eaff9cecb2b5d3d31a854fe6932014f961421855a323066f3a08d"
   },
   {
-   "p": "partyverse/app/assets/index-B-WfM19p.css",
-   "s": 15518,
-   "h": "354d6ff1fe14514aa1340d2b25abb0814fb1d9020a24fc227b8a6c82dea70758"
+   "p": "partyverse/app/assets/index-DcDDdez9.js",
+   "s": 3655,
+   "h": "18244efd41fc1cfe77c220c1aadfa363e471ca42a1c87c28d91874a269d02f6a"
   },
   {
-   "p": "partyverse/app/assets/index-B2FVuSyP.js",
-   "s": 3622,
-   "h": "edffa4dd4af07fca716d193dedd131cd1208336598311d432edde6a8edc09f44"
+   "p": "partyverse/app/assets/index-DyL7gILq.css",
+   "s": 15651,
+   "h": "6e7b545a60ebe30c05cb84e7140a537aa24b731911028f28e9473916f6f7eaa2"
   },
   {
-   "p": "partyverse/app/assets/index-BbHxmHED.js",
+   "p": "partyverse/app/assets/index-E4InUCHo.js",
    "s": 68116,
-   "h": "66aac3c251df0992cc7db566e7d2d00ea9b83d3788c7dcca45075db871877aa6"
-  },
-  {
-   "p": "partyverse/app/assets/input-_e25xTZH.js",
-   "s": 1306,
-   "h": "ea10d1213e0ff194b50b2011b2a104c3fb57ce2d2df9d9b11c8d7bc5920f2437"
+   "h": "51162cb2faa7575e37d70b004472589a4219a014ece4c840f9d664df50dd3fd7"
   },
   {
    "p": "partyverse/app/assets/items-CDMi3g47.js",
@@ -7322,34 +7317,39 @@
    "h": "dd9070cd0799a9c240664a9b0ce775626efcff27a9aed59562bd33f0a89f3288"
   },
   {
-   "p": "partyverse/app/assets/lab-C7VoYL44.js",
-   "s": 1289,
-   "h": "0b6b036a23f0be67714347c59a136db8e7becc0a08ae2ece42811009584af84d"
+   "p": "partyverse/app/assets/keymap-Cuh1DX2A.js",
+   "s": 1724,
+   "h": "bb0e6b52711f1251f366e7b6a9bb6a507623c332b4d7d799df7cbae8a872e7de"
   },
   {
-   "p": "partyverse/app/assets/mainMenu-C56vJvbf.js",
+   "p": "partyverse/app/assets/lab-cwESUbHg.js",
+   "s": 1664,
+   "h": "521d89a47a66fc360d8b3c3925d315c0dec6b9dd053a9e148e5edb16fe3ebf13"
+  },
+  {
+   "p": "partyverse/app/assets/mainMenu-jnZ1QIez.js",
    "s": 3290,
-   "h": "4052a20425e5265554d92cc4f89cc118ab1ff42999ec645e25d5a4512dfbc28f"
+   "h": "a32c478b23d40c483ae107eff254b4cdfb9947184192676b8876afe0171277ab"
   },
   {
-   "p": "partyverse/app/assets/materials-DT0vjpLi.js",
-   "s": 1845,
-   "h": "2dcebeac762253abfbeb4e4fb7c292452737eb1477b6abe71c77ce7779f242fd"
+   "p": "partyverse/app/assets/materials-x1UgsG__.js",
+   "s": 2159,
+   "h": "f0e48803dd60ae995f9dc762be72ba3f4009db44f8cf6356c37d0f599f6f6e96"
   },
   {
-   "p": "partyverse/app/assets/options-6PNj3DiX.js",
-   "s": 3732,
-   "h": "13dcf3375c7a417070e61a17e0605a129d2fb6e179e23c0e7a1da3330de88a3a"
+   "p": "partyverse/app/assets/options-Do2ek7tE.js",
+   "s": 6006,
+   "h": "6be0b51c7fcbc8bcc5f2e76152d844e04c872975cf2bcd2763704a4032c176d1"
   },
   {
-   "p": "partyverse/app/assets/p2p-DlpQkBSZ.js",
-   "s": 44516,
-   "h": "54b9dc8a5aea18c89e61b6f13efc4e7156a3c03e480932bead4ff088bb9f57a1"
+   "p": "partyverse/app/assets/p2p-BFcf5sXp.js",
+   "s": 44519,
+   "h": "4213f29d2573246fb2992e1b24c9abe5f084e605665fb8a2f7472fb6ddd03fd4"
   },
   {
-   "p": "partyverse/app/assets/pickers-9kq0WBCt.js",
+   "p": "partyverse/app/assets/pickers-Clpp2VBI.js",
    "s": 3088,
-   "h": "b96f7df8d950eaebd051f76647403e16e2ca1042f78ec539841acd5a0bc9ab15"
+   "h": "f7b2247af3df7148e783538d92169493470165b583b465901b848366fc22c8d7"
   },
   {
    "p": "partyverse/app/assets/protocol-D15s5kg9.js",
@@ -7357,9 +7357,9 @@
    "h": "6a27edae15bb4898939d4d84817a1cff341d4486a43ebca47996b0bb0f83e159"
   },
   {
-   "p": "partyverse/app/assets/registry-Z9T_d8Yy.js",
-   "s": 79616,
-   "h": "7b1dd7f1e8338e03b7dec2fd2e6f55b0d47979d6e3c54f50b3d6de5d3ec0817a"
+   "p": "partyverse/app/assets/registry-D9ofiO8N.js",
+   "s": 102468,
+   "h": "32f4b9273594735869ea3100b784694a981cae643dae4193a0b7bd30742bb625"
   },
   {
    "p": "partyverse/app/assets/rng-heOttI8c.js",
@@ -7367,19 +7367,24 @@
    "h": "c94f20b2ec5326364a26d2f9afb5d101125f6f4d6a2008300b73773fa65330fa"
   },
   {
-   "p": "partyverse/app/assets/rules-LK73Eh6t.js",
+   "p": "partyverse/app/assets/rules-BUIUF63t.js",
    "s": 7274,
-   "h": "352590fff226128f03c658d331341696e86bf5a4c162703d32b959749e81ce53"
+   "h": "614c56f54b1debf9b4fda08de553ab261202c735e60c1cabbb40a658393b9d79"
   },
   {
-   "p": "partyverse/app/assets/session-Bo4y8Fn1.js",
-   "s": 25871,
-   "h": "753db582f4fdbc6c6c431931ec2e8b16dcbee8a1507bc4bda702542a5d1447ad"
+   "p": "partyverse/app/assets/session-CHP_gbDY.js",
+   "s": 24970,
+   "h": "b06d0f432d5e28a0d607ba6bda06f477e522405db69d08d64be86b18f77b7a10"
   },
   {
-   "p": "partyverse/app/assets/setup-Dbe9Hfak.js",
-   "s": 3544,
-   "h": "acc79041dce4b0cc0a2f91281e0f6e2320045fcfa349501878ffed3202efd951"
+   "p": "partyverse/app/assets/setup-Dc5ZaqbI.js",
+   "s": 3547,
+   "h": "44154f41340131aa5eb5a8d88b60718850ee65fb905a87d2db5c3ba60835b3a8"
+  },
+  {
+   "p": "partyverse/app/assets/simulate-BMyE_JP8.js",
+   "s": 2244,
+   "h": "f86b5a7b8b8d8270205879b521860297a7b239f61751e45d9ced6b72f0121a93"
   },
   {
    "p": "partyverse/app/assets/types-CQvaslrR.js",
@@ -7392,14 +7397,14 @@
    "h": "d501abbf527729894b7e368bbfcf112fc5b0df8ecc15de9d52cbcaaa8f7b168e"
   },
   {
-   "p": "partyverse/app/assets/worldlab-DzOeE_ts.js",
+   "p": "partyverse/app/assets/worldlab-BOB6gtZm.js",
    "s": 1238,
-   "h": "1f49b30ab9aa9db606fab24598e453d7fd25e639da00dd92db85be8d98509233"
+   "h": "0d54930e72f03c92780a16622b15174d44f0202636547b4fc9f153387215a94a"
   },
   {
    "p": "partyverse/app/index.html",
-   "s": 986,
-   "h": "aaa892b36b404aaaed891b52c9a91f8aca7feb6d717232cc55bd5dec11caceee"
+   "s": 1178,
+   "h": "3cf3f1b6e5f4f43840708e3e1d9e24c4bd07df5c9c0ab4cd4b0a79703a221818"
   },
   {
    "p": "partyverse/card.jpg",
@@ -7408,13 +7413,13 @@
   },
   {
    "p": "partyverse/client/index.html",
-   "s": 707,
-   "h": "a0f8cdf8639d0f05f7bf641d67bf6567a60346c9670de80e276622789655a071"
+   "s": 1081,
+   "h": "398d547d61f845f950ceef2b8de41fb646afc9081db7af42330c7fe0e19950f5"
   },
   {
    "p": "partyverse/client/src/style.css",
-   "s": 20203,
-   "h": "71d93ab644436f02b83991610c0a26f0b85d214d994eab80991fe2ca7a7595a9"
+   "s": 20425,
+   "h": "af112b1ccf08d6faadb8927ee6501830526dd611192061ca32cd45ab7939797e"
   },
   {
    "p": "partyverse/client/src/ui/screens/screens.css",
@@ -8132,6 +8137,11 @@
    "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
   },
   {
+   "p": "riftzone/client/public/heightmap.bin",
+   "s": 1182722,
+   "h": "121bcf27e4e7d5dda62e7ed7e061d76a1f8e4dec907c9978a3a32900d5ef6d97"
+  },
+  {
    "p": "riftzone/client/src/ui/styles.css",
    "s": 30181,
    "h": "28c5e1ddb893c40dd6896ecc6a3d7d5ee09244423276d839b5aecb7a32579129"
@@ -8838,8 +8848,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 257206,
-   "h": "64a607ffb2932ffc8ee2fdef19a383799ef2393252c7d3d370c2c8414e1a538f"
+   "s": 257598,
+   "h": "9025ed8d08bf75601f0bc53493cc202ad1c139f1e857e43e7a6e658bfd91b72f"
   },
   {
    "p": "taschi/card.svg",

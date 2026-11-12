@@ -403,7 +403,7 @@ export const createView: MiniGameViewFactory<BridgeState> = (ctx, initial) => {
 
       // ---------- Kamera ----------
       const aspect = camera.aspect;
-      const halfW = aspect < 1 ? 7.0 : 8.2;
+      const halfW = aspect < 1 ? 6.0 : 8.2;
       const d = THREE.MathUtils.clamp(halfW / (Math.tan((camera.fov * Math.PI) / 360) * aspect), 11, 30);
       const focus = (Math.max(s.heroX, cur.r - 1.0) + (nx.l + nx.r) / 2) / 2 + 0.6;
       const k = dt <= 0 ? 1 : Math.min(1, dt * 4);

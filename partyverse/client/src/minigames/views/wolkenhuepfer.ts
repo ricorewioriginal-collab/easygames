@@ -303,7 +303,7 @@ export const createView: MiniGameViewFactory<WolkenState> = (ctx, initial) => {
 
       // --- Kamera ---
       const aspect = camera.aspect;
-      const halfW = aspect < 1 ? 6.8 : 9.8;
+      const halfW = aspect < 1 ? 5.0 : 9.8;
       const d = THREE.MathUtils.clamp(halfW / (Math.tan((camera.fov * Math.PI) / 360) * aspect), 11, 26);
       const tx = s.x + (aspect < 1 ? 2.2 : 3.6);
       const ty = THREE.MathUtils.clamp(
