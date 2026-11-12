@@ -38,6 +38,7 @@ export class FocusNav {
     if (!el) return;
     if (this.current) this.current.classList.remove('focus');
     this.current = el; el.classList.add('focus');
+    el.dispatchEvent(new CustomEvent('navfocus', { bubbles: true }));
     if (!scroll) return;
     // Nur den eigenen Scrollbereich bewegen: scrollIntoView verschob auch das Fenster selbst (overflow:hidden) – Kopf und Reiter rutschten weg
     const sc = el.closest('.panel-body, .tabs, .scroll'), r = el.getBoundingClientRect();

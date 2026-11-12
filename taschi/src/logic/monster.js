@@ -16,6 +16,16 @@ export function newUid(rng) {
 
 export function species(m) { return SPECIES[m.id]; }
 
+// Geschlecht nur zur Anzeige (♂/♀): fest aus der uid, damit alte Spielstände
+// nichts speichern müssen; m.g überschreibt (z. B. vom Taschi in der Welt).
+// Uralte Taschis haben keins.
+export function genderOf(m) {
+  if (!m || SPECIES[m.id]?.ancient) return null;
+  if (m.g === 'm' || m.g === 'w') return m.g;
+  let x = 0; for (const ch of String(m.uid || m.id)) x = (x * 31 + ch.charCodeAt(0)) | 0;
+  return (x >>> 3) & 1 ? 'w' : 'm';
+}
+
 // Classic-style stat curve with a small per-instance potential (0..15).
 export function statOf(m, stat) {
   const s = SPECIES[m.id];

@@ -54,7 +54,7 @@ export function openPauseMenu(game, tab = 'team', { only = false } = {}) {
   };
   const post = () => requestAnimationFrame(() => {
     const v = screen.el.querySelector('#cardview');
-    if (v) { game.preview.attach(v); game.preview.showCharacter(game.save.player.look).hold('wave'); } else game.preview.detach();
+    if (v) { game.preview.attach(v); game.preview.showCharacter(game.save.player.look).hold('wave'); } else if (!screen.el.querySelector('#dexbig')) game.preview.detach();
   });
   const rerender = () => { const old = screen.el; screen.el = render(); screen.el.classList.add('noanim'); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); post(); };
   screen.el = render();
@@ -83,13 +83,26 @@ const TAB_RENDER = {
   dex(game) {
     const s = game.save;
     const caught = P.caughtCount(s), seen = P.seenCount(s);
+    // Raster mit kleinen Bildern links, großes 3D-Modell mit Nummer und Name rechts
+    const no = h('div.dexno'), nm = h('div.dexnm'), info = h('div.dexinfo', {}, no, nm);
+    let shown = null;
+    const show = (id) => {
+      const v = document.getElementById('dexbig');
+      if (id === shown && game.preview.active === v) return; shown = id;
+      const st = s.dex[id], sp = SPECIES[id];
+      no.textContent = 'Nr. ' + String(sp.dexNo).padStart(3, '0'); nm.textContent = st ? sp.name + (st === 2 ? '  ◉' : '') : '???';
+      if (!v) return;
+      if (game.preview.active !== v) game.preview.attach(v);
+      if (st) game.preview.showCreature(id); else game.preview.clearModel(); // unbekannt: kein Modell
+    };
+    const grid = h('div.dexgrid.scroll', { onnavfocus: (e) => { const id = e.target.dataset?.id; if (id) show(id); } }, SPECIES_IDS.map(id => {
+      const st = s.dex[id], sp = SPECIES[id];
+      return h('button.dexcell.focusable' + (st ? '' : '.unknown') + (st === 2 ? '.caught' : ''), { dataset: { id }, title: st ? sp.name : '???', onclick: () => st && openDexEntry(game, id), onpointerenter: () => show(id) },
+        st ? h('img', { src: game.preview.thumbnail(id), alt: '' }) : h('span', {}, '?'), h('small', {}, String(sp.dexNo).padStart(3, '0')));
+    }));
+    requestAnimationFrame(() => show(SPECIES_IDS.find(id => s.dex[id]) || SPECIES_IDS[0]));
     return h('div', {}, h('p', {}, h('span.pill', {}, '◉ Gefangen ' + caught), ' ', h('span.pill', {}, '👁 Gesehen ' + seen), ' ', h('span.pill', {}, 'Arten ' + SPECIES_IDS.length)),
-      h('div.grid', { style: { gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 170px), 1fr))' } }, SPECIES_IDS.map(id => {
-        const st = s.dex[id], sp = SPECIES[id];
-        return h('button.card.focusable', { onclick: () => st && openDexEntry(game, id) },
-          st ? portrait(game, id) : h('div.portrait', {}, '?'),
-          h('div.meta', {}, h('div.sub', {}, '#' + String(sp.dexNo).padStart(3, '0')), h('div.name', {}, st ? sp.name : '???'), st ? h('div.sub', {}, st === 2 ? '◉ gefangen' : 'gesehen') : null));
-      })));
+      h('div.dexsplit', {}, grid, h('div.dexside', {}, h('div#dexbig.viewport3d'), info)));
   },
   bag(game, rerender) {
     const s = game.save;

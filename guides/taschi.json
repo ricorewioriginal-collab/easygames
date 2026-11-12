@@ -46,7 +46,8 @@
     {
       "t": "Kämpfe",
       "list": [
-        "Im Kampf wählst du Kampf (Attacke), Tasche (Bälle, Tränke, Pulver), Taschis (wechseln) oder Flucht. Aus Trainerkämpfen kannst du nicht fliehen.",
+        "Im Kampf wählst du rechts unten Kampf (Attacke), Taschis (wechseln), Tasche (Bälle, Tränke, Pulver) oder Flucht. Aus Trainerkämpfen kannst du nicht fliehen.",
+        "Draußen kämpfst du direkt dort, wo du stehst – auch beim Surfen auf dem Wasser. Über wilden Taschis zeigt ein Namensschild Level, Geschlecht und ◉, wenn du die Art schon gefangen hast; geh hin und drücke Aktion, um zu kämpfen.",
         "Jede Attacke hat einen Typ und begrenzte AP. Volltreffer machen 1,5-fachen Schaden.",
         "Typen: Normal, Feuer, Wasser, Pflanze, Elektro, Gestein, Flug, Geist, Eis und Erde. „Das ist sehr effektiv!“ = doppelter Schaden, „nicht sehr effektiv“ = halber, „keine Wirkung“ = null.",
         "Statusveränderungen: Verbrannt (halber Schaden), Vergiftet, Schläft (1 bis 3 Runden), Paralysiert (manchmal bewegungsunfähig, langsamer), Eingefroren. Feuer-Taschis verbrennen nicht, Eis-Taschis frieren nicht ein, Elektro-Taschis werden nicht paralysiert, Geist-Taschis nicht vergiftet.",
