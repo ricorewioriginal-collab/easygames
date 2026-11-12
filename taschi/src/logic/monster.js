@@ -24,7 +24,8 @@ export function statOf(m, stat) {
   if (stat === 'hp') return Math.floor((2 * base + iv) * m.lv / 100) + m.lv + 10;
   return Math.floor((Math.floor((2 * base + iv) * m.lv / 100) + 5) * natureFactor(m, stat));
 }
-export const maxHp = (m) => statOf(m, 'hp');
+// Raid-Riesen (m.boss) haben ein Vielfaches der KP
+export const maxHp = (m) => Math.round(statOf(m, 'hp') * (m.boss || 1));
 
 // Experience needed to go from level n to n+1.
 export function xpToNext(lv) { return Math.floor(0.8 * (3 * lv * lv + 3 * lv + 1)) + 10; }

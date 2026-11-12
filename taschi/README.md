@@ -32,6 +32,16 @@ Die 3D-Lichtintensität und Kameradistanz sind für mobiles Spielen reduziert, u
 
 Geprüft: `npm test` (31 Tests inklusive Durchlauf-Simulation bis zum Sternenmeister) sowie die Browsertests `tests/e2e/intro.mjs` und `tests/e2e/expansion.mjs` (Gras-Begegnung, Ballauswahl, Attacken vergessen/erinnern, EP-Bonbon mit Entwicklung, Rivalenkampf) ohne Browserfehler. Ein Test auf echten Handys steht weiterhin aus.
 
+## Switch-Features: Foto, Fliegen, Raids, Koop, Stimmen (November 2026)
+
+- **📷 Fotomodus** (`src/ui/photo.js`, Menü › Team): freie Kamera (`world.photo`, `photoCamera`), Filter, Posen, Rahmen; Fotos als JPEG im Album (`taschi.photos.v1`, die letzten 12), speichern oder teilen.
+- **🕊 Fliegen** (`Ride.flyMount`, `game.flyMenu`/`flyTo`): ab 5 Siegeln mit einem Flug-Taschi zu jedem besuchten Heilzentrum, Aufstieg und Landung über `world.lift`.
+- **⭐ Sternennest-Raids** (`src/logic/raid.js`): ein Nest je Region (`L.nest`), täglich ein Riese in Endform (1–5 Sterne, KP ×3–6 über `m.boss`, zwei Aktionen pro Runde). Doppelkampf mit Ranger-Helfer (`m.ally`, wählt per KI) oder Freund online; danach Belohnung und sicherer Fang.
+- **🤝 Koop-Erkunden** (`src/game/coop.js`): Im Online-Menü „Zusammen erkunden“ – die Verbindung bleibt offen, beide sehen sich in derselben Region (Namensschild), können winken, wieder tauschen/kämpfen und gemeinsam Raids bestreiten (gemeinsame KP über `raidDmg`).
+- **🎲 Zufallstausch** (`src/ui/wonder.js`): Partnersuche über feste Tauschplätze (`taschi-wonder-v1-0…5`) mit `Link.joinAt`/`hostAt`, vermittelt über `cloud/fire-peer.js`.
+- **🗣 Sprachausgabe** (`src/core/voice.js`): Dialoge werden mit deutscher Stimme vorgelesen, Tonhöhe/Tempo je Figur; Optionen › Audio (`voice`, `voiceVolume`, `voiceRate`). **🎬 Zwischensequenzen** (`game.cutscene`): Kinobalken und kreisende Kamera bei Rivale, Wächter-Schrein und Raids.
+- Tests: `tests/switch-features.test.mjs`, Browsertests `tests/e2e/switch.mjs` (Foto, Fliegen, Raid) und `tests/e2e/online.mjs` (inkl. Koop-Raid).
+
 ## Spielfigur und Zotik (November 2026)
 
 - **Eigener Abenteuer-Look** statt klassischem Trainer: Abenteuerjacke (lange Ärmel, Stehkragen, schräger Reißverschluss, Umhängegurt), Abenteuerbrille am Stirnband, Armschienen, Werkzeuggürtel mit Kapsel-Taschen und leuchtender Laterne, Rolltop-Rucksack, Cargotaschen und Wanderstiefel. Interne Schlüssel (`trainer`, `trainercap`) bleiben, alte Spielstände bekommen den neuen Look automatisch.

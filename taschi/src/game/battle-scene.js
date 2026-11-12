@@ -117,7 +117,7 @@ export class BattleScene {
   spawnModel(m, side, slot, appear = true) {
     const old = this.models.get(m.uid); if (old) { this.root.remove(old.c.root); old.c.dispose(); }
     const c = createCreature(m.id, { outline: this.game.quality.outlines, shiny: !!m.shiny });
-    const s = displayScale(m.id, 'battle');
+    const s = displayScale(m.id, 'battle') * (m.boss ? 2.1 : 1);   // Raid-Riese
     c.root.scale.setScalar(appear ? 0.01 : s);
     const [x, y, z] = this.slotPos(side, slot);
     c.root.position.set(x, y, z);
@@ -284,6 +284,7 @@ export class BattleScene {
     for (const m of opts.foeTeam) save.dex[m.id] ||= 1;
     // trainers on stage
     this.playerCh = this.spawnTrainer(save.player.look, 0, save.player.name);
+    if (opts.allyLook) { const a = this.spawnTrainer(opts.allyLook, 0, opts.allyName); a.root.position.x -= 1.5; a.root.position.z -= 1.3; }
     if (opts.kind !== 'wild') { this.foeCh = this.spawnTrainer(opts.trainerLook || lookForRole('trainer', opts.trainerName), 1, opts.trainerName); if (b.format === 2 && opts.pair) { const c2 = this.spawnTrainer(opts.trainerLook2 || opts.trainerLook, 1); c2.root.position.x += 1.4; c2.root.position.z += 1.2; } }
     else this.foeCh = null;
     this.buildHUD();
@@ -331,7 +332,9 @@ export class BattleScene {
         continue;
       }
       const choices = [];
-      const actives = b.sides[0].active.map((i, slot) => ({ slot, m: i === null ? null : b.sides[0].team[i] })).filter(x => x.m && x.m.hp > 0);
+      // Raid-Helfer (m.ally) wählen selbst
+      const actives = b.sides[0].active.map((i, slot) => ({ slot, m: i === null ? null : b.sides[0].team[i] })).filter(x => x.m && x.m.hp > 0 && !x.m.ally);
+      const bossHp = opts.raidShare ? b.sides[1].team[0].hp : 0;
       for (let k = 0; k < actives.length; k++) {
         const c = await this.chooseAction(actives[k].slot, k > 0);
         if (c === 'back') { choices.pop(); k -= 2; if (k < -1) k = -1; continue; }
@@ -343,11 +346,24 @@ export class BattleScene {
       const waitS = { el: h('div'), onInput: (input) => { if (input.pressed('confirm') || input.pressed('back')) this.skip = true; input.nav(); return true; } };
       this.ui.push(waitS);
       await this.playEvents(ev);
+      if (opts.raidShare && !b.result) await this.raidShare(b, bossHp);
       this.ui.pop(waitS);
     }
     const result = { outcome: b.result?.outcome || 'run', caught: b.result?.caught, ball: b.result?.ball, battle: b };
     await this.finish(result);
     return result;
+  }
+
+  // Koop-Raid online: Beide kämpfen gegen denselben Riesen, der Schaden des
+  // Freundes kommt nach jeder Runde dazu (gemeinsame KP).
+  async raidShare(b, before) {
+    const boss = b.sides[1].team[0];
+    const extra = await this.opts.raidShare(Math.max(0, before - boss.hp), boss);
+    if (!(extra > 0) || boss.hp <= 0) return;
+    const from = boss.hp; boss.hp = Math.max(0, boss.hp - extra);
+    const el = this.huds.get(boss.uid); if (el) this.tweenHp(boss, from, boss.hp);
+    await this.log((this.opts.allyName || 'Dein Freund') + ' trifft den Riesen: −' + extra + ' KP!', { hold: 900 });
+    if (boss.hp <= 0) { const e = this.models.get(boss.uid); e?.c?.play?.('faint', 1); await this.log(SPECIES[boss.id].name + ' ist besiegt!', { hold: 900 }); b.result = { outcome: 'win' }; b.phase = 'end'; }
   }
 
   // ------------------------------------------------------------------ online

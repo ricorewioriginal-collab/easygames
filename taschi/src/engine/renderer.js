@@ -11,6 +11,14 @@ export const PROFILES = {
   high: { label: 'Qualität', pixelRatio: 2.0, minScale: 0.85, shadows: 2048, drawDistance: 170, lodDistance: 60, vegetation: 1, tufts: 1, particles: 1, outlines: true, terrainRes: 2048, targetFps: 55, post: true, carpet: 0.7, carpetDistance: 34 }
 };
 
+// Handys: weniger Pixel, kleinere Schatten, kürzerer Grasteppich und die
+// leichte Nachbearbeitung (ohne Mehrfachabtastung, eine Bloom-Stufe).
+const COARSE = typeof matchMedia === 'function' && matchMedia('(pointer:coarse)').matches;
+if (COARSE) {
+  Object.assign(PROFILES.medium, { pixelRatio: 1.25, shadows: 512, carpet: 0.45, carpetDistance: 16, postLite: true, targetFps: 40 });
+  Object.assign(PROFILES.high, { pixelRatio: 1.6, carpet: 0.5, carpetDistance: 22, postLite: true });
+}
+
 export function detectProfile() {
   const coarse = matchMedia('(pointer:coarse)').matches;
   const mem = navigator.deviceMemory || 4, cores = navigator.hardwareConcurrency || 4;
@@ -41,7 +49,7 @@ export class Renderer {
   setProfile(name) {
     this.profileName = PROFILES[name] ? name : 'medium';
     this.profile = PROFILES[this.profileName];
-    this.scale = 1;
+    this.scale = 1; this.postOn = undefined;
     this.renderer.shadowMap.enabled = this.profile.shadows > 0;
     this.resize();
   }
@@ -67,6 +75,8 @@ export class Renderer {
         // (2 s down, 5 s up) instead of flipping the scale every second.
         const slow = this.stats.fps < target * 0.8, fast = this.stats.fps > target * 1.15;
         this._bad = slow ? this._bad + 1 : 0; this._good = fast ? this._good + 1 : 0;
+        // bleibt es trotz kleinster Auflösung zu langsam, fällt die Nachbearbeitung weg
+        if (this._bad >= 3 && this.scale <= this.profile.minScale + 0.001 && this.profile.post && this.postOn !== false) { this.postOn = false; this._bad = 0; }
         if (this._bad >= 2 && this.scale > this.profile.minScale) { this.scale = Math.max(this.profile.minScale, this.scale - 0.1); this._bad = 0; this.resize(); }
         else if (this._good >= 5 && this.scale < 1) { this.scale = Math.min(1, this.scale + 0.05); this._good = 0; this.resize(); }
       }
@@ -88,7 +98,8 @@ export class Renderer {
     this.renderer.info.reset();
     if (this.profile.post && this.postOn !== false) {
       try {
-        this.post ||= new Post(this.renderer);
+        if (this.post && this.post.lite !== !!this.profile.postLite) { this.post.dispose(); this.post = null; }
+        this.post ||= new Post(this.renderer, { lite: !!this.profile.postLite });
         if (this.post.gradeName !== grade) this.post.grade(grade);
         this.post.render(scene, camera);
       } catch (e) { console.warn('TASCHI: Nachbearbeitung aus', e); this.postOn = false; this.renderer.setRenderTarget(null); this.renderer.render(scene, camera); }

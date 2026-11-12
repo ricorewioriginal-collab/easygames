@@ -7,7 +7,7 @@ import { Emitter } from './events.js';
 const KEY = 'taschi.settings.v3';
 export const DEFAULTS = {
   graphics: null, adaptive: true, showStats: false, dayCycle: 'cycle', // cycle | day | realtime
-  musicVolume: 0.6, sfxVolume: 0.8, ambienceVolume: 0.5, muted: false,
+  musicVolume: 0.6, sfxVolume: 0.8, ambienceVolume: 0.5, muted: false, voice: true, voiceVolume: 0.9, voiceRate: 1,
   hand: 'left', joySize: 132, joyOpacity: 80, joyMode: 'floating', deadzone: 0.14, camSensitivity: 1, invertY: false,
   walkSpeed: 1, autoRun: false, textSpeed: 2, vibration: true, camDistance: 1, camAuto: true,
   keys: DEFAULT_KEYS, pad: DEFAULT_PAD, padLayout: 'switch', showHints: true

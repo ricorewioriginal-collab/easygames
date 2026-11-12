@@ -43,6 +43,36 @@ export class Link {
       p.on('open', () => { this.peer = p; this.role = 'guest'; this.code = code; this.wire(p.connect(LINK_PREFIX + code, { reliable: true }), () => { if (!done) { done = true; res(); } }); });
     });
   }
+  // Feste Kennung belegen (Zufallstausch): 'taken', wenn schon jemand dort wartet.
+  async hostAt(id, onGuest) {
+    const P = PeerCtor(); if (!P) throw new Error('lib');
+    const r = await new Promise(res => {
+      const p = new P(id); let done = false;
+      p.on('open', () => { done = true; res(p); });
+      p.on('error', (e) => { if (done) return; done = true; try { p.destroy(); } catch (x) { } res(e?.type === 'unavailable-id' ? 'taken' : 'err'); });
+      setTimeout(() => { if (!done) { done = true; try { p.destroy(); } catch (x) { } res('err'); } }, 12000);
+    });
+    if (typeof r === 'string') return r;
+    this.peer = r; this.role = 'host'; this.code = id;
+    r.on('connection', (c) => {
+      if (this.conn || this.closed) { c.on('open', () => { try { c.send({ t: 'full' }); } catch (e) { } setTimeout(() => c.close(), 300); }); return; }
+      this.wire(c, () => onGuest && onGuest());
+    });
+    return 'ok';
+  }
+  // Zu einer festen Kennung verbinden; false, wenn dort niemand wartet
+  async joinAt(id, ms = 7000) {
+    const P = PeerCtor(); if (!P) throw new Error('lib');
+    return new Promise((res) => {
+      const p = new P(); let done = false;
+      const fail = () => { if (done) return; done = true; try { p.destroy(); } catch (x) { } res(false); };
+      setTimeout(fail, ms);
+      p.on('error', fail);
+      p.on('open', () => { this.peer = p; this.role = 'guest'; this.code = id; this.wire(p.connect(id, { reliable: true }), () => { if (!done) { done = true; res(true); } }); });
+    });
+  }
+  // Verbindung lösen, ohne das Objekt zu schließen (für erneute Versuche)
+  reset() { try { this.conn?.close(); } catch (e) { } try { this.peer?.destroy(); } catch (e) { } this.peer = null; this.conn = null; this.role = ''; this.queue = []; }
   wire(c, onOpen) {
     c.on('open', () => { this.conn = c; onOpen && onOpen(); });
     c.on('data', (d) => {
