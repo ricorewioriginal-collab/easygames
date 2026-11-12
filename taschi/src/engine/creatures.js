@@ -52,8 +52,39 @@ function signature(id, sp, look) {
   return { colors: [main, acc, belly], F };
 }
 
+// Moderner Toon-Look: weichere Abstufung und ein heller Randlicht-Saum, der die Form vom Hintergrund abhebt
 function creatureMaterial() {
-  return new THREE.MeshToonMaterial({ vertexColors: true, gradientMap: toonGradient(), emissive: 0x000000 });
+  const m = new THREE.MeshToonMaterial({ vertexColors: true, gradientMap: creatureGradient(), emissive: 0x000000 });
+  m.onBeforeCompile = (sh) => {
+    sh.fragmentShader = sh.fragmentShader.replace('#include <tonemapping_fragment>', `{
+      float rim = 1.0 - clamp(dot(normalize(normal), normalize(vViewPosition)), 0.0, 1.0);
+      gl_FragColor.rgb += vec3(1.0, 0.97, 0.9) * smoothstep(0.55, 1.0, rim) * 0.28;
+    }
+    #include <tonemapping_fragment>`);
+  };
+  return m;
+}
+const STAGE_PROPS = [{ head: 1.12, body: 0.92, leg: 0.88, chunky: 0.96 }, { head: 1, body: 1, leg: 1, chunky: 1 }, { head: 0.9, body: 1.1, leg: 1.14, chunky: 1.08 }];
+// Merkmale je Stufe: Stufe 2 bekommt einen Rückenkamm, Stufe 3 zusätzlich Hörner, längeren Kamm, schärferen Blick und eine Aura
+function evolveFeatures(F, stage, plan) {
+  const body = !['wisp', 'fish', 'serpent', 'insect'].includes(plan);
+  if (stage >= 2 && body && !F.spikes && !F.shell && !F.crystal) F.spikes = 3;
+  if (stage >= 2 && !F.pattern) F.pattern = stage >= 3 ? 'stripes' : 'spots';
+  if (stage >= 3) {
+    if (body && !F.horns && plan !== 'bird') F.horns = 2;
+    if (F.spikes && F.spikes < 5) F.spikes = 5;
+    if (!F.eyes || F.eyes === 'big') F.eyes = 'sharp';
+    F.aura = true;
+  }
+  return F;
+}
+let gradient = null;
+function creatureGradient() {
+  if (gradient) return gradient;
+  const data = new Uint8Array([120, 120, 120, 255, 175, 175, 175, 255, 225, 225, 225, 255, 255, 255, 255, 255]);
+  gradient = new THREE.DataTexture(data, 4, 1, THREE.RGBAFormat);
+  gradient.magFilter = gradient.minFilter = THREE.NearestFilter; gradient.generateMipmaps = false; gradient.needsUpdate = true;
+  return gradient;
 }
 
 // Weitere Bauarten melden sich hier an (models.js: Taschis aus 3D-Modellen)
@@ -64,7 +95,8 @@ export function createCreature(id, { outline = true, shiny = false } = {}) {
   if (sp.look && sp.look.plan === 'zotik') return createZotikCreature(sp, outline);
   const look = sp.look || { plan: 'quad', colors: [sp.color, shade(sp.color, 0.7), 0xf6eee0], features: {}, size: 1 };
   const sig = sp.lineage !== undefined ? signature(id, sp, look) : null;
-  const F = sig ? sig.F : look.features || {};
+  // Entwicklungsstufen klar unterscheidbar: jede Stufe bekommt sichtbare Merkmale dazu
+  const F = evolveFeatures({ ...(sig ? sig.F : look.features || {}) }, stageOf(id), look.plan);
   const rng = createRng('creature:' + id);
   const [main0, acc0, belly0] = sig ? sig.colors : look.colors;
   // natural, two-tone palette: no neon overload, a clearly lighter belly and coloured feet on some species
@@ -88,6 +120,9 @@ export function createCreature(id, { outline = true, shiny = false } = {}) {
   };
   // seeded proportions
   const P = { head: 0.85 + rng.next() * 0.4, body: 0.85 + rng.next() * 0.4, leg: 0.75 + rng.next() * 0.55, tail: 0.8 + rng.next() * 0.7, ear: 0.75 + rng.next() * 0.8, chunky: 0.8 + rng.next() * 0.5 };
+  // Babys mit großem Kopf und kurzen Beinen, Endstufen kräftig und hochbeinig
+  const SP = STAGE_PROPS[Math.min(3, stageOf(id)) - 1];
+  for (const k in SP) P[k] *= SP[k];
   // per-species design kit: head shape, face and markings give each Taschi its own silhouette
   const HEADS = [[1.05, 0.97, 1], [1.22, 0.9, 1.02], [0.92, 1.14, 1], [1.12, 1.06, 1.08], [1.3, 0.84, 1]];
   const hs = HEADS[D.int(0, HEADS.length - 1)];
@@ -263,6 +298,8 @@ export function createCreature(id, { outline = true, shiny = false } = {}) {
   };
   if (F.ears) ear(F.ears);
   // horns
+  // Endstufe: leuchtender Stirnstein in Typfarbe, von vorn gut zu sehen
+  if (stage >= 3 && plan !== 'fish') H.add(new THREE.OctahedronGeometry(hr * 0.13, 0), mix(typeCol, 0xffffff, 0.35), matrix(0, hr * 0.62, hr * 0.8, 0.5, 0, 0, 1, 1.4, 0.6));
   if (F.horns) for (let i = 0; i < F.horns; i++) { const sx = i % 2 ? -1 : 1, k = Math.floor(i / 2); H.add(new THREE.ConeGeometry(hr * 0.12, hr * (0.8 - k * 0.2), 6), mix(acc, 0xf5ead8, 0.4), matrix(sx * hr * (0.35 + k * 0.25), hr * (0.85 - k * 0.15), -hr * (0.15 + k * 0.2), -0.3, 0, -sx * (0.3 + k * 0.3))); }
   if (F.antennae) for (const sx of [-1, 1]) { H.add(new THREE.CylinderGeometry(hr * 0.03, hr * 0.03, hr * 1.1, 4), shade(acc, 0.7), matrix(sx * hr * 0.3, hr * 1.15, hr * 0.1, 0.3, 0, -sx * 0.4)); H.add(new THREE.SphereGeometry(hr * 0.1, 6, 4), F.glow ? 0xfff6a0 : acc, matrix(sx * hr * 0.55, hr * 1.62, hr * 0.28)); }
   // crest
@@ -326,7 +363,12 @@ export function createCreature(id, { outline = true, shiny = false } = {}) {
       const wing = pivot(sx > 0 ? 'wingL' : 'wingR', body, sx * 0.25, bodyTop * 0.85, -0.2);
       const W = new Builder();
       if (F.wings === 'insect') { W.add(new THREE.SphereGeometry(0.32, 8, 6), mix(acc, 0xe8f6ff, 0.6), matrix(sx * 0.32, 0.1, -0.1, 0, 0.3 * sx, sx * 0.4, 1.2, 0.1, 0.7)); W.add(new THREE.SphereGeometry(0.22, 8, 6), mix(acc, 0xe8f6ff, 0.6), matrix(sx * 0.25, -0.12, -0.2, 0, 0.2 * sx, -sx * 0.3, 1, 0.1, 0.6)); }
-      else if (F.wings === 'bat') { W.add(new THREE.ConeGeometry(0.42, 0.9, 3), acc, matrix(sx * 0.45, 0.15, -0.05, 0, 0, sx * 1.4, 1, 1, 0.12)); W.add(new THREE.CylinderGeometry(0.03, 0.03, 0.8, 4), shade(acc, 0.6), matrix(sx * 0.4, 0.32, 0, 0, 0, sx * 1.2)); }
+      else if (F.wings === 'bat') {
+        // Drachenflügel: Flughaut mit geschwungener Kante
+        const sh = new THREE.Shape(); sh.moveTo(0, 0); sh.lineTo(0.95, 0.42); sh.quadraticCurveTo(0.78, 0.18, 0.86, -0.02); sh.quadraticCurveTo(0.62, 0.0, 0.62, -0.22); sh.quadraticCurveTo(0.4, -0.12, 0.34, -0.36); sh.quadraticCurveTo(0.18, -0.16, 0, -0.12); sh.lineTo(0, 0);
+        const g = new THREE.ExtrudeGeometry(sh, { depth: 0.03, bevelEnabled: false, curveSegments: 6 });
+        W.add(g, acc, matrix(0.02 * sx, 0.12, -0.02, 0, sx > 0 ? 0 : Math.PI, 0.35));
+      }
       else for (let k = 0; k < 3; k++) W.add(new THREE.SphereGeometry(0.28 - k * 0.05, 8, 6), k % 2 ? acc : main, matrix(sx * (0.2 + k * 0.14), 0.1 - k * 0.04, -k * 0.05, 0, 0, sx * (0.5 + k * 0.12), 1.3, 0.25, 0.7));
       W.parts.forEach(() => {});
       emit(W, wing, false);
@@ -428,7 +470,8 @@ export class Creature {
 
 // Display scale for battle/overworld based on species size.
 export function displayScale(id, context = 'battle') {
-  const size = SPECIES[id]?.look?.size || 1;
-  const s = 0.75 + size * 0.55;
+  const look = SPECIES[id]?.look, size = look?.size || 1;
+  // gebaute Taschis wachsen mit jeder Entwicklungsstufe sichtbar (Modelle bringen ihre Größe selbst mit)
+  const s = Math.min(1.75, (0.75 + size * 0.55) * (look?.plan === 'model' ? 1 : [0.92, 1.03, 1.1][Math.min(3, stageOf(id)) - 1]));
   return context === 'battle' ? s * 1.05 : s * 0.62;
 }

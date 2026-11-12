@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "ee4caa4dfbf8",
- "generated": "2026-11-12T09:55:35+00:00",
- "commit": "218678537a25a194bae4ec4112dafa606ca3c19d",
+ "version": "9ed1650e7ccc",
+ "generated": "2026-11-12T11:08:18+01:00",
+ "commit": "44b245513669e8e3457e572df30587e704c9240e",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8839,7 +8839,7 @@
   {
    "p": "sync/catalog.json",
    "s": 257209,
-   "h": "2006d2c1ef4a7d0a72908deff32bf9b4ed21014e5c4f9a4a678ad9910933256b"
+   "h": "cb9bf269dbb598e81d3d482de47ebd429881c0f91696fb575b21d19da470abc5"
   },
   {
    "p": "taschi/assets/models/alien.glb",
@@ -9163,8 +9163,8 @@
   },
   {
    "p": "taschi/src/engine/creatures.js",
-   "s": 35947,
-   "h": "65d0d211589247798011c6c3581aaf5e36c8adfe88c08b2a67e10a51604e3616"
+   "s": 38706,
+   "h": "3dec65bfce4a91a9b5ce3c0e3ad91c200c7fca6162c3fd46a6f65486255903ee"
   },
   {
    "p": "taschi/src/engine/geometry.js",
