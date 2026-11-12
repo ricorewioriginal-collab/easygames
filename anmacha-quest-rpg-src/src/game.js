@@ -1,6 +1,6 @@
 // Spielablauf: Titel, Karte, Gespräche, Shop, Menü, Kampf. Gleiche Abläufe und Texte wie main.gd der Godot-Fassung.
 // Anzeige und Bedienung kommen über `ui` (DOM) und `view` (Three.js); beide lassen sich für Tests durch Attrappen ersetzen.
-import { MAPS, HEROES, JOINS, SKILLS, IPSKILLS, ITEMS, KEYNAMES, ENEMIES, CAPSULES, SHOPS, FEED } from './data.js';
+import { MAPS, HEROES, JOINS, SKILLS, IPSKILLS, ITEMS, KEYNAMES, ENEMIES, CAPSULES, SHOPS, FEED, TOOLS } from './data.js';
 import * as L from './logic.js';
 
 export const M = { TITLE: 0, WORLD: 1, BATTLE: 2 };
@@ -153,6 +153,9 @@ export class Game {
       S.caps.own[id] = nc;
     }
     if (d.caps && S.caps.own[d.caps.active]) S.caps.active = d.caps.active;
+    // Werkzeuge kamen erst später dazu: wer das Reich schon befreit hat, bekommt sie gleich
+    if (S.flags.boss_rap && !S.flags.tool_hammer) { S.flags.tool_hammer = true; S.flags.rap_tool = true; }
+    if (S.flags.boss_schlager && !S.flags.tool_fire) { S.flags.tool_fire = true; S.flags.schlager_tool = true; }
     S.playTime = +d.t || 0;
     this.mode = M.WORLD;
     const gp = d.gp && L.tile({ ...S, map: MAPS[d.map], mw: MAPS[d.map].rows[0].length, mh: MAPS[d.map].rows.length }, d.gp.x, d.gp.y) !== '#' ? d.gp : L.startOf(d.map);
@@ -320,9 +323,64 @@ export class Game {
       case 'npc': await this.talkNpc(o.d); break;
       case 'boss': await this.fightBoss(o); break;
       case 'gate': await this.openGate(o); break;
+      case 'block': await this.pushBlock(o); break;
+      case 'torch': await this.lightTorch(o); break;
+      case 'rock': case 'bramble': await this.breakLoot(o); break;
+      case 'seal': await this.say(['Ein Siegel aus Licht versperrt den Weg zur Halle.', this.sealHint()]); break;
     }
     this.busy = false;
     this.setTouch(this.mode === M.WORLD);
+  }
+  // ---------------------------------------------------------------- Rätsel
+  sealHint() {
+    const pz = this.S.map.puzzle;
+    const parts = [];
+    if (pz.plates.length) parts.push(`${pz.plates.length} Druckplatte${pz.plates.length > 1 ? 'n' : ''} mit Steinblöcken beschweren`);
+    if (pz.torches.length) parts.push(`${pz.torches.length} Fackel${pz.torches.length > 1 ? 'n' : ''} entzünden`);
+    return `Inschrift: „${parts.join(' und ')}, dann weicht das Licht.“ (Steckt ein Block fest, verlasse das Reich und komm zurück.)`;
+  }
+  async pushBlock(o) {
+    const S = this.S;
+    if (!L.pushBlock(S, o, S.face)) { this.sfx('cancel'); return; }
+    this.sfx('push');
+    await this.wait(0.12);
+    await this.checkSeal();
+  }
+  async lightTorch(o) {
+    const S = this.S;
+    if (o.lit) { await this.say(['Die Fackel brennt hell.']); return; }
+    if (!S.flags.tool_fire) { await this.say(['Eine erloschene Fackel. Mit etwas Feuer ließe sie sich entzünden.']); return; }
+    o.lit = true;
+    S.flags[`torch_${S.mapId}_${o.d.i}`] = true;
+    this.sfx('magic');
+    this.view?.fxWorld?.('torch', o);
+    await this.wait(0.3);
+    await this.checkSeal();
+  }
+  async breakLoot(o) {
+    const S = this.S, d = o.d, rock = o.t === 'rock';
+    const tool = rock ? 'tool_hammer' : 'tool_fire';
+    if (!S.flags[tool]) { await this.say([rock ? 'Ein rissiger Felsen. Darin glitzert etwas ... mit einem Hammer könnte man ihn zerschlagen.' : 'Dichte Dornenranken. Dahinter schimmert etwas. Feuer würde sie vertreiben.']); return; }
+    S.flags[d.id] = true;
+    this.removeObj(o);
+    this.sfx(rock ? 'heavy' : 'magic');
+    this.view?.fxWorld?.(rock ? 'smash' : 'burn', o);
+    await this.wait(0.35);
+    if (d.gold) { S.gold += d.gold; await this.say([`${rock ? 'Der Fels zerbirst' : 'Die Ranken verglühen'}: ${d.gold} Münzen!`]); }
+    else { S.inv[d.v] = (S.inv[d.v] || 0) + d.n; this.sfx('chest'); await this.say([`${rock ? 'Der Fels zerbirst' : 'Die Ranken verglühen'}: ${ITEMS[d.v].name} x${d.n}!`]); }
+  }
+  async checkSeal() {
+    const S = this.S, seal = S.objs.find(x => x.t === 'seal');
+    if (!seal || !L.puzzleDone(S)) return;
+    S.flags['seal_' + S.mapId] = true;
+    const yaw = Math.atan2(S.gp.x - seal.x, S.gp.y - seal.y);
+    if (!this.autoplay && this.view) { this.ui.letterbox?.(true); this.view.cine = { x: seal.x + 0.5, z: seal.y + 0.5, h: 0.8, yaw, dist: 5, pitch: 0.35 }; await this.wait(1.0); }
+    this.removeObj(seal);
+    this.sfx('door');
+    this.view?.fxWorld?.('seal', seal);
+    await this.say(['Ein heller Klang hallt durch das Reich ... das Lichtsiegel vor der Halle zerbricht!']);
+    if (this.view) this.view.cine = null;
+    this.ui.letterbox?.(false);
   }
   removeObj(o) {
     const i = this.S.objs.indexOf(o);
@@ -349,6 +407,10 @@ export class Game {
     if (c.kind === 'gold') {
       S.gold += c.v;
       await this.say([`Truhe geöffnet: ${c.v} Münzen!`]);
+    } else if (c.kind === 'tool') {
+      S.flags[c.v] = true;
+      this.sfx('levelup');
+      await this.say([`Truhe geöffnet: ${TOOLS[c.v].name}! Er ${TOOLS[c.v].desc}.`, 'Lauf einfach gegen das passende Hindernis, dann wird das Werkzeug von selbst eingesetzt.']);
     } else if (c.kind === 'capsule') {
       const cap = L.newCapsule(c.v, Math.max(1, Math.trunc(L.avgLv(S)) - 1));
       S.caps.own[c.v] = cap;

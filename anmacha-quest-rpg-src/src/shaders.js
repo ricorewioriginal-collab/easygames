@@ -91,10 +91,33 @@ ${THREE.ShaderChunk.fog_fragment}
 
 // ---------------------------------------------------------------- Wind (Gras, Bäume)
 export const wind = { t: { value: 0 } };
-// Material im Wind wiegen lassen; amount = Ausschlag, hRef = Höhe, ab der voll ausgelenkt wird
-export function addWind(mat, amount = 0.06, hRef = 1.5) {
+// Durchsicht: Bäume zwischen Kamera und Held werden weich ausgeblendet (gerastert), wie in modernen Third-Person-Spielen
+export const occ = { p: { value: new THREE.Vector3() }, on: { value: 0 } };
+// Material im Wind wiegen lassen; amount = Ausschlag, hRef = Höhe, ab der voll ausgelenkt wird; cut = Durchsicht zum Helden
+export function addWind(mat, amount = 0.06, hRef = 1.5, cut = false) {
   mat.onBeforeCompile = (sh) => {
     sh.uniforms.windT = wind.t;
+    if (cut) {
+      sh.uniforms.occP = occ.p; sh.uniforms.occOn = occ.on;
+      sh.vertexShader = 'varying vec3 vOccW;\n' + sh.vertexShader.replace('#include <worldpos_vertex>', `#include <worldpos_vertex>
+        {
+          vec4 ow = vec4(transformed, 1.0);
+          #ifdef USE_INSTANCING
+            ow = instanceMatrix * ow;
+          #endif
+          vOccW = (modelMatrix * ow).xyz;
+        }`);
+      sh.fragmentShader = 'uniform vec3 occP; uniform float occOn; varying vec3 vOccW;\n' + sh.fragmentShader.replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
+        if (occOn > 0.5) {
+          vec3 ab = occP - cameraPosition;
+          float t = clamp(dot(vOccW - cameraPosition, ab) / dot(ab, ab), 0.0, 1.0);
+          float d = length(vOccW - (cameraPosition + ab * t));
+          float r = 0.9 + 0.6 * t;
+          float f = smoothstep(r, r * 0.55, d) * (1.0 - smoothstep(0.86, 0.98, t));
+          float h = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715))));
+          if (h < f) discard;
+        }`);
+    }
     sh.vertexShader = 'uniform float windT;\n' + sh.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
       {
         vec3 ip = vec3(0.0);
@@ -107,7 +130,7 @@ export function addWind(mat, amount = 0.06, hRef = 1.5) {
         transformed.z += cos(windT * 1.3 + ph * 1.3) * ${(amount * 0.6).toFixed(3)} * k;
       }`);
   };
-  mat.customProgramCacheKey = () => 'wind' + amount + '_' + hRef;
+  mat.customProgramCacheKey = () => 'wind' + amount + '_' + hRef + (cut ? 'c' : '');
   return mat;
 }
 

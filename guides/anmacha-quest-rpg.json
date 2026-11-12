@@ -106,6 +106,17 @@
         "Titel: zurück zum Titelbild (speichert vorher). Dort geht es mit „Fortsetzen“ weiter.",
         "Es gibt nur einen Spielstand. Ohne Anmeldung liegt er nur lokal im Browser dieses Geräts; mit dem runden Knopf „Mit Google speichern“ wird er zusätzlich im Google-Konto gesichert und lässt sich über „Spielstand mit Google wiederherstellen“ zurückholen, auch auf anderen Geräten. „Neues Spiel“ überschreibt ihn."
       ]
+    },
+    {
+      "t": "Dungeon-Rätsel und Werkzeuge",
+      "p": [
+        "Vor jeder Bosshalle liegt ein Lichtsiegel. Es bricht, wenn jede leuchtende Bodenplatte einen Steinblock trägt und jede Fackel brennt. Blöcke schiebst du, indem du dagegenläufst; steckt einer fest, verlasse das Reich und komm zurück. Die Inschrift am Siegel sagt, was noch fehlt."
+      ],
+      "list": [
+        "Kristallhammer (Truhe in der Echogruft): zerschlägt rissige Felsen.",
+        "Glutstab (Truhe im Rosenhain): entzündet Fackeln und verbrennt Dornenranken.",
+        "Glitzernde Felsen und Ranken verbergen Münzen, Tränke und Sphärenfrüchte."
+      ]
     }
   ],
   "ratgeber": [
@@ -147,6 +158,14 @@
         "Mit zu niedriger Stufe ins nächste Reich gehen. Faustregel: die empfohlene Stufe sollte erreicht sein.",
         "Fliehen wollen gegen Bosse – das geht nicht.",
         "Keinen Lebensfeder dabeihaben, wenn ein Held fällt."
+      ]
+    },
+    {
+      "t": "Rätsel ohne Frust",
+      "list": [
+        "Erst den Glutstab im Rosenhain holen: ab dem Rosenhain brauchen alle Siegel brennende Fackeln.",
+        "Nie einen Block gegen eine Wand oder in eine Ecke schieben. Passiert es doch: Reich verlassen und wieder betreten setzt die Blöcke zurück.",
+        "Zurück in die Echogruft, sobald du den Glutstab hast? Nicht nötig, dort gibt es nur Felsen für den Hammer."
       ]
     }
   ],
@@ -204,6 +223,18 @@
         "Mehrere Tränke, Äthertropfen und Lebensfedern kaufen.",
         "An der Heilquelle heilen und speichern.",
         "Im Kampf: Borin setzt Bollwerk vor dem „Totenstille“, Lyra heilt mit Segenskreis, Aren, Silas und Fenn machen Schaden. Lebenshymne aufheben, falls Helden fallen."
+      ]
+    },
+    {
+      "t": "Lösung der Lichtsiegel",
+      "p": [
+        "In jedem Reich liegen die Blöcke unten links, die Platten jeweils zwei Felder rechts daneben. Stell dich links neben einen Block und lauf nach rechts, bis er auf der Platte leuchtet. Danach alle Fackeln mit dem Glutstab anzünden."
+      ],
+      "steps": [
+        "Echogruft: beide Blöcke zwei Felder nach rechts. Kristallhammer liegt in der Truhe östlich der Mitte.",
+        "Rosenhain: Glutstab in der Truhe im Westen holen, Block nach rechts, zwei Fackeln anzünden.",
+        "Frostgrotte: zwei Blöcke nach rechts, die Fackel rechts davon anzünden.",
+        "Glutschlund und Turm der Stille: zwei Blöcke nach rechts, zwei Fackeln anzünden."
       ]
     }
   ],

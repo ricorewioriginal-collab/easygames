@@ -27,7 +27,7 @@ import { THEMES, ENEMIES, CAPSULES } from './data.js';
 import * as L from './logic.js';
 import * as A from './assets.js';
 import { groundTex, blobTex } from './textures.js';
-import { makeSky, makeLiquid, addWind, wind, makeParticles } from './shaders.js';
+import { makeSky, makeLiquid, addWind, wind, occ, makeParticles } from './shaders.js';
 import { Battle } from './battle.js';
 import { Fx } from './fx.js';
 
@@ -391,6 +391,18 @@ export class View {
     const part = map.world ? ['pollen', '#fff6b0'] : v.part;
     this.particles = makeParticles(part[0], this.Q.parts, part[1]);
     this.world.add(this.particles);
+    this.plates = [];
+    for (const [x, y] of (map.puzzle && map.puzzle.plates) || []) {
+      const pm = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.46, 0.06, 32), new THREE.MeshStandardMaterial({ color: C('#5a5a66'), roughness: 0.5, metalness: 0.6, emissive: C(v.accent), emissiveIntensity: 0.25 }));
+      const rr = new THREE.Mesh(new THREE.RingGeometry(0.3, 0.38, 40), new THREE.MeshBasicMaterial({ color: C(v.accent).multiplyScalar(2), transparent: true, opacity: 0.5, depthWrite: false }));
+      rr.rotation.x = -Math.PI / 2; rr.position.y = 0.04;
+      pm.add(rr);
+      pm.position.set(x + 0.5, this.heightAt(x + 0.5, y + 0.5) + 0.03, y + 0.5);
+      pm.receiveShadow = true;
+      pm.userData.ownGeo = pm.userData.ownMat = rr.userData.ownGeo = rr.userData.ownMat = true;
+      this.world.add(pm);
+      this.plates.push({ x, y, m: pm, r: rr, on: 0 });
+    }
     this.camInit = false;
     this.syncDyn(0);
   }
@@ -513,7 +525,7 @@ export class View {
     gltf.scene.traverse((o) => {
       if (!o.isMesh) return;
       let mat = o.material;
-      if (windy) mat = addWind([].concat(mat)[0].clone(), 0.05, 2.0);
+      if (windy) mat = addWind([].concat(mat)[0].clone(), 0.05, 2.0, true);
       if (flat) { mat = [].concat(mat)[0].clone(); mat.color = C('#9aa0b0'); mat.roughness = 0.85; }
       const im = new THREE.InstancedMesh(o.geometry, mat, list.length);
       const local = o.matrixWorld;
@@ -726,6 +738,13 @@ export class View {
       const uid = 'o' + o.uid;
       seen.add(uid);
       if (!this.dyn.has(uid)) this.makeObj(uid, o);
+      const ent = this.dyn.get(uid);
+      if (o.t === 'block') {
+        const x = o.x + 0.5, z = o.y + 0.5, k = dt > 0 ? Math.min(1, dt * 10) : 1;
+        ent.n.position.x += (x - ent.n.position.x) * k;
+        ent.n.position.z += (z - ent.n.position.z) * k;
+        ent.n.position.y = this.heightAt(ent.n.position.x, ent.n.position.z);
+      } else if (o.t === 'torch' && ent.lit !== !!o.lit) this.setTorch(ent, !!o.lit);
     }
     for (const r of S.roamers) {
       const uid = 'r' + r.uid;
@@ -763,7 +782,7 @@ export class View {
       }
       if (!seen.has(uid)) {
         this.dyn.delete(uid);
-        if (ent.k === 'obj' && (ent.o.t === 'chest' || ent.o.t === 'gate')) this.dying.push({ ...ent, life: 0 });
+        if (ent.k === 'obj' && ['chest', 'gate', 'rock', 'bramble', 'seal'].includes(ent.o.t)) this.dying.push({ ...ent, life: ['rock', 'bramble', 'seal'].includes(ent.o.t) ? 1.2 : 0, burst: ent.o.t !== 'chest' && ent.o.t !== 'gate' });
         else this.world.remove(ent.n);
       }
     }
@@ -860,6 +879,100 @@ export class View {
         ent.n.add(ring);
         ent.ring = ring;
       });
+    } else if (o.t === 'block') {
+      // Schiebeblock: behauener Stein mit leuchtender Rune
+      const pal = palette(this.theme || 'rap');
+      const m = new THREE.Mesh(new THREE.BoxGeometry(0.86, 0.86, 0.86, 2, 2, 2), new THREE.MeshStandardMaterial({ color: C(pal[2]).lerp(C('#8a8478'), 0.6), roughness: 0.85, metalness: 0.05, map: groundTex('tile').map, normalMap: groundTex('tile').normal }));
+      m.position.y = 0.43; m.castShadow = m.receiveShadow = true;
+      const rune = new THREE.Mesh(new THREE.RingGeometry(0.14, 0.2, 6), new THREE.MeshBasicMaterial({ color: C(VIS[this.theme || 'rap'].accent).multiplyScalar(2.2), transparent: true, opacity: 0.9, side: THREE.DoubleSide }));
+      rune.position.y = 0.865; rune.rotation.x = -Math.PI / 2;
+      m.userData.ownGeo = m.userData.ownMat = rune.userData.ownGeo = rune.userData.ownMat = true;
+      ent.n.add(m, rune);
+      this.addBlob(ent.n, 1.0);
+    } else if (o.t === 'torch') {
+      A.load('dungeon/column.glb').then(gl => {
+        if (!alive()) return;
+        const c = gl.scene.clone();
+        const sz = new THREE.Box3().setFromObject(c).getSize(new THREE.Vector3());
+        c.scale.set(0.45 / Math.max(0.01, sz.x), 1.25 / Math.max(0.01, sz.y), 0.45 / Math.max(0.01, sz.z));
+        c.traverse(m => { if (m.isMesh) m.castShadow = true; });
+        ent.n.add(c);
+      });
+      const bowl = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.14, 0.18, 16), new THREE.MeshStandardMaterial({ color: C('#3a2a1a'), metalness: 0.7, roughness: 0.4 }));
+      bowl.position.y = 1.32;
+      const fl = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.5, 12), new THREE.MeshBasicMaterial({ color: C('#ffb040').multiplyScalar(3), transparent: true, opacity: 0.9, depthWrite: false }));
+      fl.position.y = 1.62;
+      bowl.userData.ownGeo = bowl.userData.ownMat = fl.userData.ownGeo = fl.userData.ownMat = true;
+      ent.n.add(bowl, fl);
+      ent.flame = fl;
+      this.setTorch(ent, !!o.lit);
+    } else if (o.t === 'rock') {
+      A.load('town/rock-large.glb').then(gl => {
+        if (!alive()) return;
+        const r = gl.scene.clone();
+        r.scale.setScalar(0.55);
+        r.rotation.y = (o.x * 7 + o.y * 3) % 6;
+        r.traverse(m => { if (m.isMesh) { m.castShadow = true; m.material = m.material.clone(); m.material.color.multiplyScalar(0.8); m.material.emissive = C('#ffd27a'); m.material.emissiveIntensity = 0.06; } });
+        ent.n.add(r);
+      });
+      ent.glint = this.makeGlint('#ffe9a0');
+      ent.glint.position.y = 0.7;
+      ent.n.add(ent.glint);
+      this.addBlob(ent.n, 1.1);
+    } else if (o.t === 'bramble') {
+      // Dornenranken: verschlungene Ranken mit Stacheln
+      const g = new THREE.Group();
+      const vine = new THREE.MeshStandardMaterial({ color: C('#2e3a1c'), roughness: 0.8 });
+      const thorn = new THREE.MeshStandardMaterial({ color: C('#6a2a3a'), roughness: 0.5 });
+      for (let i = 0; i < 7; i++) {
+        const a = i * 0.9 + o.x;
+        const pts = [];
+        for (let k = 0; k <= 6; k++) pts.push(new THREE.Vector3(Math.cos(a + k * 0.8) * (0.15 + k * 0.05), 0.05 + k * 0.15, Math.sin(a + k * 0.8) * (0.15 + k * 0.05)));
+        const tube = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, 0.035, 5), vine);
+        tube.castShadow = true;
+        g.add(tube);
+        for (let k = 1; k < 6; k++) {
+          const t = new THREE.Mesh(new THREE.ConeGeometry(0.025, 0.12, 4), thorn);
+          t.position.copy(pts[k]); t.lookAt(pts[k].clone().multiplyScalar(2)); t.rotateX(Math.PI / 2);
+          g.add(t);
+        }
+      }
+      g.traverse(m => { if (m.isMesh) m.userData.ownGeo = true; });
+      g.children[0].userData.ownMat = g.children[1].userData.ownMat = true;
+      ent.n.add(g);
+      ent.glint = this.makeGlint('#ff9ad0');
+      ent.glint.position.y = 0.5;
+      ent.n.add(ent.glint);
+      this.addBlob(ent.n, 1.0);
+    } else if (o.t === 'seal') {
+      // Lichtsiegel vor der Bosshalle
+      const col = C(VIS[this.theme || 'rap'].accent);
+      const wall = new THREE.Mesh(new THREE.PlaneGeometry(0.98, 1.9), new THREE.MeshBasicMaterial({ color: col.clone().multiplyScalar(1.6), transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }));
+      wall.position.y = 0.95; wall.rotation.y = Math.PI / 2;
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.03, 8, 48), new THREE.MeshBasicMaterial({ color: col.clone().multiplyScalar(3) }));
+      ring.position.y = 0.95; ring.rotation.y = Math.PI / 2;
+      const inner = new THREE.Mesh(new THREE.RingGeometry(0.18, 0.24, 6), new THREE.MeshBasicMaterial({ color: col.clone().multiplyScalar(3), side: THREE.DoubleSide }));
+      inner.position.y = 0.95; inner.rotation.y = Math.PI / 2;
+      for (const m of [wall, ring, inner]) m.userData.ownGeo = m.userData.ownMat = true;
+      const pl = new THREE.PointLight(col, 4, 4, 1.6);
+      pl.position.y = 1;
+      ent.n.add(wall, ring, inner, pl);
+      ent.seal = { wall, ring, inner };
+    }
+  }
+  makeGlint(col) {
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: blobTex(), color: C(col).multiplyScalar(3), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+    s.scale.setScalar(0.18);
+    s.userData.ownMat = true;
+    return s;
+  }
+  setTorch(ent, lit) {
+    ent.lit = lit;
+    if (ent.flame) ent.flame.visible = lit;
+    if (lit && !ent.light) {
+      ent.light = new THREE.PointLight(C('#ffa040'), 7, 6, 1.6);
+      ent.light.position.y = 1.8;
+      ent.n.add(ent.light);
     }
   }
 
@@ -882,6 +995,14 @@ export class View {
   battleEnemyDown(i) { this.battle.enemyDown(i); }
   battleFx(kind, side, i) { this.battle.fxAt(kind, side, i); }
   fxWorld(kind, o) {
+    if (o && ['torch', 'smash', 'burn', 'seal'].includes(kind)) {
+      const p = new THREE.Vector3(o.x + 0.5, kind === 'torch' ? 1.6 : 0.6, o.y + 0.5);
+      if (kind === 'torch') this.fx.burst(p, '#ffb040', 50, 1.6, 0.9, 1.5, 0.1, this.world);
+      if (kind === 'smash') { this.fx.burst(p, '#b8a890', 70, 3.0, 1.0, -6, 0.12, this.world); this.fx.burst(p, '#ffe27a', 24, 2.0, 1.2, -1, 0.07, this.world); this.shake(0.25); }
+      if (kind === 'burn') { this.fx.burst(p, '#ff6a20', 80, 2.2, 1.1, 2.0, 0.11, this.world); this.fx.burst(p, '#3a2a20', 30, 1.2, 1.6, 0.8, 0.14, this.world); }
+      if (kind === 'seal') { p.y = 1; this.fx.burst(p, VIS[this.theme || 'rap'].accent, 140, 4.0, 1.6, -1, 0.12, this.world); this.fx.burst(p, '#ffffff', 50, 2.5, 1.0, 0, 0.08, this.world); this.shake(0.3); }
+      return;
+    }
     if (kind === 'heal') {
       const o2 = this.g.S.objs.find(x => x.t === 'npc' && x.d.kind === 'heal');
       if (o2) this.fx.burst(new THREE.Vector3(o2.x + 0.5, 0.6, o2.y + 0.5), '#7ad8ff', 60, 2.2, 1.4, -1.5, 0.12, this.world);
@@ -908,6 +1029,9 @@ export class View {
         ent.a?.mixer?.update(dt);
         if (ent.spin) { ent.spin.rotation.y += dt * 2; ent.spin.position.y = 1.2 + Math.sin(this.t * 2.5) * 0.08; }
         if (ent.ring) ent.ring.material.opacity = 0.4 + Math.sin(this.t * 4) * 0.2;
+        if (ent.flame && ent.lit) { ent.flame.scale.set(1 + Math.sin(this.t * 17) * 0.1, 1 + Math.sin(this.t * 11 + 1) * 0.18, 1); if (ent.light) ent.light.intensity = 6 + Math.sin(this.t * 13) * 1.2; }
+        if (ent.glint) { const q = (Math.sin(this.t * 2.2 + ent.o.x) + 1) / 2; ent.glint.material.opacity = q * q; ent.glint.scale.setScalar(0.1 + q * 0.22); }
+        if (ent.seal) { ent.seal.ring.rotation.x += dt * 1.2; ent.seal.inner.rotation.x -= dt * 2; ent.seal.wall.material.opacity = 0.28 + Math.sin(this.t * 3) * 0.1; }
         if (ent.k === 'portal') ent.n.traverse(o => { if (o.userData.spin) o.rotation.z += dt * o.userData.spin; if (o.userData.pulse) o.scale.setScalar(1 + Math.sin(this.t * 5) * 0.2); });
         if (ent.k === 'obj' && ent.o.t === 'npc' && ent.a && this.player) {
           const p = this.player.root.position, n = ent.n.position;
@@ -918,6 +1042,12 @@ export class View {
           // Wirbel zeigt zur Kamera
           for (const f of ent.n.userData.face) { f.lookAt(this.camera.position.x, f.getWorldPosition(new THREE.Vector3()).y, this.camera.position.z); f.rotateZ(this.t * (f.userData.spin || 1)); }
         }
+      }
+      for (const pt of this.plates || []) {
+        const on = S.objs.some(o => o.t === 'block' && o.x === pt.x && o.y === pt.y) ? 1 : 0;
+        pt.on += (on - pt.on) * Math.min(1, dt * 6);
+        pt.m.material.emissiveIntensity = 0.25 + pt.on * 2.2;
+        pt.r.material.opacity = 0.35 + pt.on * 0.6 + Math.sin(this.t * 3) * 0.1 * (1 - pt.on);
       }
       for (const dz of this.dying) {
         dz.life += dt;
@@ -931,6 +1061,8 @@ export class View {
       this.player?.a?.mixer?.update(dt);
       if (this.liquid) this.liquid.uniforms.t.value = this.t;
       this.updateCamera(dt, mode === 0);
+      occ.on.value = mode === 0 || !this.player ? 0 : 1;
+      if (this.player) occ.p.value.copy(this.player.root.position).add(new THREE.Vector3(0, 0.9, 0));
       if (this.playerLight && this.player) this.playerLight.position.copy(this.player.root.position).add(new THREE.Vector3(0, 1.6, 0.4));
       if (this.particles) { this.particles.material.uniforms.t.value = this.t; this.particles.material.uniforms.center.value.copy(this.camTarget); this.particles.material.uniforms.scale.value = this.H * 0.9; }
     }
@@ -991,12 +1123,12 @@ export class View {
   // Höhe der Hindernisse eines Feldes (für die Kamera)
   obstacleAt(x, z) {
     const S = this.g.S, tx = Math.floor(x), ty = Math.floor(z);
-    if (tx < 0 || ty < 0 || tx >= S.mw || ty >= S.mh) return S.map.world || S.map.town ? -1 : 1.3;
+    if (tx < 0 || ty < 0 || tx >= S.mw || ty >= S.mh) return S.map.world || S.map.town ? -1 : 2.1;
     const ch = S.map.rows[ty][tx];
     const g = this.heightAt(x, z);
-    if (ch === '#') return 1.3;
+    if (ch === '#') return 2.1;
     if ('hHDSM'.includes(ch)) return 3.2;
-    if (ch === 'T') return g + 1.6;
+    if (ch === 'T') return g + 2.8;
     return g;
   }
   // Bildschirmrichtung → Kartenrichtung (nächste Himmelsrichtung zur Kamera)
