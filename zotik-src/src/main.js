@@ -1631,7 +1631,7 @@ function switchWorld(n){
   MP.quiet=true;
   try{WPX().clear();if(curCh===1&&!WLD){if(n!==1)leaveLunaris()}else destroyWorld();
   if(n===1)restoreLunaris();else if(n===12)buildCave();else if(n===13)buildCamp();else if(n===14)buildPixRoom();else if(n===15)buildOver();else if(n>=MW_FIRST)MWX().build(n);else buildWorld(n)}finally{MP.quiet=false}
-  NZ().activate(n);curCh=n;S.ch=n;curZone='';mpWorldChanged(n);if(n===1&&!JP1)JP1=jumpPath(1);NQ.enter(n);LF().arrive(n);if(WLD)WLD.jp=n>1&&n<12?jumpPath(n):null;wmAbort();if(n>1&&n<12&&WLD&&!WLD.cave&&!WLD.story){owSign(n,3.2,13);advCamp(n);wzDress(n)}if(n>1&&n<11&&WLD&&!WLD.cave&&!WLD.story){worldMark(n);if(!MP.on)WPX().build(n,WLD.path,hgt)}worldRule(WLD&&!WLD.cave&&!WLD.story?n:0);
+  if(n>=MW_FIRST)castleSite(n);NZ().activate(n);curCh=n;S.ch=n;curZone='';mpWorldChanged(n);if(n===1&&!JP1)JP1=jumpPath(1);NQ.enter(n);LF().arrive(n);if(WLD)WLD.jp=n>1&&n<12?jumpPath(n):null;wmAbort();if(n>1&&n<12&&WLD&&!WLD.cave&&!WLD.story){owSign(n,3.2,13);advCamp(n);kbDress(n);wzDress(n)}if(n>1&&n<11&&WLD&&!WLD.cave&&!WLD.story){worldMark(n);if(!MP.on)WPX().build(n,WLD.path,hgt)}worldRule(WLD&&!WLD.cave&&!WLD.story?n:0);
 }
 /* ---- Ladebild je Welt: Name, Untertitel, Zeichen in der Weltfarbe, ein Tipp ---- */
 const WTIPS=['Blocken im richtigen Moment wirft Gegner aus dem Takt.','Jede Figur hat ein eigenes Element. Schwächen treffen doppelt.','Tippe oben links auf einen Gefährten, um ihn selbst zu spielen.','Im Camp rasten füllt Leben und Mana und speichert.','Hinweistafeln in Ruinen zeigen die nächste Platte mit einer grünen Lichtsäule.','Im Casino spielst du nur um Splitter, nie um echtes Geld.','Weltwaffen verstärken die Figur, die zu einer Welt gehört.','Ausweichen im letzten Moment verlangsamt kurz die Zeit.','Lies Bücherregale in den Städten: Dort stehen Hinweise zur Welt.'];
@@ -3158,17 +3158,42 @@ function mazeGen(R,N,holes){const g=[];for(let i=0;i<N;i++){g.push([]);for(let j
    Welt 2–4 zwei, ab Welt 5 drei Ebenen. Je Ebene: Schlüssel am fernen Ende (abwechselnd hinter einem Rätsel, auf einer Sprungplattform oder versiegelt, bis alle Gegner vertrieben sind),
    daneben ein Runentor als Abkürzung zurück zum Start, dort die verschlossene Treppe. Letzte Ebene: Halle des Zwischengegners, danach das Tor nach draußen. */
 const DUNF=n=>n<=4?2:3;
-function dunEnter(n){if(MP.on||X.dun)return;for(const k in S.obst)if(k.startsWith('v'+n+'_'))delete S.obst[k];const keep={};for(const k of ['a','b','m'])keep[k+n]=ED[k+n];X.dun={n,f:1,keep,ex:pl.x,ez:pl.z,seed:(Math.random()*1e9)|0,key:false};dunGo()}
+/* Begehbare Burgen und Türme der Märchenwelten (KayKit Medieval Builder + Dungeon Pack, CC0): außen ein großes Gebäude mit Tor,
+   innen zwei Stockwerke im Vorhallen-Takt (Rätsel, Sprung- oder Jagdhalle, Schlüssel) und oben der Burgherr */
+const CST={21:{k:'castle',name:'Schloss der Königin',boss:'Spiegelritter',col:0xc070ff,s:9},22:{k:'watchtower',name:'Turm der Kalten Höhlen',boss:'Wächter der Affenstadt',col:0xe8a040,s:9},
+  23:{k:'watchtower',name:'Turm der Meerhexe',boss:'Korallenwächter',col:0x6ad8ff,s:9},24:{k:'watchtower',name:'Nordturm',boss:'Steinerner Wasserspeier',col:0xffd070,s:9.5},
+  25:{k:'castle',name:'Burg der Morgana',boss:'Schwarzer Ritter',col:0x8ab8ff,s:9},26:{k:'castle',name:'Burg von Tiryns',boss:'Eurystheus’ Leibwache',col:0xffc060,s:9},
+  27:{k:'watchtower',name:'Wachturm am Pass',boss:'Hauptmann der Eindringlinge',col:0xff6a4a,s:9.5}};
+function castleSite(n){const c=CST[n];if(!c||!WLD||!WLD.mw||MP.on)return;const w=WLD.mw,R0=w.R||58,cz0=w.cz??-36,rad=c.k==='castle'?8.4:5.4,rr=mul32(n*97+5);
+  const poi=[[0,12],...(w.npcs||[]).map(d=>[d.x,d.z]),...(w.chests||[]),w.key?[w.key[0],w.key[1]]:[0,-999]];for(const m of w.ms||[]){for(const q of m.pts||[])poi.push([q[0],q[1]]);if(m.at)poi.push(m.at)}
+  let best=null;for(let t=0;t<500&&!best;t++){const a=rr()*6.283,d=R0*(.45+rr()*.42),x=Math.sin(a)*d,z=cz0+Math.cos(a)*d;if(blocked(x,z))continue;const y0=hgt(x,z);let ok=true;
+    for(let k=0;k<12&&ok;k++){const b=k/12*6.283;for(const r of [rad*.6,rad+2.5]){const px=x+Math.cos(b)*r,pz=z+Math.sin(b)*r;if(blocked(px,pz)||Math.abs(hgt(px,pz)-y0)>1.4)ok=false}}
+    if(ok&&poi.some(p=>Math.hypot(p[0]-x,p[1]-z)<rad+7))ok=false;if(ok&&COL.some(q=>Math.hypot(q.x-x,q.z-z)<q.r+rad+1))ok=false;if(ok)best=[x,z,y0]}
+  if(!best)return;const [x,z,y]=best,ry=Math.atan2(-x,cz0-z)+Math.PI,fx=Math.sin(ry),fz=Math.cos(ry);   // Tor zeigt zur Weltmitte
+  KK.place(scene,[{k:c.k,x,y:y-.3,z,ry,s:c.s}],'kb');addCol(x,z,rad);
+  const gx=x+fx*(rad+.6),gz=z+fz*(rad+.6),gy=hgt(gx,gz);KK.place(scene,[{k:'wall_doorway',x:gx,y:gy-.05,z:gz,ry,s:.9},{k:'torch_mounted',x:gx+Math.cos(ry)*2.3+fx*.4,y:gy+2.4,z:gz-Math.sin(ry)*2.3+fz*.4,ry},{k:'torch_mounted',x:gx-Math.cos(ry)*2.3+fx*.4,y:gy+2.4,z:gz+Math.sin(ry)*2.3+fz*.4,ry}],'kb');
+  const pt=mk(G.box,M(c.col,{e:c.col,ei:1.3,t:1}),gx,gy+1.5,gz,2.4,3,.08,false);pt.rotation.y=ry;pt.material.transparent=true;pt.material.opacity=.55;scene.add(pt);scene.add(glow(c.col,5,gx+fx*.6,gy+1.4,gz+fz*.6,.5));
+  for(const s of [-1,1])addCol(gx+Math.cos(ry)*s*2.2,gz-Math.sin(ry)*s*2.2,.6);
+  const ix=gx+fx*1.4,iz=gz+fz*1.4,done=()=>!!S.fl['cs'+n];
+  INT.push({x:ix,z:iz,name:c.name,get pr(){return done()?'Erneut betreten (befreit ✓)':'Betreten'},rad:2.6,talk(){say([['Zotik',done()?'Hier haben wir '+c.boss+' schon besiegt. Die Rätsel ordnen sich aber jedes Mal neu.':'Das Tor steht offen. Zwei Stockwerke, Rätsel und Wachen – und oben wartet '+c.boss+'.']],null,[{t:'Hineingehen',fn:()=>dunEnter(n,c)},{t:'Später',fn(){}}])}});
+  WLD.castle={x,z,gx:ix,gz:iz}}
+/* Innenausbau einer Burg-Ebene: Wände mit Fenstern, Säulen und Bannern an den Gangkanten, Steinboden je Feld, Fackeln */
+function castleDress(g,N,cx,cz,CS,R){const L=[],s=CS/4,WL=['wall','wall','wall_window_closed','wall','wall_archedwindow_gated','wall_pillar'];
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++){if(g[i][j])continue;L.push({k:(i+j)%5?'floor_tile_large':'floor_wood_large',x:cx(i),y:.02,z:cz(j),ry:((i*3+j)%4)*Math.PI/2,s});
+    for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]]){const ii=i+a,jj=j+b;if(ii>=0&&jj>=0&&ii<N&&jj<N&&!g[ii][jj])continue;const r=R(),x=cx(i)+a*(CS/2+.6*s),z=cz(j)+b*(CS/2+.6*s),ry=a?Math.PI/2:0;
+      L.push({k:WL[r*WL.length|0],x,y:0,z,ry,s});if(r<.12)L.push({k:'torch_mounted',x:cx(i)+a*(CS/2-.05),y:2.6,z:cz(j)+b*(CS/2-.05),ry:Math.atan2(-a,-b)});else if(r>.93)L.push({k:R()<.5?'banner_patternA_red':'banner_shield_green',x:cx(i)+a*(CS/2-.7),y:0,z:cz(j)+b*(CS/2-.7),ry:Math.atan2(-a,-b)+Math.PI})}}
+  KK.place(scene,L,'kb')}
+function dunEnter(n,mw){if(MP.on||X.dun)return;for(const k in S.obst)if(k.startsWith('v'+n+'_'))delete S.obst[k];const keep={};if(mw){keep['a'+n]=Object.assign({},ED.skm);keep['b'+n]=Object.assign({},ED.skw);keep['m'+n]=Object.assign({},ED.skw,{name:mw.boss,make:kkFoe('sk_w',1.9,'Skeleton_Axe','Skeleton_Shield_Large_A'),sc:1.7,mini:true,hp:ED.skw.hp*9,aggro:30,xp:300,sh:[40,70],col:mw.col})}else for(const k of ['a','b','m'])keep[k+n]=ED[k+n];X.dun={n,f:1,keep,mw:mw||null,ex:pl.x,ez:pl.z,seed:(Math.random()*1e9)|0,key:false};dunGo()}
 function dunGo(){const D=X.dun;sfx('quest');$('fade').style.opacity=1;setTimeout(()=>{MP.quiet=true;try{destroyWorld();Object.assign(ED,D.keep);buildDungeon()}finally{MP.quiet=false}const sp=WLD.spawn;pl.x=sp[0];pl.z=sp[1];pl.y=0;pl.vx=pl.vz=0;pl.air=false;fel.x=pl.x+1;fel.z=pl.z+1;placeParty();lockOff();curZone='';refreshQuest();$('fade').style.opacity=0},500)}
-function dunLeave(won){const D=X.dun;if(!D)return;X.dun=null;$('fade').style.opacity=1;setTimeout(()=>{MP.quiet=true;try{destroyWorld();buildWorld(D.n)}finally{MP.quiet=false}NZ().activate(D.n);NQ.enter(D.n);WLD.jp=jumpPath(D.n);worldRule(D.n);pl.x=D.ex;pl.z=D.ez;pl.y=hgt(pl.x,pl.z);pl.vx=pl.vz=0;pl.air=false;fel.x=pl.x+1;fel.z=pl.z+1;placeParty();lockOff();curZone='';if(won)WLD.kill({mini:true});refreshQuest();$('fade').style.opacity=0;saveGame(true)},500)}
+function dunLeave(won){const D=X.dun;if(!D)return;X.dun=null;$('fade').style.opacity=1;setTimeout(()=>{MP.quiet=true;try{destroyWorld();if(D.mw)MWX().build(D.n);else buildWorld(D.n)}finally{MP.quiet=false}NZ().activate(D.n);NQ.enter(D.n);WLD.jp=D.mw?null:jumpPath(D.n);if(D.mw)castleSite(D.n);else worldRule(D.n);pl.x=D.ex;pl.z=D.ez;pl.y=hgt(pl.x,pl.z);pl.vx=pl.vz=0;pl.air=false;fel.x=pl.x+1;fel.z=pl.z+1;placeParty();lockOff();curZone='';if(won&&D.mw){const fr=!S.fl['cs'+D.n];S.fl['cs'+D.n]=1;const sh=fr?300:60;S.shards+=sh;if(fr)S.potions+=2;setTimeout(()=>banner(D.mw.name+' befreit','+'+sh+' 💎'+(fr?' · 🧪×2':'')),600)}else if(won)WLD.kill({mini:true});refreshQuest();$('fade').style.opacity=0;saveGame(true)},500)}
 function dunDeath(){if(!X.dun)return false;pl.dead=false;pl.iframes=2;S.hp=maxHp();S.mp=maxMp();$('fade').style.opacity=0;dunLeave(false);setTimeout(()=>toast('Du erwachst vor dem Eingang. Die Vorhallen haben sich neu geordnet.'),1500);return true}
-function buildDungeon(){const D=X.dun,n=D.n,f=D.f,F=DUNF(n),last=f===F,C=CHP[n],R=mul32((D.seed|0)*613+f*271+n*17),N=11,CS=5,X0=-N*CS/2,Z0=-100;D.key=false;
+function buildDungeon(){const D=X.dun,n=D.n,f=D.f,F=D.mw?2:DUNF(n),last=f===F,C=D.mw?{glowc:[D.mw.col],depthN:D.mw.name,M:[D.mw.boss],pal:{arena:0x9a9088,rock:0x4a4650}}:CHP[n],R=mul32((D.seed|0)*613+f*271+n*17),N=11,CS=5,X0=-N*CS/2,Z0=-100;D.key=false;
   const MZ=mazeGen(R,N,8),g=MZ.g,dist=MZ.dist,far=MZ.far;let dead=MZ.dead.filter(c=>!(c[0]===far[0]&&c[1]===far[1])&&dist[c[0]][c[1]]>3);
   /* am fernen Ende eine Halle (3×3 Felder) freiräumen: Rätselraum, Plattformraum oder Halle des Zwischengegners */
   const hc=[Math.min(N-3,Math.max(2,far[0])),Math.min(N-3,Math.max(2,far[1]))];for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)g[hc[0]+a][hc[1]+b]=0;
   const cx=i=>X0+(i+.5)*CS,cz=j=>Z0+(j+.5)*CS,cell=(x,z)=>[Math.floor((x-X0)/CS),Math.floor((z-Z0)/CS)];
   const blk=(x,z)=>{const [i,j]=cell(x,z);return i<0||j<0||i>=N||j>=N||g[i][j]===1};
-  const hx=cx(hc[0]),hz=cz(hc[1]),gl=C.glowc[0],mode=last?'boss':['puzzle','jump','hunt'][(f+n)%3],name='Vorhallen · '+C.depthN;
+  const hx=cx(hc[0]),hz=cz(hc[1]),gl=C.glowc[0],mode=last?'boss':['puzzle','jump','hunt'][(f+n)%3],name=D.mw?D.mw.name:'Vorhallen · '+C.depthN;
   const need=()=>last?(E.some(e=>e.mini&&!e.dead)?'Besiege '+C.M[0]+' in der Halle am Ende der Gänge.':'Der Weg ist frei: Nimm das Tor in der Halle.'):D.key?'Du hast den Schlüssel. Die Treppe liegt am Start – das Runentor bringt dich zurück.':mode==='puzzle'?'Finde die Halle am Ende der Gänge und löse das Rätsel. Dann gibt die Truhe den Schlüssel frei.':mode==='jump'?'Der Schlüssel liegt in der Halle auf der hohen Plattform. Spring von Platte zu Platte hinauf.':'Die Schlüsseltruhe ist versiegelt: Vertreibe alle Gegner dieser Ebene (noch '+E.filter(e=>!e.dead).length+').';
   WLD={n,C,h:()=>0,blocked:blk,zone:()=>'cave',ims:[],edKeys:Object.keys(D.keep),terr:null,zn:{cave:[name,'Ebene '+f+' von '+F],village:[name,''],forest:[name,''],ruin:[name,'']},path:()=>0,mbg:null,spawn:[cx(1),cz(1)],cave:true,dun:D,f,
     refresh(){$('qt').textContent=name+' · Ebene '+f+'/'+F;$('qo').textContent=need();$('qo').style.whiteSpace='pre-line'},
@@ -3176,7 +3201,7 @@ function buildDungeon(){const D=X.dun,n=D.n,f=D.f,F=DUNF(n),last=f===F,C=CHP[n],
     kill(e){if(e.mini){banner(C.M[0]+' besiegt','Das Tor nach draußen öffnet sich');sfx('level');$('boss').hidden=true;boss=null}this.refresh()},zoneEnter(){},ensureBoss(){},sealedNow:()=>false,spawnMini(){}};
   setAtmos({top:[.01,.01,.03],mid:[.03,.03,.07],hor:[.08,.07,.12],aur:[.2,.3,.5],ms:[.1,.1,.2],gr:[.02,.02,.04],moon:0x404050,mg:[0x202030,0x202030],fog:0x0a0a14,fd:.026,hemi:[0x9a9ac0,0x1a1a2a,.6],lite:[0xb0b0d0,.55],stars:0,expo:1});
   const fl=new T.Mesh(new T.PlaneGeometry(N*CS+20,N*CS+20),TX.tri('cobble',C.pal.arena,{s:.3,gain:2.3,r:1,e:0x1a120c,ei:1,fresh:1}));fl.rotation.x=-Math.PI/2;fl.position.set(0,0,Z0+N*CS/2);fl.receiveShadow=true;scene.add(fl);WLD.terr=fl;
-  const im=DG().walls(g,N,cx,cz,CS,2.8,C.pal.rock,R,'stone');scene.add(im);WLD.ims.push(im);
+  const im=DG().walls(g,N,cx,cz,CS,D.mw?4.6:2.8,C.pal.rock,R,'stone');scene.add(im);WLD.ims.push(im);if(D.mw)castleDress(g,N,cx,cz,CS,R);
   /* Leuchtkristalle in der Farbe der Welt */
   const deco=new T.Group();scene.add(deco);for(let i=1;i<N-1;i++)for(let j=1;j<N-1;j++)if(!g[i][j]&&(i*7+j*3+f)%5===0){deco.add(mk(G.oct,M(gl,{e:gl,ei:1.6,r:.2}),cx(i)+1.9,1.1,cz(j)+1.9,.22,.5,.22,false));deco.add(glow(gl,3,cx(i)+1.9,1.2,cz(j)+1.9,.4))}
   /* Rätselnischen (Lufia-Takt, eigene Umsetzung): Sackgassen der Gänge mit Schatz, verschlossen mit dem, was Zotik schon kann –
@@ -3210,14 +3235,14 @@ function buildDungeon(){const D=X.dun,n=D.n,f=D.f,F=DUNF(n),last=f===F,C=CHP[n],
   /* Start: Ausgangskristall und (außer auf der letzten Ebene) die verschlossene Treppe */
   const side=g[2][1]?[0,2.2]:[2.2,0],ex=cx(1)-side[0]*.8,ez=cz(1)-side[1]*.8,xc=new T.Group();xc.position.set(ex,0,ez);xc.add(mk(G.oct,M(0x6af0ff,{e:0x2ac0ff,ei:1.8}),0,1.4,0,.4,.75,.4,false));xc.add(glow(0x6af0ff,3.4,0,1.4,0,.7));scene.add(xc);
   animObjs.push({fn(t){xc.children[0].rotation.y=t;xc.children[0].position.y=1.4+Math.sin(t*2)*.1}});
-  INT.push({x:ex,z:ez,name:'Ausgangskristall',pr:'Vorhallen verlassen',rad:1.8,talk(){say([['Zotik','Die Vorhallen verlassen? Beim nächsten Mal ordnen sich die Gänge neu, und ich beginne auf der ersten Ebene.']],null,[{t:'Verlassen',fn:()=>dunLeave(false)},{t:'Weiter erkunden',fn(){}}])}});
+  INT.push({x:ex,z:ez,name:'Ausgangskristall',pr:D.mw?'Burg verlassen':'Vorhallen verlassen',rad:1.8,talk(){say([['Zotik',(D.mw?'Die Burg verlassen? ':'Die Vorhallen verlassen? ')+'Beim nächsten Mal ordnen sich die Gänge neu, und ich beginne auf der ersten Ebene.']],null,[{t:'Verlassen',fn:()=>dunLeave(false)},{t:'Weiter erkunden',fn(){}}])}});
   const rune=(x,z,to,on)=>{const m=new T.Group();m.position.set(x,0,z);m.add(mk(G.cyl,M(gl,{e:gl,ei:1.5,r:.2,t:1}),0,.04,0,1.1,.05,1.1,false));m.add(glow(gl,4,0,.8,0,.6));scene.add(m);animObjs.push({fn(){m.visible=on()}});
     INT.push({x,z,name:'Runentor',pr:'Abkürzung nehmen',rad:1.9,vis:on,talk(){sfx('quest');emit(pl.x,1,pl.z,gl,30,5,.8,.7,2);pl.x=to[0];pl.z=to[1];pl.vx=pl.vz=0;fel.x=pl.x+1;fel.z=pl.z+1;placeParty();emit(pl.x,1,pl.z,gl,30,5,.8,.7,2)}})};
   if(!last){const sx2=cx(1)+side[0],sz2=cz(1)+side[1],stg=new T.Group();stg.position.set(sx2,0,sz2);for(let q=0;q<4;q++)stg.add(mk(G.box,M(0x8a8aa0),0,.1,-q*.5+.8,3-q*.5,.2,.8));stg.add(mk(G.cyl,M(0x0a0a14),0,.02,0,1.4,.04,1.4,false));const lk=glow(0xff5a5a,3,0,1.2,0,.6);stg.add(lk);scene.add(stg);animObjs.push({fn(){lk.material.color.setHex(D.key?0xffe27a:0xff5a5a)}});
-    INT.push({x:sx2,z:sz2,name:'Treppe',get pr(){return D.key?'Treppe nach unten (Ebene '+(f+1)+')':'🔒 Verschlossen'},rad:2.4,talk(){if(!D.key)return say([['Zotik','Verschlossen. Der Schlüssel muss irgendwo am Ende dieser Gänge liegen.']]);D.f=f+1;dunGo()}});
+    INT.push({x:sx2,z:sz2,name:'Treppe',get pr(){return D.key?(D.mw?'Treppe nach oben':'Treppe nach unten')+' (Ebene '+(f+1)+')':'🔒 Verschlossen'},rad:2.4,talk(){if(!D.key)return say([['Zotik','Verschlossen. Der Schlüssel muss irgendwo am Ende dieser Gänge liegen.']]);D.f=f+1;dunGo()}});
     /* Halle: Schlüsseltruhe und ihr Schutz */
     let open=mode!=='puzzle',kx=hx,kz=hz-4.5,ky=0;
-    if(mode==='puzzle'){const kind=['tones','lights','statues','pairs','order','pattern','sum','dark'][(n*3+f)%8],pz=RMS().build(kind,{x0:hx-5,x1:hx+5,z0:hz-3,z1:hz+5.5},{lv:n,R,tx:kx,tz:kz},()=>{open=true;S.lf=S.lf||{pz:0};S.lf.pz++;toast('🗝️ Die Schlüsseltruhe ist frei · gelöste Rätsel: '+S.lf.pz);WLD.refresh()});WLD.pz=pz}
+    if(mode==='puzzle'){const kind=['tones','lights','statues','pairs','order','pattern','sum','dark'][(n*3+f)%8],pz=RMS().build(kind,{x0:hx-5,x1:hx+5,z0:hz-3,z1:hz+5.5},{lv:D.mw?8:n,R,tx:kx,tz:kz},()=>{open=true;S.lf=S.lf||{pz:0};S.lf.pz++;toast('🗝️ Die Schlüsseltruhe ist frei · gelöste Rätsel: '+S.lf.pz);WLD.refresh()});WLD.pz=pz}
     else if(mode==='jump'){const slab=(x,z,top,r)=>{const m=new T.Group();m.position.set(x,top,z);m.add(mk(G.cyl,M(0x8d93b0,{r:.5,m:.2}),0,-.15,0,r,.3,r));m.add(mk(G.cyl,M(gl,{e:gl,ei:1.4,r:.2}),0,-.31,0,r*.82,.05,r*.82,false));m.add(glow(gl,r*2.4,0,-.5,0,.3));scene.add(m);PLAT.push({x,z,hx:r*.86,hz:r*.86,top,th:.34})};
       slab(hx-5.2,hz+4.6,1.15,1.5);slab(hx-1.2,hz+4.6,2.3,1.5);slab(hx+2.8,hz+4.6,3.45,1.5);slab(hx+4.4,hz+.6,4.6,1.7);kx=hx+4.4;kz=hz+.2;ky=4.6;slab(kx,hz-3.6,5.6,2.3);kz=hz-3.6}
     const ch=makeChest();tintModel({root:ch},0xffd45a,.5);ch.position.set(kx,ky?5.6:0,kz);scene.add(ch);const sealG=glow(0xff5a5a,3.4,kx,(ky?5.6:0)+1,kz,.6);scene.add(sealG);
@@ -3308,6 +3333,16 @@ function advCamp(n){const p=(()=>{for(let t=0;t<60;t++){const z=-14-t*1.7,x=(WLD
     addNpc('adv'+n+i,a[1],x,z,{root:P.root,kk:P},()=>advTalk(n,a[1],i),Math.atan2(cx-x,cz-z),()=>!S.fl['adv'+n])});
   const R=mul32(n*41+7),L=[];for(let i=0;i<5;i++){const an=i*1.3+.6+n,r=4+R()*1.2;L.push({k:['bed_floor','barrel_large','box_stacked','trunk_medium_B','crates_stacked'][i],x:cx+Math.sin(an)*r,y:0,z:cz+Math.cos(an)*r,ry:an+Math.PI})}
   for(const q of L){q.y=hgt(q.x,q.z);addCol(q.x,q.z,.5)}KK.place(scene,L)}
+/* Gebäude aus dem KayKit „Medieval Builder Pack“ (CC0) je Kapitelwelt: Mühlen, Gehöfte, Wachtürme, Märkte am Wegesrand (mit Kollision) */
+const KBW={2:['lumbermill','mill','watchtower'],3:['market','well','barracks'],4:['well','market','mine'],5:['watermill','well','market'],6:['lumbermill','watchtower','barracks'],7:['mine','barracks','watchtower'],
+  8:['watchtower','well','archeryrange'],9:['mill','farm_plot','market'],10:['watchtower','castle','well'],11:['watchtower','barracks']};
+const KBR={castle:.95,watchtower:.75,mill:.85,watermill:.8,lumbermill:.9,barracks:1,archeryrange:.9,market:.8,well:.5,mine:.9,farm_plot:.75,house:.85};
+function kbDress(n){const L0=KBW[n];if(!L0||!WLD)return;const R=mul32(n*4513+11),out=[];
+  for(const k of L0){const s=k==='castle'?8:k==='well'?4:7,rad=KBR[k]*s;
+    for(let t=0;t<200;t++){const z=-36-R()*110,px=WLD.path?WLD.path(z):0,sd=R()<.5?-1:1,x=px+sd*(rad+7+R()*22);if(blocked(x,z)||(WLD.reach&&!WLD.reach(x,z))||!colFree(x,z,rad+1.5))continue;
+      const y0=hgt(x,z);let ok=true;for(let a=0;a<10&&ok;a++){const b=a/10*6.283,qx=x+Math.cos(b)*rad,qz=z+Math.sin(b)*rad;if(blocked(qx,qz)||Math.abs(hgt(qx,qz)-y0)>1.2)ok=false}if(!ok)continue;
+      out.push({k,x,y:y0-.25,z,ry:Math.atan2(px-x,0)+(R()-.5)*.6,s});addCol(x,z,rad*.9);break}}
+  KK.place(scene,out,'kb')}
 /* Landschaft aus dem Wizp-Pack (CC0): Bäume, Felsen und Friedhöfe je Klimazone, als Instanzen in der Wildnis verteilt (mit Kollision) */
 const WZ={2:[['birch1',7],['birch3',6.5],['birch5',5],['garden_tree_green',6],['pine2',8],['rock_medium_1',1.4],['rock_big_2',2.6],['grass_green_group',.6]],
   3:[['garden_tree_yellow',5.5],['garden_tree_green',5.5],['garden_plant_1',1.2],['rock_medium_2',1.3],['rock_big_B_gray_1',2.4]],

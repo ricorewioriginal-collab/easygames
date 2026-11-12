@@ -135,7 +135,7 @@ export function createKayKit({ T, G, TOUCH }) {
   /* Requisiten */
   const PR = {};
   /* Requisiten-Dateien: 'props' (KayKit) oder 'wz' (Wizp, models/wz/) */
-  const props = (f = 'props') => PR[f] || (PR[f] = (f === 'props' ? load('props') : new Promise((res, rej) => new GLTFLoader().load('models/' + f + '/' + f + '.glb', res, null, rej))).then(g => { const m = {}; for (const c of g.scene.children) if (c.name.startsWith('p:')) { dress(c, false); m[c.name.slice(2)] = c; } return m; }));
+  const props = (f = 'props') => PR[f] || (PR[f] = (f === 'props' ? load('props') : new Promise((res, rej) => new GLTFLoader().load('models/' + f + '/' + f + '.glb', res, null, rej))).then(g => { const m = {}; for (const c of g.scene.children) if (/^p[:_]/.test(c.name)) { dress(c, false); m[c.name.slice(2)] = c; } return m; }));
   function prop(name, s = 1) {
     const g = new T.Group(); g.scale.setScalar(s);
     props().then(m => { const src = m[name]; if (!src) return; const c = src.clone(true); c.position.set(0, 0, 0); g.add(c); }).catch(() => { });
@@ -158,7 +158,7 @@ export function createKayKit({ T, G, TOUCH }) {
           by[k].forEach((q, i) => { ob.position.set(q.x, q.y || 0, q.z); ob.rotation.set(0, q.ry || 0, 0); ob.scale.setScalar(q.h ? q.h / PH[k] * (q.s || 1) : q.s || 1); ob.updateMatrix(); M4.multiplyMatrices(ob.matrix, loc); im.setMatrixAt(i, M4); });
           im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere && im.computeBoundingSphere(); im.frustumCulled = false; par.add(im); });
       }
-    }).catch(() => { });
+    }).catch(e => console.warn('KayKit-Requisiten', f, e && e.message));
   }
   const warm = () => { load('anim'); props(); };
   const heightOf = k => PH[k];
