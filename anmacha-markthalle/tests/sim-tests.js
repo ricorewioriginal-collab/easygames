@@ -1,5 +1,5 @@
 'use strict';
-/* Spielkern-Tests für AnMaCha Markthalle 24: node anmacha-markthalle/tests/sim-tests.js */
+/* Spielkern-Tests für Marktrausch: node anmacha-markthalle/tests/sim-tests.js */
 const Sim = require('../sim.js'), D = require('../data.js');
 let seed = 7; Sim.setRng(() => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; });
 let fails = 0; const ok = (c, m) => { if (!c) { fails++; console.log('✖ ' + m); } else console.log('✔ ' + m); };

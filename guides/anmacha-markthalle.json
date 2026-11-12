@@ -4,7 +4,7 @@
     {
       "t": "Ziel des Spiels",
       "p": [
-        "In AnMaCha Markthalle 24 führst du deinen eigenen Supermarkt in 3D. Du holst Kartons von der Rampe, räumst Regale ein, steckst Preisschilder auf, öffnest den Laden und kassierst selbst an der Kasse. Mit dem Gewinn bestellst du nach und baust die Markthalle Schritt für Schritt aus – vom kleinen Kiosk bis zum Hypermarkt.",
+        "In Marktrausch führst du deinen eigenen Supermarkt in 3D. Du holst Kartons von der Rampe, räumst Regale ein, steckst Preisschilder auf, öffnest den Laden und kassierst selbst an der Kasse. Mit dem Gewinn bestellst du nach und baust deinen Laden Schritt für Schritt aus – vom kleinen Kiosk bis zum Hypermarkt.",
         "Es gibt kein festes Ende: Du sammelst Erfahrung, steigst bis Stufe 20 auf, schaltest Warengruppen, Einrichtung, Personal und Ausbauten frei und jagst Erfolge."
       ]
     },
@@ -15,10 +15,11 @@
         "▶ Spiel starten bzw. Weiter spielen: dort weitermachen, wo du aufgehört hast. Die Karte zeigt Ladenname, Tag, Kontostand, Bewertung und Stufe.",
         "✦ Neues Spiel: neuer Laden bei Tag 1 – der alte Spielstand wird überschrieben (mit Sicherheitsabfrage).",
         "💾 Spielstand: speichern und optional mit Google sichern, um auf jedem Gerät weiterzuspielen.",
-        "⚙ Optionen: Grafik, Ton, Einräum-Hilfe, Wegweiser und Kartenzahlung.",
+        "⚙ Optionen: Grafik, Ton, Einräum-Hilfe, Wegweiser, Kartenzahlung, TV-Modus, Vollbild, Controller und Tastatur.",
         "? Anleitung: Schnellstart, Steuerung, Kasse und Tipps.",
         "⌂ Alle Spiele: zurück zur Sammlung, der Laden wird vorher gespeichert.",
-        "Menü-Steuerung: Pfeile oder W/S wählen, Enter, Leertaste oder E bestätigen, Esc zurück."
+        "☰ Befehlsmenü (nur in der Pause): alle Fenster des Spiels.",
+        "Menü-Steuerung: Pfeile, W/S, Steuerkreuz oder Stick wählen, Enter, Leertaste, E oder A bestätigen, Esc oder B zurück."
       ]
     },
     {
@@ -63,17 +64,18 @@
         "🏪 Laden (2): Ladenname, Slogan, Schildfarbe, Wände, Boden, Regale und Warnungen.",
         "🔧 Bauen (3): Einrichtung kaufen, platzieren, drehen (R) und verschieben.",
         "🏷️ Preise (4): Verkaufspreise, Markt, Billigo, Einkauf und Marge je Ware.",
-        "👥 Personal (5), 📻 Radio (6), ⭐ Ausbau & Bank (7), 📊 Zahlen (8) mit Heatmap der Laufwege, 🎯 Ziele (9) mit Tageszielen und Vorbestellungen, ☰ Menü (0)."
+        "👥 Personal (5), 📻 Radio (6), ⭐ Ausbau & Bank (7), 📊 Zahlen (8) mit Heatmap der Laufwege, 🎯 Ziele (9) mit Tageszielen und Vorbestellungen, ⚙️ Optionen (0). Alles zusammen öffnet das ☰ Befehlsmenü (Tab, C, X am Controller oder ☰ Menü in der Leiste)."
       ]
     },
     {
       "t": "Bedienung",
       "list": [
         "PC: W A S D oder Pfeiltasten laufen, Shift rennen; Maus ziehen = umsehen (Q fängt die Maus ein, Esc gibt sie frei). E oder Leertaste = Aktion (Karton nehmen, einräumen, scannen; gedrückt halten = schnell). Klick oder F zeigt Infos und Preise. V wechselt Draufsicht und Ego-Ansicht, Mausrad zoomt, R dreht beim Bauen.",
-        "PC-Fenster: Tasten 1 bis 9 und 0 öffnen Bestell-PC, Laden, Bauen, Preise, Personal, Radio, Ausbau, Zahlen, Ziele und Menü; H = Anleitung, O = Laden öffnen/Feierabend, P = Pause, + und − = Tempo, Esc schließt Fenster.",
-        "Controller: linker Stick laufen, rechter Stick umsehen, A Aktion (halten = schnell einräumen/scannen), LT rennen, Y Regal ansehen – die Preiskarte bekommt gleich den gelben Rahmen (Steuerkreuz wählt, A drückt, B zurück ins Spiel). LB Draufsicht/Ego, RB dreht beim Bauen, Select = Laden öffnen/Feierabend, Start = Pausemenü (schließt auch offene Fenster). L3 (linken Stick drücken) halten: alle Knöpfe auf dem Bildschirm wählen – Bestell-PC, Laden, Preise, Personal, Radio, Ausbau, Zahlen, Tempo. In Fenstern wählt das Steuerkreuz, B schließt. PlayStation-, Switch- und Xbox-Controller werden erkannt und zeigen ihre eigenen Symbole (✕ ○ □ △ bzw. A B X Y); bei Nintendo-Controllern bestätigt A rechts wie auf der Switch.",
+        "PC-Fenster: Tasten 1 bis 9 und 0 öffnen Bestell-PC, Laden, Bauen, Preise, Personal, Radio, Ausbau, Zahlen, Ziele und Menü; Tab oder C = Befehlsmenü, H = Anleitung, O = Laden öffnen/Feierabend, P = Pause, + und − = Tempo, Esc schließt Fenster. In Fenstern: Pfeile wählen, Enter bestätigt, Q/E wechseln Reiter.",
+        "Controller (PlayStation, Switch, Xbox – Symbole und Knopf-Hinweise passen sich an): linker Stick laufen, rechter Stick umsehen, A/✕ Aktion (halten = schnell einräumen/scannen), X/□ Befehlsmenü mit allen Fenstern, Y/△ Regal ansehen (Preiskarte mit Fokus), LT/L2 rennen, LB/L1 Draufsicht/Ego, RB/R1 dreht beim Bauen, Select Laden öffnen/Feierabend, Start Pausemenü. In allen Fenstern und Menüs: Steuerkreuz oder linker Stick wählen (Leuchtrahmen), A bestätigt, B schließt, LB/RB wechseln die Reiter, rechter Stick scrollt. Bauen: Steuerkreuz/Stick schiebt das Feld, A setzt, RB dreht, B beendet. Bei Nintendo-Controllern bestätigt A rechts wie auf der Switch.",
         "Steuerung einstellen: ⚙️ Optionen → 🎮 Controller (Symbole, Bestätigen-Knopf unten oder rechts, Knöpfe belegen) und ⌨️ Tastatur (jede Spieltaste frei belegen, Standard-Tasten zurückholen). Alles wird gespeichert.",
-        "Touch: linke Bildschirmhälfte ziehen = laufen (Joystick erscheint unter dem Daumen), rechte Hälfte wischen = umsehen. Antippen von Regal, Kasse oder Rampe benutzt sie oder zeigt Infos; gelber Knopf = Aktion (halten = schnell). 👁️ Draufsicht mit Zwei-Finger-Zoom und Verschieben, Tempo-Knopf oben rechts (1× → 2× → 4× → Pause), ☰ Mehr für Laden, Personal, Ziele, Ausbau, Zahlen, Radio und Einstellungen. Im Querformat siehst du mehr vom Laden."
+        "TV (Smart-TV, TV-Box oder Browser am Fernseher): Der TV-Modus schaltet sich automatisch ein (oder unter ⚙️ Optionen → 📺 TV-Modus): größere Schrift, sichere Ränder, Knopf-Hinweise unten. Mit der Fernbedienung: Pfeile laufen und wählen, OK = Aktion/Bestätigen, Zurück = Pausemenü mit ☰ Befehlsmenü. ⛶ Vollbild unter Optionen.",
+        "Touch: linke Bildschirmhälfte ziehen = laufen (Joystick erscheint unter dem Daumen), rechte Hälfte wischen = umsehen. Antippen von Regal, Kasse oder Rampe benutzt sie oder zeigt Infos; gelber Knopf = Aktion (halten = schnell). 👁️ Draufsicht mit Zwei-Finger-Zoom und Verschieben, Tempo-Knopf oben rechts (1× → 2× → 4× → Pause), ☰ Menü (Befehlsmenü) für Laden, Personal, Ziele, Ausbau, Zahlen, Radio und Einstellungen. Im Querformat siehst du mehr vom Laden."
       ]
     },
     {
