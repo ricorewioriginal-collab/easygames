@@ -3,8 +3,10 @@
 // tails, wings, horns, shells, manes, patterns …). Every species also gets
 // seeded proportions, so related forms share a design language but no two
 // species are identical. Parts are pivots that the animator moves.
-import { THREE } from './three.js';
-import { Builder, matrix, capsule, lathe, lumpy } from './geometry.js';
+import { THREE as T3 } from './three.js';
+import { Builder, matrix, lumpy, fineThree, fineCapsule, fineLathe } from './geometry.js';
+// feinere Rundungen (siehe geometry.js › fineThree)
+const THREE = fineThree(T3), capsule = fineCapsule, lathe = fineLathe;
 import { outlineMaterial, glowMaterial } from './materials.js';
 import { toonGradient } from './textures.js';
 import { SPECIES } from '../data/species.js';
@@ -213,18 +215,18 @@ export function createCreature(id, { outline = true, shiny = false } = {}) {
     headY = 1.15; headZ = 0.45; headR = 0.36 * P.head; bodyTop = 1.0;
   } else if (plan === 'golem') {
     const g = new Builder();
-    B.add(lumpy(new THREE.DodecahedronGeometry(0.62 * P.chunky, 1), 0.12, 3), main, matrix(0, 0.85, 0, 0, 0, 0, 1.05, 0.95, 0.9), { shade: 0.3 });
-    B.add(lumpy(new THREE.DodecahedronGeometry(0.36, 0), 0.12, 5), shade(main, 0.85), matrix(0.35, 1.2, -0.25));
+    B.add(lumpy(new THREE.DodecahedronGeometry(0.62 * P.chunky, 1), 0.12, 3, false), main, matrix(0, 0.85, 0, 0, 0, 0, 1.05, 0.95, 0.9), { shade: 0.3 });
+    B.add(lumpy(new THREE.DodecahedronGeometry(0.36, 0), 0.12, 5, false), shade(main, 0.85), matrix(0.35, 1.2, -0.25));
     headY = 1.5; headZ = 0.2; headR = 0.34 * P.head; bodyTop = 1.45;
     for (const sx of [-1, 1]) {
       const arm = pivot(sx > 0 ? 'armL' : 'armR', body, sx * 0.62, 1.05, 0.05);
       const ab = new Builder();
-      ab.add(lumpy(new THREE.DodecahedronGeometry(0.24, 0), 0.1, sx + 3), shade(main, 0.9), matrix(sx * 0.12, -0.2, 0));
-      ab.add(lumpy(new THREE.DodecahedronGeometry(0.28, 0), 0.1, sx + 5), acc, matrix(sx * 0.18, -0.55, 0.05));
+      ab.add(lumpy(new THREE.DodecahedronGeometry(0.24, 0), 0.1, sx + 3, false), shade(main, 0.9), matrix(sx * 0.12, -0.2, 0));
+      ab.add(lumpy(new THREE.DodecahedronGeometry(0.28, 0), 0.1, sx + 5, false), acc, matrix(sx * 0.18, -0.55, 0.05));
       emit(ab, arm);
       const leg = pivot(sx > 0 ? 'legL' : 'legR', body, sx * 0.3, 0.35, 0);
       const lb = new Builder();
-      lb.add(lumpy(new THREE.DodecahedronGeometry(0.22, 0), 0.1, sx + 7), shade(main, 0.8), matrix(0, -0.16, 0.03));
+      lb.add(lumpy(new THREE.DodecahedronGeometry(0.22, 0), 0.1, sx + 7, false), shade(main, 0.8), matrix(0, -0.16, 0.03));
       emit(lb, leg); legs.push(leg);
     }
     void g;
@@ -270,7 +272,7 @@ export function createCreature(id, { outline = true, shiny = false } = {}) {
   const head = pivot('head', body, 0, headY, headZ);
   const H = new Builder();
   const hr = headR;
-  if (plan === 'golem') H.add(lumpy(new THREE.DodecahedronGeometry(hr, 1), 0.1, 11), shade(main, 1.05), matrix(0, 0, 0, 0, 0, 0, 1.1, 0.9, 1));
+  if (plan === 'golem') H.add(lumpy(new THREE.DodecahedronGeometry(hr, 1), 0.1, 11, false), shade(main, 1.05), matrix(0, 0, 0, 0, 0, 0, 1.1, 0.9, 1));
   else H.add(new THREE.SphereGeometry(hr, 18, 14), main, matrix(0, 0, 0, 0, 0, 0, hs[0], hs[1], hs[2]), { shade: 0.2 });
   // muzzle / beak
   if (plan === 'bird') H.add(new THREE.ConeGeometry(hr * 0.32, hr * 0.8, 6), 0xf0a83a, matrix(0, -hr * 0.12, hr * 1.15, Math.PI / 2, 0, 0));

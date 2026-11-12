@@ -57,7 +57,7 @@ try {
   // 2. move manager and EP candy
   await page.keyboard.press('Escape');
   await page.waitForSelector('.tabs');
-  await page.locator('.card', { hasText: 'Wollini' }).first().click();
+  await page.locator('.card', { hasText: 'Wuschelschaf' }).first().click();
   await page.getByText('Attacken verwalten').click();
   await page.waitForTimeout(300);
   await shot('22-moves');
@@ -74,8 +74,8 @@ try {
   await page.locator('.tab', { hasText: 'Tasche' }).click(); await page.waitForTimeout(200);
   await page.getByText('EP-Bonbon').first().click(); await page.waitForTimeout(200);
   const lv0 = await G(page, () => window.__taschi.save.team.find(m => m.id === 'wollini').lv);
-  await page.locator('.card', { hasText: 'Wollini' }).last().click();
-  // level 16: Wollini evolves outside of battle – allow it, then skip the texts
+  await page.locator('.card', { hasText: 'Wuschelschaf' }).last().click();
+  // level 16: Wuschelschaf evolves outside of battle – allow it, then skip the texts
   for (let k = 0; k < 30; k++) {
     await page.waitForTimeout(300);
     const st = await G(page, () => { const c = document.querySelector('.choice'); if (c) { c.click(); return 'choice'; } return window.__taschi.ui.blocking && document.querySelector('.dlg') ? 'dlg' : 'idle'; });
@@ -85,7 +85,7 @@ try {
   const grown = await G(page, () => window.__taschi.save.team.find(m => m.id === 'wollmond' || m.id === 'wollini'));
   assert.equal(grown.lv, lv0 + 1);
   assert.equal(grown.id, 'wollmond', 'Entwicklung außerhalb des Kampfes');
-  step('EP-Bonbon: Level 16, Wollini entwickelt sich zu Wollmond');
+  step('EP-Bonbon: Level 16, Wuschelschaf entwickelt sich zu Wollmond');
   for (const tab of ['Taschidex', 'Karte']) { await page.locator('.tab', { hasText: tab }).click(); await page.waitForTimeout(600); await shot('23-tab-' + tab); }
   for (let k = 0; k < 4 && await page.locator('.screen').count(); k++) { await page.keyboard.press('Escape'); await page.waitForTimeout(200); }
   await waitIdle(page);

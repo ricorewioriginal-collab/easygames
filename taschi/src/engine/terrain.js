@@ -4,7 +4,6 @@ import { THREE } from './three.js';
 import { CELLS, CELL, HALF, SIZE, heightAt } from '../logic/layout.js';
 import { createNoise } from '../core/noise.js';
 import { terrainMaterial } from './materials.js';
-import { cobbleTexture } from './textures.js';
 
 const col = (c) => new THREE.Color(c);
 
@@ -126,10 +125,8 @@ export function paintTerrain(L, pal, res = 1024) {
     }
   }
   // cobbled streets and plaza with a pattern
-  const cob = cobbleTexture(pal.cobble || 0xbdb4a4).image;
-  const pattern = x.createPattern(cob, 'repeat');
-  const scale = (1.1 * S) / 32;
-  pattern.setTransform && pattern.setTransform(new DOMMatrix([scale, 0, 0, scale, 0, 0]));
+  // die Steine selbst kommen als Fototextur im Shader dazu (materials.js › terrain), hier nur die Grundfarbe
+  const pattern = '#' + new THREE.Color(pal.cobble || 0xbdb4a4).multiplyScalar(0.92).getHexString();
   for (const rd of L.roads.filter(r => r.kind === 'cobble')) {
     x.strokeStyle = 'rgba(70,60,50,0.4)'; x.lineWidth = (rd.width + 0.8) * S; strokePath(rd.pts);
     x.strokeStyle = pattern; x.lineWidth = rd.width * S; strokePath(rd.pts);

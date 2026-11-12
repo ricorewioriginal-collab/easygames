@@ -1,4 +1,4 @@
-// Procedurally painted textures (no external image files). Cached by key and
+// Procedurally painted textures plus a few small photo textures (assets/textures, CC0). Cached by key and
 // shared between maps; the resource tracker never disposes cached textures.
 import { THREE } from './three.js';
 import { createRng } from '../core/rng.js';
@@ -186,3 +186,20 @@ export function clueTexture(draw, key) {
 }
 
 export function disposeCache() { for (const t of cache.values()) t.dispose(); cache.clear(); }
+
+// Fotografierte, kachelbare Bodentexturen (CC0, ambientCG; siehe assets/textures/LICENSE.txt),
+// als Graustufen-Detail mit Mittelwert 0,5. Liefert eine geteilte Uniform: bis
+// das Bild geladen ist, steht dort ein neutrales Grau (wirkt wie „kein Detail“).
+const photo = new Map();
+let neutral = null;
+export function photoDetail(name) {
+  if (!photo.has(name)) {
+    neutral ||= Object.assign(new THREE.DataTexture(new Uint8Array([128, 128, 128, 255]), 1, 1, THREE.RGBAFormat), { needsUpdate: true });
+    const u = { value: neutral };
+    photo.set(name, u);
+    new THREE.TextureLoader().load(new URL('../../assets/textures/' + name + '.jpg', import.meta.url).href, (t) => {
+      t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; t.userData = { shared: true }; u.value = t;
+    }, undefined, () => {});
+  }
+  return photo.get(name);
+}

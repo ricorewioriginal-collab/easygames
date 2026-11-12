@@ -2,8 +2,10 @@
 // animation system with blended clips (idle, walk, run, talk, interact,
 // throw, cheer, defeat, wave, look). Parts are merged per bone so a
 // character costs ~13 draw calls with one shared toon material.
-import { THREE } from './three.js';
-import { Builder, matrix, capsule, lathe } from './geometry.js';
+import { THREE as T3 } from './three.js';
+import { Builder, matrix, fineThree, fineCapsule, fineLathe } from './geometry.js';
+// feinere Rundungen (siehe geometry.js › fineThree)
+const THREE = fineThree(T3), capsule = fineCapsule, lathe = fineLathe;
 import { toonVertexMaterial, outlineMaterial, glowMaterial } from './materials.js';
 import { createRng, hashString } from '../core/rng.js';
 import { buildZotikRig } from './zotik.js';
