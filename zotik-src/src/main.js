@@ -239,7 +239,7 @@ function nearPath(x,z,d){return z<44&&z>-160&&Math.abs(x-PATHX(z))<d}
     const x=wr(-125,125),z=wr(-230,70),da=Math.hypot(x-ARENA.x,z-ARENA.z),h=hgt(x,z);
     if(h>7||nearPath(x,z,2.2)||(da<30&&WR()>.15))continue;
     const dv=Math.hypot(x,z),s=wr(.7,1.6);
-    put(iGrass,x,h+.02*s,z,s*.9,s*.8*(.7+WR()*.7),s*.9,WR()*6,dv<45?pick([0x6ae08a,0x58d47c,0x7aea9a]):pick([0x3aaa80,0x2c9a70,0x48b890]),(WR()-.5)*.3,(WR()-.5)*.3);
+    put(iGrass,x,h+.02*s,z,s*.75,s*.65*(.7+WR()*.7),s*.75,WR()*6,dv<45?pick([0x6ae08a,0x58d47c,0x7aea9a]):pick([0x3aaa80,0x2c9a70,0x48b890]),(WR()-.5)*.3,(WR()-.5)*.3);
   }
   for(let i=0;i<900;i++){
     const x=wr(-120,120),z=wr(-60,66),h=hgt(x,z);if(Math.hypot(x,z)<8||nearPath(x,z,2)||h>5)continue;
@@ -331,9 +331,15 @@ function jumpPath(n){const col=n===1?0x7ab0ff:CHP[n].glowc[0];let q=null,dir=0;
   INT.push({x:q[0]-sz*1.6,z:q[1]+sx*1.6,name:'Wegstein',pr:'Lesen',rad:2.2,vis:()=>true,talk(){say([['Wegstein','Wer hoch hinaus will, springt von Platte zu Platte. Springen: '+(TOUCH?'der Knopf ⤴ neben dem Angriff':REMOTE?'„Springen“ im Kommandomenü – der Sprung trägt dich nach vorn':'„'+KH('jump')+'“')+'. Oben wartet eine Truhe.']])}});
   return {q,dir,goal:[gx,gz,gt]}}
 const NQ=createQuests({S:()=>S,CHP:()=>CHP,INT:()=>INT,world:()=>WLD?(WLD.cave?12:WLD.n):1,spot:k=>nqSpot(k),marker:(x,z,em)=>nqMarker(x,z,em),say:(...a)=>say(...a),toast:(...a)=>toast(...a),sfx:(...a)=>sfx(...a),banner:(...a)=>banner(...a),gainXp:n=>gainXp(n),saveGame:q=>saveGame(q),spawnEnemy:(k,x,z)=>spawnEnemy(k,x,z),refresh:()=>refreshQuest()});
+/* Baustil je Welt: Wandtextur, Dachform (gable Satteldach, pyr Zeltdach, dome Kuppel, flat Flachdach mit Brüstung, spire Turmspitze), Dachtextur, Fensterlicht, Schnee */
+const HSTY={1:{w:'plaster',r:'roof',f:'gable'},2:{w:'wood',r:'roof',f:'gable',moss:1},3:{w:'brick',r:'slate',f:'spire'},4:{w:'plaster',r:'sand',f:'dome',win:0xffb050},5:{w:'coral',r:'marble',f:'dome',win:0x8ae8ff},6:{w:'wood',r:'snow',f:'gable',snow:1},
+  7:{w:'rock',r:'slate',f:'flat',win:0xff5a1a},8:{w:'stone',r:'slate',f:'spire',win:0xb070ff},9:{w:'marble',r:'marble',f:'dome',win:0xffe8a0},10:{w:'marble',r:'marble',f:'spire',win:0xc8a0ff},11:{w:'rock',r:'slate',f:'spire',win:0xc84aff}};
+let HST=HSTY[1];
+const PRISM=(()=>{const g=new T.CylinderGeometry(1,1,1,3,1);g.rotateZ(Math.PI/2);g.rotateX(-Math.PI/2);g.computeBoundingBox();const b=g.boundingBox;g.translate(-(b.min.x+b.max.x)/2,-b.min.y,-(b.min.z+b.max.z)/2);g.scale(1/(b.max.x-b.min.x),1/(b.max.y-b.min.y),1/(b.max.z-b.min.z));g.computeVertexNormals();return g})();
+const DOME=new T.SphereGeometry(1,TOUCH?16:28,TOUCH?8:14,0,Math.PI*2,0,Math.PI/2);
 function house(x,z,w,d,h,wall,roof,ry,opt){
   opt=opt||{};const g=new T.Group(),y=hgt(x,z),c=Math.cos(ry),sn=Math.sin(ry);g.position.set(x,y-.2,z);g.rotation.y=ry;
-  const wm=TX.tri('plaster',wall,{s:.45,gain:1.7,n:.7,r:.85,e:0x3a2c1e,ei:1,fresh:1}),segs=[],t=.4,H=h+.4,dw=.75;
+  const HS=HST,wm=TX.tri(HS.w,wall,{s:.45,gain:HS.w==='plaster'?1.7:1.5,n:.8,r:.85,e:0x3a2c1e,ei:1,fresh:1}),segs=[],t=.4,H=h+.4,dw=.75;
   const H0={x,z,y,w,d,h,c,s:sn,R:Math.hypot(w,d)/2+1,segs,wm,f:0,roof:null,ceil:null};
   const W2=(lx,lz)=>[x+lx*c+lz*sn,z-lx*sn+lz*c];
   const solid=(lx,lz,hx,hz)=>{const q=W2(lx,lz);segs.push({wx:q[0],wz:q[1],hx,hz})};
@@ -353,15 +359,21 @@ function house(x,z,w,d,h,wall,roof,ry,opt){
   /* Boden, Decke, Dach */
   g.add(mk(G.box,M(0x7a5a3a,{r:.9,e:0x2a1a0c,ei:1}),0,.17,0,w-.2,.1,d-.2,false));
   const ceil=mk(G.box,M(0x5a4636,{r:.9}),0,h+.15,0,w-.2,.12,d-.2,false);g.add(ceil);H0.ceil=ceil;
-  const roofGroup=new T.Group(),rf=mk(G.cone,TX.tri('roof',roof,{s:.6,gain:1.9,r:.7,e:0x14142a,ei:1}),0,h+.2+h*.28,0,(w/Math.SQRT2)*1.22,h*.56,(d/Math.SQRT2)*1.22);
-  rf.rotation.y=Math.PI/4;roofGroup.add(rf);
+  const roofGroup=new T.Group(),rmat=TX.tri(HS.r,HS.snow?0xf4f8ff:roof,{s:.6,gain:HS.snow?1.2:1.9,r:.7,e:0x14142a,ei:1});
+  if(HS.f==='gable'){const rh=Math.min(w,d)*.42+.6,ax=w>=d;const rf=mk(PRISM,rmat,0,h+.2,0,ax?w+.9:d+.9,rh,ax?d+.9:w+.9);if(!ax)rf.rotation.y=Math.PI/2;roofGroup.add(rf);
+    if(HS.moss)roofGroup.add(mk(PRISM,M(0x3a6a2a,{r:1}),0,h+.2+rh*.02,0,ax?w+.95:d+.95,rh*.35,ax?d+.98:w+.98,false));
+    const gw=TX.tri(HS.w,wall,{s:.45,gain:1.5,n:.8,r:.85});const ge=mk(PRISM,gw,0,h+.2,0,ax?w-.05:d-.05,rh-.25,ax?d-.05:w-.05,false);if(!ax)ge.rotation.y=Math.PI/2;roofGroup.add(ge);
+    if(HS.snow)for(let k=0;k<5;k++)roofGroup.add(mk(G.box,M(0xf4f8ff,{r:.9}),(k-2)*(w/5),h+.15,d/2+.45,w/5-.1,.16-.03*(k%2),.2,false));}
+  else if(HS.f==='dome'){roofGroup.add(mk(G.box,rmat,0,h+.3,0,w+.5,.25,d+.5));const r0=Math.min(w,d)*.42;roofGroup.add(mk(DOME,rmat,0,h+.42,0,r0,r0*.9,r0));roofGroup.add(mk(G.cone,M(0xd8b040,{m:.8,r:.3}),0,h+.42+r0*.9,0,.15,.9,.15,false));}
+  else if(HS.f==='flat'){roofGroup.add(mk(G.box,rmat,0,h+.3,0,w+.4,.3,d+.4));for(const sx of [-1,1])roofGroup.add(mk(G.box,rmat,sx*(w/2+.1),h+.75,0,.3,.7,d+.4));for(const sz of [-1,1])roofGroup.add(mk(G.box,rmat,0,h+.75,sz*(d/2+.1),w+.4,.7,.3));}
+  else{const sp=HS.f==='spire',rf=mk(G.cone,rmat,0,h+.2+h*(sp?.6:.28),0,(w/Math.SQRT2)*1.22,h*(sp?1.2:.56),(d/Math.SQRT2)*1.22);rf.rotation.y=Math.PI/4;roofGroup.add(rf);}
   const fascia=M(0xd0b899,{r:.9});
   for(const sx of [-1,1])roofGroup.add(mk(G.box,fascia,sx*(w/2+.16),h+.23,0,.12,.13,d+.58,false));
   for(const sz of [-1,1])roofGroup.add(mk(G.box,fascia,0,h+.23,sz*(d/2+.16),w+.58,.13,.12,false));
-  roofGroup.add(mk(G.oct,M(0xe4c594,{m:.35,r:.4}),0,h+h*.56+.27,0,.22,.35,.22,false));
+  if(HS.f==='pyr'||HS.f==='spire')roofGroup.add(mk(G.oct,M(0xe4c594,{m:.35,r:.4}),0,h+h*(HS.f==='spire'?1.2:.56)+.27,0,.22,.35,.22,false));
   g.add(roofGroup);H0.roof=roofGroup;
   /* Fenster */
-  for(const sd of [-1,1])for(const m of [mk(G.box,M(WARM,{e:WARM,ei:1.1}),sd*w*.32,h*.62,d/2+.04,.8,.9,.05,false),mk(G.box,M(0x5a3a26),sd*w*.32,h*.62,d/2+.02,1.05,1.15,.04,false),mk(G.box,M(0xf4dec0),sd*w*.32,h*.62-.61,d/2+.1,1.2,.12,.25,false)]){g.add(m);wins.push(m)}
+  for(const sd of [-1,1])for(const m of [mk(G.box,M(HS.win||WARM,{e:HS.win||WARM,ei:1.1}),sd*w*.32,h*.62,d/2+.04,.8,.9,.05,false),mk(G.box,M(0x5a3a26),sd*w*.32,h*.62,d/2+.02,1.05,1.15,.04,false),mk(G.box,M(0xf4dec0),sd*w*.32,h*.62-.61,d/2+.1,1.2,.12,.25,false)]){g.add(m);wins.push(m)}
   const frame=M(0xf4dec0,{r:.86}),shutter=M(0x5a6a79,{r:.85});
   for(const sx of [-1,1])for(const sz of [-1,1]){
     const y=h*.62,z=sz*d*.25,x=sx*(w/2+.06);
@@ -1877,7 +1889,7 @@ const TLAY={
  9:[[-18,-13,0.95],[-24,4,1.1],[-15,20,0.39],[16,20,-0.39],[23,3,-1.1],[19,-14,-0.94]],   // Sternplatz im Kreis
  10:[[10,-15,-0.59],[25,-13,-1.09],[14,22,-0.39],[27,6,-0.39],[28,24,-0.39],[-10,34,0.39]],   // Kristallgasse im Osten
 };
-function buildWorld(n){
+function buildWorld(n){HST=HSTY[n]||HSTY[1];
   const C=CHP[n],R=mul32(7000+n*131),rr=(a,b)=>a+R()*(b-a),rp=a=>a[R()*a.length|0],ph=n*1.7,amp=C.amp||1,P=C.pal,cs=()=>chCs(n);
   const mir=n%2===0?1:-1;
   // Eigener Weg je Welt: Kehren in der Schlucht, Zickzack durch Gassen, weiter Damm, Karawanenweg …
@@ -1968,7 +1980,7 @@ function buildWorld(n){
   let cnt=0,tries=0;const tn=C.tn||({3:150,4:110,5:120,6:260,7:80,8:110,9:70,10:170}[n]||400),kinds=C.trees.filter(k=>k!=='tower');
   while(cnt<tn&&tries++<9000){const x=rr(-122,122),z=rr(-228,66);if(!free(x,z,38))continue;if(z>-40&&R()>.35)continue;tree(rp(kinds),x,z);cnt++}
   for(let i=0;i<3200;i++){const x=rr(-125,125),z=rr(-230,70),da=Math.hypot(x,z+182),hh=h(x,z);if(hh>7||np(x,z,2.2)||bflat(x,z,BPADS)>=.5||(da<30&&R()>.15))continue;const s=rr(.7,1.6);
-    put2(iGr,x,hh+.02*s,z,s*.9,s*.8*(.7+R()*.7),s*.9,R()*6,rp(C.grass),(R()-.5)*.3,(R()-.5)*.3)}
+    put2(iGr,x,hh+.02*s,z,s*.6,s*.5*(.7+R()*.7),s*.6,R()*6,rp(C.grass),(R()-.5)*.3,(R()-.5)*.3)}
   for(let i=0;i<600;i++){const x=rr(-120,120),z=rr(-60,66),hh=h(x,z);if(Math.hypot(x,z)<8||np(x,z,2)||bflat(x,z,BPADS)>=.5||hh>5)continue;put2(iFl,x,hh+.22,z,.13,.13,.13,0,rp(C.flow))}
   let r=0;tries=0;while(r<200&&tries++<4000){const x=rr(-120,120),z=rr(-226,60),hh=h(x,z);if(Math.hypot(x,z)<30||bflat(x,z,BPADS)>=.5||np(x,z,3.5)||(Math.hypot(x,z+182)<31&&Math.hypot(x,z+182)>14))continue;
     const s=rr(.5,2.4);put2(iRo,x,hh+s*.3,z,s*rr(.8,1.4),s*.75,s*rr(.8,1.4),R()*6,P.rock,R(),R());if(s>.8)addCol(x,z,s*.85);r++}
