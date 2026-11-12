@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { NEUTRAL_INPUT } from '../types';
-import { game, gustAt, speedOf, type TippState } from './tippkraft';
+import { runBot } from '../simulate';
+import { HILL_FROM, SPRINT_FROM, flowLevel, game, gustAt, speedOf, type TippState } from './tippkraft';
 
 const OPTS = { playerIndex: 0, players: 2 };
 const A = { ...NEUTRAL_INPUT, a: true };
@@ -58,5 +59,61 @@ describe('Tippkraft', () => {
       return game.score(s);
     };
     expect(play(8)).toBeGreaterThan(play(18) * 1.3);
+  });
+  it('schnelles sauberes Wechseln baut Schwung auf, ein Stolperer nimmt ihn weg', () => {
+    const s = game.init(1, OPTS);
+    s.gusts = [];
+    for (let i = 0; i < 40; i++) {
+      game.step(s, i % 2 ? B : A);
+      for (let k = 0; k < 6; k++) game.step(s, NEUTRAL_INPUT);
+    }
+    expect(flowLevel(s.flow)).toBe(3);
+    game.step(s, B);
+    game.step(s, NEUTRAL_INPUT);
+    game.step(s, B);
+    expect(s.flow).toBe(0);
+    // Langsames Tippen baut keinen Schwung auf
+    const slow = game.init(1, OPTS);
+    for (let i = 0; i < 20; i++) {
+      game.step(slow, i % 2 ? B : A);
+      for (let k = 0; k < 16; k++) game.step(slow, NEUTRAL_INPUT);
+    }
+    expect(flowLevel(slow.flow)).toBe(0);
+  });
+  it('Abschnitte: bergauf langsamer, im Endspurt zählen Meter doppelt', () => {
+    const run = (t0: number) => {
+      const s: TippState = game.init(3, OPTS);
+      s.gusts = [];
+      s.t = t0;
+      s.power = 80;
+      for (let i = 0; i < 60; i++) game.step(s, i % 8 === 0 ? (i % 16 ? B : A) : NEUTRAL_INPUT);
+      return s;
+    };
+    const flat = run(60);
+    const hill = run(HILL_FROM + 60);
+    const sprint = run(SPRINT_FROM + 60);
+    expect(hill.dist).toBeLessThan(flat.dist * 0.9);
+    expect(flat.sprint).toBe(0);
+    expect(sprint.sprint).toBeCloseTo(sprint.dist, 5);
+    expect(game.score(sprint)).toBeGreaterThan(game.score(flat) * 1.5);
+  });
+  it('Böen werden später länger und die Warnung kürzer', () => {
+    for (const seed of [1, 2, 3, 4]) {
+      const g = game.init(seed, OPTS).gusts;
+      const first = g[0]!;
+      const last = g[g.length - 1]!;
+      expect(last.warn).toBeLessThan(first.warn);
+      expect(g.every((x) => x.end <= 1200 && x.end > x.start)).toBe(true);
+    }
+  });
+  it('Bots: 0.3 < 0.6 < 0.88 im Schnitt, nie Absturz', () => {
+    const avg = (skill: number) => {
+      let sum = 0;
+      for (let i = 0; i < 10; i++) sum += runBot(game, 40 + i, OPTS, skill, 9 + i).score;
+      return sum / 10;
+    };
+    const [w, m, st] = [avg(0.3), avg(0.6), avg(0.88)];
+    expect(m).toBeGreaterThan(w);
+    expect(st).toBeGreaterThan(m * 1.3);
   });
 });
