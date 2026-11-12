@@ -705,7 +705,7 @@ function frame(ts) {
   var ix = (W.keys.d || W.keys.arrowright ? 1 : 0) - (W.keys.a || W.keys.arrowleft ? 1 : 0) + W.jx, iz = (W.keys.w || W.keys.arrowup ? 1 : 0) - (W.keys.s || W.keys.arrowdown ? 1 : 0) + W.jz;
   if (W.keys.q) W.camYaw += dt * 1.8; if (W.keys.r) W.camYaw -= dt * 1.8;
   var il = Math.hypot(ix, iz); if (il > 1) { ix /= il; iz /= il; il = 1; } if (W.dlg || W.parade > 8) { ix = iz = il = 0; }
-  var sy = Math.sin(W.camYaw), cy = Math.cos(W.camYaw), mx = -sy * iz + cy * ix, mz = -cy * iz - sy * ix, spd = 7.2 * W.spdMul;
+  var sy = Math.sin(W.camYaw), cy = Math.cos(W.camYaw), mx = -sy * iz + cy * ix, mz = -cy * iz - sy * ix, spd = 7.2 * W.spdMul * (W.run || 1);
   if (il > .05) { p.x += mx * spd * dt; p.z += mz * spd * dt; W.yaw = lerpA(W.yaw, Math.atan2(mx, mz), dt * 10); }
   // Kollision
   var R = .55; W.colliders.forEach(function (b) {
@@ -745,7 +745,7 @@ function frame(ts) {
   // Konfetti
   if (W.parade > 0) { W.parade -= dt; var a = W.conf.geometry.attributes.position, arr = a.array; for (k = 0; k < arr.length; k += 3) { arr[k + 1] -= dt * 4; arr[k] += Math.sin(W.t * 2 + k) * dt; if (arr[k + 1] < 0) arr[k + 1] = 25; } a.needsUpdate = true; W.conf.position.set(p.x, 0, p.z); if (W.parade <= 0) { W.conf.visible = false; W.npcs.forEach(function (n) { n.dance = 0; }); } }
   // Kamera
-  var D = W.camD, tx = p.x + Math.sin(W.camYaw) * D, tz = p.z + Math.cos(W.camYaw) * D, ty = W.camH; W.cam.position.x += (tx - W.cam.position.x) * Math.min(1, dt * 6); W.cam.position.y += (ty - W.cam.position.y) * Math.min(1, dt * 6); W.cam.position.z += (tz - W.cam.position.z) * Math.min(1, dt * 6);
+  var Z = W.zoom || 1, D = W.camD * Z, tx = p.x + Math.sin(W.camYaw) * D, tz = p.z + Math.cos(W.camYaw) * D, ty = W.camH * (.55 + .45 * Z); W.cam.position.x += (tx - W.cam.position.x) * Math.min(1, dt * 6); W.cam.position.y += (ty - W.cam.position.y) * Math.min(1, dt * 6); W.cam.position.z += (tz - W.cam.position.z) * Math.min(1, dt * 6);
   W.cam.lookAt(p.x, 1.8, p.z); skyUpdate();
   // HUD, Aufträge (nur ab und zu)
   W.tick += dt;

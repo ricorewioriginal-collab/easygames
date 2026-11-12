@@ -168,6 +168,13 @@ input[type=text]{background:rgba(255,255,255,.1);border:1px solid var(--line);co
 #title .ft{position:absolute;left:0;right:0;bottom:calc(8px + env(safe-area-inset-bottom));text-align:center;font-size:12px;color:var(--mu);padding:0 12px;pointer-events:none}
 #title .sv{grid-column:1/-1}#title .tx{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;font-size:14px}
 @media(max-width:720px){#title .tw{grid-template-columns:1fr;gap:14px;margin:0 auto}#title .tl{text-align:center}#title .tt{text-align:center;margin-bottom:10px}#title .ft{position:static;margin-top:14px}}
+/* Gamecontroller: Hinweisleiste mit passenden Symbolen, Touch-Tasten ausgeblendet */
+#padh{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(8px + env(safe-area-inset-bottom));display:none;gap:10px;flex-wrap:wrap;justify-content:center;pointer-events:none;z-index:6;font-size:12px;color:#fff;background:rgba(12,6,28,.62);border:1px solid var(--line);border-radius:99px;padding:5px 12px;backdrop-filter:blur(6px);max-width:calc(100vw - 24px)}
+#world.gp #padh{display:flex}#world.gp.dl #padh{display:none}#world.gp #pad{display:none!important}
+#padh .pk{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}#padh b,#act[data-g]:not([data-g=""])::before{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 4px;border-radius:10px;font:800 11px system-ui;color:#fff}
+#act[data-g]:not([data-g=""])::before{content:attr(data-g);background:#fff3;margin-right:8px;vertical-align:1px}
+.gfocus{outline:3px solid #ffd400!important;outline-offset:2px;box-shadow:0 0 0 5px rgba(0,0,0,.5),0 0 22px rgba(255,212,0,.75)!important;position:relative;z-index:1}
+#world.gp #act{bottom:calc(52px + env(safe-area-inset-bottom))}
 #dlg{position:absolute;left:8px;right:8px;bottom:calc(10px + env(safe-area-inset-bottom));display:none;gap:12px;align-items:center;background:rgba(20,10,40,.88);border:1px solid var(--line);border-radius:20px;padding:12px;max-width:640px;margin:0 auto;z-index:8}
 #dlg .dav{width:84px;height:100px;border-radius:14px;overflow:hidden;flex:none}#dlg .dav svg{width:100%;height:100%;display:block}
 #dlg p{margin:4px 0 8px;font-size:15px}
@@ -240,8 +247,9 @@ input[type=text]{background:rgba(255,255,255,.1);border:1px solid var(--line);co
 <script src="js/perf.js"></script>
 <script src="js/datingapp.js"></script>
 <script src="js/start.js"></script>
+<script src="js/pad.js"></script>
 <script src="js/main.js"></script>
-<script src="../gamepad.js" data-pad-labels="ls=Laufen; dpad=Laufen; a=Aktion; b=Karte/Orte; x=Handy; y=Pause-Menü; start=Pause-Menü; lb=Drehen die Kamera; rb=Drehen die Kamera" data-pad="b=KeyM x=KeyP y=Escape rb=KeyR start=Escape" defer></script>
+<script src="../gamepad.js" data-pad-labels="ls=Laufen; rs=Kamera drehen und zoomen; dpad=Laufen / Auswählen; a=Aktion / Bestätigen; b=Orte / Zurück; x=Handy; y=Menü; rt=Sprinten; lb=Kamera links; rb=Kamera rechts; r3=Kamera hinter die Figur; start=Menü" data-pad="b=Backspace/Escape y=- start=Escape" defer></script>
 <script src="../egstat.js" defer></script>
 </body>
 </html>

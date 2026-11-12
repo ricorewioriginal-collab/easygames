@@ -10,6 +10,8 @@ let pw; try { pw = require('playwright'); } catch (e) { pw = require(execSync('n
 const BASE = process.env.BASE || 'http://localhost:8080';
 const browser = await pw.chromium.launch({ args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 let fails = 0, errs = [];
+// ONLY=14,15 lässt nur diese Abschnitte laufen (schneller beim Entwickeln)
+const ONLY = (process.env.ONLY || '').split(',').filter(Boolean), sec = n => !ONLY.length || ONLY.includes(n);
 const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) fails++; };
 
 async function newPage(opts, title) {
@@ -43,7 +45,7 @@ async function goTo(page, x, z) { await ev(page, ([x, z]) => { const p = GL.W.pl
 async function act(page) { await page.keyboard.press('e'); await page.waitForTimeout(150); }
 
 /* ---------- 1. Neustart ---------- */
-{
+if (sec('1')) {
   const { ctx, page } = await newPage();
   await boot(page);
   const st = await ev(page, () => ({ v: GL.S.v, money: GL.S.life.money, hud: document.getElementById('hud').textContent, canvas: document.getElementById('wc').width > 0, intro: GL.S.life.intro }));
@@ -181,7 +183,7 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
 }
 
 /* ---------- 2. Migration eines alten Spielstands (v1) ---------- */
-{
+if (sec('2')) {
   const { ctx, page } = await newPage();
   const v1 = { v: 1, name: 'Ricky', look: { skin: 3, hair: 2, hc: 8, beard: 2, acc: 6, top: 5, tc: 2, eye: 1 }, glitzer: 777, xp: 1200,
     club: { coins: 40, total: 2000, items: { shaker: 2 }, best: 260, shifts: 9 }, world: { x: 10, z: -4, yaw: 1, t: .5, q: 6, stars: [1, 2, 3], dog: 3, cat: 1, qv: 4, done: 0, intro: 1, side: { ilse: 2, chantal: 1 }, zut: [0, 1, 2] },
@@ -198,7 +200,7 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
 }
 
 /* ---------- 3. Smartphone-Ansicht und Touch ---------- */
-{
+if (sec('3')) {
   const { ctx, page } = await newPage({ viewport: { width: 390, height: 780 }, hasTouch: true, isMobile: true, deviceScaleFactor: 2 });
   await boot(page);
   const inView = await ev(page, () => ['hud', 'wq', 'wPh', 'wMap', 'wFs', 'wSnd', 'wMp', 'wLook'].map(id => { const r = document.getElementById(id).getBoundingClientRect(); return [id, r.left >= 0 && r.right <= innerWidth + .5 && r.top >= 0 && r.bottom <= innerHeight + .5 && r.width > 0]; }));
@@ -228,7 +230,7 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
 
 
 /* ---------- 4. Tagesabläufe, Dating, Nachrichten, Kalender ---------- */
-{
+if (sec('4')) {
   const { ctx, page } = await newPage();
   await boot(page);
   const setTime = async (h, day) => { await ev(page, ([h, day]) => { GL.S.world.t = ((h - 6 + 24) % 24) / 24; if (day) GL.S.life.day = day; GL.emit('enterWorld', GL.W); }, [h, day]); await page.waitForTimeout(1300); };
@@ -401,7 +403,7 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
 }
 
 /* ---------- 5. Wohnen: Möbel, Miete, Besuch, Zusammenziehen ---------- */
-{
+if (sec('5')) {
   let s; const { ctx, page } = await newPage();
   await boot(page);
   const dlg = async () => { for (let i = 0; i < 14; i++) { if (!(await ev(page, () => !!GL.W.dlg))) break; await page.click('#dn'); await page.waitForTimeout(50); } await page.waitForTimeout(260); };
@@ -478,7 +480,7 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
 }
 
 /* ---------- 6. Jobs und Nachtleben ---------- */
-{
+if (sec('6')) {
   let s; const { ctx, page } = await newPage();
   await boot(page);
   const closeMenu = async () => { if (await ev(page, () => document.getElementById('maps').style.display === 'block')) await page.click('#mx'); };
@@ -529,7 +531,7 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
 }
 
 /* ---------- 7. Rainbow City: Viertel und Tram ---------- */
-{
+if (sec('7')) {
   let s; const { ctx, page } = await newPage();
   await boot(page);
   const closeMenu = async () => { if (await ev(page, () => document.getElementById('maps').style.display === 'block')) await page.click('#mx'); };
@@ -589,7 +591,7 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
 }
 
 /* ---------- 8. Hauptgeschichte: Das Regenbogen-Zentrum ---------- */
-{
+if (sec('8')) {
   let s; const { ctx, page } = await newPage();
   await boot(page);
   const dlg = async () => { for (let i = 0; i < 16; i++) { if (!(await ev(page, () => !!GL.W.dlg))) break; await page.click('#dn'); await page.waitForTimeout(50); } await page.waitForTimeout(260); };
@@ -651,7 +653,7 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
 }
 
 /* ---------- 9. Mehrspieler: PIN, QR-Code, Orte, Besuch, Gruppentanz, Gruppenfoto (mit Test-Ersatz für PeerJS über BroadcastChannel) ---------- */
-{
+if (sec('9')) {
   let s; const ctx = await browser.newContext({ viewport: { width: 1000, height: 640 } });
   if (process.env.THREE) await ctx.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
   await ctx.route(/peerjs/, r => r.fulfill({ path: new URL('./fakepeer.js', import.meta.url).pathname, contentType: 'application/javascript' }));
@@ -752,7 +754,7 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
 }
 
 /* ---------- 10. Politur: Wetter, Ton, Leistungswächter ---------- */
-{
+if (sec('10')) {
   let s; const { ctx, page } = await newPage();
   await boot(page);
   s = await ev(page, () => { const k = []; for (let d = 1; d <= 80; d++) k.push(GL.weather.kind(d)); return { all: ['sun', 'cloud', 'rain', 'fog'].every(x => k.includes(x)), same: k.every((x, i) => x === GL.weather.kind(i + 1)), sun: k.filter(x => x === 'sun').length }; });
@@ -786,7 +788,7 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
 }
 
 /* ---------- 11. Weitere Jobs und Veranstaltungen ---------- */
-{
+if (sec('11')) {
   let s; const { ctx, page } = await newPage();
   await boot(page);
   const setH = h => ev(page, hh => { GL.S.world.t = ((hh - 6 + 24) % 24) / 24; }, h);
@@ -823,7 +825,7 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
 }
 
 /* ---------- 12. Viertel-Bewohner mit Tagesplan und Dates ---------- */
-{
+if (sec('12')) {
   let s; const { ctx, page } = await newPage();
   await boot(page);
   const setH = h => ev(page, hh => { GL.S.world.t = ((hh - 6 + 24) % 24) / 24; }, h);
@@ -875,7 +877,7 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
 }
 
 /* ---------- 13. Club Glitzer als Innenraum ---------- */
-{
+if (sec('13')) {
   let s; const { ctx, page } = await newPage();
   await boot(page);
   const setH = h => ev(page, hh => { GL.S.world.t = ((hh - 6 + 24) % 24) / 24; }, h);
@@ -907,7 +909,7 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
 }
 
 /* ---------- 14. Ladebildschirm, Startmenü, Konsolen-Steuerung ---------- */
-{
+if (sec('14')) {
   const { ctx, page } = await newPage(undefined, true);
   await page.goto(BASE + '/gay-life/tests/'); await page.evaluate(() => localStorage.clear());
   await page.goto(BASE + '/gay-life/index.html');
@@ -953,7 +955,7 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   ok(await ev(page, () => GL.W.on && GL.W.inside === 0), 'Wieder in der Stadt');
   await ctx.close();
 }
-{
+if (sec('14')) {
   const { ctx, page } = await newPage({ viewport: { width: 390, height: 780 }, hasTouch: true, isMobile: true, deviceScaleFactor: 2 });
   await boot(page);
   const box = id => ev(page, id => { const r = document.getElementById(id).getBoundingClientRect(); return { l: r.left, r: r.right, t: r.top, b: r.bottom, w: r.width }; }, id);
@@ -994,11 +996,98 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   ok(Math.abs(await ev(page, () => GL.W.camYaw) - y0) > .2, 'Wischen auf dem Bild dreht die Kamera');
   await ctx.close();
 }
-{
+if (sec('14')) {
   const { ctx, page } = await newPage({ viewport: { width: 780, height: 360 }, hasTouch: true, isMobile: true });
   await boot(page);
   const ok2 = await ev(page, () => ['stk', 'bA', 'bB', 'bX', 'bY'].every(id => { const r = document.getElementById(id).getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight && r.width > 30; }));
   ok(ok2, 'Querformat (780×360): Stick und Tasten sichtbar und im Bild');
+  await ctx.close();
+}
+
+/* ---------- 15. Gamecontroller (PlayStation-Symbole, analoger Stick, Kamera, Menüs ohne Maus) ---------- */
+if (sec('15')) {
+  const { ctx, page } = await newPage();
+  await page.addInitScript(() => { try { localStorage.setItem('easygames-padstyle', 'ps'); } catch (e) { } });
+  await boot(page);
+  const V = (f, a) => ev(page, f, a);
+  const press = async (i, ms) => { await V(i => EasyGamesPadNormal.press(i, 1), i); await page.waitForTimeout(ms || 120); await V(i => EasyGamesPadNormal.press(i, 0), i); await page.waitForTimeout(160); };
+  await V(() => { EasyGamesPadNormal.virtual(true); }); await page.waitForTimeout(300);
+  // Stick halb nach vorn: analog, langsamer als ganz
+  const p0 = await V(() => ({ x: GL.W.player.x, z: GL.W.player.z }));
+  await V(() => EasyGamesPadNormal.axis(1, -0.6)); await page.waitForTimeout(700); await V(() => EasyGamesPadNormal.axis(1, 0));
+  const p1 = await V(() => ({ x: GL.W.player.x, z: GL.W.player.z })), dHalf = Math.hypot(p1.x - p0.x, p1.z - p0.z);
+  ok(dHalf > 1, `Linker Stick bewegt die Figur (${dHalf.toFixed(1)} m)`);
+  ok(await V(() => GL.pad.on && document.getElementById('world').classList.contains('gp')), 'Controller-Modus: Hinweisleiste statt Touch-Tasten');
+  ok(await V(() => /✕/.test(document.getElementById('padh').textContent) && /△/.test(document.getElementById('padh').textContent) && /R2/.test(document.getElementById('padh').textContent)), 'PlayStation-Symbole ✕ ○ □ △ und R2 in der Hinweisleiste');
+  ok(await V(() => !EasyGamesPad.enabled()), 'In der Stadt steuert GayLife selbst (keine doppelten Tasten)');
+  // Sprinten mit R2
+  await V(() => { EasyGamesPadNormal.press(7, 1); EasyGamesPadNormal.axis(1, -1); }); await page.waitForTimeout(150);
+  ok(await V(() => GL.W.run > 1.4), 'R2 gedrückt: Sprinten');
+  await V(() => { EasyGamesPadNormal.press(7, 0); EasyGamesPadNormal.axis(1, 0); }); await page.waitForTimeout(150);
+  ok(await V(() => GL.W.run === 1 && GL.W.jz === 0), 'Losgelassen: Figur steht, normales Tempo');
+  // Kamera: rechter Stick dreht und zoomt
+  const c0 = await V(() => ({ y: GL.W.camYaw, z: GL.W.zoom || 1 }));
+  await V(() => { EasyGamesPadNormal.axis(2, 1); EasyGamesPadNormal.axis(3, 1); }); await page.waitForTimeout(400); await V(() => { EasyGamesPadNormal.axis(2, 0); EasyGamesPadNormal.axis(3, 0); });
+  const c1 = await V(() => ({ y: GL.W.camYaw, z: GL.W.zoom || 1 }));
+  ok(Math.abs(c1.y - c0.y) > .3 && c1.z > c0.z, 'Rechter Stick dreht und zoomt die Kamera');
+  await press(11); ok(await V(() => GL.W.zoom === 1), 'R3 setzt die Kamera hinter die Figur');
+  // □ Handy, ○ zurück/zu, Steuerkreuz im Handy
+  await page.waitForTimeout(300);
+  await press(2); ok(await V(() => GL.phone.isOpen() && !EasyGamesPad.enabled()), '□ öffnet das Handy, GayLife führt auch dort');
+  await press(13); await press(0); await page.waitForTimeout(200);
+  ok(await V(() => GL.phone.isOpen() && GL.phone.app() !== 'home'), 'Steuerkreuz und ✕ öffnen eine Handy-App');
+  await press(1); ok(await V(() => GL.phone.isOpen() && GL.phone.app() === 'home'), '○ geht im Handy eine Ebene zurück');
+  await press(1); ok(await V(() => !GL.phone.isOpen()), '○ schließt das Handy');
+  // △ Pausenmenü, Auswahl mit Steuerkreuz
+  await page.waitForTimeout(300);
+  await press(3); ok(await V(() => document.getElementById('maps').dataset.k === 'pause'), '△ öffnet das Pausenmenü');
+  ok(await V(() => /Weiter/.test((GL.pad.focused() || {}).textContent || '')), 'Pausenmenü: „Weiter“ ist gleich gewählt');
+  await press(13);
+  ok(await V(() => /Charakter/.test((GL.pad.focused() || {}).textContent || '')), 'Steuerkreuz wählt im Pausenmenü (gelber Rahmen)');
+  await press(0); await page.waitForTimeout(300);
+  ok(await V(() => document.getElementById('modal').style.display === 'block'), '✕ öffnet den Look-Editor');
+  await press(13); await press(15); await press(0);
+  ok(await V(() => document.getElementById('modal').style.display === 'block' && !!GL.pad.focused()), 'Im Editor wählt das Steuerkreuz Look-Teile');
+  await press(1); await page.waitForTimeout(400);
+  ok(await V(() => document.getElementById('modal').style.display !== 'block'), '○ beendet den Editor („Fertig“)');
+  await V(() => { if (!GL.W.on) GL.core.enter(); }); await page.waitForTimeout(500); await closeDialogs(page);
+  await press(3); await press(1); await page.waitForTimeout(300);
+  ok(await V(() => document.getElementById('maps').style.display !== 'block'), '○ schließt das Pausenmenü');
+  await page.waitForTimeout(300);
+  // ○ Orte
+  await press(1); ok(await V(() => GL.phone.isOpen() || document.getElementById('maps').style.display === 'block'), '○ in der Stadt öffnet die Orte');
+  await press(1); await press(1); await page.waitForTimeout(300);
+  ok(await V(() => !GL.phone.isOpen() && document.getElementById('maps').style.display !== 'block' && GL.pad.world), 'Zurück in der freien Stadt');
+  // ✕ betritt die Wohnung
+  const hp = await V(() => ({ x: GL.W.pois.home.x, z: GL.W.pois.home.z })); await goTo(page, hp.x, hp.z);
+  ok(await V(() => document.getElementById('act').dataset.g === '✕'), 'Aktionsknopf zeigt das ✕-Symbol');
+  await press(0); await waitFade(page);
+  ok(await V(() => GL.W.inside === 1), '✕ löst die Aktion aus (Wohnung betreten)');
+  // Minispiele: dort übernimmt der allgemeine Controller (gamepad.js)
+  await V(() => { GL.core.leave(); GL.core.menuHub(); }); await page.waitForTimeout(400);
+  ok(await V(() => EasyGamesPad.enabled() && !GL.pad.world), 'Minispiel-Übersicht: allgemeiner Controller übernimmt');
+  await V(() => EasyGamesPadNormal.virtual(false)); await page.waitForTimeout(200);
+  ok(await V(() => !document.getElementById('world').classList.contains('gp')), 'Controller getrennt: Hinweise verschwinden');
+  await ctx.close();
+}
+
+if (sec('15')) {   // Switch-Symbole, Startmenü nur mit dem Controller
+  const { ctx, page } = await newPage(undefined, true);
+  await page.addInitScript(() => { try { localStorage.setItem('easygames-padstyle', 'switch'); } catch (e) { } });
+  await page.goto(BASE + '/gay-life/tests/'); await page.evaluate(() => localStorage.clear());
+  await page.goto(BASE + '/gay-life/index.html');
+  await page.waitForFunction(() => window.GL && GL.start && GL.start.visible(), null, { timeout: 30000 });
+  const V = (f, a) => ev(page, f, a);
+  const press = async (i) => { await V(i => EasyGamesPadNormal.press(i, 1), i); await page.waitForTimeout(120); await V(i => EasyGamesPadNormal.press(i, 0), i); await page.waitForTimeout(200); };
+  await V(() => { localStorage.setItem('easygames-padstyle', 'switch'); EasyGamesPadNormal.style('switch'); EasyGamesPadNormal.virtual(true); }); await page.waitForTimeout(300);
+  await press(13); await press(13);
+  ok(await V(() => document.querySelector('#title .mi.sel b').textContent) === 'Minispiele', 'Startmenü: Steuerkreuz wählt Menüpunkte');
+  await press(12); await press(12); await press(0);
+  await page.waitForFunction(() => GL.W && GL.W.on, null, { timeout: 30000 }); await page.waitForTimeout(600);
+  ok(true, 'Startmenü: Bestätigen startet das Spiel');
+  await closeDialogs(page); await V(() => EasyGamesPadNormal.axis(0, .8)); await page.waitForTimeout(300); await V(() => EasyGamesPadNormal.axis(0, 0));
+  const txt = await V(() => document.getElementById('padh').textContent);
+  ok(/ZR/.test(txt) && /^A/.test(txt), 'Switch-Symbole: A bestätigt, ZR sprintet (' + txt.slice(0, 40) + ' …)');
   await ctx.close();
 }
 
