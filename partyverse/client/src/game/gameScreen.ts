@@ -21,6 +21,7 @@ import { BoardStage } from './boardStage';
 import { FinaleStage, finaleOverlay } from './finale';
 import { Hud, type Shown } from './hud';
 import { MinigameFlow } from './minigameFlow';
+import { actionOf } from '../input/keymap';
 
 const KIND_ICON: Record<string, string> = {
   start: '🏁',
@@ -726,24 +727,34 @@ export class GameScreen {
       if (this.finaleStage) return;
       this.stage.zoomBy(e.deltaY > 0 ? 1.08 : 0.92);
     };
+    // Tastatur und Controller (gamepad.js) über dieselben Aktionen wie Touch: input/keymap.ts
     const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') {
+      const act = actionOf(e);
+      if (act === 'pause') {
         if (this.paused) this.closePause();
         else this.openPause();
         return;
       }
-      if (
-        (e.code === 'Space' || e.key === 'Enter') &&
-        !this.paused &&
-        !this.hud.dialogOpen &&
-        !this.overlay.firstChild &&
-        !this.flow.el.firstChild
-      ) {
-        const roll = this.el.querySelector<HTMLButtonElement>('.actions .roll');
-        if (roll) {
-          e.preventDefault();
-          roll.click();
-        }
+      if (this.paused || this.flow.el.firstChild) return; // Pause- und Minispiel-Fenster bedient gamepad.js bzw. das Minispiel
+      if ((act === 'zoomIn' || act === 'zoomOut') && !this.finaleStage) {
+        this.stage.zoomBy(act === 'zoomIn' ? 0.88 : 1.12);
+        return;
+      }
+      if (act !== 'a' || e.repeat) return;
+      // Ein Knopf hat den Fokus (Tab bzw. Leuchtrahmen des Controllers): der Browser bzw. gamepad.js klickt ihn selbst
+      const f = document.activeElement;
+      if (f instanceof HTMLButtonElement && f !== document.body) return;
+      // sonst den Hauptknopf: Würfeln/Stopp, „Weiter“ im Ergebnis, der einzige Knopf eines Fensters
+      const scope = this.overlay.firstChild
+        ? this.overlay
+        : this.hud.dialogOpen
+          ? this.el.querySelector<HTMLElement>('.dialog')
+          : this.el.querySelector<HTMLElement>('.hud .actions');
+      const all = scope ? [...scope.querySelectorAll<HTMLButtonElement>('button:not([disabled])')] : [];
+      const main = all.find((b) => b.classList.contains('roll')) ?? (all.length === 1 ? all[0] : undefined);
+      if (main) {
+        e.preventDefault();
+        main.click();
       }
     };
     el.addEventListener('pointerdown', onDown);

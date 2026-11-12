@@ -88,10 +88,11 @@
     {
       "t": "Steuerung",
       "list": [
-        "PC: Würfeln per Knopf, Leertaste oder Enter; Weg per Knopf oder Feld anklicken; Kamera ziehen = drehen, Mausrad = Zoom; Esc oder ☰ für die Pause (Weiterspielen, Kurzanleitung, Spiel verlassen).",
-        "Touch: Knöpfe und Felder antippen; Wischen dreht die Kamera, zwei Finger zoomen.",
-        "Minispiele am PC: Pfeiltasten oder W A S D bewegen, Leertaste oder Enter für Aktion A, Umschalt oder X für Aktion B; manche Spiele nutzen die Maus. Die genaue Belegung steht vor jedem Minispiel.",
-        "Minispiele am Handy: links ein Stick, rechts die Knöpfe A und B, wo sie gebraucht werden. In den Optionen lässt sich die Touch-Steuerung erzwingen oder abschalten.",
+        "PC: Würfeln mit Leertaste oder Enter (der Würfel dreht sich, bis du „Stopp!“ drückst); an Weggabelungen Knopf oder Feld anklicken; Kamera ziehen = drehen, Mausrad oder Q/E = Zoom; Esc öffnet das Pausemenü und führt in Menüs zurück.",
+        "Gamecontroller (Xbox, PlayStation, Switch und andere): Steuerkreuz oder linker Stick wählt in Menüs und läuft in Minispielen, A bestätigt und würfelt, B geht zurück bzw. schließt Fenster, X ist Aktion B, LB/RB zoomen die Kamera, der rechte Stick bewegt den Zeiger (Zielen), Start öffnet das Pausemenü. Die Knopf-Symbole (✕ ○ □ △ bei PlayStation) und der Bestätigen-Knopf (Switch: A rechts) stellen sich automatisch ein.",
+        "Optionen → 🎮 Controller: Symbole und Bestätigen-Knopf wählen, „Knöpfe belegen“ und „Belegung zeigen“. Optionen → ⌨️ Tastatur: jede Spieltaste frei belegen (wird gespeichert; Pfeiltasten, Enter und Esc bleiben immer gleich).",
+        "Touch: Knöpfe und Felder antippen; Wischen dreht die Kamera, zwei Finger zoomen. Minispiele am Handy: links ein Stick, rechts die Knöpfe A und B, wo sie gebraucht werden. In den Optionen lässt sich die Touch-Steuerung erzwingen oder abschalten.",
+        "Minispiele: Pfeiltasten oder W A S D bewegen, Leertaste oder Enter = Aktion A, Umschalt oder X = Aktion B; Zielspiele gehen mit Maus, Finger, rechtem Stick oder Pfeiltasten. Die genaue Belegung steht vor jedem Minispiel. Oben rechts läuft der Punktestand der Mitspieler live mit.",
         "Hot-Seat: Die Spieler reichen das Gerät weiter; vor Minispielen bestätigt jeder, dass er bereit ist."
       ]
     },

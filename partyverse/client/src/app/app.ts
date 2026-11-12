@@ -89,6 +89,21 @@ export class App {
       const b = (e.target as HTMLElement).closest('button.btn, .card.pick');
       if (b && !(b as HTMLButtonElement).disabled) audio.sfx(b.classList.contains('back') ? 'back' : 'click');
     });
+    // Esc / Controller-B in Menüs: zurück (wie an der Konsole). Im Spiel öffnet Esc das Pausemenü (gameScreen).
+    window.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape' || e.defaultPrevented || this.ui.querySelector('.game')) return;
+      const back = [...this.ui.querySelectorAll<HTMLButtonElement>('.screen button.back')].pop();
+      if (back && !back.disabled) {
+        e.preventDefault();
+        back.click();
+      }
+    });
+    // Hauptknopf jedes Bildschirms: Der Controller wählt ihn zuerst (gamepad.js: [data-pad-first])
+    new MutationObserver(() => {
+      const scr = this.ui.querySelector('.screen');
+      const main = scr?.querySelector('button.big, button.hot');
+      if (main && !scr?.querySelector('[data-pad-first]')) main.setAttribute('data-pad-first', '');
+    }).observe(this.ui, { childList: true });
     document.addEventListener('visibilitychange', () => (document.hidden ? this.engine.stop() : this.engine.start()));
     window.addEventListener('beforeunload', () => store.save());
     if (!store.persistent) setTimeout(() => toast('Speichern im Browser ist nicht möglich – Einstellungen gehen beim Schließen verloren.', 'error', 6000), 800);

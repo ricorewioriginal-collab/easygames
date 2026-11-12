@@ -1,13 +1,15 @@
 import { InputFrame, MiniGame, NEUTRAL_INPUT } from '@shared/minigames/types';
+import { actionOf, type KeyAction } from './keymap';
 
 /**
  * Liest Tastatur, Zeiger und Touch-Bedienelemente für ein Minispiel.
- * - Tastatur: Pfeile/WASD, Leertaste/Enter = A, Shift/X/Z = B
+ * - Tastatur und Controller über input/keymap.ts (frei belegbar; Standard: Pfeile/WASD, Leertaste/Enter = A, Shift/X/Z = B)
  * - Zeiger: Position relativ zum Spielfeld-Element (px/py in [-1,1], py nach oben positiv)
  * - Touch: virtueller Stick (links), Knöpfe A/B (rechts), nur wenn das Spiel sie braucht
  */
 export class MiniInput {
-  private keys = new Set<string>();
+  /** Gedrückte Tasten → Spielaktion */
+  private keys = new Map<string, KeyAction>();
   private pointer = { px: 0, py: 0, pd: false };
   private stick = { x: 0, y: 0 };
   private btn = { a: false, b: false };
@@ -26,11 +28,14 @@ export class MiniInput {
       this.cleanup.push(() => t.removeEventListener(ev, fn as EventListener));
     };
     on(window, 'keydown', (e) => {
+      const act = actionOf(e);
+      if (!act || act === 'pause' || act === 'zoomIn' || act === 'zoomOut') return;
+      // Taste gehört dem Minispiel: kein Scrollen, und gamepad.js schickt dann keine Ersatztaste (Enter/Esc) hinterher
+      e.preventDefault();
       if (e.repeat) return;
-      this.keys.add(e.code);
-      if (e.code === 'Space' || e.code === 'Enter') this.tap.a = true;
-      if (['ShiftLeft', 'ShiftRight', 'KeyX', 'KeyZ'].includes(e.code)) this.tap.b = true;
-      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
+      this.keys.set(e.code, act);
+      if (act === 'a') this.tap.a = true;
+      if (act === 'b') this.tap.b = true;
     });
     on(window, 'keyup', (e) => this.keys.delete(e.code));
     on(
@@ -120,9 +125,9 @@ export class MiniInput {
   }
 
   read(): InputFrame {
-    const k = this.keys;
-    let x = (k.has('ArrowRight') || k.has('KeyD') ? 1 : 0) - (k.has('ArrowLeft') || k.has('KeyA') ? 1 : 0);
-    let y = (k.has('ArrowUp') || k.has('KeyW') ? 1 : 0) - (k.has('ArrowDown') || k.has('KeyS') ? 1 : 0);
+    const held = new Set(this.keys.values());
+    let x = (held.has('right') ? 1 : 0) - (held.has('left') ? 1 : 0);
+    let y = (held.has('up') ? 1 : 0) - (held.has('down') ? 1 : 0);
     if (x === 0) x = this.stick.x;
     if (y === 0) y = this.stick.y;
     const tap = this.tap;
@@ -131,8 +136,8 @@ export class MiniInput {
       ...NEUTRAL_INPUT,
       x,
       y,
-      a: k.has('Space') || k.has('Enter') || this.btn.a || tap.a,
-      b: k.has('ShiftLeft') || k.has('ShiftRight') || k.has('KeyX') || k.has('KeyZ') || this.btn.b || tap.b,
+      a: held.has('a') || this.btn.a || tap.a,
+      b: held.has('b') || this.btn.b || tap.b,
       px: this.pointer.px,
       py: this.pointer.py,
       pd: this.pointer.pd || tap.pd,
