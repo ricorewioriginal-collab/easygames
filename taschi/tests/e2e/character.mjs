@@ -28,10 +28,10 @@ const shot = async (page, name) => { if (dir) await page.screenshot({ path: dir 
     await page.getByText('Neues Abenteuer').click();
     await page.waitForSelector('#creatorview canvas', { timeout: 30000 });
     for (const g of ['Männlich', 'Weiblich', 'Divers']) { await page.getByText(g, { exact: true }).click(); await page.waitForTimeout(600); await shot(page, '11-creator-' + g); }
-    await page.locator('input.name').fill('Kimi');
+    await page.locator('.namebtn').click(); await page.locator('input.name').fill('Kimi'); await page.locator('input.name').press('Enter'); await page.waitForTimeout(300);
     await page.getByText('Männlich', { exact: true }).click();
     await page.waitForTimeout(400);
-    assert.equal(await page.locator('input.name').inputValue(), 'Kimi', 'eigener Name bleibt beim Wechsel');
+    assert.equal((await page.locator('.namebtn').innerText()).replace('✎ ', '').trim(), 'Kimi', 'eigener Name bleibt beim Wechsel');
     await page.getByText('So starte ich').click();
     for (let i = 0; i < 40 && !(await G(page, () => window.__taschi.state === 'world')); i++) { await page.keyboard.press('Enter'); await page.waitForTimeout(700); }
     await waitState(page, 'world');
@@ -56,7 +56,7 @@ const shot = async (page, name) => { if (dir) await page.screenshot({ path: dir 
     await page.waitForSelector('.choice', { timeout: 60000 });
     await advance(page, { until: () => !!document.querySelector('#creatorview'), choose: ['Jetzt gestalten'] });
     await page.waitForSelector('#creatorview canvas');
-    assert.equal(await page.locator('input.name').inputValue(), 'Testi', 'alter Name vorausgefüllt');
+    assert.equal((await page.locator('.namebtn').innerText()).replace('✎ ', '').trim(), 'Testi', 'alter Name vorausgefüllt');
     await page.getByText('Divers', { exact: true }).click();
     await page.getByText('So starte ich').click();
     await waitIdle(page);

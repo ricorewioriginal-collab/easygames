@@ -19,12 +19,12 @@ const shot = async (page, name) => { if (dir) await page.screenshot({ path: dir 
     await page.waitForSelector('#creatorview canvas', { timeout: 30000 });
     await page.getByText('🦊 Zotik', { exact: true }).click();
     await page.waitForTimeout(900);
-    assert.equal(await page.locator('input.name').inputValue(), 'Zotik', 'Name wird Zotik');
+    assert.equal((await page.locator('.namebtn').innerText()).replace('✎ ', '').trim(), 'Zotik', 'Name wird Zotik');
     assert.equal(await page.getByText('Frisur').count(), 0, 'kein Outfit für Zotik');
     await shot(page, '20-creator-zotik');
     await page.getByText('Mensch', { exact: true }).click();
     await page.waitForTimeout(300);
-    assert.equal(await page.locator('input.name').inputValue(), 'Rio', 'zurück zum Menschen');
+    assert.equal((await page.locator('.namebtn').innerText()).replace('✎ ', '').trim(), 'Rio', 'zurück zum Menschen');
     await page.getByText('🦊 Zotik', { exact: true }).click();
     await page.getByText('So starte ich').click();
     for (let i = 0; i < 40 && !(await G(page, () => window.__taschi.state === 'world')); i++) { await page.keyboard.press('Enter'); await page.waitForTimeout(700); }
