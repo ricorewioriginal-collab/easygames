@@ -2142,14 +2142,17 @@ function buildWorld(n){HST=HSTY[n]||HSTY[1];
   const h=(x,z)=>{
     let q=(Math.sin(x*.045+1.3+ph)*Math.cos(z*.04+ph*.5)*3.2+Math.sin(x*.12+z*.09)*.9+Math.sin(z*.02+x*.015)*4)*amp;
     q=tStyle(q,x,z);
-    const dv=Math.hypot(x,z),da=Math.hypot(x,z+182),flat=Math.max(1-sm(26,46,dv),1-sm(26,36,da),bflat(x,z,BPADS)),pf=(1-sm(2,7,Math.abs(x-pathx(z))))*(z<40&&z>-160?1:0);
+    const dv=Math.hypot(x,z),da=Math.hypot(x,z+182),flat=Math.max(1-sm(26,46,dv),1-sm(26,36,da),bflat(x,z,BPADS)),pf=(1-sm(2,7,Math.abs(x-pathx(z))))*(z<80&&z>-160?1:0);
     q=q*(1-flat*.93)*(1-pf*.72);let ring=sm(30,38,da)*(1-sm(64,92,da))*17;if(z>-182)ring*=sm(8,15,Math.abs(x));q+=ring;q=pads(q,x,z);   // Truhen und Altar immer erreichbar (auch am Ringwall vor der Arena)
-    const ex=Math.max(0,Math.abs(x)-116)+Math.max(0,z-64)+Math.max(0,-220-z);return NZ().carve(LAKE,q+ex*ex*.12,x,z)};
+    /* Rand: Küste fällt ins Meer ab; nach Süden führt ein Damm als Wegpfad hinaus zur Weltkarte */
+    const dam=Math.abs(x)<3.6&&z>38,exs=dam?0:Math.max(0,z-58),ex=Math.max(0,Math.abs(x)-110)+exs+Math.max(0,-214-z);
+    if(dam&&z>55){const k=sm(55,61,z),w=1-sm(2.6,3.6,Math.abs(x));q=q*(1-k)+(.35*w-2.2*(1-w))*k}
+    return NZ().carve(LAKE,q-ex*ex*.06-ex*.35,x,z)};
   if(n===11){const s0=cs();if(s0.st<7){s0.st=7;s0.bd=1;s0.k=5}}
   const sealed=()=>cs().st<5;
-  const WATER={3:-1.6,7:-4.6,9:-6}[n];   // Aqualis liegt unter dem Meer: dort läuft man auf dem Meeresgrund
+  const WATER={3:-1.6,7:-4.6,9:-6}[n],SEA=WATER??-1.2,SAND=new T.Color(n===7?0x3a2a24:n===9?0xd8dcf0:n===6?0xe8eef4:n===8||n===11?0x5a5070:0xe0cc98);   // Aqualis liegt unter dem Meer: dort läuft man auf dem Meeresgrund
   /* Nur echte Hindernisse sperren: hohe Hänge nur wenn steil (flache Hochebenen bleiben begehbar), tiefe Senken nur wo Wasser/Lava/Abgrund sichtbar ist – keine unsichtbaren Wände */
-  const blk=(x,z)=>{const hh=h(x,z);return (hh>8.5&&tooSteep(WLD&&WLD.hm?WLD.hm:h,x,z))||(hh<-4.2&&(WATER!==undefined||hh<-9))||(LAKE&&hh<LAKE.wl-.4&&Math.hypot(x-LAKE.x,z-LAKE.z)<LAKE.r*1.3)||(WATER!==undefined&&hh<WATER+.25&&!(nSub()&&n!==7))||x<-128||x>128||z>76||z<-232||(z<-148&&sealed())};
+  const blk=(x,z)=>{const hh=h(x,z);return (hh>8.5&&tooSteep(WLD&&WLD.hm?WLD.hm:h,x,z))||(hh<-4.2&&(WATER!==undefined||hh<-9))||(LAKE&&hh<LAKE.wl-.4&&Math.hypot(x-LAKE.x,z-LAKE.z)<LAKE.r*1.3)||(WATER!==undefined&&hh<WATER+.25&&!(nSub()&&n!==7))||x<-128||x>128||z>78||z<-232||(z<-148&&sealed())||((Math.abs(x)>113||z>61&&Math.abs(x)>2.4||z<-217)&&hh<SEA+.2)};
   const zone=(x,z)=>z<-146?'cave':(z<-44?'forest':'village');
   const ims=[],edKeys=[],obs={};
   WLD={n,C,h,blocked:blk,zone,ims,edKeys,terr:null,zn:{village:[C.hubN,C.sub],forest:[C.wildN,'Gegner lauern hier'],cave:[C.depthN,C.X[4]],ruin:['Werkzeug-Ruine','Ein Rätsel aus alter Zeit']},path:pathx,mbg:null,spawn:[0,9]};
@@ -2162,10 +2165,10 @@ function buildWorld(n){HST=HSTY[n]||HSTY[1];
   {const p=g.attributes.position,col=new Float32Array(p.count*3),c=new T.Color(),c1=new T.Color(P.g1),c2=new T.Color(P.g2),cp=new T.Color(P.path),ca=new T.Color(P.arena),cr=new T.Color(P.rock);
     for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),hh=h(x,z);p.setY(i,hh);const dv=Math.hypot(x,z),da=Math.hypot(x,z+182);
       c.copy(c2).lerp(c1,1-sm(10,50,dv));const nz=Math.sin(x*.7)*Math.cos(z*.63)*.5+.5,dt=Math.sin(x*.29+z*.23)*Math.cos(z*.34-x*.13);c.offsetHSL(0,0,(nz-.5)*.055+dt*.016);
-      const pd=Math.abs(x-pathx(z));if(z<42&&z>-158){c.lerp(cp,(1-sm(1.6,4.2,pd))*.9)}
+      const pd=Math.abs(x-pathx(z));if(z<80&&z>-158){c.lerp(cp,(1-sm(1.6,4.2,pd))*.9)}if((Math.abs(x)>104||z>52||z<-206)&&hh<1.4)c.lerp(SAND,sm(1.4,-.2,hh)*.85);
       c.lerp(ca,(1-sm(26,36,da))*.9);if(hh>5)c.lerp(cr,sm(5,12,hh));col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b}
     g.setAttribute('color',new T.BufferAttribute(col,3));g.computeVertexNormals()}
-  const terr=new T.Mesh(g,TX.tri(WGTEX[n]||'grass',0xffffff,{vc:1,s:.22,gain:2.1,n:.8,r:.95}));terr.receiveShadow=true;scene.add(terr);WLD.terr=terr;
+  const terr=new T.Mesh(g,TX.tri(WGTEX[n]||'grass',0xffffff,{vc:1,s:.22,gain:2.1,n:.8,r:.95}));terr.receiveShadow=true;scene.add(terr);WLD.terr=terr;seaRing(n,SEA);
   {const NX=135,NZ=160,gx=TW/NX,gz=TD/NZ,x0=TCX-TW/2,z0=TCZ-TD/2,HG=new Float32Array((NX+1)*(NZ+1));for(let j=0;j<=NZ;j++)for(let i=0;i<=NX;i++)HG[j*(NX+1)+i]=h(x0+i*gx,z0+j*gz);
     WLD.hm=(x,z)=>{const fx=(x-x0)/gx,fz=(z-z0)/gz;if(fx<0||fz<0||fx>=NX||fz>=NZ)return h(x,z);const i=fx|0,j=fz|0,u=fx-i,v=fz-j,a=HG[j*(NX+1)+i],b=HG[j*(NX+1)+i+1],c=HG[(j+1)*(NX+1)+i],d=HG[(j+1)*(NX+1)+i+1];
       return u+v<=1?a+(b-a)*u+(c-a)*v:d+(c-d)*(1-u)+(b-d)*(1-v)}}
@@ -3324,11 +3327,23 @@ function wzDress(n){const L0=WZ[n];if(!L0||!WLD)return;const R=mul32(n*7919+3),o
 function advTalk(n,who,i){const k='adv'+n;
   if(!S.fl[k]){S.fl[k]=1;S.potions++;sfx('pick');say([[who,i===0?'Ein Reisender mit Fuchsschwanz? Setz dich ans Feuer.':i===1?'Wir ziehen seit Wochen durch die Welten. Du siehst aus, als bräuchtest du Proviant.':'Psst – wir haben noch einen Trank übrig. Nimm ihn.'],[who,ADVT[n]||'Pass auf dich auf da draußen.']],()=>toast('🧪 +1 Heiltrank vom Abenteurerlager'));saveGame(true);return}
   say([[who,[ADVT[n]||'Pass auf dich auf.','Die Skelette in den Hallen fürchten Licht. Merk dir das.','Wenn du wieder hier vorbeikommst, brennt das Feuer noch.'][(i+Math.floor(time/20))%3]]])}
+/* Meer rund um jede Kapitelwelt (Lava in Ignara, Wolken in Astralis, Riss im Weltenriss) und das Tor am Ende des Damms */
+function seaRing(n,y){const sh=new T.Shape([new T.Vector2(-900,-900),new T.Vector2(900,-900),new T.Vector2(900,900),new T.Vector2(-900,900)]);
+  sh.holes.push(new T.Path([new T.Vector2(-104,-50),new T.Vector2(104,-50),new T.Vector2(104,208),new T.Vector2(-104,208)]));
+  const g=new T.ShapeGeometry(sh);g.rotateX(-Math.PI/2);   // Form-y wird zu Welt −z
+  const k={7:[0xff5a1a,0xff3a00,1.1],9:[0xeef2ff,0xa8b8e8,.5],11:[0x6a3aa8,0x8a4aff,.6]}[n]||[0x2a7ab8,0x0a2a4a,.18];
+  const m=new T.Mesh(g,new T.MeshStandardMaterial({color:k[0],emissive:k[1],emissiveIntensity:k[2],roughness:.18,metalness:.35,transparent:true,opacity:.9,depthWrite:false}));
+  m.position.y=y;m.renderOrder=1;scene.add(m);animObjs.push({fn(t){m.position.y=y+Math.sin(t*.7)*.08}});
+  /* Tor am Damm-Ende: zwei Säulen, Bogen aus Licht, Wegweiser */
+  const gx=0,gz=72,gy=hgt(gx,gz),gt=new T.Group();gt.position.set(gx,gy,gz);
+  for(const sx of [-1,1]){gt.add(mk(G.cyl,M(0xd8d0c0,{r:.7}),sx*2.4,1.9,0,.35,3.8,.35));gt.add(mk(G.sph0,M(0x8ad0ff,{e:0x6ac0ff,ei:2}),sx*2.4,4,0,.32,.32,.32,false))}
+  const arc=new T.Mesh(new T.TorusGeometry(2.4,.12,8,24,Math.PI),M(0x8ad0ff,{e:0x6ac0ff,ei:1.8}));arc.position.y=3.8;gt.add(arc);gt.add(glow(0x8ad0ff,4,0,3,0,.6));scene.add(gt);addCol(gx-2.4,gz,.4);addCol(gx+2.4,gz,.4)}
 function owSign(n,x,z){const g=new T.Group();g.position.set(x,hgt(x,z),z);const wd=M(0x6a4a2a);g.add(mk(G.cyl0,wd,0,1.1,0,.12,2.2,.12));const b=mk(G.box,M(0x9a7a4a),.45,1.75,0,1,.36,.08);b.rotation.z=.08;g.add(b);g.add(mk(G.box,M(0x9a7a4a),-.4,1.3,0,.9,.32,.08));g.add(glow(0x8ad0ff,1.6,0,2.35,0,.6));scene.add(g);
   INT.push({x,z,name:'Wegweiser',pr:'🗺️ Zur Weltkarte',rad:2.6,vis:()=>chOpen(15)&&curCh===n,talk(){owGo(n)}});return g}
-function owEdge(dt){if(curCh<2||curCh>11||!WLD||WLD.cave||WLD.story||dlg.on||menuOpen||naut.on||!chOpen(15)||mode!=='play'){X.owE=0;return}
-  if(pl.z>62||Math.abs(pl.x)>113){X.owE=(X.owE||0)+dt;if(X.owE>.5&&!X.owAsk){X.owAsk=1;say([['Zotik','Hier endet '+CHP[curCh].name+'. Dahinter führt der Wegpfad weiter über die Weltkarte.']],null,[{t:'🗺️ Weiter zur Weltkarte',fn:()=>owGo(curCh)},{t:'Hierbleiben',fn:()=>{}}])}}
-  else{X.owE=0;if(pl.z<52&&Math.abs(pl.x)<100)X.owAsk=0}}
+function owEdge(dt){if(curCh<2||curCh>11||!WLD||WLD.cave||WLD.story||dlg.on||menuOpen||naut.on||mode!=='play'){X.owE=0;return}
+  if(!chOpen(15)){if(pl.z>72&&!X.owAsk){X.owAsk=1;toast('🗺️ Der Wegpfad führt zur Weltkarte – sie öffnet sich, sobald das Weltentor in Lunaris offen ist.')}else if(pl.z<66)X.owAsk=0;return}
+  if(pl.z>73.5&&Math.abs(pl.x)<3){X.owE=(X.owE||0)+dt;if(X.owE>.15&&!X.owAsk){X.owAsk=1;banner('🗺️ Weltkarte','Der Wegpfad führt weiter übers Land');owGo(curCh)}}
+  else{X.owE=0;if(pl.z<66)X.owAsk=0}}
 function buildCamp(){const FX=0,FZ=-14,RAD=19;
   const seat=i=>{const a=Math.PI*.15+i*Math.PI*.62,x=FX+Math.sin(a)*3.1,z=FZ+Math.cos(a)*3.1;return[x,z,Math.atan2(FX-x,FZ-z)]};
   const blk=(x,z)=>Math.hypot(x-FX,z-FZ)>RAD&&!(Math.abs(x)<2.2&&z>FZ&&z<8)||Math.hypot(x-FX,z-FZ)<1.1||z>7||[[-7,-21],[7,-22],[0,-27]].some(([tx,tz])=>Math.hypot(x-tx,z-tz)<1.85);

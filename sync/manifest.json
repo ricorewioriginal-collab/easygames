@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "51b343936212",
- "generated": "2026-11-12T20:03:34+00:00",
- "commit": "d257a434e87e014f41bb84d47a28b2a29b94f43d",
+ "version": "9c5bca7d35f7",
+ "generated": "2026-11-12T20:03:41+00:00",
+ "commit": "70c48c8dcdf72fd5e8ddc6f94dc14aafa511681f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6698,8 +6698,8 @@
   },
   {
    "p": "guides/taschi.json",
-   "s": 46004,
-   "h": "f4b8c9c40a57883215dd3ad0d41e4d509bd8ce750b22c3c418302e9ac3c2bf92"
+   "s": 46335,
+   "h": "052b805deb7f7702b192483c0673e5e8c0c5e6bf1044cdc5e2dd0115a9f2c880"
   },
   {
    "p": "guides/tortenschlacht.json",
@@ -6773,8 +6773,8 @@
   },
   {
    "p": "guides/zotik.json",
-   "s": 72273,
-   "h": "ef056cf402aa21e64173e544c4da1f4c00a98a424bf9c6292316ab1c31934cbe"
+   "s": 72354,
+   "h": "35aaae782ce29eaf47deecc9813ff57c60a59e70ed2c83d919f3e5230846d9f1"
   },
   {
    "p": "heute.html",
@@ -9359,7 +9359,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258362,
-   "h": "26a6a606a77e2249645d9abf8da3add3e6dbfeb42f859226843f95588c454f3d"
+   "h": "5c1d86524fc796b29f30fd8aa1af483abcb19f76a71696f08ba0bc780bb29d85"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -9863,8 +9863,8 @@
   },
   {
    "p": "taschi/src/engine/characters.js",
-   "s": 37833,
-   "h": "c231c33dac4d1b1e45f2038485d354db3445c8b226a95387a39e00d520c85bd4"
+   "s": 40456,
+   "h": "629508628e84140e2998c65572fcf3b3a2e10b5c9c365d1ea3f694ebd171990f"
   },
   {
    "p": "taschi/src/engine/creatures.js",
@@ -9878,8 +9878,8 @@
   },
   {
    "p": "taschi/src/engine/kaykit.js",
-   "s": 6906,
-   "h": "65b4d7d3ae96ccb83095e17c045d48de5d59b6b320baabdc8a41480e9ebd5e21"
+   "s": 13674,
+   "h": "44bebedc6c136f70938ab27f30a0c6915c13254217b3e462b4e969ba8ab315df"
   },
   {
    "p": "taschi/src/engine/materials.js",
@@ -10113,8 +10113,8 @@
   },
   {
    "p": "taschi/src/ui/screens.js",
-   "s": 16580,
-   "h": "6be85b39145227926427914f4b1adab7c7ec888e8008886d3eb7f9bdaa042858"
+   "s": 17740,
+   "h": "1be6b521a91aee9f6eeba84e7ee8465e4ae155d6f65cf571458ff48149a5b7b6"
   },
   {
    "p": "taschi/src/ui/style.css",
@@ -11807,9 +11807,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-wU-Uj22z.js",
-   "s": 1692199,
-   "h": "44858b2cc2073fed4bac9f1d04da5fb7eb07a349cb02babdf54243dabe5bf92d"
+   "p": "zotik/assets/index-BLW1_vCO.js",
+   "s": 1693723,
+   "h": "2a196533e28a7abff374120ab2a36b022dcef63c5c5a4e2a33af18cea8ca51ec"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -11829,7 +11829,7 @@
   {
    "p": "zotik/index.html",
    "s": 72193,
-   "h": "ea727cdd1f908fe1c3e1fe24999d7fed0911dc73125df8b46bcc06c7b29a90c7"
+   "h": "6bb708fe083c1ce0ef024f291eca71965a563f4296653360a61e092b66f9323e"
   },
   {
    "p": "zotik/manifest.webmanifest",
