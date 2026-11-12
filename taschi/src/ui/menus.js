@@ -4,7 +4,7 @@ import { h, typeBadge, hpBar, FocusNav } from './ui.js';
 import { SPECIES, SPECIES_IDS, learnset } from '../data/species.js';
 import { MOVES, STATUS } from '../data/moves.js';
 import { TYPES } from '../data/types.js';
-import { ITEMS, ITEM_ORDER, CATEGORY_NAMES, sellPrice, shopStock } from '../data/items.js';
+import { ITEMS, ITEM_ORDER, HELD_IDS, CATEGORY_NAMES, sellPrice, shopStock } from '../data/items.js';
 import { REGIONS } from '../data/regions.js';
 import { CHAPTERS } from '../data/story.js';
 import { maxHp, statOf, xpToNext, evolutionChain, describeEvolution, forgetMove, relearnableMoves } from '../logic/monster.js';
@@ -13,7 +13,7 @@ import * as Items from '../logic/items.js';
 import * as P from '../logic/progress.js';
 import { habitatsOf } from '../logic/encounters.js';
 import { PROFILES } from '../engine/renderer.js';
-import { ACTIONS, ACTION_LABELS, glyph } from '../core/input.js';
+import { ACTIONS, ACTION_LABELS } from '../core/input.js';
 
 const TABS = [['team', 'Team'], ['dex', 'Taschidex'], ['bag', 'Tasche'], ['quests', 'Quests'], ['map', 'Karte'], ['card', 'Trainer'], ['options', 'Optionen'], ['system', 'System']];
 export const fmtTime = (s) => Math.floor(s / 3600) + ' h ' + String(Math.floor(s / 60) % 60).padStart(2, '0') + ' min';
@@ -32,7 +32,7 @@ function monCard(game, m, i, onclick, extra = {}) {
   const sp = SPECIES[m.id], max = maxHp(m);
   return h('button.card.focusable' + (i === 0 ? '.lead' : '') + (m.hp <= 0 ? '.fainted' : ''), { onclick, ...extra },
     portrait(game, m.id),
-    h('div.meta', {}, h('div.name', {}, nameOf(m) + (m.shiny ? ' ✨' : '') + (game.save.companion === m.uid ? ' 🐾' : '') + '  ', h('span.muted', {}, 'Lv ' + m.lv)), h('div', {}, typeBadge(sp.type), sp.type2 ? typeBadge(sp.type2) : null, m.status ? h('span.status', { style: { background: STATUS[m.status].color } }, STATUS[m.status].short) : null),
+    h('div.meta', {}, h('div.name', {}, nameOf(m) + (m.shiny ? ' ✨' : '') + (game.save.companion === m.uid ? ' 🐾' : '') + (m.held ? ' 🎒' : '') + '  ', h('span.muted', {}, 'Lv ' + m.lv)), h('div', {}, typeBadge(sp.type), sp.type2 ? typeBadge(sp.type2) : null, m.status ? h('span.status', { style: { background: STATUS[m.status].color } }, STATUS[m.status].short) : null),
       hpBar(m.hp, max), h('div.sub', {}, m.hp + ' / ' + max + ' KP')));
 }
 
@@ -87,7 +87,7 @@ const TAB_RENDER = {
     const s = game.save;
     const cats = {};
     for (const id of ITEM_ORDER) if (s.bag[id] > 0) (cats[ITEMS[id].category] ||= []).push(id);
-    const blocks = Object.entries(cats).map(([cat, ids]) => h('div', {}, h('h3', {}, CATEGORY_NAMES[cat]), h('div.list', {}, ids.map(id => h('button.row.focusable', { onclick: () => Items.usableOutside(id) ? useItemFlow(game, id, rerender) : game.ui.say([{ text: ITEMS[id].name + ': ' + ITEMS[id].desc }]) },
+    const blocks = Object.entries(cats).map(([cat, ids]) => h('div', {}, h('h3', {}, CATEGORY_NAMES[cat]), h('div.list', {}, ids.map(id => h('button.row.focusable', { onclick: () => Items.usableOutside(id) ? useItemFlow(game, id, rerender) : ITEMS[id].category === 'held' ? useItemFlow(game, id, rerender, true) : game.ui.say([{ text: ITEMS[id].name + ': ' + ITEMS[id].desc }]) },
       h('div.grow', {}, h('b', {}, ITEMS[id].name), h('div.muted', {}, ITEMS[id].desc)), h('span.right', {}, '×' + s.bag[id]))))));
     return h('div', {}, h('p', {}, h('span.pill', {}, '★ ' + s.coins + ' Sternmünzen')), blocks.length ? blocks : h('p', {}, 'Deine Tasche ist leer.'));
   },
@@ -169,10 +169,13 @@ const TAB_RENDER = {
       row('Totzone', slider('deadzone', 0.04, 0.4, 0.02, pct)),
       h('h3', {}, 'Tastatur (frei belegbar)'),
       h('div.list', {}, ACTIONS.map(a => h('button.row.focusable', { onclick: () => { ui.toast('Drücke eine Taste für „' + ACTION_LABELS[a] + '“ (Esc bricht ab)'); game.input.startRemapKey(a, (ok) => { if (ok) ui.toast('Belegt!'); rerender(); }); } }, h('div.grow', {}, ACTION_LABELS[a]), h('span.right', {}, game.input.keyLabel(a))))),
+      h('h3', {}, 'Steuerung auf einen Blick'),
+      controlsTable(game),
       h('h3', {}, 'Controller'),
+      row('Tastenlayout', h('button.chip.focusable', { onclick: () => { game.input.setPadLayout(st.get('padLayout') === 'switch' ? 'xbox' : 'switch'); rerender(); ui.toast('Controller: ' + PAD_LAYOUT_NAMES[st.get('padLayout')]); } }, PAD_LAYOUT_NAMES[st.get('padLayout')] || 'Eigene Belegung')),
       h('p.muted', {}, pad ? '🎮 Verbunden: ' + pad.id.slice(0, 60) + ' (' + game.input.padType + ')' : 'Kein Controller erkannt. Verbinde einen Controller per Bluetooth/USB und drücke eine Taste.'),
-      h('div.list', {}, ACTIONS.map(a => h('button.row.focusable', { onclick: () => { if (!game.input.pad) { ui.toast('Kein Controller verbunden.'); return; } ui.toast('Drücke eine Controller-Taste für „' + ACTION_LABELS[a] + '“'); game.input.startRemapPad(a, () => { ui.toast('Belegt!'); rerender(); }); } }, h('div.grow', {}, ACTION_LABELS[a]), h('span.right', {}, glyph(game.input.padType, st.get('pad')[a]) ?? '–')))),
-      h('div.optrow', {}, h('button.chip.focusable', { onclick: () => { st.reset(['keys', 'pad']); rerender(); ui.toast('Standardbelegung wiederhergestellt'); } }, 'Standardbelegung'),
+      h('div.list', {}, ACTIONS.map(a => h('button.row.focusable', { onclick: () => { if (!game.input.pad) { ui.toast('Kein Controller verbunden.'); return; } ui.toast('Drücke eine Controller-Taste für „' + ACTION_LABELS[a] + '“'); game.input.startRemapPad(a, () => { ui.toast('Belegt!'); rerender(); }); } }, h('div.grow', {}, ACTION_LABELS[a]), h('span.right', {}, game.input.padLabel(a))))),
+      h('div.optrow', {}, h('button.chip.focusable', { onclick: () => { st.reset(['keys', 'pad', 'padLayout']); rerender(); ui.toast('Standardbelegung wiederhergestellt'); } }, 'Standardbelegung'),
         h('button.chip.focusable', { onclick: () => game.toggleFullscreen() }, 'Vollbild an/aus')));
   },
   system(game) {
@@ -188,6 +191,17 @@ const TAB_RENDER = {
   }
 };
 
+const PAD_LAYOUT_NAMES = { switch: 'Nintendo Switch (A bestätigt, B zurück)', xbox: 'Xbox / PlayStation (unten bestätigt)', custom: 'Eigene Belegung' };
+// Eine Bedienung für alle Geräte: dieselben Aktionen auf Tastatur, Controller und Touch
+function controlsTable(game) {
+  const inp = game.input, touch = { up: 'Joystick', confirm: 'Antippen / Aktion', back: '✕ oben rechts', menu: '☰', run: '🏃', team: '◉', map: '🗺', tabPrev: 'Reiter antippen', camLeft: 'Wischen' };
+  const rows = [['up', 'Bewegen / Auswahl'], ['confirm', 'Bestätigen / Sprechen'], ['back', 'Zurück / Abbrechen'], ['menu', 'Menü'], ['run', 'Rennen (halten)'], ['team', 'Team'], ['map', 'Karte'], ['tabPrev', 'Reiter wechseln'], ['camLeft', 'Kamera drehen']];
+  const key = (a) => a === 'up' ? 'WASD / Pfeile' : a === 'tabPrev' ? inp.keyLabel('tabPrev').split(' / ')[0] + ' / ' + inp.keyLabel('tabNext').split(' / ')[0] : a === 'camLeft' ? 'Maus ziehen, ' + inp.keyLabel('camLeft') + '/' + inp.keyLabel('camRight') : a === 'confirm' ? inp.keyLabel(a) + ', Linksklick' : a === 'back' ? inp.keyLabel(a) + ', Rechtsklick' : inp.keyLabel(a);
+  const pad = (a) => a === 'up' ? 'L-Stick / Steuerkreuz' : a === 'tabPrev' ? inp.padLabel('tabPrev') + ' / ' + inp.padLabel('tabNext') : a === 'camLeft' ? 'R-Stick, ' + inp.padLabel('camLeft') + '/' + inp.padLabel('camRight') : inp.padLabel(a);
+  return h('div.ctrltable', {}, h('b', {}, 'Aktion'), h('b', {}, 'Tastatur & Maus'), h('b', {}, 'Controller'), h('b', {}, 'Touch'),
+    rows.map(([a, label]) => [h('span', {}, label), h('span', {}, key(a)), h('span', {}, pad(a)), h('span', {}, touch[a] || '–')]));
+}
+
 // ------------------------------------------------------------------ status page
 export function openStatus(game, m, after) {
   const s = game.save, sp = SPECIES[m.id];
@@ -200,7 +214,8 @@ export function openStatus(game, m, after) {
         'EP', h('div.bar.xp', {}, h('i', { style: { width: m.xp / xpToNext(m.lv) * 100 + '%' } })), h('b', {}, m.xp + '/' + xpToNext(m.lv))),
       (() => { const n = natureOf(m), ab = abilityOf(m.id), L = { atk: 'Angriff', def: 'Verteidigung', speed: 'Initiative' };
         return h('div.list', {}, h('div.row', {}, h('div.grow', {}, h('b', {}, 'Wesen: ' + n.name + (m.shiny ? '  ✨ schillernd' : '')), h('div.muted', {}, n.up ? L[n.up] + ' +10 %, ' + L[n.down] + ' −10 %' : 'Keine Wertänderung'))),
-          h('div.row', {}, h('div.grow', {}, h('b', {}, 'Fähigkeit: ' + ab.name), h('div.muted', {}, ab.text)))); })(),
+          h('div.row', {}, h('div.grow', {}, h('b', {}, 'Fähigkeit: ' + ab.name), h('div.muted', {}, ab.text))),
+          h('button.row.focusable', { onclick: () => openHeldPicker(game, m, () => { game.ui.pop(screen); openStatus(game, m, after); }) }, h('div.grow', {}, h('b', {}, '🎒 Trägt: ' + (m.held ? ITEMS[m.held].name : 'nichts')), h('div.muted', {}, m.held ? ITEMS[m.held].desc : 'Gib deinem Taschi eine Beere oder ein Band – es wirkt im Kampf von selbst.')), h('span.right', {}, 'Ändern'))); })(),
       h('h3', {}, 'Attacken'),
       h('div.list', {}, m.moves.map(x => { const mv = MOVES[x.id]; return h('div.row', {}, h('div.grow', {}, typeBadge(mv.type), ' ', h('b', {}, mv.name), h('div.muted', {}, (mv.power ? 'Stärke ' + mv.power + ' · ' : 'Status · ') + 'Genauigkeit ' + Math.round(mv.acc * 100) + '% ' + (mv.desc ? '· ' + mv.desc : ''))), h('span.right', {}, x.pp + '/' + mv.pp + ' AP')); })),
       h('h3', {}, 'Entwicklung'),
@@ -210,7 +225,7 @@ export function openStatus(game, m, after) {
         h('button.chip.focusable', { onclick: () => { const i = s.team.indexOf(m); if (i > 0) { s.team.splice(i, 1); s.team.unshift(m); game.world.refreshFollower(); game.ui.toast(nameOf(m) + ' führt jetzt das Team an.'); } } }, 'An die Spitze'),
         h('button.chip.focusable', { onclick: () => { s.companion = s.companion === m.uid ? undefined : m.uid; game.world.refreshFollower(); game.ui.toast(s.companion ? nameOf(m) + ' ist jetzt dein Begleiter.' : 'Begleiter: erstes Taschi im Team.', '🐾'); game.ui.pop(screen); openStatus(game, m, after); } }, s.companion === m.uid ? '🐾 Begleiter (aktiv)' : '🐾 Als Begleiter'),
         h('button.chip.focusable', { onclick: () => openMoveManager(game, m, () => { game.ui.pop(screen); openStatus(game, m, after); }) }, 'Attacken verwalten'),
-        h('button.chip.focusable', { onclick: async () => { const n = prompt('Spitzname für ' + sp.name + ' (leer = keiner):', m.nick || ''); if (n !== null) { m.nick = n.trim().slice(0, 14) || undefined; game.ui.toast('Gespeichert'); } } }, 'Spitzname'))));
+        h('button.chip.focusable', { onclick: async () => { const n = await game.ui.textEntry({ title: 'Spitzname für ' + sp.name, value: m.nick || '', max: 14, placeholder: 'leer = kein Spitzname' }); if (n !== null) { m.nick = n || undefined; game.ui.toast('Gespeichert'); game.ui.pop(screen); openStatus(game, m, after); } } }, 'Spitzname'))));
   const screen = { el: panel(game, nameOf(m) + ' · Lv ' + m.lv, body) };
   screen.onBack = () => game.ui.pop(screen);
   screen.onClose = () => { game.preview.detach(); after && after(); };
@@ -273,9 +288,10 @@ export function openDexEntry(game, id) {
   requestAnimationFrame(() => { const v = screen.el.querySelector('#dexview'); if (v) { game.preview.attach(v); game.preview.showCreature(id); } });
 }
 
-function useItemFlow(game, id, rerender) {
+function useItemFlow(game, id, rerender, give = false) {
   const s = game.save;
-  const screen = { el: panel(game, ITEMS[id].name + ' benutzen', h('div', {}, h('p.muted', {}, ITEMS[id].desc), h('div.grid', {}, s.team.map((m, i) => monCard(game, m, i, () => {
+  const screen = { el: panel(game, ITEMS[id].name + (give ? ' zum Tragen geben' : ' benutzen'), h('div', {}, h('p.muted', {}, ITEMS[id].desc), h('div.grid', {}, s.team.map((m, i) => monCard(game, m, i, () => {
+    if (give) { const r = Items.giveHeld(s.bag, m, id); game.audio.sfx(r.ok ? 'item' : 'error'); game.ui.pop(screen); game.ui.toast(r.text, '🎒'); rerender(); return; }
     const res = Items.useFromBag(s.bag, id, m);
     game.audio.sfx(res.ok ? 'heal' : 'error');
     game.ui.pop(screen);
@@ -284,6 +300,19 @@ function useItemFlow(game, id, rerender) {
     else game.ui.toast(res.text);
     rerender();
   })))), { small: true }) };
+  screen.onBack = () => game.ui.pop(screen);
+  game.ui.push(screen);
+}
+
+// Tragen: Gegenstand aus der Tasche anlegen oder abnehmen
+function openHeldPicker(game, m, done) {
+  const s = game.save, own = HELD_IDS.filter(id => s.bag[id] > 0);
+  const pick = (fn) => { const r = fn(); game.audio.sfx(r.ok ? 'item' : 'error'); game.ui.toast(r.text, '🎒'); game.ui.pop(screen); done && done(); };
+  const body = h('div', {}, h('div.list', {},
+    m.held ? h('button.row.focusable', { onclick: () => pick(() => Items.takeHeld(s.bag, m)) }, h('div.grow', {}, h('b', {}, ITEMS[m.held].name + ' abnehmen'))) : null,
+    own.map(id => h('button.row.focusable', { onclick: () => pick(() => Items.giveHeld(s.bag, m, id)) }, h('div.grow', {}, h('b', {}, ITEMS[id].name), h('div.muted', {}, ITEMS[id].desc)), h('span.right', {}, '×' + s.bag[id])))),
+    own.length || m.held ? null : h('p.muted', {}, 'Keine Gegenstände zum Tragen. Beeren und Bänder gibt es im Laden.'));
+  const screen = { el: panel(game, nameOf(m) + ' trägt …', body, { small: true }) };
   screen.onBack = () => game.ui.pop(screen);
   game.ui.push(screen);
 }

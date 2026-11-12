@@ -362,6 +362,12 @@ export function waterDistance(L, x, z) {
   return d;
 }
 
+// Wasser zum Angeln (Seen, Flüsse, Meer, Buchten – keine Lava, kein Eis, keine Wolken)
+export function fishingWater(L, x, z) {
+  L._fish ||= { water: L.water.filter(w => ['lake', 'river', 'sea', 'bay'].includes(w.kind)) };
+  return L._fish.water.length > 0 && waterDistance(L._fish, x, z) < -0.6;
+}
+
 function computeHeights(L, noise) {
   const n = CELLS + 1, H = new Float32Array(n * n), WD = new Float32Array(n * n);
   const amp = L.cfg.hill;

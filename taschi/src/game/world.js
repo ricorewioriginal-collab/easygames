@@ -5,7 +5,7 @@ import { THREE } from '../engine/three.js';
 import { REGIONS } from '../data/regions.js';
 import { SPECIES } from '../data/species.js';
 import { TRAINERS } from '../data/trainers.js';
-import { buildLayout, grassAt } from '../logic/layout.js';
+import { buildLayout, grassAt, fishingWater } from '../logic/layout.js';
 import { FREE } from '../logic/walkgrid.js';
 import { buildRegionMap, paletteFor } from '../world/region-map.js';
 import { buildInterior } from '../world/interiors.js';
@@ -364,6 +364,12 @@ export class World {
       if (facing > 2.0 && d > 1.2) continue;
       const score = d + facing * 0.8;
       if (score < bestScore) { bestScore = score; best = e; }
+    }
+    // Ufer: vor der Spielfigur liegt Wasser → Angeln
+    const c = this.current;
+    if (!best && c.type === 'region' && this.save.flags.firstQuest) {
+      const ax = p.x + Math.sin(ry) * 2.2, az = p.z + Math.cos(ry) * 2.2;
+      if (fishingWater(c.layout, ax, az)) best = this.fishSpot = Object.assign(this.fishSpot || { id: 'fish', kind: 'fish', r: 1, label: 'Wasser', prompt: 'Angeln' }, { x: ax, z: az });
     }
     return best;
   }

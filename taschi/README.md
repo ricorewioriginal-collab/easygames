@@ -39,6 +39,16 @@ Geprüft: `npm test` (31 Tests inklusive Durchlauf-Simulation bis zum Sternenmei
 - **Zotik als legendäres Taschi:** Klon aus Professor Ulmes missglücktem Experiment mit der Lichtkammer, steht in Sonnenhain vor der Glaskuppel; Kampf ab dem Moos-Siegel (Stufe 16, Normal/Feuer, Attacke Lichtklinge). Im Labor erzählt die zerbrochene Lichtkammer die Geschichte, zu Hause in Sonnenhain warten Mama und Papa.
 - Test: `node tests/e2e/zotik.mjs [Bildordner]`; Figurenansicht: `tools/viewer.html?mode=players` (mit `&zotik=1`).
 
+## Steuerung für alle Geräte und neue Sammel-Features (November 2026)
+
+- **Eine Bedienung für Touch, Tastatur+Maus und Controller:** Jedes Menü, jeder Kampf, jeder Dialog und jetzt auch die Namenseingabe (Bildschirmtastatur statt Browser-Abfrage) sind mit jedem Gerät bedienbar.
+- **Controller wie auf der Nintendo Switch** (Standard): A (rechts) bestätigt, B (unten) zurück, X (oben) oder + Menü, Y (links) halten = rennen, − Karte, L/R Reiter, ZL/ZR und rechter Stick Kamera, linker Stick drücken = Team. Umschaltbar auf Xbox/PlayStation-Belegung unter Einstellungen › Controller › Tastenlayout; frei belegbar wie bisher. Alte unveränderte Standardbelegungen wechseln einmal automatisch auf Switch, eigene Belegungen bleiben.
+- **Maus:** Zeigen markiert Einträge, Linksklick wählt, Rechtsklick = zurück.
+- **Steuerung auf einen Blick:** Übersicht aller Aktionen für Tastatur, Controller und Touch in den Einstellungen.
+- **Angeln:** Am Ufer von Seen, Flüssen, Meer und Buchten erscheint „Angeln“ (Angel von Anglerin Mira beim ersten Mal). Reaktionsspiel: beim „❗“ sofort bestätigen. Am Haken hängen vor allem Wasser- und Eis-Taschis, manchmal ein größeres.
+- **Getragene Gegenstände:** Heilbeere, Klarbeere, Lernband, Kraftband, Fokusband – im Laden, anlegen über Team › Taschi › „🎒 Trägt“ oder die Tasche. Wirken im Kampf von selbst, Beeren und Fokusband werden verbraucht.
+- Tests: `tests/controls-held.test.mjs`, Browsertest `node tests/e2e/controls.mjs [Bildordner]` (simulierter Switch Pro Controller).
+
 ## Steuerung und Menüs
 
 - PC: WASD/Pfeiltasten bewegen, E = Interaktion, Escape = Pause.

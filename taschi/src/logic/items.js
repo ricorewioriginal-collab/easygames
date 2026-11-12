@@ -75,6 +75,25 @@ export function applyItem(id, m, { inBattle = false } = {}) {
   return { ok: false, text: 'Das kann hier nicht benutzt werden.' };
 }
 
+// Getragene Gegenstände: geben legt ihn aus der Tasche an, ein vorher
+// getragener wandert zurück in die Tasche. Returns { ok, text }.
+export function giveHeld(bag, m, id) {
+  const it = ITEMS[id], name = m.nick || SPECIES[m.id].name;
+  if (!it || it.category !== 'held') return { ok: false, text: 'Das kann man nicht tragen.' };
+  if (count(bag, id) <= 0) return { ok: false, text: 'Nicht mehr vorrätig.' };
+  if (m.held === id) return { ok: false, text: name + ' trägt das schon.' };
+  remove(bag, id);
+  const old = m.held; if (old) add(bag, old);
+  m.held = id;
+  return { ok: true, text: name + ' trägt jetzt ' + it.name + (old ? ' (' + ITEMS[old].name + ' zurück in die Tasche)' : '') + '.' };
+}
+export function takeHeld(bag, m) {
+  if (!m.held) return { ok: false, text: 'Es trägt nichts.' };
+  const id = m.held; add(bag, id); delete m.held;
+  return { ok: true, text: ITEMS[id].name + ' ist wieder in der Tasche.' };
+}
+export const heldEffect = (m) => (m && m.held && ITEMS[m.held]?.held) || null;
+
 // Field use: applies, consumes and performs evolution. Returns result.
 export function useFromBag(bag, id, m) {
   if (count(bag, id) <= 0) return { ok: false, text: 'Nicht mehr vorrätig.' };
