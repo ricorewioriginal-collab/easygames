@@ -6,6 +6,8 @@ import { clamp, lerp } from '../util';
 /**
  * Zielschuss: Schießbude. Spielfeld-Koordinaten: X in [-1.6, 1.6] (rechts positiv), Y in [-1, 1] (oben positiv),
  * das Fadenkreuz wird entweder mit dem Zeiger (px*1.6, py) oder per Tasten/Stick bewegt. Schuss: A oder Klick (Flanke).
+ * Treffer in Folge steigern den Multiplikator (bis ×3), Fehlschüsse und Bomben setzen ihn zurück.
+ * Drei Phasen: Aufwärmen → Wackelziele → Finale (alle Punkte doppelt).
  */
 export type TargetKind = 'duck' | 'fast' | 'big' | 'bonus' | 'decoy' | 'pop';
 export interface Target {
@@ -32,6 +34,8 @@ export interface ZielState {
   ppy: number;
   prevA: boolean;
   prevPd: boolean;
+  /** Ticks, die eine Richtungstaste schon gehalten wird (Fadenkreuz beschleunigt) */
+  keyHold: number;
   ammo: number;
   reload: number; // > 0: lädt nach (Ticks)
   cooldown: number;
@@ -42,33 +46,48 @@ export interface ZielState {
   hits: number;
   shots: number;
   decoys: number;
+  /** Treffer in Folge (Fehlschuss/Bombe = 0) */
+  combo: number;
+  bestCombo: number;
   /** letzter Schuss für die Ansicht */
   shotSeq: number;
-  lastShot: { x: number; y: number; id: number; pts: number; kind: TargetKind | '' };
+  lastShot: { x: number; y: number; id: number; pts: number; kind: TargetKind | ''; mult: number };
   over: boolean;
 }
 
 export const X_MAX = 1.6;
 export const MAG = 6;
-export const RELOAD_TICKS = 70;
-const MAX_TICKS = 25 * 60;
-const ROW_Y = [0.55, 0.05, -0.45];
-const KEY_SPEED = 2.6 / 60;
+export const RELOAD_TICKS = 60;
+export const MAX_TICKS = 25 * 60;
+/** Ab hier wackeln die Ziele (Phase 2) */
+export const PHASE2_TICK = 8 * 60;
+/** Ab hier zählt alles doppelt (Finale) */
+export const FINALE_TICK = 19 * 60;
+export const ROW_Y = [0.55, 0.05, -0.45];
+const KEY_MIN = 1.3 / 60;
+const KEY_MAX = 4.2 / 60;
 
 export const pointsOf = (k: TargetKind): number =>
-  ({ duck: 10, fast: 30, big: 10, bonus: 60, decoy: -40, pop: 25 })[k];
+  ({ duck: 10, fast: 25, big: 10, bonus: 50, decoy: -30, pop: 20 })[k];
+
+/** Aktuelle Phase: 0 Aufwärmen, 1 Wackelziele, 2 Finale */
+export const phaseOf = (tick: number): 0 | 1 | 2 => (tick >= FINALE_TICK ? 2 : tick >= PHASE2_TICK ? 1 : 0);
+/** Multiplikator für den nächsten Treffer bei `combo` Treffern in Folge */
+export const multOf = (combo: number): number => Math.min(3, 1 + Math.floor(combo / 4));
 
 function spawn(s: ZielState): void {
   const h = s.hz;
   const d = clamp(s.tick / MAX_TICKS, 0, 1);
+  const ph = phaseOf(s.tick);
   const roll = h.next();
   let kind: TargetKind = 'duck';
-  if (roll < 0.2) kind = 'decoy';
-  else if (roll < 0.28 + d * 0.04) kind = 'bonus';
+  if (roll < 0.18 + d * 0.06) kind = 'decoy';
+  else if (roll < 0.27 + d * 0.04 + (ph === 2 ? 0.06 : 0)) kind = 'bonus';
   else if (roll < 0.5) kind = 'fast';
-  else if (roll < 0.62) kind = 'big';
+  else if (roll < 0.6) kind = 'big';
   else if (roll < 0.78) kind = 'pop';
   const id = s.nextId++;
+  const shrink = lerp(1, 0.78, d);
   if (kind === 'pop') {
     const y = h.float(-0.7, 0.8);
     const x = h.float(-1.35, 1.35);
@@ -78,10 +97,11 @@ function spawn(s: ZielState): void {
       x,
       y0: y,
       y,
-      vx: 0,
-      r: 0.17,
+      // ab Phase 2 rutschen Pop-ups seitlich
+      vx: ph >= 1 ? h.float(-0.35, 0.35) / 60 : 0,
+      r: 0.17 * shrink,
       age: 0,
-      life: Math.round(lerp(95, 62, d)),
+      life: Math.round(lerp(90, 55, d)),
       amp: 0,
       freq: 0,
       pts: pointsOf('pop'),
@@ -89,11 +109,11 @@ function spawn(s: ZielState): void {
   } else {
     const row = h.int(3);
     const dir = row % 2 === 0 ? 1 : -1;
-    const base = { duck: 0.62, fast: 1.15, big: 0.4, bonus: 1.05, decoy: 0.7 }[kind];
-    const spd = base * lerp(1, 1.4, d) * h.float(0.9, 1.15);
-    const r = { duck: 0.16, fast: 0.115, big: 0.22, bonus: 0.115, decoy: 0.15 }[kind];
+    const base = { duck: 0.62, fast: 1.15, big: 0.42, bonus: 1.1, decoy: 0.7 }[kind];
+    const spd = base * lerp(1, 1.55, d) * h.float(0.9, 1.15);
+    const r = { duck: 0.16, fast: 0.115, big: 0.22, bonus: 0.115, decoy: 0.15 }[kind] * shrink;
     const y0 = (ROW_Y[row] as number) + h.float(-0.04, 0.04);
-    const wob = kind === 'bonus' || kind === 'fast';
+    const wob = kind === 'bonus' || kind === 'fast' || (ph >= 1 && kind !== 'big');
     s.targets.push({
       id,
       kind,
@@ -104,12 +124,12 @@ function spawn(s: ZielState): void {
       r,
       age: 0,
       life: 0,
-      amp: wob ? h.float(0.06, 0.16) : 0,
+      amp: wob ? h.float(0.06, ph >= 1 ? 0.2 : 0.14) : 0,
       freq: h.float(0.05, 0.09),
       pts: pointsOf(kind),
     });
   }
-  s.nextSpawn = s.tick + Math.round(lerp(34, 18, d) * h.float(0.7, 1.3));
+  s.nextSpawn = s.tick + Math.round(lerp(30, 15, d) * h.float(0.7, 1.3));
 }
 
 /** Position eines Ziels `dt` Ticks später (für Vorhalt und Bot) */
@@ -119,19 +139,23 @@ export function targetAt(t: Target, dt: number): { x: number; y: number } {
 
 export const score = (s: ZielState): number => Math.max(0, s.points);
 
+/** Bot lässt sich von einer Bombe täuschen? (fest je Ziel, damit er nicht jedes Bild neu würfelt) */
+const fooledBy = (id: number, skill: number): boolean =>
+  ((Math.imul(id + 7, 0x9e3779b1) >>> 8) % 1000) / 1000 < (1 - skill) * 0.4;
+
 export const game: MiniGame<ZielState> = {
   id: 'zielschuss',
   name: 'Zielschuss',
-  tagline: 'Triff, was sich bewegt – aber nicht die Köder!',
+  tagline: 'Treffer in Serie – aber Finger weg von den Bomben!',
   instructions: [
-    'Zielen: Maus oder Finger bewegen, Klick/Tippen schießt. Alternativ Pfeiltasten bewegen das Fadenkreuz, Leertaste schießt.',
-    'Enten, Raketen und Pop-ups bringen Punkte, goldene Sterne die meisten.',
-    'Finger weg von den schwarzen Bomben – sie kosten Punkte!',
-    'Sechs Schuss pro Magazin, dann lädt die Bude nach. B lädt früher nach.',
+    'Zielen und schießen: Maus/Finger tippt direkt aufs Ziel, oder Pfeile/Stick bewegen das Fadenkreuz und A schießt.',
+    'Treffer in Folge steigern den Multiplikator bis ×3 – ein Fehlschuss oder eine Bombe setzt ihn zurück.',
+    'Goldene Sterne bringen am meisten. In den letzten 6 Sekunden zählt alles doppelt!',
+    'Sechs Schuss pro Magazin; B lädt früher nach.',
   ],
   controls: {
-    desktop: 'Maus zielen + Klick, oder Pfeile/WASD + Leertaste; B lädt nach',
-    touch: 'Finger ziehen zum Zielen, Antippen schießt',
+    desktop: 'Maus zielen + Klick, oder Pfeile/WASD + Leertaste; B/Shift lädt nach',
+    touch: 'Ziel antippen schießt',
   },
   category: 'aim',
   duration: 25,
@@ -148,6 +172,7 @@ export const game: MiniGame<ZielState> = {
       ppy: 0,
       prevA: false,
       prevPd: false,
+      keyHold: 0,
       ammo: MAG,
       reload: 0,
       cooldown: 0,
@@ -158,8 +183,10 @@ export const game: MiniGame<ZielState> = {
       hits: 0,
       shots: 0,
       decoys: 0,
+      combo: 0,
+      bestCombo: 0,
       shotSeq: 0,
-      lastShot: { x: 0, y: 0, id: 0, pts: 0, kind: '' },
+      lastShot: { x: 0, y: 0, id: 0, pts: 0, kind: '', mult: 1 },
       over: false,
     };
   },
@@ -168,7 +195,9 @@ export const game: MiniGame<ZielState> = {
     s.tick++;
     // Fadenkreuz
     const ptrMoved = input.px !== s.ppx || input.py !== s.ppy;
-    const keys = Math.abs(input.x) > 0.05 || Math.abs(input.y) > 0.05;
+    const ix = clamp(Number.isFinite(input.x) ? input.x : 0, -1, 1);
+    const iy = clamp(Number.isFinite(input.y) ? input.y : 0, -1, 1);
+    const keys = Math.abs(ix) > 0.05 || Math.abs(iy) > 0.05;
     if (ptrMoved || (input.pd && !s.prevPd)) s.usePtr = true;
     else if (keys) s.usePtr = false;
     s.ppx = input.px;
@@ -176,9 +205,15 @@ export const game: MiniGame<ZielState> = {
     if (s.usePtr) {
       s.cx = clamp(input.px, -1, 1) * X_MAX;
       s.cy = clamp(input.py, -1, 1);
+      s.keyHold = 0;
     } else {
-      s.cx = clamp(s.cx + clamp(input.x, -1, 1) * KEY_SPEED, -X_MAX, X_MAX);
-      s.cy = clamp(s.cy + clamp(input.y, -1, 1) * KEY_SPEED, -1, 1);
+      s.keyHold = keys ? s.keyHold + 1 : 0;
+      // Tasten/Stick: beschleunigt beim Halten, über einem Ziel bremst das Fadenkreuz (leichte Zielhilfe)
+      let sp = lerp(KEY_MIN, KEY_MAX, clamp(s.keyHold / 22, 0, 1));
+      if (s.targets.some((t) => t.kind !== 'decoy' && Math.hypot(t.x - s.cx, t.y - s.cy) < t.r)) sp *= 0.55;
+      const len = Math.max(1, Math.hypot(ix, iy));
+      s.cx = clamp(s.cx + (ix / len) * sp, -X_MAX, X_MAX);
+      s.cy = clamp(s.cy + (iy / len) * sp, -1, 1);
     }
     // Ziele
     if (s.tick >= s.nextSpawn) spawn(s);
@@ -216,14 +251,28 @@ export const game: MiniGame<ZielState> = {
         }
       }
       s.shotSeq++;
+      const fin = phaseOf(s.tick) === 2 ? 2 : 1;
       if (best) {
-        const perfect = bd < best.r * 0.3 && best.pts > 0 ? 5 : 0;
-        s.points += best.pts + perfect;
         s.hits++;
-        if (best.pts < 0) s.decoys++;
-        s.lastShot = { x: best.x, y: best.y, id: best.id, pts: best.pts + perfect, kind: best.kind };
+        if (best.pts < 0) {
+          s.decoys++;
+          s.combo = 0;
+          s.points = Math.max(0, s.points + best.pts * fin);
+          s.lastShot = { x: best.x, y: best.y, id: best.id, pts: best.pts * fin, kind: best.kind, mult: 1 };
+        } else {
+          const perfect = bd < best.r * 0.3 ? 5 : 0;
+          const mult = multOf(s.combo) * fin;
+          const pts = (best.pts + perfect) * mult;
+          s.combo++;
+          s.bestCombo = Math.max(s.bestCombo, s.combo);
+          s.points += pts;
+          s.lastShot = { x: best.x, y: best.y, id: best.id, pts, kind: best.kind, mult };
+        }
         s.targets = s.targets.filter((t) => t !== best);
-      } else s.lastShot = { x: s.cx, y: s.cy, id: 0, pts: 0, kind: '' };
+      } else {
+        s.combo = 0;
+        s.lastShot = { x: s.cx, y: s.cy, id: 0, pts: 0, kind: '', mult: 1 };
+      }
     }
     if (s.tick >= MAX_TICKS) s.over = true;
   },
@@ -231,15 +280,14 @@ export const game: MiniGame<ZielState> = {
   score,
   bot(s, skill, rng): InputFrame {
     const react = Math.round(lerp(40, 9, skill));
-    const botSpeed = lerp(2.2, 4.2, skill) / 60; // Fadenkreuz-Bewegung je Tick (Bruchteil einer Handbewegung)
-    const noise = lerp(0.1, 0.012, skill);
+    const botSpeed = lerp(2.0, 4.2, skill) / 60; // Fadenkreuz-Bewegung je Tick (Bruchteil einer Handbewegung)
+    const noise = lerp(0.11, 0.012, skill);
     let best: Target | null = null;
     let bv = -Infinity;
     for (const t of s.targets) {
       if (t.age < react) continue;
       if (t.kind === 'pop' && t.life - t.age < 14) continue;
-      const fooled = t.kind === 'decoy' && rng.next() < (1 - skill) * 0.5;
-      const val = t.kind === 'decoy' ? (fooled ? 30 : -999) : t.pts;
+      const val = t.kind === 'decoy' ? (fooledBy(t.id, skill) ? 30 : -999) : t.pts;
       const d = Math.hypot(t.x - s.cx, t.y - s.cy);
       const v = val - d * 14;
       if (v > bv) {
@@ -278,9 +326,19 @@ export const game: MiniGame<ZielState> = {
     const lowAmmo = s.ammo > 0 && s.ammo < 3 && s.targets.length === 0 && s.reload === 0;
     return { ...NEUTRAL_INPUT, px: clamp(nx / X_MAX, -1, 1), py: clamp(ny, -1, 1), pd: fire, b: lowAmmo };
   },
-  hud: (s) => ({
-    left: s.reload > 0 ? 'Lädt nach …' : `Munition ${'●'.repeat(s.ammo)}${'○'.repeat(MAG - s.ammo)}`,
-    right: `${score(s)} Pkt`,
-    hint: s.hits ? `${s.hits} Treffer / ${s.shots} Schüsse` : undefined,
-  }),
+  hud: (s) => {
+    const fin = phaseOf(s.tick) === 2;
+    const m = multOf(s.combo) * (fin ? 2 : 1);
+    return {
+      left: s.reload > 0 ? 'Lädt nach …' : `Munition ${'●'.repeat(s.ammo)}${'○'.repeat(MAG - s.ammo)}`,
+      right: `${score(s)} Pkt`,
+      hint: fin
+        ? `FINALE ×${m}!`
+        : m > 1
+          ? `Serie ${s.combo} · ×${m}`
+          : s.tick < 150
+            ? 'Triff in Serie!'
+            : undefined,
+    };
+  },
 };
