@@ -12,7 +12,10 @@
  *     eins öffnet): Steuerkreuz/Stick wählt, A tippt, B löscht (bei leerem Feld: zu), X Leerzeichen, Y groß, LB/RB Cursor,
  *     Select 123, Start fertig (Enter).
  *   - Spiele mit eigener Controller-Steuerung (info): Fenster in der Bildmitte, die das Spiel nicht selbst bedient (z. B. „Game Over“),
- *     steuert gamepad.js – Steuerkreuz/Stick wählt, A klickt, B „Zurück/Schließen“.
+ *     steuert gamepad.js – Steuerkreuz/Stick wählt, A klickt, B „Zurück/Schließen“ (ohne solchen Knopf: Esc).
+ *     menu=<CSS-Selektor> (z. B. data-pad="info menu=.screen,.pause"): Menü-Bildschirme des Spiels (Lobby, Spind, Einstellungen, Pause),
+ *     auch bildschirmfüllende, führt gamepad.js sofort wie an der Konsole – Hauptknopf (.primary/[autofocus]/[data-pad-first]) gleich gewählt,
+ *     Schieberegler mit ←/→, Textfelder erst mit A; solange sieht das Spiel den Controller nicht.
  *   - Menüs ohne Pfeiltasten-Steuerung: Das Steuerkreuz springt zwischen sichtbaren Knöpfen (Leuchtrahmen), A klickt.
  *     Das passiert nur, wenn das Spiel die Pfeiltaste selbst nicht verarbeitet (kein preventDefault, keine sofortige Änderung
  *     an der Seite); data-pad="nonav" schaltet es ab.
@@ -186,6 +189,7 @@
     if (t === 'nonav') { opt.nav = false; return; }
     if (t === 'info') return;
     var hm = /^hud=(select|l3|r3|off)$/.exec(t); if (hm) { opt.hud = hm[1]; return; }
+    if (t.indexOf('menu=') === 0) { opt.menu = t.slice(5).replace(/_/g, ' '); return; }   // Menü-Bildschirme des Spiels (CSS-Selektor, Komma = mehrere): dort führt gamepad.js
     if (t === 'dlg=off') { opt.dlg = false; return; }   // Spiel führt selbst durch alle seine Fenster: keine Fenster-Hilfe   // Taste zum Halten für die Bildschirm-Knöpfe (info-Spiele), Standard Select
     var i = t.indexOf('='); if (i < 0) return;
     var k = t.slice(0, i), v = t.slice(i + 1), at = v.indexOf('@'), sel = '';
@@ -319,7 +323,8 @@
   }
   var HERE = String(root.location && root.location.pathname || '').replace(/[^\/]*$/, '');
   function side(e) {
-    if (e.closest && e.closest('header,nav,[role=banner],[role=navigation]')) return true;
+    var hn = e.closest ? e.closest('header,nav,[role=banner],[role=navigation]') : null;   // Kopf-/Navigationsleiste – nicht ein ganzes Hauptmenü, das als <nav> gebaut ist
+    if (hn && hn.getBoundingClientRect().height < root.innerHeight * 0.3) return true;
     var l = e.closest ? e.closest('a[href]') : null; if (!l) return false;
     try { var u = new root.URL(l.getAttribute('href'), root.location.href); return u.origin !== root.location.origin || u.pathname.replace(/[^\/]*$/, '') !== HERE; } catch (x) { return false; }
   }
@@ -327,7 +332,9 @@
     var list = candidates(); if (!list.length) return null;
     var cur = focusEl && usable(focusEl), best = null, bestScore = Infinity, i, c;
     if (!cur) {   // erster Druck: oberster, dann linkester Knopf – Kopfzeile (Logo, Symbolleiste) und Links aus dem Spiel hinaus erst, wenn es sonst nichts gibt
-      for (i = 0; i < list.length; i++) if ((list[i].e.tagName === 'BUTTON' || list[i].e.getAttribute('role') === 'button') && !side(list[i].e)) return list[i];   // erster Knopf des Spiels (Reihenfolge der Seite), nicht ein Auswahlfeld daneben
+      for (i = 0; i < list.length; i++) { c = list[i]; if (/^(INPUT|SELECT|TEXTAREA|A)$/.test(c.e.tagName) || side(c.e) || /google/i.test(c.e.textContent + ' ' + (c.e.getAttribute('aria-label') || ''))) continue;   // oberster, dann linkester Knopf des Spiels (auch Kacheln mit Klick-Handler) – kein Auswahlfeld, keine Kopfzeile, kein Konto-Knopf
+        var s0 = Math.round(c.r.top / 8) * 1e5 + c.r.left; if (s0 < bestScore) { bestScore = s0; best = c; } }
+      if (best) return best; bestScore = Infinity;
       for (i = 0; i < list.length; i++) { c = list[i]; var s = Math.round(c.r.top / 8) * 1e5 + c.r.left + (side(c.e) ? 1e9 : 0); if (s < bestScore) { bestScore = s; best = c; } }
       return best;
     }
@@ -402,6 +409,13 @@
     return true;
   }
   function navigate(dir) {
+    // Schieberegler (Lautstärke, Empfindlichkeit): links/rechts verstellt ihn wie an der Konsole, hoch/runter wechselt die Zeile
+    if (dir > 1 && focusEl && focusEl.tagName === 'INPUT' && focusEl.type === 'range' && usable(focusEl)) {
+      var v0 = focusEl.value; try { if (dir === 3) focusEl.stepUp(); else focusEl.stepDown(); } catch (x) { }
+      if (focusEl.value === v0) { var st = +focusEl.step || ((+focusEl.max || 100) - (+focusEl.min || 0)) / 20; focusEl.value = String(+v0 + (dir === 3 ? st : -st)); }
+      if (focusEl.value !== v0) { focusEl.dispatchEvent(new Event('input', { bubbles: true })); focusEl.dispatchEvent(new Event('change', { bubbles: true })); }
+      drawRing(); return;
+    }
     // Spiel arbeitet mit echtem Fokus (z. B. „Los geht's“ blau umrandet): dort weitermachen und den Fokus mitnehmen – sonst zwei Markierungen
     var a = doc.activeElement, real = a && a !== doc.body && /^(BUTTON|A|INPUT|SELECT|TEXTAREA)$/.test(a.tagName) && (!scopeEl || scopeEl.contains(a)) && usable(a);
     if (real && (!focusEl || !usable(focusEl))) focusEl = a;
@@ -420,6 +434,16 @@
     focusEl = c.e; drawRing(); cursorUntil = 0; show(cursor, false);
     try { if (c.e.scrollIntoView) c.e.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (e) {}
   }
+  // Hauptknopf eines Fensters in der Bildmitte („Los geht's“, „OK“, „Weiter“ …), sonst der erste Knopf außer Schließen/Zurück
+  var OK_RX = /^\W*(los|ok|weiter|start|starten|spielen|fertig|bestätigen|übernehmen|ja|annehmen|auswählen|eröffnen|verstanden|alles klar)/i;
+  function firstInWin() {
+    var wb = winBox(); if (!wb) return false;
+    var keep = scopeEl; scopeEl = wb; var l = candidates(), c = null, i; scopeEl = keep;
+    for (i = 0; i < l.length && !c; i++) if (OK_RX.test((l[i].e.textContent || '').trim())) c = l[i];
+    for (i = 0; i < l.length && !c; i++) if (!BACK_RX.test((l[i].e.textContent || l[i].e.getAttribute('aria-label') || '').trim().slice(0, 30)) && !oskField(l[i].e)) c = l[i];
+    if (!c) return false;
+    focusEl = c.e; drawRing(); cursorUntil = 0; show(cursor, false); return true;
+  }
   function activate() {
     var c = focusEl && usable(focusEl); if (!c) { clearRing(); return false; }
     if (oskField(c.e)) { try { c.e.focus(); } catch (x) {} oskOpen(c.e); return true; }
@@ -433,9 +457,7 @@
     // Der Knopf hat ein neues Fenster geöffnet (er selbst ist weg): Rahmen gleich auf dessen ersten Knopf – wie an der Konsole ist sofort etwas gewählt
     root.setTimeout(function () {
       if (dlg || osk || menu || !padOn || (focusEl && usable(focusEl))) return;
-      var wb = winBox(), keep = scopeEl; if (!wb) return;
-      scopeEl = wb; focusEl = null; var f = pick(0); scopeEl = keep;
-      if (f) { focusEl = f.e; drawRing(); }
+      focusEl = null; firstInWin();
     }, 300);
     return true;
   }
@@ -483,7 +505,7 @@
       if (!s.b[HB] || s.b[9]) selT = 0;
       else if (selT && now - selT > 500) { selT = 0; hudMode(); return; }
     }
-    if (opt.info && opt.dlg !== false && now > dlgT) { dlgT = now + 250; dlgCheck(); }   // Fenster des Spiels (z. B. „Game Over“), das die eigene Controller-Steuerung nicht kennt
+    if (opt.info && (opt.dlg !== false || opt.menu) && now > dlgT) { dlgT = now + 250; dlgCheck(); }   // Fenster des Spiels (z. B. „Game Over“), das die eigene Controller-Steuerung nicht kennt
     if (opt.info && opt.dlg !== false) candTick(s, p, now);
     if (dlg) { dlgTick(now); return; }
     if (opt.info && cand && !cand.ok) stickScroll(s.rs[0], s.rs[1], dt);   // Fenster mit langer Liste: rechter Stick scrollt
@@ -528,6 +550,7 @@
         var u1 = send(alt[0], true); alt2[i] = !u1 && alt[1] ? alt[1] : '';
         var u2 = alt2[i] ? send(alt2[i], true) : false;
         if (i === 1 && !u1 && !u2) backWin();   // B wie an der Konsole: schließt das offene Fenster, wenn das Spiel die Taste nicht selbst nimmt
+        if (i === 0 && !u1 && !u2 && opt.nav && !focusEl && now - gameNavT > 4000) firstInWin();   // A ohne Wirkung bei offenem Fenster: Leuchtrahmen auf dessen Hauptknopf, das nächste A wählt ihn
       } else if (!s.b[i] && p.b[i]) {
         if (i === 0 && aMode === 'mouse') { var up = pointer('up', cx, cy); mouseDown = false; if (up && downEl && !pointer.ate && (up === downEl || up.contains(downEl) || downEl.contains(up))) click(up, cx, cy); downEl = null; if (!STAY) cursorUntil = now + 4000; aMode = ''; continue; }
         if (i === 0 && aMode === 'nav') { aMode = ''; continue; }
@@ -739,6 +762,7 @@
     oskVis = now;
     if (nf > 1 || (fresh && busyForm(fresh))) return false;   // mehrere Felder auf einmal (Formular, z. B. drei Welten mit Startwert): nicht ungefragt hineinspringen – A auf dem Feld öffnet die Tastatur
     if (!fresh || menu || (a && a !== doc.body && oskField(a))) return false;
+    if (opt.menu) { try { var ms = fresh.closest(opt.menu); if (ms && !(a && ms.contains(a) && a === fresh)) return false; } catch (x) { } }   // Feld auf einem Menü-Bildschirm (z. B. Raumcode in der Lobby): erst A auf dem Feld öffnet die Tastatur
     try { fresh.focus({ preventScroll: true }); } catch (x) { } oskOpen(fresh); return true;
   }
   // Fokus kommt aufs Textfeld: Tastatur auf – außer man wandert gerade mit dem Steuerkreuz durchs Menü (dann erst mit A)
@@ -756,7 +780,7 @@
   // ---------- Dialog-Hilfe (Spiele mit eigener Controller-Steuerung, data-pad="info") ----------
   // Liegt in der Bildmitte ein Fenster mit Knöpfen (kein Spielbild) und hat das Spiel den Fokus nicht selbst hineingesetzt, übernimmt
   // gamepad.js: Steuerkreuz/Stick wählt (Leuchtrahmen), A klickt, B nimmt „Zurück/Schließen/Menü“. Das Spiel sieht den Controller solange nicht.
-  var dlg = null, dlgT = 0, BACK_RX = /zur(ü|ue)ck|schlie(ß|ss)en|abbrechen|weiter spielen|fortsetzen|nein|^\s*[✕×x]\s*$/i;
+  var dlg = null, dlgT = 0, BACK_RX = /zur(ü|ue)ck|schlie(ß|ss)en|abbrechen|weiter ?spielen|weiterfahren|fortsetzen|nein|^\s*[✕×x←]\s*$/i;
   function overlayAt() {
     var el = doc.elementFromPoint(root.innerWidth / 2, root.innerHeight / 2);
     if (!el || el === doc.body || el === doc.documentElement || el.tagName === 'CANVAS' || el.tagName === 'IFRAME' || el.tagName === 'VIDEO') return null;
@@ -800,19 +824,39 @@
     cand.miss++;   // zweimal ohne Wirkung (der erste Druck weckt in manchen Spielen nur die Controller-Steuerung)
     if (cand.miss >= 2) dlgTake(cand.el);
   }
+  // Menü-Bildschirm des Spiels (data-pad="info menu=.screen"): oberster sichtbarer Treffer mit Knöpfen – dort wählt gamepad.js sofort
+  // (Steuerkreuz/Stick, A, B = Zurück), wie im Hauptmenü einer Konsole; das Spiel sieht den Controller solange nicht
+  function menuAt() {
+    if (!opt.menu) return null;
+    var l; try { l = doc.querySelectorAll(opt.menu); } catch (e) { return null; }
+    for (var i = l.length - 1; i >= 0; i--) {
+      var e = l[i]; if (!e.getClientRects().length || root.getComputedStyle(e).visibility === 'hidden') continue;
+      var any = e.querySelectorAll(SEL), k; for (k = 0; k < any.length; k++) if (usable(any[k])) return e;
+      for (k = 0; k < any.length; k++) if (!any[k].disabled && below(any[k])) return e;   // Knöpfe erst nach dem Scrollen sichtbar
+    }
+    return null;
+  }
   function dlgCheck() {
     if (dlg && dlg.manual) return;
-    var b = overlayAt();
+    var m = menuAt(), b = opt.dlg !== false ? overlayAt() : null;
+    if (m && (!b || m.contains(b) || b.contains(m))) b = m; else m = null;   // Fenster über dem Menü (Bestätigung) hat Vorrang
     if (dlg && b === dlg.el) return;
     if (dlg && !b) { dlg = null; scopeEl = null; clearRing(); if (NORM && NORM.hold && !menu && !osk) NORM.hold(false); prev = {}; candSet(null); return; }
-    if (!dlg) { candSet(b); return; }
-    dlgTake(b);
+    if (!dlg && !m) { candSet(b); return; }
+    dlgTake(b, !!m);
   }
-  function dlgTake(b) {
+  function dlgTake(b, isMenu) {
     releaseAll(); scopeEl = b;
-    dlg = { el: b, prev: oskState(), next: 0 };
+    var keep = isMenu && focusEl && b.contains(focusEl) && usable(focusEl) ? focusEl : null;   // derselbe Bildschirm neu gezeichnet: Auswahl bleibt
+    dlg = { el: b, prev: dlg ? dlg.prev : oskState(), next: 0, menu: !!isMenu };
     if (NORM && NORM.hold) NORM.hold(true);
-    var c = pick(0); if (c) { focusEl = c.e; drawRing(); }   // gleich den ersten Knopf wählen: A klickt sofort
+    if (keep) { drawRing(); return; }
+    var c = null, i, ft = isMenu && focusEl && !focusEl.isConnected ? (focusEl.textContent || '').trim() : '';
+    if (ft) { var same = b.querySelectorAll(focusEl.tagName); for (i = 0; i < same.length && !c; i++) if ((same[i].textContent || '').trim() === ft) c = usable(same[i]); }   // Bildschirm neu aufgebaut: gleicher Knopf wieder gewählt
+    var pf = b.querySelectorAll('[data-pad-first],[autofocus],.primary,.btn.primary');   // Hauptknopf zuerst (z. B. „Spielen“), sonst der erste Knopf
+    for (i = 0; i < pf.length && !c; i++) c = usable(pf[i]);
+    if (!c && isMenu) { var cl = candidates(); for (i = 0; i < cl.length && !c; i++) if (!BACK_RX.test((cl[i].e.textContent || '').trim().slice(0, 30)) && !side(cl[i].e)) c = cl[i]; }   // Menü: erster Eintrag, nicht „← Zurück“ in der Ecke
+    c = c || pick(0); if (c) { focusEl = c.e; drawRing(); } else clearRing();   // gleich einen Knopf wählen: A klickt sofort
   }
   var selT = 0, hudTip = null;
   function hudEnd() { dlg = null; scopeEl = null; clearRing(); show(hudTip, false); if (NORM && NORM.hold && !menu && !osk) NORM.hold(false); prev = {}; dlgT = 0; }
@@ -867,6 +911,7 @@
       var list = candidates(), back = null;
       for (var i = 0; i < list.length && !back; i++) if (BACK_RX.test(list[i].e.textContent || list[i].e.getAttribute('aria-label') || '')) back = list[i];
       if (back) { focusEl = back.e; activate(); dlgT = 0; }
+      else { send('Escape', true); send('Escape', false); dlgT = 0; }   // kein Zurück-Knopf: wie Esc auf der Tastatur (schließt Karte, Rad, Pause …)
     }
   }
   function legendBox() { if (!legendEl) legendEl = el('left:50%;top:auto;bottom:16px;transform:translateX(-50%);max-width:92vw;padding:10px 14px;border-radius:14px;background:rgba(8,10,20,.9);color:#fff;font:600 13px/1.55 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.5);text-align:left;columns:2 220px;column-gap:20px'); return legendEl; }
