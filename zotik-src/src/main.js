@@ -2874,7 +2874,8 @@ function ruinDress(n,wc){const D=DG(),R=mul32(5150+n*37),g=new T.Group();g.userD
   const bc=[0x8a1a2a,0x1a3a8a,0x2a6a3a,0x6a2a7a][n%4];for(const s of [-1,1])D.banner(g,s*4.5,3.3,333.4,0,bc);
   const cp=mk(G.box,TX.tri('plaster',bc,{s:2,gain:1.4,n:.3}),0,.02,350,2.2,.03,30,false);cp.receiveShadow=true;g.add(cp);
   for(const s of [-1,1]){D.brazier(g,s*3.6,334.6,fl);D.statue(g,s*10.8,366,Math.PI,wc)}
-  const sp=[];for(const z of [336,343,351,358,362])for(const s of [-1,1])sp.push([s*11.3,z+R()*1.5,s>0?0:Math.PI]);D.clutter(g,sp,R,{rock:wc,h:3})}
+  const sp=[];for(const z of [336,343,351,358,362])for(const s of [-1,1])sp.push([s*11.3,z+R()*1.5,s>0?0:Math.PI]);D.clutter(g,sp,R,{rock:wc,h:3});
+  const fp=[];for(let z=337;z<366;z+=3.2)for(const s of [-1,1])fp.push([s*(9.4+R()*.8),z]);D.floor(g,fp,R,{slab:0xa8a090})}
 function ruinGo(x,z,face,inside){$('fade').style.opacity=1;setTimeout(()=>{pl.x=x;pl.z=z;pl.y=hgt(x,z);pl.vx=pl.vz=0;pl.face=face;camYaw=face+Math.PI;camTarget.set(pl.x,pl.y+1.5,pl.z);camPos.set(pl.x,pl.y+4,pl.z+(inside?8:-8));fel.x=pl.x+1;fel.z=pl.z+1;placeParty();lockOff();$('fade').style.opacity=0;if(inside)banner('Werkzeug-Ruine','Schiebe, sprenge, brenne, friere');},400)}
 function ruinSpot(h,blk,path,R){for(let t=0;t<400;t++){const z=-70-R()*60,side=R()<.5?-1:1,x=path(z)+side*(9+R()*6);if(Math.abs(x)>110)continue;let ok=!blk(x,z)&&h(x,z)<5.5;for(let a=0;a<8&&ok;a++){const px=x+Math.cos(a*.785)*3,pz=z+Math.sin(a*.785)*3;if(blk(px,pz))ok=false}
     if(ok&&COL.some(c=>Math.hypot(c.x-x,c.z-z)<c.r+3.2))ok=false;if(ok)return[x,z]}return[path(-90)+8,-90]}

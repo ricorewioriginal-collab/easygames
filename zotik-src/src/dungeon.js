@@ -100,7 +100,27 @@ export function createDungeon({ T, TX, M, mk, G, glow, scene }) {
     if (o.cave !== false) cavern(par, cav, o.glow || 0x7fa8ff, R, o.rock); else clut.push(...cav);
     clutter(par, clut, R, { rock: o.rock, h: o.h });
     for (const [x, z, a] of stat.slice(0, o.statues ?? 6)) (R() < .5 ? statue(par, x, z, Math.atan2(-Math.cos(a), -Math.sin(a)), o.stone) : brazier(par, x, z, o.flame));
+    floor(par, cellPts(g, N, cx, cz, o.skip), R, { slab: o.rock ? new T.Color(o.rock).lerp(new T.Color(0xb0a898), .5).getHex() : undefined });
     return sp.length;
   }
-  return { walls, rockGeo, rockMat, torch, cavern, column, brazier, statue, banner, clutter, gridSpots, dress };
+  // Bodendetails: Pfützen (spiegelnd), Moosflecken, lose und gekippte Bodenplatten, Risse – flach, ohne Kollision.
+  // pts: freie Punkte [x, z]; Platten sind gebrochen und schief, damit man sie nicht mit Druckplatten verwechselt.
+  function floor(par, pts, R, o = {}) {
+    const n = pts.length, ob = new T.Object3D();
+    const mkI = (geo, mat, cap) => { const im = new T.InstancedMesh(geo, mat, cap); im.count = 0; im.receiveShadow = true; im.frustumCulled = false; par.add(im); return im; };
+    const pud = mkI(G.cyl, new T.MeshStandardMaterial({ color: o.water || 0x1a2a3a, roughness: .04, metalness: .6, transparent: true, opacity: .78 }), n);
+    const moss = mkI(G.cyl, TX.tri('grass', o.moss || 0x4a7a3a, { s: 1.2, gain: 1.6, n: .4 }), n * 3);
+    const slab = mkI(G.box, TX.tri('stone', o.slab || 0x8a8478, { s: .9, gain: 2.1, e: 0x1a140e, ei: 1 }), n * 4);
+    const crack = mkI(G.box, M(0x0c0a0a, { r: 1 }), n * 3);
+    const put = (im, x, y, z, sx, sy, sz, rx, ry, rz) => { ob.position.set(x, y, z); ob.rotation.set(rx || 0, ry || 0, rz || 0); ob.scale.set(sx, sy, sz); ob.updateMatrix(); im.setMatrixAt(im.count++, ob.matrix); };
+    for (const [x, z] of pts) { const r = R(), jx = (R() - .5) * 1.6, jz = (R() - .5) * 1.6;
+      if (r < .28) { const s = .7 + R() * .9; put(pud, x + jx, .025, z + jz, s, .01, s * (.6 + R() * .4), 0, R() * 6); }
+      else if (r < .55) { for (let i = 0; i < 1 + (R() * 3 | 0); i++) { const s = .4 + R() * .8; put(moss, x + jx + (R() - .5) * 1.2, .02, z + jz + (R() - .5) * 1.2, s, .015, s * (.5 + R() * .5), 0, R() * 6); } }
+      else if (r < .85) { for (let i = 0; i < 2 + (R() * 3 | 0); i++) { const w = .5 + R() * .5; put(slab, x + jx + (R() - .5) * 1.8, .05, z + jz + (R() - .5) * 1.8, w, .08 + R() * .06, w * (.6 + R() * .4), (R() - .5) * .12, R() * 6, (R() - .5) * .12); } }
+      else { for (let i = 0; i < 3; i++) put(crack, x + jx + (R() - .5) * 1.2, .012, z + jz + (R() - .5) * 1.2, .05, .01, .5 + R() * .8, 0, R() * 6); } }
+    for (const im of [pud, moss, slab, crack]) im.instanceMatrix.needsUpdate = true;
+  }
+  // freie Zellmitten eines Rasters (für floor)
+  const cellPts = (g, N, cx, cz, skip) => { const out = []; for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) if (!g[i][j] && !(skip && skip(i, j))) out.push([cx(i), cz(j)]); return out; };
+  return { walls, rockGeo, rockMat, torch, cavern, column, brazier, statue, banner, clutter, gridSpots, dress, floor, cellPts };
 }
