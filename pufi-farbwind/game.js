@@ -1522,7 +1522,8 @@ function title() {
     { label: 'BONUSSPIELE', fn: openBonusMenu },
     { label: 'OPTIONEN', fn: openOptions },
     { label: 'STEUERUNG', fn: openHelp },
-    { label: 'GOOGLE-SPEICHER', fn: openCloud }
+    { label: 'GOOGLE-SPEICHER', fn: openCloud },
+    { label: '◀ 3D-NEUAUFLAGE', fn: () => { location.href = './'; } }
   ]);
 }
 // Bonusspiele aus dem Hauptmenü: Ballonjagd sofort, die anderen nach Insel 1 bzw. 2.

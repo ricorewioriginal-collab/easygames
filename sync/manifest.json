@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9c5bca7d35f7",
- "generated": "2026-11-12T20:03:41+00:00",
- "commit": "70c48c8dcdf72fd5e8ddc6f94dc14aafa511681f",
+ "version": "756f7910a345",
+ "generated": "2026-11-12T21:10:21+01:00",
+ "commit": "7cc7da573ce0668d2c1c92d65edf287d7e1e621f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6053,8 +6053,8 @@
   },
   {
    "p": "games.js",
-   "s": 58087,
-   "h": "ef8c96035613cdaf947dd7e498e5d16ee9ac4042931c793452c0999998b296f7"
+   "s": 58035,
+   "h": "72592a424bc819994dfd4f8f80cc860a741448d9a2888c0376f6c40691eb6f6c"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6288,8 +6288,8 @@
   },
   {
    "p": "guides.js",
-   "s": 173584,
-   "h": "0d729ba6d3378d68d6c143f668379438d0e30ce9c146d20cabbeda7890145123"
+   "s": 172998,
+   "h": "2283dd7fe9be73391a6e7c425f4eb8c17bf859939f63c92a947854126b98221f"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6618,8 +6618,8 @@
   },
   {
    "p": "guides/pufi-farbwind.json",
-   "s": 16540,
-   "h": "6c858fc05cf2852c2a2847caa963521ede9cf242e37a530ec09ac2d7ad7f6ff5"
+   "s": 27922,
+   "h": "85a8c01c3ef8f0b6841c888b7cc7d510b09ed5be2140fd06cc945e9ce188bfd2"
   },
   {
    "p": "guides/radio-bingo.json",
@@ -8172,17 +8172,117 @@
    "h": "43171da5b421d853149f55533f85dcd51b7fa7cd8ea880dd75bfbb2b8b322bc0"
   },
   {
+   "p": "pufi-farbwind/3d/grafik.js",
+   "s": 46234,
+   "h": "95f11819d60b547f8e2e27e0670559ff4db4da7f0cf2b30515b6b5f5c4c8d145"
+  },
+  {
+   "p": "pufi-farbwind/3d/klang.js",
+   "s": 19749,
+   "h": "4cb8cb23143a9d8e6573055b7b1e77fffae0f6b9039f16ee2536fdcb26ab4721"
+  },
+  {
+   "p": "pufi-farbwind/3d/spiel.js",
+   "s": 78047,
+   "h": "14d1a5b8009a35d07a08d42bc14350fc8cb157e2ef059c773e68db8d42d76197"
+  },
+  {
+   "p": "pufi-farbwind/3d/stil.css",
+   "s": 15395,
+   "h": "5e1188332f36355b30a459feeebde7ff914bd53fdef87d364a259b317c8f1188"
+  },
+  {
+   "p": "pufi-farbwind/3d/welten.js",
+   "s": 17191,
+   "h": "e8fa77659dc75815eb5fa4335ba5caed521f3ca839ba74227efd4e4a9c7a789d"
+  },
+  {
+   "p": "pufi-farbwind/assets/retro-bloecke.png",
+   "s": 23103,
+   "h": "2ceef2ad6bb440f57511fa5d006ea3877250fce44355d697dc7e53019c05330b"
+  },
+  {
+   "p": "pufi-farbwind/assets/sfx/button.mp3",
+   "s": 2061,
+   "h": "fffed1fba48f2627bbdedecd1739822b0c25411ba63667d912419581c2eb5642"
+  },
+  {
+   "p": "pufi-farbwind/assets/sfx/gift.mp3",
+   "s": 2061,
+   "h": "120cdebec3abb59ed9478ed2ffb5a8b327b3bfade888255b8d4a9cec30a4748d"
+  },
+  {
+   "p": "pufi-farbwind/assets/sfx/hit.mp3",
+   "s": 2061,
+   "h": "406e3599e13d194cac9526e1f13a06660f614353ef9fa2e7689fd7e47aa40c84"
+  },
+  {
+   "p": "pufi-farbwind/assets/sfx/hurt.mp3",
+   "s": 1809,
+   "h": "e69a7874474b6d6dc394f27e8f506f70c1027a88d571d06d7aaf938098acbbcf"
+  },
+  {
+   "p": "pufi-farbwind/assets/sfx/jump.mp3",
+   "s": 2313,
+   "h": "293a4fef2c251d8b9c8b4bdce7dfae8a53d8afe343534b8ad360f2a0de49b3a8"
+  },
+  {
+   "p": "pufi-farbwind/assets/sfx/kid-jump.mp3",
+   "s": 1557,
+   "h": "6ac54426f4bcf78859d34ec4b9370f0bff976c6935f46ae8fac8fc7446db9899"
+  },
+  {
+   "p": "pufi-farbwind/assets/sfx/kid.mp3",
+   "s": 4329,
+   "h": "a3c0bf66c052162a0e5620d62e3a76685e6e114dd88c8f925c67104028c89f5e"
+  },
+  {
+   "p": "pufi-farbwind/assets/sfx/leaf.mp3",
+   "s": 1557,
+   "h": "68d75684ee3d606aa2eccab326525fadc8622ba0f43531a86d7e06cb6859fd58"
+  },
+  {
+   "p": "pufi-farbwind/assets/sfx/life.mp3",
+   "s": 1557,
+   "h": "3b51d1cdca627353fa36e04f361b085dbc5f4a44baa181f6858d5a6e5f239df4"
+  },
+  {
+   "p": "pufi-farbwind/assets/sfx/on-ground.mp3",
+   "s": 1053,
+   "h": "6cf34c5afb864f09364a528132dc38d01c8b11b44222cbe01178c5de56456bd4"
+  },
+  {
+   "p": "pufi-farbwind/assets/sfx/shoot-normal.mp3",
+   "s": 1053,
+   "h": "ddaa4c6e214da8671513a88c80f5ea87ee90d203b2e2ffb6091803ca3da8d784"
+  },
+  {
+   "p": "pufi-farbwind/assets/sfx/super-jump.mp3",
+   "s": 6093,
+   "h": "6fc317e596d11fda227385e9fa3b299e192c8f93afc2447cf77f4e3a95da5800"
+  },
+  {
+   "p": "pufi-farbwind/assets/sfx/ultra-jump.mp3",
+   "s": 12141,
+   "h": "d24522efa56ebf2e22d5a3158de5a4e20f20dfc52d9c5665069c0673f0d1b794"
+  },
+  {
    "p": "pufi-farbwind/card.svg",
    "s": 2632,
    "h": "b3432523e5c0523d136976adb03ae398984c1a2f34de1582c085b82a447444a8"
   },
   {
    "p": "pufi-farbwind/game.js",
-   "s": 127056,
-   "h": "afd5debebfcf41a3473a7264b6274450db3f73fa331d3c98a4848eb3489d296c"
+   "s": 127129,
+   "h": "954a2161d9b7582b5607f1fcb848e4282bc528fdb3ca866f34f91da02d88b359"
   },
   {
    "p": "pufi-farbwind/index.html",
+   "s": 4239,
+   "h": "2c39f01d2119610393be26a83907c175dc2928be8a584f3528b4929ceb4e35f6"
+  },
+  {
+   "p": "pufi-farbwind/klassik.html",
    "s": 13933,
    "h": "019b5a505b802b8ad9be2957f0dcdd354baa71d531da3974723e7e4d09c7dfea"
   },
@@ -8193,13 +8293,13 @@
   },
   {
    "p": "pufi-farbwind/manifest.webmanifest",
-   "s": 421,
-   "h": "dc555f7db2e8dc87dcedfadf1a6ca4afc58f5a0499d2a14b809c9f3e90451144"
+   "s": 442,
+   "h": "7a536524393223d4061f7afbc1aa4c902aa9b7aede35100e55c14700ba6992fe"
   },
   {
    "p": "pufi-farbwind/sw.js",
-   "s": 766,
-   "h": "6007c66a885e5feedaafd734d1df8e91266662290acdff1af68deb04ee30ef0a"
+   "s": 944,
+   "h": "90bfa02c357e6ec408e68b46c05cf8b53170bb256f575ba4e18763587d9d372a"
   },
   {
    "p": "radio-bingo/assets/fredoka-latin-wght-normal-DM6njrJ3.woff2",
@@ -9358,8 +9458,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 258362,
-   "h": "5c1d86524fc796b29f30fd8aa1af483abcb19f76a71696f08ba0bc780bb29d85"
+   "s": 257720,
+   "h": "d1d75f3481ecba0347803284f6776817aa10dd9553b719028a625d4b7f04dcb5"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

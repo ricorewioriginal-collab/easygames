@@ -2,14 +2,87 @@
   "id": "pufi-farbwind",
   "handbuch": [
     {
-      "t": "Ziel des Spiels",
+      "t": "Ziel des Spiels (3D-Neuauflage)",
+      "p": [
+        "„Pufi & der Farbwind 3D“ ist die Neuauflage des Insel-Abenteuers in echtem 3D: Du läufst frei über schwebende Inseln, die Kamera folgt dir und lässt sich drehen. Pufi trägt den kleinen Wolkentapir Tamo auf dem Rücken über drei Inseln mit je zwei Leveln – Blütenbucht, Honig & Wolken sowie Glut & Nebel. Im letzten Level wartet der Boss Brummnebel.",
+        "Bring Tamo durchs Farbtor am Ende jedes Levels. Unterwegs sammelst du Sterne, 8 rote Münzen und 5 Farbblüten für einen Bestwert bis 100 Punkte. Das Original mit 24 Leveln in 2D findest du im Hauptmenü unter „Klassik 2D“."
+      ]
+    },
+    {
+      "t": "Start und Hauptmenü",
+      "p": [
+        "Der Startbildschirm zeigt die Insel in 3D. Drück eine Taste, tippe oder drück A am Controller. Das Hauptmenü bedienst du mit Pfeiltasten und Enter, mit der Maus, per Touch oder mit Steuerkreuz und A (B geht zurück)."
+      ],
+      "list": [
+        "Abenteuer starten bzw. Weiterspielen: startet das höchste freigeschaltete Level.",
+        "Inselkarte: alle 6 Level mit Bestwert, Blüten und roten Münzen. Gesperrte Level zeigen ein Schloss.",
+        "Klassik 2D: öffnet das Original-Abenteuer mit 24 Leveln.",
+        "Optionen: Musik- und Effekt-Lautstärke, Ton an/aus, Grafikstufe (Automatisch, Hoch, Mittel, Niedrig), Kamera-Tempo, Kamera umkehren, automatische Kamera, Vibration, Controller-Belegung.",
+        "Steuerung: Übersicht für PC, Controller und Touch, dazu die Mitwirkenden.",
+        "Google-Speicher: Fortschritt, Bestwerte und Einstellungen geräteübergreifend sichern."
+      ]
+    },
+    {
+      "t": "Steuerung",
+      "list": [
+        "PC: W A S D oder Pfeiltasten laufen, Leertaste springen (halten = flattern), X oder J Zunge, C oder K Ei zielen und werfen, V, L oder Shift stampfen bzw. Ei legen, Maus ziehen oder Q/E dreht die Kamera, Mausrad zoomt, R setzt die Kamera hinter Pufi, Esc oder P Pause, M Musik, F Vollbild.",
+        "Controller: linker Stick laufen, rechter Stick Kamera, A springen und flattern, X Zunge, B, RB oder RT Ei zielen (halten) und werfen (loslassen), Y oder LB stampfen bzw. Ei legen, LT oder L3 Kamera hinter Pufi, Start Pause, Select Musik. Select und Start zusammen öffnen die Controller-Belegung.",
+        "Touch: linke Bildschirmhälfte Daumen-Stick, auf freier Fläche rechts wischen dreht die Kamera, A springen, B Ei (antippen zielt, nochmal tippen wirft), X Zunge, Y stampfen bzw. Ei legen, 🎥 Kamera hinter Pufi, Ⅱ Pause."
+      ]
+    },
+    {
+      "t": "Mechaniken",
+      "list": [
+        "Flattern: Halte Sprung nach dem höchsten Punkt – Pufi strampelt kurz nach oben und kommt weiter.",
+        "Zunge: fängt Muffel und Flattermotten. Mit vollem Mund legst du per Stampfen-Taste ein Ei oder spuckst den Gegner mit der Zunge-Taste wieder aus.",
+        "Eier: bis zu 6 folgen dir. Zielen zeigt eine Flugbahn; eine Zielhilfe richtet den Wurf auf Gegner, ?-Wolken und den Boss aus. Eier prallen zweimal ab und sammeln Münzen ein.",
+        "Eierblöcke: von unten anstoßen, anstampfen oder abwerfen – jedes Mal gibt es ein Ei.",
+        "Stampfen: in der Luft drücken – Pufi dreht sich und saust nach unten, besiegt Gegner im Umkreis und federt auf Pilzen besonders hoch.",
+        "?-Wolken: mit einem Ei treffen. Sie geben Sterne, eine Farbblüte oder lassen eine Wolkenbrücke erscheinen.",
+        "Farbwind: bunte Windsäulen tragen dich nach oben.",
+        "Pilze: federn dich hoch hinauf.",
+        "Honigstufen bröckeln kurz nach dem Betreten und kommen nach einigen Sekunden zurück.",
+        "Farbschalter: drauf springen oder stampfen – für 12 Sekunden werden die rosa Farbblöcke begehbar; am Ende blinken sie.",
+        "Retro-Zonen: Hinter einem Pixeltor wird die Welt zur pixeligen Seitenansicht mit Retro-Musik. Dort läufst du nur nach links und rechts – wie früher."
+      ]
+    },
+    {
+      "t": "Treffer, Sterne und Leben",
+      "p": [
+        "Wirst du getroffen, schwebt Tamo in einer Blase davon und der Sterne-Zähler läuft herunter. Berühre die Blase, bevor er 0 erreicht, sonst holen die Nebelgreifer Tamo und ein Leben ist weg. Sterne sammelst du einzeln; ein Farbring gibt +10 Sterne (höchstens 30) und ist zugleich Rücksetzpunkt. Fällst du ins Wasser, in Lava, ins Wolkenmeer oder in den Nebel, verlierst du ebenfalls ein Leben. Alle 100 Münzen gibt es ein Extraleben. Bei 0 Leben startest du das Level mit 5 Leben neu."
+      ]
+    },
+    {
+      "t": "Wertung und Speichern",
+      "p": [
+        "Am Farbtor zählen Sterne (bis 30), rote Münzen (8 Münzen = 20 Punkte) und Farbblüten (je 10 Punkte) zusammen bis 100 Punkte. Der Bestwert je Level, die gefundenen Blüten und roten Münzen sowie die freigeschalteten Level werden auf dem Gerät gespeichert, mit Google-Anmeldung auch in der Cloud."
+      ]
+    },
+    {
+      "t": "Gegner",
+      "list": [
+        "Muffel: flauschige Nebelbälle, die dir nachlaufen. Fangbar mit der Zunge, besiegbar durch Draufspringen.",
+        "Flattermotten: fliegen hin und her, fangbar und zum Draufspringen.",
+        "Igelkugeln: rollen hin und her, nicht fangbar – nur Eier oder ausweichen.",
+        "Schnappblüten: beißen, wenn du nah kommst. Nur mit Eiern zu besiegen.",
+        "Brummnebel (Boss, 3-2): schwebt durch die Arena, ruft Muffel herbei und stürzt sich mit einer Schockwelle auf den Boden. Spring über die Welle!"
+      ]
+    },
+    {
+      "t": "Grafik und Geräte",
+      "p": [
+        "Das Spiel läuft im Browser, in der App, am PC, am Fernseher mit Controller und am Handy. Die Grafikstufe „Automatisch“ wählt am Handy „Mittel“ und senkt bei Ruckeln die Auflösung. „Niedrig“ schaltet Schatten und Gras ab und hilft auf schwachen Geräten."
+      ]
+    },
+    {
+      "t": "Klassik 2D – Ziel des Spiels",
       "p": [
         "In „Pufi & der Farbwind“ trägt Pufi den kleinen Wolkentapir Tamo auf dem Rücken über sechs Inseln: Blütenbucht, Honigklippen, Pilzlichtwald, Federwolken, Kreidegrotten und die Farbwind-Festung. Jede Insel hat vier Level, das vierte ist immer eine Burg mit Boss. Insgesamt sind es 24 Level.",
         "Bring Tamo sicher ins Ziel und sammle unterwegs Sterne, rote Münzen und Farbblüten für einen Bestwert bis 100 Punkte. Nach dem Endboss in Level 6-4 heißt es: „DER FARBWIND IST FREI!“"
       ]
     },
     {
-      "t": "Start und Hauptmenü",
+      "t": "Klassik 2D – Start und Hauptmenü",
       "p": [
         "Nach dem Ladebildschirm tippst du zum Starten (am PC Start oder Enter). Im Hauptmenü siehst du ein eventuelles Bonus-Guthaben (♥ Leben, ● Münzen) für die nächste Runde."
       ],
@@ -23,7 +96,7 @@
       ]
     },
     {
-      "t": "Tamo, Sterne und Leben",
+      "t": "Klassik 2D – Tamo, Sterne und Leben",
       "list": [
         "Solange Tamo auf deinem Rücken sitzt, füllt sich der Sternezähler langsam auf 10 auf. Mit gesammelten Sternen kannst du bis zu 30 haben.",
         "Wird Pufi getroffen, schwebt Tamo in einer Blase davon und der Zähler läuft herunter – etwa alle 0,75 Sekunden ein Stern. Berühre die Blase, bevor der Zähler 0 erreicht.",
@@ -35,7 +108,7 @@
       ]
     },
     {
-      "t": "Zunge, Eier, Stampfen",
+      "t": "Klassik 2D – Zunge, Eier, Stampfen",
       "list": [
         "Zunge: Fang Gegner (Wuschel, Hüpfer, Flatterlinge) mit der Zunge. Mit ↑ schießt sie schräg nach oben. Stachelkugeln und Schnappblüten kann man nicht fressen.",
         "Im Mund: Drückst du ↓, legst du ein Ei. Drückst du Zunge oder Werfen, spuckst du den Gegner als Geschoss aus.",
@@ -48,7 +121,7 @@
       ]
     },
     {
-      "t": "Sammelobjekte und Level-Elemente",
+      "t": "Klassik 2D – Sammelobjekte und Level-Elemente",
       "list": [
         "★ Sterne: +1 Stern, bis 30.",
         "Münzen: zählen für Extraleben.",
@@ -63,7 +136,7 @@
       ]
     },
     {
-      "t": "Wertung am Ziel",
+      "t": "Klassik 2D – Wertung am Ziel",
       "list": [
         "Sterne beim Erreichen des Ziels: bis 30 Punkte.",
         "Rote Münzen: bis 20 Punkte (Anteil der gefundenen roten Münzen).",
@@ -72,7 +145,7 @@
       ]
     },
     {
-      "t": "Blüten-Roulette und Bonusspiele",
+      "t": "Klassik 2D – Blüten-Roulette und Bonusspiele",
       "list": [
         "Am Ziel dreht sich das Blüten-Roulette mit 10 Feldern. Jede gefundene Farbblüte färbt zwei Felder. Landet der Zeiger auf einer Blüte, startet ein zufälliges Bonusspiel.",
         "Mit allen fünf Farbblüten ist das Bonusspiel sicher, ohne Blüte gibt es keins.",
@@ -83,7 +156,7 @@
       ]
     },
     {
-      "t": "Bedienung",
+      "t": "Klassik 2D – Bedienung",
       "list": [
         "PC: ← → oder A D laufen, Leertaste springen (halten = flattern), X Zunge (mit ↑ schräg nach oben), C Ei zielen und werfen, ↓ oder S Ei legen bzw. in der Luft stampfen, Esc oder P Pause, F Vollbild, M Musik an/aus. Alle Buchstaben-Tasten belegst du unter OPTIONEN → ⌨️ TASTATUR um (Pfeiltasten und Esc bleiben immer); die Belegung bleibt auf dem Gerät gespeichert. Menüs: Pfeiltasten wählen, Enter bestätigt, Esc geht zurück.",
         "Controller (PlayStation, Switch, Xbox – USB oder Bluetooth): linker Stick oder Steuerkreuz laufen, A/✕ springen (halten = flattern), X/□ (oder LB/LT) Zunge, B/○ (oder RB/RT) Ei zielen und werfen, Y/△ Ei legen bzw. stampfen, rechter Stick zum Umsehen (beim Zielen zielt er direkt), Start Pausemenü, Select Musik an/aus. Hauptmenü, Pausemenü und alle Fenster gehen komplett mit dem Controller: Steuerkreuz wählt (leuchtender Rahmen), A bestätigt, B geht zurück bzw. schließt. Die Knopf-Symbole passen sich dem Controller an; unter OPTIONEN → 🎮 CONTROLLER stellst du Symbole und Bestätigen-Knopf (unten oder rechts wie bei Switch) ein, belegst Knöpfe um und lässt dir die Belegung zeigen (auch mit Select + Start).",
@@ -95,7 +168,33 @@
   ],
   "ratgeber": [
     {
-      "t": "Tipps für Einsteiger",
+      "t": "Tipps für den Einstieg",
+      "list": [
+        "Benutze den Schattenfleck unter Pufi, um Sprünge zu treffen – er zeigt genau, wo du landest.",
+        "Flattern rettet zu kurze Sprünge: Sprungtaste nach dem Höhepunkt gedrückt halten.",
+        "Fang am Levelanfang zwei, drei Muffel und leg Eier – damit öffnest du ?-Wolken und besiegst Igelkugeln.",
+        "Dreh die Kamera vor schwierigen Sprüngen hinter Pufi (R, LT/L3 oder 🎥)."
+      ]
+    },
+    {
+      "t": "Für Fortgeschrittene",
+      "list": [
+        "Die Zielhilfe richtet Eier auf Ziele im Blickfeld aus – zeig die Kamera grob in die Richtung und wirf.",
+        "Stampfen auf einem Pilz katapultiert dich noch höher als ein normaler Sprung.",
+        "Draufspringen auf Muffel federt dich hoch; mit gehaltener Sprungtaste noch höher.",
+        "Rote Münzen und Blüten liegen oft abseits: hinter Bäumen, auf kleinen Inseln unter Brücken, in Windsäulen und auf hohen Plattformen."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu lange auf Honigstufen stehen – sie bröckeln nach knapp einer Sekunde.",
+        "Den Farbschalter zu früh drücken – erst hinlaufen, dann stampfen, die Blöcke halten 12 Sekunden.",
+        "In der Retro-Zone nach vorn drücken – dort zählt nur links und rechts."
+      ]
+    },
+    {
+      "t": "Klassik 2D – Tipps für Einsteiger",
       "list": [
         "Halte immer zwei, drei Eier im Vorrat – sie lösen fast jedes Problem: Gegner, Flügelwolken, Bosse.",
         "Wird Tamo weggestoßen, sofort umdrehen und die Blase einsammeln. Die Blase treibt langsam durchs Bild und bleibt sichtbar.",
@@ -104,7 +203,7 @@
       ]
     },
     {
-      "t": "Insel für Insel",
+      "t": "Klassik 2D – Insel für Insel",
       "list": [
         "Blütenbucht: Wiesen, Hügel und kleine Gruben – ideal zum Üben. Die Burg 1-4 bewacht das Riesenwuschel.",
         "Honigklippen: bröckelnde Honigstufen – nicht stehen bleiben. Erste Stachelkugeln. In der Burg 2-4 wartet der Nebelfürst.",
@@ -115,7 +214,7 @@
       ]
     },
     {
-      "t": "Profi-Tricks",
+      "t": "Klassik 2D – Profi-Tricks",
       "list": [
         "Stampfen erledigt Gegner direkt beim Aufprall – auch mehrere, die nah beieinander stehen.",
         "Wirfst du Eier schräg gegen Wände oder die Decke, prallen sie ab. So triffst du Flügelwolken und Münzen hinter Ecken.",
@@ -125,7 +224,7 @@
       ]
     },
     {
-      "t": "Häufige Fehler",
+      "t": "Klassik 2D – Häufige Fehler",
       "list": [
         "Auf Stachelkugeln oder Schnappblüten springen – das verletzt dich. Ein Ei hilft.",
         "Auf Bröckelstegen stehen bleiben.",
@@ -136,7 +235,62 @@
   ],
   "loesung": [
     {
-      "t": "Die 24 Level im Überblick",
+      "t": "1-1 Blütenbucht",
+      "list": [
+        "Blüte 1: links hinter dem Busch auf der Startinsel. Rote Münze: rechts am Inselrand.",
+        "Blüte 2: auf der kleinen Insel links unter der Holzbrücke – runter springen, zurück geht es mit einem normalen Sprung. Dort liegt auch eine rote Münze.",
+        "Blüte 3 und eine rote Münze: mit dem Pilz auf der zweiten Insel auf die Steinplattform rechts.",
+        "?-Wolke links: mit einem Ei treffen, sie gibt Sterne; darunter eine rote Münze.",
+        "Blüte 4: auf der Steinplattform rechts auf der großen dritten Insel. Zwei rote Münzen liegen am Rand dieser Insel.",
+        "Rote Münze über dem Lift, Blüte 5 und eine rote Münze bei der Zielinsel – die Blüte hinter dem Farbtor."
+      ]
+    },
+    {
+      "t": "1-2 Farbwind-Höhen",
+      "list": [
+        "Spring in die erste Windsäule: Sie trägt dich zur hohen Insel. Unterwegs eine rote Münze und ganz oben Blüte 1.",
+        "Blüte 2: ganz rechts unten auf der kleinen Pilzinsel – hinunter springen, mit dem Pilz zurück.",
+        "Die ?-Wolke über der dritten kleinen Insel lässt eine Wolkenbrücke nach links erscheinen: dort Blüte 3 und eine rote Münze.",
+        "Mit dem senkrechten Lift auf die große Insel (Blüte 4), dann in die zweite Windsäule zur Zielinsel (Blüte 5 hinter dem Tor)."
+      ]
+    },
+    {
+      "t": "2-1 Honigklippen",
+      "list": [
+        "Blüte 1 auf der Startinsel links vorn.",
+        "Über die bröckelnden Honigstufen zügig rüber.",
+        "Blüte 2: links neben der zweiten Insel unten auf einer Mini-Insel, zurück mit dem Pilz.",
+        "Retro-Zone: Eierblock am Anfang, Igelkugel im zweiten Abschnitt mit einem Ei oder einem Sprung umgehen. Auf den schwebenden Blöcken Blüte 3, die ?-Wolke gibt Sterne.",
+        "Blüte 4: mit dem Pilz auf der großen Insel auf die Honigplattform. Blüte 5 bei der Zielinsel."
+      ]
+    },
+    {
+      "t": "2-2 Wolkenpfad",
+      "list": [
+        "Blüte 1 rechts auf der Startinsel.",
+        "Auf der zweiten Insel auf den Farbschalter stampfen und sofort über die rosa Blöcke zur nächsten Insel laufen.",
+        "?-Wolke auf der dritten Insel: Wolkenbrücke nach links zu Blüte 2 und zwei roten Münzen.",
+        "Blüte 3 auf der kleinen Wolke rechts, Blüte 4 über dem fahrenden Lift, Blüte 5 hinter dem Farbtor."
+      ]
+    },
+    {
+      "t": "3-1 Glutgarten",
+      "list": [
+        "Blüte 1 auf der Steinplatte links über der Lava.",
+        "Retro-Zone nach links: Lift abwarten, die Igelkugel überspringen, die ?-Wolke über den Stufen gibt eine Blüte. Blüte 3 schwebt über dem letzten Abschnitt.",
+        "Blüte 4 auf der großen Insel vorn, Lift nach oben zur Zielinsel, Blüte 5 hinter dem Tor. Schnappblüten nur mit Eiern angreifen."
+      ]
+    },
+    {
+      "t": "3-2 Nebelburg (Boss)",
+      "list": [
+        "Auf dem Weg zur Arena liegen Blüte 1 und Blüte 2 (rechte Retro-Säule); Eierblöcke stehen am Anfang und in der Arena.",
+        "Brummnebel: Sobald er auf den Boden stürzt, spring über die Schockwelle. Danach ist er benommen – wirf Eier auf seinen leuchtenden Bauch oder stampfe auf seinen Kopf.",
+        "Drei Treffer besiegen ihn. Das Farbtor erscheint in der Mitte der Arena. Die Blüten 3 bis 5 liegen am Rand der Arena."
+      ]
+    },
+    {
+      "t": "Klassik 2D – Die 24 Level im Überblick",
       "list": [
         "Insel 1 Blütenbucht: 1-1 bis 1-3 Wiesen, Hügel, Gruben, Eierblöcke; ab 1-3 Hüpfer und Sprungpilz-Stege. 1-4 Burg mit Riesenwuschel (3 Treffer).",
         "Insel 2 Honigklippen: Honigstufen, Säulen, Bröckelstege, Wolken und Dornen. 2-4 Burg mit Nebelfürst (3 Treffer).",
@@ -150,7 +304,7 @@
       ]
     },
     {
-      "t": "Bosse besiegen",
+      "t": "Klassik 2D – Bosse besiegen",
       "steps": [
         "Beim Betreten der Arena schließt sie sich. Am Rand stehen Eierblöcke – stoß sie an und füll deinen Vorrat auf.",
         "Riesenwuschel (Blütenbucht, Pilzlichtwald, Kreidegrotten): hüpft auf dich zu, beim Aufprall bebt der Boden. Halte Abstand und triff ihn mit Eiern oder ausgespuckten Gegnern. Draufspringen schadet ihm nicht, du prallst nur ab.",
@@ -160,7 +314,7 @@
       ]
     },
     {
-      "t": "100 Punkte in jedem Level",
+      "t": "Klassik 2D – 100 Punkte in jedem Level",
       "steps": [
         "Alle 5 Farbblüten finden (50 Punkte). Schau in jede Flügelwolke – manche enthalten eine Blüte statt Sternen.",
         "Alle roten Münzen einsammeln (20 Punkte). Achte auf den roten Kern; sie liegen über das ganze Level verteilt zwischen normalen Münzen.",
@@ -169,7 +323,7 @@
       ]
     },
     {
-      "t": "Bonusspiele optimal spielen",
+      "t": "Klassik 2D – Bonusspiele optimal spielen",
       "list": [
         "Ballonjagd: Lauf unter die aufsteigenden Ballons und wirf ständig – die Eier fliegen senkrecht nach oben. Ballons mit Leben sind am wertvollsten.",
         "Glückskarten: Erst nach einem „x2“ werden Preise doppelt. Mit einem Nebelgreifer schon aufgedeckt ist jede weitere Karte ein Risiko – trotzdem lohnt es sich meist, da 10 von 12 Karten Preise oder x2 sind.",
@@ -179,6 +333,18 @@
     }
   ],
   "faq": [
+    {
+      "q": "Wo finde ich das alte 2D-Spiel?",
+      "a": "Im Hauptmenü unter „Klassik 2D“. Dort führt „◀ 3D-NEUAUFLAGE“ wieder zurück."
+    },
+    {
+      "q": "Das Spiel ruckelt auf meinem Handy.",
+      "a": "Stell in den Optionen die Grafik auf „Mittel“ oder „Niedrig“ und starte das Spiel neu. „Automatisch“ senkt die Auflösung selbst, wenn es ruckelt."
+    },
+    {
+      "q": "Die Kamera dreht sich von allein.",
+      "a": "In den Optionen „Kamera folgt automatisch“ ausschalten. Kamera-Tempo und Umkehren lassen sich dort ebenfalls einstellen."
+    },
     {
       "q": "Wo finde ich meine Fortschritte?",
       "a": "Auf der INSELKARTE stehen alle freigeschalteten Level mit Bestwert. Gespeichert wird auf dem Gerät; mit GOOGLE-SPEICHER auch geräteübergreifend."

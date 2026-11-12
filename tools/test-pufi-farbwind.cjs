@@ -42,7 +42,7 @@ const server = http.createServer((req, res) => {
 
 (async () => {
   await new Promise(r => server.listen(0, '127.0.0.1', r));
-  const url = 'http://127.0.0.1:' + server.address().port + '/pufi-farbwind/';
+  const url = 'http://127.0.0.1:' + server.address().port + '/pufi-farbwind/klassik.html';
   const shots = process.env.PUFI_SHOTS;
   const browser = await playwright.chromium.launch(process.env.PUFI_CHROME ? { executablePath: process.env.PUFI_CHROME } : {});
   const errors = [];
