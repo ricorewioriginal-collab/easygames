@@ -3,6 +3,8 @@
 import { THREE } from './three.js';
 import { createCreature, displayScale } from './creatures.js';
 import { createCharacter } from './characters.js';
+import { modelReady, loadSpeciesModel } from './models.js';
+import { SPECIES } from '../data/species.js';
 
 export class Preview {
   constructor() {
@@ -59,6 +61,8 @@ export class Preview {
   // Portrait thumbnail (data URL), cached per species.
   thumbnail(id) {
     if (this.thumbs.has(id)) return this.thumbs.get(id);
+    // Modell noch nicht geladen: farbiger Platzhalter, Bild beim nächsten Mal
+    if (!modelReady(id)) { loadSpeciesModel(id).catch(() => {}); return placeholder(SPECIES[id]?.color); }
     const keepActive = this.active, keepModel = this.model;
     this.model = null;
     const c = createCreature(id, { outline: true });
@@ -79,4 +83,9 @@ export class Preview {
     if (keepActive) this.resize();
     return url;
   }
+}
+
+function placeholder(color = 0x9a8a7a) {
+  const c = '#' + color.toString(16).padStart(6, '0');
+  return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="36" r="18" fill="' + c + '" opacity=".55"/></svg>');
 }
