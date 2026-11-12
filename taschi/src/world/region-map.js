@@ -160,7 +160,7 @@ export async function buildRegionMap(L, { quality, onProgress = () => {}, save }
     const lm = new THREE.Mesh(lampB.build(), envMaterial()); lm.castShadow = true; root.add(lm);
     root.add(new THREE.Mesh(lampGlow.build(), BLD.windowMaterial));
   }
-  for (const s of L.signs) { const sp = BLD.signpost(s.text); place(sp, s.x, s.z, Math.atan2(-s.x, 16 - s.z)); interact.push({ id: 'sign:' + s.text, kind: 'look', x: s.x, z: s.z, r: 1.6, label: 'Wegweiser', text: s.text, prompt: 'Lesen' }); }
+  for (const s of L.signs) { const sp = BLD.signpost(s.text); place(sp, s.x, s.z, Math.atan2(-s.x, 16 - s.z)); interact.push({ id: 'sign:' + s.text, kind: s.hint ? 'pzhint' : 'look', x: s.x, z: s.z, r: 1.6, label: s.hint ? 'Hinweistafel' : 'Wegweiser', text: s.text, prompt: s.hint ? 'Tipp lesen' : 'Lesen' }); }
   for (const g of L.gates) {
     const gt = BLD.gate(pal, g.label, true);
     place(gt, g.x, g.z, g.yaw);

@@ -17,7 +17,25 @@ import { disposeTree } from '../engine/renderer.js';
 import { regionPool, levelRange } from '../logic/encounters.js';
 import { createRng } from '../core/rng.js';
 import { makeMonster } from '../logic/monster.js';
-import { globalUniforms } from '../engine/materials.js';
+import { globalUniforms, glowMaterial } from '../engine/materials.js';
+import { regionMarks, MARK_STYLE } from '../logic/marks.js';
+import { JUNA } from '../data/adventure.js';
+
+// Lichtsäulen über offenen Abenteuer-Zielen: eine geteilte Geometrie mit
+// weichem Verlauf nach oben, eine Zeichenoperation je Säule.
+let BEACON_GEO = null, BEACON_TEX = null;
+const BEACON_MATS = {};
+function beaconMat(color) {
+  if (!BEACON_TEX) {
+    const cv = document.createElement('canvas'); cv.width = 4; cv.height = 64;
+    const x = cv.getContext('2d'), g = x.createLinearGradient(0, 0, 0, 64);
+    g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.7, 'rgba(255,255,255,0.55)'); g.addColorStop(1, 'rgba(255,255,255,1)');
+    x.fillStyle = g; x.fillRect(0, 0, 4, 64);
+    BEACON_TEX = new THREE.CanvasTexture(cv);
+  }
+  if (!BEACON_MATS[color]) { const m = glowMaterial(new THREE.Color(color).getHex(), 0.55); m.map = BEACON_TEX; m.side = THREE.DoubleSide; m.blending = THREE.NormalBlending; BEACON_MATS[color] = m; }
+  return BEACON_MATS[color];
+}
 
 // NPC steering: straight ahead first, then gradually wider detours
 const STEER = [0, 0.7, -0.7, 1.4, -1.4];
@@ -118,6 +136,7 @@ export class World {
     if (r < 16) this.spawnRegionNPCs(r, L);
     else this.spawnSummitNPCs();
     this.spawnWild(r, L);
+    this.refreshBeacons();
     const sp = (typeof spawnKey === 'object' ? spawnKey : L.spawn[spawnKey]) || L.spawn.start;
     this.placePlayer(sp.x, sp.z, sp.ry ?? 0);
     this.save.location = { map: 'region:' + r, x: sp.x, z: sp.z, ry: sp.ry ?? 0 };
@@ -155,7 +174,9 @@ export class World {
     for (const n of this.npcs) this.scene.remove(n.ch.root);
     for (const w of this.wild) { this.scene.remove(w.c.root); w.c.dispose(); }
     for (const p of this.puzzles) { this.scene.remove(p.group); disposeTree(p.group); }
-    this.npcs = []; this.wild = []; this.puzzles = [];
+    for (const b of this.beacons || []) this.scene.remove(b);
+    for (const e of this.extras || []) { this.scene.remove(e.root); e.dispose?.(); }
+    this.npcs = []; this.wild = []; this.puzzles = []; this.beacons = []; this.extras = [];
     if (this.current) {
       const root = this.current.type === 'region' ? this.current.map.root : this.current.interior.group;
       this.scene.remove(root);
@@ -199,6 +220,20 @@ export class World {
     this.puzzles.push(pv);
   }
 
+  // Lichtsäulen über Rätsel, Gildenlager und Hinterhalt (nach Fortschritt neu aufbauen)
+  refreshBeacons() {
+    for (const b of this.beacons || []) this.scene.remove(b);
+    this.beacons = [];
+    const c = this.current; if (c?.type !== 'region' || c.region >= 16) return;
+    BEACON_GEO ||= new THREE.CylinderGeometry(1.1, 1.1, 30, 14, 1, true).translate(0, 15, 0);
+    for (const m of regionMarks(this.save, c.layout, c.region)) {
+      if (!m.beacon) continue;
+      const b = new THREE.Mesh(BEACON_GEO, beaconMat(MARK_STYLE[m.kind].color));
+      b.position.set(m.x, c.height(m.x, m.z) - 0.5, m.z); b.renderOrder = 2; b.frustumCulled = true;
+      this.scene.add(b); this.beacons.push(b);
+    }
+  }
+
   // ------------------------------------------------------------------ NPCs
   addNPC(def) {
     const look = def.look || lookForRole(def.role === 'leader' || def.role === 'champion' ? def.role : def.role, def.name || def.id);
@@ -221,6 +256,13 @@ export class World {
       names.add(q.giver);
       const a = 2.2 + extra++ * 0.9;
       this.addNPC({ id: 'giver:' + q.id, role: 'reisender', name: q.giver, x: L.plaza.x + Math.cos(a) * (L.plaza.r + 3), z: L.plaza.z + Math.sin(a) * (L.plaza.r + 3), talk: 'giver', quest: q.id });
+    }
+    // Agentin Juna (Sternenwacht) wartet auf dem Stadtplatz auf Gildennotizen
+    if (this.save.flags.firstQuest && !this.save.quests['clue_' + r]?.done) {
+      let jx = L.plaza.x + Math.cos(5.4) * (L.plaza.r + 2.5), jz = L.plaza.z + Math.sin(5.4) * (L.plaza.r + 2.5);
+      for (let k = 0; k < 10 && this.blocked(jx, jz); k++) { jx += 1.1; jz -= 0.7; }
+      this.addNPC({ id: 'juna', role: 'reisender', name: JUNA.name, x: jx, z: jz, ry: Math.atan2(L.plaza.x - jx, L.plaza.z - jz), talk: 'giver', quest: 'clue_' + r,
+        look: { body: 'slim', skin: 3, hair: 'ponytail', hairColor: 1, top: 'coat', topColor: 0x24345a, accent: 0xffd27a, bottomColor: 0x1f2433, scarf: 0xffd27a, hat: 'beret', hatColor: 0x24345a, bag: 0x5a4632 } });
     }
     if (r === 0) {
       // Zotik: Klon aus Professor Ulmes missglücktem Experiment, streift vor der Glaskuppel umher, bis man ihn fängt
@@ -477,6 +519,13 @@ export class World {
     this.updateNPCs(dt);
     this.updateWild(dt, active);
     for (const pz of this.puzzles) pz.update(dt);
+    for (const e of this.extras || []) e.update(dt);
+    if (this.beacons?.length) {
+      const k = 0.55 + Math.sin(t * 2.2) * 0.12, pp = this.player.root.position;
+      for (const m of Object.values(BEACON_MATS)) m.opacity = k;
+      // in Zwischensequenzen und direkt daneben ausblenden, damit die Säule nichts verdeckt
+      for (const b of this.beacons) b.visible = !this.cine && Math.hypot(b.position.x - pp.x, b.position.z - pp.z) > 14;
+    }
     if (this.current.type === 'region') this.current.map.update(t, dt, this.camera, this.player.root.position);
     else for (const a of this.current.interior.animators) a(t);
     const look = input.takeCamera();
@@ -615,6 +664,7 @@ export class World {
     }
   }
   checkAutoTriggers() {
+    if (!this.game.busy) this.game.storyTriggers?.();
     // story trigger: Ulme calls the player in Sonnenhain
     if (this.current.type === 'region' && this.current.region === 0 && !this.save.flags.metUlme && !this.game.busy) {
       const ulme = this.npcs.find(n => n.id === 'ulme');

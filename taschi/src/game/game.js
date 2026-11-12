@@ -36,7 +36,9 @@ const nameOf = (m) => m.nick || SPECIES[m.id].name;
 import { ULME, GUILD_SCENES, LEAGUE_FINALE, CREDITS, CHAPTERS, RIVAL, professorLines } from '../data/story.js';
 import { makeMonster, healMonster, maxHp, evolve, teachMove } from '../logic/monster.js';
 import { gainsText } from '../logic/battle.js';
-import { rollEncounter, levelRange, rollFishing, judgeBite, BITE_WINDOW } from '../logic/encounters.js';
+import { AMBUSHES, ARRIVALS, JUNA, PUZZLE_TIPS } from '../data/adventure.js';
+import { createCreature, displayScale } from '../engine/creatures.js';
+import { rollEncounter, regionPool, levelRange, rollFishing, judgeBite, BITE_WINDOW } from '../logic/encounters.js';
 import { createStore, newSave, exportJSON, importJSON } from '../logic/save.js';
 import * as P from '../logic/progress.js';
 import * as Items from '../logic/items.js';
@@ -234,6 +236,7 @@ export class Game {
     this.save.visited[r] = true;
   }
   async travelToRegion(r, spawn) {
+    const fresh = r < 16 && !this.save.visited[r] && !this.save.flags['arrive:' + r];
     this.busy++;
     this.saveNow();
     await this.ui.fade(true);
@@ -245,7 +248,80 @@ export class Game {
       this.setState(STATES.WORLD);
     } finally { await this.ui.fade(false); this.busy--; }
     this.saveNow();
+    if (fresh && ARRIVALS[r]) await this.script(() => this.arrivalScene(r));
     await this.maybeRival();
+  }
+  // 🎬 Ankunft in einer neuen Region: Kamera kreist, Erzähler stimmt ein
+  async arrivalScene(r) {
+    this.save.flags['arrive:' + r] = true;
+    const p = this.world.player.root.position;
+    const end = this.cutscene({ x: p.x, z: p.z }, { dist: 13, pitch: 0.42, spin: 0.22 });
+    try { await this.ui.say([{ who: 'Erzähler', text: ARRIVALS[r] }]); } finally { end(); }
+    const o = this.objective();
+    if (o.region === r) this.ui.toast('Ziel: ' + o.text, '➜');
+  }
+  // Auslöser beim Laufen: Gilden-Hinterhalt und Rätsel-Hinweis
+  storyTriggers() {
+    const c = this.world.current; if (c?.type !== 'region' || c.region >= 16 || this.state !== STATES.WORLD) return;
+    const s = this.save, L = c.layout, p = this.world.player.root.position, r = c.region;
+    if (!s.flags.firstQuest) return;
+    if (L.ambush && P.ambushPending(s, r) && !(this.ambushCool > performance.now()) && Math.hypot(p.x - L.ambush.x, p.z - L.ambush.z) < L.ambush.r && s.team.some(m => m.hp > 0)) { this.script(() => this.ambushEvent(r)); return; }
+    if (L.puzzle && !s.puzzles['region:' + r] && this.pzHintShown !== r && Math.hypot(p.x - L.puzzle.x, p.z - L.puzzle.z) < 19) {
+      this.pzHintShown = r; this.audio.sfx('item');
+      this.ui.toast(REGIONS[r].puzzle.name + ': ' + REGIONS[r].puzzle.hint + ' Mehr Tipps auf der Hinweistafel.', '🧩');
+    }
+  }
+  // ⚠ Gilden-Hinterhalt: Gildenleute fangen ein wildes Taschi, Zwischensequenz, Kampf, Befreiung
+  async ambushEvent(r) {
+    const s = this.save, a = AMBUSHES[r], t = TRAINERS['amb_' + r], w = this.world;
+    if (!a || !t || !P.ambushPending(s, r)) return;
+    const pool = regionPool(r, 'grass'), monId = pool.length ? pool[(r * 7) % pool.length][0] : 'fellino';
+    const mon = SPECIES[monId].name, fill = (arr) => arr.map(l => ({ ...l, text: l.text.replaceAll('{mon}', mon) }));
+    const p = w.player.root.position, ry = w.player.root.rotation.y;
+    const fx = p.x + Math.sin(ry) * 6, fz = p.z + Math.cos(ry) * 6;
+    const names = a.member === 'kett' ? ['Kett', 'Kora'] : a.format === 'double' ? ['Gildenhelfer', 'Gildenhelferin'] : ['Gildenhelfer'];
+    const gang = names.map((nm, i) => { const side = (i - (names.length - 1) / 2) * 1.8; return w.addNPC({ id: 'amb' + i, role: 'grunt', name: nm, x: fx + Math.cos(ry) * side, z: fz - Math.sin(ry) * side, ry: ry + Math.PI, look: lookForRole(a.member === 'kett' ? 'twin' : 'grunt', nm) }); });
+    const cap = createCreature(monId, { outline: false }), cx = fx + Math.sin(ry) * 2.2, cz = fz + Math.cos(ry) * 2.2;
+    cap.root.scale.setScalar(displayScale(monId, 'world') * 0.9); cap.root.position.set(cx, w.current.height(cx, cz), cz); cap.root.rotation.y = ry + Math.PI;
+    w.scene.add(cap.root); w.extras = [...(w.extras || []), cap];
+    const actor = (who) => gang.find(n => n.name === who) || (/Gildenhelfer/.test(who) ? gang[0] : null);
+    const say = async (lines) => { for (const l of lines) { const n = actor(l.who); n?.ch.setTalking(true, l.mood); await this.ui.say([l], { guild: true }); n?.ch.setTalking(false); } };
+    let won = false;
+    try {
+      this.audio.sfx('encounter'); this.audio.play('guild');
+      let end = this.cutscene({ x: (p.x + fx) / 2, z: (p.z + fz) / 2 }, { dist: 9, pitch: 0.32, yaw: ry + 1.3 });
+      try { await this.ui.say([{ text: '— ' + a.title + ' —' }]); await say(fill(a.intro)); } finally { end(); }
+      const res = await this.trainerBattle(t, gang[0], { music: 'guildBattle' });
+      if (res.outcome !== 'win') { this.ambushCool = performance.now() + 20000; return; }
+      won = true;
+      for (const n of gang) n.ch.hold?.('defeat');
+      end = this.cutscene({ x: cx, z: cz }, { dist: 7, pitch: 0.3, spin: 0.2 });
+      try {
+        // das befreite Taschi springt vor Freude
+        const t0 = performance.now(), y0 = cap.root.position.y;
+        await new Promise(res => { const step = () => { const u = (performance.now() - t0) / 900; cap.root.position.y = y0 + Math.abs(Math.sin(u * Math.PI * 2)) * 0.8; if (u < 1) requestAnimationFrame(step); else { cap.root.position.y = y0; res(); } }; step(); });
+        this.audio.sfx('cry', { id: monId, sp: SPECIES[monId] }); cap.play?.('happy', 1);
+        await say(fill(a.win));
+      } finally { end(); }
+      const got = P.grantReward(s, { coins: 120 + r * 50, items: r < 6 ? { taschiball: 3, trank: 2 } : { superball: 3, supertrank: 2 } });
+      s.dex[monId] = s.dex[monId] || 1;
+      this.ui.toast('Gilden-Hinterhalt gestoppt! ' + got.join(', '), '✦');
+    } finally {
+      for (const n of gang) n.walkTo = { x: n.ch.root.position.x + 30, z: n.ch.root.position.z - 30, speed: 5.5, done: () => { w.scene.remove(n.ch.root); w.npcs = w.npcs.filter(x => x !== n); } };
+      const away = { x: cx + (won ? 20 : 0), z: cz + (won ? 20 : 0) };
+      const t0 = performance.now(), sx = cap.root.position.x, sz = cap.root.position.z;
+      const run = () => { const u = Math.min(1, (performance.now() - t0) / 1800); cap.setMoving?.(6); cap.root.position.x = sx + (away.x - sx) * u; cap.root.position.z = sz + (away.z - sz) * u; if (u < 1 && won) requestAnimationFrame(run); else { w.scene.remove(cap.root); w.extras = (w.extras || []).filter(x => x !== cap); cap.dispose?.(); } };
+      run();
+      w.refreshBeacons(); this.updateMusic(true); this.saveNow(true);
+    }
+  }
+  // 🧩 Hinweistafel am Rätsel: jeder Besuch zeigt den nächsten Tipp
+  async puzzleHint(r) {
+    const s = this.save, pz = REGIONS[r].puzzle, tips = [pz.hint, ...(PUZZLE_TIPS[pz.kind] || [])];
+    if (s.puzzles['region:' + r]) return this.ui.say([{ text: 'Auf der Hinweistafel leuchtet ein Siegel: „' + pz.name + '“ ist gelöst!' }]);
+    const k = 'pzhint:' + r, i = (s.flags[k] || 0) % tips.length;
+    s.flags[k] = i + 1;
+    await this.ui.say([{ who: 'Hinweistafel', text: pz.name + ' – Tipp ' + (i + 1) + '/' + tips.length + ': ' + tips[i] }]);
   }
   // Rivale Rian waits on arrival in selected regions (see RIVAL_STAGES).
   async maybeRival() {
@@ -447,6 +523,7 @@ export class Game {
       case 'professor': return L.ulme || L.buildings.find(b => b.kind === 'lab')?.door;
       case 'podium': return L.dome?.podium;
       case 'puzzle': return L.puzzle;
+      case 'ambush': return L.ambush;
       case 'arena': return L.buildings.find(b => b.kind === 'arena')?.door;
       case 'champion': return L.pavilion;
       case 'guild': return L.guild && this.save.guild[REGIONS[c.region]?.guild] !== 'done' && this.guildBattlesAt(REGIONS[c.region].guild)[0]?.where !== 'station' ? L.guild : L.buildings.find(b => b.kind === 'station')?.door || L.guild;
@@ -476,6 +553,7 @@ export class Game {
       case 'exit': return this.leaveInterior();
       case 'knock': { const reg = REGIONS[Math.min(15, r)]; const n = reg.npcs[(e.id.length + r) % reg.npcs.length]; return this.ui.say([{ text: 'Du klopfst. Von drinnen ruft jemand: „Komm später wieder, ich backe gerade!“' }, { who: n.name, text: 'Übrigens: ' + n.lines.pre[0] }]); }
       case 'look': return this.ui.say([{ text: e.text }]);
+      case 'pzhint': return this.puzzleHint(r);
       case 'wardrobe': return this.openWardrobe();
       case 'landmark': return this.ui.say([{ text: e.label + '. ' + landmarkText(r, this.world.current.layout.landmark.kind) }]);
       case 'gate': return this.useGate(e);
@@ -610,12 +688,23 @@ export class Game {
     if (!q) return;
     const s = this.save, st = P.questState(s, q);
     const who = q.giver;
+    const juna = who === JUNA.name;
     if (st.status === 'new') {
+      if (juna && !s.flags.junaMet) { s.flags.junaMet = true; n.ch?.setTalking(true, 'talk'); await this.ui.say([{ who, text: JUNA.intro }]); n.ch?.setTalking(false); }
       const c = await this.ui.ask([{ who, text: q.desc + ' Hilfst du mir?' }], ['Ja, mache ich', 'Später'], { cancelIndex: 1 });
-      if (c === 0) { P.acceptQuest(s, q); this.audio.sfx('item'); this.ui.toast('Neue Aufgabe: ' + q.title, '📜'); }
+      if (c === 0) {
+        P.acceptQuest(s, q); this.audio.sfx('item'); this.ui.toast('Neue Aufgabe: ' + q.title, '📜'); this.world.refreshBeacons();
+        if (P.questState(s, q).status === 'ready') return this.questTalk(n, q); // schon gefunden
+      }
     } else if (st.status === 'ready') {
       const res = P.turnInQuest(s, q);
-      if (res.ok) { this.audio.sfx('chest'); n.ch?.play('cheer', 1.2); await this.ui.say([{ who, text: 'Wunderbar, vielen Dank! Hier, das ist für dich.' }, { text: 'Erhalten: ' + res.rewards.join(', ') }]); this.saveNow(true); }
+      if (res.ok) {
+        this.audio.sfx('chest'); n.ch?.play('cheer', 1.2);
+        if (q.note) { n.ch?.setTalking(true, 'surprised'); await this.ui.say([{ who, text: 'Zeig her … ' + q.note }, { who, text: JUNA.thanks[q.region % JUNA.thanks.length] }]); n.ch?.setTalking(false); }
+        await this.ui.say([{ who, text: 'Wunderbar, vielen Dank! Hier, das ist für dich.' }, { text: 'Erhalten: ' + res.rewards.join(', ') }]); this.saveNow(true);
+      }
+    } else if (st.status === 'done') {
+      if (juna) await this.ui.say([{ who, text: 'Die Spur hier ist gesichert. In der nächsten Region wartet die nächste Notiz – wir sehen uns!' }]);
     } else if (st.status === 'active') {
       const step = q.steps[st.step];
       await this.ui.say([{ who, text: 'Wie läuft es? ' + step.text + ' ' + P.stepProgress(s, step) }]);
@@ -671,6 +760,7 @@ export class Game {
     s.flags.firstQuest = true; s.flags.travelStarted = true;
     for (const q of P.regionQuests(0)) if (q.id === 'q0_lost') P.acceptQuest(s, q);
     this.ui.toast('Erhalten: 5× Taschi-Kapsel, 2× Heilkapsel, 3× Trank, Pfadkarte', '🎒');
+    setTimeout(() => this.ui.toast('Vom Südpfad hallen Hilferufe herüber …', '⚠'), 2600);
     // Ulme walks back to his lab
     const lab = this.world.current.layout.buildings.find(b => b.kind === 'lab');
     ulme.facePlayer = false;
@@ -830,6 +920,7 @@ export class Game {
     if (site === 6) { Items.add(s.bag, 'brixcode', 1); this.ui.toast('Erhalten: Brix’ Zugangskarte', '🗝'); if (!s.flags.meisterball) { s.flags.meisterball = true; Items.add(s.bag, 'meisterball', 1); await this.ui.say([{ who: 'Brix', text: 'Und nimm das hier. Mein Prototyp: ein Meisterkapsel. Er fängt jedes Taschi – ich will nie wieder, dass jemand ihn für Varga baut.' }]); this.ui.toast('Erhalten: Meisterkapsel', '◉'); } }
     if (site === 7) return this.summitFinale();
     this.ui.toast('Die Schattengilde ist aus der Region vertrieben! Gefangene Taschis befreit.', '✦');
+    this.world.refreshBeacons();
     for (const npc of this.world.npcs.filter(x => x.guild)) { npc.walkTo = { x: npc.ch.root.position.x + 30, z: npc.ch.root.position.z + 30, speed: 5, done: () => { this.world.scene.remove(npc.ch.root); this.world.npcs = this.world.npcs.filter(x => x !== npc); } }; }
     const camp = this.world.current.map?.dynamic.find(d => d.kind === 'guildCamp');
     if (camp) { const bal = camp.group.children[0]; const t0 = performance.now(); const step = () => { const u = (performance.now() - t0) / 4000; bal.position.y = u * 40; if (u < 1) requestAnimationFrame(step); else bal.visible = false; }; step(); }
@@ -974,6 +1065,7 @@ export class Game {
     if (res.solved && !this.save.puzzles[pv.key]) {
       this.save.puzzles[pv.key] = true;
       this.world.player.play('cheer', 1.2);
+      this.world.refreshBeacons();
       if (pv.key.startsWith('gym:')) { const bar = this.world.current.interior?.barrier; if (bar) bar.visible = false; this.ui.toast('Das Gitter zur Arenaleitung öffnet sich!', '✦'); }
       else { P.grantReward(this.save, { coins: 100 + this.world.current.region * 20 }); this.ui.toast('Rätsel gelöst! Das Siegel der Arena erlischt. ★' + (100 + this.world.current.region * 20), '✦'); }
       this.saveNow(true);

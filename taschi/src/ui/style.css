@@ -97,6 +97,13 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 .mapview { position: relative; width: 100%; aspect-ratio: 16/10; border-radius: 16px; background: linear-gradient(160deg, #8fd0f0, #5aa8d8); overflow: hidden; }
 .mapview .node { pointer-events: auto; position: absolute; transform: translate(-50%, -50%); width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; color: #fff; box-shadow: 0 3px 0 rgba(0,0,0,.25); }
 .mapview .node.locked { background: #8a98a6 !important; opacity: .7; }
+.regionpanel { margin-bottom: 14px; }
+.regionwrap { display: flex; justify-content: center; background: none; border: 0; padding: 0; margin: 0 auto; border-radius: 20px; }
+.regionbody { display: grid; gap: 12px; }
+@media (min-width: 760px) { .regionbody { grid-template-columns: 320px 1fr; align-items: start; } }
+.regionmap { width: min(100%, 320px); aspect-ratio: 1; border-radius: 18px; box-shadow: 0 4px 0 rgba(0,0,0,.25), inset 0 0 0 3px rgba(255,255,255,.5); background: #5a9a5a; }
+.legend .row { gap: 10px; align-items: center; }
+.legend .mk { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: #1b2030; border: 2px solid #1b2030; }
 .mapview .node.here { box-shadow: 0 0 0 4px #fff, 0 0 18px #ffd35a; }
 .mapview svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 
@@ -335,13 +342,14 @@ input.name { pointer-events: auto; font: inherit; padding: 9px 12px; border-radi
 body::before, body::after { content: ''; position: fixed; left: 0; right: 0; height: 0; background: #000; z-index: 28; pointer-events: none; transition: height .5s ease; }
 body::before { top: 0; } body::after { bottom: 0; }
 body.cine::before, body.cine::after { height: 11vh; }
+body.cine #dialog { bottom: calc(11vh + 8px); }
 .wonder-spin { font-size: 3.4em; text-align: center; animation: wonderSpin 1.2s linear infinite; }
 @keyframes wonderSpin { to { transform: rotate(360deg); } }
 
 /* ---------------------------------------------------------- Branding: Logo, Hauptmenü, Ladebildschirme (Konsolen-Look) */
 .brand { display: grid; justify-items: center; color: #fff; --u: 1px; }
-.brand.xl { --u: clamp(.62px, .11vw + .5px, 1.15px); }
-.brand.md { --u: .7px; }
+.brand.xl { --u: min(clamp(.62px, .11vw + .5px, 1.15px), calc((100vw - 40px) / 600)); }
+.brand.md { --u: min(.7px, calc((100vw - 40px) / 600)); }
 .brand.sm { --u: .42px; }
 .brand-em { width: calc(130 * var(--u)); height: calc(130 * var(--u)); margin-bottom: calc(-26 * var(--u)); position: relative; z-index: 1; animation: emFloat 4s ease-in-out infinite; filter: drop-shadow(0 0 calc(18 * var(--u)) rgba(255, 200, 110, .7)); }
 .brand-em svg { width: 100%; height: 100%; }

@@ -3,6 +3,7 @@
 // buildings with doors, gates, grass, trees, NPC homes, trainers, items,
 // puzzle area, champion pavilion, guild camp, cave and legend shrine.
 import { REGIONS } from '../data/regions.js';
+import { AMBUSHES } from '../data/adventure.js';
 import { createRng } from '../core/rng.js';
 import { createNoise, smoothstep, distToPolyline, smoothPath } from '../core/noise.js';
 
@@ -134,6 +135,8 @@ export function buildLayout(r) {
   road([[puzzle.x, puzzle.z - 9], [arena.door.x, arena.door.z]], 'cobble', 4.4, false);
   // champion branch climbs the hill
   road([[X(-5 + 0), -52], [X(20), -46], [X(36), -40], [pav.x, pav.z + 6]], 'dirt', 3.8);
+  // Gilden-Hinterhalt auf der Südroute (Regionen ohne Gildenlager)
+  if (AMBUSHES[r]) L.ambush = { x: south[3][0], z: south[3][1], r: 9 };
   if (L.guild) road([[X(4), 52], [(L.guild.x + X(4)) / 2, (L.guild.z + 52) / 2 + 4], [L.guild.x, L.guild.z]], 'dirt', 3.4);
   if (L.cave) road([[X(-10), 22], [X(-34), 26], [(L.cave.x + X(-34)) / 2, (L.cave.z + 26) / 2], [L.cave.x * 0.94, L.cave.z]], 'dirt', 3.4);
   if (L.legend) road([[pav.x, pav.z - 5], [(pav.x + L.legend.x) / 2 + X(6), (pav.z + L.legend.z) / 2], [L.legend.x, L.legend.z + 4]], 'dirt', 3);
@@ -215,6 +218,11 @@ export function buildLayout(r) {
     const [lx, lz] = landSpot(mx + (mx > 0 ? -7 : 7), mz + 6);
     L.items.push({ id: 'lost:' + lost.id, x: lx, z: lz, quest: lost.id, flag: 'lost:' + lost.id, hidden: true, label: lost.title });
   }
+  // Gildennotiz für Agentin Juna, abseits der Wege
+  {
+    const [nx, nz] = [[-74, -80], [76, -84], [-82, 62], [84, 44], [-60, 90]].map(([x, z]) => [X(x), z]).find(([x, z]) => !inWater(x, z, 4) && clearOf(L, x, z, 2)) || landSpot(X(-60), -70);
+    L.items.push({ id: 'lost:clue_' + r, x: nx, z: nz, quest: 'clue_' + r, flag: 'lost:clue_' + r, hidden: true, label: 'Gildennotiz' });
+  }
   { const [cx, cz] = landSpot(mx + (mx > 0 ? 6 : -6), mz - 4); L.chest = { x: cx, z: cz }; }
   // Sternennest (Raid) etwas abseits der Truhe
   {
@@ -233,6 +241,8 @@ export function buildLayout(r) {
   if (r > 0) L.signs.push({ x: X(4), z: 108, text: '↓ ' + REGIONS[r - 1].name });
   L.signs.push({ x: X(5), z: -108, text: '↑ ' + (r === 15 ? 'Sternengipfel' : REGIONS[r + 1].name) });
   L.signs.push({ x: X(-14), z: -6, text: '← ' + region.gym.theme });
+  // Hinweistafel am Rätselplatz (gestufte Tipps, siehe game.puzzleHint)
+  L.signs.push({ x: puzzle.x + X(4.5), z: puzzle.z + puzzle.size / 2 + 2.5, text: 'Rätsel: ' + region.puzzle.name, hint: true });
   L.signs.push({ x: X(10), z: -48, text: '→ Champion-Pavillon' });
   addProps(L);
 

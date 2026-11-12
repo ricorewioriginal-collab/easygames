@@ -1,5 +1,6 @@
 // Pause menu with tabs (Team, Taschidex, Tasche, Quests, Karte, Trainer,
 // Optionen, System) plus shop, storage, travel and status pages.
+import { regionMapPanel } from './regionmap.js';
 import { h, typeBadge, hpBar, FocusNav } from './ui.js';
 import { SPECIES, SPECIES_IDS, learnset } from '../data/species.js';
 import { MOVES, STATUS } from '../data/moves.js';
@@ -137,7 +138,7 @@ const TAB_RENDER = {
       const col = i < 16 ? TYPES[r.types[0]].color : '#3c5fa8';
       return h('button.node.focusable' + (unlocked ? '' : '.locked') + (here === i ? '.here' : ''), { style: { left: x + '%', top: y + '%', background: col }, title: i < 16 ? r.name : 'Sternengipfel', onclick: () => game.ui.say([{ text: i < 16 ? r.name + ' (' + r.town + ') · ' + r.types.map(t => TYPES[t].name).join('/') + ' · ' + (s.badges > i ? 'Siegel ✓' : 'Siegel offen') + ' · Champion ' + (s.champions[i] ? '✓' : 'offen') + (unlocked ? '' : ' · noch nicht erreichbar') : 'Sternengipfel – Halle der Sternenliga' + (unlocked ? '' : ' · erst mit allen Siegeln und Brix’ Zugangskarte') }]) }, i < 16 ? String(i + 1) : '★');
     });
-    return h('div', {}, h('div.mapview', { html: svg }, nodes),
+    return h('div', {}, regionMapPanel(game), h('h3', {}, 'Weltkarte'), h('div.mapview', { html: svg }, nodes),
       h('div.row', {}, h('button.btn.focusable', { onclick: () => game.flyMenu() }, '🕊 Fliegen'), h('span.muted', {}, ' Ab dem 5. Siegel trägt dich ein Flug-Taschi zu jedem besuchten Ort.')),
       h('h3', {}, 'Championübersicht'),
       h('div.list', {}, REGIONS.map(r => h('div.row', {}, h('div.grow', {}, h('b', {}, (r.id + 1) + '. ' + r.name), ' ', h('span.muted', {}, 'Arena: ' + r.gym.leader + ' · Champion: ' + r.champion.name)), h('span.right', {}, (s.badges > r.id ? '✦' : '◌') + ' ' + (s.champions[r.id] ? '♛' : '◌'))))));

@@ -7,6 +7,7 @@ import { HALF } from '../logic/layout.js';
 import { SPECIES } from '../data/species.js';
 import { maxHp } from '../logic/monster.js';
 import { THREE } from '../engine/three.js';
+import { paintLayout, adventureMarks, drawMark } from './regionmap.js';
 
 const V = new THREE.Vector3();
 
@@ -99,6 +100,8 @@ export class HUD {
     const g = this.game, w = g.world, s = g.save;
     const m = (w.mount && s.team.find(x => x.uid === w.mount.uid)) || s.team.find(x => x.uid === s.companion && x.hp > 0) || s.team.find(x => x.hp > 0);
     this.buddy.classList.toggle('hidden', !m);
+    // auf Touch-Geräten direkt unter den Zielkasten (der je nach Textlänge mehrzeilig ist)
+    if (m && !this.touch.classList.contains('hidden')) { const top = Math.round(this.loc.getBoundingClientRect().bottom + 8) + 'px'; if (this.buddy.style.top !== top) this.buddy.style.top = top; } else if (this.buddy.style.top) this.buddy.style.top = '';
     if (!m) return;
     const src = g.preview.thumbnail(m.id), key = m.uid + ':' + m.hp + ':' + m.lv + ':' + src.length;
     if (key === this.buddyKey) return;
@@ -155,21 +158,13 @@ export class HUD {
       x.fillStyle = '#5a9a5a'; x.fillRect(0, 0, W, W);
       x.translate(W / 2, W / 2); x.rotate(yaw);
       const P = (wx, wz) => [(wx - p.x) * sc, (wz - p.z) * sc];
-      x.fillStyle = '#4a8ad0';
-      for (const wt of L.water) {
-        if (wt.kind === 'lake' || wt.kind === 'ice') { const [cx, cz] = P(wt.cx, wt.cz); x.beginPath(); x.ellipse(cx, cz, wt.rx * sc, wt.rz * sc, 0, 0, Math.PI * 2); x.fill(); }
-        if (wt.kind === 'river' || wt.kind === 'lava') { x.strokeStyle = wt.kind === 'lava' ? '#ff6a2a' : '#4a8ad0'; x.lineWidth = wt.width * sc; x.beginPath(); wt.pts.forEach(([a, b], i) => { const [px, pz] = P(a, b); i ? x.lineTo(px, pz) : x.moveTo(px, pz); }); x.stroke(); }
-        if (wt.kind === 'bay') { const [cx, cz] = P(wt.cx, wt.cz); x.beginPath(); x.arc(cx, cz, wt.r * sc, 0, Math.PI * 2); x.fill(); }
-        if (wt.kind === 'sea') { const [lx] = P(wt.side > 0 ? wt.line : -wt.line - 300, 0); x.fillRect(wt.side > 0 ? lx : lx, -400, 300 * sc, 800); }
-      }
-      x.strokeStyle = '#e8d8a8'; x.lineCap = 'round';
-      for (const rd of L.roads) { x.lineWidth = rd.width * sc * 0.8; x.beginPath(); rd.pts.forEach(([a, b], i) => { const [px, pz] = P(a, b); i ? x.lineTo(px, pz) : x.moveTo(px, pz); }); x.stroke(); }
-      x.fillStyle = '#2f6a3a';
-      for (const gr of L.grass) { const [gx, gz] = P(gr.x, gr.z); x.beginPath(); x.ellipse(gx, gz, gr.rx * sc, gr.rz * sc, 0, 0, Math.PI * 2); x.fill(); }
-      for (const b of L.buildings) { const [bx, bz] = P(b.x, b.z); x.fillStyle = { heal: '#e0566e', shop: '#3f7fc4', arena: '#f5cd77', lab: '#ffffff', pavilion: '#f5cd77', station: '#7d4fa3', league: '#ffd27a' }[b.kind] || '#c89a6a'; x.fillRect(bx - 3, bz - 3, 6, 6); }
+      paintLayout(x, L, P, sc);
+      // Abenteuer-Ziele (Rätsel, Gilde, Funde, Aufgaben) – am Rand festgehalten
+      const lim = W / 2 - 9;
+      for (const m of adventureMarks(this.game)) { const [mx, mz] = P(m.x, m.z); const d = Math.hypot(mx, mz), k = d > lim ? lim / d : 1; if (k < 1 && (m.kind === 'questNew' || m.kind === 'questReady' || m.kind === 'solved')) continue; drawMark(x, mx * k, mz * k, m.kind, 6, -yaw); }
       // objective marker
       const obj = this.game.objectiveTarget();
-      if (obj) { const [ox, oz] = P(obj.x, obj.z); const d = Math.hypot(ox, oz), lim = W / 2 - 10; const k = d > lim ? lim / d : 1; x.fillStyle = '#ffd35a'; x.beginPath(); x.arc(ox * k, oz * k, 6, 0, Math.PI * 2); x.fill(); x.strokeStyle = '#2a2f3a'; x.lineWidth = 2; x.stroke(); }
+      if (obj) { const [ox, oz] = P(obj.x, obj.z); const d = Math.hypot(ox, oz), lim = W / 2 - 10; const k = d > lim ? lim / d : 1; x.lineWidth = 5; x.strokeStyle = '#2a2f3a'; x.beginPath(); x.arc(ox * k, oz * k, 9, 0, Math.PI * 2); x.stroke(); x.lineWidth = 3; x.strokeStyle = '#ffd35a'; x.stroke(); x.fillStyle = '#ffd35a'; x.beginPath(); x.arc(ox * k, oz * k, 2.5, 0, Math.PI * 2); x.fill(); }
       void HALF;
     }
     x.restore();
