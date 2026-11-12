@@ -6,10 +6,10 @@ const BILD = process.argv[2] === 'bild';
   const ok = (n, c, i) => { res.push(c); console.log(`${c ? 'ok  ' : 'FEHL'} ${n}${i ? ' · ' + i : ''}`); };
   await p.evaluate(() => { const Z = __zotik; Z.startDbg(); const S = Z.S(); S.stage = 8; S.fl.naut = 1; for (const n of [2, 3, 4]) S.cd[n] = { st: 7, fin: 1, bd: 1, arr: 1, e1: 1, e2: 1, k: 0, b: [0, 0, 0], ord: 0 }; }); await intro(p);
   await p.evaluate(() => __zotik.switchWorld(3)); await w(800); await skip(p);
-  // Rand der Welt: Zotik läuft nach Süden über den Rand hinaus
-  const edge = await p.evaluate(() => { const Z = __zotik; Z.pl.x = 0; Z.pl.z = 64; Z.step(1 / 30, 30); return !document.getElementById('dlg').hidden && /Weltkarte/.test(document.getElementById('dOpts').textContent + document.getElementById('dText').textContent + 'x'); });
-  await skip(p); const go = await p.evaluate(() => { const b = [...document.querySelectorAll('#dOpts button')].find(x => /Weltkarte/.test(x.textContent)); if (b) b.click(); return !!b; });
-  ok('Weltrand bietet die Weltkarte an', go);
+  // Rand der Welt: Meer ringsum sperrt, der Damm im Süden führt als Wegpfad hinaus – am Tor geht es ohne Abfrage auf die Weltkarte
+  const sea = await p.evaluate(() => { const Z = __zotik, W = Z.W; return { ost: W.blocked(120, -40), west: W.blocked(-120, -60), sued: W.blocked(20, 70), damm: !W.blocked(0, 70), h: W.h(0, 70) > -1 }; });
+  ok('Meer am Rand, Damm begehbar', sea.ost && sea.west && sea.sued && sea.damm && sea.h, JSON.stringify(sea));
+  await p.evaluate(() => { const Z = __zotik; Z.pl.x = 0; Z.pl.z = 70; Z.step(1 / 30, 5); Z.pl.z = 74.5; Z.step(1 / 30, 20); });
   await p.waitForFunction(() => __zotik.ch === 15 && __zotik.mode === 'play', null, { timeout: 20000 }).catch(() => {}); await w(800);
   const s = await p.evaluate(() => { const Z = __zotik, W = Z.W; return { ch: Z.ch, over: !!(W && W.over), x: Z.pl.x, z: Z.pl.z, blk: W.blocked(Z.pl.x, Z.pl.z) }; });
   ok('Weltkarte betreten, Start neben Valdoria', s.ch === 15 && s.over && !s.blk && Math.hypot(s.x - 0, s.z - 52) < 45, JSON.stringify(s));
