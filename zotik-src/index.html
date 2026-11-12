@@ -80,9 +80,12 @@ body.touch #bUse{right:4px;bottom:106px;border-color:var(--teal)}body.touch #bUs
 .kh{display:inline-block;min-width:22px;padding:0 6px;margin-right:6px;border-radius:7px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.4);text-align:center;font-weight:800}
 #banner{position:fixed;left:0;right:0;top:20%;text-align:center;z-index:4;pointer-events:none;opacity:0;transition:opacity .8s;text-shadow:0 2px 14px #000}
 #banner.on{opacity:1}#banner h2{margin:0;font-size:clamp(26px,5vw,46px);font-weight:600;letter-spacing:.06em;background:linear-gradient(#fff,#a6d4ff);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 8px rgba(0,0,0,.7))}#banner p{margin:4px 0 0;font-size:clamp(14px,2.2vw,20px);color:var(--gold);letter-spacing:.14em;text-transform:uppercase}
-#toast{position:fixed;left:50%;top:max(70px,calc(env(safe-area-inset-top) + 60px));transform:translateX(-50%);z-index:5;pointer-events:none;display:grid;gap:6px;justify-items:center}
-#toast div{padding:6px 16px;border-radius:999px;background:rgba(8,14,40,.82);border:1px solid var(--line);font-weight:600;font-size:15px;animation:tin .25s ease,tout .5s ease 2.4s forwards}
-@keyframes tin{from{transform:translateY(-10px);opacity:0}}@keyframes tout{to{opacity:0;transform:translateY(-8px)}}
+/* Meldungen als schmale Leiste unten (wie die NPC-Texte), höchstens zwei Zeilen – verdeckt das Spielfeld nicht */
+#toast{position:fixed;left:50%;bottom:max(18px,calc(env(safe-area-inset-bottom) + 10px));transform:translateX(-50%);width:min(620px,calc(100% - 24px));z-index:5;pointer-events:none;display:grid;gap:4px;justify-items:center}
+#toast div{max-width:100%;padding:6px 16px;font-weight:600;font-size:13.5px;line-height:1.3;text-align:center;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;animation:tin .25s ease,tout .5s ease 3.4s forwards}
+body.touch #toast{bottom:calc(env(safe-area-inset-bottom) + 300px);width:min(420px,calc(100% - 24px))}
+body:has(#dlg:not([hidden])) #toast{bottom:calc(env(safe-area-inset-bottom) + 150px)}
+@keyframes tin{from{transform:translateY(8px);opacity:0}}@keyframes tout{to{opacity:0;transform:translateY(6px)}}
 #fx{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden}
 .dn{position:absolute;font-weight:700;font-size:20px;text-shadow:0 2px 4px #000,0 0 8px rgba(0,0,0,.6);transform:translate(-50%,-50%);animation:dn .9s ease-out forwards;white-space:nowrap}
 .dn.c{color:#ffd45a;font-size:27px}.dn.p{color:#ff6a7e}.dn.h{color:#7dffb2}.dn.x{color:#cfe7ff;font-size:15px}
@@ -129,7 +132,7 @@ body.touch #bUse{right:4px;bottom:106px;border-color:var(--teal)}body.touch #bUs
 #mapbox{width:92px}#mm{width:92px;height:92px}#skills{transform:scale(.82);transform-origin:right bottom}#joy{width:112px;height:112px}#joy i{width:52px;height:52px;margin:-26px 0 0 -26px}
 #lcol{width:min(232px,38vw);gap:5px}#party{grid-template-columns:48px 1fr;padding:5px 9px 6px 6px}#face{width:48px;height:48px}#mates{display:none}#menuBtn{width:38px;height:38px}
 #quest{right:calc(max(12px,env(safe-area-inset-right)) + 102px);top:max(12px,env(safe-area-inset-top));width:min(236px,31vw);padding:6px 10px}#quest b{font-size:13px}#quest span{font-size:12px}
-#hud:has(#boss:not([hidden])) #quest{display:none}#toast{top:96px}
+#hud:has(#boss:not([hidden])) #quest{display:none}
 #dText{font-size:15px;min-height:40px}#dlg{padding:8px 12px;grid-template-columns:48px 1fr}#dPort{width:48px;height:48px;font-size:26px}
 #mbox{height:calc(100% - 12px);max-height:none;display:grid;grid-template-columns:minmax(104px,max-content) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;gap:8px 10px}
 #tabs{grid-template-columns:1fr;grid-row:1/3;align-content:start;overflow-y:auto;overflow-x:hidden;max-width:38vw}#tabs button{white-space:nowrap}#tabs button{grid-template-columns:auto 1fr;justify-items:start;gap:6px;padding:6px 8px;font-size:12px}#tabs button em{font-size:17px}

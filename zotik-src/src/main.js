@@ -731,7 +731,7 @@ function saveGame(quiet){if(MP.role==='guest'){if(!quiet)toast('Als Gast wird ni
 const maxHp=()=>Math.round((100+22*(S.lvl-1)+gsum('hp'))*(1+.06*skR('vit'))),maxMp=()=>Math.round((40+8*(S.lvl-1)+gsum('mp'))*(1+.08*skR('mind'))),atkV=()=>(1+.04*skR('str'))*(12+3.2*(S.lvl-1)+(inCave()?0:(S.blade?10:0)+(S.blade2?8:0)+(S.trk?S.trk.length*1.5:0))+gsum('atk'))*formAtk()*XT.atk()*(X.tmulT>0?X.tmul:1),xpNeed=()=>Math.round(40+S.lvl*S.lvl*12);
 
 /* ================= UI-Helfer ================= */
-function toast(t){const d=document.createElement('div');d.textContent=t;$('toast').appendChild(d);setTimeout(()=>d.remove(),3000);if($('toast').children.length>4)$('toast').firstChild.remove()}
+function toast(t){const d=document.createElement('div');d.className='glass';d.textContent=t;$('toast').appendChild(d);setTimeout(()=>d.remove(),4000);if($('toast').children.length>2)$('toast').firstChild.remove()}
 let bannerT=0;
 function banner(h,p){$('bh').textContent=h;$('bp').textContent=p||'';$('banner').classList.add('on');clearTimeout(bannerT);bannerT=setTimeout(()=>$('banner').classList.remove('on'),3600)}
 const fxL=$('fx'),_v=new T.Vector3();
