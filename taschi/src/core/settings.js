@@ -1,6 +1,6 @@
 // Device-local settings (controls, graphics, audio). Version-1 input settings
 // (taschi.input.v2) are migrated once.
-import { DEFAULT_KEYS, DEFAULT_PAD } from './input.js';
+import { DEFAULT_KEYS, DEFAULT_PAD, migratePad } from './input.js';
 import { detectProfile } from '../engine/renderer.js';
 import { Emitter } from './events.js';
 
@@ -10,7 +10,7 @@ export const DEFAULTS = {
   musicVolume: 0.6, sfxVolume: 0.8, ambienceVolume: 0.5, muted: false,
   hand: 'left', joySize: 132, joyOpacity: 80, joyMode: 'floating', deadzone: 0.14, camSensitivity: 1, invertY: false,
   walkSpeed: 1, autoRun: false, textSpeed: 2, vibration: true, camDistance: 1, camAuto: true,
-  keys: DEFAULT_KEYS, pad: DEFAULT_PAD, showHints: true
+  keys: DEFAULT_KEYS, pad: DEFAULT_PAD, padLayout: 'switch', showHints: true
 };
 
 export class Settings extends Emitter {
@@ -20,6 +20,7 @@ export class Settings extends Emitter {
     let data = {};
     try { data = JSON.parse(storage.getItem(KEY) || '{}') || {}; } catch {}
     if (!Object.keys(data).length) data = migrateV1(storage);
+    migratePad(data);
     this.data = { ...DEFAULTS, ...data, keys: { ...DEFAULT_KEYS, ...(data.keys || {}) }, pad: { ...DEFAULT_PAD, ...(data.pad || {}) } };
     if (!this.data.graphics) this.data.graphics = detectProfile();
   }

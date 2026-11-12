@@ -1,5 +1,5 @@
 // Items. Every item has a working, testable effect in logic/items.js.
-// category: ball | heal | status | battle | evo | growth | key
+// category: ball | heal | status | battle | evo | growth | held | key
 export const ITEMS = {
   taschiball:   { name: 'Taschi-Kapsel', category: 'ball', price: 40, rate: 1, color: 0xe9523f, desc: 'Standardkapsel zum Fangen wilder Taschis.' },
   heilball:     { name: 'Heilkapsel', category: 'ball', price: 60, rate: 1, color: 0xf48fb8, healOnCatch: true, desc: 'Gefangene Taschis sind sofort vollständig geheilt.' },
@@ -25,17 +25,25 @@ export const ITEMS = {
   kristallsplitter: { name: 'Kristallsplitter', category: 'evo', price: 0, desc: 'Lässt bestimmte Kristall-Taschis sich entwickeln.' },
   eiskristall:  { name: 'Eiskristall', category: 'evo', price: 0, desc: 'Lässt bestimmte Polar-Taschis sich entwickeln.' },
   sternsplitter:{ name: 'Sternsplitter', category: 'evo', price: 0, sell: 400, desc: 'Funkelt geheimnisvoll. Händler zahlen gut dafür.' },
+  // getragene Gegenstände: ein Taschi trägt einen davon und er wirkt im Kampf von selbst (Beeren werden dabei verbraucht)
+  heilbeere:    { name: 'Heilbeere', category: 'held', price: 80, held: { healAt: 0.5, heal: 0.25, once: true }, desc: 'Getragen: Fällt das Taschi auf die Hälfte seiner KP, isst es die Beere und erhält ein Viertel zurück.', unlock: 1 },
+  klarbeere:    { name: 'Klarbeere', category: 'held', price: 90, held: { cure: true, once: true }, desc: 'Getragen: Heilt sofort Verbrennung, Gift, Schlaf, Paralyse oder Frost – einmalig.', unlock: 2 },
+  lernband:     { name: 'Lernband', category: 'held', price: 450, held: { xp: 1.5 }, desc: 'Getragen: Das Taschi erhält 50 % mehr EP.', unlock: 3 },
+  kraftband:    { name: 'Kraftband', category: 'held', price: 500, held: { power: 1.1 }, desc: 'Getragen: Angriffs-Attacken richten 10 % mehr Schaden an.', unlock: 4 },
+  fokusband:    { name: 'Fokusband', category: 'held', price: 600, held: { endure: true, once: true }, desc: 'Getragen: Bei vollen KP übersteht das Taschi einen sonst entscheidenden Treffer mit 1 KP – einmalig.', unlock: 6 },
   // key items
   pfadkarte:    { name: 'Pfadkarte', category: 'key', desc: 'Zeigt alle Regionen und deinen Fortschritt.' },
   gildenschluessel: { name: 'Gildenschlüssel', category: 'key', desc: 'Öffnet das Tor der Forschungsstation im Glutland.' },
   brixcode:     { name: 'Brix’ Zugangskarte', category: 'key', desc: 'Ein Schlüsselchip, mit dem sich die Sperre am Sternengipfel lösen lässt.' },
   mondlaterne:  { name: 'Mondlaterne', category: 'key', desc: 'Leuchtet versteckte Wege im Nebelmoor aus.' },
-  kletterhaken: { name: 'Kletterhaken', category: 'key', desc: 'Ermöglicht das Erklimmen markierter Felswände.' }
+  kletterhaken: { name: 'Kletterhaken', category: 'key', desc: 'Ermöglicht das Erklimmen markierter Felswände.' },
+  angel:        { name: 'Angel', category: 'key', desc: 'Am Ufer auswerfen: Wasser-Taschis beißen an. Drück im richtigen Moment, wenn es zieht!' }
 };
 
 export const ITEM_ORDER = Object.keys(ITEMS);
+export const HELD_IDS = ITEM_ORDER.filter(id => ITEMS[id].category === 'held');
 export const BALL_IDS = ITEM_ORDER.filter(id => ITEMS[id].category === 'ball');
-export const CATEGORY_NAMES = { ball: 'Kapseln', heal: 'Heilung', status: 'Status', battle: 'Kampf', evo: 'Entwicklung', growth: 'Wachstum', key: 'Basis-Items' };
+export const CATEGORY_NAMES = { ball: 'Kapseln', heal: 'Heilung', status: 'Status', battle: 'Kampf', evo: 'Entwicklung', growth: 'Wachstum', held: 'Zum Tragen', key: 'Basis-Items' };
 
 export function sellPrice(id) {
   const it = ITEMS[id];

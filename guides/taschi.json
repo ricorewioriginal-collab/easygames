@@ -63,14 +63,16 @@
     "Dein Team hat sechs Plätze, weitere Taschis landen im Taschi-Lager im Heilzentrum.",
     "Taschis bekommen Erfahrung (EP) und steigen auf. Schwächere Taschis holen schneller auf; mit hoher Freundschaft gibt es 20 % mehr EP.",
     "Entwicklungen passieren beim Levelaufstieg, die Starter z. B. mit Level 16 und 36. Manche Arten brauchen Kristallsplitter oder Eiskristall.",
-    "Mit vier Attacken fragt das Spiel, welche vergessen werden soll. Unter Team › Taschi › Attacken verwalten kannst du Attacken vergessen und beim Attacken-Erinnerer für ★80 verpasste Attacken neu lernen."
+    "Mit vier Attacken fragt das Spiel, welche vergessen werden soll. Unter Team › Taschi › Attacken verwalten kannst du Attacken vergessen und beim Attacken-Erinnerer für ★80 verpasste Attacken neu lernen.",
+    "Angeln: Stell dich ans Ufer eines Sees, Flusses oder Meeres und schau aufs Wasser – dann erscheint „Angeln“. Beim ersten Mal schenkt dir Anglerin Mira eine Angel. Warte, bis „❗“ erscheint, und drück dann sofort Bestätigen. Zu früh oder zu spät, und das Taschi ist weg. Am Haken hängen vor allem Wasser- und Eis-Taschis, manchmal ein größeres (+3 Level).",
+    "Tragen: Jedes Taschi kann einen Gegenstand tragen (Team › Taschi › „🎒 Trägt“ oder in der Tasche antippen). Heilbeere: heilt ein Viertel der KP, sobald die Hälfte erreicht ist. Klarbeere: heilt sofort jede Statusveränderung. Lernband: 50 % mehr EP. Kraftband: 10 % mehr Schaden. Fokusband: übersteht bei vollen KP einen K.-o.-Treffer mit 1 KP. Beeren und Fokusband werden dabei verbraucht."
    ]
   },
   {
    "t": "Orte in der Stadt",
    "list": [
     "Heilzentrum: Rezeption (Team heilen, KP und AP auffüllen), Taschi-Lager, Reisetagebuch (speichern) und Flugtaxi-Schalter (in freigeschaltete Regionen reisen).",
-    "Laden: Bälle, Tränke und Pulver. Mit jedem Siegel kommen neue Waren dazu. Verkaufen bringt den halben Preis.",
+    "Laden: Bälle, Tränke, Pulver sowie Beeren und Bänder zum Tragen. Mit jedem Siegel kommen neue Waren dazu. Verkaufen bringt den halben Preis.",
     "Champion-Pavillon, Arena, Rätselplatz, Truhe, Professorenlabor und sieben Bewohner pro Region.",
     "Höhlen (Flüsterhöhle, Bernsteingrotte, Kristallgrotte, Mondhöhle) mit Leuchtkristallen und einem funkelnden Spalt.",
     "Wegweiser, Minikarte und die Karte (M) zeigen dir den Weg."
@@ -79,9 +81,13 @@
   {
    "t": "Bedienung",
    "list": [
+    "Eine Bedienung für alle Geräte: Jedes Menü, jeder Kampf, jeder Dialog und die Namenseingabe gehen mit Touch, Tastatur und Maus oder Controller.",
     "PC: WASD oder Pfeiltasten laufen, Shift halten = sprinten, E, Enter oder Leertaste = Aktion/Bestätigen, Rücktaste oder Q = zurück, Esc oder P = Menü, T = Team, M = Karte, Z/C = Kamera drehen, [ ] oder Bild↑/Bild↓ oder 1/3 = Reiter wechseln.",
+    "Maus: Zeigen markiert einen Eintrag, Linksklick wählt, Rechtsklick geht zurück, Ziehen dreht die Kamera, Mausrad zoomt.",
     "Touch: links der Joystick, rechts der Aktionsknopf (zeigt, was gerade möglich ist) und 🏃 zum Sprinten; oben ☰ Menü, ◉ Team, 🗺 Karte.",
-    "Gamecontroller: linker Stick oder Steuerkreuz bewegen, A bestätigen, B zurück, X sprinten, Y Team, LB/RB Reiter, LT/RT Kamera, Select Karte, Start Menü.",
+    "Controller wie auf der Nintendo Switch: linker Stick oder Steuerkreuz bewegen, A (rechts) bestätigen, B (unten) zurück, X (oben) oder + Menü, Y (links) halten = rennen, − Karte, L/R Reiter, ZL/ZR Kamera, rechter Stick Kamera, linker Stick drücken = Team.",
+    "Wer lieber die Xbox- oder PlayStation-Belegung mag (untere Taste bestätigt), stellt unter Einstellungen › Controller › Tastenlayout um. Dort steht auch eine Übersicht aller Aktionen für Tastatur, Controller und Touch.",
+    "Namen und Spitznamen gibst du über die Bildschirmtastatur ein: Mit dem Controller Buchstaben wählen und A drücken, B löscht, X oder + ist fertig. Mit Tastatur oder Handy tippst du direkt ins Feld.",
     "Unter Einstellungen kannst du Tasten frei belegen, den Joystick links oder rechts platzieren, Größe, Deckkraft und Totzone anpassen und die Grafikqualität wählen."
    ]
   },
@@ -113,7 +119,9 @@
     "Heile vor jeder Arena und jedem Champion an der Rezeption.",
     "Kaufe am Anfang Tränke und Taschi-Kapseln; der Heilkapsel heilt das gefangene Taschi gleich mit.",
     "Sprich mit den Bewohnern: Sie verraten Hinweise zu Rätseln, Typvorteilen und dem nächsten Ziel.",
-    "Zotik vor der Glaskuppel kämpft erst, wenn du das Moos-Siegel von Fels-Fiete trägst. Er ist legendär und schwer zu fangen: erst schwächen, dann mit guten Kapseln werfen. Besiegst du ihn, steht er bald wieder vor der Kuppel."
+    "Zotik vor der Glaskuppel kämpft erst, wenn du das Moos-Siegel von Fels-Fiete trägst. Er ist legendär und schwer zu fangen: erst schwächen, dann mit guten Kapseln werfen. Besiegst du ihn, steht er bald wieder vor der Kuppel.",
+    "Gib deinem Starter früh eine Heilbeere zum Tragen – sie rettet dich in engen Arenakämpfen. Für schnelleres Leveln: Lernband an ein schwächeres Taschi.",
+    "Wasser-Taschis fehlen dir? Angle an Seen, Flüssen und am Meer. Drück erst, wenn das Ausrufezeichen erscheint."
    ]
   },
   {
@@ -269,7 +277,7 @@
   },
   {
    "q": "Kann ich mit dem Controller spielen?",
-   "a": "Ja, Standard-Controller werden erkannt („🎮 Controller verbunden“). A bestätigt, B geht zurück, Start öffnet das Menü, Y das Team."
+   "a": "Ja. Controller werden erkannt („🎮 Controller verbunden“) und funktionieren wie auf der Nintendo Switch: A bestätigt, B geht zurück, X oder + öffnet das Menü, Y gedrückt halten zum Rennen. Unter Einstellungen › Controller kannst du auf die Xbox/PlayStation-Belegung umstellen oder jede Taste frei belegen."
   },
   {
    "q": "Das Spiel ruckelt auf dem Handy.",

@@ -33,10 +33,11 @@ export function hpBar(hp, max, cls = '') { const p = Math.max(0, Math.min(100, h
 export class FocusNav {
   constructor(root) { this.root = root; this.current = null; }
   items() { return [...this.root.querySelectorAll('.focusable')].filter(e => !e.disabled && !e.classList.contains('disabled') && e.offsetParent !== null); }
-  focus(el) {
+  focus(el, scroll = true) {
     if (!el) return;
     if (this.current) this.current.classList.remove('focus');
     this.current = el; el.classList.add('focus');
+    if (!scroll) return;
     // Nur den eigenen Scrollbereich bewegen: scrollIntoView verschob auch das Fenster selbst (overflow:hidden) – Kopf und Reiter rutschten weg
     const sc = el.closest('.panel-body, .tabs, .scroll'), r = el.getBoundingClientRect();
     if (sc) { const q = sc.getBoundingClientRect();
@@ -84,6 +85,13 @@ export class UI {
       const f = e.target.closest?.('.focusable');
       if (f && this.top?.nav && this.top.el.contains(f)) this.top.nav.focus(f);
     }, true);
+    // Maus: Zeigen markiert wie Steuerkreuz/Stick, Rechtsklick = Zurück (wie B)
+    document.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      const f = e.target.closest?.('.focusable');
+      if (f && f !== this.top?.nav?.current && this.top?.el.contains(f)) { this.top.nav.focus(f, false); this.input.lastDevice = 'keyboard'; }
+    }, { passive: true });
+    document.addEventListener('contextmenu', (e) => { if (!this.blocking || e.target.closest?.('input, textarea')) return; e.preventDefault(); this.input.tap('back'); });
   }
   get top() { return this.stack[this.stack.length - 1] || null; }
   get blocking() { return this.stack.length > 0; }
@@ -200,4 +208,29 @@ export class UI {
     });
   }
   async ask(lines, choices, opts = {}) { return this.say(lines, { ...opts, choices }); }
+
+  // ----------------------------------------------------------------- text entry
+  // Namen eingeben mit jedem Gerät: Tastatur/Touch tippen ins Feld, Controller
+  // und TV wählen Buchstaben auf der Bildschirmtastatur. B löscht, X/+ fertig.
+  textEntry({ title = 'Name', value = '', max = 12, placeholder = '' } = {}) {
+    return new Promise(resolve => {
+      let text = String(value || '').slice(0, max);
+      const field = h('input.name', { value: text, maxlength: max, placeholder, autocomplete: 'off', spellcheck: 'false',
+        oninput: (e) => { text = e.target.value.slice(0, max); },
+        onkeydown: (e) => { if (e.key === 'Enter') { e.preventDefault(); done(true); } else if (e.key === 'Escape') { e.preventDefault(); done(false); } } });
+      const put = (t) => { text = t.slice(0, max); field.value = text; };
+      const key = (label, fn, cls = '') => h('button.oskkey.focusable' + cls, { onclick: fn }, label);
+      const rows = ['ABCDEFGHIJ', 'KLMNOPQRST', 'UVWXYZÄÖÜß', 'abcdefghij', 'klmnopqrst', 'uvwxyzäöü-'];
+      const keys = h('div.osk', {}, rows.map(r => h('div.oskrow', {}, [...r].map(c => key(c, () => put(text + c))))),
+        h('div.oskrow', {}, key('Leer', () => put(text + ' '), '.wide'), key('⌫', () => put(text.slice(0, -1)), '.wide'), key('✓ Fertig', () => done(true), '.wide.primary')));
+      const el = h('div.screen', {}, h('div.panel.small', {}, h('div.panel-head', {}, h('h2', {}, title), h('button.closebtn.focusable', { 'aria-label': 'Abbrechen', onclick: () => done(false) }, '✕')),
+        h('div.panel-body', {}, field, keys), this.hintsBar([['confirm', 'Zeichen'], ['back', 'Löschen'], ['menu', 'Fertig']])));
+      const screen = { el };
+      const done = (ok) => { this.pop(screen); resolve(ok ? text.trim().slice(0, max) : null); };
+      screen.onBack = () => { if (text) put(text.slice(0, -1)); else done(false); };
+      screen.onMenu = () => done(true);
+      this.push(screen);
+      requestAnimationFrame(() => { screen.nav.focus(keys.querySelector('.oskkey')); if (this.input.lastDevice === 'keyboard') field.focus(); });
+    });
+  }
 }

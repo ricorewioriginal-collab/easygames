@@ -102,7 +102,7 @@ export function creatorScreen(game, { mode = 'new', player = null } = {}) {
           mode === 'wardrobe' ? h('p.muted', {}, 'Zieh dich um, wie du willst. Deine Taschis erkennen dich trotzdem!') : h('p.muted', {}, look.zotik ? 'Wähle, wer du bist, und gib dir einen Namen.' : 'Wähle, wer du bist, und gib dir einen Namen. Danach kannst du dein Abenteuer-Outfit anpassen.'),
           row('Figur', [[false, 'Mensch'], [true, '🦊 Zotik']].map(([z, label]) => h('button.chip.focusable' + (!!look.zotik === z ? '.sel' : ''), { onclick: () => pickFigure(z) }, label))),
           look.zotik ? null : row('Ich bin', GENDERS.map(([g, label]) => h('button.chip.focusable' + (gender === g ? '.sel' : ''), { onclick: () => pickGender(g), 'data-autofocus': gender === g ? '' : undefined }, label))),
-          mode === 'wardrobe' ? null : row('Name', h('input.name', { value: name, maxlength: 12, placeholder: 'Dein Name', oninput: (e) => { name = e.target.value; } })),
+          mode === 'wardrobe' ? null : row('Name', h('button.chip.focusable.namebtn', { onclick: async () => { const n = await game.ui.textEntry({ title: 'Dein Name', value: name, max: 12, placeholder: 'Dein Name' }); if (n !== null) { name = n || name; rerender(); } } }, '✎ ' + (name || 'Dein Name'))),
           ...(look.zotik ? [h('p.muted', {}, 'Zotik, der Fuchs-Abenteurer: grüner Schal, Lederweste, Schwert auf dem Rücken. Er reist als Taschi-Abenteurer durch die 16 Regionen – und in Sonnenhain wartet etwas, das genauso aussieht wie er …')] : [
           h('h3', {}, 'Aussehen'),
           sw('Haut', 'skin', SKIN_TONES, true),

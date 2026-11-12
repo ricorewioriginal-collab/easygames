@@ -59,6 +59,7 @@ function cleanMonster(m) {
   if (m.shiny === true) out.shiny = true;
   if (m.caughtIn !== undefined) out.caughtIn = m.caughtIn;
   if (m.ball && ITEMS[m.ball]) out.ball = m.ball;
+  if (m.held && ITEMS[m.held]?.category === 'held') out.held = m.held;
   out.xp = clampInt(m.xp, 0, xpToNext(out.lv) - 1, 0);
   const moves = Array.isArray(m.moves) ? m.moves.filter(x => x && MOVES[x.id]).slice(0, 4) : [];
   out.moves = (moves.length ? moves : movesAtLevel(out.id, out.lv).map(id => ({ id, pp: maxPP(id) })))

@@ -13,8 +13,26 @@ export const DEFAULT_KEYS = {
   confirm: ['e', 'enter', ' '], back: ['backspace', 'q'], menu: ['escape', 'p'], run: ['shift'], team: ['t'], map: ['m'],
   camLeft: ['z'], camRight: ['c'], tabPrev: ['[', 'pageup', '1'], tabNext: [']', 'pagedown', '3']
 };
-// Standard gamepad mapping indices
-export const DEFAULT_PAD = { confirm: 0, back: 1, run: 2, team: 3, tabPrev: 4, tabNext: 5, camLeft: 6, camRight: 7, map: 8, menu: 9, up: 12, down: 13, left: 14, right: 15 };
+// Standard gamepad mapping indices (by position: 0 bottom, 1 right, 2 left, 3 top).
+// Default is the Nintendo Switch layout: A (right) confirms, B (bottom) goes
+// back, X (top) and + open the menu, Y (left) runs, − opens the map,
+// L/R switch tabs, ZL/ZR turn the camera, L3 opens the team. A value may be
+// a single button or a list of buttons.
+export const PAD_LAYOUTS = {
+  switch: { confirm: 1, back: 0, run: 2, menu: [3, 9], team: 10, map: 8, tabPrev: 4, tabNext: 5, camLeft: 6, camRight: 7, up: 12, down: 13, left: 14, right: 15 },
+  xbox: { confirm: 0, back: 1, run: 2, team: 3, tabPrev: 4, tabNext: 5, camLeft: 6, camRight: 7, map: 8, menu: 9, up: 12, down: 13, left: 14, right: 15 }
+};
+export const DEFAULT_PAD = PAD_LAYOUTS.switch;
+// Vor der Switch-Belegung gespeicherte Standardbelegung (Xbox-Positionen) einmal
+// auf Switch umstellen; selbst belegte Tasten bleiben erhalten.
+export function migratePad(data) {
+  if (data.padLayout) return data;
+  const custom = !!data.pad && Object.keys(PAD_LAYOUTS.xbox).some(k => data.pad[k] !== PAD_LAYOUTS.xbox[k]);
+  data.padLayout = custom ? 'custom' : 'switch';
+  if (!custom) delete data.pad;
+  return data;
+}
+export const padButtons = (v) => v === undefined || v === null ? [] : Array.isArray(v) ? v : [v];
 export const PAD_NAMES = { 0: 'A / ✕', 1: 'B / ◯', 2: 'X / ▢', 3: 'Y / △', 4: 'LB / L1', 5: 'RB / R1', 6: 'LT / L2', 7: 'RT / R2', 8: 'Select', 9: 'Start', 10: 'L3', 11: 'R3', 12: '↑', 13: '↓', 14: '←', 15: '→', 16: 'Home' };
 
 export class Input extends Emitter {
@@ -135,6 +153,7 @@ export class Input extends Emitter {
     this.nubEl.style.transform = `translate(${dx * s * 0.75}px, ${dy * s * 0.75}px)`;
   }
   press(action) { this.down.add(action); this.edges.add(action); }
+  tap(action) { this.edges.add(action); }   // one-shot (mouse right-click = zurück)
   release(action) { this.down.delete(action); this.released.add(action); }
 
   pollGamepad() {
@@ -153,13 +172,14 @@ export class Input extends Emitter {
       this.padPrev = pad.buttons.map(b => b.pressed);
       return;
     }
-    const map = this.padMap;
+    const map = this.padMap, held = (i) => !!pad.buttons[i] && (pad.buttons[i].pressed || pad.buttons[i].value > 0.55);
     let any = false;
+    this.padAct ||= {};
     for (const a of ACTIONS) {
-      const i = map[a]; if (i === undefined || !pad.buttons[i]) continue;
-      const p = pad.buttons[i].pressed || pad.buttons[i].value > 0.55;
-      if (p) { any = true; if (!this.padPrev[i]) { this.edges.add(a); this.down.add(a); } else this.down.add(a); }
-      else if (this.padPrev[i]) { this.down.delete(a); this.released.add(a); }
+      const p = padButtons(map[a]).some(held), was = !!this.padAct[a];
+      if (p) { any = true; this.down.add(a); if (!was) this.edges.add(a); }
+      else if (was) { this.down.delete(a); this.released.add(a); }
+      this.padAct[a] = p;
     }
     // stick as menu navigation with repeat
     const now = performance.now();
@@ -177,10 +197,7 @@ export class Input extends Emitter {
     if (k('left')) x -= 1; if (k('right')) x += 1; if (k('up')) y -= 1; if (k('down')) y += 1;
     const pm = this.padMove || { x: 0, y: 0 };
     x += pm.x + this.touch.joyVec.x; y += pm.y + this.touch.joyVec.y;
-    if (this.pad && this.down.has('left') && this.padMap.left !== undefined && this.pad.buttons[this.padMap.left]?.pressed) x = -1;
-    if (this.pad && this.down.has('right') && this.padMap.right !== undefined && this.pad.buttons[this.padMap.right]?.pressed) x = 1;
-    if (this.pad && this.down.has('up') && this.padMap.up !== undefined && this.pad.buttons[this.padMap.up]?.pressed) y = -1;
-    if (this.pad && this.down.has('down') && this.padMap.down !== undefined && this.pad.buttons[this.padMap.down]?.pressed) y = 1;
+    if (this.pad && this.padAct) { if (this.padAct.left) x = -1; if (this.padAct.right) x = 1; if (this.padAct.up) y = -1; if (this.padAct.down) y = 1; }
     const len = Math.hypot(x, y);
     if (len > 1) { x /= len; y /= len; }
     this.move.x = x; this.move.y = y;
@@ -212,12 +229,16 @@ export class Input extends Emitter {
   finishRemapPad(i) {
     const { action, done } = this.remapPad; this.remapPad = null;
     const map = { ...this.padMap };
-    for (const a of Object.keys(map)) if (map[a] === i) delete map[a];
+    for (const a of Object.keys(map)) { const rest = padButtons(map[a]).filter(x => x !== i); if (rest.length) map[a] = rest.length === 1 ? rest[0] : rest; else delete map[a]; }
     map[action] = i;
+    this.settings.set('padLayout', 'custom');
     this.settings.set('pad', map);
     done(true, i);
   }
-  padLabel(action) { const i = this.padMap[action]; return i === undefined ? '–' : (glyph(this.padType, i)); }
+  // unknown controllers in Switch layout show Switch letters (A right, B bottom …)
+  glyphType() { return this.padType && this.padType !== 'generic' ? this.padType : (this.settings.get('padLayout') === 'xbox' ? 'xbox' : 'nintendo'); }
+  padLabel(action) { const b = padButtons(this.padMap[action]); return b.length ? b.map(i => glyph(this.glyphType(), i)).join(' / ') : '–'; }
+  setPadLayout(name) { if (!PAD_LAYOUTS[name]) return; this.settings.set('pad', structuredClone(PAD_LAYOUTS[name])); this.settings.set('padLayout', name); }
   keyLabel(action) { return (this.keys[action] || []).map(keyName).join(' / '); }
 }
 
@@ -231,7 +252,7 @@ export function detectPadType(id = '') {
 export function glyph(type, i) {
   const ps = { 0: '✕', 1: '◯', 2: '▢', 3: '△', 4: 'L1', 5: 'R1', 6: 'L2', 7: 'R2', 8: 'Share', 9: 'Options' };
   const xb = { 0: 'A', 1: 'B', 2: 'X', 3: 'Y', 4: 'LB', 5: 'RB', 6: 'LT', 7: 'RT', 8: 'View', 9: 'Menu' };
-  const nt = { 0: 'B', 1: 'A', 2: 'Y', 3: 'X', 4: 'L', 5: 'R', 6: 'ZL', 7: 'ZR', 8: '−', 9: '+' };
+  const nt = { 0: 'B', 1: 'A', 2: 'Y', 3: 'X', 4: 'L', 5: 'R', 6: 'ZL', 7: 'ZR', 8: '−', 9: '+', 10: 'L-Stick drücken', 11: 'R-Stick drücken', 16: 'Home' };
   const t = type === 'playstation' ? ps : type === 'nintendo' ? nt : xb;
   return t[i] || PAD_NAMES[i] || ('Taste ' + i);
 }

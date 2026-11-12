@@ -25,7 +25,7 @@ import { TRAINERS, GUILD_BATTLES, GUILD_MEMBERS, RIVAL_STAGES, rivalTrainer } fr
 import { ULME, GUILD_SCENES, LEAGUE_FINALE, CREDITS, CHAPTERS, RIVAL, professorLines } from '../data/story.js';
 import { makeMonster, healMonster, maxHp, evolve, teachMove } from '../logic/monster.js';
 import { gainsText } from '../logic/battle.js';
-import { rollEncounter, levelRange } from '../logic/encounters.js';
+import { rollEncounter, levelRange, rollFishing, judgeBite, BITE_WINDOW } from '../logic/encounters.js';
 import { createStore, newSave, exportJSON, importJSON } from '../logic/save.js';
 import * as P from '../logic/progress.js';
 import * as Items from '../logic/items.js';
@@ -464,6 +464,7 @@ export class Game {
       case 'rare': return this.rareEncounter();
       case 'machine': return this.ui.say([{ text: 'Auf dem Display der Maschine steht: „Projekt Lichtspeicher – Zielwert: 16 Lichter“. Daneben kleben Zettel mit zittriger Schrift: „Brix, prüfe die Kristallspannung!“' }]);
       case 'puzzle': return this.puzzleAct(e);
+      case 'fish': return this.fish();
       case 'starter': return this.starterBall(e);
     }
   }
@@ -924,6 +925,38 @@ export class Game {
   }
 
   // ------------------------------------------------------------------ battles
+  // ------------------------------------------------------------------ angeln
+  async fish() {
+    const s = this.save;
+    if (!s.bag.angel) {
+      Items.add(s.bag, 'angel', 1); this.audio.sfx('item');
+      await this.ui.say([{ who: 'Anglerin Mira', text: 'Du schaust so sehnsüchtig aufs Wasser! Nimm meine alte Angel. Wirf aus und drück genau dann, wenn es zieht – nicht vorher!' }, { text: 'Du erhältst: Angel! (Basis-Items)' }]);
+    }
+    if (!s.team.some(m => m.hp > 0)) return this.ui.say([{ text: 'Deine Taschis sind zu erschöpft. Ruh dich erst im Heilzentrum aus.' }]);
+    const res = await this.castLine();
+    if (res === 'cancel') return;
+    if (res !== 'hit') { this.audio.sfx('error'); return this.ui.toast(res === 'early' ? 'Zu früh gezogen – nichts dran.' : 'Zu spät … es ist entwischt.', '🎣'); }
+    const r = Math.min(15, this.world.current.region);
+    this.audio.sfx('encounter');
+    await this.battle({ kind: 'wild', foeTeam: [rollFishing(r, this.rng, { night: this.isNight() })], canCatch: true, ai: 0 });
+  }
+  // Reaktionsspiel: Bestätigen (A / E / Antippen), sobald „!“ erscheint. Zurück bricht ab.
+  castLine() {
+    return new Promise(resolve => {
+      const mark = h('div.fishmark', {}, '…'), info = h('p', {}, 'Die Angel ist ausgeworfen. Warte, bis es zieht!');
+      const el = h('div#dialog', {}, h('div.dlg.fishing', { onclick: () => press() }, h('div.name', {}, '🎣 Angeln'), mark, info, this.ui.hintsBar([['confirm', 'Ziehen'], ['back', 'Einholen']])));
+      const biteAt = performance.now() + 1400 + this.rng.next() * 2600;
+      let over = false;
+      const end = (r) => { if (over) return; over = true; clearTimeout(t1); clearTimeout(t2); this.ui.pop(screen); resolve(r); };
+      const press = () => end(judgeBite(performance.now(), biteAt));
+      const t1 = setTimeout(() => { mark.textContent = '❗'; mark.classList.add('bite'); info.textContent = 'Es zieht! Jetzt!'; this.audio.sfx('confirm'); if (this.settings.get('vibration')) navigator.vibrate?.(120); }, biteAt - performance.now());
+      const t2 = setTimeout(() => end('late'), biteAt - performance.now() + BITE_WINDOW + 50);
+      const screen = { el, onInput: (inp) => { if (inp.pressed('confirm')) press(); else if (inp.pressed('back')) end('cancel'); inp.nav(); return true; } };
+      this.world.player.play('interact', 1.2);
+      this.ui.push(screen);
+    });
+  }
+
   async randomEncounter(habitat = 'grass') {
     const r = Math.min(15, this.world.current.region);
     if (!this.save.team.some(m => m.hp > 0)) return;

@@ -7,7 +7,7 @@ import { effectiveness } from '../data/types.js';
 import { ITEMS } from '../data/items.js';
 import { statOf, maxHp, maxPP, xpReward, gainXp } from './monster.js';
 import { abilityOf, WEATHER } from './traits.js';
-import { applyItem, count, remove, ballRate } from './items.js';
+import { applyItem, count, remove, ballRate, heldEffect } from './items.js';
 import { chooseAction, chooseReplacement } from './ai.js';
 
 const STAGE = (s) => s >= 0 ? (2 + s) / 2 : 2 / (2 - s);
@@ -283,6 +283,7 @@ export function calcDamage(b, user, target, move, crit, roll = 1) {
   if (b.star && b.star.includes(user.uid)) dmg *= 1.2;
   const wb = b.weather && WEATHER[b.weather]; if (wb && wb.boost[move.type]) dmg *= wb.boost[move.type];
   if (user.status === 'brand') dmg *= 0.5;
+  const hu = heldEffect(user); if (hu?.power) dmg *= hu.power;
   dmg *= roll;
   return { dmg: eff === 0 ? 0 : Math.max(1, Math.floor(dmg)), eff };
 }
@@ -311,10 +312,14 @@ function doMove(b, a, user, ev) {
     const roll = 0.85 + b.rng.next() * 0.15;
     const { dmg, eff } = calcDamage(b, user, target, move, crit, roll);
     if (eff === 0) { ev.push({ t: 'immune', uid: target.uid, text: 'Das hat keine Wirkung auf ' + nameOf(target) + '…' }); return; }
-    const dealt = Math.min(target.hp, dmg);
+    let dealt = Math.min(target.hp, dmg);
+    const endure = dealt >= target.hp && target.hp >= maxHp(target) && heldEffect(target)?.endure;
+    if (endure) dealt = target.hp - 1;
     target.hp -= dealt;
     ev.push({ t: 'damage', uid: target.uid, side: tLoc?.side, slot: tLoc?.slot, amount: dealt, hp: target.hp, max: maxHp(target), eff, crit,
       text: (crit ? 'Volltreffer! ' : '') + (eff > 1 ? 'Das ist sehr effektiv!' : eff < 1 ? 'Das ist nicht sehr effektiv …' : '') });
+    if (endure) { ev.push({ t: 'text', text: nameOf(target) + ' hält sich dank ' + ITEMS[target.held].name + ' auf den Beinen!' }); consumeHeld(target); }
+    heldCheck(b, target, ev);
     if (move.drain && dealt > 0 && user.hp > 0) {
       const h = Math.max(1, Math.floor(dealt * move.drain));
       user.hp = Math.min(maxHp(user), user.hp + h);
@@ -324,6 +329,7 @@ function doMove(b, a, user, ev) {
       const r = Math.max(1, Math.floor(dealt * move.recoil));
       user.hp = Math.max(0, user.hp - r);
       ev.push({ t: 'damage', uid: user.uid, side: userLoc?.side, slot: userLoc?.slot, amount: r, hp: user.hp, max: maxHp(user), eff: 1, recoil: true, text: nameOf(user) + ' wird vom Rückstoß getroffen.' });
+      heldCheck(b, user, ev);
     }
     if (move.heal && user.hp > 0) {
       const h = Math.floor(maxHp(user) * move.heal);
@@ -360,9 +366,25 @@ function inflict(b, m, status, ev) {
   if (status === 'schlaf') m.statusTurns = 1 + Math.floor(b.rng.next() * 3);
   const verbs = { brand: 'erleidet Verbrennungen', gift: 'wurde vergiftet', schlaf: 'ist eingeschlafen', paralyse: 'ist paralysiert', frost: 'wurde eingefroren' };
   ev.push({ t: 'status', uid: m.uid, status, text: nameOf(m) + ' ' + verbs[status] + '!' });
+  heldCheck(b, m, ev);
 }
 
 const STAT_NAMES = { atk: 'Angriff', def: 'Verteidigung', speed: 'Initiative' };
+// Getragene Beeren und Bänder wirken von selbst; Beeren werden verbraucht.
+function consumeHeld(m) { if (heldEffect(m)?.once) delete m.held; }
+function heldCheck(b, m, ev) {
+  const h = heldEffect(m);
+  if (!h || m.hp <= 0) return;
+  const item = ITEMS[m.held].name;
+  if (h.cure && m.status) {
+    m.status = null; m.statusTurns = 0; consumeHeld(m);
+    ev.push({ t: 'cure', uid: m.uid, text: nameOf(m) + ' isst die ' + item + ' und ist wieder gesund!' });
+  } else if (h.healAt && m.hp <= maxHp(m) * h.healAt) {
+    m.hp = Math.min(maxHp(m), m.hp + Math.max(1, Math.floor(maxHp(m) * h.heal))); consumeHeld(m);
+    ev.push({ t: 'heal', uid: m.uid, hp: m.hp, max: maxHp(m), text: nameOf(m) + ' isst die ' + item + ' und erholt sich.' });
+  }
+}
+
 function statChange(b, m, stat, stages, ev) {
   const v = b.vol[m.uid] ||= { atk: 0, def: 0, speed: 0, turnsIn: 0 };
   const before = v[stat] || 0;
@@ -380,6 +402,7 @@ function endOfTurn(b, ev) {
         m.hp = Math.max(0, m.hp - d);
         const loc = locate(b, m);
         ev.push({ t: 'damage', uid: m.uid, side: loc?.side, slot: loc?.slot, amount: d, hp: m.hp, max: maxHp(m), eff: 1, dot: m.status, text: nameOf(m) + (m.status === 'gift' ? ' leidet unter dem Gift.' : ' leidet unter der Verbrennung.') });
+        heldCheck(b, m, ev);
       }
     }
     checkFaints(b, ev);
@@ -418,7 +441,7 @@ function awardXpFor(b, foe, ev, factor) {
     if (m.hp <= 0) continue;
     const share = part.has(m.uid) ? 1 : (b.expShare ? 0.5 : 0);
     if (!share) continue;
-    const base = xpReward(foe, { trainer: b.sides[1].trainer, level: m.lv, friendship: m.friendship }) * factor;
+    const base = xpReward(foe, { trainer: b.sides[1].trainer, level: m.lv, friendship: m.friendship }) * factor * (heldEffect(m)?.xp || 1);
     const amount = Math.max(1, Math.floor(base * share));
     ev.push({ t: 'xp', uid: m.uid, amount, text: nameOf(m) + ' erhält ' + amount + ' EP.' });
     for (const e of gainXp(m, amount, { night: b.night })) {
