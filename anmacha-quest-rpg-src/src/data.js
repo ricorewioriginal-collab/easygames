@@ -140,3 +140,59 @@ Object.assign(ENEMIES.reimruepel, { name: 'Knochenschleicher', model: 'kk:Skelet
 Object.assign(ENEMIES.mikspin, { name: 'Gruftmagier', model: 'kk:Skeleton_Mage', h: 1.15, tint: '#c8c0ff' });
 Object.assign(ENEMIES.verstaerker, { model: 'kk:Skeleton_Warrior', h: 1.4, tint: '#ffb08a' });
 Object.assign(ENEMIES.rausritter, { model: 'kk:Skeleton_Warrior', h: 1.5, tint: '#c0c8e8' });
+
+// Elite-Gegner der Tiefe (Bestiarium von Quaternius): Glutwicht und Knurrmops, dazu der Aschenfürst als letzter Wächter
+ENEMIES.knurrmops = { name: 'Knurrmops', lv: 14, hpm: 2.0, atkm: 1.25, defm: 1.3, dir: 'cute', model: 'bestiary:Puglin', tint: '', h: 1.15, elite: true };
+ENEMIES.glutwicht = { name: 'Glutwicht', lv: 20, hpm: 1.9, atkm: 1.4, defm: 1.2, dir: 'cute', model: 'bestiary:Imp', tint: '', h: 1.4, elite: true };
+ENEMIES.aschenfuerst = { name: 'Aschenfürst Vargh', lv: 30, hpm: 10, atkm: 1.9, defm: 1.3, boss: true, spec: ['Aschenregen', 0.95, true], dir: 'cute', model: 'bestiary:Imp', tint: '#ff9a7a', h: 3.2 };
+DEEP_BOSS[30] = 'aschenfuerst';
+
+// ---------------------------------------------------------------- Freies Laufen: doppelt so große Weltkarte
+// Jedes Feld der Oberwelt wird zu 2×2 Feldern; Ecken zwischen Wald, Wasser und Fels werden abgerundet,
+// damit keine Treppenstufen entstehen. Eingänge und Ankunftsfelder wandern mit (Spielstände ab v5).
+export const WORLD_SCALE = 2;
+(function upscaleWorld() {
+  const W = MAPS.welt, src = W.rows, h = src.length, w = src[0].length, K = WORLD_SCALE;
+  const at = (x, y) => (src[y] && src[y][x]) || '~';
+  const hash = (x, y) => { let v = Math.imul(x * 374761393 + y * 668265263, 1274126177); v ^= v >>> 13; return ((v >>> 0) % 1000) / 1000; };
+  const solid = '#T~^';
+  const portals = new Set(W.portals.map(p => p.x + ',' + p.y));
+  const plain = [], smooth = [];
+  for (let y = 0; y < h * K; y++) {
+    let a = '', b = '';
+    for (let x = 0; x < w * K; x++) {
+      const sx = Math.floor(x / K), sy = Math.floor(y / K), c = at(sx, sy);
+      a += c;
+      let o = c;
+      if (!portals.has(sx + ',' + sy)) {
+        const dx = (x % K) ? 1 : -1, dy = (y % K) ? 1 : -1;
+        const nh = at(sx + dx, sy), nv = at(sx, sy + dy);
+        // Ecke abrunden: beide Nachbarn zur Ecke hin sind gleich und anders als dieses Feld
+        if (nh === nv && nh !== c && hash(x, y) < 0.7) o = nh;
+        else if (c === '.' && hash(x + 7, y + 3) < 0.05) o = ',';
+      }
+      b += o;
+    }
+    plain.push(a); smooth.push(b);
+  }
+  const scaleP = (p) => ({ ...p, x: p.x * K, y: p.y * K });
+  const portalsK = W.portals.map(scaleP);
+  const arrive = [];
+  for (const m of Object.values(MAPS)) for (const p of m.portals || []) if (p.to === 'welt') { p.ax *= K; p.ay *= K; arrive.push({ x: p.ax, y: p.ay }); }
+  // Alles muss vom Start aus erreichbar bleiben, sonst ohne Abrundung
+  const ok = (rows) => {
+    const free = (x, y) => rows[y] && rows[y][x] && !solid.includes(rows[y][x]);
+    const seen = new Set(['40,44']), q = [[40, 44]];
+    while (q.length) {
+      const [x, y] = q.pop();
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const k = (x + dx) + ',' + (y + dy);
+        if (!seen.has(k) && free(x + dx, y + dy)) { seen.add(k); q.push([x + dx, y + dy]); }
+      }
+    }
+    return [...portalsK, ...arrive].every(p => seen.has(p.x + ',' + p.y));
+  };
+  W.rows = ok(smooth) ? smooth : plain;
+  W.portals = portalsK;
+  W.rate = W.rate / K;    // doppelt so viele Schritte: gleich viele Zufallskämpfe
+})();

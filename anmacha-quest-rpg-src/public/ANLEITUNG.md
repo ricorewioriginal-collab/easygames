@@ -6,7 +6,8 @@ Ein Rollenspiel in modernem 3D für PC und Handy. Spielzeit: ca. 1,5–2,5 Stund
 
 | Aktion | PC | Handy |
 |---|---|---|
-| Laufen | Pfeiltasten oder `W` `A` `S` `D` | Steuerkreuz unten links: Finger aufsetzen und in die Richtung schieben, auch gleitend wechseln; Loslassen stoppt |
+| Laufen (frei in jede Richtung) | Pfeiltasten oder `W` `A` `S` `D`, auch schräg; `Umschalt` halten = gehen | Stick unten links: wenig schieben = gehen, ganz = rennen; Loslassen stoppt |
+| Aktion (ansprechen, öffnen) | `Enter`, `Leertaste` oder `Z` | Taste **A** unten rechts |
 | Bestätigen / Weiterlesen | `Leertaste`, `Enter` oder `Z` (Mausklick auf Textfeld) | Textfeld antippen |
 | Zurück / Abbrechen | `Esc`, `X` oder `Backspace` | – (Menüpunkt „Zurück“) |
 | Menü öffnen | `Esc`, `M` oder `Tab` | Taste **MENÜ** oben rechts |
@@ -14,11 +15,13 @@ Ein Rollenspiel in modernem 3D für PC und Handy. Spielzeit: ca. 1,5–2,5 Stund
 | Musik an/aus | Menü → Musik | Menü → Musik |
 | Menüpunkte wählen | Pfeiltasten + Bestätigen | Antippen |
 
-**Ansprechen / Öffnen:** Läufst du gegen eine Person, eine Truhe, ein Tor oder einen Boss, wird die Aktion sofort ausgelöst. Eine extra Taste ist nicht nötig.
+**Ansprechen / Öffnen:** Stell dich vor eine Person, Truhe, ein Tor oder einen Boss und drück die Aktionstaste (PC: `Enter`, Controller: A, Handy: **A**). Dagegenlaufen löst die Aktion ebenfalls aus.
+
+**Controller:** linker Stick läuft stufenlos (leicht neigen = gehen), A = Aktion und Bestätigen.
 
 ## 2. Der Bildschirm
 
-- **Ansicht:** Die Welt und die Kämpfe sind moderne Echtzeit-3D-Grafik mit Licht und Schatten, Wasser, Gras im Wind, Partikeln und Leuchteffekten (animierte Helden und Monster, Häuser, Bäume, Berge). Die Kamera folgt dir als Verfolgerkamera hinter dem Helden und lässt sich drehen und zoomen. Die Bedienung bleibt wie bei klassischen Rollenspielen Feld für Feld.
+- **Ansicht:** Die Welt und die Kämpfe sind moderne Echtzeit-3D-Grafik mit Licht und Schatten, Wasser, Gras im Wind, Partikeln und Leuchteffekten (animierte Helden und Monster, Häuser, Bäume, Berge). Die Kamera folgt dir als Verfolgerkamera hinter dem Helden und lässt sich drehen und zoomen. Du läufst frei in jede Richtung, gehst oder rennst; die Figuren sind im Verhältnis zur Welt klein, die Weltkarte ist groß und weit. Kerkermauern vor der Kamera werden ausgeblendet, damit der Held immer sichtbar bleibt.
 - **Oben links:** Name des Ortes und deine Münzen (M).
 - **Weltkarte:** Städte, Höhlen und der Turm sind beschriftet. Rot gefärbte Eingänge sind noch versiegelt.
 - **Sichtbare Monster:** Auf Weltkarte und in Dungeons laufen Gegner herum. Kommen sie nahe, jagen sie dich. Bei Berührung beginnt ein Kampf.

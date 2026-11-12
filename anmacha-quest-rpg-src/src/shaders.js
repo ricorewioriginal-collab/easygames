@@ -174,3 +174,29 @@ export function makeParticles(kind, count, color, box = new THREE.Vector3(26, 8,
   pts.frustumCulled = false;
   return pts;
 }
+
+// Kerker-Schnitt: Mauern und Möbel zwischen Kamera und Held werden weich weggerastert (Blick von schräg oben bleibt frei)
+export function addCutaway(mat) {
+  mat.onBeforeCompile = (sh) => {
+    sh.uniforms.occP = occ.p; sh.uniforms.occOn = occ.on;
+    sh.vertexShader = 'varying vec3 vOccW;\n' + sh.vertexShader.replace('#include <worldpos_vertex>', `#include <worldpos_vertex>
+      {
+        vec4 ow = vec4(transformed, 1.0);
+        #ifdef USE_INSTANCING
+          ow = instanceMatrix * ow;
+        #endif
+        vOccW = (modelMatrix * ow).xyz;
+      }`);
+    sh.fragmentShader = 'uniform vec3 occP; uniform float occOn; varying vec3 vOccW;\n' + sh.fragmentShader.replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
+      if (occOn > 0.5) {
+        vec2 dir = normalize(occP.xz - cameraPosition.xz);
+        float dp = dot(occP.xz - cameraPosition.xz, dir);
+        float df = dot(vOccW.xz - cameraPosition.xz, dir);
+        float f = smoothstep(-0.25, -0.5, df - dp) * smoothstep(0.1, 0.35, vOccW.y);
+        float h = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715))));
+        if (h < f) discard;
+      }`);
+  };
+  mat.customProgramCacheKey = () => 'cutaway';
+  return mat;
+}

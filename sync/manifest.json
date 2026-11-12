@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "0657aac25c5c",
- "generated": "2026-11-12T20:31:43+01:00",
- "commit": "4366b61e80ccfdc2726c024e953b3662abcdd6b1",
+ "version": "4e09ce5636cf",
+ "generated": "2026-11-12T19:34:48+00:00",
+ "commit": "0ee7878d13dd1ebdba282b3488228a2f9d71743a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2372,9 +2372,9 @@
    "h": "950fb90df6cb3745e31e3f7b566090d8e47ffd84f24f3e6b9a0a3d89ab1ea926"
   },
   {
-   "p": "anmacha-quest-rpg/assets/index-CjJ7puqz.js",
-   "s": 828722,
-   "h": "e4d0706fdd0c09360b58b40a5f08f4accf11efc63cd493aa21bb0d55c4d02f4e"
+   "p": "anmacha-quest-rpg/assets/index-IB2R-Gdu.js",
+   "s": 838470,
+   "h": "049b814c59e5b2594bb055ca6373bdb66e2eb0ad69dcc9e708ad0ca770346cff"
   },
   {
    "p": "anmacha-quest-rpg/card.jpg",
@@ -2388,8 +2388,8 @@
   },
   {
    "p": "anmacha-quest-rpg/index.html",
-   "s": 21699,
-   "h": "0d45b9239b6663b30ee6300a9df31e2bd1e4e1bf226439e3cc72974b498ed060"
+   "s": 18297,
+   "h": "44f3103610daca6ef8fc31cc3d6d575b9dfaf94464551593aae7ff3946fc98eb"
   },
   {
    "p": "anmacha-quest-rpg/logo.png",
@@ -2405,6 +2405,16 @@
    "p": "anmacha-quest-rpg/manifest.webmanifest",
    "s": 798,
    "h": "6870edadbca06a62fe3440e16209b29e4df9e1daac43743f61a0ccbc4a3e0b7f"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/bestiary/Imp.glb",
+   "s": 1285352,
+   "h": "60df350ed13bd29d2cfe7f781a96819cadb839466a435aa0d44f20c4bc75323e"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/bestiary/Puglin.glb",
+   "s": 498136,
+   "h": "717878aef3ebc328baadf792c907f3213998371d92e8546b86758d5eac1dade3"
   },
   {
    "p": "anmacha-quest-rpg/models/bld_1Story_GableRoof_Mat.glb",
@@ -2685,6 +2695,211 @@
    "p": "anmacha-quest-rpg/models/kk/skeleton_texture.png",
    "s": 17037,
    "h": "15741a25c53e04fa9bf3beac3bc0de442359404b1ff9be863b892cb551ad3657"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/banner_patternA_red.bin",
+   "s": 7700,
+   "h": "529ee144114cef8046da3226aa0aa1b12437c7654309dc038620b06c42444998"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/banner_patternA_red.gltf",
+   "s": 3070,
+   "h": "42c2caad0d644ddccbc901db086ef439788275bef92e24e66e006fe06572b362"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/banner_patternA_white.bin",
+   "s": 7700,
+   "h": "c30b62c098272ac1409d66eef4abfea55a369416672a63ec9a7d165a38f816ac"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/banner_patternA_white.gltf",
+   "s": 3076,
+   "h": "4a20e810a0f6f059148eb8da64ed27b5e2ee1b322d1969d6c86d7fcaa474b9f6"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/banner_patternB_blue.bin",
+   "s": 6888,
+   "h": "ae13242b0776efc6ef696886baedab29161ea126e2ddc0ecde959ab2f96646ae"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/banner_patternB_blue.gltf",
+   "s": 3073,
+   "h": "d3fa4e7a2af8cac1a0e35d780b5a0e671db54c95b21c76ed3fbe53b410c1ea4a"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/banner_patternC_white.bin",
+   "s": 6888,
+   "h": "4e388a478c692e61a4bbcf74fb636791758bcd749ab7974bc17147f3ef99c750"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/banner_patternC_white.gltf",
+   "s": 3076,
+   "h": "b9765561eaf31aa873c6bf5c2a955b38b07fa7f3dd2e1dee58b592edd5a0587c"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/banner_triple_red.bin",
+   "s": 17484,
+   "h": "a5fde381d491e8c9c26f90aeb4a96217609cbe16722542bf02f94353d49805ce"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/banner_triple_red.gltf",
+   "s": 3068,
+   "h": "6f7cd07ae8baa72a9dcb1cbd745f3593a6c57b3375c8fa8aa6d3ea330a4fac5a"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/barrel_large.bin",
+   "s": 25768,
+   "h": "f6ed14f969f48ba104521223486e3be16e5b4efee6d369b61ff5fceb53bae4c7"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/barrel_large.gltf",
+   "s": 3057,
+   "h": "6a3b211d6ae6bfb028a0bbb836d5aec6d09c805c43dbd03c28543458243273cc"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/box_stacked.bin",
+   "s": 123440,
+   "h": "febbfa284448427eb92a54bc82d5406617b9dbb8edadc7b34acb80eda8db45bb"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/box_stacked.gltf",
+   "s": 3065,
+   "h": "2519548191f7b1c120a3516cab0845e9a5553d79be46fc98ac95a76b585b3559"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/candle_triple.bin",
+   "s": 9924,
+   "h": "483a4ad1141b982a58f77d292bd2dfc81c654e20bf9d47698b23b8e61779530f"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/candle_triple.gltf",
+   "s": 3039,
+   "h": "aaedcfa4c76bd509e808509e2affabaacea71af8287006a157789d75fcd4fef8"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/chest.bin",
+   "s": 40496,
+   "h": "2c41c61df12691a7bdae510433588ce82bbf0593622b986ae2e0981f67e48ae3"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/chest.gltf",
+   "s": 5111,
+   "h": "25c1770655f555e266aadbc1936f5608ae2832a328f183277309c82c549afb5d"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/chest_gold.bin",
+   "s": 80608,
+   "h": "b47929753acecb995bab5afa41233c0f87d78804c94878fc9977dc0390e9dbc4"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/chest_gold.gltf",
+   "s": 5143,
+   "h": "91d388b9bc142a37064d1ad0b3e096205b616ea4a84146873b20eb88deffbeef"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/crates_stacked.bin",
+   "s": 82068,
+   "h": "7ef3950564c1746f7f6dd0175903e6b76507351168dbb68e9516bb322ca6e48f"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/crates_stacked.gltf",
+   "s": 3070,
+   "h": "ffd45fe1637f6ced570b489771958034ae41f077debca69eafd7c825318062ab"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/dungeon_texture.png",
+   "s": 17047,
+   "h": "ceb331d6ed53273da5e26808560bca8496f8f6ebc12d83b570c0e317560f1d03"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/floor_tile_big_grate.bin",
+   "s": 19288,
+   "h": "4639f2612b0040f32f624894321540a3a3e4b7f5337706b91d5fc11403b42d77"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/floor_tile_big_grate.gltf",
+   "s": 2996,
+   "h": "696ba811077244d19bb1bcc37b419e84e5ca6c2d16e5ea75cd49cedbd7498442"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/floor_tile_large.bin",
+   "s": 9928,
+   "h": "d4649c85286ff59fbf4b3fc8e5b228dc63ee2bb6914dbe716ca88acc9937ab23"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/floor_tile_large.gltf",
+   "s": 2999,
+   "h": "c9c8807b44e18ecf1cb058b45f237008a23503e95e2d2282498730c87a734af1"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/floor_tile_large_rocks.bin",
+   "s": 19564,
+   "h": "c1456a57bbdb36482526a0d92facefa255c106bea4cb00fd289e2acf994c53f6"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/floor_tile_large_rocks.gltf",
+   "s": 3020,
+   "h": "ea1b2b948a6671d3eeeed692160e26a48e723d1aa179aac32cb1a13fa8e18640"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/keg.bin",
+   "s": 39660,
+   "h": "31dc451ca13dca4e9313fd590ad64ba43a9cadaccd750cde230990ab2ed07bfe"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/keg.gltf",
+   "s": 3038,
+   "h": "a7a442e4624edb6ef040482a74fdb50cc3d29dddf424cfc123b5d991bee23188"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/pillar.bin",
+   "s": 8528,
+   "h": "6fc17e077a7f071f44aa24ee6dce92a719d910363cabfc17ea0cf849983d048f"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/pillar.gltf",
+   "s": 2985,
+   "h": "e82b97258de31743aa7874abebd27764e4a48b19d686f6e1493ce8209ac894b0"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/pillar_decorated.bin",
+   "s": 43960,
+   "h": "31146b0dbda9198f5cef7d94b2f02994c0aa2f7763b95a28198824b4ca4f1055"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/pillar_decorated.gltf",
+   "s": 3039,
+   "h": "e37f204f4dc911c8b5a0f13121aa7857026cd2b6d5e9a665dc67bcc247680342"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/torch_mounted.bin",
+   "s": 14180,
+   "h": "c627d80fa8b6256a887726d81880dbe88f0542eb740acada4cd6a9cbaa660ac8"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/torch_mounted.gltf",
+   "s": 3060,
+   "h": "29f1cb66f59d63b8076ca412e83de474a01aa38f27ae974846ee993caf97e16d"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/wall.bin",
+   "s": 35284,
+   "h": "cb081f98e2abd7f857d812534fe40c8b151b628a5b15f1c1c532fd93b46c29b2"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/wall.gltf",
+   "s": 2940,
+   "h": "e7262d242545816fde7ab138be802a50e5e4af0a5a392682a32c5657184d4de1"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/wall_cracked.bin",
+   "s": 103260,
+   "h": "74e9ee48e0c44cd3ab53573ccc8008cf1eefac99ec5d6cf9c1a828b2223dd2b3"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kkd/wall_cracked.gltf",
+   "s": 2997,
+   "h": "4eb34d05e4bc5f38d7e1ba1adb9ce8cb6e73ddcf15daaec433a838c2f0bec38b"
   },
   {
    "p": "anmacha-quest-rpg/models/mon_Alien.glb",
@@ -6168,8 +6383,8 @@
   },
   {
    "p": "guides/anmacha-quest-rpg.json",
-   "s": 20741,
-   "h": "3cb8a599c3f98ab326b846711a476dbe2d0760d82231a16d1af3c9862781e0ea"
+   "s": 21020,
+   "h": "4dcc1b74612dd61a8da20c80189e2287567de37988fe3ad3ca643512a100e30e"
   },
   {
    "p": "guides/anmacha-quiz.json",
@@ -9144,7 +9359,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258361,
-   "h": "6a8c1c9dc3423971f0c4d9acfed8bd888233d37286403d48f058c774515f6b28"
+   "h": "b1218423253a1878bb17d2f275e010c7250a75583f37ead9a9cab157ca9faec6"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

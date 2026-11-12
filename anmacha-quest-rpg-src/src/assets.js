@@ -64,7 +64,7 @@ export const OFFHAND = { andrew: 'kk/shield_badge_color.gltf', andy: 'kk/shield_
 // Haltung: Richtung der Spitze in Figur-Koordinaten (+Z = Blickrichtung, +Y = oben) und Länge relativ zur Körpergröße
 export const WEAPON_GRIP = { andrew: { dir: [0.1, -0.45, 1], len: 0.55 }, marco: { dir: [0, 1, 0.12], len: 0.95 }, teresa: { dir: [0, 1, 0.25], len: 0.5 },
   rico: { dir: [0, 1, 0.05], len: 0.62 }, andy: { dir: [0, 0.35, 1], len: 0.5 } };
-export const monsterPath = (d) => d.model.startsWith('kk:') ? `kk/${d.model.slice(3)}.glb` : `mon_${d.model}.glb`;
+export const monsterPath = (d) => d.model.startsWith('kk:') ? `kk/${d.model.slice(3)}.glb` : d.model.startsWith('bestiary:') ? `bestiary/${d.model.slice(9)}.glb` : `mon_${d.model}.glb`;
 export const heroPath = (m) => m.startsWith('kk:') ? `kk/${m.slice(3)}.glb` : `hero_${m}.glb`;
 // Skelett-Gegner tragen ihre Waffe
 export const MONSTER_WEAPON = { 'kk:Skeleton_Warrior': 'kk/Skeleton_Blade.gltf', 'kk:Skeleton_Minion': 'kk/Skeleton_Axe.gltf', 'kk:Skeleton_Rogue': 'kk/Skeleton_Blade.gltf', 'kk:Skeleton_Mage': 'kk/Skeleton_Staff.gltf' };
@@ -89,8 +89,45 @@ export function makeActor(gltf, height, tint) {
   const pivot = new THREE.Group();
   pivot.add(inst);
   root.add(pivot);
-  const mixer = gltf.animations.length ? new THREE.AnimationMixer(inst) : null;
-  return { root, pivot, inst, mixer, clips: gltf.animations, state: '', cur: null, h: height };
+  const a = { root, pivot, inst, mixer: null, clips: gltf.animations, state: '', cur: null, h: height };
+  a.mixer = gltf.animations.length ? new THREE.AnimationMixer(inst) : procMixer(a);
+  return a;
+}
+// T-Pose lösen: Oberarme seitlich herunterklappen (Skelett nach UE-Art: upperarm_l/_r → lowerarm_l/_r)
+function relaxArms(inst, deg = 68) {
+  inst.updateMatrixWorld(true);
+  for (const side of ['l', 'r']) {
+    const up = inst.getObjectByName('upperarm_' + side), low = inst.getObjectByName('lowerarm_' + side);
+    if (!up || !low || !up.parent) continue;
+    const pu = new THREE.Vector3().setFromMatrixPosition(up.matrixWorld), pl = new THREE.Vector3().setFromMatrixPosition(low.matrixWorld);
+    inst.worldToLocal(pu); inst.worldToLocal(pl);
+    const ang = THREE.MathUtils.degToRad(deg) * (pl.x > pu.x ? -1 : 1);
+    // Drehung um die Vorwärtsachse des Modells, in den Raum des Elternknochens übertragen
+    const qW = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), ang);
+    const qInst = inst.getWorldQuaternion(new THREE.Quaternion());
+    const qParent = up.parent.getWorldQuaternion(new THREE.Quaternion());
+    const qWorld = qInst.clone().multiply(qW).multiply(qInst.clone().invert());
+    up.quaternion.premultiply(qParent.clone().invert().multiply(qWorld).multiply(qParent));
+    up.updateMatrixWorld(true);
+  }
+}
+// Modelle ohne Animationen (Bestiarium): atmen, wiegen, beim Tod umkippen
+function procMixer(a) {
+  relaxArms(a.inst);
+  const y0 = a.inst.position.y;
+  let t = Math.random() * 6;
+  return {
+    update(dt) {
+      t += dt;
+      if (a.dead) { a.inst.rotation.x = Math.max(-1.45, a.inst.rotation.x - dt * 3); a.inst.position.y = y0 - Math.min(1, -a.inst.rotation.x) * a.h * 0.1; return; }
+      const walk = a.state === 'walk' || a.state === 'run';
+      a.inst.position.y = y0 + Math.abs(Math.sin(t * (walk ? 9 : 2.4))) * a.h * (walk ? 0.06 : 0.025);
+      a.inst.rotation.z = Math.sin(t * (walk ? 4.5 : 1.2)) * (walk ? 0.08 : 0.035);
+      a.inst.rotation.x = Math.sin(t * 1.7) * 0.03;
+    },
+    clipAction() { return null; },
+    stopAllAction() { }
+  };
 }
 
 export function clipFor(a, key) {
@@ -114,7 +151,7 @@ function fadeTo(a, clip, loop, fade) {
 export function playLoop(a, key) {
   if (!a.mixer || a.state === key) return;
   const clip = clipFor(a, key) || clipFor(a, 'idle') || clipFor(a, 'flying');
-  if (!clip) return;
+  if (!clip) { if (!a.clips.length) a.state = key; return; }
   fadeTo(a, clip, true, 0.15);
   a.state = key;
 }

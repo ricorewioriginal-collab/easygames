@@ -75,6 +75,7 @@ async function boot() {
   const loop = (now) => {
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
+    game.stick = padStick();
     game.update(dt);
     view.frame(dt);
     ui.frame();
@@ -83,6 +84,18 @@ async function boot() {
   };
   requestAnimationFrame(loop);
   game.showTitle();
+}
+
+// Linker Stick des Controllers stufenlos (gamepad.js meldet ihn zusätzlich als Pfeiltasten für die Menüs)
+function padStick() {
+  let pads = [];
+  try { pads = navigator.getGamepads ? navigator.getGamepads() : []; } catch (e) { }
+  for (const p of pads) {
+    if (!p || !p.connected || !p.axes || p.axes.length < 2) continue;
+    const x = p.axes[0] || 0, y = p.axes[1] || 0, m = Math.hypot(x, y);
+    if (m > 0.22) return { x, y, m: Math.min(1, (m - 0.22) / 0.7) };
+  }
+  return null;
 }
 
 // Spielstand der Godot-Fassung übernehmen. Die Cloud kann eine neuere alte Datei erst nach dem Start
@@ -117,14 +130,19 @@ function input(game, ui) {
     if (DIRV[a] && !e.repeat) game.pressDir(DIRV[a], true);
     if (e.repeat && !DIRV[a]) return;
     if (ui.action(a)) return;
+    if (a === 'ok' && !e.repeat && game.actionFront()) return;
     // Escape öffnet auf der Karte das Menü (wie in der Godot-Fassung)
     if ((a === 'menu' || e.code === 'Escape') && game.mode === M.WORLD) game.openMenu();
   });
+  // Umschalt gedrückt halten = gehen statt rennen
+  const shift = (e) => { if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') game.walkKey = e.type === 'keydown'; };
+  addEventListener('keydown', shift);
+  addEventListener('keyup', shift);
   addEventListener('keyup', (e) => {
     const a = KEYMAP[e.code];
     if (a && DIRV[a]) game.pressDir(DIRV[a], false);
   });
-  addEventListener('blur', () => game.clearDirs());
+  addEventListener('blur', () => { game.clearDirs(); game.walkKey = false; });
   document.addEventListener('visibilitychange', () => { if (document.hidden) game.clearDirs(); });
   document.addEventListener('contextmenu', e => e.preventDefault());
   camInput(game);
