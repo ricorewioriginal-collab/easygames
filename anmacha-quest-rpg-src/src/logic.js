@@ -201,6 +201,15 @@ export function loadMap(S, rng, id, at) {
   const b = map.boss;
   if (b && b.id && !S.flags[b.flag]) S.objs.push({ t: 'boss', x: b.x, y: b.y, d: b, uid: nextUid(S) });
   if (map.gate && !S.flags[map.gate.flag]) S.objs.push({ t: 'gate', x: map.gate.x, y: map.gate.y, d: map.gate, uid: nextUid(S) });
+  // Rätsel: Steinblöcke, Fackeln, Lichtsiegel vor dem Tor; Fundstücke in Felsen und Dornen
+  const pz = map.puzzle;
+  if (pz) {
+    const solved = sealSolved(S, id);
+    pz.blocks.forEach(([x, y], i) => { const at = solved ? pz.plates[i] : [x, y]; S.objs.push({ t: 'block', x: at[0], y: at[1], uid: nextUid(S) }); });
+    pz.torches.forEach(([x, y], i) => S.objs.push({ t: 'torch', x, y, d: { i }, lit: solved || !!S.flags[`torch_${id}_${i}`], uid: nextUid(S) }));
+    if (!solved && map.gate) S.objs.push({ t: 'seal', x: map.gate.x - 1, y: map.gate.y, d: {}, uid: nextUid(S) });
+  }
+  for (const l of map.loot || []) if (!S.flags[l.id]) S.objs.push({ t: l.kind, x: l.x, y: l.y, d: l, uid: nextUid(S) });
   S.reg = [];
   if (map.world) for (let y = 0; y < S.mh; y++) { const row = []; for (let x = 0; x < S.mw; x++) row.push(regionKey(map, x, y)); S.reg.push(row); }
   S.gp = { x: at.x, y: at.y };
@@ -208,6 +217,24 @@ export function loadMap(S, rng, id, at) {
   S.moving = false;
   S.grace = 8;
   spawnRoamers(S, rng);
+}
+
+export const sealSolved = (S, id) => !!(S.flags['seal_' + id] || (MAPS[id].boss && MAPS[id].boss.flag && S.flags[MAPS[id].boss.flag]));
+// Block schieben: gelingt nur auf freien Boden ohne Objekt, Ausgang oder Monster
+export function pushBlock(S, o, d) {
+  const n = { x: o.x + d.x, y: o.y + d.y };
+  if (blocked(S, n) || objAt(S, n) || isPortal(S, n) || tile(S, n.x, n.y) === '~') return false;
+  if (S.roamers.some(r => eq(r.g, n))) return false;
+  o.x = n.x; o.y = n.y;
+  return true;
+}
+// Siegel gelöst: jede Platte trägt einen Block, jede Fackel brennt
+export function puzzleDone(S) {
+  const pz = S.map.puzzle;
+  if (!pz) return false;
+  const onPlate = pz.plates.every(([x, y]) => S.objs.some(o => o.t === 'block' && o.x === x && o.y === y));
+  const lit = S.objs.filter(o => o.t === 'torch').every(o => o.lit);
+  return onPlate && lit;
 }
 
 // Alle vom Startfeld aus erreichbaren Felder

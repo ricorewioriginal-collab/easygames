@@ -275,6 +275,72 @@ if (S.gp.y !== 11 || S.moving) fail('Laufen', S.gp, S.moving);
   game.autoplay = false;
 }
 
+// ---- Stufe 3: Dungeon-Rätsel (Blöcke auf Platten, Fackeln, Lichtsiegel), Werkzeuge und Fundstücke
+{
+  game.autoplay = true;
+  const S = game.S;
+  const SOLID = ['seal', 'block', 'torch', 'rock', 'bramble', 'chest', 'npc'];
+  const solid = (n) => L.blocked(S, n) || S.objs.some(o => SOLID.includes(o.t) && o.x === n.x && o.y === n.y);
+  for (const mid of ['rap', 'schlager', 'xmas', 'rock', 'tower']) {
+    const m = MAPS[mid], st = L.startOf(mid);
+    S.flags = { tool_hammer: true, tool_fire: true };
+    game.loadMap(mid, st);
+    S.roamers = [];
+    if (!S.objs.some(o => o.t === 'seal')) { fail('Siegel fehlt', mid); continue; }
+    if (L.reachable(S, st, solid).has(L.key(m.boss))) fail('Boss ohne Rätsel erreichbar', mid);
+    m.puzzle.blocks.forEach(([bx, by], i) => {
+      const [px, py] = m.puzzle.plates[i];
+      if (by !== py) fail('Block und Platte nicht in einer Reihe', mid, i);
+    });
+    for (let i = 0; i < m.puzzle.blocks.length; i++) {
+      const [px] = m.puzzle.plates[i];
+      const o = S.objs.filter(x => x.t === 'block')[i];
+      const d = { x: Math.sign(px - o.x), y: 0 };
+      while (o.x !== px) {
+        const behind = { x: o.x - d.x, y: o.y };
+        if (!L.reachable(S, st, solid).has(L.key(behind))) { fail('Block nicht schiebbar', mid, i, o.x, o.y); break; }
+        S.gp = { ...behind }; S.ppos = { ...behind }; S.face = d;
+        const x0 = o.x;
+        await game.interact(o);
+        if (o.x === x0) { fail('Block klemmt', mid, i, o.x, o.y); break; }
+      }
+    }
+    for (const o of S.objs.filter(x => x.t === 'torch')) {
+      if (![[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => L.reachable(S, st, solid).has(L.key({ x: o.x + dx, y: o.y + dy })))) fail('Fackel unerreichbar', mid, o.x, o.y);
+      await game.interact(o);
+    }
+    if (!S.flags['seal_' + mid] || S.objs.some(o => o.t === 'seal')) fail('Siegel nicht gelöst', mid);
+    if (!L.reachable(S, st, solid).has(L.key(m.boss))) fail('Boss nach Rätsel unerreichbar', mid);
+    const gold0 = S.gold, inv0 = JSON.stringify(S.inv);
+    const loot = S.objs.filter(o => o.t === 'rock' || o.t === 'bramble');
+    if (loot.length !== m.loot.length) fail('Fundstücke', mid);
+    for (const o of loot) await game.interact(o);
+    if (S.objs.some(o => o.t === 'rock' || o.t === 'bramble') || (S.gold === gold0 && JSON.stringify(S.inv) === inv0)) fail('Fundstücke öffnen', mid);
+    game.loadMap(mid, st);
+    if (S.objs.some(o => o.t === 'seal' || o.t === 'rock' || o.t === 'bramble') || !L.puzzleDone(S)) fail('Rätsel nach Neuladen', mid);
+    console.log(`Rätsel ${mid}: gelöst, ${m.puzzle.blocks.length} Blöcke, ${m.puzzle.torches.length} Fackeln, ${m.loot.length} Fundstücke`);
+  }
+  // ohne Werkzeug: Fackel bleibt aus, Felsen bleibt ganz; Werkzeugtruhe gibt den Hammer
+  S.flags = {};
+  game.loadMap('schlager', L.startOf('schlager'));
+  const tch = S.objs.find(o => o.t === 'torch');
+  await game.interact(tch);
+  if (tch.lit) fail('Fackel ohne Glutstab');
+  game.loadMap('rap', L.startOf('rap'));
+  const rk = S.objs.find(o => o.t === 'rock');
+  await game.interact(rk);
+  if (!S.objs.includes(rk)) fail('Fels ohne Hammer');
+  await game.interact(S.objs.find(o => o.t === 'chest' && o.d.id === 'rap_tool'));
+  if (!S.flags.tool_hammer) fail('Werkzeugtruhe');
+  // alter Spielstand: besiegte Wächter geben die Werkzeuge nach
+  game.saveGame();
+  const old = JSON.parse(store.get(SAVE_KEY)); old.flags = { boss_rap: true, boss_schlager: true }; old.map = 'hub';
+  store.set(SAVE_KEY, JSON.stringify(old));
+  const g6 = new Game(ui, {}, { rng: L.makeRng(9), store });
+  if (!g6.loadGame() || !g6.S.flags.tool_hammer || !g6.S.flags.tool_fire) fail('Werkzeuge im alten Spielstand');
+  game.autoplay = false;
+}
+
 // ---- Godot-Spielstand (store_var) einlesen
 {
   const enc = [];
