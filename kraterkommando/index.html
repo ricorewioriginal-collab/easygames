@@ -3,43 +3,50 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#172a3d">
+<meta name="theme-color" content="#0f2233">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Kraterkommando">
 <title>Kraterkommando 3D · easygames</title>
 <link rel="icon" type="image/svg+xml" href="card.svg">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="style.css?v=30">
-<link rel="stylesheet" href="controls.css?v=30">
+<link rel="stylesheet" href="style.css?v=31">
+<link rel="stylesheet" href="controls.css?v=31">
+<link rel="stylesheet" href="console.css?v=31">
 </head>
-<body>
-<div id="loading" class="screen active" role="status"><div class="load-art"><span>💥</span></div><div class="load-copy"><div class="eyebrow">EASYGAMES ORIGINAL</div><h1>KRATER<br><span>KOMMANDO</span></h1><p>Die Insel wird gebaut …</p><div class="load-track"><i id="progress"></i></div><small id="loadStatus">Initialisiere 3D-Welt</small></div></div>
+<body class="input-touch">
+<div id="viewport"></div>
+<div id="loading" class="screen active" role="status"><div class="load-copy"><div class="eyebrow">EASYGAMES ORIGINAL</div><h1>KRATER<br><span>KOMMANDO</span></h1><div class="load-track"><i id="progress"></i></div><small id="loadStatus">Initialisiere 3D-Welt</small><p class="load-tip" id="loadTip">Tipp: Wasser ist tödlich – nach dem Schuss bleiben dir 4 Sekunden zum Weglaufen.</p></div></div>
 <div id="menu" class="screen">
-  <main class="menu-card">
-    <div class="menu-hero"><span class="badge">EASYGAMES ORIGINAL</span><div class="hero-boom">💥</div><div class="hero-people"><i>●</i><i>●</i></div></div>
-    <div class="menu-content">
-      <h1>KRATER<br><span>KOMMANDO</span></h1>
-      <p class="lead">Würmer, Bazookas, Schafe. Dein Trupp gegen den Rest der Insel.</p>
-      <div class="options"><label>SPIELMODUS <select id="mode"><option value="campaign">Feldzug mit Leveln</option><option value="cpu">Schnelles Gefecht</option><option value="local">Zu zweit an einem Gerät</option></select></label><label>SCHWIERIGKEIT <select id="difficulty"><option value="easy">Locker</option><option value="normal" selected>Normal</option><option value="hard">Knifflig</option></select></label></div>
-      <section id="levelPicker" class="level-picker" aria-label="Level wählen"><button id="levelPrev" type="button" aria-label="Level zurück">◀</button><div><strong id="levelTitle">LEVEL 1</strong><span id="levelInfo">2 gegen 2 Würmer</span></div><button id="levelNext" type="button" aria-label="Level vor">▶</button></section>
-      <label id="wormsOption" class="worms-option" hidden>WÜRMER PRO TEAM <select id="worms"><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></label>
-      <section id="worldPicker" class="world-picker" aria-label="Spielwelt wählen" hidden><div class="world-heading"><strong>WÄHLE DEINE KARTE</strong><span>Vier Kartentypen · jedes Mal neu gebaut</span></div><div id="worldCards" class="world-cards"><button type="button" data-world="island" class="world-card island selected" aria-pressed="true"><b>🌴</b><span>Smaragdinsel<small>Inselgruppe &amp; Brücken</small></span></button><button type="button" data-world="desert" class="world-card desert" aria-pressed="false"><b>🏜️</b><span>Staub-Canyon<small>Tafelberge &amp; Fluss</small></span></button><button type="button" data-world="snow" class="world-card snow" aria-pressed="false"><b>❄️</b><span>Frostfestung<small>Zwei Burgen mit Mauern</small></span></button><button type="button" data-world="volcano" class="world-card volcano" aria-pressed="false"><b>🌋</b><span>Lava-Krater<small>Ringinsel im Lavasee</small></span></button></div></section>
-      <div class="menu-actions">
-        <button id="continueGame" class="primary" hidden>Gefecht fortsetzen <b>▶</b></button>
-        <button id="newGame" class="primary">Gefecht starten <b>▶</b></button>
+  <main class="menu-shell">
+    <header class="menu-logo"><span class="badge">EASYGAMES ORIGINAL</span><h1>KRATER<br><span>KOMMANDO</span></h1><p class="lead">Dein Trupp gegen den Rest der Insel. Bazookas, Schafe, Krater.</p></header>
+    <nav class="menu-list" id="menuList" aria-label="Hauptmenü">
+      <button id="continueGame" class="tile primary" hidden><b class="tile-icon">⏵</b><span>Gefecht fortsetzen<small>Weiter beim gespeicherten Zug</small></span></button>
+      <button id="newGame" class="tile primary" data-autofocus><b class="tile-icon">💥</b><span>Gefecht starten<small id="startInfo">Feldzug · Level 1</small></span></button>
+      <button class="tile cycler" data-opt="mode" aria-label="Spielmodus"><span class="opt-label">Spielmodus</span><span class="opt-value"><i>◀</i><b id="modeVal">Feldzug</b><i>▶</i></span></button>
+      <button class="tile cycler" data-opt="level" id="levelRow" aria-label="Level"><span class="opt-label">Level</span><span class="opt-value"><i>◀</i><b id="levelVal">1</b><i>▶</i></span></button>
+      <button class="tile cycler" data-opt="world" id="worldRow" aria-label="Karte"><span class="opt-label">Karte</span><span class="opt-value"><i>◀</i><b id="worldVal">Smaragdinsel</b><i>▶</i></span></button>
+      <button class="tile cycler" data-opt="worms" id="wormsRow" aria-label="Würmer pro Team"><span class="opt-label">Würmer pro Team</span><span class="opt-value"><i>◀</i><b id="wormsVal">4</b><i>▶</i></span></button>
+      <button class="tile cycler" data-opt="difficulty" aria-label="Schwierigkeit"><span class="opt-label">Schwierigkeit</span><span class="opt-value"><i>◀</i><b id="difficultyVal">Normal</b><i>▶</i></span></button>
+      <button class="tile cycler" data-opt="sound" aria-label="Spielsound"><span class="opt-label">Spielsound</span><span class="opt-value"><i>◀</i><b id="soundVal">An</b><i>▶</i></span></button>
+      <div class="tile-row">
+        <button id="helpBtn" class="tile small"><b class="tile-icon">🎮</b><span>Steuerung</span></button>
+        <button id="cloudBtn" class="tile small"><b class="tile-icon">☁️</b><span>Spielstand</span></button>
+        <a id="backLink" class="tile small" href="../"><b class="tile-icon">←</b><span>Alle Spiele</span></a>
       </div>
-      <p class="controls"><b>Handy:</b> Stick = laufen &amp; drehen · Bildschirm ziehen = drehen &amp; Winkel · Gegner antippen = hindrehen · Feuer halten = Kraft.<br><b>PC:</b> W/S laufen · A/D drehen · ↑/↓ Winkel · Leertaste halten = Kraft · Enter Sprung · Rücktaste Salto · 1–0 / Tab Waffen · V Übersicht · Maus ziehen = zielen.<br>Wasser ist tödlich. Nach dem Schuss bleiben dir 4 Sekunden zum Weglaufen.</p>
-      <button id="menuSoundBtn" class="sound-toggle" type="button">🔊 Spielsound an</button>
-      <div id="cloudMount"></div>
-      <a class="back" href="../">← Alle Spiele</a>
-    </div>
+    </nav>
+    <aside class="menu-info" aria-live="polite"><span class="eyebrow" id="infoEyebrow">FELDZUG</span><h2 id="infoTitle">Level 1 · Smaragdinsel</h2><p id="infoText">2 gegen 2 Würmer</p><div class="squads"><div class="squad red"><b>DEIN TRUPP</b><span id="infoRed">2 Würmer</span></div><i>VS</i><div class="squad blue"><b id="infoBlueName">COMPUTER</b><span id="infoBlue">2 Würmer</span></div></div></aside>
   </main>
+  <div class="hidden-state" hidden>
+    <select id="mode"><option value="campaign">Feldzug mit Leveln</option><option value="cpu">Schnelles Gefecht</option><option value="local">Zu zweit an einem Gerät</option></select>
+    <select id="difficulty"><option value="easy">Locker</option><option value="normal" selected>Normal</option><option value="hard">Knifflig</option></select>
+    <select id="worms"><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select>
+  </div>
 </div>
 <div id="game" class="screen">
-  <div id="viewport"></div>
   <header class="topbar"><div class="brand"><span class="brand-icon">✦</span><span>KRATER<br>KOMMANDO<small id="worldHud">Smaragdinsel</small></span></div><div class="turn-pill"><span id="turnInfo">Runde 1</span><strong id="timer">45</strong></div><button id="viewBtn" aria-label="Kameraübersicht umschalten" title="Übersicht (V)">👁</button><button id="pauseBtn" aria-label="Pause">Ⅱ</button></header>
   <div id="teamHud" class="team-hud"></div>
+  <div id="turnBanner" class="turn-banner" aria-hidden="true"><small id="turnBannerTeam">DU BIST DRAN</small><strong id="turnBannerName">Nova</strong></div>
   <div id="message" class="message" aria-live="polite"></div>
   <div id="impactFlash" class="impact-flash" aria-hidden="true"></div>
   <div class="aim-hint" id="aimHint">Ziehen = drehen &amp; Winkel · Gegner antippen = hindrehen · 👁 = Übersicht</div>
@@ -49,17 +56,31 @@
     <div class="tool-area"><button id="weaponBtn" class="tool-weapon"><span id="weaponIcon">🚀</span><small id="weaponName">Bazooka</small></button><div class="small-tools"><button id="jumpBtn" aria-label="Sprung nach vorn">↗<small>SPRUNG</small></button><button id="flipBtn" aria-label="Salto rückwärts">⤺<small>SALTO</small></button><button id="skipBtn" aria-label="Zug beenden">»<small>PASS</small></button></div></div>
     <div class="fire-area"><div class="charge-ring"><button id="fireBtn" aria-label="Feuern, halten für mehr Kraft"><span id="fireIcon">🚀</span><strong id="fireLabel">FEUER</strong></button></div><small>HALTEN = KRAFT</small></div>
   </div>
+  <div class="pad-hud" id="padHud" aria-hidden="true">
+    <div class="pad-weapon"><kbd class="g" data-g="lb">LB</kbd><span id="padWeaponIcon">🚀</span><div><strong id="padWeaponName">Bazooka</strong><small id="padWeaponAmmo">∞</small></div><kbd class="g" data-g="rb">RB</kbd></div>
+    <div class="pad-power"><i id="padPower"></i></div>
+    <div class="pad-legend" id="padLegend"></div>
+  </div>
   <div id="botBanner" class="bot-banner" aria-live="polite"><div class="bot-avatar">🤖</div><div><strong>Computer ist am Zug</strong><span id="botAction">Gegner überlegt …</span></div><i aria-hidden="true">•••</i></div>
-  <div id="weaponPanel" class="sheet" hidden><div class="sheet-card"><div class="sheet-head"><h2>Waffe wählen</h2><button id="closeWeapon" aria-label="Schließen">✕</button></div><div id="weaponGrid" class="weapon-grid"></div></div></div>
+  <div id="weaponPanel" class="sheet" hidden><div class="sheet-card"><div class="sheet-head"><h2>Waffe wählen</h2><button id="closeWeapon" aria-label="Schließen" data-back>✕</button></div><div id="weaponGrid" class="weapon-grid"></div></div></div>
 </div>
-<div id="pause" class="overlay" hidden><div class="dialog"><span class="eyebrow">PAUSE</span><h2>Kurze Atempause?</h2><button id="resumeBtn" class="primary">Weiter spielen</button><button id="pauseSoundBtn">🔊 Spielsound an</button><button id="saveQuitBtn">Hauptmenü (Zugbeginn ist gespeichert)</button><button id="restartBtn">Gefecht neu starten</button></div></div>
-<div id="result" class="overlay" hidden><div class="dialog"><span class="eyebrow">GEFECHT BEENDET</span><h2 id="resultTitle">Sieg!</h2><p id="resultText"></p><button id="nextLevelBtn" class="primary" hidden>Nächstes Level ▶</button><button id="againBtn" class="primary">Noch ein Gefecht</button><button id="resultMenuBtn">Hauptmenü</button></div></div>
+<div id="pause" class="overlay" hidden><div class="dialog"><span class="eyebrow">PAUSE</span><h2>Kurze Atempause?</h2><button id="resumeBtn" class="primary" data-autofocus data-back>Weiter spielen</button><button id="pauseHelpBtn">🎮 Steuerung</button><button id="pauseSoundBtn">🔊 Spielsound an</button><button id="saveQuitBtn">Hauptmenü (Zugbeginn ist gespeichert)</button><button id="restartBtn">Gefecht neu starten</button></div></div>
+<div id="result" class="overlay result" hidden><div class="dialog"><span class="eyebrow">GEFECHT BEENDET</span><h2 id="resultTitle">Sieg!</h2><p id="resultText"></p><button id="nextLevelBtn" class="primary" hidden data-autofocus>Nächstes Level ▶</button><button id="againBtn" class="primary">Noch ein Gefecht</button><button id="resultMenuBtn" data-back>Hauptmenü</button></div></div>
+<div id="help" class="overlay" hidden><div class="dialog wide"><div class="dialog-head"><span class="eyebrow">STEUERUNG</span><button class="close" data-back aria-label="Schließen" id="helpClose">✕</button></div>
+  <div class="help-tabs" role="tablist"><button data-help="pad" class="on" data-autofocus>🎮 Controller</button><button data-help="kbd">⌨️ Tastatur</button><button data-help="touch">📱 Touch</button></div>
+  <div class="help-body" id="helpBody"></div>
+  <p class="help-note">Wasser ist tödlich. Nach dem Schuss bleiben dir 4 Sekunden zum Weglaufen. Controller-Belegung ändern: Select + Start.</p>
+</div></div>
+<div id="cloud" class="overlay" hidden><div class="dialog wide"><div class="dialog-head"><span class="eyebrow">SPIELSTAND &amp; KONTO</span><button class="close" data-back aria-label="Schließen" id="cloudClose">✕</button></div><div id="cloudMount"></div></div></div>
+<div id="confirm" class="overlay" hidden><div class="dialog"><span class="eyebrow">SICHER?</span><h2 id="confirmText">Wirklich?</h2><button id="confirmYes" class="primary">Ja</button><button id="confirmNo" data-back data-autofocus>Abbrechen</button></div></div>
+<footer class="prompt-bar" id="promptBar" aria-hidden="true"></footer>
 <script src="../cloud/anmacha-cloud.js" data-game="kraterkommando" data-prefix="easygames.kraterkommando." data-mount="#cloudMount" data-hint="Mit Google anmelden und Spielstände geräteübergreifend sichern" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>if(!window.THREE){document.write('<script src="../vendor/three-r128.min.js"><\/script>')}</script>
-<script src="game.js?v=30" defer></script>
+<script src="../vendor/three-r128-gltfloader.js"></script>
+<script src="game.js?v=31" defer></script>
 <script>if('serviceWorker' in navigator && location.protocol==='https:' && location.hostname!=='appassets.local')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
-<script src="../gamepad.js" data-pad-labels="dpad=Auswählen; a=Bestätigen; y=Waffenliste; start=Menü" data-pad="b=Backspace y=Tab lb=KeyV rb=- start=Escape" defer></script>
+<script src="../gamepad.js" data-pad="info dlg=off hud=off" data-pad-labels="ls=Laufen &amp; drehen; rs=Zielen (Richtung &amp; Winkel); rt=Feuer (halten = Kraft); a=Sprung / Bestätigen; b=Salto / Zurück; x=Waffenliste; y=Übersicht; lb=Waffe zurück; rb=Waffe vor; lt=Ziel setzen (halten); dpad=Feinzielen / Menü; select=Zug beenden (halten); start=Pause; r3=Zoom" defer></script>
 <script src="../egstat.js" defer></script>
 </body>
 </html>

@@ -11,12 +11,13 @@
   {
    "t": "Hauptmenü und Einstellungen",
    "list": [
-    "Spielmodus: „Feldzug mit Leveln“, „Schnelles Gefecht“ (gegen den Computer) oder „Zu zweit an einem Gerät“.",
+    "Das Hauptmenü liegt über der gewählten Karte in 3D – beide Trupps stehen schon bereit. Bedienen lässt es sich mit Controller (Steuerkreuz/Stick + A, B = zurück), Tastatur oder TV-Fernbedienung (Pfeile + Enter, Esc/Zurück) sowie per Antippen oder Maus.",
+    "Spielmodus: „Feldzug“ (mit Leveln), „Schnelles Gefecht“ (gegen den Computer) oder „Zu zweit“ an einem Gerät. Werte in den Zeilen änderst du mit ◀/▶ (Steuerkreuz links/rechts, Pfeiltasten oder Antippen der Pfeile).",
     "Schwierigkeit: Locker, Normal oder Knifflig. Sie macht den Computer schwächer oder stärker und bestimmt die Zielhilfe: Bei Locker zeigt eine lange Flugbahn-Linie, wohin der Schuss fliegt, bei Normal nur ein kurzes Stück, bei Knifflig gar keine.",
-    "Im Feldzug: Level-Auswahl mit ◀ und ▶. Angezeigt werden Truppgrößen, Karte und Minenzahl. „NEU“ steht am höchsten freigeschalteten Level, „✓“ an geschafften.",
-    "Im Schnellen Gefecht und zu zweit: „Würmer pro Team“ von 2 bis 8 und die Karte – 🌴 Smaragdinsel (Inselgruppe und Brücken), 🏜️ Staub-Canyon (Tafelberge und Fluss), ❄️ Frostfestung (zwei Burgen mit Mauern), 🌋 Lava-Krater (Ringinsel im Lavasee). Jede Karte wird jedes Mal neu gebaut.",
-    "„Gefecht fortsetzen ▶“ erscheint, wenn ein gespeichertes Gefecht vorhanden ist. „Gefecht starten ▶“ beginnt ein neues (ein gespeichertes wird nach Rückfrage ersetzt).",
-    "🔊 Spielsound an/aus."
+    "Im Feldzug: Zeile „Level“. „NEU“ steht am höchsten freigeschalteten Level, „✓“ an geschafften. Die Infotafel zeigt Karte, Truppgrößen, Minen und Wind.",
+    "Im Schnellen Gefecht und zu zweit: „Karte“ – 🌴 Smaragdinsel (Inselgruppe und Brücken), 🏜️ Staub-Canyon (Tafelberge und Fluss), ❄️ Frostfestung (zwei Burgen mit Mauern), 🌋 Lava-Krater (Ringinsel im Lavasee) – und „Würmer pro Team“ von 2 bis 8. Jede Karte wird jedes Mal neu gebaut.",
+    "„Gefecht fortsetzen“ erscheint, wenn ein gespeichertes Gefecht vorhanden ist. „Gefecht starten“ beginnt ein neues (ein gespeichertes wird nach Rückfrage ersetzt).",
+    "Spielsound an/aus, „Steuerung“ (Übersicht für Controller, Tastatur und Touch), „Spielstand“ (Google-Sicherung) und „Alle Spiele“."
    ]
   },
   {
@@ -70,10 +71,11 @@
   {
    "t": "Bedienung",
    "list": [
+    "Gamecontroller (Xbox, PlayStation, Switch und andere): linker Stick = laufen und drehen, rechter Stick = zielen (Richtung und Winkel), RT halten = Kraft aufladen, loslassen = Feuer, A = Sprung nach vorn, B = Salto rückwärts, X = Waffenliste, LB/RB = Waffe wechseln, Y = Übersicht, Steuerkreuz = feinzielen, R3 = Zoom, Select halten = Zug beenden, Start = Pause. Der Controller vibriert bei Schüssen und Explosionen. Belegung ändern: Select + Start.",
     "Handy und Tablet: Stick unten links = laufen (vor/zurück) und drehen. Über den Bildschirm ziehen = Blickrichtung drehen (waagerecht) und Winkel ändern (senkrecht). Einen Gegner antippen = dein Wurm dreht sich zu ihm. Zwei Finger = zoomen. FEUER halten = Kraft, loslassen = Schuss. Knöpfe: Waffe, ↗ SPRUNG, ⤺ SALTO, » PASS, 👁 Übersicht, Ⅱ Pause.",
-    "PC: W/S = vor und zurück laufen, A/D = drehen (Pfeil links/rechts dreht feiner), Pfeil hoch/runter = Winkel, Leertaste halten = Kraft aufladen, loslassen = Feuer, Enter = Sprung nach vorn, Rücktaste = Salto rückwärts, 1–0 = Waffe, Tab = Waffenliste, V = Übersicht, Esc = Pause bzw. Waffenliste schließen. Maus ziehen = zielen, Klick auf Gegner = hindrehen, Mausrad = Zoom.",
-    "Bei Luftangriff, Teleporter und Zielsuchrakete setzt ein Tippen oder Klick auf die Karte das Ziel. Für Luftangriff und Teleporter schaltet das Spiel dazu in die Übersicht; dort dreht Ziehen die Karte.",
-    "Einen Gamecontroller unterstützt das Spiel nicht.",
+    "PC: W/S = vor und zurück laufen, A/D = drehen (Pfeil links/rechts dreht feiner), Pfeil hoch/runter = Winkel, Leertaste halten = Kraft aufladen, loslassen = Feuer, Enter = Sprung nach vorn, Rücktaste = Salto rückwärts, 1–0 = Waffe, Tab = Waffenliste (Pfeile + Enter wählen), V = Übersicht, Esc = Pause bzw. zurück. Maus ziehen = zielen, Klick auf Gegner = hindrehen, Mausrad = Zoom.",
+    "Bei Luftangriff, Teleporter und Zielsuchrakete setzt ein Tippen oder Klick auf die Karte das Ziel. Mit Controller ist das Ziel schon auf den nächsten Gegner gesetzt: Luftangriff und Teleporter verschiebst du mit dem rechten Stick, bei der Zielsuchrakete hältst du LT und bewegst das Ziel mit einem Stick. Für Luftangriff und Teleporter schaltet das Spiel dazu in die Übersicht.",
+    "Das Spiel erkennt selbst, womit du spielst: Mit Controller verschwinden die Touch-Knöpfe und unten rechts erscheint die Belegung, beim Antippen kommen die Touch-Knöpfe zurück.",
     "Wenn du die App verlässt oder den Tab wechselst, pausiert das Spiel automatisch."
    ]
   },
@@ -214,7 +216,7 @@
  "faq": [
   {
    "q": "Mein gespeichertes Gefecht ist weg.",
-   "a": "Gespeichert wird im Browser zu Beginn jedes Zuges. Ist das Gefecht zu Ende oder startest du ein neues und bestätigst die Rückfrage, wird der Stand gelöscht. Ohne Google-Anmeldung entfernt ihn auch das Löschen der Browserdaten. Hast du dich vorher mit „Mit Google speichern“ (Bereich im Hauptmenü) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+   "a": "Gespeichert wird im Browser zu Beginn jedes Zuges. Ist das Gefecht zu Ende oder startest du ein neues und bestätigst die Rückfrage, wird der Stand gelöscht. Ohne Google-Anmeldung entfernt ihn auch das Löschen der Browserdaten. Hast du dich vorher mit „Mit Google speichern“ (Hauptmenü → „Spielstand“) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
   },
   {
    "q": "Warum endet mein Zug plötzlich?",
@@ -222,7 +224,7 @@
   },
   {
    "q": "Kann ich mit einem Gamecontroller spielen?",
-   "a": "Nein. Kraterkommando unterstützt Touch sowie Tastatur und Maus."
+   "a": "Ja. Jeder gängige Controller funktioniert – im Menü wie im Gefecht: Steuerkreuz und A/B führen durch alle Menüs, im Spiel laufen, zielen und feuern Sticks und Trigger. Die komplette Belegung findest du unter „Steuerung“ im Hauptmenü oder in der Pause."
   },
   {
    "q": "Gibt es einen Online-Modus?",
@@ -230,11 +232,11 @@
   },
   {
    "q": "Wie schalte ich weitere Level frei?",
-   "a": "Gewinne im Feldzug das höchste freigeschaltete Level. Danach kannst du mit ◀ und ▶ auch geschaffte Level noch einmal spielen."
+   "a": "Gewinne im Feldzug das höchste freigeschaltete Level. Danach kannst du in der Zeile „Level“ mit ◀ und ▶ auch geschaffte Level noch einmal spielen."
   },
   {
    "q": "Der Ton nervt.",
-   "a": "Im Hauptmenü oder in der Pause auf „🔊 Spielsound an“ tippen, dann ist er aus. Die Einstellung bleibt gespeichert."
+   "a": "Im Hauptmenü die Zeile „Spielsound“ auf „Aus“ stellen oder in der Pause auf „🔊 Spielsound an“ tippen. Die Einstellung bleibt gespeichert."
   }
  ]
 }
