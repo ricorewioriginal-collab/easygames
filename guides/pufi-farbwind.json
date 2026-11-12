@@ -4,7 +4,7 @@
     {
       "t": "Ziel des Spiels (3D-Neuauflage)",
       "p": [
-        "„Pufi & der Farbwind 3D“ ist die Neuauflage des Insel-Abenteuers in echtem 3D: Du läufst frei über schwebende Inseln, die Kamera folgt dir und lässt sich drehen. Pufi trägt den kleinen Wolkentapir Tamo auf dem Rücken über drei Inseln mit je zwei Leveln – Blütenbucht, Honig & Wolken sowie Glut & Nebel. Im letzten Level wartet der Boss Brummnebel.",
+        "„Pufi & der Farbwind 3D“ ist die Neuauflage des Insel-Abenteuers in echtem 3D: Du läufst frei über schwebende Inseln, die Kamera folgt dir und lässt sich drehen. Pufi trägt den kleinen Wolkentapir Tamo auf dem Rücken über sechs Inseln mit je vier Leveln – Blütenbucht, Honig & Wolken, Glut & Nebel, Frostgipfel, Pilzdschungel sowie Kristall & Sternennacht. In 3-4 wartet Brummnebel, im letzten Level der Sturmnebel.",
         "Bring Tamo durchs Farbtor am Ende jedes Levels. Unterwegs sammelst du Sterne, 8 rote Münzen und 5 Farbblüten für einen Bestwert bis 100 Punkte. Das Original mit 24 Leveln in 2D findest du im Hauptmenü unter „Klassik 2D“."
       ]
     },
@@ -15,7 +15,7 @@
       ],
       "list": [
         "Abenteuer starten bzw. Weiterspielen: startet das höchste freigeschaltete Level.",
-        "Inselkarte: alle 6 Level mit Bestwert, Blüten und roten Münzen. Gesperrte Level zeigen ein Schloss.",
+        "Inselkarte: alle 24 Level mit Bestwert, Blüten und roten Münzen. Gesperrte Level zeigen ein Schloss.",
         "Klassik 2D: öffnet das Original-Abenteuer mit 24 Leveln.",
         "Optionen: Musik- und Effekt-Lautstärke, Ton an/aus, Grafikstufe (Automatisch, Hoch, Mittel, Niedrig), Kamera-Tempo, Kamera umkehren, automatische Kamera, Vibration, Controller-Belegung.",
         "Steuerung: Übersicht für PC, Controller und Touch, dazu die Mitwirkenden.",
@@ -34,7 +34,7 @@
       "t": "Mechaniken",
       "list": [
         "Flattern: Halte Sprung nach dem höchsten Punkt – Pufi strampelt kurz nach oben und kommt weiter.",
-        "Zunge: fängt Muffel und Flattermotten. Mit vollem Mund legst du per Stampfen-Taste ein Ei oder spuckst den Gegner mit der Zunge-Taste wieder aus.",
+        "Zunge: fängt Muffel, Flattermotten, Hupfer, Nebli und Rutscher. Eine Zielhilfe richtet sie auf den nächsten Gegner vor Pufi aus. Mit vollem Mund legst du per Stampfen-Taste ein Ei oder spuckst den Gegner mit der Zunge-Taste wieder aus.",
         "Eier: bis zu 6 folgen dir. Zielen zeigt eine Flugbahn; eine Zielhilfe richtet den Wurf auf Gegner, ?-Wolken und den Boss aus. Eier prallen zweimal ab und sammeln Münzen ein.",
         "Eierblöcke: von unten anstoßen, anstampfen oder abwerfen – jedes Mal gibt es ein Ei.",
         "Stampfen: in der Luft drücken – Pufi dreht sich und saust nach unten, besiegt Gegner im Umkreis und federt auf Pilzen besonders hoch.",
@@ -43,7 +43,11 @@
         "Pilze: federn dich hoch hinauf.",
         "Honigstufen bröckeln kurz nach dem Betreten und kommen nach einigen Sekunden zurück.",
         "Farbschalter: drauf springen oder stampfen – für 12 Sekunden werden die rosa Farbblöcke begehbar; am Ende blinken sie.",
-        "Retro-Zonen: Hinter einem Pixeltor wird die Welt zur pixeligen Seitenansicht mit Retro-Musik. Dort läufst du nur nach links und rechts – wie früher."
+        "Retro-Zonen: Hinter einem Pixeltor wird die Welt zur pixeligen Seitenansicht mit Retro-Musik. Dort läufst du nur nach links und rechts – wie früher.",
+        "Eis: Eisplatten sind rutschig – Pufi bremst und beschleunigt langsamer.",
+        "Glutgeysire: pusten nur zeitweise wie eine Windsäule – warte auf den Strahl.",
+        "Hinweistafeln (!): stell dich davor, dann erscheint ein Tipp zur nächsten Herausforderung.",
+        "Kleine Stufen läuft Pufi einfach hoch; die Kamera weicht Wänden und Inseln aus."
       ]
     },
     {
@@ -65,7 +69,23 @@
         "Flattermotten: fliegen hin und her, fangbar und zum Draufspringen.",
         "Igelkugeln: rollen hin und her, nicht fangbar – nur Eier oder ausweichen.",
         "Schnappblüten: beißen, wenn du nah kommst. Nur mit Eiern zu besiegen.",
-        "Brummnebel (Boss, 3-2): schwebt durch die Arena, ruft Muffel herbei und stürzt sich mit einer Schockwelle auf den Boden. Spring über die Welle!"
+        "Hupfer: springen in Bögen auf dich zu. Fangbar und zum Draufspringen.",
+        "Kernspucker: Topfpflanzen, die Kerne auf dich schießen. Mit Eiern, Stampfen oder Draufspringen besiegen.",
+        "Wirbelkreisel: flitzen auf einer Bahn. Seitlich tun sie weh, von oben katapultieren sie dich hoch. Eier besiegen sie.",
+        "Nebli: kleine Nebelgeister, die dir nachschweben. Fangbar, zum Draufspringen oder mit Eiern.",
+        "Rutscher: Schneeball-Wesen, die übers Eis sausen. Fangbar und zum Draufspringen.",
+        "Brummnebel (Boss, 3-4): schwebt durch die Arena, ruft Muffel herbei und stürzt sich mit einer Schockwelle auf den Boden. Spring über die Welle!",
+        "Sturmnebel (Endboss, 6-4): schneller als Brummnebel und hält fünf Treffer aus."
+      ]
+    },
+    {
+      "t": "Hilfen",
+      "list": [
+        "♥ Herzfrucht: +1 Leben.",
+        "🪶 Flatterfeder: 15 Sekunden lang länger und höher flattern.",
+        "🧲 Münzmagnet: 15 Sekunden lang fliegen Münzen und Sterne in der Nähe zu dir.",
+        "🌈 Regenbogenstern: 9 Sekunden unbesiegbar – Gegner verpuffen bei Berührung.",
+        "Die restliche Zeit zeigt die Leiste oben in der Mitte."
       ]
     },
     {
@@ -255,6 +275,24 @@
       ]
     },
     {
+      "t": "1-3 Muffelwiese",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann eine große Arena-Insel mit mehreren Gegnern, dann eine Kette kleiner Inseln, dann Plattform-Stufen über dem Wasser, dann ein Federpilz hinauf zu einer hohen Steinplattform – danach geht es hinab, dann eine große Arena-Insel mit mehreren Gegnern, dann Bröckelsteine (nicht stehen bleiben), am Ende das Farbtor.",
+        "Gegner: Muffel, Hupfer, Flattermotten.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Regenbogenstern, Herzfrucht."
+      ]
+    },
+    {
+      "t": "1-4 Laternenpfad",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann Plattform-Stufen über dem Wasser, dann ein Lift über die Lücke, dann eine große Arena-Insel mit mehreren Gegnern, dann eine Farbwind-Säule nach oben, dann eine Kette kleiner Inseln, dann ein Aufzug nach oben, dann eine große Arena-Insel mit mehreren Gegnern, am Ende das Farbtor.",
+        "Gegner: Muffel, Hupfer, Nebli, Flattermotten.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Regenbogenstern, Herzfrucht."
+      ]
+    },
+    {
       "t": "2-1 Honigklippen",
       "list": [
         "Blüte 1 auf der Startinsel links vorn.",
@@ -274,6 +312,24 @@
       ]
     },
     {
+      "t": "2-3 Bienenstock-Bucht",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann Bröckelsteine (nicht stehen bleiben), dann eine große Arena-Insel mit mehreren Gegnern, dann eine Retro-Zone in Pixel-Seitenansicht, dann ein Federpilz hinauf zu einer hohen Steinplattform – danach geht es hinab, dann Plattform-Stufen über dem Wasser, dann eine große Arena-Insel mit mehreren Gegnern, am Ende das Farbtor.",
+        "Gegner: Igelkugeln, Hupfer, Kernspucker, Muffel.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Münzmagnet, Herzfrucht."
+      ]
+    },
+    {
+      "t": "2-4 Regenbogenbrücke",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann eine ?-Wolke, die per Ei-Treffer eine Brücke baut, dann eine Kette kleiner Inseln, dann ein Farbschalter mit Farbblöcken (12 Sekunden), dann eine große Arena-Insel mit mehreren Gegnern, dann eine Farbwind-Säule nach oben, dann Plattform-Stufen über dem Wasser, am Ende das Farbtor.",
+        "Gegner: Flattermotten, Nebli, Kernspucker, Muffel.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Münzmagnet, Münzmagnet."
+      ]
+    },
+    {
       "t": "3-1 Glutgarten",
       "list": [
         "Blüte 1 auf der Steinplatte links über der Lava.",
@@ -282,11 +338,138 @@
       ]
     },
     {
-      "t": "3-2 Nebelburg (Boss)",
+      "t": "3-2 Lavagrotten",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann ein Glutgeysir (warte auf den Strahl), dann Plattform-Stufen über dem Wasser, dann eine große Arena-Insel mit mehreren Gegnern, dann ein Lift über die Lücke, dann Bröckelsteine (nicht stehen bleiben), dann eine große Arena-Insel mit mehreren Gegnern, am Ende das Farbtor.",
+        "Gegner: Schnappblüten, Igelkugeln, Kernspucker, Wirbelkreisel, Muffel.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Regenbogenstern, Herzfrucht."
+      ]
+    },
+    {
+      "t": "3-3 Spukgemäuer",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann eine Retro-Zone in Pixel-Seitenansicht, dann eine große Arena-Insel mit mehreren Gegnern, dann ein Aufzug nach oben, dann ein Farbschalter mit Farbblöcken (12 Sekunden), dann Plattform-Stufen über dem Wasser, dann eine große Arena-Insel mit mehreren Gegnern, am Ende das Farbtor.",
+        "Gegner: Nebli, Muffel, Wirbelkreisel, Kernspucker.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Herzfrucht, Flatterfeder."
+      ]
+    },
+    {
+      "t": "3-4 Nebelburg (Boss)",
       "list": [
         "Auf dem Weg zur Arena liegen Blüte 1 und Blüte 2 (rechte Retro-Säule); Eierblöcke stehen am Anfang und in der Arena.",
         "Brummnebel: Sobald er auf den Boden stürzt, spring über die Schockwelle. Danach ist er benommen – wirf Eier auf seinen leuchtenden Bauch oder stampfe auf seinen Kopf.",
         "Drei Treffer besiegen ihn. Das Farbtor erscheint in der Mitte der Arena. Die Blüten 3 bis 5 liegen am Rand der Arena."
+      ]
+    },
+    {
+      "t": "4-1 Frostpfad",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann rutschige Eisplatten, dann eine große Arena-Insel mit mehreren Gegnern, dann eine Kette kleiner Inseln, dann ein Federpilz hinauf zu einer hohen Steinplattform – danach geht es hinab, dann eine große Arena-Insel mit mehreren Gegnern, am Ende das Farbtor.",
+        "Gegner: Rutscher, Muffel, Hupfer.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Herzfrucht, Münzmagnet."
+      ]
+    },
+    {
+      "t": "4-2 Gletscherspalten",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann Bröckelsteine (nicht stehen bleiben), dann ein Lift über die Lücke, dann eine große Arena-Insel mit mehreren Gegnern, dann rutschige Eisplatten, dann eine Farbwind-Säule nach oben, dann eine große Arena-Insel mit mehreren Gegnern, am Ende das Farbtor.",
+        "Gegner: Rutscher, Nebli, Kernspucker, Flattermotten.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Regenbogenstern, Herzfrucht."
+      ]
+    },
+    {
+      "t": "4-3 Schneesturmgipfel",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann ein Aufzug nach oben, dann eine große Arena-Insel mit mehreren Gegnern, dann eine Retro-Zone in Pixel-Seitenansicht, dann eine Kette kleiner Inseln, dann Plattform-Stufen über dem Wasser, dann eine große Arena-Insel mit mehreren Gegnern, am Ende das Farbtor.",
+        "Gegner: Rutscher, Wirbelkreisel, Hupfer, Flattermotten.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Herzfrucht, Regenbogenstern."
+      ]
+    },
+    {
+      "t": "4-4 Eispalast",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann ein Farbschalter mit Farbblöcken (12 Sekunden), dann eine große Arena-Insel mit mehreren Gegnern, dann ein Lift über die Lücke, dann rutschige Eisplatten, dann ein Federpilz hinauf zu einer hohen Steinplattform – danach geht es hinab, dann eine große Arena-Insel mit mehreren Gegnern, dann eine ?-Wolke, die per Ei-Treffer eine Brücke baut, am Ende das Farbtor.",
+        "Gegner: Rutscher, Kernspucker, Wirbelkreisel, Nebli, Muffel.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Regenbogenstern, Herzfrucht."
+      ]
+    },
+    {
+      "t": "5-1 Pilzdschungel",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann ein Federpilz hinauf zu einer hohen Steinplattform – danach geht es hinab, dann eine große Arena-Insel mit mehreren Gegnern, dann eine Kette kleiner Inseln, dann ein Federpilz hinauf zu einer hohen Steinplattform – danach geht es hinab, dann Plattform-Stufen über dem Wasser, am Ende das Farbtor.",
+        "Gegner: Hupfer, Schnappblüten, Kernspucker, Muffel.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Münzmagnet, Regenbogenstern."
+      ]
+    },
+    {
+      "t": "5-2 Lianenhain",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann eine Kette kleiner Inseln, dann eine Farbwind-Säule nach oben, dann eine große Arena-Insel mit mehreren Gegnern, dann Bröckelsteine (nicht stehen bleiben), dann eine Kette kleiner Inseln, dann eine große Arena-Insel mit mehreren Gegnern, am Ende das Farbtor.",
+        "Gegner: Hupfer, Flattermotten, Nebli, Schnappblüten.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Herzfrucht, Regenbogenstern."
+      ]
+    },
+    {
+      "t": "5-3 Sporensumpf",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann Plattform-Stufen über dem Wasser, dann ein Lift über die Lücke, dann eine große Arena-Insel mit mehreren Gegnern, dann eine Retro-Zone in Pixel-Seitenansicht, dann eine Kette kleiner Inseln, dann eine große Arena-Insel mit mehreren Gegnern, am Ende das Farbtor.",
+        "Gegner: Kernspucker, Hupfer, Wirbelkreisel, Muffel.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Regenbogenstern, Flatterfeder."
+      ]
+    },
+    {
+      "t": "5-4 Dschungeltempel",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann ein Aufzug nach oben, dann ein Farbschalter mit Farbblöcken (12 Sekunden), dann eine große Arena-Insel mit mehreren Gegnern, dann eine ?-Wolke, die per Ei-Treffer eine Brücke baut, dann Plattform-Stufen über dem Wasser, dann eine große Arena-Insel mit mehreren Gegnern, am Ende das Farbtor.",
+        "Gegner: Schnappblüten, Wirbelkreisel, Kernspucker, Hupfer, Nebli.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Regenbogenstern, Münzmagnet."
+      ]
+    },
+    {
+      "t": "6-1 Kristallgrotte",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann Plattform-Stufen über dem Wasser, dann eine große Arena-Insel mit mehreren Gegnern, dann ein Lift über die Lücke, dann ein Federpilz hinauf zu einer hohen Steinplattform – danach geht es hinab, dann eine große Arena-Insel mit mehreren Gegnern, dann Bröckelsteine (nicht stehen bleiben), am Ende das Farbtor.",
+        "Gegner: Nebli, Wirbelkreisel, Kernspucker, Muffel.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Regenbogenstern, Münzmagnet."
+      ]
+    },
+    {
+      "t": "6-2 Sternenstrand",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann eine Kette kleiner Inseln, dann eine große Arena-Insel mit mehreren Gegnern, dann eine Farbwind-Säule nach oben, dann Bröckelsteine (nicht stehen bleiben), dann eine Retro-Zone in Pixel-Seitenansicht, dann eine große Arena-Insel mit mehreren Gegnern, am Ende das Farbtor.",
+        "Gegner: Hupfer, Rutscher, Nebli, Flattermotten, Kernspucker.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Regenbogenstern, Flatterfeder."
+      ]
+    },
+    {
+      "t": "6-3 Sternenleiter",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann ein Aufzug nach oben, dann eine ?-Wolke, die per Ei-Treffer eine Brücke baut, dann eine große Arena-Insel mit mehreren Gegnern, dann Plattform-Stufen über dem Wasser, dann ein Farbschalter mit Farbblöcken (12 Sekunden), dann ein Aufzug nach oben, dann eine große Arena-Insel mit mehreren Gegnern, am Ende das Farbtor.",
+        "Gegner: Wirbelkreisel, Nebli, Kernspucker, Schnappblüten, Flattermotten.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Münzmagnet, Münzmagnet."
+      ]
+    },
+    {
+      "t": "6-4 Sturmnebel-Turm (Boss)",
+      "list": [
+        "Ablauf: Startinsel mit Hinweistafel und Eierblock, dann Plattform-Stufen über dem Wasser, dann eine große Arena-Insel mit mehreren Gegnern, dann ein Aufzug nach oben, dann eine Kette kleiner Inseln, dann die Bossarena.",
+        "Gegner: Nebli, Wirbelkreisel, Kernspucker, Muffel.",
+        "Farbblüten liegen bevorzugt abseits: auf kleinen Nebeninseln, auf hohen Kanten (mit Flattern erreichbar) und auf der Plattform über dem Federpilz. Rote Münzen verteilen sich über Weg und Verstecke.",
+        "Der Farbring liegt etwa in der Mitte; Hilfen im Level: Regenbogenstern, Münzmagnet.",
+        "Sturmnebel (Boss): wie Brummnebel, aber schneller und mit fünf Treffern. Über die Schockwelle springen, dann Eier auf den leuchtenden Bauch oder stampfen. Eierblöcke stehen am Arenarand."
       ]
     },
     {

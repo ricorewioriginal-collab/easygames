@@ -630,7 +630,7 @@
   {
    "id": "pufi-farbwind",
    "title": "Pufi & der Farbwind 3D",
-   "desc": "Insel-Abenteuer in echtem 3D: frei laufen, Kamera drehen, Flattersprung, Zunge, Farbeier zielen und werfen, Stampfen und Tamo vor den Nebelgreifern retten. 6 Level auf drei schwebenden Inseln mit Farbwind-Säulen, ?-Wolken, Farbschaltern, Pixel-Retro-Zonen und Bosskampf, eigene Musik und Effekte, moderner Startbildschirm. Dazu das Original als Klassik 2D mit 24 Leveln. Controller, Touch und Tastatur, Google-Speicher, offline spielbar.",
+   "desc": "Insel-Abenteuer in echtem 3D: frei laufen, Kamera drehen, Flattersprung, Zunge, Farbeier zielen und werfen, Stampfen und Tamo vor den Nebelgreifern retten. 24 unterschiedliche Level auf sechs schwebenden Inseln (Wiese, Honigklippen, Wolken, Glut, Frostgipfel, Pilzdschungel, Kristallgrotte, Sternennacht) mit vielen Gegnern, Hilfen wie Flatterfeder und Regenbogenstern, Farbwind-Säulen, Glutgeysiren, Eisplatten, ?-Wolken, Farbschaltern, Pixel-Retro-Zonen und zwei Bosskämpfen, eigene Musik und Effekte, moderner Startbildschirm. Dazu das Original als Klassik 2D mit 24 Leveln. Controller, Touch und Tastatur, Google-Speicher, offline spielbar.",
    "icon": "🎨",
    "img": "pufi-farbwind/card.svg",
    "bg": "linear-gradient(145deg,#dc95b8,#84d8ee)",
@@ -639,7 +639,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Neuauflage in echtem 3D: Pufi trägt den Wolkentapir Tamo frei laufend über drei schwebende Inseln mit je zwei Leveln bis zum Boss Brummnebel. Wirst du getroffen, schwebt Tamo in einer Blase davon und die Sterne zählen herunter – hol ihn zurück, bevor sie 0 erreichen. Fang Muffel mit der Zunge, leg Eier (bis zu sechs folgen dir) und wirf sie auf Gegner, ?-Wolken und den Boss. Farbwind-Säulen tragen dich nach oben, Farbschalter lassen Blöcke erscheinen, und hinter Pixeltoren warten Retro-Zonen in Seitenansicht. Farbringe sind Rücksetzpunkte (+10 Sterne). Am Farbtor zählen Sterne, 8 rote Münzen und 5 Farbblüten zu bis zu 100 Punkten. Das 2D-Original mit 24 Leveln steckt im Hauptmenü unter Klassik 2D.",
+    "anleitung": "Neuauflage in echtem 3D: Pufi trägt den Wolkentapir Tamo frei laufend über sechs schwebende Inseln mit je vier Leveln – 24 unterschiedliche Level mit den Bossen Brummnebel und Sturmnebel. Wirst du getroffen, schwebt Tamo in einer Blase davon und die Sterne zählen herunter – hol ihn zurück, bevor sie 0 erreichen. Fang Muffel mit der Zunge, leg Eier (bis zu sechs folgen dir) und wirf sie auf Gegner, ?-Wolken und den Boss. Farbwind-Säulen tragen dich nach oben, Farbschalter lassen Blöcke erscheinen, und hinter Pixeltoren warten Retro-Zonen in Seitenansicht. Farbringe sind Rücksetzpunkte (+10 Sterne). Am Farbtor zählen Sterne, 8 rote Münzen und 5 Farbblüten zu bis zu 100 Punkten. Das 2D-Original mit 24 Leveln steckt im Hauptmenü unter Klassik 2D.",
     "steuerung": [
      "PC: W A S D/Pfeile laufen, Leertaste springen (halten = flattern), X/J Zunge, C/K Ei zielen und werfen, V/L/Shift stampfen bzw. Ei legen, Maus ziehen oder Q/E Kamera, R Kamera hinter Pufi, Esc Pause, M Musik, F Vollbild.",
      "Controller: linker Stick laufen, rechter Stick Kamera, A springen/flattern, X Zunge, B/RB/RT Ei zielen (halten) und werfen, Y/LB stampfen bzw. Ei legen, LT/L3 Kamera hinter Pufi, Start Pause. Menüs mit Steuerkreuz und A/B.",
@@ -651,10 +651,12 @@
      "Stampfen auf einem Pilz katapultiert dich besonders hoch.",
      "Honigstufen bröckeln – nicht stehen bleiben.",
      "In Retro-Zonen zählt nur links und rechts.",
-     "Brummnebel: über die Schockwelle springen, dann Eier auf den leuchtenden Bauch."
+     "Brummnebel: über die Schockwelle springen, dann Eier auf den leuchtenden Bauch.",
+     "Hinweistafeln (!) erklären neue Hindernisse; Hilfen wie Flatterfeder, Münzmagnet und Regenbogenstern machen schwere Stellen leichter.",
+     "Wirbelkreisel von oben anspringen – sie katapultieren dich hoch."
     ]
    },
-   "size": 405456,
+   "size": 457390,
    "files": 26,
    "offline": true,
    "cloud": {
