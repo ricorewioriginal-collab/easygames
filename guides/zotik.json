@@ -26,14 +26,15 @@
    "t": "Das Spielmenü",
    "list": [
     "📜 Aufgaben: Hauptgeschichte des aktuellen Kapitels Schritt für Schritt, Nebenaufgaben.",
-    "🌍 Weltreise: nach Kapitel 1 – reise durch das Weltentor zu allen Welten, die du schon geöffnet hast.",
+    "🌍 Weltreise: nach Kapitel 1 – eine Sternenkarte mit allen Welten als kleine Inseln. Leuchtende Pfade verbinden die geöffneten Welten. Insel antippen oder wählen, dann „Reisen ▸“. Märchenwelten liegen unten zwischen ihren Kapiteln, 🔒 heißt noch verschlossen, ● zeigt, wo du bist.",
     "🎒 Inventar: Stufe, Erfahrung, Waffe, Heiltränke, Rissplitter, Werkzeuge, Äther, Kristallfrüchte, Andenken, Nautilux, Halle der 100 und Rekord der Echogrotte.",
-    "🛡️ Ausrüstung: Waffe, Rüstung und Schmuck anlegen oder ablegen.",
+    "🛡️ Ausrüstung: oben die drei Plätze Waffe, Rüstung und Schmuck mit Bild. Darunter links alles, was du für den gewählten Platz besitzt, rechts großes Bild, IP-Technik und Werte-Vergleich (grün ▲ besser, rot ▼ schlechter). Die ausgerüstete Waffe trägt Zotik sichtbar auf dem Rücken und in der Hand.",
     "🌿 Felli: Stufe, Entwicklung, Angriff, Füttern und „Kämpft mit“ an/aus.",
     "✨ Fähigkeiten: alle Kampftechniken.",
     "🎮 Steuerung: Tasten und Optionen (hier lässt sich auch das Casino ein- und ausschalten).",
     "👥 Koop: Raum öffnen für einen zweiten Spieler.",
-    "Dazu 💾 Speichern, 🔊 Ton an/aus und 🗣️ Sprachausgabe."
+    "Dazu 💾 Speichern, 🔊 Ton an/aus und 🗣️ Sprachausgabe.",
+    "Oben im Menü steht die Welt, in der du gerade bist. Unten links zeigt die Figurenkarte Stufe, Leben, Mana, Splitter und Spielzeit."
    ]
   },
   {
@@ -163,7 +164,9 @@
     "Waffen: Mondsichel (+6 Angriff, IP Mondsichel, 120), Dornenschwert (+12, Dornenwirbel, 500), Glutklinge (+20, Flammenschnitt, 1100), Sternenklinge (+30, Sternenfall, 2000).",
     "Rüstungen: Wanderweste (100), Rindenpanzer (260), Korallenmantel (800), Frostharnisch (1300), Sternenrobe (2600) – mit Schutz, Leben und Techniken wie Schutzschild, Wurzelgriff, Gezeitenheilung, Eiswall und Astralfeld.",
     "Schmuck: Mondring (+30 Mana, Manastrom, 150), Fuchsamulett (Kritisch, Zweiter Atem = volle Heilung, 300). Kapselglocke (stärkt Felli, Felli-Ruf) und Glücksring (Splitterregen) gibt es nicht im Laden, sondern als Fund.",
-    "Kapitelbelohnungen: Kapitel 2 Fuchsamulett, 3 Rindenpanzer, 4 Dornenschwert, 5 Korallenmantel, 6 Glutklinge, 7 Frostharnisch, 8 Glücksring, 9 Sternenklinge, 10 Sternenrobe, Weltenriss Uralter Ring. Uralte Klinge, Uralter Harnisch und Uralter Ring liegen mit etwas Glück in blauen Truhen der Echogrotte. Weitere Ausrüstung steckt in Truhen: in Lunaris Wanderweste, Mondsichel und Fuchsamulett, in den Werkzeug-Ruinen je ein Stück (Lunaris Mondring, Elaris Rindenpanzer, Valdoria Dornenschwert, Solmera Kapselglocke, Aqualis Korallenmantel, Frosthain Frostharnisch, Ignara Glutklinge, Noctaris Glücksring, Astralis Sternenklinge, Elyndra Sternenrobe)."
+    "Kapitelbelohnungen: Kapitel 2 Fuchsamulett, 3 Rindenpanzer, 4 Dornenschwert, 5 Korallenmantel, 6 Glutklinge, 7 Frostharnisch, 8 Glücksring, 9 Sternenklinge, 10 Sternenrobe, Weltenriss Uralter Ring. Uralte Klinge, Uralter Harnisch und Uralter Ring liegen mit etwas Glück in blauen Truhen der Echogrotte. Weitere Ausrüstung steckt in Truhen: in Lunaris Wanderweste, Mondsichel und Fuchsamulett, in den Werkzeug-Ruinen je ein Stück (Lunaris Mondring, Elaris Rindenpanzer, Valdoria Dornenschwert, Solmera Kapselglocke, Aqualis Korallenmantel, Frosthain Frostharnisch, Ignara Glutklinge, Noctaris Glücksring, Astralis Sternenklinge, Elyndra Sternenrobe).",
+    "🗝️ Splitterschlüssel: eine Schlüsselklinge aus Kristall, die du nach dem ersten Kernsplitter (Rissbild nach dem Boss von Kapitel 2) bekommst. Sie startet mit +20 Angriff, +20 Mana und +4 % Kritisch und wird mit jedem weiteren Kernsplitter um 6 Angriff stärker (bis +56 mit allen sieben). IP-Technik: Splitterstrahl.",
+    "Jede Waffe hat ein eigenes Aussehen: Mondsichel gebogen und silbern, Dornenschwert mit Ranken, Glutklinge glühend, Sternenklinge nachtblau mit Sternen, Erzählerklinge wie eine Feder, Uralte Klinge mit Runen."
    ]
   },
   {
