@@ -64,7 +64,8 @@ try {
     return null;
   });
   assert.ok(spot, 'kein Ufer in Region 0');
-  await page.evaluate(({ x, z, a }) => window.__taschi.world.placePlayer(x, z, a), spot); await page.waitForTimeout(600);
+  await page.evaluate(({ x, z, a }) => window.__taschi.world.placePlayer(x, z, a), spot);
+  await page.waitForFunction(() => window.__taschi.world.near?.kind === 'fish', null, { timeout: 8000 }).catch(() => {});
   assert.equal(await G(page, () => window.__taschi.world.near?.kind), 'fish', 'Angeln wird nicht angeboten');
   // im Spiel selbst auf das „❗“ reagieren (der langsame Testbrowser verpasst sonst das Zeitfenster)
   await page.evaluate(() => { const ob = new MutationObserver(() => { const m = document.querySelector('.fishmark'); if (m && !window.__seen) { window.__seen = 1; window.__shot = 1; } if (document.querySelector('.fishmark.bite')) { ob.disconnect(); window.__pad.buttons[1] = { pressed: true, value: 1 }; setTimeout(() => { window.__pad.buttons[1] = { pressed: false, value: 0 }; }, 600); } }); ob.observe(document.body, { subtree: true, attributes: true, childList: true, characterData: true }); });

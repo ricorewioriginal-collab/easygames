@@ -139,6 +139,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 #joy.active { border-color: #ffe08a; }
 #nub { border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #d4e4ee); box-shadow: 0 4px 12px rgba(0,0,0,.35); }
 .tbtns { position: absolute; bottom: calc(26px + var(--safe-b)); right: calc(22px + var(--safe-r)); display: grid; grid-template-columns: auto auto; gap: 12px; align-items: end; pointer-events: none; }
+.tstack { display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
 body[data-hand="right"] .tbtns { right: auto; left: calc(22px + var(--safe-l)); }
 .tbtn { pointer-events: auto; width: 66px; height: 66px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 20px; color: #fff; background: rgba(20, 40, 70, .55); border: 3px solid rgba(255,255,255,.75); backdrop-filter: blur(6px); touch-action: none; box-shadow: 0 4px 12px rgba(0,0,0,.3); }
 .tbtn.a { width: 84px; height: 84px; background: linear-gradient(160deg, #ffd96a, #f2a83a); color: var(--ink); font-size: 15px; text-align: center; line-height: 1.1; padding: 6px; }
@@ -236,3 +237,19 @@ input.name { pointer-events: auto; font: inherit; padding: 9px 12px; border-radi
 .fishmark { font-size: 46px; line-height: 1.1; opacity: .6; }
 .fishmark.bite { opacity: 1; animation: bite .25s ease-in-out infinite alternate; }
 @keyframes bite { from { transform: scale(1); } to { transform: scale(1.25) rotate(-6deg); } }
+.card[data-learn]::after { content: attr(data-learn); position: absolute; right: 8px; bottom: 6px; font-size: .72em; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: #e8f6ea; color: #2a7a3a; }
+.card[data-learn="Nicht möglich"]::after { background: #f6e8e8; color: #9a3a3a; }
+.card[data-learn="Kennt es"]::after { background: #eef0f4; color: #5a6476; }
+.card[data-learn] { position: relative; }
+.portrait.egg { display: grid; place-items: center; font-size: 30px; }
+/* Camp */
+.viewport3d.camp { position: relative; overflow: hidden; }
+.viewport3d .heart { position: absolute; bottom: 30%; color: #ff5a7a; font-size: 26px; animation: heartUp 1.4s ease-out forwards; pointer-events: none; }
+@keyframes heartUp { from { transform: translateY(0) scale(.6); opacity: 1; } to { transform: translateY(-120px) scale(1.2); opacity: 0; } }
+.bar.friend i { background: linear-gradient(90deg, #ff9ab0, #ff4a78); }
+/* Glücksrad */
+.wheelbox { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.wheelwrap { position: relative; width: 300px; height: 300px; max-width: 80vw; max-height: 80vw; }
+.wheel { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(#ffd35a 0 10%, #ff8a5a 0 20%, #7ad0a0 0 30%, #6aa8e8 0 40%, #c58af0 0 50%, #ffd35a 0 60%, #ff8a5a 0 70%, #7ad0a0 0 80%, #6aa8e8 0 90%, #c58af0 0); border: 6px solid #fff; box-shadow: 0 6px 24px rgba(0,0,0,.25); transition: transform 3s cubic-bezier(.15,.85,.2,1); }
+.wheel .slice { position: absolute; left: 50%; top: 50%; width: 92px; margin: -10px 0 0 -46px; font-size: 11px; font-weight: 700; color: #1b2a3e; text-align: center; }
+.pointer { position: absolute; left: 50%; top: -14px; transform: translateX(-50%); font-size: 26px; color: #e0566e; z-index: 2; text-shadow: 0 2px 0 #fff; }

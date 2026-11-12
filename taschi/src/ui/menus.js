@@ -12,6 +12,8 @@ import { natureOf, abilityOf } from '../logic/traits.js';
 import * as Items from '../logic/items.js';
 import * as P from '../logic/progress.js';
 import { habitatsOf } from '../logic/encounters.js';
+import { eggHint } from '../logic/daycare.js';
+import * as Daily from '../logic/daily.js';
 import { PROFILES } from '../engine/renderer.js';
 import { ACTIONS, ACTION_LABELS } from '../core/input.js';
 
@@ -19,7 +21,7 @@ const TABS = [['team', 'Team'], ['dex', 'Taschidex'], ['bag', 'Tasche'], ['quest
 export const fmtTime = (s) => Math.floor(s / 3600) + ' h ' + String(Math.floor(s / 60) % 60).padStart(2, '0') + ' min';
 const nameOf = (m) => m.nick || SPECIES[m.id].name;
 
-function panel(game, title, body, { tabs = null, active = null, onTab = null, hints = [['confirm', 'Wählen'], ['back', 'Zurück']], small = false } = {}) {
+export function panel(game, title, body, { tabs = null, active = null, onTab = null, hints = [['confirm', 'Wählen'], ['back', 'Zurück']], small = false } = {}) {
   const el = h('div.screen', {}, h('div.panel' + (small ? '.small' : ''), {},
     h('div.panel-head', {}, h('h2', {}, title), h('button.closebtn', { 'aria-label': 'Schließen', onclick: () => game.ui.pop() }, '✕')),
     tabs ? h('div.tabs', {}, tabs.map(([id, label]) => h('button.tab' + (id === active ? '.active' : ''), { onclick: () => onTab(id) }, label))) : null,
@@ -27,8 +29,8 @@ function panel(game, title, body, { tabs = null, active = null, onTab = null, hi
     game.ui.hintsBar(hints)));
   return el;
 }
-function portrait(game, id) { return h('div.portrait', {}, h('img', { src: game.preview.thumbnail(id), alt: '' })); }
-function monCard(game, m, i, onclick, extra = {}) {
+export function portrait(game, id) { return h('div.portrait', {}, h('img', { src: game.preview.thumbnail(id), alt: '' })); }
+export function monCard(game, m, i, onclick, extra = {}) {
   const sp = SPECIES[m.id], max = maxHp(m);
   return h('button.card.focusable' + (i === 0 ? '.lead' : '') + (m.hp <= 0 ? '.fainted' : ''), { onclick, ...extra },
     portrait(game, m.id),
@@ -70,6 +72,9 @@ const TAB_RENDER = {
     const s = game.save;
     return h('div', {}, h('p.muted', {}, 'Wähle ein Taschi für Details. Das erste Taschi kämpft zuerst; deinen Begleiter wählst du frei (🐾).'),
       h('div.grid', {}, s.team.map((m, i) => monCard(game, m, i, () => openStatus(game, m, rerender)))),
+      (s.eggs || []).length ? [h('h3', {}, '🥚 Eier (' + s.eggs.length + ')'), h('div.grid', {}, s.eggs.map(egg => h('button.card.focusable', { onclick: () => game.ui.say([{ text: eggHint(egg) + ' Noch etwa ' + egg.left + ' Schritte.' }]) },
+        h('div.portrait.egg', {}, '🥚'), h('div.meta', {}, h('div.name', {}, 'Ei'), h('div.sub', {}, eggHint(egg)), hpBar(egg.total - egg.left, egg.total)))))] : null,
+      h('div.row', {}, h('button.btn.focusable', { onclick: () => game.openCamp() }, '⛺ Taschi-Camp'), h('span.muted', {}, ' Streicheln, spielen, füttern: Zuneigung stärkt im Kampf.')),
       h('p.muted', {}, 'Im Lager: ' + s.box.length + ' Taschis · Lager im Heilzentrum verwalten.'));
   },
   dex(game) {
@@ -95,7 +100,9 @@ const TAB_RENDER = {
     const s = game.save, obj = P.mainObjective(s), ch = CHAPTERS[P.chapterOf(s)];
     const active = P.activeQuests(s);
     const done = P.ALL_QUESTS.filter(q => s.quests[q.id]?.done);
+    const ob = Daily.outbreak(s, Daily.dayKey());
     return h('div', {},
+      ob ? h('div.row.focusable', {}, h('div.grow', {}, h('b', {}, '📣 Massenausbruch heute'), h('div.muted', {}, 'Viele ' + ob.name + ' in ' + ob.place + '. Dort im hohen Gras ist die Chance auf ein schillerndes Taschi höher.'))) : null,
       h('div.row', {}, h('div.grow', {}, h('b', {}, 'Kapitel ' + (P.chapterOf(s) + 1) + ': ' + ch.title), h('div.muted', {}, ch.text))),
       h('h3', {}, 'Hauptauftrag'), h('div.row.focusable', {}, h('div.grow', {}, '➜ ' + obj.text)),
       h('h3', {}, 'Aktive Aufgaben (' + active.length + ')'),
@@ -194,8 +201,8 @@ const TAB_RENDER = {
 const PAD_LAYOUT_NAMES = { switch: 'Nintendo Switch (A bestätigt, B zurück)', xbox: 'Xbox / PlayStation (unten bestätigt)', custom: 'Eigene Belegung' };
 // Eine Bedienung für alle Geräte: dieselben Aktionen auf Tastatur, Controller und Touch
 function controlsTable(game) {
-  const inp = game.input, touch = { up: 'Joystick', confirm: 'Antippen / Aktion', back: '✕ oben rechts', menu: '☰', run: '🏃', team: '◉', map: '🗺', tabPrev: 'Reiter antippen', camLeft: 'Wischen' };
-  const rows = [['up', 'Bewegen / Auswahl'], ['confirm', 'Bestätigen / Sprechen'], ['back', 'Zurück / Abbrechen'], ['menu', 'Menü'], ['run', 'Rennen (halten)'], ['team', 'Team'], ['map', 'Karte'], ['tabPrev', 'Reiter wechseln'], ['camLeft', 'Kamera drehen']];
+  const inp = game.input, touch = { up: 'Joystick', confirm: 'Antippen / Aktion', back: '✕ oben rechts', menu: '☰', run: '🏃', ride: '🐾', team: '◉', map: '🗺', tabPrev: 'Reiter antippen', camLeft: 'Wischen' };
+  const rows = [['up', 'Bewegen / Auswahl'], ['confirm', 'Bestätigen / Sprechen'], ['back', 'Zurück / Abbrechen'], ['menu', 'Menü'], ['run', 'Rennen (halten)'], ['ride', 'Reiten / Absteigen'], ['team', 'Team'], ['map', 'Karte'], ['tabPrev', 'Reiter wechseln'], ['camLeft', 'Kamera drehen']];
   const key = (a) => a === 'up' ? 'WASD / Pfeile' : a === 'tabPrev' ? inp.keyLabel('tabPrev').split(' / ')[0] + ' / ' + inp.keyLabel('tabNext').split(' / ')[0] : a === 'camLeft' ? 'Maus ziehen, ' + inp.keyLabel('camLeft') + '/' + inp.keyLabel('camRight') : a === 'confirm' ? inp.keyLabel(a) + ', Linksklick' : a === 'back' ? inp.keyLabel(a) + ', Rechtsklick' : inp.keyLabel(a);
   const pad = (a) => a === 'up' ? 'L-Stick / Steuerkreuz' : a === 'tabPrev' ? inp.padLabel('tabPrev') + ' / ' + inp.padLabel('tabNext') : a === 'camLeft' ? 'R-Stick, ' + inp.padLabel('camLeft') + '/' + inp.padLabel('camRight') : inp.padLabel(a);
   return h('div.ctrltable', {}, h('b', {}, 'Aktion'), h('b', {}, 'Tastatur & Maus'), h('b', {}, 'Controller'), h('b', {}, 'Touch'),
@@ -290,16 +297,18 @@ export function openDexEntry(game, id) {
 
 function useItemFlow(game, id, rerender, give = false) {
   const s = game.save;
+  const disk = ITEMS[id].category === 'disk';
   const screen = { el: panel(game, ITEMS[id].name + (give ? ' zum Tragen geben' : ' benutzen'), h('div', {}, h('p.muted', {}, ITEMS[id].desc), h('div.grid', {}, s.team.map((m, i) => monCard(game, m, i, () => {
     if (give) { const r = Items.giveHeld(s.bag, m, id); game.audio.sfx(r.ok ? 'item' : 'error'); game.ui.pop(screen); game.ui.toast(r.text, '🎒'); rerender(); return; }
     const res = Items.useFromBag(s.bag, id, m);
     game.audio.sfx(res.ok ? 'heal' : 'error');
     game.ui.pop(screen);
+    if (res.teach) { (async () => { await game.offerMove(m, res.teach); rerender(); })().catch(e => console.error(e)); return; }
     if (res.evolved) { (async () => { await game.evolveInWorld(m, res.evolved); for (const mv of res.evolved.offers || []) await game.offerMove(m, mv); rerender(); })().catch(e => console.error(e)); }
     else if (res.events) { game.ui.toast(res.text); (async () => { await game.processGrowth(m, res.events); rerender(); })().catch(e => console.error(e)); }
     else game.ui.toast(res.text);
     rerender();
-  })))), { small: true }) };
+  }, disk ? { 'data-learn': m.moves.some(x => x.id === ITEMS[id].move) ? 'Kennt es' : Items.diskCompatible(id, m) ? 'Kann lernen' : 'Nicht möglich' } : {})))), { small: true }) };
   screen.onBack = () => game.ui.pop(screen);
   game.ui.push(screen);
 }

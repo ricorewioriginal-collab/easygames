@@ -1,4 +1,5 @@
 // Item effects and inventory bookkeeping. Every item listed in data/items.js
+import { MOVES } from '../data/moves.js';
 // has an effect implemented here (balls and battle boosts are resolved by the
 // battle engine, which calls back into this module for healing items).
 import { ITEMS, sellPrice, shopStock } from '../data/items.js';
@@ -21,7 +22,13 @@ export function remove(bag, id, n = 1) {
 // Which items can be used on a monster from the field/bag menu.
 export function usableOutside(id) {
   const it = ITEMS[id];
-  return !!it && ['heal', 'status', 'evo', 'growth'].includes(it.category) && id !== 'sternsplitter';
+  return !!it && ['heal', 'status', 'evo', 'growth', 'disk'].includes(it.category) && id !== 'sternsplitter';
+}
+// Attacken-Disk: Typ passt (oder Normal-Attacke) und die Attacke ist noch nicht bekannt
+export function diskCompatible(id, m) {
+  const it = ITEMS[id], mv = it && MOVES[it.move], sp = SPECIES[m.id];
+  if (!mv) return false;
+  return mv.type === 'normal' || mv.type === sp.type || mv.type === sp.type2;
 }
 export function usableInBattle(id) {
   const it = ITEMS[id];
@@ -63,10 +70,17 @@ export function applyItem(id, m, { inBattle = false } = {}) {
     if (!to) return { ok: false, text: 'Bei ' + name + ' zeigt das keine Wirkung.' };
     return { ok: true, text: name + ' reagiert auf ' + it.name + '!', evolveTo: to };
   }
+  if (it.treat) return { ok: false, text: 'Taschi-Kekse gibst du im Camp (Menü › Team › Camp).' };
   if (it.category === 'growth') {
     if (inBattle) return { ok: false, text: 'Das geht im Kampf nicht.' };
     if (m.lv >= MAX_LEVEL) return { ok: false, text: name + ' hat bereits das Höchstlevel erreicht.' };
     return { ok: true, text: name + ' nascht das ' + it.name + '.', growth: true };
+  }
+  if (it.category === 'disk') {
+    if (inBattle) return { ok: false, text: 'Das geht im Kampf nicht.' };
+    if (!diskCompatible(id, m)) return { ok: false, text: name + ' kann ' + MOVES[it.move].name + ' nicht lernen.' };
+    if (m.moves.some(x => x.id === it.move)) return { ok: false, text: name + ' kennt ' + MOVES[it.move].name + ' schon.' };
+    return { ok: true, text: '', teach: it.move };
   }
   if (it.category === 'battle') {
     if (!inBattle) return { ok: false, text: 'Kann nur im Kampf eingesetzt werden.' };
@@ -99,7 +113,7 @@ export function useFromBag(bag, id, m) {
   if (count(bag, id) <= 0) return { ok: false, text: 'Nicht mehr vorrätig.' };
   if (!usableOutside(id)) return { ok: false, text: 'Kann hier nicht eingesetzt werden.' };
   const res = applyItem(id, m);
-  if (res.ok) {
+  if (res.ok && !res.teach) {
     remove(bag, id);
     if (res.growth) res.events = levelUp(m);
     if (res.evolveTo) { const from = m.id; const { offers } = evolve(m, res.evolveTo); res.evolved = { from, to: res.evolveTo, offers }; }

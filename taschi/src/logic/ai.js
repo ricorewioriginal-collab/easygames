@@ -43,6 +43,11 @@ export function chooseAction(b, side, slot, rng) {
     if (heal && rng.next() < 0.75) { s.itemsUsed = (s.itemsUsed || 0) + 1; return { type: 'item', item: heal, target: me.uid }; }
   }
 
+  // Statusheilung (Stufe 2+): Schlaf, Frost, Paralyse oder Gift loswerden
+  if (level >= 2 && me.status && me.status !== 'brand' && (s.items.heilkraut | 0) > 0 && hpFrac > 0.35 && rng.next() < 0.7) return { type: 'item', item: 'heilkraut', target: me.uid };
+  // Kampfpulver (Stufe 3): zu Beginn einmal stärken, wenn nichts droht
+  if (level >= 3 && (b.vol[me.uid]?.turnsIn || 0) === 0 && hpFrac > 0.8 && (s.items.angriffsplus | 0) > 0 && !s.boosted && rng.next() < 0.5) { s.boosted = true; return { type: 'item', item: 'angriffsplus', target: me.uid }; }
+
   // Switching when badly matched (level 2+)
   if (level >= 2 && b.format === 1) {
     const threat = Math.max(...foes.flatMap(f => f.m.moves.map(x => expectedDamage(f.m, me, x.id))), 0);
@@ -61,13 +66,15 @@ export function chooseAction(b, side, slot, rng) {
       if (data.power > 0) {
         const dmg = expectedDamage(me, f.m, mv.id);
         score = dmg;
-        if (level >= 3 && dmg >= f.m.hp) score += 400; // secure KO
+        // sicherer K.o. – außer das Ziel hält sich mit einem Fokusband bei vollen KP
+        const banded = f.m.held === 'fokusband' && f.m.hp >= maxHp(f.m);
+        if (level >= 3 && dmg >= f.m.hp && !banded) score += 400; // secure KO
         if (level >= 3 && data.pp <= 10 && dmg < f.m.hp * 0.4) score *= 0.7; // save strong moves
       } else {
         score = 0;
         const turnsIn = b.vol[me.uid]?.turnsIn || 0;
         if (data.heal && data.target === 'self') score = hpFrac < 0.45 ? 140 : 0;
-        else if (data.status && data.target === 'foe') score = f.m.status ? 0 : (level >= 2 ? 70 : 30) * data.acc;
+        else if (data.status && data.target === 'foe') score = f.m.status || (level >= 3 && f.m.held === 'klarbeere') ? 0 : (level >= 2 ? 70 : 30) * data.acc;
         else if (data.stat && data.target === 'self') score = (b.vol[me.uid]?.[data.stat] || 0) < 2 && turnsIn < 2 && hpFrac > 0.6 ? (level >= 2 ? 65 : 20) : 0;
         else if (data.stat && data.target === 'foe') score = turnsIn < 2 ? 35 : 5;
       }

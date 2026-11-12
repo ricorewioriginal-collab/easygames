@@ -719,8 +719,8 @@
      "Rian nimmt immer den Starter, der deinen schlägt – nimm ein Taschi mit, das dagegen stark ist."
     ]
    },
-   "size": 929474,
-   "files": 54,
+   "size": 981806,
+   "files": 60,
    "offline": true,
    "cloud": {
     "game": "taschi",
@@ -2722,7 +2722,8 @@
     "anleitung": "Du führst deinen eigenen Supermarkt: Kartons von der Rampe holen, Regale einräumen, Preise prüfen, den Laden öffnen und die Kunden an der Kasse bedienen. Mit dem Gewinn bestellst du am Bestell-PC nach und baust den Laden mit Lizenzen, Personal, Ausbauten und Anbau aus. Ein Ladentag (8 bis 20 Uhr) dauert bei normalem Tempo rund 10 Minuten, gespeichert wird automatisch.",
     "steuerung": [
      "PC: W A S D oder Pfeiltasten laufen, Shift rennen; Maus ziehen = umsehen (Q fängt die Maus ein, Esc gibt sie frei). E oder Leertaste = Aktion (Karton nehmen, einräumen, scannen; gedrückt halten = schnell). Klick oder F zeigt Infos und Preise. V wechselt Draufsicht und Ego-Ansicht, Mausrad zoomt, R dreht beim Bauen.",
-     "PC Fenster: Tasten 1 bis 9 und 0 öffnen Bestell-PC, Laden, Bauen, Preise, Personal, Radio, Ausbau, Zahlen, Ziele und Menü; H = Anleitung, O = Laden öffnen/Feierabend, P = Pause, + und − = Tempo, Esc schließt Fenster.",
+     "PC Fenster: Tasten 1 bis 9 und 0 öffnen Bestell-PC, Laden, Bauen, Preise, Personal, Radio, Ausbau, Zahlen, Ziele und Menü; H = Anleitung, O = Laden öffnen/Feierabend, P = Pause, + und − = Tempo, Esc schließt Fenster. Tasten frei belegbar unter Optionen → Tastatur.",
+     "Controller (PlayStation, Switch, Xbox – Symbole passen sich an): linker Stick laufen, rechter Stick umsehen, ✕/A Aktion, △/Y Regal ansehen, L2/ZL rennen, L1/L Draufsicht, R1/R drehen, Select Laden öffnen, Start Pausemenü; Steuerkreuz wählt in Fenstern. Belegung und Bestätigen-Knopf unter Optionen → Controller.",
      "Touch: Linke Bildschirmhälfte ziehen = laufen (Joystick unter dem Daumen), rechte Hälfte wischen = umsehen. Antippen von Regal, Kasse oder Rampe benutzt sie oder zeigt Infos; gelber Knopf = Aktion (halten = schnell). 👁️ Draufsicht mit Zwei-Finger-Zoom, Tempo-Knopf oben rechts, ☰ Mehr für Laden, Personal, Ziele und weitere Fenster."
     ],
     "tipps": [
@@ -2730,7 +2731,7 @@
      "Der Marktpreis plus 8 % gilt als fair; zu teure Preise vertreiben Kunden."
     ]
    },
-   "size": 330791,
+   "size": 335478,
    "files": 10,
    "offline": true,
    "cloud": {

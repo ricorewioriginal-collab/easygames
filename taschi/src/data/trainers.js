@@ -174,6 +174,32 @@ G.forEach((list, site) => list.forEach((t, i) => reg({
 })));
 
 export function trainerById(id) { return TRAINERS[id]; }
+
+// Starke Trainer tragen Gegenstände: das Ass (letztes Taschi) und ab höheren
+// Siegeln auch die übrigen. Deterministisch je Trainer.
+const HELD_TIERS = [[], ['heilbeere'], ['heilbeere', 'klarbeere'], ['heilbeere', 'klarbeere', 'kraftband'], ['fokusband', 'klarbeere', 'kraftband', 'heilbeere']];
+export function trainerHeld(t, badges = 0) {
+  const strong = ['leader', 'champion', 'league', 'rival', 'rematch'].includes(t.kind) || (t.kind === 'guild' && t.member === 'varga');
+  const lv = Math.max(...t.team.map(x => x.lv));
+  const tier = strong ? (lv >= 50 ? 4 : lv >= 30 ? 3 : lv >= 16 ? 2 : badges >= 1 ? 1 : 0) : (lv >= 40 ? 1 : 0);
+  const pool = HELD_TIERS[tier];
+  if (!pool.length) return t.team.map(() => null);
+  const rng = createRng('held:' + t.id);
+  return t.team.map((x, i) => i === t.team.length - 1 ? pool[0] : (strong && tier >= 2 && rng.next() < 0.5 ? pool[1 + Math.floor(rng.next() * (pool.length - 1))] : null));
+}
+
+// Revanche: besiegte Routen-/Arenatrainer kämpfen einmal pro Tag erneut, ihr
+// Team wächst mit dir mit (bis knapp unter dein stärkstes Taschi).
+export function rematchTrainer(t, playerTop) {
+  const base = Math.max(...t.team.map(x => x.lv));
+  const target = Math.max(base + 2, Math.min(70, playerTop - 1));
+  const up = target - base;
+  const team = t.team.map(x => { const lv = Math.min(70, x.lv + up); return { id: fitSpecies(x.id, lv), lv }; });
+  const rng = createRng('rematch:' + t.id), want = target >= 40 ? 4 : target >= 25 ? 3 : team.length;
+  while (team.length < want) { const extra = t.team[Math.floor(rng.next() * t.team.length)]; team.unshift({ id: fitSpecies(extra.id, target - 2), lv: target - 2 }); }
+  return { ...t, id: t.id, kind: 'rematch', lookKind: t.kind, team, ai: Math.min(3, (t.ai ?? 1) + 1), reward: Math.round(t.reward * 0.6 + target * 8), items: { supertrank: 1, heilkraut: 1 },
+    intro: 'Revanche! Seit unserem letzten Kampf haben wir trainiert – diesmal halten wir dagegen!', defeat: 'Wieder verloren … Morgen bin ich wieder hier!' };
+}
 export function regionTrainers(r, kind) { return Object.values(TRAINERS).filter(t => t.region === r && (!kind || t.kind === kind)); }
 
 // ---------------------------------------------------------------- rival

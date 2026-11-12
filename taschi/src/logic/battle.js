@@ -191,7 +191,7 @@ function doItem(b, a, ev) {
   if (res.ok) {
     remove(bag, a.item);
     ev.push({ t: 'item', side: a.side, item: a.item, text: (a.side === 0 ? 'Du setzt ' : side.name + ' setzt ') + it.name + ' ein.' });
-    ev.push({ t: 'heal', uid: target.uid, hp: target.hp, max: maxHp(target), text: res.text });
+    ev.push(it.category === 'status' ? { t: 'cure', uid: target.uid, text: res.text } : { t: 'heal', uid: target.uid, hp: target.hp, max: maxHp(target), text: res.text });
   } else ev.push({ t: 'text', text: res.text });
 }
 
@@ -314,11 +314,14 @@ function doMove(b, a, user, ev) {
     if (eff === 0) { ev.push({ t: 'immune', uid: target.uid, text: 'Das hat keine Wirkung auf ' + nameOf(target) + '…' }); return; }
     let dealt = Math.min(target.hp, dmg);
     const endure = dealt >= target.hp && target.hp >= maxHp(target) && heldEffect(target)?.endure;
-    if (endure) dealt = target.hp - 1;
+    // Zuneigung: eigene Taschis mit sehr hoher Freundschaft halten manchmal durch
+    const loyal = !endure && dealt >= target.hp && tLoc?.side === 0 && (target.friendship ?? 0) >= 220 && b.rng.next() < 0.15;
+    if (endure || loyal) dealt = target.hp - 1;
     target.hp -= dealt;
     ev.push({ t: 'damage', uid: target.uid, side: tLoc?.side, slot: tLoc?.slot, amount: dealt, hp: target.hp, max: maxHp(target), eff, crit,
       text: (crit ? 'Volltreffer! ' : '') + (eff > 1 ? 'Das ist sehr effektiv!' : eff < 1 ? 'Das ist nicht sehr effektiv …' : '') });
     if (endure) { ev.push({ t: 'text', text: nameOf(target) + ' hält sich dank ' + ITEMS[target.held].name + ' auf den Beinen!' }); consumeHeld(target); }
+    if (loyal) ev.push({ t: 'text', text: nameOf(target) + ' hält durch, um dich nicht traurig zu machen!' });
     heldCheck(b, target, ev);
     if (move.drain && dealt > 0 && user.hp > 0) {
       const h = Math.max(1, Math.floor(dealt * move.drain));
@@ -397,6 +400,11 @@ function statChange(b, m, stat, stages, ev) {
 function endOfTurn(b, ev) {
   for (let s = 0; s < 2; s++) {
     for (const { m } of activeList(b, s)) {
+      if (s === 0 && m.status && m.hp > 0 && (m.friendship ?? 0) >= 220 && b.rng.next() < 0.2) {
+        m.status = null; m.statusTurns = 0;
+        ev.push({ t: 'cure', uid: m.uid, text: nameOf(m) + ' schüttelt die Statusveränderung ab – es will dich nicht enttäuschen!' });
+        continue;
+      }
       if (m.status === 'brand' || m.status === 'gift') {
         const d = Math.max(1, Math.floor(maxHp(m) / (m.status === 'gift' ? 8 : 16)));
         m.hp = Math.max(0, m.hp - d);
