@@ -17,7 +17,7 @@ export function createKayKit({ T, G, TOUCH }) {
     const glowM = /glow/i.test(src.name || '') || (src.emissive && src.emissive.getHex() > 0 && !src.map);
     const m = glowM ? new T.MeshBasicMaterial({ color: src.emissive && src.emissive.getHex() ? src.emissive : 0xffffff, skinning: skin })
       : new T.MeshToonMaterial({ map: src.map, color: 0xffffff, gradientMap: G, skinning: skin });
-    if (m.map) { m.map.encoding = T.sRGBEncoding; m.map.anisotropy = 4; }
+    if (m.map) { m.map.encoding = T.sRGBEncoding; m.map.anisotropy = TOUCH ? 4 : 8; }
     m.name = src.name; mats.set(k, m); return m;
   }
   const dress = (root, skin) => root.traverse(o => { if (!o.isMesh) return; o.material = toon(o.material, !!o.isSkinnedMesh); o.castShadow = !TOUCH; o.receiveShadow = false; if (o.isSkinnedMesh) o.frustumCulled = false; });
@@ -25,7 +25,24 @@ export function createKayKit({ T, G, TOUCH }) {
   const LIVE = new Set();
   const WPN = { r: 'handslotr', l: 'handslotl' };   // three entfernt Punkte aus Knotennamen
 
-  /** Figur: o.h Zielhöhe (m), o.r / o.l Requisit in der rechten/linken Hand, o.tint Farbton (0..1 Mischung o.tk), o.hide RegExp: Teile ausblenden (Helm, Hut, Umhang …) */
+  /* Umfärben nach Steckbrief (Master-Sheet): Die KayKit-Textur ist ein Raster aus 8×4 Farbverläufen. Je Rolle (Haar, Haut, Oberteil, Umhang, Hose)
+     werden die passenden Felder neu eingefärbt, der Helligkeitsverlauf bleibt erhalten. o.pal = { hair, skin, top, top2, pants, eye } */
+  const RC = { hair: { '*': [[1, 0]] }, skin: { '*': [[0, 0]] }, eye: { '*': [[2, 0]] }, pants: { '*': [[3, 2]], ad_kn: [], ad_ba: [[3, 2]] },
+    top: { ad_ma: [[0, 1]], ad_ro: [[0, 1], [5, 0]], ad_rh: [[0, 1], [5, 0]], ad_ra: [[7, 0]], ad_kn: [[7, 0]], ad_ba: [[7, 0]] },
+    top2: { ad_ma: [[1, 1], [2, 1]], ad_ro: [[1, 1]], ad_rh: [[1, 1]], ad_ra: [[0, 1]], ad_kn: [[0, 1], [6, 0]], ad_ba: [[2, 1]] } };
+  const rtex = new Map();
+  function recolor(img, id, pal) {
+    const key = id + JSON.stringify(pal); if (rtex.has(key)) return rtex.get(key);
+    const S = 512, cv = document.createElement('canvas'); cv.width = cv.height = S; const x = cv.getContext('2d'); x.drawImage(img, 0, 0, S, S);
+    const cw = S / 8, ch = S / 4;
+    for (const role in pal) { const cells = RC[role] && (RC[role][id] || RC[role]['*']); if (!cells || pal[role] == null) continue;
+      const tr = (pal[role] >> 16 & 255), tg = (pal[role] >> 8 & 255), tb = pal[role] & 255, tl = (tr * .3 + tg * .59 + tb * .11) || 1;
+      for (const [c, r] of cells) { const d = x.getImageData(c * cw, r * ch, cw, ch), p = d.data; let L0 = 0; for (let i = 0; i < p.length; i += 4) L0 += p[i] * .3 + p[i + 1] * .59 + p[i + 2] * .11; L0 = L0 / (p.length / 4) || 1;
+        for (let i = 0; i < p.length; i += 4) { const k = (p[i] * .3 + p[i + 1] * .59 + p[i + 2] * .11) / L0; p[i] = Math.min(255, tr * k); p[i + 1] = Math.min(255, tg * k); p[i + 2] = Math.min(255, tb * k); }
+        x.putImageData(d, c * cw, r * ch); } }
+    const tx = new T.CanvasTexture(cv); tx.flipY = false; tx.encoding = T.sRGBEncoding; tx.anisotropy = 4; rtex.set(key, tx); return tx;
+  }
+  /** Figur: o.h Zielhöhe (m), o.r / o.l Requisit in der rechten/linken Hand, o.tint Farbton (0..1 Mischung o.tk), o.hide RegExp: Teile ausblenden (Helm, Hut, Umhang …), o.pal Farben je Rolle (siehe recolor) */
   function char(id, o = {}) {
     const root = new T.Group(), P = { root, id, ready: false, mixer: null, act: {}, cur: '', want: 'Idle_A', once: null, swing: 0, bones: {}, speed: 1 };
     Promise.all([load(id), anims(), (o.r || o.l) ? load('props') : null]).then(([g, cl]) => {
@@ -33,6 +50,7 @@ export function createKayKit({ T, G, TOUCH }) {
       if (!H[id]) { g.scene.updateMatrixWorld(true); const b = new T.Box3().setFromObject(g.scene); H[id] = Math.max(.5, b.max.y - b.min.y); }
       c.scale.setScalar((o.h || 1.8) / H[id]);
       c.traverse(b => { if (b.isBone) P.bones[b.name] = b; });
+      if (o.pal) { const mm = new Map(); c.traverse(m => { if (!m.isMesh || !m.material.map || !m.material.map.image) return; let n = mm.get(m.material); if (!n) { n = m.material.clone(); n.map = recolor(m.material.map.image, id, o.pal); mm.set(m.material, n); } m.material = n; }); }
       if (o.hide) c.traverse(m => { if (m.isMesh && o.hide.test(m.name)) m.visible = false; });
       if (o.tint) c.traverse(m => { if (m.isMesh && m.material.color && m.material.map) { m.material = m.material.clone(); m.material.color.lerp(new T.Color(o.tint), o.tk ?? .35); } });
       for (const s of ['r', 'l']) if (o[s]) { const w = prop(o[s]), b = P.bones[WPN[s]]; if (b) { b.add(w); if (o[s + 'rot']) w.rotation.set(...o[s + 'rot']); } }
