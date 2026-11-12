@@ -124,9 +124,10 @@ export function useFromBag(bag, id, m) {
 export function buy(state, id, qty = 1) {
   const it = ITEMS[id];
   if (!it || !it.price || it.sellOnly) return { ok: false, text: 'Nicht im Sortiment.' };
-  if (!shopStock(state.badges).includes(id)) return { ok: false, text: 'Erst mit mehr Orden erhältlich.' };
+  const free = !!state.cheats?.on?.free;   // Cheat: Gratis einkaufen, jedes Sortiment offen
+  if (!shopStock(free ? 99 : state.badges).includes(id)) return { ok: false, text: 'Erst mit mehr Orden erhältlich.' };
   qty = Math.max(1, Math.min(99, qty | 0));
-  const cost = it.price * qty;
+  const cost = free ? 0 : it.price * qty;
   if (state.coins < cost) return { ok: false, text: 'Nicht genug Sternmünzen.' };
   state.coins -= cost;
   add(state.bag, id, qty);

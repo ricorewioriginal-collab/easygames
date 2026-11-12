@@ -21,7 +21,10 @@ function pick(s, test) {
 // Fliegen: Flug-Taschis (Typ Flug oder Vogel-/Drachenkörper mit Flügeln), groß genug für eine Person
 export const FLY_MIN_SIZE = 0.85;
 export function flyable(id) { const sp = SPECIES[id]; return !!sp && (types(id).includes('flug') || sp.look?.plan === 'bird' || !!sp.look?.features?.wings) && sizeOf(id) >= FLY_MIN_SIZE; }
-export function flyMount(s) { return (s.badges || 0) >= FLY_BADGES ? pick(s, flyable) : null; }
+export function flyMount(s) {
+  if (s.cheats?.on?.fly) return pick(s, flyable) || pick(s, () => true);   // Cheat: Fliegen ohne Siegel
+  return (s.badges || 0) >= FLY_BADGES ? pick(s, flyable) : null;
+}
 export function flyHint(s) {
   if ((s.badges || 0) < FLY_BADGES) return 'Fliegen lernst du mit dem fünften Licht-Siegel. Bis dahin hilft das Flugtaxi im Heilzentrum.';
   return 'Zum Fliegen brauchst du ein kampffähiges Flug-Taschi, das groß genug ist (z. B. ein entwickeltes Vogel-Taschi).';

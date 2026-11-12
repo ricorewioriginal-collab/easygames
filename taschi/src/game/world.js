@@ -20,6 +20,8 @@ import { makeMonster } from '../logic/monster.js';
 import { globalUniforms, glowMaterial } from '../engine/materials.js';
 import { regionMarks, MARK_STYLE } from '../logic/marks.js';
 import { JUNA } from '../data/adventure.js';
+import { HALF } from '../logic/layout.js';
+import * as Cheats from '../logic/cheats.js';
 
 // Lichtsäulen über offenen Abenteuer-Zielen: eine geteilte Geometrie mit
 // weichem Verlauf nach oben, eine Zeichenoperation je Säule.
@@ -339,7 +341,7 @@ export class World {
     const mag = Math.min(1, Math.hypot(m.x, m.y));
     const running = input.held('run') !== !!this.game.settings.get('autoRun');
     const mount = this.mount?.mode;
-    const maxSpeed = (mount === 'ride' ? Ride.RIDE_SPEED : mount === 'surf' ? Ride.SURF_SPEED : running ? 7.2 : 4.0) * this.game.settings.get('walkSpeed');
+    const maxSpeed = (mount === 'ride' ? Ride.RIDE_SPEED : mount === 'surf' ? Ride.SURF_SPEED : running ? 7.2 : 4.0) * this.game.settings.get('walkSpeed') * (Cheats.isOn(this.save, 'turbo') ? 2 : 1);
     let speed = 0;
     if (mag > 0.05) {
       const yaw = this.cam.yaw;
@@ -362,6 +364,8 @@ export class World {
       const grid = this.current.type === 'region' ? this.current.map.grid : null;
       const body = (x, z) => { for (const [ox, oz] of RING) if (grid.at(x + ox, z + oz) !== FREE) return false; return true; };
       let ok = grid && body(p.position.x, p.position.z) ? (x, z) => body(x, z) && !this.blocked(x, z) : lenient;
+      // Cheat Geistmodus: draußen durch alles außer Wasser und den Kartenrand
+      if (grid && !mount && Cheats.isOn(this.save, 'ghost')) ok = (x, z) => Math.abs(x) < HALF - 6 && Math.abs(z) < HALF - 6 && grid.at(x, z) !== WATER;
       // Surfen: nur Wasserfelder; wer ans Ufer stößt, geht an Land
       if (mount === 'surf' && grid) {
         ok = (x, z) => grid.at(x, z) === WATER && !this.npcs.some(n => Math.hypot(n.ch.root.position.x - x, n.ch.root.position.z - z) < 0.65);
@@ -500,6 +504,7 @@ export class World {
       this.player.hold('ride'); speed = this.lift > 0.2 ? 6 : 0;
     }
     this.player.update(dt);
+    this.cheatLook(dt);
     // follower
     if (this.follower && this.mount) {
       // das Reit-Taschi läuft unter der Spielfigur mit
@@ -607,7 +612,7 @@ export class World {
       } else if (d > 10 && w.state !== 'idle') w.state = 'idle';
       let mx = 0, mz = 0;
       if (w.state === 'flee') { mx = -dx / d; mz = -dz / d; sp = 4.5; }
-      else if (w.state === 'charge') { mx = dx / d; mz = dz / d; sp = 3.2; if (d < 1.2 && active) { w.cooldown = 8; this.game.encounterFromWild(w); return; } }
+      else if (w.state === 'charge') { mx = dx / d; mz = dz / d; sp = 3.2; if (d < 1.2 && active && !Cheats.isOn(this.save, 'noenc')) { w.cooldown = 8; this.game.encounterFromWild(w); return; } }
       else if (w.state === 'watch') { r.rotation.y += angDiff(Math.atan2(dx, dz), r.rotation.y) * Math.min(1, dt * 5); if (w.behavior === 'playful' && Math.random() < dt * 0.5) w.c.play('happy', 0.8); }
       else {
         if (!w.target && (w.wait -= dt) < 0) w.target = { x: w.home.x + (Math.random() - 0.5) * w.home.r * 2, z: w.home.z + (Math.random() - 0.5) * w.home.r * 2 };
@@ -642,8 +647,26 @@ export class World {
     if (g) return { habitat: g.habitat, rate: 0.11 };
     return null;
   }
+  // Cheats Riesenmodus/Winzling und Sternen-Aura (nur Darstellung)
+  cheatLook(dt) {
+    const s = this.save, p = this.player.root;
+    const want = Cheats.isOn(s, 'giant') ? 2.6 : Cheats.isOn(s, 'mini') ? 0.4 : 1;
+    if (Math.abs(p.scale.x - want) > 0.001) p.scale.setScalar(p.scale.x + (want - p.scale.x) * Math.min(1, dt * 6));
+    const aura = Cheats.isOn(s, 'aura');
+    if (aura && !this.cheatAura) {
+      const g = new THREE.Group();
+      for (let i = 0; i < 3; i++) { const m = new THREE.Mesh(new THREE.TorusGeometry(0.75 + i * 0.22, 0.05, 6, 40), glowMaterial([0xffd34d, 0x7fd8ff, 0xff7ad9][i], 0.75)); m.rotation.x = Math.PI / 2; g.add(m); }
+      this.cheatAura = g;
+    }
+    if (this.cheatAura) {
+      const g = this.cheatAura;
+      if (aura && g.parent !== p) p.add(g); else if (!aura && g.parent) g.parent.remove(g);
+      if (aura) { const t = globalUniforms.uTime.value; g.children.forEach((m, i) => { m.position.y = 0.15 + ((t * 0.6 + i / 3) % 1) * 1.9; m.rotation.z = t * (i % 2 ? -1.5 : 1.5); m.material.opacity = 0.8 * (1 - ((t * 0.6 + i / 3) % 1)); }); }
+    }
+  }
   checkEncounters() {
     if (this.stepAcc < 1.4) return;
+    if (Cheats.isOn(this.save, 'noenc')) { this.stepAcc = 0; return; }
     this.stepAcc = 0;
     this.encounterCooldown--;
     const g = this.inGrass();

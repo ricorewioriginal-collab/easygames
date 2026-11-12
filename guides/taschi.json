@@ -152,6 +152,23 @@
         "🌐 Online: Im Online-Menü gibt es Tauschen, Kämpfen, „🤝 Zusammen erkunden“ (ihr seht euch in derselben Region und kämpft gemeinsam in Raids) und „🎲 Zufallstausch“ mit einem zufälligen Spieler irgendwo auf der Welt.",
         "🗣 Stimmen: Jede Figur klingt anders – Professor, Rivale, Arenaleiter, Gilde und alle Leute in den Städten. Unter Optionen › Audio › Stimmen wählst du „Sprache“ (vorlesen), „Plappern“ (Silbenlaute) oder „Aus“, dazu Lautstärke, Tempo und eine Stimmprobe. 🐾 Jedes Taschi hat außerdem seinen eigenen Ruf: Du hörst ihn, wenn es im Kampf erscheint, und im Taschidex über „🔊 Ruf“. Wichtige Momente wie Rivalen-Auftritte, Wächter-Schreine und Raids zeigt das Spiel als Zwischensequenz mit Kinobalken."
       ]
+    },
+    {
+      "t": "🎮 Cheats",
+      "p": [
+        "Menü › System › „🎮 Cheats“. Jede Zeile ist ein Schalter: antippen, anklicken oder mit Enter bzw. Controller-A an- und wieder ausschalten. „⟲ Alle Cheats aus“ schaltet alles auf einmal ab.",
+        "Sammeln: Alle Taschis freischalten (kompletter Taschidex, jedes fehlende Taschi mit Lv 50 im Lager), Maximale Entwicklung (Team in Endstufe und auf Lv 70), Alle Items (je 99 Stück und 999.999 Sternmünzen). Beim Ausschalten wird genau das wieder entfernt, was der Cheat gegeben hat.",
+        "Kampf: Unbesiegbar, Ein-Treffer-K.O., Unendlich AP, Fang-Garantie, EP ×10. Welt: Immer schillernd, Keine wilden Begegnungen, Turbo-Lauf, Geistmodus (draußen durch Hindernisse), Fliegen ohne Siegel, Gratis einkaufen, Zeit anhalten. Effekte: Riesenmodus, Winzling, Regenbogen-Welt, Sternen-Aura.",
+        "Im Online-Kampf wirken keine Cheats."
+      ]
+    },
+    {
+      "t": "📻 Abenteurer-Radio",
+      "p": [
+        "Menü › Team › „📻 Abenteurer-Radio“ (oder Optionen › Audio › Radio). Wähle einen der 13 echten Sender, er ersetzt die Spielmusik. Nochmal antippen oder „⏹ Aus“ bringt die Spielmusik zurück.",
+        "Jeder Sender hat einen Abenteuer-Namen, darunter steht der echte Sender: Lichterfunk (RicoReWi Radio), Wanderwind FM (YourTime FM), Arena-Beats (Rapradio 24), Moostal-Melodien (Schlagerpop 24), Siegel-Charts (Chartradio 24), Sternennest-Club (Clubradio 24), Taschi-Treff (AnMaCha 24), Kleine Taschis (Radiofloh), Glutland-Rock (Rockradio 24), Raureif-Weihnacht (Christmasradio 24), Zeitkapsel-Kult (Kultradio 24), Abenteuer-Zocker (Zocker FM), Himmelslicht Spezial (Special Radio). Quelle: laut.fm.",
+        "Oben im Bild steht immer der aktuelle Titel, er wechselt live mit jedem Song. Die Lautstärke stellst du mit − und + ein; „Bei Dialogen leiser“ senkt das Radio automatisch, solange jemand spricht. Das Radio braucht Internet."
+      ]
     }
   ],
   "ratgeber": [
@@ -390,6 +407,14 @@
     {
       "q": "Beim Zufallstausch findet sich niemand.",
       "a": "Der Zufallstausch sucht bis zu zwei Minuten nach einem anderen Spieler, der gerade auch tauscht. Ist niemand online, behältst du dein Taschi. Versuch es später noch einmal oder tausch per Code mit Freunden."
+    },
+    {
+      "q": "Wie mache ich Cheats wieder rückgängig?",
+      "a": "Im Cheat-Menü (Menü › System) den Schalter wieder auf AUS stellen oder „⟲ Alle Cheats aus“ wählen. Geschenkte Taschis, Level und Items werden dabei wieder entfernt; was du selbst gefangen oder gekauft hast, bleibt."
+    },
+    {
+      "q": "Das Radio spielt nicht.",
+      "a": "Das Radio braucht eine Internetverbindung. Tippe einmal ins Spiel, damit der Browser Ton erlaubt. Ist ein Sender gerade nicht erreichbar, wähle einen anderen."
     }
   ]
 }

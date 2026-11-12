@@ -7,6 +7,7 @@ import { MOVES, STATUS } from '../data/moves.js';
 import { TYPES, effectiveness } from '../data/types.js';
 import { ITEMS } from '../data/items.js';
 import { REGIONS } from '../data/regions.js';
+import * as Cheats from '../logic/cheats.js';
 import { createBattle, runTurn, replace, replaceFoe, playerOptions, activeMon, targetsFor, catchChance } from '../logic/battle.js';
 import { snapshot, applySnapshot, mirrorEvents, cleanChoices } from '../logic/link.js';
 import { maxHp, xpToNext, evolve, replaceMove, genderOf } from '../logic/monster.js';
@@ -334,7 +335,7 @@ export class BattleScene {
     const w = g.world;
     this.inWorld = !indoor && w.current?.type === 'region' && !!w.player && !opts.online && !opts.exhibition && !opts.raidShare;
     if (this.inWorld) this.buildWorldStage(opts); else this.buildStage(opts.region, indoor);
-    const b = createBattle({ rng: g.rng, kind: opts.kind, pvp: !!opts.online, format: opts.format, canRun: opts.canRun, canCatch: opts.canCatch, night: g.isNight(), dark: indoor, weather: indoor ? null : g.world.weather, starUnlocked: (save.badges || 0) >= 1,
+    const b = createBattle({ rng: g.rng, kind: opts.kind, pvp: !!opts.online, format: opts.format, canRun: opts.canRun, canCatch: opts.canCatch, night: g.isNight(), dark: indoor, weather: indoor ? null : g.world.weather, starUnlocked: (save.badges || 0) >= 1, cheat: opts.online ? null : Cheats.battleFlags(save),
       player: { team: opts.playerTeam || save.team, bag: opts.playerBag || save.bag, name: save.player.name }, foe: { team: opts.foeTeam, ai: opts.ai ?? 0, trainer: opts.kind !== 'wild', name: opts.trainerName || '', items: { ...(opts.items || {}) }, star: !!opts.foeStar } });
     this.b = b; this.opts = opts;
     if (b.weather && WEATHER[b.weather]) g.ui.toast(weatherText(b.weather), WEATHER[b.weather].icon);

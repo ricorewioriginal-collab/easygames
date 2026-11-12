@@ -33,7 +33,8 @@ export function createBattle(o) {
     pendingEvolutions: [], learnRequests: [], night: !!o.night, weather: o.weather || null, star: [null, null], starUnlocked: !!o.starUnlocked, foeStar: !!o.foe.star, expShare: o.expShare ?? true,
     needReplace: [], fainted: new Set(), dark: !!o.dark,
     // Online-Kampf: die Gegenseite ist ein Mensch (eigene Wahl, eigener Ersatz, eigene Sternstufe), keine EP
-    pvp: !!o.pvp, foeReplace: [], noXp: !!o.noXp || !!o.pvp
+    pvp: !!o.pvp, foeReplace: [], noXp: !!o.noXp || !!o.pvp,
+    cheat: o.pvp ? null : (o.cheat || null)   // Cheats (logic/cheats.js), nie im Online-Kampf
   };
   for (const side of b.sides) for (const i of side.active) initVol(b, side.team[i]);
   markParticipants(b);
@@ -207,7 +208,7 @@ export function catchContext(b, foe) {
 }
 
 export function catchChance(b, foe, ball) {
-  if (ITEMS[ball]?.master) return 1;
+  if (ITEMS[ball]?.master || b.cheat?.catch) return 1;
   const s = SPECIES[foe.id];
   const hpFactor = 1 + 1.7 * (1 - foe.hp / maxHp(foe));
   const statusBonus = foe.status === 'schlaf' || foe.status === 'frost' ? 1.6 : foe.status ? 1.25 : 1;
@@ -303,7 +304,7 @@ function doMove(b, a, user, ev) {
   }
   const move = MOVES[moveId];
   if (!canAct(b, user, ev)) return;
-  if (slotMove && moveId !== 'verzweiflung') slotMove.pp = Math.max(0, slotMove.pp - 1);
+  if (slotMove && moveId !== 'verzweiflung' && !(b.cheat?.pp && a.side === 0)) slotMove.pp = Math.max(0, slotMove.pp - 1);
   const target = pickTarget(b, a, move);
   const userLoc = locate(b, user);
   const tLoc = target ? locate(b, target) : null;
@@ -323,6 +324,8 @@ function doMove(b, a, user, ev) {
     // Zuneigung: eigene Taschis mit sehr hoher Freundschaft halten manchmal durch
     const loyal = !endure && dealt >= target.hp && tLoc?.side === 0 && (target.friendship ?? 0) >= 220 && b.rng.next() < 0.15;
     if (endure || loyal) dealt = target.hp - 1;
+    if (b.cheat?.god && tLoc?.side === 0) dealt = 0;
+    else if (b.cheat?.ohko && tLoc?.side === 1) dealt = target.hp;
     target.hp -= dealt;
     ev.push({ t: 'damage', uid: target.uid, side: tLoc?.side, slot: tLoc?.slot, amount: dealt, hp: target.hp, max: maxHp(target), eff, crit,
       text: (crit ? 'Volltreffer! ' : '') + (eff > 1 ? 'Das ist sehr effektiv!' : eff < 1 ? 'Das ist nicht sehr effektiv …' : '') });
@@ -334,7 +337,7 @@ function doMove(b, a, user, ev) {
       user.hp = Math.min(maxHp(user), user.hp + h);
       ev.push({ t: 'heal', uid: user.uid, hp: user.hp, max: maxHp(user), text: nameOf(user) + ' saugt Energie ab.' });
     }
-    if (move.recoil && dealt > 0) {
+    if (move.recoil && dealt > 0 && !(b.cheat?.god && userLoc?.side === 0)) {
       const r = Math.max(1, Math.floor(dealt * move.recoil));
       user.hp = Math.max(0, user.hp - r);
       ev.push({ t: 'damage', uid: user.uid, side: userLoc?.side, slot: userLoc?.slot, amount: r, hp: user.hp, max: maxHp(user), eff: 1, recoil: true, text: nameOf(user) + ' wird vom Rückstoß getroffen.' });
@@ -411,7 +414,7 @@ function endOfTurn(b, ev) {
         ev.push({ t: 'cure', uid: m.uid, text: nameOf(m) + ' schüttelt die Statusveränderung ab – es will dich nicht enttäuschen!' });
         continue;
       }
-      if (m.status === 'brand' || m.status === 'gift') {
+      if ((m.status === 'brand' || m.status === 'gift') && !(s === 0 && b.cheat?.god)) {
         const d = Math.max(1, Math.floor(maxHp(m) / (m.status === 'gift' ? 8 : 16)));
         m.hp = Math.max(0, m.hp - d);
         const loc = locate(b, m);
@@ -456,7 +459,7 @@ function awardXpFor(b, foe, ev, factor) {
     const share = part.has(m.uid) ? 1 : (b.expShare ? 0.5 : 0);
     if (!share) continue;
     const base = xpReward(foe, { trainer: b.sides[1].trainer, level: m.lv, friendship: m.friendship }) * factor * (heldEffect(m)?.xp || 1);
-    const amount = Math.max(1, Math.floor(base * share));
+    const amount = Math.max(1, Math.floor(base * share * (b.cheat?.xp ? 10 : 1)));
     ev.push({ t: 'xp', uid: m.uid, amount, text: nameOf(m) + ' erhält ' + amount + ' EP.' });
     for (const e of gainXp(m, amount, { night: b.night })) {
       if (e.type === 'levelup') ev.push({ t: 'levelup', uid: m.uid, level: e.level, hp: m.hp, max: maxHp(m), gains: e.gains, text: nameOf(m) + ' erreicht Level ' + e.level + '! ' + gainsText(e.gains) });
