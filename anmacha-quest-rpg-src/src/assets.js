@@ -27,6 +27,8 @@ export function load(path) {
       });
       const box = new THREE.Box3().setFromObject(g.scene);
       g.box = box;
+      // KayKit-Figuren: Bewegungen kommen aus den gemeinsamen Rig-Dateien
+      if (path.startsWith('kk/') && !path.startsWith('kk/Rig_') && !path.endsWith('.gltf')) return kkClips().then(c => { g.animations = c; return g; });
       return g;
     }).finally(() => { done++; onProgress && onProgress(done, pending); });
     cache.set(path, p);
@@ -34,15 +36,38 @@ export function load(path) {
   return cache.get(path);
 }
 export const loaded = (path) => cache.has(path);
+// Rig_Medium (KayKit, CC0): Clips unter den Namen, die Kampf und Karte erwarten
+const KK_ALIAS = { Idle_A: 'idle', Walking_A: 'walk', Running_A: 'run', Hit_A: 'hit', Hit_B: 'recievehit', Death_A: 'death', Throw: 'attack', Use_Item: 'spell1', Idle_B: 'idle_weapon', Interact: 'interact' };
+let kkPromise = null;
+function kkClips() {
+  if (!kkPromise) kkPromise = Promise.all([load('kk/Rig_Medium_General.glb'), load('kk/Rig_Medium_MovementBasic.glb')]).then(gs => {
+    const out = [];
+    for (const g of gs) for (const c of g.animations) if (KK_ALIAS[c.name]) { const k = c.clone(); k.name = KK_ALIAS[c.name]; out.push(k); }
+    return out;
+  });
+  return kkPromise;
+}
 
-export const HERO_MODEL = { andrew: 'Warrior', marco: 'Wizard', teresa: 'Cleric', rico: 'Ranger', andy: 'Monk' };
+// Helden und Stadtbewohner: KayKit Adventurers (CC0); kk:Name = models/kk/Name.glb
+export const HERO_MODEL = { andrew: 'kk:Knight', marco: 'kk:Mage', teresa: 'kk:Rogue', rico: 'kk:Ranger', andy: 'kk:Barbarian' };
 // Größen wie in der Godot-Fassung (Modell 3 m hoch × Faktor)
 export const HERO_SCALE = { andrew: 0.46, marco: 0.46, teresa: 0.46, rico: 0.50, andy: 0.54 };
-export const NPC_MODEL = { shop: ['Rogue', '#ffd8a0', 0.44], elder: ['Wizard', '#f0f0ff', 0.44], kid: ['Rogue', '#ffa0c0', 0.32], guard: ['Warrior', '#ff9a8a', 0.46],
-  inn: ['Cleric', '#ffe0b0', 0.44], smith: ['Monk', '#c8a080', 0.5], trader: ['Ranger', '#a0d0ff', 0.44], sage: ['Wizard', '#c0ffd0', 0.46], kid2: ['Cleric', '#ffd0f0', 0.32],
-  angler: ['Ranger', '#b0e8ff', 0.44], casino: ['Rogue', '#ff9ad8', 0.44], arena: ['Wizard', '#ffe08a', 0.46] };
-export const monsterPath = (d) => `mon_${d.model}.glb`;
-export const heroPath = (m) => `hero_${m}.glb`;
+export const NPC_MODEL = { shop: ['kk:Rogue_Hooded', '#ffd8a0', 0.44], elder: ['kk:Mage', '#b8c8ff', 0.44], kid: ['kk:Rogue', '#ffc0d0', 0.32], guard: ['kk:Knight', '#d8c0b0', 0.46],
+  inn: ['kk:Rogue', '#ffe8c0', 0.44], smith: ['kk:Barbarian', '#d0a080', 0.5], trader: ['kk:Ranger', '#b0d8ff', 0.44], sage: ['kk:Mage', '#c0ffd0', 0.46], kid2: ['kk:Rogue_Hooded', '#ffd0f0', 0.32],
+  angler: ['kk:Ranger', '#c0f0ff', 0.44], casino: ['kk:Rogue_Hooded', '#ffa0d8', 0.44], arena: ['kk:Mage', '#ffe08a', 0.46] };
+// Waffen je Held, aufsteigend nach Ausrüstungsstufe (models/weapons, KayKit Fantasy Weapons Bits, CC0)
+export const WEAPONS = { andrew: ['sword_A', 'sword_B', 'sword_C', 'sword_D', 'sword_E'], marco: ['staff_A', 'staff_B'], teresa: ['wand_A', 'staff_A'],
+  rico: ['bow_A_withString', 'bow_B_withString'], andy: ['hammer_A', 'hammer_B', 'hammer_C'] };
+// Hand für die Hauptwaffe und Zweitausrüstung in der anderen Hand (KayKit-Handslots)
+export const WEAPON_HAND = { rico: 'handslotl' };
+export const OFFHAND = { andrew: 'kk/shield_badge_color.gltf', andy: 'kk/shield_round_barbarian.gltf' };
+// Haltung: Richtung der Spitze in Figur-Koordinaten (+Z = Blickrichtung, +Y = oben) und Länge relativ zur Körpergröße
+export const WEAPON_GRIP = { andrew: { dir: [0.1, -0.45, 1], len: 0.55 }, marco: { dir: [0, 1, 0.12], len: 0.95 }, teresa: { dir: [0, 1, 0.25], len: 0.5 },
+  rico: { dir: [0, 1, 0.05], len: 0.62 }, andy: { dir: [0, 0.35, 1], len: 0.5 } };
+export const monsterPath = (d) => d.model.startsWith('kk:') ? `kk/${d.model.slice(3)}.glb` : `mon_${d.model}.glb`;
+export const heroPath = (m) => m.startsWith('kk:') ? `kk/${m.slice(3)}.glb` : `hero_${m}.glb`;
+// Skelett-Gegner tragen ihre Waffe
+export const MONSTER_WEAPON = { 'kk:Skeleton_Warrior': 'kk/Skeleton_Blade.gltf', 'kk:Skeleton_Minion': 'kk/Skeleton_Axe.gltf', 'kk:Skeleton_Rogue': 'kk/Skeleton_Blade.gltf', 'kk:Skeleton_Mage': 'kk/Skeleton_Staff.gltf' };
 
 // Figur: Modell normiert auf eine Höhe (Felder) mit eigener Animationssteuerung
 export function makeActor(gltf, height, tint) {

@@ -87,7 +87,7 @@ Orientierung: Beim Betreten stehst du unten links. Der Ausgang ist der Wirbel li
 
 | Reich | Empf. Stufe | Schlüssel-Truhe | Weitere Truhen | Gegner |
 |---|---|---|---|---|
-| Echogruft | 3 | links oben (obere Hälfte, linkes Drittel) | Mitte oben (Tränke), oben rechts von der Mitte (Münzen) | Moospanda, Wildeber, Höhlenyeti, Dornkaktus, Irrlicht, Grottenpinguin |
+| Echogruft | 3 | links oben (obere Hälfte, linkes Drittel) | Mitte oben (Tränke), oben rechts von der Mitte (Münzen) | Gruftknecht, Knochenschleicher, Höhlenyeti, Dornkaktus, Irrlicht, Gruftmagier |
 | Rosenhain | 8 | ganz unten rechts | Mitte (Tränke), oben links (Münzen) | Rosenkrabbe, Honigschleim, Sporenpilz, Dornbiene, Blütenhirsch, Feenküken |
 | Frostgrotte | 13 | links Mitte | rechts Mitte (Tränke), oben links (Münzen) | Frostgeist, Eiswurzler, Schneeyeti, Eisfledermaus, Frostrentier, Eiskobold |
 | Glutschlund | 18 | rechts der Mitte | oben Mitte (Tränke), unten rechts (Münzen) | Glutdämon, Lavazyklop, Aschenkrieger, Rußfledermaus, Flammenschädel, Magmakraken |
@@ -137,7 +137,7 @@ Faustregel: Die empfohlene Stufe sollte erreicht sein. Wer unterwegs viele Gegne
 
 ---
 
-*Credits (alle CC0): 3D-Modelle von Quaternius (Helden „RPG Characters“, „Cute Animated Monsters“, „Animated Monster Pack“, „Ultimate Textured Building Pack“) und Kenney (Fantasy Town Kit, Mini Dungeon, Mini Forest, Graveyard Kit). Technik: Three.js (WebGL).*
+*Credits (alle CC0): 3D-Modelle von Quaternius (Helden „RPG Characters“, „Cute Animated Monsters“, „Animated Monster Pack“, „Ultimate Textured Building Pack“) und Kenney (Fantasy Town Kit, Mini Dungeon, Mini Forest, Graveyard Kit), Kay Lousberg (KayKit Adventurers, Skeletons, Fantasy Weapons). Technik: Three.js (WebGL).*
 
 ## Dungeon-Rätsel und Werkzeuge
 

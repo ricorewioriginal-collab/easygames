@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "71da3bcab093",
- "generated": "2026-11-12T18:56:27+00:00",
- "commit": "5c80c09b71ae2a271276a002f20fd764e1bd9b0a",
+ "version": "e5882a8d1c49",
+ "generated": "2026-11-12T19:13:23+00:00",
+ "commit": "5658d9db7e6e047d7fab6bbfcaf50ae85092be8a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2343,8 +2343,8 @@
   },
   {
    "p": "anmacha-quest-rpg/anleitung.html",
-   "s": 17672,
-   "h": "2f7b257cb62d0f87cc266c214cfa12d0a7888ea788032a0536f1e0dcb618646a"
+   "s": 17743,
+   "h": "efd43718a61552ff8240e4e7b4d9d23bbdc21db6248aad013132fabd4b4619cb"
   },
   {
    "p": "anmacha-quest-rpg/assets/cinzel-latin-700-normal-C-gK7hA8.woff",
@@ -2367,14 +2367,14 @@
    "h": "d5d566551cd1e60b0572567c2ed5fd4c24a28d2ee9863cbb58d47bd03afe9d5f"
   },
   {
-   "p": "anmacha-quest-rpg/assets/index-B0Py75E9.js",
-   "s": 826298,
-   "h": "40ab602bd03b1d19ece91d484f00ddd0a74863c13361c4e6a50023925882683e"
-  },
-  {
    "p": "anmacha-quest-rpg/assets/index-CitjQBdG.css",
    "s": 417,
    "h": "950fb90df6cb3745e31e3f7b566090d8e47ffd84f24f3e6b9a0a3d89ab1ea926"
+  },
+  {
+   "p": "anmacha-quest-rpg/assets/index-CjJ7puqz.js",
+   "s": 828722,
+   "h": "e4d0706fdd0c09360b58b40a5f08f4accf11efc63cd493aa21bb0d55c4d02f4e"
   },
   {
    "p": "anmacha-quest-rpg/card.jpg",
@@ -2389,7 +2389,7 @@
   {
    "p": "anmacha-quest-rpg/index.html",
    "s": 21699,
-   "h": "4c147b13a0577fcbea7cde9628d9851e5f3fc27667eb69dfa805ff6eeb07cf94"
+   "h": "0d45b9239b6663b30ee6300a9df31e2bd1e4e1bf226439e3cc72974b498ed060"
   },
   {
    "p": "anmacha-quest-rpg/logo.png",
@@ -2550,6 +2550,141 @@
    "p": "anmacha-quest-rpg/models/hero_Wizard.glb",
    "s": 1558004,
    "h": "8a3a045a9b8fbd13777147a8326283a655771383e89feca485f2ac73013cf210"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Barbarian.glb",
+   "s": 386648,
+   "h": "d37824a1d6e8e8af57ef9ae4a87e9271c3986210fbc432fb44670749a577ccac"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Knight.glb",
+   "s": 341688,
+   "h": "e484370733824a0740683e7f6040aae0d20e5efd4107dde1175d6a2ad7e2f199"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Mage.glb",
+   "s": 352472,
+   "h": "1f7d891bde50b879c70965f155b7b765b166dc3f8518e5abb86c0002f191a26e"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Ranger.glb",
+   "s": 484712,
+   "h": "3a0b0166b9d61d58dcaaa739c3cc0538be46e00d2928dd5cb513d9a41770d2e9"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Rig_Medium_General.glb",
+   "s": 828240,
+   "h": "5f725c0f745f36078c7238968cd5c04843cbc6260689eb6e7f5e2bbd7ffdd7ad"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Rig_Medium_MovementBasic.glb",
+   "s": 689624,
+   "h": "11422afd50abf7e8c92ea107e2e0bc94abd38023d6d15f55ad580347efbfa29e"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Rogue.glb",
+   "s": 409188,
+   "h": "cae5d9b2f08d53f7b4ab2617d9f42f021c546eb10920455fdcd82a110867fae4"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Rogue_Hooded.glb",
+   "s": 381432,
+   "h": "e8f3233c6db190506fbef3ad855683e6cb8bd7350de637d923e14a08aef088dc"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Skeleton_Axe.bin",
+   "s": 25348,
+   "h": "f994f9e1b3297961a2b27120adb81ccc61ef7a901586b584fa53fdba8b962cc7"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Skeleton_Axe.gltf",
+   "s": 3045,
+   "h": "44c8b65942cbb573c99dc14c2a188fad8c47e29ad9764d27b47e6f57bb7e4ebd"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Skeleton_Blade.bin",
+   "s": 20056,
+   "h": "ccf4f6642130d11650400fa649669ccdb784280eef235fac3a12a197cbc7debe"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Skeleton_Blade.gltf",
+   "s": 3047,
+   "h": "682a1df2eecb93dea35de628d6b93ca40d1b83586422356f3c1956741f2abf76"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Skeleton_Mage.glb",
+   "s": 265676,
+   "h": "aee903d0febd151dbc49a4784ad4135862b20c1b025bf433b98a08d52e5f7849"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Skeleton_Minion.glb",
+   "s": 318520,
+   "h": "1fadbf1bc66fd7ce008eecd0ffccc8f8089e1c2887813559ca553680a738fece"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Skeleton_Rogue.glb",
+   "s": 331180,
+   "h": "d5b8f074a78a9972af0966014905ea1df2e71d2c3495d37a211980e6343ee774"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Skeleton_Shield_Small_A.bin",
+   "s": 21688,
+   "h": "0a56f31d33ec36483163aa680279884b1b488cd634fe73541089d7032fac7962"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Skeleton_Shield_Small_A.gltf",
+   "s": 3069,
+   "h": "9d1d5acb0d945d36aebc57ffb9b64ad016967973e4353a632246e5c7e07346e2"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Skeleton_Staff.bin",
+   "s": 69244,
+   "h": "2b91a59316cea919b2a8b3d94ab85e3b5faa9fdb607a9ab633a6bb6d1e6bbf2f"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Skeleton_Staff.gltf",
+   "s": 3057,
+   "h": "6bb554fef0889dc9e1a69a71ddae793a772fc18eea059ded61be4f8157fd2f04"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/Skeleton_Warrior.glb",
+   "s": 367484,
+   "h": "992d5cfd6beb5565c50f742587d492f2a2cfcdfb3ffe4435aa16461c6d0e54be"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/barbarian_texture.png",
+   "s": 14424,
+   "h": "f11434d3e5e4df929dacd2c69d15734effb82babf8176a80bb040d2007f5f882"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/knight_texture.png",
+   "s": 12914,
+   "h": "028db4d1cd8b3471e6ba21686515abd4e36ae582f8b314b71ad2ab1fb5453b12"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/shield_badge_color.bin",
+   "s": 10500,
+   "h": "54ed559b5b44b1d3fa0af1abb2d97bc72793788148bb9c2af40b5e037904adc1"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/shield_badge_color.gltf",
+   "s": 3090,
+   "h": "b59019f054055c5c1356a8c75a93a064f334180183112ab374526000ea6c9f2a"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/shield_round_barbarian.bin",
+   "s": 11752,
+   "h": "4e948103979c35a8b4cfae14bd875b484ae23da2dc2bfe98207ad8b69a640fef"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/shield_round_barbarian.gltf",
+   "s": 3114,
+   "h": "eebdae322d2611854c4fa6befb29d9a32e0367c495b817212f8431f02ab46a1e"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/kk/skeleton_texture.png",
+   "s": 17037,
+   "h": "15741a25c53e04fa9bf3beac3bc0de442359404b1ff9be863b892cb551ad3657"
   },
   {
    "p": "anmacha-quest-rpg/models/mon_Alien.glb",
@@ -2715,6 +2850,141 @@
    "p": "anmacha-quest-rpg/models/town/wall-block.glb",
    "s": 8532,
    "h": "daa35e5b32d7941f3dc61f64f6f9630b70441478d652989cd6c02a908b84af86"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/bow_A_withString.bin",
+   "s": 48272,
+   "h": "9b37ca7c90f9e621bef63b7fe0fc5bb9aebc2862248ccfb498b0c0faab1b8e48"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/bow_A_withString.gltf",
+   "s": 4312,
+   "h": "a01fc3f9412b414efa62aed49e3556bb270d6dce11011fafded55f6af75bb152"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/bow_B_withString.bin",
+   "s": 173472,
+   "h": "9fd233703aba359ef255037554af62b7c6920fd5565c7378ba753d5416052bcd"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/bow_B_withString.gltf",
+   "s": 4306,
+   "h": "7c6d4d8e5b568d022f3fe14dbe048fa4862f17d8055ef4bf1a28c83de4ba97c8"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/hammer_A.bin",
+   "s": 23240,
+   "h": "da08cee13731cc62eebb987c709ec7220a5d5ee95076ba89b5206d3d68a80cd1"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/hammer_A.gltf",
+   "s": 3042,
+   "h": "499544e3488326e5d51851c05a1fd77b515fe10e6c00ff54150e17feabd3b5ea"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/hammer_B.bin",
+   "s": 28976,
+   "h": "3c60075409aad2202fb33709bc872773f04af0d987eb8aca888186109c5def6b"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/hammer_B.gltf",
+   "s": 3043,
+   "h": "90ed7353fefc6b63d8f3dac157f966205b7a5ffbeb1556a230dd6e69f04c8d82"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/hammer_C.bin",
+   "s": 32400,
+   "h": "f41f00fccda5d8aef905dc8828e2a5ccccc4971056fe1d92fe80e1325aff9fa3"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/hammer_C.gltf",
+   "s": 3045,
+   "h": "238cddce1fededc0833a7b4b7fd08e41013893728afd5df05ee8c4c9352cb439"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/staff_A.bin",
+   "s": 21016,
+   "h": "2c08abd861d4a57a85b058e1f0d5b96054bb43d1a993dd6669d3118ebbe1ac2b"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/staff_A.gltf",
+   "s": 3040,
+   "h": "f369dd0b26fb9cb922141e8ac2772b4bf99a18df04e2d8848e9679f8b35fbc80"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/staff_B.bin",
+   "s": 32560,
+   "h": "0d8db36107969448593704ea70b4ee59b4e9ce6ff4390eb3ffde2f6db1f7efd9"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/staff_B.gltf",
+   "s": 3041,
+   "h": "15f6015928ddb4aba4d523606571e1648942ad81c1e8ea239f1c87e3aac93833"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/sword_A.bin",
+   "s": 13496,
+   "h": "5b3d293758c6a33d792d7c2a055c71d84848e77a1c9d0f203508cc9955db4aeb"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/sword_A.gltf",
+   "s": 3035,
+   "h": "137cc318e9f36339a088524243071187da8adff3b5735f1d5330ed1577f54851"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/sword_B.bin",
+   "s": 20232,
+   "h": "f076069f94986ec221cb46c71a16bc966be47ff35544db8c7f7b6623fdaf2c64"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/sword_B.gltf",
+   "s": 3040,
+   "h": "265840768f36afc22fc75e7a5a8c98fd33d199b2b4a6b76653fd2bd37fb8093f"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/sword_C.bin",
+   "s": 16976,
+   "h": "d47c90f6991c4d8bcd551afc3903d2f7404b93b0ebfd469076b6f696e3a8b6ca"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/sword_C.gltf",
+   "s": 3038,
+   "h": "f18406c1792f90ba214bd836d88be06b498252f6e937a3bbd5e36a0617650573"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/sword_D.bin",
+   "s": 25980,
+   "h": "41d025afce9fe509b1244e9e136a48af6a675ca3cb80a3450328af95c59155e4"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/sword_D.gltf",
+   "s": 3038,
+   "h": "3a475e38d3f6a52da3829b4bc78cc8a67c3945408b188f7e9092ab5c53a740ea"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/sword_E.bin",
+   "s": 29872,
+   "h": "01db950a538d33ae2a0bcc78ffe48a03236542b9c02c0de526eba3be1f8a590a"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/sword_E.gltf",
+   "s": 3036,
+   "h": "94fa216bac0984dac29cb7d0a4ebea4b1981c131624d0fc9ecec142b230ee998"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/wand_A.bin",
+   "s": 19644,
+   "h": "ec6c0221b6fc29a4ab6874d6a66051539ff2a8cf59f7adc334ea15e2a3ace45e"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/wand_A.gltf",
+   "s": 3036,
+   "h": "f914bb6a9a5d581e5f46da466a9e6cb925727997bbe0924e2fcc41e7db68f0d2"
+  },
+  {
+   "p": "anmacha-quest-rpg/models/weapons/weapons_bits_texture.png",
+   "s": 17508,
+   "h": "c153429a49928594b00b53c07c4ab3d6352087b7f5df6c272d4aedfdb99a40be"
   },
   {
    "p": "anmacha-quest-rpg/sw.js",
@@ -5898,8 +6168,8 @@
   },
   {
    "p": "guides/anmacha-quest-rpg.json",
-   "s": 20733,
-   "h": "3b3b43dc78410eea05ae33eaf50201a904cce30a9be8d5014af7b4b43f8bcadc"
+   "s": 20741,
+   "h": "3cb8a599c3f98ab326b846711a476dbe2d0760d82231a16d1af3c9862781e0ea"
   },
   {
    "p": "guides/anmacha-quiz.json",
@@ -8873,8 +9143,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 258360,
-   "h": "a67c17d999f7ba746b8a81d823a73eed1a84d6de6063478668135b3a38e6316b"
+   "s": 258361,
+   "h": "f64b2ac3f2be623b63177306a484c2ab23b44fb85cb659d8016d1c5b8b6c8fc6"
   },
   {
    "p": "taschi/assets/models/alien.glb",
