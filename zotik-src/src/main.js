@@ -85,8 +85,8 @@ const TX=createTex({T,renderer});
 let _dg=null;const DG=()=>_dg||(_dg=createDungeon({T,TX,M,mk,G,glow,scene}));
 /* Bodentextur je Kapitelwelt (CC0, public/tex) */
 const WGTEX={2:'forest',3:'cobble',4:'sand',5:'sand',6:'snow',7:'mud',8:'cobble',9:'grass',10:'marble',11:'rock'};
-const PR0=Math.min(devicePixelRatio||1,2);renderer.setPixelRatio(PR0);
-renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
+const PR0=Math.min(devicePixelRatio||1,TOUCH?1.75:2);renderer.setPixelRatio(PR0);
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=TOUCH?T.PCFShadowMap:T.PCFSoftShadowMap;
 renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
 const scene=new T.Scene();scene.environment=makeEnv(renderer);
 const FOG=new T.Color(0x2a3a86);
@@ -94,7 +94,7 @@ scene.fog=new T.FogExp2(FOG,.0037);
 const camera=new T.PerspectiveCamera(58,1,.2,1800);
 const post=createPost(renderer,scene,camera,{touch:TOUCH});if(TOUCH){post.setLevel(2);setFurLevel(0)}
 /* Automatische Qualität: bricht die Bildrate ein, sinken Auflösung und Schatten-Takt schrittweise; läuft es wieder rund, geht es zurück. */
-const QPR=TOUCH?[1,.9,.8,.7]:[1,.8,.65,.5],QSH=[1,2,3,3];let qLv=0,qEma=16.7,qBad=0,qGood=0,qUp=20,qLastUp=-99,shN=0,qDowns=0;
+const QPR=TOUCH?[1,.85,.72,.6]:[1,.8,.65,.5],QSH=[1,2,3,3];let qLv=0,qEma=16.7,qBad=0,qGood=0,qUp=20,qLastUp=-99,shN=0,qDowns=0;
 renderer.shadowMap.autoUpdate=false;
 function setQ(l){qLv=l;renderer.setPixelRatio(PR0*QPR[l]);renderer.setSize(innerWidth,innerHeight,false);post.setLevel(TOUCH?2:Math.min(l,2));post.resize();setFurLevel(TOUCH?0:[1,.6,.34,0][l]);const sh=l<3;if(moonL.castShadow!==sh)moonL.castShadow=sh}
 function qualityTick(rdt){
@@ -362,7 +362,7 @@ function worldMark(n){WM.run=null;const d=WMK[n];if(!d||!WLD||WLD.cave||WLD.stor
     case 10:{for(const s of [-1,1])A(mk(G.cyl0,M(0xfff0c0,{m:.7,r:.3}),s*2.4,3,0,.3,6,.3));const top=A(mk(G.tor,M(0xfff0c0,{m:.7,r:.3}),0,6,0,2.4,1.2,.3));top.rotation.x=0;
       for(let i=0;i<7;i++)A(mk(G.cyl0,M(c0,{e:c0,ei:2.2,t:.8}),-1.8+i*.6,3,0,.03,5.4-Math.abs(i-3)*.4,.03,false));break}
   }
-  g.add(glow(c0,10,0,3,0,.35));const L=new T.PointLight(c0,1,22,1.6);L.position.set(0,4,0);g.add(L);scene.add(g);addCol(x,z,2.2);
+  g.add(glow(c0,10,0,3,0,.35));scene.add(g);addCol(x,z,2.2);
   const bells=g.children.filter(m=>m.userData&&m.userData.bob!==undefined);if(bells.length)animObjs.push({fn(t){for(const b of bells){b.position.y=4+b.userData.bob*1.6+Math.sin(t*1.3+b.userData.bob)*.25;b.rotation.z=Math.sin(t*1.7+b.userData.bob)*.2}}});
   INT.push({x,z:z+3.2,name:d[0]+' '+d[1],pr:'Prüfung',rad:2.6,vis:()=>WLD&&WLD.n===n&&!WLD.cave,talk(){const first=!S.fl['wm'+n];
     say([[d[1],d[2]],['Zotik',first?'Eine Prüfung in drei Runden. Wer sie besteht, bekommt den Schatz des Wahrzeichens.':'Noch eine Runde? Splitter gibt es immer.']],()=>wmStart(n))}})}
@@ -638,7 +638,7 @@ function makeVillager(o){
     if(hs===4)for(let i=0;i<5;i++){const c=mk(G.cone,HR,(i-2)*.09,.25,-.02,.06,.16,.06);c.rotation.z=(i-2)*-.3;head.add(c)}}  // Stachelhaare
   if(o.hat){head.add(mk(G.cyl,CL2,0,.2,0,.32,.03,.32));head.add(mk(G.cone,CL2,0,.36,0,.2,.3,.2))}
   if(o.pack){const pk=mk(G.box,M(0x7a5a30),0,.95,-.28,.4,.5,.22);body.add(pk)}
-  root.scale.setScalar(o.sc||1);mergeChar(P);anime(root);return AF.dress(P,o.look||AF.villagerLook(o),{cast:!!o.look})}
+  root.scale.setScalar(o.sc||1);mergeChar(P);anime(root);return o.look?AF.dress(P,o.look,{cast:1}):P}
 
 function makeFelli(){
   const root=new T.Group(),b=new T.Group();root.add(b);
@@ -1602,7 +1602,7 @@ function travel(n){
   if(n>=MW_FIRST||curCh>=MW_FIRST){sfx('portal');FXH.pillar(pl.x,pl.y,pl.z,0xe0b0ff,1.4,9,1,pl)}else sfx('quest');$('fade').style.opacity=1;
   setTimeout(arrive,650);
   function arrive(){
-    saveGame(true);switchWorld(n);
+    saveGame(true);switchWorld(n);try{renderer.compile(scene,camera)}catch(e){}   /* Shader jetzt (hinter der Blende) übersetzen statt ruckelnd beim ersten Hinsehen */
     S.ch=n;pl.x=0;pl.z=9;pl.y=hgt(0,9);pl.face=Math.PI;pl.vx=pl.vz=0;pl.kx=pl.kz=0;camYaw=pl.face+Math.PI;camTarget.set(pl.x,pl.y+1.5,pl.z);camPos.set(pl.x,pl.y+4,pl.z+8);fel.x=pl.x+2;fel.z=pl.z+2;
     refreshQuest();updateHud();saveGame(true);
     placeParty();extArrive(n);if(X.landSwoop){X.landSwoop=0;if(n<MW_FIRST)setCam({from:{p:[pl.x+14,pl.y+28,pl.z+22],l:[pl.x,pl.y+2,pl.z-6]},to:'player',d:3})}
