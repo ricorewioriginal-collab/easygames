@@ -17,7 +17,7 @@ const DETAIL_GLSL = {
   noise: 'float dtl = texture2D(tDetail, vWorldPosD.xz * uDetailScale).r * 0.6 + texture2D(tDetail, vWorldPosD.xz * uDetailScale * 0.23 + vWorldPosD.y * 0.05).r * 0.4;\ndiffuseColor.rgb *= mix(1.0, dtl * 1.28, uDetailStrength);',
   terrain: `vec3 pc = diffuseColor.rgb; float pmx = max(pc.r, max(pc.g, pc.b)), pmn = min(pc.r, min(pc.g, pc.b));
 float wG = smoothstep(0.0, 0.05, pc.g - max(pc.r, pc.b));
-float wP = (1.0 - wG) * (1.0 - smoothstep(0.1, 0.24, (pmx - pmn) / max(pmx, 0.02)));
+float wP = (1.0 - wG) * (1.0 - smoothstep(0.1, 0.24, (pmx - pmn) / max(pmx, 0.02))) * (1.0 - smoothstep(0.8, 0.88, pmx));   // Schnee ist kein Pflaster
 float wD = max(0.0, 1.0 - wG - wP);
 vec2 wq = vWorldPosD.xz;
 float ph = texture2D(tPhoto0, wq * 0.42).r * wG + texture2D(tPhoto1, wq * 0.3).r * wD + texture2D(tPhoto2, wq * 0.36).r * wP;
@@ -167,3 +167,42 @@ export function glowMaterial(color, opacity = 0.8) {
 }
 
 export function disposeSharedMaterials() { for (const m of cache.values()) m.dispose(); cache.clear(); }
+
+// Moderner Konsolen-Toon für Taschis und Figuren: weiche 4-stufige Schattierung,
+// leicht warme Schatten, heller Randlicht-Saum und ein dezenter Glanzpunkt.
+let softGradient = null;
+export function softToonGradient() {
+  if (softGradient) return softGradient;
+  const data = new Uint8Array([118, 112, 122, 255, 172, 168, 174, 255, 222, 220, 222, 255, 255, 255, 255, 255]);
+  softGradient = new THREE.DataTexture(data, 4, 1, THREE.RGBAFormat);
+  softGradient.magFilter = softGradient.minFilter = THREE.NearestFilter; softGradient.generateMipmaps = false; softGradient.needsUpdate = true;
+  softGradient.userData = { shared: true };
+  return softGradient;
+}
+export function modernToon(m, { rim = 0.26, sheen = 0.14 } = {}) {
+  m.gradientMap = softToonGradient();
+  const prev = m.onBeforeCompile;
+  m.onBeforeCompile = (sh, r) => {
+    prev?.call(m, sh, r);
+    sh.fragmentShader = sh.fragmentShader.replace('#include <tonemapping_fragment>', `{
+      vec3 mvN = normalize(normal), mvV = normalize(vViewPosition);
+      float mRim = 1.0 - clamp(dot(mvN, mvV), 0.0, 1.0);
+      gl_FragColor.rgb += vec3(1.0, 0.97, 0.9) * smoothstep(0.55, 1.0, mRim) * ${rim.toFixed(3)};
+      float mSpec = pow(max(dot(mvN, normalize(normalize(vec3(0.35, 0.75, 0.55)) + mvV)), 0.0), 48.0);
+      gl_FragColor.rgb += vec3(1.0) * smoothstep(0.35, 0.9, mSpec) * ${sheen.toFixed(3)};
+    }
+    #include <tonemapping_fragment>`);
+  };
+  m.customProgramCacheKey = () => 'modernToon' + rim + sheen + (m.skinning ? 's' : '') + (m.vertexColors ? 'v' : '');
+  return m;
+}
+export function characterMaterial() {
+  return shared('charModern', () => modernToon(new THREE.MeshToonMaterial({ vertexColors: true }), { rim: 0.2, sheen: 0.07 }));
+}
+// Einfarbiger Boden mit denselben Fototexturen wie das Gelände (z. B. Kampfplatz)
+export function groundMaterial(color) {
+  const m = new THREE.MeshLambertMaterial({ color });
+  m.onBeforeCompile = (s) => addDetail(s, 0.45, 0.62, 'terrain');
+  m.customProgramCacheKey = () => 'terrain';
+  return m;
+}

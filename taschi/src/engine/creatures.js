@@ -7,7 +7,7 @@ import { THREE as T3 } from './three.js';
 import { Builder, matrix, lumpy, fineThree, fineCapsule, fineLathe } from './geometry.js';
 // feinere Rundungen (siehe geometry.js › fineThree)
 const THREE = fineThree(T3), capsule = fineCapsule, lathe = fineLathe;
-import { outlineMaterial, glowMaterial } from './materials.js';
+import { outlineMaterial, glowMaterial, modernToon } from './materials.js';
 import { toonGradient } from './textures.js';
 import { SPECIES } from '../data/species.js';
 import { TYPES } from '../data/types.js';
@@ -54,8 +54,12 @@ function signature(id, sp, look) {
   return { colors: [main, acc, belly], F };
 }
 
-// Moderner Toon-Look: weichere Abstufung und ein heller Randlicht-Saum, der die Form vom Hintergrund abhebt
+// Moderner Toon-Look (materials.js › modernToon): weiche Abstufung, Randlicht, dezenter Glanz
 function creatureMaterial() {
+  return modernToon(new THREE.MeshToonMaterial({ vertexColors: true, emissive: 0x000000 }), { rim: 0.28, sheen: 0.16 });
+}
+// Zotik bleibt beim bisherigen Look
+function zotikMaterial() {
   const m = new THREE.MeshToonMaterial({ vertexColors: true, gradientMap: creatureGradient(), emissive: 0x000000 });
   m.onBeforeCompile = (sh) => {
     sh.fragmentShader = sh.fragmentShader.replace('#include <tonemapping_fragment>', `{
@@ -131,7 +135,7 @@ export function createCreature(id, { outline = true, shiny = false } = {}) {
   const face = D.int(0, 3); // 0 muzzle, 1 small mouth, 2 open smile, 3 snout
   const mh = {}; C(main).getHSL(mh);
   // no rosy cheeks on yellow/electric Taschis – keeps every design clearly original
-  const yellowish = mh.h > 0.07 && mh.h < 0.21, cheeks = D.next() < 0.45 && !yellowish && sp.type !== 'elektro', cheekCol = D.next() < 0.5 ? acc : mix(main, 0xff6a7a, 0.55), irisCol = [0x1e2638, 0x1e2638, 0x3a2414, 0x14304a, 0x2a1a40][D.int(0, 4)];
+  const yellowish = mh.h > 0.07 && mh.h < 0.21, cheeks = D.next() < 0.45 && !yellowish && sp.type !== 'elektro', cheekCol = D.next() < 0.5 ? acc : mix(main, 0xff6a7a, 0.55), irisCol = [0x2e4a8a, 0x3a3a5a, 0x7a4a22, 0x1e6a8a, 0x5a3a9a][D.int(0, 4)];
   const plan = look.plan;
   let headY = 1.2, headZ = 0.15, headR = 0.42 * P.head, bodyTop = 1;
   const B = new Builder();
@@ -330,6 +334,11 @@ export function createCreature(id, { outline = true, shiny = false } = {}) {
   for (const sx of [-1, 1]) {
     E.add(new THREE.SphereGeometry(er, 12, 10), 0xffffff, matrix(sx * eyeX * hs[0], 0, 0, 0, 0, 0, 0.9, eyeStyle === 'sleepy' ? 0.55 : 1.15, 0.5));
     E.add(new THREE.SphereGeometry(er * 0.72, 10, 8), F.glow ? mix(acc, 0x101828, 0.4) : irisCol, matrix(sx * eyeX * hs[0], -er * 0.05, er * 0.25, 0, 0, eyeStyle === 'sharp' ? sx * 0.5 : 0, eyeStyle === 'sharp' ? 0.7 : 0.9, eyeStyle === 'sleepy' ? 0.5 : 1.05, 0.5));
+    // heller Kern unten in der Iris und eine Pupille: wirkt lebendiger, wie bei modernen Monster-Spielen
+    if (!F.glow && eyeStyle !== 'sleepy') {
+      E.add(new THREE.SphereGeometry(er * 0.42, 10, 8), shade(irisCol, 1.7), matrix(sx * eyeX * hs[0], -er * 0.32, er * 0.36, 0, 0, 0, 0.9, 0.7, 0.4));
+      E.add(new THREE.SphereGeometry(er * 0.36, 10, 8), 0x0e121c, matrix(sx * eyeX * hs[0], -er * 0.02, er * 0.42, 0, 0, eyeStyle === 'sharp' ? sx * 0.5 : 0, eyeStyle === 'sharp' ? 0.55 : 0.85, 1.1, 0.4));
+    }
     E.add(new THREE.SphereGeometry(er * 0.28, 6, 4), 0xffffff, matrix(sx * eyeX * hs[0] + er * 0.25, er * 0.3, er * 0.5));
     E.add(new THREE.SphereGeometry(er * 0.12, 5, 3), 0xffffff, matrix(sx * eyeX * hs[0] - er * 0.22, -er * 0.28, er * 0.5));
     if (eyeStyle === 'sharp') E.add(new THREE.BoxGeometry(er * 2, er * 0.25, er * 0.3), shade(main, 0.6), matrix(sx * eyeX * hs[0], er * 0.95, er * 0.2, 0, 0, sx * -0.4));
@@ -387,7 +396,7 @@ export function createCreature(id, { outline = true, shiny = false } = {}) {
 
 // Zotiks Klon: gleiches Aussehen wie der Held, aber als Taschi (Creature-Animationen: Laufen, Angriff, Treffer, Ohnmacht …)
 function createZotikCreature(sp, outline) {
-  const mat = creatureMaterial(), meshes = [];
+  const mat = zotikMaterial(), meshes = [];
   const root = new THREE.Group(); root.name = 'creature:zotik';
   const body = new THREE.Group(); root.add(body);
   const z = buildZotikRig((b, parent) => {
