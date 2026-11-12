@@ -26,6 +26,21 @@ try {
   await frames(20);
   await page.screenshot({ path: `${dir}/trainer-lineup.png`, timeout: 90000 });
   await page.evaluate(() => window.__line.forEach(c => c.root.parent.remove(c.root)));
+  // Stadtbewohner und Story-Figuren im selben Stil
+  await page.evaluate(async () => {
+    const { createCharacter, lookForRole } = await import('./src/engine/characters.js');
+    const w = window.__taschi.world, z0 = 30;
+    const roles = [['kind', 'Lio'], ['forscher', 'Forscherin Ida'], ['haendler', 'Herr Bode'], ['nurse', 'Schwester Ana'], ['reisender', 'Reisender Ole'], ['handwerker', 'Handwerker Jo'], ['grunt', 'Rüpel'], ['varga', 'Varga']];
+    window.__line = roles.map(([r, n], i) => {
+      const ch = createCharacter(lookForRole(r, n), { outline: true }), x = -5.6 + i * 1.6;
+      ch.root.position.set(x, w.current.height(x, z0), z0); w.scene.add(ch.root); return ch;
+    });
+  });
+  await page.waitForFunction(() => window.__line.every(c => c.mixer), null, { timeout: 120000 });
+  for (let i = 0; i < 20; i++) await tick();
+  await frames(20);
+  await page.screenshot({ path: `${dir}/bewohner-lineup.png`, timeout: 90000 });
+  await page.evaluate(() => window.__line.forEach(c => c.root.parent.remove(c.root)));
   // Charakter-Editor: Trainer-Stil mit Männlich/Weiblich/Divers
   await page.evaluate(async () => { const { creatorScreen } = await import('./src/ui/screens.js'); window.__res = creatorScreen(window.__taschi, { mode: 'new' }).then(r => (window.__done = r)); });
   await page.waitForSelector('#creatorview canvas', { timeout: 30000 });
