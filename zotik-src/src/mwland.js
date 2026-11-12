@@ -307,6 +307,24 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       b.ico(-32, -.4, -52, 4, 1.6, 4, 0x4a7a3a); K.tree(-32, -52, .7, 0x5a4030, 0x5a8a3a, { fruit: 0xd84a2a, n: 2 }); A.mist(-32, -50, 9);
       // Merlins Steinkreis: Trilithen
       for (let i = 0; i < 9; i++) { const a = i / 9 * 6.283, x = -30 + Math.sin(a) * 10, z = -10 + Math.cos(a) * 10; if (Math.cos(a) > .9) continue; b.box(x, 0, z, 1.4, 3.6, .9, 0x8a8a8e, { ry: a, solid: 1 }); if (i % 2 === 0) b.box(x + Math.cos(a) * 1.1, 3.6, z - Math.sin(a) * 1.1, 3.2, .7, 1, 0x8a8a8e, { ry: a }); }
+      // Michaelsberg: Felskuppe mit Riesenhöhle, Knochen und Feuerstelle
+      K.cliff([[90, -20, 7, 9], [86, -4, 5, 6], [92, -10, 4, 11], [70, -26, 4, 5], [84, -30, 5, 7]], 0x7a746a);
+      b.ico(88, 0, -12, 3.2, 3.6, 2, 0x1a1612, { cast: false }); for (let i = 0; i < 6; i++) b.box(72 + (i % 3) * 2.2, .1, -8 - (i > 2 ? 3 : 0), 1.4, .22, .22, 0xe8e0c8, { ry: i, cast: false });
+      for (let i = 0; i < 6; i++) b.box(78 + Math.cos(i) * 1.1, 0, -16 + Math.sin(i) * 1.1, .4, .4, .4, 0x5a5a5e); b.glow(0xff8a30, 5, 78, 1, -16, .9); A.fire(78, -16, 1);
+      // Berg Badon: Sachsenlager mit Palisade, dunklen Zelten und Bannern; gegenüber Artus' Banner
+      K.fence(-18, 60, 18, 60, 0x4a3420); K.fence(-18, 60, -18, 44, 0x4a3420); K.fence(18, 60, 18, 44, 0x4a3420);
+      for (const [x, z, c] of [[-10, 56, 0x5a4a3a], [0, 58, 0x3a3a2e], [10, 56, 0x5a4a3a]]) K.tent(x, z, 2.6, 3, c, { flag: 0xd8d0b0 });
+      for (const x of [-12, 12]) { b.cyl(x, 0, 36, .07, 4.6, 0x5a4030, { lo: 1 }); const f = b.box(x + .55, 4, 36, 1.1, 1.4, .04, 0x3a5aa8, { cast: false }); A.sway(f, x); b.sph(x + .55, 4, 36.03, .3, .3, .02, 0xf0f0f0, { cast: false }); }
+      // Brocéliande: alte Eichen, Merlins Weißdorn und der Felsen der Nimue
+      for (let i = 0; i < 9; i++) { const a = i * .7, r = 7 + (i % 3) * 3; K.tree(-76 + Math.cos(a) * r, -84 + Math.sin(a) * r, 1.15 + (i % 2) * .3, 0x3a2a1a, 0x2a4a2a, { n: 4 }); }
+      b.ico(-76, 1.4, -84, 2.6, 2.8, 2.2, 0x6a6a72, { solid: 1, tex: 'rock' }); K.tree(-73, -82, .7, 0x6a5a4a, 0xe8e0f0, { n: 3 }); b.glow(0xb8a0ff, 4, -76, 2.6, -84, .8); A.mist(-76, -84, 12);
+      // Grüne Kapelle: bemooster Hügel mit Höhlenmund, Axt im Boden
+      b.ico(-84, 0, -28, 7, 4.2, 6, 0x3a6a2a, { solid: 1, tex: 'grass' }); b.ico(-80, .6, -23.5, 1.8, 2, .6, 0x14180e, { cast: false });
+      b.cyl(-76, 0, -22, .07, 2, 0x5a4030, { lo: 1 }); b.box(-75.8, 1.9, -22, .9, .6, .08, 0x2a6a3a, { mat: { m: .8, r: .3 } });
+      // Gralskapelle: kleine Kapelle mit leuchtendem Kelch
+      b.box(72, 0, -96, 7, 5.4, 8, 0xc8c0b0, { solid: 1 }); K.tower(72, -100, 1.4, 9, 0xc8c0b0, 0x8a6a3a, 3.4);
+      for (let i = 0; i < 3; i++) b.box(70 + i * 2, 0, -91.9, 1.2, 3 + (i === 1) * .8, .1, 0x3a2a1a, { cast: false });
+      b.box(72, 0, -88, 1.6, 1, .9, 0xd8d0c0); b.cyl(72, 1, -88, .25, .5, 0xffd860, { mat: { m: .9, r: .2, e: 0xffb020, ei: 1.6 } }); b.glow(0xfff0b0, 3, 72, 2, -88, .7);
     }
   };
   return { LAND, kit };
