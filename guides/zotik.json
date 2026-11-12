@@ -79,7 +79,9 @@
     "Fällst du, erwachst du im Dorf bzw. am Brunnen und verlierst 10 % deiner Rissplitter. Ein Boss erholt sich dann wieder.",
     "🛡️ Block: B halten (Handy: Ausweichen-Taste halten) senkt den Schaden um 70 %, kostet aber 2 Mana pro Treffer.",
     "🌪️ Elementreaktionen: Zwei verschiedene Elemente kurz nacheinander auf denselben Gegner lösen eine Reaktion aus (Feuer + Natur = Aschebrand, Licht + Natur = Sonnenblüte, Feuer + Licht = Sternenglut). In der Rissform löst jedes Element eine Rissreaktion aus.",
-    "⏱️ Timeline: Die Leiste oben zeigt, welcher Gegner als Nächstes angreift (in Sekunden, „!“ = jetzt)."
+    "⏱️ Timeline: Die Leiste oben zeigt, welcher Gegner als Nächstes angreift (in Sekunden, „!“ = jetzt).",
+    "🗡️ Hiebe wie echte Schwertkunst: Zotik holt aus, schlägt mit Ausfallschritt und Hüftdrehung zu und fängt den Schwung wieder ab. Die Klinge zieht eine Lichtspur, Treffer blitzen auf und stoppen kurz (Trefferstopp), besiegte Gegner hinterlassen ein Seelenlicht.",
+    "🔊 Klänge: Schwerthiebe zischen, schwere Hiebe klingen dumpfer, Treffer und kritische Treffer klingen verschieden, jede Zauber-Art (Natur, Eis, Blitz, Licht) hat ihren eigenen Klang. Zauber zeichnen einen Runenkreis, Heilung einen grünen Kreis, ein Stufenaufstieg eine goldene Lichtsäule, Truhen ein Glitzern."
    ]
   },
   {
@@ -129,6 +131,17 @@
     "🌌 Lebensentscheidung: Nach Kapitel 5, mit Lyra-Bindung ab 40 und drei Gesprächen möchte Lyra am Feuer unter dem Sternenhimmel reden (sprich sie im Camp an). Ein Versprechen macht ihren Teamangriff stärker, „beste Freunde“ lässt sie öfter heilen.",
     "👁️ Die Vier Gesichter des Risses: Vexa (Furcht), Korrod (Zerfall), Mirrel (Täuschung) und Ashen (Leere) begegnen dir in Elaris, Solmera, Frosthain und Noctaris. Gegen Vexa kannst du beim ersten Mal nicht gewinnen – das Spiel geht danach mit einer Szene weiter, nicht mit Game Over. In Astralis und Elyndra stellst du dich ihnen am „Riss der Gesichter“ wirklich.",
     "🎵 Leitmotive: Jeder Gefährte und jedes Gesicht des Risses hat eine eigene kurze Melodie (bei Gesprächen, Kapiteln, Teamangriffen und Auftritten)."
+   ]
+  },
+  {
+   "t": "Märchenwelten (wie in Kingdom Hearts)",
+   "list": [
+    "📖 Neben dem Weltentor in Lunaris steht das rosa-goldene Märchentor. Lunaris ist die Hauptwelt: Jede Märchenwelt erreichst du nur von hier, und zurück geht es immer über das Sternentor am Ankunftsplatz der Märchenwelt nach Lunaris. Auch im Reise-Menü stehen die Märchenwelten (Reisen nur, solange du in Lunaris bist).",
+    "🌍 Sieben Welten nach gemeinfreien Vorlagen, jede mit eigener Landschaft, eigenem Wahrzeichen und eigenen Figuren: 🍎 Der Spiegelwald (Schneewittchen, Brüder Grimm), 🐯 Dschungel von Seeonee (Das Dschungelbuch, Rudyard Kipling), 🐚 Das Meerkönigreich (Die kleine Meerjungfrau, H. C. Andersen), 🔔 Notre-Dame von Paris (Der Glöckner von Notre-Dame, Victor Hugo), ⚔️ Camelot (Artussage), 🦁 Theben (Herakles/Herkules) und 🏮 Die Große Mauer (Ballade von Hua Mulan).",
+    "📜 Jede Welt hat drei kleine Aufträge nach der Vorlage – Dinge einsammeln, Stellen auslösen (Glocken läuten, Signalfeuer entzünden, Runensteine wecken), jemanden finden, eine Gegnerwelle zurückschlagen und am Ende einen Boss. Wer einen Auftrag vergibt, trägt ein ❗ über dem Kopf. Den Stand zeigt das Auftragsfeld oben rechts und die Menüseite „Aufträge“.",
+    "🔑 Sind alle drei Aufträge erfüllt, erscheint am Wahrzeichen ein Schlüsselloch aus Licht. Versiegle es: Das bringt 300 Splitter, 2 Heiltränke, einen Phönix-Trank und viel Erfahrung. Wer alle sieben Welten versiegelt, erhält die Erzählerklinge (Waffe, Angriff 38, Technik Weltenschnitt).",
+    "📈 Die Gegner in den Märchenwelten richten sich nach deiner Stufe – du kannst die Welten in jeder Reihenfolge besuchen, sobald du mit Mira gesprochen hast. Im Mehrspieler bleibt das Märchentor geschlossen.",
+    "🎨 Alle Figuren sind eigene Gestaltungen nach den Büchern und Sagen, nicht nach Filmen."
    ]
   },
   {
@@ -306,7 +319,8 @@
     "Lass Felli mitkämpfen und füttere es – ein Blütling heilt dich im Kampf.",
     "Liegt eine Welt über deiner Stufe, sammle in der Welt davor noch etwas Erfahrung – oder hol dir mit der Nautilux die Schätze von Himmelsinseln und aus dem See.",
     "Geh nach schweren Kämpfen in die Kirche: Der Segen heilt kostenlos und weckt gefallene Gefährten. Vor einem Boss lohnt sich die Spende für den Sternensegen.",
-    "Probier das Springen gleich in Lunaris aus: Der Sprungpfad neben dem Waldweg bringt Splitter und einen Heiltrank."
+    "Probier das Springen gleich in Lunaris aus: Der Sprungpfad neben dem Waldweg bringt Splitter und einen Heiltrank.",
+    "📖 Märchenwelten passen sich deiner Stufe an. Sie sind ein guter Ort, um zwischendurch Erfahrung, Splitter und Phönix-Tränke zu sammeln."
    ]
   },
   {
@@ -477,6 +491,19 @@
     "Sprungraum: Die niedrigste Platte steht an einer Wand der Halle. Drei Platten liegen in einer Reihe, dann geht es im Bogen auf die vierte und von dort auf die große Plattform mit der Truhe.",
     "Rätsel: Klangplatten – am Lauschstein die Melodie anhören und die Platten in dieser Reihenfolge betreten. Lichtplatten – jede Platte schaltet sich und ihre Nachbarn um. Wächterstatuen – drehen, bis alle zur Truhe blicken. Symbolsteine – Paare aufdecken."
    ]
+  },
+  {
+   "t": "Märchenwelten: alle Aufträge",
+   "list": [
+    "🍎 Spiegelwald: 1) Erzbart – sieben Grubenlaternen im ganzen Wald einsammeln. 2) Schneewittchen – sechs Spiegelsplitter am Spiegelsee im Osten besiegen. 3) Schneewittchen – die Spiegelkönigin vor dem großen Spiegelrahmen im Norden. Schlüsselloch: im Spiegelrahmen.",
+    "🐯 Dschungel von Seeonee: 1) Baloo – die drei Lehrsteine berühren (Westen, Nordwesten, Mitte). 2) Bagheera – sechs Bandar-log in den Kalten Höhlen (Osten) vertreiben. 3) Mowgli – Shere Khan am Ratsfelsen. Schlüsselloch: auf dem Ratsfelsen.",
+    "🐚 Meerkönigreich: 1) Großmutter (am Schloss) – sechs Perlen im Sand. 2) Die kleine Meerjungfrau – den Schiffsjungen neben dem gesunkenen Schiff (Osten) befreien. 3) Die Meerhexe in ihrer Polypenhöhle im Nordwesten. Schlüsselloch: vor dem Schloss des Meerkönigs.",
+    "🔔 Notre-Dame: 1) Quasimodo – die Glocken Marie, Jacqueline und Emmanuel auf dem Vorplatz läuten. 2) Esmeralda – Djali im Hof der Wunder (Westen) finden. 3) Quasimodo – den Steinernen Wasserspeier vor dem Portal. Schlüsselloch: vor dem Mittelportal.",
+    "⚔️ Camelot: 1) Artus – fünf Schattenritter auf dem Turnierplatz (Osten). 2) Merlin – drei Runensteine im Steinkreis (Westen) wecken. 3) Artus – den Schwarzen Ritter vor dem Schwert im Stein. Schlüsselloch: im Stein, wo das Schwert steckte.",
+    "🦁 Theben: 1) Herakles – fünf goldene Äpfel im Garten der Hesperiden (Westen). 2) Herakles – den Nemeischen Löwen vor seiner Höhle (Osten). 3) Iolaos – die Hydra vor dem Tempel. Schlüsselloch: auf den Tempelstufen.",
+    "🏮 Große Mauer: 1) Feldherr – die drei Signalfeuer (Westen, Osten, Mitte) entzünden. 2) Hua Mulan – sechs Eindringlinge vor dem Tor. 3) Hua Mulan – den Sturmreiter. Schlüsselloch: im großen Tor der Mauer.",
+    "💡 Bosse wachen auf, sobald du ihnen nahe kommst. Sie rufen in der zweiten Hälfte Helfer – erst die Helfer besiegen, dann den Boss."
+   ]
   }
  ],
  "faq": [
@@ -507,6 +534,14 @@
   {
    "q": "Läuft das Spiel ruckelig?",
    "a": "Schließe andere Tabs und Apps. Das Spiel passt die Qualität bei Rucklern selbst an."
+  },
+  {
+   "q": "Wie komme ich aus einer Märchenwelt in eine andere Welt?",
+   "a": "Immer über Lunaris: Geh zum Sternentor am Ankunftsplatz der Märchenwelt, reise zurück nach Lunaris und wähle am Märchentor (neben dem Weltentor) die nächste Welt."
+  },
+  {
+   "q": "An manchen Stellen komme ich nicht weiter – ist da eine unsichtbare Wand?",
+   "a": "Nein. Gesperrt sind nur sichtbar steile Hänge, Wasser, Wände und Gegenstände. Der Weltrand steigt zu einem Hang an, statt unsichtbar zu enden."
   }
  ]
 }
