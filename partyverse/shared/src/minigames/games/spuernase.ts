@@ -6,7 +6,9 @@ import { hash } from './echomuster';
 
 /**
  * Spürnase: Auf der Tafel sehen alle Symbole gleich aus – bis auf eines. Es weicht in Form, Farbe oder Drehung ab.
- * Anklicken (oder Cursor bewegen + A). Falsch = Zeitstrafe. Das Raster wächst mit jedem Fund.
+ * Anklicken (oder Cursor bewegen + A). Falsch = Zeitstrafe. Das Raster wächst mit jedem Fund (bis 7×7).
+ * Serien ohne Fehler geben steigende Kombo-Boni. Ab dem 5. Fund „blinzelt“ die Tafel nach kurzer Zeit:
+ * Alle Symbole drehen sich – und das abweichende sitzt danach woanders. Jeder 5. Fund ist eine Goldtafel (doppelt).
  */
 export interface Cell {
   /** 0 Pfeil, 1 Dreieck, 2 Keil (diese drei haben eine Richtung), 3 Kreis, 4 Quadrat, 5 Stern, 6 Sechseck, 7 Kreuz */
@@ -45,10 +47,18 @@ export interface SpuerState {
   lastCell: number;
   lastBonus: number;
   seed: number;
+  /** Fehlerfreie Funde in Folge */
+  streak: number;
+  /** Tick der Runde, an dem die Tafel blinzelt (0 = nie) */
+  blinkAt: number;
+  /** Zähler für die Ansicht: wie oft die Tafel geblinzelt hat */
+  blinks: number;
+  /** Ticks seit dem letzten Blinzeln bzw. Rundenstart (für die KI) */
+  sinceLook: number;
 }
 
-/** Bereich der Tafel im Zeigerraum (px, py in [-1,1], py nach oben) */
-export const BOARD = { x0: -0.9, x1: 0.9, y0: -0.84, y1: 0.6 };
+/** Bereich der Tafel im Zeigerraum (px, py in [-1,1], py nach oben); unten bleibt Platz für die Figuren */
+export const BOARD = { x0: -0.9, x1: 0.9, y0: -0.7, y1: 0.62 };
 export const SHAPE_COUNT = 8;
 export const ASYM_SHAPES = 3;
 export const COLOR_COUNT = 8;
@@ -56,8 +66,14 @@ const LIMIT = 30 * 60;
 const PENALTY = 90;
 const LOCK = 22;
 
-export const gridSize = (found: number): number => Math.min(6, 3 + Math.floor(found / 2));
+export const gridSize = (found: number): number => Math.min(7, 3 + Math.floor(found / 2));
 export const cellValue = (n: number): number => 100 + 15 * (n - 3);
+/** Goldtafel: jeder 5. Fund zählt doppelt */
+export const isGold = (found: number): boolean => found % 5 === 4;
+export const COMBO_STEP = 20;
+/** Blinzeln ab dem 5. Fund, später früher */
+export const blinkTick = (found: number): number =>
+  found < 4 ? 0 : Math.round(Math.max(110, 190 - (found - 4) * 12));
 export const parTicks = (n: number): number => Math.round(60 * (2 + 0.6 * n));
 
 /** Mittelpunkt einer Zelle im Zeigerraum */
@@ -105,17 +121,31 @@ function newRound(s: SpuerState): void {
   s.curC = Math.min(s.curC, n - 1);
   s.curR = Math.min(s.curR, n - 1);
   s.roundTicks = 0;
+  s.sinceLook = 0;
+  s.blinkAt = blinkTick(s.found);
+}
+
+/** Tafel blinzelt: das abweichende Symbol springt an einen anderen Platz (aus dem Seed, für alle gleich) */
+function blink(s: SpuerState): void {
+  const nn = s.n * s.n;
+  const to = (s.oddIdx + 1 + (hash(s.seed ^ 0x51ed, s.found * 13 + 7) % (nn - 1))) % nn;
+  const odd = s.cells[s.oddIdx]!;
+  s.cells[s.oddIdx] = s.cells[to]!;
+  s.cells[to] = odd;
+  s.oddIdx = to;
+  s.blinks++;
+  s.sinceLook = 0;
 }
 
 export const game: MiniGame<SpuerState> = {
   id: 'spuernase',
   name: 'Spürnase',
-  tagline: 'Welches Symbol fällt aus der Reihe?',
+  tagline: 'Finde den Ausreißer – bevor die Tafel blinzelt!',
   instructions: [
-    'Auf der Tafel sehen alle Symbole gleich aus – bis auf eines.',
-    'Es hat eine andere Form, Farbe oder Drehung. Klicke es an!',
-    'Ein falscher Treffer kostet Zeit. Schnelle Funde geben Bonuspunkte.',
-    'Mit jedem Fund wird das Raster größer.',
+    'Alle Symbole sind gleich – bis auf eines (Form, Farbe oder Drehung). Tippe es an!',
+    'Schnell sein lohnt sich: Tempo-Bonus und Kombo für Funde ohne Fehler.',
+    'Ab dem 5. Fund blinzelt die Tafel – danach sitzt der Ausreißer woanders!',
+    'Falsch getippt = −1,5 s und Kombo weg. Goldtafeln zählen doppelt.',
   ],
   controls: {
     desktop: 'Mausklick auf das Symbol – oder Pfeiltasten/WASD bewegen den Cursor, Leertaste wählt',
@@ -151,6 +181,10 @@ export const game: MiniGame<SpuerState> = {
       lastCell: -1,
       lastBonus: 0,
       seed,
+      streak: 0,
+      blinkAt: 0,
+      blinks: 0,
+      sinceLook: 0,
     };
     newRound(s);
     return s;
@@ -159,7 +193,9 @@ export const game: MiniGame<SpuerState> = {
     if (s.clock >= LIMIT) return;
     s.clock++;
     s.roundTicks++;
+    s.sinceLook++;
     if (s.lock > 0) s.lock--;
+    if (s.blinkAt > 0 && s.roundTicks === s.blinkAt) blink(s);
     // Cursor mit Stick/Tasten: ein Feld pro Druck, bei Halten Wiederholung
     let dx = 0;
     let dy = 0;
@@ -193,15 +229,19 @@ export const game: MiniGame<SpuerState> = {
     if (pick < 0 || s.lock > 0) return;
     s.lastCell = pick;
     if (pick === s.oddIdx) {
-      const bonus = Math.max(0, Math.round(100 * (1 - s.roundTicks / parTicks(s.n))));
+      s.streak++;
+      const bonus =
+        Math.max(0, Math.round(100 * (1 - s.roundTicks / parTicks(s.n)))) +
+        COMBO_STEP * Math.min(5, s.streak - 1);
       s.lastBonus = bonus;
-      s.total += cellValue(s.n) + bonus;
+      s.total += (cellValue(s.n) + bonus) * (isGold(s.found) ? 2 : 1);
       s.found++;
       s.okSeq++;
       newRound(s);
     } else {
       s.wrong++;
       s.badSeq++;
+      s.streak = 0;
       s.clock += PENALTY;
       s.lock = LOCK;
     }
@@ -212,24 +252,35 @@ export const game: MiniGame<SpuerState> = {
     const n = s.n;
     const h = hash(s.seed, s.found * 31 + 1);
     const t1 = Math.round((lerp(200, 62, skill) * n) / 3 + (h % 20));
-    const errP = 0.03 + 0.5 * (1 - skill) * (1 - skill);
+    const errP = 0.04 + 0.5 * (1 - skill) * (1 - skill);
     const wrongFirst = (hash(s.seed + 5, s.found * 31 + 2) % 1000) / 1000 < errP;
     const click = (idx: number): InputFrame => {
       const c = cellCenter(n, idx);
       return { ...NEUTRAL_INPUT, pd: true, px: c.px, py: c.py };
     };
-    if (s.roundTicks === t1) {
+    // Blinzelt die Tafel, bevor gefunden wurde, beginnt die Suche (etwas schneller) von vorn
+    const blinked = s.blinkAt > 0 && s.roundTicks >= s.blinkAt;
+    const at = blinked ? s.blinkAt + Math.round(t1 * 0.6) : t1;
+    if (!blinked && s.blinkAt > 0 && t1 >= s.blinkAt) return { ...NEUTRAL_INPUT };
+    if (s.roundTicks === at) {
       if (wrongFirst) return click((s.oddIdx + 1 + (h % (n * n - 1))) % (n * n));
       return click(s.oddIdx);
     }
     // Nach einem Fehlgriff (Sperre!) erneut versuchen
-    if (s.roundTicks === t1 + LOCK + 8 + (h % 10)) return click(s.oddIdx);
+    if (s.roundTicks === at + LOCK + 8 + (h % 10)) return click(s.oddIdx);
     return { ...NEUTRAL_INPUT };
   },
   hud: (s) => ({
-    left: `Gefunden ${s.found}`,
+    left: `Gefunden ${s.found}${s.streak >= 2 ? ` · Kombo ×${s.streak}` : ''}`,
     right: `${Math.max(0, Math.ceil((LIMIT - s.clock) / 60))} s · ${s.total} Pkt`,
-    hint: s.lock > 0 ? 'Daneben! −1,5 s' : 'Welches Symbol fällt aus der Reihe?',
+    hint:
+      s.lock > 0
+        ? 'Daneben! −1,5 s'
+        : s.blinkAt > 0 && s.roundTicks >= s.blinkAt && s.roundTicks < s.blinkAt + 50
+          ? 'Geblinzelt – er ist umgezogen!'
+          : isGold(s.found)
+            ? 'Goldtafel: doppelte Punkte!'
+            : 'Welches Symbol fällt aus der Reihe?',
   }),
 };
 
