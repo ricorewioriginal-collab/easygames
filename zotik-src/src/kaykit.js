@@ -25,7 +25,7 @@ export function createKayKit({ T, G, TOUCH }) {
   const LIVE = new Set();
   const WPN = { r: 'handslotr', l: 'handslotl' };   // three entfernt Punkte aus Knotennamen
 
-  /** Figur: o.h Zielhöhe (m), o.r / o.l Requisit in der rechten/linken Hand, o.tint Farbton (0..1 Mischung o.tk) */
+  /** Figur: o.h Zielhöhe (m), o.r / o.l Requisit in der rechten/linken Hand, o.tint Farbton (0..1 Mischung o.tk), o.hide RegExp: Teile ausblenden (Helm, Hut, Umhang …) */
   function char(id, o = {}) {
     const root = new T.Group(), P = { root, id, ready: false, mixer: null, act: {}, cur: '', want: 'Idle_A', once: null, swing: 0, bones: {}, speed: 1 };
     Promise.all([load(id), anims(), (o.r || o.l) ? load('props') : null]).then(([g, cl]) => {
@@ -33,6 +33,7 @@ export function createKayKit({ T, G, TOUCH }) {
       if (!H[id]) { g.scene.updateMatrixWorld(true); const b = new T.Box3().setFromObject(g.scene); H[id] = Math.max(.5, b.max.y - b.min.y); }
       c.scale.setScalar((o.h || 1.8) / H[id]);
       c.traverse(b => { if (b.isBone) P.bones[b.name] = b; });
+      if (o.hide) c.traverse(m => { if (m.isMesh && o.hide.test(m.name)) m.visible = false; });
       if (o.tint) c.traverse(m => { if (m.isMesh && m.material.color && m.material.map) { m.material = m.material.clone(); m.material.color.lerp(new T.Color(o.tint), o.tk ?? .35); } });
       for (const s of ['r', 'l']) if (o[s]) { const w = prop(o[s]), b = P.bones[WPN[s]]; if (b) { b.add(w); if (o[s + 'rot']) w.rotation.set(...o[s + 'rot']); } }
       root.add(c); P.mixer = new T.AnimationMixer(c);

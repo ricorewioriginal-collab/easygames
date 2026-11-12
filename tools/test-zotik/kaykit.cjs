@@ -25,4 +25,8 @@ const BILD = process.argv[2] === 'bild', fs = require('fs');
   const a = await p.evaluate(() => { const Z = __zotik, n = Z.NPC.find(q => q.id === 'adv30'); Z.pl.x = n.x + Math.sin(n.face) * 3; Z.pl.z = n.z + Math.cos(n.face) * 3; Z.pl.face = Math.atan2(n.x - Z.pl.x, n.z - Z.pl.z); Z.setCam(Z.pl.face + Math.PI, .3, 7); Z.step(1 / 30, 10);
     const w = n.P.kk.bones.handslotr; return { ok: n.P.kk.ready && w.children.length > 0, cur: n.P.kk.cur }; });
   ok('Abenteurer mit Waffe und Animation', a.ok && a.cur === 'Idle_A', JSON.stringify(a)); await shot('lager');
+  const fo = await p.evaluate(() => { const Z = __zotik, L = Z.NPC.filter(n => /^f\d$/.test(n.id)); return L.map(n => n.name + ':' + (n.P.kk ? n.P.kk.id : 'alt')); });
+  ok('Dorfbewohner aus KayKit, Frauen als Frauen', fo.length >= 3 && fo.every(s => !s.endsWith(':alt')) && fo.filter(s => /^(Amani|Lotte|Sela|Perla|Ysa|Brisa|Zinna|Vael|Nyx|Sora)/.test(s)).every(s => /ad_(ma|ro|rh)/.test(s)), fo.join(', '));
+  await p.waitForFunction(() => __zotik.NPC.filter(n => /^f\d$/.test(n.id)).every(n => n.P.kk.ready), null, { timeout: 90000 }).catch(() => { });
+  await p.evaluate(() => { const Z = __zotik, n = Z.NPC.find(q => q.id === 'f1') || Z.NPC.find(q => q.id === 'f0'); Z.pl.x = n.x + Math.sin(n.face) * 3.4; Z.pl.z = n.z + Math.cos(n.face) * 3.4; Z.pl.face = Math.atan2(n.x - Z.pl.x, n.z - Z.pl.z); Z.setCam(Z.pl.face + Math.PI, .3, 6); Z.step(1 / 30, 6); }); await shot('dorf');
   ok('keine Fehler', !p.errs.length, [...new Set(p.errs)].join(' | ')); console.log(`${res.filter(Boolean).length}/${res.length} bestanden`); await b.close(); process.exit(res.every(Boolean) ? 0 : 1); })().catch(e => { console.log('ABBRUCH', e.message.slice(0, 400)); process.exit(1); });

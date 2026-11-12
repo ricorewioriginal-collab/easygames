@@ -26,10 +26,10 @@ export function createAniFig({ T, G, TOUCH }) {
   };
   // Steckbrief einer gebauten Dorffigur → Look
   function villagerLook(o) {
-    const hs = o.hs ?? (((o.cloth * 7 + (o.hair || 0) * 3 + (o.cloth2 || 0)) >>> 0) % 5), w = (hs === 1 || hs === 2 || hs === 3) && (o.wide || 1) < 1.2;
+    const hs = o.hs ?? (((o.cloth * 7 + (o.hair || 0) * 3 + (o.cloth2 || 0)) >>> 0) % 5), w = o.g === 'f' || (o.g !== 'm' && !o.beard && !o.bald && (hs === 1 || hs === 2 || hs === 3) && (o.wide || 1) < 1.2);   // Frauen nie mit Bart: Bart/Glatze = Mann, g:'f'/'m' setzt es fest
     return { m: w ? 'f1' : 'm1', h: 1.7, hair: hex(o.hair || 0x5a3a26), top: hex(o.cloth), bottom: hex(o.cloth2 || 0x5a3a26), shoes: '#4a3426', acc: hex(o.cloth2 || 0x8a6a3a),
       eye: hex(o.eye || [0x3a6ac8, 0x4a8a3a, 0x7a4a22, 0x5a3a8a][hs % 4]), skin: o.skin ? hex(o.skin) : null,
-      x: { pony: hs === 1, long: hs === 2, bun: hs === 3, spikes: hs === 4 && !w, beard: o.beard ? o.hair || 0x5a3a26 : 0, bald: o.bald, hood: o.hood ? o.cloth : 0, hat: o.hat ? o.cloth2 || 0x5a3a26 : 0,
+      x: { pony: hs === 1, long: hs === 2, bun: hs === 3, spikes: hs === 4 && !w, beard: o.beard && !w ? o.hair || 0x5a3a26 : 0, bald: o.bald, hood: o.hood ? o.cloth : 0, hat: o.hat ? o.cloth2 || 0x5a3a26 : 0,
         apron: o.apron, cape: o.cape, pack: o.pack } };
   }
 
