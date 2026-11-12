@@ -23,7 +23,7 @@ const GradeShader = {
       gl_FragColor = vec4(mix(c, clamp(g, 0.0, 1.0), amt), t.a);
     }`
 };
-import { THEMES, ENEMIES, CAPSULES } from './data.js';
+import { THEMES, ENEMIES, CAPSULES, HEROES } from './data.js';
 import * as L from './logic.js';
 import * as A from './assets.js';
 import { groundTex, blobTex } from './textures.js';
@@ -273,6 +273,7 @@ export class View {
   }
   clearWorld() {
     const sc = this.world;
+    this.sceneObjs = [];
     for (const c of sc.children.slice()) {
       if (c === sc.userData.sky || c === sc.userData.sun || c === sc.userData.hemi || c === sc.userData.sun?.target) continue;
       sc.remove(c);
@@ -1080,6 +1081,62 @@ export class View {
   battleEnemy(i, k, t) { this.battle.enemy(i, k, t); }
   battleEnemyDown(i) { this.battle.enemyDown(i); }
   battleFx(kind, side, i) { this.battle.fxAt(kind, side, i); }
+  battleSkill(i, id, tg) { this.battle.skill(i, id, tg); }
+  // ---------------------------------------------------------------- Szenen-Effekte (Zwischensequenzen)
+  // crystal: schwebender Sphärenkristall mit Lichtsäule; crystals: vier Kristalle im Kreis; actor: Figur an einem Feld
+  async sceneFx(kind, x, y, o = {}) {
+    this.sceneObjs = this.sceneObjs || [];
+    const fx = this.fx, w = this.world;
+    const gx = x + 0.5, gz = y + 0.5, gy = this.heightAt(gx, gz);
+    const crystal = (px, py, pz, col, size = 0.5) => {
+      const g = new THREE.Group();
+      const m = new THREE.Mesh(new THREE.OctahedronGeometry(size, 0), new THREE.MeshStandardMaterial({ color: C(col), emissive: C(col), emissiveIntensity: 1.6, metalness: 0.2, roughness: 0.15, transparent: true, opacity: 0.92 }));
+      m.scale.y = 1.7;
+      const halo = new THREE.Mesh(new THREE.RingGeometry(size * 1.4, size * 1.6, 48), new THREE.MeshBasicMaterial({ color: C(col).multiplyScalar(2), transparent: true, opacity: 0.6, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }));
+      const light = new THREE.PointLight(C(col), 8, 7, 1.6);
+      g.add(m, halo, light);
+      g.position.set(px, py, pz);
+      m.userData.ownGeo = m.userData.ownMat = halo.userData.ownGeo = halo.userData.ownMat = true;
+      let t = Math.random() * 6;
+      g.userData.tick = (dt) => { t += dt; m.rotation.y += dt * 1.4; g.position.y = py + Math.sin(t * 1.6) * 0.12; halo.lookAt(this.camera.position); halo.scale.setScalar(1 + Math.sin(t * 3) * 0.08); };
+      w.add(g);
+      this.sceneObjs.push(g);
+      return g;
+    };
+    if (kind === 'crystal') {
+      const col = o.col || '#9ad8ff';
+      crystal(gx, gy + 1.4, gz, col, 0.32);
+      fx.pillar(new THREE.Vector3(gx, gy, gz), col, 0.7, 9, 3.0, w, 0.6);
+      fx.ring(new THREE.Vector3(gx, gy + 0.05, gz), col, 0.3, 4, 1.4, w);
+      fx.burst(new THREE.Vector3(gx, gy + 1.4, gz), col, 80, 3.5, 1.6, 0.5, 0.11, w);
+      this.flashScreen(col, 0.45);
+    } else if (kind === 'crystals') {
+      const cols = ['#ff6a8a', '#ff9ad8', '#9ad8ff', '#ffb070'];
+      cols.forEach((c, i) => { const a = i / 4 * Math.PI * 2; crystal(gx + Math.cos(a) * (o.r || 2.2), gy + (o.h || 3.2), gz + Math.sin(a) * (o.r || 2.2), c, 0.3); });
+      if (o.burst) { fx.pillar(new THREE.Vector3(gx, gy, gz), '#fff4d0', 1.2, 14, 3.5, w, 0.7); fx.ring(new THREE.Vector3(gx, gy + 0.05, gz), '#fff0c0', 0.5, 10, 2.0, w); this.flashScreen('#fff6e0', 0.6); }
+    } else if (kind === 'actor') {
+      const a = await this.actorHero(o.id);
+      a.root.position.set(gx, gy, gz);
+      a.pivot.rotation.y = o.yaw ?? 0;
+      A.playOnce(a, ['interact', 'idle_weapon'], 'idle');
+      fx.burst(new THREE.Vector3(gx, gy + 0.6, gz), HEROES[o.id]?.col || '#ffffff', 40, 1.4, 1.2, 1.5, 0.09, w);
+      a.root.userData.tick = (dt) => a.mixer?.update(dt);
+      w.add(a.root);
+      this.sceneObjs.push(a.root);
+    }
+  }
+  clearSceneFx() {
+    for (const o of this.sceneObjs || []) { this.world.remove(o); o.traverse(m => { if (m.userData?.ownGeo) m.geometry?.dispose(); if (m.userData?.ownMat) m.material?.dispose(); }); }
+    this.sceneObjs = [];
+  }
+  // Bildschirmblitz (DOM-Ebene über dem Bild)
+  flashScreen(color, a = 0.5) {
+    const f = typeof document !== 'undefined' && document.getElementById('flash');
+    if (!f) return;
+    f.style.transition = 'none'; f.style.background = color; f.style.opacity = a;
+    void f.offsetWidth;
+    f.style.transition = 'opacity .45s ease-out'; f.style.opacity = 0;
+  }
   fxWorld(kind, o) {
     if (o && ['torch', 'smash', 'burn', 'seal'].includes(kind)) {
       const p = new THREE.Vector3(o.x + 0.5, kind === 'torch' ? 1.6 : 0.6, o.y + 0.5);
@@ -1145,6 +1202,7 @@ export class View {
       }
       this.dying = this.dying.filter(dz => { if (dz.life > 1.8) { this.world.remove(dz.n); return false; } return true; });
       this.player?.a?.mixer?.update(dt);
+      if (this.sceneObjs) for (const o of this.sceneObjs) o.userData.tick?.(dt);
       if (this.liquid) this.liquid.uniforms.t.value = this.t;
       this.updateCamera(dt, mode === 0);
       occ.on.value = mode === 0 || !this.player ? 0 : 1;

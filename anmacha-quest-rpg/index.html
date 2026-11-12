@@ -1,6 +1,21 @@
 <!doctype html>
 <html lang="de">
 <head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/anmacha-quest-rpg-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Aetherion"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#080b12">
@@ -129,6 +144,35 @@
   body.cine #hud,body.cine #menuBtn,body.cine #joy,body.cine #actBtn{opacity:0;pointer-events:none}
   #banner{font-family:Cinzel,Georgia,serif}
   @keyframes float{50%{transform:translateY(-6px)}}
+  /* Moderner Kampf: Befehlsliste, Zugreihenfolge, Technik-Band, Bildschirmblitz, Sprecher */
+  #cross{width:228px;height:auto;display:flex;flex-direction:column;gap:6px;bottom:calc(132px + env(safe-area-inset-bottom))}
+  #crossLbl{position:static;text-align:left;padding:0 0 2px 16px;font-family:Cinzel,Georgia,serif;font-size:15px;letter-spacing:.14em;color:var(--hc,#fff);text-shadow:0 0 12px var(--hc,#000),0 2px 6px #000}
+  #crossLbl small{font-family:inherit;color:var(--mut);letter-spacing:.06em;font-size:11px;margin-left:8px}
+  .cb{position:relative;left:auto;top:auto;width:100%;height:42px;margin:0;display:flex;align-items:center;gap:11px;padding:0 16px;font-size:15px;font-weight:800;letter-spacing:.04em;border-radius:7px;transform:skewX(-12deg);
+    background:linear-gradient(90deg,rgba(12,18,40,.9),rgba(12,18,40,.55));border:1px solid rgba(255,255,255,.12);border-left:4px solid var(--hc,#46e6ff);transition:transform .14s,background .14s,box-shadow .14s}
+  .cb>*{transform:skewX(12deg)}
+  .cb .i{width:20px;height:20px;flex:none}
+  .cb em{margin-left:auto;font-style:normal;font-size:11px;font-weight:700;color:var(--mut)}
+  .cb.on{transform:skewX(-12deg) translateX(-14px);background:linear-gradient(90deg,rgba(255,210,74,.42),rgba(255,210,74,.08));border-color:rgba(255,210,74,.7);border-left-color:var(--y);color:#fff7d0;box-shadow:0 0 22px rgba(255,210,74,.35)}
+  .cb.c2:not(:disabled){color:#ffc890}.cb.c2.ready{animation:glowp 1s ease-in-out infinite}
+  @keyframes glowp{50%{box-shadow:0 0 24px rgba(255,170,60,.7)}}
+  #turns{position:absolute;left:calc(12px + env(safe-area-inset-left));top:calc(12px + env(safe-area-inset-top));display:flex;align-items:center;gap:5px;pointer-events:none;z-index:4}
+  #turns b{font-size:10px;letter-spacing:.2em;color:var(--mut);margin-right:4px}
+  .tk{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:13px;color:#fff;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.45),var(--c) 55%,rgba(0,0,0,.6));border:2px solid rgba(255,255,255,.55);box-shadow:0 2px 8px rgba(0,0,0,.5);transition:transform .2s,opacity .2s;text-shadow:0 1px 2px #000}
+  .tk.e{border-radius:7px;transform:rotate(45deg) scale(.82)}.tk.e i{transform:rotate(-45deg);font-style:normal}.tk.boss{border-color:#ffd24a}
+  .tk.on{transform:scale(1.3);box-shadow:0 0 0 2px var(--y),0 0 18px var(--c)}.tk.e.on{transform:rotate(45deg) scale(1.1)}
+  .tk.done{opacity:.3}
+  #callout{position:absolute;left:50%;top:calc(58px + env(safe-area-inset-top));padding:8px 46px;font-family:Cinzel,Georgia,serif;font-weight:900;font-size:clamp(18px,3.4vw,28px);letter-spacing:.14em;white-space:nowrap;pointer-events:none;color:#fff;
+    background:linear-gradient(90deg,transparent,rgba(6,8,22,.88) 18%,rgba(6,8,22,.88) 82%,transparent);border-top:2px solid var(--cc);border-bottom:2px solid var(--cc);text-shadow:0 0 18px var(--cc),0 2px 6px #000;opacity:0;transform:translateX(-50%) skewX(-14deg)}
+  #callout.show{animation:callout 1.15s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes callout{0%{opacity:0;transform:translateX(-80%) skewX(-14deg)}14%{opacity:1;transform:translateX(-50%) skewX(-14deg)}80%{opacity:1;transform:translateX(-50%) skewX(-14deg)}100%{opacity:0;transform:translateX(-30%) skewX(-14deg)}}
+  #flash{position:fixed;inset:0;pointer-events:none;opacity:0;z-index:4;mix-blend-mode:screen}
+  #dlgName{position:absolute;left:18px;top:-16px;padding:4px 16px;font-family:Cinzel,Georgia,serif;font-weight:800;font-size:13px;letter-spacing:.1em;color:#fff;border-radius:8px;background:linear-gradient(90deg,var(--nc,#3a4a8a),rgba(10,14,30,.9));border:1px solid rgba(255,255,255,.25);box-shadow:0 4px 14px rgba(0,0,0,.4);text-shadow:0 1px 3px #000}
+  .fl.big{font-size:36px;letter-spacing:.02em;-webkit-text-stroke:1px rgba(0,0,0,.35)}
+  .fl.big{animation:flb 1s cubic-bezier(.2,.9,.3,1) forwards}
+  @keyframes flb{0%{opacity:0;scale:.3;margin-top:10px}12%{opacity:1;scale:1.45}26%{scale:1}100%{opacity:0;margin-top:-56px}}
+  @media (max-height:430px){#cross{width:200px;gap:4px}.cb{height:34px;font-size:13px}#callout{top:calc(48px + env(safe-area-inset-top))}}
+
   #title p{margin:10px 0 0;font-family:Cinzel,Georgia,serif;color:#d8d0ff;font-weight:700;letter-spacing:.24em;font-size:clamp(11px,2vw,14px);text-shadow:0 2px 8px #000}
   /* Laden */
   #load{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(ellipse at 50% 35%,#1c2348,#03040c 72%);transition:opacity .5s;padding:16px;text-align:center}
@@ -142,7 +186,7 @@
   @media (orientation:portrait) and (max-width:760px){#rot.show{display:block}.card{min-width:0;width:calc((100vw - 40px)/3);padding:6px 7px}#cross{bottom:calc(150px + env(safe-area-inset-bottom));transform:scale(.85);transform-origin:right bottom}.menu.mb{bottom:calc(160px + env(safe-area-inset-bottom))}}
   @media (max-height:430px){#cross{transform:scale(.78);transform-origin:right bottom;bottom:calc(100px + env(safe-area-inset-bottom))}.card{padding:5px 8px 6px}.ch{margin-bottom:2px}.menu.mb{bottom:calc(96px + env(safe-area-inset-bottom))}#dlg{min-height:78px;padding:10px 16px 12px}}
 </style>
-  <script type="module" crossorigin src="./assets/index-IB2R-Gdu.js"></script>
+  <script type="module" crossorigin src="./assets/index-D_Z213PD.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-CitjQBdG.css">
 </head>
 <body>
@@ -161,10 +205,13 @@
   <div id="menu" class="glass menu" hidden></div>
   <div id="msg" class="glass" hidden></div>
   <div id="banner" hidden></div>
-  <div id="dlg" class="glass" hidden><div id="dlgText"></div></div>
+  <div id="dlg" class="glass" hidden><div id="dlgName" hidden></div><div id="dlgText"></div></div>
   <div id="mini" class="glass" hidden></div>
   <div id="status" hidden></div>
   <div id="floats"></div>
+  <div id="turns" hidden></div>
+  <div id="callout" hidden></div>
+  <div id="flash"></div>
 </div>
 <div id="fade"></div>
 <div id="lbT" class="lb"></div><div id="lbB" class="lb"></div>
