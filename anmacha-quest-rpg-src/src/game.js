@@ -1,6 +1,6 @@
 // Spielablauf: Titel, Karte, Gespräche, Shop, Menü, Kampf. Gleiche Abläufe und Texte wie main.gd der Godot-Fassung.
 // Anzeige und Bedienung kommen über `ui` (DOM) und `view` (Three.js); beide lassen sich für Tests durch Attrappen ersetzen.
-import { MAPS, HEROES, JOINS, SKILLS, IPSKILLS, ITEMS, KEYNAMES, ENEMIES, CAPSULES, SHOPS, FEED, TOOLS } from './data.js';
+import { MAPS, HEROES, JOINS, SKILLS, IPSKILLS, ITEMS, KEYNAMES, ENEMIES, CAPSULES, SHOPS, FEED, TOOLS, FISH, REEL, CHIP_PRICE, PRIZES, RUSH, DEEP_FLOORS } from './data.js';
 import * as L from './logic.js';
 
 export const M = { TITLE: 0, WORLD: 1, BATTLE: 2 };
@@ -129,12 +129,14 @@ export class Game {
     if (!this.store) return;
     const S = this.S;
     const party = S.party.map(h => ({ id: h.id, name: h.name, lv: h.lv, exp: h.exp, hp: h.hp, sp: h.sp, ip: h.ip }));
-    this.store.set(SAVE_KEY, JSON.stringify({ v: 4, party, inv: S.inv, gold: S.gold, gear: S.gear, flags: S.flags, caps: S.caps, map: S.mapId, gp: S.gp, t: S.playTime }));
+    this.store.set(SAVE_KEY, JSON.stringify({ v: 4, party, inv: S.inv, gold: S.gold, gear: S.gear, flags: S.flags, caps: S.caps, chips: S.chips, deepBest: S.deepBest,
+      map: S.mapId === 'tiefe' ? 'hub' : S.mapId, gp: S.mapId === 'tiefe' ? { x: 2, y: 2 } : S.gp, t: S.playTime }));
   }
   loadGame() {
     if (!this.store) return false;
     let d = null;
     try { d = JSON.parse(this.store.get(SAVE_KEY)); } catch (e) { return false; }
+    if (d && d.map === 'tiefe') { d.map = 'hub'; d.gp = { x: 2, y: 2 }; }
     if (!d || !Array.isArray(d.party) || !d.party.length || !MAPS[d.map]) return false;
     const S = this.S;
     S.party = d.party.filter(h => HEROES[h.id]).map(h => ({ id: h.id, name: HEROES[h.id].name, lv: h.lv | 0 || 1, exp: h.exp | 0, hp: h.hp | 0, sp: h.sp | 0, ip: 0 }));
@@ -156,6 +158,8 @@ export class Game {
     // Werkzeuge kamen erst später dazu: wer das Reich schon befreit hat, bekommt sie gleich
     if (S.flags.boss_rap && !S.flags.tool_hammer) { S.flags.tool_hammer = true; S.flags.rap_tool = true; }
     if (S.flags.boss_schlager && !S.flags.tool_fire) { S.flags.tool_fire = true; S.flags.schlager_tool = true; }
+    S.chips = Math.max(0, d.chips | 0);
+    S.deepBest = Math.max(0, d.deepBest | 0);
     S.playTime = +d.t || 0;
     this.mode = M.WORLD;
     const gp = d.gp && L.tile({ ...S, map: MAPS[d.map], mw: MAPS[d.map].rows[0].length, mh: MAPS[d.map].rows.length }, d.gp.x, d.gp.y) !== '#' ? d.gp : L.startOf(d.map);
@@ -285,7 +289,7 @@ export class Game {
     this.busy = true;
     this.setTouch(false);
     if (p.req !== '' && !S.flags[p.req]) {
-      await this.say([`Der Zugang nach "${p.label}" ist versiegelt. Befreie zuerst das vorherige Reich.`]);
+      await this.say([p.lock || (p.to === 'tiefe' ? 'Ein kalter Hauch steigt aus dem Schacht. Erst wenn der Rosenhain befreit ist, wagt ihr den Abstieg.' : `Der Zugang nach "${p.label}" ist versiegelt. Befreie zuerst das vorherige Reich.`)]);
       S.gp = { x: S.gp.x - S.face.x, y: S.gp.y - S.face.y };
       S.ppos = { ...S.gp };
       this.busy = false;
@@ -294,6 +298,7 @@ export class Game {
     }
     await this.fade(1.0);
     const to = p.to;
+    if (p.deep) this.deepStep(p);
     this.loadMap(to, { x: p.ax, y: p.ay });
     if (MAPS[to].town) this.saveGame();
     await this.view.ready?.();
@@ -307,6 +312,7 @@ export class Game {
         }
       }
     }
+    if (p.deep === 'done') await this.deepDone();
     this.busy = true;
     await this.banner(S.map.world || S.map.town ? S.map.name : `${S.map.name}  (Stufe ${S.map.lv})`);
     this.busy = false;
@@ -453,6 +459,9 @@ export class Game {
           'Mirela: Ab Stufe 8 und Stufe 16 kann eine Sphärenfrucht sie in eine neue Gestalt verwandeln. Quinn verkauft welche, teuer, aber es lohnt sich.']);
         break;
       }
+      case 'angler': await this.fishing(n); break;
+      case 'casino': await this.casino(n); break;
+      case 'arena': await this.arena(n); break;
       case 'kid2':
         await this.say(['Nele: In der Gruft unter der Stadt soll es einen Turm geben, der nie endet ... sagt mein Opa. Aber mein Opa sagt viel.']);
         break;
@@ -538,6 +547,7 @@ export class Game {
   }
   async fightBoss(o) {
     const b = o.d, S = this.S;
+    if (b.deep) return this.fightDeepBoss(o);
     const txt = BOSS_TEXT[b.id] || ['...'];
     const yaw = Math.atan2(S.gp.x - o.x, S.gp.y - o.y);
     await this.cutscene([
@@ -554,6 +564,156 @@ export class Game {
       }
     } else if (res === 'lose') await this.gameOver();
   }
+  // ---------------------------------------------------------------- Stufe 4: Angeln
+  // Minispiel-Leiste: Nadel pendelt, Bestätigen stoppt sie; liefert die Position 0..1 (-1 = abgebrochen)
+  async timing(o) {
+    if (this.autoplay) { await this.tick(); return this.rng.randf(); }
+    this.setTouch(false);
+    return this.ui.timing(o);
+  }
+  async fishing(n) {
+    const S = this.S;
+    await this.say([`${n.name}: Die Fische beißen heute! Wirf die Angel aus und zieh, wenn die Nadel im hellen Feld steht.`]);
+    while (true) {
+      const fishN = FISH.reduce((a, f) => a + (S.inv[f.id] || 0), 0);
+      const r = await this.choose(['Angeln', `Fische verkaufen (${fishN})`, 'Tschüss'], true, [false, !fishN, false]);
+      if (r !== 0 && r !== 1) break;
+      if (r === 1) { await this.sellFish(n); continue; }
+      this.sfx('ok');
+      if (!this.autoplay) await this.say(['Du wirfst die Angel aus ... Das Wasser liegt still.']);
+      await this.wait(0.6 + this.rng.randf() * 1.6);
+      const f = L.rollFish(this.rng, FISH);
+      this.sfx('encounter');
+      const pos = await this.timing({ title: 'Biss!', hint: 'Jetzt ziehen!', speed: f.speed, zone: f.zone });
+      if (pos >= 0 && L.fishHit(pos, f.zone)) {
+        S.inv[f.id] = (S.inv[f.id] || 0) + 1;
+        S.flags['fish_' + f.id] = true;
+        this.sfx('chest');
+        await this.say([`Gefangen: ${ITEMS[f.id].name}! (${ITEMS[f.id].desc})`]);
+        if (FISH.every(x => S.flags['fish_' + x.id]) && !S.flags.fish_prize) {
+          S.flags.fish_prize = true;
+          S.inv.frucht = (S.inv.frucht || 0) + 1;
+          S.gold += 500;
+          this.sfx('levelup');
+          await this.say([`${n.name}: Alle drei Fischarten! Du bist ein echter Angelmeister. Nimm diese Sphärenfrucht und 500 Münzen!`]);
+        }
+      } else {
+        this.sfx('cancel');
+        await this.say(['Die Schnur zuckt ... und der Fisch ist weg.']);
+      }
+      if (this.autoplay) break;
+    }
+  }
+  async sellFish(n) {
+    const S = this.S;
+    let sum = 0;
+    for (const f of FISH) { const c = S.inv[f.id] || 0; sum += c * ITEMS[f.id].sell; S.inv[f.id] = 0; }
+    S.gold += sum;
+    this.sfx('chest');
+    await this.say([`${n.name}: Frischer Fang! Das macht ${sum} Münzen.`]);
+  }
+
+  // ---------------------------------------------------------------- Stufe 4: Spielhalle (Sphärenrad)
+  async reels(bet) {
+    if (this.autoplay) { await this.tick(); return [0, 1, 2].map(() => this.rng.randi() % REEL.length); }
+    this.setTouch(false);
+    return this.ui.reels(REEL, bet);
+  }
+  async casino(n) {
+    const S = this.S;
+    await this.say([`${n.name}: Willkommen in der Spielhalle! Ein Jeton kostet ${CHIP_PRICE} Münzen. Drei gleiche Zeichen auf dem Sphärenrad gewinnen.`]);
+    while (true) {
+      const r = await this.choose([`Jetons kaufen (10 für ${CHIP_PRICE * 10}M)`, 'Sphärenrad (1 Jeton)', 'Sphärenrad (5 Jetons)', 'Preise eintauschen', 'Tschüss', `Jetons: ${S.chips}  Münzen: ${S.gold}`], true,
+        [S.gold < CHIP_PRICE * 10, S.chips < 1, S.chips < 5, false, false, true]);
+      if (r < 0 || r === 4) break;
+      if (r === 0) { S.gold -= CHIP_PRICE * 10; S.chips += 10; this.sfx('chest'); }
+      else if (r === 1 || r === 2) {
+        const bet = r === 1 ? 1 : 5;
+        S.chips -= bet;
+        const ix = await this.reels(bet);
+        const win = L.reelPay(ix, bet);
+        S.chips += win;
+        this.sfx(win > bet ? 'levelup' : win ? 'ok' : 'cancel');
+        await this.say([`${ix.map(i => REEL[i].s).join(' ')}  –  ${win > bet ? `Gewinn: ${win} Jetons!` : win ? 'Einsatz zurück.' : 'Leider nichts.'}`]);
+      } else if (r === 3) {
+        const opts = PRIZES.map(p => `${ITEMS[p.v].name} – ${p.chips} Jetons`).concat(['Zurück']);
+        const s2 = await this.choose(opts, true, PRIZES.map(p => S.chips < p.chips).concat([false]));
+        if (s2 >= 0 && s2 < PRIZES.length && S.chips >= PRIZES[s2].chips) {
+          S.chips -= PRIZES[s2].chips;
+          S.inv[PRIZES[s2].v] = (S.inv[PRIZES[s2].v] || 0) + 1;
+          this.sfx('chest');
+          await this.say([`${ITEMS[PRIZES[s2].v].name} eingetauscht!`]);
+        }
+      }
+      if (this.autoplay) break;
+    }
+  }
+
+  // ---------------------------------------------------------------- Stufe 4: Tiefe der Echos
+  deepStep(p) {
+    const S = this.S;
+    if (p.deep === 'start') { S.deep = 1; S.deepSeed = (this.rng.randi() % 100000) + 1; }
+    else if (p.deep === 'down') S.deep += 1;
+    if (p.to !== 'tiefe') return;
+    L.resetDeepFlags(S);
+    MAPS.tiefe = L.genDeep(S.deep, S.deepSeed);
+    S.deepBest = Math.max(S.deepBest, S.deep);
+  }
+  async fightDeepBoss(o) {
+    const b = o.d, S = this.S;
+    await this.cutscene([{ x: o.x, y: o.y, h: 1.5, yaw: Math.atan2(S.gp.x - o.x, S.gp.y - o.y), dist: 3.6, pitch: 0.15,
+      t: [S.deep >= DEEP_FLOORS ? 'Aus der tiefsten Stille formt sich ein Echo von Nihl ... stärker als je zuvor.' : `Ein Echo von ${ENEMIES[b.id].name} versperrt die Treppe!`] }], 'boss');
+    const res = await this.runBattle([b.id], S.map.theme);
+    if (res === 'win') {
+      S.flags.deep_boss = true;
+      this.removeObj(o);
+      await this.say(['Das Echo verhallt. Die Treppe ist frei.']);
+    } else if (res === 'lose') await this.gameOver();
+  }
+  async deepDone() {
+    const S = this.S;
+    const first = !S.flags.deep_done;
+    S.flags.deep_done = true;
+    if (first) {
+      S.gold += 5000;
+      S.inv.frucht = (S.inv.frucht || 0) + 2;
+      S.inv.weck = (S.inv.weck || 0) + 3;
+    }
+    this.sfx('victory');
+    await this.say(first ? ['Ihr steigt aus der tiefsten Ebene ans Licht. Die Echos schweigen.', 'Belohnung: 5000 Münzen, 2 Sphärenfrüchte und 3 Lebensfedern!']
+      : ['Ihr steigt erneut aus der Tiefe auf. Die Echos verneigen sich.']);
+    this.saveGame();
+  }
+
+  // ---------------------------------------------------------------- Stufe 4: Arena der Erinnerung (alle Verfemten nacheinander)
+  async arena(n) {
+    const S = this.S;
+    if (!S.flags.boss_rauschen) { await this.say([`${n.name}: Ich schreibe die Chronik eurer Kämpfe. Wenn Nihl gefallen ist, kann ich die Erinnerung an jeden Verfemten heraufbeschwören.`]); return; }
+    await this.say([`${n.name}: Die Arena der Erinnerung. Fünf Verfemte nacheinander, zwischen den Kämpfen nur ein kurzer Atemzug. Bereit?`]);
+    const r = await this.choose(['Herausforderung annehmen', 'Später'], true);
+    if (r !== 0) return;
+    L.healAll(S);
+    for (let i = 0; i < RUSH.length; i++) {
+      await this.say([`Runde ${i + 1} von ${RUSH.length}: ${ENEMIES[RUSH[i]].name}!`]);
+      const res = await this.runBattle([RUSH[i]], ['rap', 'schlager', 'xmas', 'rock', 'static'][i]);
+      if (res !== 'win') {
+        L.healAll(S);
+        await this.say([res === 'lose' ? `${n.name}: Die Erinnerung war stärker. Ruht euch aus und versucht es erneut.` : `${n.name}: Ihr zieht euch zurück. Die Arena wartet.`]);
+        return;
+      }
+      // kurzer Atemzug: ein Viertel der LP und SP
+      for (const h of S.party) { h.hp = Math.min(L.mhp(S, h), Math.max(1, h.hp) + Math.trunc(L.mhp(S, h) / 4)); h.sp = Math.min(L.msp(h), h.sp + Math.trunc(L.msp(h) / 4)); }
+    }
+    const first = !S.flags.rush_done;
+    S.flags.rush_done = true;
+    if (first) { S.gold += 3000; S.inv.frucht = (S.inv.frucht || 0) + 1; S.inv.aetherflask = (S.inv.aetherflask || 0) + 3; }
+    L.healAll(S);
+    this.sfx('victory');
+    await this.say([`${n.name}: Unglaublich! Alle fünf Verfemten in einem Zug. Euer Name steht nun in goldenen Lettern in der Chronik.`]
+      .concat(first ? ['Belohnung: 3000 Münzen, eine Sphärenfrucht und 3 Ätherflaschen!'] : []));
+    this.saveGame();
+  }
+
   async ending() {
     const S = this.S;
     this.musicOverride = 'ending';

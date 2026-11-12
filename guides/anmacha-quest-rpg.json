@@ -117,6 +117,15 @@
         "Glutstab (Truhe im Rosenhain): entzündet Fackeln und verbrennt Dornenranken.",
         "Glitzernde Felsen und Ranken verbergen Münzen, Tränke und Sphärenfrüchte."
       ]
+    },
+    {
+      "t": "Angeln, Spielhalle, Tiefe der Echos, Arena",
+      "list": [
+        "Angeln bei Anglerin Wenke (Hafenau) oder Fischer Arno (Lindmark): bestätigen, wenn die Nadel im grünen Feld steht. Silberling heilt 120 LP, Goldforelle alle LP, Sternenkoi gibt Kapselgeistern viel EXP.",
+        "Spielhalle in Lindmark: 10 Jetons für 100 Münzen. Sphärenrad: jedes Bestätigen hält eine Walze an. Drei gleiche gewinnen (Stern x20, Krone x10, Kristall x6, Mond x4, Note x3), zwei gleiche nebeneinander geben den Einsatz zurück.",
+        "Tiefe der Echos (Schacht oben links in Hafenau, ab dem Sieg im Rosenhain): 30 Zufallsebenen mit Truhen; alle fünf Ebenen bewacht ein Echo die Treppe.",
+        "Arena der Erinnerung (Chronistin Vela in Lindmark, nach dem Ende): alle fünf Verfemten nacheinander."
+      ]
     }
   ],
   "ratgeber": [
@@ -166,6 +175,15 @@
         "Erst den Glutstab im Rosenhain holen: ab dem Rosenhain brauchen alle Siegel brennende Fackeln.",
         "Nie einen Block gegen eine Wand oder in eine Ecke schieben. Passiert es doch: Reich verlassen und wieder betreten setzt die Blöcke zurück.",
         "Zurück in die Echogruft, sobald du den Glutstab hast? Nicht nötig, dort gibt es nur Felsen für den Hammer."
+      ]
+    },
+    {
+      "t": "Minispiele und Bonusinhalte",
+      "list": [
+        "Beim Angeln lieber früh als spät drücken: Die Nadel wird am Rand langsamer, in der Mitte ist sie am schnellsten. Sternenkoi haben das schmalste Feld.",
+        "Im Sphärenrad lohnt der Einsatz 5 erst mit vielen Jetons. Die Sphärenfrucht für 40 Jetons ist der beste Preis.",
+        "In der Tiefe der Echos sind Tränke knapp: Truhen mitnehmen, auf Ebene 5, 10, 15, 20, 25 und 30 wartet ein Wächter. Mit Stufe 30 und mehr wird es ab Ebene 20 entspannter.",
+        "Für die Arena: volle Ätherflaschen und Lebensfedern mitnehmen, ein entwickelter Kapselgeist hilft sehr."
       ]
     }
   ],
@@ -235,6 +253,14 @@
         "Rosenhain: Glutstab in der Truhe im Westen holen, Block nach rechts, zwei Fackeln anzünden.",
         "Frostgrotte: zwei Blöcke nach rechts, die Fackel rechts davon anzünden.",
         "Glutschlund und Turm der Stille: zwei Blöcke nach rechts, zwei Fackeln anzünden."
+      ]
+    },
+    {
+      "t": "Bonusinhalte abschließen",
+      "steps": [
+        "Angelmeister: Silberling, Goldforelle und Sternenkoi je einmal fangen, dann gibt es Sphärenfrucht und 500 Münzen.",
+        "Tiefe der Echos: auf jeder Ebene zum Leuchten am weitesten vom Eingang laufen, Wächter besiegen, nach Ebene 30 aufsteigen (5000 Münzen, 2 Sphärenfrüchte, 3 Lebensfedern).",
+        "Arena der Erinnerung: nach dem Sieg über Nihl Chronistin Vela in Lindmark ansprechen und alle fünf Kämpfe gewinnen (3000 Münzen, Sphärenfrucht, 3 Ätherflaschen)."
       ]
     }
   ],

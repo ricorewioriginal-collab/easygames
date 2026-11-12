@@ -1,6 +1,6 @@
 // Spielregeln ohne Anzeige: Werte, Schaden, Karten, Monster-KI. 1:1 aus main.gd der Godot-Fassung übernommen.
 // Läuft auch unter Node (Tests in tests/logic.test.js).
-import { MAPS, HEROES, ENEMIES, ITEMS, CAPSULES } from './data.js';
+import { MAPS, HEROES, ENEMIES, ITEMS, CAPSULES, REEL, DEEP_BOSS, DEEP_FLOORS } from './data.js';
 
 export const STEP_T = 0.13;          // Sekunden pro Feld (Spieler)
 export const ROAM_T = 0.38;          // Sekunden pro Feld (Monster)
@@ -41,7 +41,7 @@ export const manhattan = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 
 export function newState() {
   return {
-    party: [], inv: { trank: 3, aether: 1, weck: 0 }, gold: 50, gear: 0, flags: {}, caps: { own: {}, active: null },
+    party: [], inv: { trank: 3, aether: 1, weck: 0 }, gold: 50, gear: 0, flags: {}, caps: { own: {}, active: null }, chips: 0, deep: 0, deepSeed: 1, deepBest: 0,
     mapId: 'hub', map: MAPS.hub, mw: 26, mh: 16, objs: [], reg: [], gp: { x: 12, y: 11 }, face: { x: 0, y: 1 },
     steps: 0, grace: 8, playTime: 0, uidN: 0, roamers: [], enemies: []
   };
@@ -72,7 +72,7 @@ export const gearPrice = (S) => 120 * (S.gear + 1) * (S.gear + 1);
 
 export function makeEnemy(S, id) {
   const d = ENEMIES[id];
-  const lv = d.lv;
+  const lv = d.lv + (S.map && S.map.lvBonus || 0);
   const psize = 0.62 + 0.13 * S.party.length;
   const easeF = Math.min(1.0, Math.max(0.6, 0.5 + 0.1 * avgLv(S)));   // sanfter Einstieg: Gegner sind bei niedrigen Stufen schwächer
   const hp = int((18.0 + 14.0 * lv) * 1.4 * d.hpm * psize * easeF);
@@ -106,8 +106,111 @@ export function applyItem(S, k, h) {
     h.sp = Math.min(msp(h), h.sp + (k === 'aether' ? 20 : 60));
     return true;
   }
+  if (k === 'fisch1' || k === 'fisch2') {
+    if (h.hp >= mhp(S, h)) return false;
+    h.hp = k === 'fisch1' ? Math.min(mhp(S, h), h.hp + 120) : mhp(S, h);
+    return true;
+  }
   return false;
 }
+
+// ---------------------------------------------------------------- Stufe 4: Minispiele
+// Angeln: Nadel pendelt über die Leiste (pos 0..1); Fang, wenn sie in der Zone um die Mitte steht
+export const fishHit = (pos, zone) => Math.abs(pos - 0.5) <= zone / 2;
+export function rollFish(rng, fish, luck = 0) {
+  let r = rng.randf() * (1 - luck * 0.1);
+  for (const f of fish) { if (r < f.p) return f; r -= f.p; }
+  return fish[0];
+}
+// Sphärenrad: Gewinn für drei Walzen (Indizes in REEL)
+export function reelPay(ix, bet) {
+  const [a, b, c] = ix;
+  if (a === b && b === c) return REEL[a].pay * bet;
+  if (a === b || b === c) return bet;
+  return 0;
+}
+
+// ---------------------------------------------------------------- Tiefe der Echos (Zufallsebenen)
+const DEEP_THEMES = ['rap', 'schlager', 'xmas', 'rock', 'static'];
+const DEEP_POOLS = [
+  ['beatbandit', 'reimruepel', 'bassgolem', 'boombox', 'graffiti', 'mikspin'],
+  ['gecko', 'schleim', 'aal', 'disco', 'herz', 'zuckerg'],
+  ['geist', 'lebkuchen', 'schneemann', 'eisratte', 'eisspin', 'zwerg'],
+  ['gargoyle', 'mole', 'verstaerker', 'rifffled', 'daemon', 'roadie'],
+  ['schemen', 'stoersignal', 'kreischer', 'antspin', 'rausritter', 'zyklop']];
+const DEEP_LOOT = ['trank', 'trank', 'aether', 'grosstrank', 'aetherflask', 'weck', 'bombe'];
+export function genDeep(floor, seed) {
+  const r = makeRng((seed * 7919 + floor * 104729) >>> 0);
+  const W = 26, H = 16, st = { x: 2, y: 14 };
+  const g = Array.from({ length: H }, () => Array(W).fill('#'));
+  let cells = 0;
+  const carve = (x, y) => { if (x > 0 && y > 0 && x < W - 1 && y < H - 1 && g[y][x] === '#') { g[y][x] = '.'; cells++; } };
+  carve(1, 14); carve(2, 14); carve(3, 14); carve(2, 13);
+  // mehrere Wanderer graben Gänge und Hallen
+  const goal = 150 + Math.min(60, floor * 2);
+  let p = { ...st }, steps = 0;
+  while (cells < goal && steps < 20000) {
+    steps++;
+    const d = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 0], [0, -1]][Math.floor(r.randf() * 6)];
+    p = { x: Math.min(W - 2, Math.max(1, p.x + d[0])), y: Math.min(H - 2, Math.max(1, p.y + d[1])) };
+    carve(p.x, p.y);
+    if (r.randf() < 0.3) carve(p.x + 1, p.y);
+    if (r.randf() < 0.3) carve(p.x, p.y + 1);
+    if (r.randf() < 0.02) p = { ...st };
+  }
+  const floorCells = () => { const a = []; for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) if (g[y][x] !== '#' && g[y][x] !== 'T') a.push({ x, y }); return a; };
+  const bfs = () => {
+    const dist = new Map([[key(st), 0]]), par = new Map(), q = [st];
+    while (q.length) {
+      const c = q.shift();
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const n = { x: c.x + dx, y: c.y + dy }, k = key(n);
+        if (dist.has(k) || g[n.y][n.x] === '#' || g[n.y][n.x] === 'T') continue;
+        dist.set(k, dist.get(key(c)) + 1); par.set(k, c); q.push(n);
+      }
+    }
+    return { dist, par };
+  };
+  // Säulen/Bäume als Deko, nur wenn alles erreichbar bleibt
+  for (const c of r.shuffle(floorCells())) {
+    if (Math.abs(c.x - st.x) + Math.abs(c.y - st.y) < 3 || r.randf() > 0.12) continue;
+    g[c.y][c.x] = 'T';
+    if (bfs().dist.size !== floorCells().length) g[c.y][c.x] = '.';
+  }
+  for (const c of floorCells()) if (r.randf() < 0.07) g[c.y][c.x] = ',';
+  const { dist, par } = bfs();
+  let far = st, fd = -1;
+  for (const c of floorCells()) { const d = dist.get(key(c)); if (d > fd) { fd = d; far = c; } }
+  const bossId = DEEP_BOSS[floor];
+  const last = floor >= DEEP_FLOORS;
+  const portals = [
+    { x: 1, y: 14, to: 'hub', req: '', label: 'Ausgang', kind: 'exit', ax: 2, ay: 2 },
+    { x: far.x, y: far.y, to: last ? 'hub' : 'tiefe', req: bossId ? 'deep_boss' : '', label: last ? 'Aufstieg' : 'Treppe', kind: last ? 'exit' : 'cave', ax: last ? 2 : 2, ay: last ? 2 : 14, deep: last ? 'done' : 'down',
+      lock: 'Ein Echo bewacht die Treppe. Besiege es zuerst.' }];
+  let boss = {};
+  if (bossId) { const b = par.get(key(far)) || st; boss = { x: b.x, y: b.y, id: bossId, flag: 'deep_boss', deep: true }; }
+  // Truhen fern vom Start
+  const spots = r.shuffle(floorCells().filter(c => dist.get(key(c)) > 6 && !eq(c, far) && !(boss.id && eq(c, boss))));
+  const chests = [];
+  const nC = 2 + (floor % 3 === 0 ? 1 : 0);
+  for (let i = 0; i < nC && i < spots.length; i++) {
+    const c = spots[i];
+    if (r.randf() < 0.4) chests.push({ id: 'deep_c' + i, x: c.x, y: c.y, kind: 'gold', v: 40 + floor * 30 });
+    else {
+      const v = floor >= 12 && r.randf() < 0.12 ? 'frucht' : DEEP_LOOT[Math.min(DEEP_LOOT.length - 1, Math.floor(r.randf() * (3 + floor / 6)))];
+      chests.push({ id: 'deep_c' + i, x: c.x, y: c.y, kind: 'item', v, n: v === 'frucht' ? 1 : 1 + (floor > 15 ? 1 : 0) });
+    }
+  }
+  const grp = Math.min(4, Math.floor((floor - 1) / 6));
+  return {
+    name: `Tiefe der Echos – Ebene ${floor}`, theme: DEEP_THEMES[Math.floor((floor - 1) / 6) % 5], rows: g.map(row => row.join('')),
+    enc: DEEP_POOLS[grp], rate: 0.07, lv: Math.round(1 + floor * 0.85), lvBonus: Math.round((floor - 1) % 6 * 0.6 + Math.max(0, floor - 24)),
+    deep: floor, seed, portals, npcs: [], chests, boss
+  };
+}
+MAPS.tiefe = genDeep(1, 1);
+// Flaggen einer Ebene zurücksetzen (Truhen und Wächter gibt es auf jeder neuen Ebene wieder)
+export function resetDeepFlags(S) { for (const k of Object.keys(S.flags)) if (k.startsWith('deep_c') || k === 'deep_boss') delete S.flags[k]; }
 export const itemKeys = () => Object.keys(ITEMS);
 export const itemUse = (k) => ITEMS[k]?.use || 'hero';
 
