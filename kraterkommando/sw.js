@@ -1,5 +1,5 @@
-const CACHE = 'kraterkommando-8';
-const SHELL = ['./', './index.html', './style.css', './controls.css', './game.js', './card.svg', './manifest.webmanifest', '../vendor/three-r128.min.js', '../cloud/anmacha-cloud.js'];
+const CACHE = 'kraterkommando-9';
+const SHELL = ['./', './index.html', './style.css', './controls.css', './game.js', './console.css', './card.svg', './models/props.glb', './models/cat.glb', './models/ninja.glb', './models/chicken.glb', './models/pigeon.glb', './models/orc.glb', './models/alien.glb', './models/yeti.glb', './models/wizard.glb', './manifest.webmanifest', '../vendor/three-r128.min.js', '../vendor/three-r128-gltfloader.js', '../cloud/anmacha-cloud.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
 });

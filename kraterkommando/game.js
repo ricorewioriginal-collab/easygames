@@ -84,6 +84,10 @@
   let stickX = 0, stickY = 0, actionDamage = 0, actionFired = false, hurtActive = false, hudDirty = true, timerShown = -1, matchId = 0;
   let audioContext = null, soundEnabled = true, musicAcc = 0, musicStep = 0, lastFlash = 0, menuWorld = 'island', menuLevel = 1, progress = 1, messageTimer = 0;
   let bodies = [], deco = [], itemMeshes = new Map();
+  // Freie 3D-Modelle (CC0, siehe models/LIZENZ.md): Figuren je Team, Requisiten mit Vertexfarben
+  const FIG_TEAM = [['cat', 'ninja', 'chicken', 'pigeon'], ['orc', 'alien', 'yeti', 'wizard']];
+  const ASSET = { fig: {}, props: {}, ready: false };
+  let attract = null, celebrate = null, inputMode = 'touch', padKind = 'xbox';
   const pressed = new Set(), speeches = [], lastQuip = new Map(), GEO = {}, MAT = {};
   let UP, TMP;
 
@@ -130,7 +134,8 @@
   }
   function setSound(enabled) {
     soundEnabled = enabled;
-    for (const id of ['menuSoundBtn', 'pauseSoundBtn']) $(id).textContent = enabled ? '🔊 Spielsound an' : '🔇 Spielsound aus';
+    $('pauseSoundBtn').textContent = enabled ? '🔊 Spielsound an' : '🔇 Spielsound aus';
+    if ($('soundVal')) $('soundVal').textContent = enabled ? 'An' : 'Aus';
     try { localStorage.setItem('easygames.kraterkommando.sound', enabled ? '1' : '0'); } catch (_) {}
     if (enabled) sound(520, .1, 'triangle', .03);
   }
@@ -462,6 +467,9 @@
     const bed = new THREE.Mesh(new THREE.PlaneGeometry(420, 420), MAT.bed); bed.rotation.x = -Math.PI / 2; bed.position.y = SEABED + .02; scene.add(bed);
     MAT.skin = new THREE.MeshLambertMaterial({ color: 0xf6a5b4 });
     MAT.team = [new THREE.MeshLambertMaterial({ color: 0xe8453c }), new THREE.MeshLambertMaterial({ color: 0x1f8fe0 })];
+    MAT.teamRing = [0xff6f61, 0x4cc3ff].map(c => new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: .85, depthWrite: false }));
+    MAT.activeRing = new THREE.MeshBasicMaterial({ color: 0xfff27a, transparent: true, opacity: .95, depthWrite: false });
+    MAT.prop = new Map();
     MAT.white = new THREE.MeshBasicMaterial({ color: 0xffffff });
     MAT.black = new THREE.MeshBasicMaterial({ color: 0x15202b });
     MAT.metal = new THREE.MeshLambertMaterial({ color: 0x55646f });
@@ -549,7 +557,9 @@
       if (y < S.water + .8 || taken.some(p => Math.hypot(p.x - x, p.z - z) < 2.2)) continue;
       const slope = Math.abs(height(x + .5, z) - height(x - .5, z)) + Math.abs(height(x, z + .5) - height(x, z - .5));
       const g = new THREE.Group();
-      if (n % 3 === 2 || slope > 1.2) { const m = new THREE.Mesh(GEO.rock, MAT.rock); m.scale.set(s, s * .7, s); m.rotation.y = R() * 6; g.add(m); }
+      const pm = ASSET.ready && propDecor(world, n, slope, R, s);
+      if (pm) g.add(pm);
+      else if (n % 3 === 2 || slope > 1.2) { const m = new THREE.Mesh(GEO.rock, MAT.rock); m.scale.set(s, s * .7, s); m.rotation.y = R() * 6; g.add(m); }
       else if (world === 'desert') {
         const m = new THREE.Mesh(GEO.trunk, MAT.leaf); m.scale.set(1.4, 1.3 * s, 1.4); g.add(m);
         const arm = new THREE.Mesh(GEO.trunk, MAT.leaf); arm.scale.set(.9, .5, .9); arm.position.set(.3, .7, 0); arm.rotation.z = -.8; g.add(arm);
@@ -558,6 +568,33 @@
       else { const t = new THREE.Mesh(GEO.trunk, MAT.trunk); t.scale.y = s; g.add(t); const c = new THREE.Mesh(GEO.crown, MAT.leaf); c.position.y = 1.6 * s; c.scale.setScalar(s); g.add(c); }
       g.position.set(x, y - .05, z); g.userData.r = .9 * s; scene.add(g); deco.push(g); n++;
     }
+  }
+  // Requisiten aus props.glb (Kenney, CC0), je Karte eingefärbt
+  const DECOR = {
+    island: [['round', .9], ['tree', .85], ['crooked', .95], ['rock', .7, 0xd9cdb6]],
+    desert: [['crooked', 1, 0xd7a46a], ['rocks', 1, 0xf2b783], ['rock', .75, 0xf0b27c], null],
+    snow: [['pine', .85, 0xd5ece4], ['pine', .7, 0xd5ece4], ['pinefall', 1, 0xe6f2f7], ['rock', .7, 0xdbe8f2]],
+    volcano: [['pinefall', 1, 0x4a3a36], ['rocks', 1, 0x6b5850], ['rock', .75, 0x5a4a44], ['crooked', .9, 0x3a2e2b]]
+  };
+  function propMat(tint = 0xffffff) {
+    if (!MAT.prop.has(tint)) MAT.prop.set(tint, new THREE.MeshLambertMaterial({ vertexColors: true, color: tint }));
+    return MAT.prop.get(tint);
+  }
+  function propMesh(name, tint, size) {
+    const src = ASSET.props[name]; if (!src) return null;
+    const m = src.clone(true), mat = propMat(tint);
+    m.position.set(0, 0, 0); m.rotation.set(0, 0, 0); m.scale.setScalar(size);
+    m.traverse(o => { if (o.isMesh) { o.material = mat; o.castShadow = true; } });
+    return m;
+  }
+  function propDecor(world, n, slope, R, s) {
+    const list = DECOR[world];
+    const pick = slope > 1.2 ? list.find(e => e && /rock/.test(e[0])) : list[n % list.length];
+    if (pick && /rock/.test(pick[0]) && slope > 1.2 && R() < .5) return null;
+    if (!pick) return null;
+    const m = propMesh(pick[0], pick[2], pick[1] * s * (/rock/.test(pick[0]) ? 1.1 : 1.05));
+    if (m) m.rotation.y = R() * 6.28;
+    return m;
   }
   function nameTag(u) {
     const c = document.createElement('canvas'); c.width = 160; c.height = 72;
@@ -580,48 +617,133 @@
     g.fillStyle = '#ffffff'; g.font = '900 21px system-ui,sans-serif'; g.fillText(String(Math.max(0, Math.ceil(u.hp))), 80, 55);
     d.tex.needsUpdate = true;
   }
+  // ---------- 3D-Modelle ----------
+  function loadAssets(onProgress) {
+    if (!THREE.GLTFLoader) return Promise.resolve(false);
+    const loader = new THREE.GLTFLoader(), names = FIG_TEAM[0].concat(FIG_TEAM[1]);
+    let done = 0;
+    const total = names.length + 1, step = () => onProgress && onProgress(++done / total);
+    const load = url => new Promise((res, rej) => loader.load(url, g => { step(); res(g); }, undefined, rej));
+    const jobs = names.map(n => load('models/' + n + '.glb').then(g => { ASSET.fig[n] = prepFigure(g); }));
+    jobs.push(load('models/props.glb').then(g => {
+      g.scene.updateMatrixWorld(true);
+      g.scene.traverse(o => { if (o.geometry) o.geometry.userData.shared = true; const m = /^p:?(tree|pine|round|crooked|rocks?|barrel|chest|pinefall)$/.exec(o.name || ''); if (m) ASSET.props[m[1]] = o; });   // GLTFLoader entfernt den Doppelpunkt aus „p:<name>“
+    }));
+    const timeout = new Promise(res => setTimeout(() => res('timeout'), 15000));
+    return Promise.race([Promise.all(jobs).then(() => true), timeout]).then(ok => { ASSET.ready = ok === true && Object.keys(ASSET.fig).length === names.length; return ASSET.ready; }).catch(() => false);
+  }
+  const matCache = new Map();
+  function lambertOf(m, skinned) {
+    const key = m.uuid + (skinned ? 's' : '');
+    if (!matCache.has(key)) matCache.set(key, new THREE.MeshLambertMaterial({ color: m.color ? m.color.clone().convertLinearToSRGB() : 0xffffff, skinning: skinned, vertexColors: !!m.vertexColors, side: m.side }));
+    return matCache.get(key);
+  }
+  function prepFigure(g) {
+    const root = g.scene;
+    root.traverse(o => { if (o.isMesh) { o.material = lambertOf(o.material, !!o.isSkinnedMesh); o.castShadow = true; o.frustumCulled = false; } });
+    const box = new THREE.Box3().setFromObject(root), h = box.max.y - box.min.y || 1;
+    return { root, clips: Object.fromEntries(g.animations.map(c => [c.name, c])), scale: 1.55 / h, base: -box.min.y };
+  }
+  // Wie SkeletonUtils.clone: Kopie mit eigenem Skelett, damit jede Figur eigene Bewegungen hat.
+  function cloneSkinned(src) {
+    const clone = src.clone(true), map = new Map(), pairs = [];
+    (function walk(a, b) { map.set(a, b); pairs.push([a, b]); for (let i = 0; i < a.children.length; i++) walk(a.children[i], b.children[i]); })(src, clone);
+    for (const [a, b] of pairs) if (b.isSkinnedMesh) { b.skeleton = new THREE.Skeleton(a.skeleton.bones.map(x => map.get(x)), a.skeleton.boneInverses); b.bind(b.skeleton, a.bindMatrix); }
+    return clone;
+  }
+  function figureFor(u) {
+    if (!ASSET.ready) return null;
+    const list = FIG_TEAM[u.team], idx = S.units.filter(v => v.team === u.team).indexOf(u);
+    const f = ASSET.fig[list[(idx < 0 ? 0 : idx) % list.length]];
+    if (!f) return null;
+    const model = cloneSkinned(f.root);
+    model.scale.setScalar(f.scale); model.position.y = f.base * f.scale; model.rotation.y = Math.PI;
+    const mixer = new THREE.AnimationMixer(model), actions = {};
+    for (const [n, c] of Object.entries(f.clips)) {
+      const a = mixer.clipAction(c);
+      if (['death', 'jump', 'hit', 'throw', 'yes', 'no'].includes(n)) { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; }
+      actions[n] = a;
+    }
+    return { model, mixer, actions, cur: null };
+  }
+  function playAnim(an, name, fade = .18, speed = 1) {
+    const next = an.actions[name] || an.actions.idle; if (!next) return;
+    next.timeScale = speed;
+    if (an.cur === name) return;
+    const prev = an.actions[an.cur];
+    next.reset(); next.enabled = true; next.setEffectiveWeight(1); next.play();
+    if (prev) prev.crossFadeTo(next, fade, false);
+    an.cur = name;
+  }
   function makeUnit(u) {
-    const g = new THREE.Group(), body = new THREE.Group();
-    for (const [y, z, s] of [[.38, .2, 1], [.72, .05, .98], [1.02, -.04, .95]]) {
-      const m = new THREE.Mesh(GEO.body, MAT.skin); m.position.set(0, y, z); m.scale.set(s, .78, s); m.castShadow = true; body.add(m);
+    const g = new THREE.Group(), body = new THREE.Group(), fig = figureFor(u);
+    if (fig) body.add(fig.model);
+    else {
+      for (const [y, z, s] of [[.38, .2, 1], [.72, .05, .98], [1.02, -.04, .95]]) {
+        const m = new THREE.Mesh(GEO.body, MAT.skin); m.position.set(0, y, z); m.scale.set(s, .78, s); m.castShadow = true; body.add(m);
+      }
+      const head = new THREE.Mesh(GEO.head, MAT.skin); head.position.set(0, 1.42, -.1); head.castShadow = true; body.add(head);
+      const band = new THREE.Mesh(GEO.band, MAT.team[u.team]); band.position.set(0, 1.62, -.1); band.rotation.x = Math.PI / 2; body.add(band);
+      for (const dx of [-.17, .17]) {
+        const eye = new THREE.Mesh(GEO.eye, MAT.white); eye.position.set(dx, 1.5, -.46); eye.scale.z = .7; body.add(eye);
+        const pupil = new THREE.Mesh(GEO.pupil, MAT.black); pupil.position.set(dx, 1.5, -.56); body.add(pupil);
+      }
     }
-    const head = new THREE.Mesh(GEO.head, MAT.skin); head.position.set(0, 1.42, -.1); head.castShadow = true; body.add(head);
-    const band = new THREE.Mesh(GEO.band, MAT.team[u.team]); band.position.set(0, 1.62, -.1); band.rotation.x = Math.PI / 2; body.add(band);
-    for (const dx of [-.17, .17]) {
-      const eye = new THREE.Mesh(GEO.eye, MAT.white); eye.position.set(dx, 1.5, -.46); eye.scale.z = .7; body.add(eye);
-      const pupil = new THREE.Mesh(GEO.pupil, MAT.black); pupil.position.set(dx, 1.5, -.56); body.add(pupil);
-    }
-    const gun = new THREE.Group(); gun.position.set(.42, 1.0, -.2);
-    const tube = new THREE.Mesh(GEO.gun, MAT.metal); gun.add(tube); body.add(gun);
+    const ring = new THREE.Mesh(GEO.ring, MAT.teamRing[u.team]); ring.position.y = .06; ring.scale.setScalar(.78); ring.renderOrder = 2;
+    const gun = new THREE.Group(); gun.position.set(.46, fig ? .78 : 1.0, -.22);
+    const tube = new THREE.Mesh(GEO.gun, MAT.metal); tube.castShadow = true; gun.add(tube); body.add(gun);
     const grave = new THREE.Group();
     grave.add(new THREE.Mesh(GEO.grave, MAT.stone), new THREE.Mesh(GEO.cross, MAT.stone)); grave.visible = false;
     const tag = nameTag(u);
-    g.add(body, grave, tag);
-    g.userData = { body, gun, grave, tag };
+    g.add(body, ring, grave, tag);
+    g.userData = { body, gun, grave, tag, ring, anim: fig, lx: u.x, lz: u.z, deadAt: 0 };
     scene.add(g); return g;
   }
   function syncBodies() {
-    for (const b of bodies) scene.remove(b);
+    for (const b of bodies) { scene.remove(b); if (b.userData.anim) b.userData.anim.mixer.stopAllAction(); }
     bodies = S.units.map(makeUnit);
   }
-  function updateBodies(time) {
+  function cue(u, name, ms = 900) { u.cue = name; u.cueUntil = performance.now() + ms; }
+  function updateBodies(time, dt) {
     S.units.forEach((u, i) => {
       const b = bodies[i]; if (!b) return;
-      const d = b.userData;
+      const d = b.userData, an = d.anim;
       b.visible = !u.drowned;
-      d.body.visible = !u.dead; d.grave.visible = u.dead && !u.drowned; d.tag.visible = !u.dead;
+      if (u.dead && !d.deadAt) d.deadAt = time;
+      if (!u.dead) d.deadAt = 0;
+      const showBody = !u.dead || (an && time - d.deadAt < 750);
+      d.body.visible = showBody; d.grave.visible = u.dead && !u.drowned && !showBody; d.tag.visible = !u.dead;
       b.position.set(u.x, u.y, u.z);
       d.body.rotation.y = -u.face * Math.PI / 180;
       const isActive = i === S.current && active;
-      d.gun.visible = isActive && !u.dead;
-      if (isActive) d.gun.rotation.x = S.angle * Math.PI / 180;
-      d.body.scale.y = isActive && !u.air ? 1 + Math.sin(time * .006) * .03 : 1;
+      d.ring.visible = !u.dead;
+      d.ring.material = isActive ? MAT.activeRing : MAT.teamRing[u.team];
+      if (isActive) d.ring.scale.setScalar(.78 + Math.sin(time * .008) * .08); else d.ring.scale.setScalar(.7);
+      d.gun.visible = isActive && !u.dead && (S.phase === 'aim') && !u.air;
+      if (d.gun.visible) d.gun.rotation.x = S.angle * Math.PI / 180;
+      if (!an) { d.body.scale.y = isActive && !u.air ? 1 + Math.sin(time * .006) * .03 : 1; }
+      else {
+        const moved = Math.hypot(u.x - d.lx, u.z - d.lz) / Math.max(dt, 1e-3); d.lx = u.x; d.lz = u.z;
+        d.speed = (d.speed || 0) * .8 + moved * .2;
+        let want = 'idle', speed = 1;
+        if (u.dead || (!alive(u) && !u.drowned)) want = 'death';
+        else if (u.cue && performance.now() < u.cueUntil) want = u.cue;
+        else if (celebrate && celebrate.team === u.team) want = 'dance';
+        else if (u.air) want = 'jump';
+        else if (d.speed > .4) { want = 'walk'; speed = clamp(d.speed / 2.2, .6, 1.6); }
+        playAnim(an, want, want === 'hit' ? .08 : .18, speed);
+        if (dt > 0 && (b.visible && d.body.visible)) an.mixer.update(dt);
+      }
       if (!u.dead) drawTag(u, d.tag);
     });
   }
   function itemMesh(it) {
     const g = new THREE.Group();
-    if (it.t === 'barrel') {
+    const kenney = ASSET.ready && (it.t === 'barrel' ? propMesh('barrel', 0xff8a74, 2.25) : it.t === 'crate' && it.kind !== 'health' ? propMesh('chest', 0xffffff, 2) : null);
+    if (kenney) {
+      g.add(kenney);
+      if (it.t === 'crate') { const chute = new THREE.Mesh(GEO.chute, MAT.chute); chute.position.y = 2.6; g.add(chute); g.userData.chute = chute; }
+    } else if (it.t === 'barrel') {
       const m = new THREE.Mesh(GEO.barrel, MAT.barrel); m.castShadow = true; g.add(m);
       for (const y of [.25, .85]) { const b = new THREE.Mesh(GEO.band2, MAT.barrelBand); b.position.y = y; g.add(b); }
     } else if (it.t === 'mine') {
@@ -645,7 +767,7 @@
   }
   function removeItem(it) {
     const i = S.items.indexOf(it); if (i >= 0) S.items.splice(i, 1);
-    const m = itemMeshes.get(it); if (m) { scene.remove(m); m.traverse(o => { if (o.geometry && !Object.values(GEO).includes(o.geometry)) o.geometry.dispose(); }); }
+    const m = itemMeshes.get(it); if (m) { scene.remove(m); m.traverse(o => { if (o.geometry && !o.geometry.userData.shared && !Object.values(GEO).includes(o.geometry)) o.geometry.dispose(); }); }
     itemMeshes.delete(it);
   }
 
@@ -694,7 +816,7 @@
     if (!alive(u) || amount <= 0) return 0;
     amount = Math.min(Math.ceil(u.hp), Math.round(amount));
     u.hp = Math.max(0, u.hp - amount);
-    damageNumber(u, amount); hudDirty = true;
+    damageNumber(u, amount); hudDirty = true; cue(u, 'hit', 650);
     if (u === S.units[S.current]) hurtActive = true;
     return amount;
   }
@@ -706,7 +828,8 @@
     boomSound(r);
     shake = Math.min(.9, .15 + r * .08);
     if (performance.now() - lastFlash > 250 && r > 2) { const f = $('impactFlash'); f.classList.remove('active'); void f.offsetWidth; f.classList.add('active'); lastFlash = performance.now(); }
-    if (navigator.vibrate && r > 2) try { navigator.vibrate(Math.min(120, 20 + r * 12)); } catch (_) {}
+    if (navigator.vibrate && r > 2 && inputMode === 'touch') try { navigator.vibrate(Math.min(120, 20 + r * 12)); } catch (_) {}
+    rumble(Math.min(1, .25 + r * .12), Math.min(1, .4 + r * .1), Math.min(420, 120 + r * 50));
     lastBlast = { x, y, z, at: gameTime };
     let biggest = null, biggestAmount = 0, enemyHit = false;
     for (const u of S.units) {
@@ -980,7 +1103,7 @@
     sound(880, .12, 'triangle', .04); later(.1, () => sound(1175, .16, 'triangle', .04));
     if (it.kind === 'health') { u.hp = Math.min(u.hp + 25, u.maxHp + 50); announce(u.name + ': +25 Lebenspunkte'); }
     else { const a = S.ammo[u.team]; if (a[it.kind] >= 0) a[it.kind]++; announce(u.name + ' findet: ' + LABEL[it.kind][1] + ' ' + LABEL[it.kind][2]); }
-    say(u, 'crate'); hudDirty = true;
+    say(u, 'crate'); cue(u, 'yes', 1000); hudDirty = true;
   }
   function dropCrate() {
     if (S.items.filter(i => i.t === 'crate').length >= 3 || Math.random() > .45) return;
@@ -1067,12 +1190,15 @@
     targetMarker.visible = false; cameraAz = u.face;
     if (S.round > 1 || team === 1) dropCrate();
     save(); hudDirty = true;
-    announce((S.mode === 'local' ? 'Team ' + (team ? 'Blau' : 'Rot') : team ? 'Computer' : 'Du') + ' ist dran: ' + u.name);
+    turnBanner(S.mode === 'local' ? 'TEAM ' + (team ? 'BLAU' : 'ROT') + ' IST DRAN' : team ? 'COMPUTER IST DRAN' : 'DU BIST DRAN', u.name, team);
+    if (!isBotTurn()) rumble(.1, .35, 120);
     say(u, 'turn');
     bot = isBotTurn() ? { stage: 'think', at: gameTime + 1.1 } : null;
   }
   function endMatch(winner) {
-    S.phase = 'over'; S.winner = winner; active = false; bot = null;
+    S.phase = 'over'; S.winner = winner; active = false; bot = null; charging = false; setCharge(false);
+    $('game').classList.add('over');
+    celebrate = winner >= 0 ? { team: winner, unit: S.units.find(u => u.team === winner && alive(u)) } : null;
     const won = winner === 0, campaign = S.mode === 'campaign';
     if (campaign && won) { progress = Math.max(progress, S.level + 1); try { localStorage.setItem(PROGRESS, JSON.stringify({ unlocked: progress })); } catch (_) {} }
     try { localStorage.removeItem(KEY); } catch (_) {}
@@ -1111,7 +1237,8 @@
     S.weapon = kind; hudDirty = true;
     if (NEEDS_TARGET.has(kind) && !isBotTurn()) {
       if (kind !== 'homing') { overview = true; $('viewBtn').classList.add('selected'); }
-      announce(kind === 'homing' ? 'Ziel antippen (sonst nächster Gegner)' : 'Ziel auf der Karte antippen', 2600);
+      if (inputMode === 'pad') { if (!S.target) defaultTarget(); announce(kind === 'homing' ? 'LT halten + Stick = Ziel · RT = Feuer' : 'Rechter Stick = Ziel bewegen · RT = Feuer', 2600); }
+      else announce(kind === 'homing' ? 'Ziel antippen (sonst nächster Gegner)' : 'Ziel auf der Karte antippen', 2600);
     }
   }
   function useWeapon() {
@@ -1128,6 +1255,7 @@
     const d = dirOf(S.yaw, S.angle), m = muzzle(u, d);
     actionFired = !['teleport', 'mine', 'dynamite'].includes(kind);
     if (kind !== 'shotgun' || shotsLeft === 0) say(u, kind === 'teleport' ? 'teleport' : 'fire');
+    cue(u, 'throw', 650); rumble(.35, .2, 90);
     overview = false; $('viewBtn').classList.remove('selected'); targetMarker.visible = false;
     if (CHARGE.has(kind)) {
       const sp = speedOf(S.power);
@@ -1343,10 +1471,14 @@
     $('weaponIcon').textContent = icon; $('weaponName').textContent = name + (ammo < 0 ? '' : ' · ' + ammo);
     $('fireIcon').textContent = S.phase === 'retreat' ? (sheep ? '💥' : '🏃') : icon;
     $('fireLabel').textContent = S.phase === 'retreat' ? (sheep ? 'BUMM' : 'LAUF!') : shotsLeft ? '2. SCHUSS' : 'FEUER';
+    $('padWeaponIcon').textContent = icon; $('padWeaponName').textContent = name; $('padWeaponAmmo').textContent = (ammo < 0 ? '∞ Schuss' : ammo + '× übrig') + (NEEDS_TARGET.has(id) ? ' · Ziel mit Stick' : '');
+    if (inputMode === 'pad') renderPadLegend();
+    const focusedWeapon = document.querySelector('#weaponGrid .nav-focus')?.dataset.weapon;
     $('weaponGrid').innerHTML = WEAPONS.map(([k, ic, nm, hint], i) => {
       const a = ammoOf(S.team, k);
       return `<button data-weapon="${k}" class="${S.weapon === k ? 'chosen' : ''}" ${a === 0 ? 'disabled' : ''}><span>${ic}</span><div>${nm}<small>${a < 0 ? '∞' : a + '×'} · ${hint}</small></div>${i < 10 ? `<kbd>${(i + 1) % 10}</kbd>` : ''}</button>`;
     }).join('');
+    if (focusedWeapon) { const fb = $('weaponGrid').querySelector(`[data-weapon="${focusedWeapon}"]`); if (fb) navFocus(fb); }
     const lock = bot || !active;
     for (const id2 of ['weaponBtn', 'skipBtn']) $(id2).disabled = lock || S.phase !== 'aim' || shotsLeft > 0;
     for (const id2 of ['jumpBtn', 'flipBtn']) $(id2).disabled = lock || !(S.phase === 'aim' || S.phase === 'retreat');
@@ -1357,6 +1489,7 @@
     if (v !== timerShown) { timerShown = v; $('timer').textContent = v; $('timer').classList.toggle('urgent', S.phase === 'retreat' || (S.phase === 'aim' && S.seconds <= 10)); }
     $('angleVal').textContent = Math.round(S.angle) + '°';
     $('powerVal').textContent = Math.round(S.power) + '%';
+    $('padPower').style.width = (charging ? Math.round(S.power) : 0) + '%';
     document.querySelector('.charge-ring').style.setProperty('--charge', (charging || (bot && bot.stage === 'charge') ? Math.round(S.power) : 0) + '%');
   }
   function updateAim() {
@@ -1386,17 +1519,19 @@
 
   // ---------- Kamera ----------
   function cameraUpdate(dt) {
+    if (camera.view && camera.view.enabled) camera.clearViewOffset();
     const u = activeUnit();
     let focus, dist = camDistance, az = cameraAz;
     const p = projectiles[0];
-    if (p && p.kind === 'airbomb' && strikeFocus) { focus = strikeFocus; dist = Math.max(camDistance, 20); }
+    if (S.phase === 'over' && celebrate && celebrate.unit && !p) { const c = celebrate.unit; focus = { x: c.x, y: c.y + 1, z: c.z }; dist = 7.5; cameraAz += dt * 14; az = cameraAz; }
+    else if (p && p.kind === 'airbomb' && strikeFocus) { focus = strikeFocus; dist = Math.max(camDistance, 20); }
     else if (p) { focus = { x: p.x, y: Math.max(p.y, height(p.x, p.z) + 2), z: p.z }; dist = Math.max(camDistance, 18); }
     else if (sheep) { focus = { x: sheep.x, y: sheep.y + 1, z: sheep.z }; }
     else if (lastBlast && gameTime - lastBlast.at < 1.4 && S.phase !== 'aim') { focus = lastBlast; dist = Math.max(camDistance, 14); }
     else if (overview) { focus = { x: 0, y: 2, z: 0 }; dist = innerWidth < innerHeight ? 70 : 52; az = overviewAz * 180 / Math.PI; }
     else if (u) { const a = S.yaw * Math.PI / 180, ahead = S.phase === 'aim' ? 2.5 : 0; focus = { x: u.x + Math.sin(a) * ahead, y: u.y + 1.4, z: u.z - Math.cos(a) * ahead }; }
     else focus = { x: 0, y: 2, z: 0 };
-    if (!overview && u && S.phase !== 'wait') cameraAz += (((S.yaw - cameraAz + 540) % 360) - 180) * Math.min(1, dt * 3);
+    if (!overview && u && S.phase !== 'wait' && S.phase !== 'over') cameraAz += (((S.yaw - cameraAz + 540) % 360) - 180) * Math.min(1, dt * 3);
     if (!cameraFocus) cameraFocus = new THREE.Vector3(focus.x, focus.y, focus.z);
     cameraFocus.lerp(new THREE.Vector3(focus.x, focus.y, focus.z), Math.min(1, dt * (p ? 5 : 3.5)));
     const a = (overview ? az : cameraAz) * Math.PI / 180, elev = overview ? .9 : p ? .5 : .42;
@@ -1406,6 +1541,7 @@
     camera.position.lerp(new THREE.Vector3(tx, ty, tz), Math.min(1, dt * 6));
     if (shake > 0) { camera.position.x += rand(-shake, shake); camera.position.y += rand(-shake, shake); shake = Math.max(0, shake - dt * 1.6); }
     camera.lookAt(cameraFocus.x, cameraFocus.y + (overview ? 0 : .8), cameraFocus.z);
+    if (S.phase === 'over' && celebrate && celebrate.unit) camera.setViewOffset(innerWidth, innerHeight, 0, innerHeight * .22, innerWidth, innerHeight);   // Sieger über dem Ergebnisfenster
     // Bäume und Felsen direkt vor der Kamera ausblenden, damit sie nicht die Sicht verdecken.
     for (const d of deco) d.visible = Math.hypot(d.position.x - camera.position.x, d.position.z - camera.position.z) > 3.5;
   }
@@ -1421,8 +1557,8 @@
     runEvents();
     const u = activeUnit();
     if (canMove() && !u.air) {
-      const fwd = -stickY + (pressed.has('w') ? 1 : 0) - (pressed.has('s') ? 1 : 0);
-      const turn = stickX + (pressed.has('d') ? 1 : 0) - (pressed.has('a') ? 1 : 0) + ((pressed.has('arrowright') ? 1 : 0) - (pressed.has('arrowleft') ? 1 : 0)) * .45;
+      const fwd = -stickY - padY + (pressed.has('w') ? 1 : 0) - (pressed.has('s') ? 1 : 0);
+      const turn = stickX + padX * Math.abs(padX) + (pressed.has('d') ? 1 : 0) - (pressed.has('a') ? 1 : 0) + ((pressed.has('arrowright') ? 1 : 0) - (pressed.has('arrowleft') ? 1 : 0)) * .45;
       if (Math.abs(turn) > .12) S.yaw += turn * 120 * dt;
       if (Math.abs(fwd) > .2) walk(u, Math.sign(fwd) * Math.min(1, Math.abs(fwd)) * dt * (fwd > 0 ? 2.6 : 1.6));
       u.face = S.yaw;
@@ -1445,11 +1581,15 @@
   function frame(time) {
     requestAnimationFrame(frame);
     const dt = Math.min(.05, last ? (time - last) / 1000 : .016); last = time;
-    if (!$('game').classList.contains('active') || !S) return;
+    padPoll(time, dt);
+    if (!S) return;
+    if ($('menu').classList.contains('active')) { attractFrame(time, dt); return; }
+    updatePrompts();
+    if (!$('game').classList.contains('active')) return;
     if (paused) { if (pausedFrames++ > 1) return; } else pausedFrames = 0;
     if (active && !paused) { update(dt); musicTick(dt); }
     updateParticles(dt);
-    updateBodies(time);
+    updateBodies(time, paused ? 0 : dt);
     if (hudDirty) updateHud();
     updateTimerText(); updateAim();
     water.position.y = S.water + Math.sin(time * .0012) * .05;
@@ -1553,7 +1693,10 @@
     const stopStick = e => { if (stickId === e.pointerId) { stickId = null; stickX = stickY = 0; thumb.style.transform = ''; } };
     stick.addEventListener('pointerup', stopStick); stick.addEventListener('pointercancel', stopStick);
     document.addEventListener('keydown', e => {
+      const scope = navScope();
+      if (scope) { if (navKey(e, scope)) e.preventDefault(); return; }
       if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+      if (e.isTrusted && !e.repeat) setInputMode('kbd');
       const k = e.key.toLowerCase();
       if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' ', 'tab', 'backspace'].includes(k) && $('game').classList.contains('active')) e.preventDefault();
       if (k === 'escape') { if (!$('weaponPanel').hidden) $('weaponPanel').hidden = true; else togglePause(); return; }
@@ -1564,7 +1707,7 @@
       if (k === 'enter') jump(false);
       if (k === 'backspace') jump(true);
       if (k === 'v') { overview = !overview; $('viewBtn').classList.toggle('selected', overview); }
-      if (k === 'tab' && !isBotTurn()) { $('weaponPanel').hidden = !$('weaponPanel').hidden; }
+      if (k === 'tab' && !isBotTurn()) openWeapons();
       if (/^[0-9]$/.test(k) && !isBotTurn()) { const w = WEAPONS[(+k + 9) % 10]; if (w) selectWeapon(w[0]); }
     });
     document.addEventListener('keyup', e => {
@@ -1572,6 +1715,7 @@
       if (k === ' ') releaseFire();
     });
     addEventListener('blur', () => { pressed.clear(); if (charging) releaseFire(); });
+    document.addEventListener('pointerdown', e => { if (e.isTrusted) setInputMode(e.pointerType === 'touch' || e.pointerType === 'pen' ? 'touch' : 'mouse'); }, true);
     const fb = $('fireBtn');
     let fireId = null;
     fb.addEventListener('pointerdown', e => { if (!active || paused || isBotTurn()) return; e.preventDefault(); fireId = e.pointerId; capture(fb, e); pressFire(); });
@@ -1582,23 +1726,370 @@
     if (!active || !S) return;
     paused = force === undefined ? !paused : force;
     if (paused && charging) { charging = false; setCharge(false); }
+    if (paused) $('weaponPanel').hidden = true;
     $('pause').hidden = !paused;
+    $('pauseSoundBtn').textContent = soundEnabled ? '🔊 Spielsound an' : '🔇 Spielsound aus';
+    afterOverlay();
   }
 
+  // ---------- Eingabe: Controller, Fokus-Navigation, Tasten-Hinweise ----------
+  const PAD = { prev: [], ready: false, dir: null, dirNext: 0, selectAt: 0, ltHeld: false, ltOverview: false, zoom: 1, idx: -1, legendKey: '' };
+  let padX = 0, padY = 0;
+  const GLYPH = {
+    xbox: { a: 'A', b: 'B', x: 'X', y: 'Y', lb: 'LB', rb: 'RB', lt: 'LT', rt: 'RT', select: '⧉', start: '☰', ls: 'L', rs: 'R', r3: 'R3', l3: 'L3', dpad: '✚' },
+    ps: { a: '✕', b: '○', x: '□', y: '△', lb: 'L1', rb: 'R1', lt: 'L2', rt: 'R2', select: '⧉', start: '☰', ls: 'L', rs: 'R', r3: 'R3', l3: 'L3', dpad: '✚' },
+    nin: { a: 'B', b: 'A', x: 'Y', y: 'X', lb: 'L', rb: 'R', lt: 'ZL', rt: 'ZR', select: '−', start: '+', ls: 'L', rs: 'R', r3: 'R3', l3: 'L3', dpad: '✚' }
+  };
+  const g = n => `<kbd class="g${padKind === 'ps' ? ' ps' : ''}" data-g="${n}">${GLYPH[padKind][n] || n}</kbd>`;
+  const k = t => `<kbd class="g k">${t}</kbd>`;
+  function setInputMode(mode) {
+    if (mode === inputMode) return false;
+    inputMode = mode;
+    document.body.classList.remove('input-touch', 'input-pad', 'input-kbd', 'input-mouse');
+    document.body.classList.add('input-' + mode);
+    if (mode === 'touch' || mode === 'mouse') for (const el of document.querySelectorAll('.nav-focus')) el.classList.remove('nav-focus');
+    else { const sc = navScope(); if (sc) ensureFocus(sc); }
+    promptsDirty = true; hudDirty = true;
+    return true;
+  }
+  let promptsDirty = true, promptScope = null;
+  function firstPad() {
+    const list = navigator.getGamepads ? navigator.getGamepads() : [];
+    if (PAD.idx >= 0 && list[PAD.idx] && list[PAD.idx].connected !== false) return list[PAD.idx];
+    for (let i = 0; i < list.length; i++) if (list[i] && list[i].connected !== false && list[i].buttons && list[i].buttons.length >= 10) { PAD.idx = i; return list[i]; }
+    PAD.idx = -1; return null;
+  }
+  function rumble(strong, weak, ms) {
+    if (inputMode !== 'pad') return;
+    const gp = firstPad(), va = gp && gp.vibrationActuator;
+    if (va && va.playEffect) try { va.playEffect('dual-rumble', { duration: ms, strongMagnitude: strong, weakMagnitude: weak }).catch(() => {}); } catch (_) {}
+  }
+  const dz = v => Math.abs(v) < .2 ? 0 : (v - Math.sign(v) * .2) / .8;
+  function padPoll(time, dt) {
+    const gp = firstPad();
+    if (!gp) { PAD.prev = []; PAD.ready = false; padX = padY = 0; return; }
+    const now = gp.buttons.map(b => !!b && (b.pressed || b.value > .5));
+    const ax = gp.axes.map(v => dz(v || 0));
+    if (!PAD.ready) { PAD.prev = []; PAD.ready = true; }
+    const hit = i => now[i] && !PAD.prev[i], rel = i => !now[i] && PAD.prev[i];
+    const dir = now[12] || ax[1] < -.6 ? 'up' : now[13] || ax[1] > .6 ? 'down' : now[14] || ax[0] < -.6 ? 'left' : now[15] || ax[0] > .6 ? 'right' : null;
+    const any = now.some((b, i) => b && !PAD.prev[i]) || ax.some(v => Math.abs(v) > .5);
+    if (any) {
+      const id = (gp.id || '').toLowerCase();
+      const kind = /054c|playstation|dualshock|dualsense|sony/.test(id) ? 'ps' : /057e|nintendo|switch|joy-con/.test(id) ? 'nin' : 'xbox';
+      if (kind !== padKind) { padKind = kind; promptsDirty = true; PAD.legendKey = ''; }
+      // Wechsel zum Controller: erster Druck zeigt nur den Fokusrahmen
+      if (setInputMode('pad') && navScope()) { PAD.prev = now; PAD.dir = dir; return; }
+    }
+    const scope = navScope();
+    // Richtung fürs Menü: Steuerkreuz oder linker Stick, mit Wiederholung beim Halten
+    if (scope) {
+      padX = padY = 0;
+      if (charging) releaseFire();
+      if (dir !== PAD.dir) { PAD.dir = dir; PAD.dirNext = time + 380; if (dir) navDir(dir); }
+      else if (dir && time > PAD.dirNext) { PAD.dirNext = time + 110; navDir(dir); }
+      if (hit(0)) navActivate();
+      else if (hit(1)) navBack();
+      else if (hit(9)) { if (scope.id === 'pause') togglePause(false); else if (scope.id === 'weaponPanel') $('weaponPanel').hidden = true; }
+      else if (scope.id === 'weaponPanel' && (hit(2) || hit(3))) $('weaponPanel').hidden = true;
+      else if (scope.id === 'help' && (hit(4) || hit(5))) helpTab(hit(4) ? -1 : 1);
+      if (rs(ax[3])) scope.querySelector('.dialog.wide, .sheet-card')?.scrollBy(0, ax[3] * dt * 600);
+      PAD.prev = now; PAD.selectAt = 0; return;
+    }
+    PAD.dir = dir;
+    const playing = $('game').classList.contains('active') && S && active && !paused;
+    if (hit(9) && $('game').classList.contains('active') && active) { togglePause(true); PAD.prev = now; return; }
+    if (!playing) { padX = padY = 0; PAD.prev = now; return; }
+    const mine = !isBotTurn();
+    padX = mine ? ax[0] : 0; padY = mine ? ax[1] : 0;
+    if (mine) {
+      const targeting = NEEDS_TARGET.has(S.weapon) && S.phase === 'aim' && (now[6] || S.weapon !== 'homing');
+      // LT halten: Übersicht zum Zielen
+      if (now[6] && NEEDS_TARGET.has(S.weapon) && !PAD.ltHeld) { PAD.ltHeld = true; if (!overview) { overview = true; PAD.ltOverview = true; $('viewBtn').classList.add('selected'); } if (!S.target) defaultTarget(); }
+      if (!now[6] && PAD.ltHeld) { PAD.ltHeld = false; if (PAD.ltOverview && S.weapon === 'homing') { overview = false; $('viewBtn').classList.remove('selected'); } PAD.ltOverview = false; }
+      const rx = ax[2] || 0, ry = ax[3] || 0;
+      if (targeting && S.target) {
+        moveTarget((rx + (now[6] ? ax[0] : 0)) * dt * 16, (ry + (now[6] ? ax[1] : 0)) * dt * 16);
+        if (now[6]) padX = padY = 0;
+      } else if (overview) overviewAz -= rx * dt * 1.8;
+      else if (canAct()) {
+        const u = activeUnit();
+        if (rx) { S.yaw += rx * Math.abs(rx) * 140 * dt; u.face = S.yaw; }
+        if (ry) S.angle = clamp(S.angle - ry * Math.abs(ry) * 70 * dt, -80, 85);
+      }
+      if (canAct()) {
+        const u = activeUnit();
+        if (now[12] || now[13]) S.angle = clamp(S.angle + (now[12] ? 1 : -1) * 22 * dt, -80, 85);
+        if (now[14] || now[15]) { S.yaw += (now[15] ? 1 : -1) * 30 * dt; u.face = S.yaw; }
+      }
+      if (hit(0)) jump(false);
+      if (hit(1)) jump(true);
+      if (hit(2) && canAct() && shotsLeft === 0) openWeapons();
+      if (hit(3)) { overview = !overview; PAD.ltOverview = false; $('viewBtn').classList.toggle('selected', overview); }
+      if (hit(4)) cycleWeapon(-1);
+      if (hit(5)) cycleWeapon(1);
+      if (hit(7)) pressFire();
+      if (rel(7)) releaseFire();
+      if (hit(11)) { PAD.zoom = (PAD.zoom + 1) % 3; camDistance = [9, innerWidth < innerHeight ? 15 : 12.5, 20][PAD.zoom]; }
+      if (hit(10)) { overview = false; $('viewBtn').classList.remove('selected'); cameraAz = S.yaw; }
+      // Select halten: Zug beenden
+      if (now[8] && !now[9] && canAct() && shotsLeft === 0) {
+        if (!PAD.selectAt) PAD.selectAt = time;
+        const p = Math.min(1, (time - PAD.selectAt) / 700);
+        const bar = document.querySelector('#padLegend .hold b'); if (bar) bar.style.setProperty('--p', Math.round(p * 100) + '%');
+        if (p >= 1) { PAD.selectAt = 0; passTurn(); }
+      } else if (PAD.selectAt) { PAD.selectAt = 0; const bar = document.querySelector('#padLegend .hold b'); if (bar) bar.style.setProperty('--p', '0%'); }
+    }
+    PAD.prev = now;
+  }
+  const rs = v => Math.abs(v || 0) > .3;
+  function defaultTarget() {
+    const u = activeUnit(); if (!u) return;
+    let t;
+    if (S.weapon === 'teleport') { const a = S.yaw * Math.PI / 180; t = { x: u.x + Math.sin(a) * 8, z: u.z - Math.cos(a) * 8 }; }
+    else { const e = nearestEnemy(u); t = e ? { x: e.x, z: e.z } : { x: u.x, z: u.z }; }
+    setTarget(t.x, t.z);
+  }
+  function setTarget(x, z) {
+    x = clamp(x, -HALF + 1.5, HALF - 1.5); z = clamp(z, -HALF + 1.5, HALF - 1.5);
+    S.target = { x, y: height(x, z), z };
+    targetMarker.visible = true; targetMarker.position.set(x, Math.max(S.target.y, S.water) + .1, z);
+    if (S.weapon !== 'homing') { const u = activeUnit(); S.yaw = Math.atan2(x - u.x, -(z - u.z)) * 180 / Math.PI; u.face = S.yaw; }
+  }
+  function moveTarget(mx, mz) {
+    if (!mx && !mz) return;
+    // relativ zur Kamera: Stick nach oben = vom Betrachter weg
+    const fx = cameraFocus ? cameraFocus.x - camera.position.x : 0, fz = cameraFocus ? cameraFocus.z - camera.position.z : -1, l = Math.hypot(fx, fz) || 1;
+    const f = { x: fx / l, z: fz / l }, r = { x: -f.z, z: f.x };
+    setTarget(S.target.x + r.x * mx - f.x * mz, S.target.z + r.z * mx - f.z * mz);
+  }
+  function cycleWeapon(d) {
+    if (!S || S.phase !== 'aim' || shotsLeft > 0 || isBotTurn()) return;
+    let i = WEAPONS.findIndex(w => w[0] === S.weapon);
+    for (let n = 0; n < WEAPONS.length; n++) {
+      i = (i + d + WEAPONS.length) % WEAPONS.length;
+      if (ammoOf(S.team, WEAPONS[i][0]) !== 0) { selectWeapon(WEAPONS[i][0]); break; }
+    }
+    sound(560 + d * 40, .05, 'triangle', .02);
+    const el = document.querySelector('.pad-weapon'); el.classList.remove('swap'); void el.offsetWidth; el.classList.add('swap');
+  }
+  function openWeapons() {
+    if (!canAct() || isBotTurn() || shotsLeft > 0) return;
+    $('weaponPanel').hidden = false;
+    if (inputMode === 'pad' || inputMode === 'kbd') { const b = $('weaponGrid').querySelector('.chosen') || $('weaponGrid').querySelector('button:not(:disabled)'); if (b) navFocus(b); }
+  }
+  function passTurn() {
+    if (canAct() && !isBotTurn() && shotsLeft === 0) { announce('Zug beendet'); say(activeUnit(), 'pass'); endTurn(); }
+  }
+  function turnBanner(head, name, team) {
+    const el = $('turnBanner');
+    $('turnBannerTeam').textContent = head; $('turnBannerName').textContent = name;
+    el.classList.toggle('blue', team === 1); el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+  }
+  function renderPadLegend() {
+    const tgt = S && NEEDS_TARGET.has(S.weapon);
+    const key = padKind + (tgt ? 't' : '') + (S && S.weapon);
+    if (key === PAD.legendKey) return; PAD.legendKey = key;
+    const items = [[g('rt'), 'Feuer (halten)'], [g('rs'), tgt && S.weapon !== 'homing' ? 'Ziel bewegen' : 'Zielen'], [g('a'), 'Sprung'], [g('b'), 'Salto'], [g('x'), 'Waffen'], [g('y'), 'Übersicht']];
+    if (tgt) items.push([g('lt'), 'Ziel setzen']);
+    $('padLegend').innerHTML = items.map(([a, b]) => `<span>${a}${b}</span>`).join('') + `<span class="hold">${g('select')}Zug beenden <i><b></b></i></span><span>${g('start')}Pause</span>`;
+  }
+  // Fokus-Navigation (Controller, Tastatur, TV-Fernbedienung)
+  const OVERLAYS = ['confirm', 'help', 'cloud', 'pause', 'result'];
+  function navScope() {
+    for (const id of OVERLAYS) if (!$(id).hidden) return $(id);
+    if ($('game').classList.contains('active') && !$('weaponPanel').hidden) return $('weaponPanel');
+    if ($('menu').classList.contains('active')) return $('menu');
+    return null;
+  }
+  function focusables(scope) {
+    return [...scope.querySelectorAll('button, a[href], input, textarea, select, [tabindex="0"]')].filter(e => !e.disabled && !e.closest('[hidden]') && e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden');
+  }
+  function navFocus(el) {
+    for (const o of document.querySelectorAll('.nav-focus')) if (o !== el) o.classList.remove('nav-focus');
+    el.classList.add('nav-focus');
+    try { el.focus({ preventScroll: true }); } catch (_) {}
+    el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    promptsDirty = true;
+  }
+  function current(scope) {
+    const a = document.querySelector('.nav-focus');
+    return a && scope.contains(a) && focusables(scope).includes(a) ? a : null;
+  }
+  function ensureFocus(scope) {
+    const cur = current(scope); if (cur) return cur;
+    const list = focusables(scope); if (!list.length) return null;
+    const pref = list.find(e => e.matches('[data-autofocus]')) || list.find(e => e.matches('.primary')) || list[0];
+    navFocus(pref); return pref;
+  }
+  function navDir(dir) {
+    const scope = navScope(); if (!scope) return;
+    const cur = current(scope);
+    if (!cur) { ensureFocus(scope); return; }
+    if ((dir === 'left' || dir === 'right') && cur.classList.contains('cycler')) { cycleOpt(cur, dir === 'left' ? -1 : 1); return; }
+    const r0 = cur.getBoundingClientRect(), cx = r0.left + r0.width / 2, cy = r0.top + r0.height / 2;
+    const v = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[dir];
+    let best = null, bestScore = Infinity;
+    const list = focusables(scope);
+    for (const e of list) {
+      if (e === cur) continue;
+      const r = e.getBoundingClientRect(), ex = r.left + r.width / 2, ey = r.top + r.height / 2;
+      const dx = ex - cx, dy = ey - cy, main = dx * v[0] + dy * v[1];
+      if (main <= 4) continue;
+      const side = Math.abs(dx * v[1]) + Math.abs(dy * v[0]);
+      const score = main + side * 2.2;
+      if (score < bestScore) { bestScore = score; best = e; }
+    }
+    if (!best && (dir === 'up' || dir === 'down')) {   // am Rand: einmal herum
+      const sorted = list.slice().sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
+      best = dir === 'down' ? sorted[0] : sorted[sorted.length - 1];
+      if (best === cur) best = null;
+    }
+    if (best) { navFocus(best); sound(720, .03, 'triangle', .012); }
+  }
+  function navActivate() {
+    const scope = navScope(); if (!scope) return;
+    const cur = current(scope) || ensureFocus(scope); if (!cur) return;
+    sound(880, .05, 'triangle', .018);
+    cur.click();
+  }
+  function navBack() {
+    const scope = navScope(); if (!scope) return;
+    if (scope.id === 'pause') { togglePause(false); return; }
+    if (scope.id === 'weaponPanel') { $('weaponPanel').hidden = true; return; }
+    const b = [...scope.querySelectorAll('[data-back]')].find(e => !e.closest('[hidden]') && e.getClientRects().length);
+    if (b) { sound(420, .05, 'triangle', .015); b.click(); }
+  }
+  function navKey(e, scope) {
+    const key = e.key, t = document.activeElement;
+    const typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT');
+    if (typing && key !== 'Escape') return false;
+    const dirs = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' };
+    if (dirs[key]) { if (!setInputMode('kbd')) navDir(dirs[key]); return true; }
+    if (key === 'Enter' || key === ' ') { if (!setInputMode('kbd') && !e.repeat) navActivate(); return true; }
+    if (key === 'Escape' || key === 'Backspace' || key === 'GoBack' || key === 'BrowserBack') { navBack(); return true; }
+    if (scope.id === 'weaponPanel') {
+      if (key === 'Tab') { $('weaponPanel').hidden = true; return true; }
+      if (/^[0-9]$/.test(key)) { const w = WEAPONS[(+key + 9) % 10]; if (w) { selectWeapon(w[0]); $('weaponPanel').hidden = true; } return true; }
+    }
+    if (key === 'Tab') { navDir(e.shiftKey ? 'up' : 'down'); return true; }
+    return false;
+  }
+  function updatePrompts() {
+    const scope = navScope(), show = !!scope && (inputMode === 'pad' || inputMode === 'kbd');
+    document.body.classList.toggle('prompts', show);
+    if (!show || (!promptsDirty && promptScope === scope)) return;
+    promptsDirty = false; promptScope = scope;
+    const pad = inputMode === 'pad', cur = current(scope);
+    const parts = [[pad ? g('a') : k('Enter'), 'Auswählen']];
+    if (cur && cur.classList.contains('cycler')) parts.unshift([pad ? g('dpad') : k('← →'), 'Ändern']);
+    if (scope.id !== 'menu' && scope.id !== 'result') parts.push([pad ? g('b') : k('Esc'), scope.id === 'pause' ? 'Weiter' : 'Zurück']);
+    if (scope.id === 'help') parts.push([pad ? g('lb') + g('rb') : '', 'Reiter']);
+    $('promptBar').innerHTML = parts.map(([a, b]) => `<span>${a}${b}</span>`).join('');
+  }
+  // Bestätigung ohne Browser-Dialog (Controller-tauglich)
+  let confirmResolve = null;
+  function ask(text, yes = 'Ja') {
+    return new Promise(res => {
+      $('confirmText').textContent = text; $('confirmYes').textContent = yes;
+      confirmResolve = res; $('confirm').hidden = false;
+      if (inputMode !== 'touch' && inputMode !== 'mouse') navFocus($('confirmNo'));
+    });
+  }
+  function closeConfirm(v) { $('confirm').hidden = true; const r = confirmResolve; confirmResolve = null; if (r) r(v); afterOverlay(); }
+  function afterOverlay() { const sc = navScope(); if (sc && (inputMode === 'pad' || inputMode === 'kbd')) ensureFocus(sc); promptsDirty = true; }
+  // Steuerungs-Übersicht
+  let helpMode = 'pad';
+  function helpTab(d) { const order = ['pad', 'kbd', 'touch']; helpMode = order[(order.indexOf(helpMode) + d + 3) % 3]; renderHelp(); }
+  function renderHelp() {
+    for (const b of document.querySelectorAll('[data-help]')) b.classList.toggle('on', b.dataset.help === helpMode);
+    const rows = {
+      pad: [[g('ls'), 'Laufen & drehen'], [g('rs'), 'Zielen: Richtung & Winkel'], [g('rt'), 'Feuer – halten für mehr Kraft'], [g('a'), 'Sprung nach vorn'], [g('b'), 'Salto rückwärts'], [g('x'), 'Waffenliste'],
+        [g('lb') + g('rb'), 'Waffe wechseln'], [g('y'), 'Übersicht der Karte'], [g('lt'), 'Ziel setzen (Luftangriff, Teleporter, Zielsuchrakete)'], [g('dpad'), 'Feinzielen'], [g('r3'), 'Zoom'], [g('select'), 'Halten: Zug beenden'], [g('start'), 'Pause'], [g('a') + g('b'), 'Im Menü: Bestätigen / Zurück']],
+      kbd: [[k('W') + k('S'), 'Laufen'], [k('A') + k('D'), 'Drehen'], [k('↑') + k('↓'), 'Winkel'], [k('Leertaste'), 'Feuer – halten für mehr Kraft'], [k('Enter'), 'Sprung'], [k('⌫'), 'Salto'], [k('Tab'), 'Waffenliste'],
+        [k('1') + '–' + k('0'), 'Waffe direkt'], [k('V'), 'Übersicht'], [k('Esc'), 'Pause'], ['🖱️', 'Ziehen = zielen, Klick = Ziel, Rad = Zoom'], [k('↑↓') + k('Enter'), 'Menüs & TV-Fernbedienung']],
+      touch: [['🕹️', 'Stick: laufen & drehen'], ['👆', 'Bildschirm ziehen: drehen & Winkel'], ['🎯', 'Gegner/Boden antippen: hindrehen oder Ziel setzen'], ['🔴', 'FEUER halten = Kraft'], ['↗ ⤺', 'Sprung / Salto'], ['»', 'Zug beenden'], ['🤏', 'Zwei Finger: Zoom'], ['👁', 'Übersicht']]
+    }[helpMode];
+    $('helpBody').innerHTML = rows.map(([a, b]) => `<div><span>${a}</span><span>${b}</span></div>`).join('');
+  }
+  function openHelp() { helpMode = inputMode === 'pad' ? 'pad' : inputMode === 'touch' ? 'touch' : 'kbd'; renderHelp(); $('help').hidden = false; afterOverlay(); }
+
   // ---------- Menü & Start ----------
+  const WORLD_INFO = { island: ['🌴', 'Inselgruppe & Brücken'], desert: ['🏜️', 'Tafelberge & Fluss'], snow: ['❄️', 'Zwei Burgen mit Mauern'], volcano: ['🌋', 'Ringinsel im Lavasee'] };
+  const MODE_NAMES = { campaign: 'Feldzug', cpu: 'Schnelles Gefecht', local: 'Zu zweit' };
   function readSettings() { try { return JSON.parse(localStorage.getItem(SETTINGS) || '{}'); } catch (_) { return {}; } }
   function writeSettings() {
     try { localStorage.setItem(SETTINGS, JSON.stringify({ mode: $('mode').value, difficulty: $('difficulty').value, world: menuWorld, worms: $('worms').value, level: menuLevel })); } catch (_) {}
   }
+  function stepSelect(sel, d) { const n = sel.options.length; sel.selectedIndex = (sel.selectedIndex + d + n) % n; }
+  function cycleOpt(el, d) {
+    const opt = el.dataset.opt;
+    if (opt === 'mode') stepSelect($('mode'), d);
+    else if (opt === 'difficulty') stepSelect($('difficulty'), d);
+    else if (opt === 'worms') stepSelect($('worms'), d);
+    else if (opt === 'level') { if (progress <= 1) { announceMenu('Weitere Level schaltest du im Feldzug frei'); return; } menuLevel = (menuLevel - 1 + d + progress) % progress + 1; }
+    else if (opt === 'world') { const i = WORLD_ORDER.indexOf(menuWorld); menuWorld = WORLD_ORDER[(i + d + 4) % 4]; }
+    else if (opt === 'sound') setSound(!soundEnabled);
+    sound(d > 0 ? 620 : 540, .06, 'triangle', .02);
+    refreshMenu(); writeSettings();
+    el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+  }
+  function announceMenu(t) { $('infoText').textContent = t; }
+  function previewWorld() { return $('mode').value === 'campaign' ? levelConfig(menuLevel).world : menuWorld; }
   function refreshMenu() {
-    const campaign = $('mode').value === 'campaign';
-    $('levelPicker').hidden = !campaign; $('worldPicker').hidden = campaign; $('wormsOption').hidden = campaign;
+    const mode = $('mode').value, campaign = mode === 'campaign';
     menuLevel = clamp(menuLevel, 1, progress);
-    const c = levelConfig(menuLevel);
-    $('levelTitle').textContent = 'LEVEL ' + menuLevel + (menuLevel === progress ? ' · NEU' : ' ✓');
-    $('levelInfo').textContent = `${c.player} gegen ${c.enemy} Würmer · ${worlds[c.world].name} · ${c.mines} Minen`;
-    $('levelPrev').disabled = menuLevel <= 1; $('levelNext').disabled = menuLevel >= progress;
-    document.querySelectorAll('[data-world]').forEach(b => { const on = b.dataset.world === menuWorld; b.classList.toggle('selected', on); b.setAttribute('aria-pressed', String(on)); });
+    $('levelRow').hidden = !campaign; $('worldRow').hidden = campaign; $('wormsRow').hidden = campaign;
+    const c = levelConfig(menuLevel), world = previewWorld(), w = +$('worms').value || 4;
+    $('modeVal').textContent = MODE_NAMES[mode];
+    $('levelVal').textContent = menuLevel + (menuLevel === progress ? ' · NEU' : ' ✓');
+    $('worldVal').textContent = WORLD_INFO[menuWorld][0] + ' ' + worlds[menuWorld].name;
+    $('wormsVal').textContent = w;
+    $('difficultyVal').textContent = $('difficulty').selectedOptions[0].textContent;
+    $('soundVal').textContent = soundEnabled ? 'An' : 'Aus';
+    $('startInfo').textContent = campaign ? `Feldzug · Level ${menuLevel}` : `${MODE_NAMES[mode]} · ${worlds[menuWorld].name}`;
+    $('infoEyebrow').textContent = campaign ? 'FELDZUG · LEVEL ' + menuLevel : mode === 'local' ? 'ZU ZWEIT AN EINEM GERÄT' : 'SCHNELLES GEFECHT';
+    $('infoTitle').textContent = WORLD_INFO[world][0] + ' ' + worlds[world].name;
+    $('infoText').textContent = WORLD_INFO[world][1] + (campaign ? ` · ${c.mines} Minen · Wind bis ${c.windMax.toFixed(1)}` : ' · 6 Minen · 5 Ölfässer');
+    $('infoRed').textContent = (campaign ? c.player : w) + ' Würmer'; $('infoBlue').textContent = (campaign ? c.enemy : w) + ' Würmer';
+    $('infoBlueName').textContent = mode === 'local' ? 'TEAM BLAU' : 'COMPUTER';
+    document.querySelector('.squad.red b').textContent = mode === 'local' ? 'TEAM ROT' : 'DEIN TRUPP';
+    promptsDirty = true;
+    if ($('menu').classList.contains('active')) scheduleAttract();
+  }
+  // Menü-Hintergrund: die gewählte Karte in 3D, beide Trupps stehen bereit
+  let attractTimer = 0;
+  function scheduleAttract() { clearTimeout(attractTimer); attractTimer = setTimeout(() => buildAttract(), 220); }
+  function buildAttract(force) {
+    const world = previewWorld();
+    if (!force && (!$('menu').classList.contains('active') || (attract && attract.world === world))) return;
+    matchId++; active = false; paused = false; celebrate = null; bot = null;
+    for (const p of projectiles.slice()) removeProjectile(p);
+    for (const p of particles) { scene.remove(p.mesh); if (p.own) p.mesh.material.dispose(); }
+    particles = []; events = []; if (sheep) { scene.remove(sheep.mesh); sheep = null; }
+    newState({ mode: 'cpu', level: 0, difficulty: 'normal', world, player: 4, enemy: 4, mines: 2, barrels: 4, skill: .5, suddenDeath: 99, windMax: 1, enemyHp: 100 });
+    S.phase = 'menu'; S.current = -1;
+    targetMarker.visible = false; crosshair.visible = false; arrow.visible = false; aimLine.visible = false;
+    applyWorld(); buildTerrain(); addDecor(); syncBodies(); syncItems();
+    attract = { world, t: Math.random() * 40, next: 1 };
+  }
+  function attractFrame(time, dt) {
+    if (!attract) return;
+    attract.t += dt; attract.next -= dt;
+    if (attract.next < 0 && S.units.length) {
+      attract.next = rand(.8, 1.8);
+      const u = S.units[Math.floor(Math.random() * S.units.length)];
+      cue(u, ['dance', 'yes', 'no', 'throw', 'jump'][Math.floor(Math.random() * 5)], 1600);
+    }
+    updateParticles(dt); updateBodies(time, dt);
+    const a = attract.t * .07, wide = innerWidth > innerHeight;
+    camera.position.set(Math.sin(a) * 27, 13.5, Math.cos(a) * 27);
+    camera.lookAt(0, wide ? 1 : -3, 0);
+    if (wide) { const off = innerWidth * .16; camera.setViewOffset(innerWidth, innerHeight, -off, 0, innerWidth, innerHeight); } else camera.clearViewOffset();
+    water.position.y = S.water + Math.sin(time * .0012) * .05;
+    for (const d of deco) d.visible = true;
+    renderer.render(scene, camera);
+    updatePrompts();
   }
   function config(level) {
     const mode = $('mode').value, difficulty = $('difficulty').value, adj = { easy: -.15, normal: 0, hard: .15 }[difficulty] || 0;
@@ -1610,7 +2101,7 @@
     return { mode, level: 0, difficulty, world: menuWorld, player: w, enemy: w, mines: 6, barrels: 5, skill: { easy: .3, normal: .6, hard: .85 }[difficulty] || .6, suddenDeath: 12, windMax: 2.6, enemyHp: 100 };
   }
   function startGame(continued, level = menuLevel) {
-    matchId++;
+    matchId++; clearTimeout(attractTimer);
     for (const p of projectiles.slice()) removeProjectile(p);
     for (const p of particles) { scene.remove(p.mesh); if (p.own) p.mesh.material.dispose(); }
     particles = []; events = []; bot = null; lastBlast = null; cameraFocus = null;
@@ -1620,7 +2111,8 @@
     sound(660, .18, 'triangle', .032);
     clearSpeeches(); actionDamage = 0; actionFired = false; hurtActive = false; shotsLeft = 0; gameTime = 0; acc = 0;
     active = true; paused = false; charging = false; overview = false; $('viewBtn').classList.remove('selected'); stickX = stickY = 0;
-    $('pause').hidden = true; $('result').hidden = true; $('weaponPanel').hidden = true;
+    $('pause').hidden = true; $('result').hidden = true; $('weaponPanel').hidden = true; $('confirm').hidden = true;
+    celebrate = null; attract = null; camera.clearViewOffset(); $('game').classList.remove('over'); PAD.ltHeld = false; padX = padY = 0; PAD.legendKey = '';
     applyWorld(); buildTerrain(); addDecor(); syncBodies(); syncItems();
     show('game');
     if (continued) {
@@ -1634,9 +2126,20 @@
       nextTurn();
     }
   }
-  function show(which) { for (const el of document.querySelectorAll('.screen')) el.classList.toggle('active', el.id === which); }
+  function show(which) {
+    for (const el of document.querySelectorAll('.screen')) el.classList.toggle('active', el.id === which);
+    if (which === 'menu') { buildAttract(); $('continueGame').hidden = !read(); refreshMenu(); }
+    for (const el of document.querySelectorAll('.nav-focus')) el.classList.remove('nav-focus');
+    afterOverlay();
+  }
+  function toMenu() {
+    paused = false; active = false; bot = null; charging = false;
+    for (const id of ['pause', 'result', 'confirm', 'help']) $(id).hidden = true;
+    $('weaponPanel').hidden = true; clearSpeeches();
+    show('menu');
+  }
   function boot() {
-    updateLoad(30, 'Lade Spielregeln');
+    updateLoad(20, 'Lade Spielregeln');
     try { setSound(localStorage.getItem('easygames.kraterkommando.sound') !== '0'); } catch (_) {}
     try { progress = Math.max(1, +JSON.parse(localStorage.getItem(PROGRESS) || '{}').unlocked || 1); } catch (_) {}
     const st = readSettings();
@@ -1645,43 +2148,59 @@
     if (st.worms) $('worms').value = st.worms;
     if (worlds[st.world]) menuWorld = st.world;
     menuLevel = clamp(+st.level || progress, 1, progress);
-    refreshMenu();
-    $('mode').onchange = () => { refreshMenu(); writeSettings(); };
-    $('difficulty').onchange = $('worms').onchange = writeSettings;
-    $('levelPrev').onclick = () => { menuLevel--; refreshMenu(); writeSettings(); };
-    $('levelNext').onclick = () => { menuLevel++; refreshMenu(); writeSettings(); };
-    $('worldCards').onclick = e => { const b = e.target.closest('[data-world]'); if (!b) return; menuWorld = b.dataset.world; refreshMenu(); writeSettings(); sound(520, .09, 'triangle', .022); };
-    $('menuSoundBtn').onclick = () => setSound(!soundEnabled);
-    $('pauseSoundBtn').onclick = () => setSound(!soundEnabled);
+    for (const el of document.querySelectorAll('.cycler')) el.addEventListener('click', e => {
+      const arrows = el.querySelectorAll('.opt-value i');
+      cycleOpt(el, e.target === arrows[0] ? -1 : 1);
+    });
+    $('pauseSoundBtn').onclick = () => { setSound(!soundEnabled); $('pauseSoundBtn').textContent = soundEnabled ? '🔊 Spielsound an' : '🔇 Spielsound aus'; };
     init3D();
-    updateLoad(80, 'Baue Welten');
-    $('newGame').onclick = () => {
-      if (read() && !confirm('Das gespeicherte Gefecht durch ein neues ersetzen?')) return;
+    updateLoad(35, 'Lade 3D-Figuren');
+    const ready = () => {
+      updateLoad(95, 'Baue Welten');
+      buildAttract(true);
+      updateLoad(100, 'Bereit');
+      setTimeout(() => show('menu'), 250);
+    };
+    loadAssets(f => updateLoad(35 + Math.round(f * 55), 'Lade 3D-Figuren')).then(ready, ready);
+    $('newGame').onclick = async () => {
+      if (read() && !(await ask('Das gespeicherte Gefecht durch ein neues ersetzen?', 'Neues Gefecht'))) return;
       writeSettings(); startGame(false);
     };
     $('continueGame').onclick = () => startGame(true);
+    $('helpBtn').onclick = openHelp; $('pauseHelpBtn').onclick = openHelp;
+    $('helpClose').onclick = () => { $('help').hidden = true; afterOverlay(); };
+    for (const b of document.querySelectorAll('[data-help]')) b.onclick = () => { helpMode = b.dataset.help; renderHelp(); };
+    $('cloudBtn').onclick = () => { $('cloud').hidden = false; afterOverlay(); };
+    $('cloudClose').onclick = () => { $('cloud').hidden = true; afterOverlay(); };
+    $('confirmYes').onclick = () => closeConfirm(true);
+    $('confirmNo').onclick = () => closeConfirm(false);
     $('pauseBtn').onclick = () => togglePause();
     $('viewBtn').onclick = () => { if (!active) return; overview = !overview; $('viewBtn').classList.toggle('selected', overview); };
     $('resumeBtn').onclick = () => togglePause(false);
-    $('saveQuitBtn').onclick = () => { paused = false; active = false; bot = null; $('pause').hidden = true; $('continueGame').hidden = !read(); refreshMenu(); show('menu'); };
-    $('restartBtn').onclick = () => { if (confirm('Dieses Gefecht neu starten?')) startGame(false, S.level || menuLevel); };
+    $('saveQuitBtn').onclick = toMenu;
+    $('restartBtn').onclick = async () => { if (await ask('Dieses Gefecht neu starten?', 'Neu starten')) startGame(false, S.level || menuLevel); };
     $('againBtn').onclick = () => startGame(false, S.level || menuLevel);
     $('nextLevelBtn').onclick = () => { menuLevel = Math.min(progress, S.level + 1); writeSettings(); startGame(false, menuLevel); };
-    $('resultMenuBtn').onclick = () => { $('result').hidden = true; refreshMenu(); show('menu'); };
+    $('resultMenuBtn').onclick = toMenu;
     $('jumpBtn').onclick = () => jump(false);
     $('flipBtn').onclick = () => jump(true);
-    $('skipBtn').onclick = () => { if (canAct() && !isBotTurn() && shotsLeft === 0) { announce('Zug beendet'); say(activeUnit(), 'pass'); endTurn(); } };
-    $('weaponBtn').onclick = () => { if (canAct() && !isBotTurn() && shotsLeft === 0) $('weaponPanel').hidden = false; };
+    $('skipBtn').onclick = passTurn;
+    $('weaponBtn').onclick = openWeapons;
     $('closeWeapon').onclick = () => $('weaponPanel').hidden = true;
     $('weaponPanel').addEventListener('click', e => { if (e.target === $('weaponPanel')) $('weaponPanel').hidden = true; });
     $('weaponGrid').onclick = e => { const b = e.target.closest('[data-weapon]'); if (!b || b.disabled) return; selectWeapon(b.dataset.weapon); $('weaponPanel').hidden = true; };
+    new MutationObserver(() => afterOverlay()).observe($('weaponPanel'), { attributes: true, attributeFilter: ['hidden'] });
+    new MutationObserver(() => afterOverlay()).observe($('result'), { attributes: true, attributeFilter: ['hidden'] });
     addEventListener('pagehide', () => { if (active && S && S.phase !== 'over') writeSettings(); });
     document.addEventListener('visibilitychange', () => { if (document.hidden && active && !paused) togglePause(true); });
+    addEventListener('gamepadconnected', () => { PAD.ready = false; });
     $('continueGame').hidden = !read();
-    updateLoad(100, 'Bereit');
-    setTimeout(() => show('menu'), 300);
+    refreshMenu();
     if (/[?&]test\b/.test(location.search)) window.KK = { get S() { return S; }, startGame, useWeapon, selectWeapon, endTurn, explode, height, get phase() { return S && S.phase; }, set yaw(v) { S.yaw = v; }, setTime: v => { S.seconds = v; }, set autoplay(v) { autoplay = v; },
-      tick(n, dt = 1 / 30) { for (let i = 0; i < n && active; i++) { update(dt); updateParticles(dt); if (hudDirty) updateHud(); } return S.phase; }, stats: () => ({ projectiles: projectiles.length, particles: particles.length, events: events.length, scene: scene.children.length, bot: bot && bot.stage }) };
+      tick(n, dt = 1 / 30) { for (let i = 0; i < n && active; i++) { update(dt); updateParticles(dt); if (hudDirty) updateHud(); } return S.phase; },
+      stats: () => ({ projectiles: projectiles.length, particles: particles.length, events: events.length, scene: scene.children.length, bot: bot && bot.stage }),
+      get assets() { return ASSET.ready; }, get input() { return inputMode; }, get focus() { const f = document.querySelector('.nav-focus'); return f && (f.id || f.dataset.opt || f.dataset.weapon || f.textContent.trim().slice(0, 30)); },
+      anim: i => bodies[i] && bodies[i].userData.anim && bodies[i].userData.anim.cur, get target() { return S.target; }, get overview() { return overview; } };
   }
   addEventListener('load', () => {
     try { boot(); }

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1c9fd0fc52f3",
- "generated": "2026-11-12T23:11:26+00:00",
- "commit": "945ab1f8a5c0a08e313b33635cb13aa2fcc7ce05",
+ "version": "e208e3e0eb7e",
+ "generated": "2026-11-12T23:11:30+00:00",
+ "commit": "da47d1c5958da84ea186904e2232db548cddfeae",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6248,8 +6248,8 @@
   },
   {
    "p": "games.js",
-   "s": 58249,
-   "h": "b616c1a271af9507d6c76f8aa4f81ee23e01251a8d363d1a0c09874853989b81"
+   "s": 58347,
+   "h": "ae63e78e5f8d097034edc3249d2d53db7d7255344da272e3abb076d3f44990eb"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6483,8 +6483,8 @@
   },
   {
    "p": "guides.js",
-   "s": 173681,
-   "h": "70147492abc81ecf30c9219203443e44667244bf7eb83143f52f7c2d952e8cd5"
+   "s": 173834,
+   "h": "c227562563c65db66fe76a113a1bd26701744f96ae393397e01433713d528822"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6758,8 +6758,8 @@
   },
   {
    "p": "guides/kraterkommando.json",
-   "s": 17851,
-   "h": "2b86bb0d442b80f3a015104a407d5bc64e13d045a257ee7123148a7b75efb1ec"
+   "s": 19384,
+   "h": "fcab82a5b18d8be7abf3dc72dfaec65d1e2b4bce9ed913e75f46756813570e09"
   },
   {
    "p": "guides/krawallvoegel.json",
@@ -7342,19 +7342,24 @@
    "h": "714d0d8fae0378c3d125a0295244231ab7de44c984499c645a7ec91f77b408c3"
   },
   {
+   "p": "kraterkommando/console.css",
+   "s": 13322,
+   "h": "69909e82033127cdbb19f6de5b3393e73f0e7db27c840bb4a437a2ebb801c9dd"
+  },
+  {
    "p": "kraterkommando/controls.css",
-   "s": 10444,
-   "h": "85350fd05277d106916bb2e77901593a05272b48bebf26ab24837601d6925474"
+   "s": 6723,
+   "h": "a461fc35744f3f51521adb31c23854331e9747d96c92fb497e5d89a8e4b7e17e"
   },
   {
    "p": "kraterkommando/game.js",
-   "s": 104427,
-   "h": "9db4aa44ef337119dc2f2527b5b8b89323af0bc1597b334356aaff73ef7da97f"
+   "s": 138578,
+   "h": "de152aee733cd200b0510d16d327257cb63e67d9c6e9012861f961daee9cbb50"
   },
   {
    "p": "kraterkommando/index.html",
-   "s": 8442,
-   "h": "209d93b068ef722b21adc7fc42356e7a07feb5cc0c5e5108906621173f975450"
+   "s": 10824,
+   "h": "8c6aa2860e59db4355b5310b6abf3f137c3f77a4051e1384ef471d910ae260fb"
   },
   {
    "p": "kraterkommando/manifest.webmanifest",
@@ -7362,14 +7367,59 @@
    "h": "7d7016187d5a68a755b0995c8b3a07aa0a89b305d76cf7b53bf525fec32be94f"
   },
   {
+   "p": "kraterkommando/models/alien.glb",
+   "s": 70244,
+   "h": "88a3661bb48e82aa9a6bd40f1abbf80d8b848dfc652486c32bac97e92bf81388"
+  },
+  {
+   "p": "kraterkommando/models/cat.glb",
+   "s": 62220,
+   "h": "20fbb85ebf3ab576511fa5f5bea6fbfc52c245d053e5964dfe96778e187e9c9f"
+  },
+  {
+   "p": "kraterkommando/models/chicken.glb",
+   "s": 78168,
+   "h": "6bd7876195bd96ab20edd3a1d76e71afc7f2994d32964a909ba40432d4648bd4"
+  },
+  {
+   "p": "kraterkommando/models/ninja.glb",
+   "s": 66028,
+   "h": "116a91234adf95ebd2ad4090c02b35e190b97d88ac43d852cbf3921c91b4a7da"
+  },
+  {
+   "p": "kraterkommando/models/orc.glb",
+   "s": 79484,
+   "h": "1173905a46a909fbaf973529daa543297ef3b90131db10e16a5eb0c83b30c56d"
+  },
+  {
+   "p": "kraterkommando/models/pigeon.glb",
+   "s": 62680,
+   "h": "234512f79858f42aa85bafc1c98deaad6d523108bb951aa7631da36c5759436a"
+  },
+  {
+   "p": "kraterkommando/models/props.glb",
+   "s": 62780,
+   "h": "c7b7b1e4b8a00ca458b2853fb8b9530f4e3d291fa4c2c37ecbfbc74c3462f8e1"
+  },
+  {
+   "p": "kraterkommando/models/wizard.glb",
+   "s": 56188,
+   "h": "6bd42db69c194cebbf2de605ab417f447a9767f1a82e260e00fc0bdbf29d0cfb"
+  },
+  {
+   "p": "kraterkommando/models/yeti.glb",
+   "s": 68804,
+   "h": "68a3cf60c24c3b8428bb7576d5accc1afcf847e56af4081082124c64b1a9dbdc"
+  },
+  {
    "p": "kraterkommando/style.css",
-   "s": 14583,
-   "h": "9ec2fe24a542cf799288c30433d5b1781a6c834b18fccaee9696db306c53f953"
+   "s": 11774,
+   "h": "14d299d4c7cae2f6803c74576927c647f283910af0c62a767158a63306560f6f"
   },
   {
    "p": "kraterkommando/sw.js",
-   "s": 1066,
-   "h": "e4df137e84dfa27a6103701ccd8ef4928c1514f1c3354e9e3f6dd55bfa41c10c"
+   "s": 1318,
+   "h": "2ebda7f2dbf7e3e7edc391a0269734ac2c18c6a04d9cb5a25791ea6e13fe5aa1"
   },
   {
    "p": "krawallvoegel/audio.js",
@@ -9653,8 +9703,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 258629,
-   "h": "9dbe30298c86797a713eff1c52d207fcd02a0e877fe8b52e54be6eff4d12f245"
+   "s": 258881,
+   "h": "2519f87f29e937257d312519c40ca23431a320fbf28b283bb27d9bb200a2301d"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
