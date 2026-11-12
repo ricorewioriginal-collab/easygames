@@ -18,3 +18,8 @@ Imp und Puglin aus „Bestiary – Dungeon Monsters Kit“ (Standard) von **Quat
 Lizenz: Quaternius Asset License v1.0 – Verwendung in Spielen erlaubt; die Modelle dürfen nicht als eigenständiges
 Asset-Paket weitergegeben oder verkauft werden. Aufbereitet mit `tools/make-zotik-bestiary.mjs` (verkleinerte Texturen,
 ohne Normal-/ORM-Karten, quantisiert). Bewegt werden sie in Zotik prozedural über die Knochen.
+
+## Wizp Fantasy Environment Pack (Ordner `wz/`)
+
+Bäume, Felsen und Friedhofsteile aus „Lowpoly Stylized Fantasy Environment Pack“ von **Wizp** (wizp.itch.io), Lizenz laut Seite **CC0**
+(„can be used for any purpose, commercial or not, just can't be resold“). Auswahl und Verkleinerung mit `tools/make-zotik-wizp.mjs`.
