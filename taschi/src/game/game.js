@@ -8,6 +8,8 @@ import { Preview } from '../engine/preview.js';
 import { Settings } from '../core/settings.js';
 import { Input } from '../core/input.js';
 import { Audio } from '../core/audio.js';
+import { Radio } from '../core/radio.js';
+import { radioTicker } from '../ui/radio.js';
 import { createRng } from '../core/rng.js';
 import { UI, h } from '../ui/ui.js';
 import { lookForRole } from '../engine/characters.js';
@@ -42,6 +44,7 @@ import { rollEncounter, regionPool, levelRange, rollFishing, judgeBite, BITE_WIN
 import { createStore, newSave, exportJSON, importJSON } from '../logic/save.js';
 import * as P from '../logic/progress.js';
 import * as Items from '../logic/items.js';
+import * as Cheats from '../logic/cheats.js';
 
 export const STATES = Object.freeze({ BOOT: 'boot', TITLE: 'title', CREATOR: 'creator', LOADING: 'loading', WORLD: 'world', BATTLE: 'battle', CUTSCENE: 'cutscene' });
 const TRANSITIONS = {
@@ -71,6 +74,8 @@ export class Game {
     this.sky.onThunder = () => this.audio.sfx('thunder');
     this.battleScene = new BattleScene(this);
     this.hud = new HUD(this);
+    this.radio = new Radio(this.settings, this.audio);
+    this.radioBar = radioTicker(this);
     this.hud.show(false);
     this.save = newSave();
     this.busy = 0;
@@ -82,7 +87,7 @@ export class Game {
     });
     this.clock = new THREE.Clock();
     this.autosaveT = 0; this.titleT = 0;
-    const unlock = () => this.audio.unlock();
+    const unlock = () => { this.audio.unlock(); this.radio.resume(); };
     addEventListener('pointerdown', unlock); addEventListener('keydown', unlock);
     document.addEventListener('visibilitychange', () => { if (document.hidden && this.state === STATES.WORLD) this.saveNow(); });
     addEventListener('pagehide', () => { if (this.state === STATES.WORLD) this.saveNow(); });
@@ -452,6 +457,9 @@ export class Game {
       const worldActive = this.state === STATES.WORLD && !this.ui.blocking && !this.busy;
       if (worldActive) this.worldInput();
       if (this.state === STATES.WORLD) this.tickTime(dt);
+      const disco = (this.state === STATES.WORLD || this.state === STATES.BATTLE) && Cheats.isOn(this.save, 'disco');
+      this.radio.update(dt); this.radioBar.update(this.state === STATES.WORLD || this.state === STATES.BATTLE);
+      if (disco !== !!this.cheatDisco) { this.cheatDisco = disco; document.body.classList.toggle('cheat-disco', disco); }
       if (this.state === STATES.BATTLE) {
         const bs = this.battleScene;
         bs.update(dt);
@@ -487,7 +495,8 @@ export class Game {
     const s = this.save;
     s.playTime += dt;
     const mode = this.settings.get('dayCycle');
-    if (mode === 'day') s.worldTime = 11 * 60;
+    if (Cheats.isOn(s, 'freeze')) { /* Cheat: Zeit steht */ }
+    else if (mode === 'day') s.worldTime = 11 * 60;
     else if (mode === 'realtime') { const d = new Date(); s.worldTime = d.getHours() * 60 + d.getMinutes(); }
     else s.worldTime = (s.worldTime + dt) % 1440; // 1 real second = 1 game minute
     this.autosaveT += dt;
@@ -1311,6 +1320,7 @@ export class Game {
   }
   async battle(opts) {
     const s = this.save;
+    if (opts.kind === 'wild' && Cheats.isOn(s, 'shiny')) for (const m of opts.foeTeam || []) m.shiny = true;
     const prev = this.state;
     // swirl transition
     const swirl = h('div.swirl'); this.ui.root.append(swirl);

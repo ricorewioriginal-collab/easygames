@@ -25,6 +25,7 @@ import { createWorldPlus } from './worldplus.js';
 import { createWeapons } from './weapons.js';
 import { createMinis, ISLE } from './minis.js';
 import { createRide, RIDES } from './ride.js';
+import { createRadio } from './radio.js';
 const T=makeT(THREE,.5),$=id=>document.getElementById(id);
 const TOUCH=matchMedia('(pointer:coarse)').matches||'ontouchstart' in window;
 /* Eingabe-Schicht: Tastatur frei belegbar, Hinweise passend zu Controller/Tastatur/Touch (input.js) */
@@ -1229,6 +1230,7 @@ function renderMenu(tab){mState.tab=tab;const t=$('tabs'),c=$('mcont');menuChrom
   c.querySelectorAll('[data-tw]').forEach(b=>b.onclick=()=>{sfx('ui');mState.tw=+b.dataset.tw;renderMenu('travel')});{const o=c.querySelector('.wn.on');if(o)try{o.scrollIntoView({block:'nearest',inline:'center'})}catch(e){}}
   c.querySelectorAll('[data-es]').forEach(b=>b.onclick=()=>{sfx('ui');mState.es=b.dataset.es;mState.ep='';renderMenu('equip')});c.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{const id=b.dataset.pick;if(mState.ep===id&&gearSet()[GEAR[id].s]!==id){equip(id);renderMenu('equip');return}sfx('ui');mState.ep=id;renderMenu('equip')});{const gc=c.querySelector('#goCas');if(gc)gc.onclick=()=>travel(3)}if(tab==='coop')coopBind();extBind(c,tab);LF().bind(c,tab,()=>renderMenu(tab));if(tab==='camp')XT.bind(c,()=>renderMenu('camp'));XO.bind(c,tab,()=>renderMenu(tab));if(tab==='help')INP.bindOptions(c,()=>renderMenu('help'));{const or=$('optRem');if(or)or.onclick=()=>{setRemote(!REMOTE,true);sfx('ui');toast(REMOTE?'📺 Fernbedienung an: ↑↓ laufen · ←→ drehen · OK Angriff/Aktion · Zurück Befehle':'📺 Fernbedienung aus');renderMenu('help')}}const oc=$('optCas');if(oc)oc.onclick=()=>{S.cas.off=!S.cas.off;sfx('ui');toast(S.cas.off?'🎰 Casino ausgeschaltet':'🎰 Casino eingeschaltet');saveGame(true);renderMenu('help')}}
 $('mResume').onclick=()=>toggleMenu(false);$('saveBtn').onclick=()=>saveGame();
+{const R=createRadio({ducking:()=>dlg.on||document.body.classList.contains('cut'),muteMusic:m=>{if(musGain&&m&&musGain.gain.value)musGain.gain.value=0;if(musGain&&!m&&mode!=='pix')musGain.gain.value=.2},getVolOk:()=>{try{const a=new Audio();a.volume=.5;return a.volume===.5}catch(e){return false}}});window.ZotikRadio=R;$('mRadio').onclick=()=>{initAudio();R.open()}}
 $('mSound').onclick=()=>{sndOn=!sndOn;if(master)master.gain.value=sndOn?.85:0;$('mSound').textContent=sndOn?'🔊 Ton an':'🔇 Ton aus';initAudio()};
 
 /* ================= Spielschleife ================= */

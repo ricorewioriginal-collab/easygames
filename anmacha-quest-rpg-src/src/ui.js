@@ -75,7 +75,7 @@ export class UI {
   }
 
   // ---------------------------------------------------------------- Zustand
-  isChoosing() { return !!(this.choosingList || this.choosingCross); }
+  isChoosing() { return !!(this.choosingList || this.choosingCross || this.mini); }
   isTalking() { return this.talking || !!this.statusOpen; }
   touchVisible() { return this.touchOn; }
   letterbox(on) { document.body.classList.toggle('cine', !!on); }
@@ -121,6 +121,65 @@ export class UI {
     });
   }
   advance() {}
+
+  // ---------------------------------------------------------------- Minispiele (Angeln, Sphärenrad): Bestätigen oder Tippen stoppt
+  timing({ title, hint, speed = 1, zone = 0.2 }) {
+    return new Promise((done) => {
+      const box = $('mini');
+      box.innerHTML = '';
+      box.append(el('h3', '', title));
+      const bar = el('div', 'bar'), z = el('div', 'zone'), nd = el('div', 'needle');
+      z.style.left = (50 - zone * 50) + '%'; z.style.width = (zone * 100) + '%';
+      bar.append(z, nd);
+      box.append(bar, el('div', 'hint', (hint ? hint + ' ' : '') + (this.touchDevice ? 'Tippen!' : 'Enter / A drücken!')));
+      box.hidden = false;
+      let t = Math.random() * 2, last = performance.now(), pos = 0, raf = 0;
+      const loop = (now) => {
+        t += (now - last) / 1000 * speed; last = now;
+        pos = 0.5 - 0.5 * Math.cos(t * 2.4);
+        nd.style.left = (pos * 100) + '%';
+        raf = requestAnimationFrame(loop);
+      };
+      raf = requestAnimationFrame(loop);
+      const end = (r) => { cancelAnimationFrame(raf); this.mini = null; box.hidden = true; box.onpointerdown = null; done(r); };
+      this.mini = { ok: () => end(pos), cancel: () => end(-1) };
+      box.onpointerdown = (e) => { e.preventDefault(); this.mini?.ok(); };
+    });
+  }
+  reels(sym, bet) {
+    return new Promise((done) => {
+      const box = $('mini');
+      box.innerHTML = '';
+      box.append(el('h3', '', `Sphärenrad · Einsatz ${bet}`));
+      const row = el('div', 'reels');
+      const rs = [0, 1, 2].map(() => { const r = el('div', 'reel'); row.append(r); return { el: r, i: Math.floor(Math.random() * sym.length), stop: false }; });
+      box.append(row, el('div', 'hint', this.touchDevice ? 'Tippen hält eine Walze an' : 'Enter / A hält eine Walze an'));
+      box.hidden = false;
+      let raf = 0, acc = 0, last = performance.now();
+      const draw = (r) => { r.el.textContent = sym[r.i].s; r.el.style.color = sym[r.i].col; };
+      const loop = (now) => {
+        acc += now - last; last = now;
+        if (acc > 70) { acc = 0; rs.forEach((r, k) => { if (!r.stop) { r.i = (r.i + 1 + (k === 1 ? 1 : 0)) % sym.length; draw(r); } }); }
+        raf = requestAnimationFrame(loop);
+      };
+      rs.forEach(draw);
+      raf = requestAnimationFrame(loop);
+      const stopNext = () => {
+        const r = rs.find(x => !x.stop);
+        if (!r) return;
+        r.stop = true; r.el.classList.add('stop'); draw(r);
+        this.g.sfx?.('ok');
+        if (rs.every(x => x.stop)) {
+          cancelAnimationFrame(raf);
+          this.mini = null;
+          box.onpointerdown = null;
+          setTimeout(() => { box.hidden = true; done(rs.map(x => x.i)); }, 650);
+        }
+      };
+      this.mini = { ok: stopNext, cancel: stopNext };
+      box.onpointerdown = (e) => { e.preventDefault(); this.mini?.ok(); };
+    });
+  }
 
   // ---------------------------------------------------------------- Listenmenü
   choose(opts, canCancel, disabled, mode) {
@@ -401,6 +460,7 @@ export class UI {
   // ---------------------------------------------------------------- Eingabe
   // a: up|down|left|right|ok|cancel|menu (Taste gedrückt)
   action(a) {
+    if (this.mini) { if (a === 'ok') this.mini.ok(); else if (a === 'cancel') this.mini.cancel(); return true; }
     if (this.statusOpen) { if (a === 'ok' || a === 'cancel' || a === 'menu') this.closeStatus(); return true; }
     if (this.talking) { if (a === 'ok' || a === 'cancel') { this.advance(); return true; } return false; }
     if (this.choosingList) {
