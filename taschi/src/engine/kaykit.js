@@ -67,8 +67,10 @@ function recolored(tex, { outfit = 0x3a7fd0, accent = 0xf2efe6, skin = 0 } = {})
   const img = tex.image; if (!img || !img.width) return tex;
   const key = (tex.uuid || img.src || '') + ':' + outfit + ':' + accent + ':' + skin;
   if (recolorCache.has(key)) return recolorCache.get(key);
-  const W = img.width, H = img.height, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
-  const cx = cv.getContext('2d'); cx.drawImage(img, 0, 0);
+  // Palette aus Verläufen: 256 px reichen und sparen Speicher und Rechenzeit (wichtig bei vielen Bewohnern)
+  const sc = Math.min(1, 256 / Math.max(img.width, img.height)), W = Math.round(img.width * sc), H = Math.round(img.height * sc);
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const cx = cv.getContext('2d'); cx.drawImage(img, 0, 0, W, H);
   const data = cx.getImageData(0, 0, W, H), d = data.data;
   const O = new THREE.Color(outfit), A = new THREE.Color(accent), sk = SKIN_K[skin] || SKIN_K[0];
   const cw = W / 8, ch = H / 4, hsl = {};
@@ -171,13 +173,18 @@ const GEAR = { Knight: ['sword_A', 'shield_A'], Mage: ['staff_A', null], Ranger:
 
 export class KKCharacter {
   // look (optional): Trainer-Optik { outfit, accent, skin, cap, backpack, belt } ohne Fantasy-Teile und Waffen
-  constructor(model, { outline = true, height = 1.78, look = null } = {}) {
+  // fallback (optional): erzeugt eine Ersatzfigur, falls das Modell nicht lädt – Figuren verschwinden so nie
+  constructor(model, { outline = true, height = 1.78, look = null, fallback = null } = {}) {
     this.root = new THREE.Group(); this.root.name = 'kk:' + model;
     this.model = model; this.height = height; this.outline = outline; this.look = look;
     this.target = 'idle'; this.oneShot = null; this.oneShotT = 0; this.speed = 0; this.talking = false;
     this.mixer = null; this.actions = {}; this.current = null; this.materials = []; this.disposed = false;
     this.dims = { legLen: 0.8 };
-    Promise.all([loadFile(CHAR_BASE + model + '.glb'), rigClips()]).then(([g, clips]) => { if (!this.disposed) this.build(g, clips); }).catch(e => console.warn('KayKit', model, e));
+    Promise.all([loadFile(CHAR_BASE + model + '.glb'), rigClips()]).then(([g, clips]) => { if (!this.disposed) this.build(g, clips); }).catch(e => {
+      console.warn('KayKit', model, e);
+      if (this.disposed || !fallback || this.alt) return;
+      try { this.root.clear(); this.mixer = null; this.alt = fallback(); this.root.add(this.alt.root); this.dims = this.alt.dims || this.dims; } catch (e2) { console.warn('KayKit-Ersatz', e2); }
+    });
   }
   get object() { return this.root; }
   build(g, clips) {
@@ -208,11 +215,12 @@ export class KKCharacter {
     if (this.current) a.crossFadeFrom(this.current, t, false);
     this.current = a;
   }
-  setLocomotion(speed) { this.speed = speed; if (!this.oneShot) this.target = speed > 4.2 ? 'run' : speed > 0.25 ? 'walk' : (this.talking ? 'talk' : 'idle'); }
-  setTalking(on, mood = 'talk') { this.talking = on; this.mood = mood; if (!this.oneShot && this.speed < 0.25) this.target = on ? 'talk' : 'idle'; }
-  play(name, duration = 1.2, onDone) { this.oneShot = name; this.oneShotT = 0; this.oneShotDur = duration; this.oneShotDone = onDone; }
-  hold(name) { this.target = name; this.oneShot = null; }
+  setLocomotion(speed) { if (this.alt) return this.alt.setLocomotion(speed); this.speed = speed; if (!this.oneShot) this.target = speed > 4.2 ? 'run' : speed > 0.25 ? 'walk' : (this.talking ? 'talk' : 'idle'); }
+  setTalking(on, mood = 'talk') { if (this.alt) return this.alt.setTalking?.(on, mood); this.talking = on; this.mood = mood; if (!this.oneShot && this.speed < 0.25) this.target = on ? 'talk' : 'idle'; }
+  play(name, duration = 1.2, onDone) { if (this.alt) return this.alt.play(name, duration, onDone); this.oneShot = name; this.oneShotT = 0; this.oneShotDur = duration; this.oneShotDone = onDone; }
+  hold(name) { if (this.alt) { this.alt.hold?.(name); return this; } this.target = name; this.oneShot = null; }
   update(dt) {
+    if (this.alt) return this.alt.update(dt);
     if (this.oneShot) {
       this.oneShotT += dt;
       if (this.oneShotT >= this.oneShotDur) { const cb = this.oneShotDone; this.oneShot = null; this.oneShotDone = null; cb && cb(); }
@@ -224,7 +232,7 @@ export class KKCharacter {
     else if (this.current) this.current.timeScale = 1;
     this.mixer.update(dt);
   }
-  dispose() { this.disposed = true; this.mixer?.stopAllAction(); for (const m of this.materials) m.dispose(); }
+  dispose() { this.alt?.dispose?.(); this.disposed = true; this.mixer?.stopAllAction(); for (const m of this.materials) m.dispose(); }
 }
 
 // Waffen und Schilde als Deko (Fantasy Weapons Bits)

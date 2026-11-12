@@ -167,7 +167,11 @@ function partMesh(builder, outline = false, mat = characterMaterial()) {
 }
 
 export function createCharacter(lookIn, { outline = false } = {}) {
-  if (lookIn && lookIn.kk) return new KKCharacter(lookIn.kk, { outline, look: lookIn, height: lookIn.height || 1.74 });
+  if (lookIn && lookIn.kk) {
+    // Ersatz, falls das KayKit-Modell nicht lädt: klassische Figur in ähnlichen Farben
+    const fallback = () => createCharacter({ skin: Math.min(4, lookIn.skin | 0), topColor: lookIn.outfit ?? 0x3a7fd0, accent: lookIn.accent, backpack: lookIn.backpack ?? null, body: (lookIn.height || 1.74) < 1.3 ? 'child' : 'adult' }, { outline });
+    return new KKCharacter(lookIn.kk, { outline, look: lookIn, height: lookIn.height || 1.74, fallback });
+  }
   if (lookIn && lookIn.zotik) return createZotik(outline);
   const L = resolveLook(lookIn);
   const P = BODY[L.body] || BODY.adult;
