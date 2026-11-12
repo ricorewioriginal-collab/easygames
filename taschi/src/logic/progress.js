@@ -3,6 +3,7 @@ import { REGIONS } from '../data/regions.js';
 import { SPECIES } from '../data/species.js';
 import { ITEMS } from '../data/items.js';
 import { GUILD_BATTLES } from '../data/trainers.js';
+import { AMBUSHES, JUNA } from '../data/adventure.js';
 import { add as addItem } from './items.js';
 
 export const caughtCount = (s) => Object.values(s.dex).filter(v => v === 2).length;
@@ -55,8 +56,15 @@ export function regionQuests(r) {
       { kind: 'talk', text: 'Berichte ' + region.professor.title + ' im Labor.' }
     ]
   });
+  // Agentin Juna: Gildennotiz in jeder Region finden
+  list.push({ id: 'clue_' + r, region: r, giver: JUNA.name, title: 'Gildenspur in ' + region.name, kind: 'find', note: JUNA.notes[r],
+    desc: 'Die Schattengilde hat in ' + region.name + ' eine Notiz verloren. Sie glitzert irgendwo abseits der Wege.',
+    reward: { coins: 120 + r * 40, items: r < 6 ? { superball: 2 } : { sternball: 1, supertrank: 1 } },
+    steps: [{ kind: 'flag', flag: 'lost:clue_' + r, text: 'Finde die Gildennotiz in ' + region.name + ' (✦ auf der Karte).' }, { kind: 'talk', text: 'Bringe die Notiz zu ' + JUNA.name + ' auf dem Stadtplatz.' }] });
   return list;
 }
+// Gilden-Hinterhalt einer Region noch offen?
+export const ambushPending = (s, r) => !!AMBUSHES[r] && !s.trainers['amb_' + r];
 export const ALL_QUESTS = REGIONS.flatMap(r => regionQuests(r.id));
 export const questById = (id) => ALL_QUESTS.find(q => q.id === id);
 
@@ -128,6 +136,7 @@ export function mainObjective(s) {
     const g = REGIONS[r].guild;
     if (r > 0 && !s.champions[r - 1]) return { text: 'Besiege ' + REGIONS[r - 1].champion.name + ' im Champion-Pavillon von ' + REGIONS[r - 1].name + '.', region: r - 1, target: 'champion' };
     if (g !== undefined && guildNext(s, g) !== 'done') return { text: 'Stoppe die Schattengilde in ' + REGIONS[r].name + ' – ' + (r === 6 ? 'ihre Forschungsstation liegt am Glutkegel.' : 'ihr Ballon wurde nahe der Stadt gesehen.'), region: r, target: 'guild' };
+    if (ambushPending(s, r) && s.flags.firstQuest) return { text: 'Die Schattengilde lauert am ' + AMBUSHES[r].where + ' von ' + REGIONS[r].name + '! Halte sie auf!', region: r, target: 'ambush' };
     if (!s.puzzles['region:' + r]) return { text: 'Löse das Rätsel „' + REGIONS[r].puzzle.name + '“ in ' + REGIONS[r].name + '.', region: r, target: 'puzzle' };
     return { text: 'Gewinne das Licht-Siegel bei ' + REGIONS[r].gym.leader + ' (' + REGIONS[r].gym.theme + ').', region: r, target: 'arena' };
   }

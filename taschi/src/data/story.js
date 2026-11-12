@@ -80,7 +80,7 @@ export const GUILD_SCENES = [
   { // Funkenfeld
     title: 'Fangnetze im Windradfeld',
     intro: [
-      { who: 'Kett', text: 'Kora, da kommt jemand!', mood: 'surprised' },
+      { who: 'Kett', text: 'Kora, da kommt jemand! … Moment, den Blick kenne ich doch!', mood: 'surprised' },
       { who: 'Kora', text: 'Seh ich selbst, Kett. Hey du! Das hier ist ein … äh … wissenschaftliches Sperrgebiet!', mood: 'angry' },
       { who: 'Kett', text: 'Genau! Die Knister hier gehören jetzt der Schattengilde. Befehl von Kommandantin Varga!', mood: 'talk' }
     ],
