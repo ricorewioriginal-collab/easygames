@@ -116,7 +116,9 @@ Das HUD und die Kampfmenüs sind als kompakte, fokussierbare Spiel-Overlays gest
 - **Grasteppich:** dichte, einzeln gebogene Halme auf allen grünen Flächen (Stufen „Ausgewogen“ und „Hoch“), gefärbt nach dem Boden.
 - **Wasser** spiegelt den Himmel zum Rand hin (Fresnel).
 - **Echte Fotos (CC0):** Himmelswolken aus dem Poly-Haven-HDRI „Kloofendal 48d Partly Cloudy (Pure Sky)“ (der Himmel behält die Farben der Region, die Fotosonne folgt der Spielsonne). Boden, Felsen und Rinde tragen Fototexturen von ambientCG (Grass004, Ground037, PavingStones070, Rock030, Bark007), im Shader nach der Bodenfarbe gewählt. Aufbereitet als kleine Graustufenbilder (zusammen ≈ 0,6 MB) in `assets/textures/`, Quellen und Lizenz in `assets/textures/LICENSE.txt`.
-- Schaubilder: `node tests/e2e/look.mjs <ordner> <präfix>`.
+- **Figuren und Taschis:** gemeinsames „modernToon“-Material (`materials.js`) mit weicher 4-stufiger Schattierung, Randlicht und dezentem Glanz. Menschen haben größere Köpfe und Anime-Augen (Iris mit hellem Kern, Pupille, zwei Glanzpunkte, Lidstrich, Augenfarbe über `eyeColor`). Taschis bekommen eine Pupille und farbigere Iris. Zotik behält bewusst seinen bisherigen Look.
+- **Kampfplatz** mit denselben Fototexturen wie das Gelände.
+- Schaubilder: `node tests/e2e/look.mjs <ordner> <präfix>` (Welt/Kampf) und `node tests/e2e/portraits.mjs <ordner>` (Gesichter und Taschis).
 
 ## Spielsysteme
 

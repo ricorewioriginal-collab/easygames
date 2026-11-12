@@ -6,7 +6,7 @@ import { THREE as T3 } from './three.js';
 import { Builder, matrix, fineThree, fineCapsule, fineLathe } from './geometry.js';
 // feinere Rundungen (siehe geometry.js › fineThree)
 const THREE = fineThree(T3), capsule = fineCapsule, lathe = fineLathe;
-import { toonVertexMaterial, outlineMaterial, glowMaterial } from './materials.js';
+import { toonVertexMaterial, outlineMaterial, glowMaterial, characterMaterial } from './materials.js';
 import { createRng, hashString } from '../core/rng.js';
 import { buildZotikRig } from './zotik.js';
 
@@ -14,6 +14,7 @@ const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const C = (c) => new THREE.Color(c);
 const shade = (c, f) => C(c).multiplyScalar(f).getHex();
 
+export const EYE_COLORS = [0x5a3a22, 0x2f6fb0, 0x3a8a5a, 0x8a5a2a, 0x5a4a8a, 0x2a7a8a];
 export const SKIN_TONES = [0xf6d2b8, 0xeec09a, 0xd49a6a, 0xa86f48, 0x7a4a2e];
 export const HAIR_COLORS = [0x3b2a22, 0x6b4128, 0xa86a3a, 0xe0b35a, 0x1d1d26, 0xb83a2a, 0x8a96b8, 0xf2efe8, 0x5a3a8a, 0x2f7a6a];
 export const OUTFIT_COLORS = [0xd8483a, 0x3a7fd0, 0x2fa07a, 0xf0a030, 0x7d4fa3, 0xe86aa0, 0x3a4a5a, 0xf2efe6];
@@ -46,7 +47,7 @@ export function resolveLook(look = {}) {
     top: look.top || 'tshirt', topColor: pick(look.topColor, OUTFIT_COLORS, OUTFIT_COLORS[1]), accent: look.accent ?? 0xf2efe6, bottom: look.bottom || 'pants', bottomColor: look.bottomColor ?? 0x34465f,
     shoes: look.shoes ?? 0x3a3330, hat: look.hat || null, hatColor: look.hatColor ?? 0xd8483a, glasses: !!look.glasses, beard: look.beard ? (look.beardColor ?? null) || true : false,
     backpack: look.backpack ?? null, bag: look.bag ?? null, scarf: look.scarf ?? null, apron: look.apron ?? null, goggles: !!look.goggles, mask: !!look.mask, feather: look.feather ?? null, gloves: look.gloves ?? null,
-    inner: look.inner ?? 0x2a2d36, capFront: look.capFront ?? 0xf2efe6, belt: look.belt ?? null, lashes: !!look.lashes
+    inner: look.inner ?? 0x2a2d36, capFront: look.capFront ?? 0xf2efe6, belt: look.belt ?? null, lashes: !!look.lashes, eyeColor: look.eyeColor ?? null
   };
 }
 
@@ -82,9 +83,9 @@ let LANTERN = null;
 function lanternGlow() { return LANTERN || (LANTERN = glowMaterial(0xffd27a, 0.95)); }
 
 // ---------------------------------------------------------------------------
-function partMesh(builder, outline = false) {
+function partMesh(builder, outline = false, mat = characterMaterial()) {
   const g = builder.build();
-  const m = new THREE.Mesh(g, toonVertexMaterial());
+  const m = new THREE.Mesh(g, mat);
   m.castShadow = true;
   if (outline) {
     const o = new THREE.Mesh(g, outlineMaterial());
@@ -99,7 +100,8 @@ export function createCharacter(lookIn, { outline = false } = {}) {
   const L = resolveLook(lookIn);
   const P = BODY[L.body] || BODY.adult;
   const s = P.h / 1.72, w = P.w;
-  const legLen = 0.82 * s, torsoLen = 0.58 * s, headR = 0.17 * s * P.head * (L.body === 'child' ? 1.15 : 1);
+  // moderne Proportionen: größerer Kopf mit großen Augen (wie in aktuellen Konsolen-Rollenspielen)
+  const legLen = 0.82 * s, torsoLen = 0.58 * s, headR = 0.17 * s * P.head * (L.body === 'child' ? 1.12 : 1) * 1.2;
   const root = new THREE.Group();
   root.name = 'character';
   const bones = {};
@@ -207,9 +209,8 @@ export function createCharacter(lookIn, { outline = false } = {}) {
   hd.add(new THREE.SphereGeometry(headR * 0.12, 6, 5), shade(L.skin, 0.94), matrix(0, headR * 0.9, headR * 0.93));
   hd.add(new THREE.SphereGeometry(headR * 0.15, 6, 4), 0xf49a9a, matrix(headR * 0.5, headR * 0.78, headR * 0.76, 0, 0, 0, 1, 0.6, 0.4));
   hd.add(new THREE.SphereGeometry(headR * 0.15, 6, 4), 0xf49a9a, matrix(-headR * 0.5, headR * 0.78, headR * 0.76, 0, 0, 0, 1, 0.6, 0.4));
-  // brows
-  hd.box(headR * 0.36, headR * 0.07, headR * 0.06, shade(L.hairColor, 0.8), headR * 0.36, headR * 1.38, headR * 0.86, 0);
-  hd.box(headR * 0.36, headR * 0.07, headR * 0.06, shade(L.hairColor, 0.8), -headR * 0.36, headR * 1.38, headR * 0.86, 0);
+  // brows (schmal, leicht geschwungen)
+  for (const sx of [-1, 1]) hd.add(capsule(headR * 0.035, headR * 0.26, 6, 2), shade(L.hairColor, 0.75), matrix(sx * headR * 0.38, headR * 1.42, headR * 0.97, 0, 0, Math.PI / 2 + sx * 0.12));
   hairFor(hd, L, headR);
   if (L.beard) hd.add(new THREE.SphereGeometry(headR * 0.62, 10, 6, 0, Math.PI * 2, Math.PI * 0.45, Math.PI * 0.55), typeof L.beard === 'number' ? L.beard : L.hairColor, matrix(0, headR * 0.82, headR * 0.12, 0, 0, 0, 1, 0.9, 1.05));
   if (L.glasses) { for (const sx of [-1, 1]) hd.add(new THREE.TorusGeometry(headR * 0.2, headR * 0.035, 4, 12), 0x2a2f3a, matrix(sx * headR * 0.36, headR * 1.12, headR * 0.92)); hd.box(headR * 0.2, headR * 0.04, headR * 0.04, 0x2a2f3a, 0, headR * 1.14, headR * 0.98); }
@@ -219,13 +220,20 @@ export function createCharacter(lookIn, { outline = false } = {}) {
   head.add(partMesh(hd, outline));
   // eyes (separate for blinking) and mouth (for talking)
   const eb = new Builder();
+  // große Anime-Augen: Iris mit hellem Kern, Pupille, zwei Glanzpunkte und ein Lidstrich
+  const eyeCol = L.eyeColor ?? EYE_COLORS[(L.hairColor >>> 4) % EYE_COLORS.length];
   for (const sx of [-1, 1]) {
-    eb.add(new THREE.SphereGeometry(headR * 0.17, 10, 8), 0xffffff, matrix(sx * headR * 0.36, 0, 0, 0, 0, 0, 0.9, 1.15, 0.5));
-    eb.add(new THREE.SphereGeometry(headR * 0.12, 10, 8), 0x2c3a4e, matrix(sx * headR * 0.36, -headR * 0.01, headR * 0.05, 0, 0, 0, 0.9, 1.05, 0.5));
-    eb.add(new THREE.SphereGeometry(headR * 0.045, 6, 4), 0xffffff, matrix(sx * headR * 0.36 + headR * 0.04, headR * 0.05, headR * 0.11));
-    if (L.lashes) { eb.box(headR * 0.22, headR * 0.035, headR * 0.03, 0x1d1d26, sx * headR * 0.38, headR * 0.19, headR * 0.06); eb.box(headR * 0.08, headR * 0.035, headR * 0.03, 0x1d1d26, sx * headR * 0.52, headR * 0.17, headR * 0.06, sx * 0.5); }
+    const ex = sx * headR * 0.37;
+    eb.add(new THREE.SphereGeometry(headR * 0.2, 14, 10), 0xffffff, matrix(ex, 0, 0, 0, 0, 0, 0.82, 1.2, 0.45));
+    eb.add(new THREE.SphereGeometry(headR * 0.15, 14, 10), eyeCol, matrix(ex, -headR * 0.015, headR * 0.035, 0, 0, 0, 0.82, 1.08, 0.45));
+    eb.add(new THREE.SphereGeometry(headR * 0.09, 10, 8), shade(eyeCol, 1.55), matrix(ex, -headR * 0.06, headR * 0.06, 0, 0, 0, 0.9, 0.8, 0.4));
+    eb.add(new THREE.SphereGeometry(headR * 0.072, 10, 8), 0x141820, matrix(ex, -headR * 0.005, headR * 0.075, 0, 0, 0, 0.85, 1.1, 0.4));
+    eb.add(new THREE.SphereGeometry(headR * 0.045, 8, 6), 0xffffff, matrix(ex + headR * 0.045, headR * 0.065, headR * 0.1));
+    eb.add(new THREE.SphereGeometry(headR * 0.022, 6, 4), 0xffffff, matrix(ex - headR * 0.04, -headR * 0.07, headR * 0.1));
+    eb.add(capsule(headR * 0.03, headR * 0.3, 6, 2), 0x1d1d26, matrix(ex + sx * headR * 0.01, headR * 0.225, headR * 0.05, 0, 0, Math.PI / 2 - sx * 0.14));
+    if (L.lashes) eb.add(new THREE.ConeGeometry(headR * 0.035, headR * 0.12, 4), 0x1d1d26, matrix(ex + sx * headR * 0.17, headR * 0.23, headR * 0.05, 0, 0, -sx * 1.0));
   }
-  const eyes = new THREE.Mesh(eb.build(), toonVertexMaterial());
+  const eyes = new THREE.Mesh(eb.build(), characterMaterial());
   eyes.position.set(0, headR * 1.1, headR * 0.86);
   head.add(eyes); bones.eyes = eyes;
   const mouth = new THREE.Mesh(new THREE.SphereGeometry(headR * 0.13, 8, 6), new THREE.MeshBasicMaterial({ color: 0x8a3a3a }));
@@ -280,7 +288,7 @@ export function createCharacter(lookIn, { outline = false } = {}) {
 
 // Zotik als spielbare Figur (Taschi-Abenteurer): eigener Körper, gleiche Gelenke und Animationen wie die Menschen
 function createZotik(outline) {
-  const z = buildZotikRig((b, parent) => parent.add(partMesh(b, outline)), { scale: 0.8 });
+  const z = buildZotikRig((b, parent) => parent.add(partMesh(b, outline, toonVertexMaterial())), { scale: 0.8 });   // Zotik behält seinen Look
   const blob = new THREE.Mesh(new THREE.CircleGeometry(0.34, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.22, depthWrite: false }));
   blob.rotation.x = -Math.PI / 2; blob.position.y = 0.03; blob.renderOrder = -1; z.root.add(blob);
   const ch = new Character(z.root, z.bones, z.dims);
@@ -290,7 +298,8 @@ function createZotik(outline) {
 
 function hairFor(hd, L, r) {
   const c = L.hairColor, capped = ['cap', 'beanie'].includes(L.hat);
-  const cap = (sx = 1, sy = 1, sz = 1, y = r * 1.1) => hd.add(new THREE.SphereGeometry(r * 1.05, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), c, matrix(0, y, -r * 0.05, -0.15, 0, 0, sx, sy, sz));
+  // Haarkappe stärker nach hinten geneigt: Stirn und große Augen bleiben frei, hinten fällt das Haar in den Nacken
+  const cap = (sx = 1, sy = 1, sz = 1, y = r * 1.1) => hd.add(new THREE.SphereGeometry(r * 1.05, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), c, matrix(0, y, -r * 0.05, -0.32, 0, 0, sx, sy, sz));
   switch (L.hair) {
     case 'bald': break;
     case 'short': cap(1, 0.95, 1.02); break;
@@ -305,7 +314,7 @@ function hairFor(hd, L, r) {
     case 'ponytail': cap(1.02, 1, 1.05); hd.add(capsule(r * 0.22, r * 0.7, 8, 3), c, matrix(0, r * 1.15, -r * 1.1, -0.6, 0, 0)); hd.add(new THREE.SphereGeometry(r * 0.16, 6, 5), L.hatColor || 0xd8483a, matrix(0, r * 1.45, -r * 0.92)); break;
     case 'long': cap(1.05, 1, 1.08); hd.add(new THREE.CylinderGeometry(r * 0.95, r * 1.05, r * 1.6, 14, 1, true, Math.PI * 0.25, Math.PI * 1.5), c, matrix(0, r * 0.55, -r * 0.08)); break;
     case 'bun': cap(1, 0.95, 1.02); hd.add(new THREE.SphereGeometry(r * 0.38, 10, 8), c, matrix(0, r * 1.85, -r * 0.5)); break;
-    case 'bob': cap(1.1, 1, 1.1); hd.add(new THREE.CylinderGeometry(r * 1.06, r * 1.12, r * 0.9, 16, 1, true, Math.PI * 0.2, Math.PI * 1.6), c, matrix(0, r * 0.95, -r * 0.03)); hd.box(r * 1.5, r * 0.28, r * 0.3, c, 0, r * 1.62, r * 0.78); break;
+    case 'bob': cap(1.1, 1, 1.1); hd.add(new THREE.CylinderGeometry(r * 1.06, r * 1.12, r * 0.9, 16, 1, true, Math.PI * 0.2, Math.PI * 1.6), c, matrix(0, r * 0.95, -r * 0.03)); hd.add(capsule(r * 0.17, r * 1.1, 10, 3), c, matrix(0, r * 1.6, r * 0.8, 0, 0, Math.PI / 2)); break;
     case 'curly': for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2, b = (i % 3) * 0.35; hd.add(new THREE.SphereGeometry(r * 0.34, 7, 6), c, matrix(Math.cos(a) * r * (0.8 - b * 0.4), r * (1.35 + b * 0.5), Math.sin(a) * r * (0.75 - b * 0.4) - r * 0.12)); } break;
     case 'twin': cap(1.02, 1, 1.05); for (const sx of [-1, 1]) hd.add(capsule(r * 0.2, r * 0.6, 8, 3), c, matrix(sx * r * 1.05, r * 0.8, -r * 0.3, 0.2, 0, sx * 0.3)); break;
   }
@@ -327,7 +336,7 @@ function hatFor(hd, L, r) {
       hd.box(r * 0.2, r * 0.07, r * 0.08, 0x9aa3ad, 0, r * 1.66, r * 0.95);
       break;
     }
-    case 'beanie': hd.add(new THREE.SphereGeometry(r * 1.1, 14, 8, 0, Math.PI * 2, 0, Math.PI * 0.52), c, matrix(0, r * 1.18, -r * 0.03, -0.1, 0, 0, 1, 1.08, 1)); hd.add(new THREE.SphereGeometry(r * 0.2, 7, 5), shade(c, 1.2), matrix(0, r * 2.4, -r * 0.1)); break;
+    case 'beanie': hd.add(new THREE.SphereGeometry(r * 1.1, 14, 8, 0, Math.PI * 2, 0, Math.PI * 0.52), c, matrix(0, r * 1.3, -r * 0.05, -0.22, 0, 0, 1, 1.05, 1)); hd.add(new THREE.SphereGeometry(r * 0.2, 7, 5), shade(c, 1.2), matrix(0, r * 2.45, -r * 0.2)); break;
     case 'sunhat': hd.add(new THREE.CylinderGeometry(r * 1.7, r * 1.75, r * 0.07, 18), c, matrix(0, r * 1.55, 0, -0.08, 0, 0)); hd.add(new THREE.CylinderGeometry(r * 0.8, r * 0.95, r * 0.6, 14), c, matrix(0, r * 1.85, 0, -0.08, 0, 0)); if (L.feather) hd.add(new THREE.ConeGeometry(r * 0.12, r * 1.4, 5), L.feather, matrix(r * 0.7, r * 2.2, -r * 0.2, 0.3, 0, -0.6)); break;
     case 'beret': hd.add(new THREE.SphereGeometry(r * 1.12, 14, 6), c, matrix(r * 0.12, r * 1.6, -r * 0.05, -0.25, 0, 0.18, 1, 0.38, 1)); break;
     case 'nursecap': hd.box(r * 1.0, r * 0.45, r * 0.12, c, 0, r * 1.95, r * 0.25, 0); hd.box(r * 0.3, r * 0.1, r * 0.13, 0xe0566e, 0, r * 2.0, r * 0.32); break;
