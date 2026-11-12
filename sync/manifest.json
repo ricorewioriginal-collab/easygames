@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "35989c964898",
- "generated": "2026-11-12T18:43:34+00:00",
- "commit": "7c4f4b39d2941f22bc06fdccc3973e9d6704ceb9",
+ "version": "2387c4dc8bd0",
+ "generated": "2026-11-12T18:43:42+00:00",
+ "commit": "573ce4e0fba4f4bdcb3fd77448bf6fb29c145135",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8874,7 +8874,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258360,
-   "h": "1504a6a410ab8822fd2f67ebf716a6d28b1ddaa3a1f84fc7eece26214ce329be"
+   "h": "333f0eba32c0fe59055fbb8971a7ae4d4d202f5ce7b50b03aebcc957e2a7be05"
   },
   {
    "p": "taschi/assets/models/alien.glb",
@@ -11180,11 +11180,6 @@
    "p": "zeitsprung-wissen/year.js",
    "s": 988,
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
-  },
-  {
-   "p": "zotik/assets/index-BeOovOH7.js",
-   "s": 1659086,
-   "h": "fefd0ab6d0fe606253886569673dca0bcfe86f51f991669489d5307c8061fd20"
   },
   {
    "p": "zotik/assets/index-DnUgrGQD.js",
