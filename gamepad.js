@@ -119,6 +119,17 @@
     // Wirkt hier in der Normalisierung, also in allen Spielen – auch in solchen mit eigener Controller-Steuerung.
     var RKEY = 'easygames-remap:' + String(root.location && root.location.pathname || '').replace(/[^\/]*$/, ''), remap = {}, hold = false;
     try { remap = JSON.parse(root.localStorage.getItem(RKEY) || '{}') || {}; } catch (e) { remap = {}; }
+    // Controller-Art (Symbole) und Bestätigen-Knopf – gilt für alle Spiele: easygames-padstyle = auto|xbox|ps|switch,
+    // easygames-padconfirm = auto|bottom|right (auto: rechts bei Nintendo-Controllern, sonst unten wie PlayStation/Xbox)
+    var SKEY = 'easygames-padstyle', CKEY = 'easygames-padconfirm', kindC = null, swapC = null, ownMap = false;
+    function pref(k, v) { if (v === undefined) { try { return root.localStorage.getItem(k) || 'auto'; } catch (e) { return 'auto'; } } try { if (v && v !== 'auto') root.localStorage.setItem(k, v); else root.localStorage.removeItem(k); } catch (e) { } kindC = swapC = null; return v || 'auto'; }
+    function detect() { var l; try { l = rawGet() || []; } catch (e) { l = []; } for (var i = 0; i < l.length; i++) { var id = l[i] && !notPad(l[i]) ? String(l[i].id || '') : ''; if (!id) continue; ownMap = !!M[id];
+      if (/054c|playstation|dualsense|dualshock|wireless controller/i.test(id)) return 'ps'; if (/057e|nintendo|pro controller|joy-?con|switch/i.test(id)) return 'switch'; return 'xbox'; } return 'xbox'; }
+    function kind() { if (kindC === null) { var s = pref(SKEY); kindC = /^(xbox|ps|switch)$/.test(s) ? s : detect(); } return kindC; }
+    function swapAB() { if (swapC === null) { var c = pref(CKEY); swapC = c === 'right' || (c !== 'bottom' && kind() === 'switch' && (detect(), !ownMap)); } return swapC; }   // eigene Belegung (Windows-App) hat Vorrang
+    ['gamepadconnected', 'gamepaddisconnected'].forEach(function (t) { root.addEventListener(t, function () { kindC = swapC = null; }); });
+    function swapped(g) { var b = g.buttons.slice(), t = b[0]; b[0] = b[1]; b[1] = t;
+      return { id: g.id, index: g.index, connected: g.connected, timestamp: g.timestamp, mapping: 'standard', buttons: b, axes: g.axes, vibrationActuator: g.vibrationActuator, hapticActuators: g.hapticActuators, raw: g.raw }; }
     function remapped(g) {
       var b = g.buttons.slice(), k, any = false;
       for (k in remap) { var p = g.buttons[remap[k]]; if (p) { b[+k] = p; any = true; } }
@@ -134,7 +145,8 @@
     function fire(type) { try { var ev = new Event(type); Object.defineProperty(ev, 'gamepad', { value: virt }); root.dispatchEvent(ev); } catch (e) { } }
     function list() {
       var o = stdList(), i;
-      for (i = 0; i < o.length; i++) if (o[i]) o[i] = remapped(o[i]);
+      var sw = swapAB();
+      for (i = 0; i < o.length; i++) if (o[i]) o[i] = remapped(sw ? swapped(o[i]) : o[i]);
       if (virt) { if (o[virt.index]) virt.index = Math.max(4, o.length); while (o.length < virt.index) o.push(null); o[virt.index] = virt; }
       if (troll.invert) for (i = 0; i < o.length; i++) if (o[i] && o[i] !== virt) o[i] = flip(o[i]);   // TikTok-Streich: Steuerung des Spielers vertauscht
       if (troll.block || hold) for (i = 0; i < o.length; i++) if (o[i] && o[i] !== virt) o[i] = { id: o[i].id, index: o[i].index, connected: true, timestamp: o[i].timestamp, mapping: 'standard',   // Steuerung weg
@@ -158,7 +170,11 @@
       troll: troll,   // { invert: true } vertauscht, { block: true } sperrt die Steuerung echter Controller (TikTok-Streiche)
       /** Umbelegung dieses Spiels: remap() liest, remap(obj) speichert ({} = Standard); physical() = Pads ohne Umbelegung/Sperre; hold(on) sperrt das Spiel. */
       remap: function (m) { if (m === undefined) return remap; remap = m || {}; try { if (Object.keys(remap).length) root.localStorage.setItem(RKEY, JSON.stringify(remap)); else root.localStorage.removeItem(RKEY); } catch (e) { } return remap; },
-      physical: stdList,
+      physical: function () { var o = stdList(), sw = swapAB(); for (var i = 0; i < o.length; i++) if (o[i] && sw) o[i] = swapped(o[i]); return o; },
+      /** Controller-Art für Symbole: kind() = xbox|ps|switch; style(v) liest/setzt die Vorgabe (auto|xbox|ps|switch). */
+      kind: kind, style: function (v) { return pref(SKEY, v); },
+      /** Bestätigen-Knopf: confirm(v) liest/setzt auto|bottom|right; swapped() = A und B getauscht (Nintendo-Art). */
+      confirm: function (v) { return pref(CKEY, v); }, swapped: swapAB,
       hold: function (on) { hold = !!on; },
       press: function (i, v) { this.virtual(true); virt.buttons[i] = btn(v); virt.timestamp = root.performance ? root.performance.now() : Date.now(); },
       axis: function (i, v) { this.virtual(true); virt.axes[i] = Math.max(-1, Math.min(1, v)); virt.timestamp = root.performance ? root.performance.now() : Date.now(); },
@@ -569,6 +585,17 @@
   var padOn = false, badgeT = 0, badges = {}, legendEl = null, legendShown = false, legendTimer = 0, bound = {};
   var GLYPH = { a: 'A', b: 'B', x: 'X', y: 'Y', lb: 'LB', rb: 'RB', lt: 'LT', rt: 'RT', select: '⧉', start: '☰', l3: 'L3', r3: 'R3', up: '↑', down: '↓', left: '←', right: '→', dpad: '✚', ls: 'L-Stick', rs: 'R-Stick' };
   var GCOL = { a: '#16a34a', b: '#dc2626', x: '#2563eb', y: '#d97706' };
+  // Symbole je Controller-Art nach Lage des Knopfs (Standard-Layout: a unten, b rechts, x links, y oben)
+  var GSTYLE = {
+    ps: { g: { a: '✕', b: '○', x: '□', y: '△', lb: 'L1', rb: 'R1', lt: 'L2', rt: 'R2', select: 'Create', start: 'Options' }, c: { a: '#2563eb', b: '#dc2626', x: '#db2777', y: '#16a34a' } },
+    switch: { g: { a: 'B', b: 'A', x: 'Y', y: 'X', lb: 'L', rb: 'R', lt: 'ZL', rt: 'ZR', select: '−', start: '+' }, c: {} }
+  };
+  function padKind() { return NORM && NORM.kind ? NORM.kind() : 'xbox'; }
+  function glyph(k) { var s = GSTYLE[padKind()]; return (s && s.g[k]) || GLYPH[k] || k; }
+  function gcol(k) { var s = GSTYLE[padKind()]; return (s ? s.c[k] : GCOL[k]) || '#334155'; }
+  // Lage des Knopfs, der für den logischen Knopf i gedrückt wird (Umbelegung, A/B-Tausch) – für die Symbole
+  function swp(p) { return NORM && NORM.swapped && NORM.swapped() && p < 2 ? 1 - p : p; }
+  function posOf(i) { return swp(physOf(i)); }
   function setPad(on) {
     if (on === padOn) return;
     padOn = on;
@@ -584,8 +611,8 @@
     var out = [];
     ['ls', 'rs', 'dpad', 'up', 'down', 'left', 'right'].concat(BTN).forEach(function (k) {
       if (!LABEL[k]) return;
-      var g = k in NAMES ? BTN[physOf(NAMES[k])] : k;   // nach Umbelegung: Symbol des echten Knopfs
-      out.push([GLYPH[g] || g, LABEL[k], g]);
+      var g = k in NAMES ? BTN[posOf(NAMES[k])] : k;   // nach Umbelegung: Symbol des echten Knopfs
+      out.push([glyph(g), LABEL[k], g]);
     });
     return out;
   }
@@ -617,10 +644,10 @@
     h += rows.map(function (r, n) {
       var on = n === menu.sel, st = 'display:flex;gap:10px;align-items:center;justify-content:space-between;padding:4px 8px;border-radius:9px;' + (on ? 'background:#ffd400;color:#111' : '');
       if (r.act) return '<div style="' + st + '">' + (r.act === 'reset' ? '↺ Standard-Belegung' : '✕ Schließen') + '</div>';
-      var g = BTN[physOf(r.i)], txt = menu.wait === r.i ? '<i>Neuen Knopf drücken …</i>' : '<b style="display:inline-block;min-width:26px;padding:0 5px;border-radius:7px;text-align:center;color:#fff;background:' + (GCOL[g] || '#334155') + '">' + (GLYPH[g] || g) + '</b>';
+      var g = BTN[posOf(r.i)], txt = menu.wait === r.i ? '<i>Neuen Knopf drücken …</i>' : '<b style="display:inline-block;min-width:26px;padding:0 5px;border-radius:7px;text-align:center;color:#fff;background:' + gcol(g) + '">' + glyph(g) + '</b>';
       return '<div style="' + st + '"><span>' + LABEL[r.k].replace(/</g, '&lt;') + '</span>' + txt + '</div>';
     }).join('');
-    h += '<div style="margin-top:6px;font-size:11px;opacity:.7">✚ wählen · A ändern · B schließen</div>';
+    h += '<div style="margin-top:6px;font-size:11px;opacity:.7">✚ wählen · ' + glyph(BTN[swp(0)]) + ' ändern · ' + glyph(BTN[swp(1)]) + ' schließen</div>';
     legendEl.style.columns = 'auto'; legendEl.style.minWidth = '260px'; legendEl.innerHTML = h; show(legendEl, true);
   }
   function menuTick(now) {
@@ -921,8 +948,8 @@
     var l = legendList(); if (!l.length) return;
     legendBox();
     legendEl.style.columns = '2 220px'; legendEl.style.minWidth = '';
-    legendEl.innerHTML = '<div style="column-span:all;font-size:11px;letter-spacing:.06em;color:#7ff3ff;margin-bottom:4px">🎮 CONTROLLER · Select + Start: Belegung ändern' + (hudBtn() ? ' · ' + ({ l3: 'L3', r3: 'R3' }[hudBtn()] || 'Select') + ' halten: Knöpfe auf dem Bildschirm' : '') + '</div>' +
-      l.map(function (x) { return '<div style="break-inside:avoid;white-space:nowrap"><b style="display:inline-block;min-width:26px;padding:0 5px;margin-right:6px;border-radius:7px;text-align:center;background:' + (GCOL[x[2]] || '#334155') + '">' + x[0] + '</b>' + x[1].replace(/</g, '&lt;') + '</div>'; }).join('');
+    legendEl.innerHTML = '<div style="column-span:all;font-size:11px;letter-spacing:.06em;color:#7ff3ff;margin-bottom:4px">🎮 CONTROLLER · ' + glyph('select') + ' + ' + glyph('start') + ': Belegung ändern' + (hudBtn() ? ' · ' + glyph(hudBtn()) + ' halten: Knöpfe auf dem Bildschirm' : '') + '</div>' +
+      l.map(function (x) { return '<div style="break-inside:avoid;white-space:nowrap"><b style="display:inline-block;min-width:26px;padding:0 5px;margin-right:6px;border-radius:7px;text-align:center;background:' + gcol(x[2]) + '">' + x[0] + '</b>' + x[1].replace(/</g, '&lt;') + '</div>'; }).join('');
     show(legendEl, true);
     legendTimer = root.setTimeout(function () { show(legendEl, false); }, ms);
   }
@@ -931,8 +958,8 @@
       var e = null; try { e = doc.querySelector(BIND[k]); } catch (x) {}
       var b = badges[k], c = padOn && e && usable(e);
       if (!c) { show(b, false); continue; }
-      if (!b) { b = badges[k] = el('min-width:20px;height:20px;padding:0 4px;margin:-6px 0 0 -14px;border-radius:10px;border:2px solid #fff;color:#fff;font:800 11px/16px system-ui,sans-serif;text-align:center;box-sizing:border-box;box-shadow:0 2px 6px rgba(0,0,0,.5);background:' + (GCOL[k] || '#334155')); b.textContent = GLYPH[k] || k; }
-      var gk = k in NAMES ? BTN[physOf(NAMES[k])] : k; b.textContent = GLYPH[gk] || gk; b.style.background = GCOL[gk] || '#334155';
+      if (!b) { b = badges[k] = el('min-width:20px;height:20px;padding:0 4px;margin:-6px 0 0 -14px;border-radius:10px;border:2px solid #fff;color:#fff;font:800 11px/16px system-ui,sans-serif;text-align:center;box-sizing:border-box;box-shadow:0 2px 6px rgba(0,0,0,.5);background:' + gcol(k)); b.textContent = glyph(k); }
+      var gk = k in NAMES ? BTN[posOf(NAMES[k])] : k; b.textContent = glyph(gk); b.style.background = gcol(gk);
       b.style.transform = 'translate(' + Math.round(c.r.right) + 'px,' + Math.round(c.r.top) + 'px)'; show(b, true);
     }
   }
