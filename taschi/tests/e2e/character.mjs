@@ -2,7 +2,7 @@
 // from the title screen, wardrobe, the offer for older saves and collision.
 // Run: node tests/e2e/character.mjs [screenshot-dir]
 import assert from 'node:assert/strict';
-import { launch, startSeeded, seededStorage, G, waitState, waitIdle, advance } from './helpers.mjs';
+import { launch, startSeeded, seededStorage, G, waitState, waitIdle, advance, pressStart } from './helpers.mjs';
 
 const dir = process.argv[2] || null;
 const step = (s) => console.log('  ✓ ' + s);
@@ -25,6 +25,7 @@ const shot = async (page, name) => { if (dir) await page.screenshot({ path: dir 
     await page.locator('.closebtn').first().click();
     await page.waitForTimeout(300);
     step('Einstellungen im Titelmenü liegen oben und zeigen nur Optionen');
+    await pressStart(page);
     await page.getByText('Neues Abenteuer').click();
     await page.waitForSelector('#creatorview canvas', { timeout: 30000 });
     for (const g of ['Männlich', 'Weiblich', 'Divers']) { await page.getByText(g, { exact: true }).click(); await page.waitForTimeout(600); await shot(page, '11-creator-' + g); }
@@ -52,6 +53,7 @@ const shot = async (page, name) => { if (dir) await page.screenshot({ path: dir 
   try {
     await page.goto(t.base);
     await waitState(page, 'title');
+    await pressStart(page);
     await page.getByText('Fortsetzen').click();
     await page.waitForSelector('.choice', { timeout: 60000 });
     await advance(page, { until: () => !!document.querySelector('#creatorview'), choose: ['Jetzt gestalten'] });
