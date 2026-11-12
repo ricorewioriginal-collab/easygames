@@ -132,29 +132,34 @@ export function createKayKit({ T, G, TOUCH }) {
   }
 
   /* Requisiten */
-  let PR = null;
-  const props = () => PR || (PR = load('props').then(g => { const m = {}; for (const c of g.scene.children) if (c.name.startsWith('p:')) { dress(c, false); m[c.name.slice(2)] = c; } return m; }));
+  const PR = {};
+  /* Requisiten-Dateien: 'props' (KayKit) oder 'wz' (Wizp, models/wz/) */
+  const props = (f = 'props') => PR[f] || (PR[f] = (f === 'props' ? load('props') : new Promise((res, rej) => new GLTFLoader().load('models/' + f + '/' + f + '.glb', res, null, rej))).then(g => { const m = {}; for (const c of g.scene.children) if (c.name.startsWith('p:')) { dress(c, false); m[c.name.slice(2)] = c; } return m; }));
   function prop(name, s = 1) {
     const g = new T.Group(); g.scale.setScalar(s);
     props().then(m => { const src = m[name]; if (!src) return; const c = src.clone(true); c.position.set(0, 0, 0); g.add(c); }).catch(() => { });
     return g;
   }
   /** Viele Requisiten als Instanzen: list = [{k, x, y, z, ry, s}] */
-  function place(par, list) {
+  /** q.h: Zielhöhe statt Faktor (aus der Ruhegröße des Teils) */
+  const PH = {};
+  function place(par, list, f) {
     if (!list.length) return;
-    props().then(m => {
+    props(f).then(m => {
       const by = {}; for (const q of list) if (m[q.k]) (by[q.k] = by[q.k] || []).push(q);
       const ob = new T.Object3D(), M4 = new T.Matrix4();
       for (const k in by) {
         const src = m[k]; src.updateMatrixWorld(true); const inv = new T.Matrix4().copy(src.matrixWorld).invert();
+        if (PH[k] === undefined) { const b = new T.Box3().setFromObject(src); PH[k] = Math.max(.05, b.max.y - b.min.y); }
         src.traverse(o => { if (!o.isMesh) return;
           const loc = new T.Matrix4().multiplyMatrices(inv, o.matrixWorld);
           const im = new T.InstancedMesh(o.geometry, o.material, by[k].length); im.castShadow = !TOUCH; im.receiveShadow = true;
-          by[k].forEach((q, i) => { ob.position.set(q.x, q.y || 0, q.z); ob.rotation.set(0, q.ry || 0, 0); ob.scale.setScalar(q.s || 1); ob.updateMatrix(); M4.multiplyMatrices(ob.matrix, loc); im.setMatrixAt(i, M4); });
+          by[k].forEach((q, i) => { ob.position.set(q.x, q.y || 0, q.z); ob.rotation.set(0, q.ry || 0, 0); ob.scale.setScalar(q.h ? q.h / PH[k] * (q.s || 1) : q.s || 1); ob.updateMatrix(); M4.multiplyMatrices(ob.matrix, loc); im.setMatrixAt(i, M4); });
           im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere && im.computeBoundingSphere(); im.frustumCulled = false; par.add(im); });
       }
     }).catch(() => { });
   }
   const warm = () => { load('anim'); props(); };
-  return { char, beast, play, once, loop, drive, walk, update, prop, place, warm, load, get live() { return LIVE.size; } };
+  const heightOf = k => PH[k];
+  return { char, beast, heightOf, play, once, loop, drive, walk, update, prop, place, warm, load, get live() { return LIVE.size; } };
 }

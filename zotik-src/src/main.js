@@ -1631,7 +1631,7 @@ function switchWorld(n){
   MP.quiet=true;
   try{WPX().clear();if(curCh===1&&!WLD){if(n!==1)leaveLunaris()}else destroyWorld();
   if(n===1)restoreLunaris();else if(n===12)buildCave();else if(n===13)buildCamp();else if(n===14)buildPixRoom();else if(n===15)buildOver();else if(n>=MW_FIRST)MWX().build(n);else buildWorld(n)}finally{MP.quiet=false}
-  NZ().activate(n);curCh=n;S.ch=n;curZone='';mpWorldChanged(n);if(n===1&&!JP1)JP1=jumpPath(1);NQ.enter(n);LF().arrive(n);if(WLD)WLD.jp=n>1&&n<12?jumpPath(n):null;wmAbort();if(n>1&&n<12&&WLD&&!WLD.cave&&!WLD.story){owSign(n,3.2,13);advCamp(n)}if(n>1&&n<11&&WLD&&!WLD.cave&&!WLD.story){worldMark(n);if(!MP.on)WPX().build(n,WLD.path,hgt)}worldRule(WLD&&!WLD.cave&&!WLD.story?n:0);
+  NZ().activate(n);curCh=n;S.ch=n;curZone='';mpWorldChanged(n);if(n===1&&!JP1)JP1=jumpPath(1);NQ.enter(n);LF().arrive(n);if(WLD)WLD.jp=n>1&&n<12?jumpPath(n):null;wmAbort();if(n>1&&n<12&&WLD&&!WLD.cave&&!WLD.story){owSign(n,3.2,13);advCamp(n);wzDress(n)}if(n>1&&n<11&&WLD&&!WLD.cave&&!WLD.story){worldMark(n);if(!MP.on)WPX().build(n,WLD.path,hgt)}worldRule(WLD&&!WLD.cave&&!WLD.story?n:0);
 }
 /* ---- Ladebild je Welt: Name, Untertitel, Zeichen in der Weltfarbe, ein Tipp ---- */
 const WTIPS=['Blocken im richtigen Moment wirft Gegner aus dem Takt.','Jede Figur hat ein eigenes Element. Schwächen treffen doppelt.','Tippe oben links auf einen Gefährten, um ihn selbst zu spielen.','Im Camp rasten füllt Leben und Mana und speichert.','Hinweistafeln in Ruinen zeigen die nächste Platte mit einer grünen Lichtsäule.','Im Casino spielst du nur um Splitter, nie um echtes Geld.','Weltwaffen verstärken die Figur, die zu einer Welt gehört.','Ausweichen im letzten Moment verlangsamt kurz die Zeit.','Lies Bücherregale in den Städten: Dort stehen Hinweise zur Welt.'];
@@ -3301,6 +3301,26 @@ function advCamp(n){const p=(()=>{for(let t=0;t<60;t++){const z=-14-t*1.7,x=(WLD
     addNpc('adv'+n+i,a[1],x,z,{root:P.root,kk:P},()=>advTalk(n,a[1],i),Math.atan2(cx-x,cz-z),()=>!S.fl['adv'+n])});
   const R=mul32(n*41+7),L=[];for(let i=0;i<5;i++){const an=i*1.3+.6+n,r=4+R()*1.2;L.push({k:['bed_floor','barrel_large','box_stacked','trunk_medium_B','crates_stacked'][i],x:cx+Math.sin(an)*r,y:0,z:cz+Math.cos(an)*r,ry:an+Math.PI})}
   for(const q of L){q.y=hgt(q.x,q.z);addCol(q.x,q.z,.5)}KK.place(scene,L)}
+/* Landschaft aus dem Wizp-Pack (CC0): Bäume, Felsen und Friedhöfe je Klimazone, als Instanzen in der Wildnis verteilt (mit Kollision) */
+const WZ={2:[['birch1',7],['birch3',6.5],['birch5',5],['garden_tree_green',6],['pine2',8],['rock_medium_1',1.4],['rock_big_2',2.6],['grass_green_group',.6]],
+  3:[['garden_tree_yellow',5.5],['garden_tree_green',5.5],['garden_plant_1',1.2],['rock_medium_2',1.3],['rock_big_B_gray_1',2.4]],
+  4:[['cactus1',3.2],['cactus2',3.6],['cactus3',1.8],['coconut1',8],['coconut2',7.5],['palm2',7],['rock_big_1',2.8],['rock_medium_3',1.4]],
+  5:[['coconut1',8],['palm2',7],['waterlily_pink_group',.4],['rock_big_B_gray_1',2.6],['rock_medium_1',1.3]],
+  6:[['ancient_tree_winter_1',8],['pine1',8],['pine3',7],['garden_plant_winter',1.4],['branch_winter_1',1],['rock_big_B_gray_1',2.8],['rock_medium_2',1.4]],
+  7:[['creepy_tree1',6],['creepy_tree2',6.5],['rock_big_B_dark_2',3],['rock_big_3',2.4],['bones_group',.6],['root_2',.8]],
+  8:[['creepy_tree1',6],['creepy_tree2',6.5],['grass_purple_group',.6],['rock_big_B_dark_2',2.6]],
+  9:[['ancient_tree_pink_1',8],['garden_tree_pink',6],['grass_purple_group',.6],['rock_medium_3',1.4]],
+  10:[['ancient_tree_yellow_1',8],['garden_tree_yellow',6],['rock_big_2',2.6],['rock_medium_1',1.3]],
+  11:[['creepy_tree2',6.5],['rock_big_B_dark_2',3],['root_2',.8],['bones_group',.6]]};
+const WZG={8:1,7:1};   /* Welten mit kleinem Friedhof am Wegrand */
+function wzDress(n){const L0=WZ[n];if(!L0||!WLD)return;const R=mul32(n*7919+3),out=[],N=TOUCH?60:110,big=k=>/tree|birch|pine|coconut|palm|cactus1|cactus2/.test(k);
+  for(let t=0,c=0;c<N&&t<N*12;t++){const z=-30-R()*125,px=WLD.path?WLD.path(z):0,sd=R()<.5?-1:1,x=px+sd*(9+R()*36);
+    if(blocked(x,z)||(WLD.reach&&!WLD.reach(x,z)))continue;const q=L0[R()*L0.length|0],r=big(q[0])?.7:q[1]>1.5?q[1]*.35:0;if(r&&!colFree(x,z,r+.6))continue;
+    out.push({k:q[0],x,y:hgt(x,z)-.05,z,ry:R()*6.28,h:q[1]*(.85+R()*.3)});if(r)addCol(x,z,r);c++}
+  if(WZG[n]){for(let t=0;t<40;t++){const z=-60-R()*60,px=WLD.path?WLD.path(z):0,x=px+(R()<.5?-1:1)*(10+R()*8);if(blocked(x,z)||!colFree(x,z,5))continue;
+    const G2=[['tomb_statue',2.4,0,0],['tomb_1',1.1,-2,1.2],['tomb_2',1.1,2,1.2],['tomb_3',1.1,-2,-1.4],['prop_tomb_1',.6,2,-1.4],['coffin',.5,0,2.6],['lamp',2.2,-3.2,0],['column_1',2.4,3.2,0]];
+    for(const [k,h,dx,dz] of G2){const qx=x+dx,qz=z+dz;out.push({k,x:qx,y:hgt(qx,qz)-.03,z:qz,ry:0,h});if(h>1)addCol(qx,qz,.5)}break}}
+  KK.place(scene,out,'wz');return out.length}
 function advTalk(n,who,i){const k='adv'+n;
   if(!S.fl[k]){S.fl[k]=1;S.potions++;sfx('pick');say([[who,i===0?'Ein Reisender mit Fuchsschwanz? Setz dich ans Feuer.':i===1?'Wir ziehen seit Wochen durch die Welten. Du siehst aus, als bräuchtest du Proviant.':'Psst – wir haben noch einen Trank übrig. Nimm ihn.'],[who,ADVT[n]||'Pass auf dich auf da draußen.']],()=>toast('🧪 +1 Heiltrank vom Abenteurerlager'));saveGame(true);return}
   say([[who,[ADVT[n]||'Pass auf dich auf.','Die Skelette in den Hallen fürchten Licht. Merk dir das.','Wenn du wieder hier vorbeikommst, brennt das Feuer noch.'][(i+Math.floor(time/20))%3]]])}
