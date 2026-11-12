@@ -141,6 +141,16 @@
         "Tauschen: Jeder bietet ein Taschi aus Team oder Lager an. Getauscht wird erst, wenn beide bestätigen; ändert jemand sein Angebot, muss neu bestätigt werden. Getragene Items reisen mit, im Statusbildschirm steht, von wem das Taschi kam.",
         "Online-Kampf: Je drei Taschis, alle auf Level 50 und geheilt, ohne Items aus der Tasche. Beide wählen gleichzeitig, die Sternstufe ist erlaubt. Es gibt keine EP und keine Strafe bei einer Niederlage. „Aufgeben“ beendet den Kampf."
       ]
+    },
+    {
+      "t": "Fotomodus, Fliegen, Raids und Koop",
+      "p": [
+        "📷 Fotomodus (Menü › Team): Die Zeit hält an, du drehst die Kamera frei (Ziehen, rechter Stick), zoomst (Mausrad, ZL/ZR) und verschiebst sie (Bewegen). Wähle Filter, Pose und Rahmen und drück „📸 Foto“. Fotos landen im Album und lassen sich speichern oder teilen.",
+        "🕊 Fliegen (Menü › Team oder Karte): Ab dem fünften Licht-Siegel trägt dich ein großes Flug-Taschi aus deinem Team zu jedem Heilzentrum, das du schon besucht hast.",
+        "⭐ Sternennest-Raids: In jeder Region leuchtet ein Sternennest. Dort wartet jeden Tag ein riesiges Taschi (1 bis 5 Sterne). Es hat ein Vielfaches an KP und greift zweimal pro Runde an. Du kämpfst zu zweit, mit einem Ranger-Helfer oder online mit einem Freund. Nach dem Sieg bekommst du Belohnungen und darfst den Riesen mit einer Kapsel fangen.",
+        "🌐 Online: Im Online-Menü gibt es Tauschen, Kämpfen, „🤝 Zusammen erkunden“ (ihr seht euch in derselben Region und kämpft gemeinsam in Raids) und „🎲 Zufallstausch“ mit einem zufälligen Spieler irgendwo auf der Welt.",
+        "🗣 Sprachausgabe: Dialoge werden vorgelesen, jede Figur mit eigener Stimme. Ein- und Ausschalten, Lautstärke und Tempo findest du unter Optionen › Audio. Wichtige Momente wie Rivalen-Auftritte, Wächter-Schreine und Raids zeigt das Spiel als Zwischensequenz mit Kinobalken."
+      ]
     }
   ],
   "ratgeber": [
@@ -215,6 +225,16 @@
         "Tausche Taschis, die in deiner Region nicht vorkommen – so füllst du den Taschidex schneller.",
         "Im Online-Kampf zählen Typen und Attacken mehr als das Level: alle kämpfen auf Level 50.",
         "Ein Taschi mit Heilbeere oder Fokusband hält im Online-Kampf oft einen Treffer länger durch."
+      ]
+    },
+    {
+      "t": "Raids und Fliegen",
+      "list": [
+        "Nimm in Raids dein stärkstes Taschi an die erste Stelle: Es kämpft zusammen mit dem Helfer.",
+        "Der Riese greift am Ende jeder Runde ein zweites Mal an. Halte Tränke bereit und wechsle angeschlagene Taschis aus.",
+        "Zu zweit online zählt der Schaden beider Spieler: Der Riese fällt deutlich schneller.",
+        "Jedes Nest hat jeden Tag einen neuen Riesen. Raids in allen besuchten Regionen bringen viele Superkapseln und EP-Bonbons.",
+        "Zum Fliegen eignen sich entwickelte Vogel- und Drachen-Taschis wie Glutdrach. Mach es zu deinem Begleiter, dann trägt es dich bevorzugt."
       ]
     }
   ],
@@ -361,6 +381,14 @@
     {
       "q": "Wie spiele ich online mit Freunden?",
       "a": "Menü › Team › „🌐 Online: Tauschen & Kämpfen“ › „Raum eröffnen“. Teile den Link oder Code; dein Freund öffnet den Link oder gibt den Code unter „Mit Code beitreten“ ein. Ihr braucht beide einen Spielstand mit mindestens einem Taschi. Das letzte Taschi im Team kann man nicht wegtauschen."
+    },
+    {
+      "q": "Die Stimmen sind mir zu viel.",
+      "a": "Unter Optionen › Audio schaltest du die Sprachausgabe aus oder stellst Lautstärke und Tempo ein. Ist der Ton stumm geschaltet, schweigen auch die Stimmen."
+    },
+    {
+      "q": "Beim Zufallstausch findet sich niemand.",
+      "a": "Der Zufallstausch sucht bis zu zwei Minuten nach einem anderen Spieler, der gerade auch tauscht. Ist niemand online, behältst du dein Taschi. Versuch es später noch einmal oder tausch per Code mit Freunden."
     }
   ]
 }

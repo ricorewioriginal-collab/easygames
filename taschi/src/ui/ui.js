@@ -1,6 +1,7 @@
 // UI core: DOM helper, screen stack with spatial focus navigation (keyboard,
 // gamepad and touch share the same focus model), dialog boxes with
 // typewriter text, toasts, prompts, banners and fades.
+import { Voice } from '../core/voice.js';
 import { TYPES } from '../data/types.js';
 
 export function h(tag, attrs = {}, ...kids) {
@@ -77,6 +78,7 @@ export class FocusNav {
 export class UI {
   constructor(root, { audio, input, settings }) {
     this.root = root; this.audio = audio; this.input = input; this.settings = settings;
+    this.voice = new Voice(settings);
     this.stack = [];
     this.toastBox = h('div.toasts'); root.append(this.toastBox);
     this.fadeEl = h('div#fade'); root.append(this.fadeEl);
@@ -167,6 +169,7 @@ export class UI {
         nameEl.className = 'name' + (/Gilde|Varga|Selma|Kett|Kora|Brix/.test(L.who || '') && guild !== false ? ' guild' : '');
         full = L.text; shown = 0; textEl.textContent = ''; next.style.visibility = 'hidden';
         onLine && onLine(L, i);
+        this.voice.speak(L.text, L.who);
         clearInterval(timer);
         timer = setInterval(() => {
           shown = Math.min(full.length, shown + Math.max(1, Math.round(speed / 30)));
@@ -190,7 +193,7 @@ export class UI {
         if (choiceEl) return;
         if (i < lines.length - 1) { i++; showLine(); } else finish(0);
       };
-      const finish = (ci) => { clearInterval(timer); this.pop(screen); onLine && onLine(null); resolve(ci); };
+      const finish = (ci) => { clearInterval(timer); this.voice.stop(); this.pop(screen); onLine && onLine(null); resolve(ci); };
       screen.onInput = (input) => {
         if (choiceEl) {
           const d = input.nav(); if (d) { screen.nav.move(d); this.audio.sfx('move'); }
