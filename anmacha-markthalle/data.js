@@ -1,5 +1,5 @@
 'use strict';
-/* Daten für AnMaCha Markthalle 24: eigene Marken, Waren, Regale, Kundentypen, Rezepte. Preise in Cent. */
+/* Daten für Marktrausch: eigene Marken, Waren, Regale, Kundentypen, Rezepte. Preise in Cent. */
 const Data = (() => {
   // Warengruppen: Lizenz (Kosten, ab Stufe); Lagerklasse st: dry | cold | frost | prod
   const CATS = {

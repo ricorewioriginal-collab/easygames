@@ -81,7 +81,7 @@
 
   function apply(d) {
     var el = doc && doc.documentElement; if (!el) return;
-    var keep = []; for (var i = 0; i < el.classList.length; i++) if (el.classList[i].indexOf('eg-') !== 0) keep.push(el.classList[i]);
+    var keep = []; for (var i = 0; i < el.classList.length; i++) if (!/^eg-(tv|phone|tablet|desktop|portrait|landscape|gamepad|app)$/.test(el.classList[i])) keep.push(el.classList[i]);   // nur eigene Klassen ersetzen (eg-pad gehört gamepad.js)
     keep.push('eg-' + d.type, 'eg-' + d.orientation); if (d.gamepad) keep.push('eg-gamepad'); if (d.app) keep.push('eg-app');
     el.className = keep.join(' '); el.setAttribute('data-eg-device', d.type);
   }

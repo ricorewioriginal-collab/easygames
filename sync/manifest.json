@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "56f565cd6921",
- "generated": "2026-11-12T23:43:55+01:00",
- "commit": "fd2813345438da8897dcc55bca83f4cc9e73544a",
+ "version": "c4713be5f528",
+ "generated": "2026-11-12T23:10:05+00:00",
+ "commit": "7381c5e387b25bfecbf27ca35686dc6ec3cd6505",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1697,54 +1697,249 @@
    "h": "92a676d688d0a82a0712c9173290f85b4c60f6470c7ac3c9d202c2a96eeec445"
   },
   {
+   "p": "anmacha-markthalle/assets/prompts/ps_circle.svg",
+   "s": 606,
+   "h": "7749fe0886d9d832bff47324ab1fbe7f9f3475b7de69dbc01743365b9451d94c"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/ps_create.svg",
+   "s": 816,
+   "h": "4ec964bb271ba0d396ae601e3175b9832928057bfd08a4adb1c0298d7619a7f0"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/ps_cross.svg",
+   "s": 409,
+   "h": "c9feef98bfd29797c16caef18be8f26e1ce175f140d29a48dc2ac9826fb9812e"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/ps_dpad.svg",
+   "s": 998,
+   "h": "adf2481a5f530ad905a552f13f58a5f001774b0caa97c1469c8af0475c1c24f6"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/ps_l1.svg",
+   "s": 561,
+   "h": "ae444563986badefcdc417b3d744be0676670fffd36783d91c1592d14f21b93a"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/ps_l2.svg",
+   "s": 752,
+   "h": "ae89a40ccb5ae3e3b79e604d9e1f4903e773f87d36b18686b2d123ce3e4a5473"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/ps_options.svg",
+   "s": 495,
+   "h": "a399c8b72af736c7488c9b8927a653b2aeeab72d10730ad432ab8c37f4dfe218"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/ps_r1.svg",
+   "s": 773,
+   "h": "387a37176b86facb7629b0020c56f5cb780f14d30d62e54baa394ecd2ee8229b"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/ps_square.svg",
+   "s": 367,
+   "h": "2ad7d59334648b822fdec370aa2f9b28810d6bece4cd395d8af5d1d839732385"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/ps_stick_l.svg",
+   "s": 973,
+   "h": "c5097b1eab526cddc799ae77a6bf8d29b759408be2420357ba85b7441d6430e2"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/ps_triangle.svg",
+   "s": 364,
+   "h": "c8af09238e5c38203178eabbc968d04ff85ca4fb9a394b0c1f4832a0b4550704"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/sw_a.svg",
+   "s": 393,
+   "h": "64c7e4560c68bbbdc824627aca50464eee2dab31323e06df5b4d8f8b33a7d453"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/sw_b.svg",
+   "s": 701,
+   "h": "12061d33eb6596dc94ad551296502a9e15bd26c9199210db4728fa2a666f3ca0"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/sw_dpad.svg",
+   "s": 1210,
+   "h": "cd3677f2f75925ae4ed61b1a8c1ac56c8ead99aced30e02c2ca4f89edf8b5019"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/sw_l.svg",
+   "s": 370,
+   "h": "8f8a969fff8674dd10cf171f4dfb53843c1640ed4831a2bd23e613a0cd4c8677"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/sw_minus.svg",
+   "s": 335,
+   "h": "e4d6d7238499ab290e71dfc0db83dc6d9a83d54fe54f3e0759bd992906c53cfd"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/sw_plus.svg",
+   "s": 383,
+   "h": "df8e08420f54b16fae955e30ee63198d0079ff99123893938bf859ce2955b18c"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/sw_r.svg",
+   "s": 632,
+   "h": "7872b5892e5c33e2f379f5701b64de8a90c41b02bd32ea1f56b0d830a5f647dd"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/sw_stick_l.svg",
+   "s": 973,
+   "h": "c5097b1eab526cddc799ae77a6bf8d29b759408be2420357ba85b7441d6430e2"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/sw_x.svg",
+   "s": 458,
+   "h": "505b595feca94a6dbb3b4bfb1f8213e108fab2d3419f265d7f42c7c1c1f3c711"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/sw_y.svg",
+   "s": 407,
+   "h": "c509a5a985e6c6ba9bbe6caa593571488ea4307d4d134632564742cc4f98dc03"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/sw_zl.svg",
+   "s": 404,
+   "h": "d0d9fc2225ef961581d1e5ced39e90aad82c0916d70da4aa48ad235fd8fefd07"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/xbox_a.svg",
+   "s": 393,
+   "h": "63d1a6d0798c09c70f1bd25cf03dce39bd0c04e721240fda62facd5dafe08bdc"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/xbox_b.svg",
+   "s": 701,
+   "h": "1a50644b6cb5a59564a3fdb977b16abb33ebe356e65e1b610dc2f8fb21e49fe0"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/xbox_dpad.svg",
+   "s": 363,
+   "h": "1d3528fa6ae21e2356484744c78754b455d9fce97974b5508ec424cce675f495"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/xbox_lb.svg",
+   "s": 611,
+   "h": "6463d4c86715f1445838dd502e2060cc1719bcc66af705a15efb69fa9949c36c"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/xbox_lt.svg",
+   "s": 402,
+   "h": "a9dd0f7df719f2a57e071fc5c00d951bcedb2e3a5db676a2167138a83bdbeefb"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/xbox_menu.svg",
+   "s": 399,
+   "h": "6e69a539c8a57ed461cf2690a5422abd94acad05b1c7f51b879bbad8c239c3f6"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/xbox_rb.svg",
+   "s": 793,
+   "h": "066ac893d3baa92d4ba9e3b7e12b1829cce3cdf7d0676fbab4eb56d4cf17e63b"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/xbox_stick_l.svg",
+   "s": 973,
+   "h": "c5097b1eab526cddc799ae77a6bf8d29b759408be2420357ba85b7441d6430e2"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/xbox_stick_r.svg",
+   "s": 1155,
+   "h": "c8ba98ac6b7793d1033a230df73f9b51f9ba2205ec15febcc481597c165c0b65"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/xbox_view.svg",
+   "s": 483,
+   "h": "d9f3bd3869469d006b3c2786ef7598f4470483371764390dbe2cb557873dde9c"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/xbox_x.svg",
+   "s": 458,
+   "h": "49840e42f7aa78d107a3c496a15093b4bdf6a114b0141807f86facdbe0461154"
+  },
+  {
+   "p": "anmacha-markthalle/assets/prompts/xbox_y.svg",
+   "s": 407,
+   "h": "27436f37e982d0e2502a761d889b7502faa3fcfabf0a868dcf85bfe204dfeb38"
+  },
+  {
+   "p": "anmacha-markthalle/assets/sfx/back.mp3",
+   "s": 3178,
+   "h": "ee3b1b72549f29bc1b49a6619d107fa849efca17186fdde4e70bc19d97cde1f7"
+  },
+  {
+   "p": "anmacha-markthalle/assets/sfx/move.mp3",
+   "s": 1088,
+   "h": "119366ce39f696cf094afcc470b3abf67c8d86ab4741e6e75260527be40cce65"
+  },
+  {
+   "p": "anmacha-markthalle/assets/sfx/ok.mp3",
+   "s": 1297,
+   "h": "cd9efe6873fc02405e2a2ef40d3fdd7d1c1d4c3702c05f7fd9c2ae97029cb60c"
+  },
+  {
+   "p": "anmacha-markthalle/assets/sfx/tab.mp3",
+   "s": 2342,
+   "h": "81670bef01ddccec040e42cb27223c987d49734bbc854d7c32a8da442203bddc"
+  },
+  {
    "p": "anmacha-markthalle/card.jpg",
-   "s": 39314,
-   "h": "92682d1bfaded699adc484d642998382654ae1c1dd8dc73508ffe5be1acbb3a9"
+   "s": 43827,
+   "h": "83a41098d7101a24c58e90c38268dce2525078b2fa15dbc96e5c7ca10d3d185c"
   },
   {
    "p": "anmacha-markthalle/data.js",
-   "s": 24900,
-   "h": "6a6fea9d3b8e7ac96e675d6d1aecdc81d2c9692866e3e715bc0b6d037807cbc9"
+   "s": 24890,
+   "h": "3d4e176d7feff5e15549b96d0ca6e058d10c5adeb0b1b9ec25a295c99bab6223"
   },
   {
    "p": "anmacha-markthalle/game.js",
-   "s": 97369,
-   "h": "0ad6a53630c40a3528f630b356f682e2c7a41925e7d44aad906bea8e5ae629dd"
+   "s": 104548,
+   "h": "7c0ee1809020d89cb9b87856d8351c960ebaf0765045cf9619bb985a99aa6e55"
   },
   {
    "p": "anmacha-markthalle/index.html",
-   "s": 33975,
-   "h": "8b91a2a3d5a0e91fe2ded902c275e8ff2732e70d714da89bdd49c50b7b5bb820"
+   "s": 39693,
+   "h": "910188fc7d79a2611590465b0c8a994fada56c2fd99c2773a0e98954a06def54"
   },
   {
    "p": "anmacha-markthalle/logo.svg",
    "s": 1717,
-   "h": "38a6bc75d1c55aea6b484bd697745bd306eb2fec872a19da20c4c20dd3a0c226"
+   "h": "93611822b629b69d04298fdf494d22da9c176012f4526e04c7bb463342053187"
   },
   {
    "p": "anmacha-markthalle/manifest.webmanifest",
-   "s": 792,
-   "h": "b3623a98c31c27dbeee5e31c231428cb62cc3c789e44e9bc21ce9c3f274dfe8a"
+   "s": 780,
+   "h": "6b79c5adedabd8766c1ee5cceeb4f0400518e6cbef48e95c0af25e410b26dcfc"
   },
   {
    "p": "anmacha-markthalle/menu.js",
-   "s": 7163,
-   "h": "f890eff28cc69cd67b100b863d3f0266f7f578715507802dc3fbe418ea7bf10e"
+   "s": 8303,
+   "h": "43ba480e59dabd956165ff453eba6e11eb5d217e680803c66c70b0e354f24229"
+  },
+  {
+   "p": "anmacha-markthalle/nav.js",
+   "s": 17615,
+   "h": "ab77f73f40431c1fb1324d17bc810ee21151b1a47701f01f604d4bd82790aa43"
   },
   {
    "p": "anmacha-markthalle/sim.js",
-   "s": 67634,
-   "h": "6184ff9f389e9592e0534009dd3f0916ebd2b9e5a37a9d8e4680b5c6847f3fff"
+   "s": 67677,
+   "h": "9b3af55c84f52fe8f47b9f955ee52c4f9693ce118ff08425177da851af981ee6"
   },
   {
    "p": "anmacha-markthalle/sw.js",
-   "s": 2003,
-   "h": "c497aa1793cf26975a6c9c30e118b4a6f6a37132b2fae394665864175d1b7b04"
+   "s": 1997,
+   "h": "c4b392230dab6df9912db3c664c49d56d530d74ac1fc71d321d93a018ffb3043"
   },
   {
    "p": "anmacha-markthalle/view3d.js",
-   "s": 60611,
-   "h": "9c61ffd9e34ca66bb46af9543727e5c703fc54dbb2909df1e54b2c9a0d6cdb91"
+   "s": 60726,
+   "h": "19aebbea6c2cf71840ba28b54a80bba7ca0555b38bc1d1fa725424a6549cb2c1"
   },
   {
    "p": "anmacha-memory/card.jpg",
@@ -5273,8 +5468,8 @@
   },
   {
    "p": "cloud/anmacha-gameach.js",
-   "s": 45058,
-   "h": "d4bea6814e2ef069c74f19324a2c56d2a78b721e1ea3a9306b1eb1e077ac75e2"
+   "s": 45048,
+   "h": "a2f29bb901819a900ca714d08ad693dcc2a54a56db5b0e6ec11968adfd32b68a"
   },
   {
    "p": "cloud/fire-peer.js",
@@ -5513,8 +5708,8 @@
   },
   {
    "p": "device.js",
-   "s": 9119,
-   "h": "f325bd0da82c43ce6f8c1414b46fffcd1f4be650c6850d2f63726100e0b2fbec"
+   "s": 9230,
+   "h": "5cfbe0da1a3bbf42af9d38432f9e27988ba3bc513dc749aa2d92d0b9a526bb34"
   },
   {
    "p": "easyclash/card.jpg",
@@ -6053,8 +6248,8 @@
   },
   {
    "p": "games.js",
-   "s": 58341,
-   "h": "bd790b43ca9221dadec54fb06913fa935c725b3d05cbc94bc17c88a1c1f0ce84"
+   "s": 58347,
+   "h": "ae63e78e5f8d097034edc3249d2d53db7d7255344da272e3abb076d3f44990eb"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6288,8 +6483,8 @@
   },
   {
    "p": "guides.js",
-   "s": 173408,
-   "h": "c64e340972b0efca7083a413bf8c7bdea41eccdeb4eefb3a25d51567547160e9"
+   "s": 173834,
+   "h": "c227562563c65db66fe76a113a1bd26701744f96ae393397e01433713d528822"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6363,8 +6558,8 @@
   },
   {
    "p": "guides/anmacha-markthalle.json",
-   "s": 25587,
-   "h": "73e6b58cbe583f2585046ef7d5b9c4660839b4590d084f767ac8d03eeede0f67"
+   "s": 26223,
+   "h": "cd7beb8f45f7ddc0e460b9f44826a0a030cabde559ee0ca107cc466a883fc7e2"
   },
   {
    "p": "guides/anmacha-memory.json",
@@ -7148,8 +7343,8 @@
   },
   {
    "p": "kraterkommando/console.css",
-   "s": 13317,
-   "h": "c0d184610b6c7b422ed7e430778d9ff83a04836fdd10bda172aeb1f84191e9e9"
+   "s": 13322,
+   "h": "69909e82033127cdbb19f6de5b3393e73f0e7db27c840bb4a437a2ebb801c9dd"
   },
   {
    "p": "kraterkommando/controls.css",
@@ -9508,8 +9703,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 258447,
-   "h": "38f1b9c0f974f25e92b4a3b70d8dbb400a44d39df67cfae9666750cd9cc5b53a"
+   "s": 258881,
+   "h": "5b4056a3ba4519e9dfef0e69b8162d86b5e071db0916c89d2acb019c16df79fe"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -10398,8 +10593,8 @@
   },
   {
    "p": "thumbs/anmacha-markthalle.webp",
-   "s": 12998,
-   "h": "cbe67385197787a71d343e7508b2a777e464dba8305883e2be28451c2862c810"
+   "s": 15258,
+   "h": "e784d7c587a64b7467841a5d60656480274ef77a1dab65555713672132e7638c"
   },
   {
    "p": "thumbs/anmacha-memory.webp",
@@ -10659,7 +10854,7 @@
   {
    "p": "thumbs/thumbs.js",
    "s": 2399,
-   "h": "f4a3aa8f1e2686ca5f035de797ff160afd21e3fad99e0cfc768100a21082ef5b"
+   "h": "80d5400d4bc45a0caf48a0fcaf60855f161e867e670a094abfa0beae08b3117d"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
@@ -11997,9 +12192,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-vuoSpD57.js",
-   "s": 1716249,
-   "h": "494ca0ac3640aab306a3870ac9a9bbbda37b0662118bb604c38dce5eeecc48f2"
+   "p": "zotik/assets/index-DXtH8RRC.js",
+   "s": 1719943,
+   "h": "98f9244b9045176cae03f3312cd0784b38f4e375dda544085955e6331bf3740d"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -12019,7 +12214,7 @@
   {
    "p": "zotik/index.html",
    "s": 72193,
-   "h": "9e3d2cdfd75e2b2b5d51e29e2d6544195179f7b488fc97e3149261243b6de49c"
+   "h": "efe643f60e98fe2a7a58f1f79e30a5b067ff665512c4c7686cf776865925adaf"
   },
   {
    "p": "zotik/manifest.webmanifest",
