@@ -139,8 +139,8 @@ function glow(color,size,x,y,z,op){const s=new T.Sprite(new T.SpriteMaterial({ma
 
 /* ================= Himmel ================= */
 let MOONM=null,MOONGL=[],STARS=null;
-const skyMat=new T.ShaderMaterial({side:T.BackSide,depthWrite:false,fog:false,uniforms:{uT:{value:new T.Color(.015,.035,.17)},uM:{value:new T.Color(.09,.17,.52)},uH:{value:new T.Color(.36,.30,.68)},uA:{value:new T.Color(.2,.9,.9)},uS:{value:new T.Color(.35,.5,.95)},uG:{value:new T.Color(.08,.1,.3)}},vertexShader:'varying vec3 p;void main(){p=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-  fragmentShader:'varying vec3 p;uniform vec3 uT,uM,uH,uA,uS,uG;void main(){float h=clamp(p.y,-.2,1.);vec3 top=uT,mid=uM,hor=uH;vec3 c=mix(hor,mid,smoothstep(0.,.22,h));c=mix(c,top,smoothstep(.2,.85,h));vec3 md=normalize(vec3(-.42,.5,-.76));float d=max(dot(p,md),0.);c+=uS*pow(d,18.)*.55;c+=uA*exp(-pow((p.y-.12)*5.,2.))*.12*smoothstep(-.6,.2,p.x);c=mix(c,uG,smoothstep(0.,-.2,p.y));gl_FragColor=vec4(c,1.);}'});
+const skyMat=new T.ShaderMaterial({side:T.BackSide,depthWrite:false,fog:false,uniforms:{uT:{value:new T.Color(.015,.035,.17)},uM:{value:new T.Color(.09,.17,.52)},uH:{value:new T.Color(.36,.30,.68)},uA:{value:new T.Color(.2,.9,.9)},uS:{value:new T.Color(.35,.5,.95)},uG:{value:new T.Color(.08,.1,.3)},uTm:{value:0}},vertexShader:'varying vec3 p;void main(){p=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+  fragmentShader:'varying vec3 p;uniform vec3 uT,uM,uH,uA,uS,uG;uniform float uTm;float hs(vec2 q){return fract(sin(dot(q,vec2(127.1,311.7)))*43758.5453);}float vn(vec2 q){vec2 i=floor(q),f=fract(q);f=f*f*(3.-2.*f);return mix(mix(hs(i),hs(i+vec2(1,0)),f.x),mix(hs(i+vec2(0,1)),hs(i+vec2(1,1)),f.x),f.y);}float fb(vec2 q){return vn(q)*.5+vn(q*2.03)*.25+vn(q*4.1)*.125+vn(q*8.3)*.0625;}void main(){float h=clamp(p.y,-.2,1.);vec3 top=uT,mid=uM,hor=uH;vec3 c=mix(hor,mid,smoothstep(0.,.22,h));c=mix(c,top,smoothstep(.2,.85,h));vec3 md=normalize(vec3(-.42,.5,-.76));float d=max(dot(p,md),0.);c+=uS*pow(d,18.)*.55;c+=uA*exp(-pow((p.y-.12)*5.,2.))*.12*smoothstep(-.6,.2,p.x);float nt=1.-clamp(dot(uT,vec3(.33))*3.,0.,1.);vec2 cu=p.xz/(p.y+.28)*1.5+vec2(uTm*.006,uTm*.002);float cd=fb(cu),cl=smoothstep(.48,.82,cd)*smoothstep(.0,.22,p.y);vec3 cc=uH*.8+uM*.6+uS*pow(d,6.)*.9;c=mix(c,cc,cl*.55);float au=fb(vec2(p.x*2.6+uTm*.02,p.y*7.+fb(p.xz*3.)*1.5));c+=uA*pow(au,3.)*smoothstep(.08,.3,p.y)*smoothstep(.85,.35,p.y)*.55*nt;c=mix(c,uG,smoothstep(0.,-.2,p.y));gl_FragColor=vec4(c,1.);}'});
 const sky=new T.Mesh(new T.SphereGeometry(1000,32,16),skyMat);sky.renderOrder=-10;scene.add(sky);
 { // Sterne
   const n=1400,pa=new Float32Array(n*3),ca=new Float32Array(n*3);
@@ -211,9 +211,9 @@ function chunkInst(list){
 function put(im,x,y,z,sx,sy,sz,ry,col,rx,rz){_e.set(rx||0,ry||0,rz||0);_q.setFromEuler(_e);_m.compose(_p.set(x,y,z),_q,_s.set(sx,sy,sz));const i=im.userData.n++;im.setMatrixAt(i,_m);if(col!==undefined)im.setColorAt(i,_c.set(col))}
 const PG=propSet(TOUCH),TRUNK=PG.trunk,CAN=PG.canopy,PINE=PG.pine;
 const iTrunk=inst(TRUNK,TX.tri('bark',0xffffff,{s:.9,gain:2}),520,true);
-const iCan=inst(CAN,new T.MeshStandardMaterial({color:0xffffff,roughness:.7,emissive:0x0a3a40,emissiveIntensity:.6}),1100,true);
-const iPine=inst(PINE,new T.MeshStandardMaterial({color:0xffffff,roughness:.75,emissive:0x0a2a40,emissiveIntensity:.5}),1100,true);
-const iGrass=inst(PG.grass,new T.MeshStandardMaterial({color:0xffffff,roughness:1}),5200,false);
+const iCan=inst(CAN,new T.MeshStandardMaterial({vertexColors:true,color:0xffffff,roughness:.7,emissive:0x0a3a40,emissiveIntensity:.6}),1100,true);
+const iPine=inst(PINE,new T.MeshStandardMaterial({vertexColors:true,color:0xffffff,roughness:.75,emissive:0x0a2a40,emissiveIntensity:.5}),1100,true);
+const iGrass=inst(PG.grass,new T.MeshStandardMaterial({vertexColors:true,side:T.DoubleSide,color:0xffffff,roughness:1}),5200,false);
 const iRock=inst(PG.rock,TX.tri('rock',0xffffff,{s:.6,gain:2}),220,true);
 const iShroom=inst(PG.cap,new T.MeshBasicMaterial({color:0xffffff}),260,false);
 const iStem=inst(PG.stem,new T.MeshStandardMaterial({color:0xcfd8ee,roughness:.9}),260,false);
@@ -239,7 +239,7 @@ function nearPath(x,z,d){return z<44&&z>-160&&Math.abs(x-PATHX(z))<d}
     const x=wr(-125,125),z=wr(-230,70),da=Math.hypot(x-ARENA.x,z-ARENA.z),h=hgt(x,z);
     if(h>7||nearPath(x,z,2.2)||(da<30&&WR()>.15))continue;
     const dv=Math.hypot(x,z),s=wr(.7,1.6);
-    put(iGrass,x,h+.14*s,z,s*.6,s*.55*(.7+WR()*.7),s*.6,WR()*6,dv<45?pick([0x6ae08a,0x58d47c,0x7aea9a]):pick([0x3aaa80,0x2c9a70,0x48b890]),(WR()-.5)*.3,(WR()-.5)*.3);
+    put(iGrass,x,h+.02*s,z,s*.9,s*.8*(.7+WR()*.7),s*.9,WR()*6,dv<45?pick([0x6ae08a,0x58d47c,0x7aea9a]):pick([0x3aaa80,0x2c9a70,0x48b890]),(WR()-.5)*.3,(WR()-.5)*.3);
   }
   for(let i=0;i<900;i++){
     const x=wr(-120,120),z=wr(-60,66),h=hgt(x,z);if(Math.hypot(x,z)<8||nearPath(x,z,2)||h>5)continue;
@@ -1332,7 +1332,7 @@ function titleCam(dt){const a=Math.sin(time*.1)*.7;fox.root.position.set(0,hgt(0
 function creatorCam(dt){const y=hgt(0,12);fox.root.position.set(0,y,12);fox.root.rotation.y=cr.rot;animFox(fox,time,0,-1);fox.backSword.visible=true;
   const asp=innerWidth/innerHeight;camera.position.set(0,y+1.15,12+(asp<.8?4.6:3.5));camera.lookAt(0,y+.95,12);if(asp>1.3)camera.translateX(1.1);else camera.translateY(-.55);moonL.position.set(MOON_DIR.x*100,MOON_DIR.y*100,12+MOON_DIR.z*100);moonL.target.position.set(0,0,12);auraL.position.set(0,2.5,12);felli.root.position.set(1.4,hgt(1.4,11),11);felli.root.rotation.y=-.5;for(const n of NPC){n.P.root.rotation.y=n.face;animHuman(n.P,time+n.t,0)}}
 function frame(now){
-  requestAnimationFrame(frame);const rdt=(now-lastT)/1000;let dt=Math.min(rdt,.05);lastT=now;
+  requestAnimationFrame(frame);skyMat.uniforms.uTm.value=now/1000;const rdt=(now-lastT)/1000;let dt=Math.min(rdt,.05);lastT=now;
   if(!MP.on){if(hitStop>0){hitStop-=rdt;dt*=.04}else if(slowT>0){slowT-=rdt;dt*=.4}}
   time+=dt;qualityTick(rdt);
   for(const o of animObjs)o.fn(time,dt);
@@ -1947,8 +1947,8 @@ function buildWorld(n){
   /* Instanzen */
   const mkI=(geo,mat,cap,cast)=>{const im=inst(geo,mat,cap,cast);im.userData.cap=cap;ims.push(im);return im};
   const put2=(im,...a)=>{if(im.userData.n<im.userData.cap)put(im,...a)};
-  const emi=C.emis,iTr=mkI(TRUNK,TX.tri('bark',0xffffff,{s:.9,gain:2}),900,true),iCa=mkI(CAN,new T.MeshStandardMaterial({color:0xffffff,roughness:.7,emissive:emi,emissiveIntensity:.6}),1300,true),
-    iPi=mkI(PINE,new T.MeshStandardMaterial({color:0xffffff,roughness:.75,emissive:emi,emissiveIntensity:.5}),1300,true),iGr=mkI(PG.grass,new T.MeshStandardMaterial({color:0xffffff,roughness:1}),3600,false),
+  const emi=C.emis,iTr=mkI(TRUNK,TX.tri('bark',0xffffff,{s:.9,gain:2}),900,true),iCa=mkI(CAN,new T.MeshStandardMaterial({vertexColors:true,color:0xffffff,roughness:.7,emissive:emi,emissiveIntensity:.6}),1300,true),
+    iPi=mkI(PINE,new T.MeshStandardMaterial({vertexColors:true,color:0xffffff,roughness:.75,emissive:emi,emissiveIntensity:.5}),1300,true),iGr=mkI(PG.grass,new T.MeshStandardMaterial({vertexColors:true,side:T.DoubleSide,color:0xffffff,roughness:1}),3600,false),
     iRo=mkI(PG.rock,TX.tri('rock',0xffffff,{s:.6,gain:2}),260,true),iSh=mkI(PG.cap,new T.MeshBasicMaterial({color:0xffffff}),300,false),
     iSt=mkI(PG.stem,new T.MeshStandardMaterial({color:0xcfd8ee,roughness:.9}),300,false),iCr=mkI(PG.crystal,new T.MeshStandardMaterial({color:0xffffff,emissive:C.glowc[0],emissiveIntensity:1.5,roughness:.25}),420,false),
     iFl=mkI(PG.flower,new T.MeshBasicMaterial({color:0xffffff}),700,false),iPa=mkI(PG.pave,TX.tri('cobble',0xffffff,{s:.5,gain:1.8,r:1}),220,false);
@@ -1968,7 +1968,7 @@ function buildWorld(n){
   let cnt=0,tries=0;const tn=C.tn||({3:150,4:110,5:120,6:260,7:80,8:110,9:70,10:170}[n]||400),kinds=C.trees.filter(k=>k!=='tower');
   while(cnt<tn&&tries++<9000){const x=rr(-122,122),z=rr(-228,66);if(!free(x,z,38))continue;if(z>-40&&R()>.35)continue;tree(rp(kinds),x,z);cnt++}
   for(let i=0;i<3200;i++){const x=rr(-125,125),z=rr(-230,70),da=Math.hypot(x,z+182),hh=h(x,z);if(hh>7||np(x,z,2.2)||bflat(x,z,BPADS)>=.5||(da<30&&R()>.15))continue;const s=rr(.7,1.6);
-    put2(iGr,x,hh+.14*s,z,s*.6,s*.55*(.7+R()*.7),s*.6,R()*6,rp(C.grass),(R()-.5)*.3,(R()-.5)*.3)}
+    put2(iGr,x,hh+.02*s,z,s*.9,s*.8*(.7+R()*.7),s*.9,R()*6,rp(C.grass),(R()-.5)*.3,(R()-.5)*.3)}
   for(let i=0;i<600;i++){const x=rr(-120,120),z=rr(-60,66),hh=h(x,z);if(Math.hypot(x,z)<8||np(x,z,2)||bflat(x,z,BPADS)>=.5||hh>5)continue;put2(iFl,x,hh+.22,z,.13,.13,.13,0,rp(C.flow))}
   let r=0;tries=0;while(r<200&&tries++<4000){const x=rr(-120,120),z=rr(-226,60),hh=h(x,z);if(Math.hypot(x,z)<30||bflat(x,z,BPADS)>=.5||np(x,z,3.5)||(Math.hypot(x,z+182)<31&&Math.hypot(x,z+182)>14))continue;
     const s=rr(.5,2.4);put2(iRo,x,hh+s*.3,z,s*rr(.8,1.4),s*.75,s*rr(.8,1.4),R()*6,P.rock,R(),R());if(s>.8)addCol(x,z,s*.85);r++}
