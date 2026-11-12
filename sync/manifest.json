@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f58292c09f44",
- "generated": "2026-11-12T20:25:18+01:00",
- "commit": "969e38d44f5553c9d01432aa5f0811dfcdcfdaaf",
+ "version": "0657aac25c5c",
+ "generated": "2026-11-12T20:31:43+01:00",
+ "commit": "4366b61e80ccfdc2726c024e953b3662abcdd6b1",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9144,7 +9144,132 @@
   {
    "p": "sync/catalog.json",
    "s": 258361,
-   "h": "165784e7b05a136f681aeb1977850a6cf4685519241776734dd600a411fe6fd5"
+   "h": "6a8c1c9dc3423971f0c4d9acfed8bd888233d37286403d48f058c774515f6b28"
+  },
+  {
+   "p": "taschi/assets/kaykit/axe_A.bin",
+   "s": 47012,
+   "h": "37ee058a478aed5df61accacbb745baf7e73ebccce1f350042389bd2bedd3ba8"
+  },
+  {
+   "p": "taschi/assets/kaykit/axe_A.gltf",
+   "s": 3039,
+   "h": "94441195e9a690a58119bf78d6dabe90a313afc5d8a97d84604661d16840535c"
+  },
+  {
+   "p": "taschi/assets/kaykit/bow_A_withString.bin",
+   "s": 48272,
+   "h": "9b37ca7c90f9e621bef63b7fe0fc5bb9aebc2862248ccfb498b0c0faab1b8e48"
+  },
+  {
+   "p": "taschi/assets/kaykit/bow_A_withString.gltf",
+   "s": 4312,
+   "h": "a01fc3f9412b414efa62aed49e3556bb270d6dce11011fafded55f6af75bb152"
+  },
+  {
+   "p": "taschi/assets/kaykit/dagger_A.bin",
+   "s": 17476,
+   "h": "99bb9f33a2c859fbec0056c40889eb803da3c1f64b8ca039e35c0ae2121ce750"
+  },
+  {
+   "p": "taschi/assets/kaykit/dagger_A.gltf",
+   "s": 3042,
+   "h": "a1f98d2184ebd1d91c853173ce6f56c89787d3177ed54b50e036e8c33cbb800c"
+  },
+  {
+   "p": "taschi/assets/kaykit/halberd.bin",
+   "s": 64112,
+   "h": "9a1f589764623a8b8289abcf97d242f352a134bc8274bc14ed77d984bfb04015"
+  },
+  {
+   "p": "taschi/assets/kaykit/halberd.gltf",
+   "s": 3044,
+   "h": "0b9d3f0c56525c181b6088f652caf2eec25216d9ec5abdb59646582392ef791e"
+  },
+  {
+   "p": "taschi/assets/kaykit/hammer_A.bin",
+   "s": 23240,
+   "h": "da08cee13731cc62eebb987c709ec7220a5d5ee95076ba89b5206d3d68a80cd1"
+  },
+  {
+   "p": "taschi/assets/kaykit/hammer_A.gltf",
+   "s": 3042,
+   "h": "499544e3488326e5d51851c05a1fd77b515fe10e6c00ff54150e17feabd3b5ea"
+  },
+  {
+   "p": "taschi/assets/kaykit/shield_A.bin",
+   "s": 14604,
+   "h": "274bf02beaf4a9c8e936b62e18189c2bf11ceda1f1720b6c86dffe6ad42e60df"
+  },
+  {
+   "p": "taschi/assets/kaykit/shield_A.gltf",
+   "s": 3042,
+   "h": "3634e520841d408a021c247c613084299e3a57458a4d3fa1ee84a9ba37fd5d9b"
+  },
+  {
+   "p": "taschi/assets/kaykit/shield_B.bin",
+   "s": 15840,
+   "h": "16ae59caefcb170de13ee252e669deacb3a396697a4487b5e08f314b6fbdb9bb"
+  },
+  {
+   "p": "taschi/assets/kaykit/shield_B.gltf",
+   "s": 3039,
+   "h": "4dfe59a9d33a950cbac48cdef2c7cb09b95482949ad07e815722d7537726c6b6"
+  },
+  {
+   "p": "taschi/assets/kaykit/shield_C.bin",
+   "s": 27888,
+   "h": "254470c082fc712214acdd1625195de8d907acd43eda00b0b59744c6fcdd15db"
+  },
+  {
+   "p": "taschi/assets/kaykit/shield_C.gltf",
+   "s": 3040,
+   "h": "047cf9da3e52c8d8f38932d9a5649e86e7ee28c5e692d7efa767d67a64378d95"
+  },
+  {
+   "p": "taschi/assets/kaykit/spear_A.bin",
+   "s": 52736,
+   "h": "2fff457925f370c4e4ef7bfb7434bcefcc054a96c569c653be8df5687931c59d"
+  },
+  {
+   "p": "taschi/assets/kaykit/spear_A.gltf",
+   "s": 3045,
+   "h": "7299baf7d4f948b7839d616746c791fa57af74a9ccb8903692715f1fd8c947e4"
+  },
+  {
+   "p": "taschi/assets/kaykit/staff_A.bin",
+   "s": 21016,
+   "h": "2c08abd861d4a57a85b058e1f0d5b96054bb43d1a993dd6669d3118ebbe1ac2b"
+  },
+  {
+   "p": "taschi/assets/kaykit/staff_A.gltf",
+   "s": 3040,
+   "h": "f369dd0b26fb9cb922141e8ac2772b4bf99a18df04e2d8848e9679f8b35fbc80"
+  },
+  {
+   "p": "taschi/assets/kaykit/sword_A.bin",
+   "s": 13496,
+   "h": "5b3d293758c6a33d792d7c2a055c71d84848e77a1c9d0f203508cc9955db4aeb"
+  },
+  {
+   "p": "taschi/assets/kaykit/sword_A.gltf",
+   "s": 3035,
+   "h": "137cc318e9f36339a088524243071187da8adff3b5735f1d5330ed1577f54851"
+  },
+  {
+   "p": "taschi/assets/kaykit/sword_C.bin",
+   "s": 16976,
+   "h": "d47c90f6991c4d8bcd551afc3903d2f7404b93b0ebfd469076b6f696e3a8b6ca"
+  },
+  {
+   "p": "taschi/assets/kaykit/sword_C.gltf",
+   "s": 3038,
+   "h": "f18406c1792f90ba214bd836d88be06b498252f6e937a3bbd5e36a0617650573"
+  },
+  {
+   "p": "taschi/assets/kaykit/weapons_bits_texture.png",
+   "s": 17508,
+   "h": "c153429a49928594b00b53c07c4ab3d6352087b7f5df6c272d4aedfdb99a40be"
   },
   {
    "p": "taschi/assets/models/alien.glb",
@@ -9503,8 +9628,8 @@
   },
   {
    "p": "taschi/src/data/towns.js",
-   "s": 6195,
-   "h": "774f2549391780e05545a9d690c2fb17e21e5770dd35fe90354fe56325d25a29"
+   "s": 8753,
+   "h": "429a625cd4be812f5150a49310eb76029ee5af45e394e9e2408b4638c740a98c"
   },
   {
    "p": "taschi/src/data/trainers.js",
@@ -9537,14 +9662,19 @@
    "h": "52c0a10d83d632edac959f34a527a9762840cc627dc0feb0748e2ad2a1006a2f"
   },
   {
+   "p": "taschi/src/engine/kaykit.js",
+   "s": 6906,
+   "h": "65b4d7d3ae96ccb83095e17c045d48de5d59b6b320baabdc8a41480e9ebd5e21"
+  },
+  {
    "p": "taschi/src/engine/materials.js",
    "s": 12319,
    "h": "42fe21ebfc1c4a16e2979980afdda5dc5bc547612551ba6fa279648f09e8a13c"
   },
   {
    "p": "taschi/src/engine/models.js",
-   "s": 8519,
-   "h": "328d9682a5ec6f7cf161f35c94b063c0afb75e238629f30e3a1bb3970af92e55"
+   "s": 8533,
+   "h": "5fe1295631f6b91821d9eb15af2b95fb82f2b77feceea0850400045e6c411350"
   },
   {
    "p": "taschi/src/engine/post.js",
@@ -9608,13 +9738,13 @@
   },
   {
    "p": "taschi/src/game/game.js",
-   "s": 95966,
-   "h": "260a097722414d3759c291c5cb98319559e6dcce7624e1d6edbaf7997b371aae"
+   "s": 96545,
+   "h": "b428b30065f0f8b4338a03238febb4bc221126f6e56ae500f04d3304cf10c932"
   },
   {
    "p": "taschi/src/game/world.js",
-   "s": 43100,
-   "h": "ab1f04eff6bc2e6ec43f339ab996df432120b9c39366bb4dff0bb0ab5bf5b46d"
+   "s": 43849,
+   "h": "704d1ede7948f42d4b40cfdfdac80d81e5a39f6af1059759e103bae32d45ccd3"
   },
   {
    "p": "taschi/src/logic/ai.js",
@@ -9658,8 +9788,8 @@
   },
   {
    "p": "taschi/src/logic/layout.js",
-   "s": 34013,
-   "h": "9a36b49500e3ae273bf4a2db537908cf02270de54edfd0cc8d0cdfa70b755ea7"
+   "s": 34209,
+   "h": "fb90af7b4d23b178d1e5784f2591e4a6fc89435c246d8ff90cade2ed26f41c9e"
   },
   {
    "p": "taschi/src/logic/link.js",
@@ -9798,8 +9928,8 @@
   },
   {
    "p": "taschi/src/world/region-map.js",
-   "s": 27830,
-   "h": "a3bfec0b9449e91b07e93c3c005c0d9a48d4e5d004553d98a0c04032338d76be"
+   "s": 29864,
+   "h": "77a38d35a20169129614fa798f0cd1f49b339c6163bc1a7b2f79494b2d059141"
   },
   {
    "p": "taschi/vite.config.mjs",
