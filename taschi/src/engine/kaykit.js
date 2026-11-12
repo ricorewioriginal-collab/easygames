@@ -1,7 +1,7 @@
 // KayKit von Kay Lousberg (CC0): Abenteurer-Figuren (KayKit Adventurers 2.0)
 // und Waffen/Schilde (KayKit Fantasy Weapons Bits 1.0).
-// Die Figuren und ihre Rig-Animationen liegen schon im Repo bei Anmacha Quest
-// (anmacha-quest-rpg/models/kk) und werden von dort mitbenutzt – keine Kopie.
+// Figuren und Rig-Animationen liegen in assets/kaykit/characters – im eigenen
+// Ordner, weil die Windows-App jedes Spiel nur mit seinem Ordner installiert.
 // KKCharacter hat dieselbe Schnittstelle wie die gebauten Figuren
 // (root, setLocomotion, setTalking, play, hold, update), damit die Welt sie
 // wie jeden anderen Bewohner bewegen kann.
@@ -9,7 +9,7 @@ import { THREE } from './three.js';
 import { modernToon } from './materials.js';
 import { cloneRig, outlineMaterial } from './models.js';
 
-const CHAR_BASE = new URL('../../../anmacha-quest-rpg/models/kk/', import.meta.url).href;
+const CHAR_BASE = new URL('../../assets/kaykit/characters/', import.meta.url).href;
 const ITEM_BASE = new URL('../../assets/kaykit/', import.meta.url).href;
 const files = new Map();
 
