@@ -138,6 +138,8 @@ window.EASYGAMES_GUIDES = {
    "Kampf: Kreuzmenü mit Angriff, Fertigkeit (kostet SP), Spezial (kostet IP), Item, Wache und Flucht"
   ],
   "tipps": [
+   "In jedem Reich liegt ein Kapselgeist in einer Truhe: Er kämpft von selbst mit. Füttern und mit Sphärenfrucht entwickeln im Menü unter Kapselgeist.",
+   "Lindmark (ab Reich 2): Gasthaus heilt auch Kapselgeister, Schmied Torvald rüstet bis Stufe 10 auf.",
    "Vor jedem Boss an der Heilquelle in Hafenau heilen und den Spielstand sichern.",
    "Nutze Wache in der Runde, in der ein Boss seinen Spezialangriff ausführt."
   ]

@@ -138,3 +138,17 @@ Faustregel: Die empfohlene Stufe sollte erreicht sein. Wer unterwegs viele Gegne
 ---
 
 *Credits (alle CC0): 3D-Modelle von Quaternius (Helden „RPG Characters“, „Cute Animated Monsters“, „Animated Monster Pack“, „Ultimate Textured Building Pack“) und Kenney (Fantasy Town Kit, Mini Dungeon, Mini Forest, Graveyard Kit). Technik: Three.js (WebGL).*
+
+## Lindmark und Kapselgeister
+
+**Lindmark** (Weltkarte, Osten) öffnet sich nach dem Sieg in der Echogruft: Gasthaus (heilt alles und speichert, Preis nach Stufe), Händler Quinn (Großtrank, Ätherflasche, Glutbombe, Sphärenfrucht), Schmied Torvald (Ausrüstung bis Stufe 10).
+
+**Kapselgeister** schlafen in Truhen, einer pro Reich und einer im Turm der Stille. Der gewählte Begleiter kämpft von selbst mit. Im Menü unter „Kapselgeist“ wählst du ihn aus und fütterst ihn (Tränke, Ätherwaren = EXP). Ab Stufe 8 und 16 lässt eine Sphärenfrucht ihn sich weiterentwickeln.
+
+| Geist | Element | Fundort | Gestalten |
+|---|---|---|---|
+| Flämmchen | Feuer | Echogruft | Glutgeist, Sonnenphönix |
+| Moosling | Erde | Rosenhain | Moosgolem, Waldhüter |
+| Frostling | Wasser | Frostgrotte | Eisbär, Gletscherkönig |
+| Summfix | Wind | Glutschlund | Sturmhornisse, Himmelsfürst |
+| Drakling | Licht | Turm der Stille | Sternendrache, Äonenwyrm |

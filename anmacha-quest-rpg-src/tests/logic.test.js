@@ -171,6 +171,7 @@ for (let si = 0; si < 5; si++) {
   L.spawnRoamers(S, game.rng);
   if (!S.roamers.length) fail('keine Monster', mid);
   await game.startRoamerFight(S.roamers[0]);
+  if (S.mapId !== mid) game.loadMap(mid, { x: 2, y: 14 });   // verloren: zurück ins Reich
   for (const h of S.party) { h.lv += 14; h.hp = L.mhp(S, h); h.sp = L.msp(h); }
   for (const o of S.objs.slice()) if (o.t === 'boss') await game.interact(o);
   console.log(`Auto ${mid} Boss-Flag: ${!!S.flags['boss_' + mid]} Schlüssel: ${!!S.flags[mid + '_key']}`);
@@ -211,6 +212,68 @@ for (let i = 0; i < 9; i++) game.update(0.016);
 game.pressDir({ x: 0, y: -1 }, false);
 for (let i = 0; i < 9; i++) game.update(0.016);
 if (S.gp.y !== 11 || S.moving) fail('Laufen', S.gp, S.moving);
+
+// ---- Stufe 2: Kapselgeister, Lindmark, neue Items
+{
+  game.autoplay = true;
+  S.flags = { boss_rap: true };
+  S.party = [L.newHero(S, 'andrew', 10), L.newHero(S, 'marco', 10)];
+  S.caps = { own: {}, active: null };
+  game.mode = M.WORLD;
+  game.loadMap('rap', { x: 2, y: 14 });
+  const capChest = S.objs.find(o => o.t === 'chest' && o.d.kind === 'capsule');
+  if (!capChest) fail('Kapsel-Truhe fehlt');
+  else await game.interact(capChest);
+  const cap = L.activeCap(S);
+  if (!cap || cap.id !== 'flamm') fail('Kapselgeist nicht erhalten');
+  // Kampf mit Kapselgeist
+  let capActs = 0;
+  const orig = game.capAct.bind(game);
+  game.capAct = async (...a) => { capActs++; return orig(...a); };
+  const r = await game.runBattle(['beatbandit', 'reimruepel', 'bassgolem'], 'rap');
+  game.capAct = orig;
+  if (!capActs) fail('Kapselgeist hat nicht gehandelt');
+  if (cap.hp <= 0) fail('Kapselgeist nach dem Kampf erschöpft');
+  console.log(`Kampf mit Kapselgeist: ${r}, Aktionen ${capActs}, ${L.cname(cap)} Lv ${cap.lv}`);
+  // Füttern und Entwicklung
+  S.inv = { trank: 3, frucht: 2, bombe: 2 };
+  const lv0 = cap.lv, ex0 = cap.exp;
+  await game.feed(cap);
+  if (cap.lv === lv0 && cap.exp === ex0) fail('Füttern ohne Wirkung');
+  cap.lv = 8;
+  if (!L.canEvolve(cap)) fail('Entwicklung ab Stufe 8');
+  S.inv = { frucht: 1 };
+  await game.feed(cap);
+  if (cap.form !== 1 || L.cname(cap) !== 'Glutgeist' || S.inv.frucht !== 0) fail('Entwicklung', cap.form, L.cname(cap));
+  // Glutbombe im Kampf
+  S.inv = { bombe: 1 };
+  game.loadMap('rap', { x: 2, y: 14 });
+  S.enemies = [L.makeEnemy(S, 'beatbandit')];
+  const hp0 = S.enemies[0].hp;
+  await game.heroAct({ type: 'item', h: S.party[0], i: 'bombe', t: null }, []);
+  if (S.enemies[0].hp >= hp0 || S.inv.bombe !== 0) fail('Glutbombe');
+  S.enemies = [];
+  // Lindmark: erreichbar über die Weltkarte, Gasthaus heilt und kostet
+  game.loadMap('welt', { x: 36, y: 13 });
+  const lp = MAPS.welt.portals.find(p => p.to === 'lind');
+  await game.usePortal(lp);
+  if (S.mapId !== 'lind') fail('Lindmark');
+  S.party[0].hp = 1; cap.hp = 1; S.gold = 500;
+  const inn = MAPS.lind.npcs.find(n => n.kind === 'inn');
+  await game.inn(inn);
+  if (S.party[0].hp !== L.mhp(S, S.party[0]) || cap.hp !== L.cmhp(cap) || S.gold !== 500 - L.innPrice(S)) fail('Gasthaus', S.gold);
+  for (const n of MAPS.lind.npcs) await game.talkNpc(n);
+  // Speichern/Laden mit Kapselgeist
+  game.saveGame();
+  const g3 = new Game(ui, {}, { rng: L.makeRng(7), store });
+  if (!g3.loadGame() || !L.activeCap(g3.S) || L.activeCap(g3.S).form !== 1 || g3.S.mapId !== 'lind') fail('Laden Kapselgeist');
+  // alter Spielstand ohne Kapselgeister
+  const old = JSON.parse(store.get(SAVE_KEY)); delete old.caps; old.v = 3;
+  store.set(SAVE_KEY, JSON.stringify(old));
+  const g4 = new Game(ui, {}, { rng: L.makeRng(8), store });
+  if (!g4.loadGame() || Object.keys(g4.S.caps.own).length !== 0) fail('Alter Spielstand');
+  game.autoplay = false;
+}
 
 // ---- Godot-Spielstand (store_var) einlesen
 {
