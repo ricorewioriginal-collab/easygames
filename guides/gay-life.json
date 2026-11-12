@@ -80,6 +80,16 @@
       ]
     },
     {
+      "t": "Tagesziele, Sticker und Erfolge",
+      "list": [
+        "Jeden Spieltag gibt es drei Tagesziele (z. B. laufen, mit Leuten sprechen, Geld verdienen, im Club tanzen, Tram fahren). Jedes geschaffte Ziel bringt 25 € und 15 Glitzer.",
+        "Alle drei an einem Tag: Bonus ab 60 Glitzer, und deine Serie wächst (jeder weitere Tag +10, bis +60). Bleibt ein Tag unvollständig, beginnt die Serie von vorn.",
+        "Regenbogen-Sticker: 12 im Pride District und je 3 in den sieben Vierteln (33). Einfach hinlaufen; jeder bringt 8 Glitzer, alle Sticker eines Viertels zusätzlich Geld.",
+        "15 Erfolge belohnen lange Ziele (Serien, alle Sticker, 5 km gelaufen, 1000 € auf dem Konto, alle Viertel besucht …).",
+        "Die Leiste unter dem Status zeigt Tagesziele und Sticker; antippen (oder im Handy die App „Ziele“) zeigt alles im Detail."
+      ]
+    },
+    {
       "t": "Das Handy",
       "p": [
         "Das Handy (📱, Taste P oder Tab) bündelt Status, Aufgaben, Karte (mit Schnellreise), Kontakte, Finanzen, Nachrichten, Dating-App, Kalender, Tram, Geschichte, Bewohner, Events, Wetter, Zusammen, Fotos und Einstellungen. Ein Abzeichen zeigt neue Nachrichten."
@@ -90,8 +100,9 @@
       "list": [
         "PC: W A S D oder Pfeiltasten laufen; Kamera mit der Maus ziehen oder Q/R drehen. E, Enter oder Leertaste = Aktion (sprechen, Orte betreten). P oder Tab = Handy, M = Karte/Orte, F = Vollbild, Esc = Pause bzw. schließen.",
         "Touch: fester Stick links zum Laufen; vier Tasten rechts: A Aktion, B Orte, X Handy, Y Menü. Kamera durch Wischen auf dem Bild. Die Touch-Steuerung erscheint automatisch und lässt sich in den Einstellungen erzwingen oder abschalten.",
-        "Gamecontroller: linker Stick oder Steuerkreuz laufen, A = Aktion, B = Karte/Orte, X = Handy, Y oder Start = Pause-Menü, LB/RB drehen die Kamera.",
-        "Pausenmenü: Weiter, Charakter, Ton, Speichern, Startmenü. Die Stadt läuft dabei weiter."
+        "Pausenmenü: Weiter, Charakter, Ton, Speichern, Startmenü. Die Stadt läuft dabei weiter.",
+        "Gamecontroller (PlayStation, Switch, Xbox und andere): linker Stick läuft stufenlos, Steuerkreuz läuft oder wählt, rechter Stick dreht und zoomt die Kamera, R2/ZR (oder L3) sprintet, L1/R1 drehen, R3 setzt die Kamera hinter die Figur. Bestätigen (✕ bei PlayStation, A bei Switch) = Aktion, Zurück (○ bzw. B) = Orte, □/Y = Handy, △/X oder Options/+ = Menü. Die Hinweisleiste unten zeigt die Symbole deines Controllers.",
+        "Alles geht ohne Maus: In Startmenü, Pausenmenü, Orten, Handy und Look-Editor wählt das Steuerkreuz (gelber Rahmen), Bestätigen klickt, Zurück geht eine Ebene zurück, der rechte Stick scrollt. Textfelder öffnen eine Bildschirm-Tastatur. Select + Start zeigt und ändert die Belegung."
       ]
     },
     {
@@ -110,7 +121,8 @@
         "Iss und schlaf regelmäßig – mit wenig Energie bekommst du keine Schicht.",
         "Verdiene dein erstes Geld als Barkeeper im Club Glitzer oder als Verkäufer in der Boutique, bevor die erste Miete an Tag 8 fällig wird.",
         "Sprich jeden Tag mit möglichst vielen Leuten: Das erste Gespräch pro Tag steigert die Freundschaft.",
-        "Sammle die Regenbogen-Sterne in der Stadt – jeder bringt 5 Glitzer."
+        "Sammle die Regenbogen-Sterne in der Stadt – jeder bringt 5 Glitzer.",
+        "Schau morgens in die App „Ziele“: Die drei Tagesziele lassen sich oft nebenbei erledigen und bringen schnell Geld und Glitzer."
       ]
     },
     {
@@ -121,7 +133,8 @@
         "Plane Dates im Kalender und erscheine pünktlich; verpasste Dates senken Romantik und Freundschaft.",
         "Halte Kontakt zu deinem Partner: Nach fünf Tagen ohne Kontakt gibt es Streit. Mit Entschuldigung oder Blumen versöhnst du dich.",
         "Kaufe Möbel am Laptop: Kaffeemaschine, Bücherregal und Hantelbank sparen Wege, Deko hebt die Stimmung (bis +6).",
-        "Mehrere Jobs lohnen sich: Jede Stufe erhöht den Grundlohn um 8 Prozent; gute Antworten in den Situationen bringen den Bonus."
+        "Mehrere Jobs lohnen sich: Jede Stufe erhöht den Grundlohn um 8 Prozent; gute Antworten in den Situationen bringen den Bonus.",
+        "Sammle Regenbogen-Sticker gezielt, wenn du ohnehin mit der Tram in ein Viertel fährst – drei Stück pro Viertel bringen zusammen 30 € extra."
       ]
     },
     {
@@ -242,7 +255,8 @@
         "Nachwuchsstar: 800 Punkte beim Casting-Tag.",
         "Muskelprotz: 12 Wiederholungen beim Beinetag.",
         "Match-Meisterin: 2500 Punkte im Glitzer-Match.",
-        "Paradenläufer: 600 Punkte im Parade-Runner."
+        "Paradenläufer: 600 Punkte im Parade-Runner.",
+        "Tagesziel-Erfolge (App „Ziele“): Erstes Tagesziel, Perfekter Tag, Drei am Stück, Eine Woche voll Farbe, Erster Sticker, Pride-District-Profi (12 Sticker), Ganz Rainbow City (33 Sticker), Stadtläufer (5 km), Kiez-Plaudertasche (50 Gespräche), Spielkind (20 Minispiele), Tanzflächen-Star (10× tanzen), Fleißig (10 Schichten), Gut bei Kasse (1000 €), Weltenbummler (alle Viertel), Glitzer-Ikone (Level 10)."
       ]
     },
     {

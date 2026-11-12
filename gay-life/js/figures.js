@@ -13,7 +13,7 @@
     return F.kit;
   }
   F.on = function () { return !!kit() && (GL.S.settings.q | 0) !== 0 && !window.__GL_NOFIG; };
-  var HAIR = ['short', 'fringe', 'curly', 'buzz', 'long', 'mohawk'];
+  var HAIR = ['short', 'fringe', 'curly', 'buzz', 'long', 'mohawk', 'bald'];   // Kurz, Tolle, Locken, Buzz, Lang, Undercut, Glatze
   function look(L) {
     var C = GL.core, SK = C.SKIN, HC = C.HC, TC = C.TC, sk = SK[L.skin] || SK[1], hc = HC[L.hc] || HC[1], tc = TC[L.tc] || TC[0];
     if (L.top === 6) tc = '#2a2d3a'; if (L.top === 5) tc = '#ff4f9a'; if (L.top === 3) tc = C.mix(tc, '#000000', .12);
@@ -24,6 +24,8 @@
     };
     if (L.beard >= 1 && L.beard <= 4) o.beard = hc;
     if (L.acc === 3) o.hat = { type: 'cap', color: C.mix(tc, '#000000', .2) };
+    if (L.acc === 2 || L.acc === 9) o.hat = { type: 'sunglasses' };
+    if (L.acc === 6) o.hat = { type: 'crown', color: '#f3c34a' };
     return o;
   }
   /* Einfache Figur g gegen den echten Körper tauschen (asynchron; g bleibt dieselbe Gruppe, Position/Drehung gelten weiter) */

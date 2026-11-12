@@ -15,12 +15,14 @@ const ONLY = (process.env.ONLY || '').split(',').filter(Boolean), sec = n => !ON
 const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) { fails++; if (errs.length) console.log('   letzte Fehler:', errs.slice(-3).join(' | ')); } };
 
 async function newPage(opts, title) {
-  const o2 = Object.assign({ viewport: { width: 1000, height: 640 }, serviceWorkers: 'block' }, opts || {}); delete o2.fig;
+  const o2 = Object.assign({ viewport: { width: 1000, height: 640 }, serviceWorkers: 'block' }, opts || {}); delete o2.fig; delete o2.goals;
   const ctx = await browser.newContext(o2);
   const page = await ctx.newPage();
   if (!title) await page.addInitScript(() => { window.__GL_SKIP_TITLE = true; });
   // Echte 3D-Figuren nur in Abschnitt 16: Software-WebGL (SwiftShader) wird mit vielen animierten Körpern zu langsam für die zeitabhängigen Prüfungen
   if (!(opts && opts.fig)) await page.addInitScript(() => { window.__GL_NOFIG = 1; });
+  // Tagesziele/Sticker nur in Abschnitt 17: ihre Belohnungen würden die genauen Kontostände der älteren Prüfungen verändern
+  if (!(opts && opts.goals)) await page.addInitScript(() => { window.__GL_NOGOALS = 1; });
   page.on('pageerror', e => errs.push('PAGEERR ' + e.message));
   page.on('console', m => { if (m.type() === 'error' && !/ERR_FAILED|net::|Failed to load resource/.test(m.text())) errs.push('console: ' + m.text()); });
   if (process.env.THREE) await page.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
@@ -658,7 +660,7 @@ if (sec('8')) {
 /* ---------- 9. Mehrspieler: PIN, QR-Code, Orte, Besuch, Gruppentanz, Gruppenfoto (mit Test-Ersatz für PeerJS über BroadcastChannel) ---------- */
 if (sec('9')) {
   let s; const ctx = await browser.newContext({ viewport: { width: 1000, height: 640 }, serviceWorkers: 'block' });
-  await ctx.addInitScript(() => { window.__GL_NOFIG = 1; });
+  await ctx.addInitScript(() => { window.__GL_NOFIG = 1; window.__GL_NOGOALS = 1; });
   if (process.env.THREE) await ctx.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
   await ctx.route(/peerjs/, r => r.fulfill({ path: new URL('./fakepeer.js', import.meta.url).pathname, contentType: 'application/javascript' }));
   if (process.env.QRCODE) await ctx.route(/qrcode/, r => r.fulfill({ path: process.env.QRCODE, contentType: 'application/javascript' })); else await ctx.route(/qrcode/, r => r.abort());
@@ -922,7 +924,7 @@ if (sec('14')) {
   await page.waitForFunction(() => getComputedStyle(document.getElementById('boot')).display === 'none', null, { timeout: 8000 });
   ok(true, 'Ladebildschirm verschwindet nach dem Start');
   const m0 = await ev(page, () => [...document.querySelectorAll('#title .mi')].map(b => b.querySelector('b').textContent));
-  ok(m0.join('|') === 'Spiel starten|Charakter|Minispiele|Mehrspieler|Einstellungen|Info & Hilfe', 'Menüpunkte: ' + m0.join(', '));
+  ok(m0.join('|') === 'Spiel starten|Charakter|Minispiele|Online-Mehrspieler|Einstellungen|Info & Hilfe', 'Menüpunkte: ' + m0.join(', '));
   await page.keyboard.press('ArrowDown'); await page.keyboard.press('ArrowDown');
   ok(await ev(page, () => document.querySelector('#title .mi.sel b').textContent) === 'Minispiele', 'Pfeiltasten wählen Menüpunkte');
   // Einstellungen
@@ -1112,6 +1114,43 @@ if (sec('16')) {
   ok(lod !== false, 'Ferne Leute werden als einfache Figur gezeichnet (Detailstufe)' + (lod === null ? ' – gerade niemand weit weg' : ''));
   const hgt = await V(() => { const g = GL.W.player.g, f = g.userData.fig; return f.height * f.root.scale.y * g.scale.y; });
   ok(hgt > 1.8 && hgt < 2.4, `Figur ist ${hgt.toFixed(2)} Einheiten groß wie bisher – Türen und Kamera passen`);   await ctx.close();
+}
+
+/* ---------- 17. Spielfokus: Tagesziele, Regenbogen-Sticker, Erfolge ---------- */
+if (sec('17')) {
+  const { ctx, page } = await newPage({ goals: true });
+  await boot(page);
+  const V = (f, a) => ev(page, f, a);
+  ok(await V(() => GL.goals.today().length === 3 && /🎯 0\/3/.test(document.getElementById('wgoal').textContent)), 'Drei Tagesziele, Leiste unter dem Status zeigt 🎯 0/3');
+  ok(await V(() => GL.goals.stickers().length === 12 && GL.goals.total() >= 30), 'Pride District: 12 leuchtende Sticker, ganz Rainbow City über 30');
+  ok(await V(() => GL.goals.stickers().every(s => { const W = GL.W; return !W.colliders.some(b => s.x > b.x0 && s.x < b.x1 && s.z > b.z0 && s.z < b.z1); })), 'Kein Sticker steckt in einem Gebäude');
+  // Ziele festlegen, damit der Test nicht vom Zufall abhängt
+  await V(() => { const g = GL.S.goals; g.list = [{ id: 'talk', n: 1, b: g.st.talk, done: 0 }, { id: 'stk', n: 1, b: g.st.stk, done: 0 }, { id: 'walk', n: 4, b: g.st.walk, done: 0 }]; g.paid = 0; });
+  const m0 = await V(() => ({ m: GL.S.life.money, g: GL.S.glitzer }));
+  const s0 = await V(() => { const s = GL.goals.stickers()[0]; return { x: s.x, z: s.z }; });
+  await goTo(page, s0.x, s0.z); await page.waitForTimeout(300);
+  ok(await V(() => GL.goals.got() === 1 && !GL.goals.stickers()[0].g.visible), 'Hinlaufen sammelt den Sticker');
+  ok(await V(() => GL.S.goals.list[1].done === 1), 'Tagesziel „Sticker sammeln“ geschafft');
+  const n = await V(() => { const p = GL.W.player, n = GL.W.npcs.filter(n => !n.d.q)[0]; p.x = n.x + 1; p.z = n.z + 1; return n.d.n; });
+  await page.waitForTimeout(400); await act(page); await page.waitForTimeout(300);
+  if (await V(() => document.getElementById('maps').style.display === 'block')) await page.keyboard.press('Escape');
+  await closeDialogs(page);
+  ok(await V(() => GL.S.goals.list[0].done === 1), 'Tagesziel „Sprich mit Leuten“ geschafft (' + n + ')');
+  await page.keyboard.down('w'); await page.waitForTimeout(1600); await page.keyboard.up('w'); await page.waitForTimeout(2300);
+  const r = await V(() => ({ all: GL.S.goals.list.every(q => q.done), streak: GL.S.goals.streak, m: GL.S.life.money, g: GL.S.glitzer, ach: Object.keys(GL.S.goals.ach) }));
+  ok(r.all && r.streak === 1, 'Alle drei Tagesziele: Serie 1');
+  ok(r.m >= m0.m + 75 && r.g > m0.g + 45 + 60, `Belohnung: +${r.m - m0.m} € und ✨ +${r.g - m0.g}`);
+  ok(r.ach.includes('goal1') && r.ach.includes('day1') && r.ach.includes('stk1'), 'Erfolge freigeschaltet: ' + r.ach.join(', '));
+  await page.click('#wgoal');
+  ok(await V(() => GL.phone.isOpen() && /Tagesziele/.test(document.getElementById('phone').textContent) && /Erfolge/.test(document.getElementById('phone').textContent)), 'Leiste öffnet die Handy-App „Ziele“');
+  await page.keyboard.press('Escape');
+  // neuer Tag: neue Ziele
+  await V(() => { GL.life.advance(24 * 60); }); await page.waitForTimeout(400);
+  ok(await V(() => GL.S.goals.day === GL.S.life.day && GL.S.goals.list.every(q => !q.done)), 'Neuer Tag bringt neue Tagesziele');
+  // Speichern/Laden: gesammelter Sticker bleibt weg
+  await V(() => GL.save()); await page.reload(); await page.waitForFunction(() => window.GL && GL.W && GL.W.on); await closeDialogs(page);
+  ok(await V(() => GL.goals.got() === 1 && GL.goals.stickers()[0].have && !GL.goals.stickers()[0].g.visible), 'Nach dem Neuladen bleibt der Sticker gesammelt');
+  await ctx.close();
 }
 
 ok(errs.length === 0, 'Keine Skriptfehler in der Konsole' + (errs.length ? ':\n  ' + errs.slice(0, 8).join('\n  ') : ''));

@@ -190,6 +190,7 @@ input[type=text]{background:rgba(255,255,255,.1);border:1px solid var(--line);co
 #ban.in{animation:bn 3.6s ease-out both}@keyframes bn{0%{transform:scale(.6);opacity:0}10%{transform:scale(1.06);opacity:1}85%{opacity:1}100%{opacity:0}}
 .wcol{display:flex;flex-direction:column;gap:6px;align-items:flex-start;max-width:min(430px,60vw)}
 #hud{pointer-events:auto;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;color:inherit;font-size:12px;line-height:1.3;font-family:inherit;text-align:left;cursor:pointer}
+#wgoal{pointer-events:auto;display:flex;flex-wrap:wrap;gap:3px 8px;align-items:center;color:inherit;font:12px/1.3 inherit;font-family:inherit;text-align:left;cursor:pointer}#wgoal i{font-style:normal;opacity:.7}#wgoal span{opacity:.92}
 #hud .hc{font-weight:700;white-space:nowrap}#hud .hn{display:inline-flex;align-items:center;gap:2px;white-space:nowrap}
 .hb{display:inline-block;width:22px;height:5px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden;vertical-align:middle}.hb b{display:block;height:100%}
 #phone{position:absolute;z-index:12;right:max(10px,env(safe-area-inset-right));top:calc(10px + env(safe-area-inset-top));bottom:calc(10px + env(safe-area-inset-bottom));width:min(390px,calc(100% - 20px));display:none}
@@ -248,9 +249,11 @@ input[type=text]{background:rgba(255,255,255,.1);border:1px solid var(--line);co
 <script src="js/weather.js"></script>
 <script src="js/perf.js"></script>
 <script src="js/datingapp.js"></script>
+<script src="js/goals.js"></script>
 <script src="js/start.js"></script>
 <script src="js/pad.js"></script>
 <script src="js/figures.js"></script>
+<script src="js/assets.js"></script>
 <script src="js/main.js"></script>
 <script src="../gamepad.js" data-pad-labels="ls=Laufen; rs=Kamera drehen und zoomen; dpad=Laufen / Auswählen; a=Aktion / Bestätigen; b=Orte / Zurück; x=Handy; y=Menü; rt=Sprinten; lb=Kamera links; rb=Kamera rechts; r3=Kamera hinter die Figur; start=Menü" data-pad="b=Backspace/Escape y=- start=Escape" defer></script>
 <script src="../egstat.js" defer></script>
