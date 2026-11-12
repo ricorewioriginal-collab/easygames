@@ -13,6 +13,9 @@ import { UI, h } from '../ui/ui.js';
 import { lookForRole } from '../engine/characters.js';
 import { HUD } from '../ui/hud.js';
 import { openPauseMenu, openShop, openStorage, openTravel } from '../ui/menus.js';
+import { openDaycare, hatchScene, openCamp, openWheel, openTower } from '../ui/extras.js';
+import * as Tower from '../logic/tower.js';
+import * as Daycare from '../logic/daycare.js';
 import { titleScreen, slotScreen, creatorScreen, introSlides, starterPreview } from '../ui/screens.js';
 import { World } from './world.js';
 import { BattleScene } from './battle-scene.js';
@@ -21,7 +24,8 @@ import { SPECIES } from '../data/species.js';
 import { ITEMS } from '../data/items.js';
 import { MOVES } from '../data/moves.js';
 import { TYPES } from '../data/types.js';
-import { TRAINERS, GUILD_BATTLES, GUILD_MEMBERS, RIVAL_STAGES, rivalTrainer } from '../data/trainers.js';
+import { TRAINERS, GUILD_BATTLES, GUILD_MEMBERS, RIVAL_STAGES, rivalTrainer, trainerHeld, rematchTrainer } from '../data/trainers.js';
+import * as Daily from '../logic/daily.js';
 import { ULME, GUILD_SCENES, LEAGUE_FINALE, CREDITS, CHAPTERS, RIVAL, professorLines } from '../data/story.js';
 import { makeMonster, healMonster, maxHp, evolve, teachMove } from '../logic/monster.js';
 import { gainsText } from '../logic/battle.js';
@@ -208,6 +212,8 @@ export class Game {
   }
   afterRegionLoaded() {
     const r = this.world.current.region;
+    const ob = Daily.outbreak(this.save);
+    if (ob && ob.region === r) setTimeout(() => this.ui.toast('Massenausbruch! Heute zeigen sich hier besonders viele ' + ob.name + '.', '📣'), 3800);
     this.hud.banner(r === 16 ? 'Sternengipfel' : REGIONS[r].name, r === 16 ? 'Halle der Sternenliga' : REGIONS[r].town);
     this.updateMusic(true);
     this.world.updateGates();
@@ -465,6 +471,9 @@ export class Game {
       case 'machine': return this.ui.say([{ text: 'Auf dem Display der Maschine steht: „Projekt Lichtspeicher – Zielwert: 16 Lichter“. Daneben kleben Zettel mit zittriger Schrift: „Brix, prüfe die Kristallspannung!“' }]);
       case 'puzzle': return this.puzzleAct(e);
       case 'fish': return this.fish();
+      case 'daycare': return this.daycareTalk();
+      case 'wheel': return openWheel(this);
+      case 'tower': return this.towerFlow();
       case 'starter': return this.starterBall(e);
     }
   }
@@ -549,6 +558,7 @@ export class Game {
       if (n.professor) return await this.professorTalk(n);
       if (n.id === 'nurse') return await this.healAt();
       if (n.id === 'clerk') return await openShop(this, n.name);
+      if (n.id === 'daycare') return await this.daycareTalk();
       if (n.talk === 'giver') return await this.questTalk(n, P.questById(n.quest));
       if (n.talk === 'resident') {
         const line = residentLine(n.data, s, r);
@@ -676,7 +686,21 @@ export class Game {
     if (t.kind === 'leader') return this.leaderTalk(n, t);
     if (t.kind === 'champion') return this.championTalk(n, t);
     if (t.kind === 'league') return this.leagueTalk(n, t);
-    if (s.trainers[t.id]) { n.ch.setTalking(true); await this.ui.say([{ who: t.cls + ' ' + t.name, text: t.defeat + ' Viel Erfolg auf deiner Reise!' }]); n.ch.setTalking(false); return; }
+    if (s.trainers[t.id]) {
+      n.ch.setTalking(true);
+      if (Daily.rematchReady(s, t.id) && s.team.some(m => m.hp > 0)) {
+        const pick = await this.ui.ask([{ who: t.cls + ' ' + t.name, text: 'Na, wieder da? Ich habe trainiert! Lust auf eine Revanche?' }], ['Revanche!', 'Später'], { cancelIndex: 1 });
+        n.ch.setTalking(false);
+        if (pick !== 0) return;
+        const top = Math.max(...s.team.map(m => m.lv));
+        const rt = rematchTrainer(t, top);
+        n.ch.setTalking(true, 'happy'); await this.ui.say([{ who: t.cls + ' ' + t.name, text: rt.intro }]); n.ch.setTalking(false);
+        const res = await this.trainerBattle(rt, n, { rematch: true });
+        if (res.outcome === 'win') { Daily.markRematch(s, t.id); this.saveNow(); }
+        return;
+      }
+      await this.ui.say([{ who: t.cls + ' ' + t.name, text: t.defeat + ((s.badges || 0) >= 2 ? ' Morgen fordere ich dich wieder heraus!' : ' Viel Erfolg auf deiner Reise!') }]); n.ch.setTalking(false); return;
+    }
     if (!s.team.some(m => m.hp > 0)) return this.ui.say([{ who: t.name, text: 'Deine Taschis sind erschöpft. Ruh dich erst im Heilzentrum aus!' }]);
     n.ch.setTalking(true, 'happy'); await this.ui.say([{ who: t.cls + ' ' + t.name, text: t.intro }]); n.ch.setTalking(false);
     await this.trainerBattle(t, n);
@@ -685,9 +709,10 @@ export class Game {
   async trainerBattle(t, n, extra = {}) {
     const s = this.save;
     const team = t.team.map(x => makeMonster(x.id, x.lv, this.rng));
+    trainerHeld(t, s.badges).forEach((id, i) => { if (id && team[i]) team[i].held = id; });
     const music = t.kind === 'leader' ? 'gym' : t.kind === 'champion' || t.kind === 'rematch' ? 'champion' : t.kind === 'league' ? (t.id === 'league_4' ? 'finale' : 'champion') : t.kind === 'guild' ? (t.member === 'varga' && t.site === 7 ? 'finale' : 'guildBattle') : 'trainer';
     const res = await this.battle({ kind: 'trainer', foeTeam: team, format: t.format, foeStar: ['leader', 'champion', 'league', 'rival'].includes(t.kind) && (this.save.badges || 0) >= 1, ai: t.ai, items: t.items, trainerName: t.name, trainerTitle: t.cls, trainerLookDef: lookOfTrainer(t), pair: t.format === 'double', reward: t.reward, defeatText: t.defeat, music, ...extra });
-    if (res.outcome === 'win') { s.trainers[t.id] = true; s.coins += t.reward; s.stats.wins = (s.stats.wins || 0) + 1; this.saveNow(); }
+    if (res.outcome === 'win') { if (!extra.rematch) s.trainers[t.id] = true; s.coins += t.reward; s.stats.wins = (s.stats.wins || 0) + 1; this.saveNow(); }
     return res;
   }
   async arenaWelcome() {
@@ -925,6 +950,56 @@ export class Game {
   }
 
   // ------------------------------------------------------------------ battles
+  // ------------------------------------------------------------------ pension & eier
+  // Schritte sammeln und gebündelt verarbeiten (spart Arbeit pro Frame)
+  onSteps(d) {
+    this.walkAcc = (this.walkAcc || 0) + d;
+    if (this.walkAcc < 8) return;
+    const n = Math.floor(this.walkAcc); this.walkAcc -= n;
+    const s = this.save;
+    s.stats.steps = (s.stats.steps || 0) + n;
+    if (!s.daycare?.mons.length && !s.eggs?.length) return;
+    const out = Daycare.walk(s, n, this.rng);
+    if (out.egg) this.ui.toast('Wirtin Ilse lässt ausrichten: In der Pension liegt ein Ei!', '🥚');
+    if (out.hatched.length && !this.busy) this.script(async () => { for (const egg of out.hatched) await hatchScene(this, egg); });
+  }
+  async daycareTalk() {
+    const s = this.save, dc = Daycare.ensureDaycare(s);
+    if (!s.flags.daycareMet) { s.flags.daycareMet = true; await this.ui.say([{ who: 'Wirtin Ilse', text: 'Willkommen in der Pension Sonnenblume! Ich passe auf bis zu zwei Taschis auf, während du unterwegs bist. Wer sich gut versteht, bringt mir manchmal ein Ei – frag mich nicht, woher es kommt!' }]); }
+    else if (dc.egg) await this.ui.say([{ who: 'Wirtin Ilse', text: 'Da bist du ja! Deine Taschis hatten ein Ei bei sich. Möchtest du es mitnehmen?' }]);
+    await openDaycare(this);
+  }
+
+  // ------------------------------------------------------------------ camp & kampfturm
+  async openCamp() { if (!this.save.team.length) return; await openCamp(this); }
+  async towerFlow() {
+    const s = this.save;
+    if (!Tower.towerOpen(s)) return this.ui.say([{ who: 'Turmwächterin Vera', text: 'Der Kampfturm steht allen offen, die mindestens ' + Tower.TOWER_BADGES + ' Licht-Siegel tragen. Komm wieder, wenn du so weit bist!' }]);
+    if (!s.flags.towerMet) { s.flags.towerMet = true; await this.ui.say([{ who: 'Turmwächterin Vera', text: 'Willkommen am Kampfturm-Terminal! Von hier aus geht es per Lichtsprung in den Turm. Drei Taschis, alle auf Level 50, und so viele Siege wie möglich. Für Siege gibt es Turmpunkte.' }]); }
+    const picked = await openTower(this);
+    if (!picked) return;
+    Tower.startRun(s, picked);
+    const copies = picked.map(Tower.towerCopy);
+    let earned = 0;
+    while (s.tower.run) {
+      const run = s.tower.run, op = Tower.opponent(run);
+      for (const c of copies) healMonster(c);
+      const go = await this.ui.ask([{ who: 'Turmwächterin Vera', text: 'Etage ' + Tower.floorOf(run.streak) + ', Kampf ' + (run.streak % Tower.FLOOR_SIZE + 1) + ' von ' + Tower.FLOOR_SIZE + (op.boss ? ' – der Etagenboss!' : '.') + ' Dein Team ist geheilt. Serie: ' + run.streak + '.' }], ['Weiterkämpfen', 'Pause machen'], { cancelIndex: 1 });
+      if (go !== 0) break;
+      await this.ui.say([{ who: op.cls + ' ' + op.name, text: op.intro }]);
+      const res = await this.battle({ kind: 'trainer', foeTeam: Tower.buildFoe(op, this.rng), ai: op.ai, items: op.items, trainerName: op.name, trainerTitle: op.cls, trainerLookDef: { role: op.boss ? 'champion' : 'trainer', name: op.name },
+        playerTeam: copies, playerBag: {}, exhibition: true, music: op.boss ? 'champion' : 'trainer', defeatText: op.defeat, indoor: true });
+      if (res.outcome !== 'win') { Tower.endRun(s); break; }
+      const tp = Tower.recordWin(s); earned += tp;
+      this.ui.toast('+' + tp + ' TP (Serie ' + s.tower.run.streak + ')', '◆');
+      this.saveNow();
+    }
+    const streak = s.tower.run ? s.tower.run.streak : null;
+    if (streak !== null) Tower.endRun(s);
+    this.saveNow(true);
+    return this.ui.say([{ who: 'Turmwächterin Vera', text: (streak === null ? 'Die Serie ist vorbei.' : 'Gute Pause!') + ' Du hast ' + earned + ' TP verdient. Dein Rekord: ' + s.tower.best + ' Siege in Folge.' }]);
+  }
+
   // ------------------------------------------------------------------ angeln
   async fish() {
     const s = this.save;
@@ -960,7 +1035,10 @@ export class Game {
   async randomEncounter(habitat = 'grass') {
     const r = Math.min(15, this.world.current.region);
     if (!this.save.team.some(m => m.hp > 0)) return;
-    const foe = rollEncounter(r, this.rng, { habitat, night: this.isNight() });
+    let foe = rollEncounter(r, this.rng, { habitat, night: this.isNight() });
+    // Massenausbruch des Tages: jede zweite Gras-Begegnung, dreifache Schillerchance
+    const ob = habitat === 'grass' ? Daily.outbreak(this.save) : null;
+    if (ob && ob.region === r && this.rng.next() < 0.5) { foe = makeMonster(ob.id, foe.lv, this.rng); if (this.rng.next() < 3 / 400) foe.shiny = true; }
     this.audio.sfx('encounter');
     const double = habitat === 'grass' && this.save.team.filter(m => m.hp > 0).length >= 2 && this.rng.next() < 0.06;
     const team = double ? [foe, rollEncounter(r, this.rng, { habitat })] : [foe];
@@ -999,7 +1077,7 @@ export class Game {
       if (s.team.length < 6) s.team.push(c); else s.box.push(c);
       this.ui.toast(SPECIES[c.id].name + (s.team.includes(c) ? ' ist jetzt in deinem Team.' : ' wurde ins Lager geschickt.'), '◉');
     }
-    if (res.outcome === 'lose') { await this.whiteout(); return res; }
+    if (res.outcome === 'lose' && !opts.exhibition) { await this.whiteout(); return res; }
     this.setState(prev === STATES.BATTLE ? STATES.WORLD : STATES.WORLD);
     this.world.refreshFollower();
     this.updateMusic(true);
@@ -1080,7 +1158,7 @@ function residentLine(npc, s, r) {
 }
 function lookOfTrainer(t) {
   const roleFor = { leader: 'leader', champion: 'champion', rematch: 'champion', league: t.id === 'league_4' ? 'lyra' : 'champion', gymTrainer: 'trainer', route: t.format === 'double' ? 'kind' : 'trainer', guild: { varga: 'varga', selma: 'selma', brix: 'brix', kett: 'twin', grunt: 'grunt' }[t.member] };
-  return { role: roleFor[t.kind] || 'trainer', name: t.name };
+  return { role: roleFor[t.lookKind || t.kind] || 'trainer', name: t.name };
 }
 function guildTaunt(member) {
   return { varga: 'Du schon wieder. Diesmal halte ich mich nicht zurück.', selma: 'Bühne frei für meinen großen Auftritt!', brix: 'Bitte … mach es mir nicht so schwer.', kett: 'Diesmal sind wir vorbereitet! – Sind wir? – Ja!' }[member] || 'Aus dem Weg!';

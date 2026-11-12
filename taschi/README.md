@@ -49,6 +49,17 @@ Geprüft: `npm test` (31 Tests inklusive Durchlauf-Simulation bis zum Sternenmei
 - **Getragene Gegenstände:** Heilbeere, Klarbeere, Lernband, Kraftband, Fokusband – im Laden, anlegen über Team › Taschi › „🎒 Trägt“ oder die Tasche. Wirken im Kampf von selbst, Beeren und Fokusband werden verbraucht.
 - Tests: `tests/controls-held.test.mjs`, Browsertest `node tests/e2e/controls.mjs [Bildordner]` (simulierter Switch Pro Controller).
 
+## Pension, Zucht, Kampfturm und Tagesereignisse (November 2026)
+
+- **Pension Sonnenblume** (Wirtin Ilse, in jedem Heilzentrum): zwei Taschis abgeben, sie bekommen beim Laufen 1 EP pro Schritt. Gebühr beim Abholen ★100 + ★25 je gewonnenem Level. Haben beide einen gemeinsamen Typ (oder dieselbe Linie), liegt manchmal ein Ei bereit.
+- **Zucht:** Das Ei schlüpft nach 700–2600 Schritten (Team-Menü zeigt Fortschritt). Das Junge ist die Grundform des ersten Elternteils (Lv 1), erbt drei Werte, eventuell das Wesen und bis zu zwei Erbattacken. Logik: `src/logic/daycare.js`.
+- **Attacken-Disks:** 23 Disks im Laden (nach Siegeln freigeschaltet), mehrfach nutzbar. Normal-Attacken lernt jedes Taschi, sonst muss der Typ passen; die Tasche zeigt „Kann lernen“.
+- **Schlauere Trainer:** Trainer tragen ab dem 2. Siegel Items, die KI heilt Status mit Heilkraut, stärkt sich mit Angriffsplus und beachtet Fokusband und Klarbeere. Besiegte Trainer fordern einmal pro Tag eine **Revanche** (Team auf deiner Stufe).
+- **Tagesereignisse** (`src/logic/daily.js`): Massenausbruch einer Art in einer besuchten Region (Quests-Reiter, dreifache Schillerchance), **Glücksrad** im Heilzentrum einmal pro Tag.
+- **Taschi-Camp** (Team › „⛺ Taschi-Camp“): streicheln, Ball spielen, Taschi-Keks füttern; bis 40 Freundschaft pro Taschi und Tag. Beste Freunde halten manchmal einen K.o.-Treffer aus und schütteln Status ab.
+- **Kampfturm** (Terminal im Heilzentrum, ab 8 Siegeln): drei Taschis auf Lv 50 ohne Taschen-Items gegen endlos viele Trainer, 7 Kämpfe pro Etage mit Etagenboss. Turmpunkte (TP) gegen seltene Belohnungen tauschen. Originale bleiben unverändert. Logik: `src/logic/tower.js`.
+- Tests: `tests/daycare-disks.test.mjs`, `tests/extras.test.mjs`, Browsertests `tests/e2e/breeding.mjs`, `tests/e2e/extras.mjs`.
+
 ## Steuerung und Menüs
 
 - PC: WASD/Pfeiltasten bewegen, E = Interaktion, Escape = Pause.

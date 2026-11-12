@@ -165,7 +165,7 @@ test('items: every item has a working effect, shop buy/sell', () => {
   assert.ok(grow.ok && m.lv === lv + 1 && grow.events.some(e => e.type === 'levelup') && !candy.levelbonbon);
   for (const id of Object.keys(ITEMS)) {
     const it = ITEMS[id];
-    const handled = it.category === 'ball' || it.category === 'key' || it.category === 'battle' || it.heal || it.revive || it.pp || it.cure || it.category === 'evo' || it.category === 'growth' || it.held;
+    const handled = it.category === 'ball' || it.category === 'key' || it.category === 'battle' || it.heal || it.revive || it.pp || it.cure || it.category === 'evo' || it.category === 'growth' || it.held || it.category === 'disk' || it.treat;
     assert.ok(handled, 'item without effect: ' + id);
   }
   const state = { coins: 1000, badges: 0, bag: {} };

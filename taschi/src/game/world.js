@@ -287,7 +287,7 @@ export class World {
       else if (ok(nx, p.position.z)) p.position.x = nx;
       else if (ok(p.position.x, nz)) p.position.z = nz;
       else speed = 0;
-      if (speed > 0) { this.stepAcc += step; if (this.game.settings.get('camAuto') && Math.abs(m.y) > 0.3 && m.y < 0) this.cam.yaw += angDiff(p.rotation.y + Math.PI, this.cam.yaw) * dt * 0.8; }
+      if (speed > 0) { this.stepAcc += step; this.game.onSteps?.(step); if (this.game.settings.get('camAuto') && Math.abs(m.y) > 0.3 && m.y < 0) this.cam.yaw += angDiff(p.rotation.y + Math.PI, this.cam.yaw) * dt * 0.8; }
     }
     const gy = this.current.height(p.position.x, p.position.z);
     p.position.y += (gy - p.position.y) * Math.min(1, dt * 18);
