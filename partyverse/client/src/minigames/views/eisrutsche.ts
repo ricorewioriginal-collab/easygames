@@ -1,8 +1,20 @@
 import * as THREE from 'three';
 import type { EisState } from '@shared/minigames/games/eisrutsche';
-import { ARENA_X, ARENA_Y, holePos } from '@shared/minigames/games/eisrutsche';
-import { glow, textSprite, toon } from '../../render/materials';
+import {
+  ARENA_X,
+  ARENA_Y,
+  CRACK_WARN,
+  DURATION_TICKS,
+  game,
+  holeCracking,
+  holeOpen,
+  holePos,
+} from '@shared/minigames/games/eisrutsche';
+import { disposeTree, glow, textSprite, toon } from '../../render/materials';
 import type { MiniGameViewFactory } from '../viewTypes';
+import { makeMe, makeRivals, updateRivals } from './rivals';
+
+const scoreOf = (s: EisState): number => game.score(s);
 
 function starGeometry(outer: number, inner: number, depth: number): THREE.ExtrudeGeometry {
   const sh = new THREE.Shape();
@@ -120,7 +132,14 @@ export const createView: MiniGameViewFactory<EisState> = (ctx, initial) => {
   interface HoleView {
     group: THREE.Group;
     ripples: THREE.Mesh[];
+    /** eigentliches Loch (erst sichtbar, wenn es offen ist) */
+    open: THREE.Group;
+    /** Risse im Eis vor dem Aufbrechen */
+    crack: THREE.Group;
+    crackMat: THREE.MeshBasicMaterial;
+    opened: boolean;
   }
+  const crackLine = new THREE.BoxGeometry(1, 0.02, 0.07);
   const holeViews: HoleView[] = initial.holes.map((h, hi) => {
     const group = new THREE.Group();
     const rim = new THREE.Mesh(new THREE.CylinderGeometry(h.r + 0.18, h.r + 0.18, 0.12, 28), toon(0xb6e8ff));
@@ -163,60 +182,37 @@ export const createView: MiniGameViewFactory<EisState> = (ctx, initial) => {
       group.add(sw);
       ripples.push(sw);
     }
+    // Lochteile in eine eigene Gruppe, daneben die Risse für das Aufbrechen
+    const open = new THREE.Group();
+    open.add(...group.children);
+    group.add(open);
+    const crack = new THREE.Group();
+    const crackMat = glow(0xff4d5e, 0.85);
+    const lines = 9;
+    for (let k = 0; k < lines; k++) {
+      const a = (k / lines) * Math.PI * 2 + hi * 0.7;
+      const len = h.r * (0.7 + ((k * 37) % 5) * 0.12);
+      const l = new THREE.Mesh(crackLine, crackMat);
+      l.scale.x = len;
+      l.position.set(Math.cos(a) * len * 0.5, 0.03, Math.sin(a) * len * 0.5);
+      l.rotation.y = -a;
+      crack.add(l);
+    }
+    const warnRing = new THREE.Mesh(new THREE.RingGeometry(h.r * 0.95, h.r * 1.08, 32), crackMat);
+    warnRing.rotation.x = -Math.PI / 2;
+    warnRing.position.y = 0.03;
+    crack.add(warnRing);
+    group.add(crack);
     root.add(group);
-    return { group, ripples };
+    return { group, ripples, open, crack, crackMat, opened: h.t0 === 0 };
   });
 
-  // --- Pinguin ----------------------------------------------------------------
-  const peng = new THREE.Group();
-  const body = new THREE.Group();
-  peng.add(body);
-  const navy = toon(0x232a52);
-  const torso = new THREE.Mesh(new THREE.SphereGeometry(0.55, 20, 16), navy);
-  torso.scale.set(1, 1.2, 0.95);
-  torso.position.y = 0.72;
-  body.add(torso);
-  const belly = new THREE.Mesh(new THREE.SphereGeometry(0.42, 16, 12), toon(0xffffff));
-  belly.scale.set(1, 1.2, 0.6);
-  belly.position.set(0, 0.68, 0.3);
-  body.add(belly);
-  const beak = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.3, 8), toon(0xffa72b));
-  beak.rotation.x = Math.PI / 2;
-  beak.position.set(0, 0.98, 0.56);
-  body.add(beak);
-  for (const sx of [-1, 1]) {
-    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 10), toon(0xffffff));
-    eye.position.set(sx * 0.2, 1.1, 0.42);
-    body.add(eye);
-    const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.065, 8, 8), toon(0x101020));
-    pupil.position.set(sx * 0.2, 1.1, 0.53);
-    body.add(pupil);
-    const flip = new THREE.Mesh(new THREE.SphereGeometry(0.2, 10, 8), navy);
-    flip.scale.set(0.35, 1.2, 0.8);
-    flip.position.set(sx * 0.58, 0.72, 0);
-    flip.name = sx < 0 ? 'fl' : 'fr';
-    body.add(flip);
-    const foot = new THREE.Mesh(new THREE.SphereGeometry(0.2, 10, 8), toon(0xffa72b));
-    foot.scale.set(1, 0.35, 1.4);
-    foot.position.set(sx * 0.25, 0.08, 0.2);
-    body.add(foot);
-  }
-  const scarf = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.1, 8, 20), toon(0xff4d5e));
-  scarf.rotation.x = Math.PI / 2;
-  scarf.position.y = 0.96;
-  body.add(scarf);
-  const tail = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.5, 0.06), toon(0xff4d5e));
-  tail.position.set(0.2, 0.75, -0.42);
-  tail.name = 'tail';
-  body.add(tail);
-  root.add(peng);
-  const pShadow = new THREE.Mesh(new THREE.CircleGeometry(0.6, 18), glow(0x2a5a80, 0.3));
-  pShadow.rotation.x = -Math.PI / 2;
-  pShadow.position.y = 0.02;
-  root.add(pShadow);
-  const leftFlip = body.getObjectByName('fl') as THREE.Object3D;
-  const rightFlip = body.getObjectByName('fr') as THREE.Object3D;
-  const tailObj = body.getObjectByName('tail') as THREE.Object3D;
+  // --- Eigene Figur (statt Pinguin) und Mitspieler ------------------------------
+  const me = makeMe(ctx, 0.95);
+  const peng = me.group;
+  const rivals = makeRivals(ctx, 0.85);
+  const rivalSeen = rivals.map(() => ({ falls: 0, stars: 0 }));
+  let rivalBest = 0;
 
   // --- Sterne -------------------------------------------------------------------
   const starGeo = starGeometry(0.62, 0.3, 0.2);
@@ -251,7 +247,7 @@ export const createView: MiniGameViewFactory<EisState> = (ctx, initial) => {
 
   const popups: Array<{ sp: THREE.Sprite; t: number }> = [];
   function popup(text: string, x: number, y: number, color: string): void {
-    const sp = textSprite(text, { color, size: 72, width: 1.5 });
+    const sp = textSprite(text, { color, size: 72, width: text.length > 5 ? 2.2 : 1.5 });
     sp.position.set(x, 1.9, -y);
     root.add(sp);
     popups.push({ sp, t: 0 });
@@ -290,6 +286,23 @@ export const createView: MiniGameViewFactory<EisState> = (ctx, initial) => {
         const hv = holeViews[i]!;
         const p = holePos(h, s.tick);
         hv.group.position.set(p.x, 0.0, -p.y);
+        const isOpen = holeOpen(h, s.tick);
+        const cracking = holeCracking(h, s.tick);
+        hv.group.visible = isOpen || cracking;
+        hv.open.visible = isOpen;
+        hv.crack.visible = cracking;
+        if (cracking) {
+          const k = 1 - (h.t0 - s.tick) / CRACK_WARN;
+          hv.crack.scale.setScalar(0.4 + 0.6 * k);
+          hv.crackMat.opacity = 0.45 + 0.45 * Math.abs(Math.sin(t * (6 + k * 14)));
+        }
+        if (isOpen && !hv.opened) {
+          hv.opened = true;
+          ctx.sfx('hit');
+          ctx.burst(v3.set(p.x, 0.4, -p.y), 0xbfe6ff, 26);
+          shake = Math.max(shake, 0.3);
+        }
+        if (isOpen) hv.open.scale.setScalar(Math.min(1, (s.tick - h.t0) / 20 + 0.2));
         hv.ripples.forEach((r, k) => {
           if (k < 2) {
             const q = (t * 0.5 + k * 0.5 + i * 0.13) % 1;
@@ -299,34 +312,32 @@ export const createView: MiniGameViewFactory<EisState> = (ctx, initial) => {
         });
       });
 
-      // Pinguin
+      // Eigene Figur
       const speed = Math.hypot(s.vx, s.vy);
       const hidden = s.respawn > 45;
       if (wasRespawn > 45 && s.respawn <= 45) {
         pop = 0;
         ctx.sfx('jump');
         ctx.burst(v3.set(0, 0.3, 0), 0xbfe6ff, 14);
+        me.rig.play('jump');
       }
       wasRespawn = s.respawn;
       pop = Math.min(1, pop + dt * 3);
       const popK = pop < 1 ? 1 + Math.sin(pop * Math.PI) * 0.4 : 1;
       peng.visible = !hidden;
-      pShadow.visible = !hidden;
-      peng.scale.setScalar(Math.min(1, pop * 1.4) * popK * 1.2);
-      peng.position.set(s.x, 0.12, -s.y);
-      pShadow.position.set(s.x, 0.02, -s.y);
-      const targetRot = Math.atan2(Math.cos(s.face), -Math.sin(s.face));
-      let dr = targetRot - peng.rotation.y;
-      dr = Math.atan2(Math.sin(dr), Math.cos(dr));
-      peng.rotation.y += dr * Math.min(1, dt * 10);
-      const shiver = s.respawn > 0 ? Math.sin(t * 50) * 0.08 : 0;
-      body.rotation.x = s.braking ? -0.35 : Math.min(0.45, speed * 0.05);
-      body.rotation.z = shiver + Math.sin(t * 10) * 0.02 * Math.min(1, speed / 3);
-      const flap = s.braking ? 1.1 : Math.min(0.9, speed * 0.1) + Math.sin(t * 8) * 0.05;
-      leftFlip.rotation.z = flap;
-      rightFlip.rotation.z = -flap;
-      tailObj.rotation.x = -Math.min(1, speed * 0.12);
-      tailObj.rotation.z = Math.sin(t * 6) * 0.15;
+      peng.scale.setScalar(Math.min(1, pop * 1.4) * popK);
+      peng.position.set(s.x, 0.05, -s.y);
+      me.rig.faceTowards(Math.atan2(Math.cos(s.face), -Math.sin(s.face)));
+      if (s.tick >= DURATION_TICKS)
+        me.rig.play(scoreOf(s) >= rivalBest ? 'celebrate' : 'lose', { loop: true });
+      else if (s.respawn > 0) me.rig.play('idle', { loop: true });
+      else if (s.braking && speed > 1) me.rig.play('walk', { loop: true, speed: 0.5 });
+      else if (speed > 1.2 && me.rig.current !== 'jump')
+        me.rig.play('run', { loop: true, speed: 0.5 + speed * 0.08 });
+      else if (speed <= 1.2 && me.rig.current !== 'jump') me.rig.play('idle', { loop: true });
+      // auf dem Eis leicht schräg in Fahrtrichtung
+      peng.rotation.x = Math.min(0.3, speed * 0.03);
+      me.rig.update(dt);
       if (!hidden && (speed > 4.5 || s.braking) && speed > 1.5) {
         trail -= dt;
         if (trail <= 0) {
@@ -357,7 +368,7 @@ export const createView: MiniGameViewFactory<EisState> = (ctx, initial) => {
       }
       for (const [id, v] of starViews) {
         if (!alive.has(id)) {
-          v.group.removeFromParent();
+          disposeTree(v.group);
           starViews.delete(id);
         }
       }
@@ -368,7 +379,13 @@ export const createView: MiniGameViewFactory<EisState> = (ctx, initial) => {
         const gold = s.lastPick.value > 1;
         ctx.burst(v3.set(s.lastPick.x, 0.9, -s.lastPick.y), gold ? 0xffa21f : 0xffe96a, gold ? 30 : 16);
         ctx.sfx(gold ? 'win' : 'coin');
-        popup(gold ? '+300' : '+100', s.lastPick.x, s.lastPick.y, gold ? '#ff9a1f' : '#ffd23f');
+        popup(
+          `+${s.lastGain}${s.streak > 1 ? ` ×${s.streak}` : ''}`,
+          s.lastPick.x,
+          s.lastPick.y,
+          gold ? '#ff9a1f' : '#ffd23f',
+        );
+        if (s.streak > 0 && s.streak % 5 === 0) me.rig.play('cheer');
       }
       if (s.falls !== lastFalls) {
         lastFalls = s.falls;
@@ -402,11 +419,35 @@ export const createView: MiniGameViewFactory<EisState> = (ctx, initial) => {
       const elev = portrait ? 1.2 : 1.0;
       const needW = (ARENA_X + 1.4) / (0.466 * aspect);
       const needH = (ARENA_Y * Math.sin(elev) + 1.1) / 0.466;
-      const R = Math.max(needW * 1.06, needH * 1.14, 13);
+      // Hochformat: näher heran und der Figur folgen, sonst wäre alles winzig
+      const R = portrait ? Math.max(needW * 0.55, 13) : Math.max(needW * 1.06, needH * 1.14, 13);
       shake = Math.max(0, shake - dt);
-      camT.set(0, 0, 0.6);
-      camera.position.set(Math.sin(t * 90) * shake * 0.3, R * Math.sin(elev), camT.z + R * Math.cos(elev));
+      const fx = portrait ? THREE.MathUtils.clamp(s.x * 0.8, -ARENA_X + 3.6, ARENA_X - 3.6) : 0;
+      const fz = portrait ? THREE.MathUtils.clamp(-s.y * 0.6, -ARENA_Y + 2, ARENA_Y - 2) : 0;
+      const k = Math.min(1, dt * 4);
+      camT.set(camT.x + (fx - camT.x) * k, 0, camT.z + (fz + 0.6 - camT.z) * k);
+      camera.position.set(
+        camT.x + Math.sin(t * 90) * shake * 0.3,
+        R * Math.sin(elev),
+        camT.z + R * Math.cos(elev),
+      );
       camera.lookAt(camT);
+    },
+    ghosts(states, dt) {
+      updateRivals(rivals, states, dt, (r, st, i) => {
+        r.group.visible = st.respawn <= 45;
+        r.group.position.set(st.x, 0.05, -st.y);
+        r.rig.faceTowards(Math.atan2(Math.cos(st.face), -Math.sin(st.face)));
+        rivalBest = Math.max(rivalBest, scoreOf(st));
+        const seen = rivalSeen[i] as { falls: number; stars: number };
+        if (st.falls !== seen.falls) {
+          seen.falls = st.falls;
+          ctx.burst(v3.set(st.lastFall.x, 0.4, -st.lastFall.y), 0x4fb4ff, 10);
+        }
+        const sp = Math.hypot(st.vx, st.vy);
+        if (sp > 1.2) r.rig.play('run', { loop: true, speed: 0.5 + sp * 0.08 });
+        else r.rig.play('idle', { loop: true });
+      });
     },
     dispose() {
       scene.fog = null;
