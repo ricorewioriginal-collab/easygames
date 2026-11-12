@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "faa670fd5f20",
- "generated": "2026-11-12T21:08:10+00:00",
- "commit": "4d353bc2bfd05d80c20fc1b448aadcbdcf6b28b4",
+ "version": "84a29d42c212",
+ "generated": "2026-11-12T21:43:05+00:00",
+ "commit": "9bd5866eaf996710d93c8b2373ef9151b3bbc874",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9459,7 +9459,7 @@
   {
    "p": "sync/catalog.json",
    "s": 257720,
-   "h": "3969305cee976089cc463d8cbef9391e5c83ded7afff020a5b9fdebac843e217"
+   "h": "24c1785b8c3e6f58763c0f867ea6e1f3c183f15e9888e0478299bc52027e2594"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -9480,6 +9480,46 @@
    "p": "taschi/assets/kaykit/bow_A_withString.gltf",
    "s": 4312,
    "h": "a01fc3f9412b414efa62aed49e3556bb270d6dce11011fafded55f6af75bb152"
+  },
+  {
+   "p": "taschi/assets/kaykit/characters/Barbarian.glb",
+   "s": 386648,
+   "h": "d37824a1d6e8e8af57ef9ae4a87e9271c3986210fbc432fb44670749a577ccac"
+  },
+  {
+   "p": "taschi/assets/kaykit/characters/Knight.glb",
+   "s": 341688,
+   "h": "e484370733824a0740683e7f6040aae0d20e5efd4107dde1175d6a2ad7e2f199"
+  },
+  {
+   "p": "taschi/assets/kaykit/characters/Mage.glb",
+   "s": 352472,
+   "h": "1f7d891bde50b879c70965f155b7b765b166dc3f8518e5abb86c0002f191a26e"
+  },
+  {
+   "p": "taschi/assets/kaykit/characters/Ranger.glb",
+   "s": 484712,
+   "h": "3a0b0166b9d61d58dcaaa739c3cc0538be46e00d2928dd5cb513d9a41770d2e9"
+  },
+  {
+   "p": "taschi/assets/kaykit/characters/Rig_Medium_General.glb",
+   "s": 828240,
+   "h": "5f725c0f745f36078c7238968cd5c04843cbc6260689eb6e7f5e2bbd7ffdd7ad"
+  },
+  {
+   "p": "taschi/assets/kaykit/characters/Rig_Medium_MovementBasic.glb",
+   "s": 689624,
+   "h": "11422afd50abf7e8c92ea107e2e0bc94abd38023d6d15f55ad580347efbfa29e"
+  },
+  {
+   "p": "taschi/assets/kaykit/characters/Rogue.glb",
+   "s": 409188,
+   "h": "cae5d9b2f08d53f7b4ab2617d9f42f021c546eb10920455fdcd82a110867fae4"
+  },
+  {
+   "p": "taschi/assets/kaykit/characters/Rogue_Hooded.glb",
+   "s": 381432,
+   "h": "e8f3233c6db190506fbef3ad855683e6cb8bd7350de637d923e14a08aef088dc"
   },
   {
    "p": "taschi/assets/kaykit/dagger_A.bin",
@@ -9978,8 +10018,8 @@
   },
   {
    "p": "taschi/src/engine/kaykit.js",
-   "s": 16178,
-   "h": "91eb6e1a6ea7c08bdacacf084bc9c8f4435af3f8ffcf169297e7852370dad16e"
+   "s": 16172,
+   "h": "19774e783aebb00be24dbe5eb741a132447b551f871d9ade00eba6a9bbaa5656"
   },
   {
    "p": "taschi/src/engine/materials.js",
@@ -11907,9 +11947,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-DbR9nwDa.js",
-   "s": 1705217,
-   "h": "ef651beaf0179ab3a9347558112a8575d5929fd80edaaa76646aa110ec01aac0"
+   "p": "zotik/assets/index-DCAD9gbL.js",
+   "s": 1707188,
+   "h": "c0fdbbe074a7001a04e2baa7f754d4e4496d8971eab7ad04aa6429f94de4b44f"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -11929,7 +11969,7 @@
   {
    "p": "zotik/index.html",
    "s": 72193,
-   "h": "48e4a6ef474dd19ce58b87934bd78188a2bf22a9498b33f4cc71aa64bfd13d88"
+   "h": "b5a2c6d9516a105d418f1a635e2a0cd035bf45179fcc79e2e46108170974ab5f"
   },
   {
    "p": "zotik/manifest.webmanifest",
