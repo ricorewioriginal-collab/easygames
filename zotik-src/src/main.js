@@ -23,6 +23,7 @@ import { createMaerchen, MW, MW_FIRST } from './maerchen.js';
 import { RISSBILD } from './storyx.js';
 import { createWorldPlus } from './worldplus.js';
 import { createRide, RIDES } from './ride.js';
+import { createRadio } from './radio.js';
 const T=makeT(THREE,.5),$=id=>document.getElementById(id);
 const TOUCH=matchMedia('(pointer:coarse)').matches||'ontouchstart' in window;
 /* Eingabe-Schicht: Tastatur frei belegbar, Hinweise passend zu Controller/Tastatur/Touch (input.js) */
@@ -1224,6 +1225,7 @@ function renderMenu(tab){mState.tab=tab;const t=$('tabs'),c=$('mcont');
   if(tab==='events')h+=XO.eventsHTML();if(tab==='home')h+=XO.homeHTML();if(tab==='chron')h+=XT.chronHTML();if(tab==='camp')h+=LF().campHTML()+XT.campHTML();if(tab==='coop')h+=coopHTML();if(tab==='equip')h+=equipHTML();if(tab==='felli')h+=felliHTML()+LF().soulHTML();if(tab==='skills')h=skHTML()+artHTML()+h+extSkillsHTML();
   c.innerHTML=h;c.querySelectorAll('.trv').forEach(b=>b.onclick=()=>travel(+b.dataset.n));{const gc=c.querySelector('#goCas');if(gc)gc.onclick=()=>travel(3)}if(tab==='coop')coopBind();extBind(c,tab);LF().bind(c,tab,()=>renderMenu(tab));if(tab==='camp')XT.bind(c,()=>renderMenu('camp'));XO.bind(c,tab,()=>renderMenu(tab));if(tab==='help')INP.bindOptions(c,()=>renderMenu('help'));{const or=$('optRem');if(or)or.onclick=()=>{setRemote(!REMOTE,true);sfx('ui');toast(REMOTE?'📺 Fernbedienung an: ↑↓ laufen · ←→ drehen · OK Angriff/Aktion · Zurück Befehle':'📺 Fernbedienung aus');renderMenu('help')}}const oc=$('optCas');if(oc)oc.onclick=()=>{S.cas.off=!S.cas.off;sfx('ui');toast(S.cas.off?'🎰 Casino ausgeschaltet':'🎰 Casino eingeschaltet');saveGame(true);renderMenu('help')}}
 $('mResume').onclick=()=>toggleMenu(false);$('saveBtn').onclick=()=>saveGame();
+{const R=createRadio({ducking:()=>dlg.on||document.body.classList.contains('cut'),muteMusic:m=>{if(musGain&&m&&musGain.gain.value)musGain.gain.value=0;if(musGain&&!m&&mode!=='pix')musGain.gain.value=.2},getVolOk:()=>{try{const a=new Audio();a.volume=.5;return a.volume===.5}catch(e){return false}}});window.ZotikRadio=R;$('mRadio').onclick=()=>{initAudio();R.open()}}
 $('mSound').onclick=()=>{sndOn=!sndOn;if(master)master.gain.value=sndOn?.85:0;$('mSound').textContent=sndOn?'🔊 Ton an':'🔇 Ton aus';initAudio()};
 
 /* ================= Spielschleife ================= */
