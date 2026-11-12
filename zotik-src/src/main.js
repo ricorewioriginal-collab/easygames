@@ -51,8 +51,8 @@ function hgtL(x,z){
   const ex=Math.max(0,Math.abs(x)-116)+Math.max(0,z-64)+Math.max(0,-220-z);   /* Weltrand: sichtbarer Wall statt abfallender Kante mit unsichtbarer Sperre */
   return n+ex*ex*.12;
 }
-const blocked=(x,z)=>obBlk(x,z)||(z>300?ruinOut(x,z):WLD?WLD.blocked(x,z):tooSteep(hgtLG,x,z)||x<-128||x>128||z>76||z<-232||(z<-148&&!lunOpen()));
-/* Gesperrt ist nur, was sichtbar zu steil ist (Hang > ~48°) – keine Höhengrenze mehr, die mitten am sanften Hang eine unsichtbare Wand zieht */
+const blocked=(x,z)=>obBlk(x,z)||(z>300?ruinOut(x,z):WLD?WLD.blocked(x,z):(hgtL(x,z)>8.5&&tooSteep(hgtLG,x,z))||x<-128||x>128||z>76||z<-232||(z<-148&&!lunOpen()));
+/* Oberhalb der Hügelgrenze ist nur gesperrt, was sichtbar steil ist (Hang > ~48°) – sanfte Hänge und Hochebenen bleiben begehbar, statt mitten am Hang eine unsichtbare Wand zu ziehen. Darunter bleibt alles wie bisher frei. */
 function tooSteep(h,x,z){const a=h(x+.6,z)-h(x-.6,z),b=h(x,z+.6)-h(x,z-.6);return a*a+b*b>1.74}
 const zoneAt=(x,z)=>z>300?'ruin':WLD?WLD.zone(x,z):z<-146?'cave':(z<-44?'forest':'village');
 /* Kreis-Kollider */
@@ -1905,7 +1905,7 @@ function buildWorld(n){
   const sealed=()=>cs().st<5;
   const WATER={3:-1.6,7:-4.6,9:-6}[n];   // Aqualis liegt unter dem Meer: dort läuft man auf dem Meeresgrund
   /* Nur echte Hindernisse sperren: hohe Hänge nur wenn steil (flache Hochebenen bleiben begehbar), tiefe Senken nur wo Wasser/Lava/Abgrund sichtbar ist – keine unsichtbaren Wände */
-  const blk=(x,z)=>{const hh=h(x,z);return tooSteep(WLD&&WLD.hm?WLD.hm:h,x,z)||(hh<-4.2&&(WATER!==undefined||hh<-9))||(LAKE&&hh<LAKE.wl-.4&&Math.hypot(x-LAKE.x,z-LAKE.z)<LAKE.r*1.3)||(WATER!==undefined&&hh<WATER+.25&&!(nSub()&&n!==7))||x<-128||x>128||z>76||z<-232||(z<-148&&sealed())};
+  const blk=(x,z)=>{const hh=h(x,z);return (hh>8.5&&tooSteep(WLD&&WLD.hm?WLD.hm:h,x,z))||(hh<-4.2&&(WATER!==undefined||hh<-9))||(LAKE&&hh<LAKE.wl-.4&&Math.hypot(x-LAKE.x,z-LAKE.z)<LAKE.r*1.3)||(WATER!==undefined&&hh<WATER+.25&&!(nSub()&&n!==7))||x<-128||x>128||z>76||z<-232||(z<-148&&sealed())};
   const zone=(x,z)=>z<-146?'cave':(z<-44?'forest':'village');
   const ims=[],edKeys=[],obs={};
   WLD={n,C,h,blocked:blk,zone,ims,edKeys,terr:null,zn:{village:[C.hubN,C.sub],forest:[C.wildN,'Gegner lauern hier'],cave:[C.depthN,C.X[4]],ruin:['Werkzeug-Ruine','Ein Rätsel aus alter Zeit']},path:pathx,mbg:null,spawn:[0,9]};
