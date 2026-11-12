@@ -1,5 +1,5 @@
-/* Tests für Physik, Hindernisse, Parcours (machbar? – ein Planer-Bot läuft alle Strecken) und Wertung (node tests/engine-tests.js) */
-import { Sim, COURSES, JUMP_V, G, RUN, PW, PH, DT, movePos, swingBall, ropeAt, rank, pointsFor, fmtTime, WALLRUN_MIN } from '../engine.js';
+/* Titanparcours – Tests für Physik, Hindernisse, Parcours (machbar? – ein Planer-Bot läuft alle Strecken) und Wertung (node tests/engine-tests.js) */
+import { Sim, COURSES, JUMP_V, G, RUN, PW, PH, PH_DUCK, CRAWL, DT, movePos, swingBall, ropeAt, rungY, rank, pointsFor, fmtTime, WALLRUN_MIN, LADDER_HOP } from '../engine.js';
 import { runBot } from '../bot.js';
 let fails = 0; const ok = (c, m) => { console.log((c ? '✓ ' : '✗ ') + m); if (!c) fails++; };
 const mk = (o, startX = 2) => { const c = { name: 't', o, finish: o.find(x => x.k === 'finish'), length: 99 }; const s = new Sim(c); s.x = startX; return s; };
@@ -51,6 +51,39 @@ for (const c of COURSES) { const sec = c.secs.find(q => q.n === 'Drehwalzen'), r
 { const O = [P(0, 20), { k: 'wall', x: 14, y: 1, h: 4.25, w: 0.6 }, { k: 'plat', x: 14, y: 5.25, w: 4 }, { k: 'finish', x: 15.6, y: 5.25 }]; const s = mk(O, 13.2); let tries = [];
   run(s, p => { if (tries[tries.length - 1] !== p.wallTries) tries.push(p.wallTries); return { r: 1, j: p.onGround && p.vx < 3 ? 1 : 0 }; }, 8);
   ok(s.dead === 'wall' && s.wallTries === 3 && tries.join() === '0,1,2,3', `Steilwand: nach drei Fehlversuchen ist der Lauf vorbei (${tries.join(' → ')})`); }
+
+// ---------------------------------------------------------------- Ducken, Rutschen, neue Hindernisse
+{ const s = mk([P(0, 40)]); run(s, { r: 1 }, 1); run(s, { r: 1, d: 1 }, 0.05); ok(s.duck && s.slide && s.h === PH_DUCK, 'Ducken aus dem Lauf = Rutschen (Körper nur ' + PH_DUCK + ' m hoch)'); run(s, { r: 1, d: 1 }, 1.5); ok(s.duck && !s.slide && Math.abs(s.vx - CRAWL) < 0.01, 'Nach der Rutsche geduckt weiter mit ' + CRAWL + ' m/s'); run(s, { r: 1 }, 0.1); ok(!s.duck && s.h === PH, 'Loslassen: Läufer richtet sich auf'); }
+{ const s = mk([P(0, 40)]); run(s, { d: 1 }, 0.2); ok(s.duck && !s.slide && s.vx === 0, 'Ducken im Stand: kein Rutschen'); run(s, { d: 1, j: 1 }, 0.3); ok(s.y > 1.3, 'Aus dem Ducken springen geht (mit Platz darüber)'); }
+{ const gate = { k: 'gate', x: 6, w: 1.3, y: 1, gap: 1.15, h: 3.6 }, O = [P(0, 20), gate];
+  const a = mk(O); run(a, { r: 1 }, 2.5); ok(a.x < 6 && !a.dead, 'Rutschtunnel: aufrecht kommt man nicht unter dem Tor durch');
+  const b = mk(O); run(b, p => ({ r: 1, d: p.x > 3.5 ? 1 : 0 }), 2.5); ok(b.x > 8, 'Rutschtunnel: aus dem Lauf durchrutschen klappt');
+  const c = mk(O, 4.5); run(c, p => ({ r: p.x < 6.6 ? 1 : 0, d: p.x < 6.6 ? 1 : 0 }), 3); ok(c.duck && c.x > 6 && c.x < 7.3, 'Unter dem Tor kann man nicht aufstehen (bleibt geduckt)');
+  const d = mk(O, 6.6); d.duck = true; run(d, { j: 1, d: 1 }, 0.3); run(d, { j: 1 }, 0.4); ok(d.y + d.h <= 1 + 1.15 + 0.01, 'Kein Sprung durchs Tor nach oben (Kopfstoß)'); }
+{ const lg = { k: 'log', px: 10, py: 1 + 1.36 + 3.2, len: 3.2, amp: 1.0, period: 2.8, phase: 0 };
+  let hitStand = 0, hitDuck = 0; for (let t = 0; t < 2.8; t += 0.1) { const s = mk([P(0, 20), lg], 10); s.t = t; s.step({}); hitStand += s.hits; const q = mk([P(0, 20), lg], 10); q.t = t; q.duck = true; q.step({ d: 1 }); hitDuck += q.hits; }
+  ok(hitStand > 0 && hitStand < 28, `Pendelbalken trifft aufrecht nur zeitweise (${hitStand} von 28 Zeitpunkten)`); ok(hitDuck === 0, 'Pendelbalken: geduckt immer sicher darunter');
+  const s = mk([P(0, 20), lg], 10); s.step({}); ok(s.hits === 1 && s.stun > 0 && Math.abs(s.vx) > 4, 'Pendelbalken-Treffer wirft den Läufer weg'); }
+{ const O = [P(0, 4), { k: 'bars', ledge: true, x1: 5, x2: 7.4, y: 3.4 }, { k: 'bars', ledge: true, x1: 8.4, x2: 10.6, y: 3.4 }, P(11.5, 4)];
+  const a = mk(O, 3.4); run(a, p => ({ r: 1, j: p.onGround && p.x > 3.6 ? 1 : 0 }), 4); ok(a.hang && Math.abs(a.x - 7.35) < 0.02 && !a.dead, 'Klippenhänger: am Leistenende festhalten (ohne Sprung kein Absturz)');
+  run(a, { r: 1, j: 1 }, 0.6); ok(a.hang && a.c.o[a.hang.bar].x1 === 8.4, 'Klippenhänger: Hechtsprung zur nächsten Leiste'); run(a, { r: 1 }, 1.5); run(a, p => ({ r: p.x < 13 ? 1 : 0, j: 1 }), 1.2); ok(!a.dead && a.onGround && a.x > 11.5, 'Klippenhänger: von der letzten Leiste auf die Plattform'); }
+{ const lo = { k: 'ladder', x: 5, y0: 1 + 2.8, n: 5, gap: 0.55 }, O = [P(0, 3.5), lo, P(5.75, 3, rungY(lo, 4) - 0.9)];
+  const climb = early => { const s = mk(O, 3.0); let k = 0, last = -9; run(s, p => { if (!p.ladder) return p.y > 4 ? {} : { r: p.y < 3 && p.x < 4.6, j: (p.onGround && p.x > 3.0) || (!p.onGround && p.vy > 0) ? 1 : 0 }; k++; const gapT = early ? 0.12 : LADDER_HOP + 0.02; if (p.t - last >= gapT) { last = p.t; return { j: 1 }; } return { j: 0 }; }, 6); return s; };
+  const a = climb(false); ok(a.onGround && Math.abs(a.y - (rungY(lo, 4) - 0.9)) < 0.01 && !a.dead, 'Lachsleiter: im Takt drücken = Sprosse für Sprosse hoch und oben auf die Plattform');
+  const b = climb(true); ok(b.dead === 'water', 'Lachsleiter: zu hastig gedrückt = abrutschen und ins Wasser'); }
+{ let bad = 0; for (let t = 0; t < 2.2; t += 0.275) { const c = COURSES[1], sec = c.secs.find(q => q.n === 'Ringschwung'), nx = c.secs[c.secs.indexOf(sec) + 1].x; const r = runBot(c, { startX: sec.x - 1.2, t0: t, untilX: nx, maxT: t + 25 }); if (!r.passed) bad++; } ok(bad === 0, `Ringschwung: von Ring zu Ring für jeden Startzeitpunkt (${bad} Fehlversuche)`); }
+// Jedes Hindernis jedes Parcours einzeln: der Planer-Bot schafft es aus jedem Startzeitpunkt (verschiedene Phasen der beweglichen Teile)
+for (const c of COURSES) { const fails2 = []; let n = 0;
+  const onPlat = x => c.o.some(o => o.k === 'plat' && o.x <= x && o.x + o.w >= x);
+  c.secs.forEach((sec, k) => { const nx = k + 1 < c.secs.length ? c.secs[k + 1].x : Infinity; let j = k; while (j > 0 && !onPlat(c.secs[j].x - 1.2)) j--;   // Start auf fester Plattform davor
+    for (const t0 of [0, 0.9, 1.7]) { n++; const r = runBot(c, { startX: c.secs[j].x - 1.2, t0, untilX: nx, maxT: t0 + 40 }); if (!r.passed) fails2.push(`${sec.n}@${t0}`); } });
+  ok(!fails2.length, `„${c.name}": jedes Hindernis einzeln schaffbar (${n - fails2.length}/${n}${fails2.length ? ': ' + fails2.join(', ') : ''})`); }
+// Kollisionen: zufällige Eingaben auf allen Strecken – der Läufer steckt nie in einer festen Fläche
+{ let seed = 7, viol = 0, steps = 0; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (const c of COURSES) for (let k = 0; k < 120; k++) { const s = new Sim(c), x = 1 + rnd() * (c.length - 10), p = c.o.find(o => o.k === 'plat' && o.x <= x && o.x + o.w >= x); if (!p) continue; s.x = x; s.y = p.y; s.t = rnd() * 5; s.collect(); let inp = {};
+    for (let i = 0; i < 500 && !s.dead && !s.finished; i++) { if (i % 8 === 0) inp = { l: rnd() < 0.15, r: rnd() < 0.75, j: rnd() < 0.35, d: rnd() < 0.2 }; s.step(inp); steps++; if (s.wall) continue;
+      for (const q of s.solids) if (Math.min(s.x + PW / 2, q.x1) - Math.max(s.x - PW / 2, q.x0) > 0.04 && Math.min(s.y + s.h, q.top) - Math.max(s.y, q.bot) > 0.04) viol++; } }
+  ok(viol === 0, `Kollisionen: ${steps} Zufallsschritte ohne Stecken in Plattform, Wand oder Tor (${viol} Verstöße)`); }
 // Ziel
 { const O = [P(0, 20), { k: 'finish', x: 10, y: 1 }]; const s = mk(O); run(s, { r: 1 }, 5); ok(s.finished && s.t > 1 && s.t < 3, 'Ziel: Buzzer beim Erreichen der Ziellinie'); }
 // Wertung

@@ -7,7 +7,7 @@ import { createUI } from './menu.js';
 import { stick, hold } from './stick.js';
 import { makeCommentator } from './commentary.js';
 const $ = id => document.getElementById(id), esc = s => String(s == null ? '' : s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
-const THREE_URL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+const THREE_URL = '../vendor/three-r128.min.js';   // lokal: lädt schnell und läuft auch offline
 const COLORS = [0xff6fb0, 0x00b8d9, 0xffd24a, 0x8b5cf6], CSS = ['#ff6fb0', '#00b8d9', '#ffd24a', '#8b5cf6'], LOGO = [5, 1, 8, 12], MAXT = 150, ABORT = { abort: 1 };
 const store = { get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} } };
 window.addEventListener('error', e => { $('errTxt').textContent = String(e.message || e); $('err').hidden = false; });
@@ -20,10 +20,11 @@ if (JOIN) {
   const ui = createUI({ SFX, Audio_, touch, onMenu: id => onMenu(id), panel: id => panel(id) }), frame = () => new Promise(r => requestAnimationFrame(() => r()));
   // ------------------------------------------------------------ Laden mit echtem Fortschritt: 3D-Bibliothek → Studio → Logos
   ui.boot.progress(6, 'Lade 3D-Grafik …');
+  const fontsP = document.fonts ? Promise.all(['italic 800 40px "Titan Display"', '600 20px "Titan Cond"', '500 16px "Titan Text"'].map(f => document.fonts.load(f))).catch(() => {}) : Promise.resolve();
   try { await loadScript(THREE_URL); } catch (e) { $('errTxt').textContent = 'Die 3D-Bibliothek konnte nicht geladen werden (Internet?).'; $('err').hidden = false; throw e; }
   // Figuren: Lader + gemeinsame easygames-Figuren + Figuren-Liste aller Spiele (fehlt etwas, läuft das Spiel trotzdem)
   await Promise.all(['../vendor/three-r128-gltfloader.js', '../figuren/figuren.js', '../easyclash/js/roster.js'].map(u => loadScript(u).catch(e => console.warn(e))));
-  ui.boot.progress(38, 'Baue das Studio …'); await frame();
+  ui.boot.progress(38, 'Baue das Studio …'); await Promise.race([fontsP, new Promise(r => setTimeout(r, 1500))]); await frame();
   const { Arena } = await import('./scene.js');
   let booting = true; const texDone = new Promise(res => { const M = window.THREE.DefaultLoadingManager; M.onProgress = (u, n, total) => { if (booting) ui.boot.progress(60 + 38 * n / total, `Lade Läufer und Logos (${n}/${total}) …`); }; M.onLoad = () => res(); setTimeout(res, 8000); });
   const arena = new Arena($('cv'), Array.from({ length: 16 }, (_, i) => `logos/${String(i + 1).padStart(2, '0')}.png`));
@@ -56,21 +57,21 @@ if (JOIN) {
     if(section===lastSection||section<0)return;
     lastSection=section;
     const name=sections[section].n;
-    const tips={Stufensprung:'Stufensprünge! Gut abspringen, bloß nicht ins Wasser!',Fahrstuhl:'Der Fahrstuhl! Jetzt muss das Timing stimmen!',Schiebebrücke:'Die Brücke bewegt sich! Der Sprung muss sitzen!','Bruchplatten':'Bruchplatten! Schnell weiter, bevor sie fallen!','Sandsäcke':'Vorsicht, die Sandsäcke schwingen!',Drehwalzen:'Die Drehwalzen! Weiterlaufen, die schieben zurück! Springen ist schneller, aber riskant!',Seilschwung:'Seilschwung! Seil packen und im richtigen Moment loslassen!',Trampolin:'Das Trampolin! Draufspringen und hoch an die Stangen!',Hangelstangen:'Jetzt an die Hangelstangen! Nicht loslassen!',Steilwand:'Die Steilwand! Drei Versuche. Anlauf nehmen und hoch da!'};
+    const tips={Stufensprung:'Stufensprünge! Gut abspringen, bloß nicht ins Wasser!',Fahrstuhl:'Der Fahrstuhl! Jetzt muss das Timing stimmen!',Schiebebrücke:'Die Brücke bewegt sich! Der Sprung muss sitzen!','Bruchplatten':'Bruchplatten! Schnell weiter, bevor sie fallen!','Sandsäcke':'Vorsicht, die Sandsäcke schwingen!',Drehwalzen:'Die Drehwalzen! Weiterlaufen, die schieben zurück! Springen ist schneller, aber riskant!',Pendelbalken:'Die Pendelbalken! Ducken oder den richtigen Moment abpassen!',Rutschtunnel:'Rutschtunnel! Runter mit dem Kopf und durchrutschen!',Klippenhänger:'Klippenhänger! An der Leiste festhalten und rüberhechten!',Ringschwung:'Ringschwung! Von Ring zu Ring, im richtigen Moment loslassen!',Lachsleiter:'Die Lachsleiter! Jetzt zählt der Takt, Sprosse für Sprosse nach oben!',Seilschwung:'Seilschwung! Seil packen und im richtigen Moment loslassen!',Trampolin:'Das Trampolin! Draufspringen und hoch an die Stangen!',Hangelstangen:'Jetzt an die Hangelstangen! Nicht loslassen!',Steilwand:'Die Steilwand! Drei Versuche. Anlauf nehmen und hoch da!'};
     commentator.speak(tips[name]||('Jetzt folgt: '+name+'.'));
   }
   function abort() { commentator.stop();lastSection=-1;token++; const p = pending; pending = null; $('card').hidden = true; $('big').hidden = true; G = null; padOn(false); arena.setGhost(null); if (p) p.res('abort'); push(); }
   const rows = (runs, pl, upto) => { const ord = rank(runs.map(r => r || { finished: false, dist: -1 })); return ord.filter(i => runs[i]).map((i, k) => { const r = runs[i]; return `<div class="tr ${r.finished ? '' : 'dnf'}" style="--pc:${CSS[i]}"><em>${k + 1}.</em><b>${esc(pl[i].name)}</b><span>${r.finished ? fmtTime(r.time) : r.why}</span>${upto != null ? `<em>+${r.pts || 0}</em>` : ''}</div>`; }).join(''); };
 
   // ------------------------------------------------------------ Eingabe
-  const KEYMAP = { ArrowLeft: 1, KeyA: 1, ArrowRight: 2, KeyD: 2, Space: 4, ArrowUp: 4, KeyW: 4, ArrowDown: 8, KeyS: 8, ShiftLeft: 8, ShiftRight: 8 };   // 1 links, 2 rechts, 4 Sprung, 8 Greifen
+  const KEYMAP = { ArrowLeft: 1, KeyA: 1, ArrowRight: 2, KeyD: 2, Space: 4, ArrowUp: 4, KeyW: 4, ArrowDown: 8, KeyS: 8, ShiftLeft: 8, ShiftRight: 8, ControlLeft: 8, KeyC: 8 };   // 1 links, 2 rechts, 4 Sprung, 8 Ducken/Rutschen
   addEventListener('keydown', e => { if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return; const b = KEYMAP[e.code]; if (b) { keys |= b; if (G && G.phase !== 'ready') e.preventDefault(); } if ((e.code === 'Space' || e.code === 'Enter') && pending && pending.ids.includes('bReady')) { e.preventDefault(); fire('bReady'); } });
   addEventListener('keyup', e => { const b = KEYMAP[e.code]; if (b) keys &= ~b; });
   addEventListener('blur', () => { keys = 0; touchM = 0; });
   // Touch: Stick links (Bits 1/2), Springen rechts (Bit 4), dazu Menü und Ton
   const stk = stick($('stick'), m => { touchM = (touchM & ~3) | m; }), jumpUp = hold(document.querySelector('#pad [data-k="j"]'), () => { touchM |= 4; }, () => { touchM &= ~4; });
   const padOn = v => { $('pad').hidden = !v; $('game').classList.toggle('pl', v); if (!v) { stk.reset(); jumpUp(); touchM = 0; } };
-  let padM = 0; const readInput = () => { const m = keys | touchM | padM | (G ? phoneM[G.cur] : 0); return { l: m & 1, r: m & 2, j: m & 4, g: m & 8 }; };
+  let padM = 0; const readInput = () => { const m = keys | touchM | padM | (G ? phoneM[G.cur] : 0); return { l: m & 1, r: m & 2, j: m & 4, d: m & 8 }; };
 
   // ------------------------------------------------------------ Handy-Kopplung
   const hasPhone = i => pair.has(i);
@@ -146,11 +147,11 @@ if (JOIN) {
           if (sim.t >= MAXT && !sim.finished) sim.dead = 'time';
           if (sim.wallTries !== wt) { wt = sim.wallTries; if (wt < 3) { big(`Versuch ${wt + 1} von 3`, 'sm', 1100); commentator.speak(wt === 1 ? 'Nicht geschafft! Zweiter Versuch.' : 'Letzter Versuch an der Wand!', true); } }
         }
-        $('clock').textContent = fmtTime(sim.t);
+        G.alpha = acc / DT; $('clock').textContent = fmtTime(sim.t);
         if (sim.dead || sim.finished) { G.tick = null; done({ finished: sim.finished, time: sim.t, dist: sim.dist, dead: sim.dead }); }
       };
     }));
-    G.phase = 'done'; padOn(false); phoneM[pi] = 0;
+    G.phase = 'done'; G.alpha = 1; padOn(false); phoneM[pi] = 0;
     if (res.finished) { commentator.speak('Im Ziel! '+G.players[pi].name+' mit '+res.time.toFixed(1).replace('.',',')+' Sekunden! Stark!',true); res.why = ''; SFX.top(); arena.confetti(sim.x, sim.y); SFX.clap(1.4); big('ZIEL! ' + fmtTime(res.time), 'sm', 1600); }
     else { const d = res.dead; commentator.speak(d === 'time' ? 'Die Zeit ist abgelaufen. Das war ein spannender Lauf!' : d === 'wall' ? 'Drei Versuche, kein Glück! Die Wand war heute zu hoch.' : 'Oh nein! Ein Sturz ins Wasser. Der Lauf ist vorbei.', true); res.why = d === 'time' ? 'Zeit ab' : d === 'wall' ? `Wand · ${Math.round(res.dist)} m` : `Baden · ${Math.round(res.dist)} m`; if (d === 'water') { arena.splash(sim.x); SFX.splash(); SFX.sad(); } else { SFX.buzz(); if (d === 'wall') SFX.sad(); } big(d === 'time' ? 'ZEIT ABGELAUFEN' : d === 'wall' ? 'WAND NICHT GESCHAFFT' : 'PLATSCH!', 'bad sm', 1500); }
     res.g = rec; G.say = res.finished ? fmtTime(res.time) : res.why; push();
@@ -191,7 +192,7 @@ if (JOIN) {
     arena.attract = !G && !$('menu').hidden && curCourse >= 0 ? COURSES[curCourse].length * (0.5 - 0.5 * Math.cos(arena.time * 0.045)) : null;
     if (G && G.tick) G.tick(dt);
     const sim = G && G.sim, run = sim && (G.phase === 'run' || G.phase === 'done' || G.phase === 'board');
-    arena.frame(run ? sim : null, dt, run && G.ghost ? ghostAt(G.ghost, sim.t) : G && G.ghost ? ghostAt(G.ghost, 0) : null, 2);
+    arena.frame(run ? sim : null, dt, run && G.ghost ? ghostAt(G.ghost, sim.t) : G && G.ghost ? ghostAt(G.ghost, 0) : null, 2, G && G.alpha != null ? G.alpha : 1);
     requestAnimationFrame(loop);
   }
 

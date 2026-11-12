@@ -125,3 +125,8 @@ kbd{display:inline-block;min-width:26px;padding:2px 7px;border-radius:6px;backgr
 #pickList{overflow-y:auto;flex:1;min-height:0;padding-right:4px}#pickList h3{margin:10px 0 6px;font-size:14px;color:var(--y)}.pk-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px}
 .pk{display:flex;align-items:center;gap:8px;min-height:40px;padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#fff;font-weight:800;font-size:14px;text-align:left}.pk i{flex:none;width:14px;height:14px;border-radius:50%;background:var(--cc);box-shadow:0 0 0 2px rgba(255,255,255,.3)}.pk.on{background:rgba(0,229,255,.22);border-color:var(--c)}.pk:focus-visible{outline:3px solid var(--c);outline-offset:2px}
 #pick{background:linear-gradient(90deg,rgba(5,6,20,.05) 35%,rgba(5,6,20,.7))}@media (min-aspect-ratio:1/1){#pick{justify-content:flex-end}}@media (max-aspect-ratio:1/1){#pick{align-items:flex-end;background:linear-gradient(180deg,rgba(5,6,20,.05) 40%,rgba(5,6,20,.75))}#pickBox{max-height:58vh}}
+/* Titanparcours-Schriften (Barlow / Barlow Condensed, SIL Open Font License, assets/fonts) */
+@font-face{font-family:"Titan Display";src:url(assets/fonts/titan-display.woff2) format("woff2");font-weight:800;font-style:italic;font-display:swap}
+@font-face{font-family:"Titan Cond";src:url(assets/fonts/titan-cond.woff2) format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Titan Text";src:url(assets/fonts/titan-text.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Titan Text";src:url(assets/fonts/titan-text-bold.woff2) format("woff2");font-weight:700 900;font-display:swap}
