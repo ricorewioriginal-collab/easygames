@@ -246,6 +246,19 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       for (let i = 0; i < 14; i++) { const a = i * .45, r = 6 + (i % 3); const t = b.cyl(-40 + Math.cos(a) * r, 0, -72 + Math.sin(a) * r * .8, .14, 2.6 + (i % 3), 0x5a8a3a, { lo: 1, mat: { e: 0x1a4a1a, ei: 1 } }); A.sway(t, i); }
       for (const [x, z] of w.vents) A.vent(x, z);
       for (const [x, z] of [[-10, -36], [12, -18], [6, -46], [-28, -14], [20, -60]]) { const m = mk(G.cyl, new T.MeshBasicMaterial({ color: 0x8ae8ff, transparent: true, opacity: .06, depthWrite: false, blending: T.AdditiveBlending }), x, 12, z, 2.6, 24, 2.6, false); b.g.add(m); }
+      // Eisberg (was die zweite Schwester sah): großer Eisblock bis über das Wasser, Glühen von oben
+      b.ico(-78, 2, -14, 7, 9, 6, 0xd8f0ff, { solid: 1, mat: { r: .15, m: .1, e: 0x4a8aaa, ei: .4 } }); b.ico(-70, 1, -6, 3, 4, 3, 0xe8f8ff, { solid: 1, mat: { r: .15, e: 0x4a8aaa, ei: .4 } }); b.glow(0xc8f4ff, 12, -78, 12, -14, .35);
+      // Garten mit dem Marmorjüngling: rundes Beet, rote Trauerweide, Statue
+      for (let i = 0; i < 12; i++) { const a = i * .52; b.sph(-70 + Math.cos(a) * 6, .2, -60 + Math.sin(a) * 6, .7, .4, .7, 0xe84a3a, { mat: { e: 0x8a1a1a, ei: .6 }, cast: false }); }
+      b.box(-70, 0, -60, 1.6, 1.2, 1.6, 0xe8e4dc, { solid: 1, tex: 'marble' }); b.cyl(-70, 1.2, -60, .32, 1.6, 0xf0ece4, { tex: 'marble' }); b.sph(-70, 3.1, -60, .34, .4, .34, 0xf0ece4, { tex: 'marble' }); for (const s of [-1, 1]) b.cyl(-70 + s * .45, 1.9, -60, .1, .9, 0xf0ece4, { lo: 1, cast: false });
+      for (let i = 0; i < 9; i++) b.cyl(-62 + Math.cos(i * .7) * 1.2, 0, -54 + Math.sin(i * .7) * 1.2, .08, 4 + (i % 3), 0xc8402a, { lo: 1, cast: false });
+      // Zweites Wrack aus der Sturmnacht: geborstener Rumpf, Mast, Laternen
+      b.box(70, .8, -70, 12, 3, 4, 0x5a3a22, { solid: 1, tex: 'wood', rz: .2, ry: .5 }); b.cyl(66, 0, -66, .3, 9, 0x4a2e1a, { tex: 'wood' }).rotation.z = .6; for (const [x, z] of [[74, -66], [64, -74]]) b.glow(0xffc060, 3, x, 1.2, z, .6);
+      // Polypenwald vor dem Haus der Hexe: graue Polypen mit Armen, Knochen
+      for (let i = 0; i < 16; i++) { const a = i * .4, r = 6 + (i % 4) * 2.4, x = 60 + Math.cos(a) * r, z = -92 + Math.sin(a) * r; b.cyl(x, 0, z, .35, 2 + (i % 3), 0x6a7a5a, { lo: 1, solid: 1 }); for (let k = 0; k < 4; k++) b.cyl(x + Math.cos(k * 1.6) * .5, 2.4 + (i % 3), z + Math.sin(k * 1.6) * .5, .07, 1.4, 0x5a6a4a, { lo: 1, cast: false }).rotation.z = .9; }
+      for (let i = 0; i < 6; i++) b.box(56 + i * 1.4, .1, -86 + (i % 2), .9, .14, .14, 0xe8e0d0, { cast: false, ry: i });
+      // Lichtsäule der Töchter der Luft: helle Säule von der Oberfläche
+      { const m = b.cyl(0, 0, 40, 3, 30, 0xfff8e0, { mat: { e: 0xfff0c0, ei: 1, t: .18 }, cast: false }); m.material.depthWrite = false; } b.glow(0xfff0c0, 14, 0, 6, 40, .4);
     },
     mauer(b, w, A) {
       const K = kit(b), S = 0x9a948a, R = 0xb83a2a;
