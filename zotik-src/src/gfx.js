@@ -69,10 +69,34 @@ export function geoSet(low) {
     tor: new T.TorusGeometry(1, .3, s(10), s(28))
   };
 }
+/** Vertexfarben als Licht-Verlauf (unten dunkel, oben hell, leichtes Rauschen): wirkt wie weiches Umgebungslicht und nimmt den glatten Flächen das Flache. */
+export function shadeY(g, lo, hi, nz) {
+  g.computeBoundingBox(); const b = g.boundingBox, p = g.attributes.position, n = p.count, c = new Float32Array(n * 3), hh = b.max.y - b.min.y || 1;
+  for (let i = 0; i < n; i++) {
+    const t = (p.getY(i) - b.min.y) / hh, k = lo + (hi - lo) * Math.pow(t, .8) + (nz || 0) * (fbm(p.getX(i) * 3.1, p.getY(i) * 3.1, p.getZ(i) * 3.1, 9, 2) - .5);
+    c[i * 3] = c[i * 3 + 1] = c[i * 3 + 2] = Math.max(0, k);
+  }
+  g.setAttribute('color', new T.BufferAttribute(c, 3)); return g;
+}
+/** Gras-Büschel: fünf gebogene, spitz zulaufende Halme (Höhe 1, Breite ca. 0,5), unten dunkel, Spitzen hell. */
+export function grassTuft() {
+  const pos = [], col = [], idx = [], mr = mul(7);
+  for (let b = 0; b < 5; b++) {
+    const a = b * 1.257 + mr() * .5, r0 = .04 + mr() * .12, h = .75 + mr() * .5, w = .075 + mr() * .03, bend = .15 + mr() * .3, ca = Math.cos(a), sa = Math.sin(a), px = -sa, pz = ca, base = pos.length / 3;
+    for (let k = 0; k < 4; k++) {
+      const t = k / 3, o = bend * t * t, x = ca * (r0 + o), z = sa * (r0 + o), y = t * h, hw = w * (1 - t * .92);
+      pos.push(x - px * hw, y, z - pz * hw, x + px * hw, y, z + pz * hw); const v = .45 + .6 * t; col.push(v, v, v, v, v, v);
+    }
+    for (let k = 0; k < 3; k++) { const i = base + k * 2; idx.push(i, i + 1, i + 2, i + 1, i + 3, i + 2) }
+  }
+  const g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute(pos, 3)); g.setAttribute('color', new T.Float32BufferAttribute(col, 3)); g.setIndex(idx); g.computeVertexNormals();
+  const n = g.attributes.normal; for (let i = 0; i < n.count; i++) n.setXYZ(i, 0, 1, 0);  // weich von oben beleuchtet, beidseitig gleich
+  return g;
+}
 export function propSet(low) {
   return {
-    trunk: new T.CylinderGeometry(.5, .8, 1, low ? 8 : 12, 1), canopy: organic(2, .26, 2.1, 11), pine: ruffleCone(low ? 14 : 20, 2, .16),
-    grass: new T.ConeGeometry(.09, .6, 4, 1), rock: organic(low ? 1 : 2, .34, 1.5, 23, .8), pave: organic(1, .2, 1.4, 5, .5),
+    trunk: new T.CylinderGeometry(.5, .8, 1, low ? 8 : 12, 1), canopy: shadeY(organic(low ? 2 : 3, low ? .26 : .22, low ? 2.1 : 3.4, 11), .5, 1.08, .25), pine: shadeY(ruffleCone(low ? 14 : 22, low ? 2 : 3, .16), .5, 1.1, .2),
+    grass: grassTuft(), rock: organic(low ? 1 : 2, .34, 1.5, 23, .8), pave: organic(1, .2, 1.4, 5, .5),
     cap: new T.SphereGeometry(1, low ? 10 : 14, low ? 6 : 8, 0, 6.283, 0, 1.6), stem: new T.CylinderGeometry(.18, .25, 1, 8, 1),
     flower: new T.SphereGeometry(1, 8, 6), crystal: crystal()
   };

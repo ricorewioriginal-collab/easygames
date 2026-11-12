@@ -7,7 +7,7 @@ import { WORLDS } from './mwdata.js';
 import { makeLand } from './mwland.js';
 import { createMwFoes } from './mwfoes.js';
 export const MW_FIRST = 21, MW_LAST = 27, MW = WORLDS;
-const CX = 0, CZ = -36, R = 58, PATHX = z => Math.sin(z * .08) * 5;
+const CX = 0; let CZ = -36, R = 58; const PATHX = z => Math.sin(z * .08) * 5;
 const GTEX = { spiegel: 'forest', dschungel: 'forest', notredame: 'cobble', theben: 'sand', meer: 'sand', mauer: 'grass', camelot: 'grass' };
 const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 const hex = n => '#' + n.toString(16).padStart(6, '0');
@@ -187,7 +187,7 @@ export function createMaerchen(C) {
 
   /* ---------- Welt aufbauen ---------- */
   function build(n) {
-    const w = W(n), h = heightFn(w), S = C.S(), s = st(w.id), pools = w.pools || [];
+    const w0 = W(n); R = w0.R || 58; CZ = w0.cz ?? -36; const AK = (R / 58) ** 2, w = w0, h = heightFn(w), S = C.S(), s = st(w.id), pools = w.pools || [];
     const blk = (x, z) => C.tooSteep(h, x, z) || Math.hypot(x - CX, z - CZ) > R + 6 || pools.some(([px, pz, r]) => Math.hypot(x - px, z - pz) < r - .4) || inRiver(w, x, z);
     const zone = (x, z) => { for (const q of w.zones) if (Math.hypot(x - q[3], z - q[4]) < q[5]) return q[0]; return 'wild'; };
     const zn = { wild: [w.name, w.sub] }; for (const q of w.zones) zn[q[0]] = [q[1], q[2]];
@@ -196,14 +196,14 @@ export function createMaerchen(C) {
     C.setWLD(WD); cur = { w, h, g: null, items: [], ints: [], boss: null, guest: null, react: null, swing: null, wave: 0 };
     C.setAtmos(w.atm);
     // Boden: glatte Schattierung, Farbverlauf, Weg, Sand am Wasser, Schnee am Rand; feine Bodenstruktur als Textur
-    const geo = new T.PlaneGeometry(170, 170, 136, 136); geo.rotateX(-Math.PI / 2); geo.translate(CX, 0, CZ);
+    const PS = 2 * R + 54, PN = Math.min(240, Math.round(PS * .8)), geo = new T.PlaneGeometry(PS, PS, PN, PN); geo.rotateX(-Math.PI / 2); geo.translate(CX, 0, CZ);
     const p = geo.attributes.position, col = new Float32Array(p.count * 3), c = new T.Color(), c1 = new T.Color(w.ground[0]), c2 = new T.Color(w.ground[1]), cp = new T.Color(w.path), cr = new T.Color(w.ridge), sn = new T.Color(0xf0f4f8), sand = new T.Color(0x8a7a5a);
     for (let i = 0; i < p.count; i++) { const x = p.getX(i), z = p.getZ(i), y = h(x, z); p.setY(i, y); const d = Math.hypot(x - CX, z - CZ), nz = Math.sin(x * .9) * Math.cos(z * .8) * .5 + Math.sin(x * .23 + z * .31) * .5;
       c.copy(c1).lerp(c2, .5 + nz * .5); const pd = Math.abs(x - PATHX(z)); if (z < 16 && z > -88 && pd < 2.6) c.lerp(cp, 1 - sm(1.6, 2.6, pd)); if (y < -.5) c.lerp(sand, Math.min(1, -y - .5)); c.lerp(cr, sm(R, R + 5, d)); if (w.snow) c.lerp(sn, Math.min(1, sm(R - 2, R + 4, d) * .9 + sm(3, 6, y) * .6)); col.set([c.r, c.g, c.b], i * 3); }
     geo.setAttribute('color', new T.BufferAttribute(col, 3)); geo.computeVertexNormals();
     const terr = new T.Mesh(geo, C.TX.tri(GTEX[w.id] || 'grass', 0xffffff, { vc: 1, s: .22, gain: 2.1, n: .8 })); terr.receiveShadow = true; C.scene.add(terr); WD.terr = terr;
     for (const [px, pz, r, wc] of pools) { const wm = mk(new T.CircleGeometry(r + .6, 64), new T.MeshStandardMaterial({ color: wc, metalness: .6, roughness: .06, transparent: true, opacity: .82 }), px, -.4, pz, 1, 1, 1, false); wm.rotation.x = -Math.PI / 2; C.scene.add(wm); }
-    if (w.river) { const rv = w.river, wm = mk(new T.PlaneGeometry(150, 150, 1, 1), new T.MeshStandardMaterial({ color: rv.col, metalness: .5, roughness: .08, transparent: true, opacity: .82 }), CX, -.62, CZ, 1, 1, 1, false); wm.rotation.x = -Math.PI / 2; C.scene.add(wm); }
+    if (w.river) { const rv = w.river, wm = mk(new T.PlaneGeometry(PS - 20, PS - 20, 1, 1), new T.MeshStandardMaterial({ color: rv.col, metalness: .5, roughness: .08, transparent: true, opacity: .82 }), CX, -.62, CZ, 1, 1, 1, false); wm.rotation.x = -Math.PI / 2; C.scene.add(wm); }
     // Wahrzeichen
     const g = new T.Group(); C.scene.add(g); cur.g = g; const b = B(g), keepSet = new Set(), A = anim(b, keepSet); LAND[w.land](b, w, A); cur.A = A;
     // Rand und Streuung
@@ -213,7 +213,7 @@ export function createMaerchen(C) {
     for (const m of w.ms) { for (const q of (m.pts || [])) busy.push([q[0], q[1], 3]); if (m.at) busy.push([m.at[0], m.at[1], m.r || 5]); }
     for (const d of w.npcs) busy.push([d.x, d.z, 3]); for (const q of [...(w.chests || []), ...(w.pots || []), ...(w.lore || []), ...(w.portals || []), ...(w.vents || [])]) busy.push([q[0], q[1], 2.5]);
     for (const q of (w.swings || [])) busy.push([q[0], q[1], 3], [q[2], q[3], 3]); if (w.currents) for (const q of w.currents) busy.push([q[0], q[1], q[2]]); if (w.climb) busy.push([w.climb.cx, w.climb.cz, 8]);
-    for (const [kind, cnt] of w.decor) { let n2 = 0, tries = 0; while (n2 < cnt && tries++ < cnt * 30) { const a = R2() * 6.283, rr = Math.sqrt(R2()) * (R - 3), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr;
+    for (const [kind, cnt0] of w.decor) { const cnt = Math.round(cnt0 * Math.min(AK, 2.4)); let n2 = 0, tries = 0; while (n2 < cnt && tries++ < cnt * 30) { const a = R2() * 6.283, rr = Math.sqrt(R2()) * (R - 3), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr;
       if (Math.abs(x - PATHX(z)) < 4 && z < 16 && z > -88) continue; if (busy.some(([bx, bz, br]) => Math.hypot(x - bx, z - bz) < br + 1.5)) continue; if ((w.rects || []).some(([x0, x1, z0, z1]) => x > x0 - 2 && x < x1 + 2 && z > z0 - 2 && z < z1 + 2)) continue;
       if (blk(x, z) || (w.river && riverDist(w.river, x, z) < w.river.w * .5 + 1.5)) continue; if (list.some(q => DECOR[q[2]].col && Math.hypot(q[0] - x, q[1] - z) < 2.6)) continue;
       list.push([x, z, kind, .8 + R2() * .5, R2() * 6.3]); n2++; } }
@@ -227,7 +227,7 @@ export function createMaerchen(C) {
         boss ? { boss: true, sub: f[3], p2t: f[4], minion: 'mw' + n + 'a', aggro: 30 } : {}); WD.edKeys.push(key); }
     // Gegner in der Wildnis (nicht am Ankunftsplatz, nicht in Dörfern)
     let ne = 0, tries = 0; const calm = w.zones.filter(q => ['lichtung', 'dorf', 'agora', 'hof', 'gaerten', 'parvis'].includes(q[0]));
-    while (ne < 10 && tries++ < 300) { const a = R2() * 6.283, rr = 14 + R2() * (R - 18), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr; if (z > -4 || blk(x, z) || !C.colFree(x, z, 1) || calm.some(q => Math.hypot(x - q[3], z - q[4]) < q[5])) continue; C.spawnEnemy('mw' + n + 'abc'[ne % 3], x, z); ne++; }
+    const NE = Math.round(10 * Math.min(AK, 3.2)); while (ne < NE && tries++ < 900) { const a = R2() * 6.283, rr = 14 + R2() * (R - 18), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr; if (z > -4 || blk(x, z) || !C.colFree(x, z, 1) || calm.some(q => Math.hypot(x - q[3], z - q[4]) < q[5])) continue; C.spawnEnemy('mw' + n + 'abc'[ne % 3], x, z); ne++; }
     // Nautilux geparkt am Ankunftsplatz (Reise wie mit dem Gumi-Schiff)
     { const sh = C.makeNaut(); sh.scale.setScalar(.85); sh.position.set(-7, h(-7, 15) + 1.6, 15); sh.rotation.y = .6; sh.visible = true; C.scene.add(sh); C.addCol(-7, 15, 2.4); const y0 = sh.position.y; C.animObjs.push({ fn(t) { sh.position.y = y0 + Math.sin(t * 1.3) * .18; } });
       C.INT.push({ x: -4.6, z: 12.4, name: 'Nautilux', pr: 'Weiterreisen', rad: 3.2, talk() { C.openTravel(); } }); }

@@ -26,7 +26,7 @@ let ok = 0, bad = 0; const chk = (c, m) => { if (c) { ok++; console.log('ok   ' 
       return pts.filter(([nm, x, z, r]) => !window.__near(x, z, r)).map(q => q[0]); });
     chk(!unreach.length, `${info.name}: alle Stellen zu Fuß erreichbar` + (unreach.length ? ' – NICHT: ' + unreach.join(', ') : ''));
     await shot(p, 'mw-' + info.id + '-ankunft'); await p.evaluate(() => { __zotik.noRender = true; });
-    for (let k = 0; k < 6; k++) {
+    for (let k = 0; k < 12; k++) {
       const m = await p.evaluate(() => { const Z = __zotik, w = Z.WLD.mw, s = Z.MWX().st(w.id); const m = s.done ? null : w.ms[s.m]; return m ? { t: m.t, g: m.g, n: m.n, cnt: m.cnt || (m.pts || []).length, m: s.m, top: m.top || 0, react: !!m.react, waves: (m.waves || []).length } : null; });
       if (!m) break;
       let r = await talk(p, 'mw_' + m.g); if (/kein Hinweis/.test(r)) { await p.waitForTimeout(1200); r = await talk(p, 'mw_' + m.g); } await skip(p);
