@@ -136,12 +136,16 @@
   {
    "t": "Märchenwelten (wie in Kingdom Hearts)",
    "list": [
-    "📖 Neben dem Weltentor in Lunaris steht das rosa-goldene Märchentor. Lunaris ist die Hauptwelt: Jede Märchenwelt erreichst du nur von hier, und zurück geht es immer über das Sternentor am Ankunftsplatz der Märchenwelt nach Lunaris. Auch im Reise-Menü stehen die Märchenwelten (Reisen nur, solange du in Lunaris bist).",
-    "🌍 Sieben Welten nach gemeinfreien Vorlagen, jede mit eigener Landschaft, eigenem Wahrzeichen und eigenen Figuren: 🍎 Der Spiegelwald (Schneewittchen, Brüder Grimm), 🐯 Dschungel von Seeonee (Das Dschungelbuch, Rudyard Kipling), 🐚 Das Meerkönigreich (Die kleine Meerjungfrau, H. C. Andersen), 🔔 Notre-Dame von Paris (Der Glöckner von Notre-Dame, Victor Hugo), ⚔️ Camelot (Artussage), 🦁 Theben (Herakles/Herkules) und 🏮 Die Große Mauer (Ballade von Hua Mulan).",
-    "📜 Jede Welt hat drei kleine Aufträge nach der Vorlage – Dinge einsammeln, Stellen auslösen (Glocken läuten, Signalfeuer entzünden, Runensteine wecken), jemanden finden, eine Gegnerwelle zurückschlagen und am Ende einen Boss. Wer einen Auftrag vergibt, trägt ein ❗ über dem Kopf. Den Stand zeigt das Auftragsfeld oben rechts und die Menüseite „Aufträge“.",
-    "🔑 Sind alle drei Aufträge erfüllt, erscheint am Wahrzeichen ein Schlüsselloch aus Licht. Versiegle es: Das bringt 300 Splitter, 2 Heiltränke, einen Phönix-Trank und viel Erfahrung. Wer alle sieben Welten versiegelt, erhält die Erzählerklinge (Waffe, Angriff 38, Technik Weltenschnitt).",
-    "📈 Die Gegner in den Märchenwelten richten sich nach deiner Stufe – du kannst die Welten in jeder Reihenfolge besuchen, sobald du mit Mira gesprochen hast. Im Mehrspieler bleibt das Märchentor geschlossen.",
-    "🎨 Alle Figuren sind eigene Gestaltungen nach den Büchern und Sagen, nicht nach Filmen."
+    "🚀 Märchenwelten liegen zwischen den Kapiteln. Reist du mit der Nautilux in das nächste Kapitel (zum Beispiel von Lunaris nach Elaris), leuchtet unterwegs eine Märchenwelt auf und Zotik fragt nach einem Abstecher. Wählst du „Direkt“, fliegst du weiter; die Märchenwelt bleibt dann jederzeit über das Reise-Menü erreichbar.",
+    "🌠 Jeder Flug mit der Nautilux passt zum Ziel: Himmel, Nebel und Hindernisse wechseln von der alten Welt über den Riss in die neue Welt (Äpfel und Spiegelsplitter im Spiegelwald, Glocken und Wasserspeier vor Notre-Dame, Säulen und Amphoren vor Theben, Blasen und Fische über dem Meer …). Am Ende taucht die Nautilux in die neue Welt ein, die Kamera fährt herab und eine Titelkarte zeigt den Ort.",
+    "🌍 Sieben Welten nach gemeinfreien Vorlagen: 🍎 Der Spiegelwald (Schneewittchen, Brüder Grimm), 🐯 Dschungel von Seeonee (Das Dschungelbuch, Rudyard Kipling), 🔔 Notre-Dame von Paris (Victor Hugo), 🦁 Theben (Herakles), 🐚 Das Meerkönigreich (Die kleine Meerjungfrau, H. C. Andersen), 🏮 Die Große Mauer (Ballade von Hua Mulan) und ⚔️ Camelot (Artussage). Die Reihenfolge der Abstecher folgt den Kapiteln 1 bis 7.",
+    "🗺️ Jede Welt hat mehrere Gebiete mit eigenem Namen (Banner beim Betreten), eigene Gegner nach der Vorlage, Truhen, Krüge zum Zerschlagen, Inschriften und eigene Mechaniken: Spiegeltore im Spiegelwald, Lianen zum Schwingen im Dschungel, Klettern auf den Glockenturm von Notre-Dame, Strömungen und Blasensäulen im Meerkönigreich.",
+    "🤝 In jeder Märchenwelt schließt sich ein Gast aus der Geschichte an und kämpft mit (der Jäger, Grauer Bruder, Esmeralda, Herakles, die kleine Meerjungfrau, Hua Mulan, Artus). Beim Verlassen der Welt bleibt er zurück.",
+    "📜 Jede Welt hat vier bis fünf Aufträge nach der Vorlage: Dinge einsammeln, Stellen auslösen (Glocken, Signalfeuer, Runensteine, Muschelhörner), jemanden finden, Gegnerwellen zurückschlagen und Bosse. Wer einen Auftrag vergibt, trägt ein ❗ über dem Kopf; den Stand zeigen das Auftragsfeld oben rechts und die Menüseite „Aufträge“.",
+    "△ Reaktionsbefehl: Taumelt ein Boss (bei etwa 60 % und 30 % Leben), erscheint für sieben Sekunden eine gemeinsame Aktion mit dem Gast, etwa „Excalibur!“ mit Artus oder „Ringen!“ mit Herakles. Drück dann die Aktionstaste – der Treffer kostet den Boss ein großes Stück Leben.",
+    "🔑 Sind alle Aufträge erfüllt, erscheint am Wahrzeichen ein Schlüsselloch aus Licht. Versiegle es: Das bringt 300 Splitter, 2 Heiltränke, einen Phönix-Trank und viel Erfahrung. Wer alle sieben Welten versiegelt, erhält die Erzählerklinge (Waffe, Angriff 38, Technik Weltenschnitt). Weiter geht es an der geparkten Nautilux neben dem Ankunftsplatz.",
+    "📈 Die Gegner in den Märchenwelten richten sich nach deiner Stufe. Im Mehrspieler werden keine Abstecher angeboten.",
+    "🎨 Alle Figuren sind eigene Gestaltungen nach den Büchern und Sagen, nicht nach Filmen. Böden, Mauern, Dächer und Felsen nutzen freie Texturen (CC0, Poly Haven) – in den Märchenwelten wie in den normalen Welten."
    ]
   },
   {
@@ -320,7 +324,7 @@
     "Liegt eine Welt über deiner Stufe, sammle in der Welt davor noch etwas Erfahrung – oder hol dir mit der Nautilux die Schätze von Himmelsinseln und aus dem See.",
     "Geh nach schweren Kämpfen in die Kirche: Der Segen heilt kostenlos und weckt gefallene Gefährten. Vor einem Boss lohnt sich die Spende für den Sternensegen.",
     "Probier das Springen gleich in Lunaris aus: Der Sprungpfad neben dem Waldweg bringt Splitter und einen Heiltrank.",
-    "📖 Märchenwelten passen sich deiner Stufe an. Sie sind ein guter Ort, um zwischendurch Erfahrung, Splitter und Phönix-Tränke zu sammeln."
+    "📖 Märchenwelten passen sich deiner Stufe an. Nimm den Abstecher ruhig mit: Truhen, Krüge, Aufträge und das Schlüsselloch bringen viel Erfahrung, Splitter und Phönix-Tränke, und der Gast kämpft an deiner Seite."
    ]
   },
   {
@@ -495,14 +499,14 @@
   {
    "t": "Märchenwelten: alle Aufträge",
    "list": [
-    "🍎 Spiegelwald: 1) Erzbart – sieben Grubenlaternen im ganzen Wald einsammeln. 2) Schneewittchen – sechs Spiegelsplitter am Spiegelsee im Osten besiegen. 3) Schneewittchen – die Spiegelkönigin vor dem großen Spiegelrahmen im Norden. Schlüsselloch: im Spiegelrahmen.",
-    "🐯 Dschungel von Seeonee: 1) Baloo – die drei Lehrsteine berühren (Westen, Nordwesten, Mitte). 2) Bagheera – sechs Bandar-log in den Kalten Höhlen (Osten) vertreiben. 3) Mowgli – Shere Khan am Ratsfelsen. Schlüsselloch: auf dem Ratsfelsen.",
-    "🐚 Meerkönigreich: 1) Großmutter (am Schloss) – sechs Perlen im Sand. 2) Die kleine Meerjungfrau – den Schiffsjungen neben dem gesunkenen Schiff (Osten) befreien. 3) Die Meerhexe in ihrer Polypenhöhle im Nordwesten. Schlüsselloch: vor dem Schloss des Meerkönigs.",
-    "🔔 Notre-Dame: 1) Quasimodo – die Glocken Marie, Jacqueline und Emmanuel auf dem Vorplatz läuten. 2) Esmeralda – Djali im Hof der Wunder (Westen) finden. 3) Quasimodo – den Steinernen Wasserspeier vor dem Portal. Schlüsselloch: vor dem Mittelportal.",
-    "⚔️ Camelot: 1) Artus – fünf Schattenritter auf dem Turnierplatz (Osten). 2) Merlin – drei Runensteine im Steinkreis (Westen) wecken. 3) Artus – den Schwarzen Ritter vor dem Schwert im Stein. Schlüsselloch: im Stein, wo das Schwert steckte.",
-    "🦁 Theben: 1) Herakles – fünf goldene Äpfel im Garten der Hesperiden (Westen). 2) Herakles – den Nemeischen Löwen vor seiner Höhle (Osten). 3) Iolaos – die Hydra vor dem Tempel. Schlüsselloch: auf den Tempelstufen.",
-    "🏮 Große Mauer: 1) Feldherr – die drei Signalfeuer (Westen, Osten, Mitte) entzünden. 2) Hua Mulan – sechs Eindringlinge vor dem Tor. 3) Hua Mulan – den Sturmreiter. Schlüsselloch: im großen Tor der Mauer.",
-    "💡 Bosse wachen auf, sobald du ihnen nahe kommst. Sie rufen in der zweiten Hälfte Helfer – erst die Helfer besiegen, dann den Boss."
+    "🍎 Spiegelwald (Abstecher nach Kapitel 1): 1) Erzbart – sieben Grubenlaternen einsammeln. 2) Kieselzahn – vier Erzadern im Erzstollen freischlagen. 3) Schneewittchen – sechs Spiegelsplitter am Spiegelsee besiegen. 4) Schneewittchen – die alte Krämerin mit den Äpfeln finden. 5) Schneewittchen – die Spiegelkönigin vor ihrem Schloss (Reaktion: Spiegel zurückwerfen). Die Spiegeltore bringen dich schnell von Gebiet zu Gebiet.",
+    "🐯 Dschungel von Seeonee (nach Kapitel 2): 1) Baloo – die drei Lehrsteine berühren. 2) Bagheera – sieben Bandar-log in den Kalten Höhlen vertreiben. 3) Bagheera – Kaa am Wasserbecken finden. 4) Mowgli – Glut der Roten Blume aus dem Menschendorf holen. 5) Mowgli – Shere Khan am Ratsfelsen (Reaktion mit Mowgli: Rote Blume schwingen). Über den Fluss Waingunga schwingst du an Lianen.",
+    "🔔 Notre-Dame von Paris (nach Kapitel 3): 1) Gringoire – Requisiten für das Mysterienspiel einsammeln. 2) Quasimodo – oben im Glockenturm die Glocken Marie, Jacqueline und Emmanuel läuten (über die Steinvorsprünge außen am Turm hinaufspringen). 3) Clopin – Djali im Hof der Wunder finden. 4) Clopin – „Asyl!“: sechs Stadtwachen zurückschlagen. 5) Quasimodo – den Steinernen Wasserspeier (Reaktion: Glocke Marie läuten).",
+    "🦁 Theben (nach Kapitel 4): 1) Atlas – fünf goldene Äpfel im Garten der Hesperiden. 2) König Eurystheus – den Nemeischen Löwen vor seiner Höhle (Reaktion mit Herakles: Ringen!). 3) Amphitryon – in der Arena zehn Spartoi in drei Wellen besiegen. 4) Iolaos – die Hydra im Sumpf von Lerna (Reaktion: Fackel!).",
+    "🐚 Meerkönigreich (nach Kapitel 5): 1) Großmutter – Perlen für den Schlossgarten sammeln. 2) Älteste Schwester – den Schiffsjungen im Wrack finden. 3) Meerkönig – die drei Muschelhörner blasen; jedes beruhigt einen Strudel, der dich sonst abdrängt. Blasensäulen werfen dich hoch. 4) Meerkönig – die Meerhexe vor ihrem Haus (Reaktion mit der kleinen Meerjungfrau: Trank zurückschleudern).",
+    "🏮 Große Mauer (nach Kapitel 6): 1) Vater Hua – Pferd, Sattel, Zaumzeug und Peitsche auf den vier Märkten kaufen. 2) Feldherr – die drei Signalfeuer entzünden. 3) Feldherr – das Tor gegen sechs Steppenreiter halten. 4) Feldherr – den Sturmreiter (Reaktion mit Hua Mulan: Trommelsignal).",
+    "⚔️ Camelot (nach Kapitel 7): 1) Sir Kay – fünf Schattenritter auf dem Turnierplatz in zwei Runden. 2) Merlin – die Runensteine des Mutes, der Treue und der Demut wecken. 3) Merlin – die Dame vom See am See von Avalon finden. 4) Merlin – den Schwarzen Ritter (Reaktion mit Artus: Excalibur!).",
+    "💡 Bosse wachen auf, sobald du ihnen nahe kommst, und rufen in der zweiten Hälfte Helfer. Spar dir starke Angriffe für den Reaktionsbefehl auf – er trifft immer."
    ]
   }
  ],
@@ -536,8 +540,8 @@
    "a": "Schließe andere Tabs und Apps. Das Spiel passt die Qualität bei Rucklern selbst an."
   },
   {
-   "q": "Wie komme ich aus einer Märchenwelt in eine andere Welt?",
-   "a": "Immer über Lunaris: Geh zum Sternentor am Ankunftsplatz der Märchenwelt, reise zurück nach Lunaris und wähle am Märchentor (neben dem Weltentor) die nächste Welt."
+   "q": "Wie komme ich in eine Märchenwelt und wieder heraus?",
+   "a": "Reise mit der Nautilux ins nächste Kapitel; unterwegs wird dir ein Abstecher angeboten. Später erreichst du jede freigeschaltete Märchenwelt über das Reise-Menü. In der Märchenwelt steht die Nautilux neben dem Ankunftsplatz – sprich sie an, um weiterzureisen."
   },
   {
    "q": "An manchen Stellen komme ich nicht weiter – ist da eine unsichtbare Wand?",

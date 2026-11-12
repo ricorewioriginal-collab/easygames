@@ -26,6 +26,9 @@ import { MOVES } from '../data/moves.js';
 import { TYPES } from '../data/types.js';
 import { TRAINERS, GUILD_BATTLES, GUILD_MEMBERS, RIVAL_STAGES, rivalTrainer, trainerHeld, rematchTrainer } from '../data/trainers.js';
 import * as Daily from '../logic/daily.js';
+import * as Ride from '../logic/ride.js';
+import { preloadModels } from '../engine/models.js';
+const nameOf = (m) => m.nick || SPECIES[m.id].name;
 import { ULME, GUILD_SCENES, LEAGUE_FINALE, CREDITS, CHAPTERS, RIVAL, professorLines } from '../data/story.js';
 import { makeMonster, healMonster, maxHp, evolve, teachMove } from '../logic/monster.js';
 import { gainsText } from '../logic/battle.js';
@@ -92,6 +95,7 @@ export class Game {
   async boot(progress) {
     progress(0.2, 'Welt vorbereiten …');
     await this.world.loadRegion(0, 'start', (p, t) => progress(0.2 + p * 0.7, t));
+    setTimeout(() => preloadModels(), 4000);   // 3D-Modell-Taschis im Hintergrund laden
     this.world.buildPlayer();
     this.world.player.root.visible = false;
     progress(1, 'Bereit');
@@ -316,7 +320,9 @@ export class Game {
     const w = this.world, s = this.save;
     if (!s.team.length && !s.flags.introDone) return;
     if (w.current && w.player) {
-      if (w.current.type === 'region') s.location = { map: 'region:' + w.current.region, x: +w.player.root.position.x.toFixed(2), z: +w.player.root.position.z.toFixed(2), ry: +w.player.root.rotation.y.toFixed(2) };
+      // beim Surfen zählt das Ufer, an dem man losgeschwommen ist
+      const at = w.mount?.mode === 'surf' && w.mount.shore ? w.mount.shore : { x: w.player.root.position.x, z: w.player.root.position.z, ry: w.player.root.rotation.y };
+      if (w.current.type === 'region') s.location = { map: 'region:' + w.current.region, x: +at.x.toFixed(2), z: +at.z.toFixed(2), ry: +at.ry.toFixed(2) };
       else { const r = w.current.returnTo; s.location = { map: 'region:' + r.region, x: +r.x.toFixed(2), z: +r.z.toFixed(2), ry: r.ry }; }
     }
     this.store.write(this.slot, s);
@@ -399,6 +405,7 @@ export class Game {
     if (i.pressed('menu')) { this.audio.sfx('confirm'); openPauseMenu(this, 'team'); return; }
     if (i.pressed('team')) { openPauseMenu(this, 'team'); return; }
     if (i.pressed('map')) { openPauseMenu(this, 'map'); return; }
+    if (i.pressed('ride')) { this.toggleRide(); return; }
     if (i.pressed('confirm') && this.world.near) { const e = this.world.near; this.script(() => this.interact(e)); }
     i.pressed('back');
   }
@@ -1001,8 +1008,37 @@ export class Game {
   }
 
   // ------------------------------------------------------------------ angeln
+  // ------------------------------------------------------------------ reiten & surfen
+  toggleRide() {
+    const w = this.world, s = this.save;
+    if (w.mount?.mode === 'surf') return this.ui.toast('Schwimm ans Ufer, um abzusteigen.', '🌊');
+    if (w.mount) { w.setMount(null); this.audio.sfx('back'); return this.ui.toast('Du steigst ab.', '🐾'); }
+    if (w.current?.type !== 'region') return this.ui.toast('Drinnen wird nicht geritten.', '🐾');
+    const m = Ride.rideMount(s);
+    if (!m) { this.audio.sfx('error'); return this.ui.toast(Ride.rideHint(s), '🐾'); }
+    w.setMount('ride', m);
+    this.audio.sfx('confirm');
+    if (!s.flags.rideMet) { s.flags.rideMet = true; this.ui.toast(nameOf(m) + ' trägt dich jetzt. Reiten ist schneller als Rennen!', '🐾'); }
+    else this.ui.toast('Du reitest auf ' + nameOf(m) + '.', '🐾');
+  }
+  async startSurf() {
+    const w = this.world, s = this.save, m = Ride.surfMount(s), spot = w.fishSpot;
+    if (!m || !spot) return this.ui.toast(Ride.surfHint(s), '🌊');
+    const p = w.player.root, shore = { x: p.position.x, z: p.position.z, ry: p.rotation.y };
+    if (w.mount) w.setMount(null);
+    p.position.x = spot.x; p.position.z = spot.z;
+    w.setMount('surf', m, shore);
+    this.audio.sfx('confirm');
+    this.ui.toast(nameOf(m) + ' trägt dich übers Wasser. Schwimm ans Ufer, um an Land zu gehen.', '🌊');
+  }
+
   async fish() {
     const s = this.save;
+    if (Ride.surfMount(s) && this.world.mount?.mode !== 'surf') {
+      const c = await this.ui.ask([{ text: 'Das Wasser ist ruhig. Was möchtest du tun?' }], ['🌊 Surfen', '🎣 Angeln', 'Abbrechen'], { cancelIndex: 2 });
+      if (c === 0) return this.startSurf();
+      if (c !== 1) return;
+    }
     if (!s.bag.angel) {
       Items.add(s.bag, 'angel', 1); this.audio.sfx('item');
       await this.ui.say([{ who: 'Anglerin Mira', text: 'Du schaust so sehnsüchtig aufs Wasser! Nimm meine alte Angel. Wirf aus und drück genau dann, wenn es zieht – nicht vorher!' }, { text: 'Du erhältst: Angel! (Basis-Items)' }]);

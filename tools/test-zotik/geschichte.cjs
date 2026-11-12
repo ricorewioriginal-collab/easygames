@@ -20,7 +20,7 @@ const BOT = () => { const Z = __zotik, pl = Z.pl; const B = window.B = { log: []
     else { const vb = W.querySelectorAll('.pzb'), m = d.valve_map; let best = null; for (let s = 0; s < (1 << m.length); s++) { const v = d.init.slice(0, d.channels); for (let i = 0; i < m.length; i++) if (s >> i & 1) for (const ch of m[i]) v[ch] = v[ch] ? 0 : 1; if (v.every((x, i) => x === d.sol[i])) { best = s; break; } } if (best === null) return 'Ventilrätsel unlösbar: ' + key; for (let i = 0; i < m.length; i++) if (best >> i & 1) vb[i].click(); }
     return key + (Z.S().pz[key] ? ' gelöst' : ' NICHT gelöst'); } }; };
 (async () => { const b = await chromium.launch({ args: ARGS }); const p = await open(b); const L = s => console.log(s); const ev = (f, a) => p.evaluate(f, a); const w = ms => p.waitForTimeout(ms);
-  await ev(BOT); await ev(() => { __zotik.startDbg(); }); await w(600);
+  await ev(BOT); await ev(() => { __zotik.startDbg(); __zotik.X.noDetour = 1; }); await w(600);
   const settle = async (ms = 2600) => { for (let i = 0; i < 6; i++) { await w(ms / 3); const c = await ev(() => { B.step(10); return B.dlg(); }); if (!c && i) break; } };
   const flightSkip = async () => { for (let i = 0; i < 40; i++) { const m = await ev(() => __zotik.mode); if (m === 'flight') { await p.keyboard.press('Escape'); await w(500); } else if (i > 3) break; await w(300); } };
   if (FROM === 1) {

@@ -49,6 +49,18 @@ Geprüft: `npm test` (31 Tests inklusive Durchlauf-Simulation bis zum Sternenmei
 - **Getragene Gegenstände:** Heilbeere, Klarbeere, Lernband, Kraftband, Fokusband – im Laden, anlegen über Team › Taschi › „🎒 Trägt“ oder die Tasche. Wirken im Kampf von selbst, Beeren und Fokusband werden verbraucht.
 - Tests: `tests/controls-held.test.mjs`, Browsertest `node tests/e2e/controls.mjs [Bildordner]` (simulierter Switch Pro Controller).
 
+## Neue Taschis aus 3D-Modellen (November 2026)
+
+- **57 neue Arten in 27 Entwicklungslinien** (Dex 262–318), gebaut aus dem *Ultimate Monsters Bundle* von **Quaternius** (CC0, Quelle: https://poly.pizza/bundle/Ultimate-Monsters-Bundle-5oyGWAmOB6, Lizenz in `assets/models/LICENSE.txt`). Sechs Linien nutzen die fertigen „Evolved“-Modelle, bei anderen wird aus dem einfachen das detailreiche Modell; Linien mit nur einem Modell entwickeln sich in eine größere Form mit eigenem Farbton und Glanz.
+- Technik: `src/engine/models.js` lädt die GLB-Dateien (GLTFLoader aus `../vendor`), klont Skelett und Haut, wandelt die Materialien in den Toon-Look mit Umriss um und spielt die Animationen (Stehen, Laufen, Angriff, Treffer, Freude, K.o.). Die Modelle laden im Hintergrund; Kämpfe warten kurz, bis beide Teams geladen sind.
+- Die Arten erscheinen nach ihrem Typ automatisch in der Wildnis, bei Trainern und in der Zucht. Tests: `tests/models.test.mjs`, Browsertest `tests/e2e/models.mjs`.
+
+## Reiten & Surfen (November 2026)
+
+- **Reiten** (Taste R, Controller R3 / rechter Stick drücken, Touch 🐾): Ab dem ersten Licht-Siegel trägt dich ein großes Vierbeiner-, Golem- oder Drachen-Taschi aus dem Team (Begleiter zuerst) – schneller als Rennen. Nochmal drücken zum Absteigen; drinnen wird nicht geritten.
+- **Surfen:** Ab dem dritten Siegel erscheint am Ufer „Surfen / Angeln“. Ein Wasser-Taschi trägt dich über Seen, Flüsse und das Meer; dort gibt es Wasser-Begegnungen. Wer ans Ufer schwimmt, geht automatisch an Land. Gespeichert wird beim Surfen der Startpunkt am Ufer.
+- Logik: `src/logic/ride.js`; Tests `tests/ride.test.mjs`, Browsertest `tests/e2e/ride.mjs`.
+
 ## Pension, Zucht, Kampfturm und Tagesereignisse (November 2026)
 
 - **Pension Sonnenblume** (Wirtin Ilse, in jedem Heilzentrum): zwei Taschis abgeben, sie bekommen beim Laufen 1 EP pro Schritt. Gebühr beim Abholen ★100 + ★25 je gewonnenem Level. Haben beide einen gemeinsamen Typ (oder dieselbe Linie), liegt manchmal ein Ei bereit.

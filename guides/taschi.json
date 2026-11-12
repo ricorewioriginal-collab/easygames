@@ -119,6 +119,20 @@
     "Einmal am Tag darfst du am Glücksrad im Heilzentrum drehen. Im Quests-Reiter steht, welche Art heute einen Massenausbruch hat.",
     "Ab acht Siegeln öffnet das Kampfturm-Terminal: drei Taschis auf Level 50, ohne Items aus der Tasche, sieben Kämpfe pro Etage. Für Siege gibt es Turmpunkte für seltene Belohnungen."
    ]
+  },
+  {
+   "t": "Reiten und Surfen",
+   "p": [
+    "Ab dem ersten Licht-Siegel kannst du auf großen Taschis reiten: Drück R (Controller: rechten Stick drücken, Touch: 🐾). Dein Begleiter trägt dich, wenn er groß genug ist, sonst das erste passende Taschi im Team. Reiten ist schneller als Rennen.",
+    "Ab dem dritten Siegel kannst du surfen: Stell dich ans Ufer und wähle „Surfen“. Ein Wasser-Taschi trägt dich übers Wasser, wo eigene Wasser-Taschis auftauchen. Schwimm einfach ans Ufer, um wieder an Land zu gehen."
+   ]
+  },
+  {
+   "t": "Neue Taschis",
+   "p": [
+    "57 neue Taschis leben jetzt in den Regionen, zum Beispiel Hutzel, Drakelino, Zottelchen, Glubbi und Kieselchen. Sie erscheinen nach ihrem Typ im Gras, am Wasser und in Höhlen.",
+    "Jedes neue Taschi hat eine Entwicklung: Manche ändern ihre Gestalt komplett, andere werden größer und bekommen einen neuen Farbton. Hutzel entwickelt sich sogar zweimal, bis zum Pilzkönig."
+   ]
   }
  ],
  "ratgeber": [
@@ -319,6 +333,14 @@
   {
    "q": "Wann öffnet der Kampfturm?",
    "a": "Das Terminal im Heilzentrum lässt dich ab acht Licht-Siegeln hinein. Deine Taschis kämpfen als Kopien auf Level 50, deine echten Taschis bleiben unverändert."
+  },
+  {
+   "q": "Warum kann ich nicht reiten?",
+   "a": "Du brauchst das erste Licht-Siegel und ein kampffähiges, großes Taschi (voll entwickelte Vierbeiner, Golems oder Drachen). Zum Surfen brauchst du das dritte Siegel und ein Wasser-Taschi."
+  },
+  {
+   "q": "Woher stammen die neuen 3D-Taschis?",
+   "a": "Die Modelle stammen aus dem kostenlosen Ultimate Monsters Bundle von Quaternius (Lizenz CC0). Werte, Namen, Typen und Entwicklungen sind eigens für Taschi gemacht."
   }
  ]
 }

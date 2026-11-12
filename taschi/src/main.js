@@ -1,5 +1,6 @@
 // Entry point: boot screen, error handling, game start.
 import { Game } from './game/game.js';
+import './engine/models.js';   // Taschis aus 3D-Modellen anmelden
 
 const bar = document.getElementById('bootbar'), txt = document.getElementById('boottext'), boot = document.getElementById('boot');
 const progress = (p, t) => { bar.style.width = Math.round(p * 100) + '%'; if (t) txt.textContent = t; };
