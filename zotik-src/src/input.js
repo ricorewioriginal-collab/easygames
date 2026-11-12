@@ -57,7 +57,7 @@ export function createInput({ touchDev, toast }) {
   function optionsHTML() {
     const N = window.EasyGamesPadNormal, P = window.EasyGamesPad; let h = '';
     if (P) { const st = N && N.style ? N.style() : 'auto', cf = N && N.confirm ? N.confirm() : 'auto';
-      const sel = (id, v, o) => `<select class="cpb" id="${id}">${o.map(([k, t]) => `<option value="${k}"${k === v ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
+      const sel = (id, v, o) => { const i = Math.max(0, o.findIndex(q => q[0] === v)); return `<button class="cpb cyc" id="${id}" data-v="${o[(i + 1) % o.length][0]}">${o[i][1]} ▸</button>`; };   // Knopf schaltet weiter (mit Controller, Tastatur und Touch gleich bedienbar)
       h += `<h3>🎮 Controller</h3><div class="row"><span>Symbole</span><span>${sel('padSty', st, [['auto', 'Automatisch'], ['xbox', 'Xbox (A B X Y)'], ['ps', 'PlayStation (✕ ○ □ △)'], ['switch', 'Switch (B A Y X)']])}</span></div>`
         + `<div class="row"><span>Bestätigen</span><span>${sel('padConf', cf, [['auto', 'Automatisch'], ['bottom', 'Knopf unten (PlayStation/Xbox)'], ['right', 'Knopf rechts (Switch)']])}</span></div>`
         + `<div class="row"><span>Knöpfe</span><span><button class="cpb" id="padMap">Knöpfe belegen</button> <button class="cpb" id="padLeg">Belegung zeigen</button></span></div>`; }
@@ -70,8 +70,8 @@ export function createInput({ touchDev, toast }) {
   function bindOptions(c, redraw) {
     const N = window.EasyGamesPadNormal, P = window.EasyGamesPad, q = s => c.querySelector(s);
     const after = () => { if (P && padOn()) P.showLegend(5000); redraw(); };
-    if (q('#padSty')) q('#padSty').onchange = e => { if (N && N.style) N.style(e.target.value); after(); };
-    if (q('#padConf')) q('#padConf').onchange = e => { if (N && N.confirm) N.confirm(e.target.value); after(); };
+    if (q('#padSty')) q('#padSty').onclick = e => { if (N && N.style) N.style(e.currentTarget.dataset.v); after(); };
+    if (q('#padConf')) q('#padConf').onclick = e => { if (N && N.confirm) N.confirm(e.currentTarget.dataset.v); after(); };
     const here = () => { try { return [...navigator.getGamepads()].some(Boolean); } catch (e) { return false; } };
     const need = fn => () => { if (!P || !here()) return toast('🎮 Schließ zuerst einen Controller an (USB oder Bluetooth) und drück einen Knopf.'); fn(); };
     if (q('#padMap')) q('#padMap').onclick = need(() => P.openMenu());

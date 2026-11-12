@@ -13,13 +13,15 @@ const start = async p => { await p.evaluate(() => { const Z = __zotik; Z.startDb
     await near(p); await w(300); let pr = await p.evaluate(() => document.getElementById('prompt').innerHTML);
     ok(/class="kh">A</.test(pr) && !/>E</.test(pr), 'Controller: Hinweis zeigt den A-Knopf statt „E“ (' + pr.replace(/<[^>]+>/g, '').slice(0, 40) + ')');
     await p.evaluate(() => EasyGamesPadNormal.style('ps')); for (let i = 0; i < 20 && await p.evaluate(() => !document.getElementById('dlg').hidden); i++) await tap(0, 200); pr = await near(p);
-    ok(/class="kh">✕</.test(pr), 'PlayStation-Symbole im Hinweis (✕) · ' + pr.replace(/<[^>]+>/g, '|'));
+    await shot(p, 'konsole-hinweis'); ok(/class="kh">✕</.test(pr), 'PlayStation-Symbole im Hinweis (✕) · ' + pr.replace(/<[^>]+>/g, '|'));
     await tap(0, 600); ok(await p.evaluate(() => !document.getElementById('dlg').hidden), 'A spricht Mira an (Kontextbefehl wie bei Kingdom Hearts)');
     for (let i = 0; i < 30 && await p.evaluate(() => !document.getElementById('dlg').hidden); i++) await tap(0, 200);
     await tap(9, 600); ok(await p.evaluate(() => !document.getElementById('menu').hidden), 'Start öffnet das Pausemenü');
     await p.evaluate(() => __zotik.renderMenu('help')); await w(300);
     ok(await p.evaluate(() => !!document.querySelector('#padSty') && !!document.querySelector('#padConf') && !!document.querySelector('#padMap') && !!document.querySelector('#padLeg')), 'Optionen: 🎮 Controller (Symbole, Bestätigen, Knöpfe belegen, Belegung zeigen)');
+    await p.evaluate(() => document.getElementById('padSty').click()); await w(250); ok(await p.evaluate(() => EasyGamesPadNormal.style() !== 'auto' && /▸/.test(document.getElementById('padSty').textContent)), 'Symbole umschalten per Knopf (' + await p.evaluate(() => EasyGamesPadNormal.style()) + ')');
     await shot(p, 'konsole-optionen');
+    await p.evaluate(() => EasyGamesPadNormal.style('xbox')); await w(200);   // (Switch-Stil tauscht A und B – für den Rest Xbox)
     await tap(1, 600); ok(await p.evaluate(() => document.getElementById('menu').hidden), 'B schließt das Pausemenü');
     ok(await p.evaluate(() => EasyGamesPad.legend().length >= 12 && EasyGamesPad.legend().every(l => l[1])), 'jede Belegung beschriftet (' + await p.evaluate(() => EasyGamesPad.legend().length) + ')');
     await p.evaluate(() => EasyGamesPadNormal.style('auto'));

@@ -12,6 +12,11 @@ Moderne 3D-Neuaufbau-Variante von **Zotik – Die Splitter der Welten**: eine Da
 
 Ordner: Dieses Spiel liegt jetzt in `zotik/` und ist die Startseite der Pages-Seite. Das alte Godot-Zotik liegt komplett in `zotik-old/` (Web-Build unter `/zotik-old/`).
 
+## Konsolenfähig: eine Eingabe-Schicht (`input.js`)
+- Tastatur, Controller und Touch lösen dieselben Spielaktionen aus. Controller über `../gamepad.js` (data-pad und data-pad-labels in `zotik-src/index.html`): linker Stick laufen, rechter Stick Kamera, A bestätigen/Angriff – vor Personen, Truhen und Stellen spricht/öffnet A (Kontextbefehl wie bei Kingdom Hearts) –, B zurück/Springen, Start Pausemenü, Steuerkreuz Befehle und Menüs.
+- Hinweise passen sich an: Controller-Symbol (✕ ○ □ △ / A B X Y, automatisch aus gamepad.js), die belegte Taste oder am Handy gar keine Taste (der Aktion-Knopf zeigt selbst, was er tut).
+- Menü → Steuerung: 🎮 Controller (Symbole, Bestätigen-Knopf, Knöpfe belegen, Belegung zeigen) und ⌨️ Tastatur (jede Spieltaste frei belegbar, `localStorage` `zotik_keys`, auf Handys ohne Tastatur ausgeblendet). Test `tools/test-zotik/konsole.cjs`.
+
 ## Titelscreen, HUD und Handy-Ansicht
 - Konsolen-Titelscreen nach dem Key-Art-Vorbild: Logo, Menü mit Leuchtbalken (Pfeiltasten/Enter oder Tippen), Untermenü „Steuerung".
 - HUD und Dialoge zeigen die Originalfiguren (Gesichter aus den Master-Sheets: Zotik, Mira, Professorium, Felli).
