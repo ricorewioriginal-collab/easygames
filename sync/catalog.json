@@ -380,7 +380,7 @@
   {
    "id": "kraterkommando",
    "title": "Kraterkommando 3D",
-   "desc": "Worms-artiges 3D-Artilleriespiel für Handy und PC: Feldzug mit Leveln, in denen beide Trupps wachsen und der Computer stärker wird, tödliches Wasser, Rückstoß und Fallschaden, Rückzugszeit nach dem Schuss, 14 Waffen von Bazooka bis Schaf und Heiliger Granate, Minen, Ölfässer, Kisten, Sudden Death und vier Kartentypen (Inselgruppe, Canyon, Festung, Vulkan). Gegen den Computer oder zu zweit an einem Gerät.",
+   "desc": "Worms-artiges 3D-Artilleriespiel für Handy und PC: Feldzug mit Leveln, in denen beide Trupps wachsen und der Computer stärker wird, tödliches Wasser, Rückstoß und Fallschaden, Rückzugszeit nach dem Schuss, 14 Waffen von Bazooka bis Schaf und Heiliger Granate, Minen, Ölfässer, Kisten, Sudden Death und vier Kartentypen (Inselgruppe, Canyon, Festung, Vulkan). Animierte 3D-Figuren, Konsolen-Menü und volle Gamecontroller-Steuerung, dazu Touch und Tastatur. Gegen den Computer oder zu zweit an einem Gerät.",
    "icon": "🚀",
    "img": "kraterkommando/card.svg",
    "bg": "linear-gradient(145deg,#112c53,#194e58 55%,#74efce)",
@@ -393,7 +393,7 @@
     "steuerung": [
      "Touch: Stick links = laufen und drehen, Bildschirm ziehen = drehen und Winkel, Gegner antippen = hindrehen, FEUER halten = Kraft aufladen, loslassen = Schuss; Knöpfe für Waffe, Sprung, Salto, Pass und 👁 Übersicht, zwei Finger = zoomen.",
      "PC: W/S laufen, A/D drehen, Pfeil hoch/runter = Winkel, Leertaste halten = Kraft, Enter = Sprung, Rücktaste = Salto, 1–0 = Waffe, Tab = Waffenliste, V = Übersicht, Esc = Pause; Maus ziehen = zielen, Klick auf Gegner = hindrehen, Mausrad = Zoom.",
-     "Controller: wird nicht unterstützt – gespielt wird mit Touch oder Tastatur und Maus."
+     "Controller: linker Stick = laufen, rechter Stick = zielen, RT halten = Kraft/Feuer, A = Sprung, B = Salto, X = Waffenliste, LB/RB = Waffe wechseln, Y = Übersicht, Select halten = Zug beenden, Start = Pause; Menüs mit Steuerkreuz, A und B."
     ],
     "tipps": [
      "Achte auf den Wind: Bazooka, Zielsuchrakete und Luftangriff werden abgetrieben, Granaten nicht.",
@@ -401,8 +401,8 @@
      "Nach dem Schuss sofort weglaufen – die eigene Explosion trifft auch deinen Wurm."
     ]
    },
-   "size": 142612,
-   "files": 7,
+   "size": 792780,
+   "files": 17,
    "offline": true,
    "cloud": {
     "game": "kraterkommando",
