@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1ef36dfdcbf2",
- "generated": "2026-11-12T19:37:47+00:00",
- "commit": "5723b83034f2063516506f08924b3db4e8027ba8",
+ "version": "38ba784368e1",
+ "generated": "2026-11-12T19:52:22+00:00",
+ "commit": "fb0c7dac00360e4124d38a6958dd922deda7f36a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9144,7 +9144,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258362,
-   "h": "c8a2a21dea1dca3fcab118b817277e34f055a572f0f69d07bc10ec1dffa3a554"
+   "h": "d2826f97a358b37d3084c0fbca49f0ad9962612108bbe31df95ff3f7d79fd7b1"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -11597,6 +11597,11 @@
    "h": "bd0608ee4703dfaf7407e75c7f04208b621c4ccf63fd48969f0fac6083ea04a1"
   },
   {
+   "p": "zotik/assets/index-wU-Uj22z.js",
+   "s": 1692199,
+   "h": "44858b2cc2073fed4bac9f1d04da5fb7eb07a349cb02babdf54243dabe5bf92d"
+  },
+  {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
    "s": 13809,
    "h": "6d67b37bfcae9e8edc3c861d30f80a4414b4004e6776211e43eec07789e6b75b"
@@ -11614,7 +11619,7 @@
   {
    "p": "zotik/index.html",
    "s": 72193,
-   "h": "2c818129a9e5df2c93f3c71eebc57daed6585fadabf858eb4cd07dd18dfec086"
+   "h": "ea727cdd1f908fe1c3e1fe24999d7fed0911dc73125df8b46bcc06c7b29a90c7"
   },
   {
    "p": "zotik/manifest.webmanifest",
@@ -11735,6 +11740,11 @@
    "p": "zotik/models/qb/puglin_3.jpg",
    "s": 17742,
    "h": "54c6e878f8e2083848e421bdc45afc896b66cb376634bef987153ce11f532b74"
+  },
+  {
+   "p": "zotik/models/wz/wz.glb",
+   "s": 2001656,
+   "h": "596e27b81382b09cf3e53d1a4128d22ad8e2f95ab3953ebcd95da32400ab17ab"
   },
   {
    "p": "zotik/sw.js",
