@@ -46,7 +46,7 @@
     },
     // Spielstand = Sim.save(S) als JSON-String; Erfolge in Feld "ach": {id:true} (kein Zeitstempel, daher Wert 1). Zusätzlich je Erfolg Geldbelohnung im Spiel (nicht gelistet). Titel im Spiel: Panel-Überschrift "Markthalle 24 – AnMaCha".
     "markthalle": {
-      title: "AnMaCha Markthalle 24", keys: ["amh_save_v1"],
+      title: "Marktrausch", keys: ["amh_save_v1"],
       read: function (raw) { try{var d=JSON.parse(raw);var a=d&&typeof d==='object'?d.ach:null;var o={};if(a&&typeof a==='object'&&!Array.isArray(a))for(var k in a){if(a[k])o[k]=1;}return o;}catch(e){return {};} },
       defs: [
       {id:"tag1",icon:"🌅",title:"Erster Feierabend",desc:"Schließe deinen ersten Tag ab."},

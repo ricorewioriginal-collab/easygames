@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="de">
 <head>
-<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/anmacha-markthalle-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Markthalle 24"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/anmacha-markthalle-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Marktrausch"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
 if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
 var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
 if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
@@ -20,7 +20,9 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0b1020">
-<title>AnMaCha Markthalle 24</title>
+<title>Marktrausch – Supermarkt-Simulator</title>
+<meta name="description" content="Marktrausch: Supermarkt-Simulator in 3D – Kartons einräumen, kassieren, Preise machen, Personal und Ausbau. Mit Controller, Tastatur, Touch und am TV spielbar.">
+<link rel="stylesheet" href="../vendor/fonts/fredoka.css">
 <style>
   :root{--c:#00e5ff;--ma:#ff2d95;--v:#8b5cf6;--o:#ff9a1f;--g:#00ffc8;--bg:#0b1020;--tx:#eaf2ff;--mut:#8fa3bd;--y:#ffd24a;--pn:#121a38;--hud:44px}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -79,7 +81,6 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   #dock .btn i{font-style:normal;font-size:16px}
   #dock .btn kbd{font:700 10px Inter,sans-serif;color:var(--mut);border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:0 4px;margin-left:2px}
   #dock .btn .dot{position:absolute;top:3px;right:3px;width:9px;height:9px;border-radius:50%;background:var(--ma);box-shadow:0 0 0 2px #0b1020}
-  #dock #bMore{display:none}
   body.touch #dock kbd,body.coarse #dock kbd{display:none}
   /* Fenster */
   #panel,#sum,#more{position:fixed;inset:0;z-index:20;background:rgba(3,6,16,.78);display:flex;justify-content:center;align-items:center;padding:20px;touch-action:pan-y}
@@ -87,10 +88,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   .ph{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03)}.ph h2{margin:0;flex:1;font:900 21px 'Trebuchet MS',sans-serif;color:var(--y);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #pb,#sb{overflow:auto;padding:12px 14px 18px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1;min-height:0}
   #sum>.in{width:min(520px,100%);background:none;border:0;box-shadow:none}
-  #more>.in{width:min(460px,100%);background:var(--pn);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:14px}
-  .mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-  .mgrid .btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;font-size:13px}
-  .mgrid .btn i{font-style:normal;font-size:26px}
+  #more>.in{width:min(760px,100%);max-height:100%;display:flex;flex-direction:column;background:var(--pn);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:14px;overflow:hidden}
   .tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:8px;padding-bottom:4px;scrollbar-width:thin}.tabs .btn{flex:none}.tabs .btn.on{background:linear-gradient(180deg,var(--ma),#a8105f);border-color:#fff}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
   .it{padding:9px 10px;display:flex;flex-direction:column;gap:4px}.it b{font-size:14px}.it .e{font-size:26px}.it small{color:var(--mut);font-size:12px;line-height:1.4}.it .row{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px;align-items:center}
@@ -135,7 +133,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     #dock .btn{flex:1 1 0;min-width:0;flex-direction:column;gap:1px;padding:4px 2px;min-height:48px;font-size:10.5px;border-radius:11px}
     #dock .btn i{font-size:20px}
     #dock .btn span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-    #dock .btn:not(.pri){display:none}#dock #bMore{display:flex!important}
+    #dock .btn:not(.pri){display:none}
     #panel,#sum{padding:0;align-items:stretch}
     #panel>.in,#sum>.in{border-radius:0;max-height:none;height:100%;width:100%;border:0}
     #sum>.in{height:auto;max-height:100%;margin:auto 0}
@@ -228,13 +226,72 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     .mm-logo b{font-size:44px}#mmLoad .mm-bar,#mmTitle .mm-press{margin-top:22px}#mmTipBox{display:none}
   }
   @media (prefers-reduced-motion:reduce){#boot::before,#mmTitle .mm-press{animation:none}.mm-it{transition:none}}
+
+  /* ---------- Neuer Look & Konsolen-Bedienung (Fokus, Befehlsmenü, Knopf-Hinweise, TV) ---------- */
+  :root{--fh:'Fredoka','Trebuchet MS',system-ui,sans-serif;--ring:#4ff3ff}
+  .ph h2,#namebox h2,#payov h2,#idov h2,#cardov h2,#mmInfo h3,.mm-logo b,.mm-logo i,#big h1,.big{font-family:var(--fh);font-weight:700;letter-spacing:.01em}
+  .btn,.mm-it,.chip{font-family:var(--fh)!important;font-weight:600!important;letter-spacing:.01em}
+  .btn{box-shadow:inset 0 -3px 0 rgba(0,0,0,.25),0 1px 0 rgba(255,255,255,.08);transition:transform .08s,filter .12s,box-shadow .12s}
+  .btn:active:not(:disabled){transform:translateY(1px);box-shadow:inset 0 -1px 0 rgba(0,0,0,.25)}
+  #panel>.in,#more>.in,#namebox .in,#payov .in,#idov .in,#cardov .in{background:linear-gradient(180deg,#1a2550,#111836 60%,#0e1430);box-shadow:0 24px 70px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.12)}
+  .ph{background:linear-gradient(90deg,rgba(255,210,74,.12),rgba(139,92,246,.06) 60%,transparent)}
+  .it.glass{transition:border-color .15s}body.navkb .it.glass:has(.nav-focus){border-color:rgba(79,243,255,.45)}
+  /* Leuchtrahmen: nur bei Tastatur, Controller oder TV sichtbar */
+  .nav-focus{position:relative}
+  body.navkb .nav-focus{outline:3px solid var(--ring)!important;outline-offset:3px;box-shadow:0 0 0 6px rgba(79,243,255,.22),0 0 26px rgba(79,243,255,.55)!important;z-index:2;animation:navPulse 1.4s ease-in-out infinite}
+  body.navkb .btn.nav-focus{filter:brightness(1.18)}body.navkb .btn.sm.nav-focus,body.navkb .tabs .btn.nav-focus,body.navkb .pad .btn.nav-focus,body.navkb .money .btn.nav-focus{transform:scale(1.06)}
+  body.navkb .sw.nav-focus{transform:scale(1.12)}
+  @keyframes navPulse{50%{outline-color:#fff;box-shadow:0 0 0 6px rgba(79,243,255,.12),0 0 34px rgba(79,243,255,.75)}}
+  /* Befehlsmenü */
+  .mh{padding:0 0 10px!important;border:0!important;background:none!important}
+  .cmdl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;overflow:auto;min-height:0;padding:6px;margin:-6px}
+  .cmd{display:flex!important;align-items:center;gap:10px;text-align:left;padding:10px 12px!important;min-height:58px;border-radius:14px}
+  .cmd i{font-style:normal;font-size:24px;flex:none;width:30px;text-align:center}
+  .cmd span{display:flex;flex-direction:column;min-width:0;flex:1}.cmd b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cmd small{font:600 11.5px Inter,system-ui,sans-serif;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cmd kbd{font:700 10px Inter,sans-serif;color:var(--mut);border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:0 4px;flex:none}
+  body.navkb .cmd.nav-focus{background:linear-gradient(90deg,rgba(0,229,255,.28),rgba(139,92,246,.18))}
+  body.touch .cmd kbd,body.coarse .cmd kbd,html.eg-pad .cmd kbd{display:none}
+  body.build #card{top:8px;bottom:auto;width:min(380px,60%);left:auto;right:10px;transform:none}
+  @media (max-width:760px){body.build #card{width:auto;left:8px;right:8px}}
+  /* Knopf-Hinweise unten */
+  #navbar{position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:35;display:flex;gap:14px;align-items:center;padding:7px 16px;border-radius:999px;background:rgba(6,10,26,.9);border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 26px rgba(0,0,0,.45);font:600 14px var(--fh);color:var(--tx);white-space:nowrap;pointer-events:none;max-width:calc(100vw - 24px);overflow:hidden}
+  #navbar span{display:flex;align-items:center;gap:5px}#navbar b{font-weight:600}
+  #navbar .gl{width:28px;height:28px;display:block}
+  #navbar kbd{font:800 12px Inter,sans-serif;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-bottom-width:3px;border-radius:6px;padding:1px 7px}
+  #navbar.ingame{bottom:calc(8px + env(safe-area-inset-bottom))}
+  body.navbar #panel,body.navbar #more,body.navbar #sum{padding-bottom:62px}
+  body.navbar #namebox,body.navbar #payov,body.navbar #idov,body.navbar #cardov{padding-bottom:62px}
+  /* Controller/TV im Spiel: Leiste unten weg (alles im Befehlsmenü), Hinweise statt Touch-Knöpfen */
+  html.eg-pad #dock,body.tv #dock{display:none}
+  html.eg-pad #act,html.eg-pad #stick,body.tv #act,body.tv #stick,html.eg-pad #zoom,body.tv #zoom{display:none!important}
+  html.eg-pad body.touch.fps #toast,body.navbar #toast{bottom:64px}
+  html.eg-pad #card,body.tv #card{bottom:64px;top:auto}
+  /* TV: 10-Fuß-Bedienung – größer, sichere Ränder gegen Overscan */
+  body.tv #app{padding:3.5vh 3.5vw}
+  body.tv #panel,body.tv #more,body.tv #sum,body.tv #namebox,body.tv #payov,body.tv #idov,body.tv #cardov{padding:5vh 5vw 9vh}
+  body.tv #hud,body.tv #tops,body.tv #toast,body.tv #tip,body.tv #card,body.tv #panel>.in,body.tv #more>.in,body.tv #sum>.in,body.tv #namebox .in,body.tv #payov .in,body.tv #idov .in,body.tv #cardov .in,body.tv #navbar,body.tv #mmMain,body.tv #mmTitle .mm-logo,body.tv #mmLoad .mm-logo{zoom:1.3}
+  body.tv #panel>.in{width:min(880px,calc(100% / 1.3));max-height:calc(100% / 1.3)}body.tv #more>.in{width:min(760px,calc(100% / 1.3));max-height:calc(100% / 1.3)}
+  body.tv #sum>.in{width:min(520px,calc(100% / 1.3))}body.tv #namebox .in,body.tv #payov .in,body.tv #idov .in{width:min(460px,calc(100% / 1.3))}body.tv #cardov .in{width:min(720px,calc(100% / 1.3))}
+  body.tv #card{width:min(440px,calc(94% / 1.3))}body.tv #tops{width:min(600px,calc(94% / 1.3))}body.tv #navbar{max-width:calc((100vw - 24px) / 1.3)}
+  body.tv #navbar{bottom:4vh}body.tv #mmMain{padding:5vh 6vw 0}
+  body.tv #back{display:none}
+  @media (max-width:760px), (max-height:520px){
+    .cmdl{grid-template-columns:repeat(2,minmax(0,1fr))}.cmd{min-height:52px;padding:8px 10px!important}.cmd i{font-size:20px;width:24px}.cmd b{font-size:14px}
+    #more>.in{max-height:88%}
+    #navbar{gap:9px;font-size:12.5px;padding:5px 12px}#navbar .gl{width:22px;height:22px}
+  }
+  @media (max-width:420px){#navbar span:nth-child(n+5){display:none}}
+  @media (prefers-reduced-motion:reduce){body.navkb .nav-focus{animation:none}.btn{transition:none}}
+  /* Hauptmenü: Knopf-Hinweise */
+  #mmFoot .gl{width:24px;height:24px;vertical-align:middle;margin-right:4px}
 </style>
 </head>
 <body class="mm">
-<div id="boot" role="dialog" aria-label="AnMaCha Markthalle 24">
-  <div id="mmLoad" class="mm-scr"><div class="mm-logo"><small>AnMaCha</small><b>MARKTHALLE</b><i>24</i></div><div class="mm-bar"><i id="mmBar"></i></div><div id="mmLoadT">Laden …</div><div id="mmErr" hidden><button class="btn go" onclick="location.reload()">Neu laden</button></div><div id="mmTipBox"><b>TIPP</b><span id="mmTip">Kartons stapeln sich auf der Rampe – trag sie zu den passenden Regalen.</span></div></div>
-  <div id="mmTitle" class="mm-scr" hidden><div class="mm-logo"><small>AnMaCha</small><b>MARKTHALLE</b><i>24</i><em>Dein Supermarkt. Deine Regeln.</em></div><div class="mm-press" id="mmPress">Drücke eine beliebige Taste</div></div>
-  <div id="mmMain" hidden><div class="mm-col"><div class="mm-logo"><small>AnMaCha</small><b>MARKTHALLE</b><i>24</i></div><span id="mmTag">HAUPTMENÜ</span><div id="mmList" role="menu"></div></div><div id="mmInfo" aria-live="polite"></div><div id="mmFoot"><span class="v">Markthalle 24</span><span><kbd>↑↓</kbd>Auswählen</span><span><kbd>Enter</kbd>Bestätigen</span><span><kbd>Esc</kbd>Zurück</span></div></div>
+<div id="boot" role="dialog" aria-label="Marktrausch">
+  <div id="mmLoad" class="mm-scr"><div class="mm-logo"><small>Supermarkt-Simulator</small><b>MARKT</b><i>RAUSCH</i></div><div class="mm-bar"><i id="mmBar"></i></div><div id="mmLoadT">Laden …</div><div id="mmErr" hidden><button class="btn go" onclick="location.reload()">Neu laden</button></div><div id="mmTipBox"><b>TIPP</b><span id="mmTip">Kartons stapeln sich auf der Rampe – trag sie zu den passenden Regalen.</span></div></div>
+  <div id="mmTitle" class="mm-scr" hidden><div class="mm-logo"><small>Supermarkt-Simulator</small><b>MARKT</b><i>RAUSCH</i><em>Dein Supermarkt. Deine Regeln.</em></div><div class="mm-press" id="mmPress">Drücke eine beliebige Taste</div></div>
+  <div id="mmMain" hidden><div class="mm-col"><div class="mm-logo"><small>Supermarkt-Simulator</small><b>MARKT</b><i>RAUSCH</i></div><span id="mmTag">HAUPTMENÜ</span><div id="mmList" role="menu"></div></div><div id="mmInfo" aria-live="polite"></div><div id="mmFoot"><span class="v">Marktrausch</span><span id="mmP"><kbd>↑↓</kbd>Auswählen</span><span id="mmA"><kbd>Enter</kbd>Bestätigen</span><span id="mmB"><kbd>Esc</kbd>Zurück</span></div></div>
 </div>
 <script>
 /* Ladefortschritt: zwischen den Skripten weitergezählt, damit der Balken echten Fortschritt zeigt */
@@ -259,20 +316,17 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   </div>
   <div id="stage"><canvas id="cv"></canvas><canvas id="cv3"></canvas><div id="cross"></div><div id="tops"><div id="goal" class="glass" hidden title="Antippen zum Verkleinern"></div><div id="carry" class="glass" hidden></div></div><div id="tip" class="glass" hidden></div><div id="zoom"><button class="btn glass" id="zIn" title="Näher (Mausrad)">＋</button><button class="btn glass" id="zOut" title="Weiter weg">－</button><button class="btn glass" id="zFit" title="Ganzer Laden">⤢</button></div><div id="stick"><div id="knob"></div></div><button id="act" class="idle">E</button><div id="toast" class="glass" hidden></div><div id="card" class="glass" hidden></div></div>
   <div id="dock">
-    <button class="btn glass pri" id="bView" title="Ansicht wechseln (V)"><i>👁️</i><span>Draufsicht</span><kbd>V</kbd></button><button class="btn glass pri" data-p="markt" title="Bestell-PC (1)"><i>💻</i><span>Bestell-PC</span><kbd>1</kbd></button><button class="btn glass" data-p="laden" title="Mein Laden (2)"><i>🏪</i><span>Laden</span><kbd>2</kbd></button><button class="btn glass pri" data-p="bauen" title="Bauen (3)"><i>🔧</i><span>Bauen</span><kbd>3</kbd></button><button class="btn glass pri" data-p="preise" title="Preise (4)"><i>🏷️</i><span>Preise</span><kbd>4</kbd></button><button class="btn glass" data-p="staff" title="Personal (5)"><i>👥</i><span>Personal</span><kbd>5</kbd></button><button class="btn glass" data-p="radio" title="Radio (6)"><i>📻</i><span>Radio</span><kbd>6</kbd></button><button class="btn glass" data-p="up" title="Ausbau (7)"><i>⭐</i><span>Ausbau</span><kbd>7</kbd></button><button class="btn glass" data-p="stat" title="Zahlen (8)"><i>📊</i><span>Zahlen</span><kbd>8</kbd></button><button class="btn glass" data-p="ziele" title="Ziele & Vorbestellungen (9)"><i>🎯</i><span>Ziele</span><kbd>9</kbd></button><button class="btn glass" id="bMenu" title="Hauptmenü (Esc)"><i>☰</i><span>Menü</span><kbd>Esc</kbd></button><button class="btn glass pri" id="bMore"><i>☰</i><span>Mehr</span></button>
+    <button class="btn glass pri" id="bView" title="Ansicht wechseln (V)"><i>👁️</i><span>Draufsicht</span><kbd>V</kbd></button><button class="btn glass pri" data-p="markt" title="Bestell-PC (1)"><i>💻</i><span>Bestell-PC</span><kbd>1</kbd></button><button class="btn glass" data-p="laden" title="Mein Laden (2)"><i>🏪</i><span>Laden</span><kbd>2</kbd></button><button class="btn glass pri" data-p="bauen" title="Bauen (3)"><i>🔧</i><span>Bauen</span><kbd>3</kbd></button><button class="btn glass pri" data-p="preise" title="Preise (4)"><i>🏷️</i><span>Preise</span><kbd>4</kbd></button><button class="btn glass" data-p="staff" title="Personal (5)"><i>👥</i><span>Personal</span><kbd>5</kbd></button><button class="btn glass" data-p="radio" title="Radio (6)"><i>📻</i><span>Radio</span><kbd>6</kbd></button><button class="btn glass" data-p="up" title="Ausbau (7)"><i>⭐</i><span>Ausbau</span><kbd>7</kbd></button><button class="btn glass" data-p="stat" title="Zahlen (8)"><i>📊</i><span>Zahlen</span><kbd>8</kbd></button><button class="btn glass" data-p="ziele" title="Ziele & Vorbestellungen (9)"><i>🎯</i><span>Ziele</span><kbd>9</kbd></button><button class="btn glass pri" id="bMenu" title="Befehlsmenü (Tab)"><i>☰</i><span>Menü</span><kbd>Tab</kbd></button>
   </div>
 </div>
 <div id="panel" hidden><div class="in"><div class="ph"><h2 id="pt"></h2><button class="btn glass" id="px" title="Schließen (Esc)">✕</button></div><div id="pb"></div><div id="cloudwrap" hidden style="padding:0 14px 14px"><div id="cloudbox"></div></div></div></div>
-<div id="more" hidden><div class="in"><div class="ph" style="padding:0 0 10px;border:0;background:none"><h2>☰ Mehr</h2><button class="btn glass" data-m="x">✕</button></div><div class="mgrid">
-  <button class="btn glass" data-m="laden"><i>🏪</i>Mein Laden</button><button class="btn glass" data-m="staff"><i>👥</i>Personal</button><button class="btn glass" data-m="ziele"><i>🎯</i>Ziele</button>
-  <button class="btn glass" data-m="up"><i>⭐</i>Ausbau &amp; Bank</button><button class="btn glass" data-m="stat"><i>📊</i>Zahlen</button><button class="btn glass" data-m="radio"><i>📻</i>Radio</button>
-  <button class="btn glass" data-m="hilfe"><i>❓</i>Anleitung</button><button class="btn glass" data-m="menu"><i>⚙️</i>Einstellungen</button><button class="btn glass" data-m="mm"><i>🎮</i>Hauptmenü</button>
-</div></div></div>
+<div id="more" hidden><div class="in" role="menu" aria-label="Befehle"><div class="ph mh"><h2>☰ Befehle</h2><button class="btn glass" data-m="x" title="Schließen (Esc)">✕</button></div><div class="cmdl" id="mlist"></div></div></div>
 <div id="sum" hidden><div class="in"><div id="sb"></div></div></div>
 <div id="namebox" hidden><div class="in glass" id="nb"></div></div>
 <div id="idov" hidden><div class="in glass" id="io"></div></div>
 <div id="payov" hidden><div class="in glass" id="po"></div></div>
 <div id="cardov" hidden><div class="in glass" id="co"></div></div>
+<script src="../device.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>mmStep(.55, 'Sortiment wird eingeräumt …')</script>
 <script src="data.js"></script>
@@ -282,8 +336,9 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="game.js"></script>
 <script>mmStep(.88, 'Kassen werden hochgefahren …')</script>
 <script src="menu.js"></script>
+<script src="nav.js"></script>
 <script src="../cloud/anmacha-cloud.js" data-save-btn="[data-a=&quot;save&quot;]" data-game="markthalle" data-prefix="amh_" data-mount="#cloudbox" data-hint="Sichere deinen Supermarkt mit Google und spiel auf jedem Gerät weiter." defer></script>
-<script src="../gamepad.js" data-pad-labels="ls=Laufen; rs=Umsehen; dpad=Laufen · in Fenstern wählen; a=Aktion · Einräumen (halten); b=Zurück · Fenster schließen; x=Aktion; y=Regal ansehen · Preise; lb=Draufsicht/Ego; rb=Drehen (Bauen); lt=Rennen; select=Laden öffnen · Feierabend; start=Pausemenü · Fenster schließen; l3=Knöpfe auf dem Bildschirm (halten)" data-pad="ls=none rs=none y=KeyF lb=KeyV rb=KeyR lt=ShiftLeft select=KeyO start=Escape" defer></script>
+<script src="../gamepad.js" data-pad-labels="ls=Laufen; rs=Umsehen; dpad=Laufen · in Fenstern wählen; a=Aktion · Bestätigen (halten = schnell einräumen/scannen); b=Zurück · Fenster schließen; x=Befehlsmenü (alle Fenster); y=Regal ansehen · Preise; lb=Draufsicht/Ego · Reiter links; rb=Drehen (Bauen) · Reiter rechts; lt=Rennen; select=Laden öffnen · Feierabend; start=Pausemenü; l3=Knöpfe auf dem Bildschirm (halten)" data-pad="ls=none rs=none x=KeyC y=KeyF lb=KeyV rb=KeyR lt=ShiftLeft select=KeyO start=Escape" defer></script>
 <script src="../egstat.js" defer></script>
 </body>
 </html>
