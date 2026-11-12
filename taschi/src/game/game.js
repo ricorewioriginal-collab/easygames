@@ -377,8 +377,14 @@ export class Game {
       if (worldActive) this.worldInput();
       if (this.state === STATES.WORLD) this.tickTime(dt);
       if (this.state === STATES.BATTLE) {
-        this.battleScene.update(dt);
-        this.renderer.render(this.battleScene.scene, this.battleScene.camera, 'battle');
+        const bs = this.battleScene;
+        bs.update(dt);
+        if (bs.inWorld && this.world.current?.map) {
+          // Kampf in der offenen Welt: Weltszene mit der Kampfkamera zeichnen
+          this.world.current.map.update(globalUniforms.uTime.value, dt, bs.camera, bs.focus);
+          this.sky.update(dt, this.save.worldTime, bs.focus, bs.camera);
+          this.renderer.render(this.world.scene, bs.camera, 'day');
+        } else this.renderer.render(bs.scene, bs.camera, 'battle');
       } else {
         if (this.state === STATES.TITLE) this.titleCamera(dt);
         else this.world.update(dt, this.input, worldActive);
@@ -458,6 +464,7 @@ export class Game {
     this.world.player.play('interact', 0.5);
     switch (e.kind) {
       case 'npc': return this.talkToNPC(e.npc);
+      case 'wild': return this.wildBattle(e.wild);
       case 'door': {
         if (e.target === 'arena' && !P.arenaOpen(s, r)) { this.audio.sfx('error'); return this.ui.say([{ text: 'Das Tor der ' + REGIONS[r].gym.theme + ' ist mit einem Lichtsiegel verschlossen. Ein Schild: „Wer die Arena betreten will, löse zuerst das Rätsel ' + REGIONS[r].puzzle.name + ' am Siegelplatz.“' }]); }
         if (e.target === 'station' && !s.bag.gildenschluessel) { this.audio.sfx('error'); return this.ui.say([{ text: 'Eine schwere Stahltür mit violett-orangem Schloss. Ohne Gildenschlüssel kommst du hier nicht hinein.' }]); }
@@ -1198,15 +1205,17 @@ export class Game {
     const team = double ? [foe, rollEncounter(r, this.rng, { habitat })] : [foe];
     await this.battle({ kind: 'wild', foeTeam: team, format: double ? 'double' : undefined, canCatch: !double, ai: 0 });
   }
-  encounterFromWild(w) {
-    this.script(async () => {
-      const r = Math.min(15, this.world.current.region);
-      const [lo, hi] = levelRange(r);
-      const m = makeMonster(w.id, this.rng.int(lo, hi), this.rng);
-      this.audio.sfx('encounter');
-      await this.battle({ kind: 'wild', foeTeam: [m], ai: 0 });
-      this.world.removeWild(w);
-    });
+  encounterFromWild(w) { this.script(() => this.wildBattle(w)); }
+  // Kampf gegen ein sichtbares wildes Taschi: Level und Geschlecht wie auf dem Namensschild, Kampf genau dort
+  async wildBattle(w) {
+    if (!this.save.team.some(m => m.hp > 0)) return;
+    const r = Math.min(15, this.world.current.region);
+    const [lo, hi] = levelRange(r);
+    const m = makeMonster(w.id, w.lv ?? this.rng.int(lo, hi), this.rng);
+    if (w.g) m.g = w.g;
+    this.audio.sfx('encounter');
+    await this.battle({ kind: 'wild', foeTeam: [m], ai: 0, anchor: w.c.root.position.clone(), wildRef: w });
+    this.world.removeWild(w);
   }
   async battle(opts) {
     const s = this.save;

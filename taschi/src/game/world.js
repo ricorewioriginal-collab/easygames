@@ -86,11 +86,16 @@ export class World {
   groundAt(x, z) {
     const gy = this.current.height(x, z);
     if (this.mount?.mode !== 'surf' || this.current.type !== 'region') return gy;
-    // Oberfläche von Fluss, See oder Meer per Strahl von oben (Flüsse liegen höher als der Seespiegel)
+    const wy = this.waterAt(x, z);
+    return Math.max(gy, wy !== null ? wy - 0.25 : this.current.layout.waterLevel + 0.15);
+  }
+  // Oberfläche von Fluss, See oder Meer per Strahl von oben (Flüsse liegen höher als der Seespiegel); null = kein Wasser
+  waterAt(x, z) {
+    if (this.current?.type !== 'region') return null;
     const ray = this._waterRay ||= new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 80);
     ray.ray.origin.set(x, 40, z);
     const hit = ray.intersectObjects(this.current.map.surfaces || [], false)[0];
-    return Math.max(gy, hit ? hit.point.y - 0.25 : this.current.layout.waterLevel + 0.15);
+    return hit ? hit.point.y : null;
   }
 
   // ------------------------------------------------------------------ loading
@@ -263,7 +268,8 @@ export class World {
       const x = g.x + (rng.next() - 0.5) * g.w, z = g.z + (rng.next() - 0.5) * g.d;
       c.root.position.set(x, this.current.height(x, z), z);
       this.scene.add(c.root);
-      this.wild.push({ id, c, home: { x: g.x, z: g.z, r: Math.max(g.w, g.d) * 0.45 }, target: null, wait: rng.next() * 3, behavior: SPECIES[id].behavior, state: 'idle', cooldown: 0 });
+      const [lo, hi] = levelRange(Math.min(15, r));
+      this.wild.push({ id, c, lv: rng.int(lo, hi), g: rng.next() < 0.5 ? 'w' : 'm', home: { x: g.x, z: g.z, r: Math.max(g.w, g.d) * 0.45 }, target: null, wait: rng.next() * 3, behavior: SPECIES[id].behavior, state: 'idle', cooldown: 0 });
     }
   }
 
@@ -408,6 +414,8 @@ export class World {
     const list = c.type === 'region' ? c.map.interact.slice() : c.interior.interact.slice();
     if (c.type === 'interior') list.push({ id: 'exit', kind: 'exit', x: c.interior.exit.x, z: c.interior.exit.z, r: 1.8, label: 'Ausgang', prompt: 'Hinausgehen' });
     for (const p of this.puzzles) { list.push(...p.interact.filter(e => !e.hidden).map(e => ({ ...e, pv: p }))); list.push(...p.dynamicInteract().map(e => ({ ...e, pv: p }))); }
+    // Wilde Taschis direkt ansprechen: Kampf an Ort und Stelle
+    if (this.save.flags.firstQuest && this.save.team.some(m => m.hp > 0)) for (const w of this.wild) if (w.c.root.visible) list.push({ id: 'wild', kind: 'wild', wild: w, x: w.c.root.position.x, z: w.c.root.position.z, r: 1.7, label: this.save.dex[w.id] ? SPECIES[w.id].name : 'Wildes Taschi', prompt: 'Kämpfen' });
     for (const n of this.npcs) list.push({ id: 'npc:' + n.id, kind: 'npc', npc: n, x: n.ch.root.position.x, z: n.ch.root.position.z, r: 1.9, label: n.name, prompt: n.trainer && !this.save.trainers[n.trainer] ? 'Herausfordern' : 'Sprechen' });
     return list.filter(e => !this.isConsumed(e));
   }

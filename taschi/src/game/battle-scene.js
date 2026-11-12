@@ -9,7 +9,7 @@ import { ITEMS } from '../data/items.js';
 import { REGIONS } from '../data/regions.js';
 import { createBattle, runTurn, replace, replaceFoe, playerOptions, activeMon, targetsFor, catchChance } from '../logic/battle.js';
 import { snapshot, applySnapshot, mirrorEvents, cleanChoices } from '../logic/link.js';
-import { maxHp, xpToNext, evolve, replaceMove } from '../logic/monster.js';
+import { maxHp, xpToNext, evolve, replaceMove, genderOf } from '../logic/monster.js';
 import { createCreature, displayScale } from '../engine/creatures.js';
 import { loadSpeciesModel } from '../engine/models.js';
 import { WEATHER, weatherText } from '../logic/traits.js';
@@ -21,7 +21,7 @@ import { glowMaterial, groundMaterial } from '../engine/materials.js';
 import { disposeTree } from '../engine/renderer.js';
 import { PANO_GLSL } from '../engine/sky.js';
 import { paletteFor } from '../world/region-map.js';
-import { h, typeBadge, hpBar, FocusNav } from '../ui/ui.js';
+import { h, hpBar, FocusNav } from '../ui/ui.js';
 import { BIOMES } from '../logic/layout.js';
 import { createRng } from '../core/rng.js';
 
@@ -38,6 +38,8 @@ export class BattleScene {
     this.root = null; this.models = new Map(); this.trainers = []; this.fx = []; this.active = false;
     this.camTarget = { pos: new THREE.Vector3(-7, 3.4, 9), look: new THREE.Vector3(0.8, 1, -0.6), speed: 2.5 };
     this.lookCur = new THREE.Vector3(0.8, 1, -0.6);
+    this.camLocal = new THREE.Vector3(-7, 3.4, 9); this._v = new THREE.Vector3();
+    this.inWorld = false; this.hidden = [];
   }
   get ui() { return this.game.ui; }
   get audio() { return this.game.audio; }
@@ -111,6 +113,44 @@ export class BattleScene {
     }
   }
 
+  // Kampf direkt in der offenen Welt (auch auf dem Wasser): Die Bühne ist eine
+  // leere Gruppe in der Weltszene, ausgerichtet vom Spieler zum Gegner. Der
+  // Spieler steht genau dort, wo er stand; Taschis und Leute in der Nähe werden
+  // für den Kampf ausgeblendet.
+  buildWorldStage(opts) {
+    const w = this.game.world, p = w.player.root.position;
+    if (this.root) { this.root.parent?.remove(this.root); disposeTree(this.root); }
+    const root = new THREE.Group(); this.root = root;
+    let anchor = opts.anchor;
+    if (!anchor && opts.kind !== 'wild' && opts.trainerName) anchor = w.npcs.find(n => n.name === opts.trainerName && n.ch.root.visible && n.ch.root.position.distanceTo(p) < 16)?.ch.root.position;
+    const yaw = anchor && Math.hypot(anchor.x - p.x, anchor.z - p.z) > 0.5 ? Math.atan2(anchor.x - p.x, anchor.z - p.z) : w.player.root.rotation.y;
+    root.rotation.y = yaw - Math.PI * 0.75;
+    const off = new THREE.Vector3(-5.6, 0, 5.4).applyAxisAngle(new THREE.Vector3(0, 1, 0), root.rotation.y);
+    root.position.set(p.x - off.x, 0, p.z - off.z);
+    root.position.y = this.groundY(root.position.x, root.position.z);
+    root.updateMatrixWorld(true);
+    w.scene.add(root);
+    this.surf = w.mount?.mode === 'surf';
+    this.hidden = [];
+    const hide = (o) => { if (o && o.visible) { o.visible = false; this.hidden.push(o); } };
+    const near = (o, r) => Math.hypot(o.position.x - root.position.x, o.position.z - root.position.z) < r;
+    for (const x of w.wild) if (x === opts.wildRef || near(x.c.root, 14)) hide(x.c.root);
+    for (const n of w.npcs) if (near(n.ch.root, 13)) hide(n.ch.root);
+    // Reitet/surft man, bleibt man sitzen; sonst übernimmt die Kampffigur
+    this.mounted = !!w.mount;
+    if (!this.mounted) { hide(w.player.root); hide(w.follower?.c.root); }
+  }
+  groundY(x, z) { // Weltkoordinaten → Bodenhöhe (Wasseroberfläche zählt als Boden)
+    const w = this.game.world, y = w.current.height(x, z), wy = w.waterAt(x, z);
+    return wy !== null && wy > y ? wy + 0.02 : y;
+  }
+  floorAt(x, z) { // lokale Bühnenkoordinaten → lokale Bodenhöhe
+    if (!this.inWorld || !this.root) return 0;
+    const v = this.root.localToWorld(this._v.set(x, 0, z));
+    return this.groundY(v.x, v.z) - this.root.position.y;
+  }
+  up(p, hgt) { return p.clone().setY(this.floorAt(p.x, p.z) + hgt); }
+
   // ------------------------------------------------------------------ models
   modelFor(m) { return this.models.get(m.uid); }
   slotPos(side, slot) { return (this.b.format === 2 ? SLOT_POS2 : SLOT_POS)[side][slot] || SLOT_POS[side][0]; }
@@ -123,7 +163,7 @@ export class BattleScene {
     const c = createCreature(m.id, { outline: this.game.quality.outlines, shiny: !!m.shiny });
     const s = displayScale(m.id, 'battle') * (m.boss ? 2.1 : 1);   // Raid-Riese
     c.root.scale.setScalar(appear ? 0.01 : s);
-    const [x, y, z] = this.slotPos(side, slot);
+    const [x, , z] = this.slotPos(side, slot), y = this.floorAt(x, z);
     c.root.position.set(x, y, z);
     c.root.rotation.y = side === 0 ? Math.atan2(5.2, -4.8) : Math.atan2(-5.2, 4.8);
     this.root.add(c.root);
@@ -136,7 +176,7 @@ export class BattleScene {
   tweenScale(e, a, b, ms, flash = false) {
     return new Promise(res => {
       const t0 = performance.now();
-      if (flash) { const fl = this.burst(e.c.root.position.clone().setY(1), 0xffffff, 18, 1.6); void fl; }
+      if (flash) { const fl = this.burst(this.up(e.c.root.position, 1), 0xffffff, 18, 1.6); void fl; }
       const step = () => { const u = Math.min(1, (performance.now() - t0) / ms); const k = a + (b - a) * (1 - Math.pow(1 - u, 3)); e.c.root.scale.setScalar(Math.max(0.001, k)); if (u < 1) requestAnimationFrame(step); else res(); };
       step();
     });
@@ -144,7 +184,7 @@ export class BattleScene {
   spawnTrainer(look, side, name) {
     const ch = createCharacter(look, { outline: this.game.quality.outlines });
     const pos = side === 0 ? [-5.6, 0, 5.4] : [5.4, 0, -5.6];
-    ch.root.position.set(...pos); ch.root.rotation.y = side === 0 ? Math.atan2(5.2, -4.8) : Math.atan2(-5.2, 4.8);
+    ch.root.position.set(pos[0], this.floorAt(pos[0], pos[2]), pos[2]); ch.root.rotation.y = side === 0 ? Math.atan2(5.2, -4.8) : Math.atan2(-5.2, 4.8);
     this.root.add(ch.root); this.trainers.push({ ch, side, name });
     return ch;
   }
@@ -176,7 +216,7 @@ export class BattleScene {
   }
   async moveFx(e, attacker, target) {
     const mv = MOVES[e.move], col = FX_COLORS[mv.type] || 0xffffff;
-    const a = attacker.c.root.position.clone().setY(1.1), t = target ? target.c.root.position.clone().setY(1.1) : a.clone();
+    const a = this.up(attacker.c.root.position, 1.1), t = target ? this.up(target.c.root.position, 1.1) : a.clone();
     const fx = mv.fx;
     const special = mv.power >= 90 || mv.pp <= 5;
     if (special) { this.focusOn(attacker, 0.9); this.burst(a, col, 40, 1.5, 'star', 0.9); await wait(380); }
@@ -196,7 +236,7 @@ export class BattleScene {
         break;
       case 'rock': case 'quake':
         await wait(260);
-        if (fx === 'quake') { this.cameraShake(0.5); this.burst(t.clone().setY(0.2), col, 50, 2, 'soft', 0.8, 0.6); }
+        if (fx === 'quake') { this.cameraShake(0.5); this.burst(this.up(t, 0.2), col, 50, 2, 'soft', 0.8, 0.6); }
         else { await this.projectile(t.clone().add(new THREE.Vector3(0, 5, 0)), t, col, 300, 'soft', 0.5); this.burst(t, col, 30, 1.4, 'soft', 0.7); }
         break;
       case 'wind':
@@ -212,16 +252,17 @@ export class BattleScene {
   focusOn(entry, dist = 1) {
     const p = entry.c.root.position;
     const dir = entry.side === 0 ? new THREE.Vector3(2.2, 1.4, -2.6) : new THREE.Vector3(-3, 1.6, 3.4);
-    this.camTarget = { pos: p.clone().add(dir.multiplyScalar(1.4 * dist)).setY(p.y + 2), look: p.clone().setY(1), speed: 4 };
+    this.camTarget = { pos: p.clone().add(dir.multiplyScalar(1.4 * dist)).setY(p.y + 2), look: this.up(p, 1), speed: 4 };
   }
-  defaultCam() { this.camTarget = { pos: new THREE.Vector3(-9.6, 4.4, 11.8), look: new THREE.Vector3(0.9, 0.9, -1.1), speed: 2.5 }; }
+  // In der Welt schräg hinter der Figur (wie in Konsolen-Spielen), auf der Bühne die klassische Totale
+  defaultCam() { this.camTarget = this.inWorld ? { pos: this.up(new THREE.Vector3(-4.2, 0, 10.2), 3.6), look: this.up(new THREE.Vector3(0.6, 0, -0.6), 1), speed: 2.5 } : { pos: new THREE.Vector3(-9.6, 4.4, 11.8), look: new THREE.Vector3(0.9, 0.9, -1.1), speed: 2.5 }; }
 
   // ------------------------------------------------------------------ HUD
   buildHUD() {
     this.hudEl?.remove();
     this.hudEl = h('div#battle.layer');
     this.ui.root.append(this.hudEl);
-    this.huds = new Map();
+    this.huds = new Map(); this.partyEls = [];
     this.renderHUD();
   }
   renderHUD() {
@@ -235,16 +276,27 @@ export class BattleScene {
       el.className = 'bhud' + (s === 1 ? ' foe' : ' me') + (slot ? ' second' : '');
       this.fillHud(el, m, s);
     });
+    // Team-Leiste (Kapseln) neben den Plaketten; wilde Taschis haben keine
+    for (const s of [0, 1]) {
+      if (s === 1 && b.kind === 'wild') continue;
+      const pe = this.partyEls[s] ||= this.hudEl.appendChild(h('div.bparty.' + (s ? 'foe' : 'me')));
+      if (this.hudHidden) pe.style.visibility = 'hidden';
+      pe.replaceChildren(...Array.from({ length: 6 }, (_, i) => { const m = b.sides[s].team[i]; return h('i' + (!m ? '.empty' : m.hp <= 0 ? '.out' : m.status ? '.st' : '')); }));
+    }
   }
   fillHud(el, m, side, shownHp = m.hp, shownXp = null) {
     const sp = SPECIES[m.id], max = maxHp(m);
     const caught = side === 1 && this.b.kind === 'wild' && this.game.save.dex[m.id] === 2;
+    const gd = genderOf(m);
+    // Kompakte Plakette: Level-Pille, Geschlecht, Typ-Symbole, Name, KP-Leiste
     el.replaceChildren(...[
-      h('div.top', {}, h('span.nm', {}, (caught ? '◉ ' : '') + (m.nick || sp.name)), m.status ? h('span.status', { style: { background: STATUS[m.status].color } }, STATUS[m.status].short) : null, h('span.lv', {}, 'Lv ' + m.lv)),
-      h('div', {}, typeBadge(sp.type), sp.type2 ? typeBadge(sp.type2) : null),
-      hpBar(shownHp, max),
-      side === 0 ? h('div.hpnum', {}, Math.max(0, Math.round(shownHp)) + ' / ' + max + ' KP') : null,
-      side === 0 ? h('div.bar.xp', { style: { height: '5px' } }, h('i', { style: { width: Math.min(100, (shownXp ?? m.xp) / xpToNext(m.lv) * 100) + '%' } })) : null
+      h('div.top', {}, h('span.lv', {}, 'Lv. ' + m.lv), gd ? h('span.sx.' + gd, { title: gd === 'w' ? 'weiblich' : 'männlich' }, gd === 'w' ? '♀' : '♂') : null,
+        caught ? h('span.cg', { title: 'Schon gefangen' }, '◉') : null,
+        m.status ? h('span.status', { style: { background: STATUS[m.status].color } }, STATUS[m.status].short) : null,
+        h('span.ty', { title: TYPES[sp.type].name + (sp.type2 ? ' / ' + TYPES[sp.type2].name : '') }, TYPES[sp.type].icon + (sp.type2 ? TYPES[sp.type2].icon : ''))),
+      h('div.nm', {}, (m.nick || sp.name) + (m.shiny ? ' ✨' : '')),
+      h('div.hpw', {}, hpBar(shownHp, max), side === 0 ? h('span.hpnum', {}, Math.max(0, Math.round(shownHp)) + '/' + max) : null),
+      side === 0 ? h('div.bar.xp', {}, h('i', { style: { width: Math.min(100, (shownXp ?? m.xp) / xpToNext(m.lv) * 100) + '%' } })) : null
     ].filter(Boolean));
   }
   tweenHp(m, from, to) {
@@ -279,7 +331,9 @@ export class BattleScene {
     // 3D-Modelle beider Teams vorher laden (höchstens 4 s), damit niemand unsichtbar auftaucht
     const team0 = opts.playerTeam || save.team;
     await Promise.race([Promise.all([...team0, ...(opts.foeTeam || [])].map(m => loadSpeciesModel(m.id).catch(() => null))), new Promise(r => setTimeout(r, 4000))]);
-    this.buildStage(opts.region, indoor);
+    const w = g.world;
+    this.inWorld = !indoor && w.current?.type === 'region' && !!w.player && !opts.online && !opts.exhibition && !opts.raidShare;
+    if (this.inWorld) this.buildWorldStage(opts); else this.buildStage(opts.region, indoor);
     const b = createBattle({ rng: g.rng, kind: opts.kind, pvp: !!opts.online, format: opts.format, canRun: opts.canRun, canCatch: opts.canCatch, night: g.isNight(), dark: indoor, weather: indoor ? null : g.world.weather, starUnlocked: (save.badges || 0) >= 1,
       player: { team: opts.playerTeam || save.team, bag: opts.playerBag || save.bag, name: save.player.name }, foe: { team: opts.foeTeam, ai: opts.ai ?? 0, trainer: opts.kind !== 'wild', name: opts.trainerName || '', items: { ...(opts.items || {}) }, star: !!opts.foeStar } });
     this.b = b; this.opts = opts;
@@ -287,7 +341,8 @@ export class BattleScene {
     if (opts.kind === 'wild' && opts.foeTeam.some(m => m.shiny)) { g.ui.toast('Ein schillerndes Taschi! Fang es, solange du kannst!', '✨'); g.audio.sfx('item'); }
     for (const m of opts.foeTeam) save.dex[m.id] ||= 1;
     // trainers on stage
-    this.playerCh = this.spawnTrainer(save.player.look, 0, save.player.name);
+    // Auf dem Reit-/Surf-Taschi bleibt die Weltfigur sitzen (wirft nur)
+    this.playerCh = this.inWorld && this.mounted ? { play() {}, setTalking() {}, root: w.player.root } : this.spawnTrainer(save.player.look, 0, save.player.name);
     if (opts.allyLook) { const a = this.spawnTrainer(opts.allyLook, 0, opts.allyName); a.root.position.x -= 1.5; a.root.position.z -= 1.3; }
     if (opts.kind !== 'wild') { this.foeCh = this.spawnTrainer(opts.trainerLook || lookForRole('trainer', opts.trainerName), 1, opts.trainerName); if (b.format === 2 && opts.pair) { const c2 = this.spawnTrainer(opts.trainerLook2 || opts.trainerLook, 1); c2.root.position.x += 1.4; c2.root.position.z += 1.2; } }
     else this.foeCh = null;
@@ -297,10 +352,10 @@ export class BattleScene {
     // intro camera: start close on the foe side
     const foeFirst = b.sides[1].active.map(i => b.sides[1].team[i]);
     if (opts.kind === 'wild') foeFirst.forEach((m, slot) => { const e = this.spawnModel(m, 1, slot, false); e.c.play('appear', 0.4); });
-    g.renderer.precompile(this.scene, this.camera); // no shader builds during the intro
-    this.camera.position.set(6, 2.2, 1.5); this.lookCur.set(2.7, 1, -2.4); this.camera.lookAt(this.lookCur);
+    this.camLocal.set(6, 2.2, 1.5); this.lookCur.set(2.7, 1, -2.4); this.update(0);
+    g.renderer.precompile(this.inWorld ? w.scene : this.scene, this.camera); // no shader builds during the intro
     this.camTarget = { pos: new THREE.Vector3(4.5, 2.4, 3.5), look: new THREE.Vector3(2.7, 1, -2.4), speed: 1.2 };
-    this.hudEl.querySelectorAll('.bhud').forEach(e => e.style.visibility = 'hidden');
+    this.hudHidden = true; this.hudEl.querySelectorAll('.bhud, .bparty').forEach(e => e.style.visibility = 'hidden');
     const screen = { el: h('div'), onInput: (input) => { if (input.pressed('confirm') || input.pressed('back')) this.skip = true; input.nav(); return true; } };
     this.ui.push(screen); this.waitScreen = screen;
     if (opts.kind === 'wild') { this.cry(foeFirst); await this.log('Ein wildes ' + SPECIES[foeFirst[0].id].name + ' erscheint!' + (foeFirst[1] ? ' Und ' + SPECIES[foeFirst[1].id].name + '!' : ''), { hold: 1100 }); }
@@ -319,7 +374,7 @@ export class BattleScene {
     mine.forEach((m, slot) => this.spawnModel(m, 0, slot, true));
     this.audio.sfx('ballOpen'); this.cry(mine, 0.25);
     await this.log('Los, ' + mine.map(m => m.nick || SPECIES[m.id].name).join(' und ') + '!', { hold: 700 });
-    this.hudEl.querySelectorAll('.bhud').forEach(e => e.style.visibility = '');
+    this.hudHidden = false; this.hudEl.querySelectorAll('.bhud, .bparty').forEach(e => e.style.visibility = '');
     this.defaultCam();
     this.ui.pop(screen); this.waitScreen = null;
 
@@ -469,16 +524,18 @@ export class BattleScene {
       const name = m.nick || SPECIES[m.id].name;
       this.logEl.textContent = 'Was soll ' + name + ' tun?';
       const screen = { el: h('div'), nav: null };
-      const done = (v) => { if (this.cancelChoice === cancel) this.cancelChoice = null; if (this.ui.stack.includes(screen)) this.ui.pop(screen); resolve(v); };
+      const plate = this.huds.get(m.uid); plate?.classList.add('turn');
+      const done = (v) => { plate?.classList.remove('turn'); if (this.cancelChoice === cancel) this.cancelChoice = null; if (this.ui.stack.includes(screen)) this.ui.pop(screen); resolve(v); };
       const cancel = () => { while (this.ui.top && this.ui.top !== screen && this.ui.stack.includes(screen)) this.ui.pop(); done('cancel'); };
       this.cancelChoice = cancel;
       const main = () => {
+        // Befehlsmenü rechts unten: Kampf, Taschis, Tasche, Flucht
         this.menuArea([
-          h('button.bact.fight.focusable', { onclick: () => moves(), 'data-autofocus': '' }, 'Kampf', h('small', {}, opt.struggle ? 'Keine AP mehr' : 'Attacke wählen')),
-          h('button.bact.bag.focusable', { onclick: () => bag() }, 'Tasche', h('small', {}, 'Items & Kapseln')),
-          h('button.bact.team.focusable', { onclick: () => team() }, 'Taschis', h('small', {}, 'Wechseln')),
-          this.opts.online ? h('button.bact.run.focusable', { onclick: async () => { const c = await this.ui.ask([{ text: 'Wirklich aufgeben? Dann gewinnt ' + this.opts.online.name + '.' }], ['Weiterkämpfen', 'Aufgeben'], { cancelIndex: 0 }); if (c === 1) done({ slot, type: 'forfeit' }); } }, 'Aufgeben', h('small', {}, 'Kampf beenden'))
-            : h('button.bact.run.focusable' + (opt.canRun ? '' : '.disabled'), { onclick: () => opt.canRun ? done({ slot, type: 'run' }) : this.ui.toast('Aus diesem Kampf kannst du nicht fliehen!') }, 'Flucht', h('small', {}, opt.canRun ? 'Entkommen' : 'Nicht möglich'))
+          cmd('fight', '⚔️', 'Kampf', opt.struggle ? 'Keine AP mehr' : null, { onclick: () => moves(), 'data-autofocus': '' }),
+          cmd('team', '◉', 'Taschis', null, { onclick: () => team() }),
+          cmd('bag', '🎒', 'Tasche', null, { onclick: () => bag() }),
+          this.opts.online ? cmd('run', '🏳️', 'Aufgeben', null, { onclick: async () => { const c = await this.ui.ask([{ text: 'Wirklich aufgeben? Dann gewinnt ' + this.opts.online.name + '.' }], ['Weiterkämpfen', 'Aufgeben'], { cancelIndex: 0 }); if (c === 1) done({ slot, type: 'forfeit' }); } })
+            : cmd('run' + (opt.canRun ? '' : '.disabled'), '🏃', 'Flucht', opt.canRun ? null : 'Nicht möglich', { onclick: () => opt.canRun ? done({ slot, type: 'run' }) : this.ui.toast('Aus diesem Kampf kannst du nicht fliehen!') })
         ]);
         screen.nav.current = null; screen.nav.ensure();
         screen.onBack = canBack ? () => done('back') : null;
@@ -491,22 +548,21 @@ export class BattleScene {
           const t = TYPES[mv.move.type];
           const eff = foe && mv.move.power > 0 ? effectiveness(mv.move.type, SPECIES[foe.id]) : 1;
           const effTxt = mv.move.power === 0 ? 'Status' : eff > 1 ? 'Sehr effektiv' : eff === 0 ? 'Wirkungslos' : eff < 1 ? 'Kaum effektiv' : 'Stärke ' + mv.move.power;
-          return h('button.bact.move.focusable' + (mv.disabled ? '.disabled' : ''), { style: { background: `linear-gradient(160deg, ${t.color}, ${shadeCss(t.color)})` }, onclick: () => { if (mv.disabled) { this.audio.sfx('error'); return; } pickTarget(mv.id); } },
-            t.icon + ' ' + mv.move.name, h('small', {}, effTxt + ' · AP ' + mv.pp + '/' + mv.max));
-        }), ...(opt.canStar ? [h('button.bact.star.focusable' + (starOn ? '.on' : ''), { onclick: () => { starOn = !starOn; this.audio.sfx('confirm'); moves(); } }, '★ Sternstufe ' + (starOn ? 'AN' : 'aus'), h('small', {}, 'Einmal pro Kampf: alle Werte steigen'))] : []),
-          h('button.bact.backbtn.focusable', { onclick: main }, '↩ Zurück')]);
+          return cmd('move' + (mv.disabled ? '.disabled' : '') + (eff > 1 ? '.eff' : ''), t.icon, mv.move.name, effTxt + ' · AP ' + mv.pp + '/' + mv.max, { style: { borderLeftColor: t.color }, onclick: () => { if (mv.disabled) { this.audio.sfx('error'); return; } pickTarget(mv.id); } }, t.color);
+        }), ...(opt.canStar ? [cmd('star' + (starOn ? '.on' : ''), '★', 'Sternstufe ' + (starOn ? 'AN' : 'aus'), 'Einmal pro Kampf: alle Werte steigen', { onclick: () => { starOn = !starOn; this.audio.sfx('confirm'); moves(); } })] : []),
+          back(main)]);
         screen.nav.current = null; screen.nav.ensure(); screen.onBack = main;
       };
       const pickTarget = (moveId) => {
         const mv = MOVES[moveId], targets = targetsFor(b, 0);
         if (b.format === 1 || mv.target === 'self' || targets.length < 2) { done({ slot, type: 'move', move: moveId, target: targets[0], star: starOn }); return; }
-        this.menuArea([...targets.map(t => { const fm = activeMon(b, 1, t); return h('button.bact.fight.focusable', { onclick: () => done({ slot, type: 'move', move: moveId, target: t, star: starOn }) }, 'Ziel: ' + SPECIES[fm.id].name, h('small', {}, (t === 0 ? 'links' : 'rechts'))); }), h('button.bact.backbtn.focusable', { onclick: moves }, '↩ Zurück')]);
+        this.menuArea([...targets.map(t => { const fm = activeMon(b, 1, t); return cmd('fight', '🎯', 'Ziel: ' + SPECIES[fm.id].name, t === 0 ? 'links' : 'rechts', { onclick: () => done({ slot, type: 'move', move: moveId, target: t, star: starOn }) }); }), back(moves)]);
         screen.nav.current = null; screen.nav.ensure(); screen.onBack = moves;
       };
       const bag = () => {
         const items = opt.items.filter(id => opt.canCatch || ITEMS[id].category !== 'ball');
         if (!items.length) { this.ui.toast('Keine einsetzbaren Gegenstände.'); return; }
-        this.menuArea([...items.map(id => h('button.bact.bag.focusable', { onclick: () => useItem(id) }, ITEMS[id].name + ' ×' + this.b.bag[id], h('small', {}, ITEMS[id].category === 'ball' ? 'Fangchance ' + catchHint(this, id) : ITEMS[id].desc))), h('button.bact.backbtn.focusable', { onclick: main }, '↩ Zurück')]);
+        this.menuArea([...items.map(id => cmd('bag', ITEMS[id].category === 'ball' ? '🔴' : '🧪', ITEMS[id].name + ' ×' + this.b.bag[id], ITEMS[id].category === 'ball' ? 'Fangchance ' + catchHint(this, id) : ITEMS[id].desc, { onclick: () => useItem(id) })), back(main)]);
         screen.nav.current = null; screen.nav.ensure(); screen.onBack = main;
       };
       const useItem = (id) => {
@@ -514,12 +570,12 @@ export class BattleScene {
         if (it.category === 'ball') { done({ slot, type: 'item', item: id }); return; }
         if (it.category === 'battle') { done({ slot, type: 'item', item: id, target: m.uid }); return; }
         // choose which team member
-        this.menuArea([...b.sides[0].team.map(t => h('button.bact.team.focusable', { onclick: () => done({ slot, type: 'item', item: id, target: t.uid }) }, (t.nick || SPECIES[t.id].name), h('small', {}, t.hp + '/' + maxHp(t) + ' KP' + (t.status ? ' · ' + STATUS[t.status].name : '')))), h('button.bact.backbtn.focusable', { onclick: bag }, '↩ Zurück')]);
+        this.menuArea([...b.sides[0].team.map(t => monCmd(t, t.status ? STATUS[t.status].name : null, { onclick: () => done({ slot, type: 'item', item: id, target: t.uid }) })), back(bag)]);
         screen.nav.current = null; screen.nav.ensure(); screen.onBack = bag;
       };
       const team = () => {
         if (!opt.switchTargets.length) { this.ui.toast('Keine weiteren kampffähigen Taschis.'); return; }
-        this.menuArea([...opt.switchTargets.map(x => h('button.bact.team.focusable', { onclick: () => done({ slot, type: 'switch', to: x.i }) }, (x.m.nick || SPECIES[x.m.id].name) + ' Lv' + x.m.lv, h('small', {}, x.m.hp + '/' + maxHp(x.m) + ' KP'))), h('button.bact.backbtn.focusable', { onclick: main }, '↩ Zurück')]);
+        this.menuArea([...opt.switchTargets.map(x => monCmd(x.m, null, { onclick: () => done({ slot, type: 'switch', to: x.i }) })), back(main)]);
         screen.nav.current = null; screen.nav.ensure(); screen.onBack = main;
       };
       screen.el = this.actEl; // focus inside the action grid
@@ -537,7 +593,7 @@ export class BattleScene {
       this.logEl.textContent = 'Welches Taschi soll kämpfen?';
       const screen = { el: h('div'), nav: new FocusNav(this.actEl) };
       this.cancelChoice = () => { this.cancelChoice = null; if (this.ui.stack.includes(screen)) this.ui.pop(screen); this.menuArea([]); resolve(-1); };
-      this.menuArea(list.map(x => h('button.bact.team.focusable', { onclick: () => { this.cancelChoice = null; this.ui.pop(screen); resolve(x.i); } }, (x.m.nick || SPECIES[x.m.id].name) + ' Lv' + x.m.lv, h('small', {}, x.m.hp + '/' + maxHp(x.m) + ' KP'))));
+      this.menuArea(list.map(x => monCmd(x.m, null, { onclick: () => { this.cancelChoice = null; this.ui.pop(screen); resolve(x.i); } })));
       this.ui.push(screen);
       void forced;
     });
@@ -558,14 +614,14 @@ export class BattleScene {
         case 'damage': {
           const m = this.findMon(e.uid);
           if (ent && !e.dot) { ent.c.play('hit', 0.45); ent.c.hitFlash(); }
-          if (ent && e.dot) this.burst(ent.c.root.position.clone().setY(1), e.dot === 'gift' ? 0xa060ff : 0xff7a2a, 16, 0.8, 'soft', 0.7, 1.4);
+          if (ent && e.dot) this.burst(this.up(ent.c.root.position, 1), e.dot === 'gift' ? 0xa060ff : 0xff7a2a, 16, 0.8, 'soft', 0.7, 1.4);
           if (!e.dot) this.audio.sfx('hit', { type: this.lastMoveType || 'normal', eff: e.eff });
           if (e.eff > 1 || e.crit) this.cameraShake(e.eff > 1 ? 0.35 : 0.2);
           if (m) await this.tweenHp(m, e.hp + e.amount, e.hp);
           if (e.text) await this.log(e.text, { hold: 700 });
           break;
         }
-        case 'heal': { const m = this.findMon(e.uid); if (ent) this.burst(ent.c.root.position.clone().setY(1), 0x7aff9a, 26, 1, 'star', 0.9, 1.6); this.audio.sfx('heal'); if (m) await this.tweenHp(m, Math.max(0, e.hp - 40), e.hp); await this.log(e.text, { hold: 700 }); break; }
+        case 'heal': { const m = this.findMon(e.uid); if (ent) this.burst(this.up(ent.c.root.position, 1), 0x7aff9a, 26, 1, 'star', 0.9, 1.6); this.audio.sfx('heal'); if (m) await this.tweenHp(m, Math.max(0, e.hp - 40), e.hp); await this.log(e.text, { hold: 700 }); break; }
         case 'faint': {
           if (ent) { ent.c.play('faint', 0.8); this.audio.sfx('faint'); this.cry([this.findMon(e.uid)], 0, true); await wait(700); this.tweenScale(ent, ent.scale, 0.01, 300); }
           await this.log(e.text, { hold: 900 });
@@ -585,8 +641,8 @@ export class BattleScene {
         case 'ball': await this.throwBall(e); break;
         case 'caught': this.audio.sfx('catch'); this.playerCh?.play('cheer', 1.4); await this.log(e.text, { hold: 1500 }); break;
         case 'escape': await this.log(e.text, { hold: 900 }); break;
-        case 'status': { const m = this.findMon(e.uid); if (ent) this.burst(ent.c.root.position.clone().setY(1.2), STATUS_COL[e.status], 30, 1, 'soft', 0.9); this.renderHUD(); void m; await this.log(e.text, { hold: 800 }); break; }
-        case 'stat': { if (ent) this.burst(ent.c.root.position.clone().setY(e.stages > 0 ? 0.3 : 2.2), e.stages > 0 ? 0xff9a4a : 0x6aa8ff, 26, 0.6, 'soft', 0.9, e.stages > 0 ? 2.4 : -1); this.audio.sfx(e.stages > 0 ? 'levelup' : 'back'); await this.log(e.text, { hold: 700 }); break; }
+        case 'status': { const m = this.findMon(e.uid); if (ent) this.burst(this.up(ent.c.root.position, 1.2), STATUS_COL[e.status], 30, 1, 'soft', 0.9); this.renderHUD(); void m; await this.log(e.text, { hold: 800 }); break; }
+        case 'stat': { if (ent) this.burst(this.up(ent.c.root.position, e.stages > 0 ? 0.3 : 2.2), e.stages > 0 ? 0xff9a4a : 0x6aa8ff, 26, 0.6, 'soft', 0.9, e.stages > 0 ? 2.4 : -1); this.audio.sfx(e.stages > 0 ? 'levelup' : 'back'); await this.log(e.text, { hold: 700 }); break; }
         case 'xp': {
           const m = this.findMon(e.uid);
           if (m && this.huds.get(m.uid)) this.fillHud(this.huds.get(m.uid), m, 0);
@@ -597,12 +653,12 @@ export class BattleScene {
           this.audio.sfx('levelup');
           if (ent) {
             const p = ent.c.root.position;
-            this.burst(p.clone().setY(0.6), 0xfff0a0, 50, 1.1, 'star', 1.1, 2.8); this.burst(p.clone().setY(1.2), 0xffffff, 30, 0.8, 'soft', 0.9, 1.5);
+            this.burst(this.up(p, 0.6), 0xfff0a0, 50, 1.1, 'star', 1.1, 2.8); this.burst(this.up(p, 1.2), 0xffffff, 30, 0.8, 'soft', 0.9, 1.5);
             if (!ent.c.root.getObjectByName('sternstufe')) { const aura = new THREE.Mesh(new THREE.SphereGeometry(1.1, 18, 12), glowMaterial(0xffe27a, 0.18)); aura.name = 'sternstufe'; aura.position.y = 0.9; aura.scale.set(1, 1.15, 1); ent.c.root.add(aura); }
           }
           await this.log(e.text, { hold: 1200 }); break;
         }
-        case 'levelup': { this.audio.sfx('levelup'); if (ent) this.burst(ent.c.root.position.clone().setY(0.5), 0xffe080, 40, 0.8, 'star', 1, 2.5); this.renderHUD(); await this.log(e.text, { hold: 1000 }); break; }
+        case 'levelup': { this.audio.sfx('levelup'); if (ent) this.burst(this.up(ent.c.root.position, 0.5), 0xffe080, 40, 0.8, 'star', 1, 2.5); this.renderHUD(); await this.log(e.text, { hold: 1000 }); break; }
         case 'learn': case 'learnFull': await this.log(e.text, { hold: 900 }); break;
         case 'statusBlock': case 'cure': case 'miss': case 'immune': case 'item': case 'text': case 'run': {
           if (e.t === 'item') this.audio.sfx('item');
@@ -632,8 +688,15 @@ export class BattleScene {
     this.audio.sfx('throw');
     const ball = ballModel(ITEMS[e.item]?.color ?? 0xe9523f, 0.22);
     this.root.add(ball);
-    const from = new THREE.Vector3(-5, 1.8, 5), to = foe.c.root.position.clone().setY(1.2);
-    await new Promise(res => { const t0 = performance.now(); const step = () => { const u = Math.min(1, (performance.now() - t0) / 600); ball.position.lerpVectors(from, to, u); ball.position.y += Math.sin(u * Math.PI) * 2.2; ball.rotation.x += 0.4; if (u < 1) requestAnimationFrame(step); else res(); }; step(); });
+    const from = this.up(new THREE.Vector3(-5, 0, 5), 1.8), to = this.up(foe.c.root.position, 1.2);
+    // Wurf mit Leuchtspur: heller Schweif + Glitzer hinter der Kapsel
+    const trail = new Trail(0xffb020), glow = new THREE.Mesh(new THREE.SphereGeometry(0.42, 12, 10), glowMaterial(0xfff2b0, 0.45));
+    ball.add(glow); this.root.add(trail.mesh);
+    await new Promise(res => { const t0 = performance.now(); const step = () => { const u = Math.min(1, (performance.now() - t0) / 600); ball.position.lerpVectors(from, to, u); ball.position.y += Math.sin(u * Math.PI) * 2.2; ball.rotation.x += 0.4;
+      trail.push(ball.position, this.root.worldToLocal(this._v.copy(this.camera.position))); if (Math.random() < 0.45) this.burst(ball.position.clone(), 0xfff0a0, 2, 0.25, 'star', 0.5, 0.4);
+      if (u < 1) requestAnimationFrame(step); else res(); }; step(); });
+    ball.remove(glow); glow.geometry.dispose(); glow.material.dispose();
+    trail.fade(this.root);
     this.audio.sfx('ballOpen');
     this.burst(to, 0xffffff, 30, 1, 'star', 0.6);
     await this.tweenScale(foe, foe.scale, 0.01, 260);
@@ -679,8 +742,8 @@ export class BattleScene {
     this.hudEl.querySelectorAll('.bhud').forEach(e => e.remove());
     this.menuEl?.remove(); this.menuEl = null;
     const ent = this.spawnModel(m, 0, 0, false);
-    ent.c.root.position.set(0, 0, 0); ent.c.root.rotation.y = 0.4;
-    this.camTarget = { pos: new THREE.Vector3(0, 2, 6.5), look: new THREE.Vector3(0, 1.2, 0), speed: 3 };
+    ent.c.root.position.set(0, this.floorAt(0, 0), 0); ent.c.root.rotation.y = 0.4;
+    this.camTarget = { pos: this.up(new THREE.Vector3(0, 0, 6.5), 2), look: this.up(new THREE.Vector3(), 1.2), speed: 3 };
     this.audio.stopMusic();
     const ok = await this.ui.ask([{ who: '', text: 'Nanu? ' + (m.nick || SPECIES[from].name) + ' entwickelt sich!' }], ['Entwicklung zulassen', 'Abbrechen'], { cancelIndex: 1 });
     if (ok !== 0) { await this.ui.say([{ text: (m.nick || SPECIES[from].name) + ' hat sich nicht entwickelt.' }]); return; }
@@ -688,7 +751,7 @@ export class BattleScene {
     for (let i = 0; i < 14; i++) {
       ent.c.setTint(1, 1, 1);
       ent.c.root.scale.setScalar(ent.scale * (1 + Math.sin(i * 0.9) * 0.15));
-      this.burst(new THREE.Vector3(0, 1, 0), 0xffffff, 10, 1.2, 'star', 0.8);
+      this.burst(this.up(new THREE.Vector3(), 1), 0xffffff, 10, 1.2, 'star', 0.8);
       await wait(Math.max(60, 180 - i * 8));
     }
     await this.game.ui.fade(true, true);
@@ -696,12 +759,12 @@ export class BattleScene {
     this.game.save.dex[to] = 2;
     this.removeModel(m.uid);
     const ne = this.spawnModel(m, 0, 0, false);
-    ne.c.root.position.set(0, 0, 0); ne.c.root.rotation.y = 0.4; ne.c.setTint(0.6, 0.6, 0.6);
+    ne.c.root.position.set(0, this.floorAt(0, 0), 0); ne.c.root.rotation.y = 0.4; ne.c.setTint(0.6, 0.6, 0.6);
     await this.game.ui.fade(false, true);
     for (let i = 0; i < 10; i++) { ne.c.setTint(0.6 - i * 0.06, 0.6 - i * 0.06, 0.6 - i * 0.06); await wait(60); }
     ne.c.setTint(0, 0, 0);
     this.audio.sfx('catch'); ne.c.play('happy', 1.2);
-    this.burst(new THREE.Vector3(0, 1.2, 0), 0xffe080, 60, 1.6, 'star', 1.4, 2);
+    this.burst(this.up(new THREE.Vector3(), 1.2), 0xffe080, 60, 1.6, 'star', 1.4, 2);
     await this.ui.say([{ text: 'Glückwunsch! Dein ' + SPECIES[from].name + ' hat sich zu ' + SPECIES[to].name + ' entwickelt!' }]);
     for (const id of learned) await this.ui.say([{ text: (m.nick || SPECIES[to].name) + ' hat ' + MOVES[id].name + ' gelernt!' }]);
     for (const id of offers) await this.game.offerMove(m, id);
@@ -712,9 +775,12 @@ export class BattleScene {
     for (const [uid] of this.models) this.removeModel(uid);
     for (const f of this.fx) { this.root.remove(f.pts); f.pts.geometry.dispose(); f.pts.material.dispose(); }
     this.fx = [];
-    if (this.root) { this.scene.remove(this.root); disposeTree(this.root); this.root = null; }
+    if (this.root) { this.root.parent?.remove(this.root); disposeTree(this.root); this.root = null; }
+    for (const o of this.hidden) o.visible = true;
+    this.hidden = []; this.inWorld = false; this.mounted = false;
     this.trainers = [];
   }
+  get focus() { return this.root ? this.root.position : this._v.set(0, 0, 0); }
   update(dt) {
     if (!this.active) return;
     for (const [, e] of this.models) e.c.update(dt);
@@ -727,22 +793,73 @@ export class BattleScene {
       f.pts.material.opacity = Math.max(0, 1 - f.t / f.life);
       if (f.t >= f.life) { this.root?.remove(f.pts); f.pts.geometry.dispose(); f.pts.material.dispose(); this.fx.splice(i, 1); }
     }
-    const k = Math.min(1, dt * this.camTarget.speed);
-    this.camera.position.lerp(this.camTarget.pos, k);
+    const k = Math.min(1, dt * this.camTarget.speed), cam = this.camera;
+    this.camLocal.lerp(this.camTarget.pos, k);
     this.lookCur.lerp(this.camTarget.look, k);
+    cam.position.copy(this.camLocal);
     // gentle idle sway
     const t = performance.now() / 1000;
-    this.camera.position.x += Math.sin(t * 0.4) * 0.004;
-    this.camera.lookAt(this.lookCur);
-    if (this.shake > 0) { this.shake -= dt; this.camera.position.x += (Math.random() - 0.5) * this.shake; this.camera.position.y += (Math.random() - 0.5) * this.shake * 0.6; }
+    cam.position.x += Math.sin(t * 0.4) * 0.12;
+    if (this.shake > 0) { this.shake -= dt; cam.position.x += (Math.random() - 0.5) * this.shake; cam.position.y += (Math.random() - 0.5) * this.shake * 0.6; }
+    if (this.inWorld && this.root) {
+      // Bühnenkoordinaten → Welt; die Kamera bleibt über Gelände und Wasser
+      this.root.localToWorld(cam.position);
+      const gy = this.groundY(cam.position.x, cam.position.z) + 0.9;
+      if (cam.position.y < gy) cam.position.y = gy;
+      cam.lookAt(this.root.localToWorld(this._v.copy(this.lookCur)));
+    } else cam.lookAt(this.lookCur);
   }
 }
 
 const STATUS_COL = { brand: 0xff7a2a, gift: 0xa060ff, schlaf: 0x9ab0c8, paralyse: 0xffe040, frost: 0xa8f0ff };
-function shadeCss(hex) { const c = new THREE.Color(hex); c.multiplyScalar(0.72); return '#' + c.getHexString(); }
+// Ein Eintrag im Befehlsmenü: Symbolfeld + Name (+ Zusatzzeile)
+function cmd(cls, icon, label, sub, attrs = {}, tint = null) {
+  return h('button.bact.' + cls + '.focusable', attrs, h('span.ico', tint ? { style: { background: tint } } : {}, icon), h('span.lbl', {}, label, sub ? h('small', {}, sub) : null));
+}
+const back = (fn) => cmd('backbtn', '↩', 'Zurück', null, { onclick: fn });
+function monCmd(m, extra, attrs) {
+  const max = maxHp(m), sp = SPECIES[m.id];
+  return h('button.bact.team.focusable' + (m.hp <= 0 ? '.out' : ''), attrs, h('span.ico', {}, TYPES[sp.type].icon),
+    h('span.lbl', {}, (m.nick || sp.name) + '  Lv. ' + m.lv, hpBar(m.hp, max), h('small', {}, m.hp + '/' + max + ' KP' + (extra ? ' · ' + extra : ''))));
+}
 function catchHint(scene, ball) {
   const foe = scene.b.sides[1].team.find(m => m.hp > 0);
   if (!foe) return '';
   const r = catchChance(scene.b, foe, ball);
   return r >= 1 ? 'sicher' : r > 0.55 ? 'sehr hoch' : r > 0.3 ? 'hoch' : r > 0.15 ? 'mittel' : 'gering';
+}
+
+// Leuchtender Schweif hinter einer geworfenen Kapsel: ein Band aus den letzten
+// Positionen, zur Kamera gedreht, vorne breit und hell, hinten schmal.
+class Trail {
+  constructor(color, n = 18, width = 0.13) {
+    this.n = n; this.w = width; this.pts = [];
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 6), 3));
+    const a = new Float32Array(n * 2); for (let i = 0; i < n; i++) a[i * 2] = a[i * 2 + 1] = i / (n - 1);
+    geo.setAttribute('fade', new THREE.BufferAttribute(a, 1));
+    const idx = []; for (let i = 0; i < n - 1; i++) { const k = i * 2; idx.push(k, k + 1, k + 2, k + 1, k + 3, k + 2); }
+    geo.setIndex(idx);
+    this.mat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+      uniforms: { color: { value: new THREE.Color(color) }, alpha: { value: 1 } },
+      vertexShader: 'attribute float fade; varying float f; void main(){ f = fade; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      fragmentShader: 'uniform vec3 color; uniform float alpha; varying float f; void main(){ gl_FragColor = vec4(mix(color, vec3(1.0), pow(f, 6.0)) * f * f * 0.8 * alpha, 1.0); }' });
+    this.mesh = new THREE.Mesh(geo, this.mat); this.mesh.frustumCulled = false;
+  }
+  push(p, eye) {
+    this.pts.push(p.clone()); if (this.pts.length > this.n) this.pts.shift();
+    const pos = this.mesh.geometry.attributes.position, L = this.pts.length, side = new THREE.Vector3(), dir = new THREE.Vector3(), view = new THREE.Vector3();
+    for (let i = 0; i < this.n; i++) {
+      const q = this.pts[Math.max(0, L - this.n + i)] || this.pts[0], q2 = this.pts[Math.min(L - 1, Math.max(1, L - this.n + i + 1))] || q;
+      dir.subVectors(q2, q); if (dir.lengthSq() < 1e-6) dir.set(1, 0, 0);
+      side.crossVectors(dir, view.subVectors(eye, q)).normalize().multiplyScalar(this.w * (i / (this.n - 1)));
+      pos.setXYZ(i * 2, q.x + side.x, q.y + side.y, q.z + side.z); pos.setXYZ(i * 2 + 1, q.x - side.x, q.y - side.y, q.z - side.z);
+    }
+    pos.needsUpdate = true;
+  }
+  fade(parent, ms = 260) {
+    const t0 = performance.now();
+    const step = () => { const u = Math.min(1, (performance.now() - t0) / ms); this.mat.uniforms.alpha.value = 1 - u; if (u < 1) requestAnimationFrame(step); else { parent?.remove(this.mesh); this.mesh.geometry.dispose(); this.mat.dispose(); } };
+    step();
+  }
 }

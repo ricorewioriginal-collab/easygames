@@ -182,3 +182,11 @@ Jede der 16 Stadtregionen besitzt zwei priorisierte Elementtypen (z. B. Glutland
 Die sechzehn Stadtregionen erhalten jeweils eine eingefärbte Bodenfläche und typabhängige 3D-Landschaftsmerkmale sowie sieben zusätzliche ansprechbare Bewohner, davon jeweils einen regionalen Professor (insgesamt 112 NPCs, 16 Professoren). Spielbeginn: Neben dem Startpunkt steht Professor Ulme; vor der Glaskuppel liegen drei räumlich anklickbare Starterbälle. Man muss Ulme zuerst ansprechen, bevor ein Starter gewählt werden kann. Das Menü wählt nicht mehr unmittelbar nach dem Spielstart den Starter aus. Die unabhängige Schattengilde nutzt einen violett-orangenen Heißluftballon und das originale katzenartige Taschi **Schnurrik**; vier Fangaktionen gegen wilde Taschis können durch Kämpfe verhindert werden. Gewinne werden über bestehende Speicherflags erfasst. Der Katalog umfasst nun **214 Arten** (209 Basisarten, 4 legendäre Wächter, Schnurrik). Diese neuen prozeduralen Assets sind keine Übernahme von Pokémon, Team Rocket oder Mauzi.
 
 **Offen:** Die Stadtregionen teilen noch eine zusammenhängende 3D-Karte und viele Figurenmodelle benutzen gemeinsame Formen. Eine wirkliche Multi-Map-Welt mit eigenständigen Städten/Innenräumen und eine vollständig dramaturgische Schattengilde-Kampagne sind noch nicht implementiert. Syntaxchecks sind keine Laufzeit-/Mobile-Tests.
+
+## Kampf im Konsolen-Stil (November 2026)
+
+- **Kampf in der offenen Welt:** Draußen findet der Kampf direkt in der Weltszene statt (`BattleScene.buildWorldStage`), ausgerichtet vom Spieler zum Gegner, auch auf Flüssen und Seen beim Surfen (`World.waterAt`). Taschis und Leute in der Nähe werden ausgeblendet; Innenräume, Turm, Raids und Online-Kämpfe nutzen weiter die Bühne.
+- **Befehlsmenü rechts unten** (Kampf, Taschis, Tasche, Flucht mit Symbolen, gelbe Auswahl mit Pfeil), Textleiste unten, kompakte Plaketten mit „Lv.“, ♂/♀ (`genderOf`, nur Anzeige), Typ-Symbol, KP-Zahl in der Leiste und Team-Kapselleiste.
+- **Welt:** Namensschilder über wilden Taschis (Level, Geschlecht, ◉ gefangen), wilde Taschis lassen sich ansprechen (Aktion = Kampf), Begleiter-Plakette links unten. Wurf mit Leuchtspur (`Trail`).
+- **Taschidex:** Raster mit Bildern, großes 3D-Modell mit Nummer und Name daneben.
+- Test: `tests/e2e/battlestyle.mjs`.
