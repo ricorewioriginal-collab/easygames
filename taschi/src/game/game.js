@@ -27,6 +27,7 @@ import { TYPES } from '../data/types.js';
 import { TRAINERS, GUILD_BATTLES, GUILD_MEMBERS, RIVAL_STAGES, rivalTrainer, trainerHeld, rematchTrainer } from '../data/trainers.js';
 import * as Daily from '../logic/daily.js';
 import * as Ride from '../logic/ride.js';
+import { preloadModels } from '../engine/models.js';
 const nameOf = (m) => m.nick || SPECIES[m.id].name;
 import { ULME, GUILD_SCENES, LEAGUE_FINALE, CREDITS, CHAPTERS, RIVAL, professorLines } from '../data/story.js';
 import { makeMonster, healMonster, maxHp, evolve, teachMove } from '../logic/monster.js';
@@ -94,6 +95,7 @@ export class Game {
   async boot(progress) {
     progress(0.2, 'Welt vorbereiten …');
     await this.world.loadRegion(0, 'start', (p, t) => progress(0.2 + p * 0.7, t));
+    setTimeout(() => preloadModels(), 4000);   // 3D-Modell-Taschis im Hintergrund laden
     this.world.buildPlayer();
     this.world.player.root.visible = false;
     progress(1, 'Bereit');

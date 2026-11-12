@@ -10,6 +10,7 @@ import { REGIONS } from '../data/regions.js';
 import { createBattle, runTurn, replace, playerOptions, activeMon, targetsFor, catchChance } from '../logic/battle.js';
 import { maxHp, xpToNext, evolve, replaceMove } from '../logic/monster.js';
 import { createCreature, displayScale } from '../engine/creatures.js';
+import { loadSpeciesModel } from '../engine/models.js';
 import { WEATHER, weatherText } from '../logic/traits.js';
 import { createCharacter, lookForRole } from '../engine/characters.js';
 import { vegetationGeometry, rockGeometry, MATERIALS } from '../engine/vegetation.js';
@@ -257,6 +258,9 @@ export class BattleScene {
     this.active = true; this.models.clear(); this.trainers = []; this.fx = [];
     this.menuEl = null; this.logEl = null;
     const indoor = !!opts.indoor;
+    // 3D-Modelle beider Teams vorher laden (höchstens 4 s), damit niemand unsichtbar auftaucht
+    const team0 = opts.playerTeam || save.team;
+    await Promise.race([Promise.all([...team0, ...(opts.foeTeam || [])].map(m => loadSpeciesModel(m.id).catch(() => null))), new Promise(r => setTimeout(r, 4000))]);
     this.buildStage(opts.region, indoor);
     const b = createBattle({ rng: g.rng, kind: opts.kind, format: opts.format, canRun: opts.canRun, canCatch: opts.canCatch, night: g.isNight(), dark: indoor, weather: indoor ? null : g.world.weather, starUnlocked: (save.badges || 0) >= 1,
       player: { team: opts.playerTeam || save.team, bag: opts.playerBag || save.bag, name: save.player.name }, foe: { team: opts.foeTeam, ai: opts.ai ?? 0, trainer: opts.kind !== 'wild', name: opts.trainerName || '', items: { ...(opts.items || {}) }, star: !!opts.foeStar } });

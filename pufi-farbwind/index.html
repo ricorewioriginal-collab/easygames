@@ -10,7 +10,7 @@
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#262a45;color:#fff6e2;font-family:'Trebuchet MS',system-ui,sans-serif}
 body{height:100dvh;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-button:focus-visible{outline:3px solid #ffe7a0;outline-offset:2px}
+button:focus-visible,html.eg-pad #overlay button:focus{outline:3px solid #ffe7a0;outline-offset:2px}
 [hidden]{display:none!important}
 main{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#262a45}
 body.portrait main{align-items:flex-start;padding-top:calc(46px + env(safe-area-inset-top))}
@@ -123,6 +123,6 @@ h1{margin:4px 0 8px;font-size:clamp(24px,5.4vw,40px);line-height:1.05;color:#ffe
 <script src="./game.js"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="pufi-farbwind" data-prefix="easygames.pufi-farbwind" data-mount="#cloudMount" data-hint="Mit Google anmelden: Inseln, Bestwerte und Bonus-Guthaben geräteübergreifend speichern." defer></script>
 <script>if('serviceWorker' in navigator&&location.protocol!=='file:'){addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script>
-<script src="../gamepad.js" data-pad="info" data-pad-labels="a=Springen/flattern; x=Zunge; b=Zielen/werfen; rs=Zielt direkt; start=Pause" defer></script>
+<script src="../gamepad.js" data-pad="a=Space/Enter b=KeyC/Escape x=KeyX y=KeyS lb=KeyX rb=KeyC lt=KeyX rt=KeyC select=KeyM start=Escape rs=none" data-pad-labels="ls=Laufen · in Menüs wählen; rs=Umsehen · beim Zielen: Ei zielen; dpad=Laufen · in Menüs wählen; a=Springen (halten = flattern) · Bestätigen; b=Ei zielen/werfen · Zurück; x=Zunge (mit ↑ schräg); y=Ei legen · Stampfen; lb=Zunge; rb=Ei zielen/werfen; lt=Zunge; rt=Ei zielen/werfen; select=Musik an/aus; start=Pausemenü · Fenster schließen" defer></script>
 <script src="../egstat.js" defer></script>
 </body></html>
