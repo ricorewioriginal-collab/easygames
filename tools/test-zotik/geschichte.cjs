@@ -40,7 +40,7 @@ const BOT = () => { const Z = __zotik, pl = Z.pl; const B = window.B = { log: []
     L('  Mira: ' + await ev(() => B.use(B.npc('mira')))); await w(2200); await settle(2000); L('  → ' + await ev(() => B.quest() + ' · Stufe ' + __zotik.S().stage + ' · Gruppe ' + __zotik.S().party));
   } else { await ev(n => { const S = __zotik.S(); S.stage = 8; S.fl.naut = 1; S.fl.bridge = 1; S.lvl = 6 + n * 2; for (const c of ['lyra', 'nia', 'rovan']) __zotik.joinParty(c); for (let k = 2; k < n; k++) S.cd[k] = { st: 7, k: 0, b: [0, 0, 0], ord: 0, bd: 1, fin: 1, arr: 1, e1: 1, e2: 1 }; }, FROM); }
   for (let n = Math.max(2, FROM); n <= TO; n++) {
-    await ev(n => __zotik.travel(n), n); await w(900); await flightSkip(); await p.waitForFunction(n => __zotik.ch === n && __zotik.mode === 'play', n, { timeout: 120000 }).catch(() => L('  !! Welt ' + n + ' nicht erreicht'));
+    await ev(n => { __zotik.X.jr = "fly"; __zotik.travel(n); }, n); await w(900); await flightSkip(); await p.waitForFunction(n => __zotik.ch === n && __zotik.mode === 'play', n, { timeout: 120000 }).catch(() => L('  !! Welt ' + n + ' nicht erreicht'));
     await w(2200); await settle(2400); await w(7500); await settle(1500);
     const C = await ev(n => ({ name: __zotik.CHP[n].name, elder: __zotik.CHP[n].elder[0] }), n); L(`K${n} ${C.name}: ${await ev(() => B.quest())}`);
     L('  Ältester: ' + await ev(nm => B.use(B.npc(nm)), C.elder)); L('  → ' + await ev(() => B.quest()));
