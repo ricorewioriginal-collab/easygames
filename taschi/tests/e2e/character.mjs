@@ -37,9 +37,10 @@ const shot = async (page, name) => { if (dir) await page.screenshot({ path: dir 
     for (let i = 0; i < 40 && !(await G(page, () => window.__taschi.state === 'world')); i++) { await page.keyboard.press('Enter'); await page.waitForTimeout(700); }
     await waitState(page, 'world');
     const p = await G(page, () => window.__taschi.save.player);
-    assert.equal(p.name, 'Kimi'); assert.equal(p.gender, 'm'); assert.equal(p.look.hat, 'trainercap'); assert.equal(p.look.top, 'trainer');
+    assert.equal(p.name, 'Kimi'); assert.equal(p.gender, 'm'); assert.equal(p.look.kk, 'Knight', 'Trainer-Stil ist Standard');
     await page.waitForTimeout(1200);
     await shot(page, '12-world-trainer');
+    await waitIdle(page); assert.equal(await G(page, () => !!window.__taschi.world.player.mixer), true, 'KayKit-Spielerfigur geladen');
     step('Charaktererstellung: Geschlecht, Name, Trainer-Look');
     assert.deepEqual(errors, []);
   } finally { await t.close(); }
@@ -71,6 +72,8 @@ const shot = async (page, name) => { if (dir) await page.screenshot({ path: dir 
     await page.locator('.tab', { hasText: 'Trainer' }).click();
     await page.getByText('Umkleiden').click();
     await page.waitForSelector('#creatorview canvas');
+    await page.getByText('Klassisch', { exact: true }).click();
+    await page.waitForTimeout(300);
     await page.getByText('Sonnenhut', { exact: true }).click();
     await page.waitForTimeout(400);
     await shot(page, '13-wardrobe');

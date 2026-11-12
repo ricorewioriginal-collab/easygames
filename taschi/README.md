@@ -101,6 +101,8 @@ Jede der 16 Städte hat ein eigenes Gesicht (Daten: `src/data/towns.js`, Modelle
 
 KayKit von Kay Lousberg (kaylousberg.com, CC0): In jeder Stadt stehen zwei reisende Abenteurer (KayKit Adventurers 2.0: Ritterin, Magier, Waldläuferin, Schatzsucher, Kundschafterin, Recke) mit Ausrüstung und eigenen Sätzen (`ADVENTURERS` in `src/data/towns.js`, Figur `src/engine/kaykit.js`). Die Figuren und Rig-Animationen werden aus `anmacha-quest-rpg/models/kk/` mitbenutzt und nicht kopiert. An jeder Arena hängen Schilde mit gekreuzten Schwertern, und neben der Treppe stehen Waffenständer (KayKit Fantasy Weapons Bits 1.0, `assets/kaykit/`). Schaubild: `node tests/e2e/kaykit.mjs <ordner> [region]`.
 
+Trainer-Look: Trainer, Arenaleiter, Champions und standardmäßig die Spielerfigur nutzen die KayKit-Abenteurer ohne Helm, Umhang und Waffen, umgefärbt (Kleidung, Akzent, Hautton per Paletten-Umfärbung) und mit eigener Ausrüstung: Abenteuerbrille am Stirnband, Rucksack und Gürtel mit Taschi-Kapseln (`trainerGear` in `src/engine/kaykit.js`, `TRAINER_MODELS`/`trainerLook` in `src/engine/characters.js`). Im Editor gibt es unter „Figur“ 🎒 Trainer (je drei Typen für Männlich und Weiblich, Divers alle sechs), Klassisch und Zotik. Schaubild und Editor-Test: `node tests/e2e/trainers.mjs <ordner>`.
+
 ## Steuerung und Menüs
 
 - PC: WASD/Pfeiltasten bewegen, E = Interaktion, Escape = Pause.
