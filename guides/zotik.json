@@ -257,6 +257,16 @@
    ]
   },
   {
+   "t": "Mehr in jeder Welt: Truhen, Kisten, Sprungblüten, Aufträge",
+   "list": [
+    "In jeder Kapitelwelt (Elaris bis Elyndra) liegen 12 Truhen, viele abseits des Wegs. Den Stand zeigt das Auftragsmenü („🧰 Truhen 5/12“).",
+    "Kisten, Krüge, Laternen, Eisblöcke und Ähnliches lassen sich mit einem Angriff zerschlagen: Sie geben Splitter, manchmal einen Trank.",
+    "Leuchtende Sprungblüten schleudern dich hoch. Über ihnen schweben goldene Splitterringe zum Einsammeln.",
+    "Zwei Bewohner je Welt haben einen kleinen Auftrag (Ausrufezeichen über dem Kopf): Sie haben etwas in der Wildnis verloren. Der Gegenstand leuchtet, sobald du den Auftrag angenommen hast. Zurückbringen bringt Splitter, Trank und Erfahrung.",
+    "Nach dem Weltboss feiert der Ort: Wimpelketten und schwebende Lichter in den Farben der Welt."
+   ]
+  },
+  {
    "t": "Fähigkeitenbaum",
    "p": [
     "Im Menü unter ✨ Fähigkeiten verteilst du Punkte. Mit jeder Stufe bekommst du einen Punkt; Rang 1 einer Fähigkeit kostet einen Punkt, Rang 2 zwei und so weiter bis Rang 5."
@@ -400,6 +410,7 @@
     "Löse das Rätsel der Welt.",
     "Besiege den Wächter (Mini-Boss).",
     "Stelle dich dem Weltboss.",
+    "Nach jedem Weltboss zeigt ein Rissbild, wie die Geschichte weitergeht: Kapitel 2 bis 8 geben je einen der sieben Kernsplitter, und die Vier Gesichter des Risses verraten nach und nach, was sie wollen.",
     "Berichte dem Ältesten – Kapitel geschafft, die nächste Welt öffnet sich im Weltentor.",
     "Etappen-Lösungen: Elaris – Erinnerungen Same, Regen, Blüte, Laub. Noctaris – Begegnung, Streit, Versöhnung, Abschied. Elyndra – Spiegel Elaris, Valdoria, Solmera, Aqualis. Gefahrenzonen: immer von Stein zu Stein laufen und jeden sofort entzünden. Verfolgungen: dranbleiben, der Flüchtende wartet an jeder Station."
    ]
@@ -425,12 +436,12 @@
    ],
    "list": [
     "Siegel 1 Der verlorene Wald: Der Waldhüter, dann Der erste Wächter. Drehungen 1, 3, 2.",
-    "Siegel 2 Die Stadt ohne Bewohner: Der leere Torwächter, dann Die Wurzel ohne Ende. Drehungen 2, 0, 1.",
+    "Siegel 2 Die überwucherte Stadt: Der leere Torwächter, dann Die Wurzel ohne Ende. Drehungen 2, 0, 1.",
     "Siegel 3 Das Meer über dem Himmel: Die Himmelsmuräne, dann Der Goldene Koloss. Drehungen 3, 1, 0.",
-    "Siegel 4 Der ewige Vulkan: Der Aschenkönig, dann Der Sandkönig. Drehungen 0, 2, 3.",
+    "Siegel 4 Die glühende Wüste: Der Aschenkönig, dann Der Sandkönig. Drehungen 0, 2, 3.",
     "Siegel 5 Noctaris Null: Der Nullschatten, dann Der Abyss. Drehungen 2, 2, 1.",
-    "Siegel 6 Elyndra Vorher: Das Echo der Quelle, dann Das Frostherz. Drehungen 1, 0, 3.",
-    "Siegel 7 Der Ort, den es nie gab: Der Namenlose, dann Der Feuerkern. Drehungen 3, 3, 2.",
+    "Siegel 6 Die gefrorene Quelle: Das Echo der Quelle, dann Das Frostherz. Drehungen 1, 0, 3.",
+    "Siegel 7 Der Kern, den es nie gab: Der Namenlose, dann Der Feuerkern. Drehungen 3, 3, 2.",
     "Die Drehungen gelten für die Scheiben von links nach rechts."
    ]
   },
@@ -439,7 +450,7 @@
    "list": [
     "Keshs Bogen (Nia, Solmera): Lagerfeuer-Gespräch „Meisterin Kesh“ (nach Kapitel 2), dann in Solmera das 🏹-Zeichen am Weg ansprechen und den Sandwächter besiegen. Lohn: 500 Splitter, Bindung +20.",
     "Rovans alter Posten (Rovan, Frosthain): Gespräch „Der Schwur“ (nach Kapitel 4), dann das 🛡️-Zeichen in Frosthain. Gegner: die Frostgestalt der Flucht.",
-    "Ilvas Echo (Lyra, Noctaris): Gespräch „Ilva“ (nach Kapitel 3), dann das 💫-Zeichen in Noctaris. Gegner: Ilvas Schattenecho.",
+    "Ilvas Echo (Lyra, Noctaris): Gespräch „Ilva“ (nach Kapitel 6), dann das 💫-Zeichen in Noctaris. Gegner: Ilvas Schattenecho.",
     "Vexa in Elaris: einfach durchhalten oder ausweichen – sobald dein Leben knapp wird oder 30 Sekunden um sind, endet der Kampf mit einer Szene.",
     "Riss der Gesichter: 👁️-Zeichen in Astralis (Vexa und Korrod) und Elyndra (Mirrel und Ashen). Beide Gegner besiegen: +800 Splitter, +400 EP."
    ]
@@ -527,6 +538,7 @@
   {
    "t": "Die Pixelpforte – Kieselbach und der Turm der Farben",
    "steps": [
+    "Die Pixelpforte ist eine Kindheitserinnerung von Zotik: das Spiel auf Miras altem Kasten, das ein Riss verschluckt hat. Das Grau, das die Farben frisst, ist dasselbe Grau wie bei den Vier Gesichtern.",
     "Im bunten Würfelraum auf den leuchtenden Knopf treten.",
     "In Kieselbach mit Merle im Süden des Dorfs reden: Sie gibt den Auftrag und 3 Heilkräuter, danach lässt Bruno dich durch den Zaun.",
     "Bei Pia Heilkraut und Äther kaufen, bei Hanno im Gasthaus für 6 Münzen ausruhen. Die Truhe ganz rechts auf der Wiese hält 2 Heilkräuter.",
