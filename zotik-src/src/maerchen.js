@@ -87,7 +87,18 @@ export function createMaerchen(C) {
       mist(x, z, r) { for (let i = 0; i < 6; i++) { const s = glow(0xe8f4ff, r * .9, x + Math.cos(i) * r * .5, 1.2, z + Math.sin(i) * r * .4, .22); b.g.add(s); A.move(s); const x0 = s.position.x; C.animObjs.push({ fn(t) { s.position.x = x0 + Math.sin(t * .3 + i) * 1.6; } }); } },
       climbTower(cx, cz, top, S, D) {   // Glockenturm als Plattform (Wand von unten, Boden von oben) und acht Vorsprünge spiralförmig nach oben
         b.box(cx, 0, cz, 5.2, top, 5.2, S, { mat: { r: .95 } }); C.PLAT.push({ x: cx, z: cz, hx: 2.6, hz: 2.6, top, th: top + 1 });
-        b.box(cx, top, cz, 5.6, .3, 5.6, D); for (const [dx, dz] of [[-2.6, -2.6], [2.6, -2.6], [-2.6, 2.6], [2.6, 2.6]]) b.box(cx + dx, top, cz + dz, .35, 2.6, .35, D); b.box(cx, top + 2.6, cz, 5.8, .4, 5.8, 0x4a5a6a); b.cone(cx, top + 3, cz, 3.6, 3.4, 0x4a5a6a);
+        // gotisch: Strebepfeiler, Spitzbogenfenster, offene Glockenstube mit Pfeilern, Wasserspeier, Fialen und hoher Spitzhelm
+        const CR = [[-1, -1], [1, -1], [-1, 1], [1, 1]], DK = 0x2a2a34, SL = 0x4a5a6a;
+        for (const [sx, sz] of CR) { b.box(cx + sx * 2.75, 0, cz + sz * 2.75, 1, top * .55, 1, D); b.box(cx + sx * 2.7, top * .55, cz + sz * 2.7, .7, top * .4, .7, D); b.cone(cx + sx * 2.7, top * .95, cz + sz * 2.7, .45, 1, D, { lo: 1 }); }
+        for (const [nx, nz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) for (const [h, k] of [[top * .28, 1.5], [top * .62, 1.9]]) for (const o of [-.75, .75]) { const ry = nx ? Math.PI / 2 : 0, x = cx + nx * 2.62 + (nz ? o : 0), z = cz + nz * 2.62 + (nx ? o : 0);
+          b.box(x, h, z, .55, k, .08, DK, { ry, cast: false }); const t = b.cone(x, h + k, z, .28, .55, DK, { cast: false, lo: 1, rz2: .04 }); t.rotation.y = ry; }
+        b.box(cx, top, cz, 5.6, .3, 5.6, D);
+        for (const [sx, sz] of CR) b.box(cx + sx * 2.5, top, cz + sz * 2.5, .6, 3.2, .6, D);
+        for (const [nx, nz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const ry = nx ? Math.PI / 2 : 0, x = cx + nx * 2.55, z = cz + nz * 2.55; const a = b.cone(x, top + 2.2, z, 2.2, 1.1, D, { cast: false, rz2: .15 }); a.rotation.y = ry;
+          const gq = b.box(cx + nx * 3.1, top - .5, cz + nz * 3.1, .35, .35, 1.1, 0x7a7468, { ry }); gq.rotation.x = -.25; }
+        b.box(cx, top + 3.2, cz, 6, .45, 6, D); for (let i = 0; i < 12; i++) { const t = i / 12 * 4 | 0, u = (i % 3 - 1) * 1.8, x = cx + [2.8, -2.8, u, u][t], z = cz + [u, u, 2.8, -2.8][t]; b.box(x, top + 3.65, z, .3, .6, .3, D); }
+        b.cone(cx, top + 3.65, cz, 2.3, 9, SL); for (const [sx, sz] of CR) b.cone(cx + sx * 2.65, top + 3.65, cz + sz * 2.65, .32, 2.4, D);
+        b.box(cx, top + 12.4, cz, .1, 1.2, .1, 0xd8b040, { cast: false }); b.box(cx, top + 12.9, cz, .6, .1, .1, 0xd8b040, { cast: false });
         for (let i = 0; i < 8; i++) { const a = i * .82, x = cx + Math.sin(a) * 4.5, z = cz + Math.cos(a) * 4.5, t = 1.15 * (i + 1); b.box(x, t - .5, z, 2.3, .5, 2.3, D, { ry: a }); b.box(x, 0, z, .5, t - .5, .5, S); C.PLAT.push({ x, z, hx: 1.1, hz: 1.1, top: t, th: .6 }); } }
     };
     return A;
@@ -144,7 +155,8 @@ export function createMaerchen(C) {
   }
   function npcModel(d) {
     if (d.ani) { const [kind, col, sc] = d.ani, P = FOE.has(kind) ? FOE.make(kind, col, false) : C.CR().makeKind(kind, col, false); P.root.scale.setScalar(sc); P.arms = [new T.Group()]; if (!P.legs || P.legs.length < 2) P.legs = [new T.Group(), new T.Group()]; if (!P.head) P.head = new T.Group(); return P; }
-    const P = C.makeVillager(d.v); if (d.extra) { if (d.extra === 'tail') P.tailCol = d.v.cloth; extra(P, d.extra, d.v.sc); } return P;
+    const W = { bow: { l: 'bow_withString' }, sword: { r: 'sword_1handed' }, staff: { r: 'staff' }, club: { r: 'hammer_B' }, pick: { r: 'hammer_A' } }[d.extra] || {};
+    const P = C.folk(d.name, d.v, { pal: 1, ...W, hideX: d.extra === 'tail' ? 'Leg|Cape' : '' }); if (d.extra && !W.r && !W.l) { if (d.extra === 'tail') P.tailCol = d.v.cloth; extra(P, d.extra, 1); } return P;
   }
   function piece(look, i) {
     const g = new T.Group();
@@ -181,9 +193,9 @@ export function createMaerchen(C) {
     const g = new T.Group();
     if (look === 'goat') { const P = FOE.make('rothund', 0xf0ece0, false); P.root.scale.setScalar(.6); g.add(P.root); for (const sx of [-1, 1]) { const hn = mk(G.cone, M(0x8a7a5a), sx * .1, .85, .62, .04, .22, .04); hn.rotation.x = -.5; g.add(hn); } for (const lx of [-.14, .14]) for (const lz of [-.25, .3]) g.add(mk(G.sph0, M(0xe8c040, { m: .8 }), lx, .04, lz, .06, .06, .06, false)); }
     else if (look === 'kaa') { const P = C.CR().makeKind('schlange', 0xb0a040, false); P.root.scale.setScalar(2.2); g.add(P.root); }
-    else if (look === 'crone') { const P = C.makeVillager({ cloth: 0x3a2a3a, cloth2: 0x2a2a2a, hair: 0xd0d0d0, hood: 1, sc: .9, wide: 1.1 }); g.add(P.root); g.add(mk(G.cyl, M(0x8a6a3a), .45, .75, .2, .3, .25, .3)); for (let i = 0; i < 4; i++) g.add(mk(G.sph, M(0xc8202a, { r: .3 }), .35 + (i % 2) * .2, .95, .1 + (i > 1 ? .2 : 0), .1, .1, .1)); }
-    else if (look === 'lady') { const P = C.makeVillager({ cloth: 0xd8e8f8, cloth2: 0x8ab0d8, hair: 0x8a5a2a, hs: 2, sc: 1 }); g.add(P.root); g.add(glow(0xd8f0ff, 4, 0, 1.2, 0, .6)); }
-    else { const P = C.makeVillager({ cloth: 0x3a5a8a, cloth2: 0xe8e0d0, hair: 0x6a4a2a, sc: .85 }); g.add(P.root); }
+    else if (look === 'crone') { const P = C.folk('Alte', { g: 'f', cloth: 0x3a2a3a, cloth2: 0x2a2a2a, cape: 0x2a1a2a, hair: 0xd0d0d0, sc: .9 }, { pal: 1 }); g.add(P.root); g.add(mk(G.cyl, M(0x8a6a3a), .45, .75, .2, .3, .25, .3)); for (let i = 0; i < 4; i++) g.add(mk(G.sph, M(0xc8202a, { r: .3 }), .35 + (i % 2) * .2, .95, .1 + (i > 1 ? .2 : 0), .1, .1, .1)); }
+    else if (look === 'lady') { const P = C.folk('Dame', { g: 'f', cloth: 0xd8e8f8, cloth2: 0x8ab0d8, hair: 0x8a5a2a, sc: 1 }, { pal: 1 }); g.add(P.root); g.add(glow(0xd8f0ff, 4, 0, 1.2, 0, .6)); }
+    else { const P = C.folk('Kind', { g: 'm', cloth: 0x3a5a8a, cloth2: 0xe8e0d0, hair: 0x6a4a2a, sc: .7 }, { pal: 1 }); g.add(P.root); }
     g.add(glow(0xffe08a, 2.4, 0, 1.6, 0, .45)); return g;
   }
 

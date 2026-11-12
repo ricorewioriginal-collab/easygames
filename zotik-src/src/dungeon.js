@@ -16,10 +16,11 @@ export function createDungeon({ T, TX, M, mk, G, glow, scene }) {
   const mats = {};
   const rockMat = (col, key) => mats['r' + col + key] || (mats['r' + col + key] = TX.tri(key || 'rock', col, { s: .4, gain: 2.4, n: 1.1, r: .95, e: 0x2a1c12, ei: 1 }));
   // Wände eines Rasters (g[i][j] === 1) als Instanzen; jede Zelle zufällig gedreht/gespiegelt, damit sich der Fels nicht wiederholt
-  function walls(g, N, cx, cz, cs, h, col, R, key) {
+  // clean: gemauerte Wände (Schloss, Kathedrale) als gerade Blöcke statt Fels
+  function walls(g, N, cx, cz, cs, h, col, R, key, clean) {
     let n = 0; for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) if (g[i][j]) n++;
-    const im = new T.InstancedMesh(rockGeo(cs, h), rockMat(col, key), n), o = new T.Object3D(); let k = 0;
-    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) if (g[i][j]) { o.position.set(cx(i), h / 2, cz(j)); o.rotation.set(0, (R() * 4 | 0) * Math.PI / 2, 0); o.scale.set(1, 1 + R() * .3, 1); o.updateMatrix(); im.setMatrixAt(k++, o.matrix); }
+    const im = new T.InstancedMesh(clean ? new T.BoxGeometry(cs, h, cs) : rockGeo(cs, h), clean ? TX.tri(key, col, { s: .5, gain: 1.8, r: .9 }) : rockMat(col, key), n), o = new T.Object3D(); let k = 0;
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) if (g[i][j]) { o.position.set(cx(i), h / 2, cz(j)); o.rotation.set(0, (R() * 4 | 0) * Math.PI / 2, 0); o.scale.set(1, clean ? 1 : 1 + R() * .3, 1); o.updateMatrix(); im.setMatrixAt(k++, o.matrix); }
     im.castShadow = true; im.receiveShadow = true; im.frustumCulled = false; return im;
   }
   const flameTex = (() => { const c = document.createElement('canvas'); c.width = 32; c.height = 64; const x = c.getContext('2d'), gr = x.createRadialGradient(16, 44, 2, 16, 40, 22);
