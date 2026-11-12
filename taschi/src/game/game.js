@@ -58,6 +58,7 @@ export class Game {
     this.input = new Input(this.settings);
     this.audio = new Audio(this.settings);
     this.ui = new UI(root, { audio: this.audio, input: this.input, settings: this.settings });
+    this.ui.voice.getPlayer = () => this.save?.player;
     this.preview = new Preview();
     this.store = createStore(localStorage);
     this.slot = this.store.selected();

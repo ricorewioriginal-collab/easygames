@@ -177,6 +177,6 @@ export function starterPreview(game, id) {
     const done = (v) => { game.ui.pop(screen); game.preview.detach(); resolve(v); };
     screen.onBack = () => done(false);
     game.ui.push(screen);
-    requestAnimationFrame(() => { game.preview.attach(el.querySelector('#starterview')); const c = game.preview.showCreature(id); c.play('happy', 1); game.audio.sfx('cry', { pitch: 380 + sp.speed * 2 }); });
+    requestAnimationFrame(() => { game.preview.attach(el.querySelector('#starterview')); const c = game.preview.showCreature(id); c.play('happy', 1); game.audio.sfx('cry', { id, sp }); });
   });
 }

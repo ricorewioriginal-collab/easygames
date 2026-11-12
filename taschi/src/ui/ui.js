@@ -78,7 +78,7 @@ export class FocusNav {
 export class UI {
   constructor(root, { audio, input, settings }) {
     this.root = root; this.audio = audio; this.input = input; this.settings = settings;
-    this.voice = new Voice(settings);
+    this.voice = new Voice(settings, audio);
     this.stack = [];
     this.toastBox = h('div.toasts'); root.append(this.toastBox);
     this.fadeEl = h('div#fade'); root.append(this.fadeEl);
@@ -169,12 +169,12 @@ export class UI {
         nameEl.className = 'name' + (/Gilde|Varga|Selma|Kett|Kora|Brix/.test(L.who || '') && guild !== false ? ' guild' : '');
         full = L.text; shown = 0; textEl.textContent = ''; next.style.visibility = 'hidden';
         onLine && onLine(L, i);
-        this.voice.speak(L.text, L.who);
+        this.voice.speak(L.text, L.who, L.mood);
         clearInterval(timer);
         timer = setInterval(() => {
           shown = Math.min(full.length, shown + Math.max(1, Math.round(speed / 30)));
           textEl.textContent = full.slice(0, shown);
-          if (shown % 3 === 0) this.audio.sfx('text');
+          if (!this.voice.tick(full[shown - 1], L.who, L.mood) && shown % 3 === 0) this.audio.sfx('text');
           if (shown >= full.length) { clearInterval(timer); lineDone(); }
         }, 1000 / Math.max(10, speed));
       };
