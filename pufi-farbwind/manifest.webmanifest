@@ -1,12 +1,12 @@
 {
-  "name": "Pufi & der Farbwind",
+  "name": "Pufi & der Farbwind 3D",
   "short_name": "Pufi",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#303552",
-  "theme_color": "#353857",
-  "description": "Insel-Jump-and-Run mit Flattersprung, Zunge und Eierwurf auf sechs Farbwind-Inseln.",
+  "background_color": "#1b1840",
+  "theme_color": "#2b2f5c",
+  "description": "3D-Insel-Abenteuer mit Flattersprung, Zunge, Eierwurf, Retro-Zonen und Bosskampf – plus Klassik 2D.",
   "icons": [
     {
       "src": "card.svg",
