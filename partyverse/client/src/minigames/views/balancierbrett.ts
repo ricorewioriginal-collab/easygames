@@ -7,9 +7,12 @@ import {
   MAX_HOLES,
   TARGET_R,
   activeHoles,
+  edgeR,
+  gustAt,
 } from '@shared/minigames/games/balancierbrett';
-import { glow, toon } from '../../render/materials';
+import { glow, textSprite, toon } from '../../render/materials';
 import type { MiniGameViewFactory } from '../viewTypes';
+import { makeMe, makeRivals, updateRivals, type Racer } from './rivals';
 
 const MAX_TILT = 0.3;
 
@@ -146,6 +149,98 @@ export const createView: MiniGameViewFactory<BoardState> = (ctx, initial) => {
   shadow.rotation.x = -Math.PI / 2;
   shadow.position.y = 0.04;
   board.add(shadow);
+  (ball.material as THREE.Material) = toon(ctx.me.color);
+
+  // Figuren balancieren auf ihren Kugeln: eigene vorne, Mitspieler halbdurchsichtig auf demselben Brett
+  const FIG = 0.5;
+  const me = makeMe(ctx, FIG);
+  board.add(me.group);
+  me.ring.visible = false;
+  const rivals = makeRivals(ctx, FIG * 0.9);
+  const ballGeo = new THREE.SphereGeometry(BALL_R, 20, 14);
+  const rivalBalls = rivals.map((r) => {
+    board.add(r.group);
+    r.ring.visible = false;
+    const b = new THREE.Mesh(
+      ballGeo,
+      new THREE.MeshBasicMaterial({
+        color: r.avatar.color,
+        transparent: true,
+        opacity: 0.45,
+        depthWrite: false,
+      }),
+    );
+    board.add(b);
+    return b;
+  });
+  interface Track {
+    x: number;
+    y: number;
+    cp: number;
+    falls: number;
+    over: boolean;
+  }
+  const track = (st: BoardState): Track => ({ x: st.px, y: st.py, cp: st.cp, falls: st.falls, over: false });
+  const meT = track(initial);
+  const rivT = rivals.map(() => track(initial));
+  /** Figur oben auf der Kugel (ballY = Kugelmitte, lokal) */
+  const ride = (r: Racer, st: BoardState, tr: Track, ballY: number): void => {
+    const lx = st.px;
+    const lz = -st.py;
+    const sp = Math.hypot(st.vx, st.vy);
+    r.group.position.set(lx, ballY + BALL_R * 0.95, lz);
+    if (st.over && !tr.over) {
+      tr.over = true;
+      r.rig.play(st.cp >= 6 ? 'celebrate' : 'cheer');
+    } else if (st.falls !== tr.falls) {
+      r.rig.play('shock');
+    } else if (st.cp !== tr.cp) {
+      r.rig.play('jump', { speed: 1.4 });
+    } else if (!st.over && st.fallT === 0 && r.rig.current !== 'jump' && r.rig.current !== 'shock') {
+      // Läuft auf der Kugel mit – je schneller sie rollt, desto schneller die Beine
+      if (sp > 0.6) r.rig.play('run', { loop: true, speed: Math.min(2.2, 0.5 + sp * 0.3) });
+      else r.rig.play('idle', { loop: true });
+    }
+    if (sp > 0.6) r.rig.faceTowards(Math.atan2(st.vx, -st.vy));
+    tr.x = st.px;
+    tr.y = st.py;
+    tr.cp = st.cp;
+    tr.falls = st.falls;
+  };
+
+  // Windböen-Pfeil auf dem Brett
+  const arrow = new THREE.Group();
+  const arrowMat = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0.7,
+    depthWrite: false,
+  });
+  const shaft = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.04, 0.7), arrowMat);
+  shaft.position.x = -0.6;
+  const headShape = new THREE.Shape();
+  headShape.moveTo(0, 0.9);
+  headShape.lineTo(1.5, 0);
+  headShape.lineTo(0, -0.9);
+  headShape.closePath();
+  const head = new THREE.Mesh(new THREE.ShapeGeometry(headShape), arrowMat);
+  head.rotation.x = -Math.PI / 2;
+  head.position.set(0.7, 0.02, 0);
+  arrow.add(shaft, head);
+  arrow.position.y = 0.08;
+  arrow.visible = false;
+  board.add(arrow);
+  let lastGustActive = false;
+  let windT = 0;
+
+  const popups: Array<{ sp: THREE.Sprite; t: number }> = [];
+  const popup = (text: string, color: string): void => {
+    const sp = textSprite(text, { color, size: 64, width: 1.8 });
+    ballRoot.getWorldPosition(sp.position);
+    sp.position.y += 2.2;
+    root.add(sp);
+    popups.push({ sp, t: 0 });
+  };
 
   let t = 0;
   let vx = 0;
@@ -154,6 +249,7 @@ export const createView: MiniGameViewFactory<BoardState> = (ctx, initial) => {
   let lastZ = -initial.py;
   let lastCp = initial.cp;
   let lastFalls = initial.falls;
+  let wasOver = false;
   let tiltX = 0;
   let tiltZ = 0;
   let fallVy = 0;
@@ -173,6 +269,53 @@ export const createView: MiniGameViewFactory<BoardState> = (ctx, initial) => {
       for (let i = 0; i < clouds.length; i++) {
         const c = clouds[i] as THREE.Group;
         c.position.y += Math.sin(t * 0.6 + i) * dt * 0.1;
+      }
+
+      // Brettrand bröckelt
+      const er = edgeR(s.tick);
+      const ek = er / BOARD_R;
+      disc.scale.set(ek, 1, ek);
+      top.scale.set(ek, ek, 1);
+      rim.scale.set(ek, ek, 1);
+      if (ek < 0.999 && Math.floor(t * 4) !== Math.floor((t - dt) * 4)) {
+        const a = t * 2.3;
+        board.localToWorld(wp.set(Math.cos(a) * er, 0, Math.sin(a) * er));
+        ctx.burst(wp, 0xc98a4b, 4);
+      }
+
+      // Windböe: Pfeil zeigt die Richtung (blinkt als Warnung, dann wandert er mit dem Wind)
+      const gu = gustAt(s, s.tick);
+      const g = gu.warn ?? gu.active;
+      arrow.visible = !!g;
+      if (g) {
+        arrow.rotation.y = g.a;
+        const blink = gu.warn ? 0.35 + 0.45 * (Math.floor(t * 8) % 2) : 0.85;
+        arrowMat.opacity = blink;
+        arrowMat.color.setHex(gu.active ? 0xbff4ff : 0xffffff);
+        const off = gu.active ? ((t * 3) % 1) * 1.5 - 0.75 : 0;
+        arrow.position.set(Math.cos(g.a) * off, 0.08, -Math.sin(g.a) * off);
+        arrow.scale.setScalar(gu.active ? 1.15 : 1);
+      }
+      if (gu.active && !lastGustActive) {
+        ctx.sfx('whoosh');
+      }
+      lastGustActive = !!gu.active;
+      if (gu.active) {
+        windT -= dt;
+        if (windT <= 0) {
+          windT = 0.06;
+          const g2 = gu.active;
+          const side = Math.sin(t * 37) * er;
+          // Windstreifen: von der Luv-Seite übers Brett
+          board.localToWorld(
+            wp.set(
+              -Math.cos(g2.a) * er + Math.sin(g2.a) * side * 0.6,
+              0.6,
+              Math.sin(g2.a) * er + Math.cos(g2.a) * side * 0.6,
+            ),
+          );
+          ctx.burst(wp, 0xe8fbff, 2);
+        }
       }
 
       const nh = Math.min(activeHoles(s.cp), s.holes.length);
@@ -211,6 +354,7 @@ export const createView: MiniGameViewFactory<BoardState> = (ctx, initial) => {
         q.setFromAxisAngle(axis, len / BALL_R);
         ballSpin.quaternion.premultiply(q);
       }
+      let ballY = BALL_R + 0.02;
       if (s.fallT > 0) {
         const k = s.fallT / 55;
         if (s.fallKind === 'hole') {
@@ -232,6 +376,27 @@ export const createView: MiniGameViewFactory<BoardState> = (ctx, initial) => {
         shadow.visible = true;
         shadow.position.set(lx, 0.04, lz);
       }
+      ballY = ballRoot.position.y;
+      ride(me, s, meT, ballY);
+      if (s.fallT > 0) me.group.position.set(ballRoot.position.x, ballY + BALL_R * 0.8, ballRoot.position.z);
+      me.group.scale.setScalar(ballRoot.scale.x < 0.9 && s.fallKind === 'hole' ? ballRoot.scale.x : 1);
+      me.rig.update(dt);
+      if (s.over && !wasOver) {
+        wasOver = true;
+        ctx.sfx('win');
+      }
+      for (let i = popups.length - 1; i >= 0; i--) {
+        const p = popups[i]!;
+        p.t += dt;
+        p.sp.position.y += dt * 1.3;
+        p.sp.material.opacity = Math.max(0, 1 - p.t);
+        if (p.t > 1) {
+          p.sp.removeFromParent();
+          p.sp.material.map?.dispose();
+          p.sp.material.dispose();
+          popups.splice(i, 1);
+        }
+      }
 
       // Ereignisse
       if (s.cp > lastCp) {
@@ -239,22 +404,44 @@ export const createView: MiniGameViewFactory<BoardState> = (ctx, initial) => {
         board.localToWorld(wp.set(lx, 0.8, lz));
         ctx.burst(wp, 0xffd23f, 22);
         lastCp = s.cp;
+        popup(s.lastBonus > 0 ? `+${100 + s.lastBonus}` : '+100', s.lastBonus >= 30 ? '#ffe066' : '#ffffff');
       }
       if (s.falls > lastFalls) {
         ctx.sfx('bad');
         board.localToWorld(wp.set(lx, 0.5, lz));
         ctx.burst(wp, 0x6a5cff, 16);
         lastFalls = s.falls;
+        popup('−40', '#ff8080');
       }
 
       // Kamera
       const asp = camera.aspect || 1.6;
-      const f = asp < 1.25 ? 1.25 / Math.max(0.45, asp) : 1;
+      const f = asp < 1.25 ? 1.08 / Math.max(0.45, asp) : 1;
       camera.position.set(0, 10.5 * f, 8.6 * f);
       camera.lookAt(0, -0.5, 0.2);
+      const fog = ctx.scene.fog as THREE.Fog | null;
+      if (fog) {
+        fog.near = 30 * f;
+        fog.far = 70 * f;
+      }
+    },
+    ghosts(states, dt) {
+      updateRivals(rivals, states, dt, (r, st, i) => {
+        const b = rivalBalls[i]!;
+        // Abgestürzte Mitspieler kurz ausblenden
+        const vis = st.fallT === 0;
+        r.group.visible = vis;
+        b.visible = vis;
+        b.position.set(st.px, BALL_R + 0.02, -st.py);
+        ride(r, st, rivT[i]!, BALL_R + 0.02);
+      });
+      rivalBalls.forEach((b, i) => {
+        if (states[i] == null) b.visible = false;
+      });
     },
     dispose() {
       ctx.scene.fog = null;
+      ballGeo.dispose();
     },
   };
 };
