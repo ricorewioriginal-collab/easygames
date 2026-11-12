@@ -27,7 +27,7 @@ import { THEMES, ENEMIES, CAPSULES } from './data.js';
 import * as L from './logic.js';
 import * as A from './assets.js';
 import { groundTex, blobTex } from './textures.js';
-import { makeSky, makeLiquid, addWind, wind, occ, makeParticles } from './shaders.js';
+import { makeSky, makeLiquid, addWind, addCutaway, wind, occ, makeParticles } from './shaders.js';
 import { Battle } from './battle.js';
 import { Fx } from './fx.js';
 
@@ -54,16 +54,23 @@ export const VIS = {
 const TREES = {
   xmas: [['grave/pine.glb', 1.5], ['grave/pine.glb', 1.8], ['town/tree-high.glb', 1.0]],
   rock: [['grave/pine-fall.glb', 1.5], ['grave/pine-fall-crooked.glb', 1.5], ['town/tree-crooked.glb', 1.1]],
-  rap: [['dungeon/column.glb', 1.5], ['dungeon/barrel.glb', 1.6], ['dungeon/rocks.glb', 1.2]],
-  static: [['dungeon/column.glb', 1.8], ['dungeon/rocks.glb', 1.4]],
+  rap: [['kkd/pillar.gltf', 0.45], ['kkd/barrel_large.gltf', 0.4], ['kkd/crates_stacked.gltf', 0.42], ['kkd/keg.gltf', 0.4]],
+  static: [['kkd/pillar_decorated.gltf', 0.42], ['kkd/pillar.gltf', 0.47], ['kkd/box_stacked.gltf', 0.26]],
   schlager: [['town/tree-high-round.glb', 1.0], ['town/tree.glb', 1.2], ['town/tree-high.glb', 0.9]],
   town: [['town/tree.glb', 1.1], ['town/tree-high.glb', 1.0], ['forest/tree.glb', 1.4], ['town/tree-high-round.glb', 1.0]]
 };
-export const treesFor = (key) => TREES[key.replace('ow_', '')] || TREES.town;
+// Oberwelt-Regionen vor Gruft und Turm: düstere Wälder statt Kerkermöbel
+const TREES_OW = { rap: [['grave/pine.glb', 1.5], ['town/tree-crooked.glb', 1.1], ['grave/pine-fall-crooked.glb', 1.4]], static: [['grave/pine-fall-crooked.glb', 1.4], ['grave/pine.glb', 1.6], ['forest/rocks-high.glb', 0.7]] };
+export const treesFor = (key) => (key.startsWith('ow_') && TREES_OW[key.slice(3)]) || TREES[key.replace('ow_', '')] || TREES.town;
+// Kerker aus dem KayKit Dungeon Pack (CC0): 4 Einheiten = 1 Feld
+const KKD = 0.25;
+const DUNGEON_FLOOR = ['rap', 'static'];
+const DUNGEON_TINT = { rap: '#ffffff', static: '#c4ccf0', xmas: '#dceeff', rock: '#ffb49a', schlager: '#ffd6e6' };
+const DUNGEON_BANNER = { rap: 'banner_patternA_red', static: 'banner_patternB_blue', xmas: 'banner_patternC_white', rock: 'banner_triple_red', schlager: 'banner_patternA_white' };
 const HOUSES = ['2Story_Mat', '1Story_GableRoof_Mat', '2Story_Sign_Mat', '1Story_Mat', '2Story_GableRoof_Mat'];
 export const STATIC_MODELS = ['town/tree.glb', 'town/tree-high.glb', 'town/tree-high-round.glb', 'town/tree-crooked.glb', 'town/rock-large.glb', 'town/road.glb', 'town/wall-block.glb',
   'town/fountain-round.glb', 'forest/tree.glb', 'forest/rocks-high.glb', 'grave/pine.glb', 'grave/pine-fall.glb', 'grave/pine-fall-crooked.glb', 'grave/crypt.glb',
-  'dungeon/wall.glb', 'dungeon/column.glb', 'dungeon/barrel.glb', 'dungeon/rocks.glb', 'dungeon/chest.glb', 'dungeon/gate.glb', 'dungeon/key.glb',
+  'dungeon/wall.glb', 'dungeon/column.glb', 'dungeon/barrel.glb', 'dungeon/rocks.glb', 'kkd/chest.gltf', 'kkd/chest_gold.gltf', 'dungeon/gate.glb', 'dungeon/key.glb',
   ...HOUSES.map(h => `bld_${h}.glb`), 'bld_1Story_Sign_Mat.glb', 'bld_2Story_Slim_Mat.glb'];
 export const QUALITY = [
   { dpr: 1, shadow: 0, bloom: false, samples: 0, grass: 0, parts: 120 },
@@ -71,7 +78,9 @@ export const QUALITY = [
   { dpr: 2, shadow: 2048, bloom: true, samples: 4, grass: 16, parts: 420 }];
 const WATER_LEVEL = -0.2;
 // Kamerastufen: [Neigung, Abstand] – nah hinter dem Helden bis Übersicht
-export const CAM_ZOOM = [[0.22, 4.8], [0.36, 6.8], [0.6, 10.5], [0.9, 15]];
+export const CAM_ZOOM = [[0.2, 3.8], [0.34, 5.8], [0.56, 9.5], [0.9, 15]];
+// Figuren auf der Karte kleiner als im Kampf: Häuser, Bäume und Wege wirken dadurch weit und groß
+export const FIELD_S = 0.72;
 const C = (c) => new THREE.Color(c);
 const smooth = (t) => t * t * (3 - 2 * t);
 function vhash(x, y) { const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return s - Math.floor(s); }
@@ -284,6 +293,7 @@ export class View {
     const theme = baseTheme(map.world ? 'town' : map.theme);
     const need = new Set(['town/road.glb', 'town/wall-block.glb', 'dungeon/wall.glb', 'forest/rocks-high.glb', 'town/rock-large.glb', 'grave/crypt.glb', 'bld_2Story_Slim_Mat.glb', 'bld_2Story_GableRoof_Mat.glb']);
     for (let y = 0; y < S.mh; y++) for (let x = 0; x < S.mw; x++) if (map.rows[y][x] === 'T') for (const t of treesFor(L.themeKeyAt(S, x, y))) need.add(t[0]);
+    if (!(map.world || map.town)) for (const f of ['wall', 'wall_cracked', 'floor_tile_large', 'floor_tile_large_rocks', 'floor_tile_big_grate', 'torch_mounted', DUNGEON_BANNER[map.theme] || 'banner_patternA_red', 'candle_triple']) need.add(`kkd/${f}.gltf`);
     if (map.town) { for (const h of HOUSES) need.add(`bld_${h}.glb`); need.add('bld_1Story_Sign_Mat.glb'); need.add('town/fountain-round.glb'); }
     const models = {};
     await Promise.all([...need].map(async p => { models[p] = await A.load(p); }));
@@ -331,12 +341,14 @@ export class View {
         const rp = h % 2 === 0 ? 'forest/rocks-high.glb' : 'town/rock-large.glb';
         add(rp, mtx(x, y + (h % 2 === 0 ? 0.25 : -0.15), z, 1.15, h * 1.1, 1.15 * 1.1));
       } else if (ch === '#') {
-        add(outdoorMap ? 'town/wall-block.glb' : 'dungeon/wall.glb', mtx(x, 0, z, 1.0, 0, 1.15));
+        if (outdoorMap) add('town/wall-block.glb', mtx(x, 0, z, 1.0, 0, 1.15));
       } else if (ch === 'p') {
         add('town/road.glb', mtx(x, y + 0.005, z, 1.0, 0));
       } else if ('hHDSM'.includes(ch)) bld.set(tx + ',' + ty, ch);
     }
-    for (const [path, list] of groups) this.addInstances(this.world, models[path], list, path.includes('tree') || path.includes('pine'), path.endsWith('road.glb'));
+    if (!outdoorMap) this.buildDungeon(S, add, mtx);
+    const tint = !outdoorMap && DUNGEON_TINT[map.theme] !== '#ffffff' ? C(DUNGEON_TINT[map.theme] || '#ffffff') : null;
+    for (const [path, list] of groups) this.addInstances(this.world, models[path], list, path.includes('tree') || path.includes('pine'), path.endsWith('road.glb'), path.startsWith('kkd/') ? tint : null, path.startsWith('kkd/') && !path.includes('floor'));
     // Häuser (Hafenau): zusammenhängende Dachreihen
     let bi = 0;
     const done = new Set();
@@ -521,11 +533,62 @@ export class View {
   }
 
   // Ein Modell (alle Teilnetze) vielfach zeichnen
-  addInstances(scene, gltf, list, windy, flat) {
+  // Kerker: Wände (zwei KayKit-Mauerstücke übereinander, Vorderseite zum Gang), Deckel, Bodenfliesen, Fackeln, Banner
+  buildDungeon(S, add, mtx) {
+    const map = S.map, theme = map.theme;
+    const wall = (x, y) => tile(x, y) === '#';
+    const tile = (x, y) => (x < 0 || y < 0 || x >= S.mw || y >= S.mh) ? '#' : map.rows[y][x];
+    const caps = [], torches = [];
+    let n = 0;
+    for (let ty = 0; ty < S.mh; ty++) for (let tx = 0; tx < S.mw; tx++) {
+      const cx = tx + 0.5, cz = ty + 0.5, h = vhash(tx * 3 + 1, ty * 5 + 2);
+      if (!wall(tx, ty)) {
+        if (DUNGEON_FLOOR.includes(theme) && tile(tx, ty) !== '~') {
+          const f = h < 0.08 ? 'floor_tile_large_rocks' : (h > 0.97 ? 'floor_tile_big_grate' : 'floor_tile_large');
+          add(`kkd/${f}.gltf`, mtx(cx, this.heightAt(cx, cz) - 0.012, cz, KKD, Math.floor(h * 4) * Math.PI / 2));
+        }
+        continue;
+      }
+      caps.push([cx, cz]);
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        if (wall(tx + dx, ty + dy)) continue;
+        const yaw = Math.atan2(dx, dy), hx = cx + dx * 0.375, hz = cz + dy * 0.375, hv = vhash(tx * 7 + dx * 3, ty * 11 + dy * 5);
+        add(hv < 0.2 ? 'kkd/wall_cracked.gltf' : 'kkd/wall.gltf', mtx(hx, 0, hz, KKD, yaw));
+        add('kkd/wall.gltf', mtx(hx, 1.0, hz, KKD, yaw));
+        const fx = cx + dx * 0.5, fz = cz + dy * 0.5;
+        if (++n % 7 === 0) { add('kkd/torch_mounted.gltf', mtx(fx, 1.05, fz, KKD * 1.5, yaw)); torches.push([fx + dx * 0.2, fz + dy * 0.2]); }
+        else if (n % 11 === 0) add(`kkd/${DUNGEON_BANNER[theme] || 'banner_patternA_red'}.gltf`, mtx(fx - dx * 0.08, 0.15, fz - dy * 0.08, KKD * 1.3, yaw));
+        else if (n % 17 === 0 && DUNGEON_FLOOR.includes(theme)) add('kkd/candle_triple.gltf', mtx(fx + dx * 0.15, this.heightAt(fx, fz), fz + dy * 0.15, KKD * 1.4, yaw));
+      }
+    }
+    // Deckel auf den Mauern: dunkler Stein, damit man von oben keine Lücken sieht
+    if (caps.length) {
+      const cm = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 0.06, 1), addCutaway(new THREE.MeshStandardMaterial({ color: C(palette(theme)[2]).multiplyScalar(0.55), roughness: 0.9 })), caps.length);
+      caps.forEach(([x, z], i) => cm.setMatrixAt(i, new THREE.Matrix4().makeTranslation(x, 2.0, z)));
+      cm.userData.ownGeo = cm.userData.ownMat = true;
+      cm.receiveShadow = true;
+      this.world.add(cm);
+    }
+    // Fackelflammen leuchten; nur einige echte Lichter (Leistung)
+    if (torches.length) {
+      const fm = new THREE.InstancedMesh(new THREE.ConeGeometry(0.06, 0.2, 8), addCutaway(new THREE.MeshBasicMaterial({ color: C('#ffb040').multiplyScalar(3), transparent: true, opacity: 0.9, depthWrite: false })), torches.length);
+      torches.forEach(([x, z], i) => fm.setMatrixAt(i, new THREE.Matrix4().makeTranslation(x, 1.42, z)));
+      fm.userData.ownGeo = fm.userData.ownMat = true;
+      this.world.add(fm);
+      const step = Math.max(1, Math.ceil(torches.length / (this.qi >= 2 ? 8 : 4)));
+      for (let i = 0; i < torches.length; i += step) {
+        const pl = new THREE.PointLight(C('#ffb060'), 5, 5, 1.8);
+        pl.position.set(torches[i][0], 1.5, torches[i][1]);
+        this.world.add(pl);
+      }
+    }
+  }
+  addInstances(scene, gltf, list, windy, flat, tint, cut) {
     gltf.scene.updateMatrixWorld(true);
     gltf.scene.traverse((o) => {
       if (!o.isMesh) return;
       let mat = o.material;
+      if (tint || cut) { mat = [].concat(mat)[0].clone(); if (tint) mat.color = mat.color.clone().multiply(tint); if (cut) addCutaway(mat); }
       if (windy) mat = addWind([].concat(mat)[0].clone(), 0.05, 2.0, true);
       if (flat) { mat = [].concat(mat)[0].clone(); mat.color = C('#9aa0b0'); mat.roughness = 0.85; }
       const im = new THREE.InstancedMesh(o.geometry, mat, list.length);
@@ -535,7 +598,7 @@ export class View {
       im.castShadow = !flat;
       im.receiveShadow = true;
       im.computeBoundingSphere();
-      if (windy || flat) im.userData.ownMat = true;
+      if (windy || flat || tint || cut) im.userData.ownMat = true;
       scene.add(im);
     });
   }
@@ -578,8 +641,8 @@ export class View {
           const rx = vhash(x * 13 + i, y * 7), rz = vhash(y * 11 + i, x * 5 + i);
           p.set(x + rx, 0, y + rz);
           p.y = this.heightAt(p.x, p.z) - 0.01;
-          const s = isObj ? 0.01 : 0.7 + vhash(i, x + y) * 0.9;
-          sc.set(1, s, 1);
+          const s = isObj ? 0.01 : (0.7 + vhash(i, x + y) * 0.9) * FIELD_S;
+          sc.set(0.85, s, 0.85);
           q.setFromAxisAngle(up, vhash(x + i, y) * Math.PI * 2);
           m.compose(p, q, sc);
           im.setMatrixAt(k, m);
@@ -695,8 +758,8 @@ export class View {
   // ---------------------------------------------------------------- Figuren
   async actorHero(id, battle = false) {
     const gl = await A.load(A.heroPath(A.HERO_MODEL[id]));
-    const a = A.makeActor(gl, 3.0 * A.HERO_SCALE[id]);
-    this.addBlob(a.root, battle ? 1.1 : 0.9);
+    const a = A.makeActor(gl, 3.0 * A.HERO_SCALE[id] * (battle ? 1 : FIELD_S));
+    this.addBlob(a.root, battle ? 1.1 : 0.9 * FIELD_S);
     A.playLoop(a, 'idle');
     await this.attachWeapon(a, id).catch(() => {});
     return a;
@@ -722,8 +785,8 @@ export class View {
   async actorNpc(kind) {
     const n = A.NPC_MODEL[kind];
     const gl = await A.load(A.heroPath(n[0]));
-    const a = A.makeActor(gl, 3.0 * n[2], n[1]);
-    this.addBlob(a.root, 0.9);
+    const a = A.makeActor(gl, 3.0 * n[2] * FIELD_S, n[1]);
+    this.addBlob(a.root, 0.9 * FIELD_S);
     A.playLoop(a, 'idle');
     return a;
   }
@@ -774,7 +837,7 @@ export class View {
         const ent = { n: new THREE.Group(), k: 'roamer', a: null, r };
         this.world.add(ent.n);
         this.dyn.set(uid, ent);
-        this.actorMonster(r.id, 0.62).then(a => { if (this.dyn.get(uid) !== ent) return; this.addBlob(a.root, 0.9); A.playLoop(a, 'walk'); ent.a = a; ent.n.add(a.root); });
+        this.actorMonster(r.id, 0.62 * FIELD_S).then(a => { if (this.dyn.get(uid) !== ent) return; this.addBlob(a.root, 0.9 * FIELD_S); A.playLoop(a, 'walk'); ent.a = a; ent.n.add(a.root); });
       }
       const ent = this.dyn.get(uid);
       const x = r.pos.x + 0.5, z = r.pos.y + 0.5;
@@ -821,8 +884,9 @@ export class View {
     const px = S.ppos.x + 0.5, pz = S.ppos.y + 0.5;
     this.player.root.position.set(px, this.heightAt(px, pz), pz);
     if (this.player.a) {
-      this.face(this.player.a, S.face.x, S.face.y, dt);
-      A.playLoop(this.player.a, S.moving ? 'walk' : 'idle');
+      const f = S.fdir || S.face;
+      this.face(this.player.a, f.x, f.y, dt, 0.8);
+      A.playLoop(this.player.a, S.moving ? (S.running ? 'run' : 'walk') : 'idle');
     }
   }
   setOpacity(root, a) {
@@ -859,20 +923,20 @@ export class View {
         this.actorNpc(d.kind).then(a => { if (!alive()) return; ent.a = a; ent.n.add(a.root); });
       }
     } else if (o.t === 'chest') {
-      A.load('dungeon/chest.glb').then(gl => {
+      const gold = d.kind === 'key' || d.kind === 'tool' || d.kind === 'capsule';
+      A.load(gold ? 'kkd/chest_gold.gltf' : 'kkd/chest.gltf').then(gl => {
         if (!alive()) return;
         const c = gl.scene.clone();
-        c.scale.setScalar(1.7);
-        c.rotation.y = Math.PI;
+        c.scale.setScalar(0.42);
         ent.n.add(c);
-        ent.lid = c.getObjectByName('lid');
+        ent.lid = c.getObjectByName(gold ? 'chest_gold_lid' : 'chest_lid');
         this.addBlob(ent.n, 1.0);
         if (d.kind === 'key') {
           A.load('dungeon/key.glb').then(kg => {
             if (!alive()) return;
             const k = kg.scene.clone();
             k.scale.setScalar(1.4);
-            k.position.y = 1.2;
+            k.position.y = 0.85;
             k.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.emissive = C('#ffb020'); m.material.emissiveIntensity = 0.8; } });
             ent.n.add(k);
             ent.spin = k;
@@ -1084,7 +1148,7 @@ export class View {
       if (this.liquid) this.liquid.uniforms.t.value = this.t;
       this.updateCamera(dt, mode === 0);
       occ.on.value = mode === 0 || !this.player ? 0 : 1;
-      if (this.player) occ.p.value.copy(this.player.root.position).add(new THREE.Vector3(0, 0.9, 0));
+      if (this.player) occ.p.value.copy(this.player.root.position).add(new THREE.Vector3(0, 0.9 * FIELD_S, 0));
       if (this.playerLight && this.player) this.playerLight.position.copy(this.player.root.position).add(new THREE.Vector3(0, 1.6, 0.4));
       if (this.particles) { this.particles.material.uniforms.t.value = this.t; this.particles.material.uniforms.center.value.copy(this.camTarget); this.particles.material.uniforms.scale.value = this.H * 0.9; }
     }
@@ -1107,7 +1171,7 @@ export class View {
     // Verfolgerkamera hinter dem Helden: drehbar (Maus ziehen, Wischen, Q/E, rechter Stick), zoombar (Mausrad, Zwei-Finger, Z)
     const pp = S.ppos;
     const cine = this.cine;
-    const tgt = cine ? new THREE.Vector3(cine.x, cine.h ?? 0.9, cine.z) : new THREE.Vector3(pp.x + 0.5, this.heightAt(pp.x + 0.5, pp.y + 0.5) + 0.9, pp.y + 0.5);
+    const tgt = cine ? new THREE.Vector3(cine.x, cine.h ?? 0.9, cine.z) : new THREE.Vector3(pp.x + 0.5, this.heightAt(pp.x + 0.5, pp.y + 0.5) + 0.9 * FIELD_S, pp.y + 0.5);
     if (this.camKeys) this.camYawT += this.camKeys * dt * 2.2;
     const yawT = cine && cine.yaw !== undefined ? cine.yaw : this.camYawT;
     let dy = yawT - this.camYaw;
@@ -1115,7 +1179,9 @@ export class View {
     const k = Math.min(1, dt * (cine ? 2.2 : 8));
     this.camYaw += dy * k;
     const z = CAM_ZOOM[this.camZoom];
-    const pitch = cine ? (cine.pitch ?? 0.32) : z[0];
+    // Im Kerker steiler von oben (vordere Mauern werden ausgeblendet)
+    const indoor = !(this.g.S.map.world || this.g.S.map.town);
+    const pitch = cine ? (cine.pitch ?? 0.32) : (indoor ? Math.max(z[0], 0.66) : z[0]);
     const wantD = cine ? (cine.dist ?? 6) : z[1];
     // Hindernisse zwischen Held und Kamera: erst steiler von oben schauen, notfalls heranrücken
     const clearAt = (pt, dist) => {
@@ -1145,10 +1211,11 @@ export class View {
   // Höhe der Hindernisse eines Feldes (für die Kamera)
   obstacleAt(x, z) {
     const S = this.g.S, tx = Math.floor(x), ty = Math.floor(z);
-    if (tx < 0 || ty < 0 || tx >= S.mw || ty >= S.mh) return S.map.world || S.map.town ? -1 : 2.1;
+    if (tx < 0 || ty < 0 || tx >= S.mw || ty >= S.mh) return S.map.world || S.map.town ? -1 : 0;
     const ch = S.map.rows[ty][tx];
     const g = this.heightAt(x, z);
-    if (ch === '#') return 2.1;
+    // Kerkermauern werden zwischen Kamera und Held weggerastert: die Kamera muss nicht ausweichen
+    if (ch === '#') return S.map.world || S.map.town ? 2.1 : g;
     if ('hHDSM'.includes(ch)) return 3.2;
     if (ch === 'T') return g + 2.8;
     return g;

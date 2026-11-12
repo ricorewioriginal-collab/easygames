@@ -9,6 +9,7 @@ const THREE = fineThree(T3), capsule = fineCapsule, lathe = fineLathe;
 import { toonVertexMaterial, outlineMaterial, glowMaterial, characterMaterial } from './materials.js';
 import { createRng, hashString } from '../core/rng.js';
 import { buildZotikRig } from './zotik.js';
+import { KKCharacter } from './kaykit.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const C = (c) => new THREE.Color(c);
@@ -51,8 +52,37 @@ export function resolveLook(look = {}) {
   };
 }
 
+// Trainer-Optik aus den KayKit-Abenteurern (CC0): umgefärbte Kleidung, Mütze,
+// Rucksack und Kapselgürtel statt Rüstung und Waffen – deutlich eigener Stil.
+// [Modell, Bezeichnung im Editor, Geschlecht der Figur]
+export const TRAINER_MODELS = [['Knight', 'Sportlich', 'm'], ['Barbarian', 'Kräftig', 'm'], ['Ranger', 'Abenteuerlich', 'm'], ['Mage', 'Gelehrt', 'w'], ['Rogue', 'Flink', 'w'], ['Rogue_Hooded', 'Kapuze', 'w']];
+export const TRAINER_COLORS = [0xd8483a, 0x3a7fd0, 0x2fa07a, 0xf0a030, 0x7d4fa3, 0xe86aa0, 0x3a4a5a, 0x2ab0c0];
+export function trainerLook(model, seed = 0, extra = {}) {
+  const rng = createRng('kk:' + model + ':' + seed);
+  return { kk: model, outfit: TRAINER_COLORS[rng.int(0, TRAINER_COLORS.length - 1)], accent: [0xf2efe6, 0xf5cd77, 0x2a2d36, 0xffffff][rng.int(0, 3)], skin: rng.int(0, 4),
+    cap: rng.next() < 0.6 ? TRAINER_COLORS[rng.int(0, TRAINER_COLORS.length - 1)] : null, backpack: rng.next() < 0.6 ? [0xf09a3a, 0x3a7fd0, 0x7d4fa3, 0x2fa07a][rng.int(0, 3)] : null, belt: true, ...extra };
+}
+// Spielerfigur im Trainer-Stil: Startfigur je Geschlecht, Farben für den Editor
+export const KK_DEFAULT = { m: 'Knight', w: 'Rogue', d: 'Ranger' };
+export const KK_SKIN_SWATCH = [0xf2c8a8, 0xe0ac88, 0xc08a68, 0x96684e, 0x6a4a3a];
+export const KK_ACCENTS = [0xf2efe6, 0xf5cd77, 0x2a2d36, 0xd8483a, 0x3a7fd0, 0x2fa07a];
+export const KK_BAGS = [0xf09a3a, 0x3a7fd0, 0x7d4fa3, 0x2fa07a, 0xd8483a];
+export function playerTrainerLook(gender = 'm', model = null) {
+  return trainerLook(model || KK_DEFAULT[gender] || 'Knight', 0, { outfit: gender === 'w' ? 0xe86aa0 : 0x3a7fd0, accent: 0xf2efe6, skin: 1, cap: 0x3a4a5a, backpack: 0xf09a3a });
+}
+// Trainer-Rollen: weibliche Titel (…in) bekommen eine weibliche Figur
+function trainerFor(role, name) {
+  const h = hashString('kk:' + role + ':' + name), fem = /(in|Oma|Frau|Tante)\b/.test(name.split(' ')[0] || '') ? true : /\b(Herr|Opa|Onkel)\b/.test(name) ? false : null;
+  const pool = TRAINER_MODELS.filter(m => fem === null || (m[2] === 'w') === fem);
+  const model = pool[h % pool.length][0];
+  if (role === 'leader') return trainerLook(model, name, { cap: null, accent: 0xf5cd77, backpack: null });
+  if (role === 'champion') return trainerLook(model, name, { cap: null, accent: 0xf5cd77, backpack: null, cape: true, height: 1.82 });
+  return trainerLook(model, name);
+}
+
 // Appearance generated from a role and a name (deterministic variety).
 export function lookForRole(role, name = '', regionPal = null) {
+  if (role === 'trainer' || role === 'leader' || role === 'champion') return trainerFor(role, name);
   const rng = createRng('look:' + name + ':' + role);
   const hair = HAIR_STYLES[rng.int(0, HAIR_STYLES.length - 1)];
   const base = { skin: rng.int(0, 4), hair, hairColor: rng.int(0, 7), topColor: rng.int(0, 7), bottomColor: [0x34465f, 0x4a3a2a, 0x2f3e55, 0x5a5a62, 0x6a4a3a][rng.int(0, 4)], body: rng.pick(['adult', 'adult', 'slim', 'stocky']) };
@@ -96,6 +126,7 @@ function partMesh(builder, outline = false, mat = characterMaterial()) {
 }
 
 export function createCharacter(lookIn, { outline = false } = {}) {
+  if (lookIn && lookIn.kk) return new KKCharacter(lookIn.kk, { outline, look: lookIn, height: lookIn.height || 1.74 });
   if (lookIn && lookIn.zotik) return createZotik(outline);
   const L = resolveLook(lookIn);
   const P = BODY[L.body] || BODY.adult;

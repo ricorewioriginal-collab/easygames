@@ -1,21 +1,6 @@
 <!doctype html>
 <html lang="de">
 <head>
-<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/anmacha-quest-rpg-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Aetherion"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
-if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
-var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
-if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
-var dp=null,K='egPwaHide';
-function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
-addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
-addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
-function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
-d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
-var b=document.createElement('button'),x=document.createElement('button');
-b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
-b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
-b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
-d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#080b12">
@@ -139,7 +124,9 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   .lb{position:fixed;left:0;right:0;height:0;background:#000;z-index:2;transition:height .7s cubic-bezier(.6,0,.2,1);pointer-events:none}
   #lbT{top:0}#lbB{bottom:0}
   body.cine .lb{height:11vh}
-  body.cine #hud,body.cine #menuBtn,body.cine #joy{opacity:0;pointer-events:none}
+  #actBtn{position:absolute;right:calc(22px + env(safe-area-inset-right));bottom:calc(30px + env(safe-area-inset-bottom));width:74px;height:74px;border-radius:50%;font:900 26px inherit;font-family:inherit;color:var(--tx);touch-action:none;cursor:pointer}
+  #actBtn:active{transform:scale(.92)}
+  body.cine #hud,body.cine #menuBtn,body.cine #joy,body.cine #actBtn{opacity:0;pointer-events:none}
   #banner{font-family:Cinzel,Georgia,serif}
   @keyframes float{50%{transform:translateY(-6px)}}
   #title p{margin:10px 0 0;font-family:Cinzel,Georgia,serif;color:#d8d0ff;font-weight:700;letter-spacing:.24em;font-size:clamp(11px,2vw,14px);text-shadow:0 2px 8px #000}
@@ -155,7 +142,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   @media (orientation:portrait) and (max-width:760px){#rot.show{display:block}.card{min-width:0;width:calc((100vw - 40px)/3);padding:6px 7px}#cross{bottom:calc(150px + env(safe-area-inset-bottom));transform:scale(.85);transform-origin:right bottom}.menu.mb{bottom:calc(160px + env(safe-area-inset-bottom))}}
   @media (max-height:430px){#cross{transform:scale(.78);transform-origin:right bottom;bottom:calc(100px + env(safe-area-inset-bottom))}.card{padding:5px 8px 6px}.ch{margin-bottom:2px}.menu.mb{bottom:calc(96px + env(safe-area-inset-bottom))}#dlg{min-height:78px;padding:10px 16px 12px}}
 </style>
-  <script type="module" crossorigin src="./assets/index-CjJ7puqz.js"></script>
+  <script type="module" crossorigin src="./assets/index-IB2R-Gdu.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-CitjQBdG.css">
 </head>
 <body>
@@ -168,6 +155,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <div id="hud" class="glass" hidden><span id="hudName"></span><span class="g" id="hudGold">0</span></div>
   <button id="menuBtn" class="glass" hidden>MENÜ</button>
   <div id="joy" hidden><div id="knob"></div></div>
+  <button id="actBtn" class="glass" hidden aria-label="Aktion">A</button>
   <div id="party" hidden></div>
   <div id="cross" hidden><div id="crossLbl"></div></div>
   <div id="menu" class="glass menu" hidden></div>
