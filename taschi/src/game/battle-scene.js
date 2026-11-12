@@ -17,7 +17,7 @@ import { createCharacter, lookForRole } from '../engine/characters.js';
 import { vegetationGeometry, rockGeometry, MATERIALS } from '../engine/vegetation.js';
 import { ballModel } from '../engine/buildings.js';
 import { particleTexture } from '../engine/textures.js';
-import { glowMaterial } from '../engine/materials.js';
+import { glowMaterial, groundMaterial } from '../engine/materials.js';
 import { disposeTree } from '../engine/renderer.js';
 import { PANO_GLSL } from '../engine/sky.js';
 import { paletteFor } from '../world/region-map.js';
@@ -74,9 +74,9 @@ export class BattleScene {
     root.add(sun);
     // ground
     const groundCol = indoor ? new THREE.Color(pal.wall).lerp(new THREE.Color(0xd8d0c0), 0.5) : new THREE.Color(pal.grass);
-    const ground = new THREE.Mesh(new THREE.CircleGeometry(90, 48), new THREE.MeshLambertMaterial({ color: groundCol }));
+    const ground = new THREE.Mesh(new THREE.CircleGeometry(90, 48), indoor ? new THREE.MeshLambertMaterial({ color: groundCol }) : groundMaterial(groundCol));
     ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; root.add(ground);
-    const field = new THREE.Mesh(new THREE.CircleGeometry(8.5, 48), new THREE.MeshLambertMaterial({ color: indoor ? new THREE.Color(pal.trim).lerp(new THREE.Color(0xffffff), 0.55) : new THREE.Color(pal.dirt).lerp(new THREE.Color(pal.grass), 0.3) }));
+    const field = new THREE.Mesh(new THREE.CircleGeometry(8.5, 48), indoor ? new THREE.MeshLambertMaterial({ color: new THREE.Color(pal.trim).lerp(new THREE.Color(0xffffff), 0.55) }) : groundMaterial(new THREE.Color(pal.dirt).lerp(new THREE.Color(pal.grass), 0.3)));
     field.rotation.x = -Math.PI / 2; field.position.y = 0.01; field.receiveShadow = true; root.add(field);
     for (const [x, z] of [[-2.6, 2.4], [2.6, -2.4]]) {
       const ring = new THREE.Mesh(new THREE.RingGeometry(1.9, 2.15, 40), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55 }));

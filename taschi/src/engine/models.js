@@ -6,7 +6,7 @@
 import { THREE } from './three.js';
 import { SPECIES, SPECIES_IDS } from '../data/species.js';
 import { Creature, creatureFactories } from './creatures.js';
-import { toonGradient } from './textures.js';
+import { modernToon } from './materials.js';
 
 const BASE = new URL('../../assets/models/', import.meta.url).href;
 const HEIGHT = 1.25;          // Modellhöhe vor displayScale (wie die gebauten Taschis)
@@ -90,7 +90,7 @@ export class ModelCreature extends Creature {
       // Entwicklungen mit eigenem Farbton (look.tint) und schillernde Taschis (Farbton verschoben, heller)
       if (tint && hsl.s > 0.12) c.setHSL(tint.hue / 360, Math.min(1, hsl.s * 1.1), hsl.l);
       if (this.shiny && hsl.s > 0.08) { c.getHSL(hsl); c.setHSL((hsl.h + 0.14) % 1, Math.min(1, hsl.s + 0.15), Math.min(0.8, hsl.l * 1.08 + 0.04)); }
-      const m = new THREE.MeshToonMaterial({ color: c, gradientMap: toonGradient(), skinning: !!o.isSkinnedMesh });
+      const m = modernToon(new THREE.MeshToonMaterial({ color: c, skinning: !!o.isSkinnedMesh }), { rim: 0.26, sheen: 0.15 });
       m.userData.glow = c.clone().multiplyScalar(glow);
       m.emissive.copy(m.userData.glow);
       o.material = m; o.castShadow = true; o.receiveShadow = false;

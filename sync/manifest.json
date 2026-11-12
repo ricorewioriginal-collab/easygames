@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "568770e25b89",
- "generated": "2026-11-12T12:43:47+00:00",
- "commit": "50ce4a67775b0641298275e09890815da77e57c9",
+ "version": "8823a4069fae",
+ "generated": "2026-11-12T12:41:50+00:00",
+ "commit": "8916a433df2bfbd1c3504c0308427e465e2b84a9",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8844,7 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 257559,
-   "h": "fa2b7013122434e4d81883a436db5d1dc51d00b9e448adc5bc3690080521c35f"
+   "h": "b5c6dcb714f43d7580be4f90269aaa4a0aac54958f8640adc5ddc824da7fb626"
   },
   {
    "p": "taschi/assets/models/alien.glb",
@@ -9198,13 +9198,13 @@
   },
   {
    "p": "taschi/src/engine/characters.js",
-   "s": 36741,
-   "h": "8fe84b2b2c6005c4a6d25372e38dfeed77f534720dd2a06da702c99db2665778"
+   "s": 37833,
+   "h": "c231c33dac4d1b1e45f2038485d354db3445c8b226a95387a39e00d520c85bd4"
   },
   {
    "p": "taschi/src/engine/creatures.js",
-   "s": 38899,
-   "h": "ac101a81ec3370f61e4857130bcfc9c14fd9ab4ba9950ad633066ea386f96791"
+   "s": 39597,
+   "h": "ecfa961b66a81b7faa3e1a28f551f0d76456a5300062eef1e8c4b114494848d9"
   },
   {
    "p": "taschi/src/engine/geometry.js",
@@ -9213,13 +9213,13 @@
   },
   {
    "p": "taschi/src/engine/materials.js",
-   "s": 10235,
-   "h": "1d432a88038a8bf29ce2b88cd943a6761ef4af60562e4ea2aa428e214276ba67"
+   "s": 12319,
+   "h": "42fe21ebfc1c4a16e2979980afdda5dc5bc547612551ba6fa279648f09e8a13c"
   },
   {
    "p": "taschi/src/engine/models.js",
-   "s": 8509,
-   "h": "db634e58082ca5620571a5e68a410050e7f83ca1c85c90c336a36af5d3230662"
+   "s": 8519,
+   "h": "328d9682a5ec6f7cf161f35c94b063c0afb75e238629f30e3a1bb3970af92e55"
   },
   {
    "p": "taschi/src/engine/post.js",
@@ -9268,8 +9268,8 @@
   },
   {
    "p": "taschi/src/game/battle-scene.js",
-   "s": 47557,
-   "h": "b16b64d5e385042b013606fbf4a89af51614dc0621bd59a847ac9cc79d1a4042"
+   "s": 47626,
+   "h": "40c79ffd6918f6e0781c70f45b6235e32ae9de92831973efc02f269c687d0b6f"
   },
   {
    "p": "taschi/src/game/game.js",
