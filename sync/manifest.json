@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f0a5a7505cd5",
- "generated": "2026-11-12T19:43:56+01:00",
- "commit": "330f3cc29b16cd14fdb552e3ac780009cae6707a",
+ "version": "e5882a8d1c49",
+ "generated": "2026-11-12T19:13:23+00:00",
+ "commit": "5658d9db7e6e047d7fab6bbfcaf50ae85092be8a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6558,8 +6558,8 @@
   },
   {
    "p": "guides/zotik.json",
-   "s": 71147,
-   "h": "17627050c4dfdc33df289f2d50f54baf59d9c37ea3ec684c4f450f7d95826e90"
+   "s": 71637,
+   "h": "f497747396ca16d82996910d4d6f95e428474e6afabe36cb3815239b34866a73"
   },
   {
    "p": "heute.html",
@@ -9144,7 +9144,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258361,
-   "h": "379c1b07115e58282bd30bc6a81449285ada0161c6069781270912d1b4b8ae06"
+   "h": "f64b2ac3f2be623b63177306a484c2ab23b44fb85cb659d8016d1c5b8b6c8fc6"
   },
   {
    "p": "taschi/assets/models/alien.glb",
@@ -11452,9 +11452,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-DnUgrGQD.js",
-   "s": 1660106,
-   "h": "8c39a391c4d067b321db996338569827ea84c1c01482f74e946f051a6ce1d2bc"
+   "p": "zotik/assets/index-5aqHKnwo.js",
+   "s": 1670466,
+   "h": "1684b7e9c8c79cb35b5255e5e73efd02f9bfe70b85a88d83b8b1548570c88769"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -11474,7 +11474,7 @@
   {
    "p": "zotik/index.html",
    "s": 72193,
-   "h": "64415a827c5f6b03e01c18c577148d0fa282c32012842e2536674048d54420f4"
+   "h": "cbb789b27c5752e5067f0f347270e63886e7b42c5a6703476095342204ec6479"
   },
   {
    "p": "zotik/manifest.webmanifest",
