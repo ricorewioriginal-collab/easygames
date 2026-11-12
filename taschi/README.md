@@ -49,6 +49,12 @@ Geprüft: `npm test` (31 Tests inklusive Durchlauf-Simulation bis zum Sternenmei
 - **Getragene Gegenstände:** Heilbeere, Klarbeere, Lernband, Kraftband, Fokusband – im Laden, anlegen über Team › Taschi › „🎒 Trägt“ oder die Tasche. Wirken im Kampf von selbst, Beeren und Fokusband werden verbraucht.
 - Tests: `tests/controls-held.test.mjs`, Browsertest `node tests/e2e/controls.mjs [Bildordner]` (simulierter Switch Pro Controller).
 
+## Modernerer Look und deutliche Entwicklungsstufen (November 2026)
+
+- Gebaute Taschis haben eine weichere Toon-Abstufung und einen hellen Randlicht-Saum (`creatureMaterial` in `src/engine/creatures.js`).
+- Jede Entwicklungsstufe sieht man sofort: Babys mit großem Kopf und kurzen Beinen, Endstufen kräftiger und hochbeiniger; Stufe 2 bekommt Rückenkamm und Musterung, Stufe 3 Hörner, schärferen Blick, Aura und einen leuchtenden Stirnstein in Typfarbe. Mit jeder Stufe wächst das Taschi sichtbar (`displayScale`).
+- Drachenflügel sind jetzt geschwungene Flughäute statt flacher Dreiecke. Bildtafel zum Vergleichen: `node tests/e2e/lineup.mjs <ordner>`.
+
 ## Neue Taschis aus 3D-Modellen (November 2026)
 
 - **57 neue Arten in 27 Entwicklungslinien** (Dex 262–318), gebaut aus dem *Ultimate Monsters Bundle* von **Quaternius** (CC0, Quelle: https://poly.pizza/bundle/Ultimate-Monsters-Bundle-5oyGWAmOB6, Lizenz in `assets/models/LICENSE.txt`). Sechs Linien nutzen die fertigen „Evolved“-Modelle, bei anderen wird aus dem einfachen das detailreiche Modell; Linien mit nur einem Modell entwickeln sich in eine größere Form mit eigenem Farbton und Glanz.

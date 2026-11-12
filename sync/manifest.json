@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "b6764a772745",
- "generated": "2026-11-12T11:01:58+00:00",
- "commit": "57c517c40cdb62747a4f99740e2081b759bc26ab",
+ "version": "2a9879f328ed",
+ "generated": "2026-11-12T10:55:10+00:00",
+ "commit": "fca47c7572eb44d0e76f8581529ce411926f2093",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8137,11 +8137,6 @@
    "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
   },
   {
-   "p": "riftzone/client/public/heightmap.bin",
-   "s": 1182722,
-   "h": "121bcf27e4e7d5dda62e7ed7e061d76a1f8e4dec907c9978a3a32900d5ef6d97"
-  },
-  {
    "p": "riftzone/client/src/ui/styles.css",
    "s": 30181,
    "h": "28c5e1ddb893c40dd6896ecc6a3d7d5ee09244423276d839b5aecb7a32579129"
@@ -8849,7 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 257601,
-   "h": "99cb720fe08fc8746e58f08e4d851940931fbc82f958a18726f681dd5d7d5825"
+   "h": "e6339a481b499d8d57849a25a31d5a04cbc0ff8fdcb1710023b69614716496bc"
   },
   {
    "p": "taschi/assets/models/alien.glb",
@@ -9173,8 +9168,8 @@
   },
   {
    "p": "taschi/src/engine/creatures.js",
-   "s": 35947,
-   "h": "65d0d211589247798011c6c3581aaf5e36c8adfe88c08b2a67e10a51604e3616"
+   "s": 38706,
+   "h": "3dec65bfce4a91a9b5ce3c0e3ad91c200c7fca6162c3fd46a6f65486255903ee"
   },
   {
    "p": "taschi/src/engine/geometry.js",
