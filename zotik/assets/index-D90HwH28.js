@@ -43,9 +43,9 @@
 				}
 			`},a=new es(5,5,5),s=new Wi({name:"CubemapFromEquirect",uniforms:Fl(i.uniforms),vertexShader:i.vertexShader,fragmentShader:i.fragmentShader,side:Vn,blending:Cs});s.uniforms.tEquirect.value=t;const r=new $t(a,s),o=t.minFilter;return t.minFilter===Ar&&(t.minFilter=_n),new fu(1,10,this).update(e,r),t.minFilter=o,r.geometry.dispose(),r.material.dispose(),this}clear(e,t,i,a){const s=e.getRenderTarget();for(let r=0;r<6;r++)e.setRenderTarget(this,r),e.clear(t,i,a);e.setRenderTarget(s)}}hu.prototype.isWebGLCubeRenderTarget=!0;class Il extends si{constructor(e,t,i,a,s,r,o,l,c,d,f,h){super(null,r,o,l,c,d,a,s,f,h),this.image={data:e||null,width:t||1,height:i||1},this.magFilter=c!==void 0?c:Yn,this.minFilter=d!==void 0?d:Yn,this.generateMipmaps=!1,this.flipY=!1,this.unpackAlignment=1,this.needsUpdate=!0}}Il.prototype.isDataTexture=!0;const Qo=new js,Sf=new oe;class Nd{constructor(e=new Za,t=new Za,i=new Za,a=new Za,s=new Za,r=new Za){this.planes=[e,t,i,a,s,r]}set(e,t,i,a,s,r){const o=this.planes;return o[0].copy(e),o[1].copy(t),o[2].copy(i),o[3].copy(a),o[4].copy(s),o[5].copy(r),this}copy(e){const t=this.planes;for(let i=0;i<6;i++)t[i].copy(e.planes[i]);return this}setFromProjectionMatrix(e){const t=this.planes,i=e.elements,a=i[0],s=i[1],r=i[2],o=i[3],l=i[4],c=i[5],d=i[6],f=i[7],h=i[8],u=i[9],p=i[10],y=i[11],x=i[12],b=i[13],g=i[14],S=i[15];return t[0].setComponents(o-a,f-l,y-h,S-x).normalize(),t[1].setComponents(o+a,f+l,y+h,S+x).normalize(),t[2].setComponents(o+s,f+c,y+u,S+b).normalize(),t[3].setComponents(o-s,f-c,y-u,S-b).normalize(),t[4].setComponents(o-r,f-d,y-p,S-g).normalize(),t[5].setComponents(o+r,f+d,y+p,S+g).normalize(),this}intersectsObject(e){const t=e.geometry;return t.boundingSphere===null&&t.computeBoundingSphere(),Qo.copy(t.boundingSphere).applyMatrix4(e.matrixWorld),this.intersectsSphere(Qo)}intersectsSprite(e){return Qo.center.set(0,0,0),Qo.radius=.7071067811865476,Qo.applyMatrix4(e.matrixWorld),this.intersectsSphere(Qo)}intersectsSphere(e){const t=this.planes,i=e.center,a=-e.radius;for(let s=0;s<6;s++)if(t[s].distanceToPoint(i)<a)return!1;return!0}intersectsBox(e){const t=this.planes;for(let i=0;i<6;i++){const a=t[i];if(Sf.x=a.normal.x>0?e.max.x:e.min.x,Sf.y=a.normal.y>0?e.max.y:e.min.y,Sf.z=a.normal.z>0?e.max.z:e.min.z,a.distanceToPoint(Sf)<0)return!1}return!0}containsPoint(e){const t=this.planes;for(let i=0;i<6;i++)if(t[i].distanceToPoint(e)<0)return!1;return!0}clone(){return new this.constructor().copy(this)}}function ky(){let n=null,e=!1,t=null,i=null;function a(s,r){t(s,r),i=n.requestAnimationFrame(a)}return{start:function(){e!==!0&&t!==null&&(i=n.requestAnimationFrame(a),e=!0)},stop:function(){n.cancelAnimationFrame(i),e=!1},setAnimationLoop:function(s){t=s},setContext:function(s){n=s}}}function O3(n,e){const t=e.isWebGL2,i=new WeakMap;function a(c,d){const f=c.array,h=c.usage,u=n.createBuffer();n.bindBuffer(d,u),n.bufferData(d,f,h),c.onUploadCallback();let p=5126;return f instanceof Float32Array?p=5126:f instanceof Float64Array?console.warn("THREE.WebGLAttributes: Unsupported data buffer format: Float64Array."):f instanceof Uint16Array?c.isFloat16BufferAttribute?t?p=5131:console.warn("THREE.WebGLAttributes: Usage of Float16BufferAttribute requires WebGL2."):p=5123:f instanceof Int16Array?p=5122:f instanceof Uint32Array?p=5125:f instanceof Int32Array?p=5124:f instanceof Int8Array?p=5120:f instanceof Uint8Array&&(p=5121),{buffer:u,type:p,bytesPerElement:f.BYTES_PER_ELEMENT,version:c.version}}function s(c,d,f){const h=d.array,u=d.updateRange;n.bindBuffer(f,c),u.count===-1?n.bufferSubData(f,0,h):(t?n.bufferSubData(f,u.offset*h.BYTES_PER_ELEMENT,h,u.offset,u.count):n.bufferSubData(f,u.offset*h.BYTES_PER_ELEMENT,h.subarray(u.offset,u.offset+u.count)),u.count=-1)}function r(c){return c.isInterleavedBufferAttribute&&(c=c.data),i.get(c)}function o(c){c.isInterleavedBufferAttribute&&(c=c.data);const d=i.get(c);d&&(n.deleteBuffer(d.buffer),i.delete(c))}function l(c,d){if(c.isGLBufferAttribute){const h=i.get(c);(!h||h.version<c.version)&&i.set(c,{buffer:c.buffer,type:c.type,bytesPerElement:c.elementSize,version:c.version});return}c.isInterleavedBufferAttribute&&(c=c.data);const f=i.get(c);f===void 0?i.set(c,a(c,d)):f.version<c.version&&(s(f.buffer,c,d),f.version=c.version)}return{get:r,remove:o,update:l}}class ld extends mt{constructor(e=1,t=1,i=1,a=1){super(),this.type="PlaneGeometry",this.parameters={width:e,height:t,widthSegments:i,heightSegments:a};const s=e/2,r=t/2,o=Math.floor(i),l=Math.floor(a),c=o+1,d=l+1,f=e/o,h=t/l,u=[],p=[],y=[],x=[];for(let b=0;b<d;b++){const g=b*h-r;for(let S=0;S<c;S++){const w=S*f-s;p.push(w,-g,0),y.push(0,0,1),x.push(S/o),x.push(1-b/l)}}for(let b=0;b<l;b++)for(let g=0;g<o;g++){const S=g+c*b,w=g+c*(b+1),v=g+1+c*(b+1),M=g+1+c*b;u.push(S,w,M),u.push(w,v,M)}this.setIndex(u),this.setAttribute("position",new ft(p,3)),this.setAttribute("normal",new ft(y,3)),this.setAttribute("uv",new ft(x,2))}}var U3=`#ifdef USE_ALPHAMAP
 	diffuseColor.a *= texture2D( alphaMap, vUv ).g;
-#endif`,W3=`#ifdef USE_ALPHAMAP
+#endif`,G3=`#ifdef USE_ALPHAMAP
 	uniform sampler2D alphaMap;
-#endif`,G3=`#ifdef ALPHATEST
+#endif`,W3=`#ifdef ALPHATEST
 	if ( diffuseColor.a < ALPHATEST ) discard;
 #endif`,V3=`#ifdef USE_AOMAP
 	float ambientOcclusion = ( texture2D( aoMap, vUv2 ).r - 1.0 ) * aoMapIntensity + 1.0;
@@ -1231,9 +1231,9 @@ IncidentLight directLight;
 	vec4 texelColor = texture2D( map, vUv );
 	texelColor = mapTexelToLinear( texelColor );
 	diffuseColor *= texelColor;
-#endif`,W5=`#ifdef USE_MAP
+#endif`,G5=`#ifdef USE_MAP
 	uniform sampler2D map;
-#endif`,G5=`#if defined( USE_MAP ) || defined( USE_ALPHAMAP )
+#endif`,W5=`#if defined( USE_MAP ) || defined( USE_ALPHAMAP )
 	vec2 uv = ( uvTransform * vec3( gl_PointCoord.x, 1.0 - gl_PointCoord.y, 1 ) ).xy;
 #endif
 #ifdef USE_MAP
@@ -2002,7 +2002,7 @@ void main() {
 	#include <logdepthbuf_vertex>
 	#include <clipping_planes_vertex>
 	#include <fog_vertex>
-}`,WS=`uniform vec3 diffuse;
+}`,GS=`uniform vec3 diffuse;
 uniform float opacity;
 #ifndef FLAT_SHADED
 	varying vec3 vNormal;
@@ -2050,7 +2050,7 @@ void main() {
 	#include <fog_fragment>
 	#include <premultiplied_alpha_fragment>
 	#include <dithering_fragment>
-}`,GS=`#include <common>
+}`,WS=`#include <common>
 #include <uv_pars_vertex>
 #include <uv2_pars_vertex>
 #include <envmap_pars_vertex>
@@ -2844,7 +2844,7 @@ void main() {
 			uniform float mipInt;
 			uniform vec3 poleAxis;
 
-			${Wm()}
+			${Gm()}
 
 			#define ENVMAP_TYPE_CUBE_UV
 			#include <cube_uv_reflection_fragment>
@@ -2903,7 +2903,7 @@ void main() {
 			uniform sampler2D envMap;
 			uniform vec2 texelSize;
 
-			${Wm()}
+			${Gm()}
 
 			#include <common>
 
@@ -2940,7 +2940,7 @@ void main() {
 
 			uniform samplerCube envMap;
 
-			${Wm()}
+			${Gm()}
 
 			void main() {
 
@@ -3006,7 +3006,7 @@ void main() {
 			gl_Position = vec4( position, 1.0 );
 
 		}
-	`}function Wm(){return`
+	`}function Gm(){return`
 
 		uniform int inputEncoding;
 		uniform int outputEncoding;
@@ -3170,7 +3170,7 @@ void main() {
 						weightSum += 2.0 * w;
 					}
 					gl_FragColor = vec4(diffuseSum/weightSum, 1.0);
-				}`})}getCompositeMaterial(e){return new Wi({defines:{NUM_MIPS:e},uniforms:{blurTexture1:{value:null},blurTexture2:{value:null},blurTexture3:{value:null},blurTexture4:{value:null},blurTexture5:{value:null},dirtTexture:{value:null},bloomStrength:{value:1},bloomFactors:{value:null},bloomTintColors:{value:null},bloomRadius:{value:0}},vertexShader:`varying vec2 vUv;
+				}`})}getCompositeMaterial(e){return new Gi({defines:{NUM_MIPS:e},uniforms:{blurTexture1:{value:null},blurTexture2:{value:null},blurTexture3:{value:null},blurTexture4:{value:null},blurTexture5:{value:null},dirtTexture:{value:null},bloomStrength:{value:1},bloomFactors:{value:null},bloomTintColors:{value:null},bloomRadius:{value:0}},vertexShader:`varying vec2 vUv;
 				void main() {
 					vUv = uv;
 					gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
