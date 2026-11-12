@@ -40,7 +40,7 @@ export async function preloadModels() {
 }
 
 // Skelett samt Haut klonen (ohne SkeletonUtils)
-function cloneRig(src) {
+export function cloneRig(src) {
   const c = src.clone(true), bones = {};
   c.traverse(o => { if (o.isBone) bones[o.name] = o; });
   c.traverse(o => {
@@ -53,7 +53,7 @@ function cloneRig(src) {
 }
 
 // Umriss wie bei den gebauten Taschis: Rückseite, entlang der (gehäuteten) Normalen verschoben
-function outlineMaterial(width) {
+export function outlineMaterial(width) {
   const m = new THREE.MeshToonMaterial({ color: 0x000000, emissive: 0x202638, side: THREE.BackSide, skinning: true });
   // gleich breit auf dem Bildschirm, unabhängig von Skelett-Skalierung und Abstand
   m.onBeforeCompile = (s) => { s.vertexShader = s.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n{ vec3 vn = normalize(normalMatrix * objectNormal); gl_Position.xy += vn.xy * ' + width.toFixed(4) + ' * gl_Position.w; }'); };

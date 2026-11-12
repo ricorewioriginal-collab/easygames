@@ -12,6 +12,8 @@ import { buildRegionMap, paletteFor } from '../world/region-map.js';
 import { buildInterior } from '../world/interiors.js';
 import { PuzzleView } from '../world/puzzle-view.js';
 import { createCharacter, lookForRole } from '../engine/characters.js';
+import { KKCharacter } from '../engine/kaykit.js';
+import { adventurersFor } from '../data/towns.js';
 import { createCreature, displayScale } from '../engine/creatures.js';
 import { disposeTree } from '../engine/renderer.js';
 import { regionPool, levelRange } from '../logic/encounters.js';
@@ -239,7 +241,7 @@ export class World {
   // ------------------------------------------------------------------ NPCs
   addNPC(def) {
     const look = def.look || lookForRole(def.role === 'leader' || def.role === 'champion' ? def.role : def.role, def.name || def.id);
-    const ch = createCharacter(look, { outline: this.game.quality.outlines });
+    const ch = def.kk ? new KKCharacter(def.kk, { outline: this.game.quality.outlines }) : createCharacter(look, { outline: this.game.quality.outlines });
     const y = this.current.height(def.x, def.z);
     ch.root.position.set(def.x, y, def.z); ch.root.rotation.y = def.ry ?? Math.random() * 6;
     this.scene.add(ch.root);
@@ -259,6 +261,13 @@ export class World {
       const a = 2.2 + extra++ * 0.9;
       this.addNPC({ id: 'giver:' + q.id, role: 'reisender', name: q.giver, x: L.plaza.x + Math.cos(a) * (L.plaza.r + 3), z: L.plaza.z + Math.sin(a) * (L.plaza.r + 3), talk: 'giver', quest: q.id });
     }
+    // reisende Abenteurer (KayKit-Figuren) am Rand des Stadtplatzes
+    if (r < 16) adventurersFor(r).forEach((a, i) => {
+      const ang = [0.95, 3.95][i];
+      let ax = L.plaza.x + Math.cos(ang) * (L.plaza.r + 3.5), az = L.plaza.z + Math.sin(ang) * (L.plaza.r + 3.5);
+      for (let k = 0; k < 10 && this.blocked(ax, az); k++) { ax += Math.cos(ang) * 0.9; az += Math.sin(ang) * 0.9; }
+      this.addNPC({ id: 'adv' + i, role: 'reisender', name: a.name, x: ax, z: az, ry: Math.atan2(L.plaza.x - ax, L.plaza.z - az), talk: 'adventurer', kk: a.model, adv: a });
+    });
     // Agentin Juna (Sternenwacht) wartet auf dem Stadtplatz auf Gildennotizen
     if (this.save.flags.firstQuest && !this.save.quests['clue_' + r]?.done) {
       let jx = L.plaza.x + Math.cos(5.4) * (L.plaza.r + 2.5), jz = L.plaza.z + Math.sin(5.4) * (L.plaza.r + 2.5);
