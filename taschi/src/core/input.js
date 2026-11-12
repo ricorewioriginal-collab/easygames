@@ -5,13 +5,13 @@
 // while dialogs, battles or loading screens are shown).
 import { Emitter } from './events.js';
 
-export const ACTIONS = ['up', 'down', 'left', 'right', 'confirm', 'back', 'menu', 'run', 'team', 'map', 'camLeft', 'camRight', 'tabPrev', 'tabNext'];
-export const ACTION_LABELS = { up: 'Hoch / Vorwärts', down: 'Runter / Zurück', left: 'Links', right: 'Rechts', confirm: 'Bestätigen / Aktion', back: 'Zurück / Abbrechen', menu: 'Menü', run: 'Sprinten (halten)', team: 'Team', map: 'Karte', camLeft: 'Kamera links', camRight: 'Kamera rechts', tabPrev: 'Reiter links', tabNext: 'Reiter rechts' };
+export const ACTIONS = ['up', 'down', 'left', 'right', 'confirm', 'back', 'menu', 'run', 'team', 'map', 'camLeft', 'camRight', 'tabPrev', 'tabNext', 'ride'];
+export const ACTION_LABELS = { up: 'Hoch / Vorwärts', down: 'Runter / Zurück', left: 'Links', right: 'Rechts', confirm: 'Bestätigen / Aktion', back: 'Zurück / Abbrechen', menu: 'Menü', run: 'Sprinten (halten)', team: 'Team', map: 'Karte', camLeft: 'Kamera links', camRight: 'Kamera rechts', tabPrev: 'Reiter links', tabNext: 'Reiter rechts', ride: 'Reiten / Absteigen' };
 
 export const DEFAULT_KEYS = {
   up: ['w', 'arrowup'], down: ['s', 'arrowdown'], left: ['a', 'arrowleft'], right: ['d', 'arrowright'],
   confirm: ['e', 'enter', ' '], back: ['backspace', 'q'], menu: ['escape', 'p'], run: ['shift'], team: ['t'], map: ['m'],
-  camLeft: ['z'], camRight: ['c'], tabPrev: ['[', 'pageup', '1'], tabNext: [']', 'pagedown', '3']
+  camLeft: ['z'], camRight: ['c'], tabPrev: ['[', 'pageup', '1'], tabNext: [']', 'pagedown', '3'], ride: ['r']
 };
 // Standard gamepad mapping indices (by position: 0 bottom, 1 right, 2 left, 3 top).
 // Default is the Nintendo Switch layout: A (right) confirms, B (bottom) goes
@@ -19,15 +19,15 @@ export const DEFAULT_KEYS = {
 // L/R switch tabs, ZL/ZR turn the camera, L3 opens the team. A value may be
 // a single button or a list of buttons.
 export const PAD_LAYOUTS = {
-  switch: { confirm: 1, back: 0, run: 2, menu: [3, 9], team: 10, map: 8, tabPrev: 4, tabNext: 5, camLeft: 6, camRight: 7, up: 12, down: 13, left: 14, right: 15 },
-  xbox: { confirm: 0, back: 1, run: 2, team: 3, tabPrev: 4, tabNext: 5, camLeft: 6, camRight: 7, map: 8, menu: 9, up: 12, down: 13, left: 14, right: 15 }
+  switch: { confirm: 1, back: 0, run: 2, menu: [3, 9], team: 10, map: 8, tabPrev: 4, tabNext: 5, camLeft: 6, camRight: 7, up: 12, down: 13, left: 14, right: 15, ride: 11 },
+  xbox: { confirm: 0, back: 1, run: 2, team: 3, tabPrev: 4, tabNext: 5, camLeft: 6, camRight: 7, map: 8, menu: 9, up: 12, down: 13, left: 14, right: 15, ride: 11 }
 };
 export const DEFAULT_PAD = PAD_LAYOUTS.switch;
 // Vor der Switch-Belegung gespeicherte Standardbelegung (Xbox-Positionen) einmal
 // auf Switch umstellen; selbst belegte Tasten bleiben erhalten.
 export function migratePad(data) {
   if (data.padLayout) return data;
-  const custom = !!data.pad && Object.keys(PAD_LAYOUTS.xbox).some(k => data.pad[k] !== PAD_LAYOUTS.xbox[k]);
+  const custom = !!data.pad && Object.keys(PAD_LAYOUTS.xbox).some(k => data.pad[k] !== undefined && data.pad[k] !== PAD_LAYOUTS.xbox[k]);
   data.padLayout = custom ? 'custom' : 'switch';
   if (!custom) delete data.pad;
   return data;

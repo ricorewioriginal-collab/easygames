@@ -335,7 +335,7 @@ function hatFor(hd, L, r) {
 // ---------------------------------------------------------------------------
 // Animation
 // ---------------------------------------------------------------------------
-const CLIP_NAMES = ['idle', 'walk', 'run', 'talk', 'interact', 'throw', 'cheer', 'defeat', 'wave', 'look', 'sad'];
+const CLIP_NAMES = ['idle', 'walk', 'run', 'talk', 'interact', 'throw', 'cheer', 'defeat', 'wave', 'look', 'sad', 'ride'];
 const BONES = ['hips', 'torso', 'neck', 'head', 'armL', 'armR', 'elbowL', 'elbowR', 'thighL', 'thighR', 'kneeL', 'kneeR'];
 
 export class Character {
@@ -408,6 +408,8 @@ export class Character {
     if (W.defeat > 0.001) { add('head', 0.55, 0, 0, W.defeat); add('torso', 0.35, 0, 0, W.defeat); add('armL', 0.2, 0, -0.05, W.defeat); add('armR', 0.2, 0, 0.05, W.defeat); add('kneeL', 0.5, 0, 0, W.defeat); add('kneeR', 0.5, 0, 0, W.defeat); add('thighL', -0.4, 0, 0, W.defeat); add('thighR', -0.4, 0, 0, W.defeat); hipY -= 0.12 * W.defeat; }
     if (W.wave > 0.001) { add('armR', -2.6, 0, 0.5 + Math.sin(this.t * 10) * 0.25, W.wave); add('elbowR', -0.5, 0, 0, W.wave); add('head', -0.1, 0.1, 0.1, W.wave); }
     if (W.look > 0.001) add('head', -0.1, Math.sin(this.t * 1.5) * 0.6, 0, W.look);
+    // Reitsitz: Beine nach vorn und gespreizt, Hände halten sich fest
+    if (W.ride > 0.001) { add('thighL', -1.35, 0, 0.4, W.ride); add('thighR', -1.35, 0, -0.4, W.ride); add('kneeL', 1.25, 0, 0, W.ride); add('kneeR', 1.25, 0, 0, W.ride); add('torso', 0.18, 0, 0, W.ride); add('armL', -0.7, 0, -0.25, W.ride); add('armR', -0.7, 0, 0.25, W.ride); add('elbowL', -0.6, 0, 0, W.ride); add('elbowR', -0.6, 0, 0, W.ride); }
     // apply
     for (const b of BONES) this.bones[b].rotation.copy(P[b]);
     this.bones.hips.position.y = this.dims.legLen + hipY - hipBob + 0.015;

@@ -6,7 +6,8 @@ import { REGIONS } from '../data/regions.js';
 import { SPECIES } from '../data/species.js';
 import { TRAINERS } from '../data/trainers.js';
 import { buildLayout, grassAt, fishingWater } from '../logic/layout.js';
-import { FREE } from '../logic/walkgrid.js';
+import { FREE, WATER } from '../logic/walkgrid.js';
+import * as Ride from '../logic/ride.js';
 import { buildRegionMap, paletteFor } from '../world/region-map.js';
 import { buildInterior } from '../world/interiors.js';
 import { PuzzleView } from '../world/puzzle-view.js';
@@ -33,7 +34,7 @@ export class World {
     this.cam = { yaw: Math.PI, pitch: 0.48, dist: 9, target: new THREE.Vector3(), shake: 0 };
     this.current = null; // { type: 'region'|'interior', ... }
     this.npcs = []; this.wild = []; this.puzzles = [];
-    this.player = null; this.follower = null;
+    this.player = null; this.follower = null; this.mount = null;
     this.vel = new THREE.Vector3(); this.stepAcc = 0; this.encounterCooldown = 3;
     this.mapCache = new Map(); // layouts only (cheap to keep)
     this.near = null; this.paused = false;
@@ -53,8 +54,11 @@ export class World {
   refreshFollower() {
     // the chosen companion walks with you (falls back to the first fit Taschi)
     const s = this.save, pick = s.team.find(m => m.uid === s.companion && m.hp > 0);
-    const lead = pick || s.team.find(m => m.hp > 0) || s.team[0];
-    if (this.follower?.id === lead?.id && this.follower?.shiny === !!lead?.shiny) return;
+    // beim Reiten/Surfen trägt das Reit-Taschi die Spielfigur
+    if (this.mount?.mode === 'ride' && !s.team.some(m => m.uid === this.mount.uid && m.hp > 0)) this.mount = null;
+    const ridden = this.mount && (s.team.find(m => m.uid === this.mount.uid) || this.mount.m);
+    const lead = ridden || pick || s.team.find(m => m.hp > 0) || s.team[0];
+    if (this.follower?.id === lead?.id && this.follower?.shiny === !!lead?.shiny) { if (this.mount) this.measureSeat(); return; }
     if (this.follower) { this.scene.remove(this.follower.c.root); this.follower.c.dispose(); this.follower = null; }
     if (!lead) return;
     const c = createCreature(lead.id, { outline: this.game.quality.outlines, shiny: !!lead.shiny });
@@ -63,6 +67,30 @@ export class World {
     c.root.position.set(p.x - 1.2, p.y, p.z + 1.2);
     this.scene.add(c.root);
     this.follower = { id: lead.id, shiny: !!lead.shiny, c };
+    if (this.mount) this.measureSeat();
+  }
+  // Sitzhöhe auf dem Reit-Taschi (Oberkante des Modells)
+  measureSeat() {
+    const box = new THREE.Box3().setFromObject(this.follower.c.root);
+    this.mount.seat = Math.max(0.5, (box.max.y - box.min.y) * 0.72);
+  }
+  // Auf- und Absteigen: mode 'ride' (Land), 'surf' (Wasser) oder null
+  setMount(mode, m = null, shore = null) {
+    const p = this.player.root;
+    this.mount = mode ? { mode, uid: m.uid, id: m.id, m, shore, seat: 1 } : null;
+    this.refreshFollower();
+    if (this.follower) { const f = this.follower.c.root; if (mode) { f.position.set(p.position.x, f.position.y, p.position.z); f.rotation.y = p.rotation.y; } else f.position.set(p.position.x - Math.sin(p.rotation.y) * 1.4, p.position.y, p.position.z - Math.cos(p.rotation.y) * 1.4); }
+    if (!mode) p.position.y = this.current.height(p.position.x, p.position.z);
+  }
+  // Boden unter der Spielfigur: beim Surfen die Wasseroberfläche
+  groundAt(x, z) {
+    const gy = this.current.height(x, z);
+    if (this.mount?.mode !== 'surf' || this.current.type !== 'region') return gy;
+    // Oberfläche von Fluss, See oder Meer per Strahl von oben (Flüsse liegen höher als der Seespiegel)
+    const ray = this._waterRay ||= new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 80);
+    ray.ray.origin.set(x, 40, z);
+    const hit = ray.intersectObjects(this.current.map.surfaces || [], false)[0];
+    return Math.max(gy, hit ? hit.point.y - 0.25 : this.current.layout.waterLevel + 0.15);
   }
 
   // ------------------------------------------------------------------ loading
@@ -129,7 +157,9 @@ export class World {
       if (park && this.current.type === 'region') this.parked = { region: this.current.region, map: this.current.map, quality: this.game.quality, save: this.save };
       else { disposeTree(root); this.current.map?.field?.dispose(); }
     }
-    this.current = null; this.near = null;
+    const rode = !!this.mount;
+    this.current = null; this.near = null; this.mount = null;
+    if (rode && this.player) this.refreshFollower();
     this.game.sky.dome.visible = true; this.game.sky.stars.visible = true; this.game.sky.clouds.visible = true; this.game.sky.hemi.visible = true; this.game.sky.sun.visible = true;
     this.scene.background = null;
   }
@@ -260,7 +290,8 @@ export class World {
     const m = input.move;
     const mag = Math.min(1, Math.hypot(m.x, m.y));
     const running = input.held('run') !== !!this.game.settings.get('autoRun');
-    const maxSpeed = (running ? 7.2 : 4.0) * this.game.settings.get('walkSpeed');
+    const mount = this.mount?.mode;
+    const maxSpeed = (mount === 'ride' ? Ride.RIDE_SPEED : mount === 'surf' ? Ride.SURF_SPEED : running ? 7.2 : 4.0) * this.game.settings.get('walkSpeed');
     let speed = 0;
     if (mag > 0.05) {
       const yaw = this.cam.yaw;
@@ -282,16 +313,23 @@ export class World {
       const lenient = (x, z) => !this.blocked(x + Math.sign(dx) * r * 0.6, z) && !this.blocked(x, z + Math.sign(dz) * r * 0.6) && !this.blocked(x, z);
       const grid = this.current.type === 'region' ? this.current.map.grid : null;
       const body = (x, z) => { for (const [ox, oz] of RING) if (grid.at(x + ox, z + oz) !== FREE) return false; return true; };
-      const ok = grid && body(p.position.x, p.position.z) ? (x, z) => body(x, z) && !this.blocked(x, z) : lenient;
+      let ok = grid && body(p.position.x, p.position.z) ? (x, z) => body(x, z) && !this.blocked(x, z) : lenient;
+      // Surfen: nur Wasserfelder; wer ans Ufer stößt, geht an Land
+      if (mount === 'surf' && grid) {
+        ok = (x, z) => grid.at(x, z) === WATER && !this.npcs.some(n => Math.hypot(n.ch.root.position.x - x, n.ch.root.position.z - z) < 0.65);
+        const lx = p.position.x + dx / len * 1.2, lz = p.position.z + dz / len * 1.2;
+        if (!ok(nx, nz) && grid.at(lx, lz) === FREE && !this.blocked(lx, lz)) { p.position.x = lx; p.position.z = lz; this.setMount(null); this.game.ui.toast('Du gehst an Land.', '🌊'); nx = lx; nz = lz; }
+      }
       if (ok(nx, nz)) { p.position.x = nx; p.position.z = nz; }
       else if (ok(nx, p.position.z)) p.position.x = nx;
       else if (ok(p.position.x, nz)) p.position.z = nz;
       else speed = 0;
       if (speed > 0) { this.stepAcc += step; this.game.onSteps?.(step); if (this.game.settings.get('camAuto') && Math.abs(m.y) > 0.3 && m.y < 0) this.cam.yaw += angDiff(p.rotation.y + Math.PI, this.cam.yaw) * dt * 0.8; }
     }
-    const gy = this.current.height(p.position.x, p.position.z);
+    // im Sattel sitzen die Hüften auf dem Rücken des Reit-Taschis
+    const gy = this.groundAt(p.position.x, p.position.z) + (this.mount ? this.mount.seat - this.player.dims.legLen * 0.9 : 0);
     p.position.y += (gy - p.position.y) * Math.min(1, dt * 18);
-    this.player.setLocomotion(speed);
+    if (this.mount) this.player.hold('ride'); else { if (this.player.target === 'ride') this.player.hold('idle'); this.player.setLocomotion(speed); }
     return speed;
   }
   cameraObstruction(t, cx, cy, cz) {
@@ -369,7 +407,7 @@ export class World {
     const c = this.current;
     if (!best && c.type === 'region' && this.save.flags.firstQuest) {
       const ax = p.x + Math.sin(ry) * 2.2, az = p.z + Math.cos(ry) * 2.2;
-      if (fishingWater(c.layout, ax, az)) best = this.fishSpot = Object.assign(this.fishSpot || { id: 'fish', kind: 'fish', r: 1, label: 'Wasser', prompt: 'Angeln' }, { x: ax, z: az });
+      if (fishingWater(c.layout, ax, az)) best = this.fishSpot = Object.assign(this.fishSpot || { id: 'fish', kind: 'fish', r: 1, label: 'Wasser' }, { x: ax, z: az, prompt: this.mount?.mode !== 'surf' && Ride.surfMount(this.save) ? 'Surfen / Angeln' : 'Angeln' });
     }
     return best;
   }
@@ -380,10 +418,16 @@ export class World {
     const t = globalUniforms.uTime.value;
     let speed = 0;
     if (active) speed = this.movePlayer(dt, input);
-    else this.player.setLocomotion(0);
+    else if (!this.mount) this.player.setLocomotion(0);
     this.player.update(dt);
     // follower
-    if (this.follower) {
+    if (this.follower && this.mount) {
+      // das Reit-Taschi läuft unter der Spielfigur mit
+      const f = this.follower.c, pp = this.player.root.position;
+      f.root.position.set(pp.x, this.groundAt(pp.x, pp.z), pp.z);
+      f.root.rotation.y = this.player.root.rotation.y;
+      f.setMoving(speed * 0.6); f.update(dt);
+    } else if (this.follower) {
       const f = this.follower.c, fp = f.root.position, pp = this.player.root.position;
       const dx = pp.x - fp.x, dz = pp.z - fp.z, d = Math.hypot(dx, dz);
       let fs = 0;
@@ -502,6 +546,7 @@ export class World {
   inGrass() {
     const c = this.current, p = this.player.root.position;
     if (c.type === 'interior') return c.interior.encounters ? { habitat: c.interior.encounters.habitat, rate: c.interior.encounters.rate } : null;
+    if (this.mount?.mode === 'surf') return { habitat: 'water', rate: 0.07 };
     const g = grassAt(c.layout, p.x, p.z);
     if (g) return { habitat: g.habitat, rate: 0.11 };
     return null;

@@ -29,7 +29,7 @@ export class HUD {
     };
     this.aBtn = btn('a', 'Aktion', 'confirm');
     this.touch.append(this.touchLayer, this.joy,
-      h('div.tbtns', {}, btn('small', '🏃', 'run'), this.aBtn),
+      h('div.tbtns', {}, h('div.tstack', {}, btn('small', '🐾', 'ride'), btn('small', '🏃', 'run')), this.aBtn),
       h('div.tmenu', {}, btn('small', '☰', 'menu'), btn('small', '◉', 'team'), btn('small', '🗺', 'map')));
     game.ui.root.append(this.touch);
     game.input.bindTouch(this.touchLayer, this.joy, this.joy.firstChild);

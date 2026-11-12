@@ -49,6 +49,12 @@ Geprüft: `npm test` (31 Tests inklusive Durchlauf-Simulation bis zum Sternenmei
 - **Getragene Gegenstände:** Heilbeere, Klarbeere, Lernband, Kraftband, Fokusband – im Laden, anlegen über Team › Taschi › „🎒 Trägt“ oder die Tasche. Wirken im Kampf von selbst, Beeren und Fokusband werden verbraucht.
 - Tests: `tests/controls-held.test.mjs`, Browsertest `node tests/e2e/controls.mjs [Bildordner]` (simulierter Switch Pro Controller).
 
+## Reiten & Surfen (November 2026)
+
+- **Reiten** (Taste R, Controller R3 / rechter Stick drücken, Touch 🐾): Ab dem ersten Licht-Siegel trägt dich ein großes Vierbeiner-, Golem- oder Drachen-Taschi aus dem Team (Begleiter zuerst) – schneller als Rennen. Nochmal drücken zum Absteigen; drinnen wird nicht geritten.
+- **Surfen:** Ab dem dritten Siegel erscheint am Ufer „Surfen / Angeln“. Ein Wasser-Taschi trägt dich über Seen, Flüsse und das Meer; dort gibt es Wasser-Begegnungen. Wer ans Ufer schwimmt, geht automatisch an Land. Gespeichert wird beim Surfen der Startpunkt am Ufer.
+- Logik: `src/logic/ride.js`; Tests `tests/ride.test.mjs`, Browsertest `tests/e2e/ride.mjs`.
+
 ## Pension, Zucht, Kampfturm und Tagesereignisse (November 2026)
 
 - **Pension Sonnenblume** (Wirtin Ilse, in jedem Heilzentrum): zwei Taschis abgeben, sie bekommen beim Laufen 1 EP pro Schritt. Gebühr beim Abholen ★100 + ★25 je gewonnenem Level. Haben beide einen gemeinsamen Typ (oder dieselbe Linie), liegt manchmal ein Ei bereit.
