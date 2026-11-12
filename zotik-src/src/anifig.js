@@ -16,7 +16,9 @@ export function createAniFig({ T, G, TOUCH }) {
   const CAST = {
     mira: { m: 'f1', h: 1.65, hair: '#4a86f0', top: '#c8d8ff', bottom: '#22336e', shoes: '#6a4428', acc: '#b06cff', eye: '#3a8cff',
       x: { long: 1, locks: 1, cape: 0x22336e, clip: 0xb06cff, staff: 0x58b8ff } },
-    lyra: { m: 'f2', h: 1.66, hair: '#ff9ad0', top: '#e8dcff', shoes: '#6a4428', eye: '#9a5ae0', x: { cape: 0xf4eef8, staff: 0x8ad0ff, boots: 0x6a4428 } },
+    // Lyra nach Master-Sheet: lange rosa Wellen, Blütenspange, dunkles Mieder, offener weiß-goldener Mantel mit violettem Futter, dunkle Strümpfe, braun-goldene Stiefel
+    lyra: { m: 'f1', h: 1.66, hair: '#ff9ad0', top: '#2e2c4a', bottom: '#2a2638', shoes: '#7a4a26', acc: '#d8a84a', eye: '#9a5ae0',
+      x: { long: 1, locks: 1, waves: 1, clip: 0xb06cff, coat: 0xe6dfe8, coatH: 1.05, lining: 0x6a2aa8, trim: 0xd8a84a, cape: 0x6a2aa8, capeH: 1.05, belt: 0xd8a84a, staff: 0x8ad0ff, boots: 0x7a4a26, cuffs: 0xd8a84a } },
     nia: { m: 'f1', h: 1.6, hair: '#6ac05a', top: '#a8c878', bottom: '#4a6a2a', shoes: '#5a3a22', acc: '#d8b860', eye: '#3aa04a', x: { pony: 1, bow: 1, quiver: 1 } },
     rovan: { m: 'm2', h: 1.8, hair: '#7a4a2a', top: '#5a78b0', bottom: '#4a3424', shoes: '#3a2a1e', eye: '#8a5a30', x: { cape: 0x2a3a5a, sword: 1, shield: 1, pads: 0x8a8a9a } },
     prof: { m: 'm1', h: 1.75, hair: '#f4f4f4', top: '#efe4c8', bottom: '#5a4030', shoes: '#4a3426', acc: '#b98a4a', eye: '#4a7aa0', skin: '#f6e2d6',
@@ -58,7 +60,7 @@ export function createAniFig({ T, G, TOUCH }) {
     const head = wp('J_Bip_C_Head'), chest = wp('J_Bip_C_UpperChest'), hips = wp('J_Bip_C_Hips'), hr = wp('J_Bip_R_Hand'), hl = wp('J_Bip_L_Hand');
     const hc = C(fig.look.hair).getHex(), V = (a, y, f) => new T.Vector3(a.x, a.y + y, a.z - f), M = (g, c, o) => new T.Mesh(g, gm(c, o));
     const hy = head.y + .1;   // Kopfmitte
-    if (x.long) { const g = new T.CylinderGeometry(.1, .15, .5, 14, 1, true, Math.PI * .62, Math.PI * .76); add('J_Bip_C_Head', M(g, hc, { ds: 1 }), V(head, -.12, -.02)); }
+    if (x.long) { const g = new T.CylinderGeometry(.1, .15, .5, 14, 1, true, -Math.PI * .38, Math.PI * .76);   /* θ = 0 zeigt nach +Z = Rücken (VRoid blickt nach −Z) */ add('J_Bip_C_Head', M(g, hc, { ds: 1 }), V(head, -.12, -.02)); }
     if (x.locks) for (const s of [-1, 1]) add('J_Bip_C_Head', M(new T.ConeGeometry(.035, .34, 7), hc), new T.Vector3(head.x + s * .085, hy - .12, head.z - .03), [Math.PI, 0, s * .12]);
     if (x.pony) { add('J_Bip_C_Head', M(new T.SphereGeometry(.05, 10, 8), hc), V(head, .14, -.1)); add('J_Bip_C_Head', M(new T.ConeGeometry(.05, .36, 8), hc), V(head, -.02, -.14), [Math.PI - .4, 0, 0]); }
     if (x.bun) add('J_Bip_C_Head', M(new T.SphereGeometry(.065, 12, 10), hc), V(head, .2, -.07));
@@ -69,8 +71,13 @@ export function createAniFig({ T, G, TOUCH }) {
     if (x.hat) { add('J_Bip_C_Head', M(new T.CylinderGeometry(.18, .18, .02, 18), x.hat), V(head, .2, 0)); add('J_Bip_C_Head', M(new T.ConeGeometry(.11, .2, 14), x.hat), V(head, .3, 0)); }
     if (x.clip) add('J_Bip_C_Head', M(new T.OctahedronGeometry(.028), x.clip, { e: x.clip }), new T.Vector3(head.x + .07, hy + .06, head.z - .05));
     if (x.goggles) for (const s of [-1, 1]) { add('J_Bip_C_Head', M(new T.TorusGeometry(.032, .01, 6, 14), 0xb98a4a), new T.Vector3(head.x + s * .036, hy + .07, head.z - .07), [-.6, 0, 0]); add('J_Bip_C_Head', M(new T.CircleGeometry(.026, 12), 0x4fe8ff, { e: 0x2ad8f0 }), new T.Vector3(head.x + s * .036, hy + .072, head.z - .077), [-.6 + Math.PI, 0, 0]); }
-    if (x.cape) { const m = M(new T.PlaneGeometry(.38, .75), x.cape, { ds: 1 }); add('J_Bip_C_UpperChest', m, V(chest, -.3, -.13), [-.1, 0, 0]); }
-    if (x.coat) { const g = new T.CylinderGeometry(.16, .26, .55, 14, 1, true, Math.PI * .7, Math.PI * 1.6); add('J_Bip_C_Hips', M(g, x.coat, { ds: 1 }), V(hips, -.2, 0)); }
+    if (x.cape) { const h = x.capeH || .75, g = new T.CylinderGeometry(.15, .27, h, 16, 1, true, -Math.PI * .42, Math.PI * .84); g.translate(0, -h / 2, 0); add('J_Bip_C_UpperChest', M(g, x.cape, { ds: 1 }), V(chest, .05, -.02), [-.06, 0, 0]); }
+    if (x.coat) { const h = x.coatH || .55, y0 = x.coatH ? chest.y - hips.y + .05 : .1, g = new T.CylinderGeometry(x.coatH ? .14 : .16, x.coatH ? .25 : .29, h, 16, 1, true, -Math.PI * .7, Math.PI * 1.4); add('J_Bip_C_Hips', M(g, x.coat), V(hips, y0 - h / 2, 0));
+      if (x.lining) { const gi = new T.CylinderGeometry(.135, x.coatH ? .245 : .285, h * .98, 16, 1, true, -Math.PI * .7, Math.PI * 1.4); const li = new T.Mesh(gi, gm(x.lining, { ds: 1 })); li.material = li.material.clone(); li.material.side = T.BackSide; add('J_Bip_C_Hips', li, V(hips, y0 - h / 2, 0)); }
+      if (x.trim) for (const a of [Math.PI * .7, -Math.PI * .7]) { const t = M(new T.BoxGeometry(.03, h, .02), x.trim, { e: x.trim }); const r = .225; add('J_Bip_C_Hips', t, new T.Vector3(hips.x + Math.sin(a) * r, hips.y + y0 - h / 2, hips.z + Math.cos(a) * r), [0, a, Math.atan2((.29 - .16) * Math.sign(Math.sin(a)), h) * -1]); } }
+    if (x.belt) add('J_Bip_C_Spine', M(new T.TorusGeometry(.125, .014, 6, 20), x.belt, { e: x.belt }), V(hips, .1, 0), [Math.PI / 2, 0, 0]);
+    if (x.cuffs) for (const s of ['L', 'R']) { const a = wp('J_Bip_' + s + '_Hand'); add('J_Bip_' + s + '_LowerArm', M(new T.CylinderGeometry(.04, .045, .07, 10), x.cuffs, { e: x.cuffs }), new T.Vector3(a.x - Math.sign(a.x) * .07, a.y, a.z), [0, 0, Math.PI / 2]); }
+    if (x.waves) for (let i = 0; i < 7; i++) { const a = -1.1 + i * .37, l = .42 + (i % 2) * .1; add('J_Bip_C_Head', M(new T.ConeGeometry(.05, l, 7), hc), new T.Vector3(head.x + Math.sin(a) * .12, hy - .2 - l * .35, head.z + Math.cos(a) * .1), [Math.PI + Math.cos(a) * .15, 0, -Math.sin(a) * .18]); }
     if (x.apron) add('J_Bip_C_Spine', M(new T.BoxGeometry(.26, .38, .015), x.apron), V(hips, -.05, .13));
     if (x.pack) { add('J_Bip_C_UpperChest', M(new T.CylinderGeometry(.11, .11, .32, 12), 0xb98a4a), V(chest, -.05, -.17)); add('J_Bip_C_UpperChest', M(new T.SphereGeometry(.06, 10, 8), 0x4fe8ff, { e: 0x2ad8f0 }), V(chest, -.05, -.29)); }
     if (x.quiver) add('J_Bip_C_UpperChest', M(new T.CylinderGeometry(.045, .045, .38, 8), 0x5a3a22), V(chest, -.05, -.13), [0, 0, .45]);
