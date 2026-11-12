@@ -20,6 +20,7 @@ const PER_WORLD = 4, COUNT = WORLDS.length * PER_WORLD;
 // Legende: # Block  = Steg  x Bröckelsteg  Q Eierblock  J Sprungpilz  m Schwebeplattform
 // o Münze  r rote Münze  F Farbblüte  * Stern  W Flügelwolke(Sterne)  V Flügelwolke(Blüte)  M Farbring
 // g Wuschel  h Hüpfer  f Flatterling  k Stachelkugel  p Schnappblüte  P Start  G Ziel  B Boss
+// T Stampfpfahl (mit Stampfen in den Boden rammen)  ! Schalter  D Punkteblock (fest, solange der Schalter läuft)  U Regenbogenstern
 const CHUNKS = {
   start: { p: '00000000000000', o: [
     '         o o o',
@@ -203,6 +204,27 @@ const CHUNKS = {
     '                     ',
     '     m     m         ',
     '                  k  '] },
+  rainbow: { t: 0, p: '00000000000000000000000000', o: [
+    '                          ',
+    '    Q     U               ',
+    '                          ',
+    '                          ',
+    '      g    g    g     g   '] },
+  posts: { t: 1, p: '0000000000000000000000', o: [
+    '            o o       ',
+    '                      ',
+    '       T       T      ',
+    '  g    T       T   g  '] },
+  switchSteps: { t: 1, p: '000000000000000000000000', o: [
+    '                 * * *  ',
+    '                        ',
+    '               DDDDD    ',
+    '                        ',
+    '           DDD          ',
+    '                        ',
+    '       DDD              ',
+    '                        ',
+    '   !                 g  '] },
   flyerGap: { t: 1, p: '000000      000000000', o: [
     '        f            ',
     '                     ',
@@ -261,7 +283,7 @@ function build(n) {
       for (let c = 0; c < line.length; c++) {
         const s = line[c]; if (s === ' ') continue;
         let r = top + i;
-        if ('#=Q^'.includes(s)) { grid[r][x + c] = s; continue; }
+        if ('#=Q^TD'.includes(s)) { grid[r][x + c] = s; continue; }
         while (r > 0 && grid[r][x + c] === '#') r--; // Objekte nie im Boden einbauen
         spawns.push({ c: x + c, r, ch: s });
       }
@@ -309,7 +331,7 @@ function build(n) {
 // Erreichbarkeitsprüfung (für Tests): grobe Sprunghülle über begehbare Felder.
 function validate(L) {
   const g = (c, r) => (r < 0 || c < 0 || c >= L.cols) ? ' ' : r >= L.rows ? ' ' : L.grid[r][c];
-  const solid = (c, r) => '#Q'.includes(g(c, r));
+  const solid = (c, r) => '#QT'.includes(g(c, r)); // Punkteblöcke (D) zählen nicht: sie sind nur ein Zusatzweg
   const extra = new Set();
   for (const s of L.spawns) {
     if (s.ch === 'x') extra.add(s.c + ',' + s.r);
