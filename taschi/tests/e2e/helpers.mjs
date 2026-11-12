@@ -23,6 +23,8 @@ export async function launch({ width = 1280, height = 720, touch = false, storag
   return { browser, page, errors, logs, base, close: async () => { await browser.close(); server.close(); } };
 }
 export const G = (page, fn, arg) => page.evaluate(fn, arg);
+// Startbildschirm: erst „Drücke eine Taste“, dann das Hauptmenü
+export async function pressStart(page) { await page.waitForSelector('#title'); if (await page.locator('#title.stage-press').count()) { await page.keyboard.press('Enter'); await page.waitForSelector('#title.stage-menu'); } }
 export async function waitState(page, state, timeout = 120000) { await page.waitForFunction((s) => window.__taschi?.state === s, state, { timeout }); }
 export async function waitIdle(page, timeout = 60000) { await page.waitForFunction(() => { const g = window.__taschi; return g && !g.busy && !g.ui.blocking && g.state === 'world'; }, null, { timeout }); }
 // Advance dialogs by pressing confirm until the UI is free or a predicate holds.
@@ -86,6 +88,7 @@ export async function startSeeded(opts = {}, mutate) {
   const t = await launch({ ...opts, storage });
   await t.page.goto(t.base);
   await waitState(t.page, 'title');
+  await pressStart(t.page);
   await t.page.getByText('Fortsetzen').click();
   await waitState(t.page, 'world');
   await waitIdle(t.page);

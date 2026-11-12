@@ -1,7 +1,7 @@
 // Browsertest: Switch-Controller (simuliert), Maus, Bildschirmtastatur,
 // getragene Gegenstände und Angeln. Run: node tests/e2e/controls.mjs [screenshot-dir]
 import assert from 'node:assert/strict';
-import { launch, seededStorage, waitState, waitIdle, G, advance } from './helpers.mjs';
+import { launch, seededStorage, waitState, waitIdle, G, advance, pressStart } from './helpers.mjs';
 
 const dir = process.argv[2] || null;
 const storage = await seededStorage((s) => { s.bag.heilbeere = 2; s.bag.lernband = 1; });
@@ -20,6 +20,7 @@ const A = 1, B = 0, X = 3, DOWN = 13, RIGHT = 15;
 try {
   await page.goto(t.base);
   await waitState(page, 'title');
+  await pressStart(page);
   await page.getByText('Fortsetzen').click();
   await waitState(page, 'world'); await waitIdle(page);
   // X öffnet das Menü, B schließt es

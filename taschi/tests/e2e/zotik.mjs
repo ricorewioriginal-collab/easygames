@@ -2,7 +2,7 @@
 // Glaskuppel in Sonnenhain (Kampf erst mit dem Moos-Siegel), Eltern im eigenen Haus, zerbrochene Lichtkammer im Labor.
 // Run: node tests/e2e/zotik.mjs [screenshot-dir]
 import assert from 'node:assert/strict';
-import { launch, startSeeded, G, waitState, waitIdle, advance, interactWith } from './helpers.mjs';
+import { launch, startSeeded, G, waitState, waitIdle, advance, interactWith, pressStart } from './helpers.mjs';
 
 const dir = process.argv[2] || null;
 const step = (s) => console.log('  ✓ ' + s);
@@ -15,6 +15,7 @@ const shot = async (page, name) => { if (dir) await page.screenshot({ path: dir 
   try {
     await page.goto(t.base);
     await waitState(page, 'title');
+    await pressStart(page);
     await page.getByText('Neues Abenteuer').click();
     await page.waitForSelector('#creatorview canvas', { timeout: 30000 });
     await page.getByText('🦊 Zotik', { exact: true }).click();

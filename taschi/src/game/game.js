@@ -19,6 +19,7 @@ import { openPhotoMode } from '../ui/photo.js';
 import * as Tower from '../logic/tower.js';
 import * as Daycare from '../logic/daycare.js';
 import { titleScreen, slotScreen, creatorScreen, introSlides, starterPreview } from '../ui/screens.js';
+import { logo, sparks, townCard, LOAD_TIPS } from '../ui/brand.js';
 import { World } from './world.js';
 import { BattleScene } from './battle-scene.js';
 import { REGIONS } from '../data/regions.js';
@@ -194,14 +195,17 @@ export class Game {
   }
 
   // ------------------------------------------------------------------ locations
-  async loadWithScreen(fn, label = 'Unterwegs …') {
-    const bar = h('i'), txt = h('div.loadtext', {}, label);
-    const el = h('div.screen', { style: { background: 'radial-gradient(ellipse at 50% 30%, #2f5f8a, #0b1424)', zIndex: 49 } }, h('div.logo', {}, h('div.orb', { style: { width: '70px', height: '70px' } }), h('div.loadbar', {}, bar), txt));
+  // Ladebildschirm. town = Regionsnummer: Stadt-Titelkarte mit Motiv (beim Betreten einer Stadt).
+  async loadWithScreen(fn, label = 'Unterwegs …', town = null) {
+    const bar = h('i'), txt = h('div.loadtext', {}, town === null ? label : 'Lädt …');
+    const el = town === null
+      ? h('div.screen.loadscreen', {}, sparks(10, 3), h('div.ls-center', {}, logo('md'), h('div.loadbar', {}, bar), txt, h('div.tip', {}, LOAD_TIPS[Math.floor(Math.random() * LOAD_TIPS.length)])))
+      : h('div.screen.loadscreen.town', {}, townCard(town, bar, txt));
     const scr = { el, onInput: () => true };
     this.ui.push(scr);
-    const t0 = performance.now();
+    const t0 = performance.now(), min = town === null ? 350 : 1600;
     try { return await fn((p, t) => { bar.style.width = Math.round(p * 100) + '%'; if (t) txt.textContent = t; }); }
-    finally { const dt = performance.now() - t0; if (dt < 350) await wait(350 - dt); this.ui.pop(scr); }
+    finally { bar.style.width = '100%'; const dt = performance.now() - t0; if (dt < min) await wait(min - dt); el.classList.add('out'); await wait(town === null ? 0 : 260); this.ui.pop(scr); }
   }
   async enterLocation(loc) {
     const [kind, id] = String(loc.map).split(':');
@@ -210,7 +214,7 @@ export class Game {
     await this.loadWithScreen(async (prog) => {
       if (kind === 'region') await this.world.loadRegion(r, loc.spawn || { x: loc.x, z: loc.z, ry: loc.ry }, prog);
       else { await this.world.loadRegion(r, 'heal', prog); }
-    }, kind === 'region' ? (r === 16 ? 'Sternengipfel' : REGIONS[r].name) : 'Unterwegs …');
+    }, kind === 'region' ? (r === 16 ? 'Sternengipfel' : REGIONS[r].name) : 'Unterwegs …', kind === 'region' ? r : null);
     this.world.buildPlayer();
     let sp = loc.spawn ? (this.world.current.layout.spawn[loc.spawn] || this.world.current.layout.spawn.start) : loc;
     // saves from before the map expansion may point at a spot that is now
@@ -235,7 +239,7 @@ export class Game {
     await this.ui.fade(true);
     try {
       this.setState(STATES.LOADING);
-      await this.loadWithScreen((prog) => this.world.loadRegion(r, spawn, prog), r === 16 ? 'Sternengipfel' : REGIONS[r].name);
+      await this.loadWithScreen((prog) => this.world.loadRegion(r, spawn, prog), r === 16 ? 'Sternengipfel' : REGIONS[r].name, r);
       this.world.refreshFollower();
       this.afterRegionLoaded();
       this.setState(STATES.WORLD);
@@ -1253,7 +1257,7 @@ export class Game {
     const [, id] = String(s.lastHeal.map).split(':');
     const r = Number(id) || 0;
     this.setState(STATES.LOADING);
-    await this.loadWithScreen((prog) => this.world.loadRegion(r, 'heal', prog), REGIONS[Math.min(15, r)]?.name);
+    await this.loadWithScreen((prog) => this.world.loadRegion(r, 'heal', prog), REGIONS[Math.min(15, r)]?.name, r);
     this.world.refreshFollower();
     this.afterRegionLoaded();
     this.setState(STATES.WORLD);
