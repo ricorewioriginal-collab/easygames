@@ -8,12 +8,15 @@ import { fmtTime } from './menus.js';
 
 const hex = (c) => '#' + c.toString(16).padStart(6, '0');
 
-export function titleScreen(game, { onContinue, onNew, onSlots, onSettings }) {
+export function titleScreen(game, { onContinue, onNew, onSlots, onSettings, onOnline, joinCode }) {
   const sum = game.store.summary(game.slot);
   const el = h('div#title.layer', {},
     h('div.logo', {}, h('div.orb'), h('h1', {}, 'TASCHI'), h('p.sub', {}, 'DIE 16 LICHTER')),
     h('div.menu', {},
       sum.empty ? null : h('button.bigbtn.primary.focusable', { onclick: onContinue, 'data-autofocus': '' }, h('span.ic', {}, '▶'), h('span', {}, 'Fortsetzen', h('div.muted', { style: { fontSize: '.7em', fontWeight: 400 } }, sum.name + ' · ' + sum.badges + '/16 Siegel · ' + REGIONS[Math.min(15, sum.region)].name))),
+      !sum.empty && joinCode ? h('button.bigbtn.primary.focusable', { onclick: () => onOnline(joinCode) }, h('span.ic', {}, '🌐'), h('span', {}, 'Online beitreten', h('div.muted', { style: { fontSize: '.7em', fontWeight: 400 } }, 'Raum ' + joinCode + ' · mit ' + sum.name))) : null,
+      sum.empty ? (joinCode ? h('p.muted', {}, '🌐 Einladung zu Raum ' + joinCode + ': Starte zuerst ein Abenteuer, dann kannst du beitreten.') : null)
+        : h('button.bigbtn.focusable', { onclick: () => onOnline(null) }, h('span.ic', {}, '🌐'), 'Online & Freunde'),
       h('button.bigbtn.focusable' + (sum.empty ? '.primary' : ''), { onclick: onNew, 'data-autofocus': sum.empty ? '' : undefined }, h('span.ic', {}, '✦'), 'Neues Abenteuer'),
       h('button.bigbtn.focusable', { onclick: onSlots }, h('span.ic', {}, '▤'), 'Spielstand wählen (Platz ' + game.slot + ')'),
       h('button.bigbtn.focusable', { onclick: onSettings }, h('span.ic', {}, '⚙'), 'Einstellungen'),

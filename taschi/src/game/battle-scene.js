@@ -7,7 +7,8 @@ import { MOVES, STATUS } from '../data/moves.js';
 import { TYPES, effectiveness } from '../data/types.js';
 import { ITEMS } from '../data/items.js';
 import { REGIONS } from '../data/regions.js';
-import { createBattle, runTurn, replace, playerOptions, activeMon, targetsFor, catchChance } from '../logic/battle.js';
+import { createBattle, runTurn, replace, replaceFoe, playerOptions, activeMon, targetsFor, catchChance } from '../logic/battle.js';
+import { snapshot, applySnapshot, mirrorEvents, cleanChoices } from '../logic/link.js';
 import { maxHp, xpToNext, evolve, replaceMove } from '../logic/monster.js';
 import { createCreature, displayScale } from '../engine/creatures.js';
 import { loadSpeciesModel } from '../engine/models.js';
@@ -262,7 +263,7 @@ export class BattleScene {
     const team0 = opts.playerTeam || save.team;
     await Promise.race([Promise.all([...team0, ...(opts.foeTeam || [])].map(m => loadSpeciesModel(m.id).catch(() => null))), new Promise(r => setTimeout(r, 4000))]);
     this.buildStage(opts.region, indoor);
-    const b = createBattle({ rng: g.rng, kind: opts.kind, format: opts.format, canRun: opts.canRun, canCatch: opts.canCatch, night: g.isNight(), dark: indoor, weather: indoor ? null : g.world.weather, starUnlocked: (save.badges || 0) >= 1,
+    const b = createBattle({ rng: g.rng, kind: opts.kind, pvp: !!opts.online, format: opts.format, canRun: opts.canRun, canCatch: opts.canCatch, night: g.isNight(), dark: indoor, weather: indoor ? null : g.world.weather, starUnlocked: (save.badges || 0) >= 1,
       player: { team: opts.playerTeam || save.team, bag: opts.playerBag || save.bag, name: save.player.name }, foe: { team: opts.foeTeam, ai: opts.ai ?? 0, trainer: opts.kind !== 'wild', name: opts.trainerName || '', items: { ...(opts.items || {}) }, star: !!opts.foeStar } });
     this.b = b; this.opts = opts;
     if (b.weather && WEATHER[b.weather]) g.ui.toast(weatherText(b.weather), WEATHER[b.weather].icon);
@@ -305,6 +306,7 @@ export class BattleScene {
     this.ui.pop(screen); this.waitScreen = null;
 
     // turn loop
+    if (opts.online) await this.onlineLoop(b, opts.online);
     let guard = 0;
     while (!b.result && guard++ < 500) {
       if (b.phase === 'replace') {
@@ -335,6 +337,97 @@ export class BattleScene {
     return result;
   }
 
+  // ------------------------------------------------------------------ online
+  // Online-Kampf: Der Gastgeber rechnet, der Gast schickt seine Wahl und spielt
+  // die gespiegelten Ereignisse ab. Beide wählen mit denselben Menüs wie sonst.
+  async pickChoices(b) {
+    const choices = [];
+    const actives = b.sides[0].active.map((i, slot) => ({ slot, m: i === null ? null : b.sides[0].team[i] })).filter(x => x.m && x.m.hp > 0);
+    for (let k = 0; k < actives.length; k++) {
+      const c = await this.chooseAction(actives[k].slot, k > 0);
+      if (c === 'cancel') { this.menuArea([]); return null; }
+      if (c === 'back') { choices.pop(); k -= 2; if (k < -1) k = -1; continue; }
+      choices.push(c);
+      if (c.type === 'forfeit') break;
+    }
+    this.menuArea([]);
+    return choices;
+  }
+  async waitFor(link, name, ...types) {
+    this.logEl.textContent = 'Warte auf ' + name + ' …';
+    const msg = await link.recv(...types);
+    return msg;
+  }
+  async playOnline(ev) {
+    const waitS = { el: h('div'), onInput: (input) => { if (input.pressed('confirm') || input.pressed('back')) this.skip = true; input.nav(); return true; } };
+    this.ui.push(waitS);
+    await this.playEvents(ev);
+    this.ui.pop(waitS);
+  }
+  async onlineEnd(b, outcome, text) {
+    b.result = { outcome }; b.phase = 'end';
+    await this.playOnline([{ t: 'end', outcome, text }]);
+  }
+  async onlineLoop(b, { link, host, name }) {
+    // Gibt die Gegenseite auf oder reißt die Verbindung ab, während man selbst noch wählt, endet die Wahl sofort
+    const off = link.on((d) => { if (d.t === 'forfeit' || d.t === 'closed') this.cancelChoice?.(); return false; });
+    try { await this.onlineTurns(b, link, host, name); } finally { off(); this.cancelChoice = null; }
+  }
+  async onlineTurns(b, link, host, name) {
+    const lost = () => this.onlineEnd(b, 'run', 'Die Verbindung zu ' + name + ' ist abgerissen. Der Kampf endet ohne Sieger.');
+    const gaveUp = () => { link.drop('forfeit'); return this.onlineEnd(b, 'win', name + ' gibt auf. Du gewinnst!'); };
+    const pickSwitch = async () => { const i = await this.chooseSwitch(true); return i; };
+    let guard = 0;
+    while (!b.result && guard++ < 500) {
+      if (host) {
+        const ev = [];
+        if (b.phase === 'replace') {
+          for (const slot of [...b.needReplace]) { const i = await pickSwitch(); if (i < 0) return link.closed ? lost() : gaveUp(); ev.push(...replace(b, slot, i).ev); }
+          if (b.foeReplace.length) {
+            const msg = await this.waitFor(link, name, 'rep', 'forfeit');
+            if (!msg) return lost();
+            if (msg.t === 'forfeit') { link.send({ t: 'turn', ev: [], snap: snapshot(b) }); return this.onlineEnd(b, 'win', name + ' gibt auf. Du gewinnst!'); }
+            for (const slot of [...b.foeReplace]) {
+              const want = (msg.picks || []).find(p => p.slot === slot)?.idx | 0, side = b.sides[1];
+              const idx = side.team[want]?.hp > 0 && !side.active.includes(want) ? want : side.team.findIndex((m, i) => m.hp > 0 && !side.active.includes(i));
+              ev.push(...replaceFoe(b, slot, idx).ev);
+            }
+          }
+        } else {
+          const mine = await this.pickChoices(b);
+          if (link.closed) return lost();
+          if (!mine) return gaveUp();
+          if (mine.some(c => c.type === 'forfeit')) { link.send({ t: 'forfeit' }); return this.onlineEnd(b, 'lose', 'Du gibst auf.'); }
+          const msg = await this.waitFor(link, name, 'choices', 'forfeit');
+          if (!msg) return lost();
+          if (msg.t === 'forfeit') return this.onlineEnd(b, 'win', name + ' gibt auf. Du gewinnst!');
+          ev.push(...runTurn(b, mine, cleanChoices(b, 1, msg.list)));
+        }
+        link.send({ t: 'turn', ev, snap: snapshot(b) });
+        await this.playOnline(ev);
+      } else {
+        if (b.phase === 'replace') {
+          const picks = [];
+          for (const slot of [...b.needReplace]) { const idx = await pickSwitch(); if (idx < 0) return link.closed ? lost() : gaveUp(); picks.push({ slot, idx }); b.sides[0].active[slot] = idx; }
+          if (picks.length) link.send({ t: 'rep', picks });
+        } else {
+          const mine = await this.pickChoices(b);
+          if (link.closed) return lost();
+          if (!mine) return gaveUp();
+          if (mine.some(c => c.type === 'forfeit')) { link.send({ t: 'forfeit' }); return this.onlineEnd(b, 'lose', 'Du gibst auf.'); }
+          link.send({ t: 'choices', list: mine });
+        }
+        const msg = await this.waitFor(link, name, 'turn', 'forfeit');
+        if (!msg) return lost();
+        if (msg.t === 'forfeit') return this.onlineEnd(b, 'win', name + ' gibt auf. Du gewinnst!');
+        const ev = mirrorEvents(msg.ev || [], b, { hostName: name });
+        applySnapshot(b, msg.snap, true);
+        if (b.result) ev.some(e => e.t === 'end') || ev.push({ t: 'end', outcome: b.result.outcome, text: '' });
+        await this.playOnline(ev);
+      }
+    }
+  }
+
   // ------------------------------------------------------------------ menus
   chooseAction(slot, canBack) {
     const b = this.b;
@@ -343,13 +436,16 @@ export class BattleScene {
       const name = m.nick || SPECIES[m.id].name;
       this.logEl.textContent = 'Was soll ' + name + ' tun?';
       const screen = { el: h('div'), nav: null };
-      const done = (v) => { this.ui.pop(screen); resolve(v); };
+      const done = (v) => { if (this.cancelChoice === cancel) this.cancelChoice = null; if (this.ui.stack.includes(screen)) this.ui.pop(screen); resolve(v); };
+      const cancel = () => { while (this.ui.top && this.ui.top !== screen && this.ui.stack.includes(screen)) this.ui.pop(); done('cancel'); };
+      this.cancelChoice = cancel;
       const main = () => {
         this.menuArea([
           h('button.bact.fight.focusable', { onclick: () => moves(), 'data-autofocus': '' }, 'Kampf', h('small', {}, opt.struggle ? 'Keine AP mehr' : 'Attacke wählen')),
           h('button.bact.bag.focusable', { onclick: () => bag() }, 'Tasche', h('small', {}, 'Items & Kapseln')),
           h('button.bact.team.focusable', { onclick: () => team() }, 'Taschis', h('small', {}, 'Wechseln')),
-          h('button.bact.run.focusable' + (opt.canRun ? '' : '.disabled'), { onclick: () => opt.canRun ? done({ slot, type: 'run' }) : this.ui.toast('Aus diesem Kampf kannst du nicht fliehen!') }, 'Flucht', h('small', {}, opt.canRun ? 'Entkommen' : 'Nicht möglich'))
+          this.opts.online ? h('button.bact.run.focusable', { onclick: async () => { const c = await this.ui.ask([{ text: 'Wirklich aufgeben? Dann gewinnt ' + this.opts.online.name + '.' }], ['Weiterkämpfen', 'Aufgeben'], { cancelIndex: 0 }); if (c === 1) done({ slot, type: 'forfeit' }); } }, 'Aufgeben', h('small', {}, 'Kampf beenden'))
+            : h('button.bact.run.focusable' + (opt.canRun ? '' : '.disabled'), { onclick: () => opt.canRun ? done({ slot, type: 'run' }) : this.ui.toast('Aus diesem Kampf kannst du nicht fliehen!') }, 'Flucht', h('small', {}, opt.canRun ? 'Entkommen' : 'Nicht möglich'))
         ]);
         screen.nav.current = null; screen.nav.ensure();
         screen.onBack = canBack ? () => done('back') : null;
@@ -407,7 +503,8 @@ export class BattleScene {
       const list = side.team.map((m, i) => ({ m, i })).filter(x => x.m.hp > 0 && !side.active.includes(x.i));
       this.logEl.textContent = 'Welches Taschi soll kämpfen?';
       const screen = { el: h('div'), nav: new FocusNav(this.actEl) };
-      this.menuArea(list.map(x => h('button.bact.team.focusable', { onclick: () => { this.ui.pop(screen); resolve(x.i); } }, (x.m.nick || SPECIES[x.m.id].name) + ' Lv' + x.m.lv, h('small', {}, x.m.hp + '/' + maxHp(x.m) + ' KP'))));
+      this.cancelChoice = () => { this.cancelChoice = null; if (this.ui.stack.includes(screen)) this.ui.pop(screen); this.menuArea([]); resolve(-1); };
+      this.menuArea(list.map(x => h('button.bact.team.focusable', { onclick: () => { this.cancelChoice = null; this.ui.pop(screen); resolve(x.i); } }, (x.m.nick || SPECIES[x.m.id].name) + ' Lv' + x.m.lv, h('small', {}, x.m.hp + '/' + maxHp(x.m) + ' KP'))));
       this.ui.push(screen);
       void forced;
     });

@@ -14,6 +14,7 @@ import { lookForRole } from '../engine/characters.js';
 import { HUD } from '../ui/hud.js';
 import { openPauseMenu, openShop, openStorage, openTravel } from '../ui/menus.js';
 import { openDaycare, hatchScene, openCamp, openWheel, openTower } from '../ui/extras.js';
+import { openOnline, joinCodeFromUrl } from '../ui/online.js';
 import * as Tower from '../logic/tower.js';
 import * as Daycare from '../logic/daycare.js';
 import { titleScreen, slotScreen, creatorScreen, introSlides, starterPreview } from '../ui/screens.js';
@@ -111,6 +112,8 @@ export class Game {
     const sum = this.store.summary(this.slot);
     const scr = titleScreen(this, {
       onContinue: () => this.continueGame(),
+      onOnline: async (join) => { await this.continueGame(); if (this.state === STATES.WORLD && this.save?.team.length) this.openOnline(join); },
+      joinCode: joinCodeFromUrl(),
       onNew: async () => {
         if (!sum.empty) { const c = await this.ui.ask([{ text: 'Auf Platz ' + this.slot + ' gibt es schon ein Abenteuer. Überschreiben? (Exportiere es vorher, wenn du es behalten möchtest.)' }], ['Abbrechen', 'Überschreiben'], { cancelIndex: 0 }); if (c !== 1) return; }
         this.newGame();
@@ -979,6 +982,14 @@ export class Game {
 
   // ------------------------------------------------------------------ camp & kampfturm
   async openCamp() { if (!this.save.team.length) return; await openCamp(this); }
+  // 🌐 Online-Tausch und -Kampf (Menü › Team, Titelbild oder Einladungslink #join=CODE)
+  async openOnline(join = null) {
+    if (!this.save?.team.length) { this.ui.toast('Du brauchst mindestens ein Taschi.', '🌐'); return; }
+    if (this.onlineOpen) return;
+    this.onlineOpen = true;
+    this.ui.clear();
+    try { await openOnline(this, { join }); } finally { this.onlineOpen = false; this.saveNow(); }
+  }
   async towerFlow() {
     const s = this.save;
     if (!Tower.towerOpen(s)) return this.ui.say([{ who: 'Turmwächterin Vera', text: 'Der Kampfturm steht allen offen, die mindestens ' + Tower.TOWER_BADGES + ' Licht-Siegel tragen. Komm wieder, wenn du so weit bist!' }]);

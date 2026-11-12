@@ -75,6 +75,7 @@ const TAB_RENDER = {
       (s.eggs || []).length ? [h('h3', {}, '🥚 Eier (' + s.eggs.length + ')'), h('div.grid', {}, s.eggs.map(egg => h('button.card.focusable', { onclick: () => game.ui.say([{ text: eggHint(egg) + ' Noch etwa ' + egg.left + ' Schritte.' }]) },
         h('div.portrait.egg', {}, '🥚'), h('div.meta', {}, h('div.name', {}, 'Ei'), h('div.sub', {}, eggHint(egg)), hpBar(egg.total - egg.left, egg.total)))))] : null,
       h('div.row', {}, h('button.btn.focusable', { onclick: () => game.openCamp() }, '⛺ Taschi-Camp'), h('span.muted', {}, ' Streicheln, spielen, füttern: Zuneigung stärkt im Kampf.')),
+      h('div.row', {}, h('button.btn.focusable', { onclick: () => game.openOnline() }, '🌐 Online: Tauschen & Kämpfen'), h('span.muted', {}, ' Mit Freunden per Link, QR-Code oder Code – von überall.')),
       h('p.muted', {}, 'Im Lager: ' + s.box.length + ' Taschis · Lager im Heilzentrum verwalten.'));
   },
   dex(game) {
@@ -222,6 +223,7 @@ export function openStatus(game, m, after) {
       (() => { const n = natureOf(m), ab = abilityOf(m.id), L = { atk: 'Angriff', def: 'Verteidigung', speed: 'Initiative' };
         return h('div.list', {}, h('div.row', {}, h('div.grow', {}, h('b', {}, 'Wesen: ' + n.name + (m.shiny ? '  ✨ schillernd' : '')), h('div.muted', {}, n.up ? L[n.up] + ' +10 %, ' + L[n.down] + ' −10 %' : 'Keine Wertänderung'))),
           h('div.row', {}, h('div.grow', {}, h('b', {}, 'Fähigkeit: ' + ab.name), h('div.muted', {}, ab.text))),
+          m.ot ? h('div.row', {}, h('div.grow', {}, h('b', {}, '🌐 Ertauscht von ' + m.ot), h('div.muted', {}, 'Kam über einen Online-Tausch in dein Team.'))) : null,
           h('button.row.focusable', { onclick: () => openHeldPicker(game, m, () => { game.ui.pop(screen); openStatus(game, m, after); }) }, h('div.grow', {}, h('b', {}, '🎒 Trägt: ' + (m.held ? ITEMS[m.held].name : 'nichts')), h('div.muted', {}, m.held ? ITEMS[m.held].desc : 'Gib deinem Taschi eine Beere oder ein Band – es wirkt im Kampf von selbst.')), h('span.right', {}, 'Ändern'))); })(),
       h('h3', {}, 'Attacken'),
       h('div.list', {}, m.moves.map(x => { const mv = MOVES[x.id]; return h('div.row', {}, h('div.grow', {}, typeBadge(mv.type), ' ', h('b', {}, mv.name), h('div.muted', {}, (mv.power ? 'Stärke ' + mv.power + ' · ' : 'Status · ') + 'Genauigkeit ' + Math.round(mv.acc * 100) + '% ' + (mv.desc ? '· ' + mv.desc : ''))), h('span.right', {}, x.pp + '/' + mv.pp + ' AP')); })),

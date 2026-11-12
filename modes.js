@@ -23,6 +23,7 @@ window.EASYGAMES_MODES = {
   'ricopoly': { online: true, multi: true },
   'partyverse': { online: true, multi: true },
   'riftzone': { online: true },
+  'taschi': { online: true },
   'ricolife': { online: true },
   'anmacha-kartenrausch': { pad: true, online: true, multi: true },
   'wortfunk': { pad: true, online: true, multi: true, tvParam: true },
