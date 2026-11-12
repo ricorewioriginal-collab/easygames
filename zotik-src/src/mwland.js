@@ -163,6 +163,18 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       b.cyl(30, 0, -54, 1.8, .8, 0x9a9488, { solid: 1 }); b.cyl(30, .8, -54, .3, 1.4, 0x9a9488); K.water(30, -54, 1.5, 0x6a9ab8, .78);
       K.stall(24, -48, 0xc83a2a, 1.5); K.stall(42, -54, 0x3a6ac8, -1.2, 0xc8a070);
       for (const [x, z] of [[-14, -40], [14, -40], [-16, -64], [16, -64], [-6, -30], [6, -30]]) K.lamp(x, z);
+      // Großer Saal des Justizpalastes (Narrenfest): Halle mit Spitzbögen, Bühne, Freudenfeuer-Plätze
+      b.box(-70, 0, 14, 16, 7, 8, 0x8a8274, { solid: 1, tex: 'stone' }); for (let i = 0; i < 4; i++) K.arch(-76 + i * 4, 9.6, 2.6, 4.4, 0x9a9284, 0, .5); b.box(-64, 0, 4, 6, .9, 3, 0x6a4a2a, { solid: 1, tex: 'wood' });
+      for (const [x, z, c] of [[-60, 6, 0xc8402a], [-66, 6, 0xd8b040], [-62, 2.6, 0x4a6ac8]]) b.box(x, .9, z, 1.4, 2.2, .1, c, { cast: false });
+      // Schenke „Zum Apfel Evas“: Fachwerkhaus, Fässer, Schild, Laternen
+      K.house(72, -8, 9, 7, 3.6, 0xe0d4b8, 0x5a3a2a, -.4, { beams: 0x4a2a1a, chimney: 1 }); b.box(66, 2.6, -3.2, .1, .1, 1.6, 0x2a2a2a, { cast: false }); b.box(66, 1.9, -2.6, .1, 1, 1, 0xc83a2a, { cast: false });
+      for (const [x, z] of [[62, 2], [64, 4], [70, 4], [60, -4]]) b.cyl(x, 0, z, .5, 1, 0x6a4a2a, { solid: 1, tex: 'wood' }); K.lamp(58, 0); K.lamp(74, 2);
+      // Frollos Alchemistenzelle im Nordturm-Rest: runder Turm, grünes Leuchten, Bücher, Destillierkolben
+      K.tower(-70, -94, 4.2, 12, 0x6a6468, 0x2a2232, 7, { win: 0x5aff8a, crown: 1 }); b.box(-70, 0, -89.6, 1.6, 2.6, .2, 0x0e0c0a, { cast: false });
+      for (let i = 0; i < 6; i++) b.sph(-64 + (i % 3) * 1.2, .5, -86 + Math.floor(i / 3) * 1.2, .35, .5, .35, 0x7affaa, { mat: { e: 0x2adf6a, ei: 1.6, t: .7 }, cast: false }); b.glow(0x5aff8a, 6, -63, 1, -85.4, .5);
+      // Montfaucon: kahler Hügel mit Steinpfeilern und Raben
+      for (let i = 0; i < 8; i++) { const a = i * .785; b.box(64 + Math.cos(a) * 7, 0, -96 + Math.sin(a) * 7, 1.2, 6, 1.2, 0x5a5652, { solid: 1, tex: 'stone' }); }
+      b.box(64, 6, -96, 15.4, .7, 1, 0x4a4642, { tex: 'stone' }); b.box(64, 6, -96, 1, .7, 15.4, 0x4a4642, { tex: 'stone' });
     },
     theben(b, w, A) {
       const K = kit(b), S = 0xece4d4;
