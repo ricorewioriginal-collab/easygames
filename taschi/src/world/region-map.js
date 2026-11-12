@@ -11,6 +11,7 @@ import { InstanceField, vegetationGeometry, rockGeometry, tallGrassGeometry, tuf
 import { SIZE } from '../logic/layout.js';
 import * as BLD from '../engine/buildings.js';
 import * as TS from '../engine/townstyle.js';
+import { loadItem } from '../engine/kaykit.js';
 import { townOf } from '../data/towns.js';
 import { Builder, matrix } from '../engine/geometry.js';
 import { envMaterial, waterMaterial, glowMaterial, foliageMaterial } from '../engine/materials.js';
@@ -122,6 +123,7 @@ export async function buildRegionMap(L, { quality, onProgress = () => {}, save }
     if (b.kind === 'house' && !b.enter) interact.push({ id: 'knock:' + b.id, kind: 'knock', x: b.door.x, z: b.door.z, r: 1.6, label: b.label, prompt: 'Klopfen' });
     if (b.kind === 'pavilion') interact.push({ id: 'champion', kind: 'champion', x: b.x, z: b.z, r: 3.5, label: region?.champion?.name, prompt: 'Champion' });
   }
+  if (r !== 16) arenaArmory(root, L, H, r);
   if (L.dome) {
     const d = BLD.glassDome(L.dome.r);
     place(d, L.dome.x, L.dome.z, L.dome.yaw, 0.05);
@@ -377,3 +379,34 @@ function waterNear(L, x, z) {
 }
 
 void glowMaterial;
+
+// KayKit-Deko (CC0): Schilde mit gekreuzten Schwertern an der Arena und
+// Waffenständer an der Treppe. Lädt im Hintergrund nach, blockiert den Aufbau nicht.
+const SHIELDS = ['shield_A', 'shield_B', 'shield_C'];
+function arenaArmory(root, L, H, r) {
+  const arena = L.buildings.find(b => b.kind === 'arena');
+  if (!arena) return;
+  const cos = Math.cos(arena.yaw), sin = Math.sin(arena.yaw);
+  const at = (lx, ly, lz, obj, ry = 0, rz = 0, s = 1) => {
+    obj.position.set(arena.x + cos * lx + sin * lz, H(arena.x, arena.z) + ly, arena.z - sin * lx + cos * lz);
+    obj.rotation.set(0, arena.yaw + ry, rz); obj.scale.setScalar(s); root.add(obj);
+  };
+  const shield = SHIELDS[r % 3];
+  for (const sx of [-1, 1]) {
+    loadItem('sword_C').then(m => at(sx * 5.6 - 0.05, 3.9, arena.d / 2 + 0.12, m, 0, 0.75, 2)).catch(() => {});
+    loadItem('sword_C').then(m => at(sx * 5.6 + 0.05, 3.9, arena.d / 2 + 0.12, m, 0, -0.75, 2)).catch(() => {});
+    loadItem(shield).then(m => at(sx * 5.6, 5.0, arena.d / 2 + 0.3, m, 0, 0, 1.3)).catch(() => {});
+  }
+  // Ständer: Holzgestell mit lehnenden Waffen
+  const rackB = new Builder();
+  for (const p of L.props.filter(p => p.kind === 'rack')) {
+    const y = H(p.x, p.z);
+    for (const dx of [-1, 1]) rackB.box(0.14, 1.7, 0.14, 0x6a4a32, p.x + dx * 1.1, y + 0.85, p.z);
+    rackB.box(2.5, 0.12, 0.14, 0x7a5a3c, p.x, y + 1.55, p.z); rackB.box(2.5, 0.1, 0.5, 0x7a5a3c, p.x, y + 0.2, p.z + 0.1);
+    ['spear_A', 'halberd', 'axe_A', 'sword_A', 'hammer_A'].forEach((n, i) => loadItem(n).then(m => {
+      m.position.set(p.x - 0.9 + i * 0.45, y + (['axe_A', 'hammer_A', 'sword_A'].includes(n) ? 0.6 : 1.0), p.z + 0.12);
+      m.rotation.set(-0.18, 0, 0); m.scale.setScalar(n === 'spear_A' || n === 'halberd' ? 0.85 : 0.95); root.add(m);
+    }).catch(() => {}));
+  }
+  if (!rackB.empty) { const m = new THREE.Mesh(rackB.build(), envMaterial()); m.castShadow = true; m.receiveShadow = true; root.add(m); }
+}

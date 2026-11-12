@@ -88,6 +88,8 @@ export function buildLayout(r) {
   B('house', 19, 41, 'w', { id: 'house2', label: 'Wohnhaus' });
   B('house', 33, 6, 'w', { id: 'house3', label: 'Wohnhaus' });
   const arena = B('arena', -42, -34, 's', { label: region.gym.theme, enter: 'arena' });
+  // Waffenständer (KayKit-Deko) links und rechts der Arenatreppe
+  for (const sx of [-1, 1]) L.props.push({ kind: 'rack', x: arena.x + sx * 8.2, z: arena.z + arena.d / 2 + 3.4, r: 1.2, a: 0 });
   const puzzle = { x: X(-42), z: -12, size: 20, kind: region.puzzle.kind };
   L.puzzle = puzzle;
   L.areas.push({ kind: 'puzzle', x: puzzle.x, z: puzzle.z, r: 13 });

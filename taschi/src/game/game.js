@@ -675,6 +675,15 @@ export class Game {
       if (n.id === 'clerk') return await openShop(this, n.name);
       if (n.id === 'daycare') return await this.daycareTalk();
       if (n.talk === 'giver') return await this.questTalk(n, P.questById(n.quest));
+      if (n.talk === 'adventurer') {
+        const reg = REGIONS[r], a = n.adv, nxt = REGIONS[r + 1]?.name || 'Sternengipfel';
+        const fill = (t) => t.replace(/\{town\}/g, reg.town).replace(/\{landmark\}/g, reg.landmark.name).replace(/\{venue\}/g, venueName(r)).replace(/\{champion\}/g, reg.champion.name).replace(/\{next\}/g, nxt);
+        n.talkIdx = ((n.talkIdx ?? (r + a.idx)) + 1) % a.lines.length;
+        ch.setTalking(true, 'talk');
+        await this.ui.say([{ who: a.name, text: fill(a.lines[n.talkIdx]) }]);
+        ch.setTalking(false);
+        return;
+      }
       if (n.talk === 'resident') {
         const line = residentLine(n.data, s, r);
         const q = (REGIONS[r].quests || []).find(q => q.giver === n.data.name);

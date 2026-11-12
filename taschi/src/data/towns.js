@@ -70,3 +70,24 @@ export const VENUE_SOLIDS = {
   ziggurat: [[-2.6, -4.4, 0.8], [2.6, -4.4, 0.8], [-4.4, 4.2, 0.2], [4.4, 4.2, 0.2], [-4.4, -1, 0.2], [4.4, -1, 0.2]],
   cloudaltar: [[-3.6, -4.2, 0.9], [3.6, -4.2, 0.9]]
 };
+
+// Reisende Abenteurer (KayKit-Figuren) – zwei je Stadt, wechselnd.
+// Platzhalter: {town} {landmark} {venue} {champion} {next}
+export const ADVENTURERS = [
+  { model: 'Knight', title: 'Ritterin', names: ['Ritterin Alva', 'Ritterin Brunhild', 'Ritterin Elske'], lines: [
+    'Ich bewache den Weg nach {next}. Kein Wildes Taschi kommt hier ungesehen vorbei!', 'Am {venue} wartet {champion}. Ich habe dort einmal zugesehen – das war ein Kampf!', 'Schild hoch, Kopf klar: so reise ich seit Jahren durch die Regionen.'] },
+  { model: 'Mage', title: 'Magier', names: ['Magier Orvin', 'Magier Selius', 'Magier Thamo'], lines: [
+    'Die Lichter der Arenen sind uralte Magie. Ich studiere sie, seit ich klein war.', '{landmark} strahlt eine seltsame Kraft aus. Spürst du sie auch?', 'Taschis spüren Magie besser als wir Menschen. Achte darauf, wie deins reagiert.'] },
+  { model: 'Ranger', title: 'Waldläuferin', names: ['Waldläuferin Kira', 'Waldläuferin Fenja', 'Waldläuferin Ylvi'], lines: [
+    'Im hohen Gras vor {town} habe ich heute Spuren gesehen. Ein seltenes Taschi vielleicht?', 'Wer leise geht, findet mehr Taschis. Lauf nicht immer so schnell!', 'Ich kenne jeden Pfad bis {next}. Folge den Wegweisern, dann verirrst du dich nicht.'] },
+  { model: 'Rogue', title: 'Schatzsucher', names: ['Schatzsucher Pim', 'Schatzsucher Rasko', 'Schatzsucher Juri'], lines: [
+    'Psst! Abseits der Wege glitzert manchmal etwas im Boden. Halt die Augen offen.', 'Bei {landmark} soll eine Truhe stehen. Ich war leider zu langsam …', 'Ein Taschi mit guter Nase findet jeden Schatz. Ich sollte mir auch eins fangen.'] },
+  { model: 'Rogue_Hooded', title: 'Kundschafterin', names: ['Kundschafterin Nira', 'Kundschafterin Saja', 'Kundschafterin Tove'], lines: [
+    'Die Schattengilde treibt sich in der Gegend herum. Bleib wachsam.', 'Ich beobachte die Routen rund um {town}. Hier ist es ruhiger als anderswo.', 'Hast du schon die Karte geöffnet? Die Lichtsäulen zeigen, wo etwas zu tun ist.'] },
+  { model: 'Barbarian', title: 'Recke', names: ['Recke Bodo', 'Recke Hrolf', 'Recke Gunnar'], lines: [
+    'HA! {champion} hat mich besiegt – aber nächstes Mal schaffe ich es!', 'Starke Taschis brauchen gutes Training. Kämpf gegen jeden Trainer auf der Route!', 'In {town} gibt es das beste Essen weit und breit. Erst essen, dann kämpfen!'] }
+];
+
+export function adventurersFor(r) {
+  return [0, 1].map(i => { const a = ADVENTURERS[(r + i * 3) % ADVENTURERS.length]; return { ...a, name: a.names[(Math.floor(r / 2) + i) % a.names.length], idx: i }; });
+}

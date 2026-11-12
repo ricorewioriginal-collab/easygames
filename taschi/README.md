@@ -99,6 +99,8 @@ Geprüft: `npm test` (31 Tests inklusive Durchlauf-Simulation bis zum Sternenmei
 
 Jede der 16 Städte hat ein eigenes Gesicht (Daten: `src/data/towns.js`, Modelle: `src/engine/townstyle.js`): eigenes Platz-Mittelstück (z. B. Ankerdenkmal, Blitzsäule, Kirschbaum, Glutschale, Eisskulptur, Sonnenobelisk), Pflasterfarbe, Laternen (Eisen, Holz, Papier, Fackel, Kristall, Muschel), Deko rund um den Platz, Wimpelketten und einen Hausstil (u. a. Pagode, Blockhaus, Rundhütte, Baumhaus, Basalt). Der Champion wartet nicht mehr überall im Pavillon, sondern an einem eigenen Ort: Kapitänsdeck, Hochspannungsring, Kirschblütenschrein, Lichtung der Ahnen, Sturmkreis, Schmiedering, Sternenplateau, Laternensteg, Eisthron, Wipfelbühne, Steppenring, Kristallkrone, Mondtempel, Sonnenterrasse und Wolkenaltar (Sonnenhain behält den Pavillon). Kollision der Orte: `VENUE_SOLIDS`. Schaubild: `node tests/e2e/towns.mjs <ordner> [regionen]`.
 
+KayKit von Kay Lousberg (kaylousberg.com, CC0): In jeder Stadt stehen zwei reisende Abenteurer (KayKit Adventurers 2.0: Ritterin, Magier, Waldläuferin, Schatzsucher, Kundschafterin, Recke) mit Ausrüstung und eigenen Sätzen (`ADVENTURERS` in `src/data/towns.js`, Figur `src/engine/kaykit.js`). Die Figuren und Rig-Animationen werden aus `anmacha-quest-rpg/models/kk/` mitbenutzt und nicht kopiert. An jeder Arena hängen Schilde mit gekreuzten Schwertern, und neben der Treppe stehen Waffenständer (KayKit Fantasy Weapons Bits 1.0, `assets/kaykit/`). Schaubild: `node tests/e2e/kaykit.mjs <ordner> [region]`.
+
 ## Steuerung und Menüs
 
 - PC: WASD/Pfeiltasten bewegen, E = Interaktion, Escape = Pause.
