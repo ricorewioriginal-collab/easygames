@@ -13,10 +13,12 @@ export function createRooms({ T, mk, G, M, glow, scene, hgt, INT, anim, pl, toas
   const near = (x, z, r) => Math.hypot(pl.x - x, pl.z - z) < r;
   const rnd = (R, n) => (R() * n) | 0;
   // Trittfelder: meldet das Betreten (einmal je Betreten)
+  let made = [];   // Platten des gerade gebauten Rätsels: die Markierung wandert nach jedem Schritt zum nächsten richtigen Feld
   function pad(x, z, r, col, onStep) {
     const y = hgt(x, z), m = mk(G.cyl, M(col, { e: col, ei: .25, m: .3, r: .4 }), x, y + .06, z, r, .12, r, false); scene.add(m);
     const o = { x, z, m, in: false, set(on, c) { m.material = M(c ?? col, { e: c ?? col, ei: on ? 1.6 : .25, m: .3, r: .4 }); } };
-    anim(() => { const i = near(x, z, r * .9); if (i && !o.in) onStep(o); o.in = i; });
+    made.push(o);
+    anim(() => { const i = near(x, z, r * .9); if (i && !o.in) { onStep(o); if (o.rf) o.rf(); } o.in = i; });
     return o;
   }
   function crystal(x, z, col, s = 1) {
@@ -32,6 +34,7 @@ export function createRooms({ T, mk, G, M, glow, scene, hgt, INT, anim, pl, toas
   // area: {x0,x1,z0,z1} frei begehbare Fläche; opt.R Zufall; opt.lv Schwierigkeit (1…); done() wenn gelöst
   function build(kind, area, opt, done) {
     const R = opt.R || Math.random, lv = opt.lv || 1, W = area.x1 - area.x0, D = area.z1 - area.z0, cx = (area.x0 + area.x1) / 2, cz = (area.z0 + area.z1) / 2;
+    made = [];
     let sol = null;   // Lösungsweg für die Tests: ['step'|'use', x, z]
     let solved = !!opt.solved; const win = () => { if (solved) return; solved = true; sfx('level'); toast('✨ Rätsel gelöst!'); done(); };
     const say = t => toast(t);
@@ -40,9 +43,17 @@ export function createRooms({ T, mk, G, M, glow, scene, hgt, INT, anim, pl, toas
     const intro = t => { rule = t; toast(t); };
     const tip = () => toast('💡 Tipp: Die Hinweistafel ❓ neben dem Rätsel zeigt dir den nächsten richtigen Schritt.');
     const fail = () => { if (++fails === 2 || fails % 5 === 0) setTimeout(tip, 1600); };
-    const move = () => { if (!solved && ++moves % 14 === 0) tip(); };
-    const mark = (x, z, h = 2.6) => { if (!mk1) mk1 = tag('⬇️', 0, 0, 0); mk1.position.set(x, hgt(x, z) + h, z); mk1.visible = true; mkT = 6; };
-    anim((t, dt) => { if (mk1 && mk1.visible) { mkT -= Math.min(.1, dt || .016); mk1.position.y += Math.sin(t * 6) * .01; if (mkT <= 0 || solved) mk1.visible = false; } });
+    const refresh = () => { if (mk1 && mk1.visible && hint && !solved) setTimeout(() => { if (!solved) hint(); }, 60); };
+    const move = () => { refresh(); if (!solved && ++moves % 14 === 0) tip(); };
+    /* Markierung: grüne Lichtsäule mit Bodenring über dem nächsten richtigen Schritt – auch von oben und auf dem Handy gut sichtbar */
+    let mb = null;
+    const mark = (x, z, h = 2.6) => { if (!mk1) { mk1 = tag('⬇️', 0, 0, 0); mk1.scale.set(1.6, 1.6, 1);
+        mb = new T.Group(); const bm = new T.MeshBasicMaterial({ color: 0x3aff7a, transparent: true, opacity: .45, blending: T.AdditiveBlending, depthWrite: false });
+        mb.add(new T.Mesh(new T.CylinderGeometry(.45, .55, 6, 16, 1, true), bm)); mb.children[0].position.y = 3;
+        const rg = new T.Mesh(new T.RingGeometry(.55, .85, 24), new T.MeshBasicMaterial({ color: 0x3aff7a, transparent: true, opacity: .9, side: T.DoubleSide, depthWrite: false })); rg.rotation.x = -Math.PI / 2; rg.position.y = .2; mb.add(rg); scene.add(mb); }
+      const y = hgt(x, z); mk1.position.set(x, y + Math.max(h, 3.2), z); mk1.visible = true; mb.position.set(x, y, z); mb.visible = true; mkT = 12; mk1.userData.x = x; mk1.userData.z = z; };
+    anim((t, dt) => { if (mk1 && mk1.visible) { mkT -= Math.min(.1, dt || .016); mk1.position.y += Math.sin(t * 6) * .012; const s = 1 + Math.sin(t * 7) * .12; mb.scale.set(s, 1, s);
+      if (mkT <= 0 || solved) { mk1.visible = false; mb.visible = false; } } });
     if (kind === 'tones') {
       const n = Math.min(6, 3 + (lv > 3) + (lv > 6)), len = Math.min(7, 3 + Math.floor(lv / 2)), mel = []; for (let i = 0; i < len; i++) mel.push(rnd(R, n));
       const ps = [], cs = []; let pos = 0;
@@ -69,7 +80,7 @@ export function createRooms({ T, mk, G, M, glow, scene, hgt, INT, anim, pl, toas
         for (let m = 0; m < (1 << M2); m++) { let c = 0; for (let k = 0; k < M2; k++) if (m >> k & 1) c++; if (c >= bc) continue;
           const t = on.slice(); for (let k = 0; k < M2; k++) if (m >> k & 1) { const i = (k / N) | 0, j = k % N; for (const [a, b] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]) { const u = i + a, v = j + b; if (u >= 0 && v >= 0 && u < N && v < N) t[idx(u, v)] = !t[idx(u, v)]; } }
           if (t.every(Boolean)) { best = m; bc = c; } }
-        if (best < 0) return ''; const k = Math.log2(best & -best) | 0; mark(ps[k].x, ps[k].z); return `Noch ${bc} Schritt${bc > 1 ? 'e' : ''} bis zur Lösung. Tritt auf die markierte Platte (Reihenfolge ist egal).`; };
+        if (best < 0) return ''; const k = Math.log2(best & -best) | 0; mark(ps[k].x, ps[k].z); return `Tritt auf die Platte mit der Lichtsäule. Noch ${bc} Schritt${bc > 1 ? 'e' : ''}.`; };
     } else if (kind === 'statues') {
       const n = Math.min(5, 3 + (lv > 4)), face = [], st = [], tx = opt.tx ?? cx, tz = opt.tz ?? area.z0 - 3;
       const want = i => { const x = area.x0 + (i + .5) * W / n; return Math.atan2(tx - x, tz - cz); };
@@ -164,11 +175,12 @@ export function createRooms({ T, mk, G, M, glow, scene, hgt, INT, anim, pl, toas
       intro('🔷 Mustertafel: Schalte die Platten so, dass sie dasselbe Muster zeigen wie die Kristalle an der Wand (hinten an der Wand = hintere Reihe).');
       hint = () => { const k = on.findIndex((b, q) => b !== want[q]); if (k < 0) return ''; mark(ps[k].x, ps[k].z); return `Die markierte Platte muss ${want[k] ? 'leuchten' : 'aus sein'}. Noch ${on.filter((b, q) => b !== want[q]).length} falsch.`; };
     }
+    for (const o of made) o.rf = refresh;
     if (!opt.pos && !opt.noHint) {
       const hx = Math.min(area.x1 + 1.2, 12), hz = area.z1 - .6, y = hgt(hx, hz), g = new T.Group(); g.position.set(hx, y, hz);
       g.add(mk(G.box, M(0x6e6a62, { r: .9 }), 0, .55, 0, .9, 1.1, .22)); g.add(mk(G.box, M(0x4ac8ff, { e: 0x4ac8ff, ei: .9 }), 0, .62, .12, .6, .7, .02, false)); scene.add(g);
       const q = tag('❓', hx, y + 1.7, hz);
-      INT.push({ x: hx, z: hz, name: 'Hinweistafel', pr: 'Hinweis lesen', rad: 1.8, vis: () => !solved, talk() { if (solved) return; const h = hint && hint(); toast(rule + (h ? '\n👉 ' + h : '')); sfx('pick'); } });
+      INT.push({ x: hx, z: hz, name: 'Hinweistafel', pr: 'Hinweis lesen', rad: 1.8, vis: () => !solved, talk() { if (solved) return; const h = hint && hint(); toast(h ? '👉 ' + h + (/Lichtsäule/.test(h) ? '' : ' (grüne Lichtsäule)') : rule); sfx('pick'); } });
       anim(() => { q.visible = !solved; });
     }
     return { get solved() { return solved; }, get sol() { return sol; }, solve: win, hint: () => hint && hint(), get mk() { return mk1 && mk1.visible ? [mk1.position.x, mk1.position.z] : null; } };
