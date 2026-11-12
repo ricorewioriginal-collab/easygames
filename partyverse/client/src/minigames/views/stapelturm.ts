@@ -1,17 +1,32 @@
 import * as THREE from 'three';
 import type { TowerState } from '@shared/minigames/games/stapelturm';
-import { FALL_TICKS, RANGE, heightOf } from '@shared/minigames/games/stapelturm';
+import { FALL_TICKS, GOLD_EVERY, RANGE, WIND_FROM, heightOf } from '@shared/minigames/games/stapelturm';
 import { glow, textSprite, toon } from '../../render/materials';
 import type { MiniGameViewFactory } from '../viewTypes';
+import { makeMe, makeRivals, updateRivals } from './rivals';
 
 const DEPTH = 3.2;
 const BASE_PLATE = 9;
 const ROPE = 5.5;
 
+const GOLD = 0xffc533;
+const isGoldIdx = (i: number): boolean => i > 0 && i % GOLD_EVERY === 0;
 const blockColor = (i: number): number =>
-  new THREE.Color().setHSL((i * 0.073 + 0.02) % 1, 0.78, 0.5).getHex();
+  isGoldIdx(i) ? GOLD : new THREE.Color().setHSL((i * 0.073 + 0.02) % 1, 0.78, 0.5).getHex();
+/** Mitspieler-Türme: schmaler und weiter hinten, aber gleiche Stockwerkshöhe (direkt vergleichbar) */
+const RIVAL_TOWERS: Array<[number, number]> = [
+  [-7.2, -7],
+  [7.2, -7],
+  [-11.5, -12],
+];
+const RIVAL_W = 0.42;
+const RIVAL_MAX = 48;
 
-/** Baustelle auf einer Wiese: Portalkran mit Laufkatze, bunte Blöcke, Wolken. Die Kamera klettert mit dem Turm. */
+/**
+ * Baustelle auf einer Wiese: Portalkran mit Laufkatze, bunte Blöcke, Goldblöcke, Wolken. Die eigene Figur fährt auf
+ * einer Hebebühne neben dem Turm mit nach oben, die Mitspieler bauen live ihre (schmaleren) Türme dahinter.
+ * Die Kamera klettert mit dem Turm.
+ */
 export const createView: MiniGameViewFactory<TowerState> = (ctx, initial) => {
   const { root, camera } = ctx;
   ctx.scene.background = new THREE.Color(0x8fd4ff);
@@ -152,6 +167,73 @@ export const createView: MiniGameViewFactory<TowerState> = (ctx, initial) => {
   root.add(perfectTxt);
   let txtT = 9;
 
+  // Eigene Figur auf einer Hebebühne rechts neben dem Turm
+  const lift = new THREE.Group();
+  root.add(lift);
+  const liftPlate = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.22, 1.5), toon(0x4a5a7a));
+  liftPlate.position.y = -0.11;
+  lift.add(liftPlate);
+  const liftRail = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1, 0.12), toon(0xffc83d));
+  root.add(liftRail);
+  const me = makeMe(ctx, 0.95);
+  root.remove(me.group);
+  lift.add(me.group);
+  me.group.position.set(0, 0, 0.1);
+  me.rig.faceTowards(-0.35);
+  let liftY = 1;
+  let meAnim = '';
+  const playMe = (a: 'idle' | 'cheer' | 'celebrate' | 'shock' | 'lose' | 'jump') => {
+    meAnim = a;
+    me.rig.play(a, { loop: a === 'idle' });
+  };
+
+  // Mitspieler: eigene schmale Türme mit Figur obendrauf
+  const rivals = makeRivals(ctx, 0.75);
+  const rivalTowers = rivals.map((r, i) => {
+    const [x, z] = RIVAL_TOWERS[i % 3] as [number, number];
+    const inst = new THREE.InstancedMesh(blockGeo, toon(0xffffff), RIVAL_MAX);
+    inst.count = 0;
+    inst.position.set(x, 0, z);
+    root.add(inst);
+    const base = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.3, 1.8), toon(0xc9c3b8));
+    base.position.set(x, -0.15, z);
+    root.add(base);
+    r.group.position.set(x, 0, z);
+    return { inst, x, z, n: -1, seq: 0, y: 0 };
+  });
+  const rTmp = new THREE.Object3D();
+  const rCol = new THREE.Color();
+
+  // Einblendungen
+  const sign = (txt: string, fg: string, bg: string, w: number): THREE.Sprite => {
+    const sp = textSprite(txt, { color: fg, bg, size: 64, width: w });
+    sp.material.fog = false;
+    sp.visible = false;
+    root.add(sp);
+    return sp;
+  };
+  const growSign = sign('BREITER!', '#1b3a12', '#7dff8a', 3.0);
+  const missSign = sign('DANEBEN! −1 Ersatz', '#ffffff', '#ff4d6d', 4.6);
+  const goldSign = sign('GOLD +100!', '#5a3a00', '#ffd23f', 3.6);
+  const windSign = sign('WIND!', '#ffffff', '#5b8cff', 2.2);
+  let signT = 9;
+  let signSp: THREE.Sprite | null = null;
+  const showSign = (sp: THREE.Sprite) => {
+    if (signSp) signSp.visible = false;
+    signSp = sp;
+    signT = 0;
+  };
+  const popCache = new Map<number, THREE.Sprite>();
+  let pop: THREE.Sprite | null = null;
+  let popT = 9;
+  // Windstreifen
+  const WS = 22;
+  const windMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 0.08, 0.08), glow(0xffffff, 0.7), WS);
+  windMesh.count = 0;
+  root.add(windMesh);
+  let wasWindy = false;
+  let shake = 0;
+
   let t = 0;
   let camY = 4;
   let lastSeq = initial.seq;
@@ -245,7 +327,29 @@ export const createView: MiniGameViewFactory<TowerState> = (ctx, initial) => {
         }
         if (L.miss) {
           ctx.sfx('bad');
+          shake = 0.4;
+          if (s.phase !== 'over') showSign(missSign);
+          playMe(s.phase === 'over' ? 'lose' : 'shock');
         } else {
+          let sp = popCache.get(L.gain);
+          if (!sp) {
+            sp = textSprite(`+${L.gain}`, {
+              color: '#ffffff',
+              bg: L.gold ? '#e0a000' : L.perfect ? '#ff4d8d' : '#3d5aa8',
+              size: 48,
+              width: 1.6,
+            });
+            sp.material.fog = false;
+            root.add(sp);
+            popCache.set(L.gain, sp);
+          }
+          if (pop) pop.visible = false;
+          pop = sp;
+          popT = 0;
+          pop.position.set(L.x, n + 1.6, 2);
+          if (L.grow) showSign(growSign);
+          else if (L.gold && L.perfect) showSign(goldSign);
+          playMe(L.perfect ? 'celebrate' : L.cutW > 1.2 ? 'shock' : 'cheer');
           squash = 1;
           v3.set(L.x, yBlock + 0.6, 1);
           if (L.perfect) {
@@ -293,7 +397,55 @@ export const createView: MiniGameViewFactory<TowerState> = (ctx, initial) => {
       }
       if (s.phase === 'over' && !wasOver) {
         wasOver = true;
-        if (!s.lost) ctx.sfx('win');
+        if (!s.lost) {
+          ctx.sfx('win');
+          playMe('celebrate');
+        } else playMe('lose');
+      }
+
+      // Hebebühne mit eigener Figur: fährt neben dem obersten Block mit nach oben
+      const top = s.blocks[s.blocks.length - 1];
+      const liftX = Math.min(RANGE + 1.2, (top ? top.x + top.w / 2 : 2.5) + 1.0);
+      liftY += (topY - liftY) * Math.min(1, dt * 5);
+      lift.position.set(lift.position.x + (liftX - lift.position.x) * Math.min(1, dt * 6), liftY, 1.0);
+      liftRail.scale.y = Math.max(0.1, liftY);
+      liftRail.position.set(lift.position.x + 0.7, liftY / 2, 0.4);
+      if (meAnim !== 'idle' && me.rig.current === 'idle' && s.phase !== 'over') meAnim = 'idle';
+      me.rig.lookAt(s.phase === 'swing' ? v3.set(s.cx, topY + 2, 0) : null);
+      me.rig.update(dt);
+
+      // Einblendungen
+      if (signSp) {
+        signT += dt;
+        signSp.visible = signT < 1.2;
+        signSp.position.set(0, topY + 3.4 + signT * 0.6, 2.5);
+        signSp.material.opacity = Math.min(1, (1.2 - signT) * 4);
+      }
+      if (pop) {
+        popT += dt;
+        pop.visible = popT < 0.9;
+        pop.position.y += dt * 1.4;
+        pop.material.opacity = Math.min(1, (0.9 - popT) * 4);
+      }
+
+      // Wind ab WIND_FROM
+      const windy = n >= WIND_FROM && s.phase !== 'over';
+      if (windy && !wasWindy) {
+        showSign(windSign);
+        ctx.sfx('whoosh');
+      }
+      wasWindy = windy;
+      windMesh.count = windy ? WS : 0;
+      if (windy) {
+        for (let i = 0; i < WS; i++) {
+          const cyc = (t * (0.6 + (i % 5) * 0.12) + i * 0.37) % 1;
+          rTmp.position.set(-16 + cyc * 32, camY - 3 + ((i * 1.7) % 11), -3 + (i % 4) * 1.5);
+          rTmp.rotation.set(0, 0, 0);
+          rTmp.scale.set(0.6 + (i % 3) * 0.4, 1, 1);
+          rTmp.updateMatrix();
+          windMesh.setMatrixAt(i, rTmp.matrix);
+        }
+        windMesh.instanceMatrix.needsUpdate = true;
       }
 
       for (let i = 0; i < clouds.length; i++)
@@ -303,10 +455,45 @@ export const createView: MiniGameViewFactory<TowerState> = (ctx, initial) => {
       // Kamera folgt dem Turm
       camY += (Math.max(4, topY) - camY) * Math.min(1, dt * 3);
       const asp = camera.aspect || 1.6;
-      const hh = Math.max(7.2, (RANGE + 3.2) / asp);
+      // Hochformat etwas näher ran (Kranstützen dürfen knapp am Rand stehen)
+      const hh = Math.max(7.2, (RANGE + (asp < 1 ? 2.2 : 3.2)) / asp);
       const dist = hh / Math.tan((camera.fov * Math.PI) / 360) + 3;
-      camera.position.set(0, camY + 3.2, dist);
+      shake = Math.max(0, shake - dt);
+      camera.position.set(Math.sin(t * 55) * shake * 0.4, camY + 3.2, dist);
       camera.lookAt(0, camY + 2.2, 0);
+    },
+    ghosts(states, dt) {
+      updateRivals(rivals, states, dt, (r, rs, i) => {
+        const tw = rivalTowers[i]!;
+        const h = heightOf(rs);
+        if (h !== tw.n) {
+          tw.n = h;
+          const cnt = Math.min(RIVAL_MAX, rs.blocks.length);
+          const from = rs.blocks.length - cnt;
+          for (let k = 0; k < cnt; k++) {
+            const b = rs.blocks[from + k]!;
+            rTmp.position.set(b.x * RIVAL_W, from + k + 0.5, 0);
+            rTmp.rotation.set(0, 0, 0);
+            rTmp.scale.set(Math.max(0.05, b.w * RIVAL_W), 1, 1.4);
+            rTmp.updateMatrix();
+            tw.inst.setMatrixAt(k, rTmp.matrix);
+            tw.inst.setColorAt(k, rCol.setHex(blockColor(from + k)));
+          }
+          tw.inst.count = cnt;
+          tw.inst.instanceMatrix.needsUpdate = true;
+          if (tw.inst.instanceColor) tw.inst.instanceColor.needsUpdate = true;
+        }
+        if (rs.seq !== tw.seq) {
+          tw.seq = rs.seq;
+          r.rig.play(
+            rs.last.miss ? (rs.phase === 'over' ? 'lose' : 'shock') : rs.last.perfect ? 'cheer' : 'jump',
+          );
+        }
+        const topB = rs.blocks[rs.blocks.length - 1];
+        tw.y += (h + 1 - tw.y) * Math.min(1, dt * 5);
+        r.group.position.set(tw.x + (topB ? topB.x * RIVAL_W : 0), tw.y, tw.z);
+      });
+      rivalTowers.forEach((tw, i) => (tw.inst.visible = states[i] != null));
     },
     dispose() {
       ctx.scene.fog = null;

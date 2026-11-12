@@ -1,7 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { NEUTRAL_INPUT } from '../types';
 import { runBot } from '../simulate';
-import { game, gravityAt, ORB_POINTS, CRASH_PENALTY } from './gravifaenger';
+import {
+  COMET_TICK,
+  CRASH_PENALTY,
+  GOLD_POINTS,
+  NOVA_TICK,
+  ORB_POINTS,
+  game,
+  gravityAt,
+  type GraviState,
+} from './gravifaenger';
 
 const opts = { playerIndex: 0, players: 4 };
 
@@ -24,45 +33,94 @@ describe('gravifaenger', () => {
     expect(Math.abs(near.x) / Math.abs(far.x)).toBeGreaterThan(3.6);
     expect(Math.abs(near.x) / Math.abs(far.x)).toBeLessThan(4.2);
   });
-  it('Schub verbraucht Treibstoff, ohne Schub füllt er sich langsam auf', () => {
+  it('Stick gibt die Flugrichtung vor, Turbo verbraucht Energie und lädt sich wieder auf', () => {
     const s = game.init(1, opts);
+    for (let i = 0; i < 40; i++) game.step(s, { ...NEUTRAL_INPUT, x: 1 });
+    expect(Math.abs(s.ang)).toBeLessThan(0.05);
+    expect(s.vx).toBeGreaterThan(2);
+    expect(s.fuel).toBe(1);
     for (let i = 0; i < 60; i++) game.step(s, { ...NEUTRAL_INPUT, a: true });
-    expect(s.fuel).toBeLessThan(0.9);
+    expect(s.fuel).toBeLessThan(0.6);
     const f = s.fuel;
     for (let i = 0; i < 60; i++) game.step(s, NEUTRAL_INPUT);
     expect(s.fuel).toBeGreaterThan(f);
-    expect(s.fuel).toBeLessThan(f + 0.05);
     s.fuel = 0;
     const vy = s.vy;
     game.step(s, { ...NEUTRAL_INPUT, a: true });
     expect(s.thrusting).toBe(false);
     expect(Math.abs(s.vy - vy)).toBeLessThan(0.2);
   });
-  it('Absturz setzt zurück und kostet Punkte; Orb gibt 100', () => {
-    const s = game.init(2, opts);
-    const o = s.orbs[0]!;
-    s.x = o.x;
-    s.y = o.y;
-    game.step(s, NEUTRAL_INPUT);
+  it('Orbs geben Punkte und eine Kette, Absturz kostet Punkte und beendet die Kette', () => {
+    const s: GraviState = game.init(2, opts);
+    const take = () => {
+      const o = s.orbs.find((q) => q.planet < 0)!;
+      s.x = o.x;
+      s.y = o.y;
+      s.vx = s.vy = 0;
+      game.step(s, NEUTRAL_INPUT);
+    };
+    take();
     expect(s.collected).toBe(1);
     expect(s.orbs.length).toBe(3);
-    expect(game.score(s)).toBe(ORB_POINTS + Math.round(s.fuel * 60));
+    expect(s.points).toBe(ORB_POINTS);
+    take();
+    expect(s.chain).toBe(2);
+    expect(s.points).toBe(ORB_POINTS * 2 + 25);
     const p = s.planets[0]!;
     s.x = p.x;
     s.y = p.y;
     game.step(s, NEUTRAL_INPUT);
     expect(s.crashes).toBe(1);
+    expect(s.chain).toBe(0);
     expect(s.x).toBe(0);
     expect(s.safe).toBeGreaterThan(0);
-    expect(game.score(s)).toBeLessThan(ORB_POINTS + 60 - CRASH_PENALTY + 1);
+    expect(game.score(s)).toBe(ORB_POINTS * 2 + 25 - CRASH_PENALTY);
   });
-  it('Bot 0.95 ist deutlich besser als Bot 0.1', () => {
-    let hi = 0;
-    let lo = 0;
-    for (let i = 0; i < 10; i++) {
-      hi += runBot(game, 40 + i, opts, 0.95, i).score;
-      lo += runBot(game, 40 + i, opts, 0.1, i).score;
+  it('goldene Orbs kreisen um Planeten und bringen mehr, Supernova verdoppelt', () => {
+    const s: GraviState = game.init(5, opts);
+    for (let i = 0; i < 5; i++) {
+      const o = s.orbs.find((q) => q.planet < 0)!;
+      s.x = o.x;
+      s.y = o.y;
+      game.step(s, NEUTRAL_INPUT);
+      s.chainT = 999;
     }
-    expect(hi).toBeGreaterThan(lo * 1.5);
+    const gold = s.orbs.find((q) => q.planet >= 0)!;
+    expect(gold).toBeDefined();
+    const a0 = { x: gold.x, y: gold.y };
+    game.step(s, NEUTRAL_INPUT);
+    expect(Math.hypot(gold.x - a0.x, gold.y - a0.y)).toBeGreaterThan(0.005);
+    s.tick = NOVA_TICK;
+    s.chain = 0;
+    s.safe = 50;
+    s.x = gold.x;
+    s.y = gold.y;
+    const before = s.points;
+    game.step(s, NEUTRAL_INPUT);
+    expect(s.points - before).toBe(GOLD_POINTS * 2);
+  });
+  it('Kometen kommen erst ab der zweiten Phase und sind für alle gleich', () => {
+    const a = game.init(8, opts);
+    const b = game.init(8, opts);
+    let early = 0;
+    for (let i = 0; i < COMET_TICK + 400; i++) {
+      game.step(a, { ...NEUTRAL_INPUT, x: Math.sin(i / 30) });
+      game.step(b, NEUTRAL_INPUT);
+      if (i < COMET_TICK - 1) early += a.comets.length;
+    }
+    expect(early).toBe(0);
+    expect(a.cometId).toBeGreaterThan(2);
+    expect(a.cometId).toBe(b.cometId);
+  });
+  it('Bot-Stufen: 0.88 > 0.6 > 0.3', () => {
+    const avg = (sk: number) => {
+      let sum = 0;
+      for (let i = 0; i < 8; i++) sum += runBot(game, 40 + i, opts, sk, i).score;
+      return sum / 8;
+    };
+    const lo = avg(0.3);
+    const mid = avg(0.6);
+    expect(mid).toBeGreaterThan(lo * 1.3);
+    expect(avg(0.88)).toBeGreaterThan(mid);
   });
 });

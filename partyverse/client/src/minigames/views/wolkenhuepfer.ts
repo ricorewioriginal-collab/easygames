@@ -1,9 +1,19 @@
 import * as THREE from 'three';
-import { cloudOffX, cloudTop, type Cloud, type WolkenState } from '@shared/minigames/games/wolkenhuepfer';
+import {
+  cloudOffX,
+  cloudTop,
+  speedAt,
+  spikeY,
+  SPIKE_R,
+  type Cloud,
+  type Spike,
+  type WolkenState,
+} from '@shared/minigames/games/wolkenhuepfer';
 import { glow, toon } from '../../render/materials';
 import type { MiniGameViewFactory } from '../viewTypes';
+import { makeMe, makeRivals, updateRivals } from './rivals';
 
-/** Wolkenhüpfer: weicher Himmel, bauschige Wolken, ein kugelrunder Fuchs-Läufer mit Schal. Seitenansicht, Kamera folgt. */
+/** Wolkenhüpfer: weicher Himmel, bauschige Wolken, eigene Figur als Läufer, Mitspieler halbdurchsichtig dahinter. Seitenansicht, Kamera folgt. */
 export const createView: MiniGameViewFactory<WolkenState> = (ctx, initial) => {
   const { root, camera, scene } = ctx;
   scene.background = new THREE.Color(0x7cc8ff);
@@ -133,73 +143,50 @@ export const createView: MiniGameViewFactory<WolkenState> = (ctx, initial) => {
     return m;
   });
 
-  // ---------- Held: Fuchs mit Schal ----------
-  const hero = new THREE.Group();
-  const inner = new THREE.Group();
-  hero.add(inner);
-  root.add(hero);
-  const orange = toon(0xff8a3d);
-  const cream = toon(0xfff1d6);
-  const dark = toon(0x2b2140);
-  const red = toon(0xe8366b);
-  const body = new THREE.Mesh(sphere, orange);
-  body.scale.set(0.62, 0.58, 0.55);
-  body.position.y = 0.62;
-  const belly = new THREE.Mesh(sphere, cream);
-  belly.scale.set(0.4, 0.38, 0.3);
-  belly.position.set(0.12, 0.5, 0.3);
-  const scarf = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.1, 8, 20), red);
-  scarf.position.set(0.05, 0.92, 0);
-  scarf.rotation.x = Math.PI / 2;
-  scarf.rotation.y = 0.3;
-  const scarfTail = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.12, 0.14), red);
-  scarfTail.position.set(-0.55, 0.9, 0);
-  const earL = new THREE.Mesh(cone, orange);
-  earL.scale.set(0.2, 0.42, 0.14);
-  earL.position.set(0.1, 1.28, 0.2);
-  const earR = earL.clone();
-  earR.position.z = -0.2;
-  const eyeL = new THREE.Mesh(sphere, dark);
-  eyeL.scale.set(0.07, 0.1, 0.05);
-  eyeL.position.set(0.5, 0.74, 0.19);
-  const eyeR = eyeL.clone();
-  eyeR.position.z = -0.19;
-  const shine = new THREE.Mesh(sphere, toon(0xffffff));
-  shine.scale.setScalar(0.03);
-  shine.position.set(0.54, 0.78, 0.2);
-  const shine2 = shine.clone();
-  shine2.position.z = -0.2;
-  const nose = new THREE.Mesh(sphere, dark);
-  nose.scale.setScalar(0.07);
-  nose.position.set(0.62, 0.62, 0);
-  const tail = new THREE.Mesh(sphere, cream);
-  tail.scale.set(0.3, 0.2, 0.2);
-  tail.position.set(-0.62, 0.45, 0);
-  const tailBase = new THREE.Mesh(sphere, orange);
-  tailBase.scale.set(0.34, 0.22, 0.22);
-  tailBase.position.set(-0.52, 0.42, 0);
-  const footL = new THREE.Mesh(sphere, dark);
-  footL.scale.set(0.2, 0.12, 0.14);
-  footL.position.set(0, 0.1, 0.25);
-  const footR = footL.clone();
-  footR.position.z = -0.25;
-  inner.add(
-    body,
-    belly,
-    scarf,
-    scarfTail,
-    earL,
-    earR,
-    eyeL,
-    eyeR,
-    shine,
-    shine2,
-    nose,
-    tailBase,
-    tail,
-    footL,
-    footR,
-  );
+  // ---------- Stachelballons ----------
+  const spikeMat = toon(0x6b3cff, { emissive: 0x3a1a99, emissiveIntensity: 0.5 });
+  const spikeTip = toon(0xffe14d);
+  const stringMat = glow(0xffffff, 0.6);
+  const spikeGeo = new THREE.ConeGeometry(0.13, 0.36, 6);
+  const spikes = initial.spikes.map((k) => {
+    const g = new THREE.Group();
+    const ball = new THREE.Mesh(sphere, spikeMat);
+    ball.scale.setScalar(SPIKE_R * 0.82);
+    g.add(ball);
+    for (let i = 0; i < 10; i++) {
+      const a = (i / 10) * Math.PI * 2;
+      const c = new THREE.Mesh(spikeGeo, spikeTip);
+      const tilt = i % 2 ? 0.5 : -0.5;
+      const dir = new THREE.Vector3(Math.cos(a), Math.sin(a), tilt).normalize();
+      c.position.copy(dir).multiplyScalar(SPIKE_R * 0.9);
+      c.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+      g.add(c);
+    }
+    const eyeL = new THREE.Mesh(sphere, toon(0xffffff));
+    eyeL.scale.set(0.1, 0.13, 0.05);
+    eyeL.position.set(-0.13, 0.06, SPIKE_R * 0.78);
+    const eyeR = eyeL.clone();
+    eyeR.position.x = 0.13;
+    g.add(eyeL, eyeR);
+    const str = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 1.6, 4), stringMat);
+    str.position.y = -SPIKE_R - 0.8;
+    g.add(str);
+    g.position.set(k.x, k.y, 0);
+    root.add(g);
+    return g;
+  });
+
+  // ---------- Eigene Figur und Mitspieler ----------
+  const me = makeMe(ctx, 0.85);
+  me.ring.visible = false;
+  me.group.rotation.y = Math.PI / 2;
+  me.rig.play('run', { loop: true });
+  const rivals = makeRivals(ctx, 0.8);
+  rivals.forEach((r) => {
+    r.ring.visible = false;
+    r.group.rotation.y = Math.PI / 2;
+  });
+  const rivalAnim = rivals.map(() => ({ jumps: 0, falls: 0, over: false }));
 
   // ---------- Zustand für Ereignisse ----------
   let camX = initial.x + 3.5;
@@ -210,6 +197,8 @@ export const createView: MiniGameViewFactory<WolkenState> = (ctx, initial) => {
   let lastFalls = 0;
   let lastSprings = 0;
   let lastStars = 0;
+  let lastBonks = 0;
+  let shake = 0;
   let landSquash = 0;
   let bump = { i: -1, v: 0 };
   const tmp = new THREE.Vector3();
@@ -222,6 +211,7 @@ export const createView: MiniGameViewFactory<WolkenState> = (ctx, initial) => {
       const feet = tmp.set(s.x, s.y, 0.3);
       if (s.jumps !== lastJumps) {
         lastJumps = s.jumps;
+        me.rig.play('jump');
         ctx.sfx('jump');
         ctx.burst(feet.clone(), 0xffffff, 6);
       }
@@ -238,8 +228,16 @@ export const createView: MiniGameViewFactory<WolkenState> = (ctx, initial) => {
         landSquash = 1.2;
         bump = { i: s.on, v: 1.4 };
       }
+      if (s.bonks !== lastBonks) {
+        lastBonks = s.bonks;
+        ctx.sfx('hit');
+        me.rig.play('shock');
+        ctx.burst(new THREE.Vector3(s.x, s.y + 1.2, 0.4), 0xb18cff, 16);
+        shake = 0.5;
+      }
       if (s.falls !== lastFalls) {
         lastFalls = s.falls;
+        shake = 0.35;
         ctx.sfx('bad');
         ctx.burst(new THREE.Vector3(s.x, -3.5, 0.5), 0x9ad0ff, 18);
       }
@@ -282,30 +280,30 @@ export const createView: MiniGameViewFactory<WolkenState> = (ctx, initial) => {
         }
       }
 
-      // --- Held ---
-      const air = !s.grounded;
+      // --- Eigene Figur ---
+      for (let i = 0; i < spikes.length; i++) {
+        const k = s.spikes[i] as Spike;
+        const g = spikes[i] as THREE.Group;
+        g.visible = Math.abs(k.x - camX) < 30;
+        if (g.visible) {
+          g.position.y = spikeY(k, s.t);
+          g.rotation.z = Math.sin(t * 2 + i) * 0.15;
+        }
+      }
       landSquash = Math.max(0, landSquash - dt * 4.5);
-      let sy = 1;
-      if (air) sy = 1 + Math.min(0.32, Math.abs(s.vy) * 0.024);
-      sy -= landSquash * 0.28;
-      const sxz = 1 / Math.sqrt(Math.max(0.5, sy));
-      hero.position.set(s.x, s.y, 0);
-      hero.scale.setScalar(1.2);
-      inner.scale.set(sxz, sy, sxz);
-      inner.rotation.z = air ? THREE.MathUtils.clamp(-s.vy * 0.02, -0.3, 0.3) : Math.sin(t * 22) * 0.04;
-      const runPhase = t * 20;
-      footL.position.x = air ? 0.12 : Math.sin(runPhase) * 0.22;
-      footR.position.x = air ? -0.12 : -Math.sin(runPhase) * 0.22;
-      footL.position.y = 0.1 + (air ? 0.05 : Math.max(0, Math.cos(runPhase)) * 0.1);
-      footR.position.y = 0.1 + (air ? 0.05 : Math.max(0, -Math.cos(runPhase)) * 0.1);
-      body.position.y = 0.62 + (air || s.respawn > 0 ? 0 : Math.abs(Math.sin(runPhase)) * 0.06);
-      scarfTail.rotation.z = 0.25 + Math.sin(t * 14) * 0.2 + (air ? -s.vy * 0.03 : 0);
-      tail.rotation.z = Math.sin(t * 10) * 0.25;
-      hero.visible = s.respawn <= 0 || Math.floor(s.respawn / 4) % 2 === 0;
+      me.group.position.set(s.x, s.y, 0.15);
+      me.group.scale.set(1, 1 - landSquash * 0.18, 1);
+      const air = !s.grounded;
+      if (s.over) me.rig.play(s.lives > 0 ? 'celebrate' : 'lose', { loop: true });
+      else if (s.respawn > 0) me.rig.play('idle', { loop: true });
+      else if (!air) me.rig.play('run', { loop: true, speed: speedAt(s.t) / 6.4 });
+      else if (s.springing && me.rig.current !== 'roll') me.rig.play('roll');
+      me.rig.update(dt);
+      me.group.visible = s.respawn <= 0 || Math.floor(s.respawn / 4) % 2 === 0;
 
       // --- Kamera ---
       const aspect = camera.aspect;
-      const halfW = aspect < 1 ? 6.8 : 9.8;
+      const halfW = aspect < 1 ? 5.0 : 9.8;
       const d = THREE.MathUtils.clamp(halfW / (Math.tan((camera.fov * Math.PI) / 360) * aspect), 11, 26);
       const tx = s.x + (aspect < 1 ? 2.2 : 3.6);
       const ty = THREE.MathUtils.clamp(
@@ -316,9 +314,28 @@ export const createView: MiniGameViewFactory<WolkenState> = (ctx, initial) => {
       const k = dt <= 0 ? 1 : Math.min(1, dt * 5);
       camX += (tx - camX) * k;
       camY += (ty - camY) * k;
-      camera.position.set(camX, camY + 1.2, d);
+      shake = Math.max(0, shake - dt * 2);
+      const sh = shake * shake;
+      camera.position.set(camX + (Math.random() - 0.5) * sh, camY + 1.2 + (Math.random() - 0.5) * sh, d);
       camera.lookAt(camX, camY, 0);
       far.position.set(camX * 0.8, camY * 0.5, 0);
+    },
+    ghosts(states, dt) {
+      updateRivals(rivals, states, dt, (r, st, i) => {
+        // leicht nach hinten versetzt, damit die eigene Figur vorne bleibt
+        r.group.position.set(st.x, st.y, -0.7 - i * 0.45);
+        r.group.visible = st.respawn <= 0 || Math.floor(st.respawn / 4) % 2 === 0;
+        const ra = rivalAnim[i] as { jumps: number; falls: number; over: boolean };
+        if (st.jumps !== ra.jumps) {
+          ra.jumps = st.jumps;
+          r.rig.play('jump');
+        }
+        if (st.over && !ra.over) {
+          ra.over = true;
+          r.rig.play('cheer', { loop: true });
+        } else if (!st.over && st.grounded && st.respawn <= 0) r.rig.play('run', { loop: true });
+        else if (st.respawn > 0) r.rig.play('idle', { loop: true });
+      });
     },
     dispose() {
       scene.fog = null;

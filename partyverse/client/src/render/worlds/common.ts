@@ -47,9 +47,9 @@ const baseEdges = (a: number, b: number): Record<EdgeStyle, number> => ({
 export const THEMES: Record<WorldId, WorldTheme> = {
   prismara: {
     name: 'PRISMARA',
-    skyTop: 0x6a5cff,
-    skyBottom: 0xffc6f0,
-    fog: 0xd9c4ff,
+    skyTop: 0x4a3ad8,
+    skyBottom: 0xa58cff,
+    fog: 0xbfa8ff,
     fogNear: 40,
     fogFar: 170,
     ambient: 0xcfc4ff,

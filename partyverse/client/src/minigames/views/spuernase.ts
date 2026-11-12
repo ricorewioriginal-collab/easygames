@@ -1,10 +1,11 @@
 import * as THREE from 'three';
-import { BOARD, type SpuerState } from '@shared/minigames/games/spuernase';
-import { glow, toon } from '../../render/materials';
+import { BOARD, isGold, type SpuerState } from '@shared/minigames/games/spuernase';
+import { glow, textSprite, toon } from '../../render/materials';
 import type { MiniGameViewFactory } from '../viewTypes';
+import { makeMe, makeRivals, updateRivals } from './rivals';
 
 const PALETTE = [0xff3b4e, 0xff9a2e, 0xffd93b, 0x7ddf3f, 0x27c8b5, 0x3b82ff, 0x9a5bff, 0xff5fb7];
-const MAXC = 36;
+const MAXC = 49;
 
 function shapeOf(kind: number): THREE.Shape {
   const sh = new THREE.Shape();
@@ -90,7 +91,7 @@ function shapeOf(kind: number): THREE.Shape {
   return sh;
 }
 
-/** Klassenzimmer-Tafel: bunte Kreide-Symbole auf grüner Tafel, unten schnüffelt eine Detektiv-Nase mit. */
+/** Klassenzimmer-Tafel: bunte Kreide-Symbole auf grüner Tafel, unten stehen alle Spieler und fiebern mit. */
 export const createView: MiniGameViewFactory<SpuerState> = (ctx) => {
   const { root, camera } = ctx;
   ctx.scene.background = new THREE.Color(0xf0d7a1);
@@ -170,47 +171,33 @@ export const createView: MiniGameViewFactory<SpuerState> = (ctx) => {
   cursor.position.z = 0.45;
   root.add(cursor);
 
-  // Detektiv-Nase unten
-  const mascot = new THREE.Group();
-  root.add(mascot);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 18), toon(0xd9923c));
-  head.scale.set(1.25, 1, 0.9);
-  mascot.add(head);
-  const snout = new THREE.Mesh(new THREE.SphereGeometry(0.55, 18, 14), toon(0xf6d9a6));
-  snout.position.set(0, -0.2, 0.75);
-  snout.scale.set(1.1, 0.8, 1);
-  mascot.add(snout);
-  const nose = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 12), toon(0x2a1a2e));
-  nose.position.set(0, 0.0, 1.22);
-  mascot.add(nose);
-  const noseShine = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 6), glow(0xffffff, 0.9));
-  noseShine.position.set(-0.08, 0.08, 1.45);
-  mascot.add(noseShine);
-  const eyeG: THREE.Group[] = [];
-  for (const sx of [-1, 1]) {
-    const eg = new THREE.Group();
-    eg.position.set(sx * 0.55, 0.35, 0.78);
-    const w = new THREE.Mesh(new THREE.SphereGeometry(0.28, 14, 10), toon(0xffffff));
-    eg.add(w);
-    const pu = new THREE.Mesh(new THREE.SphereGeometry(0.14, 10, 8), toon(0x1c1228));
-    pu.position.z = 0.2;
-    eg.add(pu);
-    mascot.add(eg);
-    eyeG.push(eg);
-    const ear = new THREE.Mesh(new THREE.ConeGeometry(0.4, 0.9, 6), toon(0xb8741f));
-    ear.position.set(sx * 1.05, 0.95, 0);
-    ear.rotation.z = -sx * 0.4;
-    mascot.add(ear);
-  }
-  const hat = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.85, 0.35, 16), toon(0x6c4a2a));
-  hat.position.set(0, 1.05, 0);
-  mascot.add(hat);
-  const hatTop = new THREE.Mesh(
-    new THREE.SphereGeometry(0.62, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2),
-    toon(0x7d5733),
-  );
-  hatTop.position.set(0, 1.15, 0);
-  mascot.add(hatTop);
+  // Spieler unter der Tafel: eigene Figur rechts (groß), Mitspieler links mit Fund-Zähler
+  const me = makeMe(ctx, 0.8);
+  const rivals = makeRivals(ctx, 0.62);
+  const rivalSeen = rivals.map(() => ({ ok: 0, bad: 0, found: -1 }));
+  const rivalTags: Array<THREE.Sprite | null> = rivals.map(() => null);
+  const rivalTag = (i: number, found: number): void => {
+    rivalTags[i]?.removeFromParent();
+    rivalTags[i]?.material.map?.dispose();
+    rivalTags[i]?.material.dispose();
+    const col = '#' + (rivals[i]!.avatar.color & 0xffffff).toString(16).padStart(6, '0');
+    const sp = textSprite(`${found}`, { color: '#ffffff', bg: col, size: 56, width: 0.55 });
+    root.add(sp);
+    rivalTags[i] = sp;
+  };
+  const popups: Array<{ sp: THREE.Sprite; t: number; y0: number }> = [];
+  const popup = (text: string, x: number, y: number, color: string, w = 2): void => {
+    const sp = textSprite(text, { color, bg: 'rgba(20,12,40,0.75)', size: 64, width: w * popScale });
+    const lim = geom.W * 0.9 - (w * popScale) / 2;
+    sp.position.set(Math.max(-lim, Math.min(lim, x)), y, 0.6);
+    root.add(sp);
+    popups.push({ sp, t: 0, y0: y });
+  };
+  let popScale = 1;
+  let lastTotal = 0;
+  let lastBlinks = 0;
+  let blinkT = 0;
+  let wasDone = false;
 
   let lastAspect = 0;
   let lastN = 0;
@@ -250,8 +237,22 @@ export const createView: MiniGameViewFactory<SpuerState> = (ctx) => {
     tray.position.set(cx, cy - bh / 2 - pad - 0.3, 0.1);
     chalkA.position.set(cx - 0.5, cy - bh / 2 - pad - 0.12, 0.25);
     chalkB.position.set(cx + 0.2, cy - bh / 2 - pad - 0.12, 0.25);
-    mascot.position.set(cx + bw / 2 - 1.2, -H * 1.0 + 0.25, 1.0);
-    mascot.scale.setScalar(Math.min(0.62, H * 0.13));
+    // Figuren stehen auf der Leiste unter der Tafel
+    // (Figuren stehen näher an der Kamera: dort ist das sichtbare Feld etwas kleiner)
+    const zf = 0.9;
+    const Hz = (H * (D - zf)) / D;
+    const Wz = (W * (D - zf)) / D;
+    const avail = (1 + BOARD.y0) * Hz - 0.12;
+    const figS = Math.max(0.32, Math.min(0.8, avail / 1.75));
+    const floorY = -Hz + 0.04;
+    me.group.position.set(Wz * 0.86 - 0.5 * figS, floorY, zf);
+    me.group.scale.setScalar(figS);
+    const step = Math.min(1.3, Wz * 0.2) * Math.max(0.7, figS / 0.6);
+    rivals.forEach((r, i) => {
+      r.group.position.set(-Wz * 0.86 + 0.4 * figS + i * step, floorY, zf);
+      r.group.scale.setScalar(figS * 0.85);
+    });
+    popScale = Math.max(0.6, Math.min(1, W / 6));
     lastN = 0;
   };
   layout();
@@ -302,7 +303,26 @@ export const createView: MiniGameViewFactory<SpuerState> = (ctx) => {
         ctx.sfx(s.lastBonus > 60 ? 'win' : 'coin');
         mood = 1;
         lastOk = s.okSeq;
+        const gain = s.total - lastTotal;
+        if (lastN > 0 && lastOdd >= 0) {
+          const p = cellPos(lastN, lastOdd);
+          popup(`+${gain}`, p.x, p.y + 0.25, isGold(s.found - 1) ? '#ffd23f' : '#ffffff', 1.1);
+          if (s.streak >= 2) popup(`Kombo ×${s.streak}`, p.x, p.y - 0.3, '#7dff8a', 1.8);
+        }
+        me.rig.play(isGold(s.found - 1) || s.streak >= 3 ? 'celebrate' : 'jump');
       }
+      lastTotal = s.total;
+      if (s.blinks !== lastBlinks) {
+        lastBlinks = s.blinks;
+        blinkT = 0.45;
+        ctx.sfx('whoosh');
+        boardShake = 0.25;
+      }
+      blinkT = Math.max(0, blinkT - dt);
+      // Goldtafel: goldener Rahmen
+      frame.material = isGold(s.found)
+        ? toon(0xffc93c, { emissive: 0xff9a00, emissiveIntensity: 0.35 })
+        : toon(0xa8672f);
       if (newRound || s.n !== lastN || (cellsV[0] as CellView).sym.userData.size === undefined) applyCells(s);
       if (s.badSeq !== lastBad) {
         lastBad = s.badSeq;
@@ -317,6 +337,7 @@ export const createView: MiniGameViewFactory<SpuerState> = (ctx) => {
         ctx.sfx('bad');
         boardShake = 0.5;
         mood = -1;
+        me.rig.play('shock');
       }
       lastOdd = s.oddIdx;
       mood *= Math.max(0, 1 - dt * 1.4);
@@ -340,6 +361,8 @@ export const createView: MiniGameViewFactory<SpuerState> = (ctx) => {
         m.emissiveIntensity = cv.flash * 0.8;
         const size = cv.sym.userData.size as number;
         cv.sym.position.set(b.x + sx + wob, b.y, 0.2);
+        // Blinzeln: alle Symbole drehen sich gleichzeitig um – man sieht nicht, wohin der Ausreißer springt
+        cv.sym.rotation.y = blinkT > 0 ? (1 - blinkT / 0.45) * Math.PI * 2 : 0;
         // Diskrete Eigenbewegung: sanftes Atmen verrät nichts über das abweichende Symbol
         const breathe = 1 + Math.sin(t * 2 + i * 0.7) * 0.03;
         cv.sym.scale.setScalar(size * Math.max(0.001, pop) * breathe);
@@ -365,19 +388,59 @@ export const createView: MiniGameViewFactory<SpuerState> = (ctx) => {
         (bars[3] as THREE.Mesh).position.set(w / 2, 0, 0);
       }
 
-      // Maskottchen: schnüffelt, nickt bei Erfolg, schüttelt bei Fehler
-      const sniff = 1 + Math.sin(t * 9) * 0.05 * (1 + Math.max(0, -mood));
-      nose.scale.setScalar(sniff);
-      mascot.position.y =
-        -geom.H * 1.0 + 0.25 + Math.max(0, mood) * 0.35 * Math.abs(Math.sin(t * 10)) + (mood < 0 ? -0.1 : 0);
-      mascot.rotation.z = mood < 0 ? Math.sin(t * 30) * 0.12 * -mood : Math.sin(t * 1.3) * 0.05;
+      // Eigene Figur: schaut auf die Tafel bzw. den Cursor, jubelt am Ende
       const target = cellPos(s.n, s.curR * s.n + s.curC);
-      const lookX = Math.max(-1, Math.min(1, (target.x - mascot.position.x) / geom.W));
-      eyeG.forEach((e) => {
-        e.rotation.y = lookX * 0.4;
-        e.rotation.x = -0.25;
-      });
+      me.rig.lookAt(bp.set(target.x, target.y, 0));
+      me.rig.faceTowards(-0.35);
+      const done = s.clock >= 30 * 60;
+      if (done && !wasDone) {
+        wasDone = true;
+        me.rig.play(s.found >= 6 ? 'celebrate' : s.found >= 3 ? 'cheer' : 'lose');
+      }
+      me.rig.update(dt);
+      for (let i = popups.length - 1; i >= 0; i--) {
+        const p = popups[i]!;
+        p.t += dt;
+        p.sp.position.y = p.y0 + p.t * 0.9;
+        p.sp.material.opacity = Math.max(0, 1.2 - p.t);
+        if (p.t > 1.2) {
+          p.sp.removeFromParent();
+          p.sp.material.map?.dispose();
+          p.sp.material.dispose();
+          popups.splice(i, 1);
+        }
+      }
       void mood;
+    },
+    ghosts(states, dt) {
+      updateRivals(rivals, states, dt, (r, rs, i) => {
+        const seen = rivalSeen[i]!;
+        if (rs.okSeq !== seen.ok) {
+          seen.ok = rs.okSeq;
+          r.rig.play(rs.streak >= 3 ? 'celebrate' : 'jump');
+          bp.copy(r.group.position).setY(r.group.position.y + 1);
+          ctx.burst(bp, r.avatar.color, 8);
+        }
+        if (rs.badSeq !== seen.bad) {
+          seen.bad = rs.badSeq;
+          r.rig.play('shock');
+        }
+        if (rs.found !== seen.found) {
+          seen.found = rs.found;
+          rivalTag(i, rs.found);
+        }
+        const tag = rivalTags[i];
+        if (tag) {
+          tag.position.set(
+            r.group.position.x + 0.45 * r.group.scale.y,
+            r.group.position.y + 1.7 * r.group.scale.y,
+            1,
+          );
+          tag.scale.set(0.55 * popScale, (0.55 * popScale * tag.scale.y) / tag.scale.x, 1);
+        }
+        r.rig.faceTowards(0.25);
+      });
+      rivalTags.forEach((tg, i) => tg && (tg.visible = states[i] != null));
     },
     dispose() {
       symGeos.forEach((g) => g.dispose());

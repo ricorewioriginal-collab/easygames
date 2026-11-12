@@ -3,6 +3,7 @@ import { LANE_W, type DashCoin, type DashRow, type DashState } from '@shared/min
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { glow, toon } from '../../render/materials';
 import type { MiniGameViewFactory } from '../viewTypes';
+import { makeMe, makeRivals, updateRivals } from './rivals';
 
 /** Hindernis-Dash: Neon-Zuckerbahn im Abendrot. Läufer von hinten, Welt rauscht entgegen. */
 export const createView: MiniGameViewFactory<DashState> = (ctx) => {
@@ -180,54 +181,51 @@ export const createView: MiniGameViewFactory<DashState> = (ctx) => {
   );
   root.add(coinMesh);
 
-  // ---------- Läufer ----------
-  const hero = new THREE.Group();
-  const body = new THREE.Group();
-  hero.add(body);
-  root.add(hero);
-  const skin = toon(0x37c8ff);
-  const skinDark = toon(0x1f93d6);
-  const visor = toon(0x23123f);
-  const orangeM = toon(0xff9d2e);
-  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.34, 0.45, 6, 12), skin);
-  torso.position.y = 0.88;
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 12), skin);
-  head.position.y = 1.5;
-  const vis = new THREE.Mesh(new THREE.SphereGeometry(0.3, 14, 10, -1.1, 2.2, 0.5, 1.3), visor);
-  vis.position.set(0, 1.55, 0.14);
-  vis.rotation.y = Math.PI;
-  vis.scale.set(1.0, 0.9, 1.0);
-  const visFront = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.2, 0.2), visor);
-  visFront.position.set(0, 1.55, 0.3);
-  const glint = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.05, 0.02), glow(0xffffff));
-  glint.position.set(0.12, 1.6, 0.41);
-  const antenna = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.3, 6), orangeM);
-  antenna.position.set(0, 1.98, 0);
-  const antBall = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), orangeM);
-  antBall.position.set(0, 2.15, 0);
-  const pack = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.5, 0.2), orangeM);
-  pack.position.set(0, 0.95, -0.34);
-  const legL = new THREE.Group();
-  const legR = new THREE.Group();
-  for (const lg of [legL, legR]) {
-    const thigh = new THREE.Mesh(new THREE.CapsuleGeometry(0.11, 0.3, 4, 8), skinDark);
-    thigh.position.y = -0.22;
-    const shoe = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.14, 0.4), orangeM);
-    shoe.position.set(0, -0.44, 0.07);
-    lg.add(thigh, shoe);
-    lg.position.set(lg === legL ? -0.17 : 0.17, 0.62, 0);
-    body.add(lg);
+  // ---------- Turbo-Felder ----------
+  const BOOSTS = 8;
+  const arrow = new THREE.Shape();
+  arrow.moveTo(-0.75, -0.2);
+  arrow.lineTo(0, 0.45);
+  arrow.lineTo(0.75, -0.2);
+  arrow.lineTo(0.75, -0.55);
+  arrow.lineTo(0, 0.1);
+  arrow.lineTo(-0.75, -0.55);
+  arrow.closePath();
+  const arrowGeo = new THREE.ShapeGeometry(arrow);
+  arrowGeo.rotateX(-Math.PI / 2);
+  const padGeo = new THREE.PlaneGeometry(1.9, 2.6);
+  padGeo.rotateX(-Math.PI / 2);
+  const padMat = glow(0x14e0ff, 0.35);
+  padMat.depthWrite = false;
+  const arrowMat = glow(0x9cf6ff);
+  const pads: THREE.Group[] = [];
+  for (let i = 0; i < BOOSTS; i++) {
+    const g = new THREE.Group();
+    const pad = new THREE.Mesh(padGeo, padMat);
+    pad.position.y = 0.015;
+    g.add(pad);
+    for (let k = 0; k < 3; k++) {
+      const a = new THREE.Mesh(arrowGeo, arrowMat);
+      a.position.set(0, 0.03, 0.75 - k * 0.75);
+      g.add(a);
+    }
+    g.visible = false;
+    root.add(g);
+    pads.push(g);
   }
-  const armL = new THREE.Group();
-  const armR = new THREE.Group();
-  for (const am of [armL, armR]) {
-    const a = new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.28, 4, 8), skinDark);
-    a.position.y = -0.2;
-    am.add(a);
-    am.position.set(am === armL ? -0.42 : 0.42, 1.1, 0);
-    body.add(am);
-  }
-  body.add(torso, head, vis, visFront, glint, antenna, antBall, pack);
+
+  // ---------- Läufer: eigene Figur, Mitspieler halbdurchsichtig ----------
+  const me = makeMe(ctx, 0.95);
+  const hero = me.group;
+  hero.rotation.y = Math.PI;
+  me.ring.visible = false;
+  const rivals = makeRivals(ctx, 0.9);
+  rivals.forEach((r) => {
+    r.group.rotation.y = Math.PI;
+    r.ring.visible = false;
+  });
+  const rivalSeen = rivals.map(() => ({ jumps: 0, slides: 0, crashes: 0 }));
+  let myZ = 0;
   // Betäubungs-Sterne
   const dizzy = new THREE.Group();
   for (let i = 0; i < 3; i++) {
@@ -237,15 +235,6 @@ export const createView: MiniGameViewFactory<DashState> = (ctx) => {
   }
   dizzy.position.y = 2.35;
   hero.add(dizzy);
-  // Schatten
-  const shadow = new THREE.Mesh(
-    new THREE.CircleGeometry(0.5, 16),
-    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.3 }),
-  );
-  shadow.rotation.x = -Math.PI / 2;
-  shadow.position.y = 0.02;
-  root.add(shadow);
-
   let t = 0;
   let shake = 0;
   let lastJumps = 0;
@@ -253,6 +242,9 @@ export const createView: MiniGameViewFactory<DashState> = (ctx) => {
   let lastCrashes = 0;
   let lastCoins = 0;
   let lastLands = 0;
+  let lastBoosts = 0;
+  let boostTrail = 0;
+  let fovBoost = 0;
   let camPX = 0;
   const heroPos = new THREE.Vector3();
 
@@ -263,11 +255,13 @@ export const createView: MiniGameViewFactory<DashState> = (ctx) => {
       heroPos.set(s.px, s.py + 0.8, 0);
       if (s.jumps !== lastJumps) {
         lastJumps = s.jumps;
+        me.rig.play('jump', { speed: 1.4 });
         ctx.sfx('jump');
         ctx.burst(new THREE.Vector3(s.px, 0.1, 0.2), 0xffffff, 6);
       }
       if (s.slides !== lastSlides) {
         lastSlides = s.slides;
+        me.rig.play('roll', { speed: 1.6 });
         ctx.sfx('whoosh');
       }
       if (s.lands !== lastLands) {
@@ -276,9 +270,27 @@ export const createView: MiniGameViewFactory<DashState> = (ctx) => {
       }
       if (s.crashes !== lastCrashes) {
         lastCrashes = s.crashes;
+        me.rig.play('shock');
         ctx.sfx('hit');
         ctx.burst(new THREE.Vector3(s.px, 1.0, -0.8), 0xff5a5a, 18);
         shake = 0.5;
+      }
+      if (s.boostCount !== lastBoosts) {
+        lastBoosts = s.boostCount;
+        ctx.sfx('whoosh');
+        ctx.sfx('good');
+        ctx.burst(new THREE.Vector3(s.px, 0.6, -0.5), 0x3de7ff, 22);
+      }
+      if (s.boost > 0) {
+        boostTrail -= dt;
+        if (boostTrail <= 0) {
+          boostTrail = 0.05;
+          ctx.burst(
+            new THREE.Vector3(s.px + (Math.random() - 0.5) * 1.2, 0.4 + Math.random(), 0.6),
+            0x9cf6ff,
+            2,
+          );
+        }
       }
       if (s.coinCount !== lastCoins) {
         lastCoins = s.coinCount;
@@ -348,6 +360,22 @@ export const createView: MiniGameViewFactory<DashState> = (ctx) => {
       }
       for (let k = slot * 3; k < cells.length; k++) (cells[k] as Cell).g.visible = false;
 
+      // ---------- Turbo-Felder ----------
+      let pi = 0;
+      for (const b of s.boosts) {
+        if (pi >= BOOSTS) break;
+        const dz = b.z - s.z;
+        if (dz < -6 || b.got) continue;
+        if (dz > VISIBLE) break;
+        const g = pads[pi++] as THREE.Group;
+        g.visible = true;
+        g.position.set(b.lane * LANE_W, 0, -dz);
+        g.children.forEach((c, k) => {
+          if (k > 0) (c as THREE.Mesh).position.y = 0.03 + (Math.floor(t * 8 - k) % 3 === 0 ? 0.04 : 0);
+        });
+      }
+      for (let k = pi; k < BOOSTS; k++) (pads[k] as THREE.Group).visible = false;
+
       // ---------- Münzen ----------
       let n = 0;
       for (let i = s.curCoin; i < s.coins.length && n < COINS; i++) {
@@ -364,28 +392,22 @@ export const createView: MiniGameViewFactory<DashState> = (ctx) => {
       coinMesh.instanceMatrix.needsUpdate = true;
 
       // ---------- Läufer ----------
-      hero.position.set(s.px, s.py, 0);
+      myZ = s.z;
       const stunned = s.stun > 0;
       const sliding = s.slideT > 0;
       const air = s.py > 0.02;
-      const phase = t * (11 + s.pace * 5);
+      hero.position.set(s.px, s.py, 0);
       const lean = THREE.MathUtils.clamp((s.lane * LANE_W - s.px) * 0.15, -0.35, 0.35);
-      body.rotation.z = -lean + (stunned ? Math.sin(t * 30) * 0.12 : 0);
-      body.rotation.x = sliding ? -1.25 : air ? -0.15 : 0.1;
-      body.position.y = sliding ? -0.55 : stunned ? -0.1 : air ? 0 : Math.abs(Math.sin(phase)) * 0.08;
-      body.position.z = sliding ? 0.2 : 0;
-      const sw = stunned ? 0 : Math.sin(phase) * (air ? 0.2 : 0.9);
-      legL.rotation.x = air ? -0.7 : sw;
-      legR.rotation.x = air ? 0.4 : -sw;
-      armL.rotation.x = air ? -2.5 : -sw * 0.9;
-      armR.rotation.x = air ? -2.5 : sw * 0.9;
-      const sy = air ? 1 + Math.min(0.15, Math.abs(s.vy) * 0.015) : 1;
-      body.scale.set(1 / Math.sqrt(sy), sy, 1 / Math.sqrt(sy));
+      hero.rotation.z = lean;
+      if (s.over) me.rig.play('celebrate', { loop: true });
+      else if (!stunned && !sliding && !air && me.rig.current !== 'jump')
+        me.rig.play('run', { loop: true, speed: 1.1 + s.pace * 0.6 + (s.boost > 0 ? 0.5 : 0) });
+      if (sliding && me.rig.current !== 'roll') me.rig.play('roll', { speed: 1.6 });
+      hero.scale.set(1, sliding ? 0.55 : 1, 1);
+      me.rig.update(dt);
       hero.visible = s.invuln <= 0 || Math.floor(s.invuln / 3) % 2 === 0 || s.stun > 0;
       dizzy.visible = stunned;
       dizzy.rotation.y = t * 8;
-      shadow.position.set(s.px, 0.02, 0);
-      shadow.scale.setScalar(1 - Math.min(0.5, s.py * 0.3));
 
       // ---------- Kamera ----------
       const aspect = camera.aspect;
@@ -397,8 +419,27 @@ export const createView: MiniGameViewFactory<DashState> = (ctx) => {
       const sy2 = Math.cos(t * 53) * shake * 0.12;
       camera.position.set(camPX + sx, hgt + sy2 + s.py * 0.25, back);
       camera.lookAt(camPX * 0.8, 1.1, -12);
-      camera.fov = 58 + s.pace * 6;
+      fovBoost += ((s.boost > 0 ? 8 : 0) - fovBoost) * Math.min(1, dt * 5);
+      camera.fov = 58 + s.pace * 6 + fovBoost;
       camera.updateProjectionMatrix();
+    },
+    ghosts(states, dt) {
+      updateRivals(rivals, states, dt, (r, st, i) => {
+        // Nur wer vor mir läuft, ist zu sehen – Zurückliegende würden die eigene Figur verdecken
+        const dz = st.z - myZ;
+        r.group.visible = dz > 1.2;
+        r.group.position.set(st.px, st.py, -dz);
+        r.group.scale.set(1, st.slideT > 0 ? 0.55 : 1, 1);
+        const seen = rivalSeen[i] as { jumps: number; slides: number; crashes: number };
+        if (st.jumps !== seen.jumps) r.rig.play('jump', { speed: 1.4 });
+        if (st.slides !== seen.slides) r.rig.play('roll', { speed: 1.6 });
+        if (st.crashes !== seen.crashes) r.rig.play('shock');
+        seen.jumps = st.jumps;
+        seen.slides = st.slides;
+        seen.crashes = st.crashes;
+        if (st.stun <= 0 && st.slideT <= 0 && st.py <= 0.02 && r.rig.current !== 'jump')
+          r.rig.play('run', { loop: true, speed: 1.1 + st.pace * 0.6 });
+      });
     },
     dispose() {
       scene.fog = null;

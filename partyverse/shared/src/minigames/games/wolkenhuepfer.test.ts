@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { game, type WolkenState } from './wolkenhuepfer';
+import { game, speedAt, type WolkenState } from './wolkenhuepfer';
+import { runBot } from '../simulate';
 import { NEUTRAL_INPUT } from '../types';
 
 const opts = { playerIndex: 0, players: 3 };
@@ -81,5 +82,34 @@ describe('wolkenhuepfer – Regeln', () => {
     }
     expect(s.springs).toBeGreaterThan(0);
     expect(max).toBeGreaterThan(3);
+  });
+
+  it('Stachelballon stößt nach unten, ein kurzer Hüpfer passt darunter durch', () => {
+    const run = (hold: number) => {
+      const s = flat();
+      s.spikes = [{ x: 4.5, y: 2.7, amp: 0, w: 0, ph: 0 }];
+      for (let i = 0; i < 60; i++) game.step(s, i >= 20 && i < 20 + hold ? A : NEUTRAL_INPUT);
+      return s.bonks;
+    };
+    expect(run(1)).toBe(0);
+    expect(run(30)).toBe(1);
+  });
+
+  it('jedes Level hat Stachelballons, das Tempo steigt deutlich', () => {
+    for (const seed of [1, 2, 3, 5]) expect(game.init(seed, opts).spikes.length).toBeGreaterThan(5);
+    expect(speedAt(1800)).toBeGreaterThan(speedAt(0) * 1.35);
+  });
+
+  it('Bots: stark > mittel > schwach', () => {
+    const avg = (skill: number) => {
+      let sum = 0;
+      for (let i = 0; i < 10; i++) sum += runBot(game, 40 + i, opts, skill, 3 + i).score;
+      return sum / 10;
+    };
+    const lo = avg(0.3);
+    const mid = avg(0.6);
+    const hi = avg(0.88);
+    expect(hi).toBeGreaterThan(mid);
+    expect(mid).toBeGreaterThan(lo);
   });
 });

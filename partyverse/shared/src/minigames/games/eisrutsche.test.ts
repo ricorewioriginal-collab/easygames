@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { NEUTRAL_INPUT } from '../types';
 import { runBot } from '../simulate';
-import { game, holePos, STAR_POINTS } from './eisrutsche';
+import { CRACK_WARN, game, holeOpen, holePos, starGain, STAR_POINTS } from './eisrutsche';
 
 const opts = { playerIndex: 0, players: 4 };
 
@@ -32,7 +32,7 @@ describe('eisrutsche', () => {
   });
   it('Sturz ins Loch: Rückkehr zum Start, Zeitverlust und Strafpunkte', () => {
     const s = game.init(5, opts);
-    s.starPts = 3;
+    s.pts = 3 * STAR_POINTS;
     const h = s.holes[0]!;
     const p = holePos(h, 1);
     s.x = p.x;
@@ -68,5 +68,56 @@ describe('eisrutsche', () => {
       lo += runBot(game, 40 + i, opts, 0.1, i).score;
     }
     expect(hi).toBeGreaterThan(lo * 1.4);
+  });
+
+  it('neue Löcher brechen später auf, vorher knackt das Eis; erst offen ist es gefährlich', () => {
+    const s = game.init(6, opts);
+    const late = s.holes.filter((h) => h.t0 > 0);
+    expect(late.length).toBeGreaterThanOrEqual(1);
+    expect(s.holes.filter((h) => h.t0 === 0).length).toBe(4);
+    const h = late[0]!;
+    // während des Knackens passiert nichts
+    s.tick = h.t0 - CRACK_WARN;
+    const p = holePos(h, s.tick + 1);
+    s.x = p.x;
+    s.y = p.y;
+    game.step(s, NEUTRAL_INPUT);
+    expect(s.falls).toBe(0);
+    s.tick = h.t0;
+    const q = holePos(h, s.tick + 1);
+    s.x = q.x;
+    s.y = q.y;
+    s.vx = s.vy = 0;
+    game.step(s, NEUTRAL_INPUT);
+    expect(holeOpen(h, s.tick)).toBe(true);
+    expect(s.falls).toBe(1);
+  });
+  it('Serie: Sterne ohne Sturz geben Bonus', () => {
+    expect(starGain(1, 1)).toBe(STAR_POINTS);
+    expect(starGain(1, 3)).toBeGreaterThan(starGain(1, 2));
+    expect(starGain(3, 1)).toBe(3 * STAR_POINTS);
+    const s = game.init(4, opts);
+    s.holes = [];
+    for (let k = 0; k < 3; k++) {
+      const st = s.stars[0]!;
+      st.value = 1;
+      s.x = st.x;
+      s.y = st.y;
+      game.step(s, NEUTRAL_INPUT);
+    }
+    expect(s.streak).toBe(3);
+    expect(s.pts).toBe(starGain(1, 1) + starGain(1, 2) + starGain(1, 3));
+  });
+  it('Bots: stark > mittel > schwach', () => {
+    const avg = (skill: number) => {
+      let sum = 0;
+      for (let i = 0; i < 10; i++) sum += runBot(game, 80 + i, opts, skill, 6 + i).score;
+      return sum / 10;
+    };
+    const lo = avg(0.3);
+    const mid = avg(0.6);
+    const hi = avg(0.88);
+    expect(hi).toBeGreaterThan(lo);
+    expect(mid).toBeGreaterThan(lo);
   });
 });
