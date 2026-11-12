@@ -14,7 +14,7 @@ export class MiniInput {
   private stick = { x: 0, y: 0 };
   private btn = { a: false, b: false };
   /** Seit dem letzten read() gedrückt – so zählt auch ein Tipp, der zwischen zwei Takten endet */
-  private tap = { a: false, b: false, pd: false };
+  private tap = { a: false, b: false, pd: false, x: 0, y: 0 };
   private cleanup: Array<() => void> = [];
   private ui: HTMLElement | null = null;
 
@@ -36,6 +36,9 @@ export class MiniInput {
       this.keys.set(e.code, act);
       if (act === 'a') this.tap.a = true;
       if (act === 'b') this.tap.b = true;
+      // kurzer Pfeil-Tipp zählt auch, wenn er zwischen zwei Takten schon wieder losgelassen ist
+      if (act === 'left' || act === 'right') this.tap.x = act === 'right' ? 1 : -1;
+      if (act === 'up' || act === 'down') this.tap.y = act === 'up' ? 1 : -1;
     });
     on(window, 'keyup', (e) => this.keys.delete(e.code));
     on(
@@ -128,10 +131,10 @@ export class MiniInput {
     const held = new Set(this.keys.values());
     let x = (held.has('right') ? 1 : 0) - (held.has('left') ? 1 : 0);
     let y = (held.has('up') ? 1 : 0) - (held.has('down') ? 1 : 0);
-    if (x === 0) x = this.stick.x;
-    if (y === 0) y = this.stick.y;
     const tap = this.tap;
-    this.tap = { a: false, b: false, pd: false };
+    this.tap = { a: false, b: false, pd: false, x: 0, y: 0 };
+    if (x === 0) x = this.stick.x || tap.x;
+    if (y === 0) y = this.stick.y || tap.y;
     return {
       ...NEUTRAL_INPUT,
       x,
