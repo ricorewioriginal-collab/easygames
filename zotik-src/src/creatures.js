@@ -192,5 +192,8 @@ export function createCreatures({ T, mk, G, M, glow, mergeStatic }) {
     const i = 'ABMX'.indexOf(slot), kind = p[i];
     return i === 0 ? hover(kind, col) : walker(kind, col, i === 3);
   }
-  return { makeCreature, makeExtra, PLAN };
+  // Beliebige Art mit eigener Farbe (Märchenwelten): schwebende Arten über hover(), alle anderen als Läufer
+  const HOV = new Set(['pilz', 'schleim', 'geist', 'qualle', 'funke', 'falter', 'stern', 'spiegel']);
+  const makeKind = (kind, col, boss) => HOV.has(kind) ? hover(kind, col) : walker(kind, col, !!boss);
+  return { makeCreature, makeExtra, makeKind, HOV, PLAN };
 }
