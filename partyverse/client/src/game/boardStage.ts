@@ -132,6 +132,12 @@ export class BoardStage implements Screen {
     this.scene.add(this.die);
     players.forEach((p, i) => {
       const rig = createCharacter(p.character);
+      // echte Schatten der Figuren aufs Brett (nur feste Teile, keine durchsichtigen Effekte)
+      if (opts.quality.shadows)
+        rig.root.traverse((o) => {
+          const m = (o as THREE.Mesh).material as THREE.Material | undefined;
+          if ((o as THREE.Mesh).isMesh && m && !Array.isArray(m) && !m.transparent) o.castShadow = true;
+        });
       if (opts.cosmeticFor === p.id) {
         if (opts.hat) rig.setHat(opts.hat as HatId);
         if (opts.trail) rig.setTrail(parseInt(opts.trail.replace('#', ''), 16));
