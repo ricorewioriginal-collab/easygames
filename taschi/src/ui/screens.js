@@ -5,28 +5,56 @@ import { REGIONS } from '../data/regions.js';
 import { INTRO_SLIDES } from '../data/story.js';
 import { PLAYER_PRESETS, GENDERS, BODY_FOR_GENDER, SKIN_TONES, HAIR_COLORS, OUTFIT_COLORS, HAIR_STYLES } from '../engine/characters.js';
 import { fmtTime } from './menus.js';
+import { logo, sparks } from './brand.js';
 
 const hex = (c) => '#' + c.toString(16).padStart(6, '0');
 
 export function titleScreen(game, { onContinue, onNew, onSlots, onSettings, onOnline, joinCode }) {
   const sum = game.store.summary(game.slot);
-  const el = h('div#title.layer', {},
-    h('div.logo', {}, h('div.orb'), h('h1', {}, 'TASCHI'), h('p.sub', {}, 'DIE 16 LICHTER')),
-    h('div.menu', {},
-      sum.empty ? null : h('button.bigbtn.primary.focusable', { onclick: onContinue, 'data-autofocus': '' }, h('span.ic', {}, '▶'), h('span', {}, 'Fortsetzen', h('div.muted', { style: { fontSize: '.7em', fontWeight: 400 } }, sum.name + ' · ' + sum.badges + '/16 Siegel · ' + REGIONS[Math.min(15, sum.region)].name))),
-      !sum.empty && joinCode ? h('button.bigbtn.primary.focusable', { onclick: () => onOnline(joinCode) }, h('span.ic', {}, '🌐'), h('span', {}, 'Online beitreten', h('div.muted', { style: { fontSize: '.7em', fontWeight: 400 } }, 'Raum ' + joinCode + ' · mit ' + sum.name))) : null,
-      sum.empty ? (joinCode ? h('p.muted', {}, '🌐 Einladung zu Raum ' + joinCode + ': Starte zuerst ein Abenteuer, dann kannst du beitreten.') : null)
-        : h('button.bigbtn.focusable', { onclick: () => onOnline(null) }, h('span.ic', {}, '🌐'), 'Online & Freunde'),
-      h('button.bigbtn.focusable' + (sum.empty ? '.primary' : ''), { onclick: onNew, 'data-autofocus': sum.empty ? '' : undefined }, h('span.ic', {}, '✦'), 'Neues Abenteuer'),
-      h('button.bigbtn.focusable', { onclick: onSlots }, h('span.ic', {}, '▤'), 'Spielstand wählen (Platz ' + game.slot + ')'),
-      h('button.bigbtn.focusable', { onclick: onSettings }, h('span.ic', {}, '⚙'), 'Einstellungen'),
-      h('div', { id: 'cloudSlot', style: { pointerEvents: 'auto' } })),
-    h('div.press', {}, game.input.pad ? '🎮 Controller verbunden' : ''),
-    h('div.version', {}, 'Version 2.0 · eigene Welt, eigene Wesen'));
+  const item = (ic, label, sub, onclick, extra = {}) => h('button.tmenu-item.focusable', { onclick, ...extra }, h('span.ic', {}, ic), h('span.tx', {}, h('b', {}, label), sub ? h('small', {}, sub) : null));
+  const where = sum.empty ? '' : REGIONS[Math.min(15, sum.region)].name;
+  const profile = sum.empty ? h('div.tprofile.empty', {}, h('div.tp-head', {}, 'Platz ' + game.slot), h('div.tp-name', {}, 'Neues Abenteuer'), h('div.tp-line', {}, 'Wähle deine Figur und finde dein erstes Taschi.'))
+    : h('div.tprofile', {}, h('div.tp-head', {}, 'Platz ' + game.slot + ' · Zuletzt gespielt'), h('div.tp-name', {}, sum.name),
+      h('div.tp-line', {}, '📍 ' + where),
+      h('div.tp-stats', {}, h('span', {}, h('b', {}, sum.badges), '/16 Siegel'), h('span', {}, h('b', {}, sum.dex ?? 0), ' Taschis'), h('span', {}, h('b', {}, fmtTime(sum.playTime || 0)), ' Spielzeit')),
+      h('div.tp-badges', {}, REGIONS.map((r, i) => h('i' + (sum.badges > i ? '.on' : '')))));
+  const menu = h('div.tmenu-list', {},
+    sum.empty ? null : item('▶', 'Fortsetzen', sum.name + ' · ' + sum.badges + '/16 Siegel · ' + where, onContinue, { 'data-autofocus': '' }),
+    !sum.empty && joinCode ? item('🌐', 'Online beitreten', 'Raum ' + joinCode + ' · mit ' + sum.name, () => onOnline(joinCode)) : null,
+    sum.empty ? (joinCode ? h('p.tnote', {}, '🌐 Einladung zu Raum ' + joinCode + ': Starte zuerst ein Abenteuer, dann kannst du beitreten.') : null)
+      : item('🌐', 'Online & Freunde', 'Tauschen und kämpfen – Freunde treten per Link oder Code von überall bei', () => onOnline(null)),
+    item('✦', 'Neues Abenteuer', 'Eine neue Reise durch die 16 Regionen', onNew, sum.empty ? { 'data-autofocus': '' } : {}),
+    item('▤', 'Spielstand wählen', 'Platz ' + game.slot + ' von 3', onSlots),
+    item('⚙', 'Einstellungen', 'Steuerung, Grafik, Ton und Stimmen', onSettings),
+    item('☁', 'Spielstand sichern', 'Mit Google auf allen Geräten weiterspielen', () => { const r = el.querySelector('.tright'); r.classList.toggle('cloud'); }));
+  const press = h('div.tpress', {}, h('span.key', {}, game.input.lastDevice === 'touch' ? '👆' : game.input.pad ? 'A' : '⏎'), game.input.lastDevice === 'touch' ? 'Tippe zum Starten' : 'Drücke eine Taste');
+  const el = h('div#title.layer.stage-press', {},
+    sparks(16, 5),
+    h('div.tlogo', {}, logo('xl')),
+    press,
+    h('div.tmain', {}, h('div.tleft', {}, menu), h('div.tright', {}, profile, h('div', { id: 'cloudSlot', style: { pointerEvents: 'auto' } }))),
+    h('div.tfoot', {}, h('div.tpad', {}, game.input.pad ? '🎮 Controller verbunden' : ''), game.ui.hintsBar([['confirm', 'Wählen'], ['back', 'Zurück']]), h('div.version', {}, 'Version 2.1 · eigene Welt, eigene Wesen')));
   // move the shared AnMaCha cloud panel into the title menu
   const cloud = document.getElementById('cloudMount');
   if (cloud) el.querySelector('#cloudSlot').append(cloud);
-  const screen = { el, onBack: () => {} };
+  // Konsolen-Ablauf: erst „Drücke eine Taste“, dann das Hauptmenü. B führt zurück.
+  let stage = 'press';
+  const setStage = (st) => {
+    stage = st;
+    el.classList.toggle('stage-press', st === 'press'); el.classList.toggle('stage-menu', st === 'menu');
+    if (st === 'menu') { game.audio.sfx('confirm'); requestAnimationFrame(() => { screen.nav.current = null; screen.nav.ensure(); }); }
+  };
+  el.addEventListener('click', (e) => { if (stage === 'press') { e.stopPropagation(); setStage('menu'); } }, true);
+  const screen = {
+    el,
+    onInput: (input) => {
+      if (stage !== 'press') return false;
+      if (['confirm', 'back', 'menu', 'run', 'team', 'map'].some(a => input.pressed(a))) setStage('menu');
+      return true;
+    },
+    onBack: () => setStage('press')
+  };
+  if (joinCode) setStage('menu');
   return screen;
 }
 
@@ -177,6 +205,6 @@ export function starterPreview(game, id) {
     const done = (v) => { game.ui.pop(screen); game.preview.detach(); resolve(v); };
     screen.onBack = () => done(false);
     game.ui.push(screen);
-    requestAnimationFrame(() => { game.preview.attach(el.querySelector('#starterview')); const c = game.preview.showCreature(id); c.play('happy', 1); game.audio.sfx('cry', { pitch: 380 + sp.speed * 2 }); });
+    requestAnimationFrame(() => { game.preview.attach(el.querySelector('#starterview')); const c = game.preview.showCreature(id); c.play('happy', 1); game.audio.sfx('cry', { id, sp }); });
   });
 }

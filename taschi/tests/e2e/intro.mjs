@@ -1,7 +1,7 @@
 // Browser test: complete new-game start (title → slot → creator → intro →
 // Sonnenhain → Professor Ulme → starter ceremony → first battle → first quest),
 // then heal centre, shop, wild battle with capture, save + reload.
-import { launch, waitState, advance, teleport, interactWith, G } from './helpers.mjs';
+import { launch, waitState, advance, teleport, interactWith, G, pressStart } from './helpers.mjs';
 import { strict as assert } from 'node:assert';
 
 export async function run({ shots = null, width = 1280, height = 720, touch = false } = {}) {
@@ -15,6 +15,7 @@ export async function run({ shots = null, width = 1280, height = 720, touch = fa
     await waitState(page, 'title');
     await shot('01-title');
     step('Lade- und Titelbildschirm');
+    await pressStart(page);
     await page.getByText('Neues Abenteuer').click();
     await page.waitForSelector('#creatorview canvas', { timeout: 30000 });
     await page.getByText('Weiblich', { exact: true }).click();
@@ -127,6 +128,7 @@ export async function run({ shots = null, width = 1280, height = 720, touch = fa
     const before = await G(page, () => JSON.stringify({ team: window.__taschi.save.team.map(m => m.id), coins: window.__taschi.save.coins }));
     await page.reload();
     await waitState(page, 'title');
+    await pressStart(page);
     await page.getByText('Fortsetzen').click();
     await waitState(page, 'world');
     const after = await G(page, () => JSON.stringify({ team: window.__taschi.save.team.map(m => m.id), coins: window.__taschi.save.coins }));

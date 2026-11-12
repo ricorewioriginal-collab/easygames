@@ -4,6 +4,11 @@
 import { h } from './ui.js';
 import { REGIONS } from '../data/regions.js';
 import { HALF } from '../logic/layout.js';
+import { SPECIES } from '../data/species.js';
+import { maxHp } from '../logic/monster.js';
+import { THREE } from '../engine/three.js';
+
+const V = new THREE.Vector3();
 
 export class HUD {
   constructor(game) {
@@ -15,6 +20,10 @@ export class HUD {
     this.prompt = h('div.prompt.hidden');
     this.el.append(this.prompt);
     this.padInfo = h('div.padinfo.hidden'); this.el.append(this.padInfo);
+    // Begleiter-Plakette links unten (Bild, Name, KP) und Namensschilder über wilden Taschis
+    this.buddy = h('div.buddy.hidden', {}, h('img'), h('div.bd', {}, h('b'), h('div.bar', {}, h('i'))));
+    this.el.append(this.buddy);
+    this.tags = []; this.tagLayer = h('div.wtags'); this.el.append(this.tagLayer);
     game.ui.root.append(this.el);
     // touch controls
     this.touch = h('div#touch.layer');
@@ -83,7 +92,50 @@ export class HUD {
       if (near) this.prompt.replaceChildren(h('span.key', {}, hint), ptext);
       this.setText(this.aBtn, near?.prompt || 'Aktion');
     }
-    if (performance.now() > this.miniNext) { this.drawMinimap(); this.miniNext = performance.now() + 250; }
+    if (performance.now() > this.miniNext) { this.drawMinimap(); this.updateBuddy(); this.miniNext = performance.now() + 250; }
+    this.updateTags();
+  }
+  updateBuddy() {
+    const g = this.game, w = g.world, s = g.save;
+    const m = (w.mount && s.team.find(x => x.uid === w.mount.uid)) || s.team.find(x => x.uid === s.companion && x.hp > 0) || s.team.find(x => x.hp > 0);
+    this.buddy.classList.toggle('hidden', !m);
+    if (!m) return;
+    const src = g.preview.thumbnail(m.id), key = m.uid + ':' + m.hp + ':' + m.lv + ':' + src.length;
+    if (key === this.buddyKey) return;
+    this.buddyKey = key;
+    const img = this.buddy.firstChild, max = maxHp(m), p = Math.max(0, Math.min(100, m.hp / max * 100));
+    if (img.getAttribute('src') !== src) img.src = src;
+    this.buddy.querySelector('b').textContent = (m.nick || SPECIES[m.id].name) + '  Lv. ' + m.lv;
+    const bar = this.buddy.querySelector('.bar'); bar.className = 'bar' + (p < 22 ? ' low' : p < 50 ? ' mid' : '');
+    bar.firstChild.style.width = p + '%';
+  }
+  // Namensschild (Level, Geschlecht, Name, ◉ = schon gefangen) über den nächsten wilden Taschis
+  updateTags() {
+    const g = this.game, w = g.world, cam = w.camera, pp = w.player?.root.position;
+    const show = this.visible && !g.busy && !g.ui.blocking && w.current?.type === 'region' && pp;
+    const list = show ? w.wild.filter(x => x.c.root.visible && x.c.root.position.distanceTo(pp) < 15).sort((a, b) => a.c.root.position.distanceTo(pp) - b.c.root.position.distanceTo(pp)).slice(0, 3) : [];
+    while (this.tags.length < list.length) { const t = h('div.wtag', {}, h('div.l1', {}, h('span.lv'), h('span.sx')), h('div.nm'), h('i.ar')); this.tagLayer.append(t); this.tags.push(t); }
+    const W = innerWidth, H = innerHeight;
+    this.tags.forEach((t, i) => {
+      const x = list[i];
+      if (!x) { if (!t.hidden) t.hidden = true; return; }
+      const r = x.c.root;
+      V.copy(r.position); V.y += (x.c.bodyTop || 1.2) * r.scale.y + 0.6;
+      V.project(cam);
+      if (V.z > 1 || Math.abs(V.x) > 1.1 || Math.abs(V.y) > 1.1) { t.hidden = true; return; }
+      t.hidden = false;
+      const key = x.id + x.lv + x.g + (g.save.dex[x.id] || 0);
+      if (t.dataset.k !== key) {
+        t.dataset.k = key;
+        const seen = g.save.dex[x.id];
+        t.querySelector('.lv').textContent = 'Lv. ' + x.lv;
+        const sx = t.querySelector('.sx'); sx.className = 'sx ' + (seen === 2 ? 'cg' : x.g); sx.textContent = seen === 2 ? '◉' : x.g === 'w' ? '♀' : '♂';
+        t.querySelector('.nm').textContent = seen ? SPECIES[x.id].name : '???';
+      }
+      const d = r.position.distanceTo(pp);
+      t.style.transform = `translate(${((V.x + 1) / 2 * W).toFixed(1)}px, ${((1 - V.y) / 2 * H).toFixed(1)}px) translate(-50%, -100%)`;
+      t.style.opacity = d > 11 ? ((15 - d) / 4).toFixed(2) : '';
+    });
   }
   drawMinimap() {
     const x = this.mctx, W = 160, w = this.game.world, c = w.current;

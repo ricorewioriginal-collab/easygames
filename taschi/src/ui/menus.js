@@ -54,7 +54,7 @@ export function openPauseMenu(game, tab = 'team', { only = false } = {}) {
   };
   const post = () => requestAnimationFrame(() => {
     const v = screen.el.querySelector('#cardview');
-    if (v) { game.preview.attach(v); game.preview.showCharacter(game.save.player.look).hold('wave'); } else game.preview.detach();
+    if (v) { game.preview.attach(v); game.preview.showCharacter(game.save.player.look).hold('wave'); } else if (!screen.el.querySelector('#dexbig')) game.preview.detach();
   });
   const rerender = () => { const old = screen.el; screen.el = render(); screen.el.classList.add('noanim'); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); post(); };
   screen.el = render();
@@ -83,13 +83,26 @@ const TAB_RENDER = {
   dex(game) {
     const s = game.save;
     const caught = P.caughtCount(s), seen = P.seenCount(s);
+    // Raster mit kleinen Bildern links, großes 3D-Modell mit Nummer und Name rechts
+    const no = h('div.dexno'), nm = h('div.dexnm'), info = h('div.dexinfo', {}, no, nm);
+    let shown = null;
+    const show = (id) => {
+      const v = document.getElementById('dexbig');
+      if (id === shown && game.preview.active === v) return; shown = id;
+      const st = s.dex[id], sp = SPECIES[id];
+      no.textContent = 'Nr. ' + String(sp.dexNo).padStart(3, '0'); nm.textContent = st ? sp.name + (st === 2 ? '  ◉' : '') : '???';
+      if (!v) return;
+      if (game.preview.active !== v) game.preview.attach(v);
+      if (st) game.preview.showCreature(id); else game.preview.clearModel(); // unbekannt: kein Modell
+    };
+    const grid = h('div.dexgrid.scroll', { onnavfocus: (e) => { const id = e.target.dataset?.id; if (id) show(id); } }, SPECIES_IDS.map(id => {
+      const st = s.dex[id], sp = SPECIES[id];
+      return h('button.dexcell.focusable' + (st ? '' : '.unknown') + (st === 2 ? '.caught' : ''), { dataset: { id }, title: st ? sp.name : '???', onclick: () => st && openDexEntry(game, id), onpointerenter: () => show(id) },
+        st ? h('img', { src: game.preview.thumbnail(id), alt: '' }) : h('span', {}, '?'), h('small', {}, String(sp.dexNo).padStart(3, '0')));
+    }));
+    requestAnimationFrame(() => show(SPECIES_IDS.find(id => s.dex[id]) || SPECIES_IDS[0]));
     return h('div', {}, h('p', {}, h('span.pill', {}, '◉ Gefangen ' + caught), ' ', h('span.pill', {}, '👁 Gesehen ' + seen), ' ', h('span.pill', {}, 'Arten ' + SPECIES_IDS.length)),
-      h('div.grid', { style: { gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 170px), 1fr))' } }, SPECIES_IDS.map(id => {
-        const st = s.dex[id], sp = SPECIES[id];
-        return h('button.card.focusable', { onclick: () => st && openDexEntry(game, id) },
-          st ? portrait(game, id) : h('div.portrait', {}, '?'),
-          h('div.meta', {}, h('div.sub', {}, '#' + String(sp.dexNo).padStart(3, '0')), h('div.name', {}, st ? sp.name : '???'), st ? h('div.sub', {}, st === 2 ? '◉ gefangen' : 'gesehen') : null));
-      })));
+      h('div.dexsplit', {}, grid, h('div.dexside', {}, h('div#dexbig.viewport3d'), info)));
   },
   bag(game, rerender) {
     const s = game.save;
@@ -164,7 +177,7 @@ const TAB_RENDER = {
       h('h3', {}, 'Audio'),
       row('Musik', slider('musicVolume', 0, 1, 0.1, pct)), row('Effekte', slider('sfxVolume', 0, 1, 0.1, pct)), row('Umgebung', slider('ambienceVolume', 0, 1, 0.1, pct)),
       row('Ton', cycle('muted', [false, true], ['An', 'Stumm'])),
-      row('Sprachausgabe', cycle('voice', [true, false], ['An', 'Aus'])), row('Stimme', slider('voiceVolume', 0, 1, 0.1, pct)), row('Sprechtempo', cycle('voiceRate', [0.9, 1, 1.15], ['Ruhig', 'Normal', 'Flott'])),
+      row('Stimmen', cycle('voice', [true, 'babble', false], ['🗣 Sprache', '💬 Plappern', 'Aus'])), row('Stimmprobe', h('button.chip.focusable', { onclick: () => { ui.audio?.unlock?.(); const who = ui.voice.sample(ui._sample = (ui._sample ?? -1) + 1); ui.toast('🗣 ' + who); } }, '▶ Anhören')), row('Stimme', slider('voiceVolume', 0, 1, 0.1, pct)), row('Sprechtempo', cycle('voiceRate', [0.9, 1, 1.15], ['Ruhig', 'Normal', 'Flott'])),
       h('h3', {}, 'Steuerung'),
       row('Textgeschw.', cycle('textSpeed', [1, 2, 3], ['Langsam', 'Normal', 'Schnell'])),
       row('Kamera', slider('camSensitivity', 0.4, 2, 0.2, (v) => v.toFixed(1) + '×')),
@@ -286,7 +299,7 @@ export function openDexEntry(game, id) {
   const hab = habitatsOf(id).slice(0, 6).map(x => REGIONS[x.region].name + ' (' + { grass: 'Gras', water: 'Wasser', cave: 'Höhle', flowers: 'Blumen', night: 'Nacht' }[x.habitat] + ')');
   const chain = evolutionChain(id);
   const body = h('div.split', {},
-    h('div', {}, h('div.viewport3d', { id: 'dexview' })),
+    h('div', {}, h('div.viewport3d', { id: 'dexview' }), h('button.chip.focusable', { onclick: () => { game.audio.unlock?.(); game.audio.sfx('cry', { id, sp }); game.preview.model?.play?.('cry', 0.8); } }, '🔊 Ruf')),
     h('div', {}, h('p', {}, typeBadge(sp.type), sp.type2 ? typeBadge(sp.type2) : null, ' ', h('span.muted', {}, '#' + String(sp.dexNo).padStart(3, '0'))),
       h('p', {}, sp.bio),
       caught ? h('div.statgrid', {}, 'KP', h('div.bar', {}, h('i', { style: { width: sp.hp / 1.4 + '%' } })), h('b', {}, sp.hp), 'Angriff', h('div.bar', {}, h('i', { style: { width: sp.atk / 1.4 + '%' } })), h('b', {}, sp.atk), 'Verteidigung', h('div.bar', {}, h('i', { style: { width: sp.def / 1.4 + '%' } })), h('b', {}, sp.def), 'Initiative', h('div.bar', {}, h('i', { style: { width: sp.speed / 1.4 + '%' } })), h('b', {}, sp.speed)) : h('p.muted', {}, 'Fange dieses Taschi, um seine Werte zu erfahren.'),
@@ -298,7 +311,7 @@ export function openDexEntry(game, id) {
   screen.onBack = () => game.ui.pop(screen);
   screen.onClose = () => game.preview.detach();
   game.ui.push(screen);
-  requestAnimationFrame(() => { const v = screen.el.querySelector('#dexview'); if (v) { game.preview.attach(v); game.preview.showCreature(id); } });
+  requestAnimationFrame(() => { const v = screen.el.querySelector('#dexview'); if (v) { game.preview.attach(v); game.preview.showCreature(id); game.audio.sfx('cry', { id, sp }); } });
 }
 
 function useItemFlow(game, id, rerender, give = false) {
