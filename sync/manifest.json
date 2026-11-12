@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3ed49f0add60",
- "generated": "2026-11-12T20:48:08+00:00",
- "commit": "3ee00df98ba37a5dbff1787d34470fd3b0bad2d1",
+ "version": "36985864a3dc",
+ "generated": "2026-11-12T21:03:50+00:00",
+ "commit": "305c188516480c517f7b982ffa4f8dcc00d05f4a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9359,7 +9359,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258362,
-   "h": "50cd37c39ccd67177a1f209f405a51e17781a59a4695b3344c8db3b6d1a848fb"
+   "h": "63314be8d28a6d04f7c61564f4b9e7b30f8b32f8e99acfa01531eb88c95eb713"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -9863,8 +9863,8 @@
   },
   {
    "p": "taschi/src/engine/characters.js",
-   "s": 43897,
-   "h": "4135d40671aa64e6e5c83b060228cc38f1feff587b04c0ab5bfb66f1e6bdbf22"
+   "s": 44256,
+   "h": "05302ea3df2f527fb9f09e286de356920c81ff9981fd85a18ba25814f5ca15e7"
   },
   {
    "p": "taschi/src/engine/creatures.js",
@@ -9878,8 +9878,8 @@
   },
   {
    "p": "taschi/src/engine/kaykit.js",
-   "s": 15276,
-   "h": "5f3c6ae69b1a452604d29ff279133096bc2cbf531128edcbedb537fe90094966"
+   "s": 16178,
+   "h": "91eb6e1a6ea7c08bdacacf084bc9c8f4435af3f8ffcf169297e7852370dad16e"
   },
   {
    "p": "taschi/src/engine/materials.js",
@@ -11807,9 +11807,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-fInUMz2P.js",
-   "s": 1700062,
-   "h": "e204590e13e0c3dd23fe700b47a7dbd194f1e589858a0ea0fd203bbd912171d2"
+   "p": "zotik/assets/index-DX-V52iY.js",
+   "s": 1705176,
+   "h": "7c9a20970dd9e6b2070e8aac4f25595ae8e91c042a070fa238352616f68b9849"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -11829,7 +11829,7 @@
   {
    "p": "zotik/index.html",
    "s": 72193,
-   "h": "9e1b6a63549c2eab5998c35c7ac1d719c45a875a14b3a39addf5f3d747de6f30"
+   "h": "8800f6912cdee9f2ac1f3750a5fa37af3ef5ce4273717dfccea5f351ff89cc4f"
   },
   {
    "p": "zotik/manifest.webmanifest",
@@ -11850,6 +11850,11 @@
    "p": "zotik/models/f2.glb",
    "s": 1076928,
    "h": "e3a013adbfa6344b169a553ba95a6d14dc79707de2c0457373047b58fd34ac2c"
+  },
+  {
+   "p": "zotik/models/kb/kb.glb",
+   "s": 1011876,
+   "h": "5fab0b9b52a60a36bf35aad8ae57a629367550ff7ee6188bcca52a101e9b5c7f"
   },
   {
    "p": "zotik/models/kk/ad_ba.glb",
