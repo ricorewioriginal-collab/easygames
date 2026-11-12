@@ -1,8 +1,12 @@
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+let _rb = null; const RBOX = () => _rb || (_rb = new RoundedBoxGeometry(1, 1, 1, 3, .16));
 // Eigene Gegner je Welt: jede Welt hat eigene Körperformen statt umgefärbter Riftlinge/Wölfe.
 // Schwebende Fernkämpfer (base 'rift') liefern {root, body, sh}, Nahkämpfer (base 'wolf') {root, body, head, legs[4], tail} –
 // genau das, was die Animation in main.js bewegt (sh kreisen, legs[0]/[3] gegen legs[1]/[2], tail, head).
-export function createCreatures({ T, mk, G, M, glow, mergeStatic }) {
-  const C = (h, o) => M(h, o), E = (h, i) => M(h, { e: h, ei: i ?? 1.6 });
+export function createCreatures({ T, mk, G, M, glow, mergeStatic, SK }) {
+  // Weichere Formen: abgerundete Kästen und fein unterteilte Kugeln/Kegel statt kantiger Grundkörper
+  G = Object.assign({}, G, { box: RBOX(), sph0: G.sph, cone0: G.cone, cyl0: G.cyl });
+  const C = (h, o) => (SK && !(o && (o.e !== undefined || o.t || o.m))) ? SK(h, o) : M(h, o), E = (h, i) => M(h, { e: h, ei: i ?? 1.6 });
   const dim = (h, k) => { const c = new T.Color(h); c.multiplyScalar(k); return c.getHex(); };
   const eyes = (g, y, z, sx, col) => { for (const s of [-1, 1]) g.add(mk(G.sph0, E(col || 0xffffff, 2.2), s * sx, y, z, .06, .07, .04, false)); };
   const fin = (r) => { mergeStatic(r.body, new Set([r.head, ...(r.legs || []), r.tail, ...(r.sh || [])].filter(Boolean))); return r; };
