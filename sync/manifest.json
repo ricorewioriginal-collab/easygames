@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "a75b199fe825",
- "generated": "2026-11-12T13:11:00+01:00",
- "commit": "08c26202b94583220c8140ec15a603b25918deee",
+ "version": "237b9fa3c360",
+ "generated": "2026-11-12T12:12:56+00:00",
+ "commit": "172d5ae020c2b95c9e3c59b1844c6bd743d013aa",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6183,8 +6183,8 @@
   },
   {
    "p": "guides/taschi.json",
-   "s": 40217,
-   "h": "fa70ba06ae2f0b7342adad89b1ccf0768f86bc73871c5416072b424ef593cddc"
+   "s": 40235,
+   "h": "afb806a2ecee1aab5ceee8d9d8dbc38ed7c3d3f3fe47e1f34cb66c8490b6dc74"
   },
   {
    "p": "guides/tortenschlacht.json",
@@ -8844,37 +8844,7 @@
   {
    "p": "sync/catalog.json",
    "s": 257559,
-   "h": "b7b2fd266b50da40208acfffbddeb389f105e991cdbca9c0aa856281cb7630eb"
-  },
-  {
-   "p": "taschi/assets/Bark007_1K-JPG.zip",
-   "s": 10003533,
-   "h": "a376a5208e7e9cb20475805042aee6c7d9fd1d5bcd8f80f38f75bea6e063c6f4"
-  },
-  {
-   "p": "taschi/assets/Grass004_1K-JPG.zip",
-   "s": 11003149,
-   "h": "4b63495f459db8481f4d5144e4e9069345c81cf898cc71f2216f5dd3bb344469"
-  },
-  {
-   "p": "taschi/assets/Ground037_1K-JPG.zip",
-   "s": 10574958,
-   "h": "4e69db2b7251b1736fa70fe6fe4ab80d64bd220117dd5dd4c7caaead51c2574e"
-  },
-  {
-   "p": "taschi/assets/PavingStones070_1K-JPG.zip",
-   "s": 9046803,
-   "h": "84be05ad935c2a8ea0dd3b82dd18c9e1faf7eeae222b85d96beb14ed16276132"
-  },
-  {
-   "p": "taschi/assets/Rock030_1K-JPG (1).zip",
-   "s": 9677446,
-   "h": "2fd0bc2d214e2487c19062ed0798a85dd135b41cfc12bbaed42d5acae238f989"
-  },
-  {
-   "p": "taschi/assets/kloofendal_48d_partly_cloudy_puresky_2k.hdr",
-   "s": 5451493,
-   "h": "5244534e9cf5b606f2ff513aa00ddb161b0a4826ffd88a0d3bd03ac29247d198"
+   "h": "7d0e244b76dce5c93592bc9bc53cbdc72823038108f7c719afaa021e5a1e412c"
   },
   {
    "p": "taschi/assets/models/alien.glb",
@@ -9102,6 +9072,36 @@
    "h": "789fcdd3d32a1bf6ceaa0e30f9ac5d8d2c52d15fa0181d4d1d980a1b2a2ac869"
   },
   {
+   "p": "taschi/assets/textures/bark.jpg",
+   "s": 99657,
+   "h": "821aa4298aad407a3d05dc3bc80596fade6909737f5de3fd90693d628f5e3132"
+  },
+  {
+   "p": "taschi/assets/textures/grass.jpg",
+   "s": 96265,
+   "h": "f427eb1d9bc3ec44ffbfa2355812f361df00780524929855fb5b7d9c48da32ad"
+  },
+  {
+   "p": "taschi/assets/textures/ground.jpg",
+   "s": 100365,
+   "h": "acba1d98de1e5171327e9f67498c0abca2e3175de7a3b6d41cc8411e4cd5d6ad"
+  },
+  {
+   "p": "taschi/assets/textures/paving.jpg",
+   "s": 79445,
+   "h": "c575afc086f3d9eabc9e9b7cc2212cd56a594214eb9e041a59a9bf4a498878f6"
+  },
+  {
+   "p": "taschi/assets/textures/rock.jpg",
+   "s": 92748,
+   "h": "125f6a498f09e4ba05ddd3a592eb921e1fd1cc85c8d09c54e91acf07ea859684"
+  },
+  {
+   "p": "taschi/assets/textures/sky.jpg",
+   "s": 88719,
+   "h": "912df9636f9f58c67246ea063ad09e3113cf95efa1d6733c0b58325919cda901"
+  },
+  {
    "p": "taschi/card.svg",
    "s": 2177,
    "h": "2fa2d6b39a4bb40615de46a0571efdd63b7cfed26f0673a719827d6cb297350f"
@@ -9158,8 +9158,8 @@
   },
   {
    "p": "taschi/src/data/items.js",
-   "s": 8255,
-   "h": "4a5f4d34327090b769c0047ad4acf8d89b8536a297b577fccc29c1c72abca579"
+   "s": 8257,
+   "h": "5081c035c0c9ef9e3521c660c8f6265e739866e9735c6758145dd0dcef1123d6"
   },
   {
    "p": "taschi/src/data/moves.js",
@@ -9168,13 +9168,13 @@
   },
   {
    "p": "taschi/src/data/regions.js",
-   "s": 57481,
-   "h": "481c5076a55ee2f5ed4da4074b099c0cb07aca531124bc63b014b2170eee90e3"
+   "s": 57485,
+   "h": "3402e68065338ad207b3c704496cb6cea834bfe510e9974f52cb5600a6d1e814"
   },
   {
    "p": "taschi/src/data/species.js",
-   "s": 55233,
-   "h": "83f01f2a9b2c79cf0e86115b5234d7d16ebbf860e809d6f3276e67601b91ffbd"
+   "s": 55292,
+   "h": "b2af84fe4973f3505cd50d4df87516c4b12a4dcd8d9225cdd2919707f754997b"
   },
   {
    "p": "taschi/src/data/story.js",
@@ -9193,33 +9193,38 @@
   },
   {
    "p": "taschi/src/engine/buildings.js",
-   "s": 39173,
-   "h": "370603f3ceeac1776c644178ab1cdb24124e95dd4806b0a8a7e6a9785ce3164e"
+   "s": 39187,
+   "h": "af43d634b362fe9d048b7083386122dfb87978149152b9ec371099f680743013"
   },
   {
    "p": "taschi/src/engine/characters.js",
-   "s": 36590,
-   "h": "8b37fecfc76690156a44ab1de46861d52b521b61edde2da6707979c76186457b"
+   "s": 36741,
+   "h": "8fe84b2b2c6005c4a6d25372e38dfeed77f534720dd2a06da702c99db2665778"
   },
   {
    "p": "taschi/src/engine/creatures.js",
-   "s": 38706,
-   "h": "3dec65bfce4a91a9b5ce3c0e3ad91c200c7fca6162c3fd46a6f65486255903ee"
+   "s": 38899,
+   "h": "ac101a81ec3370f61e4857130bcfc9c14fd9ab4ba9950ad633066ea386f96791"
   },
   {
    "p": "taschi/src/engine/geometry.js",
-   "s": 6553,
-   "h": "298ec45616926acfba8831857f6492c310044d039c9537a5f1c02b5bbe7006ec"
+   "s": 8776,
+   "h": "52c0a10d83d632edac959f34a527a9762840cc627dc0feb0748e2ad2a1006a2f"
   },
   {
    "p": "taschi/src/engine/materials.js",
-   "s": 7334,
-   "h": "55e591f50033d68a8509b4132cab5c5b0c3b95c15783ce6fe4cee507f34e7d89"
+   "s": 10235,
+   "h": "1d432a88038a8bf29ce2b88cd943a6761ef4af60562e4ea2aa428e214276ba67"
   },
   {
    "p": "taschi/src/engine/models.js",
    "s": 8509,
    "h": "db634e58082ca5620571a5e68a410050e7f83ca1c85c90c336a36af5d3230662"
+  },
+  {
+   "p": "taschi/src/engine/post.js",
+   "s": 6299,
+   "h": "0f0b8cf92a2a6167658bd2efa32e380ebd65eb684053358ed1f2a3d62a0b9a60"
   },
   {
    "p": "taschi/src/engine/preview.js",
@@ -9228,23 +9233,23 @@
   },
   {
    "p": "taschi/src/engine/renderer.js",
-   "s": 5772,
-   "h": "7c54e2736abfe61dbef8e5a436af0c7a1dbc94052ef86007555c162a367cc1b0"
+   "s": 6555,
+   "h": "fec9b50b726406a4a611f77d02abeba560d16993d033c9cd633a3aad9c23bfda"
   },
   {
    "p": "taschi/src/engine/sky.js",
-   "s": 11119,
-   "h": "33c946675bf9283004ac8806e204cb4bba7bc4abb3e133580b002757d394d2ce"
+   "s": 13238,
+   "h": "ebe0bf5a68b948e32f45088c2ecca9fe83bca4fc1cb576d8a4e13742657df1c5"
   },
   {
    "p": "taschi/src/engine/terrain.js",
-   "s": 8350,
-   "h": "644685ecfebeb240b57e4364f6c745d81d461d180e4cede3611afa4788d08565"
+   "s": 8284,
+   "h": "fd9789d6bdbfc5d402be06dd6ad14999ad0f0aaccb3160ceb13851c7e89efce6"
   },
   {
    "p": "taschi/src/engine/textures.js",
-   "s": 9008,
-   "h": "b776fa12a3cca9f91b3c5a9abf9a903d497c2bb1b85cccba494379b6d598e1de"
+   "s": 9892,
+   "h": "1640dbaf0ae024a13cf0c3aea7c699b9a73443eada835198dd62bae39c93db08"
   },
   {
    "p": "taschi/src/engine/three.js",
@@ -9253,8 +9258,8 @@
   },
   {
    "p": "taschi/src/engine/vegetation.js",
-   "s": 14528,
-   "h": "1b9c64a8dfbf276c08245724610a611782b5237ecbfe0a2f5fc6e28c648326e4"
+   "s": 16169,
+   "h": "be49f3727bbabb1a2913a577dddd2597bcbedb21816757ec69fe73fbf5421f55"
   },
   {
    "p": "taschi/src/engine/zotik.js",
@@ -9263,13 +9268,13 @@
   },
   {
    "p": "taschi/src/game/battle-scene.js",
-   "s": 47012,
-   "h": "58a6ce095ed9717f579a5fbd986a5a6ed580dc76252a3a5e8464cd1f525d73b9"
+   "s": 47557,
+   "h": "b16b64d5e385042b013606fbf4a89af51614dc0621bd59a847ac9cc79d1a4042"
   },
   {
    "p": "taschi/src/game/game.js",
-   "s": 79137,
-   "h": "e5bf65fddbe25921e451bb5ae57b741fdc2507a20a5b3d848159f2fc7b26c08f"
+   "s": 79207,
+   "h": "362e53e4580b13fb1bf07b0a6d04f9296f74c99434c5d2c1887d447a19829181"
   },
   {
    "p": "taschi/src/game/world.js",
@@ -9413,8 +9418,8 @@
   },
   {
    "p": "taschi/src/world/region-map.js",
-   "s": 24259,
-   "h": "9bffe22abbb7ba0191f5af698bf0cb8bd3a1d786510e36fb4559d5af2c1e248b"
+   "s": 26004,
+   "h": "eb9d694503f9c6da1e4674c08dd30acac975bebf81924c2c65a54e91ce911b34"
   },
   {
    "p": "taschi/vite.config.mjs",

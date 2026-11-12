@@ -370,13 +370,13 @@ export class Game {
       if (this.state === STATES.WORLD) this.tickTime(dt);
       if (this.state === STATES.BATTLE) {
         this.battleScene.update(dt);
-        this.renderer.render(this.battleScene.scene, this.battleScene.camera);
+        this.renderer.render(this.battleScene.scene, this.battleScene.camera, 'battle');
       } else {
         if (this.state === STATES.TITLE) this.titleCamera(dt);
         else this.world.update(dt, this.input, worldActive);
         if (this.state !== STATES.TITLE && this.world.player) this.sky.update(dt, this.save.worldTime, this.world.player.root.position, this.world.camera);
         else this.sky.update(dt, 10 * 60, new THREE.Vector3(0, 0, 14), this.world.camera);
-        this.renderer.render(this.world.scene, this.world.camera);
+        this.renderer.render(this.world.scene, this.world.camera, this.world.current?.type === 'interior' ? 'indoor' : 'day');
       }
       this.preview.update(dt);
       this.hud.update(dt);

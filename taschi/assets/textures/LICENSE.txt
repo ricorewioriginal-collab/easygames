@@ -1,0 +1,10 @@
+Taschi – freie Texturen (alle CC0 1.0 Universal / Public Domain, https://creativecommons.org/publicdomain/zero/1.0/)
+
+sky.jpg    – Poly Haven, „Kloofendal 48d Partly Cloudy (Pure Sky)“ (HDRI 2K), https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky
+             obere Bildhälfte, auf 8 Bit umgerechnet
+grass.jpg  – ambientCG Grass004 (1K), https://ambientcg.com/view?id=Grass004
+ground.jpg – ambientCG Ground037 (1K), https://ambientcg.com/view?id=Ground037
+paving.jpg – ambientCG PavingStones070 (1K), https://ambientcg.com/view?id=PavingStones070
+rock.jpg   – ambientCG Rock030 (1K), https://ambientcg.com/view?id=Rock030
+bark.jpg   – ambientCG Bark007 (1K), https://ambientcg.com/view?id=Bark007
+             je Farbbild in Graustufen, 512×512, Helligkeit normiert

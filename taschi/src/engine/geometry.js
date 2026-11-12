@@ -122,7 +122,8 @@ export function softBox(w, h, d, seg = 2) {
 }
 
 // Deform a geometry with smooth pseudo-noise (used for rocks and canopies).
-export function lumpy(geo, amount = 0.15, seed = 1) {
+// smooth: Normalen über gemeinsame Ecken mitteln – runde, weiche Formen statt Facetten.
+export function lumpy(geo, amount = 0.15, seed = 1, smooth = true) {
   const g = geo.index ? geo.toNonIndexed() : geo;
   const pos = g.attributes.position, v = new THREE.Vector3();
   const map = new Map();
@@ -134,5 +135,48 @@ export function lumpy(geo, amount = 0.15, seed = 1) {
     pos.setXYZ(i, v.x * f, v.y * f, v.z * f);
   }
   g.computeVertexNormals();
+  if (smooth) smoothNormals(g);
   return g;
 }
+
+// Weiche Normalen für nicht-indizierte Geometrie: alle Ecken an derselben
+// Position bekommen die gemittelte Normale (wie ein glatt modelliertes Objekt).
+export function smoothNormals(g) {
+  const pos = g.attributes.position, nor = g.attributes.normal, sum = new Map(), keys = new Array(pos.count);
+  for (let i = 0; i < pos.count; i++) {
+    const k = Math.round(pos.getX(i) * 1000) + ',' + Math.round(pos.getY(i) * 1000) + ',' + Math.round(pos.getZ(i) * 1000);
+    keys[i] = k;
+    const a = sum.get(k) || [0, 0, 0];
+    a[0] += nor.getX(i); a[1] += nor.getY(i); a[2] += nor.getZ(i);
+    sum.set(k, a);
+  }
+  for (let i = 0; i < pos.count; i++) {
+    const a = sum.get(keys[i]), l = Math.hypot(a[0], a[1], a[2]) || 1;
+    nor.setXYZ(i, a[0] / l, a[1] / l, a[2] / l);
+  }
+  nor.needsUpdate = true;
+  return g;
+}
+
+// Feinere Rundungen für Taschis und Figuren: dieselben Aufrufe wie bisher, nur
+// runde Körper (Kugeln, Zylinder, Kegel, Drehkörper) bekommen mehr Segmente.
+// Bewusst kantige Teile (Stacheln, Kristalle mit wenigen Seiten) bleiben, wie sie sind.
+const up = (n, min, max) => Math.max(n, Math.min(max, Math.round(n * 1.6)), Math.min(min, n * 2));
+export function fineThree(T) {
+  const F = Object.create(T);
+  F.SphereGeometry = class extends T.SphereGeometry {
+    constructor(r = 1, w = 32, h = 16, ...rest) { super(r, up(w, 16, 28), up(h, 12, 18), ...rest); }
+  };
+  F.CylinderGeometry = class extends T.CylinderGeometry {
+    constructor(rt = 1, rb = 1, h = 1, rs = 8, ...rest) { super(rt, rb, h, rs >= 5 ? up(rs, 12, 20) : rs, ...rest); }
+  };
+  F.ConeGeometry = class extends T.ConeGeometry {
+    constructor(r = 1, h = 1, rs = 8, ...rest) { super(r, h, rs >= 5 ? up(rs, 12, 20) : rs, ...rest); }
+  };
+  F.LatheGeometry = class extends T.LatheGeometry {
+    constructor(pts, seg = 12, ...rest) { super(pts, seg >= 8 ? up(seg, 14, 24) : seg, ...rest); }
+  };
+  return F;
+}
+export const fineCapsule = (r, len, seg = 10, rings = 4) => capsule(r, len, up(seg, 14, 24), rings + 2);
+export const fineLathe = (profile, seg = 14) => lathe(profile, up(seg, 14, 24));

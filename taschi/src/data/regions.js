@@ -20,7 +20,7 @@ export const REGIONS = [
     villageQuest: 'Moosbach',
     npcs: [
       { role: 'handwerker', name: 'Müller Henrik', lines: { pre: ['Die Mühle läuft wieder, seit Samenlinge die Wurzeln aus dem Mühlrad geholt haben.', 'Die Runen am Mühlstein gehören zum Siegelrätsel. Schau dir die Wandbilder genau an.'], post: ['Fiete hat dir das Siegel gegeben? Dann mahle ich dir heute extra feines Mehl!'], done: ['Die Korallküste liegt jenseits des Nordtors. Grüß mir das Meer!'] } },
-      { role: 'kind', name: 'Pia', lines: { pre: ['Ich hab ein Fellino gesehen! Es hatte sooo lange Ohren!', 'Im hohen Gras raschelt es immer, wenn man ganz leise ist.'], post: ['Zeig mal dein Siegel! Wow, es glitzert grün!'], done: ['Wenn ich groß bin, werde ich auch Champion. Versprochen!'] } },
+      { role: 'kind', name: 'Pia', lines: { pre: ['Ich hab ein Pelzlo gesehen! Es hatte sooo lange Ohren!', 'Im hohen Gras raschelt es immer, wenn man ganz leise ist.'], post: ['Zeig mal dein Siegel! Wow, es glitzert grün!'], done: ['Wenn ich groß bin, werde ich auch Champion. Versprochen!'] } },
       { role: 'familie', name: 'Familie Linde', lines: { pre: ['Wir picknicken jeden Sonntag am Mühlteich. Die Quappis springen dann aus dem Wasser.'], post: ['Unser Sohn erzählt nur noch von deinem Arenakampf.'], done: ['Pass auf dich auf, da draußen. Und komm uns besuchen!'] } },
       { role: 'reisender', name: 'Wanderin Oda', lines: { pre: ['Ich komme von der Korallküste. Das Nordtor öffnet sich erst für Trainer, die Champion Lin besiegt haben.'], post: ['Lin wartet im Pavillon am Hügel östlich der Stadt.'], done: ['Vielleicht sehen wir uns an der Küste wieder.'] } },
       { role: 'trainer', name: 'Trainer Kolja', lines: { pre: ['Hast du schon einmal einen Typenvorteil genutzt? Pflanze schlägt Wasser, Feuer schlägt Pflanze.'], post: ['Felsling ist hart, aber Wasser und Pflanze wirken gut gegen Gestein.'], done: ['Ich trainiere hier weiter, bis ich dich einhole!'] } },
@@ -218,7 +218,7 @@ export const REGIONS = [
     villageQuest: 'Nebelau', guild: 3,
     npcs: [
       { role: 'handwerker', name: 'Stegbauer Arvid', lines: { pre: ['Die Stege tragen dich, aber geh nicht ins Moor. Es ist tiefer, als es aussieht.'], post: ['Kira hat ihre Arena im Nebel gebaut. Typisch.'], done: ['Neue Stege für den Champion!'] } },
-      { role: 'kind', name: 'Mila', lines: { pre: ['Ich hab mit einem Irrlicht gesprochen! Es hat geblinkt.'], post: ['Ist der Mann in Violett noch traurig?'], done: ['Die Irrlichter mögen dich.'] } },
+      { role: 'kind', name: 'Mila', lines: { pre: ['Ich hab mit einem Dämmerfunk gesprochen! Es hat geblinkt.'], post: ['Ist der Mann in Violett noch traurig?'], done: ['Die Irrlichter mögen dich.'] } },
       { role: 'haendler', name: 'Laternenverkäufer Jasper', lines: { pre: ['Ohne Laterne kein Weg durchs Moor.'], post: ['Für Siegelträger: Laternenöl zum halben Preis.'], done: ['Leuchte weiter!'] } },
       { role: 'reisender', name: 'Forscherin Noa', lines: { pre: ['Hier schweben sanfte Geister herum. Bringe zwei verschiedene Geist-Taschis mit.'], post: ['Die Irrlichter zeigen versteckte Wege.'], done: ['Das Moor ist voller Wunder.'] } },
       { role: 'trainer', name: 'Moorläufer Gero', lines: { pre: ['Geist-Taschis sind gegen Geist anfällig. Klingt komisch, stimmt aber.'], post: ['Kira ist schwer zu finden. Du hast sie gefunden.'], done: ['Respekt aus dem Moor.'] } },
@@ -244,7 +244,7 @@ export const REGIONS = [
       { role: 'handwerker', name: 'Eisschnitzerin Runa', lines: { pre: ['Meine Figuren schmelzen nie – Eis-Taschis kühlen sie.'], post: ['Rokko liebt seine Eisblöcke mehr als seine Taschis. Fast.'], done: ['Eine Eisfigur von dir steht jetzt am Platz!'] } },
       { role: 'kind', name: 'Kalle', lines: { pre: ['Wir rutschen auf dem Spiegelsee! Komm mit!'], post: ['Hast du Rokkos Eisrutschen geschafft?'], done: ['Schneeballschlacht?'] } },
       { role: 'haendler', name: 'Pelzhändler Gunnar', lines: { pre: ['Warme Handschuhe für Trainer! Und Tränke, natürlich.'], post: ['Vitaltränke gibt’s ab zehn Siegeln.'], done: ['Für dich nur das Beste.'] } },
-      { role: 'reisender', name: 'Bergsteigerin Frida', lines: { pre: ['Der Eiskristall, den manche Polar-Taschis zur Entwicklung brauchen, liegt in Truhen am See.'], post: ['Im Norden geht es durch den Pass ins Wipfelreich.'], done: ['Wir sehen uns auf dem nächsten Gipfel!'] } },
+      { role: 'reisender', name: 'Bergsteigerin Frida', lines: { pre: ['Der Eiskristall, den manche Raureif-Taschis zur Entwicklung brauchen, liegt in Truhen am See.'], post: ['Im Norden geht es durch den Pass ins Wipfelreich.'], done: ['Wir sehen uns auf dem nächsten Gipfel!'] } },
       { role: 'trainer', name: 'Skifahrer Lasse', lines: { pre: ['Feuer und Gestein schlagen Eis. Denk dran!'], post: ['Du hast Rokko geschlagen? Respekt!'], done: ['Abfahrt, Champion!'] } },
       { role: 'familie', name: 'Familie Frost', lines: { pre: ['Im Winter heizen wir mit Glut-Taschis aus dem Süden.'], post: ['Heißer Kakao für den Sieger?'], done: ['Du gehörst jetzt zum Tal.'] } },
       { role: 'forscher', name: 'Glaziologe Mats', lines: { pre: ['Der Gletscher wandert jedes Jahr zehn Meter. Spannend!'], post: ['Professorin Fjella sucht Eis-Taschis.'], done: ['Mein Bericht erwähnt dich lobend.'] } }

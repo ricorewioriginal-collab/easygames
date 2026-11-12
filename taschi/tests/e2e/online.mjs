@@ -53,11 +53,11 @@ try {
   console.log('verbunden', await B.page.evaluate(() => [window.__taschi.ui.stack.length, document.querySelector('.panel h2')?.textContent]));
   await shot(B, 'online-lobby');
 
-  // ---- Tausch: A bietet Fellino, B bietet Samenling
+  // ---- Tausch: A bietet Pelzlo, B bietet Samenling
   await click(A, 'Taschi tauschen', '.row');
   await choose(B, 'Annehmen');
   for (const t of [A, B]) await t.page.waitForSelector('.tradebox');
-  await A.page.locator('.grid .card', { hasText: 'Fellino' }).first().dispatchEvent('click');
+  await A.page.locator('.grid .card', { hasText: 'Pelzlo' }).first().dispatchEvent('click');
   await B.page.locator('.grid .card', { hasText: 'Samenling' }).first().dispatchEvent('click');
   await A.page.waitForFunction(() => document.querySelectorAll('.card.offer:not(.empty)').length === 2);
   await B.page.waitForFunction(() => document.querySelectorAll('.card.offer:not(.empty)').length === 2);
@@ -69,7 +69,7 @@ try {
   const ta = await G(A.page, () => window.__taschi.save.team.map(m => m.id + ':' + (m.ot || '')));
   const tb = await G(B.page, () => window.__taschi.save.team.map(m => m.id + ':' + (m.ot || '')));
   assert.ok(ta.includes('samenling:Ben') && !ta.some(x => x.startsWith('fellino')), 'A hat Samenling: ' + ta);
-  assert.ok(tb.includes('fellino:Ana') && !tb.some(x => x.startsWith('samenling')), 'B hat Fellino: ' + tb);
+  assert.ok(tb.includes('fellino:Ana') && !tb.some(x => x.startsWith('samenling')), 'B hat Pelzlo: ' + tb);
 
   // ---- Kampf: B fordert heraus, A nimmt an
   for (const t of [A, B]) await t.page.waitForSelector('text=Verbunden mit', { timeout: 20000 });
