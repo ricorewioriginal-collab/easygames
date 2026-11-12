@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "4e09ce5636cf",
- "generated": "2026-11-12T19:34:48+00:00",
- "commit": "0ee7878d13dd1ebdba282b3488228a2f9d71743a",
+ "version": "51b343936212",
+ "generated": "2026-11-12T20:03:34+00:00",
+ "commit": "d257a434e87e014f41bb84d47a28b2a29b94f43d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6773,8 +6773,8 @@
   },
   {
    "p": "guides/zotik.json",
-   "s": 71637,
-   "h": "f497747396ca16d82996910d4d6f95e428474e6afabe36cb3815239b34866a73"
+   "s": 72273,
+   "h": "ef056cf402aa21e64173e544c4da1f4c00a98a424bf9c6292316ab1c31934cbe"
   },
   {
    "p": "heute.html",
@@ -9358,8 +9358,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 258361,
-   "h": "b1218423253a1878bb17d2f275e010c7250a75583f37ead9a9cab157ca9faec6"
+   "s": 258362,
+   "h": "26a6a606a77e2249645d9abf8da3add3e6dbfeb42f859226843f95588c454f3d"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -11807,9 +11807,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-5aqHKnwo.js",
-   "s": 1670466,
-   "h": "1684b7e9c8c79cb35b5255e5e73efd02f9bfe70b85a88d83b8b1548570c88769"
+   "p": "zotik/assets/index-wU-Uj22z.js",
+   "s": 1692199,
+   "h": "44858b2cc2073fed4bac9f1d04da5fb7eb07a349cb02babdf54243dabe5bf92d"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -11829,7 +11829,7 @@
   {
    "p": "zotik/index.html",
    "s": 72193,
-   "h": "cbb789b27c5752e5067f0f347270e63886e7b42c5a6703476095342204ec6479"
+   "h": "ea727cdd1f908fe1c3e1fe24999d7fed0911dc73125df8b46bcc06c7b29a90c7"
   },
   {
    "p": "zotik/manifest.webmanifest",
@@ -11852,6 +11852,66 @@
    "h": "e3a013adbfa6344b169a553ba95a6d14dc79707de2c0457373047b58fd34ac2c"
   },
   {
+   "p": "zotik/models/kk/ad_ba.glb",
+   "s": 243888,
+   "h": "e9d20bc74b2c3d12ac223b8f52b47dfac51c4fb0634bc498ec23f87bcb21ec12"
+  },
+  {
+   "p": "zotik/models/kk/ad_kn.glb",
+   "s": 220180,
+   "h": "a1cd6909b4280cb77b1e32a4d26e1cc5fa253243b6ba2cf1febeb486b9b056c0"
+  },
+  {
+   "p": "zotik/models/kk/ad_ma.glb",
+   "s": 227140,
+   "h": "19e538480ebe79ecf8d63b0851882d34f919e6e7372f2b28e5efaf20f3619f8d"
+  },
+  {
+   "p": "zotik/models/kk/ad_ra.glb",
+   "s": 302508,
+   "h": "7dc3a159004a9f089b85fe68c759a8ed02fd83cf244153946da19284ffe42b16"
+  },
+  {
+   "p": "zotik/models/kk/ad_rh.glb",
+   "s": 243028,
+   "h": "3a237456e0bc41007919b28ae5722bec63054f55d18b10095b15ebb443dfe959"
+  },
+  {
+   "p": "zotik/models/kk/ad_ro.glb",
+   "s": 256984,
+   "h": "bf0e8e360211d8cf2c292516c11806d7aeb46aeea9bb7167d3db0edf6d18c1e0"
+  },
+  {
+   "p": "zotik/models/kk/anim.glb",
+   "s": 500388,
+   "h": "bfb31b875564085b63845f82cad7be1c3bcc3dc4b948cbfbe05235c75259def7"
+  },
+  {
+   "p": "zotik/models/kk/props.glb",
+   "s": 1318704,
+   "h": "e754355976857847e2923783d6ce8bd4feae3b587d56d929e25d79fed377a041"
+  },
+  {
+   "p": "zotik/models/kk/sk_m.glb",
+   "s": 179036,
+   "h": "4bdfc6f779b3b0630b64e74b337c1648f36022b3b1d56ffb5528e6b1260ef296"
+  },
+  {
+   "p": "zotik/models/kk/sk_n.glb",
+   "s": 210720,
+   "h": "df5bc6c3d041fc9d55af234b9ab1ade255f949f964f3adbb910c9fd6d0607c70"
+  },
+  {
+   "p": "zotik/models/kk/sk_r.glb",
+   "s": 213720,
+   "h": "a399eed340e42134fd1018c86c932542742f78d8a14ac6e435d8cab48b0a7989"
+  },
+  {
+   "p": "zotik/models/kk/sk_w.glb",
+   "s": 241272,
+   "h": "36ab3c8eff438e44d354ed85ffa6c8d0762e874b68ccd68e3ddbcaac02b7bc39"
+  },
+  {
    "p": "zotik/models/m1.glb",
    "s": 714744,
    "h": "5860e9224f6efa24416d82b64030e1c191fb3bcb45631e6de7b3e03bc53b026a"
@@ -11860,6 +11920,41 @@
    "p": "zotik/models/m2.glb",
    "s": 1003916,
    "h": "01768272fdd61fd9a936731f4f2df80f72f030bc80f63eb03b2174378c324f23"
+  },
+  {
+   "p": "zotik/models/qb/imp.glb",
+   "s": 497720,
+   "h": "0d4aa5541517bba9877851505741f316e13871cb6a82beea055b91f2247b10e2"
+  },
+  {
+   "p": "zotik/models/qb/imp_2.jpg",
+   "s": 25084,
+   "h": "242f108e860921b7e746a113e15de7d271f62abb394f6b78ab4a21c4089d4e36"
+  },
+  {
+   "p": "zotik/models/qb/imp_3.jpg",
+   "s": 22651,
+   "h": "6f032f12803fdfed21624f3afc7413adbe523bf04b6399f03cffd581c2979409"
+  },
+  {
+   "p": "zotik/models/qb/puglin.glb",
+   "s": 234664,
+   "h": "d6c2ae5d11d420a0030d134e4b8d108e61bee0ff7b9a182e115de59cc49d6293"
+  },
+  {
+   "p": "zotik/models/qb/puglin_2.jpg",
+   "s": 16083,
+   "h": "050e74c0e1714bffcc2dd65c0ed31a771ea81412da294e14ac02ba01f6f224a3"
+  },
+  {
+   "p": "zotik/models/qb/puglin_3.jpg",
+   "s": 17742,
+   "h": "54c6e878f8e2083848e421bdc45afc896b66cb376634bef987153ce11f532b74"
+  },
+  {
+   "p": "zotik/models/wz/wz.glb",
+   "s": 2001656,
+   "h": "596e27b81382b09cf3e53d1a4128d22ad8e2f95ab3953ebcd95da32400ab17ab"
   },
   {
    "p": "zotik/sw.js",

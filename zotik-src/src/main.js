@@ -23,6 +23,7 @@ import { createMaerchen, MW, MW_FIRST } from './maerchen.js';
 import { RISSBILD } from './storyx.js';
 import { createWorldPlus } from './worldplus.js';
 import { createWeapons } from './weapons.js';
+import { createKayKit } from './kaykit.js';
 import { createSpellFX } from './spellfx.js';
 import { createMinis, ISLE } from './minis.js';
 import { createOverworld, OWN, OW_WL } from './overworld.js';
@@ -139,6 +140,7 @@ const TOONC=new Map();
 function toonOf(m){if(!m||!m.isMeshStandardMaterial)return m;let t=TOONC.get(m);if(!t){t=new T.MeshToonMaterial({color:m.color,vertexColors:m.vertexColors,map:m.map,gradientMap:TOONG,emissive:m.emissive,emissiveIntensity:m.emissiveIntensity,transparent:m.transparent,opacity:m.opacity});TOONC.set(m,t)}return t}
 const OUTM=(()=>{const m=new T.MeshBasicMaterial({color:0x1c1622,side:T.BackSide});m.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\n  transformed += normal * 0.016;')};return m})();
 const AF=createAniFig({T,G:TOONG,TOUCH});
+const KK=createKayKit({T,G:TOONG,TOUCH});
 function anime(root){const add=[];root.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||o.material===OUTM)return;if(o.material&&o.material.isMeshStandardMaterial){o.material=toonOf(o.material);if(!o.material.transparent&&o.geometry.attributes.normal&&o.geometry.attributes.position.count>40)add.push(o)}});
   for(const o of add){const l=new T.Mesh(o.geometry,OUTM);l.raycast=()=>{};o.add(l)}return root}
 /* Glow-Sprites */
@@ -689,7 +691,7 @@ function animFox(f,t,mv,atk){const s=Math.sin(stepPh(f,t,mv,6,12))*Math.min(mv,1
   f.scarf.rotation.x=.25+Math.sin(t*3)*.12+mv*.5;f.scarf.rotation.z=Math.sin(t*2.3)*.12;
   if(f.ears){f.ears[0].rotation.x=-.05+Math.sin(t*1.3)*.04;f.ears[1].rotation.x=-.05+Math.sin(t*1.3+1)*.04}
   f.head.rotation.z=Math.sin(t*1.1)*.03}
-function animHuman(f,t,mv){if(f.fig&&f.fig.root.visible)return AF.animate(f,t,mv);const s=Math.sin(stepPh(f,t,mv,6,10))*Math.min(mv,1);f.legs[0].rotation.x=s*.8;f.legs[1].rotation.x=-s*.8;f.arms[0].rotation.x=-s*.7;f.body.position.y=Math.abs(s)*.05+Math.sin(t*1.6)*.01;f.head.rotation.z=Math.sin(t*.9)*.03}
+function animHuman(f,t,mv){if(f.kk)return KK.walk(f.kk,mv);if(f.fig&&f.fig.root.visible)return AF.animate(f,t,mv);const s=Math.sin(stepPh(f,t,mv,6,10))*Math.min(mv,1);f.legs[0].rotation.x=s*.8;f.legs[1].rotation.x=-s*.8;f.arms[0].rotation.x=-s*.7;f.body.position.y=Math.abs(s)*.05+Math.sin(t*1.6)*.01;f.head.rotation.z=Math.sin(t*.9)*.03}
 
 /* ================= Audio ================= */
 let AC=null,master=null,musGain=null,sndOn=true;
@@ -878,7 +880,20 @@ const ED={
   wolf:{name:'Dornenwolf',hp:64,dmg:11,spd:5.6,xp:24,aggro:15,rng:2.5,wind:.6,cool:1.3,make:()=>makeWolf(false),sc:1,sh:[2,4]},
   boss:{name:'Mondwolf-Alpha',hp:560,dmg:18,spd:5.4,xp:260,aggro:60,rng:4.6,wind:.7,cool:1.1,make:()=>makeWolf(true),sc:1.9,sh:[34,44],boss:true}
 };
-ED.rift.base='rift';ED.wolf.base='wolf';Object.assign(ED.boss,{base:'wolf',sub:'Hüter des Risses',p2t:'Der Mondwolf heult auf!',minion:'rift'});
+ED.rift.base='rift';ED.wolf.base='wolf';
+/* Skelette (KayKit, CC0): Krieger mit Klinge und Schild, flinker Schurke mit Axt, Magier mit Stab (Fernkampf), kleiner Knochenwicht – Werte folgen der Weltstufe */
+const kkFoe=(id,h,r,l)=>()=>{const P=KK.char(id,{h,r,l});return{root:P.root,kk:P}};
+Object.assign(ED,{
+  skw:{name:'Skelettkrieger',hp:70,dmg:12,spd:4.4,xp:26,aggro:15,rng:2.6,wind:.7,cool:1.4,make:kkFoe('sk_w',1.9,'Skeleton_Blade','Skeleton_Shield_Small_A'),sc:1,sh:[2,4],base:'wolf',col:0xd8d0b8,weak:'light'},
+  skr:{name:'Skelettschurke',hp:48,dmg:9,spd:6,xp:22,aggro:16,rng:2.3,wind:.45,cool:1,make:kkFoe('sk_r',1.8,'Skeleton_Axe'),sc:1,sh:[2,3],base:'wolf',col:0xc8c0a8,leap:1,weak:'light'},
+  skm:{name:'Skelettmagier',hp:36,dmg:8,spd:3.4,xp:20,aggro:18,rng:9,ranged:true,wind:.9,cool:2.4,make:kkFoe('sk_m',1.85,'Skeleton_Staff'),sc:1,sh:[1,3],base:'rift',col:0x9a7aff,weak:'light'},
+  skn:{name:'Knochenwicht',hp:28,dmg:6,spd:5,xp:12,aggro:14,rng:2.2,wind:.55,cool:1.2,make:kkFoe('sk_n',1.5),sc:1,sh:[1,2],base:'wolf',col:0xd0c8b0,weak:'light'}});
+/* Bestien (Quaternius Bestiary): Imp mit Streitkolben (zäh, harte Schläge), Puglin mit Knüppel (flink, springt an) – Farbvariante je Welt */
+const qbFoe=(id,h,v)=>()=>{const P=KK.beast(id,{h,v:v>1?v:0});return{root:P.root,kk:P}},qbV=()=>{const n=chNow()||1;return n%3+1};
+Object.assign(ED,{
+  qimp:{name:'Kettenimp',hp:90,dmg:14,spd:3.8,xp:30,aggro:15,rng:2.8,wind:.85,cool:1.6,make:()=>qbFoe('imp',2.1,qbV())(),sc:1,sh:[2,5],base:'wolf',col:0xff7a3a,weak:'ice'},
+  qpug:{name:'Puglin',hp:44,dmg:8,spd:6.2,xp:20,aggro:16,rng:2.3,wind:.5,cool:1.1,make:()=>qbFoe('puglin',1.35,qbV())(),sc:1,sh:[1,3],base:'wolf',col:0x8ac04a,leap:1,weak:'fire'}});
+const SKEL=['skw','skw','skr','skm','skn','qimp','qpug','qpug'],skelKey=()=>SKEL[Math.random()*SKEL.length|0];Object.assign(ED.boss,{base:'wolf',sub:'Hüter des Risses',p2t:'Der Mondwolf heult auf!',minion:'rift'});
 const E=[],telGeo=new T.CircleGeometry(1,40);telGeo.rotateX(-Math.PI/2);
 /* Gegnerstufen: jede Welt hat einen Stufenbereich (Welt 1 schwach), Werte folgen der Stufe. Wer weit über dem Bereich liegt, trifft auf etwas stärkere Gegner (halber Abstand), bekommt aber weniger EP – Leveln lohnt sich, bleibt machbar. */
 const WLV=[0,1,5,8,10,12,14,16,18,20,22,24],RHP={A:1,B:1.35,M:3.2,X:8},RDM={A:.9,B:1.1,M:1.3,X:1.5},RXP={A:1,B:1.3,M:4,X:10};
@@ -979,7 +994,7 @@ function strike(e){const a=e.atk,d=e.d,dp=Math.hypot(pl.x-e.x,pl.z-e.z),sc=d.sc;
 function updEnemy(e,dt){
   if(MP.role==='guest'){puppetEnemy(e,dt);return}
   const dp=Math.hypot(pl.x-e.x,pl.z-e.z),root=e.m.root,d=e.d;
-  if(e.dead){e.dt+=dt;const k=Math.max(0,1-e.dt/.8);root.scale.setScalar(Math.max(.001,k)*d.sc);if(e.dt>.8)root.visible=false;if(!e.boss&&!e.summoned&&e.dt>75&&dp>48)resetEnemy(e);return}
+  if(e.dead){e.dt+=dt;const dl=e.m.kk?1.3:0;if(dl)KK.drive(e.m.kk,e,0);const k=Math.max(0,1-Math.max(0,e.dt-dl)/.8);root.scale.setScalar(Math.max(.001,k)*d.sc);if(e.dt>.8+dl)root.visible=false;if(!e.boss&&!e.summoned&&e.dt>75&&dp>48)resetEnemy(e);return}
   const vis=dp<85||e.boss;if(root.visible!==vis&&e.dt<.8)root.visible=vis;if(!vis&&e.st==='idle')return;
   e.flash=Math.max(0,e.flash-dt);e.barT=Math.max(0,e.barT-dt);e.t+=dt;e.cd-=dt;e.howl-=dt;e.kitCd=(e.kitCd||0)-dt;
   if(e.brk>0){e.brk-=dt;e.flash=Math.max(e.flash,.06+Math.abs(Math.sin(time*9))*.06);e.fl.material.color.setHex(0xffd45a);if(e.brk<=0){e.brk=0;e.bg=0;e.fl.material.color.setHex(0xffffff)}}else if(e.bg>0)e.bg=Math.max(0,e.bg-dt*(e.boss?2.5:6));
@@ -1025,6 +1040,7 @@ function animE(e,spd){const d=e.d,root=e.m.root;
   root.position.set(e.x,hov,e.z);root.rotation.y=e.face;
   if(!e.dead){const k=Math.max(0,1-(time-(e.hitT||-9))/.2),sc=d.sc;root.scale.set(sc*(1+.1*k),sc*(1-.14*k),sc*(1+.1*k))}
   const m=e.m;
+  if(m.kk){KK.drive(m.kk,e,spd);return}
   if(e.d.base==='rift'&&m.flap){for(let i=0;i<m.sh.length;i++)m.sh[i].rotation.z=(i%2?-1:1)*(.25+Math.sin(e.t*11+i)*.55);m.body.position.y=Math.sin(e.t*2)*.12}
   else if(e.d.base==='rift'){for(let i=0;i<m.sh.length;i++){const a=e.t*1.8+i*1.57;m.sh[i].position.set(Math.cos(a)*.8,Math.sin(a*1.3)*.3,Math.sin(a)*.8);m.sh[i].rotation.y=a}m.body.rotation.y=e.t}
   else{const s=Math.sin(stepPh(e,e.t,spd,7,6))*spd*.7;m.legs[0].rotation.x=s;m.legs[3].rotation.x=s;m.legs[1].rotation.x=-s;m.legs[2].rotation.x=-s;m.body.position.y=Math.abs(s)*.06;m.tail.rotation.z=Math.sin(e.t*3)*.3;m.head.rotation.x=e.st==='wind'?.3:Math.sin(e.t*1.5)*.04;if(e.st==='wind'&&e.atk&&e.atk.type==='howl'){m.head.rotation.x=-.5}}
@@ -1393,7 +1409,7 @@ function updateFelli(dt){fel.t+=dt;const tx=pl.x-Math.sin(pl.face)*2.2+Math.cos(
   if(d>.4){const sp=Math.min(d*3,9);fel.x+=(tx-fel.x)/d*sp*dt;fel.z+=(tz-fel.z)/d*sp*dt}if(d>14){fel.x=tx;fel.z=tz}
   const hop=d>.6?Math.abs(Math.sin(fel.t*9))*.35:Math.sin(fel.t*2)*.03;felli.root.position.set(fel.x,hgt(fel.x,fel.z)+hop,fel.z);felli.root.rotation.y=Math.atan2(pl.x-fel.x,pl.z-fel.z);felli.body.scale.set(1+hop*.2,1-hop*.15,1+hop*.2)}
 
-function update(dt){LF().update(dt);owEdge(dt);if(curCh===1&&!WLD&&!X.owSign1&&mode==='play'){X.owSign1=1;owSign(1,3.2,13)}if(WLD&&WLD.tick&&mode==='play')WLD.tick(dt);
+function update(dt){KK.update(dt,camera.position);LF().update(dt);owEdge(dt);if(curCh===1&&!WLD&&!X.owSign1&&mode==='play'){X.owSign1=1;owSign(1,3.2,13)}if(WLD&&WLD.tick&&mode==='play')WLD.tick(dt);
   updNaut(dt);if(mode==='play'&&!dlg.on){NZ().update(dt,time);EPX().update(dt,time)}const frozen=dlg.on;S.t=(S.t||0)+dt;
   updatePlayer(dt);updHouses(dt);zonesUpd(dt);worldRuleUpd(dt);
   if(MP.on){
@@ -1615,7 +1631,7 @@ function switchWorld(n){
   MP.quiet=true;
   try{WPX().clear();if(curCh===1&&!WLD){if(n!==1)leaveLunaris()}else destroyWorld();
   if(n===1)restoreLunaris();else if(n===12)buildCave();else if(n===13)buildCamp();else if(n===14)buildPixRoom();else if(n===15)buildOver();else if(n>=MW_FIRST)MWX().build(n);else buildWorld(n)}finally{MP.quiet=false}
-  NZ().activate(n);curCh=n;S.ch=n;curZone='';mpWorldChanged(n);if(n===1&&!JP1)JP1=jumpPath(1);NQ.enter(n);LF().arrive(n);if(WLD)WLD.jp=n>1&&n<12?jumpPath(n):null;wmAbort();if(n>1&&n<12&&WLD&&!WLD.cave&&!WLD.story)owSign(n,3.2,13);if(n>1&&n<11&&WLD&&!WLD.cave&&!WLD.story){worldMark(n);if(!MP.on)WPX().build(n,WLD.path,hgt)}worldRule(WLD&&!WLD.cave&&!WLD.story?n:0);
+  NZ().activate(n);curCh=n;S.ch=n;curZone='';mpWorldChanged(n);if(n===1&&!JP1)JP1=jumpPath(1);NQ.enter(n);LF().arrive(n);if(WLD)WLD.jp=n>1&&n<12?jumpPath(n):null;wmAbort();if(n>1&&n<12&&WLD&&!WLD.cave&&!WLD.story){owSign(n,3.2,13);advCamp(n);wzDress(n)}if(n>1&&n<11&&WLD&&!WLD.cave&&!WLD.story){worldMark(n);if(!MP.on)WPX().build(n,WLD.path,hgt)}worldRule(WLD&&!WLD.cave&&!WLD.story?n:0);
 }
 /* ---- Ladebild je Welt: Name, Untertitel, Zeichen in der Weltfarbe, ein Tipp ---- */
 const WTIPS=['Blocken im richtigen Moment wirft Gegner aus dem Takt.','Jede Figur hat ein eigenes Element. Schwächen treffen doppelt.','Tippe oben links auf einen Gefährten, um ihn selbst zu spielen.','Im Camp rasten füllt Leben und Mana und speichert.','Hinweistafeln in Ruinen zeigen die nächste Platte mit einer grünen Lichtsäule.','Im Casino spielst du nur um Splitter, nie um echtes Geld.','Weltwaffen verstärken die Figur, die zu einer Welt gehört.','Ausweichen im letzten Moment verlangsamt kurz die Zeit.','Lies Bücherregale in den Städten: Dort stehen Hinweise zur Welt.'];
@@ -2677,7 +2693,7 @@ function mpOnSnap(m){if(MP.wait||MP.trav)return;let need=false;
   if(need&&MP.t-MP.lastNeed>2){MP.lastNeed=MP.t;mpSend({t:'needEl'})}}
 function mpHurt(dmg,fx,fz){mpSend({t:'h',d:Math.round(dmg*10)/10,fx:r2(fx),fz:r2(fz)})}
 function puppetEnemy(e,dt){const root=e.m.root,d=e.d,dp=Math.hypot(pl.x-e.x,pl.z-e.z);
-  if(e.dead){e.dt+=dt;const k=Math.max(0,1-e.dt/.8);root.scale.setScalar(Math.max(.001,k)*d.sc);if(e.dt>.8)root.visible=false;return}
+  if(e.dead){e.dt+=dt;const dl=e.m.kk?1.3:0;if(dl)KK.drive(e.m.kk,e,0);const k=Math.max(0,1-Math.max(0,e.dt-dl)/.8);root.scale.setScalar(Math.max(.001,k)*d.sc);if(e.dt>.8+dl)root.visible=false;return}
   const vis=dp<85||e.boss;if(root.visible!==vis)root.visible=vis;if(!vis)return;
   e.flash=Math.max(0,e.flash-dt);e.fl.material.opacity=e.flash*6;e.barT=Math.max(0,e.barT-dt);e.t+=dt;
   let spd=0;if(e.px!==undefined){const k=Math.min(1,dt*12),ox=e.x,oz=e.z;e.x+=(e.px-e.x)*k;e.z+=(e.pz-e.z)*k;e.face+=ang(e.face,e.pf)*k;spd=Math.min(1,Math.hypot(e.x-ox,e.z-oz)/Math.max(dt,.001)/Math.max(d.spd||4,1))}
@@ -3056,10 +3072,18 @@ let _ep=null,_vg=null;const vignette=c=>{if(!_vg){_vg=document.createElement('di
 const EPX=()=>_ep||(_ep=createEtappen({T,mk,G,M,glow,scene,hgt:(x,z)=>hgt(x,z),pl,INT,pathx:z=>WLD?WLD.path(z):0,blk:(x,z)=>WLD?WLD.blocked(x,z):false,ok:(x,z)=>!WLD||(!WLD.blocked(x,z)&&(!WLD.reach||WLD.reach(x,z))&&colFree(x,z,1.2)),refresh:()=>refreshQuest(),makeVillager:o=>makeVillager(o),animHuman:(P,t,mv)=>animHuman(P,t,mv),say:(...a)=>say(...a),toast,sfx,banner:(...a)=>banner(...a),emit:(...a)=>emit(...a),S:()=>S,cmpKo:id=>{const a=CMP.find(q=>q.id===id);return !a||a.ko},nAir:()=>nAir(),spawnEnemy:(...a)=>spawnEnemy(...a),E,killE:(...a)=>killE(...a),maxHp:()=>maxHp(),vignette}));
 let _rms=null;const RMS=()=>_rms||(_rms=createRooms({T,mk,G,M,glow,scene,hgt:(x,z)=>hgt(x,z),INT,anim:fn=>animObjs.push({fn}),pl,toast,sfx,tone,emit:(...a)=>emit(...a)}));
 const RUIN_GEAR={1:'c_mond',2:'a_rinde',3:'w_dorn',4:'c_glocke',5:'a_koralle',6:'a_frost',7:'w_glut',8:'c_glueck',9:'w_stern',10:'a_stern'};
+/* Dungeon-Ausstattung aus dem KayKit-Dungeon-Pack (CC0): Fässer, Kisten, Regale, Banner, Truhen, Kerzen, Waffenwände – an den Wänden, als Instanzen */
+const KKD=[['barrel_large',1],['barrel_small_stack',1],['box_large',1],['box_stacked',1],['crates_stacked',1],['shelf_small_candles',1],['shelves',1],['trunk_large_A',1],['trunk_medium_B',1],['table_small_decorated_A',.9],['candle_triple',1],['rubble_large',1],['rubble_half',1],['sword_shield',1],['sword_shield_broken',1],['coin_stack_small',1],['bed_floor',1],['chair',1],['stool',1]];
+const KKB=['banner_patternA_red','banner_patternB_blue','banner_shield_green','banner_thin_yellow','banner_triple_white'];
+function kkDress(par,g,N,cx,cz,cs,seed,skip){const R=mul32(seed*977+13),out=[];
+  for(const [x,z,a] of DG().gridSpots(g,N,cx,cz,cs,skip)){const r=R(),ry=Math.atan2(-Math.cos(a),-Math.sin(a)),side=(R()-.5)*cs*.5,sx=-Math.sin(a)*side,sz=Math.cos(a)*side;
+    if(r<.16)out.push({k:KKB[R()*KKB.length|0],x:x+Math.cos(a)*.62+sx,y:.4,z:z+Math.sin(a)*.62+sz,ry,s:1.2});
+    else if(r<.46){const q=KKD[R()*KKD.length|0];out.push({k:q[0],x:x+Math.cos(a)*.15+sx,y:0,z:z+Math.sin(a)*.15+sz,ry:ry+(R()-.5)*.5,s:q[1]*(.95+R()*.15)})}}
+  KK.place(par,out);return out.length}
 /* Ruinen-Kämpfe: Hinterhalt je Raum, Ruinenwächter vor dem Schatz (erst nach dem Rätsel) */
 const rwKey=(k,n)=>ED[k+n]?k+n:ED['a'+n]?'a'+n:ED['b2']?'b2':'wolf';
 function ruinSpawn(key,z0,z1,tag){let x=0,z=(z0+z1)/2,t=0;do{x=-10+Math.random()*20;z=z0+1+Math.random()*(z1-z0-2)}while(blocked(x,z)&&t++<30);const e=spawnEnemy(key,x,z);e.rw=tag;e.summoned=true;e.st='chase';return e}
-function ruinWave(RW,i){const n=RW.n,c=2+Math.floor(n/3)+i,q=RW.secs[i];for(let k=0;k<c;k++){ruinSpawn(rwKey(k%3===2?'b':'a',n),q[0],q[1],1);RW.left++}banner('⚔️ Hinterhalt!','Die Ruine ist nicht verlassen');sfx('roar');camShake=.25}
+function ruinWave(RW,i){const n=RW.n,c=2+Math.floor(n/3)+i,q=RW.secs[i];for(let k=0;k<c;k++){ruinSpawn(Math.random()<.35?skelKey():rwKey(k%3===2?'b':'a',n),q[0],q[1],1);RW.left++}banner('⚔️ Hinterhalt!','Die Ruine ist nicht verlassen');sfx('roar');camShake=.25}
 function ruinGuard(RW){const n=RW.n;if(S.obst[RW.gid])return;const e=ruinSpawn(rwKey('m',n),339.5,345,'boss');e.hp=e.max=Math.round(e.max*1.25);e.x=0;e.z=342.5;banner('🗿 Ruinenwächter erwacht','Besiege ihn, dann öffnet sich das Tor');sfx('roar');camShake=.4;fxRing(0,342.5,0xffd45a,6,.6)}
 function ruinKill(e){const RW=X.rw;if(!RW)return;if(e.rw==='boss'){gateOpen(RW.gt);gainXp(30+RW.n*15);const g=30+RW.n*15;S.shards+=g;banner('Ruinenwächter besiegt','💎 +'+g+' · das Tor zum Schatz ist offen');return}
   RW.left=Math.max(0,RW.left-1);if(!RW.left){const g=10+RW.n*5;S.shards+=g;gainXp(10+RW.n*6);toast('✔ Raum gesäubert · 💎 +'+g)}}
@@ -3178,8 +3202,8 @@ function buildDungeon(){const D=X.dun,n=D.n,f=D.f,F=DUNF(n),last=f===F,C=CHP[n],
   /* Gegner */
   const cells=[];for(let i=1;i<N-1;i++)for(let j=1;j<N-1;j++)if(!g[i][j]&&dist[i][j]>3&&Math.max(Math.abs(i-hc[0]),Math.abs(j-hc[1]))>1&&!nicheC.has(i+','+j))cells.push([i,j]);
   /* Ausstattung wie in alten Dungeons (Fackeln, Krüge, Kisten, Statuen …), Start, Halle und Rätselnischen bleiben frei */
-  DG().dress(scene,g,N,cx,cz,CS,mul32(f*313+n*71),{glow:gl,rock:C.pal.rock,h:2.8,skip:(i,j)=>(i<=1&&j<=1)||(Math.abs(i-hc[0])<=1&&Math.abs(j-hc[1])<=1)||nicheC.has(i+','+j)});
-  const ne=Math.min(15,6+f*2+(n>5?1:0)+(mode==='hunt'?1:0));for(let q=0;q<ne&&cells.length;q++){const [i,j]=cells.splice(R()*cells.length|0,1)[0],e=spawnEnemy(R()<.5?'a'+n:'b'+n,cx(i),cz(j));e.summoned=true}
+  {const sk=(i,j)=>(i<=1&&j<=1)||(Math.abs(i-hc[0])<=1&&Math.abs(j-hc[1])<=1)||nicheC.has(i+','+j);DG().dress(scene,g,N,cx,cz,CS,mul32(f*313+n*71),{glow:gl,rock:C.pal.rock,h:2.8,skip:sk});kkDress(scene,g,N,cx,cz,CS,f*31+n*7,sk)}
+  const ne=Math.min(15,6+f*2+(n>5?1:0)+(mode==='hunt'?1:0));for(let q=0;q<ne&&cells.length;q++){const [i,j]=cells.splice(R()*cells.length|0,1)[0],k0=R()<.5?'a'+n:'b'+n,e=spawnEnemy(Math.random()<.35?skelKey():k0,cx(i),cz(j));e.summoned=true}
   /* Start: Ausgangskristall und (außer auf der letzten Ebene) die verschlossene Treppe */
   const side=g[2][1]?[0,2.2]:[2.2,0],ex=cx(1)-side[0]*.8,ez=cz(1)-side[1]*.8,xc=new T.Group();xc.position.set(ex,0,ez);xc.add(mk(G.oct,M(0x6af0ff,{e:0x2ac0ff,ei:1.8}),0,1.4,0,.4,.75,.4,false));xc.add(glow(0x6af0ff,3.4,0,1.4,0,.7));scene.add(xc);
   animObjs.push({fn(t){xc.children[0].rotation.y=t;xc.children[0].position.y=1.4+Math.sin(t*2)*.1}});
@@ -3264,6 +3288,42 @@ function buildOver(){const O=createOverworld({T,M,mk,G,glow,scene,MINI,TX}).buil
   setAtmos({top:[.16,.36,.72],mid:[.36,.58,.86],hor:[.78,.84,.9],aur:[.3,.5,.8],ms:[.5,.62,.85],gr:[.18,.3,.18],moon:0xffffff,mg:[0x4a7a5a,0x2a5a4a],fog:0xa8cce8,fd:.0035,hemi:[0xe8f2ff,0x4a5a3a,1],lite:[0xfff2d8,1.2],stars:0,expo:1.05});
   animObjs.push({fn:t=>O.anim(t)});WLD.refresh()}
 /* Wegweiser am Eingang jeder Kapitelwelt (und in Lunaris): führt auf die Weltkarte */
+/* Abenteurerlager (KayKit-Figuren, CC0): in jeder Kapitelwelt rastet eine kleine Gruppe am Feuer, gibt Tipps zur Welt und einmal einen Proviant */
+const ADV=[['ad_kn','Ser Brannick','sword_1handed','shield_badge_color'],['ad_ba','Hrolda','axe_2handed',null],['ad_ma','Maelis','staff','spellbook_open'],['ad_ra','Kesh','bow_withString',null],['ad_ro','Tamsin','dagger','dagger'],['ad_rh','Der Graue','crossbow_1handed',null]];
+const ADVT={2:'Im Wald kreisen die Wölfe – lass sie zu dir kommen, dann triffst du sie im Ausholen.',3:'Hier wächst alles schneller, auch die Dornen. Feuer macht den Weg frei.',4:'Die Uhren in dieser Stadt gehen falsch – manchmal öffnet genau das Türen.',5:'Unter dem Wasser liegt mehr als Sand. Mit der Nautilux kommst du überall hin.',
+  6:'Kälte zehrt. Halte Heiltränke bereit und bleib in Bewegung.',7:'Der Boden hier glüht. Spring nicht blind – manche Felsen tragen nicht.',8:'Sterne lügen nicht. Folge den hellen Pfaden am Himmel.',9:'Die Ringe ziehen an allem. Weich seitlich aus, nicht nach hinten.',10:'Wir sind nah am Kern. Was hier wartet, ist alt und zornig.',11:'Jenseits davon kennt niemand den Weg. Du bist der Erste.'};
+function advCamp(n){const p=(()=>{for(let t=0;t<60;t++){const z=-14-t*1.7,x=(WLD.path?WLD.path(z):0)+(t%2?11:-11)+(Math.random()-.5)*4;if(!blocked(x,z)&&colFree(x,z,4)&&!blocked(x+3,z)&&!blocked(x-3,z))return[x,z]}return null})();if(!p)return;
+  const [cx,cz]=p,y=hgt(cx,cz),f=new T.Group();f.position.set(cx,y,cz);
+  for(let i=0;i<4;i++){const l=mk(G.cyl0,M(0x5a3a22,{r:.9}),0,.1,0,.09,.8,.09);l.rotation.set(Math.PI/2,i*.8,0);l.position.y=.1;f.add(l)}
+  const fl=mk(G.cone0,M(0xffa040,{e:0xff7a20,ei:2.2}),0,.42,0,.24,.6,.24,false);f.add(fl);f.add(glow(0xffa050,3.2,0,.6,0,.7));scene.add(f);animObjs.push({fn(t){fl.scale.set(.24+Math.sin(t*9)*.03,.6+Math.sin(t*13)*.08,.24)}});addCol(cx,cz,.6);
+  const pick=[...ADV].sort((a,b)=>((a[1].charCodeAt(0)*7+n*13)%11)-((b[1].charCodeAt(0)*7+n*13)%11)).slice(0,3);
+  pick.forEach((a,i)=>{const an=i*2.1+n,x=cx+Math.sin(an)*2.4,z=cz+Math.cos(an)*2.4,P=KK.char(a[0],{h:1.75,r:a[2],l:a[3]});
+    addNpc('adv'+n+i,a[1],x,z,{root:P.root,kk:P},()=>advTalk(n,a[1],i),Math.atan2(cx-x,cz-z),()=>!S.fl['adv'+n])});
+  const R=mul32(n*41+7),L=[];for(let i=0;i<5;i++){const an=i*1.3+.6+n,r=4+R()*1.2;L.push({k:['bed_floor','barrel_large','box_stacked','trunk_medium_B','crates_stacked'][i],x:cx+Math.sin(an)*r,y:0,z:cz+Math.cos(an)*r,ry:an+Math.PI})}
+  for(const q of L){q.y=hgt(q.x,q.z);addCol(q.x,q.z,.5)}KK.place(scene,L)}
+/* Landschaft aus dem Wizp-Pack (CC0): Bäume, Felsen und Friedhöfe je Klimazone, als Instanzen in der Wildnis verteilt (mit Kollision) */
+const WZ={2:[['birch1',7],['birch3',6.5],['birch5',5],['garden_tree_green',6],['pine2',8],['rock_medium_1',1.4],['rock_big_2',2.6],['grass_green_group',.6]],
+  3:[['garden_tree_yellow',5.5],['garden_tree_green',5.5],['garden_plant_1',1.2],['rock_medium_2',1.3],['rock_big_B_gray_1',2.4]],
+  4:[['cactus1',3.2],['cactus2',3.6],['cactus3',1.8],['coconut1',8],['coconut2',7.5],['palm2',7],['rock_big_1',2.8],['rock_medium_3',1.4]],
+  5:[['coconut1',8],['palm2',7],['waterlily_pink_group',.4],['rock_big_B_gray_1',2.6],['rock_medium_1',1.3]],
+  6:[['ancient_tree_winter_1',8],['pine1',8],['pine3',7],['garden_plant_winter',1.4],['branch_winter_1',1],['rock_big_B_gray_1',2.8],['rock_medium_2',1.4]],
+  7:[['creepy_tree1',6],['creepy_tree2',6.5],['rock_big_B_dark_2',3],['rock_big_3',2.4],['bones_group',.6],['root_2',.8]],
+  8:[['creepy_tree1',6],['creepy_tree2',6.5],['grass_purple_group',.6],['rock_big_B_dark_2',2.6]],
+  9:[['ancient_tree_pink_1',8],['garden_tree_pink',6],['grass_purple_group',.6],['rock_medium_3',1.4]],
+  10:[['ancient_tree_yellow_1',8],['garden_tree_yellow',6],['rock_big_2',2.6],['rock_medium_1',1.3]],
+  11:[['creepy_tree2',6.5],['rock_big_B_dark_2',3],['root_2',.8],['bones_group',.6]]};
+const WZG={8:1,7:1};   /* Welten mit kleinem Friedhof am Wegrand */
+function wzDress(n){const L0=WZ[n];if(!L0||!WLD)return;const R=mul32(n*7919+3),out=[],N=TOUCH?60:110,big=k=>/tree|birch|pine|coconut|palm|cactus1|cactus2/.test(k);
+  for(let t=0,c=0;c<N&&t<N*12;t++){const z=-30-R()*125,px=WLD.path?WLD.path(z):0,sd=R()<.5?-1:1,x=px+sd*(9+R()*36);
+    if(blocked(x,z)||(WLD.reach&&!WLD.reach(x,z)))continue;const q=L0[R()*L0.length|0],r=big(q[0])?.7:q[1]>1.5?q[1]*.35:0;if(r&&!colFree(x,z,r+.6))continue;
+    out.push({k:q[0],x,y:hgt(x,z)-.05,z,ry:R()*6.28,h:q[1]*(.85+R()*.3)});if(r)addCol(x,z,r);c++}
+  if(WZG[n]){for(let t=0;t<40;t++){const z=-60-R()*60,px=WLD.path?WLD.path(z):0,x=px+(R()<.5?-1:1)*(10+R()*8);if(blocked(x,z)||!colFree(x,z,5))continue;
+    const G2=[['tomb_statue',2.4,0,0],['tomb_1',1.1,-2,1.2],['tomb_2',1.1,2,1.2],['tomb_3',1.1,-2,-1.4],['prop_tomb_1',.6,2,-1.4],['coffin',.5,0,2.6],['lamp',2.2,-3.2,0],['column_1',2.4,3.2,0]];
+    for(const [k,h,dx,dz] of G2){const qx=x+dx,qz=z+dz;out.push({k,x:qx,y:hgt(qx,qz)-.03,z:qz,ry:0,h});if(h>1)addCol(qx,qz,.5)}break}}
+  KK.place(scene,out,'wz');return out.length}
+function advTalk(n,who,i){const k='adv'+n;
+  if(!S.fl[k]){S.fl[k]=1;S.potions++;sfx('pick');say([[who,i===0?'Ein Reisender mit Fuchsschwanz? Setz dich ans Feuer.':i===1?'Wir ziehen seit Wochen durch die Welten. Du siehst aus, als bräuchtest du Proviant.':'Psst – wir haben noch einen Trank übrig. Nimm ihn.'],[who,ADVT[n]||'Pass auf dich auf da draußen.']],()=>toast('🧪 +1 Heiltrank vom Abenteurerlager'));saveGame(true);return}
+  say([[who,[ADVT[n]||'Pass auf dich auf.','Die Skelette in den Hallen fürchten Licht. Merk dir das.','Wenn du wieder hier vorbeikommst, brennt das Feuer noch.'][(i+Math.floor(time/20))%3]]])}
 function owSign(n,x,z){const g=new T.Group();g.position.set(x,hgt(x,z),z);const wd=M(0x6a4a2a);g.add(mk(G.cyl0,wd,0,1.1,0,.12,2.2,.12));const b=mk(G.box,M(0x9a7a4a),.45,1.75,0,1,.36,.08);b.rotation.z=.08;g.add(b);g.add(mk(G.box,M(0x9a7a4a),-.4,1.3,0,.9,.32,.08));g.add(glow(0x8ad0ff,1.6,0,2.35,0,.6));scene.add(g);
   INT.push({x,z,name:'Wegweiser',pr:'🗺️ Zur Weltkarte',rad:2.6,vis:()=>chOpen(15)&&curCh===n,talk(){owGo(n)}});return g}
 function owEdge(dt){if(curCh<2||curCh>11||!WLD||WLD.cave||WLD.story||dlg.on||menuOpen||naut.on||!chOpen(15)||mode!=='play'){X.owE=0;return}
@@ -3321,15 +3381,18 @@ function buildCave(){const f=S.cave.f||1,R=mul32((S.cave.seed|0)*977+f*131),rr=(
   setAtmos({top:[.01,.01,.03],mid:[.03,.03,.07],hor:[.08,.07,.12],aur:[.2,.3,.5],ms:[.1,.1,.2],gr:[.02,.02,.04],moon:0x404050,mg:[0x202030,0x202030],fog:0x0a0a14,fd:.03,hemi:[0x9a9ac0,0x2a221a,.8],lite:[0xc0b8d0,.65],stars:0,expo:1.1});
   const fl=new T.Mesh(new T.PlaneGeometry(N*CS+20,N*CS+20),TX.tri('rock',pal[1],{s:.3,gain:2.6,r:1,e:0x1a120c,ei:1,fresh:1}));fl.rotation.x=-Math.PI/2;fl.position.set(0,0,Z0+N*CS/2);fl.receiveShadow=true;scene.add(fl);WLD.terr=fl;
   const im=DG().walls(g,N,cx,cz,CS,2.8,pal[0],R,'rock');scene.add(im);WLD.ims.push(im);
-  DG().dress(scene,g,N,cx,cz,CS,mul32(f*197+11),{glow:[0x8a6aff,0xff7a4a,0x4affc8,0xffd45a,0xff5ad8][f%5],rock:pal[0],h:2.8,skip:(i,j)=>(i<=1&&j<=1)||(i===far[0]&&j===far[1])});
+  DG().dress(scene,g,N,cx,cz,CS,mul32(f*197+11),{glow:[0x8a6aff,0xff7a4a,0x4affc8,0xffd45a,0xff5ad8][f%5],rock:pal[0],h:2.8,skip:(i,j)=>(i<=1&&j<=1)||(i===far[0]&&j===far[1])});kkDress(scene,g,N,cx,cz,CS,f*53+3,(i,j)=>(i<=1&&j<=1)||(i===far[0]&&j===far[1]));
   /* Gegner */
   const lvl=f,mk2=(key,base,hp,dm,col,extra)=>{ED[key]=Object.assign({name:base,hp,dmg:dm,xp:Math.round(8+lvl*5),spd:3.6,aggro:14,rng:9,wind:.8,cool:2.2,sc:1,sh:[1,2+lvl/5|0],col,make:extra.make},extra);WLD.edKeys.push(key)};
   const tint=[0x8a6aff,0xff7a4a,0x4affc8,0xffd45a,0xff5ad8][f%5];
   mk2('ka','Höhlengeist',26+lvl*13,5+lvl*1.15,tint,{make:()=>tintModel(makeRiftling(),tint,.6),base:'rift',ranged:true,hov:1.2});
   mk2('kb','Höhlenwolf',40+lvl*18,6+lvl*1.3,tint,{make:()=>tintModel(makeWolf(false),tint,.5),base:'wolf',spd:5.4,rng:2.5,wind:.6,cool:1.3,aggro:12});
+  mk2('ks','Skelettkrieger',34+lvl*16,6+lvl*1.3,0xd8d0b8,{make:kkFoe('sk_w',1.9,'Skeleton_Blade','Skeleton_Shield_Small_A'),base:'wolf',spd:4.4,rng:2.6,wind:.7,cool:1.4,aggro:12,weak:'light'});
+  mk2('kr','Skelettschurke',26+lvl*12,5+lvl*1.2,0xc8c0a8,{make:kkFoe('sk_r',1.8,'Skeleton_Axe'),base:'wolf',spd:6,rng:2.3,wind:.45,cool:1,aggro:13,leap:1,weak:'light'});
+  mk2('km','Skelettmagier',22+lvl*11,5+lvl*1.1,0x9a7aff,{make:kkFoe('sk_m',1.85,'Skeleton_Staff'),base:'rift',ranged:true,weak:'light'});
   mk2('kx','Wächter der Tiefe',220+lvl*70,10+lvl*1.6,0xffe27a,{make:()=>tintModel(makeWolf(true),0xffe27a,.5),base:'wolf',spd:5.2,rng:4.4,wind:.7,cool:1.1,sc:1.8,aggro:30,boss:true,sub:'Ebene '+f,p2t:'Der Wächter tobt!',minion:'ka',xp:Math.round(60+lvl*20)});
   const cells=[];for(let i=1;i<N-1;i++)for(let j=1;j<N-1;j++)if(!g[i][j]&&dist[i][j]>3&&!(i===far[0]&&j===far[1]))cells.push([i,j]);
-  const ne=Math.min(26,10+Math.floor(f/3));for(let n=0;n<ne&&cells.length;n++){const [i,j]=cells.splice(R()*cells.length|0,1)[0];spawnEnemy(R()<.5?'ka':'kb',cx(i),cz(j))}
+  const ne=Math.min(26,10+Math.floor(f/3));for(let n=0;n<ne&&cells.length;n++){const [i,j]=cells.splice(R()*cells.length|0,1)[0],k0=R()<.5?'ka':'kb';spawnEnemy(Math.random()<.45?['ks','ks','kr','km','qimp','qpug'][Math.random()*6|0]:k0,cx(i),cz(j))}
   /* Siegel: auf jeder zweiten Ebene ist die Treppe versiegelt – mal Glutkristalle in den Gängen entzünden, mal alle Gegner vertreiben */
   if(f%10!==0&&f%2===0){if((f/2)%2){const pos=[];for(let k=0;k<3&&cells.length;k++){const [i,j]=cells.splice(R()*cells.length|0,1)[0];pos.push([cx(i),cz(j)])}
       const pz=RMS().build('orbs',{x0:0,x1:1,z0:0,z1:1},{pos,hold:55-Math.min(25,f/2),lv:f,R},()=>{toast('🗝️ Das Siegel der Treppe ist gebrochen');WLD.refresh()});WLD.seal=()=>!pz.solved;WLD.sealT=()=>'Die Treppe ist versiegelt: Entzünde die 3 Glutkristalle in den Gängen, bevor der erste erlischt.'}
@@ -3502,4 +3565,4 @@ function drawOb(mx){if(pl.z>300){mx.fillStyle='#2a2a3e';mx.fillRect(-13,333,26,3
 ensureBoss();
 camTarget.set(0,2,12);
 requestAnimationFrame(frame);
-if(/[?&]debug\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))window.__zotik={set noRender(v){frame.off=!!v},owGo,owLake,mount,get nearI(){return nearI},get MFX(){return MFX},ipUse,WPNS,MINI,get mState(){return mState},PX:()=>PX(),WP:()=>WPX(),RIDE:()=>RIDEX(),doHit:()=>doHit(),pixEnter:()=>pixEnter(),get mode(){return mode},INP,T,platWall,MWX:()=>MWX(),FXH:()=>FXH,TOWN,NPC,NQ,killE,E,resetEnemy,RMS,refreshQuest,ARTS,artOn,get WR(){return WRU},WRN,WM,wmStart,guestBye,guestArrive,partyPick,setLead,ruinGuard,leadSkill2,CSK2,WWG,cwOf,fox,profJoin,miraJoin,recruit,skill1,skill2,ZON,BKIT,MKIT,startAtk,ED,zone,artThorn,artGust,artFrost,artBolt,artStar,startAttack,dodge,keys,skR,skFree,spawnEnemy,PLAT,jump,dunEnter,dunLeave,DUNF,dunWin(){if(X.dun)dunLeave(true)},get dun(){return X.dun},get WLD(){return WLD},get jp(){return WLD?WLD.jp:JP1},setCam(y,pt,di){camYaw=y;if(pt!=null)camPitch=pt;if(di!=null)camDist=di},AF,NZ,EPX,nautTo,pl,joy,inputVec,CR:()=>CR(),get goTo(){return goTo},get steer(){return steer},set steer(v){steer=v},get mode(){return mode},startNew(){S=DEF();S.ch=13;S.x=0;S.z=1;mode='play';begin(true)},startDbg(){S=DEF();for(let n=2;n<=10;n++)S.fl['wr'+n]=1;S.cos={fur:cr.fur,scarf:cr.scarf,outfit:cr.outfit};mode='play';begin(true)},X,OB,GEAR,TOOLS,lockCycle,doReaction,teamAttack,formStart,ipUse,useTool,toolNext,caveEnter,caveNext,caveExit,LF:()=>LF(),get CUT(){return CUT},giveGear,equip,feed,felliXp,deckExec,deckMove,deckOpen,ruinGo,get CAVE_DOOR(){return CAVE_DOOR},spellHeal,useEther,fStage,findRx,proj,maxHp:()=>maxHp(),atkV:()=>atkV(),toBunt,BUNT_URL,get qLv(){return qLv},setQ,get naut(){return naut},pushOut,INST,blocked,hgt,pBlocked,COL,HOUSES,PZD,CUT,openPuzzle,closePuzzle,cutscene,joinParty,CMP,lunOpen,spawnOrun,get puzOpen(){return puzOpen},get W(){return WLD},get ch(){return curCh},INT,CHP,switchWorld,travel,ARENA,herbs,chests,drops,projs,step:(dt,n)=>{for(let i=0;i<n;i++){time+=dt;for(const o of animObjs)o.fn(time,dt);update(dt);updParticles(dt)}},cam:(y,p,d)=>{camYaw=y;camPitch=p;camDist=d},S:()=>S,pl,E,NPC,begin,say,toast,setStage,hurtP,get boss(){return boss},camera,scene,renderer,skill1,skill2,startAttack,dodge,interact,keys,MP,mpMsg,mpSend,mpHost,mpJoin,mpTick,variantCos,sharedFlat,spawnEnemy,hurtE,killE,get boss2(){return boss},toggleMenu,renderMenu,XT,XO};
+if(/[?&]debug\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))window.__zotik={set noRender(v){frame.off=!!v},owGo,owLake,mount,get nearI(){return nearI},get MFX(){return MFX},ipUse,WPNS,KK,ED,MINI,get mState(){return mState},PX:()=>PX(),WP:()=>WPX(),RIDE:()=>RIDEX(),doHit:()=>doHit(),pixEnter:()=>pixEnter(),get mode(){return mode},INP,T,platWall,MWX:()=>MWX(),FXH:()=>FXH,TOWN,NPC,NQ,killE,E,resetEnemy,RMS,refreshQuest,ARTS,artOn,get WR(){return WRU},WRN,WM,wmStart,guestBye,guestArrive,partyPick,setLead,ruinGuard,leadSkill2,CSK2,WWG,cwOf,fox,profJoin,miraJoin,recruit,skill1,skill2,ZON,BKIT,MKIT,startAtk,ED,zone,artThorn,artGust,artFrost,artBolt,artStar,startAttack,dodge,keys,skR,skFree,spawnEnemy,PLAT,jump,dunEnter,dunLeave,DUNF,dunWin(){if(X.dun)dunLeave(true)},get dun(){return X.dun},get WLD(){return WLD},get jp(){return WLD?WLD.jp:JP1},setCam(y,pt,di){camYaw=y;if(pt!=null)camPitch=pt;if(di!=null)camDist=di},AF,NZ,EPX,nautTo,pl,joy,inputVec,CR:()=>CR(),get goTo(){return goTo},get steer(){return steer},set steer(v){steer=v},get mode(){return mode},startNew(){S=DEF();S.ch=13;S.x=0;S.z=1;mode='play';begin(true)},startDbg(){S=DEF();for(let n=2;n<=10;n++)S.fl['wr'+n]=1;S.cos={fur:cr.fur,scarf:cr.scarf,outfit:cr.outfit};mode='play';begin(true)},X,OB,GEAR,TOOLS,lockCycle,doReaction,teamAttack,formStart,ipUse,useTool,toolNext,caveEnter,caveNext,caveExit,LF:()=>LF(),get CUT(){return CUT},giveGear,equip,feed,felliXp,deckExec,deckMove,deckOpen,ruinGo,get CAVE_DOOR(){return CAVE_DOOR},spellHeal,useEther,fStage,findRx,proj,maxHp:()=>maxHp(),atkV:()=>atkV(),toBunt,BUNT_URL,get qLv(){return qLv},setQ,get naut(){return naut},pushOut,INST,blocked,hgt,pBlocked,COL,HOUSES,PZD,CUT,openPuzzle,closePuzzle,cutscene,joinParty,CMP,lunOpen,spawnOrun,get puzOpen(){return puzOpen},get W(){return WLD},get ch(){return curCh},INT,CHP,switchWorld,travel,ARENA,herbs,chests,drops,projs,step:(dt,n)=>{for(let i=0;i<n;i++){time+=dt;for(const o of animObjs)o.fn(time,dt);update(dt);updParticles(dt)}},cam:(y,p,d)=>{camYaw=y;camPitch=p;camDist=d},S:()=>S,pl,E,NPC,begin,say,toast,setStage,hurtP,get boss(){return boss},camera,scene,renderer,skill1,skill2,startAttack,dodge,interact,keys,MP,mpMsg,mpSend,mpHost,mpJoin,mpTick,variantCos,sharedFlat,spawnEnemy,hurtE,killE,get boss2(){return boss},toggleMenu,renderMenu,XT,XO};
