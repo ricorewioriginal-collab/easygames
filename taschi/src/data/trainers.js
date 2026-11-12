@@ -1,6 +1,7 @@
 // Trainer rosters: route trainers, arena trainers, leaders, champions, guild
 // members and the Star League. Teams are built deterministically from the
 // region's element focus so every playthrough meets the same opponents.
+import { AMBUSHES } from './adventure.js';
 import { SPECIES, SPECIES_IDS, speciesByType } from './species.js';
 import { REGIONS, STAR_LEAGUE, LEGACY_TRAINERS } from './regions.js';
 import { createRng } from '../core/rng.js';
@@ -172,6 +173,13 @@ G.forEach((list, site) => list.forEach((t, i) => reg({
   ...t, kind: 'guild', site, order: i, cls: t.member === 'grunt' ? 'Schattengilde' : 'Schattengilde', name: GUILD_MEMBERS[t.member].name,
   ai: t.member === 'grunt' ? 1 : t.member === 'varga' ? 3 : 2, reward: 120 + i * 120 + site * 60, items: t.member === 'varga' ? { supertrank: 2 } : {}
 })));
+
+// Gilden-Hinterhalte auf den Routen (Regionen ohne Gildenlager), siehe data/adventure.js
+for (const [r, a] of Object.entries(AMBUSHES)) {
+  const region = REGIONS[r], lv = Math.max(4, gl(+r) - (+r === 0 ? 4 : 2)), size = +r === 0 ? 1 : Math.min(4, 2 + Math.floor(r / 5));
+  reg({ id: 'amb_' + r, region: +r, kind: 'ambush', lookKind: 'guild', member: a.member, format: a.format, cls: 'Schattengilde', name: GUILD_MEMBERS[a.member].name,
+    team: guildTeam('amb' + r, [...region.types, 'normal'], a.format === 'double' ? Math.max(2, size) : size, lv), ai: +r < 2 ? 1 : 2, reward: 150 + r * 60, items: {} });
+}
 
 export function trainerById(id) { return TRAINERS[id]; }
 
