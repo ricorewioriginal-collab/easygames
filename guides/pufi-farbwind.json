@@ -17,8 +17,8 @@
         "SPIEL STARTEN bzw. WEITERSPIELEN: startet das höchste freigeschaltete Level.",
         "INSELKARTE: alle 24 Level (Burgen mit ♜). Freigeschaltete Level kannst du jederzeit spielen; darunter steht dein Bestwert, 100 Punkte werden besonders markiert.",
         "BONUSSPIELE: Ballonjagd, Glückskarten und Farbrad direkt spielen.",
-        "OPTIONEN: Touch links Stick oder Steuerkreuz, Touch-Tasten automatisch/immer/aus, Musik, Effekte, Vollbild.",
-        "STEUERUNG: Tastenübersicht für PC, Gamepad und Touch.",
+        "OPTIONEN: 🎮 CONTROLLER (Symbole, Bestätigen-Knopf, Knöpfe belegen, Belegung zeigen), ⌨️ TASTATUR (Spieltasten frei belegen, nicht auf Handys ohne Tastatur), Touch links Stick oder Steuerkreuz, Touch-Tasten automatisch/immer/aus, 3D-Tiefe (voll/sanft/aus), Musik, Effekte, Vollbild.",
+        "STEUERUNG: Übersicht für PC, Controller und Touch – mit deiner aktuellen Tasten- und Knopfbelegung.",
         "GOOGLE-SPEICHER: Inseln, Bestwerte und Einstellungen geräteübergreifend sichern."
       ]
     },
@@ -43,7 +43,8 @@
         "Eierblöcke (Q) von unten anstoßen gibt ein Ei, bei vollem Vorrat eine Münze.",
         "Werfen: einmal drücken startet den Zielpfeil, nochmal drücken wirft. Halten und loslassen geht auch, mit dem rechten Stick zielst du direkt. Eier prallen von Wänden ab und treffen Gegner, Flügelwolken, Münzen und Bosse.",
         "Flattern: Sprungtaste in der Luft halten. Loslassen und erneut halten startet das Flattern neu, jedes Mal etwas schwächer.",
-        "Stampfen: In der Luft ↓ drücken. Pufi stürzt herab und erledigt Gegner direkt beim Aufprall. Auf Gegner springen geht auch – außer auf Stachelkugeln und Schnappblüten."
+        "Stampfen: In der Luft ↓ drücken. Pufi stürzt herab und erledigt Gegner direkt beim Aufprall. Auf Gegner springen geht auch – außer auf Stachelkugeln und Schnappblüten.",
+        "Goldeier: Glitzernde Wuschel (blinken golden) geben beim Fressen und Ei-Legen ein Goldei. Goldeier wirfst du zuerst; beim Aufprall zerplatzen sie in drei Münzen. Ist dein Eiervorrat voll, gibt ein Glitzer-Wuschel 3 Sterne."
       ]
     },
     {
@@ -55,7 +56,10 @@
         "✿ Farbblüten: genau 5 pro Level, teils offen, teils in Flügelwolken.",
         "Flügelwolken: mit einem Ei oder durch Anspringen von unten öffnen – sie geben 5 Sterne oder eine Farbblüte.",
         "Farbring in der Levelmitte: Rücksetzpunkt und +10 Sterne („FARBRING! +10 ★“).",
-        "Sprungpilze, Bröckelstege, Schwebeplattformen, Stege, Dornen und Farbsumpf prägen die Inseln."
+        "Sprungpilze, Bröckelstege, Schwebeplattformen, Stege, Dornen und Farbsumpf prägen die Inseln.",
+        "Regenbogenstern (bunter Stern mit Gesicht): 9 Sekunden lang ist Pufi unverwundbar, läuft schneller und besiegt jeden Gegner durch Berührung – auch Stachelkugeln. Oben rechts läuft die Zeit (✦), kurz vor dem Ende blinkt der Schein. Abgründe und Farbsumpf bleiben gefährlich.",
+        "Stampfpfähle: Holzpfosten mit Eisenring. Jedes Stampfen von oben rammt sie eine Kachel tiefer; ganz versenkt springen drei Münzen heraus.",
+        "Schalter (!) und Punkteblöcke: Drauftreten, Stampfen oder ein Ei aktiviert den Schalter. 10 Sekunden lang werden die gestrichelten Punkteblöcke zu festen Stufen (Zeit oben rechts ▣); kurz vor Ablauf blinken sie. Sie führen zu Bonus-Sternen."
       ]
     },
     {
@@ -81,10 +85,11 @@
     {
       "t": "Bedienung",
       "list": [
-        "PC: ← → oder A D laufen, Leertaste oder Z springen (halten = flattern), X oder J Zunge (mit ↑ schräg nach oben), C oder K Ei zielen und werfen, ↓ oder S Ei legen bzw. in der Luft stampfen, Esc oder P Pause, F Vollbild, M Musik an/aus.",
-        "Gamepad: Stick oder Steuerkreuz laufen, A springen/flattern, X (oder LB/LT) Zunge, B (oder RB/RT) zielen/werfen, rechter Stick zielt direkt, Y oder Stick ↓ Ei legen/stampfen, Start Pause. Menüs lassen sich mit dem Gamepad bedienen.",
-        "Touch: links Daumen-Stick (oder Steuerkreuz in den Optionen), rechts A Sprung, B Werfen, X Zunge, Y Ei/Stampfen. Ⅱ pausiert, ⛶ schaltet Vollbild. Im Querformat siehst du am meisten.",
-        "Pause: WEITER, LEVEL NEU STARTEN, OPTIONEN, INSELKARTE."
+        "PC: ← → oder A D laufen, Leertaste springen (halten = flattern), X Zunge (mit ↑ schräg nach oben), C Ei zielen und werfen, ↓ oder S Ei legen bzw. in der Luft stampfen, Esc oder P Pause, F Vollbild, M Musik an/aus. Alle Buchstaben-Tasten belegst du unter OPTIONEN → ⌨️ TASTATUR um (Pfeiltasten und Esc bleiben immer); die Belegung bleibt auf dem Gerät gespeichert. Menüs: Pfeiltasten wählen, Enter bestätigt, Esc geht zurück.",
+        "Controller (PlayStation, Switch, Xbox – USB oder Bluetooth): linker Stick oder Steuerkreuz laufen, A/✕ springen (halten = flattern), X/□ (oder LB/LT) Zunge, B/○ (oder RB/RT) Ei zielen und werfen, Y/△ Ei legen bzw. stampfen, rechter Stick zum Umsehen (beim Zielen zielt er direkt), Start Pausemenü, Select Musik an/aus. Hauptmenü, Pausemenü und alle Fenster gehen komplett mit dem Controller: Steuerkreuz wählt (leuchtender Rahmen), A bestätigt, B geht zurück bzw. schließt. Die Knopf-Symbole passen sich dem Controller an; unter OPTIONEN → 🎮 CONTROLLER stellst du Symbole und Bestätigen-Knopf (unten oder rechts wie bei Switch) ein, belegst Knöpfe um und lässt dir die Belegung zeigen (auch mit Select + Start).",
+        "Touch: links Daumen-Stick (oder Steuerkreuz in den Optionen), rechts A Sprung, B Werfen, X Zunge, Y Ei/Stampfen. Ⅱ pausiert, ⛶ schaltet Vollbild. Im Querformat siehst du am meisten. Sobald du einen Controller benutzt, verschwinden die Touch-Knöpfe; beim nächsten Antippen sind sie wieder da.",
+        "Pause: WEITER, LEVEL NEU STARTEN, OPTIONEN, INSELKARTE.",
+        "3D-Tiefe: Die Inseln sind in 2.5D gezeichnet – Kacheln mit Ober- und Seitenflächen, Schatten unter allen Figuren, Dunst zwischen den Hintergrund-Ebenen, Lichtstrahlen und unscharfe Büsche im Vordergrund. Auf langsamen Geräten stellst du unter OPTIONEN → 3D-TIEFE auf SANFT oder AUS."
       ]
     }
   ],
@@ -197,6 +202,14 @@
     {
       "q": "Kann man zu zweit spielen?",
       "a": "Nein, Pufi & der Farbwind ist ein Einzelspieler-Abenteuer."
+    },
+    {
+      "q": "Wie spiele ich mit dem Controller?",
+      "a": "Einfach anschließen (USB oder Bluetooth) und einen Knopf drücken. Alles – auch Menüs und Fenster – geht mit Steuerkreuz, A (bestätigen) und B (zurück). Unter OPTIONEN → 🎮 CONTROLLER stellst du Symbole und Bestätigen-Knopf ein oder belegst Knöpfe um."
+    },
+    {
+      "q": "Kann ich die Tasten am PC ändern?",
+      "a": "Ja: OPTIONEN → ⌨️ TASTATUR, Aktion wählen und die neue Taste drücken. STANDARD-TASTEN setzt alles zurück."
     }
   ]
 }
