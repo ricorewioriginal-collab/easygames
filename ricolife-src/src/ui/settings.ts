@@ -76,6 +76,7 @@ export function openSettings(settings: Settings, onChange: (s: Settings, key: ke
     h('div', null,
       sel('quality', 'Grafikqualität', [['auto', 'Automatisch'], ['low', 'Niedrig (schwache Geräte)'], ['mid', 'Mittel'], ['high', 'Hoch']]),
       chk('shadows', 'Schatten', 'Kostet Leistung'),
+      chk('toon', 'Konsolen-Look', 'Weiches Comic-Licht mit Lichtkante und kräftigeren Farben'),
       range('resScale', 'Auflösung', 0.5, 1, 0.05, (v) => `${Math.round(v * 100)} %`),
       range('maxNpcs', 'Max. sichtbare Stadtbewohner', 4, 24, 1, (v) => String(v)),
       chk('fps', 'Bildrate anzeigen'),
@@ -94,7 +95,7 @@ export function openSettings(settings: Settings, onChange: (s: Settings, key: ke
       chk('creative', 'Kreativmodus', 'Bauen und Kaufen kostet nichts'),
       inGame ? null : h('small', { class: 'muted' }, 'Spielregeln gelten für den nächsten Spielstand und lassen sich im Spiel ändern.'),
     );
-  const access = (): Node => h('div', null, chk('bigText', 'Große Schrift'), chk('highContrast', 'Hoher Kontrast'), chk('reduceMotion', 'Weniger Bewegung', 'Keine Kamerafahrten und Animationen der Oberfläche'), chk('edgeScroll', 'Kamera am Bildschirmrand bewegen (Maus)'), range('padDeadzone', 'Controller-Totzone', 0.05, 0.5, 0.05, (v) => v.toFixed(2)));
+  const access = (): Node => h('div', null, sel('uiMode', 'Oberfläche', [['auto', 'Automatisch'], ['touch', 'Handy/Tablet'], ['pc', 'PC'], ['tv', 'TV/Konsole (groß, mit Rand)']]), chk('bigText', 'Große Schrift'), chk('highContrast', 'Hoher Kontrast'), chk('reduceMotion', 'Weniger Bewegung', 'Keine Kamerafahrten und Animationen der Oberfläche'), chk('edgeScroll', 'Kamera am Bildschirmrand bewegen (Maus)'), range('padDeadzone', 'Controller-Totzone', 0.05, 0.5, 0.05, (v) => v.toFixed(2)));
   const keys = (): Node => {
     const wrap = h('div', null, h('p', { class: 'muted' }, 'Feld anklicken und neue Taste drücken. Esc behält die alte Belegung.'));
     for (const k of KEY_ACTIONS) {

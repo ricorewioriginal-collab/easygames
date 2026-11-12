@@ -234,26 +234,130 @@ export class Controls {
     }
     this.cursor.x = window.innerWidth / 2;
     this.cursor.y = window.innerHeight / 2;
-    // Tasten: 0 A, 1 B, 2 X, 3 Y, 4 LB, 5 RB, 8 Back, 9 Start, 12-15 Steuerkreuz
-    const names: [number, string][] = [[0, 'a'], [1, 'b'], [2, 'x'], [3, 'y'], [4, 'lb'], [5, 'rb'], [8, 'back'], [9, 'start'], [12, 'dup'], [13, 'ddown'], [14, 'dleft'], [15, 'dright']];
+    this.pad = gp;
+    // Standard-Layout (gamepad.js liefert jeden Controller so, bei Nintendo-Controllern A/B wie an der Switch):
+    // 0 A/✕, 1 B/○, 2 X/□, 3 Y/△, 4 L1, 5 R1, 6 L2/ZL, 7 R2/ZR, 8 Select/−/Create, 9 Start/+/Options, 10 L3, 11 R3, 12–15 Steuerkreuz
+    const names: [number, string][] = [[0, 'a'], [1, 'b'], [2, 'x'], [3, 'y'], [4, 'lb'], [5, 'rb'], [6, 'lt'], [7, 'rt'], [8, 'back'], [9, 'start'], [10, 'l3'], [11, 'r3'], [12, 'dup'], [13, 'ddown'], [14, 'dleft'], [15, 'dright']];
     for (const [i, n] of names) {
-      const now = b(i);
+      const now = i === 6 || i === 7 ? (gp.buttons[i]?.value ?? 0) > 0.5 || b(i) : b(i);
       if (now && !this.padPrev[i]) {
         this.padActive = true;
         this.hd.pad(n);
       }
       this.padPrev[i] = now;
     }
+    // In Menüs: Steuerkreuz gedrückt halten und linker Stick wiederholen (wie an der Konsole), rechter Stick scrollt
+    if (blocked) {
+      let dir = '';
+      if (b(12) || ly < -0.55) dir = 'dup';
+      else if (b(13) || ly > 0.55) dir = 'ddown';
+      else if (b(14) || lx < -0.55) dir = 'dleft';
+      else if (b(15) || lx > 0.55) dir = 'dright';
+      if (!dir) {
+        this.navDir = '';
+      } else if (dir !== this.navDir) {
+        // Steuerkreuz hat beim Drücken schon ausgelöst, der Stick noch nicht
+        if (!(b(12) || b(13) || b(14) || b(15))) this.hd.pad(dir);
+        this.navDir = dir;
+        this.navT = 0.38;
+      } else {
+        this.navT -= dt;
+        if (this.navT <= 0) {
+          this.navT = 0.11;
+          this.hd.pad(dir);
+        }
+      }
+      if (ry) scrollScope(ry * dt * 900);
+    } else this.navDir = '';
   }
+
+  private pad: Gamepad | null = null;
+  private navDir = '';
+  private navT = 0;
+
+  /** kurze Vibration (wenn der Controller das kann) */
+  rumble(ms = 60, strong = 0.25, weak = 0.45): void {
+    const va = (this.pad as (Gamepad & { vibrationActuator?: { playEffect?(t: string, o: object): Promise<unknown> } }) | null)?.vibrationActuator;
+    try {
+      void va?.playEffect?.('dual-rumble', { duration: ms, strongMagnitude: strong, weakMagnitude: weak })?.catch?.(() => undefined);
+    } catch {
+      /* Controller ohne Vibration */
+    }
+  }
+}
+
+/** Bereich, in dem der Controller gerade Knöpfe wählt (oberstes Fenster, Kreismenü, Hauptmenü, Figuren-Editor) */
+function focusScope(): HTMLElement {
+  return document.querySelector<HTMLElement>('.modal-back:last-child .modal') ?? document.querySelector<HTMLElement>('.pie') ?? document.querySelector<HTMLElement>('#menu:not(.hidden)') ?? document.querySelector<HTMLElement>('#cas') ?? document.body;
+}
+function focusables(scope: HTMLElement): HTMLElement[] {
+  return [...scope.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], input, select, textarea, [tabindex="0"]')].filter((e) => e.offsetParent !== null || e.getClientRects().length > 0);
+}
+function scrollScope(dy: number): void {
+  const sc = focusScope();
+  let el: HTMLElement | null = (document.activeElement as HTMLElement | null) ?? sc;
+  while (el && el !== document.body) {
+    if (el.scrollHeight > el.clientHeight + 4 && /auto|scroll/.test(getComputedStyle(el).overflowY)) {
+      el.scrollTop += dy;
+      return;
+    }
+    el = el.parentElement;
+  }
+  sc.scrollTop += dy;
+}
+
+/** Fokus räumlich in eine Richtung bewegen (Steuerkreuz/Stick/Fernbedienung); ohne Treffer: der Reihe nach */
+export function moveFocusDir(dx: number, dy: number): void {
+  const scope = focusScope();
+  const els = focusables(scope);
+  if (!els.length) return;
+  const cur = document.activeElement as HTMLElement | null;
+  if (!cur || !els.includes(cur)) {
+    const first = els.find((e) => e.classList.contains('primary') || e.hasAttribute('autofocus')) ?? els[0]!;
+    first.focus();
+    first.scrollIntoView?.({ block: 'nearest' });
+    return;
+  }
+  const r = cur.getBoundingClientRect();
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  let best: HTMLElement | null = null, bestS = Infinity;
+  for (const e of els) {
+    if (e === cur) continue;
+    const q = e.getBoundingClientRect();
+    const ex = q.left + q.width / 2, ey = q.top + q.height / 2;
+    const along = (ex - cx) * dx + (ey - cy) * dy;
+    if (along <= 4) continue;
+    // Abstand quer zur Richtung zählt stärker; überlappende Zeilen/Spalten bevorzugen
+    const across = Math.abs(dx ? ey - cy : ex - cx);
+    const overlap = dx ? q.bottom > r.top + 2 && q.top < r.bottom - 2 : q.right > r.left + 2 && q.left < r.right - 2;
+    const sc = along + across * (overlap ? 0.5 : 2.5);
+    if (sc < bestS) {
+      bestS = sc;
+      best = e;
+    }
+  }
+  if (!best) return moveFocus(dx + dy > 0 ? 1 : -1);
+  best.focus();
+  best.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
 }
 
 /** Fokus-Navigation in Dialogen per Steuerkreuz */
 export function moveFocus(dir: 1 | -1): void {
-  const scope = document.querySelector<HTMLElement>('.modal-back:last-child .modal') ?? document.querySelector<HTMLElement>('.pie') ?? document.querySelector<HTMLElement>('#menu:not(.hidden)') ?? document.querySelector<HTMLElement>('#cas') ?? document.body;
-  const els = [...scope.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], input, select, [tabindex="0"]')].filter((e) => e.offsetParent !== null);
+  const els = focusables(focusScope());
   if (!els.length) return;
   const i = els.indexOf(document.activeElement as HTMLElement);
   const n = els[(i + dir + els.length) % els.length]!;
   n.focus();
   n.scrollIntoView?.({ block: 'nearest' });
+}
+
+/** Reiter im obersten Fenster wechseln (L1/R1 wie an der Konsole) */
+export function cycleTabs(dir: 1 | -1): void {
+  const tabs = [...focusScope().querySelectorAll<HTMLElement>('[role="tab"]')].filter((e) => e.offsetParent !== null);
+  if (tabs.length < 2) return;
+  let i = tabs.findIndex((t) => t.classList.contains('on') || t.getAttribute('aria-selected') === 'true');
+  if (i < 0) i = 0;
+  const n = tabs[(i + dir + tabs.length) % tabs.length]!;
+  n.click();
+  n.focus();
 }

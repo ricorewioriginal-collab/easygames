@@ -232,6 +232,10 @@ export interface Settings {
   keys: Record<string, string>;
   padDeadzone: number;
   edgeScroll: boolean;
+  /** Oberfläche: automatisch, Handy/Touch, PC oder TV/Konsole (größer, mit Rand für Fernseher) */
+  uiMode: 'auto' | 'touch' | 'pc' | 'tv';
+  /** Grafikstil: weiches Comic-Licht mit Lichtkante (wie auf Konsolen) oder schlicht */
+  toon: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -259,4 +263,6 @@ export const DEFAULT_SETTINGS: Settings = {
   keys: {},
   padDeadzone: 0.2,
   edgeScroll: false,
+  uiMode: 'auto',
+  toon: true,
 };

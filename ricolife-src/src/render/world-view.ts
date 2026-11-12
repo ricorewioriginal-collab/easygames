@@ -29,6 +29,7 @@ import { FLOOR_Y, FULL_VARIANT, buildLot, makeLotOut, objFlags, type LotOut, typ
 import { objectGeometry, objectMaterial } from './object-mesh';
 import { TEX_EXTRA, TEX_ROWS, TEX_H, TEX_W, WATER_Y, buildStatic, buildTerrainTexture, leafColor } from './static-world';
 import { WATER_X } from '../world/map';
+import { stylize } from './style';
 
 export { FLOOR_Y } from './lot-builder';
 export type ViewMode = 'up' | 'cut' | 'down';
@@ -145,6 +146,7 @@ export class WorldView {
         );
     };
     this.terrainMat.customProgramCacheKey = () => 'rl-terrain';
+    stylize(this.terrainMat);
 
     this.waterMat = new THREE.MeshPhongMaterial({ color: 0x3d8db0, specular: 0x9fc8e0, shininess: 90 });
     this.waterMat.onBeforeCompile = (sh) => {
@@ -193,6 +195,7 @@ export class WorldView {
         );
     };
     this.foliageMat.customProgramCacheKey = () => 'rl-foliage';
+    stylize(this.foliageMat);
 
     this.windowMat = new THREE.MeshBasicMaterial({ vertexColors: true });
     this.windowMat.onBeforeCompile = (sh) => {
