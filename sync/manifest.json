@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "7ee53470a5ac",
- "generated": "2026-11-12T21:56:11+00:00",
- "commit": "dea9a616cb1a3d6ca2427dda9ace70ef28f19fa1",
+ "version": "fe115b19e13d",
+ "generated": "2026-11-12T21:56:19+00:00",
+ "commit": "52097334774dd1778725fb69df789d6a3f5168f5",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9459,7 +9459,7 @@
   {
    "p": "sync/catalog.json",
    "s": 257720,
-   "h": "fc7422a8a1c43a7f53b5aa7f020f4fd70478371e5612d6d2088f47d83343c64b"
+   "h": "74f9f5d8751418cda92adaecd794caa3fade0c6260cde2559b62aa7472476125"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -11945,11 +11945,6 @@
    "p": "zeitsprung-wissen/year.js",
    "s": 988,
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
-  },
-  {
-   "p": "zotik/assets/index-DCAD9gbL.js",
-   "s": 1707188,
-   "h": "c0fdbbe074a7001a04e2baa7f754d4e4496d8971eab7ad04aa6429f94de4b44f"
   },
   {
    "p": "zotik/assets/index-unE137HG.js",
