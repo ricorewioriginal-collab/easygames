@@ -749,12 +749,17 @@ const ZOTIK_SPEECH_KEY='zotik_device_speech';
 let zotikSpeechOn=false;
 try{zotikSpeechOn=localStorage.getItem(ZOTIK_SPEECH_KEY)==='1'}catch(e){}
 function zotikStopVoice(){try{if(window.speechSynthesis)window.speechSynthesis.cancel()}catch(e){}}
-function zotikSpeak(text){
+/* Eigene Stimme je Figur: Geschlecht (w/m) wählt eine passende Gerätestimme, Tonhöhe und Tempo machen sie unverwechselbar. Unbekannte Namen bekommen eine feste Stimme aus dem Namen. */
+const VOX={Zotik:['m',1.18,1.06],Lyra:['w',1.12,1],Mira:['w',1.25,1.02],Professorium:['m',.78,.9],Felli:['w',1.7,1.15],Nia:['w',1.35,1.08],Rovan:['m',.85,.96],Erzähler:['m',.95,.92],Eryn:['w',1.05,1],Veyra:['w',.9,.94],Aera:['w',1.3,1],Vexa:['w',.8,.95],Nerea:['w',1.2,.96],Kael:['m',.92,1.04],Falk:['m',.75,.92],Nuri:['w',1.45,1.1],Harlan:['m',.7,.9],Brenna:['w',1,1.04],Toren:['m',.82,.95],Mirrel:['w',1.1,.98],Mara:['w',1.05,1],Korrod:['m',.6,.86],Boro:['m',.68,.92],Ashen:['m',.72,.88],Sela:['w',1.2,1],Hanno:['m',.9,.98],Mirael:['w',1.15,.95],Bruno:['m',.7,.95],Finn:['m',1.3,1.1],Elwen:['w',1.35,1],Sari:['w',1.1,1.05],Mondwolf:['m',.5,.82],Grauwächter:['m',.45,.8],Moosling:['m',1.6,1.15],Kind:['w',1.5,1.06],Großmutter:['w',.86,.86],Merle:['w',1.15,1.02],Pia:['w',1.25,1.04],Tomi:['m',1.4,1.1],Ilse:['w',.95,.92],'???':['m',.6,.85]};
+const VFEM=/female|frau|weib|anna|petra|katja|hedda|marlene|vicki|helena|steffi|amala|seraphina|elke|gisela|klara|conni|louisa|ingrid|tanja|maja/i,VMAL=/\bmale|mann|markus|stefan|hans|conrad|killian|florian|christoph|ralf|bernd|jonas|daniel|yannick|viktor|kasper|kai/i;
+function voxOf(who){let v=VOX[who];if(!v){let h=0;for(const c of String(who||''))h=(h*31+c.charCodeAt(0))>>>0;v=[h&1?'w':'m',.8+(h%9)*.06,.92+(h>>4)%5*.04]}return v}
+function voxVoice(g){try{const all=window.speechSynthesis.getVoices().filter(x=>/^de/i.test(x.lang));if(!all.length)return null;const re=g==='w'?VFEM:VMAL,bad=g==='w'?VMAL:VFEM;return all.find(x=>re.test(x.name)&&!(g==='w'&&VMAL.test(x.name)))||all.find(x=>!bad.test(x.name))||null}catch(e){return null}}
+function zotikSpeak(text,who){
   if(!zotikSpeechOn||!text||!window.speechSynthesis||!window.SpeechSynthesisUtterance)return;
   try{
     zotikStopVoice();
-    const u=new SpeechSynthesisUtterance(String(text).replace(/<[^>]*>/g,' '));
-    u.lang='de-DE';u.rate=1;u.pitch=1;
+    const u=new SpeechSynthesisUtterance(String(text).replace(/<[^>]*>/g,' ')),v=voxOf(who),vo=voxVoice(v[0]);
+    u.lang='de-DE';u.pitch=Math.min(2,v[1]*(vo?1:v[0]==='w'?1.12:.92));u.rate=v[2];if(vo){u.voice=vo;u.lang=vo.lang}
     window.speechSynthesis.speak(u);
   }catch(e){}
 }
@@ -770,7 +775,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)zotikStopVo
 const dlg={on:false,lines:[],i:0,cb:null,opts:null,txt:'',pos:0,tm:0};
 const dlgQ=[];function dlgNext(){if(!dlg.on&&dlgQ.length)say(...dlgQ.shift())}
 function say(lines,cb,opts){if(dlg.on){dlgQ.push([lines,cb,opts]);return}dlg.on=true;dlg.lines=lines;dlg.i=0;dlg.cb=cb||null;dlg.opts=opts||null;$('dlg').hidden=false;showLine();pl.vx=pl.vz=0}
-function showLine(){const l=dlg.lines[dlg.i],p=PORT[l[0]]||PORT['???'];$('dName').textContent=l[0];$('dName').style.color=p[1];$('dPort').textContent=p[2]?'':p[0];$('dPort').style.backgroundImage=p[2]?'url('+FACE[p[2]]+')':'';$('dPort').style.borderColor=p[1];dlg.txt=l[1];dlg.pos=0;zotikSpeak(dlg.txt);$('dText').textContent='';$('dOpts').hidden=true;$('dNext').hidden=false;dlg.tm=0}
+function showLine(){const l=dlg.lines[dlg.i],p=PORT[l[0]]||PORT['???'];$('dName').textContent=l[0];$('dName').style.color=p[1];$('dPort').textContent=p[2]?'':p[0];$('dPort').style.backgroundImage=p[2]?'url('+FACE[p[2]]+')':'';$('dPort').style.borderColor=p[1];dlg.txt=l[1];dlg.pos=0;zotikSpeak(dlg.txt,l[0]);$('dText').textContent='';$('dOpts').hidden=true;$('dNext').hidden=false;dlg.tm=0}
 function dlgAdvance(){
   if(!dlg.on)return;
   if(dlg.pos<dlg.txt.length){dlg.pos=dlg.txt.length;$('dText').textContent=dlg.txt;if(dlg.i===dlg.lines.length-1&&dlg.opts)showOpts();return}
@@ -1388,12 +1393,15 @@ function titleCam(dt){const a=Math.sin(time*.1)*.7;fox.root.position.set(0,hgt(0
   for(const n of NPC){n.P.root.rotation.y=n.face;animHuman(n.P,time+n.t,0)}}
 function creatorCam(dt){const y=hgt(0,12);fox.root.position.set(0,y,12);fox.root.rotation.y=cr.rot;animFox(fox,time,0,-1);fox.backSword.visible=true;
   const asp=innerWidth/innerHeight;camera.position.set(0,y+1.15,12+(asp<.8?4.6:3.5));camera.lookAt(0,y+.95,12);if(asp>1.3)camera.translateX(1.1);else camera.translateY(-.55);moonL.position.set(MOON_DIR.x*100,MOON_DIR.y*100,12+MOON_DIR.z*100);moonL.target.position.set(0,0,12);auraL.position.set(0,2.5,12);felli.root.position.set(1.4,hgt(1.4,11),11);felli.root.rotation.y=-.5;for(const n of NPC){n.P.root.rotation.y=n.face;animHuman(n.P,time+n.t,0)}}
+function bootDone(){const L=$('load');if(!L)return;setTimeout(()=>{L.classList.add('done');setTimeout(()=>L.remove(),650)},Math.max(0,1500-performance.now()))}
+/* Titel: Uhrzeit und Controller-Anzeige wie auf einer Konsole */
+{const tick=()=>{const c=$('tclk');if(c){const d=new Date();c.textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}const g=$('tpad');if(g){let on=false;try{on=[...navigator.getGamepads()].some(Boolean)}catch(e){}g.hidden=!on}};tick();setInterval(tick,15000);addEventListener('gamepadconnected',tick);addEventListener('gamepaddisconnected',tick)}
 function frame(now){
   requestAnimationFrame(frame);skyMat.uniforms.uTm.value=now/1000;const rdt=(now-lastT)/1000;let dt=Math.min(rdt,.05);lastT=now;
   if(!MP.on){if(hitStop>0){hitStop-=rdt;dt*=.04}else if(slowT>0){slowT-=rdt;dt*=.4}}
   time+=dt;qualityTick(rdt);
   for(const o of animObjs)o.fn(time,dt);
-  if(mode==='flight'){FL.update(dt);FL.render();if(first){first=false;$('load').remove()}return}
+  if(mode==='flight'){FL.update(dt);FL.render();if(first){first=false;bootDone()}return}
   if(mode==='pix'){PX().frame(rdt);return}
   if(mode==='title')titleCam(dt);else if(mode==='creator')creatorCam(dt);else if(!menuOpen||MP.on){try{update(dt)}catch(e){if(!frame.err||time-frame.err>5){frame.err=time;console.error('[Zotik]',e)}}}
   if(MP.net)mpTick(dt);
@@ -1401,7 +1409,7 @@ function frame(now){
   if(!menuOpen||MP.on){updParticles(dt);FXH.update(dt)}
   if(++shN>=QSH[qLv]){shN=0;renderer.shadowMap.needsUpdate=true}
   if(!frame.off)post.render(dt);   /* frame.off: nur für automatische Tests (?debug) */
-  if(first){first=false;$('load').remove()}
+  if(first){first=false;bootDone()}
 }
 let lastT=performance.now(),first=true;
 
@@ -1589,6 +1597,12 @@ function switchWorld(n){
   if(n===1)restoreLunaris();else if(n===12)buildCave();else if(n===13)buildCamp();else if(n===14)buildPixRoom();else if(n>=MW_FIRST)MWX().build(n);else buildWorld(n)}finally{MP.quiet=false}
   NZ().activate(n);curCh=n;S.ch=n;curZone='';mpWorldChanged(n);if(n===1&&!JP1)JP1=jumpPath(1);NQ.enter(n);LF().arrive(n);if(WLD)WLD.jp=n>1&&n<12?jumpPath(n):null;wmAbort();if(n>1&&n<11&&WLD&&!WLD.cave&&!WLD.story)worldMark(n);worldRule(WLD&&!WLD.cave&&!WLD.story?n:0);
 }
+/* ---- Ladebild je Welt: Name, Untertitel, Zeichen in der Weltfarbe, ein Tipp ---- */
+const WTIPS=['Blocken im richtigen Moment wirft Gegner aus dem Takt.','Jede Figur hat ein eigenes Element. Schwächen treffen doppelt.','Tippe oben links auf einen Gefährten, um ihn selbst zu spielen.','Im Camp rasten füllt Leben und Mana und speichert.','Hinweistafeln in Ruinen zeigen die nächste Platte mit einer grünen Lichtsäule.','Im Casino spielst du nur um Splitter, nie um echtes Geld.','Weltwaffen verstärken die Figur, die zu einer Welt gehört.','Ausweichen im letzten Moment verlangsamt kurz die Zeit.','Lies Bücherregale in den Städten: Dort stehen Hinweise zur Welt.'];
+let WL=null;function wloadShow(n){const el=$('wload');if(!el)return;const mw=n>=MW_FIRST?MWX().W(n):null,C=n===1?{name:'Lunaris',sub:'Dorf am Mondblick'}:CHP[n]||{name:'?',sub:''},col=mw?mw.col:n===14?0xff6ab8:n===13?0xffa050:n===12?0x8a9aff:(C.glowc?C.glowc[0]:C.rift||0x8ad0ff);
+  el.style.setProperty('--wc','#'+col.toString(16).padStart(6,'0'));$('wlE').textContent=mw?mw.em:n===14?'🕹️':n===13?'⛺':n===12?'💎':n===1?'🌙':'✦';$('wlK').textContent=mw?'Märchenwelt':n===14?'16-Bit-Abenteuer':n>=12?'Vorwelt':n===11?'Endspiel':'Kapitel '+n;
+  $('wlN').textContent=C.name;$('wlS').textContent=C.sub||'';$('wlT').textContent='Tipp: '+WTIPS[(Math.random()*WTIPS.length)|0];const bar=el.querySelector('.wl-bar i');bar.style.animation='none';void bar.offsetWidth;bar.style.animation='';el.hidden=false;void el.offsetWidth;el.classList.add('on');WL=performance.now()}
+function wloadHide(){const el=$('wload');if(!el||el.hidden)return;const wait=Math.max(0,1300-(performance.now()-(WL||0)));setTimeout(()=>{el.classList.remove('on');setTimeout(()=>{el.hidden=true},380)},wait)}
 function travel(n){
   if(MP.role==='guest'){toast('Nur der Gastgeber kann die Welt wechseln.');toggleMenu(false);return}
   if(WLD&&WLD.cave&&!X.caveLeaving){toast('Verlasse die Höhle über einen Ausgangskristall.');toggleMenu(false);return}
@@ -1600,15 +1614,15 @@ function travel(n){
   if(!MP.on&&n!==12&&n!==13&&n!==14&&curCh!==13&&curCh!==12&&curCh!==14&&S.fl.naut&&!X.noFlight){const from=curCh,C=n===1?{name:'Lunaris'}:CHP[n],F0=from===1?{name:'Lunaris'}:CHP[from]||{name:'?'},th0=flyTheme(from),th1=flyTheme(n);$('fade').style.opacity=1;
     setTimeout(()=>{mode='flight';$('hud').hidden=true;$('fade').style.opacity=0;
       FL.start({fromName:F0.name,toName:C.name,color:n>=MW_FIRST?MWX().W(n).col:n===1?0x9ab8ff:(C.rift||0x8ad0ff),dist:n>=MW_FIRST||from>=MW_FIRST?1:Math.abs(n-from),from:th0,to:th1,onDone:r=>{mode='play';$('hud').hidden=false;if(r.reward){S.shards+=r.reward;toast(`🚀 Flug: +${r.reward} Splitter · ${r.kills} Drohnen`)}
-        const fd=$('fade');fd.style.transition='none';fd.style.background='#'+th1.fog.toString(16).padStart(6,'0');fd.style.opacity=1;void fd.offsetWidth;fd.style.transition='';X.landSwoop=1;arrive();setTimeout(()=>{fd.style.background=''},1400)}})},450);return}
-  if(n>=MW_FIRST||curCh>=MW_FIRST){sfx('portal');FXH.pillar(pl.x,pl.y,pl.z,0xe0b0ff,1.4,9,1,pl)}else sfx('quest');$('fade').style.opacity=1;
+        const fd=$('fade');fd.style.transition='none';fd.style.background='#'+th1.fog.toString(16).padStart(6,'0');fd.style.opacity=1;void fd.offsetWidth;fd.style.transition='';X.landSwoop=1;wloadShow(n);setTimeout(arrive,90);setTimeout(()=>{fd.style.background=''},1400)}})},450);return}
+  if(n>=MW_FIRST||curCh>=MW_FIRST){sfx('portal');FXH.pillar(pl.x,pl.y,pl.z,0xe0b0ff,1.4,9,1,pl)}else sfx('quest');$('fade').style.opacity=1;wloadShow(n);
   setTimeout(arrive,650);
   function arrive(){
     saveGame(true);switchWorld(n);try{renderer.compile(scene,camera)}catch(e){}   /* Shader jetzt (hinter der Blende) übersetzen statt ruckelnd beim ersten Hinsehen */
     S.ch=n;pl.x=0;pl.z=9;pl.y=hgt(0,9);pl.face=Math.PI;pl.vx=pl.vz=0;pl.kx=pl.kz=0;camYaw=pl.face+Math.PI;camTarget.set(pl.x,pl.y+1.5,pl.z);camPos.set(pl.x,pl.y+4,pl.z+8);fel.x=pl.x+2;fel.z=pl.z+2;
     refreshQuest();updateHud();saveGame(true);
     placeParty();extArrive(n);if(X.landSwoop){X.landSwoop=0;if(n<MW_FIRST)setCam({from:{p:[pl.x+14,pl.y+28,pl.z+22],l:[pl.x,pl.y+2,pl.z-6]},to:'player',d:3})}
-    setTimeout(()=>{$('fade').style.opacity=0;const C=CHP[n];banner(n===1?'Lunaris':C.name,n===1?'Dorf am Mondblick':C.sub);
+    wloadHide();setTimeout(()=>{$('fade').style.opacity=0;const C=CHP[n];banner(n===1?'Lunaris':C.name,n===1?'Dorf am Mondblick':C.sub);
       if(n>=2&&n<12){const s=chCs(n);if(!s.arr){s.arr=1;if(n===2)joinParty('lyra');setTimeout(()=>cutscene(cutOf(n).arr),1600);LF().firstArrive(n)}}if(n>=2&&n<11)guestArrive(n);if(n!==1&&n!==13&&S.stage>=8&&!S.fl.gk_prof&&S.fl.bridge)setTimeout(profJoin,5000);if(n===1)setTimeout(miraJoin,2500);arcSoon(n)},120)}}
 /* ---- Geschichten der Gefährten (laut Skript: Rovans Schuld, Lyras Familie, Nias Unsicherheit) ---- */
 const ARCS=[
@@ -2421,8 +2435,8 @@ addEventListener('keydown',e=>{
   if(tStage==='help'){if(e.code==='Escape'||e.code==='Enter'||e.code==='Space'){$('thClose').click();e.preventDefault()}return}
   if(tStage==='slots'){if(e.code==='Escape')$('slBack').click();return}
   if(tStage==='join'){if(e.code==='Escape')$('jBack').click();return}
-  if(e.code==='ArrowDown'||e.code==='KeyS'){tmSet(tSel+1);sfx('ui')}else if(e.code==='ArrowUp'||e.code==='KeyW'){tmSet(tSel-1);sfx('ui')}
-  else if(e.code==='Enter'||e.code==='Space'||e.code==='NumpadEnter'){tmAll()[tSel].click();e.preventDefault()}});
+  {const a=tmAll(),wide=a[0]&&a[0].id==='bLoad'&&tSel===0;if(e.code==='ArrowDown'||e.code==='KeyS'){tmSet(wide?1:Math.min(a.length-1,tSel+3));sfx('ui')}else if(e.code==='ArrowUp'||e.code==='KeyW'){tmSet(a[0].id==='bLoad'&&tSel<=3?0:Math.max(0,tSel-3));sfx('ui')}else if(e.code==='ArrowRight'||e.code==='KeyD'){tmSet(tSel+1);sfx('ui')}else if(e.code==='ArrowLeft'||e.code==='KeyA'){tmSet(tSel-1);sfx('ui')}
+  else if(e.code==='Enter'||e.code==='Space'||e.code==='NumpadEnter'){tmAll()[tSel].click();e.preventDefault()}}});
 /* Fenster ohne Maus bedienen (Tastatur, TV-Fernbedienung, Controller): Pfeile/WASD wählen den nächsten Knopf in der Richtung, Enter löst ihn aus, Zurück schließt */
 const NAVSEL='button,[role=button],input,select,a[href]',NAVBACK={zMini:'',puz:'pClose',menu:'mResume',joinov:'jBack',thelp:'thClose',slots:'slBack',crp:'crBack'};let navP=null,navSc=null,navKb=false;
 function uiScope(){const z=document.getElementById('zMini');if(z&&!z.hidden)return z;for(const id of ['puz','menu','joinov','thelp','slots']){const e=$(id);if(!e.hidden)return e}return mode==='creator'?$('crp'):null}

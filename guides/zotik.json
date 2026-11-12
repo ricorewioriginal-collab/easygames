@@ -11,13 +11,15 @@
   {
    "t": "Start und Titelmenü",
    "list": [
+    "Beim Start setzt sich das Zotik-Emblem aus drei Kristallsplittern zusammen, danach erscheint das Hauptmenü als Kachelraster wie auf einer Konsole (oben rechts die Uhrzeit). Kacheln mit Pfeilen, WASD, Steuerkreuz oder Antippen wählen, mit Enter oder A bestätigen.",
     "Neues Spiel: startet in Lunaris. Unter „Mein Zotik“ gestaltest du vorher dein Aussehen (Zotik ziehen zum Drehen) und beginnst mit „Abenteuer beginnen“.",
-    "Spiel laden: einen gespeicherten Spielstand fortsetzen.",
+    "Fortsetzen: oben die breite Kachel, wenn ein Spielstand da ist – setzt einen gespeicherten Spielstand fort.",
     "🌐 Online mitspielen: als zweiter Spieler beim Gastgeber einsteigen (4-stelliger Code oder QR-Code).",
     "Steuerung: Übersicht aller Tasten.",
     "🎮 Mini-Spiele: die ZOTIK-Arcade mit eigenen Rekorden.",
     "🏝️ Bunte Insel: ein Abstecher auf die Bunte Insel.",
-    "Ein neues Abenteuer beginnt im Camp am Lagerfeuer: Prolog, Zotiks Traum – dann über den Pfad nach Süden ins Dorf Lunaris zu Mira."
+    "Ein neues Abenteuer beginnt im Camp am Lagerfeuer: Prolog, Zotiks Traum – dann über den Pfad nach Süden ins Dorf Lunaris zu Mira.",
+    "Vor jeder neuen Welt zeigt ein kleiner Ladescreen in den Farben der Welt ihr Zeichen, ihren Namen und einen Tipp."
    ]
   },
   {
@@ -109,7 +111,8 @@
     "Touch: Stick links = bewegen (kurz tippen = dorthin gehen), rechts wischen = Kamera. Das Kommandomenü antippen: Angriff, Spezialangriff, Magie, Item, Rufen. Die große Angriff-Taste führt den markierten Befehl aus. Dazu Ausweichen (halten = Block, in der Nautilux: Turbo), Aktion (Sprechen, Öffnen, Einsteigen; halten = Nautilux-Form) und Ziel (tippen = erfassen/wechseln, halten = aus). ▲ Reaktion über die Aktion-Taste. ☰ oben links = Menü. ⤴ Springen ist der kleine runde Knopf links über „Ausweichen“. Auf dem Handy ist die Anzeige schlank gehalten: Das Kommandomenü ist ein kleiner Knopf „☰ Befehle“, der beim Antippen aufklappt und nach dem Befehl (oder einem Tipp ins Spiel) wieder zuklappt. Das Auftragsfeld zeigt zwei Zeilen; Antippen zeigt den ganzen Text.",
     "Controller (wie an der Konsole): linker Stick laufen, rechter Stick Kamera, A bestätigen und Angriff – steht jemand oder etwas vor dir, spricht oder öffnet A (Kontextbefehl wie bei Kingdom Hearts) –, B zurück und Springen, X Ausweichen, Y Aktion/Sprechen, LB Block halten, RB Lichtstoß, LT Heiltrank, RT Reaktion ▲, Steuerkreuz ↑↓ Befehl wählen (in Menüs: auswählen), → ausführen, ← zurück, Select Rufen, Start Pausemenü, L3 Rissform, R3 Ziel erfassen. Hauptmenü, Pausemenü und alle Fenster gehen komplett mit dem Controller; B schließt. PlayStation (✕ ○ □ △), Switch (A rechts) und Xbox werden erkannt – alle Hinweise im Spiel zeigen dann die passenden Symbole.",
     "Optionen (Menü → Steuerung): 🎮 Controller – Symbole (automatisch, Xbox, PlayStation, Switch), Bestätigen-Knopf (unten oder rechts), „Knöpfe belegen“ und „Belegung zeigen“ (auch mit Select + Start). ⌨️ Tastatur – jede Spieltaste antippen und die neue Taste drücken; die Belegung bleibt gespeichert, „Standard“ setzt sie zurück. Auf dem Handy ohne Tastatur ist dieser Teil ausgeblendet. Hinweise im Spiel passen sich an: Controller-Symbol, deine Taste oder – am Handy – gar keine Taste, weil der Aktion-Knopf selbst zeigt, was er tut.",
-    "TV-Fernbedienung (nur Pfeile, OK und Zurück): ↑ ↓ laufen, ← → drehen, OK = Angriff – steht jemand oder etwas vor dir, spricht oder öffnet OK. Zurück öffnet das Kommandomenü: ↑ ↓ wählen, OK ausführen, Zurück schließen. Dort stehen auch Ausweichen, Ziel erfassen und ☰ Menü. In der Nautilux: OK halten = steigen, Sinken über das Kommandomenü. Am Fernseher schaltet sich diese Bedienung von selbst ein; sonst im Menü unter Steuerung → Optionen. Sobald ein Controller, WASD oder Touch benutzt wird, gilt wieder die normale Bedienung. „Springen“ steht im Kommandomenü; der Sprung trägt Zotik von selbst nach vorn."
+    "TV-Fernbedienung (nur Pfeile, OK und Zurück): ↑ ↓ laufen, ← → drehen, OK = Angriff – steht jemand oder etwas vor dir, spricht oder öffnet OK. Zurück öffnet das Kommandomenü: ↑ ↓ wählen, OK ausführen, Zurück schließen. Dort stehen auch Ausweichen, Ziel erfassen und ☰ Menü. In der Nautilux: OK halten = steigen, Sinken über das Kommandomenü. Am Fernseher schaltet sich diese Bedienung von selbst ein; sonst im Menü unter Steuerung → Optionen. Sobald ein Controller, WASD oder Touch benutzt wird, gilt wieder die normale Bedienung. „Springen“ steht im Kommandomenü; der Sprung trägt Zotik von selbst nach vorn.",
+    "Sprachausgabe (im Menü einschalten): jede Figur spricht mit eigener Stimme – eigene Tonhöhe und eigenes Tempo, wenn möglich mit passender Frauen- oder Männerstimme des Geräts."
    ]
   },
   {
