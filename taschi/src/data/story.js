@@ -1,5 +1,6 @@
 // Story scripts. Lines are { who, text, mood } – mood drives the speaker's
 // dialogue animation (talk, happy, worried, angry, surprised, sad).
+import { venueName } from './towns.js';
 
 export const CHAPTERS = [
   { title: 'Das Erwachen', text: 'Über Sonnenhain verblasst das uralte Himmelslicht. Professor Ulme bittet dich, die sechzehn Licht-Siegel zusammenzuführen – und die Schattengilde stiehlt Taschis in allen Regionen. Dein Rivale Rian will dir dabei unbedingt zuvorkommen.' },
@@ -70,7 +71,7 @@ export function professorLines(region, save, regionData) {
     lines.push({ who: name, text: p.intro, mood: 'happy' });
     lines.push({ who: name, text: 'Mein Fachgebiet: ' + regionData.professor.focus + '. Wenn du mir hilfst, helfe ich dir.', mood: 'talk' });
   } else if (beaten) lines.push({ who: name, text: 'Champion von ' + regionData.name + '! Die Forschung hier verdankt dir viel. Die nächste Region wartet auf dich.', mood: 'happy' });
-  else if (badge) lines.push({ who: name, text: 'Mit dem Siegel in der Tasche wartet ' + regionData.champion.name + ' auf dich. Der Pavillon des Champions liegt auf dem Hügel.', mood: 'talk' });
+  else if (badge) lines.push({ who: name, text: 'Mit dem Siegel in der Tasche wartet ' + regionData.champion.name + ' auf dich am Champion-Ort „' + venueName(region.id) + '“.', mood: 'talk' });
   else lines.push({ who: name, text: 'Hast du schon das Rätsel „' + regionData.puzzle.name + '“ gesehen? ' + regionData.puzzle.hint, mood: 'talk' });
   return lines;
 }

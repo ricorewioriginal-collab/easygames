@@ -1,5 +1,6 @@
 // Progression rules: unlocks, quests, objectives and rewards.
 import { REGIONS } from '../data/regions.js';
+import { venueName } from '../data/towns.js';
 import { SPECIES } from '../data/species.js';
 import { ITEMS } from '../data/items.js';
 import { GUILD_BATTLES } from '../data/trainers.js';
@@ -134,7 +135,7 @@ export function mainObjective(s) {
   if (s.badges < 16) {
     const r = s.badges;
     const g = REGIONS[r].guild;
-    if (r > 0 && !s.champions[r - 1]) return { text: 'Besiege ' + REGIONS[r - 1].champion.name + ' im Champion-Pavillon von ' + REGIONS[r - 1].name + '.', region: r - 1, target: 'champion' };
+    if (r > 0 && !s.champions[r - 1]) return { text: 'Besiege ' + REGIONS[r - 1].champion.name + ' am Champion-Ort „' + venueName(r - 1) + '“ in ' + REGIONS[r - 1].name + '.', region: r - 1, target: 'champion' };
     if (g !== undefined && guildNext(s, g) !== 'done') return { text: 'Stoppe die Schattengilde in ' + REGIONS[r].name + ' – ' + (r === 6 ? 'ihre Forschungsstation liegt am Glutkegel.' : 'ihr Ballon wurde nahe der Stadt gesehen.'), region: r, target: 'guild' };
     if (ambushPending(s, r) && s.flags.firstQuest) return { text: 'Die Schattengilde lauert am ' + AMBUSHES[r].where + ' von ' + REGIONS[r].name + '! Halte sie auf!', region: r, target: 'ambush' };
     if (!s.puzzles['region:' + r]) return { text: 'Löse das Rätsel „' + REGIONS[r].puzzle.name + '“ in ' + REGIONS[r].name + '.', region: r, target: 'puzzle' };
