@@ -221,6 +221,40 @@ export function createTown(C) {
   }));
   const ease = k => 1 - Math.pow(1 - Math.min(1, k), 3);
   let CS = null;   // Zustand des gebauten Casinos (für Tests über die Debug-Schnittstelle)
+  /* Spielautomat als eigenes Minispiel: Vollbild-Automat, jede Walze hält man selbst mit STOPP an (Timing zählt, die Walze rutscht noch 0–2 Felder nach).
+     Wer nichts drückt, dem hält der Automat die Walzen nach ein paar Sekunden selbst an. Gleiche Bedienung mit Finger, Maus, Tastatur (Enter/Leertaste) und Controller (A auf dem Knopf). */
+  const STRIP = [0, 1, 0, 2, 1, 3, 0, 1, 2, 3, 1, 4], SPD = 13;
+  let SG = null;
+  function slotUI() {
+    if (SG) return SG; const d = document.createElement('div'); d.id = 'slotGame'; d.hidden = true;
+    d.innerHTML = `<style>#slotGame{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:radial-gradient(ellipse at center,rgba(40,10,70,.82),rgba(2,2,14,.94))}#slotGame[hidden]{display:none}
+      #slotGame .sm{width:min(440px,calc(100% - 24px));padding:14px 16px 16px;text-align:center;background:linear-gradient(170deg,#4a1a7a,#1a0a34);border:3px solid #ffd45a;border-radius:18px;box-shadow:0 0 40px rgba(255,200,80,.35),inset 0 0 30px rgba(0,0,0,.5)}
+      #slotGame h3{margin:0 0 4px;color:#ffd45a;font-size:20px;letter-spacing:1px}#slotGame .sl{display:flex;gap:8px;justify-content:center;margin:10px 0;padding:8px;background:#0a0618;border-radius:12px;position:relative}
+      #slotGame .rl{width:31%;height:168px;overflow:hidden;background:linear-gradient(#cfc6b8,#fbf6ea 30%,#fbf6ea 70%,#cfc6b8);border-radius:8px;position:relative}#slotGame .rl.st{box-shadow:inset 0 0 0 3px #7dffb2}
+      #slotGame .rl i{position:absolute;left:0;right:0;height:56px;font-size:40px;line-height:56px;font-style:normal}#slotGame .ln{position:absolute;left:4px;right:4px;top:50%;height:58px;margin-top:-29px;border:2px solid #ff5a7a;border-radius:8px;pointer-events:none;box-shadow:0 0 12px #ff5a7a}
+      #slotGame .inf{min-height:22px;font-weight:700;color:#fff}#slotGame .bt{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap}#slotGame button{font:inherit;font-weight:800;padding:10px 18px;border-radius:12px;border:2px solid #ffd45a;background:#2a1050;color:#ffd45a;cursor:pointer}
+      #slotGame button.go{background:linear-gradient(#ff7a3a,#d0301a);color:#fff;font-size:20px;min-width:150px}#slotGame button:focus{outline:3px solid #7dffb2}#slotGame small{color:#cbb8ff}</style>
+      <div class="sm"><h3>🎰 KRISTALLSLOTS</h3><small id="sgBet"></small><div class="sl"><div class="rl"></div><div class="rl"></div><div class="rl"></div><div class="ln"></div></div><div class="inf" id="sgInf"></div>
+      <div class="bt"><button class="go" id="sgGo">⏹ STOPP</button><button id="sgEnd" hidden>Aufhören</button></div><small>⭐⭐⭐ ×25 · 💎 ×12 · 🔥 ×8 · 🌙/🍃 ×5 · zwei gleiche: Einsatz zurück</small></div>`;
+    document.body.appendChild(d); const R = [...d.querySelectorAll('.rl')].map(el => { const it = []; for (let k = 0; k < 4; k++) { const i = document.createElement('i'); el.appendChild(i); it.push(i); } return { el, it, pos: Math.random() * 12, stop: null, fin: -1 }; });
+    SG = { d, R, go: d.querySelector('#sgGo'), end: d.querySelector('#sgEnd'), inf: d.querySelector('#sgInf'), bet: d.querySelector('#sgBet'), run: null };
+    const draw = () => { for (const r of SG.R) { const base = Math.floor(r.pos), f = r.pos - base; r.it.forEach((el, k) => { const idx = ((base + k - 1) % 12 + 12) % 12; el.textContent = CAS.SYM[STRIP[idx]]; el.style.top = (84 - 28 + (k - 1) * 56 - f * 56) + 'px'; }); } };
+    SG.draw = draw; draw(); return SG;
+  }
+  function slotOpen(bet, onDone, again) {
+    const g = slotUI(), t0 = C.time(); g.d.hidden = false; g.end.hidden = true; g.go.textContent = '⏹ STOPP'; g.inf.textContent = 'Drück STOPP – jede Walze einzeln!'; g.bet.textContent = 'Einsatz ' + bet + ' 💎 · Mittellinie zählt';
+    g.R.forEach((r, i) => { r.stop = null; r.fin = -1; r.el.classList.remove('st'); r.auto = t0 + 3 + i * .5; });
+    const run = g.run = { bet, done: false };
+    const stopNext = () => { const r = g.R.find(q => !q.stop); if (!r) return; const slip = (Math.random() * 3) | 0, target = Math.ceil(r.pos) + slip; r.stop = { from: r.pos, to: target, t0: C.time() }; C.sfx('ui'); };
+    g.go.onclick = () => { if (run.done) { g.d.hidden = true; again(); return; } stopNext(); };
+    g.end.onclick = () => { g.d.hidden = true; g.run = null; };
+    setTimeout(() => g.go.focus(), 30);
+    C.anim(() => { if (g.run !== run || run.over) return; const now = C.time();
+      for (const r of g.R) { if (!r.stop) { r.pos += SPD * .016 * (1 + (r === g.R[0] ? 0 : .07)); if (now > r.auto && !g.R.slice(0, g.R.indexOf(r)).some(q => !q.stop)) stopNext(); }
+        else if (r.fin < 0) { const k = Math.min(1, (now - r.stop.t0) / .35); r.pos = r.stop.from + (r.stop.to - r.stop.from) * (1 - Math.pow(1 - k, 2)); if (k >= 1) { r.pos = r.stop.to; r.fin = STRIP[((r.stop.to % 12) + 12) % 12]; r.el.classList.add('st'); C.sfx('pick'); } } }
+      g.draw();
+      if (g.R.every(r => r.fin >= 0)) { run.over = true; const fin = g.R.map(r => r.fin), win = slotPay(fin, bet); run.done = true; g.inf.textContent = win > bet ? `🎉 ${fin.map(i => CAS.SYM[i]).join(' ')} – Gewinn ${win} 💎!` : win ? 'Zwei gleiche – Einsatz zurück' : 'Leider nichts'; g.go.textContent = S().shards >= bet ? '🔁 Nochmal (' + bet + ' 💎)' : 'Schließen'; g.end.hidden = false; onDone(fin); } });
+  }
   function casino(P, n) {
     const X = P.extra.casino, s0 = S(), dyn = new T.Group(); dyn.position.set(P.x, P.y - .2, P.z); dyn.rotation.y = P.ry; scene.add(dyn);
     const off = () => !!(S().cas && S().cas.off), INT = C.INT(), wpos = (lx, ly, lz) => { const q = P.W2(lx, lz); return [q[0], P.y + ly, q[1]]; };
@@ -235,7 +269,8 @@ export function createTown(C) {
         for (let k = 0; k < 5; k++) { const a = new T.Group(); a.rotation.z = k * 1.2566; const p = flat(emo(CAS.SYM[k], ''), .27, .27); p.position.x = .262; p.rotation.y = Math.PI / 2; a.add(p); rg.add(a); }
         const cur = (mi + r * 2) % 5; rg.rotation.z = -cur * 1.2566; dyn.add(rg); reels.push({ rg, from: rg.rotation.z, to: rg.rotation.z, t0: 0, dur: 0 }); }
       const m = { reels, spin: null }; st.slots.push(m); const q = P.W2(X.sx0 + 1.5, lz);
-      const go = bet => { const fin = [casSym(), casSym(), casSym()], now = C.time(); reels.forEach((R, r) => { R.from = R.rg.rotation.z % 6.2832; R.to = -fin[r] * 1.2566 - 6.2832 * (3 + r); R.t0 = now; R.dur = 1.1 + r * .45; }); m.spin = { fin, bet, end: now + 2.15 }; C.sfx('ui'); };
+      const spin3d = (fin, bet) => { const now = C.time(); reels.forEach((R, r) => { R.from = R.rg.rotation.z % 6.2832; R.to = -fin[r] * 1.2566 - 6.2832 * (1 + r); R.t0 = now; R.dur = .5 + r * .15; }); m.spin = { fin, bet, end: now }; };
+      const go = bet => { C.sfx('ui'); slotOpen(bet, fin => spin3d(fin, bet), () => { const s = S(); if (off() || st.busy || s.shards < bet) { if (SG) SG.d.hidden = true; return; } s.shards -= bet; st.busy = true; go(bet); }); };
       INT.push({ x: q[0], z: q[1], name: 'Kristallslots', pr: 'Spielen', rad: 1.5, vis: () => true, talk: () => bets('Kristallslots', 'Drei gleiche: ⭐ ×25 · 💎 ×12 · 🔥 ×8 · 🌙 und 🍃 ×5. Zwei gleiche: Einsatz zurück.', go), go });
     });
     /* Sternenrad */
@@ -269,5 +304,5 @@ export function createTown(C) {
       for (const c of st.hilo.cards) if (c.f.rotation.y !== c.to) { const k = Math.min(1, (now - c.t0) / .35); c.f.rotation.y = c.from + (c.to - c.from) * k; } });
   }
 
-  return { build, flush, shop, has: k => !!KIND[k] || k === 'home', CAS, slotPay, hiloMul, get cs() { return CS; } };
+  return { build, flush, shop, has: k => !!KIND[k] || k === 'home', CAS, slotPay, hiloMul, get cs() { return CS; }, get slot() { return SG; } };
 }
