@@ -711,7 +711,7 @@
     "steuerung": [
      "Touch: Joystick links laufen, Aktionsknopf rechts, 🏃 sprinten, oben ☰ Menü, ◉ Team, 🗺 Karte.",
      "PC: WASD/Pfeile laufen, Shift sprinten, E/Enter/Leertaste Aktion, Q/Rücktaste zurück, Esc/P Menü, T Team, M Karte, Z/C Kamera.",
-     "Controller: Stick/Steuerkreuz laufen, A bestätigen, B zurück, X sprinten, Y Team, LB/RB Reiter, Select Karte, Start Menü."
+     "Controller (wie Nintendo Switch): Stick/Steuerkreuz laufen, A bestätigen, B zurück, X oder + Menü, Y rennen, L/R Reiter, − Karte; Maus: Rechtsklick zurück."
     ],
     "tipps": [
      "Schwäche wilde Taschis vor dem Fangen – wenig KP, Schlaf oder Eis erhöhen die Fangchance.",
@@ -719,7 +719,7 @@
      "Rian nimmt immer den Starter, der deinen schlägt – nimm ein Taschi mit, das dagegen stark ist."
     ]
    },
-   "size": 912651,
+   "size": 929474,
    "files": 54,
    "offline": true,
    "cloud": {

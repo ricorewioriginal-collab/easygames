@@ -66,6 +66,17 @@ export function rollEncounter(r, rng, { habitat = 'grass', night = false, levelB
   return m;
 }
 
+// Angeln: Wasser-Taschis vom Ufer aus. Manchmal beißt ein größerer an (+3 Level).
+export const BITE_WINDOW = 900;   // ms, die man nach dem Anbiss Zeit hat
+export function rollFishing(r, rng, { night = false } = {}) {
+  return rollEncounter(r, rng, { habitat: 'water', night, levelBoost: rng.next() < 0.15 ? 3 : 0 });
+}
+// Zeitpunkt des Drückens bewerten: zu früh, getroffen oder zu spät
+export function judgeBite(pressAt, biteAt, window = BITE_WINDOW) {
+  if (pressAt < biteAt) return 'early';
+  return pressAt - biteAt <= window ? 'hit' : 'late';
+}
+
 // Every catchable species must be obtainable in at least one table (or as
 // evolution of an obtainable species). Used by tests and the Taschidex.
 export function obtainableSpecies() {
