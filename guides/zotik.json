@@ -286,7 +286,8 @@
     "🔥 Feuerstab (Kapitel 4): brennt Dornenranken weg und zündet Fackeln.",
     "❄️ Eisstab (Kapitel 5): friert Wasser zu Eis.",
     "In jeder Welt gibt es eine Werkzeug-Ruine mit Hindernissen (Schiebeblöcke, Druckplatten, Tore, Rissmauern, Ranken, Fackeln, Wasser, Pfosten). Mit C nimmt Zotik automatisch das passende Werkzeug für das Hindernis vor ihm.",
-    "Den Ruinenschatz bewacht in jeder Welt ein eigenes Rätsel: 🎵 Klangplatten (Melodie am Lauschstein anhören, dann die Platten in derselben Reihenfolge betreten), 🗿 Wächterstatuen (jede Drehung dreht auch die Statue rechts daneben – alle sollen zum Schatz blicken), 💡 Lichtplatten (jeder Schritt schaltet die Platte und ihre Nachbarn um – alle müssen leuchten), 🔣 Symbolsteine (Paare aufdecken) und 🔥 Glutkristalle (alle entzünden, bevor der erste erlischt)."
+    "Den Ruinenschatz bewacht in jeder Welt ein eigenes Rätsel: 🎵 Klangplatten (Melodie am Lauschstein anhören, dann die Platten in derselben Reihenfolge betreten), 🗿 Wächterstatuen (jede Drehung dreht auch die Statue rechts daneben – alle sollen zum Schatz blicken), 💡 Lichtplatten (jeder Schritt schaltet die Platte und ihre Nachbarn um – alle müssen leuchten), 🔣 Symbolsteine (Paare aufdecken) und 🔥 Glutkristalle (alle entzünden, bevor der erste erlischt).",
+    "❓ Hinweistafel: Neben jedem Ruinen-Rätsel steht eine Steintafel mit leuchtendem Fragezeichen. Lies sie (Aktion), dann wiederholt sie die Regel und markiert mit einem Pfeil ⬇️ den nächsten richtigen Schritt – bei Lichtplatten auch, wie viele Schritte noch fehlen, bei Symbolsteinen zeigt sie kurz ein passendes Paar. Nach zwei Fehlern oder vielen Zügen ohne Lösung erinnert dich ein Tipp an die Tafel."
    ]
   },
   {
