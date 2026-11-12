@@ -282,6 +282,25 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       const gr = b.cone(0, 13, Z, 1, 2.6, 0x2a2a30, { lo: 1 }); gr.rotation.y = Math.PI / 4; gr.scale.set(7.4, 2.6, 5.2); for (const s of [-1, 1]) { const tip = b.cone(s * 5.2, 13.1, Z + 2.4, .15, .7, 0x2a2a30); tip.rotation.z = -s; }
       for (const x of [-30, 30]) { b.box(x, 0, Z, 6.4, 11, 6.4, S, { solid: 1 }); b.box(x, 11, Z, 7, .8, 7, 0x7a746a); }
       for (const x of [-3.4, 3.4]) { b.cyl(x, 0, Z + 4.4, .08, 4.4, 0x5a4030, { lo: 1, solid: 1 }); const f = b.box(x + .5, 3, Z + 4.4, .9, 1.7, .04, R, { cast: false }); A.sway(f, x); }
+      const roof = (x, z, w, d, y, col) => { const r = b.cone(x, y, z, 1, 1.8, col || 0x2a2a30, { lo: 1 }); r.rotation.y = Math.PI / 4; r.scale.set(w * .82, 1.8, d * .82); for (const s of [-1, 1]) { const tip = b.cone(x + s * w * .55, y + .1, z + d * .4, .15, .6, col || 0x2a2a30); tip.rotation.z = -s; } };
+      // Gelber Fluss: Lagerfeuer, Zelte am Ufer, Bogenbrücke aus Stein
+      A.fire(-40, 12, 1); for (const [x, z] of [[-46, 6], [-34, 4]]) { b.box(x, 0, z, 3, 1.4, 2.6, 0xd8ccb0, { solid: 1 }); roof(x, z, 3.4, 3, 1.4, 0xc8bca0); }
+      for (const [x, z, r] of [[-50, 20, .4], [-46, 22, 2.2], [-30, 18, -1]]) { const h = A.creature('reiter', [0x8a5a3a, 0xe8e0d0, 0x3a2a1a][Math.abs(x) % 3], .75); h.children[0] && h.traverse(c => { if (c.isMesh && c.position.y > 1.5) c.visible = false; }); h.position.set(x, b.h(x, z), z); h.rotation.y = r; b.addCol(x, z, .9); }
+      // Turm der Nachtwache: hoher Wachturm mit Dach, Gong-Gestell
+      b.box(78, 0, -44, 6, 12, 6, 0x9a948a, { solid: 1, tex: 'stone' }); b.box(78, 12, -44, 7, .6, 7, 0x7a746a); for (const [dx, dz] of [[-3, -3], [3, -3], [-3, 3], [3, 3]]) b.box(78 + dx, 12.6, -44 + dz, .4, 2.4, .4, R); roof(78, -44, 7.6, 7.6, 15, 0x2a2a30);
+      for (let i = 0; i < 4; i++) b.box(78 + (i % 2 ? 2.2 : -2.2), 13.4, -44, .5, .5, .5, 0xe84a2a, { mat: { e: 0xc02a10, ei: 1.4 }, cast: false });
+      // Schwarze Berge jenseits der Mauer: dunkle Felsen, Reiterlager mit Feuern
+      K.cliff([[-98, -86, 8, 14], [-100, -112, 9, 16], [-70, -116, 7, 12], [-102, -98, 6, 10], [-66, -104, 5, 8]], 0x2a2a30);
+      for (const [x, z] of [[-86, -94], [-78, -106]]) { K.tent(x, z, 2.2, 2.6, 0x3a2e24, { flag: 0x1a1410 }); } A.fire(-82, -100, 1.2);
+      // Halle des Lichts: Kaiserhalle auf Terrasse, rote Säulen, goldene Dachkante
+      b.box(72, 0, 12, 16, 1.2, 12, 0xd8d0c0, { solid: 1, tex: 'marble' }); b.box(72, 1.2, 9, 12, 5, 6, 0xe0d4bc, { solid: 1 });
+      for (let i = 0; i < 6; i++) b.cyl(66.5 + i * 2.2, 1.2, 13, .28, 4.6, R, { solid: 1 }); roof(72, 9, 14, 9, 6.2, 0x2a2a30); b.box(72, 6.1, 13.4, 14, .25, .25, 0xd8b040, { mat: { m: .9, r: .3 } });
+      for (const x of [64, 80]) { b.box(x, 1.2, 16, 1, 1.2, 1, 0x9a948a); b.sph(x, 2.8, 16, .55, .5, .55, 0x9a948a); }
+      for (let i = 0; i < 6; i++) { const l = b.sph(66 + i * 2.4, 4.6, 16, .3, .4, .3, 0xe84a2a, { mat: { e: 0xc02a10, ei: 1.6 }, cast: false }); A.bob(l, .08, 1 + i * .1); }
+      // Karawanenrast: Kamel, Wasserstelle, Lasten
+      { const C2 = 0xc8a070; b.sph(40, 1.9, 52, 1.5, .8, .7, C2); for (const dx of [-.5, .55]) b.sph(40 + dx, 2.6, 52, .5, .6, .5, C2); b.cyl(41.5, 2, 52, .2, 1.2, C2); b.sph(41.9, 3.2, 52, .45, .28, .26, C2); b.sph(41.65, 3.25, 52, .12, .2, .1, C2);
+        for (const [dx, dz] of [[-.9, -.4], [-.9, .4], [.9, -.4], [.9, .4]]) b.cyl(40 + dx, 0, 52 + dz, .13, 1.6, C2); b.box(40, 2.3, 52, 1.6, .2, 1.5, 0x8a2a1a, { cast: false }); b.addCol(40, 52, 1.6); }
+      K.water(46, 46, 2.6, 0x5a8a9a); for (let i = 0; i < 5; i++) b.box(34 + (i % 3) * 1.4, 0, 54 + (i > 2 ? 1.4 : 0), 1.1, .8, .8, [0x8a5a3a, 0xc8a070, 0x6a4a2a][i % 3], { tex: 'wood' }); K.lamp(36, 48, 0xff6a3a);
     },
     camelot(b, w, A) {
       const K = kit(b), S = 0xeae6de, B2 = 0x3a5aa8;
