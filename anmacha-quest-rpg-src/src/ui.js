@@ -78,6 +78,7 @@ export class UI {
   isChoosing() { return !!(this.choosingList || this.choosingCross); }
   isTalking() { return this.talking || !!this.statusOpen; }
   touchVisible() { return this.touchOn; }
+  letterbox(on) { document.body.classList.toggle('cine', !!on); }
   setTouch(v) {
     this.touchOn = v;
     $('menuBtn').hidden = !v;
@@ -137,6 +138,7 @@ export class UI {
       });
       panel.hidden = false;
       const finish = (r) => {
+        this.g.sfx?.(r < 0 ? 'cancel' : 'ok');
         this.choosingList = null;
         panel.hidden = true;
         panel.innerHTML = '';
@@ -162,6 +164,7 @@ export class UI {
     const n = c.btns.length;
     let i = c.focus;
     for (let k = 0; k < n; k++) { i = (i + d + n) % n; if (!c.btns[i].disabled) break; }
+    if (i !== c.focus) this.g.sfx?.('move');
     this.listFocus(i);
   }
   targetHint(idx) { this.targets = idx; }
@@ -190,13 +193,14 @@ export class UI {
     let n = NEIGH[c.focus][dir];
     // gesperrtes Feld (Spezial ohne IP) überspringen
     if (n >= 0 && this.crossBtns[n].disabled) { const nn = NEIGH[n][dir]; n = nn >= 0 ? nn : -1; }
-    if (n >= 0) this.crossFocus(n);
+    if (n >= 0) { this.crossFocus(n); this.g.sfx?.('move'); }
   }
   pickCross(i) {
     const c = this.choosingCross;
     if (!c || this.crossBtns[i].disabled) return;
     this.choosingCross = null;
     $('cross').hidden = true;
+    this.g.sfx?.('ok');
     c.done(i);
   }
 

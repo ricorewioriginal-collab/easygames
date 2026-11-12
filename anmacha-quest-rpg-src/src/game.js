@@ -7,18 +7,25 @@ export const M = { TITLE: 0, WORLD: 1, BATTLE: 2 };
 export const SAVE_KEY = 'anmachaQuest_save';
 
 const BOSS_TEXT = {
-  mcdroehn: ['MC Dröhn: Yo, Funker! Das ist MEIN Keller, MEIN Beat! Zeig, ob du Takt hast!'],
-  koenigin: ['Königin Schunkel: Ach, wie süß – kleine Helden! Schunkelt mit mir, bis euch schwindelig wird!'],
-  frostmod: ['Der Frost-Moderator: Und nun die Nachrichten: Heute Nacht wird es EISKALT für euch!'],
-  riff: ['Riff-Titan: *KRAAAWWWWM* ... Zu laut? Gibt\'s nicht. LAUTER!'],
-  rauschen: ['Das Große Rauschen: kshhhhhh ... Alle Stimmen werden eins. Alle Sender: Stille. Auch eure.']
+  mcdroehn: ['Vorgal: Tausend Jahre in Ketten ... und die ersten, die mich wecken, sind Kinder mit Holzschwertern?', 'Vorgal: Die Gruft hallt nur noch von meinem Groll. Gleich auch von euren Schreien!'],
+  koenigin: ['Seraphine: Wie hübsch ihr seid. Wie Rosen kurz vor dem Welken.', 'Seraphine: Bleibt bei mir. Für immer. Meine Dornen halten euch fest!'],
+  frostmod: ['Kryos: Ihr bringt Wärme in meine Halle. Wie ungezogen.', 'Kryos: Alles Leben ist nur Lärm vor der Stille. Ich lasse euch erstarren, damit ihr es versteht.'],
+  riff: ['Pyrax: *GRRRAAAH* Kleine Funken wagen sich in meinen Schlund?', 'Pyrax: Ich habe Städte verbrannt, bevor eure Ahnen sprechen konnten. BRENNT!'],
+  rauschen: ['Nihl: ... Endlich. Die Letzten, die noch Stimmen haben.', 'Nihl: Die Vier waren nur meine Hände. Ich bin das Schweigen zwischen den Sternen. Werdet still, Kinder Aetherions.']
 };
 const BOSS_AFTER = {
-  mcdroehn: ['MC Dröhn verstummt – ein Frequenzkristall glüht auf. Der Bass-Keller ist befreit!', 'Auf der Weltkarte öffnet sich der Zugang zur Glitzerwiese. Im Funkhafen wartet jemand auf euch.'],
-  koenigin: ['Die Königin sinkt in ihr Glitzerkissen. Der zweite Kristall erwacht!', 'Auf der Weltkarte öffnet sich die Frosthöhle. Im Funkhafen wartet jemand auf euch.'],
-  frostmod: ['Der Moderator taut auf und räumt das Studio. Der dritte Kristall erwacht!', 'Auf der Weltkarte öffnet sich die Vulkanbühne. Im Funkhafen wartet jemand auf euch.'],
-  riff: ['Der Titan sackt zusammen, die Verstärker verstummen. Der vierte Kristall erwacht!', 'Auf der Weltkarte öffnet sich der Rauschen-Turm im Norden.']
+  mcdroehn: ['Vorgal zerfällt zu grauer Asche. Ein Sphärenkristall leuchtet auf und erfüllt die Gruft mit einem klaren Ton.', 'Auf der Weltkarte öffnet sich der Weg zum Rosenhain. In Hafenau wartet jemand auf euch.'],
+  koenigin: ['Die Dornen welken, Seraphine löst sich in Blütenblätter auf. Der zweite Kristall erwacht!', 'Auf der Weltkarte öffnet sich die Frostgrotte. In Hafenau wartet jemand auf euch.'],
+  frostmod: ['Kryos zerspringt wie Glas. Tauwasser tropft von der Decke. Der dritte Kristall erwacht!', 'Auf der Weltkarte öffnet sich der Glutschlund. In Hafenau wartet jemand auf euch.'],
+  riff: ['Pyrax stürzt in die Lava, die Flammen erlöschen. Der vierte Kristall erwacht!', 'Im Norden erhebt sich der Turm der Stille. Der Weg zu Nihl ist frei.']
 };
+// Zwischensequenzen: Kamera (Feld x/y, Drehung, Abstand, Neigung) und Text
+const INTRO = [
+  { x: 12, y: 8, yaw: 0.6, dist: 14, pitch: 0.55, t: ['Vor tausend Jahren sangen vier Sphärenkristalle die Welt Aetherion ins Gleichgewicht.'] },
+  { x: 12, y: 9, yaw: -0.4, dist: 10, pitch: 0.42, t: ['Vier ihrer Hüter verrieten sie. Man nannte sie die Verfemten und versiegelte sie im Herzen der Welt.'] },
+  { x: 12, y: 10, yaw: 0.2, dist: 7, pitch: 0.3, t: ['Doch nun breitet sich eine Stille aus, die selbst die Vögel verstummen lässt. Die Siegel brechen.'] },
+  { x: 12, y: 12, yaw: 0, dist: 4.6, pitch: 0.2, t: ['In der Hafenstadt Hafenau erwacht der junge Schwertkämpfer Aren aus einem Traum von Sternen, die erlöschen.', 'Sein bester Freund Silas, ein Magier mit mehr Mut als Vorsicht, wartet schon vor der Tür.', 'Älteste Ysolde hat nach euch gerufen. Sie steht in der Mitte der Stadt.'] }
+];
 
 export class Game {
   constructor(ui, view, opts = {}) {
@@ -37,6 +44,38 @@ export class Game {
     this.stepflip = 0;
     this.mt = 0;
     this.debug = !!opts.debug;
+    this.audio = opts.audio || null;
+    this.musicOverride = null;
+    this.battleMusic = 'battle';
+  }
+  sfx(k) { this.audio?.sfx(k); }
+  // Passende Musik zum Ort und Spielzustand
+  pickMusic() {
+    if (!this.audio) return;
+    const S = this.S;
+    let k = this.musicOverride;
+    if (!k) {
+      if (this.mode === M.TITLE) k = 'title';
+      else if (this.mode === M.BATTLE) k = this.battleMusic;
+      else if (S.map.world) k = 'world';
+      else if (S.mapId === 'hub') k = S.flags.boss_rauschen ? 'ending' : 'town';
+      else k = S.map.theme === 'static' ? 'tower' : S.map.theme;
+    }
+    this.audio.music(k);
+  }
+  // Zwischensequenz: Kamerafahrt von Einstellung zu Einstellung, Kinobalken, Text
+  async cutscene(shots, music) {
+    if (this.autoplay || !this.view) return;
+    if (music) this.musicOverride = music;
+    this.ui.letterbox?.(true);
+    for (const sh of shots) {
+      this.view.cine = { x: sh.x + 0.5, z: sh.y + 0.5, h: sh.h ?? 0.9, yaw: sh.yaw, dist: sh.dist, pitch: sh.pitch };
+      if (sh.wait) await this.wait(sh.wait);
+      await this.say(sh.t);
+    }
+    this.view.cine = null;
+    this.ui.letterbox?.(false);
+    if (music) this.musicOverride = null;
   }
 
   // ---------------------------------------------------------------- UI-Helfer (im Selbsttest ohne Anzeige)
@@ -146,9 +185,8 @@ export class Game {
     await this.view.ready?.();
     await this.fade(0.0);
     this.busy = true;
-    await this.say(['Frequenzia, die Welt der Funkwellen. Seit das Große Rauschen aufgetaucht ist, sind vier Sender-Reiche verstummt.',
-      'Du bist Andrew, Funker aus Funkhafen – und Marco, der Frequenz-Magier, begleitet dich.',
-      'Sprich mit der Alten Antenne in der Mitte des Hafens. Sie weiß, was zu tun ist.']);
+    await this.cutscene(INTRO, 'intro');
+    if (this.view) this.view.camYawT = this.view.camYaw = 0;
     this.busy = false;
     this.setTouch(true);
   }
@@ -163,8 +201,13 @@ export class Game {
 
   // ---------------------------------------------------------------- Bewegung (pro Bild)
   readDir() {
-    if (this.dpad) return this.dpad;
-    return this.dirStack.length ? this.dirStack[this.dirStack.length - 1] : null;
+    const d = this.dpad || (this.dirStack.length ? this.dirStack[this.dirStack.length - 1] : null);
+    if (!d) return null;
+    // Eingabe ist bildschirmbezogen: an der Kameradrehung ausrichten
+    let r = { x: d.x, y: d.y };
+    const q = this.view?.camQuad?.() || 0;
+    for (let i = 0; i < q; i++) r = { x: r.y, y: -r.x };
+    return r;
   }
   pressDir(d, down) {
     this.dirStack = this.dirStack.filter(v => !L.eq(v, d));
@@ -175,6 +218,7 @@ export class Game {
 
   update(delta) {
     const S = this.S;
+    this.pickMusic();
     if (this.mode !== M.WORLD) return;
     S.playTime += delta;
     if (!this.ui.touchVisible() && this.dpad) this.dpad = null;
@@ -279,9 +323,10 @@ export class Game {
       S.flags[g.flag] = true;
       this.removeObj(o);
       this.view.fxWorld?.('gate', o);
+      this.sfx('door');
       await this.say(['Der Schlüssel passt! Das Tor öffnet sich knarrend.']);
     } else {
-      await this.say(['Das Tor zum Bossraum ist verriegelt. Irgendwo in diesem Reich liegt der Schlüssel in einer Truhe.']);
+      await this.say(['Das Tor zur Halle ist verriegelt. Irgendwo in diesem Reich liegt der Schlüssel in einer Truhe.']);
     }
   }
   async openChest(o) {
@@ -289,12 +334,13 @@ export class Game {
     S.flags[c.id] = true;
     this.removeObj(o);
     this.view.fxWorld?.('chest', o);
+    this.sfx('chest');
     if (c.kind === 'gold') {
       S.gold += c.v;
       await this.say([`Truhe geöffnet: ${c.v} Münzen!`]);
     } else if (c.kind === 'key') {
       S.flags[c.v] = true;
-      await this.say([`Truhe geöffnet: ${KEYNAMES[c.v]} gefunden! Damit lässt sich das Tor zum Bossraum öffnen.`]);
+      await this.say([`Truhe geöffnet: ${KEYNAMES[c.v]} gefunden! Damit lässt sich das Tor zur Halle öffnen.`]);
     } else {
       S.inv[c.v] = (S.inv[c.v] || 0) + c.n;
       await this.say([`Truhe geöffnet: ${ITEMS[c.v].name} x${c.n}!`]);
@@ -305,35 +351,36 @@ export class Game {
     switch (n.kind) {
       case 'elder': {
         const k = L.bossesDone(S);
-        if (S.flags.boss_rauschen) await this.say(['Alte Antenne: Das Rauschen ist verklungen. Hörst du? Frequenzia singt wieder.']);
-        else if (k === 0) await this.say(['Alte Antenne: Andrew, Marco – das Große Rauschen verschluckt Sender um Sender. Vier Reiche sind verstummt.',
-          'Verlasst den Hafen nach Süden und folgt der Karte. Der Bass-Keller im Westen ist der Anfang: Dort herrscht MC Dröhn.',
-          'Jedes Reich hat einen Schlüssel für das Tor zum Boss. Kämpft, werdet stärker – und kauft Tränke bei Tonia!']);
-        else if (k < 4) await this.say([`Alte Antenne: ${k} von 4 Reichen sind befreit. Das nächste Tor öffnet sich auf der Weltkarte, sobald der Wächter des letzten gefallen ist.`,
-          'Reihenfolge: Bass-Keller, Glitzerwiese, Frosthöhle, Vulkanbühne.']);
-        else await this.say(['Alte Antenne: Alle vier Frequenzkristalle sind erwacht! Das Tor zum Rauschen-Turm steht auf der Weltkarte offen – im Norden.',
-          'Geht gut gerüstet hinein. Dort wartet das Große Rauschen selbst.']);
+        if (S.flags.boss_rauschen) await this.say(['Ysolde: Die Stille ist gebrochen. Hörst du die Möwen? Aetherion singt wieder, Aren.']);
+        else if (k === 0) await this.say(['Ysolde: Aren, Silas. Die Siegel der Verfemten sind gebrochen. Vier Reiche sind in ihrer Hand, und ihre Kristalle schweigen.',
+          'Verlasst die Stadt nach Süden. Im Westen liegt die Echogruft, dort tobt Vorgal der Grollende.',
+          'Jedes Reich verbirgt einen Schlüssel zur Halle seines Herrn. Werdet stärker, und vergesst die Tränke bei Mara nicht!']);
+        else if (k < 4) await this.say([`Ysolde: ${k} von 4 Kristallen singen wieder. Der nächste Weg öffnet sich auf der Weltkarte, sobald der letzte Verfemte gefallen ist.`,
+          'Reihenfolge: Echogruft, Rosenhain, Frostgrotte, Glutschlund.']);
+        else await this.say(['Ysolde: Alle vier Kristalle sind erwacht! Im Norden ragt der Turm der Stille auf.',
+          'Nihl selbst wartet dort. Geht gut gerüstet, und kommt zurück.']);
         break;
       }
       case 'shop': await this.shop(); break;
       case 'heal':
         for (const h of S.party) { h.hp = L.mhp(S, h); h.sp = L.msp(h); }
         this.view.fxWorld?.('heal');
-        await this.say(['Der Heilbrunnen summt eine sanfte Melodie. LP und SP sind wieder voll!']);
+        this.sfx('heal');
+        await this.say(['Das Wasser der Quelle leuchtet sanft. LP und SP sind wieder voll, der Fortschritt ist gespeichert.']);
         this.saveGame();
         break;
       case 'kid':
-        if (L.bossesDone(S) >= 2) await this.say(['Lotte: Mein Radio rauscht nicht mehr so doll! Danke, Helden!']);
-        else await this.say(['Lotte: Wenn ein Held Schaden nimmt, füllt sich seine IP-Leiste. Dann kann er einen Spezialangriff machen – der ist riesig!']);
+        if (L.bossesDone(S) >= 2) await this.say(['Pip: Die Vögel singen wieder! Mama sagt, das wart ihr!']);
+        else await this.say(['Pip: Wenn ein Held Schaden nimmt, füllt sich seine IP-Leiste. Dann kann er einen Spezialangriff machen, der ist riesig!']);
         break;
       case 'guard':
-        await this.say(['Wache Piet: Tipp: Mit "Wache" im Kampf halbierst du den Schaden. Mit MENÜ kannst du jederzeit speichern.']);
+        await this.say(['Wache Holm: Tipp: Mit "Wache" halbierst du den Schaden. Mit Q/E oder durch Wischen drehst du den Blick, mit dem Mausrad oder zwei Fingern zoomst du.']);
         break;
     }
   }
   async shop() {
     const S = this.S;
-    await this.say(['Tonia: Frisch gelötet und günstig! Was darf\'s sein?']);
+    await this.say(['Mara: Frische Ware aus aller Welt! Was darf\'s sein?']);
     while (true) {
       const r = await this.choose(['Kaufen', `Ausrüstung ${L.gearPrice(S)}M`, 'Tschüss', `Münzen: ${S.gold}`], true, [false, false, false, true]);
       if (r === 2 || r === -1) break;
@@ -355,13 +402,13 @@ export class Game {
           if (this.autoplay) break;
         }
       } else if (r === 1) {
-        if (S.gear >= 6) await this.say(['Tonia: Besser kann ich es nicht mehr bauen!']);
-        else if (S.gold < L.gearPrice(S)) await this.say(['Tonia: Dafür fehlen dir leider Münzen.']);
+        if (S.gear >= 6) await this.say(['Mara: Bessere Klingen gibt es in ganz Aetherion nicht!']);
+        else if (S.gold < L.gearPrice(S)) await this.say(['Mara: Dafür fehlen dir leider Münzen.']);
         else {
           S.gold -= L.gearPrice(S);
           S.gear += 1;
           for (const h of S.party) h.hp = Math.min(h.hp + 8, L.mhp(S, h));
-          await this.say([`Tonia baut euch bessere Ausrüstung ein: Stufe ${S.gear}. Angriff, Abwehr und Magie steigen!`]);
+          await this.say([`Mara rüstet euch neu aus: Stufe ${S.gear}. Angriff, Abwehr und Magie steigen!`]);
         }
       }
       if (this.autoplay) break;
@@ -369,7 +416,11 @@ export class Game {
   }
   async fightBoss(o) {
     const b = o.d, S = this.S;
-    await this.say(BOSS_TEXT[b.id] || ['...']);
+    const txt = BOSS_TEXT[b.id] || ['...'];
+    const yaw = Math.atan2(S.gp.x - o.x, S.gp.y - o.y);
+    await this.cutscene([
+      { x: (o.x + S.gp.x) / 2, y: (o.y + S.gp.y) / 2, yaw: yaw + 0.5, dist: 6, pitch: 0.3, wait: 0.6, t: txt.slice(0, 1) },
+      { x: o.x, y: o.y, h: 1.5, yaw: yaw - 0.25, dist: 3.4, pitch: 0.1, t: txt.slice(1) }].filter(sh => sh.t.length), 'boss');
     const res = await this.runBattle([b.id], S.map.theme);
     if (res === 'win') {
       S.flags[b.flag] = true;
@@ -383,10 +434,12 @@ export class Game {
   }
   async ending() {
     const S = this.S;
-    await this.say(['Das Große Rauschen zerfällt in Millionen kleiner Töne. Aus dem Turm steigt ein klarer Ton auf.',
-      'Alle vier Reiche – Rap, Schlager, Weihnacht und Rock – senden wieder. Frequenzia hat seine Stimme zurück!',
-      `ENDE – Danke fürs Spielen von AnMaCha Quest!  Spielzeit: ${Math.trunc(S.playTime / 60)} Min.`]);
+    this.musicOverride = 'ending';
+    await this.say(['Nihl zerfällt in Sternenstaub. Aus dem Turm steigt ein einzelner, klarer Ton auf, dann ein zweiter, dann tausend.',
+      'Die vier Kristalle singen gemeinsam. Über Aetherion geht die Sonne auf, als hätte sie lange gewartet.',
+      `ENDE. Danke fürs Spielen von Aetherion: Chronik der Sphären!  Spielzeit: ${Math.trunc(S.playTime / 60)} Min.`]);
     S.flags.boss_rauschen = true;
+    this.musicOverride = null;
     await this.fade(1.0);
     this.loadMap('hub', { x: 12, y: 12 });
     this.saveGame();
@@ -401,7 +454,7 @@ export class Game {
     this.loadMap('hub', { x: 12, y: 12 });
     await this.view.ready?.();
     await this.fade(0.0);
-    await this.say(['Ihr wacht im Funkhafen auf. Der Heilbrunnen hat euch zusammengeflickt – nur die Hälfte der Münzen ist weg.']);
+    await this.say(['Ihr erwacht in Hafenau an der Quelle. Eure Wunden sind geheilt, doch die Hälfte der Münzen ist verloren.']);
   }
 
   // ---------------------------------------------------------------- Menü
@@ -412,8 +465,9 @@ export class Game {
     this.setTouch(false);
     this.clearDirs();
     while (true) {
-      const r = await this.choose(['Status', 'Items', 'Speichern', 'Titel', 'Zurück'], true);
-      if (r === -1 || r === 4) break;
+      const r = await this.choose(['Status', 'Items', 'Speichern', 'Titel', `Musik: ${this.audio?.on === false ? 'aus' : 'an'}`, 'Zurück'], true);
+      if (r === -1 || r === 5) break;
+      if (r === 4) { if (this.audio) { this.audio.setOn(!this.audio.on); this.onAudio?.(this.audio.on); } continue; }
       if (r === 0) {
         if (this.ui.status) await this.ui.status(this.statusData());
         else {
@@ -509,10 +563,13 @@ export class Game {
 
   async runBattle(ids, bg) {
     const S = this.S;
+    this.sfx('encounter');
     await this.fade(1.0, 0.18);
     this.ui.msg('');
     this.mode = M.BATTLE;
+    this.pickMusic();
     S.enemies = ids.map(id => L.makeEnemy(S, id));
+    this.battleMusic = ids[0] === 'rauschen' ? 'final' : (S.enemies[0].boss ? 'boss' : 'battle');
     for (const h of S.party) { h.ip = 0; h.down = h.hp <= 0; }
     await this.view.battleBegin?.(bg, S.enemies, S.party);
     this.setTouch(false);
@@ -649,6 +706,7 @@ export class Game {
   hitEnemy(e, dmg, fx = 'slash') {
     const S = this.S;
     e.hp = Math.max(0, e.hp - dmg);
+    this.sfx(fx === 'magic' ? 'magic' : 'hit');
     const i = S.enemies.indexOf(e);
     this.view.battleEnemy?.(i, 'hurt');
     this.view.battleFx?.(fx, 'enemy', i);
@@ -657,6 +715,7 @@ export class Game {
   hurtHero(h, dmg, heavy = false) {
     const S = this.S;
     h.hp = Math.max(0, h.hp - dmg);
+    this.sfx(heavy ? 'heavy' : 'hit');
     h.ip = Math.min(100, h.ip + (heavy ? 22 : 12));
     const i = S.party.indexOf(h);
     this.ui.floatHero?.(i, String(dmg), '#ff7373');
@@ -708,7 +767,7 @@ export class Game {
         }
         await this.bmsg(`${h.name}: ${d.name}!`, 0.5);
         this.view.battleHero?.(hi, d.kind === 'phys' ? 'attack' : 'cast', c.t && S.enemies.includes(c.t) ? S.enemies.indexOf(c.t) : -1);
-        if (isIp) this.view.battleFx?.('special', 'hero', hi);
+        if (isIp) { this.view.battleFx?.('special', 'hero', hi); this.sfx('special'); }
         await this.wait(0.3);
         if (d.kind === 'heal') {
           let tg = d.all ? L.aliveHeroes(S) : [c.t];
@@ -720,6 +779,7 @@ export class Game {
             const amt = d.mult > 50.0 ? L.mhp(S, t) - t.hp : Math.trunc((L.stat(S, h, 'mag') * d.mult + 12) * this.rng.range(0.95, 1.05));
             t.hp = Math.min(L.mhp(S, t), t.hp + amt);
             const ti = S.party.indexOf(t);
+            this.sfx('heal');
             this.ui.floatHero?.(ti, '+' + amt, '#66ff99');
             this.view.battleFx?.('heal', 'hero', ti);
             if (t.down && t.hp > 0) { t.down = false; this.view.battleHero?.(ti, 'idle'); }
@@ -749,7 +809,7 @@ export class Game {
       if (e.hp <= 0 && !e.dead) {
         e.dead = true;
         this.view.battleEnemyDown?.(S.enemies.indexOf(e));
-        await this.bmsg(`${e.name} wird zu Rauschen!`, 0.6);
+        await this.bmsg(`${e.name} zerfällt zu Staub!`, 0.6);
       }
     }
   }
@@ -800,6 +860,9 @@ export class Game {
     xp = L.victoryExp(S, xp);
     S.gold += gd;
     this.view.battleFx?.('victory');
+    this.musicOverride = 'none';
+    this.pickMusic();
+    this.sfx('victory');
     this.view.battleHero?.(-1, 'victory');
     await this.bmsg(`Sieg!  +${xp} EXP  +${gd} Münzen`, 1.0);
     if (this.rng.randf() < 0.25) {
@@ -809,8 +872,9 @@ export class Game {
     for (const h of S.party) {
       h.down = false;
       if (h.hp <= 0) continue;
-      for (const lv of L.gainExp(S, h, xp)) await this.bmsg(`${h.name} erreicht Stufe ${lv}!`, 0.9);
+      for (const lv of L.gainExp(S, h, xp)) { this.sfx('levelup'); await this.bmsg(`${h.name} erreicht Stufe ${lv}!`, 0.9); }
     }
+    this.musicOverride = null;
   }
 
   // Debug (nur mit ?debug): F9 Kampf, F8 nächste Karte

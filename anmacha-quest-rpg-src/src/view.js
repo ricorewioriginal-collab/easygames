@@ -5,6 +5,24 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import { GTAOPass } from 'three/examples/jsm/postprocessing/GTAOPass.js';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+
+// Farbabstimmung wie im Kino: etwas mehr Kontrast und Sättigung, kühle Schatten, warme Lichter
+const GradeShader = {
+  uniforms: { tDiffuse: { value: null }, amt: { value: 1 } },
+  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: `uniform sampler2D tDiffuse; uniform float amt; varying vec2 vUv;
+    void main(){
+      vec4 t = texture2D(tDiffuse, vUv); vec3 c = t.rgb;
+      float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
+      vec3 g = mix(vec3(l), c, 1.14);
+      g = (g - 0.5) * 1.07 + 0.5;
+      g += mix(vec3(-0.012, 0.004, 0.03), vec3(0.03, 0.012, -0.02), smoothstep(0.15, 0.85, l));
+      gl_FragColor = vec4(mix(c, clamp(g, 0.0, 1.0), amt), t.a);
+    }`
+};
 import { THEMES, ENEMIES } from './data.js';
 import * as L from './logic.js';
 import * as A from './assets.js';
@@ -52,6 +70,8 @@ export const QUALITY = [
   { dpr: 1.5, shadow: 1024, bloom: true, samples: 0, grass: 7, parts: 260 },
   { dpr: 2, shadow: 2048, bloom: true, samples: 4, grass: 16, parts: 420 }];
 const WATER_LEVEL = -0.2;
+// Kamerastufen: [Neigung, Abstand] – nah hinter dem Helden bis Übersicht
+export const CAM_ZOOM = [[0.22, 4.8], [0.36, 6.8], [0.6, 10.5], [0.9, 15]];
 const C = (c) => new THREE.Color(c);
 const smooth = (t) => t * t * (3 - 2 * t);
 function vhash(x, y) { const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return s - Math.floor(s); }
@@ -89,6 +109,7 @@ export class View {
     this.dyn = new Map();
     this.camTarget = new THREE.Vector3();
     this.camInit = false;
+    this.camYaw = 0; this.camYawT = 0; this.camPitch = 0.4; this.camD = 7; this.camZoom = 1; this.camKeys = 0; this.cine = null;
     this.shakeT = 0;
     this.labels = [];
     this.dying = [];
@@ -104,15 +125,25 @@ export class View {
     this.renderer.setPixelRatio(Math.min(devicePixelRatio || 1, Q.dpr));
     this.renderer.shadowMap.enabled = Q.shadow > 0;
     if (this.composer) { this.composer.dispose?.(); this.composer = null; }
+    this.gtao?.dispose?.(); this.gtao = null;
     if (Q.bloom) {
       const size = this.renderer.getDrawingBufferSize(new THREE.Vector2());
       const rt = new THREE.WebGLRenderTarget(Math.max(1, size.x), Math.max(1, size.y), { type: THREE.HalfFloatType, samples: Q.samples });
       this.composer = new EffectComposer(this.renderer, rt);
       this.renderPass = new RenderPass(this.world, this.camera);
       this.composer.addPass(this.renderPass);
+      this.gtao = null;
+      if (this.qi >= 2) {
+        // Umgebungsverdeckung: Ecken, Fugen und Kontaktschatten (nur auf starken Geräten)
+        this.gtao = new GTAOPass(this.world, this.camera, size.x, size.y);
+        this.gtao.updateGtaoMaterial({ radius: 0.5, distanceExponent: 1.5, thickness: 1, scale: 1 });
+        this.gtao.blendIntensity = 0.85;
+        this.composer.addPass(this.gtao);
+      }
       this.bloom = new UnrealBloomPass(new THREE.Vector2(size.x, size.y), 0.45, 0.55, 0.88);
       this.composer.addPass(this.bloom);
       this.composer.addPass(new OutputPass());
+      this.composer.addPass(new ShaderPass(GradeShader));
     }
   }
   setQuality(qi) {
@@ -165,6 +196,7 @@ export class View {
     scene.userData.sky = sky;
     scene.background = null;
     scene.fog = new THREE.FogExp2(C(v.sky[1]).lerp(C(v.sky[2]), v.out ? 0.15 : 0.5), v.fog);
+    if (v.out && this.hdrEnv) this.envCache[theme] = this.hdrEnv;
     if (!this.envCache[theme]) {
       const es = new THREE.Scene();
       es.add(makeSky(v.sky[0], v.sky[1], v.sky[2], sunDir, v.sunC, 3));
@@ -196,6 +228,17 @@ export class View {
       sun.target.position.z = Math.round(sun.target.position.z / s) * s;
       sun.position.copy(sun.target.position).addScaledVector(sun.userData.dir, 30);
     }
+  }
+
+  // Echtes HDR-Umgebungslicht (Poly Haven „Spruit Sunrise“, CC0) für Szenen unter freiem Himmel
+  async loadHdr() {
+    try {
+      const tex = await new RGBELoader().loadAsync('./env/spruit_sunrise_1k.hdr');
+      tex.mapping = THREE.EquirectangularReflectionMapping;
+      this.hdrEnv = this.pmrem.fromEquirectangular(tex).texture;
+      tex.dispose();
+      for (const k of ['town', 'schlager', 'xmas']) delete this.envCache[k];
+    } catch (e) { console.warn('HDR', e); }
   }
 
   // ---------------------------------------------------------------- Modus
@@ -246,7 +289,7 @@ export class View {
     await Promise.all([...need].map(async p => { models[p] = await A.load(p); }));
     if (token !== this.buildToken) return;
     this.clearWorld();
-    const { sunDir, v } = this.setupSky(this.world, theme, 15);
+    const { sunDir, v } = this.setupSky(this.world, theme, this.qi >= 2 ? 22 : 16);
     this.theme = theme;
     this.renderer.toneMappingExposure = v.expo;
     const outdoorMap = map.world || S.mapId === 'hub';
@@ -294,7 +337,7 @@ export class View {
       } else if ('hHDSM'.includes(ch)) bld.set(tx + ',' + ty, ch);
     }
     for (const [path, list] of groups) this.addInstances(this.world, models[path], list, path.includes('tree') || path.includes('pine'), path.endsWith('road.glb'));
-    // Häuser (Funkhafen): zusammenhängende Dachreihen
+    // Häuser (Hafenau): zusammenhängende Dachreihen
     let bi = 0;
     const done = new Set();
     for (let ty = 0; ty < S.mh; ty++) for (let tx = 0; tx < S.mw; tx++) {
@@ -889,7 +932,7 @@ export class View {
     const S = this.g.S;
     const cam = this.camera;
     if (title) {
-      // Titel: langsame Kamerafahrt über den Funkhafen
+      // Titel: langsame Kamerafahrt über Hafenau
       const a = this.t * 0.08;
       const c = new THREE.Vector3(S.mw / 2, 0.5, S.mh / 2 + 0.5);
       this.camTarget.copy(c);
@@ -898,29 +941,64 @@ export class View {
       this.placeSun(this.world, c);
       return;
     }
+    // Verfolgerkamera hinter dem Helden: drehbar (Maus ziehen, Wischen, Q/E, rechter Stick), zoombar (Mausrad, Zwei-Finger, Z)
     const pp = S.ppos;
-    let tx = pp.x + 0.5, tz = pp.y + 0.5;
-    // Sichtbereich aus der Kamera berechnen: Kartenrand möglichst füllen, Spieler aber immer sichtbar halten
-    const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
-    const half = cam.fov * Math.PI / 360, down = Math.atan2(10.8, 8.4);
-    const far = 10.8 / Math.tan(Math.max(0.05, down - half)) - 8.4, near = 8.4 - 10.8 / Math.tan(down + half);
-    const halfW = Math.max(2.5, Math.tan(half) * cam.aspect * 13.7 * 0.9);
-    tx = S.mw > halfW * 2 ? clamp(tx, halfW, S.mw - halfW) : S.mw / 2;
-    tz = S.mh > far + near ? clamp(tz, far - 0.5, S.mh - near) : S.mh / 2;
-    tx = clamp(tx, pp.x + 0.5 - halfW + 1.2, pp.x + 0.5 + halfW - 1.2);
-    tz = clamp(tz, pp.y + 0.5 - near + 1.3, pp.y + 0.5 + far - 1.3);
-    const tgt = new THREE.Vector3(tx, 0.3, tz);
-    if (!this.camInit) { this.camTarget.copy(tgt); this.camInit = true; }
-    else this.camTarget.lerp(tgt, Math.min(1, dt * 6));
-    cam.position.copy(this.camTarget).add(new THREE.Vector3(0, 10.8, 8.4));
+    const cine = this.cine;
+    const tgt = cine ? new THREE.Vector3(cine.x, cine.h ?? 0.9, cine.z) : new THREE.Vector3(pp.x + 0.5, this.heightAt(pp.x + 0.5, pp.y + 0.5) + 0.9, pp.y + 0.5);
+    if (this.camKeys) this.camYawT += this.camKeys * dt * 2.2;
+    const yawT = cine && cine.yaw !== undefined ? cine.yaw : this.camYawT;
+    let dy = yawT - this.camYaw;
+    dy = Math.atan2(Math.sin(dy), Math.cos(dy));
+    const k = Math.min(1, dt * (cine ? 2.2 : 8));
+    this.camYaw += dy * k;
+    const z = CAM_ZOOM[this.camZoom];
+    const pitch = cine ? (cine.pitch ?? 0.32) : z[0];
+    const wantD = cine ? (cine.dist ?? 6) : z[1];
+    // Hindernisse zwischen Held und Kamera: erst steiler von oben schauen, notfalls heranrücken
+    const clearAt = (pt, dist) => {
+      const cx = Math.sin(this.camYaw) * Math.cos(pt), cz = Math.cos(this.camYaw) * Math.cos(pt), cy = Math.sin(pt);
+      for (let s = 0.6; s < dist; s += 0.25) if (tgt.y + cy * s < this.obstacleAt(tgt.x + cx * s, tgt.z + cz * s) + 0.25) return s;
+      return 0;
+    };
+    let usePitch = pitch, d = wantD;
+    if (!cine) {
+      for (let pt = pitch; pt <= 1.25; pt += 0.08) { usePitch = pt; if (!clearAt(pt, wantD)) break; }
+      const hit = clearAt(usePitch, wantD);
+      if (hit) d = Math.max(1.6, hit - 0.35);
+    }
+    this.camPitch += (usePitch - this.camPitch) * Math.min(1, dt * 5);
+    const dirX = Math.sin(this.camYaw) * Math.cos(this.camPitch), dirZ = Math.cos(this.camYaw) * Math.cos(this.camPitch), dirY = Math.sin(this.camPitch);
+    if (!this.camInit) { this.camTarget.copy(tgt); this.camD = d; this.camInit = true; }
+    else { this.camTarget.lerp(tgt, Math.min(1, dt * (cine ? 2.5 : 9))); this.camD += (d - this.camD) * Math.min(1, dt * (d < this.camD ? 14 : 3)); }
+    cam.position.set(this.camTarget.x + dirX * this.camD, this.camTarget.y + dirY * this.camD, this.camTarget.z + dirZ * this.camD);
+    const gy = this.heightAt(cam.position.x, cam.position.z) + 0.35;
+    if (cam.position.y < gy) cam.position.y = gy;
     if (this.shakeT > 0) { this.shakeT -= dt; cam.position.x += (Math.random() - 0.5) * 0.15; cam.position.y += (Math.random() - 0.5) * 0.1; }
-    cam.lookAt(this.camTarget);
-    this.placeSun(this.world, this.camTarget);
+    cam.lookAt(this.camTarget.x, this.camTarget.y + 0.25, this.camTarget.z);
+    // Schattenbereich vor die Kamera legen (dort, wo man hinschaut)
+    this._sunC = (this._sunC || new THREE.Vector3()).set(this.camTarget.x - dirX * 5, 0, this.camTarget.z - dirZ * 5);
+    this.placeSun(this.world, this._sunC);
   }
+  // Höhe der Hindernisse eines Feldes (für die Kamera)
+  obstacleAt(x, z) {
+    const S = this.g.S, tx = Math.floor(x), ty = Math.floor(z);
+    if (tx < 0 || ty < 0 || tx >= S.mw || ty >= S.mh) return S.map.world || S.mapId === 'hub' ? -1 : 1.3;
+    const ch = S.map.rows[ty][tx];
+    const g = this.heightAt(x, z);
+    if (ch === '#') return 1.3;
+    if ('hHDSM'.includes(ch)) return 3.2;
+    if (ch === 'T') return g + 1.6;
+    return g;
+  }
+  // Bildschirmrichtung → Kartenrichtung (nächste Himmelsrichtung zur Kamera)
+  camQuad() { return ((Math.round(this.camYaw / (Math.PI / 2)) % 4) + 4) % 4; }
+  rotateCam(a) { this.camYawT += a; }
+  zoomCam(d) { this.camZoom = Math.max(0, Math.min(CAM_ZOOM.length - 1, this.camZoom + d)); this.onCam?.(); }
   render(scene) {
     if (this.composer) {
       this.renderPass.scene = scene;
       this.renderPass.camera = this.camera;
+      if (this.gtao) { this.gtao.scene = scene; this.gtao.camera = this.camera; }
       this.composer.render();
     } else this.renderer.render(scene, this.camera);
   }

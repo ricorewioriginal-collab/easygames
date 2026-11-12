@@ -4,14 +4,16 @@
     {
       "t": "Ziel des Spiels",
       "p": [
-        "AnMaCha Quest RPG ist ein Rollenspiel in modernem 3D für PC und Handy mit rundenbasierten Kämpfen. Die Spielzeit liegt bei etwa 1,5 bis 2,5 Stunden.",
-        "Im Land Frequenzia durchquerst du vier Musik-Reiche – Rap, Schlager, Weihnachten und Rock –, besiegst deren Bosse und stellst dich am Ende im Rauschen-Turm dem Großen Rauschen. Unterwegs schließen sich dir neue Mitstreiter an. Ausgangspunkt ist die Stadt Funkhafen."
+        "Aetherion – Chronik der Sphären ist ein Rollenspiel in modernem 3D für PC und Handy mit rundenbasierten Kämpfen. Die Spielzeit liegt bei etwa 1,5 bis 2,5 Stunden.",
+        "Im Land Aetherion durchquerst du vier Reiche der Verfemten – Echogruft, Rosenhain, Frostgrotte und Glutschlund –, besiegst deren Bosse und stellst dich am Ende im Turm der Stille Nihl. Unterwegs schließen sich dir neue Mitstreiter an. Ausgangspunkt ist die Stadt Hafenau."
       ]
     },
     {
       "t": "Steuerung",
       "list": [
         "Laufen – PC: Pfeiltasten oder W A S D. Handy: Steuerkreuz unten links; Finger aufsetzen und in die Richtung schieben, auch gleitend wechseln; Loslassen stoppt.",
+        "Kamera – PC: Q/E oder mit gedrückter Maus ziehen dreht den Blick, R/F oder Mausrad zoomt. Handy: auf freier Fläche wischen dreht, zwei Finger zoomen. Controller: rechter Stick oder LB/RB dreht, LT/RT zoomt. Die Laufrichtung richtet sich nach dem Blick.",
+        "Musik an/aus – im Menü unter „Musik“.",
         "Bestätigen und Weiterlesen – PC: Leertaste, Enter oder Z (oder Mausklick auf das Textfeld). Handy: Textfeld antippen.",
         "Zurück und Abbrechen – PC: Esc, X oder Backspace. Handy: Menüpunkt „Zurück“.",
         "Menü öffnen – PC: Esc, M oder Tab. Handy: Taste MENÜ oben rechts.",
@@ -39,33 +41,33 @@
         "Schwert (Mitte) – Angriff: normaler Angriff auf einen Gegner.",
         "Stab (oben) – Fertigkeit: Spezialfähigkeit des Helden, kostet SP.",
         "Flamme (unten) – Spezial: mächtiger Angriff, kostet IP; nur möglich, wenn die IP-Leiste voll genug ist.",
-        "Beutel (links) – Item: Trank, Ätherchip oder Weckruf einsetzen.",
+        "Beutel (links) – Item: Trank, Äthertropfen oder Lebensfeder einsetzen.",
         "Schild (rechts) – Wache: Schaden in dieser Runde halbieren.",
         "Stiefel (Ecke rechts unten) – Flucht: mit etwa 65 Prozent Chance entkommen; gegen Bosse unmöglich. Monster auf der Karte sind danach kurz betäubt.",
         "IP-Leiste: Sie füllt sich, wenn ein Held Schaden nimmt (bei starken Treffern mehr). Zu Beginn jedes Kampfes ist sie leer.",
         "Sieg: Erfahrung (EXP), Münzen und manchmal ein Trank. Sind deine Helden schwächer als das Gebiet, gibt es Bonus-EXP.",
-        "Niederlage: Ihr wacht in Funkhafen auf, voll geheilt, aber mit halbierten Münzen."
+        "Niederlage: Ihr wacht in Hafenau auf, voll geheilt, aber mit halbierten Münzen."
       ]
     },
     {
       "t": "Die Helden",
       "list": [
-        "Andrew – Held, ausgewogen. Fertigkeiten: Wuchtschlag (4 SP), Rundumschlag (8 SP, trifft alle). Spezial: Funkenhieb (40 IP), riesiger Einzelschlag. Dabei ab Start.",
-        "Marco – Magier mit hohem Schaden. Fertigkeiten: Funkenblitz (4 SP), Störwelle (9 SP, alle). Spezial: Supernova (60 IP), Magie auf alle Gegner. Dabei ab Start.",
-        "Teresa – Heilerin. Fertigkeiten: Heilton (4 SP, ein Held), Chorus (9 SP, alle). Spezial: Segenssong (50 IP), heilt alle voll und belebt Gefallene. Dabei nach dem Sieg im Bass-Keller.",
-        "Rico – Schütze, sehr schnell. Fertigkeiten: Doppelschuss (5 SP, 2 Treffer), Streufeuer (8 SP, alle). Spezial: Salvenfeuer (50 IP), alle Gegner. Dabei nach dem Sieg auf der Glitzerwiese.",
-        "Andy – Wächter mit hoher Abwehr. Fertigkeiten: Schildschlag (3 SP), Bollwerk (7 SP, das ganze Team nimmt halben Schaden). Spezial: Titanenschlag (40 IP), Einzelschlag. Dabei nach dem Sieg in der Frosthöhle.",
-        "Neue Mitstreiter warten in Funkhafen (Ansage beim Betreten der Stadt) und steigen auf der Durchschnittsstufe der Gruppe ein."
+        "Aren – Held, ausgewogen. Fertigkeiten: Wuchtschlag (4 SP), Rundumschlag (8 SP, trifft alle). Spezial: Sternenhieb (40 IP), riesiger Einzelschlag. Dabei ab Start.",
+        "Silas – Magier mit hohem Schaden. Fertigkeiten: Blitzfunke (4 SP), Ätherwelle (9 SP, alle). Spezial: Supernova (60 IP), Magie auf alle Gegner. Dabei ab Start.",
+        "Lyra – Heilerin. Fertigkeiten: Heillicht (4 SP, ein Held), Segenskreis (9 SP, alle). Spezial: Lebenshymne (50 IP), heilt alle voll und belebt Gefallene. Dabei nach dem Sieg in der Echogruft.",
+        "Fenn – Schütze, sehr schnell. Fertigkeiten: Doppelschuss (5 SP, 2 Treffer), Streufeuer (8 SP, alle). Spezial: Salvenfeuer (50 IP), alle Gegner. Dabei nach dem Sieg im Rosenhain.",
+        "Borin – Wächter mit hoher Abwehr. Fertigkeiten: Schildschlag (3 SP), Bollwerk (7 SP, das ganze Team nimmt halben Schaden). Spezial: Titanenschlag (40 IP), Einzelschlag. Dabei nach dem Sieg in der Frostgrotte.",
+        "Neue Mitstreiter warten in Hafenau (Ansage beim Betreten der Stadt) und steigen auf der Durchschnittsstufe der Gruppe ein."
       ]
     },
     {
-      "t": "Funkhafen",
+      "t": "Hafenau",
       "list": [
-        "Alte Antenne (Platzmitte): erklärt den Fortschritt und was als Nächstes zu tun ist.",
-        "Tonia (vor dem Haus oben links der Mitte), Händlerin: Trank 20 M (heilt 70 LP), Ätherchip 60 M (+20 SP), Weckruf 120 M (belebt einen Helden).",
-        "Ausrüstung bei Tonia: erhöht Angriff, Abwehr und Magie aller Helden sowie die LP. Preis: 120 M × (Stufe + 1)², höchstens Stufe 6 – jede Stufe ist also deutlich teurer als die vorige.",
-        "Heilbrunnen (rechts der Mitte): füllt LP und SP aller Helden kostenlos komplett auf und speichert zugleich.",
-        "Lotte und Wache Piet geben Tipps.",
+        "Älteste Ysolde (Platzmitte): erklärt den Fortschritt und was als Nächstes zu tun ist.",
+        "Mara (vor dem Haus oben links der Mitte), Händlerin: Trank 20 M (heilt 70 LP), Äthertropfen 60 M (+20 SP), Lebensfeder 120 M (belebt einen Helden).",
+        "Ausrüstung bei Mara: erhöht Angriff, Abwehr und Magie aller Helden sowie die LP. Preis: 120 M × (Stufe + 1)², höchstens Stufe 6 – jede Stufe ist also deutlich teurer als die vorige.",
+        "Heilquelle (rechts der Mitte): füllt LP und SP aller Helden kostenlos komplett auf und speichert zugleich.",
+        "Pip und Wache Holm geben Tipps.",
         "Ausgang: der südliche Weg führt auf die Weltkarte."
       ]
     },
@@ -74,7 +76,7 @@
       "list": [
         "Items: Gegenstände außerhalb des Kampfes einsetzen.",
         "Status: Stufe, LP, SP, Werte und EXP jedes Helden.",
-        "Speichern: von Hand speichern. Automatisch gespeichert wird beim Betreten von Funkhafen, nach jedem Boss und am Heilbrunnen.",
+        "Speichern: von Hand speichern. Automatisch gespeichert wird beim Betreten von Hafenau, nach jedem Boss und an der Heilquelle.",
         "Titel: zurück zum Titelbild (speichert vorher). Dort geht es mit „Fortsetzen“ weiter.",
         "Es gibt nur einen Spielstand. Ohne Anmeldung liegt er nur lokal im Browser dieses Geräts; mit dem runden Knopf „Mit Google speichern“ wird er zusätzlich im Google-Konto gesichert und lässt sich über „Spielstand mit Google wiederherstellen“ zurückholen, auch auf anderen Geräten. „Neues Spiel“ überschreibt ihn."
       ]
@@ -84,21 +86,21 @@
     {
       "t": "Tipps für Einsteiger",
       "list": [
-        "Sprich zuerst mit der Alten Antenne und kauf bei Tonia ein paar Tränke.",
-        "Die ersten Gegner sind absichtlich schwach, damit Andrew und Marco schnell Stufen sammeln. Bei niedrigen Stufen greifen höchstens zwei Gegner gleichzeitig an.",
+        "Sprich zuerst mit der Ältesten Ysolde und kauf bei Mara ein paar Tränke.",
+        "Die ersten Gegner sind absichtlich schwach, damit Aren und Silas schnell Stufen sammeln. Bei niedrigen Stufen greifen höchstens zwei Gegner gleichzeitig an.",
         "Monster sind langsamer als du und lassen sich umlaufen – du musst nicht jeden Kampf annehmen.",
         "Wer in eine Sackgasse gerät, kommt jederzeit über den Ausgang (Wirbel links unten im Dungeon) zurück zur Weltkarte.",
-        "Vor jedem Boss: heilen (Brunnen oder Tränke), Ausrüstung prüfen, Weckruf einpacken."
+        "Vor jedem Boss: heilen (Brunnen oder Tränke), Ausrüstung prüfen, Lebensfeder einpacken."
       ]
     },
     {
       "t": "Kampfstrategie",
       "list": [
-        "Bosse setzen alle 3 Runden einen Spezialangriff gegen die ganze Gruppe ein. Nutze in dieser Runde Wache, um den Schaden zu halbieren – oder Andys Bollwerk für das ganze Team.",
-        "Gegen Gruppen: Rundumschlag, Störwelle und Streufeuer treffen alle Gegner. Gegen einzelne starke Gegner: Wuchtschlag, Funkenblitz, Doppelschuss.",
-        "Teresa ist die Lebensversicherung: Chorus nach dem großen Boss-Angriff, Heilton für einzelne Helden.",
+        "Bosse setzen alle 3 Runden einen Spezialangriff gegen die ganze Gruppe ein. Nutze in dieser Runde Wache, um den Schaden zu halbieren – oder Borins Bollwerk für das ganze Team.",
+        "Gegen Gruppen: Rundumschlag, Ätherwelle und Streufeuer treffen alle Gegner. Gegen einzelne starke Gegner: Wuchtschlag, Blitzfunke, Doppelschuss.",
+        "Lyra ist die Lebensversicherung: Segenskreis nach dem großen Boss-Angriff, Heillicht für einzelne Helden.",
         "Die IP-Leiste füllt sich nur durch erlittenen Schaden. In langen Bosskämpfen kommen die Spezialangriffe deshalb meist in der zweiten Hälfte – plane sie als entscheidenden Schlag ein.",
-        "Rico ist sehr schnell und handelt oft vor den Gegnern – ideal, um angeschlagene Feinde zu erledigen, bevor sie zuschlagen."
+        "Fenn ist sehr schnell und handelt oft vor den Gegnern – ideal, um angeschlagene Feinde zu erledigen, bevor sie zuschlagen."
       ]
     },
     {
@@ -106,18 +108,18 @@
       "list": [
         "Bonus-EXP: Sind deine Helden schwächer als das Gebiet, holen sie schnell auf. Es lohnt sich, im neuen Reich ein paar Kämpfe mehr zu machen.",
         "Spare Münzen für die Ausrüstung. Sie wirkt auf alle Helden gleichzeitig und ist vor dem Endboss das Wichtigste.",
-        "Ätherchips (+20 SP) halten Marco und Teresa im Bosskampf einsatzbereit.",
+        "Äthertropfen (+20 SP) halten Silas und Lyra im Bosskampf einsatzbereit.",
         "Nach einer Niederlage sind die Münzen halbiert – speichere am Brunnen und gib Geld lieber vor einem riskanten Kampf aus.",
-        "Hebe im Endkampf die IP für Teresas Segenssong auf: Er heilt alle voll und belebt Gefallene."
+        "Hebe im Endkampf die IP für Lyras Lebenshymne auf: Er heilt alle voll und belebt Gefallene."
       ]
     },
     {
       "t": "Häufige Fehler",
       "list": [
-        "Den Boss ansprechen, bevor die Gruppe geheilt ist – geheilt wird am Brunnen in Funkhafen oder mit Tränken.",
+        "Den Boss ansprechen, bevor die Gruppe geheilt ist – geheilt wird am Brunnen in Hafenau oder mit Tränken.",
         "Mit zu niedriger Stufe ins nächste Reich gehen. Faustregel: die empfohlene Stufe sollte erreicht sein.",
         "Fliehen wollen gegen Bosse – das geht nicht.",
-        "Keinen Weckruf dabeihaben, wenn ein Held fällt."
+        "Keinen Lebensfeder dabeihaben, wenn ein Held fällt."
       ]
     }
   ],
@@ -125,13 +127,13 @@
     {
       "t": "Ablauf der Geschichte",
       "steps": [
-        "Start in Funkhafen mit Andrew und Marco. Sprich mit der Alten Antenne, kaufe Tränke bei Tonia und verlass die Stadt über den südlichen Weg.",
-        "Weltkarte „Frequenzia“: Funkhafen liegt unten in der Mitte. Fünf weitere Eingänge werden nacheinander freigeschaltet.",
-        "Reich 1 – Bass-Keller (Rap), Höhle im Westen (links unten). Boss: MC Dröhn. Danach wartet Teresa in Funkhafen.",
-        "Reich 2 – Glitzerwiese (Schlager), Höhle im Osten (rechts unten). Boss: Königin Schunkel. Danach stößt Rico dazu.",
-        "Reich 3 – Frosthöhle (Weihnachten), Höhle links oben. Boss: Der Frost-Moderator. Danach stößt Andy dazu.",
-        "Reich 4 – Vulkanbühne (Rock), Höhle rechts oben. Boss: Riff-Titan.",
-        "Rauschen-Turm, oben in der Mitte (öffnet sich nach den vier Reichen). Endboss: Das Große Rauschen.",
+        "Start in Hafenau mit Aren und Silas. Sprich mit der Ältesten Ysolde, kaufe Tränke bei Mara und verlass die Stadt über den südlichen Weg.",
+        "Weltkarte „Aetherion“: Hafenau liegt unten in der Mitte. Fünf weitere Eingänge werden nacheinander freigeschaltet.",
+        "Reich 1 – Echogruft, Höhle im Westen (links unten). Boss: Vorgal der Grollende. Danach wartet Lyra in Hafenau.",
+        "Reich 2 – Rosenhain, Höhle im Osten (rechts unten). Boss: Seraphine, die Dornenkönigin. Danach stößt Fenn dazu.",
+        "Reich 3 – Frostgrotte, Höhle links oben. Boss: Kryos, der Eisfürst. Danach stößt Borin dazu.",
+        "Reich 4 – Glutschlund, Höhle rechts oben. Boss: Pyrax.",
+        "Turm der Stille, oben in der Mitte (öffnet sich nach den vier Reichen). Endboss: Nihl.",
         "Nach jedem Boss glüht ein Kristall auf, der nächste Eingang öffnet sich und das Spiel speichert."
       ]
     },
@@ -150,31 +152,31 @@
     {
       "t": "Komplettlösung der Reiche",
       "list": [
-        "Bass-Keller · empfohlene Stufe 3 · Schlüssel-Truhe links oben (obere Hälfte, linkes Drittel) · Tränke Mitte oben · Münzen oben rechts von der Mitte · Gegner: Beat-Bandit, Reim-Rüpel, Bass-Golem, Boombox-Mimik, Graffiti-Geist, Mikrofon-Spinne.",
-        "Glitzerwiese · Stufe 8 · Schlüssel-Truhe ganz unten rechts · Tränke in der Mitte · Münzen oben links · Gegner: Glitzer-Schnecke, Schunkel-Schleim, Akkordeon-Mönch, Disco-Fledermaus, Herz-Ritter, Zuckerwatte-Geist.",
-        "Frosthöhle · Stufe 13 · Schlüssel-Truhe links in der Mitte · Tränke rechts in der Mitte · Münzen oben links · Gegner: Glöckchen-Geist, Lebkuchen-Golem, Schneemann-Wicht, Eisratte, Eis-Spinne, Zipfel-Zwerg.",
-        "Vulkanbühne · Stufe 18 · Schlüssel-Truhe rechts der Mitte · Tränke oben Mitte · Münzen unten rechts · Gegner: Gitarren-Gargoyle, Moshpit-Ratte, Verstärker-Schnecke, Riff-Fledermaus, Headbanger-Dämon, Roadie-Geist.",
-        "Rauschen-Turm · Stufe 23 · Schlüssel-Truhe unten Mitte · Tränke in der Mitte · Münzen oben Mitte · Gegner: Statik-Schemen, Störsignal, Pegel-Kreischer, Antennen-Spinne, Rausch-Ritter, Pixel-Zyklop."
+        "Echogruft · empfohlene Stufe 3 · Schlüssel-Truhe links oben (obere Hälfte, linkes Drittel) · Tränke Mitte oben · Münzen oben rechts von der Mitte · Gegner: Moospanda, Wildeber, Höhlenyeti, Dornkaktus, Irrlicht, Grottenpinguin.",
+        "Rosenhain · Stufe 8 · Schlüssel-Truhe ganz unten rechts · Tränke in der Mitte · Münzen oben links · Gegner: Rosenkrabbe, Honigschleim, Sporenpilz, Dornbiene, Blütenhirsch, Feenküken.",
+        "Frostgrotte · Stufe 13 · Schlüssel-Truhe links in der Mitte · Tränke rechts in der Mitte · Münzen oben links · Gegner: Frostgeist, Eiswurzler, Schneeyeti, Eisfledermaus, Frostrentier, Eiskobold.",
+        "Glutschlund · Stufe 18 · Schlüssel-Truhe rechts der Mitte · Tränke oben Mitte · Münzen unten rechts · Gegner: Glutdämon, Lavazyklop, Aschenkrieger, Rußfledermaus, Flammenschädel, Magmakraken.",
+        "Turm der Stille · Stufe 23 · Schlüssel-Truhe unten Mitte · Tränke in der Mitte · Münzen oben Mitte · Gegner: Leerwandler, Schattenseher, Stillschreier, Nichtsmotte, Stilleritter, Leerenzyklop."
       ]
     },
     {
       "t": "Alle Bosse und wie du sie besiegst",
       "list": [
-        "MC Dröhn (Bass-Keller): „Bass-Drop“ trifft alle, jede 3. Runde. Du bist nur zu zweit – nimm Tränke mit und nutze in der Runde des Bass-Drops „Wache“.",
-        "Königin Schunkel (Glitzerwiese): „Schlager-Schmalz“ trifft alle. Teresas Chorus nach dem Angriff einsetzen, Marcos Magie für Schaden.",
-        "Der Frost-Moderator (Frosthöhle): „Eiszeit-Jingle“ trifft alle. Vorher Ausrüstung kaufen; Rico ist schnell und eignet sich mit Doppelschuss.",
-        "Riff-Titan (Vulkanbühne): „Feedback-Sturm“ trifft alle, sehr zäh. Andys Bollwerk vor dem Sturm einsetzen und IP-Spezialangriffe sammeln.",
-        "Das Große Rauschen (Rauschen-Turm): „Weißes Rauschen“, der stärkste Gegner. Ausrüstung voll ausbauen (mindestens Stufe 4), Ätherchips und Weckrufe mitnehmen, IP für Segenssong aufheben."
+        "Vorgal der Grollende (Echogruft): „Grollbeben“ trifft alle, jede 3. Runde. Du bist nur zu zweit – nimm Tränke mit und nutze in der Runde des Grollbebens „Wache“.",
+        "Seraphine, die Dornenkönigin (Rosenhain): „Dornenregen“ trifft alle. Lyras Segenskreis nach dem Angriff einsetzen, Silas’ Magie für Schaden.",
+        "Kryos, der Eisfürst (Frostgrotte): „Eiszeit“ trifft alle. Vorher Ausrüstung kaufen; Fenn ist schnell und eignet sich mit Doppelschuss.",
+        "Pyrax (Glutschlund): „Feuersturm“ trifft alle, sehr zäh. Borins Bollwerk vor dem Sturm einsetzen und IP-Spezialangriffe sammeln.",
+        "Nihl (Turm der Stille): „Totenstille“, der stärkste Gegner. Ausrüstung voll ausbauen (mindestens Stufe 4), Äthertropfen und Lebensfedern mitnehmen, IP für Lebenshymne aufheben."
       ]
     },
     {
       "t": "Endkampf-Checkliste",
       "steps": [
         "Alle fünf Helden auf mindestens Stufe 23 bringen.",
-        "Ausrüstung bei Tonia auf mindestens Stufe 4 ausbauen (maximal 6).",
-        "Mehrere Tränke, Ätherchips und Weckrufe kaufen.",
-        "Am Heilbrunnen heilen und speichern.",
-        "Im Kampf: Andy setzt Bollwerk vor dem „Weißen Rauschen“, Teresa heilt mit Chorus, Andrew, Marco und Rico machen Schaden. Segenssong aufheben, falls Helden fallen."
+        "Ausrüstung bei Mara auf mindestens Stufe 4 ausbauen (maximal 6).",
+        "Mehrere Tränke, Äthertropfen und Lebensfedern kaufen.",
+        "An der Heilquelle heilen und speichern.",
+        "Im Kampf: Borin setzt Bollwerk vor dem „Totenstille“, Lyra heilt mit Segenskreis, Aren, Silas und Fenn machen Schaden. Lebenshymne aufheben, falls Helden fallen."
       ]
     }
   ],
@@ -189,7 +191,7 @@
     },
     {
       "q": "Ein Eingang auf der Weltkarte ist rot.",
-      "a": "Rote Eingänge sind noch versiegelt. Sie öffnen sich nacheinander, sobald du den Boss des vorigen Reichs besiegt hast. Die Alte Antenne in Funkhafen sagt dir, was als Nächstes dran ist."
+      "a": "Rote Eingänge sind noch versiegelt. Sie öffnen sich nacheinander, sobald du den Boss des vorigen Reichs besiegt hast. Die Älteste Ysolde in Hafenau sagt dir, was als Nächstes dran ist."
     },
     {
       "q": "Ich verliere ständig. Was tun?",

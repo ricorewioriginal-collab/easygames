@@ -15,7 +15,7 @@ const CARDS = {
   'anmacha-flipper': ['ANMACHA · 3D', ['PINBALL'], '🎱', ['🚀', '⭐']],
   'anmacha-beat-surfer': ['ANMACHA · 3D', ['BEAT', 'SURFER'], '🎧', ['🎵', '🎶']],
   'anmacha-memory': ['ANMACHA', ['MEMORY'], '🧠', ['📻', '🃏']],
-  'anmacha-quest-rpg': ['ANMACHA', ['QUEST', 'RPG'], '⚔️', ['🐉', '🏰']],
+  'anmacha-quest-rpg': ['CHRONIK DER SPHÄREN', ['AETHE-', 'RION'], '⚔️', ['🐉', '🏰']],
   'anmacha-snake': ['ANMACHA · 3D', ['SNAKE', '3D'], '🐍', ['🍎', '💎']],
   'anmacha-tower-defense': ['ANMACHA · 3D', ['TOWER', 'DEFENSE'], '🗼', ['🛡️', '👾']],
   'anmacha-markthalle': ['ANMACHA · 3D', ['MARKTHALLE', '24'], '🛒', ['🥫', '🍎']],

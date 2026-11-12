@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#080b12">
-<title>AnMaCha Quest RPG</title>
+<title>Aetherion – Chronik der Sphären</title>
 <style>
   :root{--y:#ffd24a;--c:#46e6ff;--m:#ff5ad0;--tx:#f1f5ff;--mut:#9fb0cc;--glass:rgba(10,14,30,.72);--line:rgba(255,255,255,.14);--hp:#5ec8ff;--sp:#5cf09a;--ip:#ffd24a}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -107,13 +107,21 @@
   .sk{margin:8px 0 0;font-size:11px;color:var(--mut);text-align:right}
   /* Titel */
   #title{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding-top:calc(5vh + env(safe-area-inset-top));pointer-events:none;background:linear-gradient(180deg,rgba(5,6,20,.55),transparent 45%,transparent 70%,rgba(5,6,20,.6))}
-  #title img{width:min(76vw,560px);height:auto;filter:drop-shadow(0 0 22px rgba(255,170,40,.35)) drop-shadow(0 6px 18px rgba(0,0,0,.5));animation:float 5s ease-in-out infinite}
+  .logo{display:flex;flex-direction:column;align-items:center;font-family:Cinzel,Georgia,serif;animation:float 6s ease-in-out infinite;text-align:center}
+  .logo b{font-weight:900;font-size:clamp(44px,11vw,112px);letter-spacing:.12em;line-height:1;background:linear-gradient(180deg,#fff8dc 0%,#f6d27a 38%,#b8862e 62%,#fff1b8 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 24px rgba(255,190,90,.45)) drop-shadow(0 4px 10px rgba(0,0,0,.7))}
+  .logo small{font-weight:700;font-size:clamp(12px,2.4vw,20px);letter-spacing:.5em;color:#e9e2ff;text-shadow:0 0 12px rgba(150,170,255,.8),0 2px 6px #000;margin-bottom:.3em;padding-left:.5em}
+  .logo i{display:block;width:min(70vw,520px);height:2px;margin-top:.55em;background:linear-gradient(90deg,transparent,#f6d27a,#fff,#f6d27a,transparent);box-shadow:0 0 14px #f6d27a}
+  .lb{position:fixed;left:0;right:0;height:0;background:#000;z-index:2;transition:height .7s cubic-bezier(.6,0,.2,1);pointer-events:none}
+  #lbT{top:0}#lbB{bottom:0}
+  body.cine .lb{height:11vh}
+  body.cine #hud,body.cine #menuBtn,body.cine #joy{opacity:0;pointer-events:none}
+  #banner{font-family:Cinzel,Georgia,serif}
   @keyframes float{50%{transform:translateY(-6px)}}
-  #title p{margin:6px 0 0;color:#ffd6f0;font-weight:700;letter-spacing:.24em;font-size:clamp(11px,2vw,14px);text-shadow:0 2px 8px #000}
+  #title p{margin:10px 0 0;font-family:Cinzel,Georgia,serif;color:#d8d0ff;font-weight:700;letter-spacing:.24em;font-size:clamp(11px,2vw,14px);text-shadow:0 2px 8px #000}
   /* Laden */
-  #load{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(ellipse at 50% 35%,#2a1450,#05082a 70%);transition:opacity .5s;padding:16px;text-align:center}
+  #load{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(ellipse at 50% 35%,#1c2348,#03040c 72%);transition:opacity .5s;padding:16px;text-align:center}
   #load.out{opacity:0;pointer-events:none}
-  #load img{width:min(80vw,520px);filter:drop-shadow(0 0 16px rgba(255,170,40,.3))}
+
   #lbar{width:min(70vw,420px);height:8px;border-radius:6px;background:rgba(255,255,255,.1);overflow:hidden}
   #lfill{height:100%;width:0;background:linear-gradient(90deg,var(--c),var(--m),var(--y));transition:width .2s}
   #ltxt{color:#cfe0ff;font-size:14px}
@@ -129,7 +137,7 @@
 <div id="ui">
   <div id="labels"></div>
   <div id="bars"></div>
-  <div id="title" hidden><img src="logo.png" alt="AnMaCha Quest RPG"></div>
+  <div id="title" hidden><div class="logo"><small>Chronik der Sphären</small><b>AETHERION</b><i></i></div><p>Ein Rollenspiel-Epos</p></div>
   <div id="hud" class="glass" hidden><span id="hudName"></span><span class="g" id="hudGold">0</span></div>
   <button id="menuBtn" class="glass" hidden>MENÜ</button>
   <div id="joy" hidden><div id="knob"></div></div>
@@ -143,9 +151,10 @@
   <div id="floats"></div>
 </div>
 <div id="fade"></div>
+<div id="lbT" class="lb"></div><div id="lbB" class="lb"></div>
 <div id="rot" class="glass show" onclick="this.remove()">📱 Für das beste Bild das Handy quer halten (Tippen zum Schließen)</div>
 <div id="load">
-  <img src="logo.png" alt="AnMaCha Quest RPG">
+  <div class="logo"><small>Chronik der Sphären</small><b>AETHERION</b><i></i></div>
   <div id="lbar"><div id="lfill"></div></div>
   <div id="ltxt">Lade Spielwelt …</div>
   <div id="lerr"></div>
@@ -153,7 +162,7 @@
 <noscript>Bitte JavaScript aktivieren.</noscript>
 <script type="module" src="/src/main.js"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="quest-rpg" data-prefix="anmachaQuest" data-idb="/userfs" data-idb-files="anmacha_quest2" defer></script>
-<script src="../gamepad.js" data-pad-labels="dpad=Bewegen · Auswählen; a=Bestätigen · Aktion; x=Bestätigen; y=Menü; start=Menü" data-pad="a=Enter b=KeyX x=Enter y=KeyM start=KeyM select=KeyM rs=none nonav" defer></script>
+<script src="../gamepad.js" data-pad-labels="dpad=Bewegen · Auswählen; ls=Laufen; rs=Kamera drehen; a=Bestätigen · Aktion; x=Bestätigen; y=Menü; start=Menü; lb=Kamera links; rb=Kamera rechts; lt=Zoom weg; rt=Zoom heran" data-pad="a=Enter b=KeyX x=Enter y=KeyM start=KeyM select=KeyM lb=KeyQ rb=KeyE lt=KeyF rt=KeyR rs=qe nonav" defer></script>
 <script src="../egstat.js" defer></script>
 </body>
 </html>

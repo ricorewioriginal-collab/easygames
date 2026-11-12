@@ -130,14 +130,15 @@ window.EASYGAMES_GUIDES = {
   ]
  },
  "anmacha-quest-rpg": {
-  "anleitung": "Ein Rollenspiel in modernem 3D mit Rundenkämpfen (ca. 1,5 bis 2,5 Stunden). Du durchquerst vier Reiche (Rap, Schlager, Weihnachten, Rock), besiegst deren Bosse und am Ende im Rauschen-Turm Das Große Rauschen. Dabei gewinnst du neue Mitstreiter (Andrew, Marco, Teresa, Rico, Andy). In der Stadt Funkhafen heilst du am Brunnen und kaufst bei Tonia Items und Ausrüstung. Der Spielstand wird lokal im Browser gespeichert.",
+  "anleitung": "Ein Rollenspiel in modernem 3D mit Rundenkämpfen (ca. 1,5 bis 2,5 Stunden). Du durchquerst vier Reiche der Verfemten (Echogruft, Rosenhain, Frostgrotte, Glutschlund), besiegst deren Bosse und am Ende im Turm der Stille Nihl. Dabei gewinnst du neue Mitstreiter (Aren, Silas, Lyra, Fenn, Borin). In der Stadt Hafenau heilst du am Brunnen und kaufst bei Mara Items und Ausrüstung. Der Spielstand wird lokal im Browser gespeichert.",
   "steuerung": [
    "PC: Pfeiltasten oder WASD = Laufen, Leertaste/Enter/Z = Bestätigen und Weiterlesen, Esc/X/Backspace = Zurück, Esc/M/Tab = Menü; gegen Personen, Truhen, Tore oder Bosse laufen löst die Aktion aus",
    "Touch: Steuerkreuz unten links (Finger aufsetzen und in die Richtung schieben), Textfeld antippen = Weiterlesen, Taste MENÜ oben rechts, Menüpunkte antippen",
+   "Kamera: Q/E, Maus ziehen, Wischen, rechter Stick oder LB/RB drehen den Blick; R/F, Mausrad, zwei Finger oder LT/RT zoomen",
    "Kampf: Kreuzmenü mit Angriff, Fertigkeit (kostet SP), Spezial (kostet IP), Item, Wache und Flucht"
   ],
   "tipps": [
-   "Vor jedem Boss am Heilbrunnen in Funkhafen heilen und den Spielstand sichern.",
+   "Vor jedem Boss an der Heilquelle in Hafenau heilen und den Spielstand sichern.",
    "Nutze Wache in der Runde, in der ein Boss seinen Spezialangriff ausführt."
   ]
  },

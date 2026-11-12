@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "4ff1545fd532",
- "generated": "2026-11-12T17:16:44+00:00",
- "commit": "d13c7a490621d861fff312a99406d8b92e696d96",
+ "version": "b39d57160128",
+ "generated": "2026-11-12T18:17:00+01:00",
+ "commit": "81980b82a84c852cf6772769eacfcc6c69115a91",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2343,23 +2343,53 @@
   },
   {
    "p": "anmacha-quest-rpg/anleitung.html",
-   "s": 14241,
-   "h": "634e337f2b71f2cc7d99e3a32f2a2998de3064f7ef4860013d6439deacd9514c"
+   "s": 14449,
+   "h": "d001925eb6928972fa547e5260f02f59a92c0643d28d66a131c767decc5cfe82"
   },
   {
-   "p": "anmacha-quest-rpg/assets/index-BRGFGcEb.js",
-   "s": 715836,
-   "h": "afd5c91433a9385324944f338f0d39ff9d81be4c6c28907494099c9870869cc5"
+   "p": "anmacha-quest-rpg/assets/cinzel-latin-700-normal-C-gK7hA8.woff",
+   "s": 17524,
+   "h": "83ea41e439a253b4d436cc895d07a0d47f714c4816a23e86df35c442eddffafb"
+  },
+  {
+   "p": "anmacha-quest-rpg/assets/cinzel-latin-700-normal-Dkw14w9r.woff2",
+   "s": 15184,
+   "h": "8efa224fe70fef188a39c095e218b81fd31061809f2752537e33a9ec7b9c2263"
+  },
+  {
+   "p": "anmacha-quest-rpg/assets/cinzel-latin-900-normal-BI3z7Tow.woff2",
+   "s": 14804,
+   "h": "87128561fd042f0283e7b852af5d074154779eff37b9ad8600b331ad0ce4a6b7"
+  },
+  {
+   "p": "anmacha-quest-rpg/assets/cinzel-latin-900-normal-t_fSDEbn.woff",
+   "s": 17064,
+   "h": "d5d566551cd1e60b0572567c2ed5fd4c24a28d2ee9863cbb58d47bd03afe9d5f"
+  },
+  {
+   "p": "anmacha-quest-rpg/assets/index-CUONwB5D.js",
+   "s": 770755,
+   "h": "f3a1490227d67196356263898b69bd000e6c10eac779bc55abaeaf1d5bc76c1e"
+  },
+  {
+   "p": "anmacha-quest-rpg/assets/index-CitjQBdG.css",
+   "s": 417,
+   "h": "950fb90df6cb3745e31e3f7b566090d8e47ffd84f24f3e6b9a0a3d89ab1ea926"
   },
   {
    "p": "anmacha-quest-rpg/card.jpg",
-   "s": 38271,
-   "h": "7e74019a0495d58c002e2c57c86646c6fd3ff4acee2ba3c2c82e813d7d2cee51"
+   "s": 39831,
+   "h": "99e73c5f696015290346cf682493abf73a1bbf14bd49bc0e60d64b99c8866358"
+  },
+  {
+   "p": "anmacha-quest-rpg/env/spruit_sunrise_1k.hdr",
+   "s": 1500948,
+   "h": "38199a31e945906f6778431e989256a92d9d78b0cfc0f902accad9f5244bf50f"
   },
   {
    "p": "anmacha-quest-rpg/index.html",
-   "s": 18751,
-   "h": "150bc196888161f30d6b2b2e3df3ffd3921d29baf08973ef429ba02370f4a302"
+   "s": 20087,
+   "h": "25a05a65feb22836888f802a36e4c900a16db6ac82271b5b0d98ca92c93c4c00"
   },
   {
    "p": "anmacha-quest-rpg/logo.png",
@@ -2368,13 +2398,13 @@
   },
   {
    "p": "anmacha-quest-rpg/logo.svg",
-   "s": 2317,
-   "h": "21b9959a39c48f915e38042729f440243c439039a3d13a6dde3053fab03af5e9"
+   "s": 2318,
+   "h": "b8d1ef4975a6e906a86a8bc540eeffb2db1a55a67eb7cba42669519b999f21f4"
   },
   {
    "p": "anmacha-quest-rpg/manifest.webmanifest",
-   "s": 781,
-   "h": "3c4462259d3c2e5f925769d3e88fcfdfb44fcff1f8db61c9cfd0617a246705df"
+   "s": 798,
+   "h": "6870edadbca06a62fe3440e16209b29e4df9e1daac43743f61a0ccbc4a3e0b7f"
   },
   {
    "p": "anmacha-quest-rpg/models/bld_1Story_GableRoof_Mat.glb",
@@ -2688,8 +2718,8 @@
   },
   {
    "p": "anmacha-quest-rpg/sw.js",
-   "s": 2001,
-   "h": "52fce660d1d496d618690c441b1a108e3dc5cf054937d3e5d0b75fb54bfd2a1f"
+   "s": 2018,
+   "h": "6fc027f93eda54506852428c34bf286ef49e790d1fa17aeaacb176ec4d396ff5"
   },
   {
    "p": "anmacha-quiz/audio.js",
@@ -5538,8 +5568,8 @@
   },
   {
    "p": "games.js",
-   "s": 58034,
-   "h": "84fc86250c75bb09d640e88ff9b9bd0251becbe9637efafbe55f43da118ada6d"
+   "s": 58087,
+   "h": "ef8c96035613cdaf947dd7e498e5d16ee9ac4042931c793452c0999998b296f7"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5773,8 +5803,8 @@
   },
   {
    "p": "guides.js",
-   "s": 172846,
-   "h": "e9b6018eae0020307a5d3f1fd2cab0c23da4894accdddafcf184e8a3cc8c83ec"
+   "s": 172984,
+   "h": "c9cce9833fe1cd66430a991219876dabe9b9059d53600f63e2fb6f6c0a1a40b5"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -5868,8 +5898,8 @@
   },
   {
    "p": "guides/anmacha-quest-rpg.json",
-   "s": 14643,
-   "h": "c869bb5107a6fb8d2c94c25a9107264d166e9e5df4aeb14b71405c292822fcd5"
+   "s": 14874,
+   "h": "217d94542ea4d25e9d74ee137cb8b97a0f9a06ed99e1d1d71f90fd779b5aa646"
   },
   {
    "p": "guides/anmacha-quiz.json",
@@ -8843,8 +8873,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 257559,
-   "h": "6dc07e2919d49e2aefc889382c062f1fd7b42660721663167b0211e91877a4dd"
+   "s": 257752,
+   "h": "8671171086d8c0f6d33158013631c880e21850715a1744a0fc13b42b1526214c"
   },
   {
    "p": "taschi/assets/models/alien.glb",
@@ -9543,8 +9573,8 @@
   },
   {
    "p": "thumbs/anmacha-quest-rpg.webp",
-   "s": 12960,
-   "h": "d71eea42526f18d6ca3850f1032ee9414f9d3d1e6d31377ee02e6a5199c28983"
+   "s": 13710,
+   "h": "a85d83ba01b3db9d62b599e9f013890c57fc9db9a7b863380ca24b8595fd0cc1"
   },
   {
    "p": "thumbs/anmacha-quiz.webp",
@@ -9794,7 +9824,7 @@
   {
    "p": "thumbs/thumbs.js",
    "s": 2399,
-   "h": "77bb9e70ae7e731e774ed8dbd623f4025346ccfd5b614be4327e4c1afe7ee4ee"
+   "h": "f4a3aa8f1e2686ca5f035de797ff160afd21e3fad99e0cfc768100a21082ef5b"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
