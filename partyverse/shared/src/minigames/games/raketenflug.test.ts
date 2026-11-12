@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { game, caveAt, type RocketState } from './raketenflug';
+import { game, caveAt, gateValue, rockY, type RocketState } from './raketenflug';
+import { runBot } from '../simulate';
 import { NEUTRAL_INPUT } from '../types';
 
 const opts = { playerIndex: 0, players: 2 };
@@ -14,7 +15,7 @@ describe('raketenflug – Regeln', () => {
     );
     expect(JSON.stringify(game.init(4, opts).cy)).not.toBe(JSON.stringify(a.cy));
     expect(a.gates.length).toBeGreaterThan(15);
-    expect(a.gh.every((g) => g >= 2.5)).toBe(true);
+    expect(a.gh.every((g) => g >= 2.3)).toBe(true);
   });
 
   it('Schub hebt, sonst zieht die Schwerkraft', () => {
@@ -69,12 +70,62 @@ describe('raketenflug – Regeln', () => {
 
   it('ein Felsen trifft ebenfalls', () => {
     const s: RocketState = game.init(3, opts);
-    s.rocks = [{ x: 5, y: 0, r: 0.8 }];
+    s.rocks = [{ x: 5, y: 0, r: 0.8, amp: 0, w: 0, ph: 0 }];
     s.x = 4.6;
     s.y = 0;
     s.vy = 0;
     s.cy = s.cy.map(() => 0);
     for (let i = 0; i < 30; i++) game.step(s, i < 6 ? A : NEUTRAL_INPUT);
     expect(s.crashes).toBeGreaterThanOrEqual(1);
+  });
+
+  it('Serie: Tore hintereinander zählen mehr, Goldringe doppelt, Fehlversuch setzt zurück', () => {
+    const s: RocketState = game.init(3, opts);
+    s.rocks = [];
+    s.invuln = 1000;
+    let expected = 0;
+    for (let k = 0; k < 6; k++) {
+      const g = s.gates[k]!;
+      s.x = g.x - 0.05;
+      s.y = g.y;
+      s.vy = 0;
+      game.step(s, NEUTRAL_INPUT);
+      expected += gateValue(g, k + 1);
+    }
+    expect(s.streak).toBe(6);
+    expect(s.gatePts).toBe(expected);
+    expect(s.gates[4]!.gold).toBe(true);
+    expect(gateValue(s.gates[4]!, 1)).toBe(200);
+    expect(gateValue(s.gates[0]!, 3)).toBe(150);
+    const g = s.gates[6]!;
+    s.x = g.x - 0.05;
+    s.y = g.y + 2.6;
+    game.step(s, NEUTRAL_INPUT);
+    expect(s.streak).toBe(0);
+  });
+
+  it('Schwebefelsen bewegen sich, Höhle wird enger', () => {
+    const s = game.init(8, opts);
+    const mv = s.rocks.filter((r) => r.amp > 0);
+    expect(mv.length).toBeGreaterThan(2);
+    expect(mv.every((r) => r.x > 70)).toBe(true);
+    const r = mv[0]!;
+    expect(rockY(r, 0)).not.toBeCloseTo(rockY(r, 60), 2);
+    const early = s.gh.slice(8, 20).reduce((a, b) => a + b, 0) / 12;
+    const late = s.gh.slice(80, 92).reduce((a, b) => a + b, 0) / 12;
+    expect(late).toBeLessThan(early - 0.5);
+  });
+
+  it('Bots: stark > mittel > schwach', () => {
+    const avg = (skill: number) => {
+      let sum = 0;
+      for (let i = 0; i < 10; i++) sum += runBot(game, 90 + i, opts, skill, 4 + i).score;
+      return sum / 10;
+    };
+    const lo = avg(0.3);
+    const mid = avg(0.6);
+    const hi = avg(0.88);
+    expect(hi).toBeGreaterThan(mid);
+    expect(mid).toBeGreaterThan(lo);
   });
 });
