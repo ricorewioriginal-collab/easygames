@@ -38,7 +38,8 @@ export const loaded = (path) => cache.has(path);
 export const HERO_MODEL = { andrew: 'Warrior', marco: 'Wizard', teresa: 'Cleric', rico: 'Ranger', andy: 'Monk' };
 // Größen wie in der Godot-Fassung (Modell 3 m hoch × Faktor)
 export const HERO_SCALE = { andrew: 0.46, marco: 0.46, teresa: 0.46, rico: 0.50, andy: 0.54 };
-export const NPC_MODEL = { shop: ['Rogue', '#ffd8a0', 0.44], elder: ['Wizard', '#f0f0ff', 0.44], kid: ['Rogue', '#ffa0c0', 0.32], guard: ['Warrior', '#ff9a8a', 0.46] };
+export const NPC_MODEL = { shop: ['Rogue', '#ffd8a0', 0.44], elder: ['Wizard', '#f0f0ff', 0.44], kid: ['Rogue', '#ffa0c0', 0.32], guard: ['Warrior', '#ff9a8a', 0.46],
+  inn: ['Cleric', '#ffe0b0', 0.44], smith: ['Monk', '#c8a080', 0.5], trader: ['Ranger', '#a0d0ff', 0.44], sage: ['Wizard', '#c0ffd0', 0.46], kid2: ['Cleric', '#ffd0f0', 0.32] };
 export const monsterPath = (d) => `mon_${d.model}.glb`;
 export const heroPath = (m) => `hero_${m}.glb`;
 

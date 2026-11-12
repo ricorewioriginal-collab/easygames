@@ -1,24 +1,31 @@
 // Spielablauf: Titel, Karte, Gespräche, Shop, Menü, Kampf. Gleiche Abläufe und Texte wie main.gd der Godot-Fassung.
 // Anzeige und Bedienung kommen über `ui` (DOM) und `view` (Three.js); beide lassen sich für Tests durch Attrappen ersetzen.
-import { MAPS, HEROES, JOINS, SKILLS, IPSKILLS, ITEMS, KEYNAMES, ENEMIES } from './data.js';
+import { MAPS, HEROES, JOINS, SKILLS, IPSKILLS, ITEMS, KEYNAMES, ENEMIES, CAPSULES, SHOPS, FEED } from './data.js';
 import * as L from './logic.js';
 
 export const M = { TITLE: 0, WORLD: 1, BATTLE: 2 };
 export const SAVE_KEY = 'anmachaQuest_save';
 
 const BOSS_TEXT = {
-  mcdroehn: ['MC Dröhn: Yo, Funker! Das ist MEIN Keller, MEIN Beat! Zeig, ob du Takt hast!'],
-  koenigin: ['Königin Schunkel: Ach, wie süß – kleine Helden! Schunkelt mit mir, bis euch schwindelig wird!'],
-  frostmod: ['Der Frost-Moderator: Und nun die Nachrichten: Heute Nacht wird es EISKALT für euch!'],
-  riff: ['Riff-Titan: *KRAAAWWWWM* ... Zu laut? Gibt\'s nicht. LAUTER!'],
-  rauschen: ['Das Große Rauschen: kshhhhhh ... Alle Stimmen werden eins. Alle Sender: Stille. Auch eure.']
+  mcdroehn: ['Vorgal: Tausend Jahre in Ketten ... und die ersten, die mich wecken, sind Kinder mit Holzschwertern?', 'Vorgal: Die Gruft hallt nur noch von meinem Groll. Gleich auch von euren Schreien!'],
+  koenigin: ['Seraphine: Wie hübsch ihr seid. Wie Rosen kurz vor dem Welken.', 'Seraphine: Bleibt bei mir. Für immer. Meine Dornen halten euch fest!'],
+  frostmod: ['Kryos: Ihr bringt Wärme in meine Halle. Wie ungezogen.', 'Kryos: Alles Leben ist nur Lärm vor der Stille. Ich lasse euch erstarren, damit ihr es versteht.'],
+  riff: ['Pyrax: *GRRRAAAH* Kleine Funken wagen sich in meinen Schlund?', 'Pyrax: Ich habe Städte verbrannt, bevor eure Ahnen sprechen konnten. BRENNT!'],
+  rauschen: ['Nihl: ... Endlich. Die Letzten, die noch Stimmen haben.', 'Nihl: Die Vier waren nur meine Hände. Ich bin das Schweigen zwischen den Sternen. Werdet still, Kinder Aetherions.']
 };
 const BOSS_AFTER = {
-  mcdroehn: ['MC Dröhn verstummt – ein Frequenzkristall glüht auf. Der Bass-Keller ist befreit!', 'Auf der Weltkarte öffnet sich der Zugang zur Glitzerwiese. Im Funkhafen wartet jemand auf euch.'],
-  koenigin: ['Die Königin sinkt in ihr Glitzerkissen. Der zweite Kristall erwacht!', 'Auf der Weltkarte öffnet sich die Frosthöhle. Im Funkhafen wartet jemand auf euch.'],
-  frostmod: ['Der Moderator taut auf und räumt das Studio. Der dritte Kristall erwacht!', 'Auf der Weltkarte öffnet sich die Vulkanbühne. Im Funkhafen wartet jemand auf euch.'],
-  riff: ['Der Titan sackt zusammen, die Verstärker verstummen. Der vierte Kristall erwacht!', 'Auf der Weltkarte öffnet sich der Rauschen-Turm im Norden.']
+  mcdroehn: ['Vorgal zerfällt zu grauer Asche. Ein Sphärenkristall leuchtet auf und erfüllt die Gruft mit einem klaren Ton.', 'Auf der Weltkarte öffnet sich der Weg zum Rosenhain. In Hafenau wartet jemand auf euch.'],
+  koenigin: ['Die Dornen welken, Seraphine löst sich in Blütenblätter auf. Der zweite Kristall erwacht!', 'Auf der Weltkarte öffnet sich die Frostgrotte. In Hafenau wartet jemand auf euch.'],
+  frostmod: ['Kryos zerspringt wie Glas. Tauwasser tropft von der Decke. Der dritte Kristall erwacht!', 'Auf der Weltkarte öffnet sich der Glutschlund. In Hafenau wartet jemand auf euch.'],
+  riff: ['Pyrax stürzt in die Lava, die Flammen erlöschen. Der vierte Kristall erwacht!', 'Im Norden erhebt sich der Turm der Stille. Der Weg zu Nihl ist frei.']
 };
+// Zwischensequenzen: Kamera (Feld x/y, Drehung, Abstand, Neigung) und Text
+const INTRO = [
+  { x: 12, y: 8, yaw: 0.6, dist: 14, pitch: 0.55, t: ['Vor tausend Jahren sangen vier Sphärenkristalle die Welt Aetherion ins Gleichgewicht.'] },
+  { x: 12, y: 9, yaw: -0.4, dist: 10, pitch: 0.42, t: ['Vier ihrer Hüter verrieten sie. Man nannte sie die Verfemten und versiegelte sie im Herzen der Welt.'] },
+  { x: 12, y: 10, yaw: 0.2, dist: 7, pitch: 0.3, t: ['Doch nun breitet sich eine Stille aus, die selbst die Vögel verstummen lässt. Die Siegel brechen.'] },
+  { x: 12, y: 12, yaw: 0, dist: 4.6, pitch: 0.2, t: ['In der Hafenstadt Hafenau erwacht der junge Schwertkämpfer Aren aus einem Traum von Sternen, die erlöschen.', 'Sein bester Freund Silas, ein Magier mit mehr Mut als Vorsicht, wartet schon vor der Tür.', 'Älteste Ysolde hat nach euch gerufen. Sie steht in der Mitte der Stadt.'] }
+];
 
 export class Game {
   constructor(ui, view, opts = {}) {
@@ -37,6 +44,38 @@ export class Game {
     this.stepflip = 0;
     this.mt = 0;
     this.debug = !!opts.debug;
+    this.audio = opts.audio || null;
+    this.musicOverride = null;
+    this.battleMusic = 'battle';
+  }
+  sfx(k) { this.audio?.sfx(k); }
+  // Passende Musik zum Ort und Spielzustand
+  pickMusic() {
+    if (!this.audio) return;
+    const S = this.S;
+    let k = this.musicOverride;
+    if (!k) {
+      if (this.mode === M.TITLE) k = 'title';
+      else if (this.mode === M.BATTLE) k = this.battleMusic;
+      else if (S.map.world) k = 'world';
+      else if (S.map.town) k = S.flags.boss_rauschen ? 'ending' : 'town';
+      else k = S.map.theme === 'static' ? 'tower' : S.map.theme;
+    }
+    this.audio.music(k);
+  }
+  // Zwischensequenz: Kamerafahrt von Einstellung zu Einstellung, Kinobalken, Text
+  async cutscene(shots, music) {
+    if (this.autoplay || !this.view) return;
+    if (music) this.musicOverride = music;
+    this.ui.letterbox?.(true);
+    for (const sh of shots) {
+      this.view.cine = { x: sh.x + 0.5, z: sh.y + 0.5, h: sh.h ?? 0.9, yaw: sh.yaw, dist: sh.dist, pitch: sh.pitch };
+      if (sh.wait) await this.wait(sh.wait);
+      await this.say(sh.t);
+    }
+    this.view.cine = null;
+    this.ui.letterbox?.(false);
+    if (music) this.musicOverride = null;
   }
 
   // ---------------------------------------------------------------- UI-Helfer (im Selbsttest ohne Anzeige)
@@ -90,7 +129,7 @@ export class Game {
     if (!this.store) return;
     const S = this.S;
     const party = S.party.map(h => ({ id: h.id, name: h.name, lv: h.lv, exp: h.exp, hp: h.hp, sp: h.sp, ip: h.ip }));
-    this.store.set(SAVE_KEY, JSON.stringify({ v: 3, party, inv: S.inv, gold: S.gold, gear: S.gear, flags: S.flags, map: S.mapId, gp: S.gp, t: S.playTime }));
+    this.store.set(SAVE_KEY, JSON.stringify({ v: 4, party, inv: S.inv, gold: S.gold, gear: S.gear, flags: S.flags, caps: S.caps, map: S.mapId, gp: S.gp, t: S.playTime }));
   }
   loadGame() {
     if (!this.store) return false;
@@ -104,6 +143,16 @@ export class Game {
     S.gold = d.gold | 0;
     S.gear = d.gear | 0;
     S.flags = d.flags || {};
+    // Kapselgeister (ab Spielstand v4; ältere Stände haben noch keine)
+    S.caps = { own: {}, active: null };
+    if (d.caps && d.caps.own) for (const id in d.caps.own) {
+      const c = d.caps.own[id];
+      if (!CAPSULES[id] || !c) continue;
+      const nc = L.newCapsule(id, Math.max(1, c.lv | 0));
+      nc.exp = c.exp | 0; nc.form = Math.min(2, Math.max(0, c.form | 0)); nc.hp = Math.min(L.cmhp(nc), Math.max(0, c.hp | 0));
+      S.caps.own[id] = nc;
+    }
+    if (d.caps && S.caps.own[d.caps.active]) S.caps.active = d.caps.active;
     S.playTime = +d.t || 0;
     this.mode = M.WORLD;
     const gp = d.gp && L.tile({ ...S, map: MAPS[d.map], mw: MAPS[d.map].rows[0].length, mh: MAPS[d.map].rows.length }, d.gp.x, d.gp.y) !== '#' ? d.gp : L.startOf(d.map);
@@ -139,6 +188,7 @@ export class Game {
     S.gold = 100;
     S.gear = 0;
     S.flags = {};
+    S.caps = { own: {}, active: null };
     S.playTime = 0;
     await this.fade(1.0, 0.25);
     this.mode = M.WORLD;
@@ -146,9 +196,8 @@ export class Game {
     await this.view.ready?.();
     await this.fade(0.0);
     this.busy = true;
-    await this.say(['Frequenzia, die Welt der Funkwellen. Seit das Große Rauschen aufgetaucht ist, sind vier Sender-Reiche verstummt.',
-      'Du bist Andrew, Funker aus Funkhafen – und Marco, der Frequenz-Magier, begleitet dich.',
-      'Sprich mit der Alten Antenne in der Mitte des Hafens. Sie weiß, was zu tun ist.']);
+    await this.cutscene(INTRO, 'intro');
+    if (this.view) this.view.camYawT = this.view.camYaw = 0;
     this.busy = false;
     this.setTouch(true);
   }
@@ -163,8 +212,13 @@ export class Game {
 
   // ---------------------------------------------------------------- Bewegung (pro Bild)
   readDir() {
-    if (this.dpad) return this.dpad;
-    return this.dirStack.length ? this.dirStack[this.dirStack.length - 1] : null;
+    const d = this.dpad || (this.dirStack.length ? this.dirStack[this.dirStack.length - 1] : null);
+    if (!d) return null;
+    // Eingabe ist bildschirmbezogen: an der Kameradrehung ausrichten
+    let r = { x: d.x, y: d.y };
+    const q = this.view?.camQuad?.() || 0;
+    for (let i = 0; i < q; i++) r = { x: r.y, y: -r.x };
+    return r;
   }
   pressDir(d, down) {
     this.dirStack = this.dirStack.filter(v => !L.eq(v, d));
@@ -175,6 +229,7 @@ export class Game {
 
   update(delta) {
     const S = this.S;
+    this.pickMusic();
     if (this.mode !== M.WORLD) return;
     S.playTime += delta;
     if (!this.ui.touchVisible() && this.dpad) this.dpad = null;
@@ -237,7 +292,7 @@ export class Game {
     await this.fade(1.0);
     const to = p.to;
     this.loadMap(to, { x: p.ax, y: p.ay });
-    if (to === 'hub') this.saveGame();
+    if (MAPS[to].town) this.saveGame();
     await this.view.ready?.();
     await this.fade(0.0);
     if (to === 'hub') {
@@ -250,7 +305,7 @@ export class Game {
       }
     }
     this.busy = true;
-    await this.banner(S.map.world || to === 'hub' ? S.map.name : `${S.map.name}  (Stufe ${S.map.lv})`);
+    await this.banner(S.map.world || S.map.town ? S.map.name : `${S.map.name}  (Stufe ${S.map.lv})`);
     this.busy = false;
     this.setTouch(true);
   }
@@ -279,9 +334,10 @@ export class Game {
       S.flags[g.flag] = true;
       this.removeObj(o);
       this.view.fxWorld?.('gate', o);
+      this.sfx('door');
       await this.say(['Der Schlüssel passt! Das Tor öffnet sich knarrend.']);
     } else {
-      await this.say(['Das Tor zum Bossraum ist verriegelt. Irgendwo in diesem Reich liegt der Schlüssel in einer Truhe.']);
+      await this.say(['Das Tor zur Halle ist verriegelt. Irgendwo in diesem Reich liegt der Schlüssel in einer Truhe.']);
     }
   }
   async openChest(o) {
@@ -289,12 +345,20 @@ export class Game {
     S.flags[c.id] = true;
     this.removeObj(o);
     this.view.fxWorld?.('chest', o);
+    this.sfx('chest');
     if (c.kind === 'gold') {
       S.gold += c.v;
       await this.say([`Truhe geöffnet: ${c.v} Münzen!`]);
+    } else if (c.kind === 'capsule') {
+      const cap = L.newCapsule(c.v, Math.max(1, Math.trunc(L.avgLv(S)) - 1));
+      S.caps.own[c.v] = cap;
+      if (!S.caps.active) S.caps.active = c.v;
+      this.sfx('levelup');
+      await this.say([`In der Truhe pulsiert eine leuchtende Kapsel ... Ein Kapselgeist erwacht: ${L.cname(cap)} (${CAPSULES[c.v].elem})!`,
+        S.caps.active === c.v ? `${L.cname(cap)} begleitet euch ab jetzt und kämpft von selbst mit. Im Menü unter „Kapselgeist“ kannst du ihn füttern.` : `Im Menü unter „Kapselgeist“ kannst du wählen, wer euch begleitet.`]);
     } else if (c.kind === 'key') {
       S.flags[c.v] = true;
-      await this.say([`Truhe geöffnet: ${KEYNAMES[c.v]} gefunden! Damit lässt sich das Tor zum Bossraum öffnen.`]);
+      await this.say([`Truhe geöffnet: ${KEYNAMES[c.v]} gefunden! Damit lässt sich das Tor zur Halle öffnen.`]);
     } else {
       S.inv[c.v] = (S.inv[c.v] || 0) + c.n;
       await this.say([`Truhe geöffnet: ${ITEMS[c.v].name} x${c.n}!`]);
@@ -305,42 +369,58 @@ export class Game {
     switch (n.kind) {
       case 'elder': {
         const k = L.bossesDone(S);
-        if (S.flags.boss_rauschen) await this.say(['Alte Antenne: Das Rauschen ist verklungen. Hörst du? Frequenzia singt wieder.']);
-        else if (k === 0) await this.say(['Alte Antenne: Andrew, Marco – das Große Rauschen verschluckt Sender um Sender. Vier Reiche sind verstummt.',
-          'Verlasst den Hafen nach Süden und folgt der Karte. Der Bass-Keller im Westen ist der Anfang: Dort herrscht MC Dröhn.',
-          'Jedes Reich hat einen Schlüssel für das Tor zum Boss. Kämpft, werdet stärker – und kauft Tränke bei Tonia!']);
-        else if (k < 4) await this.say([`Alte Antenne: ${k} von 4 Reichen sind befreit. Das nächste Tor öffnet sich auf der Weltkarte, sobald der Wächter des letzten gefallen ist.`,
-          'Reihenfolge: Bass-Keller, Glitzerwiese, Frosthöhle, Vulkanbühne.']);
-        else await this.say(['Alte Antenne: Alle vier Frequenzkristalle sind erwacht! Das Tor zum Rauschen-Turm steht auf der Weltkarte offen – im Norden.',
-          'Geht gut gerüstet hinein. Dort wartet das Große Rauschen selbst.']);
+        if (S.flags.boss_rauschen) await this.say(['Ysolde: Die Stille ist gebrochen. Hörst du die Möwen? Aetherion singt wieder, Aren.']);
+        else if (k === 0) await this.say(['Ysolde: Aren, Silas. Die Siegel der Verfemten sind gebrochen. Vier Reiche sind in ihrer Hand, und ihre Kristalle schweigen.',
+          'Verlasst die Stadt nach Süden. Im Westen liegt die Echogruft, dort tobt Vorgal der Grollende.',
+          'Jedes Reich verbirgt einen Schlüssel zur Halle seines Herrn. Werdet stärker, und vergesst die Tränke bei Mara nicht!']);
+        else if (k < 4) await this.say([`Ysolde: ${k} von 4 Kristallen singen wieder. Der nächste Weg öffnet sich auf der Weltkarte, sobald der letzte Verfemte gefallen ist.`,
+          'Reihenfolge: Echogruft, Rosenhain, Frostgrotte, Glutschlund.']);
+        else await this.say(['Ysolde: Alle vier Kristalle sind erwacht! Im Norden ragt der Turm der Stille auf.',
+          'Nihl selbst wartet dort. Geht gut gerüstet, und kommt zurück.']);
         break;
       }
-      case 'shop': await this.shop(); break;
+      case 'shop': await this.shop(SHOPS.hub, 'Mara: Frische Ware aus aller Welt! Was darf\'s sein?', 6); break;
+      case 'trader': await this.shop(SHOPS.lind, 'Quinn: Seltene Ware aus allen vier Reichen. Sphärenfrüchte habe ich auch, wenn die Münzen reichen.', 0); break;
+      case 'smith': await this.smith(); break;
+      case 'inn': await this.inn(n); break;
+      case 'sage': {
+        const own = Object.keys(S.caps.own).length;
+        if (!own) await this.say(['Mirela: Kapselgeister sind uralte Wesen, gebannt in Sphärenkapseln. In jedem der vier Reiche schläft einer.',
+          'Mirela: Wer eine Kapsel öffnet, gewinnt einen treuen Gefährten. Er kämpft selbst, ihr müsst ihm nichts befehlen.']);
+        else await this.say([`Mirela: ${own} Kapselgeist${own > 1 ? 'er' : ''} an eurer Seite! Füttert sie mit Tränken und Ätherwaren, dann wachsen sie.`,
+          'Mirela: Ab Stufe 8 und Stufe 16 kann eine Sphärenfrucht sie in eine neue Gestalt verwandeln. Quinn verkauft welche, teuer, aber es lohnt sich.']);
+        break;
+      }
+      case 'kid2':
+        await this.say(['Nele: In der Gruft unter der Stadt soll es einen Turm geben, der nie endet ... sagt mein Opa. Aber mein Opa sagt viel.']);
+        break;
       case 'heal':
-        for (const h of S.party) { h.hp = L.mhp(S, h); h.sp = L.msp(h); }
+        L.healAll(S);
         this.view.fxWorld?.('heal');
-        await this.say(['Der Heilbrunnen summt eine sanfte Melodie. LP und SP sind wieder voll!']);
+        this.sfx('heal');
+        await this.say(['Das Wasser der Quelle leuchtet sanft. LP und SP sind wieder voll, der Fortschritt ist gespeichert.']);
         this.saveGame();
         break;
       case 'kid':
-        if (L.bossesDone(S) >= 2) await this.say(['Lotte: Mein Radio rauscht nicht mehr so doll! Danke, Helden!']);
-        else await this.say(['Lotte: Wenn ein Held Schaden nimmt, füllt sich seine IP-Leiste. Dann kann er einen Spezialangriff machen – der ist riesig!']);
+        if (L.bossesDone(S) >= 2) await this.say(['Pip: Die Vögel singen wieder! Mama sagt, das wart ihr!']);
+        else await this.say(['Pip: Wenn ein Held Schaden nimmt, füllt sich seine IP-Leiste. Dann kann er einen Spezialangriff machen, der ist riesig!']);
         break;
       case 'guard':
-        await this.say(['Wache Piet: Tipp: Mit "Wache" im Kampf halbierst du den Schaden. Mit MENÜ kannst du jederzeit speichern.']);
+        await this.say(['Wache Holm: Tipp: Mit "Wache" halbierst du den Schaden. Mit Q/E oder durch Wischen drehst du den Blick, mit dem Mausrad oder zwei Fingern zoomst du.']);
         break;
     }
   }
-  async shop() {
+  async shop(list, hello, gearMax) {
     const S = this.S;
-    await this.say(['Tonia: Frisch gelötet und günstig! Was darf\'s sein?']);
+    await this.say([hello]);
     while (true) {
-      const r = await this.choose(['Kaufen', `Ausrüstung ${L.gearPrice(S)}M`, 'Tschüss', `Münzen: ${S.gold}`], true, [false, false, false, true]);
-      if (r === 2 || r === -1) break;
+      const r = gearMax ? await this.choose(['Kaufen', `Ausrüstung ${L.gearPrice(S)}M`, 'Tschüss', `Münzen: ${S.gold}`], true, [false, false, false, true])
+        : await this.choose(['Kaufen', 'Tschüss', `Münzen: ${S.gold}`], true, [false, false, true]);
+      if ((gearMax && r === 2) || (!gearMax && r === 1) || r === -1) break;
       if (r === 0) {
         while (true) {
           const opts = [], dis = [];
-          for (const k in ITEMS) {
+          for (const k of list) {
             opts.push(`${ITEMS[k].name} ${ITEMS[k].price}M (${S.inv[k] || 0})`);
             dis.push(S.gold < ITEMS[k].price);
           }
@@ -348,28 +428,59 @@ export class Game {
           dis.push(false);
           const s = await this.choose(opts, true, dis);
           if (s === -1 || s === opts.length - 1) break;
-          const k = Object.keys(ITEMS)[s];
+          const k = list[s];
           if (S.gold < ITEMS[k].price) continue;
           S.gold -= ITEMS[k].price;
           S.inv[k] = (S.inv[k] || 0) + 1;
           if (this.autoplay) break;
         }
-      } else if (r === 1) {
-        if (S.gear >= 6) await this.say(['Tonia: Besser kann ich es nicht mehr bauen!']);
-        else if (S.gold < L.gearPrice(S)) await this.say(['Tonia: Dafür fehlen dir leider Münzen.']);
-        else {
-          S.gold -= L.gearPrice(S);
-          S.gear += 1;
-          for (const h of S.party) h.hp = Math.min(h.hp + 8, L.mhp(S, h));
-          await this.say([`Tonia baut euch bessere Ausrüstung ein: Stufe ${S.gear}. Angriff, Abwehr und Magie steigen!`]);
-        }
-      }
+      } else if (r === 1) await this.buyGear(gearMax, 'Mara');
       if (this.autoplay) break;
+    }
+  }
+  async smith() {
+    const S = this.S;
+    await this.say(['Torvald: Mara macht ordentliche Arbeit. Aber Klingen aus Sternenstahl, die gibt es nur bei mir.']);
+    while (true) {
+      const r = await this.choose([`Schmieden ${S.gear >= 10 ? '–' : L.gearPrice(S) + 'M'}`, 'Tschüss', `Münzen: ${S.gold}`], true, [false, false, true]);
+      if (r !== 0) break;
+      await this.buyGear(10, 'Torvald');
+      if (this.autoplay) break;
+    }
+  }
+  async inn(n) {
+    const S = this.S, p = L.innPrice(S);
+    await this.say([`${n.name}: Willkommen im „Schlafenden Greif“! Ein warmes Bett kostet ${p} Münzen.`]);
+    const r = await this.choose([`Übernachten (${p}M)`, 'Nein danke'], true, [S.gold < p, false]);
+    if (r !== 0 || S.gold < p) return;
+    S.gold -= p;
+    await this.fade(1.0, 0.6);
+    L.healAll(S);
+    this.saveGame();
+    this.sfx('heal');
+    await this.wait(0.8);
+    await this.fade(0.0, 0.6);
+    await this.say([`${n.name}: Gut geschlafen? LP und SP sind voll, auch eure Kapselgeister sind ausgeruht. Spielstand gespeichert.`]);
+  }
+  async buyGear(max, who) {
+    const S = this.S;
+    if (S.gear >= max) await this.say([max >= 10 ? `${who}: Mehr kann kein Schmied der Welt aus Stahl herausholen!` : `${who}: Besser kann ich es nicht. Frag mal Torvald in Lindmark.`]);
+    else if (S.gold < L.gearPrice(S)) await this.say([`${who}: Dafür fehlen dir leider Münzen.`]);
+    else {
+      S.gold -= L.gearPrice(S);
+      S.gear += 1;
+      for (const h of S.party) h.hp = Math.min(h.hp + 8, L.mhp(S, h));
+      this.sfx('chest');
+      await this.say([`${who} rüstet euch neu aus: Stufe ${S.gear}. Angriff, Abwehr und Magie steigen!`]);
     }
   }
   async fightBoss(o) {
     const b = o.d, S = this.S;
-    await this.say(BOSS_TEXT[b.id] || ['...']);
+    const txt = BOSS_TEXT[b.id] || ['...'];
+    const yaw = Math.atan2(S.gp.x - o.x, S.gp.y - o.y);
+    await this.cutscene([
+      { x: (o.x + S.gp.x) / 2, y: (o.y + S.gp.y) / 2, yaw: yaw + 0.5, dist: 6, pitch: 0.3, wait: 0.6, t: txt.slice(0, 1) },
+      { x: o.x, y: o.y, h: 1.5, yaw: yaw - 0.25, dist: 3.4, pitch: 0.1, t: txt.slice(1) }].filter(sh => sh.t.length), 'boss');
     const res = await this.runBattle([b.id], S.map.theme);
     if (res === 'win') {
       S.flags[b.flag] = true;
@@ -383,10 +494,12 @@ export class Game {
   }
   async ending() {
     const S = this.S;
-    await this.say(['Das Große Rauschen zerfällt in Millionen kleiner Töne. Aus dem Turm steigt ein klarer Ton auf.',
-      'Alle vier Reiche – Rap, Schlager, Weihnacht und Rock – senden wieder. Frequenzia hat seine Stimme zurück!',
-      `ENDE – Danke fürs Spielen von AnMaCha Quest!  Spielzeit: ${Math.trunc(S.playTime / 60)} Min.`]);
+    this.musicOverride = 'ending';
+    await this.say(['Nihl zerfällt in Sternenstaub. Aus dem Turm steigt ein einzelner, klarer Ton auf, dann ein zweiter, dann tausend.',
+      'Die vier Kristalle singen gemeinsam. Über Aetherion geht die Sonne auf, als hätte sie lange gewartet.',
+      `ENDE. Danke fürs Spielen von Aetherion: Chronik der Sphären!  Spielzeit: ${Math.trunc(S.playTime / 60)} Min.`]);
     S.flags.boss_rauschen = true;
+    this.musicOverride = null;
     await this.fade(1.0);
     this.loadMap('hub', { x: 12, y: 12 });
     this.saveGame();
@@ -396,12 +509,12 @@ export class Game {
   async gameOver() {
     const S = this.S;
     await this.fade(1.0);
-    for (const h of S.party) { h.hp = L.mhp(S, h); h.sp = L.msp(h); }
+    L.healAll(S);
     S.gold = Math.trunc(S.gold / 2);
     this.loadMap('hub', { x: 12, y: 12 });
     await this.view.ready?.();
     await this.fade(0.0);
-    await this.say(['Ihr wacht im Funkhafen auf. Der Heilbrunnen hat euch zusammengeflickt – nur die Hälfte der Münzen ist weg.']);
+    await this.say(['Ihr erwacht in Hafenau an der Quelle. Eure Wunden sind geheilt, doch die Hälfte der Münzen ist verloren.']);
   }
 
   // ---------------------------------------------------------------- Menü
@@ -412,18 +525,24 @@ export class Game {
     this.setTouch(false);
     this.clearDirs();
     while (true) {
-      const r = await this.choose(['Status', 'Items', 'Speichern', 'Titel', 'Zurück'], true);
-      if (r === -1 || r === 4) break;
-      if (r === 0) {
+      const ent = [['status', 'Status'], ['items', 'Items']];
+      if (Object.keys(S.caps.own).length) ent.push(['caps', 'Kapselgeist']);
+      ent.push(['save', 'Speichern'], ['music', `Musik: ${this.audio?.on === false ? 'aus' : 'an'}`], ['title', 'Titel'], ['back', 'Zurück']);
+      const r = await this.choose(ent.map(e => e[1]), true);
+      const k = r >= 0 ? ent[r][0] : 'back';
+      if (k === 'back') break;
+      if (k === 'music') { if (this.audio) { this.audio.setOn(!this.audio.on); this.onAudio?.(this.audio.on); } continue; }
+      if (k === 'status') {
         if (this.ui.status) await this.ui.status(this.statusData());
         else {
           const lines = S.party.map(h => `${h.name} (${L.hd(h).role}) Lv ${h.lv}  LP ${h.hp}/${L.mhp(S, h)}  SP ${h.sp}/${L.msp(h)}  ANG ${L.stat(S, h, 'atk')} ABW ${L.stat(S, h, 'def')} MAG ${L.stat(S, h, 'mag')}  EXP ${h.exp}/${L.need(h.lv)}`);
           lines.push(`Münzen: ${S.gold}   Ausrüstung: Stufe ${S.gear}   Kristalle: ${L.bossesDone(S)}/4`);
           await this.say(lines);
         }
-      } else if (r === 1) await this.useItemMenu();
-      else if (r === 2) { this.saveGame(); await this.say(['Spielstand gespeichert.']); }
-      else if (r === 3) {
+      } else if (k === 'items') await this.useItemMenu();
+      else if (k === 'caps') await this.capsuleMenu();
+      else if (k === 'save') { this.saveGame(); await this.say(['Spielstand gespeichert.']); }
+      else if (k === 'title') {
         this.saveGame();
         this.busy = false;
         await this.fade(1.0);
@@ -431,6 +550,7 @@ export class Game {
         this.showTitle();
         return;
       }
+      if (this.autoplay) break;
     }
     this.busy = false;
     this.setTouch(true);
@@ -440,6 +560,7 @@ export class Game {
     return {
       heroes: S.party.map(h => ({ id: h.id, name: h.name, role: L.hd(h).role, col: L.hd(h).col, lv: h.lv, hp: h.hp, mhp: L.mhp(S, h), sp: h.sp, msp: L.msp(h),
         atk: L.stat(S, h, 'atk'), def: L.stat(S, h, 'def'), mag: L.stat(S, h, 'mag'), spd: L.stat(S, h, 'spd'), exp: h.exp, need: L.need(h.lv) })),
+      caps: Object.keys(S.caps.own).map(id => { const c = S.caps.own[id]; return { name: L.cname(c), elem: CAPSULES[id].elem, col: CAPSULES[id].col, lv: c.lv, hp: c.hp, mhp: L.cmhp(c), exp: c.exp, need: L.need(c.lv), atk: L.cstat(c, 'atk'), mag: L.cstat(c, 'mag'), active: S.caps.active === id }; }),
       gold: S.gold, gear: S.gear, crystals: L.bossesDone(S), time: S.playTime, inv: { ...S.inv }
     };
   }
@@ -447,18 +568,58 @@ export class Game {
     const S = this.S;
     while (true) {
       const keys = [], opts = [];
-      for (const k in ITEMS) if ((S.inv[k] || 0) > 0) { keys.push(k); opts.push(`${ITEMS[k].name} x${S.inv[k]}`); }
-      if (!keys.length) { await this.say(['Keine Items im Beutel.']); return; }
+      for (const k in ITEMS) if ((S.inv[k] || 0) > 0 && L.itemUse(k) === 'hero') { keys.push(k); opts.push(`${ITEMS[k].name} x${S.inv[k]}`); }
+      if (!keys.length) { await this.say(['Keine Items, die hier wirken.']); return; }
       opts.push('Zurück');
       const s = await this.choose(opts, true);
       if (s === -1 || s === keys.length) return;
       const k = keys[s];
       const t = await this.chooseHero();
       if (t === -1) continue;
-      if (L.applyItem(S, k, S.party[t])) S.inv[k] -= 1;
+      if (L.applyItem(S, k, S.party[t])) { S.inv[k] -= 1; this.sfx('heal'); }
       else await this.say(['Das hätte jetzt keine Wirkung.']);
       if (this.autoplay) return;
     }
+  }
+  // Kapselgeister: Begleiter wählen, füttern, entwickeln
+  async capsuleMenu() {
+    const S = this.S;
+    while (true) {
+      const ids = Object.keys(S.caps.own);
+      const opts = ids.map(id => { const c = S.caps.own[id]; return `${S.caps.active === id ? '★ ' : ''}${L.cname(c)} (${CAPSULES[id].elem}) Lv ${c.lv}  LP ${c.hp}/${L.cmhp(c)}`; });
+      opts.push('Zurück');
+      const s = await this.choose(opts, true);
+      if (s < 0 || s >= ids.length) return;
+      const id = ids[s], c = S.caps.own[id];
+      const r = await this.choose([S.caps.active === id ? 'Begleitet euch bereits' : 'Mitnehmen', 'Füttern', 'Zurück'], true, [S.caps.active === id, false, false]);
+      if (r === 0) { S.caps.active = id; this.sfx('ok'); await this.say([`${L.cname(c)} begleitet euch jetzt.`]); }
+      else if (r === 1) await this.feed(c);
+      if (this.autoplay) return;
+    }
+  }
+  async feed(c) {
+    const S = this.S;
+    const keys = Object.keys(ITEMS).filter(k => (S.inv[k] || 0) > 0 && (FEED[k] || k === 'frucht'));
+    if (!keys.length) { await this.say(['Nichts zum Füttern im Beutel. Tränke, Ätherwaren und Sphärenfrüchte mögen Kapselgeister am liebsten.']); return; }
+    const opts = keys.map(k => `${ITEMS[k].name} x${S.inv[k]}${k === 'frucht' ? ' (Entwicklung)' : ` (+${FEED[k]} EXP)`}`);
+    opts.push('Zurück');
+    const s = await this.choose(opts, true);
+    if (s < 0 || s >= keys.length) return;
+    const k = keys[s];
+    if (k === 'frucht') {
+      if (!L.canEvolve(c)) { await this.say([c.form >= 2 ? `${L.cname(c)} hat seine höchste Gestalt erreicht.` : `${L.cname(c)} ist noch nicht bereit. Ab Stufe ${c.form === 0 ? 8 : 16} kann er sich entwickeln.`]); return; }
+      S.inv.frucht -= 1;
+      const old = L.cname(c);
+      L.evolve(c);
+      this.sfx('special');
+      this.view?.fxWorld?.('heal');
+      await this.say([`${old} verschlingt die Sphärenfrucht ... und beginnt zu leuchten!`, `${old} hat sich zu ${L.cname(c)} entwickelt! Neue Fähigkeit: ${CAPSULES[c.id].skills[c.form].name}.`]);
+      return;
+    }
+    S.inv[k] -= 1;
+    const ups = L.capGain(c, FEED[k]);
+    this.sfx(ups.length ? 'levelup' : 'heal');
+    await this.say([`${L.cname(c)} frisst genüsslich ${ITEMS[k].name}. +${FEED[k]} EXP${ups.length ? ` – Stufe ${c.lv}!` : '.'}`].concat(L.canEvolve(c) && (S.inv.frucht || 0) > 0 ? ['Er wirkt unruhig ... eine Sphärenfrucht könnte ihn verwandeln.'] : []));
   }
   chooseHero() {
     const S = this.S;
@@ -509,12 +670,18 @@ export class Game {
 
   async runBattle(ids, bg) {
     const S = this.S;
+    this.sfx('encounter');
     await this.fade(1.0, 0.18);
     this.ui.msg('');
     this.mode = M.BATTLE;
+    this.pickMusic();
     S.enemies = ids.map(id => L.makeEnemy(S, id));
+    this.battleMusic = ids[0] === 'rauschen' ? 'final' : (S.enemies[0].boss ? 'boss' : 'battle');
     for (const h of S.party) { h.ip = 0; h.down = h.hp <= 0; }
-    await this.view.battleBegin?.(bg, S.enemies, S.party);
+    // aktiver Kapselgeist kämpft mit (wenn er nicht erschöpft ist)
+    const cap = L.activeCap(S);
+    S.bcap = cap && cap.hp > 0 ? cap : null;
+    await this.view.battleBegin?.(bg, S.enemies, S.party, S.bcap);
     this.setTouch(false);
     await this.fade(0.0, 0.18);
     const n = ids.length;
@@ -545,11 +712,13 @@ export class Game {
       const order = [];
       for (const c of cmds) order.push({ k: 'h', who: c.h, c, s: L.stat(S, c.h, 'spd') + this.rng.randf() * 3.0 });
       for (const e of L.aliveEnemies(S)) order.push({ k: 'e', who: e, s: e.spd + this.rng.randf() * 3.0 });
+      if (S.bcap && S.bcap.hp > 0) order.push({ k: 'c', who: S.bcap, s: L.cstat(S.bcap, 'spd') + this.rng.randf() * 3.0 });
       order.sort((a, b) => b.s - a.s);
       const guard = [];
       for (const o of order) {
         if (!L.aliveEnemies(S).length || !L.aliveHeroes(S).length) break;
         if (o.k === 'h') { if (o.who.hp > 0) await this.heroAct(o.c, guard); }
+        else if (o.k === 'c') { if (o.who.hp > 0) await this.capAct(o.who, guard); }
         else if (o.who.hp > 0) await this.enemyAct(o.who, guard);
       }
       if (!L.aliveEnemies(S).length) result = 'win';
@@ -564,6 +733,8 @@ export class Game {
     this.mode = M.WORLD;
     S.enemies = [];
     for (const h of S.party) delete h.down;
+    if (S.bcap && S.bcap.hp <= 0) S.bcap.hp = 1;   // Kapselgeister erholen sich nach dem Kampf
+    S.bcap = null;
     await this.fade(0.0, 0.18);
     return result;
   }
@@ -601,12 +772,13 @@ export class Game {
         }
         case 3: {
           const keys = [], opts = [];
-          for (const k in ITEMS) if ((S.inv[k] || 0) > 0) { keys.push(k); opts.push(`${ITEMS[k].name} x${S.inv[k]}`); }
+          for (const k in ITEMS) if ((S.inv[k] || 0) > 0 && L.itemUse(k) !== 'capsule') { keys.push(k); opts.push(`${ITEMS[k].name} x${S.inv[k]}`); }
           if (!keys.length) await this.bmsg('Keine Items!', 0.6);
           else {
             opts.push('Zurück');
             const si = await this.choose(opts, true);
             if (si >= 0 && si < keys.length) {
+              if (L.itemUse(keys[si]) === 'enemy') return { type: 'item', h, i: keys[si], t: null };
               const ti = await this.chooseHero();
               if (ti >= 0) return { type: 'item', h, i: keys[si], t: S.party[ti] };
             }
@@ -649,6 +821,7 @@ export class Game {
   hitEnemy(e, dmg, fx = 'slash') {
     const S = this.S;
     e.hp = Math.max(0, e.hp - dmg);
+    this.sfx(fx === 'magic' ? 'magic' : 'hit');
     const i = S.enemies.indexOf(e);
     this.view.battleEnemy?.(i, 'hurt');
     this.view.battleFx?.(fx, 'enemy', i);
@@ -657,6 +830,7 @@ export class Game {
   hurtHero(h, dmg, heavy = false) {
     const S = this.S;
     h.hp = Math.max(0, h.hp - dmg);
+    this.sfx(heavy ? 'heavy' : 'hit');
     h.ip = Math.min(100, h.ip + (heavy ? 22 : 12));
     const i = S.party.indexOf(h);
     this.ui.floatHero?.(i, String(dmg), '#ff7373');
@@ -685,7 +859,16 @@ export class Game {
       }
       case 'item': {
         const t = c.t;
-        if ((S.inv[c.i] || 0) > 0 && L.applyItem(S, c.i, t)) {
+        if (L.itemUse(c.i) === 'enemy') {
+          if ((S.inv[c.i] || 0) <= 0) { await this.bmsg('Ohne Wirkung ...', 0.5); break; }
+          S.inv[c.i] -= 1;
+          await this.bmsg(`${h.name} wirft eine ${ITEMS[c.i].name}!`, 0.5);
+          this.view.battleHero?.(hi, 'attack', -1);
+          this.view.shake?.(0.3);
+          await this.wait(0.3);
+          for (const e of L.aliveEnemies(S)) this.hitEnemy(e, Math.trunc((40 + 9 * L.avgLv(S)) * this.rng.range(0.9, 1.1)), 'magic');
+          await this.wait(0.5);
+        } else if ((S.inv[c.i] || 0) > 0 && L.applyItem(S, c.i, t)) {
           S.inv[c.i] -= 1;
           await this.bmsg(`${h.name} nutzt ${ITEMS[c.i].name} auf ${t.name}.`, 0.8);
           const ti = S.party.indexOf(t);
@@ -708,7 +891,7 @@ export class Game {
         }
         await this.bmsg(`${h.name}: ${d.name}!`, 0.5);
         this.view.battleHero?.(hi, d.kind === 'phys' ? 'attack' : 'cast', c.t && S.enemies.includes(c.t) ? S.enemies.indexOf(c.t) : -1);
-        if (isIp) this.view.battleFx?.('special', 'hero', hi);
+        if (isIp) { this.view.battleFx?.('special', 'hero', hi); this.sfx('special'); }
         await this.wait(0.3);
         if (d.kind === 'heal') {
           let tg = d.all ? L.aliveHeroes(S) : [c.t];
@@ -720,6 +903,7 @@ export class Game {
             const amt = d.mult > 50.0 ? L.mhp(S, t) - t.hp : Math.trunc((L.stat(S, h, 'mag') * d.mult + 12) * this.rng.range(0.95, 1.05));
             t.hp = Math.min(L.mhp(S, t), t.hp + amt);
             const ti = S.party.indexOf(t);
+            this.sfx('heal');
             this.ui.floatHero?.(ti, '+' + amt, '#66ff99');
             this.view.battleFx?.('heal', 'hero', ti);
             if (t.down && t.hp > 0) { t.down = false; this.view.battleHero?.(ti, 'idle'); }
@@ -745,13 +929,73 @@ export class Game {
         break;
       }
     }
+    await this.checkEnemyDeaths();
+  }
+  // Kapselgeist handelt selbst: meist Angriff auf den schwächsten Gegner, manchmal eine seiner Fähigkeiten
+  async capAct(c, guard) {
+    const S = this.S, d = CAPSULES[c.id];
+    const al = L.aliveEnemies(S);
+    if (!al.length) return;
+    let t = al[0];
+    for (const e of al) if (e.hp < t.hp) t = e;
+    const skills = d.skills.slice(0, c.form + 1);
+    let sk = this.rng.randf() < 0.45 ? skills[this.rng.randi() % skills.length] : null;
+    const hurt = L.aliveHeroes(S).some(h => h.hp < L.mhp(S, h) * 0.5);
+    if (sk && sk.kind === 'heal' && !hurt) sk = null;
+    const name = L.cname(c);
+    if (!sk) {
+      await this.bmsg(`${name} greift ${t.name} an!`, 0.35);
+      this.view.battleCap?.('attack', S.enemies.indexOf(t));
+      await this.wait(0.28);
+      this.hitEnemy(t, L.dmgPhys(this.rng, L.cstat(c, 'atk'), t.def));
+      await this.wait(0.45);
+    } else {
+      await this.bmsg(`${name}: ${sk.name}!`, 0.5);
+      this.view.battleCap?.(sk.kind === 'phys' ? 'attack' : 'cast', sk.all ? -1 : S.enemies.indexOf(t));
+      this.view.battleFx?.('special', 'capsule', 0);
+      await this.wait(0.3);
+      if (sk.kind === 'heal') {
+        for (const h of L.aliveHeroes(S)) {
+          const amt = Math.trunc((L.cstat(c, 'mag') * sk.mult + 10) * this.rng.range(0.95, 1.05));
+          h.hp = Math.min(L.mhp(S, h), h.hp + amt);
+          const hi = S.party.indexOf(h);
+          this.ui.floatHero?.(hi, '+' + amt, '#66ff99');
+          this.view.battleFx?.('heal', 'hero', hi);
+        }
+        this.sfx('heal');
+      } else if (sk.kind === 'guard') {
+        for (const x of L.aliveHeroes(S)) { guard.push(x); this.view.battleFx?.('guard', 'hero', S.party.indexOf(x)); }
+      } else {
+        const tg = sk.all ? al : [t];
+        for (let k = 0; k < (sk.hits || 1); k++) {
+          for (const e of tg) {
+            if (e.hp <= 0) continue;
+            if (sk.kind === 'phys') this.hitEnemy(e, L.dmgPhys(this.rng, L.cstat(c, 'atk'), e.def, sk.mult), 'slash');
+            else this.hitEnemy(e, L.dmgMag(this.rng, L.cstat(c, 'mag'), e.def, sk.mult), 'magic');
+          }
+          await this.wait(0.3);
+        }
+      }
+      await this.wait(0.3);
+    }
+    await this.checkEnemyDeaths();
+  }
+  async checkEnemyDeaths() {
+    const S = this.S;
     for (const e of S.enemies) {
       if (e.hp <= 0 && !e.dead) {
         e.dead = true;
         this.view.battleEnemyDown?.(S.enemies.indexOf(e));
-        await this.bmsg(`${e.name} wird zu Rauschen!`, 0.6);
+        await this.bmsg(`${e.name} zerfällt zu Staub!`, 0.6);
       }
     }
+  }
+  hurtCap(c, dmg, heavy) {
+    c.hp = Math.max(0, c.hp - dmg);
+    this.sfx(heavy ? 'heavy' : 'hit');
+    this.ui.floatCap?.(String(dmg), '#ff7373');
+    this.view.battleCap?.(c.hp > 0 ? 'hurt' : 'death');
+    this.view.battleFx?.(heavy ? 'heavy' : 'hit', 'capsule', 0);
   }
   async enemyAct(e, guard) {
     const S = this.S;
@@ -770,7 +1014,16 @@ export class Game {
         if (guard.includes(h)) dm = Math.max(1, Math.trunc(dm / 2));
         this.hurtHero(h, dm, true);
       }
+      const bc = S.bcap;
+      if (bc && bc.hp > 0) this.hurtCap(bc, L.dmgPhys(this.rng, e.atk, L.cdef(bc), spec[1]), true);
       await this.wait(0.5);
+    } else if (S.bcap && S.bcap.hp > 0 && this.rng.randf() < 1 / (al.length + 1)) {
+      const bc = S.bcap, heavy = this.rng.randf() < 0.2;
+      this.view.battleEnemy?.(ei, 'attack', -2);
+      await this.bmsg(`${e.name} greift ${L.cname(bc)} an!`, 0.4);
+      this.hurtCap(bc, L.dmgPhys(this.rng, e.atk, L.cdef(bc), heavy ? 1.5 : 1.0), heavy);
+      await this.wait(0.45);
+      if (bc.hp <= 0) await this.bmsg(`${L.cname(bc)} ist erschöpft und zieht sich in seine Kapsel zurück.`, 0.7);
     } else {
       const heavy = this.rng.randf() < 0.2;
       const t = al[this.rng.randi() % al.length];
@@ -800,6 +1053,9 @@ export class Game {
     xp = L.victoryExp(S, xp);
     S.gold += gd;
     this.view.battleFx?.('victory');
+    this.musicOverride = 'none';
+    this.pickMusic();
+    this.sfx('victory');
     this.view.battleHero?.(-1, 'victory');
     await this.bmsg(`Sieg!  +${xp} EXP  +${gd} Münzen`, 1.0);
     if (this.rng.randf() < 0.25) {
@@ -809,8 +1065,15 @@ export class Game {
     for (const h of S.party) {
       h.down = false;
       if (h.hp <= 0) continue;
-      for (const lv of L.gainExp(S, h, xp)) await this.bmsg(`${h.name} erreicht Stufe ${lv}!`, 0.9);
+      for (const lv of L.gainExp(S, h, xp)) { this.sfx('levelup'); await this.bmsg(`${h.name} erreicht Stufe ${lv}!`, 0.9); }
     }
+    // Kapselgeister: der Begleiter bekommt alles, die übrigen die Hälfte
+    for (const id in S.caps.own) {
+      const c = S.caps.own[id], act = id === S.caps.active;
+      for (const lv of L.capGain(c, act ? xp : Math.trunc(xp / 2))) if (act) { this.sfx('levelup'); await this.bmsg(`${L.cname(c)} erreicht Stufe ${lv}!`, 0.8); }
+      if (act && L.canEvolve(c) && c.hinted !== c.form + 1) { c.hinted = c.form + 1; await this.bmsg(`${L.cname(c)} ist bereit für eine Sphärenfrucht!`, 0.9); }
+    }
+    this.musicOverride = null;
   }
 
   // Debug (nur mit ?debug): F9 Kampf, F8 nächste Karte
