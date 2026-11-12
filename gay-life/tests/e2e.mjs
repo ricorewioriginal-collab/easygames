@@ -1,7 +1,7 @@
 /* Browser-Test für GayLife (Playwright + Chromium, Software-WebGL).
    Voraussetzung: Webserver im Repo-Hauptordner, z. B.  python3 -m http.server 8080
-   Aufruf:  BASE=http://localhost:8080 THREE=/pfad/zu/three.min.js node gay-life/tests/e2e.mjs
-   THREE ist optional (r128, für Umgebungen ohne Zugriff auf cdnjs); QRCODE ist optional (qrcode.js), Mehrspieler läuft mit tests/fakepeer.js. Prüft Start, Migration alter Spielstände, Speichern/Laden,
+   Aufruf:  BASE=http://localhost:8080 node gay-life/tests/e2e.mjs   (ONLY=15,16 nur diese Abschnitte)
+   Three.js r128 kommt jetzt aus ../vendor/ (THREE ist nicht mehr nötig); QRCODE ist optional (qrcode.js), Mehrspieler läuft mit tests/fakepeer.js. Prüft Start, Migration alter Spielstände, Speichern/Laden,
    Bewegung (Tastatur und Touch), Uhr und Bedürfnisse, Späti, Wohnung, Barjob, Kontakte, Handy-Apps, Qualität, Vollbild und alle alten Minispiele. */
 import { createRequire } from 'module';
 import { execSync } from 'child_process';
@@ -12,12 +12,15 @@ const browser = await pw.chromium.launch({ args: ['--no-sandbox', '--use-gl=swif
 let fails = 0, errs = [];
 // ONLY=14,15 lässt nur diese Abschnitte laufen (schneller beim Entwickeln)
 const ONLY = (process.env.ONLY || '').split(',').filter(Boolean), sec = n => !ONLY.length || ONLY.includes(n);
-const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) fails++; };
+const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) { fails++; if (errs.length) console.log('   letzte Fehler:', errs.slice(-3).join(' | ')); } };
 
 async function newPage(opts, title) {
-  const ctx = await browser.newContext(opts || { viewport: { width: 1000, height: 640 } });
+  const o2 = Object.assign({ viewport: { width: 1000, height: 640 }, serviceWorkers: 'block' }, opts || {}); delete o2.fig;
+  const ctx = await browser.newContext(o2);
   const page = await ctx.newPage();
   if (!title) await page.addInitScript(() => { window.__GL_SKIP_TITLE = true; });
+  // Echte 3D-Figuren nur in Abschnitt 16: Software-WebGL (SwiftShader) wird mit vielen animierten Körpern zu langsam für die zeitabhängigen Prüfungen
+  if (!(opts && opts.fig)) await page.addInitScript(() => { window.__GL_NOFIG = 1; });
   page.on('pageerror', e => errs.push('PAGEERR ' + e.message));
   page.on('console', m => { if (m.type() === 'error' && !/ERR_FAILED|net::|Failed to load resource/.test(m.text())) errs.push('console: ' + m.text()); });
   if (process.env.THREE) await page.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
@@ -654,7 +657,8 @@ if (sec('8')) {
 
 /* ---------- 9. Mehrspieler: PIN, QR-Code, Orte, Besuch, Gruppentanz, Gruppenfoto (mit Test-Ersatz für PeerJS über BroadcastChannel) ---------- */
 if (sec('9')) {
-  let s; const ctx = await browser.newContext({ viewport: { width: 1000, height: 640 } });
+  let s; const ctx = await browser.newContext({ viewport: { width: 1000, height: 640 }, serviceWorkers: 'block' });
+  await ctx.addInitScript(() => { window.__GL_NOFIG = 1; });
   if (process.env.THREE) await ctx.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
   await ctx.route(/peerjs/, r => r.fulfill({ path: new URL('./fakepeer.js', import.meta.url).pathname, contentType: 'application/javascript' }));
   if (process.env.QRCODE) await ctx.route(/qrcode/, r => r.fulfill({ path: process.env.QRCODE, contentType: 'application/javascript' })); else await ctx.route(/qrcode/, r => r.abort());
@@ -1089,6 +1093,25 @@ if (sec('15')) {   // Switch-Symbole, Startmenü nur mit dem Controller
   const txt = await V(() => document.getElementById('padh').textContent);
   ok(/ZR/.test(txt) && /^A/.test(txt), 'Switch-Symbole: A bestätigt, ZR sprintet (' + txt.slice(0, 40) + ' …)');
   await ctx.close();
+}
+
+/* ---------- 16. Echte 3D-Menschen (Quaternius, CC0) mit Bewegungen und Detailstufen ---------- */
+if (sec('16')) {
+  const { ctx, page } = await newPage({ fig: true });
+  await boot(page);
+  const V = (f, a) => ev(page, f, a);
+  await page.waitForFunction(() => GL.fig.n > 0 && GL.W.player.g.userData.fig, null, { timeout: 30000 });
+  ok(await V(() => !!GL.W.player.g.userData.fig.root.visible && GL.W.player.g.userData.old.every(c => !c.visible)), 'Spielfigur ist ein echter 3D-Körper (einfache Figur ausgeblendet)');
+  ok(await V(() => GL.fig.n >= 10), 'Auch die Leute im Kiez sind echte Figuren');
+  await closeDialogs(page); await page.keyboard.down('w'); await page.waitForTimeout(600);
+  const an = await V(() => ({ a: GL.W.player.g.userData.fig.curName, dlg: !!GL.W.dlg }));
+  ok(an.a === 'jog', 'Laufen spielt die Jogging-Bewegung (' + JSON.stringify(an) + ')');
+  await page.keyboard.up('w'); await page.waitForTimeout(400);
+  ok(await V(() => GL.W.player.g.userData.fig.curName === 'idle'), 'Stehen spielt die Ruhe-Bewegung');
+  const lod = await V(() => { const far = GL.W.npcs.filter(n => n.g.userData.fig && Math.hypot(n.x - GL.W.cam.position.x, n.z - GL.W.cam.position.z) > GL.fig.far() + 5); return far.length ? far.every(n => !n.g.userData.fig.root.visible) : null; });
+  ok(lod !== false, 'Ferne Leute werden als einfache Figur gezeichnet (Detailstufe)' + (lod === null ? ' – gerade niemand weit weg' : ''));
+  const hgt = await V(() => { const g = GL.W.player.g, f = g.userData.fig; return f.height * f.root.scale.y * g.scale.y; });
+  ok(hgt > 1.8 && hgt < 2.4, `Figur ist ${hgt.toFixed(2)} Einheiten groß wie bisher – Türen und Kamera passen`);   await ctx.close();
 }
 
 ok(errs.length === 0, 'Keine Skriptfehler in der Konsole' + (errs.length ? ':\n  ' + errs.slice(0, 8).join('\n  ') : ''));

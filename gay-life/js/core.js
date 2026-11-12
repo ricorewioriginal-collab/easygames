@@ -441,9 +441,10 @@ function makePerson(L) {
   if (L.tat === 4) add(new THREE.OctahedronGeometry(.04), lmat('#f3c34a'), .26, 2.06, .12);
   var bw = [.9, 1, 1.14][L.build == null ? 1 : L.build] || 1, hs = [.9, 1, 1.08][L.h == null ? 1 : L.h] || 1;
   g.userData = { legs: legs, arms: arms }; g.scale.set(.95 * bw, .95 * hs, .95 * bw);
+  if (GL.fig) GL.fig.upgrade(g, L);
   return g;
 }
-function animPerson(p, v, t) { var u = p.userData, s = Math.sin(t * 9) * .7 * v; u.legs[0].rotation.x = s; u.legs[1].rotation.x = -s; u.arms[0].rotation.x = -s * .8; u.arms[1].rotation.x = s * .8; }
+function animPerson(p, v, t) { if (GL.fig && GL.fig.anim(p, v)) return; var u = p.userData, s = Math.sin(t * 9) * .7 * v; u.legs[0].rotation.x = s; u.legs[1].rotation.x = -s; u.arms[0].rotation.x = -s * .8; u.arms[1].rotation.x = s * .8; }
 function lerpA(a, b, k) { var d = ((b - a + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI; return a + d * Math.min(1, k); }
 function makeCat() {
   var g = new THREE.Group(), m = lmat('#9a9aa6'), d = lmat('#5b5b66');
@@ -714,7 +715,7 @@ function frame(ts) {
   });
   W.circles.forEach(function (c) { var dx = p.x - c.x, dz = p.z - c.z, d = Math.hypot(dx, dz), m = R + c.r; if (d < m && d > 1e-6) { p.x = c.x + dx / d * m; p.z = c.z + dz / d * m; } });
   var bd = W.bounds; p.x = Math.max(bd.x0, Math.min(bd.x1, p.x)); p.z = Math.max(bd.z0, Math.min(bd.z1, p.z));
-  p.g.position.set(p.x, 0, p.z); p.g.rotation.y = W.yaw; animPerson(p.g, il > .05 ? 1 : 0, W.t);
+  p.g.position.set(p.x, 0, p.z); p.g.rotation.y = W.yaw; animPerson(p.g, il > .05 ? ((W.run || 1) > 1.2 ? 3 : il > .55 ? 2 : 1) : 0, W.t);
   // NPCs
   W.npcs.forEach(function (n) {
     n.t += dt; var walking = 0;
@@ -1748,7 +1749,7 @@ function mpAuto() {
 window.addEventListener('pagehide', save);
 
 /* ---------- Schnittstelle für die Module in js/ ---------- */
-GL.core = { ac: ac, talkBase: talkBase, $: $, esc: esc, fmt: fmt, pick: pick, toast: toast, banner: banner, say: say, sfx: sfx, gain: gain, level: level, glz2: glz2, avatar: avatar,
+GL.core = { SKIN: SKIN, HC: HC, TC: TC, ac: ac, talkBase: talkBase, $: $, esc: esc, fmt: fmt, pick: pick, toast: toast, banner: banner, say: say, sfx: sfx, gain: gain, level: level, glz2: glz2, avatar: avatar,
   editor: editor, leave: leaveWorld, enter: enterWorld, openGame: openGame, showHub: showHub, menuHub: menuHub, gameOf: gameOf, bestOf: bestOf, makePerson: makePerson, animPerson: animPerson, lmat: lmat, cvTex: cvTex, labelSprite: labelSprite, mix: mix,
   GAMES: GAMES, POIS: POIS, QUESTS: QUESTS, SIDE: SIDE, NPCDEF: NPCDEF, DATES: DATES, STARS: STARS, RB: RB, resize: function () { if (WD && WD.on) resize(); } };
 Object.defineProperty(GL, 'W', { get: function () { return WD; } });

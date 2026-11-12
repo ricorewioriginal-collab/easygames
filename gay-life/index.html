@@ -220,7 +220,9 @@ input[type=text]{background:rgba(255,255,255,.1);border:1px solid var(--line);co
 <div class="wrap" id="game"></div>
 <div id="world"><canvas id="wc"></canvas><div class="wt"><div class="wcol"><div class="wchip" id="wq"></div><button class="wchip" id="hud" title="Status (Handy)"></button></div><div style="margin-left:auto;display:flex;flex-direction:column;gap:6px;align-items:flex-end"><div class="wchip" id="wgl"></div><div class="wbt"><button id="wPh" title="Handy (P)">📱</button><button id="wLook" title="Look">👤</button><button id="wMp" title="Mehrspieler">👥</button><button id="wMap" title="Orte">🗺️</button><button id="wSnd">🔊</button><button id="wFs" title="Vollbild (F)">⛶</button></div></div></div><div id="arrw"><div id="arr">▲</div><span id="adist"></span></div><div id="pad"><div id="stk"><i></i></div><div id="dia"><button id="bY"><b>☰</b><small>Menü</small></button><button id="bX"><b>📱</b><small>Handy</small></button><button id="bB"><b>🗺️</b><small>Orte</small></button><button id="bA"><b>✋</b><small>Aktion</small></button></div></div><button id="act"></button><div id="dlg"></div><div id="ban"></div><div id="emo"><button>👋</button><button>💃</button><button>❤️</button><button>😂</button><button>🌈</button></div><div id="maps"></div><div id="phone"></div><div id="fade"></div></div>
 <div class="modal" id="modal"><div class="box" id="mbox"></div></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../vendor/three-r128-gltfloader.js"></script>
+<script src="../figuren/figuren.js"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="gay-life" data-prefix="anmachaGayLife" data-save-btn="#glSave" defer></script>
 <script src="js/state.js"></script>
 <script src="js/core.js"></script>
@@ -248,6 +250,7 @@ input[type=text]{background:rgba(255,255,255,.1);border:1px solid var(--line);co
 <script src="js/datingapp.js"></script>
 <script src="js/start.js"></script>
 <script src="js/pad.js"></script>
+<script src="js/figures.js"></script>
 <script src="js/main.js"></script>
 <script src="../gamepad.js" data-pad-labels="ls=Laufen; rs=Kamera drehen und zoomen; dpad=Laufen / Auswählen; a=Aktion / Bestätigen; b=Orte / Zurück; x=Handy; y=Menü; rt=Sprinten; lb=Kamera links; rb=Kamera rechts; r3=Kamera hinter die Figur; start=Menü" data-pad="b=Backspace/Escape y=- start=Escape" defer></script>
 <script src="../egstat.js" defer></script>
