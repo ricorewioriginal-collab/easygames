@@ -19,14 +19,14 @@ window.EASYGAMES_GUIDES = {
  "zotik": {
   "anleitung": "Zotik ist ein 3D-Action-Rollenspiel mit zehn Welten von Lunaris bis Elyndra und einem Endspiel im Weltenriss. Du erkundest die Welten, sprichst mit Figuren, erfüllst Quests (Hauptgeschichte und Nebenaufgaben), löst Rätsel, kämpfst mit deinen Gefährten gegen Gegner und Bosse und sammelst Rissplitter, Heiltränke und Erfahrung. Rote Kreise am Boden zeigen Angriffe an, denen du rechtzeitig ausweichen musst. Im Menü findest du Quests, Weltreise, Inventar, Fähigkeiten, Steuerung mit Optionen und Koop; das Spiel speichert automatisch, zusätzlich über das Menü.",
   "steuerung": [
-   "PC: WASD bewegen, Maus ziehen = Kamera, J, K oder Klick = Angriff (3-Hieb-Kombo), Shift oder Leertaste = Ausweichen, 1 / 2 = Fähigkeiten (Funkenwirbel, Lichtstoß), 3 oder R = Heiltrank, E = Sprechen/Öffnen, Esc oder Tab = Menü, I = Inventar, Antworten in Gesprächen mit 1–9, Befehlsleiste mit ↑ ↓ Enter, Q = Ziel erfassen, F = Reaktion, T = Spezial-Befehlsleiste (Team, Form, IP, Werkzeug), G = Rissform, 4/5/6 = IP-Techniken, C/X = Werkzeug benutzen/wechseln",
+   "PC: WASD bewegen, Maus ziehen = Kamera, J, K oder Klick = Angriff (vor einer Person oder Truhe: Sprechen/Öffnen), Leertaste = Springen, Shift = Ausweichen, 1 / 2 = Fähigkeiten, 3 oder R = Heiltrank, E = Sprechen/Öffnen, Q = Ziel, F = Reaktion, Esc = Menü – alle Tasten frei belegbar (Menü → Steuerung → ⌨️ Tastatur)",
    "PC (Nautilux, sobald freigeschaltet): V = ein-/aussteigen, B = Form wechseln",
-   "Touch: Stick links = Bewegen, rechts wischen = Kamera, Tasten für Angriff und Ausweichen, Fähigkeit-Taste (tippen = einsetzen, halten = wechseln), Aktion-Taste (Sprechen, Öffnen, Einsteigen), Menü-Taste ☰ oben links",
-   "Controller: linker Stick bewegen, X Angriff, A Ausweichen, Y Sprechen/Öffnen, LB Funkenwirbel, RB Lichtstoß, LT Ziel, RT Heiltrank, B oder Start Menü, Select Befehl ausführen; der rechte Stick steuert einen Zeiger für Menüs"
+   "Touch: Stick links = Bewegen, rechts wischen = Kamera, Tasten für Angriff, Springen und Ausweichen, Aktion-Taste (zeigt Sprechen, Öffnen, Einsteigen), ☰ Befehle, Menü-Taste ☰ oben links",
+   "Controller: linker Stick laufen, rechter Stick Kamera, A bestätigen/Angriff (vor Personen: Sprechen), B zurück/Springen, X Ausweichen, Y Aktion, LB Block, RB Lichtstoß, LT Heiltrank, RT Reaktion, Steuerkreuz Befehle und Menüs, Select Rufen, Start Pausemenü; Symbole für PlayStation, Switch und Xbox automatisch"
   ],
   "tipps": [
    "Treffer laden Mana auf, nutze Fähigkeiten also im Kampf.",
-   "Erscheint ▲ über dem Kampf, drücke F (Handy: Aktion-Taste) für einen Konter.",
+   "Erscheint ▲ über dem Kampf, drücke F, am Controller RT (Handy: Aktion-Taste) für einen Konter.",
    "Felli ist dein Kapselmonster: füttere es im Menü, dann entwickelt es sich.",
    "Die Uralte Höhle in Lunaris startet immer bei Stufe 1 – nur blaue Truhen behältst du.",
    "Heiltränke gibt es im Laden gegen Rissplitter."
