@@ -146,6 +146,8 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     #goal{font-size:12.5px;padding:5px 10px}
     #toast{font-size:13px}
   }
+  .keys.k4{grid-template-columns:auto 1fr auto 1fr}
+  @media (max-width:520px){.keys.k4{grid-template-columns:auto 1fr}}
   @media (max-width:420px){.grid{grid-template-columns:1fr}.money{grid-template-columns:repeat(4,1fr)}}
   /* Handy quer (wenig Höhe): alles flacher */
   @media (max-height:520px){
@@ -281,7 +283,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script>mmStep(.88, 'Kassen werden hochgefahren …')</script>
 <script src="menu.js"></script>
 <script src="../cloud/anmacha-cloud.js" data-save-btn="[data-a=&quot;save&quot;]" data-game="markthalle" data-prefix="amh_" data-mount="#cloudbox" data-hint="Sichere deinen Supermarkt mit Google und spiel auf jedem Gerät weiter." defer></script>
-<script src="../gamepad.js" data-pad-labels="ls=Laufen; rs=Umsehen; dpad=Laufen · in Fenstern wählen; a=Aktion · Einräumen (halten); b=Zurück · Fenster schließen; x=Aktion; y=Regal ansehen · Preise; lb=Draufsicht/Ego; rb=Drehen (Bauen); lt=Rennen; select=Laden öffnen · Feierabend; start=Pause; l3=Knöpfe auf dem Bildschirm (halten)" data-pad="ls=none rs=none y=KeyF lb=KeyV rb=KeyR lt=ShiftLeft select=KeyO" defer></script>
+<script src="../gamepad.js" data-pad-labels="ls=Laufen; rs=Umsehen; dpad=Laufen · in Fenstern wählen; a=Aktion · Einräumen (halten); b=Zurück · Fenster schließen; x=Aktion; y=Regal ansehen · Preise; lb=Draufsicht/Ego; rb=Drehen (Bauen); lt=Rennen; select=Laden öffnen · Feierabend; start=Pausemenü · Fenster schließen; l3=Knöpfe auf dem Bildschirm (halten)" data-pad="ls=none rs=none y=KeyF lb=KeyV rb=KeyR lt=ShiftLeft select=KeyO start=Escape" defer></script>
 <script src="../egstat.js" defer></script>
 </body>
 </html>
