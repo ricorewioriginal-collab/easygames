@@ -35,16 +35,26 @@ export function createRooms({ T, mk, G, M, glow, scene, hgt, INT, anim, pl, toas
     let sol = null;   // Lösungsweg für die Tests: ['step'|'use', x, z]
     let solved = !!opt.solved; const win = () => { if (solved) return; solved = true; sfx('level'); toast('✨ Rätsel gelöst!'); done(); };
     const say = t => toast(t);
+    /* Hinweise: Tafel neben dem Rätsel wiederholt die Regel und zeigt den nächsten richtigen Schritt; nach Fehlern oder vielen Zügen ein Tipp */
+    let rule = '', hint = null, fails = 0, moves = 0, mk1 = null, mkT = 0;
+    const intro = t => { rule = t; toast(t); };
+    const tip = () => toast('💡 Tipp: Die Hinweistafel ❓ neben dem Rätsel zeigt dir den nächsten richtigen Schritt.');
+    const fail = () => { if (++fails === 2 || fails % 5 === 0) setTimeout(tip, 1600); };
+    const move = () => { if (!solved && ++moves % 14 === 0) tip(); };
+    const mark = (x, z, h = 2.6) => { if (!mk1) mk1 = tag('⬇️', 0, 0, 0); mk1.position.set(x, hgt(x, z) + h, z); mk1.visible = true; mkT = 6; };
+    anim((t, dt) => { if (mk1 && mk1.visible) { mkT -= Math.min(.1, dt || .016); mk1.position.y += Math.sin(t * 6) * .01; if (mkT <= 0 || solved) mk1.visible = false; } });
     if (kind === 'tones') {
       const n = Math.min(6, 3 + (lv > 3) + (lv > 6)), len = Math.min(7, 3 + Math.floor(lv / 2)), mel = []; for (let i = 0; i < len; i++) mel.push(rnd(R, n));
       const ps = [], cs = []; let pos = 0;
       for (let i = 0; i < n; i++) { const x = area.x0 + (i + .5) * W / n; cs.push(crystal(x, area.z0 + .8, COLS[i], .6)); ps.push(pad(x, cz + D * .15, Math.min(1.1, W / n * .38), 0x8a8aa0, o => {
         if (solved) return; tone(NOTES[i], .5, 'sine', .25); cs[i].lit(true); setTimeout(() => !solved && cs[i].lit(false), 400);
         if (mel[pos] === i) { pos++; o.set(true, COLS[i]); setTimeout(() => o.set(false, 0x8a8aa0), 350); if (pos >= mel.length) { cs.forEach(c => c.lit(true)); win(); } }
-        else { pos = 0; sfx('hurt'); say('Falscher Ton – die Melodie beginnt von vorn.'); } })); }
+        else { pos = 0; sfx('hurt'); fail(); say('Falscher Ton – die Melodie beginnt von vorn.'); } })); }
       const lx = area.x1 - .8, lz = area.z1 - .8, st = crystal(lx, lz, 0xe0e8ff, .7);
       INT.push({ x: lx, z: lz, name: 'Lauschstein', pr: 'Melodie anhören', rad: 2.4, vis: () => !solved, talk() { pos = 0; mel.forEach((k, j) => setTimeout(() => { tone(NOTES[k], .45, 'sine', .25); cs[k].lit(true); setTimeout(() => cs[k].lit(false), 380); }, j * 560)); st.lit(true); setTimeout(() => st.lit(false), mel.length * 560); say('🎵 Merk dir die Töne – dann betritt die Platten in dieser Reihenfolge.'); } });
       if (solved) cs.forEach(c => c.lit(true));
+      intro('🎵 Klangplatten: Hör dir am Lauschstein die Melodie an und betritt die Platten in derselben Reihenfolge.');
+      hint = () => { const k = mel[pos]; mark(ps[k].x, ps[k].z); cs[k].lit(true); tone(NOTES[k], .45, 'sine', .25); setTimeout(() => !solved && cs[k].lit(false), 600); return `Ton ${pos + 1} von ${mel.length}: die markierte Platte (der Kristall darüber leuchtet).`; };
     } else if (kind === 'lights') {
       const N = lv > 5 ? 4 : 3, s = Math.min(W, D) / N, on = [], ps = [];
       const idx = (i, j) => i * N + j, flip = (i, j) => { for (const [a, b] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]) { const u = i + a, v = j + b; if (u >= 0 && v >= 0 && u < N && v < N) on[idx(u, v)] = !on[idx(u, v)]; } };
@@ -52,9 +62,14 @@ export function createRooms({ T, mk, G, M, glow, scene, hgt, INT, anim, pl, toas
       const presses = 3 + Math.min(5, lv); for (let k = 0; k < presses; k++) flip(rnd(R, N), rnd(R, N));
       if (on.every(Boolean)) flip(1, 1);
       const show = () => ps.forEach((p, k) => p.set(on[k], on[k] ? 0xffe27a : 0x3a3a5a));
-      for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) ps.push(pad(cx + (i - (N - 1) / 2) * s, cz + (j - (N - 1) / 2) * s, s * .42, 0x3a3a5a, () => { if (solved) return; flip(i, j); tone(on[idx(i, j)] ? 660 : 440, .15, 'triangle', .15); show(); if (on.every(Boolean)) win(); }));
+      for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) ps.push(pad(cx + (i - (N - 1) / 2) * s, cz + (j - (N - 1) / 2) * s, s * .42, 0x3a3a5a, () => { if (solved) return; flip(i, j); move(); tone(on[idx(i, j)] ? 660 : 440, .15, 'triangle', .15); show(); if (on.every(Boolean)) win(); }));
       if (solved) on.fill(true); show();
-      say('💡 Lichtplatten: Jeder Schritt schaltet die Platte und ihre Nachbarn um. Bring alle zum Leuchten.');
+      intro('💡 Lichtplatten: Jeder Schritt schaltet die Platte und ihre Nachbarn um. Bring alle zum Leuchten.');
+      hint = () => { const M2 = N * N; let best = -1, bc = 99;
+        for (let m = 0; m < (1 << M2); m++) { let c = 0; for (let k = 0; k < M2; k++) if (m >> k & 1) c++; if (c >= bc) continue;
+          const t = on.slice(); for (let k = 0; k < M2; k++) if (m >> k & 1) { const i = (k / N) | 0, j = k % N; for (const [a, b] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]) { const u = i + a, v = j + b; if (u >= 0 && v >= 0 && u < N && v < N) t[idx(u, v)] = !t[idx(u, v)]; } }
+          if (t.every(Boolean)) { best = m; bc = c; } }
+        if (best < 0) return ''; const k = Math.log2(best & -best) | 0; mark(ps[k].x, ps[k].z); return `Noch ${bc} Schritt${bc > 1 ? 'e' : ''} bis zur Lösung. Tritt auf die markierte Platte (Reihenfolge ist egal).`; };
     } else if (kind === 'statues') {
       const n = Math.min(5, 3 + (lv > 4)), face = [], st = [], tx = opt.tx ?? cx, tz = opt.tz ?? area.z0 - 3;
       const want = i => { const x = area.x0 + (i + .5) * W / n; return Math.atan2(tx - x, tz - cz); };
@@ -63,8 +78,9 @@ export function createRooms({ T, mk, G, M, glow, scene, hgt, INT, anim, pl, toas
         g.add(mk(G.box, M(0xffd45a, { e: 0xffa020, ei: 1 }), 0, 2, .3, .2, .08, .08, false)); scene.add(g); st.push(g); face.push(solved ? 0 : 1 + rnd(R, 3)); }
       const show = () => st.forEach((g, i) => { g.rotation.y = want(i) + face[i] * Math.PI / 2; });
       st.forEach((g, i) => INT.push({ x: g.position.x, z: g.position.z, name: 'Wächterstatue', pr: 'Statue drehen', rad: 1.9, vis: () => !solved, talk() {
-        for (const k of [i, i + 1]) if (k < n) face[k] = (face[k] + 1) % 4; sfx('pick'); show(); if (face.every(f => f === 0)) win(); } }));
-      show(); say('🗿 Wächterstatuen: Jede Drehung bewegt auch die Statue rechts daneben. Alle sollen zum Schatz blicken.');
+        for (const k of [i, i + 1]) if (k < n) face[k] = (face[k] + 1) % 4; sfx('pick'); move(); show(); if (face.every(f => f === 0)) win(); } }));
+      show(); intro('🗿 Wächterstatuen: Jede Drehung bewegt auch die Statue rechts daneben. Alle sollen zum Schatz blicken (das goldene Auge zeigt die Blickrichtung).');
+      hint = () => { const f = face.slice(); for (let i = 0; i < n; i++) { const p = (4 - f[i]) % 4; if (p) { const g = st[i]; mark(g.position.x, g.position.z, 3); return `Dreh die markierte Statue ${p}-mal. Arbeite dich von links nach rechts vor – die Statue rechts daneben dreht sich mit.`; } } return ''; };
     } else if (kind === 'pairs') {
       const pairs = Math.min(5, 3 + Math.floor(lv / 3)), deck = []; for (let i = 0; i < pairs; i++) deck.push(i, i);
       for (let i = deck.length - 1; i > 0; i--) { const j = rnd(R, i + 1); [deck[i], deck[j]] = [deck[j], deck[i]]; }
@@ -76,17 +92,21 @@ export function createRooms({ T, mk, G, M, glow, scene, hgt, INT, anim, pl, toas
           if (first < 0) { first = k; return; }
           const a = first; first = -1;
           if (deck[a] === deck[k]) { open[a] = open[k] = true; sfx('pick'); if (open.every(Boolean)) win(); }
-          else { busy = true; setTimeout(() => { stones[a].visible = stones[k].visible = false; busy = false; }, 900); } } }); });
-      say('🔣 Symbolsteine: Deck zwei Steine auf. Gleiche Paare bleiben offen.');
+          else { busy = true; move(); setTimeout(() => { stones[a].visible = stones[k].visible = false; busy = false; }, 900); } } }); });
+      intro('🔣 Symbolsteine: Deck zwei Steine auf. Gleiche Paare bleiben offen.');
+      hint = () => { if (busy) return ''; for (let a = 0; a < deck.length; a++) if (!open[a]) for (let b = a + 1; b < deck.length; b++) if (!open[b] && deck[a] === deck[b]) {
+          if (first >= 0 && first !== a && first !== b) { stones[first].visible = false; first = -1; }
+          for (const k of [a, b]) { stones[k].visible = true; setTimeout(() => { if (!open[k] && first !== k) stones[k].visible = false; }, 2200); } mark(stones[a].position.x, stones[a].position.z, 2.8); return 'Schau genau: Diese zwei Steine zeigen dasselbe Symbol.'; } return ''; };
     } else if (kind === 'orbs') {
       const n = opt.pos ? opt.pos.length : Math.min(5, 3 + Math.floor(lv / 4)), hold = opt.hold || Math.max(7, 16 - lv), lit = new Array(n).fill(0), cr = [];
       const P = opt.pos || Array.from({ length: n }, (_, i) => [cx + (i % 2 ? 1 : -1) * (W * .2 + (i >> 1) * W * .13), area.z0 + ((i * 2) % 3 + .5) * D / 3]);
       for (let i = 0; i < n; i++) { const [x, z] = P[i]; cr.push(crystal(x, z, 0xff8a3a, .8));
         INT.push({ x, z, name: 'Glutkristall', pr: 'Kristall entzünden', rad: 1.9, vis: () => !solved && lit[i] <= 0, talk() { lit[i] = hold; cr[i].lit(true); sfx('pick'); if (lit.every(v => v > 0)) win(); } }); }
       let last = 0;
-      anim((t, dt) => { if (solved) return; const d = Math.min(.1, dt || (t - last)); last = t; for (let i = 0; i < n; i++) if (lit[i] > 0) { lit[i] -= d; if (lit[i] <= 0) cr[i].lit(false); } });
+      anim((t, dt) => { if (solved) return; const d = Math.min(.1, dt || (t - last)); last = t; for (let i = 0; i < n; i++) if (lit[i] > 0) { lit[i] -= d; if (lit[i] <= 0) { cr[i].lit(false); fail(); } } });
       if (solved) cr.forEach(c => c.lit(true));
-      say(`🔥 Glutkristalle: Entzünde alle ${n}, bevor der erste nach ${hold} Sekunden erlischt.`);
+      intro(`🔥 Glutkristalle: Entzünde alle ${n}, bevor der erste nach ${hold} Sekunden erlischt.`);
+      hint = () => { const k = lit.findIndex(v => v <= 0); if (k < 0) return ''; mark(P[k][0], P[k][1], 3); return 'Der markierte Kristall ist noch aus. Plane deinen Weg vorher: erst den am weitesten entfernten Kristall, dann auf dem Rückweg die anderen. Rennen (Ausweichen) spart Zeit.'; };
     } else if (kind === 'colors') {
       /* Farbschalter: Wechseln (Aktion) dreht auch die Farbe des rechten Nachbarn weiter; alle sollen die Farbe des großen Kristalls zeigen */
       const n = Math.min(5, 3 + (lv > 4) + (lv > 8)), K = [COLS[0], COLS[1], COLS[3]], m = rnd(R, 3), v = new Array(n).fill(m), pr = new Array(n).fill(0), cr = [];
@@ -95,18 +115,20 @@ export function createRooms({ T, mk, G, M, glow, scene, hgt, INT, anim, pl, toas
       const big = crystal(cx, area.z0 + .7, K[m], 1.25); big.c.material = M(K[m], { e: K[m], ei: 2, r: .2 }); big.lit(true); big.c.material = M(K[m], { e: K[m], ei: 2, r: .2 });
       sol = [];
       for (let i = 0; i < n; i++) { const x = area.x0 + (i + .5) * W / n, z = area.z1 - .9; cr.push(crystal(x, z, K[0], .7)); for (let k = 0; k < (3 - pr[i]) % 3; k++) sol.push(['use', x, z]);
-        INT.push({ x, z, name: 'Farbkristall', pr: 'Farbe wechseln', rad: 1.8, vis: () => !solved, talk() { press(i); tone(NOTES[v[i]], .2, 'triangle', .2); show(); if (v.every(c => c === m)) win(); } }); }
+        INT.push({ x, z, name: 'Farbkristall', pr: 'Farbe wechseln', rad: 1.8, vis: () => !solved, talk() { press(i); move(); tone(NOTES[v[i]], .2, 'triangle', .2); show(); if (v.every(c => c === m)) win(); } }); }
       if (solved) v.fill(m); show();
-      say('🎨 Farbschalter: Jeder Wechsel dreht auch den rechten Nachbarn weiter. Alle sollen leuchten wie der große Kristall.');
+      intro('🎨 Farbschalter: Jeder Wechsel dreht auch den rechten Nachbarn weiter (Rot → Gelb → Blau → Rot). Alle sollen leuchten wie der große Kristall.');
+      hint = () => { const t = v.slice(); for (let i = 0; i < n; i++) { const p = (m - t[i] + 3) % 3; if (p) { const c = cr[i].g.position; mark(c.x, c.z, 2.4); return `Wechsle den markierten Kristall ${p}-mal. Immer von links nach rechts – der rechte Nachbar ändert sich mit.`; } if (i + 1 < n) t[i + 1] = (t[i + 1] + p) % 3; } return ''; };
     } else if (kind === 'order') {
       /* Zahlenplatten: in aufsteigender Reihenfolge betreten */
       const n = Math.min(8, 5 + Math.floor(lv / 4)), cols = 4, rows = 2, cells = []; for (let k = 0; k < cols * rows; k++) cells.push(k);
       for (let k = cells.length - 1; k > 0; k--) { const j = rnd(R, k + 1);[cells[k], cells[j]] = [cells[j], cells[k]]; }
       const ps = []; let pos = 0; sol = [];
       for (let i = 0; i < n; i++) { const c = cells[i], x = area.x0 + ((c % cols) + .5) * W / cols, z = area.z0 + (Math.floor(c / cols) + .5) * D / rows; sol.push(['step', x, z]); tag(String(i + 1), x, hgt(x, z) + 1.5, z);
-        ps.push(pad(x, z, Math.min(W / cols, D / rows) * .34, 0x5a5a7a, o => { if (solved || i < pos) return; if (i === pos) { pos++; o.set(true, 0x7dffb2); tone(NOTES[i % 6], .25, 'sine', .2); if (pos >= n) win(); } else { pos = 0; sfx('hurt'); ps.forEach(q => q.set(false, 0x5a5a7a)); say('Falsche Platte – wieder bei 1 beginnen.'); } })); }
+        ps.push(pad(x, z, Math.min(W / cols, D / rows) * .34, 0x5a5a7a, o => { if (solved || i < pos) return; if (i === pos) { pos++; o.set(true, 0x7dffb2); tone(NOTES[i % 6], .25, 'sine', .2); if (pos >= n) win(); } else { pos = 0; sfx('hurt'); fail(); ps.forEach(q => q.set(false, 0x5a5a7a)); say('Falsche Platte – wieder bei 1 beginnen.'); } })); }
       if (solved) ps.forEach(q => q.set(true, 0x7dffb2));
-      say(`🔢 Zahlenplatten: Betritt die Platten von 1 bis ${n} der Reihe nach.`);
+      intro(`🔢 Zahlenplatten: Betritt die Platten von 1 bis ${n} der Reihe nach. Weich den anderen Platten unterwegs aus.`);
+      hint = () => { const q = ps[pos]; if (!q) return ''; mark(q.x, q.z); return `Als Nächstes die Platte ${pos + 1}.`; };
     } else if (kind === 'dark') {
       /* Erinnerungspfad: der Lichtstein zeigt kurz die sicheren Platten, dann Reihe für Reihe nach hinten gehen */
       const cols = 3, rows = Math.min(5, 3 + Math.floor(lv / 4)), safe = [], ps = []; let c0 = rnd(R, cols), pos = 0;
@@ -115,19 +137,21 @@ export function createRooms({ T, mk, G, M, glow, scene, hgt, INT, anim, pl, toas
       sol = [['use', lx, lz]];
       for (let r = 0; r < rows; r++) { ps.push([]); for (let c = 0; c < cols; c++) ps[r].push(pad(px(c), pz(r), Math.min(W / cols, D / rows) * .34, 0x2a2a3a, o => { if (solved || r < pos) return;
           if (r === pos && c === safe[r]) { pos++; o.set(true, 0x7dffb2); tone(NOTES[r % 6], .25, 'sine', .2); if (pos >= rows) win(); }
-          else { pos = 0; sfx('hurt'); ps.forEach(L => L.forEach(q => q.set(false, 0x2a2a3a))); say('Die Platte gibt nach – zurück an den Anfang. Der Lichtstein zeigt den Weg noch einmal.'); } })); sol.push(['step', px(safe[r]), pz(r)]); }
+          else { pos = 0; sfx('hurt'); fail(); ps.forEach(L => L.forEach(q => q.set(false, 0x2a2a3a))); say('Die Platte gibt nach – zurück an den Anfang. Der Lichtstein zeigt den Weg noch einmal.'); } })); sol.push(['step', px(safe[r]), pz(r)]); }
       INT.push({ x: lx, z: lz, name: 'Lichtstein', pr: 'Weg zeigen', rad: 2.2, vis: () => !solved, talk() { st.lit(true); tone(880, .3, 'sine', .2); safe.forEach((c, r) => { if (r >= pos) ps[r][c].set(true, 0xffe27a); }); setTimeout(() => { st.lit(false); if (!solved) safe.forEach((c, r) => { if (r >= pos) ps[r][c].set(false, 0x2a2a3a); }); }, 2600); } });
       if (solved) safe.forEach((c, r) => ps[r][c].set(true, 0x7dffb2));
-      say('🌑 Erinnerungspfad: Der Lichtstein zeigt kurz die sicheren Platten. Geh Reihe für Reihe nach hinten.');
+      intro('🌑 Erinnerungspfad: Der Lichtstein zeigt kurz die sicheren Platten. Geh Reihe für Reihe nach hinten.');
+      hint = () => { const q = ps[pos] && ps[pos][safe[pos]]; if (!q) return ''; mark(q.x, q.z); return `Reihe ${pos + 1}: die markierte Platte ist sicher. Am Lichtstein siehst du den ganzen Weg.`; };
     } else if (kind === 'sum') {
       /* Gewichtsplatten: betreten schaltet an/aus; die Summe der leuchtenden Platten muss der Zahl am Sockel entsprechen */
       const n = 5, val = [], on = new Array(n).fill(false), ps = []; for (let i = 0; i < n; i++) { let q; do q = 1 + rnd(R, 9); while (val.includes(q)); val.push(q); }
       const pick = []; while (pick.length < 2 + (lv > 5)) { const i = rnd(R, n); if (!pick.includes(i)) pick.push(i); } const T2 = pick.reduce((a, i) => a + val[i], 0);
       crystal(cx, area.z0 + .7, 0xffe27a, 1.1).lit(true); tag('= ' + T2, cx, hgt(cx, area.z0 + .7) + 2.7, area.z0 + .7); sol = [];
       for (let i = 0; i < n; i++) { const x = area.x0 + (i + .5) * W / n, z = cz + D * .15; tag(String(val[i]), x, hgt(x, z) + 1.5, z); if (pick.includes(i)) sol.push(['step', x, z]);
-        ps.push(pad(x, z, Math.min(1.1, W / n * .36), 0x5a5a7a, o => { if (solved) return; on[i] = !on[i]; o.set(on[i], on[i] ? 0xffe27a : 0x5a5a7a); tone(on[i] ? 660 : 440, .15, 'triangle', .15); if (on.reduce((a, b, k) => a + (b ? val[k] : 0), 0) === T2) win(); })); }
+        ps.push(pad(x, z, Math.min(1.1, W / n * .36), 0x5a5a7a, o => { if (solved) return; on[i] = !on[i]; move(); o.set(on[i], on[i] ? 0xffe27a : 0x5a5a7a); tone(on[i] ? 660 : 440, .15, 'triangle', .15); if (on.reduce((a, b, k) => a + (b ? val[k] : 0), 0) === T2) win(); })); }
       if (solved) pick.forEach(i => ps[i].set(true, 0xffe27a));
-      say(`⚖️ Gewichtsplatten: Betreten schaltet eine Platte an oder aus. Die leuchtenden Zahlen müssen zusammen ${T2} ergeben.`);
+      intro(`⚖️ Gewichtsplatten: Betreten schaltet eine Platte an oder aus. Die leuchtenden Zahlen müssen zusammen ${T2} ergeben.`);
+      hint = () => { const cur = on.reduce((a, b, k) => a + (b ? val[k] : 0), 0); let k = pick.find(i => !on[i]), w = 'einschalten'; if (k === undefined) { k = on.findIndex((b, i) => b && !pick.includes(i)); w = 'ausschalten'; } if (k < 0) return ''; mark(ps[k].x, ps[k].z); return `Gerade leuchten zusammen ${cur}. Die markierte Platte (${val[k]}) ${w}.`; };
     } else if (kind === 'pattern') {
       /* Mustertafel: die 3×3 Platten so schalten, dass sie das Muster der Kristalle an der Rückwand zeigen */
       const N = 3, s = Math.min(W, D * .8) / N, want = [], on = new Array(N * N).fill(false), ps = []; for (let k = 0; k < N * N; k++) want.push(false);
@@ -135,11 +159,19 @@ export function createRooms({ T, mk, G, M, glow, scene, hgt, INT, anim, pl, toas
       for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) { const k = i * N + j, c = crystal(cx + (i - 1) * .9, area.z0 + .3 + j * .55, want[k] ? 0x6af0ff : 0x3a3a4a, .32); c.lit(want[k]); }
       sol = [];
       for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) { const k = i * N + j, x = cx + (i - 1) * s, z = area.z1 - (N - j - .5) * s * .95; if (want[k]) sol.push(['step', x, z]);
-        ps.push(pad(x, z, s * .38, 0x3a3a5a, o => { if (solved) return; on[k] = !on[k]; o.set(on[k], on[k] ? 0x6af0ff : 0x3a3a5a); tone(on[k] ? 660 : 440, .15, 'triangle', .15); if (on.every((b, q) => b === want[q])) win(); })); }
+        ps.push(pad(x, z, s * .38, 0x3a3a5a, o => { if (solved) return; on[k] = !on[k]; move(); o.set(on[k], on[k] ? 0x6af0ff : 0x3a3a5a); tone(on[k] ? 660 : 440, .15, 'triangle', .15); if (on.every((b, q) => b === want[q])) win(); })); }
       if (solved) ps.forEach((q, k) => q.set(want[k], want[k] ? 0x6af0ff : 0x3a3a5a));
-      say('🔷 Mustertafel: Schalte die Platten so, dass sie dasselbe Muster zeigen wie die Kristalle an der Wand.');
+      intro('🔷 Mustertafel: Schalte die Platten so, dass sie dasselbe Muster zeigen wie die Kristalle an der Wand (hinten an der Wand = hintere Reihe).');
+      hint = () => { const k = on.findIndex((b, q) => b !== want[q]); if (k < 0) return ''; mark(ps[k].x, ps[k].z); return `Die markierte Platte muss ${want[k] ? 'leuchten' : 'aus sein'}. Noch ${on.filter((b, q) => b !== want[q]).length} falsch.`; };
     }
-    return { get solved() { return solved; }, get sol() { return sol; }, solve: win };
+    if (!opt.pos && !opt.noHint) {
+      const hx = Math.min(area.x1 + 1.2, 12), hz = area.z1 - .6, y = hgt(hx, hz), g = new T.Group(); g.position.set(hx, y, hz);
+      g.add(mk(G.box, M(0x6e6a62, { r: .9 }), 0, .55, 0, .9, 1.1, .22)); g.add(mk(G.box, M(0x4ac8ff, { e: 0x4ac8ff, ei: .9 }), 0, .62, .12, .6, .7, .02, false)); scene.add(g);
+      const q = tag('❓', hx, y + 1.7, hz);
+      INT.push({ x: hx, z: hz, name: 'Hinweistafel', pr: 'Hinweis lesen', rad: 1.8, vis: () => !solved, talk() { if (solved) return; const h = hint && hint(); toast(rule + (h ? '\n👉 ' + h : '')); sfx('pick'); } });
+      anim(() => { q.visible = !solved; });
+    }
+    return { get solved() { return solved; }, get sol() { return sol; }, solve: win, hint: () => hint && hint(), get mk() { return mk1 && mk1.visible ? [mk1.position.x, mk1.position.z] : null; } };
   }
   return { build, KINDS: ['tones', 'lights', 'statues', 'pairs', 'orbs', 'colors', 'order', 'dark', 'sum', 'pattern'] };
 }
