@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "fb70cf7fd0c5",
- "generated": "2026-11-12T12:27:40+01:00",
- "commit": "69dce6a841f0af5ca9a0f3eb52a1b54000294286",
+ "version": "8a361b0168db",
+ "generated": "2026-11-12T12:41:42+01:00",
+ "commit": "4d59f39aa7530bb18d610ba7e8ec7a0dd96aa88f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8844,7 +8844,37 @@
   {
    "p": "sync/catalog.json",
    "s": 257559,
-   "h": "d79fb10bdc415c1713a5f9a7abef6af302bfdf2c56cecbd6c46966a55b6e2e0d"
+   "h": "6209384c359611221019e327325ad2685cab204b63eb48192a3f8f2aba69b29b"
+  },
+  {
+   "p": "taschi/assets/Bark007_1K-JPG.zip",
+   "s": 10003533,
+   "h": "a376a5208e7e9cb20475805042aee6c7d9fd1d5bcd8f80f38f75bea6e063c6f4"
+  },
+  {
+   "p": "taschi/assets/Grass004_1K-JPG.zip",
+   "s": 11003149,
+   "h": "4b63495f459db8481f4d5144e4e9069345c81cf898cc71f2216f5dd3bb344469"
+  },
+  {
+   "p": "taschi/assets/Ground037_1K-JPG.zip",
+   "s": 10574958,
+   "h": "4e69db2b7251b1736fa70fe6fe4ab80d64bd220117dd5dd4c7caaead51c2574e"
+  },
+  {
+   "p": "taschi/assets/PavingStones070_1K-JPG.zip",
+   "s": 9046803,
+   "h": "84be05ad935c2a8ea0dd3b82dd18c9e1faf7eeae222b85d96beb14ed16276132"
+  },
+  {
+   "p": "taschi/assets/Rock030_1K-JPG (1).zip",
+   "s": 9677446,
+   "h": "2fd0bc2d214e2487c19062ed0798a85dd135b41cfc12bbaed42d5acae238f989"
+  },
+  {
+   "p": "taschi/assets/kloofendal_48d_partly_cloudy_puresky_2k.hdr",
+   "s": 5451493,
+   "h": "5244534e9cf5b606f2ff513aa00ddb161b0a4826ffd88a0d3bd03ac29247d198"
   },
   {
    "p": "taschi/assets/models/alien.glb",
