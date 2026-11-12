@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "7c976e01960f",
- "generated": "2026-11-12T10:54:57+01:00",
- "commit": "a677b2499868f535302d2fab994d9377a0e26a0a",
+ "version": "ee4caa4dfbf8",
+ "generated": "2026-11-12T09:55:35+00:00",
+ "commit": "218678537a25a194bae4ec4112dafa606ca3c19d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6183,8 +6183,8 @@
   },
   {
    "p": "guides/taschi.json",
-   "s": 36771,
-   "h": "493a0c11e35d2b6db445f27b76fd6f01436a9fab140e517b0eb1f7616cf3784d"
+   "s": 37433,
+   "h": "24ae13e4f41dfb289f5bbbddfb4c1601915d089e189374a54cd24167254afaac"
   },
   {
    "p": "guides/tortenschlacht.json",
@@ -8838,8 +8838,233 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 257206,
-   "h": "5e38f06b876f53dc4888bc371064246a9a2061bd045af465d8244f061f1edff9"
+   "s": 257209,
+   "h": "2006d2c1ef4a7d0a72908deff32bf9b4ed21014e5c4f9a4a678ad9910933256b"
+  },
+  {
+   "p": "taschi/assets/models/alien.glb",
+   "s": 125076,
+   "h": "9eb262825e32ce95207243890a980ff4722e6fd6c443ef62aac520e3bc996310"
+  },
+  {
+   "p": "taschi/assets/models/alien2.glb",
+   "s": 480976,
+   "h": "746d9caf75897297dfd76678c55dc3dfe84e5b9e6ce816276db300cea11c27bb"
+  },
+  {
+   "p": "taschi/assets/models/alpaking.glb",
+   "s": 147164,
+   "h": "f1a7a128256db5fede6018a715d4a92d8e2841bbddb3a49e390ce8da3f647ca7"
+  },
+  {
+   "p": "taschi/assets/models/alpaking2.glb",
+   "s": 248012,
+   "h": "d96b4ffd4cce49cc031d26931639953ebdfa28d0f9713577e69261c0e7f1ba39"
+  },
+  {
+   "p": "taschi/assets/models/armabee.glb",
+   "s": 143736,
+   "h": "9a47899a2320aa42d5f550598a981c26517c6e27723980f5d2080a557eb88dc2"
+  },
+  {
+   "p": "taschi/assets/models/armabee2.glb",
+   "s": 183812,
+   "h": "61a48cfba610e46abba0c98f5371d331f60ed087a55a335580cbf27ba4b3d190"
+  },
+  {
+   "p": "taschi/assets/models/birb.glb",
+   "s": 170792,
+   "h": "63719ca3ebae056716b7e5380d4294b3a3dcc39f6a4f54dc3e5d1af962c3ca1f"
+  },
+  {
+   "p": "taschi/assets/models/bluedemon.glb",
+   "s": 439488,
+   "h": "6a8e743deba6f43f0f9b1e702016b04ddba1d3bf73b7101d2c86d64ae526f87c"
+  },
+  {
+   "p": "taschi/assets/models/bunny.glb",
+   "s": 538360,
+   "h": "4a71eb8a80a573560fd93b39cd3c547c978d54ddd288b63000667df757dd50a2"
+  },
+  {
+   "p": "taschi/assets/models/cactoro.glb",
+   "s": 140668,
+   "h": "2291a31287306ab430ad4c001dff5fbedba5c79854ad19ddc1c64d5fffc506ab"
+  },
+  {
+   "p": "taschi/assets/models/cactoro2.glb",
+   "s": 471704,
+   "h": "8a332118f7c688c23e3d5d7d6058e9bbf961c8fe4d1ecdf3f4b3d12dbe91dc84"
+  },
+  {
+   "p": "taschi/assets/models/cat.glb",
+   "s": 111948,
+   "h": "aa098d43c1006110d5a4fa3a6e6d4c843c8d8d90ffccc48f5bf32e3aadf7a3a9"
+  },
+  {
+   "p": "taschi/assets/models/chicken.glb",
+   "s": 140112,
+   "h": "3390f6f6944210ed9f612bd0010165d1c443c6186638f9fc4380574bd9e5fce1"
+  },
+  {
+   "p": "taschi/assets/models/demon.glb",
+   "s": 321140,
+   "h": "9b235359e2e28a8000a92de055ab9c8a9ed123da279461d452357dbbc30de117"
+  },
+  {
+   "p": "taschi/assets/models/demon2.glb",
+   "s": 485516,
+   "h": "7da854e1d43428b89b1afca0feca3f323b869b1d8ed7df74d17354260b607262"
+  },
+  {
+   "p": "taschi/assets/models/dino.glb",
+   "s": 404176,
+   "h": "19b9a3841ebfd7595da9cd595b74e231da29730fe8030a2d17a021bc26b563ef"
+  },
+  {
+   "p": "taschi/assets/models/dragon.glb",
+   "s": 251540,
+   "h": "d8a12f3f819e86518f5a44984db611ffaaa800895da33928d66519e629615705"
+  },
+  {
+   "p": "taschi/assets/models/dragon2.glb",
+   "s": 436000,
+   "h": "f660d8f48be4ea3f39639f6206a0181127e7fe7503cb4bad8d07d27d80528f3a"
+  },
+  {
+   "p": "taschi/assets/models/fish.glb",
+   "s": 156880,
+   "h": "1fdc84f17ce6f69e5812989788dec6f14860e48e281afbdb6a9b26cf0540d569"
+  },
+  {
+   "p": "taschi/assets/models/fish2.glb",
+   "s": 461616,
+   "h": "a04abb34053ec7b7080ca8e32ad6e8775e7b4d4b03e2cd2ef27a01e87c82fcca"
+  },
+  {
+   "p": "taschi/assets/models/frog.glb",
+   "s": 379892,
+   "h": "e649e23848548c74f22a22071ebcd5ddcf78254a9f4ce94417078a7431482309"
+  },
+  {
+   "p": "taschi/assets/models/ghost.glb",
+   "s": 203360,
+   "h": "4ed7656e2155d47b7d5fe08f31a7e764d79255f477d90040e4472552d7d5ac68"
+  },
+  {
+   "p": "taschi/assets/models/ghostskull.glb",
+   "s": 232384,
+   "h": "d1e2268fe9621583ff879d6e6e3ace80b0a6a2373ec0139a8139c88fe6e4d942"
+  },
+  {
+   "p": "taschi/assets/models/glub.glb",
+   "s": 148332,
+   "h": "afa0ae7178b047cd3c210fd864aebc8b64e5608a951efc4f073bf538cb04929c"
+  },
+  {
+   "p": "taschi/assets/models/glub2.glb",
+   "s": 211496,
+   "h": "cc85f0fe7fa65b9fcbe35fddfc38f28ba564b20533a520b42f2bbb339903a878"
+  },
+  {
+   "p": "taschi/assets/models/goleling.glb",
+   "s": 217332,
+   "h": "fe6b5a04aef77aa9b38afee216802823b543d2409674bc86bd8bd152cb8cebce"
+  },
+  {
+   "p": "taschi/assets/models/goleling2.glb",
+   "s": 310836,
+   "h": "d397a35eeacbf64cd068d626fa82e8099dc2ae2155df051224c4b575a04f034d"
+  },
+  {
+   "p": "taschi/assets/models/greenblob.glb",
+   "s": 74812,
+   "h": "31c46edd6306e4ab21bec4608b41003baa74f430f27d357b90c9b6401d88a584"
+  },
+  {
+   "p": "taschi/assets/models/hywirl.glb",
+   "s": 200868,
+   "h": "90b8f9f252999e71c1bd4bfa76bb219c577a1ecfb10294ca0eb41f903a60d8bd"
+  },
+  {
+   "p": "taschi/assets/models/monkroose.glb",
+   "s": 421164,
+   "h": "f09adddaba213130b844807cd3cc7cd951abb155fbb08400798152d34acbd3d8"
+  },
+  {
+   "p": "taschi/assets/models/mushking.glb",
+   "s": 444228,
+   "h": "45bbb9d659697d0127be159af0a58fae3fe8eef430adacaf994efcf0769b2e09"
+  },
+  {
+   "p": "taschi/assets/models/mushnub.glb",
+   "s": 67900,
+   "h": "04614a9d0db2a00d17cd85f4ef9c54e19cd3692530c0724b46809aa928e161e9"
+  },
+  {
+   "p": "taschi/assets/models/mushnub2.glb",
+   "s": 149516,
+   "h": "fe364b07af250c48073c319c0b4460239ca39daab37269a4e23217be46a3331c"
+  },
+  {
+   "p": "taschi/assets/models/ninja.glb",
+   "s": 117740,
+   "h": "327c9ead9999cd25dbcda757c6c16be0cb1baee9bad224b99c917b4a9a00d15a"
+  },
+  {
+   "p": "taschi/assets/models/ninja2.glb",
+   "s": 457204,
+   "h": "f9d38ed5156252a675b40a16c8a01795c16b78b464edbde1ab9fc46951ae420e"
+  },
+  {
+   "p": "taschi/assets/models/orc.glb",
+   "s": 146420,
+   "h": "7cd4898ef9f64c65bc6f84b718e723550a42709f40e0b38487f976bfc47e893b"
+  },
+  {
+   "p": "taschi/assets/models/orc2.glb",
+   "s": 512984,
+   "h": "fb5d9da18e16fd3bd6f066692576845d411acf19536d46c7598f5d701b6db19f"
+  },
+  {
+   "p": "taschi/assets/models/pigeon.glb",
+   "s": 110548,
+   "h": "df8ae4e405a14d7b7d9f9354039b39be0dfe0ac5b53d373b5b660af33deaf96c"
+  },
+  {
+   "p": "taschi/assets/models/pinkblob.glb",
+   "s": 62652,
+   "h": "34bb111a7931bb957f992e127d71fac321aaeea1bdcc7da56fa5aba55c83d783"
+  },
+  {
+   "p": "taschi/assets/models/spikyblob.glb",
+   "s": 185820,
+   "h": "ad5e8b1cdf8c0d328b4b44537d3da8fa98119a9a99fb6163e2f325dbb8bbecc1"
+  },
+  {
+   "p": "taschi/assets/models/squidle.glb",
+   "s": 308816,
+   "h": "a7c3492fbac79102c550f27306d0b07f5ab8b472f2ace9a78756a293c22d02c2"
+  },
+  {
+   "p": "taschi/assets/models/tribal.glb",
+   "s": 330208,
+   "h": "f42e476a67d5c3ffdfdd5dbcb29e9b9b6aaf235d118640f8fb4f2a40c4907951"
+  },
+  {
+   "p": "taschi/assets/models/wizard.glb",
+   "s": 89464,
+   "h": "fb577146c7624e001222f0efaed6fb553b2fadff181f1a8d2585c3940a5d1a25"
+  },
+  {
+   "p": "taschi/assets/models/yeti.glb",
+   "s": 111224,
+   "h": "20aaa4fc5fc3b9fe30b6109f88061f2d6f49e03b26a51ebee08f50bd1c26caaf"
+  },
+  {
+   "p": "taschi/assets/models/yeti2.glb",
+   "s": 423024,
+   "h": "789fcdd3d32a1bf6ceaa0e30f9ac5d8d2c52d15fa0181d4d1d980a1b2a2ac869"
   },
   {
    "p": "taschi/card.svg",
@@ -8858,8 +9083,8 @@
   },
   {
    "p": "taschi/index.html",
-   "s": 2634,
-   "h": "0fc97b6e4190c33407152c9b1eb87352b7ac256eb567ef5c37a21ca7226f53ea"
+   "s": 2693,
+   "h": "11e9d5dba73854b01965be8d9443009e6c4310e0666d922ef96f66405efbf6fb"
   },
   {
    "p": "taschi/src/core/audio.js",
@@ -8908,8 +9133,8 @@
   },
   {
    "p": "taschi/src/data/species.js",
-   "s": 42600,
-   "h": "ee02c71947fe00fa3a0408f51d2f0a9ebd739713a0e9b3d8790e1458a9ce0df5"
+   "s": 55233,
+   "h": "83f01f2a9b2c79cf0e86115b5234d7d16ebbf860e809d6f3276e67601b91ffbd"
   },
   {
    "p": "taschi/src/data/story.js",
@@ -8938,8 +9163,8 @@
   },
   {
    "p": "taschi/src/engine/creatures.js",
-   "s": 35713,
-   "h": "165b1c003c7640fc3418b9cc0736e5a6c42ced896c8ea36dc74016fb853049a0"
+   "s": 35947,
+   "h": "65d0d211589247798011c6c3581aaf5e36c8adfe88c08b2a67e10a51604e3616"
   },
   {
    "p": "taschi/src/engine/geometry.js",
@@ -8952,9 +9177,14 @@
    "h": "55e591f50033d68a8509b4132cab5c5b0c3b95c15783ce6fe4cee507f34e7d89"
   },
   {
+   "p": "taschi/src/engine/models.js",
+   "s": 8509,
+   "h": "db634e58082ca5620571a5e68a410050e7f83ca1c85c90c336a36af5d3230662"
+  },
+  {
    "p": "taschi/src/engine/preview.js",
-   "s": 3800,
-   "h": "e6c4bca68feee2a90e7dd836ed21519563729d28b7a205d0b4a20e20a0665382"
+   "s": 4378,
+   "h": "8b450f77ed15aecc19a63220cf1d65274b9c58342d8ddd105baa7c755f5e12c3"
   },
   {
    "p": "taschi/src/engine/renderer.js",
@@ -8993,13 +9223,13 @@
   },
   {
    "p": "taschi/src/game/battle-scene.js",
-   "s": 40682,
-   "h": "08cf86d7d364cab87356f3d3724598b80cf12290fdcba700c998ec262df549d5"
+   "s": 41049,
+   "h": "7d5c38fb217c98caa642f5b1827c05ba9126130fa3508334af3e73e32b0bf624"
   },
   {
    "p": "taschi/src/game/game.js",
-   "s": 78332,
-   "h": "692a82d72d78b0cab0c619ab72ece0809f1f14017379a15a29652c545dcde814"
+   "s": 78474,
+   "h": "6c9688ef13425645f1fa0181eed30955cc6dd20ee13775f179d365f233820cd7"
   },
   {
    "p": "taschi/src/game/world.js",
@@ -9088,8 +9318,8 @@
   },
   {
    "p": "taschi/src/main.js",
-   "s": 1487,
-   "h": "c86ee487efbc4e8decc4ac1a39a41f218525548f23da89032cf325d895d77a0e"
+   "s": 1554,
+   "h": "19518f3e08b40c8ff6a90eaa2d6697835a66730bc5f812ed049f4bc873d07c04"
   },
   {
    "p": "taschi/src/ui/extras.js",
