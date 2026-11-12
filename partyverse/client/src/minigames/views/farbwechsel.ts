@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import type { FarbState } from '@shared/minigames/games/farbwechsel';
-import { COLOR_NAMES, GRID, HALF, TILE, tileCenter } from '@shared/minigames/games/farbwechsel';
+import { COIN_POINTS, COLOR_NAMES, GRID, HALF, TILE, tileCenter } from '@shared/minigames/games/farbwechsel';
 import { glow, textSprite, toon } from '../../render/materials';
 import type { MiniGameViewFactory } from '../viewTypes';
+import { makeMe, makeRivals, updateRivals, type Racer } from './rivals';
 
 const PALETTE = [0xff4d5e, 0x3d8bff, 0x35d07f, 0xffd23f, 0xa36bff, 0xff8a3d];
 const DARK = [0xc0303f, 0x2565c9, 0x1f9f5c, 0xd9a912, 0x7b45d6, 0xd9661d];
@@ -29,10 +30,18 @@ export const createView: MiniGameViewFactory<FarbState> = (ctx, initial) => {
   abyss2.rotation.x = -Math.PI / 2;
   abyss2.position.y = -8.9;
   root.add(abyss2);
-  // Sockel unter der Arena
-  const pillar = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 3.4, 8, 20), toon(0x5b3aa8));
-  pillar.position.y = -5;
-  root.add(pillar);
+  // Schwebende Felsbrocken tief unten (Tiefe), der Rahmen hält die Arena
+  for (let i = 0; i < 10; i++) {
+    const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.5 + (i % 3) * 0.3, 0), toon(0x6a46c0));
+    const a = (i / 10) * Math.PI * 2;
+    rock.position.set(
+      Math.cos(a) * (HALF + 7 + (i % 2) * 3),
+      -4 - (i % 4) * 1.5,
+      Math.sin(a) * (HALF + 6) - 2,
+    );
+    rock.rotation.set(i, i * 2, 0);
+    root.add(rock);
+  }
   for (const [bx, bz, bw, bd] of [
     [0, -HALF - 0.2, HALF * 2 + 0.8, 0.4],
     [0, HALF + 0.2, HALF * 2 + 0.8, 0.4],
@@ -114,56 +123,99 @@ export const createView: MiniGameViewFactory<FarbState> = (ctx, initial) => {
     signGroup.add(post);
   }
 
-  // Figur
-  const hero = new THREE.Group();
-  const lift = new THREE.Group();
-  hero.add(lift);
-  const body = new THREE.Mesh(new THREE.SphereGeometry(0.62, 24, 18), toon(0x3de0d0));
-  body.position.y = 0.75;
-  body.scale.set(1, 1.1, 1);
-  lift.add(body);
-  const belly = new THREE.Mesh(new THREE.SphereGeometry(0.44, 16, 12), toon(0xffffff));
-  belly.position.set(0, 0.6, 0.3);
-  belly.scale.set(1, 1, 0.5);
-  lift.add(belly);
-  const band = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.07, 8, 24), toon(0xff4d8d));
-  band.position.y = 1.15;
-  band.rotation.x = Math.PI / 2;
-  lift.add(band);
-  for (const sx of [-1, 1]) {
-    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 10), toon(0xffffff));
-    eye.position.set(sx * 0.22, 0.98, 0.5);
-    lift.add(eye);
-    const pup = new THREE.Mesh(
-      new THREE.SphereGeometry(0.08, 10, 8),
-      new THREE.MeshBasicMaterial({ color: 0x1a1030 }),
-    );
-    pup.position.set(sx * 0.22, 0.98, 0.63);
-    lift.add(pup);
-    const foot = new THREE.Mesh(new THREE.SphereGeometry(0.2, 10, 8), toon(0xff8a3d));
-    foot.position.set(sx * 0.28, 0.1, 0.12);
-    foot.scale.set(1, 0.55, 1.4);
-    lift.add(foot);
-    const arm = new THREE.Mesh(new THREE.SphereGeometry(0.17, 10, 8), toon(0x2bbcae));
-    arm.position.set(sx * 0.68, 0.7, 0);
-    arm.name = sx < 0 ? 'armL' : 'armR';
-    lift.add(arm);
+  // Münzen
+  const coinGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.12, 22);
+  coinGeo.rotateX(Math.PI / 2);
+  const coins = [0, 1].map(() => {
+    const m = new THREE.Mesh(coinGeo, toon(0xffd23f, { emissive: 0xffa000, emissiveIntensity: 0.45 }));
+    root.add(m);
+    return m;
+  });
+
+  // Figuren: eigene vorne, Mitspieler halbdurchsichtig auf derselben Arena
+  const FIG = 0.95;
+  const me = makeMe(ctx, FIG);
+  const rivals = makeRivals(ctx, FIG * 0.9);
+  interface Track {
+    x: number;
+    y: number;
+    dash: number;
+    dead: boolean;
+    falls: number;
   }
-  const hshadow = new THREE.Mesh(new THREE.CircleGeometry(0.6, 20), glow(0x000000, 0.3));
-  hshadow.rotation.x = -Math.PI / 2;
-  hshadow.position.y = 0.28;
-  root.add(hshadow);
-  root.add(hero);
+  const track = (st: FarbState): Track => ({
+    x: st.px,
+    y: st.py,
+    dash: st.dash,
+    dead: st.dead,
+    falls: st.falls,
+  });
+  const meT = track(initial);
+  const rivT = rivals.map(() => track(initial));
+  /** Setzt Figur und Animation aus dem Simulationszustand; liefert true, wenn gerade ein Sturz begann */
+  const place = (r: Racer, st: FarbState, tr: Track): boolean => {
+    const mvx = st.px - tr.x;
+    const mvy = st.py - tr.y;
+    const moving = Math.hypot(mvx, mvy) > 0.004 && Math.hypot(mvx, mvy) < 1.5;
+    const dashP = st.dash > 0 ? 1 - st.dash / 11 : 0;
+    const jumpH = st.dash > 0 ? Math.sin(dashP * Math.PI) * 1.2 : 0;
+    let fell = false;
+    if (st.dead) {
+      if (!tr.dead) {
+        r.rig.play('shock');
+        fell = true;
+      }
+      r.group.position.set(st.px, 0.25 - st.fallT * st.fallT * 0.006, -st.py);
+      r.group.scale.setScalar(Math.max(0.15, 1 - st.fallT * 0.014));
+      r.group.rotation.z = st.fallT * 0.08;
+    } else {
+      if (tr.dead) r.rig.play('jump');
+      r.group.scale.setScalar(1);
+      r.group.rotation.z = 0;
+      r.group.position.set(st.px, 0.25 + jumpH, -st.py);
+      if (st.dash > 0 && tr.dash === 0) r.rig.play('jump', { speed: 1.6 });
+      else if (st.dash === 0 && r.rig.current !== 'jump' && r.rig.current !== 'shock') {
+        if (moving) r.rig.play('run', { loop: true, speed: 1.4 });
+        else if (r.rig.current === 'run') r.rig.play('idle', { loop: true });
+      }
+      if (moving) r.rig.faceTowards(Math.atan2(mvx, -mvy));
+    }
+    r.ring.visible = !st.dead && st.dash === 0;
+    tr.x = st.px;
+    tr.y = st.py;
+    tr.dash = st.dash;
+    tr.dead = st.dead;
+    return fell;
+  };
+  const popups: Array<{ sp: THREE.Sprite; t: number; y0: number }> = [];
+  const popup = (text: string, x: number, y: number, color: string, w = 1.8): void => {
+    const sp = textSprite(text, { color, size: 72, width: w });
+    sp.position.set(x, 2.6, -y);
+    root.add(sp);
+    popups.push({ sp, t: 0, y0: 2.6 });
+  };
+  const switchText = textSprite('FARBWECHSEL!', {
+    color: '#ffffff',
+    bg: 'rgba(30,10,60,0.85)',
+    size: 90,
+    width: 7,
+  });
+  switchText.position.set(0, 2.6, -1);
+  switchText.visible = false;
+  const swBase = switchText.scale.clone();
+  root.add(switchText);
+  let switchT = 0;
+  let shake = 0;
+  let lastCoins = initial.coinCount;
+  let lastRounds = initial.rounds;
+  let wasOver = false;
 
   let t = 0;
-  let faceY = 0;
-  let lastX = initial.px;
-  let lastY = initial.py;
   let lastPhase = initial.phase;
   let lastRound = initial.round;
   let lastTarget = -1;
-  let lastDead = false;
   let lastTickSec = -1;
+  let lastSwitched = initial.switched;
   const v3 = new THREE.Vector3();
 
   return {
@@ -217,45 +269,61 @@ export const createView: MiniGameViewFactory<FarbState> = (ctx, initial) => {
         lastTarget = s.target;
       }
       signGroup.position.y = 4.6 + Math.sin(t * 2) * 0.08;
+      signGroup.scale.setScalar(1 + Math.max(0, switchT - 0.7) * 0.5 * Math.abs(Math.sin(t * 20)));
       const frac = s.phase === 'warn' ? Math.max(0, s.timer / s.warnLen) : 0;
       bar.scale.x = Math.max(0.001, frac);
       bar.position.x = -3 * (1 - frac);
       barMat.color.setHex(frac < 0.3 ? 0xff4d4d : 0xffffff);
 
       // Figur
-      const mvx = s.px - lastX;
-      const mvy = s.py - lastY;
-      lastX = s.px;
-      lastY = s.py;
-      const moving = Math.hypot(mvx, mvy) > 0.004;
-      if (moving) {
-        const target = Math.atan2(mvx, -mvy);
-        let d = target - faceY;
-        d = Math.atan2(Math.sin(d), Math.cos(d));
-        faceY += d * Math.min(1, dt * 16);
+      const fell = place(me, s, meT);
+      if (s.over && !wasOver) {
+        wasOver = true;
+        if (!s.dead) me.rig.play(s.rounds >= 3 ? 'celebrate' : 'cheer');
       }
-      const dashP = s.dash > 0 ? 1 - s.dash / 11 : 0;
-      const jumpH = s.dash > 0 ? Math.sin(dashP * Math.PI) * 1.2 : 0;
-      const hop = moving && s.dash === 0 ? Math.abs(Math.sin(t * 14)) * 0.14 : 0;
-      hero.position.set(s.px, 0.28 + jumpH + hop, -s.py);
-      hero.rotation.y = faceY;
-      lift.scale.set(
-        1 + (s.dash > 0 ? -0.1 : 0),
-        1 + (s.dash > 0 ? 0.18 : moving ? Math.sin(t * 28) * 0.04 : Math.sin(t * 3) * 0.02),
-        1,
-      );
-      lift.rotation.x = s.dash > 0 ? 0.35 : 0;
-      (lift.getObjectByName('armL') as THREE.Object3D).position.y =
-        0.7 + (moving ? Math.sin(t * 14) * 0.15 : 0) + (s.dash > 0 ? 0.35 : 0);
-      (lift.getObjectByName('armR') as THREE.Object3D).position.y =
-        0.7 - (moving ? Math.sin(t * 14) * 0.15 : 0) + (s.dash > 0 ? 0.35 : 0);
-      hshadow.position.set(s.px, 0.3, -s.py);
-      hshadow.scale.setScalar(1 - jumpH * 0.25);
-      hshadow.visible = !s.dead;
-      if (s.dead) {
-        hero.position.y = 0.28 - s.fallT * s.fallT * 0.012;
-        hero.rotation.z = s.fallT * 0.12;
-        hero.scale.setScalar(Math.max(0.2, 1 - s.fallT * 0.012));
+      me.group.visible = !(s.over && s.dead);
+      me.rig.update(dt);
+      // Münzen
+      coins.forEach((m, i) => {
+        const c = s.coins[i];
+        m.visible = !!c && !c.taken && s.phase === 'warn';
+        if (c) m.position.set(c.x, 0.85 + Math.sin(t * 4 + i) * 0.12, -c.y);
+        m.rotation.y = t * 3 + i;
+      });
+      if (s.coinCount !== lastCoins) {
+        lastCoins = s.coinCount;
+        ctx.sfx('coin');
+        ctx.burst(v3.set(s.px, 1, -s.py), 0xffd23f, 14);
+        popup('+' + COIN_POINTS, s.px, s.py, '#ffe066');
+      }
+      if (s.rounds !== lastRounds) {
+        lastRounds = s.rounds;
+        popup('+100', s.px, s.py, '#ffffff');
+      }
+      // Farbwechsel-Finte
+      if (s.switched && !lastSwitched) {
+        ctx.sfx('beep');
+        ctx.sfx('whoosh');
+        switchT = 1.3;
+        shake = Math.max(shake, 0.3);
+      }
+      lastSwitched = s.switched;
+      if (switchT > 0) {
+        switchT -= dt;
+        switchText.visible = true;
+        switchText.scale.copy(swBase).multiplyScalar(1 + Math.max(0, switchT - 1) * 1.5);
+      } else switchText.visible = false;
+      for (let i = popups.length - 1; i >= 0; i--) {
+        const p = popups[i]!;
+        p.t += dt;
+        p.sp.position.y = p.y0 + p.t * 1.5;
+        p.sp.material.opacity = Math.max(0, 1 - p.t);
+        if (p.t > 1) {
+          p.sp.removeFromParent();
+          p.sp.material.map?.dispose();
+          p.sp.material.dispose();
+          popups.splice(i, 1);
+        }
       }
 
       // Ereignisse
@@ -276,11 +344,11 @@ export const createView: MiniGameViewFactory<FarbState> = (ctx, initial) => {
         if (s.phase === 'warn') ctx.sfx('beep');
         lastPhase = s.phase;
       }
-      if (s.dead && !lastDead) {
-        lastDead = true;
+      if (fell) {
         ctx.sfx('bad');
         v3.set(s.px, 0.8, -s.py);
         ctx.burst(v3, 0xff4d4d, 22);
+        shake = 0.45;
       }
       if (s.phase === 'warn') {
         const sec = Math.ceil(s.timer / 60);
@@ -298,9 +366,22 @@ export const createView: MiniGameViewFactory<FarbState> = (ctx, initial) => {
       const f = Math.max(1, 8.2 / (h0 * asp));
       camera.position.set(0, 13.5 * f, 11.5 * f);
       camera.lookAt(0, 0.5, -1.2);
+      if (shake > 0) {
+        shake = Math.max(0, shake - dt);
+        camera.position.x += Math.sin(t * 71) * shake * 0.6;
+        camera.position.y += Math.cos(t * 57) * shake * 0.4;
+      }
+    },
+    ghosts(states, dt) {
+      updateRivals(rivals, states, dt, (r, st, i) => {
+        // Ausgeschiedene Mitspieler verschwinden nach ihrem Sturz
+        r.group.visible = !(st.over && st.dead) && !(st.dead && st.fallT > 40);
+        if (place(r, st, rivT[i]!)) ctx.burst(v3.set(st.px, 0.6, -st.py), r.avatar.color, 10);
+      });
     },
     dispose() {
       ctx.scene.fog = null;
+      coinGeo.dispose();
     },
   };
 };
