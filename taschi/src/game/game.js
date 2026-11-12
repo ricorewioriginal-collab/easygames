@@ -1,5 +1,6 @@
 // Game: state machine, main loop, save handling, region/interior transitions
 // and all story / interaction scripts.
+import { venueName } from '../data/towns.js';
 import { THREE } from '../engine/three.js';
 import { Renderer, PROFILES } from '../engine/renderer.js';
 import { Sky } from '../engine/sky.js';
@@ -674,6 +675,15 @@ export class Game {
       if (n.id === 'clerk') return await openShop(this, n.name);
       if (n.id === 'daycare') return await this.daycareTalk();
       if (n.talk === 'giver') return await this.questTalk(n, P.questById(n.quest));
+      if (n.talk === 'adventurer') {
+        const reg = REGIONS[r], a = n.adv, nxt = REGIONS[r + 1]?.name || 'Sternengipfel';
+        const fill = (t) => t.replace(/\{town\}/g, reg.town).replace(/\{landmark\}/g, reg.landmark.name).replace(/\{venue\}/g, venueName(r)).replace(/\{champion\}/g, reg.champion.name).replace(/\{next\}/g, nxt);
+        n.talkIdx = ((n.talkIdx ?? (r + a.idx)) + 1) % a.lines.length;
+        ch.setTalking(true, 'talk');
+        await this.ui.say([{ who: a.name, text: fill(a.lines[n.talkIdx]) }]);
+        ch.setTalking(false);
+        return;
+      }
       if (n.talk === 'resident') {
         const line = residentLine(n.data, s, r);
         const q = (REGIONS[r].quests || []).find(q => q.giver === n.data.name);
@@ -851,7 +861,7 @@ export class Game {
     const s = this.save, r = t.region, region = REGIONS[r];
     const who = 'Arenaleitung ' + t.name;
     const say = async (text, mood = 'talk') => { n.ch.setTalking(true, mood); await this.ui.say([{ who, text }]); n.ch.setTalking(false); };
-    if (s.badges > r) return say('Du trägst das Siegel dieser Arena schon. ' + (s.champions[r] ? 'Und auch der Champion hat dich anerkannt!' : region.champion.name + ' erwartet dich im Champion-Pavillon auf dem Hügel.'), 'happy');
+    if (s.badges > r) return say('Du trägst das Siegel dieser Arena schon. ' + (s.champions[r] ? 'Und auch der Champion hat dich anerkannt!' : region.champion.name + ' erwartet dich am Champion-Ort „' + venueName(r) + '“.'), 'happy');
     if (s.badges < r) return say('Komm wieder, wenn du die vorherigen Siegel gesammelt hast.');
     if (region.guild !== undefined && P.guildNext(s, region.guild) !== 'done') return say('Die Schattengilde treibt in ' + region.name + ' ihr Unwesen! Kümmere dich zuerst darum – die Region braucht dich.', 'worried');
     const pending = ['gymtr_' + r + '_0', 'gymtr_' + r + '_1'].filter(id => !s.trainers[id]);
@@ -863,7 +873,7 @@ export class Game {
     if (r === 0) this.ui.toast('Neu: die Sternstufe! Im Attacken-Menü einmal pro Kampf zünden – alle Werte steigen.', '★');
     P.grantReward(s, { items: { levelbonbon: 1, ...(r < 5 ? { superball: 3 } : r < 10 ? { supertrank: 3 } : { vitaltrank: 2 }) } });
     this.audio.sfx('levelup'); this.world.player.play('cheer', 1.6);
-    await this.ui.say([{ text: 'Du erhältst das Licht-Siegel von ' + region.name + '! (' + s.badges + '/16)' }, { who, text: 'Jetzt wartet ' + region.champion.name + ' im Champion-Pavillon. Erst wer den Champion besiegt, darf weiterreisen.' }]);
+    await this.ui.say([{ text: 'Du erhältst das Licht-Siegel von ' + region.name + '! (' + s.badges + '/16)' }, { who, text: 'Jetzt wartet ' + region.champion.name + ' am Champion-Ort „' + venueName(r) + '“. Erst wer den Champion besiegt, darf weiterreisen.' }]);
     this.saveNow(true);
   }
   async championTalk(n, t) {

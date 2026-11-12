@@ -2,6 +2,7 @@
 // tests can verify that every interaction point is reachable on foot.
 import { HALF, SIZE, heightAt, slopeAt, waterDistance } from './layout.js';
 import { distToPolyline } from '../core/noise.js';
+import { VENUE_SOLIDS } from '../data/towns.js';
 
 export const FREE = 0, BLOCK = 1, WATER = 2;
 
@@ -47,7 +48,7 @@ export function buildWalkGrid(L) {
   };
   for (const b of L.buildings) {
     const { hw, hd } = footprint(b);
-    if (b.kind === 'pavilion') { for (const [dx, dz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) circle(b.x + dx * (hw - 0.8), b.z + dz * (hd - 0.8), 0.6); continue; }
+    if (b.kind === 'pavilion') { for (const [dx, dz, rr] of VENUE_SOLIDS[b.venue] || VENUE_SOLIDS.pavilion) circle(b.x + dx, b.z + dz, rr); continue; }
     rect(b.x, b.z, hw, hd);
   }
   if (L.dome) {

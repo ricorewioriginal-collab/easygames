@@ -10,6 +10,9 @@ import { buildWalkGrid } from '../logic/walkgrid.js';
 import { InstanceField, vegetationGeometry, rockGeometry, tallGrassGeometry, tuftGeometry, flowerGeometry, carpetGeometry, MATERIALS } from '../engine/vegetation.js';
 import { SIZE } from '../logic/layout.js';
 import * as BLD from '../engine/buildings.js';
+import * as TS from '../engine/townstyle.js';
+import { loadItem } from '../engine/kaykit.js';
+import { townOf } from '../data/towns.js';
 import { Builder, matrix } from '../engine/geometry.js';
 import { envMaterial, waterMaterial, glowMaterial, foliageMaterial } from '../engine/materials.js';
 import { createRng } from '../core/rng.js';
@@ -23,7 +26,7 @@ export const SUMMIT_PALETTE = { grass: 0xb8b4d0, grass2: 0x9a98c0, dirt: 0xd8d0e
 export function paletteFor(r) {
   if (r === 16) return { ...SUMMIT_PALETTE, stone: 0xc8c4d8 };
   const p = REGIONS[r].palette;
-  return { ...p, stone: { volcanic: 0x5a5050, snow: 0xb8c4cc, crystal: 0x8a88a0, mesa: 0xc89a6a }[REGIONS[r].biome] || 0xa8a296, leaf: p.leaf, blossom: REGIONS[r].biome === 'grove' ? 0xf7b3cc : 0xf5a9c6 };
+  return { ...p, cobble: townOf(r).cobble, stone: { volcanic: 0x5a5050, snow: 0xb8c4cc, crystal: 0x8a88a0, mesa: 0xc89a6a }[REGIONS[r].biome] || 0xa8a296, leaf: p.leaf, blossom: REGIONS[r].biome === 'grove' ? 0xf7b3cc : 0xf5a9c6 };
 }
 
 const HOUSE_STYLE = { valley: 'timber', coast: 'plaster', plains: 'timber', grove: 'plaster', forest: 'timber', cliffs: 'stone', volcanic: 'stone', 'meadow-night': 'plaster', swamp: 'stilts', snow: 'snow', canopy: 'timber', savanna: 'adobe', crystal: 'stone', 'bay-night': 'plaster', mesa: 'adobe', sky: 'dome' };
@@ -102,7 +105,7 @@ export async function buildRegionMap(L, { quality, onProgress = () => {}, save }
   await frame();
 
   // ---------------------------------------------------------------- buildings
-  const style = HOUSE_STYLE[L.biome] || 'timber';
+  const style = (r !== 16 && townOf(r).house) || HOUSE_STYLE[L.biome] || 'timber';
   let houseVariant = 0;
   for (const b of L.buildings) {
     let obj;
@@ -111,7 +114,7 @@ export async function buildRegionMap(L, { quality, onProgress = () => {}, save }
     else if (b.kind === 'shop') obj = BLD.shop(pal);
     else if (b.kind === 'lab') obj = BLD.lab(pal);
     else if (b.kind === 'arena') obj = BLD.arena(pal, typeColor, TYPES[region.types[0]].icon);
-    else if (b.kind === 'pavilion') obj = BLD.pavilion(pal, typeColor);
+    else if (b.kind === 'pavilion') { obj = TS.venue(b.venue, pal, typeColor); if (obj.userData.animate) animators.push(obj.userData.animate); }
     else if (b.kind === 'station') obj = BLD.station();
     else if (b.kind === 'league') obj = BLD.leagueHall();
     if (!obj) continue;
@@ -120,6 +123,7 @@ export async function buildRegionMap(L, { quality, onProgress = () => {}, save }
     if (b.kind === 'house' && !b.enter) interact.push({ id: 'knock:' + b.id, kind: 'knock', x: b.door.x, z: b.door.z, r: 1.6, label: b.label, prompt: 'Klopfen' });
     if (b.kind === 'pavilion') interact.push({ id: 'champion', kind: 'champion', x: b.x, z: b.z, r: 3.5, label: region?.champion?.name, prompt: 'Champion' });
   }
+  if (r !== 16) arenaArmory(root, L, H, r);
   if (L.dome) {
     const d = BLD.glassDome(L.dome.r);
     place(d, L.dome.x, L.dome.z, L.dome.yaw, 0.05);
@@ -145,16 +149,24 @@ export async function buildRegionMap(L, { quality, onProgress = () => {}, save }
 
   // ---------------------------------------------------------------- town props
   if (L.plaza && r !== 16) {
-    place(BLD.fountain(pal), L.plaza.x, L.plaza.z);
-    interact.push({ id: 'fountain', kind: 'look', x: L.plaza.x, z: L.plaza.z, r: 4.2, label: 'Brunnen', text: 'Das Wasser des Brunnens glitzert im Licht. Eine Inschrift: „' + region.town + ' – gegründet von Menschen und Taschis.“' });
+    const town = townOf(r);
+    const centre = place(TS.centrepiece(town.centre, pal, BLD.fountain), L.plaza.x, L.plaza.z);
+    if (centre.userData.animate) animators.push(centre.userData.animate);
+    interact.push({ id: 'fountain', kind: 'look', x: L.plaza.x, z: L.plaza.z, r: 4.2, label: town.centreName, text: (town.centre === 'fountain' ? 'Das Wasser des Brunnens glitzert im Licht.' : town.centreName + ' – das Wahrzeichen von ' + region.town + '.') + ' Eine Inschrift: „' + region.town + ' – gegründet von Menschen und Taschis.“' });
     const benches = new Builder(), lampB = new Builder(), lampGlow = new Builder();
-    const lamp = BLD.streetLamp();
+    const lamp = TS.townLamp(town.lamp, BLD.streetLamp);
+    let decorIdx = 0;
     // positions come from L.props (addProps in layout.js), which also makes them solid
     for (const p of L.props) {
       const x = p.x, z = p.z, a = p.a;
       if (p.kind === 'lamp') { lampB.add(lamp.geo.clone(), null, matrix(x, H(x, z), z)); lampGlow.add(lamp.glow.clone(), null, matrix(x, H(x, z), z)); }
       else if (p.kind === 'bench') benches.add(BLD.bench(), null, matrix(x, H(x, z), z, 0, -a + Math.PI / 2 + Math.PI, 0));
-      else if (p.kind === 'flowerbed') { benches.box(2.2, 0.35, 1.2, 0x8a6a4a, x, H(x, z) + 0.17, z, -a); for (let k = 0; k < 6; k++) benches.sphere(0.18, [0xf47a8a, 0xffd25a, 0xffffff, 0xc58af0, 0xff9a5a][k % 5], x + Math.cos(-a) * (k - 2.5) * 0.33, H(x, z) + 0.5, z + Math.sin(-a) * (k - 2.5) * 0.33, 1, 0.8, 1, 6); }
+      else if (p.kind === 'flowerbed') TS.townDecor(town.decor, decorIdx++, benches, lampGlow, x, H(x, z), z, a);
+    }
+    // Wimpelketten zwischen benachbarten Laternen
+    if (town.bunting) {
+      const lamps = L.props.filter(p => p.kind === 'lamp');
+      lamps.forEach((p, i) => { const q = lamps[(i + 1) % lamps.length]; TS.bunting(benches, town.bunting, p.x, H(p.x, p.z) + 3.3, p.z, q.x, H(q.x, q.z) + 3.3, q.z, 0.9); });
     }
     const bm = new THREE.Mesh(benches.build(), envMaterial()); bm.castShadow = true; bm.receiveShadow = true; root.add(bm);
     const lm = new THREE.Mesh(lampB.build(), envMaterial()); lm.castShadow = true; root.add(lm);
@@ -367,3 +379,34 @@ function waterNear(L, x, z) {
 }
 
 void glowMaterial;
+
+// KayKit-Deko (CC0): Schilde mit gekreuzten Schwertern an der Arena und
+// Waffenständer an der Treppe. Lädt im Hintergrund nach, blockiert den Aufbau nicht.
+const SHIELDS = ['shield_A', 'shield_B', 'shield_C'];
+function arenaArmory(root, L, H, r) {
+  const arena = L.buildings.find(b => b.kind === 'arena');
+  if (!arena) return;
+  const cos = Math.cos(arena.yaw), sin = Math.sin(arena.yaw);
+  const at = (lx, ly, lz, obj, ry = 0, rz = 0, s = 1) => {
+    obj.position.set(arena.x + cos * lx + sin * lz, H(arena.x, arena.z) + ly, arena.z - sin * lx + cos * lz);
+    obj.rotation.set(0, arena.yaw + ry, rz); obj.scale.setScalar(s); root.add(obj);
+  };
+  const shield = SHIELDS[r % 3];
+  for (const sx of [-1, 1]) {
+    loadItem('sword_C').then(m => at(sx * 5.6 - 0.05, 3.9, arena.d / 2 + 0.12, m, 0, 0.75, 2)).catch(() => {});
+    loadItem('sword_C').then(m => at(sx * 5.6 + 0.05, 3.9, arena.d / 2 + 0.12, m, 0, -0.75, 2)).catch(() => {});
+    loadItem(shield).then(m => at(sx * 5.6, 5.0, arena.d / 2 + 0.3, m, 0, 0, 1.3)).catch(() => {});
+  }
+  // Ständer: Holzgestell mit lehnenden Waffen
+  const rackB = new Builder();
+  for (const p of L.props.filter(p => p.kind === 'rack')) {
+    const y = H(p.x, p.z);
+    for (const dx of [-1, 1]) rackB.box(0.14, 1.7, 0.14, 0x6a4a32, p.x + dx * 1.1, y + 0.85, p.z);
+    rackB.box(2.5, 0.12, 0.14, 0x7a5a3c, p.x, y + 1.55, p.z); rackB.box(2.5, 0.1, 0.5, 0x7a5a3c, p.x, y + 0.2, p.z + 0.1);
+    ['spear_A', 'halberd', 'axe_A', 'sword_A', 'hammer_A'].forEach((n, i) => loadItem(n).then(m => {
+      m.position.set(p.x - 0.9 + i * 0.45, y + (['axe_A', 'hammer_A', 'sword_A'].includes(n) ? 0.6 : 1.0), p.z + 0.12);
+      m.rotation.set(-0.18, 0, 0); m.scale.setScalar(n === 'spear_A' || n === 'halberd' ? 0.85 : 0.95); root.add(m);
+    }).catch(() => {}));
+  }
+  if (!rackB.empty) { const m = new THREE.Mesh(rackB.build(), envMaterial()); m.castShadow = true; m.receiveShadow = true; root.add(m); }
+}

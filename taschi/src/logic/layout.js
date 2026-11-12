@@ -4,6 +4,7 @@
 // puzzle area, champion pavilion, guild camp, cave and legend shrine.
 import { REGIONS } from '../data/regions.js';
 import { AMBUSHES } from '../data/adventure.js';
+import { townOf } from '../data/towns.js';
 import { createRng } from '../core/rng.js';
 import { createNoise, smoothstep, distToPolyline, smoothPath } from '../core/noise.js';
 
@@ -87,13 +88,16 @@ export function buildLayout(r) {
   B('house', 19, 41, 'w', { id: 'house2', label: 'Wohnhaus' });
   B('house', 33, 6, 'w', { id: 'house3', label: 'Wohnhaus' });
   const arena = B('arena', -42, -34, 's', { label: region.gym.theme, enter: 'arena' });
+  // Waffenständer (KayKit-Deko) links und rechts der Arenatreppe
+  for (const sx of [-1, 1]) L.props.push({ kind: 'rack', x: arena.x + sx * 8.2, z: arena.z + arena.d / 2 + 3.4, r: 1.2, a: 0 });
   const puzzle = { x: X(-42), z: -12, size: 20, kind: region.puzzle.kind };
   L.puzzle = puzzle;
   L.areas.push({ kind: 'puzzle', x: puzzle.x, z: puzzle.z, r: 13 });
-  const pav = { x: X(50), z: -36, kind: 'pavilion' };
+  const town = townOf(r);
+  const pav = { x: X(50), z: -36, kind: 'pavilion', venue: town.venue.kind };
   L.pavilion = pav;
-  B('pavilion', 50, -36, 's', { label: 'Champion-Pavillon', open: true });
-  L.areas.push({ kind: 'hill', x: pav.x, z: pav.z, r: 16, height: 4.5 });
+  B('pavilion', 50, -36, 's', { label: town.venue.name, open: true, venue: town.venue.kind });
+  if (town.venue.hill) L.areas.push({ kind: 'hill', x: pav.x, z: pav.z, r: 16, height: town.venue.hill });
 
   // guild camp, cave, legend: choose first free candidate
   const inWater = (x, z, pad = 4) => waterDistance(L, x, z) < pad;
@@ -243,7 +247,7 @@ export function buildLayout(r) {
   L.signs.push({ x: X(-14), z: -6, text: '← ' + region.gym.theme });
   // Hinweistafel am Rätselplatz (gestufte Tipps, siehe game.puzzleHint)
   L.signs.push({ x: puzzle.x + X(4.5), z: puzzle.z + puzzle.size / 2 + 2.5, text: 'Rätsel: ' + region.puzzle.name, hint: true });
-  L.signs.push({ x: X(10), z: -48, text: '→ Champion-Pavillon' });
+  L.signs.push({ x: X(10), z: -48, text: '→ ' + town.venue.name });
   addProps(L);
 
   // --- terrain heights -----------------------------------------------------------
@@ -340,7 +344,7 @@ function addProps(L) {
 function landmarkCandidates(kind) {
   switch (kind) {
     case 'mill': return [[-46, 32], [-40, 52]];
-    case 'lighthouse': return [[58, -16], [52, -30], [-58, 30]];
+    case 'lighthouse': return [[58, -16], [56, -2], [-58, 30]];
     case 'windmills': return [[46, 22], [-50, 34]];
     case 'volcano': return [[64, -66], [-64, -66]];
     case 'bigtree': return [[48, 18], [-50, 40]];
@@ -393,6 +397,7 @@ function computeHeights(L, noise) {
   for (const a of L.areas) if (a.kind !== 'hill') flatFeatures.push({ x: a.x, z: a.z, r: a.r + 3 });
   const hills = L.areas.filter(a => a.kind === 'hill');
   const isSky = L.water.some(w => w.kind === 'clouds');
+  const openSea = L.water.some(w => (w.kind === 'sea' && !w.cliff) || w.kind === 'bay');
   for (const rd of L.roads) {
     rd.bb = rd.pts.reduce((b, [x, z]) => [Math.min(b[0], x), Math.max(b[1], x), Math.min(b[2], z), Math.max(b[3], z)], [Infinity, -Infinity, Infinity, -Infinity]);
   }
@@ -426,6 +431,8 @@ function computeHeights(L, noise) {
       if (local < 3) h = Math.min(h, h * smoothstep(-2, 3, local) - w.depth * (1 - smoothstep(-3, 3, local)));
     }
     if (isSky && Math.abs(x) >= 7) { const rr = Math.hypot(x, z * 1.04); h -= smoothstep(80, 92, rr) * 30; }
+    // offenes Meer/Bucht ist eine endlose Wasserfläche: Land abseits des Ufers bleibt darüber (sonst stand z. B. Silberbucht unter Wasser)
+    if (openSea && WD[j * n + i] > 1.5) h = Math.max(h, -0.9 + 1.1 * smoothstep(1.5, 9, WD[j * n + i]));
     H[j * n + i] = h;
   }
   // roads: lightly smooth heights along roads to avoid bumps

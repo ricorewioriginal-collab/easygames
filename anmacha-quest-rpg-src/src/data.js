@@ -133,3 +133,10 @@ export const DEEP_FLOORS = 30;
 // Wächter der Tiefe (alle fünf Ebenen) und Arena der Erinnerung (alle Verfemten nacheinander)
 export const DEEP_BOSS = { 5: 'mcdroehn', 10: 'koenigin', 15: 'frostmod', 20: 'riff', 25: 'rauschen', 30: 'rauschen' };
 export const RUSH = ['mcdroehn', 'koenigin', 'frostmod', 'riff', 'rauschen'];
+
+// Echogruft und Untote: Skelette (KayKit Skeletons, CC0)
+Object.assign(ENEMIES.beatbandit, { name: 'Gruftknecht', model: 'kk:Skeleton_Minion', h: 1.1, tint: '#e8e0d0' });
+Object.assign(ENEMIES.reimruepel, { name: 'Knochenschleicher', model: 'kk:Skeleton_Rogue', h: 1.1, tint: '#d8d0c8' });
+Object.assign(ENEMIES.mikspin, { name: 'Gruftmagier', model: 'kk:Skeleton_Mage', h: 1.15, tint: '#c8c0ff' });
+Object.assign(ENEMIES.verstaerker, { model: 'kk:Skeleton_Warrior', h: 1.4, tint: '#ffb08a' });
+Object.assign(ENEMIES.rausritter, { model: 'kk:Skeleton_Warrior', h: 1.5, tint: '#c0c8e8' });

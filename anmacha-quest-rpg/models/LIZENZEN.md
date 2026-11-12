@@ -12,3 +12,5 @@ entstehen im Browser per Shader (keine weiteren Bilddateien).
 - **HDR-Umgebungslicht:** „Spruit Sunrise“ von Greg Zaal, Poly Haven (polyhaven.com, CC0) – `env/spruit_sunrise_1k.hdr`
 - **Schrift:** Cinzel (Natanael Gama, SIL Open Font License 1.1, über Fontsource)
 - **Musik und Klänge:** eigene Kompositionen, im Browser per Web Audio erzeugt (keine Audiodateien)
+- **Kay Lousberg** (kaylousberg.com, CC0): *KayKit Adventurers 2.0* (Helden und Stadtbewohner, `kk/`), *KayKit Skeletons 1.1* (Skelett-Gegner, `kk/`),
+  *KayKit Fantasy Weapons Bits 1.0* (Waffen je Ausrüstungsstufe, `weapons/`); Bewegungen aus Rig_Medium (General, MovementBasic)

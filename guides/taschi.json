@@ -39,7 +39,7 @@
         "Das Regionsrätsel lösen – erst dann öffnet sich die Arena.",
         "In der Arena: Arena-Schüler besiegen und die Herausforderung in der Mitte lösen. Dann öffnet sich das Gitter zur Arenaleitung.",
         "Arenaleitung besiegen: Licht-Siegel, Sternmünzen und Tränke.",
-        "Den regionalen Champion im Champion-Pavillon besiegen. Erst dann öffnet sich das Nordtor zur nächsten Region.",
+        "Den regionalen Champion an seinem Champion-Ort besiegen (jede Stadt hat einen eigenen, z. B. Kapitänsdeck, Kirschblütenschrein oder Eisthron). Erst dann öffnet sich das Nordtor zur nächsten Region.",
         "Nebenbei: Aufträge der Bewohner, Forschungsauftrag des Professors, Truhen, Höhlen und Trainer auf den Routen."
       ]
     },
@@ -74,7 +74,7 @@
       "list": [
         "Heilzentrum: Rezeption (Team heilen, KP und AP auffüllen), Taschi-Lager, Reisetagebuch (speichern) und Flugtaxi-Schalter (in freigeschaltete Regionen reisen).",
         "Laden: Bälle, Tränke, Pulver sowie Beeren und Bänder zum Tragen. Mit jedem Siegel kommen neue Waren dazu. Verkaufen bringt den halben Preis.",
-        "Champion-Pavillon, Arena, Rätselplatz, Truhe, Professorenlabor und sieben Bewohner pro Region.",
+        "Eigener Champion-Ort, Arena, Rätselplatz, Truhe, Professorenlabor und sieben Bewohner pro Region.",
         "Höhlen (Flüsterhöhle, Bernsteingrotte, Kristallgrotte, Mondhöhle) mit Leuchtkristallen und einem funkelnden Spalt.",
         "Wegweiser, Minikarte und die Karte (M) zeigen dir den Weg."
       ]

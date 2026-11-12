@@ -57,18 +57,49 @@ export function house(pal, style = 'timber', variant = 0, w = 8, d = 7) {
   // foundation + walls
   b.box(w + 0.4, 1.4, d + 0.4, pal.stone || 0x9b958a, 0, -0.3, 0, 0, { jitter: 0.06 });
   if (style === 'stilts') for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) b.cyl(0.18, 0.2, 2.2, 0x5a4636, sx * (w / 2 - 0.3), -0.6, sz * (d / 2 - 0.3), 6);
-  b.box(w, wallH, d, wall, 0, 0.4 + wallH / 2, 0, 0, { shade: 0.12 });
-  if (style === 'timber') {
+  const round = style === 'hut';
+  if (round) b.add(new THREE.CylinderGeometry(1, 1, wallH, 20), wall, matrix(0, 0.4 + wallH / 2, 0, 0, 0, 0, w / 2, 1, d / 2), { shade: 0.12 });
+  else b.box(w, wallH, d, style === 'basalt' ? shade(wall, 0.55) : wall, 0, 0.4 + wallH / 2, 0, 0, { shade: 0.12 });
+  if (style === 'log' || style === 'treehouse') {
+    // liegende Stämme vor allen vier Wänden, Eckköpfe ragen heraus
+    const logC = style === 'log' ? 0x8a6040 : 0x9a7048;
+    for (let k = 0; k < 7; k++) {
+      const y = 0.65 + k * (wallH - 0.3) / 6, c = k % 2 ? logC : shade(logC, 0.88);
+      for (const sz of [-1, 1]) b.add(new THREE.CylinderGeometry(0.2, 0.2, w + 0.7, 7), c, matrix(0, y, sz * (d / 2 + 0.05), 0, 0, Math.PI / 2));
+      for (const sx of [-1, 1]) b.add(new THREE.CylinderGeometry(0.2, 0.2, d + 0.7, 7), c, matrix(sx * (w / 2 + 0.05), y + 0.12, 0, Math.PI / 2, 0, 0));
+    }
+  } else if (style === 'timber') {
     for (const sx of [-1, 1]) for (const sz of [-1, 1]) b.box(0.28, wallH, 0.28, pal.trim, sx * (w / 2 - 0.05), 0.4 + wallH / 2, sz * (d / 2 - 0.05));
     b.box(w + 0.1, 0.22, 0.12, pal.trim, 0, 0.4 + wallH * 0.55, d / 2 + 0.03);
     b.box(w + 0.1, 0.22, 0.12, pal.trim, 0, 0.4 + wallH * 0.55, -d / 2 - 0.03);
     for (const sx of [-2.6, 2.6]) { b.add(new THREE.BoxGeometry(0.16, 1.5, 0.1), pal.trim, matrix(sx, 0.4 + wallH * 0.8, d / 2 + 0.05, 0, 0, sx > 0 ? 0.5 : -0.5)); }
-  } else if (style === 'stone') {
+  } else if (style === 'stone' || style === 'basalt') {
     for (let i = 0; i < 14; i++) b.box(0.6 + (i % 3) * 0.2, 0.32, 0.08, shade(wall, 0.88), -w / 2 + 0.6 + (i * 1.13) % (w - 1), 0.8 + ((i * 7) % 5) * 0.55, d / 2 + 0.03);
   }
   // roof
   const roofH = style === 'adobe' ? 0 : style === 'snow' ? 3.2 : 2.6;
-  if (style === 'adobe') {
+  if (style === 'hut') {
+    // Rundhütte mit tief gezogenem Strohdach und Spitze
+    const thatch = 0xc9a45a;
+    b.add(new THREE.ConeGeometry(1, 1, 20), thatch, matrix(0, 0.4 + wallH + 1.5, 0, 0, 0, 0, w / 2 + 1, 3.4, d / 2 + 1), { jitter: 0.06 });
+    b.add(new THREE.CylinderGeometry(1, 1, 0.25, 20), shade(thatch, 0.8), matrix(0, 0.4 + wallH - 0.1, 0, 0, 0, 0, w / 2 + 1.05, 1, d / 2 + 1.05));
+    b.cyl(0.07, 0.07, 1.4, 0x5a4030, 0, 0.4 + wallH + 3.6, 0, 5);
+    b.sphere(0.2, pal.accent, 0, 0.4 + wallH + 4.3, 0, 1, 1, 1, 8);
+  } else if (style === 'pagoda') {
+    // zweistufiges, geschwungenes Dach mit Holzpfosten und Firstschmuck
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) b.box(0.32, wallH, 0.32, 0x5a2e2a, sx * (w / 2 + 0.05), 0.4 + wallH / 2, sz * (d / 2 + 0.05));
+    b.box(w + 0.3, 0.3, d + 0.3, 0x5a2e2a, 0, 0.4 + wallH, 0);
+    const tier = (y, sx, sz, hh) => {
+      b.add(new THREE.ConeGeometry(Math.SQRT1_2, 1, 4, 1, true), roofC, matrix(0, y + hh / 2, 0, 0, Math.PI / 4, 0, sx, hh, sz));
+      b.add(new THREE.CylinderGeometry(Math.SQRT1_2, Math.SQRT1_2 * 1.06, 0.18, 4), shade(roofC, 0.7), matrix(0, y, 0, 0, Math.PI / 4, 0, sx, 1, sz));
+      for (const cx of [-1, 1]) for (const cz of [-1, 1]) b.add(new THREE.ConeGeometry(0.14, 0.7, 5), shade(roofC, 0.8), matrix(cx * sx * 0.5, y + 0.15, cz * sz * 0.5, cz * 0.6, 0, -cx * 0.6));
+    };
+    tier(0.4 + wallH + 0.1, w + 2.2, d + 2.2, 1.5);
+    b.box(w * 0.5, 0.9, d * 0.5, wall, 0, 0.4 + wallH + 1.6, 0);
+    tier(0.4 + wallH + 2, w * 0.5 + 1.6, d * 0.5 + 1.6, 1.4);
+    b.cyl(0.06, 0.1, 1, 0xd8b04a, 0, 0.4 + wallH + 3.8, 0, 6);
+    b.sphere(0.18, 0xd8b04a, 0, 0.4 + wallH + 4.35, 0, 1, 1, 1, 8);
+  } else if (style === 'adobe') {
     b.box(w + 0.3, 0.35, d + 0.3, shade(wall, 0.92), 0, 0.4 + wallH + 0.15, 0);
     for (let i = -2; i <= 2; i++) b.cyl(0.08, 0.08, 0.6, 0x7a5a3a, i * 1.4, 0.4 + wallH - 0.3, d / 2 + 0.25, 5);
   } else if (style === 'dome') {
@@ -83,9 +114,12 @@ export function house(pal, style = 'timber', variant = 0, w = 8, d = 7) {
     b.box(0.7, 1.6, 0.7, pal.stone || 0x9b958a, w * 0.22, 0.4 + wallH + roofH * 0.7, -d * 0.18);
     b.box(0.9, 0.2, 0.9, shade(pal.stone || 0x9b958a, 0.8), w * 0.22, 0.4 + wallH + roofH * 0.7 + 0.85, -d * 0.18);
   }
-  doorAt(b, 0, d / 2, pal);
-  windowAt(b, glass, -w * 0.3, 2.2, d / 2, 1.1, 1.0, pal);
-  windowAt(b, glass, w * 0.3, 2.2, d / 2, 1.1, 1.0, pal);
+  if (style === 'basalt') { glass.box(0.5, 0.18, 0.5, 0xff7a2f, w * 0.22, 0.4 + wallH + roofH * 0.7 + 1, -d * 0.18); for (const sx of [-1, 1]) glass.box(0.08, wallH * 0.7, 0.06, 0xff8a3a, sx * w * 0.42, 0.4 + wallH * 0.5, d / 2 + 0.04); }
+  if (style === 'treehouse') for (let i = 0; i < 5; i++) b.sphere(1.2 + (i % 2) * 0.4, [0x5aa154, 0x6fb35a, 0x4e8f48][i % 3], (i - 2) * w * 0.22, 0.4 + wallH + roofH * 0.55 + (i % 2) * 0.5, -d * 0.35 + (i % 3) * 0.3, 1, 0.75, 1, 8);
+  doorAt(b, 0, round ? d / 2 - 0.05 : d / 2, pal);
+  const fz = round ? d / 2 * Math.sqrt(1 - 0.36) : d / 2;
+  windowAt(b, glass, -w * 0.3, 2.2, fz, 1.1, 1.0, pal);
+  windowAt(b, glass, w * 0.3, 2.2, fz, 1.1, 1.0, pal);
   windowAt(b, glass, -w / 2, 2.2, 0, 1.0, 0.9, pal, { yaw: -Math.PI / 2, box: false });
   windowAt(b, glass, w / 2, 2.2, 0, 1.0, 0.9, pal, { yaw: Math.PI / 2, box: false });
   windowAt(b, glass, 0, 2.2, -d / 2, 1.1, 0.9, pal, { yaw: Math.PI, box: false, shutters: false });

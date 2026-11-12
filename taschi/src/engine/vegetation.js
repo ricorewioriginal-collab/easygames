@@ -1,7 +1,7 @@
 // Vegetation and rock geometry (two detail levels each) and a chunked
 // instancing system with manual frustum culling and distance-based LOD.
 import { THREE } from './three.js';
-import { Builder, matrix, lumpy } from './geometry.js';
+import { Builder, matrix, lumpy, capsule } from './geometry.js';
 import { foliageMaterial, envMaterial, grassMaterial } from './materials.js';
 
 const C = (c) => new THREE.Color(c);
@@ -105,7 +105,7 @@ export function vegetationGeometry(type, pal) {
     }
     case 'cactus': {
       const g = 0x5f9a5a;
-      hi.add(new THREE.CapsuleGeometry ? new THREE.CapsuleGeometry(0.35, 2.4, 4, 8) : new THREE.CylinderGeometry(0.35, 0.38, 3, 8), g, matrix(0, 1.5, 0), { shade: 0.3 });
+      hi.add(capsule(0.35, 2.4, 8, 4), g, matrix(0, 1.5, 0), { shade: 0.3 });
       hi.add(new THREE.CylinderGeometry(0.22, 0.24, 1.2, 7), g, matrix(0.55, 1.6, 0, 0, 0, Math.PI / 2));
       hi.add(new THREE.CylinderGeometry(0.2, 0.22, 1.0, 7), g, matrix(0.95, 2.1, 0));
       hi.sphere(0.12, 0xf4a6c8, 0, 3.0, 0, 1, 1, 1, 6);
