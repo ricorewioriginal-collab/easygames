@@ -1,6 +1,6 @@
 // Spielablauf: Titel, Karte, Gespräche, Shop, Menü, Kampf. Gleiche Abläufe und Texte wie main.gd der Godot-Fassung.
 // Anzeige und Bedienung kommen über `ui` (DOM) und `view` (Three.js); beide lassen sich für Tests durch Attrappen ersetzen.
-import { MAPS, HEROES, JOINS, SKILLS, IPSKILLS, ITEMS, KEYNAMES, ENEMIES, CAPSULES, SHOPS, FEED, TOOLS, FISH, REEL, CHIP_PRICE, PRIZES, RUSH, DEEP_FLOORS, WORLD_SCALE } from './data.js';
+import { MAPS, HEROES, JOINS, SKILLS, IPSKILLS, ITEMS, KEYNAMES, ENEMIES, CAPSULES, SHOPS, FEED, TOOLS, FISH, REEL, CHIP_PRICE, PRIZES, RUSH, DEEP_FLOORS, WORLD_SCALE, REALM_SCALE, REALMS } from './data.js';
 import * as L from './logic.js';
 
 export const M = { TITLE: 0, WORLD: 1, BATTLE: 2 };
@@ -19,9 +19,17 @@ const BOSS_AFTER = {
   frostmod: ['Kryos zerspringt wie Glas. Tauwasser tropft von der Decke. Der dritte Kristall erwacht!', 'Auf der Weltkarte öffnet sich der Glutschlund. In Hafenau wartet jemand auf euch.'],
   riff: ['Pyrax stürzt in die Lava, die Flammen erlöschen. Der vierte Kristall erwacht!', 'Im Norden erhebt sich der Turm der Stille. Der Weg zu Nihl ist frei.']
 };
+// Nach jedem Boss: Farbe des erwachten Kristalls und was die Gefährten sagen
+const CRYSTAL = { mcdroehn: '#ff6a8a', koenigin: '#ff9ad8', frostmod: '#9ad8ff', riff: '#ffb070' };
+const BOSS_REACT = {
+  mcdroehn: ['Silas: Der Kristall ... er singt! Hörst du das, Aren?', 'Aren: Ysolde hatte recht. Die Verfemten sind zurück, und außer uns weiß es noch niemand.'],
+  koenigin: ['Lyra: Ihre Dornen waren voller Trauer. Vielleicht wollte sie nur nicht vergessen werden.', 'Aren: Zwei Kristalle sind wach. Noch zwei, dann hält das Gleichgewicht wieder.'],
+  frostmod: ['Silas: Mir ist immer noch kalt bis in die Knochen.', 'Fenn: Dann lauf schneller, Magier. Im Glutschlund wirst du dir die Kälte zurückwünschen.'],
+  riff: ['Borin: Ha! Von diesem Kampf wird man in Lindmark noch lange singen.', 'Lyra: Seht nach Norden ... der Turm. Dort wartet Nihl, die Stille selbst.']
+};
 // Zwischensequenzen: Kamera (Feld x/y, Drehung, Abstand, Neigung) und Text
 const INTRO = [
-  { x: 12, y: 8, yaw: 0.6, dist: 14, pitch: 0.55, t: ['Vor tausend Jahren sangen vier Sphärenkristalle die Welt Aetherion ins Gleichgewicht.'] },
+  { x: 12, y: 8, yaw: 0.6, dist: 14, pitch: 0.55, fx: { k: 'crystals', h: 5.5, r: 2.6 }, t: ['Vor tausend Jahren sangen vier Sphärenkristalle die Welt Aetherion ins Gleichgewicht.'] },
   { x: 12, y: 9, yaw: -0.4, dist: 10, pitch: 0.42, t: ['Vier ihrer Hüter verrieten sie. Man nannte sie die Verfemten und versiegelte sie im Herzen der Welt.'] },
   { x: 12, y: 10, yaw: 0.2, dist: 7, pitch: 0.3, t: ['Doch nun breitet sich eine Stille aus, die selbst die Vögel verstummen lässt. Die Siegel brechen.'] },
   { x: 12, y: 12, yaw: 0, dist: 4.6, pitch: 0.2, t: ['In der Hafenstadt Hafenau erwacht der junge Schwertkämpfer Aren aus einem Traum von Sternen, die erlöschen.', 'Sein bester Freund Silas, ein Magier mit mehr Mut als Vorsicht, wartet schon vor der Tür.', 'Älteste Ysolde hat nach euch gerufen. Sie steht in der Mitte der Stadt.'] }
@@ -70,9 +78,11 @@ export class Game {
     this.ui.letterbox?.(true);
     for (const sh of shots) {
       this.view.cine = { x: sh.x + 0.5, z: sh.y + 0.5, h: sh.h ?? 0.9, yaw: sh.yaw, dist: sh.dist, pitch: sh.pitch };
+      if (sh.fx) { if (sh.fx.clear) this.view.clearSceneFx?.(); this.view.sceneFx?.(sh.fx.k, sh.fx.x ?? sh.x, sh.fx.y ?? sh.y, sh.fx); if (sh.fx.sfx) this.sfx(sh.fx.sfx); }
       if (sh.wait) await this.wait(sh.wait);
-      await this.say(sh.t);
+      if (sh.t && sh.t.length) await this.say(sh.t);
     }
+    this.view.clearSceneFx?.();
     this.view.cine = null;
     this.ui.letterbox?.(false);
     if (music) this.musicOverride = null;
@@ -112,6 +122,16 @@ export class Game {
     this.ui.msg(t);
     if (hold > 0) await this.wait(hold);
   }
+  // Technik-Einblendung (schräges Band oben)
+  async callout(t, col = '#ffd24a', hold = 0.55) {
+    if (this.autoplay) return;
+    this.ui.callout?.(t, col);
+    if (hold > 0) await this.wait(hold);
+  }
+  // Zugreihenfolge oben anzeigen (Helden, Kapselgeist, Gegner)
+  showOrder(list) {
+    this.ui.turnOrder?.(list.map(o => o.k === 'e' ? { n: o.who.name, c: '#ff5a6a', e: true, boss: !!o.who.boss } : o.k === 'c' ? { n: L.cname(o.who), c: CAPSULES[o.who.id].col } : { n: o.who.name, c: HEROES[o.who.id].col }));
+  }
   tick() { return new Promise(r => setTimeout(r, 0)); }
   wait(t) {
     if (this.autoplay) return this.tick();
@@ -129,7 +149,7 @@ export class Game {
     if (!this.store) return;
     const S = this.S;
     const party = S.party.map(h => ({ id: h.id, name: h.name, lv: h.lv, exp: h.exp, hp: h.hp, sp: h.sp, ip: h.ip }));
-    this.store.set(SAVE_KEY, JSON.stringify({ v: 5, party, inv: S.inv, gold: S.gold, gear: S.gear, flags: S.flags, caps: S.caps, chips: S.chips, deepBest: S.deepBest,
+    this.store.set(SAVE_KEY, JSON.stringify({ v: 6, party, inv: S.inv, gold: S.gold, gear: S.gear, flags: S.flags, caps: S.caps, chips: S.chips, deepBest: S.deepBest,
       map: S.mapId === 'tiefe' ? 'hub' : S.mapId, gp: S.mapId === 'tiefe' ? { x: 2, y: 2 } : S.gp, t: S.playTime }));
   }
   loadGame() {
@@ -137,8 +157,10 @@ export class Game {
     let d = null;
     try { d = JSON.parse(this.store.get(SAVE_KEY)); } catch (e) { return false; }
     if (d && d.map === 'tiefe') { d.map = 'hub'; d.gp = { x: 2, y: 2 }; }
-    // ab v5 ist die Weltkarte doppelt so groß
-    if (d && (d.v | 0) < 5 && d.map === 'welt' && d.gp) d.gp = { x: d.gp.x * WORLD_SCALE, y: d.gp.y * WORLD_SCALE };
+    // Weltkarte: v<5 Originalgröße, v5 doppelt, ab v6 dreifach; Reiche ab v6 doppelt
+    const v = d ? d.v | 0 : 0;
+    if (d && d.gp && d.map === 'welt' && v < 6) { const f = v < 5 ? WORLD_SCALE : WORLD_SCALE / 2; d.gp = { x: Math.round(d.gp.x * f), y: Math.round(d.gp.y * f) }; }
+    if (d && d.gp && REALMS.includes(d.map) && v < 6) d.gp = { x: d.gp.x * REALM_SCALE, y: d.gp.y * REALM_SCALE };
     if (!d || !Array.isArray(d.party) || !d.party.length || !MAPS[d.map]) return false;
     const S = this.S;
     S.party = d.party.filter(h => HEROES[h.id]).map(h => ({ id: h.id, name: HEROES[h.id].name, lv: h.lv | 0 || 1, exp: h.exp | 0, hp: h.hp | 0, sp: h.sp | 0, ip: 0 }));
@@ -390,7 +412,12 @@ export class Game {
     if (to === 'hub') {
       for (const j of JOINS) {
         if (S.flags[j[0]] && !L.hasHero(S, j[1])) {
-          await this.say([j[2], `${HEROES[j[1]].name} schließt sich euch an.`]);
+          // Beitritt als kleine Szene an der Quelle: die neue Figur steht dort und spricht
+          const spot = { x: 15, y: 10 };
+          if (this.autoplay || !this.view) await this.say([j[2], `${HEROES[j[1]].name} schließt sich euch an.`]);
+          else await this.cutscene([
+            { x: spot.x, y: spot.y, h: 1.0, yaw: 0.5, dist: 4.2, pitch: 0.2, wait: 0.8, fx: { k: 'actor', id: j[1], yaw: 0.6 }, t: [j[2]] },
+            { x: spot.x, y: spot.y, h: 0.9, yaw: -0.4, dist: 3.4, pitch: 0.12, fx: { k: 'crystal', col: HEROES[j[1]].col, sfx: 'levelup' }, t: [`${HEROES[j[1]].name} schließt sich euch an!`] }]);
           S.party.push(L.newHero(S, j[1], Math.max(1, Math.trunc(L.avgLv(S)))));
           this.view.partyChanged?.();
         }
@@ -643,7 +670,12 @@ export class Game {
       this.removeObj(o);
       if (b.id === 'rauschen') await this.ending();
       else {
-        await this.say(BOSS_AFTER[b.id] || ['Besiegt!']);
+        const after = BOSS_AFTER[b.id] || ['Besiegt!'];
+        if (this.autoplay || !this.view) await this.say(after);
+        else await this.cutscene([
+          { x: o.x, y: o.y, h: 1.3, yaw: yaw + 0.3, dist: 4.2, pitch: 0.18, wait: 1.4, fx: { k: 'crystal', col: CRYSTAL[b.id], sfx: 'levelup' }, t: after.slice(0, 1) },
+          { x: o.x, y: o.y, h: 1.0, yaw: yaw - 0.9, dist: 5.6, pitch: 0.32, t: (BOSS_REACT[b.id] || []).filter(l => S.party.some(h => l.startsWith(h.name + ':'))) },
+          { x: o.x, y: o.y, h: 1.6, yaw: yaw + 1.6, dist: 7.5, pitch: 0.5, t: after.slice(1) }]);
         this.saveGame();
       }
     } else if (res === 'lose') await this.gameOver();
@@ -801,9 +833,17 @@ export class Game {
   async ending() {
     const S = this.S;
     this.musicOverride = 'ending';
-    await this.say(['Nihl zerfällt in Sternenstaub. Aus dem Turm steigt ein einzelner, klarer Ton auf, dann ein zweiter, dann tausend.',
-      'Die vier Kristalle singen gemeinsam. Über Aetherion geht die Sonne auf, als hätte sie lange gewartet.',
-      `ENDE. Danke fürs Spielen von Aetherion: Chronik der Sphären!  Spielzeit: ${Math.trunc(S.playTime / 60)} Min.`]);
+    const b = S.map.boss || { x: S.gp.x, y: S.gp.y };
+    const lines = ['Nihl zerfällt in Sternenstaub. Aus dem Turm steigt ein einzelner, klarer Ton auf, dann ein zweiter, dann tausend.',
+      'Die vier Kristalle singen gemeinsam. Über Aetherion geht die Sonne auf, als hätte sie lange gewartet.'];
+    const talk = ['Aren: Es ist vorbei. Hört ihr? Die Welt klingt wieder.', 'Silas: Ich hab doch gesagt, wir schaffen das. Na gut ... ich hab es gehofft.', 'Lyra: Die Stille hat uns gelehrt, wie wertvoll jeder Ton ist.', 'Fenn: Und jetzt? Ich hätte Lust auf einen Fisch in Lindmark.', 'Borin: Und auf ein Fest, das drei Tage dauert!']
+      .filter(l => S.party.some(h => l.startsWith(h.name + ':')));
+    if (this.autoplay || !this.view) await this.say(lines);
+    else await this.cutscene([
+      { x: b.x, y: b.y, h: 1.6, yaw: 0.4, dist: 6, pitch: 0.25, wait: 1.2, fx: { k: 'crystals', h: 2.6, r: 2.0, burst: true, sfx: 'levelup' }, t: lines.slice(0, 1) },
+      { x: b.x, y: b.y, h: 2.2, yaw: -0.8, dist: 9, pitch: 0.55, t: lines.slice(1) },
+      { x: b.x, y: b.y, h: 1.0, yaw: 2.6, dist: 4.5, pitch: 0.15, t: talk }], 'ending');
+    await this.say([`ENDE. Danke fürs Spielen von Aetherion: Chronik der Sphären!  Spielzeit: ${Math.trunc(S.playTime / 60)} Min.`]);
     S.flags.boss_rauschen = true;
     this.musicOverride = null;
     await this.fade(1.0);
@@ -1000,6 +1040,11 @@ export class Game {
       const cmds = [];
       let i = 0;
       const ph = L.aliveHeroes(S);
+      // voraussichtliche Reihenfolge nach Tempo
+      const pre = ph.map(h => ({ k: 'h', who: h, s: L.stat(S, h, 'spd') }));
+      for (const e of L.aliveEnemies(S)) pre.push({ k: 'e', who: e, s: e.spd });
+      if (S.bcap && S.bcap.hp > 0) pre.push({ k: 'c', who: S.bcap, s: L.cstat(S.bcap, 'spd') });
+      this.showOrder(pre.sort((a, b) => b.s - a.s));
       while (i < ph.length) {
         const h = ph[i];
         this.curHero = S.party.indexOf(h);
@@ -1020,9 +1065,11 @@ export class Game {
       for (const e of L.aliveEnemies(S)) order.push({ k: 'e', who: e, s: e.spd + this.rng.randf() * 3.0 });
       if (S.bcap && S.bcap.hp > 0) order.push({ k: 'c', who: S.bcap, s: L.cstat(S.bcap, 'spd') + this.rng.randf() * 3.0 });
       order.sort((a, b) => b.s - a.s);
+      this.showOrder(order);
       const guard = [];
-      for (const o of order) {
+      for (const [oi, o] of order.entries()) {
         if (!L.aliveEnemies(S).length || !L.aliveHeroes(S).length) break;
+        this.ui.turnActive?.(oi);
         if (o.k === 'h') { if (o.who.hp > 0) await this.heroAct(o.c, guard); }
         else if (o.k === 'c') { if (o.who.hp > 0) await this.capAct(o.who, guard); }
         else if (o.who.hp > 0) await this.enemyAct(o.who, guard);
@@ -1031,6 +1078,7 @@ export class Game {
       else if (!L.aliveHeroes(S).length) result = 'lose';
       else if (this.autoplay && rounds > 200) result = 'lose';   // Sicherung für den Selbsttest
     }
+    this.ui.turnOrder?.(null);
     if (result === 'win') await this.victory();
     else if (result === 'lose') await this.bmsg('Das Team ist besiegt ...', 1.2);
     this.ui.msg('');
@@ -1195,8 +1243,10 @@ export class Game {
           if (h.sp < d.sp) { await this.bmsg('Zu wenig SP!', 0.5); return; }
           h.sp -= d.sp;
         }
-        await this.bmsg(`${h.name}: ${d.name}!`, 0.5);
-        this.view.battleHero?.(hi, d.kind === 'phys' ? 'attack' : 'cast', c.t && S.enemies.includes(c.t) ? S.enemies.indexOf(c.t) : -1);
+        await this.callout(d.name, isIp ? '#ffd24a' : HEROES[h.id].col, 0.45);
+        const ti0 = c.t && S.enemies.includes(c.t) ? S.enemies.indexOf(c.t) : -1;
+        this.view.battleHero?.(hi, d.kind === 'phys' ? 'attack' : 'cast', ti0);
+        this.view.battleSkill?.(hi, c.s, c.t && S.party.includes(c.t) ? [S.party.indexOf(c.t)] : (ti0 >= 0 ? [ti0] : null));
         if (isIp) { this.view.battleFx?.('special', 'hero', hi); this.sfx('special'); }
         await this.wait(0.3);
         if (d.kind === 'heal') {
@@ -1256,7 +1306,7 @@ export class Game {
       this.hitEnemy(t, L.dmgPhys(this.rng, L.cstat(c, 'atk'), t.def));
       await this.wait(0.45);
     } else {
-      await this.bmsg(`${name}: ${sk.name}!`, 0.5);
+      await this.callout(sk.name, CAPSULES[c.id].col, 0.5);
       this.view.battleCap?.(sk.kind === 'phys' ? 'attack' : 'cast', sk.all ? -1 : S.enemies.indexOf(t));
       this.view.battleFx?.('special', 'capsule', 0);
       await this.wait(0.3);
@@ -1313,7 +1363,7 @@ export class Game {
     const ei = S.enemies.indexOf(e);
     if (useSpec) {
       this.view.battleEnemy?.(ei, 'attack');
-      await this.bmsg(`${e.name}: ${spec[0]}!`, 0.7);
+      await this.callout(spec[0], '#ff4a5a', 0.7);
       this.view.battleFx?.('spec', 'enemy', ei);
       for (const h of al) {
         let dm = L.dmgPhys(this.rng, e.atk, L.stat(S, h, 'def'), spec[1]);

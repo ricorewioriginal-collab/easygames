@@ -147,16 +147,19 @@ ENEMIES.glutwicht = { name: 'Glutwicht', lv: 20, hpm: 1.9, atkm: 1.4, defm: 1.2,
 ENEMIES.aschenfuerst = { name: 'Aschenfürst Vargh', lv: 30, hpm: 10, atkm: 1.9, defm: 1.3, boss: true, spec: ['Aschenregen', 0.95, true], dir: 'cute', model: 'bestiary:Imp', tint: '#ff9a7a', h: 3.2 };
 DEEP_BOSS[30] = 'aschenfuerst';
 
-// ---------------------------------------------------------------- Freies Laufen: doppelt so große Weltkarte
-// Jedes Feld der Oberwelt wird zu 2×2 Feldern; Ecken zwischen Wald, Wasser und Fels werden abgerundet,
-// damit keine Treppenstufen entstehen. Eingänge und Ankunftsfelder wandern mit (Spielstände ab v5).
-export const WORLD_SCALE = 2;
-(function upscaleWorld() {
-  const W = MAPS.welt, src = W.rows, h = src.length, w = src[0].length, K = WORLD_SCALE;
-  const at = (x, y) => (src[y] && src[y][x]) || '~';
-  const hash = (x, y) => { let v = Math.imul(x * 374761393 + y * 668265263, 1274126177); v ^= v >>> 13; return ((v >>> 0) % 1000) / 1000; };
-  const solid = '#T~^';
-  const portals = new Set(W.portals.map(p => p.x + ',' + p.y));
+// ---------------------------------------------------------------- Große Welten: Oberwelt ×3, Reiche ×2
+// Jedes Feld wird zu K×K Feldern. Auf der Oberwelt werden Ecken zwischen Wald, Wasser und Fels abgerundet,
+// damit keine Treppenstufen entstehen. Alle Koordinaten (Eingänge, Truhen, Rätsel, Bosse) wandern mit.
+// Spielstände: Welt v<5 ×3, v5 ×1,5; Reiche v<6 ×2.
+export const WORLD_SCALE = 3, REALM_SCALE = 2;
+export const REALMS = ['rap', 'schlager', 'xmas', 'rock', 'tower'];
+const hashT = (x, y) => { let v = Math.imul(x * 374761393 + y * 668265263, 1274126177); v ^= v >>> 13; return ((v >>> 0) % 1000) / 1000; };
+// Reine Karte vergrößern (auch für die Tiefe der Echos)
+export function upscaleMap(m, K, round = false, start = null) {
+  const src = m.rows, h = src.length, w = src[0].length;
+  const at = (x, y) => (src[y] && src[y][x]) || (round ? '~' : '#');
+  const sc = (o) => { if (!o || o.x == null) return o; o.x *= K; o.y *= K; return o; };
+  const portals = new Set((m.portals || []).map(p => p.x + ',' + p.y));
   const plain = [], smooth = [];
   for (let y = 0; y < h * K; y++) {
     let a = '', b = '';
@@ -164,35 +167,52 @@ export const WORLD_SCALE = 2;
       const sx = Math.floor(x / K), sy = Math.floor(y / K), c = at(sx, sy);
       a += c;
       let o = c;
-      if (!portals.has(sx + ',' + sy)) {
-        const dx = (x % K) ? 1 : -1, dy = (y % K) ? 1 : -1;
-        const nh = at(sx + dx, sy), nv = at(sx, sy + dy);
-        // Ecke abrunden: beide Nachbarn zur Ecke hin sind gleich und anders als dieses Feld
-        if (nh === nv && nh !== c && hash(x, y) < 0.7) o = nh;
-        else if (c === '.' && hash(x + 7, y + 3) < 0.05) o = ',';
+      if (round && !portals.has(sx + ',' + sy)) {
+        const fx = (x % K) / (K - 1), fy = (y % K) / (K - 1);       // 0 = linke/obere Kante, 1 = rechte/untere
+        const dx = fx > 0.5 ? 1 : fx < 0.5 ? -1 : 0, dy = fy > 0.5 ? 1 : fy < 0.5 ? -1 : 0;
+        const nh = dx ? at(sx + dx, sy) : c, nv = dy ? at(sx, sy + dy) : c;
+        if (dx && dy && nh === nv && nh !== c && hashT(x, y) < 0.75) o = nh;
+        else if (c === '.' && hashT(x + 7, y + 3) < 0.05) o = ',';
       }
       b += o;
     }
     plain.push(a); smooth.push(b);
   }
-  const scaleP = (p) => ({ ...p, x: p.x * K, y: p.y * K });
-  const portalsK = W.portals.map(scaleP);
-  const arrive = [];
-  for (const m of Object.values(MAPS)) for (const p of m.portals || []) if (p.to === 'welt') { p.ax *= K; p.ay *= K; arrive.push({ x: p.ax, y: p.ay }); }
-  // Alles muss vom Start aus erreichbar bleiben, sonst ohne Abrundung
-  const ok = (rows) => {
-    const free = (x, y) => rows[y] && rows[y][x] && !solid.includes(rows[y][x]);
-    const seen = new Set(['40,44']), q = [[40, 44]];
+  (m.portals || []).forEach(sc); (m.chests || []).forEach(sc); (m.npcs || []).forEach(sc); (m.loot || []).forEach(sc);
+  sc(m.boss);
+  if (m.puzzle) for (const k of ['blocks', 'plates', 'torches']) m.puzzle[k] = m.puzzle[k].map(([x, y]) => [x * K, y * K]);
+  let rows = plain;
+  if (round) {
+    const solid = '#T~^', st = start || { x: 0, y: 0 };
+    const free = (r, x, y) => r[y] && r[y][x] && !solid.includes(r[y][x]);
+    const seen = new Set([st.x + ',' + st.y]), q = [[st.x, st.y]];
     while (q.length) {
       const [x, y] = q.pop();
       for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
         const k = (x + dx) + ',' + (y + dy);
-        if (!seen.has(k) && free(x + dx, y + dy)) { seen.add(k); q.push([x + dx, y + dy]); }
+        if (!seen.has(k) && free(smooth, x + dx, y + dy)) { seen.add(k); q.push([x + dx, y + dy]); }
       }
     }
-    return [...portalsK, ...arrive].every(p => seen.has(p.x + ',' + p.y));
-  };
-  W.rows = ok(smooth) ? smooth : plain;
-  W.portals = portalsK;
-  W.rate = W.rate / K;    // doppelt so viele Schritte: gleich viele Zufallskämpfe
+    if ((m.portals || []).every(p => seen.has(p.x + ',' + p.y))) rows = smooth;
+  }
+  if (m.gate) {
+    // Tor-Durchgang wieder auf ein Feld verengen, damit Tor und Lichtsiegel ihn sperren
+    sc(m.gate);
+    const g = m.gate, horiz = at(g.x / K - 1, g.y / K) !== '#';
+    rows = rows.map((r, y) => r.split('').map((c, x) => {
+      const inB = x >= g.x && x < g.x + K && y >= g.y && y < g.y + K;
+      return inB && (horiz ? y !== g.y : x !== g.x) ? '#' : c;
+    }).join(''));
+  }
+  m.rows = rows;
+  m.rate = (m.rate || 0) / K;     // mehr Schritte: gleich viele Zufallskämpfe
+  return m;
+}
+(function upscaleAll() {
+  // Ankunftsfelder in vergrößerten Karten wandern mit
+  const scaleArr = (to, K) => { for (const m of Object.values(MAPS)) for (const p of m.portals || []) if (p.to === to) { p.ax *= K; p.ay *= K; } };
+  scaleArr('welt', WORLD_SCALE);
+  for (const id of REALMS) { scaleArr(id, REALM_SCALE); upscaleMap(MAPS[id], REALM_SCALE); }
+  MAPS.hub.portals.filter(p => p.to === 'tiefe').forEach(p => { p.ax *= REALM_SCALE; p.ay *= REALM_SCALE; });
+  upscaleMap(MAPS.welt, WORLD_SCALE, true, { x: 20 * WORLD_SCALE, y: 22 * WORLD_SCALE });
 })();
