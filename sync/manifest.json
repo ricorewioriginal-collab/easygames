@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "da445ef83b3b",
- "generated": "2026-11-12T18:56:26+00:00",
- "commit": "c5c50c068fae6d404ea738eb4bc04aac55218808",
+ "version": "71da3bcab093",
+ "generated": "2026-11-12T18:56:27+00:00",
+ "commit": "5c80c09b71ae2a271276a002f20fd764e1bd9b0a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8874,7 +8874,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258360,
-   "h": "91aa3d2dcf47a9e9641116d30ffcfd1d255b08b1a7eeef95ab0c0d7e890f8dbb"
+   "h": "a67c17d999f7ba746b8a81d823a73eed1a84d6de6063478668135b3a38e6316b"
   },
   {
    "p": "taschi/assets/models/alien.glb",
@@ -11185,11 +11185,6 @@
    "p": "zotik/assets/index-5aqHKnwo.js",
    "s": 1670466,
    "h": "1684b7e9c8c79cb35b5255e5e73efd02f9bfe70b85a88d83b8b1548570c88769"
-  },
-  {
-   "p": "zotik/assets/index-DnUgrGQD.js",
-   "s": 1660106,
-   "h": "8c39a391c4d067b321db996338569827ea84c1c01482f74e946f051a6ce1d2bc"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
