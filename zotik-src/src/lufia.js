@@ -20,8 +20,8 @@ const NAMES = { lyra: 'Lyra', nia: 'Nia', rovan: 'Rovan' };
 const TALK = {
   lyra: [
     { ch: 0, b: 0, t: 'Sternbilder', L: [['Lyra', 'Siehst du das Sternbild da? Meine Mutter nannte es „die Laterne“. Sie sagte, es zeigt immer nach Hause.'], ['Zotik', 'Und wo ist zu Hause, wenn man zwischen Welten reist?'], ['Lyra', 'Vielleicht da, wo das Feuer brennt. Hier, gerade.']] },
-    { ch: 3, b: 0, t: 'Ilva', q: 1, L: [['Lyra', 'Ich hatte eine Schwester. Ilva. Sie war beim Großen Bruch dabei, wie meine Mutter.'], ['Zotik', 'War?'], ['Lyra', 'Niemand hat sie je gefunden. Aber in den Notizen steht ein Satz: „Ilvas Stimme hallt in Noctaris.“'], ['Lyra', 'Wenn wir je dorthin kommen … hilfst du mir, ihr Echo zu suchen?'], ['Zotik', 'Versprochen.']] },
-    { ch: 5, b: 20, t: 'Stimmen vergessen', L: [['Lyra', 'Weißt du, wovor ich Angst habe? Nicht vor Elyon. Nicht vor den Rissen.'], ['Lyra', 'Ich habe Angst, dass ich vergesse, wie Ilva gelacht hat. Jeden Tag ist es ein bisschen leiser.'], ['Zotik', 'Dann erzähl es mir. Dann erinnern wir uns zu zweit.'], ['Lyra', '… Sie hat gegluckst. Wie ein kleiner Bach.']] },
+    { ch: 6, b: 0, t: 'Ilva', q: 1, L: [['Lyra', 'Ich hatte eine Schwester. Ilva. Sie war beim Großen Bruch dabei, wie meine Mutter.'], ['Zotik', 'War?'], ['Lyra', 'Niemand hat sie je gefunden. Aber in den Notizen steht ein Satz: „Ilvas Stimme hallt in Noctaris.“'], ['Lyra', 'Wenn wir je dorthin kommen … hilfst du mir, ihr Echo zu suchen?'], ['Zotik', 'Versprochen.']] },
+    { ch: 7, b: 20, t: 'Stimmen vergessen', L: [['Lyra', 'Weißt du, wovor ich Angst habe? Nicht vor Elyon. Nicht vor den Rissen.'], ['Lyra', 'Ich habe Angst, dass ich vergesse, wie Ilva gelacht hat. Jeden Tag ist es ein bisschen leiser.'], ['Zotik', 'Dann erzähl es mir. Dann erinnern wir uns zu zweit.'], ['Lyra', '… Sie hat gegluckst. Wie ein kleiner Bach.']] },
     { ch: 7, b: 40, t: 'Danach', L: [['Lyra', 'Was machst du, wenn alles vorbei ist, Zotik?'], ['Zotik', 'Darüber habe ich noch nie nachgedacht. Vielleicht einfach reisen. Ohne Risse.'], ['Lyra', 'Klingt schön. Mit … jemandem an deiner Seite?'], ['Zotik', 'Mit jemandem, der die Sterne kennt.']] }
   ],
   nia: [
