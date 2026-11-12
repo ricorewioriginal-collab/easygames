@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createPost } from './post.js';
 import { createExtra } from './extra.js';
 import { createOnline } from './online.js';
-import { geoSet, propSet, makeEnv, makeT, groundTextures, addDetail, setFurLevel } from './gfx.js';
+import { geoSet, propSet, makeEnv, makeT, addDetail, setFurLevel } from './gfx.js';
 import { buildFox, coat } from './fox.js';
 import { createCreatures } from './creatures.js';
 import { createFlight } from './flight.js';
@@ -15,6 +15,7 @@ import { createQuests } from './quests.js';
 import { createLufia, LCUT, SOUL_LV } from './lufia.js';
 import { furMat } from './gfx.js';
 import { createFX } from './fx.js';
+import { createTex } from './tex.js';
 import { createMaerchen, MW, MW_FIRST } from './maerchen.js';
 const T=makeT(THREE,.5),$=id=>document.getElementById(id);
 const TOUCH=matchMedia('(pointer:coarse)').matches||'ontouchstart' in window;
@@ -76,6 +77,9 @@ function pushOut1(o,r){
 /* ================= Renderer ================= */
 const cv=$('cv');
 const renderer=new T.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'});
+const TX=createTex({T,renderer});
+/* Bodentextur je Kapitelwelt (CC0, public/tex) */
+const WGTEX={2:'forest',3:'cobble',4:'sand',5:'sand',6:'snow',7:'mud',8:'cobble',9:'grass',10:'marble',11:'rock'};
 const PR0=Math.min(devicePixelRatio||1,2);renderer.setPixelRatio(PR0);
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
 renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
@@ -156,8 +160,6 @@ const KEEP=new Set(scene.children);
 
 /* ================= Terrain ================= */
 const TW=270,TD=320,TCX=0,TCZ=-76;
-let GBUMP=null;
-function groundTexture(){const t=groundTextures(TW,TD);GBUMP=t.bump;return t.map}
 const terrain=(()=>{
   const g=new T.PlaneGeometry(TW,TD,135,160);g.rotateX(-Math.PI/2);g.translate(TCX,0,TCZ);
   const p=g.attributes.position,col=new Float32Array(p.count*3),c=new T.Color();
@@ -174,7 +176,7 @@ const terrain=(()=>{
     col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;
   }
   g.setAttribute('color',new T.BufferAttribute(col,3));g.computeVertexNormals();
-  const m=new T.Mesh(g,new T.MeshStandardMaterial({vertexColors:true,map:groundTexture(),roughness:.95}));m.receiveShadow=true;scene.add(m);return m;
+  const m=new T.Mesh(g,TX.tri('grass',0xffffff,{vc:1,s:.22,gain:2.1,n:.8,r:.95}));m.receiveShadow=true;scene.add(m);return m;
 })();
 
 /* ================= Props (instanziert) ================= */
@@ -203,16 +205,16 @@ function chunkInst(list){
   return out}
 function put(im,x,y,z,sx,sy,sz,ry,col,rx,rz){_e.set(rx||0,ry||0,rz||0);_q.setFromEuler(_e);_m.compose(_p.set(x,y,z),_q,_s.set(sx,sy,sz));const i=im.userData.n++;im.setMatrixAt(i,_m);if(col!==undefined)im.setColorAt(i,_c.set(col))}
 const PG=propSet(TOUCH),TRUNK=PG.trunk,CAN=PG.canopy,PINE=PG.pine;
-const iTrunk=inst(TRUNK,new T.MeshStandardMaterial({color:0xffffff,roughness:.9}),520,true);
+const iTrunk=inst(TRUNK,TX.tri('bark',0xffffff,{s:.9,gain:2}),520,true);
 const iCan=inst(CAN,new T.MeshStandardMaterial({color:0xffffff,roughness:.7,emissive:0x0a3a40,emissiveIntensity:.6}),1100,true);
 const iPine=inst(PINE,new T.MeshStandardMaterial({color:0xffffff,roughness:.75,emissive:0x0a2a40,emissiveIntensity:.5}),1100,true);
 const iGrass=inst(PG.grass,new T.MeshStandardMaterial({color:0xffffff,roughness:1}),5200,false);
-const iRock=inst(PG.rock,new T.MeshStandardMaterial({color:0xffffff,roughness:.9}),220,true);
+const iRock=inst(PG.rock,TX.tri('rock',0xffffff,{s:.6,gain:2}),220,true);
 const iShroom=inst(PG.cap,new T.MeshBasicMaterial({color:0xffffff}),260,false);
 const iStem=inst(PG.stem,new T.MeshStandardMaterial({color:0xcfd8ee,roughness:.9}),260,false);
 const iCrys=inst(PG.crystal,new T.MeshStandardMaterial({color:0xffffff,emissive:0x2a6cff,emissiveIntensity:1.6,roughness:.25}),240,false);
 const iFlower=inst(PG.flower,new T.MeshBasicMaterial({color:0xffffff}),900,false);
-const iPave=inst(PG.pave,new T.MeshStandardMaterial({color:0xffffff,roughness:1}),200,false);
+const iPave=inst(PG.pave,TX.tri('cobble',0xffffff,{s:.5,gain:1.8,r:1}),200,false);
 const LEAF=[0x2fae8e,0x3ab59a,0x2a8fb0,0x6a58c8,0x45b86a],FOL=[0x1e7a5c,0x2a8c64,0x1c6a78];
 function nearPath(x,z,d){return z<44&&z>-160&&Math.abs(x-PATHX(z))<d}
 (function scatter(){
@@ -326,7 +328,7 @@ function jumpPath(n){const col=n===1?0x7ab0ff:CHP[n].glowc[0];let q=null,dir=0;
 const NQ=createQuests({S:()=>S,CHP:()=>CHP,INT:()=>INT,world:()=>WLD?(WLD.cave?12:WLD.n):1,spot:k=>nqSpot(k),marker:(x,z,em)=>nqMarker(x,z,em),say:(...a)=>say(...a),toast:(...a)=>toast(...a),sfx:(...a)=>sfx(...a),banner:(...a)=>banner(...a),gainXp:n=>gainXp(n),saveGame:q=>saveGame(q),spawnEnemy:(k,x,z)=>spawnEnemy(k,x,z),refresh:()=>refreshQuest()});
 function house(x,z,w,d,h,wall,roof,ry,opt){
   opt=opt||{};const g=new T.Group(),y=hgt(x,z),c=Math.cos(ry),sn=Math.sin(ry);g.position.set(x,y-.2,z);g.rotation.y=ry;
-  const wm=M(wall,{r:.85,e:0x3a2c1e,ei:1}).clone(),segs=[],t=.4,H=h+.4,dw=.75;
+  const wm=TX.tri('plaster',wall,{s:.45,gain:1.7,n:.7,r:.85,e:0x3a2c1e,ei:1,fresh:1}),segs=[],t=.4,H=h+.4,dw=.75;
   const H0={x,z,y,w,d,h,c,s:sn,R:Math.hypot(w,d)/2+1,segs,wm,f:0,roof:null,ceil:null};
   const W2=(lx,lz)=>[x+lx*c+lz*sn,z-lx*sn+lz*c];
   const solid=(lx,lz,hx,hz)=>{const q=W2(lx,lz);segs.push({wx:q[0],wz:q[1],hx,hz})};
@@ -336,7 +338,7 @@ function house(x,z,w,d,h,wall,roof,ry,opt){
   for(const sd of [-1,1]){wallBox(sd*(w/2-t/2),0,t,d,H,0);solid(sd*(w/2-t/2),0,t/2,d/2)}
   for(const sd of [-1,1]){const cx=sd*(w/2+dw)/2,hx=(w/2-dw)/2;wallBox(cx,d/2-t/2,hx*2,t,H,0);solid(cx,d/2-t/2,hx,t/2)}
   wallBox(0,d/2-t/2,dw*2,t,H-2.4,2.4);
-  const stone=M(0xb2a8a2,{r:1}),trim=M(0xf2dfba,{r:.9});
+  const stone=TX.tri('stone',0xb2a8a2,{s:.5,gain:2}),trim=TX.tri('wood',0xf2dfba,{s:.8,gain:1.6});
   g.add(mk(G.box,stone,0,.03,0,w+.22,.22,d+.22,false));
   for(const sx of [-1,1])for(const sz of [-1,1])g.add(mk(G.box,trim,sx*(w/2-.14),H*.5,sz*(d/2-.14),.2,H-.28,.2,false));
   /* Türrahmen und offenes Türblatt */
@@ -346,7 +348,7 @@ function house(x,z,w,d,h,wall,roof,ry,opt){
   /* Boden, Decke, Dach */
   g.add(mk(G.box,M(0x7a5a3a,{r:.9,e:0x2a1a0c,ei:1}),0,.17,0,w-.2,.1,d-.2,false));
   const ceil=mk(G.box,M(0x5a4636,{r:.9}),0,h+.15,0,w-.2,.12,d-.2,false);g.add(ceil);H0.ceil=ceil;
-  const roofGroup=new T.Group(),rf=mk(G.cone,M(roof,{r:.7,e:0x14142a,ei:1}),0,h+.2+h*.28,0,(w/Math.SQRT2)*1.22,h*.56,(d/Math.SQRT2)*1.22);
+  const roofGroup=new T.Group(),rf=mk(G.cone,TX.tri('roof',roof,{s:.6,gain:1.9,r:.7,e:0x14142a,ei:1}),0,h+.2+h*.28,0,(w/Math.SQRT2)*1.22,h*.56,(d/Math.SQRT2)*1.22);
   rf.rotation.y=Math.PI/4;roofGroup.add(rf);
   const fascia=M(0xd0b899,{r:.9});
   for(const sx of [-1,1])roofGroup.add(mk(G.box,fascia,sx*(w/2+.16),h+.23,0,.12,.13,d+.58,false));
@@ -603,7 +605,7 @@ function makeWolf(boss){
   const legs=[];for(const [x,z] of [[-.22,.55],[.22,.55],[-.22,-.4],[.22,-.4]]){const l=new T.Group();l.position.set(x,.6,z);l.add(mk(G.cyl,FR,0,-.3,0,.09,.6,.09));l.add(mk(G.sph,FL,0,-.62,.05,.1,.07,.14));b.add(l);legs.push(l)}
   const tail=new T.Group();tail.position.set(0,.85,-.78);tail.rotation.x=-.9;b.add(tail);tail.addm(mk(G.cone0,FR,0,-.3,0,.12,.7,.12)).rotation.x=Math.PI;
   mergeStatic(head);mergeStatic(b,new Set([head,...legs,tail]));coat(T,root,[[FR,furMat(T,FR.color.getHex(),{len:boss?.1:.075,dens:boss?34:42,root:.7,tip:1.05})],[FL,furMat(T,FL.color.getHex(),{len:boss?.1:.075,dens:boss?34:42,root:.8,tip:1.04})]],TOUCH?4:7);return {root,body:b,head,legs,tail}}
-let _cr=null;function CR(){return _cr||(_cr=createCreatures({T,mk,G,M,glow,mergeStatic}))}
+let _cr=null;function CR(){return _cr||(_cr=createCreatures({T,mk,G,M,glow,mergeStatic,SK:TX.skin}))}
 function makeHerb(){const g=new T.Group();for(let i=0;i<5;i++){const l=mk(G.cone0,M(0x6aff9a,{e:0x2ad060,ei:1.4}),0,.28,0,.07,.55,.04,false);l.rotation.set(.5,i*1.256,0);l.position.set(Math.sin(i*1.256)*.1,.28,Math.cos(i*1.256)*.1);g.add(l)}g.add(mk(G.sph0,M(0xd8ffe8,{e:0x8affc0,ei:2}),0,.6,0,.09,.09,.09,false));g.add(glow(0x6affb0,1.8,0,.5,0,.8));return g}
 function makeChest(){const g=new T.Group();g.add(mk(G.box,M(0x6a4428),0,.3,0,.9,.6,.6));const lid=mk(G.cyl,M(0x7a5030),0,.62,0,.3,.9,.3);lid.rotation.z=Math.PI/2;lid.scale.set(.3,.9,.3);g.add(lid);g.add(mk(G.box,M(0xe8c060,{m:.8,r:.3}),0,.4,.31,.9,.1,.02,false));g.add(mk(G.box,M(0xe8c060,{e:0xe8c060,ei:1}),0,.45,.32,.1,.14,.03,false));g.add(glow(0xffe08a,2.2,0,.5,0,.5));return g}
 
@@ -827,7 +829,8 @@ function ensureBoss(){if(S.boss||boss)return;boss=spawnEnemy('boss',ARENA.x,AREN
 const EL={fire:['🔥','Feuer'],light:['✨','Licht'],nature:['🌿','Natur'],ice:['❄️','Eis'],storm:['⚡','Sturm']};
 const weakOf=e=>e.d.weak||(e.d.base==='rift'?'light':'fire');
 let _mw=null;const MWX=()=>_mw||(_mw=createMaerchen({T,G,PG,M,mk,glow,mergeStatic,scene,S:()=>S,MP:()=>MP,CHP,setWLD:w=>{WLD=w},W:()=>WLD,setAtmos,tooSteep,addCol,colFree,rng:mul32,animObjs,emit,pl,addNpc,CR:()=>CR(),makeVillager,ED,spawnEnemy,INT,say:(...a)=>say(...a),travel:n=>travel(n),$,sfx:n=>sfx(n),banner:(...a)=>banner(...a),toast:(...a)=>toast(...a),saveGame:q=>saveGame(q),
-  setBoss:e=>{boss=e},clearBoss:()=>{$('boss').hidden=true;boss=null},FX:()=>FXH,gainXp:x=>gainXp(x),giveGear:id=>giveGear(id),time:()=>time,setMBG:c=>{MBG=c}}));
+  setBoss:e=>{boss=e},clearBoss:()=>{$('boss').hidden=true;boss=null},FX:()=>FXH,gainXp:x=>gainXp(x),giveGear:id=>giveGear(id),time:()=>time,setMBG:c=>{MBG=c},
+  TX,PLAT,makeChest:()=>makeChest(),chests,CMP,PARTY,PORT,setCam:o=>setCam(o),snapCam:()=>snapCam(),hurtE:(...a)=>hurtE(...a),shake:v=>{camShake=Math.max(camShake,v)},makeNaut:()=>makeNaut(),chDone:n=>chDone(n),openTravel:()=>toggleMenu(true,'travel'),E:()=>E,dlgOn:()=>dlg.on}));
 let _lf=null;const LF=()=>_lf||(_lf=createLufia({S:()=>S,X,T,pl,ED,E,INT:()=>INT,WLD:()=>WLD,say:(...a)=>say(...a),cutscene:(...a)=>cutscene(...a),toast:(...a)=>toast(...a),banner:(...a)=>banner(...a),sfx:(...a)=>sfx(...a),tone:(...a)=>tone(...a),dnum:(...a)=>dnum(...a),saveGame:q=>saveGame(q),gainXp:n=>gainXp(n),chDone:n=>chDone(n),maxHp:()=>maxHp(),nqSpot:k=>nqSpot(k),nqMarker:(x,z,em)=>nqMarker(x,z,em),spawnEnemy:(k,x,z)=>spawnEnemy(k,x,z),tint:(m,c,k)=>tintModel(m,c,k),felli:()=>felli,felliStages:a=>felliStages(a),closeMenu:()=>{if(menuOpen)toggleMenu(false)},menuOpen:()=>menuOpen,dlgOn:()=>dlg.on,hideBoss:()=>{$('boss').hidden=true},inCamp:()=>!!(WLD&&WLD.camp),travel:n=>travel(n),guest:()=>MP.role==='guest'}));
 const XT=createExtra({$,S:()=>S,E,pl,fox:()=>fox,toast,banner,sfx,dnum,emit,fxRing,maxHp:()=>maxHp(),maxMp:()=>maxMp(),hurtE:(...a)=>hurtE(...a),weakOf,EL,chDone:n=>chDone(n),formOn:()=>X.form.on>0,menuOpen:()=>menuOpen,saveGame:q=>saveGame(q),radioChanged:()=>{},matMul:()=>XO.ev('mat'),gimBig:()=>XO.gimBig()});
 let hitStop=0,slowT=0;const CB={n:0,t:0};
@@ -942,7 +945,8 @@ function animE(e,spd){const d=e.d,root=e.m.root;
   root.position.set(e.x,hov,e.z);root.rotation.y=e.face;
   if(!e.dead){const k=Math.max(0,1-(time-(e.hitT||-9))/.2),sc=d.sc;root.scale.set(sc*(1+.1*k),sc*(1-.14*k),sc*(1+.1*k))}
   const m=e.m;
-  if(e.d.base==='rift'){for(let i=0;i<m.sh.length;i++){const a=e.t*1.8+i*1.57;m.sh[i].position.set(Math.cos(a)*.8,Math.sin(a*1.3)*.3,Math.sin(a)*.8);m.sh[i].rotation.y=a}m.body.rotation.y=e.t}
+  if(e.d.base==='rift'&&m.flap){for(let i=0;i<m.sh.length;i++)m.sh[i].rotation.z=(i%2?-1:1)*(.25+Math.sin(e.t*11+i)*.55);m.body.position.y=Math.sin(e.t*2)*.12}
+  else if(e.d.base==='rift'){for(let i=0;i<m.sh.length;i++){const a=e.t*1.8+i*1.57;m.sh[i].position.set(Math.cos(a)*.8,Math.sin(a*1.3)*.3,Math.sin(a)*.8);m.sh[i].rotation.y=a}m.body.rotation.y=e.t}
   else{const s=Math.sin(stepPh(e,e.t,spd,7,6))*spd*.7;m.legs[0].rotation.x=s;m.legs[3].rotation.x=s;m.legs[1].rotation.x=-s;m.legs[2].rotation.x=-s;m.body.position.y=Math.abs(s)*.06;m.tail.rotation.z=Math.sin(e.t*3)*.3;m.head.rotation.x=e.st==='wind'?.3:Math.sin(e.t*1.5)*.04;if(e.st==='wind'&&e.atk&&e.atk.type==='howl'){m.head.rotation.x=-.5}}
 }
 
@@ -1172,7 +1176,7 @@ function updatePlayer(dt){
     else if(LK){if(nSub()&&LK.kind==='water'){naut.dep=Math.max(gh+1,Math.min(LK.wl+.1,(naut.dep??LK.wl-2.5)+(nUp()?5:nDn()?-5:0)*dt));ty=naut.dep}else ty=LK.wl+.1}
     else naut.dep=null;nMedHint()}
   if(!naut.on){const P=PLAT.length?platTop(pl.x,pl.z,pl.y):null,sup=P?Math.max(ty,P.top):ty;pl.on=P&&P.top>=ty?P:null;
-    if(pl.air){pl.vy-=GRAV*wrG()*dt;pl.y+=pl.vy*dt;if(pl.gl=(pl.vy<0&&!pl.slam&&keys.Space&&artOn('glide')))pl.vy=Math.max(pl.vy,-1.6);   /* Gleiten: Sprungtaste halten */
+    if(pl.air){pl.vy-=GRAV*wrG()*(WLD&&WLD.grav||1)*dt;pl.y+=pl.vy*dt;if(pl.gl=(pl.vy<0&&!pl.slam&&keys.Space&&artOn('glide')))pl.vy=Math.max(pl.vy,-1.6);   /* Gleiten: Sprungtaste halten */
       if(pl.vy<=0&&pl.y<=sup){pl.y=ty=sup;pl.air=false;if(pl.vy<-9)sfx('land');pl.vy=0;if(pl.slam)artSlamLand();emit(pl.x,pl.y+.1,pl.z,0xcfe0ff,8,2,.4,.5,0)}}
     else if(pl.y>sup+.7){pl.air=true;pl.vy=0}   /* über die Kante gelaufen: fallen */
     else ty=sup}else pl.air=false;
@@ -1239,7 +1243,14 @@ function updateProjs(dt){
   for(let i=rings.length-1;i>=0;i--){const r=rings[i];r.t+=dt;const k=r.t/r.T;r.m.scale.setScalar(.2+(r.R)*Math.min(1,k));r.m.material.opacity=.9*(1-k);if(k>=1){scene.remove(r.m);r.m.material.dispose();rings.splice(i,1)}}
 }
 let camTarget=new T.Vector3(),camK=1,camAir=0;
+/* Kamera-Regie (Kingdom-Hearts-Szenen): {p,l} feste Einstellung (dlg: solange das Gespräch läuft, d: Dauer), {from,to:'player',d} Kameraflug zur Spielerkamera */
+let CAMO=null;const _co=new T.Vector3(),_cl=new T.Vector3();
+function setCam(o){CAMO=Object.assign({t:0},o);if(o.from){camPos.set(...o.from.p);camTarget.set(...o.from.l)}}
+function snapCam(){CAMO=null;camTarget.set(pl.x,pl.y+1.55,pl.z);camPos.set(pl.x+Math.sin(camYaw)*camDist,pl.y+4,pl.z+Math.cos(camYaw)*camDist)}
 function updateCamera(dt){
+  if(CAMO){const o=CAMO;o.t+=dt;if((o.dlg&&!dlg.on&&o.t>.3)||(o.d&&o.t>=o.d&&!(o.hold&&dlg.on)))CAMO=null;else if(!o.from){_co.set(...o.p);_cl.set(...o.l);const k=1-Math.exp(-4*dt);camPos.lerp(_co,k);camTarget.lerp(_cl,k);camera.position.copy(camPos);camera.lookAt(camTarget);return}
+    else{const k=Math.min(1,o.t/o.d),e=k*k*(3-2*k),cp=Math.cos(camPitch),dist=camDist;_co.set(pl.x+Math.sin(camYaw)*cp*dist,pl.y+1.55+Math.sin(camPitch)*dist,pl.z+Math.cos(camYaw)*cp*dist);_cl.set(pl.x,pl.y+1.55,pl.z);
+      camPos.set(...o.from.p).lerp(_co,e);camTarget.set(...o.from.l).lerp(_cl,e);camera.position.copy(camPos);camera.lookAt(camTarget);return}}
   const ty=pl.y+1.55;camTarget.lerp(_ct.set(pl.x,ty,pl.z),1-Math.exp(-14*dt));
   const cp=Math.cos(camPitch),dist=camDist+pl.mv*.5+(boss&&boss.awake&&!boss.dead?2.5:0)+(naut.on&&nAir()?9:0);   /* Luftschiff: Kamera weiter weg, sonst verdeckt der Ballon die Sicht */
   _cp.set(camTarget.x+Math.sin(camYaw)*cp*dist,camTarget.y+Math.sin(camPitch)*dist,camTarget.z+Math.cos(camYaw)*cp*dist);
@@ -1475,7 +1486,10 @@ function tintModel(m,hex,k){k=k??.5;const tc=new T.Color(hex),seen=new Map();
 /* ---- Fortschritt je Kapitel ---- */
 const chCs=n=>S.cd[n]||(S.cd[n]={st:0,k:0,b:[0,0,0],ord:0,bd:0,fin:0});
 const chDone=n=>n===1?S.stage>=8:!!(S.cd[n]&&S.cd[n].fin);
-const chOpen=n=>curCh>=MW_FIRST?n===1:n>=MW_FIRST?(curCh===1&&MWX().open()):n===13?!MP.on:n===12?(S.stage>=8&&!MP.on):n===1||(n===11&&S.ng>0)||chDone(n-1);
+/* Flug-Thema je Welt: Himmel, Nebel, Hindernisse und Planet passend zur Welt (Übergang alte → neue Welt) */
+const FLY={1:{bg:0x141c44,fog:0x1e2a5a,obst:['rock','crystal'],deco:'trees'},2:{obst:['leaf','log'],deco:'trees'},3:{obst:['crate','banner'],deco:'towers'},4:{obst:['sandstone','column'],deco:'dunes'},5:{obst:['bubble','fish'],deco:'water'},6:{obst:['ice'],deco:'snow'},7:{obst:['ember','rock'],deco:'lava'},8:{obst:['lantern','crystal'],deco:'towers'},9:{obst:['crystal'],deco:'crystal'},10:{obst:['crystal','ember'],deco:'crystal'},11:{obst:['crystal'],deco:'crystal'},13:{obst:['leaf'],deco:'trees'}};
+function flyTheme(n){if(n>=MW_FIRST)return MWX().flyTheme(n);const t=Object.assign({},FLY[n]||FLY[1]),C=CHP[n];if(C&&C.sky&&C.fog){const v=C.sky[1];t.bg=new T.Color(v[0],v[1],v[2]).getHex();t.fog=C.fog[0]}return t}
+const chOpen=n=>n>=MW_FIRST?MWX().open(n):n===13?!MP.on:n===12?(S.stage>=8&&!MP.on):n===1||(n===11&&S.ng>0)||chDone(n-1);
 const MAXCH=11;
 /* ---- Welt wechseln ---- */
 TOWN.flush(1);
@@ -1518,16 +1532,19 @@ function travel(n){
   if(!chOpen(n)||n===curCh||dlg.on||pl.dead){toggleMenu(false);return}
   dismount();
   toggleMenu(false);
-  if(!MP.on&&n!==12&&n!==13&&curCh!==13&&n<MW_FIRST&&curCh<MW_FIRST&&S.fl.naut&&!X.noFlight){const from=curCh,C=n===1?{name:'Lunaris'}:CHP[n],F0=from===1?{name:'Lunaris'}:CHP[from]||{name:'?'};$('fade').style.opacity=1;
+  /* Abstecher wie bei Kingdom Hearts: Auf dem Weg zum nächsten Kapitel liegt eine Märchenwelt */
+  if(!X.noDetour&&n<MW_FIRST&&curCh<MW_FIRST){const w=MWX().detourFor(curCh,n);if(w){const C2=CHP[n];say([['Zotik','Auf dem Weg nach '+C2.name+' leuchtet etwas zwischen den Sternen: '+w.em+' '+w.name+'. Ein Abstecher?']],null,[{t:w.em+' Abstecher: '+w.name,fn:()=>{X.noDetour=1;travel(w.n);X.noDetour=0}},{t:'🚀 Direkt nach '+C2.name,fn:()=>{MWX().decline(w);X.noDetour=1;travel(n);X.noDetour=0}}]);return}}
+  if(!MP.on&&n!==12&&n!==13&&curCh!==13&&curCh!==12&&S.fl.naut&&!X.noFlight){const from=curCh,C=n===1?{name:'Lunaris'}:CHP[n],F0=from===1?{name:'Lunaris'}:CHP[from]||{name:'?'},th0=flyTheme(from),th1=flyTheme(n);$('fade').style.opacity=1;
     setTimeout(()=>{mode='flight';$('hud').hidden=true;$('fade').style.opacity=0;
-      FL.start({fromName:F0.name,toName:C.name,color:n===1?0x9ab8ff:(C.rift||0x8ad0ff),dist:Math.abs(n-from),onDone:r=>{mode='play';$('hud').hidden=false;if(r.reward){S.shards+=r.reward;toast(`🚀 Flug: +${r.reward} Splitter · ${r.kills} Drohnen`)}arrive()}})},450);return}
-  if(n>=MW_FIRST||curCh>=MW_FIRST){X.fromStory=curCh>=MW_FIRST;sfx('portal');FXH.pillar(pl.x,pl.y,pl.z,0xe0b0ff,1.4,9,1,pl)}else sfx('quest');$('fade').style.opacity=1;
+      FL.start({fromName:F0.name,toName:C.name,color:n>=MW_FIRST?MWX().W(n).col:n===1?0x9ab8ff:(C.rift||0x8ad0ff),dist:n>=MW_FIRST||from>=MW_FIRST?1:Math.abs(n-from),from:th0,to:th1,onDone:r=>{mode='play';$('hud').hidden=false;if(r.reward){S.shards+=r.reward;toast(`🚀 Flug: +${r.reward} Splitter · ${r.kills} Drohnen`)}
+        const fd=$('fade');fd.style.transition='none';fd.style.background='#'+th1.fog.toString(16).padStart(6,'0');fd.style.opacity=1;void fd.offsetWidth;fd.style.transition='';X.landSwoop=1;arrive();setTimeout(()=>{fd.style.background=''},1400)}})},450);return}
+  if(n>=MW_FIRST||curCh>=MW_FIRST){sfx('portal');FXH.pillar(pl.x,pl.y,pl.z,0xe0b0ff,1.4,9,1,pl)}else sfx('quest');$('fade').style.opacity=1;
   setTimeout(arrive,650);
   function arrive(){
     saveGame(true);switchWorld(n);
     S.ch=n;pl.x=0;pl.z=9;pl.y=hgt(0,9);pl.face=Math.PI;pl.vx=pl.vz=0;pl.kx=pl.kz=0;camYaw=pl.face+Math.PI;camTarget.set(pl.x,pl.y+1.5,pl.z);camPos.set(pl.x,pl.y+4,pl.z+8);fel.x=pl.x+2;fel.z=pl.z+2;
     refreshQuest();updateHud();saveGame(true);
-    placeParty();extArrive(n);
+    placeParty();extArrive(n);if(X.landSwoop){X.landSwoop=0;if(n<MW_FIRST)setCam({from:{p:[pl.x+14,pl.y+28,pl.z+22],l:[pl.x,pl.y+2,pl.z-6]},to:'player',d:3})}
     setTimeout(()=>{$('fade').style.opacity=0;const C=CHP[n];banner(n===1?'Lunaris':C.name,n===1?'Dorf am Mondblick':C.sub);
       if(n>=2&&n<12){const s=chCs(n);if(!s.arr){s.arr=1;if(n===2)joinParty('lyra');setTimeout(()=>cutscene(cutOf(n).arr),1600);LF().firstArrive(n)}}arcSoon(n)},120)}}
 /* ---- Geschichten der Gefährten (laut Skript: Rovans Schuld, Lyras Familie, Nias Unsicherheit) ---- */
@@ -1595,10 +1612,7 @@ function bunteTor(x,z){const g=portalAt(x,z,0x4cd07d);INT.pop();
   INT.push({x,z:z+2.4,name:'Bunte Insel',pr:'Tor zur Bunten Insel',rad:4,talk(){
     say([['Zotik','Ein grünes Tor! Dahinter liegt die Bunte Insel – ein fröhliches Land mit Fahrzeugen, Freunden und einer kleinen Insel namens Lunaris.'],['Lyra','Möchtest du hinüberreisen? Dein Fortschritt wird vorher gespeichert, und du kannst jederzeit zurückkehren.']],null,[{t:'🏝️ Hinüberreisen',fn:toBunt},{t:'Noch nicht',fn(){}}])}});return g}
 bunteTor(-8,-19);
-/* Märchentor (rosa-gold, rechts neben dem Weltentor): Lunaris ist die Hauptwelt – jede Märchenwelt beginnt und endet hier */
-function maerchenTor(x,z){const g=portalAt(x,z,0xffb0e0);INT.pop();const bk=new T.Group();bk.position.set(0,.45,1.9);for(const s of [-1,1]){const pg=mk(G.box,M(0xfff4e0,{e:0x8a6a4a,ei:.4}),s*.42,0,0,.8,.06,1.1);pg.rotation.z=s*.18;bk.add(pg)}bk.add(mk(G.box,M(0x8a2a4a),0,-.06,0,1.75,.06,1.2));g.add(bk);g.add(glow(0xffe0a0,2,0,1,1.9,.6));
-  INT.push({x,z:z+2.4,name:'Märchentor',pr:'Märchenwelten',rad:3.4,talk(){MWX().gateTalk()}});return g}
-maerchenTor(8,-19);
+
 /* ================= Zwischensequenzen, Rätsel, Begleiter ================= */
 const CUT={"LUN_DREAM":[["Erzähler","Ein Flüstern zieht durch den Schlaf. Irgendwo bricht etwas."],["???","… Weltenhörer …"],["Zotik","Wer ist da?!"]],"LUN_ORUN":[["Orun","Ein Weltenhörer. Ein Resonanzträger. Nach so langer Zeit."],["Zotik","Ich weiß nicht, wovon du redest – aber du lässt Lunaris in Ruhe!"]],"LUN_RIFT_VISION":[["Erzähler","Der große Riss flackert. Bilder fremder Welten ziehen vorbei."],["Orun","Ich habe diesen Riss gehütet, seit der Kern zerbrach. Du hörst ihn, Weltenhörer – darum durfte ich dich nicht gehen lassen, ohne dich zu prüfen."],["Erzähler","Im Licht liegt eine Klinge, die auf Zotik zu antworten scheint."],["Orun","Ein Echo des Kerns steckt in ihr. Es wird dich zu den Splittern führen, die verstreut wurden. Finde sie, bevor es ein anderer tut."]],"LUN_LYRA_BRIDGE":[["Lyra","Professorium! Ich bin gekommen, so schnell ich konnte."],["Lyra","Das ist also der Resonanzträger. Dann hat es begonnen."],["Lyra","Der Weltenstein im Dorf führt zu den anderen Welten. Meine Familie hat in Elaris geforscht – dort fangen wir an, Zotik."],["Zotik","Dann zeig mir den Weg."]],"ELA_ARRIVAL":[["Erzähler","Hinter dem Weltenstein öffnet sich ein Wald, dessen Wege sich leise verschieben."],["Lyra","Elaris. Hier hat meine Familie früher geforscht. Ich komme mit dir, Zotik."],["Zotik","Dann los."]],"ELA_TURM_EPILOG":[["Zotik","Geschafft."],["Nia","Du hast gerade eine uralte Weltenmaschine geknackt und sagst einfach ‚geschafft‘?"],["Zotik","Was soll ich sonst sagen?"],["Rovan","Vielleicht nichts. Die Tür ist offen."],["Zotik","Das ist ein gutes Argument."],["Erzähler","Elaris-Lore: Der Turm speicherte einst die Erinnerungen des Waldes, bevor der Große Bruch sie zerstreute."]],"ELA_QUEEN":[["Wurzelkönigin","Ihr tragt den Klang des Kerns in diesen Wald. Er hat mich einst zerrissen."],["Lyra","Sie erinnert sich an den Großen Bruch!"],["Zotik","Dann helfen wir ihr, ihn zu vergessen."]],"ELA_QUEEN_DEFEAT":[["Erzähler","Die Wurzeln sinken zurück in die Erde. Ein letztes Bild flackert: Forscher, ein geteilter Kern, ein Name, der nicht gesagt wird."],["Rovan","Ich war dort. Damals."],["Lyra","Zurück zu Mara. Sie muss das hören."]],"VAL_ARRIVAL":[["Erzähler","Valdoria. Lichter, Stimmen, Glocken – eine Stadt, die niemals schläft."],["Nia","So viele Leute! Hier verliert man sich schneller als im lebenden Wald."],["Lyra","Die Risse wurden auch hier gemeldet. Unter der Stadt, in den alten Kanälen."],["Lyra","Mara hat uns einen Brief an die Gilde mitgegeben. Wir sollen uns bei Harlan melden."]],"VAL_WAECHTER":[["Kanalwächter","Die Stadt über mir lärmt seit tausend Jahren. Der Splitter in meiner Brust lässt mich endlich antworten."],["Lyra","Ein Splitter des Weltenkerns! Die Wurzelkönigin trug nur sein Echo – das hier ist der erste echte."],["Zotik","Dann holen wir ihn raus, bevor er die Stadt flutet."]],"VAL_WAECHTER_DEFEAT":[["Erzähler","Das Wasser sinkt. Im Schlamm glimmt ein Splitter, kalt wie Mondlicht."],["Lyra","Jemand hat diese Splitter verteilt. Mit Absicht."],["Lyra","Wenn die Aufzeichnungen meiner Familie stimmen, gibt es sieben. Der erste lag hier."],["Nia","Zurück zu Harlan. Die Gilde muss das erfahren."]],"SOL_ARRIVAL":[["Erzähler","Solmera. Wo der Sand sich erinnert. Die Oase Qamra liegt wie ein grünes Versprechen zwischen den Dünen."],["Nia","Ist das heiß! Und ich dachte, Valdoria im Hochsommer wäre schlimm."],["Lyra","Der Weltenstein hat uns an die Oase gebracht. Die Risse liegen weiter draußen, in der Wüste."]],"SOL_RUINS":[["Erzähler","Der Wind dreht, und der Sand rinnt von den Stufen. Unter den Dünen öffnet sich eine Treppe in die Tiefe."],["Lyra","Eine ganze Stadt, unter dem Sand begraben. Seht ihr die Spiegel an den Mauern? Das ist ein Rätsel aus Licht."]],"SOL_KHAROS":[["Kharos","Der Sand erinnert sich an jeden, der kam. An jeden, der ging. An jeden, der blieb."],["Lyra","Ein weiterer Splitter des Weltenkerns – er sitzt tief in seiner Brust."],["Zotik","Dann lassen wir den Sand diesmal vergessen."]],"SOL_KHAROS_DEFEAT":[["Erzähler","Der Koloss zerfällt zu Sand, und der Wind trägt ihn fort. Im Staub glimmt ein Splitter, warm wie ein Sonnenaufgang."],["Lyra","Zwei Splitter, zwei Welten. Jemand hat sie verstreut – und wir folgen der Spur."],["Nia","Erst zurück zu Nuri. Sie wartet an der Oase."]],"AQU_ARRIVAL":[["Erzähler","Aqualis. Die Stadt unter dem Meer. Über den gläsernen Kuppeln ziehen Fischschwärme wie Wolken."],["Nia","Wir atmen hier unten? Ich schwöre, ich halte trotzdem kurz die Luft an."],["Lyra","Der Splitter, den wir suchen, muss in der Tiefe liegen. Fragen wir nach den Ingenieuren der Kuppeln."]],"AQU_ARCHIVE":[["Erzähler","Die Strömung zieht sich zurück, und im Boden der Höhle öffnet sich eine Treppe aus Perlmutt."],["Nerea","Das Weltenarchiv. Ich habe nur die Pläne gesehen, nie die Kammern selbst. Dort unten fließt alles gegeneinander."]],"AQU_NERYX":[["Neryx","Das Meer vergisst nichts. Es drückt, bis nichts mehr bleibt, als es erinnern kann."],["Lyra","Der dritte Splitter – er sitzt in ihrem Kern und treibt die Strudel an."],["Rovan","Das Meer erinnert sich an den Bruch. Ich habe das Geräusch damals gehört – und bin gelaufen."],["Zotik","Dann lassen wir die Strömung diesmal los."]],"AQU_NERYX_DEFEAT":[["Erzähler","Neryx löst sich in einen Strudel aus Licht auf. Der Druck weicht, und im Wasser glimmt ein Splitter wie eine Perle."],["Lyra","Drei Splitter, drei Welten. Wer sie verstreut hat, kennt jede Strömung."],["Nia","Erst zurück zu Nerea. Sie wartet an der Kuppel."]],"FRO_ARRIVAL":[["Erzähler","Frosthain. Der Winter, der nichts vergisst. Zwischen verschneiten Dächern steigt Rauch aus dem Dorf Hjalm, und jenseits der Wälder glimmt ein kaltes, blaues Licht."],["Nia","Meine Zehen sind schon steif, und wir sind erst fünf Schritte gegangen!"],["Lyra","Der vierte Splitter hat die Zeit hier erstarren lassen. Fragen wir im Dorf nach dem Weg."]],"FRO_CITY":[["Erzähler","Hinter den Bäumen öffnet sich der Wald, und die gefrorene Stadt liegt vor euch – Türme aus Eis, Straßen aus Glas, mittendrin ein Licht, das schlägt wie ein Herz."],["Rovan","Niemand hat hier je einen Fuß hingesetzt und ist gleich wieder umgekehrt."],["Zotik","Dann gehen wir auf der anderen Seite wieder raus."]],"FRO_AVARN":[["Avarn","Ich bewahre jeden Atemzug. Nichts darf vergehen, nichts darf sich ändern."],["Lyra","Der vierte Splitter sitzt in seiner Brust. Er friert die Zeit ein, um nichts zu verlieren."],["Zotik","Dann taut es auf. Alles, was bleibt, muss irgendwann weitergehen."]],"FRO_AVARN_DEFEAT":[["Erzähler","Avarn zerspringt in tausend funkelnde Flocken. Der Wind trägt sie davon, und in der Stille glimmt ein Splitter wie ein Stern im Schnee."],["Lyra","Vier Splitter, vier Welten – und nun der fünfte. Jemand verteilt sie mit Absicht."],["Nia","Erst zurück zu Falk. Und zu einem heißen Tee."]],"IGN_ARRIVAL":[["Erzähler","Ignara. Das Feuer unter der Welt. Über Kaldera hängt roter Dunst, und aus dem Krater darüber steigen Funken wie umgekehrter Schnee."],["Nia","Nach Frosthain ist mir endlich warm. Zu warm, vielleicht."],["Lyra","Der fünfte Splitter steckt im Herzen des Berges. Fragen wir in der Stadt nach dem Weg in die Minen."]],"IGN_MINES":[["Erzähler","Am Ende der Aschefelder klafft das Tor der Minen. Aus der Tiefe pulst rotes Licht, im Takt eines viel zu schnellen Herzschlags."],["Rovan","Das ist kein Berggrollen. Das ist ein Herz."],["Zotik","Dann bringen wir es zur Ruhe."]],"IGN_MAGMARION":[["Magmarion","Ich halte den Berg zusammen. Jeder Funke, jede Flamme – alles brennt durch mich."],["Lyra","Der Splitter sitzt in seiner Brust. Er treibt das Magma an und lässt ihn nicht ruhen."],["Nia","Der Berg leidet, das sieht man. Los, bevor ich es mir anders überlege."],["Zotik","Dann lassen wir das Feuer endlich ausatmen."]],"IGN_MAGMARION_DEFEAT":[["Erzähler","Magmarion zerfällt zu glühender Asche. Der Berg seufzt tief, und im Rauch schwebt ein Splitter, warm wie ein Sonnenuntergang."],["Lyra","Fünf Splitter, fünf Welten. Jemand sammelt sie nicht – jemand verteilt sie."],["Nia","Erst zurück zu Brenna. Und ein kühles Getränk."]],"NOC_ARRIVAL":[["Erzähler","Noctaris. Die Stadt der Erinnerungen. Über Nocturna steht kein Mond und keine Sonne – nur ein tiefes, violettes Dunkel, in dem Tausende Laternen treiben."],["Nia","Hier ist es nie Tag?"],["Lyra","Der sechste Splitter. Und Noctaris zeigt eine zweite Version der Welt, getrennt von unserer. Fragen wir nach jemandem, der sich auskennt."]],"NOC_NULL":[["Erzähler","Am Ende der Vergessenen Gassen steht ein Tor aus reinem Dunkel. Wer hineinsieht, erinnert sich an Dinge, die nie waren."],["Rovan","Ich sehe mein Haus. Es hat ein rotes Dach. Ich hatte nie ein rotes Dach."],["Zotik","Dann gehen wir hinein, solange wir noch wissen, wer wir sind."]],"NOC_HUETER":[["Erinnerungshüter","Ich bewahre alles. Auch das, was nie war. Besonders das, was nie war."],["Lyra","Der Splitter sitzt in seiner Brust. Er schreibt Erinnerungen, die die Welt nie erlebt hat."],["Zotik","Dann sorgen wir dafür, dass nur Wahres bleibt."]],"NOC_HUETER_DEFEAT":[["Erzähler","Der Erinnerungshüter zerfällt zu Tausenden Lichtpunkten, und jeder zeigt kurz ein Bild: ein Gesicht, ein Haus, ein Morgen. Dann steigt ein Splitter aus dem Dunkel, kühl wie Mondlicht."],["Lyra","Sechs Splitter. Und zwei Versionen der Welt, die der Kern gespeichert hat. Wer hat das so gebaut?"],["Nia","Erst zurück zu Eryn. Ich will wissen, ob es morgen wird."]],"AST_ARRIVAL":[["Erzähler","Astralis. Inseln auf Wolken, Brücken aus Licht, und über allem ein Himmel, der näher ist als irgendwo sonst. Luftschiffe gleiten durch den Wolkenhafen."],["Nia","Mir wird gleich schwindelig. Und es ist wunderschön."],["Lyra","Der siebte Splitter. Und Astralis zeigt die andere Version der Welt – die, die Noctaris gespiegelt hat. Wir suchen die Navigatoren."]],"AST_RUINS":[["Erzähler","Am Ende der Schwebeinseln ragen die Sternenruinen aus den Wolken. Ihre Bögen sind aus Licht, und die Sterne darüber stehen falsch."],["Rovan","Das sind nicht die Sterne, die ich kenne."],["Zotik","Dann bringen wir sie zurück an ihren Platz."]],"AST_SOLYRA":[["Astralgeist Solyra","Ich webe, was oben ist, und halte, was unten fällt. Wer an meinen Fäden zieht, stürzt."],["Lyra","Der Splitter sitzt in ihrem Kern. Er lässt sie die Sterne verschieben."],["Lyra","Die Karten meiner Familie enden hier. Sie wussten, dass es Astralis gibt – und haben nie gewagt, es zu betreten."],["Zotik","Dann weben wir sie neu."]],"AST_SOLYRA_DEFEAT":[["Erzähler","Solyra löst sich in Sternenstaub auf, und für einen Augenblick steht der Himmel still und klar. Dann steigt ein Splitter aus dem Licht, leicht wie eine Feder."],["Lyra","Sieben Splitter. Zwei Versionen der Welt, die einander spiegeln – und eine Stadt dazwischen."],["Nia","Erst zurück zu Aera. Ich brauche festen Boden. Kurz."]],"ELY_ARRIVAL":[["Erzähler","Elyndra. Straßen, die sich in der Luft verzweigen, Häuser, die in mehreren Wirklichkeiten zugleich stehen, und über allem ein Himmel aus Spiegeln, in dem sich alle Welten zeigen."],["Nia","Ich sehe Lunaris da oben. Und Frosthain. Und – ist das Valdoria?"],["Lyra","Das ist der Ort, an dem alles zusammenläuft. Der Weltenkern ist nah. Suchen wir jemanden, der sich auskennt."]],"ELY_VOID":[["Erzähler","Am Ende der Realitätsebenen klafft der Weltenspalt: ein Riss, so groß wie eine Stadt, in dem sich Echos aller Welten spiegeln."],["Rovan","Ich sehe mich selbst. Dutzende Male."],["Zotik","Dann suchen wir den Weg, der wirklich unser ist."]],"ELY_ELYON":[["Elyon","Ihr habt die Splitter gebracht. Sieben Stück – genug, um den Kern zu schließen. Gebt sie mir, und die Welten sind wieder eins."],["Lyra","Elyon. Du willst nicht retten. Du willst nicht verlieren."],["Elyon","Ist das nicht dasselbe?"],["Zotik","Nein. Und wir geben dir nichts."]],"ELY_ELYON_DEFEAT":[["Erzähler","Elyon sinkt auf die Knie. Der Weltenkern über ihm pulsiert ruhig, und die Splitter in Zotiks Tasche antworten mit einem leisen Klang – sieben Töne, ein Akkord."],["Erzähler","Dann bricht Elyons Erinnerung auf, und alle sehen sie: den Tag, an dem der Kern geteilt wurde."],["Elyon","Wir waren acht. Veyra, das Professorium, Lyras Mutter, ich – und die Eltern eines Kindes, das den Kern hören konnte."],["Erzähler","Ein Kind, das die Hände auf den Kern legt. Ein Licht. Ein Schrei, der Welten zerreißt."],["Elyon","Dich, Zotik. Der Kern antwortete dir, und aus dem Teilen wurde der Bruch. Veyra versiegelte deinen Klang, um dich zu schützen. Ich wollte alles zurückholen, was wir verloren hatten."],["Zotik","Meine Träume. Das Flüstern. Das war kein Fremder – das war ich selbst."],["Lyra","Meine Familie war dabei. Darum hat mir der Weltenstein die Tür geöffnet."],["Elyon","Ich wollte nur, dass nichts verloren geht."],["Lyra","Dann lass uns zeigen, wie man bewahrt, ohne zu verschmelzen."],["Lyra","Der Kern bleibt ruhig, solange die Splitter getrennt bleiben – und doch miteinander verbunden."],["Nia","Gehen wir nach Hause. Alle Heime, die wir haben."]]};
 Object.assign(CUT,LCUT);
@@ -1914,7 +1928,6 @@ function buildWorld(n){
     const i=Math.round(x/1.5),j=Math.round(z/1.5);return RCH.has(i*4096+j)&&RCH.has((i+1)*4096+j)&&RCH.has((i-1)*4096+j)&&RCH.has(i*4096+j+1)&&RCH.has(i*4096+j-1)};
   const a0=atmOf(C);setAtmos(a0);
   /* Gelände */
-  const tex=GTEX||(GTEX=groundTexture());
   const g=new T.PlaneGeometry(TW,TD,135,160);g.rotateX(-Math.PI/2);g.translate(TCX,0,TCZ);
   {const p=g.attributes.position,col=new Float32Array(p.count*3),c=new T.Color(),c1=new T.Color(P.g1),c2=new T.Color(P.g2),cp=new T.Color(P.path),ca=new T.Color(P.arena),cr=new T.Color(P.rock);
     for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),hh=h(x,z);p.setY(i,hh);const dv=Math.hypot(x,z),da=Math.hypot(x,z+182);
@@ -1922,18 +1935,18 @@ function buildWorld(n){
       const pd=Math.abs(x-pathx(z));if(z<42&&z>-158){c.lerp(cp,(1-sm(1.6,4.2,pd))*.9)}
       c.lerp(ca,(1-sm(26,36,da))*.9);if(hh>5)c.lerp(cr,sm(5,12,hh));col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b}
     g.setAttribute('color',new T.BufferAttribute(col,3));g.computeVertexNormals()}
-  const terr=new T.Mesh(g,new T.MeshStandardMaterial({vertexColors:true,map:tex,roughness:.95}));terr.receiveShadow=true;scene.add(terr);WLD.terr=terr;
+  const terr=new T.Mesh(g,TX.tri(WGTEX[n]||'grass',0xffffff,{vc:1,s:.22,gain:2.1,n:.8,r:.95}));terr.receiveShadow=true;scene.add(terr);WLD.terr=terr;
   {const NX=135,NZ=160,gx=TW/NX,gz=TD/NZ,x0=TCX-TW/2,z0=TCZ-TD/2,HG=new Float32Array((NX+1)*(NZ+1));for(let j=0;j<=NZ;j++)for(let i=0;i<=NX;i++)HG[j*(NX+1)+i]=h(x0+i*gx,z0+j*gz);
     WLD.hm=(x,z)=>{const fx=(x-x0)/gx,fz=(z-z0)/gz;if(fx<0||fz<0||fx>=NX||fz>=NZ)return h(x,z);const i=fx|0,j=fz|0,u=fx-i,v=fz-j,a=HG[j*(NX+1)+i],b=HG[j*(NX+1)+i+1],c=HG[(j+1)*(NX+1)+i],d=HG[(j+1)*(NX+1)+i+1];
       return u+v<=1?a+(b-a)*u+(c-a)*v:d+(c-d)*(1-u)+(b-d)*(1-v)}}
   /* Instanzen */
   const mkI=(geo,mat,cap,cast)=>{const im=inst(geo,mat,cap,cast);im.userData.cap=cap;ims.push(im);return im};
   const put2=(im,...a)=>{if(im.userData.n<im.userData.cap)put(im,...a)};
-  const emi=C.emis,iTr=mkI(TRUNK,new T.MeshStandardMaterial({color:0xffffff,roughness:.9}),900,true),iCa=mkI(CAN,new T.MeshStandardMaterial({color:0xffffff,roughness:.7,emissive:emi,emissiveIntensity:.6}),1300,true),
+  const emi=C.emis,iTr=mkI(TRUNK,TX.tri('bark',0xffffff,{s:.9,gain:2}),900,true),iCa=mkI(CAN,new T.MeshStandardMaterial({color:0xffffff,roughness:.7,emissive:emi,emissiveIntensity:.6}),1300,true),
     iPi=mkI(PINE,new T.MeshStandardMaterial({color:0xffffff,roughness:.75,emissive:emi,emissiveIntensity:.5}),1300,true),iGr=mkI(PG.grass,new T.MeshStandardMaterial({color:0xffffff,roughness:1}),3600,false),
-    iRo=mkI(PG.rock,new T.MeshStandardMaterial({color:0xffffff,roughness:.9}),260,true),iSh=mkI(PG.cap,new T.MeshBasicMaterial({color:0xffffff}),300,false),
+    iRo=mkI(PG.rock,TX.tri('rock',0xffffff,{s:.6,gain:2}),260,true),iSh=mkI(PG.cap,new T.MeshBasicMaterial({color:0xffffff}),300,false),
     iSt=mkI(PG.stem,new T.MeshStandardMaterial({color:0xcfd8ee,roughness:.9}),300,false),iCr=mkI(PG.crystal,new T.MeshStandardMaterial({color:0xffffff,emissive:C.glowc[0],emissiveIntensity:1.5,roughness:.25}),420,false),
-    iFl=mkI(PG.flower,new T.MeshBasicMaterial({color:0xffffff}),700,false),iPa=mkI(PG.pave,new T.MeshStandardMaterial({color:0xffffff,roughness:1}),220,false);
+    iFl=mkI(PG.flower,new T.MeshBasicMaterial({color:0xffffff}),700,false),iPa=mkI(PG.pave,TX.tri('cobble',0xffffff,{s:.5,gain:1.8,r:1}),220,false);
   const free=(x,z,d)=>!(LAKE&&Math.hypot(x-LAKE.x,z-LAKE.z)<LAKE.r*1.35+6)&&Math.hypot(x,z)>=(z>-10?30:36)&&bflat(x,z,BPADS)<.5&&Math.hypot(x,z+182)>=d&&!np(x,z,6.5)&&h(x,z)<6.5&&Math.abs(x)<122&&z>-228&&z<66;
   const tree=(k,x,z)=>{const y=h(x,z),s=rr(.9,1.7),lc=()=>rp(C.leaf);
     switch(k){
@@ -2899,7 +2912,7 @@ function buildDungeon(){const D=X.dun,n=D.n,f=D.f,F=DUNF(n),last=f===F,C=CHP[n],
   setAtmos({top:[.01,.01,.03],mid:[.03,.03,.07],hor:[.08,.07,.12],aur:[.2,.3,.5],ms:[.1,.1,.2],gr:[.02,.02,.04],moon:0x404050,mg:[0x202030,0x202030],fog:0x0a0a14,fd:.026,hemi:[0x9a9ac0,0x1a1a2a,.6],lite:[0xb0b0d0,.55],stars:0,expo:1});
   const fl=new T.Mesh(new T.PlaneGeometry(N*CS+20,N*CS+20),new T.MeshStandardMaterial({color:C.pal.arena,roughness:1}));fl.rotation.x=-Math.PI/2;fl.position.set(0,0,Z0+N*CS/2);fl.receiveShadow=true;scene.add(fl);WLD.terr=fl;
   let nw=0;for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(g[i][j])nw++;
-  const im=new T.InstancedMesh(new T.BoxGeometry(CS,2.6,CS),new T.MeshStandardMaterial({color:C.pal.rock,roughness:.95,flatShading:true}),nw);let k=0;
+  const im=new T.InstancedMesh(new T.BoxGeometry(CS,2.6,CS),TX.tri('stone',C.pal.rock,{s:.35,gain:2.2,fresh:1}),nw);let k=0;
   for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(g[i][j]){_m.compose(_p.set(cx(i),1.3,cz(j)),_q.set(0,0,0,1),_s.set(1,1+R()*.25,1));im.setMatrixAt(k++,_m)}
   im.castShadow=true;scene.add(im);WLD.ims.push(im);
   /* Leuchtkristalle in der Farbe der Welt */
@@ -3001,9 +3014,9 @@ function buildCave(){const f=S.cave.f||1,R=mul32((S.cave.seed|0)*977+f*131),rr=(
     menuQuest(){const r=S.cave.run;return `<h3>Echogrotte</h3><div class="row"><span>Ebene</span><span>${f} / 99</span></div><div class="row"><span>Rekord</span><span>${S.cave.best||0}</span></div>${LF().caveHTML()}<div class="row"><span>Blaue Schätze (bleiben)</span><span>${r?r.blue.map(i=>GEAR[i].n).join(', ')||'–':'–'}</span></div><p style="color:var(--dim);font-size:13px">Du beginnst mit Stufe 1 und ohne Ausrüstung. Was du in roten Truhen findest, gilt nur für diesen Lauf. Blaue Truhen behältst du. Ein Ausgangskristall steht am Start jeder Ebene.</p>`},
     kill(e){if(e.cboss){LF().relic(f);toast('🗝️ Die Treppe ist frei');sfx('quest');$('boss').hidden=true}this.refresh()},zoneEnter(){},ensureBoss(){},sealedNow:()=>false,spawnMini(){}};
   setAtmos({top:[.01,.01,.03],mid:[.03,.03,.07],hor:[.08,.07,.12],aur:[.2,.3,.5],ms:[.1,.1,.2],gr:[.02,.02,.04],moon:0x404050,mg:[0x202030,0x202030],fog:0x0a0a14,fd:.03,hemi:[0x8a8ab0,0x1a1a2a,.55],lite:[0xb0b0d0,.5],stars:0,expo:1});
-  const fl=new T.Mesh(new T.PlaneGeometry(N*CS+20,N*CS+20),new T.MeshStandardMaterial({color:pal[1],roughness:1}));fl.rotation.x=-Math.PI/2;fl.position.set(0,0,Z0+N*CS/2);fl.receiveShadow=true;scene.add(fl);WLD.terr=fl;
+  const fl=new T.Mesh(new T.PlaneGeometry(N*CS+20,N*CS+20),TX.tri('cobble',pal[1],{s:.3,gain:2,r:1,fresh:1}));fl.rotation.x=-Math.PI/2;fl.position.set(0,0,Z0+N*CS/2);fl.receiveShadow=true;scene.add(fl);WLD.terr=fl;
   let nw=0;for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(g[i][j])nw++;
-  const im=new T.InstancedMesh(new T.BoxGeometry(CS,2.6,CS),new T.MeshStandardMaterial({color:pal[0],roughness:.95,flatShading:true}),nw);let k=0;
+  const im=new T.InstancedMesh(new T.BoxGeometry(CS,2.6,CS),TX.tri('brick',pal[0],{s:.35,gain:2.2,fresh:1}),nw);let k=0;
   for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(g[i][j]){_m.compose(_p.set(cx(i),1.3,cz(j)),_q.set(0,0,0,1),_s.set(1,1+R()*.25,1));im.setMatrixAt(k++,_m)}
   im.castShadow=true;scene.add(im);WLD.ims.push(im);
   /* Gegner */
@@ -3046,8 +3059,7 @@ function extChapterDone(n){const t=CH_TOOL[n];if(t&&!S.tools.includes(t)){S.tool
 function extArrive(n){X.lock=null;if(X.form.on>0)formEnd();X.q.length=0;
   if(n===12&&WLD&&WLD.cave){const sp=WLD.spawn;pl.x=sp[0];pl.z=sp[1];pl.y=0;fel.x=pl.x+1;fel.z=pl.z+1;camYaw=Math.PI;placeParty();banner('Echogrotte','Ebene '+(S.cave.f||1)+' – Stufe 1, keine Ausrüstung')}
   else if(n===13&&WLD&&WLD.camp){const sp=WLD.spawn;pl.x=sp[0];pl.z=sp[1];pl.y=0;pl.face=Math.PI;fel.x=pl.x+1;fel.z=pl.z+1;camYaw=0;placeParty()}
-  else if(n>=MW_FIRST&&WLD&&WLD.story){const sp=WLD.spawn;pl.x=sp[0];pl.z=sp[1];pl.y=hgt(pl.x,pl.z);pl.face=Math.PI;fel.x=pl.x+1;fel.z=pl.z+1;camYaw=0;placeParty();const w=WLD.mw,s=MWX().st(w.id);banner(w.em+' '+w.name,w.sub);if(!s.seen){s.seen=1;setTimeout(()=>{if(WLD&&WLD.mw===w)say(w.intro.concat([['Zotik','Vom Sternentor hinter mir komme ich jederzeit zurück nach Lunaris.']]))},900)}}
-  else if(n===1&&X.fromStory){X.fromStory=false;pl.x=8;pl.z=-15.4;pl.y=hgt(pl.x,pl.z);pl.face=0;fel.x=pl.x+1;fel.z=pl.z+1;camYaw=Math.PI;placeParty()}
+  else if(n>=MW_FIRST&&WLD&&WLD.story){const sp=WLD.spawn;pl.x=sp[0];pl.z=sp[1];pl.y=hgt(pl.x,pl.z);pl.face=Math.PI;fel.x=pl.x+1;fel.z=pl.z+1;camYaw=0;placeParty();MWX().arrive()}
   else if(n===1&&X.fromCamp){X.fromCamp=false;pl.x=0;pl.z=24;pl.y=hgt(pl.x,pl.z);pl.face=Math.PI;fel.x=pl.x+1;fel.z=pl.z+1;placeParty()}
   else if(n===1&&X.fromCave){X.fromCave=false;pl.x=CAVE_DOOR[0];pl.z=CAVE_DOOR[1]+2.5;pl.y=hgt(pl.x,pl.z);fel.x=pl.x+1;fel.z=pl.z+1;placeParty()}}
 function extWorldBuilt(n,C,h,blk,path,R){const sp=ruinSpot(h,blk,path,R);buildRuin(n,C.pal?C.pal.rock:0x6a6c8c,sp)}
