@@ -263,3 +263,24 @@ input.name { pointer-events: auto; font: inherit; padding: 9px 12px; border-radi
 .card.offer { cursor: default; }
 .card.offer.empty { min-height: 88px; justify-content: center; opacity: .7; border: 2px dashed rgba(30,50,80,.3); }
 @media (max-width: 600px) { .tradebox { grid-template-columns: 1fr; } .tradearrow { text-align: center; transform: rotate(90deg); } }
+
+/* 📷 Fotomodus */
+.screen.photo-mode { background: none; backdrop-filter: none; align-items: flex-end; }
+.photo-drag { position: absolute; inset: 0; touch-action: none; cursor: grab; }
+.photo-help { position: absolute; top: max(10px, var(--safe-t)); left: 50%; transform: translateX(-50%); background: var(--glass); color: #fff; padding: 6px 14px; border-radius: 99px; font-size: .8em; pointer-events: none; white-space: nowrap; max-width: 94vw; overflow: hidden; text-overflow: ellipsis; }
+.photo-bar { position: relative; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; background: var(--glass); padding: 10px 12px; border-radius: 18px; max-width: 100%; }
+.photo-bar .primary { font-size: 1.1em; }
+.photo-filter { color: #fff; font-weight: 700; min-width: 6em; text-align: center; }
+.photo-flash { position: absolute; inset: 0; background: #fff; animation: photoFlash .4s ease forwards; pointer-events: none; }
+@keyframes photoFlash { from { opacity: .9; } to { opacity: 0; } }
+.photo-shot { width: 100%; border-radius: 12px; display: block; margin-bottom: 10px; box-shadow: 0 6px 20px rgba(0,0,0,.3); }
+.photo-album { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); gap: 8px; margin-bottom: 10px; }
+.photo-album .card { padding: 0; overflow: hidden; }
+.photo-album img { width: 100%; display: block; aspect-ratio: 16/9; object-fit: cover; }
+
+/* 🎬 Zwischensequenzen: Kinobalken */
+body::before, body::after { content: ''; position: fixed; left: 0; right: 0; height: 0; background: #000; z-index: 28; pointer-events: none; transition: height .5s ease; }
+body::before { top: 0; } body::after { bottom: 0; }
+body.cine::before, body.cine::after { height: 11vh; }
+.wonder-spin { font-size: 3.4em; text-align: center; animation: wonderSpin 1.2s linear infinite; }
+@keyframes wonderSpin { to { transform: rotate(360deg); } }

@@ -102,8 +102,28 @@ try {
   assert.equal(await G(A.page, () => window.__taschi.save.stats.onlineWins), 1);
   assert.equal(await G(B.page, () => window.__taschi.save.stats.onlineBattles), 1);
   assert.equal(await G(A.page, () => window.__taschi.save.team[0].lv), 12, 'Kampf-Kopien ändern das Team nicht');
-  // Trennen
-  await click(A, 'Verbindung trennen', '.row');
+  // ---- Koop-Erkunden: A schlägt vor, B nimmt an; beide sehen sich in der Welt
+  await click(A, 'Zusammen erkunden', '.row');
+  await choose(B, 'Annehmen');
+  for (const t of [A, B]) await t.page.waitForFunction(() => !!window.__taschi.coop && !window.__taschi.ui.blocking, null, { timeout: 20000 });
+  await A.page.waitForFunction(() => window.__taschi.coop.ghost?.root.visible === true, null, { timeout: 20000 });
+  await B.page.waitForFunction(() => window.__taschi.coop.ghost?.root.visible === true, null, { timeout: 20000 });
+  await shot(A, 'online-coop');
+  // Raid zu zweit: A lädt ein, B macht mit
+  A.page.evaluate(() => { const g = window.__taschi; g.save.flags.firstQuest = true; import('./src/logic/raid.js').then(R => g.script(() => g.coop.inviteRaid(R.raidOf(g.save, 0)))); }).catch(() => {});
+  await choose(B, 'Mitmachen');
+  for (const t of [A, B]) await waitState(t.page, 'battle', 60000);
+  const allies = await Promise.all([A, B].map(t => G(t.page, () => window.__taschi.battleScene.b.sides[0].team[1]?.ally || '')));
+  assert.deepEqual(allies, ['Ben', 'Ana'], 'Freund kämpft als Helfer mit');
+  await shot(A, 'online-raid');
+  for (const t of [A, B]) {
+    for (let i = 0; i < 12 && await G(t.page, () => window.__taschi.state === 'battle'); i++) { const run = t.page.locator('.bact.run'); if (await run.count()) await run.first().dispatchEvent('click'); await t.page.waitForTimeout(1500); await t.page.keyboard.press('Enter'); }
+    await t.page.waitForFunction(() => window.__taschi.state === 'world', null, { timeout: 60000 });
+  }
+  await A.page.evaluate(() => window.__taschi.coop.end());
+  await B.page.waitForFunction(() => !window.__taschi.coop, null, { timeout: 15000 });
+  console.log('koop ok');
+  // Trennen (Raum ist mit Koop-Ende schon zu)
   await B.page.waitForFunction(() => !window.__taschi.ui.blocking && window.__taschi.state === 'world', null, { timeout: 15000 });
   assert.deepEqual(A.errors, []); assert.deepEqual(B.errors, []);
   console.log('online ok');

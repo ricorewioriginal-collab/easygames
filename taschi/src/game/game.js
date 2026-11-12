@@ -14,7 +14,8 @@ import { lookForRole } from '../engine/characters.js';
 import { HUD } from '../ui/hud.js';
 import { openPauseMenu, openShop, openStorage, openTravel } from '../ui/menus.js';
 import { openDaycare, hatchScene, openCamp, openWheel, openTower } from '../ui/extras.js';
-import { openOnline, joinCodeFromUrl } from '../ui/online.js';
+import { openOnline, joinCodeFromUrl, coopLobby } from '../ui/online.js';
+import { openPhotoMode } from '../ui/photo.js';
 import * as Tower from '../logic/tower.js';
 import * as Daycare from '../logic/daycare.js';
 import { titleScreen, slotScreen, creatorScreen, introSlides, starterPreview } from '../ui/screens.js';
@@ -28,6 +29,7 @@ import { TYPES } from '../data/types.js';
 import { TRAINERS, GUILD_BATTLES, GUILD_MEMBERS, RIVAL_STAGES, rivalTrainer, trainerHeld, rematchTrainer } from '../data/trainers.js';
 import * as Daily from '../logic/daily.js';
 import * as Ride from '../logic/ride.js';
+import * as Raid from '../logic/raid.js';
 import { preloadModels } from '../engine/models.js';
 const nameOf = (m) => m.nick || SPECIES[m.id].name;
 import { ULME, GUILD_SCENES, LEAGUE_FINALE, CREDITS, CHAPTERS, RIVAL, professorLines } from '../data/story.js';
@@ -255,8 +257,9 @@ export class Game {
     try {
       this.busy++;
       this.audio.sfx('encounter');
+      const endCine = this.cutscene({ x: p.x + Math.sin(ry) * 2.5, z: p.z + Math.cos(ry) * 2.5 }, { dist: 7, yaw: ry + 1.2 });
       await new Promise(res => { n.walkTo = { x: p.x + Math.sin(ry) * 1.6, z: p.z + Math.cos(ry) * 1.6, speed: 4, done: res }; });
-      await say(lines.before);
+      try { await say(lines.before); } finally { endCine(); }
       const res = await this.trainerBattle(t, n, { music: stage === 4 ? 'champion' : 'trainer' });
       if (res.outcome === 'win') {
         await say(lines.win);
@@ -374,6 +377,7 @@ export class Game {
       } else {
         if (this.state === STATES.TITLE) this.titleCamera(dt);
         else this.world.update(dt, this.input, worldActive);
+        if (this.coop && this.state === STATES.WORLD) this.coop.update(dt);
         if (this.state !== STATES.TITLE && this.world.player) this.sky.update(dt, this.save.worldTime, this.world.player.root.position, this.world.camera);
         else this.sky.update(dt, 10 * 60, new THREE.Vector3(0, 0, 14), this.world.camera);
         this.renderer.render(this.world.scene, this.world.camera, this.world.current?.type === 'interior' ? 'indoor' : 'day');
@@ -484,6 +488,7 @@ export class Game {
       case 'daycare': return this.daycareTalk();
       case 'wheel': return openWheel(this);
       case 'tower': return this.towerFlow();
+      case 'raid': return this.raidAt();
       case 'starter': return this.starterBall(e);
     }
   }
@@ -913,7 +918,11 @@ export class Game {
     const sp = SPECIES[id];
     if (!s.champions[r]) return this.ui.say([{ text: 'Eine uralte Inschrift: „Nur wer den Champion dieser Region besiegt hat, darf den Wächter wecken.“' }]);
     if (s.legends[id] === 'caught' || s.dex[id] === 2) return this.ui.say([{ text: 'Der Schrein ist still. ' + sp.name + ' reist nun mit dir.' }]);
-    const c = await this.ui.ask([{ text: 'Der Schrein beginnt zu leuchten … ' + sp.bio }, { text: 'Willst du den Wächter rufen?' }], ['Rufen', 'Lieber nicht'], { cancelIndex: 1 });
+    const pp = this.world.player.root.position, pr = this.world.player.root.rotation.y;
+    const endCine = this.cutscene({ x: pp.x + Math.sin(pr) * 2, z: pp.z + Math.cos(pr) * 2 }, { dist: 9, pitch: 0.4, spin: 0.18, yaw: pr + Math.PI });
+    let c;
+    try { c = await this.ui.ask([{ text: 'Der Schrein beginnt zu leuchten … ' + sp.bio }, { text: 'Willst du den Wächter rufen?' }], ['Rufen', 'Lieber nicht'], { cancelIndex: 1 }); }
+    finally { endCine(); }
     if (c !== 0) return;
     this.world.cam.shake = 0.6; this.audio.sfx('thunder');
     const res = await this.battle({ kind: 'wild', foeTeam: [makeMonster(id, 50 + (r % 10), this.rng)], canRun: true, canCatch: true, ai: 2, music: 'champion' });
@@ -981,8 +990,101 @@ export class Game {
   }
 
   // ------------------------------------------------------------------ camp & kampfturm
+  // ⭐ Sternennest-Raid: zu zweit gegen einen Riesen (Ranger-Helfer oder Freund online)
+  async raidAt() {
+    const s = this.save, r = Math.min(15, this.world.current.region);
+    if (!s.flags.firstQuest || !s.team.length) return this.ui.say([{ text: 'Ein Kranz aus leuchtenden Kristallen. Tief im Inneren regt sich etwas Großes …' }]);
+    const raid = Raid.raidOf(s, r), sp = SPECIES[raid.id];
+    if (Raid.raidDone(s, raid)) return this.ui.say([{ text: 'Das Sternennest ist ruhig. Morgen wartet hier ein neuer Riese.' }]);
+    if (!s.team.some(m => m.hp > 0)) return this.ui.say([{ text: 'Deine Taschis sind zu erschöpft. Ruh dich erst im Heilzentrum aus.' }]);
+    const friend = this.coop?.partnerHere?.();
+    const stars = '★'.repeat(raid.stars) + '☆'.repeat(5 - raid.stars);
+    const pp = this.world.player.root.position;
+    const endCine = this.cutscene({ x: (pp.x + this.world.current.layout.nest.x) / 2, z: (pp.z + this.world.current.layout.nest.z) / 2 }, { dist: 8, pitch: 0.35, spin: 0.2 });
+    let c;
+    const choices = [...(friend ? ['🌐 Mit ' + friend.name] : []), '🤝 Mit Ranger-Helfer', 'Später'];
+    try { c = await this.ui.ask([{ text: 'Im Sternennest glüht ein riesiges ' + sp.name + (raid.shiny ? ' ✨' : '') + '! ' + stars }, { text: 'Es hat ein Vielfaches an KP und greift zweimal pro Runde an. Zu zweit habt ihr eine Chance!' }], choices, { cancelIndex: choices.length - 1 }); }
+    finally { endCine(); }
+    if (c === choices.length - 1 || c === null || c === undefined) return;
+    if (friend && c === 0) return this.coop.inviteRaid(raid);
+    return this.raidBattle(raid);
+  }
+  // friend: { name, look, mon } (Koop online), share: gemeinsame KP
+  async raidBattle(raid, { friend = null, share = null } = {}) {
+    const s = this.save, sp = SPECIES[raid.id];
+    const boss = Raid.makeBoss(raid, this.rng);
+    const helper = friend ? { name: friend.name, m: Object.assign(friend.mon, { ally: friend.name }) } : Raid.makeHelper(raid, s, this.rng);
+    const lead = s.team.find(m => m.hp > 0);
+    const playerTeam = [lead, helper.m, ...s.team.filter(m => m !== lead)];
+    const res = await this.battle({ kind: 'wild', format: 'double', foeTeam: [boss], playerTeam, canRun: true, canCatch: false, ai: 2, music: 'champion', exhibition: true,
+      allyName: helper.name, allyLook: friend?.look || lookForRole('trainer', helper.name), raidShare: share });
+    if (res.outcome === 'lose') { for (const m of s.team) healMonster(m); return this.ui.say([{ text: 'Der Riese war zu stark und zieht sich ins Nest zurück. ' + helper.name + ' versorgt deine Taschis.' }]); }
+    if (res.outcome !== 'win') return;
+    Raid.markRaid(s, raid);
+    const got = P.grantReward(s, Raid.raidReward(raid.stars));
+    await this.ui.say([{ who: helper.name, text: 'Geschafft! Gemeinsam sind wir unschlagbar!' }, { text: 'Belohnung: ' + got.join(', ') + '.' }]);
+    const ball = ['sternball', 'superball', 'taschiball'].find(b => (s.bag[b] | 0) > 0);
+    if (!ball) return this.ui.say([{ text: 'Du hast keine Kapsel dabei, um ' + sp.name + ' zu fangen.' }]);
+    const k = await this.ui.ask([{ text: sp.name + ' ist erschöpft und schaut dich an. Mit einer ' + ITEMS[ball].name + ' fangen?' }], ['Fangen', 'Freilassen'], { cancelIndex: 1 });
+    if (k !== 0) return;
+    Items.remove(s.bag, ball, 1);
+    const caught = makeMonster(raid.id, raid.lv, this.rng, raid.shiny ? { shiny: true } : {});
+    caught.ball = ball; caught.caughtIn = raid.region;
+    s.dex[caught.id] = 2; this.dexRewards();
+    s.stats.caught = (s.stats.caught || 0) + 1; s.stats.raids = (s.stats.raids || 0) + 1;
+    if (s.team.length < 6) s.team.push(caught); else s.box.push(caught);
+    this.audio.sfx('item');
+    await this.ui.say([{ text: sp.name + ' wurde gefangen! ' + (s.team.includes(caught) ? 'Es ist jetzt in deinem Team.' : 'Es wurde ins Lager geschickt.') }]);
+    this.saveNow(true);
+  }
+  // 🎬 Zwischensequenz: Kinobalken, HUD aus, Kamera kreist um die Szene.
+  // at: Mittelpunkt {x, y?, z}, dist/pitch/spin optional. Liefert eine Stopp-Funktion.
+  cutscene(at, { dist = 6, pitch = 0.28, spin = 0.12, yaw = null } = {}) {
+    const w = this.world; if (!w.current) return () => {};
+    const y = at.y ?? (w.current.type === 'region' ? w.current.height(at.x, at.z) : 0) + 1.3;
+    w.cine = { target: new THREE.Vector3(at.x, y, at.z), dist, pitch, spin, yaw: yaw ?? w.cam.yaw + 0.6 };
+    document.body.classList.add('cine'); this.hud.show(false);
+    let done = false;
+    return () => { if (done) return; done = true; w.cine = null; document.body.classList.remove('cine'); if (this.state === STATES.WORLD) this.hud.show(true); };
+  }
+  // 🕊 Fliegen: Ein Flug-Taschi aus dem Team trägt dich zu jedem besuchten Ort
+  async flyMenu() {
+    const s = this.save;
+    if (this.state !== STATES.WORLD) return;
+    this.ui.clear();
+    if (this.world.current?.type !== 'region') return this.ui.toast('Fliegen geht nur draußen.', '🕊');
+    if (this.world.mount?.mode === 'surf') return this.ui.toast('Schwimm erst ans Ufer.', '🕊');
+    const m = Ride.flyMount(s);
+    if (!m) { this.audio.sfx('error'); return this.ui.toast(Ride.flyHint(s), '🕊'); }
+    const to = await openTravel(this, { title: '🕊 Fliegen mit ' + nameOf(m), text: nameOf(m) + ' bringt dich zu jedem Heilzentrum, das du schon besucht hast.' });
+    if (to === null || to === undefined) return;
+    await this.script(() => this.flyTo(to, m));
+  }
+  async flyTo(to, m) {
+    const w = this.world, anim = (from, dest, secs) => new Promise(res => { const t0 = performance.now(); const step = () => { const u = Math.min(1, (performance.now() - t0) / (secs * 1000)), e = u * u * (3 - 2 * u); w.lift = from + (dest - from) * e; if (u < 1) requestAnimationFrame(step); else res(); }; step(); });
+    w.setMount('ride', m); w.lift = 0;
+    this.audio.sfx('confirm');
+    this.ui.toast(nameOf(m) + ' hebt ab!', '🕊');
+    w.cam.pitch = Math.max(w.cam.pitch, 0.5);
+    await anim(0, 26, 1.8);
+    await this.travelToRegion(to, 'heal');
+    if (this.world.current?.type === 'region') {
+      this.world.setMount('ride', m); this.world.lift = 22;
+      await anim(22, 0, 1.6);
+    }
+    this.world.setMount(null); delete this.world.lift; delete w.lift;
+    if (!this.save.flags.flyMet) { this.save.flags.flyMet = true; this.ui.toast('Fliegen findest du im Menü unter Team oder Karte.', '🕊'); }
+  }
+  // 📷 Fotomodus (aus dem Menü, nur draußen und drinnen in der Welt)
+  async openPhoto() {
+    if (this.state !== STATES.WORLD || !this.world.current) return;
+    this.ui.clear();
+    await openPhotoMode(this);
+  }
   async openCamp() { if (!this.save.team.length) return; await openCamp(this); }
   // 🌐 Online-Tausch und -Kampf (Menü › Team, Titelbild oder Einladungslink #join=CODE)
+  // Koop: Online-Menü mit dem verbundenen Freund erneut öffnen (Tauschen, Kämpfen)
+  async coopLobby() { if (!this.coop?.open) return; this.ui.clear(); this.onlineOpen = true; try { await coopLobby(this, this.coop); } finally { this.onlineOpen = false; this.saveNow(); } }
   async openOnline(join = null) {
     if (!this.save?.team.length) { this.ui.toast('Du brauchst mindestens ein Taschi.', '🌐'); return; }
     if (this.onlineOpen) return;

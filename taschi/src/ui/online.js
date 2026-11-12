@@ -8,6 +8,8 @@ import { SPECIES } from '../data/species.js';
 import { PLAYER_PRESETS } from '../engine/characters.js';
 import { Link } from '../core/net.js';
 import * as L from '../logic/link.js';
+import { openWonderTrade } from './wonder.js';
+import { Coop } from '../game/coop.js';
 
 const nameOf = L.nameOf;
 let qrLib = null;
@@ -35,7 +37,7 @@ function live(game, build) {
 
 // ------------------------------------------------------------------ Einstieg
 export async function openOnline(game, { join = null } = {}) {
-  let link = null;
+  let link = null, kept = false;
   try {
     link = join ? await joinRoom(game, join) : await startScreen(game);
     if (!link) return;
@@ -43,9 +45,9 @@ export async function openOnline(game, { join = null } = {}) {
     if (!peer) { game.ui.toast('Keine Antwort vom Mitspieler.', '🌐'); return; }
     game.audio.sfx('item');
     game.ui.toast('Verbunden mit ' + peer.name + '!', '🌐');
-    await lobby(game, link, peer);
+    kept = await lobby(game, link, peer);
   } finally {
-    if (link && !link.closed) link.close();
+    if (link && !link.closed && !kept) link.close();
     try { history.replaceState(null, '', location.href.split('#')[0]); } catch (e) { }
   }
 }
@@ -65,7 +67,9 @@ function startScreen(game) {
           if (!L.isCode(code)) { game.ui.toast('Der Code hat 5 Zeichen (Buchstaben und Ziffern).', '🌐'); return; }
           busy = true; const l = await joinRoom(game, code); busy = false;
           if (l) { v.close(); resolve(l); }
-        } }, h('div.grow', {}, h('b', {}, '🔑 Mit Code beitreten'), h('div.muted', {}, 'Den Code zeigt das Gerät, das den Raum eröffnet hat.')))),
+        } }, h('div.grow', {}, h('b', {}, '🔑 Mit Code beitreten'), h('div.muted', {}, 'Den Code zeigt das Gerät, das den Raum eröffnet hat.'))),
+        h('button.row.focusable', { onclick: () => { if (busy) return; v.close(); resolve(null); openWonderTrade(game); } },
+          h('div.grow', {}, h('b', {}, '🎲 Zufallstausch'), h('div.muted', {}, 'Ein Taschi mit einem zufälligen Spieler irgendwo auf der Welt tauschen.')))),
       h('p.muted', {}, 'Getauscht und gekämpft wird direkt von Gerät zu Gerät. Im Online-Kampf kämpfen je drei Taschis auf Level ' + 50 + ', ohne Gegenstände aus der Tasche.')), { small: true }));
     v.screen.onBack = () => { v.close(); resolve(null); };
   });
@@ -115,17 +119,20 @@ async function greet(game, link) {
 }
 
 // ------------------------------------------------------------------ Lobby
+// Koop läuft schon: dieselbe Lobby mit dem verbundenen Freund (ohne Trennen)
+export async function coopLobby(game, coop) { await lobby(game, coop.link, coop.peer); }
 async function lobby(game, link, peer) {
   while (!link.closed) {
     const what = await lobbyScreen(game, link, peer);
     if (what === 'trade') await tradeFlow(game, link, peer);
     else if (what === 'battle') await battleFlow(game, link, peer);
+    else if (what === 'coop') { if (!game.coop) new Coop(game, link, peer); return true; }
     else break;
   }
   if (link.closed && link.reason !== 'bye-self') game.ui.toast(peer.name + ' hat die Verbindung beendet.', '🌐');
 }
 
-const WHAT = { trade: '🔁 Taschi tauschen', battle: '⚔ Online-Kampf' };
+const WHAT = { trade: '🔁 Taschi tauschen', battle: '⚔ Online-Kampf', coop: '🤝 Zusammen erkunden' };
 function lobbyScreen(game, link, peer) {
   return new Promise(resolve => {
     let waiting = null, asking = false;
@@ -137,7 +144,7 @@ function lobbyScreen(game, link, peer) {
         if (waiting || asking) { link.send({ t: 'answer', what: d.what, ok: false }); return true; }
         asking = true;
         game.audio.sfx('confirm');
-        game.ui.ask([{ who: peer.name, text: d.what === 'trade' ? 'Lust auf einen Tausch?' : 'Ich fordere dich zum Online-Kampf heraus! (3 gegen 3, Level 50)' }], ['Annehmen', 'Ablehnen'], { cancelIndex: 1 }).then(c => {
+        game.ui.ask([{ who: peer.name, text: d.what === 'trade' ? 'Lust auf einen Tausch?' : d.what === 'coop' ? 'Wollen wir zusammen die Welt erkunden? Wir sehen uns dann in derselben Region und können gemeinsam Raids bestreiten.' : 'Ich fordere dich zum Online-Kampf heraus! (3 gegen 3, Level 50)' }], ['Annehmen', 'Ablehnen'], { cancelIndex: 1 }).then(c => {
           asking = false;
           if (link.closed) return;
           link.send({ t: 'answer', what: d.what, ok: c === 0 });
@@ -159,8 +166,10 @@ function lobbyScreen(game, link, peer) {
       h('div.list', {},
         h('button.row.focusable', { 'data-autofocus': '', onclick: () => propose('trade') }, h('div.grow', {}, h('b', {}, WHAT.trade), h('div.muted', {}, 'Jeder bietet ein Taschi aus Team oder Lager an. Getauscht wird, wenn beide bestätigen.'))),
         h('button.row.focusable', { onclick: () => propose('battle') }, h('div.grow', {}, h('b', {}, WHAT.battle), h('div.muted', {}, 'Je drei Taschis, alle auf Level 50, ohne Items aus der Tasche. Keine EP, kein Risiko.'))),
-        h('button.row.focusable', { onclick: () => { link.close(); finish('leave'); } }, h('div.grow', {}, h('b', {}, '✕ Verbindung trennen'))))), { small: true, hints: [['confirm', 'Wählen'], ['back', 'Trennen']] }));
-    vw.screen.onBack = () => { link.close(); finish('leave'); };
+        game.coop?.link === link ? null : h('button.row.focusable', { onclick: () => propose('coop') }, h('div.grow', {}, h('b', {}, WHAT.coop), h('div.muted', {}, 'Ihr bleibt verbunden, seht euch in derselben Region und kämpft gemeinsam gegen Sternennest-Riesen.'))),
+        game.coop?.link === link ? h('button.row.focusable', { onclick: () => finish('leave') }, h('div.grow', {}, h('b', {}, '↩ Zurück zum Erkunden')))
+          : h('button.row.focusable', { onclick: () => { link.close(); finish('leave'); } }, h('div.grow', {}, h('b', {}, '✕ Verbindung trennen'))))), { small: true, hints: [['confirm', 'Wählen'], ['back', game.coop?.link === link ? 'Zurück' : 'Trennen']] }));
+    vw.screen.onBack = () => { if (game.coop?.link !== link) link.close(); finish('leave'); };
   });
 }
 
@@ -217,7 +226,7 @@ function tradeFlow(game, link, peer) {
 }
 
 // Kurze Tausch-Szene in der 3D-Vorschau
-async function tradeScene(game, gave, got, peer) {
+export async function tradeScene(game, gave, got, peer) {
   const el = h('div.viewport3d.camp', { id: 'tradeview' });
   const scr = { el: panel(game, '🔁 Tausch', h('div', {}, el, h('p', { style: { textAlign: 'center' } }, nameOf(gave) + ' reist zu ' + peer.name + ' …')), { small: true, hints: [] }), onBack: () => {} };
   game.ui.push(scr);

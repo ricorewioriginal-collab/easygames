@@ -76,6 +76,8 @@ const TAB_RENDER = {
         h('div.portrait.egg', {}, '🥚'), h('div.meta', {}, h('div.name', {}, 'Ei'), h('div.sub', {}, eggHint(egg)), hpBar(egg.total - egg.left, egg.total)))))] : null,
       h('div.row', {}, h('button.btn.focusable', { onclick: () => game.openCamp() }, '⛺ Taschi-Camp'), h('span.muted', {}, ' Streicheln, spielen, füttern: Zuneigung stärkt im Kampf.')),
       h('div.row', {}, h('button.btn.focusable', { onclick: () => game.openOnline() }, '🌐 Online: Tauschen & Kämpfen'), h('span.muted', {}, ' Mit Freunden per Link, QR-Code oder Code – von überall.')),
+      game.coop?.open ? h('div.row', {}, h('span.pill', {}, '🤝 Koop mit ' + game.coop.peer.name), ' ', h('button.btn.focusable', { onclick: () => { game.ui.clear(); game.coop.wave(); } }, '👋 Winken'), h('button.btn.focusable', { onclick: () => game.coopLobby() }, '🔁 Tauschen/Kämpfen'), h('button.btn.focusable', { onclick: () => { game.coop.end(); rerender(); } }, '✕ Koop beenden')) : null,
+      h('div.row', {}, h('button.btn.focusable', { onclick: () => game.openPhoto() }, '📷 Fotomodus'), h('button.btn.focusable', { onclick: () => game.flyMenu() }, '🕊 Fliegen'), h('span.muted', {}, ' Fotos mit Filtern und Posen · Auf einem Flug-Taschi zu besuchten Orten fliegen.')),
       h('p.muted', {}, 'Im Lager: ' + s.box.length + ' Taschis · Lager im Heilzentrum verwalten.'));
   },
   dex(game) {
@@ -123,6 +125,7 @@ const TAB_RENDER = {
       return h('button.node.focusable' + (unlocked ? '' : '.locked') + (here === i ? '.here' : ''), { style: { left: x + '%', top: y + '%', background: col }, title: i < 16 ? r.name : 'Sternengipfel', onclick: () => game.ui.say([{ text: i < 16 ? r.name + ' (' + r.town + ') · ' + r.types.map(t => TYPES[t].name).join('/') + ' · ' + (s.badges > i ? 'Siegel ✓' : 'Siegel offen') + ' · Champion ' + (s.champions[i] ? '✓' : 'offen') + (unlocked ? '' : ' · noch nicht erreichbar') : 'Sternengipfel – Halle der Sternenliga' + (unlocked ? '' : ' · erst mit allen Siegeln und Brix’ Zugangskarte') }]) }, i < 16 ? String(i + 1) : '★');
     });
     return h('div', {}, h('div.mapview', { html: svg }, nodes),
+      h('div.row', {}, h('button.btn.focusable', { onclick: () => game.flyMenu() }, '🕊 Fliegen'), h('span.muted', {}, ' Ab dem 5. Siegel trägt dich ein Flug-Taschi zu jedem besuchten Ort.')),
       h('h3', {}, 'Championübersicht'),
       h('div.list', {}, REGIONS.map(r => h('div.row', {}, h('div.grow', {}, h('b', {}, (r.id + 1) + '. ' + r.name), ' ', h('span.muted', {}, 'Arena: ' + r.gym.leader + ' · Champion: ' + r.champion.name)), h('span.right', {}, (s.badges > r.id ? '✦' : '◌') + ' ' + (s.champions[r.id] ? '♛' : '◌'))))));
   },
@@ -161,6 +164,7 @@ const TAB_RENDER = {
       h('h3', {}, 'Audio'),
       row('Musik', slider('musicVolume', 0, 1, 0.1, pct)), row('Effekte', slider('sfxVolume', 0, 1, 0.1, pct)), row('Umgebung', slider('ambienceVolume', 0, 1, 0.1, pct)),
       row('Ton', cycle('muted', [false, true], ['An', 'Stumm'])),
+      row('Sprachausgabe', cycle('voice', [true, false], ['An', 'Aus'])), row('Stimme', slider('voiceVolume', 0, 1, 0.1, pct)), row('Sprechtempo', cycle('voiceRate', [0.9, 1, 1.15], ['Ruhig', 'Normal', 'Flott'])),
       h('h3', {}, 'Steuerung'),
       row('Textgeschw.', cycle('textSpeed', [1, 2, 3], ['Langsam', 'Normal', 'Schnell'])),
       row('Kamera', slider('camSensitivity', 0.4, 2, 0.2, (v) => v.toFixed(1) + '×')),
@@ -363,11 +367,11 @@ export function openStorage(game) {
 }
 
 // ------------------------------------------------------------------ travel
-export function openTravel(game) {
+export function openTravel(game, { title = 'Flugtaxi', text = 'Fliege zu jedem Heilzentrum, das du schon besucht hast.' } = {}) {
   const s = game.save;
   return new Promise(res => {
     const list = REGIONS.filter(r => s.visited[r.id]);
-    const screen = { el: panel(game, 'Flugtaxi', h('div', {}, h('p.muted', {}, 'Fliege zu jedem Heilzentrum, das du schon besucht hast.'),
+    const screen = { el: panel(game, title, h('div', {}, h('p.muted', {}, text),
       h('div.list', {}, list.map(r => h('button.row.focusable', { onclick: () => { game.ui.pop(screen); res(r.id); } }, h('div.grow', {}, h('b', {}, (r.id + 1) + '. ' + r.town), ' ', h('span.muted', {}, r.name)), h('span.right', {}, r.types.map(t => TYPES[t].icon).join(' ')))),
         s.flags.summitDone ? h('button.row.focusable', { onclick: () => { game.ui.pop(screen); res(16); } }, h('div.grow', {}, h('b', {}, '★ Sternengipfel'))) : null)), { small: true }) };
     screen.onBack = () => { game.ui.pop(screen); res(null); };

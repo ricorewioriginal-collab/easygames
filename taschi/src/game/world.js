@@ -344,6 +344,31 @@ export class World {
     }
     return 1;
   }
+  // Zwischensequenz: Kamera kreist langsam um einen Punkt (weich eingeblendet)
+  cineCamera(dt) {
+    const k = this.cine; k.t = (k.t || 0) + dt; k.yaw += (k.spin ?? 0.12) * dt;
+    const t = k.target, d = k.dist;
+    const x = t.x + Math.sin(k.yaw) * Math.cos(k.pitch) * d, z = t.z + Math.cos(k.yaw) * Math.cos(k.pitch) * d;
+    let y = t.y + Math.sin(k.pitch) * d;
+    if (this.current?.type === 'region') y = Math.max(y, this.current.height(x, z) + 0.6);
+    TMP.set(x, y, z);
+    this.camera.position.lerp(TMP, Math.min(1, dt * (k.t < 1.2 ? 2.5 : 6)));
+    this.cam.target.lerp(t, Math.min(1, dt * 4));
+    this.camera.lookAt(this.cam.target);
+  }
+  // Fotomodus: freie Kamera um die Figur (Drehen, Zoomen, Verschieben in Grenzen)
+  photoCamera(look) {
+    const ph = this.photo;
+    ph.yaw -= look.x; ph.pitch = Math.max(-0.25, Math.min(1.45, ph.pitch + look.y)); ph.dist = Math.max(1.2, Math.min(24, ph.dist * (1 + look.zoom * 0.2)));
+    const off = TMP.copy(ph.target).sub(ph.home); off.y = 0;
+    if (off.length() > 14) { off.setLength(14); ph.target.x = ph.home.x + off.x; ph.target.z = ph.home.z + off.z; }
+    const t = ph.target, d = ph.dist;
+    const x = t.x + Math.sin(ph.yaw) * Math.cos(ph.pitch) * d, z = t.z + Math.cos(ph.yaw) * Math.cos(ph.pitch) * d;
+    let y = t.y + Math.sin(ph.pitch) * d;
+    if (this.current?.type === 'region') y = Math.max(y, this.current.height(x, z) + 0.3);
+    else if (this.current?.interior) y = Math.min(y, (this.current.interior.h || 5) - 0.2);
+    this.camera.position.set(x, y, z); this.camera.lookAt(t);
+  }
   snapCamera() { this.updateCamera(1, { x: 0, y: 0, zoom: 0 }, true); }
   updateCamera(dt, look, snap = false) {
     const c = this.cam, p = this.player.root.position;
@@ -419,12 +444,17 @@ export class World {
     let speed = 0;
     if (active) speed = this.movePlayer(dt, input);
     else if (!this.mount) this.player.setLocomotion(0);
+    if (this.lift !== undefined && this.mount) {
+      // Fliegen: Figur und Flug-Taschi steigen auf bzw. landen (Höhe kommt aus game.flyTo)
+      const pp = this.player.root.position; pp.y = this.groundAt(pp.x, pp.z) + this.lift + this.mount.seat - this.player.dims.legLen * 0.9;
+      this.player.hold('ride'); speed = this.lift > 0.2 ? 6 : 0;
+    }
     this.player.update(dt);
     // follower
     if (this.follower && this.mount) {
       // das Reit-Taschi läuft unter der Spielfigur mit
       const f = this.follower.c, pp = this.player.root.position;
-      f.root.position.set(pp.x, this.groundAt(pp.x, pp.z), pp.z);
+      f.root.position.set(pp.x, this.groundAt(pp.x, pp.z) + (this.lift || 0), pp.z);
       f.root.rotation.y = this.player.root.rotation.y;
       f.setMoving(speed * 0.6); f.update(dt);
     } else if (this.follower) {
@@ -442,8 +472,12 @@ export class World {
     if (this.current.type === 'region') this.current.map.update(t, dt, this.camera, this.player.root.position);
     else for (const a of this.current.interior.animators) a(t);
     const look = input.takeCamera();
-    if (!active) { look.x = 0; look.y = 0; look.zoom = 0; }
-    this.updateCamera(dt, look);
+    if (this.photo) this.photoCamera(look);
+    else if (this.cine) this.cineCamera(dt);
+    else {
+      if (!active) { look.x = 0; look.y = 0; look.zoom = 0; }
+      this.updateCamera(dt, look);
+    }
     if (active) {
       this.near = this.findNear();
       // step plates

@@ -71,6 +71,7 @@ export function buildWalkGrid(L) {
   if (L.guild) circle(L.guild.x, L.guild.z - 4, 1.8);
   for (const p of L.props) if (p.r) circle(p.x, p.z, p.r);
   if (L.chest) circle(L.chest.x, L.chest.z, 0.7);
+  if (L.nest) circle(L.nest.x, L.nest.z, 1.1);
   if (L.obstacle) circle(L.obstacle.x, L.obstacle.z, 1.4);
   // gates: walls left and right of the opening
   for (const gt of L.gates) { rect(gt.x - 8, gt.z, 3, 1); rect(gt.x + 8, gt.z, 3, 1); }

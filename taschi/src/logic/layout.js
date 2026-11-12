@@ -216,6 +216,12 @@ export function buildLayout(r) {
     L.items.push({ id: 'lost:' + lost.id, x: lx, z: lz, quest: lost.id, flag: 'lost:' + lost.id, hidden: true, label: lost.title });
   }
   { const [cx, cz] = landSpot(mx + (mx > 0 ? 6 : -6), mz - 4); L.chest = { x: cx, z: cz }; }
+  // Sternennest (Raid) etwas abseits der Truhe
+  {
+    let [nx, nz] = landSpot(mx + (mx > 0 ? 14 : -14), mz - 12);
+    for (let k = 0; k < 24 && !clearOf(L, nx, nz, 3.5); k++) { const a = k * 2.4, d = 6 + k * 1.5; [nx, nz] = landSpot(mx + Math.cos(a) * d, mz + Math.sin(a) * d); }
+    L.nest = { x: nx, z: nz };
+  }
   // ability-gated optional spot (boulder / thorns / water stone)
   const gateKinds = ['boulder', 'thorns', 'boulder', 'thorns'];
   L.obstacle = { kind: gateKinds[r % 4], x: X(-72), z: -20, reward: { x: X(-80), z: -26, item: r < 8 ? 'supertrank' : 'vitaltrank', id: 'gated:' + r } };

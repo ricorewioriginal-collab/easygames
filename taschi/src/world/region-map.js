@@ -190,6 +190,18 @@ export async function buildRegionMap(L, { quality, onProgress = () => {}, save }
     place(ch, L.chest.x, L.chest.z, Math.atan2(-L.chest.x, 10 - L.chest.z));
     interact.push({ id: 'chest', kind: 'chest', x: L.chest.x, z: L.chest.z, r: 1.8, label: 'Truhe', prompt: 'Öffnen', mesh: ch });
   }
+  // Sternennest: Kristallkranz mit Lichtsäule (Raid)
+  if (L.nest) {
+    const nb = new Builder();
+    for (let k = 0; k < 7; k++) { const a = k / 7 * Math.PI * 2, hgt = 0.9 + (k % 3) * 0.45; nb.add(new THREE.OctahedronGeometry(0.42, 0), 0xb58cff, matrix(Math.cos(a) * 1.25, hgt * 0.5, Math.sin(a) * 1.25, 0.25 * Math.sin(a), a, 0.25 * Math.cos(a), 0.55, hgt * 1.6, 0.55)); }
+    nb.add(new THREE.CylinderGeometry(1.5, 1.7, 0.18, 18), 0x6a5a8a, matrix(0, 0.05, 0));
+    const nest = new THREE.Group(); nest.add(new THREE.Mesh(nb.build(), envMaterial()));
+    const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.9, 9, 14, 1, true), glowMaterial(0xd8b8ff, 0.32)); beam.position.y = 4.4; nest.add(beam);
+    const core = new THREE.Mesh(new THREE.SphereGeometry(0.5, 14, 10), glowMaterial(0xfff0ff, 0.9)); core.position.y = 0.9; nest.add(core);
+    place(nest, L.nest.x, L.nest.z);
+    animators.push((t) => { beam.rotation.y = t * 0.6; core.scale.setScalar(1 + Math.sin(t * 3) * 0.12); });
+    interact.push({ id: 'nest', kind: 'raid', x: L.nest.x, z: L.nest.z, r: 2.6, label: 'Sternennest', prompt: 'Raid' });
+  }
   const sparkleMat = new THREE.SpriteMaterial({ map: particleTexture('star'), color: 0xfff2a0, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
   for (const it of L.items) {
     const s = new THREE.Sprite(sparkleMat); s.scale.set(0.6, 0.6, 1);

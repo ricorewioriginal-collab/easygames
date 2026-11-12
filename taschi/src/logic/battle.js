@@ -92,12 +92,15 @@ export function runTurn(b, playerChoices, foeChoices = null) {
   b.turnNo++;
   const actions = [];
   for (const { slot, m } of activeList(b, 0)) {
-    const c = playerChoices.find(x => x.slot === slot) || { type: 'move', move: m.moves.find(x => x.pp > 0)?.id };
+    // Helfer im Raid (m.ally) wählen selbst, außer ein Freund schickt seine Wahl
+    const c = playerChoices.find(x => x.slot === slot) || (m.ally ? chooseAction(b, 0, slot, b.rng) : { type: 'move', move: m.moves.find(x => x.pp > 0)?.id });
     actions.push({ side: 0, slot, uid: m.uid, ...c });
   }
   for (const { slot, m } of activeList(b, 1)) {
     const c = (foeChoices && foeChoices.find(x => x.slot === slot)) || (b.pvp ? { type: 'move', move: m.moves.find(x => x.pp > 0)?.id || 'verzweiflung', target: targetsFor(b, 1)[0] } : chooseAction(b, 1, slot, b.rng));
     actions.push({ side: 1, slot, uid: m.uid, ...c });
+    // Raid-Riese: handelt zweimal pro Runde
+    if (m.boss && !b.pvp) actions.push({ side: 1, slot, uid: m.uid, ...chooseAction(b, 1, slot, b.rng), second: true });
   }
   // Sternstufe: once per battle a Taschi shines up – +1 Angriff/Verteidigung/Initiative and 20 % stronger attacks
   for (const a of actions) if (a.star && a.type === 'move' && (a.side === 0 ? b.starUnlocked : b.pvp) && b.star[a.side] === null) applyStar(b, a.side, findByUid(b, a.uid), ev);
@@ -108,6 +111,7 @@ export function runTurn(b, playerChoices, foeChoices = null) {
     const m = findByUid(b, a.uid);
     a.speed = m ? speedOf(b, m) : 0;
     a.tie = b.rng.next();
+    if (a.second) a.p -= 10;   // zweite Raid-Aktion kommt am Ende der Runde
   }
   actions.sort((x, y) => y.p - x.p || y.speed - x.speed || x.tie - y.tie);
 
