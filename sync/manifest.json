@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "756f7910a345",
- "generated": "2026-11-12T21:10:21+01:00",
- "commit": "7cc7da573ce0668d2c1c92d65edf287d7e1e621f",
+ "version": "faa670fd5f20",
+ "generated": "2026-11-12T21:08:10+00:00",
+ "commit": "4d353bc2bfd05d80c20fc1b448aadcbdcf6b28b4",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2372,9 +2372,9 @@
    "h": "950fb90df6cb3745e31e3f7b566090d8e47ffd84f24f3e6b9a0a3d89ab1ea926"
   },
   {
-   "p": "anmacha-quest-rpg/assets/index-IB2R-Gdu.js",
-   "s": 838470,
-   "h": "049b814c59e5b2594bb055ca6373bdb66e2eb0ad69dcc9e708ad0ca770346cff"
+   "p": "anmacha-quest-rpg/assets/index-D_Z213PD.js",
+   "s": 856044,
+   "h": "096093ed7956f1a61a4717b62edb1676a04d5efd8dda2dcced4f1de0a4c39e25"
   },
   {
    "p": "anmacha-quest-rpg/card.jpg",
@@ -2388,8 +2388,8 @@
   },
   {
    "p": "anmacha-quest-rpg/index.html",
-   "s": 18297,
-   "h": "44f3103610daca6ef8fc31cc3d6d575b9dfaf94464551593aae7ff3946fc98eb"
+   "s": 26355,
+   "h": "734e0cd00e5d3f87450821f379a151e9ea13e0052b79248e0b6c6b15116b2889"
   },
   {
    "p": "anmacha-quest-rpg/logo.png",
@@ -9459,7 +9459,7 @@
   {
    "p": "sync/catalog.json",
    "s": 257720,
-   "h": "d1d75f3481ecba0347803284f6776817aa10dd9553b719028a625d4b7f04dcb5"
+   "h": "3969305cee976089cc463d8cbef9391e5c83ded7afff020a5b9fdebac843e217"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -9963,8 +9963,8 @@
   },
   {
    "p": "taschi/src/engine/characters.js",
-   "s": 40456,
-   "h": "629508628e84140e2998c65572fcf3b3a2e10b5c9c365d1ea3f694ebd171990f"
+   "s": 44256,
+   "h": "05302ea3df2f527fb9f09e286de356920c81ff9981fd85a18ba25814f5ca15e7"
   },
   {
    "p": "taschi/src/engine/creatures.js",
@@ -9978,8 +9978,8 @@
   },
   {
    "p": "taschi/src/engine/kaykit.js",
-   "s": 13674,
-   "h": "44bebedc6c136f70938ab27f30a0c6915c13254217b3e462b4e969ba8ab315df"
+   "s": 16178,
+   "h": "91eb6e1a6ea7c08bdacacf084bc9c8f4435af3f8ffcf169297e7852370dad16e"
   },
   {
    "p": "taschi/src/engine/materials.js",
@@ -11907,9 +11907,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-BLW1_vCO.js",
-   "s": 1693723,
-   "h": "2a196533e28a7abff374120ab2a36b022dcef63c5c5a4e2a33af18cea8ca51ec"
+   "p": "zotik/assets/index-DbR9nwDa.js",
+   "s": 1705217,
+   "h": "ef651beaf0179ab3a9347558112a8575d5929fd80edaaa76646aa110ec01aac0"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -11929,7 +11929,7 @@
   {
    "p": "zotik/index.html",
    "s": 72193,
-   "h": "6bb708fe083c1ce0ef024f291eca71965a563f4296653360a61e092b66f9323e"
+   "h": "48e4a6ef474dd19ce58b87934bd78188a2bf22a9498b33f4cc71aa64bfd13d88"
   },
   {
    "p": "zotik/manifest.webmanifest",
@@ -11950,6 +11950,11 @@
    "p": "zotik/models/f2.glb",
    "s": 1076928,
    "h": "e3a013adbfa6344b169a553ba95a6d14dc79707de2c0457373047b58fd34ac2c"
+  },
+  {
+   "p": "zotik/models/kb/kb.glb",
+   "s": 1011876,
+   "h": "5fab0b9b52a60a36bf35aad8ae57a629367550ff7ee6188bcca52a101e9b5c7f"
   },
   {
    "p": "zotik/models/kk/ad_ba.glb",

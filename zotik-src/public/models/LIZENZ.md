@@ -23,3 +23,7 @@ ohne Normal-/ORM-Karten, quantisiert). Bewegt werden sie in Zotik prozedural üb
 
 Bäume, Felsen und Friedhofsteile aus „Lowpoly Stylized Fantasy Environment Pack“ von **Wizp** (wizp.itch.io), Lizenz laut Seite **CC0**
 („can be used for any purpose, commercial or not, just can't be resold“). Auswahl und Verkleinerung mit `tools/make-zotik-wizp.mjs`.
+
+## KayKit – Medieval Builder Pack (Kay Lousberg, CC0)
+`kb/kb.glb` (zusammen mit Wänden, Böden und Säulen aus dem KayKit Dungeon Pack, ebenfalls CC0): Burg, Wachturm, Mühlen, Markt, Brunnen und weitere Gebäude.
+Quelle: https://kaylousberg.itch.io/kaykit-medieval-builder-pack · Lizenz: Creative Commons Zero (CC0 1.0). Aufbereitung: `tools/make-zotik-kaybuild.mjs`.

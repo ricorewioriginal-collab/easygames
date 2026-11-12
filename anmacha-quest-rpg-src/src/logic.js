@@ -1,6 +1,6 @@
 // Spielregeln ohne Anzeige: Werte, Schaden, Karten, Monster-KI. 1:1 aus main.gd der Godot-Fassung übernommen.
 // Läuft auch unter Node (Tests in tests/logic.test.js).
-import { MAPS, HEROES, ENEMIES, ITEMS, CAPSULES, REEL, DEEP_BOSS, DEEP_FLOORS } from './data.js';
+import { MAPS, HEROES, ENEMIES, ITEMS, CAPSULES, REEL, DEEP_BOSS, DEEP_FLOORS, upscaleMap, WORLD_SCALE, REALM_SCALE } from './data.js';
 
 export const STEP_T = 0.13;          // Sekunden pro Feld (alte Schritt-Logik)
 export const RUN_SPEED = 5.4;        // Felder pro Sekunde beim Rennen (freies Laufen)
@@ -206,11 +206,15 @@ export function genDeep(floor, seed) {
     }
   }
   const grp = Math.min(4, Math.floor((floor - 1) / 6));
-  return {
+  const m = {
     name: `Tiefe der Echos – Ebene ${floor}`, theme: DEEP_THEMES[Math.floor((floor - 1) / 6) % 5], rows: g.map(row => row.join('')),
     enc: DEEP_POOLS[grp], rate: 0.07, lv: Math.round(1 + floor * 0.85), lvBonus: Math.round((floor - 1) % 6 * 0.6 + Math.max(0, floor - 24)),
     deep: floor, seed, portals, npcs: [], chests, boss
   };
+  // wie die Reiche doppelt so groß; die Treppe führt auf das Ankunftsfeld der nächsten Ebene
+  upscaleMap(m, REALM_SCALE);
+  if (!last) { portals[1].ax = st.x * REALM_SCALE; portals[1].ay = st.y * REALM_SCALE; }
+  return m;
 }
 MAPS.tiefe = genDeep(1, 1);
 // Flaggen einer Ebene zurücksetzen (Truhen und Wächter gibt es auf jeder neuen Ebene wieder)
@@ -362,8 +366,8 @@ export function reachable(S, start, blockFn = (n) => blocked(S, n)) {
 // Sichtbare Monster, die auf der Karte umherlaufen und bei Berührung einen Kampf starten
 export function spawnRoamers(S, rng) {
   S.roamers = [];
-  let pool = S.map.enc, count = 6;
-  if (isWorld(S)) { pool = STAGE_POOL[stage(S)]; count = 30; }
+  let pool = S.map.enc, count = 12;
+  if (isWorld(S)) { pool = STAGE_POOL[stage(S)]; count = 45; }
   if (!pool.length) return;
   const cells = [];
   for (const c of reachable(S, S.gp).values()) {
@@ -439,4 +443,4 @@ export function gainExp(S, h, xp) {
 }
 
 // Startfeld je Karte (für Tests und Debug-Sprung)
-export const startOf = (id) => id === 'hub' ? { x: 12, y: 12 } : id === 'lind' ? { x: 12, y: 11 } : (id === 'welt' ? { x: 40, y: 44 } : { x: 2, y: 14 });
+export const startOf = (id) => id === 'hub' ? { x: 12, y: 12 } : id === 'lind' ? { x: 12, y: 11 } : (id === 'welt' ? { x: 20 * WORLD_SCALE, y: 22 * WORLD_SCALE } : { x: 2 * REALM_SCALE, y: 14 * REALM_SCALE });

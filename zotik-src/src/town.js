@@ -136,7 +136,7 @@ export function createTown(C) {
       const K = KIND[P.kind], i = seq++;
       if (P.keeper && K.role) {
         const q = P.W2(P.keeper[0], P.keeper[1]), nm = K.role + ' ' + NAMES[P.kind][(n - 1) % 11];
-        const o = C.addNpc('tw_' + P.kind, nm, q[0], q[1], C.makeVillager(K.look), () => C.Q().talk(P.kind, nm, n, () => TALK[P.kind](nm, n)), P.ry + P.keeper[2], () => C.Q().mark(P.kind, n)); o.noRoute = 1;
+        const o = C.addNpc('tw_' + P.kind, nm, q[0], q[1], C.folk(nm, Object.assign({ g: /in$/.test(K.role) ? 'f' : 'm' }, K.look)), () => C.Q().talk(P.kind, nm, n, () => TALK[P.kind](nm, n)), P.ry + P.keeper[2], () => C.Q().mark(P.kind, n)); o.noRoute = 1;
       }
       if (P.extra && P.extra.book) { const q = P.W2(...P.extra.book), txt = LORE[(n * 3 + i) % LORE.length]; C.INT().push({ x: q[0], z: q[1], name: 'Bücherregal', pr: 'Lesen', rad: 1.9, vis: () => true, talk() { C.say([['Buch', txt]]); } }); }
       if (P.extra && P.extra.casino) casino(P, n);
@@ -292,9 +292,9 @@ export function createTown(C) {
       const dealer = 'Kartengeber Marlo';
       const start = bet => { H.round = { bet, pot: bet, card: draw(), n: 0 }; st.busy = false; show(0, H.round.card); show(1, 0); setTimeout(ask, 450); };
       H.start = start; H.ask = ask;
-      const q = P.W2(tx, tz - 1.25); const o = C.addNpc('tw_dealer', dealer, q[0], q[1], C.makeVillager({ cloth: 0x1a1a2a, cloth2: 0xb02a3a, hair: 0x2a2a30 }), () => { if (off()) return closed(); if (H.round) return ask(); bets(dealer, 'Höher oder Tiefer: Rate, ob die nächste Karte (1 bis 13) höher oder tiefer ist. Jeder Treffer vergrößert den Topf, du kannst jederzeit auszahlen.', start); }, P.ry); o.noRoute = 1; }
+      const q = P.W2(tx, tz - 1.25); const o = C.addNpc('tw_dealer', dealer, q[0], q[1], C.folk(dealer, { g: 'm', cloth: 0x1a1a2a, cloth2: 0xb02a3a, hair: 0x2a2a30 }), () => { if (off()) return closed(); if (H.round) return ask(); bets(dealer, 'Höher oder Tiefer: Rate, ob die nächste Karte (1 bis 13) höher oder tiefer ist. Jeder Treffer vergrößert den Topf, du kannst jederzeit auszahlen.', start); }, P.ry); o.noRoute = 1; }
     /* Empfang */
-    { const q = P.W2(-2.8, P.d / 2 - P.t - 1.3), o = C.addNpc('tw_stella', 'Stella', q[0], q[1], C.makeVillager({ cloth: 0xc02a5a, cloth2: 0x2a1a3a, hair: 0xf0d060 }), () => { const s = S();
+    { const q = P.W2(-2.8, P.d / 2 - P.t - 1.3), o = C.addNpc('tw_stella', 'Stella', q[0], q[1], C.folk('Stella', { g: 'f', cloth: 0xc02a5a, cloth2: 0x2a1a3a, hair: 0xf0d060 }), () => { const s = S();
         C.say([['Stella', off() ? 'Willkommen im Golden Star! Die Geräte sind gerade ausgeschaltet (Familienoption).' : `Willkommen im Golden Star! Hier wird nur um Spiel-Splitter gespielt, kein echtes Geld. Deine Spiele: ${s.cas.n} · bester Gewinn: ${s.cas.best} 💎.`]], null,
           [{ t: off() ? 'Geräte einschalten' : 'Geräte ausschalten', fn() { s.cas.off = !s.cas.off; C.sfx('ui'); C.toast(s.cas.off ? '🎰 Casino ausgeschaltet' : '🎰 Casino eingeschaltet – viel Glück!'); C.saveGame(true); } }, { t: 'Danke', fn() { } }]); }, P.ry + 1.2); o.noRoute = 1; }
     /* Bewegung der Walzen, des Rads und der Karten */

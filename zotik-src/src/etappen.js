@@ -22,10 +22,10 @@ export function createEtappen(c) {
     const zs = [-62, -84, -106, -128];
     switch (d.k) {
       case 'chase': {
-        const P = c.makeVillager(d.look), wp = zs.map((z, i) => spot(z, i % 2 ? 13 : -13)); P.root.position.set(wp[0][0], c.hgt(wp[0][0], wp[0][1]), wp[0][1]); scene.add(P.root);
+        const P = (/Aera/.test(d.goal) ? c.makeVillager(d.look) : c.folk('', d.look)), wp = zs.map((z, i) => spot(z, i % 2 ? 13 : -13)); P.root.position.set(wp[0][0], c.hgt(wp[0][0], wp[0][1]), wp[0][1]); scene.add(P.root);
         st.run = { P, wp, i: 0, x: wp[0][0], z: wp[0][1], mv: 0 }; st.text = () => `${d.goal} (${st.run.i}/${wp.length - 1})`; break; }
       case 'escort': {
-        const P = c.makeVillager(d.look), z = -56, x = c.pathx(z) + 3; P.root.position.set(x, c.hgt(x, z), z); scene.add(P.root);   // geht den Weg entlang (nicht querfeldein), damit man immer folgen kann
+        const P = (/Aera/.test(d.goal) ? c.makeVillager(d.look) : c.folk('', d.look)), z = -56, x = c.pathx(z) + 3; P.root.position.set(x, c.hgt(x, z), z); scene.add(P.root);   // geht den Weg entlang (nicht querfeldein), damit man immer folgen kann
         st.esc = { P, x, z, sz: z, gz: -140, hp: 100, w: 0, mv: 0 }; st.text = () => `${d.goal} (Leben ${Math.max(0, Math.round(st.esc.hp))} %)`; break; }
       case 'survive': case 'sky': case 'companion': case 'memory': {
         const cnt = d.k === 'survive' ? 5 : d.k === 'memory' ? 4 : d.k === 'sky' ? 4 : 3, col = d.col || 0xffb060;

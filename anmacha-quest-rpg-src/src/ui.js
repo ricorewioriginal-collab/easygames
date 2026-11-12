@@ -13,9 +13,8 @@ const ICONS = {
   run: '<path d="M6 21h7l2-5-4-3 2-5h4M9 8 6 11M15 16l3 5"/><circle cx="15" cy="4" r="2"/>'
 };
 const svg = (k) => `<svg viewBox="0 0 24 24" class="i">${ICONS[k]}</svg>`;
+// Befehlsliste im Kampf (Reihenfolge = Rückgabewert von chooseCross)
 const CROSS = [['sword', 'Angriff'], ['staff', 'Fertigkeit'], ['flame', 'Spezial'], ['bag', 'Item'], ['shield', 'Wache'], ['run', 'Flucht']];
-// Nachbarn im Kreuzmenü (wie die Fokus-Nachbarn der Godot-Fassung): [oben, unten, links, rechts]
-const NEIGH = { 0: [1, 2, 3, 4], 1: [-1, 0, -1, -1], 2: [0, -1, -1, 5], 3: [-1, -1, -1, 0], 4: [-1, 5, 0, -1], 5: [4, -1, 2, -1] };
 
 export class UI {
   constructor(game) {
@@ -38,7 +37,7 @@ export class UI {
     const cross = $('cross');
     this.crossBtns = CROSS.map(([ic, name], i) => {
       const b = el('button', 'cb c' + i);
-      b.innerHTML = svg(ic);
+      b.innerHTML = svg(ic) + `<span>${name}</span><em></em>`;
       b.setAttribute('aria-label', name);
       b.addEventListener('pointerenter', () => { if (!b.disabled) this.crossFocus(i); });
       b.addEventListener('click', () => { if (this.choosingCross && !b.disabled) this.pickCross(i); });
@@ -94,8 +93,18 @@ export class UI {
       this.talking = true;
       box.hidden = false;
       let li = 0, full = '', shown = 0, timer = 0;
+      const nameEl = $('dlgName');
       const show = () => {
         full = String(lines[li]);
+        // „Name: Text“ → Namensschild über dem Textfeld (in der Farbe des Helden)
+        const m = /^([A-ZÄÖÜ][^:.!?]{0,34}): (.+)$/s.exec(full);
+        if (m && nameEl) {
+          full = m[2];
+          nameEl.textContent = m[1];
+          const hero = Object.values(HEROES).find(h => m[1] === h.name || m[1].endsWith(' ' + h.name));
+          nameEl.style.setProperty('--nc', hero ? hero.col : '#5a4a9a');
+          nameEl.hidden = false;
+        } else if (nameEl) nameEl.hidden = true;
         shown = 0;
         box.classList.remove('more');
         clearInterval(timer);
@@ -236,6 +245,18 @@ export class UI {
   chooseCross(disabled) {
     return new Promise((done) => {
       this.crossBtns.forEach((b, i) => { b.disabled = !!disabled[i]; });
+      // Kopf mit Held, Kosten und IP-Stand
+      const S = this.g.S, h = S.party[this.g.curHero];
+      const cross = $('cross');
+      if (h) {
+        const d = HEROES[h.id], ip = IPSKILLS[d.ip];
+        cross.style.setProperty('--hc', d.col);
+        $('crossLbl').innerHTML = `${d.name}<small>Lv ${h.lv}</small>`;
+        this.crossBtns[1].querySelector('em').textContent = `${h.sp} SP`;
+        this.crossBtns[2].querySelector('em').textContent = `${Math.min(h.ip, ip.ip)}/${ip.ip}`;
+        this.crossBtns[2].classList.toggle('ready', h.ip >= ip.ip);
+        this.crossBtns[3].querySelector('em').textContent = '';
+      }
       $('cross').hidden = false;
       this.choosingCross = { done, focus: 0 };
       this.crossFocus(0);
@@ -245,15 +266,44 @@ export class UI {
     if (!this.choosingCross) return;
     this.choosingCross.focus = i;
     this.crossBtns.forEach((b, k) => b.classList.toggle('on', k === i));
-    $('crossLbl').textContent = CROSS[i][1];
   }
+  // Befehlsliste: hoch/runter (links/rechts ebenso), gesperrte Einträge überspringen
   crossMove(dir) {
     const c = this.choosingCross;
     if (!c) return;
-    let n = NEIGH[c.focus][dir];
-    // gesperrtes Feld (Spezial ohne IP) überspringen
-    if (n >= 0 && this.crossBtns[n].disabled) { const nn = NEIGH[n][dir]; n = nn >= 0 ? nn : -1; }
-    if (n >= 0) { this.crossFocus(n); this.g.sfx?.('move'); }
+    const d = dir === 0 || dir === 2 ? -1 : 1, n = this.crossBtns.length;
+    let i = c.focus;
+    for (let k = 0; k < n; k++) { i = (i + d + n) % n; if (!this.crossBtns[i].disabled) break; }
+    if (i !== c.focus) { this.crossFocus(i); this.g.sfx?.('move'); }
+  }
+  // Zugreihenfolge (null = ausblenden) und aktiver Zug
+  turnOrder(list) {
+    const box = $('turns');
+    if (!box) return;
+    if (!list) { box.hidden = true; box.innerHTML = ''; this.turnEls = []; return; }
+    box.innerHTML = '<b>ZUG</b>';
+    this.turnEls = list.map(o => {
+      const t = el('div', 'tk' + (o.e ? ' e' : '') + (o.boss ? ' boss' : ''));
+      t.style.setProperty('--c', o.c);
+      t.title = o.n;
+      t.innerHTML = `<i>${o.n[0]}</i>`;
+      box.appendChild(t);
+      return t;
+    });
+    box.hidden = false;
+  }
+  turnActive(i) { (this.turnEls || []).forEach((t, k) => { t.classList.toggle('on', k === i); t.classList.toggle('done', k < i); }); }
+  callout(t, col) {
+    const b = $('callout');
+    if (!b) return;
+    b.textContent = t;
+    b.style.setProperty('--cc', col || '#ffd24a');
+    b.hidden = false;
+    b.classList.remove('show');
+    void b.offsetWidth;
+    b.classList.add('show');
+    clearTimeout(this._coT);
+    this._coT = setTimeout(() => { b.hidden = true; }, 1200);
   }
   pickCross(i) {
     const c = this.choosingCross;

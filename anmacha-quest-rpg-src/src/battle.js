@@ -7,6 +7,9 @@ import { addWind, makeParticles } from './shaders.js';
 import { VIS, treesFor, palette, baseTheme } from './view.js';
 
 const C = (c) => new THREE.Color(c);
+// Effekt je Technik (Fertigkeiten und Spezialtechniken)
+const SKILL_FX = { wucht: 'heavyslash', rund: 'sweep', funke: 'lightning', welle: 'wave', heilton: 'heal', chor: 'healall', doppel: 'arrows2', streu: 'arrows', schild: 'shieldbash', bollwerk: 'dome',
+  ip_andrew: 'starfall', ip_marco: 'supernova', ip_teresa: 'hymn', ip_rico: 'volley', ip_andy: 'quake' };
 const ATTACK = ['sword_attack', 'staff_attack', 'bow_attack_shoot', 'dagger_attack', 'attack', 'punch'];
 
 // Gibt GPU-Speicher frei, den die Kampfszene selbst angelegt hat (geteilte Modelle aus dem Cache bleiben erhalten)
@@ -141,6 +144,10 @@ export class Battle {
     this.t = 0;
     this.camT = 0;
     this.shakeT = 0;
+    this.hitStop = 0;
+    this.camP = null;
+    this.shotQ = null;
+    this.shotIntro();
     this.placeCam(0);
     v.placeSun(sc, new THREE.Vector3(0, 0, -1.5));
     // erste Bilder ohne Ruckler: Shader vorab übersetzen
@@ -181,18 +188,58 @@ export class Battle {
   }
   end() { this.token++; this.clear(); }
 
+  // Kamera: ruhige Totale, dazu kurze Einstellungen je Aktion (über die Schulter, Nahaufnahme, Gegnersicht, Siegerpose)
   placeCam(dt) {
     const cam = this.v.camera;
     this.camT += dt;
-    cam.position.set(Math.sin(this.camT * 0.25) * 0.5, 5.0, 9.4);
+    let p = new THREE.Vector3(Math.sin(this.camT * 0.25) * 0.5, 5.0, 9.4), l = new THREE.Vector3(0, 0.9, -0.9);
+    const sh = this.shotQ;
+    if (sh) {
+      sh.t += dt;
+      const k = Math.min(1, sh.t / sh.dur), e = k * k * (3 - 2 * k);
+      p = sh.p0.clone().lerp(sh.p1, e); l = sh.l0.clone().lerp(sh.l1, e);
+      if (sh.t >= sh.dur + (sh.hold ?? 0.35)) this.shotQ = null;
+    }
+    if (!this.camP || dt === 0) { this.camP = p.clone(); this.camL = l.clone(); }
+    const f = Math.min(1, dt * (sh ? (sh.snap ?? 7) : 3.2));
+    this.camP.lerp(p, f); this.camL.lerp(l, f);
+    cam.position.copy(this.camP);
     if (this.shakeT > 0) { this.shakeT -= dt; cam.position.x += (Math.random() - 0.5) * 0.22; cam.position.y += (Math.random() - 0.5) * 0.15; }
-    cam.lookAt(0, 0.9, -0.9);
+    cam.lookAt(this.camL);
+  }
+  // Einstellung: Kamera fährt von p0 nach p1 und blickt von l0 nach l1
+  shot(p0, l0, p1 = p0, l1 = l0, dur = 0.8, hold = 0.35, snap) { this.shotQ = { p0, l0, p1, l1, dur, hold, snap, t: 0 }; }
+  shotOver(a, tgt) {
+    if (!a) return;
+    const h = a.base, e = tgt ? tgt.base : new THREE.Vector3(0, 0, -3.4);
+    const side = h.x >= 0 ? 1 : -1;
+    const look = h.clone().lerp(e, 0.6).setY(1.0);
+    this.shot(h.clone().add(new THREE.Vector3(side * 2.4, 1.8, 3.4)), look, h.clone().add(new THREE.Vector3(side * 1.5, 1.5, 2.6)), look, 0.9, 0.3);
+  }
+  shotFace(a, after) {
+    if (!a) return;
+    const h = a.base;
+    const p0 = h.clone().add(new THREE.Vector3(1.6, 1.3, -2.8)), p1 = h.clone().add(new THREE.Vector3(-0.8, 1.2, -2.4));
+    this.shot(p0, h.clone().setY(a.h * 0.7), p1, h.clone().setY(a.h * 0.75), after ?? 0.8, 0.2);
+  }
+  shotEnemy(a, tgt) {
+    if (!a) return;
+    const e = a.base, h = tgt ? tgt.base : new THREE.Vector3(0, 0, 0);
+    const look = h.clone().lerp(e, 0.35).setY(0.9);
+    this.shot(e.clone().add(new THREE.Vector3(-1.8, 2.6 + a.h * 0.4, -4.2)), look, e.clone().add(new THREE.Vector3(-1.2, 2.2 + a.h * 0.3, -3.2)), look, 0.9, 0.25);
+  }
+  shotIntro() {
+    this.shot(new THREE.Vector3(-7, 1.6, -0.5), new THREE.Vector3(0, 1.2, -3.4), new THREE.Vector3(3.5, 2.6, 4.5), new THREE.Vector3(0, 1.0, -2.6), 1.6, 0.1, 9);
+  }
+  shotVictory() {
+    this.shot(new THREE.Vector3(-3.5, 1.4, -4.2), new THREE.Vector3(0, 1.0, 0), new THREE.Vector3(3.2, 1.6, -4.0), new THREE.Vector3(0, 1.1, 0), 3.2, 0.6, 6);
   }
   // Ausfallschritt: Figur bewegt sich kurz in Richtung dir
   lunge(a, dir, dist, dur) { a.lunge = { t: 0, dur, dir: dir.clone().setY(0).normalize(), dist }; }
   hero(i, k, target) {
     if (i === -1 && k === 'victory') {
       for (const a of this.heroes) if (a.state !== 'once' || a.dead !== true) { if (!a.dead) a.hop = { t: 0 }; }
+      this.shotVictory();
       return;
     }
     const a = this.heroes[i];
@@ -201,6 +248,7 @@ export class Battle {
     switch (k) {
       case 'attack': {
         A.playOnce(a, ATTACK);
+        this.shotOver(a, tgt);
         const melee = a.id === 'andrew' || a.id === 'andy';
         if (tgt) this.lunge(a, tgt.base.clone().sub(a.base), melee ? 2.2 : 0.5, 0.6);
         if (a.id === 'rico' && tgt) this.bolt(a, tgt, '#ffd27a', 0.22);
@@ -208,6 +256,8 @@ export class Battle {
       }
       case 'cast':
         A.playOnce(a, ['spell1', 'staff_attack', 'attack', 'punch']);
+        this.shotFace(a);
+        this.v.fx.ring(a.root.position.clone().add(new THREE.Vector3(0, 0.05, 0)), a.id === 'teresa' ? '#9affc0' : '#c8a0ff', 0.3, 1.4, 0.7, this.scene);
         this.v.fx.burst(a.root.position.clone().add(new THREE.Vector3(0, 1.0, 0)), a.id === 'teresa' ? '#9affc0' : '#c8a0ff', 24, 1.4, 0.7, 1.5, 0.12, this.scene);
         if (tgt) this.bolt(a, tgt, '#c890ff', 0.3);
         break;
@@ -240,6 +290,7 @@ export class Battle {
     if (k === 'attack') {
       A.playOnce(a, ['bite_front', 'attack', 'dragon_attack', 'skeleton_attack', 'slime_attack']);
       const h = target === -2 ? this.cap : (target >= 0 ? this.heroes[target] : null);
+      this.shotEnemy(a, h);
       this.lunge(a, h ? h.base.clone().sub(a.base) : new THREE.Vector3(0, 0, 1), 1.4, 0.55);
     } else if (k === 'hurt') {
       A.playOnce(a, ['hitrecieve', 'hit']);
@@ -252,6 +303,88 @@ export class Battle {
     if (!a) return;
     if (!A.playOnce(a, 'death', '')) a.noDeathAnim = true;
     a.down = 0.0001;
+    const mid = a.root.position.clone().add(new THREE.Vector3(0, a.h * 0.5, 0));
+    if (a.h > 2.2) {
+      // Boss: Kette aus Explosionen, Lichtsäule, Stillstand
+      const fx = this.v.fx, sc = this.scene;
+      this.shot(a.base.clone().add(new THREE.Vector3(2.5, 2.0, 5.0)), mid, a.base.clone().add(new THREE.Vector3(-2.0, 1.6, 4.0)), mid, 2.0, 0.6);
+      for (let k = 0; k < 6; k++) fx.later(0.15 + k * 0.22, () => { const p = mid.clone().add(new THREE.Vector3((Math.random() - 0.5) * a.h * 0.6, (Math.random() - 0.3) * a.h * 0.5, 0.3)); fx.burst(p, ['#ffd24a', '#ffffff', '#ff7a5a'][k % 3], 40, 3.5, 0.7, -2, 0.13, sc); fx.flash(p, '#ffc070', 40, 0.3, sc); this.shakeT = 0.25; }, sc);
+      fx.later(1.5, () => { fx.pillar(a.base.clone(), '#fff2c0', 1.2, 14, 1.4, sc); fx.ring(a.base.clone().setY(0.05), '#ffe8a0', 0.5, 9, 1.1, sc); this.v.flashScreen?.('#fff4d0', 0.8); this.hitStop = 0.25; }, sc);
+    } else this.v.fx.ring(a.base.clone().setY(0.05), '#c8d0ff', 0.2, 2.2, 0.5, this.scene);
+  }
+  // Technik-Effekte: je Fertigkeit eine eigene, gut sichtbare Inszenierung (tg = Indizes der Ziele, -1 = Gruppe)
+  skill(i, id, tg) {
+    const fx = this.v.fx, sc = this.scene, a = this.heroes[i];
+    if (!a) return;
+    const V = (x, y, z) => new THREE.Vector3(x, y, z);
+    const ens = (tg && tg.length ? tg.map(t => this.enemies[t]) : this.enemies.filter(e => e && !e.down)).filter(Boolean);
+    const mid = (e) => e.root.position.clone().add(V(0, e.h * 0.55, 0));
+    const feet = (e) => e.base.clone().setY(0.06);
+    const hand = a.root.position.clone().add(V(0, 1.1, -0.3));
+    const center = this.enemies.length ? this.enemies.reduce((c, e) => c.add(e.base), V(0, 0, 0)).multiplyScalar(1 / this.enemies.length) : V(0, 0, -3.4);
+    switch (SKILL_FX[id] || 'hit') {
+      case 'heavyslash':
+        for (const e of ens) { fx.later(0.25, () => { fx.slash(mid(e), '#ffd27a', 2.2 + e.h * 0.3, sc); fx.ring(feet(e), '#ffb040', 0.3, 2.8, 0.45, sc); this.hitStop = 0.12; this.v.flashScreen?.('#ffe0a0', 0.25); }, sc); }
+        break;
+      case 'sweep':
+        fx.later(0.2, () => { fx.ring(center.clone().setY(0.6), '#ffe0a0', 0.5, 6.5, 0.45, sc); for (const e of ens) fx.slash(mid(e), '#ffffff', 1.8, sc); }, sc);
+        break;
+      case 'lightning':
+        this.shot(V(-5.5, 3.0, 4.0), center.clone().setY(1.6), V(-4.5, 2.4, 3.2), center.clone().setY(1.2), 0.7, 0.4);
+        for (const e of ens) fx.later(0.3, () => { fx.lightning(mid(e), '#a8d8ff', sc); fx.burst(mid(e), '#cfe8ff', 30, 4, 0.5, -3, 0.1, sc); this.v.flashScreen?.('#d8ecff', 0.35); this.shakeT = 0.2; }, sc);
+        break;
+      case 'wave':
+        fx.later(0.25, () => {
+          fx.ring(a.base.clone().setY(0.08), '#b48aff', 0.4, 9, 0.9, sc);
+          fx.ring(a.base.clone().setY(0.6), '#e0c8ff', 0.4, 8, 0.8, sc, true);
+          for (const e of ens) fx.later(0.35, () => { fx.pillar(feet(e), '#b48aff', 0.7, 3.5, 0.7, sc); fx.burst(mid(e), '#d8b8ff', 36, 3, 0.7, 0.5, 0.12, sc); }, sc);
+        }, sc);
+        break;
+      case 'heal': case 'healall': case 'hymn': {
+        const who = SKILL_FX[id] === 'heal' ? [this.heroes[tg && tg[0] >= 0 ? tg[0] : i]] : this.heroes;
+        if (SKILL_FX[id] === 'hymn') { this.shot(V(0, 4.5, 6.5), V(0, 0.5, 0), V(0, 3.2, 5.0), V(0, 1.0, 0), 1.4, 0.4); fx.ring(V(0, 0.06, 0.2), '#fff2a0', 0.5, 6, 1.2, sc); this.v.flashScreen?.('#fff8d8', 0.5); }
+        for (const h of who.filter(Boolean)) fx.later(0.2, () => { fx.pillar(h.base.clone(), '#9affc0', 0.55, 6, 1.2, sc); fx.burst(h.base.clone().setY(0.3), '#c8ffd8', 30, 1.0, 1.4, 2.5, 0.09, sc); }, sc);
+        break;
+      }
+      case 'arrows': case 'arrows2': case 'volley': {
+        const n = SKILL_FX[id] === 'volley' ? 10 : (SKILL_FX[id] === 'arrows' ? 6 : 2);
+        if (SKILL_FX[id] === 'volley') this.shot(V(5.2, 2.2, 4.8), center.clone().setY(1.4), V(4.4, 1.8, 3.9), center.clone().setY(1.2), 1.2, 0.4);
+        for (let k = 0; k < n; k++) {
+          const e = ens[k % ens.length];
+          if (!e) break;
+          fx.later(0.15 + k * 0.08, () => fx.shot(hand.clone(), mid(e).add(V((Math.random() - 0.5) * 0.6, (Math.random() - 0.5) * 0.4, 0)), '#ffd27a', 0.28, sc, 0.4 + Math.random() * 0.5, () => fx.burst(mid(e), '#ffe8a0', 10, 2.4, 0.3, -4, 0.07, sc)), sc);
+        }
+        break;
+      }
+      case 'shieldbash':
+        for (const e of ens) fx.later(0.25, () => { fx.ring(mid(e), '#8ad0ff', 0.2, 2.2, 0.4, sc, false); fx.flash(mid(e), '#8ad0ff', 30, 0.3, sc); this.shakeT = 0.2; }, sc);
+        break;
+      case 'dome':
+        fx.bubble(V(0, 0.4, 0.3), '#6ac8ff', 3.4, 1.4, sc);
+        fx.ring(V(0, 0.06, 0.3), '#8ad8ff', 0.5, 4, 0.9, sc);
+        break;
+      case 'starfall':
+        this.shot(V(-5.0, 1.2, 4.6), center.clone().setY(3.5), V(-4.0, 1.6, 3.8), center.clone().setY(1.2), 1.3, 0.5);
+        for (const e of ens) for (let k = 0; k < 5; k++) fx.later(0.2 + k * 0.12, () => {
+          const to = mid(e).add(V((Math.random() - 0.5) * 0.8, 0, (Math.random() - 0.5) * 0.4));
+          fx.shot(to.clone().add(V(2 + Math.random(), 8, -2)), to, '#ffe8a0', 0.3, sc, 0, () => { fx.burst(to, '#ffd24a', 24, 3.5, 0.6, -3, 0.12, sc); fx.flash(to, '#ffd070', 35, 0.25, sc); this.shakeT = 0.2; });
+        }, sc);
+        fx.later(1.0, () => { this.hitStop = 0.18; this.v.flashScreen?.('#fff0c0', 0.6); }, sc);
+        break;
+      case 'supernova':
+        this.shot(V(0, 2.0, 6.5), center.clone().setY(1.5), V(0, 3.5, 8.5), center.clone().setY(1.0), 1.6, 0.4);
+        fx.orb(center.clone().setY(1.6), '#c8a0ff', 0.2, 1.2, 0.6, sc);
+        fx.later(0.55, () => { fx.orb(center.clone().setY(1.6), '#e8c8ff', 0.6, 4.6, 0.9, sc); fx.ring(center.clone().setY(0.08), '#c890ff', 0.5, 12, 1.0, sc); fx.burst(center.clone().setY(1.6), '#e8d0ff', 90, 7, 1.0, 0, 0.14, sc); this.v.flashScreen?.('#f0e0ff', 0.4); this.shakeT = 0.5; this.hitStop = 0.2; }, sc);
+        break;
+      case 'quake':
+        this.shot(V(-6.2, 1.2, 4.8), center.clone().setY(1.0), V(-5.2, 1.4, 4.0), center.clone().setY(0.8), 1.0, 0.4);
+        fx.later(0.35, () => {
+          fx.ring(a.base.clone().setY(0.06), '#ffb070', 0.5, 12, 0.9, sc);
+          for (const e of ens) { fx.burst(feet(e).setY(0.3), '#b89070', 50, 4.5, 1.0, -9, 0.14, sc); fx.pillar(feet(e), '#ff9a50', 0.9, 3, 0.6, sc); }
+          this.shakeT = 0.6; this.hitStop = 0.15; this.v.flashScreen?.('#ffd0a0', 0.4);
+        }, sc);
+        break;
+    }
   }
   // Leuchtendes Geschoss vom Helden zum Gegner
   bolt(from, to, color, delay) {
@@ -288,6 +421,7 @@ export class Battle {
         fx.burst(mid, '#ffe8a0', 18, 3.2, 0.45, -4, 0.09, sc);
         break;
       case 'bigslash':
+        this.hitStop = 0.12;
         fx.slash(mid, '#ffc840', 2.4 + a.h * 0.3, sc);
         fx.ring(feet, '#ffb020', 0.3, 3.5, 0.5, sc);
         fx.burst(mid, '#ffd24a', 40, 4.5, 0.7, -4, 0.12, sc);
@@ -306,15 +440,22 @@ export class Battle {
       case 'guard': fx.bubble(mid, '#6ac8ff', 0.95, 0.8, sc); break;
       case 'hit': fx.burst(mid, '#ff6a5a', 14, 2.4, 0.4, -4, 0.08, sc); break;
       case 'heavy':
+        this.hitStop = 0.1;
         fx.burst(mid, '#ff4a3a', 28, 3.4, 0.5, -4, 0.11, sc);
         this.shakeT = 0.3;
         break;
       case 'spec':
+        fx.pillar(feet, '#ff3050', 1.4, 9, 1.0, sc);
+        this.v.flashScreen?.('#ff6070', 0.4);
         fx.ring(feet, '#ff4a6a', 0.5, 11, 0.8, sc);
         fx.flash(mid, '#ff3050', 60, 0.6, sc);
         this.shakeT = 0.45;
         break;
       case 'special':
+        this.shotFace(a, 1.0);
+        fx.pillar(feet, '#ffd24a', 0.75, 5, 1.0, sc, 0.3);
+        fx.burst(feet.clone().add(new THREE.Vector3(0, 0.2, 0)), '#ffe8a0', 50, 1.2, 1.2, 3.5, 0.1, sc);
+        this.v.flashScreen?.('#ffe8a0', 0.35);
         fx.ring(feet, '#ffd24a', 0.2, 1.6, 0.6, sc);
         fx.burst(feet.clone().add(new THREE.Vector3(0, 0.4, 0)), '#ffd24a', 40, 1.6, 0.9, 2.5, 0.12, sc);
         fx.flash(mid, '#ffc040', 30, 0.6, sc);
@@ -323,6 +464,8 @@ export class Battle {
   }
   update(dt) {
     this.t += dt;
+    const rdt = dt;
+    if (this.hitStop > 0) { this.hitStop -= dt; dt *= 0.08; }
     const all = [...this.enemies, ...this.heroes, ...(this.cap ? [this.cap] : [])];
     for (const a of all) {
       a.mixer?.update(dt);
@@ -352,7 +495,7 @@ export class Battle {
       }
     }
     if (this.parts) { this.parts.material.uniforms.t.value = this.t; this.parts.material.uniforms.scale.value = this.v.H * 0.9; }
-    this.placeCam(dt);
+    this.placeCam(rdt);
     this.v.fx.update(dt);
   }
 }

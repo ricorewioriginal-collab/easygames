@@ -160,35 +160,35 @@ for (let si = 0; si < 5; si++) {
   S.gear = si;
   S.flags = {};
   game.mode = M.WORLD;
-  game.loadMap(mid, { x: 2, y: 14 });
+  game.loadMap(mid, { x: 4, y: 28 });
   for (let k = 0; k < 3; k++) {
     const pl = MAPS[mid].enc;
     const r = await game.runBattle([pl[0], pl[1], pl[2]], MAPS[mid].theme);
     console.log(`Auto-Kampf ${mid}: ${r} Lv ${S.party[0].lv} LP ${S.party[0].hp}`);
-    if (r === 'lose') { await game.gameOver(); game.loadMap(mid, { x: 2, y: 14 }); }
+    if (r === 'lose') { await game.gameOver(); game.loadMap(mid, { x: 4, y: 28 }); }
   }
   for (const o of S.objs.slice()) if (o.t === 'chest' || o.t === 'gate') { if (o.t === 'gate') S.flags[o.d.key] = true; await game.interact(o); }
   L.spawnRoamers(S, game.rng);
   if (!S.roamers.length) fail('keine Monster', mid);
   await game.startRoamerFight(S.roamers[0]);
-  if (S.mapId !== mid) game.loadMap(mid, { x: 2, y: 14 });   // verloren: zurück ins Reich
+  if (S.mapId !== mid) game.loadMap(mid, { x: 4, y: 28 });   // verloren: zurück ins Reich
   for (const h of S.party) { h.lv += 14; h.hp = L.mhp(S, h); h.sp = L.msp(h); }
   for (const o of S.objs.slice()) if (o.t === 'boss') await game.interact(o);
   console.log(`Auto ${mid} Boss-Flag: ${!!S.flags['boss_' + mid]} Schlüssel: ${!!S.flags[mid + '_key']}`);
   if (!S.flags['boss_' + mid] || !S.flags[mid + '_key'] || S.objs.some(o => o.t === 'chest' || o.t === 'gate')) fail('Ablauf', mid);
 }
 if (!S.flags.boss_rauschen) fail('Ende nicht erreicht');
-game.loadMap('welt', { x: 40, y: 44 });
+game.loadMap('welt', { x: 60, y: 66 });
 console.log('Monster Weltkarte:', S.roamers.length);
 await game.startRoamerFight(S.roamers[0]);
 for (const n of MAPS.hub.npcs) await game.talkNpc(n);
 // Portale: versiegelter Zugang schiebt zurück, offener lädt die Karte
 S.flags = {};
-game.loadMap('welt', { x: 66, y: 38 });
+game.loadMap('welt', { x: 99, y: 57 });
 S.face = { x: 0, y: -1 };
-S.gp = { x: 66, y: 36 };
+S.gp = { x: 99, y: 54 };
 await game.usePortal(MAPS.welt.portals[2]);
-if (S.mapId !== 'welt' || S.gp.y !== 37) fail('Siegel', S.mapId, S.gp);
+if (S.mapId !== 'welt' || S.gp.y !== 55) fail('Siegel', S.mapId, S.gp);
 await game.usePortal(MAPS.welt.portals[1]);
 if (S.mapId !== 'rap') fail('Portal');
 // Mitstreiter
@@ -243,7 +243,7 @@ if (S.gp.y !== 11 || S.moving) fail('Laufen', S.gp, S.moving);
   const old = JSON.parse(store.get(SAVE_KEY));
   store.set(SAVE_KEY, JSON.stringify({ ...old, v: 4, map: 'welt', gp: { x: 20, y: 22 } }));
   const g3 = new Game(ui, {}, { rng: L.makeRng(9), store });
-  if (!g3.loadGame() || g3.S.mapId !== 'welt' || g3.S.gp.x !== 40 || g3.S.gp.y !== 44) fail('Spielstand v4 Welt', g3.S.gp);
+  if (!g3.loadGame() || g3.S.mapId !== 'welt' || g3.S.gp.x !== 60 || g3.S.gp.y !== 66) fail('Spielstand v4 Welt', g3.S.gp);
   game.saveGame();
 }
 
@@ -254,7 +254,7 @@ if (S.gp.y !== 11 || S.moving) fail('Laufen', S.gp, S.moving);
   S.party = [L.newHero(S, 'andrew', 10), L.newHero(S, 'marco', 10)];
   S.caps = { own: {}, active: null };
   game.mode = M.WORLD;
-  game.loadMap('rap', { x: 2, y: 14 });
+  game.loadMap('rap', { x: 4, y: 28 });
   const capChest = S.objs.find(o => o.t === 'chest' && o.d.kind === 'capsule');
   if (!capChest) fail('Kapsel-Truhe fehlt');
   else await game.interact(capChest);
@@ -281,14 +281,14 @@ if (S.gp.y !== 11 || S.moving) fail('Laufen', S.gp, S.moving);
   if (cap.form !== 1 || L.cname(cap) !== 'Glutgeist' || S.inv.frucht !== 0) fail('Entwicklung', cap.form, L.cname(cap));
   // Glutbombe im Kampf
   S.inv = { bombe: 1 };
-  game.loadMap('rap', { x: 2, y: 14 });
+  game.loadMap('rap', { x: 4, y: 28 });
   S.enemies = [L.makeEnemy(S, 'beatbandit')];
   const hp0 = S.enemies[0].hp;
   await game.heroAct({ type: 'item', h: S.party[0], i: 'bombe', t: null }, []);
   if (S.enemies[0].hp >= hp0 || S.inv.bombe !== 0) fail('Glutbombe');
   S.enemies = [];
   // Lindmark: erreichbar über die Weltkarte, Gasthaus heilt und kostet
-  game.loadMap('welt', { x: 72, y: 26 });
+  game.loadMap('welt', { x: 108, y: 39 });
   const lp = MAPS.welt.portals.find(p => p.to === 'lind');
   await game.usePortal(lp);
   if (S.mapId !== 'lind') fail('Lindmark');
@@ -383,7 +383,7 @@ if (S.gp.y !== 11 || S.moving) fail('Laufen', S.gp, S.moving);
     const m = L.genDeep(f, seed * 977);
     S0.map = m; S0.mw = m.rows[0].length; S0.mh = m.rows.length; S0.flags = {};
     if (m.rows.some(r => r.length !== S0.mw)) fail('Tiefe Breite', f, seed);
-    const seen = L.reachable(S0, { x: 2, y: 14 });
+    const seen = L.reachable(S0, { x: 4, y: 28 });
     const near = (t) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => seen.has(L.key({ x: t.x + dx, y: t.y + dy })));
     for (const t of [...m.portals, ...m.chests]) if (!near(t)) fail('Tiefe nicht erreichbar', f, seed, t.x, t.y);
     if (!!DEEP_BOSS[f] !== !!m.boss.id) fail('Tiefe Wächter', f);

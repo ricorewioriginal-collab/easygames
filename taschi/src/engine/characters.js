@@ -81,8 +81,49 @@ function trainerFor(role, name) {
 }
 
 // Appearance generated from a role and a name (deterministic variety).
+// Stadtbewohner und Story-Figuren im selben KayKit-Stil, mit Kleidung je Rolle statt Trainer-Ausrüstung
+const KK_PLAIN = { cap: null, backpack: null, belt: false };
+function femOf(name, h) {
+  const first = (name || '').split(' ')[0];
+  if (/(in|Oma|Frau|Tante|Schwester)$/.test(first) || /\b(Oma|Frau|Tante|Schwester)\b/.test(name)) return true;
+  if (/\b(Herr|Opa|Onkel|Bruder)\b/.test(name)) return false;
+  return h % 2 === 0;
+}
+function kkModel(fem, h, pool = null) {
+  const list = (pool || TRAINER_MODELS.filter(m => m[2] === (fem ? 'w' : 'm')).map(m => m[0]));
+  return list[h % list.length];
+}
+export function residentLook(role, name = '') {
+  const h = hashString('kkr:' + role + ':' + name), rng = createRng('kkr:' + role + ':' + name), fem = femOf(name, h);
+  const base = (model, extra) => trainerLook(model, name + ':' + role, { ...KK_PLAIN, ...extra });
+  const pick = (a) => a[rng.int(0, a.length - 1)];
+  switch (role) {
+    case 'kind': return base(kkModel(fem, h, ['Knight', 'Rogue', 'Ranger', 'Mage']), { height: 1.12, backpack: rng.next() < 0.5 ? pick([0xf09a3a, 0x3a7fd0, 0xe86aa0]) : null });
+    case 'forscher': return base(kkModel(fem, h, fem ? ['Mage', 'Rogue'] : ['Knight', 'Ranger']), { outfit: 0xeef0ee, accent: 0xeef0ee, glasses: rng.next() < 0.7 });
+    case 'professor': return base(kkModel(fem, h, fem ? ['Mage'] : ['Ranger', 'Barbarian']), { outfit: 0xeef0ee, accent: 0xeef0ee, glasses: true, height: 1.8 });
+    case 'haendler': return base(kkModel(fem, h, fem ? ['Rogue', 'Mage'] : ['Barbarian', 'Knight']), { apron: pick([0x7a5a3a, 0x3a7fd0, 0x2fa07a]) });
+    case 'clerk': return base(kkModel(fem, h, fem ? ['Rogue', 'Mage'] : ['Knight', 'Ranger']), { outfit: 0x3a7fd0, accent: 0xf2efe6, apron: 0x2f6ab0 });
+    case 'nurse': return base(fem ? 'Rogue' : 'Knight', { outfit: 0xf4a6b8, accent: 0xffffff, nursecap: 0xe86aa0 });
+    case 'reisender': return base(kkModel(fem, h, fem ? ['Rogue_Hooded', 'Rogue'] : ['Ranger', 'Barbarian']), { outfit: pick([0x8a6a4a, 0x6a7a3a, 0x5a6a7a]), cape: true, backpack: 0x7a5a3a });
+    case 'handwerker': return base(kkModel(fem, h, fem ? ['Rogue', 'Ranger'] : ['Barbarian', 'Ranger']), { outfit: pick([0x3a5a8a, 0x8a6a4a, 0x6a5a4a]), apron: 0x5a4030, cap: rng.next() < 0.4 ? 0x6a5a4a : null });
+    case 'grunt': return base('Rogue_Hooded', { outfit: 0x5e3a7c, accent: 0xf0974f, hood: true });
+    case 'varga': return trainerLook('Mage', 'varga', { ...KK_PLAIN, outfit: 0x4a2a6a, accent: 0xf0974f, skin: 0, cape: true, height: 1.84 });
+    case 'selma': return trainerLook('Rogue', 'selma', { ...KK_PLAIN, outfit: 0x8a4fa3, accent: 0xf0974f, skin: 2, cape: true });
+    case 'brix': return trainerLook('Ranger', 'brix', { ...KK_PLAIN, outfit: 0x5e3a7c, accent: 0xf0974f, skin: 1, cap: 0xf0974f, backpack: 0x5a5d66 });
+    case 'twin': return trainerLook(name.includes('Kora') ? 'Rogue' : 'Knight', 'twin:' + name, { ...KK_PLAIN, outfit: 0x5e3a7c, accent: 0xf0974f, skin: 1, cap: 0xf0974f, height: 1.6 });
+    case 'lyra': return trainerLook('Mage', 'lyra', { ...KK_PLAIN, outfit: 0x3c5fa8, accent: 0xffd27a, skin: 0, cape: true });
+    case 'familie': return base(kkModel(fem, h), { height: rng.next() < 0.3 ? 1.66 : 1.76 });
+    default: return base(kkModel(fem, h), {});
+  }
+}
+
 export function lookForRole(role, name = '', regionPal = null) {
   if (role === 'trainer' || role === 'leader' || role === 'champion') return trainerFor(role, name);
+  return residentLook(role, name);
+}
+
+// Klassische Figur einer Rolle (prozedural, z. B. für den Editor-Stil „Klassisch“)
+export function classicLookForRole(role, name = '') {
   const rng = createRng('look:' + name + ':' + role);
   const hair = HAIR_STYLES[rng.int(0, HAIR_STYLES.length - 1)];
   const base = { skin: rng.int(0, 4), hair, hairColor: rng.int(0, 7), topColor: rng.int(0, 7), bottomColor: [0x34465f, 0x4a3a2a, 0x2f3e55, 0x5a5a62, 0x6a4a3a][rng.int(0, 4)], body: rng.pick(['adult', 'adult', 'slim', 'stocky']) };
@@ -126,7 +167,11 @@ function partMesh(builder, outline = false, mat = characterMaterial()) {
 }
 
 export function createCharacter(lookIn, { outline = false } = {}) {
-  if (lookIn && lookIn.kk) return new KKCharacter(lookIn.kk, { outline, look: lookIn, height: lookIn.height || 1.74 });
+  if (lookIn && lookIn.kk) {
+    // Ersatz, falls das KayKit-Modell nicht lädt: klassische Figur in ähnlichen Farben
+    const fallback = () => createCharacter({ skin: Math.min(4, lookIn.skin | 0), topColor: lookIn.outfit ?? 0x3a7fd0, accent: lookIn.accent, backpack: lookIn.backpack ?? null, body: (lookIn.height || 1.74) < 1.3 ? 'child' : 'adult' }, { outline });
+    return new KKCharacter(lookIn.kk, { outline, look: lookIn, height: lookIn.height || 1.74, fallback });
+  }
   if (lookIn && lookIn.zotik) return createZotik(outline);
   const L = resolveLook(lookIn);
   const P = BODY[L.body] || BODY.adult;
