@@ -31,7 +31,9 @@ export function createBattle(o) {
     sides: [mkSide(o.player, true), mkSide(o.foe, false)],
     bag: o.player.bag || {}, vol: {}, participants: {}, runAttempts: 0,
     pendingEvolutions: [], learnRequests: [], night: !!o.night, weather: o.weather || null, star: [null, null], starUnlocked: !!o.starUnlocked, foeStar: !!o.foe.star, expShare: o.expShare ?? true,
-    needReplace: [], fainted: new Set(), dark: !!o.dark
+    needReplace: [], fainted: new Set(), dark: !!o.dark,
+    // Online-Kampf: die Gegenseite ist ein Mensch (eigene Wahl, eigener Ersatz, eigene Sternstufe), keine EP
+    pvp: !!o.pvp, foeReplace: [], noXp: !!o.noXp || !!o.pvp
   };
   for (const side of b.sides) for (const i of side.active) initVol(b, side.team[i]);
   markParticipants(b);
@@ -84,7 +86,7 @@ export function targetsFor(b, side) {
 // ---------------------------------------------------------------------------
 // Turn resolution
 // ---------------------------------------------------------------------------
-export function runTurn(b, playerChoices) {
+export function runTurn(b, playerChoices, foeChoices = null) {
   if (b.phase !== 'choose') throw new Error('Battle not awaiting choices: ' + b.phase);
   const ev = [];
   b.turnNo++;
@@ -94,11 +96,11 @@ export function runTurn(b, playerChoices) {
     actions.push({ side: 0, slot, uid: m.uid, ...c });
   }
   for (const { slot, m } of activeList(b, 1)) {
-    const c = chooseAction(b, 1, slot, b.rng);
+    const c = (foeChoices && foeChoices.find(x => x.slot === slot)) || (b.pvp ? { type: 'move', move: m.moves.find(x => x.pp > 0)?.id || 'verzweiflung', target: targetsFor(b, 1)[0] } : chooseAction(b, 1, slot, b.rng));
     actions.push({ side: 1, slot, uid: m.uid, ...c });
   }
   // Sternstufe: once per battle a Taschi shines up – +1 Angriff/Verteidigung/Initiative and 20 % stronger attacks
-  for (const a of actions) if (a.side === 0 && a.star && a.type === 'move' && b.starUnlocked && b.star[0] === null) applyStar(b, 0, findByUid(b, a.uid), ev);
+  for (const a of actions) if (a.star && a.type === 'move' && (a.side === 0 ? b.starUnlocked : b.pvp) && b.star[a.side] === null) applyStar(b, a.side, findByUid(b, a.uid), ev);
   if (b.foeStar && b.star[1] === null) for (const { m } of activeList(b, 1)) if (b.sides[1].team.filter(x => x.hp > 0).length === 1) { applyStar(b, 1, m, ev); break; }
   const prio = (a) => a.type === 'run' ? 7 : a.type === 'switch' ? 6 : a.type === 'item' ? 5 : (MOVES[a.move]?.priority || 0);
   for (const a of actions) {
@@ -428,7 +430,7 @@ function checkFaints(b, ev) {
         b.fainted.add(m.uid);
         m.status = null;
         ev.push({ t: 'faint', side: s, slot, uid: m.uid, text: (s === 1 && !side.trainer ? 'Das wilde ' : '') + nameOf(m) + ' ist erschöpft!' });
-        if (s === 1) awardXpFor(b, m, ev, 1);
+        if (s === 1 && !b.noXp) awardXpFor(b, m, ev, 1);
       }
     });
   }
@@ -464,8 +466,10 @@ function awardXpFor(b, foe, ev, factor) {
 function afterTurnReplacements(b, ev) {
   // foe replaces fainted actives immediately
   const foe = b.sides[1];
+  b.foeReplace = [];
   foe.active.forEach((i, slot) => {
     if (i === null || foe.team[i].hp > 0) return;
+    if (b.pvp) { if (foe.team.some((m, idx) => m.hp > 0 && !foe.active.includes(idx))) b.foeReplace.push(slot); else foe.active[slot] = null; return; }
     const r = chooseReplacement(b, 1, b.rng);
     if (r !== null && r !== undefined) doSwitch(b, 1, slot, r, ev);
     else foe.active[slot] = null;
@@ -477,7 +481,7 @@ function afterTurnReplacements(b, ev) {
     const free = me.team.some((m, idx) => m.hp > 0 && !me.active.includes(idx));
     if (free) b.needReplace.push(slot); else me.active[slot] = null;
   });
-  if (b.needReplace.length) { b.phase = 'replace'; ev.push({ t: 'needReplace', slots: b.needReplace.slice() }); }
+  if (b.needReplace.length || b.foeReplace.length) { b.phase = 'replace'; ev.push({ t: 'needReplace', slots: b.needReplace.slice(), foe: b.foeReplace.slice() }); }
 }
 
 // Player picks a replacement for a fainted active monster.
@@ -486,7 +490,16 @@ export function replace(b, slot, teamIndex) {
   const ev = [];
   if (!doSwitch(b, 0, slot, teamIndex, ev)) return { ok: false, ev };
   b.needReplace = b.needReplace.filter(s => s !== slot);
-  if (!b.needReplace.length) b.phase = 'choose';
+  if (!b.needReplace.length && !b.foeReplace.length) b.phase = 'choose';
+  return { ok: true, ev };
+}
+// Online-Kampf: die Gegenseite wählt ihren Ersatz selbst.
+export function replaceFoe(b, slot, teamIndex) {
+  if (b.phase !== 'replace' || !b.foeReplace.includes(slot)) throw new Error('No foe replacement pending');
+  const ev = [];
+  if (!doSwitch(b, 1, slot, teamIndex, ev)) return { ok: false, ev };
+  b.foeReplace = b.foeReplace.filter(s => s !== slot);
+  if (!b.needReplace.length && !b.foeReplace.length) b.phase = 'choose';
   return { ok: true, ev };
 }
 

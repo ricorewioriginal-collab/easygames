@@ -1,14 +1,18 @@
 import * as THREE from 'three';
-import { PILLAR_ANGLES, type EchoState } from '@shared/minigames/games/echomuster';
+import { HEARTS, PILLAR_SCREEN, type EchoState } from '@shared/minigames/games/echomuster';
 import { glow, textSprite, toon } from '../../render/materials';
 import type { MiniGameViewFactory } from '../viewTypes';
+import { makeMe, makeRivals, updateRivals } from './rivals';
 
 const COLORS = [0xff4d6d, 0x4dabff, 0x3ddc84, 0xffd23f, 0xb26bff, 0xff8a3d];
 const SOUNDS = ['beep', 'coin', 'jump', 'tick', 'good', 'whoosh'];
-const RX = 3.7;
-const RZ = 2.9;
+/** Höhe der Kristalle (auf diese Ebene werden die Bildschirmpositionen der Säulen projiziert) */
+const CRYSTAL_Y = 2.1;
 
-/** Kristallhain: Sechs Kristallsäulen im Kreis, in der Mitte ein neugieriger Echo-Geist, der der Folge mit den Augen folgt. */
+/**
+ * Kristallhain: Sechs Kristallsäulen im Kreis, in der Mitte die eigene Figur, die der Folge mit dem Blick folgt.
+ * Die Mitspieler stehen am Rand der Plattform, über ihnen ihre aktuelle Länge und Herzen.
+ */
 export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
   const { root, camera } = ctx;
   ctx.scene.background = new THREE.Color(0x1b1148);
@@ -27,7 +31,7 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
   root.add(rune);
   const rune2 = new THREE.Mesh(new THREE.TorusGeometry(1.7, 0.05, 6, 40), glow(0x8f7bff, 0.5));
   rune2.rotation.x = Math.PI / 2;
-  rune2.position.y = 0.08;
+  rune2.position.set(0, 0.08, -0.3);
   root.add(rune2);
 
   // Säulen
@@ -45,9 +49,9 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
   const pillars: Pillar[] = [];
   const crystalGeo = new THREE.OctahedronGeometry(0.62, 0);
   for (let i = 0; i < 6; i++) {
-    const a = ((PILLAR_ANGLES[i] as number) * Math.PI) / 180;
-    const x = Math.cos(a) * RX;
-    const z = -Math.sin(a) * RZ;
+    // vorläufig; placeCamera() stellt die Säulen genau an ihre Bildschirmposition
+    const x = (PILLAR_SCREEN[i] as readonly [number, number])[0] * 6;
+    const z = -(PILLAR_SCREEN[i] as readonly [number, number])[1] * 8;
     const g = new THREE.Group();
     g.position.set(x, 0, z);
     const base = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 1.15, 0.5, 6), toon(0x2a2060));
@@ -75,7 +79,7 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
     if (i >= 4) {
       label = textSprite(i === 4 ? 'B' : 'A', { color: '#ffffff', size: 56 });
       label.scale.multiplyScalar(0.6);
-      label.position.set(0, 0.06, 1.55);
+      label.position.set(0, 0.95, 1.05);
       g.add(label);
     }
     root.add(g);
@@ -83,55 +87,72 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
     if (i >= 4) g.scale.setScalar(0.001);
   }
 
-  // Echo-Geist in der Mitte
-  const spirit = new THREE.Group();
-  spirit.position.y = 1.2;
-  root.add(spirit);
-  const bodyMat = toon(0xf4f0ff);
-  const body = new THREE.Mesh(new THREE.SphereGeometry(0.78, 24, 18), bodyMat);
-  body.scale.set(1, 1.12, 1);
-  spirit.add(body);
-  const tail = new THREE.Mesh(new THREE.ConeGeometry(0.5, 0.9, 16), bodyMat);
-  tail.rotation.x = Math.PI;
-  tail.position.y = -0.85;
-  spirit.add(tail);
-  const face = new THREE.Group();
-  spirit.add(face);
-  for (const sx of [-1, 1]) {
-    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.2, 14, 10), toon(0xffffff));
-    eye.position.set(sx * 0.3, 0.12, 0.62);
-    eye.scale.set(1, 1.2, 0.6);
-    face.add(eye);
-    const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 8), toon(0x1b1148));
-    pupil.position.set(sx * 0.3, 0.12, 0.76);
-    face.add(pupil);
-    const cheek = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 6), glow(0xff9ec4, 0.8));
-    cheek.position.set(sx * 0.5, -0.16, 0.54);
-    cheek.scale.set(1.3, 0.7, 0.4);
-    face.add(cheek);
-  }
-  const mouth = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.035, 6, 14, Math.PI), toon(0x1b1148));
-  mouth.position.set(0, -0.12, 0.74);
-  mouth.rotation.z = Math.PI;
-  face.add(mouth);
-  const antenna = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.5, 6), toon(0xc9bcff));
-  antenna.position.y = 1.0;
-  spirit.add(antenna);
-  const antBall = new THREE.Mesh(new THREE.SphereGeometry(0.14, 10, 8), glow(0xffe36e));
-  antBall.position.y = 1.3;
-  spirit.add(antBall);
-  const spiritShadow = new THREE.Mesh(new THREE.CircleGeometry(0.8, 20), glow(0x120a33, 0.45));
-  spiritShadow.rotation.x = -Math.PI / 2;
-  spiritShadow.position.y = 0.1;
-  root.add(spiritShadow);
+  // Eigene Figur in der Mitte
+  const me = makeMe(ctx, 1.05);
+  me.group.position.set(0, 0.08, -0.3);
+  const lookP = new THREE.Vector3();
+  let meAnim = '';
+  const playMe = (a: 'idle' | 'celebrate' | 'shock' | 'lose' | 'cheer') => {
+    if (meAnim === a) return;
+    meAnim = a;
+    me.rig.play(a, { loop: a === 'idle' });
+  };
+
+  // Mitspieler am Rand
+  const rivals = makeRivals(ctx, 0.85);
+  const rivalInfo = rivals.map(() => {
+    return { key: '', label: null as THREE.Sprite | null, presses: 0, phase: '' };
+  });
+  const setLabel = (i: number, text: string, color: number): void => {
+    const info = rivalInfo[i]!;
+    if (info.key === text) return;
+    info.key = text;
+    if (info.label) {
+      info.label.material.map?.dispose();
+      info.label.material.dispose();
+      info.label.removeFromParent();
+    }
+    const sp = textSprite(text, {
+      color: '#ffffff',
+      bg: '#' + new THREE.Color(color).multiplyScalar(0.6).getHexString(),
+      size: 44,
+      width: 1.5,
+    });
+    sp.material.fog = false;
+    const g = (rivals[i] as (typeof rivals)[number]).group.position;
+    sp.position.set(g.x, 2.45, g.z);
+    root.add(sp);
+    info.label = sp;
+  };
+
+  // Herzen und Rückwärts-Schild
+  const hearts = [0, 1, 2].map((i) => {
+    const h = textSprite('♥', { color: '#ff4d6d', size: 72 });
+    h.scale.multiplyScalar(0.75);
+    h.position.set(-0.8 + i * 0.8, 0.5, 5.4);
+    h.userData.base = h.scale.clone();
+    root.add(h);
+    return h;
+  });
+  const sign = (txt: string, fg: string, bg: string, w: number): THREE.Sprite => {
+    const sp = textSprite(txt, { color: fg, bg, size: 64, width: w });
+    sp.material.fog = false;
+    sp.visible = false;
+    root.add(sp);
+    return sp;
+  };
+  const revSign = sign('⟲ RÜCKWÄRTS!', '#ffffff', '#ff8a3d', 4.4);
+  const againSign = sign('Nochmal!', '#ffffff', '#ff4d6d', 3.0);
+  const okSign = sign('Richtig!', '#1b1148', '#5dff9c', 3.0);
+  const turnSign = sign('Du bist dran!', '#1b1148', '#5dff9c', 3.6);
 
   // Fortschrittsperlen vorn
   const MAXD = 14;
   const dots: THREE.Mesh[] = [];
-  const dotGeo = new THREE.SphereGeometry(0.17, 10, 8);
+  const dotGeo = new THREE.SphereGeometry(0.2, 10, 8);
   for (let i = 0; i < MAXD; i++) {
     const m = new THREE.Mesh(dotGeo, glow(0x7a6ad8));
-    m.position.set((i - (MAXD - 1) / 2) * 0.5, 0.2, 4.6);
+    m.position.set((i - (MAXD - 1) / 2) * 0.5, 0.2, 5.6);
     root.add(m);
     dots.push(m);
   }
@@ -155,12 +176,58 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
   let lastAspect = 0;
   const burstPos = new THREE.Vector3();
 
-  const placeCamera = () => {
-    const d = Math.max(11.5, 10.8 / camera.aspect);
-    camera.position.set(0, d * 0.78, d * 0.64 + 0.5);
-    camera.lookAt(0, 0.5, 0.6);
-    lastAspect = camera.aspect;
+  const camPos = new THREE.Vector3();
+  const camLook = new THREE.Vector3(0, CRYSTAL_Y, 0);
+  const ray = new THREE.Raycaster();
+  const ndc = new THREE.Vector2();
+  const hit = new THREE.Vector3();
+  /** Weltpunkt auf der Höhe y unter dem Bildschirmpunkt (nx, ny) */
+  const onScreen = (nx: number, ny: number, y: number, out: THREE.Vector3): THREE.Vector3 => {
+    ray.setFromCamera(ndc.set(nx, ny), camera);
+    const r = ray.ray;
+    const k = (y - r.origin.y) / (Math.abs(r.direction.y) > 1e-4 ? r.direction.y : -1e-4);
+    return out.copy(r.origin).addScaledVector(r.direction, Math.max(0, k));
   };
+  const placeCamera = () => {
+    lastAspect = camera.aspect;
+    const portrait = camera.aspect < 1;
+    // Hochformat: steiler von oben, damit der Kreis nicht zu tief wirkt
+    const d = portrait ? Math.min(24, 10.8 / camera.aspect) : Math.max(13, 12 / camera.aspect);
+    camPos.set(0, portrait ? d : d * 0.78, (portrait ? d * 0.3 : d * 0.64) + 0.5);
+    camera.position.copy(camPos);
+    camera.lookAt(camLook);
+    camera.updateMatrixWorld();
+    // Kristalle exakt dorthin, wo die Simulation den Zeiger zuordnet
+    for (let i = 0; i < 6; i++) {
+      const [nx, ny] = PILLAR_SCREEN[i] as readonly [number, number];
+      onScreen(nx, ny, CRYSTAL_Y, hit);
+      const p = pillars[i] as Pillar;
+      p.x = hit.x;
+      p.z = hit.z;
+      p.g.position.set(hit.x, 0, hit.z);
+    }
+    // Perlen und Herzen vorn unten, Mitspieler am Rand oben
+    onScreen(0, -0.88, 0.5, hit);
+    hearts.forEach((h, i) => h.position.set(-0.8 + i * 0.8, 0.5, hit.z));
+    const rp: Array<[number, number]> = [
+      [-0.84, 0.58],
+      [0.84, 0.58],
+      [0.86, -0.52],
+    ];
+    rivals.forEach((r, i) => {
+      const [nx, ny] = rp[i % 3] as [number, number];
+      onScreen(nx, ny, 0.08, hit);
+      // auf der Plattform bleiben
+      const len = Math.hypot(hit.x, hit.z);
+      if (len > 6.5) hit.multiplyScalar(6.5 / len);
+      r.group.position.set(hit.x, 0.08, hit.z);
+      r.group.rotation.y = Math.atan2(camPos.x - hit.x, camPos.z - hit.z) * 0.6;
+      const info = rivalInfo[i];
+      if (info?.label) info.label.position.set(hit.x, 2.45, hit.z);
+    });
+    onScreen(0, 0.68, 4.2, signPos);
+  };
+  const signPos = new THREE.Vector3(0, 5.4, -1.2);
   placeCamera();
 
   return {
@@ -217,45 +284,61 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
         }
       }
       if (s.phase !== lastPhase) {
-        if (s.phase === 'ok') ctx.sfx('win');
+        if (s.phase === 'ok') {
+          ctx.sfx('win');
+          burstPos.set(0, 2.4, 0.4);
+          ctx.burst(burstPos, s.reverse ? 0xff8a3d : 0x5dff9c, 26);
+        }
         if (s.phase === 'input') ctx.sfx('tick');
+        if (s.phase === 'show' && s.reverse) ctx.sfx('whoosh');
         lastPhase = s.phase;
       }
 
-      // Geist: schaut zur leuchtenden Säule
-      let lx = 0;
-      let lz = 1;
+      // Eigene Figur: schaut zur leuchtenden Säule, freut sich / erschrickt
       let lit = -1;
       for (let i = 0; i < 6; i++)
         if ((s.lit[i] as number) > 0 && (lit < 0 || (s.lit[i] as number) > (s.lit[lit] as number))) lit = i;
       if (lit >= 0) {
         const p = pillars[lit] as Pillar;
-        lx = p.x;
-        lz = p.z;
+        lookP.set(p.x, 2.2, p.z);
+        me.rig.lookAt(lookP);
+        me.rig.faceTowards(Math.atan2(p.x, p.z - 0.2) * 0.5);
+      } else {
+        me.rig.lookAt(null);
+        me.rig.faceTowards(0);
       }
-      const wantY = lit >= 0 ? Math.atan2(lx, lz) : 0;
-      let dy = wantY - face.rotation.y;
-      dy = Math.atan2(Math.sin(dy), Math.cos(dy));
-      face.rotation.y += dy * Math.min(1, dt * 9);
-      const happy = s.phase === 'ok';
-      const sad = s.phase === 'over' && s.failed;
-      spirit.position.y =
-        1.2 + Math.sin(t * 2) * 0.12 + (happy ? Math.abs(Math.sin(t * 9)) * 0.6 : 0) - (sad ? 0.35 : 0);
-      spirit.rotation.y = face.rotation.y * 0.0;
-      body.scale.set(
-        1 + (happy ? Math.sin(t * 18) * 0.06 : 0),
-        1.12 - (happy ? Math.sin(t * 18) * 0.06 : 0) - (sad ? 0.2 : 0),
-        1,
-      );
-      mouth.rotation.z = sad ? 0 : Math.PI;
-      mouth.position.y = sad ? -0.22 : -0.12;
-      const orb = s.phase === 'input' ? 0x5dff9c : s.phase === 'ok' ? 0xffd23f : sad ? 0xff3355 : 0xffe36e;
-      (antBall.material as THREE.MeshBasicMaterial).color.setHex(orb);
-      antBall.scale.setScalar(1 + Math.sin(t * (s.phase === 'input' ? 8 : 3)) * 0.25);
+      const sad = s.phase === 'over' && s.hearts <= 0;
+      if (s.phase === 'ok') playMe('celebrate');
+      else if (s.phase === 'fail') playMe('shock');
+      else if (sad) playMe('lose');
+      else if (s.phase === 'over') playMe('cheer');
+      else playMe('idle');
+      me.rig.update(dt);
       (rune.material as THREE.MeshBasicMaterial).color.setHex(
-        s.phase === 'input' ? 0x5dff9c : sad ? 0xff3355 : 0x8f7bff,
+        s.phase === 'input'
+          ? s.reverse
+            ? 0xff8a3d
+            : 0x5dff9c
+          : s.phase === 'fail' || sad
+            ? 0xff3355
+            : 0x8f7bff,
       );
-      spiritShadow.scale.setScalar(1 - (spirit.position.y - 1.2) * 0.15);
+      for (let i = 0; i < HEARTS; i++) {
+        const h = hearts[i] as THREE.Sprite;
+        const alive = i < s.hearts;
+        h.material.opacity = alive ? 1 : 0.22;
+        const beat = alive && s.phase === 'fail' && i === s.hearts - 1 ? 1 + Math.sin(t * 20) * 0.1 : 1;
+        h.scale.copy(h.userData.base as THREE.Vector3).multiplyScalar(beat);
+      }
+      const rev = s.reverse && (s.phase === 'show' || s.phase === 'input' || s.phase === 'intro');
+      revSign.visible = rev && (s.phase === 'input' || Math.floor(t * 5) % 4 !== 0);
+      revSign.position.copy(signPos);
+      againSign.visible = s.phase === 'fail';
+      againSign.position.set(0, 4.2, 0.4);
+      okSign.visible = s.phase === 'ok';
+      okSign.position.set(0, 4.2 + Math.min(0.5, s.timer / 60), 0.4);
+      turnSign.visible = s.phase === 'input' && s.inputTicks < 50 && !rev;
+      turnSign.position.set(0, 4.2, 0.4);
 
       // Perlen
       const shown = Math.min(MAXD, s.len);
@@ -263,11 +346,14 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
         const d = dots[i] as THREE.Mesh;
         const m = d.material as THREE.MeshBasicMaterial;
         d.visible = i < shown;
-        const done = s.phase === 'ok' ? true : s.phase === 'input' || s.phase === 'over' ? i < s.pos : false;
+        const k = s.reverse ? shown - 1 - i : i;
+        const done = s.phase === 'ok' ? true : s.phase === 'input' || s.phase === 'over' ? k < s.pos : false;
         const playing = s.phase === 'show' && i === s.showIdx;
         m.color.setHex(done ? 0x5dff9c : playing ? 0xffe36e : 0x7a6ad8);
         d.scale.setScalar(playing ? 1.4 : done ? 1.15 : 1);
-        d.position.x = (i - (shown - 1) / 2) * Math.min(0.5, 6.4 / Math.max(1, shown));
+        // Perlen im Kreis um die eigene Figur, im Uhrzeigersinn ab hinten
+        const ang = Math.PI / 2 - (i / Math.max(1, shown)) * Math.PI * 2;
+        d.position.set(Math.cos(ang) * 1.75, 0.2, -0.3 - Math.sin(ang) * 1.75);
       }
 
       // Funken
@@ -284,9 +370,30 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
 
       // Kamera
       shake = Math.max(0, shake - dt);
-      const d = Math.max(11.5, 10.8 / camera.aspect);
-      camera.position.set(Math.sin(t * 60) * shake * 0.25, d * 0.78, d * 0.64 + 0.5);
-      camera.lookAt(0, 0.5, 0.6);
+      camera.position.set(camPos.x + Math.sin(t * 60) * shake * 0.25, camPos.y, camPos.z);
+      camera.lookAt(camLook);
+    },
+    ghosts(states, dt) {
+      updateRivals(rivals, states, dt, (r, rs, i) => {
+        const info = rivalInfo[i]!;
+        const lvl = rs.phase === 'over' ? rs.cleared : rs.len;
+        setLabel(i, `${lvl} ${'♥'.repeat(Math.max(0, rs.hearts))}`, r.avatar.color);
+        if (info.label) info.label.visible = true;
+        if (rs.phase !== info.phase) {
+          info.phase = rs.phase;
+          if (rs.phase === 'ok') r.rig.play('celebrate');
+          else if (rs.phase === 'fail') r.rig.play('shock');
+          else if (rs.phase === 'over' && rs.hearts <= 0) r.rig.play('lose');
+        }
+        // kleiner Hüpfer bei jedem eigenen Tastendruck
+        if (rs.presses !== info.presses) {
+          info.presses = rs.presses;
+          if (rs.phase === 'input' || rs.phase === 'ok') r.group.position.y = 0.3;
+        }
+        r.group.position.y = Math.max(0.08, r.group.position.y - dt * 2.5);
+        if (info.label) info.label.position.set(r.group.position.x, 2.45, r.group.position.z);
+      });
+      rivalInfo.forEach((info, i) => info.label && (info.label.visible = states[i] != null));
     },
     dispose() {
       /* Alles hängt an root und wird vom Stage freigegeben */

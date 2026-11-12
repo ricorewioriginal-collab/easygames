@@ -704,8 +704,10 @@
    "bg": "linear-gradient(145deg,#18345b,#8b5cf6 58%,#f7ba55)",
    "glow": "rgba(167,139,250,.48)",
    "path": "taschi/",
-   "modes": {},
-   "multiplayer": false,
+   "modes": {
+    "online": true
+   },
+   "multiplayer": true,
    "guide": {
     "anleitung": "TASCHI – Die 16 Lichter ist ein 3D-Sammelrollenspiel: Wähle bei Professor Ulme in Sonnenhain deinen Starter (Glutzahn, Plätscherchen oder Samenling), fang wilde Taschis im hohen Gras und bau ein Team aus bis zu sechs Begleitern auf. In jeder der 16 Regionen löst du ein Rätsel, besiegst die Arenaleitung für ein Licht-Siegel und danach den regionalen Champion, der das Tor zur nächsten Region öffnet. Unterwegs stellst du dich deinem Rivalen Rian und der Schattengilde, die wilde Taschis einfängt. Mit allen 16 Siegeln geht es zum Sternengipfel und in die Sternenliga mit fünf Meisterprüfungen. Kämpfe laufen rundenbasiert mit zehn Typen (Feuer schlägt Pflanze, Wasser schlägt Feuer …), Statusveränderungen, Einzel- und Doppelkämpfen. Drei Speicherplätze, mit Google auch geräteübergreifend.",
     "steuerung": [
@@ -719,8 +721,8 @@
      "Rian nimmt immer den Starter, der deinen schlägt – nimm ein Taschi mit, das dagegen stark ist."
     ]
    },
-   "size": 12781335,
-   "files": 106,
+   "size": 12825662,
+   "files": 109,
    "offline": true,
    "cloud": {
     "game": "taschi",
@@ -2655,9 +2657,10 @@
    "guide": {
     "anleitung": "3D-Brett-Partyspiel: Jede Runde würfelt jeder, zieht Feld für Feld und wählt an Weggabelungen den Weg. Glimmer sind die Währung; am Chrono-Altar kostet ein Siegpunkt-Splitter 20 Glimmer. Nach jeder Runde spielen alle ein Minispiel (22 Stück), die Besten bekommen Glimmer. Wer nach der letzten Runde (inkl. Bonus-Splitter) die meisten Splitter hat, gewinnt. Modi: gegen Bots, lokal auf einem Gerät (2 bis 4), online per QR-Code/Text-Code.",
     "steuerung": [
-     "PC: Würfeln per Knopf, Leertaste oder Enter; Weg per Knopf oder Feld anklicken; Kamera ziehen = drehen, Mausrad = Zoom; Esc oder Menü-Knopf für Pause.",
+     "PC: Würfeln mit Leertaste oder Enter (Würfel mit „Stopp!“ anhalten); Weg per Knopf oder Feld anklicken; Kamera ziehen = drehen, Mausrad oder Q/E = Zoom; Esc = Pausemenü bzw. zurück. Spieltasten frei belegbar unter Optionen → ⌨️ Tastatur.",
+     "Gamecontroller: Steuerkreuz/linker Stick wählen und laufen, A bestätigen/würfeln, B zurück, X Aktion B, LB/RB Zoom, rechter Stick Zeiger, Start Pausemenü; Symbole (Xbox, PlayStation, Switch) und Belegung unter Optionen → 🎮 Controller.",
      "Touch: Knöpfe und Felder antippen; Wischen = Kamera drehen, Zwei-Finger = Zoom; Minispiele mit virtuellem Stick und Knöpfen A/B bzw. Antippen.",
-     "Minispiele am PC: je nach Spiel WASD/Pfeile, Leertaste oder Maus; die Anleitung erscheint vor jedem Minispiel.",
+     "Minispiele: WASD/Pfeile, Leertaste/Enter = A, Umschalt/X = B, Zielspiele auch mit Maus oder rechtem Stick; die Anleitung erscheint vor jedem Minispiel.",
      "Online: im Menü „🌐 Online mit Freunden“ einen Raum eröffnen und Code, Link oder QR-Code teilen; Freunde treten von jedem Gerät bei."
     ],
     "tipps": [
@@ -2665,8 +2668,8 @@
      "Auf manchen Brettern erscheinen und verschwinden Wege je Runde (gestrichelt): vorausplanen."
     ]
    },
-   "size": 1356413,
-   "files": 46,
+   "size": 1428252,
+   "files": 47,
    "offline": true,
    "cloud": {
     "game": "partyverse",

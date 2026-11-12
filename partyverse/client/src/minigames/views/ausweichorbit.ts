@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import type { OrbitState } from '@shared/minigames/games/ausweichorbit';
-import { R_MAX } from '@shared/minigames/games/ausweichorbit';
-import { glow, toon } from '../../render/materials';
+import { R_MAX, R_MIN, coinValue } from '@shared/minigames/games/ausweichorbit';
+import { glow, textSprite, toon } from '../../render/materials';
 import type { MiniGameViewFactory } from '../viewTypes';
+import { makeMe, makeRivals, updateRivals, type Racer } from './rivals';
 
 const TAU = Math.PI * 2;
 const SEG = 56;
@@ -98,46 +99,83 @@ export const createView: MiniGameViewFactory<OrbitState> = (ctx, initial) => {
     ),
   );
 
-  // Figur
-  const hero = new THREE.Group();
-  const heroBody = new THREE.Group();
-  hero.add(heroBody);
-  const body = new THREE.Mesh(new THREE.SphereGeometry(0.46, 24, 18), toon(0xffd23f));
-  body.position.y = 0.55;
-  heroBody.add(body);
-  const belly = new THREE.Mesh(new THREE.SphereGeometry(0.32, 16, 12), toon(0xfff2b8));
-  belly.position.set(0, 0.45, 0.28);
-  belly.scale.set(1, 1, 0.5);
-  heroBody.add(belly);
-  for (const sx of [-1, 1]) {
-    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 10), toon(0xffffff));
-    eye.position.set(sx * 0.17, 0.72, 0.38);
-    heroBody.add(eye);
-    const pupil = new THREE.Mesh(
-      new THREE.SphereGeometry(0.065, 10, 8),
-      new THREE.MeshBasicMaterial({ color: 0x1a1030 }),
-    );
-    pupil.position.set(sx * 0.17, 0.72, 0.5);
-    heroBody.add(pupil);
-    const foot = new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 8), toon(0xff6f3c));
-    foot.position.set(sx * 0.2, 0.1, 0.05);
-    foot.scale.set(1, 0.6, 1.3);
-    heroBody.add(foot);
-  }
-  const antenna = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 0.4, 6), toon(0x9aa0ff));
-  antenna.position.set(0, 1.18, 0);
-  heroBody.add(antenna);
-  const antBall = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 8), glow(0xff4d8d));
-  antBall.position.set(0, 1.4, 0);
-  heroBody.add(antBall);
-  const shield = new THREE.Mesh(new THREE.SphereGeometry(0.85, 20, 14), glow(0x7df9ff, 0.35));
-  shield.position.y = 0.55;
+  // Figuren: eigener Charakter, Mitspieler halbdurchsichtig auf demselben Ring (gleiche Hindernisse für alle)
+  const me = makeMe(ctx, 0.78);
+  const hero = me.group;
+  const shield = new THREE.Mesh(new THREE.SphereGeometry(0.95, 20, 14), glow(0x7df9ff, 0.3));
+  shield.position.y = 0.75;
   hero.add(shield);
-  const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.45, 20), glow(0x000000, 0.3));
-  shadow.rotation.x = -Math.PI / 2;
-  shadow.position.y = 0.03;
-  hero.add(shadow);
-  root.add(hero);
+  const rivals = makeRivals(ctx, 0.7);
+  interface Track {
+    face: number;
+    hits: number;
+    over: boolean;
+    ang: number;
+    rad: number;
+  }
+  const track = (st: OrbitState): Track => ({
+    face: 0,
+    hits: st.hitCount,
+    over: false,
+    ang: st.ang,
+    rad: st.rad,
+  });
+  const meT = track(initial);
+  const rivT = rivals.map(() => track(initial));
+  /** Position, Blickrichtung und Animation einer Figur aus ihrem Zustand */
+  const place = (r: Racer, st: OrbitState, tr: Track, dt: number): void => {
+    const px = st.rad * Math.cos(st.ang);
+    const pz = st.rad * Math.sin(st.ang);
+    r.group.position.set(px, 0, pz);
+    const moving = Math.hypot(st.mx, st.my) > 0.1 && (st.ang !== tr.ang || st.rad !== tr.rad);
+    tr.ang = st.ang;
+    tr.rad = st.rad;
+    if (moving) {
+      const tx = st.mx * Math.sin(st.ang) - st.my * Math.cos(st.ang);
+      const tz = -st.mx * Math.cos(st.ang) - st.my * Math.sin(st.ang);
+      tr.face = Math.atan2(tx, tz);
+      r.rig.faceTowards(tr.face);
+    }
+    if (st.over && !tr.over) {
+      tr.over = true;
+      r.rig.play(st.lives <= 0 ? 'lose' : 'celebrate');
+    } else if (st.hitCount !== tr.hits) {
+      tr.hits = st.hitCount;
+      r.rig.play('shock');
+    } else if (!st.over && r.rig.current !== 'shock') {
+      if (moving) r.rig.play('run', { loop: true, speed: 1.3 });
+      else if (r.rig.current === 'run') r.rig.play('idle', { loop: true });
+    }
+    // Unverwundbar: blinken
+    r.rig.root.visible = !(st.inv > 0 && st.inv < 92 && Math.floor(t * 14) % 2 === 0);
+    void dt;
+  };
+
+  // Sonnen-Eruptionen (Pool, Sektor-Fläche wird je Eruption neu gebaut)
+  const flareViews = [0, 1].map(() => {
+    const mat = new THREE.MeshBasicMaterial({
+      color: 0xff7a2e,
+      transparent: true,
+      opacity: 0.3,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+    const m = new THREE.Mesh(new THREE.BufferGeometry(), mat);
+    m.rotation.x = -Math.PI / 2;
+    m.position.y = 0.06;
+    m.visible = false;
+    root.add(m);
+    return { m, mat, key: '' };
+  });
+  let lastFlareActive = false;
+
+  const popups: Array<{ sp: THREE.Sprite; t: number; y0: number }> = [];
+  const popup = (text: string, x: number, z: number, color: string): void => {
+    const sp = textSprite(text, { color, size: 64, width: 1.9 });
+    sp.position.set(x, 2.2, z);
+    root.add(sp);
+    popups.push({ sp, t: 0, y0: 2.2 });
+  };
 
   // Kometen (Pool)
   interface CometV {
@@ -146,7 +184,7 @@ export const createView: MiniGameViewFactory<OrbitState> = (ctx, initial) => {
     lineMat: THREE.MeshBasicMaterial;
   }
   const comets: CometV[] = [];
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 16; i++) {
     const g = new THREE.Group();
     const core = new THREE.Mesh(
       new THREE.SphereGeometry(0.46, 16, 12),
@@ -217,7 +255,6 @@ export const createView: MiniGameViewFactory<OrbitState> = (ctx, initial) => {
 
   let t = 0;
   let camAng = initial.ang;
-  let faceY = 0;
   let lastHits = initial.hitCount;
   let lastCoins = initial.coins;
   let shake = 0;
@@ -230,31 +267,45 @@ export const createView: MiniGameViewFactory<OrbitState> = (ctx, initial) => {
       // Figur
       const px = s.rad * Math.cos(s.ang);
       const pz = s.rad * Math.sin(s.ang);
-      const moving = Math.hypot(s.mx, s.my) > 0.1;
-      const hop = moving ? Math.abs(Math.sin(t * 13)) * 0.16 : Math.sin(t * 3) * 0.03;
-      hero.position.set(px, hop, pz);
-      // Blickrichtung aus Bewegung (Kamera schaut Richtung Mitte; rechts = Winkel sinkt)
-      if (moving) {
-        const tx = s.mx * Math.sin(s.ang) - s.my * Math.cos(s.ang);
-        const tz = -s.mx * Math.cos(s.ang) - s.my * Math.sin(s.ang);
-        const target = Math.atan2(tx, tz);
-        let d = target - faceY;
-        d = Math.atan2(Math.sin(d), Math.cos(d));
-        faceY += d * Math.min(1, dt * 14);
-      }
-      hero.rotation.y = faceY;
-      heroBody.scale.set(
-        1 + (moving ? Math.sin(t * 26) * 0.04 : 0),
-        1 - (moving ? Math.sin(t * 26) * 0.06 : 0),
-        1,
-      );
+      place(me, s, meT, dt);
+      me.rig.update(dt);
       shield.visible = s.inv > 0 && s.lives > 0;
-      hero.visible = !(s.inv > 0 && s.lives > 0 && Math.floor(t * 14) % 2 === 0) || s.inv > 80;
-      antBall.scale.setScalar(1 + Math.sin(t * 8) * 0.2);
       shield.scale.setScalar(1 + Math.sin(t * 10) * 0.06);
 
-      // Sonne
-      sun.scale.setScalar(1 + Math.sin(t * 3) * 0.04);
+      // Eruptionen
+      let flareActive = false;
+      flareViews.forEach((fv, i) => {
+        const f = s.flares[i];
+        if (!f) {
+          fv.m.visible = false;
+          return;
+        }
+        const key = `${f.a.toFixed(4)}|${f.h.toFixed(4)}`;
+        if (key !== fv.key) {
+          fv.key = key;
+          fv.m.geometry.dispose();
+          // Lokaler Winkel θ wird nach der Drehung um x zur Weltrichtung −θ
+          fv.m.geometry = new THREE.RingGeometry(R_MIN - 0.5, R_MAX + 0.9, 40, 1, -(f.a + f.h), 2 * f.h);
+        }
+        fv.m.visible = true;
+        const active = f.t >= f.warn;
+        if (active) flareActive = true;
+        const k = Math.min(1, f.t / f.warn);
+        fv.mat.color.setHex(active ? 0xffc23d : 0xff7a2e);
+        fv.mat.opacity = active ? 0.85 : 0.12 + 0.3 * k * (0.5 + 0.5 * Math.sin(t * (10 + k * 20)));
+        fv.m.position.y = active ? 0.08 + Math.sin(t * 40) * 0.02 : 0.06;
+      });
+      if (flareActive && !lastFlareActive) {
+        ctx.sfx('whoosh');
+        shake = Math.max(shake, 0.35);
+      }
+      lastFlareActive = flareActive;
+
+      // Sonne (pumpt vor und während einer Eruption)
+      const charging = s.flares.some((f) => f.t < f.warn);
+      sun.scale.setScalar(
+        1 + Math.sin(t * (charging ? 18 : 3)) * (charging ? 0.1 : 0.04) + (flareActive ? 0.2 : 0),
+      );
       halo.scale.setScalar(1 + Math.sin(t * 2.2) * 0.07);
       sunRing.rotation.set(t * 0.8, t * 0.5, 0);
 
@@ -361,10 +412,28 @@ export const createView: MiniGameViewFactory<OrbitState> = (ctx, initial) => {
         pos.set(px, 1.0, pz);
         ctx.burst(pos, 0xffd23f, 14);
         lastCoins = s.coins;
+        popup(
+          `+${coinValue(s.chain - 1)}${s.chain >= 2 ? ` ×${s.chain}` : ''}`,
+          px,
+          pz,
+          s.chain >= 3 ? '#ffe066' : '#ffffff',
+        );
       }
       if (s.over && !wasOver) {
         wasOver = true;
         ctx.sfx(s.lives <= 0 ? 'bad' : 'win');
+      }
+      for (let i = popups.length - 1; i >= 0; i--) {
+        const p = popups[i]!;
+        p.t += dt;
+        p.sp.position.y = p.y0 + p.t * 1.4;
+        p.sp.material.opacity = Math.max(0, 1 - p.t);
+        if (p.t > 1) {
+          p.sp.removeFromParent();
+          p.sp.material.map?.dispose();
+          p.sp.material.dispose();
+          popups.splice(i, 1);
+        }
       }
 
       // Kamera: hinter der Figur, schräg von oben
@@ -372,7 +441,12 @@ export const createView: MiniGameViewFactory<OrbitState> = (ctx, initial) => {
       d = Math.atan2(Math.sin(d), Math.cos(d));
       camAng += d * Math.min(1, dt * 3.5);
       const asp = camera.aspect || 1.6;
-      const f = asp < 1 ? 1.06 / asp : 1;
+      const f = asp < 1 ? 0.92 / asp : 1;
+      const fog = ctx.scene.fog as THREE.Fog | null;
+      if (fog) {
+        fog.near = 24 * f;
+        fog.far = 60 * f;
+      }
       const D = 15 * f;
       const H = 14.5 * f;
       shake = Math.max(0, shake - dt * 1.6);
@@ -384,8 +458,16 @@ export const createView: MiniGameViewFactory<OrbitState> = (ctx, initial) => {
       );
       camera.lookAt(-Math.cos(camAng) * 0.5, 0, -Math.sin(camAng) * 0.5);
     },
+    ghosts(states, dt) {
+      updateRivals(rivals, states, dt, (r, st, i) => {
+        // Ausgeschiedene Mitspieler verschwinden kurz nach dem letzten Treffer
+        r.group.visible = !(st.over && st.lives <= 0 && st.inv < 60);
+        place(r, st, rivT[i]!, dt);
+      });
+    },
     dispose() {
       ctx.scene.fog = null;
+      flareViews.forEach((fv) => fv.m.geometry.dispose());
     },
   };
 };

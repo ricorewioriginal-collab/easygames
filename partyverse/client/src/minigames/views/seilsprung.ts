@@ -1,24 +1,39 @@
 import * as THREE from 'three';
-import { multiplier, type RopeState } from '@shared/minigames/games/seilsprung';
+import {
+  MAX_HITS,
+  currentTurn,
+  multiplier,
+  nextCrossing,
+  ropeAngle,
+  type RopeState,
+} from '@shared/minigames/games/seilsprung';
 import { glow, textSprite, toon } from '../../render/materials';
 import type { MiniGameViewFactory } from '../viewTypes';
+import { makeMe, makeRivals, updateRivals, type Racer } from './rivals';
 
-/** Seilspringen: Spielplatz im Sonnenschein, zwei Bären schwingen das Seil, ein Pinguin springt. Seil kommt von hinten über den Kopf. */
+/**
+ * Seilspringen: Spielplatz im Sonnenschein, zwei Bären schwingen ein langes Seil, alle Spieler springen nebeneinander
+ * (die eigene Figur vorn in der Mitte). Goldene Doppelschwünge leuchten, Täuschungen halten oben an.
+ */
 export const createView: MiniGameViewFactory<RopeState> = (ctx) => {
   const { root, camera, scene } = ctx;
   scene.background = new THREE.Color(0x8fdcff);
   scene.fog = new THREE.Fog(0xc4ecff, 30, 80);
   const sphere = new THREE.SphereGeometry(1, 16, 12);
-  const HX = 3.7; // Griffposition
-  const HY = 1.2;
-  const R = 1.2; // Seilradius (Mitte unten = Boden)
+  const HX = 4.9; // Griffposition
+  const HY = 1.35;
+  const R = 1.45; // Seilradius (Mitte unten knapp über dem Boden)
+  /** Plätze: eigene Figur, dann die Mitspieler */
+  const ME_X = -0.95;
+  const SLOTS = [0.95, -2.85, 2.85];
 
   // ---------- Umgebung ----------
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 30), glow(0xe9b96e));
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 50), glow(0xe9b96e));
+  floor.position.z = 10;
   floor.rotation.x = -Math.PI / 2;
   root.add(floor);
-  for (let i = -5; i <= 5; i++) {
-    const line = new THREE.Mesh(new THREE.BoxGeometry(40, 0.01, 0.06), glow(0xc8934d));
+  for (let i = -5; i <= 14; i++) {
+    const line = new THREE.Mesh(new THREE.BoxGeometry(60, 0.01, 0.06), glow(0xc8934d));
     line.position.set(0, 0.006, i * 1.5);
     root.add(line);
   }
@@ -170,106 +185,134 @@ export const createView: MiniGameViewFactory<RopeState> = (ctx) => {
   const sc3 = new THREE.Vector3();
   const p3 = new THREE.Vector3();
 
-  // ---------- Pinguin ----------
-  const hero = new THREE.Group();
-  const inner = new THREE.Group();
-  hero.add(inner);
-  root.add(hero);
-  const navy = toon(0x2a3a7a);
-  const belly = toon(0xffffff);
-  const orange = toon(0xff9d2e);
-  const pBody = new THREE.Mesh(sphere, navy);
-  pBody.scale.set(0.6, 0.78, 0.55);
-  pBody.position.y = 0.85;
-  const pBelly = new THREE.Mesh(sphere, belly);
-  pBelly.scale.set(0.44, 0.6, 0.3);
-  pBelly.position.set(0, 0.8, 0.28);
-  const beak = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.3, 8), orange);
-  beak.rotation.x = Math.PI / 2;
-  beak.position.set(0, 1.2, 0.56);
-  const eA = new THREE.Mesh(sphere, belly);
-  eA.scale.setScalar(0.11);
-  eA.position.set(-0.19, 1.3, 0.45);
-  const eB = eA.clone();
-  eB.position.x = 0.19;
-  const pA = new THREE.Mesh(sphere, dark);
-  pA.scale.setScalar(0.05);
-  pA.position.set(-0.19, 1.3, 0.55);
-  const pB = pA.clone();
-  pB.position.x = 0.19;
-  const cap = new THREE.Mesh(
-    new THREE.SphereGeometry(0.36, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2),
-    toon(0xff4f7d),
-  );
-  cap.position.y = 1.5;
-  const bobble = new THREE.Mesh(sphere, belly);
-  bobble.scale.setScalar(0.09);
-  bobble.position.y = 1.88;
-  const flipA = new THREE.Mesh(sphere, navy);
-  flipA.scale.set(0.12, 0.38, 0.22);
-  flipA.position.set(-0.62, 0.9, 0);
-  const flipB = flipA.clone();
-  flipB.position.x = 0.62;
-  const footA = new THREE.Mesh(sphere, orange);
-  footA.scale.set(0.22, 0.08, 0.34);
-  footA.position.set(-0.22, 0.06, 0.2);
-  const footB = footA.clone();
-  footB.position.x = 0.22;
-  inner.add(pBody, pBelly, beak, eA, eB, pA, pB, cap, bobble, flipA, flipB, footA, footB);
+  // ---------- Springer ----------
+  const me = makeMe(ctx, 1.0);
+  me.group.position.set(ME_X, 0, 0.35);
   const stars = new THREE.Group();
   for (let i = 0; i < 4; i++) {
     const st = new THREE.Mesh(new THREE.OctahedronGeometry(0.12), glow(0xffe34d));
     st.position.set(Math.cos((i / 4) * Math.PI * 2) * 0.55, 0, Math.sin((i / 4) * Math.PI * 2) * 0.55);
     stars.add(st);
   }
-  stars.position.y = 2.1;
-  hero.add(stars);
-  const heroShadow = new THREE.Mesh(
-    new THREE.CircleGeometry(0.55, 16),
-    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28 }),
-  );
-  heroShadow.rotation.x = -Math.PI / 2;
-  heroShadow.position.y = 0.03;
-  root.add(heroShadow);
+  stars.position.y = 2.2;
+  me.group.add(stars);
+  const rivals = makeRivals(ctx, 0.9);
+  rivals.forEach((r, i) => r.group.position.set(SLOTS[i % 3] as number, 0, -0.05));
+  /** Je Springer: letzter Sprungzähler, Stolperer, Salto-Winkel */
+  interface JumpVis {
+    jumps: number;
+    hits: number;
+    flip: number;
+    wasAir: boolean;
+    squash: number;
+    out: boolean;
+  }
+  const newVis = (): JumpVis => ({ jumps: 0, hits: 0, flip: 0, wasAir: false, squash: 0, out: false });
+  const meVis = newVis();
+  const rivalVis = rivals.map(newVis);
+  /** Gemeinsame Darstellung eines Springers (eigene Figur und Mitspieler) */
+  const poseJumper = (
+    r: Racer,
+    pv: THREE.Group,
+    st: RopeState,
+    v: JumpVis,
+    dt: number,
+    x: number,
+    z: number,
+  ): void => {
+    const air = st.y > 0.001;
+    if (st.jumps !== v.jumps) {
+      v.jumps = st.jumps;
+      v.squash = -0.35;
+    }
+    if (v.wasAir && !air) v.squash = 0.45;
+    v.wasAir = air;
+    v.squash += (0 - v.squash) * Math.min(1, dt * 9);
+    // Hoher Sprung: Salto
+    if (st.high && air) v.flip = Math.min(Math.PI * 2, v.flip + dt * 13);
+    else if (!air) v.flip = 0;
+    const out = st.over && st.hits >= MAX_HITS;
+    if (st.hits !== v.hits) {
+      v.hits = st.hits;
+      r.rig.play(out ? 'lose' : 'shock');
+    } else if (out && !v.out) r.rig.play('lose');
+    else if (st.over && !out && r.rig.current !== 'celebrate') r.rig.play('celebrate');
+    v.out = out;
+    const stretch = air ? 1 + Math.min(0.2, Math.abs(st.vy) * 0.03) : 1 - v.squash * 0.3;
+    r.group.position.set(out ? x + (x < 0 ? -1.2 : 1.2) : x, st.y * 1.45, out ? z + 1.3 : z);
+    pv.scale.set(1 / Math.sqrt(stretch), stretch, 1 / Math.sqrt(stretch));
+    pv.rotation.x = st.high ? -v.flip : 0;
+    r.ring.position.y = 0.03 - st.y * 1.45;
+  };
 
-  // ---------- Punkte-Popups ----------
-  const popups: THREE.Sprite[] = [];
-  for (let m = 1; m <= 5; m++) {
-    const sp = textSprite(`+${10 * m}`, {
-      color: '#ffffff',
-      bg: ['#4aa8ff', '#2cc57a', '#ff9d2e', '#ff4f7d', '#9a5bff'][m - 1],
-      size: 48,
-      width: 1.5,
-    });
+  // ---------- Punkte-Popups (Sprites je Wert, bei Bedarf erzeugt) ----------
+  const POP_BG = ['#4aa8ff', '#2cc57a', '#ff9d2e', '#ff4f7d', '#9a5bff'];
+  const popCache = new Map<number, THREE.Sprite>();
+  const popupFor = (v: number, m: number, gold: boolean): THREE.Sprite => {
+    let sp = popCache.get(v);
+    if (!sp) {
+      sp = textSprite(`+${v}`, {
+        color: gold ? '#5a3a00' : '#ffffff',
+        bg: gold ? '#ffd23f' : (POP_BG[m - 1] as string),
+        size: 48,
+        width: 1.5,
+      });
+      sp.visible = false;
+      root.add(sp);
+      popCache.set(v, sp);
+    }
+    return sp;
+  };
+  let popup: THREE.Sprite | null = null;
+  let popupT = 0;
+  const banner = (txt: string, fg: string, bg: string, w: number): THREE.Sprite => {
+    const sp = textSprite(txt, { color: fg, bg, size: 64, width: w });
+    sp.material.fog = false;
     sp.visible = false;
     root.add(sp);
-    popups.push(sp);
-  }
-  let popupT = 0;
-  let popupIdx = 0;
+    return sp;
+  };
+  const goldSign = banner('GOLD – A HALTEN!', '#5a3a00', '#ffd23f', 4.4);
+  const fakeSign = banner('Täuschung!', '#ffffff', '#7a5cff', 2.9);
+  const outSign = banner('RAUS!', '#ffffff', '#ff4f7d', 2.2);
+  const ropeMat = ropeMesh.material as THREE.MeshToonMaterial;
+  ropeMat.emissive = new THREE.Color(0xffb300);
+  ropeMat.emissiveIntensity = 0;
+
+  // Drehpunkt in Körpermitte für Salto und Stauchen (die Figur selbst steuert Drehung/Größe ihrer Wurzel)
+  const pivotOf = (r: Racer): THREE.Group => {
+    const pv = new THREE.Group();
+    pv.position.y = 0.9;
+    r.group.add(pv);
+    pv.add(r.rig.root);
+    r.rig.root.position.y = -0.9;
+    return pv;
+  };
+  const mePivot = pivotOf(me);
+  const rivalPivots = rivals.map(pivotOf);
 
   let t = 0;
   let lastJumps = 0;
   let lastClears = 0;
   let lastHits = 0;
-  let squash = 0;
-  let wasAir = false;
+  let shake = 0;
   const feet = new THREE.Vector3();
+  const bp = new THREE.Vector3();
 
   return {
     update(s, dt) {
       t += dt;
-      const per = s.turns[s.turn] ?? 96;
-      const theta = Math.PI * 2 * (s.u / per);
+      const tr = currentTurn(s);
+      const holding = s.u < tr.hold;
+      const theta = ropeAngle(s) + (holding ? Math.sin(t * 22) * 0.05 : 0);
       const cs = Math.cos(theta);
       const sn = Math.sin(theta);
-      // Seil entlang des Bogens
+      // Seil entlang des Bogens (flaches Profil, damit es auch bei den äußeren Springern den Boden erreicht)
       for (let i = 0; i <= SEG; i++) {
         const f = i / SEG;
-        const prof = Math.sin(Math.PI * f);
-        pts[i]?.set(-HX + 2 * HX * f, HY + R * cs * prof - 0.0, R * sn * prof);
+        const prof = Math.pow(Math.sin(Math.PI * f), 0.45);
+        pts[i]?.set(-HX + 2 * HX * f, Math.max(0.06, HY + R * cs * prof), R * sn * prof);
       }
-      // Griffe schwingen leicht mit
       pts[0]?.set(-HX, HY + 0.1 * cs, 0.1 * sn);
       pts[SEG]?.set(HX, HY + 0.1 * cs, 0.1 * sn);
       for (let i = 0; i < SEG; i++) {
@@ -279,15 +322,17 @@ export const createView: MiniGameViewFactory<RopeState> = (ctx) => {
         const len = dirV.length();
         p3.copy(a).addScaledVector(dirV, 0.5);
         qq.setFromUnitVectors(up, dirV.divideScalar(Math.max(1e-6, len)));
-        sc3.set(1, len * 1.04, 1);
+        sc3.set(tr.n === 2 ? 1.5 : 1, len * 1.04, tr.n === 2 ? 1.5 : 1);
         m4.compose(p3, qq, sc3);
         ropeMesh.setMatrixAt(i, m4);
       }
       ropeMesh.instanceMatrix.needsUpdate = true;
-      const zMid = R * sn;
-      ropeShadow.position.z = zMid;
+      // Goldener Doppelschwung: Seil glüht
+      const goldNow = tr.n === 2;
+      ropeMat.emissiveIntensity += ((goldNow ? 0.9 : 0) - ropeMat.emissiveIntensity) * Math.min(1, dt * 10);
+      ropeShadow.position.z = R * sn;
       (ropeShadow.material as THREE.MeshBasicMaterial).opacity = 0.12 + 0.18 * Math.max(0, -cs);
-      // Bären
+      // Bären (wackeln beim Täuschen)
       for (let k = 0; k < 2; k++) {
         const b = bears[k] as (typeof bears)[number];
         const side = k === 0 ? -1 : 1;
@@ -296,77 +341,77 @@ export const createView: MiniGameViewFactory<RopeState> = (ctx) => {
         limb(b.arm, b.shoulder, hp);
         b.hand.position.copy(hp);
         b.g.position.y = Math.abs(Math.sin(t * 3 + k)) * 0.04;
-        b.head.rotation.z = Math.sin(t * 2.2 + k) * 0.08;
+        b.head.rotation.z = holding ? Math.sin(t * 9 + k) * 0.25 : Math.sin(t * 2.2 + k) * 0.08;
         b.head.rotation.y = -side * 0.35 + Math.sin(t * 1.3) * 0.1;
       }
 
-      // Ereignisse
-      feet.set(0, 0.1, 0.3);
+      // Ereignisse (eigene Figur)
+      feet.set(ME_X, 0.1, 0.6);
       if (s.jumps !== lastJumps) {
         lastJumps = s.jumps;
         ctx.sfx('jump');
-        ctx.burst(feet.clone(), 0xffffff, 5);
-        squash = -0.4;
+        ctx.burst(feet, 0xffffff, 5);
       }
       if (s.clears !== lastClears) {
         lastClears = s.clears;
-        ctx.sfx(s.streak >= 4 ? 'good' : 'tick');
+        const m = multiplier(s.streak);
+        const gold = s.lastGain === 25 * m;
+        ctx.sfx(gold ? 'coin' : s.streak >= 4 ? 'good' : 'tick');
+        bp.set(ME_X, 1.0, 0.7);
         ctx.burst(
-          new THREE.Vector3(0, 0.9, 0.5),
-          [0x4aa8ff, 0x2cc57a, 0xff9d2e, 0xff4f7d, 0x9a5bff][multiplier(s.streak) - 1] ?? 0xffffff,
-          7 + multiplier(s.streak) * 2,
+          bp,
+          gold ? 0xffd23f : new THREE.Color(POP_BG[m - 1] ?? '#ffffff').getHex(),
+          7 + m * 2 + (gold ? 12 : 0),
         );
-        const sp = popups[multiplier(s.streak) - 1] as THREE.Sprite;
-        popups.forEach((p) => (p.visible = false));
-        sp.visible = true;
-        popupIdx = multiplier(s.streak) - 1;
+        if (popup) popup.visible = false;
+        popup = popupFor(s.lastGain, m, gold);
         popupT = 0.9;
       }
       if (s.hits !== lastHits) {
         lastHits = s.hits;
         ctx.sfx('bad');
-        ctx.burst(new THREE.Vector3(0, 0.6, 0.5), 0xff5a5a, 16);
-        squash = 0.6;
+        bp.set(ME_X, 0.6, 0.6);
+        ctx.burst(bp, 0xff5a5a, 16);
+        shake = 0.35;
       }
-      if (popupT > 0) {
+      if (popup && popupT > 0) {
         popupT -= dt;
-        const sp = popups[popupIdx] as THREE.Sprite;
-        sp.position.set(0.1, 2.9 + (0.9 - popupT) * 0.9, 0.5);
-        sp.visible = popupT > 0;
+        popup.position.set(ME_X + 0.1, 3.0 + (0.9 - popupT) * 0.9, 0.6);
+        popup.visible = popupT > 0;
       }
+      const out = s.over && s.hits >= MAX_HITS;
+      const nc = nextCrossing(s);
+      goldSign.visible = !s.over && (goldNow || (nc.gold && nc.tc < 70)) && Math.floor(t * 6) % 3 !== 0;
+      goldSign.position.set(0, 4.35, 0);
+      fakeSign.visible = !s.over && holding && !goldNow && tr.hold > 0;
+      fakeSign.position.set(0, 4.35, 0);
+      fakeSign.scale.set(2.9 * (1 + Math.sin(t * 14) * 0.05), 0.62, 1);
+      outSign.visible = out;
+      outSign.position.set(ME_X, 3.2, 1.5);
 
-      // Pinguin
-      const air = s.y > 0.001;
-      const stumbling = s.stumble > 0;
-      if (wasAir && !air) {
-        squash = 0.5;
-        ctx.burst(feet.clone(), 0xf5deb3, 4);
-      }
-      wasAir = air;
-      squash += (0 - squash) * Math.min(1, dt * 9);
-      const vy = s.y * 1.9;
-      const stretch = air ? 1 + Math.min(0.22, Math.abs(s.vy) * 0.03) : 1 - squash * 0.3;
-      hero.position.set(0, vy, 0.25);
-      inner.scale.set(1 / Math.sqrt(stretch), stretch, 1 / Math.sqrt(stretch));
-      inner.rotation.z = stumbling ? Math.sin(t * 25) * 0.25 : 0;
-      inner.rotation.x = stumbling ? 0.35 : 0;
-      const flap = air ? -0.9 : Math.sin(t * 5) * 0.1;
-      flipA.rotation.z = -flap - (stumbling ? Math.sin(t * 30) * 0.6 : 0);
-      flipB.rotation.z = flap + (stumbling ? Math.sin(t * 30) * 0.6 : 0);
-      pBody.position.y = 0.85 + (air || stumbling ? 0 : Math.sin(t * 5) * 0.015);
-      stars.visible = stumbling;
+      // Eigene Figur
+      poseJumper(me, mePivot, s, meVis, dt, ME_X, 0.35);
+      stars.visible = s.stumble > 0 && !out;
       stars.rotation.y = t * 7;
-      hero.visible = s.invuln <= 0 || stumbling || Math.floor(s.invuln / 3) % 2 === 0;
-      heroShadow.position.set(0, 0.03, 0.25);
-      heroShadow.scale.setScalar(Math.max(0.5, 1 - vy * 0.25));
+      me.group.visible = s.invuln <= 0 || s.stumble > 0 || Math.floor(s.invuln / 3) % 2 === 0;
+      me.rig.update(dt);
 
       // Kamera
+      shake = Math.max(0, shake - dt);
       const aspect = camera.aspect;
-      const halfW = 6.3;
-      const d = THREE.MathUtils.clamp(halfW / (Math.tan((camera.fov * Math.PI) / 360) * aspect), 8.5, 22);
-      const camH = aspect < 1 ? 3.6 : 2.5;
-      camera.position.set(0, camH, d);
-      camera.lookAt(0, aspect < 1 ? 1.6 : 1.35, 0);
+      // Hochformat: näher ran (die Bären dürfen angeschnitten sein), Blick leicht von oben
+      const halfW = aspect < 1 ? 3.7 : 6.6;
+      const d = THREE.MathUtils.clamp(halfW / (Math.tan((camera.fov * Math.PI) / 360) * aspect), 9, 24);
+      const camH = aspect < 1 ? 3.6 : 2.7;
+      camera.position.set(-0.3 + Math.sin(t * 50) * shake * 0.3, camH, d);
+      camera.lookAt(-0.3, aspect < 1 ? 2.9 : 1.45, 0);
+    },
+    ghosts(states, dt) {
+      updateRivals(rivals, states, dt, (r, st, i) => {
+        const v = rivalVis[i] as JumpVis;
+        const x = SLOTS[i % 3] as number;
+        poseJumper(r, rivalPivots[i] as THREE.Group, st, v, dt, x, -0.05);
+      });
     },
     dispose() {
       scene.fog = null;

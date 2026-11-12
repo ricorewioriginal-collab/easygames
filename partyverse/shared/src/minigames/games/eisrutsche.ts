@@ -14,6 +14,8 @@ export interface Hole {
   ay: number;
   w: number;
   ph: number;
+  /** Ab diesem Tick ist das Loch offen (0 = von Anfang an). Davor knackt das Eis sichtbar (CRACK_WARN Ticks). */
+  t0: number;
 }
 export interface IceStar {
   id: number;
@@ -37,6 +39,11 @@ export interface EisState {
   stars: IceStar[];
   spawned: number;
   starPts: number;
+  /** Punkte inklusive Serienbonus */
+  pts: number;
+  /** Sterne in Folge ohne Sturz */
+  streak: number;
+  lastGain: number;
   starCount: number;
   falls: number;
   bumps: number;
@@ -55,6 +62,18 @@ const MAX_SPEED = 9.5;
 const FRICTION = 0.991;
 const BRAKE_FRICTION = 0.9;
 const START = { x: 0, y: 0 };
+/** So lange vorher knackt das Eis, bevor ein neues Loch aufbricht */
+export const CRACK_WARN = 110;
+/** Zeitpunkte, an denen neue Löcher aufbrechen */
+const CRACK_TIMES = [480, 900, 1320];
+/** Im Schlussspurt liegen mehr Sterne aus */
+export const FINALE_TICKS = 1260;
+
+export const holeOpen = (h: Hole, tick: number): boolean => tick >= h.t0;
+export const holeCracking = (h: Hole, tick: number): boolean => tick < h.t0 && tick >= h.t0 - CRACK_WARN;
+/** Punkte für einen Stern bei gegebener Serie */
+export const starGain = (value: number, streak: number): number =>
+  value * (STAR_POINTS + 20 * Math.min(5, Math.max(0, streak - 1)));
 
 export function holePos(h: Hole, tick: number): { x: number; y: number } {
   const s = Math.sin(h.ph + (h.w * tick) / 60);
@@ -68,26 +87,32 @@ export function holeVel(h: Hole, tick: number): { x: number; y: number } {
 
 function makeHoles(r: Rng): Hole[] {
   const holes: Hole[] = [];
-  const want = 7;
-  for (let tries = 0; holes.length < want && tries < 400; tries++) {
-    const moving = holes.length >= want - 3;
-    const rad = r.float(1.05, 1.55);
-    const dir = r.chance(0.5);
-    const amp = moving ? r.float(1.3, 2.1) : 0;
-    const h: Hole = {
-      x: r.float(-ARENA_X + 2.4, ARENA_X - 2.4),
-      y: r.float(-ARENA_Y + 2.2, ARENA_Y - 2.2),
-      r: rad,
-      ax: dir ? amp : 0,
-      ay: dir ? 0 : amp,
-      w: r.float(0.7, 1.1),
-      ph: r.float(0, Math.PI * 2),
-    };
-    const reach = rad + amp;
-    if (Math.hypot(h.x - START.x, h.y - START.y) < reach + 2.8) continue;
-    if (holes.some((o) => Math.hypot(o.x - h.x, o.y - h.y) < o.r + Math.hypot(o.ax, o.ay) + reach + 2.2))
-      continue;
-    holes.push(h);
+  // 4 Löcher von Anfang an, dann brechen nacheinander 3 weitere auf. Bewegliche Löcher brauchen viel Platz:
+  // findet sich keiner, wird es ein festes (kleineres) Loch.
+  const want = 4 + CRACK_TIMES.length;
+  for (let k = 0; k < want; k++) {
+    for (let tries = 0; tries < 160; tries++) {
+      const moving = (k === 3 || k === want - 1) && tries < 100;
+      const rad = r.float(0.95, tries < 100 ? 1.4 : 1.1);
+      const dir = r.chance(0.5);
+      const amp = moving ? r.float(1.0, 1.6) : 0;
+      const h: Hole = {
+        x: r.float(-ARENA_X + 2.2, ARENA_X - 2.2),
+        y: r.float(-ARENA_Y + 2.0, ARENA_Y - 2.0),
+        r: rad,
+        ax: dir ? amp : 0,
+        ay: dir ? 0 : amp,
+        w: r.float(0.7, 1.1),
+        ph: r.float(0, Math.PI * 2),
+        t0: k < 4 ? 0 : (CRACK_TIMES[k - 4] as number),
+      };
+      const reach = rad + amp;
+      if (Math.hypot(h.x - START.x, h.y - START.y) < reach + 2.4) continue;
+      if (holes.some((o) => Math.hypot(o.x - h.x, o.y - h.y) < o.r + Math.hypot(o.ax, o.ay) + reach + 1.3))
+        continue;
+      holes.push(h);
+      break;
+    }
   }
   return holes;
 }
@@ -119,10 +144,9 @@ export const game: MiniGame<EisState> = {
   name: 'Eisrutsche',
   tagline: 'Rutsch, sammle Sterne und tauche nicht ab!',
   instructions: [
-    'Du bist ein Pinguin auf glattem Eis: Steuern beschleunigt dich, aber du rutschst weiter.',
-    'Sammle möglichst viele Sterne – goldene zählen dreifach.',
-    'Wer in ein Wasserloch rutscht, landet wieder am Start, verliert Zeit und Punkte.',
-    'Halte A gedrückt, um zu bremsen und die Krallen ins Eis zu schlagen.',
+    'Glattes Eis: Steuern beschleunigt dich, aber du rutschst weiter. A hält dich fest (bremsen).',
+    'Sammle Sterne – goldene zählen dreifach, Sterne in Serie bringen Bonus.',
+    'Wo das Eis rot knackt, bricht gleich ein neues Wasserloch auf! Wer hineinrutscht, muss zurück zum Start.',
   ],
   controls: {
     desktop: 'WASD oder Pfeile = beschleunigen, Leertaste = bremsen',
@@ -148,6 +172,9 @@ export const game: MiniGame<EisState> = {
       stars: [],
       spawned: 0,
       starPts: 0,
+      pts: 0,
+      streak: 0,
+      lastGain: 0,
       starCount: 0,
       falls: 0,
       bumps: 0,
@@ -205,9 +232,11 @@ export const game: MiniGame<EisState> = {
     if (Math.hypot(s.vx, s.vy) > 0.5) s.face = Math.atan2(s.vy, s.vx);
     // Löcher
     for (const h of s.holes) {
+      if (!holeOpen(h, s.tick)) continue;
       const p = holePos(h, s.tick);
       if (Math.hypot(s.x - p.x, s.y - p.y) < h.r - 0.05) {
         s.falls++;
+        s.streak = 0;
         s.lastFall = { x: p.x, y: p.y };
         s.respawn = RESPAWN_TICKS;
         s.vx = 0;
@@ -223,24 +252,31 @@ export const game: MiniGame<EisState> = {
       if (Math.hypot(st.x - s.x, st.y - s.y) < 0.95) {
         s.starPts += st.value;
         s.starCount++;
+        s.streak++;
+        s.lastGain = starGain(st.value, s.streak);
+        s.pts += s.lastGain;
         s.lastPick = { x: st.x, y: st.y, value: st.value };
         s.stars.splice(i, 1);
         s.stars.push(spawnStar(s));
         break;
       }
     }
+    // Schlussspurt: mehr Sterne
+    while (s.tick >= FINALE_TICKS && s.stars.length < 7) s.stars.push(spawnStar(s));
   },
   done: (s) => s.tick >= DURATION_TICKS,
-  score: (s) => Math.max(0, s.starPts * STAR_POINTS - s.falls * FALL_PENALTY),
+  score: (s) => Math.max(0, s.pts - s.falls * FALL_PENALTY),
   bot(s, skill, rng): InputFrame {
     if (s.respawn > 0) return { ...NEUTRAL_INPUT };
     const look = lerp(0.15, 0.7, skill);
     const margin = lerp(0.1, 0.85, skill);
     const cap = lerp(2.6, 8.2, skill);
-    const hp = s.holes.map((h) => {
-      const p = holePos(h, s.tick);
-      return { x: p.x, y: p.y, r: h.r, reach: h.r + Math.hypot(h.ax, h.ay) };
-    });
+    const hp = s.holes
+      .filter((h) => holeOpen(h, s.tick) || (skill > 0.45 && holeCracking(h, s.tick)))
+      .map((h) => {
+        const p = holePos(h, s.tick);
+        return { x: p.x, y: p.y, r: h.r, reach: h.r + Math.hypot(h.ax, h.ay) };
+      });
     // Ziel wählen: nah, wertvoll und nicht in der Nähe von Löchern/auf gefährlicher Strecke
     let best: IceStar | null = null;
     let bestCost = Infinity;
@@ -303,6 +339,15 @@ export const game: MiniGame<EisState> = {
   hud: (s) => ({
     left: `${s.starCount} Sterne`,
     right: `${Math.max(0, Math.ceil((DURATION_TICKS - s.tick) / 60))} s`,
-    hint: s.respawn > 0 ? 'Eingetaucht! Zurück zum Start …' : s.braking ? 'Bremsen' : undefined,
+    hint:
+      s.respawn > 0
+        ? 'Eingetaucht! Zurück zum Start …'
+        : s.holes.some((h) => holeCracking(h, s.tick))
+          ? 'Das Eis knackt!'
+          : s.streak > 1
+            ? `Serie ×${s.streak}`
+            : s.braking
+              ? 'Bremsen'
+              : undefined,
   }),
 };

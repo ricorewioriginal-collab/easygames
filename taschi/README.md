@@ -49,11 +49,24 @@ Geprüft: `npm test` (31 Tests inklusive Durchlauf-Simulation bis zum Sternenmei
 - **Getragene Gegenstände:** Heilbeere, Klarbeere, Lernband, Kraftband, Fokusband – im Laden, anlegen über Team › Taschi › „🎒 Trägt“ oder die Tasche. Wirken im Kampf von selbst, Beeren und Fokusband werden verbraucht.
 - Tests: `tests/controls-held.test.mjs`, Browsertest `node tests/e2e/controls.mjs [Bildordner]` (simulierter Switch Pro Controller).
 
+## Modernerer Look und deutliche Entwicklungsstufen (November 2026)
+
+- Gebaute Taschis haben eine weichere Toon-Abstufung und einen hellen Randlicht-Saum (`creatureMaterial` in `src/engine/creatures.js`).
+- Jede Entwicklungsstufe sieht man sofort: Babys mit großem Kopf und kurzen Beinen, Endstufen kräftiger und hochbeiniger; Stufe 2 bekommt Rückenkamm und Musterung, Stufe 3 Hörner, schärferen Blick, Aura und einen leuchtenden Stirnstein in Typfarbe. Mit jeder Stufe wächst das Taschi sichtbar (`displayScale`).
+- Drachenflügel sind jetzt geschwungene Flughäute statt flacher Dreiecke. Bildtafel zum Vergleichen: `node tests/e2e/lineup.mjs <ordner>`.
+
 ## Neue Taschis aus 3D-Modellen (November 2026)
 
 - **57 neue Arten in 27 Entwicklungslinien** (Dex 262–318), gebaut aus dem *Ultimate Monsters Bundle* von **Quaternius** (CC0, Quelle: https://poly.pizza/bundle/Ultimate-Monsters-Bundle-5oyGWAmOB6, Lizenz in `assets/models/LICENSE.txt`). Sechs Linien nutzen die fertigen „Evolved“-Modelle, bei anderen wird aus dem einfachen das detailreiche Modell; Linien mit nur einem Modell entwickeln sich in eine größere Form mit eigenem Farbton und Glanz.
 - Technik: `src/engine/models.js` lädt die GLB-Dateien (GLTFLoader aus `../vendor`), klont Skelett und Haut, wandelt die Materialien in den Toon-Look mit Umriss um und spielt die Animationen (Stehen, Laufen, Angriff, Treffer, Freude, K.o.). Die Modelle laden im Hintergrund; Kämpfe warten kurz, bis beide Teams geladen sind.
 - Die Arten erscheinen nach ihrem Typ automatisch in der Wildnis, bei Trainern und in der Zucht. Tests: `tests/models.test.mjs`, Browsertest `tests/e2e/models.mjs`.
+
+## 🌐 Online: Tauschen & Kämpfen (November 2026)
+- Menü › Team, Titelbild („🌐 Online & Freunde“) oder Einladungslink `…/taschi/#join=CODE`. Ein Gerät eröffnet einen Raum (5-stelliger Code, Link, QR-Code), das andere tritt bei. Einladungslinks zeigen über `EasyGamesLink.share` immer auf die easygames-Homepage.
+- Verbindung: `../cloud/fire-peer.js` (Firebase vermittelt, gespielt wird per WebRTC direkt; Rückfall PeerJS). `src/core/net.js` kapselt Raum, Beitritt und Nachrichten.
+- **Tausch:** beide bieten an, beide bestätigen (Prüfsumme über beide Angebote). Empfangene Taschis laufen durch dieselbe Prüfung wie geladene Spielstände (`cleanMonster`), bekommen eine neue Kennung und merken sich den Erst-Trainer (`ot`).
+- **Kampf:** 3 gegen 3, Level-50-Kopien (wie im Kampfturm), keine EP. Der Gastgeber rechnet den Kampf mit der normalen Engine (`createBattle({ pvp: true })`, `runTurn(b, eigene, gegnerische Wahl)`, `replaceFoe`), der Gast schickt seine Wahl und spielt gespiegelte Ereignisse samt Zwischenstand ab (`src/logic/link.js`). Aufgeben und Verbindungsabbruch beenden den Kampf sauber.
+- Tests: `tests/link.test.mjs` (Tausch, Prüfung, kompletter gespiegelter Kampf), Browsertest `tests/e2e/online.mjs` (zwei Spielinstanzen, Tausch und Kampf).
 
 ## Reiten & Surfen (November 2026)
 

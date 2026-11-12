@@ -24,9 +24,18 @@ export interface WStar {
   y: number;
   got: boolean;
 }
+/** Stachelballon: schwebt über einer Lücke (später auch auf und ab) – wer ihn berührt, wird nach unten gestoßen */
+export interface Spike {
+  x: number;
+  y: number;
+  amp: number;
+  w: number;
+  ph: number;
+}
 export interface WolkenState {
   clouds: Cloud[];
   stars: WStar[];
+  spikes: Spike[];
   t: number;
   x: number;
   y: number;
@@ -49,6 +58,9 @@ export interface WolkenState {
   lands: number;
   falls: number;
   springs: number;
+  bonks: number;
+  /** Ticks ohne erneuten Stachel-Treffer */
+  safe: number;
   over: boolean;
 }
 
@@ -66,6 +78,8 @@ const COYOTE = 6;
 const BUFFER = 7;
 const RESPAWN_TICKS = 75;
 const STAR_R2 = 0.85 * 0.85;
+export const SPIKE_R = 0.5;
+const SPIKE_HIT2 = (SPIKE_R + 0.42) ** 2;
 
 /** Dreieckswelle, geglättet, Ergebnis in [-1, 1]; u in Zyklen */
 export function wave(u: number): number {
@@ -73,7 +87,20 @@ export function wave(u: number): number {
   const tri = f < 0.5 ? f * 2 : 2 - f * 2;
   return tri * tri * (3 - 2 * tri) * 2 - 1;
 }
-export const speedAt = (t: number): number => 6.4 + Math.min(1.6, (t / TOTAL_TICKS) * 1.6);
+/** Lauftempo: wird über die Spielzeit deutlich schneller (6,4 → 9,2 m/s) */
+export const speedAt = (t: number): number => 6.4 + Math.min(2.8, (t / TOTAL_TICKS) * 2.8);
+export const spikeY = (k: Spike, t: number): number => k.y + (k.amp ? k.amp * wave(k.ph + t * k.w) : 0);
+/** Trifft ein Körper (Füße bei x,y) einen Stachelballon? */
+export function hitsSpike(sp: Spike[], x: number, y: number, t: number): boolean {
+  for (const k of sp) {
+    const dx = k.x - x;
+    if (dx > 1.2) break;
+    if (dx < -1.2) continue;
+    const dy = spikeY(k, t) - (y + 0.6);
+    if (dx * dx + dy * dy < SPIKE_HIT2) return true;
+  }
+  return false;
+}
 export const cloudOffX = (c: Cloud, t: number): number => (c.kind === 2 ? c.amp * wave(c.ph + t * c.w) : 0);
 export const cloudTop = (c: Cloud, t: number): number =>
   c.y + (c.kind === 1 ? c.amp * wave(c.ph + t * c.w) : 0);
@@ -137,14 +164,17 @@ function advance(cl: Cloud[], t: number, b: Body, held: boolean, from: number): 
   return 0;
 }
 
-function genLevel(seed: number): { clouds: Cloud[]; stars: WStar[] } {
+function genLevel(seed: number): { clouds: Cloud[]; stars: WStar[]; spikes: Spike[] } {
   const r = new Rng((seed ^ 0x5f3759df) >>> 0);
+  const r2 = new Rng((seed ^ 0x2b7e1516) >>> 0);
   const clouds: Cloud[] = [{ x0: -4, x1: 10, y: 0, kind: 0, amp: 0, w: 0, ph: 0 }];
   const stars: WStar[] = [];
+  const spikes: Spike[] = [];
   let x = 10;
   let y = 0;
   let i = 0;
   let springNext = false;
+  let prevAmp = 0;
   while (x < 380) {
     const diff = clamp(x / 240, 0, 1);
     let kind: 0 | 1 | 2 | 3 = 0;
@@ -152,6 +182,7 @@ function genLevel(seed: number): { clouds: Cloud[]; stars: WStar[] } {
     let len: number;
     let ny: number;
     let amp = 0;
+    const afterSpring = springNext;
     if (springNext) {
       gap = r.float(3.4, 4.2);
       len = r.float(6.5, 8);
@@ -185,6 +216,12 @@ function genLevel(seed: number): { clouds: Cloud[]; stars: WStar[] } {
         }
       }
     }
+    // Stachelballon über der Lücke: zwingt zu einem flachen Sprung – dafür Lücke kurz und Ziel nicht höher
+    const spikeHere = i >= 3 && kind === 0 && !springNext && !afterSpring && r2.chance(0.3 + 0.35 * diff);
+    if (spikeHere) {
+      gap = Math.min(gap, r2.float(1.5, 2.3));
+      ny = Math.min(ny, y);
+    }
     const x0 = x + gap + (kind === 2 ? amp : 0);
     const period = r.float(2.6, 3.8) * 60;
     const c: Cloud = {
@@ -215,13 +252,26 @@ function genLevel(seed: number): { clouds: Cloud[]; stars: WStar[] } {
     } else if (r.chance(0.3)) {
       stars.push({ x: x0 + len * 0.5, y: ny + 1.0 + (kind === 1 ? amp : 0), got: false });
     }
+    if (spikeHere) {
+      const moving = diff > 0.55 && r2.chance(0.5);
+      spikes.push({
+        x: x + gap * 0.5,
+        y: y + prevAmp + 2.7,
+        amp: moving ? 0.35 : 0,
+        w: moving ? 1 / r2.float(90, 140) : 0,
+        ph: r2.next(),
+      });
+      // Sterne in diesem Bogen würden in den Ballon locken – tiefer legen
+      for (const st of stars) if (st.x > x && st.x < x0) st.y = Math.min(st.y, y + prevAmp + 1.0);
+    }
     clouds.push(c);
+    prevAmp = kind === 1 ? amp : 0;
     x = c.x1;
     y = ny;
     i++;
   }
   clouds.sort((a, b) => a.x0 - b.x0);
-  return { clouds, stars };
+  return { clouds, stars, spikes };
 }
 
 const hash01 = (i: number): number =>
@@ -255,6 +305,7 @@ function planHold(s: WolkenState, fromGround: boolean, aim: number, step: number
     for (let n = 0; n < 150; n++) {
       const t = s.t + 1 + n;
       const ev = advance(s.clouds, t, b, n < k, from);
+      if (s.safe <= n && hitsSpike(s.spikes, b.x, b.y, t)) break;
       if (ev === 1 || ev === 2) {
         const c = s.clouds[b.on] as Cloud;
         const ox = cloudOffX(c, t);
@@ -275,22 +326,26 @@ function planHold(s: WolkenState, fromGround: boolean, aim: number, step: number
 export const game: MiniGame<WolkenState> = {
   id: 'wolkenhuepfer',
   name: 'Wolkenhüpfer',
-  tagline: 'Hüpf von Wolke zu Wolke und sammle Sterne!',
+  tagline: 'Kurz tippen oder lange halten – jeder Sprung zählt!',
   instructions: [
-    'Dein Wölkchen-Läufer rennt von allein über die schwebenden Wolken.',
-    'Springe mit A über die Lücken – je länger du hältst, desto höher fliegst du.',
-    'Federwolken schleudern dich hoch, bewegliche Wolken wandern hin und her.',
-    'Drei Leben: Wer abstürzt, landet auf der letzten Wolke und verliert Zeit.',
+    'Du rennst von allein und immer schneller über die Wolken. A tippen = kleiner Hüpfer, halten = hoher Sprung.',
+    'Stachelballons über Lücken stoßen dich hinab – dort nur kurz tippen!',
+    'Federwolken schleudern dich hoch, blaue und lila Wolken wandern.',
+    'Strecke und Sterne zählen. Drei Leben – ein Absturz kostet Zeit.',
   ],
-  controls: { desktop: 'Leertaste gedrückt halten = höher springen', touch: 'Knopf A tippen oder halten' },
+  controls: {
+    desktop: 'Leertaste/Enter: tippen = flach, halten = hoch',
+    touch: 'Knopf A (oder Bildschirm) tippen oder halten',
+  },
   category: 'platform',
   duration: 30,
   touch: { stick: false, a: true, b: false },
   init(seed) {
-    const { clouds, stars } = genLevel(seed);
+    const { clouds, stars, spikes } = genLevel(seed);
     return {
       clouds,
       stars,
+      spikes,
       t: 0,
       x: 1,
       y: 0,
@@ -312,13 +367,15 @@ export const game: MiniGame<WolkenState> = {
       lands: 0,
       falls: 0,
       springs: 0,
+      bonks: 0,
+      safe: 0,
       over: false,
     };
   },
   step(s, input) {
     if (s.over) return;
     s.t++;
-    const held = !!input.a;
+    const held = !!(input.a || input.pd);
     const press = held && !s.prevA;
     s.prevA = held;
     s.held = held;
@@ -348,6 +405,15 @@ export const game: MiniGame<WolkenState> = {
       s.lands++;
       s.lastPlat = s.on;
     } else if (ev === 2) s.springs++;
+    if (s.safe > 0) s.safe--;
+    else if (!s.grounded && hitsSpike(s.spikes, s.x, s.y, s.t)) {
+      // Stachel: nach unten gestoßen, Sprung vorbei
+      s.bonks++;
+      s.safe = 40;
+      s.vy = Math.min(s.vy, -7);
+      s.jumping = false;
+      s.springing = false;
+    }
     if (s.y < KILL_Y) {
       s.lives--;
       s.falls++;
@@ -366,6 +432,7 @@ export const game: MiniGame<WolkenState> = {
       s.y = cloudTop(c, s.t);
       s.respawn = RESPAWN_TICKS;
       s.coyote = COYOTE;
+      s.safe = 0;
     }
     for (const st of s.stars) {
       if (st.got || Math.abs(st.x - s.x) > 1) continue;
@@ -385,6 +452,16 @@ export const game: MiniGame<WolkenState> = {
     if (s.over || s.respawn > 0) return { ...NEUTRAL_INPUT };
     const err = 1 - skill;
     const aim = (hash01(s.lastPlat * 3 + 1) - 0.5) * 2 * err * 3.2;
+    // Patzer: bei manchen Sprüngen verschätzt sich der Bot (falsche Haltedauer)
+    const blunder = hash01(s.lastPlat * 7 + s.falls * 131 + 3) < err * err * 1.0;
+    if (blunder) {
+      if (s.grounded) {
+        const c = s.clouds[s.on] as Cloud;
+        const ticks = (c.x1 + cloudOffX(c, s.t) + EDGE - s.x) / (speedAt(s.t) * DT);
+        return { ...NEUTRAL_INPUT, a: ticks <= 2.5 };
+      }
+      return { ...NEUTRAL_INPUT, a: s.jumping && s.vy > 0 && hash01(s.lastPlat + 11) < 0.5 };
+    }
     if (s.grounded) {
       const c = s.clouds[s.on] as Cloud;
       const edge = c.x1 + cloudOffX(c, s.t) + EDGE;

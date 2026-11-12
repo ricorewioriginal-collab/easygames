@@ -17,6 +17,15 @@ function gradientMap(): THREE.DataTexture {
 
 const cache = new Map<string, THREE.Material>();
 
+/** Weiches Randlicht (Fresnel): Figuren und Objekte heben sich plastisch vom Hintergrund ab – kostet nur ein paar Rechenschritte. */
+const addRim = (sh: { fragmentShader: string }): void => {
+  sh.fragmentShader = sh.fragmentShader.replace(
+    '#include <opaque_fragment>',
+    'float rimF = pow(1.0 - clamp(dot(normal, normalize(vViewPosition)), 0.0, 1.0), 3.0);\n' +
+      'outgoingLight += (diffuseColor.rgb * 0.6 + 0.2) * rimF * 0.5;\n#include <opaque_fragment>',
+  );
+};
+
 /** Toon-Material in einer Farbe (zwischengespeichert, wird beim Aufräumen NICHT freigegeben). */
 export function toon(
   color: number | string,
@@ -32,6 +41,8 @@ export function toon(
         ? { emissive: opts.emissive, emissiveIntensity: opts.emissiveIntensity ?? 1 }
         : {}),
     });
+    m.onBeforeCompile = addRim;
+    m.customProgramCacheKey = () => 'toon-rim';
     m.userData.shared = true;
     cache.set(key, m);
   }

@@ -5,11 +5,12 @@ import type { MiniGame } from '@shared/minigames/types';
 import type { App } from '../app/app';
 import type { Screen } from '../render/engine';
 import { MiniInput } from '../input/controls';
-import { MiniStage } from '../minigames/stage';
+import { MiniStage, type Rival } from '../minigames/stage';
+import type { Avatar } from '../minigames/viewTypes';
 import type { GameSession } from '../net/session';
 import { t } from '../i18n';
 import { btn, clear, h } from '../ui/dom';
-import { PLAYER_SYMBOLS, playerColor } from '../app/theme';
+import { PLAYER_SYMBOLS, playerColor, playerColorHex } from '../app/theme';
 
 /**
  * Führt die Minispiele durch: Anleitung → (Gerät weitergeben) → Countdown → Spiel → Ergebnis abgeben.
@@ -160,7 +161,13 @@ export class MinigameFlow {
       g,
       m.seed,
       { playerIndex: Math.max(0, idx), players: s.order.length },
-      { quality: this.app.engine.quality, sfx: (n) => this.app.audio.sfx(n), input: this.input },
+      {
+        quality: this.app.engine.quality,
+        sfx: (n) => this.app.audio.sfx(n),
+        input: this.input,
+        me: this.avatar(who),
+        rivals: this.rivalsFor(g, s, who),
+      },
     );
     this.stage = stage;
     this.hud = h('div', { class: 'mg-hud' }, h('span'), h('span'));
@@ -194,10 +201,29 @@ export class MinigameFlow {
     stage.running = !this.paused;
   }
 
-  /**
-   * Live-Punktestand aller Spieler im Minispiel. Bots laufen mit ihrem Seed Takt für Takt mit (gleiches Ergebnis wie
-   * im Spielkern), andere Menschen erscheinen, sobald ihr Ergebnis da ist.
-   */
+  /** Mitspieler fürs Minispiel: Figur, Farbe, Name; Bots laufen mit ihrem Seed Takt für Takt mit (gleiches Ergebnis wie im Spielkern) */
+  private rivalsFor(g: MiniGame, s: GameState, who: string): Rival[] {
+    const m = s.minigame;
+    if (!m) return [];
+    return s.order.flatMap((id, i) => {
+      if (id === who) return [];
+      const res = m.results[id];
+      const runner = res?.bot
+        ? new BotRunner(g, m.seed, { playerIndex: i, players: s.order.length }, res.bot.skill, res.bot.seed)
+        : null;
+      return [{ ...this.avatar(id), runner, id }];
+    });
+  }
+  private avatar(id: string): Avatar {
+    const p = this.session.players.find((x) => x.id === id);
+    return {
+      character: p?.character ?? 'pip',
+      color: playerColorHex(this.colorIdx(id)),
+      name: this.nameOf(id),
+    };
+  }
+
+  /** Live-Punktestand aller Spieler im Minispiel; andere Menschen erscheinen, sobald ihr Ergebnis da ist */
   private rivalBoard(
     g: MiniGame,
     s: GameState,
@@ -210,11 +236,8 @@ export class MinigameFlow {
     if (!m || s.order.length < 2) return { el, update: () => undefined };
     const team = (id: string): string =>
       m.mode === 'team' ? (m.teams[0]?.includes(id) ? ' A' : m.teams[1]?.includes(id) ? ' B' : '') : '';
-    const rows = s.order.map((id, i) => {
-      const res = m.results[id];
-      const ghost = res?.bot
-        ? new BotRunner(g, m.seed, { playerIndex: i, players: s.order.length }, res.bot.skill, res.bot.seed)
-        : null;
+    const rows = s.order.map((id) => {
+      const rival = stage.rivals.find((r) => r.id === id);
       const val = h('b', null, '…');
       const idx = this.colorIdx(id);
       const row = h(
@@ -224,23 +247,22 @@ export class MinigameFlow {
         val,
       );
       el.appendChild(row);
-      return { id, ghost, val, row, score: -1 };
+      return { id, runner: rival?.runner ?? null, val, row, score: -1 };
     });
     const update = (): void => {
       for (const r of rows) {
-        let sc: number | undefined;
-        if (r.id === who) sc = Math.max(0, g.score(stage.state) || 0);
-        else if (r.ghost) {
-          for (let n = 0; n < 12 && r.ghost.tick < stage.tick && !r.ghost.done; n++) r.ghost.step();
-          sc = r.ghost.score();
-        } else sc = this.session.state.minigame?.results[r.id]?.score;
+        const sc =
+          r.id === who
+            ? Math.max(0, g.score(stage.state) || 0)
+            : r.runner
+              ? r.runner.score()
+              : this.session.state.minigame?.results[r.id]?.score;
         if (sc === undefined) continue;
         const v = Math.round(sc);
         if (v === r.score) continue;
         r.score = v;
         r.val.textContent = String(v);
       }
-      // nach Punkten sortieren (nur wenn sich die Reihenfolge ändert)
       const sorted = rows.slice().sort((a, b) => b.score - a.score);
       if (sorted.some((r, i) => el.children[i] !== r.row)) for (const r of sorted) el.appendChild(r.row);
     };

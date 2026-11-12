@@ -1,33 +1,41 @@
 import { describe, expect, it } from 'vitest';
 import { Rng } from '../../rng';
-import { ANCHOR_X, ANCHOR_Y, SHOTS, game, type SlingState } from './schleuderflug';
+import { runBot } from '../simulate';
+import {
+  ANCHOR_X,
+  ANCHOR_Y,
+  ISLANDS,
+  MAX_TICKS,
+  WIND_PERIOD,
+  game,
+  streakBonus,
+  type SlingState,
+} from './schleuderflug';
 import { NEUTRAL_INPUT } from '../types';
 
 const opts = { playerIndex: 0, players: 2 };
 
 describe('Schleuderflug', () => {
-  it('erzeugt für dasselbe Seed dieselben Inseln und denselben Wind', () => {
+  it('erzeugt für dasselbe Seed dieselben Inseln und denselben Wind, der Wind wird stärker', () => {
     const a = game.init(5, opts);
     const b = game.init(5, opts);
     expect(a.islands).toEqual(b.islands);
     expect(a.winds).toEqual(b.winds);
     expect(game.init(6, opts).winds).not.toEqual(a.winds);
-    expect(a.winds.length).toBe(SHOTS);
-    // fernere Inseln geben mehr Punkte
-    const sorted = [...a.islands].sort(
-      (p, q) => Math.hypot(p.x - ANCHOR_X, p.y0 - ANCHOR_Y) - Math.hypot(q.x - ANCHOR_X, q.y0 - ANCHOR_Y),
-    );
-    expect(sorted[sorted.length - 1]!.pts).toBeGreaterThanOrEqual(sorted[0]!.pts);
+    expect(a.islands.length).toBe(ISLANDS);
+    expect(a.winds.length).toBeGreaterThanOrEqual(MAX_TICKS / WIND_PERIOD);
+    const first = Math.abs(a.winds[0]!);
+    const last = Math.abs(a.winds[a.winds.length - 1]!);
+    expect(last).toBeGreaterThan(first);
   });
 
-  it('Tastatur: Halten und Loslassen von A schießt, Wind verschiebt die Flugbahn', () => {
+  it('Tastatur: A drücken schießt, Wind verschiebt die Flugbahn', () => {
     const land = (wind: number): number => {
       const s: SlingState = game.init(5, opts);
-      s.winds[0] = wind;
-      s.wind = wind;
-      s.islands = [];
+      s.winds = s.winds.map(() => wind);
+      s.islands.forEach((i) => (i.respawn = 9999));
       for (let i = 0; i < 12; i++) game.step(s, NEUTRAL_INPUT);
-      for (let i = 0; i < 5; i++) game.step(s, { ...NEUTRAL_INPUT, a: true });
+      game.step(s, { ...NEUTRAL_INPUT, a: true });
       expect(s.phase).toBe('aim');
       game.step(s, NEUTRAL_INPUT); // loslassen
       expect(s.phase).toBe('fly');
@@ -38,27 +46,53 @@ describe('Schleuderflug', () => {
       }
       return last;
     };
-    expect(land(0.4)).toBeGreaterThan(land(0) + 0.1);
-    expect(land(-0.4)).toBeLessThan(land(0) - 0.1);
+    expect(land(0.5)).toBeGreaterThan(land(0) + 0.1);
+    expect(land(-0.5)).toBeLessThan(land(0) - 0.1);
   });
 
-  it('ein präziser Bot trifft die meisten Inseln, Mitteltreffer geben Bonus', () => {
-    let hits = 0;
-    let bulls = 0;
-    for (let k = 0; k < 6; k++) {
-      const s: SlingState = game.init(40 + k, opts);
-      const rng = new Rng(9 + k);
-      let t = 0;
-      while (!game.done(s) && t < 2200) {
-        game.step(s, game.bot(s, 1, rng));
-        t++;
-      }
-      hits += s.hits;
-      bulls += s.bulls;
-      expect(s.points).toBeGreaterThanOrEqual(s.hits * 20);
+  it('getroffene Inseln tauchen neu auf, Serien geben Bonus, Fehlschuss beendet die Serie', () => {
+    expect(streakBonus(1)).toBe(0);
+    expect(streakBonus(3)).toBe(20);
+    const s: SlingState = game.init(40, opts);
+    const rng = new Rng(9);
+    let t = 0;
+    const seen = new Set<number>();
+    while (!game.done(s) && t < MAX_TICKS + 5) {
+      game.step(s, game.bot(s, 1, rng));
+      s.islands.forEach((i) => seen.add(i.id));
+      t++;
     }
-    expect(hits).toBeGreaterThanOrEqual(28);
-    expect(bulls).toBeGreaterThan(0);
+    expect(s.hits).toBeGreaterThanOrEqual(8);
+    expect(seen.size).toBeGreaterThan(ISLANDS + 4);
+    expect(s.bestStreak).toBeGreaterThanOrEqual(2);
+    expect(s.points).toBeGreaterThanOrEqual(s.hits * 20);
+    // Fehlschuss: senkrecht nach oben ins Leere
+    const m: SlingState = game.init(40, opts);
+    m.streak = 3;
+    m.islands.forEach((i) => (i.respawn = 9999));
+    for (let i = 0; i < 6; i++) game.step(m, NEUTRAL_INPUT);
+    game.step(m, { ...NEUTRAL_INPUT, a: true });
+    while (m.phase !== 'wait') game.step(m, NEUTRAL_INPUT);
+    expect(m.streak).toBe(0);
+    expect(m.last.hit).toBe(false);
+  });
+
+  it('flottes Tempo: ein guter Bot schießt in 30 s mindestens 14-mal', () => {
+    const s: SlingState = game.init(3, opts);
+    const rng = new Rng(2);
+    while (!game.done(s)) game.step(s, game.bot(s, 0.88, rng));
+    expect(s.shot).toBeGreaterThanOrEqual(14);
+  });
+
+  it('Bot-Stufen: stark > mittel > schwach', () => {
+    const avg = (sk: number) => {
+      let sum = 0;
+      for (let i = 0; i < 6; i++) sum += runBot(game, 30 + i, opts, sk, i).score;
+      return sum / 6;
+    };
+    const [mid, hi] = [avg(0.6), avg(0.88)];
+    expect(hi).toBeGreaterThan(mid);
+    expect(mid).toBeGreaterThan(avg(0.1));
   });
 
   it('Zeiger: Ziehen und Loslassen schießt; zu schwach gezogen = kein Schuss', () => {

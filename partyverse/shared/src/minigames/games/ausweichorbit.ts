@@ -4,7 +4,9 @@ import { NEUTRAL_INPUT } from '../types';
 import { clamp, lerp } from '../util';
 
 /**
- * Ausweich-Orbit: Auf einem Ring weichen Kometen, rotierenden Balken und Druckwellen aus und sammle Münzen.
+ * Ausweich-Orbit: Auf einem Ring weichen Kometen, rotierenden Balken, Druckwellen und Sonnen-Eruptionen
+ * (ein ganzer Sektor glüht auf) aus und sammle Münzen. Münzen in Serie (ohne Treffer) werden mehr wert.
+ * Die Muster werden über die Spielzeit schneller und kommen später auch gleichzeitig.
  * Welt: Ebene (x, z). Spieler in Polarkoordinaten (ang, rad). x > 0 bewegt nach rechts (Winkel sinkt),
  * y > 0 bewegt Richtung Mitte (Radius sinkt). Die Ansicht dreht die Kamera hinter den Spieler.
  */
@@ -30,6 +32,15 @@ export interface Wave {
   gap: number;
   gapH: number;
 }
+export interface Flare {
+  /** Mitte des Sektors */
+  a: number;
+  /** halbe Breite (Radiant) */
+  h: number;
+  t: number;
+  warn: number;
+  dur: number;
+}
 export interface Coin {
   a: number;
   r: number;
@@ -51,7 +62,11 @@ export interface OrbitState {
   comets: Comet[];
   beams: Beam[];
   waves: Wave[];
+  flares: Flare[];
   field: Coin[];
+  /** Münzen in Folge ohne Treffer */
+  chain: number;
+  coinPts: number;
   nextSpawn: number;
   hitCount: number;
   over: boolean;
@@ -64,6 +79,7 @@ const PLAYER_R = 0.35;
 const MAX_TICKS = 30 * 60;
 export const COMET_START = R_MAX + 2.6;
 export const WAVE_START = 1.6;
+export const coinValue = (chain: number): number => Math.min(50, 25 + 5 * chain);
 
 const TAU = Math.PI * 2;
 export const wrapPi = (a: number): number => {
@@ -79,10 +95,21 @@ function spawnCoin(s: OrbitState, wait: number): Coin {
 function spawnPattern(s: OrbitState): void {
   const h = s.hz;
   const sec = s.tick / 60;
-  const d = clamp(sec / 34, 0, 1);
+  const d = clamp(sec / 27, 0, 1);
   const roll = h.next();
+  const comboRoll = h.next();
   let extra = 0;
-  if (sec > 4 && s.beams.length === 0 && roll < 0.24) {
+  if (sec > 7 && s.flares.length === 0 && roll >= 0.24 && roll < 0.36) {
+    // Sonnen-Eruption: ein ganzer Sektor glüht auf – rechtzeitig seitlich herauslaufen
+    s.flares.push({
+      a: h.float(0, TAU),
+      h: lerp(0.45, 0.62, d),
+      t: 0,
+      warn: Math.round(lerp(72, 56, d)),
+      dur: 34,
+    });
+    extra = 30;
+  } else if (sec > 4 && s.beams.length === 0 && roll < 0.24) {
     const dir = h.chance(0.5) ? 1 : -1;
     s.beams.push({
       a: h.float(0, TAU),
@@ -103,7 +130,9 @@ function spawnPattern(s: OrbitState): void {
       gapH: lerp(0.58, 0.46, d),
     });
     extra = 45;
-  } else {
+  }
+  // Ab der zweiten Hälfte kommen Kometen auch zusätzlich zu Balken/Welle/Eruption
+  if (extra === 0 || (d > 0.45 && comboRoll < lerp(0, 0.6, (d - 0.45) / 0.55))) {
     let n = 1;
     if (d > 0.3 && h.chance(0.5)) n++;
     if (d > 0.65 && h.chance(0.55)) n++;
@@ -115,8 +144,11 @@ function spawnPattern(s: OrbitState): void {
         warn: 40 + i * 12,
       });
   }
-  s.nextSpawn = s.tick + Math.round(lerp(64, 30, d) * h.float(0.85, 1.15)) + extra;
+  s.nextSpawn = s.tick + Math.round(lerp(62, 26, d) * h.float(0.85, 1.15)) + extra;
 }
+
+/** Liegt ein Winkel im Sektor einer Eruption? */
+export const inFlare = (f: Flare, ang: number): boolean => Math.abs(wrapPi(ang - f.a)) < f.h;
 
 /** Trifft ein Spieler an (ang, rad) in `dt` Ticks (ab dem aktuellen Zustand) ein Hindernis? Liest nur. */
 export function hitAt(s: OrbitState, ang: number, rad: number, dt: number): boolean {
@@ -146,6 +178,10 @@ export function hitAt(s: OrbitState, ang: number, rad: number, dt: number): bool
     const g2 = Math.abs(wrapPi(ang - w.gap - Math.PI));
     if (g1 > w.gapH && g2 > w.gapH) return true;
   }
+  for (const f of s.flares) {
+    const t = f.t + dt;
+    if (t >= f.warn && t < f.warn + f.dur && inFlare(f, ang)) return true;
+  }
   return false;
 }
 
@@ -161,17 +197,17 @@ export function movePlayer(ang: number, rad: number, x: number, y: number): { an
   return { ang: ang - (mx * SPEED) / nr, rad: nr };
 }
 
-export const score = (s: OrbitState): number => Math.floor((s.tick * 10) / 60) + s.coins * 25;
+export const score = (s: OrbitState): number => Math.floor((s.tick * 10) / 60) + s.coinPts;
 
 export const game: MiniGame<OrbitState> = {
   id: 'ausweichorbit',
   name: 'Ausweich-Orbit',
-  tagline: 'Kreise um die Sonne und weiche aus!',
+  tagline: 'Kreise um die Sonne – und weich allem aus, was sie schleudert!',
   instructions: [
-    'Du läufst auf einem Ring um eine leuchtende Sonne.',
-    'Weiche Kometen, rotierenden Balken und Druckwellen aus – Warnmarken zeigen, wo es gleich knallt.',
-    'Sammle Münzen für Extrapunkte. Nach drei Treffern ist Schluss.',
-    'Pro Sekunde gibt es 10 Punkte, pro Münze 25.',
+    'Lauf auf dem Ring um die Sonne. Blinkende Warnmarken zeigen, wo es gleich knallt.',
+    'Kometen, Balken, Druckwellen (durch die Lücke!) und Eruptionen: Raus aus dem glühenden Sektor!',
+    'Münzen in Serie werden mehr wert (25 bis 50) – ein Treffer beendet die Serie.',
+    '10 Punkte pro Sekunde. Nach drei Treffern ist Schluss, und es wird immer wilder.',
   ],
   controls: { desktop: 'Pfeiltasten/WASD: um den Ring laufen, nach innen und außen', touch: 'Stick bewegen' },
   category: 'survival',
@@ -193,7 +229,10 @@ export const game: MiniGame<OrbitState> = {
       comets: [],
       beams: [],
       waves: [],
+      flares: [],
       field: [],
+      chain: 0,
+      coinPts: 0,
       nextSpawn: 70,
       hitCount: 0,
       over: false,
@@ -225,11 +264,14 @@ export const game: MiniGame<OrbitState> = {
       if (w.t > w.warn) w.r += w.v;
     }
     s.waves = s.waves.filter((w) => w.r < R_MAX + 1.5);
+    for (const f of s.flares) f.t++;
+    s.flares = s.flares.filter((f) => f.t < f.warn + f.dur);
     if (s.inv > 0) s.inv--;
     else if (hitAt(s, s.ang, s.rad, 0)) {
       s.lives--;
       s.hitCount++;
       s.inv = 100;
+      s.chain = 0;
     }
     const px = s.rad * Math.cos(s.ang);
     const pz = s.rad * Math.sin(s.ang);
@@ -247,6 +289,8 @@ export const game: MiniGame<OrbitState> = {
       const dz = pz - c.r * Math.sin(c.a);
       if (dx * dx + dz * dz < 1.0) {
         s.coins++;
+        s.coinPts += coinValue(s.chain);
+        s.chain++;
         s.field[i] = spawnCoin(s, 80);
       }
     }
@@ -255,7 +299,7 @@ export const game: MiniGame<OrbitState> = {
   done: (s) => s.over,
   score,
   bot(s, skill, rng): InputFrame {
-    if (rng.next() < (1 - skill) * 0.3) {
+    if (rng.next() < (1 - skill) * 0.35) {
       return { ...NEUTRAL_INPUT, x: rng.range(-1, 1), y: rng.range(-1, 1) };
     }
     const H = Math.round(lerp(7, 32, skill));
@@ -263,7 +307,7 @@ export const game: MiniGame<OrbitState> = {
     const pz = s.rad * Math.sin(s.ang);
     let coin: Coin | null = null;
     let best = Infinity;
-    if (skill > 0.25) {
+    if (skill > 0.2) {
       for (const c of s.field) {
         if (c.wait > 0) continue;
         const d = Math.hypot(px - c.r * Math.cos(c.a), pz - c.r * Math.sin(c.a));
@@ -272,6 +316,8 @@ export const game: MiniGame<OrbitState> = {
           coin = c;
         }
       }
+      // Schwächere Spieler sehen nur Münzen in der Nähe
+      if (best > lerp(0, 20, skill)) coin = null;
     }
     let bestCost = Infinity;
     let bx = 0;
@@ -360,6 +406,11 @@ export const game: MiniGame<OrbitState> = {
   hud: (s) => ({
     left: `Leben ${Math.max(0, s.lives)}/3`,
     right: `${score(s)} Pkt`,
-    hint: s.inv > 0 && s.lives > 0 ? 'Autsch!' : `${s.coins} Münzen`,
+    hint:
+      s.inv > 0 && s.lives > 0
+        ? 'Autsch!'
+        : s.flares.some((f) => f.t < f.warn && inFlare(f, s.ang))
+          ? 'Eruption – raus aus dem Sektor!'
+          : `${s.coins} Münzen${s.chain >= 2 ? ` · Serie ×${s.chain}` : ''}`,
   }),
 };
