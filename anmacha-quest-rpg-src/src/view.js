@@ -23,7 +23,7 @@ const GradeShader = {
       gl_FragColor = vec4(mix(c, clamp(g, 0.0, 1.0), amt), t.a);
     }`
 };
-import { THEMES, ENEMIES } from './data.js';
+import { THEMES, ENEMIES, CAPSULES } from './data.js';
 import * as L from './logic.js';
 import * as A from './assets.js';
 import { groundTex, blobTex } from './textures.js';
@@ -284,7 +284,7 @@ export class View {
     const theme = baseTheme(map.world ? 'town' : map.theme);
     const need = new Set(['town/road.glb', 'town/wall-block.glb', 'dungeon/wall.glb', 'forest/rocks-high.glb', 'town/rock-large.glb', 'grave/crypt.glb', 'bld_2Story_Slim_Mat.glb', 'bld_2Story_GableRoof_Mat.glb']);
     for (let y = 0; y < S.mh; y++) for (let x = 0; x < S.mw; x++) if (map.rows[y][x] === 'T') for (const t of treesFor(L.themeKeyAt(S, x, y))) need.add(t[0]);
-    if (S.mapId === 'hub') { for (const h of HOUSES) need.add(`bld_${h}.glb`); need.add('bld_1Story_Sign_Mat.glb'); need.add('town/fountain-round.glb'); }
+    if (map.town) { for (const h of HOUSES) need.add(`bld_${h}.glb`); need.add('bld_1Story_Sign_Mat.glb'); need.add('town/fountain-round.glb'); }
     const models = {};
     await Promise.all([...need].map(async p => { models[p] = await A.load(p); }));
     if (token !== this.buildToken) return;
@@ -292,7 +292,7 @@ export class View {
     const { sunDir, v } = this.setupSky(this.world, theme, this.qi >= 2 ? 22 : 16);
     this.theme = theme;
     this.renderer.toneMappingExposure = v.expo;
-    const outdoorMap = map.world || S.mapId === 'hub';
+    const outdoorMap = map.world || map.town;
     this.terrain = this.buildTerrain(S, outdoorMap);
     this.world.add(this.terrain.mesh);
     // Wasser/Lava/Leere
@@ -457,7 +457,7 @@ export class View {
     geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
     geo.computeVertexNormals();
     const theme = baseTheme(map.world ? 'town' : map.theme);
-    const kind = map.world || S.mapId === 'hub' ? 'grass' : (theme === 'rap' || theme === 'static' ? 'tile' : (theme === 'rock' ? 'crack' : (theme === 'xmas' ? 'snow' : 'grass')));
+    const kind = map.world || map.town ? 'grass' : (theme === 'rap' || theme === 'static' ? 'tile' : (theme === 'rock' ? 'crack' : (theme === 'xmas' ? 'snow' : 'grass')));
     const tex = groundTex(kind);
     const rep = kind === 'tile' ? 0.5 : 0.35;
     const map0 = tex.map.clone(), nm = tex.normal.clone();
@@ -866,7 +866,16 @@ export class View {
   // ---------------------------------------------------------------- pro Bild
   shake(t) { if (this.g.mode === 2) this.battle.shakeT = Math.max(this.battle.shakeT || 0, t); else this.shakeT = Math.max(this.shakeT, t); }
   screenPos(side, i, lift) { const p = this.battle.pos(side, i, lift); return p ? this.project(p) : null; }
-  battleBegin(bg, enemies, party) { return this.battle.begin(bg, enemies, party); }
+  battleBegin(bg, enemies, party, cap) { return this.battle.begin(bg, enemies, party, cap); }
+  battleCap(k, t) { this.battle.capsule(k, t); }
+  async actorCapsule(c) {
+    const f = CAPSULES[c.id].forms[c.form];
+    const gl = await A.load(`mon_${f.model}.glb`);
+    const a = A.makeActor(gl, f.h, f.tint);
+    this.addBlob(a.root, f.h);
+    A.playLoop(a, 'idle');
+    return a;
+  }
   battleEnd() { this.battle.end(); this.renderer.toneMappingExposure = VIS[this.theme || 'town'].expo; }
   battleHero(i, k, t) { this.battle.hero(i, k, t); }
   battleEnemy(i, k, t) { this.battle.enemy(i, k, t); }
@@ -982,7 +991,7 @@ export class View {
   // Höhe der Hindernisse eines Feldes (für die Kamera)
   obstacleAt(x, z) {
     const S = this.g.S, tx = Math.floor(x), ty = Math.floor(z);
-    if (tx < 0 || ty < 0 || tx >= S.mw || ty >= S.mh) return S.map.world || S.mapId === 'hub' ? -1 : 1.3;
+    if (tx < 0 || ty < 0 || tx >= S.mw || ty >= S.mh) return S.map.world || S.map.town ? -1 : 1.3;
     const ch = S.map.rows[ty][tx];
     const g = this.heightAt(x, z);
     if (ch === '#') return 1.3;

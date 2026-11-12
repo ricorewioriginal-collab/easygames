@@ -10,3 +10,66 @@ export const ITEMS = {"trank": {"name": "Trank", "price": 20, "desc": "Heilt 70 
 export const KEYNAMES = {"key_rap": "Echo-Schlüssel", "key_schlager": "Rosen-Schlüssel", "key_xmas": "Frost-Schlüssel", "key_rock": "Glut-Schlüssel", "key_tower": "Stille-Schlüssel"};
 export const ENEMIES = {"beatbandit": {"name": "Moospanda", "lv": 1, "hpm": 1.0, "atkm": 1.0, "defm": 1.0, "dir": "cute", "model": "Panda", "tint": "", "h": 1.0}, "reimruepel": {"name": "Wildeber", "lv": 2, "hpm": 1.0, "atkm": 1.1, "defm": 0.9, "dir": "cute", "model": "Pig", "tint": "", "h": 1.0}, "bassgolem": {"name": "Höhlenyeti", "lv": 3, "hpm": 1.5, "atkm": 1.0, "defm": 1.4, "dir": "cute", "model": "Yeti", "tint": "#6a7ad8", "h": 1.35}, "boombox": {"name": "Dornkaktus", "lv": 1, "hpm": 1.2, "atkm": 1.1, "defm": 1.0, "dir": "cute", "model": "Cactus", "tint": "", "h": 1.0}, "graffiti": {"name": "Irrlicht", "lv": 2, "hpm": 0.8, "atkm": 1.2, "defm": 0.8, "dir": "cute", "model": "Ghost", "tint": "#ff9ad8", "h": 1.0}, "mikspin": {"name": "Grottenpinguin", "lv": 3, "hpm": 1.0, "atkm": 1.1, "defm": 1.0, "dir": "cute", "model": "Penguin", "tint": "#9a9aff", "h": 1.0}, "gecko": {"name": "Rosenkrabbe", "lv": 7, "hpm": 1.1, "atkm": 1.0, "defm": 1.1, "dir": "cute", "model": "Crab", "tint": "#ff7ac8", "h": 1.0}, "schleim": {"name": "Honigschleim", "lv": 8, "hpm": 1.3, "atkm": 0.9, "defm": 1.1, "dir": "monsters4", "model": "Slime", "tint": "#ffe36b", "h": 1.05}, "aal": {"name": "Sporenpilz", "lv": 9, "hpm": 1.1, "atkm": 1.2, "defm": 1.0, "dir": "cute", "model": "Mushroom", "tint": "", "h": 1.0}, "disco": {"name": "Dornbiene", "lv": 7, "hpm": 0.8, "atkm": 1.2, "defm": 0.8, "dir": "cute", "model": "Bee", "tint": "#ff9ae8", "h": 1.0}, "herz": {"name": "Blütenhirsch", "lv": 8, "hpm": 1.3, "atkm": 1.1, "defm": 1.3, "dir": "cute", "model": "Deer", "tint": "#ffb0c0", "h": 1.1}, "zuckerg": {"name": "Feenküken", "lv": 9, "hpm": 0.9, "atkm": 1.2, "defm": 0.9, "dir": "cute", "model": "Chicken", "tint": "#ffc0e8", "h": 0.9}, "geist": {"name": "Frostgeist", "lv": 12, "hpm": 0.9, "atkm": 1.1, "defm": 0.9, "dir": "cute", "model": "Ghost", "tint": "#bfe8ff", "h": 1.0}, "lebkuchen": {"name": "Eiswurzler", "lv": 13, "hpm": 1.5, "atkm": 1.0, "defm": 1.4, "dir": "cute", "model": "Tree", "tint": "", "h": 1.2}, "schneemann": {"name": "Schneeyeti", "lv": 14, "hpm": 1.2, "atkm": 1.2, "defm": 1.0, "dir": "cute", "model": "Yeti", "tint": "", "h": 1.3}, "eisratte": {"name": "Eisfledermaus", "lv": 12, "hpm": 1.0, "atkm": 1.2, "defm": 0.9, "dir": "cute", "model": "Bat", "tint": "#a0d8ff", "h": 1.0}, "eisspin": {"name": "Frostrentier", "lv": 13, "hpm": 1.0, "atkm": 1.2, "defm": 1.0, "dir": "cute", "model": "Deer", "tint": "#d8c8a0", "h": 1.1}, "zwerg": {"name": "Eiskobold", "lv": 14, "hpm": 1.1, "atkm": 1.2, "defm": 1.0, "dir": "cute", "model": "Demon", "tint": "#c03a3a", "h": 1.0}, "gargoyle": {"name": "Glutdämon", "lv": 17, "hpm": 1.1, "atkm": 1.1, "defm": 1.1, "dir": "cute", "model": "GreenDemon", "tint": "", "h": 1.1}, "mole": {"name": "Lavazyklop", "lv": 18, "hpm": 1.3, "atkm": 1.1, "defm": 1.1, "dir": "cute", "model": "Cyclops", "tint": "", "h": 1.2}, "verstaerker": {"name": "Aschenkrieger", "lv": 19, "hpm": 1.5, "atkm": 1.2, "defm": 1.3, "dir": "monsters4", "model": "Skeleton", "tint": "", "h": 1.4}, "rifffled": {"name": "Rußfledermaus", "lv": 17, "hpm": 0.8, "atkm": 1.3, "defm": 0.8, "dir": "cute", "model": "Bat", "tint": "#5a4a6a", "h": 1.0}, "daemon": {"name": "Flammenschädel", "lv": 18, "hpm": 1.3, "atkm": 1.3, "defm": 1.0, "dir": "cute", "model": "Skull", "tint": "#ff9a5a", "h": 1.0}, "roadie": {"name": "Magmakraken", "lv": 19, "hpm": 0.9, "atkm": 1.2, "defm": 0.9, "dir": "cute", "model": "Cthulhu", "tint": "#7a5ad8", "h": 1.2}, "schemen": {"name": "Leerwandler", "lv": 22, "hpm": 1.0, "atkm": 1.1, "defm": 1.0, "dir": "cute", "model": "Alien", "tint": "#c0c0d0", "h": 1.0}, "stoersignal": {"name": "Schattenseher", "lv": 23, "hpm": 1.3, "atkm": 1.1, "defm": 1.1, "dir": "cute", "model": "Alien_Tall", "tint": "#7cff9a", "h": 1.2}, "kreischer": {"name": "Stillschreier", "lv": 24, "hpm": 1.5, "atkm": 1.2, "defm": 1.2, "dir": "cute", "model": "Bat", "tint": "#ffffff", "h": 1.1}, "antspin": {"name": "Nichtsmotte", "lv": 22, "hpm": 1.0, "atkm": 1.3, "defm": 1.0, "dir": "cute", "model": "Bee", "tint": "#7cff9a", "h": 1.0}, "rausritter": {"name": "Stilleritter", "lv": 23, "hpm": 1.3, "atkm": 1.2, "defm": 1.3, "dir": "monsters4", "model": "Skeleton", "tint": "#c0c8d8", "h": 1.5}, "zyklop": {"name": "Leerenzyklop", "lv": 24, "hpm": 1.5, "atkm": 1.2, "defm": 1.2, "dir": "cute", "model": "Cyclops", "tint": "#7cffb0", "h": 1.3}, "mcdroehn": {"name": "Vorgal der Grollende", "lv": 5, "hpm": 4.2, "atkm": 1.15, "defm": 1.2, "boss": true, "spec": ["Grollbeben", 0.85, true], "dir": "cute", "model": "Demon", "tint": "#ff4a6a", "h": 2.4}, "koenigin": {"name": "Seraphine, die Dornenkönigin", "lv": 10, "hpm": 6.0, "atkm": 1.4, "defm": 1.2, "boss": true, "spec": ["Dornenregen", 0.85, true], "dir": "cute", "model": "YellowDragon", "tint": "#ff6ac0", "h": 2.6}, "frostmod": {"name": "Kryos, der Eisfürst", "lv": 15, "hpm": 6.5, "atkm": 1.55, "defm": 1.2, "boss": true, "spec": ["Eiszeit", 0.85, true], "dir": "cute", "model": "Yeti", "tint": "#6ad0ff", "h": 2.8}, "riff": {"name": "Pyrax, der Glutdrache", "lv": 20, "hpm": 7.0, "atkm": 1.7, "defm": 1.2, "boss": true, "spec": ["Feuersturm", 0.85, true], "dir": "monsters4", "model": "Dragon", "tint": "#ff5030", "h": 3.4}, "rauschen": {"name": "Nihl, die Stille", "lv": 26, "hpm": 9.0, "atkm": 1.85, "defm": 1.25, "boss": true, "spec": ["Totenstille", 0.9, true], "dir": "cute", "model": "Cthulhu", "tint": "#e8e8f8", "h": 3.4}};
 export const THEMES = {"town": ["#3f8f4a", "#3a8644", "#2a5a6a", "#1f6a35", "#ffd24a", 0], "rap": ["#2a2438", "#2f2a42", "#14101e", "#0c0a14", "#ff4a6a", 1], "schlager": ["#e8a3c8", "#e29abf", "#a04a80", "#ffd24a", "#ff3aa0", 2], "xmas": ["#cfe8f6", "#c2dff0", "#4a7a9a", "#2f8a4a", "#ff3a3a", 0], "rock": ["#3a2a28", "#42302c", "#1a0f0e", "#6a3a2a", "#ff7a1a", 3], "static": ["#2a2e36", "#30343e", "#10121a", "#505868", "#7cff9a", 1]};
+
+// ---------------------------------------------------------------- Stufe 2: Lindmark, Kapselgeister, neue Items
+MAPS.hub.town = true;
+MAPS.lind = {
+  name: 'Lindmark', theme: 'town', town: true, enc: [], rate: 0.0, lv: 1, npcs: [
+    { x: 7, y: 3, kind: 'inn', name: 'Wirtin Elsbeth' }, { x: 17, y: 3, kind: 'smith', name: 'Schmied Torvald' },
+    { x: 20, y: 7, kind: 'trader', name: 'Händler Quinn' }, { x: 5, y: 7, kind: 'sage', name: 'Kapselgelehrte Mirela' },
+    { x: 16, y: 10, kind: 'kid2', name: 'Nele' }],
+  chests: [{ id: 'lind_c1', x: 2, y: 1, kind: 'item', v: 'frucht', n: 1 }], boss: {},
+  portals: [{ x: 12, y: 12, to: 'welt', req: '', label: 'Ausgang', kind: 'exit', ax: 36, ay: 13 }],
+  rows: [
+    '~~~~~~~~~~~~~~~~~~~~~~~~~~',
+    '~#..T.hhh.......hhh...T.#~',
+    '~#....HSH...T...HDH.....#~',
+    '~#.....p.........p......#~',
+    '~#.....ppppppppppp..,...#~',
+    '~#..hhh....ppp.....hhh..#~',
+    '~#..HDH....ppp.....HSH..#~',
+    '~#...p.....ppp......p...#~',
+    '~#...ppppppppppppppppp..#~',
+    '~#T........ppp........T.#~',
+    '~#..,......ppp....,.....#~',
+    '~#TT.......ppp.......TT.#~',
+    '~..........ppp...........~',
+    '~~~~~~~~~~~~~~~~~~~~~~~~~~']
+};
+MAPS.welt.portals.push({ x: 36, y: 12, to: 'lind', req: 'boss_rap', label: 'Lindmark', kind: 'town', ax: 12, ay: 11 });
+// Kapselgeister in den Reichen
+MAPS.rap.chests.push({ id: 'cap_flamm', x: 13, y: 12, kind: 'capsule', v: 'flamm' });
+MAPS.schlager.chests.push({ id: 'cap_moos', x: 8, y: 7, kind: 'capsule', v: 'moos' });
+MAPS.xmas.chests.push({ id: 'cap_frost', x: 5, y: 4, kind: 'capsule', v: 'frost' });
+MAPS.rock.chests.push({ id: 'cap_summ', x: 3, y: 2, kind: 'capsule', v: 'summ' });
+MAPS.tower.chests.push({ id: 'cap_drak', x: 6, y: 6, kind: 'capsule', v: 'drak' });
+
+// Item-Arten: use = 'hero' (auf Helden), 'enemy' (auf alle Gegner, nur im Kampf), 'capsule' (nur zum Füttern)
+Object.assign(ITEMS, {
+  grosstrank: { name: 'Großtrank', price: 80, desc: 'Heilt 250 LP' },
+  aetherflask: { name: 'Ätherflasche', price: 180, desc: 'Gibt 60 SP' },
+  bombe: { name: 'Glutbombe', price: 90, desc: 'Trifft alle Gegner', use: 'enemy' },
+  frucht: { name: 'Sphärenfrucht', price: 400, desc: 'Lässt einen Kapselgeist sich entwickeln', use: 'capsule' }
+});
+export const SHOPS = { hub: ['trank', 'aether', 'weck'], lind: ['trank', 'grosstrank', 'aether', 'aetherflask', 'weck', 'bombe', 'frucht'] };
+// Futterwert (EXP für den Kapselgeist)
+export const FEED = { trank: 25, grosstrank: 70, aether: 50, aetherflask: 140, weck: 90, bombe: 60 };
+
+// Kapselgeister: eigenständige Begleiter, die im Kampf selbst handeln. Drei Gestalten je Geist (ab Stufe 8 und 16 mit Sphärenfrucht).
+export const CAPSULES = {
+  flamm: { elem: 'Feuer', col: '#ff8a3a', hp: 40, hpg: 11, atk: 10, atkg: 2.6, mag: 9, magg: 2.4, spd: 9, spdg: 0.7,
+    forms: [{ name: 'Flämmchen', model: 'Ghost', tint: '#ffa060', h: 0.9 }, { name: 'Glutgeist', model: 'Ghost', tint: '#ff6a2a', h: 1.25 }, { name: 'Sonnenphönix', model: 'YellowDragon', tint: '#ffb040', h: 1.7 }],
+    skills: [{ name: 'Funkenwurf', kind: 'mag', mult: 1.6, all: false }, { name: 'Flammenkreis', kind: 'mag', mult: 1.2, all: true }, { name: 'Sonnensturm', kind: 'mag', mult: 1.9, all: true }] },
+  moos: { elem: 'Erde', col: '#6ad05a', hp: 56, hpg: 15, atk: 9, atkg: 2.2, mag: 8, magg: 2.2, spd: 5, spdg: 0.4,
+    forms: [{ name: 'Moosling', model: 'Slime', tint: '#7ae06a', h: 0.8 }, { name: 'Moosgolem', model: 'Tree', tint: '#9ad07a', h: 1.4 }, { name: 'Waldhüter', model: 'Tree', tint: '#5ac05a', h: 1.9 }],
+    skills: [{ name: 'Rankenhieb', kind: 'phys', mult: 1.5, all: false }, { name: 'Heilmoos', kind: 'heal', mult: 2.2, all: true }, { name: 'Erdbeben', kind: 'phys', mult: 1.5, all: true }] },
+  frost: { elem: 'Wasser', col: '#6ac8ff', hp: 48, hpg: 13, atk: 11, atkg: 2.8, mag: 7, magg: 1.8, spd: 7, spdg: 0.6,
+    forms: [{ name: 'Frostling', model: 'Penguin', tint: '#a0dcff', h: 0.8 }, { name: 'Eisbär', model: 'Yeti', tint: '#c0e8ff', h: 1.4 }, { name: 'Gletscherkönig', model: 'Yeti', tint: '#7ab8ff', h: 1.9 }],
+    skills: [{ name: 'Eiskralle', kind: 'phys', mult: 1.7, all: false }, { name: 'Frosthauch', kind: 'mag', mult: 1.2, all: true }, { name: 'Gletscherwall', kind: 'guard', mult: 0, all: true }] },
+  summ: { elem: 'Wind', col: '#ffe04a', hp: 38, hpg: 10, atk: 12, atkg: 3.0, mag: 8, magg: 2.0, spd: 13, spdg: 1.0,
+    forms: [{ name: 'Summfix', model: 'Bee', tint: '#ffe070', h: 0.8 }, { name: 'Sturmhornisse', model: 'Bee', tint: '#ffc030', h: 1.2 }, { name: 'Himmelsfürst', model: 'Bat', tint: '#ffe8a0', h: 1.7 }],
+    skills: [{ name: 'Stachelwirbel', kind: 'phys', mult: 0.9, all: false, hits: 2 }, { name: 'Windklinge', kind: 'phys', mult: 1.15, all: true }, { name: 'Orkan', kind: 'phys', mult: 1.6, all: true }] },
+  drak: { elem: 'Licht', col: '#e0d0ff', hp: 60, hpg: 16, atk: 14, atkg: 3.4, mag: 13, magg: 3.2, spd: 10, spdg: 0.8,
+    forms: [{ name: 'Drakling', model: 'YellowDragon', tint: '#f0e0ff', h: 0.9 }, { name: 'Sternendrache', model: 'Dragon', tint: '#d0c0ff', h: 1.6 }, { name: 'Äonenwyrm', model: 'Dragon', tint: '#fff0c0', h: 2.2 }],
+    skills: [{ name: 'Lichtatem', kind: 'mag', mult: 1.8, all: false }, { name: 'Segenslicht', kind: 'heal', mult: 2.6, all: true }, { name: 'Sternenfall', kind: 'mag', mult: 2.0, all: true }] }
+};

@@ -72,6 +72,32 @@
       ]
     },
     {
+      "t": "Lindmark",
+      "p": [
+        "Die Handelsstadt im Osten der Weltkarte öffnet sich nach dem Sieg über Vorgal in der Echogruft."
+      ],
+      "list": [
+        "Gasthaus „Schlafender Greif“ (Wirtin Elsbeth): Übernachten heilt Helden und alle Kapselgeister voll und speichert. Der Preis steigt mit eurer Stufe.",
+        "Händler Quinn: Großtrank (250 LP), Ätherflasche (60 SP), Glutbombe (trifft alle Gegner), Sphärenfrucht und die Grundwaren.",
+        "Schmied Torvald: Ausrüstung bis Stufe 10 (Mara in Hafenau schafft nur bis Stufe 6).",
+        "Kapselgelehrte Mirela erklärt die Kapselgeister. In einer Truhe der Stadt liegt eine Sphärenfrucht."
+      ]
+    },
+    {
+      "t": "Kapselgeister",
+      "p": [
+        "In jedem Reich und im Turm der Stille liegt eine Sphärenkapsel in einer Truhe. Darin schläft ein Kapselgeist, ein Begleiter, der im Kampf selbst handelt: meist greift er den schwächsten Gegner an, manchmal setzt er eine Fähigkeit ein. Gegner können ihn treffen; ist er erschöpft, erholt er sich nach dem Kampf.",
+        "Im Menü unter „Kapselgeist“ wählst du, wer euch begleitet, und fütterst ihn mit Tränken und Ätherwaren (gibt EXP). Ab Stufe 8 und Stufe 16 verwandelt ihn eine Sphärenfrucht in eine stärkere Gestalt mit neuer Fähigkeit. Der Begleiter bekommt nach jedem Sieg volle EXP, die anderen die Hälfte."
+      ],
+      "list": [
+        "Flämmchen → Glutgeist → Sonnenphönix (Feuer, Echogruft)",
+        "Moosling → Moosgolem → Waldhüter (Erde, Rosenhain, kann heilen)",
+        "Frostling → Eisbär → Gletscherkönig (Wasser, Frostgrotte, kann schützen)",
+        "Summfix → Sturmhornisse → Himmelsfürst (Wind, Glutschlund, sehr schnell)",
+        "Drakling → Sternendrache → Äonenwyrm (Licht, Turm der Stille)"
+      ]
+    },
+    {
       "t": "Menü und Speichern",
       "list": [
         "Items: Gegenstände außerhalb des Kampfes einsetzen.",
@@ -90,7 +116,8 @@
         "Die ersten Gegner sind absichtlich schwach, damit Aren und Silas schnell Stufen sammeln. Bei niedrigen Stufen greifen höchstens zwei Gegner gleichzeitig an.",
         "Monster sind langsamer als du und lassen sich umlaufen – du musst nicht jeden Kampf annehmen.",
         "Wer in eine Sackgasse gerät, kommt jederzeit über den Ausgang (Wirbel links unten im Dungeon) zurück zur Weltkarte.",
-        "Vor jedem Boss: heilen (Brunnen oder Tränke), Ausrüstung prüfen, Lebensfeder einpacken."
+        "Vor jedem Boss: heilen (Brunnen oder Tränke), Ausrüstung prüfen, Lebensfeder einpacken.",
+        "Öffne jede Truhe: In jedem Reich wartet ein Kapselgeist. Er kämpft gratis mit und fängt Treffer ab."
       ]
     },
     {
