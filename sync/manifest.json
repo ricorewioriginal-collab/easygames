@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "ba3e75b750a5",
- "generated": "2026-11-12T20:06:59+00:00",
- "commit": "ade6a9084995bb1fc4cb1698ada62267460bf032",
+ "version": "97567d3549e0",
+ "generated": "2026-11-12T20:07:00+00:00",
+ "commit": "34a87a2798387d1c8427e4f39db2524298667859",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9144,7 +9144,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258362,
-   "h": "2a2c699150823aecde1022d2c01ccf7b81fc52ff824b72880fd39f3bce86b91c"
+   "h": "9a9b9e0f2bf1d7f475f99981824777ebb651ee26388dd4c2b4b40fe6aa35c51a"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -11595,11 +11595,6 @@
    "p": "zotik/assets/index-BLW1_vCO.js",
    "s": 1693723,
    "h": "2a196533e28a7abff374120ab2a36b022dcef63c5c5a4e2a33af18cea8ca51ec"
-  },
-  {
-   "p": "zotik/assets/index-wU-Uj22z.js",
-   "s": 1692199,
-   "h": "44858b2cc2073fed4bac9f1d04da5fb7eb07a349cb02babdf54243dabe5bf92d"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
