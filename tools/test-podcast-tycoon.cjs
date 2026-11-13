@@ -71,7 +71,7 @@ server.listen(0, '127.0.0.1', async () => {
     assert.ok(await p.evaluate(() => { const r = AMC.Home._state(); return r.slug === 'clubradio24' && r.cfg.floor[0] === 'led' && (AMC.Save.data.senders || {}).clubradio24; }), 'Clubradio24 hat eigenen Raum');
     assert.equal(new Set(await p.evaluate(() => Object.values(AMC.Sender.HOUSES).map(h => h.wallTex + '/' + h.floor[0] + '/' + h.light))).size, 13, 'alle 13 Häuser unterschiedlich');
     await p.waitForFunction(() => AMC.Home._state().fans.length >= 3, null, { timeout: 20000 });
-    await p.evaluate(() => AMC.Input.fire('jump')); await p.waitForTimeout(800);
+    await p.evaluate(() => document.querySelector('#sdEmo [data-e=dance]').click()); await p.waitForFunction(() => AMC.Home._state().w.fig.curName === 'dance', null, { timeout: 8000 }).catch(() => {});
     assert.ok(await p.evaluate(() => AMC.Home._state().dancing && AMC.Home._state().w.fig.curName === 'dance'), 'Tanzen sichtbar');
     await p.evaluate(() => document.querySelector('#sdEmo [data-e=swap]').click()); await p.waitForTimeout(500);
     assert.equal(await p.evaluate(() => AMC.Home._state().who), 'marco', 'Figurenwechsel im Senderhaus');
