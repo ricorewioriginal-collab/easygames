@@ -44,7 +44,7 @@ function rig(h) {
 }
 // Schatzkorb im Gebiet enthält einen Edelstein, der beim Zerbrechen erscheint.
 {
-  const h = fresh(), {api} = h, hidden = api.jewels().find(j => j.hidden), c = api.crates().find(k => Math.hypot(k.x - hidden.x, k.z - hidden.z) < .1);
+  const h = fresh(), {api} = h, hidden = api.jewels().find(j => j.hidden && api.crates().some(k => !k.steel && Math.hypot(k.x - j.x, k.z - j.z) < .1)), c = api.crates().find(k => Math.hypot(k.x - hidden.x, k.z - hidden.z) < .1);
   assert(c, 'Korb zum versteckten Edelstein');
   api.teleport(c.x, 0, c.z + 2, 0); h.tick(30); api.strike(); h.tick(3);
   assert(api.jewels().find(j => j.id === hidden.id).got, 'Edelstein aus dem Korb eingesammelt');

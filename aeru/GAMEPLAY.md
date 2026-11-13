@@ -7,7 +7,10 @@ Simulation mit festen 60 Hz (Akkumulator), dadurch gleiches Verhalten bei 30, 60
 - **Sprung:** Antippen springt niedrig, Halten höher (Sprunghöhe wird nach 0,08 s beim Loslassen gekappt).
 - **Coyote Time:** 0,12 s nach dem Verlassen einer Kante darf noch gesprungen werden.
 - **Sprungpuffer:** Ein Druck bis 0,14 s vor der Landung wird nach dem Aufsetzen ausgeführt (statt eines Flügelschlags knapp über dem Boden).
-- **Gleiten (wie auf der PS1):** Springen, in der Luft nochmal Sprung – Aeru segelt ohne Flügelkraft geradeaus (11 m/s, höchstens 2,4 m/s Sinken), der Stick lenkt. Ramm lässt fallen, dritter Druck = Flügelschlag/Flug. Sprung halten bremst wie bisher den Fall.
+- **Gleiten (wie auf der PS1):** Springen, in der Luft nochmal Sprung – Aeru segelt ohne Flügelkraft geradeaus (11 m/s, höchstens 2,4 m/s Sinken), der Stick lenkt. Ramm in der Luft = Kopfstoß, dritter Druck = Flügelschlag/Flug.
+- **Kopfstoß:** Ramm in der Luft (ab 0,8 m über Boden) – senkrechter Sturz, die Landung trifft Gegner im Umkreis von 3 m doppelt und öffnet Eisentruhen (je Gebiet eine, mit Edelstein; Rammen und Feuer prallen ab).
+- **Schwimmen:** See am Ostgebiet jeder Welt (Grund 0,9 m unter dem Ufer, 5,2 m/s, Steinrand hält, Kantenhilfe zieht ans Ufer). **Klettern:** Rankenwand an der 6 m hohen Klippe am Westgebiet – auf die Ranken zu drücken, 4,2 m/s hinauf.
+- **Flugprüfung:** rosa Startring über dem Hauptland (−10 | 10 | 16) jeder Welt – 60 s für 8 Ringe (Radius 41–51 m, Höhe 11–19 m) und 4 Sturmballons (Radius 38 m, Höhe 17 m); jeder Treffer füllt die Flügelkraft. Lohn: lila Edelstein (gespeichert). Sprung halten bremst wie bisher den Fall.
 - **Rammstoß (Umschalt / RAMM):** Am Boden ein kurzer Schub mit Unverwundbarkeit. Wer im Schub einen Gegner trifft, schlägt ihn (Reichweite 1,7 m, nach den ersten 3 Himmelstruhen 3,2 m) und zerstreut Dornenkugeln.
 - **Ansturm:** Wer die Rammtaste nach dem Stoß gedrückt hält, stürmt bis zu 3 s lenkbar mit 12,5 m/s weiter (Wendekreis 3,2 rad/s) und rammt alle 0,3 s erneut. Loslassen, Springen, Fliegen oder eine Kante (Kantenschutz) beenden ihn.
 - **Landung:** Stauchung und Geräusch je nach Fallgeschwindigkeit.
