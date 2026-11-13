@@ -29,6 +29,7 @@
       if (d2 > 1e-6) { const d = Math.sqrt(d2), k = (rad - d) / d; e.x += dx * k; e.z += dz * k; }
       else { const l = e.x - c.x0, r = c.x1 - e.x, b = e.z - c.z0, f = c.z1 - e.z, m = Math.min(l, r, b, f); if (m === l) e.x = c.x0 - rad; else if (m === r) e.x = c.x1 + rad; else if (m === b) e.z = c.z0 - rad; else e.z = c.z1 + rad; }
     }
+    if (S.areas && AMC.Worlds) { AMC.Worlds.clamp(e); return; }
     e.x = U.clamp(e.x, -HALF + 1, HALF - 1); e.z = U.clamp(e.z, -HALF + 1, HALF - 1);
   }
 
@@ -58,13 +59,16 @@
     }));
     // Stadtrand: Hecke/Wand
     const edge = M(snow ? 0xdde6f0 : 0x3d6b35, { r: 0.9 });
-    [[0, -HALF - 1, 182, 2], [0, HALF + 1, 182, 2], [-HALF - 1, 0, 2, 182], [HALF + 1, 0, 2, 182]].forEach(([x, z, w, d]) => W.box(w, 2.4, d, edge, x, 1.2, z, g));
+    const worlds = S.mode === 'free' && !S.cfg.net && AMC.Worlds;   // freie Stadt: Kaimauer mit Übergängen zu den anderen Welten
+    if (worlds) AMC.Worlds.edges(g, M(0x9a9488, { r: 0.9 }));
+    else [[0, -HALF - 1, 182, 2], [0, HALF + 1, 182, 2], [-HALF - 1, 0, 2, 182], [HALF + 1, 0, 2, 182]].forEach(([x, z, w, d]) => W.box(w, 2.4, d, edge, x, 1.2, z, g));
     // Skyline hinter dem Rand (einfach, mit Fenstern)
     const winTex = W.canvasTex(128, 256, (c, w, h) => { c.fillStyle = '#1b1f2c'; c.fillRect(0, 0, w, h); for (let y = 8; y < h; y += 20) for (let x = 8; x < w; x += 20) { c.fillStyle = Math.random() < (night ? 0.55 : 0.2) ? '#ffd890' : '#2a3142'; c.fillRect(x, y, 10, 12); } });
     winTex.wrapS = winTex.wrapT = T.RepeatWrapping;
     const skyMat = new T.MeshStandardMaterial({ color: W.lin(night ? 0x2a2f44 : 0x8a90a8), map: winTex, emissive: night ? 0xffffff : 0x000000, emissiveMap: night ? winTex : null, emissiveIntensity: 0.5, roughness: 0.8 });
     for (let i = 0; i < 46; i++) {
       const a = (i / 46) * Math.PI * 2, rr = 140 + rng() * 40, h = 20 + rng() * 45, w = 14 + rng() * 12;
+      if (worlds) continue;   // rundherum liegen Hafen, Insel, Berg und das RicoReWi-Universum
       const b = W.box(w, h, w, skyMat, Math.cos(a) * rr, h / 2, Math.sin(a) * rr, g, false); b.rotation.y = -a;
     }
     // Gebäude je Block (Quaternius, als Instanzen)
@@ -383,6 +387,7 @@
     m.position.set(x, 2, z); S.drones.push(d); return d;
   }
   function freeSpot(rng, margin) {
+    if (S.areas && AMC.Worlds && rng() < 0.25) { const sp = AMC.Worlds.spot(rng, solidAt); if (sp) return sp; }
     for (let k = 0; k < 60; k++) {
       const x = U.lerp(-84, 84, rng()), z = U.lerp(-84, 84, rng());
       if (!solidAt(x, 0.5, z) && !solidAt(x + 0.8, 0.5, z) && !solidAt(x - 0.8, 0.5, z) && !solidAt(x, 0.5, z + 0.8) && !solidAt(x, 0.5, z - 0.8) && Math.hypot(x - FUNKHAUS.door.x, z - FUNKHAUS.door.z) > (margin || 6)) return [x, groundAt(x, z, 0.5), z];
@@ -448,6 +453,7 @@
     const env = W.makeSky(S.scene, sky); S.env = env;
     W.particles.attach(S.scene);
     buildCity(sky, rng);
+    if (AMC.Worlds) AMC.Worlds.build(CTX);
     { const ga = S.mode === 'free' && AMC.Save.data.giselaAt; buildGisela(ga ? ga.x : FUNKHAUS.door.x + 11, ga ? ga.z : FUNKHAUS.door.z + 3.5, ga ? ga.h : -0.35); }
     buildRico(FUNKHAUS.door.x - 6.5, FUNKHAUS.door.z + 4);
     if (AMC.Drive && !cfg.net) AMC.Drive.build(CTX);
@@ -473,6 +479,7 @@
     if (AMC.CityVibe) AMC.CityVibe.stop();
     if (AMC.Career) AMC.Career.stop();
     if (AMC.District) AMC.District.stop();
+    if (AMC.Worlds) AMC.Worlds.stop();
     ['andrew', 'marco', 'rico'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent) f.root.parent.remove(f.root); });
     S.npcs.forEach(n => { if (n.fig) n.fig.dispose(); n.fig = null; });
     if (S.cat) { if (S.cat.mixer) S.cat.mixer.stopAllAction(); S.group.remove(S.cat.m); }
@@ -641,9 +648,10 @@
     S.hud.mapT -= dt; if (S.hud.mapT <= 0) { S.hud.mapT = 0.1; drawMap(); }
   }
   function drawMap() {
-    const g = S.hud.map, s = 180 / 184, cx = 90, cz = 90, X = x => cx + x * s, Z = z => cz + z * s;
+    const wm = S.areas && AMC.Worlds, s = 180 / 184, ox = wm ? U.clamp(S.pl.x, -40, 160) : 0, oz = wm ? U.clamp(S.pl.z, -160, 160) : 0, g = S.hud.map, cx = 90, cz = 90, X = x => cx + (x - ox) * s, Z = z => cz + (z - oz) * s;
     g.clearRect(0, 0, 180, 180);
-    g.fillStyle = 'rgba(30,60,30,.75)'; g.fillRect(0, 0, 180, 180);
+    if (wm) { g.fillStyle = 'rgba(30,90,140,.8)'; g.fillRect(0, 0, 180, 180); g.fillStyle = 'rgba(30,60,30,.85)'; g.fillRect(X(-90), Z(-90), 180 * s, 180 * s); AMC.Worlds.WORLDS.concat(AMC.Worlds.LINKS).forEach(r => { g.fillStyle = r.name ? 'rgba(120,110,80,.9)' : 'rgba(160,160,170,.9)'; g.fillRect(X(r.x0), Z(r.z0), (r.x1 - r.x0) * s, (r.z1 - r.z0) * s); }); }
+    else { g.fillStyle = 'rgba(30,60,30,.75)'; g.fillRect(0, 0, 180, 180); }
     g.fillStyle = 'rgba(160,160,170,.85)'; ROADS.forEach(r => { g.fillRect(X(r) - 5 * s, 0, 10 * s, 180); g.fillRect(0, Z(r) - 5 * s, 180, 10 * s); });
     g.fillStyle = 'rgba(255,138,30,.85)'; g.fillRect(X(FUNKHAUS.x0), Z(FUNKHAUS.z0), (FUNKHAUS.x1 - FUNKHAUS.x0) * s, (FUNKHAUS.z1 - FUNKHAUS.z0) * s);
     g.fillStyle = '#d04030'; g.fillRect(X(MAST.x) - 3, Z(MAST.z) - 3, 6, 6);
@@ -794,6 +802,7 @@
   // ------------------------------------------------------------------ Bild für Bild
   P.update = function (dt) {
     if (!S || S.ended) return;
+    if (AMC.Worlds && AMC.Worlds.tick(dt)) return;   // Minispiel in einer Welt
     S.time += dt;
     const p = S.pl, H = p.H, cam = W.cam;
     const driving = !S.net && AMC.Drive ? AMC.Drive.update(dt) : false;
@@ -846,7 +855,7 @@
     S.hurtT += dt; if (S.hurtT > 4) S.energy = Math.min(100, S.energy + dt * 6);
     // Zeit
     if (S.left > 0 && S.mode !== 'free') { S.left -= dt; if (S.left <= 0) { S.left = 0; if (S.mode === 'jagd') return finish(true, 'time'); if (!S.done) return finish(false, 'time'); } }
-    updPickups(dt); updDrones(dt); updNpcs(dt); if (AMC.Transit) AMC.Transit.update(dt); if (AMC.District) AMC.District.update(dt); if (AMC.Events) AMC.Events.update(dt); if (AMC.CityVibe) AMC.CityVibe.update(dt, S); if (AMC.Career) AMC.Career.update(dt, S); updObjective(dt); updRings(dt);
+    updPickups(dt); updDrones(dt); updNpcs(dt); if (AMC.Transit) AMC.Transit.update(dt); if (AMC.District) AMC.District.update(dt); if (AMC.Events) AMC.Events.update(dt); if (AMC.Worlds) AMC.Worlds.update(dt); if (AMC.CityVibe) AMC.CityVibe.update(dt, S); if (AMC.Career) AMC.Career.update(dt, S); updObjective(dt); updRings(dt);
     if (S.rico) { S.rico.f.update(dt); if (S.rico.t > 0) S.rico.t -= dt; }
     if (S.gisela) { if (S.gisela.t > 0) S.gisela.t -= dt; S.gisela.g.position.y = S.gisela.t > 0 ? Math.abs(Math.sin(S.time * 18)) * 0.06 : 0; }
     if (S.boss) updBoss(dt);
