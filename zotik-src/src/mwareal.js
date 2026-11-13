@@ -5,6 +5,7 @@
 //   cuts:  [[x0, z0, x1, z1, breite, tiefe]]  Schlucht (Absturz = zurück an den Rand)
 //   bridges: [[x0, z0, x1, z1, y]]  Brücke (begehbar über PLAT), y = Oberkante
 //   lanes: [[x0, z0, x1, z1, hw?]]  zusätzliche Gasse
+//   quay: y  Kanalstadt: offene Flächen mindestens auf Höhe y (Kais)
 //   piers: [[x0, z0, x1, z1, y]]  Steg vom Ufer (x0, z0) übers Wasser, endet offen bei (x1, z1)
 //   wall: DECOR-Arten der Waldwand, wz: Wizp-Bäume der vordersten Reihe [[name, höhe]], rock: Wizp-Felsen an Klippen
 //   props: { zonenId: [[datei, name, größe (>0 Höhe, <0 Maßstab), anzahl]] }
@@ -55,6 +56,7 @@ export function arealHeight(w, M) {
     q *= ff;   // Gelände rund um Plateau und Rampe eben, damit die Rampe gleichmäßig steigt
     let e = M.E(x, z);
     if (e > 0 && !A.city) { let u = 1; for (const b of BR) u = Math.min(u, sm(2.5, 4.5, segD(x, z, b[0], b[1], b[2], b[3])[0])); q += (6.5 * sm(.8, 4.5, e) + .3 * Math.max(0, e - 4.5)) * u - (1 - u) * 1.5; }
+    if (A.quay != null && q < A.quay) q += (A.quay - q) * (1 - sm(.2, 1.6, e));   // Kanalstadt: Gassen und Plätze als Kais über dem Wasser
     for (const [cx, cz, r, y, fx, fz] of T) { const d = Math.hypot(x - cx, z - cz); if (d > r + 30) continue;
       let k = 1 - sm(r, r + 1.3, d); const L = Math.hypot(fx - cx, fz - cz), [sd, t] = segD(x, z, cx, cz, fx, fz);
       if (sd < 2.4 && L > r) { const s = t * L; if (s > r - 1) k = Math.max(k, (1 - Math.max(0, Math.min(1, (s - r + 1) / (L - r + 1)))) * (1 - sm(1.8, 2.5, sd))); }

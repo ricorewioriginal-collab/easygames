@@ -2200,7 +2200,9 @@ const TLAY={
 /* Kapitelwelten als KH-Areale: plazas [z, Versatz zum Weg, r], tiers [z, Versatz, r, Höhe, Fuß-z, Fuß-Versatz], links [i, j] = Brücke zwischen Plateaus gleicher Höhe */
 const CAR={
   2:{path:[44,-160,14],plazas:[[-30,28,13],[-58,-30,15],[-88,30,14],[-118,-27,12],[-140,26,11]],tiers:[[-66,-46,6,4.5,-56,-33],[-84,-26,5,4.5,-96,-14],[-98,46,5,4.5,-86,33]],links:[[0,1]],
-    wall:['broad','broad','pine'],wallMax:7,wz:[['ancient_tree_1',9],['garden_tree_green',7.5]],rock:['rock_big_B_gray_1','rock_big_2'],step:0x9a9080}
+    wall:['broad','broad','pine'],wallMax:7,wz:[['ancient_tree_1',9],['garden_tree_green',7.5]],rock:['rock_big_B_gray_1','rock_big_2'],step:0x9a9080},
+  3:{path:[44,-160,14],plazas:[[-28,30,12],[-50,-30,13],[-80,30,14],[-110,-28,13],[-140,26,11]],tiers:[[-80,44,5,4.5,-80,28],[-124,-30,5,4.5,-124,-14]],quay:.25,
+    city:{walls:[0x8a8aa0,0x9a8a90,0x7a8098,0xa09888,0x8a909a],roofs:[0x3a3a4e,0x4a3a44,0x2e3446],slate:1},wall:['broad','dead'],rock:['rock_big_B_gray_1','rock_big_2'],step:0x8a8a9a}
 };
 function buildWorld(n){HST=HSTY[n]||HSTY[1];
   const C=CHP[n],R=mul32(7000+n*131),rr=(a,b)=>a+R()*(b-a),rp=a=>a[R()*a.length|0],ph=n*1.7,amp=C.amp||1,P=C.pal,cs=()=>chCs(n);
@@ -2312,7 +2314,7 @@ function buildWorld(n){HST=HSTY[n]||HSTY[1];
     put2(iCr,x,hh+s*.9,z,s*.45,s*1.5,s*.45,R()*6,rp(C.glowc),(R()-.5)*.4,(R()-.5)*.4);addCol(x,z,s*.45)}
   for(let i=0;i<170;i++){const z=-145+i*1.04,sd=i%2?-1:1,x=pathx(z)+sd*(3.1+R()*.8),hh=h(x,z);if(hh>7)continue;const sc=.3+R()*.38;put2(iPa,x,hh+.055,z,sc,.07,sc*(.65+R()*.7),R()*6.28,i%5===0?0xb9acc0:P.path)}
   /* Gebäude-Skyline (Valdoria) */
-  if(C.trees.includes('tower')){const twr=new T.Group();let t=0;tries=0;while(t<46&&tries++<2000){const x=rr(-120,120),z=rr(-220,60);if(!free(x,z,42)||Math.hypot(x,z)<42)continue;const w=rr(5,10),d=rr(5,10),hb=rr(8,24),bg=new T.Group();bg.position.set(x,h(x,z),z);bg.rotation.y=R()*3;
+  if(C.trees.includes('tower')){const twr=new T.Group();let t=0;tries=0;while(t<46&&tries++<2000){const x=rr(-120,120),z=rr(-220,60);if(!(AM?AM.E(x,z)>12&&Math.abs(x)<118&&z>-226&&z<64&&h(x,z)<8:free(x,z,42))||Math.hypot(x,z)<42)continue;const w=rr(5,10),d=rr(5,10),hb=rr(8,24),bg=new T.Group();bg.position.set(x,h(x,z),z);bg.rotation.y=R()*3;
     bg.add(mk(G.box,M(rp([0x5a5a70,0x6a5a60,0x4a5068]),{r:.9}),0,hb/2,0,w,hb,d));for(let j=0;j<Math.floor(hb/3);j++)bg.add(mk(G.box,M(0xffc060,{e:0xffa030,ei:1.1}),0,2+j*3,d/2+.03,w*.7,.7,.05,false));bg.add(mk(G.box,M(C.hub[2]),0,hb+.4,0,w+.5,.8,d+.5));twr.add(bg);addCol(x,z,Math.hypot(w,d)/2);t++}scene.add(mergeStatic(twr))}
   if(AM){const ag=new T.Group();scene.add(ag);const wl=[],bA={box(x,y,z,w,hh,d,col){ag.add(mk(G.box,M(col),x,y+hh/2,z,w,hh,d))},cyl(x,y,z,r,hh,col){ag.add(mk(G.cyl0,M(col),x,y+hh/2,z,r,hh,r))},sph(x,y,z,sx,sy,sz,col,op){ag.add(mk(G.sph0,M(col,(op&&op.mat)||{}),x,y,z,sx,sy,sz,false))},glow(c,sz,x,y,z,a){ag.add(glow(c,sz,x,y,z,a))},addCol};
     arealDress({C:{KK,TX,T,PLAT,addCol,colFree,inHouse:()=>false},w:CW,b:bA,g:ag,h,M:AM,R2:R,blk,busy:[],roadD:(x,z)=>Math.abs(x-pathx(z)),wallList:wl,TOUCH,mk,G,MAT:M});
