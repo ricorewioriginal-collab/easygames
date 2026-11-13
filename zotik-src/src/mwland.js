@@ -445,6 +445,45 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       for (const [x, z, w2, d, hh, dm] of [[-22, -40, 6, 6, 3.6, 1.6], [10, -46, 6, 5, 3.2, 0], [18, -22, 7, 6, 4, 1.8], [-26, -66, 6, 6, 3.4, 0], [16, -70, 7, 5, 3.6, 1.6], [-14, -78, 6, 6, 3, 0]]) flat(x, z, w2, d, hh, [WL, SA][(x + z) & 1], dm);
       minaret(-18, -10, 11);
     },
+    kurbelhafen(b, w, A) {
+      const K = kit(b), WH = 0xe8e8e8, GR = 0x8a8a8a, BK = 0x1e1e1e, P = { tex: 'plaster', to: { s: .45, gain: 1.7, n: .6, e: 0x3a3a3a, ei: 1 } };
+      b.tmap = { 0x5a5a5a: 'wood', 0x6a6a6a: 'wood', 0x7a7a7a: 'stone' };
+      // Raddampfer „Tuut-Tuut“ im Hafenbecken: Rumpf, Kajüte, zwei Schornsteine mit Rauch, drehende Schaufelräder
+      b.box(58, -.9, -30, 16.4, .9, 6.2, BK); b.box(58, 0, -30, 16, 1.7, 6, WH, P); b.box(58, 1.7, -30, 9, 2.2, 4.4, WH, P); b.box(58, 3.9, -30, 10, .16, 5, BK);
+      for (let i = 0; i < 5; i++) b.box(54.6 + i * 1.7, 2.6, -27.75, .8, .8, .05, 0xfff8e0, { mat: { e: 0xfff0c0, ei: 1.2 }, cast: false });
+      for (const x of [56, 60]) { b.cyl(x, 4, -30, .55, 3.6, BK); b.cyl(x, 6.9, -30, .62, .35, WH); A.smoke(x, 7.8, -30); }
+      for (const z of [-33.4, -26.6]) { const wh = b.tor(58, 1.2, z, 2, BK, { d: .5 }); A.spin(wh, 1.4); const hub = b.tor(58, 1.2, z, 1.1, GR, { d: .4 }); A.spin(hub, 1.4); }
+      // Kai mit Pollern, Kran mit schaukelnder Kiste, Kistenstapel
+      b.box(43.6, -.2, -30, 3, .5, 26, 0x7a7a7a); for (let i = 0; i < 5; i++) b.cyl(44.6, .3, -42 + i * 6, .25, .7, BK, { lo: 1 });
+      b.box(38, 0, -14, 1, 9, 1, 0x3a3a3a, { solid: 1 }); b.box(41.5, 9, -14, 8, .5, .5, 0x3a3a3a); b.cyl(45, 5, -14, .04, 4, BK, { lo: 1 }); { const c = b.box(45, 4, -14, 1.2, 1, 1.2, 0x6a6a6a); A.bob(c, .25, 1.3); }
+      for (const [x, y] of [[48, 0], [49.3, 0], [48.6, 1]]) b.box(x, y, -12, 1.2, 1, 1.2, 0x6a6a6a, { solid: y === 0 ? 1 : 0 });
+      // Lagerhaus mit Fässern
+      K.house(-34, -25, 10, 6, 4.4, 0x9a9a9a, 0x2a2a2a, 0, { beams: 0x4a4a4a }); for (const [x, z] of [[-40.5, -21], [-41.4, -22.2], [-27.4, -21]]) b.cyl(x, 0, z, .5, 1.1, 0x5a5a5a, { tex: 'wood' });
+      // Hauptstraße: Häuser, die im Takt wippen, Laternen
+      for (const [x, z, ww, d, hh, i] of [[-12, -34, 6, 5, 3.8, 0], [20, -30, 6, 6, 4.2, 1], [-14, -46, 6, 5, 3.6, 2], [20, -46, 6, 5, 4, 3]]) { const H = K.house(x, z, ww, d, hh, [WH, 0xd0d0d0][i % 2], [BK, 0x4a4a4a][i % 2], 0, { beams: 0x3a3a3a, chimney: i % 2 }); A.bob(H.g, .06, 3.2 + i * .3); }
+      for (const [x, z] of [[-4, -26], [12, -38], [-4, -52], [12, -60], [30, -24]]) K.lamp(x, z, 0xffffff);
+      // Musikhalle: Bühne, Rückwand, Riesengrammofon, Tuba
+      b.box(-12, 0, -82, 12, 1.2, 6, 0x5a5a5a, { solid: 1 }); b.box(-12, 0, -85.4, 13, 7, .6, WH, { solid: 1, ...P }); b.box(-12, 7, -85.4, 13.6, .8, .9, BK);
+      for (const s of [-1, 1]) { b.cyl(-12 + s * 6.2, 0, -79.4, .35, 6.4, WH, { solid: 1 }); const c = b.box(-12 + s * 5, 1.2, -79.2, 2.6, 5.2, .12, 0x2a2a2a, { cast: false }); A.sway(c, s); }
+      b.box(-6, 1.2, -83, 2, 1.4, 2, 0x3a3a3a); { const hn = b.cone(-6, 2.6, -82, 2.4, 3.2, 0xd8d8d8, { mat: { m: .7, r: .3 } }); hn.rotation.x = -Math.PI / 2; hn.position.set(-6, 4.4, -81.4); A.bob(hn, .08, 2.6); }
+      { const t = b.tor(-17, 3, -83, .9, 0xc8c8c8, { d: .4, mat: { m: .9, r: .25 } }); A.bob(t, .1, 2); } for (let i = 0; i < 5; i++) { const n = b.box(-14 + i * 1.6, 5 + (i % 2) * .6, -80, .3, .5, .05, BK, { cast: false }); A.bob(n, .4, 1.6 + i * .3); }
+      // Windmühle mit drehenden Flügeln
+      b.cyl(-64, 0, -68, 2.2, 8, WH, { solid: 1, ...P }); b.cone(-64, 8, -68, 2.6, 2.4, 0x3a3a3a);
+      { const bl = new T.Group(); for (let k = 0; k < 4; k++) { const pv = new T.Group(); pv.rotation.z = k * Math.PI / 2; pv.add(mk(G.box, M(0xe8e8e8), 0, 2.6, 0, .9, 5, .08)); pv.add(mk(G.box, M(0x3a3a3a), .5, 2.6, 0, .06, 5, .1, false)); bl.add(pv); }
+        bl.position.set(-64, 6.6, -65.6); b.g.add(bl); A.spin(bl, .9); b.box(-64, 6.3, -65.8, .6, .6, .6, BK); }
+      for (let i = 0; i < 4; i++) b.box(-68 + i * 1.3, 0, -61, .9, .7, .9, 0xd8d8d8);
+      // Scheune mit Heuballen und Zaun
+      K.house(62, -86, 10, 8, 4.6, 0x6a6a6a, 0x2a2a2a, 0, { beams: 0x3a3a3a }); for (const [x, z] of [[56, -76], [58, -77.6], [60, -75.6]]) b.cyl(x, 0, z, .8, 1, 0xb8b8b8, {}); K.fence(54, -70, 70, -70, 0x5a5a5a);
+      // Filmpalast: Fassade, Leuchtschrift-Rahmen mit Glühbirnen, große Filmspule, Säulen
+      b.box(18, 0, -105, 16, 8, 8, WH, { solid: 1, ...P }); b.box(18, 8, -105, 16.6, .6, 8.6, BK); b.box(18, 5.6, -100.9, 10, 2, .5, BK);
+      for (let i = 0; i < 12; i++) b.sph(13.4 + i * .84, 6.7, -100.6, .12, .12, .08, 0xffffff, { mat: { e: 0xffffff, ei: 2.4 }, cast: false }); b.box(18, 0, -100.9, 3, 4, .1, 0x2a2a2a, { cast: false });
+      for (const x of [11, 25]) b.cyl(x, 0, -100.4, .4, 5.6, 0xd0d0d0, { solid: 1 }); { const r = b.tor(18, 11, -105, 2.4, 0x2a2a2a, { d: .4 }); A.spin(r, .6); const r2 = b.tor(18, 11, -105, 1, 0x6a6a6a, { d: .4 }); A.spin(r2, .6); }
+      // Radier-Lücke: weiße, leere Flecken, halb ausradierte Bäume, Radierkrümel
+      for (const [x, z, r] of [[-40, -100, 6], [-48, -94, 3.4], [-32, -106, 3], [-46, -108, 2.4]]) b.cyl(x, .02, z, r, .05, 0xffffff, { mat: { e: 0xffffff, ei: .7 }, cast: false });
+      for (const [x, z] of [[-44, -102], [-36, -98]]) { b.cyl(x, 0, z, .25, 1.4, 0x5a5a5a); b.ico(x, 1.9, z, .9, .5, .9, 0x6a6a6a); }
+      for (let i = 0; i < 10; i++) b.box(-40 + Math.cos(i * 2.3) * 5, .05, -100 + Math.sin(i * 1.7) * 5, .3, .12, .16, 0xc8c8c8, { cast: false, ry: i });
+      b.glow(0xffffff, 10, -40, 1.5, -100, .35);
+    },
     camelot(b, w, A) {
       const K = kit(b), S = 0xeae6de, B2 = 0x3a5aa8;
       b.tmap = { 0xeae6de: 'stone', 0xd8d0c0: 'plaster', 0x6a4a2a: 'wood', 0x5a3a22: 'wood', 0x8a8a8e: 'rock', 0x8a8a90: 'rock', 0x8a6a3a: 'wood' };
