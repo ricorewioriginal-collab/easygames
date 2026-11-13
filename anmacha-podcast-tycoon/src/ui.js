@@ -104,7 +104,7 @@
     const s = UI.open('<div class="dlg glass"><img class="dlg-face" alt=""><div class="dlg-body"><b class="dlg-name"></b><p class="dlg-txt"></p><div class="dlg-foot"><button type="button" class="btn small" data-nav id="dlgSkip">Überspringen</button><button type="button" class="btn primary small" data-nav data-first id="dlgNext">Weiter ' + AMC.glyph('a') + '</button></div></div></div>', { cls: 'dlg-screen', back: () => done(), noRadio: false });
     const el = s.el, face = el.querySelector('.dlg-face'), name = el.querySelector('.dlg-name'), txt = el.querySelector('.dlg-txt');
     function show() {
-      const [w, t] = lines[i], H = w === 'a' ? D.HOSTS.andrew : w === 'm' ? D.HOSTS.marco : null;
+      const [w, t] = lines[i], H = w === 'a' ? D.HOSTS.andrew : w === 'm' ? D.HOSTS.marco : w === 'r' ? D.HOSTS.rico : null;
       face.src = H ? UI.face(H.id) : UI.podLogo; name.textContent = H ? H.name : w === 'n' ? 'Erzähler' : w;
       el.querySelector('.dlg').style.setProperty('--hc', H ? H.color : '#8fa0c8');
       full = fill(U.esc(t)); txt.innerHTML = '';

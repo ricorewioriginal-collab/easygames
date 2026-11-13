@@ -74,7 +74,7 @@
         g.restore();
         g.lineWidth = 2; g.strokeStyle = 'rgba(255,138,30,.65)'; rr(g, 1, 1, W - 2, H - 2, 21); g.stroke();
       },
-      destroy() { root.removeEventListener('resize', size); }
+      destroy() { root.removeEventListener('resize', size); if (game.stop) game.stop(); }
     };
     return ctl;
   };
@@ -83,13 +83,24 @@
 
   // ------------------------------------------------------------------ Themen-Rhythmus
   GAMES.rhythm = function (o, api) {
-    const bpm = o.bpm || 112, beat = 60 / bpm, n = o.n || 10, travel = 1.5 / (o.speed || 1), lead = beat * 4;
-    const notes = []; let t = lead, last = '', same = 0;
-    for (let i = 0; i < n; i++) {
+    const song = o.song, slow = song ? Math.max(1, 0.11 / (song.step / 1000) * (o.hard ? 0.8 : 1)) : 1, stepS = song ? song.step / 1000 * slow : 0;
+    const bpm = song ? 60 / (stepS * 4) : o.bpm || 112, beat = 60 / bpm, travel = 1.5 / (o.speed || 1), lead = beat * 4;
+    const notes = []; let t = lead, last = '', same = 0, n = o.n || 10, s0 = 0, songSec = 0;
+    if (song) {
+      // Echte Melodie aus Klavierlicht: Tonhöhe bestimmt die Bahn, Treffer spielen den Ton
+      const mel = song.mel.slice().sort((a, b) => a[0] - b[0]), gap = (o.hard ? 0.3 : 0.42) / stepS;
+      s0 = mel[0][0]; let prev = -1e9;
+      for (const [st, m, l] of mel) { if (notes.length >= n) break; if (st - prev < gap) continue; prev = st; notes.push({ t: lead + (st - s0) * stepS, m, l: l * stepS, done: false, q: 0 }); }
+      const ps = notes.map(x => x.m).sort((a, b) => a - b), qn = k => ps[Math.min(ps.length - 1, Math.floor(ps.length * k))];
+      const cut = [qn(0.25), qn(0.5), qn(0.75)];
+      notes.forEach((x, i) => { let li = x.m <= cut[0] ? 0 : x.m <= cut[1] ? 1 : x.m <= cut[2] ? 2 : 3; if (i && notes[i - 1].m !== x.m && DIRS[li] === notes[i - 1].d) li = (li + (x.m > notes[i - 1].m ? 1 : 3)) % 4; x.d = DIRS[li]; });
+      n = notes.length; t = notes[n - 1].t + 0.4; songSec = t - lead + 0.6;
+    } else for (let i = 0; i < n; i++) {
       let d = U.pick(DIRS); if (d === last && ++same > 1) { d = U.pick(DIRS.filter(x => x !== last)); same = 0; } last = d;
       notes.push({ t, d, done: false, q: 0 });
       t += beat * (o.hard && Math.random() < 0.35 ? 0.5 : Math.random() < 0.25 ? 2 : 1);
     }
+    let accomp = null;
     const endT = t + 0.8; let time = 0, combo = 0, best = 0, score = 0, hits = 0, count = 3, flashL = {}, mel = 0;
     const laneX = (W, d) => W / 2 + (DIRS.indexOf(d) - 1.5) * Math.min(86, W / 5.2);
     const judge = (d, W, H) => {
@@ -101,20 +112,23 @@
       const x = laneX(W, d), y = H * 0.78;
       api.pop(q >= 1 ? 'PERFEKT' : q >= 0.75 ? 'GUT' : 'OK', x, y - 34, q >= 1 ? '#ffd23f' : q >= 0.75 ? '#6cff8a' : '#3dd6ff', 20);
       api.burst(x, y, COL[d], q >= 1 ? 18 : 8);
-      note(60 + PENTA[mel++ % PENTA.length] + (q >= 1 ? 12 : 0), 0.22, 'triangle', 0.12);
+      if (cand.m) AMC.Audio.piano(cand.m, 0, Math.max(0.2, cand.l), q >= 1 ? 0.85 : 0.6); else note(60 + PENTA[mel++ % PENTA.length] + (q >= 1 ? 12 : 0), 0.22, 'triangle', 0.12);
+      if (o.onJudge) o.onJudge(q, combo);
       if (combo && combo % 5 === 0) { api.pop(combo + 'er KOMBO!', api.W / 2, H * 0.35, '#ff8a1e', 30); sfx('combo'); }
     };
     return {
-      title: '🎤 ' + (o.label || 'Thema'),
+      title: (song ? '🎹 ' : '🎤 ') + (o.label || 'Thema'),
+      stop() { if (accomp) accomp(); },
       right: () => (combo > 1 ? '🔥 ' + combo + '  ' : '') + Math.round(score / n * 100) + ' %',
       bar: () => 1 - time / endT,
       help: () => helpTxt('Steuerkreuz oder Ⓧ Ⓐ Ⓨ Ⓑ im Takt', '← ↓ ↑ → (oder WASD) im Takt drücken', 'Im Takt auf die Bahn tippen'),
       update(dt, taps) {
         time += dt;
         if (time < lead) { const c = 3 - Math.floor(time / beat); if (c !== count && c >= 0) { count = c; if (c > 0) { api.pop(String(c), api.W / 2, api.H / 2, '#fff', 64); sfx('drum'); } else { api.pop('LOS!', api.W / 2, api.H / 2, '#ff8a1e', 60); sfx('drum'); } } }
+        if (song && !accomp && time >= lead) accomp = AMC.Audio.playSong(song, { from: s0, sec: songSec, slow, mel: false, vel: 0.5 });
         const d = dirHit(); if (d) judge(d, api.W, api.H);
         for (const tp of taps) if (tp.type === 'down') { let bestD = DIRS[0], bd = 1e9; for (const dd of DIRS) { const dx = Math.abs(laneX(api.W, dd) - tp.x); if (dx < bd) { bd = dx; bestD = dd; } } judge(bestD, api.W, api.H); }
-        for (const nn of notes) if (!nn.done && time - nn.t > 0.25) { nn.done = true; nn.q = 0; combo = 0; api.pop('VERPASST', laneX(api.W, nn.d), api.H * 0.78 - 34, '#ff6a6a', 16); api.shake = 6; }
+        for (const nn of notes) if (!nn.done && time - nn.t > 0.25) { nn.done = true; nn.q = 0; combo = 0; if (o.onJudge) o.onJudge(0, 0); api.pop('VERPASST', laneX(api.W, nn.d), api.H * 0.78 - 34, '#ff6a6a', 16); api.shake = 6; }
         for (const k in flashL) flashL[k] -= dt;
         if (time > endT) api.end(score / n);
       },

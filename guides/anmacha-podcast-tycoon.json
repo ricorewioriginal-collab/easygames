@@ -37,7 +37,8 @@
       "t": "Die Stadt",
       "p": [
         "Im Zentrum steht das Funkhaus mit ON-AIR-Schild und Riesen-Mikrofon. Im Park (je nach Kapitel eine Bühne) treffen sich Fans, im Nordwesten steht der Sendemast mit Plattformen bis zur Spitze. Die Minikarte oben rechts zeigt Funken, Ziele und Störsender.",
-        "Vor dem Funkhaus parkt Gisela, Marcos umgebauter Camper. Geh hin und drück X/E zum Hupen – Marco und Andrew haben jedes Mal einen anderen Spruch, und dreimal Hupen bringt Fan-Punkte."
+        "Vor dem Funkhaus parkt Gisela, Marcos umgebauter Camper. Geh hin und drück X/E zum Hupen – Marco und Andrew haben jedes Mal einen anderen Spruch, und dreimal Hupen bringt Fan-Punkte.",
+        "Neben dem Funkhaus steht RicoReWi, der Social-Media-Junkie des Teams. Sprich ihn an (X/E): Beim ersten Mal teilt er euch und bringt 3 Themen-Funken, danach gibt es immer neue Sprüche über Tools, Pläne und Posts."
       ],
       "list": [
         "Themen-Funken in 5 Farben: 🧠 Serious 15, 💡 Tech-News, 🎵 Musik-Anmacher, 📺 TV-Anmacher, ☀️ Feelgood.",
@@ -64,7 +65,9 @@
         "Musik & Jingle: Rhythmus-Spiel mit vier Spuren (◀ ▼ ▲ ▶ oder Tippen). Triff die Noten auf der Linie, Combos bringen mehr Hype.",
         "Pointe: Drück A, wenn der schrumpfende Ring den Kreis trifft. Am Ende so schnell wie möglich A drücken für den Lacher.",
         "Soundboard: Merk dir die Folge aus Tusch, Giselas Hupe, Applaus und Lacher und spiel sie nach. Jede Runde wird sie länger.",
-        "Pannen: Beim Pegel-Alarm die drei Regler in den grünen Bereich schieben, bevor es pfeift. Beim Kabelsalat das Kabel verfolgen und den richtigen Stecker wählen."
+        "Pannen: Beim Pegel-Alarm die drei Regler in den grünen Bereich schieben, bevor es pfeift. Beim Kabelsalat das Kabel verfolgen und den richtigen Stecker wählen.",
+        "Musikwünsche: Hörerinnen und Hörer schicken während der Aufnahme automatisch Musikwünsche. Oben im Kommandomenü erscheint dann „🎹 Musikwunsch“. Gespielt wird die echte Melodie aus Klavierlicht: Jede getroffene Note spielt den Ton, der Chat reagiert live. Ein Wunsch wartet drei Runden, danach ist der Hörer enttäuscht.",
+        "Zwischenfälle mit Herz: RicoReWi platzt mit Handy und neuen Tools rein. Mal teilt er einen Clip und bringt Hörer, mal stört er die Stimmung. Marco und Andrew haben außerdem verrückte Ideen aus dem Alltag und dem Internet, die den Hype steigern."
       ]
     },
     {
@@ -124,7 +127,8 @@
         "Controller: linker Stick laufen, rechter Stick Kamera, A springen/bestätigen (zweimal = Doppelsprung), X Schallwelle/sprechen, B zurück, RT ausweichen, RB sprinten, Y Andrew/Marco wechseln, LB nächster Sender, LT Radio an/aus, Start Pause, Select Radio & Podcast.",
         "Tastatur & Maus: WASD/Pfeile laufen, Maus ziehen Kamera, Leertaste springen, E Welle/sprechen, C ausweichen, Umschalt sprinten, Q wechseln, R Radio, N nächster Sender, M Radio an/aus, Esc Pause.",
         "Touch: Stick links, rechts wischen für die Kamera, Knöpfe ⤴ springen, 📣 Welle, 💨 ausweichen, ⇄ wechseln, 📻 Radio und ⏸ Pause.",
-        "Die Knopfsymbole passen sich automatisch an: Xbox, PlayStation, Nintendo, Tastatur oder Touch."
+        "Die Knopfsymbole passen sich automatisch an: Xbox, PlayStation, Nintendo, Tastatur oder Touch.",
+        "Pause: jederzeit mit Start, Esc oder dem ⏸-Knopf oben rechts – auch in der Live-Aufnahme und der Quizshow. Von dort geht es zurück ins Hauptmenü."
       ]
     },
     {
