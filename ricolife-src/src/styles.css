@@ -396,3 +396,40 @@ body[data-mode='build'] .chat, body[data-mode='buy'] .chat { display: none; }
 .wishpts { margin-left: auto; font-weight: 700; color: var(--accent2); white-space: nowrap; }
 .simcard.min .wishes { display: none; }
 /* ===== Ende Wünsche ===== */
+
+/* ---------- Controller: Tastensymbole, Zielkreuz, Hinweisleiste (nur im Controller-Modus sichtbar) ---------- */
+.pg { display: none; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 11px; font: 800 12px/22px system-ui, sans-serif; text-align: center; color: #fff; background: #3a4a55; border: 1.5px solid rgba(255, 255, 255, 0.85); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45); white-space: nowrap; flex: none; }
+html.pad .pg { display: inline-block; }
+.pg-sys { background: #33424c; font-size: 11px; }
+.pg-ps-a { background: #2563eb; font-size: 15px; }
+.pg-ps-b { background: #dc2626; font-size: 15px; }
+.pg-ps-x { background: #db2777; font-size: 14px; }
+.pg-ps-y { background: #16a34a; font-size: 13px; }
+.pg-switch-a, .pg-switch-b, .pg-switch-x, .pg-switch-y { background: #23272b; }
+.pg-xbox-a { background: #3f9b2f; }
+.pg-xbox-b { background: #c8332b; }
+.pg-xbox-x { background: #2f6fd0; }
+.pg-xbox-y { background: #c9a227; color: #222; }
+.hud-right .btn { position: relative; }
+.hud-right .btn > .pg { position: absolute; right: calc(100% + 5px); top: 50%; transform: translateY(-50%); }
+.spd > .pg { align-self: center; margin: 0 2px 0 4px; }
+.pgwrap { display: none; gap: 2px; align-self: center; }
+html.pad .pgwrap { display: inline-flex; }
+.padbar { display: none; position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(8px + var(--safe-b)); gap: 12px; padding: 6px 14px; border-radius: 999px; background: rgba(10, 30, 42, 0.82); border: 1px solid var(--line); box-shadow: var(--shadow); backdrop-filter: blur(6px); pointer-events: none !important; font-size: 0.85em; font-weight: 600; white-space: nowrap; max-width: calc(100vw - 24px); overflow: hidden; z-index: 30; }
+html.pad .padbar:not(.hidden) { display: flex; }
+/* im Bau-/Kaufmodus liegt unten der Katalog: Hinweise oben */
+.padbar.top { bottom: auto; top: calc(64px + var(--safe-t)); }
+.padbar .ph { display: inline-flex; align-items: center; gap: 5px; }
+.reticle { display: none; position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.9); box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35), inset 0 0 0 2px rgba(0, 0, 0, 0.2); pointer-events: none !important; z-index: 5; }
+.reticle::after { content: ''; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: var(--accent2); }
+.reticle.drag { border-color: var(--accent2); width: 38px; height: 38px; margin: -19px 0 0 -19px; }
+html.pad .reticle:not(.hidden) { display: block; }
+/* im Controller-Modus sitzt die Figurenkarte über der Hinweisleiste */
+html.pad .hud-bottom { bottom: calc(52px + var(--safe-b)); }
+html.pad :focus-visible, html.pad .btn:focus, html.pad .tab:focus, html.pad .chip:focus, html.pad .it:focus { outline: 3px solid var(--accent2) !important; outline-offset: 2px; box-shadow: 0 0 0 6px rgba(229, 177, 107, 0.28); }
+
+/* ---------- TV/Konsole: größer, mit Rand gegen Überstrahlung (Overscan) ---------- */
+html.tv { --safe-t: max(env(safe-area-inset-top, 0px), 2.5vh); --safe-b: max(env(safe-area-inset-bottom, 0px), 2.5vh); --safe-l: max(env(safe-area-inset-left, 0px), 2.5vw); --safe-r: max(env(safe-area-inset-right, 0px), 2.5vw); }
+html.tv .hud-top, html.tv .hud-right, html.tv .hud-bottom, html.tv .modal, html.tv .padbar, html.tv #menu .mbtns { zoom: 1.25; }
+html.tv .pie { font-size: 1.2em; width: min(360px, 92vw); }
+html.tv .pg { min-width: 24px; height: 24px; line-height: 24px; }

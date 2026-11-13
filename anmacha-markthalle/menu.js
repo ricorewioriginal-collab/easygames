@@ -14,7 +14,7 @@
   // erst nach dem ersten gezeichneten Bild fertigmelden; kurze Mindestzeit, damit nichts flackert
   requestAnimationFrame(() => requestAnimationFrame(() => {
     mmStep(1, 'Bereit');
-    setTimeout(() => { clearInterval(tipT); $('mmLoad').hidden = true; $('mmPress').textContent = coarse ? 'Tippe, um zu starten' : 'Drücke eine beliebige Taste'; $('mmTitle').hidden = false; state = 'title'; }, Math.max(250, 900 - (performance.now() - t0)));
+    setTimeout(() => { clearInterval(tipT); $('mmLoad').hidden = true; $('mmPress').textContent = coarse ? 'Tippe, um zu starten' : 'Drücke eine beliebige Taste'; $('mmTitle').hidden = false; state = 'title'; foot(); }, Math.max(250, 900 - (performance.now() - t0)));
   }));
 
   // ---------- Hauptmenü ----------
@@ -26,12 +26,13 @@
       { id: 'yes', ic: '✦', t: 'Ja, neu beginnen', d: 'Dein aktueller Laden wird gelöscht und du startest bei Tag 1. Das lässt sich nicht rückgängig machen.', dng: 1 }];
     return [
       has ? { id: 'go', ic: '▶', t: pause ? 'Zurück ins Spiel' : 'Weiter spielen', d: 'Mach dort weiter, wo du aufgehört hast.', save: 1 }
-        : { id: 'go', ic: '▶', t: 'Spiel starten', d: 'Eröffne deinen eigenen Supermarkt: Ware bestellen, Regale füllen, kassieren und die Markthalle groß machen.' },
+        : { id: 'go', ic: '▶', t: 'Spiel starten', d: 'Eröffne deinen eigenen Supermarkt: Ware bestellen, Regale füllen, kassieren und aus dem kleinen Laden einen großen Supermarkt machen.' },
+      pause && { id: 'cmd', ic: '☰', t: 'Befehlsmenü', d: 'Bestell-PC, Bauen, Preise, Personal, Ziele und alle anderen Fenster – im Spiel auch mit X (Controller) oder Tab.' },
       has && { id: 'new', ic: '✦', t: 'Neues Spiel', d: 'Mit einem neuen Laden bei Tag 1 beginnen. Dein bisheriger Spielstand wird dabei überschrieben.' },
       { id: 'save', ic: '💾', t: 'Spielstand', d: 'Jetzt speichern und mit Google sichern, um auf jedem Gerät mit deinem Laden weiterzuspielen.', save: has },
       { id: 'menu', ic: '⚙', t: 'Optionen', d: 'Grafik, Ton, Einräum-Hilfe, Wegweiser und Kartenzahlung einstellen.' },
       { id: 'hilfe', ic: '?', t: 'Anleitung', d: 'Schnellstart, Steuerung, Kasse, Preise und Tipps für deinen Laden.' },
-      { id: 'quit', ic: '⌂', t: 'Alle Spiele', d: 'Zurück zur AnMaCha-Spielesammlung. Dein Laden wird vorher gespeichert.' }].filter(Boolean);
+      { id: 'quit', ic: '⌂', t: 'Alle Spiele', d: 'Zurück zur easygames-Spielesammlung. Dein Laden wird vorher gespeichert.' }].filter(Boolean);
   }
   function saveCard() {
     const S = G.S, st = G.Sim.stars(S);
@@ -42,8 +43,17 @@
     items = build(); sel = Math.min(sel, items.length - 1);
     $('mmTag').textContent = confirmNew ? 'NEUES SPIEL?' : pause ? 'PAUSE' : 'HAUPTMENÜ';
     $('mmList').innerHTML = items.map((it, i) => `<button class="mm-it${it.dng ? ' dng' : ''}" role="menuitem" tabindex="-1" data-i="${i}"><span class="ic">${it.ic}</span>${it.t}<span class="ar">◀</span></button>`).join('');
-    focus(sel, true);
+    focus(sel, true); foot();
   }
+  // Knopf-Hinweise im Fuß: Controller-Symbole (nav.js, Kenney Input Prompts) oder Tasten
+  function foot() {
+    const g = G.glyph, pad = window.EasyGamesPad && EasyGamesPad.active();
+    if ($('mmP')) $('mmP').innerHTML = (pad && g ? g('dpad') : '<kbd>↑↓</kbd>') + 'Auswählen';
+    if ($('mmA')) $('mmA').innerHTML = (pad && g ? g('a') : '<kbd>Enter</kbd>') + 'Bestätigen';
+    if ($('mmB')) $('mmB').innerHTML = (pad && g ? g('b') : '<kbd>Esc</kbd>') + 'Zurück';
+    if (state === 'title') $('mmPress').innerHTML = pad && g ? 'Drücke ' + g('a').replace('class="gl"', 'class="gl" style="width:30px;height:30px;vertical-align:middle"') : coarse ? 'Tippe, um zu starten' : 'Drücke eine beliebige Taste';
+  }
+  addEventListener('easygames:pad', foot);
   function focus(i, quiet) {
     sel = (i + items.length) % items.length; const bs = $('mmList').children;
     for (let k = 0; k < bs.length; k++) bs[k].classList.toggle('on', k === sel);
@@ -62,25 +72,27 @@
     switch (it.id) {
       case 'go': hide(); G.play(); break;
       case 'new': confirmNew = true; sel = 0; render(); break;
-      case 'no': confirmNew = false; sel = 1; render(); break;
+      case 'no': backNew(); break;
       case 'yes': hide(); G.fresh(); break;
+      case 'cmd': hide(); G.openMore(); break;
       case 'quit': G.save(); location.href = '../'; break;
       default: openPanel(it.id);
     }
   }
+  function backNew() { confirmNew = false; render(); focus(Math.max(0, items.findIndex(x => x.id === 'new')), true); }
   function back() {
-    if (confirmNew) { confirmNew = false; sel = 1; render(); G.sfx.tick(); }
+    if (confirmNew) { backNew(); G.sfx.tick(); }
     else if (pause) { hide(); G.play(); }
   }
   API.onBack = () => show(pause, true);
   API.onMenu = () => show(true);
-  $('bMenu').onclick = () => show(true);
+  API.askNew = () => { show(true); confirmNew = true; sel = 0; render(); };
 
   // ---------- Eingabe ----------
   // Capture-Phase: solange das Menü offen ist, sehen die Spieltasten nichts davon
   addEventListener('keydown', e => {
     if (state === 'off' || state === 'load' || e.ctrlKey || e.metaKey || e.altKey) return;
-    const k = e.key; e.stopPropagation();
+    const k = e.key; e.stopImmediatePropagation();
     if (state === 'title') { if (!e.repeat && k !== 'Tab' && k !== 'Shift') { e.preventDefault(); show(false); } return; }
     if (k === 'ArrowDown' || k === 's' || k === 'S') focus(sel + 1);
     else if (k === 'ArrowUp' || k === 'w' || k === 'W') focus(sel - 1);

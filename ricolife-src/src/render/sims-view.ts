@@ -9,9 +9,14 @@ import { tripPos } from '../sim/actions';
 import { HumanModel } from './human';
 import { PetModel, type PetAnim } from './pet';
 import { FLOOR_Y } from './lot-builder';
+import { modelGeometry } from './models';
+import { stylize } from './style';
 
 const LYING = new Set(['sleep', 'baby']);
 const PET_ANIMS = new Set<PetAnim>(['idle', 'walk', 'run', 'sit', 'sleep', 'eat', 'play', 'beg', 'pet']);
+/** Autos aus dem Kenney Car Kit (siehe docs/ASSETS.md); Modelle schauen wie das Spiel entlang +z (Rücklichter bei −z) */
+const CAR_MODELS = ['sedan', 'taxi', 'van', 'suv', 'hatchback_sports'];
+const CAR_YAW = 0;
 const CAR_COLORS = [0xd8574a, 0x3f7fbf, 0xf0c44c, 0x5aa36b, 0xe8e2d6, 0x404a55, 0x9a6ac9, 0xe88b3a];
 
 interface HumanEntry {
@@ -43,6 +48,7 @@ export class SimsView {
   private carTop = new THREE.BoxGeometry(1.5, 0.55, 1.9).translate(0, 1.15, -0.2);
   private carMats = CAR_COLORS.map((c) => new THREE.MeshLambertMaterial({ color: c }));
   private glassMat = new THREE.MeshLambertMaterial({ color: 0x9fc6d8 });
+  private carModelMat = stylize(new THREE.MeshLambertMaterial({ vertexColors: true }));
   private labels: HTMLElement;
   private labelEls = new Map<string, HTMLElement>();
   private level = 0;
@@ -193,10 +199,19 @@ export class SimsView {
       c = new THREE.Group();
       let h = 0;
       for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
-      const body = new THREE.Mesh(this.carBody, this.carMats[h % this.carMats.length]);
-      const top = new THREE.Mesh(this.carTop, this.glassMat);
-      body.castShadow = this.shadows;
-      c.add(body, top);
+      // echtes Automodell (Kenney Car Kit, CC0), sonst einfache Kiste
+      const mg = modelGeometry(CAR_MODELS[h % CAR_MODELS.length]!, 3.4);
+      if (mg) {
+        const body = new THREE.Mesh(mg, this.carModelMat);
+        body.rotation.y = CAR_YAW;
+        body.castShadow = this.shadows;
+        c.add(body);
+      } else {
+        const body = new THREE.Mesh(this.carBody, this.carMats[h % this.carMats.length]);
+        const top = new THREE.Mesh(this.carTop, this.glassMat);
+        body.castShadow = this.shadows;
+        c.add(body, top);
+      }
       this.group.add(c);
       this.cars.set(id, c);
     }
@@ -286,6 +301,7 @@ export class SimsView {
     this.carBody.dispose();
     this.carTop.dispose();
     for (const m of this.carMats) m.dispose();
+    this.carModelMat.dispose();
     this.glassMat.dispose();
     this.proxyMat.dispose();
     this.ringMat.dispose();

@@ -81,11 +81,11 @@
     var e = el(); items = menuItems(); if (sel >= items.length) sel = items.length - 1;
     var L = C().level(), h = '<div class="tw"><div><div class="tl">GayLife</div><div class="tt">Ein Leben in allen Farben</div>' +
       '<div class="pc"><div class="av">' + C().avatar(S.look) + '</div><div style="min-width:0"><b>' + esc(S.name) + '</b><div class="sub" style="color:var(--mu)">Level ' + L + ' · ✨ ' + C().fmt(S.glitzer) + ' Glitzer</div><div class="sub" style="color:var(--mu)">Tag ' + S.life.day + ' · 💶 ' + C().fmt(S.life.money) + ' €</div></div></div></div><div>';
-    if (scr === 'info') h += '<div class="tx"><b>Steuerung</b><br>Tastatur: WASD oder Pfeile laufen, Q/R drehen die Kamera, E oder Enter handeln, P Handy, M Orte, Esc Pause, F Vollbild.<br>Touch: Stick links, vier Tasten rechts (A Aktion, B Orte, X Handy, Y Menü), Kamera durch Wischen.</div>' +
+    if (scr === 'info') h += '<div class="tx"><b>Steuerung</b><br>Tastatur: WASD oder Pfeile laufen, Q/R drehen die Kamera, E oder Enter handeln, P Handy, M Orte, Esc Pause, F Vollbild.<br>Touch: Stick links, vier Tasten rechts (A Aktion, B Orte, X Handy, Y Menü), Kamera durch Wischen.<br>Controller (PlayStation, Switch, Xbox): linker Stick laufen, rechter Stick Kamera, R2/ZR sprinten, Bestätigen Aktion, Zurück Orte, □/Y Handy, △/X Menü. Menüs mit dem Steuerkreuz.</div>' +
       '<div class="tx" style="margin-top:9px"><b>Hinweise</b><br>GayLife ist ab 18. Alle Figuren sind erwachsen und frei erfunden, Zustimmung zählt, ein Nein wird respektiert. Der Spielstand liegt lokal auf diesem Gerät.</div><div style="height:9px"></div>';
     h += '<div class="mn" id="tmn">' + items.map(function (it, i) {
       return '<button class="mi' + (it.big ? ' big' : '') + (i === sel ? ' sel' : '') + '" data-i="' + i + '"><span class="e">' + it.e + '</span><span><b>' + esc(it.t) + '</b>' + (it.s ? '<small>' + esc(it.s) + '</small>' : '') + '</span></button>';
-    }).join('') + '</div></div><div class="ft sv">↑ ↓ wählen · Enter bestätigen · Esc zurück · Ab 18 · Alle Figuren sind frei erfunden</div></div>';
+    }).join('') + '</div></div><div class="ft sv">↑ ↓ oder Steuerkreuz wählen · Enter/✕ bestätigen · Esc/○ zurück · Ab 18 · Alle Figuren sind frei erfunden</div></div>';
     e.innerHTML = h;
     [].forEach.call(e.querySelectorAll('.mi'), function (b) {
       b.onmouseenter = function () { if (sel !== +b.dataset.i) { sel = +b.dataset.i; mark(); } };

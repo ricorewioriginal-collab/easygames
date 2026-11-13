@@ -133,6 +133,10 @@ export function createKayKit({ T, G, TOUCH }) {
   /* Dorffigur: Stehen oder Gehen */
   function walk(P, mv) { if (P.proc) { P.spd = mv; return; } loop(P, mv > .7 ? 'Running_A' : mv > .05 ? 'Walking_A' : 'Idle_A'); }
 
+  /* K.O.: liegen bleiben (Death_A bleibt stehen), beim Aufstehen Spawn_Ground */
+  function ko(P, on) { if (P.proc) { P.dead = on ? (P.dead || 1e-3) : 0; return; }
+    if (on) { if (P.want !== 'Death_A') { P.want = 'Death_A'; if (P.ready) once(P, 'Death_A', .08); } return; }
+    if (P.want === 'Death_A') { P.want = 'Idle_A'; P.once = null; P.cur = ''; if (P.ready && P.act.Spawn_Ground) { play(P, 'Spawn_Ground', 0); P.once = 'Spawn_Ground'; } else play(P, 'Idle_A', .1); } }
   const _v = new T.Vector3();
   function update(dt, cam) {
     let n = 0;
@@ -180,5 +184,5 @@ export function createKayKit({ T, G, TOUCH }) {
   }
   const warm = () => { load('anim'); props(); };
   const heightOf = k => PH[k];
-  return { char, beast, heightOf, play, once, loop, drive, walk, update, prop, place, warm, load, get live() { return LIVE.size; } };
+  return { char, beast, heightOf, play, once, loop, drive, walk, ko, update, prop, place, warm, load, get live() { return LIVE.size; } };
 }

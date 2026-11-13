@@ -441,9 +441,10 @@ function makePerson(L) {
   if (L.tat === 4) add(new THREE.OctahedronGeometry(.04), lmat('#f3c34a'), .26, 2.06, .12);
   var bw = [.9, 1, 1.14][L.build == null ? 1 : L.build] || 1, hs = [.9, 1, 1.08][L.h == null ? 1 : L.h] || 1;
   g.userData = { legs: legs, arms: arms }; g.scale.set(.95 * bw, .95 * hs, .95 * bw);
+  if (GL.fig) GL.fig.upgrade(g, L);
   return g;
 }
-function animPerson(p, v, t) { var u = p.userData, s = Math.sin(t * 9) * .7 * v; u.legs[0].rotation.x = s; u.legs[1].rotation.x = -s; u.arms[0].rotation.x = -s * .8; u.arms[1].rotation.x = s * .8; }
+function animPerson(p, v, t) { if (GL.fig && GL.fig.anim(p, v)) return; var u = p.userData, s = Math.sin(t * 9) * .7 * v; u.legs[0].rotation.x = s; u.legs[1].rotation.x = -s; u.arms[0].rotation.x = -s * .8; u.arms[1].rotation.x = s * .8; }
 function lerpA(a, b, k) { var d = ((b - a + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI; return a + d * Math.min(1, k); }
 function makeCat() {
   var g = new THREE.Group(), m = lmat('#9a9aa6'), d = lmat('#5b5b66');
@@ -530,7 +531,7 @@ function buildWorld() {
   [[58, 26, 12, 12, 13, 0xffd1ec], [-84, 26, 12, 12, 9, 0xc8e6ff], [84, 54, 12, 12, 9, 0xffe9b3], [-84, -54, 12, 12, 11, 0xb8f0ec], [-32, 54, 12, 12, 10, 0xb8f0ec], [32, 54, 12, 12, 8, 0xffc4d8], [-56, -54, 12, 12, 10, 0xc9d4ff], [56, -54, 12, 12, 9, 0xffd6c9], [-56, 54, 12, 12, 12, 0xf5ccff]].forEach(function (h) { house(h[0], h[1], h[2], h[3], h[4], h[5], h[1] < 0 ? 1 : -1, 0); });
   // Bäume, Lampen, Bänke
   var trunk = lmat(0x6a4a30), leafs = [lmat(0x6fcf7a), lmat(0xffb3d1), lmat(0x8fe0a0)];
-  function tree(x, z) { var t = new THREE.Mesh(new THREE.CylinderGeometry(.22, .34, 2.4, 6), trunk); t.position.set(x, 1.2, z); scene.add(t); var l = new THREE.Mesh(new THREE.IcosahedronGeometry(1.7, 0), leafs[Math.abs(Math.round(x + z)) % 3]); l.position.set(x, 3.6, z); scene.add(l); var l2 = new THREE.Mesh(new THREE.IcosahedronGeometry(1.2, 0), l.material); l2.position.set(x + .6, 4.6, z - .3); scene.add(l2); W.circles.push({ x: x, z: z, r: .7 }); }
+  function tree(x, z) { var t = new THREE.Mesh(new THREE.CylinderGeometry(.22, .34, 2.4, 6), trunk); t.position.set(x, 1.2, z); scene.add(t); var l = new THREE.Mesh(new THREE.IcosahedronGeometry(1.7, 0), leafs[Math.abs(Math.round(x + z)) % 3]); l.position.set(x, 3.6, z); scene.add(l); var l2 = new THREE.Mesh(new THREE.IcosahedronGeometry(1.2, 0), l.material); l2.position.set(x + .6, 4.6, z - .3); scene.add(l2); W.circles.push({ x: x, z: z, r: .7 }); (W.trees || (W.trees = [])).push({ x: x, z: z, m: [t, l, l2] }); }
   for (i = -60; i <= 60; i += 12) { if (Math.abs(i) < 14) continue; tree(i, 9.5); tree(i + 6, -9.5); }
   for (i = -60; i <= 60; i += 12) { if (Math.abs(i) < 14) continue; tree(9.5, i + 6); tree(-9.5, i); }
   for (i = -96; i <= -66; i += 12) { tree(i, 9.5); tree(i + 6, -9.5); } for (i = 72; i <= 96; i += 12) { tree(i, 9.5); tree(i + 6, -9.5); }
@@ -705,7 +706,7 @@ function frame(ts) {
   var ix = (W.keys.d || W.keys.arrowright ? 1 : 0) - (W.keys.a || W.keys.arrowleft ? 1 : 0) + W.jx, iz = (W.keys.w || W.keys.arrowup ? 1 : 0) - (W.keys.s || W.keys.arrowdown ? 1 : 0) + W.jz;
   if (W.keys.q) W.camYaw += dt * 1.8; if (W.keys.r) W.camYaw -= dt * 1.8;
   var il = Math.hypot(ix, iz); if (il > 1) { ix /= il; iz /= il; il = 1; } if (W.dlg || W.parade > 8) { ix = iz = il = 0; }
-  var sy = Math.sin(W.camYaw), cy = Math.cos(W.camYaw), mx = -sy * iz + cy * ix, mz = -cy * iz - sy * ix, spd = 7.2 * W.spdMul;
+  var sy = Math.sin(W.camYaw), cy = Math.cos(W.camYaw), mx = -sy * iz + cy * ix, mz = -cy * iz - sy * ix, spd = 7.2 * W.spdMul * (W.run || 1);
   if (il > .05) { p.x += mx * spd * dt; p.z += mz * spd * dt; W.yaw = lerpA(W.yaw, Math.atan2(mx, mz), dt * 10); }
   // Kollision
   var R = .55; W.colliders.forEach(function (b) {
@@ -714,7 +715,7 @@ function frame(ts) {
   });
   W.circles.forEach(function (c) { var dx = p.x - c.x, dz = p.z - c.z, d = Math.hypot(dx, dz), m = R + c.r; if (d < m && d > 1e-6) { p.x = c.x + dx / d * m; p.z = c.z + dz / d * m; } });
   var bd = W.bounds; p.x = Math.max(bd.x0, Math.min(bd.x1, p.x)); p.z = Math.max(bd.z0, Math.min(bd.z1, p.z));
-  p.g.position.set(p.x, 0, p.z); p.g.rotation.y = W.yaw; animPerson(p.g, il > .05 ? 1 : 0, W.t);
+  p.g.position.set(p.x, 0, p.z); p.g.rotation.y = W.yaw; animPerson(p.g, il > .05 ? ((W.run || 1) > 1.2 ? 3 : il > .55 ? 2 : 1) : 0, W.t);
   // NPCs
   W.npcs.forEach(function (n) {
     n.t += dt; var walking = 0;
@@ -745,7 +746,7 @@ function frame(ts) {
   // Konfetti
   if (W.parade > 0) { W.parade -= dt; var a = W.conf.geometry.attributes.position, arr = a.array; for (k = 0; k < arr.length; k += 3) { arr[k + 1] -= dt * 4; arr[k] += Math.sin(W.t * 2 + k) * dt; if (arr[k + 1] < 0) arr[k + 1] = 25; } a.needsUpdate = true; W.conf.position.set(p.x, 0, p.z); if (W.parade <= 0) { W.conf.visible = false; W.npcs.forEach(function (n) { n.dance = 0; }); } }
   // Kamera
-  var D = W.camD, tx = p.x + Math.sin(W.camYaw) * D, tz = p.z + Math.cos(W.camYaw) * D, ty = W.camH; W.cam.position.x += (tx - W.cam.position.x) * Math.min(1, dt * 6); W.cam.position.y += (ty - W.cam.position.y) * Math.min(1, dt * 6); W.cam.position.z += (tz - W.cam.position.z) * Math.min(1, dt * 6);
+  var Z = W.zoom || 1, D = W.camD * Z, tx = p.x + Math.sin(W.camYaw) * D, tz = p.z + Math.cos(W.camYaw) * D, ty = W.camH * (.55 + .45 * Z); W.cam.position.x += (tx - W.cam.position.x) * Math.min(1, dt * 6); W.cam.position.y += (ty - W.cam.position.y) * Math.min(1, dt * 6); W.cam.position.z += (tz - W.cam.position.z) * Math.min(1, dt * 6);
   W.cam.lookAt(p.x, 1.8, p.z); skyUpdate();
   // HUD, Aufträge (nur ab und zu)
   W.tick += dt;
@@ -1748,7 +1749,7 @@ function mpAuto() {
 window.addEventListener('pagehide', save);
 
 /* ---------- Schnittstelle für die Module in js/ ---------- */
-GL.core = { ac: ac, talkBase: talkBase, $: $, esc: esc, fmt: fmt, pick: pick, toast: toast, banner: banner, say: say, sfx: sfx, gain: gain, level: level, glz2: glz2, avatar: avatar,
+GL.core = { SKIN: SKIN, HC: HC, TC: TC, ac: ac, talkBase: talkBase, $: $, esc: esc, fmt: fmt, pick: pick, toast: toast, banner: banner, say: say, sfx: sfx, gain: gain, level: level, glz2: glz2, avatar: avatar,
   editor: editor, leave: leaveWorld, enter: enterWorld, openGame: openGame, showHub: showHub, menuHub: menuHub, gameOf: gameOf, bestOf: bestOf, makePerson: makePerson, animPerson: animPerson, lmat: lmat, cvTex: cvTex, labelSprite: labelSprite, mix: mix,
   GAMES: GAMES, POIS: POIS, QUESTS: QUESTS, SIDE: SIDE, NPCDEF: NPCDEF, DATES: DATES, STARS: STARS, RB: RB, resize: function () { if (WD && WD.on) resize(); } };
 Object.defineProperty(GL, 'W', { get: function () { return WD; } });

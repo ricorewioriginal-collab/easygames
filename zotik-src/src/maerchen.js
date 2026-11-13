@@ -192,6 +192,8 @@ export function createMaerchen(C) {
   function findModel(look) {
     const g = new T.Group();
     if (look === 'goat') { const P = FOE.make('rothund', 0xf0ece0, false); P.root.scale.setScalar(.6); g.add(P.root); for (const sx of [-1, 1]) { const hn = mk(G.cone, M(0x8a7a5a), sx * .1, .85, .62, .04, .22, .04); hn.rotation.x = -.5; g.add(hn); } for (const lx of [-.14, .14]) for (const lz of [-.25, .3]) g.add(mk(G.sph0, M(0xe8c040, { m: .8 }), lx, .04, lz, .06, .06, .06, false)); }
+    else if (look === 'pranger') { const P = C.folk('Quasimodo', { g: 'm', cloth: 0x6a5232, cloth2: 0x4a3a28, hair: 0xb04a22, skin: 0xe0b090, wide: 1.35, sc: .92, hood: 1 }, { pal: 1 }); g.add(P.root);   // Pranger: Holzbühne, Pfosten, Querbalken
+      g.add(mk(G.box, M(0x6a4a30, { r: .9 }), 0, -.15, 0, 3, .3, 3), mk(G.box, M(0x5a3a24, { r: .9 }), 0, 1, -.35, .22, 2.6, .22), mk(G.box, M(0x5a3a24, { r: .9 }), 0, 1.75, -.2, 1.6, .22, .2)); P.root.position.y = 0; }
     else if (look === 'kaa') { const P = C.CR().makeKind('schlange', 0xb0a040, false); P.root.scale.setScalar(2.2); g.add(P.root); }
     else if (look === 'crone') { const P = C.folk('Alte', { g: 'f', cloth: 0x3a2a3a, cloth2: 0x2a2a2a, cape: 0x2a1a2a, hair: 0xd0d0d0, sc: .9 }, { pal: 1 }); g.add(P.root); g.add(mk(G.cyl, M(0x8a6a3a), .45, .75, .2, .3, .25, .3)); for (let i = 0; i < 4; i++) g.add(mk(G.sph, M(0xc8202a, { r: .3 }), .35 + (i % 2) * .2, .95, .1 + (i > 1 ? .2 : 0), .1, .1, .1)); }
     else if (look === 'lady') { const P = C.folk('Dame', { g: 'f', cloth: 0xd8e8f8, cloth2: 0x8ab0d8, hair: 0x8a5a2a, sc: 1 }, { pal: 1 }); g.add(P.root); g.add(glow(0xd8f0ff, 4, 0, 1.2, 0, .6)); }
@@ -234,7 +236,7 @@ export function createMaerchen(C) {
     scatter(g, list, WD.ims, w.snow);
     C.mergeStatic(g, keepSet);
     // Figuren
-    for (const d of w.npcs) { const P = npcModel(d); const o = C.addNpc('mw_' + d.id, d.name, d.x, d.z, P, () => talk(d), d.face, () => mark(d.id)); o.mwId = d.id; o.noRoute = 1; }
+    cur.npcP = {}; for (const d of w.npcs) { const P = npcModel(d); cur.npcP[d.id] = P; const o = C.addNpc('mw_' + d.id, d.name, d.x, d.z, P, () => talk(d), d.face, () => mark(d.id)); o.mwId = d.id; o.noRoute = 1; }
     // Gegner-Arten dieser Welt
     for (const k of ['a', 'b', 'c', 'd', 'x', 'y']) { const f = w.foes[k]; if (!f) continue; const key = 'mw' + n + k, hov = FOE.HOVER.has(f[0]) || C.CR().HOV.has(f[0]), boss = k === 'x' || k === 'y', base = boss ? C.ED.boss : hov ? C.ED.rift : C.ED.wolf;
       C.ED[key] = Object.assign({}, base, { name: f[1], col: f[2], make: () => FOE.has(f[0]) ? FOE.make(f[0], f[2], boss) : C.CR().makeKind(f[0], f[2], boss), sc: boss ? (f[0] === 'hydra' || f[0] === 'loewe' || f[0] === 'tiger' ? 1.55 : 1.45) : f[0] === 'riese' ? 1.15 : 1, base: hov ? 'rift' : 'wolf' },
@@ -382,6 +384,7 @@ export function createMaerchen(C) {
   function tick(dt) {
     if (!cur) return; const s = st(cur.w.id), m = mis(), pl = C.pl;
     if (!cur.guest && !C.dlgOn() && s.seen) addGuest();
+    if (cur.npcP) for (const id in cur.npcP) cur.npcP[id].root.visible = !(m && m.hide === id);   // Figur ist gerade woanders (z. B. am Pranger)
     for (let i = cur.items.length - 1; i >= 0; i--) { const it = cur.items[i]; it.o.rotation.y += dt * 1.6; it.o.position.y = cur.h(it.x, it.z) + Math.sin(C.time() * 2.6 + i) * .12;
       if (m && m.t === 'collect' && s.st === 1 && Math.hypot(pl.x - it.x, pl.z - it.z) < 1.8 && !pl.dead) { s.got[it.i] = 1; C.scene.remove(it.o); cur.items.splice(i, 1); C.sfx('pick'); C.emit(it.x, cur.h(it.x, it.z) + .6, it.z, 0xffe08a, 18, 3, .7, .5, -2);
         const got = Object.keys(s.got).length, nm = m.pts[it.i][2]; C.toast(`${cur.w.em} ${nm || m.item} (${got}/${m.pts.length})`); refresh(); if (got >= m.pts.length) done(); else C.saveGame(true); } }
