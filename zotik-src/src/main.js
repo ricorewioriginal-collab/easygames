@@ -2204,7 +2204,9 @@ const CAR={
   3:{path:[44,-160,14],plazas:[[-28,30,12],[-50,-30,13],[-80,30,14],[-110,-28,13],[-140,26,11]],tiers:[[-80,44,5,4.5,-80,28],[-124,-30,5,4.5,-124,-14]],quay:.25,
     city:{walls:[0x8a8aa0,0x9a8a90,0x7a8098,0xa09888,0x8a909a],roofs:[0x3a3a4e,0x4a3a44,0x2e3446],slate:1},wall:['broad','dead'],rock:['rock_big_B_gray_1','rock_big_2'],step:0x8a8a9a},
     4:{path:[44,-160,14],plazas:[[-28,34,13],[-50,-38,12],[-90,38,14],[-112,-30,11],[-142,30,11]],tiers:[[-40,52,5,5,-26,30],[-70,50,5,5,-92,44],[-136,-24,5,5,-120,-14]],
-      quay:0,wall:['rockbig','rock','rockbig','palm'],wallMax:9,wz:[['cactus1',3.4],['cactus2',3.8],['palm2',7.5],['rock_big_1',3.2]],rock:['rock_big_1','rock_big_2'],step:0xc8a070}
+      quay:0,wall:['rockbig','rock','rockbig','palm'],wallMax:9,wz:[['cactus1',3.4],['cactus2',3.8],['palm2',7.5],['rock_big_1',3.2]],rock:['rock_big_1','rock_big_2'],step:0xc8a070},
+    5:{path:[44,-160,14],plazas:[[-14,48,12],[-50,-40,13],[-78,40,12],[-104,-38,13],[-132,34,11]],tiers:[[-36,-58,5,5,-46,-40],[-64,58,5,5.5,-76,44],[-120,-56,5,5,-108,-40]],
+      city:{walls:[0x7aa8a0,0x88b0b8,0x6a9a98,0xa0c0b8,0x8ab8a8],roofs:[0x2a7a8a,0x3a9a8a,0x1a5a7a,0xd8c890],flat:1},quay:-1.2,wall:['coral','kelp'],rock:['rock_big_B_gray_1','rock_big_2'],step:0x7a9a98}
 };
 function buildWorld(n){HST=HSTY[n]||HSTY[1];
   const C=CHP[n],R=mul32(7000+n*131),rr=(a,b)=>a+R()*(b-a),rp=a=>a[R()*a.length|0],ph=n*1.7,amp=C.amp||1,P=C.pal,cs=()=>chCs(n);
