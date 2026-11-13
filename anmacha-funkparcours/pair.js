@@ -1,4 +1,4 @@
-/* Funkparcours – Handy-Kopplung (PeerJS über WebRTC): Das Spiel am großen Bildschirm ist der Gastgeber, jedes Handy wird das Steuer-Pad EINES Läufers.
+/* Titanparcours – Handy-Kopplung (PeerJS über WebRTC): Das Spiel am großen Bildschirm ist der Gastgeber, jedes Handy wird das Steuer-Pad EINES Läufers.
    Handy → Spiel: {t:'join',name} {t:'in',v:Bitmaske} {t:'ready'}
    Spiel → Handy: {t:'wel',slot,names} {t:'full',msg} {t:'st', …Momentaufnahme + me} */
 export const CDN = { peer: 'https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js', qr: 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js' };

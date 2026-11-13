@@ -1,7 +1,9 @@
-/* Funkparcours – Ton: alles per WebAudio erzeugt (keine Audiodateien). */
+/* Titanparcours – Ton: Effekte per WebAudio erzeugt, Sprung und Landung als echte Aufnahmen (Kenney, CC0; assets/snd). */
 let ac = null, master = null, noiseBuf = null, on = true;
 const hz = n => 440 * Math.pow(2, (n - 69) / 12);
-function ctx() { if (!ac) { ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value = 0.8; master.connect(ac.destination); noiseBuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; } if (ac.state === 'suspended') ac.resume(); return ac; }
+const SMP = {}, smpLoad = () => { for (const n of ['jump', 'land']) if (!SMP[n]) { SMP[n] = 1; fetch('assets/snd/' + n + '.mp3').then(r => r.arrayBuffer()).then(b => new Promise((ok, no) => ac.decodeAudioData(b, ok, no))).then(buf => { SMP[n] = buf; }).catch(() => { SMP[n] = 0; }); } };
+function sample(n, v, rate) { const b = SMP[n]; if (!b || b === 1 || !ac) return false; try { const s = ac.createBufferSource(), g = ac.createGain(); s.buffer = b; s.playbackRate.value = rate || 1; g.gain.value = v; s.connect(g); g.connect(master); s.start(); return true; } catch (e) { return false; } }
+function ctx() { if (!ac) { ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value = 0.8; master.connect(ac.destination); smpLoad(); noiseBuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; } if (ac.state === 'suspended') ac.resume(); return ac; }
 function note(f, d, type, v, at, o) { try { const c = ctx(), t = c.currentTime + (at || 0), os = c.createOscillator(), g = c.createGain(); o = o || {}; os.type = type || 'sine'; os.frequency.setValueAtTime(f, t); if (o.to) os.frequency.exponentialRampToValueAtTime(o.to, t + d); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v || 0.08, t + (o.atk || 0.01)); g.gain.exponentialRampToValueAtTime(0.0001, t + d); os.connect(g); g.connect(master); os.start(t); os.stop(t + d + 0.03); } catch (e) {} }
 function noise(d, v, at, f, type) { try { const c = ctx(), t = c.currentTime + (at || 0), s = c.createBufferSource(), g = c.createGain(), fl = c.createBiquadFilter(); s.buffer = noiseBuf; fl.type = type || 'bandpass'; fl.frequency.value = f || 2000; fl.Q.value = 0.7; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v || 0.05, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + d); s.connect(fl); fl.connect(g); g.connect(master); s.start(t, Math.random() * 0.5); s.stop(t + d + 0.05); } catch (e) {} }
 const g = f => (...a) => { if (on) f(...a); };
@@ -17,8 +19,8 @@ export const SFX = {
   fanfare: g(() => { [[67, 0], [72, 0.15], [76, 0.3], [79, 0.45], [84, 0.65]].forEach(([n, t]) => { note(hz(n), 0.6, 'sawtooth', 0.05, t); note(hz(n + 12), 0.6, 'triangle', 0.05, t); }); noise(1.8, 0.04, 0.6, 3000); }),
   sad: g(() => { [64, 62, 60, 55].forEach((n, i) => note(hz(n), 0.45, 'triangle', 0.07, i * 0.3)); }),
   steal: g(() => { [60, 64, 67, 72, 67, 64, 60].forEach((n, i) => note(hz(n), 0.16, 'square', 0.04, i * 0.09)); }),
-  jump: g(() => note(380, 0.14, 'square', 0.04, 0, { to: 760 })),
-  land: g(() => noise(0.07, 0.05, 0, 500, 'lowpass')),
+  jump: g(() => { if (!sample('jump', 0.5, 0.95 + Math.random() * 0.1)) note(380, 0.14, 'square', 0.04, 0, { to: 760 }); }),
+  land: g(() => { if (!sample('land', 0.6, 0.9 + Math.random() * 0.2)) noise(0.07, 0.05, 0, 500, 'lowpass'); }),
   splash: g(() => { noise(0.6, 0.12, 0, 900); noise(0.35, 0.07, 0.08, 2600); }),
   count: g(() => note(660, 0.18, 'square', 0.06)),
   go: g(() => { note(990, 0.5, 'square', 0.07); note(1320, 0.5, 'triangle', 0.05); }),
