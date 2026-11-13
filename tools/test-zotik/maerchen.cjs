@@ -5,7 +5,7 @@
 const { chromium, ARGS, open, flood, skip, opt, talk, shot } = require('./lib.cjs');
 let ok = 0, bad = 0; const chk = (c, m) => { if (c) { ok++; console.log('ok   ' + m); } else { bad++; console.log('FEHL ' + m); } };
 (async () => { const b = await chromium.launch({ args: ARGS }); const p = await open(b, { ctx: { viewport: { width: 960, height: 540 } } }); const only = process.argv[2] ? process.argv[2].split(',').map(Number) : null;
-  await p.evaluate(() => { const Z = __zotik; Z.startDbg(); const S = Z.S(); S.stage = 8; S.lvl = 20; S.fl.naut = 1; Z.X.noFlight = 1; for (let k = 2; k <= 8; k++) S.cd[k] = { st: 7, fin: 1, bd: 1, arr: 1, e1: 1, e2: 1, k: 0, b: [0, 0, 0], ord: 0 }; }); await skip(p); await p.waitForTimeout(600); await skip(p);
+  await p.evaluate(() => { const Z = __zotik; Z.startDbg(); const S = Z.S(); S.stage = 8; S.lvl = 20; S.fl.naut = 1; Z.X.noFlight = 1; for (let k = 2; k <= 10; k++) S.cd[k] = { st: 7, fin: 1, bd: 1, arr: 1, e1: 1, e2: 1, k: 0, b: [0, 0, 0], ord: 0 }; }); await skip(p); await p.waitForTimeout(600); await skip(p);
   await p.evaluate(() => __zotik.travel(2)); await p.waitForTimeout(300); await skip(p);
   // Abstecher: Lunaris → Kapitel 2 bietet den Spiegelwald an
   const o = await opt(p, 'nichts'); chk(/Abstecher/.test(o) && /Spiegelwald/.test(o) && /Direkt nach/.test(o), 'Reise Lunaris → Elaris bietet Abstecher an: ' + o.slice(0, 110));
