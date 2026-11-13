@@ -24,9 +24,9 @@
    "list": [
     "⭐ oben links: deine Sterne. 📋 Aufgaben und Hinweise, ⚙️ Einstellungen, ⏸ Pause, runde Minikarte oben rechts.",
     "Oben zeigt eine Anzeige immer das nächste Ziel (Hof-Aufgabe oder Inselreise). Antippen öffnet das Aufgaben-Log mit „▶ Als Nächstes“, Inselreise, Hof-Aufgaben, Fellretter-Einsätzen, Aufträgen und Tagesgeschenk – offene Ziele haben einen „👣 Weg“-Knopf.",
-    "Links: 🎒 Tasche (Futter, Gegenstände), 🎉 Spaß (Tanz, Spiele, Karten …), ☰ Mehr (Wohin, Kamera, Bauen, Taschis …).",
+    "Links: 🎒 Tasche (Futter, Gegenstände), 🎉 Spaß (Tanz, Spiele, Karten …), ☰ Mehr (Wohin, Kamera, Bauen …).",
     "🧭 Wohin?: alle Orte nach Themen. 👣 zeigt den Weg mit Pfeil, Entfernung und Leuchtsäule, ✨ zaubert dich hin. Im Story-Modus sind gesperrte Orte mit 🔒 markiert. Im Reiter 🚗 Fahrzeuge stehen alle Fahrzeuge zum Herholen oder Hinfinden.",
-    "⚙️ Einstellungen: Tag und Nacht, Vorlesen, Musik, Geräusche, 🔴 Taschis an/aus, 📚 Handbuch & Lösungen, 🔑 Code eingeben, 🐞 Fehler melden und der Moduswechsel.",
+    "⚙️ Einstellungen = Insel-Handy → Einstellungen-App: 🎮 Steuerung (Touch, Controller-Art, Vibration, Tasten-Hinweise, Tasten belegen), 🖼️ Bild & Ton (Grafik, Musik, Geräusche, Vorlesen, Tag & Nacht), 🌍 Spiel (Freie Welt/Story, Spielstand, Code, Fehler melden), 👪 Eltern (Pausen-Erinnerung, Eltern-Bereich).",
     "Pause-Menü: speichern, Mitspielen, Eltern-Bereich (Knopf „👪 Eltern“ gedrückt halten), ⌨️ Tasten & Controller belegen, Modus wechseln."
    ]
   },
@@ -101,7 +101,7 @@
   {
    "t": "Kämpfen",
    "list": [
-    "Gekämpft wird nur in der Kampfarena der Hauptinsel und auf der Wald-Insel (das Waldtor im alten Wald bringt dich hin), außerdem in einzelnen Welt-Abenteuern wie der Schattenarena oder bei den Taschis.",
+    "Gekämpft wird nur in der Kampfarena der Hauptinsel und auf der Wald-Insel (das Waldtor im alten Wald bringt dich hin), außerdem in einzelnen Welt-Abenteuern wie der Schattenarena.",
     "Ausrüstung kaufst du bei Waldhändlerin Fenja (Wald-Insel), Rurik in Lunaris oder Kampfmeister Kai (Arena): Stock, Schwert, Bogen, Hammer, Zauberstab, Schilde, Herz-Amulett und Tränke. Das Schwert verbesserst du in der Schmiede der Rätsel-Insel gegen ⭐.",
     "💪 Kampfstufe: Jedes besiegte Monster gibt Erfahrung, höhere Stufe = mehr Herzen und stärkere Schläge.",
     "Das Kapselmonster kämpft mit, wird gefüttert und entwickelt sich bis Stufe 5.",
@@ -139,7 +139,7 @@
     "🦊 Zotik & Lunaris: Mond-Welt mit Luftschiff, Quest und Elementar-Kampf.",
     "📻 Radio-Insel Funkwelle: 13 Radiosender, Visual Radio, Noten sammeln.",
     "🔱 Atlantis: versunkene Stadt mit Hologramm-Archiv, Harfe und Aqua-Gleitern.",
-    "🔴 Taschi-Land: Taschis fangen, rundenweise kämpfen, 8 Orden sammeln.",
+    "🌀 Taschi-Land: das Taschi-Portal in der Arena führt ins eigene easygames-Spiel Taschi (fangen, kämpfen, Orden).",
     "🍄 Hüpfland: Dino Tupfi, Röhren, Sternblöcke, Kart-Rennen und Brockos Burg.",
     "🌀 Prisma-Archipel: Ki-Garten, Runen-Arena, Datenhain, Sternkugeln und goldene Flugwolke."
    ]
@@ -184,7 +184,7 @@
     "Story-Modus: Viele Freischalt-Aufgaben erledigst du ganz nebenbei auf der Hauptinsel (Fahren, Reden, Einkaufen, Schlafen, Fotografieren). Mach zuerst die Inselreise, dann öffnen sich die ersten Welten fast von selbst.",
     "Wald-Insel: Kauf zuerst bei Fenja Ausrüstung. Ein Schild nimmt Monstern viel Kraft. Mit Sternenbogen kämpfst du aus der Ferne, mit dem Donnerhammer wird der Tritt zur Schockwelle, der Funkelstab macht ✨ billiger und weiter.",
     "Titan Kron wird mit verbessertem Schwert und Kapselmonster viel leichter – erst die Rätsel-Insel spielen.",
-    "Taschis: Schwäche die wilden Taschis vor dem Fangen – je weniger Lebenspunkte, desto besser klappt es. Nutze die Typen-Vorteile.",
+    "Taschi-Portal: Vorher speichert die Insel automatisch – mit „Zurück“ im Browser bist du gleich wieder in Taschi-Land.",
     "Futter für das Kapselmonster gibt es in Häusern (Tisch, Truhen) und im Laden."
    ]
   },
@@ -203,7 +203,7 @@
    "list": [
     "Im Story-Modus eine Welt suchen, die noch gesperrt ist – schau an der Glaswand oder im 🧭 Wohin?, welche drei Aufgaben fehlen.",
     "Ein fahrendes Auto direkt betreten wollen: erst anhalten, dann einsteigen.",
-    "Taschis abgeschaltet und wundern, wo das Fanggras ist: ⚙️ → „🔴 Taschis: an“.",
+    "Mit Controller: Im Insel-Handy (⚙️) die Controller-Art wählen, wenn die Tastensymbole nicht passen (PlayStation, Switch, Xbox).",
     "Browserdaten löschen, ohne vorher „Sichern (Datei)“ im Pause-Menü zu nutzen oder mit Google zu speichern – dann ist der Spielstand weg."
    ]
   }
@@ -247,7 +247,7 @@
     "🦊 Zotik & Lunaris: 🎠 Karussell-Kind, 🗝️ Schlüsselreisender, 🧽 Bucht-Besucher",
     "📻 Radio-Insel: 🗿 Rätsel-Reisender, 🕳️ Höhlenforscher, 🥚 Kapsel-Freund",
     "🔱 Atlantis: 🏆 Turm-Bezwinger, ⚒️ Schwertschmied, 🏘️ Dorfentdecker",
-    "🔴 Taschi-Land: 😋 Feinschmecker, 🐾 Haustierfreund, 👑 Waldheld",
+    "🌀 Taschi-Land: 😋 Feinschmecker, 🐾 Haustierfreund, 👑 Waldheld",
     "🍄 Hüpfland: 🏆 Pokalsieger, 🎡 Freizeitpark-Fan, 🚀 Gadget-Fan",
     "🌀 Prisma-Archipel: 🥊 Kämpfer, 🚀 Gadget-Fan, 💬 Plaudertasche"
    ]
@@ -274,7 +274,7 @@
     "🦊 Der Ruf des Kristalls – erzählt von Mira: Akt 1: Besuche Lunaris und sprich mit Mira in der Taverne · Akt 2: Finde den Hinweis im Hafen · Akt 3: Untersuche den Riss an der Akademie (Elementar-Kampf) · Akt 4: Berichte Mira vom Kampf",
     "📻 Die dreizehn Sender – erzählt von Funkmeisterin Frida: Akt 1: Höre einen Sender (Radio am Platz, 20 Sekunden zuhören) · Akt 2: Sieh dir das Visual Radio an einem Bildschirm an · Akt 3: Höre alle 13 Sender",
     "🔱 Das Herz von Atlantis – erzählt von Orakel Okeana: Akt 1: Sieh dir alle 5 Hologramme im Archiv an · Akt 2: Berühre das Herz auf dem Stufenberg und spiele die Kristall-Harfe · Akt 3: Hüpfe in die Schwerelos-Halle und fahre mit einem Aqua-Gleiter",
-    "🔴 Der Weg zum Meister – erzählt von Professor Ulme: Akt 1: Wähle bei Professor Ulme dein erstes Taschi und fang ein wildes im Gras · Akt 2: Besiege die 4 Arena-Leiter (4 Orden) · Akt 3: Forscher-Orden (8 Taschis) und Ballon-Orden (Team Funke besiegen) · Akt 4: Besiege Meisterin Aurelia (Meister-Orden)",
+    "🌀 Das Portal der Taschis – erzählt von Professor Ulme: Akt 1: Sprich mit Professor Ulme an der Arena · Akt 2: Sieh dir die Statue an und finde das Portal in der Arena · Akt 3: Reise durchs Portal ins Taschi-Spiel",
     "🌀 Die drei Lichtsignale – erzählt von Nuri: Akt 1: Löse die Lichtfolge im Ki-Garten → 🥋 Ki-Prüfung · Akt 2: Löse das Zeichenrätsel in der Runen-Arena → 🃏 Runenmeister · Akt 3: Repariere die Signalfolge im Datenhain → 💠 Datenhüter · Akt 4: Sammle 7 Sternkugeln und rufe den Lichtdrachen → 🐉 Lichtdrachen-Ruf · Akt 5: Gewinne ein Runen-Duell gegen Kaia → 🎴 Duell-Sieger · Akt 6: Lass deinen Digi-Partner bis zur 3. Stufe wachsen → 💠 Digi-Partner"
    ]
   },
@@ -340,19 +340,12 @@
    ]
   },
   {
-   "t": "Taschi-Land",
+   "t": "Taschi-Land (Portal)",
    "list": [
-    "🔬 Professor Ulme (Labor, große Statue auf dem Platz): Erstes Taschi wählen (Glutzahn 🔥, Samenling 🌿 oder Plätscherchen 💧), Taschidex, Orden, Geschenke.",
-    "🌿 Hohes Gras (4 Zonen: Blumenwiese, Teichufer, Felsgrat, Glut-Hügel): wilde Taschis erscheinen. Fangen mit Taschibällen 🔴 – je weniger Lebenspunkte, desto besser klappt es.",
-    "⚔️ Kampf: abwechselnd. Wähle Attacke, Beutel (Bälle, Tränke), Team oder Flucht. Typen: 🔥 schlägt 🌿, 🌿 schlägt 💧, 💧 schlägt 🔥🪨, ⚡ schlägt 💧🕊️, 🪨 schlägt 🔥🕊️, 🕊️ schlägt 🌿, 👻 schlägt 👻.",
-    "⬆️ Level & Entwicklung: Gewinner bekommen EP, steigen auf und entwickeln sich. Fellino wird mit einem Stein zu Wellino, Flamino, Blitzino oder Laubino.",
-    "💖 Heilhaus (Schwester Hanna) heilt dein Team gratis. 🛒 Fangladen: Bälle, Tränke, Steine für Sterne. Wird dein Team müde, wachst du im Heilhaus auf.",
-    "🏟️ Arena: Fels-Fiete, Perla, Käpt’n Volt, Blüte – jeder gibt einen Orden. Meisterin Aurelia wartet erst, wenn du 7 Orden hast.",
-    "🎈 Team Funke (Jette, Jim, Mauzi) im Lager hinten: drei Kämpfe in Folge, dann gehört dir ihr Heißluftballon (Fahrzeug).",
-    "💛 Freunde: Blitzi, Fellino, Flamino & Co. laufen auf dem Platz herum. Sie sind nie Gegner – streicheln erlaubt!",
-    "🌍 Taschis gibt es in ALLEN Welten: überall liegt Fanggras (dunkle Flecken mit hohen Halmen), dort erscheinen die Taschis dieser Welt (3 Arten je Welt plus starke Entwicklungen). Wilde Taschis sind in späteren Welten stärker.",
-    "🔴 Taschi-Menü überall: ☰ Mehr → „Taschis“ (Team, Taschidex nach Welten, Orden, Weltforscher, Flug zum Heilhaus). Dein vorderstes Taschi läuft als Begleiter hinter dir her.",
-    "📘 Taschidex-Meilensteine: 25 und 50 Taschis, alle Taschis und „Weltforscher“ (in jeder Welt 2 Taschis) geben Sterne und Sticker. 12 Typen: dazu kommen 🐉 Drache, ❄️ Eis, 🌑 Dunkel und ✨ Licht."
+    "🔬 Professor Ulme steht vor der Arena und erklärt, wohin die Taschis gezogen sind.",
+    "🗿 Die große Statue auf dem Platz ansehen (Aktion-Knopf).",
+    "🌀 Das Portal mitten in der Arena: hineingehen → „Los geht’s!“ – die Insel speichert, dann öffnet sich das Taschi-Spiel.",
+    "🎈 Der Heißluftballon im Lager ist ein Fahrzeug."
    ]
   },
   {
@@ -497,7 +490,7 @@
     "📦 Truhenjäger: Finde alle 3 versteckten Truhen der Wunsch-Insel",
     "🌑 Dunkelheits-Trotzer: Überstehe den Einbruch der Dunkelheit",
     "🏟️ Schattenbezwinger: Besiege Umbra in der Schattenarena",
-    "🔴 Taschi-Held: Schaffe die Geschichte von Taschi-Land (Der Weg zum Meister)",
+    "🌀 Portal-Held: Schaffe die Geschichte von Taschi-Land (Das Portal der Taschis)",
     "🍄 Hüpfland-Gast: Besuche das Hüpfland im Westen",
     "🦕 Dino-Reiter: Reite auf Dino Tupfi",
     "🟢 Röhren-Reisender: Reise durch eine Röhre im Hüpfland",
@@ -507,11 +500,8 @@
     "🦖 Hüpf-Profi: Schaffe das Hüpf-Abenteuer am Automaten",
     "🪨 Brocko-Kitzler: Kitzle Felsenkönig Brocko in seiner Burg durch",
     "🌞 Hüpf-Held: Schaffe die Geschichte des Hüpflands (Der Sonnenstern)",
-    "📘 Taschi-Sammler: Fang 25 verschiedene Taschis",
-    "📚 Taschi-Profi: Fang 50 verschiedene Taschis",
-    "🌍 Weltforscher: Fang in jeder Welt 2 Taschis",
-    "🎯 Taschi-Fänger: Fang dein erstes wildes Taschi",
-    "👑 Taschi-Meister: Hol alle 8 Orden in Taschi-Land",
+    "🌀 Portal-Finder: Finde das Taschi-Portal in Taschi-Land",
+    "🚀 Portal-Reisender: Reise durchs Portal ins Taschi-Spiel",
     "🏘️ Dorfentdecker: Betritt 20 Gebäude",
     "🗺️ Weltenbummler: Betritt 40 Gebäude",
     "🎁 Truhenfinder: Öffne 10 Schatztruhen in Gebäuden",
@@ -561,7 +551,7 @@
    "list": [
     "🌠 WUNSCHSTERN: Wunsch-Insel (hinter dem Schlüsselreich): alle Aufgaben fertig – Wunschfrüchte, Schlucht, Floß, Truhen, Dunkelheit, Schattenarena, Umbra besiegt, Wunschschlüssel.",
     "🍄 HUEPFHELD: Hüpfland: alle Aufgaben fertig – Sternblöcke, Dino, Röhre, Kart-Pokal, Hüpf-Abenteuer und Brocko durchgekitzelt.",
-    "🔴 TASCHIMEISTER: Taschi-Land: alle 8 Orden, alle Taschis im Taschidex und viele Fangbälle, Tränke und Steine (+ ein Starter-Team).",
+    "🌀 TASCHIMEISTER: Taschi-Land: alle Portal-Aufgaben und beide Portal-Sticker.",
     "♾️ UNENDLICHSTERNE: Unendlich Sterne: nichts kostet mehr Sterne, der Vorrat ist immer voll (999.999).",
     "🔓 ALLESFREI: Schaltet ALLE Inhalte frei: alle Sticker, die ganze Inselreise, alle Welten im Story-Modus (auch künftige), alle Läden-Gegenstände.",
     "🌟 STERNENREGEN: +500 Sterne sofort.",

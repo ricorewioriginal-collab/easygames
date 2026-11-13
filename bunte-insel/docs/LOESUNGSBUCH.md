@@ -13,7 +13,7 @@
 7. 🧽 Schwammi-Bucht
 8. 🎠 Märchenland
 9. 🌊 Weitere Welten
-10. 🔴 Taschi-Land: fangen, kämpfen, Orden
+10. 🌀 Taschi-Land: das Portal zum Taschi-Spiel
 11. 🌠 Wunsch-Insel (hinter dem Schlüsselreich)
 12. 🎪 Themenbereiche
 13. 🍄 Hüpfland (Insel im Westen)
@@ -28,7 +28,7 @@
 
 ### Kapitel 1: 🏝️ Ankommen
 
-Willkommen auf der Bunten Insel! Ich bin Bürgermeisterin Rosi. Schau dich um: Sag Hallo, pack deinen Rucksack aus und lass dir den Weg zeigen.
+Willkommen auf der Bunten Insel! Ich bin Bürgermeisterin Rosi. Bald feiern wir das große Insel-Fest – und du sollst mir bei den Vorbereitungen helfen! Sag erst mal Hallo, pack deinen Rucksack aus und lass dir den Weg zeigen.
 
 - 💬 Sprich mit jemandem (tippe auf eine Person)
 - 🎒 Öffne deinen Rucksack (🎒 oben links)
@@ -36,7 +36,7 @@ Willkommen auf der Bunten Insel! Ich bin Bürgermeisterin Rosi. Schau dich um: S
 
 ### Kapitel 2: 🚗 Unterwegs
 
-Auf der Insel gibt es viele Fahrzeuge. Steig ein, hilf den Leuten mit einem Auftrag – und fahr einmal mit dem Zug!
+Die Einladungen zum Fest müssen verteilt werden! Steig in ein Fahrzeug, erledige einen Auftrag für die Leute – und hol mit dem Zug die Festmusiker vom Bahnhof ab.
 
 - 🚗 Steig in ein Fahrzeug
 - 📦 Erledige einen Auftrag (im Fahrzeug „Ja“ sagen)
@@ -44,7 +44,7 @@ Auf der Insel gibt es viele Fahrzeuge. Steig ein, hilf den Leuten mit einem Auft
 
 ### Kapitel 3: 🏠 Zuhause
 
-Du hast eine eigene Wohnung und einen Garten! Mach es dir gemütlich, ernte etwas und ruh dich aus.
+Zum Fest kommen Gäste – auch zu dir nach Hause! Richte dein Zimmer schön ein, ernte etwas im Garten für die Gäste und schlaf dich gut aus.
 
 - 🛋️ Richte dein Zimmer ein
 - 🌻 Ernte etwas im Garten
@@ -52,7 +52,7 @@ Du hast eine eigene Wohnung und einen Garten! Mach es dir gemütlich, ernte etwa
 
 ### Kapitel 4: 🚜 Auf dem Bauernhof
 
-Bauer Heinz braucht Hilfe! Streichle die Tiere, mäh ein Feld und koch etwas Leckeres in der Hofküche.
+Ohne Essen kein Fest! Bauer Heinz braucht Hilfe: Streichle die Tiere, mäh ein Feld für frisches Heu und koch etwas Leckeres in der Hofküche.
 
 - 🐄 Streichle ein Tier auf dem Hof
 - 🌾 Mäh ein Feld mit dem Traktor
@@ -60,7 +60,7 @@ Bauer Heinz braucht Hilfe! Streichle die Tiere, mäh ein Feld und koch etwas Lec
 
 ### Kapitel 5: 🛍️ Im Ort
 
-Im Ort ist immer was los. Geh einkaufen, probier die Schießbude und mach ein schönes Foto.
+Jetzt schmücken wir den Ort! Kauf etwas für die Deko, gewinn in der Schießbude Preise für die Tombola und mach ein schönes Foto für das Fest-Plakat.
 
 - 🛒 Kaufe etwas in einem Laden
 - 🎯 Spiel in der Schießbude
@@ -68,7 +68,7 @@ Im Ort ist immer was los. Geh einkaufen, probier die Schießbude und mach ein sc
 
 ### Kapitel 6: 🗺️ Abenteuer
 
-Jetzt wird es spannend! Hau einen Baum, such einen Schatz und schaff den Himmels-Parcours hoch über der Insel.
+Für die Festbühne brauchen wir Holz – hau einen Baum! Die alte Fest-Schatzkiste ist auch verschwunden: Such einen Schatz. Und hoch über der Insel, im Himmels-Parcours, hängen wir die Fest-Fahnen auf.
 
 - 🌳 Hau einen Baum (geh nah ran und tippe 🪓)
 - 🗺️ Finde einen Schatz (🎉 → Spiele → Schatzsuche)
@@ -76,7 +76,7 @@ Jetzt wird es spannend! Hau einen Baum, such einen Schatz und schaff den Himmels
 
 ### Kapitel 7: 🛡️ Mutprobe
 
-Zeig, wie mutig du bist: Gewinne einen Kampf in der Arena, segle aufs Meer und flieg mit dem Hubschrauber.
+Jedes Fest braucht einen mutigen Helden! Gewinne einen Kampf in der Arena, segle aufs Meer, um das Feuerwerk vom Schiff zu holen, und flieg mit dem Hubschrauber über die Insel, um alle einzuladen.
 
 - 🥊 Gewinne einen Kampf in der Arena
 - ⛵ Segle mit dem Boot
@@ -84,7 +84,7 @@ Zeig, wie mutig du bist: Gewinne einen Kampf in der Arena, segle aufs Meer und f
 
 ### Kapitel 8: 🎉 Spaß-Tag
 
-Du hast so viel geschafft – jetzt wird gefeiert! Fahr Karussell im Freizeitpark, schau einen Film und spring ins Freibad.
+Fast fertig! Jetzt testen wir die Fest-Attraktionen: Fahr Karussell im Freizeitpark, schau den Festfilm im Kino und spring ins Freibad.
 
 - 🎡 Fahr eine Attraktion im Freizeitpark
 - 🎬 Schau einen Film im Kino
@@ -92,7 +92,7 @@ Du hast so viel geschafft – jetzt wird gefeiert! Fahr Karussell im Freizeitpar
 
 ### Kapitel 9: 🎢 Parkdirektor
 
-Der Freizeitpark gehört jetzt dir! Geh ins Park-Büro am Eingang, bau Wege, Fahrgeschäfte und Buden – und mach deinen Park richtig beliebt.
+Das Fest findet im Freizeitpark statt – und der gehört jetzt dir! Geh ins Park-Büro am Eingang, bau Wege, Fahrgeschäfte und Buden und mach den Park richtig beliebt. Dann kann das Fest beginnen!
 
 - 🔨 Baue etwas im Freizeitpark (Park-Büro am Eingang)
 - 📋 Schließe eine Park-Mission ab
@@ -325,12 +325,11 @@ Betrittst du eine Welt, erzählt dir eine Figur dort ihre Geschichte in Akten. J
 - Akt 2: Berühre das Herz auf dem Stufenberg und spiele die Kristall-Harfe → Aufgabe der Welt
 - Akt 3: Hüpfe in die Schwerelos-Halle und fahre mit einem Aqua-Gleiter → Aufgabe der Welt
 
-### 🔴 Der Weg zum Meister – erzählt von Professor Ulme
+### 🌀 Das Portal der Taschis – erzählt von Professor Ulme
 
-- Akt 1: Wähle bei Professor Ulme dein erstes Taschi und fang ein wildes im Gras → Aufgabe der Welt
-- Akt 2: Besiege die 4 Arena-Leiter (4 Orden) → Aufgabe der Welt
-- Akt 3: Forscher-Orden (8 Taschis) und Ballon-Orden (Team Funke besiegen) → Aufgabe der Welt
-- Akt 4: Besiege Meisterin Aurelia (Meister-Orden) → Aufgabe der Welt
+- Akt 1: Sprich mit Professor Ulme an der Arena → Aufgabe der Welt
+- Akt 2: Sieh dir die Statue an und finde das Portal in der Arena → Aufgabe der Welt
+- Akt 3: Reise durchs Portal ins Taschi-Spiel → Aufgabe der Welt
 
 ### 🌀 Die drei Lichtsignale – erzählt von Nuri
 
@@ -420,26 +419,16 @@ Brücke im Nordwesten. Märchenpark mit Schloss, Basar, Taxi und Umzug.
 
 ---
 
-## 🔴 Taschi-Land: fangen, kämpfen, Orden
+## 🌀 Taschi-Land: das Portal zum Taschi-Spiel
 
-Brücke im Osten. Hier leben Taschis – freundliche Taschenwesen. Ziel der Insel: 8 Orden sammeln und Taschi-Meister werden.
+Brücke im Osten. Die Taschis sind in ihr eigenes easygames-Spiel umgezogen – mit Fangen, Kämpfen und Orden. In Taschi-Land steht dafür das große Portal.
 
-- 🔬 Professor Ulme (Labor, große Statue auf dem Platz): Erstes Taschi wählen (Glutzahn 🔥, Samenling 🌿 oder Plätscherchen 💧), Taschidex, Orden, Geschenke.
-- 🌿 Hohes Gras (4 Zonen: Blumenwiese, Teichufer, Felsgrat, Glut-Hügel): wilde Taschis erscheinen. Fangen mit Taschibällen 🔴 – je weniger Lebenspunkte, desto besser klappt es.
-- ⚔️ Kampf: abwechselnd. Wähle Attacke, Beutel (Bälle, Tränke), Team oder Flucht. Typen: 🔥 schlägt 🌿, 🌿 schlägt 💧, 💧 schlägt 🔥🪨, ⚡ schlägt 💧🕊️, 🪨 schlägt 🔥🕊️, 🕊️ schlägt 🌿, 👻 schlägt 👻.
-- ⬆️ Level & Entwicklung: Gewinner bekommen EP, steigen auf und entwickeln sich. Fellino wird mit einem Stein zu Wellino, Flamino, Blitzino oder Laubino.
-- 💖 Heilhaus (Schwester Hanna) heilt dein Team gratis. 🛒 Fangladen: Bälle, Tränke, Steine für Sterne. Wird dein Team müde, wachst du im Heilhaus auf.
-- 🏟️ Arena: Fels-Fiete, Perla, Käpt’n Volt, Blüte – jeder gibt einen Orden. Meisterin Aurelia wartet erst, wenn du 7 Orden hast.
-- 🎈 Team Funke (Jette, Jim, Mauzi) im Lager hinten: drei Kämpfe in Folge, dann gehört dir ihr Heißluftballon (Fahrzeug).
-- 💛 Freunde: Blitzi, Fellino, Flamino & Co. laufen auf dem Platz herum. Sie sind nie Gegner – streicheln erlaubt!
+- 🔬 Professor Ulme steht vor der Arena und erklärt, wohin die Taschis gezogen sind.
+- 🗿 Die große Statue auf dem Platz hält den allerersten Taschiball.
+- 🌀 Das Portal steht mitten in der Arena: hineingehen (Aktion-Knopf) → „Los geht’s!“. Das Inselspiel wird gespeichert, dann öffnet sich das Taschi-Spiel. Mit „Zurück“ im Browser kommst du wieder auf die Insel.
+- 🎈 Der Heißluftballon hinten im Lager ist ein Fahrzeug zum Einsteigen.
 
-- 🌍 Taschis gibt es in ALLEN Welten: überall liegt <b>Fanggras</b> (dunkle Flecken mit hohen Halmen), dort erscheinen die Taschis dieser Welt (3 Arten je Welt plus starke Entwicklungen). Wilde Taschis sind in späteren Welten stärker.
-- 🔴 Taschi-Menü überall: ☰ Mehr → „Taschis“ (Team, Taschidex nach Welten, Orden, Weltforscher, Flug zum Heilhaus). Dein vorderstes Taschi läuft als Begleiter hinter dir her.
-- 📘 Taschidex-Meilensteine: 25 und 50 Taschis, alle Taschis und „Weltforscher“ (in jeder Welt 2 Taschis) geben Sterne und Sticker. 12 Typen: dazu kommen 🐉 Drache, ❄️ Eis, 🌑 Dunkel und ✨ Licht.
-
-> 💡 Taschis an/aus: ⚙️ Einstellungen → „🔴 Taschis: an“. Aus = kein Begleiter, kein Fanggras, keine wilden Taschis und kein Taschi-Knopf in den anderen Welten. In Taschi-Land selbst geht alles weiter, dein Team bleibt erhalten.
-
-Die 8 Orden: 🔴 Fang · 🪨 Fels · 💧 Perlen · ⚡ Funken · 🌿 Blüten · 📘 Forscher (8 Taschis) · 🎈 Ballon (Team Funke) · 👑 Meister. Alles hier ist selbst erfunden – inspiriert von klassischen Sammel-Rollenspielen.
+> 💡 Alte Spielstände mit Taschi-Team bleiben gespeichert – es geht nichts verloren.
 
 ---
 
@@ -568,8 +557,8 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 - 🐟 Fische im Sammelbuch: 0 von 14 (am See & Strand angeln)
 - 🐞 Käfer im Sammelbuch: 0 von 14 (Kescher im Gras)
 - 🐚 Funde im Sammelbuch: 0 von 14 (glitzernde Stellen am Strand)
-- 🌈 Heute: Regenbogen-Tag – Heute zeigt sich immer wieder ein Regenbogen mit bunten Sternen!
-- 🌟 Tagesglück: heute 🦷 Dino-Zahn fangen (+2 ⭐)
+- 🦋 Heute: Käfertag – Heute wimmelt es von Käfern und Faltern – seltene sind häufiger, die ersten 5 Fänge geben extra ⭐!
+- 🌟 Tagesglück: heute 🦋 Flatterlinde fangen (+2 ⭐)
 
 ### 🎬 Dampfer-Hafen
 
@@ -609,20 +598,12 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 - 🦖 Das Hüpf-Abenteuer am Automaten schaffen
 - 🪨 Felsenkönig Brocko durchkitzeln (Mutprobe in der Burg)
 
-### 🔴 Taschi-Land
+### 🌀 Taschi-Land
 
-- 🔬 Bei Professor Ulme dein erstes Taschi wählen
-- 🔴 Im hohen Gras ein wildes Taschi fangen (Fang-Orden)
-- 🪨 Fels-Fiete in der Arena besiegen
-- 💧 Perla in der Arena besiegen
-- ⚡ Käpt'n Volt in der Arena besiegen
-- 🌿 Blüte in der Arena besiegen
-- 📘 Taschidex: 8 verschiedene Taschis fangen (0 von 8)
-- 🎈 Team Funke (Jette, Jim, Mauzi) besiegen
-- 👑 Meisterin Aurelia besiegen (alle 7 Orden nötig)
-- 📘 Taschidex: 25 Taschis fangen (0 von 25) – wilde Taschis gibt es in jeder Welt im Fanggras
-- 📚 Taschidex: 50 Taschis fangen (0 von 50)
-- 🌍 Weltforscher: in jeder der 17 Welten 2 Taschis fangen (0 von 17)
+- 🔬 Mit Professor Ulme reden (am Portal)
+- 🗿 Die große Statue auf dem Platz ansehen
+- 🌀 Das Taschi-Portal in der Arena finden
+- 🚀 Durchs Portal ins Taschi-Spiel reisen
 
 ### ✨ Märchenland
 
@@ -706,7 +687,7 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 - 🦊 Der Ruf des Kristalls – noch nicht begonnen (geh auf die Insel)
 - 📻 Die dreizehn Sender – noch nicht begonnen (geh auf die Insel)
 - 🔱 Das Herz von Atlantis – noch nicht begonnen (geh auf die Insel)
-- 🔴 Der Weg zum Meister – noch nicht begonnen (geh auf die Insel)
+- 🌀 Das Portal der Taschis – noch nicht begonnen (geh auf die Insel)
 - 🌀 Die drei Lichtsignale – noch nicht begonnen (geh auf die Insel)
 
 ---
@@ -819,7 +800,7 @@ So bekommst du jeden Sticker:
 | 📦 Truhenjäger | Finde alle 3 versteckten Truhen der Wunsch-Insel |
 | 🌑 Dunkelheits-Trotzer | Überstehe den Einbruch der Dunkelheit |
 | 🏟️ Schattenbezwinger | Besiege Umbra in der Schattenarena |
-| 🔴 Taschi-Held | Schaffe die Geschichte von Taschi-Land (Der Weg zum Meister) |
+| 🌀 Portal-Held | Schaffe die Geschichte von Taschi-Land (Das Portal der Taschis) |
 | 🍄 Hüpfland-Gast | Besuche das Hüpfland im Westen |
 | 🦕 Dino-Reiter | Reite auf Dino Tupfi |
 | 🟢 Röhren-Reisender | Reise durch eine Röhre im Hüpfland |
@@ -829,11 +810,8 @@ So bekommst du jeden Sticker:
 | 🦖 Hüpf-Profi | Schaffe das Hüpf-Abenteuer am Automaten |
 | 🪨 Brocko-Kitzler | Kitzle Felsenkönig Brocko in seiner Burg durch |
 | 🌞 Hüpf-Held | Schaffe die Geschichte des Hüpflands (Der Sonnenstern) |
-| 📘 Taschi-Sammler | Fang 25 verschiedene Taschis |
-| 📚 Taschi-Profi | Fang 50 verschiedene Taschis |
-| 🌍 Weltforscher | Fang in jeder Welt 2 Taschis |
-| 🎯 Taschi-Fänger | Fang dein erstes wildes Taschi |
-| 👑 Taschi-Meister | Hol alle 8 Orden in Taschi-Land |
+| 🌀 Portal-Finder | Finde das Taschi-Portal in Taschi-Land |
+| 🚀 Portal-Reisender | Reise durchs Portal ins Taschi-Spiel |
 | 🏘️ Dorfentdecker | Betritt 20 Gebäude |
 | 🗺️ Weltenbummler | Betritt 40 Gebäude |
 | 🎁 Truhenfinder | Öffne 10 Schatztruhen in Gebäuden |
@@ -888,7 +866,7 @@ Eingabe über ⚙️ → „🔑 Code eingeben“ (Groß-/Kleinschreibung egal).
 |---|---|
 | 🌠 WUNSCHSTERN | Wunsch-Insel (hinter dem Schlüsselreich): alle Aufgaben fertig – Wunschfrüchte, Schlucht, Floß, Truhen, Dunkelheit, Schattenarena, Umbra besiegt, Wunschschlüssel. |
 | 🍄 HUEPFHELD | Hüpfland: alle Aufgaben fertig – Sternblöcke, Dino, Röhre, Kart-Pokal, Hüpf-Abenteuer und Brocko durchgekitzelt. |
-| 🔴 TASCHIMEISTER | Taschi-Land: alle 8 Orden, alle Taschis im Taschidex und viele Fangbälle, Tränke und Steine (+ ein Starter-Team). |
+| 🌀 TASCHIMEISTER | Taschi-Land: alle Portal-Aufgaben und beide Portal-Sticker. |
 | ♾️ UNENDLICHSTERNE | Unendlich Sterne: nichts kostet mehr Sterne, der Vorrat ist immer voll (999.999). (nochmal eingeben = aus) |
 | 🔓 ALLESFREI | Schaltet ALLE Inhalte frei: alle Sticker, die ganze Inselreise, alle Welten im Story-Modus (auch künftige), alle Läden-Gegenstände. |
 | 🌟 STERNENREGEN | +500 Sterne sofort. |

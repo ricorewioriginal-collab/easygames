@@ -1,6 +1,6 @@
 'use strict';
-/* Bunte Insel – Taschi-Land 🔴 (Welt): Insel im Osten mit Professor-Statue, Labor, Heilhaus, Fangladen, runder Kampf-Arena (4 Leiter + Meisterin), 4 Gras-Zonen,
-   Lager von Team Funke mit Heißluftballon. Die Taschi-Modelle (Freunde & wilde Taschis) werden aus BI.TSPECIES gebaut. ALLES SELBST ERFUNDEN („inspiriert“). */
+/* Bunte Insel – Taschi-Land 🌀 (Welt): Insel im Osten mit Professor-Statue, Labor, Heilhaus, Fangladen, runder Arena mit dem Taschi-Portal (taschi-game.js),
+   Wiesen und Lager mit Heißluftballon. Fangen/Kämpfen gibt es im eigenen easygames-Spiel „Taschi“. ALLES SELBST ERFUNDEN („inspiriert“). */
 BI.TASCHI = (function () {
   const R = 80, d = 450, ang = 20.5 * Math.PI / 180, cx = Math.cos(ang) * d, cz = Math.sin(ang) * d, ux = Math.cos(ang), uz = Math.sin(ang);
   const A0 = { x: ux * 171, z: uz * 171 }, A1 = { x: cx - ux * (R - 5), z: cz - uz * (R - 5) };
@@ -14,88 +14,6 @@ BI.TASCHI = (function () {
   T.arenaPos = (off, rad) => { const m = T.at(T.arena.a, T.arena.b), g = Math.atan2(T.entry.x - m.x, T.entry.z - m.z) + Math.PI + off, x = m.x + Math.sin(g) * rad, z = m.z + Math.cos(g) * rad; return { x, z, h: Math.atan2(m.x - x, m.z - z) }; };
   return T;
 })();
-
-/* 3D-Modell eines Taschis (aus Art-Daten); Blick nach +z, ca. 1 m hoch (big = Skalierung der Entwicklung) */
-BI.taschiMesh = function (id, o) {
-  const S = BI.TSPECIES[id] || BI.TSPECIES.blitzi, b = new BI.Batch(), c1 = S.c1, c2 = S.c2, c3 = S.c3, K = (S.big || 1) * ((o && o.s) || 1), BK = 0x2a2230;
-  const eye = (x, y, z, r) => { b.sph(x, y, z, r, BK, 0); b.sph(x + r * .3, y + r * .35, z + r * .55, r * .38, 0xffffff, 0); };
-  const leg = (x, z, c, h) => b.cyl(x, 0, z, .07, .09, h || .3, c, 6);
-  switch (S.shape) {
-    case 'mouse':
-      b.sph(0, .45, 0, .4, c1, 1, 1, 1.05, .9); b.sph(0, .42, .14, .27, c2, 1, 1, 1, .6); b.sph(0, .98, .1, .3, c1, 1, 1.05, 1, 1); eye(-.12, 1.02, .34, .05); eye(.12, 1.02, .34, .05); b.sph(0, .93, .38, .035, BK, 0);
-      if (!S.nocheek) { b.sph(-.25, .88, .26, .085, c3, 0, 1, 1, .6); b.sph(.25, .88, .26, .085, c3, 0, 1, 1, .6); }
-      for (const s of [-1, 1]) { b.cone(s * .2, 1.2, .02, .09, .42, c1, 6); b.cone(s * .2, 1.48, .02, .06, .12, S.nocheek ? c1 : c3, 6); b.sph(s * .33, .55, .12, .09, c1, 0); leg(s * .16, .05, c1, .2); b.sph(s * .16, .08, .13, .1, c1, 0, 1, .5, 1.3); }
-      b.box(0, .4, -.45, .1, .5, .1, c1); b.box(.1, .75, -.5, .3, .09, .1, c1, 0, 0, .3); b.box(.15, .95, -.5, .1, .35, .1, c1);
-      if (S.big > 1.2) b.sph(0, .5, -.5, .18, c2, 0);
-      break;
-    case 'fox':
-      b.sph(0, .5, 0, .32, c1, 1, 1, .95, 1.4); b.sph(0, .46, .2, .22, c2, 1, 1, .9, 1.2); b.sph(0, .88, .5, .27, c1); b.sph(0, .76, .72, .13, c2, 1, 1, .8, 1); b.sph(0, .8, .84, .04, BK, 0); eye(-.12, .95, .72, .045); eye(.12, .95, .72, .045);
-      b.sph(0, .72, .38, .3, c2, 1, 1.2, .8, .7); for (const s of [-1, 1]) { b.cone(s * .15, 1.08, .46, .09, .36, c1, 6); b.cone(s * .15, 1.12, .48, .05, .22, c2, 6); leg(s * .15, .4, c1, .38); leg(s * .15, -.35, c1, .38); }
-      b.sph(0, .62, -.6, .24, c1, 1, .8, .8, 1.8); b.sph(0, .64, -.95, .16, c2, 1, .8, .8, 1);
-      if (S.fin) { b.box(0, 1.1, .3, .05, .3, .3, c3, 0, 0, 0); for (const s of [-1, 1]) b.box(s * .22, .95, .55, .05, .3, .16, c3, 0, 0, s * .4); b.box(0, .85, -.9, .05, .3, .4, c3); }
-      if (S.flame) { for (let i = 0; i < 5; i++) b.cone(Math.sin(i * 1.26) * .26, .75, .32 + Math.cos(i * 1.26) * .12, .1, .3, i & 1 ? 0xffd36a : 0xff7a1a, 5); b.sph(0, .64, -1.05, .2, 0xffb02a, 1, .8, .8, 1.2); }
-      if (S.spiky) for (let i = 0; i < 7; i++) b.cone(Math.sin(i * .9 - 2.7) * .3, .78, .38 + Math.cos(i * .9 - 2.7) * .1, .06, .28, 0xfff6c0, 5);
-      if (S.leaf) { for (const s of [-1, 0, 1]) b.sph(s * .12, 1.12, .62, .1, 0x3a9a3a, 0, 1, .35, 1.7); b.sph(0, .64, -1.0, .15, 0x3a9a3a, 0, 1, .4, 1.8); }
-      break;
-    case 'lizard':
-      b.sph(0, .55, 0, .34, c1, 1, 1, 1.15, .9); b.sph(0, .5, .14, .24, c2, 1, 1, 1.1, .6); b.sph(0, 1.02, .08, .27, c1, 1, 1, .95, 1.1); b.sph(0, .94, .3, .15, c1, 1, 1, .8, 1.2); eye(-.12, 1.07, .27, .05); eye(.12, 1.07, .27, .05);
-      for (const s of [-1, 1]) { leg(s * .18, .06, c1, .3); b.sph(s * .18, .06, .18, .1, c1, 0, 1, .5, 1.4); b.sph(s * .34, .6, .1, .1, c1, 0); }
-      b.cyl(0, .3, -.4, .04, .12, .6, c1, 6, 1.1); b.sph(0, .62, -.82, .13, c3, 1, 1, 1.4, 1); b.cone(0, .62, -.8, .09, .3, 0xffd36a, 5);
-      if (S.wings) for (const s of [-1, 1]) b.box(s * .5, .9, -.15, .5, .05, .5, c3, 0, 0, s * .5);
-      break;
-    case 'frog':
-      b.sph(0, .42, 0, .4, c1, 1, 1.2, .9, 1); b.sph(0, .38, .16, .28, c2, 1, 1.1, .9, .7); b.sph(0, .78, .22, .24, c1, 1, 1.3, .8, 1); eye(-.2, .98, .26, .07); eye(.2, .98, .26, .07);
-      for (const s of [-1, 1]) { leg(s * .32, .12, c1, .26); b.sph(s * .32, .06, .24, .13, c1, 0, 1, .45, 1.4); b.sph(s * .42, .4, 0, .13, c1, 0); }
-      b.sph(0, .62, -.15, .3, c3, 1, 1, .85, 1); b.cone(0, .9, -.15, .14, .34, c3 + 0x101010, 6);
-      if (S.bulb === 2) for (let i = 0; i < 6; i++) b.sph(Math.sin(i * 1.05) * .26, 1.0, -.15 + Math.cos(i * 1.05) * .26, .15, 0xff7ac0, 0, 1, .5, 1);
-      break;
-    case 'turtle':
-      b.sph(0, .36, 0, .34, c1, 1, 1.05, .9, 1.1); b.sph(0, .52, -.1, .42, c3, 1, 1.05, .8, 1.15); b.sph(0, .3, .05, .32, c2, 1, 1, .5, 1.1); b.sph(0, .72, .36, .2, c1); eye(-.09, .76, .52, .042); eye(.09, .76, .52, .042);
-      for (const s of [-1, 1]) { leg(s * .3, .25, c1, .22); leg(s * .3, -.25, c1, .22); b.sph(s * .38, .45, .2, .1, c1, 0); }
-      b.sph(0, .35, -.5, .1, c1, 0); if (S.cannons) for (const s of [-1, 1]) { b.cyl(s * .25, .85, -.15, .1, .1, .4, 0xc8c8d0, 8); b.cyl(s * .25, 1.2, -.15, .06, .09, .08, 0x555a66, 8); }
-      for (let i = 0; i < 4; i++) b.box(Math.sin(i * 1.57) * .2, .9 - .05, -.1 + Math.cos(i * 1.57) * .2, .12, .04, .12, 0xd8b078);
-      break;
-    case 'bird':
-      b.sph(0, .55, 0, .3, c1, 1, 1, 1.1, .9); b.sph(0, .5, .13, .22, c2, 1, 1, 1, .7); b.sph(0, .97, .1, .21, c1); eye(-.09, 1.02, .27, .04); eye(.09, 1.02, .27, .04);
-      b.cyl(0, .94, .36, 0, .07, .2, c3, 6, Math.PI / 2); for (const s of [-1, 1]) { b.box(s * .34, .6, -.02, .06, .34, .4, c1, 0, 0, s * .3); leg(s * .1, 0, c3, .3); }
-      b.box(0, .5, -.4, .2, .06, .4, c3, 0, .3); if (S.crest) for (let i = -1; i <= 1; i++) b.cone(i * .08, 1.12, .02, .05, .3, 0xe83a3a, 5);
-      break;
-    case 'rock':
-      b.sph(0, .5, 0, .45, c1, 1, 1, .95, 1, .06); b.sph(.18, .85, -.05, .22, c2, 1, 1, .8, 1, .05); b.sph(-.2, .8, -.1, .2, c1, 1, 1, .8, 1, .05); eye(-.14, .62, .4, .06); eye(.14, .62, .4, .06); b.box(0, .72, .42, .4, .06, .08, c3, 0, 0, 0);
-      for (const s of [-1, 1]) { b.sph(s * .55, .4, .1, .17, c1, 1, 1, 1.2, 1, .04); b.sph(s * .55, .26, .1, .12, c3, 0); } b.sph(0, .1, .22, .22, c3, 0, 1, .4, 1);
-      break;
-    case 'ghost':
-      b.sph(0, .72, 0, .4, c1, 1, 1, 1.1, 1); for (let i = 0; i < 5; i++) b.cone(Math.sin(i * 1.26) * .22, .02, Math.cos(i * 1.26) * .2, .1, .4, c1, 5);
-      eye(-.14, .82, .34, .085); eye(.14, .82, .34, .085); b.box(0, .62, .38, .26, .05, .06, c3); for (const s of [-1, 1]) b.sph(s * .45, .6, .1, .1, c2, 0);
-      if (S.flame) { for (let i = 0; i < 3; i++) b.cone((i - 1) * .16, 1.05, 0, .1, .36 - Math.abs(i - 1) * .1, i === 1 ? 0xffd36a : 0xff7a1a, 5); } else { b.sph(0, 1.15, -.05, .12, c2, 0, 1, .7, 1); }
-      break;
-    case 'tadpole':
-      b.sph(0, .46, 0, .42, c1, 1, 1, 1, 1.05); b.sph(0, .38, .2, .3, c2, 1, 1, 1, .6); eye(-.15, .62, .34, .06); eye(.15, .62, .34, .06); b.sph(0, .72, .12, .12, c3, 0, 1, .4, 1);
-      b.cone(0, .46, -.5, .2, .5, c3, 5); if (S.legs) for (const s of [-1, 1]) { leg(s * .2, .05, c1, .2); b.sph(s * .2, .05, .12, .1, c1, 0, 1, .45, 1.4); b.sph(s * .42, .35, .1, .1, c1, 0); }
-      break;
-    case 'bug':
-      b.sph(0, .34, 0, .3, c1, 1, 1, .85, 1.25); b.sph(0, .46, .35, .2, c1); eye(-.09, .52, .5, .045); eye(.09, .52, .5, .045); for (const s of [-1, 1]) { b.cyl(s * .08, .6, .4, .015, .015, .3, BK, 4, -.4); b.sph(s * .12, .88, .36, .035, c3, 0); b.box(s * .24, .52, -.05, .18, .04, .4, c2, 0, 0, s * .5); }
-      for (let i = -1; i <= 1; i++) for (const s of [-1, 1]) b.cyl(s * .25, 0, i * .22, .02, .02, .3, BK, 4, 0, 0, s * .6);
-      if (S.spiky) for (let i = 0; i < 6; i++) b.cone(Math.sin(i) * .2, .58, -.1 + Math.cos(i) * .2, .05, .22, c3, 4); else b.cone(0, .62, .4, .05, .2, c3, 5);
-      break;
-    case 'bear':
-      b.sph(0, .56, 0, .5, c1, 1, 1, 1.05, 1); b.sph(0, .5, .26, .34, c2, 1, 1, 1.05, .6); b.sph(0, 1.12, .15, .33, c1); b.sph(0, 1.05, .42, .14, c2, 1, 1.1, .8, .8); b.sph(0, 1.08, .55, .045, BK, 0);
-      for (const s of [-1, 1]) { b.sph(s * .24, 1.4, .1, .12, c1, 0); b.box(s * .13, 1.16, .46, .1, .025, .03, BK); b.sph(s * .52, .5, .12, .17, c1, 0, 1, 1.3, 1); leg(s * .26, .05, c3, .32); b.sph(s * .26, .06, .3, .14, c3, 0, 1, .5, 1.3); }
-      break;
-    case 'cat':
-      b.sph(0, .5, 0, .32, c1, 1, 1, 1.1, 1.2); b.sph(0, .46, .2, .22, c2, 1, 1, 1, .6); b.sph(0, 1.0, .12, .32, c1, 1, 1, .9, 1); eye(-.13, 1.04, .38, .05); eye(.13, 1.04, .38, .05); b.sph(0, .95, .43, .04, 0xd86a8a, 0);
-      for (const s of [-1, 1]) { b.cone(s * .22, 1.2, .08, .1, .36, c1, 5); b.box(s * .3, .92, .36, .24, .015, .02, BK, 0, 0, s * .2); b.box(s * .3, .88, .36, .24, .015, .02, BK, 0, 0, -s * .2); leg(s * .15, .2, c1, .34); leg(s * .15, -.2, c1, .34); }
-      b.sph(0, 1.2, .3, .08, c3, 0, 1, 1.2, .3); b.cyl(0, .5, -.5, .05, .08, .6, c1, 6, .5);
-      break;
-  }
-  { const hy = { mouse: 1.0, fox: .9, lizard: 1.02, frog: .8, turtle: .74, bird: .97, rock: .6, ghost: .82, tadpole: .62, bug: .46, bear: 1.12, cat: 1.0 }[S.shape] || .9;
-    if (S.horn) b.cone(0, hy + .26, .12, .09, .34, 0xfff0c0, 5);
-    if (S.crest && S.shape !== 'bird') for (let i = -1; i <= 1; i++) b.cone(i * .1, hy + .2, -.02, .05, .28 - Math.abs(i) * .06, c3, 4);
-    if (S.wings && S.shape !== 'lizard') for (const s2 of [-1, 1]) b.box(s2 * .52, hy - .35, -.1, .55, .05, .5, c3, 0, 0, s2 * .5); }
-  const m = b.mesh(BI.mat()), g = new THREE.Group(); g.add(m); g.scale.setScalar(K); g.userData.id = id; return g;
-};
-/* Vorschaubild (Daten-URL) eines Taschis – zwischengespeichert */
-BI.taschiPic = function (id) { return BI.Thumb ? BI.Thumb.get('tm_' + id, () => BI.Thumb.render(BI.taschiMesh(id), null, .5, .18)) : null; };
 
 BI.buildTaschiGround = function (c) {
   const { W, st, lamp, ROADY } = c, T = BI.TASCHI, TAU = Math.PI * 2, rn = BI.rng(5151), at = T.at, E = T.entry;
