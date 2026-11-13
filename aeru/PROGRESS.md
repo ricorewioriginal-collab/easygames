@@ -57,3 +57,4 @@ Grundlage: Masterprompt „AERU – Die Sterneninseln“ (Phasen A–F). Diese D
 
 Alle vier Tests müssen grün bleiben (`node tests/story.cjs`, `node tests/logic.cjs`, `node tests/webview.cjs`, Browsertest). Neue Quests nur in `story.js` anlegen; `AERU_QUESTS.validate(story)` prüft die Datenstruktur (läuft zu Beginn von `tests/story.cjs`).
 - Spyro-Ausbau, Schritt 8: Kopfstoß mit Eisentruhen, See zum Schwimmen (Ostgebiet), Rankenwand zum Klettern (Westgebiet) und Flugprüfung mit 60-s-Zeitlimit in jeder Welt; Tests in tests/spyro.cjs.
+- Spyro-Ausbau, Schritt 9: zusammenhängende Welt – Talboden unter allen Inseln, Inseln am Boden als Tafelberge, Felstreppen, Weltgrenze, Kamera vor Felswänden; Bestandsaufnahme und Plan in MASTERPLAN.md; Test tests/tal.cjs.
