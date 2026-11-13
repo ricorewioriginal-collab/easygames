@@ -301,7 +301,7 @@
     },
     // ---------------- Staffel 3: Auf Sendung – die AnMaCha-Radios
     {
-      id: 'c13', season: 3, title: 'AnMaCha24 – Die Podcastnacht', when: 'Staffel 3 · AnMaCha24', ep: 21,
+      id: 'c13', radio: 'anmacha24', season: 3, title: 'AnMaCha24 – Die Podcastnacht', when: 'Staffel 3 · AnMaCha24', ep: 21,
       sky: 'night', obj: { type: 'collect', n: 16, t: 270, gold: 4 }, drones: 6, show: { rounds: 7, goal: [760, 1120, 1500] },
       intro: [
         ['n', 'Aus dem Podcast wird ein Sender: AnMaCha24 geht rund um die Uhr auf Sendung. Erste Nacht, erste Livesendung – und das Programm ist noch leer.'],
@@ -313,7 +313,7 @@
       outro: [['a', 'Acht Stunden durchgesendet. Ich höre jetzt Stimmen.'], ['m', 'Das sind die Hörer, Andrew. Die rufen an.']]
     },
     {
-      id: 'c14', season: 3, title: 'Clubradio24', when: 'Staffel 3 · Clubradio24', ep: 22,
+      id: 'c14', radio: 'clubradio24', season: 3, title: 'Clubradio24', when: 'Staffel 3 · Clubradio24', ep: 22,
       sky: 'party', obj: { type: 'party', n: 12, t: 250 }, drones: 7, show: { rounds: 7, goal: [800, 1180, 1560] },
       intro: [
         ['n', 'Clubradio24 legt auf – aber das Funkloch hat die Club-Mixtapes in der ganzen Stadt versteckt.'],
@@ -326,7 +326,7 @@
       outro: [['a', 'Der Bass wackelt bis zum Funkhaus.'], ['m', 'Das ist nicht der Bass, das ist Gisela. Die tanzt mit.']]
     },
     {
-      id: 'c15', season: 3, title: 'Christmasradio24', when: 'Staffel 3 · Christmasradio24', ep: 23,
+      id: 'c15', radio: 'christmasradio24', season: 3, title: 'Christmasradio24', when: 'Staffel 3 · Christmasradio24', ep: 23,
       sky: 'xmas', obj: { type: 'guest', n: 4, t: 300 }, drones: 5, show: { rounds: 7, goal: [840, 1240, 1640] },
       intro: [
         ['n', 'Christmasradio24 sendet die große Weihnachtsshow. Es schneit, es glitzert – und die Gäste stecken im Schnee fest.'],
@@ -337,7 +337,7 @@
       outro: [['m', 'Frohe Weihnachten an alle Hörer!'], ['a', 'Und an Gisela. Die steht jetzt mit Lichterkette vorm Haus.']]
     },
     {
-      id: 'c16', season: 3, title: 'YourTime-FM – Giselas Roadtrip', when: 'Staffel 3 · YourTime-FM', ep: 24,
+      id: 'c16', radio: 'yourtime-fm', season: 3, title: 'YourTime-FM – Giselas Roadtrip', when: 'Staffel 3 · YourTime-FM', ep: 24,
       sky: 'day', obj: { type: 'train', n: 10, t: 170 }, drones: 5, show: { rounds: 7, goal: [880, 1300, 1720] },
       intro: [
         ['n', 'YourTime-FM schickt AnMaCha auf Tour: Eine Sendung an jeder Haltestelle der Stadt. Gisela ist leider in der Werkstatt.'],
@@ -348,7 +348,7 @@
       outro: [['a', 'Zehn Haltestellen, zehn Sendungen. Meine Füße senden SOS.'], ['m', 'Nächstes Mal fährt Gisela. Versprochen. Vielleicht.']]
     },
     {
-      id: 'c17', season: 3, title: 'Rockradio24 – Der Rauschkönig', when: 'Staffel 3 · Finale', ep: 25,
+      id: 'c17', radio: 'rockradio24', season: 3, title: 'Rockradio24 – Der Rauschkönig', when: 'Staffel 3 · Finale', ep: 25,
       sky: 'festival', obj: { type: 'boss', n: 3, t: 400, hp: 16, name: 'Die Rauschkönig-Drohne', rival: 'Ralf „Rauschkönig“ Rauschmann' }, drones: 6, show: { rounds: 8, goal: [960, 1420, 1880] },
       intro: [
         ['n', 'Rockradio24 eröffnet mit einem Konzert vor dem Funkhaus. Doch über der Bühne schwebt Rauschmanns größte Störsender-Drohne aller Zeiten.'],
