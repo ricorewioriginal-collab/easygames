@@ -353,6 +353,7 @@
     buildGisela(FUNKHAUS.door.x + 11, FUNKHAUS.door.z + 3.5);
     buildRico(FUNKHAUS.door.x - 6.5, FUNKHAUS.door.z + 4);
     if (AMC.Drive && !cfg.net) AMC.Drive.build(CTX);
+    if (AMC.Home && cfg.mode !== 'race') AMC.Home.tire([cfg.host || 'andrew'], 0.5);
     spawnHosts(cfg.host || 'andrew', FUNKHAUS.door.x, FUNKHAUS.door.z + 6);
     W.cam.yaw = 0; W.cam.pitch = 0.32; W.cam.cur = null; W.cam.tx = S.pl.x; W.cam.ty = 1.6; W.cam.tz = S.pl.z;
     S.beacon = beam(0xff8a1e);
@@ -558,6 +559,7 @@
   function interactTarget(ent) {
     const p = ent || S.pl;
     if (S.drive) return { label: 'Aussteigen 🚪' };
+    const dv = AMC.Drive && p === S.pl ? AMC.Drive.interact(p) : null; if (dv) return dv;
     for (const n of S.npcs) {
       const d = Math.hypot(n.x - p.x, n.z - p.z);
       if (d < 2.4) {
@@ -568,7 +570,6 @@
       }
     }
     for (const r of S.relays) if (!r.fixed && Math.hypot(r.x - p.x, r.z - p.z) < 2.2 && Math.abs(r.y - p.y) < 1.6) return { label: 'Verteiler reparieren (halten)', hold: r };
-    const dv = AMC.Drive && p === S.pl ? AMC.Drive.interact(p) : null; if (dv) return dv;
     if (S.gisela && S.gisela.t <= 0 && Math.hypot(S.gisela.x - p.x, S.gisela.z - p.z) < 3.6) return { label: 'Gisela hupen 📯', run: honk };
     if (S.rico && S.rico.t <= 0 && Math.hypot(S.rico.x - p.x, S.rico.z - p.z) < 2.6) return { label: 'Mit RicoReWi quatschen 📱', run: ricoTalk };
     if (S.imbiss && Math.hypot(S.imbiss.x - p.x, S.imbiss.z - p.z) < 3.4 && S.carry < 3 && S.fed + S.carry < S.hungryNeed) return { label: 'Bestellungen abholen 🍟', run: pickOrder };
@@ -655,7 +656,15 @@
   function bossDown() {
     const b = S.boss; b.state = 'dead'; b.open = 0; AMC.Audio.sfx('win'); W.cam.shake = 1;
     for (let i = 0; i < 5; i++) setTimeout(() => S && W.particles.burst(b.x + U.rand(-2, 2), b.y + U.rand(-1, 2), b.z + U.rand(-2, 2), U.pick([0x8a3dff, 0xff8a1e, 0x3dd6ff]), 40, { speed: 10 }), i * 180);
-    setTimeout(() => { if (!S) return; b.m.visible = false; S.drones.forEach(d => { if (!d.dead) killDrone(d); }); objectiveDone(); }, 1100);
+    setTimeout(() => {
+      if (!S) return; b.m.visible = false; S.drones.forEach(d => { if (!d.dead) killDrone(d); });
+      // Kein Fantasiewesen: Hinter der Störsender-Drohne steckt ein echter Mensch – jetzt wird gerangelt
+      if (AMC.Drive && !S.net && AMC.Drive.spawnRival) {
+        const name = (S.ch && S.ch.obj.rival) || 'Ralf Rauschmann';
+        msg('🎛️ Die Drohne ist down! ' + name + ' springt aus dem Störsender-Wagen – schnapp ihn dir und rangel ihn mit ' + AMC.glyph('x') + ' nieder!', 4);
+        AMC.Drive.spawnRival(name, b.x, b.z, () => { msg('🤼 ' + name + ' gibt auf: „Okay, okay! Ich mach ab jetzt auch einen Podcast. Einen netten.“', 4); objectiveDone(); });
+      } else objectiveDone();
+    }, 1100);
   }
   function objectiveDone() {
     if (S.done) return; S.done = true; AMC.Audio.sfx('star');

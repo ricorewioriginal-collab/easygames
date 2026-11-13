@@ -58,6 +58,25 @@ server.listen(0, '127.0.0.1', async () => {
     await p.keyboard.press('KeyE'); await p.waitForTimeout(2500);
     assert.ok(await p.evaluate(() => !AMC.Play.state().drive), 'Aussteigen klappt');
     await p.evaluate(() => { AMC.Play.stop(); AMC.UI.closeAll(); });
+    // Sims-Teil: Zuhause (Bedürfnisse, Schreibtisch-Idee), begehbares Studio, Musikshop, Gegenspieler zum Rangeln
+    await p.evaluate(() => { AMC.Game.mode = 'home'; AMC.Home.open('marco', () => {}); }); await p.waitForTimeout(1200);
+    const ideas0 = await p.evaluate(() => AMC.Home.needs('marco').ideas.length);
+    await p.evaluate(() => { const s = AMC.Home.HOMES.marco.slots.find(x => x.id === 'desk'); AMC.Home._act(s); });
+    assert.ok(await p.evaluate(n => AMC.Home.needs('marco').ideas.length > n || n >= 3, ideas0), 'Schreibtisch bringt eine Idee');
+    assert.ok(await p.evaluate(() => !!document.getElementById('homeUi') && AMC.Home.active()), 'Marcos Haus offen');
+    await p.evaluate(() => AMC.Home.close(true)); 
+    await p.evaluate(() => AMC.Home.studio({ host: 'andrew', actions: {} }, () => {})); await p.waitForTimeout(800);
+    assert.ok(await p.evaluate(() => AMC.Studio.mode === 'walk' && AMC.Home.active()), 'Studio begehbar');
+    await p.evaluate(() => { AMC.Home.close(true); AMC.Game.mode = 'menu'; AMC.Studio.enter('menu'); });
+    await p.evaluate(() => AMC.Home.musicShop()); await p.waitForTimeout(1500);
+    assert.ok(await p.$$eval('#msList [data-id]', b => b.length) > 10, 'Musikshop listet Klavierlicht-Lieder');
+    await p.evaluate(() => AMC.UI.closeAll());
+    // Gegenspieler (Mensch statt Fantasiewesen) nach dem Bosskampf
+    await p.evaluate(() => AMC.Game.playChapter(7)); await p.waitForTimeout(2500);
+    await p.evaluate(() => { window.__rd = false; const S = AMC.Play.state(); AMC.Drive.spawnRival('Ralf Rauschmann', S.pl.x + 2, S.pl.z, () => { window.__rd = true; }); }); await p.waitForTimeout(1200);
+    for (let i = 0; i < 14 && !(await p.evaluate(() => window.__rd)); i++) { await p.evaluate(() => { const S = AMC.Play.state(), t = S.thieves.find(x => x.rival); if (t) { S.pl.x = t.x - 1.2; S.pl.z = t.z; } }); await p.waitForTimeout(120); await p.keyboard.press('KeyE'); await p.waitForTimeout(700); }
+    assert.ok(await p.evaluate(() => window.__rd), 'Rangelei mit Rauschmann gewonnen');
+    await p.evaluate(() => { AMC.Play.stop(); AMC.UI.closeAll(); });
     // Funk-Rennen: 10 Tore, Uhr läuft vorwärts
     await p.evaluate(() => { AMC.UI.closeAll(); AMC.Play.onEnd = () => {}; AMC.Play.start({ mode: 'race', host: 'andrew' }); }); await p.waitForTimeout(2500);
     assert.equal(await p.evaluate(() => AMC.Play.state().gates.length), 10, 'Rennen mit 10 Toren');
