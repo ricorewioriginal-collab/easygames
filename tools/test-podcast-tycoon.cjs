@@ -27,9 +27,18 @@ server.listen(0, '127.0.0.1', async () => {
     await p.click('[data-go=resume]'); await p.waitForTimeout(300);
     assert.ok(await p.evaluate(() => !document.querySelector('.main-menu') && AMC.Game.mode === 'play'), 'Weiter in der Stadt');
     // Club-Feeling in der Stadt: Emote-Leiste, Tanzen, Stadt-Vibe
-    await p.evaluate(() => document.querySelector('#cvEmo [data-e=dance]').click()); await p.waitForTimeout(800);
+    await p.waitForFunction(() => AMC.Play.state().pl.onGround, null, { timeout: 8000 }).catch(() => {});
+    await p.evaluate(() => document.querySelector('#cvEmo [data-e=dance]').click()); await p.waitForFunction(() => AMC.Play.state().pl.anim === 'dance', null, { timeout: 8000 }).catch(() => {});
     assert.ok(await p.evaluate(() => AMC.CityVibe.state().dancing && AMC.Play.state().pl.anim === 'dance'), 'Tanzen in der Stadt');
     await p.evaluate(() => document.querySelector('#cvEmo [data-e=dance]').click());
+    // Stadtbus: 8 Haltestellen, Fahrt in ein anderes Viertel
+    assert.equal(await p.evaluate(() => AMC.Play.state().busStops.length), 8, '8 Bushaltestellen');
+    await p.evaluate(() => AMC.Play.onAction('bus:funk')); await p.waitForSelector('[data-b=park]'); await p.click('[data-b=park]'); await p.waitForTimeout(1800);
+    assert.ok(await p.evaluate(() => { const S = AMC.Play.state(), b = S.busStops.find(x => x.st.id === 'park'); return Math.hypot(S.pl.x - b.x, S.pl.z - b.z) < 5; }), 'Bus bringt zum Stadtpark');
+    // Gisela von innen: ausbauen und betreten
+    await p.evaluate(() => { AMC.Save.data.fan += 400; AMC.Camper.buy('bett'); AMC.Camper.buy('studio'); AMC.Play.onAction('camper'); }); await p.waitForTimeout(1200);
+    assert.ok(await p.evaluate(() => { const r = AMC.Home._state(); return r && r.kind === 'camper' && AMC.Camper.has('bett') && AMC.Camper.has('studio') && !!r.B.P.studio; }), 'Gisela innen begehbar und ausgebaut');
+    await p.evaluate(() => AMC.Home.close()); await p.waitForFunction(() => AMC.Game.mode === 'play' && AMC.Play.state() && AMC.Play.state().mode === 'free', null, { timeout: 15000 });
     // Stadt: Kapitel 1 starten, nach vorn laufen (Bordstein darf nicht blockieren)
     await p.evaluate(() => AMC.Game.playChapter(0)); await p.waitForTimeout(3000);
     const z0 = await p.evaluate(() => AMC.Play.state().pl.z);

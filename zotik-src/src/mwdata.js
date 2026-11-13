@@ -612,7 +612,7 @@ export const WORLDS = [
     ],
     intro: [L('Erzähler', 'Ein Dorf in der Toskana, Zypressen auf den Hügeln, Werkstätten, ein Theater mit roten Vorhängen – und am Ende des Landes das Meer.'), L('Erzähler', 'Der Riss hat die Fäden der Marionetten gekappt. Sie tanzen jetzt allein, als Schatten. Und draußen in der Bucht ist der Riesenhai erwacht.'), L('Zotik', 'Ein Land, in dem Lügen lange Nasen machen. Gut, dass ich nie flunkere. Fast nie.')],
     ms: [
-      { t: 'find', g: 'geppetto', n: 'Pinocchio ist weggelaufen', who: 'Pinocchio', at: [-26, 6], look: 'puppet',
+      { t: 'find', g: 'geppetto', n: 'Pinocchio ist weggelaufen', who: 'Pinocchio', at: [-26, 6], look: 'puppet', hide: 'pinocchio',
         a: [L('Geppetto', 'Kaum hatte er Beine, ist er davongerannt! Durchs Dorf, über die Felder – und ich alter Mann komme nicht hinterher.'), L('Geppetto', 'Bitte bring ihn zurück. Er läuft immer dahin, wo es nach Abenteuer riecht. Nach Westen, glaube ich.')],
         f: [L('Pinocchio', 'Ein Fuchs! Bist du ein Freund vom anderen Fuchs? Der hat mir versprochen, dass ich reich werde!'), L('Zotik', 'Ich bin ein ganz anderer Fuchs. Einer, der dich nach Hause bringt.'), L('Pinocchio', 'Na gut. Aber nur, weil du ein Schwert hast. Das ist eindeutig besser als der andere Fuchs.')],
         d: [L('Geppetto', 'Mein Junge! Komm her. Ich habe dir eine Fibel gekauft, damit du lesen lernst.'), L('Pinocchio', 'Die Fibel … die hab ich gegen eine Theaterkarte getauscht. Und dann ist der Wind gekommen, und die Seiten sind weggeflogen.')] },
@@ -674,7 +674,7 @@ export const WORLDS = [
     ],
     intro: [L('Erzähler', 'Kuppeln aus Gold und Türkis, ein Basar, der nach Zimt duftet, und hinter der Stadt eine Höhle, in der Bäume Edelsteine tragen.'), L('Erzähler', 'Ein Zauberer aus dem Maghreb hat den Riss gefunden und will mit seiner Kraft die Wunderlampe für immer an sich binden. Seine Rauchgeister ziehen schon durch die Gassen.'), L('Zotik', 'Eine Lampe mit einem Riesen darin. Und ich dachte, meine Nautilux sei geräumig.')],
     ms: [
-      { t: 'find', g: 'mutter', n: 'Aladdin suchen', who: 'Aladdin in der Höhle', at: [-56, -58], look: 'boy',
+      { t: 'find', g: 'mutter', n: 'Aladdin suchen', who: 'Aladdin in der Höhle', at: [-56, -58], look: 'boy', hide: 'aladdin',
         a: [L('Aladdins Mutter', 'Ein Fremder hat meinen Sohn mitgenommen. Er sagte, er sei sein Onkel – dabei hatte Mustafa keinen Bruder!'), L('Aladdins Mutter', 'Sie sind zur Höhle hinter der Stadt gegangen. Bitte, Fuchs, sieh nach ihm.')],
         f: [L('Aladdin', 'Er hat mich in die Höhle geschickt und wollte, dass ich ihm die Lampe heraufreiche. Als ich zuerst hinauswollte, hat er den Stein zugeschoben!'), L('Zotik', 'Dann ist dein Onkel kein Onkel. Komm, wir gehen nach Hause.')],
         d: [L('Aladdins Mutter', 'Mein Junge! Und was hast du da – eine alte Lampe? Die putze ich dir gleich.'), L('Aladdin', 'Nicht reiben! … Zu spät. Zotik, darf ich vorstellen: der Dschinn der Lampe.')] },

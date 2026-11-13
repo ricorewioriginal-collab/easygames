@@ -13,7 +13,7 @@
 
   // ------------------------------------------------------------------ Kollision
   // Kontext für das Fahr-Modul (src/drive.js)
-  const CTX = { get S() { return S; }, solidAt: (x, y, z) => solidAt(x, y, z), addBox: (...a) => addBox(...a), msg: (...a) => msg(...a), setAnim: (...a) => setAnim(...a), moveBody: (...a) => moveBody(...a), freeSpot: (...a) => freeSpot(...a), swapHost: () => swapHost(), honk: () => honk(), drawRub: () => drawRub(), padHeld: b => padHeld(b), ROADS };
+  const CTX = { get S() { return S; }, solidAt: (x, y, z) => solidAt(x, y, z), addBox: (...a) => addBox(...a), msg: (...a) => msg(...a), setAnim: (...a) => setAnim(...a), moveBody: (...a) => moveBody(...a), freeSpot: (...a) => freeSpot(...a), swapHost: () => swapHost(), honk: () => honk(), drawRub: () => drawRub(), padHeld: b => padHeld(b), addStation: (...a) => addStation(...a), ROADS };
   function addBox(x0, x1, z0, z1, top, bot) { S.col.push({ x0: Math.min(x0, x1), x1: Math.max(x0, x1), z0: Math.min(z0, z1), z1: Math.max(z0, z1), top, bot: bot || 0 }); }
   function solidAt(x, y, z) { for (const c of S.col) if (x > c.x0 && x < c.x1 && z > c.z0 && z < c.z1 && y < c.top && y > c.bot) return true; return false; }
   function groundAt(x, z, y, r) {
@@ -448,9 +448,10 @@
     const env = W.makeSky(S.scene, sky); S.env = env;
     W.particles.attach(S.scene);
     buildCity(sky, rng);
-    buildGisela(FUNKHAUS.door.x + 11, FUNKHAUS.door.z + 3.5);
+    { const ga = S.mode === 'free' && AMC.Save.data.giselaAt; buildGisela(ga ? ga.x : FUNKHAUS.door.x + 11, ga ? ga.z : FUNKHAUS.door.z + 3.5, ga ? ga.h : -0.35); }
     buildRico(FUNKHAUS.door.x - 6.5, FUNKHAUS.door.z + 4);
     if (AMC.Drive && !cfg.net) AMC.Drive.build(CTX);
+    if (AMC.Transit) AMC.Transit.build(CTX);
     if (AMC.Home && cfg.mode !== 'race') AMC.Home.tire([cfg.host || 'andrew'], 0.5);
     spawnHosts(cfg.host || 'andrew', FUNKHAUS.door.x, FUNKHAUS.door.z + 6);
     W.cam.yaw = 0; W.cam.pitch = 0.32; W.cam.cur = null; W.cam.tx = S.pl.x; W.cam.ty = 1.6; W.cam.tz = S.pl.z;
@@ -649,6 +650,7 @@
     if (S.cat) { g.font = '11px sans-serif'; g.fillText('🐈', X(S.cat.x) - 6, Z(S.cat.z) + 4); }
     const ng = S.gates.find(q => !q.passed); if (ng) { g.strokeStyle = '#3dd6ff'; g.lineWidth = 2; g.beginPath(); g.arc(X(ng.x), Z(ng.z), 5, 0, 7); g.stroke(); }
     if (S.stations) for (const st of S.stations) { if (!st.sp.visible) continue; const sd = st.id.startsWith('sender:'); g.fillStyle = sd ? (D.STATIONS.find(x => 'sender:' + x.slug === st.id) || {}).color || '#fff' : '#ffffff'; g.fillRect(X(st.x) - 2.5, Z(st.z) - 2.5, 5, 5); }
+    if (AMC.Transit) for (const d of AMC.Transit.mapDots()) { g.fillStyle = d.c; g.fillRect(X(d.x) - 4, Z(d.z) - 3, 8, 6); }
     if (AMC.Drive) for (const d of AMC.Drive.mapDots()) { g.fillStyle = d.c; g.beginPath(); g.arc(X(d.x), Z(d.z), d.big ? 4.5 : 2.6, 0, 7); g.fill(); if (d.big) { g.strokeStyle = '#000'; g.lineWidth = 1; g.stroke(); } }
     if (S.beacon.visible) { g.strokeStyle = '#ff8a1e'; g.lineWidth = 2.5; g.beginPath(); g.arc(X(S.beacon.position.x), Z(S.beacon.position.z), 6 + Math.sin(S.time * 6) * 1.5, 0, 7); g.stroke(); }
     // Spieler-Pfeil (Blickrichtung der Kamera)
@@ -837,7 +839,7 @@
     S.hurtT += dt; if (S.hurtT > 4) S.energy = Math.min(100, S.energy + dt * 6);
     // Zeit
     if (S.left > 0 && S.mode !== 'free') { S.left -= dt; if (S.left <= 0) { S.left = 0; if (S.mode === 'jagd') return finish(true, 'time'); if (!S.done) return finish(false, 'time'); } }
-    updPickups(dt); updDrones(dt); updNpcs(dt); if (AMC.CityVibe) AMC.CityVibe.update(dt, S); updObjective(dt); updRings(dt);
+    updPickups(dt); updDrones(dt); updNpcs(dt); if (AMC.Transit) AMC.Transit.update(dt); if (AMC.CityVibe) AMC.CityVibe.update(dt, S); updObjective(dt); updRings(dt);
     if (S.rico) { S.rico.f.update(dt); if (S.rico.t > 0) S.rico.t -= dt; }
     if (S.gisela) { if (S.gisela.t > 0) S.gisela.t -= dt; S.gisela.g.position.y = S.gisela.t > 0 ? Math.abs(Math.sin(S.time * 18)) * 0.06 : 0; }
     if (S.boss) updBoss(dt);
@@ -964,11 +966,11 @@
     S.rings = S.rings.filter(r => { r.t += dt; const k = r.t / 0.35, s = 0.4 + k * r.max; r.m.scale.set(s, s, s); r.m.material.opacity = Math.max(0, 0.6 * (1 - k)); const e = r.e || S.pl; r.m.position.set(e.x, e.y + 0.9, e.z); if (k >= 1) { S.group.remove(r.m); r.m.geometry.dispose(); return false; } return true; });
   }
   // ------------------------------------------------------------------ Gisela: Marcos umgebauter Camper parkt vor dem Funkhaus (hupen!)
-  function buildGisela(x, z) {
+  function buildGisela(x, z, h) {
     if (!AMC.StudioEdit) return;
-    const g = AMC.StudioEdit.camper(1); g.position.set(x, 0, z); g.rotation.y = -0.35; S.group.add(g);
+    const g = AMC.StudioEdit.camper(1); if (AMC.Camper) AMC.Camper.decorate(g); g.position.set(x, 0, z); g.rotation.y = h; S.group.add(g);
     g.traverse(o => { if (o.isMesh) { o.castShadow = W.quality > 0; o.receiveShadow = true; } });
-    const c = Math.cos(-0.35), sn = Math.sin(-0.35), hw = 1.1, hl = 2.3, xs = [], zs = [];
+    const c = Math.cos(h), sn = Math.sin(h), hw = 1.1, hl = 2.3, xs = [], zs = [];
     [[-hw, -hl], [hw, -hl], [-hw, hl], [hw, hl]].forEach(([a, b]) => { xs.push(x + a * c + b * sn); zs.push(z - a * sn + b * c); });
     addBox(Math.min(...xs) + 0.4, Math.max(...xs) - 0.4, Math.min(...zs) + 0.4, Math.max(...zs) - 0.4, 2.1);
     S.gisela = { x, z, g, t: 0, honk: 0 };
