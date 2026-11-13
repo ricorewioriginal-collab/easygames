@@ -23,14 +23,14 @@
   D.HOSTS = {
     andrew: {
       id: 'andrew', name: 'Andrew', color: '#ff9d2e',
-      look: { body: 'm', skin: '#f3cdb2', hair: { style: 'short', color: '#c9844a' }, top: '#17181d', topStyle: 'tee', bottom: '#34507e', bottomStyle: 'pants', shoes: '#1d1d22', bulk: 1.0 },
+      look: { body: 'm', skin: '#ebb796', hair: { style: 'short', color: '#c4874e', quiff: 0.012 }, brow: '#b07a48', eyes: '#5b84a6', top: '#16171b', topStyle: 'tee', bottom: '#3d5a85', bottomStyle: 'pants', shoes: '#1d1d22', build: 0.95, name: 'Andrew', logo: true, badge: true, watch: 'l' },
       speed: 7.4, jump: 8.6, wave: 4.6, waveDmg: 1, strong: ['musik', 'feel'],
       perk: 'Schneller und springt höher. Feelgood-Welle: großer Radius, betäubt Störsender.',
       blurb: 'Musikgefühl, gute Laune und ein Lachen bis in die Kaffeeküche.'
     },
     marco: {
       id: 'marco', name: 'Marco', color: '#ffb35a',
-      look: { body: 'm', skin: '#f0c8a8', hair: { style: 'short', color: '#6b4528' }, beard: '#6b4528', top: '#17181d', topStyle: 'tee', bottom: '#2a2e38', bottomStyle: 'pants', shoes: '#1d1d22', bulk: 1.1 },
+      look: { body: 'm', skin: '#e8b390', hair: { style: 'short', color: '#5c3b23', vol: 1.35, part: true }, beard: '#6e4527', brow: '#4a2e1a', eyes: '#5d7f8e', top: '#16171b', topStyle: 'tee', bottom: '#2b3242', bottomStyle: 'pants', shoes: '#1d1d22', build: 1.05, belly: 0.7, name: 'Marco', logo: true, badge: true },
       speed: 6.6, jump: 7.6, wave: 3.6, waveDmg: 2, strong: ['tech', 'tv'],
       perk: 'Kräftiger. Technik-Welle: schaltet Störsender sofort ab und repariert Geräte schneller.',
       blurb: 'Technik-Herz, Serienkenner und Hüter von Marcos Tagebuch.'
@@ -254,6 +254,67 @@
         ['a', 'Zwanzig Folgen. Ein Funkloch. Zweimal besiegt.'],
         ['m', 'Und Gisela hat nicht mal einen Kratzer.'],
         ['n', 'Staffel 2 ist im Kasten. Danke an alle, die AnMaCha hören – und weiter geht es überall, wo es Podcasts gibt!']
+      ]
+    },
+    // ---------------- Staffel 3: Auf Sendung – die AnMaCha-Radios
+    {
+      id: 'c13', season: 3, title: 'AnMaCha24 – Die Podcastnacht', when: 'Staffel 3 · AnMaCha24', ep: 21,
+      sky: 'night', obj: { type: 'collect', n: 16, t: 270, gold: 4 }, drones: 6, show: { rounds: 7, goal: [760, 1120, 1500] },
+      intro: [
+        ['n', 'Aus dem Podcast wird ein Sender: AnMaCha24 geht rund um die Uhr auf Sendung. Erste Nacht, erste Livesendung – und das Programm ist noch leer.'],
+        ['m', 'Wir brauchen Themen für acht Stunden. Wie viele haben wir?'],
+        ['a', 'Drei. Und eins davon ist „Marco hat Hunger“.'],
+        ['n', 'Sammle 16 Themen-Funken in der nächtlichen Stadt, dazu 4 goldene ({x} für die Schallwelle gegen Störsender).']
+      ],
+      outro: [['a', 'Acht Stunden durchgesendet. Ich höre jetzt Stimmen.'], ['m', 'Das sind die Hörer, Andrew. Die rufen an.']]
+    },
+    {
+      id: 'c14', season: 3, title: 'Clubradio24', when: 'Staffel 3 · Clubradio24', ep: 22,
+      sky: 'party', obj: { type: 'party', n: 12, t: 250 }, drones: 7, show: { rounds: 7, goal: [800, 1180, 1560] },
+      intro: [
+        ['n', 'Clubradio24 legt auf – aber das Funkloch hat die Club-Mixtapes in der ganzen Stadt versteckt.'],
+        ['m', 'Ohne Mixtapes spielen wir Fahrstuhlmusik. Vier Stunden lang.'],
+        ['a', 'Ich mag Fahrstuhlmusik.'],
+        ['m', 'Genau deshalb suchen wir jetzt die Mixtapes!'],
+        ['n', 'Finde 12 Mixtapes 📼 zwischen den Neonlichtern, bevor die Clubnacht beginnt.']
+      ],
+      outro: [['a', 'Der Bass wackelt bis zum Funkhaus.'], ['m', 'Das ist nicht der Bass, das ist Gisela. Die tanzt mit.']]
+    },
+    {
+      id: 'c15', season: 3, title: 'Christmasradio24', when: 'Staffel 3 · Christmasradio24', ep: 23,
+      sky: 'xmas', obj: { type: 'guest', n: 4, t: 300 }, drones: 5, show: { rounds: 7, goal: [840, 1240, 1640] },
+      intro: [
+        ['n', 'Christmasradio24 sendet die große Weihnachtsshow. Es schneit, es glitzert – und die Gäste stecken im Schnee fest.'],
+        ['a', 'Marco, du hast gesagt, du fährst sie mit Gisela ab.'],
+        ['m', 'Gisela hat Sommerreifen. Und Gefühle.'],
+        ['n', 'Bring 4 Gäste rechtzeitig ins Funkhaus. Sprich sie an ({x}) und lauf mit ihnen zur Tür.']
+      ],
+      outro: [['m', 'Frohe Weihnachten an alle Hörer!'], ['a', 'Und an Gisela. Die steht jetzt mit Lichterkette vorm Haus.']]
+    },
+    {
+      id: 'c16', season: 3, title: 'YourTime-FM – Giselas Roadtrip', when: 'Staffel 3 · YourTime-FM', ep: 24,
+      sky: 'day', obj: { type: 'train', n: 10, t: 170 }, drones: 5, show: { rounds: 7, goal: [880, 1300, 1720] },
+      intro: [
+        ['n', 'YourTime-FM schickt AnMaCha auf Tour: Eine Sendung an jeder Haltestelle der Stadt. Gisela ist leider in der Werkstatt.'],
+        ['a', 'Was ist diesmal kaputt?'],
+        ['m', 'Nichts! Sie bekommt nur … Spoiler. Und neue Blumen.'],
+        ['n', 'Erreiche alle 10 Haltestellen, bevor die Bahn weiterfährt. Sprinte mit {rb}.']
+      ],
+      outro: [['a', 'Zehn Haltestellen, zehn Sendungen. Meine Füße senden SOS.'], ['m', 'Nächstes Mal fährt Gisela. Versprochen. Vielleicht.']]
+    },
+    {
+      id: 'c17', season: 3, title: 'Rockradio24 – Der Rauschkönig', when: 'Staffel 3 · Finale', ep: 25,
+      sky: 'festival', obj: { type: 'boss', n: 3, t: 400, hp: 16, name: 'Der Rauschkönig' }, drones: 6, show: { rounds: 8, goal: [960, 1420, 1880] },
+      intro: [
+        ['n', 'Rockradio24 eröffnet mit einem Konzert vor dem Funkhaus. Doch aus dem Funkloch steigt sein großer Bruder: DER RAUSCHKÖNIG.'],
+        ['a', 'Der hat eine Krone. Aus Antennen.'],
+        ['m', 'Dann zeigen wir ihm, wie Rock klingt. Gisela, Hupe bereit!'],
+        ['n', 'Der Rauschkönig ist stärker als alles zuvor. Weiche aus ({rt}), spring über Rauschwellen ({a}) und triff ihn mit {x}, wenn der Schild offen ist.']
+      ],
+      outro: [
+        ['m', 'Der Rauschkönig ist weg. Und mein Trommelfell auch.'],
+        ['a', 'Podcast, Radio, Rockkonzert. Was kommt als Nächstes?'],
+        ['n', 'Staffel 3 ist im Kasten. Alle AnMaCha-Radios senden wieder – hört rein auf anmacha.de!']
       ]
     }
   ];
