@@ -207,7 +207,7 @@ const sfx = {
 // ───────── Freie 3D-Modelle (GLB) ─────────
 // CC0-Modelle aus models/ (Herkunft: models/LIZENZ.md). Sie ersetzen nur das Aussehen: Kollision, Gegnerverhalten und Erreichbarkeit
 // bleiben exakt wie bei den eigenen Formen. Fehlt der Loader, das Netz oder WebGL, oder steht die Grafik auf „Sparsam“, bleiben die eigenen Formen.
-const MODEL_FILES = {scenery: 'models/scenery.glb', kaefer: 'models/armabee.glb', funke: 'models/hywirl.glb', schatten: 'models/ghost.glb', motte: 'models/glub.glb', wurzel: 'models/goleling.glb'};
+const MODEL_FILES = {scenery: 'models/scenery.glb', castle: 'models/castle.glb', kaefer: 'models/armabee.glb', funke: 'models/hywirl.glb', schatten: 'models/ghost.glb', motte: 'models/glub.glb', wurzel: 'models/goleling.glb'};
 const ENEMY_MODEL = {kaefer: {h: 1.5, y: .15}, funke: {h: 1.7, y: .2}, schatten: {h: 1.9, y: 0}, motte: {h: 1.5, y: .3}, wurzel: {h: 2.1, y: 0}};
 // Bäume, Felsen und Gras je Welt (Teilnamen aus scenery.glb)
 const LEVEL_TREES = [['garden_tree_green', 'garden_tree_yellow'], ['garden_tree_yellow', 'ancient_tree_yellow_1'], ['garden_tree_green', 'garden_tree_green'], ['garden_tree_green', 'garden_tree_yellow'], ['garden_tree_pink', 'ancient_tree_pink_1'], ['garden_tree_yellow', 'garden_tree_pink'], ['garden_tree_pink', 'ancient_tree_pink_1']];
@@ -215,6 +215,11 @@ const LEVEL_GRASS = ['grass_green_group', 'grass_green_group', 'grass_purple_gro
 const models = {}, sceneryParts = new Map();
 let modelsReady = false, sceneryPlan = [];
 const useSceneryModels = () => modelsReady && !!models.scenery && !canvasMode && preset !== QUALITY.sparsam;
+// Bauwerke (Burgen, Türme) und Kulisse (Berge) aus castle.glb. Die Kollision gilt immer – auch ohne Modelle bleibt das Spiel gleich.
+function prop(name, x, z, h, yaw = 0, r = 0, y = 0) {
+  if (r) treeColliders.push({x, z, trunk: r, trunkTop: y + h, crown: Math.max(.2, (r - .35) / .55), cy: -100, ch: 0, rock: true, prop: name});
+  if (modelsReady && models.castle && !canvasMode) sceneryPlan.push({kind: 'prop', name, x, z, y, s: h, yaw});
+}
 function loadModels() {
   if (canvasMode || !T.GLTFLoader || typeof fetch !== 'function') return Promise.resolve(false);
   const loader = new T.GLTFLoader();
@@ -222,7 +227,7 @@ function loadModels() {
   return Promise.all(Object.entries(MODEL_FILES).map(([k, u]) => one(k, u))).then(() => {
     for (const g of Object.values(models)) g.scene.traverse(o => { if (o.isMesh) shared.add(o.geometry); });   // Modelle überleben den Weltwechsel
     // Teile heißen in der Datei „p:<name>“; der Loader entfernt den Doppelpunkt aus Knotennamen.
-    if (models.scenery) for (const o of models.scenery.scene.children) if (/^p:?/.test(o.name)) sceneryParts.set(o.name.replace(/^p:?/, ''), o);
+    for (const key of ['scenery', 'castle']) if (models[key]) for (const o of models[key].scene.children) if (/^p:?/.test(o.name)) sceneryParts.set(o.name.replace(/^p:?/, ''), o);
     modelsReady = Object.keys(models).length > 0; return modelsReady;
   });
 }
@@ -257,15 +262,16 @@ function placeSceneryModels(index) {
   const trees = LEVEL_TREES[index] || LEVEL_TREES[0], groups = new Map(), add = (name, matrix) => { if (!groups.has(name)) groups.set(name, []); groups.get(name).push(matrix); };
   sceneryPlan.forEach((p, i) => {
     let name, height, sx = 1;
-    if (p.kind === 'tree') { name = trees[i % 2]; height = 6.4 * p.s; const part = sceneryPart(name); if (part) sx = Math.min(1, 4.6 * p.s / (part.width * height)); }
+    if (p.kind === 'prop') { name = p.name; height = p.s; }
+    else if (p.kind === 'tree') { name = trees[i % 2]; height = 6.4 * p.s; const part = sceneryPart(name); if (part) sx = Math.min(1, 4.6 * p.s / (part.width * height)); }
     else if (p.kind === 'rock') { name = i % 2 ? 'rock_big_1' : 'rock_big_2'; height = 3 * p.s; sx = 1.5 / height; }
     else { name = LEVEL_GRASS[index] || LEVEL_GRASS[0]; height = .55 * p.s; }
     const part = sceneryPart(name); if (!part) return;
-    tmpQ.setFromAxisAngle(upY, p.yaw ?? (p.x * 7.3 + p.z * 3.1)); tmpS.set(height * sx, height, height * sx); tmpP.set(p.x, p.kind === 'grass' ? Math.max(0, floorAt(p.x, p.z, 1)) : 0, p.z);   // Bäume und Felsen stehen wie ihre Kollision auf Höhe 0
+    tmpQ.setFromAxisAngle(upY, p.yaw ?? (p.x * 7.3 + p.z * 3.1)); tmpS.set(height * sx, height, height * sx); tmpP.set(p.x, p.kind === 'grass' ? Math.max(0, floorAt(p.x, p.z, 1)) : p.y || 0, p.z);   // Bäume und Felsen stehen wie ihre Kollision auf Höhe 0
     add(name, new T.Matrix4().compose(tmpP, tmpQ, tmpS).multiply(part.norm));
   });
   for (const [name, list] of groups) for (const pc of sceneryPart(name).pieces) {
-    const inst = new T.InstancedMesh(pc.geometry, pc.material, list.length); inst.castShadow = !name.startsWith('grass'); inst.receiveShadow = true;
+    const inst = new T.InstancedMesh(pc.geometry, pc.material, list.length); inst.castShadow = !name.startsWith('grass') && !name.startsWith('mountain'); inst.receiveShadow = true;
     list.forEach((m, i) => inst.setMatrixAt(i, tmpM.multiplyMatrices(m, pc.m))); inst.instanceMatrix.needsUpdate = true; inst.frustumCulled = false; world.add(inst);
   }
 }
@@ -538,12 +544,19 @@ function buildRegions(index) {
     treeColliders.push({x: dx, z: dz, trunk: .9, trunkTop: 2.2, crown: 1.3, cy: -100, ch: 0, rock: true, statue: true});
     const [name, text] = RESCUE[index][di];
     dragonStatues.push({id: di, x: dx, z: dz, m: st, freed: freed.includes(di), name, text});
+    // Burgturm am Gebietsrand (frei von Brücke, Weg, Statue, Stufenturm, Toren und Edelsteinen)
+    const away = Math.atan2(rg.z - ez, rg.x - ex), tw = index % 2 ? 'red' : 'blue';
+    for (const off of [.9, -.9, 1.5, -1.5, 2.2, -2.2]) {
+      const a = away + off, x = rg.x + Math.cos(a) * rg.r * .74, z = rg.z + Math.sin(a) * rg.r * .74;
+      if (nearBridge(x, z, 6) || Math.hypot(x - dx, z - dz) < 6 || Math.hypot(x - tx - 1, z - tz + 1) < 7 || reserved(x, z, 8) || jewels.some(j => Math.hypot(j.x - x, j.z - z) < 4)) continue;
+      prop((di % 2 ? 'towerB_' : 'towerA_') + tw, x, z, 10, a + Math.PI / 2, 2.3); rg.keep = {x, z}; break;
+    }
     // Bäume (meiden Brücke, Turm, Statue, Edelsteine)
     for (let i = 0; i < 6; i++) {
       const ang = rand() * TAU, rr = 5 + rand() * (rg.r - 7), x = rg.x + Math.cos(ang) * rr, z = rg.z + Math.sin(ang) * rr;
       // Weg vom Brückenende zur Gebietsmitte bleibt frei.
       const sx = rg.x - ex, sz = rg.z - ez, k = clamp(((x - ex) * sx + (z - ez) * sz) / (sx * sx + sz * sz), 0, 1);
-      if (Math.hypot(x - ex - sx * k, z - ez - sz * k) < 3.5) continue;
+      if (Math.hypot(x - ex - sx * k, z - ez - sz * k) < 3.5 || rg.keep && Math.hypot(x - rg.keep.x, z - rg.keep.z) < 6) continue;
       if (nearBridge(x, z, 5) || Math.hypot(x - tx - 2.5, z - tz + 2.5) < 7 || Math.hypot(x - dx, z - dz) < 5 || Math.hypot(x - ex, z - ez) < 4 || jewels.some(j => Math.hypot(j.x - x, j.z - z) < 3)
         || reserved(x, z, 7)) continue;
       tree(x, z, .7 + rand() * .5);
@@ -551,11 +564,13 @@ function buildRegions(index) {
     // Gegner des Gebiets
     for (let i = 0; i < 2; i++) { const kind = cfg.enemies[(i + di) % cfg.enemies.length], ang = di + i * 2.4, x = rg.x + Math.cos(ang) * rg.r * .5, z = rg.z + Math.sin(ang) * rg.r * .5; const e = makeEnemy(kind, x, z); e.isle = {x: rg.x, z: rg.z, r: rg.r - 2}; spawned.push(e); }
     rg.tower = {x: tx, z: tz}; rg.statue = {x: dx, z: dz}; rg.entry = {x: ex, z: ez};
+    // Dichtes Gras (nur Aussehen, ein InstancedMesh je Teil)
+    if (useSceneryModels()) for (let i = 0; i < 12; i++) { const ang = i * 2.39996, rr = rg.r * Math.sqrt((i + .5) / 12) * .9; sceneryPlan.push({kind: 'grass', x: rg.x + Math.cos(ang) * rr, z: rg.z + Math.sin(ang) * rr, s: .8 + (i % 4) * .15, yaw: i}); }
   }
   // Schatzkörbe im Gebiet mit Edelstein darin (erscheint beim Zerbrechen)
   for (const rg of regions) for (let i = 0; i < 3; i++) {
     const ang = i * 2.1 + 1, rr = rg.r * .72, x = rg.x + Math.cos(ang) * rr, z = rg.z + Math.sin(ang) * rr;
-    if (nearBridge(x, z, 4) || reserved(x, z, 5) || treeColliders.some(t => Math.hypot(t.x - x, t.z - z) < t.crown + 1.4) || jewels.some(j => Math.hypot(j.x - x, j.z - z) < 2)) continue;
+    if (nearBridge(x, z, 4) || reserved(x, z, 5) || rg.keep && Math.hypot(x - rg.keep.x, z - rg.keep.z) < 5 || treeColliders.some(t => Math.hypot(t.x - x, t.z - z) < t.crown + 1.4) || jewels.some(j => Math.hypot(j.x - x, j.z - z) < 2)) continue;
     const j = addJewel(i ? 'blau' : 'gruen', x, z, 0, true); addCrate(x, 0, z, j);
   }
   // Wächter im Westgebiet: ein großer Gegner (6 Treffer). Besiegt gibt er einen lila Edelstein frei (gespeichert – danach bleibt er fort).
@@ -585,7 +600,10 @@ function buildRegions(index) {
       const p = hubPortal(i), open = !!save.cores[i - 1], short = levels[i].name.split(' · ')[1];
       worldGates.push(makeWorldGate({id: 'hub' + i, ...p, rot: Math.atan2(H.x - p.x, H.z - p.z), to: i, need: i - 1, arrive: HOME_ARRIVE, name: (i + 1) + ' · ' + short, color: open ? levels[i].accent : '#59647b', rim: open ? '#ffe3a4' : '#8b8799'}));
     }
-    for (let i = 0; i < 5; i++) { const ang = hubAngle(i + 1.5), x = H.x + Math.cos(ang) * 19.5, z = H.z + Math.sin(ang) * 19.5; if (!nearBridge(x, z, 4)) tree(x, z, .8); }
+    // Burg des Ältesten im Norden, Türme zwischen den Portalen am Rand
+    prop('castle_blue', H.x + 2.6, H.z - 15, 17, 0, 4.4);
+    for (let i = 0; i < 5; i++) { const ang = hubAngle(i + 1.5), x = H.x + Math.cos(ang) * 19.3, z = H.z + Math.sin(ang) * 19.3; if (!nearBridge(x, z, 4)) prop(i % 2 ? 'towerB_blue' : 'towerA_blue', x, z, 9, ang, 2.1); }
+    for (const [a, h] of [[200, 9], [255, 10]]) { const ang = a * Math.PI / 180, x = H.x + Math.cos(ang) * 19.3, z = H.z + Math.sin(ang) * 19.3; if (!nearBridge(x, z, 5)) prop('towerA_blue', x, z, h, ang, 2.1); }
   }
   // Weltentore
   if (index > 0) worldGates.push(makeWorldGate({id: 'home', ...HOME_GATE, rot: Math.atan2(HOME_ARRIVE.x - HOME_GATE.x, HOME_ARRIVE.z - HOME_GATE.z), to: 0, arrive: {...hubPortal(index, 9.5), y: 0}, name: '⌂ Heimathain', color: '#ffe3a4', rim: '#9ff3d4'}));
@@ -680,7 +698,7 @@ const totalDragons = () => (save.dragons || []).reduce((n, a) => n + (a?.length 
 const totalJewelsSaved = () => (save.jewels || []).reduce((n, a) => n + (a?.length || 0), 0);
 
 // ───────── Inselbau ─────────
-function island(x, z, r, y = 0) { const cfg = levels[save.level]; mesh('cylinder', cfg.grass, x, y - .6, z, r, 1.2, r); const base = mesh('cone', cfg.rock, x, y - 5.2, z, r * .99, 9, r * .99); base.rotation.z = Math.PI; solids.push({x, z, r, y, thick: 9.7}); for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; mesh('rock', cfg.rock, x + Math.cos(a) * r * .7, y - 2.1, z + Math.sin(a) * r * .7, 3, 4, 3); } }
+function island(x, z, r, y = 0) { const cfg = levels[save.level]; mesh('cylinder', cfg.grass, x, y - .6, z, r, 1.2, r); const base = mesh('cone', cfg.rock, x, y - 5.2, z, r * .99, 9, r * .99); base.rotation.z = Math.PI; solids.push({x, z, r, y, thick: 9.7}); for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; mesh('rock', cfg.rock, x + Math.cos(a) * r * .7, y - 5.2, z + Math.sin(a) * r * .7, 3, 4, 3); } }
 function platform(x, z, w, d, y) { mesh('box', levels[save.level].rock, x, y - .5, z, w, 1, d); mesh('box', levels[save.level].grass, x, y + .015, z, w + .1, .08, d + .1); solids.push({x, z, w, d, y, thick: 1}); }
 function floorAt(x, z, limit = Infinity) { let y = -100; for (const s of solids) { if (s.y > limit) continue; if (s.r ? Math.hypot(x - s.x, z - s.z) < s.r - .1 : Math.abs(x - s.x) < s.w / 2 + .2 && Math.abs(z - s.z) < s.d / 2 + .2) y = Math.max(y, s.y); } return y; }
 function tree(x, z, s = 1) { const cfg = levels[save.level]; fallbackTrees.push({x, z, s}); treeColliders.push({x, z, trunk: .45 * s, trunkTop: 2.6 * s, crown: 2.4 * s, cy: 4.45 * s, ch: 1.7 * s}); if (useSceneryModels()) { sceneryPlan.push({kind: 'tree', x, z, s}); return; } mesh('cone', '#7f7b68', x, 2 * s, z, .4 * s, 4 * s, .4 * s); for (let i = 0; i < 3; i++) mesh('ball', cfg.leaf, x + (i - 1) * .75 * s, (4 + i * .45) * s, z + (i % 2) * .4, 2.5 * s, 1.8 * s, 2 * s); }
@@ -741,6 +759,8 @@ function buildLevel(index, titleOnly = false) {
   makeUpdraft(21, 2, 0, 12); makeUpdraft(37, 6, 1, 12); makeUpdraft(-21, -5, 0, 12); makeUpdraft(-36, -1.2, 2, 12);
   if (index >= 3) makeUpdraft(0, 5, 0, 13);
   buildSky(index);
+  // Bergkulisse rundum (weit draußen, nur zum Ansehen)
+  if (preset !== QUALITY.sparsam) for (let i = 0; i < 9; i++) { const ang = i / 9 * TAU + index * .37, rr = 185 + (i * 37 % 23), h = 75 + (i * 53 % 30); prop(i % 2 ? 'mountain_B' : 'mountain_C', Math.cos(ang) * rr, Math.sin(ang) * rr, h, ang * 3 + i, 0, -48); }
   if (index === 4) { platform(-13, -4, 7, 7, 5); platform(12, -7, 7, 7, 7); makeUpdraft(-13, 1, 0, 14); makeUpdraft(12, -1, 0, 16); for (const [x, z] of [[-13, -4], [12, -7]]) for (let j = 0; j < 5; j++) mesh('gem', cfg.accent, x - 3 + j * 1.5, 1.2, z + 4, .65, 2.8, .65).rotation.z = (j - 2) * .15; }
   if (index === 5) { for (const sign of [-1, 1]) { for (let j = 0; j < 4; j++) platform(sign * (8 + j * 3), -2 - j * 2, 4, 4, .6 + j * .6); makeUpdraft(sign * 16, 2, 0, 14); } }
   (cfg.rings || []).forEach(([x, y, z], id) => { const got = save.rings[index].includes(id); const m = ring(x, y, z, 2.5, '#ffe9a8'); m.material = own(new T.MeshBasicMaterial({color: got ? 0x60c4a4 : 0xffd277, toneMapped: false})); m.rotation.y = id === 1 ? Math.PI / 2 : 0; flightRings.push({x, y, z, id, m, got}); });
