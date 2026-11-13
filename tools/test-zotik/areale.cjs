@@ -15,15 +15,17 @@ const only = process.argv.slice(2).map(Number);
       o.cuts = (A.cuts || []).every(c => W.blocked((c[0] + c[2]) / 2, (c[1] + c[3]) / 2));
       let wall = 0; for (let i = 0; i < 400; i++) { const x = -100 + (i % 20) * 10, z = 10 - (i / 20 | 0) * 7; if (W.blocked(x, z)) wall++; } o.wall = wall;
       const walk = (x0, z0, x1, z1, y) => { const pl = Z.pl; pl.x = x0; pl.z = z0; pl.y = y; pl.vy = 0; pl.air = false; Z.keys.KeyW = true;
-        for (let i = 0; i < 160 && Math.hypot(pl.x - x1, pl.z - z1) > 1; i++) { Z.cam(Math.atan2(pl.x - x1, pl.z - z1), .35, 9); Z.step(1 / 30, 1); } Z.keys.KeyW = false; for (let i = 0; i < 10; i++) Z.step(1 / 30, 1);
+        for (let i = 0, n = 160 + 8 * Math.hypot(x1 - x0, z1 - z0); i < n && Math.hypot(pl.x - x1, pl.z - z1) > 1; i++) { Z.cam(Math.atan2(pl.x - x1, pl.z - z1), .35, 9); Z.step(1 / 30, 1); } Z.keys.KeyW = false; for (let i = 0; i < 10; i++) Z.step(1 / 30, 1);
         return Math.hypot(pl.x - x1, pl.z - z1) < 1.5; };
       o.bridges = (A.bridges || []).map(([ax, az, bx, bz, by, wk]) => { const L = Math.hypot(bx - ax, bz - az), ux = (bx - ax) / L, uz = (bz - az) / L, e = wk ? -.6 : 2.5, sx = ax - ux * e, sz = az - uz * e; return walk(sx, sz, bx + ux * e, bz + uz * e, Math.max(by, Z.hgt(sx, sz))); });   // Wehrgang (wk): nur auf der Mauerkrone
+      o.piers = (A.piers || []).map(([ax, az, bx, bz, by]) => { const L = Math.hypot(bx - ax, bz - az), ux = (bx - ax) / L, uz = (bz - az) / L, sx = ax - ux * 2.5, sz = az - uz * 2.5; return walk(sx, sz, bx - ux * .6, bz - uz * .6, Math.max(by, Z.hgt(sx, sz))) && Math.abs(Z.pl.y - by) < .1; });   // Steg: bis ans Ende, oben bleiben
       return o; }); console.log(JSON.stringify(r.bridges));
     chk(r.tiers.every(Boolean), `${r.name}: alle ${r.tiers.length} Plateaus über Rampen erreichbar`);
     chk(r.flat, `${r.name}: Plateau-Oberkanten eben auf Sollhöhe`);
     chk(!r.chests.length, `${r.name}: alle Truhen zu Fuß erreichbar` + (r.chests.length ? ' – NICHT: ' + r.chests.join(', ') : ''));
     chk(r.cuts, `${r.name}: Schluchten sind Abgrund (gesperrt)`);
     chk(r.wall > 80, `${r.name}: Waldwände zwischen den Arealen (${r.wall}/400 Stichproben gesperrt)`);
-    chk(r.bridges.every(Boolean), `${r.name}: alle ${r.bridges.length} Brücken begehbar`); }
+    chk(r.bridges.every(Boolean), `${r.name}: alle ${r.bridges.length} Brücken begehbar`);
+    if (r.piers.length) chk(r.piers.every(Boolean), `${r.name}: alle ${r.piers.length} Stege begehbar bis zum Ende`); }
   chk(!p.errs.length, 'keine Fehler auf der Seite' + (p.errs.length ? ': ' + p.errs[0] : ''));
   console.log(ok + '/' + n + ' bestanden'); await b.close(); process.exit(ok === n ? 0 : 1); })();
