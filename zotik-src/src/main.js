@@ -185,7 +185,7 @@ const sky=new T.Mesh(new T.SphereGeometry(1000,32,16),skyMat);sky.renderOrder=-1
   const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(pa,3));g.setAttribute('color',new T.BufferAttribute(ca,3));
   const st=new T.Points(g,new T.PointsMaterial({size:2.2,vertexColors:true,sizeAttenuation:false,fog:false,transparent:true,depthWrite:false}));scene.add(st);STARS=st;
 }
-const MOON_DIR=new T.Vector3(-.42,.5,-.76).normalize();
+const MOON_DIR=new T.Vector3(-.42,.5,-.76).normalize();const LDIR=MOON_DIR.clone();
 { const moon=MOONM=new T.Mesh(new T.SphereGeometry(62,32,20),BAS(0xdde8ff));moon.position.copy(MOON_DIR).multiplyScalar(850);scene.add(moon);
   const gl=glow(0x7fa8ff,520,0,0,0,.55);gl.material.fog=false;gl.position.copy(moon.position).multiplyScalar(.99);scene.add(gl);
   const gl2=glow(0xbfd6ff,300,0,0,0,.5);gl2.material.fog=false;gl2.position.copy(moon.position).multiplyScalar(.985);scene.add(gl2);MOONGL=[gl,gl2];
@@ -1474,7 +1474,7 @@ function update(dt){KK.update(dt,camera.position);if(X.sea){SBX().update(dt);dlg
     else{for(const e of E)updEnemy(e,dt);updateProjs(dt);if(!frozen)updCmp(dt);if(boss&&boss.dummy)boss=MP.hb||null}}
   else if(!frozen){for(const e of E){const dd=Math.abs(e.x-pl.x)+Math.abs(e.z-pl.z);if(dd<160||e.boss)updEnemyC(e,dt)}updateProjs(dt);updCmp(dt)}
   extUpdate(dt,frozen);if(CB.n){CB.t-=dt;if(CB.t<=0)comboEnd()}updateNpcs(dt);extFelli(dt,frozen);animPlayer(dt);dlgTick(dt);updateCamera(dt);
-  moonL.position.set(pl.x+MOON_DIR.x*100,pl.y+MOON_DIR.y*100,pl.z+MOON_DIR.z*100);moonL.target.position.set(pl.x,pl.y,pl.z);
+  moonL.position.set(pl.x+LDIR.x*100,pl.y+LDIR.y*100,pl.z+LDIR.z*100);moonL.target.position.set(pl.x,pl.y,pl.z);
   updateHud();extHud(dt);checkZone();drawMapT+=dt;if(drawMapT>(TOUCH?.1:.05)){drawMapT=0;drawMap()}
   autoT+=dt;if(autoT>25){autoT=0;if(!pl.dead)saveGame(true)}
 }
@@ -1641,7 +1641,7 @@ Object.assign(PORT,{Mara:['🔬','#7a4ac8'],Sela:['🧪','#d9a050'],Elio:['📖'
 const ATM0={top:[.015,.035,.17],mid:[.09,.17,.52],hor:[.36,.30,.68],aur:[.2,.9,.9],ms:[.35,.5,.95],gr:[.08,.1,.3],moon:0xdde8ff,mg:[0x7fa8ff,0xbfd6ff],fog:0x2a3a86,fd:.0037,hemi:[0x849de9,0x244348,.64],lite:[0xc4d4ff,1.15],stars:1,expo:1.05};
 function setAtmos(a){const u=skyMat.uniforms;u.uT.value.setRGB(...a.top);u.uM.value.setRGB(...a.mid);u.uH.value.setRGB(...a.hor);u.uA.value.setRGB(...a.aur);u.uS.value.setRGB(...a.ms);u.uG.value.setRGB(...a.gr);
   scene.fog.color.setHex(a.fog);scene.fog.density=a.fd;hemi.color.setHex(a.hemi[0]);hemi.groundColor.setHex(a.hemi[1]);hemi.intensity=a.hemi[2];moonL.color.setHex(a.lite[0]);moonL.intensity=a.lite[1];
-  if(MOONM)MOONM.material.color.setHex(a.moon);MOONGL.forEach((g,i)=>g.material.color.setHex(a.mg[i]));if(STARS)STARS.material.opacity=a.stars;renderer.toneMappingExposure=a.expo;renderer.domElement.style.filter=a.bw?'grayscale(1) contrast(1.06) brightness(1.08) sepia(.08)':'';document.body.classList.toggle('bwfilm',!!a.bw)}
+  if(MOONM)MOONM.material.color.setHex(a.moon);MOONGL.forEach((g,i)=>g.material.color.setHex(a.mg[i]));if(STARS)STARS.material.opacity=a.stars;renderer.toneMappingExposure=a.expo;if(a.sun)LDIR.set(...a.sun).normalize();else LDIR.copy(MOON_DIR);renderer.domElement.style.filter=a.bw?'grayscale(1) contrast(1.06) brightness(1.08) sepia(.08)':'';document.body.classList.toggle('bwfilm',!!a.bw)}
 function atmOf(C){const s=C.sky;return{top:s[0],mid:s[1],hor:s[2],aur:s[3],ms:s[4],gr:s[2].map(v=>v*.3),moon:C.moon,mg:[C.rift,C.moon],fog:C.fog[0],fd:C.fog[1],hemi:C.hemi,lite:C.lite,stars:C.stars,expo:C.expo}}
 /* ---- Gegner einfärben (Material-Kopien) ---- */
 function tintModel(m,hex,k){k=k??.5;const tc=new T.Color(hex),seen=new Map();
