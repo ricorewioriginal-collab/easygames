@@ -128,6 +128,14 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
         leg(-.2, .5, 0, .5, .1, bk, true); leg(.2, .5, 0, .5, .1, bk, true); arm(-1, 2.1, .75, .09, rb, .45); const a = arm(1, 2.1, .75, .09, rb, .45);
         a.add(mk(G.cyl0, gd, 0, -.85, .15, .04, 1.2, .04)); a.add(mk(G.sph0, C(0xd82a3a, { e: 0xa01020, ei: 1.4 }), -.06, -.25, .15, .1, .1, .06, false)); a.add(mk(G.sph0, C(0xd82a3a, { e: 0xa01020, ei: 1.4 }), .06, -.25, .15, .1, .1, .06, false));
         b.add(glow(0xff3a4a, 4, 0, 1.6, 0, .35)); break; }
+      case 'marionette': {   // Holzpuppe aus Geppettos Werkstatt / Feuerfressers Theater: Gelenkkugeln, Spitzhut, lange Nase, Fäden nach oben
+        const wd = C(col, { r: .7, e: dim(col, .2), ei: 1 }), jn = C(dim(col, .75)), cl = C(boss ? 0xc83a2a : 0xd8402a, { r: .8 }), gn = C(0x3a8a3a, { r: .8 });
+        b.add(mk(G.box, cl, 0, 1.15, 0, .46, .52, .3)); b.add(mk(G.sph0, jn, 0, .85, 0, .16, .1, .14));
+        head.position.set(0, 1.62, 0); head.add(mk(G.sph, wd, 0, 0, 0, .2, .22, .2)); head.add(mk(G.cone0, gn, 0, .26, 0, .17, .36, .17)); const ns = mk(G.cone0, wd, 0, -.01, .34, .035, .32, .035); ns.rotation.x = 1.5708; head.add(ns); eyes(head, .05, .17, .07, 0x1a1414, .8);
+        const lg = (x) => { const l = leg(x, .82, 0, .8, .065, C(0xf0ece0), true); l.add(mk(G.sph0, jn, 0, -.4, 0, .08, .08, .08, false)); }; lg(-.11); lg(.11);
+        for (const k of [-1, 1]) { const a = arm(k, 1.36, .55, .055, wd, .3); a.add(mk(G.sph0, jn, 0, -.28, 0, .07, .07, .07, false)); }
+        if (!boss) for (const x of [-.3, .3, 0]) b.add(mk(G.cyl0, M(0xd8d0c0, { e: 0x6a6a6a, ei: .5 }), x, 2.4, 0, .006, 1.4, .006, false));
+        else b.add(glow(0xffb060, 3, 0, 1.2, 0, .35)); break; }
       case 'tiger': {   // Shere Khan: großer Tiger mit schwarzen Streifen, heller Schnauze, hinkt (Lungri, der Lahme)
         const sc = 1.05, fur = C(col, { r: .7, e: dim(col, .2), ei: 1 }), st = C(0x15100c); quad(sc, fur);
         for (let i = 0; i < 7; i++) for (const s of [-1, 1]) { const r = mk(G.box, st, s * .38, .88, .55 - i * .2, .06, .34, .05, false); r.rotation.z = s * .5; b.add(r); }
@@ -217,5 +225,5 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
   }
 
   const make = (kind, col, boss) => HOVER.has(kind) ? hover(kind, col) : walker(kind, col, boss);
-  return { make, has: k => HOVER.has(k) || ['karte', 'hase', 'herzkoenigin', 'pirat', 'hook', 'krokodil', 'giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'wache', 'schattenritter', 'spartoi', 'riese', 'wasserspeier', 'eber', 'elefant', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf'].includes(k), HOVER };
+  return { make, has: k => HOVER.has(k) || ['marionette', 'karte', 'hase', 'herzkoenigin', 'pirat', 'hook', 'krokodil', 'giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'wache', 'schattenritter', 'spartoi', 'riese', 'wasserspeier', 'eber', 'elefant', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf'].includes(k), HOVER };
 }

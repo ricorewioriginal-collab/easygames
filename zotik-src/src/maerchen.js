@@ -6,9 +6,9 @@
 import { WORLDS } from './mwdata.js';
 import { makeLand } from './mwland.js';
 import { createMwFoes } from './mwfoes.js';
-export const MW_FIRST = 21, MW_LAST = 29, MW = WORLDS;
+export const MW_FIRST = 21, MW_LAST = 30, MW = WORLDS;
 const CX = 0; let CZ = -36, R = 58; const PATHX = z => Math.sin(z * .08) * 5;
-const GTEX = { spiegel: 'forest', dschungel: 'forest', notredame: 'cobble', theben: 'sand', meer: 'sand', mauer: 'grass', camelot: 'grass', nimmerland: 'grass', wunderland: 'grass' };
+const GTEX = { spiegel: 'forest', dschungel: 'forest', notredame: 'cobble', theben: 'sand', meer: 'sand', mauer: 'grass', camelot: 'grass', nimmerland: 'grass', wunderland: 'grass', pinocchio: 'grass' };
 const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 const hex = n => '#' + n.toString(16).padStart(6, '0');
 
@@ -168,6 +168,7 @@ export function createMaerchen(C) {
       case 'dust': g.add(mk(G.oct, M(0xffe070, { e: 0xffc830, ei: 2.6 }), 0, .45, 0, .16, .24, .16)); for (let k = 0; k < 5; k++) g.add(mk(G.sph0, M(0xfff4c0, { e: 0xffe080, ei: 3 }), Math.cos(k * 1.3) * .3, .3 + k * .1, Math.sin(k * 1.3) * .3, .04, .04, .04, false)); g.add(glow(0xffe080, 2.6, 0, .5, 0, .9)); break;
       case 'glove': for (const k of [-1, 1]) { const m = mk(G.box, M(0xf8f4ec, { r: .7 }), k * .16, .3, 0, .22, .3, .08); m.rotation.z = k * .3; g.add(m); } g.add(mk(G.box, M(0xc83a3a), 0, .12, 0, .5, .06, .08, false)); g.add(glow(0xffffff, 2, 0, .4, 0, .6)); break;
       case 'tart': g.add(mk(G.cyl, M(0xd8a060, { r: .8 }), 0, .2, 0, .32, .14, .32)); g.add(mk(G.sph0, M(0xd82a3a, { e: 0x8a1020, ei: 1 }), -.06, .32, 0, .1, .08, .1, false)); g.add(mk(G.sph0, M(0xd82a3a, { e: 0x8a1020, ei: 1 }), .06, .32, 0, .1, .08, .1, false)); g.add(glow(0xff8a8a, 2, 0, .4, 0, .7)); break;
+      case 'page': { const m = mk(G.box, M(0xf4ecd8, { r: .8 }), 0, .3, 0, .42, .02, .56); m.rotation.set(-.4, .3, .2); g.add(m); g.add(mk(G.box, M(0x3a2a1a), .02, .31, .05, .3, .005, .04, false)); g.add(glow(0xfff4d0, 2, 0, .4, 0, .6)); break; }
       case 'ember': g.add(mk(G.sph, M(0xff6a20, { e: 0xff4010, ei: 2.6 }), 0, .3, 0, .22, .2, .22)); g.add(glow(0xff8a30, 2.4, 0, .4, 0, .9)); break;
       case 'mask': g.add(mk(G.sph, M([0xf0e8d8, 0xd8b040, 0xc8402a, 0x4a6ac8, 0xe8e8f0][i % 5], { r: .4 }), 0, .55, 0, .3, .36, .1)); g.add(mk(G.box, M(0x1a1410), 0, .62, .06, .25, .06, .04, false)); g.add(glow(0xffe08a, 2, 0, .55, 0, .7)); break;
       case 'market': { if (i % 4 === 0) { const P = FOE.make('reiter', 0x8a5a3a, false); P.root.scale.setScalar(.75); P.body.children.forEach((c, k) => { if (k > 10) c.visible = false; }); g.add(P.root); }
@@ -183,6 +184,7 @@ export function createMaerchen(C) {
     switch (look) {
       case 'clock': b.cyl(0, 0, 0, .18, 1.6, 0x5a3a22, { tex: 'wood' }); { const f = b.cyl(0, 2.2, 0, .8, .14, 0xf0e8d0, { mat: { r: .5 } }); f.rotation.x = 1.5708; b.tor(0, 2.2, .02, .82, 0xd8b040, { d: .12, mat: { m: .9, r: .3 } }); const hd = b.box(0, 2.4, .1, .06, .45, .03, 0x1a1414, { cast: false }); C.animObjs.push({ fn(t) { hd.rotation.z = fire.visible ? t * 2 : 0; } }); } fire.add(glow(0xffe8a0, 3, 0, 2.2, .3, .7)); break;
       case 'rose': for (let i = 0; i < 4; i++) b.ico(Math.cos(i * 1.6) * .45, .6, Math.sin(i * 1.6) * .45, .6, .6, .6, 0x2a6a2a); for (let i = 0; i < 7; i++) { const x = Math.cos(i * .9) * .6, y = .9 + (i % 3) * .2, z = Math.sin(i * .9) * .6; b.sph(x, y, z, .14, .14, .14, 0xf4f0e6, { cast: false }); fire.add(mk(G.sph, M(0xd81a2a, { e: 0x8a0a1a, ei: 1 }), x, y, z, .16, .16, .16, false)); } fire.add(glow(0xff4a5a, 3, 0, 1, 0, .6)); break;
+      case 'coin': b.ico(0, .1, 0, .9, .35, .8, 0x6a4a2a, { cast: false }); b.cyl(.2, .3, 0, .18, .04, 0xd8b040, { mat: { m: .9, r: .3 } }); fire.add(mk(G.oct, M(0xffd040, { e: 0xffb020, ei: 2 }), 0, .9, 0, .2, .3, .2, false)); fire.add(glow(0xffd060, 3, 0, .8, 0, .7)); break;
       case 'bell': b.box(-1, 0, 0, .2, 2.4, .2, 0x5a3a22); b.box(1, 0, 0, .2, 2.4, .2, 0x5a3a22); b.box(0, 2.3, 0, 2.3, .2, .25, 0x5a3a22);
         b.cone(0, .8, 0, .75, 1.4, 0xb08a3a, { mat: { m: .85, r: .3 } }); b.sph(0, 2.15, 0, .4, .28, .4, 0xb08a3a, { mat: { m: .85, r: .3 } }); break;
       case 'beacon': b.cyl(0, 0, 0, 1.3, 1.2, 0x8a8478, { mat: { r: 1 } }); for (let i = 0; i < 5; i++) { const l = b.cyl(Math.cos(i * 1.26) * .4, 1.3, Math.sin(i * 1.26) * .4, .12, 1, 0x5a3a1a, { lo: 1 }); l.rotation.z = .4 * Math.cos(i); }
@@ -202,6 +204,8 @@ export function createMaerchen(C) {
       g.add(mk(G.box, M(0x6a4a30, { r: .9 }), 0, -.15, 0, 3, .3, 3), mk(G.box, M(0x5a3a24, { r: .9 }), 0, 1, -.35, .22, 2.6, .22), mk(G.box, M(0x5a3a24, { r: .9 }), 0, 1.75, -.2, 1.6, .22, .2)); P.root.position.y = 0; }
     else if (look === 'shadow') { const P = C.folk('Schatten', { g: 'm', cloth: 0x0a0812, cloth2: 0x0a0812, hair: 0x0a0812, skin: 0x14101c, sc: .82, hs: 4 }, { pal: 1 }); g.add(P.root); g.add(glow(0x6a4aff, 3, 0, 1, 0, .5)); }
     else if (look === 'dormouse') { const P = FOE.make('ratte', 0xb08a6a, false); P.root.scale.setScalar(.45); g.add(P.root); }
+    else if (look === 'puppet') { const P = FOE.make('marionette', 0xd8a060, false); g.add(P.root); }
+    else if (look === 'catfox') { const F = FOE.make('rothund', 0xc86a2a, false), K = FOE.make('tiger', 0x5a5a62, false); F.root.scale.setScalar(.7); K.root.scale.setScalar(.5); F.root.position.x = -.8; K.root.position.x = .8; g.add(F.root, K.root); }
     else if (look === 'kaa') { const P = C.CR().makeKind('schlange', 0xb0a040, false); P.root.scale.setScalar(2.2); g.add(P.root); }
     else if (look === 'crone') { const P = C.folk('Alte', { g: 'f', cloth: 0x3a2a3a, cloth2: 0x2a2a2a, cape: 0x2a1a2a, hair: 0xd0d0d0, sc: .9 }, { pal: 1 }); g.add(P.root); g.add(mk(G.cyl, M(0x8a6a3a), .45, .75, .2, .3, .25, .3)); for (let i = 0; i < 4; i++) g.add(mk(G.sph, M(0xc8202a, { r: .3 }), .35 + (i % 2) * .2, .95, .1 + (i > 1 ? .2 : 0), .1, .1, .1)); }
     else if (look === 'lady') { const P = C.folk('Dame', { g: 'f', cloth: 0xd8e8f8, cloth2: 0x8ab0d8, hair: 0x8a5a2a, sc: 1 }, { pal: 1 }); g.add(P.root); g.add(glow(0xd8f0ff, 4, 0, 1.2, 0, .6)); }

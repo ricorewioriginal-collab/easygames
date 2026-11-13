@@ -372,6 +372,35 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       // verstreute Riesenkarten im Gras
       for (let i = 0; i < 10; i++) { const a = i * 2.3, x = Math.cos(a) * (30 + i * 4), z = -40 + Math.sin(a) * 34; const c = b.box(x, 0, z, 1.6, 2.4, .08, WT, { ry: a, cast: false }); c.rotation.z = .25 * Math.sin(i); b.sph(x, 1.25, z, .2, .2, .1, i % 2 ? RD : 0x1a1a2a, { cast: false }); }
     },
+    pinocchio(b, w, A) {
+      const K = kit(b), WD = 0x8a5a3a, h = (x, z) => b.h(x, z);
+      b.tmap = { 0x8a5a3a: 'wood', 0x6a4a2a: 'wood', 0xe8d8b8: 'plaster', 0xd8c8a0: 'plaster', 0x8a8478: 'stone' };
+      // Geppettos Werkstatt: Häuschen, Hobelbank, Holzscheite, Puppen an der Wand, gemalter Kamin
+      K.house(-6, -24, 7, 5.4, 3.2, 0xe8d8b8, 0xb85a3a, .15, { beams: 0x6a4a2a, chimney: 1 }); A.smoke(-4, 6, -24.6);
+      b.box(-2, 0, -19.6, 2.4, .9, .9, WD, { solid: 1 }); for (let i = 0; i < 5; i++) b.cyl(-11 + (i % 3) * .5, .2 + (i > 2 ? .4 : 0), -19.6, .2, .9, 0xa07a4a, { tex: 'wood' }).rotation.z = 1.5708;
+      for (const x of [-8.6, -7.4]) { const P = A.creature('marionette', 0xd8a060, .55); P.position.set(x, 1.3, -20.9); }
+      // Marionettentheater: Bühne, rote Vorhänge, Bänke, Laternen
+      b.box(34, 0, -36, 12, 1.2, 5, WD, { solid: 1, tex: 'wood' }); for (const s of [-1, 1]) { b.box(34 + s * 6.2, 0, -34, .5, 6, .5, 0xd8b040, { solid: 1, mat: { m: .7, r: .4 } }); const c = b.box(34 + s * 4.4, 1.2, -33.8, 3.2, 4.6, .15, 0xb81a2a, { cast: false }); A.sway(c, s); }
+      b.box(34, 5.8, -34, 13, 1.2, .4, 0xb81a2a); b.box(34, 6.4, -33.7, 4, .8, .05, 0xd8b040, { cast: false });
+      for (let r = 0; r < 3; r++) b.box(34, 0, -27 + r * 2.2, 9, .5, .5, 0x6a4a2a, { tex: 'wood' }); K.lamp(26, -26); K.lamp(42, -26);
+      // Gasthaus zum Roten Krebs mit Schild
+      K.house(-40, -42, 8, 6, 3.4, 0xd8c8a0, 0x8a4a2a, -.3, { beams: 0x5a3a22, chimney: 1 }); b.cyl(-35, 0, -37, .08, 3, 0x3a2a1a, { lo: 1 }); b.box(-34.4, 2.6, -37, 1.1, .7, .06, 0xf0e0c0, { cast: false }); b.sph(-34.4, 2.6, -36.95, .28, .18, .04, 0xd82a1a, { cast: false });
+      // Wunderfeld: Ackerfurchen, ein falscher „Goldbaum“, Vogelscheuche
+      for (let i = 0; i < 7; i++) b.box(-66, .02, -80 + i * 2.2, 18, .18, .5, 0x6a4a2a, { cast: false }); K.tree(-56, -86, .9, 0x5a3a22, 0x8a8a3a, { fruit: 0xd8b040, n: 3, glowF: 1.2 });
+      b.cyl(-80, 0, -70, .07, 2.2, 0x6a4a2a, { lo: 1 }); b.box(-80, 1.7, -70, 1.6, .1, .1, 0x6a4a2a); b.sph(-80, 2.3, -70, .25, .25, .25, 0xd8c070); b.cone(-80, 2.45, -70, .35, .3, 0x6a5a3a, { lo: 1 });
+      // Haus der Fee: weißes Häuschen mit türkisblauem Licht
+      K.house(20, -72, 6, 5, 3, 0xf4f0ec, 0x3ab8c8, 0, {}); b.glow(0x6ae8f0, 6, 20, 2.4, -69, .7); for (let i = 0; i < 6; i++) { const f = b.sph(20 + Math.cos(i) * 4, 1.6 + (i % 2) * .5, -72 + Math.sin(i) * 4, .08, .08, .08, 0x9af0ff, { mat: { e: 0x6ae8f0, ei: 3 }, cast: false }); A.bob(f, .3, 1.1 + i * .1); }
+      // Spielzeugland: bunte Bögen, Karussell, Riesenkreisel
+      for (let i = 0; i < 4; i++) b.tor(56 + i * 3.4, 0, -60 - i * 2, 2.2, [0xe83a5a, 0xf0c040, 0x3ab8e8, 0x6ac84a][i], { d: .3, rx: 0, ry: .5 });
+      { const car = b.cyl(68, 0, -72, 3.6, .4, 0xf0c040, { solid: 1 }); b.cyl(68, .4, -72, .25, 3.4, 0xe8e0d0); b.cone(68, 3.8, -72, 4, 1.6, 0xe83a5a, { lo: 1 }); for (let i = 0; i < 6; i++) { const a = i * 1.047; b.cyl(68 + Math.cos(a) * 2.8, .4, -72 + Math.sin(a) * 2.8, .05, 3.4, 0xd8b040, { lo: 1 }); b.box(68 + Math.cos(a) * 2.8, 1.2, -72 + Math.sin(a) * 2.8, .4, .5, .9, [0xf4f0e6, 0x8a6a4a][i % 2], { ry: -a }); } }
+      b.cone(76, 0, -60, 1.2, 2.2, 0x3ab8e8, { lo: 1 }); b.cone(76, 2.2, -60, 1.2, .8, 0xe83a5a, { lo: 1 });
+      // Strand mit Steg, Fischerboot und Leuchtturm
+      b.box(0, -.1, -104, 2, .2, 9, WD, { tex: 'wood' }); for (let i = 0; i < 4; i++) b.cyl(-.8 + (i % 2) * 1.6, -1, -100 - (i > 1 ? 6 : 0), .12, 1.4, 0x5a3a22, { lo: 1 });
+      b.box(-12, 0, -102, 1.4, .6, 3.4, 0x8a5a3a, { tex: 'wood' }); K.tower(-48, -96, 1.8, 9, 0xf0ece4, 0xc83a2a, 2.4, { tex: 'plaster', win: 0xffd060 }); b.glow(0xffe0a0, 8, -48, 9.6, -96, .8);
+      // Bucht des Riesenhais: gewaltiger Kopf mit Zähnen, der aus dem Wasser ragt
+      { const X = 30, Z = -118, Y = Math.min(-.4, h(X, Z)); b.sph(X, Y, Z, 6, 3.4, 7, 0x4a5a6a, { mat: { r: .5 } }); b.sph(X, Y + .1, Z + 6.3, 3.6, 1.3, 1.2, 0x14141a, { cast: false }); for (let i = 0; i < 9; i++) b.cone(X - 3.4 + i * .85, Y + .9, Z + 6.6, .18, .6, 0xf4f0e6, { lo: 1 }).rotation.x = Math.PI;
+        for (const s of [-1, 1]) b.sph(X + s * 3.4, Y + 2.2, Z + 4.6, .45, .45, .3, 0xf0f0e8, { cast: false }); b.cone(X, Y + 3, Z - 4, .5, 3.4, 0x4a5a6a, { lo: 1 }); }
+    },
     camelot(b, w, A) {
       const K = kit(b), S = 0xeae6de, B2 = 0x3a5aa8;
       b.tmap = { 0xeae6de: 'stone', 0xd8d0c0: 'plaster', 0x6a4a2a: 'wood', 0x5a3a22: 'wood', 0x8a8a8e: 'rock', 0x8a8a90: 'rock', 0x8a6a3a: 'wood' };
