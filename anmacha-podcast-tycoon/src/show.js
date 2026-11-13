@@ -104,11 +104,14 @@
       else { f.root.position.set(i ? 0.95 : -0.95, 0, -1.2); f.root.rotation.y = i ? -0.15 : 0.15; }
       f.play('idle', { fade: 0.3 });
     });
+    // RicoReWi steht mit Handy am Rand und plant (nicht in der Quizshow)
+    const r = W.hosts.rico;
+    if (r) { if (pos === 'quiz') { if (r.root.parent === ST.group) ST.group.remove(r.root); } else { ST.group.add(r.root); r.root.visible = true; r.root.position.set(2.45, 0, -0.35); r.root.rotation.y = -1.05; r.play('idle', { fade: 0.3 }); } }
   };
   /** Szenen-Regie für Dialoge: Nahaufnahme, sprechender Mund, Geste und kleine Gags nach Stichwort. who: a | m | n | null (Ende) */
   ST.react = function (who, text) {
-    const id = who === 'a' ? 'andrew' : who === 'm' ? 'marco' : null;
-    ['andrew', 'marco'].forEach(k => { const f = W.hosts[k]; f && f.talk && f.talk(k === id); });
+    const id = who === 'a' ? 'andrew' : who === 'm' ? 'marco' : who === 'r' && W.hosts.rico ? 'rico' : null;
+    ['andrew', 'marco', 'rico'].forEach(k => { const f = W.hosts[k]; f && f.talk && f.talk(k === id); });
     clearTimeout(ST.talkTO); ST.say = id; if (!who) return;
     if (id) ST.talkTO = setTimeout(() => { const f = W.hosts[id]; f && f.talk && f.talk(false); }, Math.min(3200, 500 + (text || '').length * 38));
     const f = id && W.hosts[id], t = (text || '').toLowerCase(), A = AMC.Audio;
@@ -126,11 +129,11 @@
     ST.placeHosts(mode === 'quiz' ? 'quiz' : 'desk');
     W.particles.attach(ST.scene);
   };
-  ST.leave = function () { ['andrew', 'marco'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent === ST.group) ST.group.remove(f.root); }); };
+  ST.leave = function () { ['andrew', 'marco', 'rico'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent === ST.group) ST.group.remove(f.root); }); };
   ST.focus = null; // 'andrew' | 'marco' | null
   ST.update = function (dt, o) {
     ST.t += dt; o = o || {};
-    ['andrew', 'marco'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent === ST.group) f.update(dt); });
+    ['andrew', 'marco', 'rico'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent === ST.group) f.update(dt); });
     if (ST.vu) ST.vu.forEach((v, i) => { const k = 0.3 + Math.abs(Math.sin(ST.t * (7 + i * 3))) * (o.talk ? 1 : 0.3); v.scale.y = k; v.position.y = 1.15 + k * 0.1; });
     if (AMC.StudioEdit) AMC.StudioEdit.tick(ST.t);
     if (ST.orb && ST.quizGroup.visible) { ST.orb.rotation.y += dt * 0.8; ST.orb.rotation.x += dt * 0.3; ST.orb.position.y = 2.2 + Math.sin(ST.t * 1.6) * 0.12; }
@@ -141,7 +144,8 @@
     if (ST.mode === 'menu') {
       const a = Math.sin(ST.t * 0.15) * 0.35, narrow = root.innerWidth < 760, P = ST.mp || (ST.mp = [new T.Vector3(), new T.Vector3()]), k = ST.mpOk ? 1 - Math.exp(-dt * 3) : 1;
       let pos, tgt;
-      if (ST.say) { const fx = ST.say === 'marco' ? 0.95 : -0.95; pos = [fx * 1.45, narrow ? 1.95 : 1.8, narrow ? 1.5 : 0.8]; tgt = [fx * 0.9, narrow ? 1.0 : 1.2, -1.2]; }
+      if (ST.say === 'rico') { pos = [narrow ? 0.9 : 0.6, 1.8, narrow ? 1.6 : 1.1]; tgt = [2.45, narrow ? 1.1 : 1.3, -0.35]; }
+      else if (ST.say) { const fx = ST.say === 'marco' ? 0.95 : -0.95; pos = [fx * 1.45, narrow ? 1.95 : 1.8, narrow ? 1.5 : 0.8]; tgt = [fx * 0.9, narrow ? 1.0 : 1.2, -1.2]; }
       else if (narrow) { pos = [Math.sin(a) * 1.2, 1.7, 4.2]; tgt = [0, 1.05, -1.2]; }
       else { pos = [0.4 + Math.sin(a) * 0.8, 1.75 + Math.sin(ST.t * 0.2) * 0.08, 3.1]; tgt = [-1.05, 1.42, -1.2]; }
       P[0].lerp(new T.Vector3(...pos), k); P[1].lerp(new T.Vector3(...tgt), k); ST.mpOk = true;
@@ -192,12 +196,13 @@
     const ui = U.el('div', 'show-ui'); ui.id = 'showUi';
     ui.innerHTML =
       '<div class="sh-top"><div class="sh-pill glass"><span class="rec">● REC</span> <b id="shRound"></b></div><div class="sh-pill glass big">🎧 <b id="shLis">0</b> <small>Hörer live</small></div>' +
-      '<div class="sh-hype glass"><small>Stimmung</small><i><em id="shHype"></em></i></div><div class="sh-pill glass" id="shCombo"></div></div>' +
+      '<div class="sh-hype glass"><small>Stimmung</small><i><em id="shHype"></em></i></div><div class="sh-pill glass" id="shCombo"></div><button type="button" class="sh-pause glass" id="shPause" aria-label="Pause">⏸</button></div>' +
       '<div class="sh-say" id="shSay" hidden><img id="shFace" alt=""><div><b id="shWho"></b><p id="shTxt"></p></div></div>' +
       '<div class="sh-chat glass" id="shChat"><h4>💬 Live-Chat</h4><ul id="shChatL"></ul></div>' +
       '<div class="sh-cmd" id="shCmd" hidden><div class="sh-cmdh">BEFEHLE <span id="shSpk"></span></div><ul id="shCmdL" role="menu"></ul><div class="sh-sp"><small>Spezial</small><i><em id="shSpec"></em></i></div></div>' +
       '<div class="sh-mini" id="shMini" hidden></div><div class="sh-inc" id="shInc" hidden></div><div class="sh-pop" id="shPop"></div>';
     U.$('ui').appendChild(ui);
+    ui.querySelector('#shPause').onclick = () => AMC.Game.pause && AMC.Game.pause();
     ui.querySelector('#shMini').addEventListener('pointerdown', e => { if (S && S.mini) { e.preventDefault(); S.mini.tap = true; } });
     updTop();
   }
@@ -219,6 +224,10 @@
     AMC.Audio.sfx('talk');
     if (AMC.Save.data.settings.subtitles === false) box.hidden = true;
   }
+  function chatLine(name, text, cls) {
+    const ul = U.$('shChatL'); if (!ul) return;
+    ul.appendChild(U.el('li', cls || 'good', '<b>' + U.esc(name) + '</b> ' + U.esc(text))); while (ul.children.length > 7) ul.firstChild.remove();
+  }
   function chat(kind, n) {
     const ul = U.$('shChatL'); if (!ul) return;
     for (let i = 0; i < (n || 1); i++) {
@@ -236,8 +245,55 @@
     if (S.arcade) refillCards();
     // Störung?
     const p = S.round <= 1 ? 0 : S.arcade ? Math.min(0.6, 0.2 + S.round * 0.04) : 0.33;
+    // Musikwunsch läuft ab?
+    if (S.wish && --S.wish.left <= 0) { chatLine(S.wish.from, '😢 Schade, mein Wunsch „' + S.wish.t + '“ kam nicht …', 'bad'); S.hype = Math.max(0, S.hype - 6); S.wish = null; updTop(); }
+    if (!S.wish && S.round >= 2 && Math.random() < 0.5) newWish();
     if (Math.random() < p) return startIncident();
+    const ev = S.round >= 2 && Math.random() < 0.32 ? (Math.random() < 0.45 ? ricoDrop : idea) : null;
+    if (ev) return (ev === ricoDrop && !W.hosts.rico ? idea : ev)();
     openMenu();
+  }
+  // --- Hörer-Musikwünsche (freie Klavierlicht-Melodien) kommen automatisch rein
+  function newWish() {
+    const w = U.pick(D.WISHES.filter(x => !(S.wished || []).includes(x.id))) || U.pick(D.WISHES);
+    S.wished = (S.wished || []).concat(w.id);
+    S.wish = Object.assign({ from: U.pick(D.FAN_NAMES), left: 3 }, w);
+    chatLine(S.wish.from, '🎵 Wunsch: „' + w.t + '“ – ' + w.r, 'hype');
+    pop('🎵 Musikwunsch!<small>' + U.esc(w.t) + '</small>', 'good'); AMC.Audio.sfx('onair');
+    AMC.Audio.song(w.id);   // vorladen
+  }
+  function playWish() {
+    const w = S.wish; S.wish = null; closeMenu();
+    say(S.speaker, U.pick(['Musikwunsch von ' + w.from + ': „' + w.t + '“! Ab dafür!', w.from + ' wünscht sich „' + w.t + '“ – das spielen wir live!', 'Grüße an ' + w.from + '! Hier kommt „' + w.t + '“!']));
+    let hits = 0;
+    const go = song => startMini('rhythm', { song, color: '#a46bff', speed: 1, n: 12 + Math.min(10, S.round), hard: S.round > 6, label: '„' + w.t + '“ für ' + w.from,
+      onJudge: (q, combo) => { if (q >= 0.75 && ++hits % 4 === 0) chatLine(U.pick(D.FAN_NAMES), U.pick(['🎶 Ohrwurm!', 'Ich sing mit 🎤', 'Lauter!! 🔊', '💜 Schöner Wunsch!', 'Ich tanz in der Küche 💃', 'Gänsehaut 🥹']), 'good'); else if (q === 0 && Math.random() < 0.4) chatLine(U.pick(D.FAN_NAMES), U.pick(['Falscher Ton 😅', 'Huch, Taste verrutscht?', 'Klingt jazzig 🤔']), 'bad'); } },
+      q => {
+        chatLine(w.from, q >= 0.75 ? U.pick(['DANKE!!! Mein Lied! 😍', 'Ich hab geweint 🥹 Danke!', 'Bester Sender der Welt!']) : q >= 0.45 ? 'Danke! War … fast wie im Original 😄' : 'Äh … das war mein Lied? 😅', q >= 0.45 ? 'hype' : 'bad');
+        applyGain(48 * S.combo * (0.5 + q), q); if (q >= 0.75) { AMC.Audio.sfx('applause'); W.particles.burst(0, 2.6, -1, 0xa46bff, 50, { speed: 7 }); }
+        nextSoon(1600);
+      });
+    AMC.Audio.song(w.id).then(song => S && go(song && song.mel && song.mel.length ? song : null));
+  }
+  // --- RicoReWi platzt rein (Social Media, Tools, Planung) – mal hilft's, mal nervt's
+  function ricoDrop() {
+    S.phase = 'busy';
+    const r = W.hosts.rico; if (r) { r.play('arms', { fade: 0.2 }); setTimeout(() => r.play('idle', { fade: 0.4 }), 1800); }
+    say('rico', U.pick(D.RICO_LINES));
+    setTimeout(() => {
+      if (!S || S.ended) return;
+      const other = S.speaker === 'andrew' ? 'marco' : 'andrew';
+      if (Math.random() < 0.6) { const add = Math.round(S.listeners * 0.06 + 40 + S.round * 15); S.listeners += add; pop('📱 RicoReWi hat\'s geteilt!<small>+' + U.fmt(add) + ' 🎧</small>', 'good'); chatLine('RicoReWi', 'Clip ist online! #AnMaCha 🚀', 'hype'); say(other, U.pick(['Rico, wir sind LIVE!', 'Danke, Rico. Jetzt raus hier.', 'Er hat schon wieder ein Tool gebaut …'])); }
+      else { S.hype = Math.max(0, S.hype - 6); pop('🤳 Handy im Bild!<small>Stimmung −6</small>', 'miss'); chat('bad'); say(other, U.pick(['Rico! Kamera weg vom Mischpult!', 'Nicht jetzt, Rico!', 'Wer hat ihn reingelassen?!'])); }
+      updTop(); setTimeout(() => S && !S.ended && openMenu(), 1600);
+    }, 2000);
+  }
+  // --- Verrückte Idee aus dem Alltag oder dem Internet: kurzer Schlagabtausch, die Hörer lieben's
+  function idea() {
+    S.phase = 'busy';
+    const [w1, l1, w2, l2] = U.pick(D.IDEAS), id = x => x === 'a' ? 'andrew' : 'marco';
+    pop('💡 Verrückte Idee!', 'good'); say(id(w1), l1);
+    setTimeout(() => { if (!S || S.ended) return; say(id(w2), l2); AMC.Audio.sfx('laugh'); chat('good', 2); S.hype = Math.min(100, S.hype + 5); S.special = Math.min(100, S.special + 6); updTop(); setTimeout(() => S && !S.ended && openMenu(), 1700); }, 2600);
   }
   function refillCards() {
     const free = S.cards.filter(c => !c.used);
@@ -258,7 +314,7 @@
       return list;
     }
     const sp = S.special >= 100;
-    return [
+    return (S.wish ? [{ label: '🎹 Musikwunsch: ' + U.esc(S.wish.t), info: S.wish.from + ' wartet · noch ' + S.wish.left + ' Runde' + (S.wish.left > 1 ? 'n' : ''), color: '#a46bff', hot: true, run: playWish }] : []).concat([
       { label: '🎤 Thema', info: S.cards.filter(c => !c.used).length + ' Karten', run: () => openMenu('cards') },
       { label: '😂 Pointe', info: 'Timing-Ringe + Lacher', run: punchline },
       { label: '🔁 Übergabe an ' + D.HOSTS[S.speaker === 'andrew' ? 'marco' : 'andrew'].name, info: S.swapUsed ? 'schon gewechselt' : 'Kombo-Bonus', dis: S.swapUsed, run: swap },
@@ -266,7 +322,7 @@
       { label: '🎛️ Soundboard', info: cool(S.sbRound) ? 'Effekte nachspielen' : 'lädt …', dis: !cool(S.sbRound), run: soundboard },
       { label: '❓ Hörerfrage', info: cool(S.qRound) ? 'Quiz für Fans' : 'lädt …', dis: !cool(S.qRound), run: listenerQ },
       { label: sp ? (S.speaker === 'marco' ? '📖 Marcos Tagebuch' : '🎶 Andrews Musikmoment') : '✨ Spezial', info: sp ? 'BEREIT!' : Math.round(S.special) + ' %', dis: !sp, hot: sp, run: special }
-    ];
+    ]);
   }
   function cool(r) { return r == null || S.round - r >= 2; }
   function renderMenu() {

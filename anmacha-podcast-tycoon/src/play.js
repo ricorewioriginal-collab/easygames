@@ -12,6 +12,8 @@
   const PARK = { x: -22.5, z: 22.5 }, MAST = { x: -67.5, z: -67.5 };
 
   // ------------------------------------------------------------------ Kollision
+  // Kontext für das Fahr-Modul (src/drive.js)
+  const CTX = { get S() { return S; }, solidAt: (x, y, z) => solidAt(x, y, z), addBox: (...a) => addBox(...a), msg: (...a) => msg(...a), setAnim: (...a) => setAnim(...a), moveBody: (...a) => moveBody(...a), freeSpot: (...a) => freeSpot(...a), swapHost: () => swapHost(), honk: () => honk(), drawRub: () => drawRub(), padHeld: b => padHeld(b), ROADS };
   function addBox(x0, x1, z0, z1, top, bot) { S.col.push({ x0: Math.min(x0, x1), x1: Math.max(x0, x1), z0: Math.min(z0, z1), z1: Math.max(z0, z1), top, bot: bot || 0 }); }
   function solidAt(x, y, z) { for (const c of S.col) if (x > c.x0 && x < c.x1 && z > c.z0 && z < c.z1 && y < c.top && y > c.bot) return true; return false; }
   function groundAt(x, z, y, r) {
@@ -349,6 +351,8 @@
     W.particles.attach(S.scene);
     buildCity(sky, rng);
     buildGisela(FUNKHAUS.door.x + 11, FUNKHAUS.door.z + 3.5);
+    buildRico(FUNKHAUS.door.x - 6.5, FUNKHAUS.door.z + 4);
+    if (AMC.Drive && !cfg.net) AMC.Drive.build(CTX);
     spawnHosts(cfg.host || 'andrew', FUNKHAUS.door.x, FUNKHAUS.door.z + 6);
     W.cam.yaw = 0; W.cam.pitch = 0.32; W.cam.cur = null; W.cam.tx = S.pl.x; W.cam.ty = 1.6; W.cam.tz = S.pl.z;
     S.beacon = beam(0xff8a1e);
@@ -361,7 +365,8 @@
   };
   P.stop = function () {
     if (!S) return;
-    ['andrew', 'marco'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent) f.root.parent.remove(f.root); });
+    if (AMC.Drive) AMC.Drive.stop();
+    ['andrew', 'marco', 'rico'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent) f.root.parent.remove(f.root); });
     S.npcs.forEach(n => { if (n.fig) n.fig.dispose(); n.fig = null; });
     if (S.cat) { if (S.cat.mixer) S.cat.mixer.stopAllAction(); S.group.remove(S.cat.m); }
     S.group.traverse(o => { if (o.geometry && !o.isSkinnedMesh) o.geometry.dispose(); });
@@ -440,7 +445,7 @@
     }
   }
   async function spawnFans(rng) {
-    const n = [3, 6, 9][W.quality] + (S.type === 'guest' ? 3 : 0) + (S.type === 'party' ? 3 : 0) + (S.type === 'deliver' ? S.hungryNeed : 0);
+    const n = [4, 8, 12][W.quality] + (S.mode === 'free' ? 4 : 0) + (S.type === 'guest' ? 3 : 0) + (S.type === 'party' ? 3 : 0) + (S.type === 'deliver' ? S.hungryNeed : 0);
     const myS = S;
     for (let i = 0; i < n; i++) {
       let x, y, z;
@@ -505,7 +510,8 @@
     if (t === 'boss') return [S.boss.state === 'intro' ? S.bossName + ' erscheint …' : 'Triff ' + S.bossName.replace(/^Das /, 'das ') + ', wenn der Schild offen ist', 1 - S.boss.hp / S.boss.max];
     if (t === 'race') { const k = S.gates.filter(g => g.passed).length, b = AMC.Save.data.best.race; return ['🏁 Tore ' + k + '/' + S.gates.length + ' – so schnell wie möglich!' + (b ? ' · Bestzeit ' + b.toFixed(1) + ' s' : ''), k / S.gates.length]; }
     if (t === 'jagd') return ['Sammle so viele Themen wie möglich! Punkte: ' + U.fmt(S.score), 1 - S.left / 180];
-    const q = nextQuest();
+    const q = nextQuest(), er = AMC.Drive ? AMC.Drive.errandText() : '';
+    if (er && (S.drive || !q)) return [er + (S.drive ? '' : ' · Marco fährt Gisela'), 0.5];
     if (q) { const v = Math.min(q.goal, q.val(S)); return ['📋 Nebenauftrag: ' + q.icon + ' ' + q.desc + ' (' + U.fmt(v) + '/' + U.fmt(q.goal) + ') · ' + AMC.glyph('x') + ' an der Tür = Menü', v / q.goal]; }
     return ['Alle Nebenaufträge erledigt! Erkunde weiter oder geh ins Funkhaus.', 1];
   }
@@ -541,6 +547,7 @@
     if (S.imbiss) { g.fillStyle = '#ff8a1e'; g.fillRect(X(S.imbiss.x) - 4, Z(S.imbiss.z) - 4, 8, 8); }
     if (S.cat) { g.font = '11px sans-serif'; g.fillText('🐈', X(S.cat.x) - 6, Z(S.cat.z) + 4); }
     const ng = S.gates.find(q => !q.passed); if (ng) { g.strokeStyle = '#3dd6ff'; g.lineWidth = 2; g.beginPath(); g.arc(X(ng.x), Z(ng.z), 5, 0, 7); g.stroke(); }
+    if (AMC.Drive) for (const d of AMC.Drive.mapDots()) { g.fillStyle = d.c; g.beginPath(); g.arc(X(d.x), Z(d.z), d.big ? 4.5 : 2.6, 0, 7); g.fill(); if (d.big) { g.strokeStyle = '#000'; g.lineWidth = 1; g.stroke(); } }
     if (S.beacon.visible) { g.strokeStyle = '#ff8a1e'; g.lineWidth = 2.5; g.beginPath(); g.arc(X(S.beacon.position.x), Z(S.beacon.position.z), 6 + Math.sin(S.time * 6) * 1.5, 0, 7); g.stroke(); }
     // Spieler-Pfeil (Blickrichtung der Kamera)
     const p = S.pl; g.save(); g.translate(X(p.x), Z(p.z)); g.rotate(-p.yaw + Math.PI); g.fillStyle = '#fff'; g.strokeStyle = '#000'; g.lineWidth = 1;
@@ -550,6 +557,7 @@
   // ------------------------------------------------------------------ Interaktion
   function interactTarget(ent) {
     const p = ent || S.pl;
+    if (S.drive) return { label: 'Aussteigen 🚪' };
     for (const n of S.npcs) {
       const d = Math.hypot(n.x - p.x, n.z - p.z);
       if (d < 2.4) {
@@ -560,7 +568,9 @@
       }
     }
     for (const r of S.relays) if (!r.fixed && Math.hypot(r.x - p.x, r.z - p.z) < 2.2 && Math.abs(r.y - p.y) < 1.6) return { label: 'Verteiler reparieren (halten)', hold: r };
+    const dv = AMC.Drive && p === S.pl ? AMC.Drive.interact(p) : null; if (dv) return dv;
     if (S.gisela && S.gisela.t <= 0 && Math.hypot(S.gisela.x - p.x, S.gisela.z - p.z) < 3.6) return { label: 'Gisela hupen 📯', run: honk };
+    if (S.rico && S.rico.t <= 0 && Math.hypot(S.rico.x - p.x, S.rico.z - p.z) < 2.6) return { label: 'Mit RicoReWi quatschen 📱', run: ricoTalk };
     if (S.imbiss && Math.hypot(S.imbiss.x - p.x, S.imbiss.z - p.z) < 3.4 && S.carry < 3 && S.fed + S.carry < S.hungryNeed) return { label: 'Bestellungen abholen 🍟', run: pickOrder };
     if (S.mode === 'free' && S.net !== 'guest' && p === S.pl && Math.hypot(FUNKHAUS.door.x - p.x, FUNKHAUS.door.z - p.z) < 3.5) return { label: 'Ins Funkhaus (Menü)', run: () => finish(true) };
     return null;
@@ -666,6 +676,9 @@
     if (!S || S.ended) return;
     S.time += dt;
     const p = S.pl, H = p.H, cam = W.cam;
+    const driving = !S.net && AMC.Drive ? AMC.Drive.update(dt) : false;
+    let sp = 0; const f = S.fo;
+    if (!driving) {
     // Eingaben
     if (I.hit('swap') && !S.net) swapHost();
     const fwdX = -Math.sin(cam.yaw), fwdZ = -Math.cos(cam.yaw), rX = Math.cos(cam.yaw), rZ = -Math.sin(cam.yaw);
@@ -690,13 +703,11 @@
       if (r.prog >= 1) { r.fixed = true; r.led.material.color.set(0x30ff60); r.gl.material.color.set(0x30ff60); AMC.Audio.sfx('perfect'); msg('🔧 Verteiler läuft wieder!', 2); S.score += 500; W.particles.burst(r.x, r.y + 1.2, r.z, 0x30ff60, 30); }
     }
     p.cd = Math.max(0, p.cd - dt); p.cd2 = Math.max(0, (p.cd2 || 0) - dt); p.inv = Math.max(0, p.inv - dt); p.busy = Math.max(0, p.busy - dt); p.landT = Math.max(0, p.landT - dt);
-    let sp;
     if (p.dodge > 0) { p.dodge -= dt; sp = moveBody(p, dt, p.vx / 15, p.vz / 15, 15, 30); }
     else sp = moveBody(p, dt, wx, wz, speed, p.onGround ? 12 : 4);
     animFor(p, sp);
-    if (p.fig) p.fig.root.visible = !(p.inv > 0 && Math.floor(S.time * 20) % 2);
+    if (p.fig) p.fig.root.visible = !S.drive && !(p.inv > 0 && Math.floor(S.time * 20) % 2);
     // Mitspieler: online vom anderen Gerät gesteuert
-    const f = S.fo;
     if (S.net) netRemote(dt, f);
     else {
     const tx = p.x - Math.sin(p.yaw) * 2.2 + Math.cos(p.yaw) * 1.1, tz = p.z - Math.cos(p.yaw) * 2.2 - Math.sin(p.yaw) * 1.1;
@@ -707,6 +718,7 @@
     const fsp = moveBody(f, dt, fdx, fdz, fd > 2 ? Math.min(11, H.speed * (fd > 6 ? 1.6 : 1)) : 0, 8);
     animFor(f, fsp);
     }
+    }
     if (p.fig) p.fig.update(dt); if (f.fig) f.fig.update(dt);
     if (S.foInv > 0) S.foInv -= dt;
     if (S.net === 'guest') { netGuestFrame(dt, sp); return; }
@@ -715,6 +727,7 @@
     // Zeit
     if (S.left > 0 && S.mode !== 'free') { S.left -= dt; if (S.left <= 0) { S.left = 0; if (S.mode === 'jagd') return finish(true, 'time'); if (!S.done) return finish(false, 'time'); } }
     updPickups(dt); updDrones(dt); updNpcs(dt); updObjective(dt); updRings(dt);
+    if (S.rico) { S.rico.f.update(dt); if (S.rico.t > 0) S.rico.t -= dt; }
     if (S.gisela) { if (S.gisela.t > 0) S.gisela.t -= dt; S.gisela.g.position.y = S.gisela.t > 0 ? Math.abs(Math.sin(S.time * 18)) * 0.06 : 0; }
     if (S.boss) updBoss(dt);
     if (S.cat) updCat(dt);
@@ -805,7 +818,12 @@
       } else if (!n.dancer) {
         // zum Spieler drehen, wenn nah
         const d = Math.hypot(p.x - n.x, p.z - n.z);
-        if (d < 5) n.fig.root.rotation.y += U.angDiff(n.fig.root.rotation.y, Math.atan2(p.x - n.x, p.z - n.z)) * Math.min(1, dt * 4);
+        if (d < 5) { n.fig.root.rotation.y += U.angDiff(n.fig.root.rotation.y, Math.atan2(p.x - n.x, p.z - n.z)) * Math.min(1, dt * 4); if (n.anim === 'walk') setAnim(n, 'idle'); }
+        else if (!n.guest && !n.hungry && d < 60) {   // Passanten schlendern umher
+          n.hx = n.hx == null ? n.x : n.hx; n.hz = n.hz == null ? n.z : n.hz; n.wt = (n.wt || (n.x * 7) % 6) + dt * 0.25;
+          const tx = n.hx + Math.cos(n.wt) * 4, tz = n.hz + Math.sin(n.wt * 0.8) * 4, dx = tx - n.x, dz = tz - n.z, dd = Math.hypot(dx, dz);
+          const s2 = moveBody(n, dt, dd > 0.3 ? dx / dd : 0, dd > 0.3 ? dz / dd : 0, dd > 0.3 ? 1.3 : 0, 4); setAnim(n, s2 > 0.4 ? 'walk' : 'idle');
+        }
       }
     }
   }
@@ -844,6 +862,20 @@
   }
   const HONK = [['m', 'Das ist Gisela! Umgebaut mit meinen eigenen Händen. Und etwas Panzertape.'], ['a', 'Marco, die Tür hängt schief.'], ['m', 'Das ist kein Fehler, das ist Charakter!'],
     ['a', 'Ich glaub, Gisela hat gerade ein Kabel verloren.'], ['m', 'Gisela fährt mit Liebe. Und mit ein bisschen Diesel.'], ['a', 'Wann machen wir endlich die Podcast-Tour mit ihr?'], ['m', 'Psst, nicht so laut – sie ist empfindlich.']];
+  // RicoReWi: Social-Media-Junkie vor dem Funkhaus, immer am Planen (Handy, Tools, Ideen)
+  function buildRico(x, z) {
+    const f = W.hosts.rico; if (!f) return;
+    S.group.add(f.root); f.root.position.set(x, 0, z); f.root.rotation.y = 0.6; f.root.visible = true; f.play('idle');
+    S.rico = { x, z, f, t: 0, n: 0 };
+  }
+  function ricoTalk() {
+    const R = S.rico; R.t = 1.2; R.n++;
+    R.f.root.rotation.y = Math.atan2(S.pl.x - R.x, S.pl.z - R.z); R.f.play('arms', { fade: 0.2 }); setTimeout(() => S && S.rico && R.f.play('idle', { fade: 0.4 }), 1700);
+    const first = R.n === 1, rub = U.pick(D.RUBRIC_IDS);
+    if (first) { S.got[rub] += 3; drawRub(); S.score += 200; }
+    AMC.UI.bubble('RicoReWi', U.pick(D.RICO_LINES), first ? '+3 ' + D.RUBRICS[rub].icon + ' ' + D.RUBRICS[rub].name + ' · Rico teilt euch' : null);
+    AMC.Audio.sfx('talk'); W.particles.burst(R.x, 2.2, R.z, 0xa46bff, 14);
+  }
   function honk() {
     const G2 = S.gisela; G2.honk++; G2.t = 0.6; S.honks = (S.honks || 0) + 1;
     AMC.Audio.sfx('horn'); W.particles.burst(G2.x, 2.6, G2.z, 0xff8a1e, 26, { speed: 5 }); W.particles.burst(G2.x, 0.6, G2.z, 0xcccccc, 14, { speed: 2, up: 1 });

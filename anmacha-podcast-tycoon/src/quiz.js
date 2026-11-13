@@ -24,6 +24,7 @@
       '<div class="qz-q glass" id="qzQ"><small id="qzCat"></small><p id="qzTxt">Die verrückte KI-Quizshow</p><i class="mg-bar"><em id="qzBar"></em></i></div>' +
       '<div class="qz-a" id="qzA"></div><div class="qz-help" id="qzHelp"></div>';
     U.$('ui').appendChild(ui);
+    const pb = U.el('button', 'sh-pause qz-pause glass', '⏸'); pb.type = 'button'; pb.setAttribute('aria-label', 'Pause'); pb.onclick = () => AMC.Game.pause && AMC.Game.pause(); ui.appendChild(pb);
     U.$('qzHelp').innerHTML = S.two
       ? 'Spieler 1: ' + (I.padCount() > 0 ? 'Controller 1 oder ' : '') + 'Tasten 1–4 · Spieler 2: ' + (I.padCount() > 1 ? 'Controller 2 oder ' : '') + 'Tasten 7–0 · Am Handy: linke/rechte Hälfte der Antwort'
       : (I.device === 'pad' ? 'Antworten mit ' + AMC.glyph('a') + AMC.glyph('b') + AMC.glyph('x') + AMC.glyph('y') : I.device === 'touch' ? 'Antwort antippen' : 'Antworten mit Tasten 1–4 oder Klick') + ' – schneller = mehr Punkte';
