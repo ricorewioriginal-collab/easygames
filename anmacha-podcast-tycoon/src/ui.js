@@ -43,7 +43,7 @@
     s = s || UI.top(); if (!s) return;
     UI.stack = UI.stack.filter(x => x !== s);
     const nt = UI.top(); if (nt) nt.el.classList.remove('under');
-    s.el.classList.remove('in'); s.el.classList.add('out'); setTimeout(() => s.el.remove(), 220);
+    s.closed = true; s.el.classList.remove('in'); s.el.classList.add('out'); setTimeout(() => s.el.remove(), 220);
   };
   UI.closeAll = () => { while (UI.stack.length) UI.close(); };
   UI.top = () => UI.stack[UI.stack.length - 1];

@@ -20,7 +20,7 @@
 
   function dirHit() {
     for (const d of DIRS) if (I.hit(d)) return d;
-    const ph = I.padHits[0] || []; for (const k of ph) if (FACE[k]) return FACE[k];
+    const ph = I.padHits[0] || []; for (const k of ph) { if (FACE[k]) return FACE[k]; if (DIRS.includes(k)) return k; }   // Steuerkreuz auch im Emote-Modus
     return null;
   }
   const okHit = () => I.hit('ok') || (I.padHits[0] || []).includes('a');
