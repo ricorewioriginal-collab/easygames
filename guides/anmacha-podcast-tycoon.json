@@ -9,7 +9,10 @@
       ]
     },
     {
-      "t": "Start und Hauptmenü",
+      "t": "Start und Gesamtmenü",
+      "p": [
+        "Nach dem Startbildschirm geht es direkt in die Stadt. Ein separates Hauptmenü gibt es nicht mehr: Alle Funktionen stecken im Gesamtmenü, das du mitten in der Stadt aufrufst (⏸-Knopf, Esc oder Start) oder am Empfang im Funkhaus. Dort geht es mit „🏙️ Weiter in der Stadt“ zurück ins Spiel."
+      ],
       "list": [
         "▶ Story: Staffel 1–3 – 17 Kapitel, eins nach dem anderen freigeschaltet. Staffel 3 folgt den AnMaCha-Radios.",
         "🎙️ Live-Show – Endlos-Aufnahme im Studio, bis der Hype auf null fällt. Rekord wird gespeichert.",
@@ -53,11 +56,18 @@
         "Das Funkhaus hat ein Dach und lässt sich betreten. Drinnen ist jeder Menüpunkt ein eigener Ort, und im Spiel „Stadt & Nebenaufträge“ öffnest du ihn mit der Aktionstaste (Ⓧ, E oder 📣)."
       ],
       "list": [
-        "Empfang: zurück ins Hauptmenü und zu den Einstellungen.",
+        "Empfang: Gesamtmenü mit allen Funktionen und den Einstellungen.",
         "Studio A mit Pult: Live-Aufnahme starten. Daneben die Werkstatt zum Studio-Umbauen.",
         "Redaktion mit Pinnwand: alle Story-Kapitel.",
         "Quiz-Bühne: KI-Quizshow. Radio-Lounge: alle Sender und Folgen. Fanshop: Outfits und Upgrades. Koop-Terminal: online zu zweit.",
         "In der Stadt warten die Spielhalle „AnMaCha Arcade“, der Musikladen „Klavierlicht“ sowie Andrews Wohnung und Marcos Haus. Leuchtende Türen und schwebende Symbole zeigen, wo du hinein kannst."
+      ]
+    },
+    {
+      "t": "Club-Feeling in der Stadt",
+      "p": [
+        "Auch draußen ist was los: Rechts (im Querformat oben) ist die Emote-Leiste mit Tanzen, Winken und Jubeln (Tasten 1 bis 3). Fans in der Nähe winken zurück, jubeln mit und kommen zum Mittanzen, sobald du tanzt. Über den Köpfen erscheinen Sprechblasen, links läuft der Stadt-Chat.",
+        "🔥 Stadt-Vibe: Tanzen mit Fans und Emotes füllen den Balken. Ist er voll, gibt es eine Straßenparty mit Konfetti und 60 Fan-Punkten. Losgehen oder Springen beendet das Tanzen."
       ]
     },
     {
@@ -104,7 +114,7 @@
     {
       "t": "Arcade: 3D-Minispiele",
       "p": [
-        "Unter „🕹️ Arcade“ im Hauptmenü oder am Arcade-Automaten im begehbaren Studio spielst du mit Andrew oder Marco (wechseln mit Ⓨ/Q). Punkte bringen Fan-Punkte, jedes Spiel hat einen eigenen Rekord."
+        "Unter „🕹️ Arcade“ im Gesamtmenü, im Arcade-Laden in der Stadt oder am Arcade-Automaten im begehbaren Studio spielst du mit Andrew oder Marco (wechseln mit Ⓨ/Q). Punkte bringen Fan-Punkte, jedes Spiel hat einen eigenen Rekord."
       ],
       "list": [
         "📡 Funkwellen-Flug: Tippen, Leertaste oder Ⓐ lässt dich hüpfen. Flieg durch die Lücken zwischen den Funkmasten, jeder Mast bringt einen Punkt.",
@@ -177,7 +187,7 @@
     {
       "t": "Online-Koop",
       "p": [
-        "Im Hauptmenü unter „🌐 Online-Koop“ eröffnet ein Gerät das Spiel und zeigt einen 5-stelligen Code, einen QR-Code und einen Link. Mitspieler können per Link, Code oder QR-Code von überall beitreten. Der Gastgeber spielt seine gewählte Figur, der Gast die andere."
+        "Im Gesamtmenü unter „🌐 Online-Koop“ eröffnet ein Gerät das Spiel und zeigt einen 5-stelligen Code, einen QR-Code und einen Link. Mitspieler können per Link, Code oder QR-Code von überall beitreten. Der Gastgeber spielt seine gewählte Figur, der Gast die andere."
       ],
       "list": [
         "🏃 Themenjagd zu zweit: 3 Minuten, gemeinsame Punkte.",
@@ -193,7 +203,7 @@
         "Tastatur & Maus: WASD/Pfeile laufen, Maus ziehen Kamera, Leertaste springen, E Welle/sprechen, C ausweichen, Umschalt sprinten, Q wechseln, R Radio, N nächster Sender, M Radio an/aus, Esc Pause.",
         "Touch: Stick links, rechts wischen für die Kamera, Knöpfe ⤴ springen, 📣 Welle, 💨 ausweichen, ⇄ wechseln, 📻 Radio und ⏸ Pause.",
         "Die Knopfsymbole passen sich automatisch an: Xbox, PlayStation, Nintendo, Tastatur oder Touch.",
-        "Pause: jederzeit mit Start, Esc oder dem ⏸-Knopf oben rechts – auch in der Live-Aufnahme und der Quizshow. Von dort geht es zurück ins Hauptmenü."
+        "Pause: jederzeit mit Start, Esc oder dem ⏸-Knopf oben rechts – auch in der Live-Aufnahme und der Quizshow. In der Stadt öffnet sie das Gesamtmenü, in anderen Modi geht es von dort zurück in die Stadt."
       ]
     },
     {
@@ -382,11 +392,11 @@
     },
     {
       "q": "Wie spiele ich online mit einem Freund?",
-      "a": "Hauptmenü → 🌐 Online-Koop → Spiel eröffnen. Schick den Link oder zeig den QR-Code; dein Freund kann auch den Code unter „🌐 Online-Koop“ eingeben. Sobald er verbunden ist, wählst du den Modus."
+      "a": "Gesamtmenü (⏸) → 🌐 Online-Koop → Spiel eröffnen. Schick den Link oder zeig den QR-Code; dein Freund kann auch den Code unter „🌐 Online-Koop“ eingeben. Sobald er verbunden ist, wählst du den Modus."
     },
     {
       "q": "Wo ist das Menü in der Stadt?",
-      "a": "Geh ins Funkhaus. Am Empfang kommst du ins Hauptmenü, alle anderen Menüpunkte haben drinnen oder in der Stadt einen eigenen Ort. Die Pause (⏸, Esc oder Start) geht ebenfalls jederzeit."
+      "a": "Drück ⏸, Esc oder Start: Dann öffnet sich das Gesamtmenü mit allen Funktionen. Alternativ am Empfang im Funkhaus. Viele Menüpunkte haben außerdem einen eigenen Ort in der Stadt (Funkhaus, Läden, Senderhäuser, die Häuser von Andrew und Marco)."
     }
   ]
 }

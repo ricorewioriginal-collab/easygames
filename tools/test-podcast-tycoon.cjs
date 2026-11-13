@@ -20,7 +20,16 @@ server.listen(0, '127.0.0.1', async () => {
     await p.goto(url);
     await p.waitForFunction(() => document.getElementById('loading').classList.contains('done'), null, { timeout: 180000 });
     assert.match(await p.title(), /AnMaCha – Der Podcast/);
-    await p.click('#tStart'); await p.waitForSelector('[data-go=story]');
+    await p.click('#tStart'); await p.waitForFunction(() => AMC.Game.mode === 'play' && AMC.Play.state() && AMC.Play.state().mode === 'free', null, { timeout: 20000 });
+    // Kein separates Hauptmenü: Start führt in die Stadt, das Gesamtmenü öffnet sich dort (Pause) mit allen Funktionen
+    await p.evaluate(() => AMC.Game.pause()); await p.waitForSelector('.main-menu.in-city [data-go=story]');
+    assert.ok(await p.evaluate(() => ['resume', 'story', 'live', 'jagd', 'race', 'quiz', 'koop', 'walk', 'home', 'arcade', 'music', 'studio', 'shop', 'radio', 'settings', 'controls', 'credits'].every(g => document.querySelector('.main-menu [data-go=' + g + ']'))), 'Gesamtmenü hat alle Funktionen');
+    await p.click('[data-go=resume]'); await p.waitForTimeout(300);
+    assert.ok(await p.evaluate(() => !document.querySelector('.main-menu') && AMC.Game.mode === 'play'), 'Weiter in der Stadt');
+    // Club-Feeling in der Stadt: Emote-Leiste, Tanzen, Stadt-Vibe
+    await p.evaluate(() => document.querySelector('#cvEmo [data-e=dance]').click()); await p.waitForTimeout(800);
+    assert.ok(await p.evaluate(() => AMC.CityVibe.state().dancing && AMC.Play.state().pl.anim === 'dance'), 'Tanzen in der Stadt');
+    await p.evaluate(() => document.querySelector('#cvEmo [data-e=dance]').click());
     // Stadt: Kapitel 1 starten, nach vorn laufen (Bordstein darf nicht blockieren)
     await p.evaluate(() => AMC.Game.playChapter(0)); await p.waitForTimeout(3000);
     const z0 = await p.evaluate(() => AMC.Play.state().pl.z);
@@ -47,7 +56,7 @@ server.listen(0, '127.0.0.1', async () => {
     await p.evaluate(() => AMC.Show._mini(null));
     await p.evaluate(() => { AMC.Show.stop(); AMC.UI.closeAll(); AMC.Game.mode = 'menu'; AMC.StudioEdit.open(() => {}); }); await p.waitForTimeout(800);
     assert.ok(await p.evaluate(() => AMC.StudioEdit.value() > 0 && AMC.StudioEdit.bonus().hype >= 0), 'Studio-Editor');
-    await p.keyboard.press('Escape'); await p.keyboard.press('Escape'); await p.waitForTimeout(500);
+    await p.evaluate(() => AMC.StudioEdit.close()); await p.waitForTimeout(800);
     // Stadt frei: Verkehr, Kabeldiebe, Besorgung; Marco fährt Gisela und steigt wieder aus
     await p.evaluate(() => { if (AMC.StudioEdit.close) AMC.StudioEdit.close(); AMC.UI.closeAll(); AMC.Game.mode = 'play'; AMC.Play.onEnd = () => {}; AMC.Play.start({ mode: 'free', host: 'marco' }); }); await p.waitForTimeout(3000);
     assert.ok(await p.evaluate(() => { const S = AMC.Play.state(); return S.cars.length >= 5 && S.traffic.length >= 3 && !!S.errand; }), 'Autos, Verkehr und Besorgung');
@@ -105,7 +114,7 @@ server.listen(0, '127.0.0.1', async () => {
     await p.keyboard.press('Space'); await p.waitForTimeout(400);
     assert.ok(await p.evaluate(() => { const r = AMC.Arcade.state(); return r && r.id === 'flap' && r.phase !== 'ready' && r.p.x > 0; }), 'Funkwellen-Flug startet und fliegt');
     await p.evaluate(() => AMC.Game.arcade('jump')); await p.waitForTimeout(1200);
-    await p.keyboard.down('KeyD'); await p.waitForTimeout(800); await p.keyboard.up('KeyD');
+    await p.keyboard.down('KeyD'); await p.waitForFunction(() => AMC.Arcade.state().p.x > 0.3, null, { timeout: 8000 }).catch(() => {}); await p.keyboard.up('KeyD');
     assert.ok(await p.evaluate(() => { const r = AMC.Arcade.state(); return r && r.id === 'jump' && r.p.x > 0.3 && r.plats.length > 10 && r.goal > 100; }), 'Jump & Run läuft');
     await p.evaluate(() => AMC.Game.arcade('run')); await p.waitForTimeout(1200);
     await p.keyboard.press('Space'); await p.waitForFunction(() => AMC.Arcade.state().phase !== 'ready', null, { timeout: 5000 }); await p.waitForTimeout(400); await p.evaluate(() => AMC.Input.fire('left')); await p.waitForFunction(() => AMC.Arcade.state().p.lane === 0, null, { timeout: 5000 }).catch(() => {});

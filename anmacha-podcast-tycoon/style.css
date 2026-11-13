@@ -412,3 +412,14 @@ html.eg-pad .tb, html.dev-pad #touch { display: none; }
 .home-ui:has(.sd-game) .hm-top, .home-ui:has(.sd-game) .hm-emo, .home-ui:has(.sd-game) .hm-use { display: none; }
 .hm-selfie { position: fixed; inset: 0; background: #fff; z-index: 60; pointer-events: none; animation: hmFade .6s ease forwards; }
 @media (max-height: 560px) and (orientation: landscape) { .hm-lanes { justify-content: flex-start; padding: 0 calc(16px + var(--safe-l)); } .hm-lanes button:nth-child(2) { margin-right: auto; } .hm-lanes button { width: 62px; height: 62px; } .hm-emo { top: calc(10px + var(--safe-t)); right: calc(110px + var(--safe-r)); flex-direction: row; } .hm-emo button { width: 44px; height: 44px; font-size: 18px; } .hm-feed { bottom: calc(60px + var(--safe-b)); } .hm-desc { display: none; } }
+/* Stadt: Club-Feeling (Emotes, Vibe, Chat) */
+.cv-ui { position: absolute; inset: 0; pointer-events: none; }
+.cv-ui .hm-emo { pointer-events: auto; top: 40%; }
+.cv-vibe { display: grid; place-items: center; gap: 2px; font-size: 15px; padding: 2px 0; }
+.cv-vibe i { width: 44px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.15); overflow: hidden; display: block; }
+.cv-vibe em { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #ff3da8, #ffd23f, #3dd6ff); transition: width .3s; }
+.hm-emo button.on { background: linear-gradient(135deg, #ff3da8, #a46cff); box-shadow: 0 0 16px rgba(255, 61, 168, .6); }
+.cv-feed { bottom: calc(190px + var(--safe-b)); }
+.hm-bub.pop { animation: popIn .25s; }
+html:not(.dev-touch) .cv-feed { bottom: calc(110px + var(--safe-b)); }
+@media (max-height: 560px) and (orientation: landscape) { .cv-ui .hm-emo { top: calc(10px + var(--safe-t)); right: auto; left: 50%; transform: translateX(-50%); flex-direction: row; } .cv-vibe { padding: 0 4px; } .cv-feed { bottom: calc(110px + var(--safe-b)); } }

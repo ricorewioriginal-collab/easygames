@@ -225,7 +225,7 @@
     B(0.8, 1.6, 0.6, 0x16171c, 14, 1.0, -18, null, true); B(0.66, 0.8, 0.04, 0x3dd6ff, 14, 1.4, -17.68, { e: 0x3dd6ff, ei: 0.9 }); sign('ONLINE-KOOP', '🌐 per Link, Code, QR', '#3dd6ff', F.x0 + 0.65, 3.4, -18, Math.PI / 2, 3.6);
     // Deckenlichter
     if (S.glows) { const pts = []; for (let x = F.x0 + 3; x < F.x1 - 2; x += 4.5) for (let z = F.z0 + 3; z < F.z1 - 2; z += 4.5) pts.push([x, F.h - 1, z]); S.glows.push(glowCloud(pts, 0xfff1c8, 2.4)); }
-    addStation('menu', '🏠 Empfang: Hauptmenü & Einstellungen', cx, -18.6, 2.2);
+    addStation('menu', '☰ Empfang: Gesamtmenü & Einstellungen', cx, -18.6, 2.2);
     addStation('live', '🎙️ Ins Studio: Live-Aufnahme starten', cx, -30.2, 2.2);
     addStation('edit', '🛠️ Studio umbauen', 29.4, -31.6, 1.9);
     addStation('story', '📜 Redaktion: Story-Kapitel', 15.6, -33, 2.0);
@@ -459,12 +459,14 @@
     spawnFans(rng);
     P.active = true;
     buildHud();
+    if (AMC.CityVibe) AMC.CityVibe.start(S);
     AMC.Audio.music(sky === 'party' ? 'party' : ch && ch.obj.type === 'boss' ? 'city' : 'city');
     return S;
   };
   P.stop = function () {
     if (!S) return;
     if (AMC.Drive) AMC.Drive.stop();
+    if (AMC.CityVibe) AMC.CityVibe.stop();
     ['andrew', 'marco', 'rico'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent) f.root.parent.remove(f.root); });
     S.npcs.forEach(n => { if (n.fig) n.fig.dispose(); n.fig = null; });
     if (S.cat) { if (S.cat.mixer) S.cat.mixer.stopAllAction(); S.group.remove(S.cat.m); }
@@ -673,7 +675,7 @@
     if (S.rico && S.rico.t <= 0 && Math.hypot(S.rico.x - p.x, S.rico.z - p.z) < 2.6) return { label: 'Mit RicoReWi quatschen 📱', run: ricoTalk };
     if (S.imbiss && Math.hypot(S.imbiss.x - p.x, S.imbiss.z - p.z) < 3.4 && S.carry < 3 && S.fed + S.carry < S.hungryNeed) return { label: 'Bestellungen abholen 🍟', run: pickOrder };
     if (S.ch && S.ch.radio && !S.senderDone && p === S.pl && S.stations) { const st = S.stations.find(x => x.id === 'sender:' + S.ch.radio); if (st && Math.hypot(st.x - p.x, st.z - p.z) < st.r) { const ss = D.STATIONS.find(x => x.slug === S.ch.radio); return { label: '🎙️ Interview bei ' + ss.name + ' (Bonus)', run: () => senderInterview(ss) }; } }
-    if (S.mode === 'free' && S.net !== 'guest' && p === S.pl && S.stations) for (const st of S.stations) if (Math.hypot(st.x - p.x, st.z - p.z) < st.r && p.y < 2) return { label: st.label, run: () => { AMC.Audio.sfx('door'); if (st.id !== 'menu' && P.onAction) P.onAction(st.id); else finish(true); } };
+    if (S.mode === 'free' && S.net !== 'guest' && p === S.pl && S.stations) for (const st of S.stations) if (Math.hypot(st.x - p.x, st.z - p.z) < st.r && p.y < 2) return { label: st.label, run: () => { AMC.Audio.sfx('door'); if (P.onAction) P.onAction(st.id); else finish(true); } };
     return null;
   }
   function talk(n) {
@@ -835,7 +837,7 @@
     S.hurtT += dt; if (S.hurtT > 4) S.energy = Math.min(100, S.energy + dt * 6);
     // Zeit
     if (S.left > 0 && S.mode !== 'free') { S.left -= dt; if (S.left <= 0) { S.left = 0; if (S.mode === 'jagd') return finish(true, 'time'); if (!S.done) return finish(false, 'time'); } }
-    updPickups(dt); updDrones(dt); updNpcs(dt); updObjective(dt); updRings(dt);
+    updPickups(dt); updDrones(dt); updNpcs(dt); if (AMC.CityVibe) AMC.CityVibe.update(dt, S); updObjective(dt); updRings(dt);
     if (S.rico) { S.rico.f.update(dt); if (S.rico.t > 0) S.rico.t -= dt; }
     if (S.gisela) { if (S.gisela.t > 0) S.gisela.t -= dt; S.gisela.g.position.y = S.gisela.t > 0 ? Math.abs(Math.sin(S.time * 18)) * 0.06 : 0; }
     if (S.boss) updBoss(dt);

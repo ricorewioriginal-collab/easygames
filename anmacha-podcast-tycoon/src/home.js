@@ -172,7 +172,7 @@
     if (fig) { if (fig.root.parent) fig.root.parent.remove(fig.root); built.g.add(fig.root); fig.root.visible = true; fig.talk && fig.talk(false); }
     R = { kind: 'home', who: hid, sc: built.sc, g: built.g, objs: built.objs, onClose, busy: 0, t: 0 };
     const solids = () => H.slots.map(s => ({ x: s.x, z: s.z, r: s.id === 'bed' ? 1.3 : s.id === 'kitchen' ? 1.4 : s.id === 'sofa' ? 1.1 : 0.8 }));
-    const spots = () => H.slots.map(s => ({ x: s.x, z: s.z, r: s.id === 'bed' || s.id === 'kitchen' ? 2.4 : 2.0, label: actLabel(s), run: () => act(s) })).concat([{ x: 5.4, z: 3, r: 1.6, label: '🚪 Zurück ins Menü', run: () => HM.close() }]);
+    const spots = () => H.slots.map(s => ({ x: s.x, z: s.z, r: s.id === 'bed' || s.id === 'kitchen' ? 2.4 : 2.0, label: actLabel(s), run: () => act(s) })).concat([{ x: 5.4, z: 3, r: 1.6, label: '🚪 Raus in die Stadt', run: () => HM.close() }]);
     R.w = walker({ x: 2.5, z: 2.6, fig, bounds: { x0: -5.6, x1: 5.6, z0: -4.0, z1: 4.0 }, solids, spots });
     R.ui = hud(H.name, '<button type="button" class="btn small" id="hmBuild">🛋️ Einrichten</button>');
     R.ui.querySelector('#hmBuild').onclick = () => furnish(hid);
