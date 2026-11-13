@@ -8,7 +8,7 @@ const BILD = process.argv[2] === 'bild';
   await p.evaluate(() => { const Z = __zotik; Z.startDbg(); const S = Z.S(); S.stage = 8; S.lvl = 14; S.fl.naut = 1; for (let n = 2; n <= 7; n++) S.cd[n] = { st: 7, fin: 1, bd: 1, arr: 1, e1: 1, e2: 1, k: 0, b: [0, 0, 0], ord: 0 }; }); await intro(p);
   await p.evaluate(() => __zotik.switchWorld(15)); await w(1200); await skip(p);
   /* zu Fuß: Landzunge zu jeder Märchen-Insel */
-  const isl = await p.evaluate(() => { const W = __zotik.W, out = []; for (const k of [21, 22, 23, 24, 25, 26, 27]) { const pt = W.marks.find(q => q.n === k); if (pt) out.push([k, W.h(pt.x, pt.z) > -.3, W.blocked(pt.x + 16, pt.z) && W.blocked(pt.x - 16, pt.z) && W.blocked(pt.x, pt.z + 16) && W.blocked(pt.x, pt.z - 16)]); } return out; });
+  const isl = await p.evaluate(() => { const W = __zotik.W, out = []; for (const k of [21, 22, 23, 24, 25, 26, 27, 28]) { const pt = W.marks.find(q => q.n === k); if (pt) out.push([k, W.h(pt.x, pt.z) > -.3, W.blocked(pt.x + 16, pt.z) && W.blocked(pt.x - 16, pt.z) && W.blocked(pt.x, pt.z + 16) && W.blocked(pt.x, pt.z - 16)]); } return out; });
   ok('Märchen-Inseln liegen an Land (zu Fuß erreichbar)', isl.length >= 3 && isl.every(q => q[1] && !q[2]), JSON.stringify(isl));
   const rm = await p.evaluate(() => { const R = __zotik.W.roam || []; return { n: R.length, kinds: [...new Set(R.map(r => r.def.n))].length }; });
   ok('Symbolgegner an den Wegen, verschiedene Arten', rm.n >= 8 && rm.kinds >= 5, JSON.stringify(rm));
