@@ -2202,7 +2202,9 @@ const CAR={
   2:{path:[44,-160,14],plazas:[[-30,28,13],[-58,-30,15],[-88,30,14],[-118,-27,12],[-140,26,11]],tiers:[[-66,-46,6,4.5,-56,-33],[-84,-26,5,4.5,-96,-14],[-98,46,5,4.5,-86,33]],links:[[0,1]],
     wall:['broad','broad','pine'],wallMax:7,wz:[['ancient_tree_1',9],['garden_tree_green',7.5]],rock:['rock_big_B_gray_1','rock_big_2'],step:0x9a9080},
   3:{path:[44,-160,14],plazas:[[-28,30,12],[-50,-30,13],[-80,30,14],[-110,-28,13],[-140,26,11]],tiers:[[-80,44,5,4.5,-80,28],[-124,-30,5,4.5,-124,-14]],quay:.25,
-    city:{walls:[0x8a8aa0,0x9a8a90,0x7a8098,0xa09888,0x8a909a],roofs:[0x3a3a4e,0x4a3a44,0x2e3446],slate:1},wall:['broad','dead'],rock:['rock_big_B_gray_1','rock_big_2'],step:0x8a8a9a}
+    city:{walls:[0x8a8aa0,0x9a8a90,0x7a8098,0xa09888,0x8a909a],roofs:[0x3a3a4e,0x4a3a44,0x2e3446],slate:1},wall:['broad','dead'],rock:['rock_big_B_gray_1','rock_big_2'],step:0x8a8a9a},
+    4:{path:[44,-160,14],plazas:[[-28,34,13],[-50,-38,12],[-90,38,14],[-112,-30,11],[-142,30,11]],tiers:[[-40,52,5,5,-26,30],[-70,50,5,5,-92,44],[-136,-24,5,5,-120,-14]],
+      quay:0,wall:['rockbig','rock','rockbig','palm'],wallMax:9,wz:[['cactus1',3.4],['cactus2',3.8],['palm2',7.5],['rock_big_1',3.2]],rock:['rock_big_1','rock_big_2'],step:0xc8a070}
 };
 function buildWorld(n){HST=HSTY[n]||HSTY[1];
   const C=CHP[n],R=mul32(7000+n*131),rr=(a,b)=>a+R()*(b-a),rp=a=>a[R()*a.length|0],ph=n*1.7,amp=C.amp||1,P=C.pal,cs=()=>chCs(n);
@@ -2252,7 +2254,7 @@ function buildWorld(n){HST=HSTY[n]||HSTY[1];
     let q=(Math.sin(x*.045+1.3+ph)*Math.cos(z*.04+ph*.5)*3.2+Math.sin(x*.12+z*.09)*.9+Math.sin(z*.02+x*.015)*4)*amp;
     q=tStyle(q,x,z);
     const dv=Math.hypot(x,z),da=Math.hypot(x,z+182),flat=Math.max(1-sm(26,46,dv),1-sm(26,36,da),bflat(x,z,BPADS)),pf=(1-sm(2,7,Math.abs(x-pathx(z))))*(z<80&&z>-160?1:0);
-    q=q*(1-flat*.93)*(1-pf*.72);let ring=sm(30,38,da)*(1-sm(64,92,da))*17;if(z>-182)ring*=sm(8,15,Math.abs(x));q+=ring;q=pads(q,x,z);if(AH)q=AH(x,z,q);   // Truhen und Altar immer erreichbar (auch am Ringwall vor der Arena)
+    q=q*(1-flat*.93)*(1-pf*.72);let ring=sm(30,38,da)*(1-sm(64,92,da))*17;if(z>-182)ring*=sm(8,15,Math.abs(x));if(AM)ring*=sm(.5,6,AM.E(x,z));q+=ring;q=pads(q,x,z);if(AH)q=AH(x,z,q);   // Truhen und Altar immer erreichbar (auch am Ringwall vor der Arena)
     /* Rand: Küste fällt ins Meer ab; nach Süden führt ein Damm als Wegpfad hinaus zur Weltkarte */
     const dam=Math.abs(x)<3.6&&z>38,exs=dam?0:Math.max(0,z-58),ex=Math.max(0,Math.abs(x)-110)+exs+Math.max(0,-214-z);
     if(dam&&z>55){const k=sm(55,61,z),w=1-sm(2.6,3.6,Math.abs(x));q=q*(1-k)+(.35*w-2.2*(1-w))*k}
