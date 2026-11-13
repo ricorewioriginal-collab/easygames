@@ -674,6 +674,7 @@
         if (n.dancer && !n.hyped) return null;
         if (n.hungry && !n.fed) return S.carry > 0 ? { label: 'Essen bringen 🍟', run: () => feed(n) } : null;
         if (!n.talked && !n.guest && !n.dancer) return { label: 'Mit ' + n.name + ' sprechen', run: () => talk(n) };
+        if (n.talked && !n.guest && !n.dancer && !n.hungry && S.mode === 'free' && !S.net && p === S.pl && AMC.Social) return { label: '💬 ' + n.name + ' treffen · ' + AMC.Social.label(n.name), run: () => AMC.Social.open(n, S) };
       }
     }
     for (const r of S.relays) if (!r.fixed && Math.hypot(r.x - p.x, r.z - p.z) < 2.2 && Math.abs(r.y - p.y) < 1.6) return { label: 'Verteiler reparieren (halten)', hold: r };
@@ -693,6 +694,7 @@
     AMC.UI.bubble(n.name, text, '+2 ' + D.RUBRICS[rub].icon + ' ' + D.RUBRICS[rub].name);
     AMC.Audio.sfx('talk'); W.particles.burst(n.x, n.y + 2, n.z, D.RUBRICS[rub].color, 16);
     S.score += 150;
+    if (S.mode === 'free' && !S.net && AMC.Social) AMC.Social.add(n.name, 5);
   }
   function inviteGuest(n) {
     n.follow = true; n.icon.visible = false; S.talks++;
@@ -991,7 +993,7 @@
     const R = S.rico; R.t = 1.2; R.n++;
     R.f.root.rotation.y = Math.atan2(S.pl.x - R.x, S.pl.z - R.z); R.f.play('arms', { fade: 0.2 }); setTimeout(() => S && S.rico && R.f.play('idle', { fade: 0.4 }), 1700);
     const first = R.n === 1, rub = U.pick(D.RUBRIC_IDS);
-    if (first) { S.got[rub] += 3; drawRub(); S.score += 200; }
+    if (first) { S.got[rub] += 3; drawRub(); S.score += 200; if (S.mode === 'free' && !S.net && AMC.Social) AMC.Social.add('RicoReWi', 6); }
     AMC.UI.bubble('RicoReWi', U.pick(D.RICO_LINES), first ? '+3 ' + D.RUBRICS[rub].icon + ' ' + D.RUBRICS[rub].name + ' · Rico teilt euch' : null);
     AMC.Audio.sfx('talk'); W.particles.burst(R.x, 2.2, R.z, 0xa46bff, 14);
   }
