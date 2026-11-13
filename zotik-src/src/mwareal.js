@@ -16,7 +16,7 @@ export function arealMask(w, roads, PATHX, CX, CZ, R) {
   const A = w.areal, C0 = [], S0 = [];   // Kreise [x, z, r] und Strecken [ax, az, bx, bz, hw]
   for (const q of w.zones) C0.push([q[3], q[4], q[5] + 3]);
   for (const [ax, az, bx, bz] of roads) S0.push([ax, az, bx, bz, 4.5]);
-  for (let z = 16; z > -88; z -= 6) S0.push([PATHX(z), z, PATHX(z - 6), z - 6, 6]);
+  { const [pz0, pz1, phw] = A.path || [16, -88, 6]; for (let z = pz0; z > pz1; z -= 6) S0.push([PATHX(z), z, PATHX(z - 6), z - 6, phw]); }   // Hauptweg (Kapitelwelten: länger und breiter)
   C0.push([0, 10, 14], [-7, 15, 7]);
   for (const [x, z, r] of w.pads) C0.push([x, z, r + 2]);
   for (const [x, z, r] of (w.pools || [])) C0.push([x, z, r + 3]);
@@ -73,7 +73,7 @@ export function arealDress({ C, w, b, g, h, M, R2, blk, busy, roadD, wallList, T
   const step = TOUCH ? 3.6 : 3, maxWz = TOUCH ? 90 : 220; let nwz = 0;
   for (let j = 0; j < M.N; j += step / M.ST) for (let i = 0; i < M.N; i += step / M.ST) {
     const x = M.X0 + i * M.ST + (R2() - .5) * step * .8, z = M.Z0 + j * M.ST + (R2() - .5) * step * .8, e = M.E(x, z);
-    if (A.city || e < (A.hedge ? 3.4 : 1.4) || e > 12 || Math.hypot(x, z - 12) < 16) continue; if ((A.bridges || []).some(q => segD(x, z, q[0], q[1], q[2], q[3])[0] < 4)) continue;
+    if (A.city || e < (A.hedge ? 3.4 : 1.4) || e > (A.wallMax || 12) || Math.hypot(x, z - 12) < 16) continue; if ((A.bridges || []).some(q => segD(x, z, q[0], q[1], q[2], q[3])[0] < 4)) continue;
     if (e < 4.6 && A.wz && nwz < maxWz && R2() < .75) { const [k, hh] = A.wz[R2() * A.wz.length | 0]; wz.push({ k, x, y: h(x, z) - .1, z, ry: R2() * 6.28, h: hh * (.8 + R2() * .4) }); nwz++; continue; }
     const kind = A.wall[R2() * A.wall.length | 0]; wallList.push([x, z, kind, 1 + R2() * .7, R2() * 6.3, 1]); }
   // Stadt: statt Waldwand geschlossene Häuserzeilen, Giebel zur Gasse, dahinter Dächer als Silhouette
