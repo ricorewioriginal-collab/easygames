@@ -250,7 +250,7 @@
     const ui = K.hud(st.icon + ' ' + st.name, '');
     const top = ui.querySelector('.hm-top');
     top.insertAdjacentHTML('beforeend', '<small class="hm-desc">' + U.esc(cfg.room + ' · ' + st.desc) + '</small><div class="hm-vibe"><span>🔥 Vibe</span><i><em id="sdVibe"></em></i><b id="sdLv"></b></div>');
-    ui.insertAdjacentHTML('beforeend', '<div class="hm-emo" id="sdEmo"><button type="button" data-e="dance">💃<small>Tanzen</small></button><button type="button" data-e="yes">👋<small>Winken</small></button><button type="button" data-e="arms">🙌<small>Jubeln</small></button><button type="button" data-e="roll">🤸<small>Rolle</small></button><button type="button" data-e="swap">⇄<small>' + U.esc(D.HOSTS[R.other].name) + '</small></button></div><div class="hm-feed" id="sdFeed"></div><div class="hm-lanes" id="sdLanes" hidden></div>');
+    ui.insertAdjacentHTML('beforeend', '<div class="hm-emo" id="sdEmo"><button type="button" data-e="dance" data-pad="✚↑" data-kb="Leer">💃<small>Tanzen</small></button><button type="button" data-e="yes" data-pad="✚←" data-kb="1">👋<small>Winken</small></button><button type="button" data-e="arms" data-pad="✚→" data-kb="2">🙌<small>Jubeln</small></button><button type="button" data-e="roll" data-pad="✚↓" data-kb="3">🤸<small>Rolle</small></button><button type="button" data-e="swap" data-pad="Y" data-kb="Q">⇄<small>' + U.esc(D.HOSTS[R.other].name) + '</small></button></div><div class="hm-feed" id="sdFeed"></div><div class="hm-lanes" id="sdLanes" hidden></div>');
     ui.querySelector('#sdEmo').addEventListener('click', e => { const b = e.target.closest('[data-e]'); if (b) emote(R, b.dataset.e); });
     K.drawNeeds(); drawVibe(R);
     W.particles.attach(B.sc);
@@ -261,7 +261,7 @@
     setTimeout(() => K.say(D.HOSTS[R.other].name + ': „' + cfg.talk[0] + '“ · ' + AMC.glyph('a') + ' tanzen, ' + AMC.glyph('y') + ' wechseln', 5200), 400);
     spawnFans(R);
     R.tick = dt => tick(R, dt);
-    R.dispose = () => { R.fans.forEach(f => { if (f.fig) f.fig.dispose(); if (f.bub) f.bub.remove(); }); if (R.game) endGame(R, true); if (R.stopSong) R.stopSong(); };
+    R.dispose = () => { I.dpadEmotes = false; R.fans.forEach(f => { if (f.fig) f.fig.dispose(); if (f.bub) f.bub.remove(); }); if (R.game) endGame(R, true); if (R.stopSong) R.stopSong(); };
     return R;
   };
 
@@ -356,10 +356,12 @@
   // ------------------------------------------------------------------ Schleife im Senderhaus
   function tick(R, dt) {
     const me = W.hosts[R.who];
+    I.dpadEmotes = !R.game;
     if (R.game) { R.game.update(dt); animFans(R, dt, true); return true; }
     if (I.hit('swap')) swap(R);
     if (I.hit('jump')) emote(R, 'dance');
-    if (I.hit('k1')) emote(R, 'yes'); if (I.hit('k2')) emote(R, 'arms'); if (I.hit('k3')) emote(R, 'roll');
+    if (I.device === 'pad') { if (I.hit('k1')) emote(R, 'dance'); if (I.hit('k2')) emote(R, 'yes'); if (I.hit('k3')) emote(R, 'arms'); if (I.hit('k4')) emote(R, 'roll'); }
+    else { if (I.hit('k1')) emote(R, 'yes'); if (I.hit('k2')) emote(R, 'arms'); if (I.hit('k3')) emote(R, 'roll'); }
     // Vibe: tanzen in der Nähe der Fans füllt, sonst sinkt er langsam
     const near = R.fans.filter(f => Math.hypot(f.x - R.w.x, f.z - R.w.z) < 4.5).length;
     if (R.dancing) { R.vibe = Math.min(100, R.vibe + dt * (1.5 + near * 1.2)); if (R.vibe >= 100) bumpVibe(R, 0); }

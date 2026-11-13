@@ -452,6 +452,7 @@
     buildRico(FUNKHAUS.door.x - 6.5, FUNKHAUS.door.z + 4);
     if (AMC.Drive && !cfg.net) AMC.Drive.build(CTX);
     if (AMC.Transit) AMC.Transit.build(CTX);
+    if (AMC.District) AMC.District.build(CTX);
     if (AMC.Home && cfg.mode !== 'race') AMC.Home.tire([cfg.host || 'andrew'], 0.5);
     spawnHosts(cfg.host || 'andrew', FUNKHAUS.door.x, FUNKHAUS.door.z + 6);
     W.cam.yaw = 0; W.cam.pitch = 0.32; W.cam.cur = null; W.cam.tx = S.pl.x; W.cam.ty = 1.6; W.cam.tz = S.pl.z;
@@ -470,6 +471,7 @@
     if (AMC.Drive) AMC.Drive.stop();
     if (AMC.CityVibe) AMC.CityVibe.stop();
     if (AMC.Career) AMC.Career.stop();
+    if (AMC.District) AMC.District.stop();
     ['andrew', 'marco', 'rico'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent) f.root.parent.remove(f.root); });
     S.npcs.forEach(n => { if (n.fig) n.fig.dispose(); n.fig = null; });
     if (S.cat) { if (S.cat.mixer) S.cat.mixer.stopAllAction(); S.group.remove(S.cat.m); }
@@ -549,7 +551,7 @@
     }
   }
   async function spawnFans(rng) {
-    const n = [4, 8, 12][W.quality] + (S.mode === 'free' ? 4 : 0) + (S.type === 'guest' ? 3 : 0) + (S.type === 'party' ? 3 : 0) + (S.type === 'deliver' ? S.hungryNeed : 0);
+    const n = [4, 8, 12][W.quality] + (S.mode === 'free' ? 4 + W.quality * 3 : 0) + (S.type === 'guest' ? 3 : 0) + (S.type === 'party' ? 3 : 0) + (S.type === 'deliver' ? S.hungryNeed : 0);
     const myS = S;
     for (let i = 0; i < n; i++) {
       let x, y, z;
@@ -841,7 +843,7 @@
     S.hurtT += dt; if (S.hurtT > 4) S.energy = Math.min(100, S.energy + dt * 6);
     // Zeit
     if (S.left > 0 && S.mode !== 'free') { S.left -= dt; if (S.left <= 0) { S.left = 0; if (S.mode === 'jagd') return finish(true, 'time'); if (!S.done) return finish(false, 'time'); } }
-    updPickups(dt); updDrones(dt); updNpcs(dt); if (AMC.Transit) AMC.Transit.update(dt); if (AMC.CityVibe) AMC.CityVibe.update(dt, S); if (AMC.Career) AMC.Career.update(dt, S); updObjective(dt); updRings(dt);
+    updPickups(dt); updDrones(dt); updNpcs(dt); if (AMC.Transit) AMC.Transit.update(dt); if (AMC.District) AMC.District.update(dt); if (AMC.CityVibe) AMC.CityVibe.update(dt, S); if (AMC.Career) AMC.Career.update(dt, S); updObjective(dt); updRings(dt);
     if (S.rico) { S.rico.f.update(dt); if (S.rico.t > 0) S.rico.t -= dt; }
     if (S.gisela) { if (S.gisela.t > 0) S.gisela.t -= dt; S.gisela.g.position.y = S.gisela.t > 0 ? Math.abs(Math.sin(S.time * 18)) * 0.06 : 0; }
     if (S.boss) updBoss(dt);

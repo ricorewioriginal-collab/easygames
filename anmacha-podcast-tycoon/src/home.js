@@ -106,7 +106,7 @@
   function hud(title, extra) {
     const el = U.el('div', 'home-ui'); el.id = 'homeUi';
     el.innerHTML = '<div class="hm-top glass"><b>' + U.esc(title) + '</b><div class="hm-needs" id="hmNeeds"></div></div>' +
-      '<div class="hm-act">' + (extra || '') + '<button type="button" class="btn small" id="hmBack">🚪 Raus</button></div>' +
+      '<div class="hm-act">' + (extra || '').replace('<button type="button" class="btn small"', '<button type="button" class="btn small" data-pad="✚↓"') + '<button type="button" class="btn small" id="hmBack">🚪 Raus</button></div>' +
       '<button type="button" class="hm-use glass" id="hmUse" hidden></button><div class="hm-say glass" id="hmSay" hidden></div>';
     U.$('ui').appendChild(el);
     el.querySelector('#hmBack').onclick = () => HM.close();
@@ -324,6 +324,7 @@
     (R.figs || []).forEach(f => f.update(dt));
     if (!(R.busy > 0)) R.w.update(dt); else { if (R.sc && R.w.fig) R.w.fig.update(dt); const cam = W.camera; if (R.w.cp) { cam.position.copy(R.w.cp); cam.lookAt(R.w.ct); } }
     if (I.hit('act')) use();
+    if (R.kind !== 'sender') { I.dpadEmotes = true; if (I.hit('k4')) { const b = document.querySelector('#homeUi .hm-act .btn:not(#hmBack)'); if (b) { AMC.Audio.sfx('ok'); b.click(); return; } } }
     if (I.hit('back')) { HM.close(); return; }
     const s = R.w.near(), b = U.$('hmUse');
     if (b) { const txt = s ? AMC.glyph('x') + ' ' + s.label : ''; if (b.innerHTML !== txt) b.innerHTML = txt; b.hidden = !s; }
@@ -335,6 +336,7 @@
   HM.close = function (silent) {
     if (!R) return;
     const r = R; R = null;
+    I.dpadEmotes = false;
     if (r.dispose) r.dispose();
     if (r.stopSong) r.stopSong();
     document.querySelectorAll('.hm-bub').forEach(e => e.remove());
