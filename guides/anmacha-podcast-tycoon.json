@@ -72,6 +72,17 @@
       ]
     },
     {
+      "t": "Arcade: 3D-Minispiele",
+      "p": [
+        "Unter „🕹️ Arcade“ im Hauptmenü oder am Arcade-Automaten im begehbaren Studio spielst du mit Andrew oder Marco (wechseln mit Ⓨ/Q). Punkte bringen Fan-Punkte, jedes Spiel hat einen eigenen Rekord."
+      ],
+      "list": [
+        "📡 Funkwellen-Flug: Tippen, Leertaste oder Ⓐ lässt dich hüpfen. Flieg durch die Lücken zwischen den Funkmasten, jeder Mast bringt einen Punkt.",
+        "🧗 Kabelsalat-Parkour: Lauf mit Stick, A/D oder Pfeilen, spring mit Ⓐ/Leertaste (länger halten = höher). Sammle goldene Mikros, spring auf Kabeltrommeln statt hineinzulaufen. 3 Leben, Fahnen speichern den Zwischenstand. Am Ziel wartet Gisela.",
+        "🏃 Funkhaus-Sprint: Wische oder drücke ◀ ▶ für die Spur, ▲/Leertaste zum Springen über Absperrungen, ▼ zum Rutschen unter „ON AIR“-Bannern. Übertragungswagen musst du ausweichen. Es wird immer schneller."
+      ]
+    },
+    {
       "t": "Die Live-Aufnahme",
       "p": [
         "Im Studio wählst du Befehle aus einem Kommandomenü (Steuerkreuz/Pfeile, A/Enter zum Bestätigen). Jede Runde ist ein Gesprächsblock; am Ende zählen die Hörer."
@@ -187,7 +198,8 @@
         "Spare die Jingles für Momente, in denen der Hype sinkt.",
         "Übergaben bauen Kombos auf – mehrere gelungene Aktionen in Folge vervielfachen die Hörer.",
         "Goldene Erinnerungen lohnen jeden Umweg: ihre Karten sind die stärksten.",
-        "Bau früh das Studio aus: Schon ein paar Pflanzen, ein Sofa und Ringlichter bringen spürbar mehr Start-Hype in jede Aufnahme."
+        "Bau früh das Studio aus: Schon ein paar Pflanzen, ein Sofa und Ringlichter bringen spürbar mehr Start-Hype in jede Aufnahme.",
+        "Arcade: Beim Funkhaus-Sprint immer auf die freie Spur mit den goldenen Mikros achten, dort ist garantiert kein Hindernis. Im Parkour lieber auf Kabeltrommeln springen, das gibt +25."
       ]
     },
     {

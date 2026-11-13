@@ -44,7 +44,7 @@
     if (AMC.Play.active) AMC.Play.stop();
     if (AMC.Show.active) AMC.Show.stop();
     if (AMC.Quiz.active) AMC.Quiz.stop();
-    if (AMC.Home && AMC.Home.active()) AMC.Home.close(true); UI.closeAll(); G.paused = false; G.net = null; AMC.Play.netSend = null;
+    if (AMC.Home && AMC.Home.active()) AMC.Home.close(true); if (AMC.Arcade && AMC.Arcade.active()) AMC.Arcade.close(true); UI.closeAll(); G.paused = false; G.net = null; AMC.Play.netSend = null;
   }
 
   // ------------------------------------------------------------------ Titel & Hauptmenü
@@ -74,6 +74,7 @@
       mi('koop', '🌐', 'Online-Koop', 'Zu zweit auf zwei Geräten: Andrew & Marco – per Link, Code oder QR') +
       mi('walk', '🚶', 'Studio betreten', 'Zu Fuß durchs Studio: Pult, Rico, Einrichten, Musikshop') +
       mi('home', '🏠', 'Zuhause', 'Andrews Wohnung & Marcos Haus · ' + ['andrew', 'marco'].map(id => D.HOSTS[id].name + ' ' + Math.round(AMC.Home.mood(id) * 100) + ' % fit').join(' · ')) +
+      mi('arcade', '🕹️', 'Arcade: 3D-Minispiele', AMC.Arcade.GAMES.map(g => g.name).join(' · ')) +
       mi('music', '🎹', 'Musikshop', (Save.data.songs || []).length + ' gekaufte Lieder · freie Klavierlicht-Melodien für Hörerwünsche') +
       mi('studio', '🛠️', 'Studio gestalten', 'Studio-Wert ' + AMC.StudioEdit.value() + ' · Möbel, Deko, Technik frei hinstellen – bringt Hörer-Bonus') +
       mi('shop', '🛍️', 'Fanshop', '🎟️ ' + U.fmt(Save.data.fan) + ' Fan-Punkte · Outfits & Studio-Upgrades') +
@@ -92,7 +93,7 @@
     el.querySelector('#mHost').onclick = swapHost;
     s.o.onKey = () => { if (I.hit('swap')) { swapHost(); return true; } return false; };
     updHost();
-    const go = { walk: walkStudio, home: homeMenu, music: () => AMC.Home.musicShop(), studio: studioEdit, story: storyMenu, live: startLive, jagd: () => startCity('jagd'), race: () => startCity('race'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), koop: () => AMC.Net.lobby(), shop, settings, controls, credits };
+    const go = { arcade: arcadeMenu, walk: walkStudio, home: homeMenu, music: () => AMC.Home.musicShop(), studio: studioEdit, story: storyMenu, live: startLive, jagd: () => startCity('jagd'), race: () => startCity('race'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), koop: () => AMC.Net.lobby(), shop, settings, controls, credits };
     el.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go[b.dataset.go]());
     G.menu = s;
   }
@@ -110,12 +111,28 @@
     UI.closeAll(); stopAll(); G.mode = 'home'; UI.showTouch(true); AMC.Studio.leave(); AMC.Audio.music('menu');
     AMC.Home.open(id, () => { UI.showTouch(false); backToMenu(); });
   }
+  // ------------------------------------------------------------------ Arcade: 3D-Minispiele mit Andrew und Marco
+  function arcadeMenu() {
+    const card = g => '<button type="button" class="st-item" data-nav data-a="' + g.id + '"><span class="st-ic">' + g.icon + '</span><span><b>' + g.name + '</b><small>' + g.sub + ' · Rekord ' + U.fmt(Save.data.best['arc_' + g.id] || 0) + '</small></span></button>';
+    const s = UI.open('<div class="panel glass"><header><h2>🕹️ Arcade</h2><button class="btn small" data-nav id="arB">' + AMC.glyph('b') + ' Zurück</button></header><p class="hint">Du spielst <b id="arHost">' + D.HOSTS[G.host].name + '</b> · <button type="button" class="btn small" data-nav id="arSw">' + AMC.glyph('y') + ' wechseln</button> · Punkte bringen Fan-Punkte</p><div class="st-list">' + AMC.Arcade.GAMES.map(card).join('') + '</div></div>', { back: () => UI.close(s) });
+    const sw = () => { G.host = G.host === 'andrew' ? 'marco' : 'andrew'; Save.data.host = G.host; Save.save(); AMC.Audio.sfx('swap'); s.el.querySelector('#arHost').textContent = D.HOSTS[G.host].name; };
+    s.el.querySelector('#arB').onclick = () => UI.close(s);
+    s.el.querySelector('#arSw').onclick = sw;
+    s.o.onKey = () => { if (I.hit('swap')) { sw(); return true; } return false; };
+    s.el.querySelectorAll('[data-a]').forEach(b => b.onclick = () => startArcade(b.dataset.a));
+  }
+  function startArcade(id) {
+    UI.closeAll(); stopAll(); G.mode = 'arcade'; AMC.Studio.leave(); AMC.Audio.music('party'); UI.showTouch(id === 'jump');
+    AMC.Arcade.start(id, G.host, next => { UI.showTouch(false); if (next === 'again') startArcade(id); else { backToMenu(); if (next === 'arcade') arcadeMenu(); } });
+  }
+  G.arcade = startArcade;
   function walkStudio() {
     UI.closeAll(); stopAll(); G.mode = 'home'; UI.showTouch(true);
     const leave = then => { AMC.Home.close(true); UI.showTouch(false); then(); };
     AMC.Home.studio({ host: G.host, actions: {
       live: () => leave(startLive),
       edit: () => leave(studioEdit),
+      arcade: () => leave(() => { backToMenu(); arcadeMenu(); }),
       city: () => leave(() => startCity('free'))
     } }, () => { UI.showTouch(false); backToMenu(); });
   }
@@ -386,7 +403,7 @@
     b('pMenu').onclick = () => UI.confirm(G.net ? 'Koop-Spiel verlassen? Die Verbindung wird getrennt.' : 'Zurück ins Hauptmenü? Der Fortschritt in diesem Level geht verloren.', () => { if (G.net) AMC.Net.close(); toMenuScene(); mainMenu(); });
   }
 
-  G.pause = () => { if (!G.paused && /^(play|show|quiz)$/.test(G.mode)) pause(); };
+  G.pause = () => { if (!G.paused && /^(play|show|quiz|arcade)$/.test(G.mode)) pause(); };
   // ------------------------------------------------------------------ Spielschleife
   let last = performance.now(), slow = 0;
   function frame(now) {
@@ -413,6 +430,10 @@
         if (!uiBusy && I.hit('pause')) pause();
         if (!G.paused && !uiBusy) AMC.Quiz.update(dt);
         AMC.Quiz.render();
+      } else if (G.mode === 'arcade') {
+        if (!uiBusy && I.hit('pause')) pause();
+        if (!G.paused && !uiBusy) AMC.Arcade.update(dt);
+        AMC.Arcade.render();
       } else if (G.mode === 'home') {
         if (!uiBusy) AMC.Home.update(dt);
         AMC.Home.render();

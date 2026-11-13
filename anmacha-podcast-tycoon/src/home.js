@@ -251,6 +251,7 @@
       { x: 2.45, z: 0.3, r: 1.4, label: '📱 Mit RicoReWi quatschen', run: ricoChat },
       { x: -5.6, z: 3.8, r: 1.8, label: '🛠️ Studio einrichten', run: () => R.actions.edit && R.actions.edit() },
       { x: 5.6, z: 3.8, r: 1.8, label: '🎹 Musikshop', run: () => HM.musicShop() },
+      { x: -5.6, z: 0.6, r: 1.6, label: '🕹️ Arcade-Automat: 3D-Minispiele', run: () => R.actions.arcade && R.actions.arcade() },
       { x: 0, z: 5.4, r: 1.5, label: '🚪 Raus in die Stadt', run: () => R.actions.city && R.actions.city() }
     ];
     R.w = walker({ x: 0, z: 4.4, fig, bounds: { x0: -7, x1: 7, z0: -3.6, z1: 5.6 }, solids, spots, camOff: [0, 4.6, 5.6], noFigUpdate: true });
@@ -259,7 +260,13 @@
     const of = W.hosts[other]; if (of) of.play('yes');
     setTimeout(() => say(D.HOSTS[other].name + ': „Da bist du ja! Das Pult wartet. Und Rico hat schon wieder was geplant.“', 4200), 300);
     // Schilder an den Spots (schweben über dem Boden)
-    R.marks = [[-5.6, 3.8, '🛠️'], [5.6, 3.8, '🎹'], [0, 5.4, '🚪']].map(([x, z, t]) => { const tx = W.textTex([t], { w: 128, h: 128, bg: '#14161f', size: 80, accent: '#ff8a1e' }); const s = new T.Sprite(new T.SpriteMaterial({ map: tx })); s.scale.set(0.42, 0.42, 1); s.position.set(x, 2.3, z); ST.group.add(s); return s; });
+    R.marks = [[-5.6, 3.8, '🛠️'], [5.6, 3.8, '🎹'], [0, 5.4, '🚪'], [-5.6, 0.6, '🕹️']].map(([x, z, t]) => { const tx = W.textTex([t], { w: 128, h: 128, bg: '#14161f', size: 80, accent: '#ff8a1e' }); const s = new T.Sprite(new T.SpriteMaterial({ map: tx })); s.scale.set(0.42, 0.42, 1); s.position.set(x, 2.3, z); ST.group.add(s); return s; });
+    // Arcade-Automat in der Ecke
+    { const c = new T.Group(), Mt = (col, o) => W.mat(col, o || { r: 0.5 });
+      W.box(0.9, 1.7, 0.8, Mt(0x2a1a4a), 0, 0.85, 0, c); W.box(0.92, 0.25, 0.82, Mt(0xff8a1e, { e: 0xff8a1e, ei: 0.6 }), 0, 1.82, 0, c);
+      const scr = W.box(0.7, 0.5, 0.04, Mt(0x3dd6ff, { e: 0x3dd6ff, ei: 0.9 }), 0, 1.35, 0.41, c); scr.rotation.x = -0.15;
+      W.box(0.8, 0.08, 0.3, Mt(0x111111), 0, 1.0, 0.5, c); W.cyl(0.05, 0.05, 0.15, Mt(0xd8342c), -0.2, 1.1, 0.5, c, 8);
+      c.position.set(-6.3, 0, 0.6); c.rotation.y = Math.PI / 2; ST.group.add(c); R.marks.push(c); }
   };
   function ricoChat() {
     const r = W.hosts.rico; if (r) { r.play('arms', { fade: 0.2 }); setTimeout(() => r.play('idle', { fade: 0.4 }), 1800); }
