@@ -73,7 +73,7 @@ function tooSteep(h,x,z){const a=h(x+.6,z)-h(x-.6,z),b=h(x,z+.6)-h(x,z-.6);retur
 const zoneAt=(x,z)=>z>300?'ruin':WLD?WLD.zone(x,z):z<-146?'cave':(z<-44?'forest':'village');
 /* Kreis-Kollider */
 const COL=[];
-function addCol(x,z,r){COL.push({x,z,r})}
+function addCol(x,z,r,t){COL.push(t==null?{x,z,r}:{x,z,r,t})}
 /* Kisten, Fässer und Kistenstapel (KayKit) lassen sich überall zerschlagen: Splitter, manchmal Trank, Äther oder Gefährten-Ausrüstung */
 const BRK=[],BRKRE=/barrel|box_|crate/i;
 function brkAdd(L){for(const q of L){if(!BRKRE.test(q.k))continue;let c=COL.find(o=>Math.abs(o.x-q.x)<.01&&Math.abs(o.z-q.z)<.01);if(!c){c={x:q.x,z:q.z,r:.6};COL.push(c)}BRK.push({q,c,hp:1})}}
@@ -91,14 +91,26 @@ const CAMCOL=[],HOUSES=[];let inH=null;
 /* Springen und Plattformen: PLAT = schwebende Platten {x,z,hx,hz,top,th}; man landet von oben darauf, von der Seite sind sie eine Wand, hohe Platten unterläuft man */
 const PLAT=[],GRAV=26,JUMPV=10;
 function platTop(x,z,y){let t=-1e9,P=null;for(const p of PLAT)if(Math.abs(x-p.x)<p.hx&&Math.abs(z-p.z)<p.hz&&y>=p.top-.4&&p.top>t){t=p.top;P=p}return P}
+/* Klettern: CLB = besteigbare Bauten {x,z,c,s,hx,hz,y(Traufe),f(lx,lz)=Dachhöhe darüber,rd(rund)}; Zotik greift die Kante, zieht sich hoch und läuft oben weiter */
+const CLB=[];
+function clbY(x,z,y){let b=-1e9;for(const B of CLB){const dx=x-B.x,dz=z-B.z;if(Math.abs(dx)>B.R||Math.abs(dz)>B.R)continue;let lx,lz;if(B.rd){if(dx*dx+dz*dz>B.hx*B.hx)continue;lx=dx;lz=dz}else{lx=dx*B.c-dz*B.s;lz=dx*B.s+dz*B.c;if(Math.abs(lx)>B.hx||Math.abs(lz)>B.hz)continue}
+  const v=B.y+(B.f?B.f(lx,lz):0);if(v<=y+.45&&v>b)b=v}return b}
+function clbAdd(o){o.c=o.c??1;o.s=o.s??0;o.R=Math.hypot(o.hx,o.hz)+.5;CLB.push(o);return o}
+function clbTry(ix,iy){if(pl.clbC>0||!(ix||iy)||naut.on||pl.wat||pl.atk>=0||pl.dash>0||!CLB.length)return;const fx=Math.sin(pl.face),fz=Math.cos(pl.face),lim=pl.y+(pl.air?2.3:1.05);let ye=-1e9,de=0;
+  for(const q of [.6,.85,1.1]){const v=clbY(pl.x+fx*q,pl.z+fz*q,lim);if(v>hgt(pl.x+fx*q,pl.z+fz*q)+.5){ye=v;de=q;break}}const r=ye-pl.y;
+  if(r<.55||(pl.air&&pl.vy>5))return;let x1=pl.x+fx*(de+.6),z1=pl.z+fz*(de+.6),y1=clbY(x1,z1,ye+1.2);if(y1<ye-.3){x1=pl.x+fx*de;z1=pl.z+fz*de;y1=ye}pl.clb={t:0,T:r>1.3?.7:.42,x0:pl.x,z0:pl.z,y0:pl.y,xw:pl.x+fx*.12,zw:pl.z+fz*.12,x1,z1,y1,hang:r>1.3};pl.air=false;pl.vy=0;pl.on=null;sfx('ui');emit(pl.x+fx*.5,y1,pl.z+fz*.5,0xe8dcc0,6,1.5,.3,.4,0)}
+function clbStep(dt){const c=pl.clb;c.t+=dt;const p=Math.min(1,c.t/c.T),k=c.hang?.42:.15,yh=c.y1-1.75;pl.vx=pl.vz=pl.vy=pl.kx=pl.kz=0;pl.air=false;pl.mv=0;
+  if(p<k){const q=sm(0,1,p/k);pl.x=lerp(c.x0,c.xw,q);pl.z=lerp(c.z0,c.zw,q);pl.y=lerp(c.y0,c.hang?yh:c.y0,q)}
+  else{const q=(p-k)/(1-k),e=q*q*(3-2*q);if(!c.s2){c.s2=1;sfx('jump');emit(c.x1,c.y1+.1,c.z1,0xd8d0c0,8,2,.4,.5,0)}pl.x=lerp(c.xw,c.x1,sm(.35,1,q));pl.z=lerp(c.zw,c.z1,sm(.35,1,q));pl.y=lerp(c.hang?yh:c.y0,c.y1,Math.min(1,e*1.3))}
+  if(p>=1){pl.clb=null;pl.y=c.y1;pl.clbC=.35;if(!S.fl.clb1){S.fl.clb1=1;toast('🧗 Kante gepackt: Lauf gegen eine Kante und spring – Zotik zieht sich hoch')}}}
 function platWall(x,z,y){for(const p of PLAT)if(Math.abs(x-p.x)<p.hx+.3&&Math.abs(z-p.z)<p.hz+.3&&y<p.top-.4&&y+1.5>p.top-p.th)return true;return false}
 function pushOut(o,r){for(let ps=0;ps<2;ps++){const x0=o.x,z0=o.z;pushOut1(o,r);if(o.x===x0&&o.z===z0)break}}
 function pushOut1(o,r){
-  for(let k=0;k<HOUSES.length;k++){const H=HOUSES[k],ex0=o.x-H.x,ez0=o.z-H.z,lim=H.R+r+1;if(ex0*ex0+ez0*ez0>lim*lim)continue;
+  for(let k=0;k<HOUSES.length;k++){const H=HOUSES[k],ex0=o.x-H.x,ez0=o.z-H.z,lim=H.R+r+1;if(ex0*ex0+ez0*ez0>lim*lim||(o.y!=null&&H.top!=null&&o.y>H.top-.5))continue;
     for(let i=0;i<H.segs.length;i++){const q=H.segs[i],dx=o.x-q.wx,dz=o.z-q.wz,lx=dx*H.c-dz*H.s,lz=dx*H.s+dz*H.c,cx=lx<-q.hx?-q.hx:lx>q.hx?q.hx:lx,cz=lz<-q.hz?-q.hz:lz>q.hz?q.hz:lz,ex=lx-cx,ez=lz-cz,d2=ex*ex+ez*ez;
       if(d2<r*r){let nx,nz;if(d2>1e-6){const d=Math.sqrt(d2),k2=(r-d)/d;nx=ex*k2;nz=ez*k2}else{const px=q.hx-Math.abs(lx),pz=q.hz-Math.abs(lz);if(px<pz){nx=(lx<0?-1:1)*(px+r);nz=0}else{nz=(lz<0?-1:1)*(pz+r);nx=0}}
         o.x+=nx*H.c+nz*H.s;o.z+=-nx*H.s+nz*H.c}}}
-  for(let i=0;i<COL.length;i++){const c=COL[i],dx=o.x-c.x,dz=o.z-c.z,m=r+c.r;if(dx*dx+dz*dz<m*m){const d=Math.hypot(dx,dz)||.001;o.x=c.x+dx/d*m;o.z=c.z+dz/d*m}}
+  for(let i=0;i<COL.length;i++){const c=COL[i],dx=o.x-c.x,dz=o.z-c.z,m=r+c.r;if(c.t!=null&&o.y!=null&&o.y>c.t-.5)continue;if(dx*dx+dz*dz<m*m){const d=Math.hypot(dx,dz)||.001;o.x=c.x+dx/d*m;o.z=c.z+dz/d*m}}
 }
 
 /* ================= Renderer ================= */
@@ -480,11 +492,15 @@ function house(x,z,w,d,h,wall,roof,ry,opt){
   }
   if(TOWN.has(kind))TOWN.build(kind,{g,roofGroup,box,table,stool,barrel,lamp,rug,cup,solid,W2,w,d,h,t,Y,x,y,z,ry,H0,roof,wm});
   if(opt.chest){const q=W2(-w/2+t+.7,d/2-t-.8),o={id:opt.chest.id,x:q[0],z:q[1],m:makeChest(),reward:opt.chest.reward,pr:'Truhe öffnen'};o.m.position.set(q[0],y+.02,q[1]);o.m.rotation.y=ry+.4;scene.add(o.m);chests.push(o);solid(-w/2+t+.7,d/2-t-.8,.5,.4)}
-  mergeStatic(roofGroup);mergeStatic(g,new Set([roofGroup,ceil,winG]));scene.add(g);colRect(x,z,w,d,ry);HOUSES.push(H0);
+  mergeStatic(roofGroup);mergeStatic(g,new Set([roofGroup,ceil,winG]));scene.add(g);colRect(x,z,w,d,ry);HOUSES.push(H0);houseClimb(H0,HS.f,w,d,h,y);
   const gl=glow(WARM,5,x+Math.sin(ry)*d/2,y+1.6,z+Math.cos(ry)*d/2,.35);scene.add(gl);return g;
 }
+function houseClimb(H0,f,w,d,h,y){if(f==='spire')return;const B={x:H0.x,z:H0.z,c:H0.c,s:H0.s,hx:w/2+.4,hz:d/2+.4,y:y+h};H0.top=y+h+.2;
+  if(f==='gable'){const rh=Math.min(w,d)*.42+.6,ax=w>=d,hw=(ax?d:w)/2+.45;B.f=(lx,lz)=>Math.max(0,rh*(1-Math.abs(ax?lz:lx)/hw))}
+  else if(f==='flat'){B.y=y+h+.25}else if(f==='dome'){const r0=Math.min(w,d)*.42;B.y=y+h+.22;B.f=(lx,lz)=>{const q=(lx*lx+lz*lz)/(r0*r0);return q<1?.9*r0*Math.sqrt(1-q):0}}
+  else{const hh=h*.56;B.f=(lx,lz)=>hh*Math.max(0,1-Math.max(Math.abs(lx)/(w/2+.4),Math.abs(lz)/(d/2+.4)))}clbAdd(B)}
 function updHouses(dt){let cur=null;
-  for(const H of HOUSES){const dx=pl.x-H.x,dz=pl.z-H.z,lx=dx*H.c-dz*H.s,lz=dx*H.s+dz*H.c;H.in=Math.abs(lx)<H.w/2-.2&&Math.abs(lz)<H.d/2-.2;if(H.in)cur=H;
+  for(const H of HOUSES){const dx=pl.x-H.x,dz=pl.z-H.z,lx=dx*H.c-dz*H.s,lz=dx*H.s+dz*H.c;H.in=Math.abs(lx)<H.w/2-.2&&Math.abs(lz)<H.d/2-.2&&!(H.top!=null&&pl.y>H.top-.5);if(H.in)cur=H;
     const tg=H.in?1:0;if(H.f!==tg){H.f+=(tg-H.f)*Math.min(1,dt*7);if(Math.abs(H.f-tg)<.01)H.f=tg;const tr=H.f>0;if(H.wm.transparent!==tr){H.wm.transparent=tr;H.wm.needsUpdate=true}H.wm.opacity=H.fm.opacity=1-.9*H.f;H.wm.depthWrite=H.fm.depthWrite=!tr;if(H.fm.transparent!==tr){H.fm.transparent=tr;H.fm.needsUpdate=true}for(const m of H.wins)m.visible=H.f<.5;H.roof.visible=H.ceil.visible=H.f<.5}}
   inH=cur;houseL.intensity+=((cur?1.0:0)-houseL.intensity)*Math.min(1,dt*7);if(cur)houseL.position.set(cur.x,cur.y+cur.h-.5,cur.z)}
 function lantern(x,z){const y=hgt(x,z),g=new T.Group();g.position.set(x,y,z);g.add(mk(G.cyl0,M(0x3a2a22),0,1.1,0,.07,2.2,.07));g.add(mk(G.sph0,M(0xffd890,{e:0xffc060,ei:2}),0,2.3,0,.22,.28,.22,false));g.add(glow(0xffc060,3.2,0,2.3,0,.75));scene.add(g);addCol(x,z,.2)}
@@ -942,7 +958,7 @@ function ensureBoss(){if(S.boss||boss)return;boss=spawnEnemy('boss',ARENA.x,AREN
 /* ---- Kampf-Verfeinerung: Schwächen & Bruch (Lufia/FF), Treffergefühl & Kombo (KH), Perfektes Ausweichen ---- */
 const EL={fire:['🔥','Feuer'],light:['✨','Licht'],nature:['🌿','Natur'],ice:['❄️','Eis'],storm:['⚡','Sturm']};
 const weakOf=e=>e.d.weak||(e.d.base==='rift'?'light':'fire');
-let _mw=null;const MWX=()=>_mw||(_mw=createMaerchen({folk:(n,o,w)=>folkNpc(n,o,w),T,G,PG,M,mk,glow,mergeStatic,scene,keyHint:KH,inMode:()=>INP.mode(),S:()=>S,MP:()=>MP,CHP,setWLD:w=>{WLD=w},W:()=>WLD,setAtmos,tooSteep,addCol,colFree,rng:mul32,animObjs,emit,pl,addNpc,CR:()=>CR(),makeVillager,ED,spawnEnemy,INT,say:(...a)=>say(...a),travel:n=>travel(n),$,sfx:n=>sfx(n),banner:(...a)=>banner(...a),toast:(...a)=>toast(...a),saveGame:q=>saveGame(q),
+let _mw=null;const MWX=()=>_mw||(_mw=createMaerchen({climb:o=>clbAdd(o),folk:(n,o,w)=>folkNpc(n,o,w),T,G,PG,M,mk,glow,mergeStatic,scene,keyHint:KH,inMode:()=>INP.mode(),S:()=>S,MP:()=>MP,CHP,setWLD:w=>{WLD=w},W:()=>WLD,setAtmos,tooSteep,addCol,colFree,rng:mul32,animObjs,emit,pl,addNpc,CR:()=>CR(),makeVillager,ED,spawnEnemy,INT,say:(...a)=>say(...a),travel:n=>travel(n),$,sfx:n=>sfx(n),banner:(...a)=>banner(...a),toast:(...a)=>toast(...a),saveGame:q=>saveGame(q),
   setBoss:e=>{boss=e},clearBoss:()=>{$('boss').hidden=true;boss=null},FX:()=>FXH,gainXp:x=>gainXp(x),giveGear:id=>giveGear(id),time:()=>time,setMBG:c=>{MBG=c},
   TX,PLAT,makeChest:()=>makeChest(),chests,CMP,PARTY,PORT,setCam:o=>setCam(o),snapCam:()=>snapCam(),hurtE:(...a)=>hurtE(...a),shake:v=>{camShake=Math.max(camShake,v)},makeNaut:()=>makeNaut(),chDone:n=>chDone(n),openTravel:()=>toggleMenu(true,'travel'),E:()=>E,dlgOn:()=>dlg.on}));
 let _sb=null;const SBX=()=>_sb||(_sb=createSeaBattle({T,scene,camera,say:(...a)=>say(...a),sfx:(...a)=>sfx(...a),toast:(...a)=>toast(...a),banner:(...a)=>banner(...a),dnum:(...a)=>dnum(...a),emit:(...a)=>emit(...a),S:()=>S,pl,wl:OW_WL,CMP:()=>CMP,PARTY,cmax:id=>cmax(id),maxHp:()=>maxHp(),atkV:()=>atkV(),gainXp:n=>gainXp(n),makeKind:(k,c)=>CR().makeKind(k,c,false),makeCreature:(k,sl,c)=>CR().makeCreature(k,sl,c),makeExtra:(k,i)=>CR().makeExtra(k,i),ED,CHP,WLV,eHp,eDm,maxMp:()=>maxMp(),KK,fox,naut:()=>naut,hgt:(x,z)=>hgt(x,z),$,FXH:()=>FXH,MFX:()=>MFX,tone:(...a)=>tone(...a),noise:(...a)=>noise(...a),hitStop:v=>{hitStop=Math.max(hitStop,v)},animHuman:(P,t,mv)=>animHuman(P,t,mv),foxAnim:(mv,ap)=>{animFox(fox,time,mv,ap>=0?0:-1);fox.body.rotation.set(0,0,0);if(ap>=0)atkPose(fox,ap,0)},water:(x,z)=>!WLD||!WLD.water||WLD.water(x,z),setOn:v=>{X.sea=v;if(v&&WLD&&WLD.clearTrees)X.trees=WLD.clearTrees(pl.x,pl.z,24);else if(!v&&X.trees){X.trees();X.trees=null}},lose:()=>{const d=WLD&&WLD.docks&&WLD.docks.slice().sort((a,b)=>Math.hypot(a.x-pl.x,a.z-pl.z)-Math.hypot(b.x-pl.x,b.z-pl.z))[0];if(d){pl.x=d.x;pl.z=d.z}}}));
@@ -1297,6 +1313,7 @@ function updatePlayer(dt){
   pl.hurtCd=Math.max(0,pl.hurtCd-dt);pl.pdCd=Math.max(0,(pl.pdCd||0)-dt);pl.iframes=Math.max(0,pl.iframes-dt);pl.comboT=Math.max(0,pl.comboT-dt);pl.sheath=Math.max(0,pl.sheath-dt);
   for(const k in pl.cd)pl.cd[k]=Math.max(0,pl.cd[k]-dt);
   if(pl.dead){return}
+  if(pl.clbC>0)pl.clbC-=dt;if(pl.clb){clbStep(dt);return}
   if(!(REMOTE&&X.deck.nav)){if(keys.ArrowLeft)camYaw+=dt*2.2;if(keys.ArrowRight)camYaw-=dt*2.2}
   let [ix,iy]=dlg.on?[0,0]:inputVec();let tx=0,tz=0,sp=6.4*navM()*formSpd()*XT.spd()*(WRU&&WRU.slow?.55:1)*(pl.air?wrG():1);
   if(ix||iy){const w=worldDir(ix,iy);tx=w[0]*sp*Math.hypot(ix,iy);tz=w[1]*sp*Math.hypot(ix,iy)}
@@ -1313,12 +1330,13 @@ function updatePlayer(dt){
     if(nAir()||(nSub()&&curCh===5)){naut.alt=Math.max(gh+(nAir()?3:.6),Math.min(80,(naut.alt??gh+6)+(nUp()?11:nDn()?-11:0)*dt));ty=naut.alt}
     else if(LK){if(nSub()&&LK.kind==='water'){naut.dep=Math.max(gh+1,Math.min(LK.wl+.1,(naut.dep??LK.wl-2.5)+(nUp()?5:nDn()?-5:0)*dt));ty=naut.dep}else ty=LK.wl+.1}
     else naut.dep=null;nMedHint()}
-  let SWY=null;if(!naut.on&&(SWY=swimTick(dt))!==null){ty=pl.y=SWY;pl.air=false;pl.on=null}else if(!naut.on){const P=PLAT.length?platTop(pl.x,pl.z,pl.y):null,sup=P?Math.max(ty,P.top):ty;pl.on=P&&P.top>=ty?P:null;
+  let SWY=null;if(!naut.on&&(SWY=swimTick(dt))!==null){ty=pl.y=SWY;pl.air=false;pl.on=null}else if(!naut.on){const P=PLAT.length?platTop(pl.x,pl.z,pl.y):null,sup=Math.max(P?Math.max(ty,P.top):ty,CLB.length?clbY(pl.x,pl.z,pl.y):-1e9);pl.on=P&&P.top>=ty?P:null;
     if(pl.air){pl.vy-=GRAV*wrG()*(WLD&&WLD.grav||1)*dt;if(SWIM()){pl.swc=(pl.swc||0)-dt;pl.vy=Math.max(pl.vy,-2.6);if((pl.bub=(pl.bub||0)+dt)>.18){pl.bub=0;emit(pl.x,pl.y+.9,pl.z,0xd8f8ff,1,.4,1.2,.22,-3)}}pl.y+=pl.vy*dt;if(pl.gl=(pl.vy<0&&!pl.slam&&keys.Space&&artOn('glide')))pl.vy=Math.max(pl.vy,-1.6);   /* Gleiten: Sprungtaste halten */
       if(pl.vy<=0&&pl.y<=sup){pl.y=ty=sup;pl.air=false;if(pl.vy<-9)sfx('land');pl.vy=0;if(pl.slam)artSlamLand();emit(pl.x,pl.y+.1,pl.z,0xcfe0ff,8,2,.4,.5,0)}}
     else if(pl.y>sup+.7){pl.air=true;pl.vy=0}   /* über die Kante gelaufen: fallen */
     else ty=sup}else pl.air=false;
   if(!pl.air){pl.y+=(ty-pl.y)*Math.min(1,dt*18);if(Math.abs(pl.y-ty)>1.5)pl.y=ty}
+  clbTry(ix,iy);
   if(pl.atk>=0){pl.atkT+=dt*formSpd();const du=ATD[pl.combo];if(!pl.hit&&pl.atkT>du*.42){pl.hit=true;doHit()}if(pl.atkT>=du){pl.atk=-1;pl.comboT=.55;if(pl.buf>0){pl.buf=0;startAttack()}}}
   pl.buf=Math.max(0,pl.buf-dt);
   S.mp=Math.min(maxMp(),S.mp+dt*(1.6+(X.buff.mana>0?12:0)+(X.form.on>0&&X.form.k===1?6:0)));if(S.hp<maxHp()&&zoneAt(pl.x,pl.z)==='village')S.hp=Math.min(maxHp(),S.hp+dt*1.2);
@@ -1328,7 +1346,8 @@ function animPlayer(dt){
   const f=fox;if(S.lead)f.root.visible=false;f.root.position.set(pl.x,pl.y,pl.z);f.root.rotation.y=pl.face;
   animFox(f,time,pl.dash>0?0:pl.mv,pl.atk);if(pl.air&&!naut.on){const u=Math.max(-1,Math.min(1,(pl.vy||0)/JUMPV)),up=Math.max(0,u),dn=Math.max(0,-u);f.legs[0].rotation.x=.9*up-.5*dn;f.legs[1].rotation.x=.5*up+.35*dn;f.arms[0].rotation.x=-2.3*up-1.1*dn;if(pl.atk<0)f.arms[1].rotation.x=-2.3*up-1.1*dn;f.body.position.y=0}   /* Sprunghaltung: Arme hoch beim Absprung, Beine vor beim Fallen */
   f.body.rotation.set(0,0,0);
-  if(((pl.air&&SWIM())||pl.wat)&&pl.atk<0){const k=Math.sin(time*8);f.body.rotation.x=.45+Math.min(.5,pl.mv*.45);f.legs[0].rotation.x=k*.7;f.legs[1].rotation.x=-k*.7;f.arms[0].rotation.x=f.arms[1].rotation.x=-2.4+Math.sin(time*4)*.7}   /* Schwimmhaltung */
+  if(pl.clb){const c=pl.clb,p=Math.min(1,c.t/c.T),k=c.hang?.42:.15,q=p<k?0:(p-k)/(1-k);f.arms[0].rotation.x=f.arms[1].rotation.x=lerp(-2.95,-.5,sm(.2,.9,q));f.body.rotation.x=Math.sin(q*Math.PI)*.55;f.legs[0].rotation.x=p<k?Math.sin(time*9)*.25:-1.3*Math.sin(q*Math.PI);f.legs[1].rotation.x=p<k?-Math.sin(time*9)*.25:.35;f.body.position.y=0}   /* Klettern: Hände an die Kante, hochziehen, Knie aufs Dach */
+  else if(((pl.air&&SWIM())||pl.wat)&&pl.atk<0){const k=Math.sin(time*8);f.body.rotation.x=.45+Math.min(.5,pl.mv*.45);f.legs[0].rotation.x=k*.7;f.legs[1].rotation.x=-k*.7;f.arms[0].rotation.x=f.arms[1].rotation.x=-2.4+Math.sin(time*4)*.7}   /* Schwimmhaltung */
   if(pl.atk>=0){const p=Math.min(1,pl.atkT/ATD[pl.combo]);atkPose(f,p,pl.combo)}
   else{f.arms[1].rotation.z=0}
   FXH.trail(f.handSword,!S.lead&&pl.atk>=0&&pl.atkT/ATD[pl.combo]>.24&&pl.atkT/ATD[pl.combo]<.72||pl.spin>0,X.form&&X.form.on>0?0xffd870:0xbfe4ff,dt);
@@ -1356,14 +1375,14 @@ function atkPose(f,p,cm){const P=APOSE[cm]||APOSE[0],a=.3,s2=.55,eo=t=>1-(1-t)*(
   if(cm===3&&p>=a&&p<s2+.08)f.body.position.y=-.16*lunge}
 let lastPr='';
 function updateNpcs(dt){
-  nearI=null;let nd=3.9;
+  nearI=null;let nd=3.9;const hiP=CLB.length&&!naut.on&&pl.y>hgt(pl.x,pl.z)+1.6;   /* auf dem Dach: nichts im Haus darunter ansprechen */
   for(const n of NPC){n.t+=dt;let dx=pl.x-n.x,dz=pl.z-n.z,d=Math.hypot(dx,dz);XO.npc(n,dt,d);dx=pl.x-n.x;dz=pl.z-n.z;
     if(n.mv)n.face+=ang(n.face,n.mf)*Math.min(1,dt*6);else if(d<8)n.face+=ang(n.face,Math.atan2(dx,dz))*Math.min(1,dt*3);else n.face+=ang(n.face,n.base)*Math.min(1,dt*2);
     const vv=d<90;if(n.P.root.visible!==vv)n.P.root.visible=vv;if(!vv){n.spr.visible=false;continue}if(n.P.fig){const nr=d<(TOUCH?34:52);if(n.P.fig.root.visible!==nr){n.P.fig.root.visible=nr;n.P.body.visible=!nr}}n.P.root.rotation.y=n.face;animHuman(n.P,n.t,n.mv||0);
     n.spr.visible=n.mark();if(n.spr.visible)n.spr.position.y=hgt(n.x,n.z)+2.7+Math.sin(time*3)*.12;
-    if(d<nd&&!dlg.on){nd=d;nearI=n}}
-  for(const c of chests){if(S.chests[c.id]||(c.py!==undefined&&Math.abs(pl.y-c.py)>1))continue;const d=Math.hypot(pl.x-c.x,pl.z-c.z);if(d<nd&&d<2.8){nd=d;nearI=c}}
-  for(const c of INT){if(c.vis&&!c.vis())continue;const d=Math.hypot(pl.x-c.x,pl.z-c.z);if(d<nd&&d<(c.rad||3)){nd=d;nearI=c}}
+    if(d<nd&&!dlg.on&&!hiP){nd=d;nearI=n}}
+  for(const c of chests){if(S.chests[c.id]||(c.py!==undefined?Math.abs(pl.y-c.py)>1:hiP))continue;const d=Math.hypot(pl.x-c.x,pl.z-c.z);if(d<nd&&d<2.8){nd=d;nearI=c}}
+  for(const c of INT){if((c.vis&&!c.vis())||(hiP&&!c.hi))continue;const d=Math.hypot(pl.x-c.x,pl.z-c.z);if(d<nd&&d<(c.rad||3)){nd=d;nearI=c}}
   if(!nearI&&WLD&&WLD.over)nearI=WLD.near(pl.x,pl.z);
   const pr=$('prompt');
   const pm=INP.mode();if(nearI&&!dlg.on&&!pl.dead&&pm!=='touch'){const h=`${INP.badge(pm==='pad'?'atk':'use')}${nearI.pr||'Sprechen'}${nearI.name?': '+nearI.name:''}`;if(h!==lastPr){lastPr=h;pr.innerHTML=h}if(pr.hidden)pr.hidden=false}else if(!pr.hidden){pr.hidden=true}updTouchBtns();
@@ -1639,7 +1658,7 @@ const MAXCH=11;
 /* ---- Welt wechseln ---- */
 TOWN.flush(1);
 let JP1=null;   /* Sprungpfad von Lunaris: entsteht beim ersten Spielstart (braucht die fertig geladene Welt) */
-const ARR=()=>({E,NPC,chests,herbs,COL,CAMCOL,HOUSES,animObjs,INT,OB,PLAT});
+const ARR=()=>({E,NPC,chests,herbs,COL,CAMCOL,HOUSES,animObjs,INT,OB,PLAT,CLB});
 /* Ressourcen, die das ganze Spiel über bestehen (Lunaris, geteilte Geometrien, Material-Cache): werden beim Weltwechsel nie freigegeben */
 let PERSIST=null;
 function persistSnap(){if(PERSIST)return;PERSIST=new Set([...Object.values(G),...Object.values(PG),SMILE,ringG,telGeo]);scene.traverse(o=>{if(o.geometry)PERSIST.add(o.geometry);const m=o.material;if(m)(Array.isArray(m)?m:[m]).forEach(x=>PERSIST.add(x))})}
@@ -3724,4 +3743,4 @@ function drawOb(mx){if(pl.z>300){mx.fillStyle='#2a2a3e';mx.fillRect(-13,333,26,3
 ensureBoss();
 camTarget.set(0,2,12);
 requestAnimationFrame(frame);
-if(/[?&]debug\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))window.__zotik={BRK,NZ:()=>NZ(),dodge:()=>dodge(),jump:()=>jump(),gainXp:n=>gainXp(n),kkCast:id=>kkCast(id),dunEnter:(n,c)=>dunEnter(n,c),set noRender(v){frame.off=!!v},owGo,owLake,mount,cycleNaut,get naut(){return naut},get nearI(){return nearI},get MFX(){return MFX},ipUse,WPNS,KK,ED,MINI,get mState(){return mState},PX:()=>PX(),WP:()=>WPX(),RIDE:()=>RIDEX(),doHit:()=>doHit(),pixEnter:()=>pixEnter(),get mode(){return mode},INP,T,platWall,MWX:()=>MWX(),FXH:()=>FXH,TOWN,NPC,NQ,killE,E,resetEnemy,RMS,refreshQuest,ARTS,artOn,get WR(){return WRU},WRN,WM,wmStart,guestBye,guestArrive,partyPick,setLead,ruinGuard,leadSkill2,CSK2,WWG,cwOf,fox,profJoin,miraJoin,recruit,skill1,skill2,ZON,BKIT,MKIT,startAtk,ED,zone,artThorn,artGust,artFrost,artBolt,artStar,startAttack,dodge,keys,skR,skFree,spawnEnemy,PLAT,jump,dunEnter,dunLeave,DUNF,dunWin(){if(X.dun)dunLeave(true)},get dun(){return X.dun},get WLD(){return WLD},get jp(){return WLD?WLD.jp:JP1},setCam(y,pt,di){camYaw=y;if(pt!=null)camPitch=pt;if(di!=null)camDist=di},AF,NZ,EPX,nautTo,pl,joy,inputVec,CR:()=>CR(),get goTo(){return goTo},get steer(){return steer},set steer(v){steer=v},get mode(){return mode},startNew(){S=DEF();S.ch=13;S.x=0;S.z=1;mode='play';begin(true)},startDbg(){S=DEF();for(let n=2;n<=10;n++)S.fl['wr'+n]=1;S.cos={fur:cr.fur,scarf:cr.scarf,outfit:cr.outfit};mode='play';begin(true)},X,OB,GEAR,TOOLS,lockCycle,doReaction,teamAttack,formStart,ipUse,useTool,toolNext,caveEnter,caveNext,caveExit,LF:()=>LF(),get CUT(){return CUT},giveGear,equip,feed,felliXp,deckExec,deckMove,deckOpen,ruinGo,get CAVE_DOOR(){return CAVE_DOOR},spellHeal,useEther,fStage,findRx,proj,maxHp:()=>maxHp(),atkV:()=>atkV(),toBunt,BUNT_URL,get qLv(){return qLv},setQ,get naut(){return naut},pushOut,INST,blocked,hgt,pBlocked,COL,HOUSES,PZD,CUT,openPuzzle,closePuzzle,cutscene,joinParty,CMP,lunOpen,spawnOrun,get puzOpen(){return puzOpen},get W(){return WLD},get ch(){return curCh},INT,CHP,switchWorld,travel,ARENA,herbs,chests,drops,projs,step:(dt,n)=>{for(let i=0;i<n;i++){time+=dt;for(const o of animObjs)o.fn(time,dt);update(dt);updParticles(dt)}},cam:(y,p,d)=>{camYaw=y;camPitch=p;camDist=d},S:()=>S,pl,E,NPC,begin,say,toast,setStage,hurtP,get boss(){return boss},camera,scene,renderer,skill1,skill2,startAttack,dodge,interact,keys,MP,mpMsg,mpSend,mpHost,mpJoin,mpTick,variantCos,sharedFlat,spawnEnemy,hurtE,killE,get boss2(){return boss},toggleMenu,renderMenu,XT,XO};
+if(/[?&]debug\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))window.__zotik={BRK,CLB,clbY,NZ:()=>NZ(),dodge:()=>dodge(),jump:()=>jump(),gainXp:n=>gainXp(n),kkCast:id=>kkCast(id),dunEnter:(n,c)=>dunEnter(n,c),set noRender(v){frame.off=!!v},owGo,owLake,mount,cycleNaut,get naut(){return naut},get nearI(){return nearI},get MFX(){return MFX},ipUse,WPNS,KK,ED,MINI,get mState(){return mState},PX:()=>PX(),WP:()=>WPX(),RIDE:()=>RIDEX(),doHit:()=>doHit(),pixEnter:()=>pixEnter(),get mode(){return mode},INP,T,platWall,MWX:()=>MWX(),FXH:()=>FXH,TOWN,NPC,NQ,killE,E,resetEnemy,RMS,refreshQuest,ARTS,artOn,get WR(){return WRU},WRN,WM,wmStart,guestBye,guestArrive,partyPick,setLead,ruinGuard,leadSkill2,CSK2,WWG,cwOf,fox,profJoin,miraJoin,recruit,skill1,skill2,ZON,BKIT,MKIT,startAtk,ED,zone,artThorn,artGust,artFrost,artBolt,artStar,startAttack,dodge,keys,skR,skFree,spawnEnemy,PLAT,jump,dunEnter,dunLeave,DUNF,dunWin(){if(X.dun)dunLeave(true)},get dun(){return X.dun},get WLD(){return WLD},get jp(){return WLD?WLD.jp:JP1},setCam(y,pt,di){camYaw=y;if(pt!=null)camPitch=pt;if(di!=null)camDist=di},AF,NZ,EPX,nautTo,pl,joy,inputVec,CR:()=>CR(),get goTo(){return goTo},get steer(){return steer},set steer(v){steer=v},get mode(){return mode},startNew(){S=DEF();S.ch=13;S.x=0;S.z=1;mode='play';begin(true)},startDbg(){S=DEF();for(let n=2;n<=10;n++)S.fl['wr'+n]=1;S.cos={fur:cr.fur,scarf:cr.scarf,outfit:cr.outfit};mode='play';begin(true)},X,OB,GEAR,TOOLS,lockCycle,doReaction,teamAttack,formStart,ipUse,useTool,toolNext,caveEnter,caveNext,caveExit,LF:()=>LF(),get CUT(){return CUT},giveGear,equip,feed,felliXp,deckExec,deckMove,deckOpen,ruinGo,get CAVE_DOOR(){return CAVE_DOOR},spellHeal,useEther,fStage,findRx,proj,maxHp:()=>maxHp(),atkV:()=>atkV(),toBunt,BUNT_URL,get qLv(){return qLv},setQ,get naut(){return naut},pushOut,INST,blocked,hgt,pBlocked,COL,HOUSES,PZD,CUT,openPuzzle,closePuzzle,cutscene,joinParty,CMP,lunOpen,spawnOrun,get puzOpen(){return puzOpen},get W(){return WLD},get ch(){return curCh},INT,CHP,switchWorld,travel,ARENA,herbs,chests,drops,projs,step:(dt,n)=>{for(let i=0;i<n;i++){time+=dt;for(const o of animObjs)o.fn(time,dt);update(dt);updParticles(dt)}},cam:(y,p,d)=>{camYaw=y;camPitch=p;camDist=d},S:()=>S,pl,E,NPC,begin,say,toast,setStage,hurtP,get boss(){return boss},camera,scene,renderer,skill1,skill2,startAttack,dodge,interact,keys,MP,mpMsg,mpSend,mpHost,mpJoin,mpTick,variantCos,sharedFlat,spawnEnemy,hurtE,killE,get boss2(){return boss},toggleMenu,renderMenu,XT,XO};
