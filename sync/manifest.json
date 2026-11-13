@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "fcabd2619303",
- "generated": "2026-11-13T01:29:43+00:00",
- "commit": "256aa9b0538a92de5d6be1cb77be2cb936944843",
+ "version": "3846e7f3a723",
+ "generated": "2026-11-13T01:37:18+00:00",
+ "commit": "1440b3f06ec38205c40022f8edecf0d1afe6186a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2134,7 +2134,7 @@
   {
    "p": "anmacha-podcast-tycoon/index.html",
    "s": 6278,
-   "h": "a35a235703b89abc7564abf6bf7615c45d901aa6fdfcdc7ae242ba1f17bcdc38"
+   "h": "3c26bb506155d62797b9b1700c8f6a158ec1ce682ccb3faac0694f091b8d8e9a"
   },
   {
    "p": "anmacha-podcast-tycoon/manifest.webmanifest",
@@ -2165,6 +2165,11 @@
    "p": "anmacha-podcast-tycoon/models/bld_2Story_Slim_Mat.glb",
    "s": 301592,
    "h": "a719cf22437577809b3020e807abbe0ab90af693bd9a5e475c731dd6943a30c8"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cat.glb",
+   "s": 62220,
+   "h": "20fbb85ebf3ab576511fa5f5bea6fbfc52c245d053e5964dfe96778e187e9c9f"
   },
   {
    "p": "anmacha-podcast-tycoon/models/fountain-round.glb",
@@ -2208,18 +2213,18 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/core.js",
-   "s": 11796,
-   "h": "ad714aadbf7779f26825436ff0c4ef4f88ee8b50442fb99a6589f405d9616326"
+   "s": 12071,
+   "h": "df1db48094eea85df36f1f238602d3f0d1a692feaf405082b54e70bc35b76499"
   },
   {
    "p": "anmacha-podcast-tycoon/src/data.js",
-   "s": 27877,
-   "h": "b0c6bb95aa69d396720e8b683b43cd99a3948eedb6dcf0c696490aefe5e6091e"
+   "s": 35431,
+   "h": "24974a417dbc2c6f1c8f6202fc669f6d3711e29ab555ca735efb4d88b3a884cb"
   },
   {
    "p": "anmacha-podcast-tycoon/src/main.js",
-   "s": 27913,
-   "h": "c39689b1ef28e52acdbda55f93e7fc63094060afee8f150d2a84d72373a24727"
+   "s": 33330,
+   "h": "6fd548127fbaae03f019f6af732bede77f791ea9866d2d4ee3d608b9757ece14"
   },
   {
    "p": "anmacha-podcast-tycoon/src/media.js",
@@ -2228,8 +2233,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/play.js",
-   "s": 59855,
-   "h": "777f68035ca042c5d2f26bc1a923d3991c9392f1f1c8f793cc3cae26eedf69c6"
+   "s": 69300,
+   "h": "b64a2e8f70339f902d0cb86a756db33afdf68dd3184881aeb9dc2c0798370f8a"
   },
   {
    "p": "anmacha-podcast-tycoon/src/quiz.js",
@@ -2238,8 +2243,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/show.js",
-   "s": 35807,
-   "h": "b0cc2bd2b4f18f39cae13f508c964f93148188486211f56ccb1cee05d9aa18c0"
+   "s": 35905,
+   "h": "ff7b3d41c2518f48687ffbbb9789820facafe86f73bfce2bbc35e940a6d8e70d"
   },
   {
    "p": "anmacha-podcast-tycoon/src/ui.js",
@@ -2248,13 +2253,13 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/world.js",
-   "s": 22621,
-   "h": "8ca6433ea799f9aeb32bc594249fcc452eb93223b3638e787404de62b6c27200"
+   "s": 23559,
+   "h": "0f258e47ed7a88206fea5c50ec6681f5e7cfadc2e9834a6f68d5128939f71183"
   },
   {
    "p": "anmacha-podcast-tycoon/style.css",
-   "s": 35273,
-   "h": "fe26a8c7ebf5b0479ce22c2054994b19d366297f9722608abf61cd2470ee9249"
+   "s": 36415,
+   "h": "71983bf92c4fc83446bea3aefc3cde653e3f869ee0c8bcbf9c7939d8386fd5ef"
   },
   {
    "p": "anmacha-podcast-tycoon/sw.js",
@@ -6148,8 +6153,8 @@
   },
   {
    "p": "games.js",
-   "s": 58392,
-   "h": "e40352b832b61e4b76d8f53d351a2f391ea649f0b127094c22b752bd81a8b13a"
+   "s": 58451,
+   "h": "6a5a5c5c3932906fc7fc9101d739b3b0f00d24a657f359ae003699427bdcfc51"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6453,8 +6458,8 @@
   },
   {
    "p": "guides.js",
-   "s": 173260,
-   "h": "0500ba9a030a45c60ca4b1ecd687b5046ea8ed80b005fdf0c771c86d37f13f5e"
+   "s": 173406,
+   "h": "5c3ee21a3ba2b7781f7731cede3d576dc276b999face0de90f20a883fa7083df"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6538,8 +6543,8 @@
   },
   {
    "p": "guides/anmacha-podcast-tycoon.json",
-   "s": 9647,
-   "h": "9df5b1efad6147d5b05c130c82a3fdbc6a82934de3db6adfb999fb741936a159"
+   "s": 13003,
+   "h": "775e54f6544bf02a9baf51b3fb40378650707fdcffeb9304f2a2832e2f8ca0e4"
   },
   {
    "p": "guides/anmacha-preisradar.json",
@@ -9678,8 +9683,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 258359,
-   "h": "313feff3b25257874c5d858a22579dabf33327858efd4c4a6b6bc630e51e95b9"
+   "s": 258564,
+   "h": "7655aee9a59e0fe9de9a470f12264b4e0a5bd87c5024f1abed42193fef2c90f9"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
