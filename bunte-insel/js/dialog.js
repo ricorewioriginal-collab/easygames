@@ -15,7 +15,7 @@ BI.createDialog = function (G) {
     box.textContent = icon || '💬';
   };
   function showLine() {
-    if (!cur) return; const line = cur.lines[0]; el.querySelector('.nm').textContent = cur.name; el.querySelector('.ln').textContent = line; el.querySelector('.nx').textContent = cur.lines.length > 1 || queue.length ? '▶ weiter' : '';
+    if (!cur) return; const line = cur.lines[0]; { const nm = el.querySelector('.nm'); nm.textContent = cur.name; if (cur.badge) { const b = document.createElement('span'); b.className = 'bdg'; b.textContent = ' ' + cur.badge; b.style.cssText = 'font-size:.8em;margin-left:4px;letter-spacing:-1px'; nm.appendChild(b); } } el.querySelector('.ln').textContent = line; el.querySelector('.nx').textContent = cur.lines.length > 1 || queue.length ? '▶ weiter' : '';
     portrait(cur.name, cur.icon); el.hidden = false; K.open = true; document.body.classList.add('dlgOpen'); clearTimeout(tm); tm = setTimeout(next, Math.min(14000, 3200 + line.length * 75));
     if (G.speak) G.speak(line);
   }
@@ -23,7 +23,7 @@ BI.createDialog = function (G) {
   K.close = function () { clearTimeout(tm); cur = null; queue = []; el.hidden = true; K.open = false; document.body.classList.remove('dlgOpen'); };
   /* { name, icon, text | lines } – mehrere Aufrufe nacheinander werden gereiht, ein neuer Sprecher ersetzt den alten */
   K.show = function (o) {
-    const lines = (o.lines || [o.text]).filter(Boolean).map(String); if (!lines.length) return; if (o.look && o.name) BI.DLG_LOOKS[o.name] = o.look; const d = { name: o.name || '', icon: o.icon || '💬', lines: lines.slice(), px: G.pos ? G.pos().x : 0, pz: G.pos ? G.pos().z : 0 };
+    const lines = (o.lines || [o.text]).filter(Boolean).map(String); if (!lines.length) return; if (o.look && o.name) BI.DLG_LOOKS[o.name] = o.look; const d = { name: o.name || '', badge: o.badge || '', icon: o.icon || '💬', lines: lines.slice(), px: G.pos ? G.pos().x : 0, pz: G.pos ? G.pos().z : 0 };
     if (cur && cur.name === d.name && o.append) { queue.push(d); return; } cur = d; queue = []; showLine();
   };
   /* erkennt „Name: „Text““-Meldungen (Figuren-Sprache) und liefert { name, icon, text } oder null */
