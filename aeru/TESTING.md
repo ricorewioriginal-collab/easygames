@@ -10,6 +10,7 @@ Alle Befehle aus dem Ordner `aeru/` ausführen. Node 18+ genügt; nur der Browse
 | `node tests/sky.cjs` | < 20 s | alle 21 Himmelsinseln erreichbar (Aufwind, Flug, Landung), Truhen, Schwung-Ringe |
 | `node tests/neu.cjs` | < 5 s | Rammstoß, Nachtmotte, Wurzelwächter, alter Spielstand → sieben Welten |
 | `node tests/webview.cjs` | < 5 s | 2D-Ersatzmodus ohne WebGL |
+| `node tests/portale.cjs` | < 10 s | Spieleportale in allen 7 Welten (fester Boden, frei von Splittern/Figuren/Bäumen/Rastpunkten, Nachfrage, Speichern, feste Säulen), analoger Controller-Stick mit Totzone, Kamera am rechten Stick |
 | `NODE_PATH=$(npm root -g) node tests/browser.cjs` | ca. 5 min | echtes Chromium in 9 Viewports, Screenshots, Bildzeiten |
 
 `story`, `logic` und `webview` laden das echte Spiel (alle vier Skripte) mit echter Three.js-r128-Geometrie in eine Node-VM (`tests/harness.cjs`). Nur Zeichnen und DOM sind Attrappen; Physik, Quests, Kampf und Speichern laufen unverändert.

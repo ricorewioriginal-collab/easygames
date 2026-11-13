@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="de">
 <head>
-<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/anmacha-podcast-tycoon-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Podcast Tycoo…"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/anmacha-podcast-tycoon-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="AnMaCha Podcast"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
 if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
 var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
 if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
@@ -18,32 +18,45 @@ b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remo
 d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#10142a">
-<meta name="description" content="AnMaCha Podcast Tycoon 3D – Das totale Studio-Chaos! Baue mit Marco und Andrew ein Podcast-Imperium: 3D-Stadt, Studio-Baumodus, Folgen produzieren, 24 Minispiele, Party und Online-Quizshow.">
-<title>AnMaCha Podcast Tycoon 3D – Das totale Studio-Chaos!</title>
+<meta name="theme-color" content="#0b0c12">
+<meta name="description" content="AnMaCha – Der Podcast (Offizielles Spiel): Spiele Andrew und Marco in einer 3D-Stadt, jage Themen, besiege Störsender und nimm live eure Folgen auf. Story, Live-Show, Themenjagd, KI-Quizshow – und der echte Podcast plus alle AnMaCha-Sender mit Titelanzeige.">
+<title>AnMaCha – Der Podcast (Offizielles Spiel)</title>
 <link rel="icon" href="card.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../vendor/fonts/fredoka.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <canvas id="view" aria-label="3D-Spielwelt"></canvas>
+<div id="fx"></div>
 <div id="hud" hidden></div>
 <div id="ui"></div>
+<div id="touch" hidden></div>
+<div id="nowplaying" hidden></div>
 <div id="toasts" aria-live="polite"></div>
 <div id="loading">
-  <div class="pt-load">
-    <svg class="pt-logo" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="#16171c" stroke="#ff8a1e" stroke-width="6"/><path d="M46 34 L90 60 L46 86Z" fill="#ff8a1e"/></svg>
-    <h1><span>AnMaCha</span> Podcast Tycoon 3D</h1>
-    <p>Das totale Studio-Chaos!</p>
-    <div class="pt-loadbar"><i id="loadBar"></i></div>
-    <p id="loadTxt" class="pt-hint">Lade …</p>
+  <div class="ld-glow"></div>
+  <div class="ld-box">
+    <svg class="ld-logo" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54" fill="#111218" stroke="#ff8a1e" stroke-width="6"/><path d="M47 35 L88 60 L47 85Z" fill="#ff8a1e"/></svg>
+    <h1>AnMa<span>Cha</span></h1>
+    <p class="ld-sub">Der Podcast · Offizielles Spiel</p>
+    <div class="ld-bar"><i id="loadBar"></i></div>
+    <p id="loadTxt" class="ld-txt">Lade …</p>
+    <p id="loadTip" class="ld-tip"></p>
     <noscript><p>Bitte JavaScript aktivieren.</p></noscript>
   </div>
 </div>
-<!-- Online-Kopplung über Firebase (vor dem Spielcode) -->
-<script src="../cloud/fire-peer.js"></script>
-<script src="../gamepad.js" data-pad-labels="ls=Laufen; a=Sprechen/benutzen; b=Zurück; start=Pause; rs=Zeiger" data-pad="start=Escape" defer></script>
+<script src="../gamepad.js" data-pad="info dlg=off hud=off" data-pad-labels="ls=Laufen / Auswählen; rs=Kamera; a=Springen / Bestätigen; b=Zurück; x=Schallwelle / Sprechen; y=Andrew ↔ Marco; rb=Sprint; lb=Radio: nächster Sender; lt=Radio an/aus; rt=Ausweichen; dpad=Befehl wählen; start=Pause; select=Radio & Podcast" defer></script>
 <script src="../egstat.js" defer></script>
-<script>window.PT_BUILD = "3";</script>
+<script>window.AMC_BUILD = "4";</script>
+<script src="src/core.js"></script>
+<script src="src/data.js"></script>
+<script src="src/audio.js"></script>
+<script src="src/media.js"></script>
+<script src="src/ui.js"></script>
+<script src="src/world.js"></script>
+<script src="src/play.js"></script>
+<script src="src/show.js"></script>
+<script src="src/quiz.js"></script>
 <script src="src/main.js"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="anmacha-podcast-tycoon" data-prefix="anmachaPodcastTycoon" defer></script>
 </body>
