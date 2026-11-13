@@ -521,7 +521,7 @@ export function createMaerchen(C) {
   function tick(dt) {
     if (!cur) return; const s = st(cur.w.id), m = mis(), pl = C.pl;
     if (!cur.guest && !C.dlgOn() && s.seen) addGuest();
-    if (cur.npcP) for (const id in cur.npcP) cur.npcP[id].root.visible = !(m && m.hide === id);   // Figur ist gerade woanders (z. B. am Pranger)
+    if (cur.npcP) for (const id in cur.npcP) { const P = cur.npcP[id]; P.hid = !!(m && m.hide === id); if (P.hid) P.root.visible = false; }   // Figur ist gerade woanders (z. B. am Pranger)
     for (let i = cur.items.length - 1; i >= 0; i--) { const it = cur.items[i]; it.o.rotation.y += dt * 1.6; it.o.position.y = cur.h(it.x, it.z) + Math.sin(C.time() * 2.6 + i) * .12;
       if (m && m.t === 'collect' && s.st === 1 && Math.hypot(pl.x - it.x, pl.z - it.z) < 1.8 && !pl.dead) { s.got[it.i] = 1; C.scene.remove(it.o); cur.items.splice(i, 1); C.sfx('pick'); C.emit(it.x, cur.h(it.x, it.z) + .6, it.z, 0xffe08a, 18, 3, .7, .5, -2);
         const got = Object.keys(s.got).length, nm = m.pts[it.i][2]; C.toast(`${cur.w.em} ${nm || m.item} (${got}/${m.pts.length})`); refresh(); if (got >= m.pts.length) done(); else C.saveGame(true); } }
