@@ -228,7 +228,7 @@ export function createMaerchen(C) {
     const zone = (x, z) => { for (const q of w.zones) if (Math.hypot(x - q[3], z - q[4]) < q[5]) return q[0]; return 'wild'; };
     const zn = { wild: [w.name, w.sub] }; for (const q of w.zones) zn[q[0]] = [q[1], q[2]];
     const WD = { n, C: C.CHP[n], h, blocked: blk, zone, ims: [], edKeys: [], terr: null, story: true, mw: w, lv: Math.max(3, S.lvl - 1), grav: w.grav || 1,
-      zn, path: PATHX, mbg: null, spawn: [0, 12], refresh, menuQuest, kill, zoneEnter() { }, ensureBoss() { }, sealedNow: () => false, spawnMini() { }, tick };
+      zn, path: PATHX, secs: () => cur && cur.sec, mbg: null, spawn: [0, 12], refresh, menuQuest, kill, zoneEnter() { }, ensureBoss() { }, sealedNow: () => false, spawnMini() { }, tick };
     C.setWLD(WD); cur = { w, h, g: null, items: [], ints: [], boss: null, guest: null, react: null, swing: null, wave: 0 };
     C.setAtmos({ sun: [.38, .66, .66], ...w.atm });   // Sonne von vorn-oben: Fassaden zur Kamera hin beleuchtet
     // Boden: glatte Schattierung, Farbverlauf, Weg, Sand am Wasser, Schnee am Rand; feine Bodenstruktur als Textur
@@ -265,7 +265,8 @@ export function createMaerchen(C) {
       if (!boss) { const d0 = C.ED[key], mel = d0.base === 'wolf';
         C.ED[key + 's'] = Object.assign({}, d0, { name: f[1] + ' · Späher', sc: d0.sc * .82, spd: (d0.spd || 4) * 1.3, cool: (d0.cool || 2) * (mel ? .9 : .7), leap: mel ? 1 : d0.leap, make: () => C.tint(d0.make(), 0x9ae8ff, .3) });
         C.ED[key + 'e'] = Object.assign({}, d0, { name: f[1] + ' · Anführer', mini: true, sc: d0.sc * 1.32, cool: (d0.cool || 2) * .8, wind: (d0.wind || .7) * .85, rng: (d0.rng || 2.5) * (mel ? 1.15 : 1), make: () => C.tint(d0.make(), 0xffc040, .5) });
-        WD.edKeys.push(key + 's', key + 'e'); } }
+        WD.edKeys.push(key + 's', key + 'e');
+        if (k === 'b') { C.ED[key + 'c'] = Object.assign({}, d0, { name: f[1] + ' · Champion', mini: true, sc: d0.sc * 1.6, spd: (d0.spd || 4) * 1.1, cool: (d0.cool || 2) * .7, wind: (d0.wind || .7) * .8, leap: mel ? 1 : d0.leap, aggro: 22, make: () => C.tint(d0.make(), 0xff3a4a, .5) }); WD.edKeys.push(key + 'c'); } } }
     // Gegner in der Wildnis (nicht am Ankunftsplatz, nicht in Dörfern)
     let ne = 0, tries = 0; const calm = w.zones.filter(q => ['lichtung', 'dorf', 'agora', 'hof', 'gaerten', 'parvis'].includes(q[0]));
     const NE = Math.round(10 * Math.min(AK, 3.2)); while (ne < NE && tries++ < 900) { const a = R2() * 6.283, rr = 14 + R2() * (R - 18), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr; if (z > -4 || blk(x, z) || !C.colFree(x, z, 1) || calm.some(q => Math.hypot(x - q[3], z - q[4]) < q[5])) continue;
@@ -287,7 +288,7 @@ export function createMaerchen(C) {
       C.INT.push({ x: x0, z: z0 + (z1 > z0 ? -1.2 : 1.2), name: nm, pr: 'Schwingen', rad: 2.4, talk() { cur.swing = { x0: C.pl.x, z0: C.pl.z, x1, z1: z1 + (z1 > z0 ? 1.6 : -1.6), t: 0 }; C.sfx('jump'); } }); } });
     if (w.currents) cur.cur = w.currents.map(q => ({ x: q[0], z: q[1], r: q[2], dx: q[3], dz: q[4], id: q[5] }));
     if (w.climb) C.INT.push({ x: w.climb.cx + 1.2, z: w.climb.cz + 6, name: 'Glockenturm', pr: 'Ansehen', rad: 2.6, vis: () => C.pl.y < 1, talk() { C.say([['Zotik', 'Steinvorsprünge winden sich um den Turm nach oben. Sprung für Sprung – bis zur Glockenstube.']]); } });
-    life(w); folkLife(w, R2, blk, busy);
+    life(w); side(w, s, folkLife(w, R2, blk, busy), R2, blk);
     if (s.st === 1) arm(w, s);
     keyhole(w, s);
     WD.mbg = minimap(w); C.setMBG(WD.mbg);
@@ -316,14 +317,14 @@ export function createMaerchen(C) {
     z => 'Man erzählt sich, bei ' + z[1] + ' liegt noch etwas verborgen.', () => 'Ein Fremder mit einem Fuchs? Das gibt es auch nur in Geschichten.', () => 'Wenn du Krüge findest: zerschlag sie ruhig. Die Leute verstecken gern ein paar Splitter darin.'];
   function folkLife(w, R2, blk, busy) {
     const pal = [w.col, ...(w.ground || []), 0x8a5a3a, 0x3a5a8a, 0xb0904a, 0x6a3a5a], calm = w.zones.filter(q => ['lichtung', 'dorf', 'agora', 'hof', 'gaerten', 'parvis', 'greve', 'wunder', 'friede', 'markt', 'hafen'].includes(q[0]));
-    const NR = w.life && w.life.includes('fish') ? 2 : 6; let made = 0, tries = 0;
+    const NR = w.life && w.life.includes('fish') ? 2 : 6, folk = []; let made = 0, tries = 0;
     while (made < NR && tries++ < 200) { const z0 = calm.length && R2() < .6 ? calm[(R2() * calm.length) | 0] : null, a = R2() * 6.283, rr = z0 ? R2() * z0[5] * .7 : 4 + R2() * 5, z = z0 ? z0[4] + Math.cos(a) * rr : -8 - R2() * 70, x = z0 ? z0[3] + Math.sin(a) * rr : PATHX(z) + (R2() < .5 ? -1 : 1) * rr;
       if (blk(x, z) || !C.colFree(x, z, 1) || busy.some(([bx, bz, br]) => Math.hypot(x - bx, z - bz) < br)) continue;
       const [role, g] = ROLES[(made + w.n) % ROLES.length], P = C.folk(role, { g: g === 'k' ? 'm' : g, cloth: pal[(R2() * pal.length) | 0], cloth2: pal[(R2() * pal.length) | 0], hair: [0x2a1c16, 0x6a4a2a, 0xb07a3a, 0xd0d0d0][(R2() * 4) | 0], sc: g === 'k' ? .7 : .9 + R2() * .15 }, { pal: 1 });
       const zz = w.zones[(made * 3 + w.n) % w.zones.length], lines = [0, 1, 2].map(i => FOLKL[(made + i * 2 + w.n) % FOLKL.length](zz));
-      const o = C.addNpc('mw_folk' + made, role, x, z, P, () => C.say([[role, lines[(o.k = ((o.k || 0) + 1)) % lines.length]]]), R2() * 6.3); o.wander = { x, z, r: z0 ? 6 : 5, w: R2() * 4, sp: g === 'k' ? 1.8 : 1.2 }; made++; }
+      const o = C.addNpc('mw_folk' + made, role, x, z, P, () => o.side ? o.side() : C.say([[role, lines[(o.k = ((o.k || 0) + 1)) % lines.length]]]), R2() * 6.3); o.wander = { x, z, r: z0 ? 6 : 5, w: R2() * 4, sp: g === 'k' ? 1.8 : 1.2 }; o.lines = lines; folk.push(o); made++; }
     /* Kleintiere: Hasen und Hühner hoppeln umher und flüchten, wenn man ihnen zu nahe kommt */
-    if (w.life && w.life.includes('fish')) return; const snow = !!w.snow, cr = [];
+    if (w.life && w.life.includes('fish')) return folk; const snow = !!w.snow, cr = [];
     for (let i = 0; i < 8; i++) { const a = R2() * 6.283, rr = Math.sqrt(R2()) * (R - 8), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr; if (blk(x, z)) continue;
       const hen = i % 3 === 2, c = hen ? 0xf0ece0 : snow ? 0xf4f4f8 : 0x9a7a5a, g = new T.Group(); g.add(mk(G.sph, M(c, { r: .9 }), 0, .2, 0, .2, .18, .26, false)); g.add(mk(G.sph, M(c, { r: .9 }), 0, .34, .2, .12, .12, .12, false));
       if (hen) { g.add(mk(G.cone, M(0xe8a020), 0, .34, .33, .03, .06, .03, false)); g.add(mk(G.sph, M(0xd02a2a), 0, .45, .2, .03, .05, .07, false)); } else { g.add(mk(G.sph, M(c), -.05, .52, .17, .03, .12, .04, false)); g.add(mk(G.sph, M(c), .05, .52, .17, .03, .12, .04, false)); g.add(mk(G.sph, M(0xffffff), 0, .22, -.26, .07, .07, .07, false)); }
@@ -333,7 +334,32 @@ export function createMaerchen(C) {
       const dx = q.tx - q.x, dz = q.tz - q.z, d = Math.hypot(dx, dz); let y = cur.h(q.x, q.z);
       if (q.w <= 0 && d > .2) { const sp = (dp < 4 ? 4.5 : 1.4) * dt, nx = q.x + dx / d * Math.min(d, sp), nz = q.z + dz / d * Math.min(d, sp); if (blk(nx, nz)) { q.tx = q.x; q.tz = q.z; } else { q.x = nx; q.z = nz; } q.g.rotation.x = 0; q.g.rotation.y = Math.atan2(dx, dz); q.f += dt * (q.hen ? 10 : 7); y += q.hen ? 0 : Math.abs(Math.sin(q.f)) * .25; }
       else if (q.hen) q.g.rotation.x = Math.max(0, Math.sin(t * 3 + q.hx)) * .5; q.g.position.set(q.x, y, q.z); } } });
+    return folk;
   }
+  /* ---------- Nebenbei: Kopfgeld auf Anführer, Champion der Welt, drei versteckte Sternsplitter ---------- */
+  const SIDE_N = 3;
+  function side(w, s, folk, R2, blk) {
+    const sd = s.side || (s.side = { hunt: 0, hk: 0, champ: 0, sec: {}, secD: 0 }), S = C.S(), pay = (sh, xp, txt) => { S.shards += sh; S.potions += 1; C.gainXp(xp); C.sfx('level'); C.banner('Nebenaufgabe erledigt', txt); C.toast(`✨ +${xp} EP · 💎 +${sh} · 🧪 +1`); C.saveGame(true); };
+    const [hq, sq] = folk; cur.side = sd;
+    if (hq) hq.side = () => { const nm = hq.name;
+      if (sd.hunt === 2) return C.say([[nm, 'Seit du die Anführer verjagt hast, ist es ruhiger geworden. Danke dir.']]);
+      if (sd.hunt === 1 && sd.hk >= SIDE_N) { sd.hunt = 2; return C.say([[nm, 'Alle drei Anführer? Unglaublich! Hier, das ist von uns allen.']], () => pay(150 + S.lvl * 5, 80 + S.lvl * 8, 'Kopfgeld: ' + w.name)); }
+      if (sd.hunt === 1) return C.say([[nm, `Noch ${SIDE_N - sd.hk} Anführer. Du erkennst sie am goldenen Schimmer.`]]);
+      C.say([[nm, 'Draußen ziehen Rudel umher, und jedes hört auf einen Anführer mit goldenem Schimmer.'], [nm, `Bring ${SIDE_N} von ihnen zur Strecke, dann zahlen wir dir ein Kopfgeld.`]], null, [{ t: '⚔️ Mach ich', fn() { sd.hunt = 1; C.toast('📜 Nebenaufgabe: ' + SIDE_N + ' Anführer besiegen'); refresh(); C.saveGame(true); } }, { t: 'Später', fn() { } }]); };
+    if (sq) sq.side = () => { const nm = sq.name, got = Object.keys(sd.sec).length;
+      if (sd.secD) return C.say([[nm, sq.lines[0]]]);
+      if (got >= SIDE_N) { sd.secD = 1; return C.say([[nm, 'Du hast alle drei Sternsplitter gefunden! Die gehören an einen sicheren Ort. Nimm das als Dank.']], () => { S.items.phoenix = (S.items.phoenix || 0) + 1; C.toast('🪶 Phönixfeder erhalten'); pay(120 + S.lvl * 4, 60 + S.lvl * 6, 'Sternsplitter: ' + w.name); }); }
+      C.say([[nm, `Man sagt, in ${w.name} liegen ${SIDE_N} Sternsplitter versteckt, abseits der Wege. Sie glitzern nur ganz schwach.`], [nm, got ? `Du hast schon ${got}. Bring mir alle, dann bekommst du etwas Besonderes.` : 'Wenn du alle findest, komm zu mir.']]); };
+    // Sternsplitter abseits der Wege
+    cur.sec = []; for (let i = 0, t = 0; i < SIDE_N && t < 400; t++) { const a = R2() * 6.283, rr = 18 + R2() * (R - 22), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr;
+      if (Math.abs(x - PATHX(z)) < 12 || blk(x, z) || !C.colFree(x, z, 1) || (w.river && riverDist(w.river, x, z) < w.river.w)) continue;
+      if (!sd.sec[i]) { const o = new T.Group(); o.add(mk(G.oct || G.sph, M(0xfff4c0, { e: 0xffd060, ei: 1.6 }), 0, 0, 0, .22, .3, .22, false)); o.add(glow(0xffe08a, 1.6, 0, 0, 0, .55)); o.position.set(x, cur.h(x, z) + .7, z); C.scene.add(o); cur.sec.push({ i, x, z, o }); } i++; }
+    // Champion: einmal je Welt, weit draußen
+    if (!sd.champ && C.ED['mw' + w.n + 'bc']) for (let t = 0; t < 200; t++) { const a = R2() * 6.283, rr = R - 12 - R2() * 8, x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr; if (z > -10 || blk(x, z) || !C.colFree(x, z, 1.5)) continue; const e = C.spawnEnemy('mw' + w.n + 'bc', x, z, 3); if (e) e.champ = 1; break; }
+  }
+  function sideKill(e) { const sd = cur && cur.side; if (!sd) return; const S = C.S();
+    if (/e$/.test(e.k) && sd.hunt === 1 && sd.hk < SIDE_N) { sd.hk++; C.toast(`⚔️ Anführer besiegt (${sd.hk}/${SIDE_N})` + (sd.hk >= SIDE_N ? ' – zurück ins Dorf!' : '')); }
+    if (e.champ && !sd.champ) { sd.champ = 1; S.shards += 250 + S.lvl * 8; S.potions += 2; S.items.phoenix = (S.items.phoenix || 0) + 1; C.gainXp(150 + S.lvl * 12); C.sfx('level'); C.banner('Champion besiegt!', e.d.name); C.toast('💎 +' + (250 + S.lvl * 8) + ' · 🧪 +2 · 🪶 +1'); C.saveGame(true); } }
   function minimap(w) {
     const c = document.createElement('canvas'); c.width = 260; c.height = 310; const x = c.getContext('2d');
     x.fillStyle = '#0a0e24'; x.fillRect(0, 0, 260, 310); x.fillStyle = hex(w.ground[0]); x.beginPath(); x.arc(CX + 130, CZ + 234, R, 0, 6.283); x.fill();
@@ -380,7 +406,9 @@ export function createMaerchen(C) {
   }
   function refresh() { if (!cur) return; const s = st(cur.w.id), L = cur.w.ms.length; C.$('qt').textContent = cur.w.em + ' ' + cur.w.name + ' · ' + Math.min(s.done ? L : s.m, L) + '/' + L; C.$('qo').textContent = objText(); }
   function menuQuest() { if (!cur) return ''; const w = cur.w, s = st(w.id);
-    return `<h3>${w.em} ${w.name}</h3><p style="color:var(--dim);font-size:13px">${w.sub} – Vorlage: ${w.src}.</p>` + w.ms.map((m, i) => `<div class="row"><span>${s.done || i < s.m ? '✅' : i === s.m ? '▶️' : '🔒'} ${m.n}</span><span><small>${i === s.m && !s.done ? objText() : ''}</small></span></div>`).join('') + `<div class="row"><span>${s.done ? '✅' : '🔒'} Schlüsselloch versiegeln</span><span></span></div>`; }
+    return `<h3>${w.em} ${w.name}</h3><p style="color:var(--dim);font-size:13px">${w.sub} – Vorlage: ${w.src}.</p>` + w.ms.map((m, i) => `<div class="row"><span>${s.done || i < s.m ? '✅' : i === s.m ? '▶️' : '🔒'} ${m.n}</span><span><small>${i === s.m && !s.done ? objText() : ''}</small></span></div>`).join('') + `<div class="row"><span>${s.done ? '✅' : '🔒'} Schlüsselloch versiegeln</span><span></span></div>` + sideMenu(s); }
+  function sideMenu(s) { const sd = s.side; if (!sd) return ''; const g = Object.keys(sd.sec).length, r = (a, b, c) => `<div class="row"><span>${a ? '✅' : '▫️'} ${b}</span><span><small>${c}</small></span></div>`;
+    return '<h3 style="margin-top:12px">Nebenbei</h3>' + r(sd.hunt === 2, 'Kopfgeld: Anführer besiegen', sd.hunt === 0 ? 'bei den Bewohnern fragen' : sd.hunt === 1 ? sd.hk + '/' + SIDE_N : '') + r(sd.secD, 'Sternsplitter finden', sd.secD ? '' : g + '/' + SIDE_N) + r(sd.champ, 'Champion der Welt besiegen', sd.champ ? '' : 'streift am Rand umher'); }
   // Gespräch mit Kamera auf beide Figuren (Seitenansicht)
   function shot(x, z) { const pl = C.pl, mx = (pl.x + x) / 2, mz = (pl.z + z) / 2, dx = x - pl.x, dz = z - pl.z, L = Math.hypot(dx, dz) || 1, nx = -dz / L, nz = dx / L, y = cur.h(mx, mz);
     C.setCam({ p: [mx + nx * 6, y + 2.3, mz + nz * 6], l: [mx, y + 1.3, mz], dlg: 1 }); pl.face = Math.atan2(dx, dz); }
@@ -422,6 +450,7 @@ export function createMaerchen(C) {
     refresh(); C.saveGame(true);
   }
   function kill(e) {
+    sideKill(e);
     if (cur && e === cur.boss) { cur.boss = null; C.clearBoss(); if (cur.react && cur.react.it) cur.react.it.vis = () => false; cur.react = null; hideReact(); }
     const s = cur && st(cur.w.id), m = mis(); if (!m || s.st !== 1) return;
     if (m.t === 'defeat' && e.mw === 1) { s.c++; refresh(); if (s.c >= m.cnt) return done();
@@ -440,6 +469,7 @@ export function createMaerchen(C) {
     for (let i = cur.items.length - 1; i >= 0; i--) { const it = cur.items[i]; it.o.rotation.y += dt * 1.6; it.o.position.y = cur.h(it.x, it.z) + Math.sin(C.time() * 2.6 + i) * .12;
       if (m && m.t === 'collect' && s.st === 1 && Math.hypot(pl.x - it.x, pl.z - it.z) < 1.8 && !pl.dead) { s.got[it.i] = 1; C.scene.remove(it.o); cur.items.splice(i, 1); C.sfx('pick'); C.emit(it.x, cur.h(it.x, it.z) + .6, it.z, 0xffe08a, 18, 3, .7, .5, -2);
         const got = Object.keys(s.got).length, nm = m.pts[it.i][2]; C.toast(`${cur.w.em} ${nm || m.item} (${got}/${m.pts.length})`); refresh(); if (got >= m.pts.length) done(); else C.saveGame(true); } }
+    if (cur.sec) for (let i = cur.sec.length - 1; i >= 0; i--) { const q = cur.sec[i]; q.o.rotation.y += dt * 2; if (Math.hypot(pl.x - q.x, pl.z - q.z) < 1.7 && !pl.dead) { cur.side.sec[q.i] = 1; C.scene.remove(q.o); cur.sec.splice(i, 1); C.sfx('pick'); C.emit(q.x, cur.h(q.x, q.z) + .7, q.z, 0xffe08a, 22, 3, .8, .5, -2); C.toast(`🌟 Sternsplitter (${Object.keys(cur.side.sec).length}/${SIDE_N})`); C.saveGame(true); } }
     if (cur.swing) { const q = cur.swing; q.t += dt / 1.1; const k = Math.min(1, q.t), e = k * k * (3 - 2 * k); pl.x = q.x0 + (q.x1 - q.x0) * e; pl.z = q.z0 + (q.z1 - q.z0) * e; pl.y = cur.h(pl.x, pl.z) + Math.sin(k * Math.PI) * 6 + .2; pl.vy = 0; pl.air = true; pl.face = Math.atan2(q.x1 - q.x0, q.z1 - q.z0); if (k >= 1) { cur.swing = null; pl.vy = -2; } }
     if (cur.cur) for (const q of cur.cur) { if (q.off) continue; const d = Math.hypot(pl.x - q.x, pl.z - q.z); if (d < q.r) { const k = (1 - d / q.r) * 6.5 * dt, nx = pl.x + q.dx * k, nz = pl.z + q.dz * k; if (!C.W().blocked(nx, nz)) { pl.x = nx; pl.z = nz; } } }
     if (cur.w.vents && !pl.air) for (const [x, z] of cur.w.vents) if (Math.hypot(pl.x - x, pl.z - z) < 1.2) { pl.vy = 15; pl.air = true; C.sfx('jump'); C.emit(x, cur.h(x, z) + .3, z, 0xd8f8ff, 14, 2, 1, .2, -6); }
