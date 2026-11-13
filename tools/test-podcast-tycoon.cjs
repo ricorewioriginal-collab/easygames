@@ -57,6 +57,12 @@ server.listen(0, '127.0.0.1', async () => {
     await p.keyboard.down('KeyW'); await p.waitForTimeout(1200); await p.keyboard.up('KeyW');
     await p.keyboard.press('KeyE'); await p.waitForTimeout(2500);
     assert.ok(await p.evaluate(() => !AMC.Play.state().drive), 'Aussteigen klappt');
+    // Begehbares Funkhaus: Menüpunkte als Orte in der Welt
+    assert.ok(await p.evaluate(() => { const S = AMC.Play.state(), ids = S.stations.map(s => s.id); return ['menu', 'live', 'edit', 'story', 'quiz', 'radio', 'shop', 'koop', 'arcade', 'music', 'home:andrew', 'home:marco'].every(i => ids.includes(i)); }), 'Alle Menüpunkte als Orte');
+    assert.ok(await p.evaluate(() => { const S = AMC.Play.state(); return !S.col.some(c => 22.5 > c.x0 && 22.5 < c.x1 && -25 > c.z0 && -25 < c.z1 && c.bot < 1 && c.top > 1); }), 'Funkhaus innen begehbar');
+    await p.evaluate(() => { window.__act = null; AMC.Play.onAction = id => { window.__act = id; }; const S = AMC.Play.state(), st = S.stations.find(s => s.id === 'shop'); S.pl.x = st.x; S.pl.z = st.z; S.pl.y = 0.2; }); await p.waitForTimeout(400);
+    for (let i = 0; i < 5 && !(await p.evaluate(() => window.__act)); i++) { await p.evaluate(() => AMC.Input.fire('act')); await p.waitForTimeout(300); }
+    assert.equal(await p.evaluate(() => window.__act), 'shop', 'Fanshop im Funkhaus öffnet');
     await p.evaluate(() => { AMC.Play.stop(); AMC.UI.closeAll(); });
     // Sims-Teil: Zuhause (Bedürfnisse, Schreibtisch-Idee), begehbares Studio, Musikshop, Gegenspieler zum Rangeln
     await p.evaluate(() => { AMC.Game.mode = 'home'; AMC.Home.open('marco', () => {}); }); await p.waitForTimeout(1200);
@@ -85,7 +91,7 @@ server.listen(0, '127.0.0.1', async () => {
     await p.keyboard.down('KeyD'); await p.waitForTimeout(800); await p.keyboard.up('KeyD');
     assert.ok(await p.evaluate(() => { const r = AMC.Arcade.state(); return r && r.id === 'jump' && r.p.x > 0.3 && r.plats.length > 10 && r.goal > 100; }), 'Jump & Run läuft');
     await p.evaluate(() => AMC.Game.arcade('run')); await p.waitForTimeout(1200);
-    await p.keyboard.press('Space'); await p.waitForTimeout(600); await p.keyboard.press('ArrowLeft'); await p.waitForTimeout(300);
+    await p.keyboard.press('Space'); await p.waitForFunction(() => AMC.Arcade.state().phase !== 'ready', null, { timeout: 5000 }); await p.waitForTimeout(400); await p.keyboard.press('ArrowLeft'); await p.waitForTimeout(400);
     assert.ok(await p.evaluate(() => { const r = AMC.Arcade.state(); return r && r.id === 'run' && r.phase !== 'ready' && r.p.z < 0 && r.p.lane === 0; }), 'Endlos-Läufer rennt');
     await p.evaluate(() => { const r = AMC.Arcade.state(); r.crash(); }); await p.waitForTimeout(2200);
     assert.ok(await p.evaluate(() => !!document.querySelector('.arc-end')), 'Arcade-Ergebnis erscheint');
